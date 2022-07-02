@@ -78,7 +78,8 @@ class AppListModelUpdater {
   virtual void SetAppStatus(const std::string& id, ash::AppStatus app_status) {}
   virtual void SetItemPosition(const std::string& id,
                                const syncer::StringOrdinal& new_position) {}
-  virtual void SetItemIsPersistent(const std::string& id, bool is_persistent) {}
+  virtual void SetItemIsSystemFolder(const std::string& id,
+                                     bool is_system_folder) {}
   virtual void SetIsNewInstall(const std::string& id, bool is_new_install) {}
   virtual void SetItemFolderId(const std::string& id,
                                const std::string& folder_id) = 0;

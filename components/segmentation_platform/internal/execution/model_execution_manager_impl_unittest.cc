@@ -18,8 +18,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -27,10 +25,12 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,22 +57,22 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               (override));
   MOCK_METHOD(void,
               GetSegmentInfoForSegments,
-              (const std::vector<OptimizationTarget>& segment_ids,
+              (const std::vector<SegmentId>& segment_ids,
                MultipleSegmentInfoCallback callback),
               (override));
   MOCK_METHOD(void,
               GetSegmentInfo,
-              (OptimizationTarget segment_id, SegmentInfoCallback callback),
+              (SegmentId segment_id, SegmentInfoCallback callback),
               (override));
   MOCK_METHOD(void,
               UpdateSegment,
-              (OptimizationTarget segment_id,
+              (SegmentId segment_id,
                absl::optional<proto::SegmentInfo> segment_info,
                SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
               SaveSegmentResult,
-              (OptimizationTarget segment_id,
+              (SegmentId segment_id,
                absl::optional<proto::PredictionResult> result,
                SuccessCallback callback),
               (override));
@@ -100,7 +100,7 @@ class ModelExecutionManagerTest : public testing::Test {
   }
 
   void CreateModelExecutionManager(
-      std::vector<OptimizationTarget> segment_ids,
+      std::vector<SegmentId> segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
@@ -109,8 +109,7 @@ class ModelExecutionManagerTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  MockModelProvider& FindHandler(
-      optimization_guide::proto::OptimizationTarget segment_id) {
+  MockModelProvider& FindHandler(proto::SegmentId segment_id) {
     return *(*model_provider_data_.model_providers.find(segment_id)).second;
   }
 
@@ -137,8 +136,7 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // Construct the ModelExecutionManager.
   base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
       callback;
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelExecutionManager({segment_id}, callback.Get());
 
   // Create invalid metadata, which should be ignored.
@@ -157,8 +155,7 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
       callback;
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelExecutionManager({segment_id}, callback.Get());
 
   proto::SegmentInfo segment_info;
@@ -195,8 +192,7 @@ TEST_F(ModelExecutionManagerTest,
        OnSegmentationModelUpdatedWithPreviousMetadataAndPredictionResult) {
   base::MockCallback<ModelExecutionManager::SegmentationModelUpdatedCallback>
       callback;
-  auto segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelExecutionManager({segment_id}, callback.Get());
 
   // Fill in old data in the SegmentInfo database.

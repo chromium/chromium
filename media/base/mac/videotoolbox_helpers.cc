@@ -9,6 +9,7 @@
 
 #include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 
 namespace media {
@@ -90,7 +91,7 @@ class RawAnnexBBuffer : public AnnexBBuffer {
   size_t GetReservedSize() const override { return reserved_size_; }
 
  private:
-  char* annexb_buffer_;
+  raw_ptr<char> annexb_buffer_;
   size_t annexb_buffer_size_;
   size_t annexb_buffer_offset_;
   size_t reserved_size_;
@@ -114,7 +115,7 @@ class StringAnnexBBuffer : public AnnexBBuffer {
   size_t GetReservedSize() const override { return str_annexb_buffer_->size(); }
 
  private:
-  std::string* str_annexb_buffer_;
+  raw_ptr<std::string> str_annexb_buffer_;
 };
 
 template <typename NalSizeType>

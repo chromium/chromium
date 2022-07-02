@@ -59,7 +59,7 @@ suite('OsPairedBluetoothListTest', function() {
 
   test('Tooltip is shown', async function() {
     const getTooltip = () => {
-      return pairedBluetoothList.$$('#tooltip');
+      return pairedBluetoothList.shadowRoot.querySelector('#tooltip');
     };
 
     assertFalse(getTooltip()._showing);

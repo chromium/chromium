@@ -10,12 +10,12 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
@@ -1103,15 +1103,24 @@ void OverviewGrid::CalculateWindowListAnimationStates(
       NOTREACHED();
   }
 
-  auto is_always_on_top_item = [](OverviewItem* item) -> bool {
+  // On top items are items that are higher up on the z-order, or in the always
+  // on top or float containers.
+  auto is_on_top_item = [](OverviewItem* item) -> bool {
     DCHECK(item);
-    return item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
-           ui::ZOrderLevel::kNormal;
+    if (item->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
+        ui::ZOrderLevel::kNormal) {
+      return true;
+    }
+
+    aura::Window* parent = item->GetWindow()->parent();
+    aura::Window* root = parent->GetRootWindow();
+    return parent == root->GetChildById(kShellWindowId_AlwaysOnTopContainer) ||
+           parent == root->GetChildById(kShellWindowId_FloatContainer);
   };
 
-  // Create a copy of `window_list_` which has the selected item and
-  // always on top windows in the front.
-  std::vector<OverviewItem*> always_on_top_items;
+  // Create a copy of `window_list_` which has the selected item and on top
+  // windows in the front.
+  std::vector<OverviewItem*> on_top_items;
   std::vector<OverviewItem*> regular_items;
   for (const std::unique_ptr<OverviewItem>& item : window_list_) {
     OverviewItem* item_ptr = item.get();
@@ -1120,24 +1129,23 @@ void OverviewGrid::CalculateWindowListAnimationStates(
     if (item_ptr == selected_item)
       continue;
 
-    if (is_always_on_top_item(item_ptr))
-      always_on_top_items.push_back(item_ptr);
+    if (is_on_top_item(item_ptr))
+      on_top_items.push_back(item_ptr);
     else
       regular_items.push_back(item_ptr);
   }
 
   // Construct `items` so they are ordered like so.
-  //   1) Always on top window that is selected.
-  //   2) Always on top window.
-  //   3) Selected window which is not always on top.
+  //   1) Selected window which is on top.
+  //   2) On top windows.
+  //   3) Selected window which is not on top.
   //   4) Regular window.
   // Windows in the same group maintain their ordering from `window_list`.
   std::vector<OverviewItem*> items;
-  if (selected_item && is_always_on_top_item(selected_item))
+  if (selected_item && is_on_top_item(selected_item))
     items.insert(items.begin(), selected_item);
-  items.insert(items.end(), always_on_top_items.begin(),
-               always_on_top_items.end());
-  if (selected_item && !is_always_on_top_item(selected_item))
+  items.insert(items.end(), on_top_items.begin(), on_top_items.end());
+  if (selected_item && !is_on_top_item(selected_item))
     items.insert(items.end(), selected_item);
   items.insert(items.end(), regular_items.begin(), regular_items.end());
 
@@ -1924,19 +1932,20 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   }
 
   // Enable/disable button and update tooltip.
-  const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
+  const SavedDeskPresenter* saved_desk_presenter =
+      overview_session_->saved_desk_presenter();
   SaveDeskTemplateButtonContainer* container =
       static_cast<SaveDeskTemplateButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveAsTemplate,
-      saved_desk_presenter->GetDeskTemplateEntryCount(),
-      saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
+      saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
+      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
       num_incognito_windows_, num_unsupported_windows_, size());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveForLater,
-      saved_desk_presenter->GetSaveAndRecallDeskEntryCount(),
-      saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
+      saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
+      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
       num_incognito_windows_, num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
@@ -2464,13 +2473,13 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
-  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kTemplate,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }
 
 void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
-  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kSaveAndRecall,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }

@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Chrome të kursen kohë duke i sjellë llogaritë e  tua në ueb. Mund të shtosh ose të heqësh llogari te "Cilësimet".</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3345341804167540816">Përdor Chrome kudo</translation>
+<translation id="3428998300753080128">Identifikohu në këtë sajt, "Llogarinë tënde të Google" dhe Chrome.</translation>
 <translation id="3522659714780527202">Për të parë skedat e tua nga çdo vend ku përdor Chrome, aktivizo sinkronizimin</translation>
 <translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3641179212828090796">Përdor fjalëkalimin që ruajte në Chrome për t'u identifikuar më shpejt</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">Disa komponentë shtesë i shkaktojnë Chrome ndërprerje aksidentale. Çinstalo:</translation>
 <translation id="4633328489441962921">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="4698415050768537821">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">Këshillë për Chrome. Identifikohu më shpejt duke zgjedhur fjalëkalimin tënd të ruajtur në krye të tastierës.</translation>
 <translation id="4819268619367838612">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nuk mbështetet në Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="81358522153858150">Chrome tani mbështet politikat e përdoruesit për llogarinë tënde të menaxhuar</translation>
 <translation id="8160472928944011082">Chrome nuk mund të përditësohet</translation>
-<translation id="8263079278049777200">Identifikohu në këtë sajt, "Llogarinë tënde të Google" dhe Chrome. Mund ta aktivizosh sinkronizmin më vonë.</translation>
 <translation id="8357607116237445042">Zgjidh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="840168496893712993">Disa shtesa bëjnë që Chrome të ndërpritet aksidentalisht. Provo t'i çinstalosh ato.</translation>

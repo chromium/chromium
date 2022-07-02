@@ -1,0 +1,74 @@
+<style>
+  /* Special attribute to hide elements. */
+  [hidden] {
+    display: none !important;
+  }
+
+  :host {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .file-input {
+    cursor: pointer;
+  }
+
+  .error-outline {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    margin-inline-end: 12px;
+  }
+
+  #addFileContainer,
+  #replaceFileContainer {
+    width: 248px;
+  }
+
+  #replaceFileContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #selectFileDialog {
+    height: 0;
+    opacity: 0;
+    width: 0;
+  }
+
+  #selectedFileImage {
+    display: block;
+    height: auto;
+    margin: 0 0 0 auto;
+    transition: all 250ms ease;
+    width: 68px;
+  }
+
+  #selectedFileImage:hover {
+    opacity: 0.7;
+  }
+</style>
+<div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
+  <button id="addFileLabel" class="file-input"
+      on-click="handleOpenFileInputClick_">
+    <iron-icon icon="attachment:add-file"></iron-icon>
+    [[i18n('addFileLabel')]]
+  </button>
+</div>
+<input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
+    tabindex="-1">
+<div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
+  <input type="checkbox" id="selectFileCheckbox">
+  <div>
+    <div id="selectedFileName"></div>
+    <button id="replaceFileLabel" class="file-input"
+        on-click="handleOpenFileInputClick_">
+      [[i18n('replaceFileLabel')]]
+    </button>
+  </div>
+  <img id="selectedFileImage" src="[[selectedImageUrl_]]" hidden="[[!selectedImageUrl_]]">
+</div>
+<cr-toast id="fileTooBigErrorMessage" duration="5000">
+  <iron-icon id="toastInfoIcon" class="error-outline" icon="cr:error-outline">
+  </iron-icon>
+  <span id="errorMessage">[[i18n('fileTooBigErrorMessage')]]</span>
+</cr-toast>

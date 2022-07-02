@@ -207,6 +207,11 @@ void ExtensionTestNotificationObserver::WaitForCondition(
 }
 
 void ExtensionTestNotificationObserver::MaybeQuit() {
+  // We can be called synchronously from any of the events being observed,
+  // so return immediately if the closure has already been run.
+  if (quit_closure_.is_null())
+    return;
+
   if (condition_.Run())
     std::move(quit_closure_).Run();
 }

@@ -11,6 +11,7 @@
 
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -43,11 +44,12 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_context.h"
@@ -184,6 +186,11 @@ std::string GenerateVolumeId(const Volume& volume) {
           volume.mount_path().BaseName().AsUTF8Unsafe());
 }
 
+std::string FuseBoxMTPSubdir(const std::string& storage_info_location) {
+  auto suffix = base::TrimString(storage_info_location, "/", base::TRIM_ALL);
+  return std::string(kMtpVolumeIdPrefix).append(std::string(suffix));
+}
+
 std::string GetMountPointNameForMediaStorage(
     const storage_monitor::StorageInfo& info) {
   std::string name(kFileManagerMTPMountNamePrefix);
@@ -192,7 +199,7 @@ std::string GetMountPointNameForMediaStorage(
 }
 
 chromeos::MountAccessMode GetExternalStorageAccessMode(const Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)
+  return profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)
              ? chromeos::MOUNT_ACCESS_MODE_READ_ONLY
              : chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
 }
@@ -401,7 +408,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
   volume->volume_id_ = util::kFuseBox;
   volume->volume_id_.append(kMtpVolumeIdPrefix + label);
   volume->volume_label_ = label;
-  volume->volume_label_.insert(0, "fusebox ");
+  if (ash::features::IsFileManagerFuseBoxDebugEnabled())
+    volume->volume_label_.insert(0, "fusebox ");
   return volume;
 }
 
@@ -416,7 +424,8 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_label_ = MediaViewDocumentIdToLabel(root_document_id);
-  volume->is_read_only_ = true;
+  volume->is_read_only_ =
+      arc::ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly();
   volume->watchable_ = false;
   volume->volume_id_ = arc::GetMediaViewVolumeId(root_document_id);
   return volume;
@@ -597,7 +606,6 @@ VolumeManager::VolumeManager(
       disk_mount_manager_(disk_mount_manager),
       file_system_provider_service_(file_system_provider_service),
       get_mtp_storage_info_callback_(get_mtp_storage_info_callback),
-      fusebox_mounter_(FuseBoxMounter::Create()),
       snapshot_manager_(new SnapshotManager(profile_)),
       documents_provider_root_manager_(
           std::make_unique<DocumentsProviderRootManager>(
@@ -621,6 +629,10 @@ void VolumeManager::Initialize() {
     return;
   }
 
+  if (!fusebox_mounter_.get())
+    fusebox_mounter_.reset(FuseBoxMounter::Create());
+  // The fusebox_mounter_ is enabled by a chrome flag: Create() will return
+  // nullptr if the flag is disabled. Check it before attempting to Mount.
   if (fusebox_mounter_.get())
     fusebox_mounter_->Mount(disk_mount_manager_);
 
@@ -674,11 +686,11 @@ void VolumeManager::Initialize() {
   // Subscribe to Profile Preference change.
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kExternalStorageDisabled,
+      disks::prefs::kExternalStorageDisabled,
       base::BindRepeating(&VolumeManager::OnExternalStorageDisabledChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      prefs::kExternalStorageReadOnly,
+      disks::prefs::kExternalStorageReadOnly,
       base::BindRepeating(&VolumeManager::OnExternalStorageReadOnlyChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -796,7 +808,7 @@ void VolumeManager::AddSshfsCrostiniVolume(
   // Listen for crostini container shutdown and remove volume.
   crostini::CrostiniManager::GetForProfile(profile_)
       ->AddShutdownContainerCallback(
-          crostini::ContainerId::GetDefault(),
+          crostini::DefaultContainerId(),
           base::BindOnce(&VolumeManager::RemoveSshfsCrostiniVolume,
                          weak_ptr_factory_.GetWeakPtr(), sshfs_mount_path,
                          base::BindOnce([](bool result) {
@@ -982,7 +994,8 @@ void VolumeManager::OnAutoMountableDiskEvent(
 
       bool mounting = false;
       if (disk.mount_path().empty() && disk.has_media() &&
-          !profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+          !profile_->GetPrefs()->GetBoolean(
+              disks::prefs::kExternalStorageDisabled)) {
         // TODO(crbug.com/774890): Remove |mount_label| when the issue gets
         // resolved. Currently we suggest a mount point name, because in case
         // when disk's name contains '#', content will not load in Files App.
@@ -1310,7 +1323,8 @@ void VolumeManager::OnExternalStorageDisabledChanged() {
   // If the policy just got disabled we have to unmount every device currently
   // mounted. The opposite is fine - we can let the user re-plug their device to
   // make it available.
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+  if (profile_->GetPrefs()->GetBoolean(
+          disks::prefs::kExternalStorageDisabled)) {
     // We do not iterate on mount_points directly, because mount_points can
     // be changed by UnmountPath(). Also, a failing unmount shouldn't be retried
     // indefinitely. So make a set of all the mount points that should be
@@ -1344,7 +1358,7 @@ void VolumeManager::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
   if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id()))
     return;
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled))
+  if (profile_->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled))
     return;
 
   // Resolve mtp storage name and get MtpStorageInfo.
@@ -1423,13 +1437,16 @@ void VolumeManager::DoAttachMtpStorage(
   DCHECK(mtp_file_system_url.is_valid());
 
   // Attach the MTP storage device to the fusebox daemon.
+  std::string subdir = FuseBoxMTPSubdir(info.location());
   fusebox_mounter_->AttachStorage(
-      "mtp", url, read_only,
+      subdir, url, read_only,
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageMTP,
-                     weak_ptr_factory_.GetWeakPtr(), fsid, label, read_only));
+                     weak_ptr_factory_.GetWeakPtr(), subdir, fsid, label,
+                     read_only));
 }
 
-void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& fsid,
+void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& subdir,
+                                              const std::string& fsid,
                                               const std::string& label,
                                               bool read_only,
                                               int error) {
@@ -1438,7 +1455,7 @@ void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& fsid,
     return;
 
   // Create a Volume for the fusebox MTP storage device.
-  const base::FilePath mount_path = base::FilePath::FromUTF8Unsafe("mtp");
+  const base::FilePath mount_path = base::FilePath(subdir);
   std::unique_ptr<Volume> volume =
       Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
 
@@ -1491,7 +1508,8 @@ void VolumeManager::OnRemovableStorageDetached(
     mount_points->RevokeFileSystem(util::kFuseBox + fsid);
 
     // Detach the fusebox MTP storage device from the fusebox daemon.
-    fusebox_mounter_->DetachStorage("mtp", base::DoNothing());
+    std::string subdir = FuseBoxMTPSubdir(info.location());
+    fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
     return;
   }
 }
@@ -1634,7 +1652,8 @@ void VolumeManager::DoMountEvent(chromeos::MountError error_code,
 
   // Filter out removable disks if forbidden by policy for this profile.
   if (volume->type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
-      profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+      profile_->GetPrefs()->GetBoolean(
+          disks::prefs::kExternalStorageDisabled)) {
     return;
   }
 
@@ -1702,12 +1721,12 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     // consistent, which means the mount path needs to be the same.
     // display_name, remote_mount_path and vm_type aren't needed and we don't
     // know them at unmount so leave them blank.
-    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                   // TODO(b/230667118): Once http://crrev/3627129 makes it into
-                   // Chrome change the type to unknown.
-                   *Volume::CreateForSftpGuestOs(
-                       "", sftp_mount_path, base::FilePath(),
-                       guest_os::VmType::ApplicationList_VmType_TERMINA));
+    DoUnmountEvent(
+        chromeos::MOUNT_ERROR_NONE,
+        // TODO(b/230667118): Once http://crrev/3627129 makes it into
+        // Chrome change the type to unknown.
+        *Volume::CreateForSftpGuestOs("", sftp_mount_path, base::FilePath(),
+                                      guest_os::VmType::TERMINA));
     if (callback)
       std::move(callback).Run(true);
     return;

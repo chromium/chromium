@@ -23,7 +23,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_
 
 #include <stdint.h>
+#include <limits>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
@@ -32,8 +34,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
 #include <emmintrin.h>
+
+#if !BUILDFLAG(IS_MAC)
+#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+#endif
 #endif
 
 namespace WTF {
@@ -186,10 +192,26 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
   return new_impl;
 }
 
+#if !BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+// Controls whether CopyLCharsFromUCharSource() uses intrinsics. This is backed
+// by a feature, but a variable is used as this code is performance sensitive.
+WTF_EXPORT extern bool g_enable_sse_path_for_copy_lchars;
+#endif
+
 inline void CopyLCharsFromUCharSource(LChar* destination,
                                       const UChar* source,
                                       size_t length) {
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
+#if !BUILDFLAG(IS_MAC)
+  if (!g_enable_sse_path_for_copy_lchars) {
+    for (size_t i = 0; i < length; ++i) {
+      DCHECK(!(source[i] & 0xff00));
+      destination[i] = static_cast<LChar>(source[i]);
+    }
+    return;
+  }
+#endif
+
   const uintptr_t kMemoryAccessSize =
       16;  // Memory accesses on 16 byte (128 bit) alignment
   const uintptr_t kMemoryAccessMask = kMemoryAccessSize - 1;

@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENT_SELECTION_RESULT_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENT_SELECTION_RESULT_H_
 
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
@@ -26,7 +24,7 @@ struct SegmentSelectionResult {
 
   // The result of segmentation. Can be empty if the the backend couldn't select
   // a segment with confidence.
-  absl::optional<OptimizationTarget> segment;
+  absl::optional<proto::SegmentId> segment;
 };
 
 }  // namespace segmentation_platform

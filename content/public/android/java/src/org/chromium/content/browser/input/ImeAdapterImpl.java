@@ -971,7 +971,7 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void focusedNodeChanged(boolean isEditable) {
+    private void focusedNodeChanged(boolean isEditable, int left, int top, int right, int bottom) {
         if (DEBUG_LOGS) Log.i(TAG, "focusedNodeChanged: isEditable [%b]", isEditable);
 
         // Update controller before the connection is restarted.
@@ -982,6 +982,14 @@ public class ImeAdapterImpl
         if (mTextInputType != TextInputType.NONE && mInputConnection != null && isEditable) {
             mRestartInputOnNextStateUpdate = true;
         }
+
+        // TODO(mahesh.ma): Add Android stylus writing logic.
+    }
+
+    @CalledByNative
+    private boolean requestStartStylusWriting() {
+        // TODO(mahesh.ma): Add Android stylus writing logic.
+        return false;
     }
 
     /**

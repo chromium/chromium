@@ -554,14 +554,14 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ClosableAfterNavigation) {
 
   // Navigate it elsewhere.
   content::TestNavigationObserver nav_observer(popup);
-  popup->GetMainFrame()->ExecuteJavaScriptForTests(
+  popup->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"location.href = '/empty.html'", base::NullCallback());
   nav_observer.Wait();
 
   // Have it close itself.
   CloseObserver close_observer(popup);
-  popup->GetMainFrame()->ExecuteJavaScriptForTests(u"window.close()",
-                                                   base::NullCallback());
+  popup->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"window.close()",
+                                                          base::NullCallback());
   close_observer.Wait();
 }
 
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 #endif
   bool ignored;
   javascript_dialogs::AppModalDialogManager::GetInstance()->RunJavaScriptDialog(
-      tab, tab->GetMainFrame(), content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+      tab, tab->GetPrimaryMainFrame(), content::JAVASCRIPT_DIALOG_TYPE_ALERT,
       std::u16string(), std::u16string(), base::DoNothing(), &ignored);
   javascript_dialogs::AppModalDialogController* dialog =
       ui_test_utils::WaitForAppModalDialog();
@@ -823,8 +823,10 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "a.com", "/popup_blocker/popup-many.html")));
-  content::RenderFrameHostWrapper rfh(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+  content::RenderFrameHostWrapper rfh(browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame());
   int process_id = rfh->GetProcess()->GetID();
   int frame_routing_id = rfh->GetRoutingID();
 
@@ -885,10 +887,10 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(tab_2, ""));
 
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
-                   tab_1->GetMainFrame())
+                   tab_1->GetPrimaryMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  tab_2->GetMainFrame())
+                  tab_2->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
@@ -898,7 +900,10 @@ class PopupBlockerFencedFrameTest : public PopupBlockerBrowserTest {
   ~PopupBlockerFencedFrameTest() override = default;
 
   content::RenderFrameHost* primary_main_frame_host() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
  protected:

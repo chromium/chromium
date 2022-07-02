@@ -57,8 +57,21 @@ export class SearchPageElement extends SearchPageElementBase {
     return html`{__html_template__}`;
   }
 
+  static get properties() {
+    return {
+      descriptionTemplate: {
+        type: String,
+        readonly: true,
+        observer: SearchPageElement.prototype.descriptionTemplateChanged_
+      },
+    };
+  }
+
   constructor() {
     super();
+
+    /** @type {string} */
+    this.descriptionTemplate = '';
 
     /**
      * Record the most recent number of characters in the input for which a
@@ -84,6 +97,9 @@ export class SearchPageElement extends SearchPageElementBase {
     this.iframeLoaded_ = new Promise(resolve => {
       this.resolveIframeLoaded_ = resolve;
     });
+
+    // Set focus on the input field after iframe is loaded.
+    this.iframeLoaded_.then(() => this.focusInputElement());
 
     /** @private {?HTMLIFrameElement} */
     this.iframe_ = null;
@@ -186,9 +202,8 @@ export class SearchPageElement extends SearchPageElementBase {
 
   /**
    * Focus on the textarea element.
-   * @private
    */
-  focusInputElement_() {
+  focusInputElement() {
     this.getInputElement_().focus();
   }
 
@@ -197,7 +212,7 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   onInputInvalid_() {
     this.showError_();
-    this.focusInputElement_();
+    this.focusInputElement();
   }
 
   /**
@@ -232,6 +247,16 @@ export class SearchPageElement extends SearchPageElementBase {
   }
 
   /**
+   * @returns {string}
+   * @protected
+   */
+  feedbackWritingGuidanceUrl_() {
+    // TODO(xiangdongkong): append ?hl={the application locale} to the url.
+    const url = 'https://support.google.com/chromebook/answer/2982029';
+    return url;
+  }
+
+  /**
    * @param {!Event} e
    * @private
    */
@@ -248,6 +273,21 @@ export class SearchPageElement extends SearchPageElementBase {
         detail: {currentState: FeedbackFlowState.SEARCH, description: textInput}
       }));
     }
+  }
+
+  /**
+   * @param {string} text
+   */
+  setDescription(text) {
+    this.getInputElement_().value = text;
+  }
+
+  /**
+   * @param {string} currentTemplate
+   * @protected
+   */
+  descriptionTemplateChanged_(currentTemplate) {
+    this.getInputElement_().value = currentTemplate;
   }
 }
 

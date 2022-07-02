@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_NETWORK_TELEMETRY_SAMPLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_NETWORK_TELEMETRY_SAMPLER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/sampler.h"
 
 namespace reporting {
@@ -25,9 +26,14 @@ class NetworkTelemetrySampler : public Sampler {
   void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:
-  void HandleNetworkTelemetryResult(
+  void CollectWifiSignalStrengthRssi(
       OptionalMetricCallback callback,
-      ::chromeos::cros_healthd::mojom::TelemetryInfoPtr result);
+      ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry);
+
+  void CollectNetworksStates(
+      OptionalMetricCallback callback,
+      ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
+      base::flat_map<std::string, int> service_path_rssi_map);
 
   Sampler* const https_latency_sampler_;
 

@@ -74,6 +74,9 @@ bool ProtocolHandler::IsValidDict(const base::Value::Dict& value) {
 
 bool ProtocolHandler::IsValid() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // We don't want to include URL's syntax checks because there are use cases of
+  // the protocol handlers logic that require more flexibility than the one
+  // specified for the registerProtocolHandler API (eg, Predefined Handlers).
   if (!blink::IsAllowedCustomHandlerURL(url_, security_level_))
     return false;
 

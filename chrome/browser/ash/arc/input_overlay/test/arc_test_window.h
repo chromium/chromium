@@ -29,8 +29,7 @@ class ArcTestWindow {
   void SetBounds(display::Display& display, gfx::Rect bounds);
 
  private:
-  std::unique_ptr<exo::Buffer> buffer_;
-  std::unique_ptr<exo::Surface> surface_;
+  exo::Surface* surface_;
   std::unique_ptr<exo::ClientControlledShellSurface> shell_surface_;
 };
 

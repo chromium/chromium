@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
 
-// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from '../../../test_util.js';
-// clang-format on
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
 suite('network-config', function() {
   var networkConfig;
@@ -33,7 +29,7 @@ suite('network-config', function() {
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
   });
 
   function setNetworkConfig(properties) {
@@ -57,7 +53,7 @@ suite('network-config', function() {
   function initNetworkConfig() {
     document.body.appendChild(networkConfig);
     networkConfig.init();
-    Polymer.dom.flush();
+    flush();
   }
 
   function initNetworkConfigWithCerts(hasServerCa, hasUserCert) {
@@ -86,7 +82,7 @@ suite('network-config', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => {
       networkConfig.async(resolve);
     });
@@ -178,7 +174,7 @@ suite('network-config', function() {
         assertTrue(!!networkConfig.error);
 
         passwordInput.fire('keypress');
-        Polymer.dom.flush();
+        flush();
         assertFalse(!!networkConfig.error);
       });
     });
@@ -207,7 +203,7 @@ suite('network-config', function() {
       initNetworkConfig();
 
       networkConfig.set('vpnType_', 'IKEv2');
-      Polymer.dom.flush();
+      flush();
       assertEquals(3, networkConfig.get('ipsecAuthTypeItems_').length);
       assertTrue(!!networkConfig.$$('#ipsec-auth-type'));
       assertFalse(!!networkConfig.$$('#l2tp-username-input'));
@@ -222,7 +218,7 @@ suite('network-config', function() {
       assertTrue(!!networkConfig.$$('#ipsec-remote-id-input'));
 
       networkConfig.set('ipsecAuthType_', 'PSK');
-      Polymer.dom.flush();
+      flush();
       assertTrue(!!networkConfig.$$('#ipsec-psk-input'));
       assertFalse(!!networkConfig.$$('#vpnServerCa'));
       assertFalse(!!networkConfig.$$('#vpnUserCert'));
@@ -232,7 +228,7 @@ suite('network-config', function() {
       assertTrue(!!networkConfig.$$('#ipsec-remote-id-input'));
 
       networkConfig.set('ipsecAuthType_', 'Cert');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!networkConfig.$$('#ipsec-psk-input'));
       assertTrue(!!networkConfig.$$('#vpnServerCa'));
       assertTrue(!!networkConfig.$$('#vpnUserCert'));
@@ -302,7 +298,7 @@ suite('network-config', function() {
       initNetworkConfig();
       networkConfig.set('vpnType_', 'IKEv2');
       networkConfig.set('ipsecAuthType_', 'PSK');
-      Polymer.dom.flush();
+      flush();
 
       setMandatoryFields();
       const configProperties = networkConfig.get('configProperties_');
@@ -568,7 +564,7 @@ suite('network-config', function() {
       // PSK input should appear and the dropdowns for server CA and user
       // certificate should be hidden.
       networkConfig.set('vpnType_', 'L2TP_IPsec');
-      Polymer.dom.flush();
+      flush();
       assertEquals(2, networkConfig.get('ipsecAuthTypeItems_').length);
       assertEquals('PSK', networkConfig.ipsecAuthType_);
       assertFalse(!!networkConfig.$$('#ipsec-local-id-input'));
@@ -582,7 +578,7 @@ suite('network-config', function() {
       // Switch the authentication type to Cert. The PSK input should be hidden
       // and the dropdowns for server CA and user certificate should appear.
       networkConfig.set('ipsecAuthType_', 'Cert');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!networkConfig.$$('#ipsec-psk-input'));
       assertTrue(!!networkConfig.$$('#ipsec-auth-type'));
       assertTrue(!!networkConfig.$$('#l2tp-username-input'));
@@ -659,7 +655,7 @@ suite('network-config', function() {
     test('PSK', function() {
       initNetworkConfig();
       networkConfig.set('vpnType_', 'L2TP_IPsec');
-      Polymer.dom.flush();
+      flush();
 
       setMandatoryFields();
       const configProperties = networkConfig.get('configProperties_');
@@ -841,9 +837,9 @@ suite('network-config', function() {
 
       // Switch the VPN type to another and back again. Items should not change.
       networkConfig.set('vpnType_', 'L2TP_IPsec');
-      Polymer.dom.flush();
+      flush();
       networkConfig.set('vpnType_', 'OpenVPN');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!networkConfig.$$('#ipsec-auth-type'));
       assertFalse(!!networkConfig.$$('#l2tp-username-input'));
       assertTrue(!!networkConfig.$$('#openvpn-username-input'));
@@ -891,11 +887,11 @@ suite('network-config', function() {
     test('Switch VPN Type', function() {
       const configProperties = networkConfig.get('configProperties_');
       networkConfig.set('vpnType_', 'OpenVPN');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!configProperties.typeConfig.vpn.wireguard);
       assertFalse(!!networkConfig.$$('#wireguard-ip-input'));
       networkConfig.set('vpnType_', 'WireGuard');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!configProperties.typeConfig.vpn.openvpn);
       assertTrue(!!configProperties.typeConfig.vpn.wireguard);
       assertTrue(!!networkConfig.$$('#wireguard-ip-input'));
@@ -903,7 +899,7 @@ suite('network-config', function() {
 
     test('Switch key config type', function() {
       networkConfig.set('vpnType_', 'WireGuard');
-      Polymer.dom.flush();
+      flush();
       assertFalse(!!networkConfig.$$('#wireguardPrivateKeyInput'));
       networkConfig.set('wireguardKeyType_', 'UserInput');
       return flushAsync().then(() => {
@@ -913,7 +909,7 @@ suite('network-config', function() {
 
     test('Enable Connect', function() {
       networkConfig.set('vpnType_', 'WireGuard');
-      Polymer.dom.flush();
+      flush();
       assertFalse(networkConfig.enableConnect);
       networkConfig.set('ipAddressInput_', '10.10.0.1');
       const configProperties = networkConfig.get('configProperties_');

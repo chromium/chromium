@@ -181,7 +181,7 @@ TEST_F(UnifiedConsentMediatorTest, SelectIdentity) {
   ASSERT_EQ(identity2_, mediator_.selectedIdentity);
 }
 
-// Tests that |start| will not override the selected identity with a
+// Tests that `start` will not override the selected identity with a
 // pre-determined default identity based on the accounts on the device and user
 // sign-in state.
 TEST_F(UnifiedConsentMediatorTest, DontOverrideIdentityForSignedInUser) {

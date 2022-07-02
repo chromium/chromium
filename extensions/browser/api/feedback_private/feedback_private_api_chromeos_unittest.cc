@@ -129,8 +129,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     EXPECT_TRUE(values.is_list());
 
     std::unique_ptr<api::feedback_private::SendFeedback::Params> params =
-        api::feedback_private::SendFeedback::Params::Create(
-            values.GetListDeprecated());
+        api::feedback_private::SendFeedback::Params::Create(values.GetList());
     EXPECT_TRUE(params);
 
     scoped_refptr<FeedbackData> actual_feedback_data;

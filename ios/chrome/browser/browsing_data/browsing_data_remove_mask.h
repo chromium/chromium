@@ -72,7 +72,7 @@ inline BrowsingDataRemoveMask& operator&=(BrowsingDataRemoveMask& lhs,
   return lhs;
 }
 
-// Returns whether the |flag| is set in |mask|.
+// Returns whether the `flag` is set in `mask`.
 constexpr bool IsRemoveDataMaskSet(BrowsingDataRemoveMask mask,
                                    BrowsingDataRemoveMask flag) {
   return (mask & flag) == flag;

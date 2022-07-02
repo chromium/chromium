@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SHARED_QUAD_STATE_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_SHARED_QUAD_STATE_MOJOM_TRAITS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,7 +15,7 @@
 namespace mojo {
 
 struct OptSharedQuadState {
-  const viz::SharedQuadState* sqs;
+  raw_ptr<const viz::SharedQuadState> sqs;
 };
 
 template <>

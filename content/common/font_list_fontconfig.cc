@@ -24,10 +24,10 @@ std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> CreateFormatPattern(
   return pattern;
 }
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
+base::Value::List GetFontList_SlowBlocking() {
   DCHECK(GetFontListTaskRunner()->RunsTasksInCurrentSequence());
 
-  std::unique_ptr<base::ListValue> font_list(new base::ListValue);
+  base::Value::List font_list;
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
       FcObjectSetBuild(FC_FAMILY, NULL), FcObjectSetDestroy);
@@ -64,7 +64,7 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
     font_item.Append(family);
     font_item.Append(family);  // localized name.
     // TODO(yusukes): Support localized family names.
-    font_list->GetList().Append(std::move(font_item));
+    font_list.Append(std::move(font_item));
   }
 
   return font_list;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -48,6 +49,7 @@ class WilcoDtcSupportdNotificationController {
  private:
   void DisplayNotification(
       const std::string& notification_id,
+      const NotificationCatalogName& catalog_name,
       const int title_id,
       const int message_id,
       const message_center::NotificationPriority priority,

@@ -168,7 +168,7 @@ uint32_t SamplingHeapProfiler::Start() {
   // center around 10M bytes, which would overflow the buckets.
   base::UmaHistogramCounts10M(
       "HeapProfiling.SamplingIntervalKB",
-      poisson_allocation_sampler->SamplingInterval() / 1024);
+      static_cast<int>(poisson_allocation_sampler->SamplingInterval() / 1024));
 
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)

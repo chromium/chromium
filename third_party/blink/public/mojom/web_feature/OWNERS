@@ -1,6 +1,0 @@
-# OWNERS review for adding / removing UseCounters already happens as part of
-# reviewing the actual implementation changes (which is often, but not always
-# in blink/renderer/core). No additional review (including IPC security review)
-# is required for adding/removing entries from this enum (consistent with
-# metrics/histograms/enums.xml).
-per-file web_feature.mojom=*

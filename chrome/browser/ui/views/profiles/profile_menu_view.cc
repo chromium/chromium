@@ -54,7 +54,6 @@
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -289,8 +288,9 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       chrome::ShowSettingsSubPage(browser(), chrome::kSignOutSubPage);
       break;
     case AvatarSyncErrorType::kUnrecoverableError: {
+      Profile* profile = browser()->profile();
       signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(browser()->profile());
+          IdentityManagerFactory::GetForProfile(profile);
       // This error means that the Sync engine failed to initialize. Shutdown
       // Sync engine by revoking sync consent.
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
@@ -299,7 +299,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       Hide();
       // Re-enable sync with the same primary account.
       signin_ui_util::EnableSyncFromSingleAccountPromo(
-          browser(),
+          profile,
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
@@ -308,7 +308,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
     case AvatarSyncErrorType::kAuthError:
       Hide();
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          browser(),
+          browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
       break;
     case AvatarSyncErrorType::kUpgradeClientError:
@@ -340,7 +340,7 @@ void ProfileMenuView::OnSigninAccountButtonClicked(CoreAccountInfo account) {
     return;
   Hide();
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser(), account,
+      browser()->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
@@ -373,7 +373,7 @@ void ProfileMenuView::OnSigninButtonClicked() {
   Hide();
 
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser(), AccountInfo(),
+      browser()->profile(), AccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
@@ -633,9 +633,7 @@ void ProfileMenuView::BuildFeatureButtons() {
   bool add_sign_out_button = has_unconsented_account && !has_primary_account;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Clearing the primary account is not allowed in the main profile.
-  add_sign_out_button &=
-      (!profile->IsMainProfile() &&
-       base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
+  add_sign_out_button &= !profile->IsMainProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // The sign-out button is always at the bottom.
   if (add_sign_out_button) {

@@ -65,7 +65,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace metrics {
@@ -98,10 +98,12 @@ namespace {
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
 void PostStoreMetricsClientInfo(const metrics::ClientInfo& client_info) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GoogleUpdateSettings::StoreMetricsClientInfo,
-                     client_info));
+  // This must happen on the same sequence as the tasks to enable/disable
+  // metrics reporting. Otherwise, this may run while disabling metrics
+  // reporting if the user quickly enables and disables metrics reporting.
+  GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&GoogleUpdateSettings::StoreMetricsClientInfo,
+                                client_info));
 }
 
 // Appends a group to the sampling controlling |trial|. The group will be
@@ -155,7 +157,9 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange() {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
-  ChangeMetricsReportingState(enable_metrics);
+  ChangeMetricsReportingState(
+      enable_metrics,
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange);
 
   // TODO(crbug.com/1234538): This call ensures that structured metrics' state
   // is deleted when the reporting state is disabled. Long-term this should
@@ -374,7 +378,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     std::string client_id;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Read metrics service client id from ash chrome if it's present.
-    auto* init_params = chromeos::LacrosService::Get()->init_params();
+    auto* init_params = chromeos::BrowserInitParams::Get();
     if (init_params->metrics_service_client_id.has_value())
       client_id = init_params->metrics_service_client_id.value();
 #endif

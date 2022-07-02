@@ -24,14 +24,12 @@ class TestStorageModuleStrict : public StorageModuleInterface {
 
   MOCK_METHOD(void,
               AddRecord,
-              (Priority priority,
-               Record record,
-               base::OnceCallback<void(Status)> callback),
+              (Priority priority, Record record, EnqueueCallback callback),
               (override));
 
   MOCK_METHOD(void,
               Flush,
-              (Priority priority, base::OnceCallback<void(Status)> callback),
+              (Priority priority, FlushCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -44,7 +42,7 @@ class TestStorageModuleStrict : public StorageModuleInterface {
               (SignedEncryptionInfo signed_encryption_key),
               (override));
 
-  Record record() const;
+  const Record& record() const;
   Priority priority() const;
 
  protected:
@@ -53,7 +51,7 @@ class TestStorageModuleStrict : public StorageModuleInterface {
  private:
   void AddRecordSuccessfully(Priority priority,
                              Record record,
-                             base::OnceCallback<void(Status)> callback);
+                             EnqueueCallback callback);
 
   absl::optional<Record> record_;
   absl::optional<Priority> priority_;

@@ -9,7 +9,6 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -44,8 +43,8 @@ class CORE_EXPORT SecurityContextInit {
   void ApplyPermissionsPolicy(
       LocalFrame& frame,
       const ResourceResponse& response,
-      const absl::optional<WebOriginPolicy>& origin_policy,
-      const FramePolicy& frame_policy);
+      const FramePolicy& frame_policy,
+      const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);

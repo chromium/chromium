@@ -27,6 +27,7 @@ generate_grd("build_grdp") {
     "finance.svg",
     "google_g.svg",
     "google_g_transparent.svg",
+    "journeys.svg",
     "incognito.svg",
     "mac_share.svg",
     "note.svg",

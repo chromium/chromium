@@ -701,31 +701,34 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
 
 TEST_F(BackgroundModeManagerWithExtensionsTest,
        BackgroundMenuGenerationMultipleProfile) {
-  scoped_refptr<const extensions::Extension> component_extension =
-      extensions::ExtensionBuilder("Component Extension")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> component_extension_with_options =
-      extensions::ExtensionBuilder("Component Extension with Options")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension =
-      extensions::ExtensionBuilder("Regular Extension")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension_with_options =
-      extensions::ExtensionBuilder("Regular Extension with Options")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
+  // Helper methods to build extensions; we build new instances so that each
+  // Extension object is only used in a single profile.
+  auto build_component_extension = []() {
+    return extensions::ExtensionBuilder("Component Extension")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_component_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Component Extension with Options")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
+  auto build_regular_extension = []() {
+    return extensions::ExtensionBuilder("Regular Extension")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_regular_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Regular Extension with Options")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
@@ -737,10 +740,11 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  service1->AddComponentExtension(component_extension.get());
-  service1->AddComponentExtension(component_extension_with_options.get());
-  service1->AddExtension(regular_extension.get());
-  service1->AddExtension(regular_extension_with_options.get());
+  service1->AddComponentExtension(build_component_extension().get());
+  service1->AddComponentExtension(
+      build_component_extension_with_options().get());
+  service1->AddExtension(build_regular_extension().get());
+  service1->AddExtension(build_regular_extension_with_options().get());
   Mock::VerifyAndClearExpectations(manager_.get());
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
@@ -755,9 +759,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   service2->Init();
   base::RunLoop().RunUntilIdle();
 
-  service2->AddComponentExtension(component_extension.get());
-  service2->AddExtension(regular_extension.get());
-  service2->AddExtension(regular_extension_with_options.get());
+  service2->AddComponentExtension(build_component_extension().get());
+  service2->AddExtension(build_regular_extension().get());
+  service2->AddExtension(build_regular_extension_with_options().get());
 
   manager_->status_icon_ = new TestStatusIcon();
   manager_->UpdateStatusTrayIconContextMenu();

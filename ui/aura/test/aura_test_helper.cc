@@ -94,7 +94,6 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
 
   // Reset aura::Env to eliminate test dependency (https://crbug.com/586514).
   EnvTestHelper env_helper(env);
-  env_helper.ResetEnvForTesting();
   // Unit tests generally don't want to query the system, rather use the state
   // from RootWindow.
   env_helper.SetInputStateLookup(nullptr);

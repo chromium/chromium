@@ -13,29 +13,7 @@
 
 namespace blink {
 
-class WebMediaStreamSink;
 class WebMediaStreamTrack;
-
-// TODO(crbug.com/704136): Move these helper functions out of the Blink
-// public API. Note for while moving it: there is an existing
-// media_stream_utils.h on renderer/modules/mediastream.
-
-// Calls to these methods must be done on the main render thread.
-// Note that |callback| for frame delivery happens on the IO thread.
-// Warning: Calling RemoveSinkFromMediaStreamTrack does not immediately stop
-// frame delivery through the |callback|, since frames are being delivered on
-// a different thread.
-// |is_sink_secure| indicates if |sink| meets output protection requirement.
-// Generally, this should be false unless you know what you are doing.
-BLINK_MODULES_EXPORT void AddSinkToMediaStreamTrack(
-    const WebMediaStreamTrack& track,
-    WebMediaStreamSink* sink,
-    const VideoCaptureDeliverFrameCB& callback,
-    MediaStreamVideoSink::IsSecure is_secure,
-    MediaStreamVideoSink::UsesAlpha uses_alpha);
-BLINK_MODULES_EXPORT void RemoveSinkFromMediaStreamTrack(
-    const WebMediaStreamTrack& track,
-    WebMediaStreamSink* sink);
 
 // See documentation of MediaStreamVideoTrack::CreateVideoTrack().
 BLINK_MODULES_EXPORT WebMediaStreamTrack CreateWebMediaStreamVideoTrack(

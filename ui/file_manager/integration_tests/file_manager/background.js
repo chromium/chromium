@@ -48,11 +48,11 @@ import './traverse.js';
 import './zip_files.js';
 
 import {FilesAppState} from '../files_app_state.js';
-
 import {RemoteCall, RemoteCallFilesApp} from '../remote_call.js';
 import {addEntries, checkIfNoErrorsOccuredOnApp, ENTRIES, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo, testPromiseAndApps} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
+import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
@@ -64,6 +64,9 @@ export const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
 
 export {FILE_MANAGER_EXTENSIONS_ID};
 
+/**
+ * @type {!RemoteCallFilesApp}
+ */
 export let remoteCall;
 
 /**
@@ -120,10 +123,49 @@ export async function openNewWindow(initialRoot, appState = {}) {
 }
 
 /**
+ * Opens a foreground window that makes a call to chrome.fileSystem.chooseEntry.
+ * This is due to the fact that this API shouldn't be called in the background
+ * page (see crbug.com/736930).
+ * Returns a promise that is fulfilled once the foreground window is opened.
+ *
+ * @param {!chrome.fileSystem.ChooseEntryOptions} params
+ * @return {!Promise<Window>} Promise fulfilled when a foreground window opens.
+ */
+export async function openEntryChoosingWindow(params) {
+  const json = JSON.stringify(params);
+  const url = 'file_manager/choose_entry.html?' +
+      new URLSearchParams({value: json}).toString();
+  return new Promise((resolve, reject) => {
+    chrome.windows.create({url, height: 600, width: 400}, (win) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(win);
+      }
+    });
+  });
+}
+
+/**
+ * Companion function to openEntryChoosingWindow function. This function waits
+ * until entry selected in a dialog shown by chooseEntry() is set.
+ * @return {!Promise<?Entry>} the entry set by the dialog shown via
+ *     chooseEntry().
+ */
+export async function pollForChosenEntry(caller) {
+  await repeatUntil(() => {
+    if (window[CHOOSE_ENTRY_PROPERTY] === undefined) {
+      return pending(caller, 'Waiting for chooseEntry() result');
+    }
+  });
+  return /** @type{FileEntry} */ (window[CHOOSE_ENTRY_PROPERTY]);
+}
+
+/**
  * Opens a file dialog and waits for closing it.
  *
  * @param {chrome.fileSystem.AcceptsOption} dialogParams Dialog parameters to be
- *     passed to chrome. fileSystem.chooseEntry() API.
+ *     passed to openEntryChoosingWindow() function.
  * @param {string} volumeName Volume name passed to the selectVolume remote
  *     function.
  * @param {!Array<!TestEntryInfo>} expectedSet Expected set of the entries.
@@ -142,12 +184,8 @@ export async function openAndWaitForClosingDialog(
   if (useBrowserOpen) {
     resultPromise = sendTestMessage({name: 'runSelectFileDialog'});
   } else {
-    resultPromise = new Promise(fulfill => {
-      chrome.fileSystem.chooseEntry(dialogParams, entry => {
-        fulfill(entry);
-      });
-      chrome.test.assertTrue(!chrome.runtime.lastError, 'chooseEntry failed.');
-    });
+    await openEntryChoosingWindow(dialogParams);
+    resultPromise = pollForChosenEntry(caller);
   }
 
   const appId = await remoteCall.waitForWindow('dialog#');

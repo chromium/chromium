@@ -24,7 +24,8 @@ class ArcGhostWindowDelegate
                          ArcWindowHandler* handler,
                          int window_id,
                          int64_t display_id,
-                         const gfx::Rect& bounds);
+                         const gfx::Rect& bounds,
+                         chromeos::WindowStateType window_state);
   ~ArcGhostWindowDelegate() override;
 
   // exo::ClientControlledShellSurface::Delegate

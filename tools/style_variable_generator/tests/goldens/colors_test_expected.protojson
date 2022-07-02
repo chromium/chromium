@@ -1,0 +1,43 @@
+# This file is generated from:
+#   tests/additional_colors_test.json5
+#   tests/colors_test.json5
+#   tests/colors_test_palette.json5
+palette_colors: [
+  {
+    key: "google_grey_900",
+    value: {
+      light_value: 0xFF202124,
+      dark_value: 0xFF202124
+    }
+  }
+]
+test_colors: [
+  {
+    key: "text_color_primary",
+    value: {
+      light_value: 0xFF202124,
+      dark_value: 0xFFFFFFFF
+    }
+  },
+  {
+    key: "toggle_color",
+    value: {
+      light_value: 0x19202124,
+      dark_value: 0x60FFFFFF
+    }
+  },
+  {
+    key: "bg_color_elevation_1",
+    value: {
+      light_value: 0xFFFFFFFF,
+      dark_value: 0xFF292A2D
+    }
+  },
+  {
+    key: "text_color",
+    value: {
+      light_value: 0xFF000000,
+      dark_value: 0xFFFFFFFF
+    }
+  }
+]

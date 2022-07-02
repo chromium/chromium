@@ -4,6 +4,8 @@
 
 #include "ash/shelf/shelf_context_menu_model.h"
 
+#include <tuple>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -21,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,9 +41,13 @@ class MockNewWindowDelegate
 
 class ShelfContextMenuModelTest
     : public AshTestBase,
-      public ::testing::WithParamInterface<user_manager::UserType> {
+      public ::testing::WithParamInterface<
+          std::tuple<user_manager::UserType, bool>> {
  public:
-  ShelfContextMenuModelTest() = default;
+  ShelfContextMenuModelTest() {
+    feature_list_.InitWithFeatureState(ash::features::kPersonalizationHub,
+                                       IsPersonalizationHubParamEnabled());
+  }
 
   ShelfContextMenuModelTest(const ShelfContextMenuModelTest&) = delete;
   ShelfContextMenuModelTest& operator=(const ShelfContextMenuModelTest&) =
@@ -58,7 +65,11 @@ class ShelfContextMenuModelTest
     session->SwitchActiveUser(AccountId::FromUserEmail("user1@test.com"));
   }
 
-  user_manager::UserType GetUserType() const { return GetParam(); }
+  user_manager::UserType GetUserType() const { return std::get<0>(GetParam()); }
+
+  bool IsPersonalizationHubParamEnabled() const {
+    return std::get<1>(GetParam());
+  }
 
   MockNewWindowDelegate* GetMockNewWindowDelegate() {
     return static_cast<MockNewWindowDelegate*>(
@@ -66,6 +77,7 @@ class ShelfContextMenuModelTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -100,10 +112,12 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
   int last_executed_command_ = 0;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ShelfContextMenuModelTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ShelfContextMenuModelTest,
+    ::testing::Combine(::testing::Values(user_manager::USER_TYPE_REGULAR,
+                                         user_manager::USER_TYPE_CHILD),
+                       ::testing::Bool()));
 
 // Tests the default items in a shelf context menu.
 TEST_P(ShelfContextMenuModelTest, Basic) {
@@ -112,7 +126,11 @@ TEST_P(ShelfContextMenuModelTest, Basic) {
   ASSERT_EQ(3, menu.GetItemCount());
   EXPECT_EQ(CommandId::MENU_AUTO_HIDE, menu.GetCommandIdAt(0));
   EXPECT_EQ(CommandId::MENU_ALIGNMENT_MENU, menu.GetCommandIdAt(1));
-  EXPECT_EQ(CommandId::MENU_CHANGE_WALLPAPER, menu.GetCommandIdAt(2));
+  if (IsPersonalizationHubParamEnabled()) {
+    EXPECT_EQ(CommandId::MENU_PERSONALIZATION_HUB, menu.GetCommandIdAt(2));
+  } else {
+    EXPECT_EQ(CommandId::MENU_CHANGE_WALLPAPER, menu.GetCommandIdAt(2));
+  }
   for (int i = 0; i < menu.GetItemCount(); ++i) {
     EXPECT_TRUE(menu.IsEnabledAt(i));
     EXPECT_TRUE(menu.IsVisibleAt(i));
@@ -162,31 +180,20 @@ TEST_P(ShelfContextMenuModelTest, Invocation) {
 TEST_P(ShelfContextMenuModelTest, OpensPersonalizationHubOrWallpaper) {
   int64_t display_id = GetPrimaryDisplay().id();
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Disable personalization hub feature should open wallpaper.
-  {
-    scoped_feature_list.InitAndDisableFeature(
-        ash::features::kPersonalizationHub);
+  ShelfContextMenuModel menu(nullptr, display_id);
+
+  if (IsPersonalizationHubParamEnabled()) {
+    // Personalization hub feature enabled should open hub.
+    EXPECT_CALL(*GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
+    menu.ActivatedAt(2);
+  } else {
     TestWallpaperControllerClient client;
     Shell::Get()->wallpaper_controller()->SetClient(&client);
     EXPECT_EQ(0u, client.open_count());
 
-    ShelfContextMenuModel menu_without_feature(nullptr, display_id);
     // Click the third option, wallpaper picker. It should open.
-    menu_without_feature.ActivatedAt(2);
+    menu.ActivatedAt(2);
     EXPECT_EQ(1u, client.open_count());
-  }
-
-  scoped_feature_list.Reset();
-  // Enable personalization hub feature should open hub.
-  {
-    EXPECT_CALL(*GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
-
-    scoped_feature_list.InitAndEnableFeature(
-        ash::features::kPersonalizationHub);
-
-    ShelfContextMenuModel menu_with_feature(nullptr, display_id);
-    menu_with_feature.ActivatedAt(2);
   }
 }
 
@@ -249,8 +256,13 @@ TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   ShelfContextMenuModel menu1(nullptr, primary_id);
   EXPECT_EQ(2, menu1.GetItemCount());
   EXPECT_EQ(ShelfContextMenuModel::MENU_AUTO_HIDE, menu1.GetCommandIdAt(0));
-  EXPECT_EQ(ShelfContextMenuModel::MENU_CHANGE_WALLPAPER,
-            menu1.GetCommandIdAt(1));
+  if (IsPersonalizationHubParamEnabled()) {
+    EXPECT_EQ(ShelfContextMenuModel::MENU_PERSONALIZATION_HUB,
+              menu1.GetCommandIdAt(1));
+  } else {
+    EXPECT_EQ(ShelfContextMenuModel::MENU_CHANGE_WALLPAPER,
+              menu1.GetCommandIdAt(1));
+  }
 
   // Test that a menu shown out of tablet mode includes all three options:
   // MENU_AUTO_HIDE, MENU_ALIGNMENT_MENU, and MENU_CHANGE_WALLPAPER.
@@ -282,8 +294,13 @@ TEST_P(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
   EXPECT_TRUE(submenu->IsEnabledAt(2));
 
   // Test the wallpaper picker option.
-  EXPECT_EQ(ShelfContextMenuModel::MENU_CHANGE_WALLPAPER,
-            menu2.GetCommandIdAt(2));
+  if (IsPersonalizationHubParamEnabled()) {
+    EXPECT_EQ(ShelfContextMenuModel::MENU_PERSONALIZATION_HUB,
+              menu2.GetCommandIdAt(2));
+  } else {
+    EXPECT_EQ(ShelfContextMenuModel::MENU_CHANGE_WALLPAPER,
+              menu2.GetCommandIdAt(2));
+  }
   EXPECT_TRUE(menu2.IsEnabledAt(2));
 }
 

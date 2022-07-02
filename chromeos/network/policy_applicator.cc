@@ -15,14 +15,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/network/cellular_policy_handler.h"
-#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/onc_translator.h"
 #include "chromeos/network/policy_util.h"
 #include "chromeos/network/shill_property_util.h"
 #include "components/onc/onc_constants.h"
@@ -70,20 +69,6 @@ std::string GetGUIDFromONCPart(const base::Value& onc_part) {
   return guid_value->GetString();
 }
 
-const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
-  const std::string* type =
-      onc_config.FindStringKey(::onc::network_config::kType);
-  const base::Value* cellular_dict =
-      onc_config.FindKey(::onc::network_config::kCellular);
-  const std::string* smdp_address = nullptr;
-
-  if (type && *type == ::onc::network_type::kCellular && cellular_dict &&
-      cellular_dict->is_dict())
-    smdp_address = cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);
-
-  return smdp_address;
-}
-
 void CopyStringKey(const base::Value& old_shill_properties,
                    base::Value* new_shill_properties,
                    const std::string& property_key_name) {
@@ -124,17 +109,14 @@ PolicyApplicator::PolicyApplicator(
     base::flat_map<std::string, base::Value> all_policies,
     base::Value global_network_config,
     ConfigurationHandler* handler,
-    CellularPolicyHandler* cellular_policy_handler,
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
-    base::flat_set<std::string>* modified_policy_guids)
-    : cellular_policy_handler_(cellular_policy_handler),
-      handler_(handler),
+    base::flat_set<std::string> modified_policy_guids)
+    : handler_(handler),
       managed_cellular_pref_handler_(managed_cellular_pref_handler),
       profile_(profile),
       all_policies_(std::move(all_policies)),
-      global_network_config_(std::move(global_network_config)) {
-  remaining_policy_guids_.swap(*modified_policy_guids);
-}
+      global_network_config_(std::move(global_network_config)),
+      remaining_policy_guids_(std::move(modified_policy_guids)) {}
 
 PolicyApplicator::~PolicyApplicator() {
   VLOG(1) << "Destroying PolicyApplicator for " << profile_.userhash;
@@ -253,7 +235,8 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
                    std::move(profile_entry_finished_callback));
 
     const std::string* iccid = policy_util::GetIccidFromONC(*new_policy);
-    const std::string* smdp_address = GetSMDPAddressFromONC(*new_policy);
+    const std::string* smdp_address =
+        policy_util::GetSMDPAddressFromONC(*new_policy);
     if (was_managed && managed_cellular_pref_handler_ && iccid &&
         smdp_address) {
       managed_cellular_pref_handler_->AddIccidSmdpPair(*iccid, *smdp_address);
@@ -432,6 +415,22 @@ void PolicyApplicator::ApplyRemainingPolicies() {
       << "Create new managed network configurations in profile"
       << profile_.ToDebugString() << ".";
 
+  // PolicyApplicator does not handle applying new cellular policies, just
+  // collect these so they can be reported back to the caller.
+  for (base::flat_set<std::string>::iterator it =
+           remaining_policy_guids_.begin();
+       it != remaining_policy_guids_.end();) {
+    const std::string& guid = *it;
+    const base::Value* network_policy = GetByGUID(all_policies_, guid);
+    DCHECK(network_policy);
+    if (policy_util::IsCellularPolicy(*network_policy)) {
+      new_cellular_policy_guids_.insert(guid);
+      it = remaining_policy_guids_.erase(it);
+      continue;
+    }
+    ++it;
+  }
+
   if (remaining_policy_guids_.empty()) {
     NotifyConfigurationHandlerAndFinish();
     return;
@@ -440,40 +439,12 @@ void PolicyApplicator::ApplyRemainingPolicies() {
   // All profile entries were compared to policies. |remaining_policy_guids_|
   // contains all modified policies that didn't match any entry. For these
   // remaining policies, new configurations have to be created.
-  for (base::flat_set<std::string>::iterator it =
-           remaining_policy_guids_.begin();
-       it != remaining_policy_guids_.end();) {
-    const std::string& guid = *it;
+  for (const std::string& guid : remaining_policy_guids_) {
     const base::Value* network_policy = GetByGUID(all_policies_, guid);
     DCHECK(network_policy);
 
     NET_LOG(EVENT) << "Creating new configuration managed by policy " << guid
                    << " in profile " << profile_.ToDebugString() << ".";
-
-    if (policy_util::IsCellularPolicy(*network_policy)) {
-      const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
-      if (features::IsESimPolicyEnabled() && smdp_address) {
-        NET_LOG(EVENT)
-            << "Found ONC configuration with SMDP: " << *smdp_address
-            << ". Start installing policy eSim profile with ONC config: "
-            << *network_policy;
-        if (cellular_policy_handler_)
-          cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
-        else
-          NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
-                            "initialized.";
-      } else {
-        NET_LOG(EVENT) << "Skip installing policy eSIM either because "
-                          "the eSIM policy feature is not enabled or the SMDP "
-                          "address is missing from ONC.";
-      }
-
-      it = remaining_policy_guids_.erase(it);
-      if (remaining_policy_guids_.empty()) {
-        NotifyConfigurationHandlerAndFinish();
-      }
-      continue;
-    }
 
     base::Value shill_dictionary = policy_util::CreateShillConfiguration(
         profile_, guid, &global_network_config_, network_policy,
@@ -483,7 +454,6 @@ void PolicyApplicator::ApplyRemainingPolicies() {
         shill_dictionary,
         base::BindOnce(&PolicyApplicator::RemainingPolicyApplied,
                        weak_ptr_factory_.GetWeakPtr(), guid));
-    it++;
   }
 }
 
@@ -498,7 +468,7 @@ void PolicyApplicator::RemainingPolicyApplied(const std::string& guid) {
 void PolicyApplicator::NotifyConfigurationHandlerAndFinish() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
-  handler_->OnPoliciesApplied(profile_);
+  handler_->OnPoliciesApplied(profile_, new_cellular_policy_guids_);
 }
 
 }  // namespace chromeos

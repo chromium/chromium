@@ -189,6 +189,17 @@ FetchRequestData* FetchRequestData::Create(
   if (fetch_api_request->fetch_window_id)
     request->SetWindowId(fetch_api_request->fetch_window_id.value());
 
+  if (fetch_api_request->trust_token_params) {
+    if (script_state) {
+      // script state might be null for some tests
+      DCHECK(RuntimeEnabledFeatures::TrustTokensEnabled(
+          ExecutionContext::From(script_state)));
+    }
+    absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
+        std::move(*(fetch_api_request->trust_token_params->Clone().get()));
+    request->SetTrustTokenParams(trust_token_params);
+  }
+
   return request;
 }
 

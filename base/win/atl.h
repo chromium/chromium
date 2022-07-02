@@ -13,16 +13,16 @@
 // Declare our own exception thrower (atl_throw.h includes atldef.h).
 #include "base/win/atl_throw.h"
 
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlctl.h>
-#include <atlhost.h>
-#include <atlsecurity.h>
-#include <atlwin.h>
+#include <atlbase.h>      // NOLINT(build/include_order)
+#include <atlcom.h>       // NOLINT(build/include_order)
+#include <atlctl.h>       // NOLINT(build/include_order)
+#include <atlhost.h>      // NOLINT(build/include_order)
+#include <atlsecurity.h>  // NOLINT(build/include_order)
+#include <atlwin.h>       // NOLINT(build/include_order)
 
 // Undefine the poisonous defines
-#include "base/win/windows_undefines.inc"
+#include "base/win/windows_undefines.inc"  // NOLINT(build/include)
 // Check no poisonous defines follow this include
-#include "base/win/windows_defines.inc"
+#include "base/win/windows_defines.inc"  // NOLINT(build/include)
 
 #endif  // BASE_WIN_ATL_H_

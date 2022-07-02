@@ -13,7 +13,7 @@ SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   }
 };
 
-SYNC_TEST_F('SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', function() {
+AX_TEST_F('SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', function() {
   // Build a new SwitchAccess instance with hooks.
   let initCount = 0;
   SwitchAccess.finishInit_ = () => initCount++;

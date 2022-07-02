@@ -51,6 +51,7 @@ class PageTimingMetricsSender {
 
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior);
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
+  void DidObserveSoftNavigation(uint32_t count);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
@@ -121,6 +122,8 @@ class PageTimingMetricsSender {
   mojom::FrameRenderDataUpdate render_data_;
 
   blink::UseCounterFeatureTracker feature_tracker_;
+
+  uint32_t soft_navigation_count_ = 0;
 
   bool have_sent_ipc_ = false;
 

@@ -1,0 +1,69 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+// A <select> element that shows a text input when the "custom" field is
+// selected.
+export class SelectCustom extends PolymerElement {
+  ready() {
+    super.ready();
+    // Hide custom input.
+    this.shadowRoot.querySelector('.hidden-input').hidden = true;
+
+    // Set default value of select to the first option.
+    this.shadowRoot.querySelector('#' + this.selectid).selectedIndex = 0;
+  }
+
+  static get is() {
+    return 'select-custom';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      selectElements: {type: Array},
+      selectValue: {type: String, notify: true},
+      formItemStyle: {type: String, value: 'form-item'},
+      displayLabel: {type: String},
+      selectid: {type: String},
+      noCustomInput: {type: Boolean, value: false},
+      customSelected:
+          {type: Boolean, value: false, notify: true, reflectToAttribute: true},
+    };
+  }
+
+  // Shows a hidden input element when the "custom" option is chosen from the
+  // select. The function is triggered by the on-change event for the
+  // <select> element.
+  onSelectChange(event) {
+    const customInput = this.shadowRoot.querySelector('.hidden-input');
+    this.customSelected = event.target.value == 'custom';
+    customInput.hidden = event.target.value != 'custom';
+    if (event.target.value != 'custom') {
+      this.formItemStyle = 'form-item';
+      const select = this.shadowRoot.querySelector('#' + this.selectid);
+      this.selectValue = this.selectElements[select.selectedIndex].value;
+    } else if (!this.noCustomInput) {
+      this.formItemStyle = 'form-item-custom';
+      this.onInputChange();  // sets the value of this.selectValue to the
+                             // value of the custom input.
+    }
+  }
+
+  // When the custom input field changes (on-change event), store the value in
+  // this.selectValue.
+  onInputChange() {
+    if (this.customSelected && !this.noCustomInput) {
+      const customInput = this.shadowRoot.querySelector('.hidden-input');
+      this.selectValue = customInput.value;
+    }
+  }
+}
+customElements.define(SelectCustom.is, SelectCustom);

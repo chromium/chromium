@@ -110,15 +110,11 @@ void WindowTreeHostPlatform::HideImpl() {
 }
 
 gfx::Rect WindowTreeHostPlatform::GetBoundsInPixels() const {
-  return platform_window_->GetBounds();
+  return platform_window_->GetBoundsInPixels();
 }
 
 void WindowTreeHostPlatform::SetBoundsInPixels(const gfx::Rect& bounds) {
-  platform_window_->SetBounds(bounds);
-}
-
-gfx::Point WindowTreeHostPlatform::GetLocationOnScreenInPixels() const {
-  return platform_window_->GetBounds().origin();
+  platform_window_->SetBoundsInPixels(bounds);
 }
 
 void WindowTreeHostPlatform::SetCapture() {
@@ -127,6 +123,10 @@ void WindowTreeHostPlatform::SetCapture() {
 
 void WindowTreeHostPlatform::ReleaseCapture() {
   platform_window_->ReleaseCapture();
+}
+
+gfx::Point WindowTreeHostPlatform::GetLocationOnScreenInPixels() const {
+  return platform_window_->GetBoundsInPixels().origin();
 }
 
 bool WindowTreeHostPlatform::CaptureSystemKeyEventsImpl(

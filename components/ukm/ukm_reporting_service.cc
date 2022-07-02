@@ -8,11 +8,13 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/metrics_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_service.h"
@@ -28,6 +30,9 @@ namespace ukm {
 namespace {
 
 // The UKM server's URL.
+constexpr char kDefaultServerUrl[] = "https://clients4.google.com/ukm";
+
+// The UKM server's MIME type.
 constexpr char kMimeType[] = "application/vnd.chrome.ukm";
 
 // The number of UKM logs that will be stored in UnsentLogStore before logs
@@ -47,7 +52,16 @@ constexpr int kMinUnsentLogBytes = 300000;
 constexpr size_t kMaxLogRetransmitSize = 100 * 1024;
 
 GURL GetServerUrl() {
-  constexpr char kDefaultServerUrl[] = "https://clients4.google.com/ukm";
+#ifndef NDEBUG
+  // Only allow overriding the server URL through the command line in debug
+  // builds. This is to prevent, for example, rerouting metrics due to malware.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(metrics::switches::kUkmServerUrl)) {
+    return GURL(
+        command_line->GetSwitchValueASCII(metrics::switches::kUkmServerUrl));
+  }
+#endif  // NDEBUG
+
   std::string server_url =
       base::GetFieldTrialParamValueByFeature(kUkmFeature, "ServerUrl");
   if (!server_url.empty())

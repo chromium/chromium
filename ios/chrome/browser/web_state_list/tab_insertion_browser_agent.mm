@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 
+#import "components/url_param_filter/core/features.h"
+#import "components/url_param_filter/ios/cross_otr_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -29,7 +31,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     int index,
     bool in_background,
     bool inherit_opener,
-    bool should_show_start_surface) {
+    bool should_show_start_surface,
+    int filtered_param_count) {
   DCHECK(index == TabInsertion::kPositionAutomatically ||
          (index >= 0 && index <= web_state_list_->count()));
 
@@ -63,6 +66,16 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     NewTabPageTabHelper::FromWebState(web_state.get())
         ->SetShowStartSurface(true);
   }
+
+  if (base::FeatureList::IsEnabled(
+          url_param_filter::features::kIncognitoParamFilterEnabled) &&
+      web_state->GetBrowserState()->IsOffTheRecord() && !parent &&
+      filtered_param_count > 0) {
+    // Only attach the CrossOtrTabHelper to OTR web_state if parent is null,
+    // as this indicates that it's the result of a "Open In Incognito" press.
+    url_param_filter::CrossOtrTabHelper::CreateForWebState(web_state.get());
+  }
+
   web_state->GetNavigationManager()->LoadURLWithParams(params);
 
   int inserted_index =

@@ -128,8 +128,14 @@ void DownloadResponseHandler::OnReceiveResponse(
   if (create_info_->result != DOWNLOAD_INTERRUPT_REASON_NONE)
     OnResponseStarted(mojom::DownloadStreamHandlePtr());
 
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+  if (started_)
+    return;
+
+  mojom::DownloadStreamHandlePtr stream_handle =
+      mojom::DownloadStreamHandle::New();
+  stream_handle->stream = std::move(body);
+  stream_handle->client_receiver = client_remote_.BindNewPipeAndPassReceiver();
+  OnResponseStarted(std::move(stream_handle));
 }
 
 std::unique_ptr<DownloadCreateInfo>
@@ -230,18 +236,6 @@ void DownloadResponseHandler::OnReceiveCachedMetadata(
 
 void DownloadResponseHandler::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
-
-void DownloadResponseHandler::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  if (started_)
-    return;
-
-  mojom::DownloadStreamHandlePtr stream_handle =
-      mojom::DownloadStreamHandle::New();
-  stream_handle->stream = std::move(body);
-  stream_handle->client_receiver = client_remote_.BindNewPipeAndPassReceiver();
-  OnResponseStarted(std::move(stream_handle));
-}
 
 void DownloadResponseHandler::OnComplete(
     const network::URLLoaderCompletionStatus& status) {

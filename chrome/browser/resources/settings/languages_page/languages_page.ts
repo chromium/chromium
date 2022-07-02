@@ -27,11 +27,11 @@ import './languages_subpage.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 // <if expr="not is_macosx">
 import './edit_dictionary_page.js';
 
@@ -42,7 +42,6 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -104,18 +103,6 @@ export class SettingsLanguagesPageElement extends
        */
       detailLanguage_: Object,
 
-      enableDesktopRestructuredLanguageSettings_: {
-        type: Boolean,
-        value() {
-          let enabled = false;
-          // <if expr="not chromeos_lacros">
-          enabled = loadTimeData.getBoolean(
-              'enableDesktopRestructuredLanguageSettings');
-          // </if>
-          return enabled;
-        },
-      },
-
       hideSpellCheckLanguages_: {
         type: Boolean,
         value: false,
@@ -130,15 +117,6 @@ export class SettingsLanguagesPageElement extends
           // <if expr="not is_macosx">
           if (routes.EDIT_DICTIONARY) {
             map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
-          }
-          // </if>
-          // <if expr="not chromeos_lacros">
-          if (loadTimeData.getBoolean(
-                  'enableDesktopRestructuredLanguageSettings')) {
-            if (routes.LANGUAGE_SETTINGS) {
-              map.set(
-                  routes.LANGUAGE_SETTINGS.path, '#languagesSubpageTrigger');
-            }
           }
           // </if>
           return map;
@@ -162,7 +140,6 @@ export class SettingsLanguagesPageElement extends
   languageHelper: LanguageHelper;
   private spellCheckLanguages_: Array<LanguageState|SpellCheckLanguageState>;
   private detailLanguage_?: LanguageState;
-  private enableDesktopRestructuredLanguageSettings_: boolean;
   private hideSpellCheckLanguages_: boolean;
   private showAddLanguagesDialog_: boolean;
   private focusConfig_: FocusConfig;
@@ -187,7 +164,7 @@ export class SettingsLanguagesPageElement extends
    * of spellcheck languages, based on whether or not the language is enabled.
    * @param isEnabled Whether the language is enabled or not.
    */
-  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
+  private getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
       chrome.settingsPrivate.PrefObject {
     return isEnabled ? this.get('spellcheck.forced_dictionaries', this.prefs) :
                        this.get('spellcheck.blocked_dictionaries', this.prefs);
@@ -343,17 +320,6 @@ export class SettingsLanguagesPageElement extends
           LanguageSettingsPageImpressionType.MAIN);
     }
   }
-
-  // <if expr="not chromeos_lacros">
-  /**
-   * Opens the Language Settings page.
-   */
-  private onLanguagesSubpageClick_() {
-    if (this.enableDesktopRestructuredLanguageSettings_) {
-      Router.getInstance().navigateTo(routes.LANGUAGE_SETTINGS);
-    }
-  }
-  // </if>
 
   /**
    * Toggles the expand button within the element being listened to.

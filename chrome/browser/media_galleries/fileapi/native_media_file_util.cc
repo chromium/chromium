@@ -209,7 +209,7 @@ base::File::Error NativeMediaFileUtil::BufferIsMediaHeader(
 // static
 void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
     base::SequencedTaskRunner* media_task_runner,
-    int file_flags,
+    uint32_t file_flags,
     storage::AsyncFileUtil::CreateOrOpenCallback callback,
     base::File::Error result,
     const base::File::Info& file_info,
@@ -231,14 +231,15 @@ void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
 void NativeMediaFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Returns an error if any unsupported flag is found.
   if (file_flags & ~(base::File::FLAG_OPEN |
                      base::File::FLAG_READ |
                      base::File::FLAG_WRITE_ATTRIBUTES)) {
-    std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY), base::OnceClosure());
+    std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY),
+                            base::OnceClosure());
     return;
   }
   scoped_refptr<base::SequencedTaskRunner> task_runner = context->task_runner();

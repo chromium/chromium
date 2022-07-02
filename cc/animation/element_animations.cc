@@ -60,8 +60,10 @@ ElementAnimations::ElementAnimations(AnimationHost* host, ElementId element_id)
     : animation_host_(host),
       element_id_(element_id),
       needs_push_properties_(false),
-      active_maximum_scale_(kInvalidScale),
-      pending_maximum_scale_(kInvalidScale) {
+      transform_property_active_maximum_scale_(kInvalidScale),
+      transform_property_pending_maximum_scale_(kInvalidScale),
+      scale_property_active_maximum_scale_(kInvalidScale),
+      scale_property_pending_maximum_scale_(kInvalidScale) {
   InitAffectedElementTypes();
 }
 
@@ -77,6 +79,9 @@ void ElementAnimations::InitAffectedElementTypes() {
 gfx::TargetProperties ElementAnimations::GetPropertiesMaskForAnimationState() {
   gfx::TargetProperties properties;
   properties[TargetProperty::TRANSFORM] = true;
+  properties[TargetProperty::SCALE] = true;
+  properties[TargetProperty::ROTATE] = true;
+  properties[TargetProperty::TRANSLATE] = true;
   properties[TargetProperty::OPACITY] = true;
   properties[TargetProperty::FILTER] = true;
   properties[TargetProperty::BACKDROP_FILTER] = true;
@@ -158,11 +163,12 @@ bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-float ElementAnimations::MaximumScale(ElementListType list_type) const {
+float ElementAnimations::MaximumScale(ElementId element_id,
+                                      ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    maximum_scale =
-        std::max(maximum_scale, keyframe_effect.MaximumScale(list_type));
+    maximum_scale = std::max(
+        maximum_scale, keyframe_effect.MaximumScale(element_id, list_type));
   }
   return maximum_scale;
 }
@@ -265,10 +271,33 @@ void ElementAnimations::InitClientAnimationState() {
   // (instead of only changed) recalculated current states to the client.
   pending_state_.Clear();
   active_state_.Clear();
-  active_maximum_scale_ = kInvalidScale;
-  pending_maximum_scale_ = kInvalidScale;
+  transform_property_active_maximum_scale_ = kInvalidScale;
+  transform_property_pending_maximum_scale_ = kInvalidScale;
+  scale_property_active_maximum_scale_ = kInvalidScale;
+  scale_property_pending_maximum_scale_ = kInvalidScale;
   UpdateClientAnimationState();
 }
+
+void ElementAnimations::UpdateMaximumScale(ElementId element_id,
+                                           ElementListType list_type,
+                                           float* cached_scale) {
+  if (element_id) {
+    float maximum_scale = MaximumScale(element_id, list_type);
+    if (*cached_scale != maximum_scale) {
+      animation_host_->mutator_host_client()->MaximumScaleChanged(
+          element_id, list_type, maximum_scale);
+      *cached_scale = maximum_scale;
+    }
+  } else {
+    *cached_scale = kInvalidScale;
+  }
+}
+
+#if DCHECK_IS_ON()
+static inline bool IsInvalidOrOne(float scale) {
+  return scale == kInvalidScale || scale == 1.f;
+}
+#endif
 
 void ElementAnimations::UpdateClientAnimationState() {
   if (!element_id())
@@ -311,6 +340,11 @@ void ElementAnimations::UpdateClientAnimationState() {
 
   PropertyToElementIdMap element_id_map = GetPropertyToElementIdMap();
   ElementId transform_element_id = element_id_map[TargetProperty::TRANSFORM];
+  ElementId scale_element_id = element_id_map[TargetProperty::SCALE];
+#if DCHECK_IS_ON()
+  ElementId rotate_element_id = element_id_map[TargetProperty::ROTATE];
+  ElementId translate_element_id = element_id_map[TargetProperty::TRANSLATE];
+#endif
 
   if (prev_active != active_state_) {
     PropertyAnimationState diff_active = prev_active ^ active_state_;
@@ -318,14 +352,16 @@ void ElementAnimations::UpdateClientAnimationState() {
         element_id_map, ElementListType::ACTIVE, diff_active, active_state_);
   }
 
-  float maximum_scale = transform_element_id
-                            ? MaximumScale(ElementListType::ACTIVE)
-                            : kInvalidScale;
-  if (maximum_scale != active_maximum_scale_) {
-    animation_host_->mutator_host_client()->MaximumScaleChanged(
-        transform_element_id, ElementListType::ACTIVE, maximum_scale);
-    active_maximum_scale_ = maximum_scale;
-  }
+  UpdateMaximumScale(transform_element_id, ElementListType::ACTIVE,
+                     &transform_property_active_maximum_scale_);
+  UpdateMaximumScale(scale_element_id, ElementListType::ACTIVE,
+                     &scale_property_active_maximum_scale_);
+#if DCHECK_IS_ON()
+  DCHECK(
+      IsInvalidOrOne(MaximumScale(rotate_element_id, ElementListType::ACTIVE)));
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(translate_element_id, ElementListType::ACTIVE)));
+#endif
 
   if (prev_pending != pending_state_) {
     PropertyAnimationState diff_pending = prev_pending ^ pending_state_;
@@ -333,13 +369,16 @@ void ElementAnimations::UpdateClientAnimationState() {
         element_id_map, ElementListType::PENDING, diff_pending, pending_state_);
   }
 
-  maximum_scale = transform_element_id ? MaximumScale(ElementListType::PENDING)
-                                       : kInvalidScale;
-  if (maximum_scale != pending_maximum_scale_) {
-    animation_host_->mutator_host_client()->MaximumScaleChanged(
-        transform_element_id, ElementListType::PENDING, maximum_scale);
-    pending_maximum_scale_ = maximum_scale;
-  }
+  UpdateMaximumScale(transform_element_id, ElementListType::PENDING,
+                     &transform_property_pending_maximum_scale_);
+  UpdateMaximumScale(scale_element_id, ElementListType::PENDING,
+                     &scale_property_pending_maximum_scale_);
+#if DCHECK_IS_ON()
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(rotate_element_id, ElementListType::PENDING)));
+  DCHECK(IsInvalidOrOne(
+      MaximumScale(translate_element_id, ElementListType::PENDING)));
+#endif
 }
 
 void ElementAnimations::AttachToCurve(gfx::AnimationCurve* c) {
@@ -386,10 +425,12 @@ bool ElementAnimations::HasAnyKeyframeModel() const {
 }
 
 bool ElementAnimations::HasAnyAnimationTargetingProperty(
-    TargetProperty::Type property) const {
+    TargetProperty::Type property,
+    ElementId element_id) const {
   for (auto& keyframe_effect : keyframe_effects_list_) {
-    if (keyframe_effect.GetKeyframeModel(property))
-      return true;
+    if (gfx::KeyframeModel* model = keyframe_effect.GetKeyframeModel(property))
+      if (CalculateTargetElementId(this, model) == element_id)
+        return true;
   }
   return false;
 }

@@ -8,9 +8,11 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
@@ -22,7 +24,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #endif
 
 namespace syncer {
@@ -39,9 +40,9 @@ ModelTypeSet GetUserTypes() {
   }
 #else
   // Ignore all Chrome OS types on non-Chrome OS platforms.
-  user_types.RemoveAll({APP_LIST, ARC_PACKAGE, OS_PREFERENCES,
-                        OS_PRIORITY_PREFERENCES, PRINTERS, WIFI_CONFIGURATIONS,
-                        WORKSPACE_DESK});
+  user_types.RemoveAll(
+      {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
+       PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK});
 #endif
   return user_types;
 }
@@ -313,6 +314,42 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncChromeOSAppsToggleSharing);
+
+  std::unique_ptr<SyncUserSettingsImpl> settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  ASSERT_TRUE(settings->IsSyncEverythingEnabled());
+
+  // App model types are disabled by default, even though "Sync everything" is
+  // on.
+  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
+  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APPS));
+  EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
+
+  // Mimic apps toggle enabled in the OS.
+  settings->SetAppsSyncEnabledByOs(true);
+
+  // App model types should become enabled.
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(WEB_APPS));
+
+  // Mimic "Sync everything" and all individual types toggle are disabled, app
+  // model types should stay enabled.
+  settings->SetSelectedTypes(/*sync_everything=*/false,
+                             UserSelectableTypeSet());
+  ASSERT_FALSE(settings->IsSyncEverythingEnabled());
+
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
+  EXPECT_TRUE(settings->GetPreferredDataTypes().Has(WEB_APPS));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(SyncUserSettingsImplTest, ShouldMutePassphrasePrompt) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =

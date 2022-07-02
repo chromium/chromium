@@ -491,7 +491,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppText) {
   EXPECT_EQ("Baz", tasks[0].task_title);
   EXPECT_TRUE(tasks[0].is_generic_file_handler);
   EXPECT_TRUE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 // File extension matches with bar, but there is a generic * type as well,
@@ -507,7 +507,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppBar) {
   EXPECT_EQ("Baz", tasks[0].task_title);
   EXPECT_TRUE(tasks[0].is_generic_file_handler);
   EXPECT_TRUE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 // Check that we can get web apps and Chrome apps in the same call.
@@ -539,7 +539,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppImage) {
   EXPECT_EQ("Baz", tasks[0].task_title);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs) {
@@ -555,7 +555,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs) {
   EXPECT_EQ("plain_text", tasks[0].task_descriptor.action_id);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs_Html) {
@@ -570,7 +570,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs_Html) {
   EXPECT_EQ("html_handler", tasks[0].task_descriptor.action_id);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 TEST_F(AppServiceFileTasksTestEnabled,
@@ -586,7 +586,7 @@ TEST_F(AppServiceFileTasksTestEnabled,
   EXPECT_EQ("any_with_directories", tasks[0].task_descriptor.action_id);
   EXPECT_TRUE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+  EXPECT_EQ(Verb::VERB_NONE, tasks[0].task_verb);
 }
 
 TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {

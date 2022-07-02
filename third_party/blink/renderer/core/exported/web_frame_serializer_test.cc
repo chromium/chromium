@@ -55,7 +55,7 @@ class SimpleWebFrameSerializerClient final : public WebFrameSerializerClient {
  private:
   void DidSerializeDataForFrame(const WebVector<char>& data,
                                 FrameSerializationStatus) final {
-    builder_.Append(data.Data(), static_cast<unsigned>(data.size()));
+    builder_.Append(data.data(), static_cast<unsigned>(data.size()));
   }
 
   StringBuilder builder_;

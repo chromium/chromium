@@ -197,7 +197,8 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
   return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
-      jis_incognito, web_contents->GetMainFrame()->GetPageUkmSourceId()));
+      jis_incognito,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
 }  // namespace payments

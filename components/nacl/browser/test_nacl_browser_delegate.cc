@@ -10,7 +10,7 @@ TestNaClBrowserDelegate::TestNaClBrowserDelegate() {}
 TestNaClBrowserDelegate::~TestNaClBrowserDelegate() {}
 
 void TestNaClBrowserDelegate::ShowMissingArchInfobar(int render_process_id,
-                                                     int render_view_id) {}
+                                                     int render_frame_id) {}
 
 bool TestNaClBrowserDelegate::DialogsAreSuppressed() {
   return false;

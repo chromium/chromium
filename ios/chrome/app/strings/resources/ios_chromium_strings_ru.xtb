@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Не удается проверить пароли в браузере Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="3472200483164753384">Проверка не поддерживается в Chromium Canary.</translation>
 <translation id="3567399274263440288">Чтобы пользоваться всеми возможностями браузера Chromium, войдите в аккаунт Google.</translation>
+<translation id="3619462831205197427">Войдите на этот сайт, в аккаунт Google и в Chromium.</translation>
 <translation id="3639997914391704523">Chromium сможет проверить ваши пароли, если вы войдете в аккаунт Google.</translation>
 <translation id="3650632991272923014">Пользователь <ph name="USER_EMAIL1" />, который работал с Chromium на этом устройстве, не удалил свои закладки, пароли и другие настройки</translation>
 <translation id="3805899903892079518">У Chromium нет доступа к вашим фото и видео. Чтобы предоставить его, нажмите "Настройки &gt; Конфиденциальность &gt; Фотографии".</translation>
@@ -77,7 +78,6 @@
 1. Откройте настройки устройства.
 2. Найдите раздел, где выбирается браузер по умолчанию.
 3. Выберите Chromium.</translation>
-<translation id="6155422572367400359">Войдите на этот сайт, в аккаунт Google и в Chromium. Синхронизацию можно включить позже.</translation>
 <translation id="6183442264225539303">Войдите на этот сайт и в Chromium. Синхронизацию можно включить позже.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="632825460376924298">Разрешить вход в Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Удалить данные Chromium с этого устройства?</translation>
 <translation id="8175055321229419309">Совет. <ph name="BEGIN_LINK" />Добавьте Chromium в Dock<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">Браузеру Chromium не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
+<translation id="8308172444429103994">Совет по работе с Chromium. Выполняйте вход быстрее, выбирая сохраненный пароль над экранной клавиатурой.</translation>
 <translation id="858114650497379505">Вы можете использовать пароли, сохраненные в Диспетчере паролей, для других приложений на своем устройстве iPhone.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
 <translation id="865600487977764604">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>

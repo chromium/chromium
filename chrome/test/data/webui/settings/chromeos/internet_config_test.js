@@ -40,7 +40,7 @@ suite('InternetConfig', function() {
     internetConfig.open();
     assertTrue(internetConfig.$.dialog.open);
 
-    internetConfig.$$('cr-button.cancel-button').click();
+    internetConfig.shadowRoot.querySelector('cr-button.cancel-button').click();
     assertFalse(internetConfig.$.dialog.open);
   });
 
@@ -49,13 +49,14 @@ suite('InternetConfig', function() {
     internetConfig.showConnect = true;
     flush();
 
-    const connectBtn = internetConfig.$$('#connectButton');
+    const connectBtn =
+        internetConfig.shadowRoot.querySelector('#connectButton');
     connectBtn.disabled = false;
     flush();
 
     assertFalse(connectBtn.disabled);
     assertEquals(userActionRecorder.settingChangeCount, 0);
-    internetConfig.$$('cr-button.action-button').click();
+    internetConfig.shadowRoot.querySelector('cr-button.action-button').click();
     assertEquals(userActionRecorder.settingChangeCount, 1);
   });
 
@@ -64,13 +65,13 @@ suite('InternetConfig', function() {
     internetConfig.showConnect = false;
     flush();
 
-    const saveBtn = internetConfig.$$('#saveButton');
+    const saveBtn = internetConfig.shadowRoot.querySelector('#saveButton');
     saveBtn.disabled = false;
     flush();
 
     assertFalse(saveBtn.disabled);
     assertEquals(userActionRecorder.settingChangeCount, 0);
-    internetConfig.$$('cr-button.action-button').click();
+    internetConfig.shadowRoot.querySelector('cr-button.action-button').click();
     assertEquals(userActionRecorder.settingChangeCount, 1);
   });
 });

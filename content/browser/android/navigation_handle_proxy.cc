@@ -42,7 +42,8 @@ NavigationHandleProxy::NavigationHandleProxy(
       cpp_navigation_handle_->WasServerRedirect(),
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->GetNavigationId(),
-      cpp_navigation_handle_->IsPageActivation());
+      cpp_navigation_handle_->IsPageActivation(),
+      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE);
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -60,17 +61,20 @@ void NavigationHandleProxy::DidFinish() {
                          ? cpp_navigation_handle_->GetURL()
                          : cpp_navigation_handle_->GetBaseURLForDataURL();
 
-  bool is_fragment_navigation = cpp_navigation_handle_->IsSameDocument();
+  bool is_primary_main_frame_fragment_navigation =
+      cpp_navigation_handle_->IsInPrimaryMainFrame() &&
+      cpp_navigation_handle_->IsSameDocument();
 
-  if (cpp_navigation_handle_->HasCommitted()) {
+  if (is_primary_main_frame_fragment_navigation &&
+      cpp_navigation_handle_->HasCommitted()) {
     // See http://crbug.com/251330 for why it's determined this way.
     GURL::Replacements replacements;
     replacements.ClearRef();
     bool urls_same_ignoring_fragment =
         cpp_navigation_handle_->GetURL().ReplaceComponents(replacements) ==
-        cpp_navigation_handle_->GetPreviousMainFrameURL().ReplaceComponents(
-            replacements);
-    is_fragment_navigation &= urls_same_ignoring_fragment;
+        cpp_navigation_handle_->GetPreviousPrimaryMainFrameURL()
+            .ReplaceComponents(replacements);
+    is_primary_main_frame_fragment_navigation = urls_same_ignoring_fragment;
   }
 
   bool is_valid_search_form_url =
@@ -81,7 +85,8 @@ void NavigationHandleProxy::DidFinish() {
   Java_NavigationHandle_didFinish(
       env, java_navigation_handle_, url::GURLAndroid::FromNativeGURL(env, gurl),
       cpp_navigation_handle_->IsErrorPage(),
-      cpp_navigation_handle_->HasCommitted(), is_fragment_navigation,
+      cpp_navigation_handle_->HasCommitted(),
+      is_primary_main_frame_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),

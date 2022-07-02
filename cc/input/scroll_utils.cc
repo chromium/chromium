@@ -34,4 +34,14 @@ gfx::Vector2dF ScrollUtils::ResolveScrollPercentageToPixels(
                         std::copysign(delta_y, sign_y));
 }
 
+gfx::Vector2dF ScrollUtils::ResolvePixelScrollToPercentageForTesting(
+    const gfx::Vector2dF& delta,
+    const gfx::SizeF& scroller,
+    const gfx::SizeF& viewport) {
+  float delta_x = delta.x() / std::min(scroller.width(), viewport.width());
+  float delta_y = delta.y() / std::min(scroller.height(), viewport.height());
+
+  return gfx::Vector2dF(delta_x, delta_y);
+}
+
 }  // namespace cc

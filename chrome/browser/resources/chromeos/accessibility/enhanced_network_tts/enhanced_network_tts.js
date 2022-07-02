@@ -80,7 +80,7 @@ export class EnhancedNetworkTts {
     const request = EnhancedNetworkTts.generateRequest(utterance, options);
     await (this.api_.getAudioDataWithCallback(
         request,
-        (response) => this.queueResponse_(
+        response => this.queueResponse_(
             response, audioStreamOptions, sendTtsAudio, sendError)));
   }
 

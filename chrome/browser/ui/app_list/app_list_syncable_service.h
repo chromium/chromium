@@ -14,6 +14,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -70,12 +71,11 @@ class AppListSyncableService : public syncer::SyncableService,
     syncer::StringOrdinal item_pin_ordinal;
     ash::IconColor item_color;
 
-    // Indicates whether the item represents a persistent folder - i.e. a folder
-    // that was not created explicitly by a user, and which should not be
-    // removed if it's left with a single child.
+    // Indicates whether the item represents a system-created folder - i.e. a
+    // folder that was not created explicitly by a user.
     // Unlike other properties, this value is not persisted to local state, nor
     // synced. It reflects the associated ChromeAppListItem state.
-    bool is_persistent_folder = false;
+    bool is_system_folder = false;
 
     // Whether the `item_ordinal` should be fixed after initial sync data is
     // received during a user session.
@@ -415,9 +415,9 @@ class AppListSyncableService : public syncer::SyncableService,
   bool MaybeCreateFolderBeforeAddingItem(ChromeAppListItem* app_item,
                                          const std::string& folder_id);
 
-  Profile* profile_;
-  extensions::ExtensionSystem* extension_system_;
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<extensions::ExtensionSystem> extension_system_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<AppListModelUpdater> model_updater_;
   std::unique_ptr<ModelUpdaterObserver> model_updater_observer_;
   std::unique_ptr<AppListSyncModelSanitizer> sync_model_sanitizer_;

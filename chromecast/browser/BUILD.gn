@@ -10,6 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
+assert(!is_fuchsia)
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -39,8 +41,11 @@ cast_source_set("prefs_base") {
     "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
-    "//components/cdm/browser",
   ]
+
+  if (enable_media_drm_storage) {
+    deps += [ "//components/cdm/browser" ]
+  }
 }
 
 cast_source_set("prefs_simple") {
@@ -255,7 +260,6 @@ cast_source_set("browser_base") {
     "//chromecast/ui:display_settings_manager",
     "//chromecast/ui:display_settings_public",
     "//components/cast/message_port:message_port_cast",
-    "//components/cdm/browser",
     "//components/download/public/common:public",
     "//components/heap_profiling/multi_process",
     "//components/media_control/browser",
@@ -293,6 +297,7 @@ cast_source_set("browser_base") {
     "//ipc",
     "//media",
     "//media/gpu:buildflags",
+    "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
     "//media/mojo/services",
     "//mojo/public/cpp/bindings",
@@ -312,6 +317,10 @@ cast_source_set("browser_base") {
     "//ui/events/devices",
     "//ui/gl",
   ]
+
+  if (enable_media_drm_storage) {
+    deps += [ "//components/cdm/browser" ]
+  }
 
   if (is_android) {
     sources += [
@@ -486,10 +495,6 @@ cast_source_set("browser_base") {
 
   if ((is_linux || is_chromeos) && use_ozone) {
     sources += [
-      "exo/cast_wm_helper.cc",
-      "exo/cast_wm_helper.h",
-      "exo/wayland_server_controller.cc",
-      "exo/wayland_server_controller.h",
       "webview/cast_app_controller.cc",
       "webview/cast_app_controller.h",
       "webview/cast_app_rpc_instance.cc",

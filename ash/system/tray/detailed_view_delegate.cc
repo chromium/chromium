@@ -104,10 +104,6 @@ absl::optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
   return absl::nullopt;
 }
 
-gfx::Insets DetailedViewDelegate::GetInsetsForDetailedView() const {
-  return kUnifiedDetailedViewPadding;
-}
-
 bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
   return false;
 }
@@ -135,8 +131,7 @@ TriView* DetailedViewDelegate::CreateTitleRow(int string_id) {
 
 views::View* DetailedViewDelegate::CreateTitleSeparator() {
   title_separator_ = new views::Separator();
-  title_separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSeparatorColor));
+  title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   title_separator_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kTitleRowProgressBarHeight - views::Separator::kThickness, 0, 0, 0)));
   return title_separator_;
@@ -216,8 +211,7 @@ void DetailedViewDelegate::UpdateColors() {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
   if (title_separator_) {
-    title_separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
+    title_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   }
 }
 

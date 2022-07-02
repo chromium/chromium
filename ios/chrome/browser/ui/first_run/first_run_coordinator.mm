@@ -100,7 +100,7 @@
 
 #pragma mark - Helper
 
-// Presents the screen of certain |type|.
+// Presents the screen of certain `type`.
 - (void)presentScreen:(ScreenType)type {
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
@@ -112,7 +112,7 @@
   [self.childCoordinator start];
 }
 
-// Creates a screen coordinator according to |type|.
+// Creates a screen coordinator according to `type`.
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kWelcomeAndConsent:

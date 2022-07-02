@@ -149,6 +149,7 @@ class VRTestHook {
   virtual TrackedDeviceClass WaitGetTrackedDeviceClass(unsigned int index) = 0;
   virtual ControllerFrameData WaitGetControllerData(unsigned int index) = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
+  virtual bool WaitGetCanCreateSession() = 0;
 
   virtual void AttachCurrentThread() = 0;
   virtual void DetachCurrentThread() = 0;

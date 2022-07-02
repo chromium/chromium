@@ -14,7 +14,17 @@
 """A module to record audio in a streaming basis."""
 import threading
 import numpy as np
-import sounddevice as sd
+
+try:
+# pylint: disable=g-import-not-at-top
+  import sounddevice as sd
+# pylint: enable=g-import-not-at-top
+except OSError as oe:
+  sd = None
+  sd_error = oe
+except ImportError as ie:
+  sd = None
+  sd_error = ie
 
 
 class AudioRecord(object):
@@ -31,7 +41,12 @@ class AudioRecord(object):
 
     Raises:
       ValueError: if any of the arguments is non-positive.
+      ImportError: if failed to import `sounddevice`.
+      OSError: if failed to load `PortAudio`.
     """
+    if sd is None:
+      raise sd_error
+
     if channels <= 0:
       raise ValueError('channels must be postive.')
     if sampling_rate <= 0:

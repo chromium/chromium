@@ -56,8 +56,8 @@ const OOBE_LARGE_SCREEN_WIDTH_PX = 80;
  *  requiresReloadWhenShown: boolean,
  *  buttonNext: !ButtonState,
  *  buttonNextLabelKey: ?string,
- *  buttonCancelLabelKey: ?string,
- *  buttonCancel: !ButtonState,
+ *  buttonExitLabelKey: ?string,
+ *  buttonExit: !ButtonState,
  *  buttonBack: !ButtonState,
  * }}
  */
@@ -72,7 +72,7 @@ export const StateComponentMapping = {
     componentIs: 'critical-error-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
+    buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
   [State.kWelcomeScreen]: {
@@ -80,15 +80,15 @@ export const StateComponentMapping = {
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonNextLabelKey: 'getStartedButtonLabel',
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kConfigureNetwork]: {
     componentIs: 'onboarding-network-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonNextLabelKey: 'skipButtonLabel',
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kUpdateOs]: {
@@ -96,127 +96,127 @@ export const StateComponentMapping = {
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonNextLabelKey: 'skipButtonLabel',
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kSelectComponents]: {
     componentIs: 'onboarding-select-components-page',
-    requiresReloadWhenShown: false,
+    requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseDestination]: {
     componentIs: 'onboarding-choose-destination-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseWipeDevice]: {
     componentIs: 'onboarding-choose-wipe-device-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kChooseWriteProtectDisableMethod]: {
     componentIs: 'onboarding-choose-wp-disable-method-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kEnterRSUWPDisableCode]: {
     componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kWaitForManualWPDisable]: {
     componentIs: 'onboarding-wait-for-manual-wp-disable-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kWPDisableComplete]: {
     componentIs: 'onboarding-wp-disable-complete-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.VISIBLE,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateRoFirmware]: {
     componentIs: 'reimaging-firmware-update-page',
     requiresReloadWhenShown: false,
-    buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonNext: ButtonState.DISABLED,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateDeviceInformation]: {
     componentIs: 'reimaging-device-information-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kCheckCalibration]: {
     componentIs: 'reimaging-calibration-failed-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonCancelLabelKey: 'calibrationFailedSkipCalibrationButtonLabel',
-    buttonCancel: ButtonState.VISIBLE,
+    buttonExitLabelKey: 'calibrationFailedSkipCalibrationButtonLabel',
+    buttonExit: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kRunCalibration]: {
     componentIs: 'reimaging-calibration-run-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kSetupCalibration]: {
     componentIs: 'reimaging-calibration-setup-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
-    buttonCancel: ButtonState.HIDDEN,
+    buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kProvisionDevice]: {
     componentIs: 'reimaging-provisioning-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kWaitForManualWPEnable]: {
     componentIs: 'wrapup-wait-for-manual-wp-enable-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kRestock]: {
     componentIs: 'wrapup-restock-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
+    buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
   [State.kFinalize]: {
     componentIs: 'wrapup-finalize-page',
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonExit: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
   },
 };
 
@@ -256,7 +256,7 @@ export class ShimlessRma extends ShimlessRmaBase {
           componentIs: 'splash-screen',
           requiresReloadWhenShown: false,
           buttonNext: ButtonState.HIDDEN,
-          buttonCancel: ButtonState.HIDDEN,
+          buttonExit: ButtonState.HIDDEN,
           buttonBack: ButtonState.HIDDEN,
         },
       },
@@ -310,11 +310,11 @@ export class ShimlessRma extends ShimlessRmaBase {
       },
 
       /**
-       * After the cancel button is clicked, true until the next state is
+       * After the exit button is clicked, true until the next state is
        * processed.
        * @protected
        */
-      cancelButtonClicked_: {
+      confirmExitButtonClicked_: {
         type: Boolean,
         value: false,
       },
@@ -386,12 +386,12 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
 
     /**
-     * The cancelButtonCallback_ callback is used by the landing page to create
-     * its own Cancel button in the left pane.
+     * The exitButtonCallback_ callback is used by the landing page to create
+     * its own Exit button in the left pane.
      * @private {?Function}
      */
-    this.cancelButtonCallback_ = (e) => {
-      this.onCancelButtonClicked_();
+    this.exitButtonCallback_ = (e) => {
+      this.onExitButtonClicked_();
     };
 
     /**
@@ -426,7 +426,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-all-buttons', this.disableAllButtonsCallback_);
     window.addEventListener(
         'enable-all-buttons', this.enableAllButtonsCallback_);
-    window.addEventListener('click-cancel-button', this.cancelButtonCallback_);
+    window.addEventListener('click-exit-button', this.exitButtonCallback_);
     window.addEventListener('click-next-button', this.nextButtonCallback_);
   }
 
@@ -442,8 +442,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-all-buttons', this.disableAllButtonsCallback_);
     window.removeEventListener(
         'enable-all-buttons', this.enableAllButtonsCallback_);
-    window.removeEventListener(
-        'click-cancel-button', this.cancelButtonCallback_);
+    window.removeEventListener('click-exit-button', this.exitButtonCallback_);
     window.removeEventListener('click-next-button', this.nextButtonCallback_);
   }
 
@@ -486,12 +485,12 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @param {!StateResult} stateResult
+   * @param {{stateResult: !StateResult}} stateResult
    * @private
    */
   processStateResult_(stateResult) {
     // Do not show the state screen if the critical error screen was shown.
-    if (this.handleStandardAndCriticalError_(stateResult.error)) {
+    if (this.handleStandardAndCriticalError_(stateResult.stateResult.error)) {
       return;
     }
     this.showState_(stateResult);
@@ -512,10 +511,12 @@ export class ShimlessRma extends ShimlessRmaBase {
     // Critical error - expected to be in RMA.
     if (error === RmadErrorCode.kRmaNotRequired) {
       const errorState = {
-        state: State.kUnknown,
-        canCancel: false,
-        canGoBack: false,
-        error: RmadErrorCode.kRmaNotRequired
+        stateResult: {
+          state: State.kUnknown,
+          canExit: false,
+          canGoBack: false,
+          error: RmadErrorCode.kRmaNotRequired
+        }
       };
       this.showState_(errorState);
       return true;
@@ -525,14 +526,14 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * @param {!StateResult} stateResult
+   * @param {{stateResult: !StateResult}} stateResult
    * @private
    */
-  showState_(stateResult) {
+  showState_({stateResult}) {
     // Reset clicked variables to hide the spinners.
     this.nextButtonClicked_ = false;
     this.backButtonClicked_ = false;
-    this.cancelButtonClicked_ = false;
+    this.confirmExitButtonClicked_ = false;
 
     const nextStatePageInfo = StateComponentMapping[stateResult.state];
     assert(nextStatePageInfo);
@@ -549,8 +550,8 @@ export class ShimlessRma extends ShimlessRmaBase {
 
       // Set the next page as the current page.
       this.currentPage_ = nextStatePageInfo;
-      if (!stateResult.canCancel) {
-        this.currentPage_.buttonCancel = ButtonState.HIDDEN;
+      if (!stateResult.canExit) {
+        this.currentPage_.buttonExit = ButtonState.HIDDEN;
       }
       if (!stateResult.canGoBack) {
         this.currentPage_.buttonBack = ButtonState.HIDDEN;
@@ -565,7 +566,7 @@ export class ShimlessRma extends ShimlessRmaBase {
       // A special case for the landing page, which has its own navigation
       // buttons.
       currentPageComponent.getStartedButtonClicked = false;
-      currentPageComponent.landingCancelButtonClicked = false;
+      currentPageComponent.confirmExitButtonClicked = false;
     }
 
     this.setAllButtonsState_(
@@ -694,31 +695,51 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /** @protected */
-  onCancelButtonClicked_() {
-    this.cancelButtonClicked_ = true;
-    this.setAllButtonsState_(
-        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
+  onExitButtonClicked_() {
     const page = this.shadowRoot.querySelector(this.currentPage_.componentIs);
-    if (page.onCancelButtonClick) {
+
+    // Don't show the exit dialog if it's on calibration failed page.
+    if (page.onExitButtonClick) {
       // A special case for the calibration failed page, where the skip button
-      // replaces the cancel button.
+      // replaces the exit button.
       // TODO(swifton): find a more straightforward solution for this case.
-      page.onCancelButtonClick()
+      page.onExitButtonClick()
           .then((stateResult) => {
             this.processStateResult_(stateResult);
           })
           .catch((err) => {
-            this.cancelButtonClicked_ = false;
+            this.confirmExitButtonClicked_ = false;
             this.setAllButtonsState_(
                 /* shouldDisableButtons= */ false,
                 /* showBusyStateOverlay= */ false);
           });
     } else {
-      this.shimlessRmaService_.abortRma().then((result) => {
-        this.cancelButtonClicked_ = false;
-        this.handleStandardAndCriticalError_(result.error);
-      });
+      this.shadowRoot.querySelector('#exitDialog').showModal();
     }
+  }
+
+  /** @protected */
+  onConfirmExitButtonClicked_() {
+    this.confirmExitButtonClicked_ = true;
+    this.shadowRoot.querySelector('#exitDialog').close();
+
+    // Show exit button spinner on the landing page
+    const currentPageComponent =
+        this.shadowRoot.querySelector(this.currentPage_.componentIs);
+    currentPageComponent.confirmExitButtonClicked = true;
+
+    this.setAllButtonsState_(
+        /* shouldDisableButtons= */ true, /* showBusyStateOverlay= */ true);
+
+    this.shimlessRmaService_.abortRma().then((result) => {
+      this.confirmExitButtonClicked_ = false;
+      this.handleStandardAndCriticalError_(result.error);
+    });
+  }
+
+  /** @protected */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#exitDialog').close();
   }
 
   /**
@@ -736,10 +757,10 @@ export class ShimlessRma extends ShimlessRmaBase {
    * @return {string}
    * @protected
    */
-  getCancelButtonLabel_() {
+  getExitButtonLabel_() {
     return this.i18n(
-        this.currentPage_.buttonCancelLabelKey ?
-            this.currentPage_.buttonCancelLabelKey :
+        this.currentPage_.buttonExitLabelKey ?
+            this.currentPage_.buttonExitLabelKey :
             'exitButtonLabel');
   }
 }

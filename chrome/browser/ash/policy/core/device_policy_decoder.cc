@@ -2047,14 +2047,13 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
     const std::string& json_string,
     const std::string& policy_name,
     std::string* error) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
-    *error = "Invalid JSON string: " + value_with_error.error_message;
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
+    *error = "Invalid JSON string: " + value_with_error.error().message;
     return absl::nullopt;
   }
-  base::Value root = std::move(value_with_error.value.value());
+  base::Value root = std::move(*value_with_error);
 
   const Schema& schema = GetChromeSchema().GetKnownProperty(policy_name);
   CHECK(schema.valid());

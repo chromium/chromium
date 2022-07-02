@@ -204,7 +204,6 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   web_data_backend_->CommitChanges();
 
   if (offer_data_changed) {
-    // TODO(crbug.com/1112095): Add enum to indicate what actually changed.
     web_data_backend_->NotifyOfMultipleAutofillChanges();
   }
 }

@@ -63,11 +63,7 @@ class MockGpuControlClient : public GpuControlClient {
   MOCK_METHOD0(OnGpuControlLostContext, void());
   MOCK_METHOD0(OnGpuControlLostContextMaybeReentrant, void());
   MOCK_METHOD2(OnGpuControlErrorMessage, void(const char*, int32_t));
-  MOCK_METHOD2(OnGpuControlSwapBuffersCompleted,
-               void(const SwapBuffersCompleteParams&, gfx::GpuFenceHandle));
   MOCK_METHOD1(OnGpuSwitched, void(gl::GpuPreference));
-  MOCK_METHOD2(OnSwapBufferPresented,
-               void(uint64_t, const gfx::PresentationFeedback&));
   MOCK_METHOD1(OnGpuControlReturnData, void(base::span<const uint8_t>));
 };
 

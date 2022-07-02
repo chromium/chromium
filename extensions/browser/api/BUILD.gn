@@ -134,6 +134,7 @@ group("api_implementations") {
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/mime_handler_private",
     "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
     "//extensions/browser/api/printer_provider",
     "//extensions/browser/api/runtime",
@@ -156,7 +157,6 @@ group("api_implementations") {
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/vpn_provider",
       "//extensions/browser/api/webcam_private",
     ]
   }

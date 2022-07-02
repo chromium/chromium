@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -202,7 +203,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_Allow) {
       TestingProfile::Builder().Build();
   auto web_contents = CreateTestWebContents(testing_profile.get());
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_NullWebContents) {
@@ -235,7 +237,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   EXPECT_CALL(dlp_controller_, WarnOnBlinkPaste);
 
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   // We are not expecting warning proceeded event here. Warning proceeded event
   // is sent after a user accept the warn dialogue.
   // However, DataTransferDlpController::WarnOnBlinkPaste method is mocked
@@ -266,7 +269,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
 
   EXPECT_CALL(callback, Run(true));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
@@ -293,7 +297,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
 
   EXPECT_CALL(callback, Run(false));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
-                                 web_contents->GetMainFrame(), callback.Get());
+                                 web_contents->GetPrimaryMainFrame(),
+                                 callback.Get());
   EXPECT_TRUE(events_.empty());
 }
 
@@ -313,7 +318,7 @@ class DlpControllerTest : public DataTransferDlpControllerTest {
   ui::DataTransferEndpoint data_src_{ui::EndpointType::kDefault};
   bool do_notify_;
   absl::optional<ui::DataTransferEndpoint> data_dst_;
-  ui::DataTransferEndpoint* dst_ptr_;
+  raw_ptr<ui::DataTransferEndpoint> dst_ptr_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -478,9 +483,8 @@ TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
   EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(true));
 
-  bool expected_is_read = data_dst_.has_value() ? !do_notify_ : false;
-  EXPECT_EQ(expected_is_read, dlp_controller_.IsClipboardReadAllowed(
-                                  &data_src_, dst_ptr_, absl::nullopt));
+  EXPECT_EQ(false, dlp_controller_.IsClipboardReadAllowed(&data_src_, dst_ptr_,
+                                                          absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
 

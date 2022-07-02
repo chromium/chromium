@@ -44,21 +44,17 @@ ui::Accelerator GetCloseAccelerator() {
 ///////////////////////////////////////////////////////////////////////////////
 // LoginWebDialog, public:
 
-void LoginWebDialog::Delegate::OnDialogClosed() {}
-
 LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
-                               Delegate* delegate,
                                gfx::NativeWindow parent_window,
                                const std::u16string& title,
                                const GURL& url)
     : browser_context_(browser_context),
       parent_window_(parent_window),
-      delegate_(delegate),
       title_(title),
       url_(url) {
   if (!parent_window_ && LoginDisplayHost::default_host())
     parent_window_ = LoginDisplayHost::default_host()->GetNativeWindow();
-  LOG_IF(WARNING, !parent_window)
+  LOG_IF(WARNING, !parent_window_)
       << "No parent window. Dialog sizes could be wrong";
 }
 
@@ -124,8 +120,6 @@ void LoginWebDialog::OnDialogShown(content::WebUI* webui) {
 
 void LoginWebDialog::OnDialogClosed(const std::string& json_retval) {
   dialog_window_ = nullptr;
-  if (delegate_)
-    delegate_->OnDialogClosed();
   delete this;
 }
 

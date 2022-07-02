@@ -47,7 +47,7 @@ CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
 const CGFloat kSwipeThreshold = 0.53;
 
 // Convert the velocity (which is measured in points per second) to points per
-// |kSwipeVelocityFraction| of a second.
+// `kSwipeVelocityFraction` of a second.
 const CGFloat kSwipeVelocityFraction = 0.1;
 
 // Distance after which the arrow should animate in.
@@ -85,7 +85,7 @@ UIColor* SelectionCircleColor() {
   // The selection bubble.
   CAShapeLayer* _selectionCircleLayer;
 
-  // If |NO| this is an edge gesture and navigation isn't possible. Don't show
+  // If `NO` this is an edge gesture and navigation isn't possible. Don't show
   // arrows and bubbles and don't allow navigate.
   BOOL _canNavigate;
 }
@@ -184,7 +184,7 @@ UIColor* SelectionCircleColor() {
   }
   [self setFrame:frame];
 
-  // Move |selectionCircleLayer_| without animations.
+  // Move `selectionCircleLayer_` without animations.
   CGRect bounds = self.bounds;
   CGPoint center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
   [_arrowView setCenter:AlignPointToPixel(center)];
@@ -322,7 +322,7 @@ UIColor* SelectionCircleColor() {
 
   CGFloat distance = currentPoint.x;
   // The snap back animation is 0.1 seconds, so convert the velocity distance
-  // to where the |x| position would in .1 seconds.
+  // to where the `x` position would in .1 seconds.
   CGFloat velocityOffset = velocityPoint.x * kSwipeVelocityFraction;
   CGFloat width = CGRectGetWidth(self.targetView.bounds);
   if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
@@ -351,7 +351,7 @@ UIColor* SelectionCircleColor() {
     CGFloat threshold = width * kSwipeThreshold;
     CGFloat finalDistance = distance + velocityOffset;
     // Ensure the actual distance traveled has met the minimum arrow threshold
-    // and that the distance including expected velocity is over |threshold|.
+    // and that the distance including expected velocity is over `threshold`.
     if (distance > kArrowThreshold && finalDistance > threshold &&
         _canNavigate && gesture.state == UIGestureRecognizerStateEnded) {
       TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleMedium);

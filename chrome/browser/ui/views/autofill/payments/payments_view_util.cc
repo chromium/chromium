@@ -31,7 +31,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 
@@ -113,7 +112,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   auto* icon_view_ptr = AddChildView(std::make_unique<IconView>(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
-  separator->SetPreferredHeight(kSeparatorHeight);
+  separator->SetPreferredLength(kSeparatorHeight);
   auto* separator_ptr = AddChildView(std::move(separator));
 
   auto title_label = std::make_unique<views::Label>(
@@ -169,7 +168,7 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
     views::StyledLabel* label =
         AddChildView(std::make_unique<views::StyledLabel>());
     label->SetText(line.text());
-    label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
     label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     for (const LegalMessageLine::Link& link : line.links()) {
       label->AddStyleRange(link.range,

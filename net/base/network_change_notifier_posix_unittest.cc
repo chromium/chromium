@@ -131,13 +131,13 @@ TEST_F(NetworkChangeNotifierPosixTest, OnDNSChanged) {
   FastForwardUntilIdle();
   EXPECT_EQ(1, observer.dns_changes());
 
-  config.nameservers.push_back(IPEndPoint(IPAddress(2, 3, 4, 5), 234));
+  config.nameservers.emplace_back(IPAddress(2, 3, 4, 5), 234);
   dns_config_service()->SetConfigForRefresh(config);
   notifier()->OnDNSChanged();
   FastForwardUntilIdle();
   EXPECT_EQ(2, observer.dns_changes());
 
-  config.nameservers.push_back(IPEndPoint(IPAddress(3, 4, 5, 6), 235));
+  config.nameservers.emplace_back(IPAddress(3, 4, 5, 6), 235);
   dns_config_service()->SetConfigForRefresh(config);
   notifier()->OnDNSChanged();
   FastForwardUntilIdle();

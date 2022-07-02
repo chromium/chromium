@@ -77,8 +77,8 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
       return;
     }
 
-    // Use -imageWithData to validate |data|, but continue to pass the raw
-    // |data| to -savePhoto to ensure no data loss occurs.
+    // Use -imageWithData to validate `data`, but continue to pass the raw
+    // `data` to -savePhoto to ensure no data loss occurs.
     UIImage* savedImage = [UIImage imageWithData:data];
     if (!savedImage) {
       [strongSelf
@@ -88,7 +88,7 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
     }
 
     if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage)) {
-      // Dump |data| into the photo library. Requires the usage of
+      // Dump `data` into the photo library. Requires the usage of
       // NSPhotoLibraryAddUsageDescription.
       [[PHPhotoLibrary sharedPhotoLibrary]
           performChanges:^{

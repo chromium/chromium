@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::StringPattern;
+using base::MatcherStringPattern;
 
 namespace url_matcher {
 
@@ -22,7 +22,7 @@ namespace url_matcher {
 //
 
 TEST(URLMatcherConditionTest, Constructors) {
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   URLMatcherCondition m1(URLMatcherCondition::HOST_SUFFIX, &pattern);
   EXPECT_EQ(URLMatcherCondition::HOST_SUFFIX, m1.criterion());
   EXPECT_EQ(&pattern, m1.string_pattern());
@@ -68,7 +68,7 @@ TEST(URLMatcherPortFilter, TestMatching) {
 }
 
 TEST(URLMatcherConditionTest, IsFullURLCondition) {
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   EXPECT_FALSE(URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &pattern)
                    .IsFullURLCondition());
 
@@ -93,10 +93,10 @@ TEST(URLMatcherConditionTest, IsMatch) {
   GURL url1("http://www.example.com/www.foobar.com/index.html");
   GURL url2("http://www.foobar.com/example.com/index.html");
 
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   URLMatcherCondition m1(URLMatcherCondition::HOST_SUFFIX, &pattern);
 
-  std::set<StringPattern::ID> matching_patterns;
+  std::set<MatcherStringPattern::ID> matching_patterns;
 
   // matches = {0} --> matcher did not indicate that m1 was a match.
   matching_patterns.insert(0);
@@ -115,8 +115,8 @@ TEST(URLMatcherConditionTest, IsMatch) {
 }
 
 TEST(URLMatcherConditionTest, Comparison) {
-  StringPattern p1("foobar.com", 1);
-  StringPattern p2("foobar.com", 2);
+  MatcherStringPattern p1("foobar.com", 1);
+  MatcherStringPattern p2("foobar.com", 2);
   // The first component of each test is expected to be < than the second.
   URLMatcherCondition test_smaller[][2] = {
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
@@ -233,11 +233,11 @@ TEST(URLMatcherConditionFactoryTest, TestSingletonProperty) {
   EXPECT_NE(c5.string_pattern(), c4.string_pattern());
   EXPECT_NE(c5.string_pattern()->id(), c4.string_pattern()->id());
 
-  // Check that all StringPattern singletons are freed if we call
+  // Check that all MatcherStringPattern singletons are freed if we call
   // ForgetUnusedPatterns.
-  StringPattern::ID old_id_1 = c1.string_pattern()->id();
-  StringPattern::ID old_id_4 = c4.string_pattern()->id();
-  factory.ForgetUnusedPatterns(std::set<StringPattern::ID>());
+  MatcherStringPattern::ID old_id_1 = c1.string_pattern()->id();
+  MatcherStringPattern::ID old_id_4 = c4.string_pattern()->id();
+  factory.ForgetUnusedPatterns(std::set<MatcherStringPattern::ID>());
   EXPECT_TRUE(factory.IsEmpty());
   URLMatcherCondition c6 = factory.CreateHostEqualsCondition("www.google.com");
   EXPECT_NE(old_id_1, c6.string_pattern()->id());
@@ -466,7 +466,7 @@ TEST(URLMatcherConditionSetTest, Constructor) {
 
   scoped_refptr<URLMatcherConditionSet> condition_set(
       new URLMatcherConditionSet(1, conditions));
-  EXPECT_EQ(1, condition_set->id());
+  EXPECT_EQ(1u, condition_set->id());
   EXPECT_EQ(2u, condition_set->conditions().size());
 }
 
@@ -486,10 +486,10 @@ TEST(URLMatcherConditionSetTest, Matching) {
 
   scoped_refptr<URLMatcherConditionSet> condition_set(
       new URLMatcherConditionSet(1, conditions));
-  EXPECT_EQ(1, condition_set->id());
+  EXPECT_EQ(1u, condition_set->id());
   EXPECT_EQ(2u, condition_set->conditions().size());
 
-  std::set<StringPattern::ID> matching_patterns;
+  std::set<MatcherStringPattern::ID> matching_patterns;
   matching_patterns.insert(m1.string_pattern()->id());
   EXPECT_FALSE(condition_set->IsMatch(matching_patterns, url1));
 
@@ -763,7 +763,7 @@ TEST(URLMatcherTest, FullTest) {
   conditions1.insert(factory->CreateHostSuffixCondition("example.com"));
   conditions1.insert(factory->CreatePathContainsCondition("foo"));
 
-  const int kConditionSetId1 = 1;
+  const base::MatcherStringPattern::ID kConditionSetId1 = 1;
   URLMatcherConditionSet::Vector insert1;
   insert1.push_back(base::MakeRefCounted<URLMatcherConditionSet>(
       kConditionSetId1, conditions1));
@@ -775,7 +775,7 @@ TEST(URLMatcherTest, FullTest) {
   URLMatcherConditionSet::Conditions conditions2;
   conditions2.insert(factory->CreateHostSuffixCondition("example.com"));
 
-  const int kConditionSetId2 = 2;
+  const base::MatcherStringPattern::ID kConditionSetId2 = 2;
   URLMatcherConditionSet::Vector insert2;
   insert2.push_back(base::MakeRefCounted<URLMatcherConditionSet>(
       kConditionSetId2, conditions2));
@@ -784,7 +784,7 @@ TEST(URLMatcherTest, FullTest) {
   EXPECT_EQ(1u, matcher.MatchURL(url2).size());
 
   // This should be the cached singleton.
-  int patternId1 =
+  base::MatcherStringPattern::ID patternId1 =
       factory->CreateHostSuffixCondition("example.com").string_pattern()->id();
 
   // Third insert.
@@ -792,7 +792,7 @@ TEST(URLMatcherTest, FullTest) {
   conditions3.insert(factory->CreateHostSuffixCondition("example.com"));
   conditions3.insert(factory->CreateURLMatchesCondition("x.*[0-9]"));
 
-  const int kConditionSetId3 = 3;
+  const base::MatcherStringPattern::ID kConditionSetId3 = 3;
   URLMatcherConditionSet::Vector insert3;
   insert3.push_back(base::MakeRefCounted<URLMatcherConditionSet>(
       kConditionSetId3, conditions3));
@@ -801,21 +801,21 @@ TEST(URLMatcherTest, FullTest) {
   EXPECT_EQ(1u, matcher.MatchURL(url2).size());
 
   // Removal of third insert.
-  std::vector<URLMatcherConditionSet::ID> remove3;
+  std::vector<base::MatcherStringPattern::ID> remove3;
   remove3.push_back(kConditionSetId3);
   matcher.RemoveConditionSets(remove3);
   EXPECT_EQ(2u, matcher.MatchURL(url1).size());
   EXPECT_EQ(1u, matcher.MatchURL(url2).size());
 
   // Removal of second insert.
-  std::vector<URLMatcherConditionSet::ID> remove2;
+  std::vector<base::MatcherStringPattern::ID> remove2;
   remove2.push_back(kConditionSetId2);
   matcher.RemoveConditionSets(remove2);
   EXPECT_EQ(1u, matcher.MatchURL(url1).size());
   EXPECT_EQ(0u, matcher.MatchURL(url2).size());
 
   // Removal of first insert.
-  std::vector<URLMatcherConditionSet::ID> remove1;
+  std::vector<base::MatcherStringPattern::ID> remove1;
   remove1.push_back(kConditionSetId1);
   matcher.RemoveConditionSets(remove1);
   EXPECT_EQ(0u, matcher.MatchURL(url1).size());
@@ -825,7 +825,7 @@ TEST(URLMatcherTest, FullTest) {
 
   // The cached singleton in matcher.condition_factory_ should be destroyed to
   // free memory.
-  int patternId2 =
+  base::MatcherStringPattern::ID patternId2 =
       factory->CreateHostSuffixCondition("example.com").string_pattern()->id();
   // If patternId1 and patternId2 are different that indicates that
   // matcher.condition_factory_ does not leak memory by holding onto
@@ -878,7 +878,7 @@ TEST(URLMatcherTest, TestComponentsImplyContains) {
   // Due to '?' the condition created here is a prefix-testing condition.
   conditions.insert(factory->CreateQueryContainsCondition("?test=val&a=b"));
 
-  const int kConditionSetId = 1;
+  const base::MatcherStringPattern::ID kConditionSetId = 1;
   URLMatcherConditionSet::Vector insert;
   insert.push_back(base::MakeRefCounted<URLMatcherConditionSet>(kConditionSetId,
                                                                 conditions));
@@ -896,7 +896,7 @@ TEST(URLMatcherTest, TestOriginAndPathRegExPositive) {
   URLMatcherConditionSet::Conditions conditions;
 
   conditions.insert(factory->CreateOriginAndPathMatchesCondition("w..hp"));
-  const int kConditionSetId = 1;
+  const base::MatcherStringPattern::ID kConditionSetId = 1;
   URLMatcherConditionSet::Vector insert;
   insert.push_back(base::MakeRefCounted<URLMatcherConditionSet>(kConditionSetId,
                                                                 conditions));
@@ -914,7 +914,7 @@ TEST(URLMatcherTest, TestOriginAndPathRegExNegative) {
   URLMatcherConditionSet::Conditions conditions;
 
   conditions.insert(factory->CreateOriginAndPathMatchesCondition("val"));
-  const int kConditionSetId = 1;
+  const base::MatcherStringPattern::ID kConditionSetId = 1;
   URLMatcherConditionSet::Vector insert;
   insert.push_back(base::MakeRefCounted<URLMatcherConditionSet>(kConditionSetId,
                                                                 conditions));

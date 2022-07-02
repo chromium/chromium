@@ -233,6 +233,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   }
 
   /** Overridden from IronScrollTargetBehavior */
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _scrollHandler() {
     this.toolbarShadow_ = this.scrollTarget!.scrollTop !== 0;
   }

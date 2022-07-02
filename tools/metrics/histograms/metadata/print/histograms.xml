@@ -24,6 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrintPreview.DestinationAction"
     enum="PrintPreviewPrintDestinationBuckets" expires_after="2022-07-01">
+  <obsolete>
+    Data no longer needed 2022-06.
+  </obsolete>
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -33,101 +36,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
     Time from when print preview is initiated until the initial preview is sent
     to the preview tab for rendering.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetInitialSettings"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getInitialSettings() is initiated and
-    the number of times it completes. Metric is recorded whenever Print Preview
-    is opened.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPreview"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-08-14">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPreview() is initiated and the
-    number of times it completes. Metric is recorded whenever Print Preview
-    generates the PDF preview.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinterCapabilities"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinterCapabilities() is initiated
-    and the number of times it completes. Metric is recorded whenever Print
-    Preview needs the capabilities for a new destination.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Cloud"
-    enum="PrintPreviewInitializationEvents" expires_after="M101">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Cloud
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the Cloud Print printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Extension"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for
-    Extension type printers and the number of times it completes. Metric is
-    recorded whenever Print Preview loads the extension printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Local"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-10-16">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>chrome-print@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Local
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the local printers.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.PDF"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for PDF
-    type destination and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the Save as PDF destination.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.Initialization.GetPrinters.Privet"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Counts the number of times NativeLayer.getPrinters() is initiated for Privet
-    type printers and the number of times it completes. Metric is recorded
-    whenever Print Preview loads the privet printers.
   </summary>
 </histogram>
 
@@ -161,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-10-23">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-12-25">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -210,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -220,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettingsUi"
-    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2022-07-01">
+    enum="PrintPreviewPrintSettingsUiBuckets" expires_after="2023-07-01">
   <owner>rbpotter@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -283,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2022-09-11">
+    expires_after="2022-11-27">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -299,14 +213,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

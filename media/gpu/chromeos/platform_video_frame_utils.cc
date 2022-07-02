@@ -21,9 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
-#include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/scopedfd_helper.h"
@@ -127,7 +125,7 @@ class GbmDeviceWrapper {
           version->name,
           base::checked_cast<std::string::size_type>(version->name_len));
       drmFreeVersion(version);
-      if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+      if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
         continue;
       gbm_device_ = ui::CreateGbmDevice(render_node_file_.GetPlatformFile());
       if (gbm_device_)
@@ -168,38 +166,15 @@ class GbmDeviceWrapper {
 };
 
 gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
-    gpu::GpuMemoryBufferFactory* factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    gfx::BufferUsage buffer_usage,
-    base::ScopedClosureRunner& destroy_cb) {
+    gfx::BufferUsage buffer_usage) {
   gfx::GpuMemoryBufferHandle gmb_handle;
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   if (!buffer_format)
     return gmb_handle;
-
-  if (!factory) {
-    return GbmDeviceWrapper::Get()->CreateGpuMemoryBuffer(
-        *buffer_format, coded_size, buffer_usage);
-  }
-
-  gmb_handle = factory->CreateGpuMemoryBuffer(
-      GetNextGpuMemoryBufferId(), coded_size,
-      /*framebuffer_size=*/GetRectSizeFromOrigin(visible_rect), *buffer_format,
-      buffer_usage, gpu::kPlatformVideoFramePoolClientId,
-      gfx::kNullAcceleratedWidget);
-  DCHECK(gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP ||
-         VideoFrame::NumPlanes(pixel_format) ==
-             gmb_handle.native_pixmap_handle.planes.size());
-  if (gmb_handle.is_null())
-    return gmb_handle;
-  destroy_cb.ReplaceClosure(
-      base::BindOnce(&gpu::GpuMemoryBufferFactory::DestroyGpuMemoryBuffer,
-                     base::Unretained(factory), gmb_handle.id,
-                     gpu::kPlatformVideoFramePoolClientId));
-
-  return gmb_handle;
+  return GbmDeviceWrapper::Get()->CreateGpuMemoryBuffer(
+      *buffer_format, coded_size, buffer_usage);
 }
 }  // namespace
 
@@ -212,17 +187,14 @@ gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
 }
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
-    gpu::GpuMemoryBufferFactory* factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage) {
-  base::ScopedClosureRunner destroy_cb((base::DoNothing()));
   auto gmb_handle =
-      AllocateGpuMemoryBufferHandle(factory, pixel_format, coded_size,
-                                    visible_rect, buffer_usage, destroy_cb);
+      AllocateGpuMemoryBufferHandle(pixel_format, coded_size, buffer_usage);
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
@@ -247,8 +219,6 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   if (!frame)
     return nullptr;
 
-  frame->AddDestructionObserver(destroy_cb.Release());
-
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/1258986): Add DISJOINT support.
   frame->metadata().is_webgpu_compatible = supports_zero_copy_webgpu_import;
@@ -257,17 +227,14 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
 }
 
 scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
-    gpu::GpuMemoryBufferFactory* factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage) {
-  base::ScopedClosureRunner destroy_cb((base::DoNothing()));
   auto gmb_handle =
-      AllocateGpuMemoryBufferHandle(factory, pixel_format, coded_size,
-                                    visible_rect, buffer_usage, destroy_cb);
+      AllocateGpuMemoryBufferHandle(pixel_format, coded_size, buffer_usage);
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
@@ -292,20 +259,18 @@ scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
   if (!frame)
     return nullptr;
 
-  frame->AddDestructionObserver(destroy_cb.Release());
   return frame;
 }
 
 absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     gfx::BufferUsage buffer_usage) {
   // |visible_rect| and |natural_size| do not matter here. |coded_size| is set
   // as a dummy variable.
-  auto frame = CreatePlatformVideoFrame(
-      gpu_memory_buffer_factory, pixel_format, coded_size,
-      gfx::Rect(coded_size), coded_size, base::TimeDelta(), buffer_usage);
+  auto frame =
+      CreatePlatformVideoFrame(pixel_format, coded_size, gfx::Rect(coded_size),
+                               coded_size, base::TimeDelta(), buffer_usage);
   return frame ? absl::make_optional<VideoFrameLayout>(frame->layout())
                : absl::nullopt;
 }

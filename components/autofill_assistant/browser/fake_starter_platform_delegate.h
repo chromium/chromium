@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -50,16 +51,18 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
+  bool GetIsSupervisedUser() override;
   bool GetIsCustomTab() const override;
   bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
-  const CommonDependencies* GetCommonDependencies() override;
-  const PlatformDependencies* GetPlatformDependencies() override;
+  const FakeCommonDependencies* GetCommonDependencies() const override;
+  const PlatformDependencies* GetPlatformDependencies() const override;
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Intentionally public to give tests direct access.
+  FakeCommonDependencies fake_common_dependencies_;
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
       trigger_script_ui_delegate_;
   std::unique_ptr<ServiceRequestSender> trigger_script_request_sender_for_test_;
@@ -78,6 +81,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
   bool is_logged_in_ = true;
+  bool is_supervised_user_ = false;
   bool is_custom_tab_ = true;
   bool is_web_layer_ = true;
   bool is_tab_created_by_gsa_ = true;

@@ -43,7 +43,7 @@ class NoProfileDataError(Exception):
   """An error used to indicate that no profile data was collected."""
 
   def __init__(self, value):
-    super(NoProfileDataError, self).__init__()
+    super().__init__()
     self.value = value
 
   def __str__(self):
@@ -76,7 +76,7 @@ def _SimulateSwipe(device, x1, y1, x2, y2):
   device.RunShellCommand(['input', 'swipe'] + args)
 
 
-class WprManager(object):
+class WprManager:
   """A utility to download a WPR archive, host it, and forward device ports to
   it.
   """
@@ -174,7 +174,7 @@ class WprManager(object):
     forwarder.Forwarder.UnmapAllDevicePorts(self._device)
 
 
-class AndroidProfileTool(object):
+class AndroidProfileTool:
   """A utility for generating orderfile profile data for chrome on android.
 
   Runs cygprofile_unittest found in output_directory, does profiling runs,

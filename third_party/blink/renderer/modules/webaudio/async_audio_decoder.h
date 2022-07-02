@@ -59,8 +59,8 @@ class AsyncAudioDecoder {
 
   ~AsyncAudioDecoder() = default;
 
-  // Must be called on the main thread.  |decodeAsync| and callees must not
-  // modify any of the parameters except |audioData|.  They are used to
+  // Must be called on the main thread.  `DecodeAsync` and callees must not
+  // modify any of the parameters except `audio_data`.  They are used to
   // associate this decoding instance with the caller to process the decoding
   // appropriately when finished.
   void DecodeAsync(DOMArrayBuffer* audio_data,

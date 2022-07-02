@@ -51,7 +51,7 @@ class CancellingNavigationSimulatorTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
     std::tie(cancel_time_, sync_) = GetParam();
     simulator_ = NavigationSimulator::CreateRendererInitiated(
@@ -107,7 +107,7 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
@@ -136,7 +136,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 

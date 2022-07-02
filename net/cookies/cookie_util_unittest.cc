@@ -209,26 +209,26 @@ TEST(CookieUtilTest, TestRequestCookieParsing) {
   std::vector<RequestCookieParsingTest> tests;
 
   // Simple case.
-  tests.push_back(RequestCookieParsingTest());
+  tests.emplace_back();
   tests.back().str = "key=value";
   tests.back().parsed.push_back(std::make_pair(std::string("key"),
                                                std::string("value")));
   // Multiple key/value pairs.
-  tests.push_back(RequestCookieParsingTest());
+  tests.emplace_back();
   tests.back().str = "key1=value1; key2=value2";
   tests.back().parsed.push_back(std::make_pair(std::string("key1"),
                                                std::string("value1")));
   tests.back().parsed.push_back(std::make_pair(std::string("key2"),
                                                std::string("value2")));
   // Empty value.
-  tests.push_back(RequestCookieParsingTest());
+  tests.emplace_back();
   tests.back().str = "key=; otherkey=1234";
   tests.back().parsed.push_back(std::make_pair(std::string("key"),
                                                std::string()));
   tests.back().parsed.push_back(std::make_pair(std::string("otherkey"),
                                                std::string("1234")));
   // Special characters (including equals signs) in value.
-  tests.push_back(RequestCookieParsingTest());
+  tests.emplace_back();
   tests.back().str = "key=; a2=s=(./&t=:&u=a#$; a3=+~";
   tests.back().parsed.push_back(std::make_pair(std::string("key"),
                                                std::string()));
@@ -237,7 +237,7 @@ TEST(CookieUtilTest, TestRequestCookieParsing) {
   tests.back().parsed.push_back(std::make_pair(std::string("a3"),
                                                std::string("+~")));
   // Quoted value.
-  tests.push_back(RequestCookieParsingTest());
+  tests.emplace_back();
   tests.back().str = "key=\"abcdef\"; otherkey=1234";
   tests.back().parsed.push_back(std::make_pair(std::string("key"),
                                                std::string("\"abcdef\"")));

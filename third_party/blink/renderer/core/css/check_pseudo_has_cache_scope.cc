@@ -121,13 +121,13 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
     case CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees:
       if (last_traversed_depth == 1 &&
           !ElementTraversal::PreviousSibling(*last_traversed_element)) {
-        // The :has() argument matching traversal stopped at the first child of
+        // The :has() argument checking traversal stopped at the first child of
         // a depth 0 element. It means that, all the descendants of the depth 0
         // element were checked. In this case, we can set the depth 0 element as
         // '[NotMatched|Matched]AndAllDescendantsOrNextSiblingsChecked' instead
         // of setting it as '[NotCached|Matched]AndSomeChildrenChecked'.
-        // We can skip the following :has() matching operation of the depth 0
-        // element with the cached matching result ('NotMatched' or 'Matched').
+        // We can skip the following :has() checking operation of the depth 0
+        // element with the cached checking result ('NotMatched' or 'Matched').
         Element* parent = last_traversed_element->parentElement();
         SetTraversedElementAsChecked(parent, parent->parentElement());
         break;
@@ -136,7 +136,7 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
     case CheckPseudoHasArgumentTraversalScope::kSubtree:
     case CheckPseudoHasArgumentTraversalScope::kOneNextSiblingSubtree: {
       // Mark the traversed elements in the subtree or next sibling subtree
-      // of the ':has()' scope element as checked.
+      // of the :has() anchor element as checked.
       Element* element = last_traversed_element;
       Element* parent = element->parentElement();
       int depth = last_traversed_depth;
@@ -147,10 +147,10 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
         parent = parent->parentElement();
       }
 
-      // If the argument matching traverses all the next siblings' subtrees,
+      // If the argument checking traverses all the next siblings' subtrees,
       // it guarantees that we can get all the possibly matched next siblings.
       // By marking all the traversed next siblings as checked, we can skip
-      // to match ':has()' on the already-checked next siblings.
+      // to check :has() on the already-checked next siblings.
       if (argument_context_.TraversalScope() ==
               CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees &&
           element) {

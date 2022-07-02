@@ -7,8 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 
@@ -282,5 +281,4 @@ TEST(NtlmBufferWriterTest, WriteAvPairHeaderPastEob) {
   ASSERT_EQ(0u, writer.GetCursor());
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

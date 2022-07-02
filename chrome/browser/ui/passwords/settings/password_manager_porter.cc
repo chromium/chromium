@@ -100,12 +100,12 @@ void PasswordImportConsumer::ConsumePassword(
   scoped_refptr<password_manager::PasswordStoreInterface> store(
       PasswordStoreFactory::GetForProfile(profile_,
                                           ServiceAccessType::EXPLICIT_ACCESS));
+  if (!store)
+    return;
   for (const auto& pwd : seq) {
-    if (store)
-      store->AddLogin(pwd.ParseValid());
+    store->AddLogin(pwd.ToPasswordForm());
   }
-  // TODO(crbug.com/1025510): Should the length of |seq| be reported if
-  // |store| is null?
+
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
                           std::distance(seq.begin(), seq.end()));
 }
@@ -113,40 +113,36 @@ void PasswordImportConsumer::ConsumePassword(
 }  // namespace
 
 PasswordManagerPorter::PasswordManagerPorter(
-    password_manager::CredentialProviderInterface*
-        credential_provider_interface,
+    Profile* profile,
+    password_manager::SavedPasswordsPresenter* presenter,
     ProgressCallback on_export_progress_callback)
-    : credential_provider_interface_(credential_provider_interface),
+    : profile_(profile),
+      presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
 PasswordManagerPorter::~PasswordManagerPorter() = default;
 
-bool PasswordManagerPorter::Store() {
-  // In unittests a null WebContents means: "Abort creating the file Selector."
-  if (!web_contents_)
-    return true;
-
+bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
                        password_manager::ExportProgressStatus::IN_PROGRESS) {
     return false;
   }
 
-  // Set a new exporter for this request.
-  exporter_ =
-      exporter_for_testing_
-          ? std::move(exporter_for_testing_)
-          : std::make_unique<password_manager::PasswordManagerExporter>(
-                credential_provider_interface_, on_export_progress_callback_);
+  if (!exporter_) {
+    // Set a new exporter for this request.
+    exporter_ = std::make_unique<password_manager::PasswordManagerExporter>(
+        presenter_, on_export_progress_callback_);
+  }
 
   // Start serialising while the user selects a file.
   exporter_->PreparePasswordsForExport();
-  PresentFileSelector(web_contents_,
+  PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_EXPORT);
 
   return true;
 }
 
-void PasswordManagerPorter::CancelStore() {
+void PasswordManagerPorter::CancelExport() {
   if (exporter_)
     exporter_->Cancel();
 }
@@ -159,20 +155,13 @@ PasswordManagerPorter::GetExportProgressStatus() {
 
 void PasswordManagerPorter::SetExporterForTesting(
     std::unique_ptr<password_manager::PasswordManagerExporter> exporter) {
-  exporter_for_testing_ = std::move(exporter);
+  exporter_ = std::move(exporter);
 }
 
-void PasswordManagerPorter::Load() {
-  DCHECK(web_contents_);
-  PresentFileSelector(web_contents_,
+void PasswordManagerPorter::Import(content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
-}
-
-void PasswordManagerPorter::ImportPasswordsFromPathForTesting(
-    const base::FilePath& path,
-    Profile* profile) {
-  base::AutoReset<Profile*> reset(&profile_, profile);
-  ImportPasswordsFromPath(path);
 }
 
 void PasswordManagerPorter::PresentFileSelector(
@@ -186,7 +175,6 @@ void PasswordManagerPorter::PresentFileSelector(
     return;
 
   DCHECK(web_contents);
-  profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // Get the default file extension for password files.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
@@ -250,8 +238,7 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
   // Set up a |PasswordImportConsumer| to process each password entry.
-  std::unique_ptr<PasswordImportConsumer> form_consumer(
-      new PasswordImportConsumer(profile_));
+  auto form_consumer = std::make_unique<PasswordImportConsumer>(profile_);
   password_manager::PasswordImporter::Import(
       path, base::BindOnce(&PasswordImportConsumer::ConsumePassword,
                            std::move(form_consumer)));

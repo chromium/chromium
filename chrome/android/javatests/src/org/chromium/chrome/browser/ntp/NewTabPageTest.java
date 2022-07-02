@@ -57,6 +57,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -75,11 +76,12 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -126,14 +128,14 @@ public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
 
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 5;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule
-    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -211,6 +213,8 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
+    // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRender_FocusFakeBoxT(boolean isScrollableMVTEnabled) throws Exception {
         ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
                                                     .getRootUiCoordinatorForTesting()
@@ -223,41 +227,6 @@ public class NewTabPageTest {
                         + (mEnableScrollableMVT ? "_with_scrollable_mvt"
                                                 : "_with_non_scrollable_mvt"));
         scrimCoordinator.disableAnimationForTesting(false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SignInPromoNoAccounts() throws Exception {
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(
-                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sign_in_promo");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SignInPromoWithAccount() throws Exception {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
-                "sign_in_promo_with_account");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_SyncPromo() throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSignin();
-        // Scroll to the sign in promo in case it is not visible.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(
-                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sync_promo");
     }
 
     @Test
@@ -501,7 +470,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testPlaceholder() {
+    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
+    public void testPlaceholder(boolean isScrollableMVTEnabled) {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
@@ -527,6 +497,9 @@ public class NewTabPageTest {
             when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
             ntpLayout.onSwitchToForeground(); // Force tile refresh.
+            // Mock to notify the template URL service observer.
+            ntpLayout.getMostVisitedTilesCoordinatorForTesting()
+                    .onTemplateURLServiceChangedForTesting();
         });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
@@ -640,6 +613,27 @@ public class NewTabPageTest {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/true, /*pastedText=*/"");
             verify(mFeedReliabilityLogger).onVoiceSearch();
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.FEED_ABLATION)
+    public void testRender_LoadNewTabPageWithDisabledFeed() throws IOException {
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().getActivityTab().getNativePage().getView(),
+                "feed_is_ablated");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    public void testFeedReliabilityLoggingHideWithBack() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeTabbedActivity activity = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+            activity.handleBackPressed();
+            verify(mFeedReliabilityLogger).onNavigateBack();
         });
     }
 

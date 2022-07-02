@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -36,15 +37,23 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"enterprise_profile_welcome_app.js",
        IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_JS},
+      {"enterprise_profile_welcome_app.html.js",
+       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_HTML_JS},
       {"enterprise_profile_welcome_browser_proxy.js",
        IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS},
-      {"images/enterprise_profile_welcome_illustration.svg",
-       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG},
-      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddResourcePath(
+      "images/lacros_enterprise_profile_welcome_illustration.svg",
+      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_LACROS_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
+#else
+  source->AddResourcePath(
+      "images/enterprise_profile_welcome_illustration.svg",
+      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
+#endif
   source->AddLocalizedString("enterpriseProfileWelcomeTitle",
                              IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);

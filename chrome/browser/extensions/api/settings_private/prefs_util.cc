@@ -21,7 +21,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/privacy_sandbox/generated_floc_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/common/chrome_features.h"
@@ -63,7 +62,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_pref_names.h"  // nogncheck
 #include "ash/public/cpp/ambient/ambient_prefs.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -77,8 +75,8 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/account_manager_core/pref_names.h"
 #include "ui/chromeos/events/pref_names.h"
 #endif
@@ -297,8 +295,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::kGeneratedFlocPref] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Security page
   (*s_allowlist)[::kGeneratedPasswordLeakDetectionPref] =
@@ -321,6 +317,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [::unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled] =
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::omnibox::kDocumentSuggestEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kAutofillAssistantOnDesktopEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Languages page
@@ -553,7 +551,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[crostini::prefs::kCrostiniSharedUsbDevices] =
       settings_api::PrefType::PREF_TYPE_LIST;
-  (*s_allowlist)[crostini::prefs::kCrostiniContainers] =
+  (*s_allowlist)[guest_os::prefs::kGuestOsContainers] =
       settings_api::PrefType::PREF_TYPE_LIST;
   (*s_allowlist)[crostini::prefs::kCrostiniPortForwarding] =
       settings_api::PrefType::PREF_TYPE_LIST;
@@ -583,13 +581,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
           settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-
-  // Dark Mode.
-  (*s_allowlist)[ash::prefs::kColorModeThemed] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kDarkModeEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[ash::prefs::kDarkModeScheduleType] =
+  (*s_allowlist)[ash::ambient::prefs::kAmbientModeAnimationPlaybackSpeed] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Google Assistant.
@@ -801,7 +793,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::ash::prefs::kPowerQuickDimEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-
+  (*s_allowlist)[ash::prefs::kUserCameraAllowed] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kUserMicrophoneAllowed] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #else
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =
@@ -1149,18 +1144,6 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
     default:
       return settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (pref_name == ash::prefs::kDarkModeEnabled) {
-    DCHECK(value->is_bool());
-    base::UmaHistogramBoolean("Ash.DarkTheme.Settings.IsDarkModeEnabled",
-                              value->GetBool());
-  } else if (pref_name == ash::prefs::kColorModeThemed) {
-    DCHECK(value->is_bool());
-    base::UmaHistogramBoolean("Ash.DarkTheme.Settings.IsThemed",
-                              value->GetBool());
-  }
-#endif
 
   // TODO(orenb): Process setting metrics here and in the CrOS setting method
   // too (like "ProcessUserMetric" in CoreOptionsHandler).

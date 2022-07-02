@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -118,10 +118,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
         content::NotificationService::AllSources());
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension_app->id(),
-        apps::GetEventFlags(
-            apps::mojom::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW,
-            false /* preferred_containner */),
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            false /* preferred_containner */),
         apps::mojom::LaunchSource::kFromTest,
         apps::MakeWindowInfo(
             display::Screen::GetScreen()->GetPrimaryDisplay().id()));
@@ -179,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
-  web_app::WebAppProvider::GetForTest(profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile())
+      ->InstallSystemAppsForTesting();
 
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   const extensions::Extension* app = InstallPlatformApp("minimal");

@@ -25,7 +25,7 @@ class ImageSkia;
 namespace ash {
 
 class AmbientBackgroundImageView;
-class AmbientViewDelegate;
+class AmbientViewDelegateImpl;
 struct PhotoWithDetails;
 
 // View to display photos in ambient mode.
@@ -35,7 +35,7 @@ class ASH_EXPORT PhotoView : public views::View,
  public:
   METADATA_HEADER(PhotoView);
 
-  explicit PhotoView(AmbientViewDelegate* delegate);
+  explicit PhotoView(AmbientViewDelegateImpl* delegate);
   PhotoView(const PhotoView&) = delete;
   PhotoView& operator=(PhotoView&) = delete;
   ~PhotoView() override;
@@ -63,7 +63,7 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // Note that we should be careful when using |delegate_|, as there is no
   // strong guarantee on the life cycle.
-  AmbientViewDelegate* const delegate_ = nullptr;
+  AmbientViewDelegateImpl* const delegate_ = nullptr;
 
   // Image containers used for animation. Owned by view hierarchy.
   std::array<AmbientBackgroundImageView*, 2> image_views_{nullptr, nullptr};

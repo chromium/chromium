@@ -217,13 +217,12 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
   void SetExampleDictPref(const base::StringPiece example_dict_preference) {
-    base::JSONReader::ValueWithError result =
-        base::JSONReader::ReadAndReturnValueWithError(
-            example_dict_preference,
-            base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(result.value && result.value->is_dict())
-        << result.error_message;
-    SetPref(true, pref_names::kExtensionManagement, std::move(*result.value));
+    auto result = base::JSONReader::ReadAndReturnValueWithError(
+        example_dict_preference,
+        base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    ASSERT_TRUE(result->is_dict());
+    SetPref(true, pref_names::kExtensionManagement, std::move(*result));
   }
 
   // Wrapper of ExtensionManagement::GetInstallationMode, |id| and

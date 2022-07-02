@@ -41,20 +41,17 @@ class NGTableFragmentData {
 
   using ColumnGeometries = HeapVector<ColumnGeometry>;
 
-  // Column/row location is used for collapsed border painting.
-  // Only present if borders are collapsed.
+  // Column locations are used for collapsed-border painting.
   struct CollapsedBordersGeometry {
     USING_FAST_MALLOC(CollapsedBordersGeometry);
 
    public:
-    Vector<LayoutUnit> columns;  // Column offsets from table grid border.
-    Vector<LayoutUnit> rows;     // Row offsets from table grid border.
+    Vector<LayoutUnit> columns;
 
 #if DCHECK_IS_ON()
     void CheckSameForSimplifiedLayout(
         const CollapsedBordersGeometry& other) const {
       DCHECK(columns == other.columns);
-      DCHECK(rows == other.rows);
     }
 #endif
   };

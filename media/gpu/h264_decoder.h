@@ -74,6 +74,18 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // this situation as normal and return from Decode() with kRanOutOfSurfaces.
     virtual scoped_refptr<H264Picture> CreateH264Picture() = 0;
 
+    // Provides the raw NALU data for an SPS. The |sps| passed to
+    // SubmitFrameMetadata() is always the most recent SPS passed to
+    // ProcessSPS() with the same |seq_parameter_set_id|.
+    virtual void ProcessSPS(const H264SPS* sps,
+                            base::span<const uint8_t> sps_nalu_data);
+
+    // Provides the raw NALU data for a PPS. The |pps| passed to
+    // SubmitFrameMetadata() is always the most recent PPS passed to
+    // ProcessPPS() with the same |pic_parameter_set_id|.
+    virtual void ProcessPPS(const H264PPS* pps,
+                            base::span<const uint8_t> pps_nalu_data);
+
     // Submit metadata for the current frame, providing the current |sps| and
     // |pps| for it, |dpb| has to contain all the pictures in DPB for current
     // frame, and |ref_pic_p0/b0/b1| as specified in the H264 spec. Note that
@@ -106,8 +118,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     virtual Status ParseEncryptedSliceHeader(
         const std::vector<base::span<const uint8_t>>& data,
         const std::vector<SubsampleEntry>& subsamples,
-        const std::vector<uint8_t>& sps_nalu_data,
-        const std::vector<uint8_t>& pps_nalu_data,
         H264SliceHeader* slice_header_out);
 
     // Submit one slice for the current frame, passing the current |pps| and
@@ -373,10 +383,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // different PPSes in the stream (they are present once in the container for
   // the stream).
   int last_parsed_pps_id_;
-
-  // Copies of the last SPS and PPS NALUs, used for full sample encryption.
-  std::vector<uint8_t> last_sps_nalu_;
-  std::vector<uint8_t> last_pps_nalu_;
 
   // Current NALU and slice header being processed.
   std::unique_ptr<H264NALU> curr_nalu_;

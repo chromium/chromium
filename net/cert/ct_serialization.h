@@ -13,11 +13,9 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
 // Utility functions for encoding/decoding structures used by Certificate
 // Transparency to/from the TLS wire format encoding.
-namespace ct {
+namespace net::ct {
 
 struct DigitallySigned;
 struct MerkleTreeLeaf;
@@ -97,8 +95,6 @@ NET_EXPORT bool EncodeSignedCertificateTimestamp(
 // Writes an SCTList into |output|, containing a single |sct|.
 NET_EXPORT_PRIVATE bool EncodeSCTListForTesting(const base::StringPiece& sct,
                                                 std::string* output);
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_CT_SERIALIZATION_H_

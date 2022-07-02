@@ -11,7 +11,7 @@
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
-              "builder_group": "chromium.linux",
+              "builder_group": "chromium.fuchsia",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -55,6 +55,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.linux",
+  "builder_group": "tryserver.chromium.fuchsia",
   "recipe": "chromium_trybot"
 }

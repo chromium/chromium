@@ -4,18 +4,9 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
@@ -27,10 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -40,13 +28,11 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -68,8 +54,6 @@ import java.io.IOException;
     UiRestriction.RESTRICTION_TYPE_PHONE})
 public class InstantStartNewTabFromLauncherTest {
     // clang-format on
-    private static final long MAX_TIMEOUT_MS = 30000L;
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -82,25 +66,8 @@ public class InstantStartNewTabFromLauncherTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    @DisabledTest(message = "https://crbug.com/1192559")
-    public void testNewTabFromLauncher() throws IOException {
-        testNewTabFromLauncherImpl();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithInstantStartDisabled() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherImpl();
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    public void testNewTabFromLauncherWithHomepageDisabled_NoFinale() throws IOException {
+    public void testNewTabFromLauncherWithHomepageDisabled() throws IOException {
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         testNewTabFromLauncherWithHomepageDisabledImpl();
     }
@@ -109,24 +76,7 @@ public class InstantStartNewTabFromLauncherTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    public void testNewTabFromLauncherWithHomepageDisabled_NoFinale_NoInstant() throws IOException {
-        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherWithHomepageDisabledImpl();
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithHomepageDisabled_Finale() throws IOException {
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        testNewTabFromLauncherWithHomepageDisabledImpl();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
-    public void testNewTabFromLauncherWithHomepageDisabled_Finale_NoInstant() throws IOException {
+    public void testNewTabFromLauncherWithHomepageDisabled_NoInstant() throws IOException {
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         testNewTabFromLauncherWithHomepageDisabledImpl();
     }
@@ -145,33 +95,6 @@ public class InstantStartNewTabFromLauncherTest {
     public void testNewIncognitoTabFromLauncher_NoInstant() throws IOException {
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         testNewIncognitoTabFromLauncherImpl();
-    }
-
-    private void testNewTabFromLauncherImpl() throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
-        TabAttributeCache.setTitleForTesting(0, "Google");
-
-        startNewTabFromLauncherIcon(false);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-
-        waitForView(withId(R.id.search_box_text));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
-                        && urlBar.isFocused(),
-                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
-        Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-        assertEquals(cta.findViewById(R.id.toolbar_buttons).getVisibility(), View.INVISIBLE);
-        ToolbarDataProvider toolbarDataProvider =
-                cta.getToolbarManager().getLocationBarModelForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
-        });
     }
 
     private void testNewIncognitoTabFromLauncherImpl() throws IOException {

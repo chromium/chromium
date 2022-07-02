@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -36,7 +37,8 @@ enum class AudioGlitchResult {
 
 void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
                             int renderer_missed_callback_count,
-                            int renderer_callback_count) {
+                            int renderer_callback_count,
+                            bool mixing) {
   DCHECK_LE(renderer_missed_callback_count, renderer_callback_count);
 
   auto LatencyToString = [](AudioLatency::LatencyType latency) {
@@ -56,11 +58,12 @@ void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
 
   const std::string suffix = LatencyToString(latency);
 
-  base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches2." + suffix,
-                                (renderer_missed_callback_count > 0)
-                                    ? AudioGlitchResult::kGlitches
-                                    : AudioGlitchResult::kNoGlitches);
-
+  if (!mixing) {
+    base::UmaHistogramEnumeration("Media.AudioRendererAudioGlitches2." + suffix,
+                                  (renderer_missed_callback_count > 0)
+                                      ? AudioGlitchResult::kGlitches
+                                      : AudioGlitchResult::kNoGlitches);
+  }
   const int kPermilleScaling = 1000;
   // 10%: if we have more that 10% of callbacks having issues, the details are
   // not very interesting any more, so we just log all those cases together to
@@ -78,12 +81,17 @@ void LogPerLatencyGlitchUma(AudioLatency::LatencyType latency,
       kPermilleScaling * static_cast<double>(renderer_missed_callback_count) /
       renderer_callback_count);
 
-  base::UmaHistogramCustomCounts(
-      ((renderer_callback_count < kShortStreamMaxCallbackCount)
-           ? "Media.AudioRendererMissedDeadline2.Short."
-           : "Media.AudioRendererMissedDeadline2.Long.") +
-          suffix,
-      std::min(missed_permille, kHistogramRange), 0, kHistogramRange + 1, 100);
+  std::string histogram_name = base::StrCat(
+      {"Media.AudioRendererMissedDeadline2.", mixing ? "Mixing." : "",
+       (renderer_callback_count < kShortStreamMaxCallbackCount) ? "Short"
+                                                                : "Long"});
+  base::UmaHistogramCustomCounts(histogram_name,
+                                 std::min(missed_permille, kHistogramRange), 0,
+                                 kHistogramRange + 1, 100);
+
+  base::UmaHistogramCustomCounts(histogram_name + "." + suffix,
+                                 std::min(missed_permille, kHistogramRange), 0,
+                                 kHistogramRange + 1, 100);
 }
 
 }  // namespace
@@ -93,10 +101,10 @@ namespace audio {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<double> kBufferDurationPercent{
-    &kDynamicAudioTimeout, "buffer_duration_percent", 0.5};
+    &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};
 #endif
 
 SyncReader::SyncReader(
@@ -107,17 +115,13 @@ SyncReader::SyncReader(
       latency_tag_(params.latency_tag()),
       mute_audio_for_testing_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMuteAudio)),
-      had_socket_error_(false),
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
-                                               params.frames_per_buffer())),
-      renderer_callback_count_(0),
-      renderer_missed_callback_count_(0),
-      trailing_renderer_missed_callback_count_(0),
-      buffer_index_(0) {
+                                               params.frames_per_buffer())) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   maximum_wait_time_ = params.GetBufferDuration() / 2;
+  maximum_wait_time_for_mixing_ = maximum_wait_time_;
 #else
   if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
     maximum_wait_time_ =
@@ -125,6 +129,21 @@ SyncReader::SyncReader(
   } else {
     maximum_wait_time_ = base::Milliseconds(20);
   }
+  maximum_wait_time_for_mixing_ = maximum_wait_time_;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (base::FeatureList::IsEnabled(media::kChromeWideEchoCancellation)) {
+    double mixing_timeout_percent =
+        media::kChromeWideEchoCancellationDynamicMixingTimeout.Get();
+
+    // The default negative value means we should ignore this parameter.
+    if (mixing_timeout_percent > 0) {
+      maximum_wait_time_for_mixing_ =
+          params.GetBufferDuration() * mixing_timeout_percent;
+    }
+  }
+#endif
+
 #endif
 
   base::CheckedNumeric<size_t> memory_size =
@@ -146,6 +165,8 @@ SyncReader::SyncReader(
 }
 
 SyncReader::~SyncReader() {
+  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
+
   if (!renderer_callback_count_)
     return;
 
@@ -161,6 +182,18 @@ SyncReader::~SyncReader() {
   renderer_missed_callback_count_ -= trailing_renderer_missed_callback_count_;
   renderer_callback_count_ -= trailing_renderer_missed_callback_count_;
 
+  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
+            mixing_renderer_missed_callback_count_);
+  DCHECK_LE(mixing_trailing_renderer_missed_callback_count_,
+            mixing_renderer_callback_count_);
+
+  mixing_renderer_missed_callback_count_ -=
+      mixing_trailing_renderer_missed_callback_count_;
+  mixing_renderer_callback_count_ -=
+      mixing_trailing_renderer_missed_callback_count_;
+
+  DCHECK_GE(renderer_callback_count_, mixing_renderer_callback_count_);
+
   if (!renderer_callback_count_)
     return;
 
@@ -175,7 +208,10 @@ SyncReader::~SyncReader() {
                                percentage_missed);
 
   LogPerLatencyGlitchUma(latency_tag_, renderer_missed_callback_count_,
-                         renderer_callback_count_);
+                         renderer_callback_count_, /*mixing=*/false);
+
+  LogPerLatencyGlitchUma(latency_tag_, mixing_renderer_missed_callback_count_,
+                         mixing_renderer_callback_count_, /*mixing=*/true);
 
   TRACE_EVENT_INSTANT1("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
                        "Missed callback percentage", percentage_missed);
@@ -245,11 +281,18 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   ++buffer_index_;
 }
 
-void SyncReader::Read(media::AudioBus* dest) {
+void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
   ++renderer_callback_count_;
-  if (!WaitUntilDataIsReady()) {
+  if (is_mixing)
+    ++mixing_renderer_callback_count_;
+
+  if (!WaitUntilDataIsReady(is_mixing)) {
     ++trailing_renderer_missed_callback_count_;
     ++renderer_missed_callback_count_;
+    if (is_mixing) {
+      ++mixing_trailing_renderer_missed_callback_count_;
+      ++mixing_renderer_missed_callback_count_;
+    }
     if (renderer_missed_callback_count_ <= 100 &&
         renderer_missed_callback_count_ % 10 == 0) {
       LOG(WARNING) << "SyncReader::Read timed out, audio glitch count="
@@ -262,6 +305,7 @@ void SyncReader::Read(media::AudioBus* dest) {
   }
 
   trailing_renderer_missed_callback_count_ = 0;
+  mixing_trailing_renderer_missed_callback_count_ = 0;
 
   // Zeroed buffers may be discarded immediately when outputing compressed
   // bitstream.
@@ -298,9 +342,10 @@ void SyncReader::Close() {
   output_bus_.reset();
 }
 
-bool SyncReader::WaitUntilDataIsReady() {
+bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
   TRACE_EVENT0("audio", "SyncReader::WaitUntilDataIsReady");
-  base::TimeDelta timeout = maximum_wait_time_;
+  base::TimeDelta timeout =
+      is_mixing ? maximum_wait_time_for_mixing_ : maximum_wait_time_;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   const base::TimeTicks finish_time = start_time + timeout;
 

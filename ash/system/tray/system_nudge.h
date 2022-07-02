@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
+#include "ash/system/tray/system_nudge_label.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -34,7 +35,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   SystemNudge(const std::string& name,
               int icon_size,
               int icon_label_spacing,
-              int nudge_padding);
+              int nudge_padding,
+              bool anchor_status_area = false);
   SystemNudge(const SystemNudge&) = delete;
   SystemNudge& operator=(const SystemNudge&) = delete;
   ~SystemNudge() override;
@@ -58,9 +60,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // being nudged. These will be called only when needed by Show().
 
   // Creates and initializes a view representing the label for the nudge.
-  // Returns a views::View in case the subclass wishes to creates a StyledLabel,
-  // Label, or something else entirely.
-  virtual std::unique_ptr<views::View> CreateLabelView() const = 0;
+  virtual std::unique_ptr<SystemNudgeLabel> CreateLabelView() const = 0;
 
   // Gets the VectorIcon shown to the side of the label for the nudge.
   virtual const gfx::VectorIcon& GetIcon() const = 0;
@@ -69,8 +69,17 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // screen reader is enabled when the view is shown.
   virtual std::u16string GetAccessibilityText() const = 0;
 
+  // Calculates the expected bounds of nudge widget.
+  static gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
+                                         Shelf* shelf,
+                                         int nudge_width,
+                                         int nudge_height,
+                                         bool anchor_status_area);
+
  private:
   class SystemNudgeView;
+
+  friend class SystemNudgeTest;
 
   struct SystemNudgeParams {
     // The name for the widget.
@@ -81,6 +90,10 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
     int icon_label_spacing;
     // The padding which separates the nudge's border with its inner contents.
     int nudge_padding;
+    // If true, the nudge will be on the same side of the status area.
+    // Otherwise the nudge will be on the left/right side of the window for
+    // non-RTL/RTL locale.
+    bool anchor_status_area = false;
   };
 
   // Calculate and set widget bounds based on a fixed width and a variable

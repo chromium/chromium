@@ -20,8 +20,8 @@ const int kMaxAllowedConsecutiveExternalAppLaunches = 2;
 // original source URL, and the scheme of the external Application URL.
 @property(nonatomic, strong)
     NSMutableDictionary<NSString*, AppLaunchingState*>* appLaunchingStates;
-// Generates key for |appURL| and |sourceURL| to be used to retrieve state from
-// |appLaunchingStates|.
+// Generates key for `appURL` and `sourceURL` to be used to retrieve state from
+// `appLaunchingStates`.
 + (NSString*)stateKeyForAppURL:(const GURL&)appURL
                      sourceURL:(const GURL&)sourceURL;
 @end
@@ -45,17 +45,17 @@ const int kMaxAllowedConsecutiveExternalAppLaunches = 2;
   return self;
 }
 
-- (void)didRequestLaunchExternalAppURL:(const GURL&)gURL
+- (void)didRequestLaunchExternalAppURL:(const GURL&)URL
                      fromSourcePageURL:(const GURL&)sourcePageURL {
-  NSString* key = [[self class] stateKeyForAppURL:gURL sourceURL:sourcePageURL];
+  NSString* key = [[self class] stateKeyForAppURL:URL sourceURL:sourcePageURL];
   if (!_appLaunchingStates[key])
     _appLaunchingStates[key] = [[AppLaunchingState alloc] init];
   [_appLaunchingStates[key] updateWithLaunchRequest];
 }
 
-- (ExternalAppLaunchPolicy)launchPolicyForURL:(const GURL&)gURL
+- (ExternalAppLaunchPolicy)launchPolicyForURL:(const GURL&)URL
                             fromSourcePageURL:(const GURL&)sourcePageURL {
-  NSString* key = [[self class] stateKeyForAppURL:gURL sourceURL:sourcePageURL];
+  NSString* key = [[self class] stateKeyForAppURL:URL sourceURL:sourcePageURL];
   // Don't block apps that are not registered with the abuse detector.
   if (!_appLaunchingStates[key])
     return ExternalAppLaunchPolicyAllow;
@@ -71,9 +71,9 @@ const int kMaxAllowedConsecutiveExternalAppLaunches = 2;
   return ExternalAppLaunchPolicyAllow;
 }
 
-- (void)blockLaunchingAppURL:(const GURL&)gURL
+- (void)blockLaunchingAppURL:(const GURL&)URL
            fromSourcePageURL:(const GURL&)sourcePageURL {
-  NSString* key = [[self class] stateKeyForAppURL:gURL sourceURL:sourcePageURL];
+  NSString* key = [[self class] stateKeyForAppURL:URL sourceURL:sourcePageURL];
   [_appLaunchingStates[key] setAppLaunchingBlocked:YES];
 }
 @end

@@ -113,9 +113,9 @@ UIColor* DimColorIncognito() {
                            useDeemphasizedStyling:YES];
     }
   } else {
-    // The detail text should be the URL (|_match.contents|) for non-search
-    // suggestions and the entity type (|_match.description|) for search entity
-    // suggestions. For all other search suggestions, |_match.description| is
+    // The detail text should be the URL (`_match.contents`) for non-search
+    // suggestions and the entity type (`_match.description`) for search entity
+    // suggestions. For all other search suggestions, `_match.description` is
     // the name of the currently selected search engine, which for mobile we
     // suppress.
     NSString* detailText = nil;
@@ -182,8 +182,8 @@ UIColor* DimColorIncognito() {
                        useDeemphasizedStyling:NO];
     }
   } else {
-    // The text should be search term (|_match.contents|) for searches,
-    // otherwise page title (|_match.description|).
+    // The text should be search term (`_match.contents`) for searches,
+    // otherwise page title (`_match.description`).
     std::u16string textString =
         !self.isURL ? _match.contents : _match.description;
     NSString* text = base::SysUTF16ToNSString(textString);
@@ -214,11 +214,13 @@ UIColor* DimColorIncognito() {
   return _match.type == AutocompleteMatchType::BOOKMARK_TITLE ||
          _match.type == AutocompleteMatchType::CALCULATOR ||
          _match.type == AutocompleteMatchType::HISTORY_BODY ||
+         _match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
          _match.type == AutocompleteMatchType::HISTORY_KEYWORD ||
          _match.type == AutocompleteMatchType::HISTORY_TITLE ||
          _match.type == AutocompleteMatchType::HISTORY_URL ||
          _match.type == AutocompleteMatchType::NAVSUGGEST ||
          _match.type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
+         _match.type == AutocompleteMatchType::SEARCH_HISTORY ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST ||
@@ -269,7 +271,7 @@ UIColor* DimColorIncognito() {
                    useDeemphasizedStyling:useDeemphasizedStyling];
 }
 
-// Adds the |additional_text| and |status_text| from |line| to the given
+// Adds the `additional_text` and `status_text` from `line` to the given
 // attributed string. This is necessary because answers get their main text
 // from the match contents instead of the ImageLine's text_fields. This is
 // because those fields contain server-provided formatting, which aren't used.
@@ -318,7 +320,7 @@ UIColor* DimColorIncognito() {
 }
 
 // Return correct formatting attributes for the given style.
-// |useDeemphasizedStyling| is necessary because some styles (e.g. SUPERIOR)
+// `useDeemphasizedStyling` is necessary because some styles (e.g. SUPERIOR)
 // should take their color from the surrounding line; they don't have a fixed
 // color.
 - (NSDictionary<NSAttributedStringKey, id>*)

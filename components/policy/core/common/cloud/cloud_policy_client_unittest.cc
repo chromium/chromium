@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -2525,6 +2527,111 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
   EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID, client_->status());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
+  // Enable the DMToken deletion feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDmTokenDeletion);
+
+  RegisterClient();
+
+  // Handle 410 (device needs reset) on policy fetch.
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+  DeviceManagementService::JobConfiguration::JobType upload_type;
+  em::DeviceManagementResponse response;
+  response.add_error_detail(em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(
+          service_.CaptureJobType(&upload_type),
+          service_.SendJobResponseAsync(
+              net::OK, DeviceManagementService::kDeviceNotFound, response)));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(observer_, OnClientError);
+  client_->FetchPolicy();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->status());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_FALSE(client_->is_registered());
+  EXPECT_TRUE(client_->requires_reregistration());
+
+  // Re-register.
+  ExpectAndCaptureJob(GetRegistrationResponse());
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(device_dmtoken_callback_observer_,
+              OnDeviceDMTokenRequested(
+                  /*user_affiliation_ids=*/std::vector<std::string>()))
+      .WillOnce(Return(kDeviceDMToken));
+  CloudPolicyClient::RegistrationParameters user_recovery(
+      em::DeviceRegisterRequest::USER,
+      em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
+  client_->Register(user_recovery, client_id_, kOAuthToken);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            upload_type);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
+            job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::NoAuth());
+  VerifyQueryParameter();
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            GetReregistrationRequest().SerializePartialAsString());
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Disabled) {
+  RegisterClient();
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+
+  DeviceManagementService::JobConfiguration::JobType upload_type;
+  em::DeviceManagementResponse response;
+  response.add_error_detail(em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(
+          service_.CaptureJobType(&upload_type),
+          service_.SendJobResponseAsync(
+              net::OK, DeviceManagementService::kDeviceNotFound, response)));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(observer_, OnClientError);
+
+  client_->FetchPolicy();
+  base::RunLoop().RunUntilIdle();
+
+  // Because the feature is disabled by default, the presence of the token
+  // deletion error detail still results in the "not found" DM status.
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NOT_FOUND, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Forced) {
+  // Enable the forced DMToken deletion feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kDmTokenDeletion,
+                                                  {{"forced", "true"}});
+
+  RegisterClient();
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->requires_reregistration());
+
+  DeviceManagementService::JobConfiguration::JobType upload_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&upload_type),
+                      service_.SendJobResponseAsync(
+                          net::OK, DeviceManagementService::kDeviceNotFound)));
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  EXPECT_CALL(observer_, OnClientError);
+
+  client_->FetchPolicy();
+  base::RunLoop().RunUntilIdle();
+
+  // The final DM status signals for DMToken deletion even though the
+  // corresponding error detail was never added to the response.
+  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->status());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
   RegisterClient();

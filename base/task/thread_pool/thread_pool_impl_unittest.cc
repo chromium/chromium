@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
@@ -62,7 +63,7 @@ namespace internal {
 
 namespace {
 
-constexpr int kMaxNumForegroundThreads = 4;
+constexpr size_t kMaxNumForegroundThreads = 4;
 
 struct TraitsExecutionModePair {
   TraitsExecutionModePair(const TaskTraits& traits,
@@ -287,7 +288,12 @@ GetTraitsExecutionModePairsToCoverAllSchedulingOptions() {
 class ThreadPoolImplTestBase : public testing::Test {
  public:
   ThreadPoolImplTestBase()
-      : thread_pool_(std::make_unique<ThreadPoolImpl>("Test")) {}
+      : thread_pool_(std::make_unique<ThreadPoolImpl>("Test")),
+        service_thread_("ServiceThread") {
+    Thread::Options service_thread_options;
+    service_thread_options.message_pump_type = MessagePumpType::IO;
+    service_thread_.StartWithOptions(std::move(service_thread_options));
+  }
 
   ThreadPoolImplTestBase(const ThreadPoolImplTestBase&) = delete;
   ThreadPoolImplTestBase& operator=(const ThreadPoolImplTestBase&) = delete;
@@ -298,7 +304,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   }
 
   void StartThreadPool(
-      int max_num_foreground_threads = kMaxNumForegroundThreads,
+      size_t max_num_foreground_threads = kMaxNumForegroundThreads,
       TimeDelta reclaim_time = Seconds(30)) {
     SetupFeatures();
 
@@ -322,6 +328,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   virtual GroupTypes GetGroupTypes() const = 0;
 
   std::unique_ptr<ThreadPoolImpl> thread_pool_;
+  Thread service_thread_;
 
  private:
   void SetupFeatures() {
@@ -810,10 +817,10 @@ TEST_P(ThreadPoolImplTest,
         {MayBlock(), TaskPriority::BEST_EFFORT});
   });
 
-  const int expected_max =
+  const size_t expected_max =
       GetGroupTypes().foreground_type == test::GroupType::GENERIC
           ? kMaxNumForegroundThreads
-          : std::max(3, SysInfo::NumberOfProcessors() - 1);
+          : static_cast<size_t>(std::max(3, SysInfo::NumberOfProcessors() - 1));
 
   EXPECT_EQ(expected_max,
             thread_pool_->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
@@ -958,6 +965,31 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   EXPECT_EQ(0, IGNORE_EINTR(close(pipes[1])));
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+
+// Verify that FileDescriptorWatcher::WatchReadable() can be called from task
+// running on a task_runner with GetExecutionMode() without a crash.
+TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions, FileDescriptorWatcher) {
+  StartThreadPool();
+
+  int fds[2];
+  ASSERT_EQ(0, pipe(fds));
+
+  auto task_runner = CreateTaskRunnerAndExecutionMode(
+      thread_pool_.get(), GetTraits(), GetExecutionMode());
+
+  EXPECT_TRUE(task_runner->PostTask(
+      FROM_HERE, BindOnce(IgnoreResult(&FileDescriptorWatcher::WatchReadable),
+                          fds[0], DoNothing())));
+
+  thread_pool_->FlushForTesting();
+
+  EXPECT_EQ(0, IGNORE_EINTR(close(fds[0])));
+  EXPECT_EQ(0, IGNORE_EINTR(close(fds[1])));
+}
+
+#endif
 
 // Verify that tasks posted on the same sequence access the same values on
 // SequenceLocalStorage, and tasks on different sequences see different values.
@@ -1405,7 +1437,7 @@ void TestUpdatePrioritySequenceNotScheduled(ThreadPoolImplTest* test,
   // thread per pool, it is possible that tasks don't run in order even if
   // threads got tasks from the PriorityQueue in order. Therefore, enforce a
   // maximum of 1 thread per pool.
-  constexpr int kLocalMaxNumForegroundThreads = 1;
+  constexpr size_t kLocalMaxNumForegroundThreads = 1;
 
   test->StartThreadPool(kLocalMaxNumForegroundThreads);
   auto task_runners_and_events =

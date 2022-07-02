@@ -11,13 +11,15 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../common/styles.js';
-import './cros_button_style.js';
+import '../css/common.css.js';
+import '../css/cros_button_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+
 import {isSelectionEvent} from '../common/utils.js';
+
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './personalization_theme_element.html.js';
 import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme/theme_controller.js';
@@ -43,8 +45,14 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   static get properties() {
     return {
       // null indicates value is being loaded.
-      darkModeEnabled_: Boolean,
-      colorModeAutoScheduleEnabled_: Boolean,
+      darkModeEnabled_: {
+        type: Boolean,
+        value: null,
+      },
+      colorModeAutoScheduleEnabled_: {
+        type: Boolean,
+        value: null,
+      },
 
       /** The button currently highlighted by keyboard navigation. */
       selectedButton_: {
@@ -54,8 +62,8 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     };
   }
 
-  private darkModeEnabled_: boolean|null = null;
-  private colorModeAutoScheduleEnabled_: boolean|null = null;
+  private darkModeEnabled_: boolean|null;
+  private colorModeAutoScheduleEnabled_: boolean|null;
   private selectedButton_: CrButtonElement;
 
   override ready() {
@@ -115,7 +123,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getDarkAriaPressed_() {
+  private getDarkAriaPressed_(): string {
     //  If auto schedule mode is enabled, the system disregards whether dark
     //  mode is enabled or not. To ensure expected behavior, we show that light
     //  mode is selected only when both auto schedule mode and dark mode are
@@ -124,7 +132,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getAutoAriaPressed_() {
+  private getAutoAriaPressed_(): string {
     return (!!this.colorModeAutoScheduleEnabled_).toString();
   }
 
@@ -143,12 +151,11 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   }
 
   private onClickAutoModeButton_(event: Event) {
-    if (!isSelectionEvent(event)) {
+    if (!isSelectionEvent(event) || this.colorModeAutoScheduleEnabled_) {
       return;
     }
     setColorModeAutoSchedule(
-        !this.colorModeAutoScheduleEnabled_, getThemeProvider(),
-        this.getStore());
+        /*enabled=*/ true, getThemeProvider(), this.getStore());
   }
 }
 

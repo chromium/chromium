@@ -38,7 +38,7 @@ class AdditionalSuggestionsHelper {
  public:
   AdditionalSuggestionsHelper(const GURL& suggestions_url);
 
-  // Calls the |callback| with 10 suggestions, with their url set to |url_|.
+  // Calls the `callback` with 10 suggestions, with their url set to `url_`.
   void SendAdditionalSuggestions(FetchDoneCallback* callback);
 
  private:

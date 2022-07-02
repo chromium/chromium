@@ -22,7 +22,7 @@ class BrowsingDataCounterWrapper {
       const browsing_data::BrowsingDataCounter::Result&)>;
 
   // This method returns the counter corresponding to the data type specified by
-  // |pref_name| or null if there is no such counter.
+  // `pref_name` or null if there is no such counter.
   static std::unique_ptr<BrowsingDataCounterWrapper> CreateCounterWrapper(
       base::StringPiece pref_name,
       ChromeBrowserState* browser_state,

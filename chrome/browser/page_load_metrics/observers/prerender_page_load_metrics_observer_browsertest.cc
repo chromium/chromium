@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
 #include "base/containers/contains.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/prerender/prerender_utils.h"
@@ -56,8 +58,14 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_SpeculationRule DISABLED_Activate_SpeculationRule
+#else
+#define MAYBE_Activate_SpeculationRule Activate_SpeculationRule
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Activate_SpeculationRule) {
+                       MAYBE_Activate_SpeculationRule) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an initial page.
@@ -124,6 +132,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       1);
   histogram_tester().ExpectTotalCount(
       internal::kHistogramLargestContentfulPaint, 0);
+
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScore,
@@ -132,6 +141,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
+          content::PrerenderTriggerType::kSpeculationRule, ""),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::
+              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
           content::PrerenderTriggerType::kSpeculationRule, ""),
       1);
 
@@ -154,6 +169,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name));
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::
+          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName));
   EXPECT_FALSE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
@@ -178,8 +200,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
 }
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_Embedder_DirectURLInput \
+  DISABLED_Activate_Embedder_DirectURLInput
+#else
+#define MAYBE_Activate_Embedder_DirectURLInput Activate_Embedder_DirectURLInput
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Activate_Embedder_DirectURLInput) {
+                       MAYBE_Activate_Embedder_DirectURLInput) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -265,6 +294,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       1);
   histogram_tester().ExpectTotalCount(
       internal::kHistogramLargestContentfulPaint, 0);
+
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScore,
@@ -274,6 +304,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
+      1);
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::
+              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
           content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix),
       1);
@@ -314,8 +351,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_FALSE(base::Contains(entries, prerender_url));
 }
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Redirection DISABLED_Redirection
+#else
+#define MAYBE_Redirection Redirection
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Redirection) {
+                       MAYBE_Redirection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an initial page.

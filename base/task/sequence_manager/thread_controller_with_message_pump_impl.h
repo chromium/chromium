@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/thread_controller.h"
@@ -66,7 +65,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetNextDelayedDoWork(LazyNow* lazy_now,
                             absl::optional<WakeUp> wake_up) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
-  void SetTickClock(const TickClock* clock) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;
@@ -74,7 +72,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void RestoreDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
-  const scoped_refptr<AssociatedThreadId>& GetAssociatedThread() const override;
   void SetTaskExecutionAllowed(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
@@ -129,9 +126,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // yield to the MessagePump after |work_batch_size| work items.
     base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
-    // Tracks the number and state of each run-level managed by this instance.
-    RunLevelTracker run_level_tracker;
-
     // When the next scheduled delayed work should run, if any.
     TimeTicks next_delayed_do_work = TimeTicks::Max();
 
@@ -171,12 +165,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     return main_thread_only_;
   }
 
-  // Instantiate a WatchHangsInScope to cover the current work if hang
-  // watching is activated via finch.
-  void MaybeStartWatchHangsInScope();
-
-  // TODO(altimin): Merge with the one in SequenceManager.
-  scoped_refptr<AssociatedThreadId> associated_thread_;
   MainThreadOnly main_thread_only_;
 
   mutable base::internal::CheckedLock task_runner_lock_;
@@ -194,8 +182,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   TaskAnnotator task_annotator_;
 
-  raw_ptr<const TickClock> time_source_;  // Not owned.
-
   // Non-null provider of id state for identifying distinct work items executed
   // by the message loop (task, event, etc.). Cached on the class to avoid TLS
   // lookups on task execution.
@@ -209,8 +195,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       base::internal::ScopedSetSequenceLocalStorageMapForCurrentThread>
       scoped_set_sequence_local_storage_map_for_current_thread_;
 
-  // Reset at the start of each unit of work to cover the work itself and then
-  // transition to the next one.
+  // Reset at the start & end of each unit of work to cover the work itself and
+  // the overhead between each work item (no-op if HangWatcher is not enabled
+  // on this thread). Cleared when going to sleep and at the end of a Run()
+  // (i.e. when Quit()). Nested runs override their parent.
   absl::optional<WatchHangsInScope> hang_watch_scope_;
 };
 

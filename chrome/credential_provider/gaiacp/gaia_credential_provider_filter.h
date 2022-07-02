@@ -5,9 +5,9 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_PROVIDER_FILTER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_PROVIDER_FILTER_H_
 
-#include <atlbase.h>
-#include <atlcom.h>
 #include <credentialprovider.h>
+
+#include "base/win/atl.h"
 
 namespace credential_provider {
 

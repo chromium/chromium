@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
@@ -124,7 +126,7 @@ class PermissionPromptBubbleViewBrowserTest
     base::RunLoop().RunUntilIdle();
 
     PermissionChip* chip = GetChip();
-    if (chip) {
+    if (chip->IsActive()) {
       views::test::ButtonTestApi(chip->button())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
@@ -136,7 +138,10 @@ class PermissionPromptBubbleViewBrowserTest
   GURL GetTestUrl() { return GURL("https://example.com"); }
 
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   PermissionChip* GetChip() {
@@ -249,18 +254,41 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   PermissionChip* chip = GetChip();
   // If chip UI is used, two notifications will be announced: one that
   // permission was requested and second when bubble is opened.
-  if (chip && !chip->should_start_open_for_testing()) {
+  if (chip->IsActive() && !chip->should_start_open_for_testing()) {
     EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
   } else {
     EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
   }
 }
 
+// Test switching between PermissionChip and PermissionPromptBubbleView and make
+// sure no crashes.
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
+                       SwitchBetweenChipAndBubble) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetLocationBarView()->SetVisible(false);
+  ShowUi("geolocation");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permission_request_manager->UpdateAnchor();
+  browser_view->GetLocationBarView()->SetVisible(true);
+  permission_request_manager->UpdateAnchor();
+  browser_view->GetLocationBarView()->SetVisible(false);
+  permission_request_manager->UpdateAnchor();
+}
+
 // Test bubbles showing when tabs move between windows. Simulates a situation
 // that could result in permission bubbles not being dismissed, and a problem
 // referencing a temporary drag window. See http://crbug.com/754552.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SwitchBrowserWindow DISABLED_SwitchBrowserWindow
+#else
+#define MAYBE_SwitchBrowserWindow SwitchBrowserWindow
+#endif
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
-                       SwitchBrowserWindow) {
+                       MAYBE_SwitchBrowserWindow) {
   ShowUi("geolocation");
   TabStripModel* strip = browser()->tab_strip_model();
 
@@ -303,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(
   content::RenderViewHost* render_view_host = browser()
                                                   ->tab_strip_model()
                                                   ->GetActiveWebContents()
-                                                  ->GetMainFrame()
+                                                  ->GetPrimaryMainFrame()
                                                   ->GetRenderViewHost();
   content::RenderProcessHost* render_process_host =
       render_view_host->GetProcess();
@@ -394,10 +422,11 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 class QuietUIPromoBrowserTest : public PermissionPromptBubbleViewBrowserTest {
  public:
   QuietUIPromoBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kQuietNotificationPrompts,
-        {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
-          "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts,
+          {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
+            "true"}}}},
+        {{permissions::features::kPermissionQuietChip}});
   }
 
  private:

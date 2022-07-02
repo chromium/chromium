@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_NETWORK_CONTEXT_H_
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_NETWORK_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -64,7 +65,7 @@ class PrefetchProxyNetworkContext {
   void CreateIsolatedUrlLoaderFactory();
 
   // The profile to use when configuring |network_context_|.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether an isolated network context should be used, or if the default
   // network context should be used.

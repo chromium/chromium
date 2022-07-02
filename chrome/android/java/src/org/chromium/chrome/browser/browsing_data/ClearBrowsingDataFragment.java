@@ -163,6 +163,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     static final String PREF_GOOGLE_DATA_TEXT = "clear_google_data_text";
     static final String PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT =
             "clear_search_history_non_google_text";
+    static final String PREF_SIGN_OUT_OF_CHROME_TEXT = "sign_out_of_chrome_text";
 
     /** The "Clear" button preference. */
     @VisibleForTesting

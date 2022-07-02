@@ -8,15 +8,17 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import dataclasses
 import json
 import logging
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
 
-from typing import List, Optional
+from typing import Iterator, List, Optional, Tuple
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
@@ -24,8 +26,6 @@ if str(_TOOLS_ANDROID_PATH) not in sys.path:
 from python_utils import git_metadata_utils, subprocess_utils
 
 _SRC_PATH = git_metadata_utils.get_chromium_src_path()
-_AUTONINJA_PATH = os.path.join(_SRC_PATH, 'third_party', 'depot_tools',
-                               'autoninja')
 
 # Refer to parse_tree.cc for GN AST implementation details:
 # https://gn.googlesource.com/gn/+/refs/heads/main/src/gn/parse_tree.cc
@@ -40,28 +40,30 @@ AFTER_COMMENT = 'after_comment'
 
 
 @contextlib.contextmanager
-def _backup_and_restore_original_file(path: str):
-    backup_path = path + '.backup'
-    # Move the original file and copy back to preserve timestamp. The next build
-    # file edit will trigger a new `gn gen` and make the necessary build graph
-    # updates.
-    shutil.move(path, backup_path)
+def _backup_and_restore_file_contents(path: str):
+    with open(path) as f:
+        contents = f.read()
     try:
-        shutil.copy(backup_path, path)
         yield
     finally:
-        shutil.move(backup_path, path)
+        # Ensure that the timestamp is updated since otherwise ninja will not
+        # re-build relevant targets with the original file.
+        with open(path, 'w') as f:
+            f.write(contents)
 
 
 def _build_targets_output(out_dir: str,
                           targets: List[str],
-                          should_print: bool = False) -> Optional[str]:
+                          should_print: Optional[bool] = None
+                          ) -> Optional[str]:
     env = os.environ.copy()
+    if should_print is None:
+        should_print = logging.getLogger().isEnabledFor(logging.DEBUG)
     # Ensuring ninja does not attempt to summarize the build results in slightly
     # faster builds. This script does many builds so this time can add up.
     if 'NINJA_SUMMARIZE_BUILD' in env:
         del env['NINJA_SUMMARIZE_BUILD']
-    proc = subprocess.Popen([_AUTONINJA_PATH, '-C', out_dir] + targets,
+    proc = subprocess.Popen(['autoninja', '-C', out_dir] + targets,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT,
                             env=env,
@@ -99,6 +101,20 @@ def _build_targets_output(out_dir: str,
     return ''.join(lines)
 
 
+def _generate_project_json_content(out_dir: str) -> str:
+    subprocess_utils.run_command(['gn', 'gen', '--ide=json', out_dir])
+    with open(os.path.join(out_dir, 'project.json')) as f:
+        return f.read()
+
+
+@dataclasses.dataclass
+class DepList:
+    """Represents a dep list assignment in GN."""
+    target_name: Optional[str]  # The name of the target containing the list.
+    variable_name: str  # Left-hand side variable name the list is assigned to.
+    child_nodes: List[dict]  # Right-hand side list of nodes.
+
+
 class BuildFile:
     """Represents the contents of a BUILD.gn file."""
     def __init__(self,
@@ -127,15 +143,53 @@ class BuildFile:
     def _find_all(self, match_fn):
         results = []
 
-        def recursive_find(root):
+        def get_target_name(node) -> Optional[str]:
+            """Example format (with irrelevant fields omitted):
+            {
+                "child": [ {
+                    "child": [ {
+                        "type": "LITERAL",
+                        "value": "\"hello_world_java\""
+                    } ],
+                    "type": "LIST"
+                }, {
+                    ...
+                } ],
+                "type": "FUNCTION",
+                "value": "java_library"
+            }
+
+            Example return: hello_world_java
+            """
+            if node.get(NODE_TYPE) != 'FUNCTION':
+                return None
+            children = node.get(NODE_CHILD)
+            if not children:
+                return None
+            first_child = children[0]
+            if first_child.get(NODE_TYPE) != 'LIST':
+                return None
+            grand_children = first_child.get(NODE_CHILD)
+            if not grand_children:
+                return None
+            grand_child = grand_children[0]
+            if grand_child.get(NODE_TYPE) != 'LITERAL':
+                return None
+            name = grand_child.get(NODE_VALUE)
+            if name.startswith('"'):
+                return name[1:-1]
+            return name
+
+        def recursive_find(root, last_known_target=None):
+            target_name = get_target_name(root) or last_known_target
             matched = match_fn(root)
             if matched is not None:
-                results.append(matched)
+                results.append((target_name, matched))
                 return
             children = root.get(NODE_CHILD)
             if children:
                 for child in children:
-                    recursive_find(child)
+                    recursive_find(child, last_known_target=target_name)
 
         recursive_find(self._content)
         return results
@@ -196,13 +250,14 @@ class BuildFile:
 
         return self._find_all(match_list_assignments)
 
-    def _find_all_deps_lists(self) -> List[List[dict]]:
-        name_list_tuples = self._find_all_list_assignments()
-        return [
-            node_list for name, node_list in name_list_tuples
-            if name == 'deps' or name.startswith('deps_')
-            or name.endswith('_deps') or '_deps_' in name
-        ]
+    def _find_all_deps_lists(self) -> Iterator[DepList]:
+        list_tuples = self._find_all_list_assignments()
+        for target_name, (var_name, node_list) in list_tuples:
+            if (var_name == 'deps' or var_name.startswith('deps_')
+                    or var_name.endswith('_deps') or '_deps_' in var_name):
+                yield DepList(target_name=target_name,
+                              variable_name=var_name,
+                              child_nodes=node_list)
 
     def split_deps(self, original_dep_name: str,
                    new_dep_names: List[str]) -> bool:
@@ -242,17 +297,23 @@ class BuildFile:
         added_new_dep = False
         normalized_original_dep_name = self._normalize(original_dep_name)
         normalized_new_dep_name = self._normalize(new_dep_name)
-        for deps_list in self._find_all_deps_lists():
+        for dep_list in self._find_all_deps_lists():
             original_dep_idx = None
             new_dep_already_exists = False
-            for idx, child in enumerate(deps_list):
+            for idx, child in enumerate(dep_list.child_nodes):
                 dep_name = self._normalize(child.get(NODE_VALUE))
                 if dep_name == normalized_original_dep_name:
                     original_dep_idx = idx
                 if dep_name == normalized_new_dep_name:
                     new_dep_already_exists = True
             if original_dep_idx is not None and not new_dep_already_exists:
-                new_dep = copy.deepcopy(deps_list[original_dep_idx])
+                if dep_list.target_name is None:
+                    target_str = self._gn_rel_path
+                else:
+                    target_str = f'{self._gn_rel_path}:{dep_list.target_name}'
+                location = f"{target_str}'s {dep_list.variable_name} variable"
+                logging.info(f'Adding {new_dep_name} to {location}')
+                new_dep = copy.deepcopy(dep_list.child_nodes[original_dep_idx])
                 # Any comments associated with the previous dep would not apply.
                 for comment_key in (BEFORE_COMMENT, AFTER_COMMENT,
                                     SUFFIX_COMMENT):
@@ -260,7 +321,7 @@ class BuildFile:
                 new_dep[NODE_VALUE] = f'"{new_dep_name}"'
                 # Add the new dep after the existing dep to preserve comments
                 # before the existing dep.
-                deps_list.insert(original_dep_idx + 1, new_dep)
+                dep_list.child_nodes.insert(original_dep_idx + 1, new_dep)
                 added_new_dep = True
 
         return added_new_dep
@@ -269,21 +330,25 @@ class BuildFile:
                     dep_names: List[str],
                     out_dir: str,
                     targets: List[str],
-                    inline_mode: bool = False) -> bool:
-        removed = False
-        for dep_name in dep_names:
-            if self._remove_dep(dep_name, out_dir, targets):
-                removed = True
+                    target_name_filter: Optional[str],
+                    inline_mode: bool = False) -> Tuple[bool, str]:
+        if not inline_mode:
+            deps_to_remove = dep_names
+        else:
             # If the first dep cannot be removed (or is not found) then in the
-            # case of inlining we can skip this file for the rest of the
-            # targets.
-            if inline_mode and not removed:
-                break
-        return removed
+            # case of inlining we can skip this file for the rest of the deps.
+            first_dep = dep_names[0]
+            if not self._remove_deps([first_dep], out_dir, targets,
+                                     target_name_filter):
+                return False
+            deps_to_remove = dep_names[1:]
+        return self._remove_deps(deps_to_remove, out_dir, targets,
+                                 target_name_filter)
 
-    def _remove_dep(self, dep_name: str, out_dir: str,
-                    targets: List[str]) -> bool:
-        """Remove |dep_name| if the target can still be built in |out_dir|.
+    def _remove_deps(self, dep_names: List[str], out_dir: str,
+                     targets: List[str],
+                     target_name_filter: Optional[str]) -> Tuple[bool, str]:
+        """Remove |dep_names| if the target can still be built in |out_dir|.
 
         Supports deps, public_deps, and other deps variables.
 
@@ -294,61 +359,88 @@ class BuildFile:
 
         Does not work with parameter expansion, i.e. $variables.
 
-        Returns whether the dep was removed.
+        Returns whether any deps were removed.
         """
-        assert dep_name.startswith('//'), (
-            f'Absolute GN path required, starting with //: {dep_name}')
+        normalized_dep_names = set()
+        for dep_name in dep_names:
+            assert dep_name.startswith('//'), (
+                f'Absolute GN path required, starting with //: {dep_name}')
+            normalized_dep_names.add(self._normalize(dep_name))
 
         removed_dep = False
-        normalized_dep_name = self._normalize(dep_name)
-        for deps_list in self._find_all_deps_lists():
-            child_deps = [
-                self._normalize(c.get(NODE_VALUE)) for c in deps_list
+        for dep_list in self._find_all_deps_lists():
+            child_deps_to_remove = [
+                c for c in dep_list.child_nodes
+                if self._normalize(c.get(NODE_VALUE)) in normalized_dep_names
             ]
-            idx_to_remove = None
-            for idx, child in enumerate(deps_list):
-                child_dep_name = self._normalize(child.get(NODE_VALUE))
-                if child_dep_name == normalized_dep_name:
-                    idx_to_remove = idx
-                    break
-            if idx_to_remove is not None:
-                logging.info(f'Found {normalized_dep_name} '
-                             f'({self._rel_path}) in {child_deps}')
-                child_to_remove = deps_list[idx_to_remove]
+            if not child_deps_to_remove:
+                continue
+
+            if dep_list.target_name is None:
+                target_name_str = self._gn_rel_path
+            else:
+                target_name_str = f'{self._gn_rel_path}:{dep_list.target_name}'
+            if (target_name_filter is not None and
+                    re.search(target_name_filter, target_name_str) is None):
+                logging.info(f'Skip: Since re.search("{target_name_filter}", '
+                             f'"{target_name_str}") is None.')
+                continue
+
+            location = f"{target_name_str}'s {dep_list.variable_name} variable"
+            expected_json = _generate_project_json_content(out_dir)
+            num_to_remove = len(child_deps_to_remove)
+            for remove_idx, child_dep in enumerate(child_deps_to_remove):
+                child_dep_name = self._normalize(child_dep.get(NODE_VALUE))
+                idx_to_remove = dep_list.child_nodes.index(child_dep)
+                logging.info(f'({remove_idx + 1}/{num_to_remove}) Found '
+                             f'{child_dep_name} in {location}.')
+                child_to_remove = dep_list.child_nodes[idx_to_remove]
                 can_remove_dep = False
-                with _backup_and_restore_original_file(self._full_path):
-                    deps_list.remove(child_to_remove)
+                with _backup_and_restore_file_contents(self._full_path):
+                    dep_list.child_nodes.remove(child_to_remove)
                     self.write_content_to_file()
                     # Immediately restore deps_list's original value in case the
                     # following build is interrupted. We don't want the
                     # intermediate untested value to be written as the final
                     # build file.
-                    deps_list.insert(idx_to_remove, child_to_remove)
+                    dep_list.child_nodes.insert(idx_to_remove, child_to_remove)
+                    if expected_json is not None:
+                        # If no changes to project.json was detected, this means
+                        # the current target is not part of out_dir's build and
+                        # cannot be removed even if the build succeeds.
+                        after_json = _generate_project_json_content(out_dir)
+                        if expected_json == after_json:
+                            # If one change in this list isn't part of the
+                            # build, no need to try any other in this list.
+                            logging.info('Skip: No changes to project.json.')
+                            break
+
+                        # Avoids testing every dep removal for the same list.
+                        expected_json = None
                     if self._can_still_build_everything(out_dir, targets):
                         can_remove_dep = True
-                if can_remove_dep:
-                    deps_list.remove(child_to_remove)
-                    # Comments before a target can apply to the targets after.
-                    if (BEFORE_COMMENT in child_to_remove
-                            and idx_to_remove < len(deps_list)):
-                        child_after = deps_list[idx_to_remove]
-                        if BEFORE_COMMENT not in child_after:
-                            child_after[BEFORE_COMMENT] = []
-                        child_after[BEFORE_COMMENT][:] = (
-                            child_to_remove[BEFORE_COMMENT] +
-                            child_after[BEFORE_COMMENT])
-                    # Comments after or behind a target don't make sense to re-
-                    # position, simply ignore AFTER_COMMENT and SUFFIX_COMMENT.
-                    removed_dep = True
+                if not can_remove_dep:
+                    continue
+
+                dep_list.child_nodes.remove(child_to_remove)
+                # Comments before a target can apply to the targets after.
+                if (BEFORE_COMMENT in child_to_remove
+                        and idx_to_remove < len(dep_list.child_nodes)):
+                    child_after = dep_list.child_nodes[idx_to_remove]
+                    if BEFORE_COMMENT not in child_after:
+                        child_after[BEFORE_COMMENT] = []
+                    child_after[BEFORE_COMMENT][:] = (
+                        child_to_remove[BEFORE_COMMENT] +
+                        child_after[BEFORE_COMMENT])
+                # Comments after or behind a target don't make sense to re-
+                # position, simply ignore AFTER_COMMENT and SUFFIX_COMMENT.
+                removed_dep = True
+                logging.info(f'Removed {child_dep_name} from {location}.')
         return removed_dep
 
     def _can_still_build_everything(self, out_dir: str,
                                     targets: List[str]) -> bool:
-
-        should_print = logging.getLogger().isEnabledFor(logging.DEBUG)
-        output = _build_targets_output(out_dir,
-                                       targets,
-                                       should_print=should_print)
+        output = _build_targets_output(out_dir, targets)
         if output is None:
             logging.info('Ninja failed to build all targets')
             return False

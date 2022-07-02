@@ -4,14 +4,17 @@
 
 #include "device/fido/mac/keychain.h"
 
+#import <Foundation/Foundation.h>
+
+#include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 
 namespace device {
 namespace fido {
 namespace mac {
 
-static API_AVAILABLE(macos(10.12.2)) Keychain* g_keychain_instance_override =
-    nullptr;
+static Keychain* g_keychain_instance_override = nullptr;
 
 // static
 Keychain& Keychain::GetInstance() {

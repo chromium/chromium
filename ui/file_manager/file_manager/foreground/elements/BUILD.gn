@@ -5,7 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -20,7 +20,7 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
@@ -112,7 +112,7 @@ js_library("files_metadata_entry") {
   ]
 }
 
-js_unittest("files_password_dialog_unittest.m") {
+js_unittest("files_password_dialog_unittest") {
   deps = [
     ":files_password_dialog",
     "//chrome/test/data/webui:chai_assert",
@@ -186,7 +186,7 @@ js_library("files_toggle_ripple") {
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_unittest("files_tooltip_unittest.m") {
+js_unittest("files_tooltip_unittest") {
   deps = [
     ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
@@ -200,14 +200,14 @@ js_library("files_tooltip") {
   ]
 }
 
-js_unittest("files_toast_unittest.m") {
+js_unittest("files_toast_unittest") {
   deps = [
     ":files_toast",
     "//chrome/test/data/webui:chai_assert",
   ]
 }
 
-js_unittest("files_xf_elements_unittest.m") {
+js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
@@ -237,13 +237,13 @@ js_library("xf_display_panel") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
-    ":files_password_dialog_unittest.m",
-    ":files_toast_unittest.m",
-    ":files_tooltip_unittest.m",
-    ":files_xf_elements_unittest.m",
+    ":files_password_dialog_unittest",
+    ":files_toast_unittest",
+    ":files_tooltip_unittest",
+    ":files_xf_elements_unittest",
   ]
 
   closure_flags =
@@ -251,7 +251,7 @@ js_test_gen_html("js_test_gen_html_modules") {
         "generate_exports=false",
         "js_module_root=./gen/ui",
         "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }

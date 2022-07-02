@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
                           {safe_browsing::SubresourceFilterType::BETTER_ADS});
   RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_EQ(0u, console_observer.messages().size());
 
   // Navigate the fenced frame again.
@@ -87,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   // collapsed.
   RenderFrameHost* fenced_frame_root =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), kUrlWithAllowedScript);
-  EXPECT_EQ("300x150", EvalJs(web_contents()->GetMainFrame(), R"JS(
+          web_contents()->GetPrimaryMainFrame(), kUrlWithAllowedScript);
+  EXPECT_EQ("300x150", EvalJs(web_contents()->GetPrimaryMainFrame(), R"JS(
     let ff = document.querySelector('fencedframe');
     `${ff.clientWidth}x${ff.clientHeight}`;
   )JS"));
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
       fenced_frame_root, kUrlWithIncludedScript,
       /*expected_error_code=*/net::ERR_ABORTED);
 
-  EXPECT_EQ("0x0", EvalJs(web_contents()->GetMainFrame(), R"JS(
+  EXPECT_EQ("0x0", EvalJs(web_contents()->GetPrimaryMainFrame(), R"JS(
     let ff = document.querySelector('fencedframe');
     `${ff.clientWidth}x${ff.clientHeight}`;
   )JS"));
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   fenced_frame_root = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
       fenced_frame_root, kUrlWithAllowedScript);
 
-  EXPECT_EQ("300x150", EvalJs(web_contents()->GetMainFrame(), R"JS(
+  EXPECT_EQ("300x150", EvalJs(web_contents()->GetPrimaryMainFrame(), R"JS(
     let ff = document.querySelector('fencedframe');
     `${ff.clientWidth}x${ff.clientHeight}`;
   )JS"));
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTopLevelUrl));
   RenderFrameHost* fenced_frame_root =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           GetTestUrl("/subresource_filter/frame_with_included_script.html"));
 
   // Ensure the disallowed script was blocked.
@@ -139,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 
   // Ensure content settings has seen the ad as blocked (i.e. the UI was
   // shown).
-  EXPECT_TRUE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      AdsBlockedInContentSettings(web_contents()->GetPrimaryMainFrame()));
   EXPECT_FALSE(AdsBlockedInContentSettings(fenced_frame_root));
 
   // Console message for subframe blocking should be displayed.
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   // cancel the load.
   RenderFrameHost* fenced_frame_root =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), kUrlWithIncludedScript,
+          web_contents()->GetPrimaryMainFrame(), kUrlWithIncludedScript,
           /*expected_error_code=*/net::ERR_ABORTED);
   EXPECT_FALSE(WasParsedScriptElementLoaded(fenced_frame_root));
 
@@ -237,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTopLevelUrl));
   RenderFrameHost* fenced_frame_root =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), kFencedFrameUrl);
+          web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   RenderFrameHost* subframe = content::FrameMatchingPredicate(
       fenced_frame_root->GetPage(),
       base::BindRepeating(&content::FrameMatchesName, "subframe"));

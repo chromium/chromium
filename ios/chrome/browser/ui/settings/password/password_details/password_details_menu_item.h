@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Menu item which holds item type. Possible types |website|, |username| or
-// |password|.
+// Menu item which holds item type. Possible types `website`, `username` or
+// `password`.
 @interface PasswordDetailsMenuItem : UIMenuItem
 
 @property(nonatomic, assign) NSInteger itemType;

@@ -50,7 +50,6 @@ namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      initialized_(false),
       install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   DCHECK(web_app::AreWebAppsEnabled(profile_));

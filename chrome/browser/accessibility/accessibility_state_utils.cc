@@ -15,11 +15,22 @@
 
 namespace accessibility_state_utils {
 
+enum class OverrideStatus { kNotSet = 0, kEnabled = 1, kDisabled = 2 };
+
+static OverrideStatus screen_reader_enabled_override_for_testing =
+    OverrideStatus::kNotSet;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using ::ash::AccessibilityManager;
 #endif
 
 bool IsScreenReaderEnabled() {
+  if (screen_reader_enabled_override_for_testing != OverrideStatus::kNotSet) {
+    return (screen_reader_enabled_override_for_testing ==
+            OverrideStatus::kEnabled)
+               ? true
+               : false;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return AccessibilityManager::Get() &&
          AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
@@ -30,6 +41,11 @@ bool IsScreenReaderEnabled() {
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   return mode.has_mode(ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void OverrideIsScreenReaderEnabledForTesting(bool enabled) {
+  screen_reader_enabled_override_for_testing =
+      enabled ? OverrideStatus::kEnabled : OverrideStatus::kDisabled;
 }
 
 }  // namespace accessibility_state_utils

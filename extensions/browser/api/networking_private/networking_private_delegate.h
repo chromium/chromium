@@ -45,7 +45,7 @@ class NetworkingPrivateDelegate : public KeyedService {
   // Returns |result| on success, or |result|=nullopt and |error| on failure.
   using PropertiesCallback =
       base::OnceCallback<void(absl::optional<base::Value> result,
-                              absl::optional<std::string> error)>;
+                              const absl::optional<std::string>& error)>;
 
   // Delegate for forwarding UI requests, e.g. for showing the account UI.
   class UIDelegate {

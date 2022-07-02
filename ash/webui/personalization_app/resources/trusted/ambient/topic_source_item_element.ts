@@ -41,6 +41,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+        observer: 'onCheckedChanged_',
       },
 
       topicSource: TopicSource,
@@ -68,6 +69,10 @@ export class TopicSourceItem extends WithPersonalizationStore {
 
     this.addEventListener('click', this.onItemSelected_.bind(this));
     this.addEventListener('keydown', this.onItemSelected_.bind(this));
+  }
+
+  private onCheckedChanged_(value: boolean) {
+    this.setAttribute('aria-checked', value.toString());
   }
 
   private onItemSelected_(event: Event) {

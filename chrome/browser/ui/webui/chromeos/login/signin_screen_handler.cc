@@ -51,7 +51,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -138,32 +137,13 @@ namespace chromeos {
 
 namespace {
 
-bool IsOnline(NetworkStateInformer::State state,
-              NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::ONLINE &&
-         reason != NetworkError::ERROR_REASON_PORTAL_DETECTED &&
-         reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT;
-}
-
-bool IsBehindCaptivePortal(NetworkStateInformer::State state,
-                           NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::CAPTIVE_PORTAL ||
-         reason == NetworkError::ERROR_REASON_PORTAL_DETECTED;
-}
-
 bool IsProxyError(NetworkStateInformer::State state,
                   NetworkError::ErrorReason reason,
                   net::Error frame_error) {
-  return state == NetworkStateInformer::PROXY_AUTH_REQUIRED ||
-         reason == NetworkError::ERROR_REASON_PROXY_AUTH_CANCELLED ||
-         reason == NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED ||
+  return NetworkStateInformer::IsProxyError(state, reason) ||
          (reason == NetworkError::ERROR_REASON_FRAME_ERROR &&
           (frame_error == net::ERR_PROXY_CONNECTION_FAILED ||
            frame_error == net::ERR_TUNNEL_CONNECTION_FAILED));
-}
-
-bool IsSigninScreen(const OobeScreenId screen) {
-  return screen == GaiaView::kScreenId;
 }
 
 }  // namespace
@@ -207,9 +187,6 @@ void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void SigninScreenHandler::RegisterMessages() {
-  AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
-  AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
-
   AddCallback("showLoadingTimeoutError",
               &SigninScreenHandler::HandleShowLoadingTimeoutError);
 }
@@ -293,8 +270,9 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   }
   connecting_callback_.Cancel();
 
-  const bool is_online = IsOnline(state, reason);
-  const bool is_behind_captive_portal = IsBehindCaptivePortal(state, reason);
+  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
+  const bool is_behind_captive_portal =
+      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
   const bool is_gaia_loading_timeout =
       (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
   const bool is_gaia_error =
@@ -318,8 +296,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   // Hide offline message (if needed) and return if current screen is
   // not a Gaia frame.
   if (!is_gaia_signin) {
-    if (!IsSigninScreenHiddenByError())
-      HideOfflineMessage(state, reason);
+    HideOfflineMessage(state, reason);
     return;
   }
 
@@ -363,6 +340,8 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
     if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
       error_screen_->SetParentScreen(GaiaView::kScreenId);
+      error_screen_->SetHideCallback(base::BindOnce(
+          &SigninScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
       error_screen_->ShowNetworkErrorMessage(state, reason);
       histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
     }
@@ -376,13 +355,12 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
 
 void SigninScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
                                              NetworkError::ErrorReason reason) {
-  if (!IsSigninScreenHiddenByError())
+  if (!IsGaiaHiddenByError())
     return;
 
   gaia_reload_reason_ = NetworkError::ERROR_REASON_NONE;
 
   error_screen_->Hide();
-  histogram_helper_->OnErrorHide();
 
   // Forces a reload for Gaia screen on hiding error message.
   if (IsGaiaVisible() || IsGaiaHiddenByError())
@@ -441,24 +419,9 @@ void SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
   network_state_ignored_until_proxy_auth_ = false;
 }
 
-void SigninScreenHandler::HandleLaunchIncognito() {
-  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
-  if (delegate_)
-    delegate_->Login(context, SigninSpecifics());
-}
-
-void SigninScreenHandler::HandleOfflineLogin() {
-  if (!delegate_) {
-    NOTREACHED();
-    return;
-  }
-
-  auto* offline_login_screen =
-      WizardController::default_controller()->GetScreen<OfflineLoginScreen>();
-  offline_login_screen->LoadOffline();
-  HideOfflineMessage(NetworkStateInformer::OFFLINE,
-                     NetworkError::ERROR_REASON_NONE);
-  LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
+void SigninScreenHandler::OnErrorScreenHide() {
+  histogram_helper_->OnErrorHide();
+  ShowScreenDeprecated(GaiaView::kScreenId);
 }
 
 void SigninScreenHandler::HandleShowLoadingTimeoutError() {
@@ -466,16 +429,12 @@ void SigninScreenHandler::HandleShowLoadingTimeoutError() {
 }
 
 bool SigninScreenHandler::IsGaiaVisible() {
-  return IsSigninScreen(GetCurrentScreen());
+  return GetCurrentScreen() == GaiaView::kScreenId;
 }
 
 bool SigninScreenHandler::IsGaiaHiddenByError() {
-  return IsSigninScreenHiddenByError();
-}
-
-bool SigninScreenHandler::IsSigninScreenHiddenByError() {
   return (GetCurrentScreen() == ErrorScreenView::kScreenId) &&
-         (IsSigninScreen(error_screen_->GetParentScreen()));
+         (error_screen_->GetParentScreen() == GaiaView::kScreenId);
 }
 
 net::Error SigninScreenHandler::FrameError() const {

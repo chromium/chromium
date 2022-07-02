@@ -25,8 +25,20 @@ enum class HidType {
   kMaxValue = kUnknownPointer
 };
 
+// Returns true if |device| is a HID with pointing capabilities (i.e. a mouse or
+// touchpad).
+bool IsDevicePointer(const device::mojom::InputDeviceInfo& device);
+
+// Returns true if |device| is a HID with touchscreen capabilities (i.e. a
+// touchscreen or tablet).
+bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device);
+
 // Record each HID that is connected while the HID detection screen is shown.
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
+
+// Record the total number of bluetooth pairing attempts while the HID detection
+// is shown.
+void RecordBluetoothPairingAttempts(size_t attempts);
 
 }  // namespace ash::hid_detection
 

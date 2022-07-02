@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"  // for FileAccessProvider
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,7 +137,7 @@ struct CertEquals {
   bool operator()(const scoped_refptr<net::X509Certificate> cert) const {
     return net::x509_util::IsSameCertificate(cert_, cert.get());
   }
-  CERTCertificate* cert_;
+  raw_ptr<CERTCertificate> cert_;
 };
 
 // Determine if |data| could be a PFX Protocol Data Unit.

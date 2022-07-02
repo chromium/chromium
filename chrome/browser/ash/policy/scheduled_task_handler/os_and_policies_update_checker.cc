@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/device_event_log/device_event_log.h"
@@ -22,8 +21,7 @@ OsAndPoliciesUpdateChecker::OsAndPoliciesUpdateChecker(
           update_checker_internal::
               kMaxOsAndPoliciesUpdateCheckerRetryIterations,
           update_checker_internal::kOsAndPoliciesUpdateCheckerRetryTime),
-      update_engine_client_(
-          chromeos::DBusThreadManager::Get()->GetUpdateEngineClient()) {}
+      update_engine_client_(chromeos::UpdateEngineClient::Get()) {}
 
 OsAndPoliciesUpdateChecker::~OsAndPoliciesUpdateChecker() {
   // Called to remove any observers.
@@ -56,7 +54,7 @@ void OsAndPoliciesUpdateChecker::Start(UpdateCheckCompletionCallback cb,
         FROM_HERE, update_checker_internal::kWaitForNetworkTimeout,
         base::BindOnce(&OsAndPoliciesUpdateChecker::OnNetworkWaitTimeout,
                        base::Unretained(this)));
-    network_state_handler_->AddObserver(this, FROM_HERE);
+    network_state_handler_observer_.Observe(network_state_handler_);
     return;
   }
 
@@ -81,7 +79,7 @@ void OsAndPoliciesUpdateChecker::DefaultNetworkChanged(
     return;
 
   wait_for_network_timer_.Stop();
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   ScheduleUpdateCheck();
 }
 
@@ -226,7 +224,7 @@ void OsAndPoliciesUpdateChecker::OnRefreshPoliciesCompletion(
 void OsAndPoliciesUpdateChecker::ResetState() {
   weak_factory_.InvalidateWeakPtrs();
   update_engine_client_->RemoveObserver(this);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
   update_check_task_executor_.Stop();
   ignore_idle_status_ = true;
   is_running_ = false;

@@ -1,6 +1,0 @@
-Tests that src and href element targets are rewritten properly.
-
- javascript:alert('foo')
-4	http://127.0.0.1/script.js
-5	http://127.0.0.1/stylesheet.css
-6	http://127.0.0.1/target.html

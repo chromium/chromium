@@ -40,9 +40,12 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#include "ui/display/screen.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/dummy_screen_android.h"
-#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -176,11 +179,11 @@ WebContents* RenderViewHostTestHarness::web_contents() {
 }
 
 RenderViewHost* RenderViewHostTestHarness::rvh() {
-  return web_contents()->GetMainFrame()->GetRenderViewHost();
+  return web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
 }
 
 RenderFrameHost* RenderViewHostTestHarness::main_rfh() {
-  return web_contents()->GetMainFrame();
+  return web_contents()->GetPrimaryMainFrame();
 }
 
 BrowserContext* RenderViewHostTestHarness::browser_context() {
@@ -189,7 +192,7 @@ BrowserContext* RenderViewHostTestHarness::browser_context() {
 
 MockRenderProcessHost* RenderViewHostTestHarness::process() {
   auto* contents = static_cast<TestWebContents*>(web_contents());
-  return contents->GetMainFrame()->GetProcess();
+  return contents->GetPrimaryMainFrame()->GetProcess();
 }
 
 void RenderViewHostTestHarness::DeleteContents() {
@@ -239,6 +242,10 @@ void RenderViewHostTestHarness::SetUp() {
 #if BUILDFLAG(IS_WIN)
   ole_initializer_ = std::make_unique<ui::ScopedOleInitializer>();
 #endif
+#if BUILDFLAG(IS_MAC)
+  screen_ = std::make_unique<display::ScopedNativeScreen>();
+#endif
+
 #if defined(USE_AURA)
   aura_test_helper_ = std::make_unique<aura::test::AuraTestHelper>(
       ImageTransportFactory::GetInstance()->GetContextFactory());

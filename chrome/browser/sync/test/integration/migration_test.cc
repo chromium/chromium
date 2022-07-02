@@ -73,7 +73,7 @@ class MigrationTest : public SyncTest {
   MigrationTest(const MigrationTest&) = delete;
   MigrationTest& operator=(const MigrationTest&) = delete;
 
-  ~MigrationTest() override {}
+  ~MigrationTest() override = default;
 
   enum TriggerMethod { MODIFY_PREF, MODIFY_BOOKMARK, TRIGGER_REFRESH };
 
@@ -81,8 +81,9 @@ class MigrationTest : public SyncTest {
   // helps ensure that all migration events are captured, even if they were to
   // occur before a test calls AwaitMigration for a specific profile.
   bool SetupSync() override {
-    if (!SyncTest::SetupSync())
+    if (!SyncTest::SetupSync()) {
       return false;
+    }
 
     for (int i = 0; i < num_clients(); ++i) {
       migration_watchers_.push_back(
@@ -180,19 +181,17 @@ class MigrationTest : public SyncTest {
     }
 
     // Phase 1: Trigger the migrations on the server.
-    for (MigrationList::const_iterator it = migration_list.begin();
-         it != migration_list.end(); ++it) {
-      TriggerMigrationDoneError(*it);
+    for (const syncer::ModelTypeSet& model_types : migration_list) {
+      TriggerMigrationDoneError(model_types);
     }
 
     // Phase 2: Trigger each migration individually and wait for it to
     // complete.  (Multiple migrations may be handled by each
     // migration cycle, but there's no guarantee of that, so we have
     // to trigger each migration individually.)
-    for (MigrationList::const_iterator it = migration_list.begin();
-         it != migration_list.end(); ++it) {
-      TriggerMigration(*it, trigger_method);
-      AwaitMigration(*it);
+    for (const syncer::ModelTypeSet& model_types : migration_list) {
+      TriggerMigration(model_types, trigger_method);
+      AwaitMigration(model_types);
     }
 
     // Phase 3: Wait for all clients to catch up.
@@ -212,7 +211,7 @@ class MigrationSingleClientTest : public MigrationTest {
   MigrationSingleClientTest& operator=(const MigrationSingleClientTest&) =
       delete;
 
-  ~MigrationSingleClientTest() override {}
+  ~MigrationSingleClientTest() override = default;
 
   void RunSingleClientMigrationTest(const MigrationList& migration_list,
                                     TriggerMethod trigger_method) {
@@ -375,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MigrationHellWithNigori) {
 
 class MigrationReconfigureTest : public MigrationTwoClientTest {
  public:
-  MigrationReconfigureTest() {}
+  MigrationReconfigureTest() = default;
 
   void SetUpCommandLine(base::CommandLine* cl) override {
     AddTestSwitches(cl);
@@ -385,7 +384,7 @@ class MigrationReconfigureTest : public MigrationTwoClientTest {
   MigrationReconfigureTest(const MigrationReconfigureTest&) = delete;
   MigrationReconfigureTest& operator=(const MigrationReconfigureTest&) = delete;
 
-  ~MigrationReconfigureTest() override {}
+  ~MigrationReconfigureTest() override = default;
 };
 
 }  // namespace

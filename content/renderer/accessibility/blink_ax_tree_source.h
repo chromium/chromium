@@ -9,7 +9,6 @@
 
 #include <set>
 #include <string>
-#include <unordered_map>
 
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -201,7 +200,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
   mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
 
   // Current bounding box of every object, so we can detect when it moves.
-  mutable std::unordered_map<int, ui::AXRelativeBounds> cached_bounding_boxes_;
+  mutable std::map<int, ui::AXRelativeBounds> cached_bounding_boxes_;
 
   // These are updated when calling |Freeze|.
   bool frozen_ = false;

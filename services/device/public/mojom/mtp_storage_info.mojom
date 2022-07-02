@@ -22,4 +22,5 @@ struct MtpStorageInfo {
   uint64 free_space_in_objects = 0;
   string storage_description;
   string volume_identifier;
+  string serial_number;
 };

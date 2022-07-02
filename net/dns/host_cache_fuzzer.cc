@@ -77,13 +77,13 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
   // Parse the HostCache.
   constexpr size_t kMaxEntries = 1000;
   HostCache host_cache(kMaxEntries);
-  if (!host_cache.RestoreFromListValue(*value))
+  if (!host_cache.RestoreFromListValue(value->GetList()))
     return;
 
   // Serialize the HostCache.
-  base::Value serialized(base::Value::Type::LIST);
+  base::Value::List serialized;
   host_cache.GetList(
-      &serialized /* entry_list */, true /* include_staleness */,
+      serialized /* entry_list */, true /* include_staleness */,
       HostCache::SerializationType::kRestorable /* serialization_type */);
 
   CHECK_EQ(*value, serialized);

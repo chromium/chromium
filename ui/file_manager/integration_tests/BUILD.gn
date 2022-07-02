@@ -21,7 +21,7 @@ js_type_check("closure_compile") {
       strict_error_checking_closure_args + [
         "js_module_root=./gen/ui",
         "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }

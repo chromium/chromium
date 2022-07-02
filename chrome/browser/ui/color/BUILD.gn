@@ -7,7 +7,10 @@ import("//ui/base/ui_features.gni")
 source_set("color_headers") {
   sources = [ "chrome_color_id.h" ]
 
-  public_deps = [ "//ui/color:color_headers" ]
+  public_deps = [
+    "//chrome/browser:theme_properties",
+    "//ui/color:color_headers",
+  ]
 }
 
 source_set("mixers") {

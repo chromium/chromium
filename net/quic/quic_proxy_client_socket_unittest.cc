@@ -68,8 +68,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -184,7 +183,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
                       kProxyHost,
                       quic::Perspective::IS_SERVER,
                       false),
-        random_generator_(0),
         user_agent_(kUserAgent),
         proxy_endpoint_(url::kHttpsScheme, kProxyHost, kProxyPort),
         destination_endpoint_(url::kHttpsScheme, kOriginHost, kOriginPort),
@@ -356,7 +354,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     return client_maker_.MakeAckAndRstPacket(
         packet_number, !kIncludeVersion, client_data_stream_id1_, error_code,
         largest_received, smallest_received,
-        /*include_stop_sending=*/false);
+        /*include_stop_sending_if_v99=*/false);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(
@@ -611,7 +609,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   }
 
   RecordingNetLogObserver net_log_observer_;
-  QuicFlagSaver saver_;
+  quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const quic::QuicStreamId client_data_stream_id1_;
   const bool client_headers_include_h2_stream_dependency_;
@@ -637,7 +635,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   QuicTestPacketMaker client_maker_;
   QuicTestPacketMaker server_maker_;
   IPEndPoint peer_addr_;
-  quic::test::MockRandom random_generator_;
+  quic::test::MockRandom random_generator_{0};
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
 
@@ -2007,7 +2005,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   DeleteSockCallback(const DeleteSockCallback&) = delete;
   DeleteSockCallback& operator=(const DeleteSockCallback&) = delete;
 
-  ~DeleteSockCallback() override {}
+  ~DeleteSockCallback() override = default;
 
   CompletionOnceCallback callback() {
     return base::BindOnce(&DeleteSockCallback::OnComplete,
@@ -2090,5 +2088,4 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

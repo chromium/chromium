@@ -98,7 +98,7 @@ AddressSpaceDumpProvider* AddressSpaceDumpProvider::GetInstance() {
 bool AddressSpaceDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                                             ProcessMemoryDump* pmd) {
   AddressSpaceStatsDumperImpl stats_dumper(pmd);
-  partition_alloc::internal::AddressPoolManager::GetInstance()->DumpStats(
+  partition_alloc::internal::AddressPoolManager::GetInstance().DumpStats(
       &stats_dumper);
   return true;
 }

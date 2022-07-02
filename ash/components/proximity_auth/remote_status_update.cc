@@ -5,7 +5,6 @@
 #include "ash/components/proximity_auth/remote_status_update.h"
 
 #include "ash/components/multidevice/logging/logging.h"
-#include "base/values.h"
 
 namespace {
 
@@ -39,8 +38,8 @@ namespace proximity_auth {
 
 // static
 std::unique_ptr<RemoteStatusUpdate> RemoteStatusUpdate::Deserialize(
-    const base::DictionaryValue& serialized_value) {
-  const std::string* type = serialized_value.FindStringKey(kType);
+    const base::Value::Dict& serialized_value) {
+  const std::string* type = serialized_value.FindString(kType);
   if (!type || *type != kStatusUpdateType) {
     PA_LOG(ERROR) << "Unable to parse remote status update: unexpected type. "
                   << "Expected: '" << kStatusUpdateType << "', "
@@ -48,12 +47,11 @@ std::unique_ptr<RemoteStatusUpdate> RemoteStatusUpdate::Deserialize(
     return nullptr;
   }
 
-  const std::string* user_presence =
-      serialized_value.FindStringKey(kUserPresence);
+  const std::string* user_presence = serialized_value.FindString(kUserPresence);
   const std::string* secure_screen_lock_state =
-      serialized_value.FindStringKey(kSecureScreenLock);
+      serialized_value.FindString(kSecureScreenLock);
   const std::string* trust_agent_state =
-      serialized_value.FindStringKey(kTrustAgent);
+      serialized_value.FindString(kTrustAgent);
   if (!user_presence || !secure_screen_lock_state || !trust_agent_state) {
     PA_LOG(ERROR) << "Unable to parse remote status update: missing data value."
                   << " Status update:\n"

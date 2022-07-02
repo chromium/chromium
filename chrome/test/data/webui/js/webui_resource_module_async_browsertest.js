@@ -31,7 +31,7 @@ var WebUIResourceModuleAsyncTest = class extends testing.Test {
 var CrModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/cr_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/cr_test.js';
   }
 };
 
@@ -50,7 +50,7 @@ TEST_F('CrModuleTest', 'WebUIListeners', function() {
 var IconModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/icon_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/icon_test.js';
   }
 };
 
@@ -61,7 +61,7 @@ TEST_F('IconModuleTest', 'All', function() {
 var PromiseResolverModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/promise_resolver_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/promise_resolver_test.js';
   }
 };
 
@@ -72,7 +72,7 @@ TEST_F('PromiseResolverModuleTest', 'All', function() {
 var ParseHtmlSubsetModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/parse_html_subset_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/parse_html_subset_test.js';
   }
 };
 
@@ -84,7 +84,7 @@ var ParseHtmlSubsetTrustedTypesTest =
     class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/parse_html_subset_trusted_types_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/parse_html_subset_trusted_types_test.js';
   }
 };
 
@@ -95,7 +95,7 @@ TEST_F('ParseHtmlSubsetTrustedTypesTest', 'All', function() {
 var UtilModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/util_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/util_test.js';
   }
 };
 
@@ -106,7 +106,7 @@ TEST_F('UtilModuleTest', 'All', function() {
 var LoadTimeDataModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/load_time_data_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/load_time_data_test.js';
   }
 };
 
@@ -117,7 +117,7 @@ TEST_F('LoadTimeDataModuleTest', 'All', function() {
 var I18nBehaviorModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/i18n_behavior_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/i18n_behavior_test.js';
   }
 };
 
@@ -128,7 +128,7 @@ TEST_F('I18nBehaviorModuleTest', 'All', function() {
 var I18nMixinTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/i18n_mixin_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/i18n_mixin_test.js';
   }
 };
 
@@ -139,7 +139,7 @@ TEST_F('I18nMixinTest', 'All', function() {
 var WebUIListenerMixinTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/web_ui_listener_mixin_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/web_ui_listener_mixin_test.js';
   }
 };
 
@@ -150,7 +150,7 @@ TEST_F('WebUIListenerMixinTest', 'All', function() {
 var ColorUtilsModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/color_utils_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/color_utils_test.js';
   }
 };
 
@@ -161,7 +161,7 @@ TEST_F('ColorUtilsModuleTest', 'All', function() {
 var CustomElementModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/custom_element_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/custom_element_test.js';
   }
 };
 
@@ -183,7 +183,7 @@ TEST_F('StaticTypesTest', 'All', function() {
 var EventTargetModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/cr/event_target_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=js/cr/event_target_test.js';
   }
 };
 

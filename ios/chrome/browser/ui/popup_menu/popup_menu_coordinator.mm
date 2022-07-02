@@ -12,6 +12,8 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -25,7 +27,9 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -51,7 +55,7 @@
 #endif
 
 namespace {
-// Returns the corresponding command type for a Popup menu |type|.
+// Returns the corresponding command type for a Popup menu `type`.
 PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   if (type == PopupMenuTypeToolsMenu)
     return PopupMenuCommandTypeToolsMenu;
@@ -82,7 +86,7 @@ enum class IOSOverflowMenuActionType {
 @property(nonatomic, strong) PopupMenuMediator* mediator;
 // Mediator for the overflow menu
 @property(nonatomic, strong) OverflowMenuMediator* overflowMenuMediator;
-// Mediator to that alerts the main |mediator| when the web content area
+// Mediator to that alerts the main `mediator` when the web content area
 // is blocked by an overlay.
 @property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
 // ViewController for this mediator.
@@ -280,8 +284,8 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - Private
 
-// Presents a popup menu of type |type| with an animation starting from
-// |guideName|.
+// Presents a popup menu of type `type` with an animation starting from
+// `guideName`.
 - (void)presentPopupOfType:(PopupMenuType)type
             fromNamedGuide:(GuideName*)guideName {
   if (self.presenter || self.overflowMenuMediator)
@@ -320,7 +324,8 @@ enum class IOSOverflowMenuActionType {
             .triggerFollowUpAction;
     self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
         NO;
-    if (IsWebChannelsEnabled()) {
+    if (IsWebChannelsEnabled() &&
+        !self.browser->GetBrowserState()->IsOffTheRecord()) {
       ios::GetChromeBrowserProvider()
           .GetFollowProvider()
           ->SetFollowEventDelegate(self.browser);
@@ -342,10 +347,14 @@ enum class IOSOverflowMenuActionType {
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
         self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-        self.overflowMenuMediator.dispatcher =
-            static_cast<id<ApplicationCommands, BrowserCommands,
-                           FindInPageCommands, TextZoomCommands>>(
-                self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.dispatcher = static_cast<
+            id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+               FindInPageCommands, TextZoomCommands>>(
+            self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
+            self.browser->GetCommandDispatcher(), PageInfoCommands);
+        self.overflowMenuMediator.popupMenuCommandsHandler = HandlerForProtocol(
+            self.browser->GetCommandDispatcher(), PopupMenuCommands);
         self.overflowMenuMediator.webStateList =
             self.browser->GetWebStateList();
         self.overflowMenuMediator.navigationAgent =
@@ -356,8 +365,10 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.bookmarkModel =
             ios::BookmarkModelFactory::GetForBrowserState(
                 self.browser->GetBrowserState());
-        self.overflowMenuMediator.prefService =
+        self.overflowMenuMediator.browserStatePrefs =
             self.browser->GetBrowserState()->GetPrefs();
+        self.overflowMenuMediator.localStatePrefs =
+            GetApplicationContext()->GetLocalState();
         self.overflowMenuMediator.engagementTracker =
             feature_engagement::TrackerFactory::GetForBrowserState(
                 self.browser->GetBrowserState());
@@ -366,10 +377,13 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.browserPolicyConnector =
             GetApplicationContext()->GetBrowserPolicyConnector();
 
-        if (IsWebChannelsEnabled()) {
-          ios::GetChromeBrowserProvider()
-              .GetFollowProvider()
-              ->SetFollowEventDelegate(self.browser);
+        if (IsWebChannelsEnabled() &&
+            DiscoverFeedServiceFactory::GetForBrowserState(
+                self.browser->GetBrowserState())) {
+          self.overflowMenuMediator.feedMetricsRecorder =
+              DiscoverFeedServiceFactory::GetForBrowserState(
+                  self.browser->GetBrowserState())
+                  ->GetFeedMetricsRecorder();
         }
 
         self.contentBlockerMediator.consumer = self.overflowMenuMediator;
@@ -377,7 +391,8 @@ enum class IOSOverflowMenuActionType {
         UIViewController* menu = [OverflowMenuViewProvider
             makeViewControllerWithModel:self.overflowMenuMediator
                                             .overflowMenuModel
-                         metricsHandler:self];
+                         metricsHandler:self
+                carouselMetricsDelegate:self.overflowMenuMediator];
 
         NamedGuide* guide =
             [NamedGuide guideWithName:guideName
@@ -446,15 +461,28 @@ enum class IOSOverflowMenuActionType {
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  if (IsWebChannelsEnabled() && DiscoverFeedServiceFactory::GetForBrowserState(
+                                    self.browser->GetBrowserState())) {
+    self.mediator.feedMetricsRecorder =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState())
+            ->GetFeedMetricsRecorder();
+  }
 
   self.contentBlockerMediator.consumer = self.mediator;
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;
-  self.actionHandler.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-                     LoadQueryCommands, TextZoomCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.actionHandler.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+         FindInPageCommands, LoadQueryCommands, TextZoomCommands>>(
+      self.browser->GetCommandDispatcher());
+  self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
+  self.actionHandler.popupMenuCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
+  self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);

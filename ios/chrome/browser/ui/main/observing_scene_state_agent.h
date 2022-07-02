@@ -17,7 +17,7 @@
 // See also allowsMultipleAgentsOfSameTypePerScene.
 @property(nonatomic, weak) SceneState* sceneState;
 
-// Returns the agent of this class iff one is already added to |sceneState|.
+// Returns the agent of this class iff one is already added to `sceneState`.
 + (instancetype)agentFromScene:(SceneState*)sceneState;
 
 // You can override this in your subclass. The default is NO.

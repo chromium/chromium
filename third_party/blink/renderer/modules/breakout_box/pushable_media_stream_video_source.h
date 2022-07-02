@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_VIDEO_SOURCE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -58,21 +58,21 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     void SetCanDiscardAlpha(bool can_discard_alpha);
     void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
-    WTF::Mutex mutex_;
+    base::Lock lock_;
     // |source_| can only change its value on |main_task_runner_|. We use
-    // |mutex_| to guard it for value changes and for reads outside
-    // |main_task_runner_|. It is not necessary to guard it with |mutex_| to
+    // |lock_| to guard it for value changes and for reads outside
+    // |main_task_runner_|. It is not necessary to guard it with |lock_| to
     // read its value on |main_task_runner_|. This helps avoid deadlocks in
     // Stop()/OnSourceDestroyedOrStopped() interactions.
     PushableMediaStreamVideoSource* source_;
     // The same apples to |frame_callback_|, but since it does not have
     // complex interactions with owners, like |source_| does, we always guard
     // it for simplicity.
-    VideoCaptureDeliverFrameCB frame_callback_ GUARDED_BY(mutex_);
-    int num_clients_ GUARDED_BY(mutex_) = 0;
-    bool muted_ GUARDED_BY(mutex_) = false;
-    bool can_discard_alpha_ GUARDED_BY(mutex_) = false;
-    media::VideoCaptureFeedback feedback_ GUARDED_BY(mutex_);
+    VideoCaptureDeliverFrameCB frame_callback_ GUARDED_BY(lock_);
+    int num_clients_ GUARDED_BY(lock_) = 0;
+    bool muted_ GUARDED_BY(lock_) = false;
+    bool can_discard_alpha_ GUARDED_BY(lock_) = false;
+    media::VideoCaptureFeedback feedback_ GUARDED_BY(lock_);
 
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -95,8 +95,10 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   scoped_refptr<Broker> GetBroker() const { return broker_; }
 
   // MediaStreamVideoSource
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override;
+  void StartSourceImpl(
+      VideoCaptureDeliverFrameCB frame_callback,
+      EncodedVideoFrameCB encoded_frame_callback,
+      VideoCaptureCropVersionCB crop_version_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
   void SetCanDiscardAlpha(bool can_discard_alpha) override;

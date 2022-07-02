@@ -61,6 +61,9 @@ class WifiLanMedium : public api::WifiLanMedium {
   WifiLanMedium& operator=(const WifiLanMedium&) = delete;
   ~WifiLanMedium() override;
 
+  // Check if a network connection to a primary router exist.
+  bool IsNetworkConnected() const override;
+
   // api::WifiLanMedium:
   std::unique_ptr<api::WifiLanSocket> ConnectToService(
       const NsdServiceInfo& remote_service_info,

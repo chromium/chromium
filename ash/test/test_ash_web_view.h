@@ -16,7 +16,7 @@ namespace ash {
 // An implementation of AshWebView for use in unittests.
 class TestAshWebView : public AshWebView {
  public:
-  TestAshWebView();
+  explicit TestAshWebView(const AshWebView::InitParams& init_params);
   ~TestAshWebView() override;
 
   TestAshWebView(const TestAshWebView&) = delete;
@@ -32,9 +32,14 @@ class TestAshWebView : public AshWebView {
   void RequestFocus() override;
   bool HasFocus() const override;
 
+  const AshWebView::InitParams& init_params_for_testing() const {
+    return init_params_;
+  }
+
  private:
   base::ObserverList<Observer> observers_;
   bool focused_ = false;
+  AshWebView::InitParams init_params_;
 
   base::WeakPtrFactory<TestAshWebView> weak_factory_{this};
 };

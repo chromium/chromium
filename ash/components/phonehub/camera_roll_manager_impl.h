@@ -104,6 +104,10 @@ class CameraRollManagerImpl
   std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;
 
   base::WeakPtrFactory<CameraRollManagerImpl> weak_ptr_factory_{this};
+  // WeakPtrFactory dedicated to thumbanil decoder callbacks that need to be
+  // invalidated when the current item set updates.
+  base::WeakPtrFactory<CameraRollManagerImpl>
+      thumbnail_decoder_weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub

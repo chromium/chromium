@@ -22,9 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -32,18 +30,15 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -51,6 +46,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -58,23 +54,17 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Tests Chrome download feature by attempting to download some files.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DownloadTest implements CustomMainActivityStart {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams = Arrays.asList(
-            new ParameterSet().value(true).name("UseDownloadOfflineContentProviderEnabled"),
-            new ParameterSet().value(false).name("UseDownloadOfflineContentProviderDisabled"));
-
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
@@ -98,8 +88,6 @@ public class DownloadTest implements CustomMainActivityStart {
         FILENAME_GZIP
     };
 
-    private boolean mUseDownloadOfflineContentProvider;
-
     static class DownloadManagerRequestInterceptorForTest
             implements DownloadManagerService.DownloadManagerRequestInterceptor {
         public DownloadItem mDownloadItem;
@@ -118,10 +106,13 @@ public class DownloadTest implements CustomMainActivityStart {
         public void onDownloadStarted() {}
 
         @Override
+        public void showIncognitoDownloadMessage(Callback<Boolean> callback) {}
+
+        @Override
         public void onNotificationShown(ContentId id, int notificationId) {}
 
         @Override
-        public void addDownloadInterstitialSource(String originalUrl) {}
+        public void addDownloadInterstitialSource(GURL originalUrl) {}
 
         @Override
         public void onItemsAdded(List<OfflineItem> items) {}
@@ -149,7 +140,7 @@ public class DownloadTest implements CustomMainActivityStart {
         public int notifyDownloadSuccessful(final ContentId id, final String filePath,
                 final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
                 final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
-                final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
+                final GURL originalUrl, final boolean shouldPromoteOrigin, final GURL referrer,
                 final long totalBytes) {
             return 0;
         }
@@ -159,17 +150,17 @@ public class DownloadTest implements CustomMainActivityStart {
                 final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
                 final long startTime, final OTRProfileID otrProfileID,
                 final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
-                final String originalUrl, final boolean shouldPromoteOrigin) {}
+                final GURL originalUrl, final boolean shouldPromoteOrigin) {}
 
         @Override
         void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
                 boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient,
-                Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
                 boolean hasUserGesture, boolean forceRebuild, @PendingState int pendingState) {}
 
         @Override
         public void notifyDownloadFailed(final ContentId id, final String fileName,
-                final Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                final Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
                 OTRProfileID otrProfileID, @FailState int failState) {}
 
         @Override
@@ -177,10 +168,6 @@ public class DownloadTest implements CustomMainActivityStart {
 
         @Override
         void resumeDownload(Intent intent) {}
-    }
-
-    public DownloadTest(boolean useDownloadOfflineContentProvider) {
-        mUseDownloadOfflineContentProvider = useDownloadOfflineContentProvider;
     }
 
     @Before
@@ -200,11 +187,6 @@ public class DownloadTest implements CustomMainActivityStart {
 
     @Override
     public void customMainActivityStart() throws InterruptedException {
-        if (mUseDownloadOfflineContentProvider) {
-            Features.getInstance().enable(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        } else {
-            Features.getInstance().disable(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        }
         mDownloadTestRule.startMainActivityOnBlankPage();
     }
 
@@ -265,19 +247,15 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "crbug.com/147904")
+    @Policies.Add({ @Policies.Item(key = "PromptForDownloadLocation", string = "false") })
     public void testCloseEmptyDownloadTab() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
         final int initialTabCount = mDownloadTestRule.getActivity().getCurrentTabModel().getCount();
+        int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
         View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
-        TouchCommon.longPressView(currentView);
-
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mDownloadTestRule.getActivity(), R.id.contextmenu_open_in_new_tab, 0);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload(FILENAME_GZIP, null));
+        TouchCommon.singleClickView(currentView);
+        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mDownloadTestRule.getActivity().getCurrentTabModel().getCount(),

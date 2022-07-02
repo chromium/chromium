@@ -84,8 +84,8 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnLoaded(const base::ListValue* args);
-  void OnResetCache(const base::ListValue* args);
+  void OnLoaded(const base::Value::List& args);
+  void OnResetCache(const base::Value::List& args);
 
   void OnResetCacheDone(const std::string& message);
 

@@ -18,6 +18,13 @@ filegroup(
     ),
 )
 
+filegroup(
+    name = "image_classifier_src_experimental",
+    srcs = glob(
+        ["**/*.java"],
+    ),
+)
+
 # Default target that uses BuiltInOpResolver, registers all built-in OPs.
 # IMPORTANT: In order to use hardware acceleration delegates, you must
 # additionally link to the appropriate delegate plugin target as follows:

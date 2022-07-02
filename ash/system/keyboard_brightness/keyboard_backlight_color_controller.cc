@@ -4,19 +4,21 @@
 
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_analysis.h"
 
 namespace ash {
 
@@ -28,7 +30,9 @@ PrefService* GetActivePrefService() {
 
 }  // namespace
 
-KeyboardBacklightColorController::KeyboardBacklightColorController() {
+KeyboardBacklightColorController::KeyboardBacklightColorController()
+    : keyboard_backlight_color_nudge_controller_(
+          std::make_unique<KeyboardBacklightColorNudgeController>()) {
   wallpaper_controller_observation_.Observe(WallpaperController::Get());
 }
 
@@ -49,11 +53,14 @@ void KeyboardBacklightColorController::SetBacklightColor(
   DVLOG(3) << __func__ << " backlight_color=" << backlight_color;
   switch (backlight_color) {
     case personalization_app::mojom::BacklightColor::kWallpaper: {
-      auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-      DCHECK(wallpaper_controller);
-      SkColor color = wallpaper_controller->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::NORMAL,
-                                    color_utils::SaturationRange::VIBRANT));
+      SkColor color = ConvertBacklightColorToSkColor(backlight_color);
+      bool valid_color = color != kInvalidWallpaperColor;
+      base::UmaHistogramBoolean(
+          "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
+          valid_color);
+      // Default to |kDefaultColor| if |color| is invalid.
+      if (!valid_color)
+        color = kDefaultColor;
       rgb_keyboard_manager->SetStaticBackgroundColor(
           SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
       break;
@@ -87,12 +94,8 @@ KeyboardBacklightColorController::GetBacklightColor() {
           prefs::kPersonalizationKeyboardBacklightColor));
 }
 
-void KeyboardBacklightColorController::OnActiveUserSessionChanged(
-    const AccountId& account_id) {
-  auto* session_controller = Shell::Get()->session_controller();
-  DCHECK(session_controller);
-  PrefService* pref_service =
-      session_controller->GetUserPrefServiceForUser(account_id);
+void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
   DCHECK(pref_service);
   auto backlight_color =
       static_cast<personalization_app::mojom::BacklightColor>(

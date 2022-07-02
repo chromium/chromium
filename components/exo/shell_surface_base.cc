@@ -518,6 +518,7 @@ void ShellSurfaceBase::SetPip() {
     pending_pip_ = true;
     return;
   }
+  pending_pip_ = false;
 
   // Set all the necessary window properties and window state.
   auto* window = widget_->GetNativeWindow();
@@ -525,15 +526,15 @@ void ShellSurfaceBase::SetPip() {
   window->SetProperty(aura::client::kZOrderingKey,
                       ui::ZOrderLevel::kFloatingWindow);
 
-  // Pip windows should start in the bottom right corner of the screen so move
-  // |window| to the bottom right of the work area and let the pip positioner
-  // move it within the work area.
+  if (initial_bounds_)
+    return;
+  // If no initial bounds is specified, pip windows should start in the bottom
+  // right corner of the screen so move |window| to the bottom right of the
+  // work area and let the pip positioner move it within the work area.
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   gfx::Size window_size = window->bounds().size();
   window->SetBoundsInScreen(
       gfx::Rect(display.work_area().bottom_right(), window_size), display);
-
-  pending_pip_ = false;
 }
 
 void ShellSurfaceBase::UnsetPip() {
@@ -635,10 +636,19 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
 
 void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,
                                       int32_t restore_window_id) {
+  // TODO(crbug.com/1327490): Rename restore info variables.
   // Restore information must be set before widget is created.
   DCHECK(!widget_);
   restore_session_id_.emplace(restore_session_id);
   restore_window_id_.emplace(restore_window_id);
+}
+
+void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
+    int32_t restore_session_id,
+    const std::string& restore_window_id_source) {
+  restore_session_id_.emplace(restore_session_id);
+  if (!restore_window_id_source.empty())
+    restore_window_id_source_.emplace(restore_window_id_source);
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
@@ -1292,6 +1302,13 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     params.init_properties_container.SetProperty(
         app_restore::kRestoreWindowIdKey, *restore_window_id_);
   }
+  if (restore_window_id_source_) {
+    params.init_properties_container.SetProperty(
+        app_restore::kRestoreWindowIdKey,
+        app_restore::FetchRestoreWindowId(*restore_window_id_source_));
+    params.init_properties_container.SetProperty(
+        app_restore::kAppIdKey, restore_window_id_source_.value());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Restore `params` to those of the saved `restore_window_id_`.
@@ -1352,10 +1369,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   if (frame_type_ != SurfaceFrameType::NONE)
     OnSetFrame(frame_type_);
 
-  if (pending_pip_) {
+  if (pending_pip_)
     SetPip();
-    pending_pip_ = false;
-  }
 
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
 
@@ -1726,8 +1741,10 @@ void ShellSurfaceBase::CommitWidget() {
 
     // TODO(crbug.com/1291592): Hook this up with the WM's window positioning
     // logic.
-    if (needs_layout_on_show_)
+    if (needs_layout_on_show_) {
       widget_->CenterWindow(GetWidgetBoundsFromVisibleBounds().size());
+      needs_layout_on_show_ = false;
+    }
 
     widget_->Show();
     if (has_grab_)

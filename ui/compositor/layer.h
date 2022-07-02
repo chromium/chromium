@@ -328,7 +328,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Gets/sets a gradient mask that is applied to the clip bounds on the layer
   void SetGradientMask(const gfx::LinearGradient& linear_gradient);
-  const gfx::LinearGradient gradient_mask() const {
+  const gfx::LinearGradient& gradient_mask() const {
     return cc_layer_->gradient_mask();
   }
 
@@ -601,7 +601,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
-  gfx::LinearGradient GetGradientMaskForAnimation() const override;
+  const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;

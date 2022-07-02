@@ -68,6 +68,9 @@ class MultiDeviceSection
   // Screen lock enabled pref change observer.
   void OnEnableScreenLockChanged();
 
+  // Phone screen lock status pref change observer.
+  void OnScreenLockStatusChanged();
+
   bool IsFeatureSupported(ash::multidevice_setup::mojom::Feature feature);
   void RefreshNearbyBackgroundScanningShareSearchConcepts();
 

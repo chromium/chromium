@@ -272,7 +272,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
       std::unique_ptr<base::Value> value(
           session_->spdy_session_pool()->SpdySessionPoolInfoToValue());
       CHECK(value && value->is_list());
-      return value->GetListDeprecated().size();
+      return value->GetList().size();
     }
 
     HttpNetworkTransaction* trans() { return trans_.get(); }
@@ -4906,27 +4906,24 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
                                    NetLogEventPhase::NONE);
 
   ASSERT_TRUE(entries[pos].HasParams());
-  auto* header_list = entries[pos].params.FindKey("headers");
+  auto* header_list = entries[pos].params.GetDict().FindList("headers");
   ASSERT_TRUE(header_list);
-  ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(5u, header_list->GetListDeprecated().size());
+  ASSERT_EQ(5u, header_list->size());
 
-  ASSERT_TRUE(header_list->GetListDeprecated()[0].is_string());
-  EXPECT_EQ(":method: GET", header_list->GetListDeprecated()[0].GetString());
+  ASSERT_TRUE((*header_list)[0].is_string());
+  EXPECT_EQ(":method: GET", (*header_list)[0].GetString());
 
-  ASSERT_TRUE(header_list->GetListDeprecated()[1].is_string());
-  EXPECT_EQ(":authority: www.example.org",
-            header_list->GetListDeprecated()[1].GetString());
+  ASSERT_TRUE((*header_list)[1].is_string());
+  EXPECT_EQ(":authority: www.example.org", (*header_list)[1].GetString());
 
-  ASSERT_TRUE(header_list->GetListDeprecated()[2].is_string());
-  EXPECT_EQ(":scheme: https", header_list->GetListDeprecated()[2].GetString());
+  ASSERT_TRUE((*header_list)[2].is_string());
+  EXPECT_EQ(":scheme: https", (*header_list)[2].GetString());
 
-  ASSERT_TRUE(header_list->GetListDeprecated()[3].is_string());
-  EXPECT_EQ(":path: /", header_list->GetListDeprecated()[3].GetString());
+  ASSERT_TRUE((*header_list)[3].is_string());
+  EXPECT_EQ(":path: /", (*header_list)[3].GetString());
 
-  ASSERT_TRUE(header_list->GetListDeprecated()[4].is_string());
-  EXPECT_EQ("user-agent: Chrome",
-            header_list->GetListDeprecated()[4].GetString());
+  ASSERT_TRUE((*header_list)[4].is_string());
+  EXPECT_EQ("user-agent: Chrome", (*header_list)[4].GetString());
 }
 
 // Since we buffer the IO from the stream to the renderer, this test verifies
@@ -6367,7 +6364,7 @@ class SpdyNetworkTransactionPushHeaderTest
         spdy_util_.ConstructSpdyPriority(2, 1, IDLE, true));
     writes.push_back(CreateMockWrite(priority, seq++));
 
-    reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, seq++));
+    reads.emplace_back(ASYNC, ERR_IO_PENDING, seq++);
 
     spdy::Http2HeaderBlock pushed_response_headers;
     pushed_response_headers[spdy::kHttp2StatusHeader] =
@@ -6416,9 +6413,9 @@ class SpdyNetworkTransactionPushHeaderTest
       reads.push_back(CreateMockRead(body2, seq++));
     }
 
-    reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, seq++));
+    reads.emplace_back(ASYNC, ERR_IO_PENDING, seq++);
 
-    reads.push_back(MockRead(ASYNC, 0, seq++));
+    reads.emplace_back(ASYNC, 0, seq++);
 
     SequencedSocketData data(reads, writes);
 
@@ -7507,8 +7504,7 @@ TEST_F(SpdyNetworkTransactionTest, WindowUpdateSent) {
     remaining -= frame_size;
   }
   // Yield.
-  reads.push_back(
-      MockRead(SYNCHRONOUS, ERR_IO_PENDING, writes.size() + reads.size()));
+  reads.emplace_back(SYNCHRONOUS, ERR_IO_PENDING, writes.size() + reads.size());
 
   spdy::SpdySerializedFrame session_window_update(
       spdy_util_.ConstructSpdyWindowUpdate(0, session_window_update_delta));
@@ -7702,7 +7698,7 @@ TEST_F(SpdyNetworkTransactionTest, SessionMaxQueuedCappedFramesExceeded) {
         CreateMockWrite(ping_frames.back(), writes.size() + reads.size()));
   }
   // Stop reading.
-  reads.push_back(MockRead(ASYNC, 0, writes.size() + reads.size()));
+  reads.emplace_back(ASYNC, 0, writes.size() + reads.size());
 
   SequencedSocketData data(reads, writes);
   auto session_deps = std::make_unique<SpdySessionDependencies>();
@@ -7801,7 +7797,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResume) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
   // Construct read frame for window updates that gives enough space to upload
   // the rest of the data.
   spdy::SpdySerializedFrame session_window_update(
@@ -7823,7 +7819,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResume) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   SequencedSocketData data(reads, writes);
 
@@ -7950,7 +7946,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
 
   // Construct read frame for SETTINGS that gives enough space to upload the
   // rest of the data.
@@ -7979,7 +7975,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   // Force all writes to happen before any read, last write will not
   // actually queue a frame, due to window size being 0.
@@ -8111,7 +8107,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   // Fill in mock reads.
   std::vector<MockRead> reads;
   // Force a pause.
-  reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, i++));
+  reads.emplace_back(ASYNC, ERR_IO_PENDING, i++);
   // Construct read frame for SETTINGS that makes the send_window_size
   // negative.
   spdy::SettingsMap new_settings;
@@ -8142,7 +8138,7 @@ TEST_F(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
   reads.push_back(CreateMockRead(reply, i++));
   reads.push_back(CreateMockRead(body2, i++));
   reads.push_back(CreateMockRead(body5, i++));
-  reads.push_back(MockRead(ASYNC, 0, i++));  // EOF
+  reads.emplace_back(ASYNC, 0, i++);  // EOF
 
   // Force all writes to happen before any read, last write will not
   // actually queue a frame, due to window size being 0.
@@ -10505,14 +10501,13 @@ TEST_F(SpdyNetworkTransactionTest, GreaseSettings) {
   ASSERT_LT(pos, entries.size());
 
   const base::Value& params = entries[pos].params;
-  const base::Value* const settings = params.FindKey("settings");
+  const base::Value::List* const settings =
+      params.GetDict().FindList("settings");
   ASSERT_TRUE(settings);
-  ASSERT_TRUE(settings->is_list());
 
-  base::Value::ConstListView list = settings->GetListDeprecated();
-  ASSERT_FALSE(list.empty());
+  ASSERT_FALSE(settings->empty());
   // Get last setting parameter.
-  const base::Value& greased_setting = list[list.size() - 1];
+  const base::Value& greased_setting = (*settings)[settings->size() - 1];
   ASSERT_TRUE(greased_setting.is_string());
   base::StringPiece greased_setting_string(greased_setting.GetString());
 

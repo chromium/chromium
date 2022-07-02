@@ -458,8 +458,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
         // In non-OOPR mode we need to update the client side SkSurface with the
         // copied texture. Recreating SkSurface here matches the GPU process
         // behaviour that will happen in OOPR mode.
-        if (!use_oop_rasterization_)
+        if (!use_oop_rasterization_) {
+          EnsureWriteAccess();
           GetSkSurface();
+        }
       } else {
         EnsureWriteAccess();
         if (surface_) {
@@ -1115,6 +1117,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
 
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = target_color_space;
+  target_color_params.enable_tone_mapping = false;
   playback_image_provider_n32_.emplace(cache_n32, target_color_params,
                                        std::move(settings));
   // If the image provider may require to decode to half float instead of
@@ -1438,9 +1441,10 @@ void CanvasResourceProvider::RasterRecordOOP(
   if (IsGpuContextLost())
     return;
   gpu::raster::RasterInterface* ri = RasterInterface();
-  SkColor background_color = GetSkImageInfo().alphaType() == kOpaque_SkAlphaType
-                                 ? SK_ColorBLACK
-                                 : SK_ColorTRANSPARENT;
+  SkColor4f background_color =
+      GetSkImageInfo().alphaType() == kOpaque_SkAlphaType
+          ? SkColors::kBlack
+          : SkColors::kTransparent;
 
   auto list = base::MakeRefCounted<cc::DisplayItemList>(
       cc::DisplayItemList::kTopLevelDisplayItemList);

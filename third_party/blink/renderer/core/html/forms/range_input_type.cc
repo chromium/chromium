@@ -107,7 +107,7 @@ const AtomicString& RangeInputType::FormControlType() const {
 }
 
 double RangeInputType::ValueAsDouble() const {
-  return ParseToDoubleForNumberType(GetElement().value());
+  return ParseToDoubleForNumberType(GetElement().Value());
 }
 
 void RangeInputType::SetValueAsDouble(double new_value,
@@ -180,7 +180,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
   const String& key = event.key();
 
-  const Decimal current = ParseToNumberOrNaN(GetElement().value());
+  const Decimal current = ParseToNumberOrNaN(GetElement().Value());
   DCHECK(current.IsFinite());
 
   StepRange step_range(CreateStepRange(kRejectAny));
@@ -279,23 +279,27 @@ void RangeInputType::AccessKeyAction(
 
 void RangeInputType::SanitizeValueInResponseToMinOrMaxAttributeChange() {
   if (GetElement().HasDirtyValue())
-    GetElement().setValue(GetElement().value());
+    GetElement().SetValue(GetElement().Value());
   else
-    GetElement().SetNonDirtyValue(GetElement().value());
+    GetElement().SetNonDirtyValue(GetElement().Value());
   GetElement().UpdateView();
 }
 
 void RangeInputType::StepAttributeChanged() {
   if (GetElement().HasDirtyValue())
-    GetElement().setValue(GetElement().value());
+    GetElement().SetValue(GetElement().Value());
   else
-    GetElement().SetNonDirtyValue(GetElement().value());
+    GetElement().SetNonDirtyValue(GetElement().Value());
   GetElement().UpdateView();
 }
 
 void RangeInputType::DidSetValue(const String&, bool value_changed) {
   if (value_changed)
     GetElement().UpdateView();
+}
+
+ControlPart RangeInputType::AutoAppearance() const {
+  return kSliderHorizontalPart;
 }
 
 void RangeInputType::UpdateView() {

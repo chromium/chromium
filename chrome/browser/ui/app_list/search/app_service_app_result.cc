@@ -28,8 +28,6 @@
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -234,21 +232,11 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
   // If |icon_loader_releaser_| is non-null, assigning to it will signal to
   // |icon_loader_| that the previous icon is no longer being used, as a hint
   // that it could be flushed from any caches.
-  const int dimension = GetIconDimension(chip);
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    icon_loader_releaser_ = icon_loader_->LoadIcon(
-        app_type_, app_id(), apps::IconType::kStandard, dimension,
-        allow_placeholder_icon,
-        base::BindOnce(&AppServiceAppResult::OnLoadIcon,
-                       weak_ptr_factory_.GetWeakPtr(), chip));
-  } else {
-    icon_loader_releaser_ = icon_loader_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type_), app_id(),
-        apps::mojom::IconType::kStandard, dimension, allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(
-            base::BindOnce(&AppServiceAppResult::OnLoadIcon,
-                           weak_ptr_factory_.GetWeakPtr(), chip)));
-  }
+  icon_loader_releaser_ = icon_loader_->LoadIcon(
+      app_type_, app_id(), apps::IconType::kStandard, GetIconDimension(chip),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppResult::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr(), chip));
 }
 
 void AppServiceAppResult::OnLoadIcon(bool chip, apps::IconValuePtr icon_value) {

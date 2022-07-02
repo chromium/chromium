@@ -110,17 +110,30 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Extension">
     <variant name="7z"/>
+    <variant name="bz"/>
     <variant name="bz2"/>
     <variant name="crx"/>
     <variant name="gz"/>
     <variant name="iso"/>
+    <variant name="lz"/>
+    <variant name="lzma"/>
     <variant name="rar"/>
     <variant name="tar"/>
+    <variant name="taz"/>
+    <variant name="tb2"/>
     <variant name="tbz"/>
     <variant name="tbz2"/>
     <variant name="tgz"/>
+    <variant name="tlz"/>
+    <variant name="tlzma"/>
+    <variant name="txz"/>
+    <variant name="tz"/>
+    <variant name="tz2"/>
+    <variant name="tzst"/>
     <variant name="xz"/>
+    <variant name="z"/>
     <variant name="zip"/>
+    <variant name="zst"/>
   </token>
 </histogram>
 
@@ -156,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DirectoryListLoad.{RootType}.{NumFiles}"
-    units="ms" expires_after="2022-08-09">
+    units="ms" expires_after="2023-06-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -275,6 +288,13 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks success rate of pinning files in Drive.</summary>
 </histogram>
 
+<histogram name="FileBrowser.ExtractTask.Status"
+    enum="FileManagerExtractStatus" expires_after="M113">
+  <owner>adanilo@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Tracks success/error rate of extracting archive contents.</summary>
+</histogram>
+
 <histogram name="FileBrowser.FileSystemProviderMounted"
     enum="FileSystemProviderMountType" expires_after="2023-04-10">
   <owner>simmonsjosh@google.com</owner>
@@ -336,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Glitch" enum="FileManagerGlitch"
-    expires_after="M108">
+    expires_after="2022-12-25">
   <owner>majewski@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -542,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Notification.UserAction"
-    enum="FileManagerNotificationUserAction" expires_after="M108">
+    enum="FileManagerNotificationUserAction" expires_after="2022-12-25">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -627,7 +647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.FilterByType"
-    enum="FileManagerRecentFilterType" expires_after="2022-07-20">
+    enum="FileManagerRecentFilterType" expires_after="2022-11-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -856,15 +876,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time for the execution of a zipping task. Times are only reported on
     success.
-  </summary>
-</histogram>
-
-<histogram name="FileReaderSync.WorkerType" enum="FileReaderSyncWorkerType"
-    expires_after="M85">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    For each FileReaderSync instance records the type of the web worker that
-    created the instance.
   </summary>
 </histogram>
 

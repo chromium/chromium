@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -16,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -197,6 +199,9 @@ class WizardController : public OobeUI::Observer {
   // Returns a given screen. Creates it lazily.
   BaseScreen* GetScreen(OobeScreenId screen_id);
 
+  // Returns a given OobescreenId with both name and external_api_prefix.
+  OobeScreenId GetScreenByName(const std::string& screen_name);
+
   // Returns the current ScreenManager instance.
   ScreenManager* screen_manager() const { return screen_manager_.get(); }
 
@@ -322,7 +327,8 @@ class WizardController : public OobeUI::Observer {
   void OnEulaAccepted(bool usage_statistics_reporting_enabled);
   void OnUpdateScreenExit(UpdateScreen::Result result);
   void OnUpdateCompleted();
-  void OnAutoEnrollmentCheckScreenExit();
+  void OnAutoEnrollmentCheckScreenExit(
+      AutoEnrollmentCheckScreen::Result result);
   void OnEnrollmentScreenExit(EnrollmentScreen::Result result);
   void OnEnrollmentDone();
   void OnEnableAdbSideloadingScreenExit();
@@ -452,6 +458,10 @@ class WizardController : public OobeUI::Observer {
 
   void NotifyScreenChanged();
 
+  // Tries to switch to the screen which was shown before the current screen.
+  // Returns `true` if the screen switched.
+  bool MaybeSetToPreviousScreen();
+
   // Returns auto enrollment controller (lazily initializes one if it doesn't
   // exist already).
   AutoEnrollmentController* GetAutoEnrollmentController();
@@ -464,15 +474,17 @@ class WizardController : public OobeUI::Observer {
 
   std::unique_ptr<AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
+
+  // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.
+  // So it should be safe to store the pointers.
+  base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
+
   WizardContext* wizard_context_;
 
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
   BaseScreen* current_screen_ = nullptr;
-
-  // Screen that was active before, or nullptr for login screen.
-  BaseScreen* previous_screen_ = nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

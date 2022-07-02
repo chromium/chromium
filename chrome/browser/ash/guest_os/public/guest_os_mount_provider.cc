@@ -8,6 +8,7 @@
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -28,7 +29,7 @@ class ScopedVolume {
       Profile* profile,
       std::string display_name,
       std::string mount_label,
-      base::FilePath homedir,
+      base::FilePath remote_path,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info,
       VmType vm_type)
       : profile_(profile), mount_label_(mount_label) {
@@ -45,7 +46,8 @@ class ScopedVolume {
     auto* vmgr = file_manager::VolumeManager::Get(profile_);
     if (vmgr) {
       // vmgr is null in unit tests.
-      vmgr->AddSftpGuestOsVolume(display_name, mount_path, homedir, vm_type);
+      vmgr->AddSftpGuestOsVolume(display_name, mount_path, remote_path,
+                                 vm_type);
     }
   }
 
@@ -77,38 +79,52 @@ class ScopedVolume {
 
 class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
  public:
-  explicit GuestOsMountProviderInner(Profile* profile,
-                                     std::string display_name,
-                                     crostini::ContainerId container_id,
-                                     int cid,
-                                     int port,
-                                     base::FilePath homedir,
-                                     VmType vm_type)
+  explicit GuestOsMountProviderInner(
+      Profile* profile,
+      std::string display_name,
+      guest_os::GuestId container_id,
+      VmType vm_type,
+      base::RepeatingCallback<void(GuestOsMountProvider::PrepareCallback)>
+          prepare)
       : profile_(profile),
         display_name_(display_name),
         container_id_(container_id),
-        cid_(cid),
-        port_(port),
-        homedir_(homedir),
-        vm_type_(vm_type) {}
+        vm_type_(vm_type),
+        prepare_(prepare) {}
 
   // Mount.
   void Build(RealCallback callback) override {
+    prepare_.Run(base::BindOnce(&GuestOsMountProviderInner::MountPath,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(callback)));
+  }
+  void MountPath(RealCallback callback,
+                 bool success,
+                 int cid,
+                 int port,
+                 base::FilePath remote_path) {
+    if (!success) {
+      LOG(ERROR) << "Error mounting, failed to prepare VM";
+      std::move(callback).Run(Failure(false));
+      return;
+    }
     mount_label_ =
         file_manager::util::GetGuestOsMountPointName(profile_, container_id_);
     auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
     // Call to sshfs to mount.
-    std::string source_path = base::StringPrintf("sftp://%d:%d", cid_, port_);
+    std::string source_path = base::StringPrintf("sftp://%d:%d", cid, port);
 
-    dmgr->MountPath(
-        source_path, "", mount_label_, {}, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-        chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
-        base::BindOnce(&GuestOsMountProviderInner::OnMountEvent,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    dmgr->MountPath(source_path, "", mount_label_, {},
+                    chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                    chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                    base::BindOnce(&GuestOsMountProviderInner::OnMountEvent,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(callback), remote_path));
   }
   void OnMountEvent(
       RealCallback callback,
+      base::FilePath remote_path,
       chromeos::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
     if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
@@ -120,8 +136,9 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
       std::move(callback).Run(Failure(false));
       return;
     }
-    auto scoped_volume = std::make_unique<ScopedVolume>(
-        profile_, display_name_, mount_label_, homedir_, mount_info, vm_type_);
+    auto scoped_volume =
+        std::make_unique<ScopedVolume>(profile_, display_name_, mount_label_,
+                                       remote_path, mount_info, vm_type_);
 
     // CachedCallback magic keeps the scope alive until we're destroyed or it's
     // invalidated.
@@ -130,12 +147,11 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 
   Profile* profile_;
   std::string display_name_;
-  crostini::ContainerId container_id_;
+  guest_os::GuestId container_id_;
   std::string mount_label_;
-  int cid_;
-  int port_;  // vsock port
-  base::FilePath homedir_;
   VmType vm_type_;
+  // Callback to prepare the VM for mounting.
+  base::RepeatingCallback<void(GuestOsMountProvider::PrepareCallback)> prepare_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -145,8 +161,9 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
   if (!callback_) {
     callback_ = std::make_unique<GuestOsMountProviderInner>(
-        profile(), DisplayName(), ContainerId(), cid(), port(), homedir(),
-        vm_type());
+        profile(), DisplayName(), GuestId(), vm_type(),
+        base::BindRepeating(&GuestOsMountProvider::Prepare,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
   callback_->Get(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,
@@ -162,13 +179,4 @@ void GuestOsMountProvider::Unmount() {
 
 GuestOsMountProvider::GuestOsMountProvider() = default;
 GuestOsMountProvider::~GuestOsMountProvider() = default;
-int GuestOsMountProvider::cid() {
-  return 0;
-}
-int GuestOsMountProvider::port() {
-  return 0;
-}
-base::FilePath GuestOsMountProvider::homedir() {
-  return base::FilePath("/home/fake");
-}
 }  // namespace guest_os

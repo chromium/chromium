@@ -108,7 +108,7 @@ size_t ComputeFrameDepth(RenderFrameHost* rfh,
       break;
     }
     ++depth;
-    current_frame = current_frame->GetParent();
+    current_frame = current_frame->GetParentOrOuterDocument();
   }
   (*map_rfh_to_depth)[rfh] = depth;
   return depth;
@@ -318,8 +318,6 @@ void MediaSessionImpl::DidFinishNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
-
-  image_cache_.clear();
 
   auto new_origin = url::Origin::Create(navigation_handle->GetURL());
   if (navigation_handle->IsInPrimaryMainFrame() &&
@@ -889,8 +887,10 @@ void MediaSessionImpl::OnImageDownloadComplete(
     }
   }
 
-  if (source_icon)
-    image_cache_.emplace(image_url, bitmap);
+  if (source_icon) {
+    GetPageData(web_contents()->GetPrimaryPage())
+        .AddImageCache(image_url, bitmap);
+  }
 
   std::move(callback).Run(bitmap);
 }
@@ -984,9 +984,9 @@ MediaSessionImpl::MediaSessionImpl(WebContents* web_contents)
   session_android_ = std::make_unique<MediaSessionAndroid>(this);
   should_throttle_duration_update_ = true;
 #endif  // BUILDFLAG(IS_ANDROID)
-  if (web_contents && web_contents->GetMainFrame() &&
-      web_contents->GetMainFrame()->GetView()) {
-    focused_ = web_contents->GetMainFrame()->GetView()->HasFocus();
+  if (web_contents && web_contents->GetPrimaryMainFrame() &&
+      web_contents->GetPrimaryMainFrame()->GetView()) {
+    focused_ = web_contents->GetPrimaryMainFrame()->GetView()->HasFocus();
   }
 
   RebuildAndNotifyMetadataChanged();
@@ -997,7 +997,7 @@ void MediaSessionImpl::Initialize() {
   delegate_->MediaSessionInfoChanged(GetMediaSessionInfoSync());
 
   DCHECK(web_contents());
-  DidUpdateFaviconURL(web_contents()->GetMainFrame(),
+  DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(),
                       web_contents()->GetFaviconURLs());
 }
 
@@ -1299,9 +1299,12 @@ void MediaSessionImpl::GetMediaImageBitmap(
   }
 
   // Check the cache.
-  if (source_icon && base::Contains(image_cache_, image.src)) {
-    std::move(callback).Run(image_cache_.at(image.src));
-    return;
+  PageData& page_data = GetPageData(web_contents()->GetPrimaryPage());
+  if (source_icon) {
+    if (auto* bitmap = page_data.GetImageCache(image.src)) {
+      std::move(callback).Run(*bitmap);
+      return;
+    }
   }
 
   const gfx::Size preferred_size(desired_size_px, desired_size_px);
@@ -1429,16 +1432,6 @@ void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
 
 void MediaSessionImpl::OnMediaSessionPlaybackStateChanged(
     MediaSessionServiceImpl* service) {
-  if (!BackForwardCacheImpl::IsMediaSessionPlaybackStateChangedAllowed()) {
-    // Even though the back-forward cache is allowed at OnServiceCreated, it is
-    // disabled when the playback state is changed as this affects the visible
-    // UI for MediaSession.
-    BackForwardCache::DisableForRenderFrameHost(
-        service->GetRenderFrameHostId(),
-        BackForwardCacheDisable::DisabledReason(
-            BackForwardCacheDisable::DisabledReasonId::kMediaSession));
-  }
-
   if (service != routed_service_)
     return;
 
@@ -1877,6 +1870,22 @@ void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(
     bool should_throttle) {
   should_throttle_duration_update_ = should_throttle;
 }
+
+bool MediaSessionImpl::HasImageCacheForTest(const GURL& image_url) const {
+  return GetPageData(web_contents()->GetPrimaryPage()).GetImageCache(image_url);
+}
+
+MediaSessionImpl::PageData::PageData(content::Page& page)
+    : PageUserData(page) {}
+
+MediaSessionImpl::PageData::~PageData() = default;
+
+MediaSessionImpl::PageData& MediaSessionImpl::GetPageData(
+    content::Page& page) const {
+  return *PageData::GetOrCreateForPage(page);
+}
+
+PAGE_USER_DATA_KEY_IMPL(MediaSessionImpl::PageData);
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaSessionImpl);
 

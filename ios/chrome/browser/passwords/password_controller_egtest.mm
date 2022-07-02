@@ -134,7 +134,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that update password prompt is shown on submitting the new password
 // for an already stored login.
-- (void)testUpdatePromptAppearsOnFormSubmission {
+// TODO(crbug.com/1330896): Test fails on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testUpdatePromptAppearsOnFormSubmission \
+  DISABLED_testUpdatePromptAppearsOnFormSubmission
+#else
+#define MAYBE_testUpdatePromptAppearsOnFormSubmission \
+  testUpdatePromptAppearsOnFormSubmission
+#endif
+- (void)MAYBE_testUpdatePromptAppearsOnFormSubmission {
   // Load the page the first time an store credentials.
   [self loadLoginPage];
   [PasswordManagerAppInterface storeCredentialWithUsername:@"Eguser"

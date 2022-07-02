@@ -19,9 +19,9 @@
 #include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +75,7 @@ class FakeTaskRunner : public base::TaskRunner {
 // Implementation of CryptohomePkcs11Client used in these tests.
 // TestCryptohomePkcs11Client overrides all CryptohomePkcs11Client methods used
 // in TPMTokenInfoGetter tests.
-class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
+class TestCryptohomePkcs11Client : public FakeCryptohomePkcs11Client {
  public:
   // |account_id|: The user associated with the TPMTokenInfoGetter that will be
   // using the TestCryptohomePkcs11Client. Should be empty for system token.

@@ -140,6 +140,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     if (icon_surface_->Initialize()) {
       // Corresponds to actual scale factor of the origin surface.
       icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
+      // Icon surface do not need input.
+      const gfx::Rect empty_region_px;
+      icon_surface_->SetInputRegion(&empty_region_px);
       icon_surface_->ApplyPendingState();
 
       auto icon_offset = -data.provider().GetDragImageOffset();
@@ -217,7 +220,8 @@ void WaylandDataDragController::DrawIconInternal() {
   DCHECK(!icon_bitmap_->empty());
   gfx::Size size(icon_bitmap_->width(), icon_bitmap_->height());
 
-  icon_buffer_ = std::make_unique<WaylandShmBuffer>(connection_->shm(), size);
+  icon_buffer_ = std::make_unique<WaylandShmBuffer>(
+      connection_->wayland_buffer_factory(), size);
   if (!icon_buffer_->IsValid()) {
     LOG(ERROR) << "Failed to create drag icon buffer.";
     return;
@@ -292,16 +296,10 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
     last_drag_location_ = location;
     return;
   }
-
-  gfx::PointF pointer_location(location);
-  if (connection_->surface_submission_in_pixel_coordinates())
-    pointer_location.Scale(1.0f / window_->window_scale());
-
   DCHECK(data_offer_);
   int available_operations =
       DndActionsToDragOperations(data_offer_->source_actions());
-  int client_operations =
-      window_->OnDragMotion(pointer_location, available_operations);
+  int client_operations = window_->OnDragMotion(location, available_operations);
 
   data_offer_->SetDndActions(DragOperationsToDndActions(client_operations));
 }
@@ -365,6 +363,10 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
   state_ = State::kIdle;
+}
+
+const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
+  return window_;
 }
 
 void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
@@ -474,12 +476,8 @@ void WaylandDataDragController::PropagateOnDragEnter(
     std::unique_ptr<OSExchangeData> data) {
   DCHECK(window_);
   {
-    gfx::PointF pointer_location(location);
-    if (connection_->surface_submission_in_pixel_coordinates())
-      pointer_location.Scale(1.0f / window_->window_scale());
-
     window_->OnDragEnter(
-        pointer_location, std::move(data),
+        location, std::move(data),
         DndActionsToDragOperations(data_offer_->source_actions()));
   }
   OnDragMotion(location);

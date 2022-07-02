@@ -25,18 +25,10 @@ constexpr const char kNoDestinationDeviceFoundStep[] =
 constexpr const char kSuccessStep[] = "success";
 }  // namespace
 
-// static
-constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
-
 OsInstallScreenHandler::OsInstallScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.OsInstallScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-OsInstallScreenHandler::~OsInstallScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+OsInstallScreenHandler::~OsInstallScreenHandler() = default;
 
 void OsInstallScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -94,24 +86,12 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON);
 }
 
-void OsInstallScreenHandler::InitializeDeprecated() {}
-
 void OsInstallScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void OsInstallScreenHandler::Bind(ash::OsInstallScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void OsInstallScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void OsInstallScreenHandler::ShowStep(const char* step) {
-  CallJS("login.OsInstallScreen.showStep", std::string(step));
+  CallExternalAPI("showStep", std::string(step));
 }
 
 void OsInstallScreenHandler::SetStatus(OsInstallClient::Status status) {
@@ -132,17 +112,18 @@ void OsInstallScreenHandler::SetStatus(OsInstallClient::Status status) {
 }
 
 void OsInstallScreenHandler::SetServiceLogs(const std::string& service_log) {
-  CallJS("login.OsInstallScreen.setServiceLogs", service_log);
+  CallExternalAPI("setServiceLogs", service_log);
 }
 
 void OsInstallScreenHandler::UpdateCountdownStringWithTime(
     base::TimeDelta time_left) {
-  CallJS("login.OsInstallScreen.updateCountdownString",
-         l10n_util::GetStringFUTF8(
-             IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
-             ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                                    ui::TimeFormat::LENGTH_LONG, time_left),
-             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
+  CallExternalAPI(
+      "updateCountdownString",
+      l10n_util::GetStringFUTF8(
+          IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
+          ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                                 ui::TimeFormat::LENGTH_LONG, time_left),
+          l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
 }
 
 }  // namespace chromeos

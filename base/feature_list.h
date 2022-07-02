@@ -155,6 +155,11 @@ class BASE_EXPORT FeatureList {
     FeatureList::OverrideState GetOverrideStateByFeatureName(
         StringPiece feature_name);
 
+    // Look up the feature, and, if present, populate |params|.
+    // See GetFieldTrialParams in field_trial_params.h for more documentation.
+    bool GetParamsByFeatureName(StringPiece feature_name,
+                                std::map<std::string, std::string>* params);
+
    private:
     // Allow FeatureList to construct this class.
     friend class FeatureList;
@@ -401,7 +406,7 @@ class BASE_EXPORT FeatureList {
 
   // Returns the override state of a given |feature|. If the feature was not
   // overridden, returns OVERRIDE_USE_DEFAULT. Performs any necessary callbacks
-  // for when the feature state has been observed, e.g. actvating field trials.
+  // for when the feature state has been observed, e.g. activating field trials.
   OverrideState GetOverrideState(const Feature& feature) const;
 
   // Same as GetOverrideState(), but without a default value.

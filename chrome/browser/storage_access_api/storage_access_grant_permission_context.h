@@ -43,7 +43,6 @@ class StorageAccessGrantPermissionContext
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override;
   void DecidePermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
       const GURL& embedding_origin,

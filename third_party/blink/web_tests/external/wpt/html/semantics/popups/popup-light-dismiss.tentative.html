@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>Popup light dismiss behavior</title>
+<meta name="timeout" content="long">
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <script src="/resources/testharness.js"></script>
@@ -8,16 +9,18 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/popup-utils.js"></script>
 
-<button id=b1 togglepopup='p1'>Popup 1</button>
+<button id=b1t togglepopup='p1'>Popup 1</button>
+<button id=b1s showpopup='p1'>Popup 1</button>
 <button id=p1anchor>Popup1 anchor (no action)</button>
 <span id=outside>Outside all popups</span>
-<div popup=popup id=p1 anchor=p1anchor>
+<div popup id=p1 anchor=p1anchor>
   <span id=inside1>Inside popup 1</span>
   <button id=b2 togglepopup='p2'>Popup 2</button>
   <span id=inside1after>Inside popup 1 after button</span>
 </div>
-<div popup=popup id=p2 anchor=b2>
+<div popup id=p2 anchor=b2>
   <span id=inside2>Inside popup 2</span>
 </div>
 <button id=after_p1>Next control after popup1</button>
@@ -30,26 +33,9 @@
   }
 </style>
 <script>
-  function spinEventLoop() {
-    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  }
-  async function clickOn(element) {
-    const actions = new test_driver.Actions();
-    await spinEventLoop();
-    await actions.pointerMove(0, 0, {origin: element})
-        .pointerDown({button: actions.ButtonType.LEFT})
-        .pointerUp({button: actions.ButtonType.LEFT})
-        .send();
-    await spinEventLoop();
-  }
-  async function sendTab() {
-    await spinEventLoop();
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
-    await spinEventLoop();
-  }
-
   const popup1 = document.querySelector('#p1');
-  const button1 = document.querySelector('#b1');
+  const button1toggle = document.querySelector('#b1t');
+  const button1show = document.querySelector('#b1s');
   const popup1anchor = document.querySelector('#p1anchor');
   const inside1After = document.querySelector('#inside1after');
   const popup2 = document.querySelector('#p2');
@@ -69,83 +55,117 @@
     e.preventDefault(); // 'hide' should not be cancellable.
   });
   promise_test(async () => {
-    assert_false(popup1.matches(':popup-open'));
-    popup1.showPopup();
-    assert_true(popup1.matches(':popup-open'));
+    assert_false(popup1.matches(':top-layer'));
+    popup1.showPopUp();
+    assert_true(popup1.matches(':top-layer'));
     let p1HideCount = popup1HideCount;
     await clickOn(outside);
-    assert_false(popup1.matches(':popup-open'));
+    assert_false(popup1.matches(':top-layer'));
     assert_equals(popup1HideCount,p1HideCount+1);
   },'Clicking outside a popup will dismiss the popup');
 
   promise_test(async () => {
-    assert_false(popup1.matches(':popup-open'));
-    popup1.showPopup();
-    await spinEventLoop();
+    assert_false(popup1.matches(':top-layer'));
+    popup1.showPopUp();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     await clickOn(inside1);
-    assert_true(popup1.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'));
     assert_equals(popup1HideCount,p1HideCount);
-    popup1.hidePopup();
+    popup1.hidePopUp();
   },'Clicking inside a popup does not close that popup');
 
   promise_test(async () => {
-    assert_false(popup1.matches(':popup-open'));
-    popup1.showPopup();
+    assert_false(popup1.matches(':top-layer'));
+    popup1.showPopUp();
     await clickOn(inside1After);
-    assert_true(popup1.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'));
     await sendTab();
     assert_equals(document.activeElement,afterp1,'Focus should move to a button outside the popup');
-    assert_false(popup1.matches(':popup-open'));
+    assert_false(popup1.matches(':top-layer'));
   },'Moving focus outside the popup will dismiss the popup');
 
   promise_test(async () => {
-    popup1.showPopup();
-    popup2.showPopup();
-    await spinEventLoop();
+    popup1.showPopUp();
+    popup2.showPopUp();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     let p2HideCount = popup2HideCount;
     await clickOn(inside2);
-    assert_true(popup1.matches(':popup-open'),'popup1 should be open');
-    assert_true(popup2.matches(':popup-open'),'popup2 should be open');
+    assert_true(popup1.matches(':top-layer'),'popup1 should be open');
+    assert_true(popup2.matches(':top-layer'),'popup2 should be open');
     assert_equals(popup1HideCount,p1HideCount,'popup1');
     assert_equals(popup2HideCount,p2HideCount,'popup2');
-    popup1.hidePopup();
-    assert_false(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
+    popup1.hidePopUp();
+    assert_false(popup1.matches(':top-layer'));
+    assert_false(popup2.matches(':top-layer'));
   },'Clicking inside a child popup shouldn\'t close either popup');
 
   promise_test(async () => {
-    popup1.showPopup();
-    popup2.showPopup();
-    await spinEventLoop();
+    popup1.showPopUp();
+    popup2.showPopUp();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     p2HideCount = popup2HideCount;
     await clickOn(inside1);
-    assert_true(popup1.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'));
     assert_equals(popup1HideCount,p1HideCount);
-    assert_false(popup2.matches(':popup-open'));
+    assert_false(popup2.matches(':top-layer'));
     assert_equals(popup2HideCount,p2HideCount+1);
-    popup1.hidePopup();
+    popup1.hidePopUp();
   },'Clicking inside a parent popup should close child popup');
 
   promise_test(async () => {
-    popup1.showPopup();
-    assert_true(popup1.matches(':popup-open'));
-    await spinEventLoop();
+    await clickOn(button1show);
+    assert_true(popup1.matches(':top-layer'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1show);
+    assert_true(popup1.matches(':top-layer'),'popup1 should stay open');
+    assert_equals(popup1HideCount,p1HideCount,'popup1 should not get hidden and reshown');
+    popup1.hidePopUp(); // Cleanup
+    assert_false(popup1.matches(':top-layer'));
+  },'Clicking on invoking element, after using it for activation, shouldn\'t close its popup');
+
+  promise_test(async () => {
+    popup1.showPopUp(); // Directly show the popup
+    assert_true(popup1.matches(':top-layer'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1show);
+    assert_true(popup1.matches(':top-layer'),'popup1 should stay open');
+    assert_equals(popup1HideCount,p1HideCount,'popup1 should not get hidden and reshown');
+    popup1.hidePopUp(); // Cleanup
+    assert_false(popup1.matches(':top-layer'));
+  },'Clicking on invoking element, even if it wasn\'t used for activation, shouldn\'t close its popup');
+
+  promise_test(async () => {
+    popup1.showPopUp(); // Directly show the popup
+    assert_true(popup1.matches(':top-layer'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1toggle);
+    assert_false(popup1.matches(':top-layer'),'popup1 should be hidden by togglepopup');
+    assert_equals(popup1HideCount,p1HideCount+1,'popup1 should get hidden only once by togglepopup');
+  },'Clicking on togglepopup element, even if it wasn\'t used for activation, should hide it exactly once');
+
+  promise_test(async () => {
+    popup1.showPopUp();
+    assert_true(popup1.matches(':top-layer'));
+    await waitForRender();
     p1HideCount = popup1HideCount;
     await clickOn(popup1anchor);
-    assert_true(popup1.matches(':popup-open'),'popup1 not open');
+    assert_true(popup1.matches(':top-layer'),'popup1 not open');
     assert_equals(popup1HideCount,p1HideCount);
-    popup1.hidePopup(); // Cleanup
-    assert_false(popup1.matches(':popup-open'));
+    popup1.hidePopUp(); // Cleanup
+    assert_false(popup1.matches(':top-layer'));
   },'Clicking on anchor element (that isn\'t an invoking element) shouldn\'t close its popup');
 
   promise_test(async () => {
-    popup1.showPopup();
-    popup2.showPopup(); // Popup1 is an ancestral element for popup2.
-    assert_true(popup1.matches(':popup-open'));
-    assert_true(popup2.matches(':popup-open'));
+    popup1.showPopUp();
+    popup2.showPopUp(); // Popup1 is an ancestral element for popup2.
+    assert_true(popup1.matches(':top-layer'));
+    assert_true(popup2.matches(':top-layer'));
     const drag_actions = new test_driver.Actions();
     // Drag *from* popup2 *to* popup1 (its ancestor).
     await drag_actions.pointerMove(0,0,{origin: popup2})
@@ -153,19 +173,19 @@
       .pointerMove(0,0,{origin: popup1})
       .pointerUp({button: drag_actions.ButtonType.LEFT})
       .send();
-    assert_true(popup1.matches(':popup-open'),'popup1 should be open');
-    assert_true(popup2.matches(':popup-open'),'popup1 should be open');
-    popup1.hidePopup();
-    assert_false(popup2.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'),'popup1 should be open');
+    assert_true(popup2.matches(':top-layer'),'popup1 should be open');
+    popup1.hidePopUp();
+    assert_false(popup2.matches(':top-layer'));
   },'Dragging from an open popup outside an open popup should leave the popup open');
 </script>
 
 <button id=b3 togglepopup=p3>Popup 3 - button 3
-  <div popup=popup id=p4>Inside popup 4</div>
+  <div popup id=p4>Inside popup 4</div>
 </button>
-<div popup=popup id=p3>Inside popup 3</div>
+<div popup id=p3>Inside popup 3</div>
 <button id=b4 togglepopup=p3>Popup 3 - button 4
-  <div popup=popup id=p5>Inside popup 5</div>
+  <div popup id=p5>Inside popup 5</div>
 </button>
 <style>
   #p3 {top:100px;}
@@ -179,32 +199,32 @@
   const button3 = document.querySelector('#b3');
   promise_test(async () => {
     await clickOn(button3);
-    assert_true(popup3.matches(':popup-open'),'invoking element should open popup');
-    popup4.showPopup();
-    assert_true(popup4.matches(':popup-open'));
-    assert_true(popup3.matches(':popup-open'));
-    popup3.hidePopup(); // Cleanup
-    assert_false(popup3.matches(':popup-open'));
-    assert_false(popup4.matches(':popup-open'));
+    assert_true(popup3.matches(':top-layer'),'invoking element should open popup');
+    popup4.showPopUp();
+    assert_true(popup4.matches(':top-layer'));
+    assert_true(popup3.matches(':top-layer'));
+    popup3.hidePopUp(); // Cleanup
+    assert_false(popup3.matches(':top-layer'));
+    assert_false(popup4.matches(':top-layer'));
   },'An invoking element should be part of the ancestor chain');
 
   promise_test(async () => {
     await clickOn(button3);
-    assert_true(popup3.matches(':popup-open'));
-    assert_false(popup4.matches(':popup-open'));
-    assert_false(popup5.matches(':popup-open'));
-    popup5.showPopup();
-    assert_true(popup3.matches(':popup-open'));
-    assert_false(popup4.matches(':popup-open'));
-    assert_true(popup5.matches(':popup-open'));
-    popup3.hidePopup();
-    assert_false(popup3.matches(':popup-open'));
-    assert_false(popup4.matches(':popup-open'));
-    assert_false(popup5.matches(':popup-open'));
+    assert_true(popup3.matches(':top-layer'));
+    assert_false(popup4.matches(':top-layer'));
+    assert_false(popup5.matches(':top-layer'));
+    popup5.showPopUp();
+    assert_true(popup3.matches(':top-layer'));
+    assert_false(popup4.matches(':top-layer'));
+    assert_true(popup5.matches(':top-layer'));
+    popup3.hidePopUp();
+    assert_false(popup3.matches(':top-layer'));
+    assert_false(popup4.matches(':top-layer'));
+    assert_false(popup5.matches(':top-layer'));
   },'An invoking element that was not used to invoke the popup can still be part of the ancestor chain');
 </script>
 
-<div popup=popup id=p6>Inside popup 6
+<div popup id=p6>Inside popup 6
   <div style="height:2000px;background:lightgreen"></div>
   Bottom of popup6
 </div>
@@ -219,21 +239,21 @@
 <script>
   const popup6 = document.querySelector('#p6');
   promise_test(async () => {
-    popup6.showPopup();
+    popup6.showPopUp();
     assert_equals(popup6.scrollTop,0,'popup6 should start non-scrolled');
     await new test_driver.Actions()
        .scroll(0, 0, 0, 50, {origin: popup6})
        .send();
-    assert_true(popup6.matches(':popup-open'),'popup6 should stay open');
+    assert_true(popup6.matches(':top-layer'),'popup6 should stay open');
     assert_equals(popup6.scrollTop,50,'popup6 should be scrolled');
-    popup6.hidePopup();
+    popup6.hidePopUp();
   },'Scrolling within a popup should not close the popup');
 </script>
 
 <my-element id="myElement">
   <template shadowroot="open">
-    <button id=b7 onclick='showPopup7()'>Popup7</button>
-    <div popup=popup id=p7 anchor=b7 style="top: 100px;">
+    <button id=b7 onclick='showPopUp7()'>Popup7</button>
+    <div popup id=p7 anchor=b7 style="top: 100px;">
       <p>Popup content.</p>
       <input id="inside7" type="text" placeholder="some text">
     </div>
@@ -243,27 +263,27 @@
   const button7 = document.querySelector('#myElement').shadowRoot.querySelector('#b7');
   const popup7 = document.querySelector('#myElement').shadowRoot.querySelector('#p7');
   const inside7 = document.querySelector('#myElement').shadowRoot.querySelector('#inside7');
-  function showPopup7() {
-    popup7.showPopup();
+  function showPopUp7() {
+    popup7.showPopUp();
   }
   promise_test(async () => {
     button7.click();
-    assert_true(popup7.matches(':popup-open'),'invoking element should open popup');
+    assert_true(popup7.matches(':top-layer'),'invoking element should open popup');
     inside7.click();
-    assert_true(popup7.matches(':popup-open'));
-    popup7.hidePopup();
+    assert_true(popup7.matches(':top-layer'));
+    popup7.hidePopUp();
   },'Clicking inside a shadow DOM popup does not close that popup');
 
   promise_test(async () => {
     button7.click();
     inside7.click();
-    assert_true(popup7.matches(':popup-open'));
+    assert_true(popup7.matches(':top-layer'));
     await clickOn(outside);
-    assert_false(popup7.matches(':popup-open'));
+    assert_false(popup7.matches(':top-layer'));
   },'Clicking outside a shadow DOM popup should close that popup');
 </script>
 
-<div popup=popup id=p8 anchor=p8anchor>
+<div popup id=p8 anchor=p8anchor>
   <button>Button</button>
   <span id=inside8after>Inside popup 8 after button</span>
 </div>
@@ -273,18 +293,18 @@
     const popup8 = document.querySelector('#p8');
     const inside8After = document.querySelector('#inside8after');
     const popup8Anchor = document.querySelector('#p8anchor');
-    assert_false(popup8.matches(':popup-open'));
-    popup8.showPopup();
+    assert_false(popup8.matches(':top-layer'));
+    popup8.showPopUp();
     await clickOn(inside8After);
-    assert_true(popup8.matches(':popup-open'));
+    assert_true(popup8.matches(':top-layer'));
     await sendTab();
     assert_equals(document.activeElement,popup8Anchor,'Focus should move to the anchor element');
-    assert_true(popup8.matches(':popup-open'),'popup should stay open');
-    popup8.hidePopup();
+    assert_true(popup8.matches(':top-layer'),'popup should stay open');
+    popup8.hidePopUp();
   },'Moving focus back to the anchor element should not dismiss the popup');
 </script>
 
-<div popup=popup id=p9>
+<div popup id=p9>
   <button>Button</button>
   <span id=inside9after>Inside popup 9 after button</span>
 </div>
@@ -294,45 +314,45 @@
     const popup9 = document.querySelector('#p9');
     const inside9After = document.querySelector('#inside9after');
     const popup9Invoker = document.querySelector('#b9after');
-    assert_false(popup9.matches(':popup-open'));
+    assert_false(popup9.matches(':top-layer'));
     popup9Invoker.click(); // Trigger via the button
     await clickOn(inside9After);
-    assert_true(popup9.matches(':popup-open'));
+    assert_true(popup9.matches(':top-layer'));
     await sendTab();
     assert_equals(document.activeElement,popup9Invoker,'Focus should move to the invoking element');
-    assert_true(popup9.matches(':popup-open'),'popup should stay open');
-    popup9.hidePopup();
+    assert_true(popup9.matches(':top-layer'),'popup should stay open');
+    popup9.hidePopUp();
   },'Moving focus back to the active trigger element should not dismiss the popup');
 
   promise_test(async () => {
     const popup9 = document.querySelector('#p9');
     const inside9After = document.querySelector('#inside9after');
     const popup9Invoker = document.querySelector('#b9after');
-    assert_false(popup9.matches(':popup-open'));
-    popup9.showPopup(); // Trigger directly
+    assert_false(popup9.matches(':top-layer'));
+    popup9.showPopUp(); // Trigger directly
     await clickOn(inside9After);
-    assert_true(popup9.matches(':popup-open'));
+    assert_true(popup9.matches(':top-layer'));
     await sendTab();
     assert_equals(document.activeElement,popup9Invoker,'Focus should move to the invoking element');
-    assert_true(popup9.matches(':popup-open'),'popup should stay open - even though the trigger wasn\'t used, it points to this popup');
+    assert_true(popup9.matches(':top-layer'),'popup should stay open - even though the trigger wasn\'t used, it points to this popup');
   },'Moving focus back to an inactive trigger element should also *not* dismiss the popup');
 </script>
 
 
 <!-- Convoluted ancestor relationship -->
-<div popup=popup id=convoluted_p1>Popup 1
+<div popup id=convoluted_p1>Popup 1
   <div id=convoluted_anchor>Anchor
     <button togglepopup=convoluted_p2>Open Popup 2</button>
-    <div popup=popup id=convoluted_p4><p>Popup 4</p></div>
+    <div popup id=convoluted_p4><p>Popup 4</p></div>
   </div>
 </div>
-<div popup=popup id=convoluted_p2>Popup 2
+<div popup id=convoluted_p2>Popup 2
   <button togglepopup=convoluted_p3>Open Popup 3</button>
 </div>
-<div popup=popup id=convoluted_p3 anchor=convoluted_anchor>Popup 3
+<div popup id=convoluted_p3 anchor=convoluted_anchor>Popup 3
   <button togglepopup=convoluted_p4>Open Popup 4</button>
 </div>
-<button onclick="convoluted_p1.showPopup()">Open convoluted popup</button>
+<button onclick="convoluted_p1.showPopUp()">Open convoluted popup</button>
 <style>
   #convoluted_p1 {top:50px;}
   #convoluted_p2 {top:150px;}
@@ -345,59 +365,59 @@ const convPopup2 = document.querySelector('#convoluted_p2');
 const convPopup3 = document.querySelector('#convoluted_p3');
 const convPopup4 = document.querySelector('#convoluted_p4');
 promise_test(async () => {
-  convPopup1.showPopup(); // Programmatically open p1
-  assert_true(convPopup1.matches(':popup-open'));
+  convPopup1.showPopUp(); // Programmatically open p1
+  assert_true(convPopup1.matches(':top-layer'));
   convPopup1.querySelector('button').click(); // Click to invoke p2
-  assert_true(convPopup1.matches(':popup-open'));
-  assert_true(convPopup2.matches(':popup-open'));
+  assert_true(convPopup1.matches(':top-layer'));
+  assert_true(convPopup2.matches(':top-layer'));
   convPopup2.querySelector('button').click(); // Click to invoke p3
-  assert_true(convPopup1.matches(':popup-open'));
-  assert_true(convPopup2.matches(':popup-open'));
-  assert_true(convPopup3.matches(':popup-open'));
+  assert_true(convPopup1.matches(':top-layer'));
+  assert_true(convPopup2.matches(':top-layer'));
+  assert_true(convPopup3.matches(':top-layer'));
   convPopup3.querySelector('button').click(); // Click to invoke p4
-  assert_true(convPopup1.matches(':popup-open'));
-  assert_true(convPopup2.matches(':popup-open'));
-  assert_true(convPopup3.matches(':popup-open'));
-  assert_true(convPopup4.matches(':popup-open'));
+  assert_true(convPopup1.matches(':top-layer'));
+  assert_true(convPopup2.matches(':top-layer'));
+  assert_true(convPopup3.matches(':top-layer'));
+  assert_true(convPopup4.matches(':top-layer'));
   convPopup4.firstElementChild.click(); // Click within p4
-  assert_true(convPopup1.matches(':popup-open'));
-  assert_true(convPopup2.matches(':popup-open'));
-  assert_true(convPopup3.matches(':popup-open'));
-  assert_true(convPopup4.matches(':popup-open'));
-  convPopup1.hidePopup();
-  assert_false(convPopup1.matches(':popup-open'));
-  assert_false(convPopup2.matches(':popup-open'));
-  assert_false(convPopup3.matches(':popup-open'));
-  assert_false(convPopup4.matches(':popup-open'));
+  assert_true(convPopup1.matches(':top-layer'));
+  assert_true(convPopup2.matches(':top-layer'));
+  assert_true(convPopup3.matches(':top-layer'));
+  assert_true(convPopup4.matches(':top-layer'));
+  convPopup1.hidePopUp();
+  assert_false(convPopup1.matches(':top-layer'));
+  assert_false(convPopup2.matches(':top-layer'));
+  assert_false(convPopup3.matches(':top-layer'));
+  assert_false(convPopup4.matches(':top-layer'));
 },'Ensure circular/convoluted ancestral relationships are functional');
 
 promise_test(async () => {
-  convPopup1.showPopup(); // Programmatically open p1
+  convPopup1.showPopUp(); // Programmatically open p1
   convPopup1.querySelector('button').click(); // Click to invoke p2
-  assert_true(convPopup1.matches(':popup-open'));
-  assert_true(convPopup2.matches(':popup-open'));
-  assert_false(convPopup3.matches(':popup-open'));
-  assert_false(convPopup4.matches(':popup-open'));
-  convPopup4.showPopup(); // Programmatically open p4
-  assert_true(convPopup1.matches(':popup-open'),'popup1 stays open because it is a DOM ancestor of popup4');
-  assert_false(convPopup2.matches(':popup-open'),'popup2 closes because it isn\'t connected to popup4 via active invokers');
-  assert_true(convPopup4.matches(':popup-open'));
+  assert_true(convPopup1.matches(':top-layer'));
+  assert_true(convPopup2.matches(':top-layer'));
+  assert_false(convPopup3.matches(':top-layer'));
+  assert_false(convPopup4.matches(':top-layer'));
+  convPopup4.showPopUp(); // Programmatically open p4
+  assert_true(convPopup1.matches(':top-layer'),'popup1 stays open because it is a DOM ancestor of popup4');
+  assert_false(convPopup2.matches(':top-layer'),'popup2 closes because it isn\'t connected to popup4 via active invokers');
+  assert_true(convPopup4.matches(':top-layer'));
   convPopup4.firstElementChild.click(); // Click within p4
-  assert_true(convPopup1.matches(':popup-open'),'nothing changes');
-  assert_false(convPopup2.matches(':popup-open'));
-  assert_true(convPopup4.matches(':popup-open'));
-  convPopup1.hidePopup();
-  assert_false(convPopup1.matches(':popup-open'));
-  assert_false(convPopup2.matches(':popup-open'));
-  assert_false(convPopup3.matches(':popup-open'));
-  assert_false(convPopup4.matches(':popup-open'));
-},'Ensure circular/convoluted ancestral relationships are functional, with a direct showPopup()');
+  assert_true(convPopup1.matches(':top-layer'),'nothing changes');
+  assert_false(convPopup2.matches(':top-layer'));
+  assert_true(convPopup4.matches(':top-layer'));
+  convPopup1.hidePopUp();
+  assert_false(convPopup1.matches(':top-layer'));
+  assert_false(convPopup2.matches(':top-layer'));
+  assert_false(convPopup3.matches(':top-layer'));
+  assert_false(convPopup4.matches(':top-layer'));
+},'Ensure circular/convoluted ancestral relationships are functional, with a direct showPopUp()');
 </script>
 
 
-<div popup=popup id=p10>Popup</div>
+<div popup id=p10>Popup</div>
 <div popup=hint id=p11>Hint</div>
-<div popup=async id=p12>Async</div>
+<div popup=manual id=p12>Manual</div>
 <style>
   #p10 {top:100px;}
   #p11 {top:200px;}
@@ -407,35 +427,35 @@ promise_test(async () => {
 promise_test(async () => {
   const popup = document.querySelector('#p10');
   const hint = document.querySelector('#p11');
-  const async = document.querySelector('#p12');
+  const manual = document.querySelector('#p12');
   // All three can be open at once, if shown in this order:
-  popup.showPopup();
-  hint.showPopup();
-  async.showPopup();
-  assert_true(popup.matches(':popup-open'));
-  assert_true(hint.matches(':popup-open'));
-  assert_true(async.matches(':popup-open'));
+  popup.showPopUp();
+  hint.showPopUp();
+  manual.showPopUp();
+  assert_true(popup.matches(':top-layer'));
+  assert_true(hint.matches(':top-layer'));
+  assert_true(manual.matches(':top-layer'));
   // The hint was opened last, so clicking it shouldn't close anything:
   await clickOn(hint);
-  assert_true(popup.matches(':popup-open'),'popup should stay open');
-  assert_true(hint.matches(':popup-open'),'hint should stay open');
-  assert_true(async.matches(':popup-open'),'async does not light dismiss');
-  // Clicking outside should close the hint and popup, but not the async:
+  assert_true(popup.matches(':top-layer'),'popup should stay open');
+  assert_true(hint.matches(':top-layer'),'hint should stay open');
+  assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
+  // Clicking outside should close the hint and popup, but not the manual:
   await clickOn(outside);
-  assert_false(popup.matches(':popup-open'),'popup should close');
-  assert_false(hint.matches(':popup-open'),'hint should close');
-  assert_true(async.matches(':popup-open'),'async does not light dismiss');
-  async.hidePopup();
-  assert_false(async.matches(':popup-open'));
-  popup.showPopup();
-  hint.showPopup();
-  assert_true(popup.matches(':popup-open'));
-  assert_true(hint.matches(':popup-open'));
+  assert_false(popup.matches(':top-layer'),'popup should close');
+  assert_false(hint.matches(':top-layer'),'hint should close');
+  assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
+  manual.hidePopUp();
+  assert_false(manual.matches(':top-layer'));
+  popup.showPopUp();
+  hint.showPopUp();
+  assert_true(popup.matches(':top-layer'));
+  assert_true(hint.matches(':top-layer'));
   // Clicking on the popup should close the hint:
   await clickOn(popup);
-  assert_true(popup.matches(':popup-open'),'popup should stay open');
-  assert_false(hint.matches(':popup-open'),'hint should light dismiss');
-  popup.hidePopup();
-  assert_false(popup.matches(':popup-open'));
+  assert_true(popup.matches(':top-layer'),'popup should stay open');
+  assert_false(hint.matches(':top-layer'),'hint should light dismiss');
+  popup.hidePopUp();
+  assert_false(popup.matches(':top-layer'));
 },'Light dismiss of mixed popup types');
 </script>

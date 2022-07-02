@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEXIBLE_BOX_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEXIBLE_BOX_ALGORITHM_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -165,6 +166,7 @@ class FlexItem {
   LayoutUnit FlowAwareMarginStart() const;
   LayoutUnit FlowAwareMarginEnd() const;
   LayoutUnit FlowAwareMarginBefore() const;
+  LayoutUnit MarginBlockEnd() const;
 
   LayoutUnit MainAxisMarginExtent() const;
   LayoutUnit CrossAxisMarginExtent() const;
@@ -366,7 +368,7 @@ class FlexLine {
 //        line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
 //     }
 // The final position of each flex item is in item.offset
-class FlexLayoutAlgorithm {
+class CORE_EXPORT FlexLayoutAlgorithm {
   DISALLOW_NEW();
 
  public:
@@ -437,6 +439,14 @@ class FlexLayoutAlgorithm {
   static StyleContentAlignmentData ResolvedAlignContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
+
+  // Translates [self-]{start,end}, left, right to flex-{start,end} based on the
+  // flex flow and container/item writing-modes. Note that callers of this
+  // function treat flex-{start,end} as {start,end}. That convention will be
+  // easy to fix when legacy flex code is deleted.
+  static ItemPosition TranslateItemPosition(const ComputedStyle& flexbox_style,
+                                            const ComputedStyle& child_style,
+                                            ItemPosition align);
 
   static LayoutUnit InitialContentPositionOffset(
       const ComputedStyle& style,

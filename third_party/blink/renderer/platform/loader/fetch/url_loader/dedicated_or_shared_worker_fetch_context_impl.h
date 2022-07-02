@@ -18,7 +18,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
@@ -131,8 +130,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       override;
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
-  TakePendingWorkerTimingReceiver(int request_id) override;
   void SetIsOfflineMode(bool is_offline_mode) override;
   bool IsDedicatedWorkerOrSharedWorkerFetchContext() const override {
     return true;
@@ -156,21 +153,11 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
 
   WebString GetAcceptLanguages() const override;
 
-  // Sets up |receiver| to receive resource performance timings for the given
-  // |request_id|. This receiver will be taken later by
-  // TakePendingWorkerTimingReceiver().
-  void AddPendingWorkerTimingReceiver(
-      int request_id,
-      mojo::PendingReceiver<mojom::WorkerTimingContainer> receiver);
-
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
 
  private:
   class Factory;
-  using WorkerTimingContainerReceiverMap =
-      std::map<int /* request_id */,
-               mojo::PendingReceiver<mojom::WorkerTimingContainer>>;
 
   ~DedicatedOrSharedWorkerFetchContextImpl() override;
 
@@ -318,14 +305,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       weak_wrapper_resource_load_info_notifier_;
 
   AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
-
-  // Contains pending receivers whose corresponding requests are still
-  // in-flight. The pending receivers are taken by
-  // TakePendingWorkerTimingReceiver() when the request is completed.
-  WorkerTimingContainerReceiverMap worker_timing_container_receivers_;
-
-  base::WeakPtrFactory<DedicatedOrSharedWorkerFetchContextImpl> weak_factory_{
-      this};
 };
 
 template <>

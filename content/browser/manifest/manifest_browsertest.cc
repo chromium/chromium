@@ -71,7 +71,7 @@ class MockWebContentsDelegate : public WebContentsDelegate {
   }
 
  private:
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_;
   raw_ptr<ManifestBrowserTest> test_;
 };
 
@@ -134,7 +134,7 @@ class ManifestBrowserTest : public ContentBrowserTest,
     mojo::AssociatedRemote<blink::mojom::ManifestManager> remote;
     shell()
         ->web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->GetInterface(&remote);
     remote.FlushForTesting();
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
 
   content::RenderFrameHost* fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   // Add a manifest to `fenced_frame_rfh`.
   ASSERT_TRUE(ExecJs(fenced_frame_rfh,

@@ -7,6 +7,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -21,7 +26,9 @@ struct MediaValuesTestCase {
   double output;
 };
 
-TEST(MediaValuesTest, Basic) {
+class MediaValuesTest : public PageTestBase {};
+
+TEST_F(MediaValuesTest, Basic) {
   MediaValuesTestCase test_cases[] = {
       {40.0, CSSPrimitiveValue::UnitType::kPixels, 16, 300, 300, true, 40},
       {40.0, CSSPrimitiveValue::UnitType::kEms, 16, 300, 300, true, 640},
@@ -67,6 +74,38 @@ TEST(MediaValuesTest, Basic) {
     if (success)
       EXPECT_FLOAT_EQ(test_cases[i].output, output);
   }
+}
+
+TEST_F(MediaValuesTest, ZoomedFontUnits) {
+  LoadAhem();
+  GetFrame().SetPageZoomFactor(2.0f);
+
+  // Set 'font:Ahem 10px' as the default font.
+  Settings* settings = GetDocument().GetSettings();
+  ASSERT_TRUE(settings);
+  settings->GetGenericFontFamilySettings().UpdateStandard("Ahem");
+  settings->SetDefaultFontSize(10.0f);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* media_values = MakeGarbageCollected<MediaValuesDynamic>(&GetFrame());
+
+  double em = 0;
+  double rem = 0;
+  double ex = 0;
+  double ch = 0;
+
+  using UnitType = CSSPrimitiveValue::UnitType;
+
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kEms, em));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRems, rem));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kExs, ex));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kChs, ch));
+
+  EXPECT_DOUBLE_EQ(10.0, em);
+  EXPECT_DOUBLE_EQ(10.0, rem);
+  EXPECT_DOUBLE_EQ(8.0, ex);
+  EXPECT_DOUBLE_EQ(10.0, ch);
 }
 
 }  // namespace blink

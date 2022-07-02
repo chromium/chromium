@@ -655,7 +655,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
 
 // On ChromeOS, only based on x86(use VaapiDecoder) architecture has the ability
 // to decode VP9 kSVC Stream. Other cases should fallback to sw decoder.
-#if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH))
+#if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS))
 TEST_P(RTCVideoDecoderStreamAdapterTest,
        FallbackToSoftwareWhenDecodeVP9kSVCStream) {
   auto* decoder = decoder_factory_->decoder();

@@ -41,8 +41,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -218,7 +218,7 @@ class TabManagerDelegate::FocusedProcess {
 // Target memory to free is the amount which brings available
 // memory back to the margin.
 int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
-  auto* monitor = chromeos::memory::SystemMemoryPressureEvaluator::Get();
+  auto* monitor = ash::memory::SystemMemoryPressureEvaluator::Get();
   if (monitor) {
     return monitor->GetCachedReclaimTargetKB();
   } else {
@@ -281,7 +281,7 @@ void TabManagerDelegate::OnBrowserSetLastActive(Browser* browser) {
     return;
 
   base::ProcessHandle pid =
-      contents->GetMainFrame()->GetProcess()->GetProcess().Handle();
+      contents->GetPrimaryMainFrame()->GetProcess()->GetProcess().Handle();
   AdjustFocusedTabScore(pid);
 }
 

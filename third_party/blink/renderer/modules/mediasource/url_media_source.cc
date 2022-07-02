@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/cross_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
@@ -49,31 +50,51 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
                                        MediaSource* source) {
   // Since WebWorkers previously could not obtain MediaSource objects, we should
   // be on the main thread unless MediaSourceInWorkers is enabled and we're in a
-  // dedicated worker execution context.
+  // dedicated worker execution context. Even in that case, we must prevent real
+  // object URL creation+registration here if MediaSourceInWorkersUsingHandle is
+  // enabled, since in that case, MediaSourceHandle is the exclusive attachment
+  // mechanism for a worker-owned MediaSource.
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
   DCHECK(IsMainThread() || RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
                                execution_context));
   DCHECK(source);
 
+  UseCounter::Count(execution_context, WebFeature::kCreateObjectURLMediaSource);
+
   MediaSourceAttachment* attachment;
   if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    // TODO(crbug.com/878133): Disallow this code path (CTMSA in object URL),
+    // instead use CTMSA via MediaSourceHandleImpl.
     DCHECK(!IsMainThread());
 
-    // PassKey usage here ensures that only we can call the constructor.
-    attachment = new CrossThreadMediaSourceAttachment(source, PassKey());
     UseCounter::Count(execution_context,
                       WebFeature::kCreateObjectURLMediaSourceFromWorker);
+    if (RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+            execution_context)) {
+      // Return empty string, which if attempted to be used as media element src
+      // by the app will cause the required failure. Note that the partial
+      // interface for this method in WebIDL must have same exposure as the
+      // extended createObjectURL interface, so we cannot simply remove this
+      // partial interface from exposure on dedicated workers even once
+      // MediaSourceInWorkersUsingHandle is shipped stable.
+      return String();
+    }
+
+    // PassKey provider usage here ensures that we are allowed to call the
+    // attachment constructor.
+    attachment = new CrossThreadMediaSourceAttachment(
+        source, AttachmentCreationPassKeyProvider::GetPassKey());
   } else {
     // Other contexts outside of main window thread or conditionally a dedicated
     // worker thread are not supported (like Shared Worker and Service Worker).
     DCHECK(IsMainThread() && execution_context->IsWindow());
 
-    // PassKey usage here ensures that only we can call the constructor.
-    attachment = new SameThreadMediaSourceAttachment(source, PassKey());
+    // PassKey provider usage here ensures that we are allowed to call the
+    // attachment constructor.
+    attachment = new SameThreadMediaSourceAttachment(
+        source, AttachmentCreationPassKeyProvider::GetPassKey());
   }
-
-  UseCounter::Count(execution_context, WebFeature::kCreateObjectURLMediaSource);
 
   // The creation of a ThreadSafeRefCounted attachment object, above, should
   // have a refcount of 1 immediately. It will be adopted into a scoped_refptr

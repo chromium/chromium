@@ -17,7 +17,7 @@ class FullscreenMediator;
 // Additionally, this object notifies the mediator of foreground events.
 @interface FullscreenSystemNotificationObserver : NSObject
 
-// Designated initializer that updates |controller| and |mediator| for system
+// Designated initializer that updates `controller` and `mediator` for system
 // notifications.
 - (nullable instancetype)
 initWithController:(nonnull FullscreenController*)controller

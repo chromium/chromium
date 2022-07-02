@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 
-#include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -13,25 +12,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId OfflineLoginView::kScreenId;
-
 OfflineLoginScreenHandler::OfflineLoginScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.OfflineLoginScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-OfflineLoginScreenHandler::~OfflineLoginScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void OfflineLoginScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("completeOfflineAuthentication",
-              &OfflineLoginScreenHandler::HandleCompleteAuth);
-  AddCallback("OfflineLogin.onEmailSubmitted",
-              &OfflineLoginScreenHandler::HandleEmailSubmitted);
-}
+OfflineLoginScreenHandler::~OfflineLoginScreenHandler() = default;
 
 void OfflineLoginScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -51,64 +35,28 @@ void OfflineLoginScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLoginOkBtn", IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT);
 }
 
-void OfflineLoginScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
-}
-
-void OfflineLoginScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowInWebUI();
+void OfflineLoginScreenHandler::Show(base::Value::Dict params) {
+  ShowInWebUI(std::move(params));
 }
 
 void OfflineLoginScreenHandler::Hide() {
   Reset();
 }
 
-void OfflineLoginScreenHandler::Bind(OfflineLoginScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void OfflineLoginScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void OfflineLoginScreenHandler::Reset() {
-  CallJS("login.OfflineLoginScreen.reset");
-}
-
-void OfflineLoginScreenHandler::HandleCompleteAuth(
-    const std::string& username,
-    const std::string& password) {
-  screen_->HandleCompleteAuth(username, password);
-}
-
-void OfflineLoginScreenHandler::HandleEmailSubmitted(
-    const std::string& username) {
-  screen_->HandleEmailSubmitted(username);
-}
-
-void OfflineLoginScreenHandler::LoadParams(base::DictionaryValue params) {
-  CallJS("login.OfflineLoginScreen.loadParams", std::move(params));
+  CallExternalAPI("reset");
 }
 
 void OfflineLoginScreenHandler::ShowPasswordPage() {
-  CallJS("login.OfflineLoginScreen.proceedToPasswordPage");
+  CallExternalAPI("proceedToPasswordPage");
 }
 
 void OfflineLoginScreenHandler::ShowOnlineRequiredDialog() {
-  CallJS("login.OfflineLoginScreen.showOnlineRequiredDialog");
+  CallExternalAPI("showOnlineRequiredDialog");
 }
 
 void OfflineLoginScreenHandler::ShowPasswordMismatchMessage() {
-  CallJS("login.OfflineLoginScreen.showPasswordMismatchMessage");
+  CallExternalAPI("showPasswordMismatchMessage");
 }
 
 }  // namespace chromeos

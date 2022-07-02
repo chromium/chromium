@@ -181,6 +181,10 @@ class CONTENT_EXPORT TtsController {
   // embedder.
   virtual TtsEngineDelegate* GetTtsEngineDelegate() = 0;
 
+  // Triggers the TtsPlatform to update its list of voices and relay that update
+  // through VoicesChanged.
+  virtual void RefreshVoices() = 0;
+
   // Visible for testing.
   virtual void SetTtsPlatform(TtsPlatform* tts_platform) = 0;
   virtual int QueueSize() = 0;

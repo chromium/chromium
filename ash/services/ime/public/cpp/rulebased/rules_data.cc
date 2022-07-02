@@ -314,7 +314,7 @@ std::unique_ptr<re2::RE2> ParseHistoryPrune(const char* history_prune) {
 // The delimit inserted at the position of "transat".
 // The term "transat" means "was transformed at".
 // Please refer to some details in the |Transform| method.
-static const char* kTransatDelimit = u8"\u001D";
+static const char* kTransatDelimit = "\u001D";
 
 }  // namespace
 

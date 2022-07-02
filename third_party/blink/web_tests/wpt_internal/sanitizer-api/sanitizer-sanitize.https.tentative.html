@@ -28,24 +28,28 @@
                   `Node[${getString(node1)}] == Node[${getString(node2)}]`);
     }
 
-    testcases.forEach(c => test(t => {
-        let s = new Sanitizer(c.config_input);
-        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
-        fragment = s.sanitize(dom);
-        assert_true(fragment instanceof DocumentFragment);
+    // We'll test .sanitize with Document and DocumentFragment, if the current
+    // implementation supports it.
+    if ("sanitize" in Sanitizer) {
+      testcases.forEach(c => test(t => {
+          let s = new Sanitizer(c.config_input);
+          var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
+          fragment = s.sanitize(dom);
+          assert_true(fragment instanceof DocumentFragment);
 
-        let result = getString(fragment);
-        assert_equals(result, c.result);
-    }, "SanitizerAPI with config with Document: " + c.message));
+          let result = getString(fragment);
+          assert_equals(result, c.result);
+      }, "SanitizerAPI with config with Document: " + c.message));
 
-    testcases.forEach(c => test(t => {
-        let s = new Sanitizer(c.config_input);
-        let tpl = document.createElement("template");
-        tpl.innerHTML = c.value;
-        fragment = s.sanitize(tpl.content);
-        assert_true(fragment instanceof DocumentFragment);
-        assert_equals(getString(fragment), c.result);
-    }, "SanitizerAPI with config with DocumentFragment: " + c.message));
+      testcases.forEach(c => test(t => {
+          let s = new Sanitizer(c.config_input);
+          let tpl = document.createElement("template");
+          tpl.innerHTML = c.value;
+          fragment = s.sanitize(tpl.content);
+          assert_true(fragment instanceof DocumentFragment);
+          assert_equals(getString(fragment), c.result);
+      }, "SanitizerAPI with config with DocumentFragment: " + c.message));
+    }
 
     // Let's also test .setHTML. The main test suite factors this out
     // into a seperate file.

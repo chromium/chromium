@@ -17,12 +17,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -269,9 +269,7 @@ class AppServiceSystemWebAppItemBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   Profile* const profile = browser()->profile();
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(profile)->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 
   // Wait for app service to see the newly installed apps.

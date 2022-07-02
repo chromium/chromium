@@ -208,6 +208,10 @@ if (enable_message_center) {
       "//ui/resources:ui_test_pak_data",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
+    }
+
     if (toolkit_views) {
       sources += [
         "views/message_popup_collection_unittest.cc",
@@ -225,8 +229,8 @@ if (enable_message_center) {
         "//ui/views:test_support",
       ]
 
-      if (is_chromeos_ash) {
-        deps += [ "//ash/constants" ]
+      if (is_chromeos) {
+        deps += [ "//chromeos/constants:constants" ]
       }
     }
 
@@ -235,6 +239,7 @@ if (enable_message_center) {
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/font_capabilities.test-cmx",
         "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+        "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
       ]
     }
   }

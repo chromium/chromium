@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,7 +22,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './password_list_item.html.js';
-import {PasswordViewPageUrlParams} from './password_view.js';
+import {PasswordViewPageInteractions, PasswordViewPageUrlParams, recordPasswordViewInteraction} from './password_view.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 export type PasswordMoreActionsClickedEvent = CustomEvent<{
@@ -53,11 +53,10 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
   static get properties() {
     return {
-      /** Whether password notes is enabled or not. */
-      isPasswordNotesEnabled_: {
+      isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
+          return loadTimeData.getBoolean('enablePasswordViewPage');
         },
       },
 
@@ -69,7 +68,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
       shouldShowSubpageButton_: {
         type: Boolean,
         computed: 'computeShouldShowSubpageButton_(' +
-            'isPasswordNotesEnabled_, shouldHideActionButtons)',
+            'isPasswordViewPageEnabled_, shouldHideActionButtons)',
         reflectToAttribute: true,
       },
 
@@ -83,16 +82,16 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     };
   }
 
-  private isPasswordNotesEnabled_: boolean;
+  private isPasswordViewPageEnabled_: boolean;
   private shouldShowSubpageButton_: boolean;
   shouldHideActionButtons: boolean;
 
   private computeShouldShowSubpageButton_(): boolean {
-    return !this.shouldHideActionButtons && this.isPasswordNotesEnabled_;
+    return !this.shouldHideActionButtons && this.isPasswordViewPageEnabled_;
   }
 
   private shouldHideMoreActionsButton_(): boolean {
-    return this.isPasswordNotesEnabled_ || this.shouldHideActionButtons;
+    return this.isPasswordViewPageEnabled_ || this.shouldHideActionButtons;
   }
 
   /**
@@ -112,6 +111,20 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     const params = new URLSearchParams();
     params.set(PasswordViewPageUrlParams.SITE, this.entry.urls.shown);
     params.set(PasswordViewPageUrlParams.USERNAME, this.entry.username);
+    // For sync'ing and signed-out users, there is strictly only one password
+    // store, and hence no need to specify store information.
+    // For account store users, a credential can exist in one or both of the
+    // device and account stores, in which case, store information is required.
+    // For consistency with the sync'ing and signed-out case, store information
+    // isn't provided when the credentials exist only in the device store.
+    if (this.entry.isPresentInAccount()) {
+      params.set(PasswordViewPageUrlParams.IN_ACCOUNT, 'true');
+      if (this.entry.isPresentOnDevice()) {
+        params.set(PasswordViewPageUrlParams.ON_DEVICE, 'true');
+      }
+    }
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
   }
 
@@ -137,6 +150,15 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
         (this.entry.federationText) ? 'passwordRowFederatedMoreActionsButton' :
                                       'passwordRowMoreActionsButton',
         this.entry.username, this.entry.urls.shown);
+  }
+
+  /**
+   * Get the aria label for the password details subpage.
+   */
+  private getSubpageLabel_(): string {
+    return loadTimeData.getStringF(
+        'passwordRowPasswordDetailPageButton', this.entry.username,
+        this.entry.urls.shown);
   }
 }
 

@@ -376,8 +376,6 @@
       "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/456214
       "11A01C82EF355E674E4F9728A801F5C3CB40D83F",  // http://crbug.com/456214
       "F410C88469990EE7947450311D24B8AF2ADB2595",  // http://crbug.com/456214
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA",  // Media Router Stable
       // TODO (ntang) Remove the following 2 hashes by 12/31/2017.
       "B620CF4203315F9F2E046EDED22C7571A935958D",  // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
@@ -388,8 +386,6 @@
       "46578A13607D38F1DC8E280C4F499FB0A2F9565C",  // http://crbug.com/819404
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/819404
       "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/819404
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/932466
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/932466
       "C74B2AF138F9EDECD04D0965AB36CA66C8290466",  // http://crbug.com/957772
       "754A9CB3C8623093180E10CF4C3AB64837179E68",  // https://crbug.com/1201800
       "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
@@ -402,19 +398,13 @@
   "mojoPrivate": [{
     "contexts": ["blessed_extension"],
     "channel": "stable",
-    "extension_types": ["platform_app", "extension"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",   // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA",   // Media Router Stable
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",   // Chrome Camera App Dev
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94"    // Chrome Camera App Stable
-    ]
+    "extension_types": ["platform_app", "extension"]
   }, {
     "contexts": ["blessed_extension"],
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }],
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
@@ -489,6 +479,7 @@
       "content_script",
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "web_page"
     ],
@@ -498,7 +489,7 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       // Allow only terminal_ssh.html in Terminal System Web App.
-      "chrome-untrusted://terminal/html/terminal_ssh.html"
+      "chrome-untrusted://terminal/html/terminal_ssh.html*"
     ]
   }],
   "runtime.connectNative": {
@@ -509,6 +500,7 @@
     "contexts": [
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "content_script"
     ]
@@ -517,6 +509,7 @@
     "contexts": [
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "content_script"
     ]
@@ -530,6 +523,7 @@
     "contexts": [
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "content_script"
     ]
@@ -542,6 +536,7 @@
     "contexts": [
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "content_script"
     ]
@@ -553,6 +548,7 @@
       "content_script",
       "blessed_extension",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension",
       "web_page"
     ],
@@ -641,6 +637,7 @@
       "blessed_web_page",
       "content_script",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension"
     ]
   }, {

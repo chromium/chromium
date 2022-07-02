@@ -20,6 +20,7 @@ enum class ParseStatusCode : StatusCodeType {
   kFailedToParseSignedDecimalFloatingPoint,
   kFailedToParseDecimalResolution,
   kFailedToParseQuotedString,
+  kFailedToParseByteRange,
   kInvalidPlaylistVersion,
   kUnknownPlaylistType,
   kMalformedAttributeList,
@@ -28,6 +29,7 @@ enum class ParseStatusCode : StatusCodeType {
   kInvalidUri,
   kPlaylistMissingM3uTag,
   kMediaPlaylistMissingTargetDuration,
+  kTargetDurationExceedsMax,
   kMediaSegmentMissingInfTag,
   kMediaSegmentExceedsTargetDuration,
   kPlaylistHasDuplicateTags,
@@ -41,6 +43,17 @@ enum class ParseStatusCode : StatusCodeType {
   kXStreamInfTagNotFollowedByUri,
   kVariantMissingStreamInfTag,
   kMediaSegmentBeforeMediaSequenceTag,
+  kMediaSegmentBeforeDiscontinuitySequenceTag,
+  kDiscontinuityTagBeforeDiscontinuitySequenceTag,
+  kByteRangeRequiresOffset,
+  kByteRangeInvalid,
+  kValueOverflowsTimeDelta,
+  kPlaylistOverflowsTimeDelta,
+  kSkipBoundaryTooLow,
+  kHoldBackDistanceTooLow,
+  kPartTargetDurationExceedsTargetDuration,
+  kPartHoldBackDistanceTooLow,
+  kPartInfTagWithoutPartHoldBack,
 };
 
 struct ParseStatusTraits {

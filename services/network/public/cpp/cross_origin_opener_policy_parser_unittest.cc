@@ -16,31 +16,23 @@
 
 namespace network {
 
-class CrossOriginOpenerPolicyTest : public ::testing::Test,
-                                    public ::testing::WithParamInterface<bool> {
-};
-
-TEST_P(CrossOriginOpenerPolicyTest, Parse) {
+TEST(CrossOriginOpenerPolicyTest, Parse) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCrossOriginOpenerPolicy);
-
-  // This allows us to test COOP: Same-Origin-Allow-Popups-Plus-Coep.
-  // The feature is currently off by default, but is passed to
-  // AugmentCoopWithCoep through a boolean, which is simulated here.
-  // See https://crbug.com/1221127 for details on the feature.
-  bool is_coop_soap_plus_coep_enabled = GetParam();
+  scoped_feature_list.InitWithFeatures(
+      {features::kCrossOriginOpenerPolicy, features::kCoopRestrictProperties},
+      {});
 
   using mojom::CrossOriginOpenerPolicyValue;
   constexpr auto kSameOrigin = CrossOriginOpenerPolicyValue::kSameOrigin;
   constexpr auto kSameOriginAllowPopups =
       CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+  constexpr auto kRestrictProperties =
+      CrossOriginOpenerPolicyValue::kRestrictProperties;
   constexpr auto kUnsafeNone = CrossOriginOpenerPolicyValue::kUnsafeNone;
   constexpr auto kSameOriginPlusCoep =
       CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-  auto kSameOriginAllowPopupsPlusCoepIfEnabled =
-      is_coop_soap_plus_coep_enabled
-          ? CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep
-          : CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+  constexpr auto kRestrictPropertiesPlusCoep =
+      CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
   constexpr auto kCoepNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   constexpr auto kCoepCorp =
       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
@@ -64,10 +56,11 @@ TEST_P(CrossOriginOpenerPolicyTest, Parse) {
       {"same-origin-allow-popups", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
        kSameOriginAllowPopups, kSameOriginAllowPopups, kNoEndpoint,
        kUnsafeNone},
+      {"restrict-properties", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
+       kRestrictProperties, kRestrictProperties, kNoEndpoint, kUnsafeNone},
       {"unsafe-none", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint, kUnsafeNone,
-       kUnsafeNone,
+       kUnsafeNone, kNoEndpoint, kUnsafeNone},
 
-       kNoEndpoint, kUnsafeNone},
       // Leading whitespaces.
       {"   same-origin", kCoepNone, kNoHeader, kCoepNone, kNoEndpoint,
        kSameOrigin, kSameOrigin, kNoEndpoint, kUnsafeNone},
@@ -193,27 +186,25 @@ TEST_P(CrossOriginOpenerPolicyTest, Parse) {
        kSameOrigin, kNoEndpoint, kUnsafeNone},
       // reporting Same-origin with COEP
       {kNoHeader, kCoepCorp, "same-origin", kCoepNone, kNoEndpoint, kUnsafeNone,
-       kSameOriginAllowPopupsPlusCoepIfEnabled, kNoEndpoint,
-       kSameOriginPlusCoep},
+       kSameOriginAllowPopups, kNoEndpoint, kSameOriginPlusCoep},
       // reporting Same-origin with reporting COEP
       {kNoHeader, kCoepNone, "same-origin", kCoepCorp, kNoEndpoint, kUnsafeNone,
        kSameOriginAllowPopups, kNoEndpoint, kSameOriginPlusCoep},
-      // Same-origin-allow-popups with COEP
-      {"same-origin-allow-popups", kCoepCorp, kNoHeader, kCoepNone, kNoEndpoint,
-       kSameOriginAllowPopupsPlusCoepIfEnabled,
-       kSameOriginAllowPopupsPlusCoepIfEnabled, kNoEndpoint, kUnsafeNone},
-      // Same-origin-allow-popups with report only COEP
-      {"same-origin-allow-popups", kCoepNone, kNoHeader, kCoepCorp, kNoEndpoint,
-       kSameOriginAllowPopups, kSameOriginAllowPopups, kNoEndpoint,
+      // restrict-properties with COEP
+      {"restrict-properties", kCoepCorp, kNoHeader, kCoepNone, kNoEndpoint,
+       kRestrictPropertiesPlusCoep, kRestrictPropertiesPlusCoep, kNoEndpoint,
        kUnsafeNone},
-      // reporting Same-origin-allow-popups with COEP
-      {kNoHeader, kCoepCorp, "same-origin-allow-popups", kCoepNone, kNoEndpoint,
-       kUnsafeNone, kSameOriginAllowPopupsPlusCoepIfEnabled, kNoEndpoint,
-       kSameOriginAllowPopupsPlusCoepIfEnabled},
-      // reporting Same-origin-allow-popups with reporting COEP
-      {kNoHeader, kCoepNone, "same-origin-allow-popups", kCoepCorp, kNoEndpoint,
+      // restrict-properties with report only COEP
+      {"restrict-properties", kCoepNone, kNoHeader, kCoepCorp, kNoEndpoint,
+       kRestrictProperties, kRestrictProperties, kNoEndpoint, kUnsafeNone},
+      // reporting restrict-properties with COEP
+      {kNoHeader, kCoepCorp, "restrict-properties", kCoepNone, kNoEndpoint,
        kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
-       kSameOriginAllowPopupsPlusCoepIfEnabled},
+       kRestrictPropertiesPlusCoep},
+      // reporting restrict-properties with reporting COEP
+      {kNoHeader, kCoepNone, "restrict-properties", kCoepCorp, kNoEndpoint,
+       kUnsafeNone, kSameOriginAllowPopups, kNoEndpoint,
+       kRestrictPropertiesPlusCoep},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -244,7 +235,7 @@ TEST_P(CrossOriginOpenerPolicyTest, Parse) {
     network::CrossOriginEmbedderPolicy coep;
     coep.value = test_case.coep_value;
     coep.report_only_value = test_case.coep_report_only_value;
-    AugmentCoopWithCoep(&coop, coep, is_coop_soap_plus_coep_enabled);
+    AugmentCoopWithCoep(&coop, coep);
 
     EXPECT_EQ(test_case.expected_endpoint, coop.reporting_endpoint);
     EXPECT_EQ(test_case.expected_policy, coop.value);
@@ -255,8 +246,6 @@ TEST_P(CrossOriginOpenerPolicyTest, Parse) {
     EXPECT_EQ(test_case.expected_policy_report_only, coop.report_only_value);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, CrossOriginOpenerPolicyTest, testing::Bool());
 
 TEST(CrossOriginOpenerPolicyTest, Default) {
   base::test::ScopedFeatureList scoped_feature_list;

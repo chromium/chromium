@@ -25,7 +25,6 @@
       "use_cfi_diag": true,
       "use_cfi_icall": true,
       "use_cfi_recover": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_thin_lto": true
     }
@@ -54,7 +53,6 @@
         "system_webview_package_name": "com.google.android.webview",
         "target_cpu": "arm64",
         "target_os": "android",
-        "use_rbe": true,
         "use_remoteexec": true
       }
     }
@@ -77,7 +75,59 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "use_rbe": true,
+        "use_remoteexec": true
+      }
+    }
+  },
+  "Comparison Mac (reclient)": {
+    "goma": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "enable_nacl": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "use_goma": true
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "use_remoteexec": true
+      }
+    }
+  },
+  "Comparison Mac arm64 (reclient)": {
+    "goma": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "enable_nacl": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "target_cpu": "arm64",
+        "use_goma": true
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "dcheck_always_on": false,
+        "enable_nacl": false,
+        "ffmpeg_branding": "Chrome",
+        "is_component_build": false,
+        "is_debug": false,
+        "proprietary_codecs": true,
+        "symbol_level": 1,
+        "target_cpu": "arm64",
         "use_remoteexec": true
       }
     }
@@ -99,7 +149,6 @@
         "dcheck_always_on": false,
         "is_chromeos_device": true,
         "ozone_platform_headless": true,
-        "use_rbe": true,
         "use_real_dbus_clients": false,
         "use_remoteexec": true
       }
@@ -125,7 +174,6 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_rbe": true,
         "use_remoteexec": true
       }
     }
@@ -150,7 +198,34 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_rbe": true,
+        "use_remoteexec": true
+      }
+    }
+  },
+  "Comparison ios (reclient)": {
+    "goma": {
+      "gn_args": {
+        "enable_run_ios_unittests_with_xctest": true,
+        "ios_set_attributes_for_xcode_project_generation": false,
+        "is_component_build": false,
+        "is_debug": true,
+        "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_goma": true
+      }
+    },
+    "reclient": {
+      "gn_args": {
+        "enable_run_ios_unittests_with_xctest": true,
+        "ios_set_attributes_for_xcode_project_generation": false,
+        "is_component_build": false,
+        "is_debug": true,
+        "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_environment": "simulator",
+        "target_os": "ios",
         "use_remoteexec": true
       }
     }
@@ -201,7 +276,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -292,7 +366,16 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "Linux Builder (reclient compare)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
       "use_remoteexec": true
     }
   },
@@ -305,7 +388,6 @@
       "use_cfi_cast": true,
       "use_cfi_diag": true,
       "use_cfi_icall": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_thin_lto": true
     }
@@ -328,7 +410,6 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -338,8 +419,19 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
+    }
+  },
+  "Mac Builder (py2 less)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
     }
   },
   "Mac Builder (reclient compare)": {
@@ -350,7 +442,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -362,7 +453,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -408,7 +498,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -419,7 +508,6 @@
       "is_component_build": false,
       "is_debug": false,
       "use_ozone": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -429,7 +517,17 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "Win x64 Builder (py2 less)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "use_remoteexec": true
     }
   },
@@ -441,7 +539,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -453,7 +550,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -466,7 +562,18 @@
       "proprietary_codecs": true,
       "rbe_cfg_dir": "../../buildtools/reclient_cfgs/win-cross-experiments",
       "symbol_level": 1,
-      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "Win x64 Builder (reclient)(cross)(gvisor)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "rbe_cfg_dir": "../../buildtools/reclient_cfgs/win-cross-experiments",
+      "symbol_level": 1,
       "use_remoteexec": true
     }
   },
@@ -483,7 +590,6 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -500,7 +606,6 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -520,7 +625,6 @@
       "target_os": "android",
       "use_errorprone_java_compiler": false,
       "use_jacoco_coverage": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -540,9 +644,25 @@
       "target_os": "android",
       "use_clang_coverage": true,
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_static_angle": true
+    }
+  },
+  "android-fieldtrial-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel (goma cache silo)": {
@@ -561,7 +681,6 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_rbe": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
     }
@@ -572,7 +691,6 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_rbe": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
     }
@@ -613,6 +731,16 @@
       "use_goma": true
     }
   },
+  "fuchsia-fyi-cfv2-script": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_cfv2_script": true,
+      "use_goma": true
+    }
+  },
   "fuchsia-fyi-x64-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -641,20 +769,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
-  "ios-asan": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
       "use_goma": true
     }
   },
@@ -692,7 +806,7 @@
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "10.0",
+      "ios_deployment_target": "11.0",
       "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
@@ -719,7 +833,6 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -751,16 +864,13 @@
   },
   "ios-simulator-cronet": {
     "gn_args": {
-      "additional_target_cpus": [
-        "x86"
-      ],
       "disable_brotli_filter": false,
       "disable_file_support": true,
       "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "10.0",
+      "ios_deployment_target": "11.0",
       "ios_set_attributes_for_xcode_project_generation": false,
       "ios_stack_profiler_enabled": false,
       "is_component_build": false,
@@ -804,32 +914,6 @@
       "use_lld": false
     }
   },
-  "ios14-beta-simulator": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "ios14-sdk-simulator": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
   "ios15-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
@@ -870,6 +954,34 @@
       "use_goma": true
     }
   },
+  "ios16-beta-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios16-sdk-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "treat_warnings_as_errors": false,
+      "use_goma": true,
+      "use_lld": false
+    }
+  },
   "lacros-amd64-generic-rel (goma cache silo)": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
@@ -890,7 +1002,6 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -903,7 +1014,6 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -925,7 +1035,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -950,7 +1059,6 @@
       "target_cpu": "x64",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -981,7 +1089,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -992,7 +1099,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_sandbox_future": true
     }
@@ -1005,7 +1111,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1018,7 +1123,6 @@
       "proprietary_codecs": true,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1031,7 +1135,6 @@
       "proprietary_codecs": true,
       "target_os": "chromeos",
       "use_javascript_coverage": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1051,7 +1154,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1074,7 +1176,6 @@
       "media_use_ffmpeg": false,
       "media_use_libvpx": false,
       "proprietary_codecs": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1086,7 +1187,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1109,7 +1209,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1124,7 +1223,6 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1136,7 +1234,6 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1169,7 +1266,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1179,7 +1275,6 @@
       "is_component_build": false,
       "is_debug": false,
       "use_perfetto_client_library": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1189,7 +1284,6 @@
       "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1199,7 +1293,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1209,7 +1302,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1219,7 +1311,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1229,7 +1320,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1300,7 +1390,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1314,7 +1403,6 @@
       "target_cpu": "x64",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1328,7 +1416,6 @@
       "target_cpu": "x86",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1338,7 +1425,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1350,16 +1436,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "win-pixel-builder-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1369,7 +1445,6 @@
       "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1381,7 +1456,6 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -1415,7 +1489,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

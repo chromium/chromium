@@ -10,6 +10,7 @@
 namespace blink {
 
 unsigned ScriptForbiddenScope::g_main_thread_counter_ = 0;
+unsigned ScriptForbiddenScope::g_blink_lifecycle_counter_ = 0;
 
 unsigned& ScriptForbiddenScope::GetMutableCounter() {
   if (IsMainThread())

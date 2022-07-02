@@ -22,11 +22,11 @@ void TestOnePattern(const std::string& test_string,
                     bool is_match) {
   std::string test = "TestOnePattern(" + test_string + ", " + pattern + ", " +
                      (is_match ? "1" : "0") + ")";
-  std::vector<StringPattern> patterns;
+  std::vector<MatcherStringPattern> patterns;
   patterns.emplace_back(pattern, 1);
   SubstringSetMatcher matcher;
   ASSERT_TRUE(matcher.Build(patterns));
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match(test_string, &matches);
 
   size_t expected_matches = (is_match ? 1 : 0);
@@ -43,12 +43,12 @@ void TestTwoPatterns(const std::string& test_string,
                      ", " + pattern_2 + ", " + (is_match_1 ? "1" : "0") + ", " +
                      (is_match_2 ? "1" : "0") + ")";
   ASSERT_NE(pattern_1, pattern_2);
-  StringPattern substring_pattern_1(pattern_1, 1);
-  StringPattern substring_pattern_2(pattern_2, 2);
+  MatcherStringPattern substring_pattern_1(pattern_1, 1);
+  MatcherStringPattern substring_pattern_2(pattern_2, 2);
   // In order to make sure that the order in which patterns are registered
   // does not make any difference we try both permutations.
   for (int permutation = 0; permutation < 2; ++permutation) {
-    std::vector<const StringPattern*> patterns;
+    std::vector<const MatcherStringPattern*> patterns;
     if (permutation == 0) {
       patterns.push_back(&substring_pattern_1);
       patterns.push_back(&substring_pattern_2);
@@ -58,7 +58,7 @@ void TestTwoPatterns(const std::string& test_string,
     }
     SubstringSetMatcher matcher;
     ASSERT_TRUE(matcher.Build(patterns));
-    std::set<int> matches;
+    std::set<MatcherStringPattern::ID> matches;
     matcher.Match(test_string, &matches);
 
     size_t expected_matches = (is_match_1 ? 1 : 0) + (is_match_2 ? 1 : 0);
@@ -134,16 +134,16 @@ TEST(SubstringSetMatcherTest, TestMatcher) {
 }
 
 TEST(SubstringSetMatcherTest, TestMatcher2) {
-  StringPattern pattern_1("a", 1);
-  StringPattern pattern_2("b", 2);
-  StringPattern pattern_3("c", 3);
+  MatcherStringPattern pattern_1("a", 1);
+  MatcherStringPattern pattern_2("b", 2);
+  MatcherStringPattern pattern_3("c", 3);
 
-  std::vector<const StringPattern*> patterns = {&pattern_1, &pattern_2,
-                                                &pattern_3};
+  std::vector<const MatcherStringPattern*> patterns = {&pattern_1, &pattern_2,
+                                                       &pattern_3};
   auto matcher = std::make_unique<SubstringSetMatcher>();
   ASSERT_TRUE(matcher->Build(patterns));
 
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher->Match("abd", &matches);
   EXPECT_EQ(2u, matches.size());
   EXPECT_TRUE(matches.end() != matches.find(1));
@@ -160,14 +160,14 @@ TEST(SubstringSetMatcherTest, TestMatcher2) {
   EXPECT_TRUE(matches.end() == matches.find(2));
 
   matcher = std::make_unique<SubstringSetMatcher>();
-  ASSERT_TRUE(matcher->Build(std::vector<const StringPattern*>()));
+  ASSERT_TRUE(matcher->Build(std::vector<const MatcherStringPattern*>()));
   EXPECT_TRUE(matcher->IsEmpty());
 }
 
 TEST(SubstringSetMatcherTest, TestMatcher3) {
   std::string text = "abcde";
 
-  std::vector<StringPattern> patterns;
+  std::vector<MatcherStringPattern> patterns;
   int id = 0;
   // Add all substrings of this string, including empty string.
   patterns.emplace_back("", id++);
@@ -179,20 +179,20 @@ TEST(SubstringSetMatcherTest, TestMatcher3) {
 
   SubstringSetMatcher matcher;
   matcher.Build(patterns);
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match(text, &matches);
   EXPECT_EQ(patterns.size(), matches.size());
-  for (const StringPattern& pattern : patterns) {
+  for (const MatcherStringPattern& pattern : patterns) {
     EXPECT_TRUE(matches.find(pattern.id()) != matches.end())
         << pattern.pattern();
   }
 }
 
 TEST(SubstringSetMatcherTest, TestEmptyMatcher) {
-  std::vector<StringPattern> patterns;
+  std::vector<MatcherStringPattern> patterns;
   SubstringSetMatcher matcher;
   matcher.Build(patterns);
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match("abd", &matches);
   EXPECT_TRUE(matches.empty());
   EXPECT_TRUE(matcher.IsEmpty());

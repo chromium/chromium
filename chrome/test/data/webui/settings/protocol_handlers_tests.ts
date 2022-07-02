@@ -155,81 +155,72 @@ suite('ProtocolHandlers', function() {
   });
 
   /** @return {!Promise} */
-  function initPage() {
+  async function initPage() {
     browserProxy.reset();
     document.body.innerHTML = '';
     testElement = document.createElement('protocol-handlers');
     document.body.appendChild(testElement);
-    return browserProxy.whenCalled('observeAppProtocolHandlers')
-        .then(function() {
-          flush();
-        });
+    await browserProxy.whenCalled('observeAppProtocolHandlers');
+    flush();
   }
 
-  test('set protocol handlers default called', () => {
-    return initPage().then(() => {
-      testElement.shadowRoot!
-          .querySelector<HTMLElement>('#protcolHandlersRadioBlock')!.click();
-      return browserProxy.whenCalled('setProtocolHandlerDefault');
-    });
+  test('set protocol handlers default called', async () => {
+    await initPage();
+    testElement.shadowRoot!
+        .querySelector<HTMLElement>('#protcolHandlersRadioBlock')!.click();
+    await browserProxy.whenCalled('setProtocolHandlerDefault');
   });
 
-  test('empty list', function() {
-    return initPage().then(function() {
-      const listFrames =
-          testElement.shadowRoot!.querySelectorAll('.list-frame');
-      assertEquals(0, listFrames.length);
-    });
+  test('empty list', async function() {
+    await initPage();
+    const listFrames = testElement.shadowRoot!.querySelectorAll('.list-frame');
+    assertEquals(0, listFrames.length);
   });
 
-  test('non-empty list', function() {
+  test('non-empty list', async function() {
     browserProxy.setProtocolHandlers(protocols);
 
-    return initPage().then(function() {
-      const listFrames =
-          testElement.shadowRoot!.querySelectorAll('.list-frame');
-      const listItems = testElement.shadowRoot!.querySelectorAll('.list-item');
-      // There are two protocols: ["mailto", "webcal"].
-      assertEquals(2, listFrames.length);
-      // There are three total handlers within the two protocols.
-      assertEquals(3, listItems.length);
+    await initPage();
+    const listFrames = testElement.shadowRoot!.querySelectorAll('.list-frame');
+    const listItems = testElement.shadowRoot!.querySelectorAll('.list-item');
+    // There are two protocols: ["mailto", "webcal"].
+    assertEquals(2, listFrames.length);
+    // There are three total handlers within the two protocols.
+    assertEquals(3, listItems.length);
 
-      // Check that item hosts are rendered correctly.
-      const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
-      assertEquals('www.google.com', hosts[0]!.textContent!.trim());
-      assertEquals('www.google1.com', hosts[1]!.textContent!.trim());
-      assertEquals('www.google2.com', hosts[2]!.textContent!.trim());
+    // Check that item hosts are rendered correctly.
+    const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
+    assertEquals('www.google.com', hosts[0]!.textContent!.trim());
+    assertEquals('www.google1.com', hosts[1]!.textContent!.trim());
+    assertEquals('www.google2.com', hosts[2]!.textContent!.trim());
 
-      // Check that item default subtexts are rendered correctly.
-      const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.protocol-default');
-      assertFalse(defText[0]!.hidden);
-      assertFalse(defText[1]!.hidden);
-      assertTrue(defText[2]!.hidden);
-    });
+    // Check that item default subtexts are rendered correctly.
+    const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.protocol-default');
+    assertFalse(defText[0]!.hidden);
+    assertFalse(defText[1]!.hidden);
+    assertTrue(defText[2]!.hidden);
   });
 
-  test('non-empty ignored protocols', () => {
+  test('non-empty ignored protocols', async () => {
     browserProxy.setIgnoredProtocols(ignoredProtocols);
 
-    return initPage().then(() => {
-      const listFrames =
-          testElement.shadowRoot!.querySelectorAll('.list-frame');
-      const listItems = testElement.shadowRoot!.querySelectorAll('.list-item');
-      // There is a single blocked protocols section
-      assertEquals(1, listFrames.length);
-      // There is one total handlers within the two protocols.
-      assertEquals(1, listItems.length);
+    await initPage();
+    const listFrames = testElement.shadowRoot!.querySelectorAll('.list-frame');
+    const listItems = testElement.shadowRoot!.querySelectorAll('.list-item');
+    // There is a single blocked protocols section
+    assertEquals(1, listFrames.length);
+    // There is one total handlers within the two protocols.
+    assertEquals(1, listItems.length);
 
-      // Check that item hosts are rendered correctly.
-      const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
-      assertEquals('www.google.com', hosts[0]!.textContent!.trim());
+    // Check that item hosts are rendered correctly.
+    const hosts = testElement.shadowRoot!.querySelectorAll('.protocol-host');
+    assertEquals('www.google.com', hosts[0]!.textContent!.trim());
 
-      // Check that item default subtexts are rendered correctly.
-      const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.protocol-protocol');
-      assertFalse(defText[0]!.hidden);
-    });
+    // Check that item default subtexts are rendered correctly.
+    const defText = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.protocol-protocol');
+    assertFalse(defText[0]!.hidden);
   });
 
   /**
@@ -298,22 +289,20 @@ suite('ProtocolHandlers', function() {
     });
   });
 
-  test('remove button for ignored works', () => {
+  test('remove button for ignored works', async () => {
     browserProxy.setIgnoredProtocols(ignoredProtocols);
-    return initPage()
-        .then(() => {
-          testElement.shadowRoot!
-              .querySelector<HTMLElement>('#removeIgnoredButton')!.click();
-          return browserProxy.whenCalled('removeProtocolHandler');
-        })
-        .then(args => {
-          const protocol = args[0];
-          const url = args[1];
-          // BrowserProxy's handler is expected to be called with arguments as
-          // [protocol, url].
-          assertEquals(ignoredProtocols[0]!.protocol, protocol);
-          assertEquals(ignoredProtocols[0]!.spec, url);
-        });
+    await initPage();
+
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#removeIgnoredButton')!.click();
+    const args = await browserProxy.whenCalled('removeProtocolHandler');
+
+    const protocol = args[0];
+    const url = args[1];
+    // BrowserProxy's handler is expected to be called with arguments as
+    // [protocol, url].
+    assertEquals(ignoredProtocols[0]!.protocol, protocol);
+    assertEquals(ignoredProtocols[0]!.spec, url);
   });
 
   test('non-empty web app allowed protocols', async () => {

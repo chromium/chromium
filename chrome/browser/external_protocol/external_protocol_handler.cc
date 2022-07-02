@@ -281,7 +281,7 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
     return false;
 
   url_matcher::URLMatcher matcher;
-  url_matcher::URLMatcherConditionSet::ID id(0);
+  base::MatcherStringPattern::ID id(0);
   url_matcher::util::AddFilters(&matcher, true /* allowed */, &id,
                                 &base::Value::AsListValue(*origin_patterns));
 

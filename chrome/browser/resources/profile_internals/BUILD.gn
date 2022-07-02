@@ -14,17 +14,7 @@ assert(!is_android)
 # Move everything to one folder using preprocess_if_expr.
 preprocess_folder = "preprocessed"
 
-generate_grd("build_grd") {
-  grd_prefix = "profile_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "profile_internals.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
     "profile_internals_app.ts",
@@ -74,4 +64,14 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "profile_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "profile_internals.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

@@ -6,7 +6,7 @@
 
 #include "ash/components/arc/session/arc_container_client_adapter.h"
 #include "base/callback_helpers.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,15 +24,15 @@ class ArcContainerClientAdapterTest : public testing::Test,
       const ArcContainerClientAdapterTest&) = delete;
 
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFake();
     client_adapter_ = CreateArcContainerClientAdapter();
     client_adapter_->AddObserver(this);
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
   }
 
   void TearDown() override {
     client_adapter_ = nullptr;
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
   }
 
   // ArcClientAdapter::Observer:
@@ -58,14 +58,14 @@ void OnMiniInstanceStarted(bool result) {
 }
 
 TEST_F(ArcContainerClientAdapterTest, ArcInstanceStopped) {
-  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+  ash::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
       login_manager::ArcContainerStopReason::USER_REQUEST);
   ASSERT_TRUE(is_system_shutdown().has_value());
   EXPECT_FALSE(is_system_shutdown().value());
 }
 
 TEST_F(ArcContainerClientAdapterTest, ArcInstanceStoppedSystemShutdown) {
-  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+  ash::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
       login_manager::ArcContainerStopReason::SESSION_MANAGER_SHUTDOWN);
   ASSERT_TRUE(is_system_shutdown().has_value());
   EXPECT_TRUE(is_system_shutdown().value());
@@ -115,7 +115,7 @@ TEST_F(ArcContainerClientAdapterTest,
       },
       client_adapter(), &parent_observer));
 
-  chromeos::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
+  ash::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
       login_manager::ArcContainerStopReason::USER_REQUEST);
 
   EXPECT_TRUE(parent_observer.stopped_called());
@@ -127,7 +127,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableMediaStoreMaintenance) {
   start_params.disable_media_store_maintenance = true;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_disable_media_store_maintenance());
   EXPECT_TRUE(request.disable_media_store_maintenance());
@@ -137,7 +137,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_disable_download_provider());
   EXPECT_FALSE(request.disable_download_provider());
@@ -148,7 +148,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderOn) {
   start_params.disable_download_provider = true;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_disable_download_provider());
   EXPECT_TRUE(request.disable_download_provider());
@@ -158,7 +158,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_UreadaheadByDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_disable_ureadahead());
   EXPECT_FALSE(request.disable_ureadahead());
@@ -169,7 +169,7 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableUreadahead) {
   start_params.disable_ureadahead = true;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_disable_ureadahead());
   EXPECT_TRUE(request.disable_ureadahead());
@@ -179,7 +179,7 @@ TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_enable_tts_caching());
   EXPECT_FALSE(request.enable_tts_caching());
@@ -190,10 +190,31 @@ TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingEnabled) {
   start_params.enable_tts_caching = true;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_enable_tts_caching());
   EXPECT_TRUE(request.enable_tts_caching());
+}
+
+TEST_F(ArcContainerClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
+  UpgradeParams upgrade_params;
+  upgrade_params.skip_tts_cache = true;
+  client_adapter()->UpgradeArc(std::move(upgrade_params),
+                               base::BindOnce(&OnMiniInstanceStarted));
+  const auto& upgrade_request =
+      ash::FakeSessionManagerClient::Get()->last_upgrade_arc_request();
+  EXPECT_TRUE(upgrade_request.skip_tts_cache());
+}
+
+TEST_F(ArcContainerClientAdapterTest,
+       ConvertUpgradeParams_EnableTtsCacheSetup) {
+  UpgradeParams upgrade_params;
+  upgrade_params.skip_tts_cache = false;
+  client_adapter()->UpgradeArc(std::move(upgrade_params),
+                               base::BindOnce(&OnMiniInstanceStarted));
+  const auto& upgrade_request =
+      ash::FakeSessionManagerClient::Get()->last_upgrade_arc_request();
+  EXPECT_FALSE(upgrade_request.skip_tts_cache());
 }
 
 struct DalvikMemoryProfileTestParam {
@@ -231,7 +252,7 @@ TEST_P(ArcContainerClientAdapterDalvikMemoryProfileTest, Profile) {
   start_params.dalvik_memory_profile = test_param.profile;
   client_adapter()->StartMiniArc(std::move(start_params),
                                  base::BindOnce(&OnMiniInstanceStarted));
-  const auto& request = chromeos::FakeSessionManagerClient::Get()
+  const auto& request = ash::FakeSessionManagerClient::Get()
                             ->last_start_arc_mini_container_request();
   EXPECT_TRUE(request.has_dalvik_memory_profile());
   EXPECT_EQ(test_param.expectation, request.dalvik_memory_profile());

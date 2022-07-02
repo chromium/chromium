@@ -58,6 +58,7 @@ template("trichrome_library_apk_tmpl") {
     # leave out the build hooks and let them get compiled into each APK. Later
     # this should probably be in the library.
     no_build_hooks = true
+    include_size_info = is_official_build
 
     alternative_android_sdk_dep = webview_framework_dep
     if (trichrome_synchronized_proguard) {
@@ -110,18 +111,18 @@ template("trichrome_library_apk_tmpl") {
 
     min_sdk_version = 29
 
-    if (trichrome_synchronized_proguard) {
-      product_version_resources_dep =
-          "//chrome/android:product_version_resources"
-    } else {
-      generate_buildconfig_java = false
-    }
-
     # TODO(torne): using icon_resources just to get a temporary icon
     deps = [
       "//android_webview/nonembedded:icon_resources",
       "//third_party/icu:icu_assets",
     ]
+
+    if (trichrome_synchronized_proguard) {
+      build_config_include_product_version_resource = true
+      deps += [ "//chrome/android:product_version_resources" ]
+    } else {
+      omit_dex = true
+    }
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
@@ -194,37 +195,6 @@ template("trichrome_library_apk_tmpl") {
         }
       }
     }
-
-    # http://crbug.com/1042107.
-    if (is_component_build) {
-      if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
-        main_component_library = "libmonochrome_64.cr.so"
-      } else {
-        main_component_library = "libmonochrome.cr.so"
-      }
-    }
-
-    if (!is_java_debug) {
-      proguard_enabled = true
-      proguard_configs = [
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-        "//chrome/android/proguard/trichrome.flags",
-      ]
-      if (trichrome_synchronized_proguard) {
-        proguard_configs += [
-          "//chrome/android/proguard/static_library_dex_reference_workarounds.flags",
-          "//base/android/proguard/enable_obfuscation.flags",
-        ]
-      } else {
-        # Disabling all obfuscation for the Trichrome library as a temporary
-        # workaround for crbug.com/1012842. There were naming conflicts between
-        # Library and Chrome, since each Proguard run doesn't know about the
-        # other, and thus handed out the first names (a, b, c) to both.
-        proguard_enable_obfuscation = false
-      }
-    }
-    deps += [ "//chrome/android:trichrome_dummy_resources" ]
   }
 }
 
@@ -240,7 +210,7 @@ template("write_ssargs_trichrome") {
   # by SuperSize.
   _lines = [
     "# Written by build target \"${target_name}.\"",
-    "Library -f ${invoker.trichrome_library_basename}$_extra_args",
+    "Library -f ${invoker.trichrome_library_basename}$_extra_args --no-java",
     "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args",
     "WebView -f ${invoker.trichrome_webview_basename}$_extra_args",
   ]

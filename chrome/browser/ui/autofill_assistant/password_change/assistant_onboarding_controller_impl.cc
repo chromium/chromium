@@ -6,25 +6,35 @@
 
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 AssistantOnboardingControllerImpl::AssistantOnboardingControllerImpl(
-    const AssistantOnboardingInformation& onboarding_information)
-    : onboarding_information_(onboarding_information) {}
+    const AssistantOnboardingInformation& onboarding_information,
+    content::WebContents* web_contents)
+    : onboarding_information_(onboarding_information),
+      web_contents_(web_contents) {}
 
 AssistantOnboardingControllerImpl::~AssistantOnboardingControllerImpl() {
   ClosePrompt();
 }
 
-void AssistantOnboardingControllerImpl::Show(AssistantOnboardingPrompt* prompt,
-                                             Callback callback) {
-  // If there is another prompt that is controlled by |this|, close it.
+void AssistantOnboardingControllerImpl::Show(
+    base::WeakPtr<AssistantOnboardingPrompt> prompt,
+    Callback callback) {
+  // If there is another prompt that is controlled by `this`, close it.
   ClosePrompt();
 
   callback_ = std::move(callback);
   prompt_ = prompt;
-  prompt_->Show();
+  prompt_->Show(web_contents_);
 }
 
 void AssistantOnboardingControllerImpl::OnAccept() {
@@ -48,9 +58,23 @@ void AssistantOnboardingControllerImpl::OnClose() {
   }
 }
 
+void AssistantOnboardingControllerImpl::OnLearnMoreClicked() {
+  NavigateParams params(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      GetOnboardingInformation().learn_more_url,
+      ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 const AssistantOnboardingInformation&
 AssistantOnboardingControllerImpl::GetOnboardingInformation() {
   return onboarding_information_;
+}
+
+base::WeakPtr<AssistantOnboardingController>
+AssistantOnboardingControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AssistantOnboardingControllerImpl::ClosePrompt() {
@@ -64,7 +88,8 @@ void AssistantOnboardingControllerImpl::ClosePrompt() {
 // static
 std::unique_ptr<AssistantOnboardingController>
 AssistantOnboardingController::Create(
-    const AssistantOnboardingInformation& onboarding_information) {
+    const AssistantOnboardingInformation& onboarding_information,
+    content::WebContents* web_contents) {
   return std::make_unique<AssistantOnboardingControllerImpl>(
-      onboarding_information);
+      onboarding_information, web_contents);
 }

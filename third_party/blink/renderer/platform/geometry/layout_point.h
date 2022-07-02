@@ -59,6 +59,11 @@ class PLATFORM_EXPORT LayoutPoint {
     return gfx::PointF(x_.ToFloat(), y_.ToFloat());
   }
 
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LayoutPoint(double, double) = delete;
+
   static constexpr LayoutPoint Zero() { return LayoutPoint(); }
 
   constexpr LayoutUnit X() const { return x_; }

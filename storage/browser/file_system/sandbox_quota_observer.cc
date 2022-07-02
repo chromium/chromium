@@ -101,9 +101,15 @@ base::FilePath SandboxQuotaObserver::GetUsageCachePath(
     const FileSystemURL& url) {
   DCHECK(sandbox_file_util_);
   base::File::Error error = base::File::FILE_OK;
-  base::FilePath path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
-          sandbox_file_util_, url.storage_key(), url.type(), &error);
+  base::FilePath path;
+  if (url.bucket().has_value()) {
+    path = SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
+        sandbox_file_util_, url.bucket().value(), url.type(), &error);
+  } else {
+    path =
+        SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
+            sandbox_file_util_, url.storage_key(), url.type(), &error);
+  }
   if (error != base::File::FILE_OK) {
     LOG(WARNING) << "Could not get usage cache path for: " << url.DebugString();
     return base::FilePath();

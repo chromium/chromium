@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/assistant/assistant.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -18,15 +17,12 @@ grit("resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 
-  defines = [ "enable_cros_libassistant=$enable_cros_libassistant" ]
-
   grit_flags = [
     "-E",
     "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   deps = [
-    "//chromeos/components/human_presence:human_presence_internals_ts",
     "//chromeos/language/public/mojom:mojom_js",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
 

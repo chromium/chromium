@@ -176,21 +176,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void BindInternalsHandler(
       mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver);
 
-  // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
-  // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
-  // a new bucket with the specified policies. Returns a QuotaError if the
-  // operation has failed.
-  // This method is declared as virtual to allow test code to override it.
-  virtual void GetOrCreateBucket(
+  // Gets the bucket with `bucket_name` for the `storage_key` for
+  // StorageType kTemporary and returns the BucketInfo. This may update
+  // expiration and persistence if the existing attributes don't match those
+  // found in `bucket_params`, and may clobber the bucket and rebuild it if it's
+  // expired. If a bucket doesn't exist, a new bucket is created with the
+  // specified policies. If the existing bucket exists but has expired, it will
+  // be clobbered and recreated. Returns a QuotaError if the operation has
+  // failed. This method is declared as virtual to allow test code to override
+  // it.
+  virtual void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
-  // Same as GetOrCreateBucket but takes in StorageType. This should only be
+  // Same as UpdateOrCreateBucket but takes in StorageType. This should only be
   // used by FileSystem, and is expected to be removed when
   // StorageType::kSyncable and StorageType::kPersistent are deprecated.
   // (crbug.com/1233525, crbug.com/1286964).
   virtual void GetOrCreateBucketDeprecated(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name,
+      const BucketInitParams& bucket_params,
       blink::mojom::StorageType storage_type,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
@@ -200,7 +203,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
-  void CreateBucketForTesting(
+  virtual void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
       blink::mojom::StorageType storage_type,
@@ -232,21 +235,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Used for retrieving global usage data in the UsageTracker.
   void GetBucketsForType(
       blink::mojom::StorageType type,
-      base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback);
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
 
   // Retrieves all buckets for `host` and `type` that are in the buckets table.
   // Used for retrieving host usage data in the UsageTracker.
   void GetBucketsForHost(
       const std::string& host,
       blink::mojom::StorageType type,
-      base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback);
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
 
   // Retrieves all buckets for `storage_key` and `type` that are in the buckets
-  // table. Used for retrieving storage key usage data in the UsageTracker.
+  // table. When `delete_expired` is true, the expired buckets will be filtered
+  // out of the reply and also deleted from disk.
   void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
-      base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback);
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      bool delete_expired = false);
 
   // Called by clients or webapps. Returns usage per host.
   void GetUsageInfo(GetUsageInfoCallback callback);
@@ -359,6 +364,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        const std::string& bucket_name,
                                        StatusCallback callback);
 
+  // Updates the expiration for the given bucket.
+  void UpdateBucketExpiration(
+      BucketId bucket,
+      const base::Time& expiration,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Updates the persistence bit for the given bucket.
+  virtual void UpdateBucketPersistence(
+      BucketId bucket,
+      bool persistent,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
   // Instructs each QuotaClient to remove possible traces of deleted
   // data on the disk.
   void PerformStorageCleanup(blink::mojom::StorageType type,
@@ -370,10 +387,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetDiskAvailabilityAndTempPoolSizeCallback callback) override;
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
-  void GetHostUsageForInternals(
-      const std::string& host,
-      storage::mojom::StorageType storage_type,
-      GetHostUsageForInternalsCallback callback) override;
   void GetGlobalUsageForInternals(
       storage::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
@@ -389,6 +402,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        UsageWithBreakdownCallback callback);
   void GetBucketUsageWithBreakdown(const BucketLocator& bucket,
                                    UsageWithBreakdownCallback callback);
+  void GetBucketUsageAndQuota(const BucketInfo& bucket,
+                              UsageAndQuotaCallback callback);
+
+  bool IsSessionOnly(const blink::StorageKey& storage_key,
+                     blink::mojom::StorageType type) const;
 
   bool IsStorageUnlimited(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type) const;
@@ -488,6 +506,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   friend class QuotaManagerImplTest;
   friend class QuotaTemporaryStorageEvictor;
   friend class UsageTrackerTest;
+  FRIEND_TEST_ALL_PREFIXES(QuotaManagerImplTest,
+                           UpdateOrCreateBucket_Expiration);
 
   class EvictionRoundInfoHelper;
   class UsageAndQuotaInfoGatherer;
@@ -560,12 +580,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
   void DumpBucketTable(DumpBucketTableCallback callback);
-  void DidRetrieveBucketsTable(RetrieveBucketsTableCallback callback,
-                               const BucketTableEntries& entries);
-  void OnGetHostUsageForInternals(
-      GetHostUsageForInternalsCallback callback,
-      int64_t usage,
-      blink::mojom::UsageBreakdownPtr usage_breakdown);
   void UpdateQuotaInternalsDiskAvailability(base::OnceClosure barrier_callback,
                                             AccumulateQuotaInternalsInfo* info,
                                             int64_t total_space,
@@ -576,6 +590,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void FinallySendDiskAvailabilityAndTempPoolSize(
       GetDiskAvailabilityAndTempPoolSizeCallback callback,
       std::unique_ptr<AccumulateQuotaInternalsInfo> info);
+  void RetrieveBucketUsageForBucketTable(RetrieveBucketsTableCallback callback,
+                                         const BucketTableEntries& entries);
+  void AddBucketTableEntry(
+      const BucketTableEntry& entry,
+      base::OnceClosure barrier_callback,
+      std::vector<storage::mojom::BucketTableEntryPtr>* buckets,
+      int64_t usage,
+      blink::mojom::UsageBreakdownPtr bucketUsageBreakdown);
 
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the
@@ -601,6 +623,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                   StatusCallback delete_bucket_data_callback,
                                   BucketDataDeleter* deleter,
                                   blink::mojom::QuotaStatusCode status_code);
+
+  // Called after bucket data has been deleted from clients as well as the
+  // database due to bucket expiration. This will recreate the bucket in the
+  // database and pass it to `callback`.
+  void DidDeleteBucketForRecreation(
+      const BucketInitParams& params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+      BucketInfo bucket_info,
+      blink::mojom::QuotaStatusCode status_code);
 
   // Methods for eviction logic.
   void StartEviction();
@@ -639,7 +670,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetEvictionRoundInfo();
 
-  void GetLRUBucket(blink::mojom::StorageType type, GetBucketCallback callback);
+  void GetLruEvictableBucket(blink::mojom::StorageType type,
+                             GetBucketCallback callback);
 
   void DidGetPersistentHostQuota(const std::string& host,
                                  QuotaErrorOr<int64_t> result);
@@ -647,7 +679,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                  QuotaCallback callback,
                                  const int64_t* new_quota,
                                  QuotaError error);
-  void DidGetLRUBucket(QuotaErrorOr<BucketLocator> result);
+  void DidGetLruEvictableBucket(QuotaErrorOr<BucketLocator> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
@@ -661,6 +693,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
+  void DidGetBucketCheckExpiration(
+      const BucketInitParams& params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+      QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForDeletion(StatusCallback callback,
                                QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForUsage(QuotaClientType client_type,
@@ -671,8 +707,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetStorageKeys(GetStorageKeysCallback callback,
                          QuotaErrorOr<std::set<blink::StorageKey>> result);
   void DidGetBuckets(
-      base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback,
-      QuotaErrorOr<std::set<BucketLocator>> result);
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      QuotaErrorOr<std::set<BucketInfo>> result);
+  void DidGetBucketsCheckExpiration(
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetModifiedBetween(GetBucketsCallback callback,
                              blink::mojom::StorageType type,
                              QuotaErrorOr<std::set<BucketLocator>> result);
@@ -730,7 +769,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       storage_key_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
-  mutable std::unique_ptr<QuotaDatabase> database_;
+
+  // QuotaManagerImpl creates `database_` and later schedules it for deletion on
+  // `db_runner_`. Thus, `database_` may outlive `this`.
+  raw_ptr<QuotaDatabase, DanglingUntriaged> database_ = nullptr;
+
   bool is_bootstrapping_database_ = false;
   // Queued callbacks to QuotaDatabase that will run after database bootstrap is
   // complete.

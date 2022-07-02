@@ -10,5 +10,14 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 # component and add a reference here.
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//chromeos/ash/components/dbus:unit_tests" ]
+  deps = [
+    "//chromeos/ash/components/dbus:unit_tests",
+    "//chromeos/ash/components/human_presence:unit_tests",
+    "//chromeos/ash/components/memory:unit_tests",
+    "//chromeos/ash/components/oobe_quick_start:unit_tests",
+  ]
+
+  if (target_cpu == "x64") {
+    deps += [ "//chromeos/ash/components/memory/userspace_swap:unit_tests" ]
+  }
 }

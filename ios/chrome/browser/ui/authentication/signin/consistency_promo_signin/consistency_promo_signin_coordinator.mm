@@ -51,7 +51,7 @@
 // Coordinator to select another identity.
 @property(nonatomic, strong)
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
-// |self.defaultAccountCoordinator.selectedIdentity|.
+// `self.defaultAccountCoordinator.selectedIdentity`.
 @property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
@@ -400,6 +400,18 @@
                 }
                  style:UIAlertActionStyleCancel];
   [self.alertCoordinator start];
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p, defaultAccountCoordinator: %p, alertCoordinator: %p, "
+          @"accountChooserCoordinator %p, addAccountCoordinator %p>",
+          self.class.description, self, self.defaultAccountCoordinator,
+          self.alertCoordinator, self.accountChooserCoordinator,
+          self.addAccountCoordinator];
 }
 
 @end

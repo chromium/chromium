@@ -17,10 +17,10 @@
 
 namespace {
 
-std::string FormatAsJSON(const base::Value& value) {
+std::string FormatListAsJSON(const base::Value::List& list) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
+      list, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
   return json;
 }
 
@@ -55,23 +55,22 @@ base::Value ContactMessageToDictionary(
                    *did_contacts_change_since_last_upload);
   }
   if (allowed_contact_ids) {
-    base::Value::ListStorage allowed_ids_list;
+    base::Value::List allowed_ids_list;
     allowed_ids_list.reserve(allowed_contact_ids->size());
     for (const auto& contact_id : *allowed_contact_ids) {
-      allowed_ids_list.push_back(base::Value(contact_id));
+      allowed_ids_list.Append(contact_id);
     }
     dictionary.Set(kContactMessageAllowedIdsKey,
-                   FormatAsJSON(base::Value(std::move(allowed_ids_list))));
+                   FormatListAsJSON(allowed_ids_list));
   }
   if (contacts) {
-    base::Value::ListStorage contact_list;
+    base::Value::List contact_list;
     contact_list.reserve(contacts->size());
     for (const auto& contact : *contacts)
-      contact_list.push_back(
-          base::Value(ContactRecordToReadableDictionary(contact)));
+      contact_list.Append(ContactRecordToReadableDictionary(contact));
 
     dictionary.Set(kContactMessageContactRecordKey,
-                   FormatAsJSON(base::Value(std::move(contact_list))));
+                   FormatListAsJSON(contact_list));
   }
   if (num_unreachable_contacts_filtered_out.has_value()) {
     dictionary.Set(kContactMessageNumUnreachableContactsKey,

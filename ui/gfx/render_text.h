@@ -768,9 +768,6 @@ class GFX_EXPORT RenderText {
   // Update the display text.
   void UpdateDisplayText(float text_width);
 
-  // Returns display text positions that are suitable for breaking lines.
-  const BreakList<size_t>& GetLineBreaks();
-
   // Convert points from the text space to the view space. Handles the display
   // area, display offset, application LTR/RTL mode and multiline. |line| is the
   // index of the line in which |point| is found, and is required to be passed
@@ -1037,9 +1034,6 @@ class GFX_EXPORT RenderText {
 
   // Text shadows to be drawn.
   ShadowValues shadows_;
-
-  // A list of valid display text line break positions.
-  BreakList<size_t> line_breaks_;
 
   // Text shaping computed by EnsureLayout. This should be invalidated upon
   // OnLayoutTextAttributeChanged and OnDisplayTextAttributeChanged calls.

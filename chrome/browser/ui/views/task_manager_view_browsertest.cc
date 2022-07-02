@@ -237,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {
 
   // Activate tab 0. The selection should not change.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1UL, GetTable()->selection_model().size());
   EXPECT_EQ(GetTable()->GetFirstSelectedRow(),
             FindRowForTab(browser()->tab_strip_model()->GetWebContentsAt(1)));

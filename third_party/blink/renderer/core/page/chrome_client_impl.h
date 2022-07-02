@@ -258,6 +258,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void DidChangeSelectionInSelectControl(HTMLFormControlElement&) override;
   void SelectFieldOptionsChanged(HTMLFormControlElement&) override;
   void AjaxSucceeded(LocalFrame*) override;
+  void JavaScriptChangedAutofilledValue(HTMLFormControlElement&,
+                                        const String& old_value) override;
 
   void ShowVirtualKeyboardOnElementFocus(LocalFrame&) override;
 

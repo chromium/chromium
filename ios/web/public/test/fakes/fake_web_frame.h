@@ -38,11 +38,14 @@ class FakeWebFrame : public WebFrame {
   static std::unique_ptr<FakeWebFrame> CreateChildWebFrame(
       GURL security_origin);
 
-  // Returns the most recent JavaScript handler call made to this frame.
-  virtual std::string GetLastJavaScriptCall() const = 0;
+  // Returns the most recent JavaScript call made to this frame.
+  virtual std::u16string GetLastJavaScriptCall() const = 0;
 
   // Returns |javascript_calls|. Use LastJavaScriptCall() if possible.
-  virtual const std::vector<std::string>& GetJavaScriptCallHistory() = 0;
+  virtual const std::vector<std::u16string>& GetJavaScriptCallHistory() = 0;
+
+  // Clears the history of javascript calls sent to this frame.
+  virtual void ClearJavaScriptCallHistory() = 0;
 
   // Sets the browser state associated with this frame.
   virtual void set_browser_state(BrowserState* browser_state) = 0;
@@ -53,6 +56,13 @@ class FakeWebFrame : public WebFrame {
   // long as this instance lives.
   virtual void AddJsResultForFunctionCall(base::Value* js_result,
                                           const std::string& function_name) = 0;
+
+  // Sets |js_result| that will be passed into callback for |executed_js|
+  // call through ExecuteJavaScript API.
+  // NOTE: The caller is responsible for keeping |js_result| alive for as
+  // long as this instance lives.
+  virtual void AddResultForExecutedJs(base::Value* js_result,
+                                      const std::u16string& executed_js) = 0;
 
   virtual void set_force_timeout(bool force_timeout) = 0;
 

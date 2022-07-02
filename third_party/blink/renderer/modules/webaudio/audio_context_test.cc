@@ -23,7 +23,8 @@
 namespace blink {
 
 namespace {
-static bool web_audio_device_paused_;
+
+bool web_audio_device_paused_;
 
 class MockWebAudioDeviceForAudioContext : public WebAudioDevice {
  public:
@@ -85,7 +86,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
   size_t AudioHardwareBufferSize() override { return 128; }
 };
 
-}  // anonymous namespace
+}  // namespace
 
 class AudioContextTest : public PageTestBase {
  protected:

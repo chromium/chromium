@@ -44,13 +44,14 @@ const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
 const base::Feature kEnablePerVmCoreScheduling{
     "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to pass throttling notifications to Android side.
-const base::Feature kEnableThrottlingNotification{
-    "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to use ARC TTS caching to optimize ARC boot.
 const base::Feature kEnableTTSCaching{"ArcEnableTTSCaching",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to use pregenerated ARC TTS cache to optimize ARC boot and
+// also whether or not TTS cache is used.
+const base::Feature kEnableTTSCacheSetup{"ArcEnableTTSCacheSetup",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{
@@ -75,12 +76,22 @@ const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether ARCVM can request resourced make more resources available
+// for a currently-active ARCVM game.
+const base::Feature kGameModeFeature{
+    "ArcGameModeFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 const base::Feature kGuestZram{"ArcGuestZram",
                                base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls the size of the guest zram.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
+
+// Enables/disables mlock() of guest memory for ARCVM.
+// Often used in combination with kGuestZram.
+const base::Feature kLockGuestMemory{"ArcLockGuestMemory",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Control properties of Logd at boot time. This is only for ARCVM.
 const base::Feature kLogdConfig{"ArcGuestLogdConfig",
@@ -96,11 +107,6 @@ const base::FeatureParam<int> kLogdConfigSize{&kLogdConfig, "size", 0};
 // Controls keyboard shortcut helper integration feature in ARC.
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
     "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls experimental 64-bit native bridge support for ARC on boards that
-// have 64-bit native bridge support available but not yet enabled.
-const base::Feature kNativeBridge64BitSupportExperimentFeature{
-    "ArcNativeBridge64BitSupportExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Toggles between native bridge implementations for ARC.
 // Note, that we keep the original feature name to preserve
@@ -145,7 +151,7 @@ const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
 const base::Feature kUsbDeviceDefaultAttachToArcVm{
-    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
@@ -234,6 +240,29 @@ const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
 // Controls experimental key GMS Core and related services protection against to
 // be killed by low memory killer in ARCVM.
 const base::Feature kVmGmsCoreLowMemoryKillerProtection{
-    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls experimental key to enable pre-ANR handling for BroadcastQueue in
+// ARCVM.
+const base::Feature kVmBroadcastPreNotifyANR{"ArcVmBroadcastPreAnrHandling",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If set, enable responsive balloon sizing. Concierge will listen on a VSOCK
+// for connections from LMKD in Android. When LMKD is about to kill an App, it
+// will signal the balloon sizing code, which may deflate the balloon instead
+// of killing the app.
+const base::FeatureParam<bool> kVmBalloonPolicyResponsive{&kVmBalloonPolicy,
+                                                          "responsive", false};
+
+// The amount of time LMKD will wait for a response from concierge before
+// killing an app.
+const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs{
+    &kVmBalloonPolicy, "responsive_timeout_ms", 100};
+
+// If an app should not be killed, the balloon will be deflated by
+// min(app_size, responsive_max_deflate_bytes), so that large apps don't
+// completely deflate the balloon.
+const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes{
+    &kVmBalloonPolicy, "responsive_max_deflate_bytes", 256 * 1024 * 1024};
 
 }  // namespace arc

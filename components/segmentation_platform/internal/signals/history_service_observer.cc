@@ -38,7 +38,6 @@ void HistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     ui::PageTransition transition,
     const history::URLRow& row,
-    const history::RedirectList& redirects,
     base::Time visit_time) {
   url_signal_handler_->OnHistoryVisit(row.url());
   history_delegate_->OnUrlAdded(row.url());
@@ -71,8 +70,7 @@ void HistoryServiceObserver::OnURLsDeleted(
 }
 
 void HistoryServiceObserver::SetHistoryBasedSegments(
-    base::flat_set<optimization_guide::proto::OptimizationTarget>&&
-        history_based_segments) {
+    base::flat_set<proto::SegmentId>&& history_based_segments) {
   history_based_segments_ = std::move(history_based_segments);
   // If a delete is pending, clear the results now.
   if (pending_deletion_based_on_history_based_segments_) {

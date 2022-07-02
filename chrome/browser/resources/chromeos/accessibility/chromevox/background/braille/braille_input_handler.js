@@ -384,9 +384,9 @@ export class BrailleInputHandler {
         throw Error('Unknown key code in event: ' + JSON.stringify(event));
       }
       EventGenerator.sendKeyPress(numericCode, {
-        shift: !!event.shiftKey,
-        ctrl: !!event.ctrlKey,
-        alt: !!event.altKey
+        shift: Boolean(event.shiftKey),
+        ctrl: Boolean(event.ctrlKey),
+        alt: Boolean(event.altKey)
       });
     });
   }

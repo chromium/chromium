@@ -22,7 +22,7 @@ void ShowChooserBubble(
     Browser* browser,
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
-  chrome::ShowDeviceChooserDialog(contents->GetMainFrame(),
+  chrome::ShowDeviceChooserDialog(contents->GetPrimaryMainFrame(),
                                   std::move(controller));
 }
 

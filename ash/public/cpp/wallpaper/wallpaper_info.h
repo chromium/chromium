@@ -50,6 +50,10 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperType type;
   base::Time date;
 
+  // These fields are applicable if |type| == WallpaperType::kOnceGooglePhotos
+  // or WallpaperType::kDailyGooglePhotos.
+  absl::optional<std::string> dedup_key;
+
   // These fields are applicable if |type| == WallpaperType::kOnline or
   // WallpaperType::kDaily.
   absl::optional<uint64_t> asset_id;

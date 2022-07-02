@@ -12,7 +12,7 @@
 // View for Notification Promo.
 @interface ContentSuggestionsWhatsNewView : UIView
 
-// Initializes and configures the view with |config|.
+// Initializes and configures the view with `config`.
 // TODO(crbug.com/1285378): Make this designated initializer after feature
 // launch.
 - (instancetype)initWithConfiguration:(ContentSuggestionsWhatsNewItem*)config;

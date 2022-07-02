@@ -32,9 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
  * native from becoming a crash loop that cannot be recovered from by disabling the experiment.
- *
- * TODO(crbug.com/1217708): Safe mode at the moment does not engage. Validate the crash streak logic
- * in Canary before turning it on.
  */
 class CachedFlagsSafeMode {
     private static final String TAG = "Flags";
@@ -91,7 +88,6 @@ class CachedFlagsSafeMode {
                 mBehavior.set(behavior);
                 RecordHistogram.recordEnumeratedHistogram(
                         "Variations.SafeModeCachedFlags.Engaged", behavior, Behavior.NUM_ENTRIES);
-                restoreSafeValues();
             } else {
                 mBehavior.set(Behavior.NOT_ENGAGED_BELOW_THRESHOLD);
                 RecordHistogram.recordEnumeratedHistogram("Variations.SafeModeCachedFlags.Engaged",
@@ -196,12 +192,6 @@ class CachedFlagsSafeMode {
                 || behavior == Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES;
     }
 
-    private void restoreSafeValues() {
-        // TODO(crbug.com/1217708): Overwrite cached values with safe values.
-        // TODO(crbug.com/1217708): Ignore safe values from previous versions.
-        // TODO(crbug.com/1217708): Fallback to default values.
-    }
-
     private boolean shouldEnterSafeMode() {
         int safeModeRunsLeft = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_SAFE_MODE_RUNS_LEFT, 0);
@@ -243,6 +233,11 @@ class CachedFlagsSafeMode {
         TraceEvent.begin("writeSafeValues");
         SharedPreferences.Editor editor = getSafeValuePreferences().edit();
 
+        // Remove values from other versions, since leftover values from previous version are not
+        // safe for the current one. Most will get overwritten, but there is no guarantee that all
+        // will.
+        editor.clear();
+
         synchronized (safeValuesReturned.boolValues) {
             for (Entry<String, Boolean> pair : safeValuesReturned.boolValues.entrySet()) {
                 editor.putBoolean(pair.getKey(), pair.getValue());
@@ -267,6 +262,31 @@ class CachedFlagsSafeMode {
         editor.putString(PREF_SAFE_VALUES_VERSION, VersionInfo.getProductVersion());
         editor.apply();
         TraceEvent.end("writeSafeValues");
+    }
+
+    Boolean isEnabled(String featureName, String preferenceName) {
+        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
+        return null;
+    }
+
+    Boolean getBooleanFieldTrialParam(String preferenceName, boolean defaultValue) {
+        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
+        return null;
+    }
+
+    Integer getIntFieldTrialParam(String preferenceName, int defaultValue) {
+        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
+        return null;
+    }
+
+    Double getDoubleFieldTrialParam(String preferenceName, double defaultValue) {
+        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
+        return null;
+    }
+
+    String getStringFieldTrialParam(String preferenceName, String defaultValue) {
+        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
+        return null;
     }
 
     @Behavior

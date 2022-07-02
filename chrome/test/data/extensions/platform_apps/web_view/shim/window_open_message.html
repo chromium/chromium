@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>A guest that opens a new window in response to a message from the embedder.</title>
+<script>
+
+window.addEventListener('message', (e) => {
+  // noopener is not used here because we want this call to be blocking.
+  let newWindow = window.open('about:blank');
+  e.source.postMessage(newWindow.location.href, e.origin);
+});
+
+</script>
+</head>
+<body>
+</body>
+</html>

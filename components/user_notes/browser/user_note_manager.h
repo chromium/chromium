@@ -16,10 +16,12 @@
 #include "components/user_notes/browser/user_note_instance.h"
 #include "components/user_notes/browser/user_note_service.h"
 #include "content/public/browser/page_user_data.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 
 namespace content {
 class Page;
-}
+}  // namespace content
 
 namespace user_notes {
 
@@ -33,6 +35,11 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   UserNoteManager(const UserNoteManager&) = delete;
   UserNoteManager& operator=(const UserNoteManager&) = delete;
 
+  const mojo::Remote<blink::mojom::AnnotationAgentContainer>&
+  note_agent_container() {
+    return note_agent_container_;
+  };
+
   // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.
   UserNoteInstance* GetNoteInstance(const base::UnguessableToken& id);
@@ -42,6 +49,10 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
 
   // Destroys the note instance associated with the given GUID.
   void RemoveNote(const base::UnguessableToken& id);
+
+  // Notifies the service that the web highlight has been focused for the given
+  // id and RenderFrameHost.
+  void OnWebHighlightFocused(const base::UnguessableToken& id);
 
   // Stores the given note instance into this object's instance map, then kicks
   // off its asynchronous initialization in the renderer process, passing it the
@@ -77,6 +88,10 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
                      std::unique_ptr<UserNoteInstance>,
                      base::UnguessableTokenHash>
       instance_map_;
+
+  // A connection to the annotation agent container on the renderer side to
+  // bind note instances to their agent counterpart.
+  mojo::Remote<blink::mojom::AnnotationAgentContainer> note_agent_container_;
 };
 
 }  // namespace user_notes

@@ -7,7 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/network/network_cert_loader.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace chromeos {
@@ -41,6 +43,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertMigrator
 
   // Unowned associated NetworkStateHandler* (global or test instance).
   NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkCertMigrator> weak_ptr_factory_{this};
 };

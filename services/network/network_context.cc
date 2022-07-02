@@ -81,6 +81,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "services/network/brokered_client_socket_factory.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
@@ -474,6 +475,10 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
+      first_party_sets_access_delegate_(
+          std::move(params_->first_party_sets_access_delegate_receiver),
+          std::move(params_->first_party_sets_access_delegate_params),
+          network_service_->first_party_sets_manager()),
       cors_preflight_controller_(network_service),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)) {
@@ -510,8 +515,9 @@ NetworkContext::NetworkContext(
       session_cleanup_cookie_store,
       std::move(on_url_request_context_builder_configured));
   url_request_context_ = url_request_context_owner_.url_request_context.get();
+
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, network_service_->first_party_sets_manager(),
+      url_request_context_, &first_party_sets_access_delegate_,
       std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
@@ -527,8 +533,6 @@ NetworkContext::NetworkContext(
   socket_factory_ = std::make_unique<SocketFactory>(
       url_request_context_->net_log(), url_request_context_);
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
-
-  origin_policy_manager_ = std::make_unique<OriginPolicyManager>(this);
 
   if (params_->http_auth_static_network_context_params) {
     http_auth_merged_preferences_.SetAllowDefaultCredentials(
@@ -589,11 +593,15 @@ NetworkContext::NetworkContext(
           std::make_unique<NetworkContextApplicationStatusListener>()),
 #endif
       receiver_(this, std::move(receiver)),
-      cookie_manager_(
-          std::make_unique<CookieManager>(url_request_context,
-                                          nullptr,
-                                          nullptr /* first_party_sets */,
-                                          nullptr)),
+      first_party_sets_access_delegate_(
+          /*receiver=*/mojo::NullReceiver(),
+          /*params=*/nullptr,
+          /*manager=*/nullptr),
+      cookie_manager_(std::make_unique<CookieManager>(
+          url_request_context,
+          nullptr,
+          /*first_party_sets_access_delegate=*/nullptr,
+          nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),
@@ -605,8 +613,6 @@ NetworkContext::NetworkContext(
 
   for (const auto& key : cors_exempt_header_list)
     cors_exempt_header_list_.insert(key);
-
-  origin_policy_manager_ = std::make_unique<OriginPolicyManager>(this);
 }
 
 NetworkContext::~NetworkContext() {
@@ -788,7 +794,7 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer),
-          network_service_->first_party_sets_manager()->is_enabled(),
+          first_party_sets_access_delegate_.is_enabled(),
           std::move(first_party_set_metadata)),
       std::move(receiver));
 }
@@ -953,7 +959,12 @@ void NetworkContext::ClearNetworkingHistoryBetween(
     base::Time start_time,
     base::Time end_time,
     base::OnceClosure completion_callback) {
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  auto barrier = base::BarrierClosure(3, std::move(completion_callback));
+  sct_auditing_handler()->ClearPendingReports(barrier);
+#else
   auto barrier = base::BarrierClosure(2, std::move(completion_callback));
+#endif  // BUIDLFLAG(IS_CT_SUPPORTED)
 
   url_request_context_->transport_security_state()->DeleteAllDynamicDataBetween(
       start_time, end_time, barrier);
@@ -1113,16 +1124,12 @@ void NetworkContext::QueueReport(
     const absl::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key,
     const absl::optional<std::string>& user_agent,
-    base::Value body) {
+    base::Value::Dict body) {
 #if BUILDFLAG(ENABLE_REPORTING)
   // If |reporting_source| is provided, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
-
-  DCHECK(body.is_dict());
-  if (!body.is_dict())
-    return;
 
   // Get the ReportingService.
   net::URLRequestContext* request_context = url_request_context();
@@ -1140,9 +1147,9 @@ void NetworkContext::QueueReport(
         request_context->http_user_agent_settings()->GetUserAgent();
   }
 
-  reporting_service->QueueReport(
-      url, reporting_source, network_isolation_key, reported_user_agent, group,
-      type, base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
+  reporting_service->QueueReport(url, reporting_source, network_isolation_key,
+                                 reported_user_agent, group, type,
+                                 std::move(body), 0 /* depth */);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
@@ -1259,18 +1266,6 @@ void NetworkContext::ClearDomainReliability(
         dr_mode, BuildOriginFilter(std::move(filter)));
   }
   std::move(callback).Run();
-}
-
-void NetworkContext::GetDomainReliabilityJSON(
-    GetDomainReliabilityJSONCallback callback) {
-  if (!domain_reliability_monitor_) {
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetStringKey("error", "no_service");
-    std::move(callback).Run(std::move(data));
-    return;
-  }
-
-  std::move(callback).Run(domain_reliability_monitor_->GetWebUIData());
 }
 
 void NetworkContext::CloseAllConnections(CloseAllConnectionsCallback callback) {
@@ -1506,7 +1501,7 @@ void NetworkContext::GetExpectCTState(
     const std::string& domain,
     const net::NetworkIsolationKey& network_isolation_key,
     GetExpectCTStateCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
         url_request_context()->transport_security_state();
@@ -1517,23 +1512,23 @@ void NetworkContext::GetExpectCTState(
 
       // TODO(estark): query static Expect-CT state as well.
       if (found) {
-        result.SetStringKey("dynamic_expect_ct_domain", domain);
-        result.SetDoubleKey("dynamic_expect_ct_observed",
-                            dynamic_expect_ct_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_expect_ct_expiry",
-                            dynamic_expect_ct_state.expiry.ToDoubleT());
-        result.SetBoolKey("dynamic_expect_ct_enforce",
-                          dynamic_expect_ct_state.enforce);
-        result.SetStringKey("dynamic_expect_ct_report_uri",
-                            dynamic_expect_ct_state.report_uri.spec());
+        result.Set("dynamic_expect_ct_domain", domain);
+        result.Set("dynamic_expect_ct_observed",
+                   dynamic_expect_ct_state.last_observed.ToDoubleT());
+        result.Set("dynamic_expect_ct_expiry",
+                   dynamic_expect_ct_state.expiry.ToDoubleT());
+        result.Set("dynamic_expect_ct_enforce",
+                   dynamic_expect_ct_state.enforce);
+        result.Set("dynamic_expect_ct_report_uri",
+                   dynamic_expect_ct_state.report_uri.spec());
       }
 
-      result.SetBoolKey("result", found);
+      result.Set("result", found);
     } else {
-      result.SetStringKey("error", "no Expect-CT state active");
+      result.Set("error", "no Expect-CT state active");
     }
   } else {
-    result.SetStringKey("error", "non-ASCII domain name");
+    result.Set("error", "non-ASCII domain name");
   }
 
   std::move(callback).Run(std::move(result));
@@ -1855,7 +1850,7 @@ void NetworkContext::IsHSTSActiveForHost(const std::string& host,
 
 void NetworkContext::GetHSTSState(const std::string& domain,
                                   GetHSTSStateCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
@@ -1868,24 +1863,22 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_pkp_static = transport_security_state->GetStaticPKPState(
           domain, &static_pkp_state);
       if (found_sts_static || found_pkp_static) {
-        result.SetIntKey("static_upgrade_mode",
-                         static_cast<int>(static_sts_state.upgrade_mode));
-        result.SetBoolKey("static_sts_include_subdomains",
-                          static_sts_state.include_subdomains);
-        result.SetDoubleKey("static_sts_observed",
-                            static_sts_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("static_sts_expiry",
-                            static_sts_state.expiry.ToDoubleT());
-        result.SetBoolKey("static_pkp_include_subdomains",
-                          static_pkp_state.include_subdomains);
-        result.SetDoubleKey("static_pkp_observed",
-                            static_pkp_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("static_pkp_expiry",
-                            static_pkp_state.expiry.ToDoubleT());
-        result.SetStringKey("static_spki_hashes",
-                            HashesToBase64String(static_pkp_state.spki_hashes));
-        result.SetStringKey("static_sts_domain", static_sts_state.domain);
-        result.SetStringKey("static_pkp_domain", static_pkp_state.domain);
+        result.Set("static_upgrade_mode",
+                   static_cast<int>(static_sts_state.upgrade_mode));
+        result.Set("static_sts_include_subdomains",
+                   static_sts_state.include_subdomains);
+        result.Set("static_sts_observed",
+                   static_sts_state.last_observed.ToDoubleT());
+        result.Set("static_sts_expiry", static_sts_state.expiry.ToDoubleT());
+        result.Set("static_pkp_include_subdomains",
+                   static_pkp_state.include_subdomains);
+        result.Set("static_pkp_observed",
+                   static_pkp_state.last_observed.ToDoubleT());
+        result.Set("static_pkp_expiry", static_pkp_state.expiry.ToDoubleT());
+        result.Set("static_spki_hashes",
+                   HashesToBase64String(static_pkp_state.spki_hashes));
+        result.Set("static_sts_domain", static_sts_state.domain);
+        result.Set("static_pkp_domain", static_pkp_state.domain);
       }
 
       net::TransportSecurityState::STSState dynamic_sts_state;
@@ -1896,37 +1889,34 @@ void NetworkContext::GetHSTSState(const std::string& domain,
       bool found_pkp_dynamic = transport_security_state->GetDynamicPKPState(
           domain, &dynamic_pkp_state);
       if (found_sts_dynamic) {
-        result.SetIntKey("dynamic_upgrade_mode",
-                         static_cast<int>(dynamic_sts_state.upgrade_mode));
-        result.SetBoolKey("dynamic_sts_include_subdomains",
-                          dynamic_sts_state.include_subdomains);
-        result.SetDoubleKey("dynamic_sts_observed",
-                            dynamic_sts_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_sts_expiry",
-                            dynamic_sts_state.expiry.ToDoubleT());
-        result.SetStringKey("dynamic_sts_domain", dynamic_sts_state.domain);
+        result.Set("dynamic_upgrade_mode",
+                   static_cast<int>(dynamic_sts_state.upgrade_mode));
+        result.Set("dynamic_sts_include_subdomains",
+                   dynamic_sts_state.include_subdomains);
+        result.Set("dynamic_sts_observed",
+                   dynamic_sts_state.last_observed.ToDoubleT());
+        result.Set("dynamic_sts_expiry", dynamic_sts_state.expiry.ToDoubleT());
+        result.Set("dynamic_sts_domain", dynamic_sts_state.domain);
       }
 
       if (found_pkp_dynamic) {
-        result.SetBoolKey("dynamic_pkp_include_subdomains",
-                          dynamic_pkp_state.include_subdomains);
-        result.SetDoubleKey("dynamic_pkp_observed",
-                            dynamic_pkp_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_pkp_expiry",
-                            dynamic_pkp_state.expiry.ToDoubleT());
-        result.SetStringKey(
-            "dynamic_spki_hashes",
-            HashesToBase64String(dynamic_pkp_state.spki_hashes));
-        result.SetStringKey("dynamic_pkp_domain", dynamic_pkp_state.domain);
+        result.Set("dynamic_pkp_include_subdomains",
+                   dynamic_pkp_state.include_subdomains);
+        result.Set("dynamic_pkp_observed",
+                   dynamic_pkp_state.last_observed.ToDoubleT());
+        result.Set("dynamic_pkp_expiry", dynamic_pkp_state.expiry.ToDoubleT());
+        result.Set("dynamic_spki_hashes",
+                   HashesToBase64String(dynamic_pkp_state.spki_hashes));
+        result.Set("dynamic_pkp_domain", dynamic_pkp_state.domain);
       }
 
-      result.SetBoolKey("result", found_sts_static || found_pkp_static ||
-                                      found_sts_dynamic || found_pkp_dynamic);
+      result.Set("result", found_sts_static || found_pkp_static ||
+                               found_sts_dynamic || found_pkp_dynamic);
     } else {
-      result.SetStringKey("error", "no TransportSecurityState active");
+      result.Set("error", "no TransportSecurityState active");
     }
   } else {
-    result.SetStringKey("error", "non-ASCII domain name");
+    result.Set("error", "non-ASCII domain name");
   }
 
   std::move(callback).Run(std::move(result));
@@ -2300,7 +2290,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::move(params_->initial_additional_certificates));
     cert_verifier_with_trust_anchors_->InitializeOnIOThread(
         std::move(cert_verifier));
-    cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_);
+    cert_verifier = base::WrapUnique(cert_verifier_with_trust_anchors_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -2366,7 +2356,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(
             session_cleanup_cookie_store.get(), net_log,
-            network_service_->first_party_sets_manager()->is_enabled());
+            first_party_sets_access_delegate_.is_enabled());
     if (params_->persist_session_cookies)
       cookie_store->SetPersistSessionCookies(true);
 
@@ -2434,8 +2424,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     } else {
       cache_params.path = params_->http_cache_directory->path();
       cache_params.type = network_session_configurator::ChooseCacheType();
-      if (base::FeatureList::IsEnabled(net::features::kSandboxHttpCache) &&
-          params_->http_cache_file_operations_factory) {
+      if (params_->http_cache_file_operations_factory) {
         cache_params.file_operations_factory =
             base::MakeRefCounted<MojoBackendFileOperationsFactory>(
                 std::move(params_->http_cache_file_operations_factory));
@@ -2585,7 +2574,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
   builder.set_first_party_sets_enabled(
-      network_service_->first_party_sets_manager()->is_enabled());
+      first_party_sets_access_delegate_.is_enabled());
+
+  if (params_->socket_broker) {
+    builder.set_client_socket_factory(
+        std::make_unique<BrokeredClientSocketFactory>(
+            std::move(params_->socket_broker)));
+  }
 
   // If `require_network_isolation_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkIsolationKeys,
@@ -2899,11 +2894,6 @@ bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
     const url::SchemeHostPort& scheme_host_port) {
   DCHECK(url_matcher_);
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
-}
-
-void NetworkContext::GetOriginPolicyManager(
-    mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) {
-  origin_policy_manager_->AddReceiver(std::move(receiver));
 }
 
 void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(

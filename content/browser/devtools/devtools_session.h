@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -29,6 +30,21 @@ class DevToolsExternalAgentProxyDelegate;
 
 namespace protocol {
 class DevToolsDomainHandler;
+class AuditsHandler;
+class DOMHandler;
+class EmulationHandler;
+class InputHandler;
+class InspectorHandler;
+class IOHandler;
+class OverlayHandler;
+class NetworkHandler;
+class FetchHandler;
+class StorageHandler;
+class TargetHandler;
+class PageHandler;
+class TracingHandler;
+class LogHandler;
+class WebAuthnHandler;
 }
 
 class DevToolsSession : public protocol::FrontendChannel,
@@ -54,7 +70,18 @@ class DevToolsSession : public protocol::FrontendChannel,
   // Browser-only sessions do not talk to mojom::DevToolsAgent, but instead
   // handle all protocol messages locally in the browser process.
   void SetBrowserOnly(bool browser_only);
-  void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
+  template <typename Handler, typename... Args>
+  Handler* CreateAndAddHandler(Args&&... args) {
+    if (!IsDomainAvailableToUntrustedClient<Handler>() &&
+        !client_->IsTrusted()) {
+      return nullptr;
+    }
+    auto handler = std::make_unique<Handler>(std::forward<Args>(args)...);
+    Handler* handler_ptr = handler.get();
+    AddHandler(std::move(handler));
+    return handler_ptr;
+  }
+
   void TurnIntoExternalProxy(DevToolsExternalAgentProxyDelegate* delegate);
 
   void AttachToAgent(blink::mojom::DevToolsAgent* agent,
@@ -129,6 +156,26 @@ class DevToolsSession : public protocol::FrontendChannel,
 
   // Merges the |updates| received from the renderer into session_state_cookie_.
   void ApplySessionStateUpdates(blink::mojom::DevToolsSessionStatePtr updates);
+
+  template <typename T>
+  bool IsDomainAvailableToUntrustedClient() {
+    return std::disjunction_v<std::is_same<T, protocol::AuditsHandler>,
+                              std::is_same<T, protocol::DOMHandler>,
+                              std::is_same<T, protocol::EmulationHandler>,
+                              std::is_same<T, protocol::InputHandler>,
+                              std::is_same<T, protocol::InspectorHandler>,
+                              std::is_same<T, protocol::IOHandler>,
+                              std::is_same<T, protocol::OverlayHandler>,
+                              std::is_same<T, protocol::NetworkHandler>,
+                              std::is_same<T, protocol::FetchHandler>,
+                              std::is_same<T, protocol::StorageHandler>,
+                              std::is_same<T, protocol::TargetHandler>,
+                              std::is_same<T, protocol::PageHandler>,
+                              std::is_same<T, protocol::TracingHandler>,
+                              std::is_same<T, protocol::LogHandler>,
+                              std::is_same<T, protocol::WebAuthnHandler>>;
+  }
+  void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
 
   mojo::AssociatedReceiver<blink::mojom::DevToolsSessionHost> receiver_{this};
   mojo::AssociatedRemote<blink::mojom::DevToolsSession> session_;

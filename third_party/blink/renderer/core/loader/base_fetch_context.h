@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class ClientHintsPreferences;
 class ConsoleMessage;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;
@@ -169,9 +170,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ResourceRequest::RedirectStatus redirect_status,
       ContentSecurityPolicy::CheckHeaderType) const;
 
-  enum class ClientHintsMode { kLegacy, kStandard };
-  bool ShouldSendClientHint(ClientHintsMode mode,
-                            const PermissionsPolicy*,
+  bool ShouldSendClientHint(const PermissionsPolicy*,
                             const url::Origin&,
                             bool is_1p_origin,
                             network::mojom::blink::WebClientHintsType,

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
@@ -29,7 +29,7 @@ PreconfiguredDeskTemplatesExternalDataHandler::
 void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  DesksTemplatesClient* dc = DesksTemplatesClient::Get();
+  DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->RemovePolicyPreconfiguredTemplate(
         CloudExternalDataPolicyHandler::GetAccountId(user_id));
@@ -41,7 +41,7 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  DesksTemplatesClient* dc = DesksTemplatesClient::Get();
+  DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->SetPolicyPreconfiguredTemplate(
         CloudExternalDataPolicyHandler::GetAccountId(user_id), std::move(data));
@@ -50,7 +50,7 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataFetched(
 
 void PreconfiguredDeskTemplatesExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  DesksTemplatesClient* dc = DesksTemplatesClient::Get();
+  DesksClient* dc = DesksClient::Get();
   if (dc)
     dc->RemovePolicyPreconfiguredTemplate(account_id);
 }

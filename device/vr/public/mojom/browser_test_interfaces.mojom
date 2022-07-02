@@ -155,6 +155,9 @@ interface XRTestHook {
 
   // Called by the OpenXR test to simulate runtime events.
   [Sync] WaitGetEventData() => (EventData data);
+
+  // Used to indicate if the Fake Runtime would allow creating any session.
+  [Sync] WaitGetCanCreateSession() => (bool can_create_session);
 };
 
 // Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs

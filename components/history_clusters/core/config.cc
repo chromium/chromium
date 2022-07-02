@@ -12,7 +12,10 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
@@ -33,9 +36,6 @@ Config::Config() {
 
   max_visits_to_cluster = base::GetFieldTrialParamByFeatureAsInt(
       internal::kJourneys, "JourneysMaxVisitsToCluster", max_visits_to_cluster);
-
-  max_days_to_cluster = base::GetFieldTrialParamByFeatureAsInt(
-      internal::kJourneys, "JourneysMaxDaysToCluster", max_days_to_cluster);
 
   max_keyword_phrases = base::GetFieldTrialParamByFeatureAsInt(
       internal::kJourneys, "JourneysMaxKeywordPhrases", max_keyword_phrases);
@@ -77,6 +77,24 @@ Config::Config() {
       internal::kOmniboxAction, "omnibox_action_on_noisy_urls",
       omnibox_action_on_noisy_urls);
 
+  omnibox_action_on_navigation_intents =
+      base::GetFieldTrialParamByFeatureAsBool(
+          internal::kOmniboxAction, "omnibox_action_on_navigation_intents",
+          omnibox_action_on_navigation_intents);
+
+  omnibox_action_navigation_intent_score_threshold =
+      base::GetFieldTrialParamByFeatureAsInt(
+          internal::kOmniboxAction,
+          "omnibox_action_on_navigation_intent_score_threshold",
+          omnibox_action_navigation_intent_score_threshold);
+
+  omnibox_action_with_pedals = base::GetFieldTrialParamByFeatureAsBool(
+      internal::kOmniboxAction, "omnibox_action_with_pedals",
+      omnibox_action_with_pedals);
+
+  omnibox_history_cluster_provider =
+      base::FeatureList::IsEnabled(internal::kOmniboxHistoryClusterProvider);
+
   keyword_filter_on_entity_aliases = base::GetFieldTrialParamByFeatureAsBool(
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_entity_aliases", keyword_filter_on_entity_aliases);
@@ -95,6 +113,22 @@ Config::Config() {
   keyword_filter_on_noisy_visits = GetFieldTrialParamByFeatureAsBool(
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_noisy_visits", keyword_filter_on_noisy_visits);
+
+  keyword_filter_on_search_terms = GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_search_terms", keyword_filter_on_search_terms);
+
+  keyword_filter_on_visit_hosts = GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_visit_hosts", keyword_filter_on_visit_hosts);
+
+  category_keyword_score_weight = GetFieldTrialParamByFeatureAsDouble(
+      features::kOnDeviceClusteringKeywordFiltering,
+      "category_keyword_score_weight", category_keyword_score_weight);
+
+  max_num_keywords_per_cluster = GetFieldTrialParamByFeatureAsInt(
+      features::kOnDeviceClusteringKeywordFiltering,
+      "max_num_keywords_per_cluster", max_num_keywords_per_cluster);
 
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
@@ -161,6 +195,12 @@ Config::Config() {
           features::kOnDeviceClustering,
           "hide_single_visit_clusters_on_prominent_ui_surfaces",
           should_hide_single_visit_clusters_on_prominent_ui_surfaces);
+
+  should_hide_single_domain_clusters_on_prominent_ui_surfaces =
+      GetFieldTrialParamByFeatureAsBool(
+          features::kOnDeviceClustering,
+          "hide_single_domain_clusters_on_prominent_ui_surfaces",
+          should_hide_single_domain_clusters_on_prominent_ui_surfaces);
 
   should_filter_noisy_clusters = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "filter_noisy_clusters",
@@ -229,6 +269,16 @@ Config::Config() {
   should_check_hosts_to_skip_clustering_for =
       base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);
 
+  engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
+      features::kUseEngagementScoreCache, "engagement_score_cache_size",
+      engagement_score_cache_size);
+
+  engagement_score_cache_refresh_duration =
+      base::Minutes(GetFieldTrialParamByFeatureAsInt(
+          features::kUseEngagementScoreCache,
+          "engagement_score_cache_refresh_duration_minutes",
+          engagement_score_cache_refresh_duration.InMinutes()));
+
   use_continue_on_shutdown = base::FeatureList::IsEnabled(
       internal::kHistoryClustersUseContinueOnShutdown);
 }
@@ -267,6 +317,20 @@ bool IsApplicationLocaleSupportedByJourneys(
   // the list.
   return allowlist.empty() || base::Contains(allowlist, application_locale) ||
          base::Contains(allowlist, l10n_util::GetLanguage(application_locale));
+}
+
+bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
+                                PrefService* prefs) {
+  if (!service)
+    return false;
+
+  if (!service->IsJourneysEnabled())
+    return false;
+
+  if (!prefs->GetBoolean(history_clusters::prefs::kVisible))
+    return false;
+
+  return true;
 }
 
 const Config& GetConfig() {

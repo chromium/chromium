@@ -6,12 +6,10 @@
 #define CHROMECAST_CAST_CORE_GRPC_GRPC_SERVER_H_
 
 #include <grpcpp/grpcpp.h>
+#include <unordered_map>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/strings/string_piece_forward.h"
-#include "base/time/time.h"
 #include "chromecast/cast_core/grpc/grpc_handler.h"
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
 
@@ -77,7 +75,8 @@ class GrpcServer : public grpc::CallbackGenericService {
   void SetHandler(typename THandler::OnRequestCallback on_request_callback) {
     // The full rpc name is /<fully-qualified-service-type>/method, ie
     // /cast.core.CastCoreService/RegisterRuntime.
-    DCHECK(!registered_handlers_.contains(THandler::rpc_name()))
+    DCHECK(registered_handlers_.find(THandler::rpc_name()) ==
+           registered_handlers_.end())
         << "Duplicate handler: " << THandler::rpc_name();
     registered_handlers_.emplace(
         THandler::rpc_name(),
@@ -87,7 +86,7 @@ class GrpcServer : public grpc::CallbackGenericService {
   }
 
   // Starts the gRPC server.
-  void Start(base::StringPiece endpoint);
+  void Start(const std::string& endpoint);
 
   // Stops the gRPC server synchronously. May block indefinitely if there's a
   // non-finished pending reactor created by the gRPC framework.
@@ -96,14 +95,7 @@ class GrpcServer : public grpc::CallbackGenericService {
   // Stops the gRPC server and calls the callback. The process will crash in
   // case the |timeout| is reached as such case clearly points to a bug in
   // reactor handling.
-  void Stop(const base::TimeDelta& timeout,
-            base::OnceClosure server_stopped_callback);
-
-  // Stops the gRPC server in a separate task runner to avoid blocking the main
-  // test thread, and keep latter's run loop spinning.  The process will crash
-  // in case the |timeout| is reached as such case clearly points to a bug in
-  // reactor handling.
-  void StopForTesting(const base::TimeDelta& timeout);
+  void Stop(int64_t timeout_ms, base::OnceClosure server_stopped_callback);
 
  private:
   // Implements grpc::CallbackGenericService APIs.
@@ -113,7 +105,7 @@ class GrpcServer : public grpc::CallbackGenericService {
   grpc::ServerGenericBidiReactor* CreateReactor(
       grpc::GenericCallbackServerContext* ctx) override;
 
-  base::flat_map<std::string, std::unique_ptr<utils::GrpcHandler>>
+  std::unordered_map<std::string, std::unique_ptr<utils::GrpcHandler>>
       registered_handlers_;
   std::unique_ptr<grpc::Server> server_;
   std::unique_ptr<ServerReactorTracker> server_reactor_tracker_;

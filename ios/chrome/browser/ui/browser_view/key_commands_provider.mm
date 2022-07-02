@@ -25,6 +25,7 @@
                 baseViewController:(UIViewController*)baseViewController
                         dispatcher:(id<ApplicationCommands,
                                        BrowserCommands,
+                                       BrowserCoordinatorCommands,
                                        FindInPageCommands,
                                        OmniboxCommands>)dispatcher
                    navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
@@ -32,11 +33,12 @@
                        editingText:(BOOL)editingText {
   __weak id<KeyCommandsPlumbing> weakConsumer = consumer;
   __weak UIViewController* weakBaseViewController = baseViewController;
-  __weak id<ApplicationCommands, BrowserCommands, FindInPageCommands>
+  __weak id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+            FindInPageCommands>
       weakDispatcher = dispatcher;
   __weak id<OmniboxCommands> weakOmniboxHandler = omniboxHandler;
 
-  // Block to have the tab model open the tab at |index|, if there is one.
+  // Block to have the tab model open the tab at `index`, if there is one.
   void (^focusTab)(NSUInteger) = ^(NSUInteger index) {
     [weakConsumer focusTabAtIndex:index];
   };

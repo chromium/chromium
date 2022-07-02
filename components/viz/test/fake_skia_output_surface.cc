@@ -26,6 +26,8 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_utils.h"
 
@@ -55,10 +57,6 @@ void FakeSkiaOutputSurface::DiscardBackbuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void FakeSkiaOutputSurface::BindFramebuffer() {
-  // TODO(penghuang): remove this method when GLRenderer is removed.
-}
-
 void FakeSkiaOutputSurface::Reshape(const ReshapeParams& params) {
   auto& sk_surface = sk_surfaces_[AggregatedRenderPassId{0}];
   SkColorType color_type = kRGBA_8888_SkColorType;
@@ -86,32 +84,8 @@ void FakeSkiaOutputSurface::ScheduleOutputSurfaceAsOverlay(
   NOTIMPLEMENTED();
 }
 
-uint32_t FakeSkiaOutputSurface::GetFramebufferCopyTextureFormat() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GL_RGB;
-}
-
 bool FakeSkiaOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-unsigned FakeSkiaOutputSurface::GetOverlayTextureId() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return 0;
-}
-
-bool FakeSkiaOutputSurface::HasExternalStencilTest() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return false;
-}
-
-void FakeSkiaOutputSurface::ApplyExternalStencil() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
-
-unsigned FakeSkiaOutputSurface::UpdateGpuFence() {
-  NOTIMPLEMENTED();
-  return 0;
 }
 
 void FakeSkiaOutputSurface::SetNeedsSwapSizeNotifications(
@@ -211,13 +185,22 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   return sk_surface->getCanvas();
 }
 
-void FakeSkiaOutputSurface::EndPaint(base::OnceClosure on_finished) {
+SkCanvas* FakeSkiaOutputSurface::RecordOverdrawForCurrentPaint() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void FakeSkiaOutputSurface::EndPaint(
+    base::OnceClosure on_finished,
+    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sk_surfaces_[current_render_pass_id_]->flushAndSubmit();
   current_render_pass_id_ = AggregatedRenderPassId{0};
 
   if (on_finished)
     std::move(on_finished).Run();
+  if (return_release_fence_cb)
+    std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
 }
 
 sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(

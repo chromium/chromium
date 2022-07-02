@@ -8,7 +8,9 @@
 #include <iosfwd>
 #include <string>
 
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -90,8 +92,10 @@ class Metrics {
     // The user implicitly rejected the onboarding. Some of the possible reasons
     // include navigating away, tapping the back button, closing the tab, etc.
     OB_NO_ANSWER = 4,
+    // The onboarding flow is provided externally.
+    OB_EXTERNAL = 5,
 
-    kMaxValue = OB_NO_ANSWER
+    kMaxValue = OB_EXTERNAL
   };
 
   // The different actions that can be performed on TTS button click.
@@ -502,30 +506,6 @@ class Metrics {
     kMaxValue = G_CAROUSEL
   };
 
-  // Used for logging the intent of an autofill-assistant flow.
-  //
-  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
-  // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantIntent enum listing in
-  // tools/metrics/histograms/enums.xml.
-  enum class AutofillAssistantIntent {
-    UNDEFINED_INTENT = 0,
-    BUY_MOVIE_TICKET = 3,
-    RENT_CAR = 9,
-    SHOPPING = 10,
-    TELEPORT = 11,
-    SHOPPING_ASSISTED_CHECKOUT = 14,
-    FLIGHTS_CHECKIN = 15,
-    FOOD_ORDERING = 17,
-    PASSWORD_CHANGE = 18,
-    FOOD_ORDERING_PICKUP = 19,
-    FOOD_ORDERING_DELIVERY = 20,
-    UNLAUNCHED_VERTICAL_1 = 22,
-    FIND_COUPONS = 25,
-
-    kMaxValue = FIND_COUPONS
-  };
-
   // Used for logging active autofill-assistant experiments. This is intended
   // to be a bitmask to support cases where more than one experiment is running.
   //
@@ -716,6 +696,31 @@ class Metrics {
     kMaxValue = kInvalidData
   };
 
+  // Reports notable events that occur before, during or after the execution
+  // of a Autofill Assistant JS flow.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantJsFlowStartedEvent enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/histograms/metadata/android/histograms.xml as necessary.
+  enum class JsFlowStartedEvent {
+    // The JS flow executer was started.
+    EXECUTOR_STARTED = 0,
+    // A JS flow was attempting to start before the previous one had finished.
+    // This is a client bug.
+    FAILED_ALREADY_RUNNING = 1,
+    // Failed to get the frame tree of the WebContents the JS flow was attached
+    // to.
+    FAILED_TO_GET_FRAME_TREE = 2,
+    // Failed to create the isolated world.
+    FAILED_TO_CREATE_ISOLATED_WORLD = 3,
+    // The JS flow execution was started.
+    SCRIPT_STARTED = 4,
+
+    kMaxValue = SCRIPT_STARTED
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(
       bool initially_complete,
@@ -793,7 +798,13 @@ class Metrics {
   static void RecordOnboardingFetcherResult(
       OnboardingFetcherResultStatus status);
   static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
+  static void RecordJsFlowStartedEvent(JsFlowStartedEvent event);
   static void RecordServiceRequestRetryCount(int count, bool success);
+
+  // Extracts the enum value corresponding to the intent specified in
+  // |script_parameters|.
+  static AutofillAssistantIntent ExtractIntentFromScriptParameters(
+      const ScriptParameters& script_parameters);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.

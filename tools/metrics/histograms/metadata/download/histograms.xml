@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Overall bandwidth seen for a completed download. This includes all file
@@ -88,8 +88,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Bubble.DragInfo" enum="Download.DragInfo"
+    expires_after="2022-12-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    This tracks drag events on a complete download on the bubble, and also
+    general download completion on the bubble as a point of reference. Note that
+    the completion can be logged multiple times for a single download if the
+    download bubble is shown and dismissed multiple times.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
-    expires_after="2022-10-18">
+    expires_after="2022-12-18">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -121,6 +133,18 @@ chromium-metrics-reviews@google.com.
   <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
 </histogram>
 
+<histogram name="Download.Bubble.SubpageAction"
+    enum="DownloadBubbleSubpageAction" expires_after="2022-12-14">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Record the user actions taken on the Download bubble warning subpage. The
+    warning subpage is shown when the user sees a download warning on the full
+    or the partial view, and navigates to the subpage for more actions. Recorded
+    only for Desktop platforms, where Download Bubble is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
     units="ms" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>
@@ -149,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.CancelReason" enum="DownloadCancelReason"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records why the download is canceled.</summary>
@@ -191,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.Counts" enum="DownloadCountType"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>shaktisahu@chromium.org</owner>
@@ -212,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
-    enum="DangerousDownloadDialogEvent" expires_after="2022-10-23">
+    enum="DangerousDownloadDialogEvent" expires_after="2022-12-25">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
@@ -222,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousFile.DownloadValidatedByType"
-    enum="SBClientDownloadExtensions" expires_after="2022-09-11">
+    enum="SBClientDownloadExtensions" expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -270,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DownloadDangerPrompt"
-    enum="SBClientDownloadExtensions" expires_after="2022-10-16">
+    enum="SBClientDownloadExtensions" expires_after="2022-12-18">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -359,6 +383,16 @@ chromium-metrics-reviews@google.com.
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The count of HTTP Response codes for download requests.</summary>
+</histogram>
+
+<histogram name="Download.Incognito.Message" enum="IncognitoMessageEvent"
+    expires_after="2022-12-31">
+  <owner>tommasin@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the clicks on Incognito download message in Android, when users
+    click download or dismiss the message.
+  </summary>
 </histogram>
 
 <histogram name="Download.InProgressDB.Counts"
@@ -556,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Later.Events" enum="DownloadLaterEvent"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -617,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.MixedContentDialog.Events"
-    enum="MixedContentDownloadDialogEvent" expires_after="2022-10-09">
+    enum="MixedContentDownloadDialogEvent" expires_after="2022-12-11">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the mixed content download dialog on Android.
@@ -644,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.NetworkConnectionType.StartNew"
-    enum="NetworkConnectionType" expires_after="2022-09-11">
+    enum="NetworkConnectionType" expires_after="2022-11-13">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>
@@ -664,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.OpenDownloads.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-10-09">
+    enum="BrowserProfileType" expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -675,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.OpenDownloadsFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-10-09">
+    enum="BrowserProfileType" expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -763,7 +797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Progress.InfoBar.CloseButtonClicked"
-    enum="DownloadInfoBarState" expires_after="2022-10-16">
+    enum="DownloadInfoBarState" expires_after="2022-12-18">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -773,7 +807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Progress.InfoBar.Shown"
-    enum="DownloadInfoBar.ShownState" expires_after="2022-10-16">
+    enum="DownloadInfoBar.ShownState" expires_after="2022-12-18">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -840,6 +874,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the interrupt reason when download is restarting from the beginning
     during resumption.
+  </summary>
+</histogram>
+
+<histogram name="Download.Retry.InterruptReason" enum="InterruptReason"
+    expires_after="2022-12-28">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Records the last interrupt reason for a download that has just been retried
+    through the download bubble.
   </summary>
 </histogram>
 
@@ -1007,7 +1051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Service.Finish.Type"
-    enum="Download.Service.CompletionType" expires_after="2022-10-16">
+    enum="Download.Service.CompletionType" expires_after="2022-12-18">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The completion type for downloads in download service.</summary>
@@ -1103,6 +1147,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Shelf.DragEvent" enum="Download.Shelf.DragEvent"
     expires_after="M77">
+  <obsolete>
+    Removed 2022-06-06, though it had long expired (in M77).
+  </obsolete>
   <owner>sdy@chromium.org</owner>
   <summary>
     Events related to dragging a completed download from the shelf, which
@@ -1110,8 +1157,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"
+    expires_after="2022-12-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    This tracks drag events on a complete download on the shelf, and also
+    general download completion on the shelf as a point of reference.
+  </summary>
+</histogram>
+
 <histogram name="Download.Shelf.VisibleTime" units="ms"
-    expires_after="2022-10-10">
+    expires_after="2022-12-11">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -1197,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShelfContextMenuAction"
-    enum="DownloadShelfContextMenuAction" expires_after="2022-10-11">
+    enum="DownloadShelfContextMenuAction" expires_after="2022-12-11">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -1220,7 +1277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -1262,7 +1319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.PerProfileType" enum="BrowserProfileType"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1272,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload"
-    enum="DownloadItem.DangerType" expires_after="2022-09-11">
+    enum="DownloadItem.DangerType" expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-team@chromium.org</owner>
   <summary>

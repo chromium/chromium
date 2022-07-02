@@ -10,15 +10,12 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
 class GURL;
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 
@@ -41,7 +38,7 @@ class CONTENT_EXPORT WebUIController {
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::ListValue& args);
+                                          const base::Value::List& args);
 
   // Called when a WebUI RenderFrame is created.  This is *not* called for every
   // page load because in some cases a RenderFrame will be reused, for example

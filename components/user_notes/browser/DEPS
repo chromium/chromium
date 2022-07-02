@@ -1,5 +1,8 @@
 include_rules = [
   "+content/public/browser",
   "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+services/service_manager/public/cpp/interface_provider.h",
+  "+third_party/blink/public/mojom/annotation",
   "+ui/gfx/geometry",
 ]

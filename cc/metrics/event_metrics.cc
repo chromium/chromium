@@ -255,12 +255,14 @@ EventMetrics::EventMetrics(EventType type,
 }
 
 EventMetrics::EventMetrics(const EventMetrics& other)
-    : type_(other.type_), tick_clock_(other.tick_clock_) {
+    : type_(other.type_),
+      tick_clock_(other.tick_clock_),
+      should_record_tracing_(false) {
   CopyTimestampsFrom(other, DispatchStage::kMaxValue);
 }
 
 EventMetrics::~EventMetrics() {
-  if (!is_tracing_recorded()) {
+  if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         this, base::TimeTicks::Now(), nullptr, nullptr);
   }
@@ -428,7 +430,7 @@ ScrollEventMetrics::ScrollEventMetrics(EventType type,
 ScrollEventMetrics::ScrollEventMetrics(const ScrollEventMetrics&) = default;
 
 ScrollEventMetrics::~ScrollEventMetrics() {
-  if (!is_tracing_recorded()) {
+  if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         this, base::TimeTicks::Now(), nullptr, nullptr);
   }
@@ -561,7 +563,7 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
     const ScrollUpdateEventMetrics&) = default;
 
 ScrollUpdateEventMetrics::~ScrollUpdateEventMetrics() {
-  if (!is_tracing_recorded()) {
+  if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         this, base::TimeTicks::Now(), nullptr, nullptr);
   }
@@ -648,7 +650,7 @@ PinchEventMetrics::PinchEventMetrics(EventType type,
 PinchEventMetrics::PinchEventMetrics(const PinchEventMetrics&) = default;
 
 PinchEventMetrics::~PinchEventMetrics() {
-  if (!is_tracing_recorded()) {
+  if (should_record_tracing()) {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         this, base::TimeTicks::Now(), nullptr, nullptr);
   }

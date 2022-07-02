@@ -6,7 +6,8 @@
 // consumed by the Telemetry Extension APIs implementation.
 
 // Note: this is a subset of the cros_healthd probe service interface which is
-// located in //chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.
+// located in
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.
 // This interface serves as PII filtering and data post-processing service
 // between the source (cros_healthd) and the clients
 // (third-party telemetry extensions).
@@ -485,11 +486,28 @@ union BluetoothResult {
   ProbeError error;
 };
 
+// OS Version information.
+// This structure decomposes a full version string
+// (e.g. "87.13544.59.0") into its parts.
+[Stable]
+struct OsVersion {
+  // The OS version release milestone (e.g. "87").
+  string? release_milestone@0;
+  // The OS version build number (e.g. "13544").
+  string? build_number@1;
+  // The OS version patch number (e.g. "59.0").
+  string? patch_number@2;
+  // The OS release channel (e.g. "stable-channel").
+  string? release_channel@3;
+};
+
 // The OS information.
 [Stable]
 struct OsInfo {
   // Contents of CrosConfig in /branding/oem-name.
   string? oem_name@0;
+  // OS Version information.
+  [MinVersion=1] OsVersion? os_version@1;
 };
 
 // System Information.

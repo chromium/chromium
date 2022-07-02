@@ -7,6 +7,8 @@
 
 #include <cstddef>
 
+#include "base/memory/raw_ptr.h"
+
 namespace mojo {
 
 // Simple wrapper around a pointer to allow zero-copy serialization of a
@@ -56,7 +58,7 @@ class OptionalAsPointer {
   template <typename U>
   friend class OptionalAsPointer;
 
-  T* value_ = nullptr;
+  raw_ptr<T> value_ = nullptr;
 };
 
 // Type-deducing helpers for constructing a `OptionalAsPointer`.

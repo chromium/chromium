@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/base/media_resource.h"
+#include "media/base/media_switches.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
@@ -88,9 +89,11 @@ class MediaFoundationRendererClient
   void OnSelectedVideoTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb) override;
+  void OnExternalVideoFrameRequest() override;
 
   // RendererClient implementation.
   void OnError(PipelineStatus status) override;
+  void OnFallback(PipelineStatus fallback) override;
   void OnEnded() override;
   void OnStatisticsUpdate(const PipelineStatistics& stats) override;
   void OnBufferingStateChange(BufferingState state,
@@ -135,6 +138,7 @@ class MediaFoundationRendererClient
   void SignalMediaPlayingStateChange(bool is_playing);
   void ObserveMailboxForOverlayState(const gpu::Mailbox& mailbox);
   void OnOverlayStateChanged(const gpu::Mailbox& mailbox, bool promoted);
+  void UpdateRenderMode();
 
   // This class is constructed on the main thread and used exclusively on the
   // media thread. Hence we store PendingRemotes so we can bind the Remotes
@@ -163,6 +167,8 @@ class MediaFoundationRendererClient
   bool output_size_updated_ = false;
   bool is_playing_ = false;
   bool has_video_ = false;
+  bool has_frame_read_back_signal_ = false;
+  bool promoted_to_overlay_signal_ = false;
   scoped_refptr<VideoFrame> dcomp_video_frame_;
   scoped_refptr<VideoFrame> next_video_frame_;
   gpu::Mailbox mailbox_;
@@ -170,6 +176,12 @@ class MediaFoundationRendererClient
   // Rendering mode the Media Engine will use.
   MediaFoundationRenderingMode rendering_mode_ =
       MediaFoundationRenderingMode::DirectComposition;
+
+  // Rendering strategy informs whether we enforce a rendering mode or allow
+  // dynamic transitions for Clear content. (Note: Protected content will always
+  // use Direct Composition mode).
+  MediaFoundationClearRenderingStrategy rendering_strategy_ =
+      MediaFoundationClearRenderingStrategy::kDirectComposition;
 
   PipelineStatusCallback init_cb_;
   raw_ptr<CdmContext> cdm_context_ = nullptr;

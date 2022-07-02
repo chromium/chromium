@@ -30,7 +30,6 @@ const std::string GetDecodeStatusString(const DecoderStatus& status) {
     STRINGIFY(DecoderStatus::Codes::kMalformedBitstream);
     STRINGIFY(DecoderStatus::Codes::kFailedToGetDecoderBuffer);
     STRINGIFY(DecoderStatus::Codes::kDecoderStreamInErrorState);
-    STRINGIFY(DecoderStatus::Codes::kDecoderStreamReinitFailed);
     STRINGIFY(DecoderStatus::Codes::kDecoderStreamDemuxerError);
     STRINGIFY(DecoderStatus::Codes::kUnsupportedProfile);
     STRINGIFY(DecoderStatus::Codes::kUnsupportedCodec);

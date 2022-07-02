@@ -11,8 +11,7 @@
 
 namespace device {
 
-BluetoothChannelMac::BluetoothChannelMac() : socket_(NULL) {
-}
+BluetoothChannelMac::BluetoothChannelMac() : socket_(nullptr) {}
 
 BluetoothChannelMac::~BluetoothChannelMac() {
 }

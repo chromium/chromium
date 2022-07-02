@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 import '../i18n_setup.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';

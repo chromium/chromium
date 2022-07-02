@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AutofillProfileBridge_jni.h"
 #include "chrome/browser/browser_process.h"
+#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
@@ -117,6 +118,8 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   std::vector<AddressUiComponent> ui_components = BuildComponents(
       country_code, localization, language_code, &best_language_tag);
+  ExtendAddressComponents(ui_components, country_code, localization,
+                          /*include_literals=*/false);
 
   for (const auto& ui_component : ui_components) {
     component_labels.push_back(ui_component.name);

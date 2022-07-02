@@ -19,6 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -39,6 +41,8 @@
 #endif
 
 namespace device {
+
+using ::base::test::RepeatingTestFuture;
 
 // Records the most recent position update and counts the number of times
 // OnLocationUpdate is called.
@@ -440,6 +444,8 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
 
   mojom::Geoposition position = provider->GetPosition();
   EXPECT_FALSE(ValidateGeoposition(position));
+  EXPECT_EQ("Did not provide a good position fix", position.error_message);
+  EXPECT_TRUE(position.error_technical.empty());
 
   // 2. Now wifi data arrives -- SetData will notify listeners.
   const int kFirstScanAps = 6;
@@ -503,6 +509,12 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
   // Error means we now no longer have a fix.
   position = provider->GetPosition();
   EXPECT_FALSE(ValidateGeoposition(position));
+  EXPECT_EQ("Network error. Check DevTools console for more information.",
+            position.error_message);
+  EXPECT_EQ(
+      "Network location provider at 'https://www.googleapis.com/' : "
+      "ERR_FAILED.",
+      position.error_technical);
 
   // 7. Wifi scan returns to original set: should be serviced from cache.
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(kFirstScanAps));
@@ -577,6 +589,57 @@ TEST_F(GeolocationNetworkProviderTest,
 
   provider->OnPermissionGranted();
   CheckRequestIsValid(kScanCount, 0);
+}
+
+TEST_F(GeolocationNetworkProviderTest, NetworkRequestServiceBadRequest) {
+  std::unique_ptr<LocationProvider> provider(CreateProvider(true));
+  provider->StartProvider(false);
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  RepeatingTestFuture<mojom::GeopositionPtr> future;
+  provider->SetUpdateCallback(
+      base::BindLambdaForTesting([&future](const LocationProvider* provider,
+                                           const mojom::Geoposition& position) {
+        future.AddValue(position.Clone());
+      }));
+  const std::string& request_url =
+      test_url_loader_factory_.pending_requests()->back().request.url.spec();
+  test_url_loader_factory_.AddResponse(request_url, std::string(),
+                                       net::HTTP_BAD_REQUEST);
+
+  auto position = future.Take();
+  EXPECT_EQ(
+      "Failed to query location from network service. Check the DevTools "
+      "console for more information.",
+      position->error_message);
+  EXPECT_EQ(
+      "Network location provider at 'https://www.googleapis.com/' : Returned "
+      "error code 400.",
+      position->error_technical);
+}
+
+TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
+  std::unique_ptr<LocationProvider> provider(CreateProvider(true));
+  provider->StartProvider(false);
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+
+  RepeatingTestFuture<mojom::GeopositionPtr> future;
+  provider->SetUpdateCallback(
+      base::BindLambdaForTesting([&future](const LocationProvider* provider,
+                                           const mojom::Geoposition& position) {
+        future.AddValue(position.Clone());
+      }));
+  const std::string& request_url =
+      test_url_loader_factory_.pending_requests()->back().request.url.spec();
+  const char* kMalformedResponse =
+      "{"
+      "  \"status MALFORMED\""
+      "}";
+  test_url_loader_factory_.AddResponse(request_url, kMalformedResponse);
+
+  auto position = future.Take();
+  EXPECT_EQ("Response was malformed", position->error_message);
+  EXPECT_TRUE(position->error_technical.empty());
 }
 
 #if BUILDFLAG(IS_MAC)

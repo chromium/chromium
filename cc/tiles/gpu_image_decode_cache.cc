@@ -466,6 +466,44 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   return uploaded_image;
 }
 
+// We use this below, instead of just a std::unique_ptr, so that we can run
+// a Finch experiment to check the impact of not using discardable memory on the
+// GPU decode path.
+class HeapDiscardableMemory : public base::DiscardableMemory {
+ public:
+  explicit HeapDiscardableMemory(size_t size)
+      : memory_(new char[size]), size_(size) {}
+  ~HeapDiscardableMemory() override = default;
+  [[nodiscard]] bool Lock() override {
+    // Locking only succeeds when we have not yet discarded the memory (i.e. if
+    // we have never called |Unlock()|.)
+    return memory_ != nullptr;
+  }
+  void Unlock() override { Discard(); }
+  void* data() const override {
+    DCHECK(memory_);
+    return static_cast<void*>(memory_.get());
+  }
+  void DiscardForTesting() override { Discard(); }
+  base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
+      const char* name,
+      base::trace_event::ProcessMemoryDump* pmd) const override {
+    auto* dump = pmd->CreateAllocatorDump(name);
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes, size_);
+    return dump;
+  }
+
+ private:
+  void Discard() {
+    memory_.reset();
+    size_ = 0;
+  }
+
+  std::unique_ptr<char[]> memory_;
+  size_t size_;
+};
+
 }  // namespace
 
 // Extract the information to uniquely identify a DrawImage for the purposes of
@@ -544,6 +582,13 @@ class GpuImageDecodeTaskImpl : public TileTask {
   // Overridden from TileTask:
   void OnTaskCompleted() override {
     cache_->OnImageDecodeTaskCompleted(image_, task_type_);
+  }
+
+  // Overridden from TileTask:
+  bool TaskContainsLCPCandidateImages() const override {
+    if (!HasCompleted() && image_.paint_image().may_be_lcp_candidate())
+      return true;
+    return TileTask::TaskContainsLCPCandidateImages();
   }
 
  protected:
@@ -953,6 +998,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       max_working_set_bytes_(max_working_set_bytes),
       max_working_set_items_(kMaxItemsInWorkingSet),
       dark_mode_filter_(dark_mode_filter) {
+  DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // Note that to compute |allow_accelerated_jpeg_decodes_| and
   // |allow_accelerated_webp_decodes_|, the last thing we check is the feature
   // flag. That's because we want to ensure that we're in OOP-R mode and the
@@ -1543,6 +1589,8 @@ void GpuImageDecodeCache::OnImageDecodeTaskCompleted(
   // Decode task is complete, remove our reference to it.
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key);
   DCHECK(image_data);
+  UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Hardware",
+                        draw_image.paint_image().may_be_lcp_candidate());
   if (task_type == DecodeTaskType::kPartOfUploadTask) {
     DCHECK(image_data->decode.task);
     image_data->decode.task = nullptr;
@@ -1986,10 +2034,17 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
   sk_sp<SkImage> image_v;
   {
     base::AutoUnlock unlock(lock_);
-    auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
-    backing_memory = allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
-        image_data->size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
-                                         base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(
+            features::kNoDiscardableMemoryForGpuDecodePath)) {
+      backing_memory =
+          std::make_unique<HeapDiscardableMemory>(image_data->size);
+    } else {
+      auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
+      backing_memory = allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
+          image_data->size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
+                                           base::Unretained(this)));
+    }
+
     sk_sp<SkColorSpace> color_space =
         ColorSpaceForImageDecode(draw_image, image_data->mode);
     auto release_proc = [](const void*, void*) {};

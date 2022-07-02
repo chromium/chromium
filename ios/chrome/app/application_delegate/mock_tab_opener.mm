@@ -55,7 +55,7 @@
 }
 
 - (ProceduralBlock)completionBlockForTriggeringAction:
-    (NTPTabOpeningPostOpeningAction)action {
+    (TabOpeningPostOpeningAction)action {
   // Stub
   return nil;
 }

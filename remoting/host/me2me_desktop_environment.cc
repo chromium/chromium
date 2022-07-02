@@ -58,8 +58,10 @@ Me2MeDesktopEnvironment::CreateScreenControls() {
   // they disconnect and reconnect. Both OS X and Windows will restore the
   // resolution automatically when the user logs back in on the console, and on
   // Linux the curtain-mode uses a separate session.
-  return base::WrapUnique(new ResizingHostObserver(DesktopResizer::Create(),
-                                                   curtain_ == nullptr));
+  auto resizer = std::make_unique<ResizingHostObserver>(
+      DesktopResizer::Create(), curtain_ == nullptr);
+  resizer->RegisterForDisplayChanges(*GetDisplayInfoMonitor());
+  return resizer;
 }
 
 std::string Me2MeDesktopEnvironment::GetCapabilities() const {

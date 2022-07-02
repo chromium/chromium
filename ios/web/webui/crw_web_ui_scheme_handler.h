@@ -12,7 +12,6 @@
 
 // This class allows the handle the pages associated with a WebUI URL, using the
 // custom scheme handling of the WKWebView.
-API_AVAILABLE(ios(11.0))
 @interface CRWWebUISchemeHandler : NSObject <WKURLSchemeHandler>
 
 // Initializes the handler with the |URLLoaderFactory| used to load the URLs.

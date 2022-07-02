@@ -98,6 +98,10 @@ const CGFloat kFontSize = 14.0;
       [self resizeableBackgroundImageForStateSelected:YES];
 }
 
+- (BOOL)hasIdentifier:(NSString*)identifier {
+  return [self.itemIdentifier isEqualToString:identifier];
+}
+
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -107,7 +111,7 @@ const CGFloat kFontSize = 14.0;
 
 #pragma mark - Private
 
-// Updates this tab's style based on the value of |selected| and the current
+// Updates this tab's style based on the value of `selected` and the current
 // incognito style.
 - (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
   // Style the background image first.

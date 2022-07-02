@@ -6,7 +6,6 @@
 #define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_SCORE_H_
 
 #include <array>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -15,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -201,7 +201,7 @@ class SiteEngagementScore {
   // This version of the constructor is used in unit tests.
   SiteEngagementScore(base::Clock* clock,
                       const GURL& origin,
-                      std::unique_ptr<base::DictionaryValue> score_dict);
+                      absl::optional<base::Value::Dict> score_dict);
 
   // Determine the score, accounting for any decay.
   double DecayedScore() const;
@@ -211,7 +211,7 @@ class SiteEngagementScore {
 
   // Updates the content settings dictionary |score_dict| with the current score
   // fields. Returns true if |score_dict| changed, otherwise return false.
-  bool UpdateScoreDict(base::DictionaryValue* score_dict);
+  bool UpdateScoreDict(base::Value::Dict& score_dict);
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
@@ -236,7 +236,7 @@ class SiteEngagementScore {
   base::Time last_shortcut_launch_time_;
 
   // The dictionary that represents this engagement score.
-  std::unique_ptr<base::DictionaryValue> score_dict_;
+  absl::optional<base::Value::Dict> score_dict_;
 
   // The origin this score represents.
   GURL origin_;

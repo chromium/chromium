@@ -30,9 +30,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kFedCm,
     &features::kOnDemandAccessibilityEvents,
     &features::kProcessSharingWithStrictSiteInstances,
+    &features::kRequestDesktopSiteAdditions,
     &features::kRequestDesktopSiteExceptions,
-    &features::kRequestDesktopSiteGlobal,
     &features::kTouchDragAndContextMenu,
+    &features::kWebAuthConditionalUI,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebNfc,
 };
@@ -67,6 +68,18 @@ static jint JNI_ContentFeatureListImpl_GetFieldTrialParamByFeatureAsInt(
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsInt(*feature, param_name,
                                                 jdefault_value);
+}
+
+static jboolean JNI_ContentFeatureListImpl_GetFieldTrialParamByFeatureAsBoolean(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& jfeature_name,
+    const JavaParamRef<jstring>& jparam_name,
+    const jboolean jdefault_value) {
+  const base::Feature* feature =
+      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
+  return base::GetFieldTrialParamByFeatureAsBool(*feature, param_name,
+                                                 jdefault_value);
 }
 
 }  // namespace android

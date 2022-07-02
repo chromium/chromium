@@ -5,10 +5,11 @@
 // Use the <code>chrome.os.diagnostics</code> API to run diagnostic routines.
 //
 // Many types defined here map with Mojo structs defined in
-// chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
+// chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
 namespace os.diagnostics {
   enum RoutineType {
+    ac_power,
     battery_capacity,
     battery_charge,
     battery_discharge,
@@ -58,6 +59,11 @@ namespace os.diagnostics {
     random
   };
 
+  enum AcPowerStatus {
+    connected,
+    disconnected
+  };
+
   dictionary GetAvailableRoutinesResponse {
     RoutineType[] routines;
   };
@@ -74,6 +80,13 @@ namespace os.diagnostics {
     DOMString status_message;
     // Returned for routines that require user action (e.g. unplug power cable).
     UserMessageType? user_message;
+  };
+
+  dictionary RunAcPowerRoutineRequest {
+    AcPowerStatus expected_status;
+    // If specified, this must match the type of power
+    // supply for the routine to succeed.
+    DOMString? expected_power_type;
   };
 
   dictionary RunBatteryChargeRoutineRequest {
@@ -121,6 +134,10 @@ namespace os.diagnostics {
     // Get routine update
     [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
                                                     GetRoutineUpdateCallback callback);
+
+    // Starts AcPower routine.
+    [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
+                                                     RunRoutineCallback callback);
 
     // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);

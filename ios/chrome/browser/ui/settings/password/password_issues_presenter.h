@@ -9,7 +9,7 @@
 
 @protocol PasswordIssue;
 
-// Presenter which handles commands from |PasswordsIssuesTableViewController|.
+// Presenter which handles commands from `PasswordsIssuesTableViewController`.
 @protocol PasswordIssuesPresenter
 
 // Called when view controller is removed.

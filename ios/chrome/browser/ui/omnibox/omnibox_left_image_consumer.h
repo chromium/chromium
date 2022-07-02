@@ -16,7 +16,7 @@
 // suggestions popup is visible.
 @protocol OmniboxLeftImageConsumer
 
-// The suggestion icon can either be determined by |matchType|, or, in new UI,
+// The suggestion icon can either be determined by `matchType`, or, in new UI,
 // answer icons will be used instead, if available (i.e. the match is an
 // answer). Favicons are only used for non-search match types.
 - (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType

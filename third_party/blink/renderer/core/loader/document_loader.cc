@@ -38,15 +38,18 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -55,6 +58,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -181,7 +185,7 @@ Vector<String> CopyForceEnabledOriginTrials(
     const WebVector<WebString>& force_enabled_origin_trials) {
   Vector<String> result;
   result.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(force_enabled_origin_trials.size()));
+      base::checked_cast<wtf_size_t>(force_enabled_origin_trials.size()));
   for (const auto& trial : force_enabled_origin_trials)
     result.push_back(trial);
   return result;
@@ -200,52 +204,6 @@ bool IsPagePopupRunningInWebTest(LocalFrame* frame) {
          WebTestSupport::IsRunningWebTest();
 }
 
-// TODO(https://crbug.com/1041379): This should be moved out of blink.
-void ApplyOriginPolicy(ContentSecurityPolicy* csp,
-                       const KURL& response_url,
-                       const WebOriginPolicy& origin_policy,
-                       PolicyContainer& policy_container) {
-  // When this function is called. The following lines of code happen
-  // consecutively:
-  // 1) A new empty set of CSP is created.
-  // 2) CSP(s) from the HTTP response are appended.
-  // 3) CSP(s) from the OriginPolicy are appended. [HERE]
-  //
-  // As a result, at the beginning of this function, the set of CSP must not
-  // contain any OriginPolicy's CSP yet.
-  //
-  // TODO(arthursonzogni): HasPolicyFromSource(...) is used only in this DCHECK,
-  // consider removing this function.
-  DCHECK(!csp->HasPolicyFromSource(
-      network::mojom::ContentSecurityPolicySource::kOriginPolicy));
-
-  DCHECK(response_url.ProtocolIsInHTTPFamily());
-
-  scoped_refptr<SecurityOrigin> self_origin =
-      SecurityOrigin::Create(response_url);
-
-  for (const auto& policy : origin_policy.content_security_policies) {
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-        ParseContentSecurityPolicies(
-            policy, network::mojom::ContentSecurityPolicyType::kEnforce,
-            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
-            *self_origin);
-    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
-    csp->AddPolicies(std::move(parsed_policies));
-  }
-
-  for (const auto& policy :
-       origin_policy.content_security_policies_report_only) {
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-        ParseContentSecurityPolicies(
-            policy, network::mojom::ContentSecurityPolicyType::kReport,
-            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
-            *self_origin);
-    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
-    csp->AddPolicies(std::move(parsed_policies));
-  }
-}
-
 struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
       public WebDocumentLoader,
@@ -254,12 +212,12 @@ struct SameSizeAsDocumentLoader
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
+  absl::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
   KURL url;
   AtomicString http_method;
   AtomicString referrer;
   scoped_refptr<EncodedFormData> http_body;
   AtomicString http_content_type;
-  absl::optional<WebOriginPolicy> origin_policy;
   scoped_refptr<const SecurityOrigin> requestor_origin;
   KURL unreachable_url;
   KURL pre_redirect_url_for_failed_navigations;
@@ -336,7 +294,6 @@ struct SameSizeAsDocumentLoader
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
-  bool anonymous;
   bool waiting_for_document_loader;
   bool waiting_for_code_cache;
   std::unique_ptr<ExtraData> extra_data;
@@ -358,12 +315,12 @@ DocumentLoader::DocumentLoader(
     std::unique_ptr<ExtraData> extra_data)
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
+      initial_permissions_policy_(params_->permissions_policy_override),
       url_(params_->url),
       http_method_(static_cast<String>(params_->http_method)),
       referrer_(static_cast<String>(params_->referrer)),
       http_body_(params_->http_body),
       http_content_type_(static_cast<String>(params_->http_content_type)),
-      origin_policy_(params_->origin_policy),
       requestor_origin_(params_->requestor_origin),
       unreachable_url_(params_->unreachable_url),
       pre_redirect_url_for_failed_navigations_(
@@ -438,7 +395,6 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      anonymous_(params_->anonymous),
       extra_data_(std::move(extra_data)) {
   DCHECK(frame_);
 
@@ -587,7 +543,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
-  params->anonymous = anonymous_;
   for (const auto& pair : early_hints_preloaded_resources_)
     params->early_hints_preloaded_resources.push_back(pair.key);
   if (ad_auction_components_) {
@@ -978,14 +933,6 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   }
 }
 
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-DocumentLoader::TakePendingWorkerTimingReceiver(int request_id) {
-  if (!GetServiceWorkerNetworkProvider())
-    return mojo::NullReceiver();
-  return GetServiceWorkerNetworkProvider()->TakePendingWorkerTimingReceiver(
-      request_id);
-}
-
 void DocumentLoader::BodyCodeCacheReceived(mojo_base::BigBuffer data) {
   if (cached_metadata_handler_) {
     cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
@@ -1057,8 +1004,6 @@ void DocumentLoader::BodyLoadingFinished(
           // Main resource timing information is reported through the owner
           // to be passed to the parent frame, if appropriate.
 
-          // TODO(https://crbug.com/900700): Set a Mojo pending receiver for
-          // WorkerTimingContainer in |navigation_timing_info|.
           frame_->Owner()->AddResourceTiming(*navigation_timing_info_);
         }
         frame_->SetShouldSendResourceTimingInfoToParent(false);
@@ -1187,8 +1132,6 @@ void DocumentLoader::HandleRedirect(
 
   referrer_ = redirect.new_referrer;
 
-  // TODO(dgozman): check whether clearing origin policy is intended behavior.
-  origin_policy_ = absl::nullopt;
   probe::WillSendNavigationRequest(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
@@ -2077,13 +2020,13 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
 
 bool ShouldReuseDOMWindow(LocalDOMWindow* window,
                           SecurityOrigin* security_origin,
-                          bool anonymous) {
+                          bool window_anonymous_matching) {
   if (!window) {
     return false;
   }
 
   // Anonymous is tracked per-Window, so if it does not match, do not reuse it.
-  if (anonymous != window->isAnonymouslyFramed()) {
+  if (!window_anonymous_matching) {
     return false;
   }
 
@@ -2137,6 +2080,12 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   bool did_have_policy_container = (policy_container_ != nullptr);
 
+  // The old window's PolicyContainer must be accessed before being potentially
+  // extracted below.
+  const bool old_window_is_anonymous =
+      frame_->DomWindow() &&
+      frame_->DomWindow()->GetPolicyContainer()->GetPolicies().is_anonymous;
+
   // DocumentLoader::InitializeWindow is called either on FrameLoader::Init or
   // on FrameLoader::CommitNavigation. FrameLoader::Init always initializes a
   // non null |policy_container_|. If |policy_container_| is null, this is
@@ -2156,6 +2105,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   // Every window must have a policy container.
   DCHECK(policy_container_);
+
+  const bool window_anonymous_matching =
+      old_window_is_anonymous == policy_container_->GetPolicies().is_anonymous;
 
   ContentSecurityPolicy* csp = CreateCSP();
 
@@ -2207,22 +2159,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
-                            anonymous_)) {
+                            window_anonymous_matching)) {
     auto* agent = GetWindowAgentForOrigin(
         frame_.Get(), security_origin.get(), origin_agent_cluster,
         origin_agent_cluster_left_as_default_);
-    frame_->SetDOMWindow(
-        MakeGarbageCollected<LocalDOMWindow>(*frame_, agent, anonymous_));
-
-    if (origin_policy_.has_value()) {
-      // Convert from WebVector<WebString> to WTF::Vector<WTF::String>
-      Vector<String> ids;
-      for (const auto& id : origin_policy_->ids) {
-        ids.push_back(id);
-      }
-
-      frame_->DomWindow()->SetOriginPolicyIds(ids);
-    }
+    frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
 
     // TODO(https://crbug.com/1111897): This call is likely to happen happen
     // multiple times per agent, since navigations can happen multiple times per
@@ -2368,8 +2309,11 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    security_init.ApplyPermissionsPolicy(*frame_.Get(), response_,
-                                         origin_policy_, frame_policy_);
+    security_init.ApplyPermissionsPolicy(
+        *frame_.Get(), response_, frame_policy_,
+        Agent::IsDirectSocketEnabled() ? initial_permissions_policy_
+                                       : absl::nullopt);
+
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
     // whether to block the document load or not.
@@ -2404,7 +2348,9 @@ void DocumentLoader::CommitNavigation() {
   RecordConsoleMessagesForCommit();
 
   // Clear the user activation state.
-  frame_->ClearUserActivation();
+  // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.
+  if (frame_->IsMainFrame())
+    frame_->ClearUserActivation();
 
   // The DocumentLoader was flagged as activated if it needs to notify the frame
   // that it was activated before navigation. Update the frame state based on
@@ -2645,6 +2591,9 @@ void DocumentLoader::CreateParserPostCommit() {
   document->MaybeHandleHttpRefresh(
       response_.HttpHeaderField(http_names::kRefresh),
       Document::kHttpRefreshFromHeader);
+
+  // The parser may have collected preloads in the background, flush them now.
+  parser_->FlushPendingPreloads();
 }
 
 const AtomicString& DocumentLoader::MimeType() const {
@@ -2941,12 +2890,6 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
     policy_container_->AddContentSecurityPolicies(
         mojo::Clone(parsed_embedder_policies));
     csp->AddPolicies(std::move(parsed_embedder_policies));
-  }
-
-  // Retrieve CSP stored in the OriginPolicy and add them to the policy
-  // container.
-  if (origin_policy_) {
-    ApplyOriginPolicy(csp, Url(), origin_policy_.value(), *policy_container_);
   }
 
   return csp;

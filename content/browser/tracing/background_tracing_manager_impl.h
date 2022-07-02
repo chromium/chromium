@@ -93,7 +93,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   };
   static void RecordMetric(Metrics metric);
 
-  CONTENT_EXPORT static BackgroundTracingManagerImpl* GetInstance();
+  CONTENT_EXPORT static BackgroundTracingManagerImpl& GetInstance();
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
   BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =

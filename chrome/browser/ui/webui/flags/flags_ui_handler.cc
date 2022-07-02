@@ -84,10 +84,10 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
 }
 
 void FlagsUIHandler::SendExperimentalFeatures() {
-  base::DictionaryValue results;
+  base::Value::Dict results;
 
-  base::Value::ListStorage supported_features;
-  base::Value::ListStorage unsupported_features;
+  base::Value::List supported_features;
+  base::Value::List unsupported_features;
 
   if (deprecated_features_only_) {
     about_flags::GetFlagFeatureEntriesForDeprecatedPage(
@@ -99,35 +99,34 @@ void FlagsUIHandler::SendExperimentalFeatures() {
                                        unsupported_features);
   }
 
-  results.SetKey(flags_ui::kSupportedFeatures, base::Value(supported_features));
-  results.SetKey(flags_ui::kUnsupportedFeatures,
-                 base::Value(unsupported_features));
-  results.SetBoolKey(flags_ui::kNeedsRestart,
-                     about_flags::IsRestartNeededToCommitChanges());
-  results.SetBoolKey(flags_ui::kShowOwnerWarning,
-                     access_ == flags_ui::kGeneralAccessFlagsOnly);
+  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
+  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
+  results.Set(flags_ui::kNeedsRestart,
+              about_flags::IsRestartNeededToCommitChanges());
+  results.Set(flags_ui::kShowOwnerWarning,
+              access_ == flags_ui::kGeneralAccessFlagsOnly);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
+  const bool show_system_flags_link = crosapi::browser_util::IsLacrosEnabled();
 #else
-  const bool showSystemFlagsLink = true;
+  const bool show_system_flags_link = true;
 #endif
-  results.SetBoolKey(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
+  results.Set(flags_ui::kShowSystemFlagsLink, show_system_flags_link);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();
-  results.SetBoolKey(
+  results.Set(
       flags_ui::kShowBetaChannelPromotion,
       channel == version_info::Channel::STABLE && !deprecated_features_only_);
-  results.SetBoolKey(
+  results.Set(
       flags_ui::kShowDevChannelPromotion,
       channel == version_info::Channel::BETA && !deprecated_features_only_);
 #else
-  results.SetBoolKey(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolKey(flags_ui::kShowDevChannelPromotion, false);
+  results.Set(flags_ui::kShowBetaChannelPromotion, false);
+  results.Set(flags_ui::kShowDevChannelPromotion, false);
 #endif
   ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
-                            results);
+                            base::Value(std::move(results)));
   experimental_features_callback_id_.clear();
 }
 

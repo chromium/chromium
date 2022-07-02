@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUINavigationBrowserTest,
                        DisallowEmbeddingChromeSchemeFromWebFrameBrowserCheck) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // Add iframe but don't navigate it to a chrome:// URL yet.
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(
     DisallowEmbeddingChromeUntrustedSchemeFromWebFrameBrowserCheck) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // Add iframe but don't navigate it to a chrome-untrusted:// URL yet.

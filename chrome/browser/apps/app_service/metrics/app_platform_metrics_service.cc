@@ -63,6 +63,7 @@ void AppPlatformMetricsService::Start(
       profile_, app_registry_cache, instance_registry);
   app_platform_input_metrics_ = std::make_unique<apps::AppPlatformInputMetrics>(
       profile_, instance_registry);
+  website_metrics_ = std::make_unique<apps::WebsiteMetrics>(profile_);
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();
@@ -81,6 +82,11 @@ void AppPlatformMetricsService::Start(
       &AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval);
 }
 
+void AppPlatformMetricsService::SetWebsiteMetricsForTesting(
+    std::unique_ptr<apps::WebsiteMetrics> website_metrics) {
+  website_metrics_ = std::move(website_metrics);
+}
+
 void AppPlatformMetricsService::CheckForNewDay() {
   base::Time now = base::Time::Now();
 
@@ -97,11 +103,13 @@ void AppPlatformMetricsService::CheckForNewDay() {
 void AppPlatformMetricsService::CheckForFiveMinutes() {
   app_platform_app_metrics_->OnFiveMinutes();
   app_platform_input_metrics_->OnFiveMinutes();
+  website_metrics_->OnFiveMinutes();
 }
 
 void AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval() {
   app_platform_app_metrics_->OnTwoHours();
   app_platform_input_metrics_->OnTwoHours();
+  website_metrics_->OnTwoHours();
 }
 
 }  // namespace apps

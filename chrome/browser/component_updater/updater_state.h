@@ -32,8 +32,9 @@ class UpdaterState {
   ~UpdaterState();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, SerializeChrome);
+  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, SerializeChromePerUser);
   FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, SerializeChromium);
+  FRIEND_TEST_ALL_PREFIXES(UpdaterStateTest, UpdaterNamePerUser);
 
   struct State {
     State();

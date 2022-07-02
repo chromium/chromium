@@ -119,6 +119,10 @@
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(USE_OZONE)
+#include "ui/views/test/test_desktop_screen_ozone.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -444,10 +448,6 @@ void InProcessBrowserTest::SetUp() {
   // Disable the notification delay timer used to prevent non system
   // notifications from showing up right after login.
   ash::ShellTestApi::SetUseLoginNotificationDelayForTest(false);
-
-  // Don't show the new shortcuts notification at startup.
-  ash::ShellTestApi::SetShouldShowShortcutNotificationForTest(false);
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Redirect the default download directory to a temporary directory.
@@ -483,6 +483,10 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
   // TODO(pkotwicz): Investigate if we can remove this switch.
   if (exit_when_last_browser_closes_)
     command_line->AppendSwitch(switches::kDisableZeroBrowsersOpenForTests);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not automaximize in browser tests.
+  command_line->AppendSwitch(switches::kDisableAutoMaximizeForTests);
+#endif
 }
 
 void InProcessBrowserTest::TearDown() {
@@ -593,6 +597,22 @@ bool InProcessBrowserTest::AddTabAtIndex(int index,
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
   return true;
+}
+
+void InProcessBrowserTest::SetScreenInstance() {
+  // TODO(crbug.com/1317416): On wayland platform, we need to check if the
+  // wayland-ozone platform is initialized at this point due to the async
+  // initialization of the display. Investigate if we can eliminate
+  // IsOzoneInitialized.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!display::Screen::HasScreen() &&
+      views::test::TestDesktopScreenOzone::IsOzoneInitialized()) {
+    // This is necessary for interactive UI tests.
+    // It is enabled in interactive_ui_tests_main.cc
+    // (or through GPUMain)
+    screen_ = views::test::TestDesktopScreenOzone::Create();
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -718,11 +738,6 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   SelectFirstBrowser();
   if (browser_) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // There are cases where windows get created maximized by default.
-    if (browser_->window()->IsMaximized())
-      browser_->window()->Restore();
-#endif
     auto* tab = browser_->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(tab);
     SetInitialWebContents(tab);
@@ -807,6 +822,6 @@ void InProcessBrowserTest::QuitBrowsers() {
   // get deleted.
   content::RunAllPendingInMessageLoop();
   delete autorelease_pool_;
-  autorelease_pool_ = NULL;
+  autorelease_pool_ = nullptr;
 #endif
 }

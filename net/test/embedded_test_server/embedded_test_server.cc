@@ -277,11 +277,7 @@ EmbeddedTestServer::EmbeddedTestServer() : EmbeddedTestServer(TYPE_HTTP) {}
 
 EmbeddedTestServer::EmbeddedTestServer(Type type,
                                        HttpConnection::Protocol protocol)
-    : is_using_ssl_(type == TYPE_HTTPS),
-      protocol_(protocol),
-      connection_listener_(nullptr),
-      port_(0),
-      cert_(CERT_OK) {
+    : is_using_ssl_(type == TYPE_HTTPS), protocol_(protocol) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // HTTP/2 is only valid by negotiation via TLS ALPN
   DCHECK(protocol_ != HttpConnection::Protocol::kHttp2 || type == TYPE_HTTPS);

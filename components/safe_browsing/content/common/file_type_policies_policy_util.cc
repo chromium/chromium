@@ -64,7 +64,7 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
 
     if (!domains_for_extension.GetListDeprecated().empty()) {
       url_matcher::URLMatcher matcher;
-      url_matcher::URLMatcherConditionSet::ID id(0);
+      base::MatcherStringPattern::ID id(0);
       url_matcher::util::AddFilters(&matcher, true, &id,
                                     &domains_for_extension);
       auto matching_set_size = matcher.MatchURL(normalized_url).size();

@@ -15,6 +15,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import time
 import xml.sax
 
 
@@ -32,6 +33,11 @@ def shell_join(cmd):
 def run(args, cwd=None):
     logging.debug(f'$ {shell_join(args)}')
     subprocess.check_call(args, cwd=cwd)
+
+
+def check_output(args, cwd=None):
+    logging.debug(f'$ {shell_join(args)}')
+    return subprocess.check_output(args, cwd=cwd, text=True)
 
 
 def run_node(args):
@@ -67,6 +73,41 @@ def gen_files_are_hard_links(gen_dir):
     return os.stat(util_js).st_ino == os.stat(util_js_in_gen).st_ino
 
 
+CCA_OVERRIDE_PATH = '/etc/camera/cca'
+CCA_OVERRIDE_FEATURE = 'CCALocalOverride'
+CHROME_DEV_CONF_PATH = '/etc/chrome_dev.conf'
+
+
+def local_override_enabled(device):
+    chrome_dev_conf = check_output(
+        ['ssh', device, '--', 'cat', CHROME_DEV_CONF_PATH])
+    # This is a simple heuristic that is not 100% accurate, since this only
+    # matches the feature name which can be in other irrevelant position in the
+    # file. This should be fine though since this is only used for developers
+    # and it's not expected to have the exact string match outside of
+    # --enable-features added by this script.
+    return CCA_OVERRIDE_FEATURE in chrome_dev_conf
+
+
+def ensure_local_override_enabled(device, force):
+    if local_override_enabled(device):
+        return
+    run([
+        'ssh', device, '--',
+        f'echo "--enable-features={CCA_OVERRIDE_FEATURE}"' +
+        f' >> {CHROME_DEV_CONF_PATH}'
+    ])
+    if not force:
+        prompt = input('Need to restart UI for deploy to take effect, ' +
+                       'do it now? (y/N): ').lower()
+        if prompt != 'y':
+            print(
+                'Not restarting UI. ' +
+                '`restart ui` on DUT manually for the change to take effect.')
+            return
+    run(['ssh', device, '--', 'restart', 'ui'])
+
+
 def deploy(args):
     root_dir = get_chromium_root()
     cca_root = os.getcwd()
@@ -74,6 +115,7 @@ def deploy(args):
 
     src_relative_dir = os.path.relpath(cca_root, root_dir)
     gen_dir = os.path.join(target_dir, 'gen', src_relative_dir)
+    tsc_dir = os.path.join(gen_dir, 'js/tsc/js')
 
     # Since CCA copy source to gen directory and place it together with other
     # generated files for TypeScript compilation, and GN use hard links when
@@ -85,7 +127,7 @@ def deploy(args):
     # TODO(pihsun): Support this case if there's some common scenario that
     # would cause this.
     assert gen_files_are_hard_links(gen_dir), (
-        'The generated files are not hard linked.')
+        'The generated files are not hard linked, compile Chrome first?')
 
     build_preload_images_js(os.path.join(gen_dir, 'js'))
 
@@ -103,67 +145,56 @@ def deploy(args):
         'false',
     ])
 
-    build_pak_cmd = [
-        'tools/grit/grit.py',
-        '-i',
-        os.path.join(gen_dir, '../ash_camera_app_resources.grd'),
-        'build',
-        '-o',
-        os.path.join(target_dir, 'gen/ash'),
-        '-f',
-        os.path.join(target_dir,
-                     'gen/tools/gritsettings/default_resource_ids'),
-        '-D',
-        f'SHARED_INTERMEDIATE_DIR={os.path.join(target_dir, "gen")}',
-        '-E',
-        f'root_src_dir={get_chromium_root()}',
-        '-E',
-        f'root_gen_dir={os.path.join(target_dir, "gen")}',
-    ]
-    # Since there is a constraint in grit.py which will replace ${root_gen_dir}
-    # in .grd file only if the script is executed in the parent directory of
-    # ${root_gen_dir}, execute the script in Chromium root as a workaround.
-    run(build_pak_cmd, get_chromium_root())
-
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        pak_util_script = os.path.join(get_chromium_root(),
-                                       'tools/grit/pak_util.py')
-        extract_resources_pak_cmd = [
-            pak_util_script,
-            'extract',
-            '--raw',
-            os.path.join(target_dir, 'resources.pak'),
-            '-o',
-            tmp_dir,
-        ]
-        run(extract_resources_pak_cmd)
-
-        extract_camera_pak_cmd = [
-            pak_util_script,
-            'extract',
-            '--raw',
-            os.path.join(target_dir, 'gen/ash/ash_camera_app_resources.pak'),
-            '-o',
-            tmp_dir,
-        ]
-        run(extract_camera_pak_cmd)
-
-        create_new_resources_pak_cmd = [
-            pak_util_script,
-            'create',
-            '-i',
-            tmp_dir,
-            os.path.join(target_dir, 'resources.pak'),
-        ]
-        run(create_new_resources_pak_cmd)
-
-    deploy_new_resources_pak_cmd = [
+    deploy_new_tsc_files = [
         'rsync',
+        '--recursive',
         '--inplace',
-        os.path.join(target_dir, 'resources.pak'),
-        f'{args.device}:/opt/google/chrome/',
+        '--delete',
+        '--mkpath',
+        # rsync by default use source file permission masked by target file
+        # system umask while transferring new files, and since workstation
+        # defaults to have file not readable by others, this makes deployed
+        # file not readable by Chrome.
+        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
+        # local umask, +r for read and +X for executable bit on folder), and
+        # set --perms so existing files that might have the wrong permission
+        # will have their permission fixed.
+        '--perms',
+        '--chmod=a+rX',
+        f'{tsc_dir}/',
+        f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
     ]
-    run(deploy_new_resources_pak_cmd)
+    run(deploy_new_tsc_files)
+
+    for dir in ['css', 'images', 'views', 'sounds']:
+        deploy_new_assets = [
+            'rsync',
+            '--recursive',
+            '--inplace',
+            '--delete',
+            '--mkpath',
+            '--perms',
+            '--chmod=a+rX',
+            f'{os.path.join(cca_root, dir)}/',
+            f'{args.device}:{CCA_OVERRIDE_PATH}/{dir}/',
+        ]
+        run(deploy_new_assets)
+
+    current_time = time.strftime('%F %T%z')
+    run([
+        'ssh',
+        args.device,
+        '--',
+        'printf',
+        '%s',
+        shlex.quote(
+            f'export const DEPLOYED_VERSION = "cca.py deploy {current_time}";'
+        ),
+        '>',
+        f'{CCA_OVERRIDE_PATH}/js/deployed_version.js',
+    ])
+
+    ensure_local_override_enabled(args.device, args.force)
 
 
 def test(args):
@@ -291,6 +322,15 @@ def check_strings(args):
             print(f'    {", ".join(sorted(missing))}')
             returncode = 1
 
+    def check_all_name_lower_case(names, filename):
+        nonlocal returncode
+        hasUpper = [name for name in names if not name.islower()]
+        if hasUpper:
+            print(f'{filename} includes string name with upper case:')
+            for name in hasUpper:
+                print(f'    Incorrect name: {name}')
+            returncode = 1
+
     resources_h_strings = parse_resources_h()
     check_name_id_consistent(resources_h_strings, RESOURCES_H_PATH)
     resources_h_ids = set([id for (name, id) in resources_h_strings])
@@ -298,6 +338,12 @@ def check_strings(args):
     i18n_string_ts_strings = parse_i18n_string_ts()
     check_name_id_consistent(i18n_string_ts_strings, I18N_STRING_TS_PATH)
     i18n_string_ts_ids = set([id for (name, id) in i18n_string_ts_strings])
+
+    resources_h_names = set([name for (name, id) in resources_h_strings])
+    check_all_name_lower_case(resources_h_names, RESOURCES_H_PATH)
+
+    i18n_string_ts_names = set([name for (name, id) in i18n_string_ts_strings])
+    check_all_name_lower_case(i18n_string_ts_names, I18N_STRING_TS_PATH)
 
     camera_strings_grd_ids = parse_camera_strings_grd()
 
@@ -324,6 +370,9 @@ def parse_args(args):
                                           )
     deploy_parser.add_argument('board')
     deploy_parser.add_argument('device')
+    deploy_parser.add_argument('--force',
+                               help="Don't prompt for restarting Chrome.",
+                               action='store_true')
     deploy_parser.set_defaults(func=deploy)
 
     test_parser = subparsers.add_parser('test',

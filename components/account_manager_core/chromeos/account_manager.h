@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -346,7 +347,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   DelayNetworkCallRunner delay_network_call_runner_;
 
   // Non-owning pointer.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // A task runner for disk I/O.
   // Will be |nullptr| if |AccountManager| is operating in ephemeral mode.

@@ -67,9 +67,14 @@ class CONTENT_EXPORT FrameTree {
  public:
   class NodeRange;
 
-  class CONTENT_EXPORT NodeIterator
-      : public std::iterator<std::forward_iterator_tag, FrameTreeNode*> {
+  class CONTENT_EXPORT NodeIterator {
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = FrameTreeNode*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = FrameTreeNode**;
+    using reference = FrameTreeNode*&;
+
     NodeIterator(const NodeIterator& other);
     ~NodeIterator();
 
@@ -142,9 +147,10 @@ class CONTENT_EXPORT FrameTree {
     virtual void DidChangeLoadProgress() = 0;
 
     // Returns the delegate's top loading tree, which should be used to infer
-    // the values of loading-related states. The state of IsLoading() is a
-    // WebContents level concept and LoadingTree would return the frame tree to
-    // which loading events should be directed.
+    // the values of loading-related states. The state of
+    // IsLoadingIncludingInnerFrameTrees() is a WebContents level concept and
+    // LoadingTree would return the frame tree to which loading events should be
+    // directed.
     //
     // TODO(crbug.com/1261928): Remove this method and directly rely on
     // GetOutermostMainFrame() once portals and guest views are migrated to
@@ -430,10 +436,7 @@ class CONTENT_EXPORT FrameTree {
 
   // Returns true if at least one of the nodes in this frame tree or nodes in
   // any inner frame tree of the same WebContents is loading.
-  //
-  // TODO(crbug.com/1293846): Rename to IsLoadingIncludingInnerFrameTrees() to
-  // adapt to new logic.
-  bool IsLoading() const;
+  bool IsLoadingIncludingInnerFrameTrees() const;
 
   // Set page-level focus in all SiteInstances involved in rendering
   // this FrameTree, not including the current main frame's
@@ -545,7 +548,7 @@ class CONTENT_EXPORT FrameTree {
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
   // pointer to remain valid even while the FrameTreeNode is being destroyed,
   // since it's common for a node to test whether it's the root node.
-  raw_ptr<FrameTreeNode> root_;
+  raw_ptr<FrameTreeNode, DanglingUntriaged> root_;
 
   int focused_frame_tree_node_id_;
 

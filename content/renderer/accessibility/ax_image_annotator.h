@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -129,7 +128,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   // Keeps track of the image data and the automatic annotations for each image.
   //
   // The key is retrieved using WebAXObject::AxID().
-  std::unordered_map<int, ImageInfo> image_annotations_;
+  std::map<int, ImageInfo> image_annotations_;
 
   // This member needs to be last because it should destructed first.
   base::WeakPtrFactory<AXImageAnnotator> weak_factory_{this};

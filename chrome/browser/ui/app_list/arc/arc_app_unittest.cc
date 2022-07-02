@@ -76,7 +76,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -652,6 +651,23 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       EXPECT_EQ(package->last_backup_time, package_info->last_backup_time);
       EXPECT_EQ(package->sync, package_info->should_sync);
       EXPECT_EQ(package->permission_states, package_info->permissions);
+      EXPECT_EQ(package->web_app_info.is_null(),
+                package_info->web_app_info.is_null());
+      if (!package->web_app_info.is_null() &&
+          !package_info->web_app_info.is_null()) {
+        EXPECT_EQ(package->web_app_info->title,
+                  package_info->web_app_info->title);
+        EXPECT_EQ(package->web_app_info->start_url,
+                  package_info->web_app_info->start_url);
+        EXPECT_EQ(package->web_app_info->scope_url,
+                  package_info->web_app_info->scope_url);
+        EXPECT_EQ(package->web_app_info->theme_color,
+                  package_info->web_app_info->theme_color);
+        EXPECT_EQ(package->web_app_info->is_web_only_twa,
+                  package_info->web_app_info->is_web_only_twa);
+        EXPECT_EQ(package->web_app_info->certificate_sha256_fingerprint,
+                  package_info->web_app_info->certificate_sha256_fingerprint);
+      }
     }
   }
 
@@ -2146,6 +2162,10 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
                             &arc::mojom::ArcPackageInfo::package_name,
                             fake_packages()[2]->package_name)))
       .Times(1);
+  EXPECT_CALL(observer, OnPackageInstalled(testing::Field(
+                            &arc::mojom::ArcPackageInfo::package_name,
+                            fake_packages()[3]->package_name)))
+      .Times(1);
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
@@ -2159,6 +2179,9 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
       .Times(1);
   EXPECT_CALL(observer,
               OnPackageRemoved(fake_packages()[2]->package_name, false))
+      .Times(1);
+  EXPECT_CALL(observer,
+              OnPackageRemoved(fake_packages()[3]->package_name, false))
       .Times(1);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
@@ -2859,40 +2882,22 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   SendRefreshAppList(apps);
 
   base::RunLoop run_loop;
-  base::RepeatingClosure quit = run_loop.QuitClosure();
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, proxy);
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIcon(
-        apps::AppType::kArc, app_id, apps::IconType::kCompressed, icon_size,
-        false /*allow_placeholder_icon*/,
-        base::BindLambdaForTesting([&](apps::IconValuePtr icon_value) {
-          EXPECT_EQ(apps::IconType::kCompressed, icon_value->icon_type);
-          std::vector<uint8_t> png_data = icon_value->compressed;
-          std::string compressed(png_data.begin(), png_data.end());
-          // Check that |compressed| starts with the 8-byte PNG magic string.
-          EXPECT_EQ(compressed.substr(0, 8),
-                    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
-          quit.Run();
-        }));
-  } else {
-    proxy->LoadIcon(
-        apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kCompressed,
-        icon_size, false /*allow_placeholder_icon*/,
-        base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon_value) {
-          EXPECT_EQ(apps::mojom::IconType::kCompressed, icon_value->icon_type);
-          EXPECT_TRUE(icon_value->compressed);
-          std::vector<uint8_t> png_data = icon_value->compressed.value();
-          std::string compressed(png_data.begin(), png_data.end());
-          // Check that |compressed| starts with the 8-byte PNG magic string.
-          EXPECT_EQ(compressed.substr(0, 8),
-                    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
-          quit.Run();
-        }));
-  }
+  proxy->LoadIcon(
+      apps::AppType::kArc, app_id, apps::IconType::kCompressed, icon_size,
+      false /*allow_placeholder_icon*/,
+      base::BindLambdaForTesting([&](apps::IconValuePtr icon_value) {
+        EXPECT_EQ(apps::IconType::kCompressed, icon_value->icon_type);
+        std::vector<uint8_t> png_data = icon_value->compressed;
+        std::string compressed(png_data.begin(), png_data.end());
+        // Check that |compressed| starts with the 8-byte PNG magic string.
+        EXPECT_EQ(compressed.substr(0, 8), "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="2">
+  <interface name="zcr_text_input_extension_v1" version="3">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="2">
+  <interface name="zcr_extended_text_input_v1" version="3">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -167,6 +167,57 @@
       <arg name="input_mode" type="uint" enum="input_mode" />
       <arg name="input_flags" type="uint" />
       <arg name="learning_mode" type="uint" enum="learning_mode" />
+    </request>
+
+    <!-- Version 3 -->
+
+    <event name="clear_grammar_fragments" since="3">
+      <description summary="clear grammar fragments in a range">
+        IME requests to clear all the grammar markers within the given range
+        defined by start and end.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+    </event>
+
+    <event name="add_grammar_fragment" since="3">
+      <description summary="add grammar fragment">
+        IME requests to add a new grammar fragment.
+
+        A grammar fragment describes a range of text (start, end) that has
+        grammar error and also gives the correct replacement text. It is
+        expected that the renderer will render markers (e.g. squigles or dashed
+        underlines) under the text to notify users that there is a grammar
+        error. It is also expected that the renderer will maintain and update
+        the position of fragment when users edit other parts of the text, e.g.
+        if users type something before the grammar fragment, the marker should
+        move accordingly.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length. suggestion is the correct replacement text, encoded
+        in utf-8 and suggested by ML model.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="suggestion" type="string" />
+    </event>
+
+    <request name="set_grammar_fragment_at_cursor" since="3">
+      <description summary="add grammar fragment">
+        Informs the IME of the grammar fragment containing the current cursor.
+        If not existing, both start and end are set to 0. This is called
+        whenever the cursor position or surrounding text have changed.
+
+        start and end are relative to the beginning of the input field in
+        utf-8 byte length. suggestion is the correct replacement text encoded
+        in utf-8 and suggested by ML model.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="suggestion" type="string" />
     </request>
 
   </interface>

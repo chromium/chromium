@@ -1,19 +1,27 @@
 <style include="diagnostics-shared">
   #additionalMessage {
-    @apply --diagnostics-routine-additional-message-font;
+    color: var(--cros-text-color-primary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
   }
 
   .button-container {
-    @apply --diagnostics-button-font;
     padding: 8px 0 4px;
   }
 
   .learn-more-button {
-    @apply --diagnostics-button-font;
     border-radius: 4px;
     height: 32px;
     margin-top: 12px;
     padding: 8px 16px;
+  }
+
+  .button-container,
+  .learn-more-button {
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-medium-font-weight);
   }
 
   #messageIcon {
@@ -47,12 +55,15 @@
   }
 
   #testStatusText {
-    @apply --diagnostics-test-status-text-font;
+    color: var(--cros-text-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
     padding-inline-start: 6px;
   }
 
   #toggleReportButton {
-    margin-right: 8px;
+    margin-inline-end: 8px;
   }
 
   :host([hide-routine-status]) .container-spacing {

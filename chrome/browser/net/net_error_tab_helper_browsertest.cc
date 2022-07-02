@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
 
   // Overrides the last committed origin to treat the network error as the same
   // url with the non-opaque origins.
-  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetPrimaryMainFrame(),
                                        url::Origin::Create(initial_url));
 
   GURL prerender_url =
@@ -209,7 +209,7 @@ class NetErrorTabHelperWithFencedFrameTest : public NetErrorTabHelperTest {
       const NetErrorTabHelperWithFencedFrameTest&) = delete;
 
   RenderFrameHost* primary_main_frame_host() {
-    return GetWebContents()->GetMainFrame();
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -234,10 +234,11 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
   GURL initial_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  EvalJsResult result =
-      EvalJs(GetWebContents()->GetMainFrame(), kSearchingForDiagnosisScript);
+  EvalJsResult result = EvalJs(GetWebContents()->GetPrimaryMainFrame(),
+                               kSearchingForDiagnosisScript);
   ASSERT_TRUE(result.error.empty());
-  EXPECT_EQ(WebContentsCanShowDiagnosticsTool(GetWebContents()->GetMainFrame()),
+  EXPECT_EQ(WebContentsCanShowDiagnosticsTool(
+                GetWebContents()->GetPrimaryMainFrame()),
             result.ExtractString());
 }
 
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   RenderFrameHost* inner_fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url,
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url,
           net::ERR_NAME_NOT_RESOLVED);
   EvalJsResult result =
       EvalJs(inner_fenced_frame_rfh, kSearchingForDiagnosisScript);

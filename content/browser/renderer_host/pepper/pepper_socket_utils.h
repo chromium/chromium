@@ -12,7 +12,7 @@
 #include "ppapi/c/pp_stdint.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #include "net/base/ip_endpoint.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -4,22 +4,24 @@
 
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 
+#include <array>
+
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/segmentation_platform/default_model/metadata_writer.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
 
 namespace {
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
-constexpr OptimizationTarget kChromeStartOptimizationTarget =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
+constexpr SegmentId kChromeStartSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
 constexpr proto::TimeUnit kChromeStartTimeUnit = proto::TimeUnit::DAY;
 constexpr uint64_t kChromeStartBucketDuration = 1;
 constexpr int64_t kChromeStartSignalStorageLength = 28;
@@ -36,66 +38,28 @@ constexpr std::pair<float, int> kDiscreteMappings[] = {
 // InputFeatures.
 constexpr int32_t kProfileSigninStatusEnums[] = {0 /* All profiles syncing */,
                                                  2 /* Mixed sync status */};
-constexpr MetadataWriter::UMAFeature kChromeStartUMAFeatures[] = {
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.Open",
-        .bucket_count = 7,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab",
-        .bucket_count = 7,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.OpenInNewTab",
-        .bucket_count = 7,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileNTPMostVisited",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileNewTabOpened",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileMenuRecentTabs",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileMenuHistory",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_ENUM,
-                               .name = "UMA.ProfileSignInStatus",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 2,
-                               .accepted_enum_ids = kProfileSigninStatusEnums}};
-
-#define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+constexpr std::array<MetadataWriter::UMAFeature, 8> kChromeStartUMAFeatures = {
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.Open",
+        7),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab",
+        7),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.OpenInNewTab",
+        7),
+    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
+    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabOpened", 7),
+    MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 7),
+    MetadataWriter::UMAFeature::FromUserAction("MobileMenuHistory", 7),
+    MetadataWriter::UMAFeature::FromEnumHistogram("UMA.ProfileSignInStatus",
+                                                  7,
+                                                  kProfileSigninStatusEnums,
+                                                  2)};
 
 }  // namespace
 
-ChromeStartModel::ChromeStartModel()
-    : ModelProvider(kChromeStartOptimizationTarget) {}
+ChromeStartModel::ChromeStartModel() : ModelProvider(kChromeStartSegmentId) {}
 
 void ChromeStartModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
@@ -111,20 +75,20 @@ void ChromeStartModel::InitAndFetchModel(
                                    kDiscreteMappings, 1);
 
   // Set features.
-  writer.AddUmaFeatures(kChromeStartUMAFeatures,
-                        ARRAY_SIZE(kChromeStartUMAFeatures));
+  writer.AddUmaFeatures(kChromeStartUMAFeatures.data(),
+                        kChromeStartUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindRepeating(
-                     model_updated_callback, kChromeStartOptimizationTarget,
-                     std::move(chrome_start_metadata), kModelVersion));
+      FROM_HERE,
+      base::BindRepeating(model_updated_callback, kChromeStartSegmentId,
+                          std::move(chrome_start_metadata), kModelVersion));
 }
 
 void ChromeStartModel::ExecuteModelWithInput(const std::vector<float>& inputs,
                                              ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != ARRAY_SIZE(kChromeStartUMAFeatures)) {
+  if (inputs.size() != kChromeStartUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;

@@ -66,17 +66,18 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java" ]
   }
 
-  android_library("javatests") {
-    bypass_platform_checks = true
+  robolectric_library("junit") {
     testonly = true
 
-    sources = [ "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroidTest.java" ]
+    sources = [ "android/junit/src/org/chromium/components/download/NetworkStatusListenerAndroidTest.java" ]
 
     deps = [
       ":network_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//base:base_junit_test_support",
       "//net/android:net_java",
+      "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",

@@ -155,7 +155,6 @@ bool SharedStorageDatabase::Destroy() {
 
 void SharedStorageDatabase::TrimMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(InitStatus::kSuccess, db_status_);
   db_.TrimMemory();
 }
 
@@ -167,10 +166,10 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
   GetResult result;
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
-    // We do not return an error if the database doesn't exist, but only if it
-    // pre-exists on disk and yet fails to initialize.
+    // We do not return `OperationResult::kInitFailure` if the database doesn't
+    // exist, but only if it pre-exists on disk and yet fails to initialize.
     if (db_status_ == InitStatus::kUnattempted)
-      result.result = OperationResult::kSuccess;
+      result.result = OperationResult::kKeyNotFound;
     else
       result.result = OperationResult::kInitFailure;
 
@@ -190,13 +189,18 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
   statement.BindString(0, origin_str);
   statement.BindString16(1, key);
 
-  if (statement.Step())
+  bool key_found = false;
+  if (statement.Step()) {
     result.data = statement.ColumnString16(0);
-  if (!statement.Succeeded())
+    key_found = true;
+  } else if (!statement.Succeeded()) {
     return result;
+  }
 
-  if (UpdateLastUsedTime(origin_str))
-    result.result = OperationResult::kSuccess;
+  if (UpdateLastUsedTime(origin_str)) {
+    result.result =
+        key_found ? OperationResult::kSuccess : OperationResult::kKeyNotFound;
+  }
 
   return result;
 }
@@ -266,14 +270,16 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
     return OperationResult::kSqlError;
 
   GetResult get_result = Get(context_origin, key);
-  if (get_result.result != OperationResult::kSuccess)
+  if (get_result.result != OperationResult::kSuccess &&
+      get_result.result != OperationResult::kKeyNotFound) {
     return OperationResult::kSqlError;
+  }
 
   std::u16string new_value;
   std::string origin_str(SerializeOrigin(context_origin));
 
-  if (get_result.data) {
-    new_value = std::move(*get_result.data);
+  if (get_result.result == OperationResult::kSuccess) {
+    new_value = std::move(get_result.data);
     new_value.append(tail_value);
 
     if (new_value.size() > max_string_length_)

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -103,7 +105,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   }
 
   void ActivateContents(content::WebContents* contents) override {
-    contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->Focus();
+    contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget()->Focus();
   }
 
   void CloseContents(content::WebContents* source) override {
@@ -306,7 +308,7 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
     HeadlessBrowserContextImpl* browser_context)
     : content::WebContentsObserver(web_contents.get()),
       browser_context_(browser_context),
-      render_process_host_(web_contents->GetMainFrame()->GetProcess()),
+      render_process_host_(web_contents->GetPrimaryMainFrame()->GetProcess()),
       web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
       web_contents_(std::move(web_contents)),
       agent_host_(
@@ -320,6 +322,14 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
       browser_context->options()->accept_language();
   web_contents_->GetMutableRendererPrefs()->hinting =
       browser_context->options()->font_render_hinting();
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
+    web_contents_->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
+        command_line->GetSwitchValueASCII(
+            switches::kForceWebRtcIPHandlingPolicy);
+  }
+
   web_contents_->SetDelegate(web_contents_delegate_.get());
   render_process_host_->AddObserver(this);
   agent_host_->AddObserver(this);
@@ -355,7 +365,7 @@ void HeadlessWebContentsImpl::RenderFrameDeleted(
 }
 
 void HeadlessWebContentsImpl::RenderViewReady() {
-  DCHECK(web_contents()->GetMainFrame()->IsRenderFrameLive());
+  DCHECK(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
 
   if (devtools_target_ready_notification_sent_)
     return;
@@ -367,21 +377,24 @@ void HeadlessWebContentsImpl::RenderViewReady() {
 }
 
 int HeadlessWebContentsImpl::GetMainFrameRenderProcessId() const {
-  if (!web_contents() || !web_contents()->GetMainFrame())
+  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
     return -1;
-  return web_contents()->GetMainFrame()->GetProcess()->GetID();
+  return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 }
 
 int HeadlessWebContentsImpl::GetMainFrameTreeNodeId() const {
-  if (!web_contents() || !web_contents()->GetMainFrame())
+  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
     return -1;
-  return web_contents()->GetMainFrame()->GetFrameTreeNodeId();
+  return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 }
 
 std::string HeadlessWebContentsImpl::GetMainFrameDevToolsId() const {
-  if (!web_contents() || !web_contents()->GetMainFrame())
+  if (!web_contents() || !web_contents()->GetPrimaryMainFrame())
     return "";
-  return web_contents()->GetMainFrame()->GetDevToolsFrameToken().ToString();
+  return web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetDevToolsFrameToken()
+      .ToString();
 }
 
 bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
@@ -442,7 +455,8 @@ void HeadlessWebContentsImpl::RenderProcessHostDestroyed(
 }
 
 HeadlessDevToolsTarget* HeadlessWebContentsImpl::GetDevToolsTarget() {
-  return web_contents()->GetMainFrame()->IsRenderFrameLive() ? this : nullptr;
+  return web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive() ? this
+                                                                    : nullptr;
 }
 
 std::unique_ptr<HeadlessDevToolsChannel>

@@ -4,19 +4,22 @@
 
 #include "gpu/command_buffer/common/activity_flags.h"
 
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+
 namespace gpu {
 
 ActivityFlagsBase::ActivityFlagsBase() = default;
 ActivityFlagsBase::ActivityFlagsBase(ActivityFlagsBase&& other) = default;
 ActivityFlagsBase::~ActivityFlagsBase() = default;
 
-void ActivityFlagsBase::Initialize(mojo::ScopedSharedBufferHandle handle) {
-  handle_ = std::move(handle);
-  mapping_ = handle_->Map(sizeof(Flag));
+void ActivityFlagsBase::Initialize(base::UnsafeSharedMemoryRegion region) {
+  region_ = std::move(region);
+  mapping_ = region_.Map();
 }
 
 volatile base::subtle::Atomic32* ActivityFlagsBase::AsAtomic() {
-  return reinterpret_cast<volatile base::subtle::Atomic32*>(mapping_.get());
+  return reinterpret_cast<volatile base::subtle::Atomic32*>(mapping_.memory());
 }
 
 GpuProcessActivityFlags::GpuProcessActivityFlags() = default;
@@ -24,13 +27,13 @@ GpuProcessActivityFlags::GpuProcessActivityFlags(
     GpuProcessActivityFlags&& other) = default;
 
 GpuProcessActivityFlags::GpuProcessActivityFlags(
-    mojo::ScopedSharedBufferHandle handle) {
+    base::UnsafeSharedMemoryRegion region) {
   // In cases where we are running without a GpuProcessHost, we may not
   // have a valid handle. In this case, just return.
-  if (!handle.is_valid())
+  if (!region.IsValid())
     return;
 
-  Initialize(std::move(handle));
+  Initialize(std::move(region));
 }
 
 void GpuProcessActivityFlags::SetFlag(Flag flag) {
@@ -64,7 +67,7 @@ void GpuProcessActivityFlags::UnsetFlag(Flag flag) {
 }
 
 GpuProcessHostActivityFlags::GpuProcessHostActivityFlags() {
-  Initialize(mojo::SharedBufferHandle::Create(sizeof(Flag)));
+  Initialize(base::UnsafeSharedMemoryRegion::Create(sizeof(Flag)));
 }
 
 bool GpuProcessHostActivityFlags::IsFlagSet(Flag flag) {

@@ -106,6 +106,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                        browsingDataRemover:remover_.get()
         browsingDataCounterWrapperProducer:
             [[FakeBrowsingDataCounterWrapperProducer alloc] init]];
+    [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
@@ -114,12 +115,14 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                           browser_state_->GetPrefs());
   }
 
+  ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
+
   ChromeIdentity* fake_identity() {
     return account_manager_service_->GetDefaultIdentity();
   }
 
   // Adds a prepopulated search engine to TemplateURLService.
-  // |prepopulate_id| should be big enough (>1000) to avoid collision with real
+  // `prepopulate_id` should be big enough (>1000) to avoid collision with real
   // prepopulated search engines. The collision happens when
   // TemplateURLService::SetUserSelectedDefaultSearchProvider is called, in the
   // callback of PrefService the DefaultSearchManager will update the searchable

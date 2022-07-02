@@ -33,6 +33,10 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Clipboard tests for Android platform that depend on access to the ClipboardManager.
+ *
+ * This test suite can fail on Android 10+ if the activity does not maintain focus during testing.
+ * For more information see: https://crbug.com/1297678 and
+ * https://developer.android.com/about/versions/10/privacy/changes#clipboard-data
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
@@ -50,6 +54,14 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     @Override
     public void tearDownTest() throws Exception {
         ClipboardAndroidTestSupport.cleanup();
+
+        // Clear the clipboard to avoid leaving any state.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("", "");
+            clipboardManager.setPrimaryClip(clipData);
+        });
         super.tearDownTest();
     }
 
@@ -90,7 +102,7 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
             clipboardManager.setPrimaryClip(ClipData.newPlainText(null, invalidatingText));
         });
 
-        helper.waitForFirst("ClipboardManager did not notify of PrimaryClip change.");
+        helper.waitForCallback("ClipboardManager did not notify of PrimaryClip change.", 0);
 
         // Assert that the overwrite from another application is registered by the native clipboard.
         TestThreadUtils.runOnUiThreadBlocking(() -> {

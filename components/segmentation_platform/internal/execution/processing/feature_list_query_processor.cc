@@ -9,13 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/execution/processing/sql_feature_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
@@ -29,15 +30,18 @@ const int kIndexNotUsed = 0;
 
 FeatureListQueryProcessor::FeatureListQueryProcessor(
     StorageService* storage_service,
+    std::unique_ptr<InputDelegateHolder> input_delegate_holder,
     std::unique_ptr<FeatureAggregator> feature_aggregator)
     : storage_service_(storage_service),
+      input_delegate_holder_(std::move(input_delegate_holder)),
       feature_aggregator_(std::move(feature_aggregator)) {}
 
 FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
 
 void FeatureListQueryProcessor::ProcessFeatureList(
     const proto::SegmentationModelMetadata& model_metadata,
-    OptimizationTarget segment_id,
+    scoped_refptr<InputContext> input_context,
+    SegmentId segment_id,
     base::Time prediction_time,
     ProcessOption process_option,
     FeatureProcessorCallback callback) {
@@ -72,7 +76,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
   // Capture all the relevant metadata information into a FeatureProcessorState.
   auto feature_processor_state = std::make_unique<FeatureProcessorState>(
       prediction_time, bucket_duration, segment_id, std::move(features),
-      std::move(callback));
+      input_context, std::move(callback));
 
   ProcessNext(std::move(feature_processor_state));
 }
@@ -105,7 +109,8 @@ void FeatureListQueryProcessor::ProcessNext(
       base::flat_map<QueryProcessor::FeatureIndex, proto::CustomInput> queries =
           {{kIndexNotUsed, data.input_feature->custom_input()}};
       processor = std::make_unique<CustomInputProcessor>(
-          std::move(queries), feature_processor_state->prediction_time());
+          std::move(queries), feature_processor_state->prediction_time(),
+          input_delegate_holder_.get());
     } else if (data.input_feature->has_sql_feature()) {
       auto* ukm_manager = storage_service_->ukm_data_manager();
       if (!ukm_manager->IsUkmEngineEnabled()) {
@@ -118,7 +123,7 @@ void FeatureListQueryProcessor::ProcessNext(
           {kIndexNotUsed, data.input_feature->sql_feature()}};
       processor = std::make_unique<SqlFeatureProcessor>(
           std::move(queries), feature_processor_state->prediction_time(),
-          ukm_manager->GetUkmDatabase());
+          input_delegate_holder_.get(), ukm_manager->GetUkmDatabase());
     }
   } else {
     // Process output features

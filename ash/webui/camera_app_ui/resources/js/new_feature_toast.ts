@@ -199,18 +199,15 @@ const SHOWING_TIMEOUT_MS = 10000;
 /**
  * Shows the toast on the given element.
  */
-export async function show(el: HTMLElement): Promise<void> {
+export function show(el: HTMLElement): void {
   if (showing !== null) {
     hide();
   }
 
-  await new Promise((r) => {
-    const ripple = new RippleEffect(el);
-    const toast = new Toast(el);
-    const timeout = setTimeout(r, SHOWING_TIMEOUT_MS);
-    showing = {ripple, toast, timeout};
-  });
-  hide();
+  const ripple = new RippleEffect(el);
+  const toast = new Toast(el);
+  const timeout = setTimeout(hide, SHOWING_TIMEOUT_MS);
+  showing = {ripple, toast, timeout};
 }
 
 /**

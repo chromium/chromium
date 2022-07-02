@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
@@ -336,7 +337,7 @@ void SplitViewDivider::UpdateDividerBounds() {
 gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          Shell::GetPrimaryRootWindow()->GetChildById(
+          controller_->root_window()->GetChildById(
               desks_util::GetActiveDeskContainerId()));
   const int divider_position = controller_->divider_position();
   const bool landscape = IsCurrentScreenOrientationLandscape();
@@ -486,6 +487,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   params.parent = Shell::GetContainer(controller->root_window(),
                                       kShellWindowId_AlwaysOnTopContainer);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.name = "SplitViewDivider";
   divider_widget_->set_focus_on_creation(false);
   divider_widget_->Init(std::move(params));
   divider_widget_->SetVisibilityAnimationTransition(
@@ -493,6 +495,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
+  divider_widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
   divider_widget_->Show();
 }
 

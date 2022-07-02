@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -63,9 +64,15 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // If |node| is the root of its tree, the return value will be the host
   // node of the parent tree and |in_out_tree_wrapper| will be updated to
   // point to that parent tree.
+  //
+  // Optionally, |should_use_app_id|, if true, considers
+  // ax::mojom::IntAttribute::kChildTreeNodeAppId when moving to ancestors.
+  // |requires_unignored|, if true, keeps moving to ancestors until an unignored
+  // ancestor parent is found.
   ui::AXNode* GetParent(ui::AXNode* node,
                         AutomationAXTreeWrapper** in_out_tree_wrapper,
-                        bool should_use_app_id = true) const;
+                        bool should_use_app_id = true,
+                        bool requires_unignored = true) const;
 
   // Gets the hosting node in a parent tree.
   ui::AXNode* GetHostInParentTree(
@@ -124,6 +131,13 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // enables the MessageFilter that allows us to listen to accessibility
   // events forwarded to this process.
   void StartCachingAccessibilityTrees(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // This is called by automation_internal_custom_bindings.js to indicate
+  // that an API was called that turns off accessibility trees. This
+  // disables the MessageFilter that allows us to listen to accessibility
+  // events forwarded to this process and clears all existing tree state.
+  void StopCachingAccessibilityTrees(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Called when an accessibility tree is destroyed and needs to be
@@ -194,11 +208,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                          int height)> callback);
   void RouteNodeIDPlusEventFunction(
       const std::string& name,
-      void (*callback)(v8::Isolate* isolate,
-                       v8::ReturnValue<v8::Value> result,
-                       AutomationAXTreeWrapper* tree_wrapper,
-                       ui::AXNode* node,
-                       api::automation::EventType event_type));
+      std::function<void(v8::Isolate* isolate,
+                         v8::ReturnValue<v8::Value> result,
+                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AXNode* node,
+                         api::automation::EventType event_type)> callback);
 
   //
   // Access the cached accessibility trees and properties of their nodes.
@@ -264,6 +278,10 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                                     bool* offscreen = nullptr,
                                     bool clip_bounds = true) const;
 
+  void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
+
+  void MaybeSendOnAllAutomationEventListenersRemoved();
+
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
@@ -286,6 +304,12 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   // Keeps track  of the single desktop tree, if it exists.
   ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
+
+  // Keeps track of all trees with event listeners.
+  std::set<ui::AXTreeID> trees_with_event_listeners_;
+
+  base::WeakPtrFactory<AutomationInternalCustomBindings> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace extensions

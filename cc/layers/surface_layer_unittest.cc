@@ -138,7 +138,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(2u));
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
   layer->SetOldestAcceptableFallback(primary_id);
-  layer->SetBackgroundColor(SK_ColorBLUE);
+  layer->SetBackgroundColor(SkColors::kBlue);
   layer->SetStretchContentToFillBounds(true);
 
   EXPECT_TRUE(
@@ -166,7 +166,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   // Verify that the primary and fallback SurfaceIds are pushed through.
   EXPECT_EQ(primary_id, layer_impl->range().end());
   EXPECT_EQ(primary_id, layer_impl->range().start());
-  EXPECT_EQ(SK_ColorBLUE, layer_impl->background_color());
+  EXPECT_EQ(SkColors::kBlue, layer_impl->background_color());
   EXPECT_TRUE(layer_impl->stretch_content_to_fill_bounds());
   EXPECT_EQ(2u, layer_impl->deadline_in_frames());
 
@@ -175,7 +175,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
   layer->SetOldestAcceptableFallback(fallback_id);
   layer->SetSurfaceId(fallback_id, DeadlinePolicy::UseExistingDeadline());
-  layer->SetBackgroundColor(SK_ColorGREEN);
+  layer->SetBackgroundColor(SkColors::kGreen);
   layer->SetStretchContentToFillBounds(false);
 
   // Verify that fallback surface id is not recorded on the layer tree host as
@@ -193,7 +193,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   // fallback viz::SurfaceId is pushed through.
   EXPECT_EQ(fallback_id, layer_impl->range().end());
   EXPECT_EQ(fallback_id, layer_impl->range().start());
-  EXPECT_EQ(SK_ColorGREEN, layer_impl->background_color());
+  EXPECT_EQ(SkColors::kGreen, layer_impl->background_color());
   // The deadline resets back to 0 (no deadline) after the first commit.
   EXPECT_EQ(0u, layer_impl->deadline_in_frames());
   EXPECT_FALSE(layer_impl->stretch_content_to_fill_bounds());

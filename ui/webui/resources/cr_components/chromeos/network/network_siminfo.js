@@ -42,6 +42,9 @@ Polymer({
       value: null,
     },
 
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy: Object,
+
     disabled: {
       type: Boolean,
       value: false,
@@ -95,6 +98,23 @@ Polymer({
       value: State.SIM_UNLOCKED,
       computed: 'computeState_(networkState, deviceState, deviceState.*,' +
           'isActiveSim_)',
+    },
+
+    /** @private {boolean} */
+    isSimLockPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isSimLockPolicyEnabled') &&
+            loadTimeData.getBoolean('isSimLockPolicyEnabled');
+      }
+    },
+
+    /** @private {boolean} */
+    isSimPinLockRestricted_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeIsSimPinLockRestricted_(isSimLockPolicyEnabled_,' +
+          'globalPolicy, globalPolicy.*, lockEnabled_)',
     },
   },
 
@@ -250,6 +270,10 @@ Polymer({
    * @private
    */
   showChangePinButton_() {
+    if (this.isSimPinLockRestricted_) {
+      return false;
+    }
+
     if (!this.deviceState || !this.deviceState.simLockStatus) {
       return false;
     }
@@ -262,6 +286,12 @@ Polymer({
    * @private
    */
   isSimLockButtonDisabled_() {
+    // If SIM PIN locking is restricted by admin, and the SIM does not have SIM
+    // PIN lock enabled, users should not be able to enable PIN locking.
+    if (this.isSimPinLockRestricted_ && !this.lockEnabled_) {
+      return true;
+    }
+
     return this.disabled || !this.isActiveSim_;
   },
 
@@ -283,6 +313,23 @@ Polymer({
     // Note that if this is not the active SIM, we cannot read to lock state, so
     // we default to showing the "unlocked" UI unless we know otherwise.
     return State.SIM_UNLOCKED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPolicyIndicator_() {
+    return this.isSimPinLockRestricted_ && this.isActiveSim_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsSimPinLockRestricted_() {
+    return this.isSimLockPolicyEnabled_ && !!this.globalPolicy &&
+        !this.globalPolicy.allowCellularSimLock;
   },
 
   /**

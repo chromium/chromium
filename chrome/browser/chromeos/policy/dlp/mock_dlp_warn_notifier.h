@@ -20,8 +20,11 @@ namespace policy {
 // Allows tests to simulate the user's response to the warning dialog.
 class MockDlpWarnNotifier : public DlpWarnNotifier {
  public:
-  MockDlpWarnNotifier() = delete;
-  explicit MockDlpWarnNotifier(bool should_proceed = true);
+  // Creates a mock object that propagates all calls to a real DlpWarnNotifier.
+  MockDlpWarnNotifier();
+  // Creates a mock object that can simulates user addressing the dialog, as
+  // determined by value of |should_proceed|.
+  explicit MockDlpWarnNotifier(bool should_proceed);
   MockDlpWarnNotifier(const MockDlpWarnNotifier& other) = delete;
   MockDlpWarnNotifier& operator=(const MockDlpWarnNotifier& other) = delete;
   ~MockDlpWarnNotifier() override;

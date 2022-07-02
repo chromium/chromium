@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "dbus/dbus_export.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -191,7 +192,7 @@ class CHROME_DBUS_EXPORT PropertyBase {
  private:
   // Pointer to the PropertySet instance that this instance is a member of,
   // no ownership is taken and |property_set_| must outlive this class.
-  PropertySet* property_set_;
+  raw_ptr<PropertySet> property_set_;
 
   bool is_valid_;
 
@@ -332,7 +333,7 @@ class CHROME_DBUS_EXPORT PropertySet {
 
   // Pointer to object proxy for making method calls, no ownership is taken
   // so this must outlive this class.
-  ObjectProxy* object_proxy_;
+  raw_ptr<ObjectProxy> object_proxy_;
 
   // Interface of property, e.g. "org.chromium.ExampleService", this is
   // distinct from the interface of the method call itself which is the

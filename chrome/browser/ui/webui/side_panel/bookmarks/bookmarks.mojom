@@ -26,4 +26,7 @@ interface BookmarksPageHandler {
   // an int64 but gets passed as a string from the chrome.bookmarks Extension
   // API.
   ShowContextMenu(string id, gfx.mojom.Point point);
+
+  // Notify the backend that the UI is ready to be shown.
+  ShowUI();
 };

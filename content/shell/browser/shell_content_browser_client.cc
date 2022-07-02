@@ -39,6 +39,7 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -73,6 +74,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/gurl.h"
@@ -142,8 +144,8 @@ class ShellControllerImpl : public mojom::ShellController {
                          ExecuteJavaScriptCallback callback) override {
     CHECK(!Shell::windows().empty());
     WebContents* contents = Shell::windows()[0]->web_contents();
-    contents->GetMainFrame()->ExecuteJavaScriptForTests(script,
-                                                        std::move(callback));
+    contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        script, std::move(callback));
   }
 
   void ShutDown() override { Shell::Shutdown(); }
@@ -507,18 +509,18 @@ std::unique_ptr<LoginDelegate> ShellContentBrowserClient::CreateLoginDelegate(
   return nullptr;
 }
 
-base::DictionaryValue ShellContentBrowserClient::GetNetLogConstants() {
-  base::DictionaryValue client_constants;
-  client_constants.SetString("name", "content_shell");
+base::Value::Dict ShellContentBrowserClient::GetNetLogConstants() {
+  base::Value::Dict client_constants;
+  client_constants.Set("name", "content_shell");
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
 #if BUILDFLAG(IS_WIN)
-  client_constants.SetString("command_line", base::WideToUTF8(command_line));
+  client_constants.Set("command_line", base::WideToUTF8(command_line));
 #else
-  client_constants.SetString("command_line", command_line);
+  client_constants.Set("command_line", command_line);
 #endif
-  base::DictionaryValue constants;
-  constants.SetKey("clientInfo", std::move(client_constants));
+  base::Value::Dict constants;
+  constants.Set("clientInfo", std::move(client_constants));
   return constants;
 }
 
@@ -714,13 +716,16 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
 
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
   // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
   // TODO(crbug/1248066): Consider passing a low entropy provider and source.
   field_trial_creator.SetUpFieldTrials(
       variation_ids,
-      content::GetSwitchDependentFeatureOverrides(
-          *base::CommandLine::ForCurrentProcess()),
+      command_line->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds),
+      content::GetSwitchDependentFeatureOverrides(*command_line),
       /*low_entropy_provider=*/nullptr, std::move(feature_list),
       metrics_state_manager.get(), field_trials_.get(), &safe_seed_manager,
       /*low_entropy_source_value=*/absl::nullopt);
@@ -742,6 +747,16 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
         run_loop.QuitClosure());
     run_loop.Run();
   }
+}
+
+blink::ParsedPermissionsPolicy
+ShellContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const url::Origin& app_origin) {
+  blink::ParsedPermissionsPolicyDeclaration decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets, {app_origin},
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+  return {decl};
 }
 
 }  // namespace content

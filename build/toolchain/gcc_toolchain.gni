@@ -786,7 +786,16 @@ template("gcc_toolchain") {
 # use_gold too.
 template("clang_toolchain") {
   gcc_toolchain(target_name) {
-    prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+    _path = "$clang_base_path/bin"
+    _is_path_absolute = get_path_info(_path, "abspath") == _path
+
+    # Preserve absolute paths for tools like distcc.
+    if (_is_path_absolute && filter_include([ _path ], [ "//*" ]) == []) {
+      prefix = _path
+    } else {
+      prefix = rebase_path(_path, root_build_dir)
+    }
+
     cc = "${prefix}/clang"
     cxx = "${prefix}/clang++"
     ld = cxx

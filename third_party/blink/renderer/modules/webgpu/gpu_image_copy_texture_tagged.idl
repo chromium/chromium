@@ -4,11 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-enum GPUPredefinedColorSpace {
-    "srgb"
-};
-
 dictionary GPUImageCopyTextureTagged : GPUImageCopyTexture  {
-    GPUPredefinedColorSpace colorSpace = "srgb";
+    PredefinedColorSpace colorSpace = "srgb";
     boolean premultipliedAlpha = false;
 };

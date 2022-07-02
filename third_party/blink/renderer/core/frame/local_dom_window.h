@@ -117,7 +117,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   static LocalDOMWindow* From(const ScriptState*);
 
-  LocalDOMWindow(LocalFrame&, WindowAgent*, bool anonymous);
+  LocalDOMWindow(LocalFrame&, WindowAgent*);
   ~LocalDOMWindow() override;
 
   // Returns the token identifying the frame that this ExecutionContext was
@@ -323,10 +323,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
   void queueMicrotask(V8VoidFunction*);
 
-  // https://wicg.github.io/origin-policy/#monkeypatch-html-windoworworkerglobalscope
-  const Vector<String>& originPolicyIds() const;
-  void SetOriginPolicyIds(const Vector<String>&);
-
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
 
@@ -418,11 +414,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   TrustedTypePolicyFactory* GetTrustedTypesForWorld(
       const DOMWrapperWorld&) const;
 
-  // Returns true if this window is cross-site to the main frame. Defaults to
-  // false in a detached window.
-  // Note: This uses an outdated definition of "site" which only includes the
-  // registrable domain and not the scheme. IsCrossSiteSubframeIncludingScheme()
-  // uses HTML's definition of "site" as a registrable domain and scheme.
+  // Returns true if this window is cross-site to the outermost main frame.
+  // Defaults to false in a detached window. Note: This uses an outdated
+  // definition of "site" which only includes the registrable domain and not the
+  // scheme. IsCrossSiteSubframeIncludingScheme() uses HTML's definition of
+  // "site" as a registrable domain and scheme.
   bool IsCrossSiteSubframe() const;
 
   bool IsCrossSiteSubframeIncludingScheme() const;
@@ -470,7 +466,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
 
   // Whether the window is anonymous or not.
-  bool isAnonymouslyFramed() const { return isAnonymouslyFramed_; }
+  bool isAnonymouslyFramed() const;
+
+  bool IsInFencedFrame() const override;
 
   Fence* fence();
 
@@ -532,8 +530,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   String status_;
   String default_status_;
-
-  Vector<String> origin_policy_ids_;
 
   scoped_refptr<SerializedScriptValue> pending_state_object_;
 
@@ -600,10 +596,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // due to back-forward cache. This number gets reset when the frame gets out
   // of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
-
-  // Anonymous Iframe:
-  // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
-  const bool isAnonymouslyFramed_;
 
   // Collection of fenced frame APIs.
   // https://github.com/shivanigithub/fenced-frame/issues/14

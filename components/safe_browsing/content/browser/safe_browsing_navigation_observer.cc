@@ -322,7 +322,7 @@ void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(
     // frame.
     nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
         navigation_handle->GetWebContents()
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->GetLastCommittedURL());
   } else {
     // If there was a URL previously committed in the current RenderFrameHost,

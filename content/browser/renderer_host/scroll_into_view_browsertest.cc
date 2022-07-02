@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -22,6 +23,8 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
@@ -49,7 +52,7 @@ enum TestWritingMode { kLTR, kRTL };
 
 // What kind of scroll into view to invoke, via JavaScript binding
 // (element.scrollIntoView), using the InputHandler
-// ScrollFocusedEditableNodeIntoRect method, or via setting an OSK inset.
+// ScrollFocusedEditableNodeIntoView method, or via setting an OSK inset.
 enum TestInvokeMethod { kJavaScript, kInputHandler, kAuraOnScreenKeyboard };
 
 [[maybe_unused]] std::string DescribeFrameType(
@@ -72,7 +75,7 @@ blink::mojom::FrameWidgetInputHandler* GetInputHandler(FrameTreeNode* node) {
       ->GetFrameWidgetInputHandler();
 }
 
-// Will block from the destructor until a ScrollFocusedEditableNodeIntoRect has
+// Will block from the destructor until a ScrollFocusedEditableNodeIntoView has
 // completed. This must be called with the root frame tree node since that's
 // where the ScrollIntoView and PageScaleAnimation will bubble to.
 class ScopedFocusScrollWaiter {
@@ -112,6 +115,39 @@ class ScopedSuppressImeEvents {
   base::WeakPtr<WebContents> web_contents_;
 };
 
+// Interceptor that can be used to verify calls to
+// ScrollRectToVisibleInParentFrame on the LocalFrameHost interface.
+class ScrollRectToVisibleInParentFrameInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  ScrollRectToVisibleInParentFrameInterceptor() = default;
+  ~ScrollRectToVisibleInParentFrameInterceptor() override = default;
+
+  void Init(RenderFrameHostImpl* render_frame_host) {
+    render_frame_host_ = render_frame_host;
+    std::ignore = render_frame_host_->local_frame_host_receiver_for_testing()
+                      .SwapImplForTesting(this);
+  }
+
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override {
+    return render_frame_host_;
+  }
+
+  void ScrollRectToVisibleInParentFrame(
+      const gfx::RectF& rect_to_scroll,
+      blink::mojom::ScrollIntoViewParamsPtr params) override {
+    has_called_method_ = true;
+  }
+
+  bool HasCalledScrollRectToVisibleInParentFrame() const {
+    return has_called_method_;
+  }
+
+ private:
+  raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  bool has_called_method_ = false;
+};
+
 // Test harness for ScrollIntoView related browser tests. These tests are
 // mainly concerned with behavior of scroll into view related functionality
 // across remote frames. This harness depends on
@@ -121,7 +157,7 @@ class ScopedSuppressImeEvents {
 // cross_site_scroll_into_view_factory.html builds a frame tree from its given
 // argument, allowing only a single child frame in each frame. The inner most
 // frame adds an <input> element which can be used to call
-// ScrollFocusedEditableNodeIntoRect.
+// ScrollFocusedEditableNodeIntoView.
 //
 // Each test starts by performing a non-scrolling focus on the <input> element.
 // It then performs a scroll into view (either via JavaScript bindings or
@@ -135,11 +171,12 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
   virtual bool IsForceLocalFrames() const = 0;
   virtual bool IsWritingModeLTR() const = 0;
   virtual TestInvokeMethod GetInvokeMethod() const = 0;
+  virtual net::EmbeddedTestServer* server() { return embedded_test_server(); }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(server()->Start());
 
     suppress_ime_ = std::make_unique<ScopedSuppressImeEvents>(web_contents());
   }
@@ -154,7 +191,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
 
-    // Need this to control page scale factor via script.
+    // Need this to control page scale factor via script or check for root
+    // scroller.
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 
@@ -163,14 +201,10 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
   }
 
   FrameTreeNode* InnerMostFrameTreeNode() {
-    FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
-    while (node->child_count()) {
-      // These tests never have multiple child frames.
-      CHECK_EQ(node->child_count(), 1ul);
-
-      node = node->child_at(0);
-    }
-    return node;
+    FrameTreeNode* inner_most_node = nullptr;
+    ForEachFrameFromRootToInnerMost(
+        [&inner_most_node](FrameTreeNode* node) { inner_most_node = node; });
+    return inner_most_node;
   }
 
   FrameTreeNode* RootFrameTreeNode() {
@@ -297,14 +331,15 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 
     // If `node` is a child frame, we'll convert rect up the ancestor frame
     // chain, clipping to each frame rect.
-    FrameTreeNode* frame = FrameTreeNode::From(node->parent());
+    FrameTreeNode* frame =
+        FrameTreeNode::From(node->GetParentOrOuterDocument());
     while (frame) {
-      gfx::RectF parent_rect = GetClientRect(frame, "iframe");
+      gfx::RectF parent_rect = GetClientRect(frame, "#childframe");
       rect.Offset(parent_rect.OffsetFromOrigin());
 
       rect = gfx::IntersectRects(parent_rect, rect);
 
-      frame = FrameTreeNode::From(frame->parent());
+      frame = FrameTreeNode::From(frame->GetParentOrOuterDocument());
     }
 
     gfx::RectF root_frame_rect = GetLayoutViewportRect();
@@ -377,33 +412,88 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       }
     }
 
-    return embedded_test_server()->GetURL(
-        "a.com", base::StrCat({"/cross_site_scroll_into_view_factory.html?",
-                               frame_tree_string}));
+    return server()->GetURL(
+        "a.test", base::StrCat({"/cross_site_scroll_into_view_factory.html?",
+                                frame_tree_string}));
   }
 
   // Simualte a keyboard coming up, insetting the viewport by its height.
   void SetAuraOnScreenKeyboardInset(int keyboard_height) {
 #if defined(USE_AURA)
-    RenderWidgetHostViewChildFrame* child_render_widget_host_view_child_frame =
-        static_cast<RenderWidgetHostViewChildFrame*>(InnerMostFrameTreeNode()
-                                                         ->current_frame_host()
-                                                         ->GetRenderWidgetHost()
-                                                         ->GetView());
+    RenderWidgetHostViewBase* inner_most_view = InnerMostFrameTreeNode()
+                                                    ->current_frame_host()
+                                                    ->GetRenderWidgetHost()
+                                                    ->GetView();
 
-    RenderWidgetHostViewAura* parent_render_widget_host_aura =
-        static_cast<RenderWidgetHostViewAura*>(
-            child_render_widget_host_view_child_frame->GetRootView());
+    RenderWidgetHostViewBase* root_view = inner_most_view->GetRootView();
 
     // Set the pointer type to simulate the keyboard appearing as a result of
     // the user tapping on an editable element.
-    parent_render_widget_host_aura->SetLastPointerType(
-        ui::EventPointerType::kTouch);
-    parent_render_widget_host_aura->SetInsets(
-        gfx::Insets::TLBR(0, 0, keyboard_height, 0));
+    root_view->SetLastPointerType(ui::EventPointerType::kTouch);
+    root_view->SetInsets(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
 #else
     NOTREACHED();
 #endif
+  }
+
+  // Calls `func` with each FrameTreeNode in the page, starting from the root
+  // and descending into the inner most frame, traversing frame tree boundaries
+  // such as fenced frames/portals.
+  template <typename Function>
+  void ForEachFrameFromRootToInnerMost(const Function& func) {
+    FrameTreeNode* node = web_contents()->GetPrimaryFrameTree().root();
+    while (node) {
+      bool is_proxy_for_inner_frame_tree =
+          node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+          FrameTreeNode::kFrameTreeNodeInvalidId;
+
+      // The functor isn't called for the placeholder FrameTreeNode, it'll be
+      // called on the inner tree's root.
+      if (!is_proxy_for_inner_frame_tree)
+        func(node);
+
+      if (node->child_count()) {
+        CHECK_EQ(
+            node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
+            FrameTreeNode::kFrameTreeNodeInvalidId);
+        // These tests never have multiple child frames.
+        CHECK_EQ(node->child_count(), 1ul);
+        node = node->child_at(0);
+      } else if (is_proxy_for_inner_frame_tree) {
+        CHECK_EQ(node->child_count(), 0ul);
+        node = FrameTreeNode::GloballyFindByID(
+            node->current_frame_host()->inner_tree_main_frame_tree_node_id());
+      } else {
+        node = nullptr;
+      }
+    }
+  }
+
+  // Cross origin frames may throttle their lifecycle when not visible.
+  // This method ensure each frame is brought into view and a frame produced to
+  // ensure up-to-date layout.
+  void EnsureAllFramesCompletedLifecycle() {
+    // Wait until each frame presents a CompositorFrame and then scroll its
+    // child frame (if it has one) into view, so that it is unthrottled and
+    // able to generate and present CompositorFrames.
+    ForEachFrameFromRootToInnerMost([](FrameTreeNode* node) {
+      base::RunLoop loop;
+      node->current_frame_host()->InsertVisualStateCallback(
+          base::BindLambdaForTesting(
+              [&loop](bool visual_state_updated) { loop.Quit(); }));
+      loop.Run();
+
+      EXPECT_TRUE(ExecJs(node, R"JS(
+              if (document.getElementById('childframe'))
+                document.getElementById('childframe').scrollIntoView()
+          )JS"));
+    });
+
+    // Now that each frame has been in view and produced a frame, reset each
+    // scroll offset.
+    ForEachFrameFromRootToInnerMost([](FrameTreeNode* node) {
+      EXPECT_TRUE(ExecJs(node, "window.scrollTo(0, 0)"));
+    });
   }
 
   // For frame_tree syntax see tree_parser_util.js.
@@ -422,6 +512,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     if (!NavigateToURL(shell(), kMainUrl))
       return false;
 
+    EnsureAllFramesCompletedLifecycle();
+
     VisualViewport viewport = GetVisualViewport();
     double page_scale_factor_before = viewport.scale;
     double page_left_before = viewport.page_left;
@@ -430,11 +522,11 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     if (GetInvokeMethod() == kInputHandler ||
         GetInvokeMethod() == kAuraOnScreenKeyboard) {
       // Focus the input for tests that rely on scrolling to a focused element
-      // (i.e. via ScrollFocusedEditableNodeIntoRect).  Use `preventScroll` to
+      // (i.e. via ScrollFocusedEditableNodeIntoView).  Use `preventScroll` to
       // avoid affecting the test via the automatic scrolling caused by focus.
       //
       // Note: normally, an IME (i.e. On-Screen Keyboard) can also attempt to
-      // scroll into view (in fact, using ScrollFocusedEditableNodeIntoRect
+      // scroll into view (in fact, using ScrollFocusedEditableNodeIntoView
       // which we're trying to test). However, in order to reliably test this
       // across platforms this test harness suppresses IME events so that the
       // on-screen keyboard on a platform that uses one will not activate in
@@ -458,10 +550,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       case kInputHandler: {
         ScopedFocusScrollWaiter wait_for_scroll_done(RootFrameTreeNode());
 
-        // The gfx::Rect() param is used only to debounce repeated calls, see
-        // the TODO at https://bit.ly/3vIdTsD
         GetInputHandler(InnerMostFrameTreeNode())
-            ->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+            ->ScrollFocusedEditableNodeIntoView();
       } break;
       case kAuraOnScreenKeyboard: {
         ScopedFocusScrollWaiter wait_for_scroll_done(RootFrameTreeNode());
@@ -495,7 +585,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 
 // Runs tests in all combinations of Local/Remote frames,
 // left-to-right/right-to-left writing modes, and scrollIntoView via
-// element.scrollIntoView/InputHandler.ScrollFocusedEditableNodeIntoRect. The
+// element.scrollIntoView/InputHandler.ScrollFocusedEditableNodeIntoView. The
 // kAuraOnScreenKeyboard is intentionally omitted as it is expected to be
 // functionally equivalent to kInputHandler.
 class ScrollIntoViewBrowserTest
@@ -546,7 +636,7 @@ class ScrollIntoViewBrowserTest
         invoke_method = "JavaScript";
       } break;
       case kInputHandler: {
-        invoke_method = "ScrollFocusedEditableNodeIntoRect";
+        invoke_method = "ScrollFocusedEditableNodeIntoView";
       } break;
       case kAuraOnScreenKeyboard: {
         invoke_method = "AuraOnScreenKeyboard";
@@ -559,6 +649,12 @@ class ScrollIntoViewBrowserTest
 };
 
 // See comment in SetupTest for frame tree syntax.
+
+// ScrollIntoViewBrowserTest runs with all combinations of multiple parameters
+// to test the basic scroll into view machinery so each test instantiates 8
+// cases. To avoid an explosion of tests, prefer to add new tests to a more
+// specific suite unless the functionality it's testing is likely to differ
+// across the various parameters and isn't already covered.
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
   ASSERT_TRUE(SetupTest("siteA(siteB)"));
@@ -614,14 +710,23 @@ IN_PROC_BROWSER_TEST_P(InsetScrollIntoViewBrowserTest,
                        InsetsCauseScrollToFocusedEditable) {
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
 
+  int contents_height = web_contents()->GetViewBounds().height();
+
+  // Ensure the window height is large enough to accommodate the inset and leave
+  // some space for a caret. Note: we can't just assume 800x600 because some
+  // Windows 7 bots have less than 600px of workspace area available which
+  // results in a smaller window.
+  ASSERT_GT(contents_height, 450);
+
   int visual_viewport_height_before = GetVisualViewport().height;
   int layout_viewport_height_before = GetLayoutViewportRect().height();
 
-  // We expect the window to be 800x600px but allow some fuzziness due to
-  // differing scrollbars and window decorations on different platforms.
+  // We expect the viewport height to match the WebContents but allow some
+  // fuzziness due to differing scrollbars and window decorations on different
+  // platforms.
   const int kEpsilon = 30;
-  EXPECT_NEAR(visual_viewport_height_before, 600, kEpsilon);
-  EXPECT_NEAR(layout_viewport_height_before, 600, kEpsilon);
+  EXPECT_NEAR(visual_viewport_height_before, contents_height, kEpsilon);
+  EXPECT_NEAR(layout_viewport_height_before, contents_height, kEpsilon);
   EXPECT_EQ(1.f, GetVisualViewport().scale);
 
   RunTest();
@@ -649,7 +754,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 constexpr double kMobileMinimumScale = 0.25;
 
-// Tests zooming behaviors for ScrollFocusedEditableNodeIntoRect. These tests
+// Tests zooming behaviors for ScrollFocusedEditableNodeIntoView. These tests
 // runs only on Android since that's the only platorm that uses this behavior.
 class ZoomScrollIntoViewBrowserTest
     : public ScrollIntoViewBrowserTestBase,
@@ -680,8 +785,8 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest, DesktopViewportMustZoom) {
 // zooming behavior so that "mobile-friendly" pages do not zoom in on input
 // boxes.
 IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
-                       ViewportMetaDisablesZoom) {
-  ASSERT_TRUE(SetupTest("siteA{ViewportMeta}(siteB)"));
+                       MobileViewportDisablesZoom) {
+  ASSERT_TRUE(SetupTest("siteA{MobileViewport}(siteB)"));
 
   EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
 
@@ -706,11 +811,177 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
   EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
 }
 
+class RootScrollerScrollIntoViewBrowserTest
+    : public ScrollIntoViewBrowserTestBase {
+ public:
+  bool IsForceLocalFrames() const override { return false; }
+  bool IsWritingModeLTR() const override { return true; }
+  TestInvokeMethod GetInvokeMethod() const override { return kInputHandler; }
+};
+
+IN_PROC_BROWSER_TEST_F(RootScrollerScrollIntoViewBrowserTest,
+                       FocusInRootScroller) {
+  ASSERT_TRUE(SetupTest("siteA{RootScroller,MobileViewportNoZoom}"));
+
+  // Root scroller is recomputed after a Blink lifecycle so ensure a frame is
+  // produced to make sure the renderer has had time to evaluate the root
+  // scroller.
+  {
+    base::RunLoop loop;
+    shell()->web_contents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
+        base::BindLambdaForTesting(
+            [&loop](bool visual_state_updated) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  ASSERT_EQ(1.0, GetVisualViewport().scale);
+  ASSERT_EQ(
+      true,
+      EvalJs(
+          InnerMostFrameTreeNode(),
+          "window.internals.effectiveRootScroller(document).tagName == 'DIV'"));
+
+  RunTest();
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ZoomScrollIntoViewBrowserTest,
                          testing::Values(kLocalFrame, kRemoteFrame),
                          DescribeFrameType);
 #endif
+
+enum FencedFrameType { kFencedFrameMPArch, kFencedFrameShadowDOM };
+
+[[maybe_unused]] std::string DescribeFencedFrameType(
+    const testing::TestParamInfo<FencedFrameType>& info) {
+  std::string impl_type;
+  switch (info.param) {
+    case kFencedFrameMPArch: {
+      impl_type = "MPArch";
+    } break;
+    case kFencedFrameShadowDOM: {
+      impl_type = "ShadowDOM";
+    } break;
+  }
+  return impl_type;
+}
+
+// Tests scrollIntoView behaviors related to a fenced frame.
+class ScrollIntoViewFencedFrameBrowserTest
+    : public ScrollIntoViewBrowserTestBase,
+      public ::testing::WithParamInterface<FencedFrameType> {
+ public:
+  ScrollIntoViewFencedFrameBrowserTest() {
+    const char* impl_param =
+        GetParam() == kFencedFrameMPArch ? "mparch" : "shadow_dom";
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", impl_param}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+  }
+  bool IsForceLocalFrames() const override { return false; }
+  bool IsWritingModeLTR() const override { return true; }
+  TestInvokeMethod GetInvokeMethod() const override { return kInputHandler; }
+  net::EmbeddedTestServer* server() override { return &https_server_; }
+
+  void SetUpOnMainThread() override {
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ScrollIntoViewBrowserTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       SingleFencedFrame) {
+  ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB)"));
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       NestedFencedFrames) {
+  ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB{FencedFrame}(siteC))"));
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       LocalFrameInFencedFrame) {
+  ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB(siteB))"));
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       RemoteFrameInFencedFrame) {
+  ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB(siteC))"));
+
+  // TODO(bokan): This is required due to a race in how page-level focus is
+  // transferred. If the race is won by the page level focus notification then
+  // it'll clobber the <input> focus and reset it to the main frame. In this
+  // case, trying again will work because the fenced frame tree already has
+  // page focus now so focusing it doesn't change page focus. See
+  // https://crbug.com/1327439.
+  {
+    VisualViewport viewport = GetVisualViewport();
+    double page_scale_factor_before = viewport.scale;
+
+    EXPECT_TRUE(ExecJs(InnerMostFrameTreeNode(), R"JS(
+      document.querySelector('input').focus({preventScroll: true});
+    )JS"));
+
+    // The test should start with fresh scroll and scale.
+    ASSERT_EQ(viewport.scale, page_scale_factor_before);
+    ASSERT_EQ(viewport.page_left, 0);
+    ASSERT_EQ(viewport.page_top, 0);
+  }
+
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       FencedFrameInRemoteFrame) {
+  ASSERT_TRUE(SetupTest("siteA(siteB{FencedFrame}(siteC))"));
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
+                       ProgrammaticScrollIntoViewDoesntCrossFencedFrame) {
+  ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB)"));
+
+  ScrollRectToVisibleInParentFrameInterceptor interceptor;
+  interceptor.Init(InnerMostFrameTreeNode()->current_frame_host());
+
+  ASSERT_EQ(0, EvalJs(InnerMostFrameTreeNode(), "window.scrollX"));
+  ASSERT_EQ(0, EvalJs(InnerMostFrameTreeNode(), "window.scrollY"));
+  ASSERT_TRUE(ExecJs(InnerMostFrameTreeNode(), R"JS(
+    document.querySelector('input').scrollIntoView({
+      behavior: 'instant',
+      block: 'center',
+      inline: 'center'
+    })
+  )JS"));
+  ASSERT_LT(0, EvalJs(InnerMostFrameTreeNode(), "window.scrollX"));
+  ASSERT_LT(0, EvalJs(InnerMostFrameTreeNode(), "window.scrollY"));
+
+  // Since bubbling to a parent frame happens synchronously in scrollIntoView,
+  // once the fenced frame has visible scroll we can guarantee that, if it
+  // tried bubbling the scroll to the parent the message must have been sent to
+  // the browser by now.
+  InnerMostFrameTreeNode()
+      ->current_frame_host()
+      ->local_frame_host_receiver_for_testing()
+      .FlushForTesting();
+  EXPECT_FALSE(interceptor.HasCalledScrollRectToVisibleInParentFrame());
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ScrollIntoViewFencedFrameBrowserTest,
+                         testing::Values(kFencedFrameMPArch,
+                                         kFencedFrameShadowDOM),
+                         DescribeFencedFrameType);
 
 }  // namespace
 

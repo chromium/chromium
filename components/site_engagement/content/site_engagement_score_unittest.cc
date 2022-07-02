@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace site_engagement {
 
@@ -73,11 +74,12 @@ class SiteEngagementScoreTest : public testing::Test {
   }
 
   void TestScoreInitializesAndUpdates(
-      std::unique_ptr<base::DictionaryValue> score_dict,
+      base::Value::Dict score_dict,
       double expected_raw_score,
       double expected_points_added_today,
       base::Time expected_last_engagement_time) {
-    std::unique_ptr<base::DictionaryValue> copy(score_dict->DeepCopy());
+    base::Value::Dict copy(score_dict.Clone());
+
     SiteEngagementScore initial_score(&test_clock_, GURL(),
                                       std::move(score_dict));
     VerifyScore(initial_score, expected_raw_score, expected_points_added_today,
@@ -85,13 +87,13 @@ class SiteEngagementScoreTest : public testing::Test {
 
     // Updating the score dict should return false, as the score shouldn't
     // have changed at this point.
-    EXPECT_FALSE(initial_score.UpdateScoreDict(copy.get()));
+    EXPECT_FALSE(initial_score.UpdateScoreDict(copy));
 
     // Update the score to new values and verify it updates the score dict
     // correctly.
     base::Time different_day = GetReferenceTime() + base::Days(1);
     UpdateScore(&initial_score, 5, 10, different_day);
-    EXPECT_TRUE(initial_score.UpdateScoreDict(copy.get()));
+    EXPECT_TRUE(initial_score.UpdateScoreDict(copy));
     SiteEngagementScore updated_score(&test_clock_, GURL(), std::move(copy));
     VerifyScore(updated_score, 5, 10, different_day);
   }
@@ -298,15 +300,14 @@ TEST_F(SiteEngagementScoreTest, GoBackInTime) {
 // Test that scores are read / written correctly from / to empty score
 // dictionaries.
 TEST_F(SiteEngagementScoreTest, EmptyDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time());
+  TestScoreInitializesAndUpdates(base::Value::Dict(), 0, 0, base::Time());
 }
 
 // Test that scores are read / written correctly from / to partially empty
 // score dictionaries.
 TEST_F(SiteEngagementScoreTest, PartiallyEmptyDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetDouble(SiteEngagementScore::kPointsAddedTodayKey, 2);
+  base::Value::Dict dict;
+  dict.Set(SiteEngagementScore::kPointsAddedTodayKey, 2.);
 
   TestScoreInitializesAndUpdates(std::move(dict), 0, 2, base::Time());
 }
@@ -314,11 +315,11 @@ TEST_F(SiteEngagementScoreTest, PartiallyEmptyDictionary) {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(SiteEngagementScoreTest, PopulatedDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetDouble(SiteEngagementScore::kRawScoreKey, 1);
-  dict->SetDouble(SiteEngagementScore::kPointsAddedTodayKey, 2);
-  dict->SetDouble(SiteEngagementScore::kLastEngagementTimeKey,
-                  GetReferenceTime().ToInternalValue());
+  base::Value::Dict dict;
+  dict.Set(SiteEngagementScore::kRawScoreKey, 1.);
+  dict.Set(SiteEngagementScore::kPointsAddedTodayKey, 2.);
+  dict.Set(SiteEngagementScore::kLastEngagementTimeKey,
+           static_cast<double>(GetReferenceTime().ToInternalValue()));
 
   TestScoreInitializesAndUpdates(std::move(dict), 1, 2, GetReferenceTime());
 }
@@ -328,9 +329,9 @@ TEST_F(SiteEngagementScoreTest, FirstDailyEngagementBonus) {
   SetParamValue(SiteEngagementScore::FIRST_DAILY_ENGAGEMENT, 0.5);
 
   SiteEngagementScore score1(&test_clock_, GURL(),
-                             std::unique_ptr<base::DictionaryValue>());
+                             /*score_dict=*/absl::nullopt);
   SiteEngagementScore score2(&test_clock_, GURL(),
-                             std::unique_ptr<base::DictionaryValue>());
+                             /*score_dict=*/absl::nullopt);
   base::Time current_day = GetReferenceTime();
 
   test_clock_.SetNow(current_day);

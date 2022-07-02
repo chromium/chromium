@@ -14,6 +14,8 @@ source_set("telemetry_services") {
     "diagnostics_service.h",
     "diagnostics_service_converters.cc",
     "diagnostics_service_converters.h",
+    "fake_probe_service.cc",
+    "fake_probe_service.h",
     "lid_observer.cc",
     "lid_observer.h",
     "power_observer.cc",
@@ -30,10 +32,10 @@ source_set("telemetry_services") {
     "//ash/webui/telemetry_extension_ui/mojom",
     "//base",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus",
     "//chromeos/dbus/debug_daemon",
-    "//chromeos/services/cros_healthd/public/cpp",
-    "//chromeos/services/cros_healthd/public/mojom",
   ]
 }
 
@@ -51,10 +53,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus",
     "//chromeos/dbus/debug_daemon",
-    "//chromeos/services/cros_healthd/public/cpp",
-    "//chromeos/services/cros_healthd/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -11,6 +11,7 @@ source_set("safety_check_ui") {
     "safety_check_consumer.h",
     "safety_check_navigation_commands.h",
     "safety_check_service_delegate.h",
+    "safety_check_table_view_controller.h",
   ]
   public_deps = [
     "//components/strings",
@@ -67,6 +68,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings:settings_root",

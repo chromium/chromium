@@ -469,38 +469,6 @@ export class FileTasks {
         task.iconType = 'generic';
       }
 
-      // Add verb to title.
-      if (task.verb) {
-        let verbButtonLabel = '';
-        switch (task.verb) {
-          case chrome.fileManagerPrivate.Verb.ADD_TO:
-            verbButtonLabel = 'ADD_TO_VERB_BUTTON_LABEL';
-            break;
-          case chrome.fileManagerPrivate.Verb.PACK_WITH:
-            verbButtonLabel = 'PACK_WITH_VERB_BUTTON_LABEL';
-            break;
-          case chrome.fileManagerPrivate.Verb.SHARE_WITH:
-            // Even when the task has SHARE_WITH verb, we don't prefix the title
-            // with "Share with" when the task is from SEND/SEND_MULTIPLE intent
-            // handlers from Android apps, since the title can already have an
-            // appropriate verb.
-            if (!(taskType == 'arc' &&
-                  (parsedActionId == 'send' ||
-                   parsedActionId == 'send_multiple'))) {
-              verbButtonLabel = 'SHARE_WITH_VERB_BUTTON_LABEL';
-            }
-            break;
-          case chrome.fileManagerPrivate.Verb.OPEN_WITH:
-            verbButtonLabel = 'OPEN_WITH_VERB_BUTTON_LABEL';
-            break;
-          default:
-            console.error('Invalid task verb: ' + task.verb + '.');
-        }
-        if (verbButtonLabel) {
-          task.label = loadTimeData.getStringF(verbButtonLabel, task.title);
-        }
-      }
-
       result.push(task);
     }
 
@@ -920,31 +888,35 @@ export class FileTasks {
     item.type = ProgressItemType.MOUNT_ARCHIVE;
     item.message = strf('ARCHIVE_MOUNT_MESSAGE', filename);
 
-    item.cancelCallback = () => {
-      this.volumeManager_.cancelMounting(url);
+    item.cancelCallback = async () => {
+      // Remove progress panel.
+      item.state = ProgressItemState.CANCELED;
+      this.progressCenter_.updateItem(item);
+
+      // Cancel archive mounting.
+      try {
+        await this.volumeManager_.cancelMounting(url);
+      } catch (error) {
+        console.warn('Cannot cancel archive (redacted):', error);
+        console.log(`Cannot cancel archive '${url}':`, error);
+      }
     };
 
     // Display progress panel.
     item.state = ProgressItemState.PROGRESSING;
     this.progressCenter_.updateItem(item);
 
-    let wasCancelled = false;
-
     // First time, try without providing a password.
     try {
       return await this.volumeManager_.mountArchive(url);
     } catch (error) {
       // If error is not about needing a password, propagate it.
-      if (error === VolumeManagerCommon.VolumeError.CANCELLED) {
-        wasCancelled = true;
-      }
       if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
         throw error;
       }
     } finally {
       // Remove progress panel.
-      item.state = wasCancelled ? ProgressItemState.CANCELED :
-                                  ProgressItemState.COMPLETED;
+      item.state = ProgressItemState.COMPLETED;
       this.progressCenter_.updateItem(item);
     }
 
@@ -1010,8 +982,7 @@ export class FileTasks {
 
         this.directoryModel_.changeDirectoryEntry(displayRoot);
       } catch (error) {
-        console.warn(`Cannot resolve display root after mounting: ${
-            error.stack || error}`);
+        console.error('Cannot resolve display root after mounting:', error);
       }
     } catch (error) {
       // No need to display an error message if user canceled mounting or
@@ -1032,7 +1003,8 @@ export class FileTasks {
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
-      console.warn(`Cannot mount '${url}': ${error.stack || error}`);
+      console.warn('Cannot mount (redacted):', error);
+      console.debug(`Cannot mount '${url}':`, error);
     }
   }
 

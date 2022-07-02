@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 
-#include "base/test/task_environment.h"
-#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/task/thread_pool.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
-#include "ui/base/test/ios/ui_image_test_utils.h"
+#import "testing/platform_test.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,8 +21,6 @@ namespace {
 class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
  protected:
   ChromeActivityItemThumbnailGeneratorTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
@@ -32,22 +30,12 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
     SnapshotTabHelper::FromWebState(&fake_web_state_)->SetDelegate(delegate_);
   }
 
-  void SetIncognito(bool incognito) {
-    fake_web_state_.SetBrowserState(
-        incognito ? chrome_browser_state_->GetOffTheRecordChromeBrowserState()
-                  : chrome_browser_state_.get());
-  }
-
-  FakeSnapshotGeneratorDelegate* delegate_ = nil;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  FakeSnapshotGeneratorDelegate* delegate_ = nil;
   web::FakeWebState fake_web_state_;
 };
 
-TEST_F(ChromeActivityItemThumbnailGeneratorTest,
-       ThumbnailForNonIncognitoWebState) {
-  SetIncognito(/*incognito=*/false);
-
+TEST_F(ChromeActivityItemThumbnailGeneratorTest, Thumbnail) {
   CGSize size = CGSizeMake(50, 50);
   ChromeActivityItemThumbnailGenerator* generator =
       [[ChromeActivityItemThumbnailGenerator alloc]
@@ -58,17 +46,28 @@ TEST_F(ChromeActivityItemThumbnailGeneratorTest,
   EXPECT_TRUE(CGSizeEqualToSize(thumbnail.size, size));
 }
 
-TEST_F(ChromeActivityItemThumbnailGeneratorTest,
-       NoThumbnailForIncognitoWebState) {
-  SetIncognito(/*incognito=*/true);
+TEST_F(ChromeActivityItemThumbnailGeneratorTest, DeallocOnBackgroundSequence) {
+  // Create a closure that owns a ChromeActivityItemThumbnailGenerator and
+  // that will deallocate it when it is run, allowing to deallocate it on
+  // a background sequence.
+  base::OnceClosure closure;
+  @autoreleasepool {
+    __attribute__((objc_precise_lifetime))
+    ChromeActivityItemThumbnailGenerator* generator =
+        [[ChromeActivityItemThumbnailGenerator alloc]
+            initWithWebState:&fake_web_state_];
 
-  CGSize size = CGSizeMake(50, 50);
-  ChromeActivityItemThumbnailGenerator* generator =
-      [[ChromeActivityItemThumbnailGenerator alloc]
-          initWithWebState:&fake_web_state_];
-  EXPECT_TRUE(generator);
-  UIImage* thumbnail = [generator thumbnailWithSize:size];
-  EXPECT_FALSE(thumbnail);
+    closure = base::BindOnce(^(id object){/* do nothing */}, generator);
+  }
+
+  // Post the closure on a background sequence to force the deallocation
+  // of the ChromeActivityItemThumbnailGenerator on another sequence. It
+  // should not crash.
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTaskAndReply(FROM_HERE, {base::MayBlock()},
+                                     std::move(closure),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace

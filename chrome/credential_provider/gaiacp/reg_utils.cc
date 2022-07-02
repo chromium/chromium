@@ -4,11 +4,10 @@
 
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
-#include <atlbase.h>
-
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"

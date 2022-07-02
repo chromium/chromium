@@ -113,11 +113,11 @@ TEST_F(FindInPageManagerImplTest, FindMatchesMultipleFrames) {
     return fake_delegate_.state();
   }));
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[0]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
   EXPECT_EQ(3, fake_delegate_.state()->match_count);
 }
@@ -142,12 +142,12 @@ TEST_F(FindInPageManagerImplTest, FrameCancelFind) {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state();
   }));
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_null_result_ptr->GetLastJavaScriptCall());
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[0]);
   EXPECT_EQ(1, fake_delegate_.state()->match_count);
 }
@@ -179,11 +179,11 @@ TEST_F(FindInPageManagerImplTest, ReturnLatestFind) {
     return fake_delegate_.state();
   }));
   ASSERT_EQ(3ul, frame_with_two_matches_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[2]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[0]);
   EXPECT_EQ(2, fake_delegate_.state()->match_count);
 }
@@ -228,9 +228,9 @@ TEST_F(FindInPageManagerImplTest, FrameUnavailableAfterDelegateCallback) {
   }));
 
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[0]);
   EXPECT_EQ(1, fake_delegate_.state()->match_count);
 }
@@ -259,13 +259,13 @@ TEST_F(FindInPageManagerImplTest, FrameRespondsWithPending) {
     return fake_delegate_.state();
   }));
   ASSERT_EQ(3ul, frame_with_two_matches_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[2]);
-  EXPECT_EQ("__gCrWeb.findInPage.pumpSearch(100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.pumpSearch(100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[0]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
   EXPECT_EQ(3, fake_delegate_.state()->match_count);
 }
@@ -280,7 +280,7 @@ TEST_F(FindInPageManagerImplTest, DelegateNotSet) {
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
   base::RunLoop().RunUntilIdle();
 }
@@ -332,7 +332,7 @@ TEST_F(FindInPageManagerImplTest, FrameWithNoMatchNoHighlight) {
   }));
   ASSERT_EQ(1ul,
             frame_with_zero_matches_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_zero_matches_ptr->GetJavaScriptCallHistory()[0]);
   EXPECT_EQ(0, fake_delegate_.state()->match_count);
   EXPECT_EQ(-1, fake_delegate_.state()->index);
@@ -354,9 +354,9 @@ TEST_F(FindInPageManagerImplTest, DidHighlightFirstIndex) {
     return fake_delegate_.state();
   }));
   ASSERT_EQ(2ul, frame_with_two_matches_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[0]);
   EXPECT_EQ(0, fake_delegate_.state()->index);
 }
@@ -377,9 +377,9 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
     return fake_delegate_.state();
   }));
   ASSERT_EQ(2ul, frame_with_two_matches_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetJavaScriptCallHistory()[0]);
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -388,7 +388,7 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state()->index > -1;
   }));
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
   EXPECT_EQ(1, fake_delegate_.state()->index);
 }
@@ -414,7 +414,7 @@ TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
     return fake_delegate_.state();
   }));
   EXPECT_EQ(0, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -423,7 +423,7 @@ TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
     return fake_delegate_.state();
   }));
   EXPECT_EQ(1, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -432,7 +432,7 @@ TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
     return fake_delegate_.state();
   }));
   EXPECT_EQ(2, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -441,7 +441,7 @@ TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
     return fake_delegate_.state();
   }));
   EXPECT_EQ(0, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
 }
 
@@ -467,7 +467,7 @@ TEST_F(FindInPageManagerImplTest,
     return fake_delegate_.state();
   }));
   EXPECT_EQ(0, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
@@ -477,7 +477,7 @@ TEST_F(FindInPageManagerImplTest,
     return fake_delegate_.state();
   }));
   EXPECT_EQ(2, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
@@ -487,7 +487,7 @@ TEST_F(FindInPageManagerImplTest,
     return fake_delegate_.state();
   }));
   EXPECT_EQ(1, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
@@ -497,7 +497,7 @@ TEST_F(FindInPageManagerImplTest,
     return fake_delegate_.state();
   }));
   EXPECT_EQ(0, fake_delegate_.state()->index);
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetLastJavaScriptCall());
 }
 
@@ -521,12 +521,12 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightLastIndexAfterPreviousCall) {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state();
   }));
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
-  EXPECT_EQ("__gCrWeb.findInPage.findString(\"foo\", 100.0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.findString(\"foo\", 100.0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[0]);
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
@@ -535,7 +535,7 @@ TEST_F(FindInPageManagerImplTest, FindDidHighlightLastIndexAfterPreviousCall) {
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state()->index == 2;
   }));
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(1);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 }
 
@@ -580,7 +580,7 @@ TEST_F(FindInPageManagerImplTest,
     return fake_delegate_.state();
   }));
   ASSERT_EQ(2ul, frame_with_one_match_ptr->GetJavaScriptCallHistory().size());
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_one_match_ptr->GetJavaScriptCallHistory()[1]);
 
   RemoveWebFrame(kMainFakeFrameId);
@@ -590,7 +590,7 @@ TEST_F(FindInPageManagerImplTest,
     base::RunLoop().RunUntilIdle();
     return fake_delegate_.state()->index == 0;
   }));
-  EXPECT_EQ("__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
+  EXPECT_EQ(u"__gCrWeb.findInPage.selectAndScrollToVisibleMatch(0);",
             frame_with_two_matches_ptr->GetLastJavaScriptCall());
 }
 

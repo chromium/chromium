@@ -44,4 +44,11 @@ VideoCaptureDeviceFactory::VideoCaptureDeviceFactory() {
 
 VideoCaptureDeviceFactory::~VideoCaptureDeviceFactory() = default;
 
+#if BUILDFLAG(IS_WIN)
+scoped_refptr<DXGIDeviceManager>
+VideoCaptureDeviceFactory::GetDxgiDeviceManager() {
+  return nullptr;
+}
+#endif
+
 }  // namespace media

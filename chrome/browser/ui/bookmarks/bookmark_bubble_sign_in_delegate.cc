@@ -16,37 +16,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
-BookmarkBubbleSignInDelegate::BookmarkBubbleSignInDelegate(Browser* browser)
-    : browser_(browser), profile_(browser->profile()->GetOriginalProfile()) {
-  if (profile_ != browser_->profile())
-    browser_ = nullptr;
+BookmarkBubbleSignInDelegate::BookmarkBubbleSignInDelegate(Profile* profile)
+    : profile_(profile->GetOriginalProfile()) {}
 
-  BrowserList::AddObserver(this);
-}
-
-BookmarkBubbleSignInDelegate::~BookmarkBubbleSignInDelegate() {
-  BrowserList::RemoveObserver(this);
-}
+BookmarkBubbleSignInDelegate::~BookmarkBubbleSignInDelegate() = default;
 
 void BookmarkBubbleSignInDelegate::OnEnableSync(const AccountInfo& account) {
-  EnsureBrowser();
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser_, account,
+      profile_, account,
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE);
 
   // TODO(msarda): Close the bookmarks bubble once the enable sync flow has
   // started.
-}
-
-void BookmarkBubbleSignInDelegate::OnBrowserRemoved(Browser* browser) {
-  if (browser == browser_)
-    browser_ = nullptr;
-}
-
-void BookmarkBubbleSignInDelegate::EnsureBrowser() {
-  if (!browser_) {
-    browser_ = chrome::FindLastActiveWithProfile(profile_);
-    if (!browser_)
-      browser_ = Browser::Create(Browser::CreateParams(profile_, true));
-  }
 }

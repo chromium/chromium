@@ -78,13 +78,15 @@
       </cr-button>
     </div>
 
-    <div>
-      <h2>$i18n{resetEuiccLabel}</h2>
-      <cr-button class="action-button"
-          on-click="onResetEuiccClick_">
-        $i18n{resetEuiccLabel}
-      </cr-button>
-    </div>
+    <template is="dom-if" if="[[!isGuestModeActive_]]">
+      <div>
+        <h2>$i18n{resetEuiccLabel}</h2>
+        <cr-button class="action-button"
+            on-click="onResetEuiccClick_">
+          $i18n{resetEuiccLabel}
+        </cr-button>
+      </div>
+    </template>
 
     <div>
       <h2>$i18n{addNewWifiLabel}</h2>

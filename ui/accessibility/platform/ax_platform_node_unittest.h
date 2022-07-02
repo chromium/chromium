@@ -15,6 +15,8 @@
 
 namespace ui {
 
+struct TestAXTreeUpdateNode;
+
 class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPlatformNodeTest();
@@ -41,6 +43,9 @@ class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
             const AXNodeData& node10 = AXNodeData(),
             const AXNodeData& node11 = AXNodeData(),
             const AXNodeData& node12 = AXNodeData());
+
+  // Initialize given an AXTreeUpdate by given TestAXTreeUpdateNode instance.
+  AXTree* Init(const TestAXTreeUpdateNode& root);
 
   AXTreeUpdate BuildTextField();
   AXTreeUpdate BuildTextFieldWithSelectionRange(int32_t start, int32_t stop);

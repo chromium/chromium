@@ -42,10 +42,12 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/external_files/external_file_remover.h"
 #include "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
@@ -59,6 +61,7 @@
 #include "ios/chrome/browser/snapshots/snapshots_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #include "ios/net/http_cache_helper.h"
 #import "ios/web/common/web_view_creation_util.h"
@@ -272,7 +275,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       base::SequencedTaskRunnerHandle::Get();
 
   // Note: Before adding any method below, make sure that it can finish clearing
-  // browsing data even if |browser_state)| is destroyed after this method call.
+  // browsing data even if `browser_state` is destroyed after this method call.
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     if (session_service_) {
@@ -286,6 +289,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // Remove the screenshots taken by the system when backgrounding the
     // application. Partial removal based on timePeriod is not required.
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());
+
+    // Remove all HTTPS-Only Mode allowlist decisions.
+    HttpsUpgradeService* https_upgrade_service =
+        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_);
+    https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
   }
 
   auto io_thread_task_runner = web::GetIOThreadTaskRunner({});
@@ -411,6 +419,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (language_histogram) {
       language_histogram->ClearHistory(delete_begin, delete_end);
     }
+
+    crash_helper::ClearReportsBetween(delete_begin, delete_end);
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {
@@ -553,7 +563,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       MAX_CHOICE_VALUE);
 }
 
-// Removes directories for sessions with |SessionIDs|
+// Removes directories for sessions with `session_ids`
 void BrowsingDataRemoverImpl::RemoveSessionsData(
     NSArray<NSString*>* session_ids) {
   [[SessionServiceIOS sharedService]

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "content/browser/speech/tts_mac.h"
 
 #include <string>
@@ -260,7 +262,7 @@ std::vector<content::VoiceData>& TtsPlatformImplMac::VoicesRefForTesting() {
 
 @implementation ChromeTtsDelegate {
  @private
-  TtsPlatformImplMac* _ttsImplMac;  // weak.
+  raw_ptr<TtsPlatformImplMac> _ttsImplMac;  // weak.
 }
 
 - (id)initWithPlatformImplMac:(TtsPlatformImplMac*)ttsImplMac {

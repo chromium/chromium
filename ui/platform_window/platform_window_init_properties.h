@@ -106,6 +106,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool activatable = true;
   bool force_show_in_taskbar;
   bool keep_on_top = false;
+  bool is_security_surface = false;
   bool visible_on_all_workspaces = false;
   bool remove_standard_frame = false;
   std::string workspace;
@@ -116,7 +117,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool prefer_dark_theme = false;
-  gfx::ImageSkia* icon = nullptr;
+  raw_ptr<gfx::ImageSkia> icon = nullptr;
   absl::optional<int> background_color;
 
   // Specifies the res_name and res_class fields,
@@ -126,15 +127,18 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   std::string wm_class_name;
   std::string wm_class_class;
 
-  X11ExtensionDelegate* x11_extension_delegate = nullptr;
+  raw_ptr<X11ExtensionDelegate> x11_extension_delegate = nullptr;
 
   // Wayland specific.  Holds the application ID that is used by the window
   // manager to match the desktop entry and group windows.
   std::string wayland_app_id;
 
-  // Specifies the unique browser session id and the restore window id.
+  // Specifies the unique session id and the restore window id.
   int32_t restore_session_id;
-  int32_t restore_window_id;
+  absl::optional<int32_t> restore_window_id;
+
+  // Specifies the source to get `restore_window_id` from.
+  absl::optional<std::string> restore_window_id_source;
 #endif
 
 #if defined(USE_OZONE)

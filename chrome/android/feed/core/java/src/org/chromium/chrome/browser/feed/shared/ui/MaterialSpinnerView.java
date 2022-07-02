@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.feed.shared.ui;
 
 import android.content.Context;
-import android.content.res.Resources.Theme;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -16,8 +14,8 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** View that shows a Material themed spinner. */
 public class MaterialSpinnerView extends AppCompatImageView {
@@ -41,10 +39,7 @@ public class MaterialSpinnerView extends AppCompatImageView {
         mSpinner = new CircularProgressDrawable(context);
         mSpinner.setStyle(CircularProgressDrawable.DEFAULT);
         setImageDrawable(mSpinner);
-        TypedValue typedValue = new TypedValue();
-        Theme theme = context.getTheme();
-        theme.resolveAttribute(R.attr.feedSpinnerColor, typedValue, true);
-        mSpinner.setColorSchemeColors(typedValue.data);
+        mSpinner.setColorSchemeColors(SemanticColorUtils.getDefaultIconColorAccent1(context));
         mAlwaysAnimate = FeatureList.isInitialized() ? ChromeFeatureList.isEnabled(
                                  ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE)
                                                      : false;

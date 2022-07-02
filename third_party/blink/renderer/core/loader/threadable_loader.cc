@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -323,7 +324,7 @@ void ThreadableLoader::DataReceived(Resource* resource,
 
   // TODO(junov): Fix the ThreadableLoader ecosystem to use size_t. Until then,
   // we use safeCast to trap potential overflows.
-  client_->DidReceiveData(data, SafeCast<unsigned>(data_length));
+  client_->DidReceiveData(data, base::checked_cast<unsigned>(data_length));
 }
 
 void ThreadableLoader::NotifyFinished(Resource* resource) {

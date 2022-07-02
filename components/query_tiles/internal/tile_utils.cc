@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "components/query_tiles/internal/tile_config.h"
@@ -24,7 +25,7 @@ struct TileComparator {
     return (*tile_score_map)[a->id] > (*tile_score_map)[b->id];
   }
 
-  std::map<std::string, double>* tile_score_map;
+  raw_ptr<std::map<std::string, double>> tile_score_map;
 };
 
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,

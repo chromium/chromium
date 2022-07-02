@@ -9,7 +9,7 @@ import './collapse_radio_button.js';
 import './secure_dns.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 import './disable_safebrowsing_dialog.js';

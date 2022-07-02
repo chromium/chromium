@@ -159,19 +159,6 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
   std::vector<infobars::InfoBarManager*> infobar_managers_;
 };
 
-TEST_F(SendTabToSelfBrowserAgentTest, TestSimpleSendCurrentTab) {
-  AppendNewWebState(GURL("http://www.test.com/test-1"));
-  agent_->SendCurrentTabToDevice(@"device1");
-  EXPECT_EQ(GURL("http://www.test.com/test-1"),
-            model_->GetLastEntry()->GetURL());
-  EXPECT_EQ("device1", model_->GetLastEntry()->GetTargetDeviceSyncCacheGuid());
-}
-
-TEST_F(SendTabToSelfBrowserAgentTest, TestNoActiveWebState) {
-  agent_->SendCurrentTabToDevice(@"device1");
-  EXPECT_EQ(nullptr, model_->GetLastEntry());
-}
-
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
   InfoBarManagerImpl* infobar_manager =

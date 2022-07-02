@@ -40,7 +40,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/image_searcher.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/image_searcher_options.pb.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
-#include "tensorflow_lite_support/examples/task/vision/desktop/utils/image_utils.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
 ABSL_FLAG(std::string,
           model_path,
@@ -49,7 +49,9 @@ ABSL_FLAG(std::string,
 ABSL_FLAG(std::string,
           index_path,
           "",
-          "Absolute path to the index to search into.");
+          "Absolute path to the index to search into. Mandatory only if the "
+          "index is not attached to the output tensor metadata of the embedder "
+          "model as an AssociatedFile with type SCANN_INDEX_FILE.");
 ABSL_FLAG(std::string,
           image_path,
           "",
@@ -57,9 +59,9 @@ ABSL_FLAG(std::string,
           "RGBA (grayscale is not supported). The image EXIF orientation "
           "flag, if any, is NOT taken into account.");
 ABSL_FLAG(int32,
-          num_results,
+          max_results,
           5,
-          "Number of nearest-neighbor results to display.");
+          "Maximum number of nearest-neighbor results to display.");
 ABSL_FLAG(bool,
           l2_normalize,
           false,
@@ -88,10 +90,12 @@ ImageSearcherOptions BuildOptions() {
   if (absl::GetFlag(FLAGS_l2_normalize)) {
     options.mutable_embedding_options()->set_l2_normalize(true);
   }
-  options.mutable_search_options()->mutable_index_file()->set_file_name(
-      absl::GetFlag(FLAGS_index_path));
-  options.mutable_search_options()->set_num_results(
-      absl::GetFlag(FLAGS_num_results));
+  if (!absl::GetFlag(FLAGS_index_path).empty()) {
+    options.mutable_search_options()->mutable_index_file()->set_file_name(
+        absl::GetFlag(FLAGS_index_path));
+  }
+  options.mutable_search_options()->set_max_results(
+      absl::GetFlag(FLAGS_max_results));
   if (absl::GetFlag(FLAGS_use_coral)) {
     options.mutable_base_options()
         ->mutable_compute_settings()
@@ -162,10 +166,6 @@ int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);
   if (absl::GetFlag(FLAGS_model_path).empty()) {
     std::cerr << "Missing mandatory 'model_path' argument.\n";
-    return 1;
-  }
-  if (absl::GetFlag(FLAGS_index_path).empty()) {
-    std::cerr << "Missing mandatory 'index_path' argument.\n";
     return 1;
   }
   if (absl::GetFlag(FLAGS_image_path).empty()) {

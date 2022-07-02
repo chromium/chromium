@@ -51,25 +51,24 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   // This could be really slow.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!value_with_error.value) {
+  if (!value_with_error.has_value()) {
     LOG(WARNING) << "Failed to parse printers policy ("
-                 << value_with_error.error_message << ") on line "
-                 << value_with_error.error_line << " at position "
-                 << value_with_error.error_column;
+                 << value_with_error.error().message << ") on line "
+                 << value_with_error.error().line << " at position "
+                 << value_with_error.error().column;
     return nullptr;
   }
 
-  base::Value& json_blob = value_with_error.value.value();
+  base::Value& json_blob = *value_with_error;
   if (!json_blob.is_list()) {
     LOG(WARNING) << "Failed to parse printers policy (an array was expected)";
     return nullptr;
   }
 
-  base::Value::ConstListView printer_list = json_blob.GetListDeprecated();
+  const base::Value::List& printer_list = json_blob.GetList();
   if (printer_list.size() > kMaxRecords) {
     LOG(WARNING) << "Too many records in printers policy: "
                  << printer_list.size();
@@ -79,14 +78,12 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   auto parsed_printers = std::make_unique<PrinterCache>();
   parsed_printers->reserve(printer_list.size());
   for (const base::Value& val : printer_list) {
-    // TODO(skau): Convert to the new Value APIs.
-    const base::DictionaryValue* printer_dict;
-    if (!val.GetAsDictionary(&printer_dict)) {
+    if (!val.is_dict()) {
       LOG(WARNING) << "Entry in printers policy skipped.  Not a dictionary.";
       continue;
     }
 
-    auto printer = chromeos::RecommendedPrinterToPrinter(*printer_dict);
+    auto printer = chromeos::RecommendedPrinterToPrinter(val.GetDict());
     if (!printer) {
       LOG(WARNING) << "Failed to parse printer configuration.  Skipped.";
       continue;

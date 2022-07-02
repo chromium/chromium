@@ -191,12 +191,14 @@ typename BreakList<T>::const_iterator IncrementBreakListIteratorToPosition(
     const BreakList<T>& break_list,
     typename BreakList<T>::const_iterator iter,
     size_t position) {
-  for (; iter != break_list.breaks().end(); ++iter) {
+  DCHECK_LT(position, break_list.max());
+  for (;;) {
+    CHECK(iter != break_list.breaks().end());
     const Range range = break_list.GetRange(iter);
     if (position >= range.start() && position < range.end())
-      break;
+      return iter;
+    ++iter;
   }
-  return iter;
 }
 
 // Replaces the unicode control characters, control characters and PUA (Private
@@ -572,8 +574,10 @@ void RenderText::SetFontList(const FontList& font_list) {
 }
 
 void RenderText::SetCursorEnabled(bool cursor_enabled) {
-  cursor_enabled_ = cursor_enabled;
-  cached_bounds_and_offset_valid_ = false;
+  if (cursor_enabled_ != cursor_enabled) {
+    cursor_enabled_ = cursor_enabled;
+    cached_bounds_and_offset_valid_ = false;
+  }
 }
 
 void RenderText::SetObscured(bool obscured) {
@@ -609,8 +613,10 @@ void RenderText::SetMultiline(bool multiline) {
 }
 
 void RenderText::SetMaxLines(size_t max_lines) {
-  max_lines_ = max_lines;
-  OnDisplayTextAttributeChanged();
+  if (max_lines_ != max_lines) {
+    max_lines_ = max_lines;
+    OnDisplayTextAttributeChanged();
+  }
 }
 
 size_t RenderText::GetNumLines() {
@@ -778,7 +784,7 @@ void RenderText::MoveCursor(BreakType break_type,
 
 bool RenderText::SetSelection(const SelectionModel& model) {
   // Enforce valid selection model components.
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   std::vector<Range> ranges = model.GetAllSelections();
   for (auto& range : ranges) {
     range = {std::min(range.start(), text_length),
@@ -804,7 +810,7 @@ bool RenderText::MoveCursorToPoint(const Point& point,
 }
 
 bool RenderText::SelectRange(const Range& range, bool primary) {
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   Range sel(std::min(range.start(), text_length),
             std::min(range.end(), text_length));
   // Allow selection bounds at valid indices amid multi-character graphemes.
@@ -854,61 +860,61 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
 }
 
 void RenderText::SetColor(SkColor value) {
-  colors_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
-  colors_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
-  baselines_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
-  baselines_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
-  font_size_overrides_.ApplyValue(font_size_override, range);
-  OnLayoutTextAttributeChanged(false);
+  if (font_size_overrides_.ApplyValue(font_size_override, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
-  styles_[style].SetValue(value);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].SetValue(value)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
-  styles_[style].ApplyValue(value, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].ApplyValue(value, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
-  weights_.SetValue(weight);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.SetValue(weight)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
-  weights_.ApplyValue(weight, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.ApplyValue(weight, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -1680,7 +1686,6 @@ void RenderText::UpdateDisplayText(float text_width) {
                                static_cast<float>(display_rect_.width()),
                                elide_behavior_));
   } else {
-    bool was_elided = text_elided_;
     text_elided_ = false;
     display_text_.clear();
 
@@ -1705,12 +1710,7 @@ void RenderText::UpdateDisplayText(float text_width) {
                            Elide(text_to_elide, 0,
                                  static_cast<float>(display_rect_.width()),
                                  ELIDE_TAIL));
-      // Have GetLineBreaks() re-calculate.
-      line_breaks_.SetMax(0);
     } else {
-      // If elision changed, re-calculate.
-      if (was_elided)
-        line_breaks_.SetMax(0);
       // Initial state above is fine.
       return;
     }
@@ -1718,26 +1718,6 @@ void RenderText::UpdateDisplayText(float text_width) {
   text_elided_ = display_text_ != layout_text_;
   if (!text_elided_)
     display_text_.clear();
-}
-
-const BreakList<size_t>& RenderText::GetLineBreaks() {
-  if (line_breaks_.max() != 0)
-    return line_breaks_;
-
-  const std::u16string& layout_text = GetDisplayText();
-  const size_t text_length = layout_text.length();
-  line_breaks_.SetValue(0);
-  line_breaks_.SetMax(text_length);
-  base::i18n::BreakIterator iter(layout_text,
-                                 base::i18n::BreakIterator::BREAK_LINE);
-  const bool success = iter.Init();
-  DCHECK(success);
-  if (success) {
-    do {
-      line_breaks_.ApplyValue(iter.pos(), Range(iter.pos(), text_length));
-    } while (iter.Advance());
-  }
-  return line_breaks_;
 }
 
 Point RenderText::ToViewPoint(const PointF& point, size_t line) {
@@ -1939,7 +1919,8 @@ int RenderText::GetLineContainingYCoord(float text_y) {
 bool RenderText::RangeContainsCaret(const Range& range,
                                     size_t caret_pos,
                                     LogicalCursorDirection caret_affinity) {
-  // NB: exploits unsigned wraparound (WG14/N1124 section 6.2.5 paragraph 9).
+  if (caret_pos == 0 && caret_affinity == CURSOR_BACKWARD)
+    return false;
   size_t adjacent = (caret_affinity == CURSOR_BACKWARD) ?
       caret_pos - 1 : caret_pos + 1;
   return range.Contains(Range(caret_pos, adjacent));
@@ -2011,7 +1992,6 @@ void RenderText::OnTextAttributeChanged() {
   layout_text_.clear();
   display_text_.clear();
   text_elided_ = false;
-  line_breaks_.SetMax(0);
 
   layout_text_up_to_date_ = false;
 

@@ -339,7 +339,9 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
         gpu_backing->mailbox, GL_LINEAR, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(),
         gpu_backing->overlay_candidate);
-    transferable.read_lock_fences_enabled = gpu_backing->wait_on_fence_required;
+    if (gpu_backing->wait_on_fence_required)
+      transferable.synchronization_type =
+          viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     transferable = viz::TransferableResource::MakeSoftware(
         resource->software_backing()->shared_bitmap_id, resource->size(),
@@ -661,9 +663,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, total_bytes);
 
-  if (is_free) {
-    dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, total_bytes);
-  }
+  uint64_t free_size = is_free ? total_bytes : 0u;
+  dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, free_size);
 }
 
 }  // namespace cc

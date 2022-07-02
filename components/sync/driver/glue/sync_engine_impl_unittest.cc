@@ -294,6 +294,8 @@ class SyncEngineImplTest : public testing::Test {
 
   void DownloadReady(ModelTypeSet succeeded_types, ModelTypeSet failed_types) {
     engine_types_.PutAll(succeeded_types);
+
+    backend_->StartSyncingWithServer();
     std::move(quit_loop_).Run();
   }
 
@@ -678,8 +680,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
   enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
 
-  EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
   InitializeBackend(/*expect_success=*/true);
+  ConfigureDataTypes();
 
   sync_pb::SyncInvalidationsPayload payload;
   sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
@@ -705,7 +707,6 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   enabled_types_.Remove(syncer::BOOKMARKS);
   enabled_types_.Put(syncer::PREFERENCES);
 
-  EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
   InitializeBackend(/*expect_success=*/true);
   ConfigureDataTypes();
 
@@ -728,10 +729,20 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+       ShouldStartHandlingInvalidations) {
+  ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillByDefault(Return(enabled_types_));
+  EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
+  backend_->StartHandlingInvalidations();
+}
+
 TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        UseOldInvalidationsOnlyForWalletAndOffer) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
   EXPECT_CALL(
       invalidator_,
@@ -756,6 +767,8 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(_, invalidation::TopicSet()));
   EXPECT_CALL(invalidator_, UnsubscribeFromUnregisteredTopics);
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillRepeatedly(Return(enabled_types_));
   InitializeBackend(/*expect_success=*/true);
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);

@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -42,7 +43,6 @@
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "components/policy/core/common/policy_service.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,13 +124,9 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
-
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
@@ -158,6 +154,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     device_scheduled_update_checker_.reset();
     network_state_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
+    chromeos::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::NullCallback());

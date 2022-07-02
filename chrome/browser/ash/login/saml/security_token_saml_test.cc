@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -77,10 +77,13 @@ SecurityTokenSamlTest::SecurityTokenSamlTest()
     : saml_idp_mixin_(&mixin_host_,
                       &gaia_mixin_,
                       /*client_cert_authorities=*/{GetClientCertCaName()}) {
-  // TODO(crbug.com/1274116): Remove eventually after support for auth session
-  // empty passwords
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kUseAuthsessionAuthentication);
+  if (GetParam()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kUseAuthsessionAuthentication);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kUseAuthsessionAuthentication);
+  }
   // Allow the forced installation of extensions in the background.
   needs_background_networking_ = true;
 
@@ -213,14 +216,14 @@ void SecurityTokenSamlTest::ConfigureFakeGaia() {
 
 // Subscribes for the notifications from the Login Screen UI,
 void SecurityTokenSamlTest::StartObservingLoginUiMessages() {
-  GetLoginUI()->RegisterDeprecatedMessageCallback(
+  GetLoginUI()->RegisterMessageCallback(
       "securityTokenPinDialogShownForTest",
       base::BindRepeating(&SecurityTokenSamlTest::OnPinDialogShownMessage,
                           weak_factory_.GetWeakPtr()));
 }
 
 // Called when the Login Screen UI notifies that the PIN dialog is shown.
-void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::ListValue*) {
+void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::Value::List&) {
   ++pin_dialog_shown_count_;
   if (pin_dialog_shown_run_loop_)
     pin_dialog_shown_run_loop_->Quit();

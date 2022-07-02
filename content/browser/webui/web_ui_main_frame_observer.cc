@@ -55,18 +55,6 @@ WebUIMainFrameObserver::WebUIMainFrameObserver(WebUIImpl* web_ui,
 
 WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
 
-void WebUIMainFrameObserver::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  // Only disallow JavaScript on cross-document navigations in the main frame.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  web_ui_->DisallowJavascriptOnAllHandlers();
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     RenderFrameHost* source_frame,
@@ -181,6 +169,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 }
 
 void WebUIMainFrameObserver::PrimaryPageChanged(Page& page) {
+  web_ui_->DisallowJavascriptOnAllHandlers();
   web_ui_->GetController()->WebUIPrimaryPageChanged(page);
 }
 

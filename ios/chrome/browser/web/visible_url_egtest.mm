@@ -39,6 +39,7 @@ const char kTestPage3[] = "Test Page 3";
 const char kGoBackLink[] = "go-back";
 const char kGoForwardLink[] = "go-forward";
 const char kGoNegativeDeltaLink[] = "go-negative-delta";
+const char kGoNegativeDeltaTwiceLink[] = "go-negative-delta-twice";
 const char kGoPositiveDeltaLink[] = "go-positive-delta";
 const char kPage1Link[] = "page-1";
 const char kPage2Link[] = "page-2";
@@ -150,15 +151,16 @@ class PausableResponseProvider : public HtmlResponseProvider {
       "<a onclick='window.history.back()' id='%s'>Go Back</a><br/>"
       "<a onclick='window.history.forward()' id='%s'>Go Forward</a><br/>"
       "<a onclick='window.history.go(-1)' id='%s'>Go Delta -1</a><br/>"
+      "<a onclick='window.history.go(-2)' id='%s'>Go Delta -2</a><br/>"
       "<a onclick='window.history.go(1)' id='%s'>Go Delta +1</a><br/>"
       "<a href='%s' id='%s'>Page 1</a><br/>"
       "<a href='%s' id='%s'>Page 2</a><br/>"
       "<a href='%s' id='%s'>Page 3</a><br/>"
       "</body>",
       title, title, kGoBackLink, kGoForwardLink, kGoNegativeDeltaLink,
-      kGoPositiveDeltaLink, _testURL1.spec().c_str(), kPage1Link,
-      _testURL2.spec().c_str(), kPage2Link, _testURL3.spec().c_str(),
-      kPage3Link);
+      kGoNegativeDeltaTwiceLink, kGoPositiveDeltaLink, _testURL1.spec().c_str(),
+      kPage1Link, _testURL2.spec().c_str(), kPage2Link,
+      _testURL3.spec().c_str(), kPage3Link);
 }
 
 #pragma mark -
@@ -352,16 +354,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
 // Tests that visible URL is always the same as last pending URL during go
 // navigations initiated with JS.
 - (void)testJSGoNavigation {
-  // TODO(crbug.com/1321095): The testJSGoNavigationWithCacheRestoreDisabled
-  // variant fails very often on iphone-device bot.
-#if !TARGET_OS_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom] &&
-      [NSStringFromSelector(_cmd)
-          isEqualToString:@"testJSGoNavigationWithCacheRestoreDisabled"]) {
-    EARL_GREY_TEST_DISABLED(@"This test is very flaky on iphone-device.");
-  }
-#endif
-
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
@@ -455,12 +447,9 @@ class PausableResponseProvider : public HtmlResponseProvider {
     ScopedSynchronizationDisabler disabler;
     [self setServerPaused:YES];
 
-    // Tap the back button twice on the page and verify that URL1 (pending
-    // URL) is displayed.
-    [ChromeEarlGrey
-        tapWebStateElementWithID:base::SysUTF8ToNSString(kGoBackLink)];
-    [ChromeEarlGrey
-        tapWebStateElementWithID:base::SysUTF8ToNSString(kGoBackLink)];
+    // Tap the window.history.go(-2) link.
+    [ChromeEarlGrey tapWebStateElementWithID:base::SysUTF8ToNSString(
+                                                 kGoNegativeDeltaTwiceLink)];
 
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];

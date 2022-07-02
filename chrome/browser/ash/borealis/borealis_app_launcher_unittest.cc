@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,7 +33,7 @@ using CallbackFactory =
     StrictCallbackFactory<void(BorealisAppLauncher::LaunchResult)>;
 
 class BorealisAppLauncherTest : public testing::Test,
-                                protected FakeVmServicesHelper {
+                                protected guest_os::FakeVmServicesHelper {
  public:
   BorealisAppLauncherTest()
       : ctx_(BorealisContext::CreateBorealisContextForTesting(&profile_)) {

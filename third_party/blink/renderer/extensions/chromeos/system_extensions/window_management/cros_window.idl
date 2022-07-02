@@ -52,13 +52,17 @@ interface CrosWindow {
   // Moves the window such that the window's top left corner is at coordinates
   // (x, y) relative to the top left corner of the current screen. Measured in
   // CSS pixels of the window.
-  [CallWith=ScriptState] Promise<void> setOrigin(double x, double y);
+  [CallWith=ScriptState] Promise<void> moveTo(long x, long y);
 
-  // Moves the window such that the window's top left corner is at coordinates
-  // (x, y) relative to the top left corner of the current screen and sets the
-  // window's dimensions to  width  and  height . Measured in CSS pixels of the
-  // window.
-  [CallWith=ScriptState] Promise<void> setBounds(double x, double y, double width, double height);
+  // Moves the current window by a specified amount. Positive deltas move right
+  // and down. Negative deltas move up and left.
+  [CallWith=ScriptState] Promise<void> moveBy(long deltaX, long deltaY);
+
+  // Sets the window dimensions to  width  and  height.
+  [CallWith=ScriptState] Promise<void> resizeTo(long width, long height);
+
+  // Resizes the current window by a specified amount.
+  [CallWith=ScriptState] Promise<void> resizeBy(long deltaWidth, long deltaHeight);
 
   // Sets or unsets window to fullscreen.
   [CallWith=ScriptState] Promise<void> setFullscreen(boolean fullscreen);
@@ -75,5 +79,5 @@ interface CrosWindow {
   [CallWith=ScriptState] Promise<void> focus();
 
   // Closes the window.
-  void close();
+  [CallWith=ScriptState] Promise<void> close();
 };

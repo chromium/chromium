@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-// A navigation controller that supports only |UIInterfaceOrientationPortrait|
+// A navigation controller that supports only `UIInterfaceOrientationPortrait`
 // orientation on iPhone and supports all orientations on iPad.
 @interface OrientationLimitingNavigationController : UINavigationController
 @end

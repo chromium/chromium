@@ -56,6 +56,10 @@ class CORE_EXPORT Response final : public ScriptWrappable,
                             const String& url,
                             uint16_t status,
                             ExceptionState&);
+  static Response* staticJson(ScriptState*,
+                              ScriptValue data,
+                              const ResponseInit*,
+                              ExceptionState&);
 
   static FetchResponseData* CreateUnfilteredFetchResponseDataWithoutBody(
       ScriptState*,

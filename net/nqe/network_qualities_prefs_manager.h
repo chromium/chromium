@@ -32,13 +32,13 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   // Provides an interface that must be implemented by the embedder.
   class NET_EXPORT PrefDelegate {
    public:
-    virtual ~PrefDelegate() {}
+    virtual ~PrefDelegate() = default;
 
     // Sets the persistent pref to the given value.
-    virtual void SetDictionaryValue(const base::DictionaryValue& value) = 0;
+    virtual void SetDictionaryValue(const base::Value::Dict& dict) = 0;
 
     // Returns a copy of the persistent prefs.
-    virtual std::unique_ptr<base::DictionaryValue> GetDictionaryValue() = 0;
+    virtual base::Value::Dict GetDictionaryValue() = 0;
   };
 
   // Creates an instance of the NetworkQualitiesPrefsManager. Ownership of
@@ -72,7 +72,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   std::unique_ptr<PrefDelegate> pref_delegate_;
 
   // Current prefs on the disk.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  base::Value::Dict prefs_;
 
   // nqe::internal::NetworkQualityStore::NetworkQualitiesCacheObserver
   // implementation:
@@ -81,7 +81,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
       const nqe::internal::CachedNetworkQuality& cached_network_quality)
       override;
 
-  raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   // Network quality prefs read from the disk at the time of startup.
   ParsedPrefs read_prefs_startup_;

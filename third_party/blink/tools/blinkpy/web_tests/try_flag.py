@@ -107,13 +107,27 @@ class TryFlag(object):
             builder_names=BUILDER_CONFIGS.keys())
         results_fetcher = self._host.results_fetcher
         for build in sorted(jobs):
-            self._host.print_('-- %s: %s/results.html' %
-                              (BUILDER_CONFIGS[build.builder_name].version,
-                               results_fetcher.results_url(
-                                   build.builder_name, build.build_number)))
-            results = results_fetcher.fetch_results(build, True)
-            results.for_each_test(
-                lambda result, b=build: self._process_result(b, result))
+            step_names = results_fetcher.get_layout_test_step_names(build)
+            generic_steps = [
+                step_name for step_name in step_names
+                if not results_fetcher.builders.flag_specific_option(
+                    build.builder_name, step_name)
+            ]
+            if len(generic_steps) != 1:
+                self._host.print_('Expected exactly one non-flag-specific '
+                                  'web test step for build %r, but found %d.' %
+                                  (build, len(generic_steps)))
+                continue
+            step_name = generic_steps[0]
+            results_url = results_fetcher.results_url(build.builder_name,
+                                                      build.build_number,
+                                                      step_name)
+            self._host.print_(
+                '-- %s: %s/results.html' %
+                (BUILDER_CONFIGS[build.builder_name].version, results_url))
+            results = results_fetcher.fetch_results(build, True, step_name)
+            results.for_each_test(lambda result, b=build: self._process_result(
+                b, result))
 
         # TODO: Write to flag expectations file. For now, stdout. :)
         unexpected_failures = []

@@ -94,7 +94,7 @@ class MockWebSocketStream : public WebSocketStream {
 //  - RecordWrittenDataFrame is called before writing the frame.
 class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
  public:
-  WebSocketDeflatePredictorMock() : result_(DEFLATE) {}
+  WebSocketDeflatePredictorMock() = default;
 
   WebSocketDeflatePredictorMock(const WebSocketDeflatePredictorMock&) = delete;
   WebSocketDeflatePredictorMock& operator=(
@@ -169,13 +169,13 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
   }
   void AddFramesToBeInput(
       const std::vector<std::unique_ptr<WebSocketFrame>>& frames) {
-    for (size_t i = 0; i < frames.size(); ++i)
-      AddFrameToBeInput(frames[i].get());
+    for (const auto& frame : frames)
+      AddFrameToBeInput(frame.get());
   }
   void VerifySentFrames(
       const std::vector<std::unique_ptr<WebSocketFrame>>& frames) {
-    for (size_t i = 0; i < frames.size(); ++i)
-      VerifySentFrame(frames[i].get());
+    for (const auto& frame : frames)
+      VerifySentFrame(frame.get());
   }
   // Call this method in order to disable checks in the destructor when
   // WriteFrames fails.
@@ -185,7 +185,7 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
   }
 
  private:
-  Result result_;
+  Result result_ = DEFLATE;
   // Data frames which will be recorded by |RecordInputFrames|.
   // Pushed by |AddFrameToBeInput| and popped and verified by
   // |RecordInputFrames|.
@@ -198,7 +198,7 @@ class WebSocketDeflatePredictorMock : public WebSocketDeflatePredictor {
 
 class WebSocketDeflateStreamTest : public ::testing::Test {
  public:
-  WebSocketDeflateStreamTest() : mock_stream_(nullptr), predictor_(nullptr) {}
+  WebSocketDeflateStreamTest() = default;
   ~WebSocketDeflateStreamTest() override = default;
 
   void SetUp() override {
@@ -247,9 +247,9 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
 
   std::unique_ptr<WebSocketDeflateStream> deflate_stream_;
   // Owned by |deflate_stream_|.
-  raw_ptr<MockWebSocketStream> mock_stream_;
+  raw_ptr<MockWebSocketStream> mock_stream_ = nullptr;
   // Owned by |deflate_stream_|.
-  raw_ptr<WebSocketDeflatePredictorMock> predictor_;
+  raw_ptr<WebSocketDeflatePredictorMock> predictor_ = nullptr;
 
   // TODO(yoichio): Make this type std::vector<std::string>.
   std::vector<std::unique_ptr<const char[]>> data_buffers;
@@ -1192,8 +1192,7 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     ASSERT_THAT(deflate_stream_->WriteFrames(&frames, CompletionOnceCallback()),
                 IsOk());
     for (auto& frame : *stub.frames()) {
-      buffers.push_back(
-          std::string(frame->payload, frame->header.payload_length));
+      buffers.emplace_back(frame->payload, frame->header.payload_length);
       frame->payload = (buffers.end() - 1)->data();
     }
     total_compressed_frames.insert(

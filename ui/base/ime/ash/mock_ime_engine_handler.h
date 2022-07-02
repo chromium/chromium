@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
   void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;
+  void SetCaretBounds(const gfx::Rect& caret_bounds) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
@@ -40,6 +41,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
                           uint32_t offset_pos) override;
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
+  bool IsReadyForTesting() override;
 
   const std::string& GetActiveComponentId() const;
 

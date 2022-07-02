@@ -9,15 +9,17 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './strings.m.js';
-import './signin_shared_css.js';
-import './signin_vars_css.js';
+import './signin_shared.css.js';
+import './signin_vars.css.js';
 
+import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './profile_customization_app.html.js';
 import {ProfileCustomizationBrowserProxy, ProfileCustomizationBrowserProxyImpl, ProfileInfo} from './profile_customization_browser_proxy.js';
 
 
@@ -26,6 +28,7 @@ export interface ProfileCustomizationAppElement {
     doneButton: CrButtonElement,
     nameInput: CrInputElement,
     title: HTMLElement,
+    themeSelector: CustomizeThemesElement,
   };
 }
 
@@ -38,7 +41,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -60,6 +63,12 @@ export class ProfileCustomizationAppElement extends
 
       /** Welcome title for the bubble */
       welcomeTitle_: String,
+
+      profileCustomizationInDialogDesign_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('profileCustomizationInDialogDesign'),
+      },
     };
   }
 
@@ -67,6 +76,7 @@ export class ProfileCustomizationAppElement extends
   private profileName_: string;
   private pictureUrl_: string;
   private welcomeTitle_: string;
+  private profileCustomizationInDialogDesign_: boolean;
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
 
@@ -88,6 +98,7 @@ export class ProfileCustomizationAppElement extends
    * native.
    */
   private onDoneCustomizationClicked_() {
+    this.$.themeSelector.confirmThemeChanges();
     this.profileCustomizationBrowserProxy_.done(this.profileName_);
   }
 
@@ -101,6 +112,14 @@ export class ProfileCustomizationAppElement extends
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
     this.welcomeTitle_ = profileInfo.welcomeTitle;
+  }
+
+  private onSkipCustomizationClicked_() {
+    this.profileCustomizationBrowserProxy_.skip();
+  }
+
+  private getDialogDesignClass_(inDialogDesign: boolean): string {
+    return inDialogDesign ? 'in-dialog-design' : '';
   }
 }
 

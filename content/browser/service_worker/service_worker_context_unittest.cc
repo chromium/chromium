@@ -462,7 +462,8 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, key, 1l /* dummy registration id */, context()->AsWeakPtr());
+      options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
+      blink::mojom::AncestorFrameType::kNormalFrame);
 
   auto version = base::MakeRefCounted<ServiceWorkerVersion>(
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
@@ -517,7 +518,8 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
   options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, key, 1l /* dummy registration id */, context()->AsWeakPtr());
+      options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
+      blink::mojom::AncestorFrameType::kNormalFrame);
 
   auto version = base::MakeRefCounted<ServiceWorkerVersion>(
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
@@ -547,7 +549,8 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
   options.scope = scope;
 
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, key, 1l /* dummy registration id */, context()->AsWeakPtr());
+      options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
+      blink::mojom::AncestorFrameType::kNormalFrame);
 
   auto version = base::MakeRefCounted<ServiceWorkerVersion>(
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
@@ -1121,7 +1124,8 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   scoped_refptr<ServiceWorkerRegistration> registration =
       base::MakeRefCounted<ServiceWorkerRegistration>(
           registration_opt, key_other, 1L /* registration_id */,
-          helper_->context()->AsWeakPtr());
+          helper_->context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
   scoped_refptr<ServiceWorkerVersion> version =
       base::MakeRefCounted<ServiceWorkerVersion>(
           registration.get(),

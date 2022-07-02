@@ -864,6 +864,12 @@
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
+    <CustomAction Id="kill_webauthn_native_message_host"
+      Directory="binaries"
+      ExeCommand='cmd /c taskkill /T /F /IM remote_webauthn.exe'
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
 
     <InstallExecuteSequence>
       <!-- Set REINSTALL=all and REINSTALLMODE=amus if the user reruns the
@@ -902,6 +908,10 @@
         Installed
       </Custom>
       <Custom Action="kill_me2me_native_message_host" After="InstallInitialize">
+        Installed
+      </Custom>
+      <Custom Action="kill_webauthn_native_message_host"
+               After="InstallInitialize">
         Installed
       </Custom>
       <Custom Action="make_symbolic_link" After="InstallFiles">

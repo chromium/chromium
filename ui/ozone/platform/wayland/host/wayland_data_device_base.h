@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -78,7 +79,7 @@ class WaylandDataDeviceBase {
 
   // Used to call out to WaylandConnection once clipboard data has been
   // successfully read.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Offer that holds the most-recent clipboard selection, or null if no
   // clipboard data is available.

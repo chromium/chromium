@@ -27,7 +27,8 @@ import '../site_favicon.js';
 import './password_list_item.js';
 import './passwords_list_handler.js';
 import './passwords_export_dialog.js';
-import './passwords_shared_css.js';
+import './passwords_import_dialog.js';
+import './passwords_shared.css.js';
 import './avatar_icon.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -244,6 +245,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'eligibleForAccountStorage_)',
       },
 
+      isPasswordViewPageEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordViewPage');
+        },
+        reflectToAttribute: true,
+      },
+
       isUnifiedPasswordManagerEnabled_: {
         type: Boolean,
         value() {
@@ -279,6 +288,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       // </if>
 
       showPasswordsExportDialog_: Boolean,
+      showPasswordsImportDialog_: Boolean,
 
       showAddPasswordDialog_: Boolean,
 
@@ -307,6 +317,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
+  private isPasswordViewPageEnabled_: boolean;
   private isUnifiedPasswordManagerEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
@@ -324,6 +335,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private showPasswordsExportDialog_: boolean;
+  private showPasswordsImportDialog_: boolean;
   private showAddPasswordDialog_: boolean;
   private showAddPasswordButton_: boolean;
 
@@ -438,11 +450,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeShowAddPasswordButton_(): boolean {
-    return loadTimeData.getBoolean('addPasswordsInSettingsEnabled') &&
-        // Don't show add button if password manager is disabled by policy.
-        !(this.prefs.credentials_enable_service.enforcement ===
-              chrome.settingsPrivate.Enforcement.ENFORCED &&
-          !this.prefs.credentials_enable_service.value);
+    // Don't show add button if password manager is disabled by policy.
+    return !(
+        this.prefs.credentials_enable_service.enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !this.prefs.credentials_enable_service.value);
   }
 
   private computeSignedIn_(): boolean {
@@ -641,8 +653,15 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
    * Fires an event that should trigger the password import process.
    */
   private onImportTap_() {
-    this.passwordManager_.importPasswords();
+    this.showPasswordsImportDialog_ = true;
     this.$.exportImportMenu.close();
+  }
+
+  private onPasswordsImportDialogClosed_() {
+    this.showPasswordsImportDialog_ = false;
+    const toFocus = this.activeDialogAnchorStack_.pop();
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   /**

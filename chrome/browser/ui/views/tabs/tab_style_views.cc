@@ -480,13 +480,12 @@ TabStyle::TabColors GM2TabStyle::CalculateColors() const {
   const SkColor background_color = color_utils::AlphaBlend(
       GetTabBackgroundColor(TabActive::kActive),
       GetTabBackgroundColor(TabActive::kInactive), GetActiveOpacity());
-  const auto* const color_provider = tab_->GetColorProvider();
-  const SkColor focus_ring_color = color_provider->GetColor(
-      (active == TabActive::kActive) ? kColorTabFocusRingActive
-                                     : kColorTabFocusRingInactive);
-  const SkColor close_button_focus_ring_color = color_provider->GetColor(
+  const ui::ColorId focus_ring_color = (active == TabActive::kActive)
+                                           ? kColorTabFocusRingActive
+                                           : kColorTabFocusRingInactive;
+  const ui::ColorId close_button_focus_ring_color =
       (active == TabActive::kActive) ? kColorTabCloseButtonFocusRingActive
-                                     : kColorTabCloseButtonFocusRingInactive);
+                                     : kColorTabCloseButtonFocusRingInactive;
   return {foreground_color, background_color, focus_ring_color,
           close_button_focus_ring_color};
 }
@@ -847,10 +846,10 @@ void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
 
   const auto* widget = tab_->GetWidget();
   DCHECK(widget);
-  const SkColor tab_stroke_color = widget->GetThemeProvider()->GetColor(
+  const SkColor tab_stroke_color = widget->GetColorProvider()->GetColor(
       tab_->controller()->ShouldPaintAsActiveFrame()
-          ? ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE
-          : ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE);
+          ? kColorTabStrokeFrameActive
+          : kColorTabStrokeFrameInactive);
 
   PaintBackgroundStroke(canvas, active, group_color.value_or(tab_stroke_color));
   PaintSeparators(canvas);

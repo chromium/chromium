@@ -6,8 +6,11 @@ from __future__ import print_function
 
 import os
 import sys
+import typing
+import unittest
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
 import gpu_path_util
@@ -28,11 +31,11 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'mediapipe'
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(MediaPipeIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([
         cba.FORCE_BROWSER_CRASH_ON_GPU_CRASH,
@@ -42,13 +45,13 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.StartBrowser()
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     for entry in os.scandir(_DATA_PATH):
       if entry.is_dir():
         yield ('MediaPipe_mediapipe_%s' % entry.name,
-               _get_test_html(entry.name), ())
+               _get_test_html(entry.name), [])
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     action_runner = self.tab.action_runner
     action_runner.Navigate(self.UrlOfStaticFilePath(test_path))
     action_runner.WaitForJavaScriptCondition('window.runTest !== undefined')
@@ -64,17 +67,18 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail(errors)
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'mediapipe_expectations.txt'),
     ]
 
 
-def _get_test_html(entry):
+def _get_test_html(entry: str) -> str:
   return '%s/_CLICK_ME_TO_RUN_%s_LOCALLY.html' % (entry, entry)
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

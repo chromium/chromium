@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, PrintPreviewDestinationListItemElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationStore, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, RecentDestination} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
@@ -17,7 +17,6 @@ import {createDestinationStore, getDestinations, setupTestListenerElement} from 
 const destination_dialog_cros_test = {
   suiteName: 'DestinationDialogCrosTest',
   TestNames: {
-    PrinterList: 'PrinterList',
     ShowProvisionalDialog: 'ShowProvisionalDialog',
     PrintServersChanged: 'PrintServersChanged',
     PrintServerSelected: 'PrintServerSelected',
@@ -79,35 +78,6 @@ suite(destination_dialog_cros_test.suiteName, function() {
         });
   }
 
-  // Test that destinations are correctly displayed in the lists.
-  test(assert(destination_dialog_cros_test.TestNames.PrinterList), async () => {
-    await finishSetup();
-    const list =
-        dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
-
-    const printerItems = list.shadowRoot!.querySelectorAll(
-        'print-preview-destination-list-item');
-
-    const getDisplayedName = (item: PrintPreviewDestinationListItemElement) =>
-        item.shadowRoot!.querySelector('.name')!.textContent;
-    // 5 printers + Save as PDF
-    assertEquals(6, printerItems.length);
-    // Save as PDF shows up first.
-    assertEquals(
-        GooglePromotedDestinationId.SAVE_AS_PDF,
-        getDisplayedName(printerItems[0]!));
-    assertEquals(
-        'rgb(32, 33, 36)',
-        window
-            .getComputedStyle(
-                printerItems[0]!.shadowRoot!.querySelector('.name')!)
-            .color);
-    Array.from(printerItems).slice(1, 5).forEach((item, index) => {
-      assertEquals(destinations[index]!.displayName, getDisplayedName(item));
-    });
-    assertEquals('FooName', getDisplayedName(printerItems[5]!));
-  });
-
   // Test that clicking a provisional destination shows the provisional
   // destinations dialog, and that the escape key closes only the provisional
   // dialog when it is open, not the destinations dialog.
@@ -124,7 +94,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
         // Set the extension destinations and force the destination store to
         // reload printers.
-        nativeLayer.setExtensionDestinations([provisionalDestination]);
+        nativeLayer.setExtensionDestinations([[provisionalDestination]]);
         await finishSetup();
         flush();
         const provisionalDialog = dialog.shadowRoot!.querySelector(

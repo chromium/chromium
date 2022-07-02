@@ -58,10 +58,10 @@ gfx::Rect GetDefaultBoundsForTerminal(Browser* browser) {
 }
 
 TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TERMINAL,
-                                    "Terminal",
-                                    GURL(chrome::kChromeUIUntrustedTerminalURL),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::TERMINAL,
+                                "Terminal",
+                                GURL(chrome::kChromeUIUntrustedTerminalURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> TerminalSystemAppDelegate::GetWebAppInfo()
     const {

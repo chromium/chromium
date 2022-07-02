@@ -58,6 +58,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kSetPin[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
 
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdapterPropertyChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnNameChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoverableChanged[];
@@ -116,6 +117,39 @@ template <typename T>
 using ResponseCallback =
     base::OnceCallback<void(const absl::optional<T>& ret,
                             const absl::optional<Error>& err)>;
+
+// A Weakly Owned ResponseCallback<T>. The main usecase for this is to have
+// a weak pointer available for |PostDelayedTask|, where deleting the main
+// object will automatically cancel the posted task.
+template <typename T>
+class WeaklyOwnedCallback {
+ public:
+  explicit WeaklyOwnedCallback(ResponseCallback<T> cb) : cb_(std::move(cb)) {}
+  ~WeaklyOwnedCallback() = default;
+
+  static std::unique_ptr<WeaklyOwnedCallback> Create(ResponseCallback<T> cb) {
+    return std::make_unique<WeaklyOwnedCallback>(std::move(cb));
+  }
+
+  // If the callback hasn't been executed, run it and return true. Otherwise
+  // false.
+  bool Run(const absl::optional<T>& ret, const absl::optional<Error>& err) {
+    if (cb_) {
+      std::move(cb_).Run(ret, err);
+      return true;
+    }
+
+    return false;
+  }
+
+  base::WeakPtr<WeaklyOwnedCallback> GetWeakPtr() const {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  ResponseCallback<T> cb_;
+  base::WeakPtrFactory<WeaklyOwnedCallback> weak_ptr_factory_{this};
+};
 
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.

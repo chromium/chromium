@@ -15,6 +15,11 @@
 
 class GURL;
 class PermissionRequestCreator;
+class SupervisedUserSettingsService;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Manages remote and local web approval requests from Family Link users.
 //
@@ -37,10 +42,12 @@ class WebApprovalsManager {
 
   ~WebApprovalsManager();
 
-  // Requests a local approval flow for the `url`.
+  // Requests a local approval flow for the `url`, attaching to the
+  // `web_contents` provided.
   // Runs the `callback` to inform the caller whether the flow initiation was
   // successful.
-  void RequestLocalApproval(const GURL& url,
+  void RequestLocalApproval(content::WebContents* web_contents,
+                            const GURL& url,
                             ApprovalRequestInitiatedCallback callback);
 
   // Adds a remote approval request for the `url`.
@@ -66,6 +73,10 @@ class WebApprovalsManager {
 
   size_t FindEnabledRemoteApprovalRequestCreator(size_t start) const;
 
+  // Strips user-specific tokens in a URL to generalize it for use in the
+  // parent approval request.
+  GURL NormalizeUrl(const GURL& url);
+
   void AddRemoteApprovalRequestInternal(
       const CreateRemoteApprovalRequestCallback& create_request,
       ApprovalRequestInitiatedCallback callback,
@@ -76,6 +87,13 @@ class WebApprovalsManager {
       ApprovalRequestInitiatedCallback callback,
       size_t index,
       bool success);
+
+  // Called to indicate that a URL access request has completed (either
+  // successfully or not).
+  void OnLocalApprovalRequestCompleted(
+      SupervisedUserSettingsService* settings_service,
+      const GURL& url,
+      bool request_approved);
 
   // Stores remote approval request creators.
   // The creators are cleared during shutdown.

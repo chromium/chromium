@@ -133,9 +133,8 @@ void SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem(
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error != base::File::FILE_OK) {
-    std::unique_ptr<base::ListValue> error_result =
-        std::make_unique<base::ListValue>();
-    error_result->Append(false);
+    base::Value::List error_result;
+    error_result.Append(false);
     Respond(ErrorWithArguments(
         std::move(error_result),
         ErrorToString(::sync_file_system::FileErrorToSyncStatusCode(error))));

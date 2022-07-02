@@ -952,9 +952,9 @@ std::string SourceBufferRange::ToStringForDebugging() const {
          << ", buffers.size()=" << buffers_.size()
          << ", keyframe_map_.size()=" << keyframe_map_.size()
          << ", keyframe_map_:\n";
-  for (const auto& entry : keyframe_map_) {
-    result << "\t pts " << entry.first.InMicroseconds()
-           << ", unadjusted idx = " << entry.second << "\n";
+  for (const auto& [time_delta, idx] : keyframe_map_) {
+    result << "\t pts " << time_delta.InMicroseconds()
+           << ", unadjusted idx = " << idx << "\n";
   }
 #endif  // !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 

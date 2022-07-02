@@ -263,7 +263,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   std::vector<SkColor> colors_;
   std::vector<SkScalar> positions_;
 
-  // Cached intermediates, for cc::Paint objects that may not be thread-safe
+  // Cached intermediates, for Paint objects that may not be thread-safe
   sk_sp<SkPicture> sk_cached_picture_;
   sk_sp<SkImage> sk_cached_image_;
 

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

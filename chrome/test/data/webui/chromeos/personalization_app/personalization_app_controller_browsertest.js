@@ -14,13 +14,9 @@ GEN('#include "content/public/test/browser_test.h"');
 
 var PersonalizationAppControllerBrowserTest = class extends PolymerTest {
   get browsePreload() {
-    return 'chrome://personalization/test_loader.html?host=webui-test' +
-        '&module=chromeos/personalization_app/' +
+    return 'chrome://personalization/test_loader.html' +
+        '?module=chromeos/personalization_app/' +
         'personalization_app_controller_test.js';
-  }
-
-  get featureList() {
-    return {enabled: ['chromeos::features::kWallpaperWebUI']};
   }
 };
 

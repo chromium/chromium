@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -36,6 +35,9 @@ DEFINE_TEXT_PROTO_FUZZER(
     page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
     return page_holder.release();
   }();
+
+  // Request a full GC upon returning.
+  auto scoped_gc = MakeScopedGarbageCollectionRequest();
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
@@ -112,15 +114,6 @@ DEFINE_TEXT_PROTO_FUZZER(
       }
     }
   }
-
-  // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-  //
-  // Multiple GCs may be required to ensure everything is collected (due to
-  // a chain of persistent handles), so some objects may not be collected until
-  // a subsequent iteration. This is slow enough as is, so we compromise on one
-  // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

@@ -7,7 +7,7 @@
  * the ambient mode settings.
  */
 
-import '../../common/styles.js';
+import '../../css/common.css.js';
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
 import './ambient_preview_element.js';
@@ -16,6 +16,8 @@ import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed, Paths} from '../personalization_router_element.js';
@@ -41,8 +43,18 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return {
       path: Paths,
       queryParams: Object,
+      isAmbientModeAnimationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAmbientModeAnimationEnabled');
+        }
+      },
       albums_: {
         type: Array,
+        value: null,
+      },
+      animationTheme_: {
+        type: Object,
         value: null,
       },
       ambientModeEnabled_: Boolean,
@@ -58,11 +70,26 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   path: Paths;
   queryParams: Record<string, string>;
+  private isAmbientModeAnimationEnabled_: boolean;
   private albums_: AmbientModeAlbum[]|null = null;
   private ambientModeEnabled_: boolean|null = null;
   private animationTheme_: AnimationTheme|null = null;
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
+
+  override ready() {
+    // Pre-scroll to prevent visual jank when focusing the toggle row.
+    window.scrollTo(0, 0);
+    super.ready();
+    afterNextRender(this, () => {
+      const elem = this.shadowRoot!.getElementById('ambientToggleRow');
+      if (elem) {
+        // Focus the toggle row to inform screen reader users of the current
+        // state.
+        elem.focus();
+      }
+    });
+  }
 
   override connectedCallback() {
     assert(

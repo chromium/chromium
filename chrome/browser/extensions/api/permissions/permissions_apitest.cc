@@ -115,8 +115,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
 
 // Test functions and APIs that are always allowed (even if you ask for no
 // permissions).
-// TODO(https://crbug.com/1181237): Fix flake and re-enable test.
-IN_PROC_BROWSER_TEST_F(PermissionsApiTest, DISABLED_AlwaysAllowed) {
+IN_PROC_BROWSER_TEST_F(PermissionsApiTest, AlwaysAllowed) {
   ASSERT_TRUE(RunExtensionTest("permissions/always_allowed")) << message_;
 }
 

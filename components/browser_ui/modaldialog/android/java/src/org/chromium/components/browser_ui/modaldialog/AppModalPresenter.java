@@ -5,11 +5,11 @@
 package org.chromium.components.browser_ui.modaldialog;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.activity.ComponentDialog;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.StrictModeContext;
@@ -24,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** The presenter that shows a {@link ModalDialogView} in an Android dialog. */
 public class AppModalPresenter extends ModalDialogManager.Presenter {
     private final Context mContext;
-    private Dialog mDialog;
+    private ComponentDialog mDialog;
     private PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
             mModelChangeProcessor;
 
@@ -34,6 +34,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             if (ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE == propertyKey) {
                 mDialog.setCanceledOnTouchOutside(
                         model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+            } else if (ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER == propertyKey) {
+                mDialog.getOnBackPressedDispatcher().addCallback(
+                        model.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
             } else {
                 super.bind(model, view, propertyKey);
             }
@@ -78,7 +81,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             buttonIndex = 2;
         }
-        mDialog = new Dialog(mContext, styles[buttonIndex][index]);
+        mDialog = new ComponentDialog(mContext, styles[buttonIndex][index]);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't

@@ -58,11 +58,15 @@ class CORE_EXPORT DisplayLockUtilities {
     friend void Document::EnsurePaintLocationDataValidForNode(
         const Node* node,
         DocumentUpdateReason reason);
+    friend void Document::EnsurePaintLocationDataValidForNode(
+        const Node* node,
+        DocumentUpdateReason reason,
+        CSSPropertyID property_id);
     friend VisibleSelection
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
     friend gfx::RectF Range::BoundingRect() const;
     friend DOMRectList* Range::getClientRects() const;
-    friend bool Element::isVisible(IsVisibleOptions*) const;
+    friend bool Element::checkVisibility(CheckVisibilityOptions*) const;
 
     friend class DisplayLockContext;
 

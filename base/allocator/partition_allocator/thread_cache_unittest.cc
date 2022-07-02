@@ -8,11 +8,12 @@
 #include <atomic>
 #include <vector>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -67,6 +68,7 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -274,6 +276,7 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -468,15 +471,6 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
     root_->Free(ptr);
 }
 
-// On Android and macOS with PartitionAlloc as malloc, we have extra thread
-// caches being created, causing this test to fail.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE))
-#define MAYBE_ThreadCacheRegistry DISABLED_ThreadCacheRegistry
-#else
-#define MAYBE_ThreadCacheRegistry ThreadCacheRegistry
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 class ThreadDelegateForThreadCacheRegistry
@@ -509,7 +503,7 @@ class ThreadDelegateForThreadCacheRegistry
 
 }  // namespace
 
-TEST_P(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
+TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   auto* parent_thread_tcache = root_->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
@@ -661,7 +655,7 @@ class ThreadDelegateForPurgeAll
         bucket_index_(bucket_index),
         with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
 
-  void ThreadMain() override NO_THREAD_SAFETY_ANALYSIS {
+  void ThreadMain() override PA_NO_THREAD_SAFETY_ANALYSIS {
     FillThreadCacheAndReturnIndex(root_, kSmallSize,
                                   with_denser_bucket_distribution_);
     other_thread_tcache_ = root_->thread_cache_for_testing();
@@ -695,7 +689,7 @@ class ThreadDelegateForPurgeAll
 }  // namespace
 
 TEST_P(PartitionAllocThreadCacheTest, MAYBE_PurgeAll)
-NO_THREAD_SAFETY_ANALYSIS {
+PA_NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> purge_called{false};
 
@@ -732,7 +726,7 @@ NO_THREAD_SAFETY_ANALYSIS {
 TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
   auto& registry = ThreadCacheRegistry::Instance();
   auto NextInterval = [&registry]() {
-    return base::Microseconds(
+    return internal::base::Microseconds(
         registry.GetPeriodicPurgeNextIntervalInMicroseconds());
   };
 
@@ -835,7 +829,7 @@ TEST_P(PartitionAllocThreadCacheTest,
        DISABLED_PeriodicPurgeSumsOverAllThreads) {
   auto& registry = ThreadCacheRegistry::Instance();
   auto NextInterval = [&registry]() {
-    return base::Microseconds(
+    return internal::base::Microseconds(
         registry.GetPeriodicPurgeNextIntervalInMicroseconds());
   };
   EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);

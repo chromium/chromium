@@ -49,11 +49,11 @@ class TestPasswordGenerationPopupController
                 FormData()),
             password_manager::ContentPasswordManagerDriverFactory::
                 FromWebContents(web_contents)
-                    ->GetDriverForFrame(web_contents->GetMainFrame())
+                    ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
                     ->AsWeakPtr(),
             nullptr /* PasswordGenerationPopupObserver*/,
             web_contents,
-            web_contents->GetMainFrame()) {}
+            web_contents->GetPrimaryMainFrame()) {}
 
   ~TestPasswordGenerationPopupController() override {}
 

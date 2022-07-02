@@ -112,7 +112,7 @@
 
 #pragma mark - Private
 
-// Callback used when the sign in flow is complete, with |success|.
+// Callback used when the sign in flow is complete, with `success`.
 - (void)signinCompletedWithSuccess:(BOOL)success
                     confirmationID:(const int)confirmationID
                         consentIDs:(NSArray<NSNumber*>*)consentIDs

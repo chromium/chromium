@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TEST_HELPERS_H_
 
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
@@ -13,16 +13,23 @@ namespace guest_os {
 class MockMountProvider : public GuestOsMountProvider {
  public:
   MockMountProvider();
-  MockMountProvider(Profile* profile, crostini::ContainerId container_id);
+  MockMountProvider(Profile* profile, guest_os::GuestId container_id);
 
   std::string DisplayName() override;
   Profile* profile() override;
-  crostini::ContainerId ContainerId() override;
+  guest_os::GuestId GuestId() override;
 
   VmType vm_type() override;
+  void Prepare(base::OnceCallback<
+               void(bool success, int cid, int port, base::FilePath homedir)>
+                   callback) override;
+
+  std::unique_ptr<GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) override;
 
   Profile* profile_;
-  crostini::ContainerId container_id_;
+  guest_os::GuestId container_id_;
 };
 }  // namespace guest_os
 

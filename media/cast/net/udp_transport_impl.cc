@@ -38,7 +38,7 @@ bool IsEmpty(const net::IPEndPoint& addr) {
   return (addr.address().empty() || addr.address().IsZero()) && !addr.port();
 }
 
-int32_t GetTransportSendBufferSize(const base::DictionaryValue& options) {
+int32_t GetTransportSendBufferSize(const base::Value::Dict& options) {
   // Socket send buffer size needs to be at least greater than one burst
   // size.
   int32_t max_burst_size =
@@ -330,15 +330,15 @@ void UdpTransportImpl::OnSent(const scoped_refptr<net::IOBuffer>& buf,
   }
 }
 
-void UdpTransportImpl::SetUdpOptions(const base::DictionaryValue& options) {
+void UdpTransportImpl::SetUdpOptions(const base::Value::Dict& options) {
   SetSendBufferSize(GetTransportSendBufferSize(options));
-  if (options.FindKey(kOptionDscp)) {
+  if (options.contains(kOptionDscp)) {
     // The default DSCP value for cast is AF41. Which gives it a higher
     // priority over other traffic.
     SetDscp(net::DSCP_AF41);
   }
 #if BUILDFLAG(IS_WIN)
-  if (!options.HasKey(kOptionDisableNonBlockingIO)) {
+  if (!options.contains(kOptionDisableNonBlockingIO)) {
     UseNonBlockingIO();
   }
 #endif

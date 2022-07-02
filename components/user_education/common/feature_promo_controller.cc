@@ -335,6 +335,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   if (is_critical_promo)
     create_params.timeout = base::Seconds(0);
 
+  // Feature isn't present for some critical promos.
+  if (spec.feature()) {
+    create_params.dismiss_callback = base::BindOnce(
+        &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
+  }
+
   if (spec.promo_type() == FeaturePromoSpecification::PromoType::kSnooze) {
     CHECK(spec.feature());
     create_params.buttons = CreateSnoozeButtons(*spec.feature());
@@ -344,15 +351,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     create_params.buttons =
         CreateTutorialButtons(*spec.feature(), spec.tutorial_id());
     create_params.force_close_button = true;
-  }
-  create_params.close_button_alt_text =
-      l10n_util::GetStringUTF16(IDS_CLOSE_PROMO);
+    create_params.close_button_alt_text =
+        l10n_util::GetStringUTF16(IDS_CLOSE_PROMO);
 
-  // Feature isn't present for some critical promos.
-  if (spec.feature()) {
     create_params.dismiss_callback = base::BindOnce(
-        &FeaturePromoControllerCommon::OnHelpBubbleDismissed,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
+        &FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()),
+        spec.tutorial_id());
   }
 
   bool had_screen_reader_promo = false;
@@ -407,7 +412,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
     critical_promo_bubble_ = nullptr;
   } else if (bubble == promo_bubble_.get()) {
     if (!continuing_after_bubble_closed_) {
-      if (iph_feature_bypassing_tracker_ != current_iph_feature_)
+      if (iph_feature_bypassing_tracker_.get() != current_iph_feature_)
         feature_engagement_tracker_->Dismissed(*current_iph_feature_);
       else
         iph_feature_bypassing_tracker_ = nullptr;
@@ -434,6 +439,20 @@ void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
     snooze_service_->OnUserDismiss(*feature);
 }
 
+void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
+    const base::Feature* iph_feature,
+    TutorialIdentifier tutorial_id) {
+  OnHelpBubbleSnoozed(iph_feature);
+  tutorial_service_->LogIPHLinkClicked(tutorial_id, false);
+}
+
+void FeaturePromoControllerCommon::OnTutorialHelpBubbleDismissed(
+    const base::Feature* iph_feature,
+    TutorialIdentifier tutorial_id) {
+  OnHelpBubbleDismissed(iph_feature);
+  tutorial_service_->LogIPHLinkClicked(tutorial_id, false);
+}
+
 void FeaturePromoControllerCommon::OnTutorialStarted(
     const base::Feature* iph_feature,
     TutorialIdentifier tutorial_id) {
@@ -443,14 +462,15 @@ void FeaturePromoControllerCommon::OnTutorialStarted(
     DCHECK_EQ(current_iph_feature_, iph_feature);
     tutorial_promo_handle_ = CloseBubbleAndContinuePromo(*iph_feature);
     DCHECK(tutorial_promo_handle_.is_valid());
-    tutorial_service_->StartTutorial(
-        tutorial_id, GetAnchorContext(),
-        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(iph_feature)),
-        base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Unretained(iph_feature)));
+    if (tutorial_service_->StartTutorial(
+            tutorial_id, GetAnchorContext(),
+            base::BindOnce(&FeaturePromoControllerCommon::OnTutorialComplete,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           base::Unretained(iph_feature)),
+            base::BindOnce(&FeaturePromoControllerCommon::OnTutorialAborted,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           base::Unretained(iph_feature))))
+      tutorial_service_->LogIPHLinkClicked(tutorial_id, true);
   }
 }
 
@@ -502,8 +522,8 @@ FeaturePromoControllerCommon::CreateTutorialButtons(
   snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
   snooze_button.is_default = false;
   snooze_button.callback = base::BindRepeating(
-      &FeaturePromoControllerCommon::OnHelpBubbleSnoozed,
-      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
+      &FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature), tutorial_id);
   buttons.push_back(std::move(snooze_button));
 
   HelpBubbleButtonParams tutorial_button;

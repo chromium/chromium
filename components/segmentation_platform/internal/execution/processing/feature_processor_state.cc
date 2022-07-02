@@ -32,18 +32,20 @@ bool FeatureProcessorState::Data::IsInput() const {
 FeatureProcessorState::FeatureProcessorState()
     : prediction_time_(base::Time::Now()),
       bucket_duration_(base::TimeDelta()),
-      segment_id_(OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {}
+      segment_id_(SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {}
 
 FeatureProcessorState::FeatureProcessorState(
     base::Time prediction_time,
     base::TimeDelta bucket_duration,
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     std::deque<Data> data,
+    scoped_refptr<InputContext> input_context,
     FeatureListQueryProcessor::FeatureProcessorCallback callback)
     : prediction_time_(prediction_time),
       bucket_duration_(bucket_duration),
       segment_id_(segment_id),
       data_(std::move(data)),
+      input_context_(std::move(input_context)),
       callback_(std::move(callback)) {}
 
 FeatureProcessorState::~FeatureProcessorState() = default;

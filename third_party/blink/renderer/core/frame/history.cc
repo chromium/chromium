@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/frame/history.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -47,6 +48,18 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
+
+namespace {
+void ReportURLChange(LocalDOMWindow* window, ScriptState* script_state) {
+  DCHECK(window);
+  DCHECK(window->GetFrame());
+  if (window->GetFrame()->IsMainFrame()) {
+    SoftNavigationHeuristics* heuristics =
+        SoftNavigationHeuristics::From(*window);
+    heuristics->SawURLChange(script_state);
+  }
+}
+}  // namespace
 
 History::History(LocalDOMWindow* window)
     : ExecutionContextClient(window), last_state_object_requested_(nullptr) {}
@@ -209,23 +222,27 @@ void History::go(int delta, ExceptionState& exception_state) {
   }
 }
 
-void History::pushState(v8::Isolate* isolate,
+void History::pushState(ScriptState* script_state,
                         const ScriptValue& data,
                         const String& title,
                         const String& url,
                         ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
-  if (DomWindow() &&
-      DomWindow()->GetFrame()->ShouldMaintainTrivialSessionHistory()) {
-    DomWindow()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "Use of history.pushState in a trivial session history context, "
-            "which maintains only one session history entry, is treated as "
-            "history.replaceState."),
-        /* discard_duplicates */ true);
-    load_type = WebFrameLoadType::kReplaceCurrentItem;
+  if (LocalDOMWindow* window = DomWindow()) {
+    DCHECK(window->GetFrame());
+    if (window->GetFrame()->ShouldMaintainTrivialSessionHistory()) {
+      window->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Use of history.pushState in a trivial session history context, "
+              "which maintains only one session history entry, is treated as "
+              "history.replaceState."),
+          /* discard_duplicates */ true);
+      load_type = WebFrameLoadType::kReplaceCurrentItem;
+    }
+    ReportURLChange(window, script_state);
   }
 
   scoped_refptr<SerializedScriptValue> serialized_data =
@@ -240,11 +257,12 @@ void History::pushState(v8::Isolate* isolate,
                    exception_state);
 }
 
-void History::replaceState(v8::Isolate* isolate,
+void History::replaceState(ScriptState* script_state,
                            const ScriptValue& data,
                            const String& title,
                            const String& url,
                            ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   scoped_refptr<SerializedScriptValue> serialized_data =
       SerializedScriptValue::Serialize(isolate, data.V8Value(),
                                        SerializedScriptValue::SerializeOptions(
@@ -252,6 +270,10 @@ void History::replaceState(v8::Isolate* isolate,
                                        exception_state);
   if (exception_state.HadException())
     return;
+
+  if (LocalDOMWindow* window = DomWindow()) {
+    ReportURLChange(window, script_state);
+  }
 
   StateObjectAdded(std::move(serialized_data), title, url,
                    WebFrameLoadType::kReplaceCurrentItem, exception_state);

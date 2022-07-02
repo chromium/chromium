@@ -20,12 +20,16 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.ui.resources.ResourceFactory;
+import org.chromium.ui.resources.ResourceFactoryJni;
 
 import java.lang.ref.WeakReference;
 
@@ -37,6 +41,11 @@ import java.lang.ref.WeakReference;
 public class ViewResourceAdapterTest {
     private int mViewWidth;
     private int mViewHeight;
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private ResourceFactory.Natives mResourceFactoryJni;
     @Mock
     private View mView;
 
@@ -45,6 +54,7 @@ public class ViewResourceAdapterTest {
     @Before
     public void setup() {
         initMocks(this);
+        mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
 
         mViewWidth = 200;
         mViewHeight = 100;
@@ -58,9 +68,16 @@ public class ViewResourceAdapterTest {
              * Otherwise the GC-related tests would fail.
              */
             @Override
-            protected void capture(Canvas canvas) {}
+            protected boolean captureCommon(Canvas canvas, boolean drawWhileDetached) {
+                return true;
+            }
         };
+    }
 
+    private Rect getBitmapSize() {
+        // Need to mark dirty before requesting, otherwise it will no-op.
+        mAdapter.invalidate(null);
+        return DynamicResourceTestUtils.getBitmapSizeSync(mAdapter);
     }
 
     @Test
@@ -74,7 +91,7 @@ public class ViewResourceAdapterTest {
     @Test
     public void testGetBitmapSize() {
         Bitmap bitmap = mAdapter.getBitmap();
-        Rect rect = mAdapter.getBitmapSize();
+        Rect rect = getBitmapSize();
         assertEquals(bitmap.getWidth(), rect.width());
         assertEquals(bitmap.getHeight(), rect.height());
     }
@@ -87,7 +104,7 @@ public class ViewResourceAdapterTest {
         assertEquals(mViewWidth * scale, bitmap.getWidth(), 1);
         assertEquals(mViewHeight * scale, bitmap.getHeight(), 1);
 
-        Rect rect = mAdapter.getBitmapSize();
+        Rect rect = getBitmapSize();
         assertEquals(mViewWidth, rect.width());
         assertEquals(mViewHeight, rect.height());
     }

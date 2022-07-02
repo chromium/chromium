@@ -162,7 +162,11 @@ GridItemData::GridItemData(const NGBlockNode node,
                            const WritingMode container_writing_mode)
     : node(node),
       is_sizing_dependent_on_block_size(false),
-      is_subgridded_to_parent_grid(false) {
+      is_subgridded_to_parent_grid(false),
+      is_considered_for_column_sizing(true),
+      is_considered_for_row_sizing(true),
+      can_subgrid_items_in_column_direction(false),
+      can_subgrid_items_in_row_direction(false) {
   const auto& style = node.Style();
 
   const bool is_replaced = node.IsReplaced();
@@ -367,6 +371,16 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
       end_offset -= track_collection.RangeStartLine(end_range_index);
     }
   }
+}
+
+void GridItems::ReserveInitialCapacity(wtf_size_t initial_capacity) {
+  reordered_item_indices.ReserveInitialCapacity(initial_capacity);
+  item_data.ReserveInitialCapacity(initial_capacity);
+}
+
+void GridItems::ReserveCapacity(wtf_size_t new_capacity) {
+  reordered_item_indices.ReserveCapacity(new_capacity);
+  item_data.ReserveCapacity(new_capacity);
 }
 
 void GridItems::RemoveSubgriddedItems() {

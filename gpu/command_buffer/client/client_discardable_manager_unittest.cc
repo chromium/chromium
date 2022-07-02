@@ -45,6 +45,9 @@ class FakeCommandBuffer : public CommandBuffer {
     EXPECT_TRUE(found != active_ids_.end());
     active_ids_.erase(found);
   }
+  void ForceLostContext(error::ContextLostReason reason) override {
+    // No-op; doesn't need to be exercised here.
+  }
 
  private:
   int32_t next_id_ = 1;

@@ -87,13 +87,6 @@ public interface SigninManager {
     IdentityManager getIdentityManager();
 
     /**
-     * Notifies the SigninManager that the First Run check has completed.
-     *
-     * The user will be allowed to sign-in once this is signaled.
-     */
-    void onFirstRunCheckDone();
-
-    /**
      * Returns true if sign in can be started now.
      */
     boolean isSigninAllowed();
@@ -180,6 +173,12 @@ public interface SigninManager {
      */
     void revokeSyncConsent(@SignoutReason int signoutSource, SignOutCallback signOutCallback,
             boolean forceWipeUserData);
+
+    /**
+     * Returns true if sign out can be started now.
+     * TODO(https://crbug.com/1334918): Add onSignOutAllowedChanged() in SignInStateObserver
+     */
+    boolean isSignOutAllowed();
 
     /**
      * Invokes signOut with no callback.

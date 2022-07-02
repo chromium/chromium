@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -59,40 +60,6 @@ constexpr net::BackoffEntry::Policy kResumeFetchImageBackoffPolicy = {
     true,           // Use initial delay.
 };
 
-constexpr net::NetworkTrafficAnnotationTag kAmbientPhotoControllerTag =
-    net::DefineNetworkTrafficAnnotation("ambient_photo_controller", R"(
-        semantics {
-          sender: "Ambient photo"
-          description:
-            "Download ambient image weather icon from Google."
-          trigger:
-            "Triggered periodically when the battery is charged and the user "
-            "is idle."
-          data: "None."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-         cookies_allowed: NO
-         setting:
-           "This feature is off by default and can be overridden by user."
-         policy_exception_justification:
-           "This feature is set by user settings.ambient_mode.enabled pref. "
-           "The user setting is per device and cannot be overriden by admin."
-        })");
-
-void DownloadImageFromUrl(
-    const std::string& url,
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
-  DCHECK(!url.empty());
-
-  // During shutdown, we may not have `ImageDownloader` when reach here.
-  if (!ImageDownloader::Get())
-    return;
-
-  ImageDownloader::Get()->Download(GURL(url), kAmbientPhotoControllerTag,
-                                   std::move(callback));
-}
-
 base::TaskTraits GetTaskTraits() {
   return {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
@@ -117,6 +84,7 @@ base::FilePath GetCacheRootPath() {
 AmbientPhotoController::AmbientPhotoController(
     AmbientClient& ambient_client,
     AmbientAccessTokenController& access_token_controller,
+    AmbientViewDelegate& view_delegate,
     AmbientPhotoConfig photo_config)
     : ambient_backend_model_(std::move(photo_config)),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
@@ -132,6 +100,7 @@ AmbientPhotoController::AmbientPhotoController(
           access_token_controller)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
+  scoped_view_delegate_observation_.Observe(&view_delegate);
   ScheduleFetchBackupImages();
 }
 
@@ -221,10 +190,8 @@ void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {
 void AmbientPhotoController::FetchWeather() {
   Shell::Get()
       ->ambient_controller()
-      ->ambient_backend_controller()
-      ->FetchWeather(base::BindOnce(
-          &AmbientPhotoController::StartDownloadingWeatherConditionIcon,
-          weak_factory_.GetWeakPtr()));
+      ->ambient_weather_controller()
+      ->FetchWeather();
 }
 
 void AmbientPhotoController::ClearCache() {
@@ -533,48 +500,6 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
 
   if (state_ == State::kPreparingNextTopicSet)
     StartPreparingNextTopic();
-}
-
-void AmbientPhotoController::StartDownloadingWeatherConditionIcon(
-    const absl::optional<WeatherInfo>& weather_info) {
-  if (!weather_info) {
-    LOG(WARNING) << "No weather info included in the response.";
-    return;
-  }
-
-  if (!weather_info->temp_f.has_value()) {
-    LOG(WARNING) << "No temperature included in weather info.";
-    return;
-  }
-
-  if (weather_info->condition_icon_url.value_or(std::string()).empty()) {
-    LOG(WARNING) << "No value found for condition icon url in the weather info "
-                    "response.";
-    return;
-  }
-
-  // Ideally we should avoid downloading from the same url again to reduce the
-  // overhead, as it's unlikely that the weather condition is changing
-  // frequently during the day.
-  // TODO(meilinw): avoid repeated downloading by caching the last N url hashes,
-  // where N should depend on the icon image size.
-  DownloadImageFromUrl(
-      weather_info->condition_icon_url.value(),
-      base::BindOnce(&AmbientPhotoController::OnWeatherConditionIconDownloaded,
-                     weak_factory_.GetWeakPtr(), weather_info->temp_f.value(),
-                     weather_info->show_celsius));
-}
-
-void AmbientPhotoController::OnWeatherConditionIconDownloaded(
-    float temp_f,
-    bool show_celsius,
-    const gfx::ImageSkia& icon) {
-  // For now we only show the weather card when both fields have values.
-  // TODO(meilinw): optimize the behavior with more specific error handling.
-  if (icon.isNull())
-    return;
-
-  ambient_backend_model_.UpdateWeatherInfo(icon, temp_f, show_celsius);
 }
 
 void AmbientPhotoController::FetchTopicsForTesting() {

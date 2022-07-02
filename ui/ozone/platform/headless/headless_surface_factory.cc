@@ -34,7 +34,7 @@
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
-#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_VULKAN) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
 #include "ui/ozone/platform/headless/vulkan_implementation_headless.h"
 #endif
 
@@ -49,15 +49,8 @@ base::FilePath GetPathForWidget(const base::FilePath& base_path,
   if (base_path.empty() || base_path == base::FilePath(kDevNull))
     return base_path;
 
-    // Disambiguate multiple window output files with the window id.
-#if BUILDFLAG(IS_WIN)
-  std::string path =
-      base::NumberToString(reinterpret_cast<int>(widget)) + ".png";
-  std::wstring wpath(path.begin(), path.end());
-  return base_path.Append(wpath);
-#else
+  // Disambiguate multiple window output files with the window id.
   return base_path.Append(base::NumberToString(widget) + ".png");
-#endif
 }
 
 void WriteDataToFile(const base::FilePath& location, const SkBitmap& bitmap) {
@@ -281,13 +274,17 @@ void HeadlessSurfaceFactory::CheckBasePath() const {
     PLOG(FATAL) << "Unable to write to output location";
 }
 
-#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 HeadlessSurfaceFactory::CreateVulkanImplementation(
     bool use_swiftshader,
     bool allow_protected_memory) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<VulkanImplementationHeadless>(use_swiftshader);
-}
+#else
+  return nullptr;
 #endif
+}
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace ui

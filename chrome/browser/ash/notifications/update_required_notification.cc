@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/notifications/update_required_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
@@ -155,7 +156,8 @@ void UpdateRequiredNotification::DisplayNotification(
           std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kUpdateRequiredNotificationId),
+              kUpdateRequiredNotificationId,
+              NotificationCatalogName::kUpdateRequired),
           data,
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_factory_.GetWeakPtr()),

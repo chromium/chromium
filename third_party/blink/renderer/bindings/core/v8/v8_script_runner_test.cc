@@ -491,6 +491,12 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
   feature_list_.InitAndDisableFeature(
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
   code_cache_with_hashing_scheme_ = true;
@@ -531,6 +537,12 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
 
 TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   V8TestingScope scope;
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
   code_cache_with_hashing_scheme_ = true;

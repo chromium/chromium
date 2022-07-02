@@ -17,8 +17,8 @@ class WebStateList;
 // TODO(crbug.com/1116980): Convert ManualFillInjectionHandler to browser agent.
 @interface ManualFillInjectionHandler : NSObject <ManualFillContentInjector>
 
-// Returns a handler using the |WebStateList| to inject JS to the active web
-// state and |securityAlertPresenter| to present alerts.
+// Returns a handler using the `WebStateList` to inject JS to the active web
+// state and `securityAlertPresenter` to present alerts.
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler

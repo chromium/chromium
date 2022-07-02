@@ -67,6 +67,12 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_LINKED_OFFER_REMINDER_TITLE);
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      return l10n_util::GetStringUTF16(
+          base::FeatureList::IsEnabled(
+              features::kAutofillFillMerchantPromoCodeFields)
+              ? IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE
+              : IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE);

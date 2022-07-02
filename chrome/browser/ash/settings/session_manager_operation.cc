@@ -20,8 +20,6 @@
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
 
-using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
 using ownership::OwnerKeyUtil;
 using ownership::PublicKey;
 
@@ -29,13 +27,16 @@ namespace em = enterprise_management;
 
 namespace ash {
 
+using RetrievePolicyResponseType =
+    SessionManagerClient::RetrievePolicyResponseType;
+
 SessionManagerOperation::SessionManagerOperation(Callback callback)
     : callback_(std::move(callback)) {}
 
 SessionManagerOperation::~SessionManagerOperation() {}
 
 void SessionManagerOperation::Start(
-    chromeos::SessionManagerClient* session_manager_client,
+    SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util,
     scoped_refptr<PublicKey> public_key) {
   session_manager_client_ = session_manager_client;

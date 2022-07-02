@@ -31,6 +31,7 @@
 #include "net/base/parse_number.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_log_util.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
@@ -109,13 +110,12 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
 };
 
 bool ShouldUpdateHeader(base::StringPiece name) {
-  for (size_t i = 0; i < std::size(kNonUpdatedHeaders); ++i) {
-    if (base::LowerCaseEqualsASCII(name, kNonUpdatedHeaders[i]))
+  for (const auto* header : kNonUpdatedHeaders) {
+    if (base::EqualsCaseInsensitiveASCII(name, header))
       return false;
   }
-  for (size_t i = 0; i < std::size(kNonUpdatedHeaderPrefixes); ++i) {
-    if (base::StartsWith(name, kNonUpdatedHeaderPrefixes[i],
-                         base::CompareCase::INSENSITIVE_ASCII))
+  for (const auto* prefix : kNonUpdatedHeaderPrefixes) {
+    if (base::StartsWith(name, prefix, base::CompareCase::INSENSITIVE_ASCII))
       return false;
   }
   return true;
@@ -263,8 +263,8 @@ void HttpResponseHeaders::Persist(base::Pickle* pickle,
 }
 
 void HttpResponseHeaders::Update(const HttpResponseHeaders& new_headers) {
-  DCHECK(new_headers.response_code() == 304 ||
-         new_headers.response_code() == 206);
+  DCHECK(new_headers.response_code() == net::HTTP_NOT_MODIFIED ||
+         new_headers.response_code() == net::HTTP_PARTIAL_CONTENT);
 
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(raw_headers_.c_str());
@@ -707,7 +707,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == line_end) {
     DVLOG(1) << "missing response status; assuming 200 OK";
     raw_headers_.append(" 200 OK");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
 
@@ -722,7 +722,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == code) {
     DVLOG(1) << "missing response status number; assuming 200";
     raw_headers_.append(" 200");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
   raw_headers_.push_back(' ');
@@ -886,18 +886,18 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
 }
 
 void HttpResponseHeaders::AddHopByHopHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kHopByHopResponseHeaders); ++i)
-    result->insert(std::string(kHopByHopResponseHeaders[i]));
+  for (const auto* header : kHopByHopResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddCookieHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kCookieResponseHeaders); ++i)
-    result->insert(std::string(kCookieResponseHeaders[i]));
+  for (const auto* header : kCookieResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddChallengeHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kChallengeResponseHeaders); ++i)
-    result->insert(std::string(kChallengeResponseHeaders[i]));
+  for (const auto* header : kChallengeResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
@@ -905,8 +905,8 @@ void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
 }
 
 void HttpResponseHeaders::AddSecurityStateHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < std::size(kSecurityStateHeaders); ++i)
-    result->insert(std::string(kSecurityStateHeaders[i]));
+  for (const auto* header : kSecurityStateHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::GetMimeTypeAndCharset(std::string* mime_type,
@@ -972,8 +972,11 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
   // Users probably want to see 300 (multiple choice) pages, so we don't count
   // them as redirects that need to be followed.
-  return (response_code == 301 || response_code == 302 ||
-          response_code == 303 || response_code == 307 || response_code == 308);
+  return (response_code == net::HTTP_MOVED_PERMANENTLY ||
+          response_code == net::HTTP_FOUND ||
+          response_code == net::HTTP_SEE_OTHER ||
+          response_code == net::HTTP_TEMPORARY_REDIRECT ||
+          response_code == net::HTTP_PERMANENT_REDIRECT);
 }
 
 // From RFC 2616 section 13.2.4:
@@ -1101,8 +1104,9 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   // https://datatracker.ietf.org/doc/draft-reschke-http-status-308/ is an
   // experimental RFC that adds 308 permanent redirect as well, for which "any
   // future references ... SHOULD use one of the returned URIs."
-  if ((response_code_ == 200 || response_code_ == 203 ||
-       response_code_ == 206) &&
+  if ((response_code_ == net::HTTP_OK ||
+       response_code_ == net::HTTP_NON_AUTHORITATIVE_INFORMATION ||
+       response_code_ == net::HTTP_PARTIAL_CONTENT) &&
       !must_revalidate) {
     // TODO(darin): Implement a smarter heuristic.
     Time last_modified_value;
@@ -1116,8 +1120,10 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   }
 
   // These responses are implicitly fresh (unless otherwise overruled):
-  if (response_code_ == 300 || response_code_ == 301 || response_code_ == 308 ||
-      response_code_ == 410) {
+  if (response_code_ == net::HTTP_MULTIPLE_CHOICES ||
+      response_code_ == net::HTTP_MOVED_PERMANENTLY ||
+      response_code_ == net::HTTP_PERMANENT_REDIRECT ||
+      response_code_ == net::HTTP_GONE) {
     lifetimes.freshness = base::TimeDelta::Max();
     lifetimes.staleness = base::TimeDelta();  // It should never be stale.
     return lifetimes;
@@ -1293,7 +1299,7 @@ bool HttpResponseHeaders::IsKeepAlive() const {
     std::string token;
     while (EnumerateHeader(&iterator, header, &token)) {
       for (const KeepAliveToken& keep_alive_token : kKeepAliveTokens) {
-        if (base::LowerCaseEqualsASCII(token, keep_alive_token.token))
+        if (base::EqualsCaseInsensitiveASCII(token, keep_alive_token.token))
           return keep_alive_token.keep_alive;
       }
     }
@@ -1366,8 +1372,8 @@ bool HttpResponseHeaders::GetContentRangeFor206(
 
 base::Value HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value headers(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  base::Value::List headers;
   headers.Append(NetLogStringValue(GetStatusLine()));
   size_t iterator = 0;
   std::string name;
@@ -1377,8 +1383,8 @@ base::Value HttpResponseHeaders::NetLogParams(
         ElideHeaderValueForNetLog(capture_mode, name, value);
     headers.Append(NetLogStringValue(base::StrCat({name, ": ", log_value})));
   }
-  dict.SetKey("headers", std::move(headers));
-  return dict;
+  dict.Set("headers", std::move(headers));
+  return base::Value(std::move(dict));
 }
 
 bool HttpResponseHeaders::IsChunkEncoded() const {

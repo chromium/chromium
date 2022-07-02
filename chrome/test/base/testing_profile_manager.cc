@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,7 +39,9 @@
 #endif
 
 const char kGuestProfileName[] = "Guest";
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSystemProfileName[] = "System";
+#endif
 
 TestingProfileManager::TestingProfileManager(TestingBrowserProcess* process)
     : called_set_up_(false),
@@ -57,6 +60,8 @@ TestingProfileManager::TestingProfileManager(
       profile_manager_(nullptr) {}
 
 TestingProfileManager::~TestingProfileManager() {
+  ProfileDestroyer::DestroyPendingProfilesForShutdown();
+
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.
   browser_process_->SetProfileManager(nullptr);
@@ -177,6 +182,7 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   return profile_ptr;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TestingProfile* TestingProfileManager::CreateSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -196,6 +202,7 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
 
   return profile_ptr;
 }
+#endif
 
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
@@ -242,6 +249,7 @@ void TestingProfileManager::DeleteGuestProfile() {
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
@@ -251,6 +259,7 @@ void TestingProfileManager::DeleteSystemProfile() {
   profile_manager_->profiles_info_.erase(
       ProfileManager::GetSystemProfilePath());
 }
+#endif
 
 void TestingProfileManager::DeleteProfileAttributesStorage() {
   profile_manager_->profile_attributes_storage_.reset(nullptr);

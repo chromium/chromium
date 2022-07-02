@@ -78,23 +78,18 @@ TEST_F(ShellSurfaceUtilTest, TargetForKeyboardFocus) {
                               shell_surface->GetWidget()->GetNativeWindow()));
 }
 
+// No explicit verifications are needed for this test as this test just tries to
+// catch potential crashes.
 TEST_F(ShellSurfaceUtilTest, ClientControlledTargetForKeyboardFocus) {
   Display display;
+  auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
+                           .BuildClientControlledShellSurface();
 
-  gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-
-  std::unique_ptr<Surface> surface(new Surface);
-  surface->Attach(buffer.get());
-  surface->Commit();
-
-  auto shell_surface(
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get()));
   shell_surface->set_delegate(
       std::make_unique<test::ClientControlledShellSurfaceDelegate>(
           shell_surface.get(), true));
   shell_surface->SetMinimized();
+  auto* surface = shell_surface->root_surface();
   surface->Commit();
 
   shell_surface->GetWidget()->Hide();

@@ -52,12 +52,6 @@ class SharedImageInterfaceProxy {
                              const Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID)
-  Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
-                                   uint32_t usage,
-                                   const SyncToken& sync_token);
-#endif
-
   void UpdateSharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
   void UpdateSharedImage(const SyncToken& sync_token,
                          std::unique_ptr<gfx::GpuFence> acquire_fence,

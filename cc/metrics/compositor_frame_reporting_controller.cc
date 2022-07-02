@@ -743,6 +743,7 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
                          timestamp);
     reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
                              args.deadline);
+    reporter->set_is_backfill(true);
   }
 }
 

@@ -533,7 +533,7 @@ struct Event {
   const std::string event_name;
 
   // Arguments to send to the event listener.
-  std::unique_ptr<base::ListValue> event_args;
+  base::Value::List event_args;
 
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
@@ -568,16 +568,16 @@ struct Event {
   // related browser_contexts. See https://crbug.com/726022.
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
-        std::vector<base::Value> event_args);
+        base::Value::List event_args);
 
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
-        std::vector<base::Value> event_args,
+        base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context);
 
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
-        std::vector<base::Value> event_args,
+        base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,

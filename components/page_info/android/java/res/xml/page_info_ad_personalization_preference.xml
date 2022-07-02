@@ -8,8 +8,7 @@
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="personalization_summary"
-        android:layout="@layout/page_info_summary"
-        android:summary="@string/page_ad_personalization_description"/>
+        android:layout="@layout/page_info_summary" />
 
     <Preference
         app:iconSpaceReserved="false"

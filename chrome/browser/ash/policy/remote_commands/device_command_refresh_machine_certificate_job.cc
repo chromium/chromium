@@ -17,6 +17,15 @@
 
 namespace policy {
 
+namespace {
+
+// This command has an expiration time this high with the same reasons as for
+// `DeviceCommandWipeUsersJob::kWipeUsersCommandExpirationTime`.
+constexpr base::TimeDelta kRefreshMachineCertificateCommandExpirationTime =
+    base::Days(180);
+
+}  // namespace
+
 DeviceCommandRefreshMachineCertificateJob::
     DeviceCommandRefreshMachineCertificateJob(
         ash::attestation::MachineCertificateUploader*
@@ -30,6 +39,10 @@ enterprise_management::RemoteCommand_Type
 DeviceCommandRefreshMachineCertificateJob::GetType() const {
   return enterprise_management::
       RemoteCommand_Type_DEVICE_REFRESH_ENTERPRISE_MACHINE_CERTIFICATE;
+}
+
+bool DeviceCommandRefreshMachineCertificateJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kRefreshMachineCertificateCommandExpirationTime;
 }
 
 void DeviceCommandRefreshMachineCertificateJob::RunImpl(

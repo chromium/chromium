@@ -18,9 +18,10 @@ class MissiveStorageModuleDelegateImpl
     : public MissiveStorageModule::MissiveStorageModuleDelegateInterface {
  public:
   using AddRecordCallback = base::RepeatingCallback<
-      void(Priority, Record, base::OnceCallback<void(Status)>)>;
+      void(Priority, Record, MissiveStorageModule::EnqueueCallback)>;
   using FlushCallback =
-      base::RepeatingCallback<void(Priority, base::OnceCallback<void(Status)>)>;
+      base::RepeatingCallback<void(Priority,
+                                   MissiveStorageModule::FlushCallback)>;
 
   MissiveStorageModuleDelegateImpl(AddRecordCallback add_record,
                                    FlushCallback flush);
@@ -28,10 +29,10 @@ class MissiveStorageModuleDelegateImpl
 
   void AddRecord(Priority priority,
                  Record record,
-                 base::OnceCallback<void(Status)> callback) override;
+                 MissiveStorageModule::EnqueueCallback callback) override;
 
   void Flush(Priority priority,
-             base::OnceCallback<void(Status)> callback) override;
+             MissiveStorageModule::FlushCallback callback) override;
 
   void ReportSuccess(const SequenceInformation& sequence_information,
                      bool force) override;

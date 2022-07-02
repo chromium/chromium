@@ -189,8 +189,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle response_body) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle response_body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -219,10 +217,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Records UKM for the navigation load.
   void RecordReceivedResponseUkmForOutermostMainFrame();
 
-  raw_ptr<NavigationURLLoaderDelegate> delegate_;
+  raw_ptr<NavigationURLLoaderDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
-  raw_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
+  raw_ptr<ServiceWorkerMainResourceHandle, DanglingUntriaged>
+      service_worker_handle_;
 
   std::unique_ptr<network::ResourceRequest> resource_request_;
   std::unique_ptr<NavigationRequestInfo> request_info_;
@@ -270,7 +269,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
 
   // Set to true if we receive a valid response from a URLLoader, i.e.
-  // URLLoaderClient::OnStartLoadingResponseBody() is called.
+  // URLLoaderClient::OnReceiveResponse() is called.
   bool received_response_ = false;
 
   bool started_ = false;

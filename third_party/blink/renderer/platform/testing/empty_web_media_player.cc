@@ -37,8 +37,13 @@ WebString EmptyWebMediaPlayer::GetErrorMessage() const {
   return WebString();
 }
 
-scoped_refptr<media::VideoFrame> EmptyWebMediaPlayer::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame>
+EmptyWebMediaPlayer::GetCurrentFrameThenUpdate() {
   return nullptr;
+}
+
+absl::optional<int> EmptyWebMediaPlayer::CurrentFrameId() const {
+  return absl::nullopt;
 }
 
 }  // namespace blink

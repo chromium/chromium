@@ -5,7 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DefaultImageSymbol, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isFilePath, kDefaultImageSymbol, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectWallpaper, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -118,6 +119,7 @@ suite('Personalization app controller', () => {
 
     const photos: GooglePhotosPhoto[] = [{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
@@ -715,7 +717,7 @@ suite('local images available but no internet connection', () => {
   test(
       'error displays when fetch collections failed but local images loaded',
       async () => {
-        loadTimeData.overrideValues({['networkError']: 'someError'});
+        loadTimeData.overrideValues({['wallpaperNetworkError']: 'someError'});
 
         // Set collections to null to simulate collections failure.
         wallpaperProvider.setCollectionsToFail();
@@ -769,7 +771,8 @@ suite('local images available but no internet connection', () => {
               // Set local images.
               // Error displays once local images are loaded.
               {
-                'error': {message: loadTimeData.getString('networkError')},
+                'error':
+                    {message: loadTimeData.getString('wallpaperNetworkError')},
               },
             ],
             personalizationStore.states.map(filterAndFlattenState(['error'])));
@@ -787,10 +790,41 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     wallpaperProvider.isInTabletModeResponse = false;
   });
 
+  function getImageKey(image: DisplayableImage): string|undefined {
+    if (isDefaultImage(image)) {
+      return undefined;
+    }
+    if (isGooglePhotosPhoto(image)) {
+      return image.dedupKey ? image.dedupKey : image.id;
+    }
+    if (isWallpaperImage(image)) {
+      return image.assetId.toString();
+    }
+    if (isFilePath(image)) {
+      return image.path.substr(image.path.lastIndexOf('/') + 1);
+    }
+    assertNotReached('unknown wallpaper type');
+  }
+
+  function getImageType(image: DisplayableImage): WallpaperType {
+    if (isDefaultImage(image)) {
+      return WallpaperType.kDefault;
+    }
+    if (isGooglePhotosPhoto(image)) {
+      return WallpaperType.kOnceGooglePhotos;
+    }
+    if (isWallpaperImage(image)) {
+      return WallpaperType.kOnline;
+    }
+    if (isFilePath(image)) {
+      return WallpaperType.kCustomized;
+    }
+    assertNotReached('unknown wallpaper type');
+  }
+
   // Selects `image` as the wallpaper twice and verifies that the second attempt
   // quits early because there is no work to do.
-  async function testReselectWallpaper(image: WallpaperImage|FilePath|
-                                       GooglePhotosPhoto) {
+  async function testReselectWallpaper(image: DisplayableImage) {
     const selectWallpaperActions = [
       {
         name: 'begin_select_image',
@@ -811,11 +845,13 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     assertDeepEquals(personalizationStore.actions, selectWallpaperActions);
 
     // Complete the pending selection as would happen in production code.
-    const selected = personalizationStore.data.wallpaper.pendingSelected;
-    assertEquals(selected, image);
+    const pendingSelected = personalizationStore.data.wallpaper.pendingSelected;
+    assertEquals(pendingSelected, image);
     personalizationStore.data.wallpaper.currentSelected = {
-      key: getImageKey(image)
+      key: getImageKey(image),
+      type: getImageType(image),
     };
+    personalizationStore.data.wallpaper.pendingSelected = null;
 
     // Select the same wallpaper and verify that no further actions are taken.
     await selectWallpaper(image, wallpaperProvider, personalizationStore);
@@ -848,19 +884,29 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     await testReselectWallpaper(image);
   });
 
-  test('re-selects Google Photos wallpaper', async () => {
-    const image: GooglePhotosPhoto = {
-      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
-      name: 'foo',
-      date: {data: []},
-      url: {url: 'foo.com'},
-      location: 'home'
-    };
+  // Check with both |dedupKey| absent and present for backwards compatibility
+  // with older clients that do not support the latter.
+  [undefined, '2d0d1595-14af-4471-b2db-b9c8eae3a491'].forEach(
+      dedupKey => test('re-selects Google Photos wallpaper', async () => {
+        const image: GooglePhotosPhoto = {
+          id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+          dedupKey: dedupKey,
+          name: 'foo',
+          date: {data: []},
+          url: {url: 'foo.com'},
+          location: 'home'
+        };
+        // Reset the history of actions and prior states, but keep the current
+        // state.
+        personalizationStore.reset(personalizationStore.data);
+        await testReselectWallpaper(image);
+      }));
+
+  test('re-selects default image', async () => {
     // Reset the history of actions and prior states, but keep the current
     // state.
     personalizationStore.reset(personalizationStore.data);
-
-    await testReselectWallpaper(image);
+    await testReselectWallpaper(kDefaultImageSymbol);
   });
 });
 

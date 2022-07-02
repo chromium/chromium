@@ -146,13 +146,14 @@ void FakeCrosDisksClient::Unmount(const std::string& device_path,
 
   // Remove the dummy mounted directory if it exists.
   if (mounted_paths_.erase(base::FilePath::FromUTF8Unsafe(device_path))) {
-    base::ThreadPool::PostTaskAndReply(
+    base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::GetDeletePathRecursivelyCallback(
-            base::FilePath::FromUTF8Unsafe(device_path)),
-        base::BindOnce(std::move(callback), unmount_error_));
+            base::FilePath::FromUTF8Unsafe(device_path),
+            base::OnceCallback<void(bool)>(base::DoNothing())
+                .Then(base::BindOnce(std::move(callback), unmount_error_))));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), unmount_error_));

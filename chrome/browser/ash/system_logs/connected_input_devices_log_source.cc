@@ -29,6 +29,7 @@ constexpr auto vendor_map =
         {0x27c6, "Goodix"},
         {0x2a94, "G2 Touch"},
         {0x2c68, "EMRight"},
+        {0x2d1f, "Wacom Taiwan"},
     });
 }  // namespace
 

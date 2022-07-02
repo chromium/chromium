@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
 #import <Cocoa/Cocoa.h>
@@ -21,9 +23,11 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "testing/gtest_mac.h"
+#include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
 #import "ui/base/test/cocoa_helper.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -250,6 +254,43 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 
 @end
 
+// Let's not mess with the machine's actual find pasteboard!
+@interface MockFindPasteboard : FindPasteboard
+@end
+
+@implementation MockFindPasteboard {
+  base::scoped_nsobject<NSString> _text;
+}
+
++ (FindPasteboard*)sharedInstance {
+  static MockFindPasteboard* instance = nil;
+  if (!instance) {
+    instance = [[MockFindPasteboard alloc] init];
+  }
+  return instance;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _text.reset([[NSString alloc] init]);
+  }
+  return self;
+}
+
+- (void)loadTextFromPasteboard:(NSNotification*)notification {
+  // No-op
+}
+
+- (void)setFindText:(NSString*)newText {
+  _text.reset([newText copy]);
+}
+
+- (NSString*)findText {
+  return _text;
+}
+@end
+
 namespace views {
 namespace test {
 
@@ -340,7 +381,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     ui::CocoaTest::SetUp();
 
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;
@@ -367,7 +408,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-  MockNativeWidgetMac* native_widget_mac_;  // Weak. Owned by |widget_|.
+  raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Weak. Owned by |widget_|.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.
@@ -385,6 +426,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
+
+  display::ScopedNativeScreen screen_;
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
@@ -531,7 +574,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(const std::string& text) {
 }
 
 NSString* BridgedNativeWidgetTest::GetActualText() {
-  return GetViewStringForRange(ns_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(ns_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
@@ -539,7 +582,7 @@ NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedText() {
-  return GetViewStringForRange(dummy_text_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(dummy_text_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedSelectedText() {
@@ -836,7 +879,7 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
 
   void PerformInit() {
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;
@@ -1919,6 +1962,25 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
     EXPECT_EQ(1u, [objects count]);
     EXPECT_NSEQ(@"bar baz", [objects lastObject]);
   }
+}
+
+TEST_F(BridgedNativeWidgetTest, WriteToFindPasteboard) {
+  base::mac::ScopedObjCClassSwizzler swizzler([FindPasteboard class],
+                                              [MockFindPasteboard class],
+                                              @selector(sharedInstance));
+  EXPECT_NSEQ(@"", [[FindPasteboard sharedInstance] findText]);
+
+  const std::string test_string = "foo bar baz";
+  InstallTextField(test_string);
+
+  SetSelectionRange(NSMakeRange(4, 7));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
+
+  // Don't overwrite with empty selection
+  SetSelectionRange(NSMakeRange(0, 0));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
 }
 
 }  // namespace test

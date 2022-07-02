@@ -12,7 +12,7 @@ declare_args() {
   # safe browsing feature. Safe browsing can be compiled in 3 different levels:
   # 0 disables it, 1 enables it fully, and 2 enables mobile protection via an
   # external API.
-  if (is_ios || is_chromecast) {
+  if (is_ios || is_castos || is_cast_android) {
     safe_browsing_mode = 0
   } else if (is_android) {
     safe_browsing_mode = 2

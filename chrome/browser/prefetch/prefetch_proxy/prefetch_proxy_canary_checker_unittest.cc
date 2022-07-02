@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -101,7 +102,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
     }
 
    private:
-    FakeNetworkContext* network_context_;
+    raw_ptr<FakeNetworkContext> network_context_;
     net::HostPortPair host_;
     mojo::Receiver<network::mojom::ResolveHostHandle> control_handle_receiver_{
         this};

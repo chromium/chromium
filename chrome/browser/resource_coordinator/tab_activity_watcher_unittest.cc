@@ -543,7 +543,7 @@ TEST_F(TabMetricsTest, InputEvents) {
 
   // Fake some input events.
   content::RenderWidgetHost* widget_1 =
-      test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      test_contents_1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_1->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseDown));
   widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::Type::kMouseUp));
@@ -560,7 +560,7 @@ TEST_F(TabMetricsTest, InputEvents) {
 
   // The second tab's counts are independent of the other's.
   content::RenderWidgetHost* widget_2 =
-      test_contents_2->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      test_contents_2->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_2->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_2[TabManager_TabMetrics::kMouseEventCountName] = 1;
@@ -592,7 +592,8 @@ TEST_F(TabMetricsTest, InputEvents) {
   // After a navigation, test that the counts are reset.
   WebContentsTester::For(test_contents_1)->NavigateAndCommit(TestUrls()[2]);
   // The widget may have been invalidated by the navigation.
-  widget_1 = test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  widget_1 =
+      test_contents_1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   widget_1->ForwardMouseEvent(
       CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_1[TabManager_TabMetrics::kMouseEventCountName] = 1;

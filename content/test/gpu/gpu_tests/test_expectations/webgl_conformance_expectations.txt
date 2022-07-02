@@ -5,8 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
-#             mountainlion sierra
+#         mac highsierra mojave catalina bigsur monterey
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
@@ -26,8 +25,8 @@
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff
-#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
-#               intel-0x5912
+#         intel intel-hd-630-family intel-0xa2e intel-0xd26 intel-0xa011
+#               intel-0x3e92 intel-0x3e9b intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
 # Decoder
@@ -307,7 +306,6 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 
 # Skipping new tests
-crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
@@ -417,7 +415,8 @@ crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] confor
 # Intel OpenGL driver issue, fixed in 27.20.100.9126
 crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
-# Note that the following test seems to pass, but it may still be flaky.
+# Consistent failures in functions.control_flow.return_in_nested_loop_vertex and functions.control_flow.return_in_nested_loop_fragment
+# Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
 # Win / AMD D3D11 (default) failures
@@ -432,7 +431,8 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffer-static-canvas-test.html [ RetryOnFailure ]
 
 # Win / D3D9 failures
-# Skipping these two tests because they're causing assertion failures.
+# Won't investigate this failure - D3D9 backend's effectively obsolete.
+crbug.com/angleproject/5038 [ win angle-d3d9 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # The functions test have been persistently flaky on D3D9
 crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
@@ -460,6 +460,9 @@ crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/m
 # Flaky on Win / Passthrough command decoder (both GL and D3D11 backends)
 crbug.com/1307905 [ win passthrough ] conformance/attribs/gl-vertexattribpointer.html [ RetryOnFailure ]
 
+# Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
+crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
 ####################
 # Mac failures     #
 ####################
@@ -469,7 +472,7 @@ crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragd
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1240443 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1227774 [ mac amd angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
@@ -531,6 +534,14 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 # Linux AMD RX 5500 XT
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
+# Linux NVIDIA / VANGLE - bot NVIDIA driver is too old.
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
+
 ####################
 # Android failures #
 ####################
@@ -568,6 +579,19 @@ crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/struct-equals
 crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
+
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-bvec4.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec4.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat2.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec4.html [ Failure ]
+crbug.com/1338214 [ android android-chromium android-Nexus-5 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] WebglExtension_OES_texture_float_linear [ Failure ]
 
 # Started failing after the upgrade to Marshmallow.
 crbug.com/1264880 [ android-marshmallow android-nexus-5 ] conformance/extensions/webgl-multi-draw.html [ Failure ]
@@ -620,6 +644,7 @@ crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
@@ -685,6 +710,8 @@ crbug.com/1227774 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/mis
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 
+# Failures on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #
@@ -704,6 +731,10 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] conformance/rendering/blendi
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_frag_depth [ Failure ]
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_sRGB [ Failure ]
 crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
+
+# Flaky tests on Android Nexus 5
+crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/draw-webgl-to-canvas-2d-repeatedly.html [ RetryOnFailure ]
+crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -44,7 +44,7 @@
 // a sub view controller to ask for the user consent before the user can
 // sign-in.
 // All the string ids displayed by the view are available with
-// |consentStringIds| and |openSettingsStringId|. Those can be used to record
+// `consentStringIds` and `openSettingsStringId`. Those can be used to record
 // the consent agreed by the user.
 @interface UnifiedConsentCoordinator : ChromeCoordinator
 

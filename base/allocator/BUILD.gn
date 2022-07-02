@@ -26,8 +26,6 @@ buildflag_header("buildflags") {
   # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
   _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
 
-  _record_alloc_info = false
-
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
@@ -43,8 +41,6 @@ buildflag_header("buildflags") {
     "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 
     "USE_FAKE_BINARY_EXPERIMENT=$use_fake_binary_experiment",
-
-    "RECORD_ALLOC_INFO=$_record_alloc_info",
   ]
 }
 
@@ -55,7 +51,10 @@ if (is_apple) {
       "early_zone_registration_mac.h",
     ]
 
-    deps = [ ":buildflags" ]
+    deps = [
+      ":buildflags",
+      "//base/allocator/partition_allocator:buildflags",
+    ]
   }
 }
 

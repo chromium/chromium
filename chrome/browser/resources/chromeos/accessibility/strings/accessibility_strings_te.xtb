@@ -215,7 +215,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2438712309510062123">సూచించండి</translation>
 <translation id="2450814015951372393">చెక్‌ బాక్స్</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
-<translation id="2462626033734746142">రేడియో బటన్ సమూహం</translation>
+<translation id="2462626033734746142">రేడియో బటన్ గ్రూప్‌</translation>
 <translation id="2467741090055146971">ఎంపిక చేసిన దానిని రద్దు చేయండి</translation>
 <translation id="2471138580042810658">శీర్షిక 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{నక్షత్రం గుర్తు}other{# నక్షత్రం గుర్తులు}}</translation>
@@ -290,7 +290,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2937799153569150791">తర్వాత స్థాయి 3 శీర్షిక లేదు</translation>
 <translation id="2942710183375260152">ముదురు మేఘ వర్ణపు నీలం రంగు</translation>
 <translation id="2943596527105977722">ముదురు బంగారు కడ్డీ రంగు</translation>
-<translation id="2964026537669811554">శీర్షిక సమూహం</translation>
+<translation id="2964026537669811554">శీర్షిక గ్రూప్‌</translation>
 <translation id="2968634799764242930">సముద్రపు ఆకుపచ్చ రంగు</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="2972205263822847197">సాధన చిట్కా</translation>
@@ -299,7 +299,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2988364959384217951">సూచన: మీరు ఈ ట్యుటోరియల్‌ను నిష్క్రమించాలనుకుంటే కుడి నుండి ఎడమ వైపునకు రెండు వేళ్లతో స్వైప్ చేయండి.</translation>
 <translation id="2998131015536248178">మునుపటి అక్షరం</translation>
 <translation id="2999559350546931576">స్వర స్థాయి తగ్గించండి</translation>
-<translation id="3009352964623081324">Search + O, తర్వాత S. వాయిస్‌లను ఇన్‌స్టాల్, మేనేజ్ చేయడానికి, అనుకూలీకరించడానికి ఉపయోగించండి.</translation>
+<translation id="3009352964623081324">Search + O, తర్వాత S. వాయిస్‌లను ఇన్‌స్టాల్, మేనేజ్ చేయడానికి, అనుకూలంగా మార్చడానికి ఉపయోగించండి.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
 <translation id="3030432017085518523">మెనూ అంశం రేడియో బటన్</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{సంగ్రాహక గుర్తు}other{# సంగ్రాహక గుర్తులు}}</translation>
@@ -537,6 +537,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">తరువాత కీ ప్రెస్‌ను విస్మరిస్తోంది</translation>
 <translation id="4623097797855662355">ఆఖరిమాట</translation>
+<translation id="4624970070706497034">TalkBack ఇకపై Chromebookలకు అనుకూలీకరణను అందించదు. మీరు దీనిని ఇప్పటికీ ఉపయోగించవచ్చు, కానీ TalkBack ఆటోమేటిక్ కీబోర్డ్ షార్ట్‌కట్ సెట్టింగ్‌ను ఉపయోగించండి. Search+A, ఆపై Kని నొక్కి అందుబాటులో ఉన్న షార్ట్‌కట్‌లను చూడండి. మీరు ఇప్పటికీ TalkBackను ఉపయోగించాలనుకుంటే, కమాండ్‌ను మళ్లీ నొక్కండి.</translation>
 <translation id="463135993322337640">కొత్తవి ఏమిటో కనుగొనడం కోసం ChromeVox o, n నొక్కండి</translation>
 <translation id="4649220074413114917">రెండు వేళ్లతో స్క్రీన్‌ను ట్యాప్ చేయడం ద్వారా ప్రస్తుతం నడుస్తోన్న ఏ స్పీచ్‌ను అయినా ఆపివేయవచ్చు. ChromeVox ఏదైనా చదవకూడదని మీరు అనుకుంటే ఇది ఉపయోగపడుతుంది. కొనసాగడానికి, రెండు వేళ్లతో స్క్రీన్‌పై ట్యాప్ చేయండి.</translation>
 <translation id="4660783501463101648">క్లాసిక్ తీసివేయబడింది. కీబోర్డ్ టోగుల్ ద్వారా తిరిగి ChromeVox క్లాసిక్‌కు మారడం అనేది తీసివేయబడింది.</translation>
@@ -652,7 +653,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5420259671171615858">మెనూలలో వెతకండి</translation>
 <translation id="5435274640623994081">ఇయర్‌కాన్ లాగింగ్‌ను ప్రారంభించు</translation>
 <translation id="5436105723448703439">{COUNT,plural, =1{న్యూన గుర్తు}other{# న్యూన గుర్తులు}}</translation>
-<translation id="5444587279251314700">(సక్రియంగా ఉంది)</translation>
+<translation id="5444587279251314700">(యాక్టివ్‌గా ఉంది)</translation>
 <translation id="5451268436205074266">చుక్కలు <ph name="DOT" /></translation>
 <translation id="5452267669091857717">తర్వాత స్థాయి 1 శీర్షిక లేదు</translation>
 <translation id="5455441614648621694">బహుమానపూర్వకం</translation>
@@ -854,7 +855,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6910211073230771657">తొలగించబడింది</translation>
 <translation id="6910969481785184048">ఆన్ చేయడం, ఆఫ్ చేయడం మరియు ఆపివేయడం</translation>
 <translation id="6919104639734799681">పట్టికల లిస్ట్‌ను చూపండి</translation>
-<translation id="692135145298539227">తొలగించు</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6949846980769640811">మధ్యస్థ నీలి ఆకుపచ్చ రంగు</translation>
 <translation id="6951482098621102657">తర్వాత స్థాయి 5 శీర్షిక లేదు</translation>

@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_CONSISTENCY_COOKIE_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -135,8 +136,8 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& /*excluded_cookies*/);
 
-  SigninClient* const signin_client_;
-  AccountReconcilor* const account_reconcilor_;
+  const raw_ptr<SigninClient> signin_client_;
+  const raw_ptr<AccountReconcilor> account_reconcilor_;
   signin_metrics::AccountReconcilorState account_reconcilor_state_ =
       signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
   int scoped_update_count_ = 0;

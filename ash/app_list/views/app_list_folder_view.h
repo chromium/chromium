@@ -208,6 +208,7 @@ class ASH_EXPORT AppListFolderView
 
   const AppListConfig* GetAppListConfig() const;
 
+  AppListA11yAnnouncer* a11y_announcer_for_test() { return a11y_announcer_; }
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
 
  private:

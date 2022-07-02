@@ -110,7 +110,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    ClipboardHostImpl::Create(web_contents()->GetMainFrame(),
+    ClipboardHostImpl::Create(web_contents()->GetPrimaryMainFrame(),
                               remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -295,8 +295,9 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
-    fake_clipboard_host_impl_ = new FakeClipboardHostImpl(
-        web_contents()->GetMainFrame(), remote_.BindNewPipeAndPassReceiver());
+    fake_clipboard_host_impl_ =
+        new FakeClipboardHostImpl(web_contents()->GetPrimaryMainFrame(),
+                                  remote_.BindNewPipeAndPassReceiver());
   }
 
   ~ClipboardHostImplScanTest() override {

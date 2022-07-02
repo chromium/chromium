@@ -111,11 +111,12 @@ BackForwardCachePageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1251387): This must be updated when FencedFrames
+  // supports back/forward cache.
   return STOP_OBSERVING;
 }
 

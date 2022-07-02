@@ -76,10 +76,10 @@ class TestResultsFetcher(object):
         https://www.chromium.org/developers/the-json-test-results-format
     """
 
-    def __init__(self):
+    def __init__(self, builders=None):
         self.web = Web()
-        self.builders = BuilderList.load_default_builder_list(FileSystem())
-        self._webtest_results_resultdb = None
+        self.builders = builders or BuilderList.load_default_builder_list(
+            FileSystem())
 
     def results_url(self, builder_name, build_number=None, step_name=None):
         """Returns a URL for one set of archived web test results.
@@ -92,9 +92,6 @@ class TestResultsFetcher(object):
             assert str(build_number).isdigit(), \
                 'expected numeric build number, got %s' % build_number
             url_base = self.builder_results_url_base(builder_name)
-            if step_name is None:
-                step_name = self.get_layout_test_step_name(
-                    Build(builder_name, build_number))
             if step_name:
                 return '%s/%s/%s/layout-test-results' % (
                     url_base, build_number,
@@ -157,8 +154,8 @@ class TestResultsFetcher(object):
                                          builder_name)
 
     @memoized
-    def fetch_retry_summary_json(self, build):
-        """Fetches and returns the text of the archived test_results_summary.json file.
+    def fetch_retry_summary_json(self, build, test_suite):
+        """Fetches and returns the text of the archived *test_results_summary.json file.
 
         This file is expected to contain the results of retrying web tests
         with and without a patch in a try job. It includes lists of tests
@@ -172,8 +169,9 @@ class TestResultsFetcher(object):
         # accessed via test-results, so we download it from GCS directly.
         # There is still a bug in uploading this json file for other platforms than linux.
         # see https://crbug.com/1157202
+        file_name = test_suite + '_' + 'test_results_summary.json'
         return self.web.get_binary('%s/%s' %
-                                   (url_base, 'test_results_summary.json'),
+                                   (url_base, file_name),
                                    return_none_on_404=True)
 
     def accumulated_results_url_base(self, builder_name):
@@ -200,15 +198,16 @@ class TestResultsFetcher(object):
     @memoized
     def fetch_results_from_resultdb_layout_tests(self, host, build,
                                                  unexpected_results):
-        rv = []
         if unexpected_results:
             predicate = PREDICATE_UNEXPECTED_RESULTS
         else:
             predicate = ""
         rv = self.fetch_results_from_resultdb(host, [build], predicate)
-        self._webtest_results_resultdb = WebTestResults.results_from_resultdb(
-            rv)
-        return self._webtest_results_resultdb
+        # Rebaselining should still work correctly on this object, even though
+        # it holds results for possibly multiple steps. ResultDB only exposes
+        # the test suite name (like 'blink_web_tests'), not the full step name
+        # with the '(with patch)' suffix.
+        return WebTestResults.results_from_resultdb(rv)
 
     def fetch_results_from_resultdb(self, host, builds, predicate):
         """Returns a list of test results from ResultDB
@@ -271,7 +270,6 @@ class TestResultsFetcher(object):
         if not build.builder_name or not build.build_number:
             _log.debug('Builder name or build number is None')
             return None
-        step_name = step_name or self.get_layout_test_step_name(build)
         return self.fetch_web_test_results(
             self.results_url(
                 build.builder_name,
@@ -279,52 +277,12 @@ class TestResultsFetcher(object):
                 step_name=step_name), full, step_name)
 
     @memoized
-    def get_layout_test_step_name(self, build):
-        if not build.builder_name or not build.build_number:
-            _log.debug('Builder name or build number is None')
-            return None
+    def get_layout_test_step_names(self, build):
+        if build.builder_name is None:
+            _log.debug('Builder name is None')
+            return []
 
-        # We were not able to retrieve step name for some builders from
-        # https://test-results.appspot.com. Read from config file instead
-        step_name = self.builders.step_name_for_builder(build.builder_name)
-        if step_name:
-            return step_name
-
-        url = '%s/testfile?%s' % (
-            TEST_RESULTS_SERVER,
-            six.moves.urllib.parse.urlencode([
-                ('buildnumber', build.build_number),
-                # This forces the server to gives us JSON rather than an HTML page.
-                ('callback', json_results_generator.JSON_CALLBACK),
-                ('builder', build.builder_name),
-                ('name', 'full_results.json')
-            ]))
-        data = self.web.get_binary(url, return_none_on_404=True)
-        if not data:
-            _log.debug('Got 404 response from:\n%s', url)
-            return None
-
-        # Strip out the callback
-        data = json.loads(json_results_generator.strip_json_wrapper(data))
-        suites = [
-            entry['TestType'] for entry in data
-            # Some suite names are like 'blink_web_tests on Intel GPU (with
-            # patch)'. Only make sure it starts with blink_web_tests and
-            # runs with a patch. This should be changed eventually to use actual
-            # structured data from the test results server.
-            if re.match(
-                r'(blink_web_tests|wpt_tests_suite|high_dpi_blink_web_tests).*\(with patch\)$',
-                entry['TestType'])
-        ]
-        # In manual testing, I sometimes saw results where the same suite was
-        # repeated twice. De-duplicate here to try to catch this.
-        suites = list(set(suites))
-        if len(suites) != 1:
-            raise Exception(
-                'build %s on builder %s expected to only have one web test '
-                'step, instead has %s' % (build.build_number,
-                                          build.builder_name, suites))
-        return suites[0]
+        return self.builders.step_names_for_builder(build.builder_name)
 
     @memoized
     def fetch_web_test_results(self, results_url, full=False, step_name=None):

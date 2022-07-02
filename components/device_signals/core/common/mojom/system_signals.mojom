@@ -40,12 +40,16 @@ enum AntiVirusProductState {
   kOff,
   // The security product software is in the snoozed state, temporarily off,
   // and not actively protecting the computer.
-  kSnoozed
+  kSnoozed,
+  // The security product software is expired and does not have the latest
+  // updates.
+  kExpired
 };
 
 [EnableIf=is_win]
 struct AntiVirusSignal {
   string display_name;
+  string product_id;
   AntiVirusProductState state;
 };
 
@@ -57,6 +61,7 @@ struct HotfixSignal {
 // Service in charge of collecting a specific set of device signals. The source
 // of these signals is platform-specific and, in some cases (i.e. Windows), may
 // need to be run a separate process.
+// This service can be accessed from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface SystemSignalsService {
   // Collects signals about a set of binary files specified by `requests`.

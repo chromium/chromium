@@ -386,7 +386,9 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       show_size_on_resize_(&agent_state_, false),
       paused_in_debugger_message_(&agent_state_, String()),
       inspect_mode_(&agent_state_, protocol::Overlay::InspectModeEnum::None),
-      inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {}
+      inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {
+  DCHECK(dom_agent);
+}
 
 InspectorOverlayAgent::~InspectorOverlayAgent() {
   DCHECK(!overlay_page_);

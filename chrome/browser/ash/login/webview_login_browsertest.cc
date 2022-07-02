@@ -74,7 +74,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -939,6 +939,20 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
   // The StoragePartition which is not in use is supposed to have been cleared.
   EXPECT_EQ("", GetAllCookies(signin_frame_partition_1));
   EXPECT_NE("", GetAllCookies(signin_frame_partition_2));
+
+  // Trigger another gaia load.
+  test::OobeJS().ClickOnPath(kBackButton);
+  WaitForGaiaPageBackButtonUpdate();
+  ExpectIdentifierPage();
+
+  // `signin_frame_partition_1` is disposed and no longer accessible.
+  bool found_signin_frame_partition_1 = false;
+  browser_context->ForEachStoragePartition(
+      base::BindLambdaForTesting([&](content::StoragePartition* partition) {
+        if (partition == signin_frame_partition_1)
+          found_signin_frame_partition_1 = true;
+      }));
+  EXPECT_FALSE(found_signin_frame_partition_1);
 }
 
 // Tests that requesting webcam access from the login screen works correctly.
@@ -950,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, RequestCamera) {
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
   bool getUserMediaSuccess = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       "navigator.getUserMedia("
       "    {video: true},"
       "    function() { window.domAutomationController.send(true); },"
@@ -960,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, RequestCamera) {
 
   // Audio devices should be denied from the login screen.
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       "navigator.getUserMedia("
       "    {audio: true},"
       "    function() { window.domAutomationController.send(true); },"
@@ -1208,7 +1222,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     // Override FakeSessionManagerClient. This will be shut down by the browser.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     device_policy_builder_.Build();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_builder_.GetBlob());

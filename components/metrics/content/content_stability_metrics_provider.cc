@@ -62,6 +62,7 @@ void ContentStabilityMetricsProvider::OnRecordingEnabled() {}
 
 void ContentStabilityMetricsProvider::OnRecordingDisabled() {}
 
+#if BUILDFLAG(IS_ANDROID)
 void ContentStabilityMetricsProvider::ProvideStabilityMetrics(
     SystemProfileProto* system_profile_proto) {
   helper_.ProvideStabilityMetrics(system_profile_proto);
@@ -70,6 +71,7 @@ void ContentStabilityMetricsProvider::ProvideStabilityMetrics(
 void ContentStabilityMetricsProvider::ClearSavedStabilityMetrics() {
   helper_.ClearSavedStabilityMetrics();
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ContentStabilityMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,

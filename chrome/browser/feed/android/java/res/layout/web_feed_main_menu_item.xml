@@ -14,56 +14,83 @@
     <LinearLayout
         style="@style/AppMenuItem"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/divider_height"
         android:gravity="center_vertical"
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
+        android:orientation="vertical"
         android:weightSum="1">
 
-        <org.chromium.components.browser_ui.widget.RoundedCornerImageView
-            android:id="@+id/icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
-            android:importantForAccessibility="no"
-            app:cornerRadiusBottomEnd="12dp"
-            app:cornerRadiusBottomStart="12dp"
-            app:cornerRadiusTopEnd="12dp"
-            app:cornerRadiusTopStart="12dp" />
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/divider_height"
+          android:gravity="center_vertical"
+          android:weightSum="1">
 
-        <TextView
-            android:id="@+id/menu_item_text"
-            style="@style/AppMenuItemText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true" />
+          <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+              android:id="@+id/icon"
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              android:layout_marginEnd="12dp"
+              android:importantForAccessibility="no"
+              app:cornerRadiusBottomEnd="12dp"
+              app:cornerRadiusBottomStart="12dp"
+              app:cornerRadiusTopEnd="12dp"
+              app:cornerRadiusTopStart="12dp" />
 
-        <org.chromium.components.browser_ui.widget.chips.ChipView
-            android:id="@+id/follow_chip_view"
-            style="@style/MenuFooterChip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:visibility="gone" />
+          <TextView
+              android:id="@+id/menu_item_text"
+              style="@style/AppMenuItemText"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:ellipsize="end"
+              android:singleLine="true" />
 
-        <org.chromium.components.browser_ui.widget.chips.ChipView
-            android:id="@+id/following_chip_view"
-            style="@style/MenuFooterChipInverse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:visibility="gone" />
+          <LinearLayout
+              android:id="@+id/chip_container"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end">
 
-        <org.chromium.components.browser_ui.widget.chips.ChipView
-            android:id="@+id/crow_chip_view"
-            style="@style/MenuFooterChipInverse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:visibility="gone" />
+              <org.chromium.components.browser_ui.widget.chips.ChipView
+                  android:id="@+id/follow_chip_view"
+                  style="@style/MenuFooterChip"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:visibility="gone" />
+
+              <org.chromium.components.browser_ui.widget.chips.ChipView
+                  android:id="@+id/following_chip_view"
+                  style="@style/MenuFooterChipInverse"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:visibility="gone" />
+
+              <org.chromium.components.browser_ui.widget.chips.ChipView
+                  android:id="@+id/crow_chip_view"
+                  style="@style/MenuFooterChipInverse"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="12dp"
+                  android:visibility="gone" />
+          </LinearLayout>
+      </LinearLayout>
+
+      <!-- Chips get pushed to a second row when both are displayed.
+           The second row is hidden by default. -->
+      <LinearLayout
+          android:id="@+id/footer_second_chip_row"
+          android:layout_width="match_parent"
+          android:layout_marginTop="@dimen/divider_height"
+          android:layout_weight="1"
+          android:layout_height="0dp"
+          android:orientation="horizontal"
+          android:visibility="gone">
+      </LinearLayout>
+
     </LinearLayout>
 
     <View

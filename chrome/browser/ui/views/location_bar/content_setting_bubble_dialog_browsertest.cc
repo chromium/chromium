@@ -121,7 +121,10 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
           : 0;
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame());
   content_settings->OnMediaStreamPermissionSet(
       GURL("https://example.com/"), mic_setting | camera_setting, std::string(),
       std::string(), std::string(), std::string());
@@ -133,7 +136,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       browser()->tab_strip_model()->GetActiveWebContents();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetMainFrame());
+          web_contents->GetPrimaryMainFrame());
   switch (content_type) {
     case ContentSettingsType::AUTOMATIC_DOWNLOADS: {
       // Automatic downloads are handled by DownloadRequestLimiter.
@@ -184,7 +187,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
       GURL("https://example.com"), permissions::RequestType::kNotifications);
-  permission_request_manager->AddRequest(web_contents->GetMainFrame(),
+  permission_request_manager->AddRequest(web_contents->GetPrimaryMainFrame(),
                                          &*notification_permission_request_);
   base::RunLoop().RunUntilIdle();
 }

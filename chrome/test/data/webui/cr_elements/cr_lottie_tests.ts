@@ -240,10 +240,15 @@ suite('cr_lottie_test', function() {
     await waitForPauseEvent;
   });
 
-  test('TestRenderFrame', async () => {
+  test('TestRenderFrame', async function() {
     // TODO(crbug.com/1108915): Offscreen canvas has a race issue when used in
-    // this test framework. To ensure that we capture a frame from the animation
-    // and not an empty frame, we delay the capture by 2 seconds.
+    // this test framework.
+    if (1) {
+      this.skip();
+    }
+
+    // To ensure that we capture a frame from the animation and not an empty
+    // frame, we delay the capture by 2 seconds.
     // Note: This issue is only observed in tests.
     const kRaceTimeout = 2000;
 
@@ -260,10 +265,15 @@ suite('cr_lottie_test', function() {
     assertDeepEquals(GREEN_PIXEL, await samplePixel());
   });
 
-  test('TestChangeAnimationUrl', async () => {
+  test('TestChangeAnimationUrl', async function() {
     // TODO(crbug.com/1108915): Offscreen canvas has a race issue when used in
-    // this test framework. To ensure that we capture a frame from the animation
-    // and not an empty frame, we delay the capture by 2 seconds.
+    // this test framework.
+    if (1) {
+      this.skip();
+    }
+
+    // To ensure that we capture a frame from the animation and not an empty
+    // frame, we delay the capture by 2 seconds.
     // Note: This issue is only observed in tests.
     const kRaceTimeout = 2000;
 

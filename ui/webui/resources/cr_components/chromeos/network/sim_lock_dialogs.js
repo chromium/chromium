@@ -34,6 +34,9 @@ Polymer({
       observer: 'deviceStateChanged_',
     },
 
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy: Object,
+
     /**
      * Set to true when there is an open dialog.
      * @type {boolean}
@@ -148,6 +151,23 @@ Polymer({
     puk_: {
       type: String,
       observer: 'pinOrPukChange_',
+    },
+
+    /** @private {boolean} */
+    isSimLockPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isSimLockPolicyEnabled') &&
+            loadTimeData.getBoolean('isSimLockPolicyEnabled');
+      }
+    },
+
+    /** @private {boolean} */
+    isSimPinLockRestricted_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeIsSimPinLockRestricted_(isSimLockPolicyEnabled_,' +
+          'globalPolicy, globalPolicy.*)',
     },
   },
 
@@ -281,6 +301,15 @@ Polymer({
     requestAnimationFrame(() => {
       this.$.unlockPin.focus();
     });
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsSimPinLockRestricted_() {
+    return this.isSimLockPolicyEnabled_ && !!this.globalPolicy &&
+        !this.globalPolicy.allowCellularSimLock;
   },
 
   /**

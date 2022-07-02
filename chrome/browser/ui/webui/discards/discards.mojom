@@ -91,6 +91,12 @@ interface DetailsProvider {
   // eligible for discard. Invokes a callback when the discard is complete, or
   // if the decision was made not to discard.
   Discard() => ();
+
+  // Toggle high efficiency or battery saver modes for manual testing.
+  // If the mode is enabled, this will disable it. Conversely, if it is disabled
+  // this will enable it.
+  ToggleHighEfficiencyMode();
+  ToggleBatterySaverMode();
 };
 
 // Represents the momentary state of a Page node. Sent from browser to the

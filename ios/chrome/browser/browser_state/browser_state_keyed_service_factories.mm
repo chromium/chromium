@@ -33,6 +33,7 @@
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#include "ios/chrome/browser/language/accept_languages_service_factory.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
@@ -42,7 +43,6 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
@@ -67,7 +67,6 @@
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
-#include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -157,14 +156,11 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SigninClientFactory::GetInstance();
   SyncSetupServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
-  TranslateAcceptLanguagesFactory::GetInstance();
+  AcceptLanguagesServiceFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   VerdictCacheManagerFactory::GetInstance();
-
-  if (IsURLBlocklistEnabled()) {
-    PolicyBlocklistServiceFactory::GetInstance();
-  }
+  PolicyBlocklistServiceFactory::GetInstance();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

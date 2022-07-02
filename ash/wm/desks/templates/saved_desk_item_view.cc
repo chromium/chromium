@@ -26,6 +26,7 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -35,9 +36,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -113,8 +116,9 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 }  // namespace
 
-SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
-    : desk_template_(desk_template->Clone()) {
+SavedDeskItemView::SavedDeskItemView(
+    std::unique_ptr<DeskTemplate> desk_template)
+    : desk_template_(std::move(desk_template)) {
   auto launch_template_callback = base::BindRepeating(
       &SavedDeskItemView::OnGridItemPressed, weak_ptr_factory_.GetWeakPtr());
 
@@ -254,6 +258,7 @@ SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
   });
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
@@ -286,12 +291,13 @@ bool SavedDeskItemView::IsNameBeingModified() const {
 void SavedDeskItemView::MaybeRemoveNameNumber() {
   // When there are existing matched Desk name and Template name (ie.
   // "Desk 1"), creating a new template from "Desk 1" will get auto generated
-  // template name from backend as "Desk 1 (1)", to prevent template
+  // template name from the frontend as "Desk 1 (1)", to prevent template
   // duplication, we show the template view name to be "Desk 1" by removing name
   // number, save template under such name will call out template replace
   // dialog.
-  if (FindOtherTemplateWithName(
-          DesksController::Get()->active_desk()->name())) {
+  if (saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
+          DesksController::Get()->active_desk()->name(), desk_template().type(),
+          uuid())) {
     // Replace the name number.
     name_view_->SetTemporaryName(DesksController::Get()->active_desk()->name());
     name_view_->SetViewName(DesksController::Get()->active_desk()->name());
@@ -300,10 +306,13 @@ void SavedDeskItemView::MaybeRemoveNameNumber() {
 
 void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
-  // get template name collisions.
-  SavedDeskPresenter::Get()->DeleteEntry(uuid);
+  // get template name collisions. Passing `nullopt` as `record_for_type` since
+  // we only record the delete operation when the user specifically deletes an
+  // entry.
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
+      uuid, /*record_for_type=*/absl::nullopt);
   UpdateTemplateName();
-  RecordReplaceTemplateHistogram();
+  RecordReplaceSavedDeskHistogram(desk_template_->type());
 }
 
 void SavedDeskItemView::RevertTemplateName() {
@@ -332,6 +341,25 @@ void SavedDeskItemView::UpdateTemplate(const DeskTemplate& updated_template) {
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`
   name_view_->OnContentsChanged();
+}
+
+void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  int accessible_text_id =
+      desk_template_->type() == DeskTemplateType::kTemplate
+          ? IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME
+          : IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME;
+
+  node_data->role = ax::mojom::Role::kButton;
+
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kName,
+      l10n_util::GetStringFUTF8(accessible_text_id,
+                                desk_template_->template_name()));
+
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kDescription,
+      l10n_util::GetStringUTF8(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 void SavedDeskItemView::Layout() {
@@ -364,9 +392,6 @@ void SavedDeskItemView::OnThemeChanged() {
   time_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
   time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
-
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
@@ -376,6 +401,10 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
     return;
 
   DCHECK_EQ(observed_view, name_view_);
+
+  // Make sure the current desk item view is fully visible.
+  ScrollViewToVisible();
+
   is_template_name_being_modified_ = true;
 
   // Assume we should commit the name change unless `HandleKeyEvent` detects the
@@ -458,28 +487,30 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
   // still being activated. In this case, we don't want to show the dialog and
   // activate its associated widget until after the desks bar widget is finished
   // activating. See https://crbug.com/1301759.
-  auto* template_to_replace = FindOtherTemplateWithName(name_view_->GetText());
+  auto* template_to_replace =
+      saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
+          name_view_->GetText(), desk_template().type(), uuid());
   if (template_to_replace) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
-                       weak_ptr_factory_.GetWeakPtr(), template_to_replace));
+        FROM_HERE, base::BindOnce(&SavedDeskItemView::MaybeShowReplaceDialog,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  template_to_replace->type(),
+                                  template_to_replace->uuid()));
     return;
   }
 
   UpdateTemplateName();
 }
 
-void SavedDeskItemView::MaybeShowReplaceDialog(
-    SavedDeskItemView* template_to_replace) {
+void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
+                                               const base::GUID& uuid) {
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  SavedDeskDialogController::Get()->ShowReplaceDialog(
-      root_window, name_view_->GetText(),
-      base::BindOnce(
-          &SavedDeskItemView::ReplaceTemplate, weak_ptr_factory_.GetWeakPtr(),
-          template_to_replace->desk_template_->uuid().AsLowercaseString()),
+  saved_desk_util::GetSavedDeskDialogController()->ShowReplaceDialog(
+      root_window, name_view_->GetText(), type,
+      base::BindOnce(&SavedDeskItemView::ReplaceTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), uuid.AsLowercaseString()),
       base::BindOnce(&SavedDeskItemView::RevertTemplateName,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -498,7 +529,7 @@ void SavedDeskItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
-  SavedDeskPresenter::Get()->SaveOrUpdateDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
       /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
       desk_template_->Clone());
 }
@@ -607,33 +638,16 @@ views::View* SavedDeskItemView::TargetForRect(views::View* root,
   return views::ViewTargeterDelegate::TargetForRect(root, rect);
 }
 
-SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
-    const std::u16string& name) const {
-  const auto templates_grid_view_items =
-      static_cast<const SavedDeskGridView*>(parent())->grid_items();
-
-  auto iter = std::find_if(
-      templates_grid_view_items.begin(), templates_grid_view_items.end(),
-      [this, name](const SavedDeskItemView* d) {
-        // Name duplication is allowed if one of the templates is an admin
-        // template.
-        return (d != this && d->desk_template()->template_name() == name &&
-                d->desk_template()->source() != DeskTemplateSource::kPolicy);
-      });
-  return iter == templates_grid_view_items.end() ? nullptr : *iter;
-}
-
 void SavedDeskItemView::OnDeleteTemplate() {
-  SavedDeskPresenter::Get()->DeleteEntry(
-      desk_template_->uuid().AsLowercaseString());
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
+      desk_template_->uuid().AsLowercaseString(), desk_template_->type());
 }
 
 void SavedDeskItemView::OnDeleteButtonPressed() {
   // Show the dialog to confirm the deletion.
-  auto* dialog_controller = SavedDeskDialogController::Get();
-  dialog_controller->ShowDeleteDialog(
+  saved_desk_util::GetSavedDeskDialogController()->ShowDeleteDialog(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-      name_view_->GetAccessibleName(),
+      name_view_->GetAccessibleName(), desk_template_->type(),
       base::BindOnce(&SavedDeskItemView::OnDeleteTemplate,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -657,7 +671,7 @@ void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
     delay = base::Seconds(3);
 #endif
 
-  SavedDeskPresenter::Get()->LaunchDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->LaunchDeskTemplate(
       desk_template_->uuid().AsLowercaseString(), delay,
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
@@ -694,6 +708,8 @@ void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}
 
 void SavedDeskItemView::OnViewHighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
+
+  ScrollViewToVisible();
 }
 
 void SavedDeskItemView::OnViewUnhighlighted() {

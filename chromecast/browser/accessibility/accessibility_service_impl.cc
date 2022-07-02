@@ -103,12 +103,12 @@ void AccessibilityServiceImpl::NotifyAccessibilitySettingChanged(
   for (chromecast::CastWebContents* webview : webviews) {
     mojo::Remote<mojom::CastAccessibilityClient> accessibility_client;
     content::RenderFrameHost* render_frame_host =
-        webview->web_contents()->GetMainFrame();
+        webview->web_contents()->GetPrimaryMainFrame();
 
     if (!render_frame_host)
       continue;
 
-    if (!render_frame_host->IsRenderFrameCreated())
+    if (!render_frame_host->IsRenderFrameLive())
       continue;
 
     service_manager::InterfaceProvider* interface_provider =
@@ -246,7 +246,7 @@ void AccessibilityServiceImpl::AnnounceChromeVox() {
 
   const std::string& extension_id = extension_misc::kChromeVoxExtensionId;
 
-  std::vector<base::Value> event_args;
+  base::Value::List event_args;
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX,
       extensions::cast::api::accessibility_private::OnIntroduceChromeVox::

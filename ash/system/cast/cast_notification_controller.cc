@@ -4,6 +4,7 @@
 
 #include "ash/system/cast/cast_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -98,7 +99,8 @@ void CastNotificationController::OnDevicesUpdated(
         GetNotificationTitle(sink, route), GetNotificationMessage(route),
         std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
+            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+            NotificationCatalogName::kCast),
         data,
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating(&CastNotificationController::StopCasting,

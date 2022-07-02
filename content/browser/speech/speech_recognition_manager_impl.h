@@ -145,7 +145,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // users deny the request.
   void MediaRequestPermissionCallback(
       int session_id,
-      const blink::mojom::StreamDevices& devices,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
       std::unique_ptr<MediaStreamUIProxy> stream_ui);
 
   // Entry point for pushing any external event into the session handling FSM.

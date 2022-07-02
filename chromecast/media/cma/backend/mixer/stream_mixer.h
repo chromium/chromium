@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -81,7 +82,8 @@ class StreamMixer {
 
   // Adds an input source to the mixer. The |input_source| must live at least
   // until input_source->FinalizeAudioPlayback() is called.
-  void AddInput(MixerInput::Source* input_source);
+  void AddInput(MixerInput::Source* input_source)
+      LOCKS_EXCLUDED(input_creation_lock_);
   // Removes an input source from the mixer. The input source will be removed
   // asynchronously. Once it has been removed, FinalizeAudioPlayback() will be
   // called on it; at this point it is safe to delete the input source.
@@ -158,25 +160,31 @@ class StreamMixer {
     bool muted = false;
   };
 
-  void SetNumOutputChannelsOnThread(int num_channels);
+  void SetNumOutputChannelsOnThread(int num_channels)
+      LOCKS_EXCLUDED(input_creation_lock_);
   void ResetPostProcessorsOnThread(CastMediaShlib::ResultCallback callback,
-                                   const std::string& override_config);
+                                   const std::string& override_config)
+      LOCKS_EXCLUDED(input_creation_lock_);
   void CreatePostProcessors(CastMediaShlib::ResultCallback callback,
                             const std::string& override_config,
-                            int expected_input_channels);
-  void FinalizeOnMixerThread();
-  void Start();
-  void Stop(LoopbackInterruptReason reason);
+                            int expected_input_channels)
+      EXCLUSIVE_LOCKS_REQUIRED(input_creation_lock_);
+  void FinalizeOnMixerThread() LOCKS_EXCLUDED(input_creation_lock_);
+  void Start() LOCKS_EXCLUDED(input_creation_lock_);
+  void Stop(LoopbackInterruptReason reason)
+      EXCLUSIVE_LOCKS_REQUIRED(input_creation_lock_);
   void CheckChangeOutputParams(int num_input_channels,
-                               int input_samples_per_second);
+                               int input_samples_per_second)
+      LOCKS_EXCLUDED(input_creation_lock_);
   void SignalError(MixerInput::Source::MixerError error);
   int GetEffectiveChannelCount(MixerInput::Source* input_source);
-  void AddInputOnThread(MixerInput::Source* input_source);
+  std::unique_ptr<MixerInput> CreateInput(MixerInput::Source* input_source);
+  void AddInputOnThread(MixerInput::Source* input_source,
+                        std::unique_ptr<MixerInput> input);
   void RemoveInputOnThread(MixerInput::Source* input_source);
   void SetCloseTimeout();
-  void UpdatePlayoutChannel();
 
-  void PlaybackLoop();
+  void PlaybackLoop() LOCKS_EXCLUDED(input_creation_lock_);
   void WriteOneBuffer();
   void WriteMixedPcm(int frames, int64_t expected_playback_time);
 
@@ -223,7 +231,6 @@ class StreamMixer {
   // AudioPostProcessors require stricter alignment conditions.
   const int filter_frame_alignment_;
 
-  int playout_channel_ = kChannelAll;
   int requested_input_channels_ = 0;
   int post_processor_input_channels_ = 0;
   int num_output_channels_ = 0;
@@ -240,6 +247,8 @@ class StreamMixer {
 
   State state_;
   base::TimeTicks close_timestamp_;
+
+  base::Lock input_creation_lock_;
 
   base::RepeatingClosure playback_loop_task_;
   base::flat_map<MixerInput::Source*, std::unique_ptr<MixerInput>> inputs_;

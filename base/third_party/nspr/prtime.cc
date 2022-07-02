@@ -73,6 +73,7 @@
 #include <ctype.h>
 #include <errno.h>  /* for EINVAL */
 #include <limits.h>
+#include <stddef.h>
 #include <string.h>
 #include <time.h>
 
@@ -790,7 +791,7 @@ PR_ParseTimeString(
                                           tmp_usec = tmp_usec * 10 + *end - '0';
                                         end++;
                                       }
-                                    int ndigits = end - rest;
+                                    ptrdiff_t ndigits = end - rest;
                                     while (ndigits++ < 6)
                                       tmp_usec *= 10;
                                     rest = end;

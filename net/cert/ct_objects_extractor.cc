@@ -17,9 +17,7 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -425,6 +423,4 @@ bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
                                     sizeof(kOCSPExtensionOid), sct_list);
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

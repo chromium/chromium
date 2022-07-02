@@ -62,7 +62,7 @@ std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
     const std::string& args) {
   function->set_extension(extension());
   if (contents_)
-    function->SetRenderFrameHost(contents_->GetMainFrame());
+    function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
   return std::unique_ptr<base::Value>(utils::RunFunctionAndReturnSingleResult(
       function, args, browser_context()));
 }
@@ -100,7 +100,7 @@ std::string ApiUnitTest::RunFunctionAndReturnError(ExtensionFunction* function,
                                                    const std::string& args) {
   function->set_extension(extension());
   if (contents_)
-    function->SetRenderFrameHost(contents_->GetMainFrame());
+    function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
   return utils::RunFunctionAndReturnError(function, args, browser_context());
 }
 

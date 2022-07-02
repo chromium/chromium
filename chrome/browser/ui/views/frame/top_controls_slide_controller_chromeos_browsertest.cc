@@ -1049,7 +1049,13 @@ class PageStateUpdateWaiter : content::WebContentsObserver {
 // Verifies that we ignore the shown ratios sent from widgets other than that of
 // the main frame (such as widgets of the drop-down menus in web pages).
 // https://crbug.com/891471.
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
+// TODO(1337418): Flaky for dbg and ASan builds.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_TestDropDowns DISABLED_TestDropDowns
+#else
+#define MAYBE_TestDropDowns TestDropDowns
+#endif
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   browser_view()->frame()->Maximize();
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
@@ -1400,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
-  permission_manager->AddRequest(active_contents->GetMainFrame(),
+  permission_manager->AddRequest(active_contents->GetPrimaryMainFrame(),
                                  &permission_request);
   waiter.WaitForRatio(1.f);
   EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
@@ -1422,14 +1428,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                                TopChromeShownState::kFullyHidden);
 }
 
-// Flaky on ChromeOS Release bots. https://crbug.com/1033648
-#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
-#define MAYBE_TestToggleChromeVox DISABLED_TestToggleChromeVox
-#else
-#define MAYBE_TestToggleChromeVox TestToggleChromeVox
-#endif
+// Flaky on ChromeOS bots. https://crbug.com/1033648
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       MAYBE_TestToggleChromeVox) {
+                       DISABLED_TestToggleChromeVox) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());

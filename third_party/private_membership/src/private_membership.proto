@@ -31,6 +31,7 @@ enum HashType {
   // Add more hash types if necessary.
 }
 
+// LINT.IfChange
 // An enum describing how to hash IDs to encrypted buckets.
 enum EncryptedBucketHashType {
   ENCRYPTED_BUCKET_HASH_TYPE_UNDEFINED = 0;
@@ -44,6 +45,7 @@ enum EncryptedBucketHashType {
 
   reserved 2;
 }
+// LINT.ThenChange(//depot/google3/privacy/private_membership/rlwe/shared/rlwe_id_utils_test.cc:encrypted_bucket_hash_types)
 
 // A proto message that holds the doubly encrypted identifier.
 message DoublyEncryptedId {

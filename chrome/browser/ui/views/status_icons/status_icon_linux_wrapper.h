@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -89,12 +90,12 @@ class StatusIconLinuxWrapper : public StatusIcon,
   scoped_refptr<StatusIconLinuxDbus> status_icon_dbus_;
 #endif
   std::unique_ptr<views::StatusIconLinux> status_icon_linux_;
-  views::StatusIconLinux* status_icon_;
+  raw_ptr<views::StatusIconLinux> status_icon_;
   StatusIconType status_icon_type_;
 
   gfx::ImageSkia image_;
   std::u16string tool_tip_;
-  StatusIconMenuModel* menu_model_ = nullptr;
+  raw_ptr<StatusIconMenuModel> menu_model_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_LINUX_WRAPPER_H_

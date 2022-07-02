@@ -77,12 +77,13 @@ const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Introduce a new COOP value, Same-Origin-Opener-Policy-Plus-Coep, which grants
-// cross-origin isolation. This used mainly for testing the process model and
-// should not be enabled in any production code.
-// See https://crbug.com/1221127.
-const base::Feature kCoopSameOriginAllowPopupsPlusCoep{
-    "CoopSameOriginAllowPopupsPlusCoep", base::FEATURE_DISABLED_BY_DEFAULT};
+// Introduce a new COOP value: restrict-properties. It restricts window
+// properties that can be accessed by other pages. This also grants
+// crossOriginIsolated if coupled with an appropriate COEP header.
+// This used solely for testing the process model and should not be enabled in
+// any production code. See https://crbug.com/1221127.
+const base::Feature kCoopRestrictProperties{"CoopRestrictProperties",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
@@ -116,12 +117,12 @@ const base::Feature kMdnsResponderGeneratedNameListing{
 //   of CORB's confirmation sniffers (for HTML, XML and JSON).
 // - Blocking is still done by injecting an empty response rather than erroring
 //   out the network request
-// - See other differences in the "ORB v0.1 vs full ORB differences" section in
-//   https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit#heading=h.mptmm5bpjtdn
+// - Other differences and more details can be found in
+//   //services/network/public/cpp/corb/README.md
 //
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 const base::Feature kOpaqueResponseBlockingV01{
-    "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OpaqueResponseBlockingV01", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
@@ -170,6 +171,12 @@ const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
 
 const base::Feature kWebSocketReassembleShortMessages{
     "WebSocketReassembleShortMessages", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
+// See:
+// https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
+const base::Feature kAcceptCHFrame{"AcceptCHFrame",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSCTAuditingRetryReports{"SCTAuditingRetryReports",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -249,10 +256,6 @@ const base::Feature kCorsNonWildcardRequestHeadersSupport{
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
-const base::Feature kCombineResponseBody{"CombineResponseBody",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Don't wait for database write before responding to
 // RestrictedCookieManager::SetCookieFromString.
 const base::Feature kFasterSetCookie{"FasterSetCookie",
@@ -268,8 +271,26 @@ const base::Feature kBatchSimpleURLLoader{"BatchSimpleURLLoader",
 const base::Feature kOmitCorsClientCert{"OmitCorsClientCert",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Read as much of the net::URLRequest as there is space in the Mojo data pipe.
-const base::Feature kOptimizeNetworkBuffers{"OptimizeNetworkBuffers",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// Allow pervasive payloads to use a single-keyed cache.
+const base::Feature kCacheTransparency{"CacheTransparency",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Load Pervasive Payloads List for Cache Transparency.
+const base::Feature kPervasivePayloadsList{"PervasivePayloadsList",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The list of pervasive payloads. A comma separated list starting with a
+// version number, followed one or more pairs of URL and checksum. The version
+// number is an integer. The URL is the canonical URL as returned by
+// GURL::spec(). The checksum is the SHA-256 of the payload and selected headers
+// converted to uppercase hexadecimal.
+constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
+    &kPervasivePayloadsList, "pervasive-payloads", ""};
+
+// Enables support for the `Variants` response header and reduce
+// accept-language. https://github.com/Tanych/accept-language
+const base::Feature kReduceAcceptLanguage{"ReduceAcceptLanguage",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

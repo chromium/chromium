@@ -6,6 +6,7 @@
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NACL_BROWSER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 
 namespace content {
@@ -29,7 +30,7 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
 
   // NaClBrowserDelegate overrides:
   void ShowMissingArchInfobar(int render_process_id,
-                              int render_view_id) override;
+                              int render_frame_id) override;
   bool DialogsAreSuppressed() override;
   bool GetCacheDirectory(base::FilePath* cache_dir) override;
   bool GetPluginDirectory(base::FilePath* plugin_dir) override;
@@ -44,7 +45,7 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
 
  private:
-  content::BrowserContext* browser_context_;  // Not owned.
+  raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 };
 
 }  // namespace extensions

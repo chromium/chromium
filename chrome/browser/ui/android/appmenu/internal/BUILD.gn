@@ -58,7 +58,7 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
@@ -74,12 +74,11 @@ android_library("javatests") {
     ":test_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
@@ -100,30 +99,22 @@ android_resources("test_java_resources") {
   testonly = true
 
   sources = [
-    "test/java/res/drawable/test_ic_arrow_downward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_arrow_forward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_info_outline_black_24dp.xml",
-    "test/java/res/drawable/test_ic_more_vert_black_24dp.xml",
-    "test/java/res/drawable/test_ic_refresh_black_24dp.xml",
-    "test/java/res/drawable/test_ic_star_border_black_24dp.xml",
-    "test/java/res/drawable/test_ic_vintage_filter.xml",
     "test/java/res/layout/test_app_menu_activity_layout.xml",
     "test/java/res/layout/test_menu_footer.xml",
     "test/java/res/layout/test_menu_header.xml",
     "test/java/res/menu/test_menu.xml",
   ]
-  deps = [ ":java_resources" ]
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/widget/android:java_test_resources",
+  ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java" ]
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

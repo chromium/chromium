@@ -194,6 +194,7 @@ public class FeedSurfaceMediator
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
+    private HasContentListener mHasContentListener;
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SignInPromo mSignInPromo;
@@ -235,6 +236,7 @@ public class FeedSurfaceMediator
             @FeedSurfaceCoordinator.StreamTabId int openingTabId, FeedActionDelegate actionDelegate,
             FeedOptionsCoordinator optionsCoordinator) {
         mCoordinator = coordinator;
+        mHasContentListener = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
@@ -294,7 +296,7 @@ public class FeedSurfaceMediator
     /** Update the content based on supervised user or enterprise policy. */
     void updateContent() {
         mFeedEnabled = FeedFeatures.isFeedEnabled();
-        if (mFeedEnabled == !mTabToStreamMap.isEmpty()) {
+        if (mFeedEnabled && !mTabToStreamMap.isEmpty()) {
             return;
         }
 
@@ -472,6 +474,7 @@ public class FeedSurfaceMediator
         // hasUnreadContent() changes.
         Callback<Boolean> callback = hasUnreadContent -> {
             headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
+            mHasContentListener.hasContentChanged(stream.getStreamKind(), hasUnreadContent);
         };
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
     }
@@ -685,7 +688,7 @@ public class FeedSurfaceMediator
 
     private void setHeaderIndicatorState(boolean suggestionsVisible) {
         boolean isSignedIn = isSignedIn();
-        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled();
+        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled() && suggestionsVisible;
         // If we're in tab mode now, make sure webfeed tab is set up.
         if (isTabMode) {
             setUpWebFeedTab();
@@ -704,11 +707,11 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_LOGO_KEY,
                 !isGoogleSearchEngine && isSignedIn && suggestionsVisible);
         ViewVisibility indicatorState;
-        if (!isSignedIn) {
-            // Gone when not signed in to align text to far left.
+        if (!isSignedIn || !suggestionsVisible) {
+            // Gone when not signed in or feed off to align text to far left.
             indicatorState = ViewVisibility.GONE;
-        } else if (!suggestionsVisible || !isGoogleSearchEngine) {
-            // Visible when Google is not the search engine (show logo) or when turned off (eye).
+        } else if (!isGoogleSearchEngine) {
+            // Visible when Google is not the search engine (show logo).
             indicatorState = ViewVisibility.VISIBLE;
         } else {
             // Invisible when we have centered text (signed in and not shown). This
@@ -813,7 +816,7 @@ public class FeedSurfaceMediator
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
         final int sectionHeaderStringId;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED) && isSignedIn()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED) && isSignedIn() && isExpanded) {
             sectionHeaderStringId = R.string.ntp_discover_on;
         } else if (isDefaultSearchEngineGoogle) {
             sectionHeaderStringId =

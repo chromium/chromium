@@ -23,10 +23,10 @@ suite('SiteFavicon', function() {
 
   function formExpected(url: string): string {
     return '-webkit-image-set(' +
-        'url("chrome://favicon2/?size=16&scale_factor=1x&page_url=' +
-        encodeURIComponent(url) + '&allow_google_server_fallback=0") 1x, ' +
-        'url("chrome://favicon2/?size=16&scale_factor=2x&page_url=' +
-        encodeURIComponent(url) + '&allow_google_server_fallback=0") 2x)';
+        'url("chrome://favicon2/?size=16&scaleFactor=1x&pageUrl=' +
+        encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
+        'url("chrome://favicon2/?size=16&scaleFactor=2x&pageUrl=' +
+        encodeURIComponent(url) + '&allowGoogleServerFallback=0") 2x)';
   }
 
   test('normal URL', function() {

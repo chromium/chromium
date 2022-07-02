@@ -27,22 +27,40 @@ enum class MetalReadWriteTextureSupportTier {
 };
 
 void RecordReadWriteMetalTexturesSupportedHistogram() {
-  // Metal tiers go 0, 1, 2, but we reserve 0 for when macOS is less then 10.13
-  // and we can't query.
+  // Metal tiers are `MTLReadWriteTextureTier[None|1|2]` which correspond to the
+  // integers 0, 1, and 2. The enum `MetalReadWriteTextureSupportTier` was
+  // written to use integers one higher than the macOS API constants so that it
+  // could support the concept of "unknown". Nowadays, `kUnknown` will only be
+  // logged in the case where `MTLCopyAllDevices()` returns an empty array,
+  // perhaps when running in an environment like VMWare?
   NSUInteger best_tier = 0;
 
-  if (@available(macOS 10.13, *)) {
-    base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
-    for (id<MTLDevice> device in devices.get()) {
-      best_tier = std::max(best_tier, [device readWriteTextureSupport] + 1);
-    }
+  base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
+  for (id<MTLDevice> device in devices.get()) {
+    best_tier = std::max(best_tier, [device readWriteTextureSupport] + 1);
   }
 
   UMA_HISTOGRAM_ENUMERATION(
       "Gpu.Metal.ReadWriteTextureSupport",
       static_cast<MetalReadWriteTextureSupportTier>(best_tier));
 }
+
+bool IsLowPowerGpu(const GPUInfo::GPUDevice& gpu) {
+  // Apple GPUs are considered low power. This may not be the case in the
+  // future.
+  switch (gpu.vendor_id) {
+    case 0x8086:  // Intel
+    case 0x106b:  // Apple
+      return true;
+    default:
+      return false;
+  }
 }
+
+bool IsHighPerformanceGpu(const GPUInfo::GPUDevice& gpu) {
+  return !gpu.IsSoftwareRenderer() && !IsLowPowerGpu(gpu);
+}
+}  // namespace
 
 bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
@@ -63,6 +81,20 @@ bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {
   angle::SystemInfo system_info;
   bool success = angle::GetSystemInfo(&system_info);
   FillGPUInfoFromSystemInfo(gpu_info, &system_info);
+
+  if (gpu_info->GpuCount() > 1) {
+    if (IsLowPowerGpu(gpu_info->gpu))
+      gpu_info->gpu.gpu_preference = gl::GpuPreference::kLowPower;
+    else if (IsHighPerformanceGpu(gpu_info->gpu))
+      gpu_info->gpu.gpu_preference = gl::GpuPreference::kHighPerformance;
+    for (auto& gpu : gpu_info->secondary_gpus) {
+      if (IsLowPowerGpu(gpu))
+        gpu.gpu_preference = gl::GpuPreference::kLowPower;
+      else if (IsHighPerformanceGpu(gpu))
+        gpu.gpu_preference = gl::GpuPreference::kHighPerformance;
+    }
+  }
+
   return success;
 }
 

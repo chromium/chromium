@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -102,7 +103,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 
   tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
   if (tab_restore_service_) {
-    tab_restore_service_observation_.Observe(tab_restore_service_);
+    tab_restore_service_observation_.Observe(tab_restore_service_.get());
     // If the tab entries are already loaded, invoke the observer method to
     // build the "Recently Closed" section. Otherwise it will be when the
     // backend loads.
@@ -345,11 +346,11 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
   // Set the icon of the group to the group color circle.
   AppController* controller =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  const auto& theme = [controller lastActiveThemeProvider];
-  const int color_id =
-      GetTabGroupContextMenuColorIdDeprecated(group->visual_data.color());
+  const auto& color_provider = [controller lastActiveColorProvider];
+  const ui::ColorId color_id =
+      GetTabGroupContextMenuColorId(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
-      kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
+      kTabGroupIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
 
   // Create the submenu.
   base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
@@ -538,7 +539,6 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
 void HistoryMenuBridge::OnURLVisited(history::HistoryService* history_service,
                                      ui::PageTransition transition,
                                      const history::URLRow& row,
-                                     const history::RedirectList& redirects,
                                      base::Time visit_time) {
   OnHistoryChanged();
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** @implements {CrostiniBrowserProxy} */
@@ -93,23 +95,23 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** @override */
   requestCrostiniInstallerStatus() {
     this.methodCalled('requestCrostiniInstallerStatus');
-    cr.webUIListenerCallback('crostini-installer-status-changed', false);
+    webUIListenerCallback('crostini-installer-status-changed', false);
   }
 
   /** @override */
   requestCrostiniExportImportOperationStatus() {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'crostini-export-import-operation-status-changed', false);
   }
 
   /** override */
-  exportCrostiniContainer() {
-    this.methodCalled('exportCrostiniContainer');
+  exportCrostiniContainer(containerId) {
+    this.methodCalled('exportCrostiniContainer', containerId);
   }
 
   /** override */
-  importCrostiniContainer() {
-    this.methodCalled('importCrostiniContainer');
+  importCrostiniContainer(containerId) {
+    this.methodCalled('importCrostiniContainer', containerId);
   }
 
   /** @override */
@@ -119,13 +121,12 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   requestCrostiniUpgraderDialogStatus() {
-    cr.webUIListenerCallback('crostini-upgrader-status-changed', false);
+    webUIListenerCallback('crostini-upgrader-status-changed', false);
   }
 
   /** @override */
   requestCrostiniContainerUpgradeAvailable() {
-    cr.webUIListenerCallback(
-        'crostini-container-upgrade-available-changed', true);
+    webUIListenerCallback('crostini-container-upgrade-available-changed', true);
   }
 
   /** @override */
@@ -166,7 +167,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** @override */
   getCrostiniActivePorts() {
     this.methodCalled('getCrostiniActivePorts');
-    return Promise.resolve(new Array());
+    return Promise.resolve([]);
   }
 
   /** @override */
@@ -218,7 +219,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** @override */
   requestContainerInfo() {
     this.methodCalled('requestContainerInfo');
-    cr.webUIListenerCallback('crostini-container-info', this.containerInfo);
+    webUIListenerCallback('crostini-container-info', this.containerInfo);
   }
 
   /** @override */

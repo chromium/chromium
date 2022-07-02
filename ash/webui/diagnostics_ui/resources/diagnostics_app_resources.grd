@@ -30,7 +30,7 @@
       <include name="IDR_DIAGNOSTICS_FAKE_NETWORK_HEALTH_PROVIDER_JS" file="fake_network_health_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_DATA_PROVIDER_JS" file="fake_system_data_provider.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_SYSTEM_ROUTINE_CONTROLLER_JS" file="fake_system_routine_controller.js" type="BINDATA"/>
-      <include name="IDR_DIAGNOSTICS_FONTS_CSS_JS" file="${root_gen_dir}/ash/webui/diagnostics_ui/resources/diagnostics_fonts_css.js" resource_path="diagnostics_fonts_css.js" use_base_dir="false" type="BINDATA"/>
+
       <include name="IDR_DIAGNOSTICS_FREQUENCY_CHANNEL_UTILS_JS" file="frequency_channel_utils.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ICONS_JS" file="${root_gen_dir}/ash/webui/diagnostics_ui/resources/icons.js" resource_path="icons.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_INPUT_CARD_JS" file="${root_gen_dir}/ash/webui/diagnostics_ui/resources/input_card.js" resource_path="input_card.js" use_base_dir="false" type="BINDATA"/>

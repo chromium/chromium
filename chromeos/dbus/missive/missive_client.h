@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 #define CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/reporting/proto/interface.pb.h"
+#include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -29,6 +31,10 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
   class TestInterface {
+   public:
+    virtual const std::vector<::reporting::Record>& GetEnqueuedRecords(
+        ::reporting::Priority) = 0;
+
    protected:
     virtual ~TestInterface() = default;
   };

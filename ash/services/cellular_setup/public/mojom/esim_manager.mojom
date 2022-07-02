@@ -121,9 +121,12 @@ interface Euicc {
   // |activation_code| may be obtained from ESimProfiles retrieved with a
   // previous call to RequestPendingProfiles or directly from the user through
   // a QR code. If |confirmation_code| is required but not supplied or if it’s
-  // invalid then a kErrorNeedsConfirmationCode result is returned.
+  // invalid then a kErrorNeedsConfirmationCode result is returned. The
+  // |is_install_via_qr_code| value should indicate whether the activation_code
+  // was entered manually or scanned from QR Code.
   InstallProfileFromActivationCode(string activation_code,
-                                   string confirmation_code) =>
+                                   string confirmation_code,
+                                   bool is_install_via_qr_code) =>
     (ProfileInstallResult result, pending_remote<ESimProfile>? profile);
 
   // Returns a QR Code image representing the EID of this Euicc. A null value is

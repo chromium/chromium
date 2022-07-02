@@ -149,7 +149,8 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // called later, in which case it overrides the final policies.
   void ComputePolicies(const GURL& url,
                        bool is_inside_mhtml,
-                       network::mojom::WebSandboxFlags frame_sandbox_flags);
+                       network::mojom::WebSandboxFlags frame_sandbox_flags,
+                       bool is_anonymous);
 
   // Returns a reference to the policies of the new document, i.e. the policies
   // in the policy container host to be committed.
@@ -220,7 +221,8 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   PolicyContainerPolicies ComputeFinalPolicies(
       const GURL& url,
       bool is_inside_mhtml,
-      network::mojom::WebSandboxFlags frame_sandbox_flags);
+      network::mojom::WebSandboxFlags frame_sandbox_flags,
+      bool is_anonymous);
 
   // The policies of the parent document, if any.
   const std::unique_ptr<PolicyContainerPolicies> parent_policies_;

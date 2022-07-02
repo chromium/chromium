@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -91,9 +90,6 @@ class SearchBoxViewBinder
                     searchBoxContainer.getPaddingTop(),
                     model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
                     searchBoxContainer.getPaddingBottom());
-        } else if (SearchBoxProperties.SEARCH_TEXT_SIZE == propertyKey) {
-            searchBoxTextView.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX, model.get(SearchBoxProperties.SEARCH_TEXT_SIZE));
         } else if (SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X == propertyKey) {
             searchBoxTextView.setTranslationX(
                     model.get(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X));

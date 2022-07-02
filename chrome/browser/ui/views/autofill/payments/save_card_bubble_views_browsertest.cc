@@ -70,7 +70,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/test_url_fetcher_factory.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -90,14 +89,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/url_constants.h"
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
@@ -179,9 +175,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(SetupClients());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Install the Settings App.
-    web_app::WebAppProvider::GetForTest(GetProfile(0))
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(GetProfile(0))
+        ->InstallSystemAppsForTesting();
 #endif
 
     // It's important to use the blank tab here and not some arbitrary page.
@@ -196,7 +191,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     ContentAutofillDriver::GetForRenderFrameHost(
-        GetActiveWebContents()->GetMainFrame())
+        GetActiveWebContents()->GetPrimaryMainFrame())
         ->autofill_manager()
         ->client()
         ->GetPaymentsClient()
@@ -207,19 +202,20 @@ class SaveCardBubbleViewsFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    credit_card_save_manager_ = ContentAutofillDriver::GetForRenderFrameHost(
-                                    GetActiveWebContents()->GetMainFrame())
-                                    ->autofill_manager()
-                                    ->client()
-                                    ->GetFormDataImporter()
-                                    ->credit_card_save_manager_.get();
+    credit_card_save_manager_ =
+        ContentAutofillDriver::GetForRenderFrameHost(
+            GetActiveWebContents()->GetPrimaryMainFrame())
+            ->autofill_manager()
+            ->client()
+            ->GetFormDataImporter()
+            ->credit_card_save_manager_.get();
     credit_card_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
 
     // Set up this class as the ObserverForTest implementation.
     AutofillManager* autofill_manager =
         ContentAutofillDriver::GetForRenderFrameHost(
-            GetActiveWebContents()->GetMainFrame())
+            GetActiveWebContents()->GetPrimaryMainFrame())
             ->autofill_manager();
     autofill_manager->AddObserver(this);
 
@@ -776,7 +772,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
-  std::unique_ptr<net::FakeURLFetcherFactory> url_fetcher_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
@@ -2154,14 +2149,18 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
                                      ui::PAGE_TRANSITION_TYPED,
                                      /*check_navigation_success=*/true));
   TabStripModel* tab_model = GetBrowser(0)->tab_strip_model();
-  tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   WaitForAnimationToEnd();
 
   // Ensures bubble and icon go away if user navigates to another tab.
   EXPECT_FALSE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
-  tab_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   WaitForAnimationToEnd();
 
   // If the user navigates back, shows only the icon not the bubble.

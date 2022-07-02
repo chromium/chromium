@@ -16,8 +16,9 @@ class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
   static const char Name_[];
-  static uint32_t MessageToStableIPCHash_(mojo::Message& message);
+  static std::pair<uint32_t, const void*> MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
+
 
 {%-  if interface.uuid %}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
@@ -53,6 +54,17 @@ class {{export_attribute}} {{interface.name}}
     k{{method.name}}MinVersion = {{method.min_version|default(0, true)}},
 {%- endfor %}
   };
+
+// crbug.com/1340245 - this causes binary size bloat on Fuchsia, and we're OK
+// with not having this data in traces there.
+#if !BUILDFLAG(IS_FUCHSIA)
+{#--- Per method symbols #}
+{%- for method in interface.methods %}
+  struct {{method.name}}_Sym {
+    NOINLINE static void IPCSymbol();
+  };
+{%- endfor %}
+#endif // !BUILDFLAG(IS_FUCHSIA)
 
 {#--- Enums #}
 {%- for enum in interface.enums %}

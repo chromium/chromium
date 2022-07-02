@@ -1252,7 +1252,8 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
       // up to the fragment itself. Compute this offset.
       const PhysicalOffset child_offset =
           accumulated_offset + item.OffsetInContainerFragment();
-      if (NGBoxFragmentPainter(cursor, item, *box_fragment)
+      NGInlinePaintContext inline_context;
+      if (NGBoxFragmentPainter(cursor, item, *box_fragment, &inline_context)
               .NodeAtPoint(result, hit_test_location, child_offset,
                            accumulated_offset, hit_test_action)) {
         return true;

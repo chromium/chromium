@@ -1,0 +1,28 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("test_support") {
+  crate_name = "cargo_metadata"
+  epoch = "0.14"
+  crate_type = "rlib"
+  testonly = "true"
+  crate_root = "crate/src/lib.rs"
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  cargo_pkg_version = "0.14.2"
+  cargo_pkg_authors =
+      "Oliver Schneider <git-spam-no-reply9815368754983@oli-obk.de>"
+  cargo_pkg_name = "cargo_metadata"
+  cargo_pkg_description = "structured access to the output of `cargo metadata`"
+  deps = [
+    "//third_party/rust/camino/v1:lib",
+    "//third_party/rust/cargo_platform/v0_1:lib",
+    "//third_party/rust/semver/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+  ]
+}

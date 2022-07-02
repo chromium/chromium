@@ -51,12 +51,14 @@ export class VolumeInfoImpl {
    * @param {(string|undefined)} remoteMountPath The path on the remote host
    *     where this volume is mounted, for crostini this is the user's homedir
    *     (/home/<username>).
+   * @param {(chrome.fileManagerPrivate.VmType|undefined)} vmType If this is a
+   *     GuestOS volume, the type of the VM which owns the volume.
    */
   constructor(
       volumeType, volumeId, fileSystem, error, deviceType, devicePath,
       isReadOnly, isReadOnlyRemovableDevice, profile, label, providerId,
       hasMedia, configurable, watchable, source, diskFileSystemType, iconSet,
-      driveLabel, remoteMountPath) {
+      driveLabel, remoteMountPath, vmType) {
     this.volumeType_ = volumeType;
     this.volumeId_ = volumeId;
     this.fileSystem_ = fileSystem;
@@ -64,6 +66,7 @@ export class VolumeInfoImpl {
     this.displayRoot_ = null;
     this.sharedDriveDisplayRoot_ = null;
     this.computersDisplayRoot_ = null;
+    this.vmType_ = vmType;
 
     /**
      * @private {?FilesAppEntry} an entry to be used as prefix of this volume on
@@ -291,6 +294,14 @@ export class VolumeInfoImpl {
 
   set prefixEntry(entry) {
     this.prefixEntry_ = entry;
+  }
+
+  /**
+   * @type {chrome.fileManagerPrivate.VmType|undefined} If this is a GuestOS
+   *     volume, the type of the VM which owns this volume.
+   */
+  get vmType() {
+    return this.vmType_;
   }
 
   /**

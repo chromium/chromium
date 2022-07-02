@@ -6,6 +6,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/test.gni")
 
 component("services") {
@@ -257,4 +258,32 @@ source_set("unit_tests") {
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]
   }
+
+  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+    sources += [ "stable_video_decoder_service_unittest.cc" ]
+  }
+}
+
+mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
+  sources = [ "webrtc_video_perf_mojolpm_fuzzer.cc" ]
+
+  proto_source = "webrtc_video_perf_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "media.fuzzing.webrtc_video_perf.proto.Testcase"
+
+  seed_corpus_sources = [
+    "webrtc_video_perf_fuzzer_seed_corpus/update_record_and_get_perf.textproto",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+
+  deps = [
+    ":services",
+    "//base",
+    "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//content/public/browser",
+    "//media",
+    "//media/capabilities:webrtc_video_stats_proto",
+    "//third_party/libprotobuf-mutator",
+  ]
 }

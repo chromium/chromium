@@ -14,44 +14,27 @@
 
 namespace blink {
 
-CodeCacheLoader::CodeCacheLoader(CodeCacheHost* code_cache_host)
-    : code_cache_host_(code_cache_host ? code_cache_host->GetWeakPtr()
-                                       : nullptr) {}
+CodeCacheLoader::CodeCacheLoader(CodeCacheHost* code_cache_host) {
+  DCHECK(code_cache_host);
+  code_cache_host_ = code_cache_host->GetWeakPtr();
+}
 
 CodeCacheLoader::~CodeCacheLoader() = default;
 
 void CodeCacheLoader::FetchFromCodeCache(mojom::CodeCacheType cache_type,
                                          const WebURL& url,
                                          FetchCodeCacheCallback callback) {
-  if (code_cache_host_) {
-    code_cache_host_->get()->FetchCachedCode(
-        cache_type, static_cast<GURL>(static_cast<KURL>(url)),
-        std::move(callback));
-  } else if (ShouldUsePerProcessInterface()) {
-    // TODO(mythria): This path is required for workers currently. Once we
-    // update worker requests to go through WorkerHost remove this path.
-    Platform::Current()->FetchCachedCode(cache_type, url, std::move(callback));
-  }
+  DCHECK(code_cache_host_);
+  code_cache_host_->get()->FetchCachedCode(
+      cache_type, static_cast<GURL>(static_cast<KURL>(url)),
+      std::move(callback));
 }
 
 void CodeCacheLoader::ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
                                           const WebURL& url) {
-  if (code_cache_host_) {
-    code_cache_host_->get()->ClearCodeCacheEntry(
-        cache_type, static_cast<GURL>(static_cast<KURL>(url)));
-  } else if (ShouldUsePerProcessInterface()) {
-    // TODO(mythria): This path is required for worklets currently. Once we
-    // update worker requests to go through WorkerHost remove this path.
-    Platform::Current()->ClearCodeCacheEntry(
-        cache_type, static_cast<GURL>(static_cast<KURL>(url)));
-  }
-}
-
-bool CodeCacheLoader::ShouldUsePerProcessInterface() const {
-  // If the code cache host is nullptr, and was never invalidated, then it was
-  // initialised with nullptr. In this case, we should use the per-process
-  // interface. Otherwise, we should try to use the host.
-  return !code_cache_host_ && !code_cache_host_.WasInvalidated();
+  DCHECK(code_cache_host_);
+  code_cache_host_->get()->ClearCodeCacheEntry(
+      cache_type, static_cast<GURL>(static_cast<KURL>(url)));
 }
 
 // static

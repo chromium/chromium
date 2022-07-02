@@ -522,4 +522,52 @@ IN_PROC_BROWSER_TEST_P(
       1);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    NoLoggingOnLinkClickReshowBubbleTest) {
+  base::HistogramTester histogram_tester;
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  EXPECT_TRUE(GetBubbleViews());
+  EXPECT_TRUE(IsIconVisible());
+
+  // Verify shown metrics: first show
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnrollBubble.Shown." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source),
+      false, 1);
+
+  ClickLearnMoreLink();
+
+  // Verify link click metrics: clicked
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.LinkClicked." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".LearnMoreLink",
+      true, 1);
+
+  // Switch back to the tab containing the bubble
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Verify close metrics: never closed
+  histogram_tester.ExpectTotalCount(
+      "Autofill.VirtualCardEnrollBubble.Result." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".FirstShow",
+      0);
+
+  // Verify show and reshow metrics
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.VirtualCardEnrollBubble.Shown." +
+                                     VirtualCardEnrollmentSourceToMetricSuffix(
+                                         virtual_card_enrollment_source)),
+      BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
+}
+
 }  // namespace autofill

@@ -667,7 +667,6 @@ void HotseatWidget::DelegateView::OnWallpaperColorsChanged() {
   UpdateTranslucentBackground();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // ScopedInStateTransition
 

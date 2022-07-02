@@ -7,6 +7,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
@@ -33,7 +34,7 @@ const char kChromeUIAppIconURL[] = "chrome://app-icon/";
 const char kChromeUIAppLauncherPageHost[] = "apps";
 const char kChromeUIAppsURL[] = "chrome://apps/";
 const char kChromeUIAppsWithDeprecationDialogURL[] =
-    "chrome://apps?showDeletionDialog";
+    "chrome://apps?showDeletionDialog=";
 const char kChromeUIAppsWithForceInstalledDeprecationDialogURL[] =
     "chrome://apps?showForceInstallDialog=";
 const char kChromeUIAutofillInternalsHost[] = "autofill-internals";
@@ -73,8 +74,6 @@ const char kChromeUIDevUiLoaderURL[] = "chrome://dev-ui-loader/";
 const char kChromeUIDiceWebSigninInterceptHost[] = "signin-dice-web-intercept";
 const char kChromeUIDiceWebSigninInterceptURL[] =
     "chrome://signin-dice-web-intercept/";
-const char kChromeUIDomainReliabilityInternalsHost[] =
-    "domain-reliability-internals";
 const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIDownloadsHost[] = "downloads";
 const char kChromeUIDownloadsURL[] = "chrome://downloads/";
@@ -323,6 +322,8 @@ const char kChromeUILockScreenNetworkHost[] = "lock-network";
 const char kChromeUILockScreenNetworkURL[] = "chrome://lock-network";
 const char kChromeUILockScreenStartReauthHost[] = "lock-reauth";
 const char kChromeUILockScreenStartReauthURL[] = "chrome://lock-reauth";
+const char kChromeUIManageMirrorSyncHost[] = "manage-mirrorsync";
+const char kChromeUIManageMirrorSyncURL[] = "chrome://manage-mirrorsync";
 const char kChromeUIMobileSetupHost[] = "mobilesetup";
 const char kChromeUIMobileSetupURL[] = "chrome://mobilesetup/";
 const char kChromeUIMultiDeviceInternalsHost[] = "multidevice-internals";
@@ -330,6 +331,8 @@ const char kChromeUIMultiDeviceSetupHost[] = "multidevice-setup";
 const char kChromeUIMultiDeviceSetupUrl[] = "chrome://multidevice-setup";
 const char kChromeUINetworkHost[] = "network";
 const char kChromeUINetworkUrl[] = "chrome://network";
+const char kChromeUINotificationTesterHost[] = "notification-tester";
+const char kChromeUINotificationTesterURL[] = "chrome://notification-tester";
 const char kChromeUIOSCreditsHost[] = "os-credits";
 const char kChromeUIOSCreditsURL[] = "chrome://os-credits/";
 const char kChromeUIOobeHost[] = "oobe";
@@ -419,6 +422,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUIMobileSetupHost,
     kChromeUIMultiDeviceSetupHost,
     kChromeUINetworkHost,
+    kChromeUINotificationTesterHost,
     kChromeUIOobeHost,
     kChromeUIOSCreditsHost,
     kChromeUIOSSettingsHost,
@@ -560,7 +564,6 @@ const char kSignOutSubPage[] = "signOut";
 const char kSyncSetupSubPage[] = "syncSetup";
 const char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
-const char kCreateProfileSubPage[] = "createProfile";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
 const char kPrivacySandboxAdPersonalizationSubPage[] =
@@ -759,6 +762,7 @@ const size_t kNumberOfChromeInternalsPathURLs =
 const char* const kChromeDebugURLs[] = {
     blink::kChromeUIBadCastCrashURL,
     blink::kChromeUIBrowserCrashURL,
+    blink::kChromeUIBrowserDcheckURL,
     blink::kChromeUICrashURL,
     blink::kChromeUIDumpURL,
     blink::kChromeUIKillURL,
@@ -772,6 +776,7 @@ const char* const kChromeDebugURLs[] = {
     blink::kChromeUIMemoryPressureModerateURL,
 #if BUILDFLAG(IS_WIN)
     blink::kChromeUIBrowserHeapCorruptionURL,
+    blink::kChromeUICfgViolationCrashURL,
     blink::kChromeUIHeapCorruptionCrashURL,
 #endif
 #if BUILDFLAG(IS_ANDROID)

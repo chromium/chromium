@@ -14,6 +14,10 @@
     --cr-dialog-title-slot-padding-bottom: 20px;
   }
 
+  :host([is-setup-screen-lock-in-progress_]) #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 20px;
+  }
+
   #title {
     align-items: center;
     color: var(--cros-text-color-primary);
@@ -43,6 +47,15 @@
   :host([has-started-setup-attempt_]) #dialogBody {
     /* Fixed height after intro state */
     height: 296px;
+  }
+
+  :host([is-setup-screen-lock-in-progress_]) #dialogBody {
+    /* Smaller fixed height for screen lock since subtitle occupies 40px,
+     * padding-bottom of title is 20px, 24px for second, third pages
+     * 40+20-24=36px
+     * 296-36=260px
+     */
+    height: 260px;
   }
 
   :host([did-setup-attempt-fail_]) #dialogBody {
@@ -82,6 +95,12 @@
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     height: 16px;
     width: 16px;
+  }
+
+  #screen-lock-instruction-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    height: 20px;
+    width: 20px;
   }
 
   #button-detail {
@@ -149,6 +168,19 @@
     padding-bottom: 24px;
   }
 
+  #screen-lock-instruction {
+    align-items: flex-end;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    font-family: 'Roboto';
+    font-size: 13px;
+    gap: 8px;
+    justify-content: start;
+    line-height: 20px;
+    padding-bottom: 24px;
+  }
+
   #illustration {
     background-position: center center;
     background-repeat: no-repeat;
@@ -175,7 +207,7 @@
         url(chrome://os-settings/images/notification_access_error.svg);
   }
 
-  :host([has-completed-setup-successfully_]) #illustration {
+  :host([has-completed-setup_]) #illustration {
     background-image:
         url(chrome://os-settings/images/notification_access_finished.svg);
   }
@@ -271,8 +303,15 @@
       <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
         <settings-multidevice-screen-lock-subpage
             is-screen-lock-enabled="{{isScreenLockEnabled_}}"
+            on-pin-number-selected="onPinNumberSelected_"
+            show-setup-pin-dialog="{{showSetupPinDialog_}}"
             is-password-dialog-showing="{{isPasswordDialogShowing}}">
         </settings-multidevice-screen-lock-subpage>
+        <div id="screen-lock-instruction">
+          <iron-icon id="screen-lock-instruction-icon" icon="os-settings:failure-alert">
+          </iron-icon>
+          $i18n{multideviceNotificationAccessSetupScreenLockIconInstruction}
+        </div>
       </template>
       <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
         <div id="illustration"></div>
@@ -288,7 +327,8 @@
   <div id="buttonContainer" slot="button-container">
     <div id="half-container">
       <template is="dom-if" if="[[shouldShowLearnMoreButton_]]" restamp>
-        <cr-button id="learnMore" on-click="onLearnMoreClicked_">
+        <cr-button id="learnMore" on-click="onLearnMoreClicked_"
+            aria-label$="[[learnMoreButtonAriaLabel_]]">
           $i18n{multideviceLearnMoreWithoutURL}
         </cr-button>
       </template>
@@ -305,7 +345,7 @@
           $i18n{done}
         </cr-button>
       </template>
-      <template is="dom-if" if="[[hasCompletedSetupSuccessfully_]]" restamp>
+      <template is="dom-if" if="[[hasCompletedSetup_]]" restamp>
         <cr-button id="doneButton" class="action-button"
             on-click="onDoneOrCloseButtonClicked_">
           $i18n{done}

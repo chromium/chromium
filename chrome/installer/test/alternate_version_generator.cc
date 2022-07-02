@@ -59,7 +59,7 @@
 namespace {
 
 const wchar_t k7zaExe[] = L"7za.exe";
-const wchar_t k7zaPathRelative[] = L"..\\..\\third_party\\lzma_sdk\\Executable";
+const wchar_t k7zaPathRelative[] = L"..\\..\\third_party\\lzma_sdk\\bin";
 const wchar_t kB7[] = L"B7";
 const wchar_t kBl[] = L"BL";
 const wchar_t kChromeBin[] = L"Chrome-bin";

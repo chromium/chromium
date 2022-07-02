@@ -60,7 +60,7 @@ js_type_check("closure_compile") {
       strict_error_checking_closure_args + [
         "js_module_root=gen/ui/file_manager/",
         "js_module_root=../../ui/file_manager/",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }
@@ -360,6 +360,7 @@ js_library("tasks") {
 js_library("toolbar") {
   testonly = true
   deps = [
+    ":tasks",
     ":test_data",
     "//ui/file_manager/integration_tests:testcase",
   ]
@@ -376,6 +377,7 @@ js_library("transfer") {
 js_library("trash") {
   testonly = true
   deps = [
+    ":tasks",
     ":test_data",
     "//ui/file_manager/integration_tests:testcase",
   ]

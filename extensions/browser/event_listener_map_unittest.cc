@@ -98,8 +98,8 @@ class EventListenerMapTest : public ExtensionsTest {
     mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
     info->url = url;
     return std::make_unique<Event>(
-        events::FOR_TEST, event_name, std::vector<base::Value>(), nullptr,
-        GURL(), EventRouter::USER_GESTURE_UNKNOWN, std::move(info));
+        events::FOR_TEST, event_name, base::Value::List(), nullptr, GURL(),
+        EventRouter::USER_GESTURE_UNKNOWN, std::move(info));
   }
 
   std::unique_ptr<EventListener> CreateLazyListener(

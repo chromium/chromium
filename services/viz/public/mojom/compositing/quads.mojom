@@ -10,6 +10,7 @@ import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
 import "services/viz/public/mojom/compositing/shared_quad_state.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
@@ -29,7 +30,7 @@ enum OverlayPriority {
 
 struct DebugBorderQuadState {
   // Debug border color.
-  uint32 color;
+  skia.mojom.SkColor4f color;
 
   // Debug border width.
   int32 width;
@@ -65,7 +66,7 @@ struct CompositorRenderPassQuadState {
 };
 
 struct SolidColorQuadState {
-  uint32 color;
+  skia.mojom.SkColor4f color;
   bool force_anti_aliasing_off;
 };
 
@@ -78,7 +79,7 @@ struct StreamVideoQuadState {
 
 struct SurfaceQuadState {
   SurfaceRange surface_range;
-  uint32 default_background_color;
+  skia.mojom.SkColor4f default_background_color;
   bool stretch_content_to_fill_bounds;
   bool is_reflection;
   bool allow_merge;
@@ -90,7 +91,7 @@ struct TextureQuadState {
   bool premultiplied_alpha;
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
-  uint32 background_color;
+  skia.mojom.SkColor4f background_color;
   array<float, 4> vertex_opacity;
   bool y_flipped;
   bool nearest_neighbor;

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/profiles/profile_manager.h"
+
 namespace crosapi {
 
 WebAppServiceAsh::WebAppServiceAsh() = default;
@@ -37,6 +40,32 @@ void WebAppServiceAsh::RegisterWebAppProviderBridge(
   for (auto& observer : observers_) {
     observer.OnWebAppProviderBridgeConnected();
   }
+}
+
+void WebAppServiceAsh::GetAssociatedAndroidPackage(
+    const std::string& app_id,
+    GetAssociatedAndroidPackageCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(profile);
+  if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  const absl::optional<std::string> package_name =
+      apk_web_app_service->GetPackageNameForWebApp(app_id);
+  const absl::optional<std::string> fingerprint =
+      apk_web_app_service->GetCertificateSha256Fingerprint(app_id);
+
+  // Any web-only TWA should have an associated package name and fingerprint.
+  DCHECK(package_name.has_value());
+  DCHECK(fingerprint.has_value());
+
+  auto result = crosapi::mojom::WebAppAndroidPackage::New();
+  result->package_name = *package_name;
+  result->sha256_fingerprint = *fingerprint;
+  std::move(callback).Run(std::move(result));
 }
 
 mojom::WebAppProviderBridge* WebAppServiceAsh::GetWebAppProviderBridge() {

@@ -253,8 +253,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       scoped_refptr<ShareableFileReference> file_reference,
       std::vector<scoped_refptr<ShareableBlobDataItem>> items,
       size_t total_items_size,
-      const char* evict_reason,
-      size_t memory_usage_before_eviction,
       std::pair<FileCreationInfo, int64_t /* avail_disk */> result);
 
   void OnMemoryPressure(

@@ -21,7 +21,7 @@ var DownloadsTest = class extends PolymerTest {
 var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js&host=webui-test';
+    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js';
   }
 };
 
@@ -32,7 +32,7 @@ TEST_F('DownloadsItemTest', 'All', function() {
 var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js&host=webui-test';
+    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js';
   }
 };
 
@@ -43,7 +43,7 @@ TEST_F('DownloadsManagerTest', 'All', function() {
 var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js&host=webui-test';
+    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js';
   }
 };
 
@@ -81,7 +81,7 @@ TEST_F('DownloadsUrlTest', 'All', async function() {
 var DownloadsSearchServiceTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js&host=webui-test';
+    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js';
   }
 };
 

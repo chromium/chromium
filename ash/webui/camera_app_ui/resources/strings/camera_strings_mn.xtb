@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Баркодыг скан хийх</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
+<translation id="4096701159033358951">Документ скан хийх онцлогийг татаж байна</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
 <translation id="4121305183798804752">Документ илэрлээ</translation>
 <translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Зураг авахыг зогсоох</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мега пиксел</translation>
 <translation id="4570032796877367747">Урд камер</translation>
+<translation id="4620818268515773682">Микрофоны дууг хаах тохиргоог асаана уу/унтраана уу. Дууг хаах тохиргоо унтраалттай байна</translation>
 <translation id="4628948037717959914">Зураг</translation>
 <translation id="4649291346448517080">Файлыг хадгалах боломжгүй байна</translation>
 <translation id="4695379108709712600">Дээш зөөж байна</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Документын баруун доод булан</translation>
+<translation id="7692090236657809299">Чиглүүлэгчийн хазайлт томруулалтыг идэвхжүүлэх</translation>
 <translation id="7726641833034062494">Энгийн видео бичих</translation>
 <translation id="7748344063862150053">Документын баруун дээд булан</translation>
 <translation id="7933675232020478311">Баруун доош зөөж байна</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">Доош хазайлгах</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />пиксел (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Микрофоны дууг хаах тохиргоог асаана уу/унтраана уу. Дууг хаах тохиргоо асаалттай байна</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8732462232047530626">Мета өгөгдлийг урьдчилан үзэх</translation>

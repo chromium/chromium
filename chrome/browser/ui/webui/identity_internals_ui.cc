@@ -79,12 +79,12 @@ class IdentityInternalsUIMessageHandler : public content::WebUIMessageHandler {
   // Gets all of the tokens stored in IdentityAPI token cache and returns them
   // to the caller using Javascript callback function
   // |identity_internals.returnTokens()|.
-  void GetInfoForAllTokens(const base::ListValue* args);
+  void GetInfoForAllTokens(const base::Value::List& args);
 
   // Initiates revoking of the token, based on the extension ID and token
   // passed as entries in the |args| list. Updates the caller of completion
   // using Javascript callback function |identity_internals.tokenRevokeDone()|.
-  void RevokeToken(const base::ListValue* args);
+  void RevokeToken(const base::Value::List& args);
 
   // A vector of token revokers that are currently revoking tokens.
   std::vector<std::unique_ptr<IdentityInternalsTokenRevoker>> token_revokers_;
@@ -225,8 +225,8 @@ base::Value::Dict IdentityInternalsUIMessageHandler::GetInfoForToken(
 }
 
 void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
-    const base::ListValue* args) {
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
+    const base::Value::List& args) {
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
@@ -248,32 +248,29 @@ void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
 }
 
 void IdentityInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "identityInternalsGetTokens",
       base::BindRepeating(
           &IdentityInternalsUIMessageHandler::GetInfoForAllTokens,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "identityInternalsRevokeToken",
       base::BindRepeating(&IdentityInternalsUIMessageHandler::RevokeToken,
                           base::Unretained(this)));
 }
 
 void IdentityInternalsUIMessageHandler::RevokeToken(
-    const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
+    const base::Value::List& list) {
   const std::string& callback_id = list[0].GetString();
   CHECK(!callback_id.empty());
   std::string extension_id;
   std::string access_token;
   if (!list.empty() && list[kRevokeTokenExtensionOffset].is_string()) {
-    extension_id =
-        args->GetListDeprecated()[kRevokeTokenExtensionOffset].GetString();
+    extension_id = list[kRevokeTokenExtensionOffset].GetString();
   }
   if (list.size() > kRevokeTokenTokenOffset &&
       list[kRevokeTokenTokenOffset].is_string()) {
-    access_token =
-        args->GetListDeprecated()[kRevokeTokenTokenOffset].GetString();
+    access_token = list[kRevokeTokenTokenOffset].GetString();
   }
 
   token_revokers_.push_back(std::make_unique<IdentityInternalsTokenRevoker>(

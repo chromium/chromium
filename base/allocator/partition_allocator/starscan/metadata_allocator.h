@@ -80,16 +80,4 @@ struct PCScanMetadataDeleter final {
 
 }  // namespace partition_alloc::internal
 
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-
-using ::partition_alloc::internal::AllocatedOnPCScanMetadataPartition;
-using ::partition_alloc::internal::MakePCScanMetadata;
-using ::partition_alloc::internal::MetadataAllocator;
-using ::partition_alloc::internal::PCScanMetadataAllocator;
-using ::partition_alloc::internal::PCScanMetadataDeleter;
-using ::partition_alloc::internal::ReinitPCScanMetadataAllocatorForTesting;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_METADATA_ALLOCATOR_H_

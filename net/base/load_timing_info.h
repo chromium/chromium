@@ -119,7 +119,7 @@ struct NET_EXPORT LoadTimingInfo {
   // Responding to a proxy AUTH challenge is never considered to be reusing a
   // socket, since a connection to the host wasn't established when the
   // challenge was received.
-  bool socket_reused;
+  bool socket_reused = false;
 
   // Unique socket ID, can be used to identify requests served by the same
   // socket.  For connections tunnelled over SPDY proxies, this is the ID of

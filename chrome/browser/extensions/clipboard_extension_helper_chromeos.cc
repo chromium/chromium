@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,7 +73,7 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
   }
 
  private:
-  ClipboardExtensionHelper* owner_;  // Not owned.
+  raw_ptr<ClipboardExtensionHelper> owner_;  // Not owned.
   bool has_request_pending_ = false;
 };
 

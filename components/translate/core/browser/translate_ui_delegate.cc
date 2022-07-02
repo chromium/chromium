@@ -479,6 +479,13 @@ void TranslateUIDelegate::ReportUIInteraction(UIInteraction ui_interaction) {
   }
 }
 
+void TranslateUIDelegate::ReportUIChange(bool is_ui_shown) {
+  if (translate_manager_) {
+    translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(
+        is_ui_shown);
+  }
+}
+
 // static
 std::u16string TranslateUIDelegate::GetUnknownLanguageDisplayName() {
   return l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE);

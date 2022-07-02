@@ -149,6 +149,9 @@ IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
 
   // The unique ID of the document of the frame that initiated the connection.
   IPC_STRUCT_MEMBER(std::string, document_id)
+
+  // The lifecycle of the frame that initiated the connection.
+  IPC_STRUCT_MEMBER(std::string, document_lifecycle)
 IPC_STRUCT_END()
 
 // Struct containing information about the destination of tab.connect().
@@ -258,25 +261,9 @@ IPC_STRUCT_TRAITS_END()
 #define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 
 // Map of extensions IDs to the executing script paths.
-typedef std::map<std::string, std::set<std::string> > ExecutingScriptsMap;
-
-struct ExtensionHostMsg_AutomationQuerySelector_Error {
-  enum Value { kNone, kNoDocument, kNodeDestroyed };
-
-  ExtensionHostMsg_AutomationQuerySelector_Error() : value(kNone) {}
-
-  Value value;
-};
+typedef std::map<std::string, std::set<std::string>> ExecutingScriptsMap;
 
 #endif  // INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
-
-IPC_ENUM_TRAITS_MAX_VALUE(
-    ExtensionHostMsg_AutomationQuerySelector_Error::Value,
-    ExtensionHostMsg_AutomationQuerySelector_Error::kNodeDestroyed)
-
-IPC_STRUCT_TRAITS_BEGIN(ExtensionHostMsg_AutomationQuerySelector_Error)
-IPC_STRUCT_TRAITS_MEMBER(value)
-IPC_STRUCT_TRAITS_END()
 
 // Messages sent from the browser to the renderer:
 
@@ -385,8 +372,7 @@ IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
 
 // Optional Ack message sent to the browser to notify that the response to a
 // function has been processed.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck,
-                    int /* request_id */)
+IPC_MESSAGE_ROUTED1(ExtensionHostMsg_ResponseAck, int /* request_id */)
 
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.
@@ -411,8 +397,8 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddAPIActionToActivityLog,
 
 // Sent by the renderer to log an event to the extension activity log.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddEventToActivityLog,
-                    std::string /* extension_id */,
-                    ExtensionHostMsg_APIActionOrEvent_Params)
+                     std::string /* extension_id */,
+                     ExtensionHostMsg_APIActionOrEvent_Params)
 
 // Sent by the renderer to log a DOM action to the extension activity log.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddDOMActionToActivityLog,
@@ -432,21 +418,6 @@ IPC_MESSAGE_ROUTED4(ExtensionHostMsg_DetailedConsoleMessageAdded,
                     std::u16string /* source */,
                     extensions::StackTrace /* stack trace */,
                     int32_t /* severity level */)
-
-// Sent when a query selector request is made from the automation API.
-// acc_obj_id is the accessibility tree ID of the starting element.
-IPC_MESSAGE_ROUTED3(ExtensionMsg_AutomationQuerySelector,
-                    int /* request_id */,
-                    int /* acc_obj_id */,
-                    std::u16string /* selector */)
-
-// Result of a query selector request.
-// result_acc_obj_id is the accessibility tree ID of the result element; 0
-// indicates no result.
-IPC_MESSAGE_ROUTED3(ExtensionHostMsg_AutomationQuerySelector_Result,
-                    int /* request_id */,
-                    ExtensionHostMsg_AutomationQuerySelector_Error /* error */,
-                    int /* result_acc_obj_id */)
 
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START

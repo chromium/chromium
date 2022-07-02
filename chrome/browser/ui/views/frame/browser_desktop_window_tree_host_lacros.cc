@@ -6,11 +6,16 @@
 
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/compositor/layer.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/platform_window.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +40,81 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
 
 BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
     default;
+
+void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
+  auto* const view = browser_view_->frame()->GetFrameView();
+  const bool showing_frame =
+      browser_view_->frame()->UseCustomFrame() && !view->IsFrameCondensed();
+  const float scale = device_scale_factor();
+  const gfx::Size widget_size =
+      view->GetWidget()->GetWindowBoundsInScreen().size();
+
+  std::vector<gfx::Rect> opaque_region;
+  if (showing_frame) {
+    const float corner_radius = chromeos::kTopCornerRadiusWhenRestored;
+    GetContentWindow()->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
+    GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
+
+    // The opaque region is a list of rectangles that contain only fully
+    // opaque pixels of the window.  We need to convert the clipping
+    // rounded-rect into this format.
+    const SkVector radii[4]{
+        {corner_radius, corner_radius}, {corner_radius, corner_radius}, {}, {}};
+    SkRRect rrect;
+    rrect.setRectRadii(gfx::RectToSkRect(view->GetLocalBounds()), radii);
+    gfx::RectF rectf = gfx::SkRectToRectF(rrect.rect());
+    rectf.Scale(scale);
+    // It is acceptable to omit some pixels that are opaque, but the region
+    // must not include any translucent pixels.  Therefore, we must
+    // conservatively scale to the enclosed rectangle.
+    gfx::Rect rect = gfx::ToEnclosedRect(rectf);
+
+    // Create the initial region from the clipping rectangle without rounded
+    // corners.
+    SkRegion region(gfx::RectToSkIRect(rect));
+
+    // Now subtract out the small rectangles that cover the corners.
+    struct {
+      SkRRect::Corner corner;
+      bool left;
+      bool upper;
+    } kCorners[] = {
+        {SkRRect::kUpperLeft_Corner, true, true},
+        {SkRRect::kUpperRight_Corner, false, true},
+        {SkRRect::kLowerLeft_Corner, true, false},
+        {SkRRect::kLowerRight_Corner, false, false},
+    };
+    for (const auto& corner : kCorners) {
+      auto radii = rrect.radii(corner.corner);
+      auto rx = std::ceil(scale * radii.x());
+      auto ry = std::ceil(scale * radii.y());
+      auto corner_rect = SkIRect::MakeXYWH(
+          corner.left ? rect.x() : rect.right() - rx,
+          corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
+      region.op(corner_rect, SkRegion::kDifference_Op);
+    }
+
+    // Convert the region to a list of rectangles.
+    for (SkRegion::Iterator i(region); !i.done(); i.next())
+      opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
+  } else {
+    GetContentWindow()->layer()->SetRoundedCornerRadius({});
+    GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
+    opaque_region.push_back({{}, widget_size});
+  }
+  platform_window()->SetOpaqueRegion(&opaque_region);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BrowserDesktopWindowTreeHostLacros,
+//     DesktopWindowTreeHost implementation:
+
+void BrowserDesktopWindowTreeHostLacros::OnWidgetInitDone() {
+  DesktopWindowTreeHostLacros::OnWidgetInitDone();
+
+  UpdateFrameHints();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros,
@@ -90,6 +170,13 @@ void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
   }
 }
 
+void BrowserDesktopWindowTreeHostLacros::OnBoundsChanged(
+    const BoundsChange& change) {
+  DesktopWindowTreeHostLacros::OnBoundsChanged(change);
+
+  UpdateFrameHints();
+}
+
 void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
     ui::PlatformWindowState old_window_show_state,
     ui::PlatformWindowState new_window_show_state) {
@@ -104,6 +191,8 @@ void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
     // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
     browser_view_->FullscreenStateChanging();
   }
+
+  UpdateFrameHints();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -30,8 +30,12 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
   static const NGPhysicalLineBoxFragment* Create(
       NGLineBoxFragmentBuilder* builder);
 
+  static const NGPhysicalLineBoxFragment* Clone(
+      const NGPhysicalLineBoxFragment&);
+
   using PassKey = base::PassKey<NGPhysicalLineBoxFragment>;
   NGPhysicalLineBoxFragment(PassKey, NGLineBoxFragmentBuilder* builder);
+  NGPhysicalLineBoxFragment(PassKey, const NGPhysicalLineBoxFragment&);
   ~NGPhysicalLineBoxFragment();
 
   void TraceAfterDispatch(Visitor*) const;

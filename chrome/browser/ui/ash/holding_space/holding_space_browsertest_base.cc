@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -86,7 +86,7 @@ base::FilePath CreateImageFile(Profile* profile) {
 // HoldingSpaceBrowserTestBase -------------------------------------------------
 
 HoldingSpaceBrowserTestBase::HoldingSpaceBrowserTestBase()
-    : web_app::SystemWebAppBrowserTestBase(false) {}
+    : SystemWebAppBrowserTestBase(false) {}
 
 HoldingSpaceBrowserTestBase::~HoldingSpaceBrowserTestBase() = default;
 
@@ -174,7 +174,7 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return;
 
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
 }
 

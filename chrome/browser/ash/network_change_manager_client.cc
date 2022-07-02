@@ -8,7 +8,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
 #include "net/base/network_change_notifier.h"
@@ -23,7 +22,9 @@ NetworkChangeManagerClient::NetworkChangeManagerClient(
       connection_subtype_(net::NetworkChangeNotifier::GetConnectionSubtype()),
       network_change_notifier_(network_change_notifier) {
   PowerManagerClient::Get()->AddObserver(this);
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 
   if (content::IsOutOfProcessNetworkService())
     ConnectToNetworkChangeManager();
@@ -34,8 +35,6 @@ NetworkChangeManagerClient::NetworkChangeManagerClient(
 }
 
 NetworkChangeManagerClient::~NetworkChangeManagerClient() {
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
   PowerManagerClient::Get()->RemoveObserver(this);
 }
 

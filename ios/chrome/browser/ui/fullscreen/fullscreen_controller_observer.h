@@ -21,26 +21,26 @@ class FullscreenControllerObserver {
 
   virtual ~FullscreenControllerObserver() = default;
 
-  // Invoked when the maximum or minimum viewport insets for |controller| have
+  // Invoked when the maximum or minimum viewport insets for `controller` have
   // been updated.
   virtual void FullscreenViewportInsetRangeChanged(
       FullscreenController* controller,
       UIEdgeInsets min_viewport_insets,
       UIEdgeInsets max_viewport_insets) {}
 
-  // Invoked after a scrolling event has caused |controller| to calculate
-  // |progress|.  A |progress| value of 1.0 denotes that the toolbar should be
-  // completely visible, while a |progress| value of 0.0 denotes that the
+  // Invoked after a scrolling event has caused `controller` to calculate
+  // `progress`.  A `progress` value of 1.0 denotes that the toolbar should be
+  // completely visible, while a `progress` value of 0.0 denotes that the
   // toolbar should be competely hidden.
   virtual void FullscreenProgressUpdated(FullscreenController* controller,
                                          CGFloat progress) {}
 
-  // Invoked with |controller| is enabled or disabled.
+  // Invoked with `controller` is enabled or disabled.
   virtual void FullscreenEnabledStateChanged(FullscreenController* controller,
                                              bool enabled) {}
 
-  // Invoked when |controller| is about to start an animation with |animator|.
-  // Observers are expected to add animations to update UI for |animator|'s
+  // Invoked when `controller` is about to start an animation with `animator`.
+  // Observers are expected to add animations to update UI for `animator`'s
   // final progress.
   virtual void FullscreenWillAnimate(FullscreenController* controller,
                                      FullscreenAnimator* animator) {}
@@ -50,7 +50,7 @@ class FullscreenControllerObserver {
   virtual void FullscreenControllerWillShutDown(
       FullscreenController* controller) {}
 
-  // Invoked when |controller| needs to resize its horizontal insets.
+  // Invoked when `controller` needs to resize its horizontal insets.
   // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
   virtual void ResizeHorizontalInsets(FullscreenController* controller) {}
 };

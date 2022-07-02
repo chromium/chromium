@@ -75,7 +75,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   SurfaceLayerImpl(LayerTreeImpl* tree_impl, int id, UpdateSubmissionStateCB);
 
  private:
-  void GetDebugBorderProperties(SkColor* color, float* width) const override;
+  void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void AppendRainbowDebugBorder(viz::CompositorRenderPass* render_pass);
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
   const char* LayerTypeAsString() const override;

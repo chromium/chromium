@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -22,8 +23,11 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -98,17 +102,6 @@ class AppServiceProxyLacros : public KeyedService,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
-
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
 
   // Launches the app for the given |app_id|. |event_flags| provides additional
   // context about the action which launches the app (e.g. a middle click
@@ -229,8 +222,7 @@ class AppServiceProxyLacros : public KeyedService,
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);
   // Adds a preferred app for |intent|.
-  void AddPreferredApp(const std::string& app_id,
-                       const apps::mojom::IntentPtr& intent);
+  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
 
   // Sets |app_id| as the preferred app for all of its supported links ('view'
   // intent filters with a scheme and host). Any existing preferred apps for
@@ -306,21 +298,11 @@ class AppServiceProxyLacros : public KeyedService,
         bool allow_placeholder_icon,
         apps::LoadIconCallback callback) override;
 
-    // TODO(crbug.com/1253250): Will be removed soon.
-    std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
-        const std::string& app_id,
-        apps::mojom::IconKeyPtr icon_key,
-        apps::mojom::IconType icon_type,
-        int32_t size_hint_in_dip,
-        bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override;
-
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxyLacros
     // field.
-    AppServiceProxyLacros* host_;
+    raw_ptr<AppServiceProxyLacros> host_;
 
-    apps::IconLoader* overriding_icon_loader_for_testing_;
+    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_ = nullptr;
   };
 
   bool IsValidProfile();
@@ -351,7 +333,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::PreferredAppsList preferred_apps_list_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
   // to AppServiceProxyLacros when publishers(ExtensionApps and WebApps) can run
@@ -369,7 +351,8 @@ class AppServiceProxyLacros : public KeyedService,
 
   std::unique_ptr<web_app::LacrosWebAppsController> lacros_web_apps_controller_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
-  crosapi::mojom::AppServiceProxy* remote_crosapi_app_service_proxy_ = nullptr;
+  raw_ptr<crosapi::mojom::AppServiceProxy> remote_crosapi_app_service_proxy_ =
+      nullptr;
   int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};

@@ -46,10 +46,15 @@ class AnnotateDomModelService
       optimization_guide::proto::OptimizationTarget optimization_target,
       const optimization_guide::ModelInfo& model_info) override;
 
-  // Returns the annotate dom model file, should only be called when the model
-  // file is already available. See the |NotifyOnModelFileAvailable| for an
-  // asynchronous notification of the model being available.
-  absl::optional<base::File> GetModelFile();
+  // Returns the annotate dom model file. If this returns a nullopt, see the
+  // |NotifyOnModelFileAvailable| for an asynchronous notification of the model
+  // being available.
+  absl::optional<base::File> GetModelFile() const;
+
+  // Returns the model of the version. If this returns a nullopt, see the
+  // |NotifyOnModelFileAvailable| for an asynchronous notification of the model
+  // being available.
+  absl::optional<int64_t> GetModelVersion() const;
 
   // Returns the overrides policy as a serialized binary proto representation
   // that will be passed to renderer processes.
@@ -67,7 +72,7 @@ class AnnotateDomModelService
   void SetModelFileForTest(base::File model_file);
 
  private:
-  void OnModelFileLoaded(base::File model_file);
+  void OnModelFileLoaded(int64_t model_version, base::File model_file);
 
   // Optimization Guide Service that provides model files for this service.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> opt_guide_ =
@@ -76,7 +81,9 @@ class AnnotateDomModelService
   // The file that contains the annotate DOM model. Available when the
   // file path has been provided by the Optimization Guide and has been
   // successfully loaded.
-  absl::optional<base::File> annotate_dom_model_file_;
+  absl::optional<base::File> model_file_;
+  // The version of the current model.
+  absl::optional<int64_t> model_version_;
 
   // A serialized binary representation of a SemanticSelectorPolicy proto.
   std::string overrides_policy_binary_proto_;

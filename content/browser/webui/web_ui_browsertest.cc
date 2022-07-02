@@ -23,7 +23,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/webui/content_web_ui_controller_factory.h"
+#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -174,7 +174,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   void AdvanceClock(base::TimeDelta delta) { clock_.Advance(delta); }
 
   WebContents* web_contents() { return shell()->web_contents(); }
-  RenderFrameHost* main_rfh() { return web_contents()->GetMainFrame(); }
+  RenderFrameHost* main_rfh() { return web_contents()->GetPrimaryMainFrame(); }
 
   TestWebUIMessageHandler* test_handler() { return test_handler_; }
 
@@ -182,7 +182,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler, DanglingUntriaged> test_handler_ = nullptr;
 };
 
 }  // namespace
@@ -195,11 +195,11 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   WebContents* web_contents = shell()->web_contents();
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that a WebUI page will use a separate SiteInstance when we navigated to
@@ -229,12 +229,12 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
       web_contents->GetSiteInstance());
   // Navigate from the initial blank page to the WebUI URL.
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
   auto* new_site_instance = web_contents->GetSiteInstance();
   EXPECT_NE(orig_site_instance, new_site_instance);
   EXPECT_FALSE(orig_site_instance->IsRelatedSiteInstance(new_site_instance));
@@ -248,12 +248,12 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that navigating from chrome-untrusted:// to chrome:// results in
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   ASSERT_TRUE(NavigateToURL(web_contents,
                             GetChromeUntrustedUIURL("test-host/title1.html")));
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   // Navigate to a WebUI and ensure that the SiteInstance has changed and the
   // new process has WebUI bindings.
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
@@ -417,24 +417,26 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, DISABLED_NavigateWhileWebUISend) {
   web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
 
   auto* webui = static_cast<WebUIImpl*>(web_contents->GetWebUI());
-  EXPECT_EQ(web_contents->GetMainFrame(), webui->frame_host());
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame(), webui->frame_host());
 
-  test_handler->set_finish_closure(base::BindLambdaForTesting(
-      [&]() { EXPECT_NE(web_contents->GetMainFrame(), webui->frame_host()); }));
+  test_handler->set_finish_closure(base::BindLambdaForTesting([&]() {
+    EXPECT_NE(web_contents->GetPrimaryMainFrame(), webui->frame_host());
+  }));
 
   bool received_send_message = false;
   test_handler->set_send_message_closure(
       base::BindLambdaForTesting([&]() { received_send_message = true; }));
 
   base::RunLoop run_loop;
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"onunload=function() { chrome.send('sendMessage')}",
       base::BindOnce([](base::OnceClosure callback,
                         base::Value) { std::move(callback).Run(); },
                      run_loop.QuitClosure()));
   run_loop.Run();
 
-  RenderFrameDeletedObserver delete_observer(web_contents->GetMainFrame());
+  RenderFrameDeletedObserver delete_observer(
+      web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/simple_page.html")));
   delete_observer.WaitUntilDeleted();
@@ -454,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, CoopCoepPolicies) {
   const GURL isolated_url(GetChromeUntrustedUIURL("isolated/title2.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, isolated_url));
 
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(true, EvalJs(main_frame, "window.crossOriginIsolated;",
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
 }
@@ -504,14 +506,14 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest, DefaultSchemesCanBeRequested) {
     url = GURL(base::StrCat(
         {requestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 
   for (const auto& unrequestable_scheme : unrequestable_schemes) {
     url = GURL(base::StrCat(
         {unrequestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 }
 
@@ -555,14 +557,14 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest,
     url = GURL(base::StrCat(
         {requestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 
   for (const auto& unrequestable_scheme : unrequestable_schemes) {
     url = GURL(base::StrCat(
         {unrequestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 }
 
@@ -653,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       GetWebUIURL("test-host/web_ui_shared_worker.js"),
       kLoadSharedWorkerScript);
 
-  std::string expected_failure = R"(a JavaScript error:
-Error: Failed to construct 'SharedWorker')";
+  std::string expected_failure =
+      "a JavaScript error: \"Error: Failed to construct 'SharedWorker'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
@@ -678,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
   // Navigate to a chrome:// main page.
   EXPECT_TRUE(NavigateToURL(web_contents, web_ui_url));
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   // Add an iframe in chrome-untrusted://.
   EXPECT_EQ(true,
             EvalJs(main_frame,
@@ -728,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'SharedWorker': "
+      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_shared_worker.js' cannot "
       "be accessed from origin 'chrome://trusted'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -746,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'SharedWorker': "
+      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_shared_worker.js' cannot "
       "be accessed from origin 'http://localhost";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -763,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
       GetWebUIURL("trusted/web_ui_shared_worker.js"), kLoadSharedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'SharedWorker': Script "
+      "a JavaScript error: \"Error: Failed to construct 'SharedWorker': Script "
       "at 'chrome://trusted/web_ui_shared_worker.js' cannot be accessed from "
       "origin 'chrome-untrusted://untrusted'.";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -792,8 +794,8 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       GURL(GetWebUIURL("test-host/web_ui_dedicated_worker.js")),
       kLoadDedicatedWorkerScript);
 
-  std::string expected_failure = R"(a JavaScript error:
-Error: Failed to construct 'Worker')";
+  std::string expected_failure =
+      "a JavaScript error: \"Error: Failed to construct 'Worker'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
@@ -817,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 
   // Navigate to a chrome:// main page.
   EXPECT_TRUE(NavigateToURL(web_contents, web_ui_url));
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   // Add an iframe in chrome-untrusted://.
   EXPECT_EQ(true,
             EvalJs(main_frame,
@@ -865,7 +867,7 @@ IN_PROC_BROWSER_TEST_P(
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'Worker': "
+      "a JavaScript error: \"Error: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
       "cannot be accessed from origin 'chrome://trusted'";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -883,7 +885,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'Worker': "
+      "a JavaScript error: \"Error: Failed to construct 'Worker': "
       "Script at 'chrome-untrusted://untrusted/web_ui_dedicated_worker.js' "
       "cannot be accessed from origin 'http://localhost";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
@@ -902,7 +904,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
       kLoadDedicatedWorkerScript);
 
   std::string expected_failure =
-      "a JavaScript error:\nError: Failed to construct 'Worker': Script "
+      "a JavaScript error: \"Error: Failed to construct 'Worker': Script "
       "at 'chrome://trusted/web_ui_dedicated_worker.js' cannot be accessed "
       "from origin 'chrome-untrusted://untrusted'.";
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));

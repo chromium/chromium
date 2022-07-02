@@ -187,7 +187,8 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   // thing...
   uint8_t* aligned_start_address = base::bits::AlignDown(
       static_cast<uint8_t*>(start_address), GetSystemPageSize());
-  size_t adjusted_size = mapped_size + (static_cast<uint8_t*>(start_address) -
+  size_t adjusted_size =
+      mapped_size + static_cast<size_t>(static_cast<uint8_t*>(start_address) -
                                         aligned_start_address);
 
 #if BUILDFLAG(IS_MAC)
@@ -432,7 +433,8 @@ void ProcessMemoryDump::SerializeAllocatorDumpsInto(
 
     memory_edge->set_source_id(edge.source.ToUint64());
     memory_edge->set_target_id(edge.target.ToUint64());
-    memory_edge->set_importance(edge.importance);
+    // TODO(crbug.com/1333557): Fix .proto and remove this cast.
+    memory_edge->set_importance(static_cast<uint32_t>(edge.importance));
   }
 }
 

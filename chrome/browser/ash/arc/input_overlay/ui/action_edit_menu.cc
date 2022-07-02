@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,7 +17,7 @@
 namespace arc {
 namespace input_overlay {
 namespace {
-constexpr char kFontSytle[] = "Roboto";
+constexpr char kFontStyle[] = "Roboto";
 constexpr int kFontSize = 16;
 constexpr int kCornerRadius = 6;
 constexpr int kMenuHeight = 192;
@@ -46,7 +47,7 @@ class ActionEditMenu::BindingButton : public views::LabelButton {
         views::Button::STATE_HOVERED,
         color_provider->GetContentLayerColor(
             ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
-    label()->SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL,
+    label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                        kFontSize, gfx::Font::Weight::NORMAL));
     auto key_size = CalculatePreferredSize();
     SetMinSize(gfx::Size(key_size.width(), kButtonHeight));
@@ -120,7 +121,7 @@ void ActionEditMenu::InitActionTapEditMenu() {
   if (!color_provider)
     return;
   auto bg_color = color_provider->GetBackgroundColorInMode(
-      color_provider->IsDarkModeEnabled());
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
 
   // Add each binding button.

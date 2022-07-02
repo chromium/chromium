@@ -47,8 +47,6 @@ void FakeSoftwareOutputSurface::SwapBuffersAck() {
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }
 
-void FakeSoftwareOutputSurface::BindFramebuffer() {}
-
 void FakeSoftwareOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
   NOTREACHED();
 }
@@ -57,30 +55,14 @@ void FakeSoftwareOutputSurface::SetEnableDCLayers(bool enabled) {
   NOTREACHED();
 }
 
-uint32_t FakeSoftwareOutputSurface::GetFramebufferCopyTextureFormat() {
-  return GL_RGB;
-}
-
 void FakeSoftwareOutputSurface::BindToClient(OutputSurfaceClient* client) {
   DCHECK(client);
   DCHECK(!client_);
   client_ = client;
 }
 
-bool FakeSoftwareOutputSurface::HasExternalStencilTest() const {
-  return false;
-}
-
 bool FakeSoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-unsigned FakeSoftwareOutputSurface::GetOverlayTextureId() const {
-  return 0;
-}
-
-unsigned FakeSoftwareOutputSurface::UpdateGpuFence() {
-  return 0;
 }
 
 void FakeSoftwareOutputSurface::SetUpdateVSyncParametersCallback(

@@ -18,6 +18,10 @@
 
 namespace ash {
 
+namespace eche_app {
+class LaunchAppHelperTest;
+}
+
 // Class managing toast requests.
 class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public ToastOverlay::Delegate,
@@ -33,6 +37,11 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // ToastManager overrides:
   void Show(const ToastData& data) override;
   void Cancel(const std::string& id) override;
+  bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
+      const std::string& id) override;
+  bool MaybeActivateHighlightedDismissButtonOnActiveToast(
+      const std::string& id) override;
+  bool IsRunning(const std::string& id) const override;
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
@@ -41,13 +50,11 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
-  friend class ToastManagerImplTest;
-  friend class BluetoothNotificationControllerTest;
   friend class AutoConnectNotifierTest;
+  friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
-
-  // Tells if the toast with the provided ID is running.
-  bool IsRunning(const std::string& id) const;
+  friend class ToastManagerImplTest;
+  friend class eche_app::LaunchAppHelperTest;
 
   void ShowLatest();
   void OnDurationPassed(int toast_number);

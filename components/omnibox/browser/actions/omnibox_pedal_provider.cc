@@ -322,16 +322,6 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
        concept_data->FindKey("pedals")->GetListDeprecated()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
-    if (!locale_is_english) {
-      // These IDs are the first and last for batch 3. Skip loading if batch 3
-      // is not enabled for the current locale.
-      if (id >= static_cast<int>(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS) &&
-          id <=
-              static_cast<int>(OmniboxPedalId::MANAGE_CHROMEOS_ACCESSIBILITY) &&
-          !OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled()) {
-        continue;
-      }
-    }
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
     if (pedal_iter == pedals_.end()) {
       // Data may exist for Pedals that are intentionally not registered; skip.
@@ -416,7 +406,11 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
   StringTokenizer16 tokenizer(synonyms_csv, u",،、");
   while (tokenizer.GetNext()) {
     OmniboxPedal::TokenSequence sequence(0);
-    TokenizeAndExpandDictionary(sequence, tokenizer.token());
+    // In some languages where whitespace is significant but not a token
+    // delimiter, we want to trim and normalize whitespace that might be
+    // added by translators for reading convenience in translation console.
+    TokenizeAndExpandDictionary(
+        sequence, base::CollapseWhitespace(tokenizer.token(), false));
     group.AddSynonym(std::move(sequence));
   }
   return group;

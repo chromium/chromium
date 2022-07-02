@@ -4,6 +4,7 @@
 
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/metrics/content/extensions_helper.h"
@@ -48,7 +49,7 @@ class MockExtensionsHelper : public ExtensionsHelper {
   }
 
  private:
-  content::RenderProcessHost* host_ = nullptr;
+  raw_ptr<content::RenderProcessHost> host_ = nullptr;
 };
 
 }  // namespace
@@ -150,13 +151,6 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
       "Stability.Counts2", StabilityEventType::kRendererFailedLaunch, 1);
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kExtensionCrash, 0);
-
-  // Verify that |system_profile| is populated with the Local State stability
-  // pref counts.
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(2, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -202,13 +196,6 @@ TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
   histogram_tester.ExpectBucketCount(
       "Stability.Counts2", StabilityEventType::kExtensionRendererFailedLaunch,
       1);
-
-  // Verify that |system_profile| is populated with the Local State stability
-  // pref counts.
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(1, system_profile.stability().extension_renderer_crash_count());
 }
 #endif
 

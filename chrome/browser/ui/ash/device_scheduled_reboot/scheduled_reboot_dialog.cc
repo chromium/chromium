@@ -52,7 +52,6 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
                       base::TimeFormatTimeOfDay(reboot_time),
                       base::TimeFormatShortDate(reboot_time)))
                   .set_is_secondary())
-          .OverrideShowCloseButton(false)
           .Build();
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(

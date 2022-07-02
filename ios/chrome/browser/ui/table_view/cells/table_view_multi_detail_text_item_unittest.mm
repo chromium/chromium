@@ -15,7 +15,7 @@
 
 using TableViewMultiDetailTextItemTest = PlatformTest;
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(TableViewMultiDetailTextItemTest, TextLabels) {
   TableViewMultiDetailTextItem* item =
       [[TableViewMultiDetailTextItem alloc] initWithType:0];

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using blink::mojom::IDBCursorDirection;
@@ -39,7 +39,7 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
       object_stores;
   data.GetObjectStoresDataView(&object_stores);
   out->object_stores.ReserveCapacityForSize(
-      SafeCast<wtf_size_t>(object_stores.size()));
+      base::checked_cast<wtf_size_t>(object_stores.size()));
   for (size_t i = 0; i < object_stores.size(); ++i) {
     const int64_t key = object_stores.keys()[i];
     scoped_refptr<blink::IDBObjectStoreMetadata> object_store;
@@ -281,7 +281,8 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
     case blink::mojom::IDBKeyPathType::Array: {
       const auto& array = key_path.Array();
       Vector<String> result;
-      result.ReserveInitialCapacity(SafeCast<wtf_size_t>(array.size()));
+      result.ReserveInitialCapacity(
+          base::checked_cast<wtf_size_t>(array.size()));
       for (const auto& item : array)
         result.push_back(item);
       return blink::mojom::blink::IDBKeyPathData::NewStringArray(
@@ -345,7 +346,8 @@ bool StructTraits<blink::mojom::IDBObjectStoreMetadataDataView,
   value->max_index_id = data.max_index_id();
   MapDataView<int64_t, blink::mojom::IDBIndexMetadataDataView> indexes;
   data.GetIndexesDataView(&indexes);
-  value->indexes.ReserveCapacityForSize(SafeCast<wtf_size_t>(indexes.size()));
+  value->indexes.ReserveCapacityForSize(
+      base::checked_cast<wtf_size_t>(indexes.size()));
   for (size_t i = 0; i < indexes.size(); ++i) {
     const int64_t key = indexes.keys()[i];
     scoped_refptr<blink::IDBIndexMetadata> index;

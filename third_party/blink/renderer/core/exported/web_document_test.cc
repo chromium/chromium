@@ -265,7 +265,8 @@ bool SiteForCookiesEqual(const char* path,
                          const net::SiteForCookies& site_for_cookies) {
   KURL ref_url = ToOriginA(path);
   ref_url.SetPort(80);  // url::Origin takes exception with :0.
-  return net::SiteForCookies::FromUrl(ref_url).IsEquivalent(site_for_cookies);
+  return net::SiteForCookies::FromUrl(GURL(ref_url))
+      .IsEquivalent(site_for_cookies);
 }
 
 TEST_F(WebDocumentFirstPartyTest, Empty) {
@@ -460,6 +461,12 @@ TEST_F(WebDocumentFirstPartyTest,
        NestedOriginAInOriginBWithFirstPartyOverride) {
   Load(g_nested_origin_a_in_origin_b);
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
 
   ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_a_in_origin_b,

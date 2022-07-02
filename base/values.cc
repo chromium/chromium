@@ -8,7 +8,7 @@
 // build time. Try not to raise this limit unless absolutely necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #ifndef NACL_TC_REV
-#pragma clang max_tokens_here 400000
+#pragma clang max_tokens_here 470000
 #endif
 
 #include <algorithm>
@@ -25,6 +25,7 @@
 #include "base/cxx17_backports.h"
 #include "base/cxx20_to_address.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -229,22 +230,6 @@ Value::Value(BlobStorage&& value) noexcept : data_(std::move(value)) {}
 Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(List&& value) noexcept : data_(std::move(value)) {}
-
-Value::Value(const DictStorage& value) : data_(absl::in_place_type_t<Dict>()) {
-  dict().reserve(value.size());
-  for (const auto& it : value) {
-    dict().try_emplace(dict().end(), it.first,
-                       std::make_unique<Value>(it.second.Clone()));
-  }
-}
-
-Value::Value(DictStorage&& value) : data_(absl::in_place_type_t<Dict>()) {
-  dict().reserve(value.size());
-  for (auto& it : value) {
-    dict().try_emplace(dict().end(), std::move(it.first),
-                       std::make_unique<Value>(std::move(it.second)));
-  }
-}
 
 Value::Value(span<const Value> value) : data_(absl::in_place_type_t<List>()) {
   list().reserve(value.size());
@@ -453,20 +438,20 @@ Value::Dict Value::Dict::Clone() const {
   return Dict(storage_);
 }
 
-void Value::Dict::Merge(const Dict& dict) {
+void Value::Dict::Merge(Dict dict) {
   for (const auto [key, value] : dict) {
-    if (const Dict* nested_dict = value.GetIfDict()) {
+    if (Dict* nested_dict = value.GetIfDict()) {
       if (Dict* current_dict = FindDict(key)) {
         // If `key` is a nested dictionary in this dictionary and the dictionary
         // being merged, recursively merge the two dictionaries.
-        current_dict->Merge(*nested_dict);
+        current_dict->Merge(std::move(*nested_dict));
         continue;
       }
     }
 
-    // Otherwise, unconditionally set the value, potentially overwriting any
-    // pre-existing key.
-    Set(key, value.Clone());
+    // Otherwise, unconditionally set the value, overwriting any value that may
+    // already be associated with the key.
+    Set(key, std::move(value));
   }
 }
 
@@ -786,6 +771,15 @@ std::string Value::Dict::DebugString() const {
   return DebugStringImpl(*this);
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+void Value::Dict::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  for (auto kv : *this) {
+    dict.Add(perfetto::DynamicString(kv.first), kv.second);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 Value::Dict::Dict(
     const flat_map<std::string, std::unique_ptr<Value>>& storage) {
   storage_.reserve(storage.size());
@@ -989,6 +983,15 @@ std::string Value::List::DebugString() const {
   return DebugStringImpl(*this);
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+void Value::List::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedArray array = std::move(context).WriteArray();
+  for (const auto& item : *this) {
+    array.Append(item);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 Value::List::List(const std::vector<Value>& storage) {
   storage_.reserve(storage.size());
   for (const auto& value : storage) {
@@ -1026,10 +1029,6 @@ Value::ListView Value::GetListDeprecated() {
 
 Value::ConstListView Value::GetListDeprecated() const {
   return list();
-}
-
-Value::ListStorage Value::TakeListDeprecated() && {
-  return std::exchange(list(), {});
 }
 
 void Value::Append(bool value) {
@@ -1379,18 +1378,6 @@ Value::const_dict_iterator_proxy Value::DictItems() const {
   return const_dict_iterator_proxy(&dict());
 }
 
-Value::DictStorage Value::TakeDictDeprecated() && {
-  DictStorage storage;
-  storage.reserve(dict().size());
-  for (auto& pair : dict()) {
-    storage.try_emplace(storage.end(), std::move(pair.first),
-                        std::move(*pair.second));
-  }
-
-  dict().clear();
-  return storage;
-}
-
 size_t Value::DictSize() const {
   return GetDict().size();
 }
@@ -1404,7 +1391,7 @@ void Value::DictClear() {
 }
 
 void Value::MergeDictionary(const Value* dictionary) {
-  return GetDict().Merge(dictionary->GetDict());
+  return GetDict().Merge(dictionary->GetDict().Clone());
 }
 
 bool Value::GetAsList(ListValue** out_value) {
@@ -1467,6 +1454,30 @@ bool operator>=(const Value& lhs, const Value& rhs) {
   return !(lhs < rhs);
 }
 
+bool operator==(const Value& lhs, bool rhs) {
+  return lhs.is_bool() && lhs.GetBool() == rhs;
+}
+
+bool operator==(const Value& lhs, int rhs) {
+  return lhs.is_int() && lhs.GetInt() == rhs;
+}
+
+bool operator==(const Value& lhs, double rhs) {
+  return lhs.is_double() && lhs.GetDouble() == rhs;
+}
+
+bool operator==(const Value& lhs, StringPiece rhs) {
+  return lhs.is_string() && lhs.GetString() == rhs;
+}
+
+bool operator==(const Value& lhs, const Value::Dict& rhs) {
+  return lhs.is_dict() && lhs.GetDict() == rhs;
+}
+
+bool operator==(const Value& lhs, const Value::List& rhs) {
+  return lhs.is_list() && lhs.GetList() == rhs;
+}
+
 bool Value::Equals(const Value* other) const {
   DCHECK(other);
   return *this == *other;
@@ -1495,38 +1506,26 @@ std::string Value::DebugString() const {
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 void Value::WriteIntoTrace(perfetto::TracedValue context) const {
-  switch (type()) {
-    case Type::BOOLEAN:
-      std::move(context).WriteBoolean(GetBool());
-      return;
-    case Type::INTEGER:
-      std::move(context).WriteInt64(GetInt());
-      return;
-    case Type::DOUBLE:
-      std::move(context).WriteDouble(GetDouble());
-      return;
-    case Type::STRING:
-      std::move(context).WriteString(GetString());
-      return;
-    case Type::BINARY:
-      std::move(context).WriteString("<binary data not supported>");
-      return;
-    case Type::DICTIONARY: {
-      perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
-      for (auto kv : DictItems())
-        dict.Add(perfetto::DynamicString{kv.first}, kv.second);
-      return;
-    }
-    case Type::LIST: {
-      perfetto::TracedArray array = std::move(context).WriteArray();
-      for (const auto& item : GetListDeprecated())
-        array.Append(item);
-      return;
-    }
-    case Type::NONE:
+  Visit([&](const auto& member) {
+    using T = std::decay_t<decltype(member)>;
+    if constexpr (std::is_same_v<T, absl::monostate>) {
       std::move(context).WriteString("<none>");
-      return;
-  }
+    } else if constexpr (std::is_same_v<T, bool>) {
+      std::move(context).WriteBoolean(member);
+    } else if constexpr (std::is_same_v<T, int>) {
+      std::move(context).WriteInt64(member);
+    } else if constexpr (std::is_same_v<T, DoubleStorage>) {
+      std::move(context).WriteDouble(member);
+    } else if constexpr (std::is_same_v<T, std::string>) {
+      std::move(context).WriteString(member);
+    } else if constexpr (std::is_same_v<T, BlobStorage>) {
+      std::move(context).WriteString("<binary data not supported>");
+    } else if constexpr (std::is_same_v<T, Dict>) {
+      member.WriteIntoTrace(std::move(context));
+    } else if constexpr (std::is_same_v<T, List>) {
+      member.WriteIntoTrace(std::move(context));
+    }
+  });
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
@@ -1550,13 +1549,6 @@ DictionaryValue::DictionaryValue(const LegacyDictStorage& storage)
 
 DictionaryValue::DictionaryValue(LegacyDictStorage&& storage) noexcept
     : Value(std::move(storage)) {}
-
-bool DictionaryValue::HasKey(StringPiece key) const {
-  DCHECK(IsStringUTF8AllowingNoncharacters(key));
-  auto current_entry = dict().find(key);
-  DCHECK((current_entry == dict().end()) || current_entry->second);
-  return current_entry != dict().end();
-}
 
 Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
@@ -1794,9 +1786,6 @@ std::unique_ptr<ListValue> ListValue::From(std::unique_ptr<Value> value) {
 }
 
 ListValue::ListValue() : Value(Type::LIST) {}
-ListValue::ListValue(span<const Value> in_list) : Value(in_list) {}
-ListValue::ListValue(ListStorage&& in_list) noexcept
-    : Value(std::move(in_list)) {}
 
 bool ListValue::GetDictionary(size_t index,
                               const DictionaryValue** out_value) const {
@@ -1816,10 +1805,6 @@ bool ListValue::GetDictionary(size_t index,
 bool ListValue::GetDictionary(size_t index, DictionaryValue** out_value) {
   return as_const(*this).GetDictionary(
       index, const_cast<const DictionaryValue**>(out_value));
-}
-
-void ListValue::Append(std::unique_ptr<Value> in_value) {
-  list().push_back(std::move(*in_value));
 }
 
 void ListValue::Append(base::Value::Dict in_dict) {

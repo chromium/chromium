@@ -27,15 +27,15 @@
 // add to the accept languages list.
 @interface AddLanguageTableViewController : SettingsRootTableViewController
 
-// The designated initializer. |dataSource| and |delegate| must not be nil.
-// |delegate| will not be retained.
+// The designated initializer. `dataSource` and `delegate` must not be nil.
+// `delegate` will not be retained.
 - (instancetype)initWithDataSource:(id<LanguageSettingsDataSource>)dataSource
                           delegate:(id<AddLanguageTableViewControllerDelegate>)
                                        delegate NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Called when the list of supported languages changes so that the view
-// controller can update its model from |dataSource|.
+// controller can update its model from `dataSource`.
 - (void)supportedLanguagesListChanged;
 
 @end

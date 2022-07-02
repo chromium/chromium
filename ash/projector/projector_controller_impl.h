@@ -75,7 +75,6 @@ class ASH_EXPORT ProjectorControllerImpl
   void OnSpeechRecognitionStopped() override;
   bool IsEligible() const override;
   NewScreencastPrecondition GetNewScreencastPrecondition() const override;
-  void OnToolSet(const AnnotatorTool& tool) override;
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;
   void OnCanvasInitialized(bool success) override;

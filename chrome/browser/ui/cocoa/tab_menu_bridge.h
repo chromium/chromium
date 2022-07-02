@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 @class NSMutableArray;
@@ -62,7 +63,7 @@ class TabMenuBridge : public TabStripModelObserver {
                     TabChangeType change_type) override;
   void OnTabStripModelDestroyed(TabStripModel* model) override;
 
-  TabStripModel* model_;
+  raw_ptr<TabStripModel> model_;
   NSMenuItem* menu_item_;  // weak
   base::scoped_nsobject<TabMenuListener> menu_listener_;
 

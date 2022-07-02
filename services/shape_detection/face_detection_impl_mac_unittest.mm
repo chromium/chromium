@@ -41,11 +41,7 @@ std::unique_ptr<mojom::FaceDetection> CreateFaceDetectorImplMac(
 
 std::unique_ptr<mojom::FaceDetection> CreateFaceDetectorImplMacVision(
     shape_detection::mojom::FaceDetectorOptionsPtr options) {
-  if (@available(macOS 10.13, *)) {
-    return std::make_unique<FaceDetectionImplMacVision>();
-  } else {
-    return nullptr;
-  }
+  return std::make_unique<FaceDetectionImplMacVision>();
 }
 
 using FaceDetectorFactory =
@@ -125,11 +121,6 @@ class FaceDetectionImplMacTest : public TestWithParam<struct TestParams> {
 
 TEST_P(FaceDetectionImplMacTest, CreateAndDestroy) {
   impl_ = GetParam().factory.Run(mojom::FaceDetectorOptions::New());
-  if (!impl_ && base::mac::IsAtMostOS10_12()) {
-    LOG(WARNING) << "FaceDetectionImplMacVision is not available before Mac "
-                    "OSX 10.13. Skipping test.";
-    return;
-  }
 }
 
 // Flakily fails on multiple configurations. https://crbug.com/1107962
@@ -143,11 +134,6 @@ TEST_P(FaceDetectionImplMacTest, DISABLED_ScanOneFace) {
   auto options = shape_detection::mojom::FaceDetectorOptions::New();
   options->fast_mode = GetParam().fast_mode;
   impl_ = GetParam().factory.Run(std::move(options));
-  if (!impl_ && base::mac::IsAtMostOS10_12()) {
-    LOG(WARNING) << "FaceDetectionImplMacVision is not available before Mac "
-                    "OSX 10.13. Skipping test.";
-    return;
-  }
 
   // Load image data from test directory.
   base::FilePath image_path;

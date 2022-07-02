@@ -50,16 +50,15 @@ struct RequestMetadata {
 
   feedwire::ClientInfo ToClientInfo() const;
 
-  ChromeInfo chrome_info;
+  ChromeInfo chrome_info{};
   std::string language_tag;
   std::string client_instance_id;
   std::string session_id;
-  DisplayMetrics display_metrics;
+  DisplayMetrics display_metrics{};
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
   int followed_from_web_page_menu_count = 0;
-  std::vector<std::string> acknowledged_notice_keys;
   std::vector<feedwire::InfoCardTrackingState> info_card_tracking_states;
 };
 
@@ -109,31 +108,30 @@ class LoadLatencyTimes {
 };
 
 // Tracks a set of `feedstore::Content` content IDs, for tracking whether unread
-// content is received from the server.
-class ContentIdSet {
+// content is received from the server. Note that each content ID is a hash of
+// the content URL.
+class ContentHashSet {
  public:
-  ContentIdSet();
-  ~ContentIdSet();
-  explicit ContentIdSet(base::flat_set<int64_t> ids);
-  ContentIdSet(const ContentIdSet&);
-  ContentIdSet(ContentIdSet&&);
-  ContentIdSet& operator=(const ContentIdSet&);
-  ContentIdSet& operator=(ContentIdSet&&);
+  ContentHashSet();
+  ~ContentHashSet();
+  explicit ContentHashSet(base::flat_set<uint32_t> ids);
+  ContentHashSet(const ContentHashSet&);
+  ContentHashSet(ContentHashSet&&);
+  ContentHashSet& operator=(const ContentHashSet&);
+  ContentHashSet& operator=(ContentHashSet&&);
 
   // Returns whether this set contains all items.
-  bool ContainsAllOf(const ContentIdSet& items) const;
+  bool ContainsAllOf(const ContentHashSet& items) const;
   bool IsEmpty() const;
-  const base::flat_set<int64_t>& values() const { return content_ids_; }
+  const base::flat_set<uint32_t>& values() const { return content_hashes_; }
 
-  bool operator==(const ContentIdSet& rhs) const;
+  bool operator==(const ContentHashSet& rhs) const;
 
  private:
-  // Note, we only store the `id` field of ContentId, with the assumption that
-  // `id` is unique enough given these are only `feedstore::Content` ids.
-  base::flat_set<int64_t> content_ids_;
+  base::flat_set<uint32_t> content_hashes_;
 };
 
-std::ostream& operator<<(std::ostream& s, const ContentIdSet& id_set);
+std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set);
 
 struct ContentStats {
   int card_count = 0;

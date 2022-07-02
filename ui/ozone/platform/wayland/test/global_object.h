@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 struct wl_display;
 struct wl_global;
@@ -56,10 +58,10 @@ class GlobalObject {
 
   std::unique_ptr<wl_global, Deleter> global_;
 
-  const wl_interface* interface_;
-  const void* implementation_;
+  raw_ptr<const wl_interface> interface_;
+  raw_ptr<const void> implementation_;
   const uint32_t version_;
-  wl_resource* resource_ = nullptr;
+  raw_ptr<wl_resource> resource_ = nullptr;
 };
 
 }  // namespace wl

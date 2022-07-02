@@ -58,7 +58,7 @@ class ExtensionDialogBoundsTest
   void ShowOpenFileDialog() { browser()->OpenFile(); }
 
   void ShowBigExtensionDialog() {
-    ExtensionTestMessageListener init_listener("ready", false /* will_reply */);
+    ExtensionTestMessageListener init_listener("ready");
 
     scoped_refptr<const extensions::Extension> extension =
         LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));

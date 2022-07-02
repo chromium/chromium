@@ -8,6 +8,7 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -70,11 +71,11 @@ class TestZwpLinuxBufferParamsV1 : public ServerObject {
   // Non-owned pointer to the linux dmabuf object, which created this params
   // resource and holds a pointer to it. On destruction, must notify it about
   // going out of scope.
-  MockZwpLinuxDmabufV1* linux_dmabuf_ = nullptr;
+  raw_ptr<MockZwpLinuxDmabufV1> linux_dmabuf_ = nullptr;
 
   // A buffer resource, which is created on Create or CreateImmed call. Can be
   // null if not created/failed to be created.
-  wl_resource* buffer_resource_ = nullptr;
+  raw_ptr<wl_resource> buffer_resource_ = nullptr;
 };
 
 }  // namespace wl

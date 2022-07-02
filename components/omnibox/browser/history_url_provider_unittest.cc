@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,11 +30,13 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -175,6 +178,9 @@ struct TestURLInfo {
     {"https://www.zebra.com/zebras", "zebra2", 7, 7, 80},
     {"https://www.zebra.com/zebra s", "zebra3", 7, 7, 80},
     {"https://www.zebra.com/zebra  s", "zebra4", 7, 7, 80},
+
+    // URL with "history" in it, to test the @history starter pack scope.
+    {"https://history.com/", "History.com", 1, 1, 80},
 };
 
 }  // namespace
@@ -284,6 +290,8 @@ bool HistoryURLProviderTest::SetUpImpl(bool create_history_db) {
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
+  client_->set_template_url_service(
+      std::make_unique<TemplateURLService>(nullptr, 0));
   if (!client_->GetHistoryService())
     return false;
   autocomplete_ = base::MakeRefCounted<HistoryURLProvider>(client_.get(), this);
@@ -1400,4 +1408,64 @@ TEST_F(HistoryURLProviderTest, DoTrimHttpsScheme) {
 
   AutocompleteMatch match = autocomplete_->HistoryMatchToACMatch(*params, 0, 0);
   EXPECT_EQ(u"facebook.com", match.contents);
+}
+
+// Make sure that user input is trimmed correctly for starter pack keyword mode.
+// In this mode, suggestions should be provided for only the user input after
+// the keyword, i.e. "@history google" should only match "google".
+TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    client_->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+  // Test result for user text "google", we should get back a result for google.
+  AutocompleteInput input(u"google", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  autocomplete_->Start(input, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  ASSERT_GT(matches_.size(), 0u);
+  EXPECT_EQ(GURL("http://www.google.com/"), matches_[0].destination_url);
+
+  // Test result for "@history" and "@history google" while NOT in keyword mode,
+  // we should get a result for history.com and not for google since the we're
+  // searching for the whole input text including "@history".
+  AutocompleteInput input2(u"@history", metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  autocomplete_->Start(input2, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  ASSERT_GT(matches_.size(), 0u);
+  EXPECT_EQ(GURL("https://history.com/"), matches_[0].destination_url);
+
+  AutocompleteInput input3(u"@history google",
+                           metrics::OmniboxEventProto::OTHER,
+                           TestSchemeClassifier());
+  autocomplete_->Start(input3, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  ASSERT_EQ(matches_.size(), 0u);
+
+  // Turn on keyword mode, test result again, we should get back the result for
+  // google.com since we're searching only for the user text after the keyword.
+  input3.set_prefer_keyword(true);
+  autocomplete_->Start(input3, false);
+  if (!autocomplete_->done())
+    base::RunLoop().Run();
+
+  matches_ = autocomplete_->matches();
+  ASSERT_GT(matches_.size(), 0u);
+  EXPECT_EQ(GURL("http://www.google.com/"), matches_[0].destination_url);
 }

@@ -18,7 +18,7 @@
 
 namespace autofill {
 
-struct AutofillOfferData;
+class AutofillOfferData;
 
 // Implementation of per-tab class to control the offer notification bubble and
 // Omnibox icon.

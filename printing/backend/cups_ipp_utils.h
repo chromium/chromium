@@ -9,9 +9,7 @@
 
 #include <memory>
 
-namespace base {
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace printing {
 
@@ -19,7 +17,7 @@ class CupsConnection;
 
 // Creates a CUPS connection using `print_backend_settings`.
 std::unique_ptr<CupsConnection> CreateConnection(
-    const base::Value* print_backend_settings);
+    const base::Value::Dict* print_backend_settings);
 
 }  // namespace printing
 

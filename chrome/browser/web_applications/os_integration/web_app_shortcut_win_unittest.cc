@@ -358,7 +358,7 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
       shortcut_dir.Append(FILE_PATH_LITERAL("new title.lnk"));
   EXPECT_TRUE(base::PathExists(shortcut_file));
   EXPECT_TRUE(base::win::ResolveShortcutProperties(
-      shortcut_file, ShortcutProperties::IndividualProperties::PROPERTIES_ICON,
+      shortcut_file, ShortcutProperties::PROPERTIES_ICON,
       &shortcut_properties));
   EXPECT_EQ(new_icon_file, shortcut_properties.icon);
 }

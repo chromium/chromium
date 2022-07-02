@@ -42,7 +42,7 @@ void MimeSniffingThrottle::WillProcessResponse(
       response_head->headers->GetNormalizedHeader("x-content-type-options",
                                                   &content_type_options)) {
     blocked_sniffing_mime =
-        base::LowerCaseEqualsASCII(content_type_options, "nosniff");
+        base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
   }
 
   if (!blocked_sniffing_mime &&

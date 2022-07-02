@@ -15,39 +15,12 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
 namespace {
-
-// Utility class to wait/observe the closing of the nudge.
-class NudgeWidgetObserver : public views::WidgetObserver {
- public:
-  NudgeWidgetObserver(views::Widget* widget) {
-    if (!widget)
-      return;
-
-    widget_observation_.Observe(widget);
-  }
-
-  void WaitForClose() {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override {
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
- private:
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
 
 // Enables or disables the user pref for the entire feature.
 void SetAdaptiveChargingPref(bool enabled) {
@@ -75,8 +48,8 @@ class AdaptiveChargingNudgeControllerTest : public AshTestBase {
 
   AdaptiveChargingNudgeController* GetController() { return controller_.get(); }
 
-  void WaitForWidgetClose(AdaptiveChargingNudgeController* controller,
-                          SystemNudge* nudge) {
+  void WaitForWidgetDestruction(AdaptiveChargingNudgeController* controller,
+                                SystemNudge* nudge) {
     views::Widget* nudge_widget = nudge->widget();
     ASSERT_TRUE(nudge_widget);
     EXPECT_FALSE(nudge_widget->IsClosed());
@@ -86,12 +59,11 @@ class AdaptiveChargingNudgeControllerTest : public AshTestBase {
         ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
     // Pretend the hide nudge timer has elapsed.
-    NudgeWidgetObserver widget_close_observer(nudge_widget);
     controller->FireHideNudgeTimerForTesting();
-
     EXPECT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
 
-    widget_close_observer.WaitForClose();
+    views::test::WidgetDestroyedWaiter widget_destroyed_waiter(nudge_widget);
+    widget_destroyed_waiter.Wait();
   }
 
  private:
@@ -109,7 +81,7 @@ TEST_F(AdaptiveChargingNudgeControllerTest, ShowsAndHidesNudge) {
   SystemNudge* nudge = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge);
 
-  WaitForWidgetClose(controller, nudge);
+  WaitForWidgetDestruction(controller, nudge);
 }
 
 TEST_F(AdaptiveChargingNudgeControllerTest, NoNudgeShowForDisabledFeature) {
@@ -135,7 +107,7 @@ TEST_F(AdaptiveChargingNudgeControllerTest, NudgeShowExactlyOnce) {
   controller->GetNudgeDelayTimerForTesting()->FireNow();
   SystemNudge* nudge1 = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge1);
-  WaitForWidgetClose(controller, nudge1);
+  WaitForWidgetDestruction(controller, nudge1);
 
   // No nudge for the second time.
   controller->ShowNudge();

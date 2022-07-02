@@ -35,7 +35,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // Redeclared as readwrite so the value can be changed internally.
 @property(nonatomic, assign, readwrite, getter=isUserEngaged) BOOL userEngaged;
 // The underlying BubbleViewController managed by this object.
-// |bubbleViewController| manages the BubbleView instance.
+// `bubbleViewController` manages the BubbleView instance.
 @property(nonatomic, strong) BubbleViewController* bubbleViewController;
 // The tap gesture recognizer intercepting tap gestures occurring inside the
 // bubble view. Taps inside must be differentiated from taps outside to track
@@ -167,8 +167,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   self.bubbleViewController.view.frame =
       [self frameForBubbleInRect:parentView.bounds
                    atAnchorPoint:anchorPointInParent];
-  // The bubble's frame must be set. Call |canPresentInView| to make sure that
-  // the frame can be set before calling |presentInViewController|.
+  // The bubble's frame must be set. Call `canPresentInView` to make sure that
+  // the frame can be set before calling `presentInViewController`.
   DCHECK(!CGRectIsEmpty(self.bubbleViewController.view.frame));
 
   self.presenting = YES;
@@ -220,8 +220,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 - (void)dismissAnimated:(BOOL)animated
            snoozeAction:(feature_engagement::Tracker::SnoozeAction)action {
-  // Because this object must stay in memory to handle the |userEngaged|
-  // property correctly, it is possible for |dismissAnimated| to be called
+  // Because this object must stay in memory to handle the `userEngaged`
+  // property correctly, it is possible for `dismissAnimated` to be called
   // multiple times. However, only the first call should have any effect.
   if (!self.presenting) {
     return;
@@ -318,41 +318,43 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self dismissAnimated:YES];
 }
 
-// Automatically dismisses the bubble view when |bubbleDismissalTimer| fires.
+// Automatically dismisses the bubble view when `bubbleDismissalTimer` fires.
 - (void)bubbleDismissalTimerFired:(id)sender {
   [self dismissAnimated:YES];
 }
 
-// Marks the user as not engaged when |engagementTimer| fires.
+// Marks the user as not engaged when `engagementTimer` fires.
 - (void)engagementTimerFired:(id)sender {
   self.userEngaged = NO;
   self.triggerFollowUpAction = NO;
   self.engagementTimer = nil;
 }
 
-// Calculates the frame of the BubbleView. |rect| is the frame of the bubble's
-// superview. |anchorPoint| is the anchor point of the bubble. |anchorPoint|
-// and |rect| must be in the same coordinates.
+// Calculates the frame of the BubbleView. `rect` is the frame of the bubble's
+// superview. `anchorPoint` is the anchor point of the bubble. `anchorPoint`
+// and `rect` must be in the same coordinates.
 - (CGRect)frameForBubbleInRect:(CGRect)rect atAnchorPoint:(CGPoint)anchorPoint {
-  const BOOL bubbleIsFullWidth = self.bubbleType != BubbleViewTypeDefault;
+  const BOOL arrowIsFloating = self.bubbleType != BubbleViewTypeDefault;
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
-  if (bubbleIsFullWidth) {
-    bubbleAlignmentOffset = bubble_util::FullWidthBubbleAlignmentOffset(
+  if (arrowIsFloating) {
+    bubbleAlignmentOffset = bubble_util::FloatingArrowAlignmentOffset(
         rect.size.width, anchorPoint, self.alignment);
   }
-  // Set bubble alignment offset, must be set before the call to |sizeThatFits|.
+  // Set bubble alignment offset, must be set before the call to `sizeThatFits`.
   [self.bubbleViewController setBubbleAlignmentOffset:bubbleAlignmentOffset];
   CGSize maxBubbleSize = bubble_util::BubbleMaxSize(
       anchorPoint, bubbleAlignmentOffset, self.arrowDirection, self.alignment,
       rect.size);
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
+  const BOOL bubbleIsFullWidth = self.bubbleType != BubbleViewTypeDefault &&
+                                 self.bubbleType != BubbleViewTypeWithClose;
   if (bubbleIsFullWidth) {
     bubbleSize.width = maxBubbleSize.width;
   }
-  // If |bubbleSize| does not fit in |maxBubbleSize|, the bubble will be
+  // If `bubbleSize` does not fit in `maxBubbleSize`, the bubble will be
   // partially off screen and not look good. This is most likely a result of
-  // an incorrect value for |alignment| (such as a trailing aligned bubble
+  // an incorrect value for `alignment` (such as a trailing aligned bubble
   // anchored to an element on the leading edge of the screen).
   if (bubbleSize.width > maxBubbleSize.width ||
       bubbleSize.height > maxBubbleSize.height) {

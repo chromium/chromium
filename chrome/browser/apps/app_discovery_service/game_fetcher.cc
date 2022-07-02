@@ -44,53 +44,6 @@ bool AvailableInCurrentTimezoneLocale(
   return false;
 }
 
-bool AvailableInCurrentLocale(
-    const apps::proto::LocaleAvailability& app_with_locale) {
-  int current_country_id = country_codes::GetCurrentCountryID();
-  if (current_country_id == -1) {
-    // Try using the timezone to get the country as a fallback.
-    return AvailableInCurrentTimezoneLocale(app_with_locale);
-  }
-  for (const auto& country_code : app_with_locale.available_country_codes()) {
-    int country_id = country_codes::CountryStringToCountryID(country_code);
-    if (country_id == current_country_id) {
-      return true;
-    }
-  }
-  return false;
-}
-
-std::u16string GetLocalisedName(
-    const apps::proto::LocaleAvailability& app_with_locale,
-    Profile* profile) {
-  PrefService* prefs = profile->GetPrefs();
-  DCHECK(prefs);
-  std::string locale = prefs->GetString(language::prefs::kApplicationLocale);
-  std::string resolved_locale;
-  l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
-                                   /*perform_io=*/false);
-  std::string localised_name;
-  std::string fallback_name;
-  for (const auto& available_localised_name :
-       app_with_locale.available_localised_names()) {
-    // When the current locale does not match any of the supported
-    // |language_codes|, we default to en-US. Store the en-US name as a
-    // fallback.
-    if (available_localised_name.language_code() == kDefaultLocale) {
-      fallback_name = available_localised_name.name_in_language();
-    }
-    if (available_localised_name.language_code() != resolved_locale) {
-      continue;
-    }
-    localised_name = available_localised_name.name_in_language();
-  }
-  if (localised_name.empty()) {
-    DCHECK(!fallback_name.empty());
-    localised_name = fallback_name;
-  }
-  return base::UTF8ToUTF16(localised_name);
-}
-
 absl::optional<std::vector<std::u16string>> GetPlatforms(
     const apps::proto::App& app) {
   if (app.available_stores_size() == 0) {
@@ -176,13 +129,14 @@ void GameFetcher::GetIcon(const std::string& app_id,
     return;
   }
 
-  Result* app = nullptr;
-
-  for (Result& candidate : last_results_) {
-    if (candidate.GetAppId() == app_id) {
-      app = &candidate;
-    }
+  auto iterator = app_id_to_result_.find(app_id);
+  if (iterator == app_id_to_result_.end()) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            DiscoveryError::kErrorRequestFailed);
+    return;
   }
+
+  Result* app = iterator->second;
 
   if (!app) {
     std::move(callback).Run(gfx::ImageSkia(),
@@ -204,6 +158,11 @@ void GameFetcher::GetIcon(const std::string& app_id,
 
 void GameFetcher::OnAppDataUpdated(const proto::AppWithLocaleList& app_data) {
   last_results_ = GetAppsForCurrentLocale(app_data);
+  std::map<std::string, Result*> map;
+  for (auto& result : last_results_) {
+    map.emplace(result.GetAppId(), &result);
+  }
+  app_id_to_result_ = map;
   result_callback_list_.Notify(last_results_);
 }
 
@@ -214,6 +173,7 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     if (!AvailableInCurrentLocale(app_with_locale.locale_availability())) {
       continue;
     }
+
     auto extras = std::make_unique<GameExtras>(
         GetPlatforms(app_with_locale.app()),
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
@@ -221,12 +181,89 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
         base::FilePath(app_with_locale.app().icon_info().icon_path()),
         app_with_locale.app().icon_info().is_masking_allowed(),
         GURL(app_with_locale.app().deeplink()));
-    results.push_back(Result(
-        AppSource::kGames, app_with_locale.app().app_id_for_platform(),
-        GetLocalisedName(app_with_locale.locale_availability(), profile_),
-        std::move(extras)));
+
+    auto localised_name =
+        GetLocalisedName(app_with_locale.locale_availability(), profile_);
+    // If |localised_name| is empty here, we don't have a localised name or a
+    // default name, so we cannot return this game as a result. Skip it.
+    if (localised_name.empty()) {
+      continue;
+    }
+    results.emplace_back(AppSource::kGames,
+                         app_with_locale.app().app_id_for_platform(),
+                         localised_name, std::move(extras));
   }
   return results;
+}
+
+void GameFetcher::SetResultsForTesting(
+    const proto::AppWithLocaleList& app_data) {
+  OnAppDataUpdated(app_data);
+}
+
+void GameFetcher::SetLocaleForTesting(const std::string& country,
+                                      const std::string& language) {
+  test_country_ = country;
+  test_language_ = language;
+}
+
+bool GameFetcher::AvailableInCurrentLocale(
+    const apps::proto::LocaleAvailability& app_with_locale) {
+  // `test_country_` overrides the current locale if it is present.
+  int current_country_id =
+      test_country_.has_value()
+          ? country_codes::CountryStringToCountryID(test_country_.value())
+          : country_codes::GetCurrentCountryID();
+
+  if (current_country_id == -1) {
+    // Try using the timezone to get the country as a fallback.
+    return AvailableInCurrentTimezoneLocale(app_with_locale);
+  }
+  for (const auto& country_code : app_with_locale.available_country_codes()) {
+    int country_id = country_codes::CountryStringToCountryID(country_code);
+    if (country_id == current_country_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::u16string GameFetcher::GetLocalisedName(
+    const apps::proto::LocaleAvailability& app_with_locale,
+    Profile* profile) {
+  std::string resolved_locale;
+
+  if (test_language_.has_value()) {
+    // Use language set for testing.
+    resolved_locale = test_language_.value();
+  } else {
+    PrefService* prefs = profile->GetPrefs();
+    DCHECK(prefs);
+    std::string locale = prefs->GetString(language::prefs::kApplicationLocale);
+    l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+                                     /*perform_io=*/false);
+  }
+  std::string localised_name;
+  std::string fallback_name;
+  for (const auto& available_localised_name :
+       app_with_locale.available_localised_names()) {
+    // When the current locale does not match any of the supported
+    // |language_codes|, we default to en-US. Store the en-US name as a
+    // fallback.
+    if (available_localised_name.language_code() == kDefaultLocale) {
+      fallback_name = available_localised_name.name_in_language();
+    }
+    if (available_localised_name.language_code() != resolved_locale) {
+      continue;
+    }
+    localised_name = available_localised_name.name_in_language();
+  }
+  if (localised_name.empty()) {
+    // It's ok if |fallback_name| is also empty here, as we check later on and
+    // remove results with empty name fields.
+    localised_name = fallback_name;
+  }
+  return base::UTF8ToUTF16(localised_name);
 }
 
 }  // namespace apps

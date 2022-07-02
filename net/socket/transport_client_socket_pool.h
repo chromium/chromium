@@ -143,7 +143,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
-    raw_ptr<ConnectJob> job_;
+    raw_ptr<ConnectJob> job_ = nullptr;
   };
 
   TransportClientSocketPool(
@@ -198,11 +198,12 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
       const NetLogWithSource& net_log) override;
-  void RequestSockets(
+  int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
                    ClientSocketHandle* handle,
@@ -528,7 +529,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     // preconnect and decremented when a preconnect is assigned, or when there
     // are fewer than |never_assigned_job_count_| ConnectJobs.  Not incremented
     // when a request is cancelled.
-    size_t never_assigned_job_count_;
+    size_t never_assigned_job_count_ = 0;
 
     std::list<IdleSocket> idle_sockets_;
     JobList jobs_;  // For bookkeeping purposes, there is a copy of the raw
@@ -537,7 +538,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                     // element of |unbound_requests_|.
     std::list<ConnectJob*> unassigned_jobs_;
     RequestQueue unbound_requests_;
-    int active_socket_count_;  // number of active sockets used by clients
+    int active_socket_count_ = 0;  // number of active sockets used by clients
     // A timer for when to start the backup job.
     base::OneShotTimer backup_job_timer_;
 
@@ -552,7 +553,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     // rather than reused. Destroying a group will reset the generation number,
     // but as that only happens once there are no outstanding sockets or
     // requests associated with the group, that's harmless.
-    int64_t generation_;
+    int64_t generation_ = 0;
   };
 
   using GroupMap = std::map<GroupId, Group*>;
@@ -681,11 +682,19 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // This is the internal implementation of RequestSocket().  It differs in that
   // it does not handle logging into NetLog of the queueing status of
   // |request|.
-  int RequestSocketInternal(const GroupId& group_id, const Request& request);
-
-  // Wrapper around RequestSocketInternal that adds a reentrancy guard.
-  int CheckedRequestSocketInternal(const GroupId& group_id,
-                                   const Request& request);
+  // |preconnect_done_closure| is used only for preconnect requests. For
+  // preconnect requests, this method returns ERR_IO_PENDING only if a connect
+  // job is created and the connect job didn't finish synchronously. In such
+  // case, |preconnect_done_closure| will be called when the created connect job
+  // will be deleted.
+  // For normal non-preconnect requests, |preconnect_done_closure| must be null.
+  // And this method returns ERR_IO_PENDING when the number of sockets has
+  // reached the limit or the created connect job didn't finish synchronously.
+  // In such a case, the Request with a ClientSocketHandle must be registered to
+  // |group_map_| to receive the completion callback.
+  int RequestSocketInternal(const GroupId& group_id,
+                            const Request& request,
+                            base::OnceClosure preconnect_done_closure);
 
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.
@@ -755,13 +764,13 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   PendingCallbackMap pending_callback_map_;
 
   // The total number of idle sockets in the system.
-  int idle_socket_count_;
+  int idle_socket_count_ = 0;
 
   // Number of connecting sockets across all groups.
-  int connecting_socket_count_;
+  int connecting_socket_count_ = 0;
 
   // Number of connected sockets we handed out across all groups.
-  int handed_out_socket_count_;
+  int handed_out_socket_count_ = 0;
 
   // The maximum total number of sockets. See ReachedMaxSocketsLimit.
   const int max_sockets_;

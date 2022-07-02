@@ -53,7 +53,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
                           devinfo.product_id(),
                           devinfo.version()),
       input_device_fd_(std::move(fd)),
-      has_keyboard_(devinfo.HasKeyboard()),
+      keyboard_type_(devinfo.GetKeyboardType()),
       has_touchpad_(devinfo.HasTouchpad()),
       has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
@@ -65,6 +65,14 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
   if (has_numberpad_)
     NumberpadMetricsRecorder::GetInstance()->AddDevice(input_device_);
 #endif
+  // Converts unsigned long to uint64_t.
+  const auto key_bits = devinfo.GetKeyBits();
+  key_bits_.resize(key_bits.size());
+  for (int i = 0; i < KEY_CNT; i++) {
+    if (EvdevBitIsSet(key_bits.data(), i)) {
+      EvdevSetUint64Bit(key_bits_.data(), i);
+    }
+  }
 }
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
@@ -96,8 +104,12 @@ void EventConverterEvdevImpl::OnFileCanReadWithoutBlocking(int fd) {
   ProcessEvents(inputs, read_size / sizeof(*inputs));
 }
 
+KeyboardType EventConverterEvdevImpl::GetKeyboardType() const {
+  return keyboard_type_;
+}
+
 bool EventConverterEvdevImpl::HasKeyboard() const {
-  return has_keyboard_;
+  return keyboard_type_ == KeyboardType::VALID_KEYBOARD;
 }
 
 bool EventConverterEvdevImpl::HasTouchpad() const {
@@ -135,6 +147,10 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
 void EventConverterEvdevImpl::OnDisabled() {
   ReleaseKeys();
   ReleaseMouseButtons();
+}
+
+std::vector<uint64_t> EventConverterEvdevImpl::GetKeyboardKeyBits() const {
+  return key_bits_;
 }
 
 ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {

@@ -40,7 +40,6 @@ ResourceLoaderOptions::ResourceLoaderOptions(
     scoped_refptr<const DOMWrapperWorld> world)
     : data_buffering_policy(kBufferData),
       content_security_policy_option(network::mojom::CSPDisposition::CHECK),
-      request_initiator_context(kDocumentContext),
       synchronous_policy(kRequestAsynchronously),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),

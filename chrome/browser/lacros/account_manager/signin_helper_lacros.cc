@@ -5,11 +5,9 @@
 #include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -25,12 +23,10 @@ SigninHelperLacros::SigninHelperLacros(
       account_profile_mapper_(account_profile_mapper),
       source_(source),
       identity_manager_(identity_manager) {
-  if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
-    DCHECK(consistency_cookie_manager);
-    scoped_account_update_ =
-        std::make_unique<signin::ConsistencyCookieManager::ScopedAccountUpdate>(
-            consistency_cookie_manager->CreateScopedAccountUpdate());
-  }
+  DCHECK(consistency_cookie_manager);
+  scoped_account_update_ =
+      std::make_unique<signin::ConsistencyCookieManager::ScopedAccountUpdate>(
+          consistency_cookie_manager->CreateScopedAccountUpdate());
 
   GetAllAvailableAccounts(
       account_profile_mapper, profile_path,
@@ -87,7 +83,7 @@ void SigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
 
   // Wait for account to be in tokens.
   account_added_to_mapping_ = gaia_id;
-  identity_manager_observervation_.Observe(identity_manager_);
+  identity_manager_observervation_.Observe(identity_manager_.get());
 }
 
 void SigninHelperLacros::Finalize(const CoreAccountId& account_id) {

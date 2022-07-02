@@ -8,13 +8,19 @@
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
+@protocol ApplicationCommands;
+@protocol SnackbarCommands;
+
 // Controller for the About Google Chrome Table View, which allows users to
 // view open source licenses, terms of service, etc.
 @interface AboutChromeTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// TODO(crbug.com/1323778): This class needs to have an explicit
-// id<SnacbarCommands> handler property.
+// ApplicationCommands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// SnackbarCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

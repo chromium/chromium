@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -84,7 +85,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
 
    protected:
     // View overrides.
-    gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+    ui::Cursor GetCursor(const ui::MouseEvent& event) override;
     gfx::Size CalculatePreferredSize() const override;
     void OnPaint(gfx::Canvas* canvas) override;
     bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -100,8 +101,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
     static bool IsRight(GrabHandlePosition position);
 
     GrabHandlePosition position_;
-    GrabHandles* grab_handles_;
-    View* attached_view_ = nullptr;
+    raw_ptr<GrabHandles> grab_handles_;
+    raw_ptr<View> attached_view_ = nullptr;
     gfx::Point mouse_drag_pos_;
   };
 
@@ -153,10 +154,10 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
 
   Combobox* view_type_ = nullptr;
   TableView* inspector_ = nullptr;
-  ui::TableModelObserver* model_observer_ = nullptr;
+  raw_ptr<ui::TableModelObserver> model_observer_ = nullptr;
 
-  View* selected_ = nullptr;
-  View* dragging_ = nullptr;
+  raw_ptr<View> selected_ = nullptr;
+  raw_ptr<View> dragging_ = nullptr;
   gfx::Point last_mouse_pos_;
   std::vector<ui::metadata::MemberMetaDataBase*> selected_members_;
 

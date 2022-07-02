@@ -63,6 +63,20 @@ enum class ThreadPriority : int;
       INTERNAL_SCOPED_THREAD_PRIORITY_APPEND_LINE(                  \
           scoped_may_load_library_at_background_priority)(FROM_HERE, nullptr);
 
+// Boosts the current thread's priority to match the priority of threads of
+// |target_thread_type| in this scope.
+class BASE_EXPORT ScopedBoostPriority {
+ public:
+  explicit ScopedBoostPriority(ThreadPriority target_priority);
+  ~ScopedBoostPriority();
+
+  ScopedBoostPriority(const ScopedBoostPriority&) = delete;
+  ScopedBoostPriority& operator=(const ScopedBoostPriority&) = delete;
+
+ private:
+  absl::optional<ThreadPriority> original_priority_;
+};
+
 namespace internal {
 
 class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {

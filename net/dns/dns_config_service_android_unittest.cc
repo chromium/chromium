@@ -23,8 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 namespace {
 
 const IPEndPoint kNameserver1(IPAddress(1, 2, 3, 4), 53);
@@ -273,5 +272,4 @@ TEST_F(DnsConfigServiceAndroidTest, ReadsEmptySearchSuffixes) {
 }
 
 }  // namespace
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal

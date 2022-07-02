@@ -49,14 +49,19 @@ CIPD_DATA['yaml'] = CIPD_DATA['template'] % (
 CONFIG_DATA = {}
 CONFIG_DATA['json'] = """{
   "platform1": {
+    "git": {
+      "tag_prefix": "platform-1.0"
+    },
     "arch": {
       "arch1": {
         "filename": "arch1/platform1/file1.zip",
-        "_origin": "https://a1.p1/f1.zip"
+        "_origin": "https://a1.p1/f1.zip",
+        "unzip_dir": "arch1/path/platform1_r1"
       },
       "arch2": {
         "filename": "arch2/platform1/file3.zip",
-        "_origin": "https://a2.p1/f3.zip"
+        "_origin": "https://a2.p1/f3.zip",
+        "unzip_dir": "arch1/path/platform1_r1"
       }
     },
     "test_runs": [
@@ -66,22 +71,41 @@ CONFIG_DATA['json'] = """{
     ]
   },
   "platform2": {
+    "git": {
+      "tag_prefix": "platform-2.0"
+    },
     "arch": {
       "arch1": {
         "filename": "arch1/platform2/file2.zip",
-        "_origin": "https://a1.p2/f2.zip"
+        "_origin": "https://a1.p2/f2.zip",
+        "unzip_dir": "arch1/path/platform2_r1"
       },
       "arch2": {
         "filename": "arch2/platform2/file4.zip",
-        "_origin": "https://a2.p2/f4.zip"
+        "_origin": "https://a2.p2/f4.zip",
+        "unzip_dir": "arch1/path/platform2_r1"
       }
     },
     "test_runs": [
       {
-        "apk": "p2/test1.apk"
+        "apk": "p2/test1.apk",
+        "additional_apks": [
+          {
+            "apk": "p2/additional_apk_a_1.apk"
+          }
+        ]
       },
       {
-        "apk": "p2/test2.apk"
+        "apk": "p2/test2.apk",
+        "additional_apks": [
+          {
+            "apk": "p2/additional_apk_b_1.apk",
+            "forced_queryable": true
+          },
+          {
+            "apk": "p2/additional_apk_b_2.apk"
+          }
+        ]
       }
     ]
   }
@@ -102,6 +126,7 @@ CONFIG_DATA['base22'] = 'f4.zip'
 CONFIG_DATA['file22'] = 'arch2/platform2/file4.zip'
 CONFIG_DATA['apk2a'] = 'p2/test1.apk'
 CONFIG_DATA['apk2b'] = 'p2/test2.apk'
+
 
 DEPS_DATA = {}
 DEPS_DATA['template'] = """deps = {
@@ -412,6 +437,10 @@ class CTSUtilsTest(unittest.TestCase):
     self.assertTrue(['p1/test.apk'], cts_config.get_apks('platform1'))
     self.assertTrue(['p2/test1.apk', 'p2/test2.apk'],
                     cts_config.get_apks('platform2'))
+    self.assertTrue([
+        'p2/additional_apk_a_1.apk', 'p2/additional_apk_b_1.apk',
+        'p2/additional_apk_b_2.apk'
+    ], cts_config.get_additional_apks('platform2'))
 
   @unittest.skipIf(os.name == "nt", "This fails on Windows, probably because "
                    "the temporary directory is not empty when it gets deleted.")

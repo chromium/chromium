@@ -58,7 +58,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -718,8 +717,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
 
   bool apply_rounded_corners = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  apply_rounded_corners =
-      ash::features::IsNotificationsRefreshEnabled() && use_image_for_icon;
+  apply_rounded_corners = for_ash_notification_;
 #endif  // IS_CHROMEOS_ASH
   icon_view_->SetImage(icon, icon.Size(), apply_rounded_corners);
 

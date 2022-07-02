@@ -5,13 +5,17 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 
+#include <string>
+#include <vector>
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/common/value.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/runtime_application_service.castcore.pb.h"
@@ -39,11 +43,8 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
-  virtual void StopApplication();
-
-  // Reports the application |state| to Cast Core.
-  void SetApplicationState(cast::v2::ApplicationStatusRequest::State state,
-                           StatusCallback callback);
+  virtual void StopApplication(
+      cast::v2::ApplicationStatusRequest::StopReason stop_reason);
 
   // Returns current TaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
@@ -65,10 +66,9 @@ class RuntimeApplicationBase : public RuntimeApplication {
   CastWebContents* GetCastWebContents() override;
   const std::string& GetCastMediaServiceEndpoint() const override;
 
-  // Initializes the Cast application. If initialization passes, the
-  // |app_initialized_callback| is called.
-  virtual void InitializeApplication(
-      base::OnceClosure app_initialized_callback) = 0;
+  // Launches the Cast application. The |OnApplicationLaunched| must be called
+  // if launch is successful. Otherwise, StopApplication must be called.
+  virtual void LaunchApplication() = 0;
 
   // Processes an incoming |message|, returning the status of this processing in
   // |response| after being received over gRPC.
@@ -82,6 +82,22 @@ class RuntimeApplicationBase : public RuntimeApplication {
             StatusCallback callback) final;
   void Launch(cast::runtime::LaunchApplicationRequest request,
               StatusCallback callback) final;
+
+ protected:
+  // Returns renderer features.
+  base::Value GetRendererFeatures() const;
+  // Returns if app is audio only.
+  bool GetIsAudioOnly() const;
+  // Returns if feature permissions are enforced.
+  bool GetEnforceFeaturePermissions() const;
+  // Returns feature permissions.
+  std::vector<int> GetFeaturePermissions() const;
+  // Returns additional feature permission origins.
+  std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
+  // Loads the page at the given |url| in the CastWebContents.
+  void LoadPage(const GURL& url);
+  // Notifies the application has launched.
+  void OnApplicationLaunched();
 
  private:
   // RuntimeApplicationService handlers:
@@ -97,9 +113,6 @@ class RuntimeApplicationBase : public RuntimeApplication {
 
   // Creates the root CastWebView for this Cast session.
   CastWebView::Scoped CreateCastWebView();
-
-  // Notifies that the application has been initialized.
-  void OnApplicationInitialized();
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;

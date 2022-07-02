@@ -15,6 +15,9 @@ constexpr int kBubbleCornerRadius = 16;
 // tray bubble or the switch access menu.
 constexpr int kBubbleMenuPadding = 8;
 
+// The elevation used for system tray bubble.
+constexpr int kBubbleShadowElevation = 12;
+
 }  // namespace ash
 
 #endif  // ASH_BUBBLE_BUBBLE_CONSTANTS_H_

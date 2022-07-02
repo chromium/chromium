@@ -37,11 +37,11 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
 
   ~PostProcessingPipelineImpl() override;
 
-  double ProcessFrames(float* data,
-                       int num_frames,
-                       float current_volume,
-                       float target_volume,
-                       bool is_silence) override;
+  void ProcessFrames(float* data,
+                     int num_frames,
+                     float current_volume,
+                     float target_volume,
+                     bool is_silence) override;
 
   float* GetOutputBuffer() override;
   int NumOutputChannels() const override;
@@ -55,6 +55,7 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
                               const std::string& config) override;
   void SetContentType(AudioContentType content_type) override;
   void UpdatePlayoutChannel(int channel) override;
+  double GetDelaySeconds() override;
 
  private:
   // Note: typedef is used to silence chromium-style mandatory constructor in

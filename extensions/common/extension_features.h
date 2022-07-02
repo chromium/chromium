@@ -33,6 +33,14 @@ extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs;
 
 extern const base::Feature kNewExtensionFaviconHandling;
 
+extern const base::Feature kExtensionDynamicURLRedirection;
+
+extern const base::Feature kExtensionsMenuAccessControl;
+
+extern const base::Feature kAvoidEarlyExtensionScriptContextCreation;
+
+extern const base::Feature kExtensionsOffscreenDocuments;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

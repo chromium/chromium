@@ -9,5 +9,6 @@ include_rules = [
   "+crypto/signature_verifier.h",
   "+net",
   "+services/network/public",
-  "+third_party/protobuf"
+  "+third_party/protobuf",
+  "+third_party/content_analysis_sdk"
 ]

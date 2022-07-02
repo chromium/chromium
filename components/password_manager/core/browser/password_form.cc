@@ -189,10 +189,17 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value* target) {
 
   target->SetKey("password_issues ", base::Value(password_issues));
 
-  base::Value note_value(base::Value::Type::DICTIONARY);
-  note_value.SetStringKey("note_value", form.note.value);
-  note_value.SetKey("date_created", base::TimeToValue(form.note.date_created));
-  target->SetKey("note", std::move(note_value));
+  std::vector<base::Value> password_notes;
+  password_notes.reserve(form.notes.size());
+  for (const auto& note : form.notes) {
+    base::Value note_value(base::Value::Type::DICTIONARY);
+    note_value.SetStringKey("unique_display_name", note.unique_display_name);
+    note_value.SetStringKey("value", note.value);
+    note_value.SetKey("date_created", base::TimeToValue(note.date_created));
+    note_value.SetBoolKey("hide_by_default", note.hide_by_default);
+    password_notes.push_back(std::move(note_value));
+  }
+  target->SetKey("notes", base::Value(password_notes));
 
   target->SetStringKey("previously_associated_sync_account_email",
                        form.previously_associated_sync_account_email);
@@ -215,6 +222,15 @@ PasswordNote::PasswordNote() = default;
 PasswordNote::PasswordNote(std::u16string value, base::Time date_created)
     : value(std::move(value)), date_created(std::move(date_created)) {}
 
+PasswordNote::PasswordNote(std::u16string unique_display_name,
+                           std::u16string value,
+                           base::Time date_created,
+                           bool hide_by_default)
+    : unique_display_name(std::move(unique_display_name)),
+      value(std::move(value)),
+      date_created(date_created),
+      hide_by_default(hide_by_default) {}
+
 PasswordNote::PasswordNote(const PasswordNote& rhs) = default;
 
 PasswordNote::PasswordNote(PasswordNote&& rhs) = default;
@@ -226,7 +242,13 @@ PasswordNote& PasswordNote::operator=(PasswordNote&& rhs) = default;
 PasswordNote::~PasswordNote() = default;
 
 bool operator==(const PasswordNote& lhs, const PasswordNote& rhs) {
-  return lhs.value == rhs.value && lhs.date_created == rhs.date_created;
+  return lhs.unique_display_name == rhs.unique_display_name &&
+         lhs.value == rhs.value && lhs.date_created == rhs.date_created &&
+         lhs.hide_by_default == rhs.hide_by_default;
+}
+
+bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs) {
+  return !(lhs == rhs);
 }
 
 PasswordForm::PasswordForm() = default;
@@ -337,7 +359,7 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
          lhs.in_store == rhs.in_store &&
          lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
-         lhs.password_issues == rhs.password_issues && lhs.note == rhs.note &&
+         lhs.password_issues == rhs.password_issues && lhs.notes == rhs.notes &&
          lhs.previously_associated_sync_account_email ==
              rhs.previously_associated_sync_account_email;
 }

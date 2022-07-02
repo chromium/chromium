@@ -50,7 +50,7 @@ typedef std::list<std::pair<BrokenAlternativeService, base::TimeTicks>>
 class RecentlyBrokenAlternativeServices
     : public base::LRUCache<BrokenAlternativeService, int> {
  public:
-  RecentlyBrokenAlternativeServices(
+  explicit RecentlyBrokenAlternativeServices(
       int max_recently_broken_alternative_service_entries)
       : base::LRUCache<BrokenAlternativeService, int>(
             max_recently_broken_alternative_service_entries) {}
@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
     virtual void OnExpireBrokenAlternativeService(
         const AlternativeService& expired_alternative_service,
         const NetworkIsolationKey& network_isolation_key) = 0;
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // |delegate| will be notified when a broken alternative service expires. It
@@ -229,7 +229,7 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
   // initial_delay_for_broken_alternative_service * (1 << broken_count).
   // Otherwise, the delay would be initial_delay_for_broken_alternative_service,
   // 5min, 10min.. and so on.
-  bool exponential_backoff_on_initial_delay_;
+  bool exponential_backoff_on_initial_delay_ = true;
 
   base::WeakPtrFactory<BrokenAlternativeServices> weak_ptr_factory_{this};
 };

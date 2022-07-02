@@ -1,11 +1,14 @@
 import {
   BillingResponseCode,
   CreateDigitalGoodsResponseCode,
+  ItemType,
+} from '/gen/components/digital_goods/mojom/digital_goods.mojom.m.js';
+
+import {
   DigitalGoodsFactory,
   DigitalGoodsFactoryReceiver,
   DigitalGoodsReceiver,
   DigitalGoodsRemote,
-  ItemType,
 } from '/gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.m.js';
 
 class MockDigitalGoods {

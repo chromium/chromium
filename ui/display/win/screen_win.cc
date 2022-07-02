@@ -129,6 +129,24 @@ absl::optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
   return absl::nullopt;
 }
 
+// Gets a user-friendly name for a given display using EDID data. Returns an
+// empty string if the provided path is unset/nullopt or EDID data is not
+// available for the device.
+std::string GetFriendlyDeviceName(
+    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+  if (!path)
+    return std::string();
+  DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
+  targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+  targetName.header.size = sizeof(targetName);
+  targetName.header.adapterId = path->targetInfo.adapterId;
+  targetName.header.id = path->targetInfo.id;
+  LONG result = DisplayConfigGetDeviceInfo(&targetName.header);
+  if (result == ERROR_SUCCESS && targetName.flags.friendlyNameFromEdid)
+    return base::WideToUTF8(targetName.monitorFriendlyDeviceName);
+  return std::string();
+}
+
 float GetSDRWhiteLevel(const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path) {
     DISPLAYCONFIG_SDR_WHITE_LEVEL white_level = {};
@@ -289,6 +307,7 @@ Display CreateDisplayFromDisplayInfo(
       display_info.screen_work_rect(), 1.0f / scale_factor));
   display.set_rotation(display_info.rotation());
   display.set_display_frequency(display_info.display_frequency());
+  display.set_label(display_info.label());
 
   // DisplayColorSpaces is created using the forced color profile if present, or
   // from the ICC profile provided by |color_profile_reader| for SDR content,
@@ -299,14 +318,14 @@ Display CreateDisplayFromDisplayInfo(
   } else if (hdr_enabled_on_any_display) {
     float sdr_white_level = display_info.sdr_white_level();
     float hdr_max_luminance_relative = 0.f;
-    if (dxgi_output_desc) {
+    if (dxgi_output_desc && dxgi_output_desc->hdr_enabled) {
       hdr_max_luminance_relative =
           dxgi_output_desc->max_luminance / sdr_white_level;
-      if (!dxgi_output_desc->hdr_enabled)
-        sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     }
     hdr_max_luminance_relative = std::max(hdr_max_luminance_relative,
                                           kMinHDRCapableMaxLuminanceRelative);
+    // TODO(https://crbug.com/1339352): Do not allow non-HDR-enabled displays
+    // to use HDR color spaces.
     color_spaces = GetDisplayColorSpacesForHdr(sdr_white_level,
                                                hdr_max_luminance_relative);
   } else {
@@ -477,7 +496,7 @@ BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
   display_infos->emplace_back(
       monitor_info, GetMonitorScaleFactor(monitor), GetSDRWhiteLevel(path_info),
       display_settings.rotation, display_settings.frequency, pixels_per_inch,
-      GetOutputTechnology(path_info));
+      GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
   return TRUE;
 }
 
@@ -700,6 +719,12 @@ gfx::NativeWindow ScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
 bool ScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
   NOTREACHED();
   return false;
+}
+
+absl::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
+    gfx::NativeWindow window) const {
+  NOTREACHED();
+  return absl::nullopt;
 }
 
 ScreenWin::ScreenWin(bool initialize) {

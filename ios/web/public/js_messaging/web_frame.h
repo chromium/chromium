@@ -72,13 +72,13 @@ class WebFrame : public base::SupportsUserData {
       base::TimeDelta timeout) = 0;
 
   // Executes the given |script| and returns whether the script was run.
-  virtual bool ExecuteJavaScript(const std::string& script) = 0;
+  virtual bool ExecuteJavaScript(const std::u16string& script) = 0;
 
   // Executes the given |script| and returns whether the script was run.
   // If the script is successfully executed, |callback| is called with
   // the result.
   virtual bool ExecuteJavaScript(
-      const std::string& script,
+      const std::u16string& script,
       base::OnceCallback<void(const base::Value*)> callback) = 0;
 
   using ExecuteJavaScriptCallbackWithError =
@@ -89,7 +89,7 @@ class WebFrame : public base::SupportsUserData {
   // bool parameter in the |callback| is used to signal that an error
   // during the execution of the |script| occurred.
   virtual bool ExecuteJavaScript(
-      const std::string& script,
+      const std::u16string& script,
       ExecuteJavaScriptCallbackWithError callback) = 0;
 
   // Returns the WebFrameInternal instance for this object.

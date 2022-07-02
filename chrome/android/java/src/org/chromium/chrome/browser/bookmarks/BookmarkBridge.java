@@ -24,9 +24,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
-import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
@@ -36,6 +33,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
+import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
@@ -300,7 +300,7 @@ public class BookmarkBridge {
         }
 
         // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
-        void forceEditableForTesting() {
+        public void forceEditableForTesting() {
             mForceEditableForTesting = true;
         }
     }
@@ -984,21 +984,11 @@ public class BookmarkBridge {
      *         not editable), returns null.
      */
     public BookmarkId addBookmark(BookmarkId parent, int index, String title, GURL url) {
-        ThreadUtils.assertOnUiThread();
-        assert parent.getType() == BookmarkType.NORMAL;
-        assert index >= 0;
-        assert title != null;
-        assert url != null;
-
-        recordBookmarkAdded();
-
-        if (TextUtils.isEmpty(title)) title = url.getSpec();
-        return BookmarkBridgeJni.get().addBookmark(
-                mNativeBookmarkBridge, BookmarkBridge.this, parent, index, title, url);
+        return addBookmark(/*webContents=*/null, parent, index, title, url);
     }
 
     /**
-     * Add a new power bookmark.
+     * Add a new bookmark.
      *
      * @param webContents A {@link WebContents} associated with the page being bookmarked.
      * @param parent Folder where to add. Must be a normal editable folder, instead of a partner
@@ -1010,7 +1000,7 @@ public class BookmarkBridge {
      * @return Id of the added node. If adding failed (index is invalid, string is null, parent is
      *         not editable), returns null.
      */
-    public BookmarkId addPowerBookmark(
+    public BookmarkId addBookmark(
             WebContents webContents, BookmarkId parent, int index, String title, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert parent.getType() == BookmarkType.NORMAL;
@@ -1021,18 +1011,13 @@ public class BookmarkBridge {
         recordBookmarkAdded();
 
         if (TextUtils.isEmpty(title)) title = url.getSpec();
-        return BookmarkBridgeJni.get().addPowerBookmark(
+        return BookmarkBridgeJni.get().addBookmark(
                 mNativeBookmarkBridge, this, webContents, parent, index, title, url);
     }
 
     /** Record the user action for adding a bookmark. */
     private void recordBookmarkAdded() {
         RecordUserAction.record("BookmarkAdded");
-    }
-
-    @Deprecated // Only included until internal repository is updated.
-    public BookmarkId addBookmark(BookmarkId parent, int index, String title, String url) {
-        return addBookmark(parent, index, title, new GURL(url));
     }
 
     /**
@@ -1148,8 +1133,7 @@ public class BookmarkBridge {
         return BookmarkBridgeJni.get().isBookmarked(mNativeBookmarkBridge, url);
     }
 
-    @VisibleForTesting
-    BookmarkId getPartnerFolderId() {
+    public BookmarkId getPartnerFolderId() {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getPartnerFolderId(
@@ -1420,9 +1404,7 @@ public class BookmarkBridge {
         void removeAllUserBookmarks(long nativeBookmarkBridge, BookmarkBridge caller);
         void moveBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId bookmarkId,
                 BookmarkId newParentId, int index);
-        BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
-                int index, String title, GURL url);
-        BookmarkId addPowerBookmark(long nativeBookmarkBridge, BookmarkBridge caller,
+        BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, BookmarkId parent, int index, String title, GURL url);
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);

@@ -127,7 +127,7 @@ bool PasswordProtectionRequestContent::IsVisualFeaturesEnabled() {
 }
 
 void PasswordProtectionRequestContent::GetDomFeatures() {
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   PasswordProtectionService* service =
       static_cast<PasswordProtectionService*>(password_protection_service());
   service->GetPhishingDetector(rfh->GetRemoteInterfaces(), &phishing_detector_);

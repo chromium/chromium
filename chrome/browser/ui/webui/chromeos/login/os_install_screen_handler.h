@@ -25,20 +25,15 @@ namespace chromeos {
 
 // Interface for dependency injection between OsInstallScreen and its
 // WebUI representation.
-class OsInstallScreenView {
+class OsInstallScreenView : public base::SupportsWeakPtr<OsInstallScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"os-install"};
+  inline constexpr static StaticOobeScreenId kScreenId{"os-install",
+                                                       "OsInstallScreen"};
 
   virtual ~OsInstallScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ash::OsInstallScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   virtual void ShowStep(const char* step) = 0;
   virtual void SetStatus(OsInstallClient::Status status) = 0;
@@ -60,18 +55,13 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
   // OsInstallScreenView:
   void Show() override;
-  void Bind(ash::OsInstallScreen* screen) override;
-  void Unbind() override;
   void ShowStep(const char* step) override;
   void SetStatus(OsInstallClient::Status status) override;
   void SetServiceLogs(const std::string& service_log) override;
   void UpdateCountdownStringWithTime(base::TimeDelta time_left) override;
-
-  ash::OsInstallScreen* screen_ = nullptr;
 
   base::WeakPtrFactory<OsInstallScreenHandler> weak_factory_{this};
 };

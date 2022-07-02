@@ -91,41 +91,41 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   bool MaybeHandleStreamClosedInSendData();
 
   const base::WeakPtr<SpdySession> spdy_session_;
-  raw_ptr<const BidirectionalStreamRequestInfo> request_info_;
-  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_;
+  raw_ptr<const BidirectionalStreamRequestInfo> request_info_ = nullptr;
+  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
   SpdyStreamRequest stream_request_;
   base::WeakPtr<SpdyStream> stream_;
   const NetLogSource source_dependency_;
 
-  NextProto negotiated_protocol_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
 
   // Buffers the data as it arrives asynchronously from the stream.
   SpdyReadQueue read_data_queue_;
   // Whether received more data has arrived since started waiting.
-  bool more_read_data_pending_;
+  bool more_read_data_pending_ = false;
   // User provided read buffer for ReadData() response.
   scoped_refptr<IOBuffer> read_buffer_;
-  int read_buffer_len_;
+  int read_buffer_len_ = 0;
 
   // Whether client has written the end of stream flag in request headers or
   // in SendData()/SendvData().
-  bool written_end_of_stream_;
+  bool written_end_of_stream_ = false;
   // Whether a SendData() or SendvData() is pending.
-  bool write_pending_;
+  bool write_pending_ = false;
 
   // Whether OnClose has been invoked.
-  bool stream_closed_;
+  bool stream_closed_ = false;
   // Status reported in OnClose.
-  int closed_stream_status_;
+  int closed_stream_status_ = ERR_FAILED;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes received over the network for |stream_| while it was open.
-  int64_t closed_stream_received_bytes_;
+  int64_t closed_stream_received_bytes_ = 0;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes sent over the network for |stream_| while it was open.
-  int64_t closed_stream_sent_bytes_;
+  int64_t closed_stream_sent_bytes_ = 0;
   // True if |stream_| has LoadTimingInfo when it is closed.
-  bool closed_has_load_timing_info_;
+  bool closed_has_load_timing_info_ = false;
   // LoadTimingInfo populated when |stream_| is closed.
   LoadTimingInfo closed_load_timing_info_;
 

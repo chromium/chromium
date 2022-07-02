@@ -7,6 +7,7 @@ import './pdf-shared.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ChangePageOrigin} from './viewer-bookmark.js';
 import {getTemplate} from './viewer-thumbnail.html.js';
 
 // The maximum widths of thumbnails for each layout (px).
@@ -175,7 +176,7 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   private onClick_() {
     this.dispatchEvent(new CustomEvent('change-page', {
-      detail: {page: this.pageNumber - 1, origin: 'thumbnail'},
+      detail: {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL},
       bubbles: true,
       composed: true
     }));

@@ -442,7 +442,6 @@ CompositorTimingHistory::CompositorTimingHistory(
     : using_synchronous_renderer_compositor_(
           using_synchronous_renderer_compositor),
       enabled_(false),
-      did_send_begin_main_frame_(false),
       compositor_drawing_continuously_(false),
       begin_main_frame_queue_duration_history_(kDurationHistorySize),
       begin_main_frame_queue_duration_critical_history_(kDurationHistorySize),
@@ -466,7 +465,6 @@ CompositorTimingHistory::CompositorTimingHistory(
       bmf_queue_to_activate_critical_history_(kDurationHistorySize),
       bmf_queue_to_activate_critical_percentile_(
           BeginMainFrameQueueToActivateCriticalPercentile()),
-      begin_main_frame_on_critical_path_(false),
       uma_reporter_(CreateUMAReporter(uma_category)),
       rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
 
@@ -598,8 +596,6 @@ void CompositorTimingHistory::WillBeginImplFrame(
 
   if (frame_type == viz::BeginFrameArgs::NORMAL)
     uma_reporter_->AddBeginImplFrameLatency(now - frame_time);
-
-  did_send_begin_main_frame_ = false;
 }
 
 void CompositorTimingHistory::WillFinishImplFrame(bool needs_redraw) {
@@ -617,8 +613,6 @@ void CompositorTimingHistory::WillBeginMainFrame(
 
   begin_main_frame_on_critical_path_ = args.on_critical_path;
   begin_main_frame_sent_time_ = Now();
-
-  did_send_begin_main_frame_ = true;
 }
 
 void CompositorTimingHistory::BeginMainFrameStarted(
@@ -635,18 +629,20 @@ void CompositorTimingHistory::BeginMainFrameAborted() {
 
 void CompositorTimingHistory::NotifyReadyToCommit() {
   DCHECK_NE(begin_main_frame_start_time_, base::TimeTicks());
+  base::TimeTicks begin_main_frame_end_time = Now();
+  base::TimeDelta begin_main_frame_queue_duration =
+      begin_main_frame_start_time_ - begin_main_frame_sent_time_;
   begin_main_frame_start_to_ready_to_commit_duration_history_.InsertSample(
-      Now() - begin_main_frame_start_time_);
+      begin_main_frame_end_time - begin_main_frame_start_time_);
   if (duration_estimates_enabled_) {
-    bmf_start_to_activate_duration_ = Now() - begin_main_frame_start_time_;
     if (begin_main_frame_on_critical_path_) {
       bmf_start_to_ready_to_commit_critical_history_.InsertSample(
-          (Now() - begin_main_frame_start_time_) +
-          begin_main_frame_queue_duration_);
+          (begin_main_frame_end_time - begin_main_frame_start_time_) +
+          begin_main_frame_queue_duration);
     } else {
       bmf_start_to_ready_to_commit_not_critical_history_.InsertSample(
-          (Now() - begin_main_frame_start_time_) +
-          begin_main_frame_queue_duration_);
+          (begin_main_frame_end_time - begin_main_frame_start_time_) +
+          begin_main_frame_queue_duration);
     }
   }
 }
@@ -660,18 +656,18 @@ void CompositorTimingHistory::DidCommit() {
   DCHECK_EQ(pending_tree_creation_time_, base::TimeTicks());
   DCHECK_NE(commit_start_time_, base::TimeTicks());
 
-  base::TimeTicks begin_main_frame_end_time = Now();
-  DidBeginMainFrame(begin_main_frame_end_time);
-  commit_duration_history_.InsertSample(begin_main_frame_end_time -
-                                        commit_start_time_);
-
+  base::TimeTicks commit_end_time = Now();
   if (enabled_ && duration_estimates_enabled_) {
-    // TODO(szager): This omits commit queueing time
-    bmf_start_to_activate_duration_ +=
-        begin_main_frame_end_time - commit_start_time_;
+    pending_tree_on_critical_path_ = begin_main_frame_on_critical_path_;
+    bmf_start_to_ready_to_activate_duration_ =
+        commit_end_time - begin_main_frame_start_time_;
   }
+  DidBeginMainFrame(commit_end_time);
+  commit_duration_history_.InsertSample(commit_end_time - commit_start_time_);
+
   pending_tree_is_impl_side_ = false;
-  pending_tree_creation_time_ = begin_main_frame_end_time;
+  pending_tree_creation_time_ = commit_end_time;
+  pending_tree_bmf_queue_duration_ = begin_main_frame_queue_duration_;
 }
 
 void CompositorTimingHistory::DidBeginMainFrame(
@@ -719,6 +715,8 @@ void CompositorTimingHistory::WillInvalidateOnImplSide() {
   DCHECK_EQ(pending_tree_creation_time_, base::TimeTicks());
 
   pending_tree_is_impl_side_ = true;
+  pending_tree_on_critical_path_ = false;
+  pending_tree_bmf_queue_duration_ = base::TimeDelta();
   pending_tree_creation_time_ = base::TimeTicks::Now();
 }
 
@@ -766,7 +764,7 @@ void CompositorTimingHistory::ReadyToActivate() {
       commit_to_ready_to_activate_duration_history_.InsertSample(
           time_since_commit);
       if (duration_estimates_enabled_)
-        bmf_start_to_activate_duration_ += time_since_commit;
+        bmf_start_to_ready_to_activate_duration_ += time_since_commit;
     }
   }
 }
@@ -778,31 +776,30 @@ void CompositorTimingHistory::WillActivate() {
 
   pending_tree_is_impl_side_ = false;
   pending_tree_creation_time_ = base::TimeTicks();
-  pending_tree_ready_to_activate_time_ = base::TimeTicks();
 }
 
 void CompositorTimingHistory::DidActivate() {
   DCHECK_NE(base::TimeTicks(), activate_start_time_);
-  base::TimeDelta activate_duration = Now() - activate_start_time_;
+  base::TimeTicks activate_end_time = Now();
+  base::TimeDelta activate_duration = activate_end_time - activate_start_time_;
 
   if (enabled_) {
     activate_duration_history_.InsertSample(activate_duration);
 
     if (duration_estimates_enabled_) {
-      // TODO(szager): MFBA means begin_main_frame_on_critical_path_ may have
-      // been overwritten by a call to WillBeginMainFrame().
-      if (begin_main_frame_on_critical_path_) {
-        // TODO(szager): MFBA means bmf_start_to_activate_duration_ may have
-        // been overwritten by a call to NotifyReadyToCommit().
-        // TODO(szager): MFBA means begin_main_frame_queue_duration_ may have
-        // been overwritten by a call to BeginMainFrameAborted().
+      if (pending_tree_on_critical_path_) {
+        base::TimeDelta time_since_ready_to_activate =
+            activate_end_time - pending_tree_ready_to_activate_time_;
+        DCHECK_NE(pending_tree_bmf_queue_duration_, base::TimeDelta());
         bmf_queue_to_activate_critical_history_.InsertSample(
-            bmf_start_to_activate_duration_ + activate_duration +
-            begin_main_frame_queue_duration_);
+            bmf_start_to_ready_to_activate_duration_ +
+            time_since_ready_to_activate + pending_tree_bmf_queue_duration_);
       }
+      bmf_start_to_ready_to_activate_duration_ = base::TimeDelta();
     }
   }
 
+  pending_tree_ready_to_activate_time_ = base::TimeTicks();
   activate_start_time_ = base::TimeTicks();
 }
 

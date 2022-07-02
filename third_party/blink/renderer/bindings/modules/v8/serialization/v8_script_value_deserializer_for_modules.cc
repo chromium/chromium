@@ -19,6 +19,10 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_handle_attachment.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_handle_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
@@ -94,6 +98,10 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
       return ReadEncodedVideoChunk();
     case kMediaStreamTrack:
       return ReadMediaStreamTrack();
+    case kCropTargetTag:
+      return ReadCropTarget();
+    case kMediaSourceHandleTag:
+      return ReadMediaSourceHandle();
     default:
       break;
   }
@@ -557,6 +565,49 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
                         .muted = static_cast<bool>(muted),
                         .content_hint = DeserializeContentHint(contentHint),
                         .ready_state = DeserializeReadyState(readyState)});
+}
+
+CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {
+  if (!RuntimeEnabledFeatures::RegionCaptureEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  String crop_id;
+  if (!ReadUTF8String(&crop_id)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CropTarget>(crop_id);
+}
+
+MediaSourceHandleImpl*
+V8ScriptValueDeserializerForModules::ReadMediaSourceHandle() {
+  if (!RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+          ExecutionContext::From(GetScriptState())) ||
+      !RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<MediaSourceHandleAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& attachments = attachment->Attachments();
+  if (index >= attachment->size())
+    return nullptr;
+
+  auto& handle_internals = attachments[index];
+  return MakeGarbageCollected<MediaSourceHandleImpl>(
+      std::move(handle_internals.attachment_provider),
+      std::move(handle_internals.internal_blob_url));
 }
 
 }  // namespace blink

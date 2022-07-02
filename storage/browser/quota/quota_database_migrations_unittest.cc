@@ -17,8 +17,8 @@ namespace storage {
 
 namespace {
 
-const int kCurrentSchemaVersion = 8;
-const int kCurrentCompatibleVersion = 8;
+const int kCurrentSchemaVersion = 9;
+const int kCurrentCompatibleVersion = 9;
 
 std::string RemoveQuotes(std::string input) {
   std::string output;
@@ -80,14 +80,27 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path =
         temp_directory_.GetPath().AppendASCII("current_version.db");
-    EXPECT_TRUE(LoadDatabase("version_8.sql", current_version_path));
+    EXPECT_TRUE(LoadDatabase("version_9.sql", current_version_path));
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
   }
 
+  std::string GetQuotaDatabaseSchema() {
+    QuotaDatabase db(ProfilePath());
+    EXPECT_EQ(db.EnsureOpened(), QuotaError::kNone);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(db.sequence_checker_);
+    return db.db_->GetSchema();
+  }
+
   base::ScopedTempDir temp_directory_;
 };
+
+// Verify that the schema created by a new `QuotaDatabase` instance matches the
+// current test schema file.
+TEST_F(QuotaDatabaseMigrationsTest, QuotaDatabaseSchemaMatchesTestSchema) {
+  EXPECT_EQ(GetCurrentSchema(), GetQuotaDatabaseSchema());
+}
 
 TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV5) {
   ASSERT_TRUE(LoadDatabase("version_5.sql", DbPath()));
@@ -145,11 +158,11 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV5) {
     // Check that OriginInfoTable data is migrated to bucket table.
     EXPECT_EQ(
         "1|http://a/|a|0|default|123|13260644621105493|13242931862595604|"
-        "9223372036854775807|0,"
+        "0|0|0|1,"
         "2|http://b/|b|0|default|111|13250042735631065|13260999511438890|"
-        "9223372036854775807|0,"
+        "0|0|0|1,"
         "3|http://c/|c|1|default|321|13261163582572088|13261079941303629|"
-        "9223372036854775807|0",
+        "0|0|0|1",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY storage_key ASC", "|", ","));
 
@@ -217,11 +230,11 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV6) {
     // Check that buckets data is still present.
     EXPECT_EQ(
         "1|http://a/|a|0|bucket_a|123|13260644621105493|13242931862595604|"
-        "9223372036854775807|0,"
+        "0|0|0|0,"
         "2|http://b/|b|0|bucket_b|111|13250042735631065|13260999511438890|"
-        "9223372036854775807|1000,"
+        "0|1000|0|0,"
         "3|http://c/|c|1|bucket_c|321|13261163582572088|13261079941303629|"
-        "9223372036854775807|10000",
+        "0|10000|0|0",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
 
@@ -288,11 +301,88 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV7) {
     // Check that buckets data is still present.
     EXPECT_EQ(
         "1|http://a/|a|0|bucket_a|123|13260644621105493|13242931862595604|"
-        "9223372036854775807|0,"
+        "0|0|0|0,"
         "2|http://b/|b|0|bucket_b|111|13250042735631065|13260999511438890|"
-        "9223372036854775807|1000,"
+        "0|1000|0|0,"
         "3|chrome-extension://abc/||1|default|321|13261163582572088|"
+        "13261079941303629|0|10000|0|1",
+        sql::test::ExecuteWithResults(
+            &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
+
+    // Check that quota data is still present.
+    EXPECT_EQ("a.com,b.com,c.com",
+              sql::test::ExecuteWithResults(
+                  &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
+
+    EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+  }
+}
+
+TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV8) {
+  ASSERT_TRUE(LoadDatabase("version_8.sql", DbPath()));
+
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(
+        meta_table.Init(&db, kCurrentSchemaVersion, kCurrentCompatibleVersion));
+    ASSERT_EQ(meta_table.GetVersionNumber(), 8);
+    ASSERT_EQ(meta_table.GetCompatibleVersionNumber(), 8);
+
+    ASSERT_TRUE(db.DoesTableExist("quota"));
+    ASSERT_TRUE(db.DoesTableExist("buckets"));
+
+    // Check populated data.
+    EXPECT_EQ(
+        "1|http://a/|http://a/"
+        "|0|bucket_a|123|13260644621105493|13242931862595604|"
+        "9223372036854775807|0,"
+        "2|http://b/|http://b/"
+        "|0|bucket_b|111|13250042735631065|13260999511438890|"
+        "9223372036854775807|1000,"
+        "3|chrome-extension://abc/|chrome-extension://abc/"
+        "|1|default|321|13261163582572088|"
         "13261079941303629|9223372036854775807|10000",
+        sql::test::ExecuteWithResults(
+            &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
+
+    EXPECT_EQ("a.com,b.com,c.com",
+              sql::test::ExecuteWithResults(
+                  &db, "SELECT host FROM quota ORDER BY host ASC", "|", ","));
+  }
+
+  MigrateDatabase();
+
+  // Verify upgraded schema.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(
+        meta_table.Init(&db, kCurrentSchemaVersion, kCurrentCompatibleVersion));
+    EXPECT_EQ(meta_table.GetVersionNumber(), kCurrentSchemaVersion);
+    EXPECT_EQ(meta_table.GetCompatibleVersionNumber(), kCurrentSchemaVersion);
+
+    ASSERT_TRUE(db.DoesTableExist("quota"));
+    ASSERT_TRUE(db.DoesTableExist("buckets"));
+    ASSERT_FALSE(db.DoesTableExist("eviction_info"));
+
+    // Check that buckets data is still present.
+    EXPECT_EQ(
+        "1|http://a/|http://a/"
+        "|0|bucket_a|123|13260644621105493|13242931862595604|"
+        "0|0|0|0,"
+        "2|http://b/|http://b/"
+        "|0|bucket_b|111|13250042735631065|13260999511438890|"
+        "0|1000|0|0,"
+        "3|chrome-extension://abc/|chrome-extension://abc/"
+        "|1|default|321|13261163582572088|"
+        "13261079941303629|0|10000|0|1",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
 

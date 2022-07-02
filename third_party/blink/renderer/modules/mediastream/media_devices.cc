@@ -31,9 +31,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -69,8 +68,10 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
         on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
-  void OnSuccess(MediaStream* stream) override {
-    DCHECK(stream);
+  void OnSuccess(const MediaStreamVector& streams) override {
+    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    DCHECK_EQ(streams.size(), 1u);
+    MediaStream* stream = streams[0];
 
     MediaStreamTrack* video_track = nullptr;
 
@@ -118,12 +119,6 @@ enum class DisplayCapturePolicyResult {
 #if !BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
-// Note: The mismatch between "CropId" and "CropTarget" is due to spec-changes
-// as part of the work in the W3C working group. These will be reflected in
-// code at a later point.
-// TODO(crbug.com/1291140): Remove above explanation once implementation
-// is updated to CropTargets.
 enum class ProduceCropTargetFunctionResult {
   kPromiseProduced = 0,
   kGenericError = 1,
@@ -392,10 +387,9 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
       .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
-ScriptPromise MediaDevices::produceCropId(
-    ScriptState* script_state,
-    V8UnionHTMLDivElementOrHTMLIFrameElement* element_union,
-    ExceptionState& exception_state) {
+ScriptPromise MediaDevices::ProduceCropTarget(ScriptState* script_state,
+                                              Element* element,
+                                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -418,11 +412,12 @@ ScriptPromise MediaDevices::produceCropId(
     return ScriptPromise();
   }
 
-  auto* element =
-      element_union->IsHTMLDivElement()
-          ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
-          : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
-  DCHECK(element);
+  if (!element || !element->IsSupportedByRegionCapture()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Support for this subtype is not yet implemented.");
+    return ScriptPromise();
+  }
 
   if (GetExecutionContext() != element->GetExecutionContext()) {
     RecordUma(ProduceCropTargetFunctionResult::
@@ -440,8 +435,8 @@ ScriptPromise MediaDevices::produceCropId(
     DCHECK(!old_crop_id->value().is_zero());
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     const ScriptPromise promise = resolver->Promise();
-    resolver->Resolve(WTF::String(
-        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(WTF::String(
+        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString())));
     RecordUma(
         ProduceCropTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
     return promise;
@@ -787,7 +782,7 @@ void MediaDevices::ResolveProduceCropIdPromise(Element* element,
     DCHECK(guid.is_valid());
     element->SetRegionCaptureCropId(
         std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
-    resolver->Resolve(crop_id);
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(crop_id));
     RecordUma(ProduceCropTargetPromiseResult::kPromiseResolved);
   }
 }

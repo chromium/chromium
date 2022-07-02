@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "device/fido/virtual_fido_device_authenticator.h"
 #include "device/fido/virtual_u2f_device.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 VirtualFidoDeviceDiscovery::Trace::Trace() = default;
 VirtualFidoDeviceDiscovery::Trace::~Trace() = default;
@@ -38,7 +38,7 @@ VirtualFidoDeviceDiscovery::~VirtualFidoDeviceDiscovery() {
 }
 
 void VirtualFidoDeviceDiscovery::StartInternal() {
-  std::unique_ptr<FidoDevice> device;
+  std::unique_ptr<VirtualFidoDevice> device;
   if (supported_protocol_ == ProtocolVersion::kCtap2) {
     device = std::make_unique<VirtualCtap2Device>(state_, ctap2_config_);
   } else {
@@ -46,7 +46,9 @@ void VirtualFidoDeviceDiscovery::StartInternal() {
   }
 
   id_ = device->GetId();
-  AddDevice(std::move(device));
+  auto authenticator =
+      std::make_unique<VirtualFidoDeviceAuthenticator>(std::move(device));
+  AddAuthenticator(std::move(authenticator));
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&VirtualFidoDeviceDiscovery::NotifyDiscoveryStarted,
@@ -71,5 +73,4 @@ bool VirtualFidoDeviceDiscovery::MaybeStop() {
   return FidoDeviceDiscovery::MaybeStop();
 }
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test

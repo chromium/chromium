@@ -55,10 +55,10 @@
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_services_manager_client.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#include "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
@@ -150,7 +150,6 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
   BrowserPolicyConnectorIOS* browser_policy_connector =
       GetBrowserPolicyConnector();
   if (browser_policy_connector) {
-    DCHECK(IsEnterprisePolicyEnabled());
     browser_policy_connector->Init(GetLocalState(),
                                    GetSharedURLLoaderFactory());
   }
@@ -172,7 +171,7 @@ void ApplicationContextImpl::StartTearDown() {
   // IO thread will handle that URLFetcher operation before going away.)
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service)
-    metrics_service->RecordCompletedSessionEnd();
+    metrics_service->LogCleanShutdown();
   metrics_services_manager_.reset();
   network_time_tracker_.reset();
 
@@ -422,36 +421,34 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
 
 BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (IsEnterprisePolicyEnabled()) {
-    if (!browser_policy_connector_.get()) {
-      // Ensure that the ResourceBundle has already been initialized. If this
-      // DCHECK ever fails, a call to
-      // BrowserPolicyConnector::OnResourceBundleCreated() will need to be added
-      // later in the startup sequence, after the ResourceBundle is initialized.
-      DCHECK(ui::ResourceBundle::HasSharedInstance());
-      version_info::Channel channel = ::GetChannel();
-      policy::ConfigurationPolicyProvider* test_policy_provider =
-          tests_hook::GetOverriddenPlatformPolicyProvider();
+  if (!browser_policy_connector_.get()) {
+    // Ensure that the ResourceBundle has already been initialized. If this
+    // DCHECK ever fails, a call to
+    // BrowserPolicyConnector::OnResourceBundleCreated() will need to be added
+    // later in the startup sequence, after the ResourceBundle is initialized.
+    DCHECK(ui::ResourceBundle::HasSharedInstance());
+    version_info::Channel channel = ::GetChannel();
+    policy::ConfigurationPolicyProvider* test_policy_provider =
+        tests_hook::GetOverriddenPlatformPolicyProvider();
 
-      // If running under test (for example, if a mock platform policy provider
-      // was provided), enable future policies without requiring them to be on
-      // an allowlist. Otherwise, disable future policies on
-      // externally-published channels, unless a domain administrator explicitly
-      // adds them to the allowlist.
-      bool enable_future_policies_without_allowlist =
-          test_policy_provider != nullptr ||
-          (channel != version_info::Channel::STABLE &&
-           channel != version_info::Channel::BETA);
-      browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
-          base::BindRepeating(&BuildPolicyHandlerList,
-                              enable_future_policies_without_allowlist));
+    // If running under test (for example, if a mock platform policy provider
+    // was provided), enable future policies without requiring them to be on
+    // an allowlist. Otherwise, disable future policies on
+    // externally-published channels, unless a domain administrator explicitly
+    // adds them to the allowlist.
+    bool enable_future_policies_without_allowlist =
+        test_policy_provider != nullptr ||
+        (channel != version_info::Channel::STABLE &&
+         channel != version_info::Channel::BETA);
+    browser_policy_connector_ =
+        std::make_unique<BrowserPolicyConnectorIOS>(base::BindRepeating(
+            &BuildPolicyHandlerList, enable_future_policies_without_allowlist));
 
-      // Install a mock platform policy provider, if running under EG2 and one
-      // is supplied.
-      if (test_policy_provider) {
-        browser_policy_connector_->SetPolicyProviderForTesting(
-            test_policy_provider);
-      }
+    // Install a mock platform policy provider, if running under EG2 and one
+    // is supplied.
+    if (test_policy_provider) {
+      browser_policy_connector_->SetPolicyProviderForTesting(  // IN-TEST
+          test_policy_provider);
     }
   }
   return browser_policy_connector_.get();
@@ -471,6 +468,16 @@ id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
     DCHECK(single_sign_on_service_);
   }
   return single_sign_on_service_;
+}
+
+segmentation_platform::OTRWebStateObserver*
+ApplicationContextImpl::GetSegmentationOTRWebStateObserver() {
+  if (!segmentation_otr_web_state_observer_) {
+    segmentation_otr_web_state_observer_ =
+        std::make_unique<segmentation_platform::OTRWebStateObserver>(
+            GetChromeBrowserStateManager());
+  }
+  return segmentation_otr_web_state_observer_.get();
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

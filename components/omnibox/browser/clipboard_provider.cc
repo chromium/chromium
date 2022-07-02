@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -122,17 +123,15 @@ void RecordDeletingClipboardSuggestionMetrics(
 
 ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener,
-                                     HistoryURLProvider* history_url_provider,
                                      ClipboardRecentContent* clipboard_content)
     : AutocompleteProvider(AutocompleteProvider::TYPE_CLIPBOARD),
       client_(client),
-      listener_(listener),
       clipboard_content_(clipboard_content),
-      history_url_provider_(history_url_provider),
       current_url_suggested_times_(0),
       field_trial_triggered_(false),
       field_trial_triggered_in_session_(false) {
   DCHECK(clipboard_content_);
+  AddListener(listener);
 }
 
 ClipboardProvider::~ClipboardProvider() {}
@@ -250,12 +249,8 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
   // If the omnibox is not empty, add a default match.
   // This match will be opened when the user presses "Enter".
   if (!input.text().empty()) {
-    const std::u16string description =
-        (base::FeatureList::IsEnabled(omnibox::kDisplayTitleForCurrentUrl))
-            ? input.current_title()
-            : std::u16string();
     AutocompleteMatch verbatim_match = VerbatimMatchForURL(
-        this, client_, input, input.current_url(), description, -1);
+        this, client_, input, input.current_url(), input.current_title(), -1);
     matches_.push_back(verbatim_match);
   }
 
@@ -322,17 +317,17 @@ void ClipboardProvider::OnReceiveClipboardContent(
     field_trial_triggered_ = true;
     field_trial_triggered_in_session_ = true;
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::URL) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankURLMatch();
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   } else if (matched_types.find(ClipboardContentType::Text) !=
              matched_types.end()) {
     AutocompleteMatch match = NewBlankTextMatch();
     AddCreatedMatchWithTracking(input, match, clipboard_contents_age);
-    listener_->OnProviderUpdate(true);
+    NotifyListeners(true);
   }
   done_ = true;
 }
@@ -437,7 +432,7 @@ void ClipboardProvider::AddImageMatchCallback(
     return;
   }
   AddCreatedMatchWithTracking(input, match.value(), clipboard_contents_age);
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
   done_ = true;
 }
 

@@ -7,6 +7,8 @@
 
 #include <mach/message.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 
 // Calls mach_msg_destroy on the specified message when the object goes out
@@ -28,7 +30,7 @@ class ScopedMachMsgDestroy {
   void Disarm() { header_ = nullptr; }
 
  private:
-  mach_msg_header_t* header_;
+  raw_ptr<mach_msg_header_t> header_;
 };
 
 }  // namespace base

@@ -26,14 +26,6 @@ static_library("file") {
   ]
 }
 
-source_set("shared_vector") {
-  sources = [ "shared_vector.h" ]
-  deps = [
-    ":status",
-    "//base",
-  ]
-}
-
 proto_library("status_proto") {
   # Generate JS so it can be used by chrome extensions
   generate_javascript = true
@@ -102,7 +94,6 @@ source_set("unit_tests") {
     "disconnectable_client_unittest.cc",
     "file_unittest.cc",
     "shared_queue_unittest.cc",
-    "shared_vector_unittest.cc",
     "status_macros_unittest.cc",
     "status_unittest.cc",
     "statusor_unittest.cc",
@@ -111,7 +102,6 @@ source_set("unit_tests") {
     ":disconnectable_client",
     ":file",
     ":shared_queue",
-    ":shared_vector",
     ":status",
     ":status_macros",
     ":status_proto",

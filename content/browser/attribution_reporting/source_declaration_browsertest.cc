@@ -231,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
   // Create an impression tag that is opened via middle click in the subframe.
-  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   GURL register_source_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/register_source_headers.html");
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
-                       ImpressionWithInsecureReportingOrigin_NotRegistered) {
+                       ImpressionWithInsecureReportingOrigin_ReceivesToken) {
   // Navigate to a page with the non-https server.
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
@@ -327,8 +328,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
-  // We should see a null impression on the navigation
-  EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
+  // We should see an impression, as there may be registrations that happen on
+  // the navigation redirect.
+  source_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -363,7 +365,8 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   GURL register_source_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/register_source_headers.html");
@@ -392,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   GURL register_source_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/register_source_headers.html");
@@ -435,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   content::SimulateMouseClickAt(
@@ -607,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   NavigateIframeToURL(web_contents(), "test_iframe", middle_iframe_url);
 
   RenderFrameHost* middle_iframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   GURL innermost_iframe_url(
       embedded_test_server()->GetURL("/page_with_impression_creator.html"));

@@ -164,7 +164,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   // If type is empty or CSS, this is a CSS style sheet.
   const AtomicString& type = this->type();
   if (IsCSS(element, type) && passes_content_security_policy_checks) {
-    scoped_refptr<MediaQuerySet> media_queries;
+    MediaQuerySet* media_queries = nullptr;
     const AtomicString& media_string = media();
     bool media_query_matches = true;
     if (!media_string.IsEmpty()) {
@@ -235,8 +235,10 @@ void StyleElement::BlockingAttributeChanged(Element& element) {
   // rendering.
   if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking)
     return;
-  if (blocking() && blocking()->IsExplicitlyRenderBlocking())
+  if (!IsA<HTMLElement>(element) ||
+      To<HTMLElement>(element).IsPotentiallyRenderBlocking()) {
     return;
+  }
   element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
       element, pending_sheet_type_);
   pending_sheet_type_ = PendingSheetType::kNonBlocking;

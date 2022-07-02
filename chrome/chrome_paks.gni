@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
@@ -38,7 +38,6 @@ template("chrome_repack_percent") {
       "$root_gen_dir/chrome/renderer_resources_${percent}_percent.pak",
       "$root_gen_dir/chrome/theme_resources_${percent}_percent.pak",
       "$root_gen_dir/components/components_resources_${percent}_percent.pak",
-      "$root_gen_dir/content/app/resources/content_resources_${percent}_percent.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/resources/ui_resources_${percent}_percent.pak",
     ]
@@ -48,7 +47,6 @@ template("chrome_repack_percent") {
       "//chrome/renderer:resources",
       "//components/resources",
       "//components/strings",
-      "//content/app/resources",
       "//net:net_resources",
       "//third_party/blink/public:scaled_resources_${percent}_percent",
       "//ui/resources",
@@ -147,7 +145,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/commander_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
         "$root_gen_dir/chrome/dev_ui_resources.pak",
-        "$root_gen_dir/chrome/download_shelf_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
         "$root_gen_dir/chrome/feed_resources.pak",
         "$root_gen_dir/chrome/feedback_webui_resources.pak",
@@ -181,7 +178,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/app_service_internals:resources",
         "//chrome/browser/resources/bookmarks:resources",
         "//chrome/browser/resources/commander:resources",
-        "//chrome/browser/resources/download_shelf:resources",
         "//chrome/browser/resources/downloads:resources",
         "//chrome/browser/resources/feed:resources",
         "//chrome/browser/resources/feedback_webui:resources",
@@ -213,7 +209,7 @@ template("chrome_extra_paks") {
         ]
         deps += [
           "//chrome/browser/resources:preinstalled_web_apps_resources",
-          "//chrome/browser/resources/media_router:cast_feedback_ui_resources",
+          "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
       }
     }
@@ -226,6 +222,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/ash_eche_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_eche_bundle_resources.pak",
         "$root_gen_dir/ash/webui/ash_firmware_update_app_resources.pak",
+        "$root_gen_dir/ash/webui/ash_guest_os_installer_resources.pak",
         "$root_gen_dir/ash/webui/ash_help_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_media_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_multidevice_debug_resources.pak",
@@ -249,6 +246,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/browser/supervised_user/supervised_user_unscaled_resources.pak",
         "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
+        "$root_gen_dir/chrome/gaia_action_buttons_resources.pak",
         "$root_gen_dir/chrome/internet_config_dialog_resources.pak",
         "$root_gen_dir/chrome/internet_detail_dialog_resources.pak",
         "$root_gen_dir/chrome/launcher_internals_resources.pak",
@@ -257,6 +255,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/nearby_internals_resources.pak",
         "$root_gen_dir/chrome/nearby_share_dialog_resources.pak",
         "$root_gen_dir/chrome/network_ui_resources.pak",
+        "$root_gen_dir/chrome/notification_tester_resources.pak",
         "$root_gen_dir/chrome/oobe_conditional_resources.pak",
         "$root_gen_dir/chrome/oobe_unconditional_resources.pak",
         "$root_gen_dir/chrome/os_settings_resources.pak",
@@ -282,6 +281,7 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:eche_app_resources",
         "//ash/webui/resources:eche_bundle_resources",
         "//ash/webui/resources:firmware_update_app_resources",
+        "//ash/webui/resources:guest_os_installer_resources",
         "//ash/webui/resources:help_app_bundle_resources",
         "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
         "//ash/webui/resources:help_app_resources",
@@ -307,11 +307,13 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/chromeos/assistant_optin:resources",
         "//chrome/browser/resources/chromeos/audio:resources",
         "//chrome/browser/resources/chromeos/emoji_picker:resources",
+        "//chrome/browser/resources/chromeos/gaia_action_buttons:resources",
         "//chrome/browser/resources/chromeos/launcher_internals:resources",
         "//chrome/browser/resources/chromeos/login:conditional_resources",
         "//chrome/browser/resources/chromeos/login:unconditional_resources",
         "//chrome/browser/resources/chromeos/multidevice_internals:resources",
         "//chrome/browser/resources/chromeos/network_ui:resources",
+        "//chrome/browser/resources/chromeos/notification_tester:resources",
         "//chrome/browser/resources/nearby_internals:resources",
         "//chrome/browser/resources/nearby_share:resources",
         "//chrome/browser/resources/settings/chromeos:resources",
@@ -347,15 +349,18 @@ template("chrome_extra_paks") {
     }
     if (!is_android && !is_chromeos_ash) {
       sources += [
-        "$root_gen_dir/chrome/apps_resources.pak",
         "$root_gen_dir/chrome/profile_picker_resources.pak",
         "$root_gen_dir/chrome/welcome_resources.pak",
       ]
       deps += [
-        "//chrome/browser/resources/ntp4:apps_resources",
         "//chrome/browser/resources/signin/profile_picker:resources",
         "//chrome/browser/resources/welcome:resources",
       ]
+    }
+
+    if (is_win || is_mac || is_linux || is_fuchsia) {
+      sources += [ "$root_gen_dir/chrome/apps_resources.pak" ]
+      deps += [ "//chrome/browser/resources/ntp4:apps_resources" ]
     }
 
     if (is_win || is_mac || is_linux) {

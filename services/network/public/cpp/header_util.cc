@@ -9,6 +9,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -74,6 +75,12 @@ bool IsRequestHeaderSafe(const base::StringPiece& key,
   for (const auto* header : kUnsafeHeaders) {
     if (base::EqualsCaseInsensitiveASCII(header, key))
       return false;
+  }
+
+  // 'Set-Cookie' is semantically a response header, so not useuful on requests.
+  if (base::FeatureList::IsEnabled(net::features::kBlockSetCookieHeader) &&
+      base::EqualsCaseInsensitiveASCII("Set-Cookie", key)) {
+    return false;
   }
 
   for (const auto& header : kUnsafeHeaderValues) {
@@ -176,7 +183,7 @@ bool ShouldSniffContent(const GURL& url,
                                           &content_type_options);
   }
   bool sniffing_blocked =
-      base::LowerCaseEqualsASCII(content_type_options, "nosniff");
+      base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
   bool we_would_like_to_sniff =
       net::ShouldSniffMimeType(url, response.mime_type);
 

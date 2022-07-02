@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_RENDER_THREAD_WORKLET_DRIVER_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_RENDER_THREAD_WORKLET_DRIVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 
 #include "content/public/browser/render_process_host_observer.h"
@@ -47,7 +48,7 @@ class SharedStorageRenderThreadWorkletDriver
   // need to use it to track the lifetime of `agent_scheduling_group_host_`
   // instead of RenderProcessHostObserver. For more context see
   // crbug.com/1141459#c4.
-  AgentSchedulingGroupHost* agent_scheduling_group_host_;
+  raw_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
 };
 
 }  // namespace content

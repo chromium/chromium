@@ -36,6 +36,7 @@ class DataSource;
 class Surface;
 
 class ExtendedDragSource : public DataSourceObserver,
+                           public aura::WindowObserver,
                            public ash::ToplevelWindowDragDelegate {
  public:
   class Delegate {
@@ -84,19 +85,21 @@ class ExtendedDragSource : public DataSourceObserver,
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
+  // aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override;
+
   aura::Window* GetDraggedWindowForTesting();
   absl::optional<gfx::Vector2d> GetDragOffsetForTesting() const;
+  aura::Window* GetDragSourceWindowForTesting();
 
  private:
   class DraggedWindowHolder;
 
   void MaybeLockCursor();
   void UnlockCursor();
-  void StartDrag(aura::Window* toplevel,
-                 const gfx::PointF& pointer_location_in_screen);
+  void StartDrag(aura::Window* toplevel);
   void OnDraggedWindowVisibilityChanging(bool visible);
   void OnDraggedWindowVisibilityChanged(bool visible);
-  gfx::Point CalculateOrigin(aura::Window* target) const;
   void Cleanup();
 
   static ExtendedDragSource* instance_;
@@ -107,6 +110,7 @@ class ExtendedDragSource : public DataSourceObserver,
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
   Delegate* const delegate_;
 
+  // The pointer location in screen coordinates.
   gfx::PointF pointer_location_;
   ui::mojom::DragEventSource drag_event_source_;
   bool cursor_locked_ = false;

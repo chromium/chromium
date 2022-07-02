@@ -8,12 +8,9 @@
 #include <memory>
 
 #include "base/stl_util.h"
-#include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
-#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,10 +44,15 @@ std::string GenAppId(const App& app) {
 
 class CrostiniShelfUtilsTest : public testing::Test {
  public:
-  std::string GetShelfAppId(WindowIds window_ids) const {
+  std::string GetShelfAppIdUsingProfile(const Profile* profile,
+                                        WindowIds window_ids) const {
     return GetCrostiniShelfAppId(
-        &testing_profile_, base::OptionalOrNullptr(window_ids.app_id),
+        profile, base::OptionalOrNullptr(window_ids.app_id),
         base::OptionalOrNullptr(window_ids.startup_id));
+  }
+
+  std::string GetShelfAppId(WindowIds window_ids) const {
+    return GetShelfAppIdUsingProfile(&testing_profile_, window_ids);
   }
 
   void SetGuestOsRegistry(std::vector<App> apps) {
@@ -85,6 +87,11 @@ class CrostiniShelfUtilsTest : public testing::Test {
     }
   }
 
+  const Profile* GetOffTheRecordProfile() {
+    return testing_profile_.GetOffTheRecordProfile(
+        Profile::OTRProfileID::CreateUniqueForTesting(), true);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
@@ -95,6 +102,12 @@ TEST_F(CrostiniShelfUtilsTest,
   SetGuestOsRegistry({});
 
   EXPECT_EQ(GetShelfAppId(WindowIds()), "");
+}
+
+TEST_F(CrostiniShelfUtilsTest,
+       GetCrostiniShelfAppIdReturnsEmptyIdForIneligibleProfile) {
+  EXPECT_EQ(GetShelfAppIdUsingProfile(GetOffTheRecordProfile(), WindowIds()),
+            "");
 }
 
 TEST_F(CrostiniShelfUtilsTest,

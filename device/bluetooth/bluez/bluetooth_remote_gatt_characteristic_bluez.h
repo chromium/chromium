@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -140,7 +141,7 @@ class BluetoothRemoteGattCharacteristicBlueZ
   bool has_notify_session_;
 
   // The GATT service this GATT characteristic belongs to.
-  BluetoothRemoteGattServiceBlueZ* service_;
+  raw_ptr<BluetoothRemoteGattServiceBlueZ> service_;
 
   // Number of gatt read requests in progress.
   int num_of_characteristic_value_read_in_progress_;

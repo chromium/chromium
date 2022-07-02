@@ -50,7 +50,7 @@ extern char kRARArchiveMimeType[];
 // MIME Type for TAR archive.
 extern char kTarArchiveMimeType[];
 
-// MIME Type for Adobe Flash .
+// MIME Type for Adobe Flash.
 extern char kAdobeFlashMimeType[];
 
 // MIME Type for Amazon kindle book.
@@ -68,6 +68,74 @@ extern char kJavaArchiveMimeType[];
 // Legacy USDZ content types.
 extern char kLegacyUsdzMimeType[];
 extern char kLegacyPixarUsdzMimeType[];
+
+// MIME Types that don't have specific treatment.
+extern char kAACAudioMimeType[];
+extern char kAbiWordDocumentMimeType[];
+extern char kArchiveDocumentMimeType[];
+extern char kAVIFImageMimeType[];
+extern char kAVIVideoMimeType[];
+extern char kGenericBitmapMimeType[];
+extern char kMicrosoftBitmapMimeType[];
+extern char kBZip2ArchiveMimeType[];
+extern char kCDAudioMimeType[];
+extern char kCShellScriptMimeType[];
+extern char kCascadingStyleSheetMimeType[];
+extern char kCommaSeparatedValuesMimeType[];
+extern char kMicrosoftWordMimeType[];
+extern char kMicrosoftWordXMLMimeType[];
+extern char kMSEmbeddedOpenTypefontMimeType[];
+extern char kElectronicPublicationMimeType[];
+extern char kGZipCompressedArchiveMimeType[];
+extern char kGraphicsInterchangeFormatMimeType[];
+extern char kHyperTextMarkupLanguageMimeType[];
+extern char kIconFormatMimeType[];
+extern char kJPEGImageMimeType[];
+extern char kJavaScriptMimeType[];
+extern char kJSONFormatMimeType[];
+extern char kJSONLDFormatMimeType[];
+extern char kMusicalInstrumentDigitalInterfaceMimeType[];
+extern char kXMusicalInstrumentDigitalInterfaceMimeType[];
+extern char kMP3AudioMimeType[];
+extern char kMP4VideoMimeType[];
+extern char kMPEGVideoMimeType[];
+extern char kOpenDocumentPresentationDocumentMimeType[];
+extern char kOpenDocumentSpreadsheetDocumentMimeType[];
+extern char kOpenDocumentTextDocumentMimeType[];
+extern char kOGGAudioMimeType[];
+extern char kOGGVideoMimeType[];
+extern char kOGGMimeType[];
+extern char kOpusAudioMimeType[];
+extern char kOpenTypeFontMimeType[];
+extern char kPortableNetworkGraphicMimeType[];
+extern char kAdobePortableDocumentFormatMimeType[];
+extern char kHypertextPreprocessorMimeType[];
+extern char kMicrosoftPowerPointMimeType[];
+extern char kMicrosoftPowerPointOpenXMLMimeType[];
+extern char kRARArchiveVNDMimeType[];
+extern char kRichTextFormatMimeType[];
+extern char kBourneShellScriptMimeType[];
+extern char kScalableVectorGraphicMimeType[];
+extern char kTaggedImageFileFormatMimeType[];
+extern char kMPEGTransportStreamMimeType[];
+extern char kTrueTypeFontMimeType[];
+extern char kTextMimeType[];
+extern char kMicrosoftVisioMimeType[];
+extern char kWaveformAudioFormatMimeType[];
+extern char kWEBMAudioMimeType[];
+extern char kWEBMVideoMimeType[];
+extern char kWEBPImageMimeType[];
+extern char kWebOpenFontMimeType[];
+extern char kWebOpenFont2MimeType[];
+extern char kXHTMLMimeType[];
+extern char kMicrosoftExcelMimeType[];
+extern char kMicrosoftExcelOpenXMLMimeType[];
+extern char kXMLMimeType[];
+extern char kXULMimeType[];
+extern char k3GPPVideoMimeType[];
+extern char k3GPPAudioMimeType[];
+extern char k3GPP2VideoMimeType[];
+extern char k3GPP2AudioMimeType[];
 
 // Returns whether the content-type or the file extension match those of a USDZ
 // 3D model. The file extension is checked in addition to the content-type since

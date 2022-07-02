@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
 #include "cc/input/layer_selection_bound.h"
@@ -131,6 +132,9 @@ class PLATFORM_EXPORT PaintController {
 
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
                        absl::optional<PaintedSelectionBound> end);
+  void RecordAnySelectionWasPainted() {
+    paint_chunker_.RecordAnySelectionWasPainted();
+  }
 
   wtf_size_t NumNewChunks() const {
     return new_paint_artifact_->PaintChunks().size();

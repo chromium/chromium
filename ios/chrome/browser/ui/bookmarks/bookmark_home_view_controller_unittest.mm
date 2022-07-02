@@ -6,7 +6,13 @@
 
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,8 +25,30 @@ using BookmarkHomeViewControllerTest = BookmarkIOSUnitTest;
 TEST_F(BookmarkHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+                             forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
     BookmarkHomeViewController* controller =
         [[BookmarkHomeViewController alloc] initWithBrowser:browser_.get()];
+    controller.applicationCommandsHandler = mockApplicationCommandHandler;
+    controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
     [controller setRootNode:bookmark_model_->mobile_node()];
     // Two sections: Messages and Bookmarks.

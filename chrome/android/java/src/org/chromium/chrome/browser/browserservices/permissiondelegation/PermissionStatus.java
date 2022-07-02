@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({PermissionStatus.ALLOW, PermissionStatus.BLOCK, PermissionStatus.ASK})
 @Retention(RetentionPolicy.SOURCE)
 /**
- * Represents the permission state in TWA service calls.
+ * Represents the permission state in service calls.
  */
 public @interface PermissionStatus {
     int ALLOW = 0;

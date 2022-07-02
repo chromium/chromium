@@ -290,7 +290,7 @@
     },
     {
       name: "main",
-      interfaceName: "HTMLElement",
+      interfaceName: "HTMLMainElement",
     },
     "map",
     {

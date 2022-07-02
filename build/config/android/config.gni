@@ -107,9 +107,10 @@ if (is_android || is_chromeos) {
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_build_tools =
       "${public_android_sdk_root}/build-tools/31.0.0"
+  public_android_sdk_version = "31"
   if (android_sdk_release == "s") {
     default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = "31"
+    default_android_sdk_version = public_android_sdk_version
     default_android_sdk_build_tools_version = "31.0.0"
     public_android_sdk = true
   }
@@ -123,7 +124,7 @@ if (is_android || is_chromeos) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 31
+    default_lint_android_sdk_version = 32
   }
 
   if (!defined(default_extras_android_sdk_root)) {
@@ -142,7 +143,7 @@ if (is_android || is_chromeos) {
   # google_play_services_package contains the path where individual client
   # targets (e.g. google_play_services_base_java) are located.
   if (!defined(google_play_services_package)) {
-    if (is_chromecast && chromecast_branding != "public") {
+    if (is_cast_android && chromecast_branding != "public") {
       google_play_services_package = "//chromecast/internal/android/prebuilt/google-play-services-first-party"
     } else {
       google_play_services_package = "//third_party/android_deps"

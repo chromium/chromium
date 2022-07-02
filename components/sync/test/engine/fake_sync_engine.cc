@@ -72,6 +72,10 @@ void FakeSyncEngine::StartConfiguration() {}
 
 void FakeSyncEngine::StartSyncingWithServer() {}
 
+void FakeSyncEngine::StartHandlingInvalidations() {
+  started_handling_invalidations_ = true;
+}
+
 void FakeSyncEngine::SetEncryptionPassphrase(
     const std::string& passphrase,
     const KeyDerivationParams& key_derivation_params) {}

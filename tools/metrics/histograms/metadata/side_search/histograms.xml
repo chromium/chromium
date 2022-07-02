@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SideSearch.AvailabilityChanged"
-    enum="SideSearchAvailabilityChangeType" expires_after="2022-09-29">
+    enum="SideSearchAvailabilityChangeType" expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.CloseAction" enum="SideSearchCloseActionType"
-    expires_after="2022-09-29">
+    expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.Navigation" enum="SideSearchNavigationType"
-    expires_after="2022-09-29">
+    expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney"
-    units="navigations" expires_after="2022-09-29">
+    units="navigations" expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.OpenAction" enum="SideSearchOpenActionType"
-    expires_after="2022-09-29">
+    expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.RedirectionToTabCountPerJourney"
-    units="navigations" expires_after="2022-09-29">
+    units="navigations" expires_after="2022-12-04">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>

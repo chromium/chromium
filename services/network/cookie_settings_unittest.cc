@@ -408,10 +408,9 @@ TEST_F(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
 
 TEST_F(CookieSettingsTest, LegacyCookieAccessDefault) {
   CookieSettings settings;
-  ContentSetting setting;
 
-  settings.GetSettingForLegacyCookieAccess(kDomain, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings.GetSettingForLegacyCookieAccess(kDomain),
+            CONTENT_SETTING_BLOCK);
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             settings.GetCookieAccessSemanticsForDomain(kDomain));
 }
@@ -732,6 +731,21 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // then the partitioned cookie should still be allowed.
   settings.set_content_settings(
       {CreateSetting(kOtherURL, kUnrelatedURL, CONTENT_SETTING_BLOCK)});
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
+              IsEmpty());
+
+  // If third-party cookie blocking is enabled and there is a matching Storage
+  // Access setting whose value is BLOCK, then the partitioned cookie should
+  // still be allowed.
+  settings.set_block_third_party_cookies(true);
+  settings.set_content_settings(
+      {CreateSetting(kURL, kURL, CONTENT_SETTING_ALLOW)});
+  settings.set_storage_access_grants(
+      {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));

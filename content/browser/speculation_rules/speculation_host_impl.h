@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/speculation_host_delegate.h"
@@ -56,9 +55,12 @@ class CONTENT_EXPORT SpeculationHostImpl final
 
   std::unique_ptr<SpeculationHostDelegate> delegate_;
 
-  // TODO(https://crbug.com/1197133): Record the prerendering URLs as well so
-  // that this can cancel started prerenders when candidates are updated.
-  base::flat_set<int> started_prerender_host_ids_;
+  // TODO(https://crbug.com/1197133): Cancel started prerenders when candidates
+  // are updated.
+  // This is kept sorted by URL.
+  struct PrerenderInfo;
+  std::vector<PrerenderInfo> started_prerenders_;
+
   base::WeakPtr<PrerenderHostRegistry> registry_;
 };
 

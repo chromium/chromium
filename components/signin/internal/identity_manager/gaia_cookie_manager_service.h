@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -219,7 +220,8 @@ class GaiaCookieManagerService
     base::OnceClosure callback_;
   };
 
-  GaiaCookieManagerService(ProfileOAuth2TokenService* token_service,
+  GaiaCookieManagerService(AccountTrackerService* account_tracker_service_,
+                           ProfileOAuth2TokenService* token_service,
                            SigninClient* signin_client);
 
   GaiaCookieManagerService(const GaiaCookieManagerService&) = delete;
@@ -392,6 +394,7 @@ class GaiaCookieManagerService
   // Start the next request, if needed.
   void HandleNextRequest();
 
+  const raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   raw_ptr<SigninClient> signin_client_;
 

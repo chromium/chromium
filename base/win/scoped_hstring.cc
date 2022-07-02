@@ -6,6 +6,8 @@
 
 #include <winstring.h>
 
+#include <string>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

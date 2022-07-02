@@ -40,7 +40,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -67,6 +66,7 @@
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -512,13 +512,10 @@ void Performance::GenerateAndAddResourceTiming(
   const SecurityOrigin* security_origin = GetSecurityOrigin(context);
   if (!security_origin)
     return;
-  // |info| is taken const-ref but this can make destructive changes to
-  // WorkerTimingContainer on |info| when a page is controlled by a service
-  // worker.
   AddResourceTiming(
       GenerateResourceTiming(*security_origin, info, *context),
       !initiator_type.IsNull() ? initiator_type : info.InitiatorType(),
-      info.TakeWorkerTimingReceiver(), context);
+      context);
 }
 
 // Please keep this function in sync with ObjectNavigationFallbackBodyLoader's
@@ -592,15 +589,12 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   return result;
 }
 
-void Performance::AddResourceTiming(
-    mojom::blink::ResourceTimingInfoPtr info,
-    const AtomicString& initiator_type,
-    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-        worker_timing_receiver,
-    ExecutionContext* context) {
+void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
+                                    const AtomicString& initiator_type,
+                                    ExecutionContext* context) {
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
       *info, time_origin_, cross_origin_isolated_capability_, initiator_type,
-      std::move(worker_timing_receiver), context);
+      context);
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -626,16 +620,13 @@ void Performance::AddResourceTimingWithUnparsedServerTiming(
     mojom::blink::ResourceTimingInfoPtr info,
     const String& server_timing_value,
     const AtomicString& initiator_type,
-    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-        worker_timing_receiver,
     ExecutionContext* context) {
   if (info->allow_timing_details) {
     info->server_timing =
         PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
             server_timing_value);
   }
-  AddResourceTiming(std::move(info), initiator_type,
-                    std::move(worker_timing_receiver), context);
+  AddResourceTiming(std::move(info), initiator_type, context);
 }
 
 // Called after loadEventEnd happens.
@@ -732,7 +723,8 @@ void Performance::AddFirstContentfulPaintTiming(base::TimeTicks start_time) {
 void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  base::TimeTicks start_time) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, MonotonicTimeToDOMHighResTimeStamp(start_time));
+      type, MonotonicTimeToDOMHighResTimeStamp(start_time),
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   // Always buffer First Paint & First Contentful Paint.
   if (type == PerformancePaintTiming::PaintType::kFirstPaint)
     first_paint_timing_ = entry;
@@ -755,14 +747,16 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
                                     const AtomicString& container_name) {
   double dom_high_res_start_time =
       MonotonicTimeToDOMHighResTimeStamp(start_time);
+
+  ExecutionContext* execution_context = GetExecutionContext();
   auto* entry = MakeGarbageCollected<PerformanceLongTaskTiming>(
       dom_high_res_start_time,
       // Convert the delta between start and end times to an int to reduce the
       // granularity of the duration to 1 ms.
       static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
                        dom_high_res_start_time),
-      name, container_type, container_src, container_id, container_name);
-  ExecutionContext* execution_context = GetExecutionContext();
+      name, container_type, container_src, container_id, container_name,
+      PerformanceEntry::GetNavigationId(execution_context));
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     longtask_buffer_.push_back(entry);
   } else {

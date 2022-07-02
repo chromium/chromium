@@ -39,7 +39,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace ui {
@@ -75,13 +75,8 @@ bool IsImeEnabled() {
   // Lacros-chrome side, which helps us on releasing.
   // TODO(crbug.com/1159237): In the future, we may want to unify the behavior
   // of ozone/wayland across platforms.
-  const auto* lacros_service = chromeos::LacrosService::Get();
-
-  // Note: |init_params| may be null, if ash-chrome is too old.
-  // TODO(crbug.com/1156033): Clean up the condition, after ash-chrome in the
-  // world becomes new enough.
   const crosapi::mojom::BrowserInitParams* init_params =
-      lacros_service ? lacros_service->init_params() : nullptr;
+      chromeos::BrowserInitParams::Get();
   if (init_params && init_params->exo_ime_support !=
                          crosapi::mojom::ExoImeSupport::kUnsupported) {
     return true;
@@ -127,12 +122,10 @@ ConvertStyle(uint32_t style) {
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
     WaylandKeyboard::Delegate* key_delegate,
-    LinuxInputMethodContextDelegate* ime_delegate,
-    bool is_simple)
+    LinuxInputMethodContextDelegate* ime_delegate)
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      is_simple_(is_simple),
       text_input_(nullptr) {
   connection_->wayland_window_manager()->AddObserver(this);
   Init();
@@ -152,7 +145,7 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (use_ozone_wayland_vkb && !is_simple_ && !text_input_ &&
+  if (use_ozone_wayland_vkb && !text_input_ &&
       connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
         connection_, this, connection_->text_input_manager_v1(),
@@ -209,6 +202,15 @@ void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
   if (text_input_)
     text_input_->Reset();
+}
+
+void WaylandInputMethodContext::UpdateFocus(bool has_client,
+                                            TextInputType old_type,
+                                            TextInputType new_type) {
+  if (old_type != TEXT_INPUT_TYPE_NONE)
+    Blur();
+  if (new_type != TEXT_INPUT_TYPE_NONE)
+    Focus();
 }
 
 void WaylandInputMethodContext::Focus() {
@@ -329,6 +331,13 @@ void WaylandInputMethodContext::SetContentType(TextInputType type,
   if (!text_input_)
     return;
   text_input_->SetContentType(type, mode, flags, should_do_learning);
+}
+
+void WaylandInputMethodContext::SetGrammarFragmentAtCursor(
+    const GrammarFragment& fragment) {
+  if (!text_input_)
+    return;
+  text_input_->SetGrammarFragmentAtCursor(fragment);
 }
 
 VirtualKeyboardController*
@@ -558,6 +567,24 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
   ime_delegate_->OnSetPreeditRegion(gfx::Range(offsets[0], offsets[1]),
                                     ime_text_spans);
+}
+
+void WaylandInputMethodContext::OnClearGrammarFragments(
+    const gfx::Range& range) {
+  std::vector<size_t> offsets = {range.start(), range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnClearGrammarFragments(gfx::Range(
+      static_cast<uint32_t>(offsets[0]), static_cast<uint32_t>(offsets[1])));
+}
+
+void WaylandInputMethodContext::OnAddGrammarFragment(
+    const GrammarFragment& fragment) {
+  std::vector<size_t> offsets = {fragment.range.start(), fragment.range.end()};
+  base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
+  ime_delegate_->OnAddGrammarFragment(
+      {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
+                                  static_cast<uint32_t>(offsets[1])),
+                       fragment.suggestion)});
 }
 
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {

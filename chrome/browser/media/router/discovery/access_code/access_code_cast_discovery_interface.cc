@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -24,6 +25,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -261,10 +263,12 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   discovery_scopes.push_back(kDiscoveryOAuth2Scope);
 
   return std::make_unique<EndpointFetcher>(
-      profile_, kDiscoveryOAuthConsumerName,
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      kDiscoveryOAuthConsumerName,
       GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
       kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
-      kTrafficAnnotation);
+      kTrafficAnnotation, IdentityManagerFactory::GetForProfile(profile_));
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(

@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_RUNTIME_PROBE_RUNTIME_PROBE_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/files/scoped_file.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe.pb.h"
@@ -21,21 +20,29 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) RuntimeProbeClient
  public:
   using RuntimeProbeCallback = DBusMethodCallback<runtime_probe::ProbeResult>;
 
-  // Creates an instance of RuntimeProbeClient.
-  static std::unique_ptr<RuntimeProbeClient> Create();
+  // Returns the global instance if initialized. May return null.
+  static RuntimeProbeClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   RuntimeProbeClient(const RuntimeProbeClient&) = delete;
   RuntimeProbeClient& operator=(const RuntimeProbeClient&) = delete;
-
-  ~RuntimeProbeClient() override;
 
   // Probes categories.
   virtual void ProbeCategories(const runtime_probe::ProbeRequest& request,
                                RuntimeProbeCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   RuntimeProbeClient();
+  ~RuntimeProbeClient() override;
 };
 
 }  // namespace chromeos

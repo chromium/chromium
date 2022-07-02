@@ -28,29 +28,24 @@ namespace content {
 
 namespace {
 
-std::unique_ptr<base::ListValue> GetNetworkErrorData() {
-  base::Value error_codes = net::GetNetConstants();
-  const base::DictionaryValue* net_error_codes_dict = nullptr;
+base::Value::List GetNetworkErrorData() {
+  base::Value::Dict error_codes = net::GetNetConstants();
+  const base::Value::Dict* net_error_codes_dict =
+      error_codes.FindDict(kNetworkErrorKey);
+  DCHECK(net_error_codes_dict);
 
-  for (auto item : error_codes.DictItems()) {
-    if (item.first == kNetworkErrorKey) {
-      item.second.GetAsDictionary(&net_error_codes_dict);
-      break;
-    }
-  }
+  base::Value::List error_list;
 
-  std::unique_ptr<base::ListValue> error_list(new base::ListValue());
-
-  for (base::DictionaryValue::Iterator itr(*net_error_codes_dict);
-            !itr.IsAtEnd(); itr.Advance()) {
-    const int error_code = itr.value().GetInt();
+  for (auto it = net_error_codes_dict->begin();
+       it != net_error_codes_dict->end(); ++it) {
+    const int error_code = it->second.GetInt();
     // Exclude the aborted and pending codes as these don't return a page.
     if (error_code != net::Error::ERR_IO_PENDING &&
         error_code != net::Error::ERR_ABORTED) {
       base::Value::Dict error;
       error.Set(kErrorIdField, error_code);
-      error.Set(kErrorCodeField, itr.key());
-      error_list->GetList().Append(std::move(error));
+      error.Set(kErrorCodeField, it->first);
+      error_list.Append(std::move(error));
     }
   }
   return error_list;
@@ -65,9 +60,8 @@ void HandleWebUIRequestCallback(BrowserContext* current_context,
                                 WebUIDataSource::GotDataCallback callback) {
   DCHECK(ShouldHandleWebUIRequestCallback(path));
 
-  base::DictionaryValue data;
-  data.SetKey(kErrorCodesDataName,
-              base::Value::FromUniquePtrValue(GetNetworkErrorData()));
+  base::Value::Dict data;
+  data.Set(kErrorCodesDataName, GetNetworkErrorData());
   std::string json_string;
   base::JSONWriter::Write(data, &json_string);
   std::move(callback).Run(base::RefCountedString::TakeString(&json_string));

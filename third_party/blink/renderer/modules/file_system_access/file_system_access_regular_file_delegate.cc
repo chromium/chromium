@@ -68,7 +68,7 @@ FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
     int64_t offset,
     base::span<uint8_t> data) {
-  DCHECK_GE(offset, 0);
+  CHECK_GE(offset, 0);
 
   int size = base::checked_cast<int>(data.size());
   int result =
@@ -82,7 +82,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
     int64_t offset,
     const base::span<uint8_t> data) {
-  DCHECK_GE(offset, 0);
+  CHECK_GE(offset, 0);
 
   int write_size = base::checked_cast<int>(data.size());
 
@@ -91,21 +91,25 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
     return base::File::FILE_ERROR_NO_SPACE;
   }
 
-  if (!capacity_tracker_->RequestFileCapacityChangeSync(write_end_offset)) {
-    return base::File::FILE_ERROR_NO_SPACE;
+  int64_t file_size_before = backing_file_.GetLength();
+  if (write_end_offset > file_size_before) {
+    // Attempt to pre-allocate quota. Do not attempt to write unless we have
+    // enough quota for the whole operation.
+    if (!capacity_tracker_->RequestFileCapacityChangeSync(write_end_offset))
+      return base::File::FILE_ERROR_NO_SPACE;
   }
 
   int result = backing_file_.Write(offset, reinterpret_cast<char*>(data.data()),
                                    write_size);
-  if (write_size == result) {
-    capacity_tracker_->CommitFileSizeChange(write_end_offset);
-    return result;
-  }
-  // If the operation failed, the previously requested capacity is not returned
-  // and no change in file size is recorded. This assumes that write operations
-  // either succeed or do not change the file's length, which is consistent with
-  // the way other file operations are implemented in File System Access code.
-  return base::File::GetLastFileError();
+  // The file size may not have changed after the write operation. `CheckAdd()`
+  // is not needed here since `result` is guaranteed to be no more than
+  // `write_size`.
+  int64_t new_file_size = std::max(file_size_before, offset + result);
+  capacity_tracker_->CommitFileSizeChange(new_file_size);
+
+  // Only return an error if no bytes were written. Partial writes should return
+  // the number of bytes written.
+  return result < 0 ? base::File::GetLastFileError() : result;
 }
 
 void FileSystemAccessRegularFileDelegate::GetLength(
@@ -160,14 +164,8 @@ void FileSystemAccessRegularFileDelegate::SetLength(
     int64_t new_length,
     base::OnceCallback<void(base::File::Error)> callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (new_length < 0) {
-    // This method is expected to finish asynchronously, so post a task to the
-    // current sequence to return the error.
-    task_runner_->PostTask(
-        FROM_HERE, WTF::Bind(std::move(callback),
-                             base::File::Error::FILE_ERROR_INVALID_OPERATION));
-    return;
-  }
+  CHECK_GE(new_length, 0);
+
   capacity_tracker_->RequestFileCapacityChange(
       new_length,
       WTF::Bind(&FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity,

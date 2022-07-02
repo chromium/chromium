@@ -18,7 +18,7 @@
 // The URL to be shared.
 @property(nonatomic, readonly) const GURL& URL;
 
-// Title of the page associated with |URL| to share.
+// Title of the page associated with `URL` to share.
 @property(nonatomic, readonly, copy) NSString* title;
 
 @end

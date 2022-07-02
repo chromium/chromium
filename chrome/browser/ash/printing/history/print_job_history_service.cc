@@ -32,4 +32,10 @@ void PrintJobHistoryService::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void PrintJobHistoryService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
+  }
+}
+
 }  // namespace ash

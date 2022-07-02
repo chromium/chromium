@@ -69,7 +69,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif
 
 using content::WebContents;
@@ -338,13 +337,7 @@ void PeopleHandler::DisplayGaiaLogin(signin_metrics::AccessPoint access_point) {
 
 void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     signin_metrics::AccessPoint access_point) {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-  if (!browser)
-    return;
-
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser->profile());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
 
   syncer::SyncService* service = GetSyncService();
   if (service && service->HasUnrecoverableError() &&
@@ -361,13 +354,13 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
   // same email address.
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     SigninErrorController* error_controller =
-        SigninErrorControllerFactory::GetForProfile(browser->profile());
+        SigninErrorControllerFactory::GetForProfile(profile_);
     DCHECK(error_controller->HasError());
-    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(browser,
+    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(profile_,
                                                              access_point);
   } else {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(browser, CoreAccountInfo(),
-                                                     access_point);
+    signin_ui_util::EnableSyncFromSingleAccountPromo(
+        profile_, CoreAccountInfo(), access_point);
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -447,9 +440,7 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  populate_accounts_list =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
-      !profile_->IsMainProfile();
+  populate_accounts_list = !profile_->IsMainProfile();
 #endif
 
   if (populate_accounts_list) {
@@ -482,16 +473,11 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
          AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_));
   const base::Value& email = args[0];
   const base::Value& is_default_promo_account = args[1];
-
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
-
   signin_ui_util::EnableSyncFromMultiAccountPromo(
-      browser, maybe_account,
+      profile_, maybe_account,
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       is_default_promo_account.GetBool());
 #else
@@ -783,15 +769,9 @@ void PeopleHandler::CloseSyncSetup() {
           sync_service->StopAndClear();
 // ChromeOS ash doesn't support signing out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-          bool should_revoke_sync_consent =
-              !sync_service->GetUserSettings()->IsFirstSetupComplete();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          should_revoke_sync_consent &=
-              base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles);
-#endif
           // Revoke sync consent on desktop Chrome if they click cancel during
           // initial setup or close sync setup without confirming sync.
-          if (should_revoke_sync_consent) {
+          if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(

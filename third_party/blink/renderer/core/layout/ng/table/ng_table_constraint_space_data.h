@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_CONSTRAINT_SPACE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_CONSTRAINT_SPACE_DATA_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_column_location.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -153,6 +154,11 @@ class NGTableConstraintSpaceData
 
     const wtf_size_t new_start_row_index = new_section.start_row_index;
     const wtf_size_t old_start_row_index = old_section.start_row_index;
+
+    // Collapsed-border painting has a dependency on the row-index.
+    DCHECK_EQ(has_collapsed_borders, other.has_collapsed_borders);
+    if (has_collapsed_borders && new_start_row_index != old_start_row_index)
+      return false;
 
     const wtf_size_t new_end_row_index =
         new_start_row_index + new_section.row_count;

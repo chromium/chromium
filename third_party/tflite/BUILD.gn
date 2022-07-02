@@ -66,11 +66,9 @@ config("tflite_flags") {
     ]
   }
 
-  if (is_android) {
+  if (build_tflite_with_ruy) {
     defines += [ "TFLITE_WITH_RUY" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
+  } else if (is_linux || is_chromeos_lacros) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
 
@@ -289,7 +287,6 @@ source_set("tflite_kernels") {
     "src/tensorflow/lite/kernels/cpu_backend_gemm_custom_gemv.h",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.cc",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.h",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_gemmlowp.h",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_ruy.h",
     "src/tensorflow/lite/kernels/cumsum.cc",
     "src/tensorflow/lite/kernels/densify.cc",
@@ -380,6 +377,10 @@ source_set("tflite_kernels") {
     "src/tensorflow/lite/kernels/zeros_like.cc",
   ]
 
+  if (!build_tflite_with_ruy) {
+    sources += [ "src/tensorflow/lite/kernels/cpu_backend_gemm_gemmlowp.h" ]
+  }
+
   deps = [
     ":fft2d_deps",
     ":tflite_kernel_common_headers",
@@ -460,6 +461,8 @@ static_library("tflite") {
     "src/tensorflow/lite/profiling/memory_info.h",
     "src/tensorflow/lite/profiling/platform_profiler.cc",
     "src/tensorflow/lite/profiling/platform_profiler.h",
+    "src/tensorflow/lite/profiling/root_profiler.cc",
+    "src/tensorflow/lite/profiling/root_profiler.h",
     "src/tensorflow/lite/profiling/time.cc",
     "src/tensorflow/lite/profiling/time.h",
     "src/tensorflow/lite/schema/schema_utils.cc",

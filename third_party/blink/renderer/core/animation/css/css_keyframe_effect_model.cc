@@ -23,6 +23,11 @@ using MissingPropertyValueMap = HashMap<String, String>;
 void ResolveUnderlyingPropertyValues(Element& element,
                                      const PropertyHandleSet& properties,
                                      MissingPropertyValueMap& map) {
+  // The element's computed style may be null if the element has been removed
+  // form the DOM tree.
+  if (!element.GetComputedStyle())
+    return;
+
   // TODO(crbug.com/1069235): Should sample the underlying animation.
   ActiveInterpolationsMap empty_interpolations_map;
   AnimationUtils::ForEachInterpolatedPropertyValue(
@@ -67,7 +72,10 @@ void AddMissingProperties(const MissingPropertyValueMap& property_map,
 void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
   DCHECK(element);
   // Styles are flushed when getKeyframes is called on a CSS animation.
-  DCHECK(element->GetComputedStyle());
+  // The element's computed style may be null if detached from the DOM tree.
+  if (!element->GetComputedStyle())
+    return;
+
   for (const auto& property : keyframe->Properties()) {
     if (property.IsCSSCustomProperty()) {
       // At present, custom properties are to be excluded from the keyframes.

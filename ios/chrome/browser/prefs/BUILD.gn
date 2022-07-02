@@ -20,7 +20,6 @@ source_set("prefs") {
     "//components/search_engines",
     "//components/sync_preferences",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/policy:feature_flags",
   ]
 }
 
@@ -82,6 +81,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/bookmarks:constants",

@@ -7,6 +7,7 @@
 
 #include <viewporter-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -32,7 +33,7 @@ class TestViewport : public ServerObject {
 
  private:
   // Surface resource that is the ground for this Viewport.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 
   gfx::SizeF destination_size_;
 };

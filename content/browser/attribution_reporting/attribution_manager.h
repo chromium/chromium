@@ -25,11 +25,14 @@ class AttributionObserver;
 class AttributionTrigger;
 class StorableSource;
 class StoredSource;
+class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
 class AttributionManager {
  public:
+  static AttributionManager* FromWebContents(WebContents* web_contents);
+
   virtual ~AttributionManager() = default;
 
   virtual void AddObserver(AttributionObserver* observer) = 0;
@@ -55,7 +58,8 @@ class AttributionManager {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.
   virtual void GetPendingReportsForInternalUse(
-      AttributionReport::ReportType report_type,
+      AttributionReport::ReportTypes report_types,
+      int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 
   // Sends the given reports immediately, and runs |done| once they have all
@@ -72,6 +76,7 @@ class AttributionManager {
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter,
+      bool delete_rate_limit_data,
       base::OnceClosure done) = 0;
 };
 

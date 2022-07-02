@@ -520,7 +520,7 @@ bool GuestViewManager::CanEmbedderAccessInstanceID(
       guest_view->CanBeEmbeddedInsideCrossProcessFrames()
           ? guest_view->GetOwnerSiteInstance()->GetProcess()->GetID()
           : guest_view->owner_web_contents()
-                ->GetMainFrame()
+                ->GetPrimaryMainFrame()
                 ->GetProcess()
                 ->GetID();
 

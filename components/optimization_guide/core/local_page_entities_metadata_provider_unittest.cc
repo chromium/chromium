@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -39,7 +40,7 @@ class LocalPageEntitiesMetadataProviderTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<LocalPageEntitiesMetadataProvider> provider_;
-  leveldb_proto::test::FakeDB<proto::EntityMetadataStorage>* db_;
+  raw_ptr<leveldb_proto::test::FakeDB<proto::EntityMetadataStorage>> db_;
   std::map<std::string, proto::EntityMetadataStorage> db_store_;
 };
 

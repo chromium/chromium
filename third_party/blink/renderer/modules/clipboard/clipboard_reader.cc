@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
@@ -150,10 +151,9 @@ class ClipboardHtmlReader final : public ClipboardReader {
     // Now sanitize the HTML string.
     // This must be called on the main thread because HTML DOM nodes can
     // only be used on the main thread.
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *frame->GetDocument(), html_string, fragment_start, fragment_end, url);
-    String sanitized_html =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_html = CreateSanitizedMarkupWithContext(
+        *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
+        kIncludeNode, kResolveAllURLs);
 
     if (sanitized_html.IsEmpty()) {
       NextRead(Vector<uint8_t>());
@@ -224,11 +224,9 @@ class ClipboardSvgReader final : public ClipboardReader {
     // Now sanitize the SVG string.
     KURL url;
     unsigned fragment_start = 0;
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
+    String sanitized_svg = CreateSanitizedMarkupWithContext(
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
-        url);
-    String sanitized_svg =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+        url, kIncludeNode, kResolveAllURLs);
 
     if (sanitized_svg.IsEmpty()) {
       NextRead(Vector<uint8_t>());
@@ -308,12 +306,14 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 // static
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
-                                         ClipboardPromise* promise,
-                                         bool is_custom_format_type) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type, is_custom_format_type));
-  // If this is a custom format then read the unsanitized version.
-  if (is_custom_format_type &&
-      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled()) {
+                                         ClipboardPromise* promise) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  // If this is a web custom format then read the unsanitized version.
+  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
+      !Clipboard::ParseWebCustomFormat(mime_type).IsNull()) {
+    // We read the custom MIME type that has the "web " prefix.
+    // These MIME types are found in the web custom format map written by
+    // native applications.
     return MakeGarbageCollected<ClipboardCustomFormatReader>(
         system_clipboard, promise, mime_type);
   }

@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -138,27 +137,15 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   auto icon_type = apps::IconType::kStandard;
-  auto mojom_icon_type = apps::mojom::IconType::kStandard;
 
   // When Crostini generates shelf id as the app_id, which couldn't match to an
   // app, the default penguin icon should be loaded.
   if (crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
-    if (base::FeatureList::IsEnabled(
-            features::kAppServiceLoadIconWithoutMojom)) {
-      apps::IconKey icon_key;
-      proxy->LoadIconFromIconKey(
-          apps::AppType::kCrostini, app_id, icon_key, icon_type,
-          icon_size_in_dip(), allow_placeholder_icon,
-          base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
-                         weak_ptr_factory_.GetWeakPtr(), app_id));
-    } else {
-      apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
-      proxy->LoadIconFromIconKey(
-          apps::mojom::AppType::kCrostini, app_id, std::move(icon_key),
-          mojom_icon_type, icon_size_in_dip(), allow_placeholder_icon,
-          base::BindOnce(&AppServiceAppIconLoader::OnLoadMojomIcon,
-                         weak_ptr_factory_.GetWeakPtr(), app_id));
-    }
+    proxy->LoadIconFromIconKey(
+        apps::AppType::kCrostini, app_id, apps::IconKey(), icon_type,
+        icon_size_in_dip(), allow_placeholder_icon,
+        base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
+                       weak_ptr_factory_.GetWeakPtr(), app_id));
     return;
   }
 
@@ -167,17 +154,10 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIcon(app_type, app_id, icon_type, icon_size_in_dip(),
-                    allow_placeholder_icon,
-                    base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
-                                   weak_ptr_factory_.GetWeakPtr(), app_id));
-  } else {
-    proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type), app_id,
-                    mojom_icon_type, icon_size_in_dip(), allow_placeholder_icon,
-                    base::BindOnce(&AppServiceAppIconLoader::OnLoadMojomIcon,
-                                   weak_ptr_factory_.GetWeakPtr(), app_id));
-  }
+  proxy->LoadIcon(app_type, app_id, icon_type, icon_size_in_dip(),
+                  allow_placeholder_icon,
+                  base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
+                                 weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
 void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
@@ -206,13 +186,6 @@ void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
     constexpr bool allow_placeholder_icon = false;
     CallLoadIcon(app_id, allow_placeholder_icon);
   }
-}
-
-void AppServiceAppIconLoader::OnLoadMojomIcon(
-    const std::string& app_id,
-    apps::mojom::IconValuePtr icon_value) {
-  OnLoadIcon(app_id,
-             apps::ConvertMojomIconValueToIconValue(std::move(icon_value)));
 }
 
 bool AppServiceAppIconLoader::Exist(const std::string& app_id) {

@@ -76,9 +76,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
-#include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/common/buildflags.h"
@@ -128,12 +125,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/plugin_data_remover.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -156,6 +154,12 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/activity_log/activity_log.h"
@@ -536,6 +540,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       prefetch_proxy_service->origin_decider()->OnBrowsingDataCleared();
     }
 
+    content::PrefetchServiceDelegate::ClearData(profile_);
+
 #if BUILDFLAG(IS_ANDROID)
     OomInterventionDecider* oom_intervention_decider =
         OomInterventionDecider::GetForBrowserContext(profile_);
@@ -555,10 +561,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               : filter_builder->BuildPluginFilter());
     }
 
-    // Clear VideoDecodePerfHistory only if asked to clear from the beginning of
-    // time. The perf history is a simple summing of decode statistics with no
-    // record of when the stats were written nor what site the video was played
-    // on.
+    // Clear VideoDecodePerfHistory and WebrtcVideoPerfHistory only if asked to
+    // clear from the beginning of time. The perf history is a simple summing of
+    // decode/encode statistics with no record of when the stats were written
+    // nor what site the video was played on.
     if (IsForAllTime()) {
       // TODO(chcunningham): Add UMA to track how often this gets deleted.
       media::VideoDecodePerfHistory* video_decode_perf_history =
@@ -566,6 +572,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (video_decode_perf_history) {
         video_decode_perf_history->ClearHistory(
             CreateTaskCompletionClosure(TracingDataType::kVideoDecodeHistory));
+      }
+
+      media::WebrtcVideoPerfHistory* webrtc_video_perf_history =
+          profile_->GetWebrtcVideoPerfHistory();
+      if (webrtc_video_perf_history) {
+        webrtc_video_perf_history->ClearHistory(CreateTaskCompletionClosure(
+            TracingDataType::kWebrtcVideoPerfHistory));
       }
     }
 
@@ -1363,6 +1376,8 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "WebAppHistory";
     case TracingDataType::kWebAuthnCredentials:
       return "WebAuthnCredentials";
+    case TracingDataType::kWebrtcVideoPerfHistory:
+      return "WebrtcVideoPerfHistory";
   }
 }
 

@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -42,6 +43,7 @@
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -138,8 +140,8 @@ static NSString* kNoCreditCardFormHtml =
 NSString* const kCreditCardAutofocusFormHtml =
     @"<form><input type=\"text\" autofocus autocomplete=\"cc-number\"></form>";
 
-// FAIL if a field with the supplied |name| and |fieldType| is not present on
-// the |form|.
+// FAIL if a field with the supplied `name` and `fieldType` is not present on
+// the `form`.
 void CheckField(const FormStructure& form,
                 ServerFieldType fieldType,
                 const char* name) {
@@ -221,16 +223,16 @@ class AutofillControllerTest : public PlatformTest {
   void SetUpKeyValueData();
 
   // Blocks until suggestion retrieval has completed.
-  // If |wait_for_trigger| is yes, wait for the call to
-  // |retrieveSuggestionsForForm| to avoid considering a former call.
+  // If `wait_for_trigger` is yes, wait for the call to
+  // `retrieveSuggestionsForForm` to avoid considering a former call.
   void WaitForSuggestionRetrieval(BOOL wait_for_trigger);
 
-  // Blocks until |expected_size| forms have been fecthed.
+  // Blocks until `expected_size` forms have been fetched.
   [[nodiscard]] bool WaitForFormFetched(BrowserAutofillManager* manager,
                                         size_t expected_number_of_forms);
 
   // Loads the page and wait until the initial form processing has been done.
-  // This processing must find |expected_size| forms.
+  // This processing must find `expected_size` forms.
   [[nodiscard]] bool LoadHtmlAndWaitForFormFetched(
       NSString* html,
       size_t expected_number_of_forms);
@@ -254,6 +256,7 @@ class AutofillControllerTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   bool processed_a_task_ = false;
@@ -302,6 +305,14 @@ void AutofillControllerTest::SetUp() {
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillUseAlternativeStateNameMap)) {
+    autofill_client_->GetPersonalDataManager()
+        ->personal_data_manager_cleaner_for_testing()
+        ->alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state_.Get());
+  }
 
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
@@ -580,9 +591,9 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
   web::test::ExecuteJavaScript(@"submit.click()", web_state());
-  // We can't make |consumer| a __block variable because TestConsumer lacks copy
+  // We can't make `consumer` a __block variable because TestConsumer lacks copy
   // construction. We just pass a pointer instead as we know that the callback
-  // is executed within the life-cyle of |consumer|.
+  // is executed within the life-cyle of `consumer`.
   TestConsumer* consumer_ptr = &consumer;
   WaitForCondition(^bool {
     web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),

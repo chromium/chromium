@@ -5,12 +5,28 @@
 template("html_to_wrapper") {
   action(target_name) {
     script = "//tools/polymer/html_to_wrapper.py"
-    forward_variables_from(invoker, [ "visibility" ])
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "visibility",
+                           ])
 
     inputs = []
     outputs = []
 
     wrapper_extension = ".ts"
+
+    in_folder = "."
+    if (defined(invoker.in_folder)) {
+      in_folder = invoker.in_folder
+    }
+
+    out_folder = target_gen_dir
+    if (defined(invoker.out_folder)) {
+      out_folder = invoker.out_folder
+    }
 
     foreach(html_file, invoker.in_files) {
       extension = get_path_info(html_file, "extension")
@@ -18,16 +34,27 @@ template("html_to_wrapper") {
 
       wrapper_file = get_path_info(html_file, "dir") + "/" +
                      get_path_info(html_file, "file") + wrapper_extension
-      inputs += [ html_file ]
-      outputs += [ "$target_gen_dir/" + wrapper_file ]
+      inputs += [ "$in_folder/" + html_file ]
+      outputs += [ "$out_folder/" + wrapper_file ]
     }
 
     args = [
              "--in_folder",
-             rebase_path(".", root_build_dir),
+             rebase_path(in_folder, root_build_dir),
              "--out_folder",
-             rebase_path(target_gen_dir, root_build_dir),
+             rebase_path(out_folder, root_build_dir),
              "--in_files",
            ] + invoker.in_files
+
+    if (defined(invoker.template)) {
+      args += [
+        "--template",
+        invoker.template,
+      ]
+    }
+
+    if (defined(invoker.minify) && invoker.minify) {
+      args += [ "--minify" ]
+    }
   }
 }

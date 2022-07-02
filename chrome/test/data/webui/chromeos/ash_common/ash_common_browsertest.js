@@ -27,7 +27,8 @@ this['AshCommon'] = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     // TODO(joonbug): Find a more generic way to load tests
-    return `chrome://new-tab-page/test_loader.html?module=${testSuites}`;
+    return `chrome://new-tab-page/test_loader.html?module=${
+        testSuites}&host=test`;
   }
 };
 

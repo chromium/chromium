@@ -21,9 +21,6 @@ bool g_disable_throttle_for_testing_ = false;
 std::unique_ptr<content::NavigationThrottle>
 WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  // Check web app settings feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage))
-    return nullptr;
   // Check the current url scheme is chrome://
   if (!handle->GetURL().SchemeIs(content::kChromeUIScheme))
     return nullptr;

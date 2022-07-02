@@ -9,14 +9,18 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/browser_task_traits.h"
+
 namespace safe_browsing {
 
 // static
@@ -50,7 +54,11 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(
-          &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile));
+          &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile),
+      safe_browsing::WebUIInfoSingleton::GetInstance(),
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
+                          profile));
 }
 
 // static

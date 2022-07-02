@@ -42,7 +42,7 @@ NSString* GetFocusedElementId() {
   return result.is_string() ? base::SysUTF8ToNSString(result.GetString()) : @"";
 }
 
-// Verifies that |elementId| is the selected element in the web page.
+// Verifies that `elementId` is the selected element in the web page.
 void AssertElementIsFocused(const std::string& element_id) {
   NSString* description =
       [NSString stringWithFormat:@"Timeout waiting for the focused element in "

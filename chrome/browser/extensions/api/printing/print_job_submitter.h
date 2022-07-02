@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -117,14 +118,14 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
   void FireErrorCallback(const std::string& error);
 
   gfx::NativeWindow native_window_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether |native_window_| got destroyed.
   std::unique_ptr<NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.
-  PrintJobController* const print_job_controller_;
-  mojo::Remote<printing::mojom::PdfFlattener>* const pdf_flattener_;
+  const raw_ptr<PrintJobController> print_job_controller_;
+  const raw_ptr<mojo::Remote<printing::mojom::PdfFlattener>> pdf_flattener_;
 
   // TODO(crbug.com/996785): Consider tracking extension being unloaded instead
   // of storing scoped_refptr.
@@ -139,7 +140,7 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const int local_printer_version_;
 #endif
-  crosapi::mojom::LocalPrinter* const local_printer_;
+  const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
   SubmitJobCallback callback_;
   base::WeakPtrFactory<PrintJobSubmitter> weak_ptr_factory_{this};
 };

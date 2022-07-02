@@ -181,34 +181,6 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
     EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
   }
 
-  // Allowlisted extensions are instantly granted downloads access without
-  // asking user.
-  {
-    scoped_refptr<const Extension> allowlisted_extension(
-        ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
-            .SetLocation(ManifestLocation::kComponent)
-            .AddPermission("fileSystem.requestDownloads")
-            .Build());
-    TestingConsentProviderDelegate delegate;
-    ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_extension),
-              FileSystemDelegate::kGrantPerVolume);
-    EXPECT_FALSE(
-        provider.IsGrantableForVolume(*allowlisted_extension, volume_));
-    EXPECT_TRUE(provider.IsGrantableForVolume(*allowlisted_extension,
-                                              download_volume_->AsWeakPtr()));
-
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*allowlisted_extension.get(), nullptr,
-                            download_volume_->AsWeakPtr(), true /* writable */,
-                            base::BindRepeating(&OnConsentReceived, &result));
-    base::RunLoop().RunUntilIdle();
-
-    EXPECT_EQ(0, delegate.show_dialog_counter());
-    EXPECT_EQ(0, delegate.show_notification_counter());
-    EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
-  }
-
   // Non-component apps in non-kiosk mode will be rejected instantly, without
   // asking for user consent.
   {

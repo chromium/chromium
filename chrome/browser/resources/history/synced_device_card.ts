@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './searched_label.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';

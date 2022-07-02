@@ -342,18 +342,19 @@ void HandleOOM(size_t unsued_size) {
 TestDriver::TestDriver()
     : wait_for_ui_thread_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  base::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
   partition_allocator_.init({
-      base::PartitionOptions::AlignedAlloc::kDisallowed,
-      base::PartitionOptions::ThreadCache::kDisabled,
-      base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::BackupRefPtr::kDisabled,
-      base::PartitionOptions::UseConfigurablePool::kNo,
+      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+      partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+      partition_alloc::PartitionOptions::Cookie::kAllowed,
+      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
+      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
   });
 }
 TestDriver::~TestDriver() {
-  base::PartitionAllocGlobalUninitForTesting();
+  partition_alloc::PartitionAllocGlobalUninitForTesting();
 }
 
 bool TestDriver::RunTest(const Options& options) {

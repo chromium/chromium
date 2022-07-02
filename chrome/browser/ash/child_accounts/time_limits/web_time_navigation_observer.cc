@@ -48,9 +48,7 @@ bool WebTimeNavigationObserver::IsWebApp() const {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   if (!web_app::AreWebAppsEnabled(profile))
     return false;
-  const web_app::WebAppTabHelper* web_app_helper =
-      web_app::WebAppTabHelper::FromWebContents(web_contents());
-  return !web_app_helper->GetAppId().empty();
+  return web_app::WebAppTabHelper::GetAppId(web_contents()) != nullptr;
 }
 
 void WebTimeNavigationObserver::PrimaryPageChanged(content::Page& page) {

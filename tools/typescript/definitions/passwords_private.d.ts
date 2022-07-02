@@ -82,6 +82,7 @@ declare global {
         detailedOrigin: string;
         isAndroidCredential: boolean;
         changePasswordUrl?: string;
+        hasStartableScript: boolean;
         signonRealm: string;
         username: string;
         password?: string;
@@ -99,6 +100,7 @@ declare global {
         url: string;
         username: string;
         password: string;
+        note: string;
         useAccountStore: boolean;
       }
 

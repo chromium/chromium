@@ -15,6 +15,7 @@
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 SpeechRecognitionTestHelper::SpeechRecognitionTestHelper(
     speech::SpeechRecognitionType type)

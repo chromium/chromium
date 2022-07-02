@@ -5,6 +5,8 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include "base/mac/scoped_nsobject.h"
@@ -75,7 +77,7 @@ class BluetoothLowEnergyDiscoveryManagerMac {
   friend class BluetoothLowEnergyCentralManagerBridge;
 
   // Observer interested in notifications from us.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   // Underlying CoreBluetooth central manager, owned by |observer_|.
   CBCentralManager* central_manager_ = nil;

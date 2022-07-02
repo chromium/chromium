@@ -11,6 +11,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
@@ -21,6 +22,8 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -187,7 +190,7 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       int min_height = bounds.height() * kMinimumPercentOnScreenArea;
       AdjustBoundsToEnsureWindowVisibility(display_area, min_width, min_height,
                                            &bounds);
-      window_state->AdjustSnappedBounds(&bounds);
+      window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
       window_state->SetBoundsConstrained(bounds);
       return;
     }
@@ -434,6 +437,20 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   window_state->UpdateWindowPropertiesFromStateType();
   window_state->NotifyPreStateTypeChange(previous_state_type);
 
+  auto* const float_controller = Shell::Get()->float_controller();
+  auto* window = window_state->window();
+  if (state_type_ == WindowStateType::kFloated) {
+    DCHECK_EQ(next_state_type, WindowStateType::kFloated);
+    // Add window to float container.
+    float_controller->Float(window);
+  }
+
+  // Unfloat floated window when exiting float state to another state.
+  if (previous_state_type == WindowStateType::kFloated) {
+    // Remove float window from float container.
+    float_controller->Unfloat(window);
+  }
+
   // Don't update the window if the window is detached from parent.
   // This can happen during dragging.
   // TODO(oshima): This was added for DOCKED windows. Investigate if
@@ -573,6 +590,11 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
       break;
     case WindowStateType::kInactive:
     case WindowStateType::kAutoPositioned:
+    case WindowStateType::kFloated:
+      // TODO(crbug.com/1331078): Handle Float Size and Position requirement.
+      // Temporarily set to current bounds.
+      bounds_in_parent = window->bounds();
+      break;
     case WindowStateType::kPip:
       return;
   }
@@ -626,7 +648,7 @@ void DefaultState::UpdateBoundsForDisplayOrWorkAreaBoundsChange(
     bounds.AdjustToFit(work_area_in_parent);
   else if (!::wm::GetTransientParent(window_state->window()))
     AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent, &bounds);
-  window_state->AdjustSnappedBounds(&bounds);
+  window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
 
   if (window_state->window()->GetTargetBounds() == bounds)
     return;

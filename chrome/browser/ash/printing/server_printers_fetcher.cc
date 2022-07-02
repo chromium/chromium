@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -29,6 +30,32 @@
 namespace ash {
 
 namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kServerPrintersFetcherNetworkTag =
+    net::DefineNetworkTrafficAnnotation("printing_server_printers_query", R"(
+    semantics {
+      sender: "ChromeOS Printers Manager"
+      description:
+        "Fetches the list of available printers from the Print Server."
+      trigger: "1. User asked for the list of available printers from "
+               "a chosen Print Server."
+               "2. ChromeOS automatically queries printers from Print "
+               "Servers whose addresses are set by the organization's "
+               "administrator at the Google admin console."
+      data: "None."
+      destination: OTHER
+      destination_other: "Print Server"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "This feature is enabled as long as printing is enabled."
+      chrome_policy {
+        PrintingEnabled {
+            PrintingEnabled: false
+        }
+      }
+    })");
 
 std::string ServerPrinterId(const std::string& url) {
   base::MD5Context ctx;
@@ -168,7 +195,7 @@ class ServerPrintersFetcher::PrivateImplementation
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     // TODO(pawliczek): create a traffic annotation for printing network traffic
     simple_url_loader_ = network::SimpleURLLoader::Create(
-        std::move(resource_request), MISSING_TRAFFIC_ANNOTATION);
+        std::move(resource_request), kServerPrintersFetcherNetworkTag);
     std::string request_body(request_frame.begin(), request_frame.end());
     simple_url_loader_->AttachStringForUpload(request_body, "application/ipp");
     simple_url_loader_->DownloadAsStream(

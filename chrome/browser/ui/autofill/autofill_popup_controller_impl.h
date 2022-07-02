@@ -223,8 +223,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   absl::optional<int> selected_line_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
-  // we delete the object asynchronously if AutofillDelayPopupControllerDeletion
-  // is enabled (TODO(crbug.com/1277218): Remove "if" clause).
+  // we delete the object asynchronously.
   base::WeakPtrFactory<AutofillPopupControllerImpl>
       self_deletion_weak_ptr_factory_{this};
 

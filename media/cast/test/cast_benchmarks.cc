@@ -172,7 +172,7 @@ class CastTransportWrapper : public CastTransport {
     transport_->SendRtcpFromRtpReceiver();
   }
 
-  void SetOptions(const base::DictionaryValue& options) final {}
+  void SetOptions(const base::Value::Dict& options) final {}
 
  private:
   std::unique_ptr<CastTransport> transport_;

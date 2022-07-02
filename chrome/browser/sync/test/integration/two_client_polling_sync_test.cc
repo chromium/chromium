@@ -20,7 +20,6 @@
 
 using sessions_helper::CheckInitialState;
 using sessions_helper::OpenTab;
-using syncer::SyncPrefs;
 using testing::Gt;
 
 namespace {

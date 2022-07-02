@@ -24,7 +24,7 @@ namespace {
 struct TestParam {
   absl::optional<media::VideoCodecProfile> profile;
   absl::optional<uint8_t> level;
-  int32_t bitrate;
+  uint32_t bitrate;
 };
 
 const int kFrameWidth = 64;
@@ -47,7 +47,7 @@ class H264EncoderFixture : public ::testing::Test {
  public:
   H264EncoderFixture(absl::optional<media::VideoCodecProfile> profile,
                      absl::optional<uint8_t> level,
-                     int32_t bitrate)
+                     uint32_t bitrate)
       : profile_(profile),
         level_(level),
         bitrate_(bitrate),
@@ -138,7 +138,7 @@ class H264EncoderFixture : public ::testing::Test {
  private:
   const absl::optional<media::VideoCodecProfile> profile_;
   const absl::optional<uint8_t> level_;
-  const int32_t bitrate_;
+  const uint32_t bitrate_;
   // Serves as IO thread pushing/retrieving frames.
   std::unique_ptr<base::Thread> testing_render_thread_;
   const scoped_refptr<H264Encoder> encoder_;

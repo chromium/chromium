@@ -168,6 +168,8 @@ PasswordForm GetTestAndroidCredentials(const char* signon_realm) {
 PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
   PasswordForm form = GetTestAndroidCredentials(signon_realm);
   form.blocked_by_user = true;
+  form.username_value.clear();
+  form.password_value.clear();
   return form;
 }
 

@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "components/system_media_controls/mac/remote_command_center_delegate.h"
 
-API_AVAILABLE(macos(10.12.2))
 @interface RemoteCommandCenterDelegateCocoa ()
 
 - (void)setCommand:(MPRemoteCommand*)command enabled:(bool)enabled;

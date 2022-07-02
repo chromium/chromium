@@ -95,7 +95,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                               std::vector<base::Feature>* disabled_features);
 
   void ExecuteScript(const char* script) {
-    shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(script), base::NullCallback());
   }
 
@@ -106,7 +106,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
     GURL html_data_url(
         base::EscapeExternalHandlerValue("data:text/html," + html));
     ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
@@ -119,7 +119,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                                            ax::mojom::Event::kLoadComplete);
     ASSERT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL(html_file_path)));
-    waiter.WaitForNotification();
+    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // true.
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   BrowserAccessibilityManager* GetManager() const {
@@ -195,7 +197,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         ui::AXEventGenerator::Event::FOCUS_CHANGED);
     SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   std::string GetNameOfFocusedNode() {
@@ -774,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       ui::AXActionData action_data;
       action_data.action = ax::mojom::Action::kDoDefault;
       select->AccessibilityPerformAction(action_data);
-      waiter.WaitForNotification();
+      ASSERT_TRUE(waiter.WaitForNotification());
     }
 
     // Toggle whether 'size' is '2' or not present (effectively size=1),
@@ -830,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kDoDefault;
   select->AccessibilityPerformAction(action_data);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // Get popup.
   const BrowserAccessibility* popup = select->PlatformGetChild(0);
@@ -1453,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     action_data.action = ax::mojom::Action::kDoDefault;
     popup_control->AccessibilityPerformAction(action_data);
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Get the list of ControlsIds again; should now also include the popup
@@ -1468,12 +1470,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     ASSERT_NE(nullptr, popup_area);
     EXPECT_EQ(ax::mojom::Role::kRootWebArea, popup_area->GetRole());
 
-#if !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
     // Ensure that the bounding box of the popup area is at least 100
     // pixels down the page.
     gfx::Rect popup_bounds = popup_area->GetUnclippedRootFrameBoundsRect();
     EXPECT_GT(popup_bounds.y(), 100);
-#endif
+#endif  // !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
   }
 }
 
@@ -1519,7 +1521,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     action_data.action = ax::mojom::Action::kDoDefault;
     input_control->AccessibilityPerformAction(action_data);
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Get the list of ControlsIds again; should now include the popup
@@ -1551,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       #:~:text=Anchor text)HTML"));
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  anchor_waiter.WaitForNotification();
+  ASSERT_TRUE(anchor_waiter.WaitForNotification());
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Anchor text");
 
@@ -1640,7 +1642,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
   second_iframe_root_browser_accessibility->manager()->SetFocus(*second_button);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(second_button, root_accessibility_manager->GetFocus());
 
   BrowserAccessibility* first_iframe_browser_accessibility =
@@ -1697,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
     second_iframe_root_browser_accessibility->manager()->SetFocus(
         *second_button);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     ASSERT_EQ(second_button, root_accessibility_manager->GetFocus());
   }
 
@@ -1708,7 +1710,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kBlur);
     root_accessibility_manager->SetFocus(*root_browser_accessibility);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     ASSERT_EQ(root_browser_accessibility,
               root_accessibility_manager->GetFocus());
   }
@@ -1786,8 +1788,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                                            ax::mojom::Event::kLayoutComplete);
     // Run test for 1 second, counting the number of layout completes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
-                                            timer.Elapsed());
+      std::ignore = waiter.WaitForNotificationWithTimeout(
+          base::Milliseconds(1000) - timer.Elapsed());
       ++num_batches;
     }
   }
@@ -1844,8 +1846,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       ax::mojom::Event::kDocumentSelectionChanged);
   // Run test for 1 second, counting the number of selection changes.
   while (timer.Elapsed().InMilliseconds() < 1000) {
-    waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
-                                          timer.Elapsed());
+    std::ignore = waiter.WaitForNotificationWithTimeout(
+        base::Milliseconds(1000) - timer.Elapsed());
     ++num_batches;
   }
 
@@ -1902,8 +1904,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED);
     // Run test for 1 second, counting the number of active descendant changes.
     while (timer.Elapsed().InMilliseconds() < 1000) {
-      waiter.WaitForNotificationWithTimeout(base::Milliseconds(1000) -
-                                            timer.Elapsed());
+      std::ignore = waiter.WaitForNotificationWithTimeout(
+          base::Milliseconds(1000) - timer.Elapsed());
       ++num_batches;
     }
   }
@@ -1951,7 +1953,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::IGNORED_CHANGED);
   ExecuteScript("document.body.addEventListener('mousedown', function() {});");
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // The body should no longer be ignored after adding a mouse button listener.
   ASSERT_FALSE(body_node->IsIgnored());
@@ -1978,7 +1980,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     SimulateKeyPress(shell()->web_contents(), ui::DomKey::ENTER,
                      ui::DomCode::ENTER, ui::VKEY_RETURN, false, false, false,
                      false);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   // Press Tab, we should eventually land on the last button within the
@@ -2029,7 +2031,7 @@ IN_PROC_BROWSER_TEST_F(
     action_data.target_node_id = list_option_1_browser_accessibility->GetId();
     list_option_1_browser_accessibility->AccessibilityPerformAction(
         action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   EXPECT_TRUE(list_option_1_browser_accessibility->GetBoolAttribute(
@@ -2050,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(
     action_data.target_node_id = list_option_2_browser_accessibility->GetId();
     list_option_2_browser_accessibility->AccessibilityPerformAction(
         action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
@@ -2107,7 +2109,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     action_data.action = ax::mojom::Action::kFocus;
     action_data.target_node_id = input_browser_accessibility->GetId();
     input_browser_accessibility->AccessibilityPerformAction(action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   ui::AXNodeID active_descendant_id = ui::kInvalidAXNodeID;
@@ -2131,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     action_data.action = ax::mojom::Action::kFocus;
     action_data.target_node_id = button_browser_accessibility->GetId();
     button_browser_accessibility->AccessibilityPerformAction(action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   active_descendant_id = ui::kInvalidAXNodeID;
@@ -2189,7 +2191,7 @@ IN_PROC_BROWSER_TEST_F(
     action_data.target_node_id = list_option_1_browser_accessibility->GetId();
     list_option_1_browser_accessibility->AccessibilityPerformAction(
         action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
@@ -2209,7 +2211,7 @@ IN_PROC_BROWSER_TEST_F(
     action_data.target_node_id = list_option_2_browser_accessibility->GetId();
     list_option_2_browser_accessibility->AccessibilityPerformAction(
         action_data);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   EXPECT_FALSE(list_option_1_browser_accessibility->GetBoolAttribute(
@@ -2257,7 +2259,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
     // Wait for any event
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::AXMode(), ax::mojom::Event::kNone);
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     bounds1 = button->GetUnclippedRootFrameBoundsRect();
   } while (bounds1.y() == bounds0.y());
 

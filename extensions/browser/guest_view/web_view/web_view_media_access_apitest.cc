@@ -76,7 +76,7 @@ class WebViewMediaAccessAPITest : public WebViewAPITest {
 
   // Runs media_access tests.
   void RunTest(const std::string& test_name) {
-    ExtensionTestMessageListener test_run_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener test_run_listener("TEST_PASSED");
     test_run_listener.set_failure_message("TEST_FAILED");
     EXPECT_TRUE(content::ExecuteScript(
         embedder_web_contents_.get(),

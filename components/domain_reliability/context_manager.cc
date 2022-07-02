@@ -101,13 +101,6 @@ void DomainReliabilityContextManager::RemoveContexts(
   }
 }
 
-base::Value DomainReliabilityContextManager::GetWebUIData() const {
-  base::Value contexts_value(base::Value::Type::LIST);
-  for (const auto& context_entry : contexts_)
-    contexts_value.Append(context_entry.second->GetWebUIData());
-  return contexts_value;
-}
-
 DomainReliabilityContext* DomainReliabilityContextManager::GetContext(
     const std::string& host) const {
   ContextMap::const_iterator context_it = contexts_.find(host);

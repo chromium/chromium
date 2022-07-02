@@ -94,11 +94,13 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchKeyboardDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices,
+                       std::move(key_bits_mapping)));
   }
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices) override {
@@ -146,11 +148,13 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) override {
+      const std::vector<GamepadDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchGamepadDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices,
+                       std::move(key_bits_mapping)));
   }
 
   void DispatchUncategorizedDevicesUpdated(
@@ -394,8 +398,10 @@ void EventFactoryEvdev::DispatchUiEvent(Event* event) {
 }
 
 void EventFactoryEvdev::DispatchKeyboardDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<InputDevice>& devices,
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchKeyboardDevicesUpdated");
+  input_controller_.SetKeyboardKeyBitsMapping(std::move(key_bits_mapping));
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnKeyboardDevicesUpdated(devices);
 }
@@ -459,8 +465,10 @@ void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchGamepadDevicesUpdated(
-    const std::vector<GamepadDevice>& devices) {
+    const std::vector<GamepadDevice>& devices,
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchGamepadDevicesUpdated");
+  input_controller_.SetGamepadKeyBitsMapping(std::move(key_bits_mapping));
   gamepad_provider_->DispatchGamepadDevicesUpdated(devices);
 }
 

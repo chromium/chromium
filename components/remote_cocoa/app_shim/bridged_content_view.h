@@ -88,6 +88,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // the text input client.
 - (bool)needsUpdateWindows;
 
+// Action for Cmd-E
+- (void)copyToFindPboard:(id)sender;
+
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_BRIDGED_CONTENT_VIEW_H_

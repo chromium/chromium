@@ -11,6 +11,7 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -149,12 +150,26 @@ class EcheSignalerTest : public testing::Test {
     return message;
   }
 
-  proto::ExoMessage getTearDownSiggnalingMessage() const {
+  proto::ExoMessage getTearDownSignalingMessage() const {
     proto::SignalingAction action;
     action.set_action_type(proto::ActionType::ACTION_TEAR_DOWN);
     proto::ExoMessage message;
     *message.mutable_action() = std::move(action);
     return message;
+  }
+
+  proto::ExoMessage getResponseMessage(std::string data) {
+    std::vector<uint8_t> signal(data.begin(), data.end());
+    std::string encoded_signal(signal.begin(), signal.end());
+    proto::SignalingResponse response;
+    response.set_data(encoded_signal);
+    proto::ExoMessage message;
+    *message.mutable_response() = std::move(response);
+    return message;
+  }
+
+  void SetConnectionStatus(secure_channel::ConnectionManager::Status status) {
+    fake_connection_manager_.SetStatus(status);
   }
 
   TaskRunner task_runner_;
@@ -180,8 +195,7 @@ TEST_F(EcheSignalerTest, TestSendSignalingMessage) {
 TEST_F(EcheSignalerTest, TestTearDownSignaling) {
   FakeExchangerClient fake_exchanger_client;
   signaler_->Bind(fake_exchanger_client.CreatePendingReceiver());
-  proto::ExoMessage tear_down_signaling_message =
-      getTearDownSiggnalingMessage();
+  proto::ExoMessage tear_down_signaling_message = getTearDownSignalingMessage();
 
   fake_exchanger_client.TearDownSignaling();
   task_runner_.WaitForResult();
@@ -202,6 +216,87 @@ TEST_F(EcheSignalerTest, TestSetSignalingMessageObserverAndReceiveMessage) {
   task_runner_.WaitForResult();
 
   EXPECT_TRUE(fake_observer.received_signals().size() > 0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenNoReceiveAnyMessage) {
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::kSignalingNotTriggered, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::kSignalingNotTriggered, 1);
+  EXPECT_TRUE(fake_observer.received_signals().size() == 0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  proto::ExoMessage message = getExoMessage("123");
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::SignalingHasLateRequest, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::SignalingHasLateRequest, 1);
+  EXPECT_TRUE(fake_observer.received_signals().size() > 0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  proto::ExoMessage message = getResponseMessage("123");
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::SignalingHasLateResponse, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::SignalingHasLateResponse, 1);
+  EXPECT_TRUE(fake_observer.received_signals().size() > 0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::kSecurityChannelDisconnected, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      eche_app::mojom::ConnectionFailReason::kSecurityChannelDisconnected, 1);
 }
 
 }  // namespace eche_app

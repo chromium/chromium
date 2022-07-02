@@ -4,11 +4,11 @@
 
 #include "base/win/access_token.h"
 
+#include <windows.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <map>
-
-#include <windows.h>
 
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"

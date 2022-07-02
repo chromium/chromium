@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
@@ -24,7 +25,8 @@ class ExtensionRegistry;
 class VpnListForwarder
     : public app_list::ArcVpnProviderManager::Observer,
       public extensions::ExtensionRegistryObserver,
-      public user_manager::UserManager::UserSessionStateObserver {
+      public user_manager::UserManager::UserSessionStateObserver,
+      public crosapi::VpnExtensionObserverAsh::Delegate {
  public:
   VpnListForwarder();
 
@@ -50,6 +52,12 @@ class VpnListForwarder
                            extensions::UnloadedExtensionReason reason) override;
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
+  // crosapi::VpnExtensionObserverAsh::Delegate:
+  void OnLacrosVpnExtensionLoaded(const std::string& extension_id,
+                                  const std::string& extension_name) override;
+  void OnLacrosVpnExtensionUnloaded(const std::string& extension_id) override;
+  void OnLacrosVpnExtensionObserverDisconnected() override;
+
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
 
@@ -71,10 +79,15 @@ class VpnListForwarder
   // profile. Must only be called when a user is logged in.
   void AttachToPrimaryUserArcVpnProviderManager();
 
+  // Starts observing the primary user's extension registry in lacros via
+  // crosapi.
+  void AttachToVpnExtensionObserverAsh();
+
   // The primary user's extension registry, if a user is logged in.
   extensions::ExtensionRegistry* extension_registry_ = nullptr;
 
-  // The primary user's app_list::ArcVpnProviderManager, if a user is logged in.
+  // The primary user's app_list::ArcVpnProviderManager, if a user is logged
+  // in.
   app_list::ArcVpnProviderManager* arc_vpn_provider_manager_ = nullptr;
 
   std::unique_ptr<
@@ -84,6 +97,11 @@ class VpnListForwarder
   // Map of unique provider id to VpnProvider dictionary.
   base::flat_map<std::string, chromeos::network_config::mojom::VpnProviderPtr>
       vpn_providers_;
+
+  // Map of unique provider id to VpnProvider dictionary for lacros vpn
+  // extensions.
+  base::flat_map<std::string, chromeos::network_config::mojom::VpnProviderPtr>
+      lacros_vpn_providers_;
 
   base::WeakPtrFactory<VpnListForwarder> weak_factory_{this};
 };

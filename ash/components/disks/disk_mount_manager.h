@@ -92,8 +92,7 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
         : source_path(source),
           mount_path(mount),
           mount_type(type),
-          mount_condition(condition) {
-    }
+          mount_condition(condition) {}
   };
 
   // MountPointMap key is mount_path.

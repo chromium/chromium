@@ -1306,7 +1306,17 @@ util.isRecentsFilterEnabled = () => {
  * @return {boolean}
  */
 util.isRecentsFilterV2Enabled = () => {
-  return loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
+      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+};
+
+/**
+ * Returns true if FilesTrash feature flag is enabled.
+ * @returns {boolean}
+ */
+util.isTrashEnabled = () => {
+  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
+      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
 };
 
 /**
@@ -1333,6 +1343,16 @@ util.isExtractArchiveEnabled = () => {
   return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
 };
 
+
+/**
+ * Whether the Files app Experimental flag is enabled.
+ * @returns {boolean}
+ */
+util.isFilesAppExperimental = () => {
+  return loadTimeData.valueExists('FILES_APP_EXPERIMENTAL') &&
+      loadTimeData.getBoolean('FILES_APP_EXPERIMENTAL');
+};
+
 /**
  * Returns true if FuseBox flag is enabled.
  * @return {boolean}
@@ -1357,6 +1377,16 @@ util.isFuseBoxDebugEnabled = () => {
  */
 util.isGuestOsEnabled = () => {
   return loadTimeData.getBoolean('GUEST_OS');
+};
+
+/**
+ * Returns true if DriveFsMirroring flag is enabled.
+ * @return {boolean}
+ */
+util.isMirrorSyncEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('DRIVEFS_MIRRORING') &&
+      loadTimeData.getBoolean('DRIVEFS_MIRRORING');
 };
 
 /**
@@ -1686,6 +1716,16 @@ util.makeTaskID = function({appId, taskType, actionId}) {
 util.isInGuestMode = async () => {
   const profiles = await promisify(chrome.fileManagerPrivate.getProfiles);
   return profiles.length > 0 && profiles[0].profileId === '$guest';
+};
+
+/**
+ * Get the locale based week start from the load time data.
+ * @returns {number}
+ */
+util.getLocaleBasedWeekStart = () => {
+  return loadTimeData.valueExists('WEEK_START_FROM') ?
+      loadTimeData.getInteger('WEEK_START_FROM') :
+      0;
 };
 
 /**

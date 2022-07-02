@@ -58,7 +58,8 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     base::OnceCallback<void(bool)> report_error_callback)
     : streaming_prefetch_request_(streaming_prefetch_request),
       report_error_callback_(std::move(report_error_callback)),
-      profile_(profile),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   DCHECK(streaming_prefetch_request_);
@@ -76,11 +77,9 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     }
   }
   prefetch_url_ = resource_request->url;
-  auto url_loader_factory = profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
 
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |
@@ -102,6 +101,14 @@ void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
   DCHECK(streaming_prefetch_request_);
   marked_as_servable_ = true;
   streaming_prefetch_request_->MarkPrefetchAsServable();
+}
+
+void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
+  // This means that the navigation stack is already running for the navigation
+  // to this term, and chrome does not need to prerender.
+  if (!streaming_prefetch_request_)
+    return;
+  streaming_prefetch_request_->OnServableResponseCodeReceived();
 }
 
 SearchPrefetchURLLoader::RequestHandler
@@ -186,19 +193,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
   // Do nothing.
 }
 
-void StreamingSearchPrefetchURLLoader::SetHeadersReceivedCallback(
-    base::OnceClosure headers_received_callback) {
-  headers_received_callback_ = std::move(headers_received_callback);
-}
-
-bool StreamingSearchPrefetchURLLoader::ReadyToServe() {
-  return can_be_served_.has_value() && can_be_served_.value();
-}
-
-bool StreamingSearchPrefetchURLLoader::ReceivedError() {
-  return can_be_served_.has_value() && !(can_be_served_.value());
-}
-
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
@@ -210,23 +204,15 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     return;
   }
 
-  can_be_served_ = CanServePrefetchRequest(head->headers);
+  bool can_be_served = CanServePrefetchRequest(head->headers);
 
   // Don't report errors for navigation prefetch.
   if (!navigation_prefetch_)
-    std::move(report_error_callback_).Run(!can_be_served_.value());
-
-  if (headers_received_callback_) {
-    // Stop future messages, this object just needs to keep the request alive in
-    // the network service until it is served elsewhere.
-    url_loader_receiver_.Pause();
-    std::move(headers_received_callback_).Run();
-    return;
-  }
+    std::move(report_error_callback_).Run(!can_be_served);
 
   // If there is an error, either cancel the request or fallback depending on
   // whether we still have a parent pointer.
-  if (!can_be_served_.value()) {
+  if (!can_be_served) {
     if ((navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) &&
         !streaming_prefetch_request_) {
       Fallback();
@@ -244,6 +230,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   MarkPrefetchAsServable();
+  OnServableResponseCodeReceived();
 
   // Store head and pause new messages until the forwarding client is set up.
   resource_response_ = std::move(head);
@@ -253,7 +240,17 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   if (estimated_length_ > 0)
     body_content_.reserve(estimated_length_);
 
-  OnStartLoadingResponseBody(std::move(body));
+  if (!body)
+    return;
+
+  serving_from_data_ = true;
+
+  pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+
+  event_queue_.push_back(base::BindOnce(
+      &StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData,
+      base::Unretained(this)));
 }
 
 void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
@@ -297,19 +294,6 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
   event_queue_.push_back(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated,
                      base::Unretained(this), transfer_size_diff));
-}
-
-void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!forwarding_client_);
-  serving_from_data_ = true;
-
-  pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-
-  event_queue_.push_back(base::BindOnce(
-      &StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData,
-      base::Unretained(this)));
 }
 
 void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,
@@ -546,11 +530,8 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
   url_loader_receiver_.reset();
   is_in_fallback_ = true;
 
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |

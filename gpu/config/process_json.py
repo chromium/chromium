@@ -75,7 +75,7 @@ def check_nvidia_driver_version(version):
   # Allow "456" to match "456.*", so allow a single-entry list.
   if len(ver_list) == 0 or len(ver_list) > 2:
     return False
-  elif len(ver_list) == 2 and len(ver_list[1]) != 2:
+  if len(ver_list) == 2 and len(ver_list[1]) != 2:
     return False
   # Must start with three digits, whether it's "456.*" or "456.78".
   if len(ver_list[0]) != 3:
@@ -103,7 +103,7 @@ def load_software_rendering_list_features(feature_type_filename):
       assert start
       start = False
       break
-    elif line.startswith('GPU_FEATURE_TYPE_'):
+    if line.startswith('GPU_FEATURE_TYPE_'):
       name = line[len('GPU_FEATURE_TYPE_'):]
       features.append(name.lower())
     else:
@@ -493,30 +493,30 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       assert not is_exception
       assert entry['id'] == entry_id
       continue
-    elif key == 'description':
+    if key == 'description':
       assert not is_exception
       continue
-    elif key == 'driver_update_url':
+    if key == 'driver_update_url':
       assert not is_exception
       continue
-    elif key == 'features':
+    if key == 'features':
       assert not is_exception
       continue
-    elif key == 'disabled_extensions':
+    if key == 'disabled_extensions':
       assert not is_exception
       continue
-    elif key == 'disabled_webgl_extensions':
+    if key == 'disabled_webgl_extensions':
       assert not is_exception
       continue
-    elif key == 'comment':
+    if key == 'comment':
       continue
-    elif key == 'webkit_bugs':
+    if key == 'webkit_bugs':
       assert not is_exception
       continue
-    elif key == 'cr_bugs':
+    if key == 'cr_bugs':
       assert not is_exception
       continue
-    elif key == 'os':
+    if key == 'os':
       os_info = entry[key]
       os_type = os_info['type']
       if 'version' in os_info:
@@ -870,7 +870,7 @@ def process_json_file(json_filepath, list_tag,
       if os_type not in _OS_TYPE_MAP:
         raise Exception('Unknown OS type "%s" for entry %d' %
                         (os_type, entry_id))
-      if os_filter != None and os_type != os_filter:
+      if os_filter not in (None, os_type):
         continue
     entry_count += 1
     write_entry(entry, total_features, feature_tag, unique_symbol_id,

@@ -75,4 +75,19 @@ object_value {
       }
     }
   }
+  field {
+    name: "aggregation_keys"
+    value {
+      object_value {
+        field {
+          name: "a"
+          value {
+            string_value {
+              value: "0x1"
+            }
+          }
+        }
+      }
+    }
+  }
 }

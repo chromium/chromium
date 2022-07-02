@@ -3,5 +3,5 @@
 ++++[section]
 ++++[section]
 ++++++[push button] name='1'
-++[static] name='"'
-++[static] name='"'
+++[static] name='%E2%80%9C'
+++[static] name='%E2%80%9D'

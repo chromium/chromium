@@ -65,7 +65,7 @@ export {TopicSourceItem} from './ambient/topic_source_item_element.js';
 export {TopicSourceList} from './ambient/topic_source_list_element.js';
 export {AmbientZeroState} from './ambient/zero_state_element.js';
 export {IFrameApi} from './iframe_api.js';
-export {KeyboardBacklightActionName, KeyboardBacklightActions, SetBacklightColorAction, setBacklightColorAction} from './keyboard_backlight/keyboard_backlight_actions.js';
+export {KeyboardBacklightActionName, KeyboardBacklightActions, SetBacklightColorAction, setBacklightColorAction, SetShouldShowNudgeAction, setShouldShowNudgeAction, SetWallpaperColorAction, setWallpaperColorAction} from './keyboard_backlight/keyboard_backlight_actions.js';
 export {KeyboardBacklight} from './keyboard_backlight/keyboard_backlight_element.js';
 export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keyboard_backlight_interface_provider.js';
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';
@@ -90,7 +90,7 @@ export {setUserProviderForTesting} from './user/user_interface_provider.js';
 export {UserPreview} from './user/user_preview_element.js';
 export {UserSubpage} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
-export {getImageKey, isDefaultImage, isFilePath} from './utils.js';
+export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './utils.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollection} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_album_id_element.js';
@@ -113,8 +113,9 @@ export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 
 PersonalizationStore.getInstance().init(emptyState());
 const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;
-if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
-  link!.href = '/hub_icon_192.png';
+if (link && loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+  // |link| may be null in tests.
+  link.href = '/hub_icon_192.png';
 }
 document.title = loadTimeData.getBoolean('isPersonalizationHubEnabled') ?
     loadTimeData.getString('personalizationTitle') :

@@ -312,8 +312,6 @@ void FakeChromeIdentityService::FireChromeIdentityReload() {
   FireIdentityListChanged(/*notify_user=*/true);
 }
 
-void FakeChromeIdentityService::SetUpForIntegrationTests() {}
-
 void FakeChromeIdentityService::AddManagedIdentities(NSArray* identitiesNames) {
   for (NSString* name in identitiesNames) {
     NSString* email =

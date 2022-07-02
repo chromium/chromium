@@ -452,6 +452,25 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AdPageLoadCustomSampling" singular="True">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Recorded when a page has loaded non-zero ad bytes, and the page is being
+    destroyed/navigated or when the app enters the background on mobile. This is
+    separate from the `AdPageLoad` event to allow a potentially different
+    sampling.
+  </summary>
+  <metric name="AverageViewportAdDensity">
+    <summary>
+      The estimated average density of ads within the viewport by area.
+      Calculated as the moving average of area of ads within the viewport * 100
+      / viewport area. This counts each overlapping area once.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdsIntervention.LastIntervention" singular="True">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-core@google.com</owner>
@@ -1593,6 +1612,20 @@ be describing additional metrics about the same event.
       filled if the credit card on file was complete.
     </summary>
   </metric>
+  <metric name="Fillable.AfterSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if the credit card on file was complete.
+    </summary>
+  </metric>
+  <metric name="Fillable.AfterSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if the credit card on file was complete.
+    </summary>
+  </metric>
   <metric name="Fillable.BeforeSecurity.Bitmask"
       enum="AutofillCreditCardSeamlessnessBitmask">
     <summary>
@@ -1608,6 +1641,21 @@ be describing additional metrics about the same event.
       policy.
     </summary>
   </metric>
+  <metric name="Fillable.BeforeSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if the credit card on file was complete and there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Fillable.BeforeSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if the credit card on file was complete and
+      there was no security policy.
+    </summary>
+  </metric>
   <metric name="Filled.AfterSecurity.Bitmask"
       enum="AutofillCreditCardSeamlessnessBitmask">
     <summary>
@@ -1618,6 +1666,19 @@ be describing additional metrics about the same event.
     <summary>
       Logs a qualitative summary of the field types which Autofill actually
       filled.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill actually filled into visible fields.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill actually
+      filled into visible fields.
     </summary>
   </metric>
   <metric name="Filled.BeforeSecurity.Bitmask"
@@ -1632,6 +1693,20 @@ be describing additional metrics about the same event.
     <summary>
       Logs a qualitative summary of the field types which Autofill would have
       filled if there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if there was no security policy.
     </summary>
   </metric>
   <metric name="FormSignature">
@@ -1983,6 +2058,66 @@ be describing additional metrics about the same event.
   <metric name="ServerRecordTypeCount">
     <summary>
       Number of masked and full server credit cards or server autofill profiles.
+    </summary>
+  </metric>
+</event>
+
+<event name="Autofill.KeyMetrics">
+  <owner>battre@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
+  <owner>nepper@chromium.org</owner>
+  <summary>
+    These metrics are a clone of Autofill's UMA key metrics to measure Autofill
+    quality. They are recorded on navigation if a form was submitted before.
+  </summary>
+  <metric name="AutofillAssistantIntent" enum="AutofillAssistantIntent">
+    <summary>
+      Describes the trigger source that invoked Autofill. Only recorded if
+      AutofillAssistantIntent was not undefined.
+    </summary>
+  </metric>
+  <metric name="FillingAcceptance">
+    <summary>
+      Has value 1 if user accepted the suggestion to fill values on a submitted
+      form, 0 otherwise. This is counted as 1 if the user accepted such a
+      suggestion at any time, regardless whether other suggestions were ignored
+      or whether the accepted suggestion was reverted afterwards. Only recorded
+      if suggestions were shown to the user.
+    </summary>
+  </metric>
+  <metric name="FillingAssistance">
+    <summary>
+      Has value 1 if the user filled any fields via Autofill on a submitted
+      form, 0 otherwise.
+
+      If the user reverts the filling, the form is still counted as filled.
+
+      This metric is different from FillingAcceptance in the sense that the
+      latter is only recorded if the user has actually seen a prompt to fill
+      data.
+    </summary>
+  </metric>
+  <metric name="FillingCorrectness">
+    <summary>
+      Has value 1 for submitted and autofilled forms if user edited at least one
+      filled value before submitting the form, 0 otherwise. Only recorded if any
+      suggestion was filled.
+    </summary>
+  </metric>
+  <metric name="FillingReadiness">
+    <summary>
+      Has value 1 for submitted forms when Chromium had any address or payments
+      data to fill, 0 otherwise.
+
+      It does not matter whether the user actually requested to fill the data.
+      It does not matter either whether the data available for filling
+      corresponded to the submitted data.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Type of form. Stored as bitvector. A set ith bit implies enum FormType's
+      ith type was detected. Multiple types are possible.
     </summary>
   </metric>
 </event>
@@ -2857,8 +2992,59 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Status.Revoke" enum="FedCmRevokeStatus">
+    <obsolete>
+      Removed June 2022 with the removal of the revoke() method.
+    </obsolete>
     <summary>
       Records the status of a revoke call to the FedCM API.
+    </summary>
+  </metric>
+  <metric name="Timing.CancelOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user closes the dialog without selecting any account.
+    </summary>
+  </metric>
+  <metric name="Timing.ContinueOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user presses the Continue button.
+    </summary>
+  </metric>
+  <metric name="Timing.IdTokenResponse">
+    <summary>
+      Records the time (in milliseconds) from when the user presses the Continue
+      button to when the id token response is received.
+    </summary>
+  </metric>
+  <metric name="Timing.ShowAccountsDialog">
+    <summary>
+      Records the time (in milliseconds) from when a call to the API was made to
+      when the accounts dialog is shown.
+    </summary>
+  </metric>
+  <metric name="Timing.TurnaroundTime">
+    <summary>
+      Records the overall time (in milliseconds) from when the API is called to
+      when the id token response is received.
+    </summary>
+  </metric>
+</event>
+
+<event name="Blink.FedCmIdp">
+  <owner>npm@chromium.org</owner>
+  <owner>webid-core@google.com</owner>
+  <summary>
+    Records performance metrics for FedCM (Federated Credential Management) API.
+    Recorded when the web developer calls the FedCM API. Individual metrics are
+    recorded eagerly, whenever the value has been computed.
+
+    This event uses the specific WEB_IDENTITY ukm_source_id which is generated
+    from the identity provider's origin.
+  </summary>
+  <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
+    <summary>
+      Records the status of a request id token call to the FedCM API.
     </summary>
   </metric>
   <metric name="Timing.CancelOnDialog">
@@ -3294,6 +3480,14 @@ be describing additional metrics about the same event.
       The time taken for accessibility for the main frame in microseconds during
       the sampled frame.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="AccessibilityBeginMainFrame">
     <summary>
@@ -5411,6 +5605,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContextualSearch">
+  <obsolete>
+    Deprecated as of 05/2022.
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <summary>
     Metrics related to a Contextual Search Tap event on a page, for use with
@@ -9277,9 +9474,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Identifiability">
-  <owner>asanka@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
   <owner>caraitto@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
   <summary>
     Identifiability metrics are used to measure the diversity of web clients as
     observed by individual web sites.
@@ -12452,6 +12650,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Network.CacheTransparency">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Metrics for Cache Transparency which aims to allow a list of pervasive
+    payloads to be specified and cached in a single-keyed cache to improve
+    loading performance. Recorded for each navigation and subresource load.
+  </summary>
+  <metric name="FoundPervasivePayload" enum="Boolean">
+    <summary>
+      Records whether a requested resource's URL matched with any of the URLs in
+      the Cache Transparency Pervasive Payloads List.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TotalBytesFetched">
+    <summary>
+      Records the total bytes fetched by the network.
+    </summary>
+  </metric>
+</event>
+
 <event name="NoStatePrefetch" singular="True">
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -13006,7 +13232,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad" singular="True">
-  <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Core metrics associated with web page loads.
   </summary>
@@ -13846,6 +14073,12 @@ be describing additional metrics about the same event.
       removed from a tab group is counted as false.
     </summary>
   </metric>
+  <metric name="IsScopedSearchLikeNavigation" enum="Boolean">
+    <summary>
+      Marked true if the page was eligible for a scoped search when the
+      navigation committed.
+    </summary>
+  </metric>
   <metric name="IsSignedExchangeInnerResponse">
     <obsolete>
       Migrated to the PageLoad.SignedExchange event. The presence of that event
@@ -14620,6 +14853,16 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SoftNavigationCount">
+    <summary>
+      Number of soft navigations detected by heuristics. See
+      https://bit.ly/soft-navigation
+
+      Soft navigations are JS-driven same-document navigations that are using
+      the history API or the new Navigation API, triggered by a user gesture and
+      meaningfully modify the DOM, replacing the previous content with new one.
+    </summary>
+  </metric>
   <metric name="ThirdPartyCookieBlockingEnabledForSite" enum="Boolean">
     <owner>dullweber@chromium.org</owner>
     <owner>huanzhong@chromium.org</owner>
@@ -14644,7 +14887,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.FromGoogleSearch" singular="True">
-  <owner>bmcquade@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>mushan@chromium.org</owner>
   <summary>
     Recorded for page loads that were navigated to via Google Search.
@@ -15177,6 +15420,29 @@ be describing additional metrics about the same event.
     <summary>
       Records what the user does with a form. Recorded values correspond to the
       enum password_manager::UserAction.
+    </summary>
+  </metric>
+</event>
+
+<event name="PasswordManager.LeakWarningDialog">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-duplex@google.com</owner>
+  <summary>
+    Metrics related to leak warnings shown on login and password reset. Leak
+    warning dialogs in Chrome aim to inform users about leaked credentials and
+    advise to change them. We collect type of the dialog that is shown and the
+    response of the user to it.
+  </summary>
+  <metric name="PasswordLeakDetectionDialogDismissalReason"
+      enum="PasswordLeakDetectionDialogDismissalReason">
+    <summary>
+      Records the response to the password leak dialog.
+    </summary>
+  </metric>
+  <metric name="PasswordLeakDetectionDialogType"
+      enum="PasswordLeakDetectionDialogType">
+    <summary>
+      Records the type of the password leak dialog.
     </summary>
   </metric>
 </event>
@@ -16557,6 +16823,195 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Preloading.Attempt">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This event is logged for each preloading attempt i.e., for preloading
+    features like Preresolve, Preconnect, Prerender, Prefetch, and others when
+    the user navigates or when the WebContents is being destroyed.
+
+    Associated with the Source ID of the page user navigates to. Contains
+    information about the type of attempt, its eligibility, triggering outcome,
+    failure reason and whether the attempt was triggered accurately or not.
+  </summary>
+  <metric name="AccurateTriggering" enum="Boolean">
+    <summary>
+      Whether the preloading operation was triggered accurately for the
+      predicted URL (regardless of the eligibility, failures, etc.). Set to true
+      if the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Eligibility">
+    <summary>
+      Eligibility status of preloading operation for the prediction. Values are
+      from the Chrome enum content::PreloadingEligibility.
+    </summary>
+  </metric>
+  <metric name="FailureReason">
+    <summary>
+      Reason why the preloading operation failed. Values are from the enum
+      specific to the preloading type.
+    </summary>
+  </metric>
+  <metric name="HoldbackStatus">
+    <summary>
+      The outcome of the holdback check. This is not part of eligibility status
+      to make clarify that this check needs to happen after we are done
+      verifying the eligibility of a preloading attempt. In general, eligibility
+      checks can be reordered, but the holdback check always needs to come after
+      verifying that the preloading attempt was eligible.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor which made the prediction. Values are
+      from the Chrome enum content::PreloadingPredictor or
+      ChromePreloadingPredictor.
+    </summary>
+  </metric>
+  <metric name="PreloadingType">
+    <summary>
+      The type of preloading operation used for the preloading attempt. Values
+      are from the Chrome enum content::PreloadingType.
+    </summary>
+  </metric>
+  <metric name="TriggeringOutcome">
+    <summary>
+      Specifies whether the preloading attempt triggered and was used for the
+      next navigation. Values are from the Chrome enum
+      content::PreloadingTriggeringOutcome.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Attempt.PreviousPrimaryPage">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This is same as Preloading.Attempt but UKM is associated with the primary
+    triggering page (if exists) and logged when the user navigates away or when
+    the WebContents is being destroyed.
+
+    Associated with the Source ID of the WebContents primary page where the
+    preloading attempt is triggered (user navigates from). All the metrics data
+    are similar to Preloading.Attempt and please see the comments for more
+    details.
+  </summary>
+  <metric name="AccurateTriggering" enum="Boolean">
+    <summary>
+      Whether the preloading operation was triggered accurately (regardless of
+      the eligibility, holdback, failures, etc.).
+
+      Set to true if the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Eligibility">
+    <summary>
+      Eligibility status of preloading operation for the prediction.
+    </summary>
+  </metric>
+  <metric name="FailureReason">
+    <summary>
+      Reason why the preloading operation failed.
+    </summary>
+  </metric>
+  <metric name="HoldbackStatus">
+    <summary>
+      The outcome of the holdback check. This is not part of eligibility status
+      to make clarify that this check needs to happen after we are done
+      verifying the eligibility of a preloading attempt. In general, eligibility
+      checks can be reordered, but the holdback check always needs to come after
+      verifying that the preloading attempt was eligible.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of predictor that made the prediction. Values are from either
+      content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+  <metric name="PreloadingType">
+    <summary>
+      The type of preloading operation used for the preloading attempt.
+    </summary>
+  </metric>
+  <metric name="TriggeringOutcome">
+    <summary>
+      Specifies whether the preloading triggered and was used for the next
+      navigation.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Prediction">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This event is logged for each preloading prediction and metrics related to
+    the preloading predictors like OmniboxDirectURLInput, Speculation Rules and
+    others when the navigation is finished or when the WebContents is being
+    destroyed.
+
+    Associated with the Source ID of the page user navigates to. Contains
+    information about the type of the predictor, its confidence value and
+    whether the prediction ended up being correct.
+  </summary>
+  <metric name="AccuratePrediction" enum="Boolean">
+    <summary>
+      Whether the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Confidence">
+    <summary>
+      The confidence percentage of predictor's correct prediction for
+      preloading.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor that made the prediction. Values are from
+      content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Prediction.PreviousPrimaryPage">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This is the same as Preloading.Prediction but UKM is associated with the
+    WebContents primary triggering page (if exists) and logged when the user
+    navigates away or when the WebContents is being destroyed.
+
+    Associated with the Source ID of the primary page where the preloading
+    prediction is triggered (user navigates from). All the metrics data are
+    similar to Preloading.Prediction and please see the comments for more
+    details.
+  </summary>
+  <metric name="AccuratePrediction" enum="Boolean">
+    <summary>
+      Whether the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Confidence">
+    <summary>
+      The confidence percentage of predictor's correct prediction for
+      preloading.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor which made the preloading prediction.
+      Values are from content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
@@ -16572,6 +17027,24 @@ be describing additional metrics about the same event.
 
       This is replicated as Prerender.Experimental.PrerenderHostFinalStatus.* in
       UMA.
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.FirstInputDelay4">
+    <summary>
+      The duration between the hardware timestamp and the start of event
+      processing on the main thread for the first meaningful input. Recorded on
+      the prerender activation.
+    </summary>
+  </metric>
+  <metric
+      name="LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred on the prerendered page that is successfully activated in a
+      session window. The gap between two consecutive shifts in a window is not
+      bigger than 1000ms and the maximum window size is 5000ms. This metric's
+      integral value is 100x the fractional cumulative layout shift score
+      described in the explainer.
     </summary>
   </metric>
   <metric name="Timing.ActivationToFirstContentfulPaint">
@@ -17871,7 +18344,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="OutputDelaySec">
     <summary>
-      The time from executing the model to when the UKM is recorded, in seconds.
+      The time from last segment selection to when the UKM is recorded, in
+      seconds.
     </summary>
   </metric>
   <metric name="PredictionResult">
@@ -17881,10 +18355,17 @@ be describing additional metrics about the same event.
       number between 0 to 1 and encoded into IEEE 754 double precision here.
     </summary>
   </metric>
+  <metric name="SelectionResult">
+    <summary>
+      The OptimizationTarget of the last selected segment before UKM is
+      recorded. Some features might have several ML models with them. This
+      metric records which model is currently selected for the feature.
+    </summary>
+  </metric>
 </event>
 
 <event name="SharedHighlights.LinkGenerated">
-  <owner>seblalancette@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
@@ -17906,7 +18387,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SharedHighlights.LinkGenerated.Requested">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
@@ -17928,7 +18409,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SharedHighlights.LinkOpened" singular="true">
-  <owner>seblalancette@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the browser action of highlighting (incl. scroll-to) text
@@ -17979,6 +18460,51 @@ be describing additional metrics about the same event.
       Whether the user selected a device, an app or nothing (i.e. dismissal) in
       the user interface. For some entry points this might always be the same
       value (e.g. right clicks always select devices).
+    </summary>
+  </metric>
+</event>
+
+<event name="Shopping.CartExtraction">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Metrics related to performance of cart content extraction in ChromeCart.
+  </summary>
+  <metric name="ExtractionElapsedTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the elapsed time within the JavaScript, so script parsing/compilation time
+      is excluded. Shopping.CartExtraction.ExtractionExecutionTime is measured
+      in native, and is the end-to-end elapsed time. This is expressed in
+      milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionExecutionTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the elapsed time between the start and the end of the extraction
+      JavaScript request execution. This includes script parsing/compilation
+      time and sleeping time. This is expressed in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionLongestTaskTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the time span of the longest task blocking the main thread of the renderer
+      process. This is expressed in milliseconds.
+    </summary>
+  </metric>
+  <metric name="ExtractionTimedOut" enum="Boolean">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      whether the cart content extraction has timed out.
+    </summary>
+  </metric>
+  <metric name="ExtractionTotalTasksTime">
+    <summary>
+      Logged when cart content extraction is executed for ChromeCart and records
+      the time spent on execution, excluding sleeping time. This is expressed in
+      milliseconds.
     </summary>
   </metric>
 </event>
@@ -18381,7 +18907,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SubresourceFilter" singular="True">
-  <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Recorded for page loads where subresource filtering policy was evaluated.

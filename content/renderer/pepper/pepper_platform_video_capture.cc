@@ -53,7 +53,8 @@ void PepperPlatformVideoCapture::StartCapture(
                                 weak_factory_.GetWeakPtr())),
                             media::BindToCurrentLoop(base::BindRepeating(
                                 &PepperPlatformVideoCapture::OnFrameReady,
-                                weak_factory_.GetWeakPtr())));
+                                weak_factory_.GetWeakPtr())),
+                            /*crop_version_cb=*/base::DoNothing());
 }
 
 void PepperPlatformVideoCapture::StopCapture() {

@@ -245,7 +245,7 @@ void CastWebViewDefault::RequestMediaAccessPermission(
       !params_->allow_media_access) {
     LOG(WARNING) << __func__ << ": media access is disabled.";
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
         std::unique_ptr<content::MediaStreamUI>());
     return;
@@ -258,7 +258,10 @@ void CastWebViewDefault::RequestMediaAccessPermission(
   DVLOG(2) << __func__ << " audio_devices=" << audio_devices.size()
            << " video_devices=" << video_devices.size();
 
-  blink::mojom::StreamDevices devices;
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices[0];
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     const blink::MediaStreamDevice* device = GetRequestedDeviceOrDefault(
@@ -281,7 +284,8 @@ void CastWebViewDefault::RequestMediaAccessPermission(
     }
   }
 
-  std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
+  std::move(callback).Run(stream_devices_set,
+                          blink::mojom::MediaStreamRequestResult::OK,
                           std::unique_ptr<content::MediaStreamUI>());
 }
 

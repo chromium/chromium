@@ -254,7 +254,7 @@
     t.done();
 
 - name: 2d.imageData.get.nonpremul
-  desc: getImageData() returns non-premultiplied colours
+  desc: getImageData() returns non-premultiplied colors
   testing:
   - 2d.imageData.get.premul
   code: |
@@ -285,7 +285,7 @@
     t.done();
 
 - name: 2d.imageData.get.clamp
-  desc: getImageData() clamps colours to the range [0, 255]
+  desc: getImageData() clamps colors to the range [0, 255]
   testing:
   - 2d.pixelarray.range
   code: |
@@ -842,4 +842,3 @@
     ctx.fill();
     @assert pixel 50,25 ==~ 0,255,0,255;
     t.done();
-

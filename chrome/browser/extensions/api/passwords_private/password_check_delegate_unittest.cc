@@ -19,12 +19,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,17 +37,21 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
+#include "components/password_manager/core/browser/mock_password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/driver/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
@@ -54,6 +62,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace extensions {
 
@@ -85,6 +94,7 @@ using password_manager::IsLeaked;
 using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
 using password_manager::MockPasswordChangeSuccessTracker;
+using password_manager::MockPasswordScriptsFetcher;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordChangeSuccessTrackerFactory;
 using password_manager::PasswordForm;
@@ -101,6 +111,7 @@ using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::Pair;
 using ::testing::Pointee;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 using MockStartPasswordCheckCallback =
@@ -140,6 +151,17 @@ MockPasswordChangeSuccessTracker* CreateAndUsePasswordChangeSuccessTracker(
               })));
 }
 
+MockPasswordScriptsFetcher* CreateAndUsePasswordScriptsFetcher(
+    Profile* profile) {
+  return static_cast<MockPasswordScriptsFetcher*>(
+      PasswordScriptsFetcherFactory::GetInstance()
+          ->SetTestingSubclassFactoryAndUse(
+              profile, base::BindRepeating([](content::BrowserContext*) {
+                return std::make_unique<
+                    testing::NiceMock<MockPasswordScriptsFetcher>>();
+              })));
+}
+
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
     signin::IdentityManager* identity_manager,
     Profile* profile) {
@@ -152,6 +174,13 @@ BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
                 identity_manager,
                 base::MakeRefCounted<network::TestSharedURLLoaderFactory>()));
           })));
+}
+
+syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
+  return SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      profile, base::BindLambdaForTesting([](content::BrowserContext*) {
+        return std::make_unique<syncer::TestSyncService>();
+      }));
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
@@ -244,6 +273,15 @@ auto ExpectCompromisedCredential(
                          elapsed_time_since_compromise_str, compromise_type))));
 }
 
+// Creates a simplified matcher that only checks the username name and
+// whether a startable script exists.
+auto ExpectCredentialWithScriptInfo(const std::u16string& username,
+                                    bool has_startable_script) {
+  return AllOf(
+      Field(&InsecureCredential::username, base::UTF16ToASCII(username)),
+      Field(&InsecureCredential::has_startable_script, has_startable_script));
+}
+
 class PasswordCheckDelegateTest : public ::testing::Test {
  public:
   PasswordCheckDelegateTest() {
@@ -263,6 +301,10 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   MockPasswordChangeSuccessTracker& password_change_success_tracker() {
     return *password_change_success_tracker_;
   }
+  MockPasswordScriptsFetcher& password_scripts_fetcher() {
+    return *password_scripts_fetcher_;
+  }
+  syncer::TestSyncService& sync_service() { return *sync_service_; }
   SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
 
@@ -282,6 +324,10 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       CreateAndUseTestPasswordStore(&profile_);
   raw_ptr<MockPasswordChangeSuccessTracker> password_change_success_tracker_ =
       CreateAndUsePasswordChangeSuccessTracker(&profile_);
+  raw_ptr<MockPasswordScriptsFetcher> password_scripts_fetcher_ =
+      CreateAndUsePasswordScriptsFetcher(&profile_);
+  raw_ptr<syncer::TestSyncService> sync_service_ =
+      CreateAndUseSyncService(&profile_);
   SavedPasswordsPresenter presenter_{store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_};
 };
@@ -701,7 +747,9 @@ TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialSuccess) {
 }
 
 // Test that changing a insecure password removes duplicates from store.
-TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialRemovesDupes) {
+// https://crbug.com/1334160
+TEST_F(PasswordCheckDelegateTest,
+       DISABLED_ChangeInsecureCredentialRemovesDupes) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form, InsecureType::kLeaked);
   store().AddLogin(form);
@@ -1263,8 +1311,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   delegate().StartPasswordCheck();
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED,
             event_iter->second->histogram_value);
-  auto status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetListDeprecated().front());
+  auto status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(0, *status->already_processed);
@@ -1273,8 +1321,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
 
-  status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetListDeprecated().front());
+  status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(2, *status->already_processed);
@@ -1283,8 +1331,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername2, kPassword2), IsLeaked(false));
 
-  status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetListDeprecated().front());
+  status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(4, *status->already_processed);
@@ -1362,6 +1410,157 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
       GURL(*delegate().GetCompromisedCredentials().at(1).change_password_url)
           .path(),
       password_manager::kWellKnownChangePasswordPath);
+}
+
+TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChange);
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  // Add two forms, but only one already has a known issue.
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+
+  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
+  store().AddLogin(form2);
+  const url::Origin origin2 = url::Origin::Create(GURL(kExampleOrg));
+
+  RunUntilIdle();
+
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(origin1))
+      .WillOnce(Return(false));
+
+  // Only the form with the known issue shows up and does not have a startable
+  // script.
+  EXPECT_THAT(delegate().GetCompromisedCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  kUsername1, /*has_startable_script=*/false)));
+
+  base::OnceClosure refresh_callback;
+  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(MoveArg<0>(&refresh_callback));
+
+  MockStartPasswordCheckCallback start_callback1;
+  delegate().StartPasswordCheck(start_callback1.Get());
+
+  // Starting another check will indicate that the first one is still running.
+  MockStartPasswordCheckCallback start_callback2;
+  EXPECT_CALL(start_callback2, Run(BulkLeakCheckService::State::kRunning));
+  delegate().StartPasswordCheck(start_callback2.Get());
+
+  EXPECT_CALL(start_callback1, Run(BulkLeakCheckService::State::kRunning));
+
+  // From now on, always return that scripts are available.
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  // Signal that scripts are fetched.
+  std::move(refresh_callback).Run();
+
+  static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
+  static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
+      LeakCheckCredential(kUsername2, kPassword2), IsLeaked(true));
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      delegate().GetCompromisedCredentials(),
+      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                               kUsername1, /*has_startable_script=*/true),
+                           ExpectCredentialWithScriptInfo(
+                               kUsername2, /*has_startable_script=*/true)));
+}
+
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChange);
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Disable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+
+  RunUntilIdle();
+
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_THAT(delegate().GetCompromisedCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  kUsername1, /*has_startable_script=*/false)));
+}
+
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kPasswordChange);
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+
+  RunUntilIdle();
+
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_THAT(delegate().GetCompromisedCredentials(),
+              UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                  kUsername1, /*has_startable_script=*/false)));
+}
+
+TEST_F(PasswordCheckDelegateTest,
+       HasStartableScript_CredentialListUpdateAfterScriptsFetched) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChange);
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  store().AddLogin(form1);
+  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+
+  RunUntilIdle();
+
+  base::OnceClosure refresh_callback;
+  EXPECT_CALL(password_scripts_fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(MoveArg<0>(&refresh_callback));
+
+  delegate().StartPasswordCheck();
+
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  event_router_observer().ClearEvents();
+
+  // Signal that scripts are fetched.
+  std::move(refresh_callback).Run();
+  RunUntilIdle();
+
+  // Check that an update event was fired after the scripts were fetched.
+  EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_COMPROMISED_CREDENTIALS_INFO_CHANGED,
+            event_router_observer()
+                .events()
+                .at(api::passwords_private::OnCompromisedCredentialsChanged::
+                        kEventName)
+                ->histogram_value);
 }
 
 }  // namespace extensions

@@ -124,9 +124,9 @@ TEST(CipherSuiteNamesTest, ParseSSLCipherStringFails) {
     "0xBEEFY",
   };
 
-  for (size_t i = 0; i < std::size(cipher_strings); ++i) {
+  for (const auto* cipher_string : cipher_strings) {
     uint16_t cipher_suite = 0;
-    EXPECT_FALSE(ParseSSLCipherString(cipher_strings[i], &cipher_suite));
+    EXPECT_FALSE(ParseSSLCipherString(cipher_string, &cipher_suite));
   }
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
@@ -169,11 +170,13 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::string& mime_type) const override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
+  void OnSoftNavigationCountUpdated() override {}
   void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) override {}
   void OnInputTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) override {}
+  void OnPageInputTimingUpdate(uint64_t num_input_events) override {}
   void OnSubFrameRenderDataUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::FrameRenderDataUpdate& render_data) override {}
@@ -257,7 +260,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::vector<MemoryUpdate>& memory_updates) override {}
 
  private:
-  PageLoadMetricsObserverDelegate* delegate_ = nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
 };
 
 }  // namespace page_load_metrics

@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   // Open the view-source of the options page.
   int old_tabs_count = browser()->tab_strip_model()->count();
   content::WebContentsAddedObserver view_source_contents_added_observer;
-  options_contents->GetMainFrame()->ViewSource();
+  options_contents->GetPrimaryMainFrame()->ViewSource();
   content::WebContents* view_source_contents =
       view_source_contents_added_observer.GetWebContents();
   ASSERT_TRUE(view_source_contents);
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   test_data_dir = test_data_dir.AppendASCII("extensions");
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
 
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   scoped_refptr<const extensions::Extension> extension = loader.LoadExtension(
       test_data_dir.AppendASCII("activity_log/simple_call"));
   ASSERT_TRUE(listener.WaitUntilSatisfied());

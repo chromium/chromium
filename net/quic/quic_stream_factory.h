@@ -194,7 +194,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
 
   // Set in Request(). If true, then OnHostResolutionComplete() is expected to
   // be called in the future.
-  bool expect_on_host_resolution_;
+  bool expect_on_host_resolution_ = false;
   // Callback passed to WaitForHostResolution().
   CompletionOnceCallback host_resolution_callback_;
 };
@@ -298,7 +298,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // It sends connection close packet when closing connections.
   void CloseAllSessions(int error, quic::QuicErrorCode quic_error);
 
-  std::unique_ptr<base::Value> QuicStreamFactoryInfoToValue() const;
+  base::Value QuicStreamFactoryInfoToValue() const;
 
   // Delete cached state objects in |crypto_config_|. If |origin_filter| is not
   // null, only objects on matching origins will be deleted.
@@ -515,13 +515,13 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // expected to work in general, rather than whether QUIC was broken / recently
   // broken when used with a particular server. That information is stored in
   // the broken alternative service map in HttpServerProperties.
-  bool is_quic_known_to_work_on_current_network_;
+  bool is_quic_known_to_work_on_current_network_ = false;
 
   raw_ptr<NetLog> net_log_;
   raw_ptr<HostResolver> host_resolver_;
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
-  raw_ptr<ServerPushDelegate> push_delegate_;
+  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
@@ -599,18 +599,18 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   IPEndPoint local_address_;
   // True if we need to check HttpServerProperties if QUIC was supported last
   // time.
-  bool need_to_check_persisted_supports_quic_;
-  bool prefer_aes_gcm_recorded_;
+  bool need_to_check_persisted_supports_quic_ = true;
+  bool prefer_aes_gcm_recorded_ = false;
 
   NetworkConnection network_connection_;
 
-  int num_push_streams_created_;
+  int num_push_streams_created_ = 0;
 
   QuicConnectivityMonitor connectivity_monitor_;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
-  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 

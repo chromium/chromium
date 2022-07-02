@@ -35,6 +35,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED=$builtin_cert_verifier_policy_supported",
+    "CHROME_ROOT_STORE_POLICY_SUPPORTED=$chrome_root_store_policy_supported",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_BASIC_PRINT_DIALOG=$enable_basic_print_dialog",
@@ -47,6 +48,7 @@ buildflag_header("buildflags") {
     "ENABLE_SUPERVISED_USERS=$enable_supervised_users",
     "ENABLE_SYSTEM_NOTIFICATIONS=$enable_system_notifications",
     "ENABLE_WAYLAND_SERVER=$enable_wayland_server",
+    "ENABLE_WEBUI_CERTIFICATE_VIEWER=$enable_webui_certificate_viewer",
     "ENABLE_WEBUI_TAB_STRIP=$enable_webui_tab_strip",
     "OPTIMIZE_WEBUI=$optimize_webui",
   ]
@@ -172,6 +174,7 @@ static_library("common_lib") {
     "//base:base_static",
     "//base:i18n",
     "//build:branding_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app/theme:theme_resources",
@@ -181,7 +184,6 @@ static_library("common_lib") {
     "//chrome/common/profiler",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
-    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/cast_certificate",
     "//components/cdm/common",
     "//components/client_hints/common",
@@ -359,11 +361,17 @@ static_library("common_lib") {
     public_deps += [ ":app_mode_app_support" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     assert(enable_extensions)
     sources += [
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
+    ]
+    deps += [ "//chrome/common/chromeos/extensions" ]
+  }
+  if (is_chromeos_ash) {
+    assert(enable_extensions)
+    sources += [
       "extensions/api/input_ime/input_components_handler.cc",
       "extensions/api/input_ime/input_components_handler.h",
     ]
@@ -404,8 +412,6 @@ static_library("common_lib") {
       "conflicts/module_watcher_win.h",
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
-      "protobuf_init.cc",
-      "protobuf_init.h",
     ]
     deps += [
       "//chrome/chrome_elf:chrome_elf_main_include",

@@ -134,10 +134,14 @@ public class CookieManagerTest {
         Assert.assertTrue(getResponseCookies().isEmpty());
 
         // Setting a cookie with all attributes should return the same cookie.
-        String cookie = "foo=bar; path=/; domain=127.0.0.1; expires=Thu, 15 Jul 2032 00:00:01 GMT; "
-                + "secure; httponly; samesite=lax; priority=high; sameparty";
-        Assert.assertTrue(setCookie(cookie));
-        Assert.assertThat(getResponseCookies(), Matchers.containsInAnyOrder(cookie));
+        String cookieStart = "foo=bar; path=/; domain=127.0.0.1; expires=";
+        String cookieExpires = "Thu, 15 Jul 2032 00:00:01 GMT";
+        String cookieEnd = "; secure; httponly; samesite=lax; priority=high; sameparty";
+        Assert.assertTrue(setCookie(cookieStart + cookieExpires + cookieEnd));
+        List<String> cookiesSet = getResponseCookies();
+        Assert.assertEquals(cookiesSet.size(), 1);
+        // Expiration is clamped to 400 days, so for now we just test that some date was sent back.
+        Assert.assertTrue(cookiesSet.get(0).matches(cookieStart + "[A-Za-z0-9 ,:]*" + cookieEnd));
     }
 
     @Test

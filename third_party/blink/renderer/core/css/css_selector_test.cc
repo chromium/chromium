@@ -204,7 +204,7 @@ TEST(CSSSelector, CueDefaultNamespace) {
   )HTML");
 
   const CSSSelector& cue_selector =
-      (*sheet.GetRuleSet().CuePseudoRules())[0]->Selector();
+      (*sheet.GetRuleSet().CuePseudoRules())[0].Selector();
   EXPECT_EQ(cue_selector.GetPseudoType(), CSSSelector::kPseudoCue);
 
   const CSSSelectorList* cue_arguments = cue_selector.SelectorList();
@@ -232,7 +232,6 @@ TEST(CSSSelector, FirstInInvalidList) {
   CSSSelectorList list;
   EXPECT_FALSE(list.IsValid());
   EXPECT_FALSE(list.First());
-  EXPECT_FALSE(list.FirstForCSSOM());
 }
 
 }  // namespace blink

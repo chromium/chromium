@@ -88,7 +88,7 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
   // Maps URLs to interceptors.
   URLInterceptorMap url_interceptor_map_;
 
-  mutable int hit_count_;
+  mutable int hit_count_ = 0;
 
   // Singleton instance.
   static URLRequestFilter* shared_instance_;

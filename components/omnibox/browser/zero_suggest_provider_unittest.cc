@@ -379,7 +379,7 @@ TEST_P(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        {omnibox::kOnFocusSuggestionsContextualWeb},         // Enabled
+        {omnibox::kFocusTriggersContextualWebZeroSuggest},   // Enabled
         {omnibox::kClobberTriggersContextualWebZeroSuggest}  // Disabled
     );
 
@@ -407,7 +407,7 @@ TEST_P(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        {omnibox::kOnFocusSuggestionsContextualWeb,
+        {omnibox::kFocusTriggersContextualWebZeroSuggest,
          omnibox::kClobberTriggersContextualWebZeroSuggest},  // Enabled
         {}                                                    // Disabled
     );

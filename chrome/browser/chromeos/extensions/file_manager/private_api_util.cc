@@ -23,6 +23,10 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
@@ -211,6 +215,27 @@ std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
 
   return std::make_unique<std::string>(
       alternate_url.ReplaceComponents(replacements).spec());
+}
+
+extensions::api::file_manager_private::VmType VmTypeToJs(
+    guest_os::VmType vm_type) {
+  switch (vm_type) {
+    case guest_os::VmType::TERMINA:
+      return extensions::api::file_manager_private::VM_TYPE_TERMINA;
+    case guest_os::VmType::PLUGIN_VM:
+      return extensions::api::file_manager_private::VM_TYPE_PLUGIN_VM;
+    case guest_os::VmType::BOREALIS:
+      return extensions::api::file_manager_private::VM_TYPE_BOREALIS;
+    case guest_os::VmType::BRUSCHETTA:
+      return extensions::api::file_manager_private::VM_TYPE_BRUSCHETTA;
+    case guest_os::VmType::ARCVM:
+      return extensions::api::file_manager_private::VM_TYPE_ARCVM;
+    case guest_os::VmType::UNKNOWN:
+    case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return extensions::api::file_manager_private::VM_TYPE_NONE;
+  }
 }
 
 }  // namespace
@@ -573,6 +598,9 @@ void VolumeToVolumeMetadata(
     case MOUNT_CONTEXT_UNKNOWN:
       break;
   }
+  if (volume.vm_type()) {
+    volume_metadata->vm_type = VmTypeToJs(*volume.vm_type());
+  }
 }
 
 base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
@@ -626,6 +654,22 @@ drive::EventLogger* GetLogger(Profile* profile) {
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;
+}
+
+std::vector<extensions::api::file_manager_private::MountableGuest>
+CreateMountableGuestList(Profile* profile) {
+  auto* registry =
+      guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
+  std::vector<file_manager_private::MountableGuest> guests;
+  for (const auto id : registry->List()) {
+    file_manager_private::MountableGuest guest;
+    auto* provider = registry->Get(id);
+    guest.id = id;
+    guest.display_name = provider->DisplayName();
+    guest.vm_type = VmTypeToJs(provider->vm_type());
+    guests.push_back(std::move(guest));
+  }
+  return guests;
 }
 
 }  // namespace util

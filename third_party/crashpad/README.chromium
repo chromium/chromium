@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: 4581a355b17e9deae20447cec88c315210f50b7a
+Revision: 80f383327eb5c55bc11d5d1d4917bd00a860871b
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -47,3 +47,5 @@ Local Modifications:
    base::subtle::ResetFDOwnership() API
  - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
  - Qualified calls to bit_cast<>() with base::.
+ - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
+   https://crbug.com/1341377

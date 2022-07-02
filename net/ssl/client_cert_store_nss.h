@@ -22,10 +22,9 @@ class SSLCertRequestInfo;
 
 class NET_EXPORT ClientCertStoreNSS : public ClientCertStore {
  public:
-  typedef base::RepeatingCallback<crypto::CryptoModuleBlockingPasswordDelegate*(
-      const HostPortPair& /* server */)>
-      PasswordDelegateFactory;
-
+  using PasswordDelegateFactory =
+      base::RepeatingCallback<crypto::CryptoModuleBlockingPasswordDelegate*(
+          const HostPortPair& /* server */)>;
   using CertFilter = base::RepeatingCallback<bool(CERTCertificate*)>;
 
   explicit ClientCertStoreNSS(

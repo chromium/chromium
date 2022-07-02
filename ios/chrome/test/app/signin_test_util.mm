@@ -56,7 +56,6 @@ void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
 void SetUpMockAuthentication() {
   std::unique_ptr<ios::FakeChromeIdentityService> service(
       new ios::FakeChromeIdentityService());
-  service->SetUpForIntegrationTests();
   ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
       std::move(service));
 }
@@ -117,6 +116,8 @@ void ResetSigninPromoPreferences() {
   prefs->SetBoolean(prefs::kIosBookmarkPromoAlreadySeen, false);
   prefs->SetInteger(prefs::kIosSettingsSigninPromoDisplayedCount, 0);
   prefs->SetBoolean(prefs::kIosSettingsPromoAlreadySeen, false);
+  prefs->SetInteger(prefs::kIosNtpFeedTopSigninPromoDisplayedCount, 0);
+  prefs->SetBoolean(prefs::kIosNtpFeedTopPromoAlreadySeen, false);
   prefs->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, false);
 }
 

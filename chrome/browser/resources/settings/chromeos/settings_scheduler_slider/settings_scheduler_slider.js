@@ -10,12 +10,34 @@
 
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+
+/** @interface */
+class PaperRippleBehaviorInterface {
+  constructor() {
+    /**
+     * @type {?Object}
+     * @protected
+     */
+    this._ripple;
+
+    /**
+     * @type {?Element}
+     * @protected
+     */
+    this._rippleContainer;
+  }
+
+  /** @return {boolean} */
+  hasRipple() {}
+
+  ensureRipple() {}
+}
 
 const HOURS_PER_DAY = 24;
 const MIN_KNOBS_DISTANCE_MINUTES = 60;
@@ -45,95 +67,120 @@ function modulo(x, y) {
   return ((x % y) + y) % y;
 }
 
-Polymer({
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {PaperRippleBehaviorInterface}
+ */
+const SettingsSchedulerSliderElementBase = mixinBehaviors(
+    [I18nBehavior, PrefsBehavior, IronResizableBehavior, PaperRippleBehavior],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsSchedulerSliderElement extends
+    SettingsSchedulerSliderElementBase {
+  static get is() {
+    return 'settings-scheduler-slider';
+  }
 
-  is: 'settings-scheduler-slider',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-    IronResizableBehavior,
-    PaperRippleBehavior,
-  ],
-
-  properties: {
-
-    /**
-     * The start time pref object being tracked.
-     * @type {!chrome.settingsPrivate.PrefObject}
-     */
-    prefStartTime: {
-      type: Object,
-      notify: true,
-      value() {
-        return {
-          key: 'ash.fake_feature.custom_start_time',
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: DEFAULT_CUSTOM_START_TIME,
-        };
+  static get properties() {
+    return {
+      /**
+       * The start time pref object being tracked.
+       * @type {!chrome.settingsPrivate.PrefObject}
+       */
+      prefStartTime: {
+        type: Object,
+        notify: true,
+        value() {
+          return {
+            key: 'ash.fake_feature.custom_start_time',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: DEFAULT_CUSTOM_START_TIME,
+          };
+        },
       },
-    },
 
-    /**
-     * The end time pref object being tracked.
-     * @type {!chrome.settingsPrivate.PrefObject}
-     */
-    prefEndTime: {
-      type: Object,
-      notify: true,
-      value() {
-        return {
-          key: 'ash.fake_feature.custom_start_time',
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: DEFAULT_CUSTOM_END_TIME,
-        };
+      /**
+       * The end time pref object being tracked.
+       * @type {!chrome.settingsPrivate.PrefObject}
+       */
+      prefEndTime: {
+        type: Object,
+        notify: true,
+        value() {
+          return {
+            key: 'ash.fake_feature.custom_start_time',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: DEFAULT_CUSTOM_END_TIME,
+          };
+        },
       },
-    },
+
+      /**
+       * Whether the element is ready and fully rendered.
+       * @private
+       */
+      isReady_: Boolean,
+
+      /**
+       * Whether the window is in RTL locales.
+       * @private
+       */
+      isRTL_: Boolean,
+
+      /**
+       * Whether to use the 24-hour format for the time shown in the label
+       * bubbles.
+       * @private
+       */
+      shouldUse24Hours_: Boolean,
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateKnobs_(prefs.*, isRTL_, isReady_)',
+      'hourFormatChanged_(prefs.settings.clock.use_24hour_clock.*)',
+      'updateMarkers_(prefs.*, isRTL_, isReady_)',
+    ];
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Whether the element is ready and fully rendered.
+     * The object currently being dragged. Either the start or end knobs.
+     * @type {Element}
      * @private
      */
-    isReady_: Boolean,
+    this.dragObject_ = null;
 
     /**
-     * Whether the window is in RTL locales.
-     * @private
+     * @private {number}
      */
-    isRTL_: Boolean,
+    this.valueAtDragStart_;
+  }
 
-    /**
-     * Whether to use the 24-hour format for the time shown in the label
-     * bubbles.
-     * @private
-     */
-    shouldUse24Hours_: Boolean,
-  },
+  ready() {
+    super.ready();
 
-  listeners: {
-    'iron-resize': 'onResize_',
-    focus: 'onFocus_',
-    blur: 'onBlur_',
-    keydown: 'onKeyDown_',
-  },
-
-  observers: [
-    'updateKnobs_(prefs.*, isRTL_, isReady_)',
-    'hourFormatChanged_(prefs.settings.clock.use_24hour_clock.*)',
-    'updateMarkers_(prefs.*, isRTL_, isReady_)',
-  ],
-
-  /**
-   * The object currently being dragged. Either the start or end knobs.
-   * @type {Element}
-   * @private
-   */
-  dragObject_: null,
+    this.addEventListener('iron-resize', this.onResize_);
+    this.addEventListener('focus', this.onFocus_);
+    this.addEventListener('blur', this.onBlur_);
+    this.addEventListener('keydown', this.onKeyDown_);
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.isRTL_ = window.getComputedStyle(this).direction === 'rtl';
     this.$.sliderContainer.addEventListener('contextmenu', function(e) {
       // Prevent the context menu from interfering with dragging the knobs using
@@ -149,7 +196,7 @@ Polymer({
       // rendered.
       this.isReady_ = true;
     });
-  },
+  }
 
   /**
    * @return {boolean}
@@ -158,7 +205,7 @@ Polymer({
   prefsAvailable() {
     return [this.prefStartTime, this.prefEndTime].every(
         pref => pref !== undefined);
-  },
+  }
 
   /** @private */
   updateMarkers_() {
@@ -189,7 +236,7 @@ Polymer({
       markersContainer.appendChild(marker);
       marker.style.left = (i * 100 / HOURS_PER_DAY) + '%';
     }
-  },
+  }
 
   /**
    * Return true if the start knob is focused.
@@ -198,7 +245,7 @@ Polymer({
    */
   isStartKnobFocused_() {
     return (this.shadowRoot.activeElement === this.$.startKnob);
-  },
+  }
 
   /**
    * Return true if the end knob is focused.
@@ -207,7 +254,7 @@ Polymer({
    */
   isEndKnobFocused_() {
     return (this.shadowRoot.activeElement === this.$.endKnob);
-  },
+  }
 
   /**
    * Invoked when the element is resized and the knobs positions need to be
@@ -216,7 +263,7 @@ Polymer({
    */
   onResize_() {
     this.updateKnobs_();
-  },
+  }
 
   /**
    * Called when the value of the pref associated with whether to use the
@@ -226,7 +273,7 @@ Polymer({
   hourFormatChanged_() {
     this.shouldUse24Hours_ = /** @type {boolean} */ (
         this.getPref('settings.clock.use_24hour_clock').value);
-  },
+  }
 
   /**
    * Gets the style of legend div determining its absolute left position.
@@ -238,7 +285,7 @@ Polymer({
   getLegendStyle_(percent, isRTL) {
     percent = isRTL ? 100 - percent : percent;
     return 'left: ' + percent + '%';
-  },
+  }
 
   /**
    * Gets the aria label for the start time knob.
@@ -251,7 +298,7 @@ Polymer({
         this.getTimeString_(
             /** @type {number} */ (this.prefStartTime.value),
             this.shouldUse24Hours_));
-  },
+  }
 
   /**
    * Gets the aria label for the end time knob.
@@ -264,7 +311,7 @@ Polymer({
         this.getTimeString_(
             /** @type {number} */ (this.prefEndTime.value),
             this.shouldUse24Hours_));
-  },
+  }
 
 
   /**
@@ -275,7 +322,7 @@ Polymer({
     if (this.isEitherKnobFocused_()) {
       this.shadowRoot.activeElement.blur();
     }
-  },
+  }
 
   /**
    * Start dragging the target knob.
@@ -290,18 +337,18 @@ Polymer({
     if (event.target === this.$.startKnob ||
         event.target === this.$.startKnob.firstElementChild) {
       this.dragObject_ = this.$.startKnob;
-      this.valueAtDragStart_ = this.prefStartTime.value;
+      this.valueAtDragStart_ = /** @type {number} */ (this.prefStartTime.value);
     } else if (
         event.target === this.$.endKnob ||
         event.target === this.$.endKnob.firstElementChild) {
       this.dragObject_ = this.$.endKnob;
-      this.valueAtDragStart_ = this.prefEndTime.value;
+      this.valueAtDragStart_ = /** @type {number} */ (this.prefEndTime.value);
     } else {
       return;
     }
 
     this.handleKnobEvent_(event, this.dragObject_);
-  },
+  }
 
   /**
    * Continues dragging the selected knob if any.
@@ -325,7 +372,7 @@ Polymer({
         this.endDrag_(event);
         break;
     }
-  },
+  }
 
   /**
    * Converts horizontal pixels into number of minutes.
@@ -337,7 +384,7 @@ Polymer({
     return (this.isRTL_ ? -1 : 1) *
         Math.floor(
             TOTAL_MINUTES_PER_DAY * deltaX / this.$.sliderBar.offsetWidth);
-  },
+  }
 
   /**
    * Updates the knob's corresponding pref value in response to dragging, which
@@ -359,7 +406,7 @@ Polymer({
     // pixel movement due to rounding.
     this.updatePref_(
         this.valueAtDragStart_ + this.getDeltaMinutes_(event.detail.dx), true);
-  },
+  }
 
   /**
    * Ends the dragging.
@@ -370,7 +417,7 @@ Polymer({
     event.preventDefault();
     this.dragObject_ = null;
     this.removeRipple_();
-  },
+  }
 
   /**
    * Gets the given knob's offset ratio with respect to its parent element
@@ -381,7 +428,7 @@ Polymer({
    */
   getKnobRatio_(knob) {
     return parseFloat(knob.style.left) / this.$.sliderBar.offsetWidth;
-  },
+  }
 
   /**
    * Converts the time of day, given as |hour| and |minutes|, to its language-
@@ -402,7 +449,7 @@ Polymer({
     return d.toLocaleTimeString(
         navigator.language,
         {hour: 'numeric', minute: 'numeric', hour12: !shouldUse24Hours});
-  },
+  }
 
   /**
    * Converts the |offsetMinutes| value (which the number of minutes since
@@ -417,7 +464,7 @@ Polymer({
     const hour = Math.floor(offsetMinutes / 60);
     const minute = Math.floor(offsetMinutes % 60);
     return this.getLocaleTimeString_(hour, minute, shouldUse24Hours);
-  },
+  }
 
   /**
    * Using the current start and end times prefs, this function updates the
@@ -441,7 +488,7 @@ Polymer({
     this.updateKnobLeft_(this.$.endKnob, endOffsetMinutes);
 
     this.refresh_();
-  },
+  }
 
   /**
    * Updates the absolute left coordinate of the given |knob| based on the time
@@ -468,7 +515,7 @@ Polymer({
       ratio = this.isRTL_ ? (1.0 - ratio) : ratio;
     }
     knob.style.left = (ratio * this.$.sliderBar.offsetWidth) + 'px';
-  },
+  }
 
   /**
    * Refreshes elements of the slider other than the knobs (the label bubbles,
@@ -509,7 +556,7 @@ Polymer({
         'px';
 
     this.fixLabelsOverlapIfAny_();
-  },
+  }
 
   /**
    * If the label bubbles overlap, this function fixes them by moving the end
@@ -529,7 +576,7 @@ Polymer({
     } else {
       endLabel.classList.remove('end-label-overlap');
     }
-  },
+  }
 
   /**
    * Return the value of the pref that corresponds to the other knob than
@@ -542,7 +589,7 @@ Polymer({
       return /** @type {number} */ (this.prefEndTime.value);
     }
     return /** @type {number} */ (this.prefStartTime.value);
-  },
+  }
 
   /**
    * Updates the value of the pref and wraps around if necessary.
@@ -591,7 +638,7 @@ Polymer({
       this.set(
           'prefEndTime.value', modulo(updatedValue, TOTAL_MINUTES_PER_DAY));
     }
-  },
+  }
 
   /**
    * @param {Element} knob
@@ -606,7 +653,7 @@ Polymer({
     } else {
       return null;
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether either of the two knobs is focused.
@@ -614,7 +661,7 @@ Polymer({
    */
   isEitherKnobFocused_() {
     return this.isStartKnobFocused_() || this.isEndKnobFocused_();
-  },
+  }
 
   /**
    * Overrides _createRipple() from PaperRippleBehavior to create the ripple
@@ -637,7 +684,7 @@ Polymer({
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -645,7 +692,7 @@ Polymer({
    */
   onFocus_(event) {
     this.handleKnobEvent_(event);
-  },
+  }
 
   /**
    * Handles focus, drag and key events on the start and end knobs.
@@ -657,7 +704,8 @@ Polymer({
    */
   handleKnobEvent_(event, overrideElement) {
     const knob = overrideElement ||
-        event.path.find(el => el.classList && el.classList.contains('knob'));
+        event.composedPath().find(
+            el => el.classList && el.classList.contains('knob'));
     if (!knob) {
       event.preventDefault();
       return;
@@ -674,7 +722,7 @@ Polymer({
       this._ripple.style.display = '';
       this._ripple.holdDown = true;
     }
-  },
+  }
 
   /**
    * Handles blur events on the start and end knobs.
@@ -682,7 +730,7 @@ Polymer({
    */
   onBlur_() {
     this.removeRipple_();
-  },
+  }
 
   /**
    * Removes ripple if one exists.
@@ -693,7 +741,7 @@ Polymer({
       this._ripple.remove();
       this._ripple = null;
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -740,5 +788,8 @@ Polymer({
       const delta = deltaKeyMap[event.key];
       this.updatePref_(value + delta, false);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSchedulerSliderElement.is, SettingsSchedulerSliderElement);

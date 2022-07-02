@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -21,9 +22,12 @@ namespace infobars {
 class InfoBar;
 }  // namespace infobars
 
+namespace language {
+class AcceptLanguagesService;
+}
+
 namespace translate {
 
-class TranslateAcceptLanguages;
 class TranslateDriver;
 class TranslateInfoBarDelegate;
 
@@ -45,8 +49,8 @@ class TranslateClient {
   // Returns the associated TranslatePrefs.
   virtual std::unique_ptr<TranslatePrefs> GetTranslatePrefs() = 0;
 
-  // Returns the associated TranslateAcceptLanguages.
-  virtual TranslateAcceptLanguages* GetTranslateAcceptLanguages() = 0;
+  // Returns the associated AcceptLanguagesService.
+  virtual language::AcceptLanguagesService* GetAcceptLanguagesService() = 0;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Returns a translate infobar that owns |delegate|.

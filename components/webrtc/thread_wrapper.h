@@ -26,10 +26,6 @@
 
 namespace webrtc {
 
-// Whether ThreadWrapper should schedule low-precision tasks on the metronome.
-// Default: disabled.
-extern const base::Feature kThreadWrapperUsesMetronome;
-
 // ThreadWrapper implements rtc::Thread interface on top of
 // Chromium's SingleThreadTaskRunner interface. Currently only the bare minimum
 // that is used by P2P part of libjingle is implemented. There are two ways to
@@ -174,7 +170,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   bool send_allowed_;
 
-  const bool use_metronome_;
   // |lock_| must be locked when accessing |messages_|.
   base::Lock lock_;
   int last_task_id_;
@@ -184,9 +179,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
   SampledDurationCallback task_latency_callback_;
   SampledDurationCallback task_duration_callback_;
-  // If |kThreadWrapperUsesMetronome| is enabled, low precision tasks are
-  // coalesced onto metronome ticks and stored in |coalesced_tasks_| until they
-  // are ready to run.
+  // Low precision tasks are coalesced onto metronome ticks and stored in
+  // `coalesced_tasks_` until they are ready to run.
   blink::CoalescedTasks coalesced_tasks_;
 
   base::WeakPtr<ThreadWrapper> weak_ptr_;

@@ -12,19 +12,19 @@ namespace blink {
 
 // A complete set of paint properties including those that are inherited from
 // other objects.  RefPtrs are used to guard against use-after-free bugs.
-class PLATFORM_EXPORT RefCountedPropertyTreeState {
-  USING_FAST_MALLOC(RefCountedPropertyTreeState);
+class PLATFORM_EXPORT RefCountedPropertyTreeStateOrAlias {
+  USING_FAST_MALLOC(RefCountedPropertyTreeStateOrAlias);
 
  public:
-  explicit RefCountedPropertyTreeState(
+  explicit RefCountedPropertyTreeStateOrAlias(
       const PropertyTreeStateOrAlias& property_tree_state)
       : transform_(&property_tree_state.Transform()),
         clip_(&property_tree_state.Clip()),
         effect_(&property_tree_state.Effect()) {}
 
-  RefCountedPropertyTreeState& operator=(
+  RefCountedPropertyTreeStateOrAlias& operator=(
       const PropertyTreeStateOrAlias& property_tree_state) {
-    return *this = RefCountedPropertyTreeState(property_tree_state);
+    return *this = RefCountedPropertyTreeStateOrAlias(property_tree_state);
   }
 
   const TransformPaintPropertyNodeOrAlias& Transform() const {
@@ -32,6 +32,10 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
   }
   const ClipPaintPropertyNodeOrAlias& Clip() const { return *clip_; }
   const EffectPaintPropertyNodeOrAlias& Effect() const { return *effect_; }
+
+  // NOTE: It would only be safe to provide setters on this class if
+  // they take the property node types that are not "OrAlias", since
+  // this may be an instance of RefCountedPropertyTreeState.
 
   PropertyTreeStateOrAlias GetPropertyTreeState() const {
     return PropertyTreeStateOrAlias(Transform(), Clip(), Effect());
@@ -49,41 +53,89 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
   String ToTreeString() const { return GetPropertyTreeState().ToTreeString(); }
 #endif
 
- private:
+ protected:
   scoped_refptr<const TransformPaintPropertyNodeOrAlias> transform_;
   scoped_refptr<const ClipPaintPropertyNodeOrAlias> clip_;
   scoped_refptr<const EffectPaintPropertyNodeOrAlias> effect_;
 };
 
-inline bool operator==(const RefCountedPropertyTreeState& a,
-                       const RefCountedPropertyTreeState& b) {
+class PLATFORM_EXPORT RefCountedPropertyTreeState
+    : public RefCountedPropertyTreeStateOrAlias {
+  USING_FAST_MALLOC(RefCountedPropertyTreeState);
+
+ public:
+  explicit RefCountedPropertyTreeState(
+      const PropertyTreeState& property_tree_state)
+      : RefCountedPropertyTreeStateOrAlias(property_tree_state) {}
+
+  RefCountedPropertyTreeState& operator=(
+      const PropertyTreeState& property_tree_state) {
+    return *this = RefCountedPropertyTreeState(property_tree_state);
+  }
+
+  const TransformPaintPropertyNode& Transform() const {
+    const auto& node = RefCountedPropertyTreeStateOrAlias::Transform();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const TransformPaintPropertyNode&>(node);
+  }
+  const ClipPaintPropertyNode& Clip() const {
+    const auto& node = RefCountedPropertyTreeStateOrAlias::Clip();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const ClipPaintPropertyNode&>(node);
+  }
+  const EffectPaintPropertyNode& Effect() const {
+    const auto& node = RefCountedPropertyTreeStateOrAlias::Effect();
+    DCHECK(!node.IsParentAlias());
+    return static_cast<const EffectPaintPropertyNode&>(node);
+  }
+
+  void SetTransform(const TransformPaintPropertyNode& transform) {
+    DCHECK(&transform);
+    transform_ = &transform;
+  }
+  void SetClip(const ClipPaintPropertyNode& clip) {
+    DCHECK(&clip);
+    clip_ = &clip;
+  }
+  void SetEffect(const EffectPaintPropertyNode& effect) {
+    DCHECK(&effect);
+    effect_ = &effect;
+  }
+
+  PropertyTreeState GetPropertyTreeState() const {
+    return PropertyTreeState(Transform(), Clip(), Effect());
+  }
+};
+
+inline bool operator==(const RefCountedPropertyTreeStateOrAlias& a,
+                       const RefCountedPropertyTreeStateOrAlias& b) {
   return &a.Transform() == &b.Transform() && &a.Clip() == &b.Clip() &&
          &a.Effect() == &b.Effect();
 }
 
-inline bool operator!=(const RefCountedPropertyTreeState& a,
-                       const RefCountedPropertyTreeState& b) {
+inline bool operator!=(const RefCountedPropertyTreeStateOrAlias& a,
+                       const RefCountedPropertyTreeStateOrAlias& b) {
   return !(a == b);
 }
 
-inline bool operator==(const RefCountedPropertyTreeState& a,
+inline bool operator==(const RefCountedPropertyTreeStateOrAlias& a,
                        const PropertyTreeStateOrAlias& b) {
   return &a.Transform() == &b.Transform() && &a.Clip() == &b.Clip() &&
          &a.Effect() == &b.Effect();
 }
 
-inline bool operator!=(const RefCountedPropertyTreeState& a,
+inline bool operator!=(const RefCountedPropertyTreeStateOrAlias& a,
                        const PropertyTreeStateOrAlias& b) {
   return !(a == b);
 }
 
 inline bool operator==(const PropertyTreeStateOrAlias& a,
-                       const RefCountedPropertyTreeState& b) {
+                       const RefCountedPropertyTreeStateOrAlias& b) {
   return b == a;
 }
 
 inline bool operator!=(const PropertyTreeStateOrAlias& a,
-                       const RefCountedPropertyTreeState& b) {
+                       const RefCountedPropertyTreeStateOrAlias& b) {
   return !(a == b);
 }
 

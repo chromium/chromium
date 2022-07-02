@@ -64,7 +64,7 @@ class PaintTimingCallbackManager : public GarbageCollectedMixin {
 //
 // |GarbageCollected| inheritance is required by the swap-time callback
 // registration.
-class PaintTimingCallbackManagerImpl final
+class CORE_EXPORT PaintTimingCallbackManagerImpl final
     : public GarbageCollected<PaintTimingCallbackManagerImpl>,
       public PaintTimingCallbackManager {
  public:
@@ -123,13 +123,19 @@ class CORE_EXPORT PaintTimingDetector
  public:
   PaintTimingDetector(LocalFrameView*);
 
-  static void NotifyBackgroundImagePaint(
+  // Returns true if the image might ultimately be a candidate for largest
+  // paint, otherwise false. When this method is called we do not know the
+  // largest status for certain, because we need to wait for presentation.
+  // Hence the "maybe" return value.
+  static bool NotifyBackgroundImagePaint(
       const Node&,
       const Image&,
       const StyleFetchedImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
-  static void NotifyImagePaint(
+  // Returns true if the image is a candidate for largest paint, otherwise
+  // false. See the comment for NotifyBackgroundImagePaint(...).
+  static bool NotifyImagePaint(
       const LayoutObject&,
       const gfx::Size& intrinsic_size,
       const MediaTiming& media_timing,
@@ -178,7 +184,7 @@ class CORE_EXPORT PaintTimingDetector
     return largest_image_paint_time_;
   }
   uint64_t LargestImagePaintSize() const { return largest_image_paint_size_; }
-  LargestContentfulPaintTypeMask LargestContentfulPaintType() const {
+  blink::LargestContentfulPaintType LargestContentfulPaintType() const {
     return largest_contentful_paint_type_;
   }
   double LargestContentfulPaintImageBPP() const {
@@ -205,6 +211,9 @@ class CORE_EXPORT PaintTimingDetector
   void Trace(Visitor* visitor) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
+                           LargestImagePaint_Detached_Frame);
+
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
   bool HasLargestImagePaintChanged(base::TimeTicks, uint64_t size) const;
@@ -232,7 +241,8 @@ class CORE_EXPORT PaintTimingDetector
 
   base::TimeTicks largest_image_paint_time_;
   uint64_t largest_image_paint_size_ = 0;
-  LargestContentfulPaintTypeMask largest_contentful_paint_type_ = 0;
+  blink::LargestContentfulPaintType largest_contentful_paint_type_ =
+      blink::LargestContentfulPaintType::kNone;
   double largest_contentful_paint_image_bpp_ = 0.0;
   base::TimeTicks largest_text_paint_time_;
   uint64_t largest_text_paint_size_ = 0;

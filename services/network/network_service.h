@@ -142,7 +142,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void StartNetLog(base::File file,
                    net::NetLogCaptureMode capture_mode,
-                   base::Value constants) override;
+                   base::Value::Dict constants) override;
   void AttachNetLogProxy(
       mojo::PendingRemote<mojom::NetLogProxySource> proxy_source,
       mojo::PendingReceiver<mojom::NetLogProxySink>) override;

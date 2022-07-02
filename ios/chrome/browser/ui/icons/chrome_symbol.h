@@ -25,6 +25,7 @@ extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kPinSymbol;
+extern NSString* const kPinFillSymbol;
 extern NSString* const kGearShapeSymbol;
 extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;
@@ -32,41 +33,44 @@ extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;
 extern NSString* const kArrowDownCircleFillSymbol;
+extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpFillSymbol;
+extern NSString* const kCheckMarkCircleSymbol;
 extern NSString* const kCheckMarkCircleFillSymbol;
 extern NSString* const kFailMarkCircleFillSymbol;
 extern NSString* const kTrashSymbol;
+extern NSString* const kInfoCircleSymbol;
 
-// Returns a SF symbol named |symbolName| configured with the given
-// |configuration|.
+// Returns a SF symbol named `symbolName` configured with the given
+// `configuration`.
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration);
 
-// Returns a custom symbol named |symbolName| configured with the given
-// |configuration|.
+// Returns a custom symbol named `symbolName` configured with the given
+// `configuration`.
 UIImage* CustomSymbolWithConfiguration(NSString* symbolName,
                                        UIImageConfiguration* configuration);
 
-// Returns a SF symbol named |symbolName| configured with the default
-// configuration and the given |pointSize|.
+// Returns a SF symbol named `symbolName` configured with the default
+// configuration and the given `pointSize`.
 UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
 
-// Returns a custom symbol named |symbolName| configured with the default
-// configuration and the given |pointSize|.
+// Returns a custom symbol named `symbolName` configured with the default
+// configuration and the given `pointSize`.
 UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
 
-// Returns a SF symbol named |symbolName| as a template image, configured with
-// the default configuration and the given |pointSize|.
+// Returns a SF symbol named `symbolName` as a template image, configured with
+// the default configuration and the given `pointSize`.
 UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
                                             NSInteger pointSize);
 
-// Returns a custom symbol named |symbolName| as a template image, configured
-// with the default configuration and the given |pointSize|.
+// Returns a custom symbol named `symbolName` as a template image, configured
+// with the default configuration and the given `pointSize`.
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
                                            NSInteger pointSize);
 
-// Returns YES if the kUseSFSymbolsSamples flag is enabled.
+// Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_

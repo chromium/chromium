@@ -53,8 +53,6 @@ class PLATFORM_EXPORT LayoutSize {
       : width_(width), height_(height) {}
   constexpr LayoutSize(int width, int height)
       : width_(LayoutUnit(width)), height_(LayoutUnit(height)) {}
-  constexpr LayoutSize(float width, float height)
-      : width_(LayoutUnit(width)), height_(LayoutUnit(height)) {}
 
   constexpr explicit LayoutSize(const gfx::SizeF& size)
       : width_(size.width()), height_(size.height()) {}
@@ -64,12 +62,14 @@ class PLATFORM_EXPORT LayoutSize {
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
   }
-  constexpr explicit operator gfx::PointF() const {
-    return gfx::PointF(width_.ToFloat(), height_.ToFloat());
-  }
   constexpr explicit operator gfx::Vector2dF() const {
     return gfx::Vector2dF(width_.ToFloat(), height_.ToFloat());
   }
+
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LayoutSize(double, double) = delete;
 
   constexpr LayoutUnit Width() const { return width_; }
   constexpr LayoutUnit Height() const { return height_; }
@@ -176,7 +176,8 @@ inline LayoutSize operator-(const LayoutSize& size) {
 }
 
 inline LayoutSize operator*(const LayoutSize& a, const float scale) {
-  return LayoutSize(a.Width() * scale, a.Height() * scale);
+  return LayoutSize(LayoutUnit(a.Width() * scale),
+                    LayoutUnit(a.Height() * scale));
 }
 
 constexpr bool operator==(const LayoutSize& a, const LayoutSize& b) {

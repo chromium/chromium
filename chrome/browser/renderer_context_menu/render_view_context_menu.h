@@ -17,11 +17,13 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/autofill/autofill_context_menu_manager.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -47,9 +49,12 @@ class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
 class QuickAnswersMenuObserver;
-class SharedClipboardContextMenuObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+
+namespace ash {
+class SystemWebAppDelegate;
+}
 
 namespace content {
 class RenderFrameHost;
@@ -73,10 +78,6 @@ class MediaPlayerAction;
 
 namespace ui {
 class DataTransferEndpoint;
-}
-
-namespace web_app {
-class SystemWebAppDelegate;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -189,9 +190,9 @@ class RenderViewContextMenu
   // Gets the extension (if any) associated with the WebContents that we're in.
   const extensions::Extension* GetExtension() const;
 
-  // Queries the translate service to obtain the user's transate target
-  // language.
-  std::string GetTargetLanguage() const;
+  // Queries the Translate service to obtain the user's Translate target
+  // language and returns the language name in its same locale.
+  std::u16string GetTargetLanguageDisplayName() const;
 
   void AppendDeveloperItems();
   void AppendDevtoolsForUnpackedExtensions();
@@ -210,7 +211,11 @@ class RenderViewContextMenu
   void AppendExitFullscreenItem();
   void AppendCopyItem();
   void AppendLinkToTextItems();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void AppendPdfOcrItem();
+#endif
   void AppendPrintItem();
+  void AppendPartialTranslateItem();
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendRotationItems();
@@ -235,7 +240,6 @@ class RenderViewContextMenu
 #if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
 #endif
-  void AppendSharedClipboardItem();
   void AppendRegionSearchItem();
   bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
@@ -294,11 +298,15 @@ class RenderViewContextMenu
   void ExecPrint();
   void ExecRouteMedia();
   void ExecTranslate();
+  void ExecPartialTranslate();
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
   // Implemented in RenderViewContextMenuViews.
   void ExecOpenInReadAnything() override {}
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ExecRunPdfOcr();
+#endif
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);
@@ -381,12 +389,8 @@ class RenderViewContextMenu
   std::unique_ptr<ClickToCallContextMenuObserver>
       click_to_call_context_menu_observer_;
 
-  // Shared clipboard menu observer.
-  std::unique_ptr<SharedClipboardContextMenuObserver>
-      shared_clipboard_context_menu_observer_;
-
   // The system app (if any) associated with the WebContents we're in.
-  raw_ptr<const web_app::SystemWebAppDelegate> system_app_ = nullptr;
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
 
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.
@@ -402,6 +406,9 @@ class RenderViewContextMenu
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
 #endif
+
+  // Responsible for handling autofill related context menu items.
+  autofill::AutofillContextMenuManager autofill_context_menu_manager_;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

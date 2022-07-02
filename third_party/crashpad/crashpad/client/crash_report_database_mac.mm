@@ -25,7 +25,9 @@
 #include <unistd.h>
 #include <uuid/uuid.h>
 
+#include <array>
 #include <iterator>
+#include <mutex>
 #include <tuple>
 
 #include "base/logging.h"
@@ -57,7 +59,7 @@ constexpr char kCompletedDirectory[] = "completed";
 
 constexpr char kSettings[] = "settings.dat";
 
-constexpr const char* kReportDirectories[] = {
+constexpr std::array<const char*, 3> kReportDirectories = {
     kWriteDirectory,
     kUploadPendingDirectory,
     kCompletedDirectory,
@@ -261,20 +263,27 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   // Cleans any attachments that have no associated report in any state.
   void CleanOrphanedAttachments();
 
+  Settings& SettingsInternal() {
+    std::call_once(settings_init_, [this]() {
+      settings_.Initialize(base_dir_.Append(kSettings));
+    });
+    return settings_;
+  }
+
   base::FilePath base_dir_;
   Settings settings_;
+  std::once_flag settings_init_;
   bool xattr_new_names_;
   InitializationStateDcheck initialized_;
 };
-
 
 CrashReportDatabaseMac::CrashReportDatabaseMac(const base::FilePath& path)
     : CrashReportDatabase(),
       base_dir_(path),
       settings_(),
+      settings_init_(),
       xattr_new_names_(false),
-      initialized_() {
-}
+      initialized_() {}
 
 CrashReportDatabaseMac::~CrashReportDatabaseMac() {}
 
@@ -291,17 +300,14 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
   }
 
   // Create the three processing directories for the database.
-  for (size_t i = 0; i < std::size(kReportDirectories); ++i) {
-    if (!CreateOrEnsureDirectoryExists(base_dir_.Append(kReportDirectories[i])))
+  for (const auto& dir : kReportDirectories) {
+    if (!CreateOrEnsureDirectoryExists(base_dir_.Append(dir)))
       return false;
   }
 
   if (!CreateOrEnsureDirectoryExists(AttachmentsRootPath())) {
     return false;
   }
-
-  if (!settings_.Initialize(base_dir_.Append(kSettings)))
-    return false;
 
   // Do an xattr operation as the last step, to ensure the filesystem has
   // support for them. This xattr also serves as a marker for whether the
@@ -333,7 +339,7 @@ base::FilePath CrashReportDatabaseMac::DatabasePath() {
 
 Settings* CrashReportDatabaseMac::GetSettings() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return &settings_;
+  return &SettingsInternal();
 }
 
 CrashReportDatabase::OperationStatus
@@ -526,7 +532,7 @@ CrashReportDatabaseMac::RecordUploadAttempt(UploadReport* report,
     return kDatabaseError;
   }
 
-  if (!settings_.SetLastUploadAttemptTime(now)) {
+  if (!SettingsInternal().SetLastUploadAttemptTime(now)) {
     return kDatabaseError;
   }
 

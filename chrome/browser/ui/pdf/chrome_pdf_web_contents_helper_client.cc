@@ -29,7 +29,7 @@ ChromePDFWebContentsHelperClient::~ChromePDFWebContentsHelperClient() = default;
 
 content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
     content::WebContents* contents) {
-  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* pdf_frame =
       pdf_frame_util::FindPdfChildFrame(main_frame);
   return pdf_frame ? pdf_frame : main_frame;

@@ -149,9 +149,9 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
     download::DownloadItem* item) {
   base::TimeDelta time_delta;
   bool time_remaining_known = item->TimeRemaining(&time_delta);
-  std::string original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
-                                 ? std::string()
-                                 : item->GetOriginalUrl().spec();
+  GURL original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
+                          ? GURL::EmptyGURL()
+                          : item->GetOriginalUrl();
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
 
@@ -178,8 +178,9 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       item->GetReceivedBytes(), item->GetTotalBytes(), otr_profile_id,
       item->GetState(), item->PercentComplete(), item->IsPaused(),
       DownloadUtils::IsDownloadUserInitiated(item), item->CanResume(),
-      item->IsParallelDownload(), ConvertUTF8ToJavaString(env, original_url),
-      ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
+      item->IsParallelDownload(),
+      url::GURLAndroid::FromNativeGURL(env, original_url),
+      url::GURLAndroid::FromNativeGURL(env, item->GetReferrerUrl()),
       time_remaining_known ? time_delta.InMilliseconds()
                            : kUnknownRemainingTime,
       item->GetLastAccessTime().ToJavaTime(), item->IsDangerous(),
@@ -806,31 +807,6 @@ void DownloadManagerService::RenameDownload(
   item->Rename(base::FilePath(target_name), std::move(callback));
 }
 
-void DownloadManagerService::ChangeSchedule(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& id,
-    jboolean only_on_wifi,
-    jlong start_time,
-    const JavaParamRef<jobject>& j_profile_key) {
-  std::string download_guid = ConvertJavaStringToUTF8(id);
-  download::DownloadItem* item = GetDownload(
-      download_guid, ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key));
-  if (!item)
-    return;
-
-  absl::optional<DownloadSchedule> download_schedule;
-  if (only_on_wifi) {
-    download_schedule = absl::make_optional<DownloadSchedule>(
-        true /*only_on_wifi*/, absl::nullopt);
-  } else if (start_time > 0) {
-    download_schedule = absl::make_optional<DownloadSchedule>(
-        false /*only_on_wifi*/, base::Time::FromJavaTime(start_time));
-  }
-
-  item->OnDownloadScheduleChanged(std::move(download_schedule));
-}
-
 void DownloadManagerService::CreateInterruptedDownloadForTest(
     JNIEnv* env,
     jobject obj,
@@ -854,8 +830,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false, false, false,
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
-          download::DownloadItemRerouteInfo(),
-          absl::nullopt /*download_schedule*/, download::kInvalidRange,
+          download::DownloadItemRerouteInfo(), download::kInvalidRange,
           download::kInvalidRange, nullptr));
 }
 

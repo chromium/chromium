@@ -24,12 +24,12 @@ enum class AnchorMode {
   // The anchor mode for the popover alert.
   AnchorMode _anchorMode;
 
-  // Rectangle for the popover alert. Only used when |_anchorMode| is VIEW.
+  // Rectangle for the popover alert. Only used when `_anchorMode` is VIEW.
   CGRect _rect;
-  // View for the popovert alert. Only used when |_anchorMode| is VIEW.
+  // View for the popovert alert. Only used when `_anchorMode` is VIEW.
   __weak UIView* _view;
 
-  // Bar button item for the popover alert.  Only used when |_anchorMode| is
+  // Bar button item for the popover alert.  Only used when `_anchorMode` is
   // BAR_BUTTON_ITEM.
   UIBarButtonItem* _barButtonItem;
 }

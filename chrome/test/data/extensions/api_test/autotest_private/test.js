@@ -1273,7 +1273,21 @@ var arcEnabledTests = [
               chrome.test.callbackPass(function() {
           }));
     });
-  },
+  }
+];
+
+var arcProcessTests = [
+  async function requestLowMemoryKillCounts() {
+    const counts = await promisify(chrome.autotestPrivate.getArcAppKills);
+    chrome.test.assertEq(counts.oom, 1);
+    chrome.test.assertEq(counts.lmkdForeground, 2);
+    chrome.test.assertEq(counts.lmkdPerceptible, 3);
+    chrome.test.assertEq(counts.lmkdCached, 4);
+    chrome.test.assertEq(counts.pressureForeground, 5);
+    chrome.test.assertEq(counts.pressurePerceptible, 6);
+    chrome.test.assertEq(counts.pressureCached, 7);
+    chrome.test.succeed();
+  }
 ];
 
 var policyTests = [
@@ -1527,6 +1541,9 @@ var systemWebAppsTests = [
         chrome.test.assertEq(1, apps.length)
         chrome.test.assertEq('OSSettings', apps[0].internalName);
         chrome.test.assertEq('chrome://test-system-app/', apps[0].url);
+        chrome.test.assertEq('chrome://test-system-app/pwa.html',
+            apps[0].startUrl);
+        chrome.test.assertEq('Test System App', apps[0].name);
       })
     );
   },
@@ -1563,6 +1580,7 @@ var systemWebAppsTests = [
 var test_suites = {
   'default': defaultTests,
   'arcEnabled': arcEnabledTests,
+  'arcProcess': arcProcessTests,
   'enterprisePolicies': policyTests,
   'arcPerformanceTracing': arcPerformanceTracingTests,
   'overviewDefault': overviewTests,

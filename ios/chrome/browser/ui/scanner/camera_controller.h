@@ -32,7 +32,7 @@
 // The current state of the torch.
 @property(nonatomic, readonly, assign, getter=isTorchActive) BOOL torchActive;
 
-// Initializes the controller with the |delegate|.
+// Initializes the controller with the `delegate`.
 - (instancetype)initWithDelegate:(id<CameraControllerDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
@@ -47,13 +47,13 @@
 - (void)requestAuthorizationAndLoadCaptureSession:
     (AVCaptureVideoPreviewLayer*)previewLayer;
 
-// Loads the camera and sets the value of |cameraState|.
+// Loads the camera and sets the value of `cameraState`.
 // Should only be called when the current authorization status is
 // AVAuthorizationStatusAuthorized.
 - (void)loadCaptureSession:(AVCaptureVideoPreviewLayer*)previewLayer;
 
-// Sets the rectangle in which codes are recognized to |viewportRect|. If the
-// metadata output object is not loaded, |viewportRect| will be set when the
+// Sets the rectangle in which codes are recognized to `viewportRect`. If the
+// metadata output object is not loaded, `viewportRect` will be set when the
 // output loads.
 - (void)setViewport:(CGRect)viewportRect;
 
@@ -68,7 +68,7 @@
 // available.
 - (void)stopRecording;
 
-// Sets the camera's torch mode to |mode|. Does nothing if the camera is not
+// Sets the camera's torch mode to `mode`. Does nothing if the camera is not
 // available or the torch mode is not supported.
 - (void)setTorchMode:(AVCaptureTorchMode)mode;
 
@@ -76,7 +76,7 @@
 
 @interface CameraController (Subclassing)
 
-// The queue for dispatching calls to |_captureSession|.
+// The queue for dispatching calls to `_captureSession`.
 @property(nonatomic, readonly) dispatch_queue_t sessionQueue;
 
 // The capture session for recording video and detecting QR codes or credit

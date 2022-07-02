@@ -23,21 +23,21 @@ suite('OSSettingsUi', function() {
     flush();
 
     await CrSettingsPrefs.initialized;
-    settingsMain =
-        document.querySelector('os-settings-ui').$$('os-settings-main');
+    settingsMain = document.querySelector('os-settings-ui')
+                       .shadowRoot.querySelector('os-settings-main');
 
-    settingsMain =
-        document.querySelector('os-settings-ui').$$('os-settings-main');
+    settingsMain = document.querySelector('os-settings-ui')
+                       .shadowRoot.querySelector('os-settings-main');
     assert(!!settingsMain);
 
-    settingsPage = settingsMain.$$('os-settings-page');
+    settingsPage = settingsMain.shadowRoot.querySelector('os-settings-page');
     assertTrue(!!settingsPage);
 
     // Simulate Kerberos enabled.
     settingsPage.showKerberosSection = true;
 
-    const idleRender =
-        settingsMain.$$('os-settings-page').$$('settings-idle-load');
+    const idleRender = settingsMain.shadowRoot.querySelector('os-settings-page')
+                           .shadowRoot.querySelector('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
     flush();
@@ -149,20 +149,24 @@ suite('OSSettingsUi', function() {
   test('Update required end of life banner visibility', function() {
     flush();
     assertFalse(settingsPage.showUpdateRequiredEolBanner_);
-    assertFalse(!!settingsPage.$$('#updateRequiredEolBanner'));
+    assertFalse(
+        !!settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner'));
 
     settingsPage.showUpdateRequiredEolBanner_ = true;
     flush();
-    assertTrue(!!settingsPage.$$('#updateRequiredEolBanner'));
+    assertTrue(
+        !!settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner'));
   });
 
   test('Update required end of life banner close button click', function() {
     settingsPage.showUpdateRequiredEolBanner_ = true;
     flush();
-    const banner = settingsPage.$$('#updateRequiredEolBanner');
+    const banner =
+        settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner');
     assertTrue(!!banner);
 
-    const closeButton = assert(settingsPage.$$('#closeUpdateRequiredEol'));
+    const closeButton = assert(
+        settingsPage.shadowRoot.querySelector('#closeUpdateRequiredEol'));
     closeButton.click();
     flush();
     assertFalse(settingsPage.showUpdateRequiredEolBanner_);

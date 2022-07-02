@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 class DeviceActionsDelegate {
  public:

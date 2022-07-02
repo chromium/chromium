@@ -34,6 +34,9 @@ class PLATFORM_EXPORT DarkModeFilter {
   enum class ElementRole { kForeground, kListSymbol, kBackground, kSVG };
   enum class ImageType { kNone, kIcon, kSeparator, kPhoto };
 
+  static ElementRole BorderElementRole(SkColor border_color,
+                                       SkColor background_color);
+
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
 
   absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(

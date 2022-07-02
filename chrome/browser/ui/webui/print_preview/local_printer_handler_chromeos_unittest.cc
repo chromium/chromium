@@ -25,15 +25,14 @@
 namespace printing {
 
 namespace {
+
 // Used as a callback to `StartGetPrinters()` in tests.
 // Increases `call_count` and records values returned by `StartGetPrinters()`.
-// TODO(crbug.com/1171579) Get rid of use of base::ListValue.
 void RecordPrinterList(size_t& call_count,
-                       std::unique_ptr<base::ListValue>& printers_out,
-                       const base::ListValue& printers) {
+                       base::Value::List& printers_out,
+                       base::Value::List printers) {
   ++call_count;
-  printers_out =
-      base::ListValue::From(base::Value::ToUniquePtrValue(printers.Clone()));
+  printers_out = std::move(printers);
 }
 
 // Used as a callback to `StartGetPrinters` in tests.
@@ -42,8 +41,8 @@ void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
 }
 
-void RecordGetCapability(base::Value& capabilities_out,
-                         base::Value capability) {
+void RecordGetCapability(base::Value::Dict& capabilities_out,
+                         base::Value::Dict capability) {
   capabilities_out = std::move(capability);
 }
 
@@ -92,7 +91,7 @@ TEST_F(LocalPrinterHandlerChromeosTest,
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetPrintersNoAsh_ProvidesDefaultValue) {
   size_t call_count = 0;
-  std::unique_ptr<base::ListValue> printers;
+  base::Value::List printers;
   bool is_done = false;
   local_printer_handler()->StartGetPrinters(
       base::BindRepeating(&RecordPrinterList, std::ref(call_count),
@@ -117,10 +116,10 @@ TEST_F(LocalPrinterHandlerChromeosTest,
 
 TEST_F(LocalPrinterHandlerChromeosTest,
        GetCapabilityNoAsh_ProvidesDefaultValue) {
-  base::Value fetched_caps("unset");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
-  EXPECT_EQ(base::Value(), fetched_caps);
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetEulaUrlNoAsh_ProvidesDefaultValue) {
@@ -170,7 +169,8 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
       "printerOptions": {}
    }
 })");
-  EXPECT_EQ(kExpectedValue,
+  ASSERT_TRUE(kExpectedValue.is_dict());
+  EXPECT_EQ(kExpectedValue.GetDict(),
             LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
 }
 
@@ -188,13 +188,13 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
       "printerOptions": {}
    }
 })");
-  EXPECT_EQ(kExpectedValue,
+  ASSERT_TRUE(kExpectedValue.is_dict());
+  EXPECT_EQ(kExpectedValue.GetDict(),
             LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
-  EXPECT_EQ(base::Value(),
-            LocalPrinterHandlerChromeos::CapabilityToValue(nullptr));
+  EXPECT_TRUE(LocalPrinterHandlerChromeos::CapabilityToValue(nullptr).empty());
 }
 
 TEST(LocalPrinterHandlerChromeos, StatusToValue) {

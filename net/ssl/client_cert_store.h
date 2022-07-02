@@ -23,7 +23,7 @@ class NET_EXPORT ClientCertStore {
   ClientCertStore(const ClientCertStore&) = delete;
   ClientCertStore& operator=(const ClientCertStore&) = delete;
 
-  virtual ~ClientCertStore() {}
+  virtual ~ClientCertStore() = default;
 
   using ClientCertListCallback =
       base::OnceCallback<void(ClientCertIdentityList)>;
@@ -36,7 +36,7 @@ class NET_EXPORT ClientCertStore {
                               ClientCertListCallback callback) = 0;
 
  protected:
-  ClientCertStore() {}
+  ClientCertStore() = default;
 };
 
 }  // namespace net

@@ -10,6 +10,7 @@ DemoAshRequiresLacrosTest*
 Dictation*
 SelectToSpeak*
 SwitchAccess*
+VpnExtensionObserverBrowserTest*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
@@ -28,6 +29,12 @@ SwitchAccess*
 -SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
+-BrowserAppShelfControllerBrowserTest.*
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
+-DockedMagnifierVirtualKeyboardTest.WelcomeScreen
+-ChromeVoxTutorialTest.Gestures
+-ChromeVoxTutorialTest.ExitButtonTest
+-ChromeVoxTutorialTest.EscapeTest
 # Flaky (crbug.com/1268842).
 -ChromeVoxBackgroundTest.GestureOnPopUpButton
 -ChromeVoxBackgroundTest.HitTestOnExoSurface

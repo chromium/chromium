@@ -52,8 +52,7 @@ ItemsBubbleController::ItemsBubbleController(
                                             !local_credentials_.empty())) {}
 
 ItemsBubbleController::~ItemsBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void ItemsBubbleController::OnManageClicked(

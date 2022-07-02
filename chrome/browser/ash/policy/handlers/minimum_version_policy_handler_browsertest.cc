@@ -53,11 +53,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -113,11 +112,8 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
     const std::string lsb_release =
         base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s", kCurrentVersion);
     version_info_.emplace(lsb_release, base::Time::Now());

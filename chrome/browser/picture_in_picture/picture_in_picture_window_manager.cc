@@ -14,6 +14,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/size.h"
 
+// This is used only for video PiP. Document PiP is handled by the window
+// controller internally.
 class PictureInPictureWindowManager::ContentsObserver final
     : public content::WebContentsObserver {
  public:
@@ -53,7 +55,7 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
 
 void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
-    std::unique_ptr<content::WebContents> child_web_contents) {
+    content::WebContents* child_web_contents) {
   // If there was already a controller, close the existing window before
   // creating the next one. This needs to happen before creating the new
   // controller so that its precondition (no child_web_contents_) remains
@@ -64,7 +66,7 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   auto* controller = content::PictureInPictureWindowController::
       GetOrCreateDocumentPictureInPictureController(parent_web_contents);
 
-  controller->SetChildWebContents(std::move(child_web_contents));
+  controller->SetChildWebContents(child_web_contents);
 
   // Show the new window. As a side effect, this also first closes any
   // pre-existing PictureInPictureWindowController's window (if any).

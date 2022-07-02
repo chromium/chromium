@@ -26,6 +26,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/browser/privacy_budget/privacy_budget_reid_score_estimator.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
@@ -63,7 +64,8 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
               // However, `MesaDistribution` needs a `pivot_point` parameter
               // bigger than 0.
               : 1,
-          kMesaDistributionRatio) {
+          kMesaDistributionRatio),
+      reid_estimator_(PrivacyBudgetReidScoreEstimator(settings_)) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }
@@ -79,6 +81,10 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LIKELY(!settings_.enabled()))
     return false;
+
+  // We always record surfaces of type zero.
+  if (surface.GetType() == blink::IdentifiableSurface::Type::kReservedInternal)
+    return true;
 
   if (base::Contains(active_surfaces_, surface))
     return true;
@@ -489,6 +495,14 @@ void IdentifiabilityStudyState::InitFromPrefs() {
   CheckInvariants();
 }
 
+void IdentifiabilityStudyState::MaybeStoreValueForComputingReidScore(
+    blink::IdentifiableSurface surface,
+    blink::IdentifiableToken token) {
+  if (!settings_.is_using_reid_score_estimator())
+    return;
+  reid_estimator_.ProcessForReidScore(surface, token);
+}
+
 void IdentifiabilityStudyState::InitStateForRandomSurfaceSampling() {
   ResetInMemoryState();
 
@@ -577,6 +591,12 @@ bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }
+
+  if (surface.GetType() ==
+      blink::IdentifiableSurface::Type::kReservedInternal) {
+    return false;
+  }
+
   return surface_encounters_.IsNewEncounter(source_id,
                                             surface.ToUkmMetricHash());
 }

@@ -13,10 +13,10 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -30,6 +30,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace segmentation_platform {
+namespace {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -38,17 +41,14 @@ using Segmentation_ModelExecution =
     ::ukm::builders::Segmentation_ModelExecution;
 
 constexpr auto kTestOptimizationTarget0 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 constexpr auto kTestOptimizationTarget1 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 constexpr char kHistogramName0[] = "histogram0";
 constexpr char kHistogramName1[] = "histogram1";
 constexpr char kSegmentationKey[] = "test_key";
 constexpr int64_t kModelVersion = 123;
 constexpr int kSample = 1;
-
-namespace segmentation_platform {
-namespace {
 
 class TrainingDataCollectorImplTest : public ::testing::Test {
  public:
@@ -61,6 +61,10 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     LocalStateHelper::GetInstance().Initialize(&prefs_);
     LocalStateHelper::GetInstance().SetPrefTime(
         kSegmentationLastCollectionTimePref, base::Time::Now());
+    // Set UKM allowed 30 days ago
+    LocalStateHelper::GetInstance().SetPrefTime(
+        kSegmentationUkmMostRecentAllowedTimeKey,
+        base::Time::Now() - base::Days(30));
     clock_.SetNow(base::Time::Now());
     test_recorder_.Purge();
 
@@ -72,8 +76,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     // Setup behavior for |feature_list_processor_|.
     std::vector<float> inputs({1.f});
-    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _))
-        .WillByDefault(RunOnceCallback<4>(true, inputs, std::vector<float>()));
+    ON_CALL(feature_list_processor_, ProcessFeatureList(_, _, _, _, _, _))
+        .WillByDefault(RunOnceCallback<5>(false, inputs, std::vector<float>()));
     ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
         .WillByDefault(Return(true));
 
@@ -82,13 +86,13 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     configs_.emplace_back(std::make_unique<Config>());
     configs_[0]->segmentation_key = kSegmentationKey;
     configs_[0]->segment_ids.push_back(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
     configs_[0]->segment_ids.push_back(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
     SegmentationResultPrefs result_prefs(&prefs_);
     SelectedSegment selected_segment(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     selected_segment.selection_time = base::Time::Now() - base::Days(1);
     result_prefs.SaveSegmentationResultToPref(kSegmentationKey,
                                               selected_segment);
@@ -125,9 +129,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     return segment_info;
   }
 
-  proto::SegmentInfo* CreateSegment(OptimizationTarget optimization_target) {
-    auto* segment_info =
-        test_segment_db()->FindOrCreateSegment(optimization_target);
+  proto::SegmentInfo* CreateSegment(SegmentId segment_id) {
+    auto* segment_info = test_segment_db()->FindOrCreateSegment(segment_id);
     auto* model_metadata = segment_info->mutable_model_metadata();
     model_metadata->set_time_unit(proto::TimeUnit::DAY);
     model_metadata->set_signal_storage_length(7);
@@ -135,6 +138,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     auto model_update_time = clock()->Now() - base::Days(365);
     segment_info->set_model_update_time_s(
         model_update_time.ToDeltaSinceWindowsEpoch().InSeconds());
+    auto* prediction_result = segment_info->mutable_prediction_result();
+    prediction_result->set_result(0.6);
     return segment_info;
   }
 
@@ -299,8 +304,8 @@ TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
 
 // Tests that continuous collection happens on startup.
 TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartup) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(true, std::vector<float>{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
                                         std::vector<float>{2.f, 3.f}));
   CreateSegmentInfo();
   clock()->Advance(base::Hours(24));
@@ -320,8 +325,8 @@ TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartup) {
 // Tests that ReportCollectedContinuousTrainingData() works well later if
 // no data is reported on start up.
 TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(true, std::vector<float>{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
                                         std::vector<float>{2.f, 3.f}));
   CreateSegmentInfo();
   Init();
@@ -332,13 +337,15 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
        Segmentation_ModelExecution::kModelVersionName,
        Segmentation_ModelExecution::kInput0Name,
        Segmentation_ModelExecution::kPredictionResultName,
+       Segmentation_ModelExecution::kSelectionResultName,
        Segmentation_ModelExecution::kOutputDelaySecName,
        Segmentation_ModelExecution::kActualResultName,
        Segmentation_ModelExecution::kActualResult2Name},
       {kTestOptimizationTarget0, kModelVersion,
        SegmentationUkmHelper::FloatToInt64(1.f),
-       SegmentationUkmHelper::FloatToInt64(5.f), base::Days(1).InSeconds(),
-       SegmentationUkmHelper::FloatToInt64(2.f),
+       SegmentationUkmHelper::FloatToInt64(0.6f),
+       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+       base::Days(1).InSeconds(), SegmentationUkmHelper::FloatToInt64(2.f),
        SegmentationUkmHelper::FloatToInt64(3.f)});
 }
 
@@ -346,8 +353,8 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
 // immediately afterwards.
 TEST_F(TrainingDataCollectorImplTest,
        NoImmediateDataCollectionAfterLastCollection) {
-  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(true, std::vector<float>{1.f},
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
                                         std::vector<float>{2.f, 3.f}));
   CreateSegmentInfo();
   Init();
@@ -365,6 +372,21 @@ TEST_F(TrainingDataCollectorImplTest,
   clock()->Advance(base::Hours(24));
   WaitForContinousCollection();
   ExpectUkmCount(1u);
+}
+
+// Tests that if UKM allowed timestamp is not set in local state, data
+// collection won't happen.
+TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _, _))
+      .WillByDefault(RunOnceCallback<5>(false, std::vector<float>{1.f},
+                                        std::vector<float>{2.f, 3.f}));
+  LocalStateHelper::GetInstance().SetPrefTime(
+      kSegmentationUkmMostRecentAllowedTimeKey, base::Time());
+  CreateSegmentInfo();
+  Init();
+  collector()->ReportCollectedContinuousTrainingData();
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
 }
 
 }  // namespace

@@ -173,13 +173,13 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
 
   // User provided buffer for the Read() response.
   scoped_refptr<IOBuffer> user_buffer_;
-  size_t user_buffer_len_;
+  size_t user_buffer_len_ = 0;
 
   // User specified number of bytes to be written.
-  int write_buffer_len_;
+  int write_buffer_len_ = 0;
 
   // True if the transport socket has ever sent data.
-  bool was_ever_used_;
+  bool was_ever_used_ = false;
 
   const NetLogWithSource net_log_;
   const NetLogSource source_dependency_;

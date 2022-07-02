@@ -23,14 +23,8 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
             @Nullable ContextualSearchTapState previousTapState, int x, int y,
             boolean wasSelectionEmptyBeforeTap) {
         super();
-        mHeuristics.add(new EngagementSuppression());
-        mHeuristics.add(new RecentScrollTapSuppression(selectionController));
         mHeuristics.add(new TapFarFromPreviousSuppression(
                 selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));
-        // Quick Answer that appears in the Caption via the JS API.
-        QuickAnswersHeuristic quickAnswersHeuristic = new QuickAnswersHeuristic();
-        setQuickAnswersHeuristic(quickAnswersHeuristic);
-        mHeuristics.add(quickAnswersHeuristic);
     }
 
     @Override
@@ -57,16 +51,6 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
     boolean shouldSuppressTap() {
         for (ContextualSearchHeuristic heuristic : mHeuristics) {
             if (heuristic.isConditionSatisfiedAndEnabled()) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return Whether the Tap should override an ML suppression.
-     */
-    boolean shouldOverrideMlTapSuppression() {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            if (heuristic.shouldOverrideMlTapSuppression()) return true;
         }
         return false;
     }

@@ -146,7 +146,7 @@ void CheckContainsOriginStorageRecords(
 // Calls the accessStorage javascript function and awaits its completion for
 // each frame in the active web contents for |browser|.
 void EnsurePageAccessedStorage(content::WebContents* web_contents) {
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating([](content::RenderFrameHost* frame) {
         EXPECT_TRUE(
             content::EvalJs(frame,
@@ -474,11 +474,14 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
   EXPECT_EQ(cookies.size(),
             kEmbeddedPageCookieCount + kTopLevelPageCookieCount);
 
-  auto tree_model =
-      CookiesTreeModel::CreateForProfile(chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
+  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
+      chrome_test_utils::GetProfile(this));
+  {
+    CookiesTreeObserver observer;
+    tree_model->AddCookiesTreeObserver(&observer);
+    observer.AwaitTreeModelEndBatch();
+    tree_model->RemoveCookiesTreeObserver(&observer);
+  }
 
   tree_model->DeleteAllStoredObjects();
 
@@ -681,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditFencedFrameBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       GetWebContents(), top_level_.GetURL(kTopLevelHost, "/empty.html")));
   content::RenderFrameHost* ff = fenced_frame_test_helper().CreateFencedFrame(
-      GetWebContents()->GetMainFrame(), embedded_url());
+      GetWebContents()->GetPrimaryMainFrame(), embedded_url());
 
   EXPECT_TRUE(
       content::EvalJs(ff, "(async () => { return await accessStorage();})()")

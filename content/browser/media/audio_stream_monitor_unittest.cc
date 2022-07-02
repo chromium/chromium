@@ -383,7 +383,7 @@ TEST_F(AudioStreamMonitorTest, RenderProcessGone) {
 }
 
 TEST_F(AudioStreamMonitorTest, RenderFrameGone) {
-  RenderFrameHost* render_frame_host = web_contents()->GetMainFrame();
+  RenderFrameHost* render_frame_host = web_contents()->GetPrimaryMainFrame();
   int render_process_id = render_frame_host->GetProcess()->GetID();
   int render_frame_id = render_frame_host->GetRoutingID();
 

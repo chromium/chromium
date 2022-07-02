@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -15,7 +16,8 @@ class Browser;
 
 // A search icon that appears when the side search feature is available. Opens
 // the side panel to the available SRP.
-class SideSearchIconView : public PageActionIconView {
+class SideSearchIconView : public PageActionIconView,
+                           public TabStripModelObserver {
  public:
   METADATA_HEADER(SideSearchIconView);
   explicit SideSearchIconView(
@@ -26,6 +28,12 @@ class SideSearchIconView : public PageActionIconView {
   SideSearchIconView(const SideSearchIconView&) = delete;
   SideSearchIconView& operator=(const SideSearchIconView&) = delete;
   ~SideSearchIconView() override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   void SetLabelVisibilityForTesting(bool visible);
 
@@ -40,6 +48,20 @@ class SideSearchIconView : public PageActionIconView {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
+  // Returns true if we should animate-in the page action icon label when the
+  // side search page action icon is shown in the omnibox.
+  bool ShouldShowPageActionLabel() const;
+
+  // Called when the page action icon label has been shown.
+  void SetPageActionLabelShown();
+
+  // Hides the page action label text and cancels the animation if necessary.
+  void HidePageActionLabel();
+
+  // Tracks the number of times the page action icon has animated-in its label
+  // text for this window.
+  int page_action_label_shown_count_ = 0;
+
   raw_ptr<Browser> browser_ = nullptr;
 
   // Source for the default search icon image used by this page action.

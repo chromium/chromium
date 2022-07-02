@@ -153,18 +153,18 @@ bool WebFormControlElement::AutoComplete() const {
 
 void WebFormControlElement::SetValue(const WebString& value, bool send_events) {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_)) {
-    input->setValue(value,
+    input->SetValue(value,
                     send_events
                         ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
                         : TextFieldEventBehavior::kDispatchNoEvent);
   } else if (auto* textarea =
                  ::blink::DynamicTo<HTMLTextAreaElement>(*private_)) {
-    textarea->setValue(
+    textarea->SetValue(
         value, send_events
                    ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
                    : TextFieldEventBehavior::kDispatchNoEvent);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
-    select->setValue(value, send_events);
+    select->SetValue(value, send_events);
   }
 }
 
@@ -178,14 +178,16 @@ void WebFormControlElement::DispatchBlurEvent() {
       nullptr, mojom::blink::FocusType::kForward, nullptr);
 }
 
-void WebFormControlElement::SetAutofillValue(const WebString& value) {
+void WebFormControlElement::SetAutofillValue(const WebString& value,
+                                             WebAutofillState autofill_state) {
   // The input and change events will be sent in setValue.
   if (IsA<HTMLInputElement>(*private_) || IsA<HTMLTextAreaElement>(*private_)) {
     if (!Focused())
       DispatchFocusEvent();
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeydown));
-    Unwrap<TextControlElement>()->SetAutofillValue(value);
+    Unwrap<TextControlElement>()->SetAutofillValue(
+        value, value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeyup));
     if (!Focused())
@@ -193,7 +195,7 @@ void WebFormControlElement::SetAutofillValue(const WebString& value) {
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     if (!Focused())
       DispatchFocusEvent();
-    select->setValue(value, true);
+    select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
   }
@@ -201,11 +203,11 @@ void WebFormControlElement::SetAutofillValue(const WebString& value) {
 
 WebString WebFormControlElement::Value() const {
   if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
-    return input->value();
+    return input->Value();
   if (auto* textarea = ::blink::DynamicTo<HTMLTextAreaElement>(*private_))
-    return textarea->value();
+    return textarea->Value();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
-    return select->value();
+    return select->Value();
   return WebString();
 }
 

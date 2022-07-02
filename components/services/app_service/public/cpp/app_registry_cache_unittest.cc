@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -93,7 +94,7 @@ class RemoveObserver : public apps::AppRegistryCache::Observer {
  private:
   std::vector<std::string> updated_ids_;
   std::vector<apps::Readiness> readinesses_;
-  apps::AppRegistryCache* cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
 };
 
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that
@@ -303,7 +304,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
   std::set<apps::AppType> app_types_;
   int initialized_app_type_count_ = 0;
   int app_count_at_initialization_ = 0;
-  apps::AppRegistryCache* cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
 };
 
 }  // namespace

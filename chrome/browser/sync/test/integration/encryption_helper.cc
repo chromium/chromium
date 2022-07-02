@@ -13,20 +13,16 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-ServerNigoriChecker::ServerNigoriChecker(
-    syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server,
+ServerPassphraseTypeChecker::ServerPassphraseTypeChecker(
     syncer::PassphraseType expected_passphrase_type)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      expected_passphrase_type_(expected_passphrase_type) {}
+    : expected_passphrase_type_(expected_passphrase_type) {}
 
-bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
+bool ServerPassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for a Nigori node with the proper passphrase type to become "
          "available on the server.";
 
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
          syncer::ProtoPassphraseInt32ToEnum(
@@ -35,16 +31,12 @@ bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
-    const std::string& expected_key_name,
-    syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      expected_key_name_(expected_key_name) {}
+    const std::string& expected_key_name)
+    : expected_key_name_(expected_key_name) {}
 
 bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   DCHECK_EQ(nigori_entities.size(), 1U);
 
   const std::string given_key_name =

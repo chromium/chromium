@@ -18,20 +18,20 @@ class OverlayRequest;
 // coordinators for a request.
 @interface OverlayRequestCoordinatorFactory : NSObject
 
-// Returns a coordinator factory for |browser| at |modality|.
+// Returns a coordinator factory for `browser` at `modality`.
 + (instancetype)factoryForBrowser:(Browser*)browser
                          modality:(OverlayModality)modality;
 
 // OverlayRequestCoordinatorFactory must be fetched using
-// |+factoryForBrowser:modality:|.
+// |+factoryForBrowser:modality:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns whether the OverlayRequestCoordinator subclass responsible for
-// showing |request|'s overlay UI uses a child UIViewController instead of a
+// showing `request`'s overlay UI uses a child UIViewController instead of a
 // presented UIViewController.
 - (BOOL)coordinatorForRequestUsesChildViewController:(OverlayRequest*)request;
 
-// Creates a coordinator to show |request|'s overlay UI.
+// Creates a coordinator to show `request`'s overlay UI.
 - (OverlayRequestCoordinator*)
     newCoordinatorForRequest:(OverlayRequest*)request
                     delegate:(OverlayRequestCoordinatorDelegate*)delegate

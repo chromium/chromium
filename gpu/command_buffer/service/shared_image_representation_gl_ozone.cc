@@ -14,18 +14,15 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_gl_api_implementation.h"
-#include "ui/gl/gl_image_native_pixmap.h"
-#include "ui/gl/gl_image_shared_memory.h"
-#include "ui/gl/gl_version_info.h"
-#include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
+#include "ui/ozone/public/gl_ozone.h"
+#include "ui/ozone/public/native_pixmap_gl_binding.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace gpu {
 
@@ -72,43 +69,41 @@ void SharedImageRepresentationGLOzoneShared::EndAccess(
                            std::move(fence));
 }
 
-scoped_refptr<gl::GLImageNativePixmap>
-SharedImageRepresentationGLOzoneShared::CreateGLImage(
+std::unique_ptr<ui::NativePixmapGLBinding>
+SharedImageRepresentationGLOzoneShared::GetBinding(
+    SharedImageBacking* backing,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
-    gfx::Size size) {
-  scoped_refptr<gl::GLImageNativePixmap> image =
-      base::MakeRefCounted<gl::GLImageNativePixmap>(size, buffer_format, plane);
-  if (!image->Initialize(std::move(pixmap))) {
-    LOG(ERROR) << "Unable to initialize GL image from pixmap";
+    GLuint& gl_texture_service_id,
+    GLenum& target) {
+  ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
+                              ->GetSurfaceFactoryOzone()
+                              ->GetCurrentGLOzone();
+  if (!gl_ozone) {
+    LOG(FATAL) << "Failed to get GLOzone.";
     return nullptr;
   }
-  return image;
-}
 
-absl::optional<GLuint> SharedImageRepresentationGLOzoneShared::SetupTexture(
-    scoped_refptr<gl::GLImageNativePixmap> image,
-    GLenum target) {
+  gfx::BufferFormat buffer_format = viz::BufferFormat(backing->format());
+  target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
+               ? GL_TEXTURE_2D
+               : gpu::GetPlatformSpecificTextureTarget();
+
   gl::GLApi* api = gl::g_current_gl_context;
   DCHECK(api);
-
-  GLuint gl_texture_service_id;
   api->glGenTexturesFn(1, &gl_texture_service_id);
-  gl::ScopedTextureBinder binder(target, gl_texture_service_id);
 
-  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  if (!image->BindTexImage(target)) {
-    LOG(ERROR) << "Unable to bind GL image to target = " << target;
+  std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
+      gl_ozone->ImportNativePixmap(std::move(pixmap), buffer_format, plane,
+                                   backing->size(), backing->color_space(),
+                                   target, gl_texture_service_id);
+  if (!np_gl_binding) {
+    DLOG(ERROR) << "Failed to create NativePixmapGLBinding.";
     api->glDeleteTexturesFn(1, &gl_texture_service_id);
-    return absl::nullopt;
+    return nullptr;
   }
 
-  return gl_texture_service_id;
+  return np_gl_binding;
 }
 
 // static
@@ -118,26 +113,17 @@ SharedImageRepresentationGLTextureOzone::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::ResourceFormat format,
     gfx::BufferPlane plane) {
-  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  GLenum target =
-      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
-          ? GL_TEXTURE_2D
-          : gpu::GetPlatformSpecificTextureTarget();
-  auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format, plane, backing->size());
-  if (!image) {
+  GLenum target;
+  GLuint gl_texture_service_id;
+  std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
+      SharedImageRepresentationGLOzoneShared::GetBinding(
+          backing, std::move(pixmap), plane, gl_texture_service_id, target);
+  if (!np_gl_binding) {
     return nullptr;
   }
 
-  auto gl_texture_service_id =
-      SharedImageRepresentationGLOzoneShared::SetupTexture(image, target);
-  if (!gl_texture_service_id.has_value()) {
-    return nullptr;
-  }
-
-  gles2::Texture* texture = new gles2::Texture(*gl_texture_service_id);
+  gles2::Texture* texture = new gles2::Texture(gl_texture_service_id);
   texture->SetLightweightRef();
   texture->SetTarget(target, 1 /*max_levels=*/);
   texture->set_min_filter(GL_LINEAR);
@@ -145,13 +131,12 @@ SharedImageRepresentationGLTextureOzone::Create(
   texture->set_wrap_t(GL_CLAMP_TO_EDGE);
   texture->set_wrap_s(GL_CLAMP_TO_EDGE);
 
-  GLuint internal_format = image->GetInternalFormat();
-  GLenum gl_format = image->GetDataFormat();
-  GLenum gl_type = image->GetDataType();
+  GLuint internal_format = np_gl_binding->GetInternalFormat();
+  GLenum gl_format = np_gl_binding->GetDataFormat();
+  GLenum gl_type = np_gl_binding->GetDataType();
   texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
                         backing->size().height(), 1, 0, gl_format, gl_type,
                         backing->ClearedRect());
-  texture->SetLevelImage(target, 0, image.get(), gles2::Texture::BOUND);
   texture->SetImmutable(true, true);
 
   return base::WrapUnique<SharedImageRepresentationGLTextureOzone>(
@@ -196,32 +181,23 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::ResourceFormat format,
     gfx::BufferPlane plane) {
-  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  GLenum target =
-      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
-          ? GL_TEXTURE_2D
-          : gpu::GetPlatformSpecificTextureTarget();
-  auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format, plane, backing->size());
-  if (!image) {
+  GLenum target;
+  GLuint gl_texture_service_id;
+  std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
+      SharedImageRepresentationGLOzoneShared::GetBinding(
+          backing, std::move(pixmap), plane, gl_texture_service_id, target);
+  if (!np_gl_binding) {
     return nullptr;
   }
 
-  auto gl_texture_service_id =
-      SharedImageRepresentationGLOzoneShared::SetupTexture(image, target);
-  if (!gl_texture_service_id.has_value()) {
-    return nullptr;
-  }
-
-  GLuint internal_format = image->GetInternalFormat();
-  GLenum gl_format = image->GetDataFormat();
-  GLenum gl_type = image->GetDataType();
+  GLuint internal_format = np_gl_binding->GetInternalFormat();
+  GLenum gl_format = np_gl_binding->GetDataFormat();
+  GLenum gl_type = np_gl_binding->GetDataType();
 
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
       base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-          *gl_texture_service_id, target, internal_format,
+          gl_texture_service_id, target, internal_format,
           backing->size().width(), backing->size().height(),
           /*depth=*/1, /*border=*/0, gl_format, gl_type);
 

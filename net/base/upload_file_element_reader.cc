@@ -36,11 +36,7 @@ UploadFileElementReader::UploadFileElementReader(
       path_(path),
       range_offset_(range_offset),
       range_length_(range_length),
-      expected_modification_time_(expected_modification_time),
-      content_length_(0),
-      bytes_remaining_(0),
-      next_state_(State::IDLE),
-      init_called_while_operation_pending_(false) {
+      expected_modification_time_(expected_modification_time) {
   DCHECK(file.IsValid());
   DCHECK(task_runner_.get());
   file_stream_ = std::make_unique<FileStream>(std::move(file), task_runner);
@@ -56,11 +52,7 @@ UploadFileElementReader::UploadFileElementReader(
       path_(path),
       range_offset_(range_offset),
       range_length_(range_length),
-      expected_modification_time_(expected_modification_time),
-      content_length_(0),
-      bytes_remaining_(0),
-      next_state_(State::IDLE),
-      init_called_while_operation_pending_(false) {
+      expected_modification_time_(expected_modification_time) {
   DCHECK(task_runner_.get());
 }
 

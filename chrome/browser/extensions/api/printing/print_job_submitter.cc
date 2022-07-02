@@ -19,7 +19,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
@@ -81,7 +81,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
-  return !base::Contains(list->GetListDeprecated(), base::Value(extension_id));
+  return !base::Contains(list->GetList(), base::Value(extension_id));
 }
 
 }  // namespace
@@ -263,7 +263,7 @@ void PrintJobSubmitter::ShowPrintJobConfirmationDialog(
   if (native_window_tracker_ && native_window_tracker_->WasNativeWindowClosed())
     native_window_ = gfx::kNullNativeWindow;
 
-  chrome::ShowPrintJobConfirmationDialog(
+  extensions::ShowPrintJobConfirmationDialog(
       native_window_, extension_->id(), base::UTF8ToUTF16(extension_->name()),
       extension_icon.AsImageSkia(), settings_->title(), printer_name_,
       base::BindOnce(&PrintJobSubmitter::OnPrintJobConfirmationDialogClosed,

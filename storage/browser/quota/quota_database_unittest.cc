@@ -153,8 +153,10 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "last_accessed,"
               "last_modified,"
               "expiration,"
-              "quota) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0)";
+              "quota,"
+              "persistent,"
+              "durability) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(
@@ -249,14 +251,14 @@ TEST_P(QuotaDatabaseTest, HostQuota) {
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
-TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
+TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
   BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"));
-  params.name = "google_bucket";
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
 
-  QuotaErrorOr<BucketInfo> result = db->GetOrCreateBucket(params);
+  QuotaErrorOr<BucketInfo> result = db->UpdateOrCreateBucket(params);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
@@ -266,7 +268,7 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
   ASSERT_EQ(created_bucket.type, kTemp);
 
   // Should return the same bucket when querying again.
-  result = db->GetOrCreateBucket(params);
+  result = db->UpdateOrCreateBucket(params);
   ASSERT_TRUE(result.ok());
 
   BucketInfo retrieved_bucket = result.value();
@@ -274,6 +276,60 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucket) {
   ASSERT_EQ(retrieved_bucket.name, created_bucket.name);
   ASSERT_EQ(retrieved_bucket.storage_key, created_bucket.storage_key);
   ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
+}
+
+TEST_P(QuotaDatabaseTest, UpdateBucket) {
+  auto db = CreateDatabase(use_in_memory_db());
+  EXPECT_TRUE(EnsureOpened(db.get()));
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
+  params.expiration = base::Time::Now() + base::Days(1);
+  params.persistent = true;
+
+  QuotaErrorOr<BucketInfo> result = db->UpdateOrCreateBucket(params);
+  ASSERT_TRUE(result.ok());
+  BucketInfo created_bucket = result.value();
+
+  EXPECT_EQ(params.expiration, result->expiration);
+  EXPECT_TRUE(result->persistent);
+
+  // Should update the bucket when querying again.
+  params.expiration = base::Time::Now() + base::Days(2);
+  params.persistent = false;
+  params.quota = 1024 * 1024 * 20;  // 20 MB
+  params.durability = blink::mojom::BucketDurability::kStrict;
+  result = db->UpdateOrCreateBucket(params);
+  ASSERT_TRUE(result.ok());
+  BucketInfo updated_bucket = result.value();
+
+  EXPECT_EQ(updated_bucket.id, created_bucket.id);
+
+  // Expiration is updated.
+  EXPECT_EQ(updated_bucket.expiration, params.expiration);
+  EXPECT_NE(updated_bucket.expiration, created_bucket.expiration);
+
+  // Persistence is updated.
+  EXPECT_EQ(updated_bucket.persistent, params.persistent);
+  EXPECT_NE(updated_bucket.persistent, created_bucket.persistent);
+
+  // Quota can't be updated.
+  EXPECT_NE(updated_bucket.quota, params.quota);
+  EXPECT_EQ(updated_bucket.quota, created_bucket.quota);
+
+  // Durability can't be updated.
+  EXPECT_NE(updated_bucket.durability, *params.durability);
+  EXPECT_EQ(updated_bucket.durability, created_bucket.durability);
+
+  // Query, but without explicit policies.
+  params.expiration = base::Time();
+  params.persistent.reset();
+  result = db->UpdateOrCreateBucket(params);
+  ASSERT_TRUE(result.ok());
+
+  // Expiration and persistence are unchanged.
+  EXPECT_EQ(result->expiration, updated_bucket.expiration);
+  EXPECT_EQ(result->persistent, updated_bucket.persistent);
 }
 
 TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
@@ -284,7 +340,7 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
   std::string bucket_name = "google_bucket";
 
   QuotaErrorOr<BucketInfo> result =
-      db->GetOrCreateBucketDeprecated(storage_key, bucket_name, kPerm);
+      db->GetOrCreateBucketDeprecated({storage_key, bucket_name}, kPerm);
   ASSERT_TRUE(result.ok());
 
   BucketInfo created_bucket = result.value();
@@ -294,7 +350,7 @@ TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
   ASSERT_EQ(created_bucket.type, kPerm);
 
   // Should return the same bucket when querying again.
-  result = db->GetOrCreateBucketDeprecated(storage_key, bucket_name, kPerm);
+  result = db->GetOrCreateBucketDeprecated({storage_key, bucket_name}, kPerm);
   ASSERT_TRUE(result.ok());
 
   BucketInfo retrieved_bucket = result.value();
@@ -403,16 +459,16 @@ TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   ASSERT_TRUE(bucket_result.ok());
   BucketInfo perm_bucket2 = bucket_result.value();
 
-  QuotaErrorOr<std::set<BucketLocator>> result = db->GetBucketsForType(kTemp);
+  QuotaErrorOr<std::set<BucketInfo>> result = db->GetBucketsForType(kTemp);
   ASSERT_TRUE(result.ok());
-  std::set<BucketLocator> buckets = result.value();
+  std::set<BucketLocator> buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
   result = db->GetBucketsForType(kPerm);
   ASSERT_TRUE(result.ok());
-  buckets = result.value();
+  buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, perm_bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
@@ -435,12 +491,12 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
       StorageKey::CreateFromStringForTesting("http://google.com:123/"),
       "default", kTemp);
 
-  QuotaErrorOr<std::set<BucketLocator>> result =
+  QuotaErrorOr<std::set<BucketInfo>> result =
       db->GetBucketsForHost("example.com", kTemp);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 2U);
-  EXPECT_TRUE(ContainsBucket(result.value(), temp_example_bucket1.value()));
-  EXPECT_TRUE(ContainsBucket(result.value(), temp_example_bucket2.value()));
+  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket1.value()));
+  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket2.value()));
 
   result = db->GetBucketsForHost("example.com", kPerm);
   ASSERT_TRUE(result.ok());
@@ -449,12 +505,12 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   result = db->GetBucketsForHost("google.com", kPerm);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
-  EXPECT_TRUE(ContainsBucket(result.value(), perm_google_bucket1.value()));
+  EXPECT_TRUE(base::Contains(result.value(), perm_google_bucket1.value()));
 
   result = db->GetBucketsForHost("google.com", kTemp);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
-  EXPECT_TRUE(ContainsBucket(result.value(), temp_google_bucket2.value()));
+  EXPECT_TRUE(base::Contains(result.value(), temp_google_bucket2.value()));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
@@ -483,17 +539,17 @@ TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
   ASSERT_TRUE(bucket_result.ok());
   BucketInfo perm_bucket2 = bucket_result.value();
 
-  QuotaErrorOr<std::set<BucketLocator>> result =
+  QuotaErrorOr<std::set<BucketInfo>> result =
       db->GetBucketsForStorageKey(storage_key1, kTemp);
   ASSERT_TRUE(result.ok());
-  std::set<BucketLocator> buckets = result.value();
+  std::set<BucketLocator> buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
   result = db->GetBucketsForStorageKey(storage_key2, kPerm);
   ASSERT_TRUE(result.ok());
-  buckets = result.value();
+  buckets = BucketInfosToBucketLocators(result.value());
   ASSERT_EQ(1U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
 }
@@ -504,7 +560,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<BucketLocator> result =
-      db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+      db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -547,7 +603,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
       db->SetBucketLastAccessTime(BucketId(777), base::Time::FromJavaTime(40)),
       QuotaError::kNone);
 
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket1.bucket_id, result.value().id);
 
@@ -556,29 +612,29 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
   policy->AddProtected(bucket2.storage_key.origin().GetURL());
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, policy.get());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(bucket2.storage_key.origin().GetURL());
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, policy.get());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
   // Bucket exceptions exclude specified buckets.
   bucket_exceptions.insert(bucket1.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket2.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket3.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -590,15 +646,54 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket1.bucket_id);
   bucket_exceptions.insert(bucket2.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
+}
+
+TEST_P(QuotaDatabaseTest, BucketPersistence) {
+  auto db = CreateDatabase(use_in_memory_db());
+  EXPECT_TRUE(EnsureOpened(db.get()));
+
+  std::set<BucketId> bucket_exceptions;
+  QuotaErrorOr<BucketLocator> result =
+      db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
+
+  // Insert bucket entries into BucketTable.
+  base::Time now = base::Time::Now();
+  using Entry = QuotaDatabase::BucketTableEntry;
+  Entry bucket1 = Entry(
+      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
+      kTemp, kDefaultBucketName, 99, now, now);
+  Entry bucket2 = Entry(
+      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
+      kTemp, kDefaultBucketName, 0, now, now);
+  Entry kTableEntries[] = {bucket1, bucket2};
+  AssignBucketTable(db.get(), kTableEntries);
+
+  EXPECT_EQ(db->SetBucketLastAccessTime(bucket1.bucket_id,
+                                        base::Time::FromJavaTime(10)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(bucket2.bucket_id,
+                                        base::Time::FromJavaTime(20)),
+            QuotaError::kNone);
+
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket1.bucket_id, result.value().id);
+
+  ASSERT_TRUE(db->UpdateBucketPersistence(bucket1.bucket_id, true).ok());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
 }
 
 TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
@@ -961,12 +1056,12 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
   BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"));
-  params.name = "google_bucket";
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetOrCreateBucket(params);
+    auto result = db->UpdateOrCreateBucket(params);
     ASSERT_TRUE(result.ok());
   }
   // Move db file paths to legacy file path for path migration test setup.
@@ -990,12 +1085,12 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
   BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"));
-  params.name = "google_bucket";
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetOrCreateBucket(params);
+    auto result = db->UpdateOrCreateBucket(params);
     ASSERT_TRUE(result.ok());
   }
   // Copy db file paths to legacy file path to mimic bad migration state.
@@ -1018,18 +1113,18 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
 TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
-  BucketInitParams google_params(
+  BucketInitParams google_params = BucketInitParams::ForDefaultBucket(
       StorageKey::CreateFromStringForTesting("http://google/"));
-  BucketInitParams example_params(
+  BucketInitParams example_params = BucketInitParams::ForDefaultBucket(
       StorageKey::CreateFromStringForTesting("http://example/"));
   BucketId example_id;
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
     // Create two buckets to check that ids are different after database reset.
-    auto result = db->GetOrCreateBucket(google_params);
+    auto result = db->UpdateOrCreateBucket(google_params);
     ASSERT_TRUE(result.ok());
-    result = db->GetOrCreateBucket(example_params);
+    result = db->UpdateOrCreateBucket(example_params);
     ASSERT_TRUE(result.ok());
     example_id = result->id;
   }
@@ -1046,7 +1141,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
     // Open database to trigger migration. Migration failure forces a database
     // reset.
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetOrCreateBucket(example_params);
+    auto result = db->UpdateOrCreateBucket(example_params);
     ASSERT_TRUE(result.ok());
     // Validate database reset by checking that bucket id doesn't match.
     EXPECT_NE(result->id, example_id);
@@ -1054,14 +1149,14 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
+TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
   QuotaDatabase db(ProfilePath());
   BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"));
-  params.name = "google_bucket";
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
 
   {
-    QuotaErrorOr<BucketInfo> result = db.GetOrCreateBucket(params);
+    QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params);
     ASSERT_TRUE(result.ok()) << "Failed to create bucket to be used in test";
   }
 
@@ -1077,13 +1172,68 @@ TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
   {
     base::HistogramTester histograms;
 
-    QuotaErrorOr<BucketInfo> result = db.GetOrCreateBucket(params);
+    QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params);
     EXPECT_FALSE(result.ok());
 
     histograms.ExpectTotalCount("Quota.QuotaDatabaseError", 1);
     histograms.ExpectBucketCount("Quota.QuotaDatabaseError",
                                  sql::SqliteLoggedResultCode::kCorrupt, 1);
   }
+}
+
+TEST_P(QuotaDatabaseTest, Expiration) {
+  QuotaDatabase db(ProfilePath());
+
+  // Default `expiration` value.
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
+  QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params);
+  ASSERT_TRUE(result.ok());
+  EXPECT_TRUE(result->expiration.is_null());
+
+  // Non-default `expiration` value.
+  BucketInitParams params2(
+      StorageKey::CreateFromStringForTesting("http://example/"),
+      "example_bucket");
+  params2.expiration = base::Time::Now();
+  result = db.UpdateOrCreateBucket(params2);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(params2.expiration, result->expiration);
+
+  // Update `expiration` value.
+  const base::Time updated_time = base::Time::Now() + base::Days(1);
+  result = db.UpdateBucketExpiration(result->id, updated_time);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(updated_time, result->expiration);
+}
+
+TEST_P(QuotaDatabaseTest, Persistent) {
+  QuotaDatabase db(ProfilePath());
+
+  // Default `persistent` value.
+  BucketInitParams params(
+      StorageKey::CreateFromStringForTesting("http://google/"),
+      "google_bucket");
+  QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params);
+  ASSERT_TRUE(result.ok());
+  EXPECT_FALSE(params.persistent.has_value());
+  EXPECT_FALSE(result->persistent);
+
+  // Non-default `persistent` value.
+  BucketInitParams params2(
+      StorageKey::CreateFromStringForTesting("http://example/"),
+      "example_bucket");
+  params2.persistent = !params2.persistent;
+  result = db.UpdateOrCreateBucket(params2);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(params2.persistent, result->persistent);
+
+  // Update `persistent` value.
+  EXPECT_TRUE(result->persistent);
+  result = db.UpdateBucketPersistence(result->id, false);
+  ASSERT_TRUE(result.ok());
+  EXPECT_FALSE(result->persistent);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

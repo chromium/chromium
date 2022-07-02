@@ -16,7 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
@@ -828,7 +828,7 @@ FileManagerPrivateMountCrostiniFunction::Run() {
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   DCHECK(crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::RestartCallback,
                      this));
   return RespondLater();
@@ -847,7 +847,7 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   DCHECK(crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   crostini::CrostiniManager::GetForProfile(profile)->MountCrostiniFiles(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::MountCallback,
                      this),
       false);
@@ -887,7 +887,7 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
           .path();
 
   crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
-      crostini::ContainerId::GetDefault(), path,
+      crostini::DefaultContainerId(), path,
       base::BindOnce(
           [](base::FilePath path, crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
@@ -965,15 +965,12 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       Params;
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-  // TODO(crbug.com/1057591): Unexpected crashes in
-  // GuestOsSharePath::GetPersistedSharedPaths with null profile_.
-  CHECK(browser_context());
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  CHECK(profile);
-
+  // Use OriginalProfile since using crostini in incognito such as saving
+  // files into Linux files should still work.
+  Profile* profile =
+      Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   auto* guest_os_share_path =
       guest_os::GuestOsSharePath::GetForProfile(profile);
-  CHECK(guest_os_share_path);
   bool first_for_session = params->observe_first_for_session &&
                            guest_os_share_path->GetAndSetFirstForSession();
   auto shared_paths =
@@ -1017,7 +1014,7 @@ FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
           profile, render_frame_host());
 
   crostini::CrostiniPackageService::GetForProfile(profile)->GetLinuxPackageInfo(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
       base::BindOnce(&FileManagerPrivateInternalGetLinuxPackageInfoFunction::
                          OnGetLinuxPackageInfo,
@@ -1058,7 +1055,7 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
 
   crostini::CrostiniPackageService::GetForProfile(profile)
       ->QueueInstallLinuxPackage(
-          crostini::ContainerId::GetDefault(),
+          crostini::DefaultContainerId(),
           file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
           base::BindOnce(
               &FileManagerPrivateInternalInstallLinuxPackageFunction::
@@ -1226,6 +1223,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
 
   model->GetRecentFiles(
       file_system_context.get(), source_url(), file_type,
+      params->invalidate_cache,
       base::BindOnce(
           &FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles,
           this, params->restriction));
@@ -1281,12 +1279,12 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetFrameColorFunction::Run() {
   ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  auto* color_provider = ash::ColorProvider::Get();
   std::string frame_color = SkColorToHexString(SK_ColorWHITE);
-  if (color_provider) {
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get()) {
     frame_color = SkColorToHexString(cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, color_provider->IsDarkModeEnabled(),
-        /*use_debug_color=*/false));
+        cros_styles::ColorName::kBgColor,
+        dark_light_mode_controller->IsDarkModeEnabled(),
+        /*use_debug_colors=*/false));
   }
   return RespondNow(OneArgument(base::Value(frame_color)));
 }
@@ -1343,8 +1341,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  web_app::LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::FILE_MANAGER, launch_params);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   launch_params);
 
   return RespondNow(OneArgument(base::Value(true)));
 }

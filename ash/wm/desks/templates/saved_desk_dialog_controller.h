@@ -34,10 +34,6 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
       delete;
   ~SavedDeskDialogController() override;
 
-  // Convenience function to get the controller instance, which is created and
-  // owned by OverviewSession.
-  static SavedDeskDialogController* Get();
-
   const views::Widget* dialog_widget() const { return dialog_widget_; }
 
   // Shows the dialog. The dialog will look slightly different depending on the
@@ -51,6 +47,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
       std::unique_ptr<DeskTemplate> desk_template);
   void ShowReplaceDialog(aura::Window* root_window,
                          const std::u16string& template_name,
+                         DeskTemplateType template_type,
                          base::OnceClosure on_accept_callback,
                          base::OnceClosure on_cancel_callback);
   // Show the delete template dialog when user press the delete button.
@@ -58,6 +55,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   // the dialog description.
   void ShowDeleteDialog(aura::Window* root_window,
                         const std::u16string& template_name,
+                        DeskTemplateType template_type,
                         base::OnceClosure on_accept_callback);
 
   // views::WidgetObserver:
@@ -67,6 +65,9 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   // Creates and shows the dialog on `root_window`.
   void CreateDialogWidget(std::unique_ptr<SavedDeskDialog> dialog,
                           aura::Window* root_window);
+
+  // Returns true if a dialog can be shown.
+  bool CanShowDialog() const;
 
   // Callbacks for when a user has either accepted the unsupported apps dialog
   // or not.

@@ -59,17 +59,17 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
  protected:
   // The presenter object under test.
   BubbleViewControllerPresenter* bubbleViewControllerPresenter_;
-  // The window the |parentViewController_|'s view is in.
-  // -presentInViewController: expects the |anchorPoint| parameter to be in
-  // window coordinates, which requires the |view| property to be in a window.
+  // The window the `parentViewController_`'s view is in.
+  // -presentInViewController: expects the `anchorPoint` parameter to be in
+  // window coordinates, which requires the `view` property to be in a window.
   UIWindow* window_;
   // The view controller the BubbleViewController is added as a child of.
   UIViewController* parentViewController_;
   // The point at which the bubble is anchored.
   CGPoint anchorPoint_;
-  // How many times |bubbleViewControllerPresenter_|'s internal
-  // |dismissalCallback| has been invoked. Defaults to 0. Every time the
-  // callback is invoked, |dismissalCallbackCount_| increments.
+  // How many times `bubbleViewControllerPresenter_`'s internal
+  // `dismissalCallback` has been invoked. Defaults to 0. Every time the
+  // callback is invoked, `dismissalCallbackCount_` increments.
   int dismissalCallbackCount_;
   absl::optional<feature_engagement::Tracker::SnoozeAction>
       dismissalCallbackAction_;
@@ -143,13 +143,13 @@ TEST_F(BubbleViewControllerPresenterTest,
   EXPECT_EQ(0, dismissalCallbackCount_);
 }
 
-// Tests that the timers are |nil| before the bubble is presented on screen.
+// Tests that the timers are `nil` before the bubble is presented on screen.
 TEST_F(BubbleViewControllerPresenterTest, TimersInitiallyNil) {
   EXPECT_EQ(nil, bubbleViewControllerPresenter_.bubbleDismissalTimer);
   EXPECT_EQ(nil, bubbleViewControllerPresenter_.engagementTimer);
 }
 
-// Tests that the timers are not |nil| once the bubble is presented on screen.
+// Tests that the timers are not `nil` once the bubble is presented on screen.
 TEST_F(BubbleViewControllerPresenterTest, TimersInstantiatedOnPresent) {
   [bubbleViewControllerPresenter_
       presentInViewController:parentViewController_
@@ -159,7 +159,7 @@ TEST_F(BubbleViewControllerPresenterTest, TimersInstantiatedOnPresent) {
   EXPECT_NE(nil, bubbleViewControllerPresenter_.engagementTimer);
 }
 
-// Tests that the bubble timer is |nil| but the engagement timer is not |nil|
+// Tests that the bubble timer is `nil` but the engagement timer is not `nil`
 // when the bubble is presented and dismissed.
 TEST_F(BubbleViewControllerPresenterTest, BubbleTimerNilOnDismissal) {
   [bubbleViewControllerPresenter_
@@ -171,12 +171,12 @@ TEST_F(BubbleViewControllerPresenterTest, BubbleTimerNilOnDismissal) {
   EXPECT_NE(nil, bubbleViewControllerPresenter_.engagementTimer);
 }
 
-// Tests that the |userEngaged| property is initially |NO|.
+// Tests that the `userEngaged` property is initially `NO`.
 TEST_F(BubbleViewControllerPresenterTest, UserEngagedInitiallyNo) {
   EXPECT_FALSE(bubbleViewControllerPresenter_.isUserEngaged);
 }
 
-// Tests that the |userEngaged| property is |YES| once the bubble is presented
+// Tests that the `userEngaged` property is `YES` once the bubble is presented
 // on screen.
 TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnPresent) {
   [bubbleViewControllerPresenter_
@@ -186,7 +186,7 @@ TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnPresent) {
   EXPECT_TRUE(bubbleViewControllerPresenter_.isUserEngaged);
 }
 
-// Tests that the |userEngaged| property remains |YES| once the bubble is
+// Tests that the `userEngaged` property remains `YES` once the bubble is
 // presented and dismissed.
 TEST_F(BubbleViewControllerPresenterTest, UserEngagedYesOnDismissal) {
   [bubbleViewControllerPresenter_

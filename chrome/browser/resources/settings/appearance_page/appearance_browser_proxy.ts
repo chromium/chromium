@@ -16,7 +16,7 @@ export interface AppearanceBrowserProxy {
 
   useDefaultTheme(): void;
 
-  // <if expr="is_linux and not chromeos_ash">
+  // <if expr="is_linux">
   useSystemTheme(): void;
   // </if>
 
@@ -44,7 +44,7 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
     chrome.send('useDefaultTheme');
   }
 
-  // <if expr="is_linux and not chromeos_ash">
+  // <if expr="is_linux">
   useSystemTheme() {
     chrome.send('useSystemTheme');
   }

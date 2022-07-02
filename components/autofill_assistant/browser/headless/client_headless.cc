@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/empty_website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
@@ -43,8 +44,11 @@ const char kConsumerName[] = "autofill_assistant";
 ClientHeadless::ClientHeadless(
     content::WebContents* web_contents,
     const CommonDependencies* common_dependencies,
-    ExternalActionDelegate* action_extension_delegate)
-    : web_contents_(web_contents), common_dependencies_(common_dependencies) {
+    ExternalActionDelegate* action_extension_delegate,
+    HeadlessScriptControllerImpl* external_script_controller)
+    : web_contents_(web_contents),
+      common_dependencies_(common_dependencies),
+      external_script_controller_(external_script_controller) {
   auto* password_manager_client =
       common_dependencies_->GetPasswordManagerClient(web_contents);
   if (password_manager_client) {
@@ -60,8 +64,7 @@ ClientHeadless::ClientHeadless(
 ClientHeadless::~ClientHeadless() = default;
 
 void ClientHeadless::Start(const GURL& url,
-                           std::unique_ptr<TriggerContext> trigger_context,
-                           ControllerObserver* observer) {
+                           std::unique_ptr<TriggerContext> trigger_context) {
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(web_contents_)->GetWeakPtr(),
@@ -69,7 +72,6 @@ void ClientHeadless::Start(const GURL& url,
       /* annotate_dom_model_service= */
       common_dependencies_->GetOrCreateAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
-  controller_->AddObserver(observer);
   controller_->Start(url, std::move(trigger_context));
 }
 
@@ -94,7 +96,8 @@ std::string ClientHeadless::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientHeadless::GetSignedInEmail() const {
-  return common_dependencies_->GetSignedInEmail(GetWebContents());
+  return common_dependencies_->GetSignedInEmail(
+      GetWebContents()->GetBrowserContext());
 }
 
 absl::optional<std::pair<int, int>> ClientHeadless::GetWindowSize() const {
@@ -117,12 +120,12 @@ AccessTokenFetcher* ClientHeadless::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientHeadless::GetPersonalDataManager() const {
-  return common_dependencies_->GetPersonalDataManager();
+  return common_dependencies_->GetPersonalDataManager(
+      GetWebContents()->GetBrowserContext());
 }
 
 WebsiteLoginManager* ClientHeadless::GetWebsiteLoginManager() const {
-  // TODO(b/201964911): return instance.
-  return nullptr;
+  return website_login_manager_.get();
 }
 
 password_manager::PasswordChangeSuccessTracker*
@@ -169,7 +172,25 @@ bool ClientHeadless::MustUseBackendData() const {
   return false;
 }
 
-void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {}
+void ClientHeadless::GetAnnotateDomModelVersion(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
+  std::move(callback).Run(absl::nullopt);
+}
+
+void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {
+  // This call can cause Controller to be destroyed. For this reason we delay it
+  // to avoid UAF errors in the controller.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ClientHeadless::NotifyScriptEnded,
+                                weak_ptr_factory_.GetWeakPtr(), reason));
+}
+
+void ClientHeadless::NotifyScriptEnded(Metrics::DropOutReason reason) {
+  external_script_controller_->NotifyScriptEnded(reason);
+
+  // This instance can be destroyed by the above call, so nothing should be
+  // added here.
+}
 
 void ClientHeadless::FetchAccessToken(
     base::OnceCallback<void(bool, const std::string&)> callback) {

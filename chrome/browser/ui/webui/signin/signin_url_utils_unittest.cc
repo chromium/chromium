@@ -10,72 +10,28 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
-
-MATCHER_P(ParamsEq, expected_params, "") {
-  return arg.is_modal == expected_params.is_modal &&
-         arg.design == expected_params.design &&
-         arg.profile_color == expected_params.profile_color;
-}
-
-// Tests that the default values correspond to the usage of the sync
-// confirmation page in the modal flow.
-TEST(SigninURLUtilsTest, SyncConfirmationURLParamsDefault) {
-  SyncConfirmationURLParams default_params;
-  SyncConfirmationURLParams expected_params = {
-      /*is_modal=*/true, SyncConfirmationUI::DesignVersion::kMonotone,
-      absl::nullopt};
-  EXPECT_THAT(default_params, ParamsEq(expected_params));
-}
 
 TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  SyncConfirmationURLParams parsed_params =
-      GetParamsFromSyncConfirmationURL(url);
-  // Default params are expected.
-  SyncConfirmationURLParams expected_params;
-  EXPECT_THAT(parsed_params, ParamsEq(expected_params));
+  EXPECT_TRUE(IsSyncConfirmationModal(url));
 }
 
-class SigninURLUtilsSyncConfirmationURLTest
-    : public ::testing::TestWithParam<SyncConfirmationURLParams> {};
-
-TEST_P(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
-  SyncConfirmationURLParams params = GetParam();
+TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
+  // Modal version.
   GURL url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL), params);
+      GURL(chrome::kChromeUISyncConfirmationURL), /*is_modal=*/true);
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
-  SyncConfirmationURLParams parsed_params =
-      GetParamsFromSyncConfirmationURL(url);
-  EXPECT_THAT(parsed_params, ParamsEq(params));
-}
+  EXPECT_TRUE(IsSyncConfirmationModal(url));
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SigninURLUtilsSyncConfirmationURLTest,
-    ::testing::Values(
-        SyncConfirmationURLParams{},
-        SyncConfirmationURLParams{
-            true, SyncConfirmationUI::DesignVersion::kMonotone, absl::nullopt},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kMonotone, absl::nullopt},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kColored, absl::nullopt},
-        SyncConfirmationURLParams{false,
-                                  SyncConfirmationUI::DesignVersion::kColored,
-                                  SK_ColorTRANSPARENT},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kColored, SK_ColorBLACK},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kColored, SK_ColorWHITE},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kColored, SK_ColorRED},
-        SyncConfirmationURLParams{
-            false, SyncConfirmationUI::DesignVersion::kColored, SK_ColorCYAN},
-        SyncConfirmationURLParams{
-            true, SyncConfirmationUI::DesignVersion::kColored, SK_ColorBLACK}));
+  // Non-modal version.
+  url = AppendSyncConfirmationQueryParams(
+      GURL(chrome::kChromeUISyncConfirmationURL), /*is_modal=*/false);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_FALSE(IsSyncConfirmationModal(url));
+}
 
 class SigninURLUtilsReauthConfirmationURLTest
     : public ::testing::TestWithParam<int> {};

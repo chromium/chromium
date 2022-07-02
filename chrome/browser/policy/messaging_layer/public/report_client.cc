@@ -36,6 +36,7 @@
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
@@ -78,7 +79,8 @@ class ReportingClient::Uploader : public UploaderInterface {
  public:
   using UploadCallback =
       base::OnceCallback<Status(bool,
-                                std::unique_ptr<std::vector<EncryptedRecord>>)>;
+                                std::vector<EncryptedRecord>,
+                                absl::optional<ScopedReservation>)>;
 
   static std::unique_ptr<Uploader> Create(bool need_encryption_key,
                                           UploadCallback upload_callback) {
@@ -91,9 +93,11 @@ class ReportingClient::Uploader : public UploaderInterface {
   Uploader& operator=(const Uploader& other) = delete;
 
   void ProcessRecord(EncryptedRecord data,
+                     ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
     helper_.AsyncCall(&Helper::ProcessRecord)
-        .WithArgs(std::move(data), std::move(processed_cb));
+        .WithArgs(std::move(data), std::move(scoped_reservation),
+                  std::move(processed_cb));
   }
   void ProcessGap(SequenceInformation start,
                   uint64_t count,
@@ -114,6 +118,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     Helper(const Helper& other) = delete;
     Helper& operator=(const Helper& other) = delete;
     void ProcessRecord(EncryptedRecord data,
+                       ScopedReservation scoped_reservation,
                        base::OnceCallback<void(bool)> processed_cb);
     void ProcessGap(SequenceInformation start,
                     uint64_t count,
@@ -123,7 +128,8 @@ class ReportingClient::Uploader : public UploaderInterface {
    private:
     bool completed_{false};
     const bool need_encryption_key_;
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
+    std::vector<EncryptedRecord> encrypted_records_;
+    absl::optional<ScopedReservation> encrypted_records_reservation_;
 
     UploadCallback upload_callback_;
   };
@@ -140,17 +146,20 @@ ReportingClient::Uploader::Helper::Helper(
     bool need_encryption_key,
     ReportingClient::Uploader::UploadCallback upload_callback)
     : need_encryption_key_(need_encryption_key),
-      encrypted_records_(std::make_unique<std::vector<EncryptedRecord>>()),
       upload_callback_(std::move(upload_callback)) {}
 
 void ReportingClient::Uploader::Helper::ProcessRecord(
     EncryptedRecord data,
+    ScopedReservation scoped_reservation,
     base::OnceCallback<void(bool)> processed_cb) {
   if (completed_) {
     std::move(processed_cb).Run(false);
     return;
   }
-  encrypted_records_->emplace_back(std::move(data));
+  encrypted_records_.emplace_back(std::move(data));
+  if (encrypted_records_reservation_.has_value()) {
+    encrypted_records_reservation_.value().HandOver(scoped_reservation);
+  }
   std::move(processed_cb).Run(true);
 }
 
@@ -163,8 +172,8 @@ void ReportingClient::Uploader::Helper::ProcessGap(
     return;
   }
   for (uint64_t i = 0; i < count; ++i) {
-    encrypted_records_->emplace_back();
-    *encrypted_records_->rbegin()->mutable_sequence_information() = start;
+    encrypted_records_.emplace_back();
+    *encrypted_records_.rbegin()->mutable_sequence_information() = start;
     start.set_sequencing_id(start.sequencing_id() + 1);
   }
   std::move(processed_cb).Run(true);
@@ -181,14 +190,16 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
     return;
   }
   completed_ = true;
-  DCHECK(encrypted_records_);
-  if (encrypted_records_->empty() && !need_encryption_key_) {
+  if (encrypted_records_.empty() && !need_encryption_key_) {
     return;
   }
   DCHECK(upload_callback_);
   Status upload_status =
       std::move(upload_callback_)
-          .Run(need_encryption_key_, std::move(encrypted_records_));
+          .Run(need_encryption_key_, std::move(encrypted_records_),
+               std::move(encrypted_records_reservation_));
+  // Make sure the reservation is invalidated.
+  encrypted_records_reservation_.reset();
   if (!upload_status.ok()) {
     LOG(ERROR) << "Unable to upload records: " << upload_status;
   }
@@ -344,10 +355,13 @@ void ReportingClient::DeliverAsyncStartUploader(
                 base::BindOnce(
                     [](EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
-                       std::unique_ptr<std::vector<EncryptedRecord>> records) {
+                       std::vector<EncryptedRecord> records,
+                       absl::optional<ScopedReservation> scoped_reservation) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
-                          base::DoNothing());
+                          std::move(scoped_reservation), base::DoNothing());
+                      // Make sure reservation is invalidated.
+                      scoped_reservation.reset();
                       return Status::StatusOK();
                     },
                     base::Unretained(instance->upload_provider_.get())));

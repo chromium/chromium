@@ -9,11 +9,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/files/file_error_or.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -505,6 +507,62 @@ TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
   TestGenerateUnusedFilename({}, "", base::File::FILE_ERROR_INVALID_OPERATION);
   TestGenerateUnusedFilename({}, "path/with/slashes",
                              base::File::FILE_ERROR_INVALID_OPERATION);
+}
+
+TEST_P(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
+  Profile* const profile = GetProfile();
+  const std::string extension_id = "abc";
+
+  // Create and mount the FileSystemProvider.
+  auto fake_provider =
+      ash::file_system_provider::FakeExtensionProvider::Create(extension_id);
+  const auto kProviderId = fake_provider->GetId();
+  auto* service = ash::file_system_provider::Service::Get(profile);
+  service->RegisterProvider(std::move(fake_provider));
+  const base::File::Error result = service->MountFileSystem(
+      kProviderId, ash::file_system_provider::MountOptions(file_system_id_,
+                                                           "Test FileSystem"));
+  ASSERT_EQ(base::File::FILE_OK, result);
+
+  auto* provided_file_system =
+      static_cast<ash::file_system_provider::FakeProvidedFileSystem*>(
+          service->GetProvidedFileSystem(kProviderId, file_system_id_));
+  ASSERT_TRUE(provided_file_system);
+  const base::FilePath mount_point_name =
+      provided_file_system->GetFileSystemInfo().mount_path().BaseName();
+
+  const std::string origin = "chrome-extension://abc/";
+  storage::FileSystemContext* const context =
+      GetFileSystemContextForSourceURL(profile, GURL(origin));
+  ASSERT_TRUE(context);
+
+  // Make sure we can access the filesystem from the above origin.
+  context->external_backend()->GrantFileAccessToOrigin(
+      url::Origin::Create(GURL(origin)), base::FilePath(mount_point_name));
+
+  const storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  auto destination_folder_url = mount_points->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal, mount_point_name);
+  auto expected_url = mount_points->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal,
+      mount_point_name.Append("hello (1).txt"));
+
+  base::RunLoop run_loop;
+  GenerateUnusedFilename(
+      destination_folder_url,
+      base::FilePath(ash::file_system_provider::kFakeFilePath).BaseName(),
+      context,
+      base::BindLambdaForTesting(
+          [&](base::FileErrorOr<storage::FileSystemURL> result) {
+            EXPECT_FALSE(result.is_error())
+                << "Unexpected error " << result.error();
+            EXPECT_EQ(expected_url.ToGURL(), result->ToGURL());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesAppMode,

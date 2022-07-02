@@ -15,7 +15,7 @@ class Browser;
 // Coordinator for the tab strip.
 @interface TabStripCoordinator : ChromeCoordinator
 
-// Initializes this Coordinator with its |browser| and a nil base view
+// Initializes this Coordinator with its `browser` and a nil base view
 // controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 

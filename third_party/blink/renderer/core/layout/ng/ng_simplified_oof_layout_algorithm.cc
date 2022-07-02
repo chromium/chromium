@@ -28,8 +28,8 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetDisableOOFDescendantsPropagation();
   container_builder_.SetHasOutOfFlowFragmentChild(true);
 
-  const auto* old_fragment_break_token =
-      To<NGBlockBreakToken>(previous_fragment.BreakToken());
+  const NGBlockBreakToken* old_fragment_break_token =
+      previous_fragment.BreakToken();
   if (old_fragment_break_token) {
     container_builder_.SetHasColumnSpanner(
         old_fragment_break_token->IsCausedByColumnSpanner());

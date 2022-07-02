@@ -14,7 +14,7 @@ using password_manager::CredentialLeakType;
 // Commands related to Password Breach.
 @protocol PasswordBreachCommands
 
-// Shows Password Breach for |leakType| and |URL|.
+// Shows Password Breach for `leakType` and `URL`.
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType;
 
 @end

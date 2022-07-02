@@ -68,7 +68,7 @@ class CC_EXPORT LayerListConstIterator {
   const Layer* operator*() const { return current_layer_; }
 
  private:
-  const Layer* current_layer_;
+  raw_ptr<const Layer> current_layer_;
   std::vector<size_t> list_indices_;
 };
 

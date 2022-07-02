@@ -25,6 +25,9 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -179,13 +182,14 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
 void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
-  absl::optional<AppId> app_id =
-      externally_installed_app_prefs_.LookupPlaceholderAppId(
-          install_options_.install_url);
+  absl::optional<AppId> app_id = registrar_->LookupPlaceholderAppId(
+      install_options_.install_url,
+      ConvertExternalInstallSourceToSource(install_options_.install_source));
 
-  // If there is no placeholder app or the app is not installed,
-  // then no need to uninstall anything.
-  if (!app_id.has_value() || !registrar_->IsInstalled(app_id.value())) {
+  // If there is no app in the DB that is a placeholder app or if the app exists
+  // but is not a placeholder, then no need to uninstall anything.
+  // These checks are handled by the WebAppRegistrar itself.
+  if (!app_id.has_value()) {
     ContinueWebAppInstall(web_contents, std::move(result_callback));
     return;
   }
@@ -243,11 +247,11 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<AppId> app_id =
-      externally_installed_app_prefs_.LookupPlaceholderAppId(
-          install_options_.install_url);
-  if (app_id.has_value() && registrar_->IsInstalled(app_id.value()) &&
-      !install_options_.force_reinstall) {
+  absl::optional<AppId> app_id = registrar_->LookupPlaceholderAppId(
+      install_options_.install_url,
+      ConvertExternalInstallSourceToSource(install_options_.install_source));
+
+  if (app_id.has_value() && !install_options_.force_reinstall) {
     // No need to install a placeholder app again.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

@@ -17,7 +17,7 @@ export class SliderNode extends BasicNode {
    */
   constructor(baseNode, parent) {
     super(baseNode, parent);
-    this.isCustomSlider_ = !!baseNode.htmlAttributes.role;
+    this.isCustomSlider_ = Boolean(baseNode.htmlAttributes.role);
   }
 
   /** @override */

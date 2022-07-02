@@ -97,6 +97,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     if (clear_storage_) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_DOM_STORAGE;
       remove_mask |= BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+      // Internal data should not be removed by site-initiated deletions.
+      remove_mask &=
+          ~BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL;
     }
     if (clear_cache_)
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;

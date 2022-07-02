@@ -30,17 +30,18 @@ public class NavigationHandle {
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
-    private boolean mIsFragmentNavigation;
+    private boolean mIsPrimaryMainFrameFragmentNavigation;
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
     private final Origin mInitiatorOrigin;
     private final boolean mIsPost;
-    private final boolean mHasUserGesture;
+    private boolean mHasUserGesture;
     private boolean mIsRedirect;
     private final boolean mIsExternalProtocol;
     private final long mNavigationId;
     private final boolean mIsPageActivation;
+    private final boolean mIsReload;
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
@@ -48,7 +49,7 @@ public class NavigationHandle {
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
             Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
             boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId, boolean isPageActivation) {
+            long navigationId, boolean isPageActivation, boolean isReload) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -64,6 +65,7 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mNavigationId = navigationId;
         mIsPageActivation = isPageActivation;
+        mIsReload = isReload;
     }
 
     /**
@@ -81,12 +83,13 @@ public class NavigationHandle {
      */
     @CalledByNative
     public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
-            boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
-            @PageTransition int transition, @NetError int errorCode, int httpStatuscode) {
+            boolean isPrimaryMainFrameFragmentNavigation, boolean isDownload,
+            boolean isValidSearchFormUrl, @PageTransition int transition, @NetError int errorCode,
+            int httpStatuscode) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
-        mIsFragmentNavigation = isFragmentNavigation;
+        mIsPrimaryMainFrameFragmentNavigation = isPrimaryMainFrameFragmentNavigation;
         mIsDownload = isDownload;
         mIsValidSearchFormUrl = isValidSearchFormUrl;
         mPageTransition = transition;
@@ -206,10 +209,10 @@ public class NavigationHandle {
     }
 
     /**
-     * Returns true on same-document navigation with fragment change.
+     * Returns true on same-document navigation with fragment change in the primary main frame.
      */
-    public boolean isFragmentNavigation() {
-        return mIsFragmentNavigation;
+    public boolean isPrimaryMainFrameFragmentNavigation() {
+        return mIsPrimaryMainFrameFragmentNavigation;
     }
 
     /**
@@ -298,6 +301,21 @@ public class NavigationHandle {
      */
     public boolean isPageActivation() {
         return mIsPageActivation;
+    }
+
+    /**
+     * TODO(https://crbug.com/1310013): This is a hack, restoring M99 Chrome behavior for gesture
+     * carryover on resource requests. To be deleted as soon as a better alternative is agreed upon.
+     */
+    public void setUserGestureForCarryover(boolean hasUserGesture) {
+        mHasUserGesture = hasUserGesture;
+    }
+
+    /**
+     * Whether this navigation was initiated by a page reload.
+     */
+    public boolean isReload() {
+        return mIsReload;
     }
 
     @NativeMethods

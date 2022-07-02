@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -66,10 +67,10 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
   AppListControllerDelegate* controller() const { return controller_; }
 
  private:
-  AppContextMenuDelegate* delegate_;
-  Profile* profile_;
+  raw_ptr<AppContextMenuDelegate> delegate_;
+  raw_ptr<Profile> profile_;
   const std::string app_id_;
-  AppListControllerDelegate* controller_;
+  raw_ptr<AppListControllerDelegate> controller_;
 };
 
 }  // namespace app_list

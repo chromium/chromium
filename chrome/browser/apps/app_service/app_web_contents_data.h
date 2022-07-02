@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_WEB_CONTENTS_DATA_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_WEB_CONTENTS_DATA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -34,7 +35,7 @@ class AppWebContentsData
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  Client* client_;
+  raw_ptr<Client> client_;
 };
 
 }  // namespace apps

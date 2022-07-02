@@ -256,6 +256,33 @@ void TabStripScrollContainer::FrameColorsChanged() {
   right_overflow_indicator_->SchedulePaint();
 }
 
+bool TabStripScrollContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
+  const auto get_target_rect = [&](views::View* target) {
+    gfx::RectF rect_in_target_coords_f(rect);
+    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
+    return gfx::ToEnclosingRect(rect_in_target_coords_f);
+  };
+
+  if (leading_scroll_button_->GetLocalBounds().Intersects(
+          get_target_rect(leading_scroll_button_))) {
+    return !leading_scroll_button_->HitTestRect(
+        get_target_rect(leading_scroll_button_));
+  }
+
+  if (trailing_scroll_button_->GetLocalBounds().Intersects(
+          get_target_rect(trailing_scroll_button_))) {
+    return !trailing_scroll_button_->HitTestRect(
+        get_target_rect(trailing_scroll_button_));
+  }
+
+  if (scroll_view_->GetLocalBounds().Intersects(
+          get_target_rect(scroll_view_))) {
+    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+  }
+
+  return true;
+}
+
 void TabStripScrollContainer::OnThemeChanged() {
   View::OnThemeChanged();
   FrameColorsChanged();

@@ -33,7 +33,7 @@ class EcAlgorithm : public AlgorithmImplementation {
                      GenerateKeyResult* result) const override;
 
   Status ImportKey(blink::WebCryptoKeyFormat format,
-                   const CryptoData& key_data,
+                   base::span<const uint8_t> key_data,
                    const blink::WebCryptoAlgorithm& algorithm,
                    bool extractable,
                    blink::WebCryptoKeyUsageMask usages,
@@ -47,29 +47,29 @@ class EcAlgorithm : public AlgorithmImplementation {
                                 blink::WebCryptoKeyType type,
                                 bool extractable,
                                 blink::WebCryptoKeyUsageMask usages,
-                                const CryptoData& key_data,
+                                base::span<const uint8_t> key_data,
                                 blink::WebCryptoKey* key) const override;
 
  private:
-  Status ImportKeyRaw(const CryptoData& key_data,
+  Status ImportKeyRaw(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,
                       bool extractable,
                       blink::WebCryptoKeyUsageMask usages,
                       blink::WebCryptoKey* key) const;
 
-  Status ImportKeyPkcs8(const CryptoData& key_data,
+  Status ImportKeyPkcs8(base::span<const uint8_t> key_data,
                         const blink::WebCryptoAlgorithm& algorithm,
                         bool extractable,
                         blink::WebCryptoKeyUsageMask usages,
                         blink::WebCryptoKey* key) const;
 
-  Status ImportKeySpki(const CryptoData& key_data,
+  Status ImportKeySpki(base::span<const uint8_t> key_data,
                        const blink::WebCryptoAlgorithm& algorithm,
                        bool extractable,
                        blink::WebCryptoKeyUsageMask usages,
                        blink::WebCryptoKey* key) const;
 
-  Status ImportKeyJwk(const CryptoData& key_data,
+  Status ImportKeyJwk(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,
                       bool extractable,
                       blink::WebCryptoKeyUsageMask usages,

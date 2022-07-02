@@ -4,8 +4,7 @@
 
 package org.chromium.base.metrics;
 
-import android.os.SystemClock;
-
+import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
@@ -66,8 +65,18 @@ import java.util.Map;
     @Override
     public void recordUserAction(String name, long elapsedRealtimeMillis) {
         // Java and native code use different clocks. We need a relative elapsed time.
-        long millisSinceEvent = SystemClock.elapsedRealtime() - elapsedRealtimeMillis;
+        long millisSinceEvent = TimeUtils.elapsedRealtimeMillis() - elapsedRealtimeMillis;
         NativeUmaRecorderJni.get().recordUserAction(name, millisSinceEvent);
+    }
+
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        return NativeUmaRecorderJni.get().getHistogramValueCountForTesting(name, sample, 0);
+    }
+
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        return NativeUmaRecorderJni.get().getHistogramTotalCountForTesting(name, 0);
     }
 
     private long getNativeHint(String name) {
@@ -87,7 +96,7 @@ import java.util.Map;
 
     /** Natives API to record metrics. */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long recordBooleanHistogram(String name, long nativeHint, boolean sample);
         long recordExponentialHistogram(
                 String name, long nativeHint, int sample, int min, int max, int numBuckets);
@@ -105,5 +114,8 @@ import java.util.Map;
          *         Should be positive.
          */
         void recordUserAction(String name, long millisSinceEvent);
+
+        int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
+        int getHistogramTotalCountForTesting(String name, long snapshotPtr);
     }
 }

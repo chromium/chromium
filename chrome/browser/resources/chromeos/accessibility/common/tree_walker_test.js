@@ -119,7 +119,7 @@ TEST_F(
       }.bind(this)));
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'RootLeafRestriction',
     async function() {
       const r = await this.runWithLoadedTree(`
@@ -197,7 +197,7 @@ TEST_F(
       assertEquals(node6, walker.next().node);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'LeafPredicateSymmetry',
     async function() {
       const r = await this.runWithLoadedTree(toolbarDoc);
@@ -220,7 +220,7 @@ TEST_F(
       } while (backwardWalker.next().node);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'RootPredicateEnding',
     async function() {
       const r = await this.runWithLoadedTree(toolbarDoc());

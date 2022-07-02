@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -54,15 +55,19 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
                               uint32_t flags,
                               bool should_do_learning) = 0;
 
+  // Sets grammar fragment at the cursor position. If not exists, sends a
+  // fragment with empty range.
+  virtual void SetGrammarFragmentAtCursor(
+      const ui::GrammarFragment& fragment) = 0;
+
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().
   virtual void Reset() = 0;
 
-  // Focuses the context.
-  virtual void Focus() = 0;
-
-  // Blurs the context.
-  virtual void Blur() = 0;
+  // Called when text input focus is changed.
+  virtual void UpdateFocus(bool has_client,
+                           TextInputType old_type,
+                           TextInputType new_type) = 0;
 
   // Returns the corresponding VirtualKeyboardController instance.
   // Or nullptr, if not supported.
@@ -95,6 +100,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   // |range| is in UTF-16 code range.
   virtual void OnSetPreeditRegion(const gfx::Range& range,
                                   const std::vector<ImeTextSpan>& spans) = 0;
+
+  // Clears all the grammar fragments in |range|. All indices are measured in
+  // UTF-16 code point.
+  virtual void OnClearGrammarFragments(const gfx::Range& range) = 0;
+
+  // Adds a new grammar marker according to |fragments|. Clients should show
+  // some visual indications such as underlining. All indices are measured in
+  // UTF-16 code point.
+  virtual void OnAddGrammarFragment(const ui::GrammarFragment& fragment) = 0;
 };
 
 }  // namespace ui

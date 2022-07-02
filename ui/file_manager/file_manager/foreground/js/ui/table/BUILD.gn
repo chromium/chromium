@@ -62,8 +62,8 @@ js_library("table_list") {
 
 js_library("table_splitter") {
   deps = [
+    "//ui/file_manager/file_manager/foreground/js/ui:splitter",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
-    "//ui/webui/resources/js/cr/ui:splitter",
   ]
 }

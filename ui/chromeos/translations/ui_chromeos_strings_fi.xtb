@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Ei verkkoja</translation>
 <translation id="1060368002126861100">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, siirrä se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="1062407476771304334">Korvaa</translation>
-<translation id="1119069657431255176">Bzip2-pakattu Tar-arkisto</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">englanti (Yhdysvallat), Dvorak-näppäimistö ohjelmoijille</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">katalaani</translation>
 <translation id="1168100932582989117">Googlen nimipalvelimet</translation>
-<translation id="1171082344678443012">XZ-pakattu arkisto</translation>
 <translation id="1172970565351728681">Noin <ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1173916544412572294">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1209796539517632982">Automaattiset nimipalvelimet</translation>
 <translation id="1210831758834677569">lao</translation>
-<translation id="1223825810409523901">Chrome-laajennus</translation>
 <translation id="1243314992276662751">Lähetä</translation>
 <translation id="1249250836236328755">Lajityyppi</translation>
 <translation id="1254593899333212300">Suora internet-yhteys</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Jaettujen verkkojen määritysten muokkaaminen on estetty.</translation>
 <translation id="1665611772925418501">Tiedostoa ei voi muuttaa.</translation>
 <translation id="1673103856845176271">Tiedostoa ei voi käyttää turvallisuussyistä.</translation>
-<translation id="16762847117768727">ISO-kuva</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Pyöräily</translation>
 <translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Ylläpidä Drivessa</translation>
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
-<translation id="2028997212275086731">RAR-arkisto</translation>
-<translation id="2036414735548252477">LZMA-pakattu tar-arkisto</translation>
 <translation id="2037845485764049925">venäjä</translation>
 <translation id="2044023416777079300">Modeemia ei rekisteröity</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
 <translation id="2142680004883808240">venäjä, foneettinen YaZHert-näppäimistö</translation>
 <translation id="2143778271340628265">Manuaalinen välityspalvelimen määritys</translation>
+<translation id="2148716181193084225">Tänään</translation>
 <translation id="2163152940313951844">Virheellinen merkki: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugali, Yhdysvaltain kansainvälinen PC-näppäimistö</translation>
 <translation id="2198315389084035571">yksinkertaistettu kiina</translation>
-<translation id="2208158072373999562">Zip-arkisto</translation>
 <translation id="22085916256174561">korea</translation>
 <translation id="2208919847696382164">Asenna Linux-versio</translation>
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> tiedostoa on valittu</translation>
+<translation id="2387120140441437063">Roskakorissa olevia tiedostoja ei voi avata. Palauta tiedostot ennen avaamista.</translation>
 <translation id="2387458720915042159">Välityspalvelinyhteyden tyyppi</translation>
 <translation id="2389832672041313158">burma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">Tämän kansion sisältöä voi vain lukea. Joitain toimintoja ei tueta.</translation>
 <translation id="2542049655219295786">Google-taulukko</translation>
 <translation id="2544853746127077729">Verkko on hylännyt todennusvarmenteen</translation>
-<translation id="2547921442987553570">Lisää laajennukseen <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2563185590376525700">Sammakko</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">kiina (dayi)</translation>
 <translation id="3057861065630527966">Varmuuskopioi valokuvasi ja videosi.</translation>
 <translation id="3067790092342515856">Windows-tiedostot</translation>
-<translation id="3078461028045006476">Jaa laajennuksen <ph name="EXTENSION_NAME" /> kanssa</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-isäntä</translation>
 <translation id="3104793765551262433">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3855472144336161447">saksa, Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
-<translation id="386548886866354912">Pakkaa laajennuksella <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Kuvaus</translation>
 <translation id="3899991606604168269">ranska (Kanada), monikielinen näppäimistö</translation>
 <translation id="3901991538546252627">Yhdistetään verkkoon <ph name="NAME" /></translation>
@@ -347,8 +339,9 @@
 <translation id="3958548648197196644">Kiivi</translation>
 <translation id="3966388904776714213">Äänisoitin</translation>
 <translation id="3971140002794351170">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
-<translation id="3973925058222872294">englanti (Iso-Britannia)</translation>
+<translation id="3973925058222872294">englanti (Yhdistynyt kuningaskunta)</translation>
 <translation id="3975895378829046965">foneettinen bangla</translation>
+<translation id="3991446849494482687">Tämä poistaa myös SIM-kortin lukitusasetuksen käytöstä laitteella.</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4017788180641807848">englanti (Yhdysvallat), Workman-näppäimistö</translation>
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> tavua</translation>
 <translation id="4880214202172289027">Äänenvoimakkuuden liukusäädin</translation>
 <translation id="4881695831933465202">Avaa</translation>
-<translation id="4886199584824489598">Bzip2-pakattu arkisto</translation>
 <translation id="4900532980794411603">Jaa Parallels Desktopille</translation>
 <translation id="4902546322522096650">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> valmiina varmuuskopiointiin</translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> verkko, ei yhteyttä</translation>
 <translation id="6074825444536523002">Google-lomake</translation>
 <translation id="6079871810119356840">unkari, qwerty-näppäimistö</translation>
-<translation id="6082256976217156453">LZMA-pakattu arkisto</translation>
 <translation id="6096979789310008754">Hakukysely poistettu, kaikki tiedostot ja kansiot näytetään.</translation>
 <translation id="610101264611565198">Siirretään <ph name="FILE_NAME" /> kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV-tekstitiedosto</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6170470584681422115">Voileipä</translation>
 <translation id="6187719147498869044">unkari</translation>
-<translation id="6189412234224385711">Avaa laajennuksella <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Vaihda PIN-koodi</translation>
 <translation id="6199801702437275229">Odotetaan tietoja tallennustilasta...</translation>
 <translation id="6205710420833115353">Jotkin toiminnot kestävät odotettua kauemmin. Haluatko keskeyttää ne?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">Väärä PUK-koodi</translation>
 <translation id="6312403991423642364">Tuntematon verkkovirhe</translation>
 <translation id="6317608858038767920">Oma nimipalvelin <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkisto</translation>
 <translation id="6321303798550928047">Vilkuttaa</translation>
 <translation id="6327785803543103246">Verkkovälityspalvelimen automaattinen tunnistaminen</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">vietnam, TCVN-näppäimistö</translation>
 <translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
 <translation id="6495925982925244349">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> puretaan tänne: <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Estä välityspalvelimien käyttö jaetuissa verkoissa</translation>
 <translation id="6509122719576673235">norja</translation>
 <translation id="6528513914570774834">Anna muiden laitteen käyttäjien käyttää tätä verkkoa</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Määritä Linux-jakaminen</translation>
 <translation id="6806796368146926706">aakkosnumeerinen, japanilainen näppäimistö</translation>
 <translation id="6808193438228982088">Kettu</translation>
-<translation id="6820687829547641339">Gzip-pakattu Tar-arkisto</translation>
 <translation id="6823166707458800069">Kaikki tähän kansioon tallennetut tiedostot varmuuskopioidaan verkkoon automaattisesti.</translation>
 <translation id="6825883775269213504">venäjä</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> poistettiin valinnasta.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">thai, TIS 820-2531 ‑näppäimistö</translation>
 <translation id="708278670402572152">Katkaise yhteys, jotta skannaus voidaan ottaa käyttöön.</translation>
 <translation id="7086590977277044826">tamil, InScript-näppäimistö</translation>
+<translation id="7088615885725309056">Vanhempi</translation>
 <translation id="7103992300314999525">makedonia</translation>
 <translation id="7106346894903675391">Osta lisää tallennustilaa...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;hae Drivesta&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7695430100978772476">Ei voitu alustaa: <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Roskakorin tyhjentäminen epäonnistui.</translation>
 <translation id="770015031906360009">kreikka</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopioitu.</translation>
 <translation id="7711920809702896782">Kuvan tiedot</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">kiina (wubi)</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7774365994322694683">Lintu</translation>
+<translation id="7781829728241885113">Eilen</translation>
 <translation id="7788080748068240085">Jos haluat tallentaa tiedoston <ph name="FILE_NAME" /> offline-version, vapauta vielä <ph name="TOTAL_FILE_SIZE" /> levytilaa:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />irrota tiedostoja, joita et enää tarvitse offline-tilassa<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />poista tiedostoja Lataukset-kansiosta.<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
 <translation id="7928710562641958568">Poista laite</translation>
 <translation id="7943385054491506837">USA, Colemak</translation>
-<translation id="7948417415021769876">7z-arkisto</translation>
 <translation id="7953739707111622108">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tunnistettu.</translation>
 <translation id="7969525169268594403">sloveeni</translation>
 <translation id="7972920761225148017">ranska (Sveitsi)</translation>
@@ -838,7 +831,7 @@
 <translation id="8087576439476816834">Lataa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
-<translation id="8128733386027980860">englanti (Iso-Britannia), Dvorak-näppäimistö</translation>
+<translation id="8128733386027980860">englanti (Yhdistynyt kuningaskunta), Dvorak-näppäimistö</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> on jaettu sinulle. Et voi poistaa sitä, koska et ole tiedoston omistaja.</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8147028810663464959">Merkkileveys on täysleveä</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">Hangul 3-set (ei vaihtoa)</translation>
 <translation id="8299269255470343364">japani</translation>
 <translation id="8300849813060516376">OTASP epäonnistui</translation>
-<translation id="8308481408797647857">XZ-pakattu arkisto</translation>
 <translation id="8312871300878166382">Liitä kansioon</translation>
 <translation id="8329978297633540474">Vain teksti</translation>
 <translation id="8335587457941836791">Poista kiinnitys hyllystä</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">Klikkaa tiedostoa kakkospainikkeella ja valitse Kiinnitä hyllyyn, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="8461914792118322307">Välityspalvelin</translation>
 <translation id="8463494891489624050">vietnam (VIQR)</translation>
-<translation id="8466234950814670489">Tar-arkisto</translation>
 <translation id="8475647382427415476">Google Drive ei onnistunut synkronoimaan tiedostoa <ph name="FILENAME" />. Google Drive yrittää myöhemmin uudelleen.</translation>
 <translation id="8477649328507734757">Pyörä</translation>
 <translation id="8484284835977497781">Valitse viimeaikaisista kuvistasi.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">Muokkaaja</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Gzip-pakattu arkisto</translation>
 <translation id="965477715979482472">englanti (Etelä-Afrikka)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>

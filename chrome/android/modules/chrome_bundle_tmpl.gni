@@ -181,6 +181,7 @@ template("chrome_bundle") {
                              "lint_suppressions_dep",
                              "min_sdk_version",
                              "proguard_android_sdk_dep",
+                             "rotation_config",
                              "static_library_provider",
                              "static_library_synchronized_proguard",
                              "version_code",

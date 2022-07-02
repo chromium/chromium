@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 
 #include <string.h>
+
 #include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
@@ -16,7 +19,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -63,8 +65,8 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       }
       Chunk* chunk = nullptr;
       if (result == Result::kOk) {
-        chunk = MakeGarbageCollected<Chunk>(buffer,
-                                            SafeCast<wtf_size_t>(available));
+        chunk = MakeGarbageCollected<Chunk>(
+            buffer, base::checked_cast<wtf_size_t>(available));
         result = src_->EndRead(available);
       }
       switch (result) {

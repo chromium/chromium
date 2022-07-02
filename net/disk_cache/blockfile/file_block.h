@@ -16,7 +16,7 @@ namespace disk_cache {
 // Used to simplify loading / storing the block from disk.
 class FileBlock {
  public:
-  virtual ~FileBlock() {}
+  virtual ~FileBlock() = default;
 
   // Returns a pointer to the actual data.
   virtual void* buffer() const = 0;

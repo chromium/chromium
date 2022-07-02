@@ -18,10 +18,8 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
@@ -71,7 +69,7 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
   // Number of times the repeated launches alert has been shown.
   size_t alert_shown_count_ = 0;
   // Simulates the user tapping the accept button when prompted via
-  // |-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler|.
+  // `-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler`.
   bool should_accept_prompt_ = false;
 };
 // A fake NavigationManager to be used by the WebState object for the
@@ -102,7 +100,8 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
 class AppLauncherTabHelperTest : public PlatformTest {
  protected:
   AppLauncherTabHelperTest()
-      : abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_);
     U2FTabHelper::CreateForWebState(&web_state_);
     // Allow is the default policy for this test.
@@ -111,6 +110,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetCurrentURL(GURL("https://chromium.org"));
+    web_state_.SetBrowserState(browser_state_.get());
     tab_helper_ = AppLauncherTabHelper::FromWebState(&web_state_);
     tab_helper_->SetDelegate(&delegate_);
   }
@@ -152,7 +152,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     is_reading_list_initialized_ = true;
   }
 
-  // Returns true if the |expected_read_status| matches the read status for any
+  // Returns true if the `expected_read_status` matches the read status for any
   // non empty source URL based on the transition type and the app policy.
   bool TestReadingListUpdate(bool is_app_blocked,
                              bool is_link_transition,
@@ -203,6 +203,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   FakeNavigationManager* navigation_manager_ = nullptr;
 
@@ -555,13 +556,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
 class BlockedUrlPolicyAppLauncherTabHelperTest
     : public AppLauncherTabHelperTest {
  protected:
-  BlockedUrlPolicyAppLauncherTabHelperTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kInstallURLBlocklistHandlers);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableEnterprisePolicy);
-  }
-
   void SetUp() override {
     AppLauncherTabHelperTest::SetUp();
 

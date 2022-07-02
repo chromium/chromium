@@ -11,11 +11,11 @@
 @protocol FollowManagementUIUpdater
 
 // Removes the web channel from the followed web channels list corresponding
-// to |channel|.
+// to `channel`.
 - (void)removeFollowedWebChannel:(FollowedWebChannel*)channel;
 
 // Adds the web channel from the followed web channels list corresponding to
-// |channel|.
+// `channel`.
 - (void)addFollowedWebChannel:(FollowedWebChannel*)channel;
 
 @end

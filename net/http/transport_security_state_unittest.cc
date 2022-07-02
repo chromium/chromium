@@ -164,7 +164,7 @@ class MockCertificateReportSender
 class MockFailingCertificateReportSender
     : public TransportSecurityState::ReportSenderInterface {
  public:
-  MockFailingCertificateReportSender() : net_error_(ERR_CONNECTION_FAILED) {}
+  MockFailingCertificateReportSender() = default;
   ~MockFailingCertificateReportSender() override = default;
 
   int net_error() { return net_error_; }
@@ -182,14 +182,14 @@ class MockFailingCertificateReportSender
   }
 
  private:
-  const int net_error_;
+  const int net_error_ = ERR_CONNECTION_FAILED;
 };
 
 // A mock ExpectCTReporter that remembers the latest violation that was
 // reported and the number of violations reported.
 class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
  public:
-  MockExpectCTReporter() : num_failures_(0) {}
+  MockExpectCTReporter() = default;
   ~MockExpectCTReporter() override = default;
 
   void OnExpectCTFailed(
@@ -233,7 +233,7 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   HostPortPair host_port_pair_;
   GURL report_uri_;
   base::Time expiration_;
-  uint32_t num_failures_;
+  uint32_t num_failures_ = 0;
   raw_ptr<const X509Certificate> served_certificate_chain_;
   raw_ptr<const X509Certificate> validated_certificate_chain_;
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;
@@ -255,11 +255,10 @@ void CompareCertificateChainWithList(
   ASSERT_TRUE(cert_list->is_list());
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetListDeprecated().size());
+  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetList().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
-    const std::string& list_cert =
-        cert_list->GetListDeprecated()[i].GetString();
+    const std::string& list_cert = cert_list->GetList()[i].GetString();
     EXPECT_EQ(pem_encoded_chain[i], list_cert);
   }
 }
@@ -274,46 +273,46 @@ void CheckHPKPReport(
     const HashValueVector& known_pins) {
   absl::optional<base::Value> value = base::JSONReader::Read(report);
   ASSERT_TRUE(value.has_value());
-  const base::Value& report_dict = value.value();
-  ASSERT_TRUE(report_dict.is_dict());
+  const base::Value::Dict* report_dict = value.value().GetIfDict();
+  ASSERT_TRUE(report_dict);
 
-  const std::string* report_hostname = report_dict.FindStringKey("hostname");
+  const std::string* report_hostname = report_dict->FindString("hostname");
   ASSERT_TRUE(report_hostname);
   EXPECT_EQ(host_port_pair.host(), *report_hostname);
 
-  absl::optional<int> report_port = report_dict.FindIntKey("port");
+  absl::optional<int> report_port = report_dict->FindInt("port");
   ASSERT_TRUE(report_port.has_value());
   EXPECT_EQ(host_port_pair.port(), report_port.value());
 
   absl::optional<bool> report_include_subdomains =
-      report_dict.FindBoolKey("include-subdomains");
+      report_dict->FindBool("include-subdomains");
   ASSERT_TRUE(report_include_subdomains.has_value());
   EXPECT_EQ(include_subdomains, report_include_subdomains.value());
 
   const std::string* report_noted_hostname =
-      report_dict.FindStringKey("noted-hostname");
+      report_dict->FindString("noted-hostname");
   ASSERT_TRUE(report_noted_hostname);
   EXPECT_EQ(noted_hostname, *report_noted_hostname);
 
   // TODO(estark): check times in RFC3339 format.
 
   const std::string* report_expiration =
-      report_dict.FindStringKey("effective-expiration-date");
+      report_dict->FindString("effective-expiration-date");
   ASSERT_TRUE(report_expiration);
   EXPECT_FALSE(report_expiration->empty());
 
-  const std::string* report_date = report_dict.FindStringKey("date-time");
+  const std::string* report_date = report_dict->FindString("date-time");
   ASSERT_TRUE(report_date);
   EXPECT_FALSE(report_date->empty());
 
   const base::Value* report_served_certificate_chain =
-      report_dict.FindKey("served-certificate-chain");
+      report_dict->Find("served-certificate-chain");
   ASSERT_TRUE(report_served_certificate_chain);
   ASSERT_NO_FATAL_FAILURE(CompareCertificateChainWithList(
       served_certificate_chain, report_served_certificate_chain));
 
   const base::Value* report_validated_certificate_chain =
-      report_dict.FindKey("validated-certificate-chain");
+      report_dict->Find("validated-certificate-chain");
   ASSERT_TRUE(report_validated_certificate_chain);
   ASSERT_NO_FATAL_FAILURE(CompareCertificateChainWithList(
       validated_certificate_chain, report_validated_certificate_chain));
@@ -1776,15 +1775,21 @@ class CTEmergencyDisableTest
     : public TransportSecurityStateTest,
       public testing::WithParamInterface<CTEmergencyDisableSwitchKind> {
  public:
+  CTEmergencyDisableTest() {
+    if (GetParam() ==
+        CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
+      scoped_feature_list_.Init();
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          TransportSecurityState::kCertificateTransparencyEnforcement);
+    }
+  }
   void SetUp() override {
     if (GetParam() ==
         CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
       state_.SetCTEmergencyDisabled(true);
-      scoped_feature_list_.Init();
     } else {
       ASSERT_EQ(GetParam(), CTEmergencyDisableSwitchKind::kFinchDrivenFeature);
-      scoped_feature_list_.InitAndDisableFeature(
-          TransportSecurityState::kCertificateTransparencyEnforcement);
     }
   }
 
@@ -4095,13 +4100,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
                 network_isolation_key, &unused_failure_log));
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_UpdateKeyPinsListTimestamp DISABLED_UpdateKeyPinsListTimestamp
-#else
-#define MAYBE_UpdateKeyPinsListTimestamp UpdateKeyPinsListTimestamp
-#endif
-TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
+TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -4125,7 +4124,6 @@ TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
 
   TransportSecurityState state;
   EnableStaticPins(&state);
-  state.SetPinningListAlwaysTimelyForTesting(false);
   std::string unused_failure_log;
 
   // Prior to updating the list, bad_hashes should be rejected.
@@ -4134,6 +4132,12 @@ TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
                 host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
                 TransportSecurityState::ENABLE_PIN_REPORTS,
                 network_isolation_key, &unused_failure_log));
+
+  // TransportSecurityStateTest sets a flag when EnableStaticPins is called that
+  // results in TransportSecurityState considering the pins list as always
+  // timely. We need to disable it so we can test that the timestamp has the
+  // required effect.
+  state.SetPinningListAlwaysTimelyForTesting(false);
 
   // Update the pins list, with bad hashes as rejected, but a timestamp >70 days
   // old.
@@ -4176,10 +4180,9 @@ TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
 class TransportSecurityStatePinningKillswitchTest
     : public TransportSecurityStateTest {
  public:
-  void SetUp() override {
+  TransportSecurityStatePinningKillswitchTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kStaticKeyPinningEnforcement);
-    TransportSecurityStateTest::SetUp();
   }
 
  protected:

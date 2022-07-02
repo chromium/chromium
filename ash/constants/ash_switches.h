@@ -40,11 +40,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableLocaleSync[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcDisableMediaStoreMaintenance[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisablePlayAutoInstall[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kArcDisableSystemDefaultApps[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableTtsCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableUreadahead[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kArcEnableNativeBridge64BitSupportExperiment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcGeneratePlayAutoInstall[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -79,6 +76,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshForceStatusAreaCollapsible[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshHideNotificationsForFactory[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshNoNudges[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshPowerButtonPosition[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshSideVolumeButtonPosition[];
@@ -86,6 +84,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshTouchHud[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeClamshell[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeTablet[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshUseCrOSMojoServiceManager[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAuraLegacyPowerButton[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
@@ -219,6 +219,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kBrowserDataMigrationMoveMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataMigrationForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMarketingOptInUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNaturalScrollDefault[];
@@ -230,6 +232,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeForceTabletFirstRun[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeLargeScreenSpecialScaling[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeScreenshotDirectory[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeShowBlazeyScreen[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipPostLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];
@@ -255,6 +258,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowTaps[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipForceOnlineSignInForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSkipReorderNudgeShowThresholdDurationForTest[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSupportsClamshellAutoRotation[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuppressMessageCenterPopups[];
@@ -276,6 +281,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWaitForInitialPolicyFetchForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOndeviceHandwritingSwitch[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -363,6 +369,11 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldClearFastInkBuffer();
 
 // Returns whether the device has hps hardware.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool HasHps();
+
+// Returns true if the duration threshold for considering the nudge to be
+// shown is skipped.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsSkipRecorderNudgeShowThresholdDurationEnabled();
 
 }  // namespace ash::switches
 

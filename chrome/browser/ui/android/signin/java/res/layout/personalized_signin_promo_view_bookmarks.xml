@@ -17,13 +17,13 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingBottom="12dp">
+        android:paddingBottom="@dimen/signin_promo_padding_bottom">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp">
 
             <include layout="@layout/personalized_signin_promo_view_header"/>

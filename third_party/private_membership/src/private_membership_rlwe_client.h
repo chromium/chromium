@@ -15,6 +15,9 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
 
+#include <optional>
+#include <string>
+
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include "third_party/private_membership/base/private_membership_export.h"
@@ -49,7 +52,7 @@ class PRIVATE_MEMBERSHIP_EXPORT PrngSeedGenerator {
   explicit PrngSeedGenerator(
       std::unique_ptr<SingleThreadPrng> prng_seed_generator);
 
-  const absl::optional<std::unique_ptr<SingleThreadPrng>>
+  const std::optional<std::unique_ptr<SingleThreadPrng>>
       deterministic_prng_seed_generator_;
 };
 
@@ -192,7 +195,7 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
   CreateInternal(
       private_membership::rlwe::RlweUseCase use_case,
       const std::vector<RlwePlaintextId>& plaintext_ids,
-      absl::optional<std::string> ec_cipher_key,
+      std::optional<std::string> ec_cipher_key,
       std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator);
 
   PrivateMembershipRlweClient(

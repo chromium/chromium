@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -78,7 +80,6 @@ void WebAppPolicyManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* app_registrar,
     WebAppSyncBridge* sync_bridge,
-    SystemWebAppManager* web_app_manager,
     OsIntegrationManager* os_integration_manager) {
   DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);
@@ -88,8 +89,12 @@ void WebAppPolicyManager::SetSubsystems(
   externally_managed_app_manager_ = externally_managed_app_manager;
   app_registrar_ = app_registrar;
   sync_bridge_ = sync_bridge;
-  web_app_manager_ = web_app_manager;
   os_integration_manager_ = os_integration_manager;
+}
+
+void WebAppPolicyManager::SetSystemWebAppDelegateMap(
+    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
+  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
 
 void WebAppPolicyManager::Start() {
@@ -177,8 +182,8 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-const std::set<SystemAppType>& WebAppPolicyManager::GetDisabledSystemWebApps()
-    const {
+const std::set<ash::SystemWebAppType>&
+WebAppPolicyManager::GetDisabledSystemWebApps() const {
   return disabled_system_apps_;
 }
 
@@ -235,8 +240,8 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     install_options.wait_for_windows_closed = true;
     install_options.reinstall_placeholder = true;
 
-    absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
-        install_options.install_url);
+    absl::optional<AppId> app_id =
+        app_registrar_->LookupExternalAppId(install_options.install_url);
     if (app_id) {
       // If the override name has changed, reinstall:
       if (install_options.override_name &&
@@ -340,6 +345,8 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   const base::Value* create_desktop_shortcut =
       entry.FindKey(kCreateDesktopShortcutKey);
   const base::Value* fallback_app_name = entry.FindKey(kFallbackAppNameKey);
+  const base::Value* uninstall_and_replace =
+      entry.FindKey(kUninstallAndReplaceKey);
 
   DCHECK(!default_launch_container ||
          default_launch_container->GetString() ==
@@ -378,6 +385,18 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   // as the permanent name for Web Apps without a manifest.
   if (fallback_app_name)
     install_options.fallback_app_name = fallback_app_name->GetString();
+
+  // Used by default Chrome app policy migration to force install web apps and
+  // uninstall the old Chrome app equivalents.
+  if (uninstall_and_replace) {
+    const base::Value::List* list = uninstall_and_replace->GetIfList();
+    if (list) {
+      for (const base::Value& item : *list) {
+        if (item.is_string())
+          install_options.uninstall_and_replace.push_back(item.GetString());
+      }
+    }
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value* custom_name = entry.FindKey(kCustomNameKey);
@@ -475,13 +494,15 @@ void WebAppPolicyManager::MaybeOverrideManifest(
                                  : absl::nullopt;
     const AppId& app_id = GenerateAppId(manifest_id, manifest->start_url);
     // List of policy-installed apps and their install URLs:
-    std::map<AppId, GURL> policy_installed_apps =
+    base::flat_map<AppId, base::flat_set<GURL>> policy_installed_apps =
         app_registrar_->GetExternallyInstalledApps(
             ExternalInstallSource::kExternalPolicy);
     if (base::Contains(policy_installed_apps, app_id)) {
-      const auto& policy_install_url = policy_installed_apps[app_id];
-      if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
-        OverrideManifest(policy_install_url, manifest);
+      DCHECK(policy_installed_apps[app_id].size() > 0);
+      for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
+        if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
+          OverrideManifest(policy_install_url, manifest);
+      }
       return;
     }
   }
@@ -612,22 +633,22 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   for (const auto& entry : disabled_system_features_pref->GetListDeprecated()) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCamera:
-        disabled_system_apps_.insert(SystemAppType::CAMERA);
+        disabled_system_apps_.insert(ash::SystemWebAppType::CAMERA);
         break;
       case policy::SystemFeature::kOsSettings:
-        disabled_system_apps_.insert(SystemAppType::SETTINGS);
+        disabled_system_apps_.insert(ash::SystemWebAppType::SETTINGS);
         break;
       case policy::SystemFeature::kScanning:
-        disabled_system_apps_.insert(SystemAppType::SCANNING);
+        disabled_system_apps_.insert(ash::SystemWebAppType::SCANNING);
         break;
       case policy::SystemFeature::kExplore:
-        disabled_system_apps_.insert(SystemAppType::HELP);
+        disabled_system_apps_.insert(ash::SystemWebAppType::HELP);
         break;
       case policy::SystemFeature::kCanvas:
         disabled_web_apps_.insert(web_app::kCanvasAppId);
         break;
       case policy::SystemFeature::kCrosh:
-        disabled_system_apps_.insert(SystemAppType::CROSH);
+        disabled_system_apps_.insert(ash::SystemWebAppType::CROSH);
         break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
@@ -637,9 +658,10 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
-  for (const auto& app_type : disabled_system_apps_) {
-    absl::optional<AppId> app_id =
-        web_app_manager_->GetAppIdForSystemApp(app_type);
+  DCHECK(system_web_apps_delegate_map_);
+  for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
+    absl::optional<AppId> app_id = GetAppIdForSystemApp(
+        *app_registrar_, *system_web_apps_delegate_map_, app_type);
     if (app_id.has_value()) {
       disabled_web_apps_.insert(app_id.value());
     }

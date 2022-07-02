@@ -5,16 +5,17 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_OZONE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_OZONE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/gpu_gles2_export.h"
 
 struct DawnProcTable;
 
 namespace gpu {
-
 class SharedContextState;
 
 // Implementation of SharedImageBackingFactory that produces NativePixmap
@@ -23,7 +24,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
     : public SharedImageBackingFactory {
  public:
   explicit SharedImageBackingFactoryOzone(
-      SharedContextState* shared_context_state);
+      SharedContextState* shared_context_state,
+      const GpuDriverBugWorkarounds& workarounds);
 
   ~SharedImageBackingFactoryOzone() override;
 
@@ -71,12 +73,12 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
                    bool is_pixel_used) override;
 
  private:
-  bool CanImportGpuMemoryBufferToVulkan(
-      gfx::GpuMemoryBufferType memory_buffer_type);
+  bool CanImportNativePixmapToVulkan();
   bool CanImportNativePixmapToWebGPU();
 
-  SharedContextState* const shared_context_state_;
+  const raw_ptr<SharedContextState> shared_context_state_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  const GpuDriverBugWorkarounds workarounds_;
 
   std::unique_ptr<SharedImageBackingOzone> CreateSharedImageInternal(
       const Mailbox& mailbox,

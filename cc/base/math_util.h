@@ -5,22 +5,18 @@
 #ifndef CC_BASE_MATH_UTIL_H_
 #define CC_BASE_MATH_UTIL_H_
 
+#include <cmath>
 #include <limits>
-#include <memory>
-#include <vector>
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace base {
 class Value;
@@ -34,6 +30,7 @@ class QuadF;
 class Rect;
 class RectF;
 class RRectF;
+class Size;
 class SizeF;
 class Transform;
 class Vector2dF;

@@ -452,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -495,7 +496,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -533,7 +535,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -572,7 +575,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -613,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -656,7 +661,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   LoadIFrame(url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -694,7 +700,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -738,7 +745,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -778,7 +786,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -818,7 +827,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -860,7 +870,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_document =
+      web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
@@ -1278,9 +1289,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       https_server().GetURL("a.com", "/cross_site_iframe_factory.html?a(a,b)");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
 
   struct TestCase {
     const char* name;
@@ -1383,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a same-origin access does not register use counters.
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::ExecJs(same_origin_subframe, "window.top.close()"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessClose, 0);
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClose, 0);
@@ -1397,7 +1408,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a cross-origin access register use counters.
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::ExecJs(cross_origin_subframe, "window.top.close()"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessClose, 1);
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClose, 0);
@@ -1411,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a same-origin access does not register use counters.
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::ExecJs(same_origin_subframe, "window.top[0]"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessIndexedGetter, 0);
   CheckCounter(
@@ -1419,7 +1430,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a cross-origin access register use counters.
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
   EXPECT_TRUE(content::ExecJs(cross_origin_subframe, "window.top[0]"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessIndexedGetter, 1);
   CheckCounter(
@@ -1440,7 +1451,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a same-origin access does not register use counters.
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(
       content::ExecJs(same_origin_subframe,
                       content::JsReplace("window.top.location = $1", url)));
@@ -1459,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a cross-origin access register use counters.
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
   EXPECT_TRUE(content::ExecJs(
       cross_origin_subframe,
       content::JsReplace("window.top.location = $1", fragment_url)));
@@ -1478,7 +1489,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a same-origin access does not register use counters.
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::ExecJs(same_origin_subframe,
                               "window.top['about_blank_iframe']"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessNamedGetter, 0);
@@ -1487,7 +1498,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a cross-origin access register use counters.
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
   EXPECT_TRUE(content::ExecJs(cross_origin_subframe,
                               "window.top['about_blank_iframe']"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessNamedGetter, 1);
@@ -1510,7 +1521,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that a same-origin access does not register use counters.
   content::RenderFrameHost* same_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(content::ExecJs(same_origin_subframe, "window.top.opener = ''"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessOpener, 0);
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener, 0);
@@ -1518,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   // Check that a cross-origin access doesn't register use counters because it
   // is blocked by the same-origin policy.
   content::RenderFrameHost* cross_origin_subframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
   EXPECT_FALSE(
       content::ExecJs(cross_origin_subframe, "window.top.opener = ''"));
   CheckCounter(WebFeature::kWindowProxyCrossOriginAccessOpener, 0);

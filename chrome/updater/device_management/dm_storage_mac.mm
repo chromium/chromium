@@ -20,14 +20,13 @@
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
-
 namespace {
 
-static const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
-static const CFStringRef kBrowserBundleId =
-    CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
-
 bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
+  const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
+  const CFStringRef kBrowserBundleId =
+      CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
+
   base::ScopedCFTypeRef<CFPropertyListRef> token_value(
       CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
   if (!token_value || CFGetTypeID(token_value) != CFStringGetTypeID() ||
@@ -92,6 +91,7 @@ class TokenService : public TokenServiceInterface {
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
   bool StoreDmToken(const std::string& dm_token) override;
+  bool DeleteDmToken() override;
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -134,6 +134,15 @@ bool TokenService::StoreDmToken(const std::string& token) {
     return false;
   }
   dm_token_ = token;
+  return true;
+}
+
+bool TokenService::DeleteDmToken() {
+  const base::FilePath dm_token_path = GetDmTokenFilePath();
+  if (dm_token_path.empty() || !base::DeleteFile(dm_token_path)) {
+    return false;
+  }
+  dm_token_.clear();
   return true;
 }
 

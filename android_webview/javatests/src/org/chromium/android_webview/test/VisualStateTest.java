@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
+import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
@@ -34,7 +35,6 @@ import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.ByteArrayInputStream;
@@ -314,7 +314,7 @@ public class VisualStateTest {
 
         Assert.assertTrue(readyToUpdateColor.await(
                 AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        DOMUtils.clickNode(webContents, UPDATE_COLOR_CONTROL_ID);
+        JSUtils.clickNodeWithUserGesture(webContents, UPDATE_COLOR_CONTROL_ID);
         Assert.assertTrue(jsObserver.waitForEvent(WAIT_TIMEOUT_MS));
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
@@ -381,7 +381,7 @@ public class VisualStateTest {
 
         Assert.assertTrue(readyToEnterFullscreenSignal.await(
                 AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        DOMUtils.clickNode(webContents, ENTER_FULLSCREEN_CONTROL_ID);
+        JSUtils.clickNodeWithUserGesture(webContents, ENTER_FULLSCREEN_CONTROL_ID);
         Assert.assertTrue(jsObserver.waitForEvent(WAIT_TIMEOUT_MS));
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(

@@ -7,11 +7,13 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/chromeos/gaia_action_buttons/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/gaia_action_buttons/=../../chrome/browser/resources/chromeos/gaia_action_buttons/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
-                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=../../chrome/browser/resources/chromeos/",
+                    "js_module_root=./gen/chrome/browser/resources/chromeos/",
+                    "js_module_root=../../chrome/browser/resources/",
+                    "js_module_root=./gen/chrome/browser/resources/",
                   ]
   deps = [ ":gaia_action_buttons_test" ]
 }

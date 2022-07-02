@@ -7,8 +7,20 @@
 
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
+
+class NetworkErrorsListingUI;
+
+class NetworkErrorsListingUIConfig
+    : public DefaultWebUIConfig<NetworkErrorsListingUI> {
+ public:
+  NetworkErrorsListingUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUINetworkErrorsListingHost) {
+  }
+};
 
 class NetworkErrorsListingUI : public WebUIController {
  public:

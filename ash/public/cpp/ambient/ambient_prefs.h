@@ -36,6 +36,10 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kAmbientModeLockScreenBackgroundTimeoutSeconds[];
 
+// Float pref for the playback speed of the animation in ambient mode. Currently
+// does not apply to slideshow mode. Not displayed to the user in settings.
+ASH_PUBLIC_EXPORT extern const char kAmbientModeAnimationPlaybackSpeed[];
+
 // Integer pref for the interval in seconds to refresh photos. Not displayed to
 // the user in settings.
 ASH_PUBLIC_EXPORT extern const char kAmbientModePhotoRefreshIntervalSeconds[];

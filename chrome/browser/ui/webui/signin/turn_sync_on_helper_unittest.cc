@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -47,7 +47,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -106,7 +105,7 @@ class AccountRemovedWaiter : public signin::IdentityManager::Observer {
   void Wait() {
     if (!identity_manager_->HasAccountWithRefreshToken(account_id_))
       return;
-    observation_.Observe(identity_manager_);
+    observation_.Observe(identity_manager_.get());
     run_loop_.Run();
   }
 
@@ -120,7 +119,7 @@ class AccountRemovedWaiter : public signin::IdentityManager::Observer {
   }
 
   base::RunLoop run_loop_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountId account_id_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -625,7 +624,7 @@ class TurnSyncOnHelperTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   raw_ptr<FakeUserPolicySigninService> user_policy_signin_service_ = nullptr;
@@ -640,9 +639,6 @@ class TurnSyncOnHelperTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   testing::NiceMock<account_manager::MockAccountManagerFacade>
       mock_account_manager_facade_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kLacrosNonSyncingProfiles};
 #endif
 
   // State of the delegate calls.
@@ -1222,7 +1218,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupCompleted();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kComplete);
   CheckDelegateCalls();
 }
 
@@ -1258,7 +1255,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupCompleted();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kComplete);
   CheckDelegateCalls();
 }
 
@@ -1294,7 +1292,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupFailed();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kError);
   CheckDelegateCalls();
 }
 
@@ -1332,7 +1331,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupFailed();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kError);
   CheckDelegateCalls();
 }
 

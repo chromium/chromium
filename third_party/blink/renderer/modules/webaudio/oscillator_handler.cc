@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -22,10 +23,137 @@
 
 namespace blink {
 
-// Breakpoints where we deicde to do linear interoplation, 3-point
-// interpolation or 5-point interpolation.  See DoInterpolation().
-constexpr float kInterpolate2Point = 0.3;
-constexpr float kInterpolate3Point = 0.16;
+namespace {
+
+// An oscillator is always mono.
+constexpr unsigned kNumberOfOutputChannels = 1;
+
+// Convert the detune value (in cents) to a frequency scale multiplier:
+// 2^(d/1200)
+float DetuneToFrequencyMultiplier(float detune_value) {
+  return std::exp2(detune_value / 1200);
+}
+
+// Clamp the frequency value to lie with Nyquist frequency. For NaN, arbitrarily
+// clamp to +Nyquist.
+void ClampFrequency(float* frequency, int frames_to_process, float nyquist) {
+  for (int k = 0; k < frames_to_process; ++k) {
+    float f = frequency[k];
+
+    if (std::isnan(f)) {
+      frequency[k] = nyquist;
+    } else {
+      frequency[k] = ClampTo(f, -nyquist, nyquist);
+    }
+  }
+}
+
+float DoInterpolation(double virtual_read_index,
+                      float incr,
+                      unsigned read_index_mask,
+                      float table_interpolation_factor,
+                      const float* lower_wave_data,
+                      const float* higher_wave_data) {
+  DCHECK_GE(incr, 0);
+  DCHECK(std::isfinite(virtual_read_index));
+
+  double sample_lower = 0;
+  double sample_higher = 0;
+
+  unsigned read_index_0 = static_cast<unsigned>(virtual_read_index);
+
+  // Consider a typical sample rate of 44100 Hz and max periodic wave
+  // size of 4096.  The relationship between `incr` and the frequency
+  // of the oscillator is `incr` = freq * 4096/44100. Or freq =
+  // `incr`*44100/4096 = 10.8*`incr`.
+  //
+  // For the `incr` thresholds below, this means that we use linear
+  // interpolation for all freq >= 3.2 Hz, 3-point Lagrange
+  // for freq >= 1.7 Hz and 5-point Lagrange for every thing else.
+  //
+  // We use Lagrange interpolation because it's relatively simple to
+  // implement and fairly inexpensive, and the interpolator always
+  // passes through known points.
+  if (incr >= OscillatorHandler::kInterpolate2Point) {
+    // Increment is fairly large, so we're doing no more than about 3
+    // points between each wave table entry. Assume linear
+    // interpolation between points is good enough.
+    unsigned read_index2 = read_index_0 + 1;
+
+    // Contain within valid range.
+    read_index_0 = read_index_0 & read_index_mask;
+    read_index2 = read_index2 & read_index_mask;
+
+    float sample1_lower = lower_wave_data[read_index_0];
+    float sample2_lower = lower_wave_data[read_index2];
+    float sample1_higher = higher_wave_data[read_index_0];
+    float sample2_higher = higher_wave_data[read_index2];
+
+    // Linearly interpolate within each table (lower and higher).
+    double interpolation_factor =
+        static_cast<float>(virtual_read_index) - read_index_0;
+    sample_higher = (1 - interpolation_factor) * sample1_higher +
+                    interpolation_factor * sample2_higher;
+    sample_lower = (1 - interpolation_factor) * sample1_lower +
+                   interpolation_factor * sample2_lower;
+
+  } else if (incr >= OscillatorHandler::kInterpolate3Point) {
+    // We're doing about 6 interpolation values between each wave
+    // table sample. Just use a 3-point Lagrange interpolator to get a
+    // better estimate than just linear.
+    //
+    // See 3-point formula in http://dlmf.nist.gov/3.3#ii
+    unsigned read_index[3];
+
+    for (int k = -1; k <= 1; ++k) {
+      read_index[k + 1] = (read_index_0 + k) & read_index_mask;
+    }
+
+    double a[3];
+    double t = virtual_read_index - read_index_0;
+
+    a[0] = 0.5 * t * (t - 1);
+    a[1] = 1 - t * t;
+    a[2] = 0.5 * t * (t + 1);
+
+    for (int k = 0; k < 3; ++k) {
+      sample_lower += a[k] * lower_wave_data[read_index[k]];
+      sample_higher += a[k] * higher_wave_data[read_index[k]];
+    }
+  } else {
+    // For everything else (more than 6 points per entry), we'll do a
+    // 5-point Lagrange interpolator.  This is a trade-off between
+    // quality and speed.
+    //
+    // See 5-point formula in http://dlmf.nist.gov/3.3#ii
+    unsigned read_index[5];
+    for (int k = -2; k <= 2; ++k) {
+      read_index[k + 2] = (read_index_0 + k) & read_index_mask;
+    }
+
+    double a[5];
+    double t = virtual_read_index - read_index_0;
+    double t2 = t * t;
+
+    a[0] = t * (t2 - 1) * (t - 2) / 24;
+    a[1] = -t * (t - 1) * (t2 - 4) / 6;
+    a[2] = (t2 - 1) * (t2 - 4) / 4;
+    a[3] = -t * (t + 1) * (t2 - 4) / 6;
+    a[4] = t * (t2 - 1) * (t + 2) / 24;
+
+    for (int k = 0; k < 5; ++k) {
+      sample_lower += a[k] * lower_wave_data[read_index[k]];
+      sample_higher += a[k] * higher_wave_data[read_index[k]];
+    }
+  }
+
+  // Then interpolate between the two tables.
+  float sample = (1 - table_interpolation_factor) * sample_higher +
+                 table_interpolation_factor * sample_lower;
+  return sample;
+}
+
+}  // namespace
 
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
@@ -36,13 +164,11 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     : AudioScheduledSourceHandler(kNodeTypeOscillator, node, sample_rate),
       frequency_(&frequency),
       detune_(&detune),
-      first_render_(true),
-      virtual_read_index_(0),
       phase_increments_(GetDeferredTaskHandler().RenderQuantumFrames()),
       detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   if (wave_table) {
     // A PeriodicWave overrides any value for the oscillator type,
-    // forcing the type to be 'custom".
+    // forcing the type to be "custom".
     SetPeriodicWave(wave_table);
   } else {
     if (oscillator_type == "sine") {
@@ -58,8 +184,7 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     }
   }
 
-  // An oscillator is always mono.
-  AddOutput(1);
+  AddOutput(kNumberOfOutputChannels);
 
   Initialize();
 }
@@ -144,28 +269,6 @@ bool OscillatorHandler::SetType(uint8_t type) {
   return true;
 }
 
-// Convert the detune value (in cents) to a frequency scale multiplier:
-// 2^(d/1200)
-static float DetuneToFrequencyMultiplier(float detune_value) {
-  return std::exp2(detune_value / 1200);
-}
-
-// Clamp the frequency value to lie with Nyquist frequency. For NaN, arbitrarily
-// clamp to +Nyquist.
-static void ClampFrequency(float* frequency,
-                           int frames_to_process,
-                           float nyquist) {
-  for (int k = 0; k < frames_to_process; ++k) {
-    float f = frequency[k];
-
-    if (std::isnan(f)) {
-      frequency[k] = nyquist;
-    } else {
-      frequency[k] = ClampTo(f, -nyquist, nyquist);
-    }
-  }
-}
-
 bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
     uint32_t frames_to_process) {
   DCHECK_LE(frames_to_process, phase_increments_.size());
@@ -235,111 +338,6 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   }
 
   return has_sample_accurate_values;
-}
-
-static float DoInterpolation(double virtual_read_index,
-                             float incr,
-                             unsigned read_index_mask,
-                             float table_interpolation_factor,
-                             const float* lower_wave_data,
-                             const float* higher_wave_data) {
-  DCHECK_GE(incr, 0);
-  DCHECK(std::isfinite(virtual_read_index));
-
-  double sample_lower = 0;
-  double sample_higher = 0;
-
-  unsigned read_index_0 = static_cast<unsigned>(virtual_read_index);
-
-  // Consider a typical sample rate of 44100 Hz and max periodic wave
-  // size of 4096.  The relationship between |incr| and the frequency
-  // of the oscillator is |incr| = freq * 4096/44100. Or freq =
-  // |incr|*44100/4096 = 10.8*|incr|.
-  //
-  // For the |incr| thresholds below, this means that we use linear
-  // interpolation for all freq >= 3.2 Hz, 3-point Lagrange
-  // for freq >= 1.7 Hz and 5-point Lagrange for every thing else.
-  //
-  // We use Lagrange interpolation because it's relatively simple to
-  // implement and fairly inexpensive, and the interpolator always
-  // passes through known points.
-  if (incr >= kInterpolate2Point) {
-    // Increment is fairly large, so we're doing no more than about 3
-    // points between each wave table entry. Assume linear
-    // interpolation between points is good enough.
-    unsigned read_index2 = read_index_0 + 1;
-
-    // Contain within valid range.
-    read_index_0 = read_index_0 & read_index_mask;
-    read_index2 = read_index2 & read_index_mask;
-
-    float sample1_lower = lower_wave_data[read_index_0];
-    float sample2_lower = lower_wave_data[read_index2];
-    float sample1_higher = higher_wave_data[read_index_0];
-    float sample2_higher = higher_wave_data[read_index2];
-
-    // Linearly interpolate within each table (lower and higher).
-    double interpolation_factor =
-        static_cast<float>(virtual_read_index) - read_index_0;
-    sample_higher = (1 - interpolation_factor) * sample1_higher +
-                    interpolation_factor * sample2_higher;
-    sample_lower = (1 - interpolation_factor) * sample1_lower +
-                   interpolation_factor * sample2_lower;
-
-  } else if (incr >= kInterpolate3Point) {
-    // We're doing about 6 interpolation values between each wave
-    // table sample. Just use a 3-point Lagrange interpolator to get a
-    // better estimate than just linear.
-    //
-    // See 3-point formula in http://dlmf.nist.gov/3.3#ii
-    unsigned read_index[3];
-
-    for (int k = -1; k <= 1; ++k) {
-      read_index[k + 1] = (read_index_0 + k) & read_index_mask;
-    }
-
-    double a[3];
-    double t = virtual_read_index - read_index_0;
-
-    a[0] = 0.5 * t * (t - 1);
-    a[1] = 1 - t * t;
-    a[2] = 0.5 * t * (t + 1);
-
-    for (int k = 0; k < 3; ++k) {
-      sample_lower += a[k] * lower_wave_data[read_index[k]];
-      sample_higher += a[k] * higher_wave_data[read_index[k]];
-    }
-  } else {
-    // For everything else (more than 6 points per entry), we'll do a
-    // 5-point Lagrange interpolator.  This is a trade-off between
-    // quality and speed.
-    //
-    // See 5-point formula in http://dlmf.nist.gov/3.3#ii
-    unsigned read_index[5];
-    for (int k = -2; k <= 2; ++k) {
-      read_index[k + 2] = (read_index_0 + k) & read_index_mask;
-    }
-
-    double a[5];
-    double t = virtual_read_index - read_index_0;
-    double t2 = t * t;
-
-    a[0] = t * (t2 - 1) * (t - 2) / 24;
-    a[1] = -t * (t - 1) * (t2 - 4) / 6;
-    a[2] = (t2 - 1) * (t2 - 4) / 4;
-    a[3] = -t * (t + 1) * (t2 - 4) / 6;
-    a[4] = t * (t2 - 1) * (t + 2) / 24;
-
-    for (int k = 0; k < 5; ++k) {
-      sample_lower += a[k] * lower_wave_data[read_index[k]];
-      sample_higher += a[k] * higher_wave_data[read_index[k]];
-    }
-  }
-
-  // Then interpolate between the two tables.
-  float sample = (1 - table_interpolation_factor) * sample_higher +
-                 table_interpolation_factor * sample_lower;
-  return sample;
 }
 
 #if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
@@ -660,8 +658,8 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   DCHECK_LE(frames_to_process, phase_increments_.size());
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Too bad - the tryLock() failed. We must be in the middle of changing
     // wave-tables.
     output_bus->Zero();
@@ -752,7 +750,7 @@ void OscillatorHandler::SetPeriodicWave(PeriodicWaveImpl* periodic_wave) {
   DCHECK(periodic_wave);
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   periodic_wave_ = periodic_wave;
   type_ = CUSTOM;
 }
@@ -764,8 +762,8 @@ bool OscillatorHandler::PropagatesSilence() const {
 void OscillatorHandler::HandleStoppableSourceNode() {
   double now = Context()->currentTime();
 
-  MutexTryLocker try_locker(process_lock_);
-  if (!try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
     // Can't get the lock, so just return.  It's ok to handle these at a later
     // time; this was just a hint anyway so stopping them a bit later is ok.
     return;

@@ -12,6 +12,10 @@
 
 namespace reputation {
 
+// Retrieve any existing Safety Tips config proto if set, or create a new one
+// otherwise.
+std::unique_ptr<SafetyTipsConfig> GetOrCreateSafetyTipsConfig();
+
 // Initialize component configuration. Necessary to enable Safety Tips for
 // testing, as no heuristics trigger if the allowlist is inaccessible.
 void InitializeSafetyTipConfig();

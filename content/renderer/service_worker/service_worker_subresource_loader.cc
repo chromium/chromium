@@ -19,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -113,12 +112,6 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    DCHECK(url_loader_client_.is_bound());
-    url_loader_client_->OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -329,12 +322,6 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
 
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
-
-  if (service_worker_subresource_loader_factory_) {
-    service_worker_subresource_loader_factory_->AddPendingWorkerTimingReceiver(
-        request_id_,
-        params->worker_timing_remote.InitWithNewPipeAndPassReceiver());
-  }
 
   // TODO(falken): Grant the controller service worker's process access to files
   // in the body, like ServiceWorkerFetchDispatcher::DispatchFetchEvent() does.
@@ -594,23 +581,14 @@ void ServiceWorkerSubresourceLoader::StartResponse(
 void ServiceWorkerSubresourceLoader::CommitResponseHeaders() {
   TransitionToStatus(Status::kSentHeader);
   DCHECK(url_loader_client_.is_bound());
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
-    return;  // Will be sent in CommitResponseBody.
-
-  // TODO(kinuko): Fill the ssl_info.
-  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                        mojo::ScopedDataPipeConsumerHandle());
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   TransitionToStatus(Status::kSentBody);
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                          std::move(response_body));
-  } else {
-    url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
-  }
+  // TODO(kinuko): Fill the ssl_info.
+  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                        std::move(response_body));
 }
 
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
@@ -813,18 +791,12 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
   DCHECK(!side_data_reading_complete_);
   side_data_reading_complete_ = true;
 
-  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      metadata.has_value()) {
-    url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
-  }
-
   DCHECK(data_pipe.is_valid());
   CommitResponseBody(std::move(data_pipe));
 
   // See https://crbug.com/1294238. The cached meta data needs to be sent after
   // the response head.
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      metadata.has_value()) {
+  if (metadata.has_value()) {
     url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
   }
 
@@ -860,27 +832,20 @@ void ServiceWorkerSubresourceLoaderFactory::Create(
     scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
     scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-    WorkerTimingCallback worker_timing_callback) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   new ServiceWorkerSubresourceLoaderFactory(
       std::move(controller_connector), std::move(fallback_factory),
-      std::move(receiver), std::move(task_runner),
-      std::move(parent_task_runner), std::move(worker_timing_callback));
+      std::move(receiver), std::move(task_runner));
 }
 
 ServiceWorkerSubresourceLoaderFactory::ServiceWorkerSubresourceLoaderFactory(
     scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
     scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-    WorkerTimingCallback worker_timing_callback)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : controller_connector_(std::move(controller_connector)),
       fallback_factory_(std::move(fallback_factory)),
-      task_runner_(std::move(task_runner)),
-      parent_task_runner_(std::move(parent_task_runner)),
-      worker_timing_callback_(std::move(worker_timing_callback)) {
+      task_runner_(std::move(task_runner)) {
   DCHECK(fallback_factory_);
   receivers_.Add(this, std::move(receiver));
   receivers_.set_disconnect_handler(base::BindRepeating(
@@ -890,14 +855,6 @@ ServiceWorkerSubresourceLoaderFactory::ServiceWorkerSubresourceLoaderFactory(
 
 ServiceWorkerSubresourceLoaderFactory::
     ~ServiceWorkerSubresourceLoaderFactory() = default;
-
-void ServiceWorkerSubresourceLoaderFactory::AddPendingWorkerTimingReceiver(
-    int request_id,
-    mojo::PendingReceiver<blink::mojom::WorkerTimingContainer> receiver) {
-  parent_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(worker_timing_callback_, request_id, std::move(receiver)));
-}
 
 void ServiceWorkerSubresourceLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,

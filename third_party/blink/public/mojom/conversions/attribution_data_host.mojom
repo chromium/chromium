@@ -13,31 +13,19 @@ struct AttributionDebugKey {
 };
 
 // Filter data for selectively matching attribution sources and triggers.
-// See https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#optional-attribution-filters
+// See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
 struct AttributionFilterData {
   // Map of filter name to a possibly empty set of values.
   map<string, array<string>> filter_values;
 };
 
-// Defines a list of named histogram contributions.
-struct AttributionAggregatableSource {
-  // Map of key id to the key.
-  map<string, mojo_base.mojom.Uint128> keys;
-};
-
 // Struct containing the trigger-side aggregatable data.
 struct AttributionAggregatableTriggerData {
-  mojo_base.mojom.Uint128 key;
+  mojo_base.mojom.Uint128 key_piece;
   array<string> source_keys;
   AttributionFilterData filters;
   AttributionFilterData not_filters;
-};
-
-// Struct containing all the aggregatable trigger data and values.
-struct AttributionAggregatableTrigger {
-  array<AttributionAggregatableTriggerData> trigger_data;
-  map<string, uint32> values;
 };
 
 struct AttributionSourceData {
@@ -66,8 +54,7 @@ struct AttributionSourceData {
 
   AttributionFilterData filter_data;
 
-  // Contains source-side aggregatable key pieces.
-  AttributionAggregatableSource aggregatable_source;
+  map<string, mojo_base.mojom.Uint128> aggregation_keys;
 };
 
 // Deduplication key set by a reporting origin which prevents duplicate triggers
@@ -105,7 +92,7 @@ struct EventTriggerData {
 
 // Represents a request from a reporting origin to trigger attribution on a
 // given site. See:
-// https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#triggering-attribution
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
 struct AttributionTriggerData {
   // Origin that registered this trigger, used to determine which source this
   // trigger is associated with.
@@ -119,9 +106,16 @@ struct AttributionTriggerData {
   // filter data matches.
   AttributionFilterData filters;
 
-  // Contains a list of trigger data that generates trigger-side aggregatable
-  // key pieces and the values.
-  AttributionAggregatableTrigger aggregatable_trigger;
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  AttributionFilterData not_filters;
+
+  // List of all aggregatable trigger data objects declared by the trigger
+  // header.
+  array<AttributionAggregatableTriggerData> aggregatable_trigger_data;
+
+  // A map of aggregation key identifier and the corresponding value.
+  map<string, uint32> aggregatable_values;
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.

@@ -47,6 +47,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                                       history_service,
                                       nullptr,
                                       base::FilePath(),
+                                      nullptr,
                                       nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 

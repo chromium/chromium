@@ -21,8 +21,10 @@
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +47,7 @@ class MockCommand : public WebAppCommand {
   ~MockCommand() override { OnDestruction(); }
 
   MOCK_METHOD(void, Start, (), (override));
-  MOCK_METHOD(void, OnBeforeForcedUninstallFromSync, (), (override));
+  MOCK_METHOD(void, OnSyncSourceRemoved, (), (override));
   MOCK_METHOD(void, OnShutdown, (), (override));
 
   base::WeakPtr<MockCommand> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
@@ -83,7 +85,12 @@ class WebAppCommandManagerTest : public WebAppTest {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    FakeWebAppProvider::Get(profile())->StartWithSubsystems();
+    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    auto command_url_loader = std::make_unique<TestWebAppUrlLoader>();
+    url_loader_ = command_url_loader.get();
+    provider->GetCommandManager().SetUrlLoaderForTesting(
+        std::move(command_url_loader));
+    provider->StartWithSubsystems();
   }
 
   void TearDown() override {
@@ -186,6 +193,11 @@ class WebAppCommandManagerTest : public WebAppTest {
       loop.Run();
     }
   }
+
+  TestWebAppUrlLoader* url_loader() const { return url_loader_.get(); }
+
+ private:
+  base::raw_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
 TEST_F(WebAppCommandManagerTest, SimpleCommand) {
@@ -267,6 +279,8 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
   command1_ptr = command1->AsWeakPtr();
   command2_ptr = command2->AsWeakPtr();
 
+  // One about:blank load per web contents lock.
+  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   // Global command blocks web contents command.
@@ -274,6 +288,7 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
                           /*check_web_contents_in_first=*/false,
                           /*check_web_contents_in_second=*/true);
 
+  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   command1 = std::make_unique<StrictMock<MockCommand>>(
       WebAppCommandLock::CreateForAppLock({kTestAppId}));
   command2 = std::make_unique<StrictMock<MockCommand>>(
@@ -326,6 +341,8 @@ TEST_F(WebAppCommandManagerTest, BackgroundWebContentsQueue) {
       WebAppCommandLock::CreateForBackgroundWebContentsLock());
   base::WeakPtr<MockCommand> command2_ptr = command2->AsWeakPtr();
 
+  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                          WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   CheckCommandsRunInOrder(command1_ptr, command2_ptr);
@@ -421,17 +438,15 @@ TEST_F(WebAppCommandManagerTest, NotifySyncCallsCompleteAndDestruct) {
   }
   {
     testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, OnBeforeForcedUninstallFromSync())
-        .Times(1)
-        .WillOnce([&]() {
-          ASSERT_TRUE(command_ptr);
-          command_ptr->CallSignalCompletionAndSelfDestruct(
-              CommandResult::kSuccess, mock_closure.Get());
-        });
+    EXPECT_CALL(*command_ptr, OnSyncSourceRemoved()).Times(1).WillOnce([&]() {
+      ASSERT_TRUE(command_ptr);
+      command_ptr->CallSignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                                       mock_closure.Get());
+    });
     EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
     EXPECT_CALL(mock_closure, Run()).Times(1);
   }
-  manager().NotifyBeforeSyncUninstalls({kTestAppId});
+  manager().NotifySyncSourceRemoved({kTestAppId});
 }
 
 TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
@@ -467,6 +482,9 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
 
+  // One about:blank load per web contents lock.
+  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                          WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   manager().ScheduleCommand(std::move(command3));

@@ -260,9 +260,10 @@ TEST_F(SecurityInterstitialTabHelperFencedFrameTest,
       ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
+  fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
   EXPECT_FALSE(blocking_page_destroyed);
   EXPECT_TRUE(helper->IsDisplayingInterstitial());

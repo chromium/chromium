@@ -21,6 +21,7 @@
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -52,9 +53,8 @@ class DynamicRowView : public views::View {
 
 std::unique_ptr<views::Separator> CreateSeparator() {
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetPreferredHeight(kSeparatorHeight);
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  separator->SetPreferredLength(kSeparatorHeight);
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;
   separator->SetBorder(views::CreateEmptyBorder(

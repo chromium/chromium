@@ -34,7 +34,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
@@ -90,7 +89,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -232,7 +230,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -251,11 +249,11 @@
 #include <shellapi.h>
 
 #include "chrome/browser/ui/view_ids.h"
-#include "components/autofill/core/browser/autofill_ie_toolbar_import_win.h"
 #include "ui/base/win/shell.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/session_manager/core/session_manager.h"
 #endif
@@ -374,6 +372,8 @@ Browser::CreateParams::CreateParams(const CreateParams& other) = default;
 Browser::CreateParams& Browser::CreateParams::operator=(
     const CreateParams& other) = default;
 
+Browser::CreateParams::~CreateParams() = default;
+
 // static
 Browser::CreateParams Browser::CreateParams::CreateForAppBase(
     bool is_popup,
@@ -491,6 +491,7 @@ Browser::Browser(const CreateParams& params)
       command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
+      picture_in_picture_window_title_(params.picture_in_picture_window_title),
       signin_view_controller_(this),
       breadcrumb_manager_browser_agent_(
           breadcrumbs::IsEnabled()
@@ -553,15 +554,6 @@ Browser::Browser(const CreateParams& params)
 
   if (service)
     service->WindowOpened(this);
-
-  // TODO(beng): move to ChromeBrowserMain:
-  if (first_run::ShouldDoPersonalDataManagerFirstRun()) {
-#if BUILDFLAG(IS_WIN)
-    // Notify PDM that this is a first run.
-    ImportAutofillDataWin(
-        autofill::PersonalDataManagerFactory::GetForProfile(profile_));
-#endif  // BUILDFLAG(IS_WIN)
-  }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
       window_->GetExclusiveAccessContext());
@@ -700,6 +692,9 @@ std::u16string Browser::GetWindowTitleForCurrentTab(
     bool include_app_name) const {
   if (!user_title_.empty())
     return base::UTF8ToUTF16(user_title_);
+  if (!picture_in_picture_window_title_.empty()) {
+    return base::UTF8ToUTF16(picture_in_picture_window_title_);
+  }
   return GetWindowTitleFromWebContents(
       include_app_name, tab_strip_model_->GetActiveWebContents());
 }
@@ -1073,10 +1068,14 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 }
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Suppress for System Apps.
-  if (app_controller_ && app_controller_->system_app()) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kTerminalMultiProfile) &&
+      app_controller_ && app_controller_->system_app()) {
     return false;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Otherwise, always display the favicon.
   return true;
@@ -1457,8 +1456,10 @@ std::unique_ptr<content::WebContents> Browser::SwapWebContents(
   // avoid flashing white when navigating from a site with a dark background to
   // another site with a dark background.
   if (old_contents && new_contents) {
-    RenderWidgetHostView* old_view = old_contents->GetMainFrame()->GetView();
-    RenderWidgetHostView* new_view = new_contents->GetMainFrame()->GetView();
+    RenderWidgetHostView* old_view =
+        old_contents->GetPrimaryMainFrame()->GetView();
+    RenderWidgetHostView* new_view =
+        new_contents->GetPrimaryMainFrame()->GetView();
     if (old_view && new_view)
       new_view->TakeFallbackContentFrom(old_view);
   }
@@ -1705,7 +1706,7 @@ void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
   }
 
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      source->GetMainFrame(), std::move(features));
+      source->GetPrimaryMainFrame(), std::move(features));
   window_->SetBounds(bounds);
 }
 
@@ -1981,6 +1982,7 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
     case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
     case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
     case extensions::Feature::UNSPECIFIED_CONTEXT:
     case extensions::Feature::WEBUI_CONTEXT:
@@ -2397,11 +2399,13 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   // a new tab. (There is also code in RenderFrameHostManager to do something
   // similar for intra-tab navigations.)
   if (old_contents && new_contents) {
-    // While GetMainFrame() is guaranteed to return non-null, GetView() is not,
-    // e.g. between WebContents creation and creation of the
+    // While GetPrimaryMainFrame() is guaranteed to return non-null, GetView()
+    // is not, e.g. between WebContents creation and creation of the
     // RenderWidgetHostView.
-    RenderWidgetHostView* old_view = old_contents->GetMainFrame()->GetView();
-    RenderWidgetHostView* new_view = new_contents->GetMainFrame()->GetView();
+    RenderWidgetHostView* old_view =
+        old_contents->GetPrimaryMainFrame()->GetView();
+    RenderWidgetHostView* new_view =
+        new_contents->GetPrimaryMainFrame()->GetView();
     if (old_view && new_view)
       new_view->CopyBackgroundColorIfPresentFrom(*old_view);
   }

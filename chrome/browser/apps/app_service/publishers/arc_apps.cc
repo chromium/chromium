@@ -51,11 +51,13 @@
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -183,6 +185,7 @@ bool GetArcPermissionType(
       return true;
     case apps::mojom::PermissionType::kUnknown:
     case apps::mojom::PermissionType::kPrinting:
+    case apps::mojom::PermissionType::kFileHandling:
       return false;
   }
 }
@@ -277,6 +280,10 @@ absl::optional<arc::UserInteractionType> GetUserInterationType(
       user_interaction_type = arc::UserInteractionType::
           APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU;
       break;
+    case apps::mojom::LaunchSource::kFromOtherApp:
+      user_interaction_type =
+          arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP;
+      break;
     default:
       NOTREACHED();
       return absl::nullopt;
@@ -285,10 +292,9 @@ absl::optional<arc::UserInteractionType> GetUserInterationType(
 }
 
 // Check if this intent filter only contains HTTP and HTTPS schemes.
-bool IsHttpOrHttpsIntentFilter(
-    const apps::mojom::IntentFilterPtr& intent_filter) {
+bool IsHttpOrHttpsIntentFilter(const apps::IntentFilterPtr& intent_filter) {
   for (const auto& condition : intent_filter->conditions) {
-    if (condition->condition_type != apps::mojom::ConditionType::kScheme) {
+    if (condition->condition_type != apps::ConditionType::kScheme) {
       continue;
     }
     for (const auto& condition_value : condition->condition_values) {
@@ -304,8 +310,8 @@ bool IsHttpOrHttpsIntentFilter(
 }
 
 void AddPreferredApp(const std::string& app_id,
-                     const apps::mojom::IntentFilterPtr& intent_filter,
-                     apps::mojom::IntentPtr intent,
+                     const apps::IntentFilterPtr& intent_filter,
+                     apps::IntentPtr intent,
                      arc::ArcServiceManager* arc_service_manager,
                      ArcAppListPrefs* prefs) {
   arc::mojom::IntentHelperInstance* instance = nullptr;
@@ -332,8 +338,8 @@ void AddPreferredApp(const std::string& app_id,
 }
 
 void ResetVerifiedLinks(
-    const apps::mojom::IntentFilterPtr& intent_filter,
-    const apps::mojom::ReplacedAppPreferencesPtr& replaced_app_preferences,
+    const apps::IntentFilterPtr& intent_filter,
+    const apps::ReplacedAppPreferences& replaced_app_preferences,
     arc::ArcServiceManager* arc_service_manager,
     ArcAppListPrefs* prefs) {
   if (!arc_service_manager) {
@@ -342,7 +348,7 @@ void ResetVerifiedLinks(
   std::vector<std::string> package_names;
 
   // Find the apps that needs to reset verified link domain status in ARC.
-  for (auto& entry : replaced_app_preferences->replaced_preference) {
+  for (auto& entry : replaced_app_preferences) {
     auto app_info = prefs->GetApp(entry.first);
     if (!app_info) {
       continue;
@@ -424,16 +430,19 @@ void OnContentUrlResolved(const base::FilePath& file_path,
                           apps::mojom::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
                           apps::mojom::WindowInfoPtr window_info,
+                          apps::ArcApps::LaunchAppWithIntentCallback callback,
                           const std::vector<GURL>& content_urls) {
   for (const auto& content_url : content_urls) {
     if (!content_url.is_valid()) {
       LOG(ERROR) << "Share files failed, file urls are not valid";
+      std::move(callback).Run(/*success=*/false);
       return;
     }
   }
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -446,6 +455,7 @@ void OnContentUrlResolved(const base::FilePath& file_path,
       OpenUrlsWithPermissionAndWindowInfo);
   if (!arc_file_system) {
     LOG(ERROR) << "Failed to open urls, ARC File System not found";
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
@@ -455,7 +465,10 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   ::full_restore::SaveAppLaunchInfo(
       file_path,
       std::make_unique<app_restore::AppLaunchInfo>(
-          app_id, event_flags, std::move(intent), session_id, display_id));
+          app_id, event_flags, apps::ConvertMojomIntentToIntent(intent),
+          session_id, display_id));
+
+  std::move(callback).Run(/*success=*/true);
 }
 
 // Sets the session id for |window_info|. If the full restore feature is
@@ -691,13 +704,13 @@ void ArcApps::LoadIcon(const std::string& app_id,
 
 void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                   LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+  auto event_flags = apps::GetEventFlags(params.disposition,
                                          /*prefer_container=*/false);
   auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source, std::move(window_info),
-                        base::DoNothing());
+    LaunchAppWithIntent(
+        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
+        params.launch_source, std::move(window_info), base::DoNothing());
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::move(window_info));
@@ -717,7 +730,16 @@ void ArcApps::OnPreferredAppSet(
     IntentFilterPtr intent_filter,
     IntentPtr intent,
     ReplacedAppPreferences replaced_app_preferences) {
-  // TODO(crbug.com/1253250): Add the implementation.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+  AddPreferredApp(app_id, intent_filter, std::move(intent), arc_service_manager,
+                  prefs);
+  ResetVerifiedLinks(intent_filter, replaced_app_preferences,
+                     arc_service_manager, prefs);
 }
 
 void ArcApps::Connect(
@@ -739,50 +761,6 @@ void ArcApps::Connect(
   subscriber->OnApps(std::move(apps), apps::mojom::AppType::kArc,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
-}
-
-void ArcApps::LoadIcon(const std::string& app_id,
-                       apps::mojom::IconKeyPtr icon_key,
-                       apps::mojom::IconType mojom_icon_type,
-                       int32_t size_hint_in_dip,
-                       bool allow_placeholder_icon,
-                       LoadIconCallback callback) {
-  if (!icon_key || mojom_icon_type == apps::mojom::IconType::kUnknown) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-  IconEffects icon_effects = static_cast<IconEffects>(icon_key->icon_effects);
-
-  apps::IconType icon_type = ConvertMojomIconTypeToIconType(mojom_icon_type);
-
-  // Treat the Play Store as a special case, loading an icon defined by a
-  // resource instead of asking the Android VM (or the cache of previous
-  // responses from the Android VM). Presumably this is for bootstrapping:
-  // the Play Store icon (the UI for enabling and installing Android apps)
-  // should be showable even before the user has installed their first
-  // Android app and before bringing up an Android VM for the first time.
-  if (app_id == arc::kPlayStoreAppId) {
-    LoadPlayStoreIcon(icon_type, size_hint_in_dip, icon_effects,
-                      IconValueToMojomIconValueCallback(std::move(callback)));
-  } else {
-    const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-    DCHECK(arc_prefs);
-
-    // If the app has been removed, immediately terminate the icon request since
-    // it can't possibly succeed.
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        arc_prefs->GetApp(app_id);
-    if (!app_info) {
-      std::move(callback).Run(apps::mojom::IconValue::New());
-      return;
-    }
-
-    arc_icon_once_loader_.LoadIcon(
-        app_id, size_hint_in_dip, icon_type,
-        base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
-                       size_hint_in_dip, icon_effects,
-                       IconValueToMojomIconValueCallback(std::move(callback))));
-  }
 }
 
 void ArcApps::Launch(const std::string& app_id,
@@ -867,8 +845,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
                          event_flags, std::move(intent), std::move(activity),
-                         std::move(new_window_info)));
-      std::move(callback).Run(/*success=*/true);
+                         std::move(new_window_info), std::move(callback)));
       return;
     }
 
@@ -929,8 +906,9 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     full_restore::SaveAppLaunchInfo(
         profile_->GetPath(),
         std::make_unique<app_restore::AppLaunchInfo>(
-            app_id, event_flags, std::move(intent_for_full_restore), session_id,
-            display_id));
+            app_id, event_flags,
+            apps::ConvertMojomIntentToIntent(intent_for_full_restore),
+            session_id, display_id));
     std::move(callback).Run(/*success=*/true);
     return;
   }
@@ -1159,9 +1137,12 @@ void ArcApps::OnPreferredAppSet(
   if (!prefs) {
     return;
   }
-  AddPreferredApp(app_id, intent_filter, std::move(intent), arc_service_manager,
+  AddPreferredApp(app_id, ConvertMojomIntentFilterToIntentFilter(intent_filter),
+                  ConvertMojomIntentToIntent(intent), arc_service_manager,
                   prefs);
-  ResetVerifiedLinks(intent_filter, replaced_app_preferences,
+  ResetVerifiedLinks(ConvertMojomIntentFilterToIntentFilter(intent_filter),
+                     ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
+                         replaced_app_preferences),
                      arc_service_manager, prefs);
 }
 
@@ -1399,17 +1380,16 @@ void ArcApps::OnArcSupportedLinksChanged(
       continue;
     }
 
-    std::vector<apps::mojom::IntentFilterPtr> app_service_filters;
+    apps::IntentFilters app_service_filters;
     for (const auto& arc_filter : supported_link->filters.value()) {
-      auto converted =
-          apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
+      auto converted = apps_util::CreateIntentFilterForArc(arc_filter);
       if (apps_util::IsSupportedLinkForApp(app_id, converted)) {
         app_service_filters.push_back(std::move(converted));
       }
     }
 
-    app_service->SetSupportedLinksPreference(apps::mojom::AppType::kArc, app_id,
-                                             std::move(app_service_filters));
+    proxy()->SetSupportedLinksPreference(app_id,
+                                         std::move(app_service_filters));
   }
 
   for (const auto& supported_link : removed) {
@@ -1418,8 +1398,7 @@ void ArcApps::OnArcSupportedLinksChanged(
     if (app_id.empty()) {
       continue;
     }
-    app_service->RemoveSupportedLinksPreference(apps::mojom::AppType::kArc,
-                                                app_id);
+    proxy()->RemoveSupportedLinksPreference(app_id);
   }
 }
 

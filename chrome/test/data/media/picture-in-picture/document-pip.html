@@ -1,8 +1,7 @@
 <script>
 var pipWindow;
 async function createDocumentPipWindow() {
-    pipWindow = await window.requestPictureInPictureWindow(
-        {"width": 100, "height": 100});
+    pipWindow = await window.requestPictureInPictureWindow();
     pipWindow.document.write("Hello, world.<a name='top'>top</a>");
     return true;
 }
@@ -10,6 +9,11 @@ async function createDocumentPipWindow() {
 function navigateInDocumentPipWindow(url) {
     pipWindow.document.location.href = url;
     return true;
+}
+
+function addScriptToPictureInPictureWindow() {
+    pipWindow.document.write("<script>document.testvalue = 123;<\/script>");
+    return pipWindow.document.testvalue == 123;
 }
 
 </script>

@@ -31,25 +31,20 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit") {
   sources = [ "junit/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogMediatorTest.java" ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "javatests/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogIntegrationTest.java" ]
@@ -58,7 +53,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",

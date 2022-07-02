@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import { addSingletonGetter, sendWithPromise } from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview Helper browser proxy for getting metrics and changing metrics
@@ -45,8 +43,21 @@ export class MetricsConsentBrowserProxy {
   updateMetricsConsent(consent) {}
 }
 
+/** @type {?MetricsConsentBrowserProxy} */
+let instance = null;
+
 /** @implements {MetricsConsentBrowserProxy} */
 export class MetricsConsentBrowserProxyImpl {
+  /** @return {!MetricsConsentBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new MetricsConsentBrowserProxyImpl());
+  }
+
+  /** @param {!MetricsConsentBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getMetricsConsentState() {
     return sendWithPromise('getMetricsConsentState');
@@ -57,7 +68,3 @@ export class MetricsConsentBrowserProxyImpl {
     return sendWithPromise('updateMetricsConsent', {consent: consent});
   }
 }
-
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(MetricsConsentBrowserProxyImpl);

@@ -21,12 +21,11 @@
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/gfx/image/image_skia.h"
@@ -199,24 +198,15 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   DCHECK(app_service_proxy_);
 
   Observe(&app_service_proxy_->AppRegistryCache());
-  auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(
-      web_app::kOsSettingsAppId);
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(app_type, web_app::kOsSettingsAppId,
-                                 apps::IconType::kStandard,
-                                 GetAppIconDimension(),
-                                 /*allow_placeholder_icon=*/false,
-                                 base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                                                weak_factory_.GetWeakPtr()));
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), web_app::kOsSettingsAppId,
-        apps::mojom::IconType::kStandard, GetAppIconDimension(),
-        /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(
+          web_app::kOsSettingsAppId),
+      web_app::kOsSettingsAppId, apps::IconType::kStandard,
+      GetAppIconDimension(),
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                     weak_factory_.GetWeakPtr()));
 
   // Set parameters from Finch. Reasonable defaults are set in the header.
   accept_alternate_matches_ = base::GetFieldTrialParamByFeatureAsBool(
@@ -324,23 +314,12 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAppServiceLoadIconWithoutMojom)) {
-      app_service_proxy_->LoadIcon(
-          update.AppType(), web_app::kOsSettingsAppId,
-          apps::IconType::kStandard, GetAppIconDimension(),
-          /*allow_placeholder_icon=*/false,
-          base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      app_service_proxy_->LoadIcon(
-          apps::ConvertAppTypeToMojomAppType(update.AppType()),
-          web_app::kOsSettingsAppId, apps::mojom::IconType::kStandard,
-          GetAppIconDimension(),
-          /*allow_placeholder_icon=*/false,
-          apps::MojomIconValueToIconValueCallback(base::BindOnce(
-              &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
-    }
+    app_service_proxy_->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
+                                 apps::IconType::kStandard,
+                                 GetAppIconDimension(),
+                                 /*allow_placeholder_icon=*/false,
+                                 base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                                                weak_factory_.GetWeakPtr()));
   }
 }
 

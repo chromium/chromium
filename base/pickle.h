@@ -54,7 +54,7 @@ class BASE_EXPORT PickleIterator {
   // placed in |*length|. The pointer placed into |*data| points into the
   // message's buffer so it will be scoped to the lifetime of the message (or
   // until the message data is mutated). Do not keep the pointer around!
-  [[nodiscard]] bool ReadData(const char** data, int* length);
+  [[nodiscard]] bool ReadData(const char** data, size_t* length);
 
   // Similar, but using base::span for convenience.
   [[nodiscard]] bool ReadData(base::span<const uint8_t>* data);
@@ -64,17 +64,21 @@ class BASE_EXPORT PickleIterator {
   // pointer placed into |*data| points into the message's buffer so it will be
   // scoped to the lifetime of the message (or until the message data is
   // mutated). Do not keep the pointer around!
-  [[nodiscard]] bool ReadBytes(const char** data, int length);
+  [[nodiscard]] bool ReadBytes(const char** data, size_t length);
 
-  // A safer version of ReadInt() that checks for the result not being negative.
-  // Use it for reading the object sizes.
-  [[nodiscard]] bool ReadLength(int* result) {
-    return ReadInt(result) && *result >= 0;
+  // A version of ReadInt() that checks for the result not being negative. Use
+  // it for reading the object sizes.
+  [[nodiscard]] bool ReadLength(size_t* result) {
+    int result_int;
+    if (!ReadInt(&result_int) || result_int < 0)
+      return false;
+    *result = static_cast<size_t>(result_int);
+    return true;
   }
 
   // Skips bytes in the read buffer and returns true if there are at least
   // num_bytes available. Otherwise, does nothing and returns false.
-  [[nodiscard]] bool SkipBytes(int num_bytes) {
+  [[nodiscard]] bool SkipBytes(size_t num_bytes) {
     return !!GetReadPointerAndAdvance(num_bytes);
   }
 
@@ -94,12 +98,12 @@ class BASE_EXPORT PickleIterator {
   const char* GetReadPointerAndAdvance();
 
   // Get read pointer for |num_bytes| and advance read pointer. This method
-  // checks num_bytes for negativity and wrapping.
-  const char* GetReadPointerAndAdvance(int num_bytes);
+  // checks num_bytes for wrapping.
+  const char* GetReadPointerAndAdvance(size_t num_bytes);
 
   // Get read pointer for (num_elements * size_element) bytes and advance read
-  // pointer. This method checks for int overflow, negativity and wrapping.
-  const char* GetReadPointerAndAdvance(int num_elements,
+  // pointer. This method checks for overflow and wrapping.
+  const char* GetReadPointerAndAdvance(size_t num_elements,
                                        size_t size_element);
 
   const char* payload_;  // Start of our pickle's payload.
@@ -149,7 +153,7 @@ class BASE_EXPORT Pickle {
   // Initialize a Pickle object with the specified header size in bytes, which
   // must be greater-than-or-equal-to sizeof(Pickle::Header).  The header size
   // will be rounded up to ensure that the header size is 32bit-aligned.
-  explicit Pickle(int header_size);
+  explicit Pickle(size_t header_size);
 
   // Initializes a Pickle from a const block of data.  The data is not copied;
   // instead the data is merely referenced by this Pickle.  Only const methods
@@ -206,11 +210,11 @@ class BASE_EXPORT Pickle {
   void WriteString16(const StringPiece16& value);
   // "Data" is a blob with a length. When you read it out you will be given the
   // length. See also WriteBytes.
-  void WriteData(const char* data, int length);
+  void WriteData(const char* data, size_t length);
   // "Bytes" is a blob with no length. The caller must specify the length both
   // when reading and writing. It is normally used to serialize PoD types of a
   // known size. See also WriteData.
-  void WriteBytes(const void* data, int length);
+  void WriteBytes(const void* data, size_t length);
 
   // WriteAttachment appends |attachment| to the pickle. It returns
   // false iff the set is full or if the Pickle implementation does not support
@@ -308,7 +312,7 @@ class BASE_EXPORT Pickle {
                        size_t* pickle_size);
 
   // The allocation granularity of the payload.
-  static const int kPayloadUnit;
+  static const size_t kPayloadUnit;
 
  private:
   friend class PickleIterator;

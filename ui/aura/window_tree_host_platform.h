@@ -43,7 +43,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void HideImpl() override;
   gfx::Rect GetBoundsInPixels() const override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
-  gfx::Point GetLocationOnScreenInPixels() const override;
   void SetCapture() override;
   void ReleaseCapture() override;
   void SetCursorNative(gfx::NativeCursor cursor) override;
@@ -87,6 +86,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void SetFrameRateThrottleEnabled(bool enabled) override;
 
   // Overridden from aura::WindowTreeHost:
+  gfx::Point GetLocationOnScreenInPixels() const override;
   bool CaptureSystemKeyEventsImpl(
       absl::optional<base::flat_set<ui::DomCode>> dom_codes) override;
   void ReleaseSystemKeyEventCapture() override;

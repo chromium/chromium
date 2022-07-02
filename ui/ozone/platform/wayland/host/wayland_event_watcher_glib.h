@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_GLIB_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_GLIB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
 using GPollFD = struct _GPollFD;
@@ -37,7 +38,7 @@ class WaylandEventWatcherGlib : public WaylandEventWatcher {
   bool started_ = false;
 
   // The GLib event source for Wayland events.
-  GSource* wayland_source_ = nullptr;
+  raw_ptr<GSource> wayland_source_ = nullptr;
 
   // The poll attached to |wayland_source_|.
   std::unique_ptr<GPollFD> wayland_poll_;

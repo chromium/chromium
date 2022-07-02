@@ -97,7 +97,7 @@ views::MenuItemView* GetReorderOptionForNonFolderItemMenu(
 
 ash::AppListItemView* FindFolderItemView(ash::AppsGridView* apps_grid_view) {
   auto* model = apps_grid_view->view_model();
-  for (int index = 0; index < model->view_size(); ++index) {
+  for (size_t index = 0; index < model->view_size(); ++index) {
     ash::AppListItemView* current_view = model->view_at(index);
     if (current_view->is_folder())
       return current_view;
@@ -108,7 +108,7 @@ ash::AppListItemView* FindFolderItemView(ash::AppsGridView* apps_grid_view) {
 
 ash::AppListItemView* FindNonFolderItemView(ash::AppsGridView* apps_grid_view) {
   auto* model = apps_grid_view->view_model();
-  for (int index = 0; index < model->view_size(); ++index) {
+  for (size_t index = 0; index < model->view_size(); ++index) {
     ash::AppListItemView* current_view = model->view_at(index);
     if (!current_view->is_folder())
       return current_view;
@@ -158,7 +158,7 @@ views::MenuItemView* ShowRootMenuAndReturn(
     ui::test::EventGenerator* event_generator) {
   views::MenuItemView* root_menu = nullptr;
 
-  EXPECT_GT(apps_grid_view->view_model()->view_size(), 0);
+  EXPECT_GT(apps_grid_view->view_model()->view_size(), 0u);
 
   switch (menu_type) {
     case AppListTestApi::MenuType::kAppListPageMenu:
@@ -236,7 +236,7 @@ AppListToastContainerView* GetToastContainerViewFromBubble() {
 
 AppListToastContainerView* GetToastContainerViewFromFullscreenAppList() {
   DCHECK(features::IsLauncherAppSortEnabled());
-  return GetAppsContainerView()->toast_container_for_test();
+  return GetAppsContainerView()->toast_container();
 }
 
 RecentAppsView* GetRecentAppsView() {
@@ -415,7 +415,7 @@ std::u16string AppListTestApi::GetAppListItemViewName(
     const std::string& item_id) {
   views::ViewModelT<AppListItemView>* view_model =
       GetTopLevelAppsGridView()->view_model();
-  for (int i = 0; i < view_model->view_size(); ++i) {
+  for (size_t i = 0; i < view_model->view_size(); ++i) {
     AppListItemView* app_list_item_view = view_model->view_at(i);
     if (app_list_item_view->item()->id() == item_id)
       return app_list_item_view->title()->GetText();
@@ -426,7 +426,7 @@ std::u16string AppListTestApi::GetAppListItemViewName(
 std::vector<std::string> AppListTestApi::GetTopLevelViewIdList() {
   std::vector<std::string> id_list;
   auto* view_model = GetTopLevelAppsGridView()->view_model();
-  for (int i = 0; i < view_model->view_size(); ++i) {
+  for (size_t i = 0; i < view_model->view_size(); ++i) {
     AppListItem* app_list_item = view_model->view_at(i)->item();
     if (app_list_item) {
       id_list.push_back(app_list_item->id());
@@ -633,7 +633,8 @@ ash::AppListItemView* AppListTestApi::FindTopLevelFolderItemView() {
 void AppListTestApi::VerifyTopLevelItemVisibility() {
   auto* view_model = GetTopLevelAppsGridView()->view_model();
   std::vector<std::string> invisible_item_names;
-  for (int view_index = 0; view_index < view_model->view_size(); ++view_index) {
+  for (size_t view_index = 0; view_index < view_model->view_size();
+       ++view_index) {
     auto* item_view = view_model->view_at(view_index);
     if (!item_view->GetVisible())
       invisible_item_names.push_back(item_view->item()->name());
@@ -765,21 +766,20 @@ void AppListTestApi::RegisterReorderAnimationDoneCallback(
                           weak_factory_.GetWeakPtr(), actual_state));
 }
 
-void AppListTestApi::OnReorderAnimationDone(
-    ReorderAnimationEndState* result,
-    bool abort,
-    ash::AppListReorderAnimationStatus status) {
-  DCHECK(status == ash::AppListReorderAnimationStatus::kFadeOutAnimation ||
-         status == ash::AppListReorderAnimationStatus::kFadeInAnimation);
+void AppListTestApi::OnReorderAnimationDone(ReorderAnimationEndState* result,
+                                            bool abort,
+                                            AppListGridAnimationStatus status) {
+  DCHECK(status == AppListGridAnimationStatus::kReorderFadeOut ||
+         status == AppListGridAnimationStatus::kReorderFadeIn);
 
   // Record the animation running result.
   if (abort) {
-    if (status == ash::AppListReorderAnimationStatus::kFadeOutAnimation)
+    if (status == AppListGridAnimationStatus::kReorderFadeOut)
       *result = ReorderAnimationEndState::kFadeOutAborted;
     else
       *result = ReorderAnimationEndState::kFadeInAborted;
   } else {
-    EXPECT_EQ(ash::AppListReorderAnimationStatus::kFadeInAnimation, status);
+    EXPECT_EQ(AppListGridAnimationStatus::kReorderFadeIn, status);
     *result = ReorderAnimationEndState::kCompleted;
 
     // Verify that the toast container under the clamshell mode does not have
@@ -804,8 +804,8 @@ void AppListTestApi::WaitForReorderAnimationAndVerifyItemVisibility() {
 void AppListTestApi::WaitForFadeOutAnimation() {
   ash::AppsGridView* apps_grid_view = GetTopLevelAppsGridView();
 
-  if (apps_grid_view->reorder_animation_status_for_test() !=
-      ash::AppListReorderAnimationStatus::kFadeOutAnimation) {
+  if (apps_grid_view->grid_animation_status_for_test() !=
+      AppListGridAnimationStatus::kReorderFadeOut) {
     // The apps grid is not under fade out animation so no op.
     return;
   }

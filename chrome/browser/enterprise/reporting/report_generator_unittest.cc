@@ -169,7 +169,10 @@ class ReportGeneratorTest : public ::testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     profile_manager_.CreateGuestProfile();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateSystemProfile();
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();

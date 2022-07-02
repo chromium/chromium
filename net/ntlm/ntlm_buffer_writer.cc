@@ -12,11 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 NtlmBufferWriter::NtlmBufferWriter(size_t buffer_len)
-    : buffer_(buffer_len, 0), cursor_(0) {}
+    : buffer_(buffer_len, 0) {}
 
 NtlmBufferWriter::~NtlmBufferWriter() = default;
 
@@ -179,5 +178,4 @@ void NtlmBufferWriter::SetCursor(size_t cursor) {
   cursor_ = cursor;
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

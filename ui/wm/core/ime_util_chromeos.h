@@ -5,8 +5,8 @@
 #ifndef UI_WM_CORE_IME_UTIL_CHROMEOS_H_
 #define UI_WM_CORE_IME_UTIL_CHROMEOS_H_
 
+#include "base/component_export.h"
 #include "ui/aura/window.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace gfx {
 class Rect;
@@ -16,16 +16,18 @@ namespace wm {
 
 // A property key to store the restore bounds for a window when moved by the
 // virtual keyboard.
-WM_CORE_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
+COMPONENT_EXPORT(UI_WM)
+extern const aura::WindowProperty<gfx::Rect*>* const
     kVirtualKeyboardRestoreBoundsKey;
 
 // Moves |window| to ensure it does not intersect with |rect_in_screen|.
-WM_CORE_EXPORT void EnsureWindowNotInRect(aura::Window* window,
-                                          const gfx::Rect& rect_in_screen);
+COMPONENT_EXPORT(UI_WM)
+void EnsureWindowNotInRect(aura::Window* window,
+                           const gfx::Rect& rect_in_screen);
 
 // Restores the window bounds when input client loses the focus on the window.
-WM_CORE_EXPORT void RestoreWindowBoundsOnClientFocusLost(
-    aura::Window* top_level_window);
+COMPONENT_EXPORT(UI_WM)
+void RestoreWindowBoundsOnClientFocusLost(aura::Window* top_level_window);
 
 }  // namespace wm
 

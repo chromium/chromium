@@ -10,16 +10,18 @@
 
 namespace blink {
 
-static __m128 WrapVirtualIndexVector(__m128 x,
-                                     __m128 wave_size,
-                                     __m128 inv_wave_size) {
-  // Wrap the virtual index |x| to the range 0 to wave_size - 1.  This is done
-  // by computing x - floor(x/wave_size)*wave_size.
+namespace {
+
+__m128 WrapVirtualIndexVector(__m128 x,
+                              __m128 wave_size,
+                              __m128 inv_wave_size) {
+  // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
+  // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
   //
   // But there's no SSE2 SIMD instruction for this, so we do it the following
   // way.
 
-  // f = truncate(x/wave_size), truncating towards 0.
+  // `f` = truncate(`x`/`wave_size`), truncating towards 0.
   const __m128 r = _mm_mul_ps(x, inv_wave_size);
   __m128i f = _mm_cvttps_epi32(r);
 
@@ -39,6 +41,42 @@ static __m128 WrapVirtualIndexVector(__m128 x,
   // from x.
   return _mm_sub_ps(x, _mm_mul_ps(_mm_cvtepi32_ps(f), wave_size));
 }
+
+__m128d WrapVirtualIndexVectorPd(__m128d x,
+                                 __m128d wave_size,
+                                 __m128d inv_wave_size) {
+  // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
+  // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
+  //
+  // But there's no SSE2 SIMD instruction for this, so we do it the following
+  // way.
+
+  // `f` = truncate(`x`/`wave_size`), truncating towards 0.
+  const __m128d r = _mm_mul_pd(x, inv_wave_size);
+  __m128i f = _mm_cvttpd_epi32(r);
+
+  // Note that if r >= 0, then f <= r. But if r < 0, then r <= f, with equality
+  // only if r is already an integer.  Hence if r < f, we want to subtract 1
+  // from f to get floor(r).
+
+  // cmplt(a,b) returns 0xffffffffffffffff (-1) if a < b and 0 if not.  So cmp
+  // is -1 or 0 depending on whether r < f, which is what we need to compute
+  // floor(r).
+  __m128i cmp = reinterpret_cast<__m128i>(_mm_cmplt_pd(r, _mm_cvtepi32_pd(f)));
+
+  // Take the low 32 bits of each 64-bit result and move them into the two
+  // lowest 32-bit fields.
+  cmp = _mm_shuffle_epi32(cmp, (2 << 2) | 0);
+
+  // This subtracts 1 if needed to get floor(r).
+  f = _mm_add_epi32(f, cmp);
+
+  // Convert back to float, and scale by wave_size.  And finally subtract that
+  // from x.
+  return _mm_sub_pd(x, _mm_mul_pd(_mm_cvtepi32_pd(f), wave_size));
+}
+
+}  // namespace
 
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,
@@ -153,40 +191,6 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
       floor(virtual_read_index * inv_periodic_wave_size) * periodic_wave_size;
 
   return std::make_tuple(k, virtual_read_index);
-}
-
-static __m128d WrapVirtualIndexVectorPd(__m128d x,
-                                        __m128d wave_size,
-                                        __m128d inv_wave_size) {
-  // Wrap the virtual index |x| to the range 0 to wave_size - 1.  This is done
-  // by computing x - floor(x/wave_size)*wave_size.
-  //
-  // But there's no SSE2 SIMD instruction for this, so we do it the following
-  // way.
-
-  // f = truncate(x/wave_size), truncating towards 0.
-  const __m128d r = _mm_mul_pd(x, inv_wave_size);
-  __m128i f = _mm_cvttpd_epi32(r);
-
-  // Note that if r >= 0, then f <= r. But if r < 0, then r <= f, with equality
-  // only if r is already an integer.  Hence if r < f, we want to subtract 1
-  // from f to get floor(r).
-
-  // cmplt(a,b) returns 0xffffffffffffffff (-1) if a < b and 0 if not.  So cmp
-  // is -1 or 0 depending on whether r < f, which is what we need to compute
-  // floor(r).
-  __m128i cmp = reinterpret_cast<__m128i>(_mm_cmplt_pd(r, _mm_cvtepi32_pd(f)));
-
-  // Take the low 32 bits of each 64-bit result and move them into the two
-  // lowest 32-bit fields.
-  cmp = _mm_shuffle_epi32(cmp, (2 << 2) | 0);
-
-  // This subtracts 1 if needed to get floor(r).
-  f = _mm_add_epi32(f, cmp);
-
-  // Convert back to float, and scale by wave_size.  And finally subtract that
-  // from x.
-  return _mm_sub_pd(x, _mm_mul_pd(_mm_cvtepi32_pd(f), wave_size));
 }
 
 double OscillatorHandler::ProcessARateVectorKernel(

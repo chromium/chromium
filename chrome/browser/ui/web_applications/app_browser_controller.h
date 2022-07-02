@@ -29,6 +29,10 @@ class BrowserThemePack;
 class CustomThemeSupplier;
 class TabMenuModelFactory;
 
+namespace ash {
+class SystemWebAppDelegate;
+}
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -39,7 +43,6 @@ class ImageModel;
 
 namespace web_app {
 
-class SystemWebAppDelegate;
 class WebAppBrowserController;
 
 // Returns true if |app_url| and |page_url| are the same origin. To avoid
@@ -173,7 +176,7 @@ class AppBrowserController
   virtual bool HasReloadButton() const;
 
   // Returns the SystemWebAppDelegate if any for this controller.
-  virtual const SystemWebAppDelegate* system_app() const;
+  virtual const ash::SystemWebAppDelegate* system_app() const;
 
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be

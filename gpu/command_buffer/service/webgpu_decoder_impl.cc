@@ -6,8 +6,8 @@
 
 #include <dawn/native/DawnNative.h>
 #include <dawn/native/OpenGLBackend.h>
-#include <dawn_platform/DawnPlatform.h>
-#include <dawn_wire/WireServer.h>
+#include <dawn/platform/DawnPlatform.h>
+#include <dawn/wire/WireServer.h>
 
 #include <algorithm>
 #include <memory>
@@ -223,9 +223,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTIMPLEMENTED();
     return false;
   }
-  bool WasContextLostByRobustnessExtension() const override {
-    return false;
-  }
+  bool WasContextLostByRobustnessExtension() const override { return false; }
   void MarkContextLost(error::ContextLostReason reason) override {
     NOTIMPLEMENTED();
   }
@@ -923,7 +921,7 @@ class DawnWireServer : public dawn::wire::WireServer {
     }
   };
 
-  WebGPUDecoderImpl* decoder_;
+  raw_ptr<WebGPUDecoderImpl> decoder_;
 };
 
 thread_local WebGPUDecoderImpl* DawnWireServer::tls_parent_decoder = nullptr;
@@ -1033,8 +1031,10 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
   switch (feature) {
     case WGPUFeatureName_TimestampQuery:
     case WGPUFeatureName_PipelineStatisticsQuery:
+    case WGPUFeatureName_ChromiumExperimentalDp4a:
+    case WGPUFeatureName_DawnMultiPlanarFormats:
+    case WGPUFeatureName_DepthClipControl:
       return allow_unsafe_apis_;
-    case WGPUFeatureName_Depth24UnormStencil8:
     case WGPUFeatureName_Depth32FloatStencil8:
     case WGPUFeatureName_TextureCompressionBC:
     case WGPUFeatureName_TextureCompressionETC2:
@@ -1067,7 +1067,7 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
 #if BUILDFLAG(IS_LINUX)
     callback(WGPURequestAdapterStatus_Unavailable, nullptr,
              "WebGPU on Linux requires command-line flag "
-             "--enable-features=Vulkan,UseSkiaRenderer",
+             "--enable-features=Vulkan",
              userdata);
     return;
 #endif  // BUILDFLAG(IS_LINUX)
@@ -1669,7 +1669,7 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     color_attachment.view = view;
     color_attachment.loadOp = WGPULoadOp_Clear;
     color_attachment.storeOp = WGPUStoreOp_Store;
-    color_attachment.clearColor = {0.0, 0.0, 0.0, 0.0};
+    color_attachment.clearValue = {0.0, 0.0, 0.0, 0.0};
 
     WGPURenderPassDescriptor render_pass_descriptor = {};
     render_pass_descriptor.colorAttachmentCount = 1;

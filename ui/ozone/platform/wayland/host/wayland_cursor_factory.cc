@@ -13,8 +13,8 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
 namespace ui {
 
@@ -146,7 +146,7 @@ void WaylandCursorFactory::ReloadThemeCursors() {
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(LoadCursorTheme, name_, size_, scale_,
-                     connection_->shm()->get()),
+                     connection_->wayland_buffer_factory()->shm()),
       base::BindOnce(&WaylandCursorFactory::OnThemeLoaded,
                      weak_factory_.GetWeakPtr(), name_, size_));
 }

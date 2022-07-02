@@ -6,7 +6,7 @@ import './pin_to_shelf_item.js';
 import './supported_links_item.js';
 import './shared_style.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';
-import 'chrome://resources/cr_components/app_management/icons.js';
+import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 import 'chrome://resources/cr_elements/icons.m.js';

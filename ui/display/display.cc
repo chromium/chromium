@@ -34,7 +34,7 @@ int g_has_forced_device_scale_factor = -1;
 // -1.0, we read the forced device scale factor again.
 float g_forced_device_scale_factor = -1.0;
 
-// An alloance error epsilon cauesd by fractional scale factor to produce
+// An allowance error epsilon caused by fractional scale factor to produce
 // expected DP display size.
 constexpr float kDisplaySizeAllowanceEpsilon = 0.01f;
 
@@ -252,6 +252,16 @@ gfx::Insets Display::GetWorkAreaInsets() const {
 void Display::SetScaleAndBounds(float device_scale_factor,
                                 const gfx::Rect& bounds_in_pixel) {
   gfx::Insets insets = bounds_.InsetsFrom(work_area_);
+  SetScale(device_scale_factor);
+
+  gfx::RectF f(bounds_in_pixel);
+  f.Scale(1.f / device_scale_factor_);
+  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
+  size_in_pixels_ = bounds_in_pixel.size();
+  UpdateWorkAreaFromInsets(insets);
+}
+
+void Display::SetScale(float device_scale_factor) {
   if (!HasForceDeviceScaleFactor()) {
 #if BUILDFLAG(IS_APPLE)
     // Unless an explicit scale factor was provided for testing, ensure the
@@ -261,12 +271,6 @@ void Display::SetScaleAndBounds(float device_scale_factor,
     device_scale_factor_ = device_scale_factor;
   }
   device_scale_factor_ = std::max(0.5f, device_scale_factor_);
-
-  gfx::RectF f(bounds_in_pixel);
-  f.Scale(1.f / device_scale_factor_);
-  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
-  size_in_pixels_ = bounds_in_pixel.size();
-  UpdateWorkAreaFromInsets(insets);
 }
 
 void Display::SetSize(const gfx::Size& size_in_pixel) {
@@ -321,7 +325,7 @@ bool Display::operator==(const Display& rhs) const {
          color_depth_ == rhs.color_depth_ &&
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&
-         display_frequency_ == rhs.display_frequency_;
+         display_frequency_ == rhs.display_frequency_ && label_ == rhs.label_;
 }
 
 }  // namespace display

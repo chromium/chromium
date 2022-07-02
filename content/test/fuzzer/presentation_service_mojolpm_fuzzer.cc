@@ -224,7 +224,8 @@ void PresentationServiceTestcase::SetUp() {
 
 void PresentationServiceTestcase::SetUpOnUIThread() {
   content::TestRenderFrameHost* render_frame_host =
-      static_cast<content::TestWebContents*>(web_contents())->GetMainFrame();
+      static_cast<content::TestWebContents*>(web_contents())
+          ->GetPrimaryMainFrame();
   render_frame_host->InitializeRenderFrameIfNeeded();
 
   presentation_service_ =

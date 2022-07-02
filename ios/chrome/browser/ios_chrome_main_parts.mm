@@ -28,6 +28,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_service.h"
@@ -44,6 +45,7 @@
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_switches.h"
 #include "ios/chrome/browser/application_context_impl.h"
 #include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -83,6 +85,10 @@
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/allocator_interception_mac.h"
 #include "base/allocator/allocator_shim.h"
+#endif
+
+#if DCHECK_IS_ON()
+#include "ui/display/screen_base.h"
 #endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -125,7 +131,15 @@ IOSChromeMainParts::IOSChromeMainParts(
   net::URLRequest::SetDefaultCookiePolicyToBlock();
 }
 
-IOSChromeMainParts::~IOSChromeMainParts() {}
+IOSChromeMainParts::~IOSChromeMainParts() {
+#if DCHECK_IS_ON()
+  // The screen object is never deleted on IOS. Make sure that all display
+  // observers are removed at the end.
+  display::ScreenBase* screen =
+      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+  DCHECK(!screen->HasDisplayObservers());
+#endif
+}
 
 void IOSChromeMainParts::PreEarlyInitialization() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -200,10 +214,23 @@ void IOSChromeMainParts::PreCreateThreads() {
       break;
   }
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // Get the variation IDs passed through the command line. This is done early
+  // on because ConvertFlagsToSwitches() will append to the command line
+  // the variation IDs from flags (so that they are visible in about://version).
+  // This will be passed on to `VariationsService::SetUpFieldTrials()`, which
+  // will manually fetch the variation IDs from flags (hence the reason we do
+  // not pass the mutated command line, otherwise the IDs will be duplicated).
+  // It also distinguishes between variation IDs coming from the command line
+  // and from flags, so we cannot rely on simply putting them all in the
+  // command line.
+  const std::string command_line_variation_ids =
+      command_line->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds);
+
   // Convert freeform experimental settings into switches before initializing
   // local state, in case any of the settings affect policy.
-  AppendSwitchesFromExperimentalSettings(
-      base::CommandLine::ForCurrentProcess());
+  AppendSwitchesFromExperimentalSettings(command_line);
 
   // Initialize local state.
   local_state_ = application_context_->GetLocalState();
@@ -211,14 +238,13 @@ void IOSChromeMainParts::PreCreateThreads() {
 
   flags_ui::PrefServiceFlagsStorage flags_storage(
       application_context_->GetLocalState());
-  ConvertFlagsToSwitches(&flags_storage,
-                         base::CommandLine::ForCurrentProcess());
+  ConvertFlagsToSwitches(&flags_storage, command_line);
 
   // Now that the command line has been mutated based on about:flags, we can
   // initialize field trials. The field trials are needed by IOThread's
   // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
-  SetUpFieldTrials();
+  SetUpFieldTrials(command_line_variation_ids);
 
   // Set metrics upload for stack/heap profiles.
   IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
@@ -243,9 +269,9 @@ void IOSChromeMainParts::PreCreateThreads() {
     if (malloc_intercepted) {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ =
-          std::make_unique<HeapProfilerController>(channel);
-      heap_profiler_controller_->Start();
+      heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
+          channel, metrics::CallStackProfileParams::Process::kBrowser);
+      heap_profiler_controller_->StartIfEnabled();
     }
   }
 #endif
@@ -302,7 +328,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // immediately after starting metrics recording.
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "CrashpadIOS",
-      crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled");
+      crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
   // a synthetic field trial when the user defaults beacon is set. Called
@@ -310,7 +337,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "UseUserDefaultsForExitedCleanlyBeacon",
       metrics::CleanExitBeacon::ShouldUseUserDefaultsBeacon() ? "Enabled"
-                                                              : "Disabled");
+                                                              : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Init the RLZ library. This just schedules a task on the file thread to be
@@ -385,7 +413,8 @@ void IOSChromeMainParts::PostDestroyThreads() {
 }
 
 // This will be called after the command-line has been mutated by about:flags
-void IOSChromeMainParts::SetUpFieldTrials() {
+void IOSChromeMainParts::SetUpFieldTrials(
+    const std::string& command_line_variation_ids) {
   base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
 
   // FeatureList requires VariationsIdsProvider to be created.
@@ -406,7 +435,8 @@ void IOSChromeMainParts::SetUpFieldTrials() {
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
   application_context_->GetVariationsService()->SetUpFieldTrials(
-      variation_ids, std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      variation_ids, command_line_variation_ids,
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
 }
 

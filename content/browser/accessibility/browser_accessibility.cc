@@ -148,11 +148,8 @@ ui::AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {
   return nullptr;
 }
 
-uint32_t BrowserAccessibility::PlatformChildCount() const {
-  if (IsLeaf())
-    return 0;
-  return static_cast<uint32_t>(
-      node()->GetUnignoredChildCountCrossingTreeBoundary());
+size_t BrowserAccessibility::PlatformChildCount() const {
+  return IsLeaf() ? 0 : node()->GetUnignoredChildCountCrossingTreeBoundary();
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
@@ -216,7 +213,7 @@ bool BrowserAccessibility::IsLineBreakObject() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
-    uint32_t child_index) const {
+    size_t child_index) const {
   if (PlatformChildCount() == 0)
     return nullptr;
 
@@ -340,12 +337,12 @@ void BrowserAccessibility::SetNode(ui::AXNode& node) {
   node_ = &node;
 }
 
-uint32_t BrowserAccessibility::InternalChildCount() const {
+size_t BrowserAccessibility::InternalChildCount() const {
   return node_->GetUnignoredChildCount();
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetChild(
-    uint32_t child_index) const {
+    size_t child_index) const {
   ui::AXNode* child_node = node_->GetUnignoredChildAtIndex(child_index);
   if (!child_node)
     return nullptr;
@@ -1011,6 +1008,14 @@ bool BrowserAccessibility::IsWebContent() const {
   return true;
 }
 
+bool BrowserAccessibility::IsReadOnlySupported() const {
+  return node()->IsReadOnlySupported();
+}
+
+bool BrowserAccessibility::IsReadOnlyOrDisabled() const {
+  return node()->IsReadOnlyOrDisabled();
+}
+
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   ui::AXTree::Selection unignored_selection =
       manager()->ax_tree()->GetUnignoredSelection();
@@ -1369,7 +1374,8 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
       selection.anchor_offset =
           static_cast<int>(anchor_child->GetUnignoredIndexInParent());
     } else {
-      selection.anchor_offset = anchor_object->GetChildCount();
+      selection.anchor_offset =
+          static_cast<int>(anchor_object->GetChildCount());
     }
   }
 
@@ -1385,7 +1391,7 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
       selection.focus_offset =
           static_cast<int>(focus_child->GetUnignoredIndexInParent());
     } else {
-      selection.focus_offset = focus_object->GetChildCount();
+      selection.focus_offset = static_cast<int>(focus_object->GetChildCount());
     }
   }
 
@@ -1417,11 +1423,11 @@ gfx::NativeViewAccessible BrowserAccessibility::GetParent() const {
   return delegate->AccessibilityGetNativeViewAccessible();
 }
 
-int BrowserAccessibility::GetChildCount() const {
-  return static_cast<int>(PlatformChildCount());
+size_t BrowserAccessibility::GetChildCount() const {
+  return PlatformChildCount();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(int index) {
+gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(size_t index) {
   BrowserAccessibility* child = PlatformGetChild(index);
   if (!child)
     return nullptr;
@@ -1591,7 +1597,8 @@ BrowserAccessibility::PlatformChildIterator::GetNativeViewAccessible() const {
   return platform_iterator->GetNativeViewAccessible();
 }
 
-int BrowserAccessibility::PlatformChildIterator::GetIndexInParent() const {
+absl::optional<size_t>
+BrowserAccessibility::PlatformChildIterator::GetIndexInParent() const {
   if (platform_iterator == parent_->PlatformChildrenEnd().platform_iterator)
     return parent_->PlatformChildCount();
 
@@ -1660,12 +1667,12 @@ ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
   return node->GetAXPlatformNode();
 }
 
-int BrowserAccessibility::GetIndexInParent() {
+absl::optional<size_t> BrowserAccessibility::GetIndexInParent() {
   if (manager()->GetRoot() == this && PlatformGetParent() == nullptr) {
     // If it is a root node of WebContent, it doesn't have a parent and a
     // valid index in parent. So it returns -1 in order to compute its
     // index at AXPlatformNodeBase.
-    return -1;
+    return absl::nullopt;
   }
   return node()->GetUnignoredIndexInParent();
 }

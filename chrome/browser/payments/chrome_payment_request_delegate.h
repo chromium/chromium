@@ -56,7 +56,9 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool IsBrowserWindowActive() const override;
   void ShowNoMatchingPaymentCredentialDialog(
       const std::u16string& merchant_name,
-      base::OnceClosure response_callback) override;
+      const std::string& rp_id,
+      base::OnceClosure response_callback,
+      base::OnceClosure opt_out_callback) override;
 
   // ContentPaymentRequestDelegate:
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()

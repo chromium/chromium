@@ -27,6 +27,14 @@ ASH_PUBLIC_EXPORT extern const char
 // education nudge show and the first sort usage.
 ASH_PUBLIC_EXPORT extern const char kAppListSortDiscoveryDurationAfterNudge[];
 
+// Similar to `kAppListSortDiscoveryDurationAfterNudge`. The only difference is
+// that the metric data is separated by the tablet mode state under which the
+// reorder education nudge shows.
+ASH_PUBLIC_EXPORT extern const char
+    kAppListSortDiscoveryDurationAfterNudgeClamshell[];
+ASH_PUBLIC_EXPORT extern const char
+    kAppListSortDiscoveryDurationAfterNudgeTablet[];
+
 // The UMA histogram that records the time duration between the earliest user
 // session activation with the app list sort enabled and the first sort usage.
 ASH_PUBLIC_EXPORT extern const char

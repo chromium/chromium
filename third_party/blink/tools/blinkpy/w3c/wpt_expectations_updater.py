@@ -74,8 +74,8 @@ class WPTExpectationsUpdater(object):
                              for p in self.expectations_files()}
         self._test_expectations = TestExpectations(
             self.port, expectations_dict=expectations_dict)
-        self.testid_prefix = "ninja://:blink_web_tests/"
-        self.test_suite = "blink_web_tests"
+        self.testid_prefix = "ninja://:blink_wpt_tests/"
+        self.test_suite = "blink_wpt_tests"
 
     def expectations_files(self):
         """Returns list of expectations files.
@@ -96,11 +96,6 @@ class WPTExpectationsUpdater(object):
         log_level = logging.DEBUG if self.options.verbose else logging.INFO
         configure_logging(logging_level=log_level, include_time=True)
 
-        if not (self.options.android_product
-                or self.options.update_android_expectations_only):
-            assert not self.options.include_unexpected_pass, (
-                'Command line argument --include-unexpected-pass is not '
-                'supported in desktop mode.')
         self.patchset = self.options.patchset
 
         if (self.options.clean_up_test_expectations or
@@ -139,17 +134,6 @@ class WPTExpectationsUpdater(object):
             help='Only cleanup expectations deleted or renamed in current CL. '
                  'If flag is not used then a full cleanup of deleted or '
                  'renamed tests will be done in expectations.')
-        # TODO(rmhasan): Move below arguments to the
-        # AndroidWPTExpectationsUpdater add_arguments implementation.
-        # Also look into using sub parsers to separate android and
-        # desktop specific arguments.
-        parser.add_argument(
-            '--update-android-expectations-only', action='store_true',
-            help='Update and clean up only Android test expectations.')
-        parser.add_argument(
-            '--android-product', action='append', default=[],
-            help='Android products whose baselines will be updated.',
-            choices=PRODUCTS)
         parser.add_argument(
             '--include-unexpected-pass',
             action='store_true',
@@ -173,11 +157,11 @@ class WPTExpectationsUpdater(object):
 
         if flag_specific == "disable-site-isolation-trials":
             builder_names = ["linux-rel"]
-            test_suite = "not_site_per_process_blink_web_tests"
+            test_suite = "not_site_per_process_blink_wpt_tests"
         else:
             builder_names = self.host.builders.all_flag_specific_try_builder_names(
                 flag_specific)
-            test_suite = "blink_web_tests"
+            test_suite = "blink_wpt_tests"
 
         build_to_status = self.git_cl.latest_try_jobs(
             builder_names=builder_names,
@@ -657,11 +641,7 @@ class WPTExpectationsUpdater(object):
         # rebaselined and has an actual result but no baseline. We can't
         # add a Missing expectation (this is not allowed), but no other
         # expectation is correct.
-        # We also want to skip any new manual tests that are not automated;
-        # see crbug.com/708241 for context.
         if 'MISSING' in actual_results:
-            return {'Skip'}
-        if '-manual.' in test_name and 'TIMEOUT' in actual_results:
             return {'Skip'}
         expectations = set()
         failure_types = {'TEXT', 'IMAGE+TEXT', 'IMAGE', 'AUDIO', 'FAIL'}
@@ -890,13 +870,13 @@ class WPTExpectationsUpdater(object):
         Args:
             specifiers: A collection of specifiers (case insensitive).
             specifier_macros: A dict mapping "macros" for groups of specifiers
-                to lists of version specifiers. e.g. {"win": ["win7", "win10"]}.
+                to lists of version specifiers. e.g. {"win": ["win10", "win11"]}.
                 If there are versions in this dict for that have no corresponding
                 try bots, they are ignored.
 
         Returns:
-            A shortened list of specifiers (capitalized). For example, ["win7",
-            "win10"] would be converted to ["Win"]. If the given list covers
+            A shortened list of specifiers (capitalized). For example, ["win10",
+            "win11"] would be converted to ["Win"]. If the given list covers
             all supported platforms, then an empty list is returned.
         """
         specifiers = {s.lower() for s in specifiers}
@@ -966,9 +946,7 @@ class WPTExpectationsUpdater(object):
         webdriver_list = []
         for lines in line_dict.values():
             for line in lines:
-                if 'Skip' in line and '-manual.' in line:
-                    wont_fix_list.append(line)
-                elif self.finder.webdriver_prefix() in line:
+                if self.finder.webdriver_prefix() in line:
                     webdriver_list.append(line)
                 else:
                     line_list.append(line)

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,15 +83,9 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     ASSERT_EQ(2u, notification->buttons().size());
     EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-    // Clicking the first notification button should launch try again.
+    // Clicking the notification button should launch try again.
     EXPECT_CALL(*notification_controller_, LaunchTryAgain());
     notification->delegate()->Click(0, absl::nullopt);
-
-    // Clicking the second notification button should launch help.
-    EXPECT_CALL(*new_window_delegate_,
-                OpenUrl(GURL(kEcheAppHelpUrl),
-                        NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-    notification->delegate()->Click(1, absl::nullopt);
   }
 
   MockNewWindowDelegate* new_window_delegate_;
@@ -107,20 +102,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
   ASSERT_TRUE(notification);
-  ASSERT_EQ(2u, notification->buttons().size());
+  ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), message);
 
-  // Clicking the first notification button should relaunch again.
+  // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
   notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the second notification button should launch help.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppHelpUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-  notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Connection Lost Title";
   message = u"Connection Lost Message";
@@ -129,20 +118,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   notification =
       display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
   ASSERT_TRUE(notification.has_value());
-  ASSERT_EQ(2u, notification->buttons().size());
+  ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), message);
 
-  // Clicking the first notification button should relaunch again.
+  // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
   notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the second notification button should launch help.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppHelpUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-  notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Inactivity Title";
   message = u"Inactivity Message";
@@ -169,18 +152,12 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   ASSERT_TRUE(notification.has_value());
   ASSERT_TRUE(notification->title().size() > 0);
   ASSERT_TRUE(notification->message().size() > 0);
-  ASSERT_EQ(2u, notification->buttons().size());
+  ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-  // Clicking the first notification button should launch settings.
+  // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
   notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the second notification button should launch learn more.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppLearnMoreUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-  notification->delegate()->Click(1, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest,
@@ -193,18 +170,12 @@ TEST_F(EcheAppNotificationControllerTest,
   ASSERT_TRUE(notification.has_value());
   ASSERT_TRUE(notification->title().size() > 0);
   ASSERT_TRUE(notification->message().size() > 0);
-  ASSERT_EQ(2u, notification->buttons().size());
+  ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-  // Clicking the first notification button should launch settings.
+  // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
   notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the second notification button should launch learn more.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppLearnMoreUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-  notification->delegate()->Click(1, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
@@ -234,9 +205,9 @@ TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::INVALID_NOTIFICATION);
   notification_controller_->CloseNotification(
-      kEcheAppFromWebWithoudButtonNotifierId);
+      kEcheAppFromWebWithoutButtonNotifierId);
   notification =
-      display_service_->GetNotification(kEcheAppFromWebWithoudButtonNotifierId);
+      display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
   ASSERT_FALSE(notification.has_value());
 }
 
@@ -263,7 +234,7 @@ TEST_F(EcheAppNotificationControllerTest,
       display_service_->GetNotification(kEcheAppInactivityNotifierId);
   ASSERT_FALSE(notification.has_value());
   notification =
-      display_service_->GetNotification(kEcheAppFromWebWithoudButtonNotifierId);
+      display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
   ASSERT_FALSE(notification.has_value());
 }
 

@@ -78,6 +78,7 @@ VaapiStatus VaapiPictureNativePixmapEgl::Allocate(gfx::BufferFormat format) {
   if (make_context_current_cb_ && !make_context_current_cb_.Run())
     return VaapiStatus::Codes::kBadContext;
 
+  // TODO(b/220336463): plumb the right color space.
   auto image =
       base::MakeRefCounted<gl::GLImageNativePixmap>(visible_size_, format);
   // Create an EGLImage from a gl texture

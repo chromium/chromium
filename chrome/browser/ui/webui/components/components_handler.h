@@ -15,10 +15,6 @@
 #include "components/update_client/update_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 // The handler for Javascript messages for the chrome://components/ page.
 class ComponentsHandler : public content::WebUIMessageHandler,
                           public component_updater::ServiceObserver {
@@ -35,17 +31,17 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // Callback for the "requestComponentsData" message.
-  void HandleRequestComponentsData(const base::ListValue* args);
+  void HandleRequestComponentsData(const base::Value::List& args);
 
   // Callback for the "checkUpdate" message.
-  void HandleCheckUpdate(const base::ListValue* args);
+  void HandleCheckUpdate(const base::Value::List& args);
 
   // ServiceObserver implementation.
   void OnEvent(Events event, const std::string& id) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callback for the "crosUrlComponentsRedirect" message.
-  void HandleCrosUrlComponentsRedirect(const base::ListValue* args);
+  void HandleCrosUrlComponentsRedirect(const base::Value::List& args);
 #endif
 
  private:

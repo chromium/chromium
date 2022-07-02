@@ -141,9 +141,9 @@ bool OpenTabFromSourceIndex(int browser_index,
                                          ui::PAGE_TRANSITION_LINK, false,
                                          false);
   open_url_params.source_render_frame_id =
-      source_contents->GetMainFrame()->GetRoutingID();
+      source_contents->GetPrimaryMainFrame()->GetRoutingID();
   open_url_params.source_render_process_id =
-      source_contents->GetMainFrame()->GetProcess()->GetID();
+      source_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   content::WebContents* new_contents =
       source_contents->OpenURL(open_url_params);
@@ -198,9 +198,11 @@ void NavigateTabForward(int browser_index) {
 }
 
 bool ExecJs(int browser_index, int tab_index, const std::string& script) {
-  return content::ExecJs(
-      test()->GetBrowser(browser_index)->tab_strip_model()->GetWebContentsAt(0),
-      script);
+  return content::ExecJs(test()
+                             ->GetBrowser(browser_index)
+                             ->tab_strip_model()
+                             ->GetWebContentsAt(tab_index),
+                         script);
 }
 
 bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
@@ -259,12 +261,11 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
         std::make_unique<sync_sessions::SyncedSessionWindow>();
     new_window->wrapped_window.window_id =
         SessionID::FromSerializedValue(window.window_id.id());
-    for (size_t t = 0; t < window.tabs.size(); ++t) {
-      const sessions::SessionTab& tab = *window.tabs.at(t);
+    for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
       std::unique_ptr<sessions::SessionTab> new_tab =
           std::make_unique<sessions::SessionTab>();
-      new_tab->navigations.resize(tab.navigations.size());
-      base::ranges::copy(tab.navigations, new_tab->navigations.begin());
+      new_tab->navigations.resize(tab->navigations.size());
+      base::ranges::copy(tab->navigations, new_tab->navigations.begin());
       new_window->wrapped_window.tabs.push_back(std::move(new_tab));
     }
     SessionID id = new_window->wrapped_window.window_id;
@@ -275,10 +276,12 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
 }
 
 bool CheckInitialState(int browser_index) {
-  if (0 != GetNumWindows(browser_index))
+  if (0 != GetNumWindows(browser_index)) {
     return false;
-  if (0 != GetNumForeignSessions(browser_index))
+  }
+  if (0 != GetNumForeignSessions(browser_index)) {
     return false;
+  }
   return true;
 }
 

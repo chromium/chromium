@@ -11,10 +11,10 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/models/combobox_model.h"
-
-using read_anything::mojom::ContentNodePtr;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingFontModel
@@ -30,7 +30,10 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   ReadAnythingFontModel& operator=(const ReadAnythingFontModel&) = delete;
   ~ReadAnythingFontModel() override;
 
-  std::string GetCurrentFontName(int index);
+  std::string GetFontNameAt(int index);
+  bool IsValidFontName(const std::string& font_name);
+  bool IsValidFontIndex(int index);
+  void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
 
  protected:
   // ui::Combobox implementation:
@@ -42,6 +45,9 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
  private:
   // Styled font names for the drop down options in front-end.
   std::vector<std::u16string> font_choices_;
+
+  // Default index for drop down, either zero or populated from prefs.
+  int default_index_ = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,11 +62,12 @@ class ReadAnythingModel {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
-    virtual void OnContentUpdated(
-        const std::vector<ContentNodePtr>& content) = 0;
+    virtual void OnAXTreeDistilled(
+        const ui::AXTreeUpdate& snapshot,
+        const std::vector<ui::AXNodeID>& content_node_ids) = 0;
   };
 
-  ReadAnythingModel();
+  explicit ReadAnythingModel(std::string prefs_font_name);
   ReadAnythingModel(const ReadAnythingModel&) = delete;
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
@@ -68,18 +75,22 @@ class ReadAnythingModel {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  void SetSelectedFontIndex(int new_index);
-  void SetContent(std::vector<ContentNodePtr> content_nodes);
+  void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
+                          std::vector<ui::AXNodeID> content_node_ids);
+  void SetSelectedFontByIndex(int new_index);
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
 
  private:
+  void NotifyAXTreeDistilled();
   void NotifyFontNameUpdated();
-  void NotifyContentUpdated();
 
   // State:
   std::string font_name_;
-  std::vector<ContentNodePtr> content_nodes_;
+  // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
+  // scrolls in sync.
+  ui::AXTreeUpdate snapshot_;
+  std::vector<ui::AXNodeID> content_node_ids_;
 
   base::ObserverList<Observer> observers_;
   const std::unique_ptr<ReadAnythingFontModel> font_model_;

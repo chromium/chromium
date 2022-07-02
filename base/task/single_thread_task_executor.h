@@ -51,7 +51,7 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   // asks its delegate to DoWork(). Defaults to 1. Can be increased in some
   // scenarios where the native pump (i.e. not MessagePumpType::DEFAULT) has
   // high overhead and yielding to native isn't critical.
-  void SetWorkBatchSize(size_t work_batch_size);
+  void SetWorkBatchSize(int work_batch_size);
 
  private:
   explicit SingleThreadTaskExecutor(MessagePumpType type,

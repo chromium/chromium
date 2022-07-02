@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace ui {
@@ -127,7 +128,7 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
   int total_latency_ms_ = 0;
   int max_latency_ms_ = 0;
 
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
   bool recording_ = true;
 
   base::WeakPtrFactory<PresentationTimeRecorderInternal> weak_ptr_factory_{
@@ -269,7 +270,7 @@ class PresentationTimeHistogramRecorder
   }
 
  private:
-  base::HistogramBase* presentation_time_histogram_;
+  raw_ptr<base::HistogramBase> presentation_time_histogram_;
   std::string max_latency_histogram_name_;
 };
 

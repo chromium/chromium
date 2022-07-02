@@ -1,0 +1,67 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //chromeos/network should be updated as well. We need to sync both files
+# until the migration is done.
+
+noparent = True
+
+include_rules = [
+  "+ash/constants",
+  "+base",
+  "+base/component_export.h",
+  "+chromeos/test",
+  "+chromeos/dbus",
+  "+chromeos/components/feature_usage",
+  "+chromeos/components/onc",
+  "+chromeos/login/login_state",
+  "+chromeos/network",
+  "+chromeos/services/network_config/public",
+  "+components/account_id",
+  "+components/certificate_matching",
+  "+components/crx_file",
+  "+components/device_event_log",
+  "+components/onc",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/proxy_config",
+  "+components/url_formatter",
+  "+components/user_manager",
+  "+crypto",
+  "+dbus",
+  "+net",
+  "+services/preferences/public/cpp",
+  "+testing",
+  "+third_party/cros_system_api",
+  "+url",
+
+  # Abseil features must be allowlisted explicitly for now. See
+  # //styleguide/c++/c++11.html. Allowed features' headers will be listed
+  # explicitly here.
+  # Please keep this section in sync with //DEPS.
+  '-absl',
+  '-third_party/abseil-cpp',
+  '+third_party/abseil-cpp/absl/base/attributes.h',
+  "+third_party/abseil-cpp/absl/numeric/int128.h",
+  '+third_party/abseil-cpp/absl/types/optional.h',
+  '+third_party/abseil-cpp/absl/types/variant.h',
+  '+third_party/abseil-cpp/absl/utility/utility.h',
+]
+
+specific_include_rules = {
+ "ui_proxy_config_service_unittest.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h"
+  ],
+ "managed_network_configuration_handler_unittest.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h"
+  ],
+ "cellular_policy_handler_unittest.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h"
+  ],
+ "network_metadata_store_unittest.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h"
+  ],
+
+  # Dependencies specific for fuzz targets and other fuzzing-related code.
+  ".*fuzz.*": [
+    "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
+  ],
+}

@@ -10,7 +10,7 @@ export function loadTestModule() {
     return false;
   }
 
-  const host = params.get('host') || 'test';
+  const host = params.get('host') || 'webui-test';
   if (host !== 'test' && host !== 'webui-test') {
     return false;
   }

@@ -152,6 +152,10 @@ ukm::SourceId FakePageLoadMetricsObserverDelegate::GetPageUkmSourceId() const {
   return ukm::kInvalidSourceId;
 }
 
+uint32_t FakePageLoadMetricsObserverDelegate::GetSoftNavigationCount() const {
+  return 0;
+}
+
 bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()
     const {
   return false;

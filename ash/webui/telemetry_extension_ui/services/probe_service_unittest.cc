@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,8 +52,9 @@ class ProbeServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
-  ProbeService probe_service_{
-      remote_probe_service_.BindNewPipeAndPassReceiver()};
+  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_{
+      ProbeService::Factory::Create(
+          remote_probe_service_.BindNewPipeAndPassReceiver())};
 
   FakeDebugDaemonClient* fake_debugd_client_ = nullptr;
 };

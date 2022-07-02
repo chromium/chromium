@@ -27,12 +27,13 @@ class TestRun:
   def SetUp(self):
     raise NotImplementedError
 
-  def RunTests(self, results):
+  def RunTests(self, results, raw_logs_fh=None):
     """Runs Tests and populates |results|.
 
     Args:
       results: An array that should be populated with
                |base_test_result.TestRunResults| objects.
+      raw_logs_fh: An optional file handle to write raw logs to.
     """
     raise NotImplementedError
 

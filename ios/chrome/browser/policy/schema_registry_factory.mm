@@ -9,7 +9,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,7 +18,6 @@ std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForBrowserState(
     ChromeBrowserState* browser_state,
     const policy::Schema& chrome_schema,
     policy::CombinedSchemaRegistry* global_registry) {
-  DCHECK(IsEnterprisePolicyEnabled());
   DCHECK(!browser_state->IsOffTheRecord());
 
   auto registry = std::make_unique<policy::SchemaRegistry>();

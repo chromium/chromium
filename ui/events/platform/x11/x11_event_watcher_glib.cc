@@ -6,6 +6,8 @@
 
 #include <glib.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ui {
 
 namespace {
@@ -13,8 +15,8 @@ namespace {
 struct GLibX11Source : public GSource {
   // Note: The GLibX11Source is created and destroyed by GLib. So its
   // constructor/destructor may or may not get called.
-  x11::Connection* connection;
-  GPollFD* poll_fd;
+  raw_ptr<x11::Connection> connection;
+  raw_ptr<GPollFD> poll_fd;
 };
 
 gboolean XSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -27,7 +29,7 @@ gboolean XSourcePrepare(GSource* source, gint* timeout_ms) {
   //      requests.
   //   2. A request was made after XSourceDispatch() when running tasks from
   //      the task queue.
-  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  auto* connection = static_cast<GLibX11Source*>(source)->connection.get();
   connection->Flush();
 
   // Read a pre-buffered response if available to prevent a deadlock where we
@@ -51,7 +53,7 @@ gboolean XSourceCheck(GSource* source) {
 gboolean XSourceDispatch(GSource* source,
                          GSourceFunc unused_func,
                          gpointer data) {
-  auto* connection = static_cast<GLibX11Source*>(source)->connection;
+  auto* connection = static_cast<GLibX11Source*>(source)->connection.get();
   connection->Dispatch();
 
   // Flushing here is not strictly required, but when this function returns,

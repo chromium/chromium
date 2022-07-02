@@ -31,7 +31,7 @@ class AlarmsApiTest : public ExtensionApiTest,
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
-  static std::vector<base::Value> BuildEventArguments(const bool last_message) {
+  static base::Value::List BuildEventArguments(const bool last_message) {
     api::test::OnMessage::Info info;
     info.data = "";
     info.last_message = last_message;
@@ -64,9 +64,9 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSplit) {
   catcher.RestrictToBrowserContext(browser()->profile());
   EventRouter* event_router = EventRouter::Get(incognito_profile);
 
-  ExtensionTestMessageListener listener("ready: false", false);
+  ExtensionTestMessageListener listener("ready: false");
 
-  ExtensionTestMessageListener listener_incognito("ready: true", false);
+  ExtensionTestMessageListener listener_incognito("ready: true");
 
   ASSERT_TRUE(LoadAlarmsExtensionIncognito("split"));
 

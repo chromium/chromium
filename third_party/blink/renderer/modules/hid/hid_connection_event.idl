@@ -6,7 +6,8 @@
 // https://wicg.github.io/webhid/index.html#events
 
 [
-    Exposed(Window WebHID),
+    Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            Window WebHID),
     SecureContext
 ] interface HIDConnectionEvent : Event {
     constructor(DOMString type, HIDConnectionEventInit eventInitDict);

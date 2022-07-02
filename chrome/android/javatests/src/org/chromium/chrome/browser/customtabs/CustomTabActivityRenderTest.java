@@ -77,9 +77,9 @@ public class CustomTabActivityRenderTest {
                     PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
                             new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
-            toolbarItems.add(CustomTabsTestUtils.makeToolbarItemBundle(
+            toolbarItems.add(CustomTabsIntentTestUtils.makeToolbarItemBundle(
                     ICON_CREDIT_CARD, "Top Action #1", pendingIntent, 1));
-            toolbarItems.add(CustomTabsTestUtils.makeToolbarItemBundle(
+            toolbarItems.add(CustomTabsIntentTestUtils.makeToolbarItemBundle(
                     ICON_EMAIL, "Top Action #2", pendingIntent, 2));
             intent.putParcelableArrayListExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, toolbarItems);
         }
@@ -126,7 +126,7 @@ public class CustomTabActivityRenderTest {
 
     private void prepareCCTIntent() {
         mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        mIntent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        mIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getContext(), mUrl);
     }
 
@@ -189,8 +189,8 @@ public class CustomTabActivityRenderTest {
     @Feature("RenderTest")
     public void custom_color_red() throws IOException {
         Context context = InstrumentationRegistry.getContext();
-        mIntent = CustomTabsTestUtils.createCustomTabIntent(
-                context, mUrl, builder -> { builder.setToolbarColor(Color.RED); });
+        mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
+                context, mUrl, true, builder -> { builder.setToolbarColor(Color.RED); });
 
         startActivityAndRenderToolbar("cct_red" + mRunWithHttps);
     }
@@ -200,8 +200,8 @@ public class CustomTabActivityRenderTest {
     @Feature("RenderTest")
     public void custom_color_black() throws IOException {
         Context context = InstrumentationRegistry.getContext();
-        mIntent = CustomTabsTestUtils.createCustomTabIntent(
-                context, mUrl, builder -> { builder.setToolbarColor(Color.BLACK); });
+        mIntent = CustomTabsIntentTestUtils.createCustomTabIntent(
+                context, mUrl, true, builder -> { builder.setToolbarColor(Color.BLACK); });
 
         startActivityAndRenderToolbar("cct_black" + mRunWithHttps);
     }

@@ -125,7 +125,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::vector<base::Value> event_args,
+                     base::Value::List event_args,
                      const device::mojom::HidDeviceInfo& device_info);
 
   base::ThreadChecker thread_checker_;

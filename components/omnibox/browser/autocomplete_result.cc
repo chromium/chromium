@@ -39,6 +39,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using metrics::OmniboxEventProto;
@@ -87,6 +88,11 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 #elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
+  // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
+  // defines a hard limit on the number of ZPS suggestions on iPad, so if an
+  // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone
+  // and 10 on iPad.
+  constexpr size_t kMaxZeroSuggestMatchesOnIPad = 10;
 #else
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
@@ -110,6 +116,12 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
         OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
         kDefaultMaxZeroSuggestMatches);
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
+#if BUILDFLAG(IS_IOS)
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      field_trial_value =
+          std::min(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
+    }
+#endif
     return field_trial_value;
   }
 
@@ -216,8 +228,7 @@ void AutocompleteResult::TransferOldMatches(
   SortAndCull(input, template_url_service);
 }
 
-void AutocompleteResult::AppendMatches(const AutocompleteInput& input,
-                                       const ACMatches& matches) {
+void AutocompleteResult::AppendMatches(const ACMatches& matches) {
   for (const auto& match : matches) {
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents),
               match.contents);
@@ -282,7 +293,15 @@ void AutocompleteResult::SortAndCull(
 
     RotateMatchToFront(top_match, &matches_);
 
-    DiscourageTopMatchFromBeingSearchEntity(&matches_);
+    // The search provider may pre-deduplicate search suggestions. It's possible
+    // for the un-deduped search suggestion that replaces a default search
+    // entity suggestion to not have had `ComputeStrippedDestinationURL()`
+    // invoked. Make sure to invoke it now as `AutocompleteController` relies on
+    // `stripped_destination_url` to detect result changes. If
+    // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
+    // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
+    if (DiscourageTopMatchFromBeingSearchEntity(&matches_))
+      matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
 
   // Limit URL matches per OmniboxMaxURLMatches.
@@ -316,7 +335,7 @@ void AutocompleteResult::SortAndCull(
   }
 
   // Group search suggestions above URL suggestions.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
 #else
@@ -636,14 +655,18 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
 }
 
 // static
-void AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
+bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
     ACMatches* matches) {
   if (matches->empty())
-    return;
+    return false;
 
   auto top_match = matches->begin();
   if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
-    return;
+    return false;
+
+  // We define an iterator to capture the non-entity duplicate match (if any)
+  // so that we can later use it with duplicate_matches.erase().
+  auto non_entity_it = top_match->duplicate_matches.end();
 
   // Search the duplicates for an equivalent non-entity search suggestion.
   for (auto it = top_match->duplicate_matches.begin();
@@ -655,17 +678,51 @@ void AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
       continue;
     }
 
+    // Capture the first eligible non-entity duplicate we find, but continue the
+    // search for a potential server-provided duplicate, which is considered to
+    // be an even better candidate for the reasons outlined below.
+    if (non_entity_it == top_match->duplicate_matches.end()) {
+      non_entity_it = it;
+    }
+
+    // When an entity suggestion (SEARCH_SUGGEST_ENTITY) is received from
+    // google.com, we also receive a non-entity version of the same suggestion
+    // which (a) gets placed in the |duplicate_matches| list of the entity
+    // suggestion (as part of the deduplication process) and (b) has the same
+    // |deletion_url| as the entity suggestion.
+    // When the user attempts to remove the SEARCH_SUGGEST_ENTITY suggestion
+    // from the omnibox, the suggestion removal code will fire off network
+    // requests to the suggestion's own |deletion_url| as well as to any
+    // deletion_url's present on matches in the associated |duplicate_matches|
+    // list, which in this case would result in redundant network calls to the
+    // same URL.
+    // By prioritizing the "undeduping" (i.e. moving a duplicate match out of
+    // the |duplicate_matches| list) and promotion of the non-entity
+    // SEARCH_SUGGEST (or any other "specialized search") duplicate as the
+    // top match, we are deliberately separating the two matches that have the
+    // same |deletion_url|, thereby eliminating any redundant network calls
+    // upon suggestion removal.
+    if (it->type == ACMatchType::SEARCH_SUGGEST ||
+        AutocompleteMatch::IsSpecializedSearchType(it->type)) {
+      non_entity_it = it;
+      break;
+    }
+  }
+
+  if (non_entity_it != top_match->duplicate_matches.end()) {
     // Copy the non-entity match, then erase it from the list of duplicates.
     // We do this first, because the insertion operation invalidates all
     // iterators, including |top_match|.
-    AutocompleteMatch non_entity_match_copy = *it;
-    top_match->duplicate_matches.erase(it);
+    AutocompleteMatch non_entity_match_copy = *non_entity_it;
+    top_match->duplicate_matches.erase(non_entity_it);
 
     // Promote the non-entity match to the top, then immediately return, since
     // all our iterators are invalid after the insertion.
     matches->insert(matches->begin(), std::move(non_entity_match_copy));
-    return;
+    return true;
   }
+
+  return false;
 }
 
 // static

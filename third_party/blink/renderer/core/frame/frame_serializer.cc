@@ -464,6 +464,8 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kNamespaceRule:
     case CSSRule::kViewportRule:
     case CSSRule::kLayerStatementRule:
+    case CSSRule::kPositionFallbackRule:
+    case CSSRule::kTryRule:
       break;
   }
 }

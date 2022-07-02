@@ -88,10 +88,10 @@ containing sources and triggers to register in the simulation. The format
 is described below in detail.
 
 Learn more about the Attribution Reporting API at
-https://github.com/WICG/conversion-measurement-api#attribution-reporting-api.
+https://github.com/WICG/attribution-reporting-api#attribution-reporting-api.
 
 Learn about the meaning of the input and output fields at
-https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md.
+https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md.
 
 Switches:
   --copy_input_to_output    - Optional. If present, the input is copied to the
@@ -189,21 +189,20 @@ int ProcessJsonString(const std::string& json_input,
                       const content::AttributionSimulationOptions& options,
                       bool copy_input_to_output,
                       int json_write_options) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_input, base::JSONParserOptions::JSON_PARSE_RFC);
-  if (!result.value) {
-    std::cerr << "failed to deserialize input: " << result.error_message
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      json_input, base::JSONParserOptions::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    std::cerr << "failed to deserialize input: " << result.error().message
               << std::endl;
     return 1;
   }
 
   base::Value input_copy;
   if (copy_input_to_output)
-    input_copy = result.value->Clone();
+    input_copy = result->Clone();
 
-  base::Value output = content::RunAttributionSimulation(
-      std::move(*result.value), options, std::cerr);
+  base::Value output =
+      content::RunAttributionSimulation(std::move(*result), options, std::cerr);
   if (output.type() == base::Value::Type::NONE)
     return 1;
 

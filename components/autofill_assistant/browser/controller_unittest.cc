@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
@@ -215,7 +216,7 @@ class ControllerTest : public testing::Test {
   void SimulateNavigateToUrl(const GURL& url) {
     SetLastCommittedUrl(url);
     content::NavigationSimulator::NavigateAndCommitFromDocument(
-        url, web_contents()->GetMainFrame());
+        url, web_contents()->GetPrimaryMainFrame());
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
     controller_->DidFinishLoad(nullptr, GURL(""));
   }
@@ -783,7 +784,7 @@ TEST_F(ControllerTest, SuccessfulNavigation) {
   NavigationStateChangeListener listener(controller_.get());
   controller_->AddNavigationListener(&listener);
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
   controller_->RemoveNavigationListener(&listener);
 
   EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
@@ -801,7 +802,7 @@ TEST_F(ControllerTest, FailedNavigation) {
   controller_->AddNavigationListener(&listener);
   content::NavigationSimulator::NavigateAndFailFromDocument(
       GURL("http://initialurl.com"), net::ERR_CONNECTION_TIMED_OUT,
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   controller_->RemoveNavigationListener(&listener);
 
   EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
@@ -820,7 +821,8 @@ TEST_F(ControllerTest, NavigationWithRedirects) {
 
   std::unique_ptr<content::NavigationSimulator> simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL("http://original.example.com/"), web_contents()->GetMainFrame());
+          GURL("http://original.example.com/"),
+          web_contents()->GetPrimaryMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
   EXPECT_TRUE(controller_->IsNavigatingToNewDocument());
@@ -849,9 +851,9 @@ TEST_F(ControllerTest, EventuallySuccessfulNavigation) {
   controller_->AddNavigationListener(&listener);
   content::NavigationSimulator::NavigateAndFailFromDocument(
       GURL("http://initialurl.com"), net::ERR_CONNECTION_TIMED_OUT,
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
   controller_->RemoveNavigationListener(&listener);
 
   EXPECT_FALSE(controller_->IsNavigatingToNewDocument());
@@ -873,15 +875,15 @@ TEST_F(ControllerTest, RemoveListener) {
   NavigationStateChangeListener listener(controller_.get());
   controller_->AddNavigationListener(&listener);
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
   listener.events.clear();
   controller_->RemoveNavigationListener(&listener);
 
   content::NavigationSimulator::NavigateAndFailFromDocument(
       GURL("http://initialurl.com"), net::ERR_CONNECTION_TIMED_OUT,
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
 
   EXPECT_THAT(listener.events, IsEmpty());
 }
@@ -975,7 +977,8 @@ TEST_F(ControllerTest, WaitForNavigationActionStartWithinTimeout) {
   EXPECT_THAT(processed_actions_capture, SizeIs(0));
   std::unique_ptr<content::NavigationSimulator> simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL("http://a.example.com/path"), web_contents()->GetMainFrame());
+          GURL("http://a.example.com/path"),
+          web_contents()->GetPrimaryMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -1727,7 +1730,7 @@ TEST_F(ControllerTest, UnexpectedNavigationDuringPromptAction) {
   EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
   EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://a.example.com/page"), web_contents()->GetMainFrame());
+      GURL("http://a.example.com/page"), web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
 
   // Expected browser initiated navigation is allowed.
@@ -1775,7 +1778,7 @@ TEST_F(ControllerTest, UnexpectedNavigationInRunningState) {
   EXPECT_CALL(mock_client_, Shutdown(_)).Times(0);
   EXPECT_CALL(mock_client_, RecordDropOut(_)).Times(0);
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://a.example.com/page"), web_contents()->GetMainFrame());
+      GURL("http://a.example.com/page"), web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(AutofillAssistantState::RUNNING, controller_->GetState());
 
   // Expected browser initiated navigation while in RUNNING state:
@@ -2097,7 +2100,8 @@ TEST_F(ControllerTest, EndPromptWithOnEndNavigation) {
 
   std::unique_ptr<content::NavigationSimulator> simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL("http://a.example.com/path"), web_contents()->GetMainFrame());
+          GURL("http://a.example.com/path"),
+          web_contents()->GetPrimaryMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -2222,7 +2226,7 @@ TEST_F(ControllerPrerenderTest, SuccessfulNavigation) {
   controller_->AddNavigationListener(&listener);
 
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
 
   EXPECT_THAT(
       listener.events,
@@ -2280,7 +2284,7 @@ TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
   controller_->AddNavigationListener(&listener);
 
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://initialurl.com"), web_contents()->GetMainFrame());
+      GURL("http://initialurl.com"), web_contents()->GetPrimaryMainFrame());
 
   EXPECT_THAT(
       listener.events,
@@ -2291,14 +2295,14 @@ TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
   listener.events.clear();
 
   // Create a fenced frame.
-  content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
       ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(web_contents()->GetMainFrame());
+      CreateFencedFrame(web_contents()->GetPrimaryMainFrame());
   GURL kFencedFrameUrl("https://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(kFencedFrameUrl,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
@@ -2326,6 +2330,82 @@ TEST_F(ControllerTest, SemanticOverridesSetInService) {
   EXPECT_CALL(mock_client_, AttachUI());
   Start("http://a.example.com/path");
   EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
+}
+
+TEST_F(ControllerTest, SkipModelVersionIfParameterNotSpecified) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion).Times(0);
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{{}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, AttachesAvailableModelVersionOnStart) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(123456));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, DoesNotAttachUnavailableModelVersionOnStart) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(absl::nullopt));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, AttachesAvailableModelVersionForCommandLineSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantAnnotateDom, "true");
+
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(123456));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, UpdatesJsFlowLibraryLoaded) {
+  EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(true));
+
+  controller_->SetJsFlowLibrary("const st = 2;");
+}
+
+TEST_F(ControllerTest, JsFlowLibraryNotLoadedForEmpty) {
+  EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(true)).Times(0);
+
+  controller_->SetJsFlowLibrary("");
 }
 
 }  // namespace autofill_assistant

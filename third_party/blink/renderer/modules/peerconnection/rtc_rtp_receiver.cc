@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 
+#include "base/numerics/safe_conversions.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -35,7 +37,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 
@@ -211,11 +212,11 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
 
 void RTCRtpReceiver::ContextDestroyed() {
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_.Clear();
   }
   {
-    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    base::AutoLock locker(audio_underlying_sink_lock_);
     audio_to_decoder_underlying_sink_.Clear();
   }
 }
@@ -250,7 +251,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
 
   HeapVector<Member<RTCRtpCodecCapability>> codecs;
   codecs.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(rtc_capabilities->codecs.size()));
+      base::checked_cast<wtf_size_t>(rtc_capabilities->codecs.size()));
   for (const auto& rtc_codec : rtc_capabilities->codecs) {
     auto* codec = RTCRtpCodecCapability::Create();
     codec->setMimeType(WTF::String::FromUTF8(rtc_codec.mime_type()));
@@ -276,8 +277,8 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
   capabilities->setCodecs(codecs);
 
   HeapVector<Member<RTCRtpHeaderExtensionCapability>> header_extensions;
-  header_extensions.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(rtc_capabilities->header_extensions.size()));
+  header_extensions.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(
+      rtc_capabilities->header_extensions.size()));
   for (const auto& rtc_header_extension : rtc_capabilities->header_extensions) {
     auto* header_extension = RTCRtpHeaderExtensionCapability::Create();
     header_extension->setUri(WTF::String::FromUTF8(rtc_header_extension.uri));
@@ -311,7 +312,7 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
 
   HeapVector<Member<RTCRtpDecodingParameters>> encodings;
   encodings.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->encodings.size()));
+      base::checked_cast<wtf_size_t>(webrtc_parameters->encodings.size()));
   for (const auto& webrtc_encoding : webrtc_parameters->encodings) {
     RTCRtpDecodingParameters* encoding = RTCRtpDecodingParameters::Create();
     if (!webrtc_encoding.rid.empty()) {
@@ -322,8 +323,8 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
   parameters->setEncodings(encodings);
 
   HeapVector<Member<RTCRtpHeaderExtensionParameters>> headers;
-  headers.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->header_extensions.size()));
+  headers.ReserveCapacity(base::checked_cast<wtf_size_t>(
+      webrtc_parameters->header_extensions.size()));
   for (const auto& webrtc_header : webrtc_parameters->header_extensions) {
     headers.push_back(ToRtpHeaderExtensionParameters(webrtc_header));
   }
@@ -331,7 +332,7 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
 
   HeapVector<Member<RTCRtpCodecParameters>> codecs;
   codecs.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->codecs.size()));
+      base::checked_cast<wtf_size_t>(webrtc_parameters->codecs.size()));
   for (const auto& webrtc_codec : webrtc_parameters->codecs) {
     codecs.push_back(ToRtpCodecParameters(webrtc_codec));
   }
@@ -361,7 +362,7 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
     return;
   }
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     audio_from_depacketizer_underlying_source_ = new_underlying_source;
   }
@@ -378,7 +379,7 @@ void RTCRtpReceiver::SetAudioUnderlyingSink(
     // continue.
     return;
   }
-  WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+  base::AutoLock locker(audio_underlying_sink_lock_);
   audio_to_decoder_underlying_sink_ = new_underlying_sink;
 }
 
@@ -390,7 +391,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
   encoded_audio_streams_ = RTCInsertableStreams::Create();
 
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     DCHECK(!audio_from_depacketizer_underlying_source_);
 
     // Set up readable.
@@ -422,7 +423,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
   WritableStream* writable_stream;
   {
-    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    base::AutoLock locker(audio_underlying_sink_lock_);
     DCHECK(!audio_to_decoder_underlying_sink_);
 
     // Set up writable.
@@ -448,7 +449,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableFrameInterface> encoded_audio_frame) {
-  WTF::MutexLocker locker(audio_underlying_source_mutex_);
+  base::AutoLock locker(audio_underlying_source_lock_);
   if (audio_from_depacketizer_underlying_source_) {
     audio_from_depacketizer_underlying_source_->OnFrameFromSource(
         std::move(encoded_audio_frame));

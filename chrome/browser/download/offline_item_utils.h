@@ -26,6 +26,9 @@ class OfflineItemUtils {
       const std::string& name_space,
       download::DownloadItem* item);
 
+  static offline_items_collection::ContentId GetContentIdForDownload(
+      download::DownloadItem* download);
+
   static std::string GetDownloadNamespacePrefix(bool is_off_the_record);
 
   static bool IsDownload(const offline_items_collection::ContentId& id);

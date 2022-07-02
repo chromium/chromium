@@ -106,7 +106,7 @@ found in the LICENSE file. -->
         [[i18nDynamic(locale, 'consolidatedConsentGoogleEulaTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
-        <webview id="googleEulaWebview" role="document"
+        <webview id="consolidatedConsentGoogleEulaWebview" role="document"
             class="oobe-tos-webview tos-webview"
             on-contentload="onGoogleEulaContentLoad_">
         </webview>
@@ -128,7 +128,7 @@ found in the LICENSE file. -->
         [[i18nDynamic(locale, 'consolidatedConsentCrosEulaTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
-        <webview id="crosEulaWebview" role="document"
+        <webview id="consolidatedConsentCrosEulaWebview" role="document"
             class="oobe-tos-webview tos-webview"
             on-contentload="onCrosEulaContentLoad_">
         </webview>
@@ -149,7 +149,7 @@ found in the LICENSE file. -->
         [[i18nDynamic(locale, 'consolidatedConsentArcTermsTitle')]]
       </h1>
       <div slot="content" class="flex layout vertical">
-        <webview id="arcTosWebview" role="document"
+        <webview id="consolidatedConsentArcTosWebview" role="document"
             class="oobe-tos-webview tos-webview"
             on-contentload="onArcTosContentLoad_">
         </webview>
@@ -220,8 +220,7 @@ found in the LICENSE file. -->
             <span id="usageTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
-            [[getUsageText_(locale, isChildAccount_, isArcEnabled_,
-                            isDemo_, isOwner_)]]
+            [[getUsageText_(locale, isChildAccount_, isArcEnabled_, isDemo_)]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
                 class="oobe-local-link" is="action-link">
               [[i18nDynamic(locale,
@@ -331,7 +330,7 @@ found in the LICENSE file. -->
         <span
             inner-h-t-m-l=
                 "[[getUsageLearnMoreText_(locale, isChildAccount_,
-                                          isArcEnabled_, isDemo_, isOwner_)]]">
+                                          isArcEnabled_, isDemo_)]]">
         </span>
       </div>
     </oobe-modal-dialog>

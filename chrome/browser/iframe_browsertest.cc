@@ -59,15 +59,16 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, DISABLED_FileChooserInDestroyedSubframe) {
   NavigateIframeToURL(tab, "test", file_input_url);
 
   // Invoke the file chooser and remove the iframe from the main document.
-  content::RenderFrameHost* frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* frame = ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame);
-  EXPECT_EQ(frame->GetSiteInstance(), tab->GetMainFrame()->GetSiteInstance());
+  EXPECT_EQ(frame->GetSiteInstance(),
+            tab->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_TRUE(
       ExecuteScript(frame, "document.getElementById('fileinput').click();"));
-  EXPECT_TRUE(ExecuteScript(tab->GetMainFrame(),
+  EXPECT_TRUE(ExecuteScript(tab->GetPrimaryMainFrame(),
                             "document.body.removeChild("
                             "document.querySelectorAll('iframe')[0])"));
-  ASSERT_EQ(nullptr, ChildFrameAt(tab->GetMainFrame(), 0));
+  ASSERT_EQ(nullptr, ChildFrameAt(tab->GetPrimaryMainFrame(), 0));
 
   // On ASan bots, this test should succeed without reporting use-after-free
   // condition.

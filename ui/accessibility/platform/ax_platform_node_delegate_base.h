@@ -120,13 +120,13 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetParent() const override;
 
   // Get the index in parent. Typically this is the AXNode's index_in_parent_.
-  int GetIndexInParent() override;
+  absl::optional<size_t> GetIndexInParent() override;
 
   // Get the number of children of this node.
-  int GetChildCount() const override;
+  size_t GetChildCount() const override;
 
   // Get the child of a node given a 0-based index.
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
 
   // Returns true if it has a modal dialog.
   bool HasModalDialog() const override;
@@ -150,7 +150,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
 
   class ChildIteratorBase : public ChildIterator {
    public:
-    ChildIteratorBase(AXPlatformNodeDelegateBase* parent, int index);
+    ChildIteratorBase(AXPlatformNodeDelegateBase* parent, size_t index);
     ChildIteratorBase(const ChildIteratorBase& it);
     ~ChildIteratorBase() override = default;
     ChildIteratorBase& operator++() override;
@@ -158,12 +158,12 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
     ChildIteratorBase& operator--() override;
     ChildIteratorBase& operator--(int) override;
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
-    int GetIndexInParent() const override;
+    absl::optional<size_t> GetIndexInParent() const override;
     AXPlatformNodeDelegate& operator*() const override;
     AXPlatformNodeDelegate* operator->() const override;
 
    private:
-    int index_;
+    size_t index_;
     raw_ptr<AXPlatformNodeDelegateBase> parent_;
   };
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenBegin()
@@ -231,6 +231,12 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
 
   // Get whether this node is in web content.
   bool IsWebContent() const override;
+
+  // Get whether this node can be marked as read-only.
+  bool IsReadOnlySupported() const override;
+
+  // Get whether this node is marked as read-only or is disabled.
+  bool IsReadOnlyOrDisabled() const override;
 
   // Returns true if the caret or selection is visible on this object.
   bool HasVisibleCaretOrSelection() const override;

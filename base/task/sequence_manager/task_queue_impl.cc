@@ -128,7 +128,7 @@ DelayedTaskHandle TaskQueueImpl::GuardedTaskPoster::PostCancelableTask(
 
 TaskQueueImpl::TaskRunner::TaskRunner(
     scoped_refptr<GuardedTaskPoster> task_poster,
-    scoped_refptr<AssociatedThreadId> associated_thread,
+    scoped_refptr<const AssociatedThreadId> associated_thread,
     TaskType task_type)
     : task_poster_(std::move(task_poster)),
       associated_thread_(std::move(associated_thread)),
@@ -835,21 +835,28 @@ Value TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
       StringPrintf("0x%" PRIx64,
                    static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this))));
   state.SetBoolKey("enabled", IsQueueEnabled());
-  state.SetIntKey("any_thread_.immediate_incoming_queuesize",
-                  any_thread_.immediate_incoming_queue.size());
-  state.SetIntKey("delayed_incoming_queue_size",
-                  main_thread_only().delayed_incoming_queue.size());
-  state.SetIntKey("immediate_work_queue_size",
-                  main_thread_only().immediate_work_queue->Size());
-  state.SetIntKey("delayed_work_queue_size",
-                  main_thread_only().delayed_work_queue->Size());
+  // TODO(crbug.com/1334256): Make base::Value able to store an int64_t and
+  // remove the various static_casts below.
+  state.SetIntKey(
+      "any_thread_.immediate_incoming_queuesize",
+      static_cast<int>(any_thread_.immediate_incoming_queue.size()));
+  state.SetIntKey(
+      "delayed_incoming_queue_size",
+      static_cast<int>(main_thread_only().delayed_incoming_queue.size()));
+  state.SetIntKey(
+      "immediate_work_queue_size",
+      static_cast<int>(main_thread_only().immediate_work_queue->Size()));
+  state.SetIntKey(
+      "delayed_work_queue_size",
+      static_cast<int>(main_thread_only().delayed_work_queue->Size()));
 
-  state.SetIntKey("any_thread_.immediate_incoming_queuecapacity",
-                  any_thread_.immediate_incoming_queue.capacity());
+  state.SetIntKey(
+      "any_thread_.immediate_incoming_queuecapacity",
+      static_cast<int>(any_thread_.immediate_incoming_queue.capacity()));
   state.SetIntKey("immediate_work_queue_capacity",
-                  immediate_work_queue()->Capacity());
+                  static_cast<int>(immediate_work_queue()->Capacity()));
   state.SetIntKey("delayed_work_queue_capacity",
-                  delayed_work_queue()->Capacity());
+                  static_cast<int>(delayed_work_queue()->Capacity()));
 
   if (!main_thread_only().delayed_incoming_queue.empty()) {
     TimeDelta delay_to_next_task =
@@ -862,7 +869,8 @@ Value TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
     Value fence_state(Value::Type::DICTIONARY);
     fence_state.SetIntKey(
         "enqueue_order",
-        main_thread_only().current_fence->task_order().enqueue_order());
+        static_cast<int>(
+            main_thread_only().current_fence->task_order().enqueue_order()));
     fence_state.SetBoolKey("activated_in_wake_up",
                            !main_thread_only()
                                 .current_fence->task_order()
@@ -1069,7 +1077,7 @@ Value TaskQueueImpl::TaskAsValue(const Task& task, TimeTicks now) {
   Value state(Value::Type::DICTIONARY);
   state.SetStringKey("posted_from", task.posted_from.ToString());
   if (task.enqueue_order_set())
-    state.SetIntKey("enqueue_order", task.enqueue_order());
+    state.SetIntKey("enqueue_order", static_cast<int>(task.enqueue_order()));
   state.SetIntKey("sequence_num", task.sequence_num);
   state.SetBoolKey("nestable", task.nestable == Nestable::kNestable);
   state.SetBoolKey("is_high_res", task.is_high_res);
@@ -1516,7 +1524,8 @@ void TaskQueueImpl::ReportIpcTaskQueued(
         auto* proto = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                           ->set_chrome_task_posted_to_disabled_queue();
         proto->set_task_queue_name(task_queue_name);
-        proto->set_time_since_disabled_ms(time_since_disabled.InMilliseconds());
+        proto->set_time_since_disabled_ms(
+            checked_cast<uint64_t>(time_since_disabled.InMilliseconds()));
         proto->set_ipc_hash(pending_task.ipc_hash);
         proto->set_source_location_iid(
             base::trace_event::InternedSourceLocation::Get(
@@ -1617,7 +1626,7 @@ bool TaskQueueImpl::DelayedIncomingQueue::Compare::operator()(
 
 TaskQueueImpl::OnTaskPostedCallbackHandleImpl::OnTaskPostedCallbackHandleImpl(
     TaskQueueImpl* task_queue_impl,
-    scoped_refptr<AssociatedThreadId> associated_thread)
+    scoped_refptr<const AssociatedThreadId> associated_thread)
     : task_queue_impl_(task_queue_impl),
       associated_thread_(std::move(associated_thread)) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

@@ -5,7 +5,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 5
+version_major: 6
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 trust_anchors {
@@ -655,4 +655,14 @@ trust_anchors {
 # CN=DigiCert TLS RSA4096 Root G5, O=DigiCert, Inc., C=US
 trust_anchors {
   sha256_hex: "371a00dc0533b3721a7eeb40e8419e70799d2b0a0f2c1d80693165f7cec4ad75"
+}
+
+# C = US, O = Certainly, CN = Certainly Root E1
+trust_anchors {
+  sha256_hex: "b4585f22e4ac756a4e8612a1361c5d9d031a93fd84febb778fa3068b0fc42dc2"
+}
+
+# C = US, O = Certainly, CN = Certainly Root R1
+trust_anchors {
+  sha256_hex: "77b82cd8644c4305f7acc5cb156b45675004033d51c60c6202a8e0c33467d3a0"
 }

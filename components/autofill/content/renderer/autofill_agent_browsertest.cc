@@ -85,12 +85,19 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
+              JavaScriptChangedAutofilledValue,
+              (const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& old_value),
+              (override));
+  MOCK_METHOD(void,
               AskForValuesToFill,
-              (int32_t id,
+              (int32_t query_id,
                const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounding_box,
-               bool autoselect_first_suggestion),
+               bool autoselect_first_suggestion,
+               TouchToFillEligible touch_to_fill_eligible),
               (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void,

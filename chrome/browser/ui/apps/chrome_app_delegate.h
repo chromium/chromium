@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,8 +19,7 @@ class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
-class ChromeAppDelegate : public extensions::AppDelegate,
-                          public content::NotificationObserver {
+class ChromeAppDelegate : public extensions::AppDelegate {
  public:
   // Params:
   //   keep_alive: Whether this object should keep the browser alive.
@@ -84,10 +82,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
   bool has_been_shown_;
   bool is_hidden_;
@@ -97,7 +92,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<NewWindowContentsDelegate> new_window_contents_delegate_;
   base::OnceClosure terminating_callback_;
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription subscription_;
   base::WeakPtrFactory<ChromeAppDelegate> weak_factory_{this};
 };
 

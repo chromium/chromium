@@ -9,19 +9,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
-generate_grd("build_grd") {
-  grd_prefix = "new_tab_page_instant"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "most_visited_title.css",
-    "most_visited_title.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 grit("resources") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   enable_input_discovery_for_gn_analyze = false
@@ -41,4 +28,18 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "most_visited_title.ts" ]
   definitions = [ "embedded_search.d.ts" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "new_tab_page_instant"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "most_visited_title.css",
+    "most_visited_title.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

@@ -22,7 +22,6 @@ source_set("eg_app_support+eg2") {
     "coverage_utils.h",
     "coverage_utils.mm",
     "earl_grey_app.h",
-    "earl_grey_app.mm",
   ]
 }
 
@@ -50,7 +49,6 @@ source_set("eg_test_support+eg2") {
     "coverage_utils_stub.mm",
     "disabled_test_macros.h",
     "earl_grey_test.h",
-    "earl_grey_test.mm",
     "matchers.h",
     "matchers.mm",
   ]
@@ -63,5 +61,6 @@ source_set("eg_test_support+eg2") {
     "//ios/third_party/edo",
     "//ios/web/common",
     "//testing/gtest:gtest",
+    "//ui/display",
   ]
 }

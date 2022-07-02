@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './menu_container.js';
 import './page_favicon.js';
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import '../../cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
-import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './url_visit.html.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
@@ -37,14 +40,18 @@ declare global {
   }
 }
 
+const MenuContainerElementBase = I18nMixin(PolymerElement);
+
 interface VisitRowElement {
   $: {
+    actionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    actionMenuButton: HTMLElement,
     title: HTMLElement,
     url: HTMLElement,
   };
 }
 
-class VisitRowElement extends PolymerElement {
+class VisitRowElement extends MenuContainerElementBase {
   static get is() {
     return 'url-visit';
   }
@@ -55,15 +62,6 @@ class VisitRowElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * Whether this is a top visit.
-       */
-      isTopVisit: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
-
       /**
        * The current query for which related clusters are requested and shown.
        */
@@ -80,6 +78,15 @@ class VisitRowElement extends PolymerElement {
       annotations_: {
         type: Object,
         computed: 'computeAnnotations_(visit)',
+      },
+
+      /**
+       * Usually this is true, but this can be false if deleting history is
+       * prohibited by Enterprise policy.
+       */
+      allowDeletingHistory_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('allowDeletingHistory'),
       },
 
       /**
@@ -116,10 +123,10 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  isTopVisit: boolean;
   query: string;
   visit: URLVisit;
   private annotations_: Array<string>;
+  private allowDeletingHistory_: boolean;
   private debugInfo_: string;
   private unusedTitle_: string;
   private unusedVisibleUrl_: string;
@@ -148,7 +155,7 @@ class VisitRowElement extends PolymerElement {
     // To record metrics.
     this.onAuxClick_();
 
-    OpenWindowProxyImpl.getInstance().open(this.visit.normalizedUrl.url);
+    this.openUrl_(event);
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -160,7 +167,24 @@ class VisitRowElement extends PolymerElement {
     // To record metrics.
     this.onAuxClick_();
 
-    OpenWindowProxyImpl.getInstance().open(this.visit.normalizedUrl.url);
+    this.openUrl_(e);
+  }
+
+  private onActionMenuButtonClick_(event: Event) {
+    this.$.actionMenu.get().showAt(this.$.actionMenuButton);
+    event.preventDefault();  // Prevent default browser action (navigation).
+  }
+
+  private onRemoveSelfButtonClick_(event: Event) {
+    event.preventDefault();  // Prevent default browser action (navigation).
+
+    this.dispatchEvent(new CustomEvent('remove-visit', {
+      bubbles: true,
+      composed: true,
+      detail: this.visit,
+    }));
+
+    this.$.actionMenu.get().close();
   }
 
   //============================================================================
@@ -197,6 +221,17 @@ class VisitRowElement extends PolymerElement {
         this.$.url, this.visit.urlForDisplay,
         this.visit.urlForDisplayMatchPositions);
     return this.visit.urlForDisplay;
+  }
+
+  private openUrl_(event: MouseEvent|KeyboardEvent) {
+    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+        this.visit.normalizedUrl, {
+          middleButton: false,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        });
   }
 }
 

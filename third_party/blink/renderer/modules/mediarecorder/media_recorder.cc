@@ -85,23 +85,23 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
                                    ExecutionContext* context,
                                    const MediaRecorderOptions* options,
                                    MediaStream* stream,
-                                   int* audio_bits_per_second,
-                                   int* video_bits_per_second) {
+                                   uint32_t* audio_bits_per_second,
+                                   uint32_t* video_bits_per_second) {
   const bool use_video = !stream->getVideoTracks().IsEmpty();
   const bool use_audio = !stream->getAudioTracks().IsEmpty();
 
   // Clamp incoming values into a signed integer's range.
   // TODO(mcasas): This section would no be needed if the bit rates are signed
   // or double, see https://github.com/w3c/mediacapture-record/issues/48.
-  const unsigned kMaxIntAsUnsigned = std::numeric_limits<int>::max();
+  constexpr uint32_t kMaxIntAsUnsigned = std::numeric_limits<int>::max();
 
-  int overall_bps = 0;
+  uint32_t overall_bps = 0;
   if (options->hasBitsPerSecond())
     overall_bps = std::min(options->bitsPerSecond(), kMaxIntAsUnsigned);
-  int video_bps = 0;
+  uint32_t video_bps = 0;
   if (options->hasVideoBitsPerSecond() && use_video)
     video_bps = std::min(options->videoBitsPerSecond(), kMaxIntAsUnsigned);
-  int audio_bps = 0;
+  uint32_t audio_bps = 0;
   if (options->hasAudioBitsPerSecond() && use_audio)
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
 
@@ -142,7 +142,8 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
   if (use_video) {
     // Allocate the remaining |overallBps|, if any, to video.
     if (options->hasBitsPerSecond())
-      video_bps = overall_bps - audio_bps;
+      video_bps = overall_bps >= audio_bps ? overall_bps - audio_bps : 0u;
+
     // Clamp the video bit rate. Avoid clamping if the user has not set it
     // explicitly.
     if (options->hasVideoBitsPerSecond() || options->hasBitsPerSecond()) {

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
@@ -14,6 +14,22 @@ import {AppManagementUserAction, WindowMode} from './constants.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {recordAppManagementUserAction} from './util.js';
 import {getTemplate} from './window_mode_item.html.js';
+
+function convertWindowModeToBool(windowMode: WindowMode): boolean {
+  switch (windowMode) {
+    case WindowMode.kBrowser:
+      return false;
+    case WindowMode.kWindow:
+      return true;
+    default:
+      assertNotReached();
+  }
+}
+
+function getWindowModeBoolean(windowMode: WindowMode): boolean {
+  assert(windowMode !== WindowMode.kUnknown, 'Window Mode Not Set');
+  return convertWindowModeToBool(windowMode);
+}
 
 export class AppManagementWindowModeElement extends PolymerElement {
   static get is() {
@@ -30,12 +46,15 @@ export class AppManagementWindowModeElement extends PolymerElement {
 
       app: Object,
 
-      hidden:
-          {type: Boolean, computed: 'isHidden_(app)', reflectToAttribute: true},
+      hidden: {
+        type: Boolean,
+        computed: 'isHidden_(app)',
+        reflectToAttribute: true,
+      },
     };
   }
 
-  windowModeLabel: String;
+  windowModeLabel: string;
   app: App;
 
   override ready() {
@@ -44,12 +63,8 @@ export class AppManagementWindowModeElement extends PolymerElement {
     this.addEventListener('change', this.toggleWindowMode_);
   }
 
-  private getValue_(app: App): boolean {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
-    return this.getWindowModeBoolean(app.windowMode);
+  private getValue_(): boolean {
+    return getWindowModeBoolean(this.app.windowMode);
   }
 
   private onClick_() {
@@ -57,8 +72,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
         .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
   }
 
-  toggleWindowMode_() {
-    assert(this.app);
+  private toggleWindowMode_() {
     const currentWindowMode = this.app.windowMode;
     if (currentWindowMode === WindowMode.kUnknown) {
       assertNotReached();
@@ -70,32 +84,15 @@ export class AppManagementWindowModeElement extends PolymerElement {
         this.app.id,
         newWindowMode,
     );
-    const booleanWindowMode = this.getWindowModeBoolean(newWindowMode);
+    const booleanWindowMode = getWindowModeBoolean(newWindowMode);
     const windowModeChangeAction = booleanWindowMode ?
         AppManagementUserAction.WINDOW_MODE_CHANGED_TO_WINDOW :
         AppManagementUserAction.WINDOW_MODE_CHANGED_TO_BROWSER;
     recordAppManagementUserAction(this.app.type, windowModeChangeAction);
   }
 
-  private convertWindowModeToBool(windowMode: WindowMode): boolean {
-    switch (windowMode) {
-      case WindowMode.kBrowser:
-        return false;
-      case WindowMode.kWindow:
-        return true;
-      default:
-        assertNotReached();
-        return false;
-    }
-  }
-
-  private getWindowModeBoolean(windowMode: WindowMode): boolean {
-    assert(windowMode !== WindowMode.kUnknown, 'Window Mode Not Set');
-    return this.convertWindowModeToBool(windowMode);
-  }
-
-  private isHidden_(app: App): Boolean {
-    return app.hideWindowMode;
+  private isHidden_(): boolean {
+    return this.app.hideWindowMode;
   }
 }
 

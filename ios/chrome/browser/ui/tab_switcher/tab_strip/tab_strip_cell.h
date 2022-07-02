@@ -31,6 +31,9 @@
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;
 
+// Checks if cell has a specific identifier.
+- (BOOL)hasIdentifier:(NSString*)identifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CELL_H_

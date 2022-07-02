@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // We are not enforcing ad blocking on ads violations, site should load
   // as expected without subresource filter UI.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
   histogram_tester.ExpectBucketCount(

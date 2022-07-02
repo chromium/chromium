@@ -30,6 +30,9 @@ enum class SuppressReason {
 
 // The context for the list of suggestions available for a given field.
 struct SuggestionsContext {
+  SuggestionsContext();
+  ~SuggestionsContext();
+
   FormStructure* form_structure = nullptr;
   AutofillField* focused_field = nullptr;
   bool is_autofill_available = false;

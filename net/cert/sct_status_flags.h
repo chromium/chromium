@@ -9,9 +9,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 // The possible verification statuses for a SignedCertificateTimestamp.
 // Note: The numeric values are used within histograms and should not change
@@ -46,8 +44,6 @@ enum SCTVerifyStatus : uint32_t {
 // is all current values in the enum except SCT_STATUS_NONE.
 NET_EXPORT bool IsValidSCTStatus(uint32_t status);
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_SCT_STATUS_FLAGS_H_

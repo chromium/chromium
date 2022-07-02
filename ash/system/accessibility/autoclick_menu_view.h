@@ -44,9 +44,6 @@ class AutoclickMenuView : public views::BoxLayoutView {
   void UpdateEventType(AutoclickEventType type);
   void UpdatePosition(FloatingMenuPosition position);
 
-  // views::BoxLayoutView:
-  void OnThemeChanged() override;
-
  private:
   void OnAutoclickButtonPressed(views::Button* sender);
   void OnPositionButtonPressed();

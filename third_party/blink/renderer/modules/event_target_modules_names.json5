@@ -85,5 +85,7 @@
     "USB",
     "WakeLockSentinel",
     "WindowControlsOverlay",
+    "AudioEncoder",
+    "VideoEncoder",
   ],
 }

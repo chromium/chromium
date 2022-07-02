@@ -45,7 +45,6 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   in_files = ts_files
   out_folder = "$target_gen_dir/$preprocess_folder"
 }
@@ -95,6 +94,7 @@ copy("copy_mojo") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$tsc_folder"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   manifest_excludes = [
     "graph_doc.ts",
@@ -134,7 +134,8 @@ generate_grd("build_grd") {
     ":build_graph_tab_grdp",
     ":build_ts",
   ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   grdp_files = [ "$target_gen_dir/discards_graph_tab.grdp" ]
   grd_prefix = "discards"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"

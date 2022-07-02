@@ -225,7 +225,7 @@ enum MinidumpContextAMD64Flags : uint32_t {
   //! \brief Indicates the validity of `xsave` data (`CONTEXT_XSTATE`).
   //!
   //! The context contains `xsave` data. This is used with an extended context
-  //! structure not currently defined here.
+  //! structure which is partly implemented for CET state only.
   kMinidumpContextAMD64Xstate = kMinidumpContextAMD64 | 0x00000040,
 
   //! \brief Indicates the validity of control, integer, and floating-point
@@ -384,6 +384,51 @@ struct MinidumpContextARM {
   //! \brief This space is unused. It is included for compatibility with
   //!     breakpad (which also doesn't use it).
   uint32_t extra[8];
+};
+
+//! \brief CONTEXT_CHUNK
+struct MinidumpContextChunk {
+  int32_t offset;
+  uint32_t size;
+};
+
+//! \brief CONTEXT_EX
+struct MinidumpContextExHeader {
+  MinidumpContextChunk all;
+  MinidumpContextChunk legacy;
+  MinidumpContextChunk xstate;
+};
+
+//! \brief XSAVE_AREA_HEADER
+struct MinidumpXSaveAreaHeader {
+  uint64_t mask;
+  uint64_t compaction_mask;
+  uint64_t xsave_header_reserved[6];
+};
+
+//! \brief Offset of first xsave feature in the full extended context.
+//!
+//! This is used to calculate the final size of the extended context, and
+//! can be validated by calling InitializeContext2 with one XSTATE feature,
+//! and LocateXStateFeature to determine the first offset.
+//! Also see "MANAGING STATE USING THE XSAVE FEATURE SET", Ch. 13, Intel SDM.
+constexpr uint32_t kMinidumpAMD64XSaveOffset = 0x550;
+
+//! \brief Offset of first xsave feature within the extended context area.
+//!
+//! 0x240 is the size of the legacy area (512) + the xsave header(64 bytes)
+//! Intel SDM 13.4.1. This is not where the item is in the extended compacted
+//! context, but is the offset recorded in the minidump. It needs to be correct
+//! there. See https://windows-internals.com/cet-on-windows/ for some discussion
+//! "CONTEXT_XSTATE: Extended processor state chunk. The state is stored in the
+//! same format the XSAVE operation stores it with exception of the first 512
+//! bytes, i.e. starting from XSAVE_AREA_HEADER." This may vary by cpuid.
+constexpr uint32_t kXSaveAreaFirstOffset = 0x240;
+
+//! \brief XSAVE_CET_U_FORMAT
+struct MinidumpAMD64XSaveFormatCetU {
+  uint64_t cetmsr;
+  uint64_t ssp;
 };
 
 //! \brief 64-bit ARM-specifc flags for MinidumpContextARM64::context_flags.

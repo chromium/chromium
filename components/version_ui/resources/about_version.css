@@ -84,7 +84,8 @@ body {
   vertical-align: bottom;
 }
 
-#copy-to-clipboard {
+#copy-to-clipboard,
+#copy-os-content-to-clipboard {
   -webkit-mask-image: url(chrome://resources/images/icon_copy_content.svg);
   -webkit-mask-size: cover;
   background: none;

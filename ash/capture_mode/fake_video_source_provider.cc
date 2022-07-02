@@ -75,17 +75,31 @@ void FakeVideoSourceProvider::AddFakeCamera(
     const std::string& display_name,
     const std::string& model_id,
     media::VideoFacingMode camera_facing_mode) {
+  AddFakeCameraWithoutNotifying(device_id, display_name, model_id,
+                                camera_facing_mode);
+  NotifyVideoCaptureDevicesChanged();
+}
+
+void FakeVideoSourceProvider::AddFakeCameraWithoutNotifying(
+    const std::string& device_id,
+    const std::string& display_name,
+    const std::string& model_id,
+    media::VideoFacingMode camera_facing_mode) {
   const auto iter = devices_map_.emplace(
       device_id, std::make_unique<FakeCameraDevice>(CreateCaptureDeviceInfo(
                      device_id, display_name, model_id, camera_facing_mode)));
   DCHECK(iter.second);
-  NotifyVideoCaptureDevicesChanged();
 }
 
 void FakeVideoSourceProvider::RemoveFakeCamera(const std::string& device_id) {
+  RemoveFakeCameraWithoutNotifying(device_id);
+  NotifyVideoCaptureDevicesChanged();
+}
+
+void FakeVideoSourceProvider::RemoveFakeCameraWithoutNotifying(
+    const std::string& device_id) {
   DCHECK(devices_map_.contains(device_id));
   devices_map_.erase(device_id);
-  NotifyVideoCaptureDevicesChanged();
 }
 
 void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {

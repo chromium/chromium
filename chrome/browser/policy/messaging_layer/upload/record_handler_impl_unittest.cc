@@ -68,9 +68,6 @@ MATCHER_P(ResponseEquals,
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
-// TODO(https://crbug.com/1297261): Change the various out params in the helper
-// functions below to return by value instead.
-
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
                                                    /*force_confirm*/ bool>> {
@@ -93,12 +90,11 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
+std::vector<EncryptedRecord> BuildTestRecordsVector(
     int64_t number_of_test_records,
     int64_t generation_id) {
-  std::unique_ptr<std::vector<EncryptedRecord>> test_records =
-      std::make_unique<std::vector<EncryptedRecord>>();
-  test_records->reserve(number_of_test_records);
+  std::vector<EncryptedRecord> test_records;
+  test_records.reserve(number_of_test_records);
   for (int64_t i = 0; i < number_of_test_records; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
@@ -108,7 +104,7 @@ std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
     sequence_information->set_generation_id(generation_id);
     sequence_information->set_sequencing_id(i);
     sequence_information->set_priority(Priority::IMMEDIATE);
-    test_records->push_back(std::move(encrypted_record));
+    test_records.push_back(std::move(encrypted_record));
   }
   return test_records;
 }
@@ -120,7 +116,7 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   const auto force_confirm_by_server = force_confirm();
 
   DmServerUploadService::SuccessfulUploadResponse expected_response{
-      .sequence_information = test_records->back().sequence_information(),
+      .sequence_information = test_records.back().sequence_information(),
       .force_confirm = force_confirm()};
 
   EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
@@ -217,7 +213,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   static constexpr int64_t kGenerationId = 1234;
   // test records that has one record with missing sequence information.
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
-  test_records->back().clear_sequence_information();
+  test_records.back().clear_sequence_information();
 
   // The response should show an error and UploadEncryptedReport should not have
   // been even called, because UploadEncryptedReportingRequestBuilder::Build()
@@ -272,7 +268,7 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
 
   const DmServerUploadService::SuccessfulUploadResponse expected_response{
       .sequence_information =
-          (*test_records)[kNumTestRecords - 1].sequence_information(),
+          test_records[kNumTestRecords - 1].sequence_information(),
       .force_confirm = force_confirm()};
 
   // Once for failure, and once for gap.
@@ -350,7 +346,7 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
   const auto force_confirm_by_server = force_confirm();
 
   DmServerUploadService::SuccessfulUploadResponse expected_response{
-      .sequence_information = test_records->back().sequence_information(),
+      .sequence_information = test_records.back().sequence_information(),
       .force_confirm = force_confirm()};
 
   EXPECT_CALL(*client_, UploadEncryptedReport(IsDataUploadRequestValid(), _, _))

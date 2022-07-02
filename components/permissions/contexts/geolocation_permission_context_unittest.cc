@@ -91,8 +91,7 @@ class TestGeolocationPermissionContextDelegate
 #endif
   }
 
-  bool DecidePermission(content::WebContents* web_contents,
-                        const PermissionRequestID& id,
+  bool DecidePermission(const PermissionRequestID& id,
                         const GURL& requesting_origin,
                         bool user_gesture,
                         BrowserPermissionCallback* callback,
@@ -140,8 +139,7 @@ class GeolocationPermissionContextTests
   PermissionRequestID RequestID(int request_id);
   PermissionRequestID RequestIDForTab(int tab, int request_id);
 
-  void RequestGeolocationPermission(content::WebContents* web_contents,
-                                    const PermissionRequestID& id,
+  void RequestGeolocationPermission(const PermissionRequestID& id,
                                     const GURL& requesting_frame,
                                     bool user_gesture);
 
@@ -211,8 +209,8 @@ class GeolocationPermissionContextTests
 PermissionRequestID GeolocationPermissionContextTests::RequestID(
     int request_id) {
   return PermissionRequestID(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
@@ -220,18 +218,17 @@ PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
     int tab,
     int request_id) {
   return PermissionRequestID(
-      extra_tabs_[tab]->GetMainFrame()->GetProcess()->GetID(),
-      extra_tabs_[tab]->GetMainFrame()->GetRoutingID(),
+      extra_tabs_[tab]->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      extra_tabs_[tab]->GetPrimaryMainFrame()->GetRoutingID(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
 void GeolocationPermissionContextTests::RequestGeolocationPermission(
-    content::WebContents* web_contents,
     const PermissionRequestID& id,
     const GURL& requesting_frame,
     bool user_gesture) {
   geolocation_permission_context_->RequestPermission(
-      web_contents, id, requesting_frame, user_gesture,
+      id, requesting_frame, user_gesture,
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));
   content::RunAllTasksUntilIdle();
@@ -279,7 +276,7 @@ void GeolocationPermissionContextTests::CheckPermissionMessageSentForTab(
     bool allowed) {
   CheckPermissionMessageSentInternal(
       static_cast<MockRenderProcessHost*>(
-          extra_tabs_[tab]->GetMainFrame()->GetProcess()),
+          extra_tabs_[tab]->GetPrimaryMainFrame()->GetProcess()),
       request_id, allowed);
 }
 
@@ -308,7 +305,7 @@ void GeolocationPermissionContextTests::CheckTabContentsState(
     ContentSetting expected_content_setting) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
 
   expected_content_setting == CONTENT_SETTING_BLOCK
       ? content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION)
@@ -398,7 +395,7 @@ bool GeolocationPermissionContextTests::RequestPermissionIsLSDShown(
   NavigateAndCommit(origin);
   RequestManagerDocumentLoadCompleted();
   MockLocationSettings::ClearHasShownLocationSettingsDialog();
-  RequestGeolocationPermission(web_contents(), RequestID(0), origin, true);
+  RequestGeolocationPermission(RequestID(0), origin, true);
 
   return MockLocationSettings::HasShownLocationSettingsDialog();
 }
@@ -408,7 +405,7 @@ bool GeolocationPermissionContextTests::
   NavigateAndCommit(origin);
   RequestManagerDocumentLoadCompleted();
   MockLocationSettings::ClearHasShownLocationSettingsDialog();
-  RequestGeolocationPermission(web_contents(), RequestID(0), origin, true);
+  RequestGeolocationPermission(RequestID(0), origin, true);
 
   EXPECT_TRUE(HasActivePrompt());
   AcceptPrompt();
@@ -507,8 +504,7 @@ TEST_F(GeolocationPermissionContextTests, SinglePermissionPrompt) {
   RequestManagerDocumentLoadCompleted();
 
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
 }
 
@@ -519,8 +515,7 @@ TEST_F(GeolocationPermissionContextTests,
   RequestManagerDocumentLoadCompleted();
 
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_FALSE(HasActivePrompt());
 }
 
@@ -534,8 +529,7 @@ TEST_F(GeolocationPermissionContextTests, GeolocationEnabledDisabled) {
   MockLocationSettings::SetLocationStatus(true /* android */,
                                           true /* system */);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   EXPECT_TRUE(HasActivePrompt());
   histograms.ExpectTotalCount("Permissions.Action.Geolocation", 0);
 
@@ -546,8 +540,7 @@ TEST_F(GeolocationPermissionContextTests, GeolocationEnabledDisabled) {
                                           true /* system */);
   MockLocationSettings::SetCanPromptForAndroidPermission(false);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   histograms.ExpectUniqueSample("Permissions.Action.Geolocation",
                                 static_cast<int>(PermissionAction::IGNORED), 1);
   EXPECT_FALSE(HasActivePrompt());
@@ -560,8 +553,7 @@ TEST_F(GeolocationPermissionContextTests, AndroidEnabledCanPrompt) {
   MockLocationSettings::SetLocationStatus(false /* android */,
                                           true /* system */);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
   AcceptPrompt();
   CheckTabContentsState(requesting_frame, CONTENT_SETTING_ALLOW);
@@ -576,8 +568,7 @@ TEST_F(GeolocationPermissionContextTests, AndroidEnabledCantPrompt) {
                                           true /* system */);
   MockLocationSettings::SetCanPromptForAndroidPermission(false);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   EXPECT_FALSE(HasActivePrompt());
 }
 
@@ -588,8 +579,7 @@ TEST_F(GeolocationPermissionContextTests, SystemLocationOffLSDDisabled) {
   MockLocationSettings::SetLocationStatus(true /* android */,
                                           false /* system */);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   EXPECT_FALSE(HasActivePrompt());
   EXPECT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
 }
@@ -599,8 +589,7 @@ TEST_F(GeolocationPermissionContextTests, SystemLocationOnNoLSD) {
   NavigateAndCommit(requesting_frame);
   RequestManagerDocumentLoadCompleted();
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
   AcceptPrompt();
   CheckTabContentsState(requesting_frame, CONTENT_SETTING_ALLOW);
@@ -619,8 +608,7 @@ TEST_F(GeolocationPermissionContextTests, SystemLocationOffLSDAccept) {
   MockLocationSettings::SetLocationSettingsDialogStatus(true /* enabled */,
                                                         GRANTED);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
   AcceptPrompt();
   CheckTabContentsState(requesting_frame, CONTENT_SETTING_ALLOW);
@@ -643,8 +631,7 @@ TEST_F(GeolocationPermissionContextTests, SystemLocationOffLSDReject) {
   MockLocationSettings::SetLocationSettingsDialogStatus(true /* enabled */,
                                                         DENIED);
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
   AcceptPrompt();
   CheckTabContentsState(requesting_frame, CONTENT_SETTING_BLOCK);
@@ -931,8 +918,7 @@ TEST_F(GeolocationPermissionContextTests, HashIsIgnored) {
   // Check permission is requested.
   ASSERT_FALSE(HasActivePrompt());
   const bool user_gesture = true;
-  RequestGeolocationPermission(web_contents(), RequestID(0), url_a,
-                               user_gesture);
+  RequestGeolocationPermission(RequestID(0), url_a, user_gesture);
   ASSERT_TRUE(HasActivePrompt());
 
   // Change the hash, we'll still be on the same page.
@@ -955,8 +941,7 @@ TEST_F(GeolocationPermissionContextTests, DISABLED_PermissionForFileScheme) {
 
   // Check permission is requested.
   ASSERT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   EXPECT_TRUE(HasActivePrompt());
 
   // Accept the frame.
@@ -979,7 +964,7 @@ TEST_F(GeolocationPermissionContextTests, CancelGeolocationPermissionRequest) {
 
   ASSERT_FALSE(HasActivePrompt());
 
-  RequestGeolocationPermission(web_contents(), RequestID(0), frame_0, true);
+  RequestGeolocationPermission(RequestID(0), frame_0, true);
 
   ASSERT_TRUE(HasActivePrompt());
   std::u16string text_0 = GetPromptText();
@@ -1002,8 +987,7 @@ TEST_F(GeolocationPermissionContextTests, InvalidURL) {
 
   // Nothing should be displayed.
   EXPECT_FALSE(HasActivePrompt());
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               true);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   EXPECT_FALSE(HasActivePrompt());
   CheckPermissionMessageSent(0, false);
 }
@@ -1019,11 +1003,9 @@ TEST_F(GeolocationPermissionContextTests, SameOriginMultipleTabs) {
   RequestManagerDocumentLoadCompleted(extra_tabs_[1].get());
 
   // Request permission in all three tabs.
-  RequestGeolocationPermission(web_contents(), RequestID(0), url_a, true);
-  RequestGeolocationPermission(extra_tabs_[0].get(), RequestIDForTab(0, 0),
-                               url_b, true);
-  RequestGeolocationPermission(extra_tabs_[1].get(), RequestIDForTab(1, 0),
-                               url_a, true);
+  RequestGeolocationPermission(RequestID(0), url_a, true);
+  RequestGeolocationPermission(RequestIDForTab(0, 0), url_b, true);
+  RequestGeolocationPermission(RequestIDForTab(1, 0), url_a, true);
   ASSERT_TRUE(HasActivePrompt());  // For A0.
   ASSERT_TRUE(HasActivePrompt(extra_tabs_[0].get()));
   ASSERT_TRUE(HasActivePrompt(extra_tabs_[1].get()));
@@ -1048,8 +1030,7 @@ TEST_F(GeolocationPermissionContextTests, TabDestroyed) {
   RequestManagerDocumentLoadCompleted();
 
   // Request permission for two frames.
-  RequestGeolocationPermission(web_contents(), RequestID(0), requesting_frame,
-                               false);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, false);
 
   ASSERT_TRUE(HasActivePrompt());
   EXPECT_EQ(CONTENT_SETTING_ASK,

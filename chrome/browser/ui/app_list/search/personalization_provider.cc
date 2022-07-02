@@ -20,16 +20,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -73,16 +72,14 @@ void PersonalizationResult::Open(int event_flags) {
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kLauncherSearch);
   web_app::LaunchSystemWebAppAsync(
-      profile_, web_app::SystemAppType::PERSONALIZATION, launch_params);
+      profile_, ash::SystemWebAppType::PERSONALIZATION, launch_params);
 }
 
 PersonalizationProvider::PersonalizationProvider(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
-
-  if (!ash::features::IsPersonalizationHubEnabled()) {
-    return;
-  }
+  DCHECK(ash::features::IsPersonalizationHubEnabled());
+  DCHECK(profile_ && profile_->IsRegularProfile())
+      << "Regular profile required for personalization search";
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
@@ -99,13 +96,11 @@ PersonalizationProvider::PersonalizationProvider(Profile* profile)
 PersonalizationProvider::~PersonalizationProvider() = default;
 
 void PersonalizationProvider::Start(const std::u16string& query) {
+  DCHECK(search_handler_) << "Search handler required to run query";
+
   ClearResultsSilently();
 
   if (query.size() < kMinQueryLength) {
-    return;
-  }
-
-  if (!search_handler_) {
     return;
   }
 
@@ -170,27 +165,14 @@ void PersonalizationProvider::OnSearchDone(
 }
 
 void PersonalizationProvider::StartLoadIcon() {
-  apps::AppType app_type = app_service_proxy_->AppRegistryCache().GetAppType(
-      web_app::kPersonalizationAppId);
-
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        app_type, web_app::kPersonalizationAppId, apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&PersonalizationProvider::OnLoadIcon,
-                       app_service_weak_ptr_factory_.GetWeakPtr()));
-
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type),
-        web_app::kPersonalizationAppId, apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(
-            base::BindOnce(&PersonalizationProvider::OnLoadIcon,
-                           app_service_weak_ptr_factory_.GetWeakPtr())));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(
+          web_app::kPersonalizationAppId),
+      web_app::kPersonalizationAppId, apps::IconType::kStandard,
+      ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&PersonalizationProvider::OnLoadIcon,
+                     app_service_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PersonalizationProvider::OnLoadIcon(::apps::IconValuePtr icon_value) {

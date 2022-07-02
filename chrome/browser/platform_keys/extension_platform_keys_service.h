@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
@@ -210,8 +211,8 @@ class ExtensionPlatformKeysService : public KeyedService {
                     const std::string& public_key_spki_der,
                     platform_keys::Status status);
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  crosapi::mojom::KeystoreService* const keystore_service_ = nullptr;
+  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};

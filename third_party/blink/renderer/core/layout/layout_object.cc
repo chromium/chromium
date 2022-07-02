@@ -180,27 +180,68 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
   // we traverse the fragment tree when hit-testing.
   if (obj.IsTextControlIncludingNG())
     return false;
-  // If this object participates in legacy block fragmentation (but still is a
-  // LayoutNG object, which may happen if we're using a layout type not
-  // supported in the legacy engine, such as custom layout), do not attempt to
-  // fragment-traverse it. Check whether the nearest parent box can traverse
-  // fragments (but ignore the flow thread, as it's not used by LayoutNG and
-  // therefore never fragment-traversable), and just inherit that.
-  if (obj.IsInsideFlowThread()) {
-    if (const LayoutObject* parent = obj.Parent()) {
-      if (const LayoutObject* nearest_box_ancestor = parent->EnclosingBox()) {
-        if (nearest_box_ancestor->IsLayoutFlowThread())
-          nearest_box_ancestor = nearest_box_ancestor->Parent();
-        return nearest_box_ancestor->CanTraversePhysicalFragments();
-      }
-    }
-  }
   return true;
+}
+
+bool HasNativeBackgroundPainter(Node* node) {
+  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
+    return false;
+
+  Element* element = DynamicTo<Element>(node);
+  if (!element)
+    return false;
+
+  ElementAnimations* element_animations = element->GetElementAnimations();
+  if (!element_animations)
+    return false;
+
+  return element_animations->CompositedBackgroundColorStatus() ==
+         ElementAnimations::CompositedPaintStatus::kComposited;
+}
+
+StyleDifference AdjustForBackgroundColorPaint(
+    scoped_refptr<const ComputedStyle> old_style,
+    scoped_refptr<const ComputedStyle> new_style,
+    Node* node,
+    StyleDifference diff) {
+  // Background color changes that are triggered by animations on the compositor
+  // thread can skip paint invalidation.
+  bool had_background_color_animation =
+      old_style ? old_style->HasCurrentBackgroundColorAnimation() : false;
+  DCHECK(new_style);
+  bool has_background_color_animation =
+      new_style->HasCurrentBackgroundColorAnimation();
+  // If animation status changed, we need a paint invalidation regardless of
+  // whether the background color changed.
+  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      (had_background_color_animation != has_background_color_animation))
+    diff.SetNeedsPaintInvalidation();
+
+  bool skip_background_color_paint_invalidation =
+      !diff.BackgroundColorChanged() || HasNativeBackgroundPainter(node);
+  if (!skip_background_color_paint_invalidation)
+    diff.SetNeedsPaintInvalidation();
+
+  return diff;
 }
 
 }  // namespace
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
+
+void ApplyVisibleOverflowToClipRect(OverflowClipAxes overflow_clip,
+                                    PhysicalRect& clip_rect) {
+  DCHECK_NE(overflow_clip, kOverflowClipBothAxis);
+  const LayoutRect infinite_rect(LayoutRect::InfiniteIntRect());
+  if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
+    clip_rect.offset.left = infinite_rect.X();
+    clip_rect.size.width = infinite_rect.Width();
+  }
+  if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
+    clip_rect.offset.top = infinite_rect.Y();
+    clip_rect.size.height = infinite_rect.Height();
+  }
+}
 
 AllowDestroyingLayoutObjectInFinalizerScope::
     AllowDestroyingLayoutObjectInFinalizerScope() {
@@ -728,6 +769,31 @@ bool LayoutObject::IsInListMarker() const {
   return Parent() && Parent()->IsListMarkerIncludingAll();
 }
 
+LayoutObject* LayoutObject::NonCulledParent() const {
+  LayoutObject* parent = Parent();
+  for (; parent; parent = parent->Parent()) {
+    if (const auto* parent_inline_box = DynamicTo<LayoutInline>(parent)) {
+      if (!parent_inline_box->AlwaysCreateLineBoxesForLayoutInline())
+        continue;
+    }
+    return parent;
+  }
+  return nullptr;
+}
+
+bool LayoutObject::IsTextDecorationBoundary(NGStyleVariant variant) const {
+  const LayoutObject* parent = NonCulledParent();
+  if (!parent)
+    return true;
+  const ComputedStyle& style = EffectiveStyle(variant);
+  const ComputedStyle& parent_style = variant == NGStyleVariant::kEllipsis
+                                          ? parent->FirstLineStyleRef()
+                                          : parent->EffectiveStyle(variant);
+  if (!style.IsAppliedTextDecorationsSame(parent_style))
+    return true;
+  return false;
+}
+
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {
   NOT_DESTROYED();
   LayoutObject* o = NextSibling();
@@ -1189,7 +1255,7 @@ void LayoutObject::SetNeedsCollectInlines() {
     return;
 
   if (UNLIKELY(IsSVGChild() && !IsNGSVGText() && !IsSVGInline() &&
-               !IsSVGInlineText()))
+               !IsSVGInlineText() && !IsNGSVGForeignObject()))
     return;
 
   // Don't mark |LayoutFlowThread| because |CollectInlines()| skips them.
@@ -1576,7 +1642,7 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   // select elements inside that are created by user agent shadow DOM, and we
   // have (C++) code that assumes that the elements are indeed contained by the
   // text control. So just make sure this is the case.
-  if (IsA<LayoutView>(this) || IsSVGForeignObject() ||
+  if (IsA<LayoutView>(this) || IsSVGForeignObjectIncludingNG() ||
       IsTextControlIncludingNG())
     return true;
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
@@ -2399,6 +2465,10 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 
   diff = AdjustStyleDifference(diff);
 
+  // A change to the background color or status of BG color animation may
+  // require paint invalidation.
+  diff = AdjustForBackgroundColorPaint(style_, style, GetNode(), diff);
+
   StyleWillChange(diff, *style);
 
   scoped_refptr<const ComputedStyle> old_style = std::move(style_);
@@ -2740,11 +2810,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
                         WebFeature::kHiddenBackfaceWithPossible3D);
       // For consistency with existing code usage, this uses
       // Has3DTransformOperation rather than the slightly narrower
-      // HasNonTrivial3DTransformOperation (which is only web-exposed for
-      // compositing decisions on low-end devices).  However, given the
-      // discussion in https://github.com/w3c/csswg-drafts/issues/3305 it's
-      // possible we may want to tie backface-visibility behavior to something
-      // closer to the latter.
+      // HasNonTrivial3DTransformOperation (which used to exist, and was only
+      // web-exposed for compositing decisions on low-end devices).  However,
+      // given the discussion in
+      // https://github.com/w3c/csswg-drafts/issues/3305 it's possible we may
+      // want to tie backface-visibility behavior to something closer to the
+      // latter.
       if (style_->Has3DTransformOperation()) {
         UseCounter::Count(GetDocument(), WebFeature::kHiddenBackfaceWith3D);
       }
@@ -2889,6 +2960,8 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
       if (const auto* new_first_line_style = FirstLineStyleWithoutFallback()) {
         diff = old_first_line_style->VisualInvalidationDiff(
             GetDocument(), *new_first_line_style);
+        diff = AdjustForBackgroundColorPaint(
+            old_first_line_style, new_first_line_style, GetNode(), diff);
         has_diff = true;
       }
     }
@@ -4759,7 +4832,7 @@ Vector<PhysicalRect> LayoutObject::OutlineRects(
   return outline_rects;
 }
 
-void LayoutObject::SetTextAutoSizedStyle(
+void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
     scoped_refptr<const ComputedStyle> style,
     ApplyStyleChanges apply_changes) {
   NOT_DESTROYED();

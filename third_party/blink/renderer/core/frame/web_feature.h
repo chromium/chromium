@@ -9,7 +9,7 @@
 // is heavy on the compiler. Those who do not need the definition, but could do
 // with just a forward-declaration, should include WebFeatureForward.h instead.
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 
 namespace blink {
 using WebFeature = mojom::WebFeature;

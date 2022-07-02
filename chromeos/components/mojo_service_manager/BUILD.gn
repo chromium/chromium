@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/features.gni")
+
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("mojo_service_manager") {
@@ -11,8 +13,16 @@ component("mojo_service_manager") {
   ]
   deps = [
     "//base",
+    "//chromeos:features",
     "//mojo/public/cpp/bindings",
   ]
   public_deps = [ "//chromeos/components/mojo_service_manager/mojom" ]
   defines = [ "IS_CHROMEOS_MOJO_SERVICE_MANAGER_IMPL" ]
+
+  if (!use_real_chromeos_services) {
+    sources += [
+      "fake_mojo_service_manager.cc",
+      "fake_mojo_service_manager.h",
+    ]
+  }
 }

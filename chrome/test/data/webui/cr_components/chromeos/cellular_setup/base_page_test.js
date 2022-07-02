@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/base_page.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/base_page.m.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrComponentsBasePageTest', function() {
   let basePage;
   setup(function() {
     basePage = document.createElement('base-page');
     document.body.appendChild(basePage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Title is shown', function() {
     basePage.title = 'Base page titile';
-    Polymer.dom.flush();
+    flush();
     const title = basePage.$$('#title');
     assertTrue(!!title);
   });
@@ -30,7 +28,7 @@ suite('CrComponentsBasePageTest', function() {
 
   test('Message icon is shown', function() {
     basePage.messageIcon = 'warning';
-    Polymer.dom.flush();
+    flush();
     const messageIcon = basePage.$$('iron-icon');
     assertTrue(!!messageIcon);
     assertFalse(messageIcon.hidden);

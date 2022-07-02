@@ -49,11 +49,13 @@
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="2238944249568001759">Suggested searches based on your last tab</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remove</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
 <translation id="2321958826496381788">Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.</translation>
+<translation id="2329473609445770916">This site defines interests that other sites can use to show you ads</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2387895666653383613">Text scaling</translation>
@@ -90,6 +92,7 @@
 <translation id="300526633675317032">This will clear all <ph name="SIZE_IN_KB" /> of website storage.</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
+<translation id="3069226013421428034">Allow third-party sign-in for a specific site.</translation>
 <translation id="3114012059975132928">Video player</translation>
 <translation id="3115898365077584848">Show info</translation>
 <translation id="3123473560110926937">Blocked on some sites</translation>
@@ -97,6 +100,7 @@
 <translation id="3203366800380907218">From the web</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3248611290851046188">This site defines interests that other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.</translation>
 <translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
 <translation id="3295602654194328831">Hide info</translation>
 <translation id="3328801116991980348">Site information</translation>
@@ -113,6 +117,7 @@
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">Your device use</translation>
@@ -123,11 +128,13 @@
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992684624889376114">About this page</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4008040567710660924">Allow cookies for a specific site.</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4165986682804962316">Site settings</translation>
+<translation id="4169549551965910670">Connected to a USB device</translation>
 <translation id="4194328954146351878">Ask before allowing sites to see and change information on NFC devices (recommended)</translation>
 <translation id="4200726100658658164">Open location settings</translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
@@ -222,6 +229,7 @@
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6320088164292336938">Vibrate</translation>
+<translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
 <translation id="6388207532828177975">Clear &amp; reset</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>

@@ -185,6 +185,8 @@ source_set("encoding") {
   }
 }
 
+# TODO(https://crbug.com/1327074): should be split into multiple source sets
+# once the new Open Screen frame sender implementation is added.
 source_set("sender") {
   sources = [
     "cast_sender.h",
@@ -196,6 +198,8 @@ source_set("sender") {
     "sender/congestion_control.h",
     "sender/frame_sender.cc",
     "sender/frame_sender.h",
+    "sender/frame_sender_impl.cc",
+    "sender/frame_sender_impl.h",
     "sender/performance_metrics_overlay.cc",
     "sender/performance_metrics_overlay.h",
     "sender/video_sender.cc",
@@ -262,10 +266,18 @@ static_library("test_support") {
     "test/loopback_transport.h",
     "test/mock_cast_transport.cc",
     "test/mock_cast_transport.h",
+    "test/mock_paced_packet_sender.cc",
+    "test/mock_paced_packet_sender.h",
+    "test/mock_rtp_payload_feedback.cc",
+    "test/mock_rtp_payload_feedback.h",
+    "test/rtp_packet_builder.cc",
+    "test/rtp_packet_builder.h",
     "test/skewed_single_thread_task_runner.cc",
     "test/skewed_single_thread_task_runner.h",
     "test/skewed_tick_clock.cc",
     "test/skewed_tick_clock.h",
+    "test/test_rtcp_packet_builder.cc",
+    "test/test_rtcp_packet_builder.h",
     "test/utility/audio_utility.cc",
     "test/utility/audio_utility.h",
     "test/utility/barcode.cc",
@@ -304,7 +316,7 @@ static_library("test_support") {
 
   # FFMPEG software video decoders are not available on Android and/or
   # Chromecast content_shell builds.
-  if (!is_android && !is_chromecast) {
+  if (!is_android && !is_castos) {
     sources += [
       "test/fake_media_source.cc",
       "test/fake_media_source.h",
@@ -319,6 +331,7 @@ test("cast_unittests") {
   sources = [
     "common/expanded_value_base_unittest.cc",
     "common/rtp_time_unittest.cc",
+    "encoding/audio_encoder_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
     "encoding/video_encoder_unittest.cc",
     "encoding/vpx_quantizer_parser_unittest.cc",
@@ -327,24 +340,12 @@ test("cast_unittests") {
     "logging/simple_event_subscriber_unittest.cc",
     "logging/stats_event_subscriber_unittest.cc",
     "net/cast_transport_impl_unittest.cc",
-    "net/pacing/mock_paced_packet_sender.cc",
-    "net/pacing/mock_paced_packet_sender.h",
     "net/pacing/paced_sender_unittest.cc",
     "net/rtcp/receiver_rtcp_event_subscriber_unittest.cc",
     "net/rtcp/rtcp_builder_unittest.cc",
     "net/rtcp/rtcp_unittest.cc",
     "net/rtcp/rtcp_utility_unittest.cc",
-
-    # TODO(jophba): The following two are test utility modules.  Rename/move the
-    # files.
-    "encoding/audio_encoder_unittest.cc",
-    "net/rtcp/test_rtcp_packet_builder.cc",
-    "net/rtcp/test_rtcp_packet_builder.h",
-    "net/rtp/mock_rtp_payload_feedback.cc",
-    "net/rtp/mock_rtp_payload_feedback.h",
     "net/rtp/packet_storage_unittest.cc",
-    "net/rtp/rtp_packet_builder.cc",
-    "net/rtp/rtp_packet_builder.h",
     "net/rtp/rtp_packetizer_unittest.cc",
     "net/rtp/rtp_parser_unittest.cc",
     "net/udp_packet_pipe_unittest.cc",

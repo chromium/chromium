@@ -65,6 +65,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
+  void SetGroupPolicies(const base::Value::Dict& values) const override {
+    updater::test::SetGroupPolicies(values);
+  }
+
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
@@ -148,6 +152,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
 
+  void DeleteUpdaterDirectory() const override {
+    updater::test::DeleteUpdaterDirectory(updater_scope_);
+  }
+
   void InstallApp(const std::string& app_id) const override {
     updater::test::InstallApp(updater_scope_, app_id);
   }
@@ -170,6 +178,15 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void ExpectLegacyProcessLauncherSucceeds() const override {
     updater::test::ExpectLegacyProcessLauncherSucceeds(updater_scope_);
+  }
+
+  void ExpectLegacyAppCommandWebSucceeds(
+      const std::string& app_id,
+      const std::string& command_id,
+      const base::Value::List& parameters,
+      int expected_exit_code) const override {
+    updater::test::ExpectLegacyAppCommandWebSucceeds(
+        updater_scope_, app_id, command_id, parameters, expected_exit_code);
   }
 
   void RunUninstallCmdLine() const override {
@@ -228,6 +245,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UninstallApp(const std::string& app_id) const override {
     updater::test::UninstallApp(updater_scope_, app_id);
+  }
+
+  void RunOfflineInstall() override {
+    updater::test::RunOfflineInstall(updater_scope_);
   }
 
  private:

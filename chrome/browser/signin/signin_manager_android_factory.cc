@@ -20,11 +20,10 @@ SigninManagerAndroidFactory::SigninManagerAndroidFactory()
 SigninManagerAndroidFactory::~SigninManagerAndroidFactory() {}
 
 // static
-base::android::ScopedJavaLocalRef<jobject>
-SigninManagerAndroidFactory::GetJavaObjectForProfile(Profile* profile) {
+SigninManagerAndroid* SigninManagerAndroidFactory::GetForProfile(
+    Profile* profile) {
   return static_cast<SigninManagerAndroid*>(
-             GetInstance()->GetServiceForBrowserContext(profile, true))
-      ->GetJavaObject();
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static

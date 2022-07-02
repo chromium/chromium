@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -152,6 +154,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
 
   base::RunLoop run_loop;
   bool quit_run_loop = false;
+  bool uninstall_delegate_called = false;
 
   // Trigger app uninstall without waiting for result.
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
@@ -165,10 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
         quit_run_loop = true;
       }));
 
-  // Validate that uninstalling flag is set
-  auto* app = provider->registrar().GetAppById(app_id);
-  EXPECT_TRUE(app);
-  EXPECT_TRUE(app->is_uninstalling());
+  EXPECT_EQ(1u, provider->command_manager().GetCommandCountForTesting());
 
   // Trigger second uninstall call and wait for result.
   provider->install_finalizer().UninstallWebApp(
@@ -178,6 +178,23 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
           run_loop.Quit();
         quit_run_loop = true;
       }));
+
+  EXPECT_EQ(2u, provider->command_manager().GetCommandCountForTesting());
+
+  WebAppInstallManagerObserverAdapter install_observer(
+      &provider->install_manager());
+  install_observer.SetWebAppWillBeUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstall_app_id) {
+        EXPECT_EQ(app_id, uninstall_app_id);
+        EXPECT_FALSE(uninstall_delegate_called);
+
+        // Validate that uninstalling flag is set
+        auto* app = provider->registrar().GetAppById(app_id);
+        EXPECT_TRUE(app);
+        EXPECT_TRUE(app->is_uninstalling());
+        uninstall_delegate_called = true;
+      }));
+
   run_loop.Run();
   EXPECT_FALSE(provider->registrar().IsInstalled(app_id));
 }

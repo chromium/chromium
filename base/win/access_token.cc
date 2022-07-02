@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <utility>
+
 #include "base/strings/stringprintf.h"
 
 namespace base {

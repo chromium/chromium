@@ -95,9 +95,9 @@ void SkiaOutputSurfaceDependencyWebView::ScheduleGrContextCleanup() {
   // There is no way to access the gpu thread here, so leave it no-op for now.
 }
 
-void SkiaOutputSurfaceDependencyWebView::PostTaskToClientThread(
-    base::OnceClosure closure) {
-  task_queue_->ScheduleClientTask(std::move(closure));
+scoped_refptr<base::TaskRunner>
+SkiaOutputSurfaceDependencyWebView::GetClientTaskRunner() {
+  return task_queue_->GetClientTaskRunner();
 }
 
 gpu::ImageFactory* SkiaOutputSurfaceDependencyWebView::GetGpuImageFactory() {

@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -58,7 +57,6 @@ public class PrivacyPreferencesManagerImplNativeTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     @UiThreadTest
-    @DisabledTest(message = "crbug.com/700500")
     public void testSetUsageAndCrashReporting() {
         PermissionContext context =
                 new PermissionContext(InstrumentationRegistry.getTargetContext());

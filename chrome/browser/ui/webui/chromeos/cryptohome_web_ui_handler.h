@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

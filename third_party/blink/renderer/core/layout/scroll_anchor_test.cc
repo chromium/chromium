@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
@@ -15,11 +16,13 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -36,20 +39,25 @@ using Corner = ScrollAnchor::Corner;
 #endif
 class MAYBE_ScrollAnchorTest : public testing::WithParamInterface<bool>,
                                private ScopedLayoutNGForTest,
-                               public RenderingTest {
+                               public SimTest {
  public:
   MAYBE_ScrollAnchorTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
   void SetUp() override {
-    EnableCompositing();
-    RenderingTest::SetUp();
+    SimTest::SetUp();
+    ResizeView(gfx::Size(800, 600));
+    String kUrl = "https://example.com/test.html";
+    SimRequest request(kUrl, "text/html");
+    LoadURL(kUrl);
+    request.Complete("<!DOCTYPE html>");
   }
 
-  void Update() {
-    // TODO(skobes): Use SimTest instead of RenderingTest and move into
-    // Source/web?
-    UpdateAllLifecyclePhasesForTest();
+  void Update() { Compositor().BeginFrame(); }
+
+  void SetBodyInnerHTML(const String& body_content) {
+    GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+    Update();
   }
 
   ScrollableArea* LayoutViewport() {
@@ -404,6 +412,11 @@ TEST_P(MAYBE_ScrollAnchorTest, AnchorWhileDraggingScrollbar) {
   scroller->MouseEnteredScrollbar(*scrollbar);
   MouseDownOnVerticalScrollbar(scrollbar);
   MouseDragVerticalScrollbar(scrollbar, 150);
+
+  // Process the injected scroll gestures.
+  GetWebFrameWidget().FlushInputHandlerTasks();
+  Compositor().BeginFrame();
+
   EXPECT_NEAR(150, scroller->GetScrollOffset().y(), kScrollbarDragAccuracy);
 
   // In this layout pass we will anchor to #block2 which has its own PaintLayer.
@@ -414,8 +427,13 @@ TEST_P(MAYBE_ScrollAnchorTest, AnchorWhileDraggingScrollbar) {
 
   // If we continue dragging the scroller should scroll from the newly anchored
   // position.
-  MouseDragVerticalScrollbar(scrollbar, 10);
-  EXPECT_NEAR(260, scroller->ScrollOffsetInt().y(), kScrollbarDragAccuracy);
+  MouseDragVerticalScrollbar(scrollbar, 12);
+
+  // Process the injected scroll gesture.
+  GetWebFrameWidget().FlushInputHandlerTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_NEAR(262, scroller->ScrollOffsetInt().y(), kScrollbarDragAccuracy);
   MouseUpOnVerticalScrollbar(scrollbar);
 }
 
@@ -836,14 +854,14 @@ TEST_P(MAYBE_ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       <div id='host'></div>
       <div></div>
       <div></div>)HTML");
-  auto* host = GetElementById("host");
+  auto* host = GetDocument().getElementById("host");
   auto& shadow_root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
       <style>
         div { height: 100px; }
       </style>
       <div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
+  Update();
 
   ScrollLayoutViewport(ScrollOffset(0, 50));
 

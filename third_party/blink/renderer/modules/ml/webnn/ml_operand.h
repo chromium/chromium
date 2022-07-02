@@ -11,13 +11,13 @@
 
 namespace blink {
 
-class MLContext;
+class MLGraphBuilder;
 
-class MLOperand : public ScriptWrappable {
+class MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit MLOperand(MLContext* context);
+  explicit MLOperand(MLGraphBuilder* graph_builder);
 
   MLOperand(const MLOperand&) = delete;
   MLOperand& operator=(const MLOperand&) = delete;
@@ -27,7 +27,7 @@ class MLOperand : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<MLContext> ml_context_;
+  Member<MLGraphBuilder> graph_builder_;
 };
 
 }  // namespace blink

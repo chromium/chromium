@@ -7,6 +7,7 @@
 
 #include <bitset>
 
+#include "base/check_op.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
 
 namespace blink {

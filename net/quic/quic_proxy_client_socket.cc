@@ -31,11 +31,8 @@ QuicProxyClientSocket::QuicProxyClientSocket(
     const NetLogWithSource& net_log,
     HttpAuthController* auth_controller,
     ProxyDelegate* proxy_delegate)
-    : next_state_(STATE_DISCONNECTED),
-      stream_(std::move(stream)),
+    : stream_(std::move(stream)),
       session_(std::move(session)),
-      read_buf_(nullptr),
-      write_buf_len_(0),
       endpoint_(endpoint),
       auth_(auth_controller),
       proxy_server_(proxy_server),

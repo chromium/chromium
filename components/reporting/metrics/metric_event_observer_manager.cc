@@ -88,6 +88,8 @@ void MetricEventObserverManager::Report(
           << status;
     }
   });
-  metric_report_queue_->Enqueue(metric_data.value(), std::move(enqueue_cb));
+  metric_report_queue_->Enqueue(
+      std::make_unique<MetricData>(std::move(metric_data.value())),
+      std::move(enqueue_cb));
 }
 }  // namespace reporting

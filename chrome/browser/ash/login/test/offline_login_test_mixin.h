@@ -10,7 +10,7 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 
 class AccountId;
 

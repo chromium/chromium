@@ -98,7 +98,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   StartSurfaceSceneAgent* agent_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  // Create WebState at |index| with |url| as the current url.
+  // Create WebState at `index` with `url` as the current url.
   void InsertNewWebState(int index, WebStateOpener opener, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
@@ -111,8 +111,8 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
                                    WebStateList::INSERT_FORCE_INDEX, opener);
   }
 
-  // Create a WebState that has a navigation history of more than one at |index|
-  // with |url| as the current url.
+  // Create a WebState that has a navigation history of more than one at `index`
+  // with `url` as the current url.
   void InsertNewWebStateWithNavigationHistory(int index,
                                               WebStateOpener opener,
                                               GURL url) {
@@ -224,10 +224,10 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
       /*favicon_service=*/nullptr);
   SetStartSurfaceSessionObjectForSceneState(scene_state_);
 
-  histogram_tester_->ExpectTotalCount("IOS.WarmStartBackgroundTime", 0);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 0);
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-  histogram_tester_->ExpectTotalCount("IOS.WarmStartBackgroundTime", 1);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeWarmStart", 1);
 }
 
 // Tests that IOS.StartSurfaceShown is correctly logged for a valid cold start
@@ -251,8 +251,8 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
       web_state_list->GetActiveWebState(),
       /*favicon_service=*/nullptr);
 
-  histogram_tester_->ExpectTotalCount("IOS.ColdStartBackgroundTime", 0);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 0);
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
-  histogram_tester_->ExpectTotalCount("IOS.ColdStartBackgroundTime", 1);
+  histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 1);
 }

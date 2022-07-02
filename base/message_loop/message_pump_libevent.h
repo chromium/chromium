@@ -116,14 +116,14 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   // Libevent dispatcher.  Watches all sockets registered with it, and sends
   // readiness callbacks when a socket is ready for I/O.
-  const raw_ptr<event_base> event_base_;
+  const raw_ptr<event_base, DanglingUntriaged> event_base_;
 
   // ... write end; ScheduleWork() writes a single byte to it
   int wakeup_pipe_in_ = -1;
   // ... read end; OnWakeup reads it and then breaks Run() out of its sleep
   int wakeup_pipe_out_ = -1;
   // ... libevent wrapper for read end
-  raw_ptr<event> wakeup_event_ = nullptr;
+  raw_ptr<event, DanglingUntriaged> wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
 };

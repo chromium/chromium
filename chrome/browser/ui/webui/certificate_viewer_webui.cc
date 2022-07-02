@@ -23,15 +23,20 @@
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/common/net/x509_certificate_model_nss.h"
+#include "chrome/common/net/x509_certificate_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
-#include "net/cert/x509_util_nss.h"
+#include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "chrome/common/net/x509_certificate_model_nss.h"
+#include "net/cert/x509_util_nss.h"
+#endif
 
 using content::WebContents;
 using content::WebUIMessageHandler;
@@ -119,25 +124,64 @@ std::unique_ptr<base::DictionaryValue> CertNodeBuilder::Build() {
 void ShowCertificateViewer(WebContents* web_contents,
                            gfx::NativeWindow parent,
                            net::X509Certificate* cert) {
+  std::vector<std::string> nicknames;
+#if BUILDFLAG(USE_NSS_CERTS)
   net::ScopedCERTCertificateList nss_certs =
       net::x509_util::CreateCERTCertificateListFromX509Certificate(cert);
-  if (nss_certs.empty())
-    return;
+  // If any of the certs could not be parsed by NSS, |nss_certs| will be an
+  // empty list and |nicknames| will not be populated, which is fine as a
+  // fallback.
+  for (const auto& nss_cert : nss_certs) {
+    nicknames.push_back(x509_certificate_model::GetRawNickname(nss_cert.get()));
+  }
+#endif
 
-  CertificateViewerDialog::ShowConstrained(std::move(nss_certs), web_contents,
-                                           parent);
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
+  cert_buffers.push_back(bssl::UpRef(cert->cert_buffer()));
+  for (const auto& intermediate : cert->intermediate_buffers()) {
+    cert_buffers.push_back(bssl::UpRef(intermediate));
+  }
+  CertificateViewerDialog::ShowConstrained(
+      std::move(cert_buffers), std::move(nicknames), web_contents, parent);
 }
+
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
+  ShowCertificateViewer(web_contents, parent, cert);
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // CertificateViewerDialog
 
+#if BUILDFLAG(USE_NSS_CERTS)
 // static
 CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
-    net::ScopedCERTCertificateList certs,
+    net::ScopedCERTCertificateList nss_certs,
     WebContents* web_contents,
     gfx::NativeWindow parent) {
+  std::vector<std::string> nicknames;
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
+  for (const auto& cert : nss_certs) {
+    nicknames.push_back(x509_certificate_model::GetRawNickname(cert.get()));
+    cert_buffers.push_back(net::x509_util::CreateCryptoBuffer(
+        base::make_span(cert->derCert.data, cert->derCert.len)));
+  }
+  return ShowConstrained(std::move(cert_buffers), std::move(nicknames),
+                         web_contents, parent);
+}
+#endif
+
+// static
+CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+    std::vector<std::string> cert_nicknames,
+    content::WebContents* web_contents,
+    gfx::NativeWindow parent) {
   CertificateViewerDialog* dialog_ptr =
-      new CertificateViewerDialog(std::move(certs));
+      new CertificateViewerDialog(std::move(certs), std::move(cert_nicknames));
   auto dialog = base::WrapUnique(dialog_ptr);
 
   // TODO(bshe): UI tweaks needed for Aura HTML Dialog, such as adding padding
@@ -160,13 +204,17 @@ gfx::NativeWindow CertificateViewerDialog::GetNativeWebContentsModalDialog() {
 }
 
 CertificateViewerDialog::CertificateViewerDialog(
-    net::ScopedCERTCertificateList certs)
-    : nss_certs_(std::move(certs)) {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+    std::vector<std::string> cert_nicknames) {
+  for (size_t i = 0; i < certs.size(); ++i) {
+    std::string nickname;
+    if (i < cert_nicknames.size())
+      nickname = std::move(cert_nicknames[i]);
+    certs_.emplace_back(std::move(certs[i]), std::move(nickname));
+  }
   // Construct the dialog title from the certificate.
   title_ = l10n_util::GetStringFUTF16(
-      IDS_CERT_INFO_DIALOG_TITLE,
-      base::UTF8ToUTF16(
-          x509_certificate_model::GetTitle(nss_certs_.front().get())));
+      IDS_CERT_INFO_DIALOG_TITLE, base::UTF8ToUTF16(certs_.front().GetTitle()));
 }
 
 CertificateViewerDialog::~CertificateViewerDialog() = default;
@@ -186,8 +234,7 @@ GURL CertificateViewerDialog::GetDialogContentURL() const {
 void CertificateViewerDialog::GetWebUIMessageHandlers(
     std::vector<WebUIMessageHandler*>* handlers) const {
   handlers->push_back(new CertificateViewerDialogHandler(
-      const_cast<CertificateViewerDialog*>(this),
-      net::x509_util::DupCERTCertificateList(nss_certs_)));
+      const_cast<CertificateViewerDialog*>(this), &certs_));
 }
 
 void CertificateViewerDialog::GetDialogSize(gfx::Size* size) const {
@@ -196,72 +243,79 @@ void CertificateViewerDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
+std::string HandleOptionalOrError(
+    const x509_certificate_model::OptionalStringOrError& s) {
+  if (absl::holds_alternative<x509_certificate_model::Error>(s))
+    return l10n_util::GetStringUTF8(IDS_CERT_DUMP_ERROR);
+  else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s))
+    return l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
+  return absl::get<std::string>(s);
+}
+
 std::string CertificateViewerDialog::GetDialogArgs() const {
   std::string data;
 
   // Certificate information. The keys in this dictionary's general key
   // correspond to the IDs in the Html page.
   base::DictionaryValue cert_info;
-  CERTCertificate* cert_hnd = nss_certs_.front().get();
+  const x509_certificate_model::X509CertificateModel& model = certs_.front();
 
-  // Standard certificate details.
-  const std::string alternative_text =
-      l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
+  cert_info.SetBoolean("isError", !model.is_valid());
   cert_info.SetStringPath(
       "general.title",
-      l10n_util::GetStringFUTF8(
-          IDS_CERT_INFO_DIALOG_TITLE,
-          base::UTF8ToUTF16(x509_certificate_model::GetTitle(cert_hnd))));
+      l10n_util::GetStringFUTF8(IDS_CERT_INFO_DIALOG_TITLE,
+                                base::UTF8ToUTF16(model.GetTitle())));
 
-  // Issued to information.
-  cert_info.SetStringPath(
-      "general.issued-cn",
-      x509_certificate_model::GetSubjectCommonName(cert_hnd, alternative_text));
-  cert_info.SetStringPath(
-      "general.issued-o",
-      x509_certificate_model::GetSubjectOrgName(cert_hnd, alternative_text));
-  cert_info.SetStringPath("general.issued-ou",
-                          x509_certificate_model::GetSubjectOrgUnitName(
-                              cert_hnd, alternative_text));
+  if (model.is_valid()) {
+    // Standard certificate details.
+    const std::string alternative_text =
+        l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
 
-  // Issuer information.
-  cert_info.SetStringPath(
-      "general.issuer-cn",
-      x509_certificate_model::GetIssuerCommonName(cert_hnd, alternative_text));
-  cert_info.SetStringPath(
-      "general.issuer-o",
-      x509_certificate_model::GetIssuerOrgName(cert_hnd, alternative_text));
-  cert_info.SetStringPath(
-      "general.issuer-ou",
-      x509_certificate_model::GetIssuerOrgUnitName(cert_hnd, alternative_text));
+    // Issued to information.
+    cert_info.SetStringPath(
+        "general.issued-cn",
+        HandleOptionalOrError(model.GetSubjectCommonName()));
+    cert_info.SetStringPath("general.issued-o",
+                            HandleOptionalOrError(model.GetSubjectOrgName()));
+    cert_info.SetStringPath(
+        "general.issued-ou",
+        HandleOptionalOrError(model.GetSubjectOrgUnitName()));
 
-  // Validity period.
-  base::Time issued, expires;
-  std::string issued_str, expires_str;
-  if (x509_certificate_model::GetTimes(cert_hnd, &issued, &expires)) {
-    issued_str = base::UTF16ToUTF8(
-        base::TimeFormatFriendlyDateAndTime(issued));
-    expires_str = base::UTF16ToUTF8(
-        base::TimeFormatFriendlyDateAndTime(expires));
-  } else {
-    issued_str = alternative_text;
-    expires_str = alternative_text;
+    // Issuer information.
+    cert_info.SetStringPath("general.issuer-cn",
+                            HandleOptionalOrError(model.GetIssuerCommonName()));
+    cert_info.SetStringPath("general.issuer-o",
+                            HandleOptionalOrError(model.GetIssuerOrgName()));
+    cert_info.SetStringPath(
+        "general.issuer-ou",
+        HandleOptionalOrError(model.GetIssuerOrgUnitName()));
+
+    // Validity period.
+    base::Time issued, expires;
+    std::string issued_str, expires_str;
+    if (model.GetTimes(&issued, &expires)) {
+      issued_str =
+          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(issued));
+      expires_str =
+          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(expires));
+    } else {
+      issued_str = alternative_text;
+      expires_str = alternative_text;
+    }
+    cert_info.SetStringPath("general.issue-date", issued_str);
+    cert_info.SetStringPath("general.expiry-date", expires_str);
   }
-  cert_info.SetStringPath("general.issue-date", issued_str);
-  cert_info.SetStringPath("general.expiry-date", expires_str);
 
   cert_info.SetStringPath("general.sha256",
-                          x509_certificate_model::HashCertSHA256(cert_hnd));
-  cert_info.SetStringPath("general.sha1",
-                          x509_certificate_model::HashCertSHA1(cert_hnd));
+                          model.HashCertSHA256WithSeparators());
+  cert_info.SetStringPath("general.sha1", model.HashCertSHA1WithSeparators());
 
   // Certificate hierarchy is constructed from bottom up.
   base::Value children;
   int index = 0;
-  for (const auto& cert : nss_certs_) {
+  for (const auto& cert : certs_) {
     base::Value cert_node(base::Value::Type::DICTIONARY);
-    cert_node.SetKey("label",
-                     base::Value(x509_certificate_model::GetTitle(cert.get())));
+    cert_node.SetKey("label", base::Value(cert.GetTitle()));
     cert_node.SetPath({"payload", "index"}, base::Value(index));
     // Add the child from the previous iteration.
     if (!children.is_none())
@@ -302,19 +356,19 @@ bool CertificateViewerDialog::ShouldShowDialogTitle() const {
 
 CertificateViewerDialogHandler::CertificateViewerDialogHandler(
     CertificateViewerDialog* dialog,
-    net::ScopedCERTCertificateList cert_chain)
-    : dialog_(dialog), cert_chain_(std::move(cert_chain)) {}
+    const std::vector<x509_certificate_model::X509CertificateModel>* certs)
+    : dialog_(dialog), certs_(certs) {}
 
 CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {
 }
 
 void CertificateViewerDialogHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "exportCertificate",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleExportCertificate,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestCertificateFields",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleRequestCertificateFields,
@@ -322,147 +376,130 @@ void CertificateViewerDialogHandler::RegisterMessages() {
 }
 
 void CertificateViewerDialogHandler::HandleExportCertificate(
-    const base::ListValue* args) {
-  int cert_index = GetCertificateIndex(args->GetListDeprecated()[0].GetInt());
+    const base::Value::List& args) {
+  int cert_index = GetCertificateIndex(args[0].GetInt());
   if (cert_index < 0)
     return;
 
   gfx::NativeWindow window =
-      platform_util::GetTopLevel(dialog_->GetNativeWebContentsModalDialog());
-  ShowCertExportDialog(web_ui()->GetWebContents(),
-                       window,
-                       cert_chain_.begin() + cert_index,
-                       cert_chain_.end());
+      platform_util::GetTopLevel(platform_util::GetViewForWindow(
+          dialog_->GetNativeWebContentsModalDialog()));
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
+  for (const auto& cert : base::make_span(*certs_).subspan(cert_index)) {
+    export_certs.push_back(bssl::UpRef(cert.cert_buffer()));
+  }
+  ShowCertExportDialog(web_ui()->GetWebContents(), window,
+                       std::move(export_certs),
+                       (*certs_)[cert_index].GetTitle());
 }
 
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  int cert_index = GetCertificateIndex(args->GetListDeprecated()[1].GetInt());
+  const base::Value& callback_id = args[0];
+  int cert_index = GetCertificateIndex(args[1].GetInt());
   if (cert_index < 0)
     return;
 
-  CERTCertificate* cert = cert_chain_[cert_index].get();
+  const x509_certificate_model::X509CertificateModel& model =
+      (*certs_)[cert_index];
 
-  CertNodeBuilder version_node(IDS_CERT_DETAILS_VERSION);
-  std::string version = x509_certificate_model::GetVersion(cert);
-  if (!version.empty()) {
-    version_node.Payload(l10n_util::GetStringFUTF8(
-        IDS_CERT_DETAILS_VERSION_FORMAT, base::UTF8ToUTF16(version)));
-  }
+  CertNodeBuilder contents_builder(IDS_CERT_DETAILS_CERTIFICATE);
 
-  CertNodeBuilder issued_node_builder(IDS_CERT_DETAILS_NOT_BEFORE);
-  CertNodeBuilder expires_node_builder(IDS_CERT_DETAILS_NOT_AFTER);
-  base::Time issued, expires;
-  if (x509_certificate_model::GetTimes(cert, &issued, &expires)) {
-    issued_node_builder.Payload(base::UTF16ToUTF8(
-        base::TimeFormatShortDateAndTimeWithTimeZone(issued)));
-    expires_node_builder.Payload(base::UTF16ToUTF8(
-        base::TimeFormatShortDateAndTimeWithTimeZone(expires)));
-  }
-
-  x509_certificate_model::Extensions extensions;
-  x509_certificate_model::GetExtensions(
-      l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
-      l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL),
-      cert, &extensions);
-
-  std::unique_ptr<base::DictionaryValue> details_extensions;
-  if (!extensions.empty()) {
-    CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
-    for (const x509_certificate_model::Extension& extension : extensions) {
-      details_extensions_builder.Child(
-          CertNodeBuilder(extension.name).Payload(extension.value).Build());
+  if (model.is_valid()) {
+    CertNodeBuilder issued_node_builder(IDS_CERT_DETAILS_NOT_BEFORE);
+    CertNodeBuilder expires_node_builder(IDS_CERT_DETAILS_NOT_AFTER);
+    base::Time issued, expires;
+    if (model.GetTimes(&issued, &expires)) {
+      issued_node_builder.Payload(base::UTF16ToUTF8(
+          base::TimeFormatShortDateAndTimeWithTimeZone(issued)));
+      expires_node_builder.Payload(base::UTF16ToUTF8(
+          base::TimeFormatShortDateAndTimeWithTimeZone(expires)));
     }
-    details_extensions = details_extensions_builder.Build();
+
+    std::vector<x509_certificate_model::Extension> extensions =
+        model.GetExtensions(
+            l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
+            l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL));
+
+    std::unique_ptr<base::DictionaryValue> details_extensions;
+    if (!extensions.empty()) {
+      CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
+      for (const x509_certificate_model::Extension& extension : extensions) {
+        details_extensions_builder.Child(
+            CertNodeBuilder(extension.name).Payload(extension.value).Build());
+      }
+      details_extensions = details_extensions_builder.Build();
+    }
+
+    contents_builder
+        // Main certificate fields.
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_VERSION)
+                   .Payload(l10n_util::GetStringFUTF8(
+                       IDS_CERT_DETAILS_VERSION_FORMAT,
+                       base::UTF8ToUTF16(model.GetVersion())))
+                   .Build())
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_SERIAL_NUMBER)
+                   .Payload(model.GetSerialNumberHexified())
+                   .Build())
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG)
+                   .Payload(model.ProcessSecAlgorithmSignature())
+                   .Build())
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_ISSUER)
+                   .Payload(HandleOptionalOrError(model.GetIssuerName()))
+                   .Build())
+        // Validity period.
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_VALIDITY)
+                   .Child(issued_node_builder.Build())
+                   .Child(expires_node_builder.Build())
+                   .Build())
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT)
+                   .Payload(HandleOptionalOrError(model.GetSubjectName()))
+                   .Build())
+        // Subject key information.
+        .Child(
+            CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY_INFO)
+                .Child(CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY_ALG)
+                           .Payload(model.ProcessSecAlgorithmSubjectPublicKey())
+                           .Build())
+                .Child(CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY)
+                           .Payload(model.ProcessSubjectPublicKeyInfo())
+                           .Build())
+                .Build())
+        // Extensions.
+        .ChildIfNotNull(std::move(details_extensions))
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG)
+                   .Payload(model.ProcessSecAlgorithmSignatureWrap())
+                   .Build())
+        .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_VALUE)
+                   .Payload(model.ProcessRawBitsSignatureWrap())
+                   .Build());
   }
 
-  base::ListValue root_list;
-  root_list.Append(base::Value::FromUniquePtrValue(
-      CertNodeBuilder(x509_certificate_model::GetTitle(cert))
-          .Child(
-              CertNodeBuilder(
-                  l10n_util::GetStringUTF8(IDS_CERT_DETAILS_CERTIFICATE))
-                  // Main certificate fields.
-                  .Child(version_node.Build())
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_DETAILS_SERIAL_NUMBER)
-                          .Payload(
-                              x509_certificate_model::GetSerialNumberHexified(
-                                  cert, l10n_util::GetStringUTF8(
-                                            IDS_CERT_INFO_FIELD_NOT_PRESENT)))
-                          .Build())
-                  .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG)
-                             .Payload(x509_certificate_model::
-                                          ProcessSecAlgorithmSignature(cert))
-                             .Build())
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_DETAILS_ISSUER)
-                          .Payload(x509_certificate_model::GetIssuerName(cert))
-                          .Build())
-                  // Validity period.
-                  .Child(CertNodeBuilder(IDS_CERT_DETAILS_VALIDITY)
-                             .Child(issued_node_builder.Build())
-                             .Child(expires_node_builder.Build())
-                             .Build())
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT)
-                          .Payload(x509_certificate_model::GetSubjectName(cert))
-                          .Build())
-                  // Subject key information.
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY_INFO)
-                          .Child(
-                              CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY_ALG)
-                                  .Payload(
-                                      x509_certificate_model::
-                                          ProcessSecAlgorithmSubjectPublicKey(
-                                              cert))
-                                  .Build())
-                          .Child(CertNodeBuilder(IDS_CERT_DETAILS_SUBJECT_KEY)
-                                     .Payload(
-                                         x509_certificate_model::
-                                             ProcessSubjectPublicKeyInfo(cert))
-                                     .Build())
-                          .Build())
-                  // Extensions.
-                  .ChildIfNotNull(std::move(details_extensions))
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG)
-                          .Payload(x509_certificate_model::
-                                       ProcessSecAlgorithmSignatureWrap(cert))
-                          .Build())
-                  .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_VALUE)
-                             .Payload(x509_certificate_model::
-                                          ProcessRawBitsSignatureWrap(cert))
-                             .Build())
-                  .Child(
-                      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP)
-                          .Child(CertNodeBuilder(
-                                     IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
-                                     .Payload(
-                                         x509_certificate_model::HashCertSHA256(
-                                             cert))
-                                     .Build())
-                          .Child(
-                              CertNodeBuilder(
-                                  IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL)
-                                  .Payload(x509_certificate_model::HashCertSHA1(
-                                      cert))
-                                  .Build())
-                          .Build())
-                  .Build())
-          .Build()));
+  contents_builder.Child(
+      CertNodeBuilder(IDS_CERT_INFO_FINGERPRINTS_GROUP)
+          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL)
+                     .Payload(model.HashCertSHA256WithSeparators())
+                     .Build())
+          .Child(CertNodeBuilder(IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL)
+                     .Payload(model.HashCertSHA1WithSeparators())
+                     .Build())
+          .Build());
 
+  base::Value::List root_list;
+  root_list.Append(
+      base::Value::FromUniquePtrValue(CertNodeBuilder(model.GetTitle())
+                                          .Child(contents_builder.Build())
+                                          .Build()));
   // Send certificate information to javascript.
-  ResolveJavascriptCallback(callback_id, root_list);
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(root_list)));
 }
 
 int CertificateViewerDialogHandler::GetCertificateIndex(
     int requested_index) const {
   int cert_index = requested_index;
-  if (cert_index < 0 || cert_index >= static_cast<int>(cert_chain_.size()))
+  if (cert_index < 0 || static_cast<size_t>(cert_index) >= certs_->size())
     return -1;
   return cert_index;
 }

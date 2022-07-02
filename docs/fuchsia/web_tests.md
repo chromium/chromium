@@ -1,4 +1,6 @@
-# Deploying content_shell and running web_tests on Fuchsia.
+# Deploying content_shell and running web_tests on Fuchsia
+
+[TOC]
 
 General instruction on running and debugging web_tests can be found
 [here](../testing/web_tests.md).

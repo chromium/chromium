@@ -2,7 +2,7 @@ include_rules = [
   # For Lacros.
   "+chromeos/crosapi/mojom",
   "+chromeos/crosapi/cpp/crosapi_constants.h",
-  "+chromeos/lacros/lacros_service.h",
+  "+chromeos/startup/browser_init_params.h",
   "+chromeos/ui/base",
 
   # Common includes.

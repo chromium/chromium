@@ -4,6 +4,7 @@
 
 #include "remoting/host/basic_desktop_environment.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -21,6 +22,7 @@
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -101,10 +103,30 @@ BasicDesktopEnvironment::CreateScreenControls() {
   return nullptr;
 }
 
-std::unique_ptr<DesktopDisplayInfoMonitor>
-BasicDesktopEnvironment::CreateDisplayInfoMonitor() {
-  return std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_,
-                                                     client_session_control_);
+DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
+  if (!display_info_monitor_) {
+    using VideoLayoutCallback =
+        base::RepeatingCallback<void(std::unique_ptr<protocol::VideoLayout>)>;
+
+    VideoLayoutCallback video_layout_callback =
+        base::BindRepeating(&ClientSessionControl::OnDesktopDisplayChanged,
+                            client_session_control_);
+
+    // |video_layout_callback| is bound to |client_session_control_| which is a
+    // WeakPtr, but it accepts a VideoLayout proto as the parameter. DDIM needs
+    // a callback that accepts a DesktopDisplayInfo& instead.
+    auto converting_callback =
+        base::BindRepeating([](const DesktopDisplayInfo& info) {
+          return info.GetVideoLayoutProto();
+        });
+    DesktopDisplayInfoMonitor::Callback callback =
+        std::move(converting_callback).Then(std::move(video_layout_callback));
+
+    display_info_monitor_ =
+        std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_);
+    display_info_monitor_->AddCallback(std::move(callback));
+  }
+  return display_info_monitor_.get();
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -148,24 +170,28 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-BasicDesktopEnvironment::CreateComposingVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+BasicDesktopEnvironment::CreateComposingVideoCapturer() {
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
     return nullptr;
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
-      CreateVideoCapturer(std::move(monitor)));
+      CreateVideoCapturer());
 }
 
-std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
-    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
+  return std::make_unique<RemoteWebAuthnExtensionNotifier>();
+}
+
+std::unique_ptr<DesktopCapturer>
+BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   auto result = std::make_unique<DesktopCapturerProxy>(
       video_capture_task_runner_, ui_task_runner_);
-  result->set_desktop_display_info_monitor(std::move(monitor));
+  result->set_desktop_display_info_monitor(GetDisplayInfoMonitor());
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }

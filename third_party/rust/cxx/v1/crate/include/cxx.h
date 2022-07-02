@@ -46,6 +46,13 @@ public:
   String(const char16_t *);
   String(const char16_t *, std::size_t);
 
+  // Replace invalid Unicode data with the replacement character (U+FFFD).
+  static String lossy(const std::string &) noexcept;
+  static String lossy(const char *) noexcept;
+  static String lossy(const char *, std::size_t) noexcept;
+  static String lossy(const char16_t *) noexcept;
+  static String lossy(const char16_t *, std::size_t) noexcept;
+
   String &operator=(const String &) &noexcept;
   String &operator=(String &&) &noexcept;
 
@@ -85,6 +92,9 @@ public:
   String(unsafe_bitcopy_t, const String &) noexcept;
 
 private:
+  struct lossy_t;
+  String(lossy_t, const char *, std::size_t) noexcept;
+  String(lossy_t, const char16_t *, std::size_t) noexcept;
   friend void swap(String &lhs, String &rhs) noexcept { lhs.swap(rhs); }
 
   // Size and alignment statically verified by rust_string.rs.
@@ -324,6 +334,8 @@ public:
   void push_back(T &&value);
   template <typename... Args>
   void emplace_back(Args &&...args);
+  void truncate(std::size_t len);
+  void clear();
 
   using iterator = typename Slice<T>::iterator;
   iterator begin() noexcept;
@@ -942,6 +954,11 @@ void Vec<T>::emplace_back(Args &&...args) {
                                size * size_of<T>()))
       T(std::forward<Args>(args)...);
   this->set_len(size + 1);
+}
+
+template <typename T>
+void Vec<T>::clear() {
+  this->truncate(0);
 }
 
 template <typename T>

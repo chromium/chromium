@@ -335,7 +335,7 @@ class NET_EXPORT SpdySession
       public Http2PushPromiseIndex::Delegate {
  public:
   // TODO(akalin): Use base::TickClock when it becomes available.
-  typedef base::TimeTicks (*TimeFunc)(void);
+  typedef base::TimeTicks (*TimeFunc)();
 
   // Returns true if |new_hostname| can be pooled into an existing connection to
   // |old_hostname| associated with |ssl_info|.
@@ -530,7 +530,7 @@ class NET_EXPORT SpdySession
   LoadState GetLoadState() const;
 
   // MultiplexedSession methods:
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;
@@ -1076,7 +1076,7 @@ class NET_EXPORT SpdySession
 
   // Whether Do{Read,Write}Loop() is in the call stack. Useful for
   // making sure we don't destroy ourselves prematurely in that case.
-  bool in_io_loop_;
+  bool in_io_loop_ = false;
 
   // The key used to identify this session.
   SpdySessionKey spdy_session_key_;
@@ -1086,7 +1086,7 @@ class NET_EXPORT SpdySession
   std::set<SpdySessionKey> pooled_aliases_;
 
   // |pool_| owns us, therefore its lifetime must exceed ours.
-  raw_ptr<SpdySessionPool> pool_;
+  raw_ptr<SpdySessionPool> pool_ = nullptr;
   raw_ptr<HttpServerProperties> http_server_properties_;
 
   raw_ptr<TransportSecurityState> transport_security_state_;
@@ -1103,7 +1103,7 @@ class NET_EXPORT SpdySession
   std::unique_ptr<LoadTimingInfo::ConnectTiming> connect_timing_;
 
   // The socket for this session.
-  raw_ptr<StreamSocket> socket_;
+  raw_ptr<StreamSocket> socket_ = nullptr;
 
   // The read buffer used to read data from the socket.
   // Non-null if there is a Read() pending.
@@ -1112,7 +1112,7 @@ class NET_EXPORT SpdySession
   spdy::SpdyStreamId stream_hi_water_mark_;  // The next stream id to use.
 
   // Used to ensure the server increments push stream ids correctly.
-  spdy::SpdyStreamId last_accepted_push_stream_id_;
+  spdy::SpdyStreamId last_accepted_push_stream_id_ = 0;
 
   // Queue, for each priority, of pending stream requests that have
   // not yet been satisfied.
@@ -1143,18 +1143,18 @@ class NET_EXPORT SpdySession
   // Number of pushed streams. All active streams are stored in
   // |active_streams_|, but it's better to know the number of push streams
   // without traversing the whole collection.
-  size_t num_pushed_streams_;
+  size_t num_pushed_streams_ = 0u;
 
   // Number of active pushed streams in |active_streams_|, i.e. not in reserved
   // remote state. Streams in reserved state are not counted towards any
   // concurrency limits.
-  size_t num_active_pushed_streams_;
+  size_t num_active_pushed_streams_ = 0u;
 
   // Number of bytes that has been pushed by the server.
-  uint64_t bytes_pushed_count_;
+  uint64_t bytes_pushed_count_ = 0u;
 
   // Number of bytes that has been pushed by the server but never claimed.
-  uint64_t bytes_pushed_and_unclaimed_count_;
+  uint64_t bytes_pushed_and_unclaimed_count_ = 0u;
 
   // The write queue.
   SpdyWriteQueue write_queue_;
@@ -1164,9 +1164,9 @@ class NET_EXPORT SpdySession
   // The buffer we're currently writing.
   std::unique_ptr<SpdyBuffer> in_flight_write_;
   // The type of the frame in |in_flight_write_|.
-  spdy::SpdyFrameType in_flight_write_frame_type_;
+  spdy::SpdyFrameType in_flight_write_frame_type_ = spdy::SpdyFrameType::DATA;
   // The size of the frame in |in_flight_write_|.
-  size_t in_flight_write_frame_size_;
+  size_t in_flight_write_frame_size_ = 0;
   // The stream to notify when |in_flight_write_| has been written to
   // the socket completely.
   base::WeakPtr<SpdyStream> in_flight_write_stream_;
@@ -1178,15 +1178,15 @@ class NET_EXPORT SpdySession
   std::unique_ptr<BufferedSpdyFramer> buffered_spdy_framer_;
 
   // The state variables.
-  AvailabilityState availability_state_;
-  ReadState read_state_;
-  WriteState write_state_;
+  AvailabilityState availability_state_ = STATE_AVAILABLE;
+  ReadState read_state_ = READ_STATE_DO_READ;
+  WriteState write_state_ = WRITE_STATE_IDLE;
 
   // If the session is closing (i.e., |availability_state_| is STATE_DRAINING),
   // then |error_on_close_| holds the error with which it was closed, which
   // may be OK (upon a polite GOAWAY) or an error < ERR_IO_PENDING otherwise.
   // Initialized to OK.
-  Error error_on_close_;
+  Error error_on_close_ = OK;
 
   // Settings that are sent in the initial SETTINGS frame
   // (if |enable_sending_initial_data_| is true),
@@ -1223,31 +1223,31 @@ class NET_EXPORT SpdySession
 
   // The value of the last received SETTINGS_DEPRECATE_HTTP2_PRIORITIES, with 0
   // mapping to false and 1 to true.  Initial value is false.
-  bool deprecate_http2_priorities_;
+  bool deprecate_http2_priorities_ = false;
 
   // True if at least one SETTINGS frame has been received.
-  bool settings_frame_received_;
+  bool settings_frame_received_ = false;
 
   // The callbacks to notify a request that the handshake has been confirmed.
   std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;
 
   // True if there is an ongoing handshake confirmation with outstanding
   // requests.
-  bool in_confirm_handshake_;
+  bool in_confirm_handshake_ = false;
 
   // Limits
   size_t max_concurrent_streams_;
   size_t max_concurrent_pushed_streams_;
 
   // Some statistics counters for the session.
-  int streams_initiated_count_;
-  int streams_pushed_count_;
-  int streams_pushed_and_claimed_count_;
-  int streams_abandoned_count_;
+  int streams_initiated_count_ = 0;
+  int streams_pushed_count_ = 0;
+  int streams_pushed_and_claimed_count_ = 0;
+  int streams_abandoned_count_ = 0;
 
   // True if there has been a ping sent for which we have not received a
   // response yet.  There is always at most one ping in flight.
-  bool ping_in_flight_;
+  bool ping_in_flight_ = false;
 
   // Triggers periodic connection status checks.
   base::OneShotTimer heartbeat_timer_;
@@ -1256,10 +1256,10 @@ class NET_EXPORT SpdySession
   base::TimeDelta heartbeat_interval_;
 
   // True if the connection status should be checked once the radio wakes up.
-  bool check_connection_on_radio_wakeup_;
+  bool check_connection_on_radio_wakeup_ = false;
 
   // This is the next ping_id (unique_id) to be sent in PING frame.
-  spdy::SpdyPingId next_ping_id_;
+  spdy::SpdyPingId next_ping_id_ = 1;
 
   // This is the last time we have sent a PING.
   base::TimeTicks last_ping_sent_time_;
@@ -1268,13 +1268,13 @@ class NET_EXPORT SpdySession
   base::TimeTicks last_read_time_;
 
   // This is the length of the last compressed frame.
-  size_t last_compressed_frame_len_;
+  size_t last_compressed_frame_len_ = 0;
 
   // True if there is a CheckPingStatus() task posted on the message loop.
-  bool check_ping_status_pending_;
+  bool check_ping_status_pending_ = false;
 
   // Current send window size.  Zero unless session flow control is turned on.
-  int32_t session_send_window_size_;
+  int32_t session_send_window_size_ = 0;
 
   // Maximum receive window size.  Each time a WINDOW_UPDATE is sent, it
   // restores the receive window size to this value.  Zero unless session flow
@@ -1287,18 +1287,18 @@ class NET_EXPORT SpdySession
   int session_max_queued_capped_frames_;
 
   // Number of active requests which asked for connection status monitoring.
-  int broken_connection_detection_requests_;
+  int broken_connection_detection_requests_ = 0;
 
   // Sum of |session_unacked_recv_window_bytes_| and current receive window
   // size.  Zero unless session flow control is turned on.
   // TODO(bnc): Rename or change semantics so that |window_size_| is actual
   // window size.
-  int32_t session_recv_window_size_;
+  int32_t session_recv_window_size_ = 0;
 
   // When bytes are consumed, SpdyIOBuffer destructor calls back to SpdySession,
   // and this member keeps count of them until the corresponding WINDOW_UPDATEs
   // are sent.  Zero unless session flow control is turned on.
-  int32_t session_unacked_recv_window_bytes_;
+  int32_t session_unacked_recv_window_bytes_ = 0;
 
   // Time of the last WINDOW_UPDATE for the receive window.
   base::TimeTicks last_recv_window_update_;
@@ -1345,7 +1345,7 @@ class NET_EXPORT SpdySession
   // True if the server has advertised WebSocket support via
   // spdy::SETTINGS_ENABLE_CONNECT_PROTOCOL, see
   // https://tools.ietf.org/html/draft-ietf-httpbis-h2-websockets-00.
-  bool support_websocket_;
+  bool support_websocket_ = false;
 
   // |connection_at_risk_of_loss_time_| is an optimization to avoid sending
   // wasteful preface pings (when we just got some data).

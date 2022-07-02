@@ -217,19 +217,19 @@ export class ViewerToolbarElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('properties-click'));
   }
 
-  getSinglePageAriaChecked_(checked: boolean): string {
+  private getSinglePageAriaChecked_(checked: boolean): string {
     return checked ? 'false' : 'true';
   }
 
-  getTwoPageViewAriaChecked_(checked: boolean): string {
+  private getTwoPageViewAriaChecked_(checked: boolean): string {
     return checked ? 'true' : 'false';
   }
 
-  getShowAnnotationsAriaChecked_(checked: boolean): string {
+  private getShowAnnotationsAriaChecked_(checked: boolean): string {
     return checked ? 'true' : 'false';
   }
 
-  getAriaExpanded_(): string {
+  private getAriaExpanded_(): string {
     return this.sidenavCollapsed ? 'false' : 'true';
   }
 

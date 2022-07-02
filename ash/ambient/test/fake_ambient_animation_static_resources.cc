@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ambient_animation_theme.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -47,7 +46,7 @@ gfx::ImageSkia FakeAmbientAnimationStaticResources::GetStaticImageAsset(
 
 AmbientAnimationTheme
 FakeAmbientAnimationStaticResources::GetAmbientAnimationTheme() const {
-  return AmbientAnimationTheme::kFeelTheBreeze;
+  return ambient_animation_theme_;
 }
 
 }  // namespace ash

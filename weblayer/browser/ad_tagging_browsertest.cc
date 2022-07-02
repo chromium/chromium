@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   // Main frame.
   NavigateAndWaitForCompletion(GetURL("frame_factory.html"), shell());
   EXPECT_FALSE(observer.GetIsAdSubframe(
-      web_contents()->GetMainFrame()->GetFrameTreeNodeId()));
+      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_child = subresource_filter::CreateSrcFrame(

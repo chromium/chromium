@@ -8,8 +8,9 @@
 // Implements the ANGLE platform interface, for functionality like
 // histograms and trace profiling.
 
-#include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_export.h"
+
+typedef void* EGLDisplay;
 
 namespace angle {
 

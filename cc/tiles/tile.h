@@ -29,7 +29,7 @@ class TileManager;
 class CC_EXPORT Tile {
  public:
   struct CreateInfo {
-    const PictureLayerTiling* tiling = nullptr;
+    raw_ptr<const PictureLayerTiling> tiling = nullptr;
     int tiling_i_index = 0;
     int tiling_j_index = 0;
     gfx::Rect enclosing_layer_rect;
@@ -111,6 +111,8 @@ class CC_EXPORT Tile {
   }
 
   bool HasRasterTask() const { return !!raster_task_.get(); }
+
+  bool HasMissingLCPCandidateImages() const;
 
   void set_solid_color_analysis_performed(bool performed) {
     is_solid_color_analysis_performed_ = performed;

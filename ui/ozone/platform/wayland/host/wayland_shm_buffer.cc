@@ -8,14 +8,15 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
 namespace ui {
 
-WaylandShmBuffer::WaylandShmBuffer(WaylandShm* shm, const gfx::Size& size)
+WaylandShmBuffer::WaylandShmBuffer(WaylandBufferFactory* buffer_factory,
+                                   const gfx::Size& size)
     : size_(size) {
-  Initialize(shm);
+  Initialize(buffer_factory);
 }
 
 WaylandShmBuffer::~WaylandShmBuffer() = default;
@@ -23,8 +24,8 @@ WaylandShmBuffer::WaylandShmBuffer(WaylandShmBuffer&& buffer) = default;
 WaylandShmBuffer& WaylandShmBuffer::operator=(WaylandShmBuffer&& buffer) =
     default;
 
-void WaylandShmBuffer::Initialize(WaylandShm* shm) {
-  DCHECK(shm);
+void WaylandShmBuffer::Initialize(WaylandBufferFactory* buffer_factory) {
+  DCHECK(buffer_factory);
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size_.width(), size_.height());
   int stride = info.minRowBytes();
@@ -46,7 +47,8 @@ void WaylandShmBuffer::Initialize(WaylandShm* shm) {
 
   base::subtle::ScopedFDPair fd_pair =
       platform_shared_memory.PassPlatformHandle();
-  buffer_ = shm->CreateBuffer(std::move(fd_pair.fd), buffer_size, size_);
+  buffer_ = buffer_factory->CreateShmBuffer(std::move(fd_pair.fd), buffer_size,
+                                            size_);
   if (!buffer_) {
     shared_memory_mapping_ = base::WritableSharedMemoryMapping();
     return;

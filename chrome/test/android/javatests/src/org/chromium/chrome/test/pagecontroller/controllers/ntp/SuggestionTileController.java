@@ -6,7 +6,7 @@ package org.chromium.chrome.test.pagecontroller.controllers.ntp;
 
 import static org.chromium.chrome.test.pagecontroller.utils.Ui2Locators.withText;
 
-import android.support.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObject2;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.controllers.ElementController;

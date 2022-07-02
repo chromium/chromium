@@ -29,6 +29,13 @@ BaseScreen* ScreenManager::GetScreen(OobeScreenId screen) {
   return iter->second.get();
 }
 
+OobeScreenId ScreenManager::GetScreenByName(const std::string& screen_name) {
+  OobeScreenId screen = OobeScreenId(screen_name);
+  auto iter = screens_.find(screen);
+  CHECK(iter != screens_.end()) << "Failed to find screen " << screen;
+  return iter->first;
+}
+
 bool ScreenManager::HasScreen(OobeScreenId screen) {
   return screens_.count(screen) > 0;
 }

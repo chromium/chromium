@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('CommandHandlerInterface');
-
-CommandHandlerInterface = class {
+export class CommandHandlerInterface {
   /**
    * Handles ChromeVox commands.
    * @param {string} command
@@ -20,7 +18,7 @@ CommandHandlerInterface = class {
    * @return {cursors.Range} The resulting range.
    */
   skipLabelOrDescriptionFor(current, dir) {}
-};
+}
 
 /**
  * @type {CommandHandlerInterface}

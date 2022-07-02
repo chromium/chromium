@@ -10,12 +10,12 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
@@ -52,6 +52,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
+#include "base/guid.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -154,8 +155,21 @@ void RemoveAllWindowsFromOverview() {
   auto* overview_session =
       Shell::Get()->overview_controller()->overview_session();
   for (const auto& grid : overview_session->grid_list()) {
-    while (!grid->empty())
-      overview_session->RemoveItem(grid->window_list()[0].get());
+    while (!grid->empty()) {
+      OverviewItem* overview_item = grid->window_list()[0].get();
+
+      // We want to restore the window here primarily because when we are
+      // undoing the removal of an active desk outside of overview, we do not
+      // want those windows to still be in its overview transformation, so we
+      // need to restore the transformation of the desk's windows before we
+      // remove the respective overview items from the grid. We can also do this
+      // in the case of combining desks, as in that case we will be applying the
+      // overview transformation to the windows again when appending those
+      // windows back to the overview grid regardless of whether those windows
+      // were already in that transformation.
+      overview_item->RestoreWindow(/*reset_transform=*/true);
+      overview_session->RemoveItem(overview_item);
+    }
   }
 }
 
@@ -210,11 +224,14 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
 
 void ShowDeskRemovalUndoToast(const std::string& toast_id,
                               base::RepeatingClosure dismiss_callback,
-                              base::RepeatingClosure expired_callback) {
+                              base::RepeatingClosure expired_callback,
+                              bool use_persistent_toast) {
+  // If ChromeVox is enabled, then we want the toast to be infinite duration.
   ToastData undo_toast_data(
       toast_id, ash::ToastCatalogName::kUndoCloseAll,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT),
-      ToastData::kDefaultToastDuration,
+      use_persistent_toast ? ToastData::kInfiniteDuration
+                           : ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/false,
       /*has_dismiss_button=*/true,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_UNDO_TEXT));
@@ -225,8 +242,8 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
 
 }  // namespace
 
-// Class that can hold the data for a removed desk while it waits for a user to
-// confirm its deletion.
+// Class that can hold the data for a removed desk while it waits for a user
+// to confirm its deletion.
 class DesksController::RemovedDeskData {
  public:
   RemovedDeskData(std::unique_ptr<Desk> desk, int index)
@@ -234,7 +251,11 @@ class DesksController::RemovedDeskData {
                                      ++g_close_desk_toast_counter)),
         was_active_(desk->is_active()),
         desk_(std::move(desk)),
-        index_(index) {
+        index_(index),
+        is_toast_persistent_(Shell::Get()
+                                 ->accessibility_controller()
+                                 ->spoken_feedback()
+                                 .enabled()) {
     desk_->set_is_desk_being_removed(true);
   }
 
@@ -252,6 +273,7 @@ class DesksController::RemovedDeskData {
   bool was_active() const { return was_active_; }
   Desk* desk() { return desk_.get(); }
   int index() const { return index_; }
+  bool is_toast_persistent() const { return is_toast_persistent_; }
   std::unique_ptr<Desk> AcquireDesk() { return std::move(desk_); }
 
  private:
@@ -259,6 +281,11 @@ class DesksController::RemovedDeskData {
   const bool was_active_;
   std::unique_ptr<Desk> desk_;
   const int index_;
+
+  // If this was created in overview with ChromeVox enabled and then ChromeVox
+  // is exited before this is destroyed, then we still need to know to destroy
+  // it when overview closes.
+  const bool is_toast_persistent_;
 };
 
 // Helper class which wraps around a OneShotTimer and used for recording how
@@ -458,6 +485,14 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
   return desks_[previous_index].get();
 }
 
+Desk* DesksController::GetDeskByUuid(const base::GUID& desk_uuid) const {
+  auto it = std::find_if(desks_.begin(), desks_.end(),
+                         [&desk_uuid](const std::unique_ptr<Desk>& desk) {
+                           return desk->uuid() == desk_uuid;
+                         });
+  return it != desks_.end() ? it->get() : nullptr;
+}
+
 bool DesksController::CanRemoveDesks() const {
   return desks_.size() > 1;
 }
@@ -642,9 +677,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   }
 
   if (source == DesksSwitchSource::kDeskRemoved ||
-      source == DesksSwitchSource::kRemovalUndone || is_user_switch) {
-    // Desk switches due to desks removal or user switches in a multi-profile
-    // session result in immediate desk activation without animation.
+      (source == DesksSwitchSource::kRemovalUndone && in_overview) ||
+      is_user_switch) {
+    // Desk switches due to desks removal, undoing the removal of an active desk
+    // in overview mode, or user switches in a multi-profile session result in
+    // immediate desk activation without animation.
     ActivateDeskInternal(desk, /*update_window_activation=*/!in_overview);
     return;
   }
@@ -1005,9 +1042,9 @@ void DesksController::CaptureActiveDeskAsTemplate(
 }
 
 void DesksController::CreateNewDeskForTemplate(
-    const std::u16string& template_name,
     bool activate_desk,
-    base::OnceCallback<void(const Desk*)> callback) {
+    base::OnceCallback<void(const Desk*)> callback,
+    const std::u16string& customized_desk_name) {
   DCHECK(!callback.is_null());
 
   if (!CanCreateDesks()) {
@@ -1020,18 +1057,27 @@ void DesksController::CreateNewDeskForTemplate(
   if (animation_)
     animation_.reset();
 
-  // Change the desk name if the current name already exists.
-  int count = 1;
-  std::u16string desk_name = template_name;
-  while (HasDeskWithName(desk_name)) {
-    desk_name = std::u16string(template_name)
-                    .append(u" (" + base::FormatNumber(count) + u")");
-    count++;
+  // Desk name was set to a default name upon creation. If
+  // `customized_desk_name` is provided, override desk name to be
+  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
+  // naming conflicts.
+  std::u16string desk_name;
+  if (!customized_desk_name.empty()) {
+    int count = 1;
+    desk_name = customized_desk_name;
+    while (HasDeskWithName(desk_name)) {
+      desk_name = std::u16string(customized_desk_name)
+                      .append(u" (" + base::FormatNumber(count) + u")");
+      count++;
+    }
   }
 
   NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
   Desk* desk = desks().back().get();
-  desk->SetName(desk_name, /*set_by_user=*/true);
+
+  if (!desk_name.empty()) {
+    desk->SetName(desk_name, /*set_by_user=*/true);
+  }
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
@@ -1183,6 +1229,8 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
             case chromeos::WindowStateType::kPinned:
             case chromeos::WindowStateType::kTrustedPinned:
             case chromeos::WindowStateType::kPip:
+            // TODO(crbug.com/1331825): Float state support for desk template.
+            case chromeos::WindowStateType::kFloated:
               NOTREACHED();
               break;
           }
@@ -1219,6 +1267,49 @@ void DesksController::UpdateDesksDefaultNames() {
       desk->SetName(GetDeskDefaultName(i), /*set_by_user=*/false);
     i++;
   }
+}
+
+void DesksController::MaybeCancelDeskRemoval() {
+  if (!temporary_removed_desk_)
+    return;
+
+  // `UndoDeskRemoval()` will take ownership of `temporary_removed_desk` so we
+  // need to get the toast id beforehand. It also needs to come before
+  // cancelling the toast as if animations are disabled, cancelling will call
+  // `MaybeCommitPendingDeskRemoval()` right away, which would delete
+  // `temporary_removed_desk`.
+  const std::string toast_id = temporary_removed_desk_->toast_id();
+  UndoDeskRemoval();
+  ToastManager::Get()->Cancel(toast_id);
+}
+
+void DesksController::MaybeDismissPersistentDeskRemovalToast() {
+  if (temporary_removed_desk_ &&
+      temporary_removed_desk_->is_toast_persistent()) {
+    ToastManager::Get()->Cancel(temporary_removed_desk_->toast_id());
+  }
+}
+
+bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
+  if (!temporary_removed_desk_ ||
+      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+    return false;
+  }
+
+  return ToastManager::Get()
+      ->MaybeToggleA11yHighlightOnActiveToastDismissButton(
+          temporary_removed_desk_->toast_id());
+}
+
+bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
+  if (!temporary_removed_desk_ ||
+      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+    return false;
+  }
+
+  return ToastManager::Get()
+      ->MaybeActivateHighlightedDismissButtonOnActiveToast(
+          temporary_removed_desk_->toast_id());
 }
 
 void DesksController::OnWindowActivating(ActivationReason reason,
@@ -1456,7 +1547,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // windows from the overview grid which will result in removing the
     // "OverviewModeLabel" widgets created by overview mode for these windows.
     // This way the removed desk tracks only real windows, which are now ready
-    // to be moved to the target desk.
+    // to be moved to the target desk if we are combining desks.
     if (in_overview)
       RemoveAllWindowsFromOverview();
 
@@ -1533,11 +1624,14 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskHistogramName, source);
   UMA_HISTOGRAM_ENUMERATION(kRemoveDeskTypeHistogramName, close_type);
 
-  Shell::Get()
-      ->accessibility_controller()
-      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
-          active_desk_->name()));
+  // We should only announce desks are being merged if we are combining desks.
+  if (close_type == DeskCloseType::kCombineDesks) {
+    Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
+            active_desk_->name()));
+  }
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
@@ -1553,7 +1647,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         /*expired_callback=*/
         base::BindRepeating(&DesksController::MaybeCommitPendingDeskRemoval,
                             base::Unretained(this),
-                            temporary_removed_desk_->toast_id()));
+                            temporary_removed_desk_->toast_id()),
+        temporary_removed_desk_->is_toast_persistent());
   }
 }
 
@@ -1585,6 +1680,11 @@ void DesksController::UndoDeskRemoval() {
     if (in_overview)
       AppendWindowsToOverview(readded_desk_ptr->windows());
   }
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringUTF8(
+          IDS_ASH_DESKS_CLOSE_ALL_UNDONE_NOTIFICATION));
 
   UpdateDesksDefaultNames();
 }
@@ -1763,6 +1863,11 @@ const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
   }
 
   return nullptr;
+}
+
+void DesksController::GetAllDesks(std::vector<const Desk*>& out_desks) const {
+  for (const auto& d : desks_)
+    out_desks.push_back(d.get());
 }
 
 void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {

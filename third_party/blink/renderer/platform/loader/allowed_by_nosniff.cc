@@ -6,7 +6,7 @@
 
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -115,9 +115,10 @@ bool AllowMimeTypeAsScript(const String& mime_type,
   // we still wish to accept them (or log them using UseCounter, or add a
   // deprecation warning to the console).
 
-  if (mime_type.StartsWithIgnoringASCIICase("text/") &&
-      MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(
-          mime_type.Substring(5))) {
+  if (EqualIgnoringASCIICase(mime_type, "text/javascript1.6") ||
+      EqualIgnoringASCIICase(mime_type, "text/javascript1.7")) {
+    // We've been excluding these legacy values from UseCounter stats since
+    // before.
     return true;
   }
 

@@ -9,7 +9,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeSettingsPrivate} from 'chrome://test/settings/chromeos/fake_settings_private.js';
 
-import {eventToPromise, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.js';
+import {eventToPromise, isVisible as testUtilIsVisible, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 
 import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
@@ -25,28 +25,8 @@ let fakeUma = null;
  * @param {!Element} element
  */
 function isVisible(element) {
-  while (element) {
-    if (element.offsetWidth <= 0 || element.offsetHeight <= 0 ||
-        element.hidden ||
-        window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-
-    element = element.parentElement;
-
-    if (element) {
-      // cr-dialog itself will always be 0x0. It's the inner native <dialog>
-      // that has actual dimensions.
-      // (The same about PIN-KEYBOARD.)
-      if (element.tagName === 'CR-DIALOG') {
-        element = element.getNative();
-      } else if (element.tagName === 'PIN-KEYBOARD') {
-        element = element.$.root;
-      }
-    }
-  }
-
-  return true;
+  return testUtilIsVisible(element) &&
+      window.getComputedStyle(element).visibility !== 'hidden';
 }
 
 /**
@@ -64,9 +44,9 @@ function assertHasClass(element, className) {
  * @return {Element}
  */
 function getFromElement(selector) {
-  let childElement = testElement.$$(selector);
+  let childElement = testElement.shadowRoot.querySelector(selector);
   if (!childElement && testElement.$.pinKeyboard) {
-    childElement = testElement.$.pinKeyboard.$$(selector);
+    childElement = testElement.$.pinKeyboard.shadowRoot.querySelector(selector);
   }
 
   assertTrue(!!childElement);
@@ -276,13 +256,15 @@ function registerLockScreenTests() {
 
     function isSetupPinButtonVisible() {
       flush();
-      const setupPinButton = testElement.$$('#setupPinButton');
+      const setupPinButton =
+          testElement.shadowRoot.querySelector('#setupPinButton');
       return isVisible(setupPinButton);
     }
 
     function isEnablePinAutosubmitToggleVisible() {
       flush();
-      const autosubmitToggle = testElement.$$('#enablePinAutoSubmit');
+      const autosubmitToggle =
+          testElement.shadowRoot.querySelector('#enablePinAutoSubmit');
       return autosubmitToggle && isVisible(autosubmitToggle);
     }
 
@@ -451,7 +433,9 @@ function registerLockScreenTests() {
       assertRadioButtonChecked(pinPasswordRadioButton);
       assertTrue(isSetupPinButtonVisible());
       flush();
-      assertEquals(testElement.$$('#setupPinButton').innerText, 'Change PIN');
+      assertEquals(
+          testElement.shadowRoot.querySelector('#setupPinButton').innerText,
+          'Change PIN');
 
       // Clicking will trigger an async call which setActiveModes([]) fakes.
       passwordRadioButton.click();
@@ -466,7 +450,9 @@ function registerLockScreenTests() {
       flush();
       assertRadioButtonChecked(pinPasswordRadioButton);
       assertTrue(isSetupPinButtonVisible());
-      assertEquals(testElement.$$('#setupPinButton').innerText, 'Set up PIN');
+      assertEquals(
+          testElement.shadowRoot.querySelector('#setupPinButton').innerText,
+          'Set up PIN');
     });
 
     // Tapping the PIN configure button opens up the setup PIN dialog, and
@@ -485,7 +471,7 @@ function registerLockScreenTests() {
       getFromElement('#setupPinButton').click();
       flush();
       const setupPinDialog = getFromElement('#setupPin');
-      assertTrue(setupPinDialog.$$('#dialog').open);
+      assertTrue(setupPinDialog.shadowRoot.querySelector('#dialog').open);
       assertEquals(
           1,
           fakeUma.getHistogramValue(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD));
@@ -502,11 +488,11 @@ function registerLockScreenTests() {
       getFromElement('#enablePinAutoSubmit').click();
       flush();
       const autosubmitDialog = getFromElement('#pinAutosubmitDialog');
-      assertTrue(autosubmitDialog.$$('#dialog').open);
+      assertTrue(autosubmitDialog.shadowRoot.querySelector('#dialog').open);
 
       // Cancel button closes the dialog.
-      autosubmitDialog.$$('#cancelButton').click();
-      assertFalse(autosubmitDialog.$$('#dialog').open);
+      autosubmitDialog.shadowRoot.querySelector('#cancelButton').click();
+      assertFalse(autosubmitDialog.shadowRoot.querySelector('#dialog').open);
     });
   });
 }
@@ -766,7 +752,7 @@ function registerSetupPinDialogTests() {
     // Hitting cancel at the setup step dismisses the dialog.
     test('HittingBackButtonResetsState', function() {
       backButton.click();
-      assertFalse(testElement.$$('#dialog').open);
+      assertFalse(testElement.shadowRoot.querySelector('#dialog').open);
     });
 
     // Hitting cancel at the confirm step dismisses the dialog.
@@ -774,7 +760,7 @@ function registerSetupPinDialogTests() {
       pinKeyboard.value = '1111';
       continueButton.click();
       backButton.click();
-      assertFalse(testElement.$$('#dialog').open);
+      assertFalse(testElement.shadowRoot.querySelector('#dialog').open);
     });
 
     // User has to re-enter PIN for confirm step.
@@ -854,14 +840,15 @@ function registerSetupPinDialogTests() {
     // Verify that the backspace button is disabled when there is nothing
     // entered.
     test('BackspaceDisabledWhenNothingEntered', function() {
-      const backspaceButton = pinKeyboard.$$('#backspaceButton');
+      const backspaceButton =
+          pinKeyboard.shadowRoot.querySelector('#backspaceButton');
       assertTrue(!!backspaceButton);
       assertTrue(backspaceButton.disabled);
 
-      pinKeyboard.$$('cr-input').value = '11';
+      pinKeyboard.shadowRoot.querySelector('cr-input').value = '11';
       assertFalse(backspaceButton.disabled);
 
-      pinKeyboard.$$('cr-input').value = '';
+      pinKeyboard.shadowRoot.querySelector('cr-input').value = '';
       assertTrue(backspaceButton.disabled);
     });
   });

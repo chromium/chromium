@@ -21,7 +21,10 @@ static_library("language_packs") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "language_pack_manager_unittest.cc" ]
+  sources = [
+    "language_pack_manager_unittest.cc",
+    "metrics_unittest.cc",
+  ]
   deps = [
     ":language_packs",
     "//base",
@@ -29,5 +32,10 @@ source_set("unit_tests") {
     "//chromeos/dbus/dlcservice",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+  data = [
+    # enums.xml is analyzed by LanguagePackMetricsTest, so this dependency
+    # is needed to make commit bots run unit_tests on enums.xml changes.
+    "//tools/metrics/histograms/enums.xml",
   ]
 }

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -105,7 +106,7 @@ class AudioScheduledSourceHandler
   // do.  If it is zero, the other return values are meaningless.
   std::tuple<size_t, size_t, double> UpdateSchedulingInfo(
       size_t quantum_frame_size,
-      AudioBus* output_bus);
+      AudioBus* output_bus) EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Called when we have no more sound to play or the stop() time has been
   // reached. No onEnded event is called.
@@ -118,28 +119,26 @@ class AudioScheduledSourceHandler
 
   // This synchronizes with process() and any other method that needs to be
   // synchronized like setBuffer for AudioBufferSource.
-  mutable Mutex process_lock_;
+  mutable base::Lock process_lock_;
 
-  // m_startTime is the time to start playing based on the context's timeline (0
-  // or a time less than the context's current time means "now").
-  double start_time_;  // in seconds
+  // |start_time_| is the time to start playing based on the context's timeline
+  // (0 or a time less than the context's current time means "now").
+  double start_time_ GUARDED_BY(process_lock_) = 0;  // in seconds
 
-  // m_endTime is the time to stop playing based on the context's timeline (0 or
-  // a time less than the context's current time means "now").  If it hasn't
+  // |end_time_| is the time to stop playing based on the context's timeline (0
+  // or a time less than the context's current time means "now").  If it hasn't
   // been set explicitly, then the sound will not stop playing (if looping) or
   // will stop when the end of the AudioBuffer has been reached.
-  double end_time_;  // in seconds
+  double end_time_ GUARDED_BY(process_lock_);  // in seconds
 
   // Magic value indicating that the time (start or end) has not yet been set.
-  static const double kUnknownTime;
+  static constexpr double kUnknownTime = -1.0;
 
   // Number of extra frames to use when determining if a source node can be
   // stopped.  This should be at least one rendering quantum, but we add one
   // more quantum for good measure.  This doesn't need to be extra precise, just
-  // more than one rendering quantum.  See |handleStoppableSourceNode()|.
-  // FIXME: Expose the rendering quantum somehow instead of hardwiring a value
-  // here.
-  static const int kExtraStopFrames = 256;
+  // more than one rendering quantum.  See `HandleStoppableSourceNode()`.
+  static constexpr int kExtraStopFrames = 256;
 
  private:
   // This is accessed by both the main thread and audio thread.  Use the setter

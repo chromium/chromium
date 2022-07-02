@@ -25,10 +25,6 @@ namespace ui {
 
 class AXTreeID;
 
-// If a node is not yet or no longer valid, its ID should have a value of
-// kInvalidAXNodeID.
-static constexpr AXNodeID kInvalidAXNodeID = 0;
-
 // Return true if |attr| should be interpreted as the id of another node
 // in the same tree.
 AX_BASE_EXPORT bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr);
@@ -288,10 +284,6 @@ struct AX_BASE_EXPORT AXNodeData {
   // month, time, and week types does not allow this. In either type, pressing
   // up/down arrow will change the value to the previous/next allowed value.
   bool IsSpinnerTextField() const;
-
-  // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
-  // By default, all nodes that can't be edited are readonly.
-  bool IsReadOnlyOrDisabled() const;
 
   // Helper to determine if the data belongs to a node that supports
   // range-based values.

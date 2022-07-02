@@ -13,8 +13,8 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace ash {
 

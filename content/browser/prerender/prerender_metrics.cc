@@ -6,6 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -20,8 +22,6 @@ PrerenderCancelledInterface GetCancelledInterfaceType(
     return PrerenderCancelledInterface::kGamepadHapticsManager;
   else if (interface_name == "device.mojom.GamepadMonitor")
     return PrerenderCancelledInterface::kGamepadMonitor;
-  else if (interface_name == "blink.mojom.NotificationService")
-    return PrerenderCancelledInterface::kNotificationService;
   else if (interface_name == "chrome.mojom.SyncEncryptionKeysExtension")
     return PrerenderCancelledInterface::kSyncEncryptionKeysExtension;
   return PrerenderCancelledInterface::kUnknown;
@@ -87,21 +87,19 @@ void RecordPrerenderActivationTime(
       delta);
 }
 
-void RecordPrerenderHostFinalStatus(
-    PrerenderHost::FinalStatus status,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix,
-    ukm::SourceId initiator_ukm_id,
-    ukm::SourceId prerendered_ukm_id) {
+void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
+                                    const PrerenderAttributes& attributes,
+                                    ukm::SourceId prerendered_ukm_id) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
-                            trigger_type, embedder_histogram_suffix),
+                            attributes.trigger_type,
+                            attributes.embedder_histogram_suffix),
       status);
 
-  if (initiator_ukm_id != ukm::kInvalidSourceId) {
+  if (attributes.initiator_ukm_id != ukm::kInvalidSourceId) {
     // `initiator_ukm_id` must be valid for the speculation rules.
-    DCHECK_EQ(trigger_type, PrerenderTriggerType::kSpeculationRule);
-    ukm::builders::PrerenderPageLoad(initiator_ukm_id)
+    DCHECK_EQ(attributes.trigger_type, PrerenderTriggerType::kSpeculationRule);
+    ukm::builders::PrerenderPageLoad(attributes.initiator_ukm_id)
         .SetFinalStatus(static_cast<int>(status))
         .Record(ukm::UkmRecorder::Get());
   }
@@ -113,6 +111,18 @@ void RecordPrerenderHostFinalStatus(
     ukm::builders::PrerenderPageLoad(prerendered_ukm_id)
         .SetFinalStatus(static_cast<int>(status))
         .Record(ukm::UkmRecorder::Get());
+  }
+
+  // The kActivated case is recorded in `PrerenderHost::Activate`. Browser
+  // initiated prerendering doesn't report cancellation reasons to the DevTools
+  // as it doesn't have the initiator frame associated with DevTools agents.
+  if (!attributes.IsBrowserInitiated() &&
+      status != PrerenderHost::FinalStatus::kActivated) {
+    auto* ftn = FrameTreeNode::GloballyFindByID(
+        attributes.initiator_frame_tree_node_id);
+    DCHECK(ftn);
+    devtools_instrumentation::DidCancelPrerender(attributes.prerendering_url,
+                                                 ftn, status);
   }
 }
 

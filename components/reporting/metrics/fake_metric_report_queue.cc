@@ -4,6 +4,9 @@
 
 #include "components/reporting/metrics/fake_metric_report_queue.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -35,9 +38,10 @@ FakeMetricReportQueue::FakeMetricReportQueue(
                         default_rate,
                         rate_unit_to_ms) {}
 
-void FakeMetricReportQueue::Enqueue(const MetricData& metric_data,
-                                    ReportQueue::EnqueueCallback callback) {
-  reported_data_.emplace_back(metric_data);
+void FakeMetricReportQueue::Enqueue(
+    std::unique_ptr<const MetricData> metric_data,
+    ReportQueue::EnqueueCallback callback) {
+  reported_data_.emplace_back(std::move(metric_data));
   std::move(callback).Run(Status());
 }
 
@@ -47,7 +51,8 @@ void FakeMetricReportQueue::Flush() {
   num_flush_++;
 }
 
-std::vector<MetricData> FakeMetricReportQueue::GetMetricDataReported() const {
+const std::vector<std::unique_ptr<const MetricData>>&
+FakeMetricReportQueue::GetMetricDataReported() const {
   return reported_data_;
 }
 

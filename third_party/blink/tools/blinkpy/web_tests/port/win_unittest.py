@@ -41,10 +41,10 @@ from blinkpy.web_tests.port import win
 
 class WinPortTest(port_testcase.PortTestCase):
     port_name = 'win'
-    full_port_name = 'win-win7'
+    full_port_name = 'win-win11'
     port_maker = win.WinPort
     os_name = 'win'
-    os_version = 'win7'
+    os_version = 'win11'
 
     def test_setup_environ_for_server(self):
         port = self.make_port()
@@ -62,34 +62,28 @@ class WinPortTest(port_testcase.PortTestCase):
     def test_get_platform_tags(self):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
-                         {'win', 'win7', 'x86', 'release'})
+                         {'win', 'win11', 'x86', 'release'})
 
     def test_versions(self):
         port = self.make_port()
-        self.assertIn(port.name(), ('win-win7', 'win-win10'))
-
-        self.assert_name(None, 'win7', 'win-win7')
-        self.assert_name('win', 'win7', 'win-win7')
+        self.assertIn(port.name(), ('win-win10.20h2', 'win-win11'))
 
         self.assert_name(None, '10.20h2', 'win-win10.20h2')
         self.assert_name('win', '10.20h2', 'win-win10.20h2')
         self.assert_name('win-win10.20h2', '10.20h2', 'win-win10.20h2')
-        self.assert_name('win-win10.20h2', 'win7', 'win-win10.20h2')
+        self.assert_name('win-win10.20h2', '10.1909', 'win-win10.20h2')
 
         self.assert_name(None, '8', 'win-win10.20h2')
         self.assert_name(None, '8.1', 'win-win10.20h2')
         self.assert_name('win', '8', 'win-win10.20h2')
         self.assert_name('win', '8.1', 'win-win10.20h2')
 
-        self.assert_name(None, '7sp1', 'win-win7')
-        self.assert_name(None, '7sp0', 'win-win7')
-        self.assert_name(None, 'vista', 'win-win7')
-        self.assert_name('win', '7sp1', 'win-win7')
-        self.assert_name('win', '7sp0', 'win-win7')
-        self.assert_name('win', 'vista', 'win-win7')
-        self.assert_name('win-win7', '7sp1', 'win-win7')
-        self.assert_name('win-win7', '7sp0', 'win-win7')
-        self.assert_name('win-win7', 'vista', 'win-win7')
+        self.assert_name(None, '7sp1', 'win-win10.20h2')
+        self.assert_name(None, '7sp0', 'win-win10.20h2')
+        self.assert_name(None, 'vista', 'win-win10.20h2')
+        self.assert_name('win', '7sp1', 'win-win10.20h2')
+        self.assert_name('win', '7sp0', 'win-win10.20h2')
+        self.assert_name('win', 'vista', 'win-win10.20h2')
 
         self.assert_name(None, 'win11', 'win-win11')
         self.assert_name('win', 'win11', 'win-win11')
@@ -99,7 +93,7 @@ class WinPortTest(port_testcase.PortTestCase):
         self.assert_name('win-win11', 'future', 'win-win11')
 
         with self.assertRaises(AssertionError):
-            self.assert_name(None, 'w2k', 'win-win7')
+            self.assert_name(None, 'w2k', 'win-win11')
 
     def assert_baseline_paths(self, port_name, *expected_paths):
         port = self.make_port(port_name=port_name)
@@ -110,8 +104,8 @@ class WinPortTest(port_testcase.PortTestCase):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))
 
     def test_baseline_path(self):
-        self.assert_baseline_paths('win-win7', 'win7', 'win10', '/win')
         self.assert_baseline_paths('win-win10.20h2', 'win10', 'win')
+        self.assert_baseline_paths('win-win11', 'win')
 
     def test_operating_system(self):
         self.assertEqual('win', self.make_port().operating_system())

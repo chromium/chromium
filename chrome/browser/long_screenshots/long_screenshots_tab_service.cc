@@ -110,7 +110,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
                                        /*stay_awake=*/true);
   content::RenderFrameHost* rfh =
-      GetRootRenderFrameHost(contents->GetMainFrame(), *url);
+      GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), *url);
   if (in_memory) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
                        clip_x, clip_y, clip_width, clip_height, in_memory,
@@ -152,7 +152,7 @@ void LongScreenshotsTabService::CaptureTabInternal(
   // There is a small chance RenderFrameHost may be destroyed when the UI thread
   // is used to create the directory.  By doing a lookup for the RenderFrameHost
   // and comparing it to the WebContent, we can ensure that the content is still
-  // available for capture and WebContents::GetMainFrame did not return a
+  // available for capture and WebContents::GetPrimaryMainFrame did not return a
   // defunct pointer.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
   if (!contents || !rfh || contents->IsBeingDestroyed() || !rfh->IsActive()) {

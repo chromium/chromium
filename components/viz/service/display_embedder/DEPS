@@ -19,7 +19,9 @@ include_rules = [
   "+components/viz/service/display/skia_output_surface.h",
   "+components/viz/service/display/software_output_device.h",
   "+components/viz/service/gl/gpu_service_impl.h",
-  "+gpu/command_buffer/client",
+  "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
+  "+gpu/command_buffer/client/shared_image_interface.h",
+  "+gpu/command_buffer/client/shared_memory_limits.h",
   "+gpu/command_buffer/common",
   "+gpu/command_buffer/service",
   "+gpu/config",
@@ -45,14 +47,12 @@ include_rules = [
   "+ui/ozone/public",
 
   # TODO(danakj): Double check the layering for these dependencies.
-  "+components/viz/service/display/gl_renderer_copier.h",
   "+components/viz/service/display/overlay_processor.h",
   "+components/viz/service/display/overlay_processor_interface.h",
   "+components/viz/service/display/overlay_strategy_fullscreen.h",
   "+components/viz/service/display/overlay_strategy_single_on_top.h",
   "+components/viz/service/display/overlay_strategy_underlay_cast.h",
   "+components/viz/service/display/overlay_strategy_underlay.h",
-  "+components/viz/service/display/texture_deleter.h",
 ]
 
 specific_include_rules = {

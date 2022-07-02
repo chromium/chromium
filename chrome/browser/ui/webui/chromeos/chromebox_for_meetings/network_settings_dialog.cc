@@ -73,7 +73,7 @@ class NetworkSettingsMessageHandler : public content::WebUIMessageHandler {
   void ShowManageCerts() {
     // Dialogs manage their own lifecycle and will delete themselves.
     CertificateManagerDialog* dialog = new CertificateManagerDialog(
-        ProfileManager::GetActiveUserProfile(), nullptr, nullptr);
+        ProfileManager::GetActiveUserProfile(), nullptr);
     dialog->Show();
   }
 };

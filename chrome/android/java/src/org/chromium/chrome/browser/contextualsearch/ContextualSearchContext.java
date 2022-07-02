@@ -63,10 +63,6 @@ public abstract class ContextualSearchContext {
     // The offset of the tap within the tapped word, or {@code INVALID_OFFSET} if not yet analyzed.
     private int mTapWithinWordOffset = INVALID_OFFSET;
 
-    // Data about the previous user interactions and the event-ID from the server that will log it.
-    private long mPreviousEventId;
-    private int mPreviousUserInteractions;
-
     // Translation members.
     @NonNull
     private String mTargetLanguage = "";
@@ -90,22 +86,16 @@ public abstract class ContextualSearchContext {
      * @param homeCountry The country where the user usually resides, or an empty string if not
      *        known.
      * @param doSendBasePageUrl Whether the base-page URL should be sent to the server.
-     * @param previousEventId An EventID from the server to send along with the resolve request.
-     * @param previousUserInteractions Persisted interaction outcomes to send along with the resolve
-     *        request.
      * @param targetLanguage The language to translate into, in case translation might be needed.
      * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
      *        the user can read fluently, or an empty string.
      */
     void setResolveProperties(@NonNull String homeCountry, boolean doSendBasePageUrl,
-            long previousEventId, int previousUserInteractions, @NonNull String targetLanguage,
-            @NonNull String fluentLanguages) {
+            @NonNull String targetLanguage, @NonNull String fluentLanguages) {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
-        mPreviousEventId = previousEventId;
-        mPreviousUserInteractions = previousUserInteractions;
-        ContextualSearchContextJni.get().setResolveProperties(getNativePointer(), this, homeCountry,
-                doSendBasePageUrl, previousEventId, previousUserInteractions);
+        ContextualSearchContextJni.get().setResolveProperties(
+                getNativePointer(), this, homeCountry, doSendBasePageUrl);
         mTargetLanguage = targetLanguage;
         mFluentLanguages = fluentLanguages;
     }
@@ -454,16 +444,6 @@ public abstract class ContextualSearchContext {
     // ============================================================================================
 
     @VisibleForTesting
-    int getPreviousUserInteractions() {
-        return mPreviousUserInteractions;
-    }
-
-    @VisibleForTesting
-    long getPreviousEventId() {
-        return mPreviousEventId;
-    }
-
-    @VisibleForTesting
     String getRelatedSearchesStamp() {
         return mRelatedSearchesStamp;
     }
@@ -483,8 +463,7 @@ public abstract class ContextualSearchContext {
         long init(ContextualSearchContext caller);
         void destroy(long nativeContextualSearchContext, ContextualSearchContext caller);
         void setResolveProperties(long nativeContextualSearchContext,
-                ContextualSearchContext caller, String homeCountry, boolean doSendBasePageUrl,
-                long previousEventId, int previousEventResults);
+                ContextualSearchContext caller, String homeCountry, boolean doSendBasePageUrl);
         void adjustSelection(long nativeContextualSearchContext, ContextualSearchContext caller,
                 int startAdjust, int endAdjust);
         String detectLanguage(long nativeContextualSearchContext, ContextualSearchContext caller);

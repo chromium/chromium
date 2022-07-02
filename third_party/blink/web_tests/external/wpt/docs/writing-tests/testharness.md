@@ -241,7 +241,7 @@ otherwise too many tests to complete inside the timeout. For example:
 <meta name="variant" content="?2001-last">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/subset-tests.js">
+<script src="/common/subset-tests.js"></script>
 <script>
  const tests = [
                  { fn: t => { ... }, name: "..." },

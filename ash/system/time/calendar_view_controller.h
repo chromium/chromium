@@ -21,6 +21,8 @@
 
 namespace ash {
 
+class CalendarDateCellView;
+
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarViewController {
  public:
@@ -33,7 +35,7 @@ class ASH_EXPORT CalendarViewController {
   class Observer : public base::CheckedObserver {
    public:
     // Gets called when `currently_shown_date_ ` changes.
-    virtual void OnMonthChanged(const base::Time::Exploded current_month) {}
+    virtual void OnMonthChanged() {}
 
     // Invoked when a date cell is clicked to open the event list.
     virtual void OpenEventList() {}
@@ -52,85 +54,11 @@ class ASH_EXPORT CalendarViewController {
   // Updates the `currently_shown_date_`.
   void UpdateMonth(const base::Time current_month_first_date);
 
-  // When rendering a view based on a certain date, the time difference might
-  // change due to daylight savings time. This method will compare the current
-  // `time_difference_minutes_` with the new time difference and make an update
-  // if there's a change.
-  void MaybeUpdateTimeDifference(base::Time date);
-
-  // Gets the first day of the `currently_shown_date_`'s month, in local time.
-  base::Time GetOnScreenMonthFirstDayLocal();
-
-  // Gets the first day of the nth-previous month based on the
-  // `currently_shown_date_`'s month, in local time.
-  base::Time GetPreviousMonthFirstDayLocal(unsigned int num_months);
-
-  // Gets the first day of the nth-next month based on the
-  // `currently_shown_date_`'s month, in local time.
-  base::Time GetNextMonthFirstDayLocal(unsigned int num_months);
-
-  // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
-  base::Time GetOnScreenMonthFirstDayUTC() const;
-
-  // Gets the first day of the nth-previous month based on the
-  // `currently_shown_date_`'s month, in UTC time.
-  base::Time GetPreviousMonthFirstDayUTC(unsigned int num_months) const;
-
-  // Gets the first day of the nth-next month based on the
-  // `currently_shown_date_`'s month, in UTC time.
-  base::Time GetNextMonthFirstDayUTC(unsigned int num_months) const;
-
-  // Gets the month name of the `currently_shown_date_`'s month.
-  std::u16string GetOnScreenMonthName() const;
-
-  // Gets the month name of the next `num_months` month based on the
-  // `currently_shown_date_`'s month.
-  std::u16string GetNextMonthName(int num_months = 1);
-
-  // Gets the month name of the previous month based `currently_shown_date_`'s
-  // month.
-  std::u16string GetPreviousMonthName();
-
-  // Get the current date, which can be today or the first day of the current
-  // month if current month is not today's month.
-  base::Time currently_shown_date() { return currently_shown_date_; }
-
-  // The currently selected date to show the event list.
-  absl::optional<base::Time> selected_date() { return selected_date_; }
-
-  // The row index of the currently selected date. This is used for auto
-  // scrolling to this row when the event list is expanded.
-  int selected_date_row_index() { return selected_date_row_index_; }
-
-  // Getters and setters: the row index when the event list view is showing,
-  // today's row number, today's row height and expanded area height.
-  int GetExpandedRowIndex() const;
-  void set_expanded_row_index(int row_index) {
-    expanded_row_index_ = row_index;
-  }
-  int today_row() const { return today_row_; }
-  void set_today_row(int row) { today_row_ = row; }
-  int row_height() const { return row_height_; }
-  void set_row_height(int height) { row_height_ = height; }
-
-  int time_difference_minutes() { return time_difference_minutes_; }
-
-  // Getters of the today's row position, top and bottom.
-  int GetTodayRowTopHeight() const;
-  int GetTodayRowBottomHeight() const;
-
-  // Requests more events as needed.
-  void FetchEvents();
-
-  // The calendar events of the selected date.
-  SingleDayEventList SelectedDateEvents();
-
-  // The calendar events number of the `date`.
-  int GetEventNumber(base::Time date);
-
   // A callback passed into the`CalendarDateCellView`, which is called when the
   // cell is clicked to show the event list view.
-  void ShowEventListView(base::Time selected_date, int row_index);
+  void ShowEventListView(CalendarDateCellView* selected_calendar_date_cell_view,
+                         base::Time selected_date,
+                         int row_index);
 
   // A callback passed into the`CalendarEventListView`, which is called when the
   // close button is clicked to close the event list view.
@@ -149,6 +77,93 @@ class ASH_EXPORT CalendarViewController {
   // `CalendarView` if the month should be updated when a date is selected.
   bool IsSelectedDateInCurrentMonth();
 
+  // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
+  // Time difference is applied.
+  base::Time GetOnScreenMonthFirstDayUTC();
+
+  // Gets the first day of the nth-previous month based on the
+  // `currently_shown_date_`'s month, in UTC time. Time difference is applied.
+  base::Time GetPreviousMonthFirstDayUTC(unsigned int num_months);
+
+  // Gets the first day of the nth-next month based on the
+  // `currently_shown_date_`'s month, in UTC time. Time difference is applied.
+  base::Time GetNextMonthFirstDayUTC(unsigned int num_months);
+
+  // Gets the month name of the `currently_shown_date_`'s month.
+  std::u16string GetOnScreenMonthName() const;
+
+  // Gets the month name of the next `num_months` month based on the
+  // `currently_shown_date_`'s month.
+  std::u16string GetNextMonthName(int num_months = 1);
+
+  // Gets the month name of the previous month based `currently_shown_date_`'s
+  // month.
+  std::u16string GetPreviousMonthName();
+
+  // `row_height_` is expanded when the EventListView is shown.
+  int GetRowHeightWithEventListView() const;
+
+  // Getters of the today's row position, top and bottom.
+  int GetTodayRowTopHeight() const;
+  int GetTodayRowBottomHeight() const;
+
+  // The calendar events of the selected date.
+  SingleDayEventList SelectedDateEvents();
+
+  // The calendar events number of the `date`.
+  int GetEventNumber(base::Time date);
+
+  // Getters and setters: the row index when the event list view is showing,
+  // today's row number, today's row height and expanded area height.
+  int GetExpandedRowIndex() const;
+
+  // Get the current date, which can be today or the first day of the current
+  // month if current month is not today's month.
+  base::Time currently_shown_date() { return currently_shown_date_; }
+
+  // The currently selected date to show the event list.
+  absl::optional<base::Time> selected_date() { return selected_date_; }
+
+  // The midnight of the currently selected date adjusted to the local timezone.
+  base::Time selected_date_midnight() { return selected_date_midnight_; }
+
+  // The midnight of the selected date in UTC time.
+  base::Time selected_date_midnight_utc() {
+    return selected_date_midnight_utc_;
+  }
+
+  // The row index of the currently selected date. This is used for auto
+  // scrolling to this row when the event list is expanded.
+  int selected_date_row_index() { return selected_date_row_index_; }
+
+  void set_expanded_row_index(int row_index) {
+    expanded_row_index_ = row_index;
+  }
+
+  int today_row() const { return today_row_; }
+  void set_today_row(int row) { today_row_ = row; }
+
+  int row_height() const { return row_height_; }
+  void set_row_height(int height) { row_height_ = height; }
+
+  CalendarDateCellView* selected_date_cell_view() {
+    return selected_date_cell_view_;
+  }
+  void set_selected_date_cell_view(
+      CalendarDateCellView* todays_date_cell_view) {
+    selected_date_cell_view_ = todays_date_cell_view;
+  }
+
+  CalendarDateCellView* todays_date_cell_view() {
+    return todays_date_cell_view_;
+  }
+  void set_todays_date_cell_view(CalendarDateCellView* todays_date_cell_view) {
+    todays_date_cell_view_ = todays_date_cell_view;
+  }
+
+  // Returns whether the events for `start_of_month` is fetched or not.
+  bool isSuccessfullyFetched(base::Time start_of_month);
+
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
@@ -156,7 +171,7 @@ class ASH_EXPORT CalendarViewController {
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
 
-  // Adds the `time_difference_minutes_` and returns the adjusted time.
+  // Adds the time difference and returns the adjusted time.
   base::Time ApplyTimeDifference(base::Time date);
 
   // The currently shown date, which can be today or the first day of the
@@ -188,14 +203,31 @@ class ASH_EXPORT CalendarViewController {
   // The currently selected date.
   absl::optional<base::Time> selected_date_;
 
+  // The currently selected CalendarDateCellView
+  CalendarDateCellView* selected_date_cell_view_ = nullptr;
+
+  // The CalendarDateCellView which represents today.
+  CalendarDateCellView* todays_date_cell_view_ = nullptr;
+
+  // The midnight of the currently selected date adjusted to the local timezone.
+  base::Time selected_date_midnight_;
+
+  // The midnight of the selected date in UTC time.
+  base::Time selected_date_midnight_utc_;
+
   // The row index of the currently selected date.
   int selected_date_row_index_ = 0;
 
   // The current row index when the event list view is shown.
   int expanded_row_index_ = 0;
 
-  // The time difference between UTC and local time in minutes.
-  int time_difference_minutes_ = 0;
+  // Maximum distance, in months, from the on-screen month first displayed in
+  // the calendar when it was opened. This is logged as a metric when the
+  // calendar is closed.
+  size_t max_distance_browsed_ = 0;
+
+  // The first date shown, used to record max distance browsed metrics.
+  const base::Time first_shown_date_;
 
   base::ObserverList<Observer> observers_;
 

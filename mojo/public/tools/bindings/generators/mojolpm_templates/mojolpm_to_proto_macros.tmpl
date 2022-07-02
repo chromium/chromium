@@ -137,6 +137,12 @@ bool ToProto(
   return mojolpm_result;
 {%-     elif kind.kind|is_move_only_kind %}
   return ToProto(std::move(input), *output.mutable_value());
+{%-     elif kind.kind|is_nullable_kind and not kind.kind|nullable_is_same_kind %}
+  if (input) {
+    return ToProto(*input, *output.mutable_value());
+  } else {
+    return true;
+  }
 {%-     else %}
   return ToProto(input, *output.mutable_value());
 {%-     endif %}
@@ -207,6 +213,12 @@ bool ToProto(
   return mojolpm_result;
 {%-     elif kind.key_kind|is_move_only_kind %}
   return ToProto(std::move(input), *output.mutable_value());
+{%-     elif kind.key_kind|is_nullable_kind and not kind.key_kind|nullable_is_same_kind %}
+  if (input) {
+    return ToProto(*input, *output.mutable_value());
+  } else {
+    return true;
+  }
 {%-     else %}
   return ToProto(input, *output.mutable_value());
 {%-     endif %}
@@ -234,6 +246,12 @@ bool ToProto(
   return mojolpm_result;
 {%-     elif kind.value_kind|is_move_only_kind %}
   return ToProto(std::move(input), *output.mutable_value());
+{%-     elif kind.value_kind|is_nullable_kind and not kind.value_kind|nullable_is_same_kind %}
+  if (input) {
+    return ToProto(*input, *output.mutable_value());
+  } else {
+    return true;
+  }
 {%-     else %}
   return ToProto(input, *output.mutable_value());
 {%-     endif %}

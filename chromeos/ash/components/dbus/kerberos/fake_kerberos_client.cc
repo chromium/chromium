@@ -24,8 +24,8 @@ constexpr base::TimeDelta kTgtValidity = base::Hours(10);
 // Fake renewal lifetime for TGTs.
 constexpr base::TimeDelta kTgtRenewal = base::Hours(24);
 
-// Blacklist for fake config validation.
-const char* const kBlacklistedConfigOptions[] = {
+// Blocklist for fake config validation.
+const char* const kBlocklistedConfigOptions[] = {
     "allow_weak_crypto",
     "ap_req_checksum_type",
     "ccache_type",
@@ -48,9 +48,9 @@ const char* const kBlacklistedConfigOptions[] = {
 };
 
 // Performs a fake validation of a config line by just checking for some
-// non-whitelisted keywords. Returns true if no blacklisted items are contained.
+// non-allowlisted keywords. Returns true if no blocklisted items are contained.
 bool ValidateConfigLine(const std::string& line) {
-  for (const char* option : kBlacklistedConfigOptions) {
+  for (const char* option : kBlocklistedConfigOptions) {
     if (line.find(option) != std::string::npos)
       return false;
   }
@@ -309,18 +309,20 @@ void FakeKerberosClient::GetKerberosFiles(
   PostProtoResponse(std::move(callback), response, task_delay_);
 }
 
-void FakeKerberosClient::ConnectToKerberosFileChangedSignal(
+base::CallbackListSubscription
+FakeKerberosClient::SubscribeToKerberosFileChangedSignal(
     KerberosFilesChangedCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
-  DCHECK(!kerberos_files_changed_callback_);
-  kerberos_files_changed_callback_ = callback;
+  DCHECK(callback);
+  return base::CallbackListSubscription();
 }
 
-void FakeKerberosClient::ConnectToKerberosTicketExpiringSignal(
+base::CallbackListSubscription
+FakeKerberosClient::SubscribeToKerberosTicketExpiringSignal(
     KerberosTicketExpiringCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
-  DCHECK(!kerberos_ticket_expiring_callback_);
-  kerberos_ticket_expiring_callback_ = callback;
+  DCHECK(callback);
+  return base::CallbackListSubscription();
 }
 
 void FakeKerberosClient::SetTaskDelay(base::TimeDelta delay) {

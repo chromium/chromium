@@ -22,6 +22,17 @@ class WebContents;
 }  // namespace content
 
 namespace media_router {
+
+enum class AccessCodeCastDialogMode {
+  // Dialog opened from the browser. This will match the styling of other
+  // browser dialogs (i.e. Cast dialog), and will be positioned in the center of
+  // the window and overlapping top-chrome.
+  kBrowserStandard = 0,
+  // Dialog is shown system modal, and matches the style for ChromeOS system
+  // dialogs.
+  kSystem = 1,
+};
+
 class AccessCodeCastDialog : public ui::WebDialogDelegate,
                              public views::WidgetObserver {
  public:
@@ -35,7 +46,9 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   static void Show(
       const media_router::CastModeSet& cast_mode_set,
       std::unique_ptr<media_router::MediaRouteStarter> media_route_starter,
-      AccessCodeCastDialogOpenLocation open_location);
+      AccessCodeCastDialogOpenLocation open_location,
+      AccessCodeCastDialogMode dialog_mode =
+          AccessCodeCastDialogMode::kBrowserStandard);
 
   // Show the access code dialog box for desktop mirroring.
   static void ShowForDesktopMirroring(
@@ -46,7 +59,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
 
  protected:
   // Creates default params for showing AccessCodeCastDialog
-  virtual views::Widget::InitParams CreateParams();
+  virtual views::Widget::InitParams CreateParams(
+      AccessCodeCastDialogMode dialog_mode);
 
  private:
   ui::ModalType GetDialogModalType() const override;
@@ -72,7 +86,7 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
                                   blink::mojom::MediaStreamType type) override;
 
   // Displays the dialog
-  void ShowWebDialog();
+  void ShowWebDialog(AccessCodeCastDialogMode dialog_mode);
 
   gfx::NativeView GetParentView();
 
@@ -95,6 +109,7 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
+  bool closing_dialog_ = false;
 };
 
 }  // namespace media_router

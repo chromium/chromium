@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -94,6 +96,10 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
 
   PrefService* local_state_;
   ProfileManager* profile_manager_ = nullptr;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // Support any number of connections.
   mojo::ReceiverSet<mojom::NetworkSettingsService> receivers_;

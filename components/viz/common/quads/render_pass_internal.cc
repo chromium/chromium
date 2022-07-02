@@ -40,7 +40,7 @@ SharedQuadState* RenderPassInternal::CreateAndAppendSharedQuadState() {
 
 void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
     QuadList::Iterator at,
-    SkColor color,
+    SkColor4f color,
     SkBlendMode blend_mode) {
   const SharedQuadState* shared_quad_state = at->shared_quad_state;
   if (shared_quad_state->are_contents_opaque ||
@@ -53,6 +53,7 @@ void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
   }
 
   const gfx::Rect rect = at->rect;
+  // TODO(crbug.com/1308932) This function should be called with an SkColor4f
   quad_list.ReplaceExistingElement<SolidColorDrawQuad>(at)->SetAll(
       shared_quad_state, rect, /*visible_rect=*/rect,
       /*needs_blending=*/false, color,

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace web {
@@ -38,14 +38,16 @@ class TabInsertionBrowserAgent
       int index,
       bool in_background,
       bool inherit_opener,
-      bool should_show_start_surface);
+      bool should_show_start_surface,
+      int filtered_param_count);
 
   web::WebState* InsertWebStateOpenedByDOM(web::WebState* parent);
 
  private:
-  explicit TabInsertionBrowserAgent(Browser* browser);
   friend class BrowserUserData<TabInsertionBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit TabInsertionBrowserAgent(Browser* browser);
 
   ChromeBrowserState* browser_state_;
   WebStateList* web_state_list_;

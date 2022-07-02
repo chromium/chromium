@@ -29,6 +29,7 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gl {
+class GLDisplayEGL;
 class YUVToRGBConverter;
 }  // namespace gl
 
@@ -246,6 +247,12 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // contexts. Forces full reset from unknown state the next time a virtual
   // context is made current.
   void DirtyVirtualContextState();
+
+#if defined(USE_EGL)
+  // Returns GLDisplayEGL this context belongs to if this context is a
+  // GLContextEGL; returns nullptr otherwise.
+  virtual GLDisplayEGL* GetGLDisplayEGL();
+#endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
   // Create a fence for all work submitted to this context so far, and return a

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip_delegate.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,22 +28,9 @@ class BubbleOwnerDelegate {
 class PermissionChip : public views::AccessiblePaneView,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
- protected:
-  // Holds all parameters needed for a chip initialization.
-  struct DisplayParams {
-    const gfx::VectorIcon& icon_on;
-    const gfx::VectorIcon& icon_off;
-    std::u16string message;
-    bool should_start_open;
-    bool is_prominent;
-    OmniboxChipButton::Theme theme;
-    bool should_expand;
-  };
-
  public:
   METADATA_HEADER(PermissionChip);
-  explicit PermissionChip(permissions::PermissionPrompt::Delegate* delegate,
-                          DisplayParams initializer);
+  PermissionChip();
   PermissionChip(const PermissionChip& chip) = delete;
   PermissionChip& operator=(const PermissionChip& chip) = delete;
   ~PermissionChip() override;
@@ -57,7 +45,6 @@ class PermissionChip : public views::AccessiblePaneView,
   bool is_fully_collapsed() const { return chip_button_->is_fully_collapsed(); }
 
   // views::View:
-  void AddedToWidget() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   // views::WidgetObserver:
@@ -67,6 +54,14 @@ class PermissionChip : public views::AccessiblePaneView,
   bool IsBubbleShowing() const override;
   bool IsAnimating() const override;
   void RestartTimersOnMouseHover() override;
+
+  void SetupChip(
+      std::unique_ptr<PermissionChipDelegate> permission_chip_delegate);
+
+  void Finalize();
+  bool IsInitialized();
+  // The chip is fully initialized and visible.
+  bool IsActive();
 
   views::Widget* GetPromptBubbleWidgetForTesting();
 
@@ -92,22 +87,13 @@ class PermissionChip : public views::AccessiblePaneView,
   }
 
  protected:
-  // Returns a newly-created permission prompt bubble.
-  [[nodiscard]] virtual views::View* CreateBubble() = 0;
-
-  // Show previously created prompt bubble.
-  virtual void ShowBubble() = 0;
-
   permissions::PermissionPrompt::Delegate* delegate() const {
-    return delegate_;
+    return permission_prompt_delegate_.value();
   }
 
   views::Widget* GetPromptBubbleWidget();
 
-  virtual void Collapse(bool allow_restart);
   void ShowBlockedIcon();
-
-  virtual void OnPromptBubbleDismissed();
 
  private:
   void Show(bool always_open_bubble);
@@ -115,17 +101,20 @@ class PermissionChip : public views::AccessiblePaneView,
   void ChipButtonPressed();
   void StartCollapseTimer();
   void StartDismissTimer();
-  void Finalize();
+  void Collapse(bool allow_restart);
 
   void ResetTimers() {
     collapse_timer_.AbandonAndStop();
     dismiss_timer_.AbandonAndStop();
   }
 
-  void AnimateCollapse();
-  void AnimateExpand();
+  void AnnounceChip();
+  void OnPromptBubbleDismissed();
 
-  const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
+  absl::optional<permissions::PermissionPrompt::Delegate*>
+      permission_prompt_delegate_;
+
+  std::unique_ptr<PermissionChipDelegate> permission_chip_delegate_;
 
   // ViewTracker used to track the prompt bubble.
   views::ViewTracker prompt_bubble_tracker_;

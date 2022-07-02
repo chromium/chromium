@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include <ostream>
+#include <string>
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

@@ -41,11 +41,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class VoiceToolbarButtonController
         implements ButtonDataProvider, ConfigurationChangedObserver {
-    /**
-     * Default minimum width to show the voice search button.
-     */
-    public static final int DEFAULT_MIN_WIDTH_DP = 360;
-
     private static final String IPH_PROMO_PARAM = "generic_message";
 
     private final Supplier<Tab> mActiveTabSupplier;
@@ -60,7 +55,6 @@ public class VoiceToolbarButtonController
     private final ButtonDataImpl mButtonData;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
 
-    private Integer mMinimumWidthDp;
     private int mScreenWidthDp;
 
     /**
@@ -188,38 +182,23 @@ public class VoiceToolbarButtonController
         }
 
         IPHCommandBuilder iphCommandBuilder = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID)) {
-            iphCommandBuilder = createVoiceButtonIPHCommandBuilder(tab);
-        } else if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+        if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
             iphCommandBuilder = createCustomizationIPHCommandBuilder(tab);
         } else {
             // No IPH features enabled.
             return;
         }
 
-        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
-        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
-                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
-                currentSpec.getSupportsTinting(), iphCommandBuilder,
-                currentSpec.getButtonVariant());
-
-        mButtonData.setButtonSpec(newSpec);
+        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
     }
 
     private boolean shouldShowVoiceButton(Tab tab) {
-        if (!isToolbarMicEnabled() || tab == null || tab.isIncognito()
-                || !mVoiceSearchDelegate.isVoiceSearchEnabled()) {
+        if (tab == null || tab.isIncognito() || !mVoiceSearchDelegate.isVoiceSearchEnabled()) {
             return false;
         }
 
-        if (mMinimumWidthDp == null) {
-            mMinimumWidthDp = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR, "minimum_width_dp",
-                    DEFAULT_MIN_WIDTH_DP);
-        }
-
-        boolean isDeviceWideEnough = mScreenWidthDp >= mMinimumWidthDp;
+        boolean isDeviceWideEnough =
+                mScreenWidthDp >= AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton();
         if (!isDeviceWideEnough) return false;
 
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
@@ -228,10 +207,7 @@ public class VoiceToolbarButtonController
     /** Returns whether the feature flags allow showing the mic icon in the toolbar. */
     public static boolean isToolbarMicEnabled() {
         if (!FeatureList.isInitialized()) return false;
-        return AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
-                && AdaptiveToolbarFeatures.getSingleVariantMode()
-                        == AdaptiveToolbarButtonVariant.VOICE
-                || AdaptiveToolbarFeatures.isCustomizationEnabled();
+        return AdaptiveToolbarFeatures.isCustomizationEnabled();
     }
 
     private void notifyObservers(boolean hint) {

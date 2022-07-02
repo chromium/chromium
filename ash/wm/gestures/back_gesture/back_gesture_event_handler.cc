@@ -7,11 +7,11 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/model/system_tray_model.h"
@@ -59,9 +59,9 @@ bool CanStartGoingBackFromSplitViewDivider(const gfx::Point& screen_location) {
   // Same thing for ARC virtual keyboard as well.
   SystemTrayModel* system_tray_model = Shell::Get()->system_tray_model();
   if (system_tray_model) {
-    auto* arc_keyboard = system_tray_model->virtual_keyboard();
-    if (arc_keyboard->visible() &&
-        arc_keyboard->arc_keyboard_bounds().Contains(screen_location)) {
+    auto* virtual_keyboard = system_tray_model->virtual_keyboard();
+    if (virtual_keyboard->arc_keyboard_visible() &&
+        virtual_keyboard->arc_keyboard_bounds().Contains(screen_location)) {
       return false;
     }
   }

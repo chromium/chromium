@@ -37,7 +37,7 @@ const int64_t kShowPromoWebpageLoadWaitTime = 3;
 const int64_t kShowPromoPostShareWaitTime = 1;
 
 // Number of times to show the promo to a user.
-const int kPromoShownTimesLimit = 2;
+const int kPromoShownTimesLimit = 3;
 
 // Timeout before the promo is dismissed.
 const double kPromoTimeout = 45;
@@ -328,8 +328,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 #pragma mark - Timer Management
 
-// Start the timer to show a promo. |self.currentPromoReason| must be set to
-// the reason for this promo flow and must not be |PromoReasonNone|.
+// Start the timer to show a promo. `self.currentPromoReason` must be set to
+// the reason for this promo flow and must not be `PromoReasonNone`.
 - (void)startShowPromoTimer {
   DCHECK(self.currentPromoReason != PromoReasonNone);
 

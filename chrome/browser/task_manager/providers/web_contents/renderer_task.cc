@@ -60,7 +60,7 @@ RendererTask::RendererTask(const std::u16string& title,
     : RendererTask(title,
                    icon,
                    web_contents,
-                   web_contents->GetMainFrame()->GetProcess()) {}
+                   web_contents->GetPrimaryMainFrame()->GetProcess()) {}
 
 RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,

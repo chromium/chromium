@@ -69,7 +69,8 @@ viz::DrawQuad* AllocateAndConstruct(
 bool StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::DebugBorderQuadStateDataView data, viz::DrawQuad* out) {
   viz::DebugBorderDrawQuad* quad = static_cast<viz::DebugBorderDrawQuad*>(out);
-  quad->color = data.color();
+  if (!data.ReadColor(&quad->color))
+    return false;
   quad->width = data.width();
   return true;
 }
@@ -111,7 +112,8 @@ bool StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   viz::SolidColorDrawQuad* quad = static_cast<viz::SolidColorDrawQuad*>(out);
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
-  quad->color = data.color();
+  if (!data.ReadColor(&quad->color))
+    return false;
   return true;
 }
 
@@ -133,7 +135,8 @@ bool StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad>::Read(
     viz::mojom::SurfaceQuadStateDataView data,
     viz::DrawQuad* out) {
   viz::SurfaceDrawQuad* quad = static_cast<viz::SurfaceDrawQuad*>(out);
-  quad->default_background_color = data.default_background_color();
+  if (!data.ReadDefaultBackgroundColor(&quad->default_background_color))
+    return false;
   quad->stretch_content_to_fill_bounds = data.stretch_content_to_fill_bounds();
   quad->is_reflection = data.is_reflection();
   quad->allow_merge = data.allow_merge();
@@ -165,7 +168,8 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   }
   quad->protected_video_type = protected_video_type;
   quad->overlay_priority_hint = overlay_priority_hint;
-  quad->background_color = data.background_color();
+  if (!data.ReadBackgroundColor(&quad->background_color))
+    return false;
   base::span<float> vertex_opacity_array(quad->vertex_opacity);
   if (!data.ReadVertexOpacity(&vertex_opacity_array))
     return false;

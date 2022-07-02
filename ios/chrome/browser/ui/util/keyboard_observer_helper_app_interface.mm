@@ -13,12 +13,7 @@
 @implementation KeyboardObserverHelperAppInterface
 
 + (KeyboardObserverHelper*)appSharedInstance {
-  static KeyboardObserverHelper* sharedInstance;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[KeyboardObserverHelper alloc] init];
-  });
-  return sharedInstance;
+  return [KeyboardObserverHelper sharedKeyboardObserver];
 }
 
 @end

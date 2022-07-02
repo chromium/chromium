@@ -34,9 +34,10 @@ MetricReportQueue::MetricReportQueue(
 
 MetricReportQueue::~MetricReportQueue() = default;
 
-void MetricReportQueue::Enqueue(const MetricData& metric_data,
+void MetricReportQueue::Enqueue(std::unique_ptr<const MetricData> metric_data,
                                 ReportQueue::EnqueueCallback callback) {
-  report_queue_->Enqueue(&metric_data, priority_, std::move(callback));
+  report_queue_->Enqueue(std::move(metric_data), priority_,
+                         std::move(callback));
 }
 
 void MetricReportQueue::Upload() {

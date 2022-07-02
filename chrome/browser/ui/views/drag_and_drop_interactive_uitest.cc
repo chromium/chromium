@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigationController& controller = web_contents->GetController();
   int initial_history_count = controller.GetEntryCount();
-  GURL initial_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Focus the omnibox.
@@ -1049,10 +1049,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver(new_web_contents, 1).Wait();
   EXPECT_EQ(dragged_url,
-            new_web_contents->GetMainFrame()->GetLastCommittedURL());
+            new_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Verify that the initial tab didn't navigate.
-  EXPECT_EQ(initial_url, web_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(initial_url,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_history_count, controller.GetEntryCount());
 
   // Verify that the focus moved from the omnibox to the tab contents.
@@ -1068,7 +1069,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  GURL initial_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Focus the omnibox.
@@ -1129,7 +1130,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigationController& controller = web_contents->GetController();
   int initial_history_count = controller.GetEntryCount();
-  GURL initial_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Focus the omnibox.
@@ -1155,10 +1156,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver(new_web_contents, 1).Wait();
   EXPECT_EQ(net::FilePathToFileURL(dragged_file),
-            new_web_contents->GetMainFrame()->GetLastCommittedURL());
+            new_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Verify that the initial tab didn't navigate.
-  EXPECT_EQ(initial_url, web_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(initial_url,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_history_count, controller.GetEntryCount());
 
   // Verify that the focus moved from the omnibox to the tab contents.
@@ -1197,7 +1199,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
   EXPECT_EQ(123, content::EvalJs(GetRightFrame(), "123"));
 
   // Verify that the history remains unchanged.
-  EXPECT_NE(dragged_url, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_NE(dragged_url,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_history_count, controller.GetEntryCount());
 }
 
@@ -1621,7 +1624,7 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState* state) {
   // Delete the left frame in an attempt to repro https://crbug.com/670123.
   content::RenderFrameDeletedObserver frame_deleted_observer(GetLeftFrame());
-  ASSERT_TRUE(ExecuteScript(web_contents()->GetMainFrame(),
+  ASSERT_TRUE(ExecuteScript(web_contents()->GetPrimaryMainFrame(),
                             "frame = document.getElementById('left');\n"
                             "frame.parentNode.removeChild(frame);\n"));
   frame_deleted_observer.WaitUntilDeleted();
@@ -2132,10 +2135,12 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 
   // Create a new tab that closes itself on dragover event.
-  ASSERT_TRUE(ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      "window.open('javascript:document.addEventListener("
-      "\"dragover\", () => {window.close(); })');"));
+  ASSERT_TRUE(ExecuteScript(browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame(),
+                            "window.open('javascript:document.addEventListener("
+                            "\"dragover\", () => {window.close(); })');"));
 
   wait_for_new_tab.Wait();
 

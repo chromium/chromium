@@ -23,6 +23,7 @@ class UserNote {
                     std::unique_ptr<UserNoteMetadata> metadata,
                     std::unique_ptr<UserNoteBody> body,
                     std::unique_ptr<UserNoteTarget> target);
+
   ~UserNote();
   UserNote(const UserNote&) = delete;
   UserNote& operator=(const UserNote&) = delete;
@@ -33,6 +34,9 @@ class UserNote {
   const UserNoteMetadata& metadata() const { return *metadata_; }
   const UserNoteBody& body() const { return *body_; }
   const UserNoteTarget& target() const { return *target_; }
+
+  // Consumes the provided model to update this one.
+  void Update(std::unique_ptr<UserNote> new_model);
 
  private:
   // The unique (among the user's notes) ID for this note.

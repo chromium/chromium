@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/support_tool_resources.h"
@@ -45,14 +45,14 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/path_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kSupportCaseIDQuery[] = "case_id";
 const char kModuleQuery[] = "module";
 
+// TODO(b/226318326): Move the utility functions to support_tool_ui_utils.h and
+// add unit tests for them.
 namespace {
+
 // Returns the support case ID that's extracted from `url` with query
 // `kSupportCaseIDQuery`. Returns empty string if `url` doesn't contain support
 // case ID.
@@ -110,6 +110,8 @@ std::string GetDataCollectorName(
       return "Chrome OS Reven";
     case support_tool::CHROMEOS_DBUS:
       return "DBus Details";
+    case support_tool::CHROMEOS_NETWORK_ROUTES:
+      return "Chrome OS Network Routes";
     default:
       return "Error: Undefined";
   }
@@ -234,76 +236,6 @@ base::Value GetStartDataCollectionResult(bool success,
   return base::Value(std::move(result));
 }
 
-// Returns the human readable name corresponding to `data_collector_type`.
-std::string GetPIITypeDescription(feedback::PIIType type_enum) {
-  // This function will return translatable strings in future. For now, return
-  // string constants until we have the translatable strings ready.
-  switch (type_enum) {
-    case feedback::PIIType::kAndroidAppStoragePath:
-      return "Android App Storage Paths";
-    case feedback::PIIType::kBSSID:
-      return "BSSID (Basic Service Set Identifier)";
-    case feedback::PIIType::kCellID:
-      return "Cell Tower Identifier";
-    case feedback::PIIType::kEmail:
-      return "Email Address";
-    case feedback::PIIType::kGaiaID:
-      return "GAIA (Google Accounts and ID Administration) ID";
-    case feedback::PIIType::kHash:
-      return "Hashes";
-    case feedback::PIIType::kIPPAddress:
-      return "IPP (Internet Printing Protocol) Addresses";
-    case feedback::PIIType::kIPAddress:
-      return "IP (Internet Protocol) Address";
-    case feedback::PIIType::kLocationAreaCode:
-      return "Location Area Code";
-    case feedback::PIIType::kMACAddress:
-      return "MAC Address";
-    case feedback::PIIType::kUIHierarchyWindowTitles:
-      return "Window Titles";
-    case feedback::PIIType::kURL:
-      return "URLs";
-    case feedback::PIIType::kUUID:
-      return "Universal Unique Identifiers (UUIDs)";
-    case feedback::PIIType::kSerial:
-      return "Serial Numbers";
-    case feedback::PIIType::kSSID:
-      return "SSID (Service Set Identifier)";
-    case feedback::PIIType::kVolumeLabel:
-      return "Volume Labels";
-    default:
-      return "Error: Undefined";
-  }
-}
-
-// type PIIDataItem = {
-//   piiTypeDescription: string,
-//   piiType: number,
-//   detectedData: string,
-//   count: number,
-//   keep: boolean,
-// }
-base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
-  base::Value::List detected_pii_data_items;
-  for (const auto& pii_entry : detected_pii) {
-    base::Value::Dict pii_data_item;
-    pii_data_item.Set("piiTypeDescription",
-                      GetPIITypeDescription(pii_entry.first));
-    pii_data_item.Set("piiType", static_cast<int>(pii_entry.first));
-    pii_data_item.Set(
-        "detectedData",
-        base::JoinString(std::vector<base::StringPiece>(
-                             pii_entry.second.begin(), pii_entry.second.end()),
-                         ", "));
-    pii_data_item.Set("count", static_cast<int>(pii_entry.second.size()));
-    // TODO(b/200511640): Set `keep` field to the value we'll get from URL's
-    // pii_masking_on query if it exists.
-    pii_data_item.Set("keep", false);
-    detected_pii_data_items.Append(base::Value(std::move(pii_data_item)));
-  }
-  return detected_pii_data_items;
-}
-
 // Returns the current time in YYYY_MM_DD_HH_mm format.
 std::string GetTimestampString(base::Time timestamp) {
   base::Time::Exploded tex;
@@ -322,21 +254,6 @@ base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
           : base::StringPrintf("support_packet_%s_%s", case_id.c_str(),
                                timestamp_string.c_str());
   return suggested_path.AppendASCII(filename);
-}
-
-std::set<feedback::PIIType> GetSelectedPIIToKeep(
-    const base::Value::List* pii_items) {
-  std::set<feedback::PIIType> pii_to_keep;
-  for (const auto& item : *pii_items) {
-    const base::Value::Dict* item_as_dict = item.GetIfDict();
-    DCHECK(item_as_dict);
-    absl::optional<bool> keep = item_as_dict->FindBool("keep");
-    if (keep && keep.value()) {
-      pii_to_keep.insert(static_cast<feedback::PIIType>(
-          item_as_dict->FindInt("piiType").value()));
-    }
-  }
-  return pii_to_keep;
 }
 
 std::string GetDataCollectionModuleQuery(
@@ -453,7 +370,6 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void OnDataExportDone(base::FilePath path, std::set<SupportToolError> errors);
 
   std::set<feedback::PIIType> selected_pii_to_keep_;
-  base::Time data_collection_time_;
   base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -580,9 +496,6 @@ void SupportToolMessageHandler::HandleStartDataCollection(
                             *issue_details->FindString("emailAddress"),
                             *issue_details->FindString("issueDescription"),
                             GetIncludedDataCollectorTypes(data_collectors));
-  // TODO(b/214196981): Add data collection timestamp as a class field to
-  // SupportToolHandler.
-  data_collection_time_ = base::Time::NowFromSystemTime();
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -616,7 +529,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
   if (select_file_dialog_)
     return;
 
-  selected_pii_to_keep_ = GetSelectedPIIToKeep(pii_items);
+  selected_pii_to_keep_ = GetPIITypesToKeep(pii_items);
 
   AllowJavascript();
   content::WebContents* web_contents = web_ui()->GetWebContents();
@@ -635,8 +548,8 @@ void SupportToolMessageHandler::HandleStartDataExport(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE,
       /*title=*/std::u16string(),
       /*default_path=*/
-      GetDefaultFileToExport(suggested_path, handler_->GetCaseID(),
-                             data_collection_time_),
+      GetDefaultFileToExport(suggested_path, handler_->GetCaseId(),
+                             handler_->GetDataCollectionTimestamp()),
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,
@@ -677,12 +590,7 @@ void SupportToolMessageHandler::OnDataExportDone(
       });
   if (export_error == errors.end()) {
     data_export_result.Set("success", true);
-    std::string displayed_path = data_path_.AsUTF8Unsafe();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    displayed_path = file_manager::util::GetPathDisplayTextForSettings(
-        Profile::FromWebUI(web_ui()), displayed_path);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    data_export_result.Set("path", displayed_path);
+    data_export_result.Set("path", path.BaseName().AsUTF8Unsafe());
     data_export_result.Set("error", std::string());
   } else {
     // If a data export error is found in the returned set of errors, send the
@@ -728,3 +636,7 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 SupportToolUI::~SupportToolUI() = default;
+
+bool SupportToolUI::IsEnabled(Profile* profile) {
+  return webui::IsEnterpriseManaged() || !profile->IsGuestSession();
+}

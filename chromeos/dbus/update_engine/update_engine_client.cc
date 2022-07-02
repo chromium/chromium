@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -55,12 +56,12 @@ const int64_t kDownloadSizeDelta = 1 << 19;
 // Version number of the image being installed during fake AU.
 const char kStubVersion[] = "1234.0.0.0";
 
+UpdateEngineClient* g_instance = nullptr;
+
 bool IsValidChannel(const std::string& channel) {
   return channel == kReleaseChannelDev || channel == kReleaseChannelBeta ||
          channel == kReleaseChannelStable;
 }
-
-}  // namespace
 
 // The UpdateEngineClient implementation used in production.
 class UpdateEngineClientImpl : public UpdateEngineClient {
@@ -264,7 +265,6 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     update_engine_proxy_ = bus->GetObjectProxy(
         update_engine::kUpdateEngineServiceName,
@@ -573,15 +573,15 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
 // The UpdateEngineClient implementation used on Linux desktop,
 // which does nothing.
-class UpdateEngineClientStubImpl : public UpdateEngineClient {
+class UpdateEngineClientDesktopFake : public UpdateEngineClient {
  public:
-  UpdateEngineClientStubImpl()
+  UpdateEngineClientDesktopFake()
       : current_channel_(kReleaseChannelBeta),
         target_channel_(kReleaseChannelBeta) {}
 
-  UpdateEngineClientStubImpl(const UpdateEngineClientStubImpl&) = delete;
-  UpdateEngineClientStubImpl& operator=(const UpdateEngineClientStubImpl&) =
-      delete;
+  UpdateEngineClientDesktopFake(const UpdateEngineClientDesktopFake&) = delete;
+  UpdateEngineClientDesktopFake& operator=(
+      const UpdateEngineClientDesktopFake&) = delete;
 
   // UpdateEngineClient implementation:
   void Init(dbus::Bus* bus) override {}
@@ -614,7 +614,7 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
     last_status_.set_is_enterprise_rollback(false);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
+        base::BindOnce(&UpdateEngineClientDesktopFake::StateTransition,
                        weak_factory_.GetWeakPtr(), apply_update),
         base::Milliseconds(kStateTransitionDefaultDelayMs));
   }
@@ -726,7 +726,7 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
     if (last_status_.current_operation() != update_engine::Operation::IDLE) {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
+          base::BindOnce(&UpdateEngineClientDesktopFake::StateTransition,
                          weak_factory_.GetWeakPtr(), apply_update),
           base::Milliseconds(delay_ms));
     }
@@ -739,20 +739,43 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
 
   update_engine::StatusResult last_status_;
 
-  base::WeakPtrFactory<UpdateEngineClientStubImpl> weak_factory_{this};
+  base::WeakPtrFactory<UpdateEngineClientDesktopFake> weak_factory_{this};
 };
 
-UpdateEngineClient::UpdateEngineClient() = default;
-
-UpdateEngineClient::~UpdateEngineClient() = default;
+}  // namespace
 
 // static
-UpdateEngineClient* UpdateEngineClient::Create(
-    DBusClientImplementationType type) {
-  if (type == REAL_DBUS_CLIENT_IMPLEMENTATION)
-    return new UpdateEngineClientImpl();
-  DCHECK_EQ(FAKE_DBUS_CLIENT_IMPLEMENTATION, type);
-  return new UpdateEngineClientStubImpl();
+UpdateEngineClient* UpdateEngineClient::Get() {
+  return g_instance;
+}
+
+// static
+void UpdateEngineClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new UpdateEngineClientImpl())->Init(bus);
+}
+
+// static
+void UpdateEngineClient::InitializeFake() {
+  // Do not create a new fake if it was initialized early in a browser test to
+  // allow the test to set its own client.
+  if (g_instance)
+    return;
+
+  (new UpdateEngineClientDesktopFake())->Init(nullptr);
+}
+
+// static
+FakeUpdateEngineClient* UpdateEngineClient::InitializeFakeForTest() {
+  auto* client = new FakeUpdateEngineClient();
+  client->Init(nullptr);
+  return client;
+}
+
+// static
+void UpdateEngineClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
 }
 
 // static
@@ -766,6 +789,16 @@ bool UpdateEngineClient::IsTargetChannelMoreStable(
       kReleaseChannelsList,
       kReleaseChannelsList + std::size(kReleaseChannelsList), target_channel);
   return tix > cix;
+}
+
+UpdateEngineClient::UpdateEngineClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+UpdateEngineClient::~UpdateEngineClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

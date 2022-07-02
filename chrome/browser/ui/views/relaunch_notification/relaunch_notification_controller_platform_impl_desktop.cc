@@ -115,13 +115,6 @@ bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
   return widget_ != nullptr;
 }
 
-void RelaunchNotificationControllerPlatformImpl::OnWidgetClosing(
-    views::Widget* widget) {
-  DCHECK_EQ(widget, widget_);
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
-}
-
 void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(
     views::Widget* widget) {
   DCHECK_EQ(widget, widget_);

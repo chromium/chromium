@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Barkodu tara</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Doküman tarama özelliği indiriliyor</translation>
 <translation id="4118525110028899586">Kaydı duraklat</translation>
 <translation id="4121305183798804752">Doküman algılandı</translation>
 <translation id="414641094616694804">Bu kamera, çözünürlüğü değiştiremez</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Fotoğraf çekmeyi durdur</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Ön kamera</translation>
+<translation id="4620818268515773682">Mikrofonun sesini aç/kapat Ses açık</translation>
 <translation id="4628948037717959914">Fotoğraf</translation>
 <translation id="4649291346448517080">Dosya kaydedilemiyor</translation>
 <translation id="4695379108709712600">Üste doğru hareket ediyor</translation>
@@ -145,6 +147,7 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Dokümanın sağ alt köşesi</translation>
+<translation id="7692090236657809299">Kaydırma, eğme, yakınlaştırmayı etkinleştir</translation>
 <translation id="7726641833034062494">Normal video kaydet</translation>
 <translation id="7748344063862150053">Dokümanın sağ üst köşesi</translation>
 <translation id="7933675232020478311">Sağ alta doğru hareket ediyor</translation>
@@ -158,6 +161,7 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8425673304802773841">Yatır</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Mikrofonun sesini aç/kapat Ses kapalı</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8732462232047530626">Meta veriyi önizle</translation>

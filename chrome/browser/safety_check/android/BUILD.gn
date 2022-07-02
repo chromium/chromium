@@ -81,7 +81,7 @@ android_library("javatests") {
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -93,10 +93,7 @@ android_library("javatests") {
   ]
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [ "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java" ]
   deps = [
     ":java",
@@ -104,7 +101,6 @@ android_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_check/android:password_check_java_enums",
@@ -119,14 +115,13 @@ android_library("junit") {
     "//chrome/browser/settings:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/signin:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/commerce/core:proto_java",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//content/public/common:trust_tokens_mojo_bindings_java",
     "//third_party/android_deps:guava_android_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

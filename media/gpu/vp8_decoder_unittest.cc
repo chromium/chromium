@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/vp8_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +56,7 @@ class VP8DecoderTest : public ::testing::Test {
   void CompleteToDecodeFirstIFrame();
 
   std::unique_ptr<VP8Decoder> decoder_;
-  MockVP8Accelerator* accelerator_ = nullptr;
+  raw_ptr<MockVP8Accelerator> accelerator_ = nullptr;
 
  private:
   void DecodeFirstIFrame();

@@ -46,7 +46,7 @@ BrowserControlsNavigationStateHandler::
 bool BrowserControlsNavigationStateHandler::IsRendererControllingOffsets() {
   if (IsRendererHungOrCrashed())
     return false;
-  return !web_contents()->GetMainFrame()->GetProcess()->IsBlocked();
+  return !web_contents()->GetPrimaryMainFrame()->GetProcess()->IsBlocked();
 }
 
 void BrowserControlsNavigationStateHandler::DidStartNavigation(
@@ -89,7 +89,7 @@ void BrowserControlsNavigationStateHandler::DidFailLoad(
   if (is_main_frame)
     ScheduleStopDelayedForceShow();
   if (render_frame_host->IsActive() &&
-      (render_frame_host == web_contents()->GetMainFrame())) {
+      (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
     UpdateState();
   }
 }

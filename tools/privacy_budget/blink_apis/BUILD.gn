@@ -34,7 +34,7 @@ action("blink_apis") {
     rebase_path(output_data_file, root_build_dir),
     "--web_feature_mojom",
     rebase_path(
-        "//third_party/blink/public/mojom/web_feature/web_feature.mojom",
+        "//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom",
         root_build_dir),
     "--path",
     string_join(":",

@@ -13,7 +13,6 @@
 #include <memory>
 #include <ostream>
 #include <set>
-#include <unordered_set>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
@@ -322,16 +321,14 @@ AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
   // client ancestor chain disagree. The last node before they disagree
   // is the LCA.
   AXSourceNode lca = tree_->GetNull();
-  int source_index = static_cast<int>(ancestors.size() - 1);
-  int client_index = static_cast<int>(client_ancestors.size() - 1);
-  while (source_index >= 0 && client_index >= 0) {
-    if (tree_->GetId(ancestors[source_index]) !=
-            client_ancestors[client_index]->id) {
+  for (size_t source_index = ancestors.size(),
+              client_index = client_ancestors.size();
+       source_index > 0 && client_index > 0; --source_index, --client_index) {
+    if (tree_->GetId(ancestors[source_index - 1]) !=
+        client_ancestors[client_index - 1]->id) {
       return lca;
     }
-    lca = ancestors[source_index];
-    source_index--;
-    client_index--;
+    lca = ancestors[source_index - 1];
   }
   return lca;
 }

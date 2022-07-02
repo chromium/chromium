@@ -490,6 +490,18 @@
       valid_type: "bool",
     },
 
+    // - valid_for_highlight_legacy: true
+    //
+    // Theoretically matches
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling,
+    // but includes additional properties for compatibility reasons.
+    // Applied to highlight pseudos that use originating inheritance
+    // instead of highlight inheritance.
+    valid_for_highlight_legacy: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_highlight: true
     //
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
@@ -590,6 +602,26 @@
       valid_type: "bool",
     },
 
+    // If true, then the ComputedStyle field for this property overlaps with
+    // another property.
+    //
+    // Overlapping properties are *partially* overlapping, or do otherwise not
+    // have compatible or interchangeable values with each other.
+    overlapping: {
+      default: false,
+      valid_type: "bool",
+    },
+
+    // Like 'overlapping', but set on -webkit-prefixed properties that should
+    // ultimately be removed.
+    //
+    // Note that properties that are legacy_overlapping are also overlapping
+    // (i.e. legacy_overlapping:true implies overlapping:true).
+    legacy_overlapping: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_canvas_formatted_text: true
     //
     // Whether the property can be used to style the top-level container
@@ -606,6 +638,24 @@
     // Whether the property can be used to style individual text runs, in the
     // experimental API to bring multiline text rendering to HTML canvas.
     valid_for_canvas_formatted_text_run: {
+      default: false,
+      valid_type: "bool",
+    },
+
+    // - valid_for_keyframe: true
+    //
+    // Whether the property can be used in @keyframes.
+    // https://www.w3.org/TR/css-animations-1/#typedef-keyframe-block
+    valid_for_keyframe: {
+      default: true,
+      valid_type: "bool",
+    },
+
+    // - valid_for_position_fallback: true
+    //
+    // Whether the property can be used in a @try rule of @position-fallback
+    // https://tabatkins.github.io/specs/css-anchor-position/#fallback-rule
+    valid_for_position_fallback: {
       default: false,
       valid_type: "bool",
     },
@@ -628,6 +678,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-direction",
@@ -642,6 +693,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-duration",
@@ -655,6 +707,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-fill-mode",
@@ -668,6 +721,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-iteration-count",
@@ -683,6 +737,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-name",
@@ -697,6 +752,7 @@
       valid_for_marker: true,
       tree_scoped_value: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-play-state",
@@ -710,6 +766,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-timeline",
@@ -842,6 +899,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -1205,7 +1263,7 @@
       keywords: ["auto", "none", "preserve-parent-color"],
       typedom_types: ["Keyword"],
       default_value: "auto",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
       computable: false,
     },
     {
@@ -1327,6 +1385,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
+      valid_for_position_fallback: true,
     },
     {
       name: "align-items",
@@ -1337,6 +1396,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kNormal, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      valid_for_position_fallback: true,
     },
     {
       name: "alignment-baseline",
@@ -1358,6 +1418,19 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      valid_for_position_fallback: true,
+    },
+    {
+      name: "anchor-name",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      type_name: "AtomicString",
+      default_value: "g_null_atom",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNoneOrCustomIdent",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
     },
     {
       name: "aspect-ratio",
@@ -1469,6 +1542,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_background: true,
       is_highlight_colors: true,
@@ -1689,6 +1763,8 @@
         name: "border-width",
         resolver: "bottom",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-collapse",
@@ -1711,6 +1787,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-repeat",
@@ -1723,6 +1801,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-slice",
@@ -1735,6 +1815,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-source",
@@ -1745,6 +1827,8 @@
       style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-width",
@@ -1758,6 +1842,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-left-color",
@@ -1819,6 +1905,8 @@
         name: "border-width",
         resolver: "left",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-right-color",
@@ -1880,6 +1968,8 @@
         name: "border-width",
         resolver: "right",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-top-color",
@@ -1980,6 +2070,8 @@
         name: "border-width",
         resolver: "top",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "bottom",
@@ -1997,6 +2089,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "box-shadow",
@@ -2093,7 +2186,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "clear",
@@ -2191,7 +2284,7 @@
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
       computable: false,
     },
     {
@@ -2258,13 +2351,13 @@
     {
       name: "container-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["none", "inline-size", "size"],
+      keywords: ["normal", "inline-size", "size", "style"],
       field_group: "*",
-      field_size: 2,
+      field_size: 3,
       field_template: "primitive",
-      default_value: "kContainerTypeNone",
+      default_value: "kContainerTypeNormal",
       type_name: "unsigned",
-      converter: "ConvertFlags<EContainerType>",
+      converter: "ConvertFlags<EContainerType, CSSValueID::kNormal>",
       typedom_types: ["Keyword"],
       runtime_flag: "CSSContainerQueries",
     },
@@ -2334,7 +2427,7 @@
       default_value: "auto",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "cx",
@@ -2427,6 +2520,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialFillPaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -2665,6 +2759,7 @@
       field_group: "*->grid",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/computed_grid_track_list.h"],
+      interpolable: true,
       default_value: "ComputedGridTrackList()",
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
@@ -2681,6 +2776,7 @@
       field_group: "*->grid",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/computed_grid_track_list.h"],
+      interpolable: true,
       default_value: "ComputedGridTrackList()",
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
@@ -2708,6 +2804,7 @@
       },
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "hyphens",
@@ -2763,6 +2860,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
+      valid_for_position_fallback: true,
     },
     {
       name: "justify-items",
@@ -2773,6 +2871,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kLegacy, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      valid_for_position_fallback: true,
     },
     {
       name: "justify-self",
@@ -2783,6 +2882,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      valid_for_position_fallback: true,
     },
     {
       name: "left",
@@ -2800,6 +2900,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "letter-spacing",
@@ -3081,6 +3182,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "max-width",
@@ -3098,6 +3200,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "min-height",
@@ -3114,6 +3217,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "min-width",
@@ -3130,6 +3234,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "mix-blend-mode",
@@ -3400,13 +3505,15 @@
     {
       name: "overflow-clip-margin",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "OverflowClip",
       field_template: "external",
       field_group: "*",
-      default_value: "LayoutUnit()",
-      type_name: "LayoutUnit",
-      include_paths: ["third_party/blink/renderer/platform/geometry/layout_unit.h"],
-      converter: "ConvertLayoutUnit",
+      include_paths: ["third_party/blink/renderer/core/style/style_overflow_clip_margin.h"],
+      keywords: ["border-box", "content-box", "padding-box"],
+      separator: " ",
+      default_value: "absl::nullopt",
+      type_name: "absl::optional<StyleOverflowClipMargin>",
+      converter: "ConvertOverflowClipMargin",
+      runtime_flag: "OverflowClip",
     },
     {
       name: "overflow-x",
@@ -3640,6 +3747,8 @@
       type_name: "LengthPoint",
       converter: "ConvertPosition",
       typedom_types: ["Position"],
+      // Overlaps with -webkit-perspective-origin-[x,y].
+      overlapping: true,
     },
     {
       name: "pointer-events",
@@ -3671,12 +3780,24 @@
       supports_incremental_style: false,
     },
     {
+      name: "position-fallback",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      type_name: "AtomicString",
+      default_value: "g_null_atom",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNoneOrCustomIdent",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
+    },
+    {
       name: "quotes",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
       field_template: "pointer",
-      include_paths: ["third_party/blink/renderer/core/style/quotes_data.h"],
+      include_paths: ["third_party/blink/renderer/platform/text/quotes_data.h"],
       wrapper_pointer_name: "scoped_refptr",
       default_value: "nullptr",
       type_name: "QuotesData",
@@ -3725,6 +3846,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "r",
@@ -4166,6 +4288,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialStrokePaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -4259,6 +4382,7 @@
       default_value: "UnzoomedLength(Length::Fixed(1))",
       converter: "ConvertUnzoomedLength",
       typedom_types: ["Length", "Percentage"],
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -4354,6 +4478,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
@@ -4372,6 +4497,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4389,6 +4515,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4404,6 +4531,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4423,6 +4551,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       computable: false,
       valid_for_canvas_formatted_text: true,
@@ -4484,6 +4613,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4618,12 +4748,13 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "touch-action",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_size: 7, // FIXME: Make this use "kTouchActionBits".
+      field_size: 8, // FIXME: Make this use "kTouchActionBits".
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       default_value: "TouchAction::kAuto",
@@ -4671,6 +4802,8 @@
       type_name: "TransformOrigin",
       converter: "ConvertTransformOrigin",
       supports_incremental_style: true,
+      // Overlaps with -webkit-transform-origin-[x,y,z].
+      overlapping: true,
     },
     {
       name: "transform-style",
@@ -4846,6 +4979,9 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
+      affected_by_all: false,
+      // Overlaps with border-image.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-border-vertical-spacing",
@@ -5217,6 +5353,9 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
+      // Overlaps with perspective-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-perspective-origin-y",
@@ -5224,6 +5363,9 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
+      // Overlaps with perspective-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-print-color-adjust",
@@ -5300,6 +5442,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -5333,7 +5476,8 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
+      valid_for_highlight: true
     },
     {
       name: "-webkit-text-security",
@@ -5357,7 +5501,7 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-webkit-text-stroke-width",
@@ -5368,7 +5512,7 @@
       default_value: "0",
       type_name: "float",
       converter: "ConvertTextStrokeWidth",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-webkit-transform-origin-x",
@@ -5376,6 +5520,9 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-transform-origin-y",
@@ -5383,6 +5530,9 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-transform-origin-z",
@@ -5390,6 +5540,9 @@
       interpolable: true,
       converter: "ConvertComputedLength<float>",
       computable: false,
+      affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-user-drag",
@@ -5464,6 +5617,7 @@
       },
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "will-change",
@@ -5522,6 +5676,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "block-size",
@@ -5533,6 +5688,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "min-inline-size",
@@ -5542,6 +5698,7 @@
         resolver: "inline",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "min-block-size",
@@ -5551,6 +5708,7 @@
         resolver: "block",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "max-inline-size",
@@ -5561,6 +5719,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "max-block-size",
@@ -5571,6 +5730,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "margin-inline-start",
@@ -5772,6 +5932,7 @@
         resolver: "inline-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-inline-end",
@@ -5781,6 +5942,7 @@
         resolver: "inline-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block-start",
@@ -5790,6 +5952,7 @@
         resolver: "block-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block-end",
@@ -5799,6 +5962,7 @@
         resolver: "block-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "border-start-start-radius",
@@ -6115,7 +6279,6 @@
       name: "size-adjust",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontFaceSizeAdjust",
     },
     {
       name: "base-palette",
@@ -6140,6 +6303,7 @@
         "animation-timeline"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_keyframe: false,
     },
     {
       name: "background",
@@ -6505,16 +6669,19 @@
       name: "inset",
       longhands: ["top", "right", "bottom", "left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block",
       longhands: ["inset-block-start", "inset-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-inline",
       longhands: ["inset-inline-start", "inset-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "list-style",
@@ -6755,6 +6922,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
     },
@@ -6774,7 +6942,7 @@
       style_builder_template_args: {
         initial_color: "StyleAutoColor::AutoColor",
       },
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-internal-visited-column-rule-color",
@@ -6807,6 +6975,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
     },
@@ -6938,6 +7107,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialFillPaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -6970,6 +7140,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialStrokePaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -6987,6 +7158,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7002,6 +7174,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7017,6 +7190,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7032,6 +7206,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
 

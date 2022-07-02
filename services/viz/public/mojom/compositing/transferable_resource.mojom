@@ -13,6 +13,14 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
 
+// See viz::TransferableResource::SynchronizationType in
+// components/viz/common/resources/transferable_resource.h
+enum SynchronizationType {
+  kSyncToken,
+  kGpuCommandsCompleted,
+  kReleaseFence,
+};
+
 // See components/viz/common/resources/transferable_resource.h.
 struct TransferableResource {
   ResourceId id;
@@ -20,7 +28,7 @@ struct TransferableResource {
   uint32 filter;
   gfx.mojom.Size size;
   gpu.mojom.MailboxHolder mailbox_holder;
-  bool read_lock_fences_enabled;
+  SynchronizationType synchronization_type;
   bool is_software;
   bool is_overlay_candidate;
   bool is_backed_by_surface_texture;

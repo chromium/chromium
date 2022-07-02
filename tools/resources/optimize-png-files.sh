@@ -23,7 +23,6 @@ chrome/app/theme
 chrome/browser/resources
 chrome/renderer/resources
 content/public/android/java/res
-content/app/resources
 content/shell/resources
 remoting/resources
 ui/android/java/res

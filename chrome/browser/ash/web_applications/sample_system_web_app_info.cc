@@ -68,15 +68,15 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp() {
 }
 
 SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::SAMPLE,
+    : ash::SystemWebAppDelegate(
+          ash::SystemWebAppType::SAMPLE,
           "Sample",
           GURL("chrome://sample-system-web-app/pwa.html"),
           profile,
-          web_app::OriginTrialsMap(
-              {{web_app::GetOrigin("chrome://sample-system-web-app"),
+          ash::OriginTrialsMap(
+              {{ash::GetOrigin("chrome://sample-system-web-app"),
                 {"Frobulate"}},
-               {web_app::GetOrigin("chrome-untrusted://sample-system-web-app"),
+               {ash::GetOrigin("chrome-untrusted://sample-system-web-app"),
                 {"Frobulate"}}})) {}
 
 std::unique_ptr<WebAppInstallInfo> SampleSystemAppDelegate::GetWebAppInfo()
@@ -96,8 +96,8 @@ bool SampleSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 
-absl::optional<web_app::SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 SampleSystemAppDelegate::GetTimerInfo() const {
-  return web_app::SystemAppBackgroundTaskInfo(
+  return ash::SystemWebAppBackgroundTaskInfo(
       base::Seconds(30), GURL("chrome://sample-system-web-app/timer.html"));
 }

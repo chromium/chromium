@@ -59,7 +59,7 @@ class LaunchedAppInfo {
     gfx::Image icon_;
   };
 
-  LaunchedAppInfo();
+  LaunchedAppInfo() = delete;
   LaunchedAppInfo(const LaunchedAppInfo&) = delete;
   LaunchedAppInfo& operator=(const LaunchedAppInfo&) = delete;
   ~LaunchedAppInfo();
@@ -93,7 +93,9 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info);
-  static void CloseEche(Profile* profile);
+  static void CloseNotification(base::WeakPtr<EcheAppManagerFactory> weak_ptr,
+                                Profile* profile,
+                                const std::string& notification_id);
   static void LaunchEcheApp(Profile* profile,
                             const absl::optional<int64_t>& notification_id,
                             const std::string& package_name,
@@ -111,6 +113,7 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   friend struct base::DefaultSingletonTraits<EcheAppManagerFactory>;
+  friend class EcheAppManagerFactoryTest;
 
   EcheAppManagerFactory();
   ~EcheAppManagerFactory() override;

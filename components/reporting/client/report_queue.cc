@@ -26,7 +26,7 @@ namespace reporting {
 
 namespace {
 
-StatusOr<std::string> ValueToJson(const base::Value::Dict& record) {
+StatusOr<std::string> ValueToJson(base::Value::Dict record) {
   std::string json_record;
   if (!base::JSONWriter::Write(record, &json_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -36,7 +36,7 @@ StatusOr<std::string> ValueToJson(const base::Value::Dict& record) {
 }
 
 StatusOr<std::string> ProtoToString(
-    const google::protobuf::MessageLite* record) {
+    std::unique_ptr<const google::protobuf::MessageLite> record) {
   std::string protobuf_record;
   if (!record->SerializeToString(&protobuf_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -50,26 +50,30 @@ StatusOr<std::string> ProtoToString(
 
 ReportQueue::~ReportQueue() = default;
 
-void ReportQueue::Enqueue(base::StringPiece record,
+void ReportQueue::Enqueue(std::string record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  AddRecord(record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(
+                        [](std::string record) -> StatusOr<std::string> {
+                          return std::move(record);
+                        },
+                        std::move(record)),
+                    priority, std::move(callback));
 }
 
-void ReportQueue::Enqueue(const base::Value::Dict& record,
+void ReportQueue::Enqueue(base::Value::Dict record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string json_record, callback,
-                                     ValueToJson(record));
-  AddRecord(json_record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(&ValueToJson, std::move(record)), priority,
+                    std::move(callback));
 }
 
-void ReportQueue::Enqueue(const google::protobuf::MessageLite* record,
-                          Priority priority,
-                          ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string protobuf_record, callback,
-                                     ProtoToString(record));
-  AddRecord(protobuf_record, priority, std::move(callback));
+void ReportQueue::Enqueue(
+    std::unique_ptr<const google::protobuf::MessageLite> record,
+    Priority priority,
+    ReportQueue::EnqueueCallback callback) const {
+  AddProducedRecord(base::BindOnce(&ProtoToString, std::move(record)), priority,
+                    std::move(callback));
 }
 
 }  // namespace reporting

@@ -16,29 +16,29 @@ class GURL;
 @interface ActivityParams : NSObject
 
 // Initializes an instance configured to share the current tab's URL for the
-// metrics |scenario|.
+// metrics `scenario`.
 - (instancetype)initWithScenario:(ActivityScenario)scenario
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes an instance configured to share an |image|, along
-// with its |title|, for the metrics |scenario|.
+// Initializes an instance configured to share an `image`, along
+// with its `title`, for the metrics `scenario`.
 - (instancetype)initWithImage:(UIImage*)image
                         title:(NSString*)title
                      scenario:(ActivityScenario)scenario;
 
-// Initializes an instance configured to share |URL|, along with its |title| for
-// the metrics |scenario|.
+// Initializes an instance configured to share `URL`, along with its `title` for
+// the metrics `scenario`.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
                    scenario:(ActivityScenario)scenario;
 
 // Initializes an instance configured to share one or more URLs represented by
-// |URLWithTitle|s, for the metrics |scenario|.
+// `URLWithTitle`s, for the metrics `scenario`.
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
                     scenario:(ActivityScenario)scenario;
 
-// Initializes an instance configured to share an |URL|, along
-// with its |title| and |additionalText|, for the metrics |scenario|.
+// Initializes an instance configured to share an `URL`, along
+// with its `title` and `additionalText`, for the metrics `scenario`.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
              additionalText:(NSString*)additionalText
@@ -49,7 +49,7 @@ class GURL;
 // Image to be shared.
 @property(nonatomic, readonly, strong) UIImage* image;
 
-// Title of the content that will be shared. Must be set if |image| is set.
+// Title of the content that will be shared. Must be set if `image` is set.
 @property(nonatomic, readonly, copy) NSString* imageTitle;
 
 // URLs, and associated titles, of the page(s) to be shared.

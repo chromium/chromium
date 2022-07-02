@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
@@ -66,8 +67,10 @@ class CrostiniUpdateFilesystemViewBrowserTest
     EXPECT_EQ(nullptr, ActiveView());
   }
 
-  const crostini::ContainerId kContainerId =
-      crostini::ContainerId("vm_name", "container_name");
+  const guest_os::GuestId kGuestId =
+      guest_os::GuestId(crostini::kCrostiniDefaultVmType,
+                        "vm_name",
+                        "container_name");
 };
 
 // Test the dialog is actually launched.
@@ -109,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kContainerId, base::DoNothing());
+      ->StartLxdContainer(kGuestId, base::DoNothing());
   ExpectNoView();
 }
 
@@ -123,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateFilesystemViewBrowserTest,
   GetFakeCiceroneClient()->set_start_lxd_container_response(reply);
 
   crostini::CrostiniManager::GetForProfile(browser()->profile())
-      ->StartLxdContainer(kContainerId, base::DoNothing());
+      ->StartLxdContainer(kGuestId, base::DoNothing());
   ExpectView();
 
   ActiveView()->AcceptDialog();

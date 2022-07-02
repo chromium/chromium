@@ -13,8 +13,7 @@ using base::android::JavaArrayOfByteArrayToStringVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-namespace net {
-namespace android {
+namespace net::android {
 
 void ExtractCertVerifyResult(const JavaRef<jobject>& result,
                              CertVerifyStatusAndroid* status,
@@ -33,5 +32,4 @@ void ExtractCertVerifyResult(const JavaRef<jobject>& result,
   JavaArrayOfByteArrayToStringVector(env, chain_byte_array, verified_chain);
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

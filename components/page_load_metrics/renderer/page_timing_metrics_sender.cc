@@ -18,8 +18,8 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {
@@ -92,6 +92,12 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
     return;
 
   new_features_.push_back(feature);
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::DidObserveSoftNavigation(uint32_t count) {
+  DCHECK(count > soft_navigation_count_);
+  soft_navigation_count_ = count;
   EnsureSendTimer();
 }
 
@@ -319,7 +325,8 @@ void PageTimingMetricsSender::SendNow() {
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(input_timing_delta_), mobile_friendliness_);
+                      std::move(input_timing_delta_), mobile_friendliness_,
+                      soft_navigation_count_);
   input_timing_delta_ = mojom::InputTiming::New();
   mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
@@ -335,6 +342,9 @@ void PageTimingMetricsSender::SendNow() {
   render_data_.ng_layout_block_count_delta = 0;
   render_data_.all_layout_call_count_delta = 0;
   render_data_.ng_layout_call_count_delta = 0;
+  // As PageTimingMetricsSender is owned by MetricsRenderFrameObserver, which is
+  // instantiated for each frame, there's no need to make soft_navigation_count_
+  // zero here, as its value only increments through the lifetime of the frame.
 }
 
 void PageTimingMetricsSender::DidObserveInputDelay(

@@ -46,36 +46,62 @@ class BatteryLevelProviderMac : public BatteryLevelProvider {
   ~BatteryLevelProviderMac() override = default;
 
   void GetBatteryState(
-      base::OnceCallback<void(const BatteryState&)> callback) override {
-    std::vector<BatteryInterface> battery_interfaces =
-        GetBatteryInterfaceList();
-    std::move(callback).Run(
-        BatteryLevelProvider::MakeBatteryState(battery_interfaces));
+      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      override {
+    std::move(callback).Run(GetBatteryStateImpl());
   }
 
  private:
-  static std::vector<BatteryInterface> GetBatteryInterfaceList();
-
-  static BatteryLevelProvider::BatteryInterface GetInterface(
-      CFDictionaryRef description);
+  absl::optional<BatteryState> GetBatteryStateImpl();
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderMac>();
 }
 
-BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
-    CFDictionaryRef description) {
+absl::optional<BatteryLevelProviderMac::BatteryState>
+BatteryLevelProviderMac::GetBatteryStateImpl() {
+  const base::mac::ScopedIOObject<io_service_t> service(
+      IOServiceGetMatchingService(kIOMasterPortDefault,
+                                  IOServiceMatching("IOPMPowerSource")));
+  if (service == IO_OBJECT_NULL) {
+    // Macs without a battery don't necessarily provide the IOPMPowerSource
+    // service (e.g. test bots). Don't report this as an error.
+    return MakeBatteryState(/* battery_details=*/{});
+  }
+
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  kern_return_t result = IORegistryEntryCreateCFProperties(
+      service.get(), dict.InitializeInto(), 0, 0);
+
+  if (result != KERN_SUCCESS) {
+    // Failing to retrieve the dictionary is unexpected.
+    return absl::nullopt;
+  }
+
+  absl::optional<bool> battery_installed =
+      GetValueAsBoolean(dict, CFSTR("BatteryInstalled"));
+  if (!battery_installed.has_value()) {
+    // Failing to access the BatteryInstalled property is unexpected.
+    return absl::nullopt;
+  }
+
+  if (!battery_installed.value()) {
+    // BatteryInstalled == false means that there is no battery.
+    return MakeBatteryState(/* battery_details=*/{});
+  }
+
   absl::optional<bool> external_connected =
-      GetValueAsBoolean(description, CFSTR("ExternalConnected"));
-  if (!external_connected.has_value())
-    return BatteryInterface(true);
-  bool is_connected = *external_connected;
+      GetValueAsBoolean(dict, CFSTR("ExternalConnected"));
+  if (!external_connected.has_value()) {
+    // Failing to access the ExternalConnected property is unexpected.
+    return absl::nullopt;
+  }
 
   CFStringRef capacity_key;
   CFStringRef max_capacity_key;
 
-  // Use the correct key depending on macOS version.
+  // Use the correct capacity keys depending on macOS version.
   if (@available(macOS 10.14.0, *)) {
     capacity_key = CFSTR("AppleRawCurrentCapacity");
     max_capacity_key = CFSTR("AppleRawMaxCapacity");
@@ -84,40 +110,23 @@ BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
     max_capacity_key = CFSTR("RawMaxCapacity");
   }
 
-  // Extract the information from the dictionary.
   absl::optional<SInt64> current_capacity =
-      GetValueAsSInt64(description, capacity_key);
+      GetValueAsSInt64(dict, capacity_key);
+  if (!current_capacity.has_value()) {
+    return absl::nullopt;
+  }
+
   absl::optional<SInt64> max_capacity =
-      GetValueAsSInt64(description, max_capacity_key);
-  if (!current_capacity.has_value() || !max_capacity.has_value())
-    return BatteryInterface(true);
+      GetValueAsSInt64(dict, max_capacity_key);
+  if (!max_capacity.has_value()) {
+    return absl::nullopt;
+  }
+
   DCHECK_GE(*current_capacity, 0);
   DCHECK_GE(*max_capacity, 0);
-  return BatteryInterface({is_connected,
-                           static_cast<uint64_t>(*current_capacity),
-                           static_cast<uint64_t>(*max_capacity)});
-}
 
-std::vector<BatteryLevelProvider::BatteryInterface>
-BatteryLevelProviderMac::GetBatteryInterfaceList() {
-  // Retrieve the IOPMPowerSource service.
-  const base::mac::ScopedIOObject<io_service_t> service(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
-                                  IOServiceMatching("IOPMPowerSource")));
-  if (service == IO_OBJECT_NULL)
-    return {};
-
-  // Gather a dictionary containing the power information.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result = IORegistryEntryCreateCFProperties(
-      service.get(), dict.InitializeInto(), 0, 0);
-
-  std::vector<BatteryInterface> interfaces;
-  // Retrieving dictionary failed. Cannot proceed.
-  if (result != KERN_SUCCESS) {
-    interfaces.push_back(BatteryInterface(false));
-  } else {
-    interfaces.push_back(GetInterface(dict));
-  }
-  return interfaces;
+  return MakeBatteryState({BatteryDetails{
+      .is_external_power_connected = external_connected.value(),
+      .current_capacity = static_cast<uint64_t>(current_capacity.value()),
+      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value())}});
 }

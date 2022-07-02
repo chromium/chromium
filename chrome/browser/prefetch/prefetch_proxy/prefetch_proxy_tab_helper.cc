@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
@@ -195,6 +196,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchProxyPrefetchStatus status) {
     case PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter:
     case PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
@@ -501,6 +503,7 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedCookiesChanged:
     case PrefetchProxyPrefetchStatus::kPrefetchFailedRedirectsDisabled:
     case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchProxyPrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
       return prefetch_container->GetPrefetchStatus();
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -1361,7 +1364,7 @@ void PrefetchProxyTabHelper::PrefetchUrls(
     page_->prefetch_metrics_collector_ =
         base::MakeRefCounted<PrefetchProxyPrefetchMetricsCollector>(
             page_->navigation_start_,
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
   // Add new prefetches, and update the type for any existing prefetches.
@@ -1417,6 +1420,12 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(
     const PrefetchType& prefetch_type) {
   if (!IsProfileEligible(profile)) {
     return std::make_pair(false, absl::nullopt);
+  }
+
+  if (data_saver::IsDataSaverEnabled(profile)) {
+    return std::make_pair(
+        false,
+        PrefetchProxyPrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
   }
 
   if (!PrefetchProxyUseSpeculationRules() &&

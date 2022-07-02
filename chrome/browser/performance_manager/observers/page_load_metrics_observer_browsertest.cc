@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverPrerenderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverFencedFrameBrowserTest,
-                       FencedFrameDoesNotCountAsPageLoad) {
+                       FencedFrameCountsAsSubFramePageLoad) {
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::LoadCountsPerTopLevelDocument::kEntryName);
@@ -157,6 +157,10 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverFencedFrameBrowserTest,
   histogram_tester()->ExpectBucketCount(
       "Stability.Experimental.PageLoads",
       performance_manager::LoadType::kVisibleTabBase, 1);
+
+  histogram_tester()->ExpectBucketCount(
+      "Stability.Experimental.PageLoads",
+      performance_manager::LoadType::kVisibleTabSubFrameDifferentDocument, 1);
 
   // Navigate the fenced frame again.
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
@@ -168,4 +172,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverFencedFrameBrowserTest,
   histogram_tester()->ExpectBucketCount(
       "Stability.Experimental.PageLoads",
       performance_manager::LoadType::kVisibleTabBase, 1);
+
+  histogram_tester()->ExpectBucketCount(
+      "Stability.Experimental.PageLoads",
+      performance_manager::LoadType::kVisibleTabSubFrameDifferentDocument, 2);
 }

@@ -28,9 +28,8 @@ CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 THIRD_PARTY_DIR = os.path.join(THIS_DIR, '..', '..', '..', 'third_party')
 BUILDTOOLS_DIR = os.path.join(THIS_DIR, '..', '..', '..', 'buildtools')
 LLVM_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm')
-LLVM_BOOTSTRAP_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-build-tools',
-                                  'llvm-bootstrap')
-LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-build-tools',
+LLVM_BOOTSTRAP_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-bootstrap')
+LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
                                           'llvm-bootstrap-install')
 LLVM_BUILD_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-build')
 LLVM_RELEASE_DIR = os.path.join(LLVM_BUILD_DIR, 'Release+Asserts')
@@ -110,7 +109,7 @@ def PackageInArchive(directory_path, archive_path):
 
 def MaybeUpload(do_upload, filename, gcs_platform, extra_gsutil_args=[]):
   gsutil_args = ['cp'] + extra_gsutil_args + [
-      '-a', 'public-read', filename,
+      '-n', '-a', 'public-read', filename,
       'gs://chromium-browser-clang-staging/%s/%s' % (gcs_platform, filename)
   ]
   if do_upload:
@@ -257,20 +256,23 @@ def main():
     ])
   else:
     want.extend([
-      'bin/clang',
+        'bin/clang',
 
-      # Add LLD.
-      'bin/lld',
+        # Add LLD.
+        'bin/lld',
 
-      # Add llvm-ar for LTO.
-      'bin/llvm-ar',
+        # Add llvm-ar for LTO.
+        'bin/llvm-ar',
 
-      # Include libclang_rt.builtins.a for Fuchsia targets.
-      'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
-      'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
+        # llvm-ml for Windows cross builds.
+        'bin/llvm-ml',
 
-      # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
-      'bin/llvm-readobj',
+        # Include libclang_rt.builtins.a for Fuchsia targets.
+        'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
+
+        # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
+        'bin/llvm-readobj',
     ])
     if not args.build_mac_arm:
       # TODO(thakis): Figure out why this doesn't build in --build-mac-arm
@@ -344,9 +346,15 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
 
         # Builtins for Lacros (and potentially Linux, but not used there atm).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
         # crtstart/crtend for Linux and Lacros.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtbegin.o',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtend.o',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtbegin.o',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtend.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtend.o',
 
@@ -362,9 +370,11 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.msan_cxx.a.syms',
 
         # Profile runtime (used by profiler and code coverage).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.profile.a',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.profile.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.profile.a',
-        'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.profile.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
 
@@ -438,10 +448,14 @@ def main():
 
   # Check that all non-glob wanted files exist on disk.
   want = [w.replace('$V', RELEASE_VERSION) for w in want]
+  found_all_wanted_files = True
   for w in want:
     if '*' in w: continue
     if os.path.exists(os.path.join(LLVM_RELEASE_DIR, w)): continue
     print('wanted file "%s" but it did not exist' % w, file=sys.stderr)
+    found_all_wanted_files = False
+
+  if not found_all_wanted_files:
     return 1
 
   # Check that all reclient inputs are in the package.
@@ -513,10 +527,12 @@ def main():
 
     # Make `--target=*-cros-linux-gnu` work with
     # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON.
-    os.symlink(
-        'x86_64-unknown-linux-gnu',
-        os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib',
-                     'x86_64-cros-linux-gnu'))
+    for arch, abi in [('armv7', 'gnueabihf'), ('aarch64', 'gnu'),
+                      ('x86_64', 'gnu')]:
+      old = '%s-unknown-linux-%s' % (arch, abi)
+      new = old.replace('unknown', 'cros').replace('armv7', 'armv7a')
+      os.symlink(
+          old, os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib', new))
 
   # Copy libc++ headers.
   if sys.platform == 'darwin':

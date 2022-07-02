@@ -18,7 +18,7 @@ SysInternalsBrowserTest.prototype = {
   __proto__: testing.Test.prototype,
 
   browsePreload:
-      'chrome://sys-internals/index.html?module=sys_internals/all_tests.js',
+      'chrome://sys-internals/index.html?module=sys_internals/all_tests.js&host=test',
 
   isAsync: true,
 

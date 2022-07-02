@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // Make sure it is actually disabled for webpages.
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_FALSE(filter->IsPluginAvailable(
-      initiator()->GetMainFrame()->GetProcess()->GetID(),
+      initiator()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       pdf_external_plugin_info));
 
   PrintPreview();
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
     run_loop.Run();
 
     frame_count = 0;
-    preview_dialog->GetMainFrame()->ForEachRenderFrameHost(
+    preview_dialog->GetPrimaryMainFrame()->ForEachRenderFrameHost(
         base::BindLambdaForTesting(
             [&frame_count](content::RenderFrameHost* /*frame*/) {
               ++frame_count;
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_EQ(kExpectedFrameCount, frame_count);
 
   // Make sure all the frames in the dialog has access to the PDF plugin.
-  preview_dialog->GetMainFrame()->ForEachRenderFrameHost(
+  preview_dialog->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(&CheckPdfPluginForRenderFrame));
 
   PrintPreviewDone();

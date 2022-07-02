@@ -14,5 +14,5 @@ Tests that CSSPropertyPrompt properly builds suggestions.
   text: --other)
   priority: 1
   subtitle: undefined
-  subtitleRenderer: undefined
+  subtitleRenderer: function () { [native code] }
 

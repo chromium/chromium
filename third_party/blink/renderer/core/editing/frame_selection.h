@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
@@ -312,7 +313,7 @@ class CORE_EXPORT FrameSelection final
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
       const NGInlineCursor& cursor) const;
-  SelectionState ComputeLayoutSelectionStateForCursor(
+  SelectionState ComputePaintingSelectionStateForCursor(
       const NGInlineCursorPosition& position) const;
   SelectionState ComputeLayoutSelectionStateForInlineTextBox(
       const InlineTextBox& text_box) const;

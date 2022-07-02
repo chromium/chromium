@@ -146,6 +146,7 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ui::ime::AssistiveWindowType::kGrammarSuggestion:
     case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_NONE;
     case ui::ime::AssistiveWindowType::kUndoWindow:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_UNDO;
@@ -290,8 +291,8 @@ class ImeObserverChromeOS
       return;
     }
     // Note: this is a private API event.
-    std::vector<base::Value> args;
-    args.push_back(base::Value(is_projected));
+    base::Value::List args;
+    args.Append(is_projected);
 
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_SCREEN_PROJECTION_CHANGED,
@@ -411,7 +412,7 @@ class ImeObserverChromeOS
     }
 
     // Note: this is a private API event.
-    std::vector<base::Value> bounds_list;
+    base::Value::List bounds_list;
     bounds_list.reserve(bounds.size());
     for (const auto& bound : bounds) {
       base::Value bounds_value(base::Value::Type::DICTIONARY);
@@ -419,19 +420,38 @@ class ImeObserverChromeOS
       bounds_value.SetIntKey("y", bound.y());
       bounds_value.SetIntKey("w", bound.width());
       bounds_value.SetIntKey("h", bound.height());
-      bounds_list.push_back(std::move(bounds_value));
+      bounds_list.Append(std::move(bounds_value));
     }
 
-    std::vector<base::Value> args;
+    base::Value::List args;
 
     // The old extension code uses the first parameter to get the bounds of the
     // first composition character, so for backward compatibility, add it here.
-    args.push_back(bounds_list[0].Clone());
-    args.push_back(base::Value(std::move(bounds_list)));
+    args.Append(bounds_list[0].Clone());
+    args.Append(std::move(bounds_list));
 
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_COMPOSITION_BOUNDS_CHANGED,
         OnCompositionBoundsChanged::kEventName, std::move(args));
+  }
+
+  void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {
+    if (extension_id_.empty() ||
+        !HasListener(input_method_private::OnCaretBoundsChanged::kEventName)) {
+      return;
+    }
+
+    // Note: this is a private API event;
+    input_method_private::OnCaretBoundsChanged::CaretBounds caret_bounds_arg;
+    caret_bounds_arg.x = caret_bounds.x();
+    caret_bounds_arg.y = caret_bounds.y();
+    caret_bounds_arg.w = caret_bounds.width();
+    caret_bounds_arg.h = caret_bounds.height();
+
+    DispatchEventToExtension(
+      extensions::events::INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED,
+      input_method_private::OnCaretBoundsChanged::kEventName,
+      input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
   }
 
   void OnFocus(
@@ -593,7 +613,7 @@ class ImeObserverChromeOS
   void DispatchEventToExtension(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::vector<base::Value> args) {
+      base::Value::List args) {
     if (event_name == input_ime::OnActivate::kEventName) {
       // Send onActivate event regardless of it's listened by the IME.
       auto event = std::make_unique<extensions::Event>(
@@ -626,8 +646,8 @@ class ImeObserverChromeOS
 
     auto event = std::make_unique<extensions::Event>(
         histogram_value, event_name, std::move(args), profile_);
-    extensions::EventRouter::Get(profile_)
-        ->DispatchEventToExtension(extension_id_, std::move(event));
+    extensions::EventRouter::Get(profile_)->DispatchEventToExtension(
+        extension_id_, std::move(event));
   }
 
   // The component IME extensions need to know the current screen type (e.g.
@@ -983,9 +1003,8 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
       parent_params->parameters;
 
   bool success = engine->ClearComposition(params.context_id, &error);
-  std::unique_ptr<base::ListValue> results =
-      std::make_unique<base::ListValue>();
-  results->Append(success);
+  base::Value::List results;
+  results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(
@@ -1062,8 +1081,8 @@ ExtensionFunction::ResponseAction
 InputImeSetCandidateWindowPropertiesFunction::Run() {
   std::unique_ptr<SetCandidateWindowProperties::Params> parent_params(
       SetCandidateWindowProperties::Params::Create(args()));
-  const SetCandidateWindowProperties::Params::Parameters&
-      params = parent_params->parameters;
+  const SetCandidateWindowProperties::Params::Parameters& params =
+      parent_params->parameters;
 
   std::string error;
   InputMethodEngine* engine =
@@ -1077,9 +1096,8 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
 
   if (properties.visible &&
       !engine->SetCandidateWindowVisible(*properties.visible, &error)) {
-    std::unique_ptr<base::ListValue> results =
-        std::make_unique<base::ListValue>();
-    results->Append(false);
+    base::Value::List results;
+    results.Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
@@ -1150,8 +1168,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
 
   std::unique_ptr<SetCandidates::Params> parent_params(
       SetCandidates::Params::Create(args()));
-  const SetCandidates::Params::Parameters& params =
-      parent_params->parameters;
+  const SetCandidates::Params::Parameters& params = parent_params->parameters;
 
   std::vector<InputMethodEngine::Candidate> candidates_out;
   for (const auto& candidate_in : params.candidates) {
@@ -1170,9 +1187,8 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
 
   bool success =
       engine->SetCandidates(params.context_id, candidates_out, &error);
-  std::unique_ptr<base::ListValue> results =
-      std::make_unique<base::ListValue>();
-  results->Append(success);
+  base::Value::List results;
+  results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(
@@ -1195,9 +1211,8 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
 
   bool success =
       engine->SetCursorPosition(params.context_id, params.candidate_id, &error);
-  std::unique_ptr<base::ListValue> results =
-      std::make_unique<base::ListValue>();
-  results->Append(success);
+  base::Value::List results;
+  results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(

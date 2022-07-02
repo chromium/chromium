@@ -6,19 +6,19 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CAMERA_APP_CAMERA_SYSTEM_WEB_APP_INFO_H_
 
 #include <memory>
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
 struct WebAppInstallInfo;
 
-class CameraSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class CameraSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit CameraSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides
+  // ash::SystemWebAppDelegate overrides
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;

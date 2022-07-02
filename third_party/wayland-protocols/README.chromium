@@ -9,6 +9,8 @@ Description:
 wayland-protocols/src contains the official library of Wayland protocol
 extensions maintained by the developers of the Wayland project.
 
+unstable/ contains unofficial ChromeOS extensions to wayland.
+
 Repository:
 https://anongit.freedesktop.org/git/wayland/wayland-protocols.git.
 

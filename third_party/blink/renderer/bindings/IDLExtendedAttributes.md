@@ -1150,6 +1150,8 @@ The `[ReflectEmpty]` extended attribute specifies the value that an IDL getter f
 Non-empty string value specified by `[ReflectEmpty]` must be added to
 `core/html/keywords.json5`.
 
+When no value is specified by `[ReflectEmpty]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
+
 ### [ReflectInvalid] _(a)_
 
 Specification: [Limited value attributes](http://www.whatwg.org/specs/web-apps/current-work/#limited-to-only-known-values) - _defined in spec prose, not as an IDL extended attribute._
@@ -1171,6 +1173,8 @@ The `[ReflectInvalid]` extended attribute specifies the value that an IDL getter
 Non-empty string value specified by `[ReflectInvalid]` must be added to
 `core/html/keywords.json5`.
 
+When no value is specified by `[ReflectEmpty]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
+
 ### [ReflectMissing] _(a)_
 
 Specification: [Limited value attributes](http://www.whatwg.org/specs/web-apps/current-work/#limited-to-only-known-values) - _defined in spec prose, not as an IDL extended attribute._
@@ -1191,6 +1195,8 @@ The `[ReflectMissing]` extended attribute specifies the value that an IDL getter
 
 Non-empty string value specified by `[ReflectMissing]` must be added to
 `core/html/keywords.json5`.
+
+When no value is specified by `[ReflectEmpty]`, the value will be IDL null if the attribute type is nullable, otherwise the empty string.
 
 ### [ReflectOnly] _(a)_
 
@@ -1683,6 +1689,12 @@ Usage: The possible usage is `[ImplementedAs=XXX]`, where XXX is a method name i
 ```
 
 Method names in Blink default to being the same as the name in an IDL file. In some cases this is not possible, e.g., `delete` is a C++ reserved word. In such cases, you can explicitly specify the method name in Blink by `[ImplementedAs]`. Generally the `[ImplementedAs]` name should be in lowerCamelCase. You should _not_ use `[ImplementedAs]` simply to avoid renaming Blink methods.
+
+### [TargetOfExposed] _(i)_
+
+Summary: Interfaces specified with `[Global]` expose top-level IDL constructs specified with `[Exposed]` as JS data properties, however `[Global]` means a lot more (e.g. global object, named properties object, etc.). Interfaces specified with `[TargetOfExposed]` only expose top-level IDL constructs specified with `[Exposed]` and means nothing else.
+
+This extended attribute should be used only for pseudo namespace(-ish) objects like `globalThis.chromeos`. Consult with the bindings team before you use this extended attribute.
 
 ## Deprecated Blink-specific IDL Extended Attributes
 

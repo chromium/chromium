@@ -10,11 +10,11 @@
   </ul>
   <h2>Show an IPH</h2>
   <ul>
-    <template is="dom-repeat" items="[[feature_promos_]]">
+    <template is="dom-repeat" items="[[featurePromos_]]">
       <li>
         <h3>[[item.displayTitle]]</h3>
         <h4>[[item.displayDescription]]</h4>
-        <button id="[[item.displayTitle]]" on-click="ShowFeaturePromo_">
+        <button id="[[item.displayTitle]]" on-click="showFeaturePromo_">
           [[item.displayTitle]]
         </button>
       </li>

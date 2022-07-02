@@ -109,8 +109,8 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
 
   const gfx::Size frame_size = capture_format.frame_size;
   // PNGCodec does not support YUV formats, convert to a temporary ARGB buffer.
-  std::unique_ptr<uint8_t[]> tmp_argb(
-      new uint8_t[VideoFrame::AllocationSize(PIXEL_FORMAT_ARGB, frame_size)]);
+  auto tmp_argb = std::make_unique<uint8_t[]>(
+      VideoFrame::AllocationSize(PIXEL_FORMAT_ARGB, frame_size));
   if (ConvertToARGB(buffer, bytesused, tmp_argb.get(), frame_size.width() * 4,
                     0 /* crop_x_pos */, 0 /* crop_y_pos */, frame_size.width(),
                     frame_size.height(), frame_size.width(),

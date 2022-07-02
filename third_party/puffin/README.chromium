@@ -1,0 +1,32 @@
+Name: Puffin deterministic deflate recompressor
+Short Name: Puffin
+URL: https://android.googlesource.com/platform/external/puffin
+Version: 1.0.0
+Date: Tues May 10 13:55:00 2022
+Revision: e0820dcfebfb4df925be2e37ad8f56c00dc624f5
+License: Chromium OS BSD
+License File: LICENSE
+Security Critical: yes
+License Android Compatible: yes
+
+Description:
+Puffin is a deterministic deflate recompressor. It is mainly used for patching
+deflate compressed images (zip, gzip, etc.) because patches created from deflate
+files/streams are usually large (deflate has a bit-aligned format, hence,
+changing one byte in the raw data can cause the entire deflate stream to change
+drastically.) Specifically in chromium/src, this library is needed in order for
+Omaha, chrome's auto-updater client, to support puffin-generated diffs created
+by Omaha Server.
+
+Local Modifications:
+- Updated OWNERS to reflect our team as the owners.
+- Removed BUILD.gn taken from AOSP as it doesn't build in chromium.
+- removed PRESUBMIT.cfg and PREUPLOAD.cfg
+- Adding a DEPS file so we can pass presubmit checks.
+- removed BSDiff as we only require the zucchini version of puffdiff/puffpatch
+- rewrote the commandline usage for the puffin binary as we only need to support
+    and test puffdiff and puffpatch.
+- Replaced POSIX file IO with chromium/src's base::File/base::FilePath methods
+    so it will build and run cross-platform.
+- Removed dependence of libpuffpatch on libpuffdiff as the puffin patching
+    service we plant to implement only requires libpuffpatch.

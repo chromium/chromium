@@ -45,7 +45,7 @@ suite('SiteDetailsPermission', function() {
     document.body.appendChild(testElement);
   });
 
-  function validatePermissionFlipWorks(
+  async function validatePermissionFlipWorks(
       origin: string, expectedContentSetting: ContentSetting) {
     browserProxy.resetResolver('setOriginPermissions');
 
@@ -53,14 +53,14 @@ suite('SiteDetailsPermission', function() {
     testElement.$.permission.value = expectedContentSetting;
     testElement.$.permission.dispatchEvent(new CustomEvent('change'));
 
-    return browserProxy.whenCalled('setOriginPermissions').then((args) => {
-      assertEquals(origin, args[0]);
-      assertDeepEquals(testElement.category, args[1]);
-      assertEquals(expectedContentSetting, args[2]);
-    });
+    const [site, category, setting] =
+        await browserProxy.whenCalled('setOriginPermissions');
+    assertEquals(origin, site);
+    assertDeepEquals(testElement.category, category);
+    assertEquals(expectedContentSetting, setting);
   }
 
-  test('camera category', function() {
+  test('camera category', async function() {
     const origin = 'https://www.example.com';
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.CAMERA;
@@ -80,19 +80,13 @@ suite('SiteDetailsPermission', function() {
         'Widget should be labelled correctly');
 
     // Flip the permission and validate that prefs stay in sync.
-    return validatePermissionFlipWorks(origin, ContentSetting.ALLOW)
-        .then(() => {
-          return validatePermissionFlipWorks(origin, ContentSetting.BLOCK);
-        })
-        .then(() => {
-          return validatePermissionFlipWorks(origin, ContentSetting.ALLOW);
-        })
-        .then(() => {
-          return validatePermissionFlipWorks(origin, ContentSetting.DEFAULT);
-        });
+    await validatePermissionFlipWorks(origin, ContentSetting.ALLOW);
+    await validatePermissionFlipWorks(origin, ContentSetting.BLOCK);
+    await validatePermissionFlipWorks(origin, ContentSetting.ALLOW);
+    await validatePermissionFlipWorks(origin, ContentSetting.DEFAULT);
   });
 
-  test('default string is correct', function() {
+  test('default string is correct', async function() {
     const origin = 'https://www.example.com';
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.CAMERA;
@@ -104,44 +98,39 @@ suite('SiteDetailsPermission', function() {
       source: SiteSettingSource.PREFERENCE,
     });
 
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then((args) => {
-          // Check getDefaultValueForContentType was called for camera category.
-          assertEquals(ContentSettingsTypes.CAMERA, args);
+    let args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    // Check getDefaultValueForContentType was called for camera category.
+    assertEquals(ContentSettingsTypes.CAMERA, args);
 
-          // The default option will always be the first in the menu.
-          assertEquals(
-              'Allow (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-          browserProxy.resetResolver('getDefaultValueForContentType');
-          const defaultPrefs = createSiteSettingsPrefs(
-              [createContentSettingTypeToValuePair(
-                  ContentSettingsTypes.CAMERA,
-                  createDefaultContentSetting(
-                      {setting: ContentSetting.BLOCK}))],
-              []);
-          browserProxy.setPrefs(defaultPrefs);
-          return browserProxy.whenCalled('getDefaultValueForContentType');
-        })
-        .then((args) => {
-          assertEquals(ContentSettingsTypes.CAMERA, args);
-          assertEquals(
-              'Block (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-          browserProxy.resetResolver('getDefaultValueForContentType');
-          const defaultPrefs = createSiteSettingsPrefs(
-              [createContentSettingTypeToValuePair(
-                  ContentSettingsTypes.CAMERA, createDefaultContentSetting())],
-              []);
-          browserProxy.setPrefs(defaultPrefs);
-          return browserProxy.whenCalled('getDefaultValueForContentType');
-        })
-        .then((args) => {
-          assertEquals(ContentSettingsTypes.CAMERA, args);
-          assertEquals(
-              'Ask (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-        });
+    // The default option will always be the first in the menu.
+    assertEquals(
+        'Allow (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
+    browserProxy.resetResolver('getDefaultValueForContentType');
+    let defaultPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.CAMERA,
+            createDefaultContentSetting({setting: ContentSetting.BLOCK}))],
+        []);
+    browserProxy.setPrefs(defaultPrefs);
+
+    args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(ContentSettingsTypes.CAMERA, args);
+    assertEquals(
+        'Block (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
+    browserProxy.resetResolver('getDefaultValueForContentType');
+    defaultPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.CAMERA, createDefaultContentSetting())],
+        []);
+    browserProxy.setPrefs(defaultPrefs);
+
+    args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(ContentSettingsTypes.CAMERA, args);
+    assertEquals(
+        'Ask (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
   });
 
   test('info string is correct', function() {
@@ -320,7 +309,7 @@ suite('SiteDetailsPermission', function() {
     assertTrue(testElement.$.permission.disabled);
   });
 
-  test('sound setting default string is correct', function() {
+  test('sound setting default string is correct', async function() {
     const origin = 'https://www.example.com';
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.SOUND;
@@ -332,50 +321,44 @@ suite('SiteDetailsPermission', function() {
       source: SiteSettingSource.PREFERENCE,
     });
 
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then((args) => {
-          // Check getDefaultValueForContentType was called for sound category.
-          assertEquals(ContentSettingsTypes.SOUND, args);
+    let args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    // Check getDefaultValueForContentType was called for sound category.
+    assertEquals(ContentSettingsTypes.SOUND, args);
 
-          // The default option will always be the first in the menu.
-          assertEquals(
-              'Allow (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-          browserProxy.resetResolver('getDefaultValueForContentType');
-          const defaultPrefs = createSiteSettingsPrefs(
-              [createContentSettingTypeToValuePair(
-                  ContentSettingsTypes.SOUND,
-                  createDefaultContentSetting(
-                      {setting: ContentSetting.BLOCK}))],
-              []);
-          browserProxy.setPrefs(defaultPrefs);
-          return browserProxy.whenCalled('getDefaultValueForContentType');
-        })
-        .then((args) => {
-          assertEquals(ContentSettingsTypes.SOUND, args);
-          assertEquals(
-              'Mute (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-          browserProxy.resetResolver('getDefaultValueForContentType');
-          testElement.useAutomaticLabel = true;
-          const defaultPrefs = createSiteSettingsPrefs(
-              [createContentSettingTypeToValuePair(
-                  ContentSettingsTypes.SOUND,
-                  createDefaultContentSetting(
-                      {setting: ContentSetting.ALLOW}))],
-              []);
-          browserProxy.setPrefs(defaultPrefs);
-          return browserProxy.whenCalled('getDefaultValueForContentType');
-        })
-        .then((args) => {
-          assertEquals(ContentSettingsTypes.SOUND, args);
-          assertEquals(
-              'Automatic (default)', testElement.$.permission.options[0]!.text,
-              'Default setting string should match prefs');
-        });
+    // The default option will always be the first in the menu.
+    assertEquals(
+        'Allow (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
+    browserProxy.resetResolver('getDefaultValueForContentType');
+    let defaultPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.SOUND,
+            createDefaultContentSetting({setting: ContentSetting.BLOCK}))],
+        []);
+    browserProxy.setPrefs(defaultPrefs);
+
+    args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(ContentSettingsTypes.SOUND, args);
+    assertEquals(
+        'Mute (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
+    browserProxy.resetResolver('getDefaultValueForContentType');
+    testElement.useAutomaticLabel = true;
+    defaultPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.SOUND,
+            createDefaultContentSetting({setting: ContentSetting.ALLOW}))],
+        []);
+    browserProxy.setPrefs(defaultPrefs);
+
+    args = await browserProxy.whenCalled('getDefaultValueForContentType');
+    assertEquals(ContentSettingsTypes.SOUND, args);
+    assertEquals(
+        'Automatic (default)', testElement.$.permission.options[0]!.text,
+        'Default setting string should match prefs');
   });
 
-  test('sound setting block string is correct', function() {
+  test('sound setting block string is correct', async function() {
     const origin = 'https://www.example.com';
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.SOUND;
@@ -387,16 +370,15 @@ suite('SiteDetailsPermission', function() {
       source: SiteSettingSource.PREFERENCE,
     });
 
-    return browserProxy.whenCalled('getDefaultValueForContentType')
-        .then((args) => {
-          // Check getDefaultValueForContentType was called for sound category.
-          assertEquals(ContentSettingsTypes.SOUND, args);
+    const args = await browserProxy.whenCalled('getDefaultValueForContentType');
 
-          // The block option will always be the third in the menu.
-          assertEquals(
-              'Mute', testElement.$.permission.options[2]!.text,
-              'Block setting string should match prefs');
-        });
+    // Check getDefaultValueForContentType was called for sound category.
+    assertEquals(ContentSettingsTypes.SOUND, args);
+
+    // The block option will always be the third in the menu.
+    assertEquals(
+        'Mute', testElement.$.permission.options[2]!.text,
+        'Block setting string should match prefs');
   });
 
   test('ASK can be chosen as a preference by users', function() {

@@ -52,7 +52,7 @@ public interface Toolbar {
     /**
      * @return Whether a dirty check for invalidation makes sense at this time.
      */
-    boolean isReadyForTextureCapture();
+    CaptureReadinessResult isReadyForTextureCapture();
 
     /**
      * Sets whether or not the toolbar should force itself to draw for a texture capture regardless

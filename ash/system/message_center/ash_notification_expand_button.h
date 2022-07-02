@@ -42,9 +42,10 @@ class AshNotificationExpandButton : public views::Button {
   // Generate the icons used for chevron in the expanded and collapsed state.
   void UpdateIcons();
 
-  // Perform expand/collapse animation, including bounds change and fade in/out
-  // `label_`.
-  void PerformExpandCollapseAnimation();
+  // Perform expand/collapse and converting from single to group notification
+  // animation. Both of these include bounds change and fade in/out `label_`.
+  void AnimateExpandCollapse();
+  void AnimateSingleToGroupNotification();
 
   // views::Button:
   void OnThemeChanged() override;
@@ -54,9 +55,19 @@ class AshNotificationExpandButton : public views::Button {
     label_fading_out_ = label_fading_out;
   }
 
+  void set_previous_bounds(gfx::Rect previous_bounds) {
+    previous_bounds_ = previous_bounds;
+  }
+
   views::Label* label_for_test() { return label_; }
 
  private:
+  // Bounds change animation happens during expand/collapse and converting from
+  // single to group animation.
+  void AnimateBoundsChange(int duration_in_ms,
+                           gfx::Tween::Type tween_type,
+                           const std::string& animation_histogram_name);
+
   // Owned by views hierarchy.
   views::Label* label_;
   views::ImageView* image_;

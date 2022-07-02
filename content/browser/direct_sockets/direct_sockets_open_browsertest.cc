@@ -246,12 +246,6 @@ MockOpenNetworkContext::CreateMockUDPSocket(
                                              std::move(listener));
 }
 
-net::Error UnconditionallyPermitConnection(
-    const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(options.remote_hostname.has_value());
-  return net::OK;
-}
-
 }  // anonymous namespace
 
 class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
@@ -263,6 +257,11 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  }
+
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -279,8 +278,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   const char kExampleHostname[] = "mail.example.com";
   const char kExampleAddress[] = "98.76.54.32";
   const std::string mapping_rules =
@@ -300,8 +297,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_KeepAliveOptionsDelayMissingOnKeepAliveTrue) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   const std::string script =
       JsReplace("openTcp($1, 228, { keepAlive: true })", kLocalhostAddress);
 
@@ -312,8 +307,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_KeepAliveOptionsDelayLessThanASecond) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   const std::string script =
       JsReplace("openTcp($1, 228, { keepAlive: true, keepAliveDelay: 950 })",
                 kLocalhostAddress);
@@ -325,8 +318,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_KeepAliveOptionsDelaySetOnKeepAliveFalse) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   const std::string script = JsReplace(
       "openTcp($1, 228, { keepAlive: false, keepAliveDelay: 10_000 })",
       kLocalhostAddress);
@@ -342,7 +333,6 @@ using ProtocolType = DirectSocketsServiceImpl::ProtocolType;
 class DirectSocketsOpenCannotConnectBrowserTest
     : public DirectSocketsOpenBrowserTest,
       public testing::WithParamInterface<ProtocolType> {
-  // std::tuple<std::string, ProtocolType>> {
  public:
   static std::vector<std::string> ProduceAllTestParams() {
     std::vector<std::string> params;
@@ -366,8 +356,6 @@ class DirectSocketsOpenCannotConnectBrowserTest
   }
 
   void RunTest() {
-    EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
     const auto protocol = GetParam();
     const std::string type =
         protocol == DirectSocketsServiceImpl::ProtocolType::kTcp ? "Tcp"
@@ -413,11 +401,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(ProtocolType::kTcp, ProtocolType::kUdp));
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(kTCPNetworkFailuresHistogramName,
                                       -net::Error::ERR_PROXY_CONNECTION_FAILED,
@@ -459,11 +442,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -497,11 +475,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -533,8 +506,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   const char kExampleHostname[] = "mail.example.com";
   const char kExampleAddress[] = "98.76.54.32";
   const std::string mapping_rules =
@@ -553,8 +524,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -566,11 +535,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(kUDPNetworkFailuresHistogramName,
                                       -net::Error::ERR_PROXY_CONNECTION_FAILED,
@@ -609,11 +573,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -695,8 +654,6 @@ class DirectSocketsOpenCorsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   // HTTPS uses port 443. We cannot really start a server on port 443,
@@ -729,8 +686,6 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
 }
 
 IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
   MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 

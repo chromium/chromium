@@ -101,14 +101,15 @@ happens whenever Chrome is updated rather than when the user launches Chrome.
 [preemptively run]: https://source.chromium.org/search?q=symbol:DexFixer.needsDexCompile&ss=chromium
 [PackageReplacedBroadcastReceiver]: https://source.chromium.org/search?q=symbol:PackageReplacedBroadcastReceiver&ss=chromium
 
-### Conflicting ClassLoaders (Android Pre-S)
+### Conflicting ClassLoaders
 
 Missing synchronization can cause the parent ClassLoader of split contexts to
 be different from the Application's ClassLoader. This manifests as odd-looking
 `ClassCastExceptions` where `"TypeA cannot be cast to TypeA"` (since the two
 `TypeAs` are from different ClassLoaders).
 
-Fixed in Android S. Bug: [b/172602571] (Googler only).
+Tracked by UMA `Android.IsolatedSplits.ClassLoaderReplaced`. Occurs < 0.05% of
+the time.
 
 **Work-around:**
 
@@ -140,6 +141,18 @@ System.load(BundleUtils.getNativeLibraryPath("foo", "mysplitsname"));
 ```
 
 [b/171269960]: https://issuetracker.google.com/171269960
+
+### System.loadLibrary() Broken for Libraries in Splits on System Image
+
+Also tracked by [b/171269960], Android's linker config (`ld.config.txt`) sets
+`permitted_paths="/data:/mnt/expand"`, and then adds the app's `.apk` to an
+allowlist. This allowlist does not contain apk splits, so library loading is
+blocked by `permitted_paths` when the splits live on the `/system` partition.
+
+**Work-around:**
+
+Use compressed system image stubs (`.apk.gz` and `-Stub.apk`) so that Chrome is
+extracted to the `/data` partition upon boot.
 
 ### Too Many Splits Break App Zygote
 

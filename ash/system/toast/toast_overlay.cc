@@ -178,6 +178,18 @@ const std::u16string ToastOverlay::GetText() {
   return text_;
 }
 
+bool ToastOverlay::MaybeToggleA11yHighlightOnDismissButton() {
+  return overlay_view_->ToggleA11yFocus();
+}
+
+bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
+  if (!overlay_view_->is_dismiss_button_highlighted())
+    return false;
+
+  OnButtonClicked();
+  return true;
+}
+
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // If the native window has not been initialized, as in the first call, get
   // the default root window. Otherwise get the window for this overlay_widget

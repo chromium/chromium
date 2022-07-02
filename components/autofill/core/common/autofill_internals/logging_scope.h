@@ -36,7 +36,9 @@ class LogBuffer;
   /* If credit card upload is either enabled or disabled. */           \
   T(CreditCardUploadStatus)                                            \
   /* Whether or not card upload was offered to the user. */            \
-  T(CardUploadDecision)
+  T(CardUploadDecision)                                                \
+  /* The website modified a field */                                   \
+  T(WebsiteModifiedFieldValue)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

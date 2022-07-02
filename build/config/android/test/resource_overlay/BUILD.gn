@@ -43,7 +43,7 @@ test_resources("root_tagged_root_resources") {
   deps = [ ":root_tagged_dependency_resources" ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/build/resource_overlay/ResourceOverlayTest.java",

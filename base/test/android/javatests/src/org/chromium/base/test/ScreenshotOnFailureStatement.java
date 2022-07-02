@@ -9,7 +9,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
+
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.runners.model.Statement;
 

@@ -11,9 +11,10 @@ for more details about the presubmit API built into depot_tools.
 USE_PYTHON3 = True
 
 EXTRA_PATHS_COMPONENTS = [
-    tuple(['build']),
+    ('build', ),
     ('build', 'fuchsia'),
-    tuple(['testing']),
+    ('build', 'util'),
+    ('testing', ),
     ('third_party', 'catapult', 'common', 'py_utils'),
     ('third_party', 'catapult', 'devil'),
     ('third_party', 'catapult', 'telemetry'),
@@ -90,6 +91,7 @@ def CommonChecks(input_api, output_api):
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(CheckForNewSkipExpectations(input_api, output_api))
+  results.extend(CheckPytypePathsInSync(input_api, output_api))
 
   return results
 
@@ -120,8 +122,37 @@ def CheckForNewSkipExpectations(input_api, output_api):
   return result
 
 
+def CheckPytypePathsInSync(input_api, output_api):
+  """Checks that run_pytype.py's paths are in sync with PRESUBMIT.py's"""
+  filepath = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                    'run_pytype.py')
+  with open(filepath) as infile:
+    contents = infile.read()
+  # Grab the EXTRA_PATHS_COMPONENTS = [...] portion as a string.
+  match = input_api.re.search(r'(EXTRA_PATHS_COMPONENTS\s*=\s*[^=]*\]\n)',
+                              contents, input_api.re.DOTALL)
+  if not match:
+    return [
+        output_api.PresubmitError(
+            'Unable to find EXTRA_PATHS_COMPONENTS in run_pytype.py. Maybe '
+            'the code in PRESUBMIT.py needs to be updated?')
+    ]
+  expression = match.group(0)
+  expression = expression.split('=', 1)[1]
+  expression = expression.lstrip()
+  pytype_path_components = input_api.ast.literal_eval(expression)
+  if EXTRA_PATHS_COMPONENTS != pytype_path_components:
+    return [
+        output_api.PresubmitError(
+            'EXTRA_PATHS_COMPONENTS is not synced between PRESUBMIT.py and '
+            'run_pytype.py, please ensure they are identical.')
+    ]
+  return []
+
+
 def CheckChangeOnUpload(input_api, output_api):
   return CommonChecks(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
   return CommonChecks(input_api, output_api)

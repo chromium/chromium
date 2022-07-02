@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
-#include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_caption_button.h"
+#include "chrome/browser/ui/views/frame/windows_tab_search_caption_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,17 +20,17 @@
 
 namespace {
 
-std::unique_ptr<Windows10CaptionButton> CreateCaptionButton(
+std::unique_ptr<WindowsCaptionButton> CreateCaptionButton(
     views::Button::PressedCallback callback,
     GlassBrowserFrameView* frame_view,
     ViewID button_type,
     int accessible_name_resource_id) {
-  return std::make_unique<Windows10CaptionButton>(
+  return std::make_unique<WindowsCaptionButton>(
       std::move(callback), frame_view, button_type,
       l10n_util::GetStringUTF16(accessible_name_resource_id));
 }
 
-bool HitTestCaptionButton(Windows10CaptionButton* button,
+bool HitTestCaptionButton(WindowsCaptionButton* button,
                           const gfx::Point& point) {
   return button && button->GetVisible() && button->bounds().Contains(point);
 }
@@ -68,7 +68,7 @@ GlassBrowserCaptionButtonContainer::GlassBrowserCaptionButtonContainer(
   if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
           frame_view_->browser_view()->browser())) {
     tab_search_button_ =
-        AddChildViewAt(std::make_unique<Windows10TabSearchCaptionButton>(
+        AddChildViewAt(std::make_unique<WindowsTabSearchCaptionButton>(
                            frame_view_, VIEW_ID_TAB_SEARCH_BUTTON,
                            l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH)),
                        0);
@@ -189,9 +189,12 @@ void GlassBrowserCaptionButtonContainer::OnWidgetBoundsChanged(
 }
 
 void GlassBrowserCaptionButtonContainer::UpdateButtons() {
+  minimize_button_->SetVisible(frame_view_->browser_view()->CanMinimize());
+
   const bool is_maximized = frame_view_->IsMaximized();
-  restore_button_->SetVisible(is_maximized);
-  maximize_button_->SetVisible(!is_maximized);
+  const bool can_maximize = frame_view_->browser_view()->CanMaximize();
+  restore_button_->SetVisible(is_maximized && can_maximize);
+  maximize_button_->SetVisible(!is_maximized && can_maximize);
 
   // In touch mode, windows cannot be taken out of fullscreen or tiled mode, so
   // the maximize/restore button should be disabled.

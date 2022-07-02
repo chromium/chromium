@@ -136,6 +136,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // highlight/fragment.
   bool opened_from_highlight = false;
 
+  // The context menu was opened on an input field. Otherwise, `absl::nullopt`.
+  absl::optional<uint64_t> field_renderer_id;
+
  private:
   void Assign(const UntrustworthyContextMenuParams& other);
 };

@@ -5,15 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_CONTROLLER_H_
 
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/frame/device_single_window_event_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 class DeviceOrientationData;
 class DeviceOrientationEventPump;
 class Event;
+class ScriptState;
 
 class MODULES_EXPORT DeviceOrientationController
     : public DeviceSingleWindowEventController,
@@ -40,6 +44,8 @@ class MODULES_EXPORT DeviceOrientationController
       LocalFrame&,
       const AtomicString& event_name);
 
+  ScriptPromise RequestPermission(ScriptState*);
+
  protected:
   void RegisterWithOrientationEventPump(bool absolute);
 
@@ -59,6 +65,9 @@ class MODULES_EXPORT DeviceOrientationController
   DeviceOrientationData* LastData() const;
 
   Member<DeviceOrientationData> override_orientation_data_;
+
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+  bool has_requested_permission_ = false;
 };
 
 }  // namespace blink

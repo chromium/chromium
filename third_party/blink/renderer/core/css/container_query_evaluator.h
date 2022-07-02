@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -25,7 +27,9 @@ class ContainerSelector;
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
-  static Element* FindContainer(const StyleRecalcContext& context,
+  // Look for a container query container in the inclusive ancestor
+  // chain of `context_element`.
+  static Element* FindContainer(Element* context_element,
                                 const ContainerSelector&);
   static bool EvalAndAdd(const StyleRecalcContext&,
                          const ContainerQuery&,
@@ -40,7 +44,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   double Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
 
-  enum class Change {
+  enum class Change : uint8_t {
     // The update has no effect on the evaluation of queries associated with
     // this evaluator, and therefore we do not need to perform style recalc of
     // any elements which depend on this evaluator.
@@ -59,9 +63,13 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Dependent queries are cleared when kUnnamed/kNamed is returned (and left
   // unchanged otherwise).
   Change ContainerChanged(Document&,
-                          const ComputedStyle&,
+                          Element& container,
                           PhysicalSize,
                           PhysicalAxes contained_axes);
+
+  // We may need to update the internal CSSContainerValues of this evaluator
+  // when e.g. the rem unit changes.
+  void UpdateValuesIfNeeded(Document&, Element& container, StyleRecalcChange);
 
   void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
                              const ComputedStyle& new_style);
@@ -72,17 +80,20 @@ class CORE_EXPORT ContainerQueryEvaluator final
   friend class ContainerQueryEvaluatorTest;
 
   void SetData(Document&,
-               const ComputedStyle&,
+               Element& container,
                PhysicalSize,
                PhysicalAxes contained_axes);
-  void ClearResults();
+  void ClearResults(Change change);
   Change ComputeChange() const;
   bool Eval(const ContainerQuery&) const;
-  bool Eval(const ContainerQuery&, MediaQueryEvaluator::Results) const;
+  bool Eval(const ContainerQuery&, MediaQueryResultFlags*) const;
 
   struct Result {
     // Main evaluation result.
     bool value = false;
+    // The units that were relevant for the result.
+    // See `MediaQueryExpValue::UnitFlags`.
+    unsigned unit_flags : MediaQueryExpValue::kUnitFlagsBits;
     // Indicates what we need to invalidate if the result value changes.
     Change change = Change::kNone;
   };
@@ -99,7 +110,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
   PhysicalAxes contained_axes_;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   bool referenced_by_unit_ = false;
-  bool depends_on_font_ = false;
+  // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
+  // ContainerQueryEvaluator.
+  unsigned unit_flags_ = 0;
   bool font_dirty_ = false;
 };
 

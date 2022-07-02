@@ -309,7 +309,7 @@ TEST(WebRequestConditionTest, TestPortFilter) {
   result->GetURLMatcherConditionSets(&url_matcher_condition_set);
   matcher.AddConditionSets(url_matcher_condition_set);
 
-  std::set<URLMatcherConditionSet::ID> url_match_ids;
+  std::set<base::MatcherStringPattern::ID> url_match_ids;
 
   // Test various URLs.
   GURL http_url("http://www.example.com");

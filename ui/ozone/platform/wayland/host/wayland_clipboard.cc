@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -189,7 +190,7 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   }
 
   // The device manager used to access data device and create data sources.
-  Manager* const manager_;
+  const raw_ptr<Manager> manager_;
 
   // The clipboard buffer managed by this |this|.
   const ui::ClipboardBuffer buffer_;
@@ -203,7 +204,7 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   // Notifies when clipboard data changes. Can be empty if not set.
   ClipboardDataChangedCallback clipboard_changed_callback_;
 
-  ui::WaylandConnection* const connection_;
+  const raw_ptr<ui::WaylandConnection> connection_;
 
   base::WeakPtrFactory<ClipboardImpl> weak_factory_{this};
 };

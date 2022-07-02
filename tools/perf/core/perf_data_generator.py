@@ -220,7 +220,7 @@ FYI_BUILDERS = {
         'dimension': {
             'gpu': '10de',
             'id': 'build186-b7',
-            'os': 'Ubuntu-14.04',
+            'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests.perf-fyi',
         },
     },
@@ -651,33 +651,6 @@ BUILDERS = {
         'dimension': {
             'cpu': 'x86',
             'os': 'Mac',
-            'pool': 'chrome.tests',
-        },
-        'perf_trigger': False,
-    },
-    'win32-builder-perf': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
-        'tests': [{
-            'name': 'chrome_sizes',
-            'isolate': 'chrome_sizes',
-            'type': TEST_TYPES.GENERIC,
-            'resultdb': {
-                'has_native_resultdb_integration': True,
-            },
-        }],
-        'dimension': {
-            'cpu': 'x86',
-            'os': 'Windows',
-            'pool': 'chrome.tests',
-        },
-        'perf_trigger':
-        False,
-    },
-    'win32-builder-perf-pgo': {
-        'additional_compile_targets': ['chromium_builder_perf'],
-        'dimension': {
-            'cpu': 'x86',
-            'os': 'Windows',
             'pool': 'chrome.tests',
         },
         'perf_trigger': False,

@@ -47,11 +47,13 @@ _CONFIG = [
             'base::SampleMetadataScope',
             'base::AutoReset',
             'base::Contains',
+            'base::ConditionVariable',
             'base::CpuReductionExperimentFilter',
             'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',
             'base::ElapsedTimer',
+            'base::EnumSet',
             'base::JobDelegate',
             'base::JobHandle',
             'base::PostJob',
@@ -67,6 +69,7 @@ _CONFIG = [
             "base::i18n::ToUCharPtr",
             'base::Location',
             'base::MakeRefCounted',
+            'base::MatcherStringPattern',
             'base::Microseconds',
             'base::Milliseconds',
             'base::Minutes',
@@ -77,6 +80,7 @@ _CONFIG = [
             'base::PlatformThreadId',
             'base::RefCountedData',
             'base::RunLoop',
+            'base::HashingLRUCache',
             'base::ReadOnlySharedMemoryMapping',
             'base::ReadOnlySharedMemoryRegion',
             'base::RemoveChars',
@@ -87,7 +91,6 @@ _CONFIG = [
             'base::ScopedAllowBlocking',
             'base::ScopedFD',
             'base::ScopedClosureRunner',
-            'base::StringPattern',
             'base::StringPiece',
             'base::SubstringSetMatcher',
             'base::SupportsWeakPtr',
@@ -126,6 +129,9 @@ _CONFIG = [
 
             # //base/task/bind_post_task.h
             'base::BindPostTask',
+
+            # //base/bind.h
+            'base::IgnoreResult',
 
             # //base/bits.h
             'base::bits::.+',
@@ -609,9 +615,13 @@ _CONFIG = [
             'service_manager::InterfaceProvider',
 
             # STL containers such as std::string and std::vector are discouraged
-            # but still needed for interop with WebKit/common. Note that other
+            # but still needed for interop with blink/common. Note that other
             # STL types such as std::unique_ptr are encouraged.
             'std::.+',
+
+            # Similarly, GURL is allowed to interoperate with blink/common and
+            # other common code shared between browser and renderer.
+            'GURL',
 
             # UI Cursor
             'ui::Cursor',
@@ -1436,6 +1446,7 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/exported/',
+            'third_party/blink/renderer/core/frame/',
             'third_party/blink/renderer/core/input/',
         ],
         'allowed': [
@@ -1727,6 +1738,12 @@ _CONFIG = [
         ],
         'allowed': [
             'base::Value',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/renderer/modules/clipboard/'],
+        'allowed': [
+            'net::ParseMimeTypeWithoutParameter',
         ],
     },
 ]

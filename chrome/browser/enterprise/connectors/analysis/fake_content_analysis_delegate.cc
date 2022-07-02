@@ -4,9 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -26,7 +29,6 @@ safe_browsing::BinaryUploadService::Result
 FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
@@ -37,7 +39,6 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
                               safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
-      encryption_callback_(encryption_callback),
       dm_token_(std::move(dm_token)) {}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
@@ -55,14 +56,18 @@ void FakeContentAnalysisDelegate::SetResponseResult(
 std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback) {
   auto ret = std::make_unique<FakeContentAnalysisDelegate>(
-      delete_closure, status_callback, encryption_callback, std::move(dm_token),
-      web_contents, std::move(data), std::move(callback));
+      delete_closure, status_callback, std::move(dm_token), web_contents,
+      std::move(data), std::move(callback));
+  FilesRequestHandler::SetFactoryForTesting(base::BindRepeating(
+      &FakeFilesRequestHandler::Create,
+      base::BindRepeating(
+          &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
+          base::Unretained(ret.get()))));
   return ret;
 }
 
@@ -167,11 +172,14 @@ void FakeContentAnalysisDelegate::Response(
       break;
     case AnalysisConnector::FILE_ATTACHED:
     case AnalysisConnector::FILE_DOWNLOADED:
-      FileRequestCallback(path, result_, response);
+      DCHECK(GetFilesRequestHandlerForTesting());
+      GetFilesRequestHandlerForTesting()->FileRequestCallbackForTesting(
+          path, result_, response);
       break;
     case AnalysisConnector::PRINT:
       PageRequestCallback(result_, response);
       break;
+    case AnalysisConnector::FILE_TRANSFER:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED();
   }
@@ -190,7 +198,7 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       response_delay);
 }
 
-void FakeContentAnalysisDelegate::UploadFileForDeepScanning(
+void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {

@@ -240,6 +240,8 @@ TEST_F(FileAnalyzerTest, TypeInvalidZip) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::INVALID_ZIP);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::UNKNOWN);
 }
 
 // Since we only inspect contents of DMGs on OS X, we only get
@@ -268,34 +270,12 @@ TEST_F(FileAnalyzerTest, TypeInvalidDmg) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::UNKNOWN);
 }
 #endif
 
 // TODO(drubery): Add tests verifying Rar inspection
-
-TEST_F(FileAnalyzerTest, ArchiveIsValidUnsetForNonArchive) {
-  scoped_refptr<MockBinaryFeatureExtractor> extractor =
-      new testing::StrictMock<MockBinaryFeatureExtractor>();
-  FileAnalyzer analyzer(extractor);
-  base::RunLoop run_loop;
-
-  base::FilePath target_path(FILE_PATH_LITERAL("target.exe"));
-  base::FilePath tmp_path =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
-
-  EXPECT_CALL(*extractor, CheckSignature(tmp_path, _)).WillOnce(Return());
-  EXPECT_CALL(*extractor, ExtractImageFeatures(tmp_path, _, _, _))
-      .WillRepeatedly(Return(true));
-
-  analyzer.Start(
-      target_path, tmp_path,
-      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
-                     run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ASSERT_TRUE(has_result_);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::UNSET);
-}
 
 TEST_F(FileAnalyzerTest, ArchiveIsValidSetForValidArchive) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =
@@ -324,7 +304,8 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForValidArchive) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::VALID);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::VALID);
 }
 
 TEST_F(FileAnalyzerTest, ArchiveIsValidSetForInvalidArchive) {
@@ -349,7 +330,8 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForInvalidArchive) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::INVALID);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::UNKNOWN);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedExecutableSetForZipWithExecutable) {
@@ -693,7 +675,8 @@ TEST_F(FileAnalyzerTest, TypeSniffsDmgWithoutExtension) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::MAC_EXECUTABLE);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::VALID);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::VALID);
 }
 
 #endif
@@ -720,7 +703,8 @@ TEST_F(FileAnalyzerTest, SmallRarHasContentInspection) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::VALID);
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::VALID);
   ASSERT_EQ(1, result_.archived_binaries.size());
 
   // Since the file is small enough, we should have a sha256
@@ -760,8 +744,9 @@ TEST_F(FileAnalyzerTest, LargeRarSkipsContentInspection) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::INVALID_RAR);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::INVALID);
   ASSERT_EQ(0, result_.archived_binaries.size());
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
 }
 
 TEST_F(FileAnalyzerTest, ZipFilesGetFileCount) {
@@ -792,8 +777,8 @@ TEST_F(FileAnalyzerTest, ZipFilesGetFileCount) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(1, result_.file_count);
-  EXPECT_EQ(0, result_.directory_count);
+  EXPECT_EQ(1, result_.archive_summary.file_count());
+  EXPECT_EQ(0, result_.archive_summary.directory_count());
 }
 
 TEST_F(FileAnalyzerTest, ZipFilesGetDirectoryCount) {
@@ -821,8 +806,8 @@ TEST_F(FileAnalyzerTest, ZipFilesGetDirectoryCount) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(0, result_.file_count);
-  EXPECT_EQ(1, result_.directory_count);
+  EXPECT_EQ(0, result_.archive_summary.file_count());
+  EXPECT_EQ(1, result_.archive_summary.directory_count());
 }
 
 TEST_F(FileAnalyzerTest, RarFilesGetFileCount) {
@@ -845,8 +830,8 @@ TEST_F(FileAnalyzerTest, RarFilesGetFileCount) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(1, result_.file_count);
-  EXPECT_EQ(0, result_.directory_count);
+  EXPECT_EQ(1, result_.archive_summary.file_count());
+  EXPECT_EQ(0, result_.archive_summary.directory_count());
 }
 
 TEST_F(FileAnalyzerTest, RarFilesGetDirectoryCount) {
@@ -869,8 +854,8 @@ TEST_F(FileAnalyzerTest, RarFilesGetDirectoryCount) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
-  EXPECT_EQ(0, result_.file_count);
-  EXPECT_EQ(1, result_.directory_count);
+  EXPECT_EQ(0, result_.archive_summary.file_count());
+  EXPECT_EQ(1, result_.archive_summary.directory_count());
 }
 
 TEST_F(FileAnalyzerTest, LargeZipSkipsContentInspection) {
@@ -912,8 +897,9 @@ TEST_F(FileAnalyzerTest, LargeZipSkipsContentInspection) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::INVALID_ZIP);
-  EXPECT_EQ(result_.archive_is_valid, FileAnalyzer::ArchiveValid::INVALID);
   ASSERT_EQ(0, result_.archived_binaries.size());
+  EXPECT_EQ(result_.archive_summary.parser_status(),
+            ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
 }
 
 TEST_F(FileAnalyzerTest, ZipAnalysisResultMetric) {

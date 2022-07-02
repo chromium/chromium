@@ -56,6 +56,12 @@
     await this._logMessage(message, expectError, styleSheetId);
   }
 
+  async setScopeText(styleSheetId, expectError, options) {
+    options.styleSheetId = styleSheetId;
+    var message = await this._dp.CSS.setScopeText(options);
+    await this._logMessage(message, expectError, styleSheetId);
+  }
+
   async addRule(styleSheetId, expectError, options) {
     options.styleSheetId = styleSheetId;
     var message = await this._dp.CSS.addRule(options);
@@ -108,6 +114,13 @@
     const layersLine = layers.map(s => s.text).join('.');
     if (layersLine.length) {
       this._indentLog(baseIndent, '@layer ' + layersLine);
+      baseIndent += 4;
+    }
+
+    const scopes = rule.scopes || [];
+    const scopesLine = scopes.map(s => s.text).join(' ');
+    if (scopesLine.length) {
+      this._indentLog(baseIndent, '@scope ' + scopesLine);
       baseIndent += 4;
     }
 

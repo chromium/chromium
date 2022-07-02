@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 
-#include "base/callback_helpers.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -30,34 +28,6 @@ class FuseBoxServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> object) override;
 
  private:
-  // storage::FileSystemOperationRunner::OpenFile gives us an
-  // "on_close_calback" that we are supposed to run after the file is closed.
-  // To complicate matters, we duplicate the underlying FD (file descriptor)
-  // and pass it over D-Bus to the fusebox::kFuseBoxServiceInterface client for
-  // which we are the fusebox::kFuseBoxServiceInterface server.
-  //
-  // This struct tracks when the underlying FD is closed in both client and
-  // server. When its ref-count hits zero, on_close_callback_runner will run.
-  class OnCloseCallbackTracker
-      : public base::RefCounted<OnCloseCallbackTracker> {
-   public:
-    explicit OnCloseCallbackTracker(
-        base::ScopedClosureRunner on_close_callback);
-    OnCloseCallbackTracker(const OnCloseCallbackTracker&) = delete;
-    OnCloseCallbackTracker& operator=(const OnCloseCallbackTracker&) = delete;
-
-   private:
-    ~OnCloseCallbackTracker();
-    friend class base::DeleteHelper<OnCloseCallbackTracker>;
-    friend class base::RefCounted<OnCloseCallbackTracker>;
-
-    base::ScopedClosureRunner on_close_callback_runner;
-  };
-
-  // trackers_ and next_tracker_key_ should only be accessed on the UI thread.
-  base::flat_map<uint64_t, scoped_refptr<OnCloseCallbackTracker>> trackers_;
-  uint64_t next_tracker_key_;
-
   // D-Bus methods.
   //
   // In terms of semantics, they're roughly equivalent to the C standard
@@ -74,11 +44,7 @@ class FuseBoxServiceProvider
   void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
 
-  void ReplyToOpenTypical(scoped_refptr<storage::FileSystemContext> fs_context,
-                          dbus::MethodCall* method_call,
-                          dbus::ExportedObject::ResponseSender sender,
-                          base::File file,
-                          base::ScopedClosureRunner on_close_callback);
+  fusebox::Server server_;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<FuseBoxServiceProvider> weak_ptr_factory_{this};

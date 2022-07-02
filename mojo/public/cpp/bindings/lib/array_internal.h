@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -79,7 +80,7 @@ struct ArrayDataTraits<bool> {
     friend struct ArrayDataTraits<bool>;
     BitRef(uint8_t* storage, uint8_t mask);
     BitRef();
-    uint8_t* storage_;
+    raw_ptr<uint8_t> storage_;
     uint8_t mask_;
   };
 
@@ -95,7 +96,8 @@ struct ArrayDataTraits<bool> {
     return MessageFragmentArrayTraits<bool>::GetStorageSize(num_elements);
   }
   static BitRef ToRef(StorageType* storage, size_t offset) {
-    return BitRef(&storage[offset / 8], 1 << (offset % 8));
+    return BitRef(&storage[offset / 8],
+                  static_cast<uint8_t>(1 << (offset % 8)));
   }
   static bool ToConstRef(const StorageType* storage, size_t offset) {
     return (storage[offset / 8] & (1 << (offset % 8))) != 0;

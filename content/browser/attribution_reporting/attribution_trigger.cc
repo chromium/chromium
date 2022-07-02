@@ -28,15 +28,19 @@ AttributionTrigger::AttributionTrigger(
     url::Origin destination_origin,
     url::Origin reporting_origin,
     AttributionFilterData filters,
+    AttributionFilterData not_filters,
     absl::optional<uint64_t> debug_key,
     std::vector<EventTriggerData> event_triggers,
-    AttributionAggregatableTrigger aggregatable_trigger)
+    std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
+    AttributionAggregatableValues aggregatable_values)
     : destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
       filters_(std::move(filters)),
+      not_filters_(std::move(not_filters)),
       debug_key_(debug_key),
       event_triggers_(std::move(event_triggers)),
-      aggregatable_trigger_(std::move(aggregatable_trigger)) {
+      aggregatable_trigger_data_(std::move(aggregatable_trigger_data)),
+      aggregatable_values_(std::move(aggregatable_values)) {
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));
 }

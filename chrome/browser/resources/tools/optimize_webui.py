@@ -26,14 +26,7 @@ import node_modules
 _BASE_EXCLUDES = []
 for excluded_file in [
     'resources/polymer/v1_0/web-animations-js/web-animations-next-lite.min.js',
-    'resources/css/roboto.css',
-    'resources/css/text_defaults.css',
-    'resources/css/text_defaults_md.css',
-    'resources/mojo/mojo/public/js/mojo_bindings_lite.html',
-    'resources/mojo/mojo/public/mojom/base/time.mojom.html',
     'resources/mojo/mojo/public/mojom/base/time.mojom-lite.js',
-    'resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom.html',
-    'resources/mojo/services/network/public/mojom/ip_address.mojom.html',
     'resources/polymer/v3_0/polymer/polymer_bundled.min.js',
     'resources/js/load_time_data.m.js',
 ]:
@@ -209,6 +202,12 @@ def _optimize(in_folder, args):
       'strings.m.js',
   ]
   excludes.extend(args.exclude or [])
+
+  for exclude in excludes:
+    extension = os.path.splitext(exclude)[1]
+    assert extension == '.js', f'Unexpected |excludes| entry: {exclude}.' + \
+        ' Only .js files can appear in |excludes|.'
+
   external_paths = args.external_paths or []
 
   try:

@@ -20,6 +20,9 @@ chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
 ash::health::mojom::DiagnosticRoutineCommandEnum ConvertRoutineCommand(
     chromeos::api::os_diagnostics::RoutineCommandType commandType);
 
+ash::health::mojom::AcPowerStatusEnum ConvertAcPowerStatusRoutineType(
+    chromeos::api::os_diagnostics::AcPowerStatus routineType);
+
 chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
     ash::health::mojom::DiagnosticRoutineUserMessageEnum userMessage);
 

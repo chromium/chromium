@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/xml/document_xpath_evaluator.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
@@ -723,6 +724,8 @@ Response InspectorDOMAgent::collectClassNamesFromSubtree(
   HashSet<String> unique_names;
   *class_names = std::make_unique<protocol::Array<String>>();
   Node* parent_node = NodeForId(node_id);
+  if (!parent_node)
+    return Response::ServerError("No suitable node with given id found");
   auto* parent_element = DynamicTo<Element>(parent_node);
   if (!parent_element && !parent_node->IsDocumentNode() &&
       !parent_node->IsDocumentFragment())
@@ -806,6 +809,21 @@ Response InspectorDOMAgent::querySelectorAll(
 
   for (unsigned i = 0; i < elements->length(); ++i)
     (*result)->emplace_back(PushNodePathToFrontend(elements->item(i)));
+  return Response::Success();
+}
+
+Response InspectorDOMAgent::getTopLayerElements(
+    std::unique_ptr<protocol::Array<int>>* result) {
+  if (!document_)
+    return Response::ServerError("DOM agent hasn't been enabled");
+
+  *result = std::make_unique<protocol::Array<int>>();
+  for (auto element : document_->TopLayerElements()) {
+    int node_id = PushNodePathToFrontend(element);
+    if (node_id)
+      (*result)->emplace_back(node_id);
+  }
+
   return Response::Success();
 }
 
@@ -1653,7 +1671,7 @@ InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
 bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
                                                   Element* element) {
   const ComputedStyle* style = element->GetComputedStyle();
-  if (!style || !style->DependsOnContainerQueries())
+  if (!style || !style->DependsOnSizeContainerQueries())
     return false;
 
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
@@ -1804,9 +1822,13 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
 
     if (element->GetPseudoId()) {
       value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
+      if (auto tag = To<PseudoElement>(element)->document_transition_tag())
+        value->setPseudoIdentifier(tag);
     } else {
       if (!element->ownerDocument()->xmlVersion().IsEmpty())
         value->setXmlVersion(element->ownerDocument()->xmlVersion());
+      if (auto* slot = element->AssignedSlotWithoutRecalc())
+        value->setAssignedSlot(BuildBackendNode(slot));
     }
     std::unique_ptr<protocol::Array<protocol::DOM::Node>> pseudo_elements =
         BuildArrayForPseudoElements(element, nodes_map);
@@ -1935,6 +1957,15 @@ InspectorDOMAgent::BuildArrayForPseudoElements(Element* element,
       std::move(pseudo_elements));
 }
 
+std::unique_ptr<protocol::DOM::BackendNode> InspectorDOMAgent::BuildBackendNode(
+    Node* slot_element) {
+  return protocol::DOM::BackendNode::create()
+      .setNodeType(slot_element->getNodeType())
+      .setNodeName(slot_element->nodeName())
+      .setBackendNodeId(IdentifiersFactory::IntIdForNode(slot_element))
+      .build();
+}
+
 std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
 InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   // TODO(hayato): In Shadow DOM v1, the concept of distributed nodes should
@@ -1946,14 +1977,7 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   for (auto& node : slot_element->AssignedNodes()) {
     if (ShouldSkipNode(node, IncludeWhitespace()))
       continue;
-
-    std::unique_ptr<protocol::DOM::BackendNode> backend_node =
-        protocol::DOM::BackendNode::create()
-            .setNodeType(node->getNodeType())
-            .setNodeName(node->nodeName())
-            .setBackendNodeId(IdentifiersFactory::IntIdForNode(node))
-            .build();
-    distributed_nodes->emplace_back(std::move(backend_node));
+    distributed_nodes->emplace_back(BuildBackendNode(node));
   }
   return distributed_nodes;
 }
@@ -2327,6 +2351,10 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
                                     document_node_to_id_map_.Get()));
 }
 
+void InspectorDOMAgent::TopLayerElementsChanged() {
+  GetFrontend()->topLayerElementsUpdated();
+}
+
 void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
   int pseudo_element_id = BoundNodeId(pseudo_element);
   if (!pseudo_element_id)
@@ -2336,7 +2364,10 @@ void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   DCHECK(parent);
   int parent_id = BoundNodeId(parent);
-  DCHECK(parent_id);
+  // Since the pseudo element tree created for a document transition is destroyed with in-order
+  // traversal, the parent node (::page-transition) are destroyed before its children
+  // (::page-transition-container).
+  DCHECK(parent_id || IsTransitionPseudoElement(pseudo_element->GetPseudoId()));
 
   Unbind(pseudo_element);
   GetFrontend()->pseudoElementRemoved(parent_id, pseudo_element_id);
@@ -2552,26 +2583,28 @@ protocol::Response InspectorDOMAgent::getFrameOwner(
     }
 
     if (IsA<LocalFrame>(frame)) {
-      for (HTMLFencedFrameElement* ff :
-           DocumentFencedFrames::From(*(To<LocalFrame>(frame)->GetDocument()))
-               .GetFencedFrames()) {
-        Frame* ff_frame = ff->ContentFrame();
-        if (ff_frame && IdentifiersFactory::FrameId(ff_frame) == frame_id) {
-          found_frame = ff_frame;
-          break;
+      if (auto* fenced_frames = DocumentFencedFrames::Get(
+              *To<LocalFrame>(frame)->GetDocument())) {
+        for (HTMLFencedFrameElement* ff : fenced_frames->GetFencedFrames()) {
+          Frame* ff_frame = ff->ContentFrame();
+          if (ff_frame && IdentifiersFactory::FrameId(ff_frame) == frame_id) {
+            found_frame = ff_frame;
+            break;
+          }
         }
       }
     }
   }
 
   if (!found_frame) {
-    for (PortalContents* portal :
-         DocumentPortals::From(*inspected_frames_->Root()->GetDocument())
-             .GetPortals()) {
-      Frame* portal_frame = portal->GetFrame();
-      if (IdentifiersFactory::FrameId(portal_frame) == frame_id) {
-        found_frame = portal_frame;
-        break;
+    if (auto* portals =
+            DocumentPortals::Get(*inspected_frames_->Root()->GetDocument())) {
+      for (PortalContents* portal : portals->GetPortals()) {
+        Frame* portal_frame = portal->GetFrame();
+        if (IdentifiersFactory::FrameId(portal_frame) == frame_id) {
+          found_frame = portal_frame;
+          break;
+        }
       }
     }
   }

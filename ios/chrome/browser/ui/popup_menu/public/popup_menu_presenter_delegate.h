@@ -15,7 +15,7 @@
 
 // Tells the delegate that user took an action that will result in the dismissal
 // of the presented view. It is the delegate's responsibility to call
-// |dismissAnimated:|.
+// `dismissAnimated:`.
 - (void)popupMenuPresenterWillDismiss:(PopupMenuPresenter*)presenter;
 
 @end

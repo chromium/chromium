@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
@@ -81,9 +82,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
-class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSwitcherViewObserver,
-                                      View.OnClickListener, StartSurface.OnTabSelectingListener,
-                                      BackPressHandler {
+class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.OnClickListener,
+                                      StartSurface.OnTabSelectingListener, BackPressHandler {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -171,8 +171,6 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
     private boolean mHasFeedPlaceholderShown;
     private final JankTracker mJankTracker;
-    private boolean mHideMVForNewSurface;
-    private boolean mHideTabCarouselForNewSurface;
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private ViewGroup mTabSwitcherContainer;
@@ -278,7 +276,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
                     if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                             && !mHideOverviewOnTabSelecting
                             && !mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) {
-                        setTabCarouselVisibility(!mIsIncognito && !mHideTabCarouselForNewSurface);
+                        setTabCarouselVisibility(!mIsIncognito);
                     }
                 }
             };
@@ -362,6 +360,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         if (BackPressManager.isEnabled()) {
             backPressManager.addHandler(this, Type.START_SURFACE_MEDIATOR);
             notifyBackPressStateChanged();
+            mController.getHandleBackPressChangedSupplier().addObserver(
+                    (v) -> notifyBackPressStateChanged());
             mController.isDialogVisibleSupplier().addObserver((v) -> notifyBackPressStateChanged());
         }
     }
@@ -423,8 +423,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceState.
-    @Override
-    public void setStartSurfaceState(
+    void setStartSurfaceState(
             @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
         // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
         // states.
@@ -432,6 +431,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         if (mPropertyModel == null || state == mStartSurfaceState) return;
 
         // Cache previous state.
+        int cachedPreviousState = mPreviousStartSurfaceState;
         if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {
             mPreviousStartSurfaceState = mStartSurfaceState;
         }
@@ -477,11 +477,13 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
             RecordUserAction.record("StartSurface.SinglePane.Home");
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             RecordUserAction.record("StartSurface.SinglePane.Tabswitcher");
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS
+                && cachedPreviousState == StartSurfaceState.SHOWN_HOMEPAGE) {
+            ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
         }
     }
 
-    @Override
-    public void setStartSurfaceState(@StartSurfaceState int state) {
+    void setStartSurfaceState(@StartSurfaceState int state) {
         setStartSurfaceState(state, mLaunchOrigin);
     }
 
@@ -510,28 +512,6 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
             mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
             StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
 
-            String newHomeSurface =
-                    StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
-            switch (newHomeSurface) {
-                case "hide_tab_switcher_only":
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                case "hide_mv_tiles_and_tab_switcher":
-                    mHideMVForNewSurface = true;
-                    mHideTabCarouselForNewSurface = true;
-                    break;
-                default:
-                    mHideMVForNewSurface = false;
-                    mHideTabCarouselForNewSurface = false;
-            }
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-            if (!mTabModelSelector.isIncognitoSelected()) {
-                // Every time Chrome is started, no matter warm start or cold start, show MV tiles &
-                // tab carousel.
-                mHideMVForNewSurface = false;
-                mHideTabCarouselForNewSurface = false;
-            }
         } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
             // Set secondary surface visible to make sure tab list recyclerview is updated in time
             // (before GTS animations start). We need to skip
@@ -543,9 +523,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
-            setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
-            setTabCarouselVisibility(
-                    hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
+            setMVTilesVisibility(!mIsIncognito);
+            setTabCarouselVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
             // TODO(qinmin): show query tiles when flag is enabled.
             setQueryTilesVisibility(false);
@@ -589,45 +568,37 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         }
     }
 
-    @Override
     @StartSurfaceState
-    public int getStartSurfaceState() {
+    int getStartSurfaceState() {
         return mStartSurfaceState;
     }
 
-    @Override
-    public int getPreviousStartSurfaceState() {
+    int getPreviousStartSurfaceState() {
         return mPreviousStartSurfaceState;
     }
 
-    @Override
-    public ViewGroup getTabSwitcherContainer() {
+    ViewGroup getTabSwitcherContainer() {
         return mTabSwitcherContainer;
     }
 
-    @Override
-    public void setSnackbarParentView(ViewGroup parentView) {
+    void setSnackbarParentView(ViewGroup parentView) {
         if (mSnackbarManager == null) return;
         mSnackbarManager.setParentView(parentView);
     }
 
-    @Override
-    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+    void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
     }
 
-    @Override
-    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+    void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.removeObserver(observer);
     }
 
-    @Override
-    public void hideTabSwitcherView(boolean animate) {
+    void hideTabSwitcherView(boolean animate) {
         mController.hideTabSwitcherView(animate);
     }
 
-    @Override
-    public void showOverview(boolean animate) {
+    void showOverview(boolean animate) {
         // TODO(crbug.com/982018): Animate the bottom bar together with the Tab Grid view.
         if (mPropertyModel != null) {
             RecordUserAction.record("StartSurface.Shown");
@@ -671,8 +642,15 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         mController.showTabSwitcherView(animate);
     }
 
-    @Override
-    public boolean onBackPressed() {
+    boolean onBackPressed() {
+        boolean ret = onBackPressedInternal();
+        if (ret) {
+            BackPressManager.record(BackPressHandler.Type.START_SURFACE_MEDIATOR);
+        }
+        return ret;
+    }
+
+    private boolean onBackPressedInternal() {
         boolean isOnHomepage = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
         // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
@@ -694,6 +672,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
                 // If we reached Tab switcher from HomePage, and there isn't any dialog shown,
                 // updates the state, and ChromeTabbedActivity will handle the back button.
                 setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+                ReturnToChromeUtil.recordBackNavigationToStart("FromTabSwitcher");
                 return true;
             } else {
                 return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
@@ -712,7 +691,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
 
     @Override
     public void handleBackPress() {
-        boolean ret = onBackPressed();
+        boolean ret = onBackPressedInternal();
         assert ret;
     }
 
@@ -721,8 +700,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         return mBackPressChangedSupplier;
     }
 
-    @Override
-    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
+    void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
         mController.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
     }
 
@@ -744,14 +722,12 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         }
     }
 
-    @Override
-    public boolean inShowState() {
+    boolean inShowState() {
         return mStartSurfaceState != StartSurfaceState.NOT_SHOWN
                 && mStartSurfaceState != StartSurfaceState.DISABLED;
     }
 
-    @Override
-    public boolean isShowingStartSurfaceHomepage() {
+    boolean isShowingStartSurfaceHomepage() {
         // When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage
         // is showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
         // SHOWN_HOMEPAGE or NOT_SHOWN, homepage is showing.
@@ -862,12 +838,12 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
     public boolean shouldShowFeedPlaceholder() {
         if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
             mFeedVisibilityInSharedPreferenceOnStartUp =
-                    StartSurfaceConfiguration.getFeedArticlesVisibility();
+                    ReturnToChromeUtil.getFeedArticlesVisibility();
         }
 
         return mIsStartSurfaceEnabled
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart
+                && ReturnToChromeUtil.getFeedArticlesVisibility() && !mHadWarmStart
                 && !mHasFeedPlaceholderShown;
     }
 
@@ -1123,7 +1099,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSw
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
-    private boolean shouldInterceptBackPress() {
+    @VisibleForTesting
+    boolean shouldInterceptBackPress() {
         if (mSecondaryTasksSurfaceController != null
                 && mSecondaryTasksSurfaceController.isDialogVisible()) {
             return true;

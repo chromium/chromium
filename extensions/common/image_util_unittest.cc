@@ -111,6 +111,29 @@ TEST(ImageUtilTest, IsIconSufficientlyVisible) {
   }
 }
 
+TEST(ImageUtilTest, IconTooLargeForAnalysis) {
+  base::FilePath test_dir;
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
+  // This is a large icon which is entirely black, so it would be
+  // visible. However, it exceeds the max allowed size for analysis,
+  // so it will fail.
+  base::FilePath icon_path = test_dir.AppendASCII("3000x3000.png");
+  SkBitmap large_icon;
+  SkBitmap rendered_icon;
+  ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &large_icon));
+  EXPECT_FALSE(image_util::RenderIconForVisibilityAnalysis(
+      large_icon, SK_ColorWHITE, &rendered_icon));
+
+  // Shrink the icon so it's under the limit. It should be visible.
+  const SkImageInfo& image_info = large_icon.info();
+  SkImageInfo new_image_info = SkImageInfo::Make(
+      128, 128, image_info.colorType(), image_info.alphaType());
+  ASSERT_TRUE(large_icon.setInfo(new_image_info));
+  EXPECT_TRUE(image_util::RenderIconForVisibilityAnalysis(
+      large_icon, SK_ColorWHITE, &rendered_icon));
+  EXPECT_FALSE(rendered_icon.empty());
+}
+
 TEST(ImageUtilTest, MANUAL_IsIconSufficientlyVisiblePerfTest) {
   base::FilePath test_dir;
   ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
@@ -161,7 +184,8 @@ void WriteRenderedIcon(const SkBitmap& icon,
                        SkColor background_color,
                        const base::FilePath& rendered_icon_path) {
   SkBitmap bitmap;
-  image_util::RenderIconForVisibilityAnalysis(icon, background_color, &bitmap);
+  DCHECK(image_util::RenderIconForVisibilityAnalysis(icon, background_color,
+                                                     &bitmap));
   std::vector<unsigned char> output_data;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output_data));
   const int bytes_to_write = output_data.size();

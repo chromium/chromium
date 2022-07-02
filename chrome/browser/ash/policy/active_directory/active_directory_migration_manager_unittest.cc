@@ -12,7 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +33,8 @@ class ActiveDirectoryMigrationManagerTest : public testing::Test {
   ActiveDirectoryMigrationManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         local_state_(TestingBrowserProcess::GetGlobal()) {
-    chromeos::SessionManagerClient::InitializeFake();
-    session_manager_client_ = chromeos::FakeSessionManagerClient::Get();
+    ash::SessionManagerClient::InitializeFake();
+    session_manager_client_ = ash::FakeSessionManagerClient::Get();
 
     SetEnrollmentIdUploadedPref(/*value=*/false);
     SetChromadMigrationEnabledPref(/*value=*/false);
@@ -44,7 +44,7 @@ class ActiveDirectoryMigrationManagerTest : public testing::Test {
   ~ActiveDirectoryMigrationManagerTest() override {
     migration_manager_->Shutdown();
     migration_manager_.reset();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
   }
 
  protected:
@@ -90,7 +90,7 @@ class ActiveDirectoryMigrationManagerTest : public testing::Test {
   }
 
   session_manager::SessionManager session_manager_;
-  raw_ptr<chromeos::FakeSessionManagerClient> session_manager_client_;
+  raw_ptr<ash::FakeSessionManagerClient> session_manager_client_;
   content::BrowserTaskEnvironment task_environment_;
   base::RunLoop run_loop_first_;
   base::RunLoop run_loop_following_;

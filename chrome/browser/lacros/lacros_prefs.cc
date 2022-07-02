@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/lacros_prefs.h"
 
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -29,10 +30,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // location with suitable #ifdefs.
   registry->RegisterBooleanPref(::prefs::kSettingsShowOSBanner, true);
 
-  // The following two prefs are used in imageWriterPrivate extension api
-  // implementation code, which are supported in Lacros.
-  registry->RegisterBooleanPref(::prefs::kExternalStorageDisabled, false);
-  registry->RegisterBooleanPref(::prefs::kExternalStorageReadOnly, false);
+  // The preferences on external storages are used in imageWriterPrivate
+  // extension api implementation code, which are supported in Lacros.
+  disks::prefs::RegisterProfilePrefs(registry);
 }
 
 void RegisterExtensionControlledAshPrefs(

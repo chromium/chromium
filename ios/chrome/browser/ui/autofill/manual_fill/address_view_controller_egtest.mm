@@ -288,7 +288,7 @@ BOOL WaitForKeyboardToAppear() {
   testAddressIconIsNotVisibleWhenAddressStoreEmpty
 #endif
 - (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
-  // Delete the profile that is added on |-setUp|.
+  // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
 
   // Bring up the keyboard.

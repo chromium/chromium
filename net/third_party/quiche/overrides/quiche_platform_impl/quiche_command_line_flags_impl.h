@@ -144,6 +144,11 @@ QuicheParseCommandLineFlagsResult QuicheParseCommandLineFlagsHelper(
 
 void QuichePrintCommandLineFlagHelpImpl(const char* usage);
 
+template <typename T>
+T GetQuicheCommandLineFlag(const T& flag) {
+  return flag;
+}
+
 }  // namespace quiche
 
 #endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_COMMAND_LINE_FLAGS_IMPL_H_

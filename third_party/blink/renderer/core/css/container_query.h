@@ -19,11 +19,11 @@ namespace blink {
 // https://drafts.csswg.org/css-contain-3/#container-rule
 class CORE_EXPORT ContainerSelector {
  public:
-  using FeatureFlags = MediaQueryExpNode::FeatureFlags;
-
   ContainerSelector() = default;
   ContainerSelector(const ContainerSelector&) = default;
   explicit ContainerSelector(AtomicString name) : name_(std::move(name)) {}
+  explicit ContainerSelector(PhysicalAxes physical_axes)
+      : physical_axes_(physical_axes) {}
   ContainerSelector(AtomicString name, const MediaQueryExpNode&);
 
   const AtomicString& Name() const { return name_; }
@@ -34,13 +34,14 @@ class CORE_EXPORT ContainerSelector {
 
  private:
   AtomicString name_;
-  FeatureFlags feature_flags_ = 0;
+  PhysicalAxes physical_axes_{kPhysicalAxisNone};
+  LogicalAxes logical_axes_{kLogicalAxisNone};
 };
 
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
  public:
-  ContainerQuery(ContainerSelector, std::unique_ptr<MediaQueryExpNode> query);
+  ContainerQuery(ContainerSelector, const MediaQueryExpNode* query);
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
@@ -50,7 +51,10 @@ class CORE_EXPORT ContainerQuery final
 
   String ToString() const;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(query_);
+    visitor->Trace(parent_);
+  }
 
  private:
   friend class ContainerQueryTest;
@@ -61,7 +65,7 @@ class CORE_EXPORT ContainerQuery final
   const MediaQueryExpNode& Query() const { return *query_; }
 
   ContainerSelector selector_;
-  std::unique_ptr<MediaQueryExpNode> query_;
+  Member<const MediaQueryExpNode> query_;
   Member<const ContainerQuery> parent_;
 };
 

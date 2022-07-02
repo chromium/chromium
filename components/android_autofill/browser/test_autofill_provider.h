@@ -20,12 +20,14 @@ class TestAutofillProvider : public AutofillProvider {
   ~TestAutofillProvider() override = default;
 
   // AutofillProvider:
-  void OnAskForValuesToFill(AndroidAutofillManager* manager,
-                            int32_t id,
-                            const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box,
-                            bool autoselect_first_suggestion) override {}
+  void OnAskForValuesToFill(
+      AndroidAutofillManager* manager,
+      int32_t query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) override {}
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,

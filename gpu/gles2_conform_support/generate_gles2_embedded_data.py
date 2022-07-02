@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,8 +9,9 @@ from __future__ import print_function
 
 import os
 import sys
+import typing
 
-class GenerateEmbeddedFiles(object):
+class GenerateEmbeddedFiles():
   """generates files to embed the gles2 conform test data in executable"""
 
   paths_to_ignore = set([
@@ -28,7 +29,7 @@ class GenerateEmbeddedFiles(object):
       ".run",
   ])
 
-  def __init__(self, scan_dir, base_dir):
+  def __init__(self, scan_dir: str, base_dir: typing.Optional[str]):
     self.scan_dir = scan_dir
     self.base_dir = base_dir
     self.count = 0;
@@ -59,7 +60,7 @@ class GenerateEmbeddedFiles(object):
       self.files_data_h.close()
       self.files_toc_c.close()
 
-  def AddFiles(self, scan_dir):
+  def AddFiles(self, scan_dir: str) -> None:
     """Scan a folder and embed the contents of files."""
     files_to_embed = os.listdir(scan_dir)
     sub_dirs = []
@@ -103,7 +104,7 @@ class GenerateEmbeddedFiles(object):
       self.AddFiles(sub_dir)
 
 
-def main(argv):
+def main(argv: typing.List[str]) -> int:
   """This is the main function."""
 
   if len(argv) >= 1:

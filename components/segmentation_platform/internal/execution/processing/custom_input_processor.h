@@ -14,17 +14,19 @@
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
+class InputDelegateHolder;
 
 // CustomInputProcessor adds support to a larger variety of data type
 // (timestamps, strings mapped to enums, etc), transforming them into valid
 // input tensor to use when executing the ML model.
 class CustomInputProcessor : public QueryProcessor {
  public:
-  explicit CustomInputProcessor();
-  explicit CustomInputProcessor(const base::Time prediction_time);
-  explicit CustomInputProcessor(
+  CustomInputProcessor(const base::Time prediction_time,
+                       InputDelegateHolder* input_delegate_holder);
+  CustomInputProcessor(
       base::flat_map<FeatureIndex, proto::CustomInput>&& custom_inputs,
-      const base::Time prediction_time);
+      const base::Time prediction_time,
+      InputDelegateHolder* input_delegate_holder);
   ~CustomInputProcessor() override;
 
   using FeatureListQueryProcessorCallback =
@@ -57,16 +59,30 @@ class CustomInputProcessor : public QueryProcessor {
                               base::flat_map<IndexType, Tensor>)>;
 
   // Process a data mapping with a customized index type and return the tensor
-  // values in |callback|.
+  // values in |callback|. Appends the input to the provided `result` and
+  // returns it.
   template <typename IndexType>
   void ProcessIndexType(
       base::flat_map<IndexType, proto::CustomInput> custom_inputs,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      std::unique_ptr<base::flat_map<IndexType, Tensor>> result,
       TemplateCallback<IndexType> callback);
 
  private:
-  // Helper function for parsing a single custom input and insert the result
-  // along with the corresponding feature index.
+  // Helper method to handle async custom inputs for `ProcessIndexType()`
+  template <typename IndexType>
+  void OnGotProcessedValue(
+      base::flat_map<IndexType, proto::CustomInput> custom_inputs,
+      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      std::unique_ptr<base::flat_map<IndexType, Tensor>> result,
+      TemplateCallback<IndexType> callback,
+      IndexType current_index,
+      size_t current_tensor_length,
+      bool error,
+      Tensor current_value);
+
+  // Helper function for parsing a single sync custom input and insert the
+  // result along with the corresponding feature index.
   QueryProcessor::Tensor ProcessSingleCustomInput(
       const proto::CustomInput& custom_input,
       FeatureProcessorState* feature_processor_state);
@@ -80,6 +96,8 @@ class CustomInputProcessor : public QueryProcessor {
   // return whether it succeeded.
   bool AddTimeRangeBeforePrediction(const proto::CustomInput& custom_input,
                                     std::vector<ProcessedValue>& out_tensor);
+
+  const raw_ptr<InputDelegateHolder> input_delegate_holder_;
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, proto::CustomInput> custom_inputs_;

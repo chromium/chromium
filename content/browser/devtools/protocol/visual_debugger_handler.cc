@@ -34,7 +34,7 @@ void VisualDebuggerHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 DispatchResponse VisualDebuggerHandler::FilterStream(
-    std::unique_ptr<base::flat_map<std::string, base::Value>> in_filter) {
+    std::unique_ptr<base::Value::Dict> in_filter) {
   base::Value dict(std::move(*in_filter));
 
   GpuProcessHost::CallOnIO(
@@ -72,8 +72,7 @@ void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
   // above and thus should be in the correct thread.
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   frontend_->FrameResponse(
-      std::make_unique<base::flat_map<std::string, base::Value>>(
-          std::move(json).TakeDictDeprecated()));
+      std::make_unique<base::Value::Dict>(std::move(json.GetDict())));
 }
 
 DispatchResponse VisualDebuggerHandler::StopStream() {

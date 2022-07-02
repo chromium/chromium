@@ -34,13 +34,14 @@ void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   DCHECK(callback_.is_null());
 
   profile_ = ProfileManager::GetActiveUserProfile();
-  extension_service_ =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-
   if (!profile_) {
     std::move(callback).Run("There is no active user");
     return;
   }
+
+  extension_service_ =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
+
   callback_ = std::move(callback);
   errors_.clear();
   extensions_to_be_uninstalled_.clear();

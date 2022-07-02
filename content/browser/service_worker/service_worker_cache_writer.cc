@@ -761,7 +761,7 @@ class ServiceWorkerCacheWriter::DataPipeReader
   }
 
   // Parameters set on Read().
-  raw_ptr<net::IOBuffer> buffer_ = nullptr;
+  raw_ptr<net::IOBuffer, DanglingUntriaged> buffer_ = nullptr;
   uint32_t num_bytes_to_read_ = 0;
   ReadCallback callback_;
 

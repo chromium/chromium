@@ -412,7 +412,7 @@ void MultiBufferDataSource::Read(int64_t position,
     // muxing as soon as possible. This works because TryReadAt is
     // thread-safe.
     if (reader_) {
-      int bytes_read = reader_->TryReadAt(position, data, size);
+      int64_t bytes_read = reader_->TryReadAt(position, data, size);
       if (bytes_read > 0) {
         bytes_read_ += bytes_read;
         seek_positions_.push_back(position + bytes_read);
@@ -424,7 +424,7 @@ void MultiBufferDataSource::Read(int64_t position,
               kSeekDelay);
         }
 
-        std::move(read_cb).Run(bytes_read);
+        std::move(read_cb).Run(static_cast<int>(bytes_read));
         return;
       }
     }
@@ -457,7 +457,6 @@ void MultiBufferDataSource::ReadTask() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
   base::AutoLock auto_lock(lock_);
-  int bytes_read = 0;
   if (stop_signal_received_ || !read_op_)
     return;
   DCHECK(read_op_->size());
@@ -472,8 +471,7 @@ void MultiBufferDataSource::ReadTask() {
     return;
   }
   if (available) {
-    bytes_read =
-        static_cast<int>(std::min<int64_t>(available, read_op_->size()));
+    int64_t bytes_read = std::min<int64_t>(available, read_op_->size());
     bytes_read =
         reader_->TryReadAt(read_op_->position(), read_op_->data(), bytes_read);
 
@@ -489,7 +487,7 @@ void MultiBufferDataSource::ReadTask() {
         host_->SetTotalBytes(total_bytes_);
     }
 
-    ReadOperation::Run(std::move(read_op_), bytes_read);
+    ReadOperation::Run(std::move(read_op_), static_cast<int>(bytes_read));
 
     SeekTask_Locked();
   } else {

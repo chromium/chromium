@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
@@ -387,7 +388,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
 
   constexpr static char kSearchDomain[] = "a.test";
   constexpr static char16_t kSearchDomain16[] = u"a.test";
-  PrerenderManager* prerender_manager_;
+  raw_ptr<PrerenderManager> prerender_manager_;
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   std::string prerender_page_target_ = "/title1.html";

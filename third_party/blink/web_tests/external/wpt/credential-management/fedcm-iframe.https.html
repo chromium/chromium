@@ -1,0 +1,58 @@
+<!doctype html>
+<link rel="help" href="https://wicg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<div id=log>
+<script>
+'use strict';
+
+const host = get_host_info();
+const remoteBaseURL =
+    host.HTTPS_REMOTE_ORIGIN +
+    window.location.pathname.replace(/\/[^\/]*$/, '/');
+
+async function createIframeAndWaitForMessage(test, iframeUrl, setPermissionPolicy) {
+    const messageWatcher = new EventWatcher(test, window, "message");
+    var iframe = document.createElement("iframe");
+    iframe.src = iframeUrl;
+    if (setPermissionPolicy) {
+      iframe.allow = "federated-credentials";
+    }
+    document.body.appendChild(iframe);
+    const message = await messageWatcher.wait_for("message");
+    return message.data;
+}
+
+promise_test(async t => {
+  const message = await createIframeAndWaitForMessage(
+      t, "support/fedcm-iframe.html",
+      /*setPermissionPolicy=*/false);
+  assert_equals(message.result, "Pass");
+  assert_equals(message.token, "a_token");
+}, "FedCM enabled in same origin iframe");
+
+promise_test(async t => {
+  const message = await createIframeAndWaitForMessage(
+      t, remoteBaseURL + "support/fedcm-iframe.html",
+      /*setPermissionPolicy=*/true);
+  assert_equals(message.result, "Pass");
+  assert_equals(message.token, "a_token");
+}, "FedCM enabled in cross origin iframe with permissions policy");
+
+promise_test(async t => {
+  const message = await createIframeAndWaitForMessage(
+      t, remoteBaseURL + "support/fedcm-iframe.html",
+      /*setPermissionPolicy=*/false);
+  assert_equals(message.result, "Fail");
+  assert_equals(message.errorType, "NotAllowedError");
+}, "FedCM disabled in cross origin iframe without permissions policy");
+
+promise_test(async t => {
+  const message = await createIframeAndWaitForMessage(
+      t, remoteBaseURL + "support/fedcm-iframe-level2.html",
+      /*setPermissionPolicy=*/true);
+  assert_equals(message.result, "Fail");
+  assert_equals(message.errorType, "NotAllowedError");
+  }, "FedCM disabled in nested cross origin iframes regardless of permissions policy");
+</script>

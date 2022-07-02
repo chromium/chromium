@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -58,7 +59,7 @@
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
 #elif defined(USE_CRAS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -106,8 +107,8 @@ struct TestAudioManagerFactory<std::nullptr_t> {
 };
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-using chromeos::AudioNode;
-using chromeos::AudioNodeList;
+using ::ash::AudioNode;
+using ::ash::AudioNodeList;
 
 const int kDefaultSampleRate = 48000;
 
@@ -313,12 +314,12 @@ class AudioManagerTest : public ::testing::Test {
   void TearDown() override {
     CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
-    chromeos::CrasAudioClient::Shutdown();
+    ash::CrasAudioClient::Shutdown();
   }
 
   void SetUpCrasAudioHandlerWithTestingNodes(const AudioNodeList& audio_nodes) {
-    chromeos::CrasAudioClient::InitializeFake();
-    chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting(audio_nodes);
+    ash::CrasAudioClient::InitializeFake();
+    ash::FakeCrasAudioClient::Get()->SetAudioNodesForTesting(audio_nodes);
     audio_pref_handler_ = new ash::AudioDevicesPrefHandlerStub();
     CrasAudioHandler::Initialize(
         /*media_controller_manager*/ mojo::NullRemote(), audio_pref_handler_);
@@ -1016,7 +1017,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 
  private:
   const int expected_frames_per_buffer_;
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
 };
 
 // Test that we can create an AudioOutputStream with kMinAudioBufferSize and

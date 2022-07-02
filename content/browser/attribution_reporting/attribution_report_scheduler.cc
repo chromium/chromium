@@ -39,7 +39,6 @@ void AttributionReportScheduler::Refresh() {
     return;
 
   attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
-      .WithArgs(base::Time::Now())
       .Then(base::BindOnce(&AttributionReportScheduler::ScheduleSend,
                            weak_factory_.GetWeakPtr()));
 }

@@ -72,6 +72,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="3838931309141338733">Scansiona il codice a barre</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Download funzionalità di scansione documenti in corso…</translation>
 <translation id="4118525110028899586">Metti in pausa la registrazione</translation>
 <translation id="4121305183798804752">Documento rilevato</translation>
 <translation id="414641094616694804">Non è possibile modificare la risoluzione di questa fotocamera</translation>
@@ -82,6 +83,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="4445542136948522167">Interrompi acquisizione foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Fotocamera anteriore</translation>
+<translation id="4620818268515773682">Attiva/disattiva audio del microfono. Opzione Disattiva audio non attiva</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Impossibile salvare il file</translation>
 <translation id="4695379108709712600">Spostamento in alto</translation>
@@ -145,6 +147,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Angolo inferiore destro del documento</translation>
+<translation id="7692090236657809299">Attiva panoramica inclinazione zoom</translation>
 <translation id="7726641833034062494">Registra video normale</translation>
 <translation id="7748344063862150053">Angolo superiore destro del documento</translation>
 <translation id="7933675232020478311">Spostamento in basso a destra</translation>
@@ -158,6 +161,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8425673304802773841">Inclinazione verso il basso</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Attiva/disattiva audio del microfono. Opzione Disattiva audio attiva</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8732462232047530626">Anteprima metadati</translation>

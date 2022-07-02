@@ -36,4 +36,7 @@ class MissingCtorsArentOKInHeader {
 ./missing_ctor.h:330:3: warning: [chromium-style] Complex constructor has an inlined body.
   TenRawPtrWarns() = default;
   ^
-13 warnings generated.
+./missing_ctor.h:374:3: warning: [chromium-style] Complex constructor has an inlined body.
+  TenRawRefWarns() = default;
+  ^
+14 warnings generated.

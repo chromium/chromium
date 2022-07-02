@@ -190,8 +190,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
         errors->AddError(kFailedParsingIp);
         return false;
       }
-      subtrees->ip_addresses.push_back(
-          IPAddress(value.UnsafeData(), value.Length()));
+      subtrees->ip_addresses.emplace_back(value.UnsafeData(), value.Length());
     } else {
       DCHECK_EQ(ip_address_type, GeneralNames::IP_ADDRESS_AND_NETMASK);
       // RFC 5280 section 4.2.1.10:
@@ -216,9 +215,9 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
         errors->AddError(kFailedParsingIp);
         return false;
       }
-      subtrees->ip_address_ranges.push_back(
-          std::make_pair(IPAddress(value.UnsafeData(), value.Length() / 2),
-                         mask_prefix_length));
+      subtrees->ip_address_ranges.emplace_back(
+          IPAddress(value.UnsafeData(), value.Length() / 2),
+          mask_prefix_length);
     }
   } else if (tag == der::ContextSpecificPrimitive(8)) {
     // registeredID                    [8]     OBJECT IDENTIFIER }

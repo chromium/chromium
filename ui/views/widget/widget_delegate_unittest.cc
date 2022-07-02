@@ -72,22 +72,6 @@ TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
   EXPECT_EQ(tracker.view(), client.get());
 }
 
-TEST_F(WidgetDelegateTest,
-       NonClientFrameViewFactoryCanReplaceNonClientFrameView) {
-  ViewTracker tracker;
-
-  auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetNonClientFrameViewFactory(
-      base::BindLambdaForTesting([&tracker](Widget* widget) {
-        auto view = std::make_unique<NonClientFrameView>();
-        tracker.SetView(view.get());
-        return view;
-      }));
-
-  auto nonclient = delegate->CreateNonClientFrameView(nullptr);
-  EXPECT_EQ(tracker.view(), nonclient.get());
-}
-
 TEST_F(WidgetDelegateTest, OverlayViewFactoryCanReplaceOverlayView) {
   ViewTracker tracker;
 

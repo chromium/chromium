@@ -31,9 +31,7 @@ namespace net {
 
 class NetworkQualityEstimatorParams;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 struct WeightedObservation;
 
@@ -131,9 +129,7 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   raw_ptr<const base::TickClock> tick_clock_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

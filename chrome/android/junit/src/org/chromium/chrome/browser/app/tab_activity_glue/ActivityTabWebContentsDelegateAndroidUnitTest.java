@@ -47,6 +47,7 @@ import org.chromium.url.ShadowGURL;
                 ShadowProfile.class, ShadowGURL.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Implements(WebContentsDarkModeController.class)
     static class ShadowWebContentsDarkModeController {

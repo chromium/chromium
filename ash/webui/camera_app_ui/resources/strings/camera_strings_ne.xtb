@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">बारकोड स्क्यान गर्नुहोस्</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> मेगापिक्सेल</translation>
+<translation id="4096701159033358951">कागजात स्क्यान गर्ने सुविधा डाउनलोड गरिँदै छ</translation>
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
 <translation id="4121305183798804752">कागजात भेटियो</translation>
 <translation id="414641094616694804">यो क्यामेरामा रिजोल्युसन बदल्न मिल्दैन</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">तस्बिर खिच्न छाड्नुहोस्‌</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> मेगा पिक्सेल</translation>
 <translation id="4570032796877367747">अगाडिको क्यामेरा</translation>
+<translation id="4620818268515773682">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अफ छ</translation>
 <translation id="4628948037717959914">तस्बिर</translation>
 <translation id="4649291346448517080">फाइल सुरक्षित गर्न सकिएन</translation>
 <translation id="4695379108709712600">सिरानतिर सारिँदै छ</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7670511624014457267">६० FPS</translation>
 <translation id="7671804233658741790">कागजातको पुछारको दायाँ कुना</translation>
+<translation id="7692090236657809299">प्यान गर्ने, ढल्काउने र जुम गर्ने विकल्पहरू अन गर्नुहोस्</translation>
 <translation id="7726641833034062494">सामान्य भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7748344063862150053">कागजातको सिरानको दायाँ कुना</translation>
 <translation id="7933675232020478311">पुछारको दायाँतिर सारिँदै छ</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">तलतिर ढल्काइयोस्</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> पिक्सेल (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अन छ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8732462232047530626">मेटाडेटाको पूर्वावलोकन</translation>

@@ -145,10 +145,11 @@ void FlossAdapterClient::SetPasskey(ResponseCallback<Void> callback,
                            accept, passkey);
 }
 
-void FlossAdapterClient::GetBondedDevices(
-    ResponseCallback<std::vector<FlossDeviceId>> callback) {
-  CallAdapterMethod0<std::vector<FlossDeviceId>>(std::move(callback),
-                                                 adapter::kGetBondedDevices);
+void FlossAdapterClient::GetBondedDevices() {
+  CallAdapterMethod0<std::vector<FlossDeviceId>>(
+      base::BindOnce(&FlossAdapterClient::OnGetBondedDevices,
+                     weak_ptr_factory_.GetWeakPtr()),
+      adapter::kGetBondedDevices);
 }
 
 void FlossAdapterClient::Init(dbus::Bus* bus,
@@ -192,6 +193,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
   }
 
   // Register callbacks for the adapter.
+  callbacks->ExportMethod(
+      adapter::kCallbackInterface, adapter::kOnAdapterPropertyChanged,
+      base::BindRepeating(&FlossAdapterClient::OnAdapterPropertyChanged,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnAdapterPropertyChanged));
+
   callbacks->ExportMethod(
       adapter::kCallbackInterface, adapter::kOnAddressChanged,
       base::BindRepeating(&FlossAdapterClient::OnAddressChanged,
@@ -275,6 +282,30 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindOnce(&FlossAdapterClient::DefaultResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      adapter::kRegisterCallback));
+}
+
+void FlossAdapterClient::OnAdapterPropertyChanged(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader msg(method_call);
+  uint32_t prop;
+
+  if (!msg.PopUint32(&prop)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters, std::string()));
+    return;
+  }
+
+  BtPropertyType prop_type = static_cast<BtPropertyType>(prop);
+  switch (prop_type) {
+    case BtPropertyType::kAdapterBondedDevices:
+      GetBondedDevices();
+      break;
+    default:;  // Do nothing for other property types
+  }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void FlossAdapterClient::HandleGetAddress(dbus::Response* response,
@@ -475,6 +506,26 @@ void FlossAdapterClient::OnSspRequest(
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::OnGetBondedDevices(
+    const absl::optional<std::vector<FlossDeviceId>>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Error on GetBondedDevices: " << error->name;
+    return;
+  }
+
+  if (!ret.has_value()) {
+    LOG(ERROR) << "Error on GetBondedDevices: No return value";
+    return;
+  }
+
+  for (const auto& device_id : *ret) {
+    for (auto& observer : observers_) {
+      observer.AdapterFoundDevice(device_id);
+    }
+  }
 }
 
 void FlossAdapterClient::OnBondStateChanged(

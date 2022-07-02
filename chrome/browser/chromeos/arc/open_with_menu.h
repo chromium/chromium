@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/arc/common/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -42,7 +43,7 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
     void ExecuteCommand(int command_id, int event_flags) override;
 
    private:
-    OpenWithMenu* const parent_;
+    const raw_ptr<OpenWithMenu> parent_;
   };
 
   OpenWithMenu(content::BrowserContext* context,
@@ -81,8 +82,8 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
   static const int kNumMainMenuCommands;
   static const int kNumSubMenuCommands;
 
-  content::BrowserContext* context_;
-  RenderViewContextMenuProxy* const proxy_;
+  raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<RenderViewContextMenuProxy> proxy_;
   SubMenuDelegate submenu_delegate_{this};
   const std::u16string more_apps_label_;
 

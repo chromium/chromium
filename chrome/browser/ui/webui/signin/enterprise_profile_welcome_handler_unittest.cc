@@ -42,7 +42,8 @@ class EnterpriseProfileWelcomeHandlerTestBase
         browser()->tab_strip_model()->GetActiveWebContents());
 
     account_info_.email = user_manager::kStubUserEmail;
-    account_info_.account_id = CoreAccountId::FromEmail(account_info_.email);
+    account_info_.gaia = user_manager::kStubUserId;
+    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
   }
 
   void InitializeHandler(EnterpriseProfileWelcomeUI::ScreenType screen_type,

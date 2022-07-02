@@ -23,7 +23,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -178,12 +178,10 @@ std::string GetExpectedAdvancedBatteryChargeModePolicyForPrefs(
 
 void DecodeJsonStringAndNormalize(const std::string& json_string,
                                   base::Value* value) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_EQ(parsed_json.error_message, "");
-  ASSERT_TRUE(parsed_json.value);
-  *value = std::move(*parsed_json.value);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+  *value = std::move(*parsed_json);
 }
 
 void SetQuickDimPreference(bool enabled) {
@@ -661,16 +659,16 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 }
 
 TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
-  // Should be disabled by default.
-  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
-
-  // Should be enabled after setting the prefs to true.
-  SetAdaptiveChargingPreference(true);
+  // Should be enabled by default.
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 
   // Should be disabled after changing the prefs to false.
   SetAdaptiveChargingPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  // Should be enabled after setting the prefs to true.
+  SetAdaptiveChargingPreference(true);
+  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 }
 
 }  // namespace ash

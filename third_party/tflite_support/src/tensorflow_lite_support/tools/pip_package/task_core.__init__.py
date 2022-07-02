@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""An import entry for the Task Core module."""
+"""TensorFlow Lite Task Library's core module.
+
+This module contains classes used across multiple tasks in the Task Library."""
 
 from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 
 BaseOptions = base_options_pb2.BaseOptions
+
+# Remove unnecessary modules to avoid duplication in API docs.
+del base_options_pb2

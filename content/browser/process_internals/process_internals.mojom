@@ -24,6 +24,9 @@ struct SiteInstanceInfo {
   // false otherwise.
   bool requires_origin_keyed_process;
 
+  // Specifies if the SiteInstance is for sandboxed iframe isolation.
+  bool is_sandbox_for_iframes;
+
   // Specifies whether this SiteInstance is for a <webview> guest.
   bool is_guest;
 

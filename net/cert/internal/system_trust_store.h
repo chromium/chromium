@@ -50,6 +50,12 @@ class SystemTrustStore {
   // that it is one of default trust anchors for the system, as opposed to a
   // user-installed one.
   virtual bool IsKnownRoot(const ParsedCertificate* cert) const = 0;
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Returns the current version of the Chrome Root Store being used. If
+  // Chrome Root Store is not in use, returns 0.
+  virtual int64_t chrome_root_store_version() = 0;
+#endif
 };
 
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
@@ -93,7 +99,8 @@ CreateSystemTrustStoreChromeForTesting(
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 
 #if BUILDFLAG(IS_MAC)
-// Initializes trust cache on a worker thread.
+// Initializes trust cache on a worker thread, if the builtin verifier is
+// enabled.
 NET_EXPORT void InitializeTrustStoreMacCache();
 #endif
 

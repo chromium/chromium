@@ -282,11 +282,6 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   return result;
 }
 
-void ProjectorControllerImpl::OnToolSet(const AnnotatorTool& tool) {
-  // TODO(b/198184362): Reflect the annotator tool changes on the Projector
-  // toolbar.
-}
-
 void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
     bool undo_available,
     bool redo_available) {
@@ -305,7 +300,7 @@ void ProjectorControllerImpl::OnRecordingStarted(aura::Window* current_root,
     return;
   }
   if (ui_controller_)
-    ui_controller_->ShowToolbar(current_root);
+    ui_controller_->ShowAnnotationTray(current_root);
 
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
@@ -319,9 +314,8 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
 
   DCHECK(projector_session_->is_active());
 
-  // Close Projector toolbar if ui controller is present.
   if (ui_controller_)
-    ui_controller_->CloseToolbar();
+    ui_controller_->HideAnnotationTray();
 
   MaybeStopSpeechRecognition();
 

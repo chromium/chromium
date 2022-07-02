@@ -7,7 +7,7 @@ module page_load_metrics.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
@@ -38,7 +38,7 @@ struct LargestContentfulPaintTiming {
 
   // These are packed blink::LargestContentfulPaintType enums, indicating
   // the largest LCP candidate's type characteristics.
-  uint32 type;
+  uint64 type;
 
   // Computed entropy of the page's largest image, calculated as the image file
   // size, in bits, divided by the image's rendered size, in pixels.
@@ -369,7 +369,8 @@ interface PageLoadMetrics {
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
                InputTiming input_timing_delta,
-               blink.mojom.MobileFriendliness? mobile_friendliness);
+               blink.mojom.MobileFriendliness? mobile_friendliness,
+               uint32 soft_navigation_count);
 
   // Set up a shared memory used to transfer smoothness data from the renderer
   // to the browser. The structure is defined in

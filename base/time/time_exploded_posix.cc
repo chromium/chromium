@@ -130,10 +130,10 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
   if (sizeof(SysTime) < 8) {
 // TODO(b/167763382) Find an alternate solution for Chromecast devices, since
 // adding the icui18n dep significantly increases the binary size.
-#if !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
     ExplodeUsingIcu(millis_since_unix_epoch, is_local, exploded);
     return;
-#endif  // !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
   }
 
   // Split the |millis_since_unix_epoch| into separate seconds and millisecond

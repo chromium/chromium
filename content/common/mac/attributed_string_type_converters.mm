@@ -18,11 +18,17 @@ namespace {
 
 NSDictionary* ToAttributesDictionary(std::u16string name, float font_size) {
   DCHECK(!name.empty());
-  NSString* font_name_ns = base::SysUTF16ToNSString(name);
-  NSFont* font = [NSFont fontWithName:font_name_ns size:font_size];
-  if (!font)
-    return [NSDictionary dictionary];
-  return [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+  NSFont* font = [NSFont fontWithName:base::SysUTF16ToNSString(name)
+                                 size:font_size];
+  if (!font) {
+    // This can happen if:
+    // - The specified font is unavailable in this process.
+    // - The specified font is a system font unavailable through `+[NSFont
+    //   fontWithName:size]`.
+    // In either case, the system font is a reasonable substitute.
+    font = [NSFont systemFontOfSize:font_size];
+  }
+  return @{NSFontAttributeName : font};
 }
 
 }  // namespace
@@ -38,21 +44,19 @@ TypeConverter<NSAttributedString*, ui::mojom::AttributedStringPtr>::Convert(
   // Iterate over all the encoded attributes, attaching each to the string.
   const std::vector<ui::mojom::FontAttributePtr>& attributes =
       mojo_attributed_string->attributes;
-  for (std::vector<ui::mojom::FontAttributePtr>::const_iterator it =
-           attributes.begin();
-       it != attributes.end(); ++it) {
+  for (const auto& attribute : attributes) {
     // Protect against ranges that are outside the range of the string.
-    const gfx::Range& range = it->get()->effective_range;
+    const gfx::Range& range = attribute.get()->effective_range;
     if (range.GetMin() > [plain_text length] ||
         range.GetMax() > [plain_text length]) {
       continue;
     }
     [decoded_string
-        addAttributes:ToAttributesDictionary(it->get()->font_name,
-                                             it->get()->font_point_size)
+        addAttributes:ToAttributesDictionary(attribute.get()->font_name,
+                                             attribute.get()->font_point_size)
                 range:range.ToNSRange()];
   }
-  return [decoded_string.release() autorelease];
+  return decoded_string.autorelease();
 }
 
 ui::mojom::AttributedStringPtr
@@ -72,7 +76,7 @@ TypeConverter<ui::mojom::AttributedStringPtr, NSAttributedString*>::Convert(
         [ns_attributed_string attributesAtIndex:i
                                  effectiveRange:&effective_range];
 
-    NSFont* font = [ns_attributes objectForKey:NSFontAttributeName];
+    NSFont* font = ns_attributes[NSFontAttributeName];
     std::u16string font_name;
     float font_point_size;
     // Only encode the attributes if the filtered set contains font information.

@@ -154,10 +154,9 @@ class SafeMoveHelperTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    auto lock = manager_->TakeWriteLock(
+    ASSERT_TRUE(manager_->TakeWriteLock(
         test_dest_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kShared);
-    ASSERT_TRUE(lock.has_value());
+        FileSystemAccessWriteLockManager::WriteLockType::kShared));
 
     helper_ = std::make_unique<SafeMoveHelper>(
         manager_->AsWeakPtr(),

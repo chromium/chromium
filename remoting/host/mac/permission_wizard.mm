@@ -4,6 +4,8 @@
 
 #include "remoting/host/mac/permission_wizard.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
@@ -186,7 +188,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 
   // Reference used for permission-checking. Its lifetime should outlast this
   // Controller.
-  PermissionWizard::Impl* _impl;
+  raw_ptr<PermissionWizard::Impl> _impl;
 }
 
 - (instancetype)initWithWindow:(NSWindow*)window

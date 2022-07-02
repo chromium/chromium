@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_NSWINDOW_DELEGATE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_NSWINDOW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
@@ -20,7 +22,8 @@ class NativeWidgetNSWindowBridge;
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface ViewsNSWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  remote_cocoa::NativeWidgetNSWindowBridge* _parent;  // Weak. Owns this.
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
+      _parent;  // Weak. Owns this.
   base::scoped_nsobject<NSCursor> _cursor;
   absl::optional<float> _aspectRatio;
 

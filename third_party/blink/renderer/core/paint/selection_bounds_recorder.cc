@@ -126,6 +126,11 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
       selection_layout_object_(layout_object) {}
 
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
+  paint_controller_.RecordAnySelectionWasPainted();
+
+  if (state_ == SelectionState::kInside)
+    return;
+
   absl::optional<PaintedSelectionBound> start;
   absl::optional<PaintedSelectionBound> end;
   gfx::Rect selection_rect = ToPixelSnappedRect(selection_rect_);
@@ -172,7 +177,7 @@ bool SelectionBoundsRecorder::ShouldRecordSelection(
   if (local_frame != focused_frame)
     return false;
 
-  if (state == SelectionState::kInside || state == SelectionState::kNone)
+  if (state == SelectionState::kNone)
     return false;
 
   return true;

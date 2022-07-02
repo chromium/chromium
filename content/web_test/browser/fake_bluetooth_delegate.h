@@ -53,6 +53,9 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   void ShowDeviceCredentialsPrompt(RenderFrameHost* frame,
                                    const std::u16string& device_identifier,
                                    CredentialsCallback callback) override;
+  void ShowDevicePairConfirmPrompt(RenderFrameHost* frame,
+                                   const std::u16string& device_identifier,
+                                   PairConfirmCallback callback) override;
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override;

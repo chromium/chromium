@@ -15,11 +15,12 @@ namespace pdf_extension_test_util {
 
 testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data) {
+    bool wait_for_hit_test_data,
+    const std::string& pdf_element) {
   bool load_success = false;
   if (!content::ExecuteScriptAndExtractBool(
           frame,
-          R"(window.addEventListener('message', event => {
+          content::JsReplace(R"(window.addEventListener('message', event => {
             if (event.origin !==
                     'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
               return;
@@ -31,8 +32,9 @@ testing::AssertionResult EnsurePDFHasLoaded(
               window.domAutomationController.send(true);
             }
           });
-          document.getElementsByTagName('embed')[0].postMessage(
+          document.getElementsByTagName($1)[0].postMessage(
               {type: 'initialize'});)",
+                             pdf_element),
           &load_success)) {
     return testing::AssertionFailure()
            << "Cannot communicate with PDF extension.";

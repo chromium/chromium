@@ -12,7 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
 namespace ash {
 

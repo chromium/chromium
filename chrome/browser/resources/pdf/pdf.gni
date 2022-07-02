@@ -137,6 +137,7 @@ shared_ts_files = [
                     "pdf_scripting_api.ts",
                     "pdf_viewer_base.ts",
                     "pdf_viewer_utils.ts",
+                    "swipe_detector.ts",
                     "viewport.ts",
                     "viewport_scroller.ts",
                     "zoom_manager.ts",

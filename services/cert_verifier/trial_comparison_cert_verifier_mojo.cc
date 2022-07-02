@@ -12,6 +12,7 @@
 #include "net/cert/trial_comparison_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
+#include "net/net_buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
@@ -40,6 +41,9 @@ TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
     case net::TrustStoreMac::TrustImplType::kLruCache:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
           kLruCache;
+    case net::TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kDomainCacheFullCerts;
   }
 }
 #endif
@@ -168,6 +172,15 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
           encoded_generalized_time,
           encoded_generalized_time + net::der::kGeneralizedTimeLength);
     }
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    if (cert_verify_proc_builtin_debug_data->chrome_root_store_version()) {
+      debug_info->chrome_root_store_debug_info =
+          mojom::ChromeRootStoreDebugInfo::New();
+      debug_info->chrome_root_store_debug_info->chrome_root_store_version =
+          cert_verify_proc_builtin_debug_data->chrome_root_store_version()
+              .value();
+    }
+#endif
   }
 
   report_client_->SendTrialReport(

@@ -200,6 +200,24 @@ void FakeFileSystemInstance::AddRecentDocument(const std::string& root_id,
   recent_documents_[key].push_back(document);
 }
 
+void FakeFileSystemInstance::RemoveRecentDocument(const Document& document) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Unfortunately we don't know the root_id when deleting a document, so
+  // here we need to loop through all available roots to find the document.
+  for (auto const& doc : recent_documents_) {
+    const auto iter = std::find_if(
+        doc.second.begin(), doc.second.end(),
+        [&document](const Document& recent_document) {
+          return document.authority == recent_document.authority &&
+                 document.document_id == recent_document.document_id;
+        });
+    if (iter != doc.second.end()) {
+      recent_documents_[doc.first].erase(iter);
+      return;
+    }
+  }
+}
+
 void FakeFileSystemInstance::AddRoot(const Root& root) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   roots_list_.push_back(root);
@@ -575,6 +593,9 @@ void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
+  // We also need to remove the document from the recent_documents_ if it was
+  // being added there.
+  RemoveRecentDocument(iter->second);
   documents_.erase(iter);
   size_t erased = child_documents_.erase(key);
   DCHECK_NE(0u, erased);

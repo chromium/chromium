@@ -113,11 +113,14 @@ class DocumentTransitionStyleTracker
 
   bool IsSharedElement(Element* element) const;
 
+  // This function represents whether root itself is participating in the
+  // transition (i.e. it has a tag in the current phase). Note that we create an
+  // EffectNode for the root whether or not it's transitioning.
+  bool IsRootTransitioning() const;
+
   std::vector<viz::SharedElementResourceId> TakeCaptureResourceIds() {
     return std::move(capture_resource_ids_);
   }
-
-  static bool IsReservedTransitionTag(const StringView& value);
 
  private:
   class ImageWrapperPseudoElement;
@@ -139,12 +142,10 @@ class DocumentTransitionStyleTracker
     // |target_element|. This information is mirrored into the UA stylesheet.
     LayoutSize border_box_size_in_css_space;
     TransformationMatrix viewport_matrix;
-    float device_pixel_ratio = 1.f;
 
     // Computed info cached before the DOM switches to the new state.
     LayoutSize cached_border_box_size_in_css_space;
     TransformationMatrix cached_viewport_matrix;
-    float cached_device_pixel_ratio = 1.f;
 
     // Valid if there is an element in the old DOM generating a snapshot.
     viz::SharedElementResourceId old_snapshot_id;
@@ -164,6 +165,16 @@ class DocumentTransitionStyleTracker
     // This rect is in layout space.
     PhysicalRect visual_overflow_rect_in_layout_space;
     PhysicalRect cached_visual_overflow_rect_in_layout_space;
+
+    // The writing mode to use for the container. Note that initially this is
+    // the outgoing element's (if any) writing mode, and then switches to the
+    // incoming element's writing mode, if one exists.
+    WritingMode container_writing_mode = WritingMode::kHorizontalTb;
+  };
+
+  struct RootData {
+    viz::SharedElementResourceId snapshot_id;
+    VectorOf<AtomicString> tags;
   };
 
   void InvalidateStyle();
@@ -171,16 +182,27 @@ class DocumentTransitionStyleTracker
   void EndTransition();
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
-  bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
+  bool FlattenAndVerifyElements(VectorOf<Element>&,
+                                VectorOf<AtomicString>&,
+                                absl::optional<RootData>&);
 
   void AddSharedElementsFromCSSRecursive(PaintLayer*);
+
+  int OldRootDataTagSize() const {
+    return old_root_data_ ? old_root_data_->tags.size() : 0;
+  }
+  int NewRootDataTagSize() const {
+    return new_root_data_ ? new_root_data_->tags.size() : 0;
+  }
+  absl::optional<RootData> GetCurrentRootData() const;
+  HashSet<AtomicString> AllRootTags() const;
 
   Member<Document> document_;
   State state_ = State::kIdle;
   int captured_tag_count_ = 0;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
-  viz::SharedElementResourceId old_root_snapshot_id_;
-  viz::SharedElementResourceId new_root_snapshot_id_;
+  absl::optional<RootData> old_root_data_;
+  absl::optional<RootData> new_root_data_;
   scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
   absl::optional<String> ua_style_sheet_;
 

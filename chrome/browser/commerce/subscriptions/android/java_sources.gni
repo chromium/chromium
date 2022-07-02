@@ -9,7 +9,6 @@ commerce_subscriptions_java_sources = [
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionJsonSerializer.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsMetrics.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsService.java",
-  "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceConfig.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceFactory.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxy.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
@@ -21,7 +20,6 @@ commerce_subscriptions_java_sources = [
 commerce_subscriptions_java_deps = [
   "//base:base_java",
   "//base:jni_java",
-  "//build/android:build_java",
   "//chrome/android:base_module_java",
   "//chrome/browser/android/lifecycle:java",
   "//chrome/browser/endpoint_fetcher:java",

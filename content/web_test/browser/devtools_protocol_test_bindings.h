@@ -40,7 +40,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-  void HandleMessageFromTest(base::Value);
+  void HandleMessageFromTest(base::Value::Dict message);
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
 #if !BUILDFLAG(IS_ANDROID)

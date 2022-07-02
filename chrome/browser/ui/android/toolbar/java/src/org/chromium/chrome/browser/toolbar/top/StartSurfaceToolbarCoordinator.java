@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -16,7 +17,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -43,6 +43,8 @@ public class StartSurfaceToolbarCoordinator {
     private final StartSurfaceToolbarMediator mToolbarMediator;
     private final ViewStub mStub;
     private final PropertyModel mPropertyModel;
+    private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
+
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
     private TabModelSelector mTabModelSelector;
@@ -60,10 +62,7 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
-            ObservableSupplier<Boolean> homepageEnabledSupplier,
-            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
-            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler, boolean isTabGroupsAndroidContinuationEnabled,
+            boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback) {
@@ -90,19 +89,15 @@ public class StartSurfaceToolbarCoordinator {
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
-                StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
-                homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
-                isTabGroupsAndroidContinuationEnabled, userEducationHelper,
-                isIncognitoModeEnabledSupplier,
-                StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()),
+                isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
                 profileSupplier, logoClickedCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mTopToolbarInteractabilityManager = new TopToolbarInteractabilityManager(
+                enabled -> mToolbarMediator.setNewTabEnabled(enabled));
     }
 
     /**
@@ -242,6 +237,11 @@ public class StartSurfaceToolbarCoordinator {
         mToolbarMediator.setNewTabButtonHighlight(highlight);
     }
 
+    @NonNull
+    TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
+        return mTopToolbarInteractabilityManager;
+    }
+
     private void inflate() {
         mStub.setLayoutResource(R.layout.start_top_toolbar);
         mView = (StartSurfaceToolbarView) mStub.inflate();
@@ -251,7 +251,6 @@ public class StartSurfaceToolbarCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
 
-        mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
         mToolbarMediator.onLogoViewReady(mView.findViewById(R.id.logo));
 
         if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {

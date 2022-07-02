@@ -79,10 +79,7 @@ GURL GetMockUrl(const std::string& scheme,
 URLRequestFailedJob::URLRequestFailedJob(URLRequest* request,
                                          FailurePhase phase,
                                          int net_error)
-    : URLRequestJob(request),
-      phase_(phase),
-      net_error_(net_error),
-      total_received_bytes_(0) {
+    : URLRequestJob(request), phase_(phase), net_error_(net_error) {
   CHECK_GE(phase, URLRequestFailedJob::FailurePhase::START);
   CHECK_LE(phase, URLRequestFailedJob::FailurePhase::READ_ASYNC);
   CHECK_LT(net_error, OK);

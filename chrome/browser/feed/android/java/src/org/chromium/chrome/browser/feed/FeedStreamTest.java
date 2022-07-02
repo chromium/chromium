@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -99,12 +99,14 @@ public class FeedStreamTest {
     private static final String TEST_DATA = "test";
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String HEADER_PREFIX = "header";
+    private static final String TAG = "FeedStreamTest";
 
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
     private NtpListContentManager mContentManager;
+    private boolean mFirstLoadWatcherCalled;
 
     @Mock
     private FeedStream.Natives mFeedStreamJniMock;
@@ -150,6 +152,8 @@ public class FeedStreamTest {
     private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
     @Mock
     private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
+    @Mock
+    private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -186,7 +190,7 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -269,6 +273,7 @@ public class FeedStreamTest {
         assertEquals(2, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
         assertEquals(1, mContentManager.findContentPositionByKey("Spacer"));
+        verify(mFeedContentFirstLoadWatcher).nonNativeContentLoaded(anyInt());
     }
 
     @Test
@@ -757,35 +762,15 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
-    public void testSendFeedback() {
-        final String testUrl = TEST_URL;
-        final String testTitle = "Chromium based browsers for the win!";
-        final String xSurfaceCardTitle = "Card Title";
-        final String cardTitle = "CardTitle";
-        final String cardUrl = "CardUrl";
-        // Arrange.
-        Map<String, String> productSpecificDataMap = new HashMap<>();
-        productSpecificDataMap.put(FeedStream.FeedActionsHandlerImpl.XSURFACE_CARD_URL, testUrl);
-        productSpecificDataMap.put(xSurfaceCardTitle, testTitle);
-
-        mFeedStream.setHelpAndFeedbackLauncherForTest(mHelpAndFeedbackLauncher);
+    public void testNavigateCrow() {
         bindToView();
-        FeedStream.FeedActionsHandlerImpl handler =
-                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
-                        FeedActionsHandler.KEY);
 
-        // Act.
-        handler.sendFeedback(productSpecificDataMap);
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.navigateCrow(TEST_URL);
 
-        // Assert.
-        verify(mHelpAndFeedbackLauncher)
-                .showFeedback(any(), any(), eq(testUrl),
-                        eq(FeedStream.FeedActionsHandlerImpl.FEEDBACK_REPORT_TYPE),
-                        mMapCaptor.capture());
-
-        // Check that the map contents are as expected.
-        assertThat(mMapCaptor.getValue(), hasEntry(cardUrl, testUrl));
-        assertThat(mMapCaptor.getValue(), hasEntry(cardTitle, testTitle));
+        verify(mActionDelegate).openCrow(TEST_URL);
     }
 
     @Test
@@ -912,7 +897,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         mFeedStream = stream;
         createHeaderContent(1);
         bindToView();
@@ -932,7 +918,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNull(stream.getUnreadContentObserverForTest());
     }
 
@@ -946,7 +933,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -961,7 +949,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -976,7 +965,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -990,7 +980,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1004,7 +995,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1018,7 +1010,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertTrue(stream.supportsOptions());
     }
 

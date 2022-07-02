@@ -1,4 +1,0 @@
-include_rules = [
-  # Require explicit include rules for sub-directories.
-  "-fuchsia_webengine",
-]

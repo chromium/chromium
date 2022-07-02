@@ -227,6 +227,8 @@ void VideoCaptureHost::Start(
            << ", device_id=" << device_id << ", format="
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureHost::Start");
 
   if (!params.IsValid()) {
     mojo::ReportBadMessage("Invalid video capture params.");
@@ -255,6 +257,8 @@ void VideoCaptureHost::Start(
 void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureHost::Stop");
 
   const VideoCaptureControllerID& controller_id(device_id);
 
@@ -272,6 +276,8 @@ void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
 void VideoCaptureHost::Pause(const base::UnguessableToken& device_id) {
   DVLOG(1) << __func__ << " " << device_id;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureHost::Pause");
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
@@ -292,6 +298,8 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
                               const media::VideoCaptureParams& params) {
   DVLOG(1) << __func__ << " " << device_id;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureHost::Resume");
 
   if (!params.IsValid()) {
     mojo::ReportBadMessage("Invalid video capture params.");
@@ -386,6 +394,19 @@ void VideoCaptureHost::OnFrameDropped(
   const base::WeakPtr<VideoCaptureController>& controller = it->second;
   if (controller)
     controller->OnFrameDropped(reason);
+}
+
+void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,
+                                        uint32_t crop_version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  const VideoCaptureControllerID controller_id(device_id);
+  if (!base::Contains(controllers_, controller_id) ||
+      !base::Contains(device_id_to_observer_map_, controller_id)) {
+    return;
+  }
+
+  device_id_to_observer_map_[controller_id]->OnNewCropVersion(crop_version);
 }
 
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,

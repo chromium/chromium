@@ -37,6 +37,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
 
   // Overrides for updater::UpdateServiceInternal.
   void Run(base::OnceClosure callback) override {
+    VLOG(1) << __func__ << " (Qualifying)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     scoped_refptr<UpdateServiceImpl> service =
@@ -55,6 +56,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
 
   void InitializeUpdateService(base::OnceClosure callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(1) << __func__ << " (Qualifying)";
     std::move(callback).Run();
   }
 

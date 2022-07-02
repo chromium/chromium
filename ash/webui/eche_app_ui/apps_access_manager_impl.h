@@ -52,6 +52,7 @@ class AppsAccessManagerImpl
   AccessStatus GetAccessStatus() const override;
   void SetAccessStatusInternal(AccessStatus access_status) override;
   void OnSetupRequested() override;
+  void NotifyAppsAccessCanceled() override;
 
   // EcheMessageReceiver::Observer:
   void OnGetAppsAccessStateResponseReceived(
@@ -71,10 +72,13 @@ class AppsAccessManagerImpl
   void AttemptAppsAccessStateRequest();
   void GetAppsAccessStateRequest();
   void SendShowAppsAccessSetupRequest();
-  void UpdateFeatureEnabledState(AccessStatus access_status);
+  void UpdateFeatureEnabledState(AccessStatus previous_access_status,
+                                 AccessStatus current_access_status);
   bool IsWaitingForAccessToInitiallyEnableApps() const;
+  bool IsPhoneHubEnabled() const;
   bool IsEligibleForOnboarding(FeatureStatus feature_status) const;
   void UpdateSetupOperationState();
+  void LogAppsSetupResponse(proto::Result apps_setup_result);
 
   AccessStatus ComputeAppsAccessState();
 

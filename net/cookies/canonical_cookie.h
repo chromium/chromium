@@ -367,6 +367,12 @@ class NET_EXPORT CanonicalCookie {
                                     const base::Time& current,
                                     const base::Time& server_time);
 
+  // Per rfc6265bis the maximum expiry date is no further than 400 days in the
+  // future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
+  static base::Time ValidateAndAdjustExpiryDate(
+      const base::Time& expiry_date,
+      const base::Time& creation_date);
+
   // Cookie ordering methods.
 
   // Returns true if the cookie is less than |other|, considering only name,
@@ -508,7 +514,6 @@ class NET_EXPORT CanonicalCookie {
                                        bool partition_has_nonce);
   static bool IsCookiePartitionedValid(const GURL& url,
                                        bool secure,
-                                       const std::string& domain,
                                        const std::string& path,
                                        bool is_partitioned,
                                        bool is_same_party,

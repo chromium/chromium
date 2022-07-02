@@ -94,6 +94,7 @@ constexpr char kLTSChromeVersionPrefix[] = "LTS ";
 constexpr char kArcStatusKey[] = "CHROMEOS_ARC_STATUS";
 constexpr char kMonitorInfoKey[] = "monitor_info";
 constexpr char kAccountTypeKey[] = "account_type";
+constexpr char kLacrosStatus[] = "lacros_status";
 constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 #else
@@ -357,6 +358,9 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
     PopulateArcPolicyStatus(response.get());
   }
   response->emplace(kAccountTypeKey, GetPrimaryAccountTypeString());
+  response->emplace(kLacrosStatus, crosapi::browser_util::IsLacrosEnabled()
+                                       ? "enabled"
+                                       : "disabled");
   response->emplace(kDemoModeConfigKey, ash::DemoSession::DemoConfigToString(
                                             ash::DemoSession::GetDemoConfig()));
   PopulateLocalStateSettings(response.get());

@@ -184,16 +184,22 @@ test("device_unittests") {
       "fido/u2f_register_operation_unittest.cc",
       "fido/u2f_sign_operation_unittest.cc",
       "fido/virtual_ctap2_device_unittest.cc",
+      "fido/virtual_fido_device_authenticator_unittest.cc",
       "fido/virtual_u2f_device_unittest.cc",
     ]
 
     deps += [ "//device/fido:mocks" ]
+
+    if (is_mac) {
+      data_deps += [ "fido/strings:fido_test_strings" ]
+    }
   }
 
   if (is_mac) {
     sources += [
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
+      "fido/mac/credential_store_unittest.mm",
       "fido/mac/get_assertion_operation_unittest_mac.mm",
       "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
@@ -201,7 +207,10 @@ test("device_unittests") {
   }
 
   if (is_win) {
-    sources += [ "fido/win/type_conversions_unittest.cc" ]
+    sources += [
+      "fido/win/authenticator_unittest.cc",
+      "fido/win/type_conversions_unittest.cc",
+    ]
   }
 
   # FIDO HID:
@@ -287,29 +296,27 @@ test("device_unittests") {
     }
   }
 
-  if (is_linux || is_chromeos) {
-    if (is_castos) {
-      # Cast does not support GATT server mode.
-      sources -= [
-        "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
-        "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-        "bluetooth/bluetooth_local_gatt_service_unittest.cc",
-      ]
+  if (is_castos) {
+    # Cast does not support GATT server mode.
+    sources -= [
+      "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
+      "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
+      "bluetooth/bluetooth_local_gatt_service_unittest.cc",
+    ]
 
-      sources += [
-        "bluetooth/cast/bluetooth_adapter_cast_unittest.cc",
-        "bluetooth/cast/bluetooth_utils_unittest.cc",
-        "bluetooth/test/bluetooth_test_cast.cc",
-        "bluetooth/test/bluetooth_test_cast.h",
-      ]
+    sources += [
+      "bluetooth/cast/bluetooth_adapter_cast_unittest.cc",
+      "bluetooth/cast/bluetooth_utils_unittest.cc",
+      "bluetooth/test/bluetooth_test_cast.cc",
+      "bluetooth/test/bluetooth_test_cast.h",
+    ]
 
-      deps += [
-        "//chromecast/device/bluetooth:util",
-        "//chromecast/device/bluetooth/le",
-        "//chromecast/device/bluetooth/le:test_support",
-        "//chromecast/device/bluetooth/shlib:mock_shlib",
-      ]
-    }
+    deps += [
+      "//chromecast/device/bluetooth:util",
+      "//chromecast/device/bluetooth/le",
+      "//chromecast/device/bluetooth/le:test_support",
+      "//chromecast/device/bluetooth/shlib:mock_shlib",
+    ]
   }
 
   if (is_mac) {
@@ -319,6 +326,8 @@ test("device_unittests") {
       "CoreBluetooth.framework",
       "IOBluetooth.framework",
       "IOKit.framework",
+      "Foundation.framework",
+      "Security.framework",
     ]
   }
 
@@ -441,7 +450,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:jni_java",
-      "//build/android:build_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
       "//third_party/android_sdk:android_test_mock_java",
@@ -451,7 +459,7 @@ if (is_android) {
     srcjar_deps = [ ":bluetooth_test_javagen" ]
   }
 
-  junit_binary("device_junit_tests") {
+  robolectric_binary("device_junit_tests") {
     sources = [
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadDeviceTest.java",
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadMappingsTest.java",
@@ -462,7 +470,6 @@ if (is_android) {
       "$google_play_services_package:google_play_services_location_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
-      "//build/android:build_java",
       "//device/gamepad:java",
       "//mojo/public/java:bindings_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

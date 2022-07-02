@@ -6,13 +6,13 @@
 
 #include <initializer_list>
 
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -79,8 +79,9 @@ String GetErrorString(const network::CorsErrorStatus& status,
       "fetch the resource with CORS disabled.";
 
   using CorsError = network::mojom::CorsError;
-  const StringView hint(status.failed_parameter.data(),
-                        SafeCast<wtf_size_t>(status.failed_parameter.size()));
+  const StringView hint(
+      status.failed_parameter.data(),
+      base::checked_cast<wtf_size_t>(status.failed_parameter.size()));
 
   const char* resource_kind_raw =
       Resource::ResourceTypeToString(resource_type, initiator_name);

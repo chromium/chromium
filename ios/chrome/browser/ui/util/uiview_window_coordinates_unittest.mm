@@ -6,12 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/test/ios/wait_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Sets up a window and a view.
 class UIViewWindowCoordinatesTest : public PlatformTest {
@@ -55,10 +59,19 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameAsDirectSubview) {
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
     callback_called = YES;
   };
+  // The callback is called when set if the view is in a window. Now reset it to
+  // check that it's called again when changing view_'s frame.
+  EXPECT_TRUE(callback_called);
+  callback_called = NO;
 
   view_.frame = CGRectMake(10, 20, 30, 40);
+  [window_ setNeedsLayout];
+  [window_ layoutIfNeeded];
 
-  EXPECT_TRUE(callback_called);
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return callback_called;
+  }));
 }
 
 // Checks the callback is called when any parent view's frame changes (even
@@ -71,8 +84,17 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameOfParentView) {
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
     callback_called = YES;
   };
+  // The callback is called when set if the view is in a window. Now reset it to
+  // check that it's called again when changing view_'s frame.
+  EXPECT_TRUE(callback_called);
+  callback_called = NO;
 
   parent_view.frame = CGRectMake(10, 20, 30, 40);
+  [window_ setNeedsLayout];
+  [window_ layoutIfNeeded];
 
-  EXPECT_TRUE(callback_called);
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return callback_called;
+  }));
 }

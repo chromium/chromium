@@ -452,6 +452,10 @@ TtsEngineDelegate* TtsControllerImpl::GetTtsEngineDelegate() {
   return engine_delegate_;
 }
 
+void TtsControllerImpl::RefreshVoices() {
+  GetTtsPlatform()->RefreshVoices();
+}
+
 void TtsControllerImpl::Shutdown() {
   if (tts_platform_)
     tts_platform_->Shutdown();

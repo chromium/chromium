@@ -112,8 +112,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
 
     int random_index = rand_callback_.Run(0, total_weight - 1);
     int weight_so_far = 0;
-    for (size_t i = 0; i < available_endpoints.size(); ++i) {
-      const ReportingEndpoint& endpoint = available_endpoints[i];
+    for (const auto& endpoint : available_endpoints) {
       weight_so_far += endpoint.info.weight;
       if (random_index < weight_so_far) {
         return endpoint;

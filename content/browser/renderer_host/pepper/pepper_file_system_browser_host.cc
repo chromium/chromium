@@ -200,40 +200,6 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
   SendReplyForFileSystemIfHostAlive(reply_context, pp_error);
 }
 
-void PepperFileSystemBrowserHost::IOThreadState::OpenPluginPrivateFileSystem(
-    const GURL& origin,
-    const std::string& plugin_id,
-    ppapi::host::ReplyMessageContext reply_context,
-    const std::string& fsid,
-    scoped_refptr<storage::FileSystemContext> file_system_context) {
-  if (!origin.is_valid()) {
-    SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_FAILED);
-    return;
-  }
-
-  if (plugin_id.empty()) {
-    SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_BADARGUMENT);
-    return;
-  }
-
-  file_system_context->OpenPluginPrivateFileSystem(
-      url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate, fsid,
-      plugin_id, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-      base::BindOnce(&IOThreadState::OpenPluginPrivateFileSystemComplete, this,
-                     reply_context, fsid));
-}
-
-void PepperFileSystemBrowserHost::IOThreadState::
-    OpenPluginPrivateFileSystemComplete(
-        ppapi::host::ReplyMessageContext reply_context,
-        const std::string& fsid,
-        base::File::Error error) {
-  int32_t pp_error = ppapi::FileErrorToPepperError(error);
-  if (pp_error == PP_OK)
-    opened_ = true;
-  SendReplyForIsolatedFileSystem(reply_context, fsid, pp_error);
-}
-
 void PepperFileSystemBrowserHost::IOThreadState::RunCallbackIfHostAlive(
     base::OnceClosure callback) {
   if (!task_runner_->BelongsToCurrentThread()) {

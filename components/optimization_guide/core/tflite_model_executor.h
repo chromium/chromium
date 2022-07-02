@@ -13,6 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -75,19 +76,10 @@ class ScopedExecutionStatusResultRecorder {
 template <class OutputType, class... InputTypes>
 class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
  public:
-  TFLiteModelExecutor() = default;
+  TFLiteModelExecutor()
+      : watchdog_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
   ~TFLiteModelExecutor() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    // |watchdog_| uses a thread internally so we need to allow sync primitives
-    // when destroying (joining) it.
-    //
-    // Note that this dtor is already being called on a background task runner
-    // via DeleteSoon.
-    if (watchdog_) {
-      base::ScopedAllowBaseSyncPrimitives allow_sync_primitives;
-      watchdog_.reset();
-    }
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
@@ -107,11 +99,19 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
     if (features::IsModelExecutionWatchdogEnabled()) {
-      watchdog_ = std::make_unique<
-          ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>>(
-          optimization_target_,
-          model_inference_timeout.value_or(
-              features::ModelExecutionWatchdogDefaultTimeout()));
+      // The sequence |watchdog_sequence| is used to run watchdog's task. The
+      // watchdog must be deleted on that sequence to guarantee that pending
+      // tasks can safely be executed.
+      scoped_refptr<base::SequencedTaskRunner> watchdog_sequence =
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+      using WatchdogType =
+          ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>;
+      watchdog_ = std::unique_ptr<WatchdogType, base::OnTaskRunnerDeleter>(
+          new WatchdogType(
+              watchdog_sequence, optimization_target_,
+              model_inference_timeout.value_or(
+                  features::ModelExecutionWatchdogDefaultTimeout())),
+          base::OnTaskRunnerDeleter(watchdog_sequence));
     }
   }
 
@@ -332,7 +332,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
 
   bool should_unload_model_on_complete_ = true;
 
-  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>>
+  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>,
+                  base::OnTaskRunnerDeleter>
       watchdog_;
 
   scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;

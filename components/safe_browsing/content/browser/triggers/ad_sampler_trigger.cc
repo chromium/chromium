@@ -85,8 +85,6 @@ AdSamplerTrigger::AdSamplerTrigger(
     PrefService* prefs,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<AdSamplerTrigger>(*web_contents),
@@ -99,7 +97,6 @@ AdSamplerTrigger::AdSamplerTrigger(
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
-      get_user_population_callback_(get_user_population_callback),
       referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
@@ -137,7 +134,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
 
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents()->GetMainFrame()->GetGlobalId();
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();
@@ -146,8 +143,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,
-          history_service_, get_user_population_callback_,
-          referrer_chain_provider_, error_options)) {
+          history_service_, referrer_chain_provider_, error_options)) {
     UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName,
                               NO_SAMPLE_COULD_NOT_START_REPORT, MAX_ACTIONS);
     return;

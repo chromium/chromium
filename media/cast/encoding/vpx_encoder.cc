@@ -318,6 +318,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // used as the lossy utilization.
   const double actual_bitrate =
       encoded_frame->data.size() * 8.0 / predicted_frame_duration.InSecondsF();
+  encoded_frame->encoder_bitrate = actual_bitrate;
   const double target_bitrate = 1000.0 * config_.rc_target_bitrate;
   DCHECK_GT(target_bitrate, 0.0);
   const double bitrate_utilization = actual_bitrate / target_bitrate;
@@ -328,12 +329,12 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // Side note: If it was possible for the encoder to encode within the target
   // number of bytes, the |perfect_quantizer| will be in the range [0.0,63.0].
   // If it was never possible, the value will be greater than 63.0.
-  encoded_frame->lossy_utilization = perfect_quantizer / 63.0;
+  encoded_frame->lossiness = perfect_quantizer / 63.0;
 
   DVLOG(2) << "VPX encoded frame_id " << encoded_frame->frame_id
            << ", sized: " << encoded_frame->data.size()
            << ", encoder_utilization: " << encoded_frame->encoder_utilization
-           << ", lossy_utilization: " << encoded_frame->lossy_utilization
+           << ", lossiness: " << encoded_frame->lossiness
            << " (quantizer chosen by the encoder was " << quantizer << ')';
 
   if (encoded_frame->dependency == EncodedFrame::KEY) {

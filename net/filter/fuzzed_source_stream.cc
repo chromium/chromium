@@ -25,10 +25,7 @@ const Error kReadErrors[] = {OK, ERR_FAILED, ERR_CONTENT_DECODING_FAILED};
 }  // namespace
 
 FuzzedSourceStream::FuzzedSourceStream(FuzzedDataProvider* data_provider)
-    : SourceStream(SourceStream::TYPE_NONE),
-      data_provider_(data_provider),
-      read_pending_(false),
-      end_returned_(false) {}
+    : SourceStream(SourceStream::TYPE_NONE), data_provider_(data_provider) {}
 
 FuzzedSourceStream::~FuzzedSourceStream() {
   DCHECK(!read_pending_);

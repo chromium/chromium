@@ -20,10 +20,10 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/scanning/scanner.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -88,9 +88,8 @@ constexpr std::array<ScanProtocol, 4> kPrioritizedProtocols = {
 
 // Returns a pointer to LorgnetteManagerClient, which is used to detect and
 // interact with scanners via the lorgnette D-Bus service.
-chromeos::LorgnetteManagerClient* GetLorgnetteManagerClient() {
-  DCHECK(DBusThreadManager::IsInitialized());
-  return DBusThreadManager::Get()->GetLorgnetteManagerClient();
+LorgnetteManagerClient* GetLorgnetteManagerClient() {
+  return LorgnetteManagerClient::Get();
 }
 
 // Creates a base name by concatenating the manufacturer and model, if the

@@ -43,8 +43,7 @@ void ExtensionFrameHost::Request(mojom::RequestParamsPtr params,
       receivers_.GetCurrentTargetFrame();
   ExtensionWebContentsObserver::GetForWebContents(web_contents_)
       ->dispatcher()
-      ->Dispatch(std::move(params), render_frame_host,
-                 render_frame_host->GetProcess()->GetID(), std::move(callback));
+      ->Dispatch(std::move(params), *render_frame_host, std::move(callback));
 }
 
 void ExtensionFrameHost::WatchedPageChange(

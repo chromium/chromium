@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
@@ -21,9 +23,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -57,8 +63,6 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
-#include "services/network/origin_policy/origin_policy_constants.h"
-#include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
@@ -71,7 +75,6 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -82,7 +85,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
-#include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
@@ -295,39 +297,6 @@ const struct {
     {"Via", ConcerningHeaderId::kVia},
 };
 
-void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
-                                   bool allow_http1_for_streaming_upload) {
-  // Same as tools/metrics/histograms/enums.xml's.
-  enum class HttpProtocolScheme {
-    kHTTP1_1 = 0,
-    kHTTP2 = 1,
-    kQUIC = 2,
-    kMaxValue = kQUIC
-  } protocol;
-  const auto connection_info = request->response_info().connection_info;
-  switch (net::HttpResponseInfo::ConnectionInfoToCoarse(connection_info)) {
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1:
-      protocol = HttpProtocolScheme::kHTTP1_1;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP2:
-      protocol = HttpProtocolScheme::kHTTP2;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_QUIC:
-      protocol = HttpProtocolScheme::kQUIC;
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_OTHER:
-      protocol = HttpProtocolScheme::kHTTP1_1;
-      break;
-  }
-  if (allow_http1_for_streaming_upload) {
-    base::UmaHistogramEnumeration("Net.Fetch.UploadStreamingProtocolAllowH1",
-                                  protocol);
-  } else {
-    base::UmaHistogramEnumeration("Net.Fetch.UploadStreamingProtocolNotAllowH1",
-                                  protocol);
-  }
-}
-
 // Parses AcceptCHFrame and removes client hints already in the headers.
 std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
     const std::string& accept_ch_frame,
@@ -398,6 +367,169 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
+// Feature configuration for Cache Transparency is expensive to calculate, so it
+// is cached. Not threadsafe.
+class CacheTransparencySettings {
+ public:
+  // This is not threadsafe, but it doesn't need to be.
+  static const CacheTransparencySettings& Get() {
+    if (!singleton_instance_) {
+      singleton_instance_ = new CacheTransparencySettings();
+    }
+    return *singleton_instance_;
+  }
+
+  static void ResetForTesting() {
+    // `singleton_instance_` needs to be leaked at shutdown but not during
+    // tests.
+    delete singleton_instance_;
+    singleton_instance_ = nullptr;
+  }
+
+  CacheTransparencySettings(CacheTransparencySettings&) = delete;
+  CacheTransparencySettings& operator=(const CacheTransparencySettings&) =
+      delete;
+
+  bool enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return enabled_;
+  }
+
+  bool PervasivePayloadsEnabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return pervasive_payloads_enabled_;
+  }
+
+  absl::optional<int> GetIndexForURL(const GURL& url) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!pervasive_payloads_enabled_ || !url.is_valid())
+      return absl::nullopt;
+
+    auto it = map_.find(url.spec());
+    if (it == map_.end()) {
+      return absl::nullopt;
+    }
+    return std::distance(map_.begin(), it);
+  }
+
+  absl::optional<std::string> GetChecksumForURL(const GURL& url) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!enabled_ || !url.is_valid())
+      return absl::nullopt;
+
+    auto it = map_.find(url.spec());
+    if (it == map_.end()) {
+      return absl::nullopt;
+    }
+    return it->second;
+  }
+
+ private:
+  using PervasivePayloadsMap = base::flat_map<std::string, std::string>;
+
+  CacheTransparencySettings()
+      : enabled_(
+            base::FeatureList::IsEnabled(features::kCacheTransparency) &&
+            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
+        pervasive_payloads_enabled_(
+            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
+        map_(CreateMap()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  ~CacheTransparencySettings() = default;
+
+  PervasivePayloadsMap CreateMap() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!pervasive_payloads_enabled_)
+      return PervasivePayloadsMap();
+
+    const std::string comma_separated =
+        features::kCacheTransparencyPervasivePayloads.Get();
+    auto split = base::SplitStringPiece(
+        comma_separated, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (split.empty()) {
+      // The code below safely produces an empty map in this case.
+      DLOG(WARNING) << "Pervasive payload list is empty.";
+    } else {
+      const auto version_string = split[0];
+      int version_number = 0;
+      if (StringToInt(version_string, &version_number)) {
+        base::UmaHistogramExactLinear("Network.CacheTransparency.ListVersion",
+                                      version_number, 101);
+      } else {
+        LOG(WARNING) << "Could not parse pervasive payload version number";
+      }
+      // The number of items cannot be large, so this O(N) algorithm is
+      // acceptable.
+      split.erase(split.begin());
+    }
+    if (split.size() % 2 == 1) {
+      DLOG(WARNING)
+          << "Pervasive payload list contains an odd number of elements."
+          << comma_separated;
+    }
+    using Container = PervasivePayloadsMap::container_type;
+    Container pairs;
+    pairs.reserve(split.size() / 2);
+    // `split` has to fit in memory, therefore split.size() cannot be the
+    // largest possible value, therefore adding 1 to i will not overflow.
+    for (size_t i = 0; i + 1 < split.size(); i += 2) {
+      pairs.emplace_back(split[i], split[i + 1]);
+    }
+    return PervasivePayloadsMap(std::move(pairs));
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const bool pervasive_payloads_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const PervasivePayloadsMap map_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // This is normally leaked to avoid running a destructor. It's only
+  // re-allocated in tests.
+  static CacheTransparencySettings* singleton_instance_;
+};
+
+CacheTransparencySettings* CacheTransparencySettings::singleton_instance_ =
+    nullptr;
+
+bool HasFlagsIncompatibleWithSingleKeyedCache(int load_flags) {
+  return load_flags &
+         (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+          net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
+          net::LOAD_DISABLE_CACHE | net::LOAD_SKIP_VARY_CHECK);
+}
+
+bool HasHeadersIncompatibleWithSingleKeyedCache(
+    const net::HttpRequestHeaders& headers) {
+  // These are lowercase to permit case-insensitive matching.
+  auto incompatible_headers = base::MakeFixedFlatSet<base::StringPiece>({
+      "accept-charset",
+      "accept-encoding",
+      "authorization",
+      "cache-control",
+      "if-match",
+      "if-modified-since",
+      "if-none-match",
+      "if-range",
+      "if-unmodified-since",
+      "pragma",
+      "range",
+  });
+  // HttpRequestHeaders::FindHeader() would iterate through the headers for each
+  // name in the above list. To reduce the cost of this function, iterate
+  // manually instead
+  net::HttpRequestHeaders::Iterator it(headers);
+  while (it.GetNext()) {
+    if (incompatible_headers.contains(base::ToLowerASCII(it.name()))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -444,7 +576,8 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer)
+    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
+    bool third_party_cookies_enabled)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -495,6 +628,7 @@ URLLoader::URLLoader(
       allow_http1_for_streaming_upload_(
           request.request_body &&
           request.request_body->AllowHTTP1ForStreamingUpload()),
+      third_party_cookies_enabled_(third_party_cookies_enabled),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)) {
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               perfetto::Flow::FromPointer(this));
@@ -582,10 +716,7 @@ URLLoader::URLLoader(
   // they should be ignored by CORS checks.
   net::HttpRequestHeaders merged_headers = request.headers;
   merged_headers.MergeFrom(request.cors_exempt_headers);
-  if (request.obey_origin_policy) {
-    origin_policy_manager_ = context.GetOriginPolicyManager();
-    DCHECK(origin_policy_manager_);
-  }
+
   // This should be ensured by the CorsURLLoaderFactory(), which is called
   // before URLLoaders are created.
   DCHECK(AreRequestHeadersSafe(merged_headers));
@@ -614,7 +745,48 @@ URLLoader::URLLoader(
         net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
   }
 
-  url_request_->SetLoadFlags(request.load_flags);
+  int request_load_flags = request.load_flags;
+
+  if (CacheTransparencySettings::Get().PervasivePayloadsEnabled()) {
+    auto index = CacheTransparencySettings::Get().GetIndexForURL(request.url);
+    if (index.has_value()) {
+      // Remember that a pervasive payload was found so we can annotate the
+      // URLLoaderCompletionStatus with it later.
+      pervasive_payload_requested_ = true;
+      url_request_->set_pervasive_payloads_index_for_logging(index.value());
+      base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
+                                    index.value(), 101);
+      DVLOG(2) << "Found pervasive payload: " << request.url.spec();
+    }
+  }
+
+  if (CacheTransparencySettings::Get().enabled() &&
+      ThirdPartyCookiesEnabled()) {
+    auto checksum =
+        CacheTransparencySettings::Get().GetChecksumForURL(request.url);
+    if (checksum.has_value()) {
+      CacheTransparencyCacheNotUsedReason cache_not_used_reason =
+          CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
+      if (request.method != net::HttpRequestHeaders::kGetMethod) {
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestType;
+      } else if (HasFlagsIncompatibleWithSingleKeyedCache(request_load_flags)) {
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestLoadFlags;
+      } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
+      } else {
+        request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
+
+        url_request_->set_expected_response_checksum(checksum.value());
+      }
+      base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",
+                                    cache_not_used_reason);
+    }
+  }
+
+  url_request_->SetLoadFlags(request_load_flags);
   SetRequestCredentials(request.url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
@@ -733,6 +905,7 @@ class URLLoader::FileOpenerForUpload {
 
     network_context_client_->OnFileUploadRequested(
         process_id_, /*async=*/true, batch_paths,
+        url_loader_->url_request_->url(),
         base::BindOnce(&FileOpenerForUpload::OnFilesForUploadOpened,
                        weak_ptr_factory_.GetWeakPtr(), num_files_to_request));
   }
@@ -1088,7 +1261,8 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     return net::ERR_FAILED;
   }
 
-  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty()) {
+  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
+      !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
     return net::OK;
   }
 
@@ -1189,6 +1363,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->client_address_space =
       private_network_access_checker_.ClientAddressSpace();
 
+  response->has_partitioned_cookie = url_request_->HasPartitionedCookie();
+
   return response;
 }
 
@@ -1268,6 +1444,11 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
          element.As<network::DataElementChunkedDataPipe>().read_only_once();
 }
 
+// static
+void URLLoader::ResetPervasivePayloadsListForTesting() {
+  CacheTransparencySettings::ResetForTesting();
+}
+
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,
                                const net::AuthChallengeInfo& auth_info) {
   if (has_fetch_streaming_upload_body_) {
@@ -1301,6 +1482,14 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
 void URLLoader::OnCertificateRequested(net::URLRequest* unused,
                                        net::SSLCertRequestInfo* cert_info) {
   DCHECK(!client_cert_responder_receiver_.is_bound());
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kIgnoreUrlFetcherCertRequests) &&
+      factory_params_.is_trusted) {
+    ContinueWithoutCertificate();
+    return;
+  }
+
   if (!url_loader_network_observer_) {
     CancelRequest();
     return;
@@ -1335,10 +1524,6 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   has_received_response_ = true;
 
   ReportFlaggedResponseCookies();
-  if (has_fetch_streaming_upload_body_) {
-    ReportFetchUploadStreamingUMA(url_request_.get(),
-                                  allow_http1_for_streaming_upload_);
-  }
 
   if (net_error != net::OK) {
     NotifyCompleted(net_error);
@@ -1447,6 +1632,21 @@ void URLLoader::ContinueOnResponseStarted() {
     return;
   }
 
+  // Enforce FLEDGE auction-only signals -- the renderer process isn't allowed
+  // to read auction-only signals for FLEDGE auctions; only the browser process
+  // is allowed to read those, and only the browser process can issue trusted
+  // requests.
+  std::string fledge_auction_only_signals;
+  if (!factory_params_.is_trusted && response_->headers &&
+      response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
+                                              &fledge_auction_only_signals) &&
+      base::EqualsCaseInsensitiveASCII(fledge_auction_only_signals, "true")) {
+    CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
+    url_request_->AbortAndCloseConnection();
+    DeleteSelf();
+    return;
+  }
+
   // Figure out if we need to sniff (for MIME type detection or for Cross-Origin
   // Read Blocking / CORB).
   if (factory_params_.is_corb_enabled) {
@@ -1488,42 +1688,6 @@ void URLLoader::ContinueOnResponseStarted() {
       // treat the response as "text/plain".  This is the most secure option.
       response_->mime_type.assign("text/plain");
     }
-  }
-
-  // If necessary, retrieve the associated origin policy, before sending the
-  // response to the client.
-  if (origin_policy_manager_ && url_request_->response_headers()) {
-    // The request should have been rejected in IsolationInfo if this were
-    // empty.
-    DCHECK(!url_request_->isolation_info().IsEmpty());
-
-    absl::optional<std::string> origin_policy_header;
-    std::string origin_policy_header_value;
-    if (url_request_->response_headers()->GetNormalizedHeader(
-            "origin-policy", &origin_policy_header_value)) {
-      origin_policy_header = origin_policy_header_value;
-    }
-
-    OriginPolicyManager::RetrieveOriginPolicyCallback
-        origin_policy_manager_done =
-            base::BindOnce(&URLLoader::OnOriginPolicyManagerRetrieveDone,
-                           weak_ptr_factory_.GetWeakPtr());
-
-    // Create IsolationInfo as if this were an uncredentialed subresource
-    // request of the original URL.
-    net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RequestType::kOther,
-        url_request_->isolation_info().top_frame_origin().value(),
-        url_request_->isolation_info().frame_origin().value(),
-        net::SiteForCookies());
-    origin_policy_manager_->RetrieveOriginPolicy(
-        url::Origin::Create(url_request_->url()), isolation_info,
-        origin_policy_header, std::move(origin_policy_manager_done));
-
-    // The callback will continue by calling
-    // `StartReading()` after retrieving the origin
-    // policy.
-    return;
   }
 
   StartReading();
@@ -1921,6 +2085,8 @@ void URLLoader::NotifyCompleted(int error_code) {
       status.ssl_info = url_request_->ssl_info();
     }
 
+    status.pervasive_payload_requested = pervasive_payload_requested_;
+
     url_loader_client_.Get()->OnComplete(status);
   }
 
@@ -1954,15 +2120,8 @@ void URLLoader::SendResponseToClient() {
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response_->emitted_extra_info = emitted_devtools_raw_request_;
 
-  if (base::FeatureList::IsEnabled(features::kCombineResponseBody)) {
-    url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
-                                                std::move(consumer_handle_));
-  } else {
-    url_loader_client_.Get()->OnReceiveResponse(
-        response_->Clone(), mojo::ScopedDataPipeConsumerHandle());
-    url_loader_client_.Get()->OnStartLoadingResponseBody(
-        std::move(consumer_handle_));
-  }
+  url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
+                                              std::move(consumer_handle_));
 }
 
 void URLLoader::CompletePendingWrite(bool success) {
@@ -2007,19 +2166,10 @@ void URLLoader::NotifyEarlyResponse(
   mojom::IPAddressSpace ip_address_space =
       CalculateClientAddressSpace(url_request_->url(), params);
 
-  // Populate origin trial tokens.
-  std::vector<std::string> origin_trial_tokens;
-  size_t iter = 0;
-  std::string value;
-  while (headers->EnumerateHeader(&iter, "Origin-Trial", &value)) {
-    origin_trial_tokens.push_back(value);
-  }
-
   mojom::ReferrerPolicy referrer_policy = ParseReferrerPolicy(*headers);
 
-  url_loader_client_.Get()->OnReceiveEarlyHints(
-      mojom::EarlyHints::New(std::move(parsed_headers), referrer_policy,
-                             ip_address_space, std::move(origin_trial_tokens)));
+  url_loader_client_.Get()->OnReceiveEarlyHints(mojom::EarlyHints::New(
+      std::move(parsed_headers), referrer_policy, ip_address_space));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(
@@ -2258,15 +2408,8 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
   }
   producer_handle.reset();
 
-  if (base::FeatureList::IsEnabled(features::kCombineResponseBody)) {
-    url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
-                                                std::move(consumer_handle));
-  } else {
-    url_loader_client_.Get()->OnReceiveResponse(
-        response_->Clone(), mojo::ScopedDataPipeConsumerHandle());
-    url_loader_client_.Get()->OnStartLoadingResponseBody(
-        std::move(consumer_handle));
-  }
+  url_loader_client_.Get()->OnReceiveResponse(response_->Clone(),
+                                              std::move(consumer_handle));
 
   // Tell the real URLLoaderClient that the response has been completed.
   if (corb_detachable_) {
@@ -2354,13 +2497,6 @@ void URLLoader::StartReading() {
 
   // Start reading...
   ReadMore();
-}
-
-void URLLoader::OnOriginPolicyManagerRetrieveDone(
-    const OriginPolicy& origin_policy) {
-  response_->origin_policy = origin_policy;
-
-  StartReading();
 }
 
 bool URLLoader::ShouldForceIgnoreSiteForCookies(
@@ -2520,6 +2656,12 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 5. Return false.
   return false;
+}
+
+bool URLLoader::ThirdPartyCookiesEnabled() const {
+  return third_party_cookies_enabled_ &&
+         !(options_ & (mojom::kURLLoadOptionBlockThirdPartyCookies |
+                       mojom::kURLLoadOptionBlockAllCookies));
 }
 
 }  // namespace network

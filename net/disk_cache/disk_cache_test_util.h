@@ -39,6 +39,31 @@ bool CheckCacheIntegrity(const base::FilePath& path,
 
 // -----------------------------------------------------------------------
 
+// Like net::TestCompletionCallback, but for BackendResultCallback.
+struct BackendResultIsPendingHelper {
+  bool operator()(const disk_cache::BackendResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+using TestBackendResultCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<disk_cache::BackendResult,
+                                                  BackendResultIsPendingHelper>;
+
+class TestBackendResultCompletionCallback
+    : public TestBackendResultCompletionCallbackBase {
+ public:
+  TestBackendResultCompletionCallback();
+
+  TestBackendResultCompletionCallback(
+      const TestBackendResultCompletionCallback&) = delete;
+  TestBackendResultCompletionCallback& operator=(
+      const TestBackendResultCompletionCallback&) = delete;
+
+  ~TestBackendResultCompletionCallback() override;
+
+  disk_cache::BackendResultCallback callback();
+};
+
 // Like net::TestCompletionCallback, but for EntryResultCallback.
 
 struct EntryResultIsPendingHelper {
@@ -129,14 +154,14 @@ class MessageLoopHelper {
   void TimerExpired();
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  int num_callbacks_;
-  int num_iterations_;
-  int last_;
-  bool completed_;
+  int num_callbacks_ = 0;
+  int num_iterations_ = 0;
+  int last_ = 0;
+  bool completed_ = false;
 
   // True if a callback was called/reused more than expected.
-  bool callback_reused_error_;
-  int callbacks_called_;
+  bool callback_reused_error_ = false;
+  int callbacks_called_ = 0;
 };
 
 // -----------------------------------------------------------------------

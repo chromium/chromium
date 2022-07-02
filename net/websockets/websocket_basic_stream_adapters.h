@@ -115,13 +115,13 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
 
   // True if SpdyStream::Delegate::OnHeadersSent() has been called.
   // SpdyStream::SendData() must not be called before that.
-  bool headers_sent_;
+  bool headers_sent_ = false;
 
   // The underlying SpdyStream.
   base::WeakPtr<SpdyStream> stream_;
 
   // The error code with which SpdyStream was closed.
-  int stream_error_;
+  int stream_error_ = ERR_CONNECTION_CLOSED;
 
   raw_ptr<Delegate> delegate_;
 
@@ -140,7 +140,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // Write length saved to be passed to |write_callback_|.  This is necessary
   // because SpdyStream::Delegate::OnDataSent() does not pass number of bytes
   // written.
-  int write_length_;
+  int write_length_ = 0;
 
   // Write callback saved for asynchronous writes (all writes are asynchronous).
   CompletionOnceCallback write_callback_;

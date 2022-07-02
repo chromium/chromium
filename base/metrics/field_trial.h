@@ -125,8 +125,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // FieldTrial object. Does not use StringPiece to avoid conversions back to
   // std::string.
   struct BASE_EXPORT State {
-    raw_ptr<const std::string> trial_name = nullptr;
-    raw_ptr<const std::string> group_name = nullptr;
+    raw_ptr<const std::string, DanglingUntriaged> trial_name = nullptr;
+    raw_ptr<const std::string, DanglingUntriaged> group_name = nullptr;
     bool activated = false;
 
     State();
@@ -139,10 +139,10 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // base::Pickle object that we unpickle and read from.
   struct BASE_EXPORT FieldTrialEntry {
     // SHA1(FieldTrialEntry): Increment this if structure changes!
-    static constexpr uint32_t kPersistentTypeId = 0xABA17E13 + 2;
+    static constexpr uint32_t kPersistentTypeId = 0xABA17E13 + 3;
 
     // Expected size for 32/64-bit check.
-    static constexpr size_t kExpectedInstanceSize = 8;
+    static constexpr size_t kExpectedInstanceSize = 16;
 
     // Whether or not this field trial is activated. This is really just a
     // boolean but using a 32 bit value for portability reasons. It should be
@@ -151,8 +151,12 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     // thread is accessing the memory location.
     subtle::Atomic32 activated;
 
+    // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and
+    // alignment of `pickle_size` across platforms.
+    uint32_t padding;
+
     // Size of the pickled structure, NOT the total size of this entry.
-    uint32_t pickle_size;
+    uint64_t pickle_size;
 
     // Calling this is only valid when the entry is initialized. That is, it
     // resides in shared memory and has a pickle containing the trial name and
@@ -556,7 +560,7 @@ class BASE_EXPORT FieldTrialList {
   // to contain the shared memory handle that contains the field trial
   // allocator.
   static void CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                          int fd_key);
+                                          uint32_t fd_key);
 
   // Creates base::Feature overrides from the command line by first trying to
   // use shared memory and then falling back to the command line if it fails.
@@ -572,13 +576,13 @@ class BASE_EXPORT FieldTrialList {
       LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
   // On POSIX, we also need to explicitly pass down this file descriptor that
   // should be shared with the child process. Returns -1 if it was not
   // initialized properly. The current process remains the onwer of the passed
   // descriptor.
   static int GetFieldTrialDescriptor();
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
 
   static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 
@@ -694,7 +698,7 @@ class BASE_EXPORT FieldTrialList {
   // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
   // down to the child process for the shared memory region.
   static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
-                                          int fd_key);
+                                          uint32_t fd_key);
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size

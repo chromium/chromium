@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -36,26 +35,9 @@ namespace {
 using ::media::EmeConfigRule;
 using ::media::EmeFeatureSupport;
 using ::media::EmeMediaType;
-using ::media::EmeSessionTypeSupport;
 using ::media::EncryptionScheme;
 using EmeFeatureRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EmeEncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
-
-EmeConfigRule GetSessionTypeConfigRule(EmeSessionTypeSupport support) {
-  switch (support) {
-    case EmeSessionTypeSupport::INVALID:
-      NOTREACHED();
-      return EmeConfigRule::NOT_SUPPORTED;
-    case EmeSessionTypeSupport::NOT_SUPPORTED:
-      return EmeConfigRule::NOT_SUPPORTED;
-    case EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER:
-      return EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED;
-    case EmeSessionTypeSupport::SUPPORTED:
-      return EmeConfigRule::PERSISTENCE_REQUIRED;
-  }
-  NOTREACHED();
-  return EmeConfigRule::NOT_SUPPORTED;
-}
 
 EmeConfigRule GetDistinctiveIdentifierConfigRule(
     EmeFeatureSupport support,
@@ -164,39 +146,6 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
   std::vector<std::string> codec_vector;
   media::SplitCodecs(codecs, &codec_vector);
-
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  // EME HEVC is supported on under this build flag, but it is not supported for
-  // clear playback or when using ClearKey. Remove the HEVC codec strings to
-  // avoid asking IsSupported*MediaFormat() about HEVC. EME support for HEVC
-  // profiles is described via KeySystemProperties::GetSupportedCodecs().
-  // TODO(1156282): Decouple the rest of clear vs EME codec support.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool allow_hevc = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kLacrosEnablePlatformEncryptedHevc);
-#else
-  const bool allow_hevc = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (allow_hevc && !use_aes_decryptor &&
-      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
-      !codec_vector.empty()) {
-    auto it = codec_vector.begin();
-    while (it != codec_vector.end()) {
-      media::VideoCodecProfile profile;
-      uint8_t level_idc;
-      if (ParseHEVCCodecId(*it, &profile, &level_idc))
-        codec_vector.erase(it);
-      else
-        ++it;
-    }
-
-    // Avoid calling IsSupported*MediaFormat() with an empty vector. For
-    // "video/mp4", this will return MaybeSupported, which we would otherwise
-    // consider "false" below.
-    if (codec_vector.empty())
-      return true;
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.
@@ -756,8 +705,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     // 13.1. Let session type be the value.
     WebEncryptedMediaSessionType session_type = session_types[i];
     if (session_type == WebEncryptedMediaSessionType::kUnknown) {
-      DVLOG(2) << "Rejecting requested configuration because "
-               << "session type was not recognized.";
+      DVLOG(2) << "Rejecting requested configuration because the session type "
+                  "was not recognized.";
       return CONFIGURATION_NOT_SUPPORTED;
     }
 
@@ -767,8 +716,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     if (accumulated_configuration->persistent_state ==
             EmeFeatureRequirement::kNotAllowed &&
         IsPersistentSessionType(session_type)) {
-      DVLOG(2) << "Rejecting requested configuration because persistent "
-                  "sessions are not allowed.";
+      DVLOG(2) << "Rejecting requested configuration because persistent state "
+                  "is not allowed.";
       return CONFIGURATION_NOT_SUPPORTED;
     }
 
@@ -784,8 +733,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
         session_type_rule = EmeConfigRule::SUPPORTED;
         break;
       case WebEncryptedMediaSessionType::kPersistentLicense:
-        session_type_rule = GetSessionTypeConfigRule(
-            key_systems_->GetPersistentLicenseSessionSupport(key_system));
+        session_type_rule =
+            key_systems_->GetPersistentLicenseSessionSupport(key_system);
         break;
     }
 

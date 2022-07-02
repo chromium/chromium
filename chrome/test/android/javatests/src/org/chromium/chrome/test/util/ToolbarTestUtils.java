@@ -16,9 +16,6 @@ import static org.hamcrest.core.IsNot.not;
 import androidx.annotation.IdRes;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.LocationBarModel;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * A utility class that contains methods generic to both the top toolbar and bottom toolbar,
@@ -39,18 +36,6 @@ public class ToolbarTestUtils {
     public static final @IdRes int TAB_SWITCHER_TOOLBAR_TAB_SWITCHER_BUTTON =
             R.id.tab_switcher_mode_tab_switcher_button;
 
-    public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
-            new LocationBarModel.OfflineStatus() {
-                @Override
-                public boolean isShowingTrustedOfflinePage(WebContents webContents) {
-                    return true;
-                }
-
-                @Override
-                public boolean isOfflinePage(Tab tab) {
-                    return true;
-                }
-            };
     public static void checkToolbarVisibility(@IdRes int toolbarId, boolean isVisible) {
         onView(withId(toolbarId)).check(matches(isVisible ? isDisplayed() : not(isDisplayed())));
     }

@@ -37,7 +37,7 @@ void ShowTabViewController() {
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 }
 
-// Selects and focuses the tab with the given |title|.
+// Selects and focuses the tab with the given `title`.
 void SelectTab(NSString* title) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
@@ -88,7 +88,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
-// Returns the URL for a test page with the given |title|.
+// Returns the URL for a test page with the given `title`.
 - (GURL)makeURLForTitle:(NSString*)title {
   return self.testServer->GetURL("/querytitle?" +
                                  base::SysNSStringToUTF8(title));

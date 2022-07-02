@@ -16,31 +16,21 @@ int NGTextDecorationOffset::ComputeUnderlineOffsetForUnder(
     const SimpleFontData* font_data,
     float text_decoration_thickness,
     FontVerticalPositionType position_type) const {
-  LayoutUnit offset = LayoutUnit::Max();
   const ComputedStyle& style = text_style_;
   FontBaseline baseline_type = style.GetFontBaseline();
 
   LayoutUnit style_underline_offset_pixels = LayoutUnit::FromFloatRound(
       StyleUnderlineOffsetToPixels(style_underline_offset, computed_font_size));
-  if (IsLineOverSide(position_type)) {
+  if (IsLineOverSide(position_type))
     style_underline_offset_pixels = -style_underline_offset_pixels;
-  }
 
-  if (decorating_box_) {
-    offset = decorating_box_->Baseline().value_or(offset) +
-             style_underline_offset_pixels;
-  }
-
-  if (offset == LayoutUnit::Max()) {
-    // TODO(layout-dev): How do we compute the baseline offset with a
-    // decorating_box?
-    if (!font_data)
-      return 0;
-    offset = LayoutUnit::FromFloatRound(
-                 font_data->GetFontMetrics().FloatAscent(baseline_type)) -
-             font_data->VerticalPosition(position_type, baseline_type) +
-             style_underline_offset_pixels;
-  }
+  if (!font_data)
+    return 0;
+  const LayoutUnit offset =
+      LayoutUnit::FromFloatRound(
+          font_data->GetFontMetrics().FloatAscent(baseline_type)) -
+      font_data->VerticalPosition(position_type, baseline_type) +
+      style_underline_offset_pixels;
 
   // Compute offset to the farthest position of the decorating box.
   // TODO(layout-dev): This does not take farthest offset within the decorating

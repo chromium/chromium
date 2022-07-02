@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
       https_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_FALSE(core_tab_helper->new_tab_start_time().is_null());
   histogram_tester.ExpectTotalCount("Tab.NewTabOnload.Other", 1);
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
 
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), ntp_url);
+          web_contents()->GetPrimaryMainFrame(), ntp_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   // Fenced frames should not update the title of the web contents.
   EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());

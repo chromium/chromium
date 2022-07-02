@@ -21,6 +21,13 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './search_engine_edit_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
+/**
+ * The |modelIndex| to use when a new search engine is added. Must match
+ * with kNewSearchEngineIndex constant specified at
+ * chrome/browser/ui/webui/settings/search_engines_handler.cc
+ */
+const DEFAULT_MODEL_INDEX: number = -1;
+
 export interface SettingsSearchEngineEditDialogElement {
   $: {
     actionButton: CrButtonElement,
@@ -77,19 +84,7 @@ export class SettingsSearchEngineEditDialogElement extends
   private actionButtonText_: string;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
-  DEFAULT_MODEL_INDEX: number;
   private isActiveSearchEnginesFlagEnabled_: boolean;
-
-  constructor() {
-    super();
-
-    /**
-     * The |modelIndex| to use when a new search engine is added. Must match
-     * with kNewSearchEngineIndex constant specified at
-     * chrome/browser/ui/webui/settings/search_engines_handler.cc
-     */
-    this.DEFAULT_MODEL_INDEX = -1;
-  }
 
   override ready() {
     super.ready();
@@ -126,7 +121,7 @@ export class SettingsSearchEngineEditDialogElement extends
 
     microTask.run(() => this.updateActionButtonState_());
     this.browserProxy_.searchEngineEditStarted(
-        this.model ? this.model.modelIndex : this.DEFAULT_MODEL_INDEX);
+        this.model ? this.model.modelIndex : DEFAULT_MODEL_INDEX);
     this.$.dialog.showModal();
   }
 

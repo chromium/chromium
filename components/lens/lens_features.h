@@ -16,24 +16,29 @@ namespace features {
 // Enables context menu search by image sending to the Lens homepage.
 extern const base::Feature kLensStandalone;
 
-// Enables Lens Region Search from the context menu.
-extern const base::Feature kLensRegionSearch;
+// Feature that controls the compression of images before they are sent to Lens.
+extern const base::Feature kLensImageCompression;
+
+// Enables a variety of changes aimed to improve user's engagement with current
+// Lens features.
+extern const base::Feature kLensSearchOptimizations;
+
+// Enables a fix to properly handle transparent images in Lens Image Search
+extern const base::Feature kLensTransparentImagesFix;
 
 // Enables a fix for cursor pointer/crosshair state over overlay on Mac.
 // TODO(crbug/1266514): make default and remove feature once launched.
 extern const base::FeatureParam<bool> kRegionSearchMacCursorFix;
+
+// Enables using `Google` as the visual search provider instead of `Google
+// Lens`.
+extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
 
 // Enables alternate option 1 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1;
 
 // Enables alternate option 2 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
-
-// Enables alternate option 3 for the Region Search context menu item text.
-extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
-
-// Enables alternate option 4 for the Region Search context menu item text.
-extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4;
 
 // Enables UKM logging for the Lens Region Search feature.
 extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
@@ -43,6 +48,9 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 
 // Enables the side panel for Lens features on Chrome where supported.
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
+
+// Enables Lens fullscreen search on Desktop platforms.
+extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();
@@ -63,8 +71,26 @@ extern int GetMaxPixelsForImageSearch();
 // The URL for the Lens home page.
 extern std::string GetHomepageURLForLens();
 
+// Returns whether Lens fullscreen search is enabled.
+extern bool IsLensFullscreenSearchEnabled();
+
+// Returns whether to use alternative option 1 for the Region Search context
+// menu item text.
+extern bool UseRegionSearchMenuItemAltText1();
+
+// Returns whether to use alternative option 2 for the Region Search context
+// menu item text.
+extern bool UseRegionSearchMenuItemAltText2();
+
+// Returns whether to use `Google` as the visual search provider for all
+// relevant Lens context menu strings.
+extern bool UseGoogleAsVisualSearchProvider();
+
 // Returns whether the Lens side panel is enabled.
 extern bool IsLensSidePanelEnabled();
+
+// Returns whether to send images to Lens Standalone as PNG
+extern bool GetSendImagesAsPng();
 
 }  // namespace features
 }  // namespace lens

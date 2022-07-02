@@ -23,9 +23,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/features.h"
@@ -71,8 +70,8 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_concierge_client_->set_disk_image_progress_signal_connected(true);
     fake_vm_plugin_dispatcher_client_ =
-        static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-            chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
+        static_cast<ash::FakeVmPluginDispatcherClient*>(
+            ash::VmPluginDispatcherClient::Get());
 
     network_connection_tracker_ =
         network::TestNetworkConnectionTracker::CreateInstance();
@@ -155,7 +154,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   PluginVmInstallerView* view_;
   ash::FakeConciergeClient* fake_concierge_client_;
-  chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
+  ash::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
  private:
   void EnterpriseEnrollDevice() {

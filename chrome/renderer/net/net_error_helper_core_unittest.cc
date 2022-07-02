@@ -87,6 +87,19 @@ std::string NetErrorString(net::Error net_error) {
   return ErrorToString(NetError(net_error), false);
 }
 
+error_page::LocalizedError::PageState GetErrorPageState(int error_code,
+                                                        bool is_kiosk_mode) {
+  return error_page::LocalizedError::GetPageState(
+      error_code, error_page::Error::kNetErrorDomain, GURL(kFailedUrl),
+      /*is_post=*/false,
+      /*is_secure_dns_network_error=*/false, /*stale_copy_in_cache=*/false,
+      /*can_show_network_diagnostics_dialog=*/false, /*is_incognito=*/false,
+      /*offline_content_feature_enabled=*/false,
+      /*auto_fetch_feature_enabled=*/false, /*is_kiosk_mode=*/is_kiosk_mode,
+      /*locale=*/"",
+      /*is_blocked_by_extension=*/false);
+}
+
 class NetErrorHelperCoreTest : public testing::Test,
                                public NetErrorHelperCore::Delegate {
  public:
@@ -356,6 +369,36 @@ TEST_F(NetErrorHelperCoreTest, MainFrameNonDnsErrorSpuriousStatus) {
   core()->OnNetErrorInfo(error_page::DNS_PROBE_FINISHED_NXDOMAIN);
 
   EXPECT_EQ(0, update_count());
+}
+
+TEST_F(NetErrorHelperCoreTest,
+       UserModeErrBlockedByAdministratorContainsDetails) {
+  error_page::LocalizedError::PageState page_state = GetErrorPageState(
+      net::ERR_BLOCKED_BY_ADMINISTRATOR, /*is_kiosk_mode=*/false);
+
+  auto* suggestions_details = page_state.strings.FindList("suggestionsDetails");
+  ASSERT_TRUE(suggestions_details);
+  EXPECT_FALSE(suggestions_details->empty());
+
+  auto* suggestions_summary_list =
+      page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(suggestions_summary_list);
+  EXPECT_FALSE(suggestions_summary_list->empty());
+}
+
+TEST_F(NetErrorHelperCoreTest,
+       KioskModeErrBlockedByAdministratorDoenNotContainDetails) {
+  error_page::LocalizedError::PageState page_state = GetErrorPageState(
+      net::ERR_BLOCKED_BY_ADMINISTRATOR, /*is_kiosk_mode=*/true);
+
+  auto* suggestions_details = page_state.strings.FindList("suggestionsDetails");
+  ASSERT_TRUE(suggestions_details);
+  EXPECT_TRUE(suggestions_details->empty());
+
+  auto* suggestions_summary_list =
+      page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(suggestions_summary_list);
+  EXPECT_TRUE(suggestions_summary_list->empty());
 }
 
 TEST_F(NetErrorHelperCoreTest, SubFrameErrorWithCustomErrorPage) {
@@ -846,12 +889,12 @@ TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
   // `chrome/browser/web_applications/web_app_offline.h`
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
-  dict.SetStringKey("customized_background_color",
-                    skia::SkColorToHexString(SK_ColorYELLOW));
-  dict.SetStringKey("app_short_name", "Test Short Name");
-  dict.SetStringKey(
+  base::Value::Dict dict;
+  dict.Set("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
+  dict.Set("customized_background_color",
+           skia::SkColorToHexString(SK_ColorYELLOW));
+  dict.Set("app_short_name", "Test Short Name");
+  dict.Set(
       "web_app_default_offline_message",
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);

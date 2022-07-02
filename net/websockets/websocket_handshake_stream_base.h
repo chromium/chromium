@@ -95,7 +95,7 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
   // WebSocket connection.
   class NET_EXPORT_PRIVATE CreateHelper : public base::SupportsUserData::Data {
    public:
-    ~CreateHelper() override {}
+    ~CreateHelper() override = default;
 
     // Create a WebSocketBasicHandshakeStream. This is called after the
     // underlying connection has been established but before any handshake data

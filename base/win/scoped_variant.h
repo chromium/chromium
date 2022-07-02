@@ -42,7 +42,8 @@ class BASE_EXPORT ScopedVariant {
 
   // Creates a new integral type variant and assigns the value to
   // VARIANT.lVal (32 bit sized field).
-  explicit ScopedVariant(long value, VARTYPE vt = VT_I4);
+  explicit ScopedVariant(long value,  // NOLINT(runtime/int)
+                         VARTYPE vt = VT_I4);
 
   // Creates a new integral type variant for the int type and assigns the value
   // to VARIANT.lVal (32 bit sized field).

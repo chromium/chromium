@@ -119,7 +119,7 @@ static inline UChar ToLowerCaseIfAlpha(UChar cc) {
   return cc | (IsASCIIUpper(cc) ? 0x20 : 0);
 }
 
-static inline bool VectorEqualsString(const LiteralBuffer<LChar, 32>& vector,
+static inline bool VectorEqualsString(const LCharLiteralBuffer<32>& vector,
                                       const String& string) {
   if (vector.size() != string.length())
     return false;

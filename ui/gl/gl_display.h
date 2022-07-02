@@ -7,14 +7,21 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "ui/gl/gl_export.h"
 
 #if defined(USE_EGL)
 #include <EGL/egl.h>
 #endif  // defined(USE_EGL)
 
-namespace gl {
+namespace base {
+class CommandLine;
+}  // namespace base
 
+namespace gl {
+struct DisplayExtensionsEGL;
 template <typename GLDisplayPlatform>
 class GLDisplayManager;
 
@@ -62,6 +69,17 @@ enum DisplayType {
   DISPLAY_TYPE_MAX = 19,
 };
 
+GL_EXPORT void GetEGLInitDisplaysForTesting(
+    bool supports_angle_d3d,
+    bool supports_angle_opengl,
+    bool supports_angle_null,
+    bool supports_angle_vulkan,
+    bool supports_angle_swiftshader,
+    bool supports_angle_egl,
+    bool supports_angle_metal,
+    const base::CommandLine* command_line,
+    std::vector<DisplayType>* init_displays);
+
 class GL_EXPORT GLDisplay {
  public:
   GLDisplay(const GLDisplay&) = delete;
@@ -87,79 +105,37 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   ~GLDisplayEGL() override;
 
+  static GLDisplayEGL* GetDisplayForCurrentContext();
+
   EGLDisplay GetDisplay() override;
   void SetDisplay(EGLDisplay display);
+  EGLDisplayPlatform GetNativeDisplay() const;
+  DisplayType GetDisplayType() const;
 
-  EGLDisplay GetHardwareDisplay();
-
-  EGLNativeDisplayType GetNativeDisplay();
-  DisplayType GetDisplayType();
-
-  bool HasEGLClientExtension(const char* name);
-  bool HasEGLExtension(const char* name);
-  bool IsCreateContextRobustnessSupported();
-  bool IsRobustnessVideoMemoryPurgeSupported();
-  bool IsCreateContextBindGeneratesResourceSupported();
-  bool IsCreateContextWebGLCompatabilitySupported();
   bool IsEGLSurfacelessContextSupported();
   bool IsEGLContextPrioritySupported();
-  bool IsEGLNoConfigContextSupported();
-  bool IsRobustResourceInitSupported();
-  bool IsDisplayTextureShareGroupSupported();
-  bool IsDisplaySemaphoreShareGroupSupported();
-  bool IsCreateContextClientArraysSupported();
   bool IsAndroidNativeFenceSyncSupported();
-  bool IsPixelFormatFloatSupported();
-  bool IsANGLEFeatureControlSupported();
-  bool IsANGLEPowerPreferenceSupported();
-  bool IsANGLEDisplayPowerPreferenceSupported();
-  bool IsANGLEPlatformANGLEDeviceIdSupported();
   bool IsANGLEExternalContextAndSurfaceSupported();
-  bool IsANGLEContextVirtualizationSupported();
-  bool IsANGLEVulkanImageSupported();
-  bool IsEGLQueryDeviceSupported();
 
-  EGLDisplayPlatform native_display = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  bool InitializeDisplay(EGLDisplayPlatform native_display);
+  void InitializeCommon();
+  bool InitializeExtensionSettings();
+  void Shutdown();
 
-  DisplayType display_type = DisplayType::DEFAULT;
-
-  const char* egl_client_extensions = nullptr;
-  const char* egl_extensions = nullptr;
-  bool egl_create_context_robustness_supported = false;
-  bool egl_robustness_video_memory_purge_supported = false;
-  bool egl_create_context_bind_generates_resource_supported = false;
-  bool egl_create_context_webgl_compatability_supported = false;
-  bool egl_sync_control_supported = false;
-  bool egl_sync_control_rate_supported = false;
-  bool egl_window_fixed_size_supported = false;
-  bool egl_surfaceless_context_supported = false;
-  bool egl_surface_orientation_supported = false;
-  bool egl_context_priority_supported = false;
-  bool egl_khr_colorspace = false;
-  bool egl_ext_colorspace_display_p3 = false;
-  bool egl_ext_colorspace_display_p3_passthrough = false;
-  bool egl_no_config_context_supported = false;
-  bool egl_robust_resource_init_supported = false;
-  bool egl_display_texture_share_group_supported = false;
-  bool egl_display_semaphore_share_group_supported = false;
-  bool egl_create_context_client_arrays_supported = false;
-  bool egl_android_native_fence_sync_supported = false;
-  bool egl_ext_pixel_format_float_supported = false;
-  bool egl_angle_feature_control_supported = false;
-  bool egl_angle_power_preference_supported = false;
-  bool egl_angle_display_power_preference_supported = false;
-  bool egl_angle_platform_angle_device_id_supported = false;
-  bool egl_angle_external_context_and_surface_supported = false;
-  bool egl_ext_query_device_supported = false;
-  bool egl_angle_context_virtualization_supported = false;
-  bool egl_angle_vulkan_image_supported = false;
+  std::unique_ptr<DisplayExtensionsEGL> ext;
 
  private:
   friend class GLDisplayManager<GLDisplayEGL>;
 
   explicit GLDisplayEGL(uint64_t system_device_id);
 
-  EGLDisplay display_;
+  EGLDisplay display_ = EGL_NO_DISPLAY;
+  EGLDisplayPlatform native_display_ = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  DisplayType display_type_ = DisplayType::DEFAULT;
+
+  bool egl_surfaceless_context_supported_ = false;
+  bool egl_context_priority_supported_ = false;
+  bool egl_android_native_fence_sync_supported_ = false;
 };
 #endif  // defined(USE_EGL)
 

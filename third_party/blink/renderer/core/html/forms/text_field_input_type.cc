@@ -280,10 +280,13 @@ void TextFieldInputType::HandleBlurEvent() {
 }
 
 bool TextFieldInputType::ShouldSubmitImplicitly(const Event& event) {
-  return (event.type() == event_type_names::kTextInput &&
-          event.HasInterface(event_interface_names::kTextEvent) &&
-          To<TextEvent>(event).data() == "\n") ||
-         InputTypeView::ShouldSubmitImplicitly(event);
+  if (const TextEvent* text_event = DynamicTo<TextEvent>(event)) {
+    if (!text_event->IsPaste() && !text_event->IsDrop() &&
+        text_event->data() == "\n") {
+      return true;
+    }
+  }
+  return InputTypeView::ShouldSubmitImplicitly(event);
 }
 
 void TextFieldInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
@@ -297,6 +300,10 @@ LayoutObject* TextFieldInputType::CreateLayoutObject(
     LegacyLayout legacy) const {
   return LayoutObjectFactory::CreateTextControlSingleLine(GetElement(), style,
                                                           legacy);
+}
+
+ControlPart TextFieldInputType::AutoAppearance() const {
+  return kTextFieldPart;
 }
 
 void TextFieldInputType::CreateShadowSubtree() {

@@ -5,6 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -12,12 +13,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.ui.DropdownItemBase;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /**
  * Autofill suggestion container used to store information needed for each Autofill popup entry.
  */
 public class AutofillSuggestion extends DropdownItemBase {
     private final String mLabel;
     private final String mSublabel;
+    @Nullable
     private final String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
@@ -25,7 +29,9 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsDeletable;
     private final boolean mIsMultilineLabel;
     private final boolean mIsBoldLabel;
+    @Nullable
     private final String mFeatureForIPH;
+    @Nullable
     private final GURL mCustomIconUrl;
     @Nullable
     private final Bitmap mCustomIcon;
@@ -52,18 +58,18 @@ public class AutofillSuggestion extends DropdownItemBase {
      * Use the {@link AutofillSuggestion.Builder} instead.
      */
     @Deprecated
-    public AutofillSuggestion(String label, String sublabel, String itemTag, int iconId,
+    public AutofillSuggestion(String label, String sublabel, @Nullable String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
-            boolean isBoldLabel, String featureForIPH) {
+            boolean isBoldLabel, @Nullable String featureForIPH) {
         this(label, sublabel, itemTag, iconId, isIconAtStart, suggestionId, isDeletable,
                 isMultilineLabel, isBoldLabel, featureForIPH, /*customIconUrl=*/null,
                 /*customIcon=*/null);
     }
 
     @VisibleForTesting
-    public AutofillSuggestion(String label, String sublabel, String itemTag, int iconId,
+    public AutofillSuggestion(String label, String sublabel, @Nullable String itemTag, int iconId,
             boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isMultilineLabel,
-            boolean isBoldLabel, String featureForIPH, GURL customIconUrl,
+            boolean isBoldLabel, @Nullable String featureForIPH, @Nullable GURL customIconUrl,
             @Nullable Bitmap customIcon) {
         mLabel = label;
         mSublabel = sublabel;
@@ -90,6 +96,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
+    @Nullable
     public String getItemTag() {
         return mItemTag;
     }
@@ -126,6 +133,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
+    @Nullable
     public GURL getCustomIconUrl() {
         return mCustomIconUrl;
     }
@@ -150,6 +158,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mSuggestionId >= 0;
     }
 
+    @Nullable
     public String getFeatureForIPH() {
         return mFeatureForIPH;
     }
@@ -164,15 +173,16 @@ public class AutofillSuggestion extends DropdownItemBase {
         }
         AutofillSuggestion other = (AutofillSuggestion) o;
         return this.mLabel.equals(other.mLabel) && this.mSublabel.equals(other.mSublabel)
-                && this.mItemTag.equals(other.mItemTag) && this.mIconId == other.mIconId
+                && Objects.equals(this.mItemTag, other.mItemTag) && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionId == other.mSuggestionId
                 && this.mIsDeletable == other.mIsDeletable
                 && this.mIsMultilineLabel == other.mIsMultilineLabel
                 && this.mIsBoldLabel == other.mIsBoldLabel
-                && this.mFeatureForIPH.equals(other.mFeatureForIPH)
-                && this.mCustomIconUrl.equals(other.mCustomIconUrl)
-                && this.mCustomIcon.sameAs(other.mCustomIcon);
+                && Objects.equals(this.mFeatureForIPH, other.mFeatureForIPH)
+                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
+                && (this.mCustomIcon == null ? other.mCustomIcon == null
+                                             : this.mCustomIcon.sameAs(other.mCustomIcon));
     }
 
     public Builder toBuilder() {
@@ -269,7 +279,9 @@ public class AutofillSuggestion extends DropdownItemBase {
         }
 
         public AutofillSuggestion build() {
-            assert !mLabel.isEmpty() : "AutofillSuggestion requires the label to be set.";
+            assert !TextUtils.isEmpty(mLabel) : "AutofillSuggestion requires the label to be set.";
+            assert (mSubLabel != null)
+                : "The AutofillSuggestion sublabel can be empty but never null.";
             return new AutofillSuggestion(mLabel, mSubLabel, mItemTag, mIconId, mIsIconAtStart,
                     mSuggestionId, mIsDeletable, mIsMultiLineLabel, mIsBoldLabel, mFeatureForIPH,
                     mCustomIconUrl, mCustomIcon);

@@ -94,7 +94,7 @@ int AttributionStorageDelegateImpl::GetMaxSourcesPerOrigin() const {
   return 1024;
 }
 
-int AttributionStorageDelegateImpl::GetMaxAttributionsPerOrigin(
+int AttributionStorageDelegateImpl::GetMaxReportsPerDestination(
     AttributionReport::ReportType) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
@@ -304,6 +304,12 @@ uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
 
   const uint64_t cardinality = TriggerDataCardinality(source_type);
   return trigger_data % cardinality;
+}
+
+uint64_t AttributionStorageDelegateImpl::SanitizeSourceEventId(
+    uint64_t source_event_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return source_event_id;
 }
 
 }  // namespace content

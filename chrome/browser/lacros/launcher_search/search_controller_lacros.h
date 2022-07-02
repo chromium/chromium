@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,7 +42,7 @@ class SearchControllerLacros : public mojom::SearchController,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   std::unique_ptr<FaviconCache> favicon_cache_;
 

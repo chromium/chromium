@@ -24,6 +24,13 @@
 using save_card_infobar_overlays::SaveCardBannerRequestConfig;
 using save_card_infobar_overlays::SaveCardMainAction;
 
+namespace {
+
+// The name of the save card icon image.
+NSString* const kSaveCardImageName = @"infobar_save_card_icon";
+
+}  // namespace
+
 @interface SaveCardInfobarBannerOverlayMediator ()
 // The save card banner config from the request.
 @property(nonatomic, readonly) SaveCardBannerRequestConfig* config;
@@ -77,12 +84,11 @@ using save_card_infobar_overlays::SaveCardMainAction;
 
   [self.consumer
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];
-  if (UseSymbols()) {
-    [self.consumer setIconImage:DefaultSymbolWithPointSize(
-                                    kCreditCardSymbol, kSymbolImagePointSize)];
-  } else {
-    [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
-  }
+  UIImage* iconImage = UseSymbols()
+                           ? DefaultSymbolTemplateWithPointSize(
+                                 kCreditCardSymbol, kSymbolImagePointSize)
+                           : [UIImage imageNamed:kSaveCardImageName];
+  [self.consumer setIconImage:iconImage];
   [self.consumer
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
   [self.consumer

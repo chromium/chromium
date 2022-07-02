@@ -267,7 +267,15 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
     EXPECT_EQ(users_in_session_order_[i], unlock_users[i]->GetAccountId());
 }
 
-IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, ScreenVisibilityAfterLock) {
+// TODO(crbug.com/1334963) Disabled
+// UserAddingScreenTest.ScreenVisibilityAfterLockbecause it is failing on "Linux
+// Chromium OS ASan LSan Tests" builder.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_ScreenVisibilityAfterLock DISABLED_ScreenVisibilityAfterLock
+#else
+#define MAYBE_ScreenVisibilityAfterLock ScreenVisibilityAfterLock
+#endif
+IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, MAYBE_ScreenVisibilityAfterLock) {
   const auto& users = login_mixin_.users();
   LoginUser(users[0].account_id);
 

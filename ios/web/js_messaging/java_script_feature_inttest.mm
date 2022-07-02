@@ -306,12 +306,6 @@ class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
 // configured in an isolated world only.
 TEST_F(JavaScriptFeatureIsolatedWorldTest,
        JavaScriptFeatureExecuteJavaScriptInIsolatedWorldOnly) {
-  // Using ContentWorld::kIsolatedWorldOnly on older versions of iOS will
-  // trigger a DCHECK, so return early.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   LoadHtml(kPageHTML);
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));

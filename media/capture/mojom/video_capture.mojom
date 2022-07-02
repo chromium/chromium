@@ -81,6 +81,9 @@ interface VideoCaptureObserver {
   // The buffer handle previously registered for |buffer_id| via OnNewBuffer(),
   // is no longer going to be used by the Browser/Host.
   OnBufferDestroyed(int32 buffer_id);
+
+  // All subsequent buffers are guaranteed to have this crop-version or higher.
+  OnNewCropVersion(uint32 crop_version);
 };
 
 interface VideoCaptureHost {

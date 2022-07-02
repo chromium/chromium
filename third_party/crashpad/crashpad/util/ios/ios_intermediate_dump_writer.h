@@ -39,11 +39,13 @@ namespace internal {
 //! Note: All methods are `RUNS-DURING-CRASH`.
 class IOSIntermediateDumpWriter final {
  public:
-  IOSIntermediateDumpWriter() = default;
+  IOSIntermediateDumpWriter() : fd_(-1) { }
 
   IOSIntermediateDumpWriter(const IOSIntermediateDumpWriter&) = delete;
   IOSIntermediateDumpWriter& operator=(const IOSIntermediateDumpWriter&) =
       delete;
+
+  ~IOSIntermediateDumpWriter();
 
   //! \brief Command instructions for the intermediate dump reader.
   enum class CommandType : uint8_t {
@@ -72,6 +74,8 @@ class IOSIntermediateDumpWriter final {
 
   //! \brief Open and lock an intermediate dump file. This is the only method
   //!     in the writer class that is generally run outside of a crash.
+  //!
+  //! The client must invoke `Close()` before this object is destroyed.
   //!
   //! \param[in] path The path to the intermediate dump.
   //!

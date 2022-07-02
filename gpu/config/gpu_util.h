@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/gpu_export.h"
+#include "ui/gl/gl_display.h"
 
 namespace base {
 class CommandLine;
@@ -62,10 +63,11 @@ GPU_EXPORT bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info);
 // bindings, create a GL context, collects GPUInfo, make blocklist and
 // GPU driver bug workaround decisions. This is intended to be called
 // by Android WebView render thread and in-process GPU thread.
-GPU_EXPORT bool InitializeGLThreadSafe(base::CommandLine* command_line,
-                                       const GpuPreferences& gpu_preferences,
-                                       GPUInfo* out_gpu_info,
-                                       GpuFeatureInfo* out_gpu_feature_info);
+GPU_EXPORT gl::GLDisplay* InitializeGLThreadSafe(
+    base::CommandLine* command_line,
+    const GpuPreferences& gpu_preferences,
+    GPUInfo* out_gpu_info,
+    GpuFeatureInfo* out_gpu_feature_info);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Returns whether SwiftShader should be enabled. If true, the proper command

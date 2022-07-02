@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: universal specificity</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="set-universal-specificity-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+#shared {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  background: blue;
+  page-transition-tag: shared;
+}
+
+/* We're verifying what we capture, so just display the old contents for 5 minutes.  */
+html::page-transition { background: pink; }
+html::page-transition-container(shared) { animation-duration: 300s; }
+
+html::page-transition-outgoing-image(shared) {
+  animation: unset;
+  opacity: 1;
+  border: 10px solid black;
+}
+html::page-transition-outgoing-image(*) {
+  border: 10px solid red;
+}
+
+html::page-transition-incoming-image(shared) { animation: unset; opacity: 0; }
+
+html::page-transition-outgoing-image(root) { animation: unset; opacity: 0; }
+html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
+</style>
+<div id=shared></div>
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>

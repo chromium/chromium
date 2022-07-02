@@ -288,7 +288,7 @@ NSInteger kSymbolToolbarPointSize = 18;
 
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols()
-                       ? DefaultSymbolWithPointSize(kCheckMarkCircleFillSymbol,
+                       ? DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
                                                     kSymbolActionPointSize)
                        : [UIImage imageNamed:@"select"];
   UIAction* action = [self
@@ -302,7 +302,7 @@ NSInteger kSymbolToolbarPointSize = 18;
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHLENS)
+                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE)
                       image:[UIImage imageNamed:@"lens_icon"]
                        type:MenuActionType::SearchImageWithLens
                       block:block];

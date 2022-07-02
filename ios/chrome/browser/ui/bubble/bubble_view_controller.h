@@ -36,7 +36,7 @@
 // view hierarchy.
 - (void)animateContentIn;
 
-// Dismisses the bubble. If |animated| is true, the bubble fades out.
+// Dismisses the bubble. If `animated` is true, the bubble fades out.
 //
 // The bubble view controller is automatically removed from the view hierarchy.
 - (void)dismissAnimated:(BOOL)animated;

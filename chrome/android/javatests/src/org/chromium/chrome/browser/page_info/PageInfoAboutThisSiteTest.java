@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -50,6 +51,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,6 +122,9 @@ public class PageInfoAboutThisSiteTest {
     @Mock
     private PageInfoAboutThisSiteController.Natives mMockAboutThisSiteJni;
 
+    @Mock
+    private EphemeralTabCoordinator mMockEphemeralTabCoordinator;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -134,7 +139,8 @@ public class PageInfoAboutThisSiteTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR, null, null)
+                    PageInfoController.OpenedFromSource.TOOLBAR, null,
+                    () -> mMockEphemeralTabCoordinator)
                     .show(tab, ChromePageInfoHighlight.noHighlight());
         });
         onViewWaiting(allOf(withId(org.chromium.chrome.R.id.page_info_url_wrapper), isDisplayed()));
@@ -251,6 +257,29 @@ public class PageInfoAboutThisSiteTest {
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
                         PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED));
+
+        onView(withText(containsString("Example Source"))).perform(click());
+        String sourceUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
+        verify(mMockEphemeralTabCoordinator)
+                .requestOpenSheetWithFullPageUrl(/*url=*/new GURL(sourceUrl),
+                        /*fullPageUrl=*/new GURL(sourceUrl), /*title=*/"From the web",
+                        /*isIncognito=*/false);
+        assertEquals(3, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
+                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
+    }
+
+    @Test
+    @MediumTest
+    public void testAboutThisSiteSubPageSourceClickedWithoutEphemeralTabCreator()
+            throws ExecutionException, TimeoutException {
+        // Test the path without ephemeralTabCreator.
+        mMockEphemeralTabCoordinator = null;
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+
         final CallbackHelper onTabAdded = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
             @Override
@@ -265,10 +294,6 @@ public class PageInfoAboutThisSiteTest {
         onView(withText(containsString("Example Source"))).perform(click());
         onTabAdded.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
-        assertEquals(3, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
-                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
     }
 
     @Test
@@ -277,11 +302,15 @@ public class PageInfoAboutThisSiteTest {
             ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
             ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO})
     public void
-    testAboutThisSiteMoreInfoShown() {
+    testAboutThisSiteOpensEphemeralTab() throws Exception {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
-        onView(withText(R.string.page_info_more_about_this_page)).check(matches(isDisplayed()));
+        String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
+        verify(mMockEphemeralTabCoordinator)
+                .requestOpenSheetWithFullPageUrl(/*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
+                        /*fullPageUrl=*/new GURL(moreAboutUrl), /*title=*/"About this page",
+                        /*isIncognito=*/false);
     }
 
     @Test

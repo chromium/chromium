@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_mock.h"
 
 namespace gl {
@@ -43,6 +45,7 @@ class GpuServiceTest : public testing::Test {
   scoped_refptr<gl::GLContextStub> context_;
   scoped_refptr<gl::GLSurfaceStub> surface_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace gles2

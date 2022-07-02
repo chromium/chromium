@@ -5,9 +5,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div popup=popup id=p1 defaultopen>
+<div popup id=p1 defaultopen>
   Outer popup
-  <div popup=popup id=p2 defaultopen>
+  <div popup id=p2 defaultopen>
     Inner popup
   </div>
 </div>
@@ -16,8 +16,8 @@
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       test(function(){
-        assert_true(p1.matches(':popup-open'),'The first (outermost) popup should be the one that opens in this case');
-        assert_false(p2.matches(':popup-open'),'The inner popup should not be open');
+        assert_true(p1.matches(':top-layer'),'The first (outermost) popup should be the one that opens in this case');
+        assert_false(p2.matches(':top-layer'),'The inner popup should not be open');
       }, "The defaultopen attribute should cause only the first popup to open");
     });
   });

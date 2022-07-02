@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -173,7 +174,7 @@ class PerformanceEvaluator : public VideoFrameProcessor {
 
   // Frame renderer used to get the dropped frame rate, owned by the creator of
   // the performance evaluator.
-  const FrameRendererDummy* const frame_renderer_;
+  const raw_ptr<const FrameRendererDummy> frame_renderer_;
 };
 
 void PerformanceEvaluator::ProcessVideoFrame(
@@ -356,9 +357,8 @@ class VideoDecoderTest : public ::testing::Test {
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
 
-    auto video_player = VideoPlayer::Create(
-        config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
-        std::move(frame_processors));
+    auto video_player = VideoPlayer::Create(config, std::move(frame_renderer),
+                                            std::move(frame_processors));
     LOG_ASSERT(video_player);
     LOG_ASSERT(video_player->Initialize(video));
 
@@ -368,7 +368,7 @@ class VideoDecoderTest : public ::testing::Test {
     return video_player;
   }
 
-  PerformanceEvaluator* performance_evaluator_;
+  raw_ptr<PerformanceEvaluator> performance_evaluator_;
 };
 
 }  // namespace

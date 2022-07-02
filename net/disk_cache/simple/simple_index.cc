@@ -193,10 +193,8 @@ SimpleIndex::~SimpleIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Fail all callbacks waiting for the index to come up.
-  for (auto it = to_run_when_initialized_.begin(),
-            end = to_run_when_initialized_.end();
-       it != end; ++it) {
-    std::move(*it).Run(net::ERR_ABORTED);
+  for (auto& callback : to_run_when_initialized_) {
+    std::move(callback).Run(net::ERR_ABORTED);
   }
 }
 
@@ -546,25 +544,23 @@ void SimpleIndex::MergeInitializingSet(
 
   EntrySet* index_file_entries = &load_result->entries;
 
-  for (auto it = removed_entries_.begin(); it != removed_entries_.end(); ++it) {
-    index_file_entries->erase(*it);
+  for (uint64_t removed_entry : removed_entries_) {
+    index_file_entries->erase(removed_entry);
   }
   removed_entries_.clear();
 
-  for (EntrySet::const_iterator it = entries_set_.begin();
-       it != entries_set_.end(); ++it) {
-    const uint64_t entry_hash = it->first;
+  for (const auto& it : entries_set_) {
+    const uint64_t entry_hash = it.first;
     std::pair<EntrySet::iterator, bool> insert_result =
         index_file_entries->insert(EntrySet::value_type(entry_hash,
                                                         EntryMetadata()));
     EntrySet::iterator& possibly_inserted_entry = insert_result.first;
-    possibly_inserted_entry->second = it->second;
+    possibly_inserted_entry->second = it.second;
   }
 
   uint64_t merged_cache_size = 0;
-  for (auto it = index_file_entries->begin(); it != index_file_entries->end();
-       ++it) {
-    merged_cache_size += it->second.GetEntrySize();
+  for (const auto& index_file_entry : *index_file_entries) {
+    merged_cache_size += index_file_entry.second.GetEntrySize();
   }
 
   entries_set_.swap(*index_file_entries);
@@ -587,10 +583,9 @@ void SimpleIndex::MergeInitializingSet(
       static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
 
   // Run all callbacks waiting for the index to come up.
-  for (auto it = to_run_when_initialized_.begin(),
-            end = to_run_when_initialized_.end();
-       it != end; ++it) {
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(*it), net::OK));
+  for (auto& callback : to_run_when_initialized_) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), net::OK));
   }
   to_run_when_initialized_.clear();
 }

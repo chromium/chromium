@@ -256,12 +256,10 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
   //
   ClassicScript::CreateUnspecifiedScript(
       "var ro = new ResizeObserver( entries => {});")
-      ->RunScript(&Window(),
-                  ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      ->RunScript(&Window());
   ASSERT_EQ(observers.size(), 1U);
   ClassicScript::CreateUnspecifiedScript("ro = undefined;")
-      ->RunScript(&Window(),
-                  ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      ->RunScript(&Window());
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.IsEmpty(), true);
@@ -274,15 +272,13 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
       "var el = document.createElement('div');"
       "ro.observe(el);"
       "ro = undefined;")
-      ->RunScript(&Window(),
-                  ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      ->RunScript(&Window());
   ASSERT_EQ(observers.size(), 1U);
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.size(), 1U);
   ClassicScript::CreateUnspecifiedScript("el = undefined;")
-      ->RunScript(&Window(),
-                  ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      ->RunScript(&Window());
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
   ASSERT_EQ(observers.IsEmpty(), true);

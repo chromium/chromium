@@ -98,8 +98,8 @@ class MODULES_EXPORT MediaRecorder
 
   Member<MediaStream> stream_;
   String mime_type_;
-  int audio_bits_per_second_;
-  int video_bits_per_second_;
+  uint32_t audio_bits_per_second_{0};
+  uint32_t video_bits_per_second_{0};
 
   State state_;
   bool first_write_received_ = false;

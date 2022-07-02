@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
@@ -42,8 +43,11 @@ bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
   if (prev.is_internal != current.is_internal)
     return false;
 
+  // label()
+  if (prev.label != current.label)
+    return false;
+
   // Note: devicePixelRatio() covered by Screen base function
-  // TODO: handle label() when it gets implemented.
 
   return true;
 }
@@ -91,7 +95,13 @@ float ScreenDetailed::devicePixelRatio() const {
 }
 
 String ScreenDetailed::label() const {
-  // Returns a placeholder label, e.g. "Internal Display 1".
+  if (!DomWindow())
+    return String();
+  // If enabled, return a more accurate screen label determined by the platform.
+  if (RuntimeEnabledFeatures::WindowPlacementEnhancedScreenLabelsEnabled())
+    return String(GetScreenInfo().label);
+
+  // Return a placeholder label, e.g. "Internal Display 1".
   // These don't have to be unique, but it's nice to be able to differentiate
   // if a user has two external screens, for example.
   const char* prefix =

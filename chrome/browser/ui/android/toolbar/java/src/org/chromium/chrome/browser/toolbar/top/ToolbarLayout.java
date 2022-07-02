@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -292,7 +293,7 @@ public abstract class ToolbarLayout
             }
 
             @Override
-            public int getSecurityIconResource(boolean isTablet) {
+            public @DrawableRes int getSecurityIconResource(boolean isTablet) {
                 return 0;
             }
 
@@ -581,8 +582,8 @@ public abstract class ToolbarLayout
      */
     void onTabContentViewChanged() {}
 
-    boolean isReadyForTextureCapture() {
-        return true;
+    CaptureReadinessResult isReadyForTextureCapture() {
+        return CaptureReadinessResult.unknown(/*isReady=*/true);
     }
 
     boolean setForceTextureCapture(boolean forceTextureCapture) {
@@ -853,9 +854,15 @@ public abstract class ToolbarLayout
      */
     protected void setToolbarHairlineColor(@ColorInt int toolbarColor) {
         final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
-        final int hairlineColor =
-                ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
-        shadow.setImageTintList(ColorStateList.valueOf(hairlineColor));
+        shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
+    }
+
+    /**
+     * Returns the border color between the toolbar and WebContents area.
+     * @param toolbarColor Toolbar color
+     */
+    public @ColorInt int getToolbarHairlineColor(@ColorInt int toolbarColor) {
+        return ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
     }
 
     /**

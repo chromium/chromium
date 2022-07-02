@@ -20,7 +20,7 @@ class Browser;
 @interface ActivityServiceCoordinator : ChromeCoordinator
 
 // Initializes a coordinator instance configured to share the current tab's URL
-// based on |baseViewController| and |browser|, and where |params| contains all
+// based on `baseViewController` and `browser`, and where `params` contains all
 // necessary values to drive the scenario.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser

@@ -109,7 +109,6 @@ android_apk("webview_instrumentation_apk") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
     "//components/content_capture/android/test_support:java",
     "//components/embedder_support/android:util_java",
@@ -244,13 +243,13 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/js_sandbox:js_sandbox_java",
     "//android_webview/nonembedded:devui_java",
     "//android_webview/nonembedded:services_java",
+    "//android_webview/nonembedded:util_java",
     "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//android_webview/test/embedded_test_server:aw_net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
     "//components/autofill/android:autofill_java",
@@ -491,7 +490,6 @@ android_library("webview_instrumentation_test_mock_services_java") {
     "//android_webview/nonembedded:services_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//components/component_updater/android:component_provider_service_aidl_java",
     "//third_party/junit",
   ]
@@ -571,8 +569,10 @@ test("android_webview_unittests") {
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/optimization_guide/core:bloomfilter",
+    "//components/policy/core/browser:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/common",
     "//components/tracing:background_tracing_utils",
@@ -602,6 +602,7 @@ test("android_webview_unittests") {
     "../browser/aw_pac_processor_unittest.cc",
     "../browser/aw_permission_manager_unittest.cc",
     "../browser/component_updater/loader_policies/aw_apps_package_names_allowlist_component_loader_policy_unittest.cc",
+    "../browser/enterprise_authentication_app_link_policy_handler_unittest.cc",
     "../browser/gfx/begin_frame_source_webview_unittest.cc",
     "../browser/gfx/browser_view_renderer_unittest.cc",
     "../browser/gfx/test/fake_window.cc",
@@ -618,7 +619,6 @@ test("android_webview_unittests") {
     "../browser/renderer_host/auto_login_parser_unittest.cc",
     "../browser/safe_browsing/aw_ping_manager_unittest.cc",
     "../browser/safe_browsing/aw_safe_browsing_allowlist_manager_unittest.cc",
-    "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../browser/tracing/aw_tracing_delegate_unittest.cc",
@@ -647,7 +647,6 @@ android_library("android_webview_unittests_java") {
   deps = [
     "//android_webview:android_webview_java",
     "//base:jni_java",
-    "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",
   ]
   sources = [ "../unittestjava/src/org/chromium/android_webview/unittest/MockAwContentsClientBridge.java" ]
@@ -659,7 +658,7 @@ generate_jni("android_webview_unittests_jni") {
 }
 
 # robolectric tests
-junit_binary("android_webview_junit_tests") {
+robolectric_binary("android_webview_junit_tests") {
   sources = [
     "../junit/src/org/chromium/android_webview/robolectric/AwDisplayCutoutControllerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/AwDisplayModeControllerTest.java",
@@ -683,7 +682,6 @@ junit_binary("android_webview_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/component_updater/android:embedded_component_loader_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",

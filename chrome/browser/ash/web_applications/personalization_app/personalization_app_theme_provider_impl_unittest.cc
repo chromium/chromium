@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
@@ -91,7 +91,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   // testing::Test:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    ash::AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+    ash::DarkLightModeControllerImpl::Get()->OnActiveUserPrefServiceChanged(
         ash::Shell::Get()->session_controller()->GetActivePrefService());
 
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -170,11 +170,12 @@ TEST_F(PersonalizationAppThemeProviderImplTest, SetColorModePref) {
 TEST_F(PersonalizationAppThemeProviderImplTest, OnColorModeChanged) {
   SetThemeObserver();
 
-  bool dark_mode_enabled = ash::AshColorProvider::Get()->IsDarkModeEnabled();
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  bool dark_mode_enabled = dark_light_mode_controller->IsDarkModeEnabled();
+  dark_light_mode_controller->ToggleColorMode();
   EXPECT_NE(is_dark_mode_enabled().value(), dark_mode_enabled);
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
   EXPECT_EQ(is_dark_mode_enabled().value(), dark_mode_enabled);
 }
 

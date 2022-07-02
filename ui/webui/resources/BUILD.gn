@@ -14,9 +14,8 @@ generate_grd("build_grd") {
   grd_prefix = "webui_generated"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  deps = [
+  public_deps = [
     ":build_ts_grdp",
-    "cr_components/color_change_listener:build_grdp",
     "css:build_grdp",
     "html:build_grdp",
     "images:build_grdp",
@@ -34,7 +33,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
-    "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
   ]
 
   if (!is_chromeos_ash && !is_android) {
@@ -50,10 +48,11 @@ generate_grd("build_grd") {
   }
 
   if (include_polymer) {
-    deps += [
+    public_deps += [
       "cr_components:build_grdp",
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
+      "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
       "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
@@ -61,44 +60,45 @@ generate_grd("build_grd") {
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/customize_themes/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/help_bubble/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/most_visited/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/js/browser_command/resources.grdp",
     ]
 
     if (use_nss_certs) {
-      deps += [ "cr_components/certificate_manager:build_grdp" ]
+      public_deps += [ "cr_components/certificate_manager:build_grdp" ]
       grdp_files +=
           [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
     }
 
     # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
     if (is_chromeos_ash) {
-      deps += [ "//third_party/polymer/v1_0:build_grdp" ]
+      public_deps += [ "//third_party/polymer/v1_0:build_grdp" ]
       grdp_files += [
         "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       ]
     }
 
     if (!is_android) {
-      deps += [ "cr_components/history_clusters:build_grdp" ]
+      public_deps += [ "cr_components/history_clusters:build_grdp" ]
       grdp_files += [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/resources.grdp" ]
     }
   }
 
   if (is_chromeos_ash) {
-    deps += [
+    public_deps += [
       ":build_cros_styles_grdp",
       "//ash/webui/common/resources:build_grdp",
-      "//chromeos/components/cros_elements:build_grdp",
+      "//chromeos/ash/components/cros_elements:build_grdp",
       "//third_party/material_web_components:build_grdp",
       "//third_party/web-animations-js:build_grdp",
     ]
     grdp_files += [
-      "$root_gen_dir/chromeos/components/cros_elements/cros_elements_resources.grdp",
+      "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cros_styles_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
@@ -107,8 +107,14 @@ generate_grd("build_grd") {
   }
 
   if (!is_android && !is_ios) {
-    deps += [ "//third_party/lottie:build_grdp" ]
-    grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
+    public_deps += [
+      "cr_components/color_change_listener:build_grdp",
+      "//third_party/lottie:build_grdp",
+    ]
+    grdp_files += [
+      "$root_gen_dir/third_party/lottie/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
+    ]
   }
 }
 
@@ -116,7 +122,7 @@ if (is_chromeos_ash) {
   generate_grd("build_cros_styles_grdp") {
     grd_prefix = "webui"
     out_grd = "$target_gen_dir/cros_styles_resources.grdp"
-    deps = [ "//ui/chromeos/styles:cros_styles_css" ]
+    public_deps = [ "//ui/chromeos/styles:cros_styles_css" ]
     input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
     input_files = [ "ui/chromeos/styles/cros_styles.css" ]
     resource_path_rewrites =
@@ -154,13 +160,6 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-generate_grd("build_ts_grdp") {
-  grd_prefix = "webui"
-  out_grd = "$target_gen_dir/resources_ts.grdp"
-  deps = [ ":library" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 checked_in_dts_files = [
   "cr_elements/cr_button/cr_button.m.d.ts",
   "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
@@ -184,6 +183,7 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_policy_pref_indicator.m.d.ts",
   "cr_elements/policy/cr_tooltip_icon.m.d.ts",
   "js/cr/ui/focus_row_behavior.m.d.ts",
+  "js/cr/ui/list.m.d.ts",
   "js/i18n_behavior.m.d.ts",
   "js/list_property_update_behavior.m.d.ts",
   "js/parse_html_subset.m.d.ts",
@@ -191,6 +191,14 @@ checked_in_dts_files = [
   "js/static_types.d.ts",
   "js/web_ui_listener_behavior.m.d.ts",
 ]
+
+if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
+  checked_in_dts_files += [
+    "js/cr/ui/context_menu_handler.m.d.ts",
+    "js/cr/ui/menu_button.m.d.ts",
+    "js/cr/ui/menu_item.m.d.ts",
+  ]
+}
 
 if (is_chromeos_ash) {
   checked_in_dts_files += [
@@ -205,12 +213,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/bluetooth/bluetooth_pairing_ui.d.ts",
     "cr_components/chromeos/smb_shares/add_smb_share_dialog.d.ts",
     "cr_components/chromeos/smb_shares/smb_browser_proxy.d.ts",
-    "js/cr/ui/context_menu_handler.m.d.ts",
-    "js/cr/ui/dialogs.m.d.ts",
     "js/cr/ui/grid.m.d.ts",
-    "js/cr/ui/list.m.d.ts",
-    "js/cr/ui/menu_button.m.d.ts",
-    "js/cr/ui/menu_item.m.d.ts",
   ]
 }
 
@@ -228,11 +231,16 @@ generate_definitions_js_files = [
   "js/color_utils.js",
   "js/cr/event_target.m.js",
   "js/cr.m.js",
+  "js/cr/ui.m.js",
+  "js/cr/ui/array_data_model.m.js",
   "js/cr/ui/drag_wrapper.js",
   "js/cr/ui/focus_grid.js",
   "js/cr/ui/focus_outline_manager.m.js",
   "js/cr/ui/focus_row.m.js",
   "js/cr/ui/keyboard_shortcut_list.m.js",
+  "js/cr/ui/list_item.m.js",
+  "js/cr/ui/list_selection_controller.m.js",
+  "js/cr/ui/list_selection_model.m.js",
   "js/cr/ui/store.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
@@ -241,6 +249,21 @@ generate_definitions_js_files = [
   "js/icon.js",
   "js/util.m.js",
 ]
+
+if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
+  generate_definitions_js_files += [
+    "js/cr/ui/menu.m.js",
+    "js/cr/ui/command.m.js",
+    "js/cr/ui/position_util.m.js",
+  ]
+}
+
+if (is_chromeos_ash) {
+  generate_definitions_js_files += [
+    "js/cr/ui/list_single_selection_model.m.js",
+    "js/cr/ui/store_client.js",
+  ]
+}
 
 if (include_polymer) {
   generate_definitions_js_files += [
@@ -279,24 +302,16 @@ if (include_polymer) {
       "cr_elements/chromeos/cr_picture/icons.js",
       "cr_elements/chromeos/cr_picture/png.js",
       "cr_elements/chromeos/cr_picture/webcam_utils.js",
-      "js/cr/ui.m.js",
-      "js/cr/ui/array_data_model.m.js",
-      "js/cr/ui/command.m.js",
-      "js/cr/ui/list_item.m.js",
-      "js/cr/ui/list_selection_model.m.js",
-      "js/cr/ui/list_single_selection_model.m.js",
-      "js/cr/ui/list_selection_controller.m.js",
-      "js/cr/ui/menu.m.js",
-      "js/cr/ui/position_util.m.js",
-      "js/cr/ui/splitter.js",
-      "js/cr/ui/store_client.js",
-      "js/cr/ui/tree.js",
     ]
   }
 }
 
 if (!is_android) {
   generate_definitions_js_files += [ "js/cr/ui/focus_without_ink.m.js" ]
+}
+
+if (is_ios) {
+  generate_definitions_js_files += [ "js/ios/web_ui.js" ]
 }
 
 ts_library("library") {
@@ -306,15 +321,20 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = [
+    "cr_elements/cr_splitter/cr_splitter.ts",
     "cr_elements/cr_tab_box/cr_tab_box.ts",
+    "cr_elements/cr_tab_box/cr_tab_box.html.ts",
+    "cr_elements/cr_tree/cr_tree.ts",
+    "cr_elements/cr_tree/cr_tree.html.ts",
+    "cr_elements/cr_tree/cr_tree_base.ts",
+    "cr_elements/cr_tree/cr_tree_item.ts",
+    "cr_elements/cr_tree/cr_tree_item.html.ts",
     "js/assert_ts.ts",
     "js/custom_element.ts",
   ]
 
   if (include_polymer) {
     in_files += [
-      "cr_components/iph_bubble/iph_bubble.html.ts",
-      "cr_components/iph_bubble/iph_bubble.ts",
       "cr_components/localized_link/localized_link.html.ts",
       "cr_components/localized_link/localized_link.ts",
       "cr_components/managed_footnote/managed_footnote.html.ts",
@@ -345,7 +365,6 @@ ts_library("library") {
       "cr_elements/cr_search_field/cr_search_field.ts",
       "cr_elements/cr_slider/cr_slider.html.ts",
       "cr_elements/cr_slider/cr_slider.ts",
-      "cr_elements/cr_splitter/cr_splitter.ts",
       "cr_elements/cr_tabs/cr_tabs.html.ts",
       "cr_elements/cr_tabs/cr_tabs.ts",
       "cr_elements/cr_toast/cr_toast_manager.html.ts",
@@ -406,6 +425,14 @@ ts_library("library") {
     ":generate_definitions",
     ":preprocess",
   ]
+}
+
+generate_grd("build_ts_grdp") {
+  grd_prefix = "webui"
+  out_grd = "$target_gen_dir/resources_ts.grdp"
+  public_deps = [ ":library" ]
+  manifest_files =
+      filter_include(get_target_outputs(":library"), [ "*.manifest" ])
 }
 
 ts_definitions("generate_definitions") {

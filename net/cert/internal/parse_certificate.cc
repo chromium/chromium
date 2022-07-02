@@ -236,6 +236,9 @@ bool ParseAndAddDistributionPoint(
 
 ParsedTbsCertificate::ParsedTbsCertificate() = default;
 
+ParsedTbsCertificate::ParsedTbsCertificate(ParsedTbsCertificate&& other) =
+    default;
+
 ParsedTbsCertificate::~ParsedTbsCertificate() = default;
 
 bool VerifySerialNumber(const der::Input& value,

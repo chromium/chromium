@@ -171,8 +171,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   }
 
   // Verify that the expected AEC dump file exists and contains some data.
-  base::ProcessId render_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetProcess().Pid();
+  base::ProcessId render_process_id = shell()
+                                          ->web_contents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetProcess()
+                                          ->GetProcess()
+                                          .Pid();
   base::FilePath file_path =
       GetExpectedAecDumpFileName(base_file_path, render_process_id);
   EXPECT_TRUE(base::PathExists(file_path));

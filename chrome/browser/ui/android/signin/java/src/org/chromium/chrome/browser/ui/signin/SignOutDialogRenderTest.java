@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -23,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -34,22 +34,26 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
- * Render tests for {@link SignOutDialogFragment}
+ * Render tests for {@link SignOutDialogCoordinator}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
+public class SignOutDialogRenderTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
     @Rule
@@ -57,6 +61,10 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
+
+    @Rule
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final JniMocker mocker = new JniMocker();
@@ -71,6 +79,9 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     private SigninManager mSigninManagerMock;
 
     @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
     private Profile mProfile;
 
     @Mock
@@ -79,7 +90,10 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private PrefService mPrefService;
 
-    private SignOutDialogFragment mSignOutDialog;
+    @Mock
+    private Listener mListenerMock;
+
+    private SignOutDialogCoordinator mSignOutDialogCoordinator;
 
     @Before
     public void setUp() {
@@ -87,24 +101,71 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsMock);
+        mActivityTestRule.launchActivity(null);
     }
 
     @After
     public void tearDown() {
         // Since the Dialog dismiss calls native method, we need to close the dialog before the
         // Native mock SigninMetricsUtils.Natives gets removed.
-        if (mSignOutDialog != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> mSignOutDialog.dismiss());
+        if (mSignOutDialogCoordinator != null) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    mSignOutDialogCoordinator::dismissDialogForTesting);
         }
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
+    public void testSignOutDialogForNonSyncingAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignOutDialogForNonSyncingManagedAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testTurnOffSyncDialogForNonSyncingAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+
+        mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_syncing_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
     public void testSignOutDialogForManagedAccount() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(true);
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
+
         mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_managed_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignOutDialogForManagedAccountCannotDeleteHistory() throws Exception {
+        mockAllowDeletingBrowserHistoryPref(false);
+
+        mRenderTestRule.render(showTurnOffSyncDialog(),
+                "signout_dialog_for_managed_account_cannot_delete_history");
     }
 
     @Test
@@ -112,6 +173,7 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @Feature("RenderTest")
     public void testSignOutDialogForNonManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
+
         mRenderTestRule.render(showSignOutDialog(), "signout_dialog_for_non_managed_account");
     }
 
@@ -120,6 +182,7 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @Feature("RenderTest")
     public void testTurnOffSyncDialogForNonManagedAccount() throws Exception {
         mockAllowDeletingBrowserHistoryPref(true);
+
         mRenderTestRule.render(
                 showTurnOffSyncDialog(), "turn_off_sync_dialog_for_non_managed_account");
     }
@@ -129,26 +192,29 @@ public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     @Feature("RenderTest")
     public void testTurnOffSyncDialogForNonManagedAccountCannotDeleteHistory() throws Exception {
         mockAllowDeletingBrowserHistoryPref(false);
+
         mRenderTestRule.render(showTurnOffSyncDialog(),
                 "turn_off_sync_dialog_for_non_managed_account_cannot_delete_history");
     }
 
-    private View showTurnOffSyncDialog() {
-        mSignOutDialog =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        mSignOutDialog.show(getActivity().getSupportFragmentManager(), null);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        return mSignOutDialog.getDialog().getWindow().getDecorView();
+    private View showTurnOffSyncDialog() throws Exception {
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSignOutDialogCoordinator =
+                    new SignOutDialogCoordinator(mActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity().getModalDialogManager(), mListenerMock,
+                            ActionType.REVOKE_SYNC_CONSENT, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+            return mSignOutDialogCoordinator.getDialogViewForTesting();
+        });
     }
 
-    private View showSignOutDialog() {
-        mSignOutDialog =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        mSignOutDialog.show(getActivity().getSupportFragmentManager(), null);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        return mSignOutDialog.getDialog().getWindow().getDecorView();
+    private View showSignOutDialog() throws Exception {
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSignOutDialogCoordinator = new SignOutDialogCoordinator(
+                    mActivityTestRule.getActivity(),
+                    mActivityTestRule.getActivity().getModalDialogManager(), mListenerMock,
+                    ActionType.CLEAR_PRIMARY_ACCOUNT, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+            return mSignOutDialogCoordinator.getDialogViewForTesting();
+        });
     }
 
     private void mockAllowDeletingBrowserHistoryPref(boolean value) {

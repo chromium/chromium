@@ -4,7 +4,7 @@
 
 #include "ui/views/highlight_border.h"
 
-#include "ash/constants/ash_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -71,14 +71,24 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
     // TODO(crbug/1319917): These light color values are used here since we want
     // to use light colors when dark/light mode feature is not enabled. This
     // should be removed after dark light mode is launched.
-    DCHECK(!ash::features::IsDarkLightModeEnabled());
+    DCHECK(!chromeos::features::IsDarkLightModeEnabled());
+    // `kHighlightBorder3` can only be used when the dark light mode is enabled.
+    DCHECK(type != HighlightBorder::Type::kHighlightBorder3);
     highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
                              ? ui::kColorAshSystemUILightHighlightColor1
                              : ui::kColorAshSystemUILightHighlightColor2;
   } else {
-    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                             ? ui::kColorAshSystemUIHighlightColor1
-                             : ui::kColorAshSystemUIHighlightColor2;
+    switch (type) {
+      case HighlightBorder::Type::kHighlightBorder1:
+        highlight_color_id = ui::kColorAshSystemUIHighlightColor1;
+        break;
+      case HighlightBorder::Type::kHighlightBorder2:
+        highlight_color_id = ui::kColorAshSystemUIHighlightColor2;
+        break;
+      case HighlightBorder::Type::kHighlightBorder3:
+        highlight_color_id = ui::kColorAshSystemUIHighlightColor3;
+        break;
+    }
   }
 
   // `view` should be embedded in a Widget to use color provider.
@@ -95,14 +105,24 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
     // TODO(crbug/1319917): These light color values are used here since we want
     // to use light colors when dark/light mode feature is not enabled. This
     // should be removed after dark light mode is launched.
-    DCHECK(!ash::features::IsDarkLightModeEnabled());
+    DCHECK(!chromeos::features::IsDarkLightModeEnabled());
+    // `kHighlightBorder3` can only be used when the dark light mode is enabled.
+    DCHECK(type != HighlightBorder::Type::kHighlightBorder3);
     border_color_id = type == HighlightBorder::Type::kHighlightBorder1
                           ? ui::kColorAshSystemUILightBorderColor1
                           : ui::kColorAshSystemUILightBorderColor2;
   } else {
-    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                          ? ui::kColorAshSystemUIBorderColor1
-                          : ui::kColorAshSystemUIBorderColor2;
+    switch (type) {
+      case HighlightBorder::Type::kHighlightBorder1:
+        border_color_id = ui::kColorAshSystemUIBorderColor1;
+        break;
+      case HighlightBorder::Type::kHighlightBorder2:
+        border_color_id = ui::kColorAshSystemUIBorderColor2;
+        break;
+      case HighlightBorder::Type::kHighlightBorder3:
+        border_color_id = ui::kColorAshSystemUIBorderColor3;
+        break;
+    }
   }
 
   // `view` should be embedded in a Widget to use color provider.

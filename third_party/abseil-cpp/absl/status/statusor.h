@@ -162,8 +162,8 @@ class ABSL_MUST_USE_RESULT StatusOr;
 // A `absl::StatusOr<T*>` can be constructed from a null pointer like any other
 // pointer value, and the result will be that `ok()` returns `true` and
 // `value()` returns `nullptr`. Checking the value of pointer in an
-// `absl::StatusOr<T>` generally requires a bit more care, to ensure both that a
-// value is present and that value is not null:
+// `absl::StatusOr<T*>` generally requires a bit more care, to ensure both that
+// a value is present and that value is not null:
 //
 //  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
 //  if (!result.ok()) {

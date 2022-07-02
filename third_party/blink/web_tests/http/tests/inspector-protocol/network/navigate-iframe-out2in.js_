@@ -1,0 +1,52 @@
+(async function(testRunner) {
+  const {page, session, dp} = await testRunner.startBlank(
+      `Verifies that navigating from a OOPIF to in-process iframe sets the right sessionId.\n`);
+
+  await dp.Page.enable();
+  await dp.Page.setLifecycleEventsEnabled({ enabled: true });
+  dp.Page.onLifecycleEvent(onLifecycleEvent);
+
+  await dp.Network.clearBrowserCache();
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
+  await dp.Network.enable();
+
+  await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
+
+  await session.navigate('resources/page-out.html');
+  const attachedEvent = await dp.Target.onceAttachedToTarget();
+  const dp2 = session.createChild(attachedEvent.params.sessionId).protocol;
+  const iFrameEvents = Promise.all([
+    dp2.Network.onceRequestWillBeSent(),
+    dp2.Network.onceResponseReceivedExtraInfo(),
+    dp2.Network.onceResponseReceived(),
+    dp2.Network.onceResponseReceivedExtraInfo()
+  ]);
+  await dp2.Page.enable();
+  await dp2.Network.clearBrowserCache();
+  await dp2.Network.setCacheDisabled({cacheDisabled: true});
+  await dp2.Network.enable();
+  await dp2.Page.setLifecycleEventsEnabled({enabled: true});
+  dp2.Runtime.runIfWaitingForDebugger();
+
+  // There are two load events fired, one for the OOPIF frame, and one for
+  // page-out after setting the src property on the iframe.
+  await dp2.Page.onceLifecycleEvent((event) => event.params.name == "load"));
+  await dp2.Page.onceLifecycleEvent((event) => event.params.name == "load"));
+
+  testRunner.log(
+      'Loaded page-out with OOPIF, setting iframe src to in-process URL.');
+
+  dp.Network.onRequestWillBeSent(() => testRunner.log("unexpected RequestWillBeSent"));
+  dp.Network.onRequestWillBeSentExtraInfo(() => testRunner.log("unexpected RequestWillBeSentExtraInfo"));
+  dp.Network.onResponseReceivedExtraInfo(() => testRunner.log("unexpected ResponseReceivedExtraInfo"));
+  dp.Network.onResponseReceived(() => testRunner.log("unexpected ResponseReceived"));
+
+  await session.evaluate( `document.getElementById('page-iframe').src =
+      'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html'`);
+
+  await dp2.Page.onceLifecycleEvent((event) => event.params.name == "load"));
+  await dp2.Page.onceLifecycleEvent((event) => event.params.name == "load"));
+  await iFrameEvents;
+
+  testRunner.completeTest();
+})

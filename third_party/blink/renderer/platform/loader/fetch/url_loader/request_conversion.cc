@@ -257,7 +257,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
                              ResourceRequestBody src_body,
                              network::ResourceRequest* dest) {
   dest->method = src.HttpMethod().Latin1();
-  dest->url = src.Url();
+  dest->url = GURL(src.Url());
   dest->site_for_cookies = src.SiteForCookies();
   dest->upgrade_if_insecure = src.UpgradeIfInsecure();
   dest->is_revalidating = src.IsRevalidating();
@@ -281,8 +281,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   DCHECK(dest->navigation_redirect_chain.empty());
   dest->navigation_redirect_chain.reserve(src.NavigationRedirectChain().size());
-  for (const auto& url : src.NavigationRedirectChain()) {
-    dest->navigation_redirect_chain.push_back(url);
+  for (const KURL& url : src.NavigationRedirectChain()) {
+    dest->navigation_redirect_chain.push_back(GURL(url));
   }
 
   if (src.IsolatedWorldOrigin()) {
@@ -328,7 +328,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   if (src.GetWebBundleTokenParams().has_value()) {
     dest->web_bundle_token_params =
         absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
-            src.GetWebBundleTokenParams()->bundle_url,
+            GURL(src.GetWebBundleTokenParams()->bundle_url),
             src.GetWebBundleTokenParams()->token,
             ToCrossVariantMojoType(
                 src.GetWebBundleTokenParams()->CloneHandle())));

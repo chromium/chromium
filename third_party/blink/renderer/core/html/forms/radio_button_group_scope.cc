@@ -73,7 +73,7 @@ void RadioButtonGroup::SetCheckedButton(HTMLInputElement* button) {
     return;
   checked_button_ = button;
   if (old_checked_button)
-    old_checked_button->setChecked(false);
+    old_checked_button->SetChecked(false);
 }
 
 void RadioButtonGroup::UpdateRequiredButton(MemberKeyValue& it,
@@ -97,7 +97,7 @@ void RadioButtonGroup::Add(HTMLInputElement* button) {
     return;
   bool group_was_valid = IsValid();
   UpdateRequiredButton(*add_result.stored_value, button->IsRequired());
-  if (button->checked())
+  if (button->Checked())
     SetCheckedButton(button);
 
   bool group_is_valid = IsValid();
@@ -114,7 +114,7 @@ void RadioButtonGroup::UpdateCheckedState(HTMLInputElement* button) {
   DCHECK_EQ(button->type(), input_type_names::kRadio);
   DCHECK(members_.Contains(button));
   bool was_valid = IsValid();
-  if (button->checked()) {
+  if (button->Checked()) {
     SetCheckedButton(button);
   } else {
     if (checked_button_ == button)

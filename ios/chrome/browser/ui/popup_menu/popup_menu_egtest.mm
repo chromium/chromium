@@ -145,7 +145,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeEarlGreyUI openToolsMenu];
 
   // If using the new overflow menu, swipe up to expand the menu to the full
-  // height to make sure that |closeToolsMenu| still closes it.
+  // height to make sure that `closeToolsMenu` still closes it.
   if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
       [ChromeEarlGrey isCompactWidth]) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]

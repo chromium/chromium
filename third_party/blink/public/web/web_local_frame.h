@@ -37,7 +37,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -53,8 +53,13 @@
 #include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
+template <typename T>
+class sk_sp;
+
 namespace cc {
 class PaintCanvas;
+class PaintOpBuffer;
+using PaintRecord = PaintOpBuffer;
 }  // namespace cc
 
 namespace gfx {
@@ -82,6 +87,7 @@ class WebContentSettingsClient;
 class WebLocalFrameClient;
 class WebFrameWidget;
 class WebHistoryItem;
+class WebHitTestResult;
 class WebInputMethodController;
 class WebPerformance;
 class WebPlugin;
@@ -902,6 +908,18 @@ class WebLocalFrame : public WebFrame {
   virtual void SetSessionStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           session_storage_area) = 0;
+
+  // Android WebView requires notification of hit tests from blink. It requires
+  // hit tests on touchstart. So this method installs a passive event listener
+  // on touchstart and does a GestureTap hit test providing the results to the
+  // callback.
+  virtual void AddHitTestOnTouchStartCallback(
+      base::RepeatingCallback<void(const blink::WebHitTestResult&)>
+          callback) = 0;
+
+  // Get the PaintRecord based on the cached paint artifact generated during
+  // the last paint in lifecycle update.
+  virtual sk_sp<cc::PaintRecord> GetPaintRecord() const = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

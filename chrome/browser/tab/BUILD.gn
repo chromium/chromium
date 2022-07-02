@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/CouponPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabDataObserver.java",
     "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
@@ -134,6 +135,7 @@ generate_jni("jni_headers") {
 proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
   sources = [
+    "$proto_path/coupon_persisted_tab_data.proto",
     "$proto_path/critical_persisted_tab_data.proto",
     "$proto_path/shopping_persisted_tab_data.proto",
     "$proto_path/store_persisted_tab_data.proto",
@@ -145,9 +147,7 @@ flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {
   sources = [ "$root_dir/critical_persisted_tab_data.fbs" ]
 }
 
-android_library("junit") {
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
@@ -161,7 +161,6 @@ android_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
     "//content/public/android:content_full_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

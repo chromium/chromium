@@ -75,7 +75,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
         PowerPolicyController::ACTION_SUSPEND;
     bool lid_closed_controlled = false;
     bool has_lid = true;
-    bool adaptive_charging = false;
+    bool adaptive_charging = true;
   };
 
   PowerHandlerTest() = default;
@@ -434,9 +434,9 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetAdaptiveCharging) {
       GetPrefs()->FindPreference(ash::prefs::kPowerAdaptiveChargingEnabled);
   ASSERT_NE(nullptr, pref);
 
-  EXPECT_EQ(false, pref->GetValue()->GetBool());
-  test_api_->SetAdaptiveCharging(true);
   EXPECT_EQ(true, pref->GetValue()->GetBool());
+  test_api_->SetAdaptiveCharging(false);
+  EXPECT_EQ(false, pref->GetValue()->GetBool());
 }
 
 }  // namespace settings

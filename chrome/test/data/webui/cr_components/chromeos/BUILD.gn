@@ -5,14 +5,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
 
-group("modulize") {
-  deps = [
-    "cellular_setup:modulize",
-    "multidevice_setup:modulize",
-    "network:modulize",
-  ]
-}
-
 group("closure_compile") {
   deps = [
     "bluetooth:closure_compile",

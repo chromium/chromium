@@ -162,7 +162,6 @@ void FaviconCache::InvokeRequestCallbackWithFavicon(const Request& request,
 void FaviconCache::OnURLVisited(history::HistoryService* history_service,
                                 ui::PageTransition transition,
                                 const history::URLRow& row,
-                                const history::RedirectList& redirects,
                                 base::Time visit_time) {
   auto it =
       responses_without_favicons_.Peek({RequestType::BY_PAGE_URL, row.url()});

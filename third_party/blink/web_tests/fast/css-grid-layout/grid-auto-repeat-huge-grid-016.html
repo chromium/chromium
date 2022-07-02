@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Test for auto-fit and auto-fill with huge grids (lots of tracks)</title>
+<link href="resources/grid.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
+<link href="resources/huge-grids.css" rel="stylesheet">
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<script src="resources/grid-tracks-length.js"></script>
+
+<div id="handMadeAutoFillRows" class="grid tallGrid handMadeMoreThanThousandAutoFillRows"></div>
+
+<script>
+
+test(function() {
+     var autoFillGrid = testElement("handMadeAutoFillRows", "grid-template-rows", 4601597);
+
+     assert_equals(autoFillGrid[4601597 - 1], "999px");
+     assert_equals(autoFillGrid[0], "10px");
+}, "Test that we don't crash when there are more than kGridMaxTracks rows in the auto repeat <track-list>.");
+
+</script>

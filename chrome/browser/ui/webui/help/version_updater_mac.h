@@ -16,9 +16,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/updater/update_service.h"  // nogncheck
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
-class BrowserUpdaterClient;
 class BrowserUpdaterHelperClientMac;
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
@@ -58,10 +58,12 @@ class VersionUpdaterMac : public VersionUpdater {
   void UpdateStatusFromChromiumUpdater(
       VersionUpdater::StatusCallback status_callback,
       VersionUpdater::PromoteCallback promote_callback,
+      updater::UpdaterScope scope,
       updater::UpdateService::UpdateState update_state);
 
   void UpdatePromotionStatusFromChromiumUpdater(
       VersionUpdater::PromoteCallback promote_callback,
+      updater::UpdaterScope scope,
       bool enable_promote_button,
       const std::string& version);
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
@@ -79,9 +81,6 @@ class VersionUpdaterMac : public VersionUpdater {
   base::scoped_nsobject<KeystoneObserver> keystone_observer_;
 
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-  // Instance of the BrowserUpdaterClient used to update the browser with the
-  // new updater.
-  scoped_refptr<BrowserUpdaterClient> update_client_;
   scoped_refptr<BrowserUpdaterHelperClientMac> update_helper_client_;
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)

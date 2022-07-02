@@ -166,7 +166,7 @@ const CGFloat kButtonLength = 44;
 
 #pragma mark - Configuration
 
-// Adds |rightLabel| as right view of the |textField|.
+// Adds `rightLabel` as right view of the `textField`.
 - (void)addLabel:(UILabel*)rightLabel
     asRightViewOfTextField:(UITextField*)textField {
   UIView* rightView = [[UIView alloc] init];

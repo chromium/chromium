@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void GetRoutes(
       bool numeric,
       bool ipv6,
+      bool all_tables,
       DBusMethodCallback<std::vector<std::string> /* routes */> callback) = 0;
 
   // Gets information about network status as json.
@@ -146,7 +147,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   using KstaledRatioCallback = base::OnceCallback<void(bool)>;
 
   // Sets the kstaled ratio to the provided value, for more information
-  // see chromeos/memory/README.md.
+  // see chromeos/ash/components/memory/README.md.
   virtual void SetKstaledRatio(uint8_t val, KstaledRatioCallback) = 0;
 
   // Called once TestICMP() is complete. Takes an optional string.
@@ -298,6 +299,22 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void SetSwapParameter(const std::string& parameter,
                                 int32_t value,
                                 DBusMethodCallback<std::string> callback) = 0;
+
+  // Zram Writeback Dbus Messages
+  virtual void SwapZramEnableWriteback(
+      uint32_t size_mb,
+      DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void SwapZramSetWritebackLimit(
+      uint32_t limit_pages,
+      DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void SwapZramMarkIdle(uint32_t age_seconds,
+                                DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void InitiateSwapZramWriteback(
+      debugd::ZramWritebackMode mode,
+      DBusMethodCallback<std::string> callback) = 0;
 
   // Stops the packet capture process identified with |handle|. |handle| is a
   // unique process identifier that is returned from debugd's PacketCaptureStart

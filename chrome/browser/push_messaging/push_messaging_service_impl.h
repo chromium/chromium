@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -30,8 +31,6 @@
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/common/child_process_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,7 +81,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler,
                                  public content_settings::Observer,
                                  public KeyedService,
-                                 public content::NotificationObserver,
                                  public PushMessagingRefresher::Observer {
  public:
   // If any Service Workers are using push, starts GCM and adds an app handler.
@@ -166,11 +164,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // content::NotificationObserver implementation
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // WARNING: Only call this function if features::kPushSubscriptionChangeEvent
   // is enabled, will be later used by the Push Service to trigger subscription
   // refreshes
@@ -198,6 +191,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
  private:
   friend class PushMessagingBrowserTestBase;
   friend class PushMessagingServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(PushMessagingBrowserTest, PushEventOnShutdown);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest,
@@ -418,6 +412,8 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
     message_dispatched_callback_for_testing_ = callback;
   }
 
+  void OnAppTerminating();
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
       abusive_origin_revocation_request_;
@@ -463,7 +459,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   std::unique_ptr<ScopedProfileKeepAlive> in_flight_profile_keep_alive_;
 #endif
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // True when shutdown has started. Do not allow processing of incoming
   // messages when this is true.

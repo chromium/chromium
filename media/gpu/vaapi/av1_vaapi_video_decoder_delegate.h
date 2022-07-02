@@ -43,7 +43,6 @@ class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
 
  private:
   std::unique_ptr<ScopedVABuffer> picture_params_;
-  std::vector<std::unique_ptr<ScopedVABuffer>> slice_params_;
   std::unique_ptr<ScopedVABuffer> crypto_params_;
 };
 }  // namespace media

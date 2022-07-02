@@ -86,17 +86,11 @@ std::u16string ConstructMobileLabelLine(
 bool IsNonStreetAddressPart(ServerFieldType type) {
   switch (type) {
     case ADDRESS_HOME_CITY:
-    case ADDRESS_BILLING_CITY:
     case ADDRESS_HOME_ZIP:
-    case ADDRESS_BILLING_ZIP:
     case ADDRESS_HOME_STATE:
-    case ADDRESS_BILLING_STATE:
     case ADDRESS_HOME_COUNTRY:
-    case ADDRESS_BILLING_COUNTRY:
     case ADDRESS_HOME_SORTING_CODE:
-    case ADDRESS_BILLING_SORTING_CODE:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
       return true;
     default:
       return false;
@@ -108,13 +102,8 @@ bool IsStreetAddressPart(ServerFieldType type) {
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_APT_NUM:
-    case ADDRESS_BILLING_LINE1:
-    case ADDRESS_BILLING_LINE2:
-    case ADDRESS_BILLING_APT_NUM:
     case ADDRESS_HOME_STREET_ADDRESS:
-    case ADDRESS_BILLING_STREET_ADDRESS:
     case ADDRESS_HOME_LINE3:
-    case ADDRESS_BILLING_LINE3:
       return true;
     default:
       return false;

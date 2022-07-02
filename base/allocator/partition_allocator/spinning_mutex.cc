@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/spinning_mutex.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
@@ -45,17 +46,7 @@ void SpinningMutex::Reinit() {
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-
-  if (LIKELY(os_unfair_lock_trylock)) {
-    unfair_lock_ = OS_UNFAIR_LOCK_INIT;
-    return;
-  }
-
-#pragma clang diagnostic pop
-
-  Release();
+  unfair_lock_ = OS_UNFAIR_LOCK_INIT;
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
@@ -63,7 +54,7 @@ void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
   do {
-    if (LIKELY(Try()))
+    if (PA_LIKELY(Try()))
       return;
     // Note: Per the intel optimization manual
     // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),
@@ -148,6 +139,12 @@ void SpinningMutex::LockSlow() {
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#elif BUILDFLAG(IS_APPLE)
+
+void SpinningMutex::LockSlow() {
+  return os_unfair_lock_lock(&unfair_lock_);
 }
 
 #elif BUILDFLAG(IS_POSIX)

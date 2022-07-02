@@ -5,8 +5,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Shelf alignment is a Chrome OS only preference.
-  ChangeStringPref(/*profile_index=*/0, ash::prefs::kShelfAlignment,
+  ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
                    ash::kShelfAlignmentRight);
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),
@@ -54,10 +54,10 @@ class SyncCategorizationBaseTest : public SyncTest {
 
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
-    const std::string res = value.DebugString();
-    const base::StringPiece trimmed =
-        base::TrimWhitespaceASCII(res, base::TrimPositions::TRIM_ALL);
-    return std::string(trimmed);
+    std::string result;
+    bool success = base::JSONWriter::Write(value, &result);
+    DCHECK(success);
+    return result;
   }
 
   sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(

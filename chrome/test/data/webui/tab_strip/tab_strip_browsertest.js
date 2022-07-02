@@ -16,7 +16,7 @@ var TabStripBrowserTest = class extends testing.Test {
 
 var TabStripTabListTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_list_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_list_test.js';
   }
 };
 
@@ -27,7 +27,7 @@ TEST_F('TabStripTabListTest', 'DISABLED_All', function() {
 
 var TabStripTabTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_test.js';
   }
 };
 
@@ -37,7 +37,7 @@ TEST_F('TabStripTabTest', 'All', function() {
 
 var TabStripAlertIndicatorsTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/alert_indicators_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/alert_indicators_test.js';
   }
 };
 
@@ -47,7 +47,7 @@ TEST_F('TabStripAlertIndicatorsTest', 'All', function() {
 
 var TabStripAlertIndicatorTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/alert_indicator_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/alert_indicator_test.js';
   }
 };
 
@@ -57,7 +57,7 @@ TEST_F('TabStripAlertIndicatorTest', 'All', function() {
 
 var TabStripTabSwiperTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_swiper_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_swiper_test.js';
   }
 };
 
@@ -67,7 +67,7 @@ TEST_F('TabStripTabSwiperTest', 'All', function() {
 
 var TabStripTabGroupTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_group_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/tab_group_test.js';
   }
 };
 
@@ -77,7 +77,7 @@ TEST_F('TabStripTabGroupTest', 'All', function() {
 
 var TabStripDragManagerTest = class extends TabStripBrowserTest {
   get browsePreload() {
-    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/drag_manager_test.js&host=webui-test';
+    return 'chrome://tab-strip.top-chrome/test_loader.html?module=tab_strip/drag_manager_test.js';
   }
 };
 

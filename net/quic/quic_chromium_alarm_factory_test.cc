@@ -8,13 +8,12 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
  public:
-  TestDelegate() : fired_(false) {}
+  TestDelegate() = default;
 
   void OnAlarm() override { fired_ = true; }
 
@@ -22,7 +21,7 @@ class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
   void Clear() { fired_ = false; }
 
  private:
-  bool fired_;
+  bool fired_ = false;
 };
 
 class QuicChromiumAlarmFactoryTest : public ::testing::Test {
@@ -226,5 +225,4 @@ TEST_F(QuicChromiumAlarmFactoryTest, CreateAlarmAndUpdate) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

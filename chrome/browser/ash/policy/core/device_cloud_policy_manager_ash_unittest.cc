@@ -39,11 +39,10 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/common/dbus_client_implementation_type.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -167,7 +166,7 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
 
 class DeviceCloudPolicyManagerAshTest
     : public ash::DeviceSettingsTestBase,
-      public chromeos::SessionManagerClient::Observer {
+      public ash::SessionManagerClient::Observer {
  public:
   DeviceCloudPolicyManagerAshTest(const DeviceCloudPolicyManagerAshTest&) =
       delete;
@@ -198,13 +197,13 @@ class DeviceCloudPolicyManagerAshTest
     base::RunLoop().RunUntilIdle();
 
     if (set_empty_system_salt_) {
-      chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+      ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
           std::vector<uint8_t>());
     }
 
     ash::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<ash::InstallAttributes>(
-        chromeos::FakeInstallAttributesClient::Get());
+        ash::FakeInstallAttributesClient::Get());
     store_ = new DeviceCloudPolicyStoreAsh(device_settings_service_.get(),
                                            install_attributes_.get(),
                                            base::ThreadTaskRunnerHandle::Get());

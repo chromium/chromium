@@ -17,6 +17,10 @@
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace tracing {
 
 ChromeBackgroundTracingMetricsProvider::
@@ -35,7 +39,16 @@ void ChromeBackgroundTracingMetricsProvider::Init() {
   system_profile_providers_.emplace_back(
       std::make_unique<AntiVirusMetricsProvider>());
   av_metrics_provider_ = system_profile_providers_.back().get();
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  // Collect system profile such as hardware class for ChromeOS. Note that
+  // ChromeOSMetricsProvider is initialized asynchronously. It might not be
+  // initialized when reporting metrics, in which case it'll just not add any
+  // ChromeOS system metrics to the proto (i.e. no hardware class etc).
+  system_profile_providers_.emplace_back(
+      std::make_unique<ChromeOSMetricsProvider>(
+          metrics::MetricsLogUploader::UMA));
+  chromeos_metrics_provider_ = system_profile_providers_.back().get();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Metrics service can be null in some testing contexts.
   if (g_browser_process->metrics_service() != nullptr) {
@@ -51,9 +64,11 @@ void ChromeBackgroundTracingMetricsProvider::AsyncInit(
     base::OnceClosure done_callback) {
 #if BUILDFLAG(IS_WIN)
   av_metrics_provider_->AsyncInit(std::move(done_callback));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos_metrics_provider_->AsyncInit(std::move(done_callback));
 #else
   std::move(done_callback).Run();
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 }
 
 }  // namespace tracing

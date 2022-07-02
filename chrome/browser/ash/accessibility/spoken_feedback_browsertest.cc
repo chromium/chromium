@@ -138,9 +138,7 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndControlAndShift(
 
 void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
   // To avoid flakes in sending keys, execute the command directly in js.
-  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
-      "CommandHandlerInterface.instance.onCommand('toggleStickyMode');");
+  ExecuteCommandHandlerCommand("toggleStickyMode");
 }
 
 void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
@@ -183,6 +181,16 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
                         "autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
+}
+
+void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
+    std::string command) {
+  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId,
+      "import('/chromevox/background/"
+      "command_handler_interface.js').then(module => "
+      "module.CommandHandlerInterface.instance.onCommand('" +
+          command + "'));");
 }
 
 // Flaky test, crbug.com/1081563
@@ -269,11 +277,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
 // logged in.
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandlerInterface.instance.onCommand('showLearnModePage');");
-  });
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -306,11 +310,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandlerInterface.instance.onCommand('showLearnModePage');");
-  });
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -805,7 +805,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxFindInPage) {
+// TODO(https://crbug.com/1333373): Flaky on Linux ChromiumOS MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ChromeVoxFindInPage DISABLED_ChromeVoxFindInPage
+#else
+#define MAYBE_ChromeVoxFindInPage ChromeVoxFindInPage
+#endif
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxFindInPage) {
   EnableChromeVox();
 
   sm_.Call([this]() {
@@ -1589,7 +1596,8 @@ class OobeSpokenFeedbackTest : public OobeBaseTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
+// TODO(crbug.com/1310682) - Re-enable this test.
+IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
@@ -1739,8 +1747,10 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   // has the same name as the desk it was created from, in this case the default
   // desk name is "Desk 1".
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
-  sm_.ExpectSpeechPattern("Desk 1");
+  sm_.ExpectSpeechPattern("Template, Desk 1");
   sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Press Ctrl plus W to close");
+  sm_.ExpectSpeech("Press Search plus Space to activate");
 
   // The next item is the textfield inside the template card, which also has the
   // same name as the desk it was created from.

@@ -4,10 +4,7 @@
 
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
 
-#include "base/profiler/sample_metadata.h"
-
 namespace page_load_metrics {
-
 namespace {
 bool IsTimeTicksRangeSensible(base::TimeTicks start, base::TimeTicks end) {
   return start <= end && end <= base::TimeTicks::Now();
@@ -38,23 +35,59 @@ PageTimingMetadataRecorder::PageTimingMetadataRecorder(
 PageTimingMetadataRecorder::~PageTimingMetadataRecorder() = default;
 
 void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
+  UpdateFirstContentfulPaintMetadata(timing.navigation_start,
+                                     timing.first_contentful_paint);
+  UpdateFirstInputDelayMetadata(timing.first_input_timestamp,
+                                timing.first_input_delay);
+  timing_ = timing;
+}
+
+void PageTimingMetadataRecorder::ApplyMetadataToPastSamples(
+    base::TimeTicks period_start,
+    base::TimeTicks period_end,
+    base::StringPiece name,
+    int64_t key,
+    int64_t value,
+    base::SampleMetadataScope scope) {
+  base::ApplyMetadataToPastSamples(period_start, period_end, name, key, value,
+                                   scope);
+}
+
+void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
+    const absl::optional<base::TimeTicks>& first_input_timestamp,
+    const absl::optional<base::TimeDelta>& first_input_delay) {
   // Applying metadata to past samples has non-trivial cost so only do so if
   // the relevant values changed.
   const bool should_apply_metadata =
-      timing.navigation_start.has_value() &&
-      timing.first_contentful_paint.has_value() &&
-      (timing_.navigation_start != timing.navigation_start ||
-       timing_.first_contentful_paint != timing.first_contentful_paint);
-  if (should_apply_metadata &&
-      IsTimeTicksRangeSensible(*timing.navigation_start,
-                               *timing.first_contentful_paint)) {
-    base::ApplyMetadataToPastSamples(
-        *timing.navigation_start, *timing.first_contentful_paint,
-        "PageLoad.PaintTiming.NavigationToFirstContentfulPaint", instance_id_,
-        1, base::SampleMetadataScope::kProcess);
-  }
+      first_input_timestamp.has_value() && first_input_delay.has_value() &&
+      (timing_.first_input_timestamp != first_input_timestamp ||
+       timing_.first_input_delay != first_input_delay);
 
-  timing_ = timing;
+  if (should_apply_metadata) {
+    ApplyMetadataToPastSamples(
+        *first_input_timestamp, *first_input_timestamp + *first_input_delay,
+        "PageLoad.InteractiveTiming.FirstInputDelay4", /* key=*/instance_id_,
+        /* value=*/1, base::SampleMetadataScope::kProcess);
+  }
+}
+
+void PageTimingMetadataRecorder::UpdateFirstContentfulPaintMetadata(
+    const absl::optional<base::TimeTicks>& navigation_start,
+    const absl::optional<base::TimeTicks>& first_contentful_paint) {
+  // Applying metadata to past samples has non-trivial cost so only do so if
+  // the relevant values changed.
+  const bool should_apply_metadata =
+      navigation_start.has_value() && first_contentful_paint.has_value() &&
+      (timing_.navigation_start != navigation_start ||
+       timing_.first_contentful_paint != first_contentful_paint);
+  if (should_apply_metadata &&
+      IsTimeTicksRangeSensible(*navigation_start, *first_contentful_paint)) {
+    ApplyMetadataToPastSamples(
+        *navigation_start, *first_contentful_paint,
+        "PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
+        /* key=*/instance_id_,
+        /* value=*/1, base::SampleMetadataScope::kProcess);
+  }
 }
 
 }  // namespace page_load_metrics

@@ -11,8 +11,9 @@ source_set("network") {
 
     sources = [ "win_key_network_delegate.cc" ]
 
+    public_deps = [ "//components/winhttp" ]
+
     deps += [
-      "//components/winhttp",
       "//net",
       "//url",
     ]

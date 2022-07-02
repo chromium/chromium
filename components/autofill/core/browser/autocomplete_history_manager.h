@@ -25,6 +25,8 @@
 
 namespace autofill {
 
+struct SuggestionsContext;
+
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
 // through WebDataServiceBase.
@@ -42,21 +44,22 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   ~AutocompleteHistoryManager() override;
 
   // SingleFieldFormFiller overrides:
-  void OnGetSingleFieldSuggestions(
-      int query_id,
-      bool is_autocomplete_enabled,
-      bool autoselect_first_suggestion,
-      const std::u16string& name,
-      const std::u16string& prefix,
-      const std::string& form_control_type,
-      base::WeakPtr<SuggestionsHandler> handler) override;
-  void OnWillSubmitForm(const FormData& form,
-                        bool is_autocomplete_enabled) override;
+  void OnGetSingleFieldSuggestions(int query_id,
+                                   bool is_autocomplete_enabled,
+                                   bool autoselect_first_suggestion,
+                                   const std::u16string& name,
+                                   const std::u16string& prefix,
+                                   const std::string& form_control_type,
+                                   base::WeakPtr<SuggestionsHandler> handler,
+                                   const SuggestionsContext& context) override;
+  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
+                                  bool is_autocomplete_enabled) override;
   void CancelPendingQueries(const SuggestionsHandler* handler) override;
-  void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
+  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
+                                            const std::u16string& value,
+                                            int frontend_id) override;
+  void OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                       int frontend_id) override;
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.
@@ -106,33 +109,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     // The name of field that is currently measured, we don't repeatedly measure
     // the query of the same field while user is filling the field.
     std::u16string measuring_name_;
-  };
-
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(int client_query_id,
-                 bool autoselect_first_suggestion,
-                 std::u16string prefix,
-                 base::WeakPtr<SuggestionsHandler> handler);
-    QueryHandler(const QueryHandler& original);
-    ~QueryHandler();
-
-    // Query ID living in the handler's scope, which is NOT the same as the
-    // database query ID. This ID is unique per frame, but not per profile.
-    int client_query_id_;
-
-    // Determines whether we should auto-select the first suggestion when
-    // returning. This value was given by the handler when requesting
-    // suggestions.
-    bool autoselect_first_suggestion_;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix_;
-
-    // Weak pointer to the handler instance which will be called-back when
-    // we get the response for the associate query.
-    base::WeakPtr<SuggestionsHandler> handler_;
   };
 
   // Sends the autocomplete |suggestions| to the |query_handler|'s handler for

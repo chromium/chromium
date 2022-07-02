@@ -12,7 +12,6 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
-#include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/common/content_export.h"
@@ -72,7 +71,6 @@ using DownloadTargetCallback = base::OnceCallback<void(
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
     const std::string& mime_type,
-    absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason)>;
 
 // Called when a download delayed by the delegate has completed.

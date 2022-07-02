@@ -38,45 +38,38 @@ namespace {
 constexpr char kFuchsiaSwapchainLayerName[] =
     "VK_LAYER_FUCHSIA_imagepipe_swapchain";
 
-bool CheckSwapchainAvailable() {
-  uint32_t num_instance_exts;
-  VkResult result = vkEnumerateInstanceExtensionProperties(
-      kFuchsiaSwapchainLayerName, &num_instance_exts, nullptr);
-  return result == VK_SUCCESS;
-}
-
-bool IsSwapchainEnabled() {
-  static bool is_swapchain_enabled = CheckSwapchainAvailable();
-  return is_swapchain_enabled;
-}
-
 }  // namespace
 
 VulkanImplementationScenic::VulkanImplementationScenic(
     ScenicSurfaceFactory* scenic_surface_factory,
     SysmemBufferManager* sysmem_buffer_manager,
+    bool use_swiftshader,
     bool allow_protected_memory)
-    : VulkanImplementation(false /* use_swiftshader */, allow_protected_memory),
+    : VulkanImplementation(use_swiftshader, allow_protected_memory),
       scenic_surface_factory_(scenic_surface_factory),
       sysmem_buffer_manager_(sysmem_buffer_manager) {}
 
 VulkanImplementationScenic::~VulkanImplementationScenic() = default;
 
 bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
-  DCHECK(using_surface);
+  using_surface_ = using_surface;
 
-  vulkan_instance_.BindUnassignedFunctionPointers(
-      base::FilePath("libvulkan.so"));
+  base::FilePath path(use_swiftshader() ? "libvk_swiftshader.so"
+                                        : "libvulkan.so");
+  vulkan_instance_.BindUnassignedFunctionPointers(path);
 
-  std::vector<const char*> required_extensions = {
-      VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
-  };
+  std::vector<const char*> required_extensions;
   std::vector<const char*> required_layers;
 
-  if (IsSwapchainEnabled()) {
-    required_layers.push_back(kFuchsiaSwapchainLayerName);
+  if (using_surface) {
     required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    required_extensions.push_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
+
+    // Enable ImagePipe swapchain (not supported in swiftshader).
+    if (!use_swiftshader()) {
+      required_layers.push_back(kFuchsiaSwapchainLayerName);
+      required_extensions.push_back(
+          VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
+    }
   };
 
   return vulkan_instance_.InitializeInstace(required_extensions,
@@ -89,10 +82,7 @@ gpu::VulkanInstance* VulkanImplementationScenic::GetVulkanInstance() {
 
 std::unique_ptr<gpu::VulkanSurface>
 VulkanImplementationScenic::CreateViewSurface(gfx::AcceleratedWidget window) {
-  if (!IsSwapchainEnabled()) {
-    LOG(FATAL) << "CreateViewSurface() called while swapchain extension isn't "
-                  "enabled.";
-  }
+  DCHECK(using_surface_);
 
   ScenicSurface* scenic_surface = scenic_surface_factory_->GetSurface(window);
   fuchsia::images::ImagePipe2Ptr image_pipe;
@@ -128,7 +118,6 @@ bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationScenic::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
@@ -137,11 +126,15 @@ VulkanImplementationScenic::GetRequiredDeviceExtensions() {
       VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
       VK_KHR_MAINTENANCE1_EXTENSION_NAME,
-      VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
   };
 
-  if (IsSwapchainEnabled())
-    result.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+  // Following extensions are not supported by Swiftshader.
+  if (!use_swiftshader()) {
+    result.push_back(VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME);
+    result.push_back(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
+    if (using_surface_)
+      result.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+  }
 
   return result;
 }
@@ -173,60 +166,15 @@ VkSemaphore VulkanImplementationScenic::CreateExternalSemaphore(
 VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
     VkDevice vk_device,
     gpu::SemaphoreHandle handle) {
-  if (!handle.is_valid())
-    return VK_NULL_HANDLE;
-
-  if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
-    return VK_NULL_HANDLE;
-  }
-
-  VkSemaphore semaphore = VK_NULL_HANDLE;
-  VkSemaphoreCreateInfo info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-  VkResult result = vkCreateSemaphore(vk_device, &info, nullptr, &semaphore);
-  if (result != VK_SUCCESS)
-    return VK_NULL_HANDLE;
-
-  zx::event event = handle.TakeHandle();
-  VkImportSemaphoreZirconHandleInfoFUCHSIA import = {
-      VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA};
-  import.semaphore = semaphore;
-  import.handleType =
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.zirconHandle = event.get();
-
-  result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
-  if (result != VK_SUCCESS) {
-    vkDestroySemaphore(vk_device, semaphore, nullptr);
-    return VK_NULL_HANDLE;
-  }
-
-  // Vulkan took ownership of the handle.
-  std::ignore = event.release();
-
-  return semaphore;
+  return gpu::ImportVkSemaphoreHandle(vk_device, std::move(handle));
 }
 
 gpu::SemaphoreHandle VulkanImplementationScenic::GetSemaphoreHandle(
     VkDevice vk_device,
     VkSemaphore vk_semaphore) {
-  // Create VkSemaphoreGetFdInfoKHR structure.
-  VkSemaphoreGetZirconHandleInfoFUCHSIA info = {
-      VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA};
-  info.semaphore = vk_semaphore;
-  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
-
-  zx_handle_t handle;
-  VkResult result =
-      vkGetSemaphoreZirconHandleFUCHSIA(vk_device, &info, &handle);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkGetSemaphoreFuchsiaHandleKHR failed : " << result;
-    return gpu::SemaphoreHandle();
-  }
-
-  return gpu::SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
-      zx::event(handle));
+  return gpu::GetVkSemaphoreHandle(
+      vk_device, vk_semaphore,
+      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
 }
 
 VkExternalMemoryHandleTypeFlagBits

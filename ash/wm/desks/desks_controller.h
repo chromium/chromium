@@ -17,6 +17,7 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -174,6 +175,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   Desk* GetNextDesk(bool use_target_active_desk = true) const;
   Desk* GetPreviousDesk(bool use_target_active_desk = true) const;
 
+  // Returns the desk that matches the desk_uuid, and returns null if no matches
+  // found.
+  Desk* GetDeskByUuid(const base::GUID& desk_uuid) const;
+
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
 
@@ -280,6 +285,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   int GetDeskIndex(const Desk* desk) const;
 
+  // Fills `out_desks` with all the existing desks.
+  void GetAllDesks(std::vector<const Desk*>& out_desks) const;
+
   // Gets the container of the desk at |desk_index| in a specific screen with a
   // |target_root|. If desk_index is invalid, it returns nullptr.
   aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
@@ -299,13 +307,15 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    DeskTemplateType template_type,
                                    aura::Window* root_window_to_show) const;
 
-  // Creates (and optionally activates) a new desk for a template with name
-  // `template_name` or `template_name ({counter})` to resolve naming
-  // conflicts. Runs `callback` with the newly created desk if creation was
-  // successful, nullptr otherwise.
-  void CreateNewDeskForTemplate(const std::u16string& template_name,
-                                bool activate_desk,
-                                base::OnceCallback<void(const Desk*)> callback);
+  // Creates (and optionally activates) a new desk. If `customized_desk_name`
+  // is provided, desk name will be `customized_desk_name` or
+  // `customized_desk_name ({counter})` to resolve naming conflicts. Runs
+  // `callback` with the newly created desk if creation was successful, nullptr
+  // otherwise.
+  void CreateNewDeskForTemplate(
+      bool activate_desk,
+      base::OnceCallback<void(const Desk*)> callback,
+      const std::u16string& customized_desk_name = std::u16string());
 
   // Called when an app with `app_id` is a single instance app which is about to
   // get launched from a saved template. Moves the existing app instance to the
@@ -321,6 +331,24 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // desks. This is called when desks are added, removed or reordered to update
   // the names based on the desks order.
   void UpdateDesksDefaultNames();
+
+  // Cancels the desk removal toast and then triggers `UndoDeskRemoval()` if
+  // there is a desk removal in progress.
+  void MaybeCancelDeskRemoval();
+
+  // Cancels the desk removal toast if there is currently a
+  // `temporary_removed_desk_` and
+  // `temporary_removed_desk_->is_toast_persistent()` is true.
+  void MaybeDismissPersistentDeskRemovalToast();
+
+  // Adds focus highlight to an active toast to undo desk removal if one is
+  // active and the toast is not already highlighted. Otherwise, it removes the
+  // highlight from an active toast and returns false.
+  bool MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
+
+  // Activates the undo button on a highlighted toast to undo desk removal if
+  // one is active. Returns true if the activation was successful.
+  bool MaybeActivateDeskRemovalUndoButtonOnHighlightedToast();
 
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,

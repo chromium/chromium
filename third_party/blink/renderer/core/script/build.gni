@@ -66,3 +66,12 @@ blink_core_sources_script = [
   "xml_parser_script_runner.h",
   "xml_parser_script_runner_host.h",
 ]
+
+blink_core_tests_script = [
+  "document_modulator_impl_test.cc",
+  "dynamic_module_resolver_test.cc",
+  "module_map_test.cc",
+  "module_record_resolver_impl_test.cc",
+  "module_script_test.cc",
+  "script_runner_test.cc",
+]

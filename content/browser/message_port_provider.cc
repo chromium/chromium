@@ -87,7 +87,9 @@ void MessagePortProvider::PostMessageToFrame(
 }
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
 // static
 void MessagePortProvider::PostMessageToFrame(
     Page& page,

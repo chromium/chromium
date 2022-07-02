@@ -27,7 +27,9 @@ GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!d3d11_device_) {
+  if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
+    // Reset device if it was removed.
+    d3d11_device_ = nullptr;
     // Use same adapter as ANGLE device.
     auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
     if (!angle_d3d11_device) {
@@ -186,6 +188,7 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -195,6 +198,8 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     return nullptr;
   // Transfer ownership of handle to GLImageDXGI.
   auto image = base::MakeRefCounted<gl::GLImageDXGI>(size, nullptr);
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
   if (!image->InitializeHandle(std::move(handle.dxgi_handle), 0, format))
     return nullptr;
   return image;

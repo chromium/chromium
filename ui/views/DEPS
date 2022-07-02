@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "+cc/paint",
+  "+chromeos/constants",
   "+components/crash/core/common/crash_key.h",
   "+components/remote_cocoa",
   "+components/url_formatter",

@@ -7,7 +7,8 @@ import("//chrome/common/features.gni")
 import("//components/signin/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("signin.gni")
@@ -33,11 +34,55 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
+}
+
+preprocess_if_expr("preprocess") {
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = html_wrapper_files + css_wrapper_files
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + html_wrapper_files + css_wrapper_files
+
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_gen",
+  ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "signin"
   out_grd = "$target_gen_dir/resources.grd"
 
   input_files = [
+    "profile_customization/images/profile_customization_illustration.svg",
     "sync_confirmation/sync_confirmation.html",
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
@@ -49,11 +94,16 @@ generate_grd("build_grd") {
   if (!is_chromeos_ash) {
     input_files += [
       "enterprise_profile_welcome/enterprise_profile_welcome.html",
-      "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
     ]
+  }
+  if (is_chromeos_lacros) {
+    input_files += [ "enterprise_profile_welcome/images/lacros_enterprise_profile_welcome_illustration.svg" ]
+  }
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
+    input_files += [ "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg" ]
   }
   if (enable_dice_support) {
     input_files += [
@@ -69,42 +119,6 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
-html_to_js("web_components") {
-  js_files = web_component_files
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
-}
-
-preprocess_if_expr("preprocess_gen") {
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
-  deps = [ ":web_components" ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = non_web_component_files + web_component_files
-
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
-  ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_gen",
-  ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

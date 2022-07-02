@@ -7,8 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -36,7 +36,7 @@ constexpr int kElevation = 16;
 #if !defined(USE_AURA)
 
 struct WidgetEventPair {
-  views::Widget* widget;
+  raw_ptr<views::Widget> widget;
   std::unique_ptr<ui::MouseEvent> event;
 };
 
@@ -71,25 +71,6 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 
 #endif  // !USE_AURA
 
-// Subclass for results view which sets the correct background color on
-// theme changes.
-class OmniboxResultsContentsView : public views::View {
- public:
-  METADATA_HEADER(OmniboxResultsContentsView);
-  OmniboxResultsContentsView() = default;
-  ~OmniboxResultsContentsView() override = default;
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const SkColor background_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
-    SetBackground(views::CreateSolidBackground(background_color));
-  }
-};
-
-BEGIN_METADATA(OmniboxResultsContentsView, views::View)
-END_METADATA
-
 // View at the top of the frame which paints transparent pixels to make a hole
 // so that the location bar shows through.
 class TopBackgroundView : public views::View {
@@ -101,7 +82,7 @@ class TopBackgroundView : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     const SkColor background_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
+        GetColorProvider()->GetColor(kColorOmniboxResultsBackground);
 
     // Paint a stroke of the background color as a 1 px border to hide the
     // underlying antialiased location bar/toolbar edge.  The round rect here is
@@ -136,7 +117,7 @@ class TopBackgroundView : public views::View {
     event->SetHandled();
   }
 
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     auto pair = GetParentWidgetAndEvent(this, &event);
     if (pair.widget) {
       views::View* omnibox_view =
@@ -145,7 +126,7 @@ class TopBackgroundView : public views::View {
       return omnibox_view->GetCursor(*pair.event);
     }
 
-    return nullptr;
+    return ui::Cursor();
   }
 #endif  // !USE_AURA
 
@@ -169,7 +150,9 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     LocationBarView* location_bar)
     : contents_(contents) {
   // Host the contents in its own View to simplify layout and customization.
-  contents_host_ = new OmniboxResultsContentsView();
+  contents_host_ = new views::View();
+  contents_host_->SetBackground(
+      views::CreateThemedSolidBackground(kColorOmniboxResultsBackground));
   contents_host_->SetPaintToLayer();
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 

@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       std::make_unique<content::MockNavigationHandle>(
-          GURL("https://google.com/"), web_contents->GetMainFrame());
+          GURL("https://google.com/"), web_contents->GetPrimaryMainFrame());
   navigation_handle->set_has_committed(true);
   navigation_handle->set_is_same_document(false);
   EXPECT_TRUE(RunAttachFunction(web_contents, ""));
@@ -507,9 +507,9 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
     DebuggerApiTest::TearDownOnMainThread();
   }
 
-  ProfileManager* profile_manager_ = nullptr;
-  Profile* other_profile_ = nullptr;
-  Profile* otr_profile_ = nullptr;
+  raw_ptr<ProfileManager> profile_manager_ = nullptr;
+  raw_ptr<Profile> other_profile_ = nullptr;
+  raw_ptr<Profile> otr_profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {

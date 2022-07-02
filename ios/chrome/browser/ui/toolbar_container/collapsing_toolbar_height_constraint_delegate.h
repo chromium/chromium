@@ -15,7 +15,7 @@ class HeightRange;
 // The delegate for the collapsing height constraint.
 @protocol CollapsingToolbarHeightConstraintDelegate<NSObject>
 
-// Called when |constraint|'s height range is changed from |oldHeightRange|.
+// Called when `constraint`'s height range is changed from `oldHeightRange`.
 - (void)collapsingHeightConstraint:
             (nonnull CollapsingToolbarHeightConstraint*)constraint
           didUpdateFromHeightRange:

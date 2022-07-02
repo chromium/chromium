@@ -30,6 +30,9 @@ class WebAppRegistrar;
 // Install web app from manifest for current `WebContents`.
 class FetchManifestAndInstallCommand : public WebAppCommand {
  public:
+  // When |dialog_callback| is null (aka |base::NullCallback|) the command
+  // doesn't show installation prompt in UI and installs the application in
+  // background.
   FetchManifestAndInstallCommand(WebAppInstallFinalizer* install_finalizer,
                                  WebAppRegistrar* registrar,
                                  webapps::WebappInstallSource install_surface,
@@ -40,6 +43,10 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
 
   // `use_fallback` allows getting fallback information from current document
   // to enable installing a non-promotable site.
+  //
+  // When |dialog_callback| is null (aka |base::NullCallback|) the command
+  // doesn't show installation prompt in UI and installs the application in
+  // background.
   FetchManifestAndInstallCommand(WebAppInstallFinalizer* install_finalizer,
                                  WebAppRegistrar* registrar,
                                  webapps::WebappInstallSource install_surface,
@@ -53,7 +60,7 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
   ~FetchManifestAndInstallCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   content::WebContents* GetInstallingWebContents() override;

@@ -42,7 +42,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // How long since the loaded content was fetched from the server.
     // May be zero if content is not loaded.
     base::TimeDelta content_age;
-    ContentIdSet content_ids;
+    ContentHashSet content_ids;
 
     // Loading result to be logged by
     // LaunchReliabilityLogger::LogCacheReadEnd().
@@ -98,7 +98,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   std::vector<feedstore::StoredAction> pending_actions_;
   base::TimeDelta content_age_;
-  ContentIdSet content_ids_;
+  ContentHashSet content_ids_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};
 };

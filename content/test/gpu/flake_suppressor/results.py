@@ -5,7 +5,9 @@
 
 import collections
 import os
+import typing
 
+from flake_suppressor import common_typing as ct
 from flake_suppressor import data_types
 from flake_suppressor import expectations
 from flake_suppressor import tag_utils
@@ -13,7 +15,7 @@ from flake_suppressor import tag_utils
 from typ import expectations_parser
 
 
-def AggregateResults(results):
+def AggregateResults(results: ct.QueryJsonType) -> ct.AggregatedResultsType:
   """Aggregates BigQuery results.
 
   Also filters out any results that have already been suppressed.
@@ -43,7 +45,8 @@ def AggregateResults(results):
   return aggregated_results
 
 
-def _ConvertJsonResultsToResultObjects(results):
+def _ConvertJsonResultsToResultObjects(results: ct.QueryJsonType
+                                       ) -> typing.List[data_types.Result]:
   """Converts JSON BigQuery results to data_types.Result objects.
 
   Args:
@@ -62,7 +65,8 @@ def _ConvertJsonResultsToResultObjects(results):
   return object_results
 
 
-def _FilterOutSuppressedResults(results):
+def _FilterOutSuppressedResults(results: typing.List[data_types.Result]
+                                ) -> typing.List[data_types.Result]:
   """Filters out results that have already been suppressed in the repo.
 
   Args:
@@ -99,6 +103,7 @@ def _FilterOutSuppressedResults(results):
   return kept_results
 
 
-def GetTestSuiteAndNameFromResultDbName(result_db_name):
+def GetTestSuiteAndNameFromResultDbName(result_db_name: str
+                                        ) -> typing.Tuple[str, str]:
   _, suite, __, test_name = result_db_name.split('.', 3)
   return suite, test_name

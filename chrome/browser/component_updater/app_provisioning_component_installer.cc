@@ -26,6 +26,7 @@
 #include "base/version.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/browser_thread.h"
@@ -143,14 +144,15 @@ void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
 }
 
 void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic)) {
-    return;
+  // If either of these flags are enabled, register the component. Otherwise,
+  // don't.
+  if (base::FeatureList::IsEnabled(features::kAppProvisioningStatic) ||
+      chromeos::features::IsCloudGamingDeviceEnabled()) {
+    VLOG(1) << "Registering App Provisioning component.";
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<AppProvisioningComponentInstallerPolicy>());
+    installer->Register(cus, base::OnceClosure());
   }
-
-  VLOG(1) << "Registering App Provisioning component.";
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<AppProvisioningComponentInstallerPolicy>());
-  installer->Register(cus, base::OnceClosure());
 }
 
 }  // namespace component_updater

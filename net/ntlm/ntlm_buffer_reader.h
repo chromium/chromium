@@ -15,8 +15,7 @@
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 // Supports various bounds-checked low level buffer operations required by an
 // NTLM implementation.
@@ -218,7 +217,6 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   size_t cursor_ = 0;
 };
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm
 
 #endif  // NET_NTLM_NTLM_BUFFER_READER_H_

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './searched_label.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -20,7 +20,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry} from './externs.js';
 import {getTemplate} from './history_item.html.js';
 
@@ -296,37 +295,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
     if (this.searchTerm) {
       browserService.recordAction('SearchResultClick');
     }
-
-    if (this.index === undefined) {
-      return;
-    }
-
-    const ageInDays = Math.ceil(
-        (new Date().getTime() - new Date(this.item.time).getTime()) /
-        1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
-
-    browserService.recordHistogram(
-        'HistoryPage.ClickPosition', Math.min(this.index, UMA_MAX_BUCKET_VALUE),
-        UMA_MAX_BUCKET_VALUE);
-
-    browserService.recordHistogram(
-        'HistoryPage.ClickAgeInDays', Math.min(ageInDays, UMA_MAX_BUCKET_VALUE),
-        UMA_MAX_BUCKET_VALUE);
-
-    if (this.index <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-      browserService.recordHistogram(
-          'HistoryPage.ClickPositionSubset', this.index,
-          UMA_MAX_SUBSET_BUCKET_VALUE);
-    }
-
-    if (ageInDays <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-      browserService.recordHistogram(
-          'HistoryPage.ClickAgeInDaysSubset', ageInDays,
-          UMA_MAX_SUBSET_BUCKET_VALUE);
-    }
   }
 
-  onLinkRightClick_() {
+  private onLinkRightClick_() {
     BrowserServiceImpl.getInstance().recordAction('EntryLinkRightClick');
   }
 

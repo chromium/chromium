@@ -26,6 +26,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import gzip
+
+import six
 from six.moves import urllib
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
@@ -41,8 +44,22 @@ class Web(object):
             return self.http_error_301(req, fp, 301, msg, headers)
 
     def get_binary(self, url, return_none_on_404=False):
-        return NetworkTransaction(return_none_on_404=return_none_on_404).run(
-            lambda: self.request('GET', url).read())
+        def make_request():
+            response = self.request('GET',
+                                    url,
+                                    headers={'Accept-Encoding': 'gzip'})
+            if response.headers.get('Content-Encoding') == 'gzip':
+                # Wrap the HTTP response, which is not fully file-like.
+                # Unfortunately, `six` does not provide `io.BufferedRandom`, so
+                # we need to read the entire payload up-front (may pose a
+                # performance issue).
+                buf = six.BytesIO(response.read())
+                gzip_decoder = gzip.GzipFile(fileobj=buf)
+                return gzip_decoder.read()
+            return response.read()
+
+        return NetworkTransaction(
+            return_none_on_404=return_none_on_404).run(make_request)
 
     def request(self, method, url, data=None, headers=None):
         opener = urllib.request.build_opener(Web._HTTPRedirectHandler2)

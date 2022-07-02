@@ -53,7 +53,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
 #include "components/exo/capabilities.h"
-#include "components/exo/common_utils.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
@@ -142,6 +141,18 @@ const char kWaylandSocketGroup[] = "wayland";
 // Directory name where all custom wayland sockets will live.
 constexpr base::FilePath::CharType kCustomServerDir[] =
     FILE_PATH_LITERAL("wayland");
+
+bool IsDrmAtomicAvailable() {
+#if defined(USE_OZONE)
+  auto& host_properties =
+      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
+  return host_properties.supports_overlays;
+#else
+  LOG(WARNING) << "Ozone disabled, cannot determine whether DrmAtomic is "
+                  "present. Assuming it is not";
+  return false;
+#endif
+}
 
 void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
@@ -325,7 +336,7 @@ void Server::Initialize() {
                    bind_shell);
   wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface, 1,
                    display_, bind_cursor_shapes);
-  wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface, 2,
+  wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface, 3,
                    display_, bind_gaming_input);
   wl_global_create(wl_display_.get(), &zcr_keyboard_configuration_v1_interface,
                    zcr_keyboard_configuration_v1_interface.version, display_,
@@ -387,7 +398,7 @@ void Server::Initialize() {
 
   zcr_text_input_extension_data_ =
       std::make_unique<WaylandTextInputExtension>();
-  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 2,
+  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 3,
                    zcr_text_input_extension_data_.get(),
                    bind_text_input_extension);
 

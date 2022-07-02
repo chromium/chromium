@@ -288,13 +288,17 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
                             ui::PAGE_TRANSITION_TYPED));
   TabStripModel* tab_model = browser()->tab_strip_model();
-  tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(IsBubbleShowing());
   EXPECT_EQ(1, tab_model->active_index());
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   // Back to the first tab.
-  tab_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(IsBubbleShowing());
 }
 
@@ -304,13 +308,17 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
                             ui::PAGE_TRANSITION_TYPED));
   TabStripModel* tab_model = browser()->tab_strip_model();
-  tab_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(IsBubbleShowing());
   EXPECT_EQ(1, tab_model->active_index());
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   // Back to the first tab. Set up the bubble.
-  tab_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   // Drain message pump to ensure the bubble view is cleared so that it can be
   // created again (it is checked on Mac to prevent re-opening the bubble when
   // clicking the location bar button repeatedly).
@@ -410,4 +418,19 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
       password_manager::CredentialLeakFlags::kPasswordSaved,
       GURL("https://example.com"), std::u16string(u"Eve"));
   EXPECT_FALSE(IsBubbleShowing());
+}
+
+// This is a regression test for crbug.com/1335418
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
+  base::HistogramTester histogram_tester;
+
+  SetupPendingPassword();
+  ASSERT_TRUE(IsBubbleShowing());
+  PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
+  content::RunAllPendingInMessageLoop();
+  ASSERT_FALSE(IsBubbleShowing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }

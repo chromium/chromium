@@ -15,6 +15,7 @@ html { writing-mode: vertical-lr; }
   top: 0;
   left: 0;
   contain: paint;
+  page-transition-tag: hidden;
 }
 .shared {
   margin: 2px;
@@ -31,6 +32,7 @@ html { writing-mode: vertical-lr; }
   width: 100px;
   height: 500px;
   contain: paint;
+  page-transition-tag: s1;
 }
 #two {
   background: lightblue;
@@ -56,13 +58,10 @@ html::page-transition-outgoing-image(root) { animation: unset; opacity: 0; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-  t.setElement(target, "s1");
   t.start(() => {
     target.remove();
-    t.setElement(hidden, "hidden");
     hidden.style.left = "200px";
-    t.setElement(one, "s1");
+    one.style.pageTransitionTag = "s1";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

@@ -5,6 +5,7 @@
 #ifndef CC_TREES_RENDER_FRAME_METADATA_H_
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
@@ -63,7 +64,7 @@ class CC_EXPORT RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not
   // specified.
-  SkColor root_background_color = SK_ColorWHITE;
+  SkColor4f root_background_color = SkColors::kWhite;
 
   // Scroll offset of the root layer.
   absl::optional<gfx::PointF> root_scroll_offset;
@@ -113,6 +114,14 @@ class CC_EXPORT RenderFrameMetadata {
   // consider the second scroll event to have caused a change in direction.
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
+
+  // The cumulative time spent performing visual updates for all
+  // `local_surface_id` before this one.
+  base::TimeDelta previous_surfaces_visual_update_duration;
+
+  // The cumulative time spent performing visual updates for the current
+  // `local_surface_id`.
+  base::TimeDelta current_surface_visual_update_duration;
 
 #if BUILDFLAG(IS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the

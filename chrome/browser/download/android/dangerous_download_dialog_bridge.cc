@@ -14,9 +14,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/download/android/jni_headers/DangerousDownloadDialogBridge_jni.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/download_item_utils.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -52,11 +50,6 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  content::BrowserContext* browser_context =
-      content::DownloadItemUtils::GetBrowserContext(download_item);
-  bool isOffTheRecord =
-      Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
-
   Java_DangerousDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
       base::android::ConvertUTF8ToJavaString(env, download_item->GetGuid()),
@@ -64,8 +57,7 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
           env,
           base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value())),
       download_item->GetTotalBytes(),
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING),
-      isOffTheRecord);
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING));
 }
 
 void DangerousDownloadDialogBridge::OnDownloadDestroyed(

@@ -140,7 +140,7 @@ component("message_support") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "mach_port_attachment_mac.cc",
       "mach_port_attachment_mac.h",
@@ -253,6 +253,8 @@ if (!is_ios) {
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//mojo/core/test:test_support",
+      "//third_party/ipcz/src:ipcz_tests_sources_chromium",
+      "//third_party/ipcz/src:test_buildflags",
     ]
   }
 

@@ -92,6 +92,10 @@ class WebRemoteFrame : public WebFrame {
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener) = 0;
 
+  // Returns the frame associated with the |frame_token|.
+  BLINK_EXPORT static WebRemoteFrame* FromFrameToken(
+      const RemoteFrameToken& frame_token);
+
   // Set security origin replicated from another process.
   virtual void SetReplicatedOrigin(
       const WebSecurityOrigin&,

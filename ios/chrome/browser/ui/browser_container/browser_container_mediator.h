@@ -14,10 +14,10 @@ class WebStateList;
 // Mediator that updates a BrowserContainerConsumer
 @interface BrowserContainerMediator : NSObject
 
-// Initializer for a mediator.  |webStateList| is the WebStateList for the
+// Initializer for a mediator.  `webStateList` is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer.
-// |overlayPresenter| is the OverlayModality::kWebContentArea OverlayPresenter.
-// Both |webSateList| and |overlaPresenter| must be non-null.
+// `overlayPresenter` is the OverlayModality::kWebContentArea OverlayPresenter.
+// Both `webSateList` and `overlaPresenter` must be non-null.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
       webContentAreaOverlayPresenter:(OverlayPresenter*)overlayPresenter
     NS_DESIGNATED_INITIALIZER;

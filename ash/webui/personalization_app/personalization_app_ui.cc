@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
@@ -75,7 +77,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH},
       {"unknownImageAttribution",
        IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION},
-      {"networkError", IDS_PERSONALIZATION_APP_NETWORK_ERROR},
+      {"wallpaperNetworkError",
+       IDS_PERSONALIZATION_APP_WALLPAPER_NETWORK_ERROR},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
       // Using old wallpaper app error string pending final revision.
       // TODO(b/195609442)
@@ -112,6 +115,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
       {"takeWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO},
       {"takeWebcamVideo", IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO},
+      {"webcamCaptureInProgress",
+       IDS_PERSONALIZATION_APP_AVATAR_CAPTURE_IN_PROGRESS},
       {"confirmWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO},
       {"confirmWebcamVideo", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO},
       {"rejectWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO},
@@ -126,6 +131,12 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AVATAR_LAST_EXTERNAL_IMAGE},
       {"ariaLabelCurrentAvatar",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR},
+      {"ariaAnnounceAvatarChanged",
+       IDS_PERSONALIZATION_APP_ARIA_ANNOUNCE_AVATAR_CHANGED},
+      {"ariaLabelCloseCamera",
+       IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_CLOSE_CAMERA},
+      {"ariaLabelWebcamVideo",
+       IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_WEBCAM_VIDEO},
 
       // Ambient mode related string.
       {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
@@ -151,6 +162,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW},
       {"ambientModeWeatherTitle",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_TITLE},
+      {"ambientModeAriaDescriptionWeather",
+       IDS_PERSONALIZATION_APP_ARIA_DESCRIPTION_AMBIENT_MODE_WEATHER},
       {"ambientModeWeatherUnitFahrenheit",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT},
       {"ambientModeWeatherUnitCelsius",
@@ -187,12 +200,16 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL},
       {"ariaLabelChangeScreensaver",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
+      {"ambientModeNetworkError",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR},
 
       // Keyboard backlight strings
       {"keyboardBacklightTitle",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE},
       {"wallpaperColor",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL},
+      {"wallpaperColorTooltipText",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_TOOLTIP_TEXT},
       {"whiteColor",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WHITE_COLOR_LABEL},
       {"redColor", IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RED_COLOR_LABEL},
@@ -208,12 +225,14 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PURPLE_COLOR_LABEL},
       {"rainbowColor",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL},
+      {"wallpaperColorNudgeText",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
       {"googlePhotosError", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR},
-      {"googlePhotosRetry", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_RETRY},
+      {"googlePhotosTryAgain", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_TRY_AGAIN},
       {"googlePhotosAlbumsTabLabel",
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
       {"googlePhotosPhotosTabLabel",
@@ -248,12 +267,18 @@ void AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isPersonalizationHubEnabled",
                      features::IsPersonalizationHubEnabled());
 
+  source->AddBoolean("isAmbientModeAnimationEnabled",
+                     features::IsAmbientModeAnimationEnabled());
+
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
 
   source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
 
-  source->AddBoolean("isRgbKeyboardEnabled", features::IsRgbKeyboardEnabled());
+  source->AddBoolean(
+      "isRgbKeyboardSupported",
+      features::IsRgbKeyboardEnabled() &&
+          Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 }
 
 }  // namespace

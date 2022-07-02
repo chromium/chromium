@@ -52,11 +52,6 @@ class IOSNTPTilesInternalsMessageHandlerBridge
       base::RepeatingCallback<void(const base::Value::List&)>;
   void RegisterMessageCallback(const std::string& message,
                                MessageCallback callback) override;
-  using DeprecatedMessageCallback =
-      base::RepeatingCallback<void(const base::ListValue*)>;
-  void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const DeprecatedMessageCallback& callback) override;
   void CallJavascriptFunctionVector(
       const std::string& name,
       const std::vector<const base::Value*>& values) override;
@@ -103,13 +98,6 @@ void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessageCallback(
     const std::string& message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
-}
-
-void IOSNTPTilesInternalsMessageHandlerBridge::
-    RegisterDeprecatedMessageCallback(
-        const std::string& message,
-        const DeprecatedMessageCallback& callback) {
-  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
 }
 
 void IOSNTPTilesInternalsMessageHandlerBridge::CallJavascriptFunctionVector(

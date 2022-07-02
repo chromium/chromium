@@ -488,6 +488,10 @@ const char kPrintingAPIExtensionsAllowlist[] =
 // A boolean specifying whether the insights extension is enabled. If set to
 // true, the CCaaS Chrome component extension will be installed.
 const char kInsightsExtensionEnabled[] = "insights_extension_enabled";
+
+// Boolean controlling whether showing Sync Consent during sign-in is enabled.
+// Controlled by policy.
+const char kEnableSyncConsent[] = "sync_consent.enabled";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -702,7 +706,7 @@ const char kTermsOfServiceURL[] = "terms_of_service.url";
 const char kAttestationEnabled[] = "attestation.enabled";
 
 // A boolean pref recording whether user has dismissed the multiprofile
-// itroduction dialog show.
+// introduction dialog show.
 const char kMultiProfileNeverShowIntro[] =
     "settings.multi_profile_never_show_intro";
 
@@ -952,10 +956,6 @@ const char kUsageTimeLimit[] = "screen_time.limit";
 // Last state of the screen time limit.
 const char kScreenTimeLastState[] = "screen_time.last_state";
 
-// Boolean controlling whether showing Sync Consent during sign-in is enabled.
-// Controlled by policy.
-const char kEnableSyncConsent[] = "sync_consent.enabled";
-
 // Boolean pref indicating whether a user is allowed to use the Network File
 // Shares for Chrome OS feature.
 const char kNetworkFileSharesAllowed[] = "network_file_shares.allowed";
@@ -1150,25 +1150,27 @@ const char kSystemProxyUserTrafficHostAndPort[] =
 const char kEduCoexistenceArcMigrationCompleted[] =
     "account_manager.edu_coexistence_arc_migration_completed";
 
-// List pref containing extension IDs that are exempt from the restricted
-// managed guest session clean-up procedure.
-const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
-    "restricted_managed_guest_session_extension_cleanup_exempt_list";
+// Dictionary pref for shared extension storage for device pin.
+const char kSharedStorage[] = "shared_storage";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// A pref holding the value of the policy used to disable mounting of external
-// storage for the user.
-const char kExternalStorageDisabled[] = "hardware.external_storage_disabled";
-
-// A pref holding the value of the policy used to limit mounting of external
-// storage to read-only mode for the user.
-const char kExternalStorageReadOnly[] = "hardware.external_storage_read_only";
-
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.
 const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
+
+// Counter for reporting daily OOM kills count.
+const char kOOMKillsDailyCount[] = "oom_kills.daily_count";
+
+// Integer pref used by the metrics::DailyEvent owned by
+// memory::OOMKillsMonitor.
+const char kOOMKillsDailySample[] = "oomkills.daily_sample";
+
+// List pref containing extension IDs that are exempt from the restricted
+// managed guest session clean-up procedure.
+const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
+    "restricted_managed_guest_session_extension_cleanup_exempt_list";
 
 // Boolean user profile pref that determines whether to show a banner in browser
 // settings that links to OS settings.
@@ -1396,7 +1398,7 @@ const char kProfileName[] = "profile.name";
 // Whether a profile is using a default avatar name (eg. Pickles or Person 1)
 // because it was randomly assigned at profile creation time.
 const char kProfileUsingDefaultName[] = "profile.using_default_name";
-// Whether a profile is using an avatar without having explicitely chosen it
+// Whether a profile is using an avatar without having explicitly chosen it
 // (i.e. was assigned by default by legacy profile creation).
 const char kProfileUsingDefaultAvatar[] = "profile.using_default_avatar";
 const char kProfileUsingGAIAAvatar[] = "profile.using_gaia_avatar";
@@ -1820,10 +1822,6 @@ const char kOpenPdfDownloadInSystemReader[] =
 // ask the user where they want to download the file (only for Android).
 const char kPromptForDownloadAndroid[] = "download.prompt_for_download_android";
 
-// The prompt status for the download later dialog.
-const char kDownloadLaterPromptStatus[] =
-    "download.download_later_prompt_status";
-
 // Boolean which specifies whether we should display the missing SD card error.
 // This is only applicable for Android.
 const char kShowMissingSdCardErrorAndroid[] =
@@ -2022,7 +2020,7 @@ const char kDevToolsTCPDiscoveryConfig[] = "devtools.tcp_discovery_config";
 // A dictionary with all unsynced DevTools settings.
 const char kDevToolsPreferences[] = "devtools.preferences";
 
-// A boolean specyfing whether the "syncable" subset of DevTools preferences
+// A boolean specifying whether the "syncable" subset of DevTools preferences
 // should be synced or not.
 const char kDevToolsSyncPreferences[] = "devtools.sync_preferences";
 
@@ -2256,7 +2254,7 @@ const char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean whether Kerberos functionality is enabled.
 const char kKerberosEnabled[] = "kerberos.enabled";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Boolean that specifies whether to enable revocation checking (best effort)
 // by default.
@@ -2376,6 +2374,12 @@ const char kDemoModeConfig[] = "demo_mode.config";
 
 // A string pref holding the value of the current country for demo sessions.
 const char kDemoModeCountry[] = "demo_mode.country";
+
+// A string pref holding the value of the retailer id input for demo sessions.
+const char kDemoModeRetailerId[] = "demo_mode.retailer_id";
+
+// A string pref holding the value of the store id input for demo sessions.
+const char kDemoModeStoreId[] = "demo_mode.store_id";
 
 // A string pref holding the value of the default locale for demo sessions.
 const char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
@@ -3037,8 +3041,6 @@ const char kLacrosAccessibilityVirtualKeyboardEnabled[] =
     "lacros.settings.a11y.virtual_keyboard";
 #endif
 
-const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
-
 const char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3095,6 +3097,12 @@ const char kThirdPartyBlockingEnabled[] = "third_party_blocking_enabled";
 // A boolean value, controlling whether Chrome renderer processes have the CIG
 // mitigation enabled.
 const char kRendererCodeIntegrityEnabled[] = "renderer_code_integrity_enabled";
+
+// A boolean value, controlling whether Chrome renderer processes should have
+// Renderer App Container enabled or not. If this pref is set to false then
+// Renderer App Container is disabled, otherwise Renderer App Container is
+// controlled by the `RendererAppContainer` feature owned by sandbox/policy.
+const char kRendererAppContainerEnabled[] = "renderer_app_container_enabled";
 
 // A boolean that controls whether the Browser process has
 // ProcessExtensionPointDisablePolicy enabled.
@@ -3297,6 +3305,15 @@ const char kCACertificateManagementAllowed[] =
 // set, Chrome will choose the certificate verifier based on experiments.
 const char kBuiltinCertificateVerifierEnabled[] =
     "builtin_certificate_verifier_enabled";
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+// Boolean that specifies whether the Chrome Root Store and built-in
+// certificate verifier should be used. If false, Chrome will not use the
+// Chrome Root Store. (The built-in certificate verifier may or may not be used
+// depending on the state of kBuiltinCertificateVerifierEnabled, if supported.)
+// If not set, Chrome will choose the root store based on experiments.
+const char kChromeRootStoreEnabled[] = "chrome_root_store_enabled";
 #endif
 
 const char kSharingVapidKey[] = "sharing.vapid_key";
@@ -3542,5 +3559,12 @@ const char kSCTAuditingHashdanceReportCount[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// A dictionary containing kiosk metrics latest session related information.
+// For example, kiosk session start times, number of network drops.
+// This setting resides in local state.
+const char kKioskMetrics[] = "kiosk-metrics";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace prefs

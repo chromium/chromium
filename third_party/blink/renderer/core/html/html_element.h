@@ -177,6 +177,9 @@ class CORE_EXPORT HTMLElement : public Element {
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
 
+  // https://html.spec.whatwg.org/C/#potentially-render-blocking
+  virtual bool IsPotentiallyRenderBlocking() const { return false; }
+
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };

@@ -24,7 +24,7 @@
 
 namespace {
 // Checks whether an HTTP authentication dialog is being shown by
-// |overlay_presenter| for a page whose host does not match |web_state_list|'s
+// `overlay_presenter` for a page whose host does not match `web_state_list`'s
 // active WebState's last committed URL.
 bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
     WebStateList* web_state_list) {

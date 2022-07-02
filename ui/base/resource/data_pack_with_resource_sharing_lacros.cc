@@ -318,10 +318,6 @@ void DataPackWithResourceSharing::OnFailedToGenerate(
   // is no longer useful and it won't affect the behavior itself even if
   // DeleteFile() fails.
   base::DeleteFile(temp_shared_resource_path);
-
-  // Create `shared_resource_path` file with an empty content.
-  ScopedFileWriter reopen_file(shared_resource_path);
-  reopen_file.Close();
 }
 
 // static
@@ -434,7 +430,8 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
 
   // If `temp_shared_resource_path` is already valid, move it back to
   // `shared_resource_path` and skip regenerating.
-  if (IsSharedResourceValid(temp_shared_resource_path) &&
+  if (base::PathExists(temp_shared_resource_path) &&
+      IsSharedResourceValid(temp_shared_resource_path) &&
       base::Move(temp_shared_resource_path, shared_resource_path)) {
     return true;
   }

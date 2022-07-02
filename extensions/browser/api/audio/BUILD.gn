@@ -27,12 +27,29 @@ source_set("audio") {
     "//extensions/common/api",
   ]
 
+  if (is_chromeos) {
+    sources += [
+      "audio_service_utils.cc",
+      "audio_service_utils.h",
+    ]
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/audio",
       "//content/public/browser",
     ]
     sources += [ "audio_service_chromeos.cc" ]
+  } else if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/cpp",
+      "//chromeos/lacros",
+    ]
+    sources += [
+      "audio_service_lacros.cc",
+      "audio_service_lacros.h",
+    ]
   } else {
     sources += [ "audio_service.cc" ]
   }

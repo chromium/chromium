@@ -308,6 +308,23 @@ TEST(StringViewTest, ConstructionStringView16) {
   EXPECT_EQ("3", StringView(view16_bit, 2, 1));
 }
 
+TEST(StringViewTest, SubstringContainsOnlyWhitespaceOrEmpty) {
+  EXPECT_TRUE(StringView("  ").SubstringContainsOnlyWhitespaceOrEmpty(0, 1));
+  EXPECT_TRUE(StringView("  ").SubstringContainsOnlyWhitespaceOrEmpty(0, 2));
+  EXPECT_TRUE(StringView("\x20\x09\x0A\x0D")
+                  .SubstringContainsOnlyWhitespaceOrEmpty(0, 4));
+  EXPECT_FALSE(StringView(" a").SubstringContainsOnlyWhitespaceOrEmpty(0, 2));
+  EXPECT_TRUE(StringView(" ").SubstringContainsOnlyWhitespaceOrEmpty(1, 1));
+  EXPECT_TRUE(StringView("").SubstringContainsOnlyWhitespaceOrEmpty(0, 0));
+  EXPECT_TRUE(
+      StringView("  \nABC").SubstringContainsOnlyWhitespaceOrEmpty(0, 3));
+  EXPECT_FALSE(StringView(" \u090A\n")
+                   .SubstringContainsOnlyWhitespaceOrEmpty(
+                       0, StringView(" \u090A\n").length()));
+  EXPECT_FALSE(
+      StringView("\n\x08\x1B").SubstringContainsOnlyWhitespaceOrEmpty(0, 3));
+}
+
 TEST(StringViewTest, ConstructionLiteral8) {
   // StringView(const LChar* chars);
   ASSERT_TRUE(StringView(kChars8).Is8Bit());

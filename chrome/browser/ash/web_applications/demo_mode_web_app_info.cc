@@ -15,8 +15,8 @@
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIDemoModeAppURL);
-  info->scope = GURL(ash::kChromeUIDemoModeAppURL);
+  info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
+  info->scope = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
   // TODO(b/185608502): Convert the title to a localized string
   info->title = u"Demo Mode App";
   web_app::CreateIconInfoForSystemWebApp(
@@ -32,10 +32,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
 }
 
 DemoModeSystemAppDelegate::DemoModeSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::DEMO_MODE,
-                                    "DemoMode",
-                                    GURL("chrome://demo-mode-app"),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DEMO_MODE,
+                                "DemoMode",
+                                GURL(ash::kChromeUntrustedUIDemoModeAppURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> DemoModeSystemAppDelegate::GetWebAppInfo()
     const {

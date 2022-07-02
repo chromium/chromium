@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+
+#include <stddef.h>
+
 #include <memory>
 
 #include "base/bind.h"
@@ -12,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -298,8 +300,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ("just hosts",
-            base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"just hosts", action_controller->GetTooltip(web_contents));
 
   // Navigate to a url the extension does have permissions to. The extension is
   // set to run on click and has the current URL withheld, so it should not be
@@ -310,8 +311,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ("just hosts\nWants access to this site",
-            base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"just hosts\nWants access to this site",
+            action_controller->GetTooltip(web_contents));
 
   // After triggering the action it should have access, which is reflected in
   // the tooltip.
@@ -322,8 +323,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(action_controller->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-  EXPECT_EQ("just hosts\nHas access to this site",
-            base::UTF16ToUTF8(action_controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"just hosts\nHas access to this site",
+            action_controller->GetTooltip(web_contents));
 }
 
 TEST_F(ExtensionActionViewControllerUnitTest,
@@ -611,8 +612,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   EXPECT_EQ(extensions::PermissionsData::PageAccess::kWithheld,
             extension->permissions_data()->GetPageAccess(kUrl, tab_id,
                                                          /*error=*/nullptr));
-  EXPECT_EQ("extension name\nWants access to this site",
-            base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"extension name\nWants access to this site",
+            controller->GetTooltip(web_contents));
 
   // Request access.
   extensions::ExtensionActionRunner* action_runner =
@@ -620,14 +621,14 @@ TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   action_runner->RequestScriptInjectionForTesting(
       extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
-  EXPECT_EQ("extension name\nWants access to this site",
-            base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"extension name\nWants access to this site",
+            controller->GetTooltip(web_contents));
 
   // Grant access.
   action_runner->ClearInjectionsForTesting(*extension);
   permissions_modifier.GrantHostPermission(kUrl);
-  EXPECT_EQ("extension name\nHas access to this site",
-            base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+  EXPECT_EQ(u"extension name\nHas access to this site",
+            controller->GetTooltip(web_contents));
 }
 
 // Tests the appearance of extension actions for an extension with the activeTab
@@ -636,10 +637,11 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   const GURL kUnlistedHost("https://www.example.com");
   const GURL kGrantedHost("https://www.google.com");
   const GURL kRestrictedHost("chrome://extensions");
-  const std::string kWantsAccessTooltip(
-      "active tab\nWants access to this site");
-  const std::string kHasAccessTooltip("active tab\nHas access to this site");
-  const std::string kNoAccessTooltip("active tab");
+  static constexpr char16_t kWantsAccessTooltip[] =
+      u"active tab\nWants access to this site";
+  static constexpr char16_t kHasAccessTooltip[] =
+      u"active tab\nHas access to this site";
+  static constexpr char16_t kNoAccessTooltip[] = u"active tab";
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
           .AddPermission("activeTab")
@@ -657,22 +659,21 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   {
-    EXPECT_EQ(SiteInteraction::kPending,
+    EXPECT_EQ(SiteInteraction::kActiveTab,
               controller->GetSiteInteraction(web_contents));
     EXPECT_TRUE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_FALSE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-    EXPECT_EQ(kWantsAccessTooltip,
-              base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+    EXPECT_EQ(kWantsAccessTooltip, controller->GetTooltip(web_contents));
   }
 
   // Navigate to a site which the extension does have explicit host access to
   // and verify the expected appearance.
   NavigateAndCommitActiveTab(kGrantedHost);
   {
-    EXPECT_EQ(SiteInteraction::kActive,
+    EXPECT_EQ(SiteInteraction::kGranted,
               controller->GetSiteInteraction(web_contents));
     // This is a little unintuitive, but if an extension is using a page action
     // and has not specified any declarative rules or manually changed it's
@@ -683,8 +684,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_FALSE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-    EXPECT_EQ(kHasAccessTooltip,
-              base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+    EXPECT_EQ(kHasAccessTooltip, controller->GetTooltip(web_contents));
   }
 
   // Navigate to a restricted URL and verify the expected appearance.
@@ -697,13 +697,12 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
         controller->GetIconImageSourceForTesting(web_contents, view_size());
     EXPECT_TRUE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
-    EXPECT_EQ(kNoAccessTooltip,
-              base::UTF16ToUTF8(controller->GetTooltip(web_contents)));
+    EXPECT_EQ(kNoAccessTooltip, controller->GetTooltip(web_contents));
   }
 }
 
-// Tests that an extension with the activeTab permission is shown to be pending
-// user approval for normal web pages, but not for restricted URLs.
+// Tests that an extension with the activeTab permission has active tab site
+// interaction except for restricted URLs.
 TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
       "active tab", extensions::ActionInfo::TYPE_BROWSER, {"activeTab"});
@@ -717,14 +716,14 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(SiteInteraction::kPending,
+  EXPECT_EQ(SiteInteraction::kActiveTab,
             controller->GetSiteInteraction(web_contents));
 
   // Click on the action, which grants activeTab and allows the extension to
-  // access the page. This changes the page interaction status to "active".
+  // access the page. This changes the page interaction status to "granted".
   controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(SiteInteraction::kActive,
+  EXPECT_EQ(SiteInteraction::kGranted,
             controller->GetSiteInteraction(web_contents));
 
   // Now navigate to a restricted URL. Clicking the extension won't give access
@@ -738,8 +737,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
             controller->GetSiteInteraction(web_contents));
 }
 
-// Tests that file URLs only show as pending user approval for activeTab
-// extensions if the extension has file URL access.
+// Tests that file URLs only have active tab site interaction if the extension
+// has active tab permission and file URL access.
 TEST_F(ExtensionActionViewControllerUnitTest,
        GetSiteInteractionActiveTabWithFileURL) {
   // We need to use a TestExtensionDir here to allow for the reload when giving
@@ -786,11 +785,11 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(extension);
   // Refresh the controller as the extension has been reloaded.
   controller = GetViewControllerForId(extension->id());
-  EXPECT_EQ(SiteInteraction::kPending,
+  EXPECT_EQ(SiteInteraction::kActiveTab,
             controller->GetSiteInteraction(web_contents));
   controller->ExecuteUserAction(
       ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(SiteInteraction::kActive,
+  EXPECT_EQ(SiteInteraction::kGranted,
             controller->GetSiteInteraction(web_contents));
 }
 

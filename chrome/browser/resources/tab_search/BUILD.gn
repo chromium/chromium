@@ -44,30 +44,6 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "tab_search"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "alert_indicators/tab_audio_muting_rounded.svg",
-    "alert_indicators/tab_audio_rounded.svg",
-    "alert_indicators/tab_media_recording.svg",
-    "tab_search.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_fuse_grdp" ]
-  grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
-
-  if (optimize_webui) {
-    deps += [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [ "tab_search.rollup.js|tab_search.js" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-}
-
 generate_grd("build_fuse_grdp") {
   grd_prefix = "tab_search"
   out_grd = "$target_gen_dir/fuse_resources.grdp"
@@ -78,7 +54,6 @@ generate_grd("build_fuse_grdp") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }
@@ -183,4 +158,29 @@ ts_library("build_ts") {
     ":preprocess_mojo_tab_groups",
     ":preprocess_tabs",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "tab_search"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "tab_search.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_fuse_grdp" ]
+  grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
+
+  if (optimize_webui) {
+    deps += [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "tab_search.rollup.js|tab_search.js" ]
+  } else {
+    deps += [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 }

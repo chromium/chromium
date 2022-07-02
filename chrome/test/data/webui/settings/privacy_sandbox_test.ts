@@ -4,13 +4,11 @@
 
 import 'chrome://settings/privacy_sandbox/app.js';
 
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import {PrivacySandboxAppElement, PrivacySandboxSettingsView} from 'chrome://settings/privacy_sandbox/app.js';
 import {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -22,27 +20,11 @@ class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxBrowserProxy {
   constructor() {
     super([
-      'getFlocId',
-      'resetFlocId',
       'getFledgeState',
       'setFledgeJoiningAllowed',
       'getTopicsState',
       'setTopicAllowed',
     ]);
-  }
-
-  getFlocId() {
-    this.methodCalled('getFlocId');
-    return Promise.resolve({
-      trialStatus: 'test-trial-status',
-      cohort: 'test-id',
-      nextUpdate: 'test-time',
-      canReset: true,
-    });
-  }
-
-  resetFlocId() {
-    this.methodCalled('resetFlocId');
   }
 
   getFledgeState() {
@@ -101,8 +83,6 @@ suite('PrivacySandbox', function() {
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
 
-    page.prefs = {generated: {floc_enabled: {value: true}}};
-
     return flushTasks();
   });
 
@@ -126,7 +106,6 @@ suite('PrivacySandbox', function() {
           manually_controlled: {value: false},
           manually_controlled_v2: {value: false},
         },
-        generated: {floc_enabled: {value: true}}
       };
       await flushTasks();
       metricsBrowserProxy.resetResolver('recordAction');
@@ -153,88 +132,6 @@ suite('PrivacySandbox', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX, interaction);
-  });
-
-  test('flocId', async function() {
-    // The page should automatically retrieve the FLoC state when it is attached
-    // to the document.
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    assertEquals(
-        'test-trial-status',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocStatus')!.textContent!.trim());
-    assertEquals(
-        'test-id',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocId')!.textContent!.trim());
-    assertEquals(
-        'test-time',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocUpdatedOn')!.textContent!.trim());
-    assertFalse(
-        page.shadowRoot!.querySelector<CrButtonElement>(
-                            '#resetFlocIdButton')!.disabled);
-
-    // The page should listen for changes via a WebUI listener.
-    webUIListenerCallback('floc-id-changed', {
-      trialStatus: 'new-test-trial-status',
-      cohort: 'new-test-id',
-      nextUpdate: 'new-test-time',
-      canReset: false,
-    });
-
-    await flushTasks();
-    assertEquals(
-        'new-test-trial-status',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocStatus')!.textContent!.trim());
-    assertEquals(
-        'new-test-id',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocId')!.textContent!.trim());
-    assertEquals(
-        'new-test-time',
-        page.shadowRoot!.querySelector<HTMLElement>(
-                            '#flocUpdatedOn')!.textContent!.trim());
-    assertTrue(
-        page.shadowRoot!.querySelector<CrButtonElement>(
-                            '#resetFlocIdButton')!.disabled);
-  });
-
-  test('resetFlocId', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#resetFlocIdButton')!.click();
-    return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
-  });
-
-  test('prefObserver', async function() {
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
-
-    // When the FLoC generated preference is changed, the page should re-query
-    // for the FLoC id.
-    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
-    page.set('prefs.generated.floc_enabled.value', false);
-    await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-  });
-
-  test('userActions', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
-    assertEquals(
-        'Settings.PrivacySandbox.FlocDisabled',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    metricsBrowserProxy.resetResolver('recordAction');
-
-    page.shadowRoot!.querySelector<HTMLElement>('#flocToggleButton')!.click();
-    assertEquals(
-        'Settings.PrivacySandbox.FlocEnabled',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    metricsBrowserProxy.resetResolver('recordAction');
-
-    // Ensure that an action is only recorded in response to interaction with
-    // the toggle, and not for the generated preference changing.
-    page.set('prefs.generated.floc_enabled.value', false);
-    await flushTasks();
-    assertEquals(0, metricsBrowserProxy.getCallCount('recordAction'));
   });
 });
 
@@ -267,7 +164,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertMainViewVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_, PrivacySandboxSettingsView.MAIN);
+        page.privacySandboxSettingsView, PrivacySandboxSettingsView.MAIN);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
     assertFalse(!!dialogWrapper);
@@ -275,7 +172,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertLearnMoreDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.LEARN_MORE_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -289,7 +186,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdPersonalizationDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -310,7 +207,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdPersonalizationRemovedDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -331,7 +228,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdMeasurementDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -345,7 +242,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertSpamAndFraudDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');

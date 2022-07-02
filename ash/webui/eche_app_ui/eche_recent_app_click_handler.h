@@ -12,6 +12,7 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/callback.h"
 
@@ -21,13 +22,17 @@ namespace eche_app {
 class LaunchAppHelper;
 
 // Handles recent app clicks originating from Phone Hub recent apps.
-class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
-                                  public FeatureStatusProvider::Observer,
-                                  public phonehub::RecentAppClickObserver {
+class EcheRecentAppClickHandler
+    : public phonehub::NotificationClickHandler,
+      public FeatureStatusProvider::Observer,
+      public phonehub::RecentAppClickObserver,
+      public EcheStreamStatusChangeHandler::Observer {
  public:
-  EcheRecentAppClickHandler(phonehub::PhoneHubManager* phone_hub_manager,
-                            FeatureStatusProvider* feature_status_provider,
-                            LaunchAppHelper* launch_app_helper);
+  EcheRecentAppClickHandler(
+      phonehub::PhoneHubManager* phone_hub_manager,
+      FeatureStatusProvider* feature_status_provider,
+      LaunchAppHelper* launch_app_helper,
+      EcheStreamStatusChangeHandler* stream_status_change_handler);
   ~EcheRecentAppClickHandler() override;
 
   EcheRecentAppClickHandler(const EcheRecentAppClickHandler&) = delete;
@@ -46,6 +51,10 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
+  // EcheStreamStatusChangeHandler::Observer:
+  void OnStartStreaming() override {}
+  void OnStreamStatusChanged(mojom::StreamStatus status) override;
+
  private:
   bool IsClickable(FeatureStatus status);
 
@@ -53,7 +62,10 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
   phonehub::RecentAppsInteractionHandler* recent_apps_handler_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchAppHelper* launch_app_helper_;
+  EcheStreamStatusChangeHandler* stream_status_change_handler_;
+  std::vector<phonehub::Notification::AppMetadata> to_stream_apps_;
   bool is_click_handler_set_ = false;
+  bool is_stream_started_ = false;
 };
 
 }  // namespace eche_app

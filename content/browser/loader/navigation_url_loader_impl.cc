@@ -38,6 +38,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_url_loader_interceptor.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
@@ -295,7 +296,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->transition_type = request_info.common_params->transition;
   new_request->devtools_request_id =
       request_info.devtools_navigation_token.ToString();
-  new_request->obey_origin_policy = request_info.obey_origin_policy;
   if (request_info.begin_params->trust_token_params) {
     new_request->trust_token_params =
         *request_info.begin_params->trust_token_params;
@@ -359,6 +359,34 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
   auto previous_origin = url::Origin::Create(url_chain[url_chain.size() - 2]);
   return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
 }
+
+#if DCHECK_IS_ON()
+void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
+                              const network::mojom::ParsedHeadersPtr& rhs) {
+  if (mojo::Equals(lhs, rhs))
+    return;
+  DCHECK(
+      mojo::Equals(lhs->content_security_policy, rhs->content_security_policy));
+  DCHECK(mojo::Equals(lhs->allow_csp_from, rhs->allow_csp_from));
+  DCHECK(mojo::Equals(lhs->cross_origin_embedder_policy,
+                      rhs->cross_origin_embedder_policy));
+  DCHECK(mojo::Equals(lhs->cross_origin_opener_policy,
+                      rhs->cross_origin_opener_policy));
+  DCHECK(mojo::Equals(lhs->origin_agent_cluster, rhs->origin_agent_cluster));
+  DCHECK(mojo::Equals(lhs->accept_ch, rhs->accept_ch));
+  DCHECK(mojo::Equals(lhs->critical_ch, rhs->critical_ch));
+  DCHECK_EQ(lhs->xfo, rhs->xfo);
+  DCHECK(mojo::Equals(lhs->link_headers, rhs->link_headers));
+  DCHECK(mojo::Equals(lhs->timing_allow_origin, rhs->timing_allow_origin));
+  DCHECK_EQ(lhs->bfcache_opt_in_unload, rhs->bfcache_opt_in_unload);
+  DCHECK(mojo::Equals(lhs->reporting_endpoints, rhs->reporting_endpoints));
+  DCHECK(mojo::Equals(lhs->variants_headers, rhs->variants_headers));
+  DCHECK(mojo::Equals(lhs->content_language, rhs->content_language));
+  NOTREACHED() << "The parsed headers don't match, but we don't know which "
+                  "field does not match. Please add a DCHECK before this one "
+                  "checking for the missing field.";
+}
+#endif
 
 }  // namespace
 
@@ -472,6 +500,14 @@ void NavigationURLLoaderImpl::CreateInterceptors(
         *request_info_, network_loader_factory_,
         std::move(signed_exchange_prefetch_metric_recorder),
         std::move(accept_langs)));
+  }
+
+  // Set up an interceptor for prefetch.
+  std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
+      content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
+          frame_tree_node_id_);
+  if (prefetch_interceptor) {
+    interceptors_.push_back(std::move(prefetch_interceptor));
   }
 
   // See if embedders want to add interceptors.
@@ -790,14 +826,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   if (head_->mime_type == "application/pdf" || head_->mime_type == "text/pdf")
     early_hints_manager_.reset();
 
-  if (response_body)
-    OnStartLoadingResponseBody(std::move(response_body));
-}
+  if (!response_body)
+    return;
 
-void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
-  LogQueueTimeHistogram("Navigation.QueueTime.OnStartLoadingResponseBody",
-                        resource_request_->is_outermost_main_frame);
   response_body_ = std::move(response_body);
   received_response_ = true;
 
@@ -998,6 +1029,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
     OnAcceptCHFrameReceivedCallback callback) {
   received_accept_ch_frame_ = true;
+  if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
   LogAcceptCHFrameStatus(AcceptCHFrameRestart::kFramePresent);
 
   // Given that this is happening in the middle of navigation, there should
@@ -1186,7 +1222,7 @@ void NavigationURLLoaderImpl::ParseHeaders(
     auto check = [](base::OnceClosure continuation,
                     network::mojom::URLResponseHead* head,
                     network::mojom::ParsedHeadersPtr parsed_headers) {
-      DCHECK(parsed_headers.Equals(head->parsed_headers));
+      CheckParsedHeadersEquals(parsed_headers, head->parsed_headers);
       std::move(continuation).Run();
     };
     GetNetworkService()->ParseHeaders(
@@ -1343,18 +1379,25 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   }
 
   const std::string storage_domain;
-  // TODO(https://crbug.com/1264405): Determine if we should deprecate
-  // navigation in filesystem: URLs entirely or in 3p contexts; alter the
-  // below as necessary. NOTE: while the logic below is appropriate for
-  // browser-initiated navigations, it is likely incorrect to always use
-  // first-party StorageKeys for renderer-initiated navigations.
-  non_network_url_loader_factories_.emplace(
-      url::kFileSystemScheme,
-      CreateFileSystemURLLoaderFactory(
-          ChildProcessHost::kInvalidUniqueID,
-          frame_tree_node->frame_tree_node_id(),
-          storage_partition_->GetFileSystemContext(), storage_domain,
-          blink::StorageKey(url::Origin::Create(url_))));
+  if (base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation) ||
+      !frame_tree_node->navigation_request()->IsRendererInitiated()) {
+    // TODO(https://crbug.com/256067): Once DevTools has support for sandboxed
+    // file system inspection there isn't much reason anymore to support browser
+    // initiated filesystem: navigations, so remove this entirely at that point.
+
+    // Navigations in to filesystem: URLs are deprecated entirely for
+    // renderer-initiated navigations. The logic below is appropriate for
+    // browser-initiated navigations, but it is incorrect to always use
+    // first-party StorageKeys for renderer-initiated navigations when third
+    // party storage partitioning is enabled.
+    non_network_url_loader_factories_.emplace(
+        url::kFileSystemScheme,
+        CreateFileSystemURLLoaderFactory(
+            ChildProcessHost::kInvalidUniqueID,
+            frame_tree_node->frame_tree_node_id(),
+            storage_partition_->GetFileSystemContext(), storage_domain,
+            blink::StorageKey(url::Origin::Create(url_))));
+  }
 
   non_network_url_loader_factories_.emplace(url::kAboutScheme,
                                             AboutURLLoaderFactory::Create());

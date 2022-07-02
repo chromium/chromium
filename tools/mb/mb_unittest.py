@@ -30,15 +30,15 @@ from mb import mb
 
 class FakeMBW(mb.MetaBuildWrapper):
   def __init__(self, win32=False):
-    super(FakeMBW, self).__init__()
+    super().__init__()
 
     # Override vars for test portability.
     if win32:
       self.chromium_src_dir = 'c:\\fake_src'
       self.default_config = 'c:\\fake_src\\tools\\mb\\mb_config.pyl'
-
       self.default_isolate_map = ('c:\\fake_src\\testing\\buildbot\\'
                                   'gn_isolate_map.pyl')
+      self.temp = 'c:\\temp'
       self.platform = 'win32'
       self.executable = 'c:\\python\\python.exe'
       self.sep = '\\'
@@ -47,8 +47,9 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.chromium_src_dir = '/fake_src'
       self.default_config = '/fake_src/tools/mb/mb_config.pyl'
       self.default_isolate_map = '/fake_src/testing/buildbot/gn_isolate_map.pyl'
-      self.executable = '/usr/bin/python'
+      self.temp = '/tmp'
       self.platform = 'linux'
+      self.executable = '/usr/bin/python'
       self.sep = '/'
       self.cwd = '/fake_src/out/Default'
 
@@ -86,8 +87,8 @@ class FakeMBW(mb.MetaBuildWrapper):
   def ReadFile(self, path):
     try:
       return self.files[self._AbsPath(path)]
-    except KeyError:
-      raise IOError('%s not found' % path)
+    except KeyError as e:
+      raise IOError('%s not found' % path) from e
 
   def WriteFile(self, path, contents, force_verbose=False):
     if self.args.dryrun or self.args.verbose or force_verbose:
@@ -96,6 +97,10 @@ class FakeMBW(mb.MetaBuildWrapper):
     self.files[abpath] = contents
 
   def Call(self, cmd, env=None, buffer_output=True, stdin=None):
+    # Avoid unused-argument warnings from Pylint
+    del env
+    del buffer_output
+    del stdin
     self.calls.append(cmd)
     if self.cmds:
       return self.cmds.pop(0)
@@ -111,11 +116,13 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.out += sep.join(args) + end
 
   def TempDir(self):
-    tmp_dir = os.path.join(tempfile.gettempdir(), 'mb_test')
+    tmp_dir = self.temp + self.sep + 'mb_test'
     self.dirs.add(tmp_dir)
     return tmp_dir
 
   def TempFile(self, mode='w'):
+    # Avoid unused-argument warnings from Pylint
+    del mode
     return FakeFile(self.files)
 
   def RemoveFile(self, path):
@@ -140,7 +147,7 @@ class FakeMBW(mb.MetaBuildWrapper):
     return re.sub('/+', '/', path)
 
 
-class FakeFile(object):
+class FakeFile:
   def __init__(self, files):
     self.name = '/tmp/file'
     self.buf = ''

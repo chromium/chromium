@@ -97,7 +97,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id2, surface_id1), 2u);
-  surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  surface_layer_impl->SetBackgroundColor(SkColors::kBlue);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
@@ -159,15 +159,15 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   ASSERT_TRUE(surface_draw_quad3);
 
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad1->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad1->default_background_color);
   EXPECT_EQ(surface_id2, surface_draw_quad1->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad2->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad2->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad2->default_background_color);
   EXPECT_EQ(absl::nullopt, surface_draw_quad2->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad3->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad3->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad3->default_background_color);
   EXPECT_EQ(surface_id2, surface_draw_quad3->surface_range.start());
 }
 
@@ -235,7 +235,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   surface_layer_impl->SetDrawsContent(true);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 1u);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 2u);
-  surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  surface_layer_impl->SetBackgroundColor(SkColors::kBlue);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
@@ -254,7 +254,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
 
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.end());
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.start());
-  EXPECT_EQ(SK_ColorBLUE, surface_draw_quad1->default_background_color);
+  EXPECT_EQ(SkColors::kBlue, surface_draw_quad1->default_background_color);
 }
 
 TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {

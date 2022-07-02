@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
@@ -96,9 +96,9 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // Reference to the bookmark model.
 @property(nonatomic, assign) BookmarkModel* bookmarkModel;
 
-// The parent of the bookmark. This may be different from |bookmark->parent()|
-// if the changes have not been saved yet. |folder| then represents the
-// candidate for the new parent of |bookmark|.  This property is always a
+// The parent of the bookmark. This may be different from `bookmark->parent()`
+// if the changes have not been saved yet. `folder` then represents the
+// candidate for the new parent of `bookmark`.  This property is always a
 // non-NULL, valid folder.
 @property(nonatomic, assign) const BookmarkNode* folder;
 
@@ -109,9 +109,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 @property(nonatomic, assign) Browser* browser;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
-
-// Dispatcher for sending commands.
-@property(nonatomic, readonly, weak) id<BrowserCommands> dispatcher;
 
 // Cancel button item in navigation bar.
 @property(nonatomic, strong) UIBarButtonItem* cancelItem;
@@ -134,7 +131,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 // bookmark.
 - (void)commitBookmarkChanges;
 
-// Changes |self.folder| and updates the UI accordingly.
+// Changes `self.folder` and updates the UI accordingly.
 // The change is not committed until the user taps the Save button.
 - (void)changeFolder:(const BookmarkNode*)folder;
 
@@ -205,11 +202,6 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     // Set up the bookmark model oberver.
     _modelBridge.reset(
         new bookmarks::BookmarkModelBridge(self, _bookmarkModel));
-
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-    // clean up.
-    _dispatcher =
-        static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
   }
   return self;
 }
@@ -321,7 +313,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   base::AutoReset<BOOL> autoReset(&_ignoresBookmarkModelChanges, YES);
 
   GURL url = ConvertUserDataToGURL([self inputURLString]);
-  // If the URL was not valid, the |save| message shouldn't have been sent.
+  // If the URL was not valid, the `save` message shouldn't have been sent.
   DCHECK([self inputURLIsValid]);
 
   // Tell delegate if bookmark name or title has been changed.
@@ -332,12 +324,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     [self.delegate bookmarkEditorWillCommitTitleOrUrlChange:self];
   }
 
-  // TODO(crbug.com/906662): This will need to be called on the SnackbarCommands
-  // handler.
-  [self.dispatcher showSnackbarMessage:
-                       bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
-                           self.bookmark, [self inputBookmarkName], url,
-                           self.folder, self.bookmarkModel, self.browserState)];
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:
+          bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
+              self.bookmark, [self inputBookmarkName], url, self.folder,
+              self.bookmarkModel, self.browserState)];
 }
 
 - (void)changeFolder:(const BookmarkNode*)folder {
@@ -442,9 +433,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       nodes.insert(self.bookmark);
     }
 
-    // TODO(crbug.com/1323778): This will need to be called on the
-    // SnackbarCommands handler.
-    [self.dispatcher
+    [self.snackbarCommandsHandler
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                                 nodes, self.bookmarkModel, self.browserState)];
     self.bookmark = nil;
@@ -467,6 +456,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
                  selectedFolder:self.folder
                         browser:_browser];
   folderViewController.delegate = self;
+  folderViewController.snackbarCommandsHandler = self.snackbarCommandsHandler;
   self.folderViewController = folderViewController;
   self.folderViewController.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
@@ -569,10 +559,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   // - the user selected a folder in the folder picker. In that case, the folder
   // picker should be popped;
   // - the user created a new folder, in which case the navigation stack
-  // contains this bookmark editor (|self|), a folder picker and a folder
+  // contains this bookmark editor (`self`), a folder picker and a folder
   // creator. In such a case, both the folder picker and creator shoud be popped
   // to reveal this bookmark editor. Thus the call to
-  // |popToViewController:animated:|.
+  // `popToViewController:animated:`.
   [self.navigationController popToViewController:self animated:YES];
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
@@ -580,8 +570,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 - (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
   // This delegate method can only be called from the folder picker, which is
-  // the only view controller on top of this bookmark editor (|self|). Thus the
-  // call to |popViewControllerAnimated:|.
+  // the only view controller on top of this bookmark editor (`self`). Thus the
+  // call to `popViewControllerAnimated:`.
   [self.navigationController popViewControllerAnimated:YES];
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;

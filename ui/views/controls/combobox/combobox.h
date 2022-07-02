@@ -43,6 +43,8 @@ class VIEWS_EXPORT Combobox : public View,
  public:
   METADATA_HEADER(Combobox);
 
+  using MenuSelectionAtCallback = base::RepeatingCallback<bool(int index)>;
+
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
 
@@ -103,6 +105,10 @@ class VIEWS_EXPORT Combobox : public View,
   void SetSizeToLargestLabel(bool size_to_largest_label);
   bool GetSizeToLargestLabel() const { return size_to_largest_label_; }
 
+  void SetMenuSelectionAtCallback(MenuSelectionAtCallback callback) {
+    menu_selection_at_callback_ = std::move(callback);
+  }
+
   // Use the time when combobox was closed in order for parent view to not
   // treat a user event already treated by the combobox.
   base::TimeTicks GetClosedTime() { return closed_time_; }
@@ -131,6 +137,7 @@ class VIEWS_EXPORT Combobox : public View,
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
+  void OnComboboxModelDestroying(ui::ComboboxModel* model) override;
 
   // Getters to be used by metadata.
   const base::RepeatingClosure& GetCallback() const;
@@ -158,6 +165,9 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Cleans up after the menu as closed
   void OnMenuClosed(Button::ButtonState original_button_state);
+
+  // Called when there has been a selection from the menu.
+  void MenuSelectionAt(int index);
 
   // Called when the selection is changed by the user.
   void OnPerformAction();
@@ -189,6 +199,12 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Callback notified when the selected index changes.
   base::RepeatingClosure callback_;
+
+  // Callback notified when the selected index is triggered to change. If set,
+  // when a selection is made in the combobox this callback is called. If it
+  // returns true no other action is taken, if it returns false then the model
+  // will updated based on the selection.
+  MenuSelectionAtCallback menu_selection_at_callback_;
 
   // The current selected index; -1 and means no selection.
   int selected_index_ = -1;

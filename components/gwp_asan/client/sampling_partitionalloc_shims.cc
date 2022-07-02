@@ -26,7 +26,10 @@ SamplingState<PARTITIONALLOC> sampling_state;
 // for every access.
 GuardedPageAllocator* gpa = nullptr;
 
-bool AllocationHook(void** out, int flags, size_t size, const char* type_name) {
+bool AllocationHook(void** out,
+                    unsigned int flags,
+                    size_t size,
+                    const char* type_name) {
   if (UNLIKELY(sampling_state.Sample())) {
     // Ignore allocation requests with unknown flags.
     constexpr int kKnownFlags = partition_alloc::AllocFlags::kReturnNull |
@@ -80,8 +83,8 @@ void InstallPartitionAllocHooks(
   sampling_state.Init(sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
-  base::PartitionAllocHooks::SetOverrideHooks(&AllocationHook, &FreeHook,
-                                              &ReallocHook);
+  partition_alloc::PartitionAllocHooks::SetOverrideHooks(
+      &AllocationHook, &FreeHook, &ReallocHook);
 }
 
 }  // namespace internal

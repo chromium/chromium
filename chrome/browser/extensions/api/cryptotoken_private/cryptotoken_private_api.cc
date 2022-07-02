@@ -259,9 +259,10 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 
   // The created AttestationPermissionRequest deletes itself once complete.
   permission_request_manager->AddRequest(
-      web_contents->GetMainFrame(),  // Extension API targets a particular tab,
-                                     // so select the current main frame to
-                                     // handle the request.
+      web_contents
+          ->GetPrimaryMainFrame(),  // Extension API targets a particular tab,
+                                    // so select the current main frame to
+                                    // handle the request.
       NewAttestationPermissionRequest(
           origin,
           base::BindOnce(
@@ -321,25 +322,20 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
                                frame->GetLastCommittedURL(), response_headers,
                                extension_misc::kCryptotokenDeprecationTrialName,
                                base::Time::Now()));
-  const bool u2f_api_enterprise_policy_enabled =
-      Profile::FromBrowserContext(browser_context())
-          ->GetPrefs()
-          ->GetBoolean(extensions::pref_names::kU2fSecurityKeyApiEnabled);
 
   DCHECK(
       base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
+      u2f_api_origin_trial_enabled);
 
   // Don't show a permission prompt if its feature flag is disabled, or if the
   // site enrolled in the deprecation trial (since they're obviously aware of
-  // the deprecation), or if the enterprise policy to override U2F
-  // deprecation-related changes has been enabled.
+  // the deprecation).
   //
   // Also don't show the prompt in "non-regular" ChromeOS profiles, which
   // includes CrOS SAML sign-in context that doesn't support permission prompts
   // (crbug.com/1257293).
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
+      u2f_api_origin_trial_enabled) {
     return RespondNow(OneArgument(base::Value(true)));
   }
 

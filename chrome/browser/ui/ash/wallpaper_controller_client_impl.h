@@ -30,8 +30,8 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace value_store {
-class ValueStore;
+namespace {
+class WallpaperControllerClientImplTest;
 }
 
 // Handles chrome-side wallpaper control alongside the ash-side controller.
@@ -62,7 +62,6 @@ class WallpaperControllerClientImpl
 
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(
       const AccountId& account_id,
       bool show_wallpaper,
@@ -82,7 +81,6 @@ class WallpaperControllerClientImpl
   void FetchDailyGooglePhotosPhoto(
       const AccountId& account_id,
       const std::string& album_id,
-      const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback) override;
   void FetchGooglePhotosAccessToken(
       const AccountId& account_id,
@@ -157,14 +155,12 @@ class WallpaperControllerClientImpl
   bool IsActiveUserWallpaperControlledByPolicy();
   ash::WallpaperInfo GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
-  void MigrateCollectionIdFromValueStoreForTesting(
-      const AccountId& account_id,
-      value_store::ValueStore* storage);
   // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
   // either by built-in Wallpaper app or a third party extension/app.
   void RecordWallpaperSourceUMA(const ash::WallpaperType type);
 
  private:
+  friend class WallpaperControllerClientImplTest;
   // Initialize the controller for this client and some wallpaper directories.
   void InitController();
 
@@ -179,14 +175,6 @@ class WallpaperControllerClientImpl
   bool ShouldShowUserNamesOnLogin() const;
 
   base::FilePath GetDeviceWallpaperImageFilePath();
-
-  // Used as callback to |MigrateCollectionIdFromChromeApp|. Called on backend
-  // task runner. Extracts the daily refresh collection id and calls
-  // |SetDailyRefreshCollectionId| on main task runner.
-  void OnGetWallpaperChromeAppValueStore(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      base::OnceCallback<void(const std::string&)> result_callback,
-      value_store::ValueStore* value_store);
 
   // Passes |collection_id| to wallpaper controller on main task runner.
   void SetDailyRefreshCollectionId(const AccountId& account_id,
@@ -209,7 +197,7 @@ class WallpaperControllerClientImpl
           response);
 
   void OnGooglePhotosDailyAlbumFetched(
-      const absl::optional<std::string>& current_photo_id,
+      const AccountId& account_id,
       FetchGooglePhotosPhotoCallback callback,
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
           response);

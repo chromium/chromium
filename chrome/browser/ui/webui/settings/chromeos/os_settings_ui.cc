@@ -24,11 +24,11 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -36,6 +36,7 @@
 #include "chrome/grit/os_settings_resources_map.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -141,9 +142,14 @@ void OSSettingsUI::BindInterface(
   DCHECK(ash::features::IsPersonalizationHubEnabled())
       << "This interface should only be bound if personalization hub feature "
          "is enabled";
+
+  auto* profile = Profile::FromWebUI(web_ui());
+  DCHECK(profile->IsRegularProfile())
+      << "This interface should only be bound for regular profiles";
+
   auto* search_handler =
       ::ash::personalization_app::PersonalizationAppManagerFactory::
-          GetForBrowserContext(Profile::FromWebUI(web_ui()))
+          GetForBrowserContext(profile)
               ->search_handler();
   DCHECK(search_handler);
   search_handler->BindInterface(std::move(receiver));

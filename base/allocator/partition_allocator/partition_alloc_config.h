@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
 
-#include "base/allocator/buildflags.h"
-#include "base/dcheck_is_on.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 // ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
@@ -30,9 +30,11 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_STARSCAN_NEON_SUPPORTED
 #endif
 
-#if 0
+#if BUILDFLAG(IS_IOS)
 // Use dynamically sized GigaCage. This allows to query the size at run-time,
-// before initialization, instead of using a hardcoded constexpr.
+// before initialization, instead of using a hardcoded constexpr. This is needed
+// on iOS because iOS test processes can't handle a large cage (see
+// crbug.com/1250788).
 #define PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE
 #endif
 
@@ -76,16 +78,15 @@ static_assert(sizeof(void*) != 8, "");
 // - On Linux, futex(2)
 // - On Windows, a fast userspace "try" operation which is available
 //   with SRWLock
-// - Otherwise, a fast userspace pthread_mutex_trylock().
-//
-// On macOS, pthread_mutex_trylock() is fast by default starting with macOS
-// 10.14. Chromium targets an earlier version, so it cannot be known at
-// compile-time. So we use something different. On other POSIX systems, we
-// assume that pthread_mutex_trylock() is suitable.
+// - On macOS, pthread_mutex_trylock() is fast by default starting with macOS
+//   10.14. Chromium targets an earlier version, so it cannot be known at
+//   compile-time. So we use something different.
+// - Otherwise, on POSIX we assume that a fast userspace pthread_mutex_trylock()
+//   is available.
 //
 // Otherwise, a userspace spinlock implementation is used.
 #if defined(PA_HAS_LINUX_KERNEL) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define PA_HAS_FAST_MUTEX
 #endif
 
@@ -129,7 +130,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Specifies whether allocation extras need to be added.
-#if DCHECK_IS_ON() || BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(USE_BACKUP_REF_PTR)
 #define PA_EXTRAS_REQUIRED
 #endif
 
@@ -161,10 +162,10 @@ static_assert(sizeof(void*) != 8, "");
 // calling malloc() again.
 //
 // Limitations:
-// - DCHECK_IS_ON() due to runtime cost
+// - BUILDFLAG(PA_DCHECK_IS_ON) due to runtime cost
 // - thread_local TLS to simplify the implementation
 // - Not on Android due to bot failures
-#if DCHECK_IS_ON() && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if BUILDFLAG(PA_DCHECK_IS_ON) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_HAS_ALLOCATION_GUARD
 #endif
@@ -201,7 +202,8 @@ constexpr bool kUseLazyCommit = false;
 // raw_ptr at the same time.
 #if !(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) &&  \
       BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)) && \
-    (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS))
+    (BUILDFLAG(PA_DCHECK_IS_ON) ||                  \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS))
 #define PA_REF_COUNT_CHECK_COOKIE
 #endif
 

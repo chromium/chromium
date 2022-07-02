@@ -37,20 +37,20 @@
 // is added as a subview.
 - (void)addSeparatorToSearchField:(UIView*)searchField;
 
-// Adds the |toolbarView| to the view implementing this protocol.
+// Adds the `toolbarView` to the view implementing this protocol.
 // Can only be added once.
 - (void)addToolbarView:(UIView*)toolbarView;
 
 // Returns the progress of the search field position along
-// |ntp_header::kAnimationDistance| as the offset changes.
+// `ntp_header::kAnimationDistance` as the offset changes.
 - (CGFloat)searchFieldProgressForOffset:(CGFloat)offset
                          safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
 // Changes the constraints of searchField based on its initialFrame and the
-// scroll view's y |offset|. Also adjust the alpha values for |_searchBoxBorder|
-// and |_shadow| and the constant values for the |constraints|.|screenWidth| is
+// scroll view's y `offset`. Also adjust the alpha values for `_searchBoxBorder`
+// and `_shadow` and the constant values for the `constraints`.|screenWidth` is
 // the width of the screen, including the space outside the safe area. The
-// |safeAreaInsets| is relative to the view used to calculate the |width|.
+// `safeAreaInsets` is relative to the view used to calculate the `width`.
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint
                         height:(NSLayoutConstraint*)heightConstraint
                      topMargin:(NSLayoutConstraint*)topMarginConstraint
@@ -64,7 +64,7 @@
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 
-// Updates the different constraints using |topSafeAreaInset|. This is needed
+// Updates the different constraints using `topSafeAreaInset`. This is needed
 // because sometimes the safe area isn't correctly updated. See
 // crbug.com/1041831.
 - (void)updateForTopSafeAreaInset:(CGFloat)topSafeAreaInset;

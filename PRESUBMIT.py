@@ -4,7 +4,7 @@
 
 """Top-level presubmit script for Chromium.
 
-See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
+See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 for more details about the presubmit API built into depot_tools.
 """
 
@@ -68,6 +68,13 @@ _IMPLEMENTATION_EXTENSIONS = r'\.(cc|cpp|cxx|mm)$'
 # Fragment of a regular expression that matches C++ and Objective-C++
 # header files.
 _HEADER_EXTENSIONS = r'\.(h|hpp|hxx)$'
+
+
+# Paths with sources that don't use //base.
+_NON_BASE_DEPENDENT_PATHS = (
+    r"^chrome[\\/]browser[\\/]browser_switcher[\\/]bho[\\/]",
+    r"^tools[\\/]win[\\/]",
+)
 
 
 # Regular expression that matches code only used for test binaries
@@ -918,8 +925,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       False,
       (
-        r'^fuchsia/engine/browser/url_request_rewrite_rules_manager\.cc$',
-        r'^fuchsia/engine/url_request_rewrite_type_converters\.cc$',
+        r'^fuchsia_web/webengine/browser/url_request_rewrite_rules_manager\.cc$',
+        r'^fuchsia_web/webengine/url_request_rewrite_type_converters\.cc$',
         r'^third_party/blink/.*\.(cc|h)$',
         r'^content/renderer/.*\.(cc|h)$',
       ),
@@ -1008,6 +1015,28 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$',
       ),
     ),
+    BanRule(
+      r'base::Watchdog',
+      (
+        'base::Watchdog is deprecated because it creates its own thread.',
+        'Instead, manually start a timer on a SequencedTaskRunner.',
+      ),
+      False,
+      (),
+    ),
+    BanRule(
+      'base::Passed',
+      (
+        'Do not use base::Passed. It is a legacy helper for capturing ',
+        'move-only types with base::BindRepeating, but invoking the ',
+        'resulting RepeatingCallback moves the captured value out of ',
+        'the callback storage, and subsequent invocations may pass the ',
+        'value in a valid but undefined state. Prefer base::BindOnce().',
+        'See http://crbug.com/1326449 for context.'
+      ),
+      False,
+      (),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
@@ -1056,6 +1085,8 @@ _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
     r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]',
     r'^tools[\\/]perf[\\/]',
     r'^tools[\\/]traceline[\\/]svgui[\\/]startup-release.json',
+    # vscode configuration files allow comments
+    r'^tools[\\/]vscode[\\/]',
 ]
 
 # These are not checked on the public chromium-presubmit trybot.
@@ -1107,7 +1138,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/java_cpp_features.pydeps',
     'build/android/gyp/java_cpp_strings.pydeps',
     'build/android/gyp/java_google_api_keys.pydeps',
-    'build/android/gyp/jetify_jar.pydeps',
     'build/android/gyp/jinja_template.pydeps',
     'build/android/gyp/lint.pydeps',
     'build/android/gyp/merge_manifest.pydeps',
@@ -1115,6 +1145,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/prepare_resources.pydeps',
     'build/android/gyp/process_native_prebuilt.pydeps',
     'build/android/gyp/proguard.pydeps',
+    'build/android/gyp/system_image_apks.pydeps',
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
     'build/android/gyp/turbine.pydeps',
     'build/android/gyp/unused_resources.pydeps',
@@ -1124,6 +1155,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/zip.pydeps',
     'build/android/incremental_install/generate_android_manifest.pydeps',
     'build/android/incremental_install/write_installer_json.pydeps',
+    'build/android/pylib/results/presentation/test_results_presentation.pydeps',
     'build/android/resource_sizes.pydeps',
     'build/android/test_runner.pydeps',
     'build/android/test_wrapper/logdog_wrapper.pydeps',
@@ -1371,15 +1403,22 @@ def CheckNoIOStreamInHeaders(input_api, output_api):
     return []
 
 
-def _CheckNoStrCatRedefines(input_api, output_api):
+def CheckNoStrCatRedefines(input_api, output_api):
     """Checks no windows headers with StrCat redefined are included directly."""
     files = []
+    files_to_check = (r'.+%s' % _HEADER_EXTENSIONS,
+                      r'.+%s' % _IMPLEMENTATION_EXTENSIONS)
+    files_to_skip = (input_api.DEFAULT_FILES_TO_SKIP +
+                     _NON_BASE_DEPENDENT_PATHS)
+    sources_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=files_to_check, files_to_skip=files_to_skip)
+
     pattern_deny = input_api.re.compile(
         r'^#include\s*[<"](shlwapi|atlbase|propvarutil|sphelper).h[">]',
         input_api.re.MULTILINE)
     pattern_allow = input_api.re.compile(
         r'^#include\s"base/win/windows_defines.inc"', input_api.re.MULTILINE)
-    for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
+    for f in input_api.AffectedSourceFiles(sources_filter):
         contents = input_api.ReadFile(f)
         if pattern_deny.search(
                 contents) and not pattern_allow.search(contents):
@@ -1529,7 +1568,7 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
 def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
     """Checks to make sure DCHECK_IS_ON() does not skip the parentheses."""
     errors = []
-    pattern = input_api.re.compile(r'DCHECK_IS_ON\b(?!\(\))',
+    pattern = input_api.re.compile(r'\bDCHECK_IS_ON\b(?!\(\))',
                                    input_api.re.MULTILINE)
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
         if (not f.LocalPath().endswith(('.cc', '.mm', '.h'))):
@@ -2214,7 +2253,7 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
     # We rely on Gerrit's code-owners to check approvals.
     # input_api.gerrit is always set for Chromium, but other projects
     # might not use Gerrit.
-    if not input_api.gerrit:
+    if not input_api.gerrit or input_api.no_diffs:
         return []
     if (input_api.change.issue and input_api.gerrit.IsOwnersOverrideApproved(
             input_api.change.issue)):
@@ -2344,9 +2383,9 @@ def CheckSpamLogging(input_api, output_api):
             r"^courgette[\\/]courgette_minimal_tool\.cc$",
             r"^courgette[\\/]courgette_tool\.cc$",
             r"^extensions[\\/]renderer[\\/]logging_native_handler\.cc$",
-            r"^fuchsia[\\/]base[\\/]init_logging.cc$",
-            r"^fuchsia[\\/]engine[\\/]browser[\\/]frame_impl.cc$",
-            r"^fuchsia[\\/]runners[\\/]common[\\/]web_component.cc$",
+            r"^fuchsia_web[\\/]common[\\/]init_logging.cc$",
+            r"^fuchsia_web[\\/]runners[\\/]common[\\/]web_component.cc$",
+            r"^fuchsia_web[\\/]shell[\\/]web_engine_shell.cc$",
             r"^headless[\\/]app[\\/]headless_shell\.cc$",
             r"^ipc[\\/]ipc_logging\.cc$",
             r"^native_client_sdk[\\/]",
@@ -2768,6 +2807,12 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
     Note: if the presubmit is running for commit rather than for upload, this
     only returns True if a security reviewer has also approved the CL.
     """
+    # Owners-Override should bypass all additional OWNERS enforcement checks.
+    # A CR+1 vote will still be required to land this change.
+    if (input_api.change.issue and input_api.gerrit.IsOwnersOverrideApproved(
+            input_api.change.issue)):
+        return True
+
     owner_email, reviewers = (
         input_api.canned_checks.GetCodereviewOwnerAndReviewers(
             input_api,
@@ -2779,10 +2824,16 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
 
 
 @dataclass
+class _SecurityProblemWithItems:
+    problem: str
+    items: Sequence[str]
+
+
+@dataclass
 class _MissingSecurityOwnersResult:
-    owners_file_errors: Sequence[str]
+    owners_file_problems: Sequence[_SecurityProblemWithItems]
     has_security_sensitive_files: bool
-    missing_reviewer_errors: Sequence[str]
+    missing_reviewer_problem: Optional[_SecurityProblemWithItems]
 
 
 def _FindMissingSecurityOwners(input_api,
@@ -2843,7 +2894,7 @@ def _FindMissingSecurityOwners(input_api,
 
     def AddPatternToCheck(file, pattern):
         owners_file = input_api.os_path.join(
-            input_api.os_path.dirname(file.AbsoluteLocalPath()), 'OWNERS')
+            input_api.os_path.dirname(file.LocalPath()), 'OWNERS')
         if owners_file not in to_check:
             to_check[owners_file] = {}
         if pattern not in to_check[owners_file]:
@@ -2854,7 +2905,7 @@ def _FindMissingSecurityOwners(input_api,
                     f'per-file {pattern}=file://{required_owners_file}',
                 ]
             }
-        to_check[owners_file][pattern]['files'].append(file)
+        to_check[owners_file][pattern]['files'].append(file.LocalPath())
         files_to_review.append(file.LocalPath())
 
     # Only enforce security OWNERS rules for a directory if that directory has a
@@ -2881,52 +2932,66 @@ def _FindMissingSecurityOwners(input_api,
                 break
 
     has_security_sensitive_files = bool(to_check)
-    missing_reviewer_errors = []
-    if files_to_review and not _ChangeHasSecurityReviewer(
+
+    # Check if any newly added lines in OWNERS files intersect with required
+    # per-file OWNERS lines. If so, ensure that a security reviewer is included.
+    # This is a hack, but is needed because the OWNERS check (by design) ignores
+    # new OWNERS entries; otherwise, a non-owner could add someone as a new
+    # OWNER and have that newly-added OWNER self-approve their own addition.
+    newly_covered_files = []
+    for file in input_api.AffectedFiles(include_deletes=False):
+        if not file.LocalPath() in to_check:
+            continue
+        for _, line in file.ChangedContents():
+            for _, entry in to_check[file.LocalPath()].items():
+                if line in entry['rules']:
+                    newly_covered_files.extend(entry['files'])
+
+    missing_reviewer_problems = None
+    if newly_covered_files and not _ChangeHasSecurityReviewer(
             input_api, required_owners_file):
-        joined_files_to_review = '\n'.join(f'  {file}'
-                                           for file in files_to_review)
-        missing_reviewer_errors.append(
-            f'Code review from an owner in //{required_owners_file} is required '
-            'for this change for the following files:\n'
-            f'{joined_files_to_review}')
+        missing_reviewer_problems = _SecurityProblemWithItems(
+            f'Review from an owner in {required_owners_file} is required for '
+            'the following newly-added files:',
+            [f'{file}' for file in sorted(set(newly_covered_files))])
 
     # Go through the OWNERS files to check, filtering out rules that are already
     # present in that OWNERS file.
     for owners_file, patterns in to_check.items():
         try:
-            with open(owners_file) as f:
-                lines = set(f.read().splitlines())
-                for entry in patterns.values():
-                    entry['rules'] = [
-                        rule for rule in entry['rules'] if rule not in lines
-                    ]
+            lines = set(
+                input_api.ReadFile(
+                    input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                           owners_file)).splitlines())
+            for entry in patterns.values():
+                entry['rules'] = [
+                    rule for rule in entry['rules'] if rule not in lines
+                ]
         except IOError:
             # No OWNERS file, so all the rules are definitely missing.
             continue
 
     # All the remaining lines weren't found in OWNERS files, so emit an error.
-    owners_file_errors = []
+    owners_file_problems = []
 
     for owners_file, patterns in to_check.items():
         missing_lines = []
         files = []
         for _, entry in patterns.items():
+            files.extend(entry['files'])
             missing_lines.extend(entry['rules'])
-            files.extend(
-                ['  %s' % file.LocalPath() for file in entry['files']])
         if missing_lines:
-            joined_files = '\n'.join(files)
-            joined_missing_lines = '\n'.join(missing_lines)
-            owners_file_errors.append(
-                f'Because of the presence of files:\n{joined_files}\n\n'
-                f'{owners_file} needs the following {len(missing_lines)} '
-                'line(s) added:\n\n'
-                f'{joined_missing_lines}')
+            joined_missing_lines = '\n'.join(line for line in missing_lines)
+            owners_file_problems.append(
+                _SecurityProblemWithItems(
+                    'Found missing OWNERS lines for security-sensitive files. '
+                    f'Please add the following lines to {owners_file}:\n'
+                    f'{joined_missing_lines}\n\nTo ensure security review for:',
+                    files))
 
-    return _MissingSecurityOwnersResult(owners_file_errors,
+    return _MissingSecurityOwnersResult(owners_file_problems,
                                         has_security_sensitive_files,
-                                        missing_reviewer_errors)
+                                        missing_reviewer_problems)
 
 
 def _CheckChangeForIpcSecurityOwners(input_api, output_api):
@@ -2952,9 +3017,8 @@ def _CheckChangeForIpcSecurityOwners(input_api, output_api):
         'third_party/blink/renderer/platform/bindings/*',
         'third_party/protobuf/benchmarks/python/*',
         'third_party/win_build_output/*',
-        # Enums used for web metrics, so no security review needed.
-        'third_party/blink/public/mojom/use_counter/css_property_id.mojom',
-        'third_party/blink/public/mojom/web_feature/web_feature.mojom',
+        # Enum-only mojoms used for web metrics, so no security review needed.
+        'third_party/blink/public/mojom/use_counter/metrics/*',
         # These files are just used to communicate between class loaders running
         # in the same process.
         'weblayer/browser/java/org/chromium/weblayer_private/interfaces/*',
@@ -3015,42 +3079,39 @@ def CheckSecurityOwners(input_api, output_api):
 
     results = []
 
-    # Ensure that a security reviewer is included as a CL reviewer. This is a
-    # hack, but is needed because the OWNERS check (by design) ignores new
-    # OWNERS entries; otherwise, a non-owner could add someone as a new OWNER
-    # and have that newly-added OWNER self-approve their own addition.
-    missing_reviewer_errors = []
-    missing_reviewer_errors.extend(ipc_results.missing_reviewer_errors)
-    missing_reviewer_errors.extend(fuchsia_results.missing_reviewer_errors)
+    missing_reviewer_problems = []
+    if ipc_results.missing_reviewer_problem:
+        missing_reviewer_problems.append(ipc_results.missing_reviewer_problem)
+    if fuchsia_results.missing_reviewer_problem:
+        missing_reviewer_problems.append(
+            fuchsia_results.missing_reviewer_problem)
 
-    if missing_reviewer_errors:
-        # Missing reviewers are only a warning at upload time; otherwise, it'd
-        # be impossible to upload a change.
-        if input_api.is_committing:
-            make_presubmit_message = output_api.PresubmitError
-        else:
-            make_presubmit_message = output_api.PresubmitPromptWarning
+    # Missing reviewers are an error unless there's no issue number
+    # associated with this branch; in that case, the presubmit is being run
+    # with --all or --files.
+    #
+    # Note that upload should never be an error; otherwise, it would be
+    # impossible to upload changes at all.
+    if input_api.is_committing and input_api.change.issue:
+        make_presubmit_message = output_api.PresubmitError
+    else:
+        make_presubmit_message = output_api.PresubmitNotifyResult
+    for problem in missing_reviewer_problems:
         results.append(
-            make_presubmit_message(
-                'Found missing security reviewers:',
-                long_text='\n\n'.join(missing_reviewer_errors)))
+            make_presubmit_message(problem.problem, items=problem.items))
 
-    owners_file_errors = []
-    owners_file_errors.extend(ipc_results.owners_file_errors)
-    owners_file_errors.extend(fuchsia_results.owners_file_errors)
+    owners_file_problems = []
+    owners_file_problems.extend(ipc_results.owners_file_problems)
+    owners_file_problems.extend(fuchsia_results.owners_file_problems)
 
-    if owners_file_errors:
+    for problem in owners_file_problems:
         # Missing per-file rules are always an error. While swarming and caching
         # means that uploading a patchset with updated OWNERS files and sending
         # it to the CQ again should not have a large incremental cost, it is
         # still frustrating to discover the error only after the change has
         # already been uploaded.
         results.append(
-            output_api.PresubmitError(
-                'Found OWNERS files with missing per-file rules for '
-                'security-sensitive files.\nPlease update the OWNERS files '
-                'below to add the missing rules:',
-                long_text='\n\n'.join(owners_file_errors)))
+            output_api.PresubmitError(problem.problem, items=problem.items))
 
     return results
 
@@ -4605,31 +4666,33 @@ def ChecksCommon(input_api, output_api):
             ],
             non_inclusive_terms=_NON_INCLUSIVE_TERMS))
 
-    for f in input_api.AffectedFiles():
-        path, name = input_api.os_path.split(f.LocalPath())
-        if name == 'PRESUBMIT.py':
-            full_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                               path)
-            test_file = input_api.os_path.join(path, 'PRESUBMIT_test.py')
-            if f.Action() != 'D' and input_api.os_path.exists(test_file):
-                # The PRESUBMIT.py file (and the directory containing it) might
-                # have been affected by being moved or removed, so only try to
-                # run the tests if they still exist.
-                use_python3 = False
-                with open(f.LocalPath()) as fp:
-                    use_python3 = any(
-                        line.startswith('USE_PYTHON3 = True')
-                        for line in fp.readlines())
+    presubmit_py_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=[r'PRESUBMIT\.py$'])
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=presubmit_py_filter):
+        full_path = input_api.os_path.dirname(f.AbsoluteLocalPath())
+        test_file = input_api.os_path.join(full_path, 'PRESUBMIT_test.py')
+        # The PRESUBMIT.py file (and the directory containing it) might have
+        # been affected by being moved or removed, so only try to run the tests
+        # if they still exist.
+        if not input_api.os_path.exists(test_file):
+            continue
 
-                results.extend(
-                    input_api.canned_checks.RunUnitTestsInDirectory(
-                        input_api,
-                        output_api,
-                        full_path,
-                        files_to_check=[r'^PRESUBMIT_test\.py$'],
-                        run_on_python2=not use_python3,
-                        run_on_python3=use_python3,
-                        skip_shebang_check=True))
+        use_python3 = False
+        with open(f.LocalPath()) as fp:
+            use_python3 = any(
+                line.startswith('USE_PYTHON3 = True')
+                for line in fp.readlines())
+
+        results.extend(
+            input_api.canned_checks.RunUnitTestsInDirectory(
+                input_api,
+                output_api,
+                full_path,
+                files_to_check=[r'^PRESUBMIT_test\.py$'],
+                run_on_python2=not use_python3,
+                run_on_python3=use_python3,
+                skip_shebang_check=True))
     return results
 
 
@@ -5586,7 +5649,7 @@ def CheckStableMojomChanges(input_api, output_api):
         include_deletes=True,
         file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
 
-    if not changed_mojoms:
+    if not changed_mojoms or input_api.no_diffs:
         return []
 
     delta = []
@@ -5816,7 +5879,7 @@ def CheckMPArchApiUsage(input_api, output_api):
         'IsMainFrame',
     ]
     concerning_blink_frame_methods = [
-        'IsCrossOriginToMainFrame',
+        'IsCrossOriginToNearestMainFrame',
     ]
     concerning_method_pattern = input_api.re.compile(r'(' + r'|'.join(
         item for sublist in [
@@ -5953,3 +6016,67 @@ def CheckPythonShebang(input_api, output_api):
                 "Please use '#!/usr/bin/env python/2/3' as the shebang of %s" %
                 file))
     return result
+
+
+def CheckBatchAnnotation(input_api, output_api):
+    """Checks that tests have either @Batch or @DoNotBatch annotation. If this
+    is not an instrumentation test, disregard."""
+
+    batch_annotation = input_api.re.compile(r'^\s*@Batch')
+    do_not_batch_annotation = input_api.re.compile(r'^\s*@DoNotBatch')
+    robolectric_test = input_api.re.compile(r'[rR]obolectric')
+    test_class_declaration = input_api.re.compile(r'^\s*public\sclass.*Test')
+    uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
+
+    missing_annotation_errors = []
+    extra_annotation_errors = []
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+            files_to_check=[r'.*Test\.java$'])
+
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        batch_matched = None
+        do_not_batch_matched = None
+        is_instrumentation_test = True
+        for line in f.NewContents():
+            if robolectric_test.search(line) or uiautomator_test.search(line):
+                # Skip Robolectric and UiAutomator tests.
+                is_instrumentation_test = False
+                break
+            if not batch_matched:
+                batch_matched = batch_annotation.search(line)
+            if not do_not_batch_matched:
+                do_not_batch_matched = do_not_batch_annotation.search(line)
+            test_class_declaration_matched = test_class_declaration.search(
+                line)
+            if test_class_declaration_matched:
+                break
+        if (is_instrumentation_test and
+            not batch_matched and
+            not do_not_batch_matched):
+          missing_annotation_errors.append(str(f.LocalPath()))
+        if (not is_instrumentation_test and
+            (batch_matched or
+             do_not_batch_matched)):
+          extra_annotation_errors.append(str(f.LocalPath()))
+
+    results = []
+
+    if missing_annotation_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Instrumentation tests should use either @Batch or @DoNotBatch. If tests are not
+safe to run in batch, please use @DoNotBatch with reasons.
+""", missing_annotation_errors))
+    if extra_annotation_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Robolectric tests do not need a @Batch or @DoNotBatch annotations.
+""", extra_annotation_errors))
+
+    return results

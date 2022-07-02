@@ -34,11 +34,9 @@ const sync_pb::SharingSpecificFields::EnabledFeatures
     kSharingEnabledFeatures[] = {
         sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
 
-using testing::_;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
-using testing::ReturnRef;
 
 class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
  public:

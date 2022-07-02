@@ -92,46 +92,6 @@
     , '''
   </message>
 
-  <!-- These are all variants of the same logical field: The major subdivision below the "country" level. -->
-  <message name="IDS_AUTOFILL_FIELD_LABEL_STATE" desc="The label of the State entry.">
-    State
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_AREA" desc="The label of the Area entry.">
-    Area
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_COUNTY" desc="The label of the County entry.">
-    County
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_DEPARTMENT" desc="The label of the Department entry.">
-    Department
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_DISTRICT" desc="The label of the District entry.">
-    District
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_EMIRATE" desc="The label of the Emirate entry.">
-    Emirate
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_ISLAND" desc="The label of the Island entry.">
-    Island
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_PARISH" desc="The label of the Parish entry.">
-    Parish
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_PREFECTURE" desc="The label of the Prefecture entry.">
-    Prefecture
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_PROVINCE" desc="The label of the Province entry.">
-    Province
-  </message>
-  <!-- End state variants. -->
-
-  <message name="IDS_AUTOFILL_FIELD_LABEL_ZIP_CODE" desc="The label of the ZIP code entry.">
-    ZIP code
-  </message>
-  <message name="IDS_AUTOFILL_FIELD_LABEL_POSTAL_CODE" desc="The label of the Postal code entry.">
-    Postal code
-  </message>
-
   <message name="IDS_AUTOFILL_HIDE_SUGGESTIONS" desc="The text displayed at the Autofill popup to allow the user to hide the suggestions menu." meaning="Hides the suggestion list.">
     Hide suggestions
   </message>
@@ -153,7 +113,6 @@
       Manage passwords...
     </message>
   </if>
-  
   <if expr="use_titlecase">
     <message name="IDS_AUTOFILL_MANAGE_ADDRESSES" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses in the user profile that can be used by Chrome Autofill.">
       Manage Addresses...

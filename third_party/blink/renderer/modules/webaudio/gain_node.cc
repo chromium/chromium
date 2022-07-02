@@ -31,13 +31,19 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultGainValue = 1.0;
+
+}  // namespace
+
 GainNode::GainNode(BaseAudioContext& context)
     : AudioNode(context),
       gain_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeGainGain,
-          1.0,
+          kDefaultGainValue,
           AudioParamHandler::AutomationRate::kAudio,
           AudioParamHandler::AutomationRateMode::kVariable)) {
   SetHandler(

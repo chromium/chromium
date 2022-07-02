@@ -14,14 +14,15 @@
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
     : browser_(browser) {}
 
-BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() {}
+BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() = default;
 
 bool BrowserSyncedWindowDelegate::IsTabPinned(
     const sync_sessions::SyncedTabDelegate* tab) const {
   for (int i = 0; i < browser_->tab_strip_model()->count(); i++) {
     sync_sessions::SyncedTabDelegate* current = GetTabAt(i);
-    if (tab == current)
+    if (tab == current) {
       return browser_->tab_strip_model()->IsTabPinned(i);
+    }
   }
   // The window and tab are not always updated atomically, so it's possible
   // one of the values was stale. We'll retry later, just ignore for now.

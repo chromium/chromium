@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
@@ -65,7 +66,7 @@ class WaylandBufferHandle {
   // wl_buffer_listener:
   static void BufferRelease(void* data, struct wl_buffer* wl_buffer);
 
-  const WaylandBufferBacking* backing_;
+  raw_ptr<const WaylandBufferBacking> backing_;
 
   // A wl_buffer backed by the dmabuf/shm |backing_| created on the GPU side.
   wl::Object<struct wl_buffer> wl_buffer_;

@@ -11,21 +11,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class HostContentSettingsMap;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace subresource_filter {
 
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
 //
-// Site metadata is stored in two formats as a base::DictionaryValue:
+// Site metadata is stored in two formats as a base::Value::Dict:
 // -  V1 (or legacy) metadata, which uses the presence of metadata to indicate
 //    activation due to safe browsing and may store additional data for
 //    the time since UI was shown, see OnDidShowUI. The absence of metadata
@@ -79,7 +77,7 @@ class SubresourceFilterContentSettingsManager {
   void AllowlistSite(const GURL& url);
 
   // Public for testing.
-  std::unique_ptr<base::DictionaryValue> GetSiteMetadata(const GURL& url) const;
+  absl::optional<base::Value::Dict> GetSiteMetadata(const GURL& url) const;
 
   // Specific logic for more intelligent UI.
   void OnDidShowUI(const GURL& url);
@@ -108,7 +106,7 @@ class SubresourceFilterContentSettingsManager {
       const GURL& url,
       bool is_activated,
       ActivationSource activation_source,
-      std::unique_ptr<base::DictionaryValue> additional_metadata = nullptr);
+      absl::optional<base::Value::Dict> additional_metadata = absl::nullopt);
 
   // Returns the activation status based on the |url|'s site metadata. See
   // class comment for information on the metadata data model.
@@ -134,19 +132,18 @@ class SubresourceFilterContentSettingsManager {
 
   // Overwrites existing site metadata for testing.
   void SetSiteMetadataForTesting(const GURL& url,
-                                 std::unique_ptr<base::DictionaryValue> dict);
+                                 absl::optional<base::Value::Dict> dict);
 
  private:
-  void SetSiteMetadata(const GURL& url,
-                       std::unique_ptr<base::DictionaryValue> dict);
+  void SetSiteMetadata(const GURL& url, absl::optional<base::Value::Dict> dict);
 
-  std::unique_ptr<base::DictionaryValue> CreateMetadataDictWithActivation(
-      bool is_activated);
+  base::Value::Dict CreateMetadataDictWithActivation(bool is_activated);
 
   // Whether the site metadata stored in |dict| is being persisted with an
   // expiry time set by an ads intervention.
-  bool ShouldDeleteDataWithNoActivation(base::DictionaryValue* dict,
-                                        ActivationSource activation_source);
+  bool ShouldDeleteDataWithNoActivation(
+      const absl::optional<base::Value::Dict>& dict,
+      ActivationSource activation_source);
 
   raw_ptr<HostContentSettingsMap> settings_map_;
 

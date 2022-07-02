@@ -61,9 +61,11 @@ class TestVideoPictureInPictureWindowController
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
 
  private:
   raw_ptr<content::WebContents> web_contents_;
+  gfx::Rect source_bounds_;
 };
 
 class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {

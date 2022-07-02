@@ -91,3 +91,19 @@ tflite_file(
     name = "30k-clean",
     extension = "model",
 )
+
+filegroup(
+    name = "test_indices",
+    srcs = glob([
+        "*.ldb",
+    ]),
+)
+
+filegroup(
+    name = "test_searchers",
+    srcs = [
+        "mobilebert_searcher.tflite",
+        "regex_searcher.tflite",
+        "universal_sentence_encoder_searcher.tflite",
+    ],
+)

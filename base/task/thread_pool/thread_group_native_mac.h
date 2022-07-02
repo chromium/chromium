@@ -25,10 +25,15 @@ namespace internal {
 // https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationQueues/OperationQueues.html
 class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
  public:
-  ThreadGroupNativeMac(ThreadPriority priority_hint,
-                       TrackedRef<TaskTracker> task_tracker,
-                       TrackedRef<Delegate> delegate,
-                       ThreadGroup* predecessor_thread_group = nullptr);
+  // `io_thread_task_runner` is used to setup FileDescriptorWatcher on worker
+  // threads. `io_thread_task_runner` must refer to a Thread with
+  // MessgaePumpType::IO
+  ThreadGroupNativeMac(
+      ThreadPriority priority_hint,
+      scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
+      TrackedRef<TaskTracker> task_tracker,
+      TrackedRef<Delegate> delegate,
+      ThreadGroup* predecessor_thread_group = nullptr);
 
   ThreadGroupNativeMac(const ThreadGroupNativeMac&) = delete;
   ThreadGroupNativeMac& operator=(const ThreadGroupNativeMac&) = delete;
@@ -48,6 +53,9 @@ class BASE_EXPORT ThreadGroupNativeMac : public ThreadGroupNative {
 
   // Dispatch group to enable synchronization.
   ScopedDispatchObject<dispatch_group_t> group_;
+
+  // Service thread task runner.
+  scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
 };
 
 using ThreadGroupNativeImpl = ThreadGroupNativeMac;

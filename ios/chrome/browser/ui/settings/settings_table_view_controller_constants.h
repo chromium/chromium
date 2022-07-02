@@ -148,4 +148,11 @@ extern NSString* const kDefaultBrowserSettingsTableViewId;
 
 extern NSString* const kSettingsHttpsOnlyModeCellId;
 
+// The accessibility identifier of the Incognito interstitial setting.
+extern NSString* const kSettingsIncognitoInterstitialId;
+
+// The accessibility identifier of the Incognito interstitial setting
+// when the setting is disabled because of Enterprise policy.
+extern NSString* const kSettingsIncognitoInterstitialDisabledId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

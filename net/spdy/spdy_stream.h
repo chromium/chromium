@@ -73,7 +73,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // Delegate handles protocol specific behavior of spdy stream.
   class NET_EXPORT_PRIVATE Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
     virtual NetLogSource source_dependency() const = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // SpdyStream constructor
@@ -474,11 +474,11 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   const SpdyStreamType type_;
 
-  spdy::SpdyStreamId stream_id_;
+  spdy::SpdyStreamId stream_id_ = 0;
   const GURL url_;
   RequestPriority priority_;
 
-  bool send_stalled_by_flow_control_;
+  bool send_stalled_by_flow_control_ = false;
 
   // Current send window size.
   int32_t send_window_size_;
@@ -496,7 +496,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // When bytes are consumed, SpdyIOBuffer destructor calls back to SpdySession,
   // and this member keeps count of them until the corresponding WINDOW_UPDATEs
   // are sent.
-  int32_t unacked_recv_window_bytes_;
+  int32_t unacked_recv_window_bytes_ = 0;
 
   // Time of the last WINDOW_UPDATE for the receive window
   base::TimeTicks last_recv_window_update_;
@@ -504,16 +504,16 @@ class NET_EXPORT_PRIVATE SpdyStream {
   const base::WeakPtr<SpdySession> session_;
 
   // The transaction should own the delegate.
-  raw_ptr<SpdyStream::Delegate> delegate_;
+  raw_ptr<SpdyStream::Delegate> delegate_ = nullptr;
 
   // The headers for the request to send.
-  bool request_headers_valid_;
+  bool request_headers_valid_ = false;
   spdy::Http2HeaderBlock request_headers_;
 
   // Data waiting to be sent, and the close state of the local endpoint
   // after the data is fully written.
   scoped_refptr<DrainableIOBuffer> pending_send_data_;
-  SpdySendStatus pending_send_status_;
+  SpdySendStatus pending_send_status_ = MORE_DATA_TO_SEND;
 
   // Data waiting to be received, and the close state of the remote endpoint
   // after the data is fully read. Specifically, data received before the
@@ -526,10 +526,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
   base::Time request_time_;
 
   spdy::Http2HeaderBlock response_headers_;
-  ResponseState response_state_;
+  ResponseState response_state_ = READY_FOR_HEADERS;
   base::Time response_time_;
 
-  State io_state_;
+  State io_state_ = STATE_IDLE;
 
   NetLogWithSource net_log_;
 
@@ -553,19 +553,19 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Number of bytes that have been received on this stream, including frame
   // overhead and headers.
-  int64_t raw_received_bytes_;
+  int64_t raw_received_bytes_ = 0;
   // Number of bytes that have been sent on this stream, including frame
   // overhead and headers.
-  int64_t raw_sent_bytes_;
+  int64_t raw_sent_bytes_ = 0;
 
   // Number of data bytes that have been received on this stream, not including
   // frame overhead. Note that this does not count headers.
-  int recv_bytes_;
+  int recv_bytes_ = 0;
 
   // Guards calls of delegate write handlers ensuring |this| is not destroyed.
   // TODO(jgraettinger): Consider removing after crbug.com/35511 is tracked
   // down.
-  bool write_handler_guard_;
+  bool write_handler_guard_ = false;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 

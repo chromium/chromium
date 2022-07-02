@@ -22,6 +22,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -265,7 +266,7 @@ struct AppShimManager::ProfileState {
   AppShimHost* GetHost() const;
 
   // Weak, owns |this|.
-  AppShimManager::AppState* const app_state;
+  const raw_ptr<AppShimManager::AppState> app_state;
 
   // The AppShimHost for apps that are not multi-profile.
   const std::unique_ptr<AppShimHost> single_profile_host;
@@ -722,9 +723,7 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
            it != browsers->end_browsers_ordered_by_activation(); ++it) {
         if ((*it)->profile() != profile)
           continue;
-        if (!(*it)->app_controller())
-          continue;
-        if ((*it)->app_controller()->app_id() != params.app_id)
+        if (!web_app::AppBrowserController::IsForWebApp(*it, params.app_id))
           continue;
         browser = *it;
         break;

@@ -9,11 +9,12 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/util/resource_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -71,7 +72,7 @@ SkColor GetBackgroundColor(int index) {
   DCHECK_LT(index, static_cast<int>(std::size(kBackgroundColors)));
 
   if (features::IsDarkLightModeEnabled()) {
-    return ColorProvider::Get()->IsDarkModeEnabled()
+    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                ? kBackgroundColors[index].dark
                : kBackgroundColors[index].light;
   }
@@ -93,7 +94,7 @@ SkColor GetForegroundColor(int index) {
   DCHECK_LT(index, static_cast<int>(std::size(kForegroundColors)));
 
   if (features::IsDarkLightModeEnabled()) {
-    return ColorProvider::Get()->IsDarkModeEnabled()
+    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                ? kForegroundColors[index].dark
                : kForegroundColors[index].light;
   }
@@ -183,7 +184,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing::Get(this)->SetColor(gfx::kGoogleBlue300);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshOnboardingFocusRing);
 
   // Ink Drop.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

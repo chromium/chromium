@@ -57,12 +57,11 @@ class PredictionModelFetcherTest : public testing::Test {
 
  protected:
   bool FetchModels(const std::vector<proto::ModelInfo> models_request_info,
-                   const std::vector<proto::FieldTrial>& active_field_trials,
                    proto::RequestContext request_context,
                    const std::string& locale) {
     bool status =
         prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-            models_request_info, active_field_trials, request_context, locale,
+            models_request_info, request_context, locale,
             base::BindOnce(&PredictionModelFetcherTest::OnModelsFetched,
                            base::Unretained(this)));
     RunUntilIdle();
@@ -110,7 +109,7 @@ TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {
   proto::ModelInfo model_info;
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
+  EXPECT_TRUE(FetchModels({model_info},
                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   VerifyHasPendingFetchRequests();
@@ -127,7 +126,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
   proto::ModelInfo model_info;
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
+  EXPECT_TRUE(FetchModels({model_info},
                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   // Send a 404 to HintsFetcher.
@@ -159,7 +158,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   proto::ModelInfo model_info;
   model_info.set_optimization_target(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_TRUE(FetchModels({model_info}, /*active_field_trials=*/{},
+  EXPECT_TRUE(FetchModels({model_info},
                           proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                           "en-US"));
   VerifyHasPendingFetchRequests();
@@ -170,9 +169,7 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
 TEST_F(PredictionModelFetcherTest, EmptyModelInfo) {
   base::HistogramTester histogram_tester;
   std::string response_content;
-  proto::FieldTrial field_trial;
-  field_trial.set_name_hash(123);
-  EXPECT_FALSE(FetchModels(/*models_request_info=*/{}, {field_trial},
+  EXPECT_FALSE(FetchModels(/*models_request_info=*/{},
                            proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS,
                            "en-US"));
 

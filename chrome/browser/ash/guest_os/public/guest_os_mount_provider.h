@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_MOUNT_PROVIDER_H_
 
 #include <string>
+
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
 class Profile;
@@ -18,6 +21,8 @@ namespace guest_os {
 class GuestOsMountProviderInner;
 class GuestOsMountProvider {
  public:
+  using PrepareCallback = base::OnceCallback<
+      void(bool success, int cid, int port, base::FilePath homedir)>;
   GuestOsMountProvider();
   virtual ~GuestOsMountProvider();
 
@@ -30,17 +35,7 @@ class GuestOsMountProvider {
   // The localised name to show in UI elements such as the files app sidebar.
   virtual std::string DisplayName() = 0;
 
-  // TODO(crbug/1293229): Make ContainerId generic and in guest_os namespace.
-  virtual crostini::ContainerId ContainerId() = 0;
-
-  // TODO(crbug/1293229): How exactly we perform an SFTP mount is TBD, so these
-  // are subject to change. For now we put random fake values in so we don't
-  // need to keep changing subclasses as we figure out the format. Assuming we
-  // keep a similar format to now we get cid from concierge or cicerone, port
-  // from garcon and homedir is either hardcoded or from tremplin or garcon.
-  virtual int cid();
-  virtual int port();
-  virtual base::FilePath homedir();
+  virtual guest_os::GuestId GuestId() = 0;
 
   // The type of VM which this provider creates mounts for. Needed for e.g.
   // enterprise policy which applies different rules to each disk volume
@@ -53,8 +48,27 @@ class GuestOsMountProvider {
   // Requests the provider to unmount.
   void Unmount();
 
+  // Creates a file watcher for the given path, specified by `mount_path` as the
+  // path to where the volume is mounted and `relative_path` is the path to
+  // watch relative to `mount_path`. The watcher starts off idle, call Watch to
+  // start watching.
+  virtual std::unique_ptr<GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) = 0;
+
+ protected:
+  // Called prior to mounting a volume, for the mount provider to do any
+  // needed setup (e.g. ensure the VM is running). Must call `callback` once
+  // finished to actually mount. On error set `success` to false and the
+  // mount will be aborted, on success set `success` to true, set `cid` and
+  // `port` to the address that the guests's sftp server is listening on,
+  // and set `homedir` to the path, relative to the VM root, which is being
+  // shared.
+  virtual void Prepare(PrepareCallback callback) = 0;
+
  private:
   std::unique_ptr<GuestOsMountProviderInner> callback_;
+  base::WeakPtrFactory<GuestOsMountProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace guest_os

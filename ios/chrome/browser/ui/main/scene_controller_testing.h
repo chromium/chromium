@@ -21,8 +21,8 @@ struct UrlLoadParams;
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;
 
-// Dismisses all modal dialogs, excluding the omnibox if |dismissOmnibox| is
-// NO, then call |completion|.
+// Dismisses all modal dialogs, excluding the omnibox if `dismissOmnibox` is
+// NO, then call `completion`.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
 

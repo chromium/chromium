@@ -482,7 +482,47 @@ The updater will not delete this file.
 part of pings to the update server.
 
 ### Updating Applications
-TODO(crbug.com/1035895): Document scheduler.
+For every updater install, there is a timed scheduler that invokes the updater
+to check for updates. The default period is for the scheduler to call `--wake`
+on the updater every hour. Once the updater wakes, it will check if it has been
+long enough since the last update check to try again. The default is every 5
+hours to do an update check.
+
+#### Windows
+Windows utilizes the Task Scheduler and the Windows Task Scheduler API to create
+a scheduler.
+
+#### Mac
+On Mac, the scheduler is implemented via LaunchAgents (for user-level installs)
+and LaunchDaemons (for system-level installs). The scheduled task is defined by
+the `org.chromium.ChromiumUpdater.wake.1.2.3.4.plist`, which contains a Label
+corresponding to the name of the plist, program arguments, which contains the
+path to the executable and the arguments it'll run with, and a StartInterval,
+which denotes interval for when launchctl should invoke the program. An example:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AbandonProcessGroup</key>
+	<true/>
+	<key>Label</key>
+	<string>org.chromium.ChromiumUpdater.wake.1.2.3.4</string>
+	<key>LimitLoadToSessionType</key>
+	<string>Aqua</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/user/Library/Chromium/ChromiumUpdater/1.2.3.4/ChromiumUpdater.app/Contents/MacOS/ChromiumUpdater</string>
+		<string>--wake</string>
+		<string>--vmodule=*/chrome/updater/*=2,*/components/update_client/*=2</string>
+		<string>--enable-logging</string>
+	</array>
+	<key>StartInterval</key>
+	<integer>3600</integer>
+</dict>
+</plist>
+```
 
 TODO(crbug.com/1035895): Document differential updates.
 
@@ -519,7 +559,35 @@ TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.
 #### IPC
 TODO(crbug.com/1035895): Document COM.
 
-TODO(crbug.com/1035895): Document XPC.
+##### XPC
+On Mac, the IPC utilized for the updater is XPC, which is the macOS native IPC
+system controlled by launchd. The main portion to utilize XPC is to create
+launch agent plists under `${HOME}/Library/LaunchAgents` for user level installs
+and launch daemon plists under `/Library/LaunchDaemons` for system level
+installs.
+
+The updater uses multiple layers of XPC to start-up separate processes
+that are responsible for different actions. There are two XPC plists that the
+updater creates for the server. The first is the `.internal` plist, which goes
+through some control tasks first, and then there's the `.service` plist, which
+actually performs the update check and the update itself.
+
+The XPC interface is also utilized to communicate between the browser and the
+updater for on-demand updates. The protocol utilized by the browser has to be in
+sync with the updater's protocol, or else the XPC call will fail. The same
+`.service` launchd plist is utilized to communicate between the browser and the
+updater for the on-demand updates.
+
+Lastly, the XPC interface connects the browser and updater to promote the
+updater to a system-level updater. Promotion in this context means that the
+browser will install a system-level updater. This process entails the browser
+showing UI to the user on the About Page to prompt the user to promote. When the
+user accepts, the browser will then ask the user to elevate to allow root
+privileges so that a system-level updater can be installed. Inside of the
+browser, there exists a Privileged Helper tool executable. This is installed
+from the browser if promotion is selected via SMJobBless. When the Privileged
+Helper tool is installed, the browser can make an XPC connection to it and
+invoke a call to start the system-level updater installation process.
 
 TODO(crbug.com/1035895): Document any IPC fallbacks that exist.
 

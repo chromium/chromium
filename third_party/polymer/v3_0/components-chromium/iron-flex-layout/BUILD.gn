@@ -6,10 +6,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_library("iron-flex-layout") {
-  deps = [ "../polymer:polymer_bundled" ]
-}
-
 js_library("iron-flex-layout-classes") {
   deps = [ "../polymer:polymer_bundled" ]
 }

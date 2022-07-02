@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/network/managed_cellular_pref_handler.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_policy_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"

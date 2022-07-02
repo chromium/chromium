@@ -43,7 +43,7 @@ specific_include_rules = {
     "+content/shell",
   ],
   "renderer_main\.cc": [
-   "+chromeos/memory/userspace_swap",
+   "+chromeos/ash/components/memory/userspace_swap",
   ],
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",

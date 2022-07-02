@@ -101,14 +101,16 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
   // Try a single-digit month.
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(3);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   content_index = GetIndexOfValue(field.options, field.value);
   EXPECT_EQ(u"Mar", field.options[content_index].content);
 
   // Try a two-digit month.
   card.SetExpirationMonth(11);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   content_index = GetIndexOfValue(field.options, field.value);
   EXPECT_EQ(u"Nov", field.options[content_index].content);
@@ -165,21 +167,21 @@ TEST_F(AutofillFieldFillerTest, Type) {
   EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
 
   // Set the server type and check it.
-  prediction.set_type(ADDRESS_BILLING_LINE1);
+  prediction.set_type(ADDRESS_HOME_LINE1);
   field.set_server_predictions({prediction});
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
 
   // Checks that overall_type trumps everything.
-  field.SetTypeTo(AutofillType(ADDRESS_BILLING_ZIP));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
 
   // Checks that setting server type resets overall type.
-  prediction.set_type(ADDRESS_BILLING_LINE1);
+  prediction.set_type(ADDRESS_HOME_LINE1);
   field.set_server_predictions({prediction});
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
 
   // Remove the server type to make sure the heuristic type is preserved.
   prediction.set_type(NO_SERVER_DATA);
@@ -188,9 +190,9 @@ TEST_F(AutofillFieldFillerTest, Type) {
   EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
 
   // Checks that overall_type trumps everything.
-  field.SetTypeTo(AutofillType(ADDRESS_BILLING_ZIP));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressHome, field.Type().group());
 
   // Set the heuristic type and check it and reset overall Type.
   field.set_heuristic_type(GetActivePatternSource(), NAME_FIRST);
@@ -372,11 +374,30 @@ TEST_F(AutofillFieldFillerTest,
   // Non credit card related field.
   address()->SetRawInfo(NAME_FIRST, u"Test");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled in all circumstances.
   EXPECT_EQ(u"Test", field.value);
+}
+
+// Verify that a forced fill_value takes precedence.
+TEST_F(AutofillFieldFillerTest, FillFormField_ForcedFillValues) {
+  AutofillField field;
+  field.set_heuristic_type(GetActivePatternSource(), NAME_FIRST);
+
+  // Non credit card related field.
+  address()->SetRawInfo(NAME_FIRST, u"Test");
+  std::map<FieldGlobalId, std::u16string> forced_fill_values;
+  forced_fill_values[field.global_id()] = u"Test2";
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, address(), forced_fill_values, &field,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kFill);
+
+  // Verify that the field is filled with the overridden value.
+  EXPECT_EQ(u"Test2", field.value);
 }
 
 // Verify that credit card related fields with the autocomplete attribute
@@ -389,7 +410,8 @@ TEST_F(AutofillFieldFillerTest, FillFormField_AutocompleteOff_CreditCardField) {
   // Credit card related field.
   credit_card()->SetNumber(u"4111111111111111");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled.
@@ -408,7 +430,8 @@ TEST_F(AutofillFieldFillerTest,
   // Credit card related field.
   credit_card()->SetNumber(u"0123456789999999");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled with the fourth digit of the credit card
@@ -428,7 +451,8 @@ TEST_F(AutofillFieldFillerTest,
   // Credit card related field.
   credit_card()->SetNumber(u"0123456789999999");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled with the full credit card number.
@@ -447,7 +471,8 @@ TEST_F(AutofillFieldFillerTest,
   // Credit card related field.
   credit_card()->SetNumber(u"0123456789999999");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled with the third digit of the credit card
@@ -464,7 +489,8 @@ TEST_F(AutofillFieldFillerTest, FillFormField_MaxLength_CreditCardField) {
   // Credit card related field.
   credit_card()->SetNumber(u"4111111111111111");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
 
   // Verify that the field is filled with only the first digit of the credit
@@ -480,7 +506,8 @@ TEST_F(AutofillFieldFillerTest, FillFormField_Preview_CreditCardField) {
   // Credit card related field.
   credit_card()->SetNumber(u"4111111111111111");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, credit_card(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, credit_card(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview);
 
   // Verify that the field contains 4 but no more than 4 digits.
@@ -531,7 +558,8 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(test_case.expected_value, field.value);
 }
@@ -596,7 +624,8 @@ TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"12/2023");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(test_case.expected_value, field.value);
 }
@@ -641,6 +670,7 @@ struct FillUtilExpirationDateTestCase {
   size_t field_max_length;
   std::u16string expected_value;
   bool expected_response;
+  const char* opt_label = nullptr;
 };
 
 class ExpirationDateTest
@@ -656,12 +686,22 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
+  base::test::ScopedFeatureList enabled;
+  if (test_case.opt_label) {
+    field.label = base::UTF8ToUTF16(test_case.opt_label);
+    // We take the addition of label also as an indication to test the
+    // features::kAutofillFillCreditCardAsPerFormatString feature. When this
+    // lands, we can just drop all references to |enabled| from this function.
+    enabled.InitAndEnableFeature(
+        features::kAutofillFillCreditCardAsPerFormatString);
+  }
+
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"03/2022");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  bool response = filler.FillFormField(field, &card, &field,
-                                       /*cvc=*/std::u16string(),
-                                       mojom::RendererFormDataAction::kFill);
+  bool response = filler.FillFormField(
+      field, &card, /*forced_fill_values=*/{}, &field,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(test_case.expected_value, field.value);
   EXPECT_EQ(response, test_case.expected_response);
 }
@@ -730,8 +770,51 @@ INSTANTIATE_TEST_SUITE_P(
         FillUtilExpirationDateTestCase{
             HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 7, u"03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022",
-            true}));
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022", true},
+
+        // Tests for features::kAutofillFillCreditCardAsPerFormatString:
+
+        // Base case works regardless of captialization.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "mm/yy"},
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "MM/YY"},
+        // Even if we expect a 4 digit expiration date, we follow the
+        // placeholder.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 0, u"03/22", true,
+            "MM/YY"},
+        // Whitespaces are respected.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03 / 22", true,
+            "MM / YY"},
+        // Whitespaces are stripped if that makes the string fit.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, u"03/22", true,
+            "MM / YY"},
+        // Different separators work.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-22", true,
+            "MM-YY"},
+        // Four year expiration years work.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-2022", true,
+            "MM-YYYY"},
+        // Some extra text around the pattern does not matter.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "Credit card in format MM/YY."},
+        // Fallback to the length based filling in case the maxlength is too
+        // low.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            "MM/YYYY"},
+        // Empty strings are handled gracefully.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            ""}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
   std::vector<const char*> kOptions = {
@@ -752,7 +835,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
 
   address()->SetRawInfo(NAME_FIRST, u"Meenie");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Meenie", field.value);
 }
@@ -775,7 +859,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
 
   address()->SetRawInfo(NAME_FIRST, u"Miney");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"2", field.value);  // Corresponds to "Miney".
 }
@@ -843,7 +928,8 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   AutofillProfile address = test::GetFullProfile();
   address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   // nullptr means we expect them not to match without normalization.
   if (test_case.expected_value_without_normalization != nullptr) {
@@ -855,9 +941,9 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   canadian_address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
   // Fill a first time without loading the rules for the region.
   FieldFiller canadian_filler(/*app_locale=*/"en-US", normalizer());
-  canadian_filler.FillFormField(field, &canadian_address, &field,
-                                /*cvc=*/std::u16string(),
-                                mojom::RendererFormDataAction::kFill);
+  canadian_filler.FillFormField(
+      field, &canadian_address, /*forced_fill_values=*/{}, &field,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
   // If the expectation with normalization is nullptr, this means that the same
   // result than without a normalizer is expected.
   if (test_case.expected_value_with_normalization == nullptr) {
@@ -869,9 +955,9 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
 
     // Load the rules and try again.
     normalizer()->LoadRulesForRegion("CA");
-    canadian_filler.FillFormField(field, &canadian_address, &field,
-                                  /*cvc=*/std::u16string(),
-                                  mojom::RendererFormDataAction::kFill);
+    canadian_filler.FillFormField(
+        field, &canadian_address, /*forced_fill_values=*/{}, &field,
+        /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
     EXPECT_EQ(test_case.expected_value_with_normalization, field.value);
   }
 }
@@ -926,9 +1012,7 @@ INSTANTIATE_TEST_SUITE_P(
                            u"North Carolina."},
         FillSelectTestCase{{"NC - North Carolina", "CA - California"},
                            u"CA",
-                           u"CA - California"},
-        // These are not states.
-        FillSelectTestCase{{"NCNCA", "SCNCA"}, u"NC", u""}));
+                           u"CA - California"}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
   AutofillField field;
@@ -938,7 +1022,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
   AutofillProfile address = test::GetFullProfile();
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Canada", field.value);
 }
@@ -1065,7 +1150,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithAbbreviatedMonthName) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Apr", field.value);
 }
@@ -1082,7 +1168,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"April", field.value);
 }
@@ -1100,7 +1187,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthNameAndDigits) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"April (04)", field.value);
 }
@@ -1128,11 +1216,13 @@ TEST_F(AutofillFieldFillerTest,
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(8);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"08 - AOÛT", field.value);
   card.SetExpirationMonth(12);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"12 - DECEMBRE", field.value);
 }
@@ -1147,17 +1237,20 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(2);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"FÉVR.", field.value);
 
   card.SetExpirationMonth(1);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"JANV", field.value);
 
   card.SetExpirationMonth(12);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"décembre", field.value);
 }
@@ -1174,7 +1267,8 @@ TEST_F(AutofillFieldFillerTest,
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"4", field.value);
 }
@@ -1190,7 +1284,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithTwoDigitCreditCardYear) {
   CreditCard card = test::GetCreditCard();
   card.SetExpirationYear(2017);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"17", field.value);
 }
@@ -1206,25 +1301,29 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithCreditCardType) {
 
   // Normal case:
   card.SetNumber(u"4111111111111111");  // Visa number.
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Visa", field.value);
 
   // Filling should be able to handle intervening whitespace:
   card.SetNumber(u"5555555555554444");  // MC number.
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Mastercard", field.value);
 
   // American Express is sometimes abbreviated as AmEx:
   card.SetNumber(u"378282246310005");  // Amex number.
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"AmEx", field.value);
 
   // Case insensitivity:
   card.SetNumber(u"6011111111111117");  // Discover number.
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"discover", field.value);
 }
@@ -1239,13 +1338,15 @@ TEST_F(AutofillFieldFillerTest, FillMonthControl) {
   // Try a month with two digits.
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"2017-12", field.value);
 
   // Try a month with a leading zero.
   card.SetExpirationDateFromString(u"03/2019");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"2019-03", field.value);
 }
@@ -1259,7 +1360,8 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextArea) {
 
   std::u16string value = u"123 Fake St.\nApt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(value, field.value);
 
@@ -1267,7 +1369,8 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextArea) {
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
                      "ja-JP");
   address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(ja_value, field.value);
 }
@@ -1283,7 +1386,8 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
 
   std::u16string value = u"123 Fake St.\nApt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);
 
@@ -1291,7 +1395,8 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value,
                      "ja-JP");
   address()->set_language_code("ja-JP");
-  filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"桜丘町26-1セルリアンタワー6階", field.value);
 }
@@ -1304,9 +1409,9 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithoutSplits) {
 
   credit_card()->SetNumber(u"41111111111111111");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
+  filler.FillFormField(
+      cc_number_full, credit_card(), /*forced_fill_values=*/{}, &cc_number_full,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
 
   // Verify that full card-number shall get filled properly.
   EXPECT_EQ(u"41111111111111111", cc_number_full.value);
@@ -1331,7 +1436,8 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
 
     // Fill with a card-number; should fill just the card_number_part.
     credit_card()->SetNumber(test.card_number_);
-    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+    filler.FillFormField(cc_number_part, credit_card(),
+                         /*forced_fill_values=*/{}, &cc_number_part,
                          /*cvc=*/std::u16string(),
                          mojom::RendererFormDataAction::kFill);
 
@@ -1346,9 +1452,9 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithEqualSizeSplits) {
                                     CREDIT_CARD_NUMBER);
 
   credit_card()->SetNumber(test.card_number_);
-  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
+  filler.FillFormField(
+      cc_number_full, credit_card(), /*forced_fill_values=*/{}, &cc_number_full,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
 
   // Verify for expected results.
   EXPECT_EQ(test.card_number_, cc_number_full.value);
@@ -1378,7 +1484,8 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithEqualSizeSplits) {
 
     // Fill with a card-number; should fill just the card_number_part.
     credit_card()->SetNumber(test.card_number_);
-    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+    filler.FillFormField(cc_number_part, credit_card(),
+                         /*forced_fill_values=*/{}, &cc_number_part,
                          /*cvc=*/std::u16string(),
                          mojom::RendererFormDataAction::kPreview);
 
@@ -1393,9 +1500,9 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithEqualSizeSplits) {
                                     CREDIT_CARD_NUMBER);
 
   credit_card()->SetNumber(test.card_number_);
-  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kPreview);
+  filler.FillFormField(
+      cc_number_full, credit_card(), /*forced_fill_values=*/{}, &cc_number_full,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kPreview);
 
   // Verify for expected results.
   EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
@@ -1421,7 +1528,8 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
 
     // Fill with a card-number; should fill just the card_number_part.
     credit_card()->SetNumber(test.card_number_);
-    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+    filler.FillFormField(cc_number_part, credit_card(),
+                         /*forced_fill_values=*/{}, &cc_number_part,
                          /*cvc=*/std::u16string(),
                          mojom::RendererFormDataAction::kFill);
 
@@ -1436,9 +1544,9 @@ TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithUnequalSizeSplits) {
   cc_number_full.set_heuristic_type(GetActivePatternSource(),
                                     CREDIT_CARD_NUMBER);
   credit_card()->SetNumber(test.card_number_);
-  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kFill);
+  filler.FillFormField(
+      cc_number_full, credit_card(), /*forced_fill_values=*/{}, &cc_number_full,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
 
   // Verify for expected results.
   EXPECT_EQ(test.card_number_, cc_number_full.value);
@@ -1472,7 +1580,8 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
 
     // Fill with a card-number; should fill just the card_number_part.
     credit_card()->SetNumber(test.card_number_);
-    filler.FillFormField(cc_number_part, credit_card(), &cc_number_part,
+    filler.FillFormField(cc_number_part, credit_card(),
+                         /*forced_fill_values=*/{}, &cc_number_part,
                          /*cvc=*/std::u16string(),
                          mojom::RendererFormDataAction::kPreview);
 
@@ -1487,9 +1596,9 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
   cc_number_full.set_heuristic_type(GetActivePatternSource(),
                                     CREDIT_CARD_NUMBER);
   credit_card()->SetNumber(test.card_number_);
-  filler.FillFormField(cc_number_full, credit_card(), &cc_number_full,
-                       /*cvc=*/std::u16string(),
-                       mojom::RendererFormDataAction::kPreview);
+  filler.FillFormField(
+      cc_number_full, credit_card(), /*forced_fill_values=*/{}, &cc_number_full,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kPreview);
 
   // Verify for expected results.
   EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
@@ -1562,9 +1671,9 @@ TEST_P(AutofillStateTextTest, FillStateText) {
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   AutofillProfile address = test::GetFullProfile();
   address.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
-  bool has_filled = filler.FillFormField(field, &address, &field,
-                                         /*cvc=*/std::u16string(),
-                                         mojom::RendererFormDataAction::kFill);
+  bool has_filled = filler.FillFormField(
+      field, &address, /*forced_fill_values=*/{}, &field,
+      /*cvc=*/std::u16string(), mojom::RendererFormDataAction::kFill);
 
   EXPECT_EQ(test_case.should_fill, has_filled);
   EXPECT_EQ(test_case.expected_value, field.value);
@@ -1618,7 +1727,8 @@ TEST_F(AutofillFieldFillerTest,
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+15145554578");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"1", field.value);
 }
@@ -1640,7 +1750,8 @@ TEST_F(AutofillFieldFillerTest,
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+918890888888");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"+91", field.value);
 }
@@ -1662,7 +1773,8 @@ TEST_F(AutofillFieldFillerTest,
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+918890888888");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"0091", field.value);
 }
@@ -1684,7 +1796,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlAugmentedPhoneCountryCode) {
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49151669087345");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"+49 (Germany)", field.value);
 }
@@ -1707,7 +1820,8 @@ TEST_F(AutofillFieldFillerTest,
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49151669087345");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"(00 49) Germany", field.value);
 }
@@ -1731,7 +1845,8 @@ TEST_F(AutofillFieldFillerTest,
   AutofillProfile address;
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+49151669087345");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"(0049) Germany", field.value);
 }
@@ -1754,7 +1869,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"BY", field.value);
 }
@@ -1778,7 +1894,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Bayern", field.value);
 }
@@ -1802,7 +1919,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Bavaria Has Munich", field.value);
 }
@@ -1826,7 +1944,8 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"BY", field.value);
 }
@@ -1850,7 +1969,8 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Bavari", field.value);
 }
@@ -1879,7 +1999,8 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"", field.value);
 }
@@ -1903,7 +2024,8 @@ TEST_F(AutofillFieldFillerTest,
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"Colorado", field.value);
 }
@@ -1930,9 +2052,35 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kFill);
   EXPECT_EQ(u"BY", field.value);
+}
+
+// Tests that Autofill does not fill the state when abbreviated data is stored
+// in the profile and none of the options match with the abbreviated state.
+TEST_F(AutofillFieldFillerTest,
+       DoNotFillStateFieldWhenAbbrStoredInProfileAndNotInOptionsList) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Colombia", "Connecticut", "Colifornia"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kFill);
+  EXPECT_EQ(u"", field.value);
 }
 
 TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
@@ -1944,14 +2092,16 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
   // A month with two digits should return two dots.
   CreditCard card = test::GetVirtualCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
 
   // A month with one digit should still return two dots.
   card.SetExpirationDateFromString(u"03/2019");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
@@ -1966,14 +2116,16 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualYear) {
 
   CreditCard card = test::GetVirtualCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
 
   field.set_heuristic_type(GetActivePatternSource(),
                            CREDIT_CARD_EXP_2_DIGIT_YEAR);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
@@ -1990,7 +2142,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedYear) {
 
   CreditCard card = test::GetVirtualCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis2Dots, field.value);
@@ -2008,7 +2161,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualDate) {
   // month and four dots for year.
   CreditCard card = test::GetVirtualCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   std::u16string slash = u"/";
@@ -2021,7 +2175,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualDate) {
   field.set_heuristic_type(GetActivePatternSource(),
                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
   field.max_length = 5;
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
 
@@ -2040,7 +2195,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
 
   CreditCard card = test::GetVirtualCard();
   card.SetExpirationDateFromString(u"12/2017");
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
 
@@ -2050,7 +2206,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
 
   field.max_length = 5;
   std::u16string slash = u"/";
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
 
@@ -2059,7 +2216,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
   EXPECT_EQ(expected, field.value);
 
   field.max_length = 6;
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
 
@@ -2068,7 +2226,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualShortenedDate) {
   EXPECT_EQ(expected, field.value);
 
   field.max_length = 7;
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
 
@@ -2086,7 +2245,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
 
   CreditCard card = test::GetVirtualCard();
   CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis3Dots, field.value);
@@ -2102,7 +2262,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
 
   CreditCard card = test::GetVirtualCard();
   CreditCardTestApi(&card).set_network_for_virtual_card(kAmericanExpressCard);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(kMidlineEllipsis4Dots, field.value);
@@ -2119,7 +2280,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
   card.SetNumber(u"5454545454545454");
   CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, &card, &field,
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
@@ -2146,7 +2307,8 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardholderName) {
   card.SetRawInfoWithVerificationStatus(
       CREDIT_CARD_NAME_FULL, name,
       structured_address::VerificationStatus::kFormatted);
-  filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string(),
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
                        /*failure_to_fill*/ nullptr);
   EXPECT_EQ(name, field.value);

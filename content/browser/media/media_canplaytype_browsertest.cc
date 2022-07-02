@@ -72,10 +72,30 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp3) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  ExecuteTest("testMp4Variants(true)");  // has_proprietary_codecs=true
+#if !BUILDFLAG(USE_PROPRIETARY_CODECS)
+  // The function signature for JS is:
+  // testMp4Variants(has_proprietary_codecs:bool, platform_guarantees_hevc:bool)
+  ExecuteTest("testMp4Variants(false, false)");
+#elif BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    ExecuteTest("testMp4Variants(true, false)");
+    return;
+  }
+  ExecuteTest("testMp4Variants(true, true)");
+#elif BUILDFLAG(IS_MAC)
+  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    ExecuteTest("testMp4Variants(true, false)");
+  } else if (__builtin_available(macOS 11.0, *)) {
+    // the Mac compiler freaks out if __builtin_available is not the _only_
+    // condition in the if statement, which is why it's written like this.
+    ExecuteTest("testMp4Variants(true, true)");
+  } else {
+    ExecuteTest("testMp4Variants(true, false)");
+  }
 #else
-  ExecuteTest("testMp4Variants(false)");  // has_proprietary_codecs=false
+  // Other platforms query the gpu each time to find out, so it would be
+  // unreliable on the bots to test for this.
+  ExecuteTest("testMp4Variants(true, false)");
 #endif
 }
 

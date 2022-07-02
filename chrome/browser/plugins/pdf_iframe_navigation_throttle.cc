@@ -60,7 +60,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
                         bool* is_stale) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  int process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
+  int process_id = web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(

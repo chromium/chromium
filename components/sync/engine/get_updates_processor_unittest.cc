@@ -124,12 +124,9 @@ TEST_F(GetUpdatesProcessorTest, BookmarkNudge) {
     // We perform some basic tests of GU trigger and source fields here.  The
     // more complicated scenarios are tested by the NudgeTracker tests.
     if (type == BOOKMARKS) {
-      EXPECT_TRUE(progress_marker.has_notification_hint());
-      EXPECT_EQ("", progress_marker.notification_hint());
       EXPECT_EQ(1, gu_trigger.local_modification_nudges());
       EXPECT_EQ(0, gu_trigger.datatype_refresh_nudges());
     } else {
-      EXPECT_FALSE(progress_marker.has_notification_hint());
       EXPECT_EQ(0, gu_trigger.local_modification_nudges());
       EXPECT_EQ(0, gu_trigger.datatype_refresh_nudges());
     }
@@ -172,11 +169,8 @@ TEST_F(GetUpdatesProcessorTest, NotifyMany) {
     // We perform some basic tests of GU trigger and source fields here.  The
     // more complicated scenarios are tested by the NudgeTracker tests.
     if (notified_types.Has(type)) {
-      EXPECT_TRUE(progress_marker.has_notification_hint());
-      EXPECT_FALSE(progress_marker.notification_hint().empty());
       EXPECT_EQ(1, gu_trigger.notification_hint_size());
     } else {
-      EXPECT_FALSE(progress_marker.has_notification_hint());
       EXPECT_EQ(0, gu_trigger.notification_hint_size());
     }
   }

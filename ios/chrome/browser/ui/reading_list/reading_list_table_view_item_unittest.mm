@@ -23,7 +23,7 @@ namespace {
 using ReadingListTableViewItemTest = PlatformTest;
 }
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(ReadingListTableViewItemTest, TextLabels) {
   NSString* titleText = @"Some Title Text";
   NSString* URLText = @"https://www.google.com";

@@ -16,10 +16,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/memory/page_size.h"
+#endif
+
 namespace base {
 
 namespace {
 
+using ::testing::Each;
 using ::testing::ElementsAre;
 
 // A thread delegate for use in tests that provides the expected behavior when
@@ -118,14 +123,30 @@ TEST(StackCopierSuspendTest, CopyStack) {
 }
 
 TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
-  std::vector<uintptr_t> stack = {0, 1, 2, 3, 4};
+  std::vector<uintptr_t> stack;
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS will round up the size of the stack up to the next multiple of
+  // the page size. To make the buffer "too small", the stack must be 1 element
+  // larger than the page size.
+  const size_t kStackElements = (GetPageSize() / sizeof(stack[0])) + 1;
+#else  // #if BUILDFLAG(IS_CHROMEOS)
+  const size_t kStackElements = 5;  // Arbitrary
+#endif
+  stack.reserve(kStackElements);
+  for (size_t i = 0; i < kStackElements; ++i) {
+    stack.push_back(i);
+  }
   StackCopierSuspend stack_copier_suspend(
       std::make_unique<TestSuspendableThreadDelegate>(stack));
 
   std::unique_ptr<StackBuffer> stack_buffer =
-      std::make_unique<StackBuffer>((stack.size() - 1) * sizeof(uintptr_t));
+      std::make_unique<StackBuffer>((stack.size() - 1) * sizeof(stack[0]));
   // Make the buffer different than the input stack.
-  stack_buffer->buffer()[0] = 100;
+  constexpr uintptr_t kBufferInitializer = 100;
+  size_t stack_buffer_elements =
+      stack_buffer->size() / sizeof(stack_buffer->buffer()[0]);
+  std::fill_n(stack_buffer->buffer(), stack_buffer_elements,
+              kBufferInitializer);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext register_context{};
@@ -135,12 +156,11 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(
-      stack_copy_bottom,
-      stack_copy_bottom + (stack_buffer->size() / sizeof(*stack_copy_bottom)));
+  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
+                                    stack_copy_bottom + stack_buffer_elements);
   // Use the buffer not being overwritten as a proxy for the unwind being
   // aborted.
-  EXPECT_NE(stack, stack_copy);
+  EXPECT_THAT(stack_copy, Each(kBufferInitializer));
 }
 
 TEST(StackCopierSuspendTest, CopyStackAndRewritePointers) {

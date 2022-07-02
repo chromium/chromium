@@ -51,7 +51,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
       device_operation_handler_(initializer.CreateDeviceOperationHandler(
           adapter_state_controller_.get(),
           bluetooth_adapter,
-          device_name_manager_.get())),
+          device_name_manager_.get(),
+          fast_pair_delegate)),
       fast_pair_delegate_(fast_pair_delegate) {
   if (fast_pair_delegate_) {
     BLUETOOTH_LOG(EVENT) << "Setting fast pair delegate's device name manager";
@@ -101,8 +102,14 @@ void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
   bluetooth_power_controller_->SetBluetoothEnabledState(enabled);
 }
 
-void CrosBluetoothConfig::SetBluetoothHidDetectionActive(bool active) {
-  bluetooth_power_controller_->SetBluetoothHidDetectionActive(active);
+void CrosBluetoothConfig::SetBluetoothHidDetectionActive() {
+  bluetooth_power_controller_->SetBluetoothHidDetectionActive();
+}
+
+void CrosBluetoothConfig::SetBluetoothHidDetectionInactive(
+    bool is_using_bluetooth) {
+  bluetooth_power_controller_->SetBluetoothHidDetectionInactive(
+      is_using_bluetooth);
 }
 
 void CrosBluetoothConfig::StartDiscovery(

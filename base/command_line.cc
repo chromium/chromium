@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -362,7 +363,8 @@ void CommandLine::AppendSwitchNative(StringPiece switch_string,
   if (!value.empty())
     base::StrAppend(&combined_switch_string, {kSwitchValueSeparator, value});
   // Append the switch and update the switches/arguments divider |begin_args_|.
-  argv_.insert(argv_.begin() + begin_args_++, combined_switch_string);
+  argv_.insert(argv_.begin() + begin_args_, combined_switch_string);
+  begin_args_ = (CheckedNumeric(begin_args_) + 1).ValueOrDie();
 }
 
 void CommandLine::AppendSwitchASCII(StringPiece switch_string,
@@ -632,7 +634,7 @@ void CommandLine::ParseAsSingleArgument(
   DCHECK(!raw_command_line_string_.empty());
 
   // Remove any previously parsed arguments.
-  argv_.resize(begin_args_);
+  argv_.resize(static_cast<size_t>(begin_args_));
 
   // Locate "--single-argument" in the process's raw command line. Results are
   // unpredictable if "--single-argument" appears as part of a previous

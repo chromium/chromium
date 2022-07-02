@@ -113,12 +113,72 @@ chrome.test.runTests([
         }));
   },
 
+  // Checks that providing writable=false is processed as read-only.
+  function writableFalse() {
+    const fileSystemId = 'read-only';
+    chrome.fileSystemProvider.mount(
+        {
+          fileSystemId: fileSystemId,
+          displayName: 'read-only.zip',
+          writable: false,
+        },
+        chrome.test.callbackPass(function() {
+          chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeList) {
+            //  For extension based providers, provider id is the same as
+            //  extension id.
+            const volumeInfo = volumeList.find(
+                inVolumeInfo =>
+                    (inVolumeInfo.providerId === chrome.runtime.id &&
+                     inVolumeInfo.fileSystemId === fileSystemId));
+            chrome.test.assertTrue(!!volumeInfo);
+            chrome.test.assertTrue(volumeInfo.isReadOnly);
+          });
+        }));
+  },
+
+  // Checks that providing supportsNotifyTag=false|true persists as requested.
+  function supportsNotifyTag() {
+    const taggedFilesystemId = 'tagged-fs';
+    chrome.fileSystemProvider.mount(
+        {
+          fileSystemId: taggedFilesystemId,
+          displayName: 'tagged-fs-.zip',
+          supportsNotifyTag: true,
+        },
+        chrome.test.callbackPass(function() {
+          chrome.fileSystemProvider.get(taggedFilesystemId, fsInfo => {
+            chrome.test.assertTrue(fsInfo.supportsNotifyTag);
+
+            chrome.fileSystemProvider.unmount(
+                {fileSystemId: taggedFilesystemId},
+                chrome.test.callbackPass(() => {}));
+          });
+        }));
+
+    const nonTaggedFilesystemId = 'non-tagged-fs';
+    chrome.fileSystemProvider.mount(
+        {
+          fileSystemId: nonTaggedFilesystemId,
+          displayName: 'tagged-fs-.zip',
+          supportsNotifyTag: false,
+        },
+        chrome.test.callbackPass(function() {
+          chrome.fileSystemProvider.get(nonTaggedFilesystemId, fsInfo => {
+            chrome.test.assertFalse(fsInfo.supportsNotifyTag);
+
+            chrome.fileSystemProvider.unmount(
+                {fileSystemId: nonTaggedFilesystemId},
+                chrome.test.callbackPass(() => {}));
+          });
+        }));
+  },
+
   // Checks is limit for mounted file systems per profile works correctly.
   // Tries to create more than allowed number of file systems. All of the mount
   // requests should succeed, except the last one which should fail with a
   // security error.
   function stressMountTest() {
-    var ALREADY_MOUNTED_FILE_SYSTEMS = 5;  // By previous tests.
+    var ALREADY_MOUNTED_FILE_SYSTEMS = 6;  // By previous tests.
     var MAX_FILE_SYSTEMS = 16;
     var index = 0;
     var tryNextOne = function() {

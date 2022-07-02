@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RECOMMEND_APPS_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RECOMMEND_APPS_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
 class RecommendAppsScreen;
@@ -17,14 +17,13 @@ namespace chromeos {
 
 // Interface for dependency injection between RecommendAppsScreen and its
 // WebUI representation.
-class RecommendAppsScreenView {
+class RecommendAppsScreenView
+    : public base::SupportsWeakPtr<RecommendAppsScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"recommend-apps-old"};
+  inline constexpr static StaticOobeScreenId kScreenId{"recommend-apps",
+                                                       "RecommendAppsScreen"};
 
   virtual ~RecommendAppsScreenView() = default;
-
-  // Sets screen this view belongs to.
-  virtual void Bind(ash::RecommendAppsScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -58,36 +57,17 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void RegisterMessages() override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // RecommendAppsScreenView:
-  void Bind(ash::RecommendAppsScreen* screen) override;
   void Show() override;
   void Hide() override;
   void OnLoadSuccess(base::Value app_list) override;
   void OnParseResponseError() override;
 
-  // BaseScreenHandler:
-  void InitializeDeprecated() override;
-
  private:
-  void OnUserSkip();
-
   // Call the JS function to load the list of apps in the WebView.
   void LoadAppListInUI(base::Value app_list);
-
-  void HandleSkip();
-  void HandleRetry();
-  void HandleInstall(const base::Value::List& args);
-
-  ash::RecommendAppsScreen* screen_ = nullptr;
-
-  PrefService* pref_service_;
-
-  int recommended_app_count_ = 0;
-
-  // If true, InitializeDeprecated() will call Show().
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

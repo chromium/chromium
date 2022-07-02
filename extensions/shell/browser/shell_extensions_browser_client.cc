@@ -101,6 +101,14 @@ std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShellExtensionsBrowserClient::IsFromMainProfile(
+    content::BrowserContext* context) {
+  // AppShell only supports single context.
+  return true;
+}
+#endif
+
 bool ShellExtensionsBrowserClient::IsGuestSession(
     BrowserContext* context) const {
   return false;
@@ -243,12 +251,8 @@ void ShellExtensionsBrowserClient::BroadcastEventToRenderers(
     return;
   }
 
-  std::vector<base::Value> event_args(args.size());
-  std::transform(args.begin(), args.end(), event_args.begin(),
-                 [](const base::Value& arg) { return arg.Clone(); });
-
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(event_args));
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name, std::move(args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

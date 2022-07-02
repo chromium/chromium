@@ -15,13 +15,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/notification_observer.h"
@@ -106,6 +108,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   // NetworkStateHandlerObserver implementation:
   void DefaultNetworkChanged(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   // PortalDetectorStrategy::Delegate implementation:
   int NoResponseResultCount() override;
@@ -225,6 +228,10 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   SEQUENCE_CHECKER(sequence_checker_);
 
   content::NotificationRegistrar registrar_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // Test time ticks used by unit tests.
   base::TimeTicks time_ticks_for_testing_;

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,7 @@ during any attempt to use a badly behaving script.
 
 import generate_stubs as gs
 import re
-import StringIO
+import io
 import sys
 import unittest
 
@@ -73,18 +73,18 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
 
   def testParseSignatures_EmptyFile(self):
     # Empty file just generates empty signatures.
-    infile = StringIO.StringIO()
+    infile = io.StringIO()
     signatures = gs.ParseSignatures(infile)
     self.assertEqual(0, len(signatures))
 
   def testParseSignatures_SimpleSignatures(self):
     file_contents = '\n'.join([x[0] for x in SIMPLE_SIGNATURES])
-    infile = StringIO.StringIO(file_contents)
+    infile = io.StringIO(file_contents)
     signatures = gs.ParseSignatures(infile)
     self.assertEqual(len(SIMPLE_SIGNATURES), len(signatures))
 
     # We assume signatures are in order.
-    for i in xrange(len(SIMPLE_SIGNATURES)):
+    for i in range(len(SIMPLE_SIGNATURES)):
       self.assertEqual(SIMPLE_SIGNATURES[i][1], signatures[i],
                        msg='Expected %s\nActual %s\nFor %s' %
                        (SIMPLE_SIGNATURES[i][1],
@@ -93,12 +93,12 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
 
   def testParseSignatures_TrickySignatures(self):
     file_contents = '\n'.join([x[0] for x in TRICKY_SIGNATURES])
-    infile = StringIO.StringIO(file_contents)
+    infile = io.StringIO(file_contents)
     signatures = gs.ParseSignatures(infile)
     self.assertEqual(len(TRICKY_SIGNATURES), len(signatures))
 
     # We assume signatures are in order.
-    for i in xrange(len(TRICKY_SIGNATURES)):
+    for i in range(len(TRICKY_SIGNATURES)):
       self.assertEqual(TRICKY_SIGNATURES[i][1], signatures[i],
                        msg='Expected %s\nActual %s\nFor %s' %
                        (TRICKY_SIGNATURES[i][1],
@@ -107,7 +107,7 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
 
   def testParseSignatures_InvalidSignatures(self):
     for i in INVALID_SIGNATURES:
-      infile = StringIO.StringIO(i)
+      infile = io.StringIO(i)
       self.assertRaises(gs.BadSignatureError, gs.ParseSignatures, infile)
 
   def testParseSignatures_CommentsIgnored(self):
@@ -124,7 +124,7 @@ class GenerateStubModuleFunctionsUnittest(unittest.TestCase):
     my_sigs.append(SIMPLE_SIGNATURES[0][0])
 
     file_contents = '\n'.join(my_sigs)
-    infile = StringIO.StringIO(file_contents)
+    infile = io.StringIO(file_contents)
     signatures = gs.ParseSignatures(infile)
     self.assertEqual(5, len(signatures))
 
@@ -133,7 +133,7 @@ class WindowsLibUnittest(unittest.TestCase):
   def testWriteWindowsDefFile(self):
     module_name = 'my_module-1'
     signatures = [sig[1] for sig in SIMPLE_SIGNATURES]
-    outfile = StringIO.StringIO()
+    outfile = io.StringIO()
     gs.WriteWindowsDefFile(module_name, signatures, outfile)
     contents = outfile.getvalue()
 
@@ -149,18 +149,18 @@ EXPORTS
                       msg='Expected match of "%s" in %s' % (pattern, contents))
 
   def testQuietRun(self):
-    output = StringIO.StringIO()
+    output = io.StringIO()
     gs.QuietRun([
-        sys.executable, '-c',
-        'from __future__ import print_function; print("line 1 and suffix\\nline 2")'
+        sys.executable, '-c', 'from __future__ import print_function; '
+        'print("line 1 and suffix\\nline 2")'
     ],
                 write_to=output)
     self.assertEqual('line 1 and suffix\nline 2\n', output.getvalue())
 
-    output = StringIO.StringIO()
+    output = io.StringIO()
     gs.QuietRun([
-        sys.executable, '-c',
-        'from __future__ import print_function; print("line 1 and suffix\\nline 2")'
+        sys.executable, '-c', 'from __future__ import print_function; '
+        'print("line 1 and suffix\\nline 2")'
     ],
                 filter='line 1',
                 write_to=output)
@@ -173,7 +173,7 @@ class PosixStubWriterUnittest(unittest.TestCase):
     self.signatures = [sig[1] for sig in SIMPLE_SIGNATURES]
     self.out_dir = 'out_dir'
     self.writer = gs.PosixStubWriter(self.module_name, '', self.signatures,
-                                     'VLOG(1)', 'base/logging.h')
+                                     'VLOG(1)')
 
   def testEnumName(self):
     self.assertEqual('kModuleMy_module1',
@@ -195,18 +195,22 @@ class PosixStubWriterUnittest(unittest.TestCase):
 
   def testStubFunctionPointer(self):
     self.assertEqual(
-        'static int (*foo_ptr)(int a) = NULL;',
+        'static int (*foo_ptr)(int a) = nullptr;',
         gs.PosixStubWriter.StubFunctionPointer(SIMPLE_SIGNATURES[0][1]))
 
   def testStubFunction(self):
     # Test for a signature with a return value and a parameter.
-    self.assertEqual("""extern int foo(int a) __attribute__((weak));
+    self.assertEqual(
+        """extern int foo(int a) __attribute__((weak));
+DISABLE_CFI_ICALL
 int  foo(int a) {
   return foo_ptr(a);
 }""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[0][1]))
 
     # Test for a signature with a void return value and no parameters.
-    self.assertEqual("""extern void waldo(void) __attribute__((weak));
+    self.assertEqual(
+        """extern void waldo(void) __attribute__((weak));
+DISABLE_CFI_ICALL
 void  waldo(void) {
   waldo_ptr();
 }""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[4][1]))
@@ -214,20 +218,24 @@ void  waldo(void) {
     # Test export macros.
     sig = _MakeSignature('int*', 'foo', ['bool b'])
     sig['export'] = 'TEST_EXPORT'
-    self.assertEqual("""extern int* foo(bool b) __attribute__((weak));
+    self.assertEqual(
+        """extern int* foo(bool b) __attribute__((weak));
+DISABLE_CFI_ICALL
 int* TEST_EXPORT foo(bool b) {
   return foo_ptr(b);
 }""", gs.PosixStubWriter.StubFunction(sig))
 
     # Test for a signature where an array is passed. It should be passed without
     # square brackets otherwise the compilation failure will occur..
-    self.assertEqual("""extern int ferda(char **argv[]) __attribute__((weak));
+    self.assertEqual(
+        """extern int ferda(char **argv[]) __attribute__((weak));
+DISABLE_CFI_ICALL
 int  ferda(char **argv[]) {
   return ferda_ptr(argv);
 }""", gs.PosixStubWriter.StubFunction(SIMPLE_SIGNATURES[6][1]))
 
   def testWriteImplemenationContents(self):
-    outfile = StringIO.StringIO()
+    outfile = io.StringIO()
     self.writer.WriteImplementationContents('my_namespace', outfile)
     contents = outfile.getvalue()
 
@@ -263,9 +271,9 @@ int  ferda(char **argv[]) {
     module_names = ['oneModule', 'twoModule']
 
     # Make the header.
-    outfile = StringIO.StringIO()
+    outfile = io.StringIO()
     self.writer.WriteHeaderContents(module_names, 'my_namespace', 'GUARD_',
-                                    outfile, 'base/logging.h')
+                                    outfile)
     contents = outfile.getvalue()
 
     # Check for namespace and header guard.
@@ -293,12 +301,27 @@ int  ferda(char **argv[]) {
       self.assertTrue(contents.find(decl) != -1,
                       msg='Expected "%s" in %s' % (decl, contents))
 
+  def testWriteImplementationPreamble(self):
+    # Data for header generation.
+    module_names = ['oneModule', 'twoModule']
+
+    # Make the header.
+    outfile = io.StringIO()
+    self.writer.WriteImplementationPreamble(module_names, outfile,
+                                            "base/logging.h",
+                                            "my/compiler_specific.h")
+    contents = outfile.getvalue()
+
+    # Verify includes are included correctly.
+    self.assertTrue(contents.find('#include "base/logging.h"') != -1)
+    self.assertTrue(contents.find('#include "my/compiler_specific.h"') != -1)
+
   def testWriteUmbrellaInitializer(self):
     # Data for header generation.
     module_names = ['oneModule', 'twoModule']
 
     # Make the header.
-    outfile = StringIO.StringIO()
+    outfile = io.StringIO()
     self.writer.WriteUmbrellaInitializer(module_names, 'my_namespace', outfile,
                                          'VLOG(1)')
     contents = outfile.getvalue()

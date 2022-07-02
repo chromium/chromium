@@ -55,8 +55,10 @@ IN_PROC_BROWSER_TEST_F(CecPrivateKioskApiTest, TestAllApiFunctions) {
   cec_->set_tv_power_states({chromeos::CecServiceClient::PowerState::kOn,
                              chromeos::CecServiceClient::PowerState::kOn});
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener standby_call_count("standby_call_count", true);
-  ExtensionTestMessageListener wakeup_call_count("wakeup_call_count", true);
+  ExtensionTestMessageListener standby_call_count("standby_call_count",
+                                                  ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener wakeup_call_count("wakeup_call_count",
+                                                 ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadApp("api_test/cec_private/api"));
 

@@ -10,5 +10,6 @@ namespace updater {
 const char kTestSleepMinutesSwitch[] = "test-sleep-minutes";
 const char kTestEventToSignal[] = "test-event-to-signal";
 const char kTestEventToWaitOn[] = "test-event-to-wait-on";
+const char kTestExitCode[] = "test-exit-code";
 
 }  // namespace updater

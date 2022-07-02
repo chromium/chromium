@@ -7,7 +7,9 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
@@ -17,13 +19,17 @@
 
 namespace network {
 class SimpleURLLoader;
+namespace mojom {
+class CookieManager;
+}  // namespace mojom
 }  // namespace network
 
 namespace content {
 
-class PrefetchService;
+class PrefetchCookieListener;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
+class PrefetchService;
 class PrefetchedMainframeResponseContainer;
 
 // This class contains the state for a request to prefetch a specific URL.
@@ -73,6 +79,22 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
 
+  // After the initial eligiblity check for |url_|, a
+  // |PrefetchCookieListener| listens for any changes to the cookies
+  // associated with |url_|. If these cookies change, then no prefetched
+  // resources will be served.
+  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
+  void StopCookieListener();
+  bool HaveDefaultContextCookiesChanged() const;
+
+  // Before a prefetch can be served, any cookies added to the isolated network
+  // context must be copied over to the default network context. These functions
+  // are used to check and update the status of this process.
+  bool IsIsolatedCookieCopyInProgress() const;
+  void OnIsolatedCookieCopyStart();
+  void OnIsolatedCookieCopyComplete();
+  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+
   // The network context used to make network requests for this prefetch.
   PrefetchNetworkContext* GetOrCreateNetworkContext(
       PrefetchService* prefetch_service);
@@ -87,7 +109,7 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchDocumentManager* GetPrefetchDocumentManager() const;
 
   // Whether or not |this| has a prefetched response.
-  bool HasPrefetchedResponse() const;
+  bool HasValidPrefetchedResponse(base::TimeDelta cacheable_duration) const;
 
   // |this| takes ownership of the given |prefetched_response|.
   void TakePrefetchedResponse(
@@ -125,6 +147,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // any prefetched resources will not be served.
   bool is_decoy_ = false;
 
+  // This tracks whether the cookies associated with |url_| have changed at some
+  // point after the initial eligibility check.
+  std::unique_ptr<PrefetchCookieListener> cookie_listener_;
+
   // The network context used to prefetch |url_|.
   std::unique_ptr<PrefetchNetworkContext> network_context_;
 
@@ -133,6 +159,23 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The prefetched response for |url_|.
   std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response_;
+
+  // The time at which |prefetched_response_| was received. This is used to
+  // determine whether or not |prefetched_response_| is stale.
+  absl::optional<base::TimeTicks> prefetch_received_time_;
+
+  // The different possible states of the cookie copy process.
+  enum class CookieCopyStatus {
+    kNotStarted,
+    kInProgress,
+    kCompleted,
+  };
+
+  // The current state of the cookie copy process for this prefetch.
+  CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNotStarted;
+
+  // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
+  base::OnceClosure on_cookie_copy_complete_callback_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

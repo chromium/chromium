@@ -740,7 +740,7 @@ function testMp3Variants() {
       testMimeCodecMap(MP3_CODEC_MAP, false);
 }
 
-function testMp4Variants(has_proprietary_codecs) {
+function testMp4Variants(has_proprietary_codecs, platform_guarantees_hevc) {
   const MP4_CODEC_MAP = {
     'probably': [
       'audio/mp4; codecs="flac"',
@@ -787,10 +787,6 @@ function testMp4Variants(has_proprietary_codecs) {
       'video/x-m4v; codecs="hev1.1.6.L93.B0"',
       'video/x-m4v; codecs="hvc1.1.6.L93.B0, mp4a.40.5"',
       'video/x-m4v; codecs="hvc1.1.6.L93.B0"',
-      'video/mp4; codecs="hev1.1.6.L93.B0, mp4a.40.5"',
-      'video/mp4; codecs="hev1.1.6.L93.B0"',
-      'video/mp4; codecs="hvc1.1.6.L93.B0, mp4a.40.5"',
-      'video/mp4; codecs="hvc1.1.6.L93.B0"',
 
       // AC3 and EAC3 (aka Dolby Digital Plus, DD+) audio codecs. These are not
       // supported by Chrome by default. TODO(servolk): Strictly speaking only
@@ -813,6 +809,23 @@ function testMp4Variants(has_proprietary_codecs) {
       'video/mp4; codecs="avc1.640028,mp4a.A6"',
     ],
   };
+
+  if (platform_guarantees_hevc) {
+    MP4_CODEC_MAP['probably'] = MP4_CODEC_MAP['probably'].concat([
+      'video/mp4; codecs="hev1.1.6.L93.B0, mp4a.40.5"',
+      'video/mp4; codecs="hev1.1.6.L93.B0"',
+      'video/mp4; codecs="hvc1.1.6.L93.B0, mp4a.40.5"',
+      'video/mp4; codecs="hvc1.1.6.L93.B0"'
+    ])
+  } else {
+    MP4_CODEC_MAP['not'] = MP4_CODEC_MAP['not'].concat([
+      'video/mp4; codecs="hev1.1.6.L93.B0, mp4a.40.5"',
+      'video/mp4; codecs="hev1.1.6.L93.B0"',
+      'video/mp4; codecs="hvc1.1.6.L93.B0, mp4a.40.5"',
+      'video/mp4; codecs="hvc1.1.6.L93.B0"'
+    ])
+  }
+
 
   const MP4A_BAD_CODEC_LIST = [
     'ac-3',
@@ -1248,6 +1261,27 @@ function testAvcLevelsInternal(has_proprietary_codecs, avc) {
   if (!testMimeCodec('video/mp4; codecs="avc1.42E051"', P_MAYBE))
     return false;
   if (!testMimeCodec('video/mp4; codecs="avc1.42E052"', P_MAYBE))
+    return false;
+
+  // Levels 6 (0x3C), 6.1 (0x3D), 6.2 (0x3E).
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03B"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03C"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03D"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03E"', P_PROBABLY))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E03F"', P_MAYBE))
+    return false;
+  // Verify that decimal representations of levels are not supported.
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E006"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E060"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E061"', P_MAYBE))
+    return false;
+  if (!testMimeCodec('video/mp4; codecs="avc1.42E062"', P_MAYBE))
     return false;
 
   return true;

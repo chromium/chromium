@@ -54,8 +54,7 @@ bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
   }
 }
 
-SrvRecordRdata::SrvRecordRdata() : priority_(0), weight_(0), port_(0) {
-}
+SrvRecordRdata::SrvRecordRdata() = default;
 
 SrvRecordRdata::~SrvRecordRdata() = default;
 
@@ -327,7 +326,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
           reader.ReadPiece(&opt_data, opt_data_size))) {
       return nullptr;
     }
-    rdata->opts_.push_back(Opt(opt_code, opt_data));
+    rdata->opts_.emplace_back(opt_code, opt_data);
   }
 
   return rdata;

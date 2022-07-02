@@ -112,16 +112,23 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
 
 void FontUniqueNameLookupAndroid::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts) ||
-      !RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled())
-    return;
-
-  EnsureServiceConnected();
-  if (android_font_lookup_service_) {
-    // WTF::Unretained is safe here because |this| owns
-    // |android_font_lookup_service_|.
-    android_font_lookup_service_->FetchAllFontFiles(WTF::Bind(
-        &FontUniqueNameLookupAndroid::FontsPrefetched, WTF::Unretained(this)));
+  if (base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts) &&
+      RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
+    EnsureServiceConnected();
+    if (android_font_lookup_service_) {
+      // WTF::Unretained is safe here because |this| owns
+      // |android_font_lookup_service_|.
+      android_font_lookup_service_->FetchAllFontFiles(
+          WTF::Bind(&FontUniqueNameLookupAndroid::FontsPrefetched,
+                    WTF::Unretained(this)));
+    }
+  }
+  if (base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables) &&
+      RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
+    // This call primes IsFontUniqueNameLookupReadyForSyncLookup() by
+    // asynchronously fetching the font table so it will be ready when needed.
+    // It isn't needed now, so base::DoNothing() is passed as the callback.
+    PrepareFontUniqueNameLookup(base::DoNothing());
   }
 }
 
@@ -235,6 +242,15 @@ void FontUniqueNameLookupAndroid::FontsPrefetched(
     HashMap<String, base::File> font_files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   prefetched_font_map_ = std::move(font_files);
+
+  if (base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables)) {
+    // The |prefetched_font_map_| contains all the fonts that are available from
+    // the AndroidFontLookup service. We can directly set |queryable_fonts_|
+    // here from the map keys since |queryable_fonts_| is used to check which
+    // fonts can be fetched from the AndroidFontLookup service.
+    queryable_fonts_ = Vector<String>();
+    CopyKeysToVector(prefetched_font_map_, *queryable_fonts_);
+  }
 }
 
 }  // namespace blink

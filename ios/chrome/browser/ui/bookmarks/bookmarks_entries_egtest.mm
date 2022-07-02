@@ -65,6 +65,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
@@ -377,12 +378,7 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Verify general pasteboard has the URL copied.
-  ConditionBlock condition = ^{
-    return !![[UIPasteboard generalPasteboard].string
-        containsString:@"www.a.fr"];
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
-             @"Waiting for URL to be copied to pasteboard.");
+  [ChromeEarlGrey verifyStringCopied:@"www.a.fr"];
 
   // Verify edit mode is closed (context bar back to default state).
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES

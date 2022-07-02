@@ -32,6 +32,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class LongScreenshotsCompositorTest {
     private TestPlayerCompositorDelegate mCompositorDelegate;
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
@@ -68,8 +69,7 @@ public class LongScreenshotsCompositorTest {
     }
 
     /**
-     * Implementation of {@link PlayerCompositorDelegate} for tests. TODO(tgupta): Consider moving
-     * this into its own class when it starts to get used more.
+     * Implementation of {@link PlayerCompositorDelegate} for tests.
      */
     class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
         private boolean mRequestBitmapError;

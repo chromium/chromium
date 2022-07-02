@@ -41,8 +41,9 @@ void ExtensionsActivityMonitor::OnBookmarksApiInvoked(
     const extensions::Extension* extension,
     const extensions::BookmarksFunction* func) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   switch (func->histogram_value()) {
     case extensions::functions::BOOKMARKS_UPDATE:

@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
@@ -95,6 +97,19 @@ bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
 UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   UserSelectableTypeSet types = prefs_->GetSelectedTypes();
   types.RetainAll(GetRegisteredSelectableTypes());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing) &&
+      GetRegisteredSelectableTypes().Has(UserSelectableType::kApps)) {
+    // Apps sync is controlled by dedicated preference on Lacros, corresponding
+    // to Apps toggle in OS Sync settings.
+    types.Remove(UserSelectableType::kApps);
+    if (prefs_->IsAppsSyncEnabledByOs()) {
+      types.Put(UserSelectableType::kApps);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   return types;
 }
 
@@ -117,6 +132,8 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
       registered_types.Put(type);
     }
   }
+  // TODO(crbug.com/1330894): Apps datatypes shouldn't be registered on
+  // secondary Lacros profiles.
   return registered_types;
 }
 
@@ -155,6 +172,13 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
   return registered_types;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SyncUserSettingsImpl::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
+  DCHECK(base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing));
+  prefs_->SetAppsSyncEnabledByOs(apps_sync_enabled);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool SyncUserSettingsImpl::IsCustomPassphraseAllowed() const {
   return !preference_provider_ ||
@@ -252,7 +276,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
 #endif
   types.RetainAll(registered_model_types_);
 
-  static_assert(39 == GetNumModelTypes(),
+  static_assert(40 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   types.PutAll(ControlTypes());

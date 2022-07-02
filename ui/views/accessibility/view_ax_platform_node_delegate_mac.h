@@ -7,6 +7,8 @@
 
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
+#include <string>
+
 namespace views {
 
 // Mac-specific accessibility class for |ViewAXPlatformNodeDelegate|.
@@ -21,6 +23,12 @@ class ViewAXPlatformNodeDelegateMac : public ViewAXPlatformNodeDelegate {
   // |ViewAXPlatformNodeDelegate| overrides:
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetParent() const override;
+
+  // |ViewAccessibility| overrides:
+  void OverrideNativeWindowTitle(const std::string& title) override;
+
+  // |AXPlatformNodeDelegate| overrides:
+  const std::string& GetName() const override;
 };
 
 }  // namespace views

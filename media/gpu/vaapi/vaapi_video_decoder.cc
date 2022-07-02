@@ -41,9 +41,9 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check does not account for BUILDFLAG(), so including these headers will
@@ -110,7 +110,8 @@ std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
   const bool can_create_decoder =
-      num_instances_.Increment() < kMaxNumOfInstances;
+      num_instances_.Increment() < kMaxNumOfInstances ||
+      !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
   if (!can_create_decoder) {
     num_instances_.Decrement();
     return nullptr;
@@ -272,14 +273,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // but we still need to do special handling with it.
     transcryption_ = (VaapiWrapper::GetImplementationType() ==
                       VAImplementation::kMesaGallium);
-#endif
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-  } else if (config.codec() == VideoCodec::kHEVC &&
-             !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                 switches::kEnableClearHevcForTesting)) {
-    SetErrorState("clear HEVC content is not supported");
-    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
-    return;
 #endif
   }
 
@@ -795,8 +788,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // TODO(b/203240043): Create a GMB directly instead of allocating a
   // VideoFrame.
   scoped_refptr<VideoFrame> dummy_frame = CreateGpuMemoryBufferVideoFrame(
-      /*gpu_memory_buffer_factory=*/nullptr, *format, decoder_pic_size,
-      decoder_visible_rect, decoder_natural_size,
+      *format, decoder_pic_size, decoder_visible_rect, decoder_natural_size,
       /*timestamp=*/base::TimeDelta(),
       cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
                        : gfx::BufferUsage::SCANOUT_VDA_WRITE);
@@ -840,7 +832,6 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 CroStatus::Or<scoped_refptr<VideoFrame>>
 VaapiVideoDecoder::AllocateCustomFrameProxy(
     base::WeakPtr<VaapiVideoDecoder> decoder,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -850,13 +841,12 @@ VaapiVideoDecoder::AllocateCustomFrameProxy(
     base::TimeDelta timestamp) {
   if (!decoder)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
-  return decoder->AllocateCustomFrame(
-      gpu_memory_buffer_factory, format, coded_size, visible_rect, natural_size,
-      use_protected, use_linear_buffers, timestamp);
+  return decoder->AllocateCustomFrame(format, coded_size, visible_rect,
+                                      natural_size, use_protected,
+                                      use_linear_buffers, timestamp);
 }
 
 CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -1120,7 +1110,7 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
     decoder_ = std::make_unique<VP9Decoder>(std::move(accelerator), profile_,
                                             color_space_);
   }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
     auto accelerator = std::make_unique<H265VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
@@ -1131,7 +1121,7 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
     decoder_ = std::make_unique<H265Decoder>(std::move(accelerator), profile_,
                                              color_space_);
   }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
     auto accelerator = std::make_unique<AV1VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),

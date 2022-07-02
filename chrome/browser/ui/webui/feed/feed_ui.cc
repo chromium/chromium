@@ -19,7 +19,8 @@
 
 namespace feed {
 
-FeedUI::FeedUI(content::WebUI* web_ui) : ui::MojoBubbleWebUIController(web_ui) {
+FeedUI::FeedUI(content::WebUI* web_ui)
+    : ui::UntrustedBubbleWebUIController(web_ui) {
   web_ui->AddRequestableScheme("https");
   // TODO(crbug.com/1292623): We should disable http requests before launching.
   web_ui->AddRequestableScheme("http");

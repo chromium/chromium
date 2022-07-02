@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+import typing
 
 import six
 
@@ -72,7 +73,11 @@ class RemovalType(object):
 
 
 class Expectations(object):
-  def CreateTestExpectationMap(self, expectation_files, tests, grace_period):
+  def CreateTestExpectationMap(
+      self,
+      expectation_files: typing.Optional[typing.Union[str, typing.List[str]]],
+      tests: typing.Optional[typing.Iterable[str]],
+      grace_period: int) -> data_types.TestExpectationMap:
     """Creates an expectation map based off a file or list of tests.
 
     Args:
@@ -89,7 +94,8 @@ class Expectations(object):
       will be empty.
     """
 
-    def AddContentToMap(content, ex_map, expectation_file_name):
+    def AddContentToMap(content: str, ex_map: data_types.TestExpectationMap,
+                        expectation_file_name: str) -> None:
       list_parser = expectations_parser.TaggedTestListParser(content)
       expectations_for_file = ex_map.setdefault(
           expectation_file_name, data_types.ExpectationBuilderMap())
@@ -131,7 +137,8 @@ class Expectations(object):
 
     return expectation_map
 
-  def _GetNonRecentExpectationContent(self, expectation_file_path, num_days):
+  def _GetNonRecentExpectationContent(self, expectation_file_path: str,
+                                      num_days: int) -> str:
     """Gets content from |expectation_file_path| older than |num_days| days.
 
     Args:
@@ -182,8 +189,9 @@ class Expectations(object):
         content += line_content
     return content
 
-  def RemoveExpectationsFromFile(self, expectations, expectation_file,
-                                 removal_type):
+  def RemoveExpectationsFromFile(
+      self, expectations: typing.List[data_types.Expectation],
+      expectation_file: str, removal_type: str) -> typing.Set[str]:
     """Removes lines corresponding to |expectations| from |expectation_file|.
 
     Ignores any lines that match but are within a disable block or have an
@@ -269,7 +277,9 @@ class Expectations(object):
 
     return removed_urls
 
-  def _CreateExpectationFromExpectationFileLine(self, line, expectation_file):
+  def _CreateExpectationFromExpectationFileLine(self, line: str,
+                                                expectation_file: str
+                                                ) -> data_types.Expectation:
     """Creates a data_types.Expectation from |line|.
 
     Args:
@@ -289,7 +299,7 @@ class Expectations(object):
                                   typ_expectation.raw_results,
                                   typ_expectation.reason)
 
-  def _GetExpectationFileTagHeader(self, expectation_file):
+  def _GetExpectationFileTagHeader(self, expectation_file: str) -> str:
     """Gets the tag header used for expectation files.
 
     Args:
@@ -302,7 +312,9 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
-  def ModifySemiStaleExpectations(self, stale_expectation_map):
+  def ModifySemiStaleExpectations(
+      self,
+      stale_expectation_map: data_types.TestExpectationMap) -> typing.Set[str]:
     """Modifies lines from |stale_expectation_map| in |expectation_file|.
 
     Prompts the user for each modification and provides debug information since
@@ -372,7 +384,10 @@ class Expectations(object):
       modified_urls |= set(e.bug.split())
     return modified_urls
 
-  def _GetExpectationLine(self, expectation, file_contents, expectation_file):
+  def _GetExpectationLine(
+      self, expectation: data_types.Expectation, file_contents: str,
+      expectation_file: str
+  ) -> typing.Union[typing.Tuple[None, None], typing.Tuple[str, int]]:
     """Gets the line and line number of |expectation| in |file_contents|.
 
     Args:
@@ -406,7 +421,8 @@ class Expectations(object):
         return line, line_number + 1
     return None, None
 
-  def FindOrphanedBugs(self, affected_urls):
+  def FindOrphanedBugs(self,
+                       affected_urls: typing.Iterable[str]) -> typing.Set[str]:
     """Finds cases where expectations for bugs no longer exist.
 
     Args:
@@ -431,7 +447,7 @@ class Expectations(object):
           seen_bugs.add(url)
     return set(affected_urls) - seen_bugs
 
-  def GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self) -> typing.List[str]:
     """Gets all the filepaths to expectation files of interest.
 
     Returns:
@@ -441,7 +457,7 @@ class Expectations(object):
     raise NotImplementedError()
 
 
-def _WaitForAnyUserInput():
+def _WaitForAnyUserInput() -> None:
   """Waits for any user input.
 
   Split out for testing purposes.
@@ -449,7 +465,7 @@ def _WaitForAnyUserInput():
   _get_input('Press any key to continue')
 
 
-def _WaitForUserInputOnModification():
+def _WaitForUserInputOnModification() -> str:
   """Waits for user input on how to modify a semi-stale expectation.
 
   Returns:
@@ -468,15 +484,15 @@ def _WaitForUserInputOnModification():
   return response
 
 
-def _LineContainsDisableComment(line):
+def _LineContainsDisableComment(line: str) -> bool:
   return FINDER_DISABLE_COMMENT_BASE in line
 
 
-def _LineContainsEnableComment(line):
+def _LineContainsEnableComment(line: str) -> bool:
   return FINDER_ENABLE_COMMENT_BASE in line
 
 
-def _GetFinderCommentSuffix(line):
+def _GetFinderCommentSuffix(line: str) -> str:
   """Gets the suffix of the finder comment on the given line.
 
   Examples:
@@ -497,7 +513,7 @@ def _GetFinderCommentSuffix(line):
   return suffix
 
 
-def _LineContainsRelevantDisableComment(line, removal_type):
+def _LineContainsRelevantDisableComment(line: str, removal_type: str) -> bool:
   """Returns whether the given line contains a relevant disable comment.
 
   Args:
@@ -516,7 +532,7 @@ def _LineContainsRelevantDisableComment(line, removal_type):
   return False
 
 
-def _DisableSuffixIsRelevant(suffix, removal_type):
+def _DisableSuffixIsRelevant(suffix: str, removal_type: str) -> bool:
   """Returns whether the given suffix is relevant given the removal type.
 
   Args:
@@ -534,16 +550,16 @@ def _DisableSuffixIsRelevant(suffix, removal_type):
   return False
 
 
-def _GetDisableReasonFromComment(line):
+def _GetDisableReasonFromComment(line: str) -> str:
   suffix = _GetFinderCommentSuffix(line)
   return line.split(FINDER_DISABLE_COMMENT_BASE + suffix, 1)[1].strip()
 
 
-def _IsCommentOrBlankLine(line):
+def _IsCommentOrBlankLine(line: str) -> bool:
   return (not line or line.startswith('#'))
 
 
-def _get_input(prompt):
+def _get_input(prompt: str) -> str:
   if sys.version_info[0] == 2:
     return raw_input(prompt)
   return input(prompt)

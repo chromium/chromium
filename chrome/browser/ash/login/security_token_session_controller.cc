@@ -9,6 +9,7 @@
 
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -18,12 +19,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/certificate_provider/certificate_info.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_info.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -102,7 +103,8 @@ void DisplayNotification(const std::u16string& title,
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierSecurityTokenSession),
+              kNotifierSecurityTokenSession,
+              NotificationCatalogName::kSecurityToken),
           /*optional_fields=*/{},
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),
@@ -161,7 +163,7 @@ SecurityTokenSessionController::SecurityTokenSessionController(
     PrefService* local_state,
     PrefService* profile_prefs,
     const user_manager::User* user,
-    CertificateProviderService* certificate_provider_service)
+    chromeos::CertificateProviderService* certificate_provider_service)
     : local_state_(local_state),
       profile_prefs_(profile_prefs),
       user_(user),
@@ -210,7 +212,7 @@ void SecurityTokenSessionController::OnChallengeResponseKeysUpdated() {
 
 void SecurityTokenSessionController::OnCertificatesUpdated(
     const std::string& extension_id,
-    const std::vector<certificate_provider::CertificateInfo>&
+    const std::vector<chromeos::certificate_provider::CertificateInfo>&
         certificate_infos) {
   if (behavior_ == Behavior::kIgnore)
     return;

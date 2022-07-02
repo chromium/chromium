@@ -105,7 +105,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   static AXPositionInstance GetNextTextBoundaryPosition(
       const AXPositionInstance& position,
       ax::mojom::TextBoundary boundary_type,
-      AXBoundaryBehavior boundary_behavior,
+      AXMovementOptions options,
       ax::mojom::MoveDirection boundary_direction);
 
   // Prefer these *Impl methods when functionality is needed internally. We

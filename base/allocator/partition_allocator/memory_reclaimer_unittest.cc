@@ -8,9 +8,10 @@
 #include <utility>
 
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +41,7 @@ class MemoryReclaimerTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    base::PartitionAllocGlobalInit(HandleOOM);
+    PartitionAllocGlobalInit(HandleOOM);
     MemoryReclaimer::Instance()->ResetForTesting();
     allocator_ = std::make_unique<PartitionAllocator>();
     allocator_->init({
@@ -49,6 +50,7 @@ class MemoryReclaimerTest : public ::testing::Test {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kAllowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
     });
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
@@ -57,7 +59,7 @@ class MemoryReclaimerTest : public ::testing::Test {
   void TearDown() override {
     allocator_ = nullptr;
     MemoryReclaimer::Instance()->ResetForTesting();
-    base::PartitionAllocGlobalUninitForTesting();
+    PartitionAllocGlobalUninitForTesting();
   }
 
   void Reclaim() { MemoryReclaimer::Instance()->ReclaimNormal(); }
@@ -108,7 +110,7 @@ TEST_F(MemoryReclaimerTest, Reclaim) {
 namespace {
 // malloc() / free() pairs can be removed by the compiler, this is enough (for
 // now) to prevent that.
-NOINLINE void FreeForTest(void* data) {
+PA_NOINLINE void FreeForTest(void* data) {
   free(data);
 }
 }  // namespace

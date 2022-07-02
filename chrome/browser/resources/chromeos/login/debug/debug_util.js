@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 // TODO(crbug.com/1229130) - Remove this global namespace pollution.
-// TODO(crbug.com/1261902): Remove from the place it will be moved to after
-// crbug.com/1229130.
+// TODO(crbug.com/1261902): Remove once crbug.com/1229130 is tackled.
 window.RECOMMENDED_APPS_OLD_CONTENT = `
   // <include src="../../arc_support/recommend_app_old_list_view.html">
   `;

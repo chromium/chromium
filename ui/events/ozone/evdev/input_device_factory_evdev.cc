@@ -527,14 +527,16 @@ void InputDeviceFactoryEvdev::NotifyTouchscreensUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<InputDevice> keyboards;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasKeyboard()) {
       keyboards.push_back(InputDevice(it->second->input_device()));
+      key_bits_mapping[it->second->id()] = it->second->GetKeyboardKeyBits();
     }
   }
-
-  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards);
+  dispatcher_->DispatchKeyboardDevicesUpdated(keyboards,
+                                              std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
@@ -543,7 +545,9 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasMouse()) {
       mice.push_back(it->second->input_device());
-      has_mouse = true;
+      // Some I2C touchpads falsely claim to be mice, see b/205272718
+      if (it->second->type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+        has_mouse = true;
     } else if (it->second->HasPointingStick()) {
       mice.push_back(it->second->input_device());
       has_pointing_stick = true;
@@ -568,16 +572,18 @@ void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyGamepadDevicesUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<GamepadDevice> gamepads;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasGamepad()) {
       gamepads.emplace_back(it->second->input_device(),
                             it->second->GetGamepadAxes(),
                             it->second->GetGamepadRumbleCapability());
+      key_bits_mapping[it->second->id()] = it->second->GetGamepadKeyBits();
     }
   }
 
-  dispatcher_->DispatchGamepadDevicesUpdated(gamepads);
+  dispatcher_->DispatchGamepadDevicesUpdated(gamepads, std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {

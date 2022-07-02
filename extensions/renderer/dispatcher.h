@@ -229,8 +229,8 @@ class Dispatcher : public content::RenderThreadObserver,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override;
   void SetActivityLoggingEnabled(bool enabled) override;
-  void LoadExtensions(std::vector<extensions::mojom::ExtensionLoadedParamsPtr>
-                          loaded_extensions) override;
+  void LoadExtensions(
+      std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override;
   void UnloadExtension(const std::string& extension_id) override;
   void SuspendExtension(
       const std::string& extension_id,
@@ -254,10 +254,12 @@ class Dispatcher : public content::RenderThreadObserver,
                          URLPatternSet policy_allowed_hosts,
                          bool uses_default_policy_host_restrictions) override;
   void UpdateDefaultPolicyHostRestrictions(
-      extensions::URLPatternSet default_policy_blocked_hosts,
-      extensions::URLPatternSet default_policy_allowed_hosts) override;
+      URLPatternSet default_policy_blocked_hosts,
+      URLPatternSet default_policy_allowed_hosts) override;
+  void UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
+                                  URLPatternSet user_allowed_hosts) override;
   void UpdateTabSpecificPermissions(const std::string& extension_id,
-                                    extensions::URLPatternSet new_hosts,
+                                    URLPatternSet new_hosts,
                                     int tab_id,
                                     bool update_origin_allowlist) override;
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,

@@ -214,10 +214,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
       device_store(), g_browser_process->local_state(),
       enrollment_certificate_uploader_.get());
-  if (ash::features::IsESimPolicyEnabled()) {
-    euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
-        client(), g_browser_process->local_state());
-  }
+  euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
+      client(), g_browser_process->local_state());
 
   // Don't create a MachineCertificateUploader or start the
   // AttestationPolicyObserver if machine cert requests are disabled.

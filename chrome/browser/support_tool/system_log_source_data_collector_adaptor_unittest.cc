@@ -178,7 +178,8 @@ TEST_F(SystemLogSourceDataCollectorAdaptorTest, CollectAndExportData) {
 
   std::map<base::FilePath, std::string> expected_contents;
   for (const auto& data : kTestData) {
-    expected_contents[output_dir.AppendASCII(data.data_source_name)] =
+    expected_contents[output_dir.AppendASCII(data.data_source_name)
+                          .AddExtension(FILE_PATH_LITERAL(".log"))] =
         data.test_logs_pii_redacted;
   }
   EXPECT_THAT(result_contents, ContainerEq(expected_contents));

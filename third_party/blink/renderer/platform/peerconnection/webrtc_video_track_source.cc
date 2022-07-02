@@ -272,6 +272,11 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
                translated_camera_time_us);
 }
 
+void WebRtcVideoTrackSource::OnNotifyFrameDropped() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  OnFrameDropped();
+}
+
 WebRtcVideoTrackSource::FrameAdaptationParams
 WebRtcVideoTrackSource::ComputeAdaptationParams(int width,
                                                 int height,

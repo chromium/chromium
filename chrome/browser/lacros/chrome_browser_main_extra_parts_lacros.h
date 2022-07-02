@@ -20,12 +20,14 @@ class ForceInstalledTrackerLacros;
 class LacrosButterBar;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
+class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class QuickAnswersController;
 class StandaloneBrowserTestController;
 class SyncExplicitPassphraseClientLacros;
 class TabletModePageBehavior;
+class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
 
 namespace arc {
@@ -84,6 +86,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros installation status of force-installed extensions to ash.
   std::unique_ptr<ForceInstalledTrackerLacros> force_installed_tracker_;
+
+  // Sends lacros load/unload events of Vpn extensions to ash.
+  std::unique_ptr<VpnExtensionTrackerLacros> vpn_extension_tracker_;
 
   std::unique_ptr<ChromeKioskLaunchControllerLacros>
       chrome_kiosk_launch_controller_;
@@ -145,6 +150,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Updates Blink preferences on tablet mode state change.
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
+
+  // Forwards file system provider events to extensions.
+  std::unique_ptr<LacrosFileSystemProvider> file_system_provider_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

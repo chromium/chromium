@@ -148,19 +148,18 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
   // Prefer using named spaces.
   CFStringRef color_space_name = nullptr;
-  if (__builtin_available(macos 10.12, *)) {
-    if (color_space == ColorSpace::CreateSRGB() ||
-        (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
-         color_space == ColorSpace::CreateREC709())) {
-      color_space_name = kCGColorSpaceSRGB;
-    } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
-      color_space_name = kCGColorSpaceDisplayP3;
-    } else if (color_space == ColorSpace::CreateExtendedSRGB()) {
-      color_space_name = kCGColorSpaceExtendedSRGB;
-    } else if (color_space == ColorSpace::CreateSRGBLinear()) {
-      color_space_name = kCGColorSpaceExtendedLinearSRGB;
-    }
+  if (color_space == ColorSpace::CreateSRGB() ||
+      (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
+       color_space == ColorSpace::CreateREC709())) {
+    color_space_name = kCGColorSpaceSRGB;
+  } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
+    color_space_name = kCGColorSpaceDisplayP3;
+  } else if (color_space == ColorSpace::CreateExtendedSRGB()) {
+    color_space_name = kCGColorSpaceExtendedSRGB;
+  } else if (color_space == ColorSpace::CreateSRGBLinear()) {
+    color_space_name = kCGColorSpaceExtendedLinearSRGB;
   }
+
   // The symbols kCGColorSpaceITUR_2020_PQ_EOTF and kCGColorSpaceITUR_2020_HLG
   // have been deprecated. Claim that we were able to set the color space,
   // because the path that will render these color spaces will use the
@@ -313,14 +312,7 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
   }
 
   // Ensure that all IOSurfaces start as sRGB.
-  if (__builtin_available(macos 10.12, *)) {
-    IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), kCGColorSpaceSRGB);
-  } else {
-    CGColorSpaceRef color_space = base::mac::GetSRGBColorSpace();
-    base::ScopedCFTypeRef<CFDataRef> color_space_icc(
-        CGColorSpaceCopyICCProfile(color_space));
-    IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), color_space_icc);
-  }
+  IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), kCGColorSpaceSRGB);
 
   UMA_HISTOGRAM_TIMES("GPU.IOSurface.CreateTime",
                       base::TimeTicks::Now() - start_time);

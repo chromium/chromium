@@ -102,13 +102,13 @@ class NET_EXPORT_PRIVATE GzipSourceStream : public FilterSourceStream {
   GZipHeader gzip_header_;
 
   // Tracks how many bytes of gzip footer are yet to be filtered.
-  size_t gzip_footer_bytes_left_;
+  size_t gzip_footer_bytes_left_ = 0;
 
   // Tracks the state of the input stream.
-  InputState input_state_;
+  InputState input_state_ = STATE_START;
 
   // Used when replaying data.
-  InputState replay_state_;
+  InputState replay_state_ = STATE_COMPRESSED_BODY;
 };
 
 }  // namespace net

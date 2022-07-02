@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/ash_prefs.h"
 
-#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
@@ -14,6 +13,7 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
@@ -26,10 +26,8 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/fullscreen_controller.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_controller.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
@@ -50,14 +48,15 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/lock_state_controller.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
@@ -68,11 +67,9 @@ namespace {
 
 // Registers prefs whose default values are same in user and signin prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  AcceleratorControllerImpl::RegisterProfilePrefs(registry);
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);
-  AshColorProvider::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   if (!ash::features::IsBluetoothRevampEnabled())
     BluetoothPowerController::RegisterProfilePrefs(registry);
@@ -81,7 +78,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
   ClipboardNudgeController::RegisterProfilePrefs(registry);
-  DarkModeController::RegisterProfilePrefs(registry);
+  DarkLightModeControllerImpl::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
   saved_desk_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
@@ -112,8 +109,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
   VPNListView::RegisterProfilePrefs(registry);
-  WallpaperControllerImpl::RegisterProfilePrefs(registry);
+  WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
+  MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {
@@ -137,7 +135,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterLocalStatePrefs(registry);
-  WallpaperControllerImpl::RegisterLocalStatePrefs(registry);
+  WallpaperPrefManager::RegisterLocalStatePrefs(registry);
   if (!ash::features::IsBluetoothRevampEnabled())
     BluetoothPowerController::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);

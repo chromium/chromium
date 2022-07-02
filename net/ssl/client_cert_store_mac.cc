@@ -31,8 +31,7 @@
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/cert/x509_util_ios_and_mac.h"
-#include "net/cert/x509_util_mac.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/ssl_platform_key_util.h"
 
@@ -61,17 +60,17 @@ OSStatus CopyCertChain(SecCertificateRef cert_handle,
   DCHECK(out_cert_chain);
 
   // Create an SSL policy ref configured for client cert evaluation.
-  SecPolicyRef ssl_policy;
-  OSStatus result = x509_util::CreateSSLClientPolicy(&ssl_policy);
-  if (result)
-    return result;
-  ScopedCFTypeRef<SecPolicyRef> scoped_ssl_policy(ssl_policy);
+  ScopedCFTypeRef<SecPolicyRef> ssl_policy(
+      SecPolicyCreateSSL(/*server=*/false, /*hostname=*/nullptr));
+  if (!ssl_policy)
+    return errSecNoPolicyModule;
 
   // Create a SecTrustRef.
   ScopedCFTypeRef<CFArrayRef> input_certs(CFArrayCreate(
-      NULL, const_cast<const void**>(reinterpret_cast<void**>(&cert_handle)),
+      nullptr, const_cast<const void**>(reinterpret_cast<void**>(&cert_handle)),
       1, &kCFTypeArrayCallBacks));
-  SecTrustRef trust_ref = NULL;
+  OSStatus result;
+  SecTrustRef trust_ref = nullptr;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     result = SecTrustCreateWithCertificates(input_certs, ssl_policy,
@@ -110,7 +109,7 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
                                        os_cert.InitializeInto());
   if (err != noErr)
     return false;
-  CFArrayRef cert_chain = NULL;
+  CFArrayRef cert_chain = nullptr;
   OSStatus result = CopyCertChain(os_cert.get(), &cert_chain);
   if (result) {
     OSSTATUS_LOG(ERROR, result) << "CopyCertChain error";
@@ -317,7 +316,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     // See if there's an identity preference for this domain:
     ScopedCFTypeRef<CFStringRef> domain_str(
         base::SysUTF8ToCFStringRef("https://" + server_domain));
-    SecIdentityRef sec_identity = NULL;
+    SecIdentityRef sec_identity = nullptr;
     // While SecIdentityCopyPreferences appears to take a list of CA issuers
     // to restrict the identity search to, within Security.framework the
     // argument is ignored and filtering unimplemented. See
@@ -325,7 +324,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     // _SecIdentityCopyPreferenceMatchingName().
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-      if (SecIdentityCopyPreference(domain_str, 0, NULL, &sec_identity) ==
+      if (SecIdentityCopyPreference(domain_str, 0, nullptr, &sec_identity) ==
           noErr)
         preferred_sec_identity.reset(sec_identity);
     }
@@ -335,11 +334,11 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   std::unique_ptr<ClientCertIdentityMac> preferred_identity;
   ClientCertIdentityMacList regular_identities;
 
-  SecIdentitySearchRef search = NULL;
+  SecIdentitySearchRef search = nullptr;
   OSStatus err;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    err = SecIdentitySearchCreate(NULL, CSSM_KEYUSE_SIGN, &search);
+    err = SecIdentitySearchCreate(nullptr, CSSM_KEYUSE_SIGN, &search);
   }
   if (err)
     return ClientCertIdentityList();
@@ -403,9 +402,9 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
 
 }  // namespace
 
-ClientCertStoreMac::ClientCertStoreMac() {}
+ClientCertStoreMac::ClientCertStoreMac() = default;
 
-ClientCertStoreMac::~ClientCertStoreMac() {}
+ClientCertStoreMac::~ClientCertStoreMac() = default;
 
 void ClientCertStoreMac::GetClientCerts(const SSLCertRequestInfo& request,
                                         ClientCertListCallback callback) {
@@ -421,7 +420,7 @@ bool ClientCertStoreMac::SelectClientCertsForTesting(
     ClientCertIdentityMacList input_identities,
     const SSLCertRequestInfo& request,
     ClientCertIdentityList* selected_identities) {
-  GetClientCertsImpl(NULL, std::move(input_identities), request, false,
+  GetClientCertsImpl(nullptr, std::move(input_identities), request, false,
                      selected_identities);
   return true;
 }

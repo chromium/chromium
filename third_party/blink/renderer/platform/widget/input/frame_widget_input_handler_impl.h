@@ -93,7 +93,7 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       int32_t end,
       blink::mojom::SelectionMenuBehavior selection_menu_behavior) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent) override;
-  void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect) override;
+  void ScrollFocusedEditableNodeIntoView() override;
   void WaitForPageScaleAnimationForTesting(
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point) override;

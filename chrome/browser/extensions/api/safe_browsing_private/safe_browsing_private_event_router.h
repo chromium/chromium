@@ -102,7 +102,6 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyUnscannedFileEvent[];
   static const char kKeyLoginEvent[];
   static const char kKeyPasswordBreachEvent[];
-  static const char* kAllEvents[8];
 
   static const char kKeyUnscannedReason[];
 

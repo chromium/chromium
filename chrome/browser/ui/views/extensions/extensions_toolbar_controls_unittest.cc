@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "ui/views/view_utils.h"
+#include "url/origin.h"
 
 class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
  public:
@@ -38,7 +43,7 @@ class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
 
 ExtensionsToolbarControlsUnitTest::ExtensionsToolbarControlsUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 ExtensionsRequestAccessButton*
@@ -288,4 +293,133 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // TODO(crbug.com/1304959): Remove the only extension that requests access to
   // the current site to verify no extension should have access to the current
   // site. Uninstall extension in unit tests is flaky.
+}
+
+// TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
+// when clicking on request access button.
+
+// Tests that extensions with activeTab and requested url with withheld access
+// are taken into account for the request access button visibility, but not the
+// ones with just activeTab.
+// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
+// is run multiple times.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       DISABLED_RequestAccessButtonVisibility_ActiveTabExtensions) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+  const GURL requested_url("http://www.requested-url.com");
+
+  InstallExtensionWithPermissions("Extension A", {"activeTab"});
+  constexpr char kExtensionName[] = "Extension B";
+  auto extension = InstallExtensionWithHostPermissions(
+      kExtensionName, {requested_url.spec(), "activeTab"});
+  WithholdHostPermissions(extension.get());
+
+  web_contents_tester->NavigateAndCommit(requested_url);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
+              testing::ElementsAre(kExtensionName));
+
+  web_contents_tester->NavigateAndCommit(
+      GURL("http://www.non-requested-url.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+// Test that request access button is visible based on the user site setting
+// selected.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButtonVisibility_UserSiteSetting) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+  const GURL url("http://www.url.com");
+  auto url_origin = url::Origin::Create(url);
+
+  // Install an extension and withhold permissions so request access button can
+  // be visible.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  // A site has "customize by extensions" site setting by default,
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  {
+    // Request access button is not visible in permitted sites.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->AddUserPermittedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_FALSE(IsRequestAccessButtonVisible());
+  }
+
+  {
+    // Request access button is not visible in restricted sites.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->AddUserRestrictedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_FALSE(IsRequestAccessButtonVisible());
+  }
+
+  {
+    // Request acesss button is visible if site is not permitted or restricted,
+    // and at least one extension is requesting access.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->RemoveUserRestrictedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_TRUE(IsRequestAccessButtonVisible());
+  }
+}
+
+// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
+// is run multiple times.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       DISABLED_RequestAccessButton_OnPressedExecuteAction) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+
+  constexpr char kActivatedUserAction[] =
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton";
+  base::UserActionTester user_action_tester;
+  extensions::SitePermissionsHelper permissions(browser()->profile());
+
+  // Request access button is visible because extension A is requesting
+  // access.
+  ASSERT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
+  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
+            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
+
+  ClickButton(request_access_button());
+
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+
+  // Verify request access button is hidden since extension executed its
+  // action. Extension's site access should have not changed, since clicking the
+  // button grants one time access.
+  ASSERT_FALSE(request_access_button()->GetVisible());
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
+  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
+            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
 }

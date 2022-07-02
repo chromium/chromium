@@ -2,10 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/media/router/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+
+declare_args() {
+  # Set to true to build code that supports the Open Screen Protocol.
+  # OSP is experimental and not yet feature-complete.
+  enable_openscreen_protocol = false
+}
 
 source_set("data_decoder_util") {
   deps = [
@@ -25,7 +30,7 @@ static_library("media_router_feature") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//components/media_router/common:common",
     "//components/prefs:prefs",
@@ -75,7 +80,7 @@ static_library("router") {
 
   if (!is_android) {
     deps += [
-      "discovery",
+      "discovery:discovery",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
@@ -165,7 +170,7 @@ static_library("router") {
       deps += [ "//chrome/installer/util:with_no_strings" ]
     }
 
-    if (enable_openscreen) {
+    if (enable_openscreen_protocol) {
       sources += [
         "providers/openscreen/discovery/open_screen_listener.cc",
         "providers/openscreen/discovery/open_screen_listener.h",
@@ -195,7 +200,7 @@ if (!is_android) {
   static_library("test_support") {
     testonly = true
     deps = [
-      "discovery",
+      "discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/cast_channel:cast_channel",
@@ -244,6 +249,7 @@ source_set("unittests") {
     "//chrome/test:test_support",
     "//components/cast_channel:cast_channel",
     "//components/cast_channel:test_support",
+    "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
     "//content/test:test_support",
@@ -318,9 +324,8 @@ source_set("unittests") {
     ]
   }
 
-  if (enable_openscreen) {
+  if (enable_openscreen_protocol) {
     include_dirs = [ "//third_party/openscreen/src" ]
-
     sources += [
       "providers/openscreen/discovery/open_screen_listener_unittest.cc",
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
@@ -328,7 +333,10 @@ source_set("unittests") {
   }
 }
 
-if (enable_openscreen) {
+# TODO(crbug.com/1290541): Fails to link on Fuchsia builds.
+# TODO(https://issuetracker.google.com/236160471): CDDL compiler doesn't build
+# on Windows.
+if (!is_fuchsia && !is_win) {
   test("openscreen_unittests") {
     deps = [
       "//base/test:run_all_unittests",

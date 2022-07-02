@@ -255,6 +255,14 @@ COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
     const IntentFilterPtr& intent_filter);
 
+COMPONENT_EXPORT(APP_TYPES)
+IntentFilters ConvertMojomIntentFiltersToIntentFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& mojom_intent_filters);
+
+COMPONENT_EXPORT(APP_TYPES)
+std::vector<apps::mojom::IntentFilterPtr>
+ConvertIntentFiltersToMojomIntentFilters(const IntentFilters& intent_filters);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_H_

@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
@@ -36,7 +37,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
 namespace web_app {
@@ -89,16 +90,17 @@ content::WebContents* WebAppLaunchProcess::Run() {
   // DCHECK on the basic scope.
   DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id) ||
          GetSystemWebAppTypeForAppId(&profile_, params_.app_id) &&
-             provider_.system_web_app_manager().GetSystemApp(
-                 *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
-             provider_.system_web_app_manager()
-                 .GetSystemApp(
+             ash::SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
+                 ->GetSystemApp(
+                     *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
+             ash::SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
+                 ->GetSystemApp(
                      *GetSystemWebAppTypeForAppId(&profile_, params_.app_id))
                  ->IsUrlInSystemAppScope(launch_url));
 #endif
 
   // System Web Apps have their own launch code path.
-  absl::optional<SystemAppType> system_app_type =
+  absl::optional<ash::SystemWebAppType> system_app_type =
       GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
   if (system_app_type) {
     Browser* browser = LaunchSystemWebAppImpl(&profile_, *system_app_type,
@@ -129,8 +131,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
 const apps::ShareTarget* WebAppLaunchProcess::MaybeGetShareTarget() const {
   DCHECK(web_app_);
-  bool is_share_intent =
-      params_.intent && apps_util::IsShareIntent(params_.intent);
+  bool is_share_intent = params_.intent && params_.intent->IsShareIntent();
   return is_share_intent && web_app_->share_target().has_value()
              ? &web_app_->share_target().value()
              : nullptr;
@@ -341,7 +342,9 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       /*is_renderer_initiated=*/false));
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
-  tab_strip->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
+  tab_strip->ActivateTabAt(
+      tab_index, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
   SetWebContentsActingAsApp(web_contents, params_.app_id);
   return {.web_contents = web_contents, .did_navigate = true};
 }

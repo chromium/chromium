@@ -54,6 +54,8 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 
   html_source->AddLocalizedString(version_ui::kCompany,
                                   IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
+  html_source->AddLocalizedString(version_ui::kCopyLabel,
+                                  IDS_VERSION_UI_COPY_LABEL);
   base::Time::Exploded exploded_time;
   base::Time::Now().LocalExplode(&exploded_time);
   html_source->AddString(

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 
 namespace guest_os {
 
@@ -33,8 +33,7 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
       base::BindOnce(&GuestOsStabilityMonitor::SeneschalStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  auto* chunneld_client =
-      chromeos::DBusThreadManager::Get()->GetChunneldClient();
+  auto* chunneld_client = chromeos::ChunneldClient::Get();
   DCHECK(chunneld_client);
   chunneld_client->WaitForServiceToBeAvailable(
       base::BindOnce(&GuestOsStabilityMonitor::ChunneldStarted,
@@ -70,8 +69,7 @@ void GuestOsStabilityMonitor::SeneschalStarted(bool is_available) {
 void GuestOsStabilityMonitor::ChunneldStarted(bool is_available) {
   DCHECK(is_available);
 
-  auto* chunneld_client =
-      chromeos::DBusThreadManager::Get()->GetChunneldClient();
+  auto* chunneld_client = chromeos::ChunneldClient::Get();
   DCHECK(chunneld_client);
   chunneld_observer_.Observe(chunneld_client);
 }

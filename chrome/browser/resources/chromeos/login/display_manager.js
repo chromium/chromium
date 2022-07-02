@@ -11,7 +11,7 @@
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
- // #import {DISPLAY_TYPE, ACCELERATOR_CANCEL, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+ // #import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
 // #import {MultiTapDetector} from './multi_tap_detector.m.js';
 // #import {keyboard} from './keyboard_utils.m.js'
 
@@ -102,15 +102,6 @@ cr.define('cr.ui.login', function() {
       this.displayType_ = DISPLAY_TYPE.UNKNOWN;
 
       /**
-       * Number of users in the login screen UI. This is used by the views login
-       * screen, and is always 0 for WebUI login screen.
-       * TODO(crbug.com/808271): WebUI and views implementation should return
-       * the same user list.
-       * @type {number}
-       */
-      this.userCount_ = 0;
-
-      /**
        * Stored OOBE configuration for newly registered screens.
        * @type {OobeTypes.OobeConfiguration|undefined}
        */
@@ -148,22 +139,6 @@ cr.define('cr.ui.login', function() {
      */
     get currentScreen() {
       return $(this.screens_[this.currentStep_]);
-    }
-
-    /**
-     * Returns true if we are showing views based login screen.
-     * @return {boolean}
-     */
-    get showingViewsLogin() {
-      return this.displayType_ == DISPLAY_TYPE.GAIA_SIGNIN;
-    }
-
-    /**
-     * Returns true if the login screen has user pods.
-     * @return {boolean}
-     */
-    get hasUserPods() {
-      return this.showingViewsLogin && this.userCount_ > 0;
     }
 
     /**
@@ -225,30 +200,12 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Sets the number of users on the views login screen.
-     * @param {number} userCount The number of users.
+     * Handle the cancel accelerator.
      */
-    setLoginUserCount(userCount) {
-      this.userCount_ = userCount;
-    }
-
-    /**
-     * Handle accelerators.
-     * @param {string} name Accelerator name.
-     *
-     * @suppress {missingProperties}
-     * $('reset').userActed(...)
-     * TODO(crbug.com/1229130) - Remove this suppression.
-     */
-    handleAccelerator(name) {
-      if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
-        return;
-      }
+    handleCancel() {
       const currentStepId = this.screens_[this.currentStep_];
-      if (name == ACCELERATOR_CANCEL) {
-        if (this.currentScreen && this.currentScreen.cancel) {
-          this.currentScreen.cancel();
-        }
+      if (this.currentScreen && this.currentScreen.cancel) {
+        this.currentScreen.cancel();
       }
     }
 
@@ -285,15 +242,6 @@ cr.define('cr.ui.login', function() {
       }
 
       invokePolymerMethod(newStep, 'onBeforeShow', screenData);
-
-      // We still have several screens that are not implemented as a single
-      // Polymer-element, so we need to explicitly inform all oobe-dialogs.
-      //
-      // TODO(alemate): make every screen a single Polymer element, so that
-      // we could simply use OobeDialogHostBehavior in stead of this.
-      for (const dialog of newStep.getElementsByTagName('oobe-dialog')) {
-        invokePolymerMethod(dialog, 'onBeforeShow', screenData);
-      }
 
       if (newStep.defaultControl) {
         invokePolymerMethod(newStep.defaultControl, 'onBeforeShow', screenData);
@@ -464,15 +412,6 @@ cr.define('cr.ui.login', function() {
                 currentScreen.onSetupDemoModeGesture();
               }
             });
-      }
-    }
-
-    /**
-     * Prepares screens to use in login display.
-     */
-    prepareForLoginDisplay_() {
-      if (this.showingViewsLogin) {
-        $('top-header-bar').hidden = true;
       }
     }
 

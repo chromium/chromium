@@ -84,6 +84,9 @@ class NET_EXPORT UDPSocketPosixSender
  public:
   UDPSocketPosixSender();
 
+  UDPSocketPosixSender(const UDPSocketPosixSender&) = delete;
+  UDPSocketPosixSender& operator=(const UDPSocketPosixSender&) = delete;
+
   SendResult SendBuffers(int fd, DatagramBuffers buffers);
 
   void SetSendmmsgEnabled(bool enabled) {
@@ -113,9 +116,7 @@ class NET_EXPORT UDPSocketPosixSender
 #endif
 
  private:
-  UDPSocketPosixSender(const UDPSocketPosixSender&) = delete;
-  UDPSocketPosixSender& operator=(const UDPSocketPosixSender&) = delete;
-  bool sendmmsg_enabled_;
+  bool sendmmsg_enabled_ = false;
 };
 
 class NET_EXPORT UDPSocketPosix {
@@ -127,7 +128,7 @@ class NET_EXPORT UDPSocketPosix {
   // throughput estimate.
   class ReceivedActivityMonitor {
    public:
-    ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
+    ReceivedActivityMonitor() = default;
 
     ReceivedActivityMonitor(const ReceivedActivityMonitor&) = delete;
     ReceivedActivityMonitor& operator=(const ReceivedActivityMonitor&) = delete;
@@ -143,8 +144,8 @@ class NET_EXPORT UDPSocketPosix {
     void Update();
     void OnTimerFired();
 
-    uint32_t bytes_;
-    uint32_t increments_;
+    uint32_t bytes_ = 0;
+    uint32_t increments_ = 0;
     base::RepeatingTimer timer_;
   };
 
@@ -391,8 +392,7 @@ class NET_EXPORT UDPSocketPosix {
   // Watcher for WriteAsync paths.
   class WriteAsyncWatcher : public base::MessagePumpForIO::FdWatcher {
    public:
-    explicit WriteAsyncWatcher(UDPSocketPosix* socket)
-        : socket_(socket), watching_(false) {}
+    explicit WriteAsyncWatcher(UDPSocketPosix* socket) : socket_(socket) {}
 
     WriteAsyncWatcher(const WriteAsyncWatcher&) = delete;
     WriteAsyncWatcher& operator=(const WriteAsyncWatcher&) = delete;
@@ -409,7 +409,7 @@ class NET_EXPORT UDPSocketPosix {
 
    private:
     const raw_ptr<UDPSocketPosix> socket_;
-    bool watching_;
+    bool watching_ = false;
   };
 
   void IncreaseWriteAsyncOutstanding(int increment) {
@@ -544,24 +544,24 @@ class NET_EXPORT UDPSocketPosix {
   // Hash of |socket_| to verify that it is not corrupted when calling close().
   // Used to debug https://crbug.com/906005.
   // TODO(crbug.com/906005): Remove this once the bug is fixed.
-  int socket_hash_;
+  int socket_hash_ = 0;
 
-  int addr_family_;
-  bool is_connected_;
+  int addr_family_ = 0;
+  bool is_connected_ = false;
 
   // Bitwise-or'd combination of SocketOptions. Specifies the set of
   // options that should be applied to |socket_| before Bind().
-  int socket_options_;
+  int socket_options_ = SOCKET_OPTION_MULTICAST_LOOP;
 
   // Flags passed to sendto().
-  int sendto_flags_;
+  int sendto_flags_ = 0;
 
   // Multicast interface.
-  uint32_t multicast_interface_;
+  uint32_t multicast_interface_ = 0;
 
   // Multicast socket options cached for SetMulticastOption.
   // Cannot be used after Bind().
-  int multicast_time_to_live_;
+  int multicast_time_to_live_ = 1;
 
   // How to do source port binding, used only when UDPSocket is part of
   // UDPClientSocket, since UDPServerSocket provides Bind.
@@ -587,22 +587,22 @@ class NET_EXPORT UDPSocketPosix {
   int write_async_max_buffers_ = 16;
   int written_bytes_ = 0;
 
-  int last_async_result_;
+  int last_async_result_ = 0;
   base::RepeatingTimer write_async_timer_;
-  bool write_async_timer_running_;
+  bool write_async_timer_running_ = false;
   // Total writes in flight, including those |PostTask*|'d.
-  int write_async_outstanding_;
+  int write_async_outstanding_ = 0;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The buffer used by InternalRead() to retry Read requests
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
-  raw_ptr<IPEndPoint> recv_from_address_;
+  int read_buf_len_ = 0;
+  raw_ptr<IPEndPoint> recv_from_address_ = nullptr;
 
   // The buffer used by InternalWrite() to retry Write requests
   scoped_refptr<IOBuffer> write_buf_;
-  int write_buf_len_;
+  int write_buf_len_ = 0;
   std::unique_ptr<IPEndPoint> send_to_address_;
 
   // External callback; called when read is complete.
@@ -634,7 +634,7 @@ class NET_EXPORT UDPSocketPosix {
   // By default, the value is set to false. To use the optimization, the
   // client of the socket has to opt-in by calling the
   // enable_experimental_recv_optimization() method.
-  bool experimental_recv_optimization_enabled_;
+  bool experimental_recv_optimization_enabled_ = false;
 
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.

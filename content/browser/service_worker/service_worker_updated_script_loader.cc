@@ -23,7 +23,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -191,11 +190,6 @@ void ServiceWorkerUpdatedScriptLoader::OnTransferSizeUpdated(
   client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void ServiceWorkerUpdatedScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  NOTREACHED();
-}
-
 void ServiceWorkerUpdatedScriptLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   LoaderState previous_state = network_loader_state_;
@@ -253,14 +247,8 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   }
 
   // Pass the consumer handle to the client.
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    client_->OnReceiveResponse(std::move(client_response),
-                               std::move(client_consumer));
-  } else {
-    client_->OnReceiveResponse(std::move(client_response),
-                               mojo::ScopedDataPipeConsumerHandle());
-    client_->OnStartLoadingResponseBody(std::move(client_consumer));
-  }
+  client_->OnReceiveResponse(std::move(client_response),
+                             std::move(client_consumer));
 
   client_producer_watcher_.Watch(
       client_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,

@@ -981,7 +981,7 @@ class Exporter:
     recently_added_sender = None
     for group in self.grouping_archive:
       if group.name != "Unsorted":
-       continue
+        continue
       for sender in group.senders:
         if sender.name == "Recently Added":
           recently_added_sender = sender

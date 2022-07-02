@@ -24,7 +24,7 @@ var CrComponentsCustomizeThemesTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js';
   }
 };
 
@@ -32,10 +32,45 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
   mocha.run();
 });
 
+var CrComponentsHelpBubbleMixinTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_mixin_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleMixinTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsHelpBubbleTest = class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsHistoryClustersTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js';
+  }
+};
+
+TEST_F('CrComponentsHistoryClustersTest', 'All', function() {
+  mocha.run();
+});
+
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js';
   }
 };
 

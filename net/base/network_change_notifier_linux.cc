@@ -44,7 +44,8 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
   void OnLinkChanged();
   // Used to detect online/offline state and IP address changes.
   internal::AddressTrackerLinux address_tracker_;
-  NetworkChangeNotifier::ConnectionType last_type_;
+  NetworkChangeNotifier::ConnectionType last_type_ =
+      NetworkChangeNotifier::CONNECTION_NONE;
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
@@ -57,8 +58,7 @@ NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
               &NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged,
               base::Unretained(this)),
           base::DoNothing(),
-          ignored_interfaces),
-      last_type_(NetworkChangeNotifier::CONNECTION_NONE) {}
+          ignored_interfaces) {}
 
 void NetworkChangeNotifierLinux::BlockingThreadObjects::Init() {
   address_tracker_.Init();

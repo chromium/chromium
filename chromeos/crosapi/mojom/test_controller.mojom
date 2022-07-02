@@ -31,19 +31,44 @@ enum OptionalBoolean {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
   // in a tab or window) and returns the ID of the installed app (see
   // |web_app::GenerateAppId|).
   InstallWebApp@0(string start_url, WindowMode mode) => (string app_id);
+
+  // Loads a fake extension in lacros-chrome, assigns it the given name and
+  // returns the ID of the loaded extension.
+  [MinVersion=1]
+  LoadVpnExtension@1(string extension_name) => (string extension_id);
+};
+
+// Allows callers running in lacros to trigger test events that are passed to
+// the active Vpn configuration.
+// See chrome/browser/lacros/vpn_provider_lacros_apitest.cc for details.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="e2bca22e-32e9-40b3-a0bc-035b41534496"]
+interface TestShillController {
+  // Simulate |data| being received by the configuration determined by
+  // |extension_id| and |configuration_name|.
+  OnPacketReceived@0(string extension_id, string configuration_name,
+      array<uint8> data);
+
+  // Simulate |message| being received by the configuration determined by
+  // |extension_id| and |configuration_name|.
+  OnPlatformMessage@1(string extension_id, string configuration_name,
+      uint32 message);
 };
 
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 14
-// Next method id: 23
+// Next version: 16
+// Next method id: 25
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -174,4 +199,14 @@ interface TestController {
   // Introduced in M-103.
   [MinVersion=13]
   GetAshVersion@22() => (string ash_version);
+
+  // Binds |test_shill_controller| that can be used to simulate packet/message
+  // events.
+  [MinVersion=14]
+  BindTestShillController@23(
+      pending_receiver<TestShillController> test_shill_controller) => ();
+
+  // Creates and then cancels a print job.
+  [MinVersion=15]
+  CreateAndCancelPrintJob@24(string job_title) => ();
 };

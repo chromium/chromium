@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "chromeos/dbus/arc/fake_arc_appfuse_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -19,9 +21,11 @@ namespace chromeos {
 
 namespace {
 
+ArcAppfuseProviderClient* g_instance = nullptr;
+
 class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
  public:
-  ArcAppfuseProviderClientImpl() {}
+  ArcAppfuseProviderClientImpl() = default;
 
   ArcAppfuseProviderClientImpl(const ArcAppfuseProviderClientImpl&) = delete;
   ArcAppfuseProviderClientImpl& operator=(const ArcAppfuseProviderClientImpl&) =
@@ -76,7 +80,6 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   // DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
@@ -114,13 +117,36 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
 
 }  // namespace
 
-ArcAppfuseProviderClient::ArcAppfuseProviderClient() = default;
-
-ArcAppfuseProviderClient::~ArcAppfuseProviderClient() = default;
+// static
+ArcAppfuseProviderClient* ArcAppfuseProviderClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<ArcAppfuseProviderClient> ArcAppfuseProviderClient::Create() {
-  return std::make_unique<ArcAppfuseProviderClientImpl>();
+void ArcAppfuseProviderClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ArcAppfuseProviderClientImpl())->Init(bus);
+}
+
+// static
+void ArcAppfuseProviderClient::InitializeFake() {
+  new FakeArcAppfuseProviderClient();
+}
+
+// static
+void ArcAppfuseProviderClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ArcAppfuseProviderClient::ArcAppfuseProviderClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ArcAppfuseProviderClient::~ArcAppfuseProviderClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

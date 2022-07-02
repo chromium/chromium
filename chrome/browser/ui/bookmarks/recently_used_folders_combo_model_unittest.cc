@@ -41,6 +41,8 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
     changed_ = true;
   }
 
+  void OnComboboxModelDestroying(ui::ComboboxModel* model) override {}
+
  private:
   bool changed_;
 };

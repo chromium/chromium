@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions on a non-custom composited div scrollbar thumb.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<script src="resources/mouse-scrolling-on-div-scrollbar-thumb.js"></script>
+<style>
+  .appearance {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    border: 1px solid black;
+  }
+
+  .standardLocation {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+  }
+
+  .space {
+    height: 1000px;
+    width: 1000px;
+  }
+
+  #standard {
+    direction: rtl;
+  }
+</style>
+
+<!-- Composited non-custom scroller -->
+<div id="standard" class="appearance standardLocation" style="direction: rtl;">
+  <div class="space"></div>
+</div>
+
+<script>
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  let platform = navigator.userAgent.includes("Linux") ? "linux" :
+    navigator.userAgent.includes("Windows") ? "win" :
+      navigator.userAgent.includes("Mac OS X") ? "mac" :
+        (() => { throw "Platform unsupported."; })();
+
+  const scroller = document.getElementById("standard");
+  const TRACK_WIDTH = calculateScrollbarThickness()
+  const params = {
+    scroller: scroller,
+    TRACK_WIDTH: TRACK_WIDTH,
+    BUTTON_WIDTH: TRACK_WIDTH,
+    SCROLL_CORNER: TRACK_WIDTH,
+    SCROLL_DELTA: 50,
+    platform: platform
+  }
+
+  promise_test(async () => {
+    await testScrollThumbNonScrolls(params);
+  }, "Test thumb drags beyond scrollbar track (RTL).");
+  promise_test(async () => {
+    await testThumbScrolls(params);
+  }, "Test mouse drags in intervals on non-custom composited div scrollbar thumb (RTL).");
+</script>

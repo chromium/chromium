@@ -109,20 +109,20 @@ std::string ICULocaleName(const std::string& locale_string) {
   if (locale_string.substr(0, 2) != "es")
     return locale_string;
   // Expand es to es-ES.
-  if (LowerCaseEqualsASCII(locale_string, "es"))
+  if (EqualsCaseInsensitiveASCII(locale_string, "es"))
     return "es-ES";
   // Map es-419 (Latin American Spanish) to es-FOO depending on the system
   // locale.  If it's es-RR other than es-ES, map to es-RR. Otherwise, map
   // to es-MX (the most populous in Spanish-speaking Latin America).
-  if (LowerCaseEqualsASCII(locale_string, "es-419")) {
+  if (EqualsCaseInsensitiveASCII(locale_string, "es-419")) {
     const icu::Locale& locale = icu::Locale::getDefault();
     std::string language = locale.getLanguage();
     const char* country = locale.getCountry();
-    if (LowerCaseEqualsASCII(language, "es") &&
-      !LowerCaseEqualsASCII(country, "es")) {
-        language += '-';
-        language += country;
-        return language;
+    if (EqualsCaseInsensitiveASCII(language, "es") &&
+        !EqualsCaseInsensitiveASCII(country, "es")) {
+      language += '-';
+      language += country;
+      return language;
     }
     return "es-MX";
   }

@@ -43,7 +43,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   // Observing CaptureHandle wheneither the capturing or the captured party
   // is incognito is disallowed, except for self-capture.
-  if (capturer->GetMainFrame() != captured->GetMainFrame()) {
+  if (capturer->GetMainFrame() != captured->GetPrimaryMainFrame()) {
     if (capturer->GetBrowserContext()->IsOffTheRecord() ||
         captured->GetBrowserContext()->IsOffTheRecord()) {
       return nullptr;
@@ -52,7 +52,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   auto result = media::mojom::CaptureHandle::New();
   if (capture_handle_config.expose_origin) {
-    result->origin = captured->GetMainFrame()->GetLastCommittedOrigin();
+    result->origin = captured->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
   result->capture_handle = capture_handle_config.capture_handle;
 
@@ -253,10 +253,12 @@ void CaptureHandleManager::OnTabCaptureStopped(
 
 void CaptureHandleManager::OnTabCaptureDevicesUpdated(
     const std::string& label,
-    const blink::mojom::StreamDevices& new_devices,
+    blink::mojom::StreamDevicesSetPtr new_stream_devices_set,
     GlobalRenderFrameHostId capturer,
     DeviceCaptureHandleChangeCallback handle_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(new_stream_devices_set);
+  DCHECK_EQ(1u, new_stream_devices_set->stream_devices.size());
 
   // Pause tracking of all old devices.
   for (auto& capture : captures_) {
@@ -266,6 +268,8 @@ void CaptureHandleManager::OnTabCaptureDevicesUpdated(
   }
 
   // Start tracking any new devices; resume tracking of changed devices.
+  const blink::mojom::StreamDevices& new_devices =
+      *new_stream_devices_set->stream_devices[0];
   if (new_devices.audio_device.has_value()) {
     OnTabCaptureStarted(label, new_devices.audio_device.value(), capturer,
                         handle_change_callback);

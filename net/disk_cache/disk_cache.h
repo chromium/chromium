@@ -54,6 +54,26 @@ using RangeResultCallback = base::OnceCallback<void(const RangeResult&)>;
 // See CreateCacheBackend() for its usage.
 enum class ResetHandling { kReset, kResetOnError, kNeverReset };
 
+struct NET_EXPORT BackendResult {
+  BackendResult();
+  ~BackendResult();
+  BackendResult(BackendResult&&);
+  BackendResult& operator=(BackendResult&&);
+
+  BackendResult(const BackendResult&) = delete;
+  BackendResult& operator=(const BackendResult&) = delete;
+
+  // `error_in` should not be net::OK for MakeError().
+  static BackendResult MakeError(net::Error error_in);
+  // `backend_in` should not be nullptr for Make().
+  static BackendResult Make(std::unique_ptr<Backend> backend_in);
+
+  net::Error net_error = net::ERR_FAILED;
+  std::unique_ptr<Backend> backend;
+};
+
+using BackendResultCallback = base::OnceCallback<void(BackendResult)>;
+
 // Returns an instance of a Backend of the given `type`. `file_operations`
 // (nullable) is used to broker file operations in sandboxed environments.
 // Currently `file_operations` is only used for the simple backend.
@@ -71,28 +91,27 @@ enum class ResetHandling { kReset, kResetOnError, kNeverReset };
 // cache creation will fail if there is a problem with cache initialization.
 //
 // `max_bytes` is the maximum size the cache can grow to. If zero is passed in
-// as `max_bytes`, the cache will determine the value to use. The returned
-// pointer can be nullptr if a fatal error is found. The actual return value of
-// the function is a net error code. If this function returns ERR_IO_PENDING,
-// the `callback` will be invoked when a backend is available or a fatal error
-// condition is reached.  The pointer to receive the `backend` must remain valid
-// until the operation completes (the callback is notified).
-NET_EXPORT net::Error CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    scoped_refptr<BackendFileOperationsFactory> file_operations,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    std::unique_ptr<Backend>* backend,
-    net::CompletionOnceCallback callback);
+// as `max_bytes`, the cache will determine the value to use.
+//
+// `net_error` in return value of the function is a net error code. If it is
+// ERR_IO_PENDING, the `callback` will be invoked when a backend is available or
+// a fatal error condition is reached.  `backend` in return value or parameter
+// to callback can be nullptr if a fatal error is found.
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   BackendResultCallback callback);
 
 #if BUILDFLAG(IS_ANDROID)
 // Similar to the function above, but takes an |app_status_listener| which is
 // used to listen for when the Android application status changes, so we can
 // flush the cache to disk when the app goes to the background.
-NET_EXPORT net::Error CreateCacheBackend(
+NET_EXPORT BackendResult CreateCacheBackend(
     net::CacheType type,
     net::BackendType backend_type,
     scoped_refptr<BackendFileOperationsFactory> file_operations,
@@ -100,8 +119,7 @@ NET_EXPORT net::Error CreateCacheBackend(
     int64_t max_bytes,
     ResetHandling reset_handling,
     net::NetLog* net_log,
-    std::unique_ptr<Backend>* backend,
-    net::CompletionOnceCallback callback,
+    BackendResultCallback callback,
     base::android::ApplicationStatusListener* app_status_listener);
 #endif
 
@@ -114,17 +132,16 @@ NET_EXPORT net::Error CreateCacheBackend(
 //
 // Note that this will not wait for |post_cleanup_callback| of a previous
 // instance for |path| to run.
-NET_EXPORT net::Error CreateCacheBackend(
-    net::CacheType type,
-    net::BackendType backend_type,
-    scoped_refptr<BackendFileOperationsFactory> file_operations,
-    const base::FilePath& path,
-    int64_t max_bytes,
-    ResetHandling reset_handling,
-    net::NetLog* net_log,
-    std::unique_ptr<Backend>* backend,
-    base::OnceClosure post_cleanup_callback,
-    net::CompletionOnceCallback callback);
+NET_EXPORT BackendResult
+CreateCacheBackend(net::CacheType type,
+                   net::BackendType backend_type,
+                   scoped_refptr<BackendFileOperationsFactory> file_operations,
+                   const base::FilePath& path,
+                   int64_t max_bytes,
+                   ResetHandling reset_handling,
+                   net::NetLog* net_log,
+                   base::OnceClosure post_cleanup_callback,
+                   BackendResultCallback callback);
 
 // This will flush any internal threads used by backends created w/o an
 // externally injected thread specified, so tests can be sure that all I/O
@@ -146,7 +163,7 @@ class NET_EXPORT Backend {
 
   class Iterator {
    public:
-    virtual ~Iterator() {}
+    virtual ~Iterator() = default;
 
     // OpenNextEntry returns a result with net_error() |net::OK| and provided
     // entry if there is an entry to enumerate which it can return immediately.
@@ -175,8 +192,8 @@ class NET_EXPORT Backend {
   // on what will succeed and what will fail.  In particular the blockfile
   // backend will leak entries closed after backend deletion, while others
   // handle it properly.
-  Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
-  virtual ~Backend() {}
+  explicit Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
+  virtual ~Backend() = default;
 
   // Returns the type of this cache.
   net::CacheType GetCacheType() const { return cache_type_; }
@@ -464,7 +481,7 @@ class NET_EXPORT Entry {
   virtual void SetLastUsedTimeForTest(base::Time time) = 0;
 
  protected:
-  virtual ~Entry() {}
+  virtual ~Entry() = default;
 };
 
 struct EntryDeleter {

@@ -65,13 +65,15 @@ ServiceWorkerHost::~ServiceWorkerHost() {
 
 void ServiceWorkerHost::CompleteStartWorkerPreparation(
     int process_id,
-    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-        broker_receiver) {
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
+    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+        interface_provider_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, worker_process_id_);
   DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
   worker_process_id_ = process_id;
   broker_receiver_.Bind(std::move(broker_receiver));
+  remote_interfaces_.Bind(std::move(interface_provider_remote));
 }
 
 void ServiceWorkerHost::CreateWebTransportConnector(
@@ -91,6 +93,15 @@ void ServiceWorkerHost::BindCacheStorage(
       blink::features::kEagerCacheStorageSetupForServiceWorkers));
   version_->embedded_worker()->BindCacheStorage(std::move(receiver));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ServiceWorkerHost::BindHidService(
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindHidService(version_->key().origin(),
+                                              std::move(receiver));
+}
+#endif
 
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a

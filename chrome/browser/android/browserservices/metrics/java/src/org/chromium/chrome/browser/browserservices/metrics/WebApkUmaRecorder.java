@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.webapps.WebApkDistributor;
 
 import java.io.File;
@@ -152,10 +153,17 @@ public class WebApkUmaRecorder {
                 HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_HIDDEN, durationMs);
     }
 
-    /** Records whether a WebAPK has permission to display notifications. */
-    public static void recordNotificationPermissionStatus(boolean permissionEnabled) {
-        RecordHistogram.recordBooleanHistogram(
-                "WebApk.Notification.Permission.Status", permissionEnabled);
+    /** Records the notification permission status for a WebAPK. */
+    public static void recordNotificationPermissionStatus(@ContentSettingValues int settingValue) {
+        RecordHistogram.recordEnumeratedHistogram("WebApk.Notification.Permission.Status2",
+                settingValue, ContentSettingValues.NUM_SETTINGS);
+    }
+
+    /** Records the notification permission request result for a WebAPK. */
+    public static void recordNotificationPermissionRequestResult(
+            @ContentSettingValues int settingValue) {
+        RecordHistogram.recordEnumeratedHistogram("WebApk.Notification.PermissionRequestResult",
+                settingValue, ContentSettingValues.NUM_SETTINGS);
     }
 
     /**

@@ -27,8 +27,8 @@ namespace {
 connectors_internals::mojom::KeyTrustLevel ParseTrustLevel(
     BPKUR::KeyTrustLevel trust_level) {
   switch (trust_level) {
-    case BPKUR::CHROME_BROWSER_TPM_KEY:
-      return connectors_internals::mojom::KeyTrustLevel::TPM;
+    case BPKUR::CHROME_BROWSER_HW_KEY:
+      return connectors_internals::mojom::KeyTrustLevel::HW;
     case BPKUR::CHROME_BROWSER_OS_KEY:
       return connectors_internals::mojom::KeyTrustLevel::OS;
     default:

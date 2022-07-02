@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -41,9 +42,10 @@ namespace file_manager_private {
 struct EntryProperties;
 struct IconSet;
 struct VolumeMetadata;
+struct MountableGuest;
 }
 }
-}
+}  // namespace extensions
 
 namespace ui {
 struct SelectedFileInfo;
@@ -146,6 +148,9 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 
 // Get event logger to chrome://drive-internals page for the |profile|.
 drive::EventLogger* GetLogger(Profile* profile);
+
+std::vector<extensions::api::file_manager_private::MountableGuest>
+CreateMountableGuestList(Profile* profile);
 
 }  // namespace util
 }  // namespace file_manager

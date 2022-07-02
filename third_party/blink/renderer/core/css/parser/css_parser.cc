@@ -43,7 +43,7 @@ void CSSParser::ParseDeclarationListForInspector(
                                                   observer);
 }
 
-CSSSelectorList CSSParser::ParseSelector(
+CSSSelectorVector CSSParser::ParseSelector(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet_contents,
     const String& selector) {

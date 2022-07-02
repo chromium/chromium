@@ -209,7 +209,7 @@ class ContentSubresourceFilterThrottleManagerTest
     content::RenderViewHostTestHarness::SetUp();
     content::WebContents* web_contents =
         RenderViewHostTestHarness::web_contents();
-    CreateAgentForHost(web_contents->GetMainFrame());
+    CreateAgentForHost(web_contents->GetPrimaryMainFrame());
 
     // Initialize the ruleset dealer. Allowlisted URLs must also match a
     // disallowed rule in order to work correctly.
@@ -288,15 +288,9 @@ class ContentSubresourceFilterThrottleManagerTest
   void CreateTestNavigation(const GURL& url,
                             content::RenderFrameHost* render_frame_host) {
     DCHECK(render_frame_host);
-    if (render_frame_host->IsFencedFrameRoot()) {
-      navigation_simulator_ =
-          content::NavigationSimulator::CreateForFencedFrame(url,
-                                                             render_frame_host);
-    } else {
-      navigation_simulator_ =
-          content::NavigationSimulator::CreateRendererInitiated(
-              url, render_frame_host);
-    }
+    navigation_simulator_ =
+        content::NavigationSimulator::CreateRendererInitiated(
+            url, render_frame_host);
   }
 
   content::NavigationSimulator* navigation_simulator() {
@@ -346,7 +340,8 @@ class ContentSubresourceFilterThrottleManagerTest
   bool ads_blocked_in_content_settings() {
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            content::RenderViewHostTestHarness::web_contents()->GetMainFrame());
+            content::RenderViewHostTestHarness::web_contents()
+                ->GetPrimaryMainFrame());
 
     return content_settings->IsContentBlocked(ContentSettingsType::ADS);
   }
@@ -1749,6 +1744,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerFencedFrameTest,
             throttle_manager);
 
   navigation_simulator()->Commit();
+  fenced_frame_root = navigation_simulator()->GetFinalRenderFrameHost();
 
   // Committing the fenced frame navigation should not change the Page's
   // throttle manager.

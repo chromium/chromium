@@ -93,7 +93,8 @@ NonMainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 NonMainThreadSchedulerImpl::ControlTaskRunner() {
-  return helper_.ControlNonMainThreadTaskQueue()->task_runner();
+  return helper_.ControlNonMainThreadTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType();
 }
 
 const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() const {

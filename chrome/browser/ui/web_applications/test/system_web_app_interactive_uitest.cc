@@ -16,6 +16,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,8 +31,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -73,7 +74,7 @@
 namespace web_app {
 
 class SystemWebAppLinkCaptureBrowserTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
@@ -81,7 +82,7 @@ class SystemWebAppLinkCaptureBrowserTest
     EnableSystemWebAppsInLacrosForTesting();
 #endif
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+        ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
@@ -102,7 +103,8 @@ class SystemWebAppLinkCaptureBrowserTest
     return incognito;
   }
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");
-  const SystemAppType kInitiatingAppType = SystemAppType::SETTINGS;
+  const ash::SystemWebAppType kInitiatingAppType =
+      ash::SystemWebAppType::SETTINGS;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -223,9 +225,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
   observer.StartWatchingNewWebContents();
 
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
@@ -266,9 +270,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
   observer.StartWatchingNewWebContents();
 
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW, 0);
 
@@ -475,12 +481,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerWindowSizeControlsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerWindowSizeControlsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpNonResizeableAndNonMaximizableApp();
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetUpNonResizeableAndNonMaximizableApp();
   }
   ~SystemWebAppManagerWindowSizeControlsTest() override = default;
 };
@@ -521,7 +527,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
     installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+        ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
 
   ~SystemWebAppManagerMultiDesktopLaunchBrowserTest() override = default;
@@ -529,25 +535,21 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   void WaitForSystemWebAppInstall(Profile* profile) {
     base::RunLoop run_loop;
 
-    web_app::WebAppProvider::GetForSystemWebApps(profile)
-        ->system_web_app_manager()
-        .on_apps_synchronized()
-        .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
-                // Wait one execution loop for
-                // on_apps_synchronized() to be called on all
-                // listeners.
-                base::ThreadTaskRunnerHandle::Get()->PostTask(
-                    FROM_HERE, run_loop.QuitClosure());
-              }));
+    ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          // Wait one execution loop for
+          // on_apps_synchronized() to be called on all
+          // listeners.
+          base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+        }));
     run_loop.Run();
   }
 
   AppId GetAppId(Profile* profile) {
-    SystemWebAppManager& manager =
-        web_app::WebAppProvider::GetForSystemWebApps(profile)
-            ->system_web_app_manager();
     absl::optional<AppId> app_id =
-        manager.GetAppIdForSystemApp(installation_->GetType());
+        ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
+            installation_->GetType());
     CHECK(app_id.has_value());
     return *app_id;
   }
@@ -584,7 +586,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   }
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> installation_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id1_;
   AccountId account_id2_;
@@ -603,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   WaitForSystemWebAppInstall(profile1);
 
   installation_ =
-      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+      ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
@@ -657,21 +659,22 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   WaitForSystemWebAppInstall(profile1);
 
   installation_ =
-      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+      ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
   Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
   WaitForSystemWebAppInstall(profile2);
+  const AppId& app_id1 = GetAppId(profile1);
+  const AppId& app_id2 = GetAppId(profile2);
 
   g_browser_process->profile_manager()->ScheduleProfileForDeletion(
       profile2->GetPath(), base::DoNothing());
 
   {
     auto launch_params = apps::AppLaunchParams(
-        GetAppId(profile2),
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id2, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
@@ -683,8 +686,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 
   {
     auto launch_params = apps::AppLaunchParams(
-        GetAppId(profile1),
-        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        app_id1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
         apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
@@ -698,7 +700,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
+using SystemWebAppLaunchProfileBrowserTest =
+    ash::SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
                        LaunchFromNormalSessionIncognitoProfile) {
@@ -790,7 +793,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchOmniboxNavigateBrowsertest =
-    SystemWebAppManagerBrowserTest;
+    ash::SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
                        OpenInTab) {
@@ -808,9 +811,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Verifies the tab has an associated tab helper for System App's AppId.
-  auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-  EXPECT_TRUE(tab_helper);
-  EXPECT_EQ(tab_helper->GetAppId(),
+  EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
             *web_app::GetAppIdForSystemWebApp(browser()->profile(),
                                               GetMockAppType()));
 }
@@ -853,10 +854,10 @@ class TestActivationObserver : public wm::ActivationChangeObserver {
 
 // Tests which are exercising OpenUrl called by Lacros in Ash.
 class SystemWebAppOpenInAshFromLacrosTests
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppOpenInAshFromLacrosTests()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
     url_handler_ = std::make_unique<crosapi::UrlHandlerAsh>();
   }
@@ -956,13 +957,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerCloseFromScriptsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerCloseFromScriptsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
-            true);
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetupAppWithAllowScriptsToCloseWindows(true);
   }
   ~SystemWebAppManagerCloseFromScriptsTest() override = default;
 };
@@ -988,13 +988,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
 }
 
 class SystemWebAppManagerShouldNotCloseFromScriptsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerShouldNotCloseFromScriptsTest()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
-            false);
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetupAppWithAllowScriptsToCloseWindows(false);
   }
   ~SystemWebAppManagerShouldNotCloseFromScriptsTest() override = default;
 };
@@ -1027,12 +1026,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class SystemWebAppNewWindowMenuItemTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppNewWindowMenuItemTest()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem();
+        ash::TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem();
   }
   ~SystemWebAppNewWindowMenuItemTest() override = default;
 

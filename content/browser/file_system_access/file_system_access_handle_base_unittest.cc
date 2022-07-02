@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
@@ -156,17 +157,13 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission_AlreadyGranted) {
   EXPECT_CALL(*write_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::GRANTED));
 
-  base::RunLoop loop;
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
   handle.DoRequestPermission(
-      /*writable=*/true,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr error,
-              PermissionStatus result) {
-            EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, error->status);
-            EXPECT_EQ(PermissionStatus::GRANTED, result);
-            loop.Quit();
-          }));
-  loop.Run();
+      /*writable=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
 }
 
 TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
@@ -198,17 +195,13 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
         .WillOnce(testing::Return(PermissionStatus::GRANTED));
   }
 
-  base::RunLoop loop;
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         PermissionStatus>
+      future;
   handle.DoRequestPermission(
-      /*writable=*/true,
-      base::BindLambdaForTesting(
-          [&](blink::mojom::FileSystemAccessErrorPtr error,
-              PermissionStatus result) {
-            EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, error->status);
-            EXPECT_EQ(PermissionStatus::GRANTED, result);
-            loop.Quit();
-          }));
-  loop.Run();
+      /*writable=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_EQ(future.Get<1>(), PermissionStatus::GRANTED);
 }
 
 TEST_F(FileSystemAccessHandleBaseTest, GetParentURL_CustomBucketLocator) {

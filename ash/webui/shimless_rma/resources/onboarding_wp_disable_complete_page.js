@@ -15,7 +15,7 @@ import {enableNextButton} from './shimless_rma_util.js';
 /** @type {!Object<WriteProtectDisableCompleteAction, string>} */
 const disableActionTextKeys = {
   [WriteProtectDisableCompleteAction.kSkippedAssembleDevice]:
-      'wpDisableSkippedText',
+      'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteAssembleDevice]:
       'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen]:
@@ -83,12 +83,13 @@ export class OnboardingWpDisableCompletePage extends
    * @protected
    */
   getActionString_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown) ?
+    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         this.i18n(disableActionTextKeys[this.action_]);
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.confirmManualWpDisableComplete();
   }

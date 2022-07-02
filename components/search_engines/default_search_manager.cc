@@ -88,9 +88,7 @@ const char DefaultSearchManager::kStarterPackId[] = "starter_pack_id";
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
     const ObserverCallback& change_observer)
-    : pref_service_(pref_service),
-      change_observer_(change_observer),
-      default_search_controlled_by_policy_(false) {
+    : pref_service_(pref_service), change_observer_(change_observer) {
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -116,12 +114,10 @@ void DefaultSearchManager::RegisterProfilePrefs(
 }
 
 // static
-void DefaultSearchManager::AddPrefValueToMap(
-    std::unique_ptr<base::DictionaryValue> value,
-    PrefValueMap* pref_value_map) {
-  DCHECK(value);
+void DefaultSearchManager::AddPrefValueToMap(base::Value::Dict value,
+                                             PrefValueMap* pref_value_map) {
   pref_value_map->SetValue(kDefaultSearchProviderDataPrefName,
-                           base::Value::FromUniquePtrValue(std::move(value)));
+                           base::Value(std::move(value)));
 }
 
 // static
@@ -132,9 +128,14 @@ void DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(
 
 const TemplateURLData* DefaultSearchManager::GetDefaultSearchEngine(
     Source* source) const {
-  if (default_search_controlled_by_policy_) {
+  if (default_search_mandatory_by_policy_) {
     if (source)
       *source = FROM_POLICY;
+    return prefs_default_search_.get();
+  }
+  if (default_search_recommended_by_policy_) {
+    if (source)
+      *source = FROM_POLICY_RECOMMENDED;
     return prefs_default_search_.get();
   }
   if (extension_default_search_) {
@@ -157,7 +158,8 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   if (prefs_default_search_)
     return std::make_unique<TemplateURLData>(*prefs_default_search_);
 
-  if (default_search_controlled_by_policy_) {
+  if (default_search_mandatory_by_policy_ ||
+      default_search_recommended_by_policy_) {
     // If a policy specified a specific engine, it would be returned above
     // as |prefs_default_search_|. The only other scenario is that policy has
     // disabled default search, in which case we return null.
@@ -289,15 +291,16 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
   DCHECK(pref);
-  default_search_controlled_by_policy_ =
-      pref->IsManaged() || pref->IsRecommended();
+  default_search_mandatory_by_policy_ = pref->IsManaged();
+  default_search_recommended_by_policy_ = pref->IsRecommended();
 
   const base::Value* url_dict =
       pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);
   if (url_dict->DictEmpty())
     return;
 
-  if (default_search_controlled_by_policy_) {
+  if (default_search_mandatory_by_policy_ ||
+      default_search_recommended_by_policy_) {
     if (url_dict->FindBoolKey(kDisabledByPolicy).value_or(false))
       return;
   }

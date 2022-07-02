@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
@@ -36,7 +37,7 @@ class ScopedShapeEventSelector {
   ~ScopedShapeEventSelector();
 
  private:
-  Connection* const connection_;
+  const raw_ptr<Connection> connection_;
   const Window window_;
 };
 
@@ -150,7 +151,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   static WindowCache* instance_;
 
-  Connection* const connection_;
+  const raw_ptr<Connection> connection_;
   const Window root_;
   const Atom gtk_frame_extents_;
   std::unique_ptr<XScopedEventSelector> root_events_;

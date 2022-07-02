@@ -186,7 +186,7 @@ class BASE_EXPORT StackSamplingProfiler {
   friend void ApplyMetadataToPastSamplesImpl(
       TimeTicks period_start,
       TimeTicks period_end,
-      int64_t name_hash,
+      uint64_t name_hash,
       absl::optional<int64_t> key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);
@@ -196,7 +196,7 @@ class BASE_EXPORT StackSamplingProfiler {
   static void ApplyMetadataToPastSamples(
       TimeTicks period_start,
       TimeTicks period_end,
-      int64_t name_hash,
+      uint64_t name_hash,
       absl::optional<int64_t> key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);

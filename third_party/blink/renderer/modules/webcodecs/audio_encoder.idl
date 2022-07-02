@@ -9,13 +9,18 @@
     SecureContext,
     RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
-] interface AudioEncoder {
+] interface AudioEncoder : EventTarget {
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsAudioEncoder]
     constructor(AudioEncoderInit init);
 
     // The number of pending encode requests. This does not include requests
     // that have been sent to the underlying codec.
     readonly attribute unsigned long encodeQueueSize;
+
+    // Fires to signal a decrease in encodeQueueSize. Will fire at most once
+    // for a given turn of the event loop.
+    [RuntimeEnabled=WebCodecsDequeueEvent]
+    attribute EventHandler ondequeue;
 
     // Enqueues a control message to configure the audio encoder for encoding
     // audio data as described by config.

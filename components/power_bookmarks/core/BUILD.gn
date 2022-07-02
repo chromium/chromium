@@ -1,0 +1,61 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("core") {
+  sources = [
+    "power_bookmark_utils.cc",
+    "power_bookmark_utils.h",
+  ]
+
+  public_deps = [ ":proto" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:proto",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "proto/power_bookmark_meta.proto",
+    "proto/shopping_specifics.proto",
+  ]
+  deps = [ "//components/commerce/core:proto" ]
+}
+
+if (is_android) {
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [
+      "proto/power_bookmark_meta.proto",
+      "proto/shopping_specifics.proto",
+    ]
+    deps = [ "//components/commerce/core:proto_java" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "power_bookmark_utils_unittest.cc" ]
+
+  deps = [
+    ":core",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//testing/gtest",
+  ]
+}

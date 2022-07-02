@@ -81,7 +81,7 @@ AudioParam* AudioParam::Create(BaseAudioContext& context,
 
 AudioParam::~AudioParam() {
   // The graph lock is required to destroy the handler. And we can't use
-  // |context_| to touch it, since that object may also be a dead heap object.
+  // `context_` to touch it, since that object may also be a dead heap object.
   {
     DeferredTaskHandler::GraphAutoLocker locker(*deferred_task_handler_);
     handler_ = nullptr;
@@ -217,9 +217,6 @@ AudioParam* AudioParam::setTargetAtTime(float target,
   WarnIfOutsideRange("setTargetAtTime value", target);
   Handler().Timeline().SetTargetAtTime(target, time, time_constant,
                                        exception_state);
-
-  // Don't update the histogram here.  It's not clear in normal usage if the
-  // parameter value will actually reach |target|.
   return this;
 }
 
@@ -242,11 +239,6 @@ AudioParam* AudioParam::setValueCurveAtTime(const Vector<float>& curve,
 
   Handler().Timeline().SetValueCurveAtTime(curve, time, duration,
                                            exception_state);
-
-  // We could update the histogram with every value in the curve, due to
-  // interpolation, we'll probably be missing many values.  So we don't update
-  // the histogram.  setValueCurveAtTime is probably a fairly rare method
-  // anyway.
   return this;
 }
 

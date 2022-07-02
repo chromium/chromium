@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -36,7 +35,6 @@
 
 namespace {
 
-using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::ServerBookmarksEqualityChecker;
@@ -182,24 +180,32 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
   return specifics;
 }
 
-class SingleClientWithSyncSendInterestedDataTypesTest : public SyncTest {
+class SingleClientSyncInvalidationsTestBase : public SyncTest {
  public:
-  SingleClientWithSyncSendInterestedDataTypesTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
-        /*disabled_features=*/{syncer::kUseSyncInvalidations,
-                               syncer::kUseSyncInvalidationsForWalletAndOffer});
+  SingleClientSyncInvalidationsTestBase(
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features)
+      : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  SingleClientWithSyncSendInterestedDataTypesTest(
-      const SingleClientWithSyncSendInterestedDataTypesTest&) = delete;
-  SingleClientWithSyncSendInterestedDataTypesTest& operator=(
-      const SingleClientWithSyncSendInterestedDataTypesTest&) = delete;
-
-  ~SingleClientWithSyncSendInterestedDataTypesTest() override = default;
+  // Disable configuration refresher to make it sure that clients receive
+  // invalidations correctly during browser startup.
+  bool UseConfigurationRefresher() override { return false; }
 
  private:
   base::test::ScopedFeatureList override_features_;
+};
+
+class SingleClientWithSyncSendInterestedDataTypesTest
+    : public SingleClientSyncInvalidationsTestBase {
+ public:
+  SingleClientWithSyncSendInterestedDataTypesTest()
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
+            /*disabled_features=*/{
+                syncer::kUseSyncInvalidations,
+                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
@@ -226,27 +232,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
   // also enabled.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             Not(HasInstanceIdToken()))))
           .Wait());
 }
 
-class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
+class SingleClientWithUseSyncInvalidationsTest
+    : public SingleClientSyncInvalidationsTestBase {
  public:
-  SingleClientWithUseSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                              syncer::kUseSyncInvalidations},
-        /*disabled_features=*/{syncer::kUseSyncInvalidationsForWalletAndOffer});
-  }
-
-  SingleClientWithUseSyncInvalidationsTest(
-      const SingleClientWithUseSyncInvalidationsTest&) = delete;
-  SingleClientWithUseSyncInvalidationsTest& operator=(
-      const SingleClientWithUseSyncInvalidationsTest&) = delete;
-
-  ~SingleClientWithUseSyncInvalidationsTest() override = default;
+  SingleClientWithUseSyncInvalidationsTest()
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                                  syncer::kUseSyncInvalidations},
+            /*disabled_features=*/{
+                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
 
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
@@ -270,9 +269,6 @@ class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
     return prefs.GetCacheGuid();
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
@@ -301,7 +297,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // The local device should eventually be committed to the server.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
@@ -360,8 +355,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // Commit a new bookmark to check if the next commit message has FCM
   // registration tokens.
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle);
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             {{kTitle, GURL()}},
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
@@ -441,7 +435,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
   // Wait until DeviceInfo is updated.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(HasBeenUpdatedAfter(last_updated_timestamp)))
                   .Wait());
 
@@ -449,57 +442,52 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // more GetUpdates request if it was triggered.
   const std::string kTitle1 = "Title 1";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle1);
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             {{kTitle1, GURL()}},
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle1, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
   const std::string kTitle2 = "Title 2";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle2);
   ASSERT_TRUE(
-      ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                     {{kTitle1, GURL()}, {kTitle2, GURL()}},
+      ServerBookmarksEqualityChecker({{kTitle1, GURL()}, {kTitle2, GURL()}},
                                      /*cryptographer=*/nullptr)
           .Wait());
 
-  // There will be one TriggerRefresh request in tests due to
-  // ConfigurationRefresher. There shouldn't be any additional GU_TRIGGER
-  // with nudge DeviceInfo data type.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS tests data types are configured twice and hence there are two
-  // expected TriggerRefresh calls during initialization. It happens due to
-  // SyncArcPackageHelper which eventually triggers reconfiguration.
-  EXPECT_EQ(2u, observer.num_nudged_get_updates_for_data_type());
-#else
-  EXPECT_EQ(1u, observer.num_nudged_get_updates_for_data_type());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(0u, observer.num_nudged_get_updates_for_data_type());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       PRE_ShouldReceiveInvalidationSentBeforeSetupClients) {
+  // Initialize and enable sync to simulate browser restart when sync is
+  // enabled. This is required to receive an invalidation when browser is not
+  // loaded.
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldReceiveInvalidationSentBeforeSetupClients) {
+  const base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+
+  ASSERT_TRUE(SetupClients());
+
+  // When configuration refresher is disabled, the following condition will be
+  // possible only if invalidations are delivered.
+  EXPECT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
-    : public SyncTest {
+    : public SingleClientSyncInvalidationsTestBase {
  public:
   SingleClientWithUseSyncInvalidationsForWalletAndOfferTest()
-      : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
-                              syncer::kUseSyncInvalidations,
-                              syncer::kUseSyncInvalidationsForWalletAndOffer},
-        /*disabled_features=*/{});
-  }
-
-  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest(
-      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
-      delete;
-  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest& operator=(
-      const SingleClientWithUseSyncInvalidationsForWalletAndOfferTest&) =
-      delete;
-
-  ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
+      : SingleClientSyncInvalidationsTestBase(
+            /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                                  syncer::kUseSyncInvalidations,
+                                  syncer::
+                                      kUseSyncInvalidationsForWalletAndOffer},
+            /*disabled_features=*/{}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -528,7 +516,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
@@ -575,7 +562,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server. BOOKMARKS
   // should be included in interested types, since it's enabled by default.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
                   .Wait());
 
@@ -586,7 +572,6 @@ IN_PROC_BROWSER_TEST_F(
   // should not be included in interested types, as it was disabled.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(Not(InterestedDataTypesContain(syncer::BOOKMARKS))))
           .Wait());
 
@@ -598,7 +583,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server. BOOKMARKS
   // should now be included in interested types.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
                   .Wait());
   // The bookmark should get synced now.
@@ -629,9 +613,9 @@ IN_PROC_BROWSER_TEST_F(
   const std::string old_token =
       *SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
            ->GetFCMRegistrationToken();
-  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(), ElementsAre(HasInstanceIdToken(old_token)))
-                  .Wait());
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(ElementsAre(HasInstanceIdToken(old_token)))
+          .Wait());
 
   // Sign out. The FCM token should be cleared.
   GetClient(0)->SignOutPrimaryAccount();
@@ -652,11 +636,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(new_token.empty());
   // New device info should eventually be committed to the server (but the old
   // device info will remain on the server). The FCM token should be present.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), UnorderedElementsAre(HasInstanceIdToken(old_token),
-                                                HasInstanceIdToken(new_token)))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  UnorderedElementsAre(HasInstanceIdToken(old_token),
+                                       HasInstanceIdToken(new_token)))
+                  .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -668,6 +651,10 @@ class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
     features_override_.InitWithFeatureState(
         syncer::kSyncSendInterestedDataTypes, !content::IsPreTest());
   }
+
+  // Disable configuration refresher to make it sure that clients receive
+  // invalidations correctly during browser startup.
+  bool UseConfigurationRefresher() override { return false; }
 
   std::string GetLocalCacheGuid() {
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
@@ -685,7 +672,6 @@ IN_PROC_BROWSER_TEST_F(
     PRE_ShouldResendDeviceInfoWithInterestedDataTypes) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid())))
                   .Wait());
 }
@@ -698,7 +684,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::NIGORI)))
                   .Wait());
 }

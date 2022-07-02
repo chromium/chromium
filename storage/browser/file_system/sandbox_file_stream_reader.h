@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   void OnRead(int rv);
   void OnGetLength(int64_t rv);
 
-  raw_ptr<net::IOBuffer> read_buf_;
+  raw_ptr<net::IOBuffer, DanglingUntriaged> read_buf_;
   int read_buf_len_;
   net::CompletionOnceCallback read_callback_;
   net::Int64CompletionOnceCallback get_length_callback_;

@@ -28,6 +28,7 @@ div {
   height: 100px;
   background: green;
 }
+#e1 { page-transition-tag: e1; }
 </style>
 
 <div id=e1 class="square left"></div>
@@ -35,7 +36,6 @@ div {
 <script>
 async function startTransition() {
   let t = document.createDocumentTransition();
-  t.setElement(e1, "e1");
   t.start(() => {
     e1.classList.remove("left");
     e1.classList.add("right");

@@ -25,6 +25,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace speech {

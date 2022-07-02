@@ -20,7 +20,7 @@ namespace base {
 
 namespace {
 
-constexpr int32_t kErrorCodePoint = 0xFFFD;
+constexpr base_icu::UChar32 kErrorCodePoint = 0xFFFD;
 
 // Size coefficient ----------------------------------------------------------
 // The maximum number of codeunits in the destination encoding corresponding to
@@ -71,17 +71,23 @@ using EnableIfBitsAre = std::enable_if_t<std::is_integral<Char>::value &&
                                          bool>;
 
 template <typename Char, EnableIfBitsAre<Char, 8> = true>
-void UnicodeAppendUnsafe(Char* out, int32_t* size, uint32_t code_point) {
-  CBU8_APPEND_UNSAFE(out, *size, code_point);
+void UnicodeAppendUnsafe(Char* out,
+                         size_t* size,
+                         base_icu::UChar32 code_point) {
+  CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(out), *size, code_point);
 }
 
 template <typename Char, EnableIfBitsAre<Char, 16> = true>
-void UnicodeAppendUnsafe(Char* out, int32_t* size, uint32_t code_point) {
+void UnicodeAppendUnsafe(Char* out,
+                         size_t* size,
+                         base_icu::UChar32 code_point) {
   CBU16_APPEND_UNSAFE(out, *size, code_point);
 }
 
 template <typename Char, EnableIfBitsAre<Char, 32> = true>
-void UnicodeAppendUnsafe(Char* out, int32_t* size, uint32_t code_point) {
+void UnicodeAppendUnsafe(Char* out,
+                         size_t* size,
+                         base_icu::UChar32 code_point) {
   out[(*size)++] = code_point;
 }
 
@@ -91,14 +97,14 @@ void UnicodeAppendUnsafe(Char* out, int32_t* size, uint32_t code_point) {
 
 template <typename DestChar>
 bool DoUTFConversion(const char* src,
-                     int32_t src_len,
+                     size_t src_len,
                      DestChar* dest,
-                     int32_t* dest_len) {
+                     size_t* dest_len) {
   bool success = true;
 
-  for (int32_t i = 0; i < src_len;) {
-    int32_t code_point;
-    CBU8_NEXT(src, i, src_len, code_point);
+  for (size_t i = 0; i < src_len;) {
+    base_icu::UChar32 code_point;
+    CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), i, src_len, code_point);
 
     if (!IsValidCodepoint(code_point)) {
       success = false;
@@ -113,12 +119,12 @@ bool DoUTFConversion(const char* src,
 
 template <typename DestChar>
 bool DoUTFConversion(const char16_t* src,
-                     int32_t src_len,
+                     size_t src_len,
                      DestChar* dest,
-                     int32_t* dest_len) {
+                     size_t* dest_len) {
   bool success = true;
 
-  auto ConvertSingleChar = [&success](char16_t in) -> int32_t {
+  auto ConvertSingleChar = [&success](char16_t in) -> base_icu::UChar32 {
     if (!CBU16_IS_SINGLE(in) || !IsValidCodepoint(in)) {
       success = false;
       return kErrorCodePoint;
@@ -126,12 +132,12 @@ bool DoUTFConversion(const char16_t* src,
     return in;
   };
 
-  int32_t i = 0;
+  size_t i = 0;
 
   // Always have another symbol in order to avoid checking boundaries in the
   // middle of the surrogate pair.
-  while (i < src_len - 1) {
-    int32_t code_point;
+  while (i + 1 < src_len) {
+    base_icu::UChar32 code_point;
 
     if (CBU16_IS_LEAD(src[i]) && CBU16_IS_TRAIL(src[i + 1])) {
       code_point = CBU16_GET_SUPPLEMENTARY(src[i], src[i + 1]);
@@ -148,8 +154,9 @@ bool DoUTFConversion(const char16_t* src,
     UnicodeAppendUnsafe(dest, dest_len, code_point);
   }
 
-  if (i < src_len)
+  if (i < src_len) {
     UnicodeAppendUnsafe(dest, dest_len, ConvertSingleChar(src[i]));
+  }
 
   return success;
 }
@@ -158,13 +165,13 @@ bool DoUTFConversion(const char16_t* src,
 
 template <typename DestChar>
 bool DoUTFConversion(const wchar_t* src,
-                     int32_t src_len,
+                     size_t src_len,
                      DestChar* dest,
-                     int32_t* dest_len) {
+                     size_t* dest_len) {
   bool success = true;
 
-  for (int32_t i = 0; i < src_len; ++i) {
-    int32_t code_point = src[i];
+  for (size_t i = 0; i < src_len; ++i) {
+    base_icu::UChar32 code_point = src[i];
 
     if (!IsValidCodepoint(code_point)) {
       success = false;
@@ -197,12 +204,12 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
   auto* dest = &(*dest_str)[0];
 
   // ICU requires 32 bit numbers.
-  int32_t src_len32 = static_cast<int32_t>(src_str.length());
-  int32_t dest_len32 = 0;
+  size_t src_len = src_str.length();
+  size_t dest_len = 0;
 
-  bool res = DoUTFConversion(src_str.data(), src_len32, dest, &dest_len32);
+  bool res = DoUTFConversion(src_str.data(), src_len, dest, &dest_len);
 
-  dest_str->resize(dest_len32);
+  dest_str->resize(dest_len);
   dest_str->shrink_to_fit();
 
   return res;

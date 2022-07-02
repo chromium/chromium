@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -62,12 +63,12 @@ class EvdevThread : public base::Thread {
  private:
   // Initialization bits passed from main thread.
   std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
-  CursorDelegateEvdev* cursor_;
+  raw_ptr<CursorDelegateEvdev> cursor_;
   EventThreadStartCallback init_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> init_runner_;
 
   // Thread-internal state.
-  InputDeviceFactoryEvdev* input_device_factory_ = nullptr;
+  raw_ptr<InputDeviceFactoryEvdev> input_device_factory_ = nullptr;
 };
 
 }  // namespace

@@ -20,7 +20,7 @@ class FullscreenController;
 class OverlayContainerFullscreenDisabler {
  public:
   // Constructs a OverlayContainerFullscreenDisabler that disables fullscreen
-  // for |browser| when overlays are displayed at |modality|.
+  // for `browser` when overlays are displayed at `modality`.
   OverlayContainerFullscreenDisabler(Browser* browser,
                                      OverlayModality modality);
   ~OverlayContainerFullscreenDisabler();

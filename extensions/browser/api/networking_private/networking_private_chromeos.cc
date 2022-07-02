@@ -12,10 +12,13 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/onc_translator.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -24,9 +27,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_translator.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -372,7 +372,7 @@ void NetworkingPrivateChromeOS::SetProperties(
   } else {
     std::string user_id_hash;
     std::string error;
-    // Do not allow changing a non-shared network from a secondary users.
+    // Do not allow changing a non-shared network from secondary users.
     if (!GetPrimaryUserIdHash(browser_context_, &user_id_hash, &error)) {
       std::move(failure_callback).Run(error);
       return;

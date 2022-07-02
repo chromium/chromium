@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/common/url_constants.h"
@@ -90,10 +91,6 @@ extern const char kReportingTypeSecurity[];
 extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace extensions {
 class Extension;
 }  // namespace extensions
@@ -171,16 +168,16 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleGetDeviceReportingInfo(const base::ListValue* args);
-  void HandleGetPluginVmDataCollectionStatus(const base::ListValue* args);
-  void HandleGetLocalTrustRootsInfo(const base::ListValue* args);
+  void HandleGetDeviceReportingInfo(const base::Value::List& args);
+  void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
+  void HandleGetLocalTrustRootsInfo(const base::Value::List& args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void HandleGetExtensions(const base::ListValue* args);
-  void HandleGetContextualManagedData(const base::ListValue* args);
-  void HandleGetThreatProtectionInfo(const base::ListValue* args);
-  void HandleGetManagedWebsites(const base::ListValue* args);
-  void HandleInitBrowserReportingInfo(const base::ListValue* args);
+  void HandleGetExtensions(const base::Value::List& args);
+  void HandleGetContextualManagedData(const base::Value::List& args);
+  void HandleGetThreatProtectionInfo(const base::Value::List& args);
+  void HandleGetManagedWebsites(const base::Value::List& args);
+  void HandleInitBrowserReportingInfo(const base::Value::List& args);
 
   void AsyncUpdateLogo();
 

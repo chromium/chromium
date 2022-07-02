@@ -10,9 +10,9 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #if DCHECK_IS_ON()
@@ -125,7 +125,7 @@ class WTF_EXPORT StringView {
       : StringView(reinterpret_cast<const LChar*>(chars), length) {}
   StringView(const LChar* chars)
       : StringView(chars,
-                   chars ? SafeCast<unsigned>(
+                   chars ? base::checked_cast<unsigned>(
                                strlen(reinterpret_cast<const char*>(chars)))
                          : 0) {}
   StringView(const char* chars)
@@ -164,6 +164,8 @@ class WTF_EXPORT StringView {
   }
 
   bool ContainsOnlyASCIIOrEmpty() const;
+
+  bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
 
   void Clear();
 

@@ -81,9 +81,6 @@ _UNION_FIELD_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
 # TODO(https://crbug.com/1193875) empty this set and remove the allowlist.
 _STABLE_ONLY_ALLOWLISTED_ENUMS = {
     'crosapi.mojom.OptionalBool',
-    'crosapi.mojom.RequestActivityIconsStatus',
-    'crosapi.mojom.RequestTextSelectionActionsStatus',
-    'crosapi.mojom.RequestUrlHandlerListStatus',
     'crosapi.mojom.TriState',
 }
 

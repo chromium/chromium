@@ -10,15 +10,15 @@
 #include <limits>
 #include <tuple>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -63,7 +63,7 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 //    further determine which part of the supe page is used by PartitionAlloc.
 //    This isn't a problem in 64-bit mode, where allocation granularity is
 //    kSuperPageSize.
-class BASE_EXPORT ReservationOffsetTable {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
  public:
 #if defined(PA_HAS_64_BITS_POINTERS)
   // There is one reservation offset table per Pool in 64-bit mode.
@@ -102,45 +102,48 @@ class BASE_EXPORT ReservationOffsetTable {
 };
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
+PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
   return ReservationOffsetTable::reservation_offset_tables_[handle - 1].offsets;
 }
 
-ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(pool_handle handle) {
+PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
+    pool_handle handle) {
   return GetReservationOffsetTable(handle) +
          ReservationOffsetTable::kReservationOffsetTableLength;
 }
 
-ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
+PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
   pool_handle handle = GetPool(address);
   return GetReservationOffsetTable(handle);
 }
 
-ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
+PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
+    uintptr_t address) {
   pool_handle handle = GetPool(address);
   return GetReservationOffsetTableEnd(handle);
 }
 
-ALWAYS_INLINE uint16_t* ReservationOffsetPointer(pool_handle pool,
-                                                 uintptr_t offset_in_pool) {
+PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(pool_handle pool,
+                                                    uintptr_t offset_in_pool) {
   size_t table_index = offset_in_pool >> kSuperPageShift;
   PA_DCHECK(table_index <
             ReservationOffsetTable::kReservationOffsetTableLength);
   return GetReservationOffsetTable(pool) + table_index;
 }
 #else
-ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
+PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
   return ReservationOffsetTable::reservation_offset_table_.offsets;
 }
 
-ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
+PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
+    uintptr_t address) {
   return ReservationOffsetTable::reservation_offset_table_.offsets +
          ReservationOffsetTable::kReservationOffsetTableLength;
 }
 #endif
 
-ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
+PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
   address = ::partition_alloc::internal::UnmaskPtr(address);
@@ -154,29 +157,29 @@ ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #endif
 }
 
-ALWAYS_INLINE uintptr_t ComputeReservationStart(uintptr_t address,
-                                                uint16_t* offset_ptr) {
+PA_ALWAYS_INLINE uintptr_t ComputeReservationStart(uintptr_t address,
+                                                   uint16_t* offset_ptr) {
   return (address & kSuperPageBaseMask) -
          (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
 }
 
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
-ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
-#if DCHECK_IS_ON()
+PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!is_in_brp_pool);
 #endif
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   if (*offset_ptr == kOffsetTagNormalBuckets)
     return 0;
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Make sure the reservation start is in the same pool as |address|.
   // In the 32-bit mode, the beginning of a reservation may be excluded from the
   // BRP pool, so shift the pointer. The other pools don't have this logic.
@@ -191,7 +194,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
   PA_DCHECK(is_in_regular_pool ==
             IsManagedByPartitionAllocRegularPool(reservation_start));
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   return reservation_start;
 }
@@ -201,10 +204,11 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 // returns 0.
 // This variant has better performance than the regular one on 64-bit builds if
 // the Pool that an allocation belongs to is known.
-ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address,
-                                                     pool_handle pool,
-                                                     uintptr_t offset_in_pool) {
-  PA_DCHECK(AddressPoolManager::GetInstance()->GetPoolBaseAddress(pool) +
+PA_ALWAYS_INLINE uintptr_t
+GetDirectMapReservationStart(uintptr_t address,
+                             pool_handle pool,
+                             uintptr_t offset_in_pool) {
+  PA_DCHECK(AddressPoolManager::GetInstance().GetPoolBaseAddress(pool) +
                 offset_in_pool ==
             address);
   uint16_t* offset_ptr = ReservationOffsetPointer(pool, offset_in_pool);
@@ -221,7 +225,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address,
 // reservation, i.e. either a normal bucket super page, or the first super page
 // of direct map.
 // |address| must belong to an allocated super page.
-ALWAYS_INLINE bool IsReservationStart(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsReservationStart(uintptr_t address) {
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   return ((*offset_ptr == kOffsetTagNormalBuckets) || (*offset_ptr == 0)) &&
@@ -229,13 +233,13 @@ ALWAYS_INLINE bool IsReservationStart(uintptr_t address) {
 }
 
 // Returns true if |address| belongs to a normal bucket super page.
-ALWAYS_INLINE bool IsManagedByNormalBuckets(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByNormalBuckets(uintptr_t address) {
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   return *offset_ptr == kOffsetTagNormalBuckets;
 }
 
 // Returns true if |address| belongs to a direct map region.
-ALWAYS_INLINE bool IsManagedByDirectMap(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByDirectMap(uintptr_t address) {
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   return *offset_ptr != kOffsetTagNormalBuckets &&
          *offset_ptr != kOffsetTagNotAllocated;
@@ -243,28 +247,11 @@ ALWAYS_INLINE bool IsManagedByDirectMap(uintptr_t address) {
 
 // Returns true if |address| belongs to a normal bucket super page or a direct
 // map region, i.e. belongs to an allocated super page.
-ALWAYS_INLINE bool IsManagedByNormalBucketsOrDirectMap(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByNormalBucketsOrDirectMap(uintptr_t address) {
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   return *offset_ptr != kOffsetTagNotAllocated;
 }
 
 }  // namespace partition_alloc::internal
-
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::GetDirectMapReservationStart;
-using ::partition_alloc::internal::GetReservationOffsetTable;
-using ::partition_alloc::internal::GetReservationOffsetTableEnd;
-using ::partition_alloc::internal::IsManagedByDirectMap;
-using ::partition_alloc::internal::IsManagedByNormalBuckets;
-using ::partition_alloc::internal::IsManagedByNormalBucketsOrDirectMap;
-using ::partition_alloc::internal::IsReservationStart;
-using ::partition_alloc::internal::kOffsetTagNormalBuckets;
-using ::partition_alloc::internal::kOffsetTagNotAllocated;
-using ::partition_alloc::internal::ReservationOffsetPointer;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_RESERVATION_OFFSET_TABLE_H_

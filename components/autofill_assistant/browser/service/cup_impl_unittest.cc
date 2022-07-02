@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cup_impl.h"
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +16,29 @@
 namespace autofill_assistant {
 
 namespace {
+
+// kExampleRequestBase64 is the base64 encoded version of `
+//   ScriptActionRequestProto {
+//     InitialRequest {
+//       StructuredQuery {
+//         url: "https://www.example.com/123",
+//       }
+//     }
+//   }`
+const base::StringPiece kExampleRequestBase64 =
+    "Ih8aHRIbaHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vMTIz";
+// kExampleResponseBase64 is the base64 encoded version of `
+//   ActionsResponseProto {
+//    warnings: "foo",
+//   }`
+const base::StringPiece kExampleResponseBase64 = "SgNmb28=";
+// Dev autofill_assistant public key.
+const base::StringPiece kPublicKeyBase64 =
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERgn63oKhDjiDbmgYC/pyOlKjiIpFlQH/"
+    "CsevP5NynMB4HLF95EPFA4eDobcBDSlRl6GIXoNlKa7GhXs6FkfQbg==";
+const base::StringPiece kPublicKeyVersion = "8";
+const int kPublicKeyVersionInt = 8;
+const uint32_t kExampleNonce = 12345;
 
 TEST(CUPImplTest, PacksAndSignsGetActionsRequest) {
   cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
@@ -46,7 +70,111 @@ TEST(CUPImplTest, IgnoresNonGetActionsRequest) {
   EXPECT_EQ(cup.PackAndSignRequest("a request"), "a request");
 }
 
-TEST(CUPImplTest, FailsToVerifyNonTrustedGetActionsResponse) {
+TEST(CUPImplTest, VerifiesTrustedGetActionsResponse) {
+  base::HistogramTester histogram_tester;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupPublicKeyBase64, kPublicKeyBase64);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupKeyVersion, kPublicKeyVersion);
+
+  // Valid server etag generated from the server for the autofill_assistant key
+  // for the example request, response and nonce in this test.
+  const base::StringPiece kServerEtag =
+      "3045"
+      "02200789b2dfa79204405f20d54cf35ed0aef948acb6eb2f91e1d90a6c229ed42dcf"
+      "022100f17de1439313fab4eeb0f1a99127278edcc0aae50bbc1e248dc28f056f018dfc"
+      ":27a8e08b3595e2b17d22bd9a50cd63dea36c8a9bbb91c0ff119bbf1254a9f5c3";
+
+  // Sign the request and override the nonce so that result is deterministic.
+  cup::CUPImpl cup(cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS);
+  std::string request_bytes;
+  ASSERT_TRUE(base::Base64Decode(kExampleRequestBase64, &request_bytes));
+  cup.PackAndSignRequest(request_bytes);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
+
+  // Construct server response as it would have been received by the client.
+  autofill_assistant::ActionsResponseProto packed_response;
+  packed_response.mutable_cup_data()->set_ecdsa_signature(
+      std::string(kServerEtag));
+  std::string serialized_response_bytes;
+  ASSERT_TRUE(
+      base::Base64Decode(kExampleResponseBase64, &serialized_response_bytes));
+  packed_response.mutable_cup_data()->set_response(serialized_response_bytes);
+  std::string serialized_packed_response;
+  packed_response.SerializeToString(&serialized_packed_response);
+
+  // Expect that unpacking gives as a result the cup_data.response field of
+  // the packed response proto.
+  EXPECT_EQ(cup.UnpackResponse(serialized_packed_response),
+            serialized_response_bytes);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_FAILED, 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_SUCCEEDED, 1);
+}
+
+TEST(CUPImplTest, FailsToVerifySignatureFromDifferentKey) {
+  base::HistogramTester histogram_tester;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupPublicKeyBase64, kPublicKeyBase64);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantCupKeyVersion, kPublicKeyVersion);
+
+  // This is a valid server etag generated from a different private key for the
+  // same request, response and nonce provided for this test; following the
+  // procedure:
+  //   openssl ecparam -genkey -name prime256v1 -out ecpriv.pem
+  //   echo -n Ih8aHRIbaHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vMTIz | base64 -d | \
+  //     sha256sum -b | cut -d " " -f 1 > h
+  //
+  //   echo -n SgNmb28= | base64 -d | sha256sum -b | cut -d " " -f 1 >> h
+  //   cat h | xxd -r -p > hbin
+  //   echo -n 8:12345 >> hbin
+  //   sha256sum hbin | cut -d " " -f 1 | xxd -r -p > hbin2
+  //   openssl dgst -hex -sha256 -sign ecpriv.pem hbin2 | cut -d " " -f 2 > sig
+  //   echo -n : >> sig
+  //   echo -n Ih8aHRIbaHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vMTIz | base64 -d | \
+  //     sha256sum -b | cut -d " " -f 1 >> sig
+  //   cat sig
+  const base::StringPiece kServerEtag =
+      "3044"
+      "022009d5e42b3eacd0a859d182a158c9feece557d31a0276ecae01a693c88d7a71a9"
+      "0220084d131af48010fe56b6399e6d6f83d88ca30236100fc34c959baed79ddb8862"
+      ":27a8e08b3595e2b17d22bd9a50cd63dea36c8a9bbb91c0ff119bbf1254a9f5c3";
+
+  // Sign the request and override the nonce so that result is deterministic.
+  cup::CUPImpl cup(cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS);
+  std::string request_bytes;
+  ASSERT_TRUE(base::Base64Decode(kExampleRequestBase64, &request_bytes));
+  cup.PackAndSignRequest(request_bytes);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
+
+  // Construct server response as it would have been received by the client.
+  autofill_assistant::ActionsResponseProto packed_response;
+  packed_response.mutable_cup_data()->set_ecdsa_signature(
+      std::string(kServerEtag));
+  std::string serialized_response_bytes;
+  ASSERT_TRUE(
+      base::Base64Decode(kExampleResponseBase64, &serialized_response_bytes));
+  packed_response.mutable_cup_data()->set_response(serialized_response_bytes);
+  std::string serialized_packed_response;
+  packed_response.SerializeToString(&serialized_packed_response);
+
+  // Expect to receive an empty optional as verification fails.
+  EXPECT_EQ(cup.UnpackResponse(serialized_packed_response), absl::nullopt);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_FAILED, 1);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_SUCCEEDED, 0);
+}
+
+TEST(CUPImplTest, FailsToVerifyWithNonValidSignature) {
   base::HistogramTester histogram_tester;
   cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
   ScriptActionRequestProto user_request;
@@ -54,7 +182,8 @@ TEST(CUPImplTest, FailsToVerifyNonTrustedGetActionsResponse) {
   user_request.SerializeToString(&user_request_str);
 
   cup.PackAndSignRequest(user_request_str);
-  cup.GetQuerySigner().OverrideNonceForTesting(8, 12345);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
 
   autofill_assistant::ActionsResponseProto packed_response;
   packed_response.mutable_cup_data()->set_ecdsa_signature("not a signature");
@@ -73,7 +202,8 @@ TEST(CUPImplTest, FailsToParseInvalidProtoResponse) {
   user_request.SerializeToString(&user_request_str);
 
   cup.PackAndSignRequest(user_request_str);
-  cup.GetQuerySigner().OverrideNonceForTesting(8, 12345);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
 
   EXPECT_EQ(cup.UnpackResponse("invalid proto"), absl::nullopt);
   histogram_tester.ExpectUniqueSample(

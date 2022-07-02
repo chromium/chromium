@@ -7,6 +7,8 @@
 // This file defines the internal messages which can be sent on a NodeLink
 // between two ipcz nodes.
 
+IPCZ_MSG_BEGIN_INTERFACE(Node)
+
 // Initial greeting sent by a broker node when a ConnectNode() is issued without
 // the IPCZ_CONNECT_NODE_TO_BROKER flag, implying that the receiving node is a
 // non-broker.
@@ -30,6 +32,10 @@ IPCZ_MSG_BEGIN(ConnectFromBrokerToNonBroker,
   // another, where one end tries to establish more initial portals than the
   // other supports.
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // A driver memory object to serve as the new NodeLink's primary shared
+  // buffer. That is, BufferId 0 within its NodeLinkMemory's BufferPool.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
 IPCZ_MSG_END()
 
 // Initial greeting sent by a non-broker node when ConnectNode() is invoked with
@@ -46,6 +52,33 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker,
   // an initial connection, the node which sent the larger number should behave
   // as if its excess portals have observed peer closure.
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+IPCZ_MSG_END()
+
+// Conveys the contents of a parcel.
+IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
+  // The SublinkId linking the source and destination Routers along the
+  // transmitting NodeLink.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The SequenceNumber of this parcel within the transmitting portal's outbound
+  // parcel sequence (and the receiving portal's inbound parcel sequence.)
+  IPCZ_MSG_PARAM(SequenceNumber, sequence_number)
+
+  // Free-form array of application-provided data bytes for this parcel.
+  IPCZ_MSG_PARAM_ARRAY(uint8_t, parcel_data)
+
+  // Array of handle types, with each corresponding to a single IpczHandle
+  // attached to the parcel.
+  IPCZ_MSG_PARAM_ARRAY(HandleType, handle_types)
+
+  // For every portal handle attached, there is also a RouterDescriptor encoding
+  // the details needed to construct a new Router at the parcel's destination
+  // to extend the transmitted portal's route there.
+  IPCZ_MSG_PARAM_ARRAY(RouterDescriptor, new_routers)
+
+  // Every DriverObject boxed and attached to this parcel has an entry in this
+  // array.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
 IPCZ_MSG_END()
 
 // Notifies a node that the route has been closed on one side. This message
@@ -68,3 +101,5 @@ IPCZ_MSG_BEGIN(RouteClosed, IPCZ_MSG_ID(22), IPCZ_MSG_VERSION(0))
   // arrive before completely forgetting about the route's link(s).
   IPCZ_MSG_PARAM(SequenceNumber, sequence_length)
 IPCZ_MSG_END()
+
+IPCZ_MSG_END_INTERFACE()

@@ -29,11 +29,12 @@ LayoutPageLoadMetricsObserver::LayoutPageLoadMetricsObserver() = default;
 
 LayoutPageLoadMetricsObserver::~LayoutPageLoadMetricsObserver() = default;
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LayoutPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // Observed events are forwarded at PageLoadTracker,
+  // and no needs to forward here.
   return STOP_OBSERVING;
 }
 

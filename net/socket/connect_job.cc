@@ -136,6 +136,10 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
+void ConnectJob::set_done_closure(base::OnceClosure done_closure) {
+  done_closure_ = base::ScopedClosureRunner(std::move(done_closure));
+}
+
 absl::optional<HostResolverEndpointResult>
 ConnectJob::GetHostResolverEndpointResult() const {
   return absl::nullopt;

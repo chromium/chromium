@@ -5,6 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -24,7 +25,7 @@ struct PartitionDirectMapExtent {
   // the allocation.
   size_t padding_for_alignment;
 
-  ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 };
 
@@ -44,12 +45,12 @@ struct PartitionDirectMapMetadata {
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
 
-  ALWAYS_INLINE static PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 };
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionDirectMapMetadata<thread_safe>*
+PA_ALWAYS_INLINE PartitionDirectMapMetadata<thread_safe>*
 PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
@@ -61,7 +62,7 @@ PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
+PA_ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
 PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
@@ -70,14 +71,5 @@ PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
 }
 
 }  // namespace partition_alloc::internal
-
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::PartitionDirectMapExtent;
-using ::partition_alloc::internal::PartitionDirectMapMetadata;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_

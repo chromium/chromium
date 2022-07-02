@@ -118,7 +118,7 @@ class BASE_EXPORT ProcessIterator {
   std::vector<kinfo_proc> kinfo_procs_;
   size_t index_of_kinfo_proc_;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  raw_ptr<DIR> procfs_dir_;
+  raw_ptr<DIR, DanglingUntriaged> procfs_dir_;
 #endif
   ProcessEntry entry_;
   raw_ptr<const ProcessFilter> filter_;

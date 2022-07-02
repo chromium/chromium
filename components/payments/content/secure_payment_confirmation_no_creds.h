@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
 
 namespace content {
 class WebContents;
@@ -21,6 +22,7 @@ class SecurePaymentConfirmationNoCredsView;
 class SecurePaymentConfirmationNoCreds {
  public:
   using ResponseCallback = base::OnceClosure;
+  using OptOutCallback = base::OnceClosure;
 
   SecurePaymentConfirmationNoCreds();
   ~SecurePaymentConfirmationNoCreds();
@@ -34,8 +36,11 @@ class SecurePaymentConfirmationNoCreds {
 
   void ShowDialog(content::WebContents* web_contents,
                   const std::u16string& merchant_name,
-                  ResponseCallback response_callback);
+                  const std::string& rp_id,
+                  ResponseCallback response_callback,
+                  OptOutCallback opt_out_callback);
   void CloseDialog();
+  bool ClickOptOutForTesting();
 
  private:
   // On desktop, the SecurePaymentConfirmationNoCredsView object is memory
@@ -43,6 +48,8 @@ class SecurePaymentConfirmationNoCreds {
   // and views::DialogDelegateView::DeleteDelegate() is called by its
   // corresponding views::Widget.
   base::WeakPtr<SecurePaymentConfirmationNoCredsView> view_;
+
+  SecurePaymentConfirmationNoCredsModel model_;
 };
 
 }  // namespace payments

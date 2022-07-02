@@ -10,6 +10,8 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
+#include "components/exo/wayland/wayland_display_observer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -24,7 +26,7 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 31;
+constexpr uint32_t kZAuraShellVersion = 35;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -118,6 +120,9 @@ class AuraToplevel {
   void SetClientUsesScreenCoordinates();
   void SetWindowBounds(int32_t x, int32_t y, int32_t width, int32_t height);
   void SetRestoreInfo(int32_t restore_session_id, int32_t restore_window_id);
+  void SetRestoreInfoWithWindowIdSource(
+      int32_t restore_session_id,
+      const std::string& restore_window_id_source);
   void SetSystemModal(bool modal);
 
   void OnConfigure(const gfx::Rect& bounds,
@@ -125,6 +130,7 @@ class AuraToplevel {
                    bool resizing,
                    bool activated);
   virtual void OnOriginChange(const gfx::Point& origin);
+  void SetDecoration(SurfaceFrameType type);
 
   ShellSurface* shell_surface_;
   SerialTracker* const serial_tracker_;
@@ -143,9 +149,31 @@ class AuraPopup {
   ~AuraPopup();
 
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
+  void SetDecoration(SurfaceFrameType type);
 
  private:
   ShellSurfaceBase* shell_surface_;
+};
+
+class AuraOutput : public WaylandDisplayObserver {
+ public:
+  explicit AuraOutput(wl_resource* resource);
+
+  AuraOutput(const AuraOutput&) = delete;
+  AuraOutput& operator=(const AuraOutput&) = delete;
+
+  ~AuraOutput() override;
+
+  // Overridden from WaylandDisplayObserver:
+  bool SendDisplayMetrics(const display::Display& display,
+                          uint32_t changed_metrics) override;
+
+ protected:
+  virtual void SendInsets(const gfx::Insets& insets);
+  virtual void SendLogicalTransform(int32_t transform);
+
+ private:
+  wl_resource* const resource_;
 };
 
 }  // namespace wayland

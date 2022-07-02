@@ -9,7 +9,7 @@
     height: 0px;
   }
   #scrollers > div {
-    overflow: scroll;
+    overflow: hidden;
     width: 100px;
     height: 100px;
   }
@@ -23,20 +23,14 @@
   @scroll-timeline timeline1 {
     source: selector(#scroller1);
     orientation: auto;
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline2 {
     source: selector(#scroller2);
     orientation: auto;
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline3 {
     source: selector(#scroller3);
     orientation: auto;
-    start: 0px;
-    end: 100px;
   }
   #element {
     width: 0px;

@@ -216,7 +216,7 @@ NGHighlightPainter::SelectionPaintState::SelectionPaintState(
     const FrameSelection& frame_selection)
     : selection_status_(
           frame_selection.ComputeLayoutSelectionStatus(containing_block)),
-      state_(frame_selection.ComputeLayoutSelectionStateForCursor(
+      state_(frame_selection.ComputePaintingSelectionStateForCursor(
           containing_block.Current())),
       containing_block_(containing_block),
       box_offset_(box_offset),
@@ -375,12 +375,13 @@ NGHighlightPainter::NGHighlightPainter(
     grammar_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kGrammar);
     custom_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kCustomHighlight);
     Vector<HighlightLayer> layers = NGHighlightOverlay::ComputeLayers(
-        GetHighlightRegistry(node_), fragment_paint_info_,
-        GetSelectionStatus(selection_), custom_, grammar_, spelling_, target_);
+        GetHighlightRegistry(node_), GetSelectionStatus(selection_), custom_,
+        grammar_, spelling_, target_);
     Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
-        node_, GetHighlightRegistry(node_), fragment_paint_info_,
-        GetSelectionStatus(selection_), custom_, grammar_, spelling_, target_);
-    parts_ = NGHighlightOverlay::ComputeParts(layers, edges);
+        node_, GetHighlightRegistry(node_), GetSelectionStatus(selection_),
+        custom_, grammar_, spelling_, target_);
+    parts_ =
+        NGHighlightOverlay::ComputeParts(fragment_paint_info_, layers, edges);
 
     const Document& document = layout_object_->GetDocument();
     for (wtf_size_t i = 0; i < layers.size(); i++) {
@@ -697,16 +698,12 @@ void NGHighlightPainter::PaintHighlightOverlays(
       if (part.layer != layer.id)
         continue;
 
-      const unsigned clamped_start = ClampOffset(part.from, fragment_item_);
-      const unsigned clamped_end = ClampOffset(part.to, fragment_item_);
-
       // TODO(dazabani@igalia.com) expand range to include partial glyphs, then
       // paint with clipping (NGTextPainter::PaintSelectedText)
 
       PaintDecorationsExceptLineThrough(part);
-      text_painter_.Paint(clamped_start, clamped_end,
-                          clamped_end - clamped_start, layer.text_style,
-                          node_id, foreground_auto_dark_mode_,
+      text_painter_.Paint(part.from, part.to, part.to - part.from,
+                          layer.text_style, node_id, foreground_auto_dark_mode_,
                           TextPainterBase::kTextProperOnly);
       PaintDecorationsOnlyLineThrough(part);
       PaintSpellingGrammarDecorations(part);
@@ -737,10 +734,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
 void NGHighlightPainter::ClipToPartDecorations(const HighlightPart& part) {
   const StringView text = cursor_.CurrentText();
-  const unsigned clamped_start = ClampOffset(part.from, fragment_item_);
-  const unsigned clamped_end = ClampOffset(part.to, fragment_item_);
-  PhysicalRect local_rect =
-      fragment_item_.LocalRect(text, clamped_start, clamped_end);
+  PhysicalRect local_rect = fragment_item_.LocalRect(text, part.from, part.to);
   PhysicalRect part_rect{box_origin_ + local_rect.offset, local_rect.size};
   gfx::RectF clip_rect{part_rect};
 
@@ -774,6 +768,14 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
     if (!decoration_layer.decoration_info)
       continue;
+
+    // SVG painting currently ignores ::selection styles, and will malfunction
+    // or crash if asked to paint decorations introduced by highlight pseudos.
+    // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
+    if (text_painter_.GetSvgState() &&
+        decoration_layer_id.type != HighlightLayerType::kOriginating) {
+      continue;
+    }
 
     if (!state_saver.Saved()) {
       state_saver.Save();
@@ -810,6 +812,14 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
         !decoration_layer.has_line_through_decorations)
       continue;
 
+    // SVG painting currently ignores ::selection styles, and will malfunction
+    // or crash if asked to paint decorations introduced by highlight pseudos.
+    // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
+    if (text_painter_.GetSvgState() &&
+        decoration_layer_id.type != HighlightLayerType::kOriginating) {
+      continue;
+    }
+
     if (!state_saver.Saved()) {
       state_saver.Save();
       ClipToPartDecorations(part);
@@ -832,8 +842,6 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 void NGHighlightPainter::PaintSpellingGrammarDecorations(
     const HighlightPart& part) {
   const StringView text = cursor_.CurrentText();
-  const unsigned clamped_start = ClampOffset(part.from, fragment_item_);
-  const unsigned clamped_end = ClampOffset(part.to, fragment_item_);
   absl::optional<PhysicalRect> marker_rect{};
 
   for (const HighlightLayer& decoration_layer_id : part.decorations) {
@@ -852,8 +860,8 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
           break;
 
         if (!marker_rect) {
-          marker_rect = MarkerRectForForeground(fragment_item_, text,
-                                                clamped_start, clamped_end);
+          marker_rect =
+              MarkerRectForForeground(fragment_item_, text, part.from, part.to);
         }
 
         DocumentMarkerPainter::PaintDocumentMarker(

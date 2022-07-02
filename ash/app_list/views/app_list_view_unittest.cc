@@ -1454,7 +1454,7 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
   forward_view_list.push_back(suggestions[0]);
   const views::ViewModelT<AppListItemView>* view_model =
       apps_grid_view()->view_model();
-  for (int i = 0; i < view_model->view_size(); i += apps_grid_view()->cols())
+  for (size_t i = 0; i < view_model->view_size(); i += apps_grid_view()->cols())
     forward_view_list.push_back(view_model->view_at(i));
   forward_view_list.push_back(search_box_view()->search_box());
 
@@ -1463,7 +1463,7 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
 
   std::vector<views::View*> backward_view_list;
   backward_view_list.push_back(search_box_view()->search_box());
-  for (int i = view_model->view_size() - 1; i >= 0;
+  for (size_t i = view_model->view_size() - 1; i < view_model->view_size();
        i -= apps_grid_view()->cols())
     backward_view_list.push_back(view_model->view_at(i));
   // Up key will always move focus to the last suggestion chip from first row
@@ -1531,7 +1531,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
-  for (int i = 0; i < view_model->view_size();
+  for (size_t i = 0; i < view_model->view_size();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
   }
@@ -1548,7 +1548,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   backward_view_list.push_back(search_box_view()->search_box());
   backward_view_list.push_back(
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
-  for (int i = view_model->view_size() - 1; i >= 0;
+  for (size_t i = view_model->view_size() - 1; i < view_model->view_size();
        i -= app_list_folder_view()->items_grid_view()->cols()) {
     backward_view_list.push_back(view_model->view_at(i));
   }
@@ -1579,7 +1579,7 @@ TEST_F(AppListViewPeekingFocusTest,
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
-  for (int i = kMaxItemsPerFolderPage; i < view_model->view_size();
+  for (size_t i = kMaxItemsPerFolderPage; i < view_model->view_size();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
   }
@@ -1596,7 +1596,7 @@ TEST_F(AppListViewPeekingFocusTest,
   backward_view_list.push_back(search_box_view()->search_box());
   backward_view_list.push_back(
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
-  for (int i = view_model->view_size() - 1; i >= 0;
+  for (size_t i = view_model->view_size() - 1; i < view_model->view_size();
        i -= app_list_folder_view()->items_grid_view()->cols()) {
     backward_view_list.push_back(view_model->view_at(i));
   }
@@ -2019,65 +2019,6 @@ TEST_F(AppListViewPeekingTest, ShowPeekingByDefault) {
   Show();
 
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_ZeroFolders) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->PopulateApps(2);
-  Show();
-
-  // 1 sample in the 0 folders bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 0));
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 0 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_OneRegularFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateAndPopulateFolderWithApps(2);
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 1));
-  // 1 sample in the 2 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 2));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_OemFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateSingleItemFolder(kOemFolderId, "item_id");
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  // 1 sample in the 0 folders bucket, because OEM folder is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 0 apps bucket, because OEM apps don't count.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_LinuxAppsFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateSingleItemFolder(kCrostiniFolderId,
-                                                    "item_id");
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  // 1 sample in the 0 folders bucket, because "Linux apps" is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 1 app bucket, because Linux apps do count.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 1));
 }
 
 // Tests that in side shelf mode, the app list opens in fullscreen by default

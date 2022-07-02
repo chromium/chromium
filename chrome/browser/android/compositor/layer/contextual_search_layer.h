@@ -9,7 +9,6 @@
 
 namespace cc {
 class Layer;
-class NinePatchLayer;
 class SolidColorLayer;
 class UIResourceLayer;
 }
@@ -49,8 +48,6 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      int progress_bar_resource_id,
                      int progress_bar_tint,
                      int search_promo_resource_id,
-                     int bar_banner_ripple_resource_id,
-                     int bar_banner_text_resource_id,
                      float dp_to_px,
                      const scoped_refptr<cc::Layer>& content_layer,
                      bool search_promo_visible,
@@ -65,13 +62,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      bool related_searches_in_bar_visible,
                      float related_searches_in_bar_height,
                      float related_searches_in_bar_redundant_padding,
-                     // Banner etc
-                     bool search_bar_banner_visible,
-                     float search_bar_banner_height,
-                     float search_bar_banner_padding,
-                     float search_bar_banner_ripple_width,
-                     float search_bar_banner_ripple_opacity,
-                     float search_bar_banner_text_opacity,
+                     // Panel position etc
                      float search_panel_x,
                      float search_panel_y,
                      float search_panel_width,
@@ -152,9 +143,6 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   scoped_refptr<cc::SolidColorLayer> search_promo_container_;
   scoped_refptr<cc::UIResourceLayer> related_searches_in_bar_;
   scoped_refptr<cc::UIResourceLayer> related_searches_in_content_;
-  scoped_refptr<cc::SolidColorLayer> bar_banner_container_;
-  scoped_refptr<cc::NinePatchLayer> bar_banner_ripple_;
-  scoped_refptr<cc::UIResourceLayer> bar_banner_text_;
   scoped_refptr<cc::UIResourceLayer> search_caption_;
   scoped_refptr<cc::UIResourceLayer> text_layer_;
   scoped_refptr<cc::SolidColorLayer> touch_highlight_layer_;

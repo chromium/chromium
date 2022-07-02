@@ -66,6 +66,10 @@ def ProcessCrashreport(base, source):
     subprocess.check_call([sys.executable, GSUTIL, '-q', 'cp', tmp_name, dest])
     print('done')
     print('    %s' % dest)
+  except subprocess.CalledProcessError as e:
+    print('upload failed; if it was due to missing permissions, try running')
+    print('download_from_google_storage --config')
+    print('and then try again')
   finally:
     if tmp_name:
       os.remove(tmp_name)

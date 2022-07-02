@@ -73,13 +73,13 @@ public class AutocompleteController {
     }
 
     /** @param listener The listener to be notified when new suggestions are available. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void addOnSuggestionsReceivedListener(@NonNull OnSuggestionsReceivedListener listener) {
         mListeners.add(listener);
     }
 
     /** @param listener A previously registered new suggestions listener to be removed. */
-    void removeOnSuggestionsReceivedListener(@NonNull OnSuggestionsReceivedListener listener) {
+    public void removeOnSuggestionsReceivedListener(
+            @NonNull OnSuggestionsReceivedListener listener) {
         mListeners.remove(listener);
     }
 
@@ -143,7 +143,6 @@ public class AutocompleteController {
      * @param pageClassification The page classification of the current tab.
      * @param title The title of the currently loaded web page.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void startZeroSuggest(@NonNull String omniboxText, @NonNull String url,
             int pageClassification, @NonNull String title) {
         if (mNativeController == 0) return;
@@ -341,7 +340,7 @@ public class AutocompleteController {
      * @return An existing (if one is available) or new (otherwise) instance of the
      *         AutocompleteController associated with the supplied profile.
      */
-    static AutocompleteController getForProfile(Profile profile) {
+    public static AutocompleteController getForProfile(Profile profile) {
         assert profile != null : "AutocompleteController cannot be created for null profile";
         if (profile == null) return null;
         return AutocompleteControllerJni.get().getForProfile(profile);

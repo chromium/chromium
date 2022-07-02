@@ -10,8 +10,9 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -67,6 +68,13 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     return NetworkHandler::Get()->managed_network_configuration_handler();
   }
 
+  void SetCellularEnabled(bool enabled) {
+    NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
+        NetworkTypePattern::Cellular(), enabled,
+        network_handler::ErrorCallback());
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetCellularSimLockEnabled(bool enable) {
     // Simulate a locked SIM.
     base::Value sim_lock_status(base::Value::Type::DICTIONARY);
@@ -78,16 +86,16 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
             std::move(sim_lock_status), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetKey(shill::kSIMSlotInfoICCID, base::Value(kTestIccid));
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
             kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
-            base::Value(sim_slot_infos), /*notify_changed=*/true);
+            base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -212,6 +220,69 @@ TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
   // Notification should not surface in new active session since the SIM is not
   // PIN locked.
   EXPECT_FALSE(GetManagedSimLockNotification());
+}
+
+TEST_F(ManagedSimLockNotifierTest, HideNotificationOnLockDisabled) {
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockEnabled(true);
+  SetAllowCellularSimLock(false);
+
+  EXPECT_TRUE(GetManagedSimLockNotification());
+
+  // Notification will disappear once user disables SIM Lock setting.
+  SetCellularSimLockEnabled(false);
+  EXPECT_FALSE(GetManagedSimLockNotification());
+}
+
+TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockEnabled(true);
+  SetAllowCellularSimLock(false);
+
+  EXPECT_TRUE(GetManagedSimLockNotification());
+  RemoveNotification();
+
+  EXPECT_FALSE(GetManagedSimLockNotification());
+  // Simulate primary ICCID changed. Notification should be shown after.
+  base::Value::List sim_slot_infos;
+  base::Value::Dict slot_info_item;
+  slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+  slot_info_item.Set(shill::kSIMSlotInfoPrimary, false);
+  sim_slot_infos.Append(std::move(slot_info_item));
+
+  base::Value::Dict slot_info_item_2;
+  slot_info_item_2.Set(shill::kSIMSlotInfoICCID, "kTestIccid2");
+  slot_info_item_2.Set(shill::kSIMSlotInfoPrimary, true);
+  sim_slot_infos.Append(std::move(slot_info_item_2));
+
+  network_config_helper_->network_state_helper()
+      .device_test()
+      ->SetDeviceProperty(kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
+                          base::Value(std::move(sim_slot_infos)),
+                          /*notify_changed=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetManagedSimLockNotification());
+}
+
+TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockEnabled(true);
+  SetAllowCellularSimLock(false);
+
+  EXPECT_TRUE(GetManagedSimLockNotification());
+
+  // Notification will disappear if user turns off Cellular.
+  SetCellularEnabled(false);
+  EXPECT_FALSE(GetManagedSimLockNotification());
+
+  // Notification will appear if user turns on Cellular.
+  SetCellularEnabled(true);
+  EXPECT_TRUE(GetManagedSimLockNotification());
 }
 
 }  // namespace ash

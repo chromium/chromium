@@ -14,9 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 // An opaque class that represents a fixed buffer of data of a fixed length,
 // to be used as an input to other operations. An Input object does not own
@@ -47,7 +45,7 @@ class NET_EXPORT_PRIVATE Input {
   // Creates an Input from a std::string. The lifetimes are a bit subtle when
   // using this function: The constructed Input is only valid so long as |s| is
   // still alive and not mutated.
-  Input(const std::string* s);
+  explicit Input(const std::string* s);
 
   // Returns the length in bytes of an Input's data.
   constexpr size_t Length() const { return len_; }
@@ -153,8 +151,6 @@ class NET_EXPORT_PRIVATE ByteReader {
   size_t len_;
 };
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_INPUT_H_

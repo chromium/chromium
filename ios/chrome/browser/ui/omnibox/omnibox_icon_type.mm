@@ -13,8 +13,7 @@
 
 namespace {
 
-// Specific symbol names for the location bar.
-NSString* kInfoLocationBarSymbol = @"info.circle.fill";
+// Specific symbol name for the location bar.
 NSString* kSecureLocationBarSymbol = @"lock.fill";
 
 }  // namespace
@@ -38,13 +37,13 @@ NSString* GetLocationBarSecuritySymbolName(
     LocationBarSecurityIconType iconType) {
   switch (iconType) {
     case INFO:
-      return kInfoLocationBarSymbol;
+      return kInfoCircleSymbol;
     case SECURE:
       return kSecureLocationBarSymbol;
     case NOT_SECURE_WARNING:
       return kWarningFillSymbol;
     case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
       NOTREACHED();
-      return kInfoLocationBarSymbol;
+      return kInfoCircleSymbol;
   }
 }

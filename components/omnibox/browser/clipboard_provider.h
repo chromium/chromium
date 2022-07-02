@@ -8,11 +8,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/history_url_provider.h"
 
 class AutocompleteProviderClient;
+class AutocompleteProviderListener;
 class ClipboardRecentContent;
-class HistoryURLProvider;
 enum class ClipboardContentType;
 
 // Autocomplete provider offering content based on the clipboard's content.
@@ -20,7 +19,6 @@ class ClipboardProvider : public AutocompleteProvider {
  public:
   ClipboardProvider(AutocompleteProviderClient* client,
                     AutocompleteProviderListener* listener,
-                    HistoryURLProvider* history_url_provider,
                     ClipboardRecentContent* clipboard_content);
 
   ClipboardProvider(const ClipboardProvider&) = delete;
@@ -181,11 +179,7 @@ class ClipboardProvider : public AutocompleteProvider {
                                   AutocompleteMatch* match);
 
   raw_ptr<AutocompleteProviderClient> client_;
-  raw_ptr<AutocompleteProviderListener> listener_;
   raw_ptr<ClipboardRecentContent> clipboard_content_;
-
-  // Used for efficiency when creating the verbatim match.  Can be NULL.
-  raw_ptr<HistoryURLProvider> history_url_provider_;
 
   // The current URL suggested and the number of times it has been offered.
   // Used for recording metrics.

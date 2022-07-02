@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -29,24 +33,34 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/table_layout_view.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/chromeos/devicetype_utils.h"
@@ -56,14 +70,258 @@ namespace {
 
 constexpr char kInvalidLaunchName[] = "";
 
+constexpr int kGridItemPreferredSize = 96;
+constexpr int kGridItemsPerRow = 3;
+constexpr int kGridInteriorColumnPadding = 8;
+constexpr int kGridInteriorRowPadding = 8;
+constexpr int kGridExteriorColumnPadding = 8;
+
+constexpr int kGridItemTopInset = 12;
+constexpr int kGridItemInset = 2;
+constexpr int kGridItemInteriorPadding = 8;
+constexpr int kGridItemBorderRadius = 4;
+constexpr int kGridItemGroupId = 1;
+
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
-}  // namespace
+bool IsDoubleClick(const ui::Event& event) {
+  return (event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
+         (event.IsGestureEvent() &&
+          event.AsGestureEvent()->details().tap_count() == 2);
+}
 
-// IntentPickerLabelButton
+// Callback for when an app is selected in the app list. First parameter is the
+// index, second parameter is true if the dialog should be immediately accepted.
+using AppSelectedCallback =
+    base::RepeatingCallback<void(absl::optional<size_t>, bool)>;
+
+// Grid view:
+
+// A Button which displays an app icon and name, as part of a grid layout of
+// apps.
+class IntentPickerAppGridButton : public views::Button {
+ public:
+  // Callback for when this app is selected. Parameter is true if the dialog
+  // should be immediately accepted.
+  using ButtonSelectedCallback = base::RepeatingCallback<void(bool)>;
+
+  METADATA_HEADER(IntentPickerAppGridButton);
+
+  IntentPickerAppGridButton(ButtonSelectedCallback selected_callback,
+                            const ui::ImageModel& icon_model,
+                            const std::string& display_name)
+      : views::Button(base::BindRepeating(&IntentPickerAppGridButton::OnPressed,
+                                          base::Unretained(this))),
+        selected_callback_(std::move(selected_callback)) {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        gfx::Insets::TLBR(kGridItemTopInset, kGridItemInset, kGridItemInset,
+                          kGridItemInset),
+        kGridItemInteriorPadding, true));
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    auto* icon_view =
+        AddChildView(std::make_unique<views::ImageView>(icon_model));
+    icon_view->SetCanProcessEventsWithinSubtree(false);
+
+    auto* name_label = AddChildView(std::make_unique<views::Label>(
+        base::UTF8ToUTF16(display_name), views::style::CONTEXT_BUTTON));
+    name_label->SetMultiLine(true);
+    name_label->SetMaxLines(2);
+    name_label->SetMaximumWidth(kGridItemPreferredSize);
+    name_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    name_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
+
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetAccessibleName(name_label->GetText());
+    SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
+
+    SetGroup(kGridItemGroupId);
+  }
+  IntentPickerAppGridButton(const IntentPickerAppGridButton&) = delete;
+  IntentPickerAppGridButton& operator=(const IntentPickerAppGridButton&) =
+      delete;
+  ~IntentPickerAppGridButton() override = default;
+
+  void SetSelected(bool selected) {
+    selected_ = selected;
+    UpdateBackground();
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+  }
+
+  // views::Button:
+  void StateChanged(ButtonState old_state) override { UpdateBackground(); }
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    Button::GetAccessibleNodeData(node_data);
+    node_data->role = ax::mojom::Role::kRadioButton;
+    node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
+                                         : ax::mojom::CheckedState::kFalse);
+  }
+  bool IsGroupFocusTraversable() const override { return false; }
+  views::View* GetSelectedViewForGroup(int group) override {
+    if (group != kGridItemGroupId)
+      return nullptr;
+
+    Views siblings = parent()->children();
+    auto it = base::ranges::find_if(siblings, [](auto* v) {
+      return static_cast<IntentPickerAppGridButton*>(v)->selected_;
+    });
+
+    return it != siblings.end() ? *it : nullptr;
+  }
+  void OnFocus() override {
+    Button::OnFocus();
+    if (select_on_focus_)
+      selected_callback_.Run(false);
+  }
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    if (action_data.action == ax::mojom::Action::kFocus) {
+      base::AutoReset<bool> reset(&select_on_focus_, false);
+      RequestFocus();
+      return true;
+    }
+    return Button::HandleAccessibleAction(action_data);
+  }
+
+ private:
+  void UpdateBackground() {
+    ui::ColorId color;
+    if (selected_ || GetState() == ButtonState::STATE_PRESSED) {
+      color = kColorIntentPickerItemBackgroundSelected;
+    } else if (GetState() == ButtonState::STATE_HOVERED) {
+      color = kColorIntentPickerItemBackgroundHovered;
+    } else {
+      SetBackground(nullptr);
+      return;
+    }
+
+    SetBackground(
+        views::CreateThemedRoundedRectBackground(color, kGridItemBorderRadius));
+  }
+
+  void OnPressed(const ui::Event& event) {
+    selected_callback_.Run(IsDoubleClick(event));
+  }
+
+  bool selected_ = false;
+  bool select_on_focus_ = true;
+  ButtonSelectedCallback selected_callback_;
+};
+
+BEGIN_METADATA(IntentPickerAppGridButton, views::Button)
+END_METADATA
+
+// Displays a list of apps as a grid of buttons.
+class IntentPickerAppGridView
+    : public IntentPickerBubbleView::IntentPickerAppsView {
+ public:
+  METADATA_HEADER(IntentPickerAppGridView);
+
+  IntentPickerAppGridView(
+      const std::vector<IntentPickerBubbleView::AppInfo>& apps,
+      AppSelectedCallback selected_callback)
+      : selected_callback_(selected_callback) {
+    auto table_view = std::make_unique<views::TableLayoutView>();
+    table_view->SetID(IntentPickerBubbleView::ViewId::kItemContainer);
+
+    table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                 kGridExteriorColumnPadding);
+    for (int i = 0; i < kGridItemsPerRow; i++) {
+      table_view->AddColumn(views::LayoutAlignment::kCenter,
+                            views::LayoutAlignment::kStart,
+                            views::TableLayout::kFixedSize,
+                            views::TableLayout::ColumnSize::kUsePreferred,
+                            /*fixed_width=*/0, /*min_width=*/0);
+      if (i < kGridItemsPerRow - 1) {
+        table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                     kGridInteriorColumnPadding);
+      }
+    }
+    table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                 kGridExteriorColumnPadding);
+
+    // Add padding to the exterior of the grid so that the focus ring on app
+    // items is not clipped.
+    constexpr int kFocusRingPadding = views::FocusRing::kDefaultHaloInset +
+                                      views::FocusRing::kDefaultHaloThickness;
+
+    int row_count = (apps.size() - 1) / kGridItemsPerRow + 1;
+    table_view->AddPaddingRow(views::TableLayout::kFixedSize,
+                              kFocusRingPadding);
+    for (int i = 0; i < row_count; i++) {
+      table_view->AddRows(1, views::TableLayout::kFixedSize);
+      if (i < row_count - 1) {
+        table_view->AddPaddingRow(views::TableLayout::kFixedSize,
+                                  kGridInteriorRowPadding);
+      }
+    }
+    table_view->AddPaddingRow(views::TableLayout::kFixedSize,
+                              kFocusRingPadding);
+
+    for (size_t i = 0; i < apps.size(); i++) {
+      auto app_button = std::make_unique<IntentPickerAppGridButton>(
+          base::BindRepeating(
+              &IntentPickerAppGridView::SetSelectedIndexInternal,
+              base::Unretained(this), i),
+          apps[i].icon_model, apps[i].display_name);
+      table_view->AddChildView(std::move(app_button));
+    }
+
+    SetContents(std::move(table_view));
+    // Clip height so that at most two rows are visible, with a peek of the
+    // third if it exists.
+    ClipHeightTo(kGridItemPreferredSize, kGridItemPreferredSize * 2.5f);
+  }
+
+  void SetSelectedIndex(absl::optional<size_t> index) override {
+    SetSelectedIndexInternal(index, false);
+  }
+
+  absl::optional<size_t> GetSelectedIndex() const override {
+    return selected_app_index_;
+  }
+
+ private:
+  void SetSelectedIndexInternal(absl::optional<size_t> new_index,
+                                bool accepted) {
+    if (selected_app_index_.has_value()) {
+      GetButtonAtIndex(selected_app_index_.value())->SetSelected(false);
+    }
+    if (new_index.has_value()) {
+      GetButtonAtIndex(new_index.value())->SetSelected(true);
+    }
+
+    if (selected_app_index_.has_value() && new_index.has_value() &&
+        GetButtonAtIndex(selected_app_index_.value())->HasFocus()) {
+      GetButtonAtIndex(new_index.value())->RequestFocus();
+    }
+
+    selected_app_index_ = new_index;
+
+    selected_callback_.Run(new_index, accepted);
+  }
+
+  IntentPickerAppGridButton* GetButtonAtIndex(size_t index) {
+    const auto& children = contents()->children();
+    return static_cast<IntentPickerAppGridButton*>(children[index]);
+  }
+
+  AppSelectedCallback selected_callback_;
+
+  absl::optional<size_t> selected_app_index_ = 0;
+};
+
+BEGIN_METADATA(IntentPickerAppGridView, views::ScrollView)
+ADD_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
+END_METADATA
+
+// List view:
 
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
@@ -99,14 +357,136 @@ class IntentPickerLabelButton : public views::LabelButton {
     views::InkDrop::Get(this)->AnimateToState(
         views::InkDropState::ACTIVATED, ui::LocatedEvent::FromIfValid(event));
   }
-
-  views::InkDropState GetTargetInkDropState() {
-    return views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState();
-  }
 };
 
 BEGIN_METADATA(IntentPickerLabelButton, views::LabelButton)
 END_METADATA
+
+class IntentPickerAppListView
+    : public IntentPickerBubbleView::IntentPickerAppsView {
+ public:
+  METADATA_HEADER(IntentPickerAppListView);
+
+  IntentPickerAppListView(
+      const std::vector<IntentPickerBubbleView::AppInfo>& apps,
+      AppSelectedCallback selected_callback)
+      : selected_callback_(selected_callback) {
+    auto scrollable_view = std::make_unique<views::View>();
+    scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    scrollable_view->SetID(IntentPickerBubbleView::ViewId::kItemContainer);
+
+    for (size_t i = 0; i < apps.size(); i++) {
+      auto app_button = std::make_unique<IntentPickerLabelButton>(
+          base::BindRepeating(&IntentPickerAppListView::OnAppPressed,
+                              base::Unretained(this), i),
+          apps[i].icon_model, apps[i].display_name);
+      scrollable_view->AddChildViewAt(std::move(app_button), i);
+    }
+
+    SetBackgroundThemeColorId(ui::kColorBubbleBackground);
+    SetContents(std::move(scrollable_view));
+    DCHECK(!contents()->children().empty());
+    const int row_height =
+        contents()->children().front()->GetPreferredSize().height();
+    // TODO(djacobo): Replace this limit to correctly reflect the UI mocks,
+    // which now instead of limiting the results to 3.5 will allow whatever fits
+    // in 256pt. Using |kMaxAppResults| as a measure of how many apps we want to
+    // show.
+    ClipHeightTo(row_height, (apps::kMaxAppResults + 0.5) * row_height);
+  }
+
+  ~IntentPickerAppListView() override = default;
+
+  void SetSelectedIndex(absl::optional<size_t> index) override {
+    DCHECK(index.has_value());  // List-style intent picker does not support
+                                // having no selection.
+    SetSelectedAppIndex(index.value(), nullptr);
+  }
+
+  absl::optional<size_t> GetSelectedIndex() const override {
+    return selected_app_index_;
+  }
+
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    if (!IsKeyboardCodeArrow(event->key_code()) ||
+        event->type() != ui::ET_KEY_RELEASED)
+      return;
+
+    int delta = 0;
+    switch (event->key_code()) {
+      case ui::VKEY_UP:
+        delta = -1;
+        break;
+      case ui::VKEY_DOWN:
+        delta = 1;
+        break;
+      case ui::VKEY_LEFT:
+        delta = base::i18n::IsRTL() ? 1 : -1;
+        break;
+      case ui::VKEY_RIGHT:
+        delta = base::i18n::IsRTL() ? -1 : 1;
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    SetSelectedAppIndex(CalculateNextAppIndex(delta), nullptr);
+    AdjustScrollViewVisibleRegion();
+
+    ScrollView::OnKeyEvent(event);
+  }
+
+ private:
+  void OnAppPressed(size_t index, const ui::Event& event) {
+    SetSelectedAppIndex(index, &event);
+  }
+
+  void SetSelectedAppIndex(size_t index, const ui::Event* event) {
+    GetIntentPickerLabelButtonAt(selected_app_index_)
+        ->MarkAsUnselected(nullptr);
+    selected_app_index_ = index;
+    GetIntentPickerLabelButtonAt(selected_app_index_)->MarkAsSelected(event);
+
+    bool accepted = false;
+    if (event && IsDoubleClick(*event)) {
+      accepted = true;
+    }
+
+    selected_callback_.Run(index, accepted);
+  }
+
+  size_t CalculateNextAppIndex(int delta) {
+    size_t size = contents()->children().size();
+    return static_cast<size_t>((selected_app_index_ + delta) % size);
+  }
+
+  void AdjustScrollViewVisibleRegion() {
+    views::ScrollBar* bar = vertical_scroll_bar();
+    if (bar) {
+      const int row_height =
+          contents()->children().front()->GetPreferredSize().height();
+      ScrollToPosition(bar, (selected_app_index_ - 1) * row_height);
+    }
+  }
+
+  IntentPickerLabelButton* GetIntentPickerLabelButtonAt(size_t index) {
+    const auto& children = contents()->children();
+    DCHECK_LT(index, children.size());
+    return static_cast<IntentPickerLabelButton*>(children[index]);
+  }
+
+  AppSelectedCallback selected_callback_;
+
+  size_t selected_app_index_ = 0;
+};
+
+BEGIN_METADATA(IntentPickerAppListView, views::ScrollView)
+ADD_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
+END_METADATA
+
+}  // namespace
 
 // static
 IntentPickerBubbleView* IntentPickerBubbleView::intent_picker_bubble_ = nullptr;
@@ -131,7 +511,6 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
       show_remember_selection, initiating_origin);
   if (highlighted_button)
     intent_picker_bubble_->SetHighlightedButton(highlighted_button);
-  intent_picker_bubble_->set_margins(gfx::Insets());
   intent_picker_bubble_->Initialize();
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(intent_picker_bubble_);
@@ -143,8 +522,8 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
 
   DCHECK(intent_picker_bubble_->HasCandidates());
   widget->Show();
-  intent_picker_bubble_->GetIntentPickerLabelButtonAt(0)->MarkAsSelected(
-      nullptr);
+
+  intent_picker_bubble_->SelectDefaultItem();
   return widget;
 }
 
@@ -162,8 +541,11 @@ void IntentPickerBubbleView::CloseBubble() {
 void IntentPickerBubbleView::OnDialogAccepted() {
   bool should_persist = remember_selection_checkbox_ &&
                         remember_selection_checkbox_->GetChecked();
-  RunCallbackAndCloseBubble(app_info_[selected_app_tag_].launch_name,
-                            app_info_[selected_app_tag_].type,
+  auto selected_index = GetSelectedIndex();
+  // Dialog cannot be accepted when there is no selection.
+  DCHECK(selected_index.has_value());
+  RunCallbackAndCloseBubble(app_info_[selected_index.value()].launch_name,
+                            app_info_[selected_index.value()].type,
                             apps::IntentPickerCloseReason::OPEN_APP,
                             should_persist);
 }
@@ -187,6 +569,22 @@ void IntentPickerBubbleView::OnDialogClosed() {
 
 bool IntentPickerBubbleView::ShouldShowCloseButton() const {
   return true;
+}
+
+void IntentPickerBubbleView::SelectDefaultItem() {
+  if (use_grid_view_ && app_info_.size() > 1) {
+    apps_view_->SetSelectedIndex(absl::nullopt);
+    // The default button is disabled in this case. Clear the focus so it
+    // returns to the window, as if there was no default button in the first
+    // place.
+    GetWidget()->GetFocusManager()->ClearFocus();
+  } else {
+    apps_view_->SetSelectedIndex(0);
+  }
+}
+
+absl::optional<size_t> IntentPickerBubbleView::GetSelectedIndex() const {
+  return apps_view_->GetSelectedIndex();
 }
 
 std::u16string IntentPickerBubbleView::GetWindowTitle() const {
@@ -242,6 +640,8 @@ IntentPickerBubbleView::IntentPickerBubbleView(
   // intent_picker_helpers, they will get closed on each navigation start and
   // should stay open until after navigation finishes.
   SetCloseOnMainFrameOriginNavigation(bubble_type == BubbleType::kClickToCall);
+  // Margins are manually added in Initialize().
+  set_margins(gfx::Insets());
 }
 
 IntentPickerBubbleView::~IntentPickerBubbleView() {
@@ -256,80 +656,25 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
                             false);
 }
 
-void IntentPickerBubbleView::AppButtonPressed(size_t index,
-                                              const ui::Event& event) {
-  SetSelectedAppIndex(index, &event);
-  if ((event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
-      (event.IsGestureEvent() &&
-       event.AsGestureEvent()->details().tap_count() == 2)) {
+void IntentPickerBubbleView::OnAppSelected(absl::optional<size_t> index,
+                                           bool accepted) {
+  SetButtonEnabled(ui::DIALOG_BUTTON_OK, index.has_value());
+
+  if (index.has_value()) {
+    UpdateCheckboxState(index.value());
+  }
+
+  if (accepted) {
+    DCHECK(index.has_value());
     AcceptDialog();
   }
 }
 
-void IntentPickerBubbleView::ArrowButtonPressed(size_t index) {
-  SetSelectedAppIndex(index, nullptr);
-  AdjustScrollViewVisibleRegion();
-}
-
-void IntentPickerBubbleView::OnKeyEvent(ui::KeyEvent* event) {
-  if (!IsKeyboardCodeArrow(event->key_code()) ||
-      event->type() != ui::ET_KEY_RELEASED)
-    return;
-
-  int delta = 0;
-  switch (event->key_code()) {
-    case ui::VKEY_UP:
-      delta = -1;
-      break;
-    case ui::VKEY_DOWN:
-      delta = 1;
-      break;
-    case ui::VKEY_LEFT:
-      delta = base::i18n::IsRTL() ? 1 : -1;
-      break;
-    case ui::VKEY_RIGHT:
-      delta = base::i18n::IsRTL() ? -1 : 1;
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-  ArrowButtonPressed(CalculateNextAppIndex(delta));
-
-  View::OnKeyEvent(event);
-}
-
 void IntentPickerBubbleView::Initialize() {
-  // Creates a view to hold the views for each app.
-  auto scrollable_view = std::make_unique<views::View>();
-  scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  for (size_t i = 0; i < app_info_.size(); i++) {
-    auto app_button = std::make_unique<IntentPickerLabelButton>(
-        base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
-                            base::Unretained(this), i),
-        app_info_[i].icon_model, app_info_[i].display_name);
-    scrollable_view->AddChildViewAt(std::move(app_button), i);
-  }
-
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(ui::kColorBubbleBackground);
-  scroll_view->SetContents(std::move(scrollable_view));
-  DCHECK(!scroll_view->contents()->children().empty());
-  const int row_height =
-      scroll_view->contents()->children().front()->GetPreferredSize().height();
-  // TODO(djacobo): Replace this limit to correctly reflect the UI mocks, which
-  // now instead of limiting the results to 3.5 will allow whatever fits in
-  // 256pt. Using |kMaxAppResults| as a measure of how many apps we want to
-  // show.
-  scroll_view->ClipHeightTo(row_height,
-                            (apps::kMaxAppResults + 0.5) * row_height);
-
   const bool show_origin =
       initiating_origin_ &&
       !initiating_origin_->IsSameOriginWith(
-          web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto leading_content_type = use_grid_view_
                                   ? views::DialogContentType::kText
@@ -340,6 +685,7 @@ void IntentPickerBubbleView::Initialize() {
   const auto* provider = ChromeLayoutProvider::Get();
   auto insets = provider->GetDialogInsetsForContentType(leading_content_type,
                                                         trailing_content_type);
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0),
@@ -367,7 +713,16 @@ void IntentPickerBubbleView::Initialize() {
     subtitle->SetMaximumWidth(kMaxDialogWidth - insets.width());
   }
 
-  scroll_view_ = AddChildView(std::move(scroll_view));
+  // Create a container for all of the individual app views.
+  if (use_grid_view_) {
+    apps_view_ = AddChildView(std::make_unique<IntentPickerAppGridView>(
+        app_info_, base::BindRepeating(&IntentPickerBubbleView::OnAppSelected,
+                                       base::Unretained(this))));
+  } else {
+    apps_view_ = AddChildView(std::make_unique<IntentPickerAppListView>(
+        app_info_, base::BindRepeating(&IntentPickerBubbleView::OnAppSelected,
+                                       base::Unretained(this))));
+  }
 
   if (show_origin) {
     std::u16string origin_text = l10n_util::GetStringFUTF16(
@@ -393,15 +748,9 @@ void IntentPickerBubbleView::Initialize() {
     remember_selection_checkbox_ = AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION)));
+    remember_selection_checkbox_->SetID(ViewId::kRememberCheckbox);
     remember_selection_checkbox_->SetProperty(views::kMarginsKey, insets);
-    UpdateCheckboxState();
   }
-}
-
-IntentPickerLabelButton* IntentPickerBubbleView::GetIntentPickerLabelButtonAt(
-    size_t index) {
-  const auto& children = scroll_view_->contents()->children();
-  return static_cast<IntentPickerLabelButton*>(children[index]);
 }
 
 bool IntentPickerBubbleView::HasCandidates() const {
@@ -416,53 +765,16 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
   ClearIntentPickerBubbleView();
   if (!intent_picker_cb_.is_null()) {
     // Calling Run() will make |intent_picker_cb_| null.
-    // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-    // after finding out the root cause.
-    if (should_persist && launch_name.empty()) {
-      base::debug::DumpWithoutCrashing();
-    }
+    DCHECK(!should_persist || !launch_name.empty());
     std::move(intent_picker_cb_)
         .Run(launch_name, entry_type, close_reason, should_persist);
   }
 }
 
-size_t IntentPickerBubbleView::GetScrollViewSize() const {
-  return scroll_view_->contents()->children().size();
-}
-
-void IntentPickerBubbleView::AdjustScrollViewVisibleRegion() {
-  const views::ScrollBar* bar = scroll_view_->vertical_scroll_bar();
-  if (bar) {
-    const int row_height = scroll_view_->contents()
-                               ->children()
-                               .front()
-                               ->GetPreferredSize()
-                               .height();
-    scroll_view_->ScrollToPosition(const_cast<views::ScrollBar*>(bar),
-                                   (selected_app_tag_ - 1) * row_height);
-  }
-}
-
-void IntentPickerBubbleView::SetSelectedAppIndex(size_t index,
-                                                 const ui::Event* event) {
-  DCHECK(HasCandidates());
-  DCHECK_LT(index, app_info_.size());
-
-  GetIntentPickerLabelButtonAt(selected_app_tag_)->MarkAsUnselected(nullptr);
-  selected_app_tag_ = index;
-  GetIntentPickerLabelButtonAt(selected_app_tag_)->MarkAsSelected(event);
-  UpdateCheckboxState();
-}
-
-size_t IntentPickerBubbleView::CalculateNextAppIndex(int delta) {
-  size_t size = GetScrollViewSize();
-  return static_cast<size_t>((selected_app_tag_ + size + delta) % size);
-}
-
-void IntentPickerBubbleView::UpdateCheckboxState() {
+void IntentPickerBubbleView::UpdateCheckboxState(size_t index) {
   if (!remember_selection_checkbox_)
     return;
-  auto selected_app_type = app_info_[selected_app_tag_].type;
+  auto selected_app_type = app_info_[index].type;
   bool should_enable = true;
   if (selected_app_type == apps::PickerEntryType::kDevice) {
     // TODO(crbug.com/1000037): Allow persisting remote devices.
@@ -483,21 +795,6 @@ void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
   // else.
   if (intent_picker_bubble_ == this)
     intent_picker_bubble_ = nullptr;
-}
-
-gfx::ImageSkia IntentPickerBubbleView::GetAppImageForTesting(size_t index) {
-  return GetIntentPickerLabelButtonAt(index)->GetImage(
-      views::Button::ButtonState::STATE_NORMAL);
-}
-
-views::InkDropState IntentPickerBubbleView::GetInkDropStateForTesting(
-    size_t index) {
-  return GetIntentPickerLabelButtonAt(index)->GetTargetInkDropState();
-}
-
-void IntentPickerBubbleView::PressButtonForTesting(size_t index,
-                                                   const ui::Event& event) {
-  AppButtonPressed(index, event);
 }
 
 BEGIN_METADATA(IntentPickerBubbleView, LocationBarBubbleDelegateView)

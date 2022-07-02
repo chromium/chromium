@@ -24,6 +24,12 @@ class NativeViewHostTestBase::NativeViewHostTesting : public NativeViewHost {
 
   ~NativeViewHostTesting() override { owner_->host_destroyed_count_++; }
 
+  // NativeViewHost:
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    ++owner_->on_mouse_pressed_called_count_;
+    return NativeViewHost::OnMousePressed(event);
+  }
+
  private:
   raw_ptr<NativeViewHostTestBase> owner_;
 };
@@ -37,10 +43,11 @@ void NativeViewHostTestBase::TearDown() {
   ViewsTestBase::TearDown();
 }
 
-void NativeViewHostTestBase::CreateTopLevel() {
+void NativeViewHostTestBase::CreateTopLevel(WidgetDelegate* widget_delegate) {
   toplevel_ = std::make_unique<Widget>();
   Widget::InitParams toplevel_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
+  toplevel_params.delegate = widget_delegate;
   toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   toplevel_->Init(std::move(toplevel_params));
 }

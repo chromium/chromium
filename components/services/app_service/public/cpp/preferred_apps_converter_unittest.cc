@@ -548,3 +548,22 @@ TEST_F(PreferredAppsConverterTest, UpgradePreferredApp) {
   EXPECT_TRUE(
       IsEqual(old_preferred_apps_value, new_preferred_apps.GetReference()));
 }
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(PreferredAppsConverterTest, ReplacedAppPreferencesMojomConvert) {
+  std::string app_id("abcdefg");
+  GURL filter_url = GURL("https://www.google.com/abc");
+
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+
+  apps::ReplacedAppPreferences replaced_app_preferences;
+  replaced_app_preferences[app_id].push_back(std::move(intent_filter));
+
+  apps::ReplacedAppPreferences new_replaced_app_preferences =
+      apps::ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
+          apps::ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(
+              replaced_app_preferences));
+  ASSERT_EQ(1u, new_replaced_app_preferences.size());
+  EXPECT_TRUE(apps::IsEqual(replaced_app_preferences[app_id],
+                            new_replaced_app_preferences[app_id]));
+}

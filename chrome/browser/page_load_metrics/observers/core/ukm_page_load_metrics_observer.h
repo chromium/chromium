@@ -309,6 +309,10 @@ class UkmPageLoadMetricsObserver
   // the foreground, no matter how it started.
   bool was_hidden_after_first_show_in_foreground = false;
 
+  // True if the TemplateURLService has a search engine template for the
+  // navigation and a scoped search would have been possible.
+  bool was_scoped_search_like_navigation_ = false;
+
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };
 

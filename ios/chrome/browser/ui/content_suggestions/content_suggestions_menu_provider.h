@@ -11,8 +11,8 @@
 // components.
 @protocol ContentSuggestionsMenuProvider
 
-// Creates a context menu configuration instance for the given |item|, which is
-// represented on the UI by |view|.
+// Creates a context menu configuration instance for the given `item`, which is
+// represented on the UI by `view`.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (ContentSuggestionsMostVisitedItem*)item
                                                       fromView:(UIView*)view;

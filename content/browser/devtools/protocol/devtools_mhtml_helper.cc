@@ -40,6 +40,7 @@ DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
 void DevToolsMHTMLHelper::Capture(
     base::WeakPtr<PageHandler> page_handler,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback) {
+  DCHECK(!page_handler->AssureTopLevelActiveFrame().IsError());
   scoped_refptr<DevToolsMHTMLHelper> helper =
       new DevToolsMHTMLHelper(page_handler, std::move(callback));
   base::ThreadPool::PostTask(

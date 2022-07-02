@@ -21,6 +21,9 @@ class Event;
 // changed or removed.
 //
 // Window "show" state.
+// TODO: Add snapped window state to immersive fullscreen state to
+// WindowShowState. Those are ChromeOS specific window states but we should make
+// it available here as well as Lacros also needs to know those states.
 enum WindowShowState {
   // A default un-set state.
   SHOW_STATE_DEFAULT = 0,
@@ -43,9 +46,9 @@ enum DialogButton {
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {
-  MODAL_TYPE_NONE   = 0,  // Window is not modal.
+  MODAL_TYPE_NONE = 0,    // Window is not modal.
   MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD  = 2,  // Window is modal to a child of its transient parent.
+  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
   MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
 };
 

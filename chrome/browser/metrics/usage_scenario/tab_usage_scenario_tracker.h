@@ -11,6 +11,7 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "url/origin.h"
 
@@ -44,6 +45,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnTabIsAudibleChanged(content::WebContents* web_contents) override;
   void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
                                            bool is_fullscreen) override;
+  void OnMediaDestroyed(content::WebContents* web_contents) override;
   void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) override;
   void OnVideoStartedPlaying(content::WebContents* web_contents) override;
@@ -51,15 +53,14 @@ class TabUsageScenarioTracker : public TabStatsObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& new_display) override;
+  // Note: It would be incorrect to override OnDisplayRemoved() instead of
+  // OnDidRemoveDisplays() because the former may be invoked *before* the number
+  // of displays is updated.
+  void OnDidRemoveDisplays() override;
 
  private:
   using VisibleTabsMap = base::flat_map<content::WebContents*,
                                         std::pair<ukm::SourceId, url::Origin>>;
-
-  // Should be called every time |content_with_media_playing_fullscreen_| needs
-  // to be reset.
-  void OnContentStoppedPlayingMediaFullScreen();
 
   // Should be called when |visible_tab_iter| switch from being visible to non
   // visible. |visible_tab_iter| should be an iterator in |visible_contents_|.
@@ -73,6 +74,9 @@ class TabUsageScenarioTracker : public TabStatsObserver,
 
   void InsertContentsInMapOfVisibleTabs(content::WebContents* web_contents);
 
+  // Invoked when displays are added or removed.
+  void OnNumDisplaysChanged();
+
   // Non-owning. Needs to outlive this class.
   raw_ptr<UsageScenarioDataStoreImpl> usage_scenario_data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -81,14 +85,17 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   base::flat_set<content::WebContents*> contents_playing_video_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // The last reading of the number of displays.
+  absl::optional<int> last_num_displays_;
+
   // Keep track of the visible WebContents and the navigation data associated to
   // them. The associated sourceID for tabs that don't have committed a main
   // frame navigation is ukm::kInvalidSourceID and the origin is empty.
   VisibleTabsMap visible_tabs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // WebContents currently playing video fullscreen, nullptr if there's none.
-  raw_ptr<content::WebContents> content_with_media_playing_fullscreen_ =
-      nullptr;
+  // WebContents currently playing video fullscreen.
+  base::flat_set<raw_ptr<content::WebContents>>
+      contents_playing_video_fullscreen_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

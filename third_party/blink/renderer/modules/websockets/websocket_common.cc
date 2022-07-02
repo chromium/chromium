@@ -46,7 +46,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
       mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
 
   if (upgrade_insecure_requests_set && url_.Protocol() == "ws" &&
-      !network::IsUrlPotentiallyTrustworthy(url_)) {
+      !network::IsUrlPotentiallyTrustworthy(GURL(url_))) {
     UseCounter::Count(
         execution_context,
         WebFeature::kUpgradeInsecureRequestsUpgradedRequestWebsocket);

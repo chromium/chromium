@@ -59,10 +59,6 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
                                          SBThreatType* worst_threat,
                                          ThreatMetadata* metadata);
 
-// DEPRECATED.  Will be removed.
-UmaRemoteCallResult ParseJsonToThreatAndPB(const std::string& metadata_str,
-                                           SBThreatType* worst_threat,
-                                           std::string* metadata_pb_str);
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_ANDROID_SAFE_BROWSING_API_HANDLER_UTIL_H_

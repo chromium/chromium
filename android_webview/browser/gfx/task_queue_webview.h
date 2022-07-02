@@ -41,7 +41,10 @@ class TaskQueueWebView {
 
   // Called by both DeferredGpuCommandService and
   // SkiaOutputSurfaceDisplayContext to post task to client thread.
-  virtual void ScheduleClientTask(base::OnceClosure task) = 0;
+  void ScheduleClientTask(base::OnceClosure task) {
+    GetClientTaskRunner()->PostTask(FROM_HERE, std::move(task));
+  }
+  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
 
  protected:
   virtual ~TaskQueueWebView() = default;

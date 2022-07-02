@@ -45,9 +45,11 @@ class MockGpuVideoEncodeAcceleratorFactories
   GetVideoEncodeAcceleratorSupportedProfiles() override {
     media::VideoEncodeAccelerator::SupportedProfiles profiles = {
         {media::VP8PROFILE_ANY, kMaxResolution, kMaxFramerateNumerator,
-         kMaxFramerateDenominator, kScalabilityModes},
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kScalabilityModes},
         {media::VP9PROFILE_PROFILE0, kMaxResolution, kMaxFramerateNumerator,
-         kMaxFramerateDenominator, kScalabilityModes}};
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kScalabilityModes}};
     return profiles;
   }
 };

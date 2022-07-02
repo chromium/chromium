@@ -45,6 +45,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -290,8 +291,12 @@ void ManagePasswordsUIController::OnCredentialLeak(
   else
     ClearPopUpFlagForBubble();
 
-  auto* raw_controller =
-      new CredentialLeakDialogControllerImpl(this, leak_type, url, username);
+  auto* raw_controller = new CredentialLeakDialogControllerImpl(
+      this, leak_type, url, username,
+      std::make_unique<
+          password_manager::metrics_util::LeakDialogMetricsRecorder>(
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+          password_manager::GetLeakDialogType(leak_type)));
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(
       CreateCredentialLeakPrompt(raw_controller));
@@ -644,9 +649,8 @@ void ManagePasswordsUIController::StartAutomatedPasswordChange(
 }
 
 void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser, account,
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 }
 

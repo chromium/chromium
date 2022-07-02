@@ -9,7 +9,8 @@ namespace ash {
 using ::testing::AtLeast;
 using ::testing::_;
 
-MockErrorScreen::MockErrorScreen(ErrorScreenView* view) : ErrorScreen(view) {}
+MockErrorScreen::MockErrorScreen(base::WeakPtr<ErrorScreenView> view)
+    : ErrorScreen(std::move(view)) {}
 
 MockErrorScreen::~MockErrorScreen() {}
 
@@ -29,24 +30,8 @@ void MockErrorScreen::SetErrorState(NetworkError::ErrorState error_state,
   MockSetErrorState(error_state, network);
 }
 
-MockErrorScreenView::MockErrorScreenView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-  EXPECT_CALL(*this, MockUnbind()).Times(AtLeast(1));
-}
+MockErrorScreenView::MockErrorScreenView() = default;
 
-MockErrorScreenView::~MockErrorScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockErrorScreenView::Bind(ErrorScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockErrorScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
+MockErrorScreenView::~MockErrorScreenView() = default;
 
 }  // namespace ash

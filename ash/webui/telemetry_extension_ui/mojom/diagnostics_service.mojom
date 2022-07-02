@@ -7,7 +7,7 @@
 
 // Note: This is a subset of the cros_healthd diagnostics service interface
 // which is located in
-// //chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.
 // This interface serves as PII filtering and data post-processing service
 // between the source (cros_healthd) and the clients
 // (third-party telemetry extensions).

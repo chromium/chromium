@@ -350,9 +350,8 @@ gfx::NativeView OmniboxViewIOS::GetRelativeWindowForPopup() const {
 }
 
 void OmniboxViewIOS::OnDidBeginEditing() {
-
   // If Open from Clipboard offers a suggestion, the popup may be opened when
-  // |OnSetFocus| is called on the model. The state of the popup is saved early
+  // `OnSetFocus` is called on the model. The state of the popup is saved early
   // to ignore that case.
   DCHECK(popup_provider_);
   bool popup_was_open_before_editing_began = popup_provider_->IsPopupOpen();
@@ -382,7 +381,7 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   if (!popup_was_open_before_editing_began)
     [field_ enterPreEditState];
 
-  // |controller_| is only forwarding the call to the BVC. This should only
+  // `controller_` is only forwarding the call to the BVC. This should only
   // happen when the omnibox is being focused and it starts showing the popup;
   // if the popup was already open, no need to call this.
   if (!popup_was_open_before_editing_began)
@@ -419,13 +418,13 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
       field_.text = @"";
     }
 
-    // Reset |range| to be of zero-length at location zero, as the field will be
+    // Reset `range` to be of zero-length at location zero, as the field will be
     // now cleared.
     range = NSMakeRange(0, 0);
   }
 
   // Figure out the old and current (new) selections.  Assume the new selection
-  // will be of zero-length, located at the end of |new_text|.
+  // will be of zero-length, located at the end of `new_text`.
   NSRange old_range = range;
   NSRange new_range = NSMakeRange(range.location + [new_text length], 0);
 
@@ -573,7 +572,7 @@ void OmniboxViewIOS::OnCopy() {
     UITextRange* selected_range = [field_ selectedTextRange];
     selectedText = [field_ textInRange:selected_range];
     UITextPosition* start = [field_ beginningOfDocument];
-    // The following call to |-offsetFromPosition:toPosition:| gives the offset
+    // The following call to `-offsetFromPosition:toPosition:` gives the offset
     // in terms of the number of "visible characters."  The documentation does
     // not specify whether this means glyphs or UTF16 chars.  This does not
     // matter for the current implementation of AdjustTextForCopy(), but it may
@@ -630,7 +629,7 @@ void OmniboxViewIOS::OnDeleteBackward() {
   if (field_.text.length == 0) {
     // If the user taps backspace while the pre-edit text is showing,
     // OnWillChange is invoked before this method and sets the text to an empty
-    // string, so use the |clearingPreEditText| to determine if the chip should
+    // string, so use the `clearingPreEditText` to determine if the chip should
     // be cleared or not.
     if ([field_ clearingPreEditText]) {
       // In the case where backspace is tapped while in pre-edit mode,
@@ -656,7 +655,7 @@ void OmniboxViewIOS::ClearText() {
   if (![field_ isFirstResponder])
     [field_ becomeFirstResponder];
   if (field_.text.length == 0) {
-    // If |field_| is empty, remove the query refinement chip.
+    // If `field_` is empty, remove the query refinement chip.
     RemoveQueryRefinementChip();
   } else {
     // Otherwise, just remove the text in the omnibox.
@@ -732,7 +731,7 @@ void OmniboxViewIOS::OnSelectedMatchImageChanged(
 void OmniboxViewIOS::OnResultsChanged(const AutocompleteResult& result) {
   if (ignore_popup_updates_) {
     // Please contact rohitrao@ if the following DCHECK ever fires.  If
-    // |ignore_popup_updates_| is true but |result| is not empty, then the new
+    // `ignore_popup_updates_` is true but `result` is not empty, then the new
     // prerender code in ChromeOmniboxClientIOS will incorrectly discard its
     // prerender.
     // TODO(crbug.com/754050): Remove this whole method once we are reasonably

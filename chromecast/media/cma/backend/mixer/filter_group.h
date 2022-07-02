@@ -14,37 +14,40 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chromecast/media/base/aligned_buffer.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"
 
-namespace media {
-class AudioBus;
-}  // namespace media
-
 namespace chromecast {
 namespace media {
 class InterleavedChannelMixer;
 class MixerInput;
 class PostProcessingPipeline;
+class PostProcessingPipelineFactory;
 
 // FilterGroup mixes MixerInputs and/or FilterGroups, mixes their outputs, and
 // applies DSP to them.
 
-// FilterGroups are added at construction. These cannot be removed.
+// Tag to avoid ABA problem.
+class FilterGroupTag : public base::RefCountedThreadSafe<FilterGroupTag> {
+ private:
+  friend class base::RefCountedThreadSafe<FilterGroupTag>;
+  ~FilterGroupTag() = default;
+};
 
-// InputQueues are added with AddActiveInput(), then cleared when
-// MixAndFilter() is called (they must be added each time data is queried).
+// FilterGroups are added at construction. These cannot be removed.
 class FilterGroup {
  public:
   // |num_channels| indicates number of input audio channels.
   // |name| is used for debug printing
-  // |pipeline| - processing pipeline.
   FilterGroup(int num_channels,
-              const std::string& name,
-              std::unique_ptr<PostProcessingPipeline> pipeline,
+              std::string name,
+              base::Value prerender_filter_list,
+              const base::Value* filter_list,
+              PostProcessingPipelineFactory* ppp_factory,
               const base::Value* volume_limits);
 
   FilterGroup(const FilterGroup&) = delete;
@@ -59,6 +62,10 @@ class FilterGroup {
   AudioContentType content_type() const { return content_type_; }
   int input_frames_per_write() const { return input_frames_per_write_; }
   int input_samples_per_second() const { return input_samples_per_second_; }
+  int system_output_sample_rate() const {
+    return output_config_.system_output_sample_rate;
+  }
+  scoped_refptr<FilterGroupTag> tag() const { return tag_; }
 
   // |input| will be recursively mixed into this FilterGroup's input buffer when
   // MixAndFilter() is called. Registering a FilterGroup as an input to more
@@ -94,6 +101,9 @@ class FilterGroup {
   MediaPipelineBackend::AudioDecoder::RenderingDelay
   GetRenderingDelayToOutput();
 
+  std::unique_ptr<PostProcessingPipeline> CreatePrerenderPipeline(
+      int num_channels);
+
   // Retrieves a pointer to the output buffer. This will crash if called before
   // MixAndFilter(), and the data & memory location may change each time
   // MixAndFilter() is called.
@@ -109,9 +119,6 @@ class FilterGroup {
   // |name|.
   void SetPostProcessorConfig(const std::string& name,
                               const std::string& config);
-
-  // Sets the active channel for post processors.
-  void UpdatePlayoutChannel(int playout_channel);
 
   // Determines whether this group is still ringing out after all input streams
   // have stopped playing.
@@ -142,6 +149,10 @@ class FilterGroup {
 
   const int num_channels_;
   const std::string name_;
+  base::Value prerender_filter_list_;
+  PostProcessingPipelineFactory* const ppp_factory_;
+  int prerender_creation_count_ = 0;
+  const scoped_refptr<FilterGroupTag> tag_;
 
   VolumeLimitsMap volume_limits_;
   float default_volume_min_ = 0.0f;
@@ -154,23 +165,18 @@ class FilterGroup {
   AudioPostProcessor2::Config output_config_;
   int input_samples_per_second_ = 0;
   int input_frames_per_write_ = 0;
-  int frames_zeroed_ = 0;
+  int output_frames_zeroed_ = 0;
   float last_volume_ = 0.0f;
   float target_volume_ = 0.0f;
   double delay_seconds_ = 0;
   MediaPipelineBackend::AudioDecoder::RenderingDelay rendering_delay_to_output_;
   AudioContentType content_type_ = AudioContentType::kMedia;
 
-  // Buffers that hold audio data while it is mixed.
-  // These are kept as members of this class to minimize copies and
-  // allocations.
-  std::unique_ptr<::media::AudioBus> temp_buffer_;
-  std::unique_ptr<::media::AudioBus> mixed_;
-
   // Interleaved data must be aligned to 16 bytes.
   AlignedBuffer<float> interleaved_;
 
   std::unique_ptr<PostProcessingPipeline> post_processing_pipeline_;
+  float* output_buffer_ = nullptr;
 };
 
 }  // namespace media

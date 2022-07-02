@@ -184,8 +184,14 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   }
   gpu_preferences.gr_context_type = ParseGrContextType();
   gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Vulkan Surface is not used on Fuchsia.
+  gpu_preferences.disable_vulkan_surface = true;
+#else
   gpu_preferences.disable_vulkan_surface =
       command_line->HasSwitch(switches::kDisableVulkanSurface);
+#endif
 
   gpu_preferences.enable_gpu_blocked_time_metric =
       command_line->HasSwitch(switches::kEnableGpuBlockedTime);

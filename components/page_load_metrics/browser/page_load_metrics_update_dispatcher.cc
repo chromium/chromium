@@ -456,7 +456,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
-    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+    uint32_t soft_navigation_count) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
     // Extensions can inject child frames into a page. We don't want to track
@@ -477,8 +478,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateMainFrameTiming(std::move(new_timing));
     UpdateMainFrameRenderData(*render_data);
-    if (mobile_friendliness.has_value())
+    if (mobile_friendliness.has_value()) {
       UpdateMainFrameMobileFriendliness(*mobile_friendliness);
+    }
+    UpdateSoftNavigationCount(soft_navigation_count);
   } else {
     UpdateSubFrameMetadata(render_frame_host, std::move(new_metadata));
     UpdateSubFrameTiming(render_frame_host, std::move(new_timing));
@@ -629,6 +632,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMobileFriendliness(
   client_->OnSubFrameMobileFriendlinessChanged(mobile_friendliness);
 }
 
+void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationCount(
+    uint32_t soft_navigation_count) {
+  client_->OnSoftNavigationCountChanged(soft_navigation_count);
+}
 void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameIntersectionRect(
     content::RenderFrameHost* render_frame_host,
     const mojom::FrameMetadataPtr& frame_metadata) {
@@ -761,6 +768,8 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
         input_timing_delta.num_interactions,
         *(input_timing_delta.max_event_durations));
   }
+  if (page_input_timing_->num_input_events > 0)
+    client_->OnPageInputTimingChanged(page_input_timing_->num_input_events);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(

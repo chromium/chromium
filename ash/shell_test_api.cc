@@ -126,13 +126,6 @@ void ShellTestApi::SetUseLoginNotificationDelayForTest(bool use_delay) {
       use_delay);
 }
 
-// static
-void ShellTestApi::SetShouldShowShortcutNotificationForTest(
-    bool show_notification) {
-  AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(
-      show_notification);
-}
-
 MessageCenterController* ShellTestApi::message_center_controller() {
   return shell_->message_center_controller_.get();
 }

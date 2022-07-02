@@ -6,11 +6,8 @@
 #define CHROME_BROWSER_USB_WEB_USB_CHOOSER_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
+#include "content/public/browser/usb_chooser.h"
 
 namespace content {
 class RenderFrameHost;
@@ -20,28 +17,23 @@ class UsbChooserController;
 
 // This interface can be used by a webpage to request permission from user
 // to access a certain device.
-class WebUsbChooser {
+class WebUsbChooser : public content::UsbChooser {
  public:
-  explicit WebUsbChooser(content::RenderFrameHost* render_frame_host);
+  static std::unique_ptr<WebUsbChooser> Create(
+      content::RenderFrameHost* frame,
+      std::unique_ptr<UsbChooserController> controller);
 
   WebUsbChooser(const WebUsbChooser&) = delete;
   WebUsbChooser& operator=(const WebUsbChooser&) = delete;
 
-  virtual ~WebUsbChooser();
+  ~WebUsbChooser() override;
 
-  void GetPermission(
-      std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
-      blink::mojom::WebUsbService::GetPermissionCallback callback);
+ protected:
+  WebUsbChooser();
 
   virtual void ShowChooser(
+      content::RenderFrameHost* render_frame_host,
       std::unique_ptr<UsbChooserController> controller) = 0;
-
-  virtual base::WeakPtr<WebUsbChooser> GetWeakPtr() = 0;
-
-  content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
-
- private:
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_CHOOSER_H_

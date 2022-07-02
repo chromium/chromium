@@ -171,7 +171,7 @@ class CORE_EXPORT SelectorChecker {
     Element* element = nullptr;
     Element* previous_element = nullptr;
     Element* vtt_originating_element = nullptr;
-    ContainerNode* relative_leftmost_element = nullptr;
+    ContainerNode* relative_anchor_element = nullptr;
 
     PseudoId pseudo_id = kPseudoIdNone;
 
@@ -193,10 +193,9 @@ class CORE_EXPORT SelectorChecker {
     PseudoId dynamic_pseudo{kPseudoIdNone};
     AtomicString custom_highlight_name;
 
-    // From the shortest argument selector match, we need to get the element
-    // that matches the leftmost compound selector to mark the correct scope
-    // elements of :has() pseudo class having the argument selectors starts
-    // with descendant combinator.
+    // From the :has() argument selector checking, we need to get the element
+    // that matches the leftmost compound selector to mark all possible :has()
+    // anchor elements (the relative anchor element of the :has() argument).
     //
     // <main id=main>
     //   <div id=d1>
@@ -214,36 +213,30 @@ class CORE_EXPORT SelectorChecker {
     //  main.querySelectorAll('div:has(.a .b)'); // Should return #d1, #d2
     // </script>
     //
-    // In case of the above example, div#d5 element matches the argument
-    // selector '.a .b'. Among the ancestors of the div#d5, the div#d3 and
-    // div#d4 is not the correct candidate scope element of ':has(.a .b)'
-    // because those elements don't have .a element as it's descendant.
-    // So instead of marking ancestors of div#d5, we should mark ancestors
-    // of div#d3 to prevent incorrect marking.
-    // In case of the shortest match for the argument selector '.a .b' on
-    // div#d5 element, the div#d3 is the element that matches the leftmost
-    // compound selector '.a'. So the MatchResult will return the div#d3
-    // element for the matching operation.
+    // In case of the above example, the selector 'div:has(.a .b)' is checked
+    // on the descendants of '#main' element in this order:
+    // - 'div#d1', 'div#d2', 'div#d3', 'div#d4', 'div#d5'
+    // When checking the selector on 'div#d1', we can get all possible :has()
+    // anchor element while checking the :has() argument selector ('.a .b')
+    // on the descendants of 'div#d1'.
+    // Among the descendants of 'div#d1', 'div#d5' matches the argument selector
+    // '.a .b'. More precisely, the 'div#d5' matches the argument selector
+    // ':-internal-relative-anchor .a .b' only when the ':-internal-relative-
+    // anchor' matches any ancestors of the element matches the leftmost
+    // compound of the argument selector ('.a').
+    // So, in case of checking the 'div:has(.a .b)' on 'div#d1', 'div#d1' and
+    // 'div#d2' can be a :has() argument anchor element because 'div#d3' and
+    // 'div#d4' are the element that matches the leftmost compound '.a' of the
+    // :has() argument '.a .b'.
+    // To avoid repetitive argument checking, the :has() anchor elements are
+    // stored in the CheckPseudoHasResultCache. To cache the anchor elements
+    // correctly, MatchResult returns the elements that match the leftmost
+    // compound of the :has() argument selector.
     //
-    // In case of matching none desendant relative argument selectors, we
-    // can get the candidate leftmost compound matches while matching the
-    // argument selector.
-    // To process the 'main.querySelectorAll("div:has(:scope > .a .b)")'
-    // on the above DOM tree, selector checker will try to match the
-    // argument selector ':scope > .a .b' on the descendants of #d1 div
-    // element with the :scope element as #d1. When it matches the argument
-    // selector on #d5 element, the matching result is true and it can get
-    // the element that matches the leftmost(except :scope) compound '.a'
-    // as #d2 element. But while matching the argument selector on the #d5
-    // element, selector checker can also aware that the #d3 element can
-    // be a leftmost compound matching element when the scope element is
-    // #d2 element. So the selector checker will return the #d2 and #d3
-    // element so that the #d1 and #d2 can be marked as matched with the
-    // ':has(:scope > .a .b)'
-    //
-    // Instead of having vector for the :has argument matching, MatchResult
-    // has a pointer field to hold a element vector instance to minimize the
-    // MatchResult instance allocation overhead for none-has matching operations
+    // This field is only for checking :has() pseudo class. To avoid the
+    // MatchResult instance allocation overhead on checking the other selectors,
+    // MatchResult has a pointer field to hold the reference of the vector
+    // instance instead of having the vector instance field.
     HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
         nullptr};
     unsigned proximity{std::numeric_limits<unsigned>::max()};

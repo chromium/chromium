@@ -421,9 +421,11 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
     return source;
   }
 
-  void GetUserMediaRequestSucceeded(MediaStreamDescriptor* descriptor,
+  void GetUserMediaRequestSucceeded(MediaStreamDescriptorVector* descriptors,
                                     UserMediaRequest* request_info) override {
-    last_generated_descriptor_ = descriptor;
+    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    DCHECK_EQ(descriptors->size(), 1u);
+    last_generated_descriptor_ = (*descriptors)[0];
     *state_ = kRequestSucceeded;
   }
 

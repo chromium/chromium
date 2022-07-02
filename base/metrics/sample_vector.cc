@@ -32,6 +32,13 @@ SampleVectorBase::SampleVectorBase(uint64_t id,
   CHECK_GE(bucket_ranges_->bucket_count(), 1u);
 }
 
+SampleVectorBase::SampleVectorBase(uint64_t id,
+                                   std::unique_ptr<Metadata> meta,
+                                   const BucketRanges* bucket_ranges)
+    : HistogramSamples(id, std::move(meta)), bucket_ranges_(bucket_ranges) {
+  CHECK_GE(bucket_ranges_->bucket_count(), 1u);
+}
+
 SampleVectorBase::~SampleVectorBase() = default;
 
 void SampleVectorBase::Accumulate(Sample value, Count count) {
@@ -303,11 +310,9 @@ SampleVector::SampleVector(const BucketRanges* bucket_ranges)
     : SampleVector(0, bucket_ranges) {}
 
 SampleVector::SampleVector(uint64_t id, const BucketRanges* bucket_ranges)
-    : SampleVectorBase(id, new LocalMetadata(), bucket_ranges) {}
+    : SampleVectorBase(id, std::make_unique<LocalMetadata>(), bucket_ranges) {}
 
-SampleVector::~SampleVector() {
-  delete static_cast<LocalMetadata*>(meta());
-}
+SampleVector::~SampleVector() = default;
 
 bool SampleVector::MountExistingCountsStorage() const {
   // There is never any existing storage other than what is already in use.
@@ -344,15 +349,6 @@ std::string SampleVector::GetAsciiBody() const {
   const double kLineLength = 72;
   if (max_size > kLineLength)
     scaling_factor = kLineLength / max_size;
-
-  // Calculate space needed to print bucket range numbers.  Leave room to print
-  // nearly the largest bucket range without sliding over the histogram.
-  uint32_t largest_non_empty_bucket = bucket_count() - 1;
-  while (0 == GetCountAtIndex(largest_non_empty_bucket)) {
-    if (0 == largest_non_empty_bucket)
-      break;  // All buckets are empty.
-    --largest_non_empty_bucket;
-  }
 
   // Calculate largest print width needed for any of our bucket range displays.
   size_t print_width = 1;

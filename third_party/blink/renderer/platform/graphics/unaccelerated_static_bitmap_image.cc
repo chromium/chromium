@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
+#include "base/process/memory.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -79,8 +80,14 @@ void UnacceleratedStaticBitmapImage::Draw(
     const gfx::RectF& src_rect,
     const ImageDrawOptions& draw_options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto image = PaintImageForCurrentFrame();
+  if (image.may_be_lcp_candidate() != draw_options.may_be_lcp_candidate) {
+    image = PaintImageBuilder::WithCopy(std::move(image))
+                .set_may_be_lcp_candidate(draw_options.may_be_lcp_candidate)
+                .TakePaintImage();
+  }
   StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, draw_options,
-                                PaintImageForCurrentFrame());
+                                image);
 }
 
 PaintImage UnacceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
@@ -108,7 +115,12 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
     skia_image =
         skia_image->makeColorTypeAndColorSpace(color_type, color_space);
   }
-  CHECK(skia_image) << "Skia failed to convert image.";
+  if (UNLIKELY(!skia_image)) {
+    // Null value indicates that skia failed to allocate the destination
+    // bitmap.
+    base::TerminateBecauseOutOfMemory(
+        skia_image->imageInfo().makeColorType(color_type).computeMinByteSize());
+  }
   return UnacceleratedStaticBitmapImage::Create(skia_image, orientation_);
 }
 

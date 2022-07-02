@@ -82,7 +82,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
         doReturn(mContext).when(mTab).getContext();
 
-        mConfiguration.screenWidthDp = OptionalNewTabButtonController.MIN_WIDTH_DP + WIDTH_DELTA;
+        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
         doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());

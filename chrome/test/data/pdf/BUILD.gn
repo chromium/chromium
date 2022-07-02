@@ -9,15 +9,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
 
-generate_grd("build_grdp") {
-  grd_prefix = "pdf"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "pdf"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -47,6 +38,7 @@ ts_library("build_ts") {
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
     "scroll_with_form_field_focused_test.ts",
+    "swipe_detector_test.ts",
     "test_util.ts",
     "title_test.ts",
     "touch_handling_test.ts",
@@ -78,4 +70,14 @@ ts_library("build_ts") {
       ts_definitions + [ "//tools/typescript/definitions/chrome_test.d.ts" ]
   deps = [ "//chrome/browser/resources/pdf:build_ts" ]
   extra_deps = [ "../webui:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "pdf"
 }

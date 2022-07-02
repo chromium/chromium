@@ -26,6 +26,7 @@ namespace {
 
 constexpr char kNotifierId[] = "adaptive-charging-notify";
 constexpr char kInfoNotificationId[] = "adaptive-charging-notify-info";
+constexpr base::TimeDelta kTimeDeltaRoundingInterval = base::Minutes(30);
 
 }  // namespace
 
@@ -46,7 +47,10 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
     notification_message = l10n_util::GetStringFUTF16(
         IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY,
         base::TimeFormatTimeOfDayWithHourClockType(
-            base::Time::Now() + base::Hours(hours_to_full.value()),
+            base::Time::FromDeltaSinceWindowsEpoch(
+                base::Time::Now().ToDeltaSinceWindowsEpoch().RoundToMultiple(
+                    kTimeDeltaRoundingInterval)) +
+                base::Hours(hours_to_full.value()),
             base::GetHourClockType(), base::kKeepAmPm));
   } else {
     notification_message = l10n_util::GetStringUTF16(
@@ -63,7 +67,8 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       notification_message,
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+                                 kNotifierId,
+                                 NotificationCatalogName::kAdaptiveCharging),
       notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()),
@@ -75,6 +80,12 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
+}
+
+void AdaptiveChargingNotificationController::CloseAdaptiveChargingNotification(
+    bool by_user) {
+  message_center::MessageCenter::Get()->RemoveNotification(kInfoNotificationId,
+                                                           by_user);
 }
 
 bool AdaptiveChargingNotificationController::ShouldShowNotification() {
@@ -92,6 +103,7 @@ void AdaptiveChargingNotificationController::Click(
     return;
   if (button_index.value() == 0) {
     PowerManagerClient::Get()->ChargeNowForAdaptiveCharging();
+    CloseAdaptiveChargingNotification(/*by_user=*/true);
   } else {
     NOTREACHED() << "Unknown button index value";
   }

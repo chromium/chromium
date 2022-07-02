@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_
 
-#include <limits>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -47,7 +47,7 @@ class LayoutView;
 class Font;
 class Element;
 
-class CORE_EXPORT CSSToLengthConversionData {
+class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   STACK_ALLOCATED();
 
  public:
@@ -55,21 +55,27 @@ class CORE_EXPORT CSSToLengthConversionData {
     DISALLOW_NEW();
 
    public:
-    FontSizes() : em_(0), rem_(0), font_(nullptr), zoom_(1) {}
+    FontSizes() = default;
     FontSizes(float em, float rem, const Font*, float zoom);
     FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
 
-    float Em() const { return em_; }
-    float Rem() const { return rem_; }
-    float Zoom() const;
+    FontSizes Unzoomed() const { return CopyWithAdjustedZoom(1.0f); }
+
+    float Em() const { return em_ * zoom_adjust_.value_or(zoom_); }
+    float Rem() const { return rem_ * zoom_adjust_.value_or(zoom_); }
     float Ex() const;
     float Ch() const;
 
    private:
-    float em_;
-    float rem_;
-    const Font* font_;
-    float zoom_;
+    friend class CSSToLengthConversionData;
+
+    FontSizes CopyWithAdjustedZoom(float new_zoom) const;
+
+    float em_ = 0;
+    float rem_ = 0;
+    const Font* font_ = nullptr;
+    float zoom_ = 1;
+    absl::optional<float> zoom_adjust_;
   };
 
   class CORE_EXPORT ViewportSize {
@@ -120,15 +126,24 @@ class CORE_EXPORT CSSToLengthConversionData {
 
    public:
     ContainerSizes() = default;
-    explicit ContainerSizes(Element* nearest_container)
-        : nearest_container_(nearest_container) {}
+
+    // ContainerSizes will look for container-query containers in the inclusive
+    // ancestor chain of `context_element`. Optimally, the nearest container-
+    // query container is provided, although it's harmless to provide some
+    // descendant of that container (we'll just traverse a bit more).
+    explicit ContainerSizes(Element* context_element)
+        : context_element_(context_element) {}
 
     // ContainerSizes::Width/Height is normally computed lazily by looking
-    // the ancestor chain of `nearest_container_`. This function allows the
+    // the ancestor chain of `context_element_`. This function allows the
     // sizes to be fetched eagerly instead. This is useful for situations where
     // we don't have enough context to fetch the information lazily (e.g.
     // generated images).
     ContainerSizes PreCachedCopy() const;
+
+    // Note that this will eagerly compute width/height for both `this` and
+    // the incoming object.
+    bool SizesEqual(const ContainerSizes&) const;
 
     void Trace(Visitor*) const;
 
@@ -138,13 +153,14 @@ class CORE_EXPORT CSSToLengthConversionData {
    private:
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
-    Member<Element> nearest_container_;
+    Member<Element> context_element_;
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;
   };
 
-  CSSToLengthConversionData() : style_(nullptr), zoom_(1) {}
+  CSSToLengthConversionData()
+      : CSSLengthResolver(1 /* zoom */), style_(nullptr) {}
   CSSToLengthConversionData(const ComputedStyle*,
                             WritingMode,
                             const FontSizes&,
@@ -157,76 +173,45 @@ class CORE_EXPORT CSSToLengthConversionData {
                             const ContainerSizes&,
                             float zoom);
 
-  float Zoom() const { return zoom_; }
-
-  float EmFontSize() const;
-  float RemFontSize() const;
-  float ExFontSize() const;
-  float ChFontSize() const;
-  float FontSizeZoom() const { return font_sizes_.Zoom(); }
-
-  // Accessing these marks the style as having viewport units
-  double ViewportWidthPercent() const;
-  double ViewportHeightPercent() const;
-  double ViewportInlineSizePercent() const;
-  double ViewportBlockSizePercent() const;
-  double ViewportMinPercent() const;
-  double ViewportMaxPercent() const;
-  double SmallViewportWidthPercent() const;
-  double SmallViewportHeightPercent() const;
-  double SmallViewportInlineSizePercent() const;
-  double SmallViewportBlockSizePercent() const;
-  double SmallViewportMinPercent() const;
-  double SmallViewportMaxPercent() const;
-  double LargeViewportWidthPercent() const;
-  double LargeViewportHeightPercent() const;
-  double LargeViewportInlineSizePercent() const;
-  double LargeViewportBlockSizePercent() const;
-  double LargeViewportMinPercent() const;
-  double LargeViewportMaxPercent() const;
-  double DynamicViewportWidthPercent() const;
-  double DynamicViewportHeightPercent() const;
-  double DynamicViewportInlineSizePercent() const;
-  double DynamicViewportBlockSizePercent() const;
-  double DynamicViewportMinPercent() const;
-  double DynamicViewportMaxPercent() const;
-
-  // Accessing these marks the style as having container relative units.
-  double ContainerWidthPercent() const;
-  double ContainerHeightPercent() const;
-  double ContainerInlineSizePercent() const;
-  double ContainerBlockSizePercent() const;
-  double ContainerMinPercent() const;
-  double ContainerMaxPercent() const;
+  float EmFontSize() const override;
+  float RemFontSize() const override;
+  float ExFontSize() const override;
+  float ChFontSize() const override;
+  double ViewportWidth() const override;
+  double ViewportHeight() const override;
+  double SmallViewportWidth() const override;
+  double SmallViewportHeight() const override;
+  double LargeViewportWidth() const override;
+  double LargeViewportHeight() const override;
+  double DynamicViewportWidth() const override;
+  double DynamicViewportHeight() const override;
+  double ContainerWidth() const override;
+  double ContainerHeight() const override;
+  WritingMode GetWritingMode() const override;
 
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
-  void SetZoom(float zoom) {
-    DCHECK(std::isfinite(zoom));
-    DCHECK_GT(zoom, 0);
-    zoom_ = zoom;
-  }
 
-  const ContainerSizes& GetContainerSizes() const { return container_sizes_; }
+  // See ContainerSizes::PreCachedCopy.
+  //
+  // Calling this function will mark the associated ComputedStyle as
+  // dependent on container-relative units.
+  ContainerSizes PreCachedContainerSizesCopy() const;
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
     return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
                                      viewport_size_, container_sizes_,
                                      new_zoom);
   }
-
-  double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
-
- private:
-  bool IsHorizontalWritingMode() const {
-    return blink::IsHorizontalWritingMode(writing_mode_);
+  CSSToLengthConversionData Unzoomed() const {
+    return CopyWithAdjustedZoom(1.0f);
   }
 
+ private:
   const ComputedStyle* style_;
   WritingMode writing_mode_;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;
-  float zoom_;
 };
 
 }  // namespace blink

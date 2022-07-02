@@ -44,9 +44,14 @@ const CommandLinePrefStore::SwitchToPreferenceMapEntry
     ChromeCommandLinePrefStore::string_switch_map_[] = {
         {switches::kLang, language::prefs::kApplicationLocale},
         {switches::kAcceptLang, language::prefs::kSelectedLanguages},
+        // `switches::kAuthServerAllowlistDeprecated` must be before
+        // `switches::kAuthServerAllowlist` so that the deprecated value is
+        // overridden in `ChromeCommandLinePrefStore::ApplyStringSwitches`.
+        {switches::kAuthServerAllowlistDeprecated, prefs::kAuthServerAllowlist},
         {switches::kAuthServerAllowlist, prefs::kAuthServerAllowlist},
         {switches::kSSLVersionMin, prefs::kSSLVersionMin},
         {switches::kSSLVersionMax, prefs::kSSLVersionMax},
+        {switches::kWebRtcIPHandlingPolicy, prefs::kWebRTCIPHandlingPolicy},
 #if BUILDFLAG(IS_ANDROID)
         {switches::kAuthAndroidNegotiateAccountType,
          prefs::kAuthAndroidNegotiateAccountType},

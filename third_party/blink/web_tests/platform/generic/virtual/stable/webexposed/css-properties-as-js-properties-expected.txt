@@ -135,6 +135,9 @@ containIntrinsicHeight
 containIntrinsicInlineSize
 containIntrinsicSize
 containIntrinsicWidth
+container
+containerName
+containerType
 content
 contentVisibility
 counterIncrement
@@ -270,6 +273,7 @@ mixBlendMode
 negative
 objectFit
 objectPosition
+objectViewBox
 offset
 offsetDistance
 offsetPath
@@ -328,10 +332,12 @@ range
 removeProperty
 resize
 right
+rotate
 rowGap
 rubyPosition
 rx
 ry
+scale
 scrollBehavior
 scrollMargin
 scrollMarginBlock
@@ -419,6 +425,7 @@ transitionDelay
 transitionDuration
 transitionProperty
 transitionTimingFunction
+translate
 unicodeBidi
 unicodeRange
 userSelect

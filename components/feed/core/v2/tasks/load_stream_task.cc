@@ -52,6 +52,8 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
                  // TODO(b/185848601): Switch back to PREFETCHED_WEB_FEED when
                  // the server supports it.
                  : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
+    case LoadType::kFeedCloseBackgroundRefresh:
+      return feedwire::FeedQuery::APP_CLOSE_REFRESH;
     case LoadType::kLoadMore:
       NOTREACHED();
       return feedwire::FeedQuery::MANUAL_REFRESH;
@@ -304,16 +306,16 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       options_.stream_type, request_metadata.content_order);
 
   FeedNetwork& network = stream_.GetNetwork();
-
-  if (options_.stream_type.IsWebFeed() &&
-      !GetFeedConfig().use_feed_query_requests_for_web_feeds) {
+  const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
+  if (options_.stream_type.IsWebFeed() && !force_feed_query) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), account_info, std::move(request_metadata),
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&
-             base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+             base::FeatureList::IsEnabled(kDiscoFeedEndpoint) &&
+             !force_feed_query) {
     // Special case: For You feed using the DiscoFeedEndpoint call
     // Query*FeedDiscoverApi.
     switch (options_.load_type) {
@@ -324,6 +326,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
+      case LoadType::kFeedCloseBackgroundRefresh:
       case LoadType::kBackgroundRefresh:
         network.SendApiRequest<QueryBackgroundFeedDiscoverApi>(
             request, account_info, std::move(request_metadata),
@@ -376,9 +379,9 @@ void LoadStreamTask::ProcessNetworkResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
           response_info.account_info, base::Time::Now());
   server_send_timestamp_ns_ =
-      response_data.server_request_received_timestamp_ns;
-  server_receive_timestamp_ns_ =
-      response_data.server_request_received_timestamp_ns;
+      feedstore::ToTimestampNanos(response_data.server_response_sent_timestamp);
+  server_receive_timestamp_ns_ = feedstore::ToTimestampMillis(
+      response_data.server_request_received_timestamp);
 
   if (!response_data.model_update_request) {
     return RequestFinished(
@@ -403,7 +406,10 @@ void LoadStreamTask::ProcessNetworkResponse(
   MetricsReporter::NoticeCardFulfilled(fetched_content_has_notice_card);
 
   feedstore::Metadata updated_metadata = stream_.GetMetadata();
-  SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
+  SetLastFetchTime(updated_metadata, options_.stream_type,
+                   response_data.last_fetch_timestamp);
+  SetLastServerResponseTime(updated_metadata, options_.stream_type,
+                            response_data.server_response_sent_timestamp);
   updated_metadata.set_web_and_app_activity_enabled(
       response_data.web_and_app_activity_enabled);
   updated_metadata.set_discover_personalization_enabled(

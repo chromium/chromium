@@ -296,33 +296,22 @@ class CORE_EXPORT LocalFrameView final
   void DidChangeScrollOffset();
 
   void ViewportSizeChanged(bool width_changed, bool height_changed);
-  void MarkViewportConstrainedObjectsForLayout(bool width_changed,
-                                               bool height_changed);
+  void MarkFixedPositionObjectsForLayout(bool width_changed,
+                                         bool height_changed);
   void DynamicViewportUnitsChanged();
 
   AtomicString MediaType() const;
   void SetMediaType(const AtomicString&);
   void AdjustMediaTypeForPrinting(bool printing);
 
-  // For any viewport-constrained object, we need to know if it's due to fixed
-  // or sticky so that we can support HasStickyViewportConstrainedObject().
-  enum ViewportConstrainedType { kFixed = 0, kSticky = 1 };
-  // Fixed-position and viewport-constrained sticky-position objects.
   typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
-  void AddViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
-  void RemoveViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
-  const ObjectSet* ViewportConstrainedObjects() const {
-    return viewport_constrained_objects_;
+  void AddFixedPositionObject(LayoutObject&);
+  void RemoveFixedPositionObject(LayoutObject&);
+  const ObjectSet* FixedPositionObjects() const {
+    return fixed_position_objects_;
   }
-  bool HasViewportConstrainedObjects() const {
-    return viewport_constrained_objects_ &&
-           viewport_constrained_objects_->size() > 0;
-  }
-  // Returns true if any of the objects in viewport_constrained_objects_ are
-  // sticky position.
-  bool HasStickyViewportConstrainedObject() const {
-    DCHECK(!sticky_position_object_count_ || HasViewportConstrainedObjects());
-    return sticky_position_object_count_ > 0;
+  bool HasFixedPositionObjects() const {
+    return fixed_position_objects_ && fixed_position_objects_->size() > 0;
   }
 
   // Objects with background-attachment:fixed.
@@ -412,8 +401,6 @@ class CORE_EXPORT LocalFrameView final
 
   void ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
-  bool InvalidateViewportConstrainedObjects();
-
   // Perform a hit test on the frame with throttling allowed. Normally, a hit
   // test will do a synchronous lifecycle update to kPrePaintClean with
   // throttling disabled. This will do the same lifecycle update, but with
@@ -445,7 +432,7 @@ class CORE_EXPORT LocalFrameView final
                           bool should_scroll = true);
   FragmentAnchor* GetFragmentAnchor() { return fragment_anchor_; }
   void InvokeFragmentAnchor();
-  void DismissFragmentAnchor();
+  void ClearFragmentAnchor();
 
   bool ShouldSetCursor() const;
 
@@ -710,7 +697,7 @@ class CORE_EXPORT LocalFrameView final
 
   void MapLocalToRemoteMainFrame(TransformState&);
 
-  void CrossOriginToMainFrameChanged();
+  void CrossOriginToNearestMainFrameChanged();
   void CrossOriginToParentFrameChanged();
 
   void SetVisualViewportOrOverlayNeedsRepaint();
@@ -729,11 +716,6 @@ class CORE_EXPORT LocalFrameView final
   // scrolling should continue in the parent process.
   void ScrollRectToVisibleInRemoteParent(const PhysicalRect&,
                                          mojom::blink::ScrollIntoViewParamsPtr);
-
-  // Returns true if a scroll into view can continue to cause scrolling in the
-  // parent frame.
-  bool AllowedToPropagateScrollIntoView(
-      const mojom::blink::ScrollIntoViewParamsPtr&);
 
   PaintArtifactCompositor* GetPaintArtifactCompositor() const;
 
@@ -754,7 +736,9 @@ class CORE_EXPORT LocalFrameView final
   }
   void DidChangeMobileFriendliness(const MobileFriendliness& mf);
 
-  // Return the UKM aggregator for this frame, creating it if necessary.
+  // Returns the UKM aggregator for this frame, or this frame's local root if
+  // features::kLocalFrameRootPrePostFCPMetrics is enabled, creating it if
+  // necessary.
   LocalFrameUkmAggregator& EnsureUkmAggregator();
 
   // Report the First Contentful Paint signal to the LocalFrameView.
@@ -792,8 +776,8 @@ class CORE_EXPORT LocalFrameView final
 
   bool HasDominantVideoElement() const;
 
-  // Gets the fullscreen overlay layer if present, or nullptr if there is none.
-  PaintLayer* GetFullScreenOverlayLayer() const;
+  // Gets the xr overlay layer if present, or nullptr if there is none.
+  PaintLayer* GetXROverlayLayer() const;
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 
@@ -1106,9 +1090,7 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
   Member<ScrollableAreaSet> user_scrollable_areas_;
-  Member<ObjectSet> viewport_constrained_objects_;
-  // Number of entries in viewport_constrained_objects_ that are sticky.
-  unsigned sticky_position_object_count_;
+  Member<ObjectSet> fixed_position_objects_;
   ObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 

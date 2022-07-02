@@ -227,6 +227,10 @@ class OptimizationGuideKeyedServiceBrowserTest
   }
 
   void PushHintsComponentAndWaitForCompletion() {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        histogram_tester(),
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+
     base::RunLoop run_loop;
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->GetHintsManager()

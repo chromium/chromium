@@ -10,7 +10,7 @@
 // Commands related to feed.
 @protocol FeedCommands
 
-// Displays the First Follow UI with |followedWebChannel|.
+// Displays the First Follow UI with `followedWebChannel`.
 - (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel;
 
 @end

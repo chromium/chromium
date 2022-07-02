@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
@@ -46,7 +48,8 @@ class DeepScanningSideIconSpinnerView;
 // upload to the user.
 class ContentAnalysisDialog : public views::DialogDelegate,
                               public content::WebContentsObserver,
-                              public views::TextfieldController {
+                              public views::TextfieldController,
+                              public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
   // ContentAnalysisDialog functions are called. The test can add itself as an
@@ -71,9 +74,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     // Called at the end of ContentAnalysisDialog::UpdateDialog. `result` is
     // the value that UpdatedDialog used to transition from the pending state to
     // the success/failure/warning state.
-    virtual void DialogUpdated(
-        ContentAnalysisDialog* dialog,
-        ContentAnalysisDelegateBase::FinalResult result) {}
+    virtual void DialogUpdated(ContentAnalysisDialog* dialog,
+                               FinalContentAnalysisResult result) {}
 
     // Called at the end of ContentAnalysisDialog's destructor. `dialog` is a
     // pointer to the ContentAnalysisDialog being destructed. It can be used
@@ -94,8 +96,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
                         content::WebContents* web_contents,
                         safe_browsing::DeepScanAccessPoint access_point,
                         int files_count,
-                        ContentAnalysisDelegateBase::FinalResult final_result =
-                            ContentAnalysisDelegateBase::FinalResult::SUCCESS);
+                        FinalContentAnalysisResult final_result =
+                            FinalContentAnalysisResult::SUCCESS,
+                        download::DownloadItem* download_item = nullptr);
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
@@ -111,7 +114,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
-  void ShowResult(ContentAnalysisDelegateBase::FinalResult result);
+  void ShowResult(FinalContentAnalysisResult result);
 
   // Accessors to simplify `dialog_state_` checking.
   inline bool is_success() const { return dialog_state_ == State::SUCCESS; }
@@ -142,6 +145,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Returns the side image's background circle color depending on
   // `dialog_state_`.
   ui::ColorId GetSideImageBackgroundColor() const;
+
+  // Returns true if should use dark version of top image.
+  bool ShouldUseDarkTopImage() const;
 
   // Returns the appropriate top image depending on `dialog_state_`.
   const gfx::ImageSkia* GetTopImage() const;
@@ -183,8 +189,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   ~ContentAnalysisDialog() override;
 
-  void UpdateStateFromFinalResult(
-      ContentAnalysisDelegateBase::FinalResult final_result);
+  void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
 
   // Updates the views in the dialog to put them in the correct state for
   // `dialog_state_`. This doesn't trigger the same events/resizes as
@@ -195,6 +200,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Update the UI depending on `dialog_state_`. This also triggers resizes and
   // fires some events. It's meant to be called to update the entire dialog when
   // it's already showing.
+  // This function can only be called after the dialog widget is initialized.
   void UpdateDialog();
 
   // Resizes the already shown dialog to accommodate changes in its content.
@@ -255,6 +261,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
 
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadOpened(download::DownloadItem* download) override;
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
+
+  // Several conditions can lead to the dialog being no longer useful, so this
+  // method is shared for those different conditions to close the dialog.
+  void CancelDialogWithoutCallback();
+
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
   raw_ptr<content::WebContents> web_contents_;
@@ -282,7 +297,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   State dialog_state_ = State::PENDING;
 
   // Used to show the appropriate message.
-  ContentAnalysisDelegateBase::FinalResult final_result_;
+  FinalContentAnalysisResult final_result_;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
@@ -295,6 +310,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // text (files_count_==0). This changes what text and top image are shown to
   // the user.
   int files_count_;
+
+  // `DownloadItem` for dialogs corresponding to a download with a reviewable
+  // verdict. nullptr otherwise.
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+
+  // Set to true once the dialog is either accepted or cancelled by the user.
+  // This is used to decide whether the dialog should go away without user input
+  // or not.
+  bool accepted_or_cancelled_ = false;
 
   base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
 };

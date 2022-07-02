@@ -7,10 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -23,7 +25,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "components/account_id/account_id.h"
 
 namespace chromeos {
@@ -91,6 +93,10 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             false
 #endif
   );
+
+  dict->Set("testapi_isOobeInTabletMode",
+            ash::TabletMode::Get()->InTabletMode() ||
+                ash::switches::ShouldOobeUseTabletModeFirstRun());
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
@@ -107,8 +113,15 @@ void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
 }
 
 void OobeTestAPIHandler::SkipToLoginForTesting() {
-  ash::WizardController::default_controller()
-      ->SkipToLoginForTesting();  // IN-TEST
+  ash::WizardController* controller =
+      ash::WizardController::default_controller();
+  if (!controller || !controller->is_initialized()) {
+    LOG(ERROR)
+        << "SkipToLoginForTesting is called when WizardController is not yet "
+           "initialized. Please report at https://crbug.com/1336940";
+    return;
+  }
+  controller->SkipToLoginForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
@@ -128,6 +141,7 @@ void OobeTestAPIHandler::LoginAsGuest() {
 void OobeTestAPIHandler::ShowGaiaDialog() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
 }
+
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config;

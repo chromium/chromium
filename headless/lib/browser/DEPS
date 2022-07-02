@@ -40,4 +40,7 @@ specific_include_rules = {
   "headless_web_contents_impl.cc": [
     "+components/printing/browser/print_to_pdf",
   ],
+  "headless_select_file_dialog_factory.*": [
+    "+ui/shell_dialogs",
+  ],
 }

@@ -8,15 +8,23 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "printing/printing_context_linux.h"  // nogncheck
+#endif
+
 namespace qt {
 
+class QtNativeTheme;
+
 // Interface to QT desktop features.
-class QtUi : public views::LinuxUI {
+class QtUi : public views::LinuxUI, QtInterface::Delegate {
  public:
-  QtUi();
+  explicit QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_uik);
 
   QtUi(const QtUi&) = delete;
   QtUi& operator=(const QtUi&) = delete;
@@ -25,8 +33,7 @@ class QtUi : public views::LinuxUI {
 
   // ui::LinuxInputMethodContextFactory:
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
-      ui::LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
 
   // gfx::LinuxFontDelegate:
   gfx::FontRenderParams GetDefaultFontRenderParams() const override;
@@ -44,7 +51,6 @@ class QtUi : public views::LinuxUI {
 
   // views::LinuxUI:
   bool Initialize() override;
-  bool GetTint(int id, color_utils::HSL* tint) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;
@@ -53,29 +59,12 @@ class QtUi : public views::LinuxUI {
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
-  bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  std::unique_ptr<views::Border> CreateNativeBorder(
-      views::LabelButton* owning_button,
-      std::unique_ptr<views::LabelButtonBorder> border) override;
-  void AddWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
-  void RemoveWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
-  void NotifyWindowManagerStartupComplete() override;
-  void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
-  void AddDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
-  void RemoveDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
@@ -85,22 +74,54 @@ class QtUi : public views::LinuxUI {
   int GetCursorThemeSize() override;
   std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
   void SetSystemThemeByNameForTest(const std::string& theme_name) override;
+  ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
                   std::vector<ui::TextEditCommandAuraLinux>* commands) override;
 
+#if BUILDFLAG(ENABLE_PRINTING)
+  // printing::PrintingContextLinuxDelegate:
+  printing::PrintDialogLinuxInterface* CreatePrintDialog(
+      printing::PrintingContextLinux* context) override;
+  gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
+#endif
+
+  // QtInterface::Delegate:
+  void FontChanged() override;
+  void ThemeChanged() override;
+
  private:
+  void AddNativeColorMixer(ui::ColorProvider* provider,
+                           const ui::ColorProviderManager::Key& key);
+
+  absl::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
+
+  // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
+  // functionality in the QT backend and should eventually be removed.
+  std::unique_ptr<views::LinuxUI> fallback_linux_ui_;
+
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
   CmdLineArgs cmd_line_;
 
+  // Cached default font settings.
+  std::string font_family_;
+  int font_size_pixels_ = 0;
+  int font_size_points_ = 0;
+  gfx::Font::FontStyle font_style_ = gfx::Font::NORMAL;
+  gfx::Font::Weight font_weight_;
+  gfx::FontRenderParams font_params_;
+
   std::unique_ptr<QtInterface> shim_;
+
+  std::unique_ptr<QtNativeTheme> native_theme_;
 };
 
 // This should be the only symbol exported from this component.
 COMPONENT_EXPORT(QT)
-std::unique_ptr<views::LinuxUI> CreateQtUi();
+std::unique_ptr<views::LinuxUI> CreateQtUi(
+    std::unique_ptr<views::LinuxUI> fallback_linux_ui);
 
 }  // namespace qt
 

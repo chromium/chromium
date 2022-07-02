@@ -25,8 +25,6 @@ source_set("translate") {
     "language_detection_model_service_factory.mm",
     "language_selection_context.h",
     "language_selection_context.mm",
-    "translate_accept_languages_factory.cc",
-    "translate_accept_languages_factory.h",
     "translate_infobar_tags.h",
     "translate_model_service_factory.h",
     "translate_model_service_factory.mm",
@@ -77,19 +75,27 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "chrome_ios_translate_client_unittest.mm",
     "language_detection_javascript_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
   deps = [
     ":public",
     ":translate",
+    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//components/language/core/browser",
-    "//components/translate/core/browser:test_support",
+    "//components/language/ios/browser",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/translate/core/language_detection",
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/language",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common:string_util",
     "//ios/web/public",
@@ -159,4 +165,12 @@ source_set("eg_test_support+eg2") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/translate/valid_model.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

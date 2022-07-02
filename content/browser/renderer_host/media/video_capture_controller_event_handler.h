@@ -63,6 +63,11 @@ class VideoCaptureControllerEventHandler {
       const ReadyBuffer& buffer,
       const std::vector<ReadyBuffer>& scaled_buffers) = 0;
 
+  // All subsequent buffers are guaranteed to have a crop version whose value
+  // is at least |crop_version|.
+  virtual void OnNewCropVersion(const VideoCaptureControllerID& id,
+                                uint32_t crop_version) = 0;
+
   virtual void OnFrameWithEmptyRegionCapture(
       const VideoCaptureControllerID& id) = 0;
 

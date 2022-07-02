@@ -29,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 using content::WebContents;
@@ -254,12 +255,7 @@ void LocationIconView::Update(bool suppress_animations) {
       SetFocusBehavior(FocusBehavior::NEVER);
     } else {
       views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-
-#if BUILDFLAG(IS_MAC)
-      SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-#else
-      SetFocusBehavior(FocusBehavior::ALWAYS);
-#endif
+      SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
     }
   }
 

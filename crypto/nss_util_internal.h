@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
@@ -51,7 +52,7 @@ class CRYPTO_EXPORT AutoSECMODListReadLock {
   ~AutoSECMODListReadLock();
 
  private:
-  SECMODListLock* lock_;
+  raw_ptr<SECMODListLock> lock_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

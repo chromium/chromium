@@ -10,10 +10,12 @@ from __future__ import absolute_import
 import argparse
 import collections
 import contextlib
+import io
 import itertools
 import logging
 import os
 import re
+import shlex
 import shutil
 import signal
 import sys
@@ -58,6 +60,8 @@ from lib.results import result_sink  # pylint: disable=import-error
 
 _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'devil_config.json'))
+
+_RERUN_FAILED_TESTS_FILE = 'rerun_failed_tests.filter'
 
 
 def _RealPath(arg):
@@ -177,6 +181,10 @@ def AddCommonOptions(parser):
       action='store_true',
       help='Whether to archive test output locally and generate '
            'a local results detail page.')
+  parser.add_argument('--wrapper-script-args',
+                      help='A string of args that were passed to the wrapper '
+                      'script. This should probably not be edited by a '
+                      'user as it is passed by the wrapper itself.')
 
   class FastLocalDevAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -426,6 +434,19 @@ def AddInstrumentationTestOptions(parser):
       type=_RealPath,
       help='Additional apk that must be installed on '
            'the device when the tests are run')
+  parser.add_argument('--forced-queryable-additional-apk',
+                      action='append',
+                      dest='forced_queryable_additional_apks',
+                      default=[],
+                      type=_RealPath,
+                      help='Configures an additional-apk to be forced '
+                      'to be queryable by other APKs.')
+  parser.add_argument('--instant-additional-apk',
+                      action='append',
+                      dest='instant_additional_apks',
+                      default=[],
+                      type=_RealPath,
+                      help='Configures an additional-apk to be an instant APK')
   parser.add_argument(
       '-A', '--annotation',
       dest='annotation_str',
@@ -493,7 +514,11 @@ def AddInstrumentationTestOptions(parser):
       'on the system. WARNING: THIS WILL PERMANENTLY REMOVE THE SYSTEM APP. '
       'Unlike --replace-system-package, the app will not be restored after '
       'tests are finished.')
-
+  parser.add_argument(
+      '--use-voice-interaction-service',
+      help='This can be used to update the voice interaction service to be a '
+      'custom one. This is useful for mocking assistants. eg: '
+      'android.assist.service/.MainInteractionService')
   parser.add_argument(
       '--use-webview-provider',
       type=_RealPath, default=None,
@@ -985,6 +1010,9 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
       upload_logcats_file(),
       'upload_logcats_file' in args and args.upload_logcats_file)
 
+  save_detailed_results = (args.local_output or not local_utils.IsOnSwarming()
+                           ) and not args.isolated_script_test_output
+
   ### Set up test objects.
 
   out_manager = output_manager_factory.CreateOutputManager(args)
@@ -998,6 +1026,9 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
   ### Run.
   with out_manager, json_finalizer():
+    # |raw_logs_fh| is only used by Robolectric tests.
+    raw_logs_fh = io.StringIO() if save_detailed_results else None
+
     with json_writer(), logcats_uploader, env, test_instance, test_run:
 
       repetitions = (range(args.repeat +
@@ -1013,7 +1044,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
         raw_results = []
         all_raw_results.append(raw_results)
 
-        test_run.RunTests(raw_results)
+        test_run.RunTests(raw_results, raw_logs_fh=raw_logs_fh)
         if not raw_results:
           all_raw_results.pop()
           continue
@@ -1034,6 +1065,11 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             annotation=getattr(args, 'annotations', None),
             flakiness_server=getattr(args, 'flakiness_dashboard_server',
                                      None))
+
+        if iteration_results.GetNotPass():
+          _LogRerunStatement(iteration_results.GetNotPass(),
+                             args.wrapper_script_args)
+
         if args.break_on_failure and not iteration_results.DidRunPass():
           break
 
@@ -1062,8 +1098,17 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
                          str(tot_tests),
                          str(iteration_count))
 
-    if (args.local_output or not local_utils.IsOnSwarming()
-        ) and not args.isolated_script_test_output:
+    if save_detailed_results:
+      assert raw_logs_fh
+      raw_logs_fh.seek(0)
+      raw_logs = raw_logs_fh.read()
+      if raw_logs:
+        with out_manager.ArchivedTempfile(
+            'raw_logs.txt', 'raw_logs',
+            output_manager.Datatype.TEXT) as raw_logs_file:
+          raw_logs_file.write(raw_logs)
+        logging.critical('RAW LOGS: %s', raw_logs_file.Link())
+
       with out_manager.ArchivedTempfile(
           'test_results_presentation.html',
           'test_results_presentation',
@@ -1089,6 +1134,61 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
   return (0 if all(r.DidRunPass() for r in all_iteration_results)
           else constants.ERROR_EXIT_CODE)
+
+
+def _LogRerunStatement(failed_tests, wrapper_arg_str):
+  """Logs a message that can rerun the failed tests.
+
+  Logs a copy/pasteable message that filters tests so just the failing tests
+  are run.
+
+  Args:
+    failed_tests: A set of test results that did not pass.
+    wrapper_arg_str: A string of args that were passed to the called wrapper
+        script.
+  """
+  rerun_arg_list = []
+  try:
+    constants.CheckOutputDirectory()
+  # constants.CheckOutputDirectory throws bare exceptions.
+  except:  # pylint: disable=bare-except
+    logging.exception('Output directory not found. Unable to generate failing '
+                      'test filter file.')
+    return
+
+  test_filter_file = os.path.join(os.path.relpath(constants.GetOutDirectory()),
+                                  _RERUN_FAILED_TESTS_FILE)
+  arg_list = shlex.split(
+      wrapper_arg_str.strip('\'')) if wrapper_arg_str else sys.argv
+  index = 0
+  while index < len(arg_list):
+    arg = arg_list[index]
+    # Skip adding the filter=<file> and/or the filter arg as we're replacing
+    # it with the new filter arg.
+    # This covers --test-filter=, --test-launcher-filter-file=, --gtest-filter=,
+    # --test-filter *Foobar.baz, -f *foobar, --package-filter <package>,
+    # --runner-filter <runner>.
+    if 'filter' in arg or arg == '-f':
+      index += 1 if '=' in arg else 2
+      continue
+
+    rerun_arg_list.append(arg)
+    index += 1
+
+  failed_test_list = [str(t) for t in failed_tests]
+  with open(test_filter_file, 'w') as fp:
+    for t in failed_test_list:
+      # Test result names can have # in them that don't match when applied as
+      # a test name filter.
+      fp.write('%s\n' % t.replace('#', '.'))
+
+  rerun_arg_list.append('--test-launcher-filter-file=%s' % test_filter_file)
+  msg = """
+    %d Test(s) failed.
+    Rerun failed tests with copy and pastable command:
+        %s
+    """
+  logging.critical(msg, len(failed_tests), shlex.join(rerun_arg_list))
 
 
 def DumpThreadStacks(_signal, _frame):

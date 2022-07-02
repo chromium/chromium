@@ -16,7 +16,7 @@ namespace disk_cache {
 
 class NET_EXPORT_PRIVATE SimpleIndexDelegate {
  public:
-  virtual ~SimpleIndexDelegate() {}
+  virtual ~SimpleIndexDelegate() = default;
 
   // Dooms all entries in |entries|, calling |callback| with the result
   // asynchronously. |entries| is mutated in an undefined way by this call,

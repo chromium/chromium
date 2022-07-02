@@ -13,15 +13,20 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace absl {
+class uint128;
+}  // namespace absl
+
 namespace blink {
 
+class JSONValue;
 class ResourceResponse;
 
 namespace attribution_response_parsing {
 
 // Helper functions to parse response headers. See details in the explainer.
-// https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md
-// https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md
+// https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
 
 // Example JSON schema:
 // [{
@@ -34,9 +39,9 @@ namespace attribution_response_parsing {
 // }]
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseAttributionAggregatableSource(
-    const String& json_string,
-    mojom::blink::AttributionAggregatableSource& source);
+CORE_EXPORT bool ParseAggregationKeys(
+    const JSONValue* json,
+    WTF::HashMap<String, absl::uint128>& aggregation_keys);
 
 // Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
 // string. Returns `nullptr` on failure.
@@ -46,6 +51,10 @@ CORE_EXPORT mojom::blink::AttributionDebugKeyPtr ParseDebugKey(
 CORE_EXPORT bool ParseSourceRegistrationHeader(
     const String& json_string,
     mojom::blink::AttributionSourceData& source_data);
+
+CORE_EXPORT bool ParseTriggerRegistrationHeader(
+    const String& json_string,
+    mojom::blink::AttributionTriggerData& trigger_data);
 
 // Parses event trigger data header of the form:
 //
@@ -57,7 +66,7 @@ CORE_EXPORT bool ParseSourceRegistrationHeader(
 //
 // Returns whether parsing was successful.
 CORE_EXPORT bool ParseEventTriggerData(
-    const String& json_string,
+    const JSONValue* json,
     WTF::Vector<mojom::blink::EventTriggerDataPtr>& event_trigger_data);
 
 // Parses filter header of the form:
@@ -68,8 +77,9 @@ CORE_EXPORT bool ParseEventTriggerData(
 // }
 //
 // Returns whether parsing was successful.
-CORE_EXPORT bool ParseFilters(const String& json_string,
-                              mojom::blink::AttributionFilterData& filter_data);
+CORE_EXPORT bool ParseAttributionFilterData(
+    const JSONValue* json,
+    mojom::blink::AttributionFilterData& filter_data);
 
 // Example JSON schema:
 // [{
@@ -83,7 +93,7 @@ CORE_EXPORT bool ParseFilters(const String& json_string,
 //
 // Returns whether parsing was successful.
 CORE_EXPORT bool ParseAttributionAggregatableTriggerData(
-    const String& json_string,
+    const JSONValue* json,
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>&
         trigger_data);
 
@@ -95,7 +105,7 @@ CORE_EXPORT bool ParseAttributionAggregatableTriggerData(
 //
 // Returns whether parsing was successful.
 CORE_EXPORT bool ParseAttributionAggregatableValues(
-    const String& json_string,
+    const JSONValue* json,
     WTF::HashMap<String, uint32_t>& values);
 
 // Returns the attribution trigger data parsed from the response. Returns

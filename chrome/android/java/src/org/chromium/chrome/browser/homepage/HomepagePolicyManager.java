@@ -96,7 +96,6 @@ public class HomepagePolicyManager implements PrefObserver {
 
     @VisibleForTesting
     public static void setInstanceForTests(HomepagePolicyManager instance) {
-        assert instance != null;
         sInstance = instance;
     }
 

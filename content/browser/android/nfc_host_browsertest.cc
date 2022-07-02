@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(NFCHostBrowserTest, FencedFrameCannotCloseNFC) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Initialize NFC in the primary main frame.
-  EXPECT_EQ("success", EvalJs(web_contents()->GetMainFrame(), R"(
+  EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(), R"(
     const ndef = new NDEFReader();
     new Promise(async resolve => {
       try {
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(NFCHostBrowserTest, FencedFrameCannotCloseNFC) {
   // Ensure that fenced frame insertion cannot close the NFC connection.
   GURL inner_url(https_server_.GetURL("/fenced_frames/title1.html"));
   RenderFrameHost* fenced_frame_host = fenced_frame_helper_.CreateFencedFrame(
-      web_contents()->GetMainFrame(), inner_url);
+      web_contents()->GetPrimaryMainFrame(), inner_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_EQ(true, scoped_nfc_overrider.IsConnected());
 }

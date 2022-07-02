@@ -5,9 +5,7 @@
 #include "net/base/datagram_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 const size_t kMaxBufferSize = 1024;
 
@@ -49,6 +47,4 @@ TEST_F(DatagramBufferTest, DatgramBufferPoolRecycles) {
   EXPECT_EQ(buffer2_ptr, buffers.back().get());
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

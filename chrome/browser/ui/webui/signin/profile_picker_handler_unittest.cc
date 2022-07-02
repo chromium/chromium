@@ -456,7 +456,7 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   base::ListValue args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/kGaiaId);
-  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
 
   // Check profile creation.
   Profile* new_profile = profile_waiter.WaitForProfileAdded();
@@ -521,7 +521,7 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
   base::ListValue args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
-  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
 
   // Check profile creation.
   Profile* new_profile = profile_waiter.WaitForProfileAdded();
@@ -579,7 +579,7 @@ class ProfilePickerHandlerInUserProfileTest : public ProfilePickerHandlerTest {
     return *data.arg3();
   }
 
-  Profile* secondary_profile_ = nullptr;
+  raw_ptr<Profile> secondary_profile_ = nullptr;
 };
 
 // Tests that accounts available as secondary are returned.
@@ -756,7 +756,7 @@ TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {
   base::ListValue args;
   args.Append(/*color=*/base::Value());
   args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
-  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+  web_ui()->HandleReceivedMessage("selectAccountLacros", &args);
 }
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

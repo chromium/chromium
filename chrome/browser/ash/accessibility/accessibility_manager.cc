@@ -40,16 +40,17 @@
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/pumpkin_installer.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -77,9 +78,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/media_session_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -275,7 +273,8 @@ AccessibilityManager* AccessibilityManager::Get() {
 void AccessibilityManager::ShowAccessibilityHelp() {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeAccessibilityHelpURL));
+        GURL(chrome::kChromeAccessibilityHelpURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 
@@ -288,8 +287,9 @@ void AccessibilityManager::ShowAccessibilityHelp() {
 AccessibilityManager::AccessibilityManager() {
   session_observation_.Observe(session_manager::SessionManager::Get());
 
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &AccessibilityManager::OnAppTerminating, base::Unretained(this)));
 
   focus_changed_subscription_ =
       content::BrowserAccessibilityState::GetInstance()
@@ -630,7 +630,7 @@ void AccessibilityManager::OnTwoFingerTouchStart() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_START,
       extensions::api::accessibility_private::OnTwoFingerTouchStart::kEventName,
-      std::vector<base::Value>());
+      base::Value::List());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -644,7 +644,7 @@ void AccessibilityManager::OnTwoFingerTouchStop() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_STOP,
       extensions::api::accessibility_private::OnTwoFingerTouchStop::kEventName,
-      std::vector<base::Value>());
+      base::Value::List());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -665,15 +665,15 @@ void AccessibilityManager::HandleAccessibilityGesture(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(base::Value(ui::ToString(gesture)));
-  event_args.push_back(base::Value(location.x()));
-  event_args.push_back(base::Value(location.y()));
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
+  base::Value::List event_args;
+  event_args.Append(ui::ToString(gesture));
+  event_args.Append(location.x());
+  event_args.Append(location.y());
+  auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ACCESSIBILITY_GESTURE,
       extensions::api::accessibility_private::OnAccessibilityGesture::
           kEventName,
-      std::move(event_args)));
+      std::move(event_args));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kChromeVoxExtensionId, std::move(event));
 }
@@ -1064,7 +1064,7 @@ void AccessibilityManager::RequestSelectToSpeakStateChange() {
           ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_STATE_CHANGE_REQUESTED,
       extensions::api::accessibility_private::
           OnSelectToSpeakStateChangeRequested::kEventName,
-      std::vector<base::Value>()));
+      base::Value::List()));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
@@ -1512,16 +1512,20 @@ void AccessibilityManager::PlayVolumeAdjustSound() {
   }
 }
 
-void AccessibilityManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void AccessibilityManager::OnAppTerminating() {
   app_terminating_ = true;
+}
+
+void AccessibilityManager::OnShimlessRmaLaunched() {
+  SetActiveProfile();
 }
 
 void AccessibilityManager::OnLoginOrLockScreenVisible() {
   // Update `profile_` when entering the login screen.
+  SetActiveProfile();
+}
+
+void AccessibilityManager::SetActiveProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (ProfileHelper::IsSigninProfile(profile))
     SetProfile(profile);
@@ -1608,7 +1612,7 @@ void AccessibilityManager::PostLoadChromeVox() {
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX,
       extensions::api::accessibility_private::OnIntroduceChromeVox::kEventName,
-      std::vector<base::Value>()));
+      base::Value::List()));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
   if (!chromevox_panel_ && spoken_feedback_enabled_)
@@ -1782,8 +1786,8 @@ bool AccessibilityManager::ToggleDictation() {
   dictation_active_ = !dictation_active_;
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  auto event_args = std::vector<base::Value>();
-  event_args.emplace_back(dictation_active_);
+  base::Value::List event_args;
+  event_args.Append(dictation_active_);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
       extensions::api::accessibility_private::OnToggleDictation::kEventName,
@@ -1966,10 +1970,10 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(base::Value(AccessibilityPrivateEnumForAction(action)));
+  base::Value::List event_args;
+  event_args.Append(AccessibilityPrivateEnumForAction(action));
   if (value != 0.0) {
-    event_args.push_back(base::Value(value));
+    event_args.Append(value);
   }
 
   auto event = std::make_unique<extensions::Event>(
@@ -2197,6 +2201,46 @@ speech::LanguageCode AccessibilityManager::GetDictationLanguageCode() {
   DCHECK(profile_);
   return speech::GetLanguageCode(
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale));
+}
+
+void AccessibilityManager::InstallPumpkinForDictation(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(!callback.is_null());
+  if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
+      !IsDictationEnabled()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!pumpkin_installer_)
+    pumpkin_installer_ = std::make_unique<PumpkinInstaller>();
+
+  // Save `callback` and run it after the installation succeeds or fails.
+  install_pumpkin_callback_ = std::move(callback);
+  pumpkin_installer_->MaybeInstall(
+      base::BindOnce(&AccessibilityManager::OnPumpkinInstalled,
+                     base::Unretained(this)),
+      base::BindRepeating([](double progress) {}),
+      base::BindOnce(&AccessibilityManager::OnPumpkinError,
+                     base::Unretained(this)));
+}
+
+void AccessibilityManager::OnPumpkinInstalled(bool success) {
+  DCHECK(!install_pumpkin_callback_.is_null());
+  if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled()) {
+    std::move(install_pumpkin_callback_).Run(false);
+    return;
+  }
+
+  std::move(install_pumpkin_callback_).Run(success);
+  is_pumpkin_installed_for_testing_ = success;
+}
+
+void AccessibilityManager::OnPumpkinError(const std::string& error) {
+  DCHECK(!install_pumpkin_callback_.is_null());
+  std::move(install_pumpkin_callback_).Run(false);
+  is_pumpkin_installed_for_testing_ = false;
+  // TODO(akihiroota): Consider showing the error message to the user.
 }
 
 }  // namespace ash

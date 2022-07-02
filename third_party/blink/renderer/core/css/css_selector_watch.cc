@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -138,9 +139,9 @@ void CSSSelectorWatch::UpdateSelectorMatches(
   }
 }
 
-static bool AllCompound(const CSSSelectorList& selector_list) {
-  for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
-       selector = selector_list.Next(*selector)) {
+static bool AllCompound(const StyleRule* style_rule) {
+  for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+       selector = CSSSelectorList::Next(*selector)) {
     if (!selector->IsCompound())
       return false;
   }
@@ -157,17 +158,19 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kUASheetMode, SecureContextMode::kInsecureContext);
   for (const auto& selector : selectors) {
-    CSSSelectorList selector_list =
+    CSSSelectorVector selector_vector =
         CSSParser::ParseSelector(context, nullptr, selector);
-    if (!selector_list.IsValid())
+    if (selector_vector.IsEmpty())
       continue;
+
+    StyleRule* style_rule =
+        StyleRule::Create(selector_vector, callback_property_set);
 
     // Only accept Compound Selectors, since they're cheaper to match.
-    if (!AllCompound(selector_list))
+    if (!AllCompound(style_rule))
       continue;
 
-    watched_callback_selectors_.push_back(MakeGarbageCollected<StyleRule>(
-        std::move(selector_list), callback_property_set));
+    watched_callback_selectors_.push_back(style_rule);
   }
   GetSupplementable()->GetStyleEngine().WatchedSelectorsChanged();
 }

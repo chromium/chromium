@@ -4,11 +4,10 @@
 
 package org.chromium.base.library_loader;
 
-import android.os.SystemClock;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -102,7 +101,7 @@ class ModernLinker extends Linker {
         String backgroundStateBeforeLoad = readBackgroundStateFromCgroups();
 
         // Load or declare fallback to System.loadLibrary.
-        long beforeLoadMs = SystemClock.uptimeMillis();
+        UptimeMillisTimer timer = new UptimeMillisTimer();
         String libFilePath = System.mapLibraryName(library);
         boolean performedModernLoad = true;
         if (relroMode == RelroSharingMode.NO_SHARING) {
@@ -137,7 +136,7 @@ class ModernLinker extends Linker {
         }
 
         if (performedModernLoad) {
-            recordDetailedLoadTimeSince(beforeLoadMs,
+            recordDetailedLoadTimeSince(timer,
                     relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume",
                     backgroundStateBeforeLoad);
         }
@@ -149,19 +148,19 @@ class ModernLinker extends Linker {
         //
         // This is not wasteful though, as libraries are reference-counted, and as a consequence the
         // library is not really loaded a second time, and we keep relocation sharing.
-        long beforeSystemLoadMs = SystemClock.uptimeMillis();
+        timer = new UptimeMillisTimer();
         try {
             System.loadLibrary(library);
         } catch (UnsatisfiedLinkError e) {
             resetAndThrow("Failed at System.loadLibrary()");
         }
-        recordDetailedLoadTimeSince(beforeSystemLoadMs,
-                performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
+        recordDetailedLoadTimeSince(
+                timer, performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
     }
 
     private void recordDetailedLoadTimeSince(
-            long sinceMs, String suffix, String backgroundStateSuffix) {
-        long durationMs = SystemClock.uptimeMillis() - sinceMs;
+            UptimeMillisTimer timer, String suffix, String backgroundStateSuffix) {
+        long durationMs = timer.getElapsedMillis();
         RecordHistogram.recordTimesHistogram(
                 DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, durationMs);
         RecordHistogram.recordTimesHistogram(DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP

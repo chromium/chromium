@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 15
+// Next ID to use: 16
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -72,6 +72,27 @@ message ExtendedSodaConfigMsg {
   // Whether to return, in an asynchronous manner, speech/google3 logs from here
   // and back through the callbacks.
   optional bool include_logging = 14 [default = false];
+
+  // Multilang configuration.
+  // In order to enable multilang, ExtendedSodaConfigMsg.language_pack_directory
+  // must correctly specify the LP for the primary locale.
+  optional MultilangConfig multilang_config = 15;
+}
+
+// Next ID: 3
+message MultilangConfig {
+  // The locale-to-LP mapping for multilang code switching. Locales are in BCP47
+  // format, e.g. `en-US`. The set of keys are the locales that will support
+  // multilang code switching. There should only be one locale per language
+  // (e.g. only es-ES not both es-US and es-ES). The primary LP specified in
+  // OnDeviceAsrConfig.language_pack_directory does not need to be included.
+  map<string, string> multilang_language_pack_directory = 1;
+
+  // Rewind the audio buffer if SODA decides to switch the recognizer when a
+  // new language is detected. The language detection has a delay between the
+  // spoken language changed and the new language detected. The audio buffer
+  // rewind will try to cover this gap. See b/218705498 for additional details.
+  optional bool rewind_when_switching_language = 2;
 }
 
 // Next id: 5

@@ -8,7 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -27,14 +27,14 @@ NSString* const kSendTabToSelfActivityType =
 // The data object targeted by this activity.
 @property(nonatomic, strong, readonly) ShareToData* data;
 // The handler to be invoked when the activity is performed.
-@property(nonatomic, weak, readonly) id<BrowserCommands> handler;
+@property(nonatomic, weak, readonly) id<BrowserCoordinatorCommands> handler;
 
 @end
 
 @implementation SendTabToSelfActivity
 
 - (instancetype)initWithData:(ShareToData*)data
-                     handler:(id<BrowserCommands>)handler {
+                     handler:(id<BrowserCoordinatorCommands>)handler {
   if (self = [super init]) {
     _data = data;
     _handler = handler;
@@ -66,7 +66,7 @@ NSString* const kSendTabToSelfActivityType =
 
 - (void)performActivity {
   [self activityDidFinish:YES];
-  [self.handler showSendTabToSelfUI];
+  [self.handler showSendTabToSelfUI:self.data.shareURL title:self.data.title];
 }
 
 @end

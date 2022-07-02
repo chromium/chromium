@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_keyboard_configuration_v1" version="2">
+  <interface name="zcr_keyboard_configuration_v1" version="3">
     <description summary="extends wl_keyboard with events for device configuration change">
       Allows a wl_keyboard to notify device configuration change events of
       the keyboard to the client.
@@ -57,7 +57,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_keyboard_device_configuration_v1" version="2">
+  <interface name="zcr_keyboard_device_configuration_v1" version="3">
     <description summary="extension of wl_keyboard protocol">
       The zcr_keyboard_device_configuration_v1 interface extends the wl_keyboard
       interface with events to describe device configuration of a keyboard.
@@ -92,6 +92,14 @@
         client responds to one of them, and the other is ignored.
       </description>
       <arg name="name" type="string" summary="XKB layout name e.g. us(dvorak)"/>
+    </event>
+
+    <!-- Version 3 additions -->
+    <event name="supported_key_bits" since="3">
+      <description summary="supported key bits">
+        Union of supported scan code key bits of all connected keyboards.
+      </description>
+      <arg name="key_bits" type="array" summary="Uint64 key bits" />
     </event>
   </interface>
 

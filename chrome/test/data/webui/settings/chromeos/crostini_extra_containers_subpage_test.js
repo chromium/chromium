@@ -28,24 +28,12 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   setup(async function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
-    crostiniPage.prefs = {
-      crostini: {
-        enabled: {value: true},
-      },
-    };
-    flush();
-    Router.getInstance().navigateTo(
-        routes.CROSTINI_EXTRA_CONTAINERS);
 
-    await flushTasks();
-    subpage = crostiniPage.$$('settings-crostini-extra-containers');
-    assertTrue(!!subpage);
-
-    subpage.allContainers_ = [
+    const allContainers_ = [
       {
         'id': {'container_name': 'penguin', 'vm_name': 'termina'},
       },
@@ -57,6 +45,21 @@ suite('CrostiniExtraContainersSubpageTests', function() {
             {'container_name': 'custom_container_2', 'vm_name': 'not_termina'},
       },
     ];
+
+    crostiniBrowserProxy.containerInfo = allContainers_;
+    crostiniPage.prefs = {
+      crostini: {
+        enabled: {value: true},
+      },
+    };
+    flush();
+    Router.getInstance().navigateTo(
+        routes.CROSTINI_EXTRA_CONTAINERS);
+
+    await flushTasks();
+    subpage = crostiniPage.shadowRoot.querySelector(
+        'settings-crostini-extra-containers');
+    assertTrue(!!subpage);
   });
 
   teardown(function() {
@@ -72,10 +75,11 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     let vmNameInput;
 
     setup(async function() {
-      subpage.$$('#create').click();
+      subpage.shadowRoot.querySelector('#create').click();
 
       await flushTasks();
-      subpage = subpage.$$('settings-crostini-create-container-dialog');
+      subpage = subpage.shadowRoot.querySelector(
+          'settings-crostini-create-container-dialog');
 
       containerNameInput = subpage.root.querySelector('#containerNameInput');
       vmNameInput = subpage.root.querySelector('#vmNameInput');
@@ -202,49 +206,81 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     });
   });
 
-  suite('ExportContainer', function() {
+  suite('ExportImportContainer', function() {
     test('Export', async function() {
-      subpage.$$('#showContainerMenu1').click();
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
       await flushTasks();
-      assertTrue(!!subpage.$$('#exportContainerButton'));
-      subpage.$$('#exportContainerButton').click();
-      assertEquals(
-          1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
+      assertTrue(!!subpage.shadowRoot.querySelector('#exportContainerButton'));
+      subpage.shadowRoot.querySelector('#exportContainerButton').click();
+      const args = crostiniBrowserProxy.getArgs('exportCrostiniContainer');
+      assertEquals(1, args.length);
+      assertEquals(args[0].vm_name, 'termina');
+      assertEquals(args[0].container_name, 'custom_container_1');
+    });
+
+    test('Import', async function() {
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
+
+      await flushTasks();
+      assertTrue(!!subpage.shadowRoot.querySelector('#importContainerButton'));
+      subpage.shadowRoot.querySelector('#importContainerButton').click();
+      const args = crostiniBrowserProxy.getArgs('importCrostiniContainer');
+      assertEquals(1, args.length);
+      assertEquals(args[0].vm_name, 'termina');
+      assertEquals(args[0].container_name, 'custom_container_1');
     });
 
     test('ExportImportButtonsGetDisabledOnOperationStatus', async function() {
-      subpage.$$('#showContainerMenu1').click();
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
       await flushTasks();
-      assertFalse(subpage.$$('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', true);
 
       await flushTasks();
-      assertTrue(subpage.$$('#exportContainerButton').disabled);
+      assertTrue(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertTrue(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', false);
 
       await flushTasks();
-      assertFalse(subpage.$$('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
     });
 
     test(
         'ExportImportButtonsDisabledOnWhenInstallingCrostini',
         async function() {
-          subpage.$$('#showContainerMenu1').click();
+          subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
           await flushTasks();
-          assertFalse(subpage.$$('#exportContainerButton').disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#exportContainerButton')
+                          .disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#importContainerButton')
+                          .disabled);
           webUIListenerCallback('crostini-installer-status-changed', true);
 
           await flushTasks();
-          assertTrue(subpage.$$('#exportContainerButton').disabled);
+          assertTrue(subpage.shadowRoot.querySelector('#exportContainerButton')
+                         .disabled);
+          assertTrue(subpage.shadowRoot.querySelector('#importContainerButton')
+                         .disabled);
           webUIListenerCallback('crostini-installer-status-changed', false);
 
           await flushTasks();
-          assertFalse(subpage.$$('#exportContainerButton').disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#exportContainerButton')
+                          .disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#importContainerButton')
+                          .disabled);
         });
   });
 });

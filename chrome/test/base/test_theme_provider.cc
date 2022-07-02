@@ -15,11 +15,6 @@ gfx::ImageSkia* TestThemeProvider::GetImageSkiaNamed(int id) const {
   return nullptr;
 }
 
-SkColor TestThemeProvider::GetColor(int id) const {
-  auto it = colors_.find(id);
-  return it != colors_.end() ? it->second : gfx::kPlaceholderColor;
-}
-
 color_utils::HSL TestThemeProvider::GetTint(int id) const {
   return color_utils::HSL();
 }

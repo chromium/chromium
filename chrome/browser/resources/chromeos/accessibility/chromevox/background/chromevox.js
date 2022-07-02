@@ -6,12 +6,6 @@
  * @fileoverview Defines a global object.
  */
 
-// Forward declare.
-goog.addDependency('../common/abstract_earcons.js', ['AbstractEarcons'], []);
-goog.addDependency(
-    '../common/braille/braille_interface.js', ['BrailleInterface'], []);
-goog.addDependency('../common/tts_interface.js', ['TtsInterface'], []);
-
 goog.provide('ChromeVox');
 
 goog.require('AbstractEarcons');
@@ -62,10 +56,6 @@ ChromeVox.isStickyPrefOn = false;
  * @type {?boolean}
  */
 ChromeVox.stickyOverride = null;
-/**
- * @type {number}
- */
-ChromeVox.typingEcho = 0;
 /**
  * @type {Object<string, constants.Point>}
  */

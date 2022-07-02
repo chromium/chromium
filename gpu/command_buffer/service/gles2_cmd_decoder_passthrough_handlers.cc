@@ -1753,22 +1753,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetTranslatedShaderSourceANGLE(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandlePostSubBufferCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::PostSubBufferCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::PostSubBufferCHROMIUM*>(
-          cmd_data);
-  GLint x = static_cast<GLint>(c.x);
-  GLint y = static_cast<GLint>(c.y);
-  GLint width = static_cast<GLint>(c.width);
-  GLint height = static_cast<GLint>(c.height);
-  GLuint64 swap_id = static_cast<GLuint64>(c.swap_id());
-  GLbitfield flags = static_cast<GLbitfield>(c.flags);
-
-  return DoPostSubBufferCHROMIUM(swap_id, x, y, width, height, flags);
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleDrawArraysInstancedANGLE(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -2220,85 +2204,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleDiscardBackbufferCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   return DoDiscardBackbufferCHROMIUM();
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleScheduleOverlayPlaneCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleOverlayPlaneCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ScheduleOverlayPlaneCHROMIUM*>(
-          cmd_data);
-  GLint plane_z_order = static_cast<GLint>(c.plane_z_order);
-  GLenum plane_transform = static_cast<GLenum>(c.plane_transform);
-  GLuint overlay_texture_id = static_cast<GLuint>(c.overlay_texture_id);
-  GLint bounds_x = static_cast<GLint>(c.bounds_x);
-  GLint bounds_y = static_cast<GLint>(c.bounds_y);
-  GLint bounds_width = static_cast<GLint>(c.bounds_width);
-  GLint bounds_height = static_cast<GLint>(c.bounds_height);
-  GLfloat uv_x = static_cast<GLfloat>(c.uv_x);
-  GLfloat uv_y = static_cast<GLfloat>(c.uv_y);
-  GLfloat uv_width = static_cast<GLfloat>(c.uv_width);
-  GLfloat uv_height = static_cast<GLfloat>(c.uv_height);
-  bool enable_blend = static_cast<bool>(c.enable_blend);
-  GLuint gpu_fence_id = static_cast<GLuint>(c.gpu_fence_id);
-
-  return DoScheduleOverlayPlaneCHROMIUM(
-      plane_z_order, plane_transform, overlay_texture_id, bounds_x, bounds_y,
-      bounds_width, bounds_height, uv_x, uv_y, uv_width, uv_height,
-      enable_blend, gpu_fence_id);
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::HandleScheduleCALayerSharedStateCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleCALayerSharedStateCHROMIUM& c =
-      *static_cast<
-          const volatile gles2::cmds::ScheduleCALayerSharedStateCHROMIUM*>(
-          cmd_data);
-  GLfloat opacity = static_cast<GLfloat>(c.opacity);
-  GLboolean is_clipped = static_cast<GLboolean>(c.is_clipped);
-  GLint sorting_context_id = static_cast<GLint>(c.sorting_context_id);
-  uint32_t shm_id = c.shm_id;
-  uint32_t shm_offset = c.shm_offset;
-
-  // 4 for |clip_rect|, 5 for |rounded_corner_bounds|, 16 for |transform|.
-  const GLfloat* mem = GetSharedMemoryAs<const GLfloat*>(shm_id, shm_offset,
-                                                         25 * sizeof(GLfloat));
-  if (!mem) {
-    return error::kOutOfBounds;
-  }
-  const GLfloat* clip_rect = mem + 0;
-  const GLfloat* rounded_corner_bounds = mem + 4;
-  const GLfloat* transform = mem + 9;
-  return DoScheduleCALayerSharedStateCHROMIUM(opacity, is_clipped, clip_rect,
-                                              rounded_corner_bounds,
-                                              sorting_context_id, transform);
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleScheduleCALayerCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ScheduleCALayerCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ScheduleCALayerCHROMIUM*>(
-          cmd_data);
-  GLuint contents_texture_id = static_cast<GLint>(c.contents_texture_id);
-  GLuint background_color = static_cast<GLuint>(c.background_color);
-  GLuint edge_aa_mask = static_cast<GLuint>(c.edge_aa_mask);
-  GLenum filter = static_cast<GLenum>(c.filter);
-  uint32_t shm_id = c.shm_id;
-  uint32_t shm_offset = c.shm_offset;
-
-  const GLfloat* mem = GetSharedMemoryAs<const GLfloat*>(shm_id, shm_offset,
-                                                         8 * sizeof(GLfloat));
-  if (!mem) {
-    return error::kOutOfBounds;
-  }
-  const GLfloat* contents_rect = mem;
-  const GLfloat* bounds_rect = mem + 4;
-  return DoScheduleCALayerCHROMIUM(contents_texture_id, contents_rect,
-                                   background_color, edge_aa_mask, filter,
-                                   bounds_rect);
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleSetColorSpaceMetadataCHROMIUM(

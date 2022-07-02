@@ -88,7 +88,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void Drain(HttpNetworkSession* session) override;
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
                  int net_error,
                  absl::optional<int> response_code);
 
-  HandshakeResult result_;
+  HandshakeResult result_ = HandshakeResult::HTTP2_INCOMPLETE;
 
   // The connection to open the Websocket stream on.
   base::WeakPtr<SpdySession> session_;
@@ -136,7 +136,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // |connect_delegate| will live during the lifetime of this object.
   const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
-  raw_ptr<HttpResponseInfo> http_response_info_;
+  raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
   spdy::Http2HeaderBlock http2_request_headers_;
 
@@ -148,7 +148,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
 
-  raw_ptr<const HttpRequestInfo> request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
 
   RequestPriority priority_;
 
@@ -165,14 +165,14 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   std::unique_ptr<WebSocketSpdyStreamAdapter> stream_adapter_;
 
   // True if |stream_| has been created then closed.
-  bool stream_closed_;
+  bool stream_closed_ = false;
 
   // The error code corresponding to the reason for closing the stream.
   // Only meaningful if |stream_closed_| is true.
-  int stream_error_;
+  int stream_error_ = OK;
 
   // True if complete response headers have been received.
-  bool response_headers_complete_;
+  bool response_headers_complete_ = false;
 
   // Save callback provided in asynchronous HttpStream methods.
   CompletionOnceCallback callback_;

@@ -64,7 +64,9 @@ void MediaStreamVideoSource::AddTrack(
     MediaStreamVideoTrack* track,
     const VideoTrackAdapterSettings& track_adapter_settings,
     const VideoCaptureDeliverFrameCB& frame_callback,
+    const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
     const EncodedVideoFrameCB& encoded_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
     ConstraintsOnceCallback callback) {
@@ -73,11 +75,12 @@ void MediaStreamVideoSource::AddTrack(
   tracks_.push_back(track);
   secure_tracker_.Add(track, true);
 
-  pending_tracks_.push_back(PendingTrackInfo(
-      track, frame_callback, encoded_frame_callback, settings_callback,
+  pending_tracks_.push_back(PendingTrackInfo{
+      track, frame_callback, notify_frame_dropped_callback,
+      encoded_frame_callback, crop_version_callback, settings_callback,
       format_callback,
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
-      std::move(callback)));
+      std::move(callback)});
 
   switch (state_) {
     case NEW: {
@@ -87,7 +90,11 @@ void MediaStreamVideoSource::AddTrack(
               &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter())),
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnIO,
-              GetTrackAdapter())));
+              GetTrackAdapter())),
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoTrackAdapter::NewCropVersionOnIO, GetTrackAdapter()))
+
+      );
       break;
     }
     case STARTING:
@@ -457,8 +464,10 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
     if (result == mojom::blink::MediaStreamRequestResult::OK) {
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
-          track_info.encoded_frame_callback, track_info.settings_callback,
-          track_info.format_callback, *track_info.adapter_settings);
+          track_info.notify_frame_dropped_callback,
+          track_info.encoded_frame_callback, track_info.crop_version_callback,
+          track_info.settings_callback, track_info.format_callback,
+          *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
     }
 
@@ -538,7 +547,15 @@ void MediaStreamVideoSource::Crop(
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
+
+absl::optional<uint32_t> MediaStreamVideoSource::GetNextCropVersion() {
+  return absl::nullopt;
+}
 #endif
+
+uint32_t MediaStreamVideoSource::GetCropVersion() const {
+  return 0;
+}
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.
@@ -553,29 +570,5 @@ scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
   }
   return track_adapter_;
 }
-
-MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(
-    MediaStreamVideoTrack* track,
-    const VideoCaptureDeliverFrameCB& frame_callback,
-    const EncodedVideoFrameCB& encoded_frame_callback,
-    const VideoTrackSettingsCallback& settings_callback,
-    const VideoTrackFormatCallback& format_callback,
-    std::unique_ptr<VideoTrackAdapterSettings> adapter_settings,
-    ConstraintsOnceCallback callback)
-    : track(track),
-      frame_callback(frame_callback),
-      encoded_frame_callback(encoded_frame_callback),
-      settings_callback(settings_callback),
-      format_callback(format_callback),
-      adapter_settings(std::move(adapter_settings)),
-      callback(std::move(callback)) {}
-
-MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(
-    PendingTrackInfo&& other) = default;
-MediaStreamVideoSource::PendingTrackInfo&
-MediaStreamVideoSource::PendingTrackInfo::operator=(
-    MediaStreamVideoSource::PendingTrackInfo&& other) = default;
-
-MediaStreamVideoSource::PendingTrackInfo::~PendingTrackInfo() {}
 
 }  // namespace blink

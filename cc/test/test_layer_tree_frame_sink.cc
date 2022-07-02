@@ -80,7 +80,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller;
   std::unique_ptr<viz::OutputSurface> display_output_surface;
-  if (renderer_settings_.use_skia_renderer) {
+  const bool gpu_accelerated = context_provider();
+  if (gpu_accelerated) {
     display_controller = test_client_->CreateDisplayController();
     auto output_surface =
         test_client_->CreateSkiaOutputSurface(display_controller.get());
@@ -140,6 +141,14 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   display_->SetDisplayColorSpaces(display_color_spaces_);
   display_->SetVisible(true);
   return true;
+}
+
+void TestLayerTreeFrameSink::UnregisterBeginFrameSource() {
+  if (display_begin_frame_source_) {
+    frame_sink_manager_->UnregisterBeginFrameSource(
+        display_begin_frame_source_);
+    display_begin_frame_source_ = nullptr;
+  }
 }
 
 void TestLayerTreeFrameSink::DetachFromClient() {
@@ -259,6 +268,10 @@ void TestLayerTreeFrameSink::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   client_->ReclaimResources(std::move(resources));
+}
+
+void TestLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
+  external_begin_frame_source_.OnSetBeginFrameSourcePaused(paused);
 }
 
 void TestLayerTreeFrameSink::DisplayOutputSurfaceLost() {

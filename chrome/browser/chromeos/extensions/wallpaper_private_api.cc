@@ -53,6 +53,7 @@
 #include "url/gurl.h"
 
 using base::Value;
+using wallpaper_api_util::GenerateThumbnail;
 namespace wallpaper_base = extensions::api::wallpaper;
 namespace wallpaper_private = extensions::api::wallpaper_private;
 namespace set_wallpaper_if_exists = wallpaper_private::SetWallpaperIfExists;
@@ -333,10 +334,10 @@ void WallpaperPrivateSetWallpaperIfExistsFunction::
   if (file_exists) {
     Respond(OneArgument(base::Value(true)));
   } else {
-    auto args = std::make_unique<base::ListValue>();
+    base::Value::List args;
     // TODO(crbug.com/830212): Do not send arguments when the function fails.
     // Call sites should inspect chrome.runtime.lastError instead.
-    args->Append(false);
+    args.Append(false);
     Respond(ErrorWithArguments(
         std::move(args), "The wallpaper doesn't exist in local file system."));
   }
@@ -428,7 +429,7 @@ void WallpaperPrivateSetCustomWallpaperFunction::OnWallpaperDecoded(
       base::FilePath(params->file_name).BaseName().value();
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
       account_id_, file_name, layout, image, params->preview_mode);
-  unsafe_wallpaper_decoder_ = nullptr;
+  wallpaper_decoder_ = nullptr;
 
   if (params->generate_thumbnail) {
     image.EnsureRepsForSupportedScales();
@@ -868,6 +869,5 @@ void WallpaperPrivateGetSurpriseMeImageFunction::OnSurpriseMeImageFetched(
 }
 
 ExtensionFunction::ResponseAction WallpaperPrivateIsSwaEnabledFunction::Run() {
-  return RespondNow(
-      OneArgument(base::Value(ash::features::IsWallpaperWebUIEnabled())));
+  return RespondNow(OneArgument(base::Value(true)));
 }

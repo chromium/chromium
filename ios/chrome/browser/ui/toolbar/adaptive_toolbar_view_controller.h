@@ -14,8 +14,9 @@
 
 @protocol AdaptiveToolbarMenusProvider;
 @class AdaptiveToolbarViewController;
-@protocol ApplicationCommands;
 @protocol BrowserCommands;
+@protocol OmniboxCommands;
+@protocol PopupMenuCommands;
 @protocol PopupMenuLongPressDelegate;
 @class ToolbarButtonFactory;
 @class ToolbarToolsMenuButton;
@@ -32,11 +33,10 @@
 
 // Button factory.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
-// Dispatcher for the ViewController.
-// TODO(crbug.com/1323764): The only commands used here are PopupMenuCommands
-// and OmniboxCommands; these (and only these) should be provided by separate
-// dedicated handlers.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+// Omnibox commands handler for the ViewController.
+@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
+// Popup menu commands handler for the ViewController.
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 
@@ -47,11 +47,11 @@
 - (ToolbarToolsMenuButton*)toolsMenuButton;
 
 // Updates the view so a snapshot can be taken. It needs to be adapted,
-// depending on if it is a snapshot displayed |onNTP| or not.
+// depending on if it is a snapshot displayed `onNTP` or not.
 - (void)updateForSideSwipeSnapshotOnNTP:(BOOL)onNTP;
 // Resets the view after taking a snapshot for a side swipe.
 - (void)resetAfterSideSwipeSnapshot;
-// Sets the toolbar location bar alpha and vertical offset based on |progress|.
+// Sets the toolbar location bar alpha and vertical offset based on `progress`.
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress;
 
 @end

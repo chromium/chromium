@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/services/cros_healthd/public/mojom",
+  "+chromeos/ash/services/cros_healthd/public/mojom",
   "+chromeos/services/network_health/public/mojom",
   "+mojo/public",
 ]

@@ -15,10 +15,11 @@
 #include "cc/input/touch_action.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/input/input_event_prediction.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue_task_list.h"
 #include "ui/latency/latency_info.h"
@@ -99,7 +100,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   MainThreadEventQueue(
       MainThreadEventQueueClient* client,
       const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
       bool allow_raf_aligned_input);
   MainThreadEventQueue(const MainThreadEventQueue&) = delete;
   MainThreadEventQueue& operator=(const MainThreadEventQueue&) = delete;
@@ -137,10 +138,6 @@ class PLATFORM_EXPORT MainThreadEventQueue
     return ack_state == mojom::blink::InputEventResultState::kNotConsumed ||
            ack_state ==
                mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
-  }
-
-  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
-    return main_task_runner_.get();
   }
 
  protected:
@@ -197,7 +194,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   SharedState shared_state_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scheduler::WebThreadScheduler* main_thread_scheduler_;
+  scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
 
   // A safe guard timer to ensure input is always processed. A BeginMainFrame
   // signal might not always occur if our visibility changed.

@@ -14,7 +14,7 @@
 @protocol PopupMenuActionHandlerDelegate
 // Adds the current page to the reading list.
 - (void)readPageLater;
-// Navigates to the page associated with |item|.
+// Navigates to the page associated with `item`.
 - (void)navigateToPageForItem:(TableViewItem<PopupMenuItem>*)item;
 // Records open settings metric per profile type.
 - (void)recordSettingsMetricsPerProfile;

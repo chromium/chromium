@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
@@ -89,9 +90,41 @@ const std::vector<BrowsingDataRemoveMask> _browsingDataRemoveFlags = {
     BrowsingDataRemoveMask::REMOVE_FORM_DATA,
 };
 
-}  // namespace
+// The size of the symbol image used in the 'Clear Browsing Data' view.
+NSInteger kSymbolPointSize = 22;
 
-static NSDictionary* _imageNamesByItemTypes = @{
+// Specific symbols used in the 'Clear Browsing Data' view.
+NSString* kCachedDataSymbol = @"photo.on.rectangle";
+NSString* kAutofillDataSymbol = @"wand.and.rays";
+
+// Returns the symbol coresponding to the given itemType.
+UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
+  UIImage* symbol = nil;
+  switch (itemType) {
+    case ItemTypeDataTypeBrowsingHistory:
+    case ItemTypeDataTypeCookiesSiteData:
+    case ItemTypeDataTypeSavedPasswords:
+      // TODO(crbug.com/1315544): update these cases when custom symbols are
+      // done.
+      symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    case ItemTypeDataTypeCache:
+      symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    case ItemTypeDataTypeAutofill:
+      symbol = DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return symbol;
+}
+
+static NSDictionary* imageNamesByItemTypes = @{
   [NSNumber numberWithInteger:ItemTypeDataTypeBrowsingHistory] :
       @"clear_browsing_data_history",
   [NSNumber numberWithInteger:ItemTypeDataTypeCookiesSiteData] :
@@ -106,6 +139,8 @@ static NSDictionary* _imageNamesByItemTypes = @{
   [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
       @"clear_browsing_data_autofill",
 };
+
+}  // namespace
 
 @interface ClearBrowsingDataManager () <BrowsingDataRemoverObserving,
                                         PrefObserverDelegate> {
@@ -188,19 +223,6 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
     _prefChangeRegistrar.Init(_browserState->GetPrefs());
     _prefObserverBridge.reset(new PrefObserverBridge(self));
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
-
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -215,6 +237,26 @@ static NSDictionary* _imageNamesByItemTypes = @{
       toSectionWithIdentifier:SectionIdentifierTimeRange];
   [self addClearBrowsingDataItemsToModel:model];
   [self addSyncProfileItemsToModel:model];
+}
+
+- (void)prepare {
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
+
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
+}
+
+- (void)disconnect {
+  _prefChangeRegistrar.RemoveAll();
 }
 
 // Add items for types of browsing data to clear.
@@ -413,8 +455,8 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 #pragma mark Items
 
-// Creates item of type |itemType| with |mask| of data to be cleared if
-// selected, |prefName|, and |titleId| of item.
+// Creates item of type `itemType` with `mask` of data to be cleared if
+// selected, `prefName`, and `titleId` of item.
 - (TableViewClearBrowsingDataItem*)
     clearDataItemWithType:(ClearBrowsingDataItemType)itemType
                   titleID:(int)titleMessageID
@@ -431,14 +473,21 @@ static NSDictionary* _imageNamesByItemTypes = @{
   clearDataItem.prefName = prefName;
   clearDataItem.checkedBackgroundColor = [[UIColor colorNamed:kBlueColor]
       colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
-  clearDataItem.imageName = [_imageNamesByItemTypes
-      objectForKey:[NSNumber numberWithInteger:itemType]];
+
+  if (UseSymbols()) {
+    clearDataItem.image = SymbolForItemType(itemType);
+  } else {
+    clearDataItem.image = [UIImage
+        imageNamed:[imageNamesByItemTypes
+                       objectForKey:[NSNumber numberWithInteger:itemType]]];
+  }
+
   if (itemType == ItemTypeDataTypeCookiesSiteData) {
     // Because there is no counter for cookies, an explanatory text is
     // displayed.
     clearDataItem.detailText = l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER);
   } else {
-    // Having a placeholder |detailText| helps reduce the observable
+    // Having a placeholder `detailText` helps reduce the observable
     // row-height changes induced by the counter callbacks.
     clearDataItem.detailText = @"\u00A0";
     __weak ClearBrowsingDataManager* weakSelf = self;
@@ -613,7 +662,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 #pragma mark - Private Methods
 
-// Signs the user out of Chrome if the sign-in state is |ConsentLevel::kSignin|.
+// Signs the user out of Chrome if the sign-in state is `ConsentLevel::kSignin`.
 - (void)signOutIfNotSyncing {
   DCHECK(self.browserState);
   signin::IdentityManager* identityManager =
@@ -655,7 +704,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
     const bool showDialog =
         // 1. The dialog is relevant for the user.
         _shouldPopupDialogAboutOtherFormsOfBrowsingHistory &&
-        // 2. The notice has been shown less than |kMaxTimesHistoryNoticeShown|.
+        // 2. The notice has been shown less than `kMaxTimesHistoryNoticeShown`.
         noticeShownTimes < kMaxTimesHistoryNoticeShown;
     if (!showDialog) {
       return;

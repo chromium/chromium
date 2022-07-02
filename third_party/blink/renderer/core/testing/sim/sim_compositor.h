@@ -71,7 +71,8 @@ class SimCompositor final {
   }
   // Returns the background color set on the compositor.
   SkColor background_color() const {
-    return LayerTreeHost()->background_color();
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+    return LayerTreeHost()->background_color().toSkColor();
   }
 
   base::TimeTicks LastFrameTime() const { return last_frame_time_; }

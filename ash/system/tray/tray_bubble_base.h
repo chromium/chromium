@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_BUBBLE_BASE_H_
 
 #include "ash/ash_export.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;
@@ -17,9 +18,13 @@ class TrayBackgroundView;
 class TrayBubbleView;
 
 // Base class for tray bubbles registered to TrayEventFilter.
-class ASH_EXPORT TrayBubbleBase {
+// Note: As this class implements `views::WidgetObserver`, the derived classes
+// are required to add themselves as a `views::WidgetObserver` to the bubble
+// Widgets they make.
+class ASH_EXPORT TrayBubbleBase : public views::WidgetObserver {
  public:
-  virtual ~TrayBubbleBase() {}
+  TrayBubbleBase();
+  ~TrayBubbleBase() override;
 
   // Returns the tray button instance.
   virtual TrayBackgroundView* GetTray() const = 0;
@@ -29,6 +34,9 @@ class ASH_EXPORT TrayBubbleBase {
 
   // Returns the widget of the bubble.
   virtual views::Widget* GetBubbleWidget() const = 0;
+
+  // views::WidgetObserver overrides:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 };
 
 }  // namespace ash

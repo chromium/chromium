@@ -19,7 +19,6 @@
 
 struct AccountInfo;
 struct CoreAccountInfo;
-class Browser;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
@@ -45,11 +44,11 @@ void ShowSigninErrorLearnMorePage(Profile* profile);
 // Shows a reauth page/dialog to reauthanticate a primary account in error
 // state.
 void ShowReauthForPrimaryAccountWithAuthError(
-    Browser* browser,
+    Profile* profile,
     signin_metrics::AccessPoint access_point);
 
 // Shows a reauth page/dialog to reauthanticate an account.
-void ShowReauthForAccount(Browser* browser,
+void ShowReauthForAccount(Profile* profile,
                           const std::string& email,
                           signin_metrics::AccessPoint access_point);
 
@@ -66,7 +65,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
 //   then it presents the Chrome sign-in page with |account.emil| prefilled.
 // * If token service has a valid refresh token for |account|, then it
 //   enables sync for |account|.
-void EnableSyncFromSingleAccountPromo(Browser* browser,
+void EnableSyncFromSingleAccountPromo(Profile* profile,
                                       const CoreAccountInfo& account,
                                       signin_metrics::AccessPoint access_point);
 
@@ -77,7 +76,7 @@ void EnableSyncFromSingleAccountPromo(Browser* browser,
 //
 // |is_default_promo_account| is true if |account| corresponds to the default
 // account in the promo. It is ignored if |account| is empty.
-void EnableSyncFromMultiAccountPromo(Browser* browser,
+void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account);
@@ -90,9 +89,9 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     Profile* profile,
     bool restrict_to_accounts_eligible_for_sync);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Returns single account to use in Dice promos.
-AccountInfo GetSingleAccountForDicePromos(Profile* profile);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns single account to use in promos.
+AccountInfo GetSingleAccountForPromos(Profile* profile);
 
 #endif
 

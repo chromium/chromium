@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -146,14 +145,8 @@ void ReadData(
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(client_remote));
 
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    client->OnReceiveResponse(std::move(headers),
-                              std::move(pipe_consumer_handle));
-  } else {
-    client->OnReceiveResponse(std::move(headers),
-                              mojo::ScopedDataPipeConsumerHandle());
-    client->OnStartLoadingResponseBody(std::move(pipe_consumer_handle));
-  }
+  client->OnReceiveResponse(std::move(headers),
+                            std::move(pipe_consumer_handle));
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.encoded_data_length = output_size;

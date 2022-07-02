@@ -76,6 +76,11 @@ BatchingMediaLog::~BatchingMediaLog() {
     SendQueuedMediaEvents();
 }
 
+void BatchingMediaLog::Stop() {
+  base::AutoLock lock(lock_);
+  event_handlers_.clear();
+}
+
 void BatchingMediaLog::OnWebMediaPlayerDestroyedLocked() {
   base::AutoLock lock(lock_);
   for (const auto& handler : event_handlers_)

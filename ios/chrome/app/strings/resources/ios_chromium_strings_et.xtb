@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromiumil ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="3472200483164753384">Ei toetata versioonis Chromium Canary</translation>
 <translation id="3567399274263440288">Chromiumi kasutamiseks parimal moel logige Chromiumi sisse oma Google'i kontoga.</translation>
+<translation id="3619462831205197427">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse.</translation>
 <translation id="3639997914391704523">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> kasutas Chromiumi ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
@@ -77,7 +78,6 @@
 1. Avage menüü Seaded.
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
-<translation id="6155422572367400359">Logige sellele saidile, oma Google'i kontole ja Chromiumi sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="6183442264225539303">Logige sellele saidile ja Chromiumisse sisse. Sünkroonimise saate hiljem sisse lülitada.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
+<translation id="8308172444429103994">Chromiumi nõuanne. Logige kiiremini sisse, valides klaviatuuri ülaosas oma salvestatud parooli.</translation>
 <translation id="858114650497379505">Saate paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="865600487977764604">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>

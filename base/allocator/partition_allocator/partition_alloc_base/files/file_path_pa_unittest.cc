@@ -9,7 +9,6 @@
 #include <sstream>
 
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This macro helps avoid wrapped lines in the test structs.

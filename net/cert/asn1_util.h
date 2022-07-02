@@ -8,9 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace asn1 {
+namespace net::asn1 {
 
 // ExtractSubjectFromDERCert parses the DER encoded certificate in |cert| and
 // extracts the bytes of the X.501 Subject. On successful return, |subject_out|
@@ -70,8 +68,6 @@ NET_EXPORT bool ExtractExtensionFromDERCert(base::StringPiece cert,
                                             bool* out_extension_critical,
                                             base::StringPiece* out_contents);
 
-} // namespace asn1
-
-} // namespace net
+}  // namespace net::asn1
 
 #endif // NET_CERT_ASN1_UTIL_H_

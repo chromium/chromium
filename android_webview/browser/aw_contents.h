@@ -90,7 +90,6 @@ class AwContents : public FindHelper::Listener,
   // Methods called from Java.
   void SetJavaPeers(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& aw_contents,
       const base::android::JavaParamRef<jobject>& web_contents_delegate,
       const base::android::JavaParamRef<jobject>& contents_client_bridge,
@@ -98,92 +97,47 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaParamRef<jobject>&
           intercept_navigation_delegate);
   void InitializeAndroidAutofill(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jobject> GetWebContents(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void SetCompositorFrameConsumer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong compositor_frame_consumer);
-  base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(JNIEnv* env);
+  void SetCompositorFrameConsumer(JNIEnv* env, jlong compositor_frame_consumer);
+  base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(JNIEnv* env);
 
   void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jobject>& message);
   void GenerateMHTML(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
                      const base::android::JavaParamRef<jstring>& jpath,
                      const base::android::JavaParamRef<jobject>& callback);
   void CreatePdfExporter(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& pdfExporter);
   void AddVisitedLinks(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobjectArray>& jvisited_links);
-  base::android::ScopedJavaLocalRef<jbyteArray> GetCertificate(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jbyteArray> GetCertificate(JNIEnv* env);
   void RequestNewHitTestDataAt(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj,
                                jfloat x,
                                jfloat y,
                                jfloat touch_major);
-  void UpdateLastHitTestData(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj);
-  void OnSizeChanged(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
-                     int w,
-                     int h,
-                     int ow,
-                     int oh);
+  void UpdateLastHitTestData(JNIEnv* env);
+  void OnSizeChanged(JNIEnv* env, int w, int h, int ow, int oh);
   void OnConfigurationChanged(JNIEnv* env);
-  void SetViewVisibility(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
-                         bool visible);
-  void SetWindowVisibility(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
-                           bool visible);
-  void SetIsPaused(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   bool paused);
-  void OnAttachedToWindow(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          int w,
-                          int h);
-  void OnDetachedFromWindow(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  bool IsVisible(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  bool IsDisplayingInterstitialForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jbyteArray> GetOpaqueState(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void SetViewVisibility(JNIEnv* env, bool visible);
+  void SetWindowVisibility(JNIEnv* env, bool visible);
+  void SetIsPaused(JNIEnv* env, bool paused);
+  void OnAttachedToWindow(JNIEnv* env, int w, int h);
+  void OnDetachedFromWindow(JNIEnv* env);
+  bool IsVisible(JNIEnv* env);
+  bool IsDisplayingInterstitialForTesting(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jbyteArray> GetOpaqueState(JNIEnv* env);
   jboolean RestoreFromOpaqueState(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jbyteArray>& state);
-  void FocusFirstNode(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void SetBackgroundColor(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          jint color);
-  void ZoomBy(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& obj,
-              jfloat delta);
-  void OnComputeScroll(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
-                       jlong animation_time_millis);
+  void FocusFirstNode(JNIEnv* env);
+  void SetBackgroundColor(JNIEnv* env, jint color);
+  void ZoomBy(JNIEnv* env, jfloat delta);
+  void OnComputeScroll(JNIEnv* env, jlong animation_time_millis);
   bool OnDraw(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& obj,
               const base::android::JavaParamRef<jobject>& canvas,
               jboolean is_hardware_accelerated,
               jint scroll_x,
@@ -193,64 +147,47 @@ class AwContents : public FindHelper::Listener,
               jint visible_right,
               jint visible_bottom,
               jboolean force_auxiliary_bitmap_rendering);
-  bool NeedToDrawBackgroundColor(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jlong CapturePicture(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
-                       int width,
-                       int height);
-  void EnableOnNewPicture(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          jboolean enabled);
+  bool NeedToDrawBackgroundColor(JNIEnv* env);
+  jlong CapturePicture(JNIEnv* env, int width, int height);
+  void EnableOnNewPicture(JNIEnv* env, jboolean enabled);
   void InsertVisualStateCallback(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jlong request_id,
       const base::android::JavaParamRef<jobject>& callback);
-  void ClearView(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void ClearView(JNIEnv* env);
   void SetExtraHeadersForUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url,
       const base::android::JavaParamRef<jstring>& extra_headers);
 
   void InvokeGeolocationCallback(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean value,
       const base::android::JavaParamRef<jstring>& origin);
 
-  jint GetEffectivePriority(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
+  jint GetEffectivePriority(JNIEnv* env);
 
   js_injection::JsCommunicationHost* GetJsCommunicationHost();
 
   jint AddDocumentStartJavaScript(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& script,
       const base::android::JavaParamRef<jobjectArray>& allowed_origin_rules);
 
-  void RemoveDocumentStartJavaScript(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint script_id);
+  void RemoveDocumentStartJavaScript(JNIEnv* env, jint script_id);
 
   base::android::ScopedJavaLocalRef<jstring> AddWebMessageListener(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& listener,
       const base::android::JavaParamRef<jstring>& js_object_name,
       const base::android::JavaParamRef<jobjectArray>& allowed_origins);
 
   void RemoveWebMessageListener(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& js_object_name);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetJsObjectsInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jclass>& clazz);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
@@ -266,7 +203,6 @@ class AwContents : public FindHelper::Listener,
 
   void PreauthorizePermission(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& origin,
       jlong resources);
 
@@ -285,13 +221,9 @@ class AwContents : public FindHelper::Listener,
 
   // Find-in-page API and related methods.
   void FindAllAsync(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& search_string);
-  void FindNext(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& obj,
-                jboolean forward);
-  void ClearMatches(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  void FindNext(JNIEnv* env, jboolean forward);
+  void ClearMatches(JNIEnv* env);
   FindHelper* GetFindHelper();
 
   // Per WebView Cookie Policy
@@ -331,58 +263,33 @@ class AwContents : public FindHelper::Listener,
                      bool inside_vsync) override;
   ui::TouchHandleDrawable* CreateDrawable() override;
 
-  void ClearCache(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
-                  jboolean include_disk_files);
+  void ClearCache(JNIEnv* env, jboolean include_disk_files);
   // See //android_webview/docs/how-does-on-create-window-work.md for more
   // details.
   void SetPendingWebContentsForPopup(
       std::unique_ptr<content::WebContents> pending);
-  jlong ReleasePopupAwContents(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
+  jlong ReleasePopupAwContents(JNIEnv* env);
 
-  void ScrollTo(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& obj,
-                jint x,
-                jint y);
-  void RestoreScrollAfterTransition(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint x,
-      jint y);
+  void ScrollTo(JNIEnv* env, jint x, jint y);
+  void RestoreScrollAfterTransition(JNIEnv* env, jint x, jint y);
   void SmoothScroll(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     jint target_x,
                     jint target_y,
                     jlong duration_ms);
-  void SetDipScale(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
-                   jfloat dip_scale);
-  base::android::ScopedJavaLocalRef<jstring> GetScheme(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void OnInputEvent(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  void SetDipScale(JNIEnv* env, jfloat dip_scale);
+  base::android::ScopedJavaLocalRef<jstring> GetScheme(JNIEnv* env);
+  void OnInputEvent(JNIEnv* env);
   void SetSaveFormData(bool enabled);
 
   // Sets the java client
   void SetAwAutofillClient(const base::android::JavaRef<jobject>& client);
 
-  void SetJsOnlineProperty(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
-                           jboolean network_up);
-  void TrimMemory(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
-                  jint level,
-                  jboolean visible);
+  void SetJsOnlineProperty(JNIEnv* env, jboolean network_up);
+  void TrimMemory(JNIEnv* env, jint level, jboolean visible);
 
-  void GrantFileSchemeAccesstoChildProcess(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void GrantFileSchemeAccesstoChildProcess(JNIEnv* env);
 
-  void ResumeLoadingCreatedPopupWebContents(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void ResumeLoadingCreatedPopupWebContents(JNIEnv* env);
 
   void RendererUnresponsive(content::RenderProcessHost* render_process_host);
   void RendererResponsive(content::RenderProcessHost* render_process_host);

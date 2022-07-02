@@ -16,7 +16,7 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     public DoubleCachedFieldTrialParameter(
             String featureName, String variationName, double defaultValue) {
-        super(featureName, variationName, FieldTrialParameterType.DOUBLE, null);
+        super(featureName, variationName, FieldTrialParameterType.DOUBLE);
         mDefaultValue = defaultValue;
     }
 

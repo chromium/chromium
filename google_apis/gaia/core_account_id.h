@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // Represent the id of an account for interaction with GAIA.
 //
@@ -57,16 +58,21 @@ struct CoreAccountId {
   // Returns an empty CoreAccountId if |gaia_id| is empty.
   static CoreAccountId FromGaiaId(const std::string& gaia_id);
 
+  // Create a CoreAccountId object from an email of a robot account.
+  // Returns an empty CoreAccountId if |email| is empty.
+  static CoreAccountId FromRobotEmail(const std::string& robot_email);
+
+  // Create a CoreAccountId object from a string that was serialized via
+  // |CoreAccountId::ToString()|.
+  static CoreAccountId FromString(const std::string& value);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Only on ChromeOS, CoreAccountId objects may be created from Gaia emails.
+  //
   // Create a CoreAccountId object from an email.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromEmail(const std::string& email);
-
-  // Create a CoreAccountId object from a string that is either a gaia_id
-  // or an email.
-  //
-  // Note: This method only exits while the code is being migrated to
-  // use Gaia ID as the value of a CoreAccountId.
-  static CoreAccountId FromString(const std::string gaia_id_or_email);
+#endif
   // ---------------------------------------- ---------------------------------
 
   // --------------------------------------------------------------------------

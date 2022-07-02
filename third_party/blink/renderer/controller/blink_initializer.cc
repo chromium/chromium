@@ -54,6 +54,8 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
+#include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
@@ -103,6 +105,16 @@ class EndOfTaskRunner : public Thread::TaskObserver {
   }
 };
 
+// See description of `g_literal_buffer_create_string_with_encoding` in
+// LiteralBuffer as to what this controls.
+const base::Feature kLiteralBufferCreateStringWithEncoding{
+    "LiteralBufferCreateStringWithEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// See description of `g_use_html_attribute_name_lookup` in AtomicHTMLToken as
+// to what this controls.
+const base::Feature kUseHtmlAttributeNameLookup{
+    "UseHtmlAttributeNameLookup", base::FEATURE_DISABLED_BY_DEFAULT};
+
 Thread::TaskObserver* g_end_of_task_runner = nullptr;
 
 BlinkInitializer& GetBlinkInitializer() {
@@ -131,6 +143,13 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 #endif  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_ARM64) &&
         // BUILDFLAG(IS_WIN)
 
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  // ChromeOSExtensions::Initialize() initializes strings which must be done
+  // before calling CoreInitializer::Initialize() which is called by
+  // GetBlinkInitializer().Initialize() below.
+  ChromeOSExtensions::Initialize();
+#endif
+
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
@@ -145,10 +164,6 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   DCHECK(!g_end_of_task_runner);
   g_end_of_task_runner = new EndOfTaskRunner;
   Thread::Current()->AddTaskObserver(g_end_of_task_runner);
-
-#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-  ChromeOSExtensions::Initialize();
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory
@@ -169,6 +184,12 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 
   // Initialize performance manager.
   RendererResourceCoordinatorImpl::MaybeInitialize();
+
+  g_literal_buffer_create_string_with_encoding =
+      base::FeatureList::IsEnabled(kLiteralBufferCreateStringWithEncoding);
+
+  g_use_html_attribute_name_lookup =
+      base::FeatureList::IsEnabled(kUseHtmlAttributeNameLookup);
 }
 
 }  // namespace
@@ -262,6 +283,13 @@ void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &AnnotationAgentContainerImpl::BindReceiver, WrapWeakPersistent(&frame)));
   ModulesInitializer::InitLocalFrame(frame);
+}
+
+void BlinkInitializer::InitServiceWorkerGlobalScope(
+    ServiceWorkerGlobalScope& worker_global_scope) const {
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  ChromeOSExtensions::InitServiceWorkerGlobalScope(worker_global_scope);
+#endif
 }
 
 void BlinkInitializer::OnClearWindowObjectInMainWorld(

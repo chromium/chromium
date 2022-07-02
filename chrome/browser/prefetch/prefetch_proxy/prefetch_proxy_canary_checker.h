@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -161,7 +162,7 @@ class PrefetchProxyCanaryChecker {
   void UpdateCacheKey(std::string key);
 
   // The current profile, not owned.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Pipe to allow cancelling an ongoing DNS resolution request. This is set
   // when we fire off a DNS request to the network service. We send the
@@ -198,17 +199,17 @@ class PrefetchProxyCanaryChecker {
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   // The tick clock used within this class.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The time clock used within this class.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Remembers the last time the checker became active.
   absl::optional<base::Time> time_when_set_active_;
 
   // This reference is kept around for unregistering |this| as an observer on
   // any thread.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Small LRU cache holding the result of canary checks made for different
   // networks. This cache is not persisted across browser restarts.

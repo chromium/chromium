@@ -6,16 +6,22 @@
 
 #include <xf86drmMode.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/platform_file.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/traced_value_support.h"
+#include "base/values.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/display/types/display_snapshot.h"
@@ -25,6 +31,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/linux/gbm_buffer.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -123,6 +130,64 @@ std::unique_ptr<base::trace_event::TracedValue> ParamsToTracedValue(
   return value;
 }
 
+// Returns a JSON-format log for a DRM configuration request represented by
+// `controllers_params`. Note that this function assumes that all controllers in
+// `controllers_params` are a part of the same DRM device.
+std::string GenerateConfigurationLogForController(
+    const ScreenManager::ControllerConfigsList& controllers_params) {
+  DCHECK(!controllers_params.empty());
+
+  base::flat_map<uint64_t, std::string> base_connectors_to_keys;
+  base::Value::Dict drm_device;
+  std::string base_connector_key;
+  for (const auto& param : controllers_params) {
+    const int64_t next_base_connector = param.base_connector_id;
+    const auto& it = base_connectors_to_keys.find(next_base_connector);
+    if (it == base_connectors_to_keys.end()) {
+      base_connector_key = base::StrCat(
+          {"base_connector=", base::NumberToString(next_base_connector)});
+      drm_device.Set(base_connector_key, base::Value::List());
+
+      base_connectors_to_keys.insert(
+          std::make_pair(next_base_connector, base_connector_key));
+    } else {
+      base_connector_key = it->second;
+    }
+
+    std::string mode;
+    if (param.mode) {
+      const std::string size = ModeSize(*(param.mode.get())).ToString();
+      const std::string refresh_rate =
+          base::NumberToString(param.mode->vrefresh);
+      mode = base::StrCat({size, "@", refresh_rate});
+    } else {
+      mode = "Disabled";
+    }
+
+    const std::string display =
+        base::StrCat({"{connector=", base::NumberToString(param.connector), " ",
+                      "crtc=", base::NumberToString(param.crtc), " mode=", mode,
+                      "+(", param.origin.ToString(), ")}"});
+    drm_device.FindList(base_connector_key)->Append(display);
+  }
+  const std::string device_name =
+      controllers_params.back().drm->device_path().BaseName().value();
+  base::Value::Dict drm_config;
+  drm_config.Set(device_name, std::move(drm_device));
+  std::string drm_config_log;
+  const int json_writer_options = IsPrettyPrintDrmModesetConfigLogsEnabled()
+                                      ? base::JSONWriter::OPTIONS_PRETTY_PRINT
+                                      : 0;
+  bool json_status = base::JSONWriter::WriteWithOptions(
+      drm_config, json_writer_options, &drm_config_log);
+  DCHECK(json_status);
+  DCHECK(!drm_config_log.empty());
+  // Remove trailing newline
+  if (json_writer_options)
+    drm_config_log.pop_back();
+  return drm_config_log;
+}
+
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -137,11 +202,14 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
     uint32_t crtc,
     uint32_t connector,
     gfx::Point origin,
-    std::unique_ptr<drmModeModeInfo> pmode)
+    std::unique_ptr<drmModeModeInfo> pmode,
+    uint64_t base_connector)
     : display_id(display_id),
       drm(drm),
       crtc(crtc),
       connector(connector),
+      base_connector_id(base_connector ? base_connector
+                                       : static_cast<uint64_t>(connector)),
       origin(origin),
       mode(std::move(pmode)) {}
 
@@ -151,6 +219,7 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
       drm(other.drm),
       crtc(other.crtc),
       connector(other.connector),
+      base_connector_id(other.base_connector_id),
       origin(other.origin) {
   if (other.mode) {
     drmModeModeInfo mode_obj = *other.mode.get();
@@ -164,6 +233,7 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
       drm(other.drm),
       crtc(other.crtc),
       connector(other.connector),
+      base_connector_id(other.base_connector_id),
       origin(other.origin) {
   if (other.mode) {
     drmModeModeInfo mode_obj = *other.mode.get();
@@ -182,7 +252,7 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
   // display configuration in ScreenManager and display::NativeDisplayDelegate
   // creating the display controllers.)
   if (it != controllers_.end()) {
-    LOG(WARNING) << "Display controller (crtc=" << crtc << ") already present.";
+    VLOG(2) << "Display controller (crtc=" << crtc << ") already present.";
     return;
   }
 
@@ -266,22 +336,27 @@ bool ScreenManager::ConfigureDisplayControllers(
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
     const ControllerConfigsList& drm_controllers_params = configs_on_drm.second;
+    VLOG(1) << "DRM configuring: "
+            << GenerateConfigurationLogForController(drm_controllers_params);
+
     bool test_modeset = TestAndSetPreferredModifiers(drm_controllers_params) ||
                         TestAndSetLinearModifier(drm_controllers_params);
     config_success &= test_modeset;
     if (!test_modeset) {
-      LOG(ERROR)
-          << "Test modeset failed (preferred modifiers and linear modifier)";
+      VLOG(1) << "Test modeset failed.";
       continue;
     }
+
     bool can_modeset_with_overlays =
         TestModesetWithOverlays(drm_controllers_params);
     bool real_modeset =
         Modeset(drm_controllers_params, can_modeset_with_overlays);
     config_success &= real_modeset;
-    LOG_IF(ERROR, !real_modeset)
-        << "Failed to modeset. can_modeset_with_overlays="
-        << can_modeset_with_overlays;
+    if (real_modeset) {
+      VLOG(1) << "Modeset succeeded.";
+    } else {
+      LOG(ERROR) << "Modeset failed after a successful test-modeset for.";
+    }
   }
 
   if (config_success)

@@ -47,30 +47,15 @@ bool StructTraits<
                        base::Value* value_out) {
   mojo::MapDataView<mojo::StringDataView, mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
-  std::vector<base::Value::DictStorage::value_type> dict_storage;
-  dict_storage.reserve(view.size());
+  base::Value::Dict dict;
   for (size_t i = 0; i < view.size(); ++i) {
     base::StringPiece key;
     base::Value value;
     if (!view.keys().Read(i, &key) || !view.values().Read(i, &value))
       return false;
-    dict_storage.emplace_back(std::string(key), std::move(value));
+    dict.Set(key, std::move(value));
   }
-  *value_out = base::Value(base::Value::DictStorage(std::move(dict_storage)));
-  return true;
-}
-
-bool StructTraits<mojo_base::mojom::DeprecatedListValueDataView, base::Value>::
-    Read(mojo_base::mojom::DeprecatedListValueDataView data,
-         base::Value* value_out) {
-  mojo::ArrayDataView<mojo_base::mojom::ValueDataView> view;
-  data.GetStorageDataView(&view);
-  base::Value::ListStorage list_storage(view.size());
-  for (size_t i = 0; i < view.size(); ++i) {
-    if (!view.Read(i, &list_storage[i]))
-      return false;
-  }
-  *value_out = base::Value(std::move(list_storage));
+  *value_out = base::Value(std::move(dict));
   return true;
 }
 

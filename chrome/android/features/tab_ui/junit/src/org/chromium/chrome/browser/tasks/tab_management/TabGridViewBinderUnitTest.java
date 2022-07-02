@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
@@ -55,10 +59,14 @@ public final class TabGridViewBinderUnitTest {
     private TabGridThumbnailView mThumbnailView;
     @Captor
     private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
+    @Mock
+    private TypedArray mTypedArray;
 
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private Bitmap mBitmap;
+    private static final int RESOURCE_ID = 123;
+    private static final float RESOURCE_DIMEN = 10;
 
     @Before
     public void setUp() {
@@ -73,6 +81,10 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
         when(mViewGroup.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
+        when(mContext.obtainStyledAttributes(eq(R.style.ThemeRefactorOverlay_Enabled_TabUi), any()))
+                .thenReturn(mTypedArray);
+        when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(RESOURCE_ID);
+        when(mResources.getDimension(anyInt())).thenReturn(RESOURCE_DIMEN);
         // Mock tablet.
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket)).thenReturn(3);
 
@@ -89,14 +101,16 @@ public final class TabGridViewBinderUnitTest {
 
     @Test
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail() {
-        // Update width - 200.
-        final int updatedWidth = 200;
-        mModel.set(TabProperties.GRID_CARD_WIDTH, updatedWidth);
+        // Update width.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        final int updatedCardWidth = 200;
+        mModel.set(TabProperties.GRID_CARD_WIDTH, updatedCardWidth);
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_WIDTH);
 
-        verify(mViewGroup).setMinimumWidth(updatedWidth);
+        verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
-        assertThat(mLayoutParams.width, equalTo(updatedWidth));
+        assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(mBitmap);
@@ -112,17 +126,19 @@ public final class TabGridViewBinderUnitTest {
     @Test
     public void bindClosableTabWithCardWidthWithPolishEnabled_updateCardAndThumbnail() {
         TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(true);
-        // Update width.
-        final int updatedWidth = 200;
-        mModel.set(TabProperties.GRID_CARD_WIDTH, updatedWidth);
+        // Update card width.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        final int updatedCardWidth = 200;
+        mModel.set(TabProperties.GRID_CARD_WIDTH, updatedCardWidth);
 
         // Call.
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_WIDTH);
 
         // Verify.
-        verify(mViewGroup).setMinimumWidth(updatedWidth);
+        verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
-        assertThat(mLayoutParams.width, equalTo(updatedWidth));
+        assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(mCallbackCaptor.capture());
 
         // Pass bitmap to callback and verify thumbnail updated with image resize.
@@ -136,9 +152,9 @@ public final class TabGridViewBinderUnitTest {
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
-        // Scale = updatedWidth / INIT_WIDTH = 200 / 100 = 2.
-        float expectedScale = 2.f;
-        // xTranslate = (destinationWidth - scaledWidth) /2 = (200 - (100*2))/2 = 0.
+        // Scale = updatedBitmapWidth / INIT_WIDTH = 160 / 100 = 1.6f.
+        float expectedScale = 1.6f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (160 - (100*1.6))/2 = 0.
         float expectedXTrans = 0.f;
         assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
@@ -149,17 +165,19 @@ public final class TabGridViewBinderUnitTest {
         LayoutParams thumbnailParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
         when(mThumbnailView.getLayoutParams()).thenReturn(thumbnailParams);
 
-        // Update height.
-        final int updatedHeight = 400;
-        mModel.set(TabProperties.GRID_CARD_HEIGHT, updatedHeight);
+        // Update card height = 400.
+        // updatedBitmapWidth = INIT_WIDTH - margins = 100 - 40 = 60.
+        // updatedBitmapHeight = updatedCardHeight - margins = 400 - 40 - 360.
+        final int updatedCardHeight = 400;
+        mModel.set(TabProperties.GRID_CARD_HEIGHT, updatedCardHeight);
 
         // Call.
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_HEIGHT);
 
         // Verify.
-        verify(mViewGroup).setMinimumHeight(updatedHeight);
+        verify(mViewGroup).setMinimumHeight(updatedCardHeight);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
-        assertThat(mLayoutParams.height, equalTo(updatedHeight));
+        assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         assertThat(thumbnailParams.height, equalTo(LayoutParams.MATCH_PARENT));
         verify(mFetcher).fetch(mCallbackCaptor.capture());
 
@@ -175,10 +193,10 @@ public final class TabGridViewBinderUnitTest {
         verifyNoMoreInteractions(mThumbnailView);
 
         // Verify metrics scale + translate.
-        // Scale = updatedHeight / INIT_HEIGHT = 400 / 200 = 2.
-        float expectedScale = 2.f;
-        // xTranslate = (destinationWidth - scaledWidth) /2 = (100 - (100*2))/2 = -50.
-        float expectedXTrans = -50.f;
+        // Scale = updatedBitmapHeight / INIT_HEIGHT = 360 / 200 = 1.8f.
+        float expectedScale = 1.8f;
+        // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (60 - (100*1.8))/2 = -60.
+        float expectedXTrans = -60f;
         assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
     }
 

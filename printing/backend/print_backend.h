@@ -14,15 +14,11 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 // This is the interface for platform-specific code for a print backend
 namespace printing {
@@ -214,12 +210,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
  public:
   // Enumerates the list of installed local and network printers.  It will
   // return success when the available installed printers have been enumerated
-  // into `printer_list`.  Note that `printer_list` must not be null and also
-  // should be empty prior to this call.  If there are no printers installed
-  // then it will still return success, and `printer_list` remains empty.  The
-  // result code will return one of the error result codes when there is a
-  // failure in generating the list.
-  virtual mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) = 0;
+  // into `printer_list`.  Note that `printer_list` should be empty prior to
+  // this call.  If there are no printers installed then it will still return
+  // success, and `printer_list` remains empty.  The result code will return
+  // one of the error result codes when there is a failure in generating the
+  // list.
+  virtual mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) = 0;
 
   // Gets the default printer name.  If there is no default printer then it
   // will still return success and `default_printer` will be empty.  The result
@@ -287,7 +283,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
   // Provide the actual backend for CreateInstance().
   static scoped_refptr<PrintBackend> CreateInstanceImpl(
-      const base::DictionaryValue* print_backend_settings,
+      const base::Value::Dict* print_backend_settings,
       const std::string& locale);
 };
 

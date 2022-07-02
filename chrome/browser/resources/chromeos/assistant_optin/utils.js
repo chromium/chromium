@@ -70,3 +70,20 @@
     return copy;
   }
 }
+
+/**
+ * Possible native assistant icons
+ * Must be in sync with the corresponding c++ enum
+ * @enum {number}
+ */
+/* #export */ const AssistantNativeIconType = {
+  NONE: 0,
+
+  // Web & App Activity.
+  WAA: 1,
+
+  // Device Applications Information.
+  DA: 2,
+
+  INFO: 3,
+};

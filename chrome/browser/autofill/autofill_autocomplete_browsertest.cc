@@ -20,6 +20,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_async_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -92,7 +93,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         active_browser_->tab_strip_model()->GetActiveWebContents();
     ContentAutofillDriverFactory::FromWebContents(web_contents)
-        ->DriverForFrame(web_contents->GetMainFrame())
+        ->DriverForFrame(web_contents->GetPrimaryMainFrame())
         ->autofill_manager()
         ->client()
         ->HideAutofillPopup(PopupHidingReason::kTabGone);
@@ -205,7 +206,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
                                   MockSuggestionsHandler& handler) {
     autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         1, true, false, ASCIIToUTF16(input_name), ASCIIToUTF16(prefix), "input",
-        handler.GetWeakPtr());
+        handler.GetWeakPtr(), SuggestionsContext());
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();

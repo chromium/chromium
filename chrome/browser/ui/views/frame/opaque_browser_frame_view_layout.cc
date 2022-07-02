@@ -322,8 +322,8 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
     }
   }
 
-  for (const auto& button : buttons_not_shown)
-    HideButton(button);
+  for (const auto& button_id : buttons_not_shown)
+    HideButton(button_id);
 }
 
 void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
@@ -434,22 +434,31 @@ void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
                                                    ButtonAlignment alignment) {
   switch (button_id) {
     case views::FrameButton::kMinimize: {
-      SetViewVisibility(minimize_button_, true);
-      SetBoundsForButton(button_id, minimize_button_, alignment);
+      if (delegate_->CanMinimize()) {
+        SetViewVisibility(minimize_button_, true);
+        SetBoundsForButton(button_id, minimize_button_, alignment);
+      } else {
+        HideButton(button_id);
+      }
       break;
     }
     case views::FrameButton::kMaximize: {
-      // When the window is restored, we show a maximized button; otherwise, we
-      // show a restore button.
-      bool is_restored = !delegate_->IsMaximized() && !delegate_->IsMinimized();
-      views::Button* invisible_button =
-          is_restored ? restore_button_ : maximize_button_;
-      SetViewVisibility(invisible_button, false);
+      if (delegate_->CanMaximize()) {
+        // When the window is restored, we show a maximized button; otherwise,
+        // we show a restore button.
+        bool is_restored =
+            !delegate_->IsMaximized() && !delegate_->IsMinimized();
+        views::Button* invisible_button =
+            is_restored ? restore_button_ : maximize_button_;
+        SetViewVisibility(invisible_button, false);
 
-      views::Button* visible_button =
-          is_restored ? maximize_button_ : restore_button_;
-      SetViewVisibility(visible_button, true);
-      SetBoundsForButton(button_id, visible_button, alignment);
+        views::Button* visible_button =
+            is_restored ? maximize_button_ : restore_button_;
+        SetViewVisibility(visible_button, true);
+        SetBoundsForButton(button_id, visible_button, alignment);
+      } else {
+        HideButton(button_id);
+      }
       break;
     }
     case views::FrameButton::kClose: {

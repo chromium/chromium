@@ -8,10 +8,10 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithms/rsa.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -42,7 +42,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
                             EncryptDecryptFunc encrypt_decrypt_func,
                             const blink::WebCryptoAlgorithm& algorithm,
                             const blink::WebCryptoKey& key,
-                            const CryptoData& data,
+                            base::span<const uint8_t> data,
                             std::vector<uint8_t>* buffer) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -69,7 +69,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
     // calling set0_rsa_oaep_label().
     bssl::UniquePtr<uint8_t> label_copy;
     label_copy.reset(static_cast<uint8_t*>(OPENSSL_malloc(label.size())));
-    memcpy(label_copy.get(), label.Data(), label.size());
+    memcpy(label_copy.get(), label.data(), label.size());
 
     if (1 != EVP_PKEY_CTX_set0_rsa_oaep_label(ctx.get(), label_copy.release(),
                                               label.size())) {
@@ -79,15 +79,15 @@ Status CommonEncryptDecrypt(InitFunc init_func,
 
   // Determine the maximum length of the output.
   size_t outlen = 0;
-  if (!encrypt_decrypt_func(ctx.get(), nullptr, &outlen, data.bytes(),
-                            data.byte_length())) {
+  if (!encrypt_decrypt_func(ctx.get(), nullptr, &outlen, data.data(),
+                            data.size())) {
     return Status::OperationError();
   }
   buffer->resize(outlen);
 
   // Do the actual encryption/decryption.
-  if (!encrypt_decrypt_func(ctx.get(), buffer->data(), &outlen, data.bytes(),
-                            data.byte_length())) {
+  if (!encrypt_decrypt_func(ctx.get(), buffer->data(), &outlen, data.data(),
+                            data.size())) {
     return Status::OperationError();
   }
   buffer->resize(outlen);
@@ -121,7 +121,7 @@ class RsaOaepImplementation : public RsaHashedAlgorithm {
 
   Status Encrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     if (key.GetType() != blink::kWebCryptoKeyTypePublic)
       return Status::ErrorUnexpectedKeyType();
@@ -132,7 +132,7 @@ class RsaOaepImplementation : public RsaHashedAlgorithm {
 
   Status Decrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
       return Status::ErrorUnexpectedKeyType();

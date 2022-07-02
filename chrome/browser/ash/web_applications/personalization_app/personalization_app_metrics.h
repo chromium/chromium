@@ -7,6 +7,7 @@
 
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/personalization_entry_point.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 
 namespace ash {
 namespace personalization_app {
@@ -29,6 +30,8 @@ constexpr char kAmbientModeAnimationThemeHistogramName[] =
     "Ash.Personalization.AmbientMode.AnimationTheme";
 constexpr char kPersonalizationThemeColorModeHistogramName[] =
     "Ash.Personalization.Theme.ColorMode";
+constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =
+    "Ash.Personalization.KeyboardBacklight.Color";
 
 // -----------------------------------------------------------------------------
 // Histograms
@@ -39,6 +42,8 @@ void LogPersonalizationTheme(ColorMode color_mode);
 void LogAmbientModeAnimationTheme(ash::AmbientAnimationTheme animation_theme);
 
 void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point);
+
+void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color);
 
 }  // namespace personalization_app
 }  // namespace ash

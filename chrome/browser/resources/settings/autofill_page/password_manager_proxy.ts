@@ -159,19 +159,14 @@ export interface PasswordManagerProxy {
 
   /**
    * Triggers the dialogue for exporting passwords.
-   * TODO(https://crbug.com/919483): Return a promise instead of taking a
-   * callback argument.
    */
-  exportPasswords(callback: () => void): void;
+  exportPasswords(): Promise<void>;
 
   /**
    * Queries the status of any ongoing export.
-   * TODO(https://crbug.com/919483): Return a promise instead of taking a
-   * callback argument.
    */
-  requestExportProgressStatus(
-      callback: (status: chrome.passwordsPrivate.ExportProgressStatus) => void):
-      void;
+  requestExportProgressStatus():
+      Promise<chrome.passwordsPrivate.ExportProgressStatus>;
 
   /**
    * Add an observer to the export progress.
@@ -346,8 +341,9 @@ export enum PasswordCheckInteraction {
   SHOW_PASSWORD = 6,
   MUTE_PASSWORD = 7,
   UNMUTE_PASSWORD = 8,
+  CHANGE_PASSWORD_AUTOMATICALLY = 9,
   // Must be last.
-  COUNT = 9,
+  COUNT = 10,
 }
 
 /**
@@ -478,14 +474,23 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.importPasswords();
   }
 
-  exportPasswords(callback: () => void) {
-    chrome.passwordsPrivate.exportPasswords(callback);
+  exportPasswords() {
+    return new Promise<void>((resolve, reject) => {
+      chrome.passwordsPrivate.exportPasswords(() => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError.message);
+          return;
+        }
+        resolve();
+      });
+    });
   }
 
-  requestExportProgressStatus(
-      callback:
-          (status: chrome.passwordsPrivate.ExportProgressStatus) => void) {
-    chrome.passwordsPrivate.requestExportProgressStatus(callback);
+  requestExportProgressStatus() {
+    return new Promise<chrome.passwordsPrivate.ExportProgressStatus>(
+        resolve => {
+          chrome.passwordsPrivate.requestExportProgressStatus(resolve);
+        });
   }
 
   addPasswordsFileExportProgressListener(

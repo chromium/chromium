@@ -117,6 +117,8 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
           static_cast<SharedImageBackingOzone*>(backing())->GetNativePixmap();
       gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
           pixmap->GetBufferSize(), buffer_format);
+      if (backing()->color_space().IsValid())
+        gl_image_->SetColorSpace(backing()->color_space());
       gl_image_->InitializeForOverlay(pixmap);
     }
 
@@ -139,6 +141,8 @@ void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
                      context_state_.get(), format(), size(), alpha_type())) {
       DLOG(ERROR) << "Failed to write pixels.";
     }
+  } else if (in_fence) {
+    external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
   }
 }
 
@@ -178,8 +182,8 @@ SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingOzone::ProduceGLTexture(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLTextureOzone::Create(
-      manager, this, tracker, pixmap_, format(), plane_);
+  return SharedImageRepresentationGLTextureOzone::Create(manager, this, tracker,
+                                                         pixmap_, plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
@@ -187,7 +191,7 @@ SharedImageBackingOzone::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   return SharedImageRepresentationGLTexturePassthroughOzone::Create(
-      manager, this, tracker, pixmap_, format(), plane_);
+      manager, this, tracker, pixmap_, plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
@@ -251,7 +255,8 @@ SharedImageBackingOzone::SharedImageBackingOzone(
     uint32_t usage,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
+    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
+    const GpuDriverBugWorkarounds& workarounds)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -264,7 +269,8 @@ SharedImageBackingOzone::SharedImageBackingOzone(
       plane_(plane),
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
-      context_state_(std::move(context_state)) {
+      context_state_(std::move(context_state)),
+      workarounds_(workarounds) {
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY);
   bool used_by_gl =
@@ -386,22 +392,25 @@ bool SharedImageBackingOzone::BeginAccess(
     AccessStream access_stream,
     std::vector<gfx::GpuFenceHandle>* fences,
     bool& need_end_fence) {
-  if (is_write_in_progress_) {
-    DLOG(ERROR) << "Unable to begin read or write access because another write "
-                   "access is in progress";
-    return false;
-  }
+  // Track reads and writes if not being used for concurrent read/writes.
+  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (is_write_in_progress_) {
+      DLOG(ERROR) << "Unable to begin read or write access because another "
+                     "write access is in progress";
+      return false;
+    }
 
-  if (reads_in_progress_ && !readonly) {
-    DLOG(ERROR)
-        << "Unable to begin write access because a read access is in progress";
-    return false;
-  }
+    if (reads_in_progress_ && !readonly) {
+      DLOG(ERROR) << "Unable to begin write access because a read access is in "
+                     "progress ";
+      return false;
+    }
 
-  if (readonly) {
-    ++reads_in_progress_;
-  } else {
-    is_write_in_progress_ = true;
+    if (readonly) {
+      ++reads_in_progress_;
+    } else {
+      is_write_in_progress_ = true;
+    }
   }
 
   // We don't wait for read-after-read.
@@ -417,11 +426,25 @@ bool SharedImageBackingOzone::BeginAccess(
     read_fences_.clear();
   }
 
-  // If current stream is different than last_write_stream_ then wait on that
-  // stream's write_fence_.
-  if (last_write_stream_ != access_stream && !write_fence_.is_null()) {
-    // For write access we expect new write_fence_ so we can move the old fence
-    // here.
+  // Always wait on an `external_write_fence_` if present.
+  if (!external_write_fence_.is_null()) {
+    DCHECK(write_fence_.is_null());  // `write_fence_` should be null.
+    // For write access we expect new `write_fence_` so we can move the
+    // old fence here.
+    if (!readonly)
+      fences->emplace_back(std::move(external_write_fence_));
+    else
+      fences->emplace_back(external_write_fence_.Clone());
+  }
+
+  // If current stream is different than `last_write_stream_` then wait on that
+  // stream's `write_fence_` (except on ARM Mali boards for ChromeOS).
+  if (!write_fence_.is_null() && (workarounds_.add_fence_for_same_gl_context ||
+                                  last_write_stream_ != access_stream)) {
+    DCHECK(external_write_fence_
+               .is_null());  // `external_write_fence_` should be null.
+    // For write access we expect new `write_fence_` so we can move the old
+    // fence here.
     if (!readonly)
       fences->emplace_back(std::move(write_fence_));
     else
@@ -443,8 +466,20 @@ bool SharedImageBackingOzone::BeginAccess(
         << "Unexpected write stream: " << static_cast<int>(access_stream)
         << ", " << static_cast<int>(last_write_stream_) << ", "
         << write_streams_count_;
-    // Always need end fence for writes.
-    need_end_fence = true;
+    // Always need end fence for multiple write streams. For single write stream
+    // need an end fence for all usages except for raster using delegated
+    // compositing. If the image will be used for delegated compositing, no need
+    // to put fences at this moment as there are many raster tasks in the CPU gl
+    // context that end up creating a big number of fences, which may have some
+    // performance overhead depending on the gpu. Instead, when these images
+    // will be scheduled as overlays, a single fence will be created.
+    // TODO(crbug.com/1254033): this block of code shall be removed after cc is
+    // able to set a single (duplicated) fence for bunch of tiles instead of
+    // having the SI framework creating fences for each single message when
+    // write access ends.
+    need_end_fence =
+        (write_streams_count_ > 1) ||
+        !(usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
   }
 
   return true;
@@ -453,12 +488,15 @@ bool SharedImageBackingOzone::BeginAccess(
 void SharedImageBackingOzone::EndAccess(bool readonly,
                                         AccessStream access_stream,
                                         gfx::GpuFenceHandle fence) {
-  if (readonly) {
-    DCHECK_GT(reads_in_progress_, 0u);
-    --reads_in_progress_;
-  } else {
-    DCHECK(is_write_in_progress_);
-    is_write_in_progress_ = false;
+  // Track reads and writes if not being used for concurrent read/writes.
+  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (readonly) {
+      DCHECK_GT(reads_in_progress_, 0u);
+      --reads_in_progress_;
+    } else {
+      DCHECK(is_write_in_progress_);
+      is_write_in_progress_ = false;
+    }
   }
 
   if (readonly) {

@@ -45,6 +45,7 @@ enum AssistantViewID {
 
   // UIs in UiElementContainer
   kOverflowIndicator,
+  kAshWebView,
 
   // UIs in AssistantOnboardingSuggestionView
   kAssistantOnboardingSuggestionViewLabel,

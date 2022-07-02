@@ -12,11 +12,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace feed {
 
-class FeedUI : public ui::MojoBubbleWebUIController,
+class FeedUI : public ui::UntrustedBubbleWebUIController,
                public feed::mojom::FeedSidePanelHandlerFactory {
  public:
   explicit FeedUI(content::WebUI* web_ui);

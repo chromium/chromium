@@ -93,11 +93,9 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         createToolbarView();
         createThinWebView();
         mMediator.setupSheetWebContents(mThinWebView, mToolbarModel);
-        mSheetContent = new MerchantTrustBottomSheetContent(mToolbarView.getView(),
-                mThinWebView.getView(), () -> mMediator.getVerticalScrollOffset(), () -> {
-                    closeSheet();
-                    return true;
-                });
+        mSheetContent =
+                new MerchantTrustBottomSheetContent(mToolbarView.getView(), mThinWebView.getView(),
+                        () -> mMediator.getVerticalScrollOffset(), this::closeSheet);
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             private int mCloseReason;

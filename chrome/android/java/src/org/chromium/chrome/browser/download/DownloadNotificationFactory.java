@@ -49,7 +49,6 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.PendingState;
-import org.chromium.url.GURL;
 
 /**
  * Creates and updates notifications related to downloads.
@@ -299,7 +298,8 @@ public final class DownloadNotificationFactory {
                         intent.putExtra(NotificationConstants.EXTRA_NOTIFICATION_ID,
                                 downloadUpdate.getNotificationId());
                         MediaViewerUtils.setOriginalUrlAndReferralExtraToIntent(intent,
-                                downloadUpdate.getOriginalUrl(), downloadUpdate.getReferrer());
+                                downloadUpdate.getOriginalUrl().getSpec(),
+                                downloadUpdate.getReferrer().getSpec());
                     } else {
                         intent = buildActionIntent(
                                 context, ACTION_DOWNLOAD_OPEN, downloadUpdate.getContentId(), null);
@@ -365,7 +365,7 @@ public final class DownloadNotificationFactory {
         } else if (downloadUpdate.getShouldPromoteOrigin()) {
             // Always show the origin URL if available (for normal profiles).
             String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(
-                    new GURL(downloadUpdate.getOriginalUrl()));
+                    downloadUpdate.getOriginalUrl());
             if (formattedUrl != null) setSubText(builder, formattedUrl);
         }
 

@@ -151,8 +151,10 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1288117): Flakes on macOS.
+#if BUILDFLAG(IS_MAC) || defined(THREAD_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1288117, crbug.com/1336124): Flakes on macOS and various
+// MSAN/TSAN/ASAN builders.
 #define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
 #else
 #define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot

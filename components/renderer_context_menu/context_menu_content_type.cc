@@ -125,6 +125,9 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
     case ITEM_GROUP_COPY:
       return !params_.is_editable && has_selection;
 
+    case ITEM_GROUP_PARTIAL_TRANSLATE:
+      return has_selection;
+
     case ITEM_GROUP_EXISTING_LINK_TO_TEXT:
       return params_.opened_from_highlight;
 
@@ -158,6 +161,10 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
     case ITEM_GROUP_PASSWORD:
       return params_.input_field_type ==
              blink::mojom::ContextMenuDataInputFieldType::kPassword;
+
+    case ITEM_GROUP_AUTOFILL:
+      return params_.input_field_type !=
+             blink::mojom::ContextMenuDataInputFieldType::kNone;
 
     default:
       NOTREACHED();

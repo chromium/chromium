@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/pnacl_translation_cache.h"
@@ -49,7 +50,7 @@ class FileProxy {
 
  private:
   std::unique_ptr<base::File> file_;
-  PnaclHost* host_;
+  raw_ptr<PnaclHost> host_;
 };
 
 FileProxy::FileProxy(std::unique_ptr<base::File> file, PnaclHost* host)

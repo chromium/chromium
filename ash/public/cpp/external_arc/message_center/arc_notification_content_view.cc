@@ -486,6 +486,15 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
       }
     }
   }
+
+  // Maybe this if-branch is not needed but if the refresh flag is disabled we
+  // don't have to call |SchedulePaint()| because the notification background is
+  // opaque. Let's keep this if-branch not to break any existing behavior.
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    // Setting/resetting |surface_| changes the visibility of the snapshot so we
+    // here request to paint.
+    SchedulePaint();
+  }
 }
 
 void ArcNotificationContentView::UpdatePreferredSize() {
@@ -693,9 +702,6 @@ void ArcNotificationContentView::Layout() {
 }
 
 void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
-  if (ash::features::IsNotificationsRefreshEnabled())
-    return;
-
   views::NativeViewHost::OnPaint(canvas);
 
   SkScalar radii[8] = {top_radius_,    top_radius_,      // top-left
@@ -721,7 +727,9 @@ void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
     // area out of the surface.
     // TODO: This can be removed once both ARC and Chrome notifications have
     // smooth expansion animations.
-    canvas->DrawColor(SK_ColorWHITE);
+    canvas->DrawColor(ash::features::IsNotificationsRefreshEnabled()
+                          ? SK_ColorTRANSPARENT
+                          : SK_ColorWHITE);
   }
 }
 

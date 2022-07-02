@@ -8,7 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-#include "base/strings/sys_string_conversions.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -66,8 +65,10 @@ void FollowJavaScriptFeature::HandleResponse(
     NSMutableArray* rss_links = [[NSMutableArray alloc] init];
     for (const auto& link : response->GetListDeprecated()) {
       if (link.is_string()) {
-        [rss_links addObject:[NSURL URLWithString:base::SysUTF8ToNSString(
-                                                      *link.GetIfString())]];
+        NSURL* url = net::NSURLWithGURL(GURL(link.GetString()));
+        if (url) {
+          [rss_links addObject:url];
+        }
       }
     }
     std::move(callback).Run([[FollowWebPageURLs alloc]

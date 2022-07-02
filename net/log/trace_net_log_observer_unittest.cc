@@ -47,29 +47,30 @@ struct TraceEntryInfo {
   std::string source_type;
 };
 
-TraceEntryInfo GetTraceEntryInfoFromValue(const base::Value& value) {
+TraceEntryInfo GetTraceEntryInfoFromValue(const base::Value::Dict& value) {
   TraceEntryInfo info;
-  if (const std::string* cat = value.FindStringKey("cat")) {
+  if (const std::string* cat = value.FindString("cat")) {
     info.category = *cat;
   } else {
     ADD_FAILURE() << "Missing 'cat'";
   }
-  if (const std::string* id = value.FindStringKey("id")) {
+  if (const std::string* id = value.FindString("id")) {
     info.id = *id;
   } else {
     ADD_FAILURE() << "Missing 'id'";
   }
-  if (const std::string* ph = value.FindStringKey("ph")) {
+  if (const std::string* ph = value.FindString("ph")) {
     info.phase = *ph;
   } else {
     ADD_FAILURE() << "Missing 'ph'";
   }
-  if (const std::string* name = value.FindStringKey("name")) {
+  if (const std::string* name = value.FindString("name")) {
     info.name = *name;
   } else {
     ADD_FAILURE() << "Missing 'name'";
   }
-  if (const std::string* type = value.FindStringPath("args.source_type")) {
+  if (const std::string* type =
+          value.FindStringByDottedPath("args.source_type")) {
     info.source_type = *type;
   } else {
     ADD_FAILURE() << "Missing 'args.source_type'";
@@ -111,7 +112,6 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     DCHECK(!tracelog->IsEnabled());
     trace_buffer_.SetOutputCallback(json_output_.GetCallback());
     trace_net_log_observer_ = std::make_unique<TraceNetLogObserver>();
-    trace_events_ = std::make_unique<base::ListValue>();
   }
 
   ~TraceNetLogObserverTest() override {
@@ -122,19 +122,19 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       base::RunLoop* run_loop,
       const scoped_refptr<base::RefCountedString>& events_str,
       bool has_more_events) {
-    DCHECK(trace_events_->GetListDeprecated().empty());
+    DCHECK(trace_events_.empty());
     trace_buffer_.Start();
     trace_buffer_.AddFragment(events_str->data());
     trace_buffer_.Finish();
 
-    std::unique_ptr<base::Value> trace_value;
-    trace_value = base::JSONReader::ReadDeprecated(json_output_.json_output,
-                                                   base::JSON_PARSE_RFC);
+    absl::optional<base::Value> trace_value;
+    trace_value =
+        base::JSONReader::Read(json_output_.json_output, base::JSON_PARSE_RFC);
 
     ASSERT_TRUE(trace_value) << json_output_.json_output;
     ASSERT_TRUE(trace_value->is_list());
 
-    trace_events_ = FilterNetLogTraceEvents(std::move(trace_value));
+    trace_events_ = FilterNetLogTraceEvents(trace_value->GetList());
 
     if (!has_more_events)
       run_loop->Quit();
@@ -153,18 +153,17 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     trace_net_log_observer_.reset(trace_net_log_observer);
   }
 
-  static std::unique_ptr<base::Value> FilterNetLogTraceEvents(
-      std::unique_ptr<base::Value> trace_events) {
-    std::unique_ptr<base::Value> filtered_trace_events =
-        std::make_unique<base::Value>(base::Value::Type::LIST);
+  static base::Value::List FilterNetLogTraceEvents(
+      const base::Value::List& trace_events) {
+    base::Value::List filtered_trace_events;
 
-    for (size_t i = 0; i < trace_events->GetListDeprecated().size(); i++) {
-      const base::Value* dict = &trace_events->GetListDeprecated()[i];
-      if (!dict->is_dict()) {
+    for (const auto& event : trace_events) {
+      if (!event.is_dict()) {
         ADD_FAILURE() << "Unexpected non-dictionary event in trace_events";
         continue;
       }
-      const std::string* category = dict->FindStringPath("cat");
+      const std::string* category =
+          event.GetDict().FindStringByDottedPath("cat");
       if (!category) {
         ADD_FAILURE()
             << "Unexpected item without a category field in trace_events";
@@ -172,16 +171,14 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       }
       if (*category != kNetLogTracingCategory)
         continue;
-      filtered_trace_events->Append(dict->Clone());
+      filtered_trace_events.Append(event.Clone());
     }
     return filtered_trace_events;
   }
 
-  base::Value* trace_events() const { return trace_events_.get(); }
+  const base::Value::List& trace_events() const { return trace_events_; }
 
-  size_t trace_events_size() const {
-    return trace_events_->GetListDeprecated().size();
-  }
+  size_t trace_events_size() const { return trace_events_.size(); }
 
   RecordingNetLogObserver* net_log_observer() { return &net_log_observer_; }
 
@@ -190,7 +187,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
   }
 
  private:
-  std::unique_ptr<base::Value> trace_events_;
+  base::Value::List trace_events_;
   base::trace_event::TraceResultBuffer trace_buffer_;
   base::trace_event::TraceResultBuffer::SimpleOutput json_output_;
   RecordingNetLogObserver net_log_observer_;
@@ -245,18 +242,16 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
   EXPECT_EQ(3u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
+  const base::Value* item1 = &trace_events()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
-  ;
+  const base::Value* item2 = &trace_events()[1];
   ASSERT_TRUE(item2->is_dict());
-  const base::Value* item3 = &trace_events()->GetListDeprecated()[2];
-  ;
+  const base::Value* item3 = &trace_events()[2];
   ASSERT_TRUE(item3->is_dict());
 
-  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
-  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(*item2);
-  TraceEntryInfo actual_item3 = GetTraceEntryInfoFromValue(*item3);
+  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(item1->GetDict());
+  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(item2->GetDict());
+  TraceEntryInfo actual_item3 = GetTraceEntryInfoFromValue(item3->GetDict());
   EXPECT_EQ(kNetLogTracingCategory, actual_item1.category);
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
@@ -300,13 +295,13 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
   auto entries = net_log_observer()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(2u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
+  const base::Value* item1 = &trace_events()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
+  const base::Value* item2 = &trace_events()[1];
   ASSERT_TRUE(item2->is_dict());
 
-  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
-  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(*item2);
+  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(item1->GetDict());
+  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(item2->GetDict());
   EXPECT_EQ(kNetLogTracingCategory, actual_item1.category);
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
@@ -340,10 +335,10 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileTracing) {
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(1u, trace_events_size());
 
-  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
+  const base::Value* item1 = &trace_events()[0];
   ASSERT_TRUE(item1->is_dict());
 
-  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
+  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(item1->GetDict());
   EXPECT_EQ(kNetLogTracingCategory, actual_item1.category);
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
   EXPECT_EQ(std::string(1, TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT),
@@ -420,13 +415,13 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   auto entries = net_log_observer()->GetEntries();
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(2u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
+  const base::Value* item1 = &trace_events()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
+  const base::Value* item2 = &trace_events()[1];
   ASSERT_TRUE(item2->is_dict());
 
-  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
-  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(*item2);
+  TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(item1->GetDict());
+  TraceEntryInfo actual_item2 = GetTraceEntryInfoFromValue(item2->GetDict());
 
   EXPECT_EQ(kNetLogTracingCategory, actual_item1.category);
   EXPECT_EQ(base::StringPrintf("0x%x", entries[0].source.id), actual_item1.id);
@@ -446,13 +441,15 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   EXPECT_EQ(NetLog::SourceTypeToString(entries[1].source.type),
             actual_item2.source_type);
 
-  const std::string* item1_params = item1->FindStringPath("args.params.foo");
+  const std::string* item1_params =
+      item1->GetDict().FindStringByDottedPath("args.params.foo");
   ASSERT_TRUE(item1_params);
   EXPECT_EQ("bar", *item1_params);
 
-  const base::Value* item2_params = item2->FindDictPath("args.params");
+  const base::Value::Dict* item2_params =
+      item2->GetDict().FindDictByDottedPath("args.params");
   ASSERT_TRUE(item2_params);
-  EXPECT_TRUE(item2_params->DictEmpty());
+  EXPECT_TRUE(item2_params->empty());
 }
 
 TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {

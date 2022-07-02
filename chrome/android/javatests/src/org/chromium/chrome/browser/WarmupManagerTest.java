@@ -29,8 +29,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -69,7 +69,7 @@ public class WarmupManagerTest {
     }
 
     @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private WarmupManager mWarmupManager;
     private Context mContext;
@@ -129,7 +129,7 @@ public class WarmupManagerTest {
     @Test
     @SmallTest
     public void testCreateAndTakeSpareRenderer() {
-        final AtomicBoolean isRenderFrameCreated = new AtomicBoolean();
+        final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -140,13 +140,13 @@ public class WarmupManagerTest {
             Assert.assertNotNull(webContents);
             Assert.assertFalse(mWarmupManager.hasSpareWebContents());
 
-            if (webContents.getMainFrame().isRenderFrameCreated()) {
-                isRenderFrameCreated.set(true);
+            if (webContents.getMainFrame().isRenderFrameLive()) {
+                isRenderFrameLive.set(true);
             }
             WebContentsObserver observer = new WebContentsObserver(webContents) {
                 @Override
                 public void renderFrameCreated(GlobalRenderFrameHostId id) {
-                    isRenderFrameCreated.set(true);
+                    isRenderFrameLive.set(true);
                 }
             };
             webContents.addObserver(observer);
@@ -154,7 +154,7 @@ public class WarmupManagerTest {
             webContentsReference.set(webContents);
         });
         CriteriaHelper.pollUiThread(
-                () -> isRenderFrameCreated.get(), "Spare renderer is not initialized");
+                () -> isRenderFrameLive.get(), "Spare renderer is not initialized");
         PostTask.runOrPostTask(
                 UiThreadTaskTraits.DEFAULT, () -> webContentsReference.get().destroy());
     }

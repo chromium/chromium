@@ -20,7 +20,7 @@ SelectToSpeakNodeUtilsUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
       const nodeWithoutRoot1 = {root: null};
       const nodeWithoutRoot2 = {root: null, state: {invisible: true}};
@@ -69,7 +69,7 @@ SYNC_TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityStateWithRootWebArea',
     function() {
       // Currently nodes aren't actually marked 'invisible', so we need to
@@ -120,7 +120,7 @@ SYNC_TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
+AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   const rect = {left: 0, top: 0, width: 100, height: 100};
   const rootNode = {
     root: {},
@@ -254,7 +254,7 @@ SYNC_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
   assertEquals(container2, result[0]);
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'findAllMatchingWithInputs', function() {
       const rect = {left: 0, top: 0, width: 100, height: 100};
       const rootNode = {
@@ -280,7 +280,7 @@ SYNC_TEST_F(
       assertEquals(checkbox, result[0]);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedNoChildren', function() {
       const node = {name: 'Hello, world', children: []};
@@ -293,7 +293,7 @@ SYNC_TEST_F(
       assertEquals(6, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedSimpleChildren', function() {
       const child1 =
@@ -329,7 +329,7 @@ SYNC_TEST_F(
       assertEquals(3, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedComplexChildren', function() {
       const child1 =
@@ -402,7 +402,7 @@ SYNC_TEST_F(
       assertEquals(0, result.offset);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortSvgNodesByReadingOrder', function() {
       const svgRootNode = {role: 'svgRoot'};
       const gNode1 = {
@@ -441,7 +441,7 @@ SYNC_TEST_F(
       assertEquals(nodes[2].name, 'three');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'sortNodesByReadingOrderMultipleSVGs',
     function() {
       const textNode1 = {role: 'staticText', name: 'Text Node 1'};
@@ -489,7 +489,7 @@ SYNC_TEST_F(
       assertEquals(nodes[6].name, 'Text Node 3');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'GetAllNodesInParagraph', function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -536,7 +536,7 @@ SYNC_TEST_F(
       assertEquals(result[2], text5);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getPositionFromNodeGroup', function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51. The first and the
@@ -604,7 +604,7 @@ SYNC_TEST_F(
       assertEquals(testPosition.offset, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeUtilsUnitTest', 'getDirectionBetweenPositions',
     function() {
       // The nodeGroup has four inline text nodes and one static text node.

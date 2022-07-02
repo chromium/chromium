@@ -14,7 +14,6 @@
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
-#include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
@@ -54,7 +53,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
       const std::string& mime_type,
-      absl::optional<DownloadSchedule> download_schedule,
       DownloadInterruptReason interrupt_reason)>;
   // Request determination of the download target from the delegate.
   virtual void DetermineDownloadTarget(DownloadItemImpl* download,

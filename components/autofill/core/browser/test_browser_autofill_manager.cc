@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -46,6 +47,10 @@ void TestBrowserAutofillManager::UploadFormData(
     BrowserAutofillManager::UploadFormData(submitted_form, observed_submission);
 }
 
+void TestBrowserAutofillManager::ScheduleRefill(const FormData& form) {
+  TriggerRefillForTest(form);
+}
+
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission) {
@@ -80,10 +85,9 @@ void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),
                 possible_types.size());
-      for (auto it = expected_submitted_field_types_[i].begin();
-           it != expected_submitted_field_types_[i].end(); ++it) {
-        EXPECT_TRUE(possible_types.count(*it))
-            << "Expected type: " << AutofillType(*it).ToString();
+      for (auto it : expected_submitted_field_types_[i]) {
+        EXPECT_TRUE(possible_types.count(it))
+            << "Expected type: " << AutofillType(it).ToString();
       }
     }
   }
@@ -96,7 +100,8 @@ int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
-  return MakeFrontendID(credit_card_guid, std::string());
+  return suggestion_generator()->MakeFrontendId(credit_card_guid,
+                                                std::string());
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
@@ -147,6 +152,18 @@ void TestBrowserAutofillManager::ClearFormStructures() {
 
 const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
   return submitted_form_signature_;
+}
+
+void TestBrowserAutofillManager::OnAskForValuesToFillTest(
+    const FormData& form,
+    const FormFieldData& field,
+    int query_id,
+    const gfx::RectF& bounding_box,
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
+  BrowserAutofillManager::OnAskForValuesToFill(
+      query_id, form, field, bounding_box, autoselect_first_suggestion,
+      touch_to_fill_eligible);
 }
 
 void TestBrowserAutofillManager::SetAutofillProfileEnabled(

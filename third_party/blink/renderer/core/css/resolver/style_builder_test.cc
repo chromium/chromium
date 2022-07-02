@@ -41,7 +41,7 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
       style->SetWritingMode(WritingMode::kVerticalLr);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               StyleRecalcContext(),
+                               nullptr /* StyleRecalcContext */,
                                StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
@@ -75,7 +75,7 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
       style->SetTextOrientation(ETextOrientation::kUpright);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               StyleRecalcContext(),
+                               nullptr /* StyleRecalcContext */,
                                StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
@@ -91,7 +91,7 @@ TEST_F(StyleBuilderTest, HasExplicitInheritance) {
   auto parent_style = GetDocument().GetStyleResolver().CreateComputedStyle();
   auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
-                           StyleRecalcContext(),
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style.get()));
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
@@ -127,7 +127,7 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
   scoped_refptr<ComputedStyle> parent_style =
       GetDocument().GetStyleResolver().CreateComputedStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
-                           StyleRecalcContext(),
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style.get()));
 
   scoped_refptr<ComputedStyle> style1;

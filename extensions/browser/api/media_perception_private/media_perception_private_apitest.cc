@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, MediaPerception) {
   catcher.RestrictToBrowserContext(browser_context());
 
   ExtensionTestMessageListener handler_registered_listener(
-      "mediaPerceptionListenerSet", false);
+      "mediaPerceptionListenerSet");
   ASSERT_TRUE(LoadApp("media_perception_private/media_perception")) << message_;
   ASSERT_TRUE(handler_registered_listener.WaitUntilSatisfied());
 

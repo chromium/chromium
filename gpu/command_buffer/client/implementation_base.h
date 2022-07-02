@@ -90,8 +90,6 @@ class GLES2_IMPL_EXPORT ImplementationBase
   bool HasGrContextSupport() const override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
-  void SetFrameRate(float frame_rate) override;
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

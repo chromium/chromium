@@ -25,11 +25,15 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace ash {
 
 SystemExtensionsInstallManager::SystemExtensionsInstallManager(Profile* profile)
     : profile_(profile) {
@@ -158,6 +162,8 @@ void SystemExtensionsInstallManager::RegisterServiceWorker(
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
 
+  // TODO(ortuno): Remove after fixing flakiness.
+  DLOG(ERROR) << "Registering service worker";
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
   worker_context->RegisterServiceWorker(
@@ -175,6 +181,59 @@ void SystemExtensionsInstallManager::OnRegisterServiceWorker(
 
   for (auto& observer : observers_)
     observer.OnServiceWorkerRegistered(system_extension_id, status_code);
+
+  auto it = system_extensions_.find(system_extension_id);
+  if (it == system_extensions_.end()) {
+    LOG(ERROR) << "Tried to start service worker for non-existent extension";
+    return;
+  }
+
+  DLOG(ERROR) << "Starting service worker";
+
+  const SystemExtension& system_extension = it->second;
+  const GURL& scope = system_extension.base_url;
+
+  // TODO(b/221123297): Only dispatch `start` event for window manager
+  // system extensions. This is OK for now, because we only have window
+  // manager extensions.
+  auto* worker_context =
+      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
+  worker_context->StartWorkerForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      base::BindOnce(
+          &SystemExtensionsInstallManager::DispatchWindowManagerStartEvent,
+          weak_ptr_factory_.GetWeakPtr(), system_extension_id),
+      base::BindOnce([](blink::ServiceWorkerStatusCode status_code) {
+        LOG(ERROR) << "Failed to start service worker: "
+                   << blink::ServiceWorkerStatusToString(status_code);
+      }));
+}
+
+void SystemExtensionsInstallManager::DispatchWindowManagerStartEvent(
+    const SystemExtensionId& system_extension_id,
+    int64_t version_id,
+    int process_id,
+    int thread_id) {
+  auto it = system_extensions_.find(system_extension_id);
+  if (it == system_extensions_.end()) {
+    LOG(ERROR) << "Tried to dispatch event to service worker for "
+               << "non-existent extension";
+    return;
+  }
+
+  auto* worker_context =
+      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
+  if (!worker_context->IsLiveRunningServiceWorker(version_id)) {
+    LOG(ERROR) << "Service Worker version no longer running.";
+    return;
+  }
+  auto& remote_interfaces = worker_context->GetRemoteInterfaces(version_id);
+
+  DLOG(ERROR) << "Dispatching start event";
+
+  mojo::Remote<blink::mojom::CrosWindowManagementStartObserver> observer;
+  remote_interfaces.GetInterface(observer.BindNewPipeAndPassReceiver());
+  observer->DispatchStartEvent();
 }
 
 bool SystemExtensionsInstallManager::IOHelper::CopyExtensionAssets(
@@ -219,3 +278,5 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionByURL(
   }
   return nullptr;
 }
+
+}  // namespace ash

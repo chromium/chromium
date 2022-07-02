@@ -41,7 +41,7 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
-// Closes the managed account dialog, if |fakeIdentity| is a managed account.
+// Closes the managed account dialog, if `fakeIdentity` is a managed account.
 void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   if (![fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
     return;
@@ -258,7 +258,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 + (void)tapPrimarySignInButtonInRecentTabs {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
+      tapToolsMenuButton:chrome_test_util::RecentTabsDestinationButton()];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]

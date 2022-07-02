@@ -45,7 +45,7 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelper* get() const { return session_metrics_helper_; }
 
  private:
-  raw_ptr<SessionMetricsHelper> session_metrics_helper_;
+  raw_ptr<SessionMetricsHelper, DanglingUntriaged> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features
@@ -120,7 +120,7 @@ SessionMetricsHelper::StartInlineSession(
       session_id,
       std::make_unique<WebXRSessionTracker>(
           std::make_unique<ukm::builders::XR_WebXR_Session>(
-              web_contents()->GetMainFrame()->GetPageUkmSourceId())));
+              web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId())));
   auto* tracker = result.first->second.get();
 
   ReportInitialSessionData(tracker, session_options, enabled_features);
@@ -159,7 +159,7 @@ SessionMetricsHelper::StartImmersiveSession(
   // Plumb explicit RenderFrameHost reference from VRSessionImpl.
   webxr_immersive_session_tracker_ = std::make_unique<WebXRSessionTracker>(
       std::make_unique<ukm::builders::XR_WebXR_Session>(
-          web_contents()->GetMainFrame()->GetPageUkmSourceId()));
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
   // TODO(https://crbug.com/1056930): Consider renaming the timers to something
   // that indicates both that these also record AR, and that these are no longer

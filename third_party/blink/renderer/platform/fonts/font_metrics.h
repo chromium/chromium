@@ -39,19 +39,6 @@ class FontMetrics {
   DISALLOW_NEW();
 
  public:
-  FontMetrics()
-      : units_per_em_(kGDefaultUnitsPerEm),
-        float_ascent_(0),
-        float_descent_(0),
-        line_gap_(0),
-        line_spacing_(0),
-        x_height_(0),
-        zero_width_(0),
-        int_ascent_(0),
-        int_descent_(0),
-        has_x_height_(false),
-        has_zero_width_(false) {}
-
   unsigned UnitsPerEm() const { return units_per_em_; }
   void SetUnitsPerEm(unsigned units_per_em) { units_per_em_ = units_per_em; }
 
@@ -157,6 +144,16 @@ class FontMetrics {
     has_zero_width_ = has_zero_width;
   }
 
+  // The approximated advance of fullwidth ideographic characters. This is
+  // currently used to support the [`ic` unit].
+  // [`ic` unit]: https://drafts.csswg.org/css-values-4/#ic
+  absl::optional<float> IdeographicFullWidth() const {
+    return ideographic_full_width_;
+  }
+  void SetIdeographicFullWidth(absl::optional<float> width) {
+    ideographic_full_width_ = width;
+  }
+
   absl::optional<float> UnderlineThickness() const {
     return underline_thickness_;
   }
@@ -198,6 +195,7 @@ class FontMetrics {
     line_gap_ = 0;
     line_spacing_ = 0;
     x_height_ = 0;
+    ideographic_full_width_.reset();
     has_x_height_ = false;
     underline_thickness_.reset();
     underline_position_.reset();
@@ -206,19 +204,20 @@ class FontMetrics {
   PLATFORM_EXPORT float FloatAscentInternal(FontBaseline baseline_type) const;
   PLATFORM_EXPORT int IntAscentInternal(FontBaseline baseline_type) const;
 
-  unsigned units_per_em_;
-  float float_ascent_;
-  float float_descent_;
-  float line_gap_;
-  float line_spacing_;
-  float x_height_;
-  float zero_width_;
-  absl::optional<float> underline_thickness_ = absl::nullopt;
-  absl::optional<float> underline_position_ = absl::nullopt;
-  int int_ascent_;
-  int int_descent_;
-  bool has_x_height_;
-  bool has_zero_width_;
+  unsigned units_per_em_ = kGDefaultUnitsPerEm;
+  float float_ascent_ = 0;
+  float float_descent_ = 0;
+  float line_gap_ = 0;
+  float line_spacing_ = 0;
+  float x_height_ = 0;
+  float zero_width_ = 0;
+  absl::optional<float> ideographic_full_width_;
+  absl::optional<float> underline_thickness_;
+  absl::optional<float> underline_position_;
+  int int_ascent_ = 0;
+  int int_descent_ = 0;
+  bool has_x_height_ = false;
+  bool has_zero_width_ = false;
 };
 
 }  // namespace blink

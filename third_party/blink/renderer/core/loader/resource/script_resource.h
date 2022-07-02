@@ -118,7 +118,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Gets the script streamer from the ScriptResource, clearing the resource's
   // streamer so that it cannot be used twice.
-  ScriptStreamer* TakeStreamer();
+  ResourceScriptStreamer* TakeStreamer();
 
   ScriptStreamer::NotStreamingReason NoStreamerReason() const {
     return no_streamer_reason_;
@@ -241,7 +241,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   ParkableString source_text_;
 
-  Member<ScriptStreamer> streamer_;
+  Member<ResourceScriptStreamer> streamer_;
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;
   StreamingState streaming_state_ = StreamingState::kWaitingForDataPipe;

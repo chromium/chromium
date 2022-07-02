@@ -57,7 +57,8 @@ bool WebGPUTest::WebGPUSupported() const {
 }
 
 bool WebGPUTest::WebGPUSharedImageSupported() const {
-  // Currently WebGPUSharedImage is only implemented on Mac, Linux and Windows
+  // Currently WebGPUSharedImage is only implemented on Mac, Linux, Windows
+  // and ChromeOS.
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_WIN)) &&                                                 \
     BUILDFLAG(USE_DAWN)
@@ -105,18 +106,15 @@ void WebGPUTest::Initialize(const Options& options) {
   attributes.enable_gles2_interface = false;
   attributes.context_type = CONTEXT_TYPE_WEBGPU;
 
-  static constexpr GpuMemoryBufferManager* memory_buffer_manager = nullptr;
 #if BUILDFLAG(IS_MAC)
   ImageFactory* image_factory = &image_factory_;
 #else
   static constexpr ImageFactory* image_factory = nullptr;
 #endif
-  static constexpr GpuChannelManagerDelegate* channel_manager = nullptr;
   context_ = std::make_unique<WebGPUInProcessContext>();
   ContextResult result =
       context_->Initialize(gpu_service_holder_->task_executor(), attributes,
-                           options.shared_memory_limits, memory_buffer_manager,
-                           image_factory, channel_manager);
+                           options.shared_memory_limits, image_factory);
   ASSERT_EQ(result, ContextResult::kSuccess);
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(

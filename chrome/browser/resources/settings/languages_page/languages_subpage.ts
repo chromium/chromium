@@ -24,12 +24,12 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
+import '../icons.html.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
@@ -329,7 +329,8 @@ export class SettingsLanguagesSubpageElement extends
    * @return 'target' if |languageCode| matches the target language,
    *     'non-target' otherwise.
    */
-  isTranslationTarget_(languageCode: string, translateTarget: string): string {
+  private isTranslationTarget_(languageCode: string, translateTarget: string):
+      string {
     if (this.languageHelper.convertLanguageCodeForTranslate(languageCode) ===
         translateTarget) {
       return 'target';
@@ -415,6 +416,8 @@ export class SettingsLanguagesSubpageElement extends
         this.detailLanguage_!.language.code);
     this.languageHelper.moveLanguageToFront(
         this.detailLanguage_!.language.code);
+    LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
+        LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
 
     this.closeMenuSoon_();
   }
@@ -487,7 +490,7 @@ export class SettingsLanguagesSubpageElement extends
    * Returns "complex" if the menu includes checkboxes, which should change
    * the spacing of items and show a separator in the menu.
    */
-  getMenuClass_(translateEnabled: boolean): string {
+  private getMenuClass_(translateEnabled: boolean): string {
     if (translateEnabled || isWindows) {
       return 'complex';
     }

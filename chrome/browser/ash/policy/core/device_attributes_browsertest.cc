@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -26,23 +26,6 @@ using testing::InvokeWithoutArgs;
 namespace policy {
 
 namespace {
-
-void WaitUntilPolicyLoaded() {
-  DeviceCloudPolicyStoreAsh* policy_store = g_browser_process->platform_part()
-                                                ->browser_policy_connector_ash()
-                                                ->GetDeviceCloudPolicyManager()
-                                                ->device_store();
-  if (!policy_store->has_policy()) {
-    MockCloudPolicyStoreObserver observer;
-    base::RunLoop loop;
-    policy_store->AddObserver(&observer);
-    EXPECT_CALL(observer, OnStoreLoaded(policy_store))
-        .Times(1)
-        .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit));
-    loop.Run();
-    policy_store->RemoveObserver(&observer);
-  }
-}
 
 constexpr char kFakeDomain[] = "fake.domain.acme.corp";
 constexpr char kFakeDisplayDomain[] = "acme.corp";
@@ -100,8 +83,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
       kFakeLogoURL);
   device_policy()->policy_data().set_market_segment(
       enterprise_management::PolicyData_MarketSegment_ENROLLED_ENTERPRISE);
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   // Verify returned attributes correspond to what was set.
   EXPECT_EQ(kFakeDomain, attributes_.GetEnterpriseEnrollmentDomain());

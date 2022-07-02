@@ -95,6 +95,9 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   output->is_history_navigation =
       input.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK;
   output->devtools_stack_id = input.devtools_stack_id;
+  if (input.trust_token_params) {
+    output->trust_token_params = input.trust_token_params->Clone();
+  }
   return output;
 }
 

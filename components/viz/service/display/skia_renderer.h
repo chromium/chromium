@@ -17,7 +17,6 @@
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
-#include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
@@ -196,7 +195,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                        DrawQuadParams* params);
 
   void DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
-                         const absl::optional<SkColor>& clear_color,
+                         const absl::optional<SkColor4f>& clear_color,
                          const TileDrawQuad* quad,
                          const DrawQuadParams* params);
 
@@ -265,6 +264,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       OverlayProcessorInterface::PlatformOverlayCandidate* overlay);
 #endif
 
+  // Sets up callbacks for frame resource fences and passes them to
+  // SkiaOutputSurface by calling EndPaint on that. If |failed|,
+  // SkiaOutputSurface::EndPaint will be called with null callbacks.
+  void EndPaint(bool failed);
+
   DisplayResourceProviderSkia* resource_provider() {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
   }
@@ -285,12 +289,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   }
 
   // Interface used for drawing. Common among different draw modes.
-  sk_sp<SkSurface> root_surface_;
-  raw_ptr<SkCanvas> root_canvas_ = nullptr;
-  raw_ptr<SkCanvas> current_canvas_ = nullptr;
-  raw_ptr<SkSurface> current_surface_ = nullptr;
-  class FrameResourceFence;
-  scoped_refptr<FrameResourceFence> current_frame_resource_fence_;
+  raw_ptr<SkCanvas, DanglingUntriaged> current_canvas_ = nullptr;
+
+  class FrameResourceGpuCommandsCompletedFence;
+  scoped_refptr<FrameResourceGpuCommandsCompletedFence>
+      current_gpu_commands_completed_fence_;
+  class FrameResourceReleaseFence;
+  scoped_refptr<FrameResourceReleaseFence> current_release_fence_;
 
   bool disable_picture_quad_image_filtering_ = false;
   bool is_scissor_enabled_ = false;
@@ -319,7 +324,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   std::vector<SkMatrix> batched_cdt_matrices_;
 
   // Specific for SkDDL.
-  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
+  const raw_ptr<SkiaOutputSurface, DanglingUntriaged> skia_output_surface_;
 
   const bool is_using_raw_draw_;
 

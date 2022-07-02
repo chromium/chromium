@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "extensions/common/extension_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,11 +87,11 @@ ExtensionsMenuView::ExtensionsMenuView(
       wants_access_{
           nullptr, nullptr, IDS_EXTENSIONS_MENU_WANTS_TO_ACCESS_SITE_DATA_SHORT,
           IDS_EXTENSIONS_MENU_WANTS_TO_ACCESS_SITE_DATA,
-          extensions::SitePermissionsHelper::SiteInteraction::kPending},
-      has_access_{nullptr, nullptr,
-                  IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
-                  IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
-                  extensions::SitePermissionsHelper::SiteInteraction::kActive} {
+          extensions::SitePermissionsHelper::SiteInteraction::kWithheld},
+      has_access_{
+          nullptr, nullptr, IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
+          IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
+          extensions::SitePermissionsHelper::SiteInteraction::kGranted} {
   // Ensure layer masking is used for the extensions menu to ensure buttons with
   // layer effects sitting flush with the bottom of the bubble are clipped
   // appropriately.
@@ -261,10 +261,11 @@ ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForSiteInteraction(
     case extensions::SitePermissionsHelper::SiteInteraction::kNone:
       section = &cant_access_;
       break;
-    case extensions::SitePermissionsHelper::SiteInteraction::kPending:
+    case extensions::SitePermissionsHelper::SiteInteraction::kWithheld:
+    case extensions::SitePermissionsHelper::SiteInteraction::kActiveTab:
       section = &wants_access_;
       break;
-    case extensions::SitePermissionsHelper::SiteInteraction::kActive:
+    case extensions::SitePermissionsHelper::SiteInteraction::kGranted:
       section = &has_access_;
       break;
   }
@@ -486,7 +487,8 @@ views::Widget* ExtensionsMenuView::ShowBubble(
   DCHECK(!g_extensions_dialog);
   // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
   // `ExtensionsMenuView` is only constructed when the experiment is disabled.
-  DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
+  DCHECK(!base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
   g_extensions_dialog = new ExtensionsMenuView(
       anchor_view, browser, extensions_container, allow_pinning);
   views::Widget* widget =

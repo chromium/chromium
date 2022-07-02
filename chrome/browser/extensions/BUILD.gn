@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
@@ -141,6 +142,8 @@ static_library("extensions") {
     "api/downloads_internal/downloads_internal_api.h",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api.cc",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api.h",
+    "api/enterprise_reporting_private/conversion_utils.cc",
+    "api/enterprise_reporting_private/conversion_utils.h",
     "api/enterprise_reporting_private/enterprise_reporting_private_api.cc",
     "api/enterprise_reporting_private/enterprise_reporting_private_api.h",
     "api/extension_action/extension_action_api.cc",
@@ -760,6 +763,7 @@ static_library("extensions") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//chrome:extra_resources",
     "//chrome:resources",
     "//chrome:strings",
@@ -773,6 +777,7 @@ static_library("extensions") {
     "//chrome/browser:theme_properties",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/favicon",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media/router",
@@ -809,6 +814,8 @@ static_library("extensions") {
     "//components/content_settings/core/browser",
     "//components/cookie_config:cookie_config",
     "//components/crx_file",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common",
     "//components/dom_distiller/core",
     "//components/download/content/public",
     "//components/download/public/common:public",
@@ -881,7 +888,6 @@ static_library("extensions") {
     "//components/vector_icons",
     "//components/web_modal",
     "//components/zoom",
-    "//content/app/resources",
     "//content/public/common",
     "//crypto",
     "//device/bluetooth",
@@ -952,16 +958,26 @@ static_library("extensions") {
       "api/system_indicator/system_indicator_manager_factory.cc",
       "api/system_indicator/system_indicator_manager_factory.h",
     ]
+
+    deps += [ "//components/device_signals/core/common:features" ]
   }
 
   if (is_chromeos) {
     sources += [
+      "api/certificate_provider/certificate_provider_api.cc",
+      "api/certificate_provider/certificate_provider_api.h",
+      "api/document_scan/document_scan_api.cc",
+      "api/document_scan/document_scan_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.cc",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.h",
+      "api/file_manager/file_browser_handler_api.cc",
       "api/file_manager/file_browser_handler_api.h",
+      "api/file_manager/file_selector.h",
+      "api/file_manager/file_selector_impl.cc",
+      "api/file_manager/file_selector_impl.h",
       "api/messaging/native_message_built_in_host.cc",
       "api/messaging/native_message_built_in_host.h",
       "api/messaging/native_message_echo_host.cc",
@@ -974,6 +990,11 @@ static_library("extensions") {
       "api/platform_keys/verify_trust_api.h",
       "api/printing/print_job_controller.cc",
       "api/printing/print_job_controller.h",
+      "api/shared_storage/shared_storage_private_api.h",
+
+      # TODO(crbug.com/1340540): Find an appropriate spot for this.
+      "chromeos_browser_context_keyed_service_factories.cc",
+      "chromeos_browser_context_keyed_service_factories.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
       "system_display/system_display_serialization.cc",
@@ -992,14 +1013,21 @@ static_library("extensions") {
       ]
 
       deps += [
+        # TODO(crbug.com/1340540): Find an appropriate spot for printing_metrics.
+        "//chrome/browser/chromeos/extensions/printing_metrics",
         "//chromeos/printing",
         "//printing/backend",
       ]
     }
     deps += [
       "//chrome/browser/chromeos/extensions:constants",
-      "//chrome/browser/chromeos/extensions/login_screen",
+
+      # TODO(crbug.com/1340540): Find an appropriate spot for vpn_provider.
+      "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chromeos/components/disks:prefs",
       "//chromeos/components/quick_answers/public/cpp:prefs",
+      "//chromeos/components/security_token_pin",
+      "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/missive:missive",
@@ -1035,8 +1063,6 @@ static_library("extensions") {
 
   if (is_chromeos_ash) {
     sources += [
-      "api/certificate_provider/certificate_provider_api.cc",
-      "api/certificate_provider/certificate_provider_api.h",
       "api/crash_report_private/crash_report_private_api.cc",
       "api/crash_report_private/crash_report_private_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.cc",
@@ -1072,6 +1098,7 @@ static_library("extensions") {
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h",
       "api/settings_private/generated_time_zone_pref_base.cc",
       "api/settings_private/generated_time_zone_pref_base.h",
+      "api/shared_storage/shared_storage_private_api_ash.cc",
       "api/terminal/crostini_startup_status.cc",
       "api/terminal/crostini_startup_status.h",
       "api/terminal/terminal_private_api.cc",
@@ -1126,9 +1153,12 @@ static_library("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
-      "//chromeos/components/chromebox_for_meetings/buildflags",
+      "//chromeos/ash/components/dbus/cicerone:cicerone",
+      "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+      "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/dbus",
+      "//chromeos/dbus/cros_disks",
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/image_burner",
       "//chromeos/dbus/power",
@@ -1139,7 +1169,6 @@ static_library("extensions") {
       "//chromeos/login/login_state",
       "//chromeos/network",
       "//chromeos/process_proxy",
-      "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//chromeos/services/media_perception/public/mojom",
@@ -1165,6 +1194,10 @@ static_library("extensions") {
       "//ui/views",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+
+    if (is_cfm) {
+      deps += [ "//chromeos/ash/components/chromebox_for_meetings" ]
+    }
   }
 
   if (is_chromeos_lacros) {
@@ -1184,6 +1217,7 @@ static_library("extensions") {
       "api/messaging/native_message_host_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
+      "api/shared_storage/shared_storage_private_api_lacros.cc",
       "chrome_kiosk_delegate.cc",
       "preinstalled_apps.cc",
       "preinstalled_apps.h",
@@ -1192,6 +1226,7 @@ static_library("extensions") {
     ]
     deps += [
       "//chromeos/lacros",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//components/enterprise",
       "//components/enterprise/common/proto:connectors_proto",
@@ -1247,6 +1282,7 @@ static_library("extensions") {
       "system_display/display_info_provider_win.h",
     ]
     deps += [
+      "//components/device_signals/core/common/win",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
     ]

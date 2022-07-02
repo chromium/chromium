@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 
 namespace crostini {
 
@@ -34,24 +33,24 @@ class CrostiniSshfs : ContainerShutdownObserver {
   // mounted. If this is something running in the background set background to
   // true, if failures are user-visible set it to false. If you're setting
   // base::DoNothing as the callback then background should be true.
-  void MountCrostiniFiles(const ContainerId& container_id,
+  void MountCrostiniFiles(const guest_os::GuestId& container_id,
                           MountCrostiniFilesCallback callback,
                           bool background);
 
   // Unmounts the user's Crostini home directory. Must be called from the UI
   // thread.
-  void UnmountCrostiniFiles(const ContainerId& container_id,
+  void UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                             MountCrostiniFilesCallback callback);
 
   // ContainerShutdownObserver.
-  void OnContainerShutdown(const ContainerId& container_id) override;
+  void OnContainerShutdown(const guest_os::GuestId& container_id) override;
 
   void OnMountEvent(
       chromeos::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info);
 
   // Returns true if sshfs is mounted for the specified container, else false.
-  bool IsSshfsMounted(const ContainerId& container);
+  bool IsSshfsMounted(const guest_os::GuestId& container);
 
   // Only public so unit tests can reference them without needing to FRIEND_TEST
   // every single test case.
@@ -70,10 +69,10 @@ class CrostiniSshfs : ContainerShutdownObserver {
   };
 
  private:
-  void SetSshfsMounted(const ContainerId& container, bool mounted);
+  void SetSshfsMounted(const guest_os::GuestId& container, bool mounted);
   void Finish(CrostiniSshfsResult result);
 
-  void OnRemoveSshfsCrostiniVolume(const ContainerId& container_id,
+  void OnRemoveSshfsCrostiniVolume(const guest_os::GuestId& container_id,
                                    MountCrostiniFilesCallback callback,
                                    base::Time started,
                                    bool success);
@@ -85,12 +84,12 @@ class CrostiniSshfs : ContainerShutdownObserver {
 
   struct InProgressMount {
     std::string source_path;
-    ContainerId container_id;
+    guest_os::GuestId container_id;
     base::FilePath container_homedir;
     MountCrostiniFilesCallback callback;
     base::Time started;
     bool background;
-    InProgressMount(const ContainerId& container,
+    InProgressMount(const guest_os::GuestId& container,
                     MountCrostiniFilesCallback callback,
                     bool background);
     InProgressMount(InProgressMount&& other) noexcept;
@@ -98,10 +97,10 @@ class CrostiniSshfs : ContainerShutdownObserver {
     ~InProgressMount();
   };
   struct PendingRequest {
-    ContainerId container_id;
+    guest_os::GuestId container_id;
     MountCrostiniFilesCallback callback;
     bool background;
-    PendingRequest(const ContainerId& container_id,
+    PendingRequest(const guest_os::GuestId& container_id,
                    MountCrostiniFilesCallback callback,
                    bool background);
     PendingRequest(PendingRequest&& other) noexcept;
@@ -118,7 +117,7 @@ class CrostiniSshfs : ContainerShutdownObserver {
 
   std::unique_ptr<InProgressMount> in_progress_mount_;
 
-  std::set<ContainerId> sshfs_mounted_;
+  std::set<guest_os::GuestId> sshfs_mounted_;
   std::queue<PendingRequest> pending_requests_;
 
   // Note: This should remain the last member so it'll be destroyed and

@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingId
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -120,7 +119,7 @@ public class PriceDropNotificationManager {
             // Handles "turn off alert" action button click.
             ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(() -> {
                 PriceDropNotificationManager priceDropNotificationManager =
-                        new PriceDropNotificationManager();
+                        PriceDropNotificationManagerFactory.create();
                 assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
                     : "Currently only turn off alert action uses this activity.";
                 priceDropNotificationManager.onNotificationActionClicked(
@@ -148,11 +147,18 @@ public class PriceDropNotificationManager {
     private final NotificationManagerProxy mNotificationManager;
     private final SharedPreferencesManager mPreferencesManager;
 
+    // TODO(shaktisahu): Remove this after landing downstream changes.
     public PriceDropNotificationManager() {
         this(ContextUtils.getApplicationContext(),
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
     }
 
+    /**
+     * Constructor.
+     * @param context The application context.
+     * @param notificationManagerProxy The {@link NotificationManagerProxy} for sending
+     *         notifications.
+     */
     public PriceDropNotificationManager(
             Context context, NotificationManagerProxy notificationManagerProxy) {
         mContext = context;
@@ -165,7 +171,7 @@ public class PriceDropNotificationManager {
      *         which could influence the Chime registration.
      */
     public boolean isEnabled() {
-        return PriceTrackingUtilities.getPriceTrackingNotificationsEnabled();
+        return PriceTrackingFeatures.getPriceTrackingNotificationsEnabled();
     }
 
     /**
@@ -173,7 +179,7 @@ public class PriceDropNotificationManager {
      */
     public boolean canPostNotification() {
         if (!areAppNotificationsEnabled()
-                || !PriceTrackingUtilities.isPriceDropNotificationEligible()) {
+                || !PriceTrackingFeatures.isPriceDropNotificationEligible()) {
             return false;
         }
 
@@ -191,7 +197,7 @@ public class PriceDropNotificationManager {
      * @return Whether price drop notifications can be posted and record user opt-in metrics.
      */
     public boolean canPostNotificationWithMetricsRecorded() {
-        if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return false;
+        if (!PriceTrackingFeatures.isPriceDropNotificationEligible()) return false;
         boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
         RecordHistogram.recordBooleanHistogram(
                 NOTIFICATION_ENABLED_HISTOGRAM, isSystemNotificationEnabled);

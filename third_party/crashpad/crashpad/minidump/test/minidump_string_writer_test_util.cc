@@ -25,8 +25,11 @@ namespace test {
 
 namespace {
 
-template <typename T>
-const T* TMinidumpStringAtRVA(const std::string& file_contents, RVA rva) {
+template <
+    typename T,
+    typename RVAType = RVA,
+    typename MinidumpLocationDescriptorType = MINIDUMP_LOCATION_DESCRIPTOR>
+const T* TMinidumpStringAtRVA(const std::string& file_contents, RVAType rva) {
   const T* string_base = MinidumpWritableAtRVA<T>(file_contents, rva);
   if (!string_base) {
     return nullptr;
@@ -41,7 +44,7 @@ const T* TMinidumpStringAtRVA(const std::string& file_contents, RVA rva) {
   }
 
   // |Length| does not include space for the required NUL terminator.
-  MINIDUMP_LOCATION_DESCRIPTOR location;
+  MinidumpLocationDescriptorType location;
   location.DataSize =
       sizeof(*string_base) + string_base->Length + kCodeUnitSize;
   location.Rva = rva;
@@ -62,11 +65,16 @@ const T* TMinidumpStringAtRVA(const std::string& file_contents, RVA rva) {
   return string;
 }
 
-template <typename StringType, typename MinidumpStringType>
+template <typename StringType,
+          typename MinidumpStringType,
+          typename RVAType,
+          typename MinidumpLocationDescriptorType>
 StringType TMinidumpStringAtRVAAsString(const std::string& file_contents,
-                                        RVA rva) {
+                                        RVAType rva) {
   const MinidumpStringType* minidump_string =
-      TMinidumpStringAtRVA<MinidumpStringType>(file_contents, rva);
+      TMinidumpStringAtRVA<MinidumpStringType,
+                           RVAType,
+                           MinidumpLocationDescriptorType>(file_contents, rva);
   if (!minidump_string) {
     return StringType();
   }
@@ -82,24 +90,69 @@ StringType TMinidumpStringAtRVAAsString(const std::string& file_contents,
 
 const MINIDUMP_STRING* MinidumpStringAtRVA(const std::string& file_contents,
                                            RVA rva) {
-  return TMinidumpStringAtRVA<MINIDUMP_STRING>(file_contents, rva);
+  return TMinidumpStringAtRVA<MINIDUMP_STRING,
+                              RVA,
+                              MINIDUMP_LOCATION_DESCRIPTOR>(file_contents, rva);
+}
+
+const MINIDUMP_STRING* MinidumpStringAtRVA(const std::string& file_contents,
+                                           RVA64 rva) {
+  return TMinidumpStringAtRVA<MINIDUMP_STRING,
+                              RVA64,
+                              MINIDUMP_LOCATION_DESCRIPTOR64>(file_contents,
+                                                              rva);
 }
 
 const MinidumpUTF8String* MinidumpUTF8StringAtRVA(
     const std::string& file_contents,
     RVA rva) {
-  return TMinidumpStringAtRVA<MinidumpUTF8String>(file_contents, rva);
+  return TMinidumpStringAtRVA<MinidumpUTF8String,
+                              RVA,
+                              MINIDUMP_LOCATION_DESCRIPTOR>(file_contents, rva);
+}
+
+const MinidumpUTF8String* MinidumpUTF8StringAtRVA(
+    const std::string& file_contents,
+    RVA64 rva) {
+  return TMinidumpStringAtRVA<MinidumpUTF8String,
+                              RVA64,
+                              MINIDUMP_LOCATION_DESCRIPTOR64>(file_contents,
+                                                              rva);
 }
 
 std::u16string MinidumpStringAtRVAAsString(const std::string& file_contents,
                                            RVA rva) {
-  return TMinidumpStringAtRVAAsString<std::u16string, MINIDUMP_STRING>(
+  return TMinidumpStringAtRVAAsString<std::u16string,
+                                      MINIDUMP_STRING,
+                                      RVA,
+                                      MINIDUMP_LOCATION_DESCRIPTOR>(
+      file_contents, rva);
+}
+
+std::u16string MinidumpStringAtRVAAsString(const std::string& file_contents,
+                                           RVA64 rva) {
+  return TMinidumpStringAtRVAAsString<std::u16string,
+                                      MINIDUMP_STRING,
+                                      RVA64,
+                                      MINIDUMP_LOCATION_DESCRIPTOR64>(
       file_contents, rva);
 }
 
 std::string MinidumpUTF8StringAtRVAAsString(const std::string& file_contents,
                                             RVA rva) {
-  return TMinidumpStringAtRVAAsString<std::string, MinidumpUTF8String>(
+  return TMinidumpStringAtRVAAsString<std::string,
+                                      MinidumpUTF8String,
+                                      RVA,
+                                      MINIDUMP_LOCATION_DESCRIPTOR>(
+      file_contents, rva);
+}
+
+std::string MinidumpUTF8StringAtRVAAsString(const std::string& file_contents,
+                                            RVA64 rva) {
+  return TMinidumpStringAtRVAAsString<std::string,
+                                      MinidumpUTF8String,
+                                      RVA64,
+                                      MINIDUMP_LOCATION_DESCRIPTOR64>(
       file_contents, rva);
 }
 

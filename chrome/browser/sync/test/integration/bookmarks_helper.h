@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -478,7 +479,8 @@ class BookmarkFaviconLoadedChecker
 
 // Checker used to block until the bookmarks on the server match a given set of
 // expected bookmarks. The |title| is comapred to both legacy and full titles.
-class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
+class ServerBookmarksEqualityChecker
+    : public fake_server::FakeServerMatchStatusChecker {
  public:
   struct ExpectedBookmark {
     // Used to check both legacy and full titles in specifics.
@@ -491,8 +493,6 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
   // will be used to decrypt the data prior to checking for equality.
   // |fake_server| must not be nullptr and must outlive this object.
   ServerBookmarksEqualityChecker(
-      syncer::SyncServiceImpl* service,
-      fake_server::FakeServer* fake_server,
       std::vector<ExpectedBookmark> expected_bookmarks,
       syncer::Cryptographer* cryptographer);
 
@@ -506,7 +506,6 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
   ~ServerBookmarksEqualityChecker() override;
 
  private:
-  raw_ptr<fake_server::FakeServer> fake_server_;
   raw_ptr<syncer::Cryptographer> cryptographer_;
   const std::vector<ExpectedBookmark> expected_bookmarks_;
 };

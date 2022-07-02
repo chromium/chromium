@@ -72,9 +72,10 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         features::kMacSystemScreenCapturePermissionCheck);
 #endif
     content::MediaStreamRequest request(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
-        origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, origin, /*user_gesture=*/false,
+        blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_id=*/std::string(), requested_video_device_id,
         blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
@@ -85,11 +86,17 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         [](base::RunLoop* wait_loop, bool expect_result,
            blink::mojom::MediaStreamRequestResult* request_result,
            blink::mojom::StreamDevices* devices_result,
-           const blink::mojom::StreamDevices& devices,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
-          *devices_result = devices;
+          if (result == blink::mojom::MediaStreamRequestResult::OK) {
+            ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
+            *devices_result = *stream_devices_set.stream_devices[0];
+          } else {
+            ASSERT_TRUE(stream_devices_set.stream_devices.empty());
+            *devices_result = blink::mojom::StreamDevices();
+          }
           EXPECT_TRUE(expect_result) << "MediaResponseCallback should not be "
                                         "called when expect_result is false.";
           wait_loop->Quit();
@@ -130,12 +137,16 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     content::MediaResponseCallback callback = base::BindOnce(
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
-           blink::mojom::StreamDevices* stream_devices_result,
-           const blink::mojom::StreamDevices& devices,
+           blink::mojom::StreamDevices* devices_result,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
           *request_result = result;
-          *stream_devices_result = devices;
+          if (!stream_devices_set.stream_devices.empty()) {
+            *devices_result = *stream_devices_set.stream_devices[0];
+          } else {
+            *devices_result = blink::mojom::StreamDevices();
+          }
           wait_loop->Quit();
         },
         &wait_loop, request_result, stream_devices_result);
@@ -305,12 +316,12 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceMultipleRequests) {
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
            blink::MediaStreamDevices* devices_result,
-           const blink::mojom::StreamDevices& devices,
+           const blink::mojom::StreamDevicesSet& stream_devices_set,
            blink::mojom::MediaStreamRequestResult result,
            std::unique_ptr<content::MediaStreamUI> ui) {
+          ASSERT_EQ(stream_devices_set.stream_devices.size(), 1u);
           *request_result = result;
-          *devices_result =
-              blink::StreamDevicesToMediaStreamDevicesList(devices);
+          *devices_result = blink::ToMediaStreamDevicesList(stream_devices_set);
           wait_loop->Quit();
         },
         &loop, &result, &devices);
@@ -345,8 +356,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamSuccess) {
   const GURL origin(kOrigin);
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(origin),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),
@@ -508,8 +519,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),
@@ -541,8 +552,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(),
+          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                   content::DesktopMediaID::kFakeId),

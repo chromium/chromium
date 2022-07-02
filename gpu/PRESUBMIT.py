@@ -8,12 +8,13 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+import sys
+
 
 USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
-  import sys
 
   output = []
   sys_path_backup = sys.path
@@ -21,7 +22,11 @@ def CommonChecks(input_api, output_api):
     sys.path = [
         input_api.PresubmitLocalPath()
     ] + sys.path
-    output.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+    pylint_checks = input_api.canned_checks.GetPylint(
+        input_api,
+        output_api,
+        version='2.7')
+    output.extend(input_api.RunTests(pylint_checks))
   finally:
     sys.path = sys_path_backup
 

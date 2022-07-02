@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.crash.FirebaseConfig;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.components.crash.PureJavaExceptionHandler;
@@ -199,6 +200,10 @@ public class SplitCompatApplication extends Application {
             // Disable MemoryPressureMonitor polling when Chrome goes to the background.
             ApplicationStatus.registerApplicationStateListener(
                     SplitCompatApplication::updateMemoryPressurePolling);
+
+            if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
+                AppLocaleUtils.maybeMigrateOverrideLanguage();
+            }
         }
 
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());

@@ -14,7 +14,7 @@
 
 namespace {
 
-// Returns the |category| unchanged, unless it is ||, in which case it returns
+// Returns the `category` unchanged, unless it is ||, in which case it returns
 // the preferred content size category from the shared application.
 UIContentSizeCategory NormalizedCategory(UIContentSizeCategory category) {
   if ([category isEqualToString:UIContentSizeCategoryUnspecified])
@@ -23,9 +23,9 @@ UIContentSizeCategory NormalizedCategory(UIContentSizeCategory category) {
 }
 
 // Returns an interpolation of the height based on the multiplier associated
-// with |category|, clamped between UIContentSizeCategoryLarge and
+// with `category`, clamped between UIContentSizeCategoryLarge and
 // UIContentSizeCategoryAccessibilityExtraLarge. This multiplier is applied to
-// |default_height| - |non_dynamic_height|.
+// `default_height` - `non_dynamic_height`.
 CGFloat Interpolate(UIContentSizeCategory category,
                     CGFloat default_height,
                     CGFloat non_dynamic_height) {

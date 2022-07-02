@@ -23,8 +23,8 @@ SolidColorLayer::SolidColorLayer() = default;
 
 SolidColorLayer::~SolidColorLayer() = default;
 
-void SolidColorLayer::SetBackgroundColor(SkColor color) {
-  SetContentsOpaque(SkColorGetA(color) == 255);
+void SolidColorLayer::SetBackgroundColor(SkColor4f color) {
+  SetContentsOpaque(color.isOpaque());
   Layer::SetBackgroundColor(color);
 }
 

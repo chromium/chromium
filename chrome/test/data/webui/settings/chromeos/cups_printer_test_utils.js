@@ -78,7 +78,8 @@ export function createPrinterListEntry(
  * @private
  */
 export function getPrinterEntries(printersElement) {
-  const entryList = printersElement.$$('#printerEntryList');
+  const entryList =
+      printersElement.shadowRoot.querySelector('#printerEntryList');
   return entryList.querySelectorAll(
       'settings-cups-printers-entry:not([hidden])');
 }

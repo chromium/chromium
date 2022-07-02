@@ -35,11 +35,20 @@ constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
 
 }  // namespace
 
-FencedFrameTestHelper::FencedFrameTestHelper() {
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
-       {features::kPrivacySandboxAdsAPIsOverride, {}}},
-      {/* disabled_features */});
+FencedFrameTestHelper::FencedFrameTestHelper(FencedFrameType type)
+    : type_(type) {
+  if (type == FencedFrameType::kMPArch) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+  } else {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+  }
 }
 
 FencedFrameTestHelper::~FencedFrameTestHelper() = default;
@@ -52,25 +61,39 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
               "fenced_frame_parent", fenced_frame_parent, "url", url);
   RenderFrameHostImpl* fenced_frame_parent_rfh =
       static_cast<RenderFrameHostImpl*>(fenced_frame_parent);
+  RenderFrameHostImpl* fenced_frame_rfh;
+  if (type_ == FencedFrameType::kMPArch) {
+    size_t previous_fenced_frame_count =
+        fenced_frame_parent_rfh->GetFencedFrames().size();
 
-  size_t previous_fenced_frame_count =
-      fenced_frame_parent_rfh->GetFencedFrames().size();
+    EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
+                       JsReplace(kAddFencedFrameScript),
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh, JsReplace(kAddFencedFrameScript),
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    std::vector<FencedFrame*> fenced_frames =
+        fenced_frame_parent_rfh->GetFencedFrames();
+    EXPECT_EQ(previous_fenced_frame_count + 1, fenced_frames.size());
 
-  std::vector<FencedFrame*> fenced_frames =
-      fenced_frame_parent_rfh->GetFencedFrames();
-  EXPECT_EQ(previous_fenced_frame_count + 1, fenced_frames.size());
-
-  FencedFrame* fenced_frame = fenced_frames.back();
-  // It is possible that we got the did stop loading notification because the
-  // fenced frame was actually being destroyed. Check to make sure that's not
-  // the case. TODO(crbug.com/1123606): Consider weakly referencing the fenced
-  // frame if the removal-and-stop-loading scenario is a useful one to test.
-  EXPECT_EQ(previous_fenced_frame_count + 1,
-            fenced_frame_parent_rfh->GetFencedFrames().size());
-  return NavigateFrameInFencedFrameTree(fenced_frame->GetInnerRoot(), url,
+    FencedFrame* fenced_frame = fenced_frames.back();
+    // It is possible that we got the did stop loading notification because the
+    // fenced frame was actually being destroyed. Check to make sure that's not
+    // the case. TODO(crbug.com/1123606): Consider weakly referencing the fenced
+    // frame if the removal-and-stop-loading scenario is a useful one to test.
+    EXPECT_EQ(previous_fenced_frame_count + 1,
+              fenced_frame_parent_rfh->GetFencedFrames().size());
+    fenced_frame_rfh = fenced_frame->GetInnerRoot();
+  } else {
+    EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
+                       JsReplace(kAddFencedFrameScript),
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
+        fenced_frame_parent_rfh
+            ->child_at(fenced_frame_parent_rfh->child_count() - 1)
+            ->current_frame_host());
+  }
+  if (url.is_empty())
+    return fenced_frame_rfh;
+  return NavigateFrameInFencedFrameTree(fenced_frame_rfh, url,
                                         expected_error_code);
 }
 
@@ -108,12 +131,27 @@ RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
 // static
 RenderFrameHost* FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(
     RenderFrameHost* rfh) {
-  std::vector<FencedFrame*> fenced_frames =
-      static_cast<RenderFrameHostImpl*>(rfh)->GetFencedFrames();
-  if (fenced_frames.empty())
+  if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
+      blink::features::FencedFramesImplementationType::kMPArch) {
+    std::vector<FencedFrame*> fenced_frames =
+        static_cast<RenderFrameHostImpl*>(rfh)->GetFencedFrames();
+    if (fenced_frames.empty())
+      return nullptr;
+    return fenced_frames.back()->GetInnerRoot();
+  }
+  if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    RenderFrameHostImpl* parent_rfh = static_cast<RenderFrameHostImpl*>(rfh);
+    for (size_t i = 0, ff_index = parent_rfh->child_count() - 1;
+         i < parent_rfh->child_count(); ++i, --ff_index) {
+      RenderFrameHost* child_rfh =
+          parent_rfh->child_at(ff_index)->current_frame_host();
+      if (child_rfh->IsFencedFrameRoot())
+        return child_rfh;
+    }
     return nullptr;
-
-  return fenced_frames.back()->GetInnerRoot();
+  }
+  return nullptr;
 }
 
 GURL CreateFencedFrameURLMapping(RenderFrameHost* rfh, const GURL& url) {

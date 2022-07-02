@@ -39,12 +39,13 @@ const test::UIPath kUsageLearnMorePopUpClose = {
 
 // Google EUlA Dialog
 const test::UIPath kGoogleEulaDialog = {kGuestTostId, "googleEulaDialog"};
-const test::UIPath kGoogleEulaWebview = {kGuestTostId, "googleEulaWebview"};
+const test::UIPath kGoogleEulaWebview = {kGuestTostId,
+                                         "guestTosGoogleEulaWebview"};
 const test::UIPath kGoogleEulaOkButton = {kGuestTostId, "googleEulaOkButton"};
 
 // CROS EULA Dialog
 const test::UIPath kCrosEulaDialog = {kGuestTostId, "crosEulaDialog"};
-const test::UIPath kCrosEulaWebview = {kGuestTostId, "crosEulaWebview"};
+const test::UIPath kCrosEulaWebview = {kGuestTostId, "guestTosCrosEulaWebview"};
 const test::UIPath kCrosEulaOkButton = {kGuestTostId, "crosEulaOkButton"};
 
 }  // namespace

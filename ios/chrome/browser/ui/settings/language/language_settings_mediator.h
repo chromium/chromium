@@ -15,7 +15,7 @@ class ChromeBrowserState;
 @interface LanguageSettingsMediator
     : NSObject <LanguageSettingsDataSource, LanguageSettingsCommands>
 
-// The designated initializer. |browserState| must not be nil.
+// The designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

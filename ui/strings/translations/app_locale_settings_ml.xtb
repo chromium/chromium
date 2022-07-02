@@ -9,7 +9,7 @@
   <translation id="IDS_WEB_FONT_FAMILY">'Segoe UI',Arial,AnjaliOldLipi,Rachana,Kartika</translation>
   <translation id="IDS_WEB_FONT_FAMILY_XP">Arial,AnjaliOldLipi,Rachana,Kartika</translation>
 </if>
-<if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+<if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Arial,AnjaliOldLipi,Rachana,Kartika,sans-serif</translation>
 </if>
 <if expr="chromeos_ash or chromeos_lacros">

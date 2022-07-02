@@ -160,7 +160,7 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
 
   RenderFrameHostImpl* main_frame() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
   bool CheckCanLoadHttp(Shell* shell, const std::string& relative_url) {

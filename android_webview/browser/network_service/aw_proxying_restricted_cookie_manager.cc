@@ -213,4 +213,10 @@ bool AwProxyingRestrictedCookieManager::AllowCookies(
   }
 }
 
+void AwProxyingRestrictedCookieManager::
+    ConvertPartitionedCookiesToUnpartitioned(const GURL& url) {
+  underlying_restricted_cookie_manager_
+      ->ConvertPartitionedCookiesToUnpartitioned(url);
+}
+
 }  // namespace android_webview

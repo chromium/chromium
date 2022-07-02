@@ -72,16 +72,6 @@ void FrameRendererDummy::Destroy() {
   DCHECK(pending_frames_.empty());
 }
 
-bool FrameRendererDummy::AcquireGLContext() {
-  // As no actual rendering is done we don't have a GLContext to acquire.
-  return true;
-}
-
-gl::GLContext* FrameRendererDummy::GetGLContext() {
-  // As no actual rendering is done we don't have a GLContext.
-  return nullptr;
-}
-
 void FrameRendererDummy::RenderFrame(scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
@@ -102,10 +92,14 @@ void FrameRendererDummy::RenderFrame(scoped_refptr<VideoFrame> video_frame) {
       DVLOGF(4) << "Dropping frame: decoder too slow";
       frames_to_drop_decoding_slow_--;
       frames_dropped_++;
-      return;
+      // Don't return here: let |video_frame| be kept for the next
+      // RenderFrameTask() call.
     }
   }
 
+  // TODO(mcasas): |pending_frames_| should not enqueue more than one
+  // |video_frame|, because a real Renderer would drop the oldest frame and
+  // only keep the latest one.
   pending_frames_.push(std::move(video_frame));
 
   // If this is the first frame decoded, render it immediately.

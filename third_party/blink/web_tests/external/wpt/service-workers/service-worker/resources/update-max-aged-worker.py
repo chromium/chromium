@@ -13,7 +13,7 @@ def main(request, response):
     body = u'''
         const mainTime = {time:8f};
         const testName = {test};
-        importScripts('update-max-aged-worker-imported-script.py');
+        importScripts('update-max-aged-worker-imported-script.py?test={test}');
 
         addEventListener('message', event => {{
             event.source.postMessage({{

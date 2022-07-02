@@ -44,6 +44,8 @@
 
 namespace policy {
 
+const size_t kNumChunks = 8;
+
 namespace {
 
 base::FilePath GetTestCasePath() {
@@ -112,6 +114,21 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
+// Splits the test cases into `kNumChunks` and the testing parameter determines
+// the index of the current chunk. This prevents the test from timing out when
+// testing all test cases in a single browser test.
+class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
+                               public ::testing::WithParamInterface<size_t> {
+ public:
+  ChunkedPolicyPrefsTest() = default;
+  ChunkedPolicyPrefsTest(const ChunkedPolicyPrefsTest&) = delete;
+  ChunkedPolicyPrefsTest& operator=(const ChunkedPolicyPrefsTest&) = delete;
+  ~ChunkedPolicyPrefsTest() override = default;
+
+ protected:
+  PrefMappingChunkInfo chunk_info_{GetParam(), kNumChunks};
+};
+
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
 // README SHERIFFs: This test encapsulates a whole suite of individual browser
@@ -119,8 +136,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-// Flaky on all platforms: crbug.com/1294825
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
@@ -133,8 +149,13 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
 
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
-                             GetMockPolicyProvider());
-}
+                             GetMockPolicyProvider(), &chunk_info_);
+};
+
+INSTANTIATE_TEST_SUITE_P(Chunked,
+                         ChunkedPolicyPrefsTest,
+                         ::testing::Range(/* start= */ static_cast<size_t>(0),
+                                          /* end= */ kNumChunks));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

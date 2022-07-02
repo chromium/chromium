@@ -16,11 +16,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/translate/translate_accept_languages_factory.h"
 #include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -30,12 +30,12 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
@@ -180,10 +180,10 @@ ChromeTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
 }
 
 // static
-translate::TranslateAcceptLanguages*
-ChromeTranslateClient::GetTranslateAcceptLanguages(
+language::AcceptLanguagesService*
+ChromeTranslateClient::GetAcceptLanguagesService(
     content::BrowserContext* browser_context) {
-  return TranslateAcceptLanguagesFactory::GetForBrowserContext(browser_context);
+  return AcceptLanguagesServiceFactory::GetForBrowserContext(browser_context);
 }
 
 // static
@@ -312,10 +312,10 @@ ChromeTranslateClient::GetTranslatePrefs() {
   return CreateTranslatePrefs(GetPrefs());
 }
 
-translate::TranslateAcceptLanguages*
-ChromeTranslateClient::GetTranslateAcceptLanguages() {
+language::AcceptLanguagesService*
+ChromeTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_contents());
-  return GetTranslateAcceptLanguages(web_contents()->GetBrowserContext());
+  return GetAcceptLanguagesService(web_contents()->GetBrowserContext());
 }
 
 #if BUILDFLAG(IS_ANDROID)

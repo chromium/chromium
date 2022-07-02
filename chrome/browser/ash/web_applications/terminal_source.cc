@@ -19,15 +19,19 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -73,7 +77,6 @@ void ReadFile(const base::FilePath downloads,
         kTestFiles({
             {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
-            {"html/terminal_home.html", ""},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},
         });
@@ -152,8 +155,24 @@ void TerminalSource::StartDataRequest(
 
   // Refresh the $i8n{themeColor} replacement for css files.
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
-    replacements_["themeColor"] = base::EscapeForHTML(
-        crostini::GetTerminalSettingBackgroundColor(profile_));
+    GURL url;
+    absl::optional<SkColor> opener_background_color;
+    content::WebContents* contents = wc_getter.Run();
+    if (contents) {
+      url = contents->GetVisibleURL();
+      TabStripModel* tab_strip;
+      int tab_index;
+      extensions::ExtensionTabUtil::GetTabStripModel(contents, &tab_strip,
+                                                     &tab_index);
+      content::WebContents* opener =
+          tab_strip->GetOpenerOfWebContentsAt(tab_index);
+      if (opener) {
+        opener_background_color = opener->GetBackgroundColor();
+      }
+    }
+    replacements_["themeColor"] =
+        base::EscapeForHTML(crostini::GetTerminalSettingBackgroundColor(
+            profile_, url, opener_background_color));
   }
 
   base::ThreadPool::PostTask(

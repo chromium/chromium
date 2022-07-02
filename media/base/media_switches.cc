@@ -72,6 +72,12 @@ const char kTrySupportedChannelLayouts[] = "try-supported-channel-layouts";
 
 // Number of buffers to use for WaveOut.
 const char kWaveOutBuffers[] = "waveout-buffers";
+
+// Emulates audio capture timestamps instead of using timestamps from the actual
+// audio device.
+// See crbug.com/1315231 for more details.
+const char kUseFakeAudioCaptureTimestamps[] =
+    "use-fake-audio-capture-timestamps";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -206,19 +212,12 @@ const char kOverrideHardwareSecureCodecsForTesting[] =
 const char kEnableLiveCaptionPrefForTesting[] =
     "enable-live-caption-pref-for-testing";
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-// Enables playback of clear (unencrypted) HEVC content for testing purposes.
-const char kEnableClearHevcForTesting[] = "enable-clear-hevc-for-testing";
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // These are flags passed from ash-chrome to lacros-chrome that correspond to
 // buildflags for the platform we are running on. lacros-chrome only builds for
 // x86/arm differences, so we unconditionally build in the below features into
 // the relevant parts of lacros-chrome and then filter the functionality based
 // on these command line flags.
-MEDIA_EXPORT extern const char kLacrosEnablePlatformEncryptedHevc[] =
-    "lacros-enable-platform-encrypted-hevc";
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[] =
     "lacros-enable-platform-hevc";
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[] =
@@ -247,6 +246,11 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 // This provides a mechanism during testing to lock the decoder framerate
 // to a specific value.
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
+// Set the maximum number of decoder threads for hardware video decoders on
+// ChromeOS. This is intended to be used for development only.
+// TODO(b/195769334): Propagate this to Chrome utility process for
+// Out-of-Process video decoding.
+const char kMaxChromeOSDecoderThreads[] = "max-chromeos-decoder-threads";
 #endif
 }  // namespace switches
 
@@ -265,23 +269,14 @@ const base::Feature kEnableTabMuting{"EnableTabMuting",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable Picture-in-Picture.
-const base::Feature kPictureInPicture {
-  "PictureInPicture",
-#if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kPictureInPicture{"PictureInPicture",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                                       \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // Enables HEVC hardware accelerated decoding.
 const base::Feature kPlatformHEVCDecoderSupport{
     "PlatformHEVCDecoderSupport", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
-        // || IS_MAC || IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 // Only decode preload=metadata elements upon visibility.
 // TODO(crbug.com/879406): Remove this after M76 ships to stable
@@ -298,12 +293,6 @@ const base::Feature kResumeBackgroundVideo {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
-
-// Experimental: Try to avoid destroying the media player when transferring a
-// media element to a new document.  This is a work in progress, and may cause
-// security and/or stability issues.
-const base::Feature kReuseMediaPlayer{"ReuseMediaPlayer",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, MediaCapabilities will check with GPU Video Accelerator
 // Factories to determine isPowerEfficient = true/false.
@@ -331,7 +320,7 @@ const base::Feature kUseAndroidOverlayForSecureOnly{
 // Allows usage of OS-level (platform) audio encoders.
 const base::Feature kPlatformAudioEncoder {
   "PlatformAudioEncoder",
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -386,6 +375,16 @@ const base::FeatureParam<int> kChromeWideEchoCancellationProcessingFifoSize{
 // audio capture device.
 const base::FeatureParam<bool> kChromeWideEchoCancellationMinimizeResampling{
     &kChromeWideEchoCancellation, "minimize_resampling", true};
+
+// Dynamically sets audio::SyncReader's timeout based off of a percentage of
+// buffer duration, in an attempt to minimize glitches.
+// The default negative value indicates that no experiment is running, and
+// we shouldn't use a mixing specific timeout value.
+// If the similar kDynamicAudioTimeout feature is enabled and this value is set,
+// this parameter will override kDynamicAudioTimeout values when we are mixing.
+const base::FeatureParam<double>
+    kChromeWideEchoCancellationDynamicMixingTimeout{
+        &kChromeWideEchoCancellation, "mixing_buffer_duration_percent", -1.0};
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under
@@ -404,6 +403,11 @@ const base::Feature kMultiPlaneVideoCaptureSharedImages {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+// Controls whether the Open Screen libcast SenderSession is used for
+// initializing and managing streaming sessions, or the legacy implementation.
+const base::Feature kOpenscreenCastStreamingSession{
+    "OpenscreenCastStreamingSession", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.
@@ -441,8 +445,7 @@ const base::Feature kGav1VideoDecoder{"Gav1VideoDecoder",
 // Show toolbar button that opens dialog for controlling media sessions.
 const base::Feature kGlobalMediaControls {
   "GlobalMediaControls",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -519,6 +522,12 @@ const base::Feature kVaapiVideoDecodeLinux{"VaapiVideoDecoder",
 
 const base::Feature kVaapiVideoEncodeLinux{"VaapiVideoEncoder",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Ignore the non-intel driver blacklist for VaapiVideoDecoder implementations.
+// Intended for manual usage only in order to gague the status of newer driver
+// implementations.
+const base::Feature kVaapiIgnoreDriverChecks{"VaapiIgnoreDriverChecks",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Enable VA-API hardware decode acceleration for AV1.
@@ -565,14 +574,8 @@ const base::Feature kVaapiH264TemporalLayerHWEncoding{
 const base::Feature kVaapiVp8TemporalLayerHWEncoding{
     "VaapiVp8TemporalLayerEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
-const base::Feature kVaapiVp9kSVCHWEncoding {
-  "VaapiVp9kSVCHWEncoding",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
+const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 // Inform video blitter of video color space.
@@ -582,7 +585,9 @@ const base::Feature kVideoBlitColorAccuracy{"video-blit-color-accuracy",
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
 const base::Feature kVp9kSVCHWDecoding {
   "Vp9kSVCHWDecoding",
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1325698): Remove  defined(ARCH_CPU_X86_FAMILY) once this is
+// enabled by default on ChromeOS ARM devices.
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -666,6 +671,11 @@ const base::Feature kHardwareSecureDecryptionFallback{
 const base::Feature kWakeLockOptimisationHiddenMuted{
     "kWakeLockOptimisationHiddenMuted", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If active, enable HiDPI mode that increases the display scale factor
+// while capturing a low-resolution tab.
+const base::Feature kWebContentsCaptureHiDpi{"WebContentsCaptureHiDPI",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables handling of hardware media keys for controlling media.
 const base::Feature kHardwareMediaKeyHandling {
   "HardwareMediaKeyHandling",
@@ -740,7 +750,7 @@ const base::Feature kMediaDrmPreprovisioningAtStartup{
 
 // Enable picture in picture web api for android.
 const base::Feature kPictureInPictureAPI{"PictureInPictureAPI",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables CanPlayType() (and other queries) for HLS MIME types. Note that
 // disabling this also causes navigation to .m3u8 files to trigger downloading
@@ -775,6 +785,11 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// Enable Variable Bitrate encoding with hardware accelerated encoders on
+// ChromeOS.
+const base::Feature kChromeOSHWVBREncoding{"ChromeOSHWVBREncoding",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a
 // chrome:flag for developers debugging issues as well as to be able to
@@ -782,6 +797,10 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 // TODO(b/159825227): remove when the direct video decoder is fully launched.
 const base::Feature kUseChromeOSDirectVideoDecoder{
     "UseChromeOSDirectVideoDecoder", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Limit the number of concurrent hardware decoder instances on ChromeOS.
+const base::Feature kLimitConcurrentDecoderInstances{
+    "LimitConcurrentDecoderInstances", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if defined(ARCH_CPU_ARM_FAMILY)
 // Some architectures have separate image processor hardware that
@@ -1039,10 +1058,6 @@ const base::Feature kUseFakeDeviceForMediaStream{
 // estimations.
 const base::Feature kBresenhamCadence{"BresenhamCadence",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Display the playback speed button on the media controls.
-const base::Feature kPlaybackSpeedButton{"PlaybackSpeedButton",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

@@ -106,8 +106,7 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
 
 class FakeDataChannel {
  public:
-  FakeDataChannel()
-      : read_buf_len_(0), closed_(false), write_called_after_close_(false) {}
+  FakeDataChannel() = default;
 
   FakeDataChannel(const FakeDataChannel&) = delete;
   FakeDataChannel& operator=(const FakeDataChannel&) = delete;
@@ -203,19 +202,19 @@ class FakeDataChannel {
 
   CompletionOnceCallback read_callback_;
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
 
   CompletionOnceCallback write_callback_;
 
   base::queue<scoped_refptr<DrainableIOBuffer>> data_;
 
   // True if Close() has been called.
-  bool closed_;
+  bool closed_ = false;
 
   // Controls the completion of Write() after the FakeDataChannel is closed.
   // After the FakeDataChannel is closed, the first Write() call completes
   // asynchronously.
-  bool write_called_after_close_;
+  bool write_called_after_close_ = false;
 
   base::WeakPtrFactory<FakeDataChannel> weak_factory_{this};
 };
@@ -449,8 +448,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     static const uint8_t kClientCertCAName[] = {
         0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55,
         0x04, 0x03, 0x0c, 0x04, 0x42, 0x20, 0x43, 0x41};
-    server_ssl_config_.cert_authorities.push_back(std::string(
-        std::begin(kClientCertCAName), std::end(kClientCertCAName)));
+    server_ssl_config_.cert_authorities.emplace_back(
+        std::begin(kClientCertCAName), std::end(kClientCertCAName));
 
     scoped_refptr<X509Certificate> expected_client_cert(
         ImportCertFromFile(GetTestCertsDirectory(), kClientCertFileName));

@@ -21,8 +21,7 @@ class ExternalConstantsOverriderTest : public ::testing::Test {};
 
 TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
-      base::flat_map<std::string, base::Value>{},
-      CreateDefaultExternalConstants());
+      base::Value::Dict(), CreateDefaultExternalConstants());
 
   EXPECT_TRUE(overrider->UseCUP());
 
@@ -33,17 +32,23 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
 
   EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
   EXPECT_EQ(overrider->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
-  base::Value::DictStorage overrides;
-  base::Value::ListStorage url_list;
-  url_list.push_back(base::Value("https://www.example.com"));
-  url_list.push_back(base::Value("https://www.google.com"));
-  overrides[kDevOverrideKeyUseCUP] = base::Value(false);
-  overrides[kDevOverrideKeyUrl] = base::Value(std::move(url_list));
-  overrides[kDevOverrideKeyInitialDelay] = base::Value(137.1);
-  overrides[kDevOverrideKeyServerKeepAliveSeconds] = base::Value(1);
+  base::Value::Dict overrides;
+  base::Value::List url_list;
+  url_list.Append("https://www.example.com");
+  url_list.Append("https://www.google.com");
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
+  group_policies.Set("b", 2);
+
+  overrides.Set(kDevOverrideKeyUseCUP, false);
+  overrides.Set(kDevOverrideKeyUrl, std::move(url_list));
+  overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
+  overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
+  overrides.Set(kDevOverrideKeyGroupPolicies, std::move(group_policies));
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
       std::move(overrides), CreateDefaultExternalConstants());
 
@@ -58,11 +63,12 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
 
   EXPECT_EQ(overrider->InitialDelay(), 137.1);
   EXPECT_EQ(overrider->ServerKeepAliveSeconds(), 1);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 2U);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
-  base::Value::DictStorage overrides;
-  overrides[kDevOverrideKeyUrl] = base::Value("https://www.example.com");
+  base::Value::Dict overrides;
+  overrides.Set(kDevOverrideKeyUrl, "https://www.example.com");
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
       std::move(overrides), CreateDefaultExternalConstants());
 
@@ -75,6 +81,7 @@ TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
   EXPECT_TRUE(overrider->UseCUP());
   EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
   EXPECT_EQ(overrider->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
 }
 
 }  // namespace updater

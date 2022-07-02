@@ -4,12 +4,41 @@
 
 function createAttributionSrcImg(src) {
   const img = document.createElement('img');
-  img.setAttribute('target', "top");
-  img.width = 100;
-  img.height = 100;
-  img.setAttribute("attributionsrc", src);
-  document.body.appendChild(img);
-  return img;
+  img.attributionSrc = src;
+}
+
+function createAttributionEligibleImgSrc(src) {
+  const img = document.createElement('img');
+  img.setAttribute('attributionsrc', '');
+  img.src = src;
+}
+
+function createAttributionSrcScript(src) {
+  const script = document.createElement('script');
+  script.setAttribute('attributionsrc', src);
+}
+
+function createAttributionEligibleScriptSrc(src) {
+  const script = document.createElement('script');
+  script.setAttribute('attributionsrc', '');
+  script.src = src;
+  document.body.appendChild(script);
+}
+
+function doAttributionEligibleFetch(url) {
+  const headers = {
+    'Attribution-Reporting-Eligible': 'event-source'
+  };
+  // Optionally set keepalive to ensure the request outlives the page.
+  window.fetch(url,
+               { headers, keepalive: true});
+}
+
+function doAttributionEligibleXHR(url) {
+  const req = new XMLHttpRequest();
+  req.open('GET', url);
+  req.setRequestHeader('Attribution-Reporting-Eligible', 'event-source');
+  req.send();
 }
 
 function createAttributionSrcAnchor({
@@ -22,8 +51,8 @@ function createAttributionSrcAnchor({
 } = {}) {
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.setAttribute('target', target);
-  anchor.setAttribute("attributionsrc", attributionsrc);
+  anchor.target = target;
+  anchor.attributionSrc = attributionsrc;
   anchor.width = 100;
   anchor.height = 100;
   anchor.id = id;

@@ -285,7 +285,7 @@ void GetCertChainInfo(PCCERT_CHAIN_CONTEXT chain_context,
               NULL, X509_ASN_ENCODING, CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT,
               const_cast<PCERT_CONTEXT>(cert),
               CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
-              const_cast<PCERT_CONTEXT>(issuer), 0, NULL)) {
+              const_cast<PCERT_CONTEXT>(issuer), 0, nullptr)) {
         verify_result->cert_status |= CERT_STATUS_INVALID;
         break;
       }
@@ -1055,9 +1055,9 @@ CertVerifyProcWin::ResultDebugData::Clone() {
   return std::make_unique<ResultDebugData>(*this);
 }
 
-CertVerifyProcWin::CertVerifyProcWin() {}
+CertVerifyProcWin::CertVerifyProcWin() = default;
 
-CertVerifyProcWin::~CertVerifyProcWin() {}
+CertVerifyProcWin::~CertVerifyProcWin() = default;
 
 bool CertVerifyProcWin::SupportsAdditionalTrustAnchors() const {
   return false;

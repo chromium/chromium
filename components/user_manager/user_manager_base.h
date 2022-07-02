@@ -111,6 +111,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override;
+  UserType GetUserType(const AccountId& account_id) override;
   void SaveUserType(const User* user) override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
@@ -165,10 +166,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                      const std::set<AccountId>& existing_users,
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
-
-  // Returns true if trusted device policies have successfully been retrieved
-  // and ephemeral users are enabled.
-  virtual bool AreEphemeralUsersEnabled() const = 0;
 
   void AddUserRecordForTesting(User* user) {
     return AddUserRecord(user);

@@ -10,6 +10,8 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -59,16 +61,38 @@ ScriptPromise Socket::closed(ScriptState* script_state) const {
   return ScriptPromise(script_state, closed_.Get(script_state->GetIsolate()));
 }
 
-ScriptPromise Socket::close(ScriptState* script_state,
-                            const SocketCloseOptions* options,
-                            ExceptionState& exception_state) {
-  Close(options, exception_state);
-  if (exception_state.HadException()) {
+ScriptPromise Socket::close(ScriptState*, ExceptionState& exception_state) {
+  if (!Initialized()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is not properly initialized.");
     return ScriptPromise();
-  } else {
-    DCHECK(Closed());
-    return ScriptPromise::CastUndefined(script_state);
   }
+
+  if (Closed()) {
+    return closed(script_state_);
+  }
+
+  if (readable_stream_wrapper_->Locked() ||
+      writable_stream_wrapper_->Locked()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Close called on locked streams.");
+    return ScriptPromise();
+  }
+
+  auto* reason = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Stream closed.");
+
+  auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
+      script_state_, ScriptValue::From(script_state_, reason), exception_state);
+  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  readable_cancel.MarkAsHandled();
+
+  auto writable_abort = writable_stream_wrapper_->Writable()->abort(
+      script_state_, ScriptValue::From(script_state_, reason), exception_state);
+  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  writable_abort.MarkAsHandled();
+
+  return closed(script_state_);
 }
 
 Socket::Socket(ScriptState* script_state)

@@ -284,6 +284,8 @@ target(link_target_type, "gles2_sources") {
   if (use_dawn) {
     deps += [ "//gpu/webgpu:common" ]
     sources += [
+      "dawn_caching_interface.cc",
+      "dawn_caching_interface.h",
       "dawn_instance.cc",
       "dawn_instance.h",
       "dawn_platform.cc",
@@ -359,14 +361,6 @@ target(link_target_type, "gles2_sources") {
       "//ui/base:features",
       "//ui/ozone",
     ]
-
-    # Adding this dependency for collecting some metrics checking GL
-    # extensions used on Ozone platforms. Will be removed once the
-    # metrics are collected (in 2-3 months hopefully).
-    # Ref bug: https://crbug.com/1310028
-    if (ozone_platform_x11) {
-      deps += [ "//ui/gfx/x" ]
-    }
   }
 
   if (enable_vulkan) {
@@ -430,6 +424,7 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [
+      "//net",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
       "//third_party/dawn/src/dawn/platform",
@@ -487,8 +482,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image_backing_factory_ahardwarebuffer.h",
       "shared_image_backing_factory_egl.cc",
       "shared_image_backing_factory_egl.h",
-      "shared_image_backing_scoped_hardware_buffer_fence_sync.cc",
-      "shared_image_backing_scoped_hardware_buffer_fence_sync.h",
       "shared_image_batch_access_manager.cc",
       "shared_image_batch_access_manager.h",
       "shared_image_representation_gl_texture_android.cc",

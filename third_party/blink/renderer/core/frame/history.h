@@ -60,13 +60,13 @@ class CORE_EXPORT History final : public ScriptWrappable,
   void forward(ExceptionState&);
   void go(int delta, ExceptionState&);
 
-  void pushState(v8::Isolate* isolate,
+  void pushState(ScriptState*,
                  const ScriptValue& data,
                  const String& title,
                  const String& url,
                  ExceptionState&);
 
-  void replaceState(v8::Isolate* isolate,
+  void replaceState(ScriptState*,
                     const ScriptValue& data,
                     const String& title,
                     const String& url,

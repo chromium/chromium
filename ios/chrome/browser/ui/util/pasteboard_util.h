@@ -11,15 +11,15 @@
 
 class GURL;
 
-// Stores |url| in the pasteboard. |url| must be valid.
+// Stores `url` in the pasteboard. `url` must be valid.
 void StoreURLInPasteboard(const GURL& url);
 
-// Stores |urls| in the pasteboard. |urls| must not be empty and each url
-// within |urls| must be valid. (Use |ClearPasteboard()| explicitly to clear
+// Stores `urls` in the pasteboard. `urls` must not be empty and each url
+// within `urls` must be valid. (Use `ClearPasteboard()` explicitly to clear
 // existing items.)
 void StoreURLsInPasteboard(const std::vector<const GURL>& urls);
 
-// Stores |text| and |url| into the pasteboard.
+// Stores `text` and `url` into the pasteboard.
 void StoreInPasteboard(NSString* text, const GURL& url);
 
 // Effectively clears any items in the pasteboard.

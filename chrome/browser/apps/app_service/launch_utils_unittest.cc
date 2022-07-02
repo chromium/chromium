@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,13 +24,13 @@ class LaunchUtilsTest : public testing::Test {
       apps::mojom::LaunchContainer container,
       WindowOpenDisposition disposition,
       bool preferred_container,
+      int64_t display_id = display::kInvalidDisplayId,
       apps::mojom::LaunchContainer fallback_container =
           apps::mojom::LaunchContainer::kLaunchContainerNone) {
     return apps::CreateAppIdLaunchParamsWithEventFlags(
-        app_id,
-        apps::GetEventFlags(container, disposition, preferred_container),
-        apps::mojom::LaunchSource::kFromChromeInternal,
-        display::kInvalidDisplayId, fallback_container);
+        app_id, apps::GetEventFlags(disposition, preferred_container),
+        apps::mojom::LaunchSource::kFromChromeInternal, display_id,
+        fallback_container);
   }
 
   std::string app_id = "aaa";
@@ -70,7 +71,8 @@ TEST_F(LaunchUtilsTest, PreferContainerWithTab) {
   auto preferred_container =
       apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto params =
-      CreateLaunchParams(container, disposition, true, preferred_container);
+      CreateLaunchParams(container, disposition, true,
+                         display::kInvalidDisplayId, preferred_container);
 
   EXPECT_EQ(preferred_container, params.container);
   EXPECT_EQ(disposition, params.disposition);
@@ -82,21 +84,21 @@ TEST_F(LaunchUtilsTest, PreferContainerWithWindow) {
   auto preferred_container =
       apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto params =
-      CreateLaunchParams(container, disposition, true, preferred_container);
+      CreateLaunchParams(container, disposition, true,
+                         display::kInvalidDisplayId, preferred_container);
 
   EXPECT_EQ(preferred_container, params.container);
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB, params.disposition);
 }
 
 TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
-  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
   const GURL url = GURL("https://example.com/?query=1#frag");
   auto intent = apps_util::CreateIntentFromUrl(url);
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, apps::GetEventFlags(container, disposition, true),
+      app_id, apps::GetEventFlags(disposition, true),
       apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
@@ -106,7 +108,6 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 }
 
 TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
-  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
   std::vector<apps::mojom::IntentFilePtr> files;
@@ -119,7 +120,7 @@ TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
   auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
 
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, apps::GetEventFlags(container, disposition, true),
+      app_id, apps::GetEventFlags(disposition, true),
       apps::mojom::LaunchSource::kFromChromeInternal,
       display::kInvalidDisplayId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent),
@@ -208,7 +209,8 @@ TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
 TEST_F(LaunchUtilsTest, ConvertToCrosapi) {
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  auto params = CreateLaunchParams(container, disposition, false);
+  const int64_t kDisplayId = 1;
+  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
   auto converted_params =
@@ -217,13 +219,15 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapi) {
   EXPECT_EQ(params.container, converted_params.container);
   EXPECT_EQ(params.disposition, converted_params.disposition);
   EXPECT_EQ(params.launch_source, converted_params.launch_source);
+  EXPECT_EQ(params.display_id, converted_params.display_id);
 }
 
 // Verifies that convert params with override url to crosapi and back works.
 TEST_F(LaunchUtilsTest, ConvertToCrosapiUrl) {
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  auto params = CreateLaunchParams(container, disposition, false);
+  const int64_t kDisplayId = 2;
+  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
   params.override_url = GURL("abc.example.com");
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
@@ -234,14 +238,16 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiUrl) {
   EXPECT_EQ(params.disposition, converted_params.disposition);
   EXPECT_EQ(params.launch_source, converted_params.launch_source);
   EXPECT_EQ(params.override_url, converted_params.override_url);
+  EXPECT_EQ(params.display_id, converted_params.display_id);
 }
 
 // Verifies that convert params with files to crosapi and back works.
 TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  auto params = CreateLaunchParams(container, disposition, false);
-  params.launch_files.push_back(base::FilePath("root"));
+  const int64_t kDisplayId = 3;
+  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
+  params.launch_files.emplace_back("root");
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
   auto converted_params =
@@ -250,6 +256,7 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
   EXPECT_EQ(params.container, converted_params.container);
   EXPECT_EQ(params.disposition, converted_params.disposition);
   EXPECT_EQ(params.launch_source, converted_params.launch_source);
+  EXPECT_EQ(params.display_id, converted_params.display_id);
   EXPECT_EQ(params.launch_files, converted_params.launch_files);
 }
 
@@ -257,8 +264,10 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
 TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
-  auto params = CreateLaunchParams(container, disposition, false);
-  params.intent = apps_util::CreateIntentFromUrl(GURL("abc.example.com"));
+  const int64_t kDisplayId = 4;
+  auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
+  params.intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                                 GURL("abc.example.com"));
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
   auto converted_params =
@@ -267,7 +276,8 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   EXPECT_EQ(params.container, converted_params.container);
   EXPECT_EQ(params.disposition, converted_params.disposition);
   EXPECT_EQ(params.launch_source, converted_params.launch_source);
-  EXPECT_EQ(params.intent, converted_params.intent);
+  EXPECT_EQ(params.display_id, converted_params.display_id);
+  EXPECT_EQ(*params.intent, *converted_params.intent);
 }
 
 // Verifies that convert params from crosapi with incomplete params works.
@@ -301,6 +311,8 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   crosapi_params->disposition =
       crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
   crosapi_params->launch_source = apps::mojom::LaunchSource::kFromSharesheet;
+  const int64_t kDisplayId = 5;
+  crosapi_params->display_id = kDisplayId;
   crosapi_params->intent = crosapi::mojom::Intent::New();
   crosapi_params->intent->action = apps_util::kIntentActionSend;
   crosapi_params->intent->mime_type = kIntentMimeType;
@@ -323,6 +335,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   EXPECT_EQ(converted_params.launch_source,
             apps::mojom::LaunchSource::kFromSharesheet);
+  EXPECT_EQ(converted_params.display_id, kDisplayId);
 
   EXPECT_EQ(converted_params.launch_files.size(), 1U);
   EXPECT_EQ(converted_params.launch_files[0], base::FilePath(kFilePath));
@@ -330,10 +343,10 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   EXPECT_EQ(converted_params.intent->action, apps_util::kIntentActionSend);
   EXPECT_EQ(converted_params.intent->mime_type, kIntentMimeType);
   EXPECT_EQ(converted_params.intent->share_text, kShareText);
-  EXPECT_EQ(converted_params.intent->files->size(), 1U);
-  EXPECT_EQ((*converted_params.intent->files)[0]->file_name,
+  EXPECT_EQ(converted_params.intent->files.size(), 1U);
+  EXPECT_EQ(converted_params.intent->files[0]->file_name,
             base::SafeBaseName::Create(kBaseName));
-  EXPECT_EQ((*converted_params.intent->files)[0]->mime_type, kFileMimeType);
+  EXPECT_EQ(converted_params.intent->files[0]->mime_type, kFileMimeType);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

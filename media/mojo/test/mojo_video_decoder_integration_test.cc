@@ -25,6 +25,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_log.h"
 #include "media/base/mock_media_log.h"
+#include "media/base/simple_sync_token_client.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
@@ -191,7 +192,9 @@ class FakeMojoMediaClient : public MojoMediaClient {
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) override {
+      const gfx::ColorSpace& target_color_space,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+      override {
     return create_video_decoder_cb_.Run(media_log);
   }
 
@@ -228,8 +231,9 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
   mojo::PendingRemote<mojom::VideoDecoder> CreateRemoteVideoDecoder() {
     mojo::PendingRemote<mojom::VideoDecoder> remote_video_decoder;
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<MojoVideoDecoderService>(&mojo_media_client_,
-                                                  &mojo_cdm_service_context_),
+        std::make_unique<MojoVideoDecoderService>(
+            &mojo_media_client_, &mojo_cdm_service_context_,
+            mojo::PendingRemote<stable::mojom::StableVideoDecoder>()),
         remote_video_decoder.InitWithNewPipeAndPassReceiver());
     return remote_video_decoder;
   }
@@ -462,6 +466,12 @@ TEST_F(MojoVideoDecoderIntegrationTest, Release) {
   Mock::VerifyAndClearExpectations(&output_cb_);
 
   EXPECT_CALL(release_cb, Run(_));
+  gpu::SyncToken release_sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                                    gpu::CommandBufferId(),
+                                    /*release_count=*/1u);
+  release_sync_token.SetVerifyFlush();
+  SimpleSyncTokenClient client(release_sync_token);
+  frame->UpdateReleaseSyncToken(&client);
   frame = nullptr;
   RunUntilIdle();
 }

@@ -38,7 +38,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class PasswordsSyncPerfTest : public SyncTest {
  public:
-  PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT), password_number_(0) {}
+  PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   PasswordsSyncPerfTest(const PasswordsSyncPerfTest&) = delete;
   PasswordsSyncPerfTest& operator=(const PasswordsSyncPerfTest&) = delete;
@@ -59,7 +59,7 @@ class PasswordsSyncPerfTest : public SyncTest {
   // Returns a new unique password value.
   std::string NextPassword();
 
-  int password_number_;
+  int password_number_ = 0;
 };
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {

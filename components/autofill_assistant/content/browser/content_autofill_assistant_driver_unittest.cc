@@ -48,8 +48,8 @@ class ContentAutofillAssistantDriverTest : public testing::Test {
         &browser_context_, nullptr);
     // Constructor of ContentAutofillAssistantDriver is private, cannot use
     // std::make_unique.
-    driver_ = base::WrapUnique(
-        new ContentAutofillAssistantDriver(web_contents_->GetMainFrame()));
+    driver_ = base::WrapUnique(new ContentAutofillAssistantDriver(
+        web_contents_->GetPrimaryMainFrame()));
     driver_->SetAnnotateDomModelService(annotate_dom_model_service_.get());
   }
 

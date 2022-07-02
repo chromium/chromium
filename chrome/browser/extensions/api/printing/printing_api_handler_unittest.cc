@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -63,11 +64,11 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
                            api::printing::JobStatus expected_status) const {
     EXPECT_EQ(expected_extension_id, extension_id_);
     ASSERT_TRUE(event_args_.is_list());
-    ASSERT_EQ(2u, event_args_.GetListDeprecated().size());
-    const base::Value& job_id = event_args_.GetListDeprecated()[0];
+    ASSERT_EQ(2u, event_args_.GetList().size());
+    const base::Value& job_id = event_args_.GetList()[0];
     ASSERT_TRUE(job_id.is_string());
     EXPECT_EQ(expected_job_id, job_id.GetString());
-    const base::Value& job_status = event_args_.GetListDeprecated()[1];
+    const base::Value& job_status = event_args_.GetList()[1];
     ASSERT_TRUE(job_status.is_string());
     EXPECT_EQ(expected_status,
               api::printing::ParseJobStatus(job_status.GetString()));
@@ -82,7 +83,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
                                   const Event& event) override {
     if (event.event_name == event_name_) {
       extension_id_ = extension_id;
-      event_args_ = event.event_args->Clone();
+      event_args_ = base::Value(event.event_args.Clone());
     }
   }
 
@@ -92,7 +93,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
 
  private:
   // Event router this class should observe.
-  TestEventRouter* const event_router_;
+  const raw_ptr<TestEventRouter> event_router_;
 
   // The name of the observed event.
   const std::string event_name_;
@@ -190,8 +191,8 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 
-  std::vector<base::Value> args;
-  args.emplace_back(base::Value::FromUniquePtrValue(request.ToValue()));
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(request.ToValue()));
   return api::printing::SubmitJob::Params::Create(args);
 }
 
@@ -430,10 +431,10 @@ class PrintingAPIHandlerUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* testing_profile_;
-  TestEventRouter* event_router_ = nullptr;
-  FakePrintJobController* print_job_controller_;
-  chromeos::TestCupsWrapper* cups_wrapper_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestEventRouter> event_router_ = nullptr;
+  raw_ptr<FakePrintJobController> print_job_controller_;
+  raw_ptr<chromeos::TestCupsWrapper> cups_wrapper_;
   std::unique_ptr<PrintingAPIHandler> printing_api_handler_;
   scoped_refptr<const Extension> extension_;
   absl::optional<api::printing::SubmitJobStatus> submit_job_status_;
@@ -646,9 +647,9 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   ASSERT_TRUE(color);
   const base::Value* color_options = color->FindListKey("option");
   ASSERT_TRUE(color_options);
-  ASSERT_EQ(1u, color_options->GetListDeprecated().size());
+  ASSERT_EQ(1u, color_options->GetList().size());
   const std::string* color_type =
-      color_options->GetListDeprecated()[0].FindStringKey("type");
+      color_options->GetList()[0].FindStringKey("type");
   ASSERT_TRUE(color_type);
   EXPECT_EQ("STANDARD_MONOCHROME", *color_type);
 
@@ -658,10 +659,10 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   const base::Value* page_orientation_options =
       page_orientation->FindListKey("option");
   ASSERT_TRUE(page_orientation_options);
-  ASSERT_EQ(3u, page_orientation_options->GetListDeprecated().size());
+  ASSERT_EQ(3u, page_orientation_options->GetList().size());
   std::vector<std::string> page_orientation_types;
   for (const base::Value& page_orientation_option :
-       page_orientation_options->GetListDeprecated()) {
+       page_orientation_options->GetList()) {
     const std::string* page_orientation_type =
         page_orientation_option.FindStringKey("type");
     ASSERT_TRUE(page_orientation_type);

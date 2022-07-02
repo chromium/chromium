@@ -278,29 +278,6 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID)
-Mailbox SharedImageInterfaceProxy::CreateSharedImageWithAHB(
-    const Mailbox& mailbox,
-    uint32_t usage,
-    const SyncToken& sync_token) {
-  auto out_mailbox = Mailbox::GenerateForSharedImage();
-  std::vector<SyncToken> dependencies =
-      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
-  {
-    base::AutoLock lock(lock_);
-    AddMailbox(out_mailbox, usage);
-    gfx::GpuFenceHandle acquire_fence_handle;
-    last_flush_id_ = host_->EnqueueDeferredMessage(
-        mojom::DeferredRequestParams::NewSharedImageRequest(
-            mojom::DeferredSharedImageRequest::NewCreateSharedImageWithAhb(
-                mojom::CreateSharedImageWithAHBParams::New(
-                    out_mailbox, mailbox, usage, ++next_release_id_))),
-        std::move(dependencies));
-  }
-  return out_mailbox;
-}
-#endif
-
 void SharedImageInterfaceProxy::UpdateSharedImage(const SyncToken& sync_token,
                                                   const Mailbox& mailbox) {
   UpdateSharedImage(sync_token, nullptr, mailbox);

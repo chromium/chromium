@@ -10,7 +10,7 @@
 namespace chromeos {
 
 // A cleanup handler which clears the profile's print jobs.
-// TODO(jityao, b:200678974) Add browser tests.
+// TODO(b:200678974) Add Tast test.
 class PrintJobsCleanupHandler : public CleanupHandler {
  public:
   PrintJobsCleanupHandler();

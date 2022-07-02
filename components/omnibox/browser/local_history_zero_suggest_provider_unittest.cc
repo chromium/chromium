@@ -95,24 +95,11 @@ class LocalHistoryZeroSuggestProviderTest
 
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     if (GetParam()) {
-#if BUILDFLAG(IS_IOS)
-      scoped_feature_list_->InitWithFeatures(
-          {omnibox::kLocalHistoryZeroSuggest,
-           omnibox::kLocalHistorySuggestRevamp},
-          {});
-#else
-      scoped_feature_list_->InitWithFeatures(
-          {omnibox::kLocalHistorySuggestRevamp}, {});
-#endif
+      scoped_feature_list_->InitAndEnableFeature(
+          omnibox::kLocalHistorySuggestRevamp);
     } else {
-#if BUILDFLAG(IS_IOS)
-      scoped_feature_list_->InitWithFeatures(
-          {omnibox::kLocalHistoryZeroSuggest},
-          {omnibox::kLocalHistorySuggestRevamp});
-#else
-      scoped_feature_list_->InitWithFeatures(
-          {}, {omnibox::kLocalHistorySuggestRevamp});
-#endif
+      scoped_feature_list_->InitAndDisableFeature(
+          omnibox::kLocalHistorySuggestRevamp);
     }
 
     // Add the fallback default search provider to the TemplateURLService so
@@ -329,11 +316,7 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
   // on Desktop and Android NTP.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   StartProviderAndWaitUntilDone();
-#if !BUILDFLAG(IS_IOS)  // Enabled by default on Desktop and Android NTP.
   ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
-#else
-  ExpectMatches({});
-#endif
 }
 
 // Tests that search terms are extracted from the default search provider's

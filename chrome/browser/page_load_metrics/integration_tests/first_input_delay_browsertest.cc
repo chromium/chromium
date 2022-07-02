@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -14,6 +15,10 @@
 using ukm::builders::PageLoad;
 
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstInputDelay);
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script>
@@ -41,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
 
   // We should wait for the main frame's hit-test data to be ready before
   // sending the click event below to avoid flakiness.
-  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
   // Ensure the compositor thread is ready for mouse events.
   content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
   frame_observer.Wait();
@@ -52,6 +57,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
   // Check web perf API.
   double expected_fid = EvalJs(web_contents(), "runtest()").ExtractDouble();
   EXPECT_GT(expected_fid, 0.0);
+
+  waiter->Wait();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 

@@ -13,27 +13,16 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace media {
 
 // Returns a GpuMemoryBufferId that's guaranteed to be different from those
 // returned by previous calls. This function is thread safe.
 MEDIA_GPU_EXPORT gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId();
 
-// Create GpuMemoryBuffer-based media::VideoFrame with |buffer_usage|.
-// See //media/base/video_frame.h for other parameters.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// GpuMemoryBuffer and it must outlive the returned VideoFrame. If it's null,
-// the buffer is allocated using the render node (this is intended to be used
-// only for the internals of video encoding when the usage is
-// VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
-// concurrently from multiple threads (as long as either
-// |gpu_memory_buffer_factory| is thread-safe or nullptr).
+// Creates a STORAGE_GPU_MEMORY_BUFFER VideoFrame backed by a NATIVE_PIXMAP
+// GpuMemoryBuffer allocated with |buffer_usage|. See //media/base/video_frame.h
+// for the other parameters. This function is thread-safe.
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -41,17 +30,10 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage);
 
-// Create platform dependent media::VideoFrame with |buffer_usage|.
-// See //media/base/video_frame.h for other parameters.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// video frame's storage and it must outlive the returned VideoFrame. If it's
-// null, the buffer is allocated using the render node (this is intended to be
-// used only for the internals of video encoding when the usage is
-// VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
-// concurrently from multiple threads (as long as either
-// |gpu_memory_buffer_factory| is thread-safe or nullptr).
+// Creates a STORAGE_DMABUFS VideoFrame whose buffer is allocated with
+// |buffer_usage|. See //media/base/video_frame.h for the other parameters. This
+// function is thread-safe.
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -59,17 +41,13 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
     base::TimeDelta timestamp,
     gfx::BufferUsage buffer_usage);
 
-// Get VideoFrameLayout of platform dependent video frame with |pixel_format|,
-// |coded_size| and |buffer_usage|. This function is not cost-free as this
-// allocates a platform dependent video frame.
-// If |gpu_memory_buffer_factory| is not null, it's used to allocate the
-// video frame's storage. If it's null, the storage is allocated using the
-// render node (this is intended to be used only for the internals of video
-// encoding when the usage is VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's
-// safe to call this function concurrently from multiple threads (as long as
-// either |gpu_memory_buffer_factory| is thread-safe or nullptr).
+// Returns the VideoFrameLayout of a VideoFrame allocated with
+// CreatePlatformVideoFrame(), i.e., all parameters are forwarded to that
+// function (|visible_rect| is set to gfx::Rect(|coded_size|), |natural_size| is
+// set to |coded_size|, and |timestamp| is set to base::TimeDelta()). This
+// function is not cheap as it allocates a buffer. Returns absl::nullopt if the
+// buffer allocation fails. This function is thread-safe.
 MEDIA_GPU_EXPORT absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     gfx::BufferUsage buffer_usage);

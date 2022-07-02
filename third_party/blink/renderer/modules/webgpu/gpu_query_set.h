@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUERY_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_QUERY_SET_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_type.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -25,6 +26,8 @@ class GPUQuerySet : public DawnObject<WGPUQuerySet> {
 
   // gpu_queryset.idl
   void destroy();
+  String type() const;
+  uint32_t count() const;
 
  private:
   void setLabelImpl(const String& value) override {

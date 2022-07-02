@@ -136,6 +136,8 @@ enum DeviceManagementStatus {
   DM_STATUS_REQUEST_TOO_LARGE = 16,
   // Client error: Too many request.
   DM_STATUS_SERVICE_TOO_MANY_REQUESTS = 17,
+  // Service error: The device needs to be reset (ex. for re-enrollment).
+  DM_STATUS_SERVICE_DEVICE_NEEDS_RESET = 18,
   // Service error: Policy not found. Error code defined by the DM folks.
   DM_STATUS_SERVICE_POLICY_NOT_FOUND = 902,
   // Service error: ARC is not enabled on this domain.

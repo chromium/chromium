@@ -12,7 +12,7 @@
 // Toolbar configuration object giving access to styling elements.
 @interface ToolbarConfiguration : NSObject
 
-// Init the toolbar configuration with the desired |style|.
+// Init the toolbar configuration with the desired `style`.
 - (instancetype)initWithStyle:(ToolbarStyle)style NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -48,9 +48,9 @@
 // See locationBarBackgroundColorWithVisibility: below for defocused.
 @property(nonatomic, readonly) UIColor* focusedLocationBarBackgroundColor;
 
-// Returns the background color of the location bar, with a |visibilityFactor|.
-// The |visibilityFactor| is here to alter the alpha value of the background
-// color. Even with a |visibilityFactor| of 1, the final color could is
+// Returns the background color of the location bar, with a `visibilityFactor`.
+// The `visibilityFactor` is here to alter the alpha value of the background
+// color. Even with a `visibilityFactor` of 1, the final color could is
 // translucent.
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor;
 

@@ -119,15 +119,11 @@ bool VizCompositorThreadRunnerWebView::CreateHintSessionFactory(
 }
 
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
-    viz::mojom::FrameSinkManagerParamsPtr params) {
-  // Does not support software compositing.
-  NOTREACHED();
-}
-
-void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
     viz::mojom::FrameSinkManagerParamsPtr params,
-    gpu::CommandBufferTaskExecutor* task_executor,
     viz::GpuServiceImpl* gpu_service) {
+  // Does not support software compositing.
+  DCHECK(gpu_service);
+
   viz_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -65,6 +65,13 @@ enum CustomContextMenuItemType {
   kSubMenu
 };
 
+// Container for information about the field renderer id where the context menu
+// was triggered.
+// autofill::FieldRendererId
+struct FieldRendererId {
+  uint64 id;
+};
+
 // Container for information about entries in an HTML select popup menu and
 // custom entries of the context menu.
 // TODO(crbug.com/1093904): Consider merging the MenuItem struct in
@@ -191,6 +198,10 @@ struct UntrustworthyContextMenuParams {
   // Whether the context contains text highlighted by a text fragment.
   // See TextFragmentAnchor.
   bool opened_from_highlight;
+
+  // The renderer id of the input field from where the context menu is opened.
+  // `base::nullopt` if it is not an input field.
+  FieldRendererId? field_renderer_id;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

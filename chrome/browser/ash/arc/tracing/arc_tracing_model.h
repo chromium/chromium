@@ -69,7 +69,7 @@ class ArcTracingModel {
  private:
   // Processes list of events. Returns true in case all events were processed
   // successfully.
-  bool ProcessEvent(base::ListValue* events);
+  bool ProcessEvent(base::Value::List* events);
 
   // Converts sys traces events to the |base::Dictionary| based format used in
   // Chrome.

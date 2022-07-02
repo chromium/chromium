@@ -364,15 +364,15 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
       new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
         NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
-    if (tests[i].parsed_success) {
+    if (test.parsed_success) {
       EXPECT_THAT(rv, IsOk());
     } else {
       EXPECT_NE(OK, rv);
@@ -382,13 +382,13 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
     ASSERT_TRUE(handler.get() != nullptr);
     HttpAuthHandlerDigest* digest =
         static_cast<HttpAuthHandlerDigest*>(handler.get());
-    EXPECT_STREQ(tests[i].parsed_realm, digest->realm_.c_str());
-    EXPECT_STREQ(tests[i].parsed_nonce, digest->nonce_.c_str());
-    EXPECT_STREQ(tests[i].parsed_domain, digest->domain_.c_str());
-    EXPECT_STREQ(tests[i].parsed_opaque, digest->opaque_.c_str());
-    EXPECT_EQ(tests[i].parsed_stale, digest->stale_);
-    EXPECT_EQ(tests[i].parsed_algorithm, digest->algorithm_);
-    EXPECT_EQ(tests[i].parsed_qop, digest->qop_);
+    EXPECT_STREQ(test.parsed_realm, digest->realm_.c_str());
+    EXPECT_STREQ(test.parsed_nonce, digest->nonce_.c_str());
+    EXPECT_STREQ(test.parsed_domain, digest->domain_.c_str());
+    EXPECT_STREQ(test.parsed_opaque, digest->opaque_.c_str());
+    EXPECT_EQ(test.parsed_stale, digest->stale_);
+    EXPECT_EQ(test.parsed_algorithm, digest->algorithm_);
+    EXPECT_EQ(test.parsed_qop, digest->qop_);
     EXPECT_TRUE(handler->encrypts_identity());
     EXPECT_FALSE(handler->is_connection_based());
     EXPECT_TRUE(handler->NeedsIdentity());
@@ -530,12 +530,12 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
       new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
         NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
@@ -543,16 +543,13 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
 
     HttpAuthHandlerDigest* digest =
         static_cast<HttpAuthHandlerDigest*>(handler.get());
-    std::string creds =
-        digest->AssembleCredentials(tests[i].req_method,
-                                    tests[i].req_path,
-                                    AuthCredentials(
-                                        base::ASCIIToUTF16(tests[i].username),
-                                        base::ASCIIToUTF16(tests[i].password)),
-                                    tests[i].cnonce,
-                                    tests[i].nonce_count);
+    std::string creds = digest->AssembleCredentials(
+        test.req_method, test.req_path,
+        AuthCredentials(base::ASCIIToUTF16(test.username),
+                        base::ASCIIToUTF16(test.password)),
+        test.cnonce, test.nonce_count);
 
-    EXPECT_STREQ(tests[i].expected_creds, creds.c_str());
+    EXPECT_STREQ(test.expected_creds, creds.c_str());
   }
 }
 

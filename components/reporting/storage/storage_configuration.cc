@@ -6,10 +6,13 @@
 
 namespace reporting {
 
-StorageOptions::StorageOptions() = default;
+StorageOptions::StorageOptions()
+    : memory_resource_(base::MakeRefCounted<MemoryResourceImpl>(
+          4u * 1024uLL * 1024uLL)),  // 4 MiB by default
+      disk_space_resource_(base::MakeRefCounted<DiskResourceImpl>(
+          64u * 1024uLL * 1024uLL))  // 64 MiB by default.
+{}
 StorageOptions::StorageOptions(const StorageOptions& options) = default;
-StorageOptions& StorageOptions::operator=(const StorageOptions& options) =
-    default;
 StorageOptions::~StorageOptions() = default;
 
 QueueOptions::QueueOptions(const StorageOptions& storage_options)

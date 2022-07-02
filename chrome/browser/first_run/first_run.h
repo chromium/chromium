@@ -122,18 +122,6 @@ bool ShouldShowWelcomePage();
 // Returns true if |contents| hosts one of the welcome pages.
 bool IsOnWelcomePage(content::WebContents* contents);
 
-// Sets a flag that will cause ShouldDoPersonalDataManagerFirstRun()
-// to return true exactly once, so that the browser loads
-// PersonalDataManager once the main message loop gets going.
-void SetShouldDoPersonalDataManagerFirstRun();
-
-// Returns true if the autofill personal data manager first-run action
-// should be taken.
-//
-// This will return true only once, the first time it is called after
-// SetShouldDoPersonalDataManagerFirstRun() is called.
-bool ShouldDoPersonalDataManagerFirstRun();
-
 // Automatically imports items requested by |profile|'s configuration (sum of
 // policies and initial prefs). Also imports bookmarks from file if
 // |import_bookmarks_path| is not empty.

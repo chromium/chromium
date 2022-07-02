@@ -938,7 +938,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
   EditingTriState state = EditingTriState::kFalse;
   bool node_is_start = true;
   for (Node& node : NodeTraversal::StartsAt(*selection.Start().AnchorNode())) {
-    if (node.GetLayoutObject() && HasEditableStyle(node)) {
+    if (node.GetLayoutObject() && IsEditable(node)) {
       auto* node_style =
           MakeGarbageCollected<CSSComputedStyleDeclaration>(&node);
       if (node_style) {
@@ -1579,8 +1579,7 @@ void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
   // 1. Remove style from matched rules because style remain without repeating
   // it in inline style declaration
   MutableCSSPropertyValueSet* style_from_matched_rules =
-      StyleFromMatchedRulesForElement(element,
-                                      StyleResolver::kAllButEmptyCSSRules);
+      StyleFromMatchedRulesForElement(element, StyleResolver::kAllCSSRules);
   if (style_from_matched_rules && !style_from_matched_rules->IsEmpty()) {
     mutable_style_ =
         GetPropertiesNotIn(mutable_style_.Get(), element,

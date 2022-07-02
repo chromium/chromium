@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/mojom/base/shared_memory.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -188,6 +189,21 @@ void FontUniqueNameLookupWin::PrepareFontUniqueNameLookup(
       base::Unretained(this)));
 }
 
+void FontUniqueNameLookupWin::Init() {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables))
+    return;
+
+  EnsureServiceConnected();
+
+  if (lookup_mode_.has_value()) {
+    InitWithLookupMode(lookup_mode_.value());
+    return;
+  }
+
+  service_->GetUniqueFontLookupMode(base::BindOnce(
+      &FontUniqueNameLookupWin::InitWithLookupMode, base::Unretained(this)));
+}
+
 void FontUniqueNameLookupWin::ReceiveReadOnlySharedMemoryRegion(
     base::ReadOnlySharedMemoryRegion shared_memory_region) {
   DCHECK(lookup_mode_ == blink::mojom::UniqueFontLookupMode::kRetrieveTable);
@@ -196,6 +212,20 @@ void FontUniqueNameLookupWin::ReceiveReadOnlySharedMemoryRegion(
   while (!pending_callbacks_.IsEmpty()) {
     NotifyFontUniqueNameLookupReady callback = pending_callbacks_.TakeFirst();
     std::move(callback).Run();
+  }
+}
+
+void FontUniqueNameLookupWin::InitWithLookupMode(
+    blink::mojom::UniqueFontLookupMode lookup_mode) {
+  lookup_mode_ = lookup_mode;
+
+  if (!font_table_matcher_.get() &&
+      RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled() &&
+      lookup_mode_ == blink::mojom::UniqueFontLookupMode::kRetrieveTable) {
+    // This call primes IsFontUniqueNameLookupReadyForSyncLookup() by
+    // asynchronously fetching the font table so it will be ready when needed.
+    // It isn't needed now, so base::DoNothing() is passed as the callback.
+    PrepareFontUniqueNameLookup(base::DoNothing());
   }
 }
 

@@ -26,6 +26,7 @@ class StreamingSearchPrefetchURLLoader;
 class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
  public:
   StreamingSearchPrefetchRequest(
+      const std::u16string& prefetch_search_terms,
       const GURL& prefetch_url,
       bool navigation_prefetch,
       base::OnceCallback<void(bool)> report_error_callback);

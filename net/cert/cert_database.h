@@ -5,6 +5,7 @@
 #ifndef NET_CERT_CERT_DATABASE_H_
 #define NET_CERT_CERT_DATABASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -39,7 +40,7 @@ class NET_EXPORT CertDatabase {
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called whenever the Cert Database is known to have changed.
     // Typically, this will be in response to a CA certificate being added,
@@ -48,7 +49,7 @@ class NET_EXPORT CertDatabase {
     virtual void OnCertDBChanged() {}
 
    protected:
-    Observer() {}
+    Observer() = default;
   };
 
   // Returns the CertDatabase singleton.
@@ -91,7 +92,7 @@ class NET_EXPORT CertDatabase {
 
   class Notifier;
   friend class Notifier;
-  Notifier* notifier_ = nullptr;
+  raw_ptr<Notifier> notifier_ = nullptr;
 #endif
 };
 

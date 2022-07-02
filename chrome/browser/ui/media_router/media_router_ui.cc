@@ -87,7 +87,7 @@ std::u16string GetSinkFriendlyName(const MediaSink& sink) {
 
 void MaybeReportCastingSource(MediaCastMode cast_mode,
                               const RouteRequestResult& result) {
-  if (result.result_code() == RouteRequestResult::OK)
+  if (result.result_code() == mojom::RouteRequestResultCode::OK)
     base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
 }
 
@@ -547,12 +547,12 @@ void MediaRouterUI::OnRouteResponseReceived(
   }
 
   current_route_request_.reset();
-  if (result.result_code() == RouteRequestResult::OK &&
+  if (result.result_code() == mojom::RouteRequestResultCode::OK &&
       cast_mode == TAB_MIRROR && !base::TimeTicks::IsHighResolution()) {
     // When tab mirroring on a device without a high resolution clock, the audio
     // is not mirrored.
     SendIssueForTabAudioNotSupported(sink_id);
-  } else if (result.result_code() == RouteRequestResult::TIMED_OUT) {
+  } else if (result.result_code() == mojom::RouteRequestResultCode::TIMED_OUT) {
     SendIssueForRouteTimeout(cast_mode, sink_id,
                              presentation_request_source_name);
   }

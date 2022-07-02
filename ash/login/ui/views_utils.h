@@ -52,7 +52,7 @@ ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 // If |view_defining_max_width| is set, we allow the label to have multiple
 // lines and we set its maximum width to the preferred width of
 // |view_defining_max_width|.
-ASH_EXPORT views::Label* CreateBubbleLabel(
+ASH_EXPORT std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width = nullptr,
     SkColor color = AshColorProvider::Get()->GetContentLayerColor(

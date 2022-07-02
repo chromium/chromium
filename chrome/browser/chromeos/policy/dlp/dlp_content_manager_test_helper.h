@@ -6,12 +6,17 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -43,6 +48,14 @@ class DlpContentManagerTestHelper {
 
   int ActiveWarningDialogsCount() const;
 
+  const std::vector<std::unique_ptr<DlpContentManager::ScreenShareInfo>>&
+  GetRunningScreenShares() const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+  GetRunningVideoCaptureInfo() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::TimeDelta GetPrivacyScreenOffDelay() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,9 +64,9 @@ class DlpContentManagerTestHelper {
   DlpReportingManager* GetReportingManager() const;
 
  private:
-  DlpContentManager* manager_;
-  DlpReportingManager* reporting_manager_;
-  ScopedDlpContentObserverForTesting* scoped_dlp_content_observer_;
+  raw_ptr<DlpContentManager> manager_;
+  raw_ptr<DlpReportingManager> reporting_manager_;
+  raw_ptr<ScopedDlpContentObserverForTesting> scoped_dlp_content_observer_;
 };
 
 }  // namespace policy

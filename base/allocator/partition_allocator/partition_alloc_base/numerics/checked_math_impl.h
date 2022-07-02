@@ -165,7 +165,7 @@ constexpr bool CheckedMulImpl(T x, T y, T* result) {
   if (uy > UnsignedDst(!std::is_signed<T>::value || is_negative) &&
       ux > (std::numeric_limits<T>::max() + UnsignedDst(is_negative)) / uy)
     return false;
-  *result = is_negative ? 0 - uresult : uresult;
+  *result = static_cast<T>(is_negative ? 0 - uresult : uresult);
   return true;
 }
 
@@ -196,7 +196,8 @@ struct CheckedMulOp<T,
     bool is_valid = true;
     if (CheckedMulFastOp<Promotion, Promotion>::is_supported) {
       // The fast op may be available with the promoted type.
-      is_valid = CheckedMulFastOp<Promotion, Promotion>::Do(x, y, &presult);
+      is_valid = CheckedMulFastOp<Promotion, Promotion>::Do(
+          static_cast<Promotion>(x), static_cast<Promotion>(y), &presult);
     } else if (IsIntegerArithmeticSafe<Promotion, T, U>::value) {
       presult = static_cast<Promotion>(x) * static_cast<Promotion>(y);
     } else {

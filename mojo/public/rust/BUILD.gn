@@ -75,12 +75,14 @@ rust_static_library("mojo_rust") {
     "system/mojo_types.rs",
     "system/shared_buffer.rs",
     "system/trap.rs",
+    "system/wait.rs",
     "system/wait_set.rs",
   ]
 
   deps = [
     ":mojo_c_system_binding",
     ":mojo_c_system_wrapper",
+    "//third_party/rust/bitflags/v1:lib",
   ]
 
   bindgen_output = get_target_outputs(":mojo_c_system_binding")

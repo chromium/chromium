@@ -5,6 +5,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for recording CrOSActions.
   </summary>
@@ -194,6 +195,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     See event summary.
   </summary>
@@ -258,6 +260,7 @@
   <owner>pdyson@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for recording events to monitor the creation of Neutrino Devices.
   </summary>
@@ -383,6 +386,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Structured Metrics is a logging framework for events. This project is used
     for monitoring the framework itself.
@@ -407,6 +411,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -432,6 +437,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -463,6 +469,7 @@
   <owner>tby@chromium.org</owner>
   <id>uma</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -483,6 +490,7 @@
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -503,6 +511,7 @@
   <owner>tby@chromium.org</owner>
   <id>none</id>
   <scope>profile</scope>
+  <key-rotation>90</key-rotation>
   <summary>
     Project for unit testing, do not use.
   </summary>

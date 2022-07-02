@@ -63,7 +63,7 @@ void MockReportQueueProvider::
       .WillRepeatedly([]() {
         auto report_queue =
             std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-                new NiceMock<MockReportQueue>(),
+                new MockReportQueue(),
                 base::OnTaskRunnerDeleter(
                     base::ThreadPool::CreateSequencedTaskRunner({})));
 

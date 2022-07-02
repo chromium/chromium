@@ -12,7 +12,7 @@
   }
 
   cr-button {
-    margin-inline-start: 12px;
+    margin-inline-start: 8px;
   }
 </style>
 
@@ -30,8 +30,8 @@
     <pii-selection id="piiSelection"
         page-index="[[supportToolPageIndex_.PII_SELECTION]]">
     </pii-selection>
-    <spinner-page page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]"
-        page-title="Exporting diagnostic data">
+    <spinner-page id="exportSpinner" page-title="Exporting diagnostic data"
+        page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]">
     </spinner-page>
     <data-export-done id="dataExportDone"
         page-index="[[supportToolPageIndex_.DATA_EXPORT_DONE]]">
@@ -49,9 +49,10 @@
     Continue
   </cr-button>
 </div>
-<cr-toast id="errorMessageToast" duration="0">
-  <span>[[errorMessage_]]</span>
-  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
-      iron-icon="cr:close">
-  </cr-icon-button>
+<cr-toast id="errorMessageToast" duration="0" tabindex="0"
+    aria-labelledby="error-message">
+  <span id="error-message">[[errorMessage_]]</span>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
 </cr-toast>

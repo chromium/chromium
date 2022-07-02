@@ -10,6 +10,8 @@
 #include "base/values.h"
 #include "components/ui_metrics/canonical_url_share_metrics_types.h"
 #import "ios/chrome/browser/procedural_block_types.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
@@ -18,20 +20,14 @@
 #endif
 
 namespace {
-// Script to access the canonical URL from a web page.
-const char16_t kCanonicalURLScript[] =
-    u"(function() {"
-    u"  var linkNode = document.querySelector(\"link[rel='canonical']\");"
-    u"  return linkNode ? linkNode.getAttribute(\"href\") : \"\";"
-    u"})()";
 
-// Logs |result| in the Mobile.CanonicalURLResult histogram.
+// Logs `result` in the Mobile.CanonicalURLResult histogram.
 void LogCanonicalUrlResultHistogram(ui_metrics::CanonicalURLResult result) {
   UMA_HISTOGRAM_ENUMERATION(ui_metrics::kCanonicalURLResultHistogram, result,
                             ui_metrics::CANONICAL_URL_RESULT_COUNT);
 }
 
-// Converts a |value| to a GURL. Returns an empty GURL if |value| is not a valid
+// Converts a `value` to a GURL. Returns an empty GURL if `value` is not a valid
 // HTTPS URL, indicating that retrieval failed. This function also handles
 // logging retrieval failures if applicable.
 GURL UrlFromValue(const base::Value* value) {
@@ -43,7 +39,7 @@ GURL UrlFromValue(const base::Value* value) {
 
     // This variable is required for metrics collection in order to distinguish
     // between the no canonical URL found and the invalid canonical URL found
-    // cases. The |canonical_url| GURL cannot be relied upon to distinguish
+    // cases. The `canonical_url` GURL cannot be relied upon to distinguish
     // between these cases because GURLs created with invalid URLs can be
     // constructed as empty GURLs.
     canonical_url_found = true;
@@ -62,12 +58,25 @@ GURL UrlFromValue(const base::Value* value) {
 }  // namespace
 
 namespace activity_services {
+
+const char16_t kCanonicalURLScript[] =
+    u"(function() {"
+    u"  var linkNode = document.querySelector(\"link[rel='canonical']\");"
+    u"  return linkNode ? linkNode.getAttribute(\"href\") : \"\";"
+    u"})()";
+
 void RetrieveCanonicalUrl(web::WebState* web_state,
                           ProceduralBlockWithURL completion) {
   // Do not use the canonical URL if the page is not secured with HTTPS.
   const GURL visible_url = web_state->GetVisibleURL();
   if (!visible_url.SchemeIsCryptographic()) {
     LogCanonicalUrlResultHistogram(ui_metrics::FAILED_VISIBLE_URL_NOT_HTTPS);
+    completion(GURL::EmptyGURL());
+    return;
+  }
+
+  web::WebFrame* main_frame = web::GetMainFrame(web_state);
+  if (!main_frame) {
     completion(GURL::EmptyGURL());
     return;
   }
@@ -94,7 +103,7 @@ void RetrieveCanonicalUrl(web::WebState* web_state,
         completion(canonical_url);
       };
 
-  web_state->ExecuteJavaScript(kCanonicalURLScript,
-                               base::BindOnce(javascript_completion));
+  main_frame->ExecuteJavaScript(kCanonicalURLScript,
+                                base::BindOnce(javascript_completion));
 }
 }  // namespace activity_services

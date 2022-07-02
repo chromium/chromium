@@ -45,8 +45,6 @@ void StartCachedLoad(
     const std::string& data) {
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(pending_client));
-  client->OnReceiveResponse(std::move(response_head),
-                            mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
@@ -56,7 +54,7 @@ void StartCachedLoad(
     return;
   }
 
-  client->OnStartLoadingResponseBody(std::move(consumer));
+  client->OnReceiveResponse(std::move(response_head), std::move(consumer));
 
   auto write_data = std::make_unique<WriteData>();
   write_data->client = std::move(client);

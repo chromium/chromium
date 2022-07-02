@@ -107,7 +107,7 @@ void SaveCardMessageControllerAndroid::Show(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   message_->SetSecondaryButtonMenuText(
       l10n_util::GetStringUTF16(IDS_NO_THANKS));
-  message_->SetSecondaryActionCallback(base::BindOnce(
+  message_->SetSecondaryActionCallback(base::BindRepeating(
       &SaveCardMessageControllerAndroid::HandleMessageSecondaryButtonClicked,
       base::Unretained(this)));
 
@@ -243,6 +243,11 @@ void SaveCardMessageControllerAndroid::OnSaveCardConfirmed(JNIEnv* env) {
 
 // --- Dialog Dismissed ---
 
+void SaveCardMessageControllerAndroid::OnUserDismiss(JNIEnv* env) {
+  OnPromptCompleted(SaveCreditCardPromptResult::kDenied,
+                    /*user_provided_details=*/{});
+}
+
 void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
   if (reprompt_required_) {
     return;
@@ -329,8 +334,14 @@ bool SaveCardMessageControllerAndroid::HadUserInteraction() {
 void SaveCardMessageControllerAndroid::ResetInternal() {
   message_.reset();
   reprompt_required_ = false;
+  is_dialog_shown_ = false;
+  is_link_clicked_ = false;
   web_contents_ = nullptr;
   save_card_message_confirm_controller_.reset();
+
+  is_name_confirmed_for_testing_ = false;
+  is_date_confirmed_for_testing_ = false;
+  is_save_card_confirmed_for_testing_ = false;
 }
 
 }  // namespace autofill

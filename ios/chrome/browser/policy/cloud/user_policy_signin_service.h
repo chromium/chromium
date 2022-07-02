@@ -41,6 +41,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // KeyedService implementation:
   void Shutdown() override;
 
+  // Notifies that the user has seen the notification about User Policy.
+  void OnUserPolicyNotificationSeen();
+
  private:
   // UserPolicySigninServiceBase implementation:
   base::TimeDelta GetTryRegistrationDelay() override;

@@ -32,6 +32,7 @@ class ChromeBackgroundTracingMetricsProvider
  private:
   // owned by BackgroundTracingMetricsProvider::system_profile_providers_.
   raw_ptr<MetricsProvider> av_metrics_provider_ = nullptr;
+  raw_ptr<MetricsProvider> chromeos_metrics_provider_ = nullptr;
 };
 
 }  // namespace tracing

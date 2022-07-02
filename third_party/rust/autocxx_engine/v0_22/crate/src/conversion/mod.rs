@@ -157,7 +157,7 @@ impl<'a> BridgeConverter<'a> {
                 // parameterized by a richer set of metadata.
                 Self::dump_apis("adding casts", &analyzed_apis);
                 let analyzed_apis =
-                    FnAnalyzer::analyze_functions(analyzed_apis, unsafe_policy, self.config);
+                    FnAnalyzer::analyze_functions(analyzed_apis, &unsafe_policy, self.config);
                 // If any of those functions turned out to be pure virtual, don't attempt
                 // to generate UniquePtr implementations for the type, since it can't
                 // be instantiated.
@@ -197,6 +197,7 @@ impl<'a> BridgeConverter<'a> {
                 )?;
                 let rs = RsCodeGenerator::generate_rs_code(
                     analyzed_apis,
+                    &unsafe_policy,
                     self.include_list,
                     bindgen_mod,
                     self.config,

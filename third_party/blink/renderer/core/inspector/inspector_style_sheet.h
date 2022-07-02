@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
+#include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -170,6 +171,11 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
                                          SourceRange* new_range,
                                          String* old_selector,
                                          ExceptionState&);
+  CSSScopeRule* SetScopeRuleText(const SourceRange&,
+                                 const String& selector,
+                                 SourceRange* new_range,
+                                 String* old_selector,
+                                 ExceptionState&);
   CSSSupportsRule* SetSupportsRuleText(const SourceRange&,
                                        const String& selector,
                                        SourceRange* new_range,

@@ -28,12 +28,13 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/assistant_settings.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/service.h"
+#include "chromeos/services/assistant/public/proto/activity_control_settings_common.pb.h"
 #include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
-#include "chromeos/services/assistant/service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -259,6 +260,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
     setting->add_additional_info_paragraph();
     setting->set_additional_info_paragraph(0, "And it's really cool");
     setting->set_icon_uri("assistant_icon");
+    setting->set_setting_set_id(chromeos::assistant::SettingSetId::WAA);
   }
 
   void UpdateSettings(const std::string& update,

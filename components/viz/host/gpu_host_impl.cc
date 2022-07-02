@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -136,7 +137,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
-      std::move(discardable_manager_remote), activity_flags_.CloneHandle(),
+      std::move(discardable_manager_remote), activity_flags_.CloneRegion(),
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if defined(USE_OZONE)
@@ -194,9 +195,8 @@ void GpuHostImpl::AddConnectionErrorHandler(base::OnceClosure handler) {
 void GpuHostImpl::BlockLiveOffscreenContexts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto iter = urls_with_live_offscreen_contexts_.begin();
-       iter != urls_with_live_offscreen_contexts_.end(); ++iter) {
-    delegate_->BlockDomainFrom3DAPIs(*iter, gpu::DomainGuilt::kUnknown);
+  for (auto& url : urls_with_live_offscreen_contexts_) {
+    delegate_->BlockDomainFrom3DAPIs(url, gpu::DomainGuilt::kUnknown);
   }
 }
 

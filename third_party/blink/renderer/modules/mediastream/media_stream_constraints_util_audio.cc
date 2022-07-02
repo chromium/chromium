@@ -706,14 +706,17 @@ class ProcessingBasedContainer {
   // properties settings.
   static ProcessingBasedContainer CreateApmProcessedContainer(
       const SourceInfo& source_info,
+      mojom::blink::MediaStreamType stream_type,
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
     int sample_rate_hz = media::kAudioProcessingSampleRateHz;
-    if (!ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
+    if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
+        !ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
       // If audio processing runs in the audio service without any mitigations
       // for unnecessary resmapling, ProcessedLocalAudioSource will output audio
       // at the device sample rate.
+      // This is only enabled for mic input sources: https://crbug.com/1328012
       sample_rate_hz = device_parameters.sample_rate();
     }
     return ProcessingBasedContainer(
@@ -1114,6 +1117,7 @@ constexpr ProcessingBasedContainer::BooleanPropertyContainerInfo
 class DeviceContainer {
  public:
   DeviceContainer(const AudioDeviceCaptureCapability& capability,
+                  mojom::blink::MediaStreamType stream_type,
                   bool is_device_capture,
                   bool is_reconfiguration_allowed)
       : device_parameters_(capability.Parameters()) {
@@ -1145,12 +1149,21 @@ class DeviceContainer {
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
             source_info, is_device_capture, device_parameters_,
             is_reconfiguration_allowed));
-    processing_based_containers_.push_back(
-        ProcessingBasedContainer::CreateApmProcessedContainer(
-            source_info, is_device_capture, device_parameters_,
-            is_reconfiguration_allowed));
-
-    DCHECK_EQ(processing_based_containers_.size(), 3u);
+    // TODO(https://crbug.com/1332484): Sample rates not divisible by 100 are
+    // not reliably supported due to the common assumption that sample_rate/100
+    // corresponds to 10 ms of audio. This needs to be addressed in order to
+    // support these rates for WebRTC audio processing in the audio process.
+    if ((device_parameters_.sample_rate() % 100 == 0) ||
+        !(media::IsChromeWideEchoCancellationEnabled() &&
+          stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE)) {
+      processing_based_containers_.push_back(
+          ProcessingBasedContainer::CreateApmProcessedContainer(
+              source_info, stream_type, is_device_capture, device_parameters_,
+              is_reconfiguration_allowed));
+      DCHECK_EQ(processing_based_containers_.size(), 3u);
+    } else {
+      DCHECK_EQ(processing_based_containers_.size(), 2u);
+    }
 
     if (source_info.type() == SourceType::kNone)
       return;
@@ -1383,12 +1396,14 @@ constexpr DeviceContainer::BooleanPropertyContainerInfo
 class CandidatesContainer {
  public:
   CandidatesContainer(const AudioDeviceCaptureCapabilities& capabilities,
+                      mojom::blink::MediaStreamType stream_type,
                       std::string& media_stream_source,
                       std::string& default_device_id,
                       bool is_reconfiguration_allowed)
       : default_device_id_(default_device_id) {
+    const bool is_device_capture = media_stream_source.empty();
     for (const auto& capability : capabilities) {
-      devices_.emplace_back(capability, media_stream_source.empty(),
+      devices_.emplace_back(capability, stream_type, is_device_capture,
                             is_reconfiguration_allowed);
       DCHECK(!devices_.back().IsEmpty());
     }
@@ -1495,6 +1510,7 @@ const media::AudioParameters& AudioDeviceCaptureCapability::Parameters() const {
 AudioCaptureSettings SelectSettingsAudioCapture(
     const AudioDeviceCaptureCapabilities& capabilities,
     const MediaConstraints& constraints,
+    mojom::blink::MediaStreamType stream_type,
     bool should_disable_hardware_noise_suppression,
     bool is_reconfiguration_allowed) {
   if (capabilities.IsEmpty())
@@ -1506,7 +1522,7 @@ AudioCaptureSettings SelectSettingsAudioCapture(
   if (is_device_capture)
     default_device_id = capabilities.begin()->DeviceID().Utf8();
 
-  CandidatesContainer candidates(capabilities, media_stream_source,
+  CandidatesContainer candidates(capabilities, stream_type, media_stream_source,
                                  default_device_id, is_reconfiguration_allowed);
   DCHECK(!candidates.IsEmpty());
 
@@ -1580,6 +1596,7 @@ AudioCaptureSettings SelectSettingsAudioCapture(
         media::AudioParameters::NOISE_SUPPRESSION);
 
   return SelectSettingsAudioCapture(capabilities, constraints,
+                                    source->device().type,
                                     should_disable_hardware_noise_suppression);
 }
 

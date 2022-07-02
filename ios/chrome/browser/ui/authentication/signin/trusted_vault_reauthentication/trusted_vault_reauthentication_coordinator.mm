@@ -165,4 +165,13 @@ using l10n_util::GetNSStringF;
                                completionInfo:completionInfo];
 }
 
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p, errorAlertCoordinator: %p, intent: %lu>",
+                       self.class.description, self, self.errorAlertCoordinator,
+                       self.intent];
+}
+
 @end

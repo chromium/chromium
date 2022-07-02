@@ -26,7 +26,7 @@ SolidColorContentLayerClient::PaintContentsToDisplayList() {
 
   SkRect clip = gfx::RectToSkRect(PaintableRegion());
   display_list->push<ClipRectOp>(clip, SkClipOp::kIntersect, false);
-  SkColor color = SK_ColorTRANSPARENT;
+  SkColor4f color = SkColors::kTransparent;
   display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
   if (border_size_ != 0) {

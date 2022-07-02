@@ -153,6 +153,8 @@ namespace autotestPrivate {
     DOMString? email;
     // User display email. Set only if `isLoggedIn`.
     DOMString? displayEmail;
+    // User display name. Set only if `isLoggedIn`.
+    DOMString? displayName;
     // User image: 'file', 'profile' or a number. Set only if `isLoggedIn`.
     DOMString? userImage;
     // Whether the user has a valid oauth2 token. Only set for gaia user.
@@ -289,6 +291,17 @@ namespace autotestPrivate {
   };
   callback GetArcAppCallback = void (ArcAppDict package);
 
+  dictionary ArcAppKillsDict {
+    double oom;
+    double lmkdForeground;
+    double lmkdPerceptible;
+    double lmkdCached;
+    double pressureForeground;
+    double pressurePerceptible;
+    double pressureCached;
+  };
+  callback GetArcAppKillsCallback = void (ArcAppKillsDict counts);
+
   dictionary ArcPackageDict {
     DOMString packageName;
     long packageVersion;
@@ -333,6 +346,17 @@ namespace autotestPrivate {
 
   callback SetOverviewModeStateCallback = void(boolean finished);
 
+  enum ThemeStyle {
+    TonalSpot,
+    Vibrant,
+    Expressive,
+    Spritz,
+    Rainbow,
+    FruitSalad
+  };
+
+  callback SendArcOverlayColorCallback = void (boolean result);
+
   callback ArcAppTracingCallback = void(ArcAppTracingInfo info);
 
   callback WaitForDisplayRotationCallback = void (boolean success);
@@ -352,9 +376,22 @@ namespace autotestPrivate {
     boolean? showInSearch;
   };
 
-  dictionary SystemApp {
+  dictionary SystemWebApp {
+    // App's internal name. This isn't user-visible and should only be used
+    // for logging.
     DOMString internalName;
+
+    // App's install URL. This is a placeholder for installation pipeline,
+    // not used for anything else.
     DOMString url;
+
+    // App's visible name. This is defined in the Web App manifest, and shown
+    // in Shelf and Launcher. This matches App's name attribute (see above).
+    DOMString name;
+
+    // App's default start_url. This is the default URL that the App will be
+    // launched to.
+    DOMString startUrl;
   };
 
   callback GetAllInstalledAppsCallback = void (App[] apps);
@@ -617,7 +654,7 @@ namespace autotestPrivate {
   // Callback invoked to report the number of system web apps that should be
   // installed.
   callback GetRegisteredSystemWebAppsCallback = void
-      (SystemApp[] systemApps);
+      (SystemWebApp[] systemWebApps);
 
   callback IsSystemWebAppOpenCallback = void (boolean isOpen);
 
@@ -648,6 +685,33 @@ namespace autotestPrivate {
   callback GetLoginEventRecorderLoginEventsCallback = void
       (LoginEventRecorderData[] data);
 
+  // Request parameters for <code>getAccessToken</code>.
+  dictionary GetAccessTokenParams {
+     // An email associated with the account to get a token for.
+     DOMString email;
+     // A list of OAuth scopes to request.
+     DOMString[] scopes;
+     // An optional timeout in milliseconds for the request.
+     // Default: 90 seconds
+     long? timeoutMs;
+  };
+
+  // Response data for <code>getAccessToken</code>.
+  dictionary GetAccessTokenData {
+    // The access token
+    DOMString accessToken;
+    // The time the access token will expire as a unix timestamp in
+    // milliseconds.
+    DOMString expirationTimeUnixMs;
+  };
+
+  // Reponse callback for <code>getAccessToken</code>.
+  callback GetAccessTokenCallback = void(GetAccessTokenData data);
+
+  // Callback invoked to report whether the current input method is ready to
+  // accept key events from the test.
+  callback IsInputMethodReadyForTestingCallback = void
+      (boolean isReady);
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -766,6 +830,10 @@ namespace autotestPrivate {
     // Gets information about the requested ARC app.
     [supportsPromises] static void getArcApp(DOMString appId,
                                              GetArcAppCallback callback);
+
+    // Gets counts of how many ARC apps have been killed, by priority.
+    [supportsPromises] static void getArcAppKills(
+        GetArcAppKillsCallback callback);
 
     // Gets information about requested ARC package.
     [supportsPromises] static void getArcPackage(
@@ -1066,6 +1134,13 @@ namespace autotestPrivate {
     // Show virtual keyboard of the current input method if it's available.
     static void showVirtualKeyboardIfEnabled();
 
+    // Sends the overlay color and theme to Android and changes the Android system color and theme to these values.
+    // |color|: the int color of the system ui.
+    // |theme|: the theme of the system ui.
+    // |callback|: callback to deliver sendArcOverlayColor result.
+    [supportsPromises] static void sendArcOverlayColor(
+      long color, ThemeStyle theme, SendArcOverlayColorCallback callback);
+
     // Start ARC performance tracing for the active ARC app window.
     // |callback|: Called when the operation has completed.
     [supportsPromises] static void arcAppTracingStart(VoidCallback callback);
@@ -1318,6 +1393,18 @@ namespace autotestPrivate {
 
     // Adds login event to test LoginEventRecorderDataCollection API.
     static void addLoginEventForTesting(VoidCallback callback);
+
+    // Force auto theme mode in dark mode or light mode for testing.
+    [supportsPromises] static void forceAutoThemeMode(boolean darkModeEnabled, VoidCallback callback);
+
+    // Fetches an access token from Chrome.
+    [supportsPromises] static void getAccessToken(
+        GetAccessTokenParams accessTokenParams,
+        GetAccessTokenCallback callback);
+
+    // Returns whether the current input method is ready to accept key events.
+    [supportsPromises] static void isInputMethodReadyForTesting(
+        IsInputMethodReadyForTestingCallback callback);
   };
 
   interface Events {

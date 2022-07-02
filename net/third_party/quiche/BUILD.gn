@@ -33,7 +33,10 @@ build_epoll_based_tools = is_linux || is_chromeos
 config("quiche_internal_config") {
   cflags = []
   if (is_clang) {
-    cflags += [ "-Wno-unused-private-field" ]
+    cflags += [
+      "-Wno-unused-private-field",
+      "-Wno-sign-compare",
+    ]
   }
 }
 
@@ -646,6 +649,7 @@ component("quiche") {
     "src/quiche/quic/platform/api/quic_hostname_utils.h",
     "src/quiche/quic/platform/api/quic_ip_address.cc",
     "src/quiche/quic/platform/api/quic_ip_address.h",
+    "src/quiche/quic/platform/api/quic_ip_address_family.cc",
     "src/quiche/quic/platform/api/quic_ip_address_family.h",
     "src/quiche/quic/platform/api/quic_logging.h",
     "src/quiche/quic/platform/api/quic_mutex.h",
@@ -655,6 +659,8 @@ component("quiche") {
     "src/quiche/quic/platform/api/quic_stack_trace.h",
     "src/quiche/quic/platform/api/quic_testvalue.h",
     "src/quiche/quic/platform/api/quic_thread.h",
+    "src/quiche/spdy/core/array_output_buffer.cc",
+    "src/quiche/spdy/core/array_output_buffer.h",
     "src/quiche/spdy/core/hpack/hpack_constants.cc",
     "src/quiche/spdy/core/hpack/hpack_constants.h",
     "src/quiche/spdy/core/hpack/hpack_decoder_adapter.cc",
@@ -772,6 +778,8 @@ if (build_epoll_based_tools) {
       "src/quiche/epoll_server/platform/api/epoll_thread.h",
       "src/quiche/epoll_server/simple_epoll_server.cc",
       "src/quiche/epoll_server/simple_epoll_server.h",
+      "src/quiche/quic/core/io/socket.h",
+      "src/quiche/quic/core/io/socket_posix.cc",
       "src/quiche/quic/core/quic_default_packet_writer.cc",
       "src/quiche/quic/core/quic_default_packet_writer.h",
       "src/quiche/quic/core/quic_epoll_alarm_factory.cc",
@@ -805,6 +813,8 @@ if (build_epoll_based_tools) {
       "src/quiche/quic/masque/masque_utils.cc",
       "src/quiche/quic/masque/masque_utils.h",
       "src/quiche/quic/platform/api/quic_epoll.h",
+      "src/quiche/quic/platform/api/quic_ip_address_family.h",
+      "src/quiche/quic/platform/api/quic_ip_address_family.cc",
       "src/quiche/quic/platform/api/quic_udp_socket_platform_api.h",
       "src/quiche/quic/tools/quic_client.cc",
       "src/quiche/quic/tools/quic_client.h",
@@ -1240,8 +1250,6 @@ static_library("quiche_tool_support") {
     "src/quiche/quic/tools/simple_ticket_crypter.cc",
     "src/quiche/quic/tools/simple_ticket_crypter.h",
     "src/quiche/quic/tools/web_transport_test_visitors.h",
-    "src/quiche/spdy/core/array_output_buffer.cc",
-    "src/quiche/spdy/core/array_output_buffer.h",
   ]
 
   configs += [ ":quiche_internal_config" ]

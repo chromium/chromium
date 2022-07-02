@@ -93,4 +93,11 @@
                                 : ApplicationModeForTabOpening::NORMAL;
 }
 
+- (void)setPostOpeningAction:(TabOpeningPostOpeningAction)action {
+  // Only NO_ACTION or SHOW_DEFAULT_BROWSER_SETTINGS are allowed on non NTP.
+  DCHECK(action == NO_ACTION || action == SHOW_DEFAULT_BROWSER_SETTINGS ||
+         _externalURL == GURL(kChromeUINewTabURL));
+  _postOpeningAction = action;
+}
+
 @end

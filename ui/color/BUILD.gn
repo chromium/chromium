@@ -152,8 +152,6 @@ component("mixers") {
 
   if (is_chromeos) {
     sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
-  } else if (is_linux) {
-    sources += [ "linux/native_color_mixers_linux.cc" ]
   } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [

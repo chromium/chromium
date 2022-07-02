@@ -183,7 +183,7 @@ absl::optional<DnsOverHttpsServerConfig> DnsOverHttpsServerConfig::FromValue(
       if (!dict)
         return absl::nullopt;
       IPAddressList parsed_ips;
-      const base::Value* ips = endpoint.FindKey(kJsonKeyIps);
+      const base::Value* ips = dict->Find(kJsonKeyIps);
       if (ips) {
         const base::Value::List* ip_list = ips->GetIfList();
         if (!ip_list)

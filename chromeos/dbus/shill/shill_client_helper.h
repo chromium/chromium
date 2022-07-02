@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -152,7 +153,7 @@ class ShillClientHelper {
   // Handles PropertyChanged signal.
   void OnPropertyChanged(dbus::Signal* signal);
 
-  dbus::ObjectProxy* proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   ReleasedCallback released_callback_;
   int active_refs_;
   base::ObserverList<ShillPropertyChangedObserver,

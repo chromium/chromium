@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_input_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
@@ -44,8 +45,12 @@ class AppPlatformMetricsService {
     return app_platform_app_metrics_.get();
   }
 
+  void SetWebsiteMetricsForTesting(
+      std::unique_ptr<apps::WebsiteMetrics> website_metrics);
+
  private:
   friend class AppPlatformInputMetricsTest;
+  friend class WebsiteMetricsBrowserTest;
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -73,6 +78,7 @@ class AppPlatformMetricsService {
 
   std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
   std::unique_ptr<apps::AppPlatformInputMetrics> app_platform_input_metrics_;
+  std::unique_ptr<apps::WebsiteMetrics> website_metrics_;
 };
 
 }  // namespace apps

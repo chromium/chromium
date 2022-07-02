@@ -89,6 +89,8 @@ class XRSession final
   static constexpr char kCannotCancelHitTestSource[] =
       "Hit test source could not be canceled! Ensure that it was not already "
       "canceled.";
+  static constexpr char kCannotReportPoses[] =
+      "Poses cannot be given out for the current state.";
 
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from

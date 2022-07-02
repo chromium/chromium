@@ -17,9 +17,7 @@ namespace net {
 
 class NetLogWithSource;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // Class that adds net log events for network quality estimator.
 class NET_EXPORT_PRIVATE EventCreator {
@@ -44,7 +42,8 @@ class NET_EXPORT_PRIVATE EventCreator {
   NetLogWithSource net_log_;
 
   // The effective connection type when the net log event was last added.
-  EffectiveConnectionType past_effective_connection_type_;
+  EffectiveConnectionType past_effective_connection_type_ =
+      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   //  The network quality when the net log event was last added.
   NetworkQuality past_network_quality_;
@@ -52,9 +51,7 @@ class NET_EXPORT_PRIVATE EventCreator {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

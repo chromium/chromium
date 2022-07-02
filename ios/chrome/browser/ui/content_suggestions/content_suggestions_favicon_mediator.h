@@ -24,7 +24,7 @@ class LargeIconCache;
 // items.
 @interface ContentSuggestionsFaviconMediator : NSObject
 
-// Initializes the mediator with |largeIconService| to fetch the favicon
+// Initializes the mediator with `largeIconService` to fetch the favicon
 // locally.
 - (instancetype)initWithLargeIconService:
                     (favicon::LargeIconService*)largeIconService
@@ -33,7 +33,7 @@ class LargeIconCache;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The consumer that will be notified when the data change. |consumer| is used
+// The consumer that will be notified when the data change. `consumer` is used
 // if kContentSuggestionsUIViewControllerMigration is enabled.
 // TODO(crbug.com/1285378): remove after completion of UIViewController
 // migration.
@@ -45,13 +45,13 @@ class LargeIconCache;
 @property(nonatomic, strong, readonly)
     FaviconAttributesProvider* mostVisitedAttributesProvider;
 
-// Sets the |mostVisitedData| used to log the impression of the tiles.
+// Sets the `mostVisitedData` used to log the impression of the tiles.
 - (void)setMostVisitedDataForLogging:
     (const ntp_tiles::NTPTilesVector&)mostVisitedData;
 
-// Fetches the favicon for this |item|.
+// Fetches the favicon for this `item`.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item;
-// Fetches the favicon for |item| within |parentItem|.
+// Fetches the favicon for `item` within `parentItem`.
 // TODO(crbug.com/1285378): Remove this after fully migrating ContentSuggestions
 // to UIViewController.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item

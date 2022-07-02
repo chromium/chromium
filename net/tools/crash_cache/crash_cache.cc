@@ -147,9 +147,9 @@ bool CreateCache(const base::FilePath& path,
       net::DISK_CACHE, /* net_log = */ nullptr);
   backend->SetMaxSize(size);
   backend->SetFlags(disk_cache::kNoRandom);
-  int rv = backend->Init(cb->callback());
+  backend->Init(cb->callback());
   *cache = backend;
-  return (cb->GetResult(rv) == net::OK && !(*cache)->GetEntryCount());
+  return (cb->WaitForResult() == net::OK && !(*cache)->GetEntryCount());
 }
 
 // Generates the files for an empty and one item cache.
@@ -286,8 +286,8 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   // No experiments and use a simple LRU.
   cache->SetFlags(disk_cache::kNoRandom);
   net::TestCompletionCallback cb;
-  int rv = cache->Init(cb.callback());
-  if (cb.GetResult(rv) != net::OK || cache->GetEntryCount())
+  cache->Init(cb.callback());
+  if (cb.WaitForResult() != net::OK || cache->GetEntryCount())
     return GENERIC;
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());

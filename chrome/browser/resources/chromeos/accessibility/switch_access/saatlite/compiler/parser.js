@@ -1311,7 +1311,7 @@ var parser = (function() {
             // info.value = null;
             // info.value_stack = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {
                 this[key] = undefined;
@@ -2043,7 +2043,7 @@ var parser = (function() {
         /** @constructor */
         var pei = {
           errStr: msg,
-          recoverable: !!recoverable,
+          recoverable: Boolean(recoverable),
           text: this.match,  // This one MAY be empty; userland code should use
                              // the `upcomingInput` API to obtain more text
                              // which follows the 'lexer cursor position'...
@@ -2070,7 +2070,7 @@ var parser = (function() {
             // info.yy = null;
             // info.lexer = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
 
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {
@@ -3523,7 +3523,7 @@ var parser = (function() {
   const decreaseIndent = () => indent = indent.substring(2);
 
   let buffer = '';
-  const addToBuffer = (text) => buffer += indent + text + '\n';
+  const addToBuffer = text => buffer += indent + text + '\n';
   const flushBuffer = () => {
     const result = buffer;
     buffer = '';
@@ -3549,7 +3549,7 @@ var parser = (function() {
     return flushBuffer();
   };
 
-  const finishTest = (opt_url) => {
+  const finishTest = opt_url => {
     decreaseIndent();
     if (opt_url) {
       addToBuffer(`}, {url: ${opt_url.output}});`);

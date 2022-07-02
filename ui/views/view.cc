@@ -1358,8 +1358,8 @@ View* View::GetTooltipHandlerForPoint(const gfx::Point& point) {
   return this;
 }
 
-gfx::NativeCursor View::GetCursor(const ui::MouseEvent& event) {
-  return gfx::kNullCursor;
+ui::Cursor View::GetCursor(const ui::MouseEvent& event) {
+  return ui::Cursor();
 }
 
 bool View::HitTestPoint(const gfx::Point& point) const {

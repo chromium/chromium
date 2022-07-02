@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /** @interface */
 export class OsResetBrowserProxy {
   /**
@@ -17,10 +15,23 @@ export class OsResetBrowserProxy {
   requestFactoryResetRestart() {}
 }
 
+/** @type {?OsResetBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsResetBrowserProxy}
  */
 export class OsResetBrowserProxyImpl {
+  /** @return {!OsResetBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new OsResetBrowserProxyImpl());
+  }
+
+  /** @param {!OsResetBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   onPowerwashDialogShow() {
     chrome.send('onPowerwashDialogShow');
@@ -31,5 +42,3 @@ export class OsResetBrowserProxyImpl {
     chrome.send('requestFactoryResetRestart');
   }
 }
-
-addSingletonGetter(OsResetBrowserProxyImpl);

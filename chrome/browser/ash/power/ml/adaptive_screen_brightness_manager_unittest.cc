@@ -219,7 +219,7 @@ class AdaptiveScreenBrightnessManagerTest
       tab_strip_model->ActivateTabAt(tab_strip_model->count() - 1);
     }
     content::WebContentsTester::For(contents)->TestSetIsLoading(false);
-    return contents->GetMainFrame()->GetPageUkmSourceId();
+    return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }
 
   const gfx::Point kEventLocation = gfx::Point(90, 90);

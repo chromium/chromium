@@ -462,12 +462,6 @@ struct common_params {
   static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
     slot_policy::transfer(alloc, new_slot, old_slot);
   }
-  static void swap(Alloc *alloc, slot_type *a, slot_type *b) {
-    slot_policy::swap(alloc, a, b);
-  }
-  static void move(Alloc *alloc, slot_type *src, slot_type *dest) {
-    slot_policy::move(alloc, src, dest);
-  }
 };
 
 // An adapter class that converts a lower-bound compare into an upper-bound
@@ -504,8 +498,8 @@ struct SearchResult {
 template <typename V>
 struct SearchResult<V, false> {
   SearchResult() {}
-  explicit SearchResult(V value) : value(value) {}
-  SearchResult(V value, MatchKind /*match*/) : value(value) {}
+  explicit SearchResult(V v) : value(v) {}
+  SearchResult(V v, MatchKind /*match*/) : value(v) {}
 
   V value;
 
@@ -1196,7 +1190,9 @@ class btree_iterator {
   }
 
   const key_type &key() const { return node_->key(position_); }
-  slot_type *slot() { return node_->slot(position_); }
+  decltype(std::declval<Node *>()->slot(0)) slot() {
+    return node_->slot(position_);
+  }
 
   void assert_valid_generation() const {
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
@@ -1225,7 +1221,6 @@ template <typename Params>
 class btree {
   using node_type = btree_node<Params>;
   using is_key_compare_to = typename Params::is_key_compare_to;
-  using init_type = typename Params::init_type;
   using field_type = typename node_type::field_type;
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
@@ -1309,14 +1304,6 @@ class btree {
   using slot_type = typename Params::slot_type;
 
  private:
-  // For use in copy_or_move_values_in_order.
-  const value_type &maybe_move_from_iterator(const_iterator it) { return *it; }
-  value_type &&maybe_move_from_iterator(iterator it) {
-    // This is a destructive operation on the other container so it's safe for
-    // us to const_cast and move from the keys here even if it's a set.
-    return std::move(const_cast<value_type &>(*it));
-  }
-
   // Copies or moves (depending on the template parameter) the values in
   // other into this btree in their order in other. This btree must be empty
   // before this method is called. This method is used in copy construction,
@@ -2063,12 +2050,12 @@ void btree<P>::copy_or_move_values_in_order(Btree &other) {
   // values is the same order we'll store them in.
   auto iter = other.begin();
   if (iter == other.end()) return;
-  insert_multi(maybe_move_from_iterator(iter));
+  insert_multi(iter.slot());
   ++iter;
   for (; iter != other.end(); ++iter) {
     // If the btree is not empty, we can just insert the new value at the end
     // of the tree.
-    internal_emplace(end(), maybe_move_from_iterator(iter));
+    internal_emplace(end(), iter.slot());
   }
 }
 
@@ -2205,8 +2192,11 @@ template <typename P>
 template <typename InputIterator>
 void btree<P>::insert_iterator_unique(InputIterator b, InputIterator e, char) {
   for (; b != e; ++b) {
-    init_type value(*b);
-    insert_hint_unique(end(), params_type::key(value), std::move(value));
+    // Use a node handle to manage a temp slot.
+    auto node_handle =
+        CommonAccess::Construct<node_handle_type>(get_allocator(), *b);
+    slot_type *slot = CommonAccess::GetSlot(node_handle);
+    insert_hint_unique(end(), params_type::key(slot), slot);
   }
 }
 
@@ -2304,23 +2294,29 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
 
 template <typename P>
 auto btree<P>::erase(iterator iter) -> iterator {
-  bool internal_delete = false;
-  if (iter.node_->is_internal()) {
-    // Deletion of a value on an internal node. First, move the largest value
-    // from our left child here, then delete that position (in remove_values()
-    // below). We can get to the largest value from our left child by
-    // decrementing iter.
+  iter.node_->value_destroy(iter.position_, mutable_allocator());
+  iter.update_generation();
+
+  const bool internal_delete = iter.node_->is_internal();
+  if (internal_delete) {
+    // Deletion of a value on an internal node. First, transfer the largest
+    // value from our left child here, then erase/rebalance from that position.
+    // We can get to the largest value from our left child by decrementing iter.
     iterator internal_iter(iter);
     --iter;
     assert(iter.node_->is_leaf());
-    params_type::move(mutable_allocator(), iter.node_->slot(iter.position_),
-                      internal_iter.node_->slot(internal_iter.position_));
-    internal_delete = true;
+    internal_iter.node_->transfer(internal_iter.position_, iter.position_,
+                                  iter.node_, mutable_allocator());
+  } else {
+    // Shift values after erased position in leaf. In the internal case, we
+    // don't need to do this because the leaf position is the end of the node.
+    const field_type transfer_from = iter.position_ + 1;
+    const field_type num_to_transfer = iter.node_->finish() - transfer_from;
+    iter.node_->transfer_n(num_to_transfer, iter.position_, transfer_from,
+                           iter.node_, mutable_allocator());
   }
-
-  // Delete the key from the leaf.
-  iter.node_->remove_values(iter.position_, /*to_erase=*/1,
-                            mutable_allocator());
+  // Update node finish and container size.
+  iter.node_->set_finish(iter.node_->finish() - 1);
   --size_;
 
   // We want to return the next value after the one we just erased. If we

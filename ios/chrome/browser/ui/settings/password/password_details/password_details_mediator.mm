@@ -121,7 +121,7 @@ using InsecureCredentialsView =
 
 - (BOOL)isUsernameReused:(NSString*)newUsername {
   // It is more efficient to check set of the usernames for the same origin
-  // instead of delegating this to the |_manager|.
+  // instead of delegating this to the `_manager`.
   return [self.usernamesWithSameDomain containsObject:newUsername];
 }
 

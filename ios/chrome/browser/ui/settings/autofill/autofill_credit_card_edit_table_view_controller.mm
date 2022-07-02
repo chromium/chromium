@@ -447,7 +447,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                appLocal:GetApplicationContext()->GetApplicationLocale()];
 }
 
-// Returns the value in the field corresponding to the |itemType|.
+// Returns the value in the field corresponding to the `itemType`.
 - (NSString*)textfieldValueForItemType:(ItemType)itemType {
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:itemType

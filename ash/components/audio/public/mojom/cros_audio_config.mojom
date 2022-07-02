@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.audio_config.mojom;
+
+// Represents the mute state of a user's audio device.
+enum MuteState {
+  // The device is not muted.
+  kNotMuted,
+
+  // The device is muted by the user.
+  kMutedByUser,
+
+  // The device is muted by the device policy.
+  kMutedByPolicy
+};
+
+// Represents the audio state of the Audio system.
+struct AudioSystemProperties {
+  // The volume of the active output device.
+  uint8 output_volume_percent;
+
+  // The mute state of the active output device.
+  MuteState output_mute_state;
+};
+
+// Observer for changes to audio system properties.
+interface AudioSystemPropertiesObserver {
+  // Invoked whenever any property changes, including whenever a property of
+  // an audio device changes (e.g., from active to inactive).
+  OnPropertiesUpdated(AudioSystemProperties properties);
+};
+
+// Provides audio metadata and controls. Embedded in the browser process.
+//
+// Clients include:
+// * WebUI such as chrome://os-settings, implemented in JS as part of renderer
+//   processes.
+interface CrosAudioConfig {
+  // Invokes OnPropertiesUpdated() with initial set of properties when
+  // observer is first added, then again whenever properties are updated.
+  // To stop observing, disconnect |observer|.
+  ObserveAudioSystemProperties(
+    pending_remote<AudioSystemPropertiesObserver> observer);
+};

@@ -164,7 +164,7 @@ class MODULES_EXPORT BaseAudioContext
                                 V8DecodeSuccessCallback*,
                                 ExceptionState&);
 
-  // Handles the promise and callbacks when |decodeAudioData| is finished
+  // Handles the promise and callbacks when `.decodeAudioData()` is finished
   // decoding.
   void HandleDecodeAudioData(AudioBuffer*,
                              ScriptPromiseResolver*,
@@ -237,11 +237,11 @@ class MODULES_EXPORT BaseAudioContext
   // Called at the start of each render quantum.
   //
   // For an AudioContext:
-  //   - |output_position| must be a valid pointer to an AudioIOPosition
+  //   - `output_position` must be a valid pointer to an AudioIOPosition
   //   - The return value is ignored.
   //
   // For an OfflineAudioContext, we have the following conditions:
-  //   - |output_position| must be nullptr because there is no defined
+  //   - `output_position` must be nullptr because there is no defined
   //   AudioIOPosition.
   //   - The return value indicates whether the context needs to be suspended or
   //   not after rendering.
@@ -370,9 +370,9 @@ class MODULES_EXPORT BaseAudioContext
   // Returns the Document wich wich the instance is associated.
   Document* GetDocument() const;
 
-  // The audio thread relies on the main thread to perform some operations
-  // over the objects that it owns and controls; |ScheduleMainThreadCleanup()|
-  // posts the task to initiate those.
+  // The audio thread relies on the main thread to perform some operations over
+  // the objects that it owns and controls; this method posts the task to
+  // initiate those.
   void ScheduleMainThreadCleanup();
 
   // Handles promise resolving, stopping and finishing up of audio source nodes
@@ -383,31 +383,36 @@ class MODULES_EXPORT BaseAudioContext
   // True if we're in the process of resolving promises for resume().  Resolving
   // can take some time and the audio context process loop is very fast, so we
   // don't want to call resolve an excessive number of times.
-  bool is_resolving_resume_promises_;
+  bool is_resolving_resume_promises_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
  private:
-  bool is_cleared_;
+  // This is considering 32 is large enough for multiple channels audio.
+  // It is somewhat arbitrary and could be increased if necessary.
+  static constexpr uint32_t kMaxNumberOfChannels = 32;
+
   void Clear();
 
   // When the context goes away, there might still be some sources which
   // haven't finished playing.  Make sure to release them here.
   void ReleaseActiveSourceNodes();
 
+  bool is_cleared_ = false;
+
   // Listener for the PannerNodes
   Member<AudioListener> listener_;
 
-  // Set to |true| by the audio thread when it posts a main-thread task to
+  // Set to `true` by the audio thread when it posts a main-thread task to
   // perform delayed state sync'ing updates that needs to be done on the main
   // thread. Cleared by the main thread task once it has run.
-  bool has_posted_cleanup_task_;
+  bool has_posted_cleanup_task_ = false;
 
   // Graph locking.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 
   // The state of the BaseAudioContext.
-  AudioContextState context_state_;
+  AudioContextState context_state_ = kSuspended;
 
   AsyncAudioDecoder audio_decoder_;
 
@@ -424,11 +429,7 @@ class MODULES_EXPORT BaseAudioContext
   Member<PeriodicWave> periodic_wave_sawtooth_;
   Member<PeriodicWave> periodic_wave_triangle_;
 
-  // This is considering 32 is large enough for multiple channels audio.
-  // It is somewhat arbitrary and could be increased if necessary.
-  enum { kMaxNumberOfChannels = 32 };
-
-  // The handler associated with the above |destination_node_|.
+  // The handler associated with the above `destination_node_`.
   scoped_refptr<AudioDestinationHandler> destination_handler_;
 
   Member<AudioWorklet> audio_worklet_;

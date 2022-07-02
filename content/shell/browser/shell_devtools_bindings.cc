@@ -261,20 +261,18 @@ void ShellDevToolsBindings::WebContentsDestroyed() {
 }
 
 void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
-    base::Value message) {
-  if (!message.is_dict())
-    return;
-  const std::string* method = message.FindStringKey("method");
+    base::Value::Dict message) {
+  const std::string* method = message.FindString("method");
   if (!method)
     return;
 
-  int request_id = message.FindIntKey("id").value_or(0);
-  base::Value* params_value = message.FindListKey("params");
+  int request_id = message.FindInt("id").value_or(0);
+  base::Value::List* params_value = message.FindList("params");
 
   // Since we've received message by value, we can take the list.
-  base::Value::ListStorage params;
+  base::Value::List params;
   if (params_value) {
-    params = std::move(*params_value).TakeListDeprecated();
+    params = std::move(*params_value);
   }
 
   if (*method == "dispatchProtocolMessage" && params.size() == 1) {
@@ -296,10 +294,10 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 
     GURL gurl(*url);
     if (!gurl.is_valid()) {
-      base::Value response(base::Value::Type::DICTIONARY);
-      response.SetIntKey("statusCode", 404);
-      response.SetBoolKey("urlValid", false);
-      SendMessageAck(request_id, std::move(response));
+      base::Value::Dict response;
+      response.Set("statusCode", 404);
+      response.Set("urlValid", false);
+      SendMessageAck(request_id, base::Value(std::move(response)));
       return;
     }
 
@@ -337,7 +335,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->headers.AddHeadersFromString(*headers);
 
     auto* partition =
-        inspected_contents()->GetMainFrame()->GetStoragePartition();
+        inspected_contents()->GetPrimaryMainFrame()->GetStoragePartition();
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 
     auto simple_url_loader = network::SimpleURLLoader::Create(
@@ -422,7 +420,7 @@ void ShellDevToolsBindings::CallClientFunction(
     base::OnceCallback<void(base::Value)> cb) {
   std::string javascript;
 
-  web_contents()->GetMainFrame()->AllowInjectingJavaScript();
+  web_contents()->GetPrimaryMainFrame()->AllowInjectingJavaScript();
 
   base::Value::List arguments;
   if (!arg1.is_none()) {
@@ -434,7 +432,7 @@ void ShellDevToolsBindings::CallClientFunction(
       }
     }
   }
-  web_contents()->GetMainFrame()->ExecuteJavaScriptMethod(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptMethod(
       base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
       std::move(arguments), std::move(cb));
 }

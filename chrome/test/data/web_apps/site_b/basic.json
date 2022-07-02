@@ -20,7 +20,8 @@
       "action": "/web_apps/site_b/text_handler.html",
       "name": "Plain Text",
       "accept": {
-        "text/plain": [".txt", ".md", ".csv", ".text"]
+        "text/plain": [".txt", ".md", ".csv", ".text"],
+        "application/octet-stream": [".qux", ".quux"]
       }
     },
     {

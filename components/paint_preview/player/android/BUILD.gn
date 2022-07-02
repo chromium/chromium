@@ -92,6 +92,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//components/browser_ui/styles/android:java",
     "//components/paint_preview/browser/android:java",
     "//content/public/android:content_java",
@@ -140,15 +141,14 @@ android_library("javatests") {
     ":player_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]
@@ -177,7 +177,7 @@ source_set("test_support") {
   ]
 }
 
-junit_binary("paint_preview_junit_tests") {
+robolectric_binary("paint_preview_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/paintpreview/player/PlayerManagerTest.java",
     "junit/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetectorTest.java",
@@ -194,7 +194,6 @@ junit_binary("paint_preview_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",

@@ -1,6 +1,3 @@
 buganizer: {
   component_id: 582701
 }
-monorail: {
-  component: "OS>Software>Enterprise"
-}

@@ -68,7 +68,7 @@ class ChildrenDeleter
       public disk_cache::FileIOCallback {
  public:
   ChildrenDeleter(disk_cache::BackendImpl* backend, const std::string& name)
-      : backend_(backend->GetWeakPtr()), name_(name), signature_(0) {}
+      : backend_(backend->GetWeakPtr()), name_(name) {}
 
   ChildrenDeleter(const ChildrenDeleter&) = delete;
   ChildrenDeleter& operator=(const ChildrenDeleter&) = delete;
@@ -89,7 +89,7 @@ class ChildrenDeleter
   base::WeakPtr<disk_cache::BackendImpl> backend_;
   std::string name_;
   disk_cache::Bitmap children_map_;
-  int64_t signature_;
+  int64_t signature_ = 0;
   std::unique_ptr<char[]> buffer_;
 };
 
@@ -202,19 +202,7 @@ namespace disk_cache {
 
 SparseControl::SparseControl(EntryImpl* entry)
     : entry_(entry),
-      child_(nullptr),
-      operation_(kNoOperation),
-      pending_(false),
-      finished_(false),
-      init_(false),
-      range_found_(false),
-      abort_(false),
-      child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32),
-      offset_(0),
-      buf_len_(0),
-      child_offset_(0),
-      child_len_(0),
-      result_(0) {
+      child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32) {
   memset(&sparse_header_, 0, sizeof(sparse_header_));
   memset(&child_data_, 0, sizeof(child_data_));
 }

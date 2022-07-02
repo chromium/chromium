@@ -104,16 +104,19 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
     updates_[id] = std::move(args);
   }
 
-  void StartUpdateCheck(
-      ExtensionDownloader* downloader,
-      ExtensionDownloaderDelegate* delegate,
-      std::unique_ptr<ManifestFetchData> fetch_data) override {
+  void StartUpdateCheck(ExtensionDownloader* downloader,
+                        ExtensionDownloaderDelegate* delegate,
+                        std::vector<ExtensionDownloaderTask> tasks) override {
+    std::set<int> request_ids;
+    for (const ExtensionDownloaderTask& task : tasks)
+      request_ids.insert(task.request_id);
     // Instead of immediately firing callbacks to the delegate in matching
     // cases below, we instead post a task since the delegate typically isn't
     // expecting a synchronous reply (the real code has to go do at least one
     // network request before getting a response, so this is is a reasonable
     // expectation by delegates).
-    for (const std::string& id : fetch_data->GetExtensionIds()) {
+    for (const ExtensionDownloaderTask& task : tasks) {
+      const ExtensionId& id = task.id;
       auto no_update = no_updates_.find(id);
       if (no_update != no_updates_.end()) {
         no_updates_.erase(no_update);
@@ -123,8 +126,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                 &ExtensionDownloaderDelegate::OnExtensionDownloadFailed,
                 base::Unretained(delegate), id,
                 ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
-                ExtensionDownloaderDelegate::PingResult(),
-                fetch_data->request_ids(),
+                ExtensionDownloaderDelegate::PingResult(), request_ids,
                 ExtensionDownloaderDelegate::FailureData()));
         continue;
       }
@@ -140,8 +142,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                 &ExtensionDownloaderDelegate::OnExtensionDownloadFinished,
                 base::Unretained(delegate), crx_info,
                 false /* file_ownership_passed */, GURL(),
-                ExtensionDownloaderDelegate::PingResult(),
-                fetch_data->request_ids(),
+                ExtensionDownloaderDelegate::PingResult(), request_ids,
                 ExtensionDownloaderDelegate::InstallCallback()));
         continue;
       }

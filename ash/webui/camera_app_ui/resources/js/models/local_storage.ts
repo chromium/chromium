@@ -7,11 +7,13 @@ import {
   assertInstanceof,
   assertString,
 } from '../assert.js';
+import {LocalStorageKey} from '../type.js';
+import {checkEnumVariant} from '../util.js';
 
 /**
  * @return The value in storage or defaultValue if not found.
  */
-function getHelper(key: string, defaultValue: unknown): unknown {
+function getHelper(key: LocalStorageKey, defaultValue: unknown): unknown {
   const rawValue = window.localStorage.getItem(key);
   if (rawValue === null) {
     return defaultValue;
@@ -23,7 +25,8 @@ function getHelper(key: string, defaultValue: unknown): unknown {
  * @return The object in storage or defaultValue if not found.
  */
 export function getObject<T>(
-    key: string, defaultValue: Record<string, T> = {}): Record<string, T> {
+    key: LocalStorageKey,
+    defaultValue: Record<string, T> = {}): Record<string, T> {
   // TODO(pihsun): actually verify the type at runtime here?
   return assertInstanceof(getHelper(key, defaultValue), Object) as
       Record<string, T>;
@@ -32,21 +35,21 @@ export function getObject<T>(
 /**
  * @return The string in storage or defaultValue if not found.
  */
-export function getString(key: string, defaultValue = ''): string {
+export function getString(key: LocalStorageKey, defaultValue = ''): string {
   return assertString(getHelper(key, defaultValue));
 }
 
 /**
  * @return The boolean in storage or defaultValue if not found.
  */
-export function getBool(key: string, defaultValue = false): boolean {
+export function getBool(key: LocalStorageKey, defaultValue = false): boolean {
   return assertBoolean(getHelper(key, defaultValue));
 }
 
 /**
  * Sets the value of localStorage for the given key.
  */
-export function set(key: string, value: unknown): void {
+export function set(key: LocalStorageKey, value: unknown): void {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
@@ -64,4 +67,20 @@ export function remove(...keys: string[]): void {
  */
 export function clear(): void {
   window.localStorage.clear();
+}
+
+/**
+ * Remove undefined keys in enum in local storage.
+ */
+export function cleanup(): void {
+  // Iteration order is not defined and can change upon most mutations. See
+  // https://html.spec.whatwg.org/multipage/webstorage.html#the-storage-interface
+  const undefinedKeys = [];
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (key !== null && checkEnumVariant(LocalStorageKey, key) === null) {
+      undefinedKeys.push(key);
+    }
+  }
+  remove(...undefinedKeys);
 }

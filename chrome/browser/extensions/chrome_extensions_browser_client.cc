@@ -192,6 +192,13 @@ std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ChromeExtensionsBrowserClient::IsFromMainProfile(
+    content::BrowserContext* browser_context) {
+  return Profile::FromBrowserContext(browser_context)->IsMainProfile();
+}
+#endif
+
 bool ChromeExtensionsBrowserClient::IsGuestSession(
     content::BrowserContext* context) const {
   return static_cast<Profile*>(context)->IsGuestSession();
@@ -446,6 +453,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kExtensionBackgroundPage:
     case mojom::ViewType::kExtensionDialog:
     case mojom::ViewType::kExtensionPopup:
+    case mojom::ViewType::kOffscreenDocument:
       // These are the only types that are tracked by the ExtensionTag.
       task_manager::WebContentsTags::CreateForExtension(web_contents,
                                                         view_type);
@@ -652,7 +660,8 @@ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !IsExtensionTelemetryRemoteHostContactedSignalEnabled()) {
     return;
   }
   auto remote_host_signal =
@@ -694,6 +703,14 @@ void ChromeExtensionsBrowserClient::GetFavicon(
         callback) const {
   favicon_util::GetFaviconForExtensionRequest(browser_context, extension, url,
                                               tracker, std::move(callback));
+}
+
+std::vector<content::BrowserContext*>
+ChromeExtensionsBrowserClient::GetRelatedContextsForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) const {
+  return util::GetAllRelatedProfiles(
+      Profile::FromBrowserContext(browser_context), extension);
 }
 
 }  // namespace extensions

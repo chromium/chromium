@@ -146,13 +146,6 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   if (display_width >= kLargeDisplayThreshold)
     actual.bytes_limit_when_visible *= 2;
 #endif
-
-  // If the feature `kScaleTileMemoryLimitFactor` is not enabled,
-  // `kScaleTileMemoryLimitFactor` will default to 1.
-  actual.bytes_limit_when_visible =
-      static_cast<size_t>(actual.bytes_limit_when_visible *
-                          features::kScaleTileMemoryLimitFactor.Get());
-
   return actual;
 }
 
@@ -390,7 +383,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   // This is default overlay scrollbar settings for Android and DevTools mobile
   // emulator. Aura Overlay Scrollbar will override below.
   settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
-  settings.solid_color_scrollbar_color = SkColorSetARGB(128, 128, 128, 128);
+  settings.solid_color_scrollbar_color = {0.5f, 0.5f, 0.5f, 0.5f};
   settings.scrollbar_fade_delay = base::Milliseconds(300);
   settings.scrollbar_fade_duration = base::Milliseconds(300);
 
@@ -424,7 +417,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // hide_scrollbars setting because supporting -webkit custom scrollbars is
     // still desired on sublayers.
     settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
-    settings.solid_color_scrollbar_color = SK_ColorTRANSPARENT;
+    settings.solid_color_scrollbar_color = SkColors::kTransparent;
 
     // Early damage check works in combination with synchronous compositor.
     settings.enable_early_damage_check =
@@ -455,6 +448,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     settings.scrollbar_thinning_duration =
         ui::kOverlayScrollbarThinningDuration;
     settings.scrollbar_flash_after_any_scroll_update = true;
+    settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
   }
 
   // If there's over 4GB of RAM, increase the working set size to 256MB for both

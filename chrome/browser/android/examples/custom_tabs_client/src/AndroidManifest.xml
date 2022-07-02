@@ -27,6 +27,7 @@
         <activity
             android:name="org.chromium.customtabsclient.MainActivity"
             android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

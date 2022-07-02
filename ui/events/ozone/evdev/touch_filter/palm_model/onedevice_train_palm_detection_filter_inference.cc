@@ -14,7 +14,8 @@
 #define USE_EIGEN 0
 #endif
 
-namespace ui {
+namespace ui::internal_onedevice::alpha_model {
+
 namespace {
 
 // -----------------------------------------------------------------------------
@@ -3878,7 +3879,6 @@ int32_t input_from_feature_columns_input_layer_concat_concat0Shape[2] = {1,
                                                                          323};
 int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2] = {1, 1};
 
-namespace internal_onedevice {
 void Inference(
     const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,323 */
     ,
@@ -3921,5 +3921,4 @@ void Inference(
 #endif
 }
 
-}  // namespace internal_onedevice
-}  // namespace ui
+}  // namespace ui::internal_onedevice::alpha_model

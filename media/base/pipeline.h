@@ -39,6 +39,11 @@ class MEDIA_EXPORT Pipeline {
     // NOTE: The client is responsible for calling Pipeline::Stop().
     virtual void OnError(PipelineStatus status) = 0;
 
+    // Executed whenever some fallback-enabled portion of the pipeline (Just
+    // Decoders and Renderers for now) fails in such a way that a fallback
+    // is still possible without a fatal pipeline error.
+    virtual void OnFallback(PipelineStatus status) = 0;
+
     // Executed whenever the media reaches the end.
     virtual void OnEnded() = 0;
 
@@ -150,6 +155,10 @@ class MEDIA_EXPORT Pipeline {
   virtual void OnSelectedVideoTrackChanged(
       absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
+
+  // Signal to the pipeline that there has been a client request to access
+  // video frame data.
+  virtual void OnExternalVideoFrameRequest() = 0;
 
   // Stops the pipeline. This is a blocking function.
   // If the pipeline is started, it must be stopped before destroying it.

@@ -187,6 +187,12 @@ void GLContext::DirtyVirtualContextState() {
   current_virtual_context_ = nullptr;
 }
 
+#if defined(USE_EGL)
+GLDisplayEGL* GLContext::GetGLDisplayEGL() {
+  return nullptr;
+}
+#endif  // USE_EGL
+
 #if BUILDFLAG(IS_APPLE)
 constexpr uint64_t kInvalidFenceId = 0;
 
@@ -298,8 +304,6 @@ bool GLContext::LosesAllContextsOnContextLost() {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       return true;
-    case kGLImplementationAppleGL:
-      return false;
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       return false;

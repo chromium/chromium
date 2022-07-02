@@ -32,7 +32,10 @@ suite('AmbientSubpageTest', function() {
   const routerMock = TestBrowserProxy.fromClass(PersonalizationRouter);
 
   setup(() => {
-    loadTimeData.overrideValues({isAmbientModeAllowed: true});
+    loadTimeData.overrideValues({
+      isAmbientModeAllowed: true,
+      isAmbientModeAnimationEnabled: true,
+    });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
@@ -301,8 +304,8 @@ suite('AmbientSubpageTest', function() {
         assertEquals(
             AnimationTheme.kFeelTheBreeze, feelTheBreeze.animationTheme);
 
-        assertEquals(feelTheBreeze.ariaSelected, 'false');
-        assertEquals(slideshow.ariaSelected, 'true');
+        assertEquals(feelTheBreeze.ariaChecked, 'false');
+        assertEquals(slideshow.ariaChecked, 'true');
 
         personalizationStore.expectAction(
             AmbientActionName.SET_ANIMATION_THEME);
@@ -580,6 +583,12 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList, '!!albumList');
 
+    // The grid may not have templated all the items yet since it was just
+    // instantiated. See crbug/1334962.
+    const grid = albumList.shadowRoot!.getElementById('grid');
+    assertTrue(!!grid, 'albums subpage has a grid');
+    await waitAfterNextRender(grid);
+
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
@@ -631,6 +640,12 @@ suite('AmbientSubpageTest', function() {
 
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
+
+    // The grid may not have templated all the items yet since it was just
+    // instantiated. See crbug/1334962.
+    const grid = albumList.shadowRoot!.getElementById('grid');
+    assertTrue(!!grid, 'albums subpage has a grid');
+    await waitAfterNextRender(grid);
 
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');

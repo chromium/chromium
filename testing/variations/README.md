@@ -69,8 +69,8 @@ Each *study configuration* is a dictionary containing `platforms` and
 `experiments`.
 
 `platforms` is an array of strings, indicating the targetted platforms. The
-strings may be `android`, `android_webview`, `chromeos`, `ios`, `linux`, `mac`,
-or `windows`.
+strings may be `android`, `android_weblayer`, `android_webview`, `chromeos`,
+`chromeos_lacros`, `ios`, `linux`, `mac`, or `windows`.
 
 `experiments` is an array containing the *experiments*.
 
@@ -168,6 +168,14 @@ Simply specify two different study configurations in the study:
 }
 ```
 
-## Presubmit
-The presubmit tool will ensure that your changes follow the correct ordering and
-format.
+## Formatting
+
+Run the following command to auto-format the `fieldtrial_testing_config.json`
+configuration file:
+
+```shell
+python3 testing/variations/PRESUBMIT.py testing/variations/fieldtrial_testing_config.json
+```
+
+The presubmit tool will also ensure that your changes follow the correct
+ordering and format.

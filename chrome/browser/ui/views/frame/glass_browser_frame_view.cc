@@ -603,14 +603,14 @@ void GlassBrowserFrameView::PaintTitlebar(gfx::Canvas* canvas) const {
   // So the accent border also has to be opaque. We can blend the titlebar
   // color with the accent border to approximate the native effect.
   const SkColor titlebar_color = GetTitlebarColor();
-  const int color_id = ShouldPaintAsActive()
-                           ? ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE
-                           : ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE;
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
   cc::PaintFlags flags;
   flags.setColor(color_utils::GetResultingPaintColor(
-      GetThemeProvider()->GetColor(color_id), titlebar_color));
+      GetColorProvider()->GetColor(ShouldPaintAsActive()
+                                       ? kColorAccentBorderActive
+                                       : kColorAccentBorderInactive),
+      titlebar_color));
   canvas->DrawRect(gfx::RectF(0, 0, width() * scale, y), flags);
 
   const int titlebar_height =

@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
@@ -17,7 +16,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/commerce/commerce_prompt.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,6 +26,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -640,12 +642,19 @@ void CartService::AddCartsWithFakeData() {
   base::flat_map<GURL,
                  std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
       coupon_map;
-  auto offer = std::make_unique<autofill::AutofillOfferData>();
-  offer->offer_id = 123;
-  offer->display_strings.value_prop_text = "15% off on everything";
-  offer->promo_code = std::move("15PERCENTOFF");
-  offer->merchant_origins.emplace_back(dummy_url1);
-  offer->expiry = base::Time::Now() + base::Days(3);
+  int64_t offer_id = 123;
+  base::Time expiry = base::Time::Now() + base::Days(3);
+  std::vector<GURL> merchant_origins;
+  merchant_origins.emplace_back(dummy_url1);
+  GURL offer_details_url = GURL();
+  autofill::DisplayStrings display_strings;
+  display_strings.value_prop_text = "15% off on everything";
+  std::string promo_code = "15PERCENTOFF";
+
+  auto offer = std::make_unique<autofill::AutofillOfferData>(
+      autofill::AutofillOfferData::FreeListingCouponOffer(
+          offer_id, expiry, merchant_origins, offer_details_url,
+          display_strings, promo_code));
   coupon_map[dummy_url1].emplace_back(std::move(offer));
   coupon_service_->UpdateFreeListingCoupons(coupon_map);
 
@@ -1149,10 +1158,9 @@ void CartService::SetCouponServiceForTesting(CouponService* coupon_service) {
 }
 
 void CartService::ShowNativeConsentDialog(
+    Browser* browser,
     base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>
         consent_status_callback) {
-  // TODO(crbug.com/1317519): Show the native dialog and move the
-  // consent_status_callback to the dialog.
-  std::move(consent_status_callback)
-      .Run(chrome_cart::mojom::ConsentStatus::ACCEPTED);
+  commerce::ShowDiscountConsentPrompt(browser,
+                                      std::move(consent_status_callback));
 }

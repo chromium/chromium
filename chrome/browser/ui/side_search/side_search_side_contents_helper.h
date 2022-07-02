@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -95,7 +96,7 @@ class SideSearchSideContentsHelper
   SideSearchConfig* GetConfig();
 
   // `delegate_` will outlive the SideContentsWrapper.
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   WebuiLoadTimer webui_load_timer_;
 

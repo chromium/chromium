@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <atomic>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
@@ -15,15 +16,21 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/threading/hang_watcher.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#include "base/files/file_descriptor_watcher_posix.h"
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
@@ -34,8 +41,42 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+// Returns the desired sleep time before the worker has to wake up to purge
+// the cache thread or reclaim itself. |min_sleep_time| contains the minimal
+// acceptable amount of time to sleep.
+base::TimeDelta GetSleepTimeBeforePurge(base::TimeDelta min_sleep_time) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Do not wake up to purge within the first minute of process lifetime. In
+  // short lived processes this will avoid waking up to try and save memory
+  // for a heap that will be going away soon. For longer lived processes this
+  // should allow for better performance at process startup since even if a
+  // worker goes to sleep for kPurgeThreadCacheIdleDelay it's very likely it
+  // will be needed soon after because of heavy startup workloads.
+  constexpr base::TimeDelta kFirstSleepLength = base::Minutes(1);
+
+  // Use the first time a worker goes to sleep in this process as an
+  // approximation of the process creation time.
+  static const base::TimeTicks first_scheduled_wake = now + kFirstSleepLength;
+
+  // Align wakeups for purges to reduce the chances of taking the CPU out of
+  // sleep multiple times for these operations.
+  constexpr base::TimeDelta kPurgeThreadCacheIdleDelay = base::Seconds(1);
+  const base::TimeTicks snapped_wake =
+      (now + min_sleep_time)
+          .SnappedToNextTick(base::TimeTicks(), kPurgeThreadCacheIdleDelay);
+
+  // Avoid scheduling at |first_scheduled_wake| if it would result in a sleep
+  // that's too short.
+  return std::max(snapped_wake - now, first_scheduled_wake - now);
+}
+#endif
+}  // namespace
+
+namespace base::internal {
 
 constexpr TimeDelta WorkerThread::Delegate::kPurgeThreadCacheIdleDelay;
 
@@ -59,17 +100,32 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
   // many times.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
-  bool was_signaled = wake_up_event->TimedWait(
-      std::min(sleep_time, kPurgeThreadCacheIdleDelay));
+  TimeDelta min_sleep_time = std::min(sleep_time, kPurgeThreadCacheIdleDelay);
+
+  static const base::Feature kDelayFirstWorkerWake{
+      "DelayFirstWorkerWake", base::FEATURE_DISABLED_BY_DEFAULT};
+  // ThreadPoolInstance::Start() must always be after FeatureList
+  // initialization. This means this function has access to the feature state on
+  // first call. Cache the feature check to avoid the overhead of calling
+  // IsEnabled() every time.
+  static const bool is_delay_first_worker_sleep_enabled =
+      FeatureList::IsEnabled(kDelayFirstWorkerWake);
+
+  if (is_delay_first_worker_sleep_enabled)
+    min_sleep_time = GetSleepTimeBeforePurge(min_sleep_time);
+
+  const bool was_signaled = wake_up_event->TimedWait(min_sleep_time);
 
   // Timed out.
   if (!was_signaled) {
-    ThreadCache::PurgeCurrentThread();
+    partition_alloc::ThreadCache::PurgeCurrentThread();
 
-    if (sleep_time > kPurgeThreadCacheIdleDelay) {
+    // The thread woke up to purge before its standard reclaim time. Sleep for
+    // what's remaining until then.
+    if (sleep_time > min_sleep_time) {
       wake_up_event->TimedWait(sleep_time.is_max()
                                    ? base::TimeDelta::Max()
-                                   : sleep_time - kPurgeThreadCacheIdleDelay);
+                                   : sleep_time - min_sleep_time);
     }
   }
 #else
@@ -94,10 +150,17 @@ WorkerThread::WorkerThread(ThreadPriority priority_hint,
   wake_up_event_.declare_only_used_while_idle();
 }
 
-bool WorkerThread::Start(WorkerThreadObserver* worker_thread_observer) {
+bool WorkerThread::Start(
+    scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
+    WorkerThreadObserver* worker_thread_observer) {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(thread_handle_.is_null());
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+  DCHECK(io_thread_task_runner);
+  io_thread_task_runner_ = std::move(io_thread_task_runner);
+#endif
 
   if (should_exit_.IsSet() || join_called_for_testing_.IsSet())
     return true;
@@ -221,6 +284,11 @@ void WorkerThread::UpdateThreadPriority(
 }
 
 void WorkerThread::ThreadMain() {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+  DCHECK(io_thread_task_runner_);
+  FileDescriptorWatcher file_descriptor_watcher(io_thread_task_runner_);
+#endif
+
   if (priority_hint_ == ThreadPriority::BACKGROUND) {
     switch (delegate_->GetThreadLabel()) {
       case ThreadLabel::POOLED:
@@ -354,7 +422,7 @@ void WorkerThread::RunWorker() {
 #endif
     absl::optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)
-      hang_watch_scope.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
+      hang_watch_scope.emplace();
 
     UpdateThreadPriority(GetDesiredThreadPriority());
 
@@ -417,5 +485,4 @@ void WorkerThread::RunWorker() {
   PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

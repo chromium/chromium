@@ -68,7 +68,7 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
   static HostCache::Entry CreateEmptyResult(DnsQueryType query_type);
 
  private:
-  const raw_ptr<const DnsResponse> response_;
+  const raw_ptr<const DnsResponse, DanglingUntriaged> response_;
 };
 
 }  // namespace net

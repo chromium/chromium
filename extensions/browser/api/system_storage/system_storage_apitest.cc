@@ -129,8 +129,7 @@ IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
     device_ids_listeners.push_back(
         std::make_unique<ExtensionTestMessageListener>(
             StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
-                entry.device_id),
-            false));
+                entry.device_id)));
   }
   // Set the number of expected callbacks into the StorageInfoProvider.
   provider->set_expected_call_count(device_ids_listeners.size());
@@ -144,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
 
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, StorageAttachment) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener attach_listener("attach", false);
-  ExtensionTestMessageListener detach_listener("detach", false);
+  ExtensionTestMessageListener attach_listener("attach");
+  ExtensionTestMessageListener detach_listener("detach");
 
   EXPECT_TRUE(LoadApp("system/storage_attachment"));
   // Simulate triggering onAttached event.
@@ -157,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, StorageAttachment) {
       StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           kRemovableStorageData.device_id);
   ExtensionTestMessageListener detach_device_id_listener(
-      removable_storage_transient_id, false);
+      removable_storage_transient_id);
 
   // Simulate triggering onDetached event.
   ASSERT_TRUE(detach_listener.WaitUntilSatisfied());

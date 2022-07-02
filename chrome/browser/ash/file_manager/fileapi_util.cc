@@ -471,13 +471,13 @@ void GenerateUnusedFilenameOnGotMetadata(
     GenerateUnusedFilenameState state,
     base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
         callback,
-    base::File::Error error,
-    const base::File::Info& file_info) {
+    base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (error == base::File::FILE_ERROR_NOT_FOUND) {
     std::move(callback).Run(std::move(trial_url));
     return;
-  } else if (error != base::File::FILE_OK) {
+  } else if (error != base::File::FILE_OK &&
+             error != base::File::FILE_ERROR_NOT_A_DIRECTORY) {
     std::move(callback).Run(error);
     return;
   }
@@ -493,9 +493,8 @@ void GenerateUnusedFilenameOnGotMetadata(
       state.destination_folder.mount_type(),
       state.destination_folder.virtual_path().Append(
           base::FilePath::FromUTF8Unsafe(filename)));
-  GetMetadataForPathOnIoThread(
+  CheckIfDirectoryExistsOnIoThread(
       file_system_context, filesystem_url,
-      storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(&GenerateUnusedFilenameOnGotMetadata, filesystem_url,
                      std::move(state), std::move(callback)));
 }
@@ -719,10 +718,8 @@ void GenerateUnusedFilename(
       google_apis::CreateRelayCallback(std::move(callback)));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetMetadataForPathOnIoThread, file_system_context,
-                     std::move(trial_url),
-                     storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
-                     std::move(get_metadata_callback)));
+      base::BindOnce(&CheckIfDirectoryExistsOnIoThread, file_system_context,
+                     std::move(trial_url), std::move(get_metadata_callback)));
 }
 
 }  // namespace util

@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -147,7 +148,7 @@ struct PLATFORM_EXPORT PaintChunk {
   Id id;
 
   // The paint properties which apply to this chunk.
-  RefCountedPropertyTreeState properties;
+  RefCountedPropertyTreeStateOrAlias properties;
 
   std::unique_ptr<HitTestData> hit_test_data;
   std::unique_ptr<RegionCaptureData> region_capture_data;

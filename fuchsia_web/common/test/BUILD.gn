@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+# Only allow use by WebEngine-related Fuchsia targets.
+visibility = [ "//fuchsia_web/*" ]
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fit_adapter.h",
+    "frame_test_util.cc",
+    "frame_test_util.h",
+    "test_devtools_list_fetcher.cc",
+    "test_devtools_list_fetcher.h",
+    "test_navigation_listener.cc",
+    "test_navigation_listener.h",
+    "url_request_rewrite_test_util.cc",
+    "url_request_rewrite_test_util.h",
+  ]
+  public_deps = [
+    "//base",
+    "//fuchsia_web/common",
+    "//net",
+    "//net:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//url",
+  ]
+}
+
+static_library("run_all_integration_tests") {
+  testonly = true
+  visibility = []
+  visibility += [
+    "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
+  ]
+  sources = [ "run_all_integration_tests.cc" ]
+  deps = [ "//base/test:test_support" ]
+}

@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
 <translation id="3567399274263440288">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din.</translation>
+<translation id="3619462831205197427">Logg på dette nettstedet, Google-kontoen din og Chromium.</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
@@ -77,7 +78,6 @@
 1. Åpne Innstillinger.
 2. Trykk på Standard nettleserapp.
 3. Velg Chromium.</translation>
-<translation id="6155422572367400359">Logg på dette nettstedet, Google-kontoen din og Chromium. Du kan slå på synkronisering senere.</translation>
 <translation id="6183442264225539303">Logg på dette nettstedet og Chromium. Du kan slå på synkronisering senere.</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
+<translation id="8308172444429103994">Chromium-tips. Logg på raskere ved å velge det lagrede passordet ditt øverst på tastaturet.</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>

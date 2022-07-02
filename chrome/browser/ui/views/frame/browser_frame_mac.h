@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 
 #import "base/mac/scoped_nsobject.h"
@@ -27,7 +28,6 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   BrowserFrameMac(const BrowserFrameMac&) = delete;
   BrowserFrameMac& operator=(const BrowserFrameMac&) = delete;
 
-  API_AVAILABLE(macos(10.12.2))
   BrowserWindowTouchBarController* GetTouchBarController() const;
 
   // Overridden from views::NativeWidgetMac:
@@ -50,6 +50,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
   bool ShouldRestorePreviousBrowserWidgetState() const override;
+  bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
   void AnnounceTextInInProcessWindow(const std::u16string& text) override;
 
  protected:
@@ -75,7 +76,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   int GetMinimizeButtonOffset() const override;
 
  private:
-  BrowserView* browser_view_;  // Weak. Our ClientView.
+  raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   base::scoped_nsobject<BrowserWindowTouchBarViewsDelegate> touch_bar_delegate_;
 };
 

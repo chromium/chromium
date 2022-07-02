@@ -15,26 +15,26 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/cellular_metrics_logger.h"
-#include "chromeos/network/fake_stub_cellular_networks_provider.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/policy_util.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -230,16 +230,15 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void AddSimSlotInfoToList(
-      base::Value::ListStorage& ordered_sim_slot_info_list,
-      const std::string& eid,
-      const std::string& iccid,
-      bool primary = false) {
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetStringKey(shill::kSIMSlotInfoEID, eid);
-    item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    item.SetBoolKey(shill::kSIMSlotInfoPrimary, primary);
-    ordered_sim_slot_info_list.push_back(std::move(item));
+  void AddSimSlotInfoToList(base::Value::List& ordered_sim_slot_info_list,
+                            const std::string& eid,
+                            const std::string& iccid,
+                            bool primary = false) {
+    base::Value::Dict item;
+    item.Set(shill::kSIMSlotInfoEID, eid);
+    item.Set(shill::kSIMSlotInfoICCID, iccid);
+    item.Set(shill::kSIMSlotInfoPrimary, primary);
+    ordered_sim_slot_info_list.Append(std::move(item));
   }
 
   void SetupNetworks() {
@@ -268,13 +267,13 @@ class CrosNetworkConfigTest : public testing::Test {
         /*notify_changed=*/false);
 
     // Setup SimSlotInfo
-    base::Value::ListStorage ordered_sim_slot_info_list;
+    base::Value::List ordered_sim_slot_info_list;
     AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"",
                          kCellularTestIccid,
                          /*primary=*/true);
     helper()->device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMSlotInfoProperty,
-        base::Value(ordered_sim_slot_info_list),
+        base::Value(std::move(ordered_sim_slot_info_list)),
         /*notify_changed=*/false);
 
     // Note: These are Shill dictionaries, not ONC.
@@ -944,7 +943,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
       /*esim_1_physical_slot=*/esim_2_physical_slot);
 
   // Add pSIM and eSIM slot info to Shill.
-  base::Value::ListStorage ordered_sim_slot_info_list;
+  base::Value::List ordered_sim_slot_info_list;
   // Add pSIM first to correspond to |psim_physical_slot| index. Note that
   // pSIMs do not have EIDs.
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid,
@@ -958,7 +957,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", /*iccid=*/"");
   helper()->device_test()->SetDeviceProperty(
       kCellularDevicePath, shill::kSIMSlotInfoProperty,
-      base::Value(ordered_sim_slot_info_list),
+      base::Value(std::move(ordered_sim_slot_info_list)),
       /*notify_changed=*/true);
   base::RunLoop().RunUntilIdle();
 

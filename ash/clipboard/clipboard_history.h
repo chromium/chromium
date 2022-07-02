@@ -72,18 +72,31 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // `Resume()`.
   friend class ScopedClipboardHistoryPauseImpl;
 
-  // Adds `data` to the `history_list_` if it's supported. If `data` is not
-  // supported by clipboard history, this method no-ops.
+  // Ensures that the clipboard buffer contains the same data as the item at the
+  // top of clipboard history. If clipboard history is empty, then the clipboard
+  // is cleared.
+  void SyncClipboardToClipboardHistory();
+
+  // Adds `data` to the top of the history list if `data` is supported by
+  // clipboard history. If `data` is not supported, this method no-ops. If
+  // `data` is already in the history list, `data` will be moved to the top of
+  // the list.
   void MaybeCommitData(ui::ClipboardData data);
 
-  void Pause();
-  void Resume();
+  // If `metrics_only` is true, pausing will not prevent modifications to
+  // clipboard history, but it will prevent updates to the metrics tracked on
+  // clipboard operations.
+  void Pause(bool metrics_only);
+  void Resume(bool metrics_only);
 
   // Keeps track of consecutive clipboard operations and records metrics.
   void OnClipboardOperation(bool copy);
 
   // The count of pauses.
   size_t num_pause_ = 0;
+
+  // The count of metrics recording pauses.
+  size_t num_metrics_pause_ = 0;
 
   // The number of consecutive copies, reset after a paste.
   int consecutive_copies_ = 0;

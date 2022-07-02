@@ -97,9 +97,6 @@ void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
 void ReportInternalError(const char* type,
                          IndexedDBBackingStoreErrorSource location);
 
-void ReportSchemaVersion(int version,
-                         const storage::BucketLocator& bucket_locator);
-
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);
 

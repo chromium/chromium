@@ -11,7 +11,7 @@
 // ConsistencySheetNavigationController.
 @protocol ChildConsistencySheetViewController <NSObject>
 
-// Returns the desired height for |viewController| to fit. The height needs to
+// Returns the desired height for `viewController` to fit. The height needs to
 // include safe area insets.
 - (CGFloat)layoutFittingHeightForWidth:(CGFloat)width;
 

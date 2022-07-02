@@ -37,7 +37,7 @@ class IncrementingIconKeyFactory {
   std::unique_ptr<apps::IconKey> CreateIconKey(uint32_t icon_effects);
 
  private:
-  uint64_t last_timeline_;
+  uint64_t last_timeline_ = 0;
 };
 
 }  // namespace apps_util

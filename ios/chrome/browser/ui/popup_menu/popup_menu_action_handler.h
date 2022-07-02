@@ -11,9 +11,13 @@
 
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @protocol FindInPageCommands;
 @protocol LoadQueryCommands;
+@protocol PageInfoCommands;
 @protocol PopupMenuActionHandlerDelegate;
+@protocol PopupMenuCommands;
+@protocol QRScannerCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 
@@ -21,32 +25,24 @@ class WebNavigationBrowserAgent;
 @interface PopupMenuActionHandler
     : NSObject <PopupMenuTableViewControllerDelegate>
 
-// The view controller that presents |popupMenu|.
+// The view controller that presents the popup menu.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // Command handler.
 @property(nonatomic, weak) id<PopupMenuActionHandlerDelegate> delegate;
 
 // Dispatcher.
-// TODO(crbug.com/906662): This class uses BrowserCoordinatorCommands via their
-// includion in BrowserCommands. That dependency should be explicit, and instead
-// of a single parameter for all command protocols, separate handler properties
-// should be used for each necessary protocol (see ToolbarButtonActionsHandler
-// for an example of this).
-// TODO(crbug.com/1323758): This uses PageInfoCommands via inclusion in
-// BrowserCommands, and should instead use a dedicated handler.
-// TODO(crbug.com/1323764): This uses PopupMenuCommands via inclusion in
-// BrowserCommands, and should instead use a dedicated handler.
-// TODO(crbug.com/1323775): This uses  QRScannerCommands via inclusion in
-// BrowserCommands, and should instead use a dedicated handler.
-
 @property(nonatomic, weak) id<ApplicationCommands,
                               BrowserCommands,
+                              BrowserCoordinatorCommands,
                               FindInPageCommands,
                               LoadQueryCommands,
                               TextZoomCommands>
     dispatcher;
 
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
+@property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 @end

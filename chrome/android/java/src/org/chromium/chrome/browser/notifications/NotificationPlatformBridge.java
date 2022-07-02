@@ -540,7 +540,7 @@ public class NotificationPlatformBridge {
         // Delegate notification to WebAPK.
         if (!webApkPackage.isEmpty()) {
             WebApkServiceClient.getInstance().notifyNotification(
-                    webApkPackage, notificationBuilder, notificationId, PLATFORM_ID);
+                    origin, webApkPackage, notificationBuilder, notificationId, PLATFORM_ID);
             return;
         }
 

@@ -264,14 +264,15 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(markup.Utf8().data(), markup.length());
   GetFrame().ForceSynchronousDocumentInstall("text/xml", data);
-  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
 
-  // Creates a StyleSheetContents with selector and optional default @namespace.
-  auto sheet = [&](String selector,
-                   absl::optional<AtomicString> defaultNamespace) {
-    auto* context = MakeGarbageCollected<CSSParserContext>(
+  // Creates a StyleSheetContents with selector and optional default @namespace,
+  // matches rules for originating element, then returns the non-universal flag
+  // for ::highlight(x) or the given PseudoId.
+  auto run = [&](Element& element, String selector,
+                 absl::optional<AtomicString> defaultNamespace) {
+    auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
-    auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+    auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
     sheet->ParserAddNamespace("bar", "http://example.org/bar");
     if (defaultNamespace)
       sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
@@ -280,20 +281,29 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, selector + " { color: green }"));
     rules.AddStyleRule(rule, kRuleHasNoSpecialState);
-    return sheet;
-  };
 
-  // Matches the element and pseudo and returns MatchesNonUniversalHighlights.
-  auto test = [&](Element& element, StyleSheetContents* sheet,
-                  PseudoId pseudo = kPseudoIdSelection) {
     MatchResult result;
+    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     ElementResolveContext context{element};
     ElementRuleCollector collector(context, StyleRecalcContext(),
                                    SelectorFilter(), result, style.get(),
                                    EInsideLink::kNotInsideLink);
-    collector.SetPseudoElementStyleRequest(StyleRequest{pseudo, nullptr});
     collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr});
-    return result.MatchesNonUniversalHighlights();
+
+    // Pretty-print the arguments for debugging.
+    StringBuilder args{};
+    args.Append("(<");
+    args.Append(element.ToString());
+    args.Append(">, ");
+    args.Append(selector);
+    args.Append(", ");
+    if (defaultNamespace)
+      args.Append(String("\"" + *defaultNamespace + "\""));
+    else
+      args.Append("{}");
+    args.Append(")");
+
+    return style->HasNonUniversalHighlightPseudoStyles();
   };
 
   Element& body = *GetDocument().body();
@@ -302,32 +312,28 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   Element& def = *body.QuerySelector("default");
   AtomicString defNs = "http://example.org/default";
 
-  // MatchesNonUniversalHighlights is only ever set for highlight pseudos.
-  EXPECT_FALSE(test(body, sheet("::before", {}), kPseudoIdBefore));
-  EXPECT_FALSE(test(body, sheet("body::before", {}), kPseudoIdBefore));
-
   // Cases that only make sense without a default @namespace.
   // ::selection kSubSelector :window-inactive
-  EXPECT_TRUE(test(body, sheet("::selection:window-inactive", {})));
-  EXPECT_TRUE(test(body, sheet("body::selection", {})));    // body::selection
-  EXPECT_TRUE(test(body, sheet(".foo::selection", {})));    // .foo::selection
-  EXPECT_TRUE(test(body, sheet("* ::selection", {})));      // ::selection *
-  EXPECT_TRUE(test(body, sheet("* body::selection", {})));  // body::selection *
+  EXPECT_TRUE(run(body, "::selection:window-inactive", {}));
+  EXPECT_TRUE(run(body, "body::highlight(x)", {}));    // body::highlight(x)
+  EXPECT_TRUE(run(body, ".foo::highlight(x)", {}));    // .foo::highlight(x)
+  EXPECT_TRUE(run(body, "* ::highlight(x)", {}));      // ::highlight(x) *
+  EXPECT_TRUE(run(body, "* body::highlight(x)", {}));  // body::highlight(x) *
 
   // Cases that depend on whether there is a default @namespace.
-  EXPECT_FALSE(test(def, sheet("::selection", {})));     // ::selection
-  EXPECT_FALSE(test(def, sheet("*::selection", {})));    // ::selection
-  EXPECT_TRUE(test(def, sheet("::selection", defNs)));   // null|*::selection
-  EXPECT_TRUE(test(def, sheet("*::selection", defNs)));  // null|*::selection
+  EXPECT_FALSE(run(def, "::highlight(x)", {}));     // ::highlight(x)
+  EXPECT_FALSE(run(def, "*::highlight(x)", {}));    // ::highlight(x)
+  EXPECT_TRUE(run(def, "::highlight(x)", defNs));   // null|*::highlight(x)
+  EXPECT_TRUE(run(def, "*::highlight(x)", defNs));  // null|*::highlight(x)
 
   // Cases that are independent of whether there is a default @namespace.
   for (auto& ns : Vector<absl::optional<AtomicString>>{{}, defNs}) {
-    // no default ::selection, default *|*::selection
-    EXPECT_FALSE(test(body, sheet("*|*::selection", ns)));
-    // no default .foo::selection, default *|*.foo::selection
-    EXPECT_TRUE(test(body, sheet("*|*.foo::selection", ns)));
-    EXPECT_TRUE(test(none, sheet("|*::selection", ns)));  // empty|*::selection
-    EXPECT_TRUE(test(bar, sheet("bar|*::selection", ns)));  // bar|*::selection
+    // no default ::highlight(x), default *|*::highlight(x)
+    EXPECT_FALSE(run(body, "*|*::highlight(x)", ns));
+    // no default .foo::highlight(x), default *|*.foo::highlight(x)
+    EXPECT_TRUE(run(body, "*|*.foo::highlight(x)", ns));
+    EXPECT_TRUE(run(none, "|*::highlight(x)", ns));    // empty|*::highlight(x)
+    EXPECT_TRUE(run(bar, "bar|*::highlight(x)", ns));  // bar|*::highlight(x)
   }
 }
 

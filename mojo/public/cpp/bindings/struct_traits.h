@@ -53,7 +53,7 @@ namespace mojo {
 //      *Traits defined.
 //
 //      During serialization, getters for all fields are called exactly once. It
-//      is therefore reasonably effecient for a getter to construct and return
+//      is therefore reasonably efficient for a getter to construct and return
 //      temporary value in the event that it cannot return a readily
 //      serializable reference to some existing object.
 //

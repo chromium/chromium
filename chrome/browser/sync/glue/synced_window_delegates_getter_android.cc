@@ -12,8 +12,10 @@ using sync_sessions::SyncedWindowDelegate;
 
 namespace browser_sync {
 
-SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegatesGetterAndroid() {}
-SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() {}
+SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegatesGetterAndroid() =
+    default;
+SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() =
+    default;
 
 SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegateMap
 SyncedWindowDelegatesGetterAndroid::GetSyncedWindowDelegates() {

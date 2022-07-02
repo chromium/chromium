@@ -87,6 +87,7 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
                                     !pref_account_id.empty());
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!pref_account_id.empty()) {
     if (account_tracker_service_->GetMigrationState() ==
         AccountTrackerService::MIGRATION_IN_PROGRESS) {
@@ -100,6 +101,7 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
       }
     }
   }
+#endif
 
   bool consented =
       client_->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync);
@@ -365,10 +367,12 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
   token_service_->RemoveObserver(this);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (account_tracker_service_->GetMigrationState() ==
       AccountTrackerService::MIGRATION_IN_PROGRESS) {
     account_tracker_service_->SetMigrationDone();
   }
+#endif
 
   // Remove account information from the account tracker service if needed.
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
@@ -385,26 +389,4 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On non-ChromeOS platforms, account ID migration started in 2015. Data is
-  // most probably corrupted for profiles that were not migrated. Clear all
-  // accounts to fix this state.
-
-  // TODO(crbug.com/1224899): This code should be removed once migration
-  // finishes.
-  if (account_tracker_service_->GetMigrationState() ==
-      AccountTrackerService::MIGRATION_NOT_STARTED) {
-    // Clear the primary account if any.
-    ClearPrimaryAccount(signin_metrics::ACCOUNT_ID_MIGRATION,
-                        signin_metrics::SignoutDelete::kIgnoreMetric);
-    // Clean all remaining account information from the account tracker.
-    for (const auto& account : account_tracker_service_->GetAccounts())
-      account_tracker_service_->RemoveAccount(account.account_id);
-    account_tracker_service_->SetMigrationDone();
-    client_->GetPrefs()->CommitPendingWrite();
-  }
-  DCHECK_EQ(AccountTrackerService::MIGRATION_DONE,
-            account_tracker_service_->GetMigrationState());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

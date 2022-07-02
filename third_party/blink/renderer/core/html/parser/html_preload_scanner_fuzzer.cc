@@ -5,6 +5,7 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/resource_preloader.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_for_fuzzing.h"
@@ -67,17 +68,17 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::unique_ptr<HTMLPreloadScanner> scanner =
       std::make_unique<HTMLPreloadScanner>(
-          options, document_url, std::move(document_parameters), media_data,
-          TokenPreloadScanner::ScannerType::kMainDocument);
+          std::make_unique<HTMLTokenizer>(options), false, document_url,
+          std::move(document_parameters), media_data,
+          TokenPreloadScanner::ScannerType::kMainDocument, nullptr);
 
   TextResourceDecoderForFuzzing decoder(fuzzed_data);
   std::string bytes = fuzzed_data.ConsumeRemainingBytes();
   String decoded_bytes = decoder.Decode(bytes.data(), bytes.length());
   scanner->AppendToEnd(decoded_bytes);
-  bool has_csp_meta_tag_unused = false;
-  PreloadRequestStream requests =
-      scanner->Scan(document_url, nullptr, has_csp_meta_tag_unused);
-  preloader.TakeAndPreload(requests);
+  std::unique_ptr<PendingPreloadData> preload_data =
+      scanner->Scan(document_url);
+  preloader.TakeAndPreload(preload_data->requests);
   return 0;
 }
 

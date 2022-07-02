@@ -69,8 +69,8 @@ class SyncArcPackageHelper {
   // informaton as |profile2|.
   bool ArcPackageDetailsMatch(Profile* profile1, Profile* profile2);
 
-  SyncTest* test_;
-  bool setup_completed_;
+  SyncTest* test_ = nullptr;
+  bool setup_completed_ = false;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
 };

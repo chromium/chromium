@@ -409,6 +409,7 @@ void NGInlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
   DCHECK(box->item);
   BoxData& box_data = box_data_list_.emplace_back(
       box->fragment_start, fragment_end, box->item, placeholder.Size());
+  box_data.borders = box->borders;
   box_data.padding = box->padding;
   if (box->has_start_edge) {
     box_data.has_line_left_edge = true;
@@ -416,6 +417,9 @@ void NGInlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
     box_data.margin_border_padding_line_left = box->margin_inline_start +
                                                box->borders.inline_start +
                                                box->padding.inline_start;
+  } else {
+    box_data.borders.inline_start = LayoutUnit();
+    box_data.padding.inline_start = LayoutUnit();
   }
   if (box->has_end_edge) {
     box_data.has_line_right_edge = true;
@@ -423,6 +427,9 @@ void NGInlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
     box_data.margin_border_padding_line_right = box->margin_inline_end +
                                                 box->borders.inline_end +
                                                 box->padding.inline_end;
+  } else {
+    box_data.borders.inline_end = LayoutUnit();
+    box_data.padding.inline_end = LayoutUnit();
   }
   if (IsRtl(style.Direction())) {
     std::swap(box_data.has_line_left_edge, box_data.has_line_right_edge);
@@ -808,12 +815,14 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   NGFragmentGeometry fragment_geometry;
   fragment_geometry.border_box_size = {
       rect.size.inline_size.ClampNegativeToZero(), rect.size.block_size};
+  fragment_geometry.border =
+      NGBoxStrut(borders, IsFlippedLinesWritingMode(style.GetWritingMode()));
   fragment_geometry.padding =
       NGBoxStrut(padding, IsFlippedLinesWritingMode(style.GetWritingMode()));
 
   // Because children are already in the visual order, use LTR for the
   // fragment builder so that it should not transform the coordinates for RTL.
-  NGBoxFragmentBuilder box(item->GetLayoutObject(), &style,
+  NGBoxFragmentBuilder box(item->GetLayoutObject(), &style, space,
                            {style.GetWritingMode(), TextDirection::kLtr});
   box.SetInitialFragmentGeometry(fragment_geometry);
   box.SetBoxType(NGPhysicalFragment::kInlineBox);

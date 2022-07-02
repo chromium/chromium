@@ -32,7 +32,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
 namespace base {
-class ListValue;
 class Value;
 }
 
@@ -229,7 +228,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // base::Value of type LIST.
   void SetArgs(base::Value args);
 
-  // Retrieves the results of the function as a ListValue.
+  // Retrieves the results of the function as a base::Value::List.
   const base::Value::List* GetResultList() const;
 
   // Retrieves any error string from the function.
@@ -379,15 +378,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // should be using the generated Result struct and ArgumentList.
   ResponseValue TwoArguments(base::Value arg1, base::Value arg2);
   // Success, a list of arguments |results| to pass to caller.
-  ResponseValue ArgumentList(std::vector<base::Value> results);
-  // TODO(crbug.com/1139221): Deprecate this when Create() returns a base::Value
-  // instead of a std::unique_ptr<>.
-  //
-  // Success, a list of arguments |results| to pass to caller.
-  // - a std::unique_ptr<> for convenience, since callers usually get this from
-  //   the result of a Create(...) call on the generated Results struct. For
-  //   example, alarms::Get::Results::Create(alarm).
-  ResponseValue ArgumentList(std::unique_ptr<base::ListValue> results);
+  ResponseValue ArgumentList(base::Value::List results);
   // Error. chrome.runtime.lastError.message will be set to |error|.
   ResponseValue Error(std::string error);
   // Error with formatting. Args are processed using
@@ -406,10 +397,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Using this ResponseValue indicates something is wrong with the API.
   // It shouldn't be possible to have both an error *and* some arguments.
   // Some legacy APIs do rely on it though, like webstorePrivate.
-  ResponseValue ErrorWithArguments(std::vector<base::Value> args,
-                                   const std::string& error);
-  // TODO(crbug.com/1139221): Deprecate this in favor of the variant above.
-  ResponseValue ErrorWithArguments(std::unique_ptr<base::ListValue> args,
+  ResponseValue ErrorWithArguments(base::Value::List args,
                                    const std::string& error);
   // Bad message. A ResponseValue equivalent to EXTENSION_FUNCTION_VALIDATE(),
   // so this will actually kill the renderer and not respond at all.
@@ -491,12 +479,12 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   bool has_args() const { return args_.has_value(); }
 
-  const std::vector<base::Value>& args() const {
+  const base::Value::List& args() const {
     DCHECK(args_);
     return *args_;
   }
 
-  std::vector<base::Value>& mutable_args() {
+  base::Value::List& mutable_args() {
     DCHECK(args_);
     return *args_;
   }
@@ -523,7 +511,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
                           const std::vector<std::string>& blob_uuids);
 
   // The arguments to the API. Only non-null if arguments were specified.
-  absl::optional<std::vector<base::Value>> args_;
+  absl::optional<base::Value::List> args_;
 
   base::ElapsedTimer timer_;
 

@@ -47,6 +47,10 @@ interface AudioBufferRequester {
   // returns.
   GetBuffer() => (AudioStreamInfo? stream_info,
                   media.mojom.DecoderBuffer buffer);
+
+  // Requests that the data source providing audio buffers enable its bitstream
+  // converter. Returns whether the operation was successful.
+  EnableBitstreamConverter() => (bool success);
 };
 
 // Provides a "pull" mechanism to request DecoderBuffer frames of video data.
@@ -56,6 +60,9 @@ interface VideoBufferRequester {
   // As AudioBufferRequester::GetBuffer() above.
   GetBuffer() => (VideoStreamInfo? stream_info,
                   media.mojom.DecoderBuffer buffer);
+
+  // As AudioBufferRequester::EnableBitstreamConverter() above.
+  EnableBitstreamConverter() => (bool success);
 };
 
 // Initialization information for an audio DemuxerStream.

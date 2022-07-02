@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -42,33 +42,7 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "history"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "history.html",
-    "images/journeys.svg",
-    "images/list.svg",
-    "images/sign_in_promo_dark.svg",
-    "images/sign_in_promo.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "history.rollup.js|history.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-}
-
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }
@@ -100,12 +74,12 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
+  in_files = html_files + icons_html_files
 }
 
 ts_library("build_ts") {
@@ -128,4 +102,30 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "history"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "history.html",
+    "images/journeys.svg",
+    "images/list.svg",
+    "images/sign_in_promo_dark.svg",
+    "images/sign_in_promo.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "history.rollup.js|history.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 }

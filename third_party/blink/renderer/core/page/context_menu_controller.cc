@@ -133,6 +133,13 @@ template <class enumType>
 uint32_t EnumToBitmask(enumType outcome) {
   return 1 << static_cast<uint8_t>(outcome);
 }
+
+absl::optional<uint64_t> GetRendererId(HitTestResult& result) {
+  if (auto* input = DynamicTo<HTMLInputElement>(result.InnerNode()))
+    return input->UniqueRendererFormControlId();
+  return absl::nullopt;
+}
+
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -476,7 +483,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       result.SetURLElement(target_node->EnclosingLinkEventParentOrSelf());
     }
   }
-  data.link_url = result.AbsoluteLinkURL();
+  data.link_url = GURL(result.AbsoluteLinkURL());
 
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {
@@ -484,12 +491,13 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.alt_text = html_element->AltText().Utf8();
   }
   if (!result.AbsoluteMediaURL().IsEmpty() ||
-      result.GetMediaStreamDescriptor()) {
+      result.GetMediaStreamDescriptor() || result.GetMediaSourceHandle()) {
     if (!result.AbsoluteMediaURL().IsEmpty())
-      data.src_url = result.AbsoluteMediaURL();
+      data.src_url = GURL(result.AbsoluteMediaURL());
 
     // We know that if absoluteMediaURL() is not empty or element has a media
-    // stream descriptor, then this is a media element.
+    // stream descriptor or element has a media source handle, then this is a
+    // media element.
     auto* media_element = To<HTMLMediaElement>(result.InnerNode());
     if (IsA<HTMLVideoElement>(*media_element)) {
       // A video element should be presented as an audio element when it has an
@@ -541,20 +549,18 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         data.media_type = mojom::blink::ContextMenuDataMediaType::kPlugin;
 
         WebPlugin* plugin = plugin_view->Plugin();
-        data.link_url = KURL(plugin->LinkAtPosition(data.mouse_position)
-                                 .GetString()
-                                 .Utf8()
-                                 .c_str());
+        data.link_url = GURL(KURL(plugin->LinkAtPosition(data.mouse_position)));
 
         auto* plugin_element = To<HTMLPlugInElement>(result.InnerNode());
-        data.src_url =
-            plugin_element->GetDocument().CompleteURL(plugin_element->Url());
+        data.src_url = GURL(
+            plugin_element->GetDocument().CompleteURL(plugin_element->Url()));
 
         // Figure out the text selection and text edit flags.
         WebString text = plugin->SelectionAsText();
         if (!text.IsEmpty()) {
           data.selected_text = text.Utf8();
-          data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
+          if (plugin->CanCopy())
+            data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
         }
         bool plugin_can_edit_text = plugin->CanEditText();
         if (plugin_can_edit_text) {
@@ -604,7 +610,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     } else if (potential_image_node != nullptr &&
                !HitTestResult::AbsoluteImageURL(potential_image_node)
                     .IsEmpty()) {
-      data.src_url = HitTestResult::AbsoluteImageURL(potential_image_node);
+      data.src_url =
+          GURL(HitTestResult::AbsoluteImageURL(potential_image_node));
       data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
       data.media_flags |= ContextMenuData::kMediaCanPrint;
       data.has_image_contents =
@@ -752,6 +759,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   data.input_field_type = ComputeInputFieldType(result);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
+  data.field_renderer_id = GetRendererId(result);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||
@@ -759,18 +767,24 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 
-  absl::optional<gfx::Point> host_context_menu_location;
-  auto* main_frame =
-      WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
-  if (main_frame) {
-    host_context_menu_location =
-        main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
-  }
-
   WebLocalFrameImpl* selected_web_frame =
       WebLocalFrameImpl::FromFrame(selected_frame);
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
+
+  absl::optional<gfx::Point> host_context_menu_location;
+  if (selected_web_frame->FrameWidgetImpl()) {
+    host_context_menu_location =
+        selected_web_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+  }
+  if (!host_context_menu_location.has_value()) {
+    auto* main_frame =
+        WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
+    if (main_frame && main_frame != selected_web_frame) {
+      host_context_menu_location =
+          main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+    }
+  }
 
   selected_web_frame->ShowContextMenu(
       context_menu_client_receiver_.BindNewEndpointAndPassRemote(

@@ -47,8 +47,8 @@ component("model") {
   deps = [
     "//ash/assistant/ui:constants",
     "//ash/public/cpp",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/services/libassistant/public/cpp:structs",
     "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry",

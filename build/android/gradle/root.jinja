@@ -6,15 +6,9 @@
 buildscript {
     repositories {
         google()
-        jcenter()
-{% if channel == 'canary' %}
-        // Workaround for http://b/144885480.
-        //maven() {
-        //  url "http://dl.bintray.com/kotlin/kotlin-eap"
-        //}
-{% endif %}
+        mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.0.3"
+        classpath "com.android.tools.build:gradle:7.2.0"
     }
 }

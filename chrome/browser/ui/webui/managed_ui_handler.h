@@ -56,7 +56,7 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // Handles the "observeManagedUI" message. No arguments.
-  void HandleObserveManagedUI(const base::ListValue* args);
+  void HandleObserveManagedUI(const base::Value::List& args);
 
   // Add/remove observers on the PolicyService.
   void AddObservers();

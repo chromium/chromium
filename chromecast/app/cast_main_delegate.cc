@@ -36,6 +36,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -232,11 +233,16 @@ void CastMainDelegate::ZygoteForked() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-bool CastMainDelegate::ShouldCreateFeatureList() {
-  return false;
+bool CastMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
-void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+void CastMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (ShouldCreateFeatureList(invoked_in)) {
+    // content is handling the feature list.
+    return;
+  }
+
   DCHECK(cast_feature_list_creator_);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -253,7 +259,9 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   //
   // The FieldTrialList is a dependency of the feature list. In tests, it is
   // constructed as part of the test suite.
-  if (is_running_tests) {
+  const auto* invoked_in_browser =
+      absl::get_if<InvokedInBrowserProcess>(&invoked_in);
+  if (invoked_in_browser && invoked_in_browser->is_running_test) {
     DCHECK(base::FieldTrialList::GetInstance());
   } else {
     // This is intentionally leaked since it needs to live for the duration of

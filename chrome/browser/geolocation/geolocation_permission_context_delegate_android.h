@@ -22,7 +22,6 @@ class GeolocationPermissionContextDelegateAndroid
 
   // GeolocationPermissionContext::Delegate:
   bool DecidePermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
       bool user_gesture,

@@ -204,6 +204,9 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
 void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
   DCHECK(value.is_string());
   preferred_languages_ = value.GetString();
+
+  for (auto& observer : observers_)
+    observer.OnPreferredLanguagesChanged(preferred_languages_);
 }
 
 void QuickAnswersStateLacros::OnImpressionCountChanged(base::Value value) {

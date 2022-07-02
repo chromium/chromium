@@ -70,7 +70,7 @@ class EVENTS_EXPORT Event {
     void set_time_stamp(base::TimeTicks time) { event_->time_stamp_ = time; }
 
    private:
-    raw_ptr<Event> event_;
+    raw_ptr<Event, DanglingUntriaged> event_;
   };
 
   void SetNativeEvent(const PlatformEvent& event);
@@ -316,7 +316,9 @@ class EVENTS_EXPORT Event {
   // Neither Event copy constructor nor the assignment operator copies
   // `target_`, as `target_` should be explicitly set so the setter will be
   // responsible for tracking it.
-  raw_ptr<EventTarget> target_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): Breaks events_unittests.
+  raw_ptr<EventTarget, DegradeToNoOpWhenMTE> target_ = nullptr;
   EventPhase phase_ = EP_PREDISPATCH;
   EventResult result_ = ER_UNHANDLED;
 

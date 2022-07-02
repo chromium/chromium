@@ -57,48 +57,50 @@
     margin-inline-end: 20px;
   }
 </style>
-<div id="show">
-  <cr-radio-group selected="[[radioSelection_(show_)]]"
-      disabled="[[showManagedByPolicy_]]"
-      on-selected-changed="onShowRadioSelectionChanged_">
-    <cr-radio-button id="hideButton" name="hide"
-        label="$i18n{hideAllCards}">
-    </cr-radio-button>
-    <cr-radio-button id="customizeButton" name="customize"
-        label="$i18n{customizeCards}">
-    </cr-radio-button>
-  </cr-radio-group>
-  <cr-policy-indicator indicator-type="devicePolicy"
-      hidden="[[!showManagedByPolicy_]]">
-  </cr-policy-indicator>
-</div>
-<div id="toggles">
-  <template id="toggleRepeat" is="dom-repeat" items="[[modules_]]">
-    <div class="toggle-section">
-      <div class="toggle-row">
-        <div class="toggle-name">[[item.name]]</div>
-        <cr-policy-indicator indicator-type="devicePolicy"
-            hidden="[[!showManagedByPolicy_]]">
-        </cr-policy-indicator>
-        <cr-toggle checked="{{item.checked}}"
-            disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]"
-            title="[[item.name]]">
-        </cr-toggle>
-      </div>
-      <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
-      removed after module customization is better defined. Please avoid
-      using similar pattern for other features. -->
-      <template is="dom-if"
-          if=
-      "[[showDiscountToggle_(item.id, item.checked, discountToggleEligible_)]]">
-        <div class="discount-toggle-row">
-          <div class="toggle-name">
-            $i18n{modulesCartDiscountConsentAccept}
-          </div>
-          <cr-toggle checked="{{discountToggle_.enabled}}"
-              title="$i18n{modulesCartDiscountConsentAccept}"></cr-toggle>
+<div id="container" hidden>
+  <div id="show">
+    <cr-radio-group selected="[[radioSelection_(show_)]]"
+        disabled="[[showManagedByPolicy_]]"
+        on-selected-changed="onShowRadioSelectionChanged_">
+      <cr-radio-button id="hideButton" name="hide"
+          label="$i18n{hideAllCards}">
+      </cr-radio-button>
+      <cr-radio-button id="customizeButton" name="customize"
+          label="$i18n{customizeCards}">
+      </cr-radio-button>
+    </cr-radio-group>
+    <cr-policy-indicator indicator-type="devicePolicy"
+        hidden="[[!showManagedByPolicy_]]">
+    </cr-policy-indicator>
+  </div>
+  <div id="toggles">
+    <template id="toggleRepeat" is="dom-repeat" items="[[modules_]]">
+      <div class="toggle-section">
+        <div class="toggle-row">
+          <div class="toggle-name">[[item.name]]</div>
+          <cr-policy-indicator indicator-type="devicePolicy"
+              hidden="[[!showManagedByPolicy_]]">
+          </cr-policy-indicator>
+          <cr-toggle checked="{{item.checked}}"
+              disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]"
+              title="[[item.name]]">
+          </cr-toggle>
         </div>
-      </template>
-    </div>
-  </template>
+        <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
+        removed after module customization is better defined. Please avoid
+        using similar pattern for other features. -->
+        <template is="dom-if"
+            if=
+        "[[showDiscountToggle_(item.id, item.checked, discountToggleEligible_)]]">
+          <div class="discount-toggle-row">
+            <div class="toggle-name">
+              $i18n{modulesCartDiscountConsentAccept}
+            </div>
+            <cr-toggle checked="{{discountToggle_.enabled}}"
+                title="$i18n{modulesCartDiscountConsentAccept}"></cr-toggle>
+          </div>
+        </template>
+      </div>
+    </template>
+  </div>
 </div>

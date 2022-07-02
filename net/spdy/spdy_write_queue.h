@@ -106,7 +106,7 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
     ~PendingWrite();
   };
 
-  bool removing_writes_;
+  bool removing_writes_ = false;
 
   // Number of currently queued capped frames including all priorities.
   int num_queued_capped_frames_ = 0;

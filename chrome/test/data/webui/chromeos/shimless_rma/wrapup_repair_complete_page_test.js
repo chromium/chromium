@@ -26,13 +26,10 @@ export function wrapupRepairCompletePageTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -254,7 +251,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(powerwashDialog.open);
   });
 
-  test('CutoffBatteryButtonOpensCountdownDialogAndCutsOffBattery', async () => {
+  test('CutoffBatteryButtonCutsOffBattery', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
     let callCount = 0;
@@ -277,11 +274,11 @@ export function wrapupRepairCompletePageTest() {
     // Cut off the battery.
     assertEquals(1, callCount);
     assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
-    // Show the dialog.
+    // When the countdown is done, the battery cutoff dialog will be closed.
     const batteryCutoffDialog =
         component.shadowRoot.querySelector('#batteryCutoffDialog');
     assertTrue(!!batteryCutoffDialog);
-    assertTrue(batteryCutoffDialog.open);
+    assertFalse(batteryCutoffDialog.open);
   });
 
   test('PowerCableConnectCancelsBatteryCutoff', async () => {
@@ -311,11 +308,20 @@ export function wrapupRepairCompletePageTest() {
     };
     await flushTasks();
 
+    // Force the battery cutoff dialog to open, to make sure that the shutdown
+    // button closes it.
+    const batteryCutoffDialog =
+        component.shadowRoot.querySelector('#batteryCutoffDialog');
+    assertTrue(!!batteryCutoffDialog);
+    batteryCutoffDialog.showModal();
+    assertTrue(batteryCutoffDialog.open);
+
     await clickButton('#batteryCutoffShutdownButton');
     await flushTasks();
 
     assertEquals(1, callCount);
     assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
+    assertFalse(batteryCutoffDialog.open);
   });
 
   test('OpensRmaLogDialog', async () => {
@@ -325,6 +331,22 @@ export function wrapupRepairCompletePageTest() {
     const logsDialog = component.shadowRoot.querySelector('#logsDialog');
     assertTrue(!!logsDialog);
     assertTrue(logsDialog.open);
+  });
+
+  test('SaveLogButtonSavesTheLog', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    await clickButton('#saveLogDialogButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {

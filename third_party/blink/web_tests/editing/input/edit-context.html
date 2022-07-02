@@ -398,6 +398,21 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "";
+  test.editContext = editContext;
+  test.focus();
+  assert_equals(editContext.text, "");
+  editContext.updateText(0, 0, "foo");
+  assert_equals(editContext.text, "foo");
+  // replace "oo" with "bar"
+  textInputController.setCompositionWithReplacementRange("bar", 1, 3);
+  assert_equals(editContext.text, "fbar");
+}, 'The new text should apply to the replacement range');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div

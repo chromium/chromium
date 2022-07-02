@@ -26,7 +26,15 @@ class DocumentPortals final : public GarbageCollected<DocumentPortals>,
                               public Supplement<Document> {
  public:
   static const char kSupplementName[];
-  static DocumentPortals& From(Document&);
+
+  // Returns the supplement that stores the portal elements
+  // that are associated with the document. Returns nullptr if
+  // `GetOrCreate` has yet been called yet.
+  static DocumentPortals* Get(Document&);
+
+  // Like `Get` but if the supplement has not been created yet it
+  // will be created.
+  static DocumentPortals& GetOrCreate(Document&);
 
   void RegisterPortalContents(PortalContents*);
   void DeregisterPortalContents(PortalContents*);

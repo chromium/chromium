@@ -60,4 +60,38 @@ void ShoppingServiceAndroid::HandleProductInfoCallback(
       info_java_object);
 }
 
+void ShoppingServiceAndroid::GetMerchantInfoForUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_gurl,
+    const JavaParamRef<jobject>& j_callback) {
+  CHECK(shopping_service_);
+
+  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+
+  shopping_service_->GetMerchantInfoForUrl(
+      url, base::BindOnce(&ShoppingServiceAndroid::HandleMerchantInfoCallback,
+                          weak_ptr_factory_.GetWeakPtr(), env,
+                          ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void ShoppingServiceAndroid::HandleMerchantInfoCallback(
+    JNIEnv* env,
+    const ScopedJavaGlobalRef<jobject>& callback,
+    const GURL& url,
+    absl::optional<MerchantInfo> info) {
+  ScopedJavaLocalRef<jobject> info_java_object(nullptr);
+  if (info.has_value()) {
+    info_java_object = Java_ShoppingService_createMerchantInfo(
+        env, info->star_rating, info->count_rating,
+        url::GURLAndroid::FromNativeGURL(env, GURL(info->details_page_url)),
+        info->has_return_policy, info->non_personalized_familiarity_score,
+        info->contains_sensitive_content, info->proactive_message_disabled);
+  }
+
+  Java_ShoppingService_runMerchantInfoCallback(
+      env, callback, url::GURLAndroid::FromNativeGURL(env, url),
+      info_java_object);
+}
+
 }  // namespace commerce

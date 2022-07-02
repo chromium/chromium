@@ -228,18 +228,18 @@ class NET_EXPORT ClientSocketHandle {
   // Resets the supplemental error state.
   void ResetErrorState();
 
-  bool is_initialized_;
-  raw_ptr<ClientSocketPool> pool_;
-  raw_ptr<HigherLayeredPool> higher_pool_;
+  bool is_initialized_ = false;
+  raw_ptr<ClientSocketPool> pool_ = nullptr;
+  raw_ptr<HigherLayeredPool> higher_pool_ = nullptr;
   std::unique_ptr<StreamSocket> socket_;
   ClientSocketPool::GroupId group_id_;
-  SocketReuseType reuse_type_;
+  SocketReuseType reuse_type_ = ClientSocketHandle::UNUSED;
   CompletionOnceCallback callback_;
   base::TimeDelta idle_time_;
   // See ClientSocketPool::ReleaseSocket() for an explanation.
-  int64_t group_generation_;
+  int64_t group_generation_ = -1;
   ResolveErrorInfo resolve_error_info_;
-  bool is_ssl_error_;
+  bool is_ssl_error_ = false;
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
   std::vector<ConnectionAttempt> connection_attempts_;
 

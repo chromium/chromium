@@ -124,7 +124,7 @@ struct NextCharUTF8 {
   base_icu::UChar32 operator()(const char** p, const char* end) {
     base_icu::UChar32 c;
     int offset = 0;
-    CBU8_NEXT(*p, offset, end - *p, c);
+    CBU8_NEXT(reinterpret_cast<const uint8_t*>(*p), offset, end - *p, c);
     *p += offset;
     return c;
   }

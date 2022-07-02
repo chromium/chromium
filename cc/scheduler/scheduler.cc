@@ -74,11 +74,13 @@ void Scheduler::Stop() {
 
 void Scheduler::SetNeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
-               "Scheduler::SetNeedsImplSideInvalidation",
-               "needs_first_draw_on_activation",
-               needs_first_draw_on_activation);
-  state_machine_.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  {
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
+                 "Scheduler::SetNeedsImplSideInvalidation",
+                 "needs_first_draw_on_activation",
+                 needs_first_draw_on_activation);
+    state_machine_.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+  }
   ProcessScheduledActions();
 }
 
@@ -179,10 +181,16 @@ void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
         base::Microseconds(1), base::Milliseconds(50), 50);
   }
 
-  compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
-      frame_token, submit_time, begin_main_frame_args_.frame_id,
-      last_activate_origin_frame_args_.frame_id, std::move(events_metrics),
-      has_missing_content);
+  // Hardware and software draw may occur at the same frame simultaneously for
+  // Android WebView. There is no need to call DidSubmitCompositorFrame here for
+  // software draw.
+  if (!settings_.using_synchronous_renderer_compositor ||
+      !state_machine_.resourceless_draw()) {
+    compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
+        frame_token, submit_time, begin_main_frame_args_.frame_id,
+        last_activate_origin_frame_args_.frame_id, std::move(events_metrics),
+        has_missing_content);
+  }
   state_machine_.DidSubmitCompositorFrame();
 
   // There is no need to call ProcessScheduledActions here because
@@ -209,23 +217,27 @@ void Scheduler::SetTreePrioritiesAndScrollState(
 
 void Scheduler::NotifyReadyToCommit(
     std::unique_ptr<BeginMainFrameMetrics> details) {
-  TRACE_EVENT0("cc", "Scheduler::NotifyReadyToCommit");
-  compositor_timing_history_->NotifyReadyToCommit();
-  compositor_frame_reporting_controller_->NotifyReadyToCommit(
-      std::move(details));
-  state_machine_.NotifyReadyToCommit();
+  {
+    TRACE_EVENT0("cc", "Scheduler::NotifyReadyToCommit");
+    compositor_timing_history_->NotifyReadyToCommit();
+    compositor_frame_reporting_controller_->NotifyReadyToCommit(
+        std::move(details));
+    state_machine_.NotifyReadyToCommit();
+  }
   ProcessScheduledActions();
 }
 
 void Scheduler::BeginMainFrameAborted(CommitEarlyOutReason reason) {
-  TRACE_EVENT1("cc", "Scheduler::BeginMainFrameAborted", "reason",
-               CommitEarlyOutReasonToString(reason));
-  compositor_timing_history_->BeginMainFrameAborted();
-  auto frame_id = last_dispatched_begin_main_frame_args_.frame_id;
-  compositor_frame_reporting_controller_->BeginMainFrameAborted(frame_id,
-                                                                reason);
+  {
+    TRACE_EVENT1("cc", "Scheduler::BeginMainFrameAborted", "reason",
+                 CommitEarlyOutReasonToString(reason));
+    compositor_timing_history_->BeginMainFrameAborted();
+    auto frame_id = last_dispatched_begin_main_frame_args_.frame_id;
+    compositor_frame_reporting_controller_->BeginMainFrameAborted(frame_id,
+                                                                  reason);
 
-  state_machine_.BeginMainFrameAborted(reason);
+    state_machine_.BeginMainFrameAborted(reason);
+  }
   ProcessScheduledActions();
 }
 
@@ -246,18 +258,22 @@ void Scheduler::DidPresentCompositorFrame(
 }
 
 void Scheduler::DidLoseLayerTreeFrameSink() {
-  TRACE_EVENT0("cc", "Scheduler::DidLoseLayerTreeFrameSink");
-  state_machine_.DidLoseLayerTreeFrameSink();
-  UpdateCompositorTimingHistoryRecordingEnabled();
+  {
+    TRACE_EVENT0("cc", "Scheduler::DidLoseLayerTreeFrameSink");
+    state_machine_.DidLoseLayerTreeFrameSink();
+    UpdateCompositorTimingHistoryRecordingEnabled();
+  }
   ProcessScheduledActions();
 }
 
 void Scheduler::DidCreateAndInitializeLayerTreeFrameSink() {
-  TRACE_EVENT0("cc", "Scheduler::DidCreateAndInitializeLayerTreeFrameSink");
-  DCHECK(!observing_begin_frame_source_);
-  DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
-  state_machine_.DidCreateAndInitializeLayerTreeFrameSink();
-  UpdateCompositorTimingHistoryRecordingEnabled();
+  {
+    TRACE_EVENT0("cc", "Scheduler::DidCreateAndInitializeLayerTreeFrameSink");
+    DCHECK(!observing_begin_frame_source_);
+    DCHECK(!begin_impl_frame_deadline_timer_.IsRunning());
+    state_machine_.DidCreateAndInitializeLayerTreeFrameSink();
+    UpdateCompositorTimingHistoryRecordingEnabled();
+  }
   ProcessScheduledActions();
 }
 
@@ -355,9 +371,11 @@ void Scheduler::PostPendingBeginFrameTask() {
 void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
   if (state_machine_.begin_frame_source_paused() == paused)
     return;
-  TRACE_EVENT_INSTANT1("cc", "Scheduler::SetBeginFrameSourcePaused",
-                       TRACE_EVENT_SCOPE_THREAD, "paused", paused);
-  state_machine_.SetBeginFrameSourcePaused(paused);
+  {
+    TRACE_EVENT_INSTANT1("cc", "Scheduler::SetBeginFrameSourcePaused",
+                         TRACE_EVENT_SCOPE_THREAD, "paused", paused);
+    state_machine_.SetBeginFrameSourcePaused(paused);
+  }
   ProcessScheduledActions();
 }
 
@@ -762,24 +780,26 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
 }
 
 void Scheduler::OnBeginImplFrameDeadline() {
-  TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
-  begin_impl_frame_deadline_timer_.Stop();
-  // We split the deadline actions up into two phases so the state machine
-  // has a chance to trigger actions that should occur durring and after
-  // the deadline separately. For example:
-  // * Sending the BeginMainFrame will not occur after the deadline in
-  //     order to wait for more user-input before starting the next commit.
-  // * Creating a new OuputSurface will not occur during the deadline in
-  //     order to allow the state machine to "settle" first.
-  compositor_timing_history_->RecordDeadlineMode(deadline_mode_);
-  if (!settings_.using_synchronous_renderer_compositor) {
-    compositor_timing_history_->WillFinishImplFrame(
-        state_machine_.needs_redraw());
-    compositor_frame_reporting_controller_->OnFinishImplFrame(
-        begin_main_frame_args_.frame_id);
-  }
+  {
+    TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
+    begin_impl_frame_deadline_timer_.Stop();
+    // We split the deadline actions up into two phases so the state machine
+    // has a chance to trigger actions that should occur during and after
+    // the deadline separately. For example:
+    // * Sending the BeginMainFrame will not occur after the deadline in
+    //     order to wait for more user-input before starting the next commit.
+    // * Creating a new OutputSurface will not occur during the deadline in
+    //     order to allow the state machine to "settle" first.
+    compositor_timing_history_->RecordDeadlineMode(deadline_mode_);
+    if (!settings_.using_synchronous_renderer_compositor) {
+      compositor_timing_history_->WillFinishImplFrame(
+          state_machine_.needs_redraw());
+      compositor_frame_reporting_controller_->OnFinishImplFrame(
+          begin_main_frame_args_.frame_id);
+    }
 
-  state_machine_.OnBeginImplFrameDeadline();
+    state_machine_.OnBeginImplFrameDeadline();
+  }
   ProcessScheduledActions();
 
   if (settings_.using_synchronous_renderer_compositor)
@@ -816,6 +836,13 @@ void Scheduler::DrawForced() {
   bool drawing_with_new_active_tree =
       state_machine_.active_tree_needs_first_draw() &&
       !state_machine_.previous_pending_tree_was_impl_side();
+  if (drawing_with_new_active_tree) {
+    TRACE_EVENT_WITH_FLOW1(
+        "viz,benchmark", "Graphics.Pipeline.DrawForced",
+        TRACE_ID_GLOBAL(last_activate_origin_frame_args().trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "trace_id",
+        last_activate_origin_frame_args().trace_id);
+  }
   compositor_timing_history_->WillDraw();
   state_machine_.WillDraw();
   DrawResult result = client_->ScheduledActionDrawForced();
@@ -825,9 +852,11 @@ void Scheduler::DrawForced() {
 }
 
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
-  TRACE_EVENT1("cc", "Scheduler::SetDeferBeginMainFrame",
-               "defer_begin_main_frame", defer_begin_main_frame);
-  state_machine_.SetDeferBeginMainFrame(defer_begin_main_frame);
+  {
+    TRACE_EVENT1("cc", "Scheduler::SetDeferBeginMainFrame",
+                 "defer_begin_main_frame", defer_begin_main_frame);
+    state_machine_.SetDeferBeginMainFrame(defer_begin_main_frame);
+  }
   ProcessScheduledActions();
 }
 
@@ -915,12 +944,11 @@ void Scheduler::ProcessScheduledActions() {
       case SchedulerStateMachine::Action::DRAW_FORCED:
         DrawForced();
         break;
-      case SchedulerStateMachine::Action::DRAW_ABORT: {
+      case SchedulerStateMachine::Action::DRAW_ABORT:
         // No action is actually performed, but this allows the state machine to
         // drain the pipeline without actually drawing.
         state_machine_.AbortDraw();
         break;
-      }
       case SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
         state_machine_.WillBeginLayerTreeFrameSinkCreation();
         client_->ScheduledActionBeginLayerTreeFrameSinkCreation();
@@ -929,12 +957,11 @@ void Scheduler::ProcessScheduledActions() {
         state_machine_.WillPrepareTiles();
         client_->ScheduledActionPrepareTiles();
         break;
-      case SchedulerStateMachine::Action::INVALIDATE_LAYER_TREE_FRAME_SINK: {
+      case SchedulerStateMachine::Action::INVALIDATE_LAYER_TREE_FRAME_SINK:
         state_machine_.WillInvalidateLayerTreeFrameSink();
         client_->ScheduledActionInvalidateLayerTreeFrameSink(
             state_machine_.RedrawPending());
         break;
-      }
     }
   } while (action != SchedulerStateMachine::Action::NONE);
 

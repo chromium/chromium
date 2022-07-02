@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/media_query_set_owner.h"
+#include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -57,7 +59,8 @@ enum class CSSImportRules {
   kIgnoreWithWarning,
 };
 
-class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
+class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
+                                        public MediaQuerySetOwner {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -132,20 +135,25 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
 
   void ClearOwnerRule() { owner_rule_ = nullptr; }
   Document* OwnerDocument() const;
-  const MediaQuerySet* MediaQueries() const { return media_queries_.get(); }
-  void SetMediaQueries(scoped_refptr<MediaQuerySet>);
+
+  // MediaQuerySetOwner
+  const MediaQuerySet* MediaQueries() const override {
+    return media_queries_.Get();
+  }
+  void SetMediaQueries(const MediaQuerySet* media_queries) override {
+    media_queries_ = media_queries;
+  }
+
   bool MatchesMediaQueries(const MediaQueryEvaluator&);
+  const MediaQueryResultFlags& GetMediaQueryResultFlags() const {
+    return media_query_result_flags_;
+  }
   bool HasMediaQueryResults() const {
-    return !viewport_dependent_media_query_results_.IsEmpty() ||
-           !device_dependent_media_query_results_.IsEmpty();
+    return media_query_result_flags_.is_viewport_dependent ||
+           media_query_result_flags_.is_device_dependent;
   }
+  bool HasViewportDependentMediaQueries() const;
   bool HasDynamicViewportDependentMediaQueries() const;
-  const MediaQueryResultList& ViewportDependentMediaQueryResults() const {
-    return viewport_dependent_media_query_results_;
-  }
-  const MediaQueryResultList& DeviceDependentMediaQueryResults() const {
-    return device_dependent_media_query_results_;
-  }
   void SetTitle(const String& title) { title_ = title; }
 
   void AddedAdoptedToTreeScope(TreeScope& tree_scope);
@@ -213,7 +221,6 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   bool LoadCompleted() const { return load_completed_; }
   void SetToPendingState();
   void SetText(const String&, CSSImportRules);
-  void SetMedia(MediaList*);
   void SetAlternateFromConstructor(bool);
   bool CanBeActivated(const String& current_preferrable_name) const;
   bool IsConstructed() const { return ConstructorDocument(); }
@@ -266,11 +273,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   bool enable_rule_access_for_inspector_ = false;
 
   String title_;
-  scoped_refptr<MediaQuerySet> media_queries_;
-  MediaQueryResultList viewport_dependent_media_query_results_;
-  MediaQueryResultList device_dependent_media_query_results_;
-  // See MediaQueryExpValue::UnitFlags.
-  unsigned media_query_unit_flags_ = 0;
+  Member<const MediaQuerySet> media_queries_;
+  MediaQueryResultFlags media_query_result_flags_;
 
   Member<Node> owner_node_;
   Member<CSSRule> owner_rule_;

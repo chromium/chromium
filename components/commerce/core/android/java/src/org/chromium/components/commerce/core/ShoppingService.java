@@ -4,6 +4,8 @@
 
 package org.chromium.components.commerce.core;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -34,6 +36,30 @@ public class ShoppingService {
         }
     }
 
+    /** A data container for merchant info provided by the shopping service. */
+    public static final class MerchantInfo {
+        public final float starRating;
+        public final int countRating;
+        public final GURL detailsPageUrl;
+        public final boolean hasReturnPolicy;
+        public final float nonPersonalizedFamiliarityScore;
+        public final boolean containsSensitiveContent;
+        public final boolean proactiveMessageDisabled;
+
+        @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+        public MerchantInfo(float starRating, int countRating, GURL detailsPageUrl,
+                boolean hasReturnPolicy, float nonPersonalizedFamiliarityScore,
+                boolean containsSensitiveContent, boolean proactiveMessageDisabled) {
+            this.starRating = starRating;
+            this.countRating = countRating;
+            this.detailsPageUrl = detailsPageUrl;
+            this.hasReturnPolicy = hasReturnPolicy;
+            this.nonPersonalizedFamiliarityScore = nonPersonalizedFamiliarityScore;
+            this.containsSensitiveContent = containsSensitiveContent;
+            this.proactiveMessageDisabled = proactiveMessageDisabled;
+        }
+    }
+
     /** A callback for acquiring product information about a page. */
     public interface ProductInfoCallback {
         /**
@@ -42,6 +68,16 @@ public class ShoppingService {
          * @param info The product info for the URL or {@code null} if none is available.
          */
         void onResult(GURL url, ProductInfo info);
+    }
+
+    /** A callback for acquiring merchant information about a page. */
+    public interface MerchantInfoCallback {
+        /**
+         * A notification that fetching merchant information for the URL has completed.
+         * @param url The URL the merchant info was fetched for.
+         * @param info The merchant info for the URL or {@code null} if none is available.
+         */
+        void onResult(GURL url, MerchantInfo info);
     }
 
     /** A pointer to the native side of the object. */
@@ -62,6 +98,19 @@ public class ShoppingService {
         if (mNativeShoppingServiceAndroid == 0) return;
 
         ShoppingServiceJni.get().getProductInfoForUrl(
+                mNativeShoppingServiceAndroid, this, url, callback);
+    }
+
+    /**
+     * Fetch information about a merchant for a URL.
+     * @param url The URL to fetch merchant info for.
+     * @param callback The callback that will run after the fetch is completed. The merchant info
+     *                 object will be null if there is none available.
+     */
+    public void getMerchantInfoForUrl(GURL url, MerchantInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        ShoppingServiceJni.get().getMerchantInfoForUrl(
                 mNativeShoppingServiceAndroid, this, url, callback);
     }
 
@@ -88,9 +137,25 @@ public class ShoppingService {
         callback.onResult(url, info);
     }
 
+    @CalledByNative
+    private static MerchantInfo createMerchantInfo(float starRating, int countRating,
+            GURL detailsPageUrl, boolean hasReturnPolicy, float nonPersonalizedFamilarityScore,
+            boolean containsSensitiveContent, boolean proactiveMessageDisabled) {
+        return new MerchantInfo(starRating, countRating, detailsPageUrl, hasReturnPolicy,
+                nonPersonalizedFamilarityScore, containsSensitiveContent, proactiveMessageDisabled);
+    }
+
+    @CalledByNative
+    private static void runMerchantInfoCallback(
+            MerchantInfoCallback callback, GURL url, MerchantInfo info) {
+        callback.onResult(url, info);
+    }
+
     @NativeMethods
     interface Natives {
         void getProductInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
                 GURL url, ProductInfoCallback callback);
+        void getMerchantInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
+                GURL url, MerchantInfoCallback callback);
     }
 }

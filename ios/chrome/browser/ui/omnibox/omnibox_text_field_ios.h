@@ -25,13 +25,13 @@ typedef enum {
                     textColor:(UIColor*)textColor
                     tintColor:(UIColor*)tintColor;
 
-// Sets the field's text to |text|.  If |userTextLength| is less than the length
-// of |text|, the excess is displayed as inline autocompleted text.  When the
+// Sets the field's text to `text`.  If `userTextLength` is less than the length
+// of `text`, the excess is displayed as inline autocompleted text.  When the
 // field is not in editing mode, it will respect the text attributes set on
-// |text|.
+// `text`.
 - (void)setText:(NSAttributedString*)text userTextLength:(size_t)userTextLength;
 
-// Inserts the given |text| into the text field.  The text replaces the current
+// Inserts the given `text` into the text field.  The text replaces the current
 // selection, if there is one; otherwise the text is inserted at the current
 // cursor position.  This method should only be called while editing.
 - (void)insertTextWhileEditing:(NSString*)text;
@@ -43,7 +43,7 @@ typedef enum {
 // Returns self.text without the autocomplete part, if it's available.
 - (NSString*)userText;
 
-// Returns just the portion of |-displayedText| that is inline autocompleted.
+// Returns just the portion of `-displayedText` that is inline autocompleted.
 - (NSString*)autocompleteText;
 
 // Returns YES if this field is currently displaying any inline autocompleted
@@ -63,11 +63,11 @@ typedef enum {
 - (NSRange)selectedNSRange;
 
 // Returns the most likely text alignment, Left or Right, based on the best
-// language match for |self.text|.
+// language match for `self.text`.
 - (NSTextAlignment)bestTextAlignment;
 
 // Returns the most likely semantic content attribute -- right to left, left to
-// right or unspecified -- based on the first character of |self.text| and the
+// right or unspecified -- based on the first character of `self.text` and the
 // device's current locale.
 - (UISemanticContentAttribute)bestSemanticContentAttribute;
 
@@ -79,9 +79,9 @@ typedef enum {
 // property.
 - (UIColor*)displayedTextColor;
 
-// Fade in/out the text and auxiliary views depending on |style|.
+// Fade in/out the text and auxiliary views depending on `style`.
 - (void)animateFadeWithStyle:(OmniboxTextFieldFadeStyle)style;
-// Called when animations added by |-animateFadeWithStyle:| can be removed.
+// Called when animations added by `-animateFadeWithStyle:` can be removed.
 - (void)cleanUpFadeAnimations;
 
 // Returns an x offset for a given string. If no such string is found, returns
@@ -91,8 +91,8 @@ typedef enum {
 
 // Initial touch on the Omnibox triggers a "pre-edit" state. The current
 // URL is shown without any insertion point. First character typed replaces
-// the URL. A second touch turns on the insertion point. |preEditStaticLabel|
-// is normally hidden. In pre-edit state, |preEditStaticLabel| is unhidden
+// the URL. A second touch turns on the insertion point. `preEditStaticLabel`
+// is normally hidden. In pre-edit state, `preEditStaticLabel` is unhidden
 // and displays the URL that will be edited on the second touch.
 - (void)enterPreEditState;
 - (void)exitPreEditState;

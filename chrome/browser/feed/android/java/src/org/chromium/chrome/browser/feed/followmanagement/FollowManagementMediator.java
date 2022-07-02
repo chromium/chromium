@@ -62,7 +62,6 @@ class FollowManagementMediator {
         mModelList.add(listItem);
 
         // Control flow is to refresh the feeds, then get the feed list, then display it.
-        // TODO(https://crbug.com/1197286) Add a spinner while waiting for results.
         WebFeedBridge.refreshFollowedWebFeeds(this::getFollowedWebFeeds);
     }
 

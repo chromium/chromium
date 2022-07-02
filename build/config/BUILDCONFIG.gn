@@ -342,7 +342,6 @@ default_compiler_configs = [
   "//build/config/compiler:no_exceptions",
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:no_unresolved_symbols",
-  "//build/config/compiler:prevent_unsafe_narrowing",
   "//build/config/compiler:runtime_library",
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",

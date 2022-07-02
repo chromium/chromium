@@ -123,7 +123,7 @@ void CredentialProviderSigninDialogWinDialogTest::SendSigninCompleteMessage(
 
   std::string login_complete_message =
       "chrome.send('lstFetchResults', [" + json_string + "]);";
-  content::RenderFrameHost* root = web_contents()->GetMainFrame();
+  content::RenderFrameHost* root = web_contents()->GetPrimaryMainFrame();
   content::ExecuteScriptAsync(root, login_complete_message);
   WaitForSigninCompleteMessage();
 }

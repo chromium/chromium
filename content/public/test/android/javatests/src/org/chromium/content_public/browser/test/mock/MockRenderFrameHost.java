@@ -10,7 +10,6 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -68,7 +67,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public boolean isRenderFrameCreated() {
+    public boolean isRenderFrameLive() {
         return false;
     }
 
@@ -89,10 +88,6 @@ public class MockRenderFrameHost implements RenderFrameHost {
             String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
         return 0;
     }
-
-    @Override
-    public void onCredentialsDetailsListReceived(
-            List<WebAuthnCredentialDetails> credentialList, Callback<byte[]> callback) {}
 
     @Override
     public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {

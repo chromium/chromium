@@ -8,8 +8,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.optimization_guide.proto.ModelsProto;
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 
 /**
  * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java
@@ -41,17 +39,22 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 mNativePtr, this, segmentationKey);
     }
 
-    @CalledByNative
-    private void clearNativePtr() {
-        mNativePtr = 0;
+    @Override
+    public int registerOnDemandSegmentSelectionCallback(
+            String segmentationKey, Callback<OnDemandSegmentSelectionResult> callback) {
+        return SegmentationPlatformServiceImplJni.get().registerOnDemandSegmentSelectionCallback(
+                mNativePtr, this, segmentationKey, callback);
+    }
+
+    @Override
+    public void unregisterOnDemandSegmentSelectionCallback(String segmentationKey, int callbackId) {
+        SegmentationPlatformServiceImplJni.get().unregisterOnDemandSegmentSelectionCallback(
+                mNativePtr, this, segmentationKey, callbackId);
     }
 
     @CalledByNative
-    private static SegmentSelectionResult createSegmentSelectionResult(
-            boolean isReady, int selectedSegment) {
-        OptimizationTarget segment = ModelsProto.OptimizationTarget.forNumber(selectedSegment);
-        if (segment == null) segment = OptimizationTarget.OPTIMIZATION_TARGET_UNKNOWN;
-        return new SegmentSelectionResult(isReady, segment);
+    private void clearNativePtr() {
+        mNativePtr = 0;
     }
 
     @NativeMethods
@@ -61,5 +64,11 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 Callback<SegmentSelectionResult> callback);
         SegmentSelectionResult getCachedSegmentResult(long nativeSegmentationPlatformServiceAndroid,
                 SegmentationPlatformServiceImpl caller, String segmentationKey);
+        int registerOnDemandSegmentSelectionCallback(long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller, String segmentationKey,
+                Callback<OnDemandSegmentSelectionResult> callback);
+        void unregisterOnDemandSegmentSelectionCallback(
+                long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller, String segmentationKey, int callbackId);
     }
 }

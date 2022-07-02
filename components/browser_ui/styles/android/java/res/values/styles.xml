@@ -6,25 +6,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Control styles -->
     <style name="Widget.BrowserUI.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/selection_control_button_tint</item>
+        <item name="buttonTint">@color/selection_control_button_tint_list</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
-        <item name="buttonTint">@color/selection_control_button_tint</item>
+        <item name="buttonTint">@color/selection_control_button_tint_list</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint</item>
+        <item name="thumbTint">@color/switch_thumb_tint_list</item>
         <item name="trackTint">@color/switch_track_tint</item>
         <item name="trackTintMode">src_in</item>
     </style>
     <style name="Widget.BrowserUI.Switch.Incognito" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint_incognito</item>
-        <item name="trackTint">@color/switch_track_tint_incognito</item>
+        <item name="thumbTint">@color/switch_thumb_tint_incognito_baseline_list</item>
+        <item name="trackTint">@color/switch_track_tint_incognito_baseline_list</item>
+
     </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">

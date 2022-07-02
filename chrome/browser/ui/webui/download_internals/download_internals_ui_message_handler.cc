@@ -26,17 +26,17 @@ DownloadInternalsUIMessageHandler::~DownloadInternalsUIMessageHandler() {
 }
 
 void DownloadInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getServiceStatus",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getServiceDownloads",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startDownload",
       base::BindRepeating(
           &DownloadInternalsUIMessageHandler::HandleStartDownload,
@@ -89,26 +89,25 @@ void DownloadInternalsUIMessageHandler::OnServiceRequestMade(
 }
 
 void DownloadInternalsUIMessageHandler::HandleGetServiceStatus(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id,
                             download_service_->GetLogger()->GetServiceStatus());
 }
 
 void DownloadInternalsUIMessageHandler::HandleGetServiceDownloads(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id, download_service_->GetLogger()->GetServiceDownloads());
 }
 
 void DownloadInternalsUIMessageHandler::HandleStartDownload(
-    const base::ListValue* args) {
-  CHECK_GT(args->GetListDeprecated().size(), 1u)
-      << "Missing argument download URL.";
-  GURL url = GURL(args->GetListDeprecated()[1].GetString());
+    const base::Value::List& args) {
+  CHECK_GT(args.size(), 1u) << "Missing argument download URL.";
+  GURL url = GURL(args[1].GetString());
   if (!url.is_valid()) {
     LOG(WARNING) << "Can't parse download URL, try to enter a valid URL.";
     return;

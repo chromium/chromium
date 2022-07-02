@@ -54,6 +54,32 @@ group("run_perf_test") {
   }
 }
 
+group("pytype_dependencies") {
+  data = [
+    "//build/util/lib/results/",
+    "//testing/pytype_common/",
+  ]
+}
+
+# Could be changed to "testing_pytype" if type hinting is ever added to other
+# code in the directory.
+group("unexpected_passes_common_pytype") {
+  data = [
+    "//testing/run_pytype.py",
+
+    "//testing/unexpected_passes_common/",
+    "//third_party/catapult/third_party/typ/",
+  ]
+
+  data_deps = [ ":pytype_dependencies" ]
+}
+
+group("fuchsia_pytype") {
+  testonly = true
+  data = [ "//build/fuchsia/test/" ]
+  data_deps = [ ":pytype_dependencies" ]
+}
+
 python_library("run_isolated_script_test") {
   testonly = true
   pydeps_file = "//testing/scripts/run_isolated_script_test.pydeps"

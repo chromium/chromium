@@ -404,13 +404,6 @@ ContentSettingBubbleContents::~ContentSettingBubbleContents() {
 
 void ContentSettingBubbleContents::WindowClosing() {
   if (content_setting_bubble_model_) {
-    if (GetWidget()->closed_reason() ==
-            views::Widget::ClosedReason::kEscKeyPressed ||
-        GetWidget()->closed_reason() ==
-            views::Widget::ClosedReason::kCloseButtonClicked) {
-      content_setting_bubble_model_->OnBubbleDismissedByUser();
-    }
-
     content_setting_bubble_model_->CommitChanges();
   }
 }
@@ -452,14 +445,6 @@ std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
 
 bool ContentSettingBubbleContents::ShouldShowCloseButton() const {
   return true;
-}
-
-void ContentSettingBubbleContents::OnWidgetDestroying(views::Widget* widget) {
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    content_setting_bubble_model_->OnBubbleDismissedByUser();
-  }
 }
 
 void ContentSettingBubbleContents::Init() {

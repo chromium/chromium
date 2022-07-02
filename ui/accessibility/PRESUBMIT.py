@@ -13,7 +13,7 @@ USE_PYTHON3 = True
 AX_MOJOM = 'ui/accessibility/ax_enums.mojom'
 AUTOMATION_IDL = 'extensions/common/api/automation.idl'
 
-AX_JS_FILE = 'chrome/browser/resources/accessibility/accessibility.js'
+AX_TS_FILE = 'chrome/browser/resources/accessibility/accessibility.ts'
 AX_MODE_HEADER = 'ui/accessibility/ax_mode.h'
 
 def InitialLowerCamelCase(unix_name):
@@ -243,31 +243,23 @@ def GetAccessibilityModesFromFile(fullpath):
   values = []
   inside = False
   for line in open(fullpath).readlines():
-    # Strip out comments
-    line = re.sub('//.*', '', line)
-
-    # Look for the block of code that defines AXMode
-    m = re.search('const AXMode = {', line)
-    if m:
-      inside = True
+    if not inside:
+      # Look for the block of code that defines the AXMode enum.
+      m = re.search('^enum AXMode {$', line)
+      if m:
+        inside = True
       continue
 
-    # Look for a "}" character signifying the end of an enum
-    if line.find('};') >= 0:
+    # Look for a "}" character signifying the end of the enum.
+    m = re.search('^}$', line)
+    if m:
       return values
 
-    if not inside:
-      continue
-
-    m = re.search('([\w]+):', line)
+    m = re.search('([\w]+) = ', line)
     if m:
       values.append(m.group(1))
       continue
 
-    # getters
-    m = re.search('get ([\w]+)\(\)', line)
-    if m:
-      values.append(m.group(1))
   return values
 
 # Make sure that the modes defined in the C++ header match those defined in
@@ -281,13 +273,31 @@ def CheckModesMatch(input_api, output_api):
   ax_modes_in_header = GetConstexprFromFile(
     os.path.join(repo_root,AX_MODE_HEADER))
   ax_modes_in_js = GetAccessibilityModesFromFile(
-    os.path.join(repo_root, AX_JS_FILE))
+    os.path.join(repo_root, AX_TS_FILE))
+
+  # In TypeScript enum values are NAMED_LIKE_THIS. Transform them to make them
+  # comparable to the C++ naming scheme.
+  ax_modes_in_js = list(
+      map(lambda s: ('k' + s.replace('_', '')).lower(), ax_modes_in_js))
+
+  # The following AxMode values are not used in the UI, and are purposefully
+  # omitted.
+  unused_ax_modes = [
+    'kAXModeBasic',
+    'kAXModeWebContentsOnly',
+    'kAXModeComplete',
+    'kAXModeCompleteNoHTML',
+  ]
 
   for value in ax_modes_in_header:
-    if value not in ax_modes_in_js:
+    if value in unused_ax_modes:
+      continue
+
+    equivalent_value = value.lower()
+    if equivalent_value not in ax_modes_in_js:
       errs.append(output_api.PresubmitError(
-          'Found %s in %s, but did not find %s in %s' % (
-              value, AX_MODE_HEADER, value, AX_JS_FILE)))
+          'Found %s in %s, but did not find an equivalent value in %s' % (
+              value, AX_MODE_HEADER, AX_TS_FILE)))
   return errs
 
 def CheckChangeOnUpload(input_api, output_api):

@@ -379,7 +379,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
   return [self.collapsableMediator sectionKeyIsCollapsed:sectionKey];
 }
 
-// |_collapsedKeys| lazy instantiation.
+// `_collapsedKeys` lazy instantiation.
 - (NSMutableDictionary*)collapsedKeys {
   if (!_collapsedKeys) {
     _collapsedKeys = [[NSMutableDictionary alloc] init];
@@ -416,8 +416,8 @@ typedef NSMutableArray<ListItem*> SectionItems;
   return item;
 }
 
-// Returns |item|'s index among all the items of the same type in the given
-// section items.  |item| must belong to |sectionItems|.
+// Returns `item`'s index among all the items of the same type in the given
+// section items.  `item` must belong to `sectionItems`.
 - (NSUInteger)indexInItemTypeForItem:(ListItem*)item
                       inSectionItems:(SectionItems*)sectionItems {
   DCHECK([sectionItems containsObject:item]);

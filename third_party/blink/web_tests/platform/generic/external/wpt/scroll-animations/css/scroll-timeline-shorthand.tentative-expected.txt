@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+FAIL e.style['scroll-timeline'] = "block none" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "none inline" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "horizontal abc" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "inline abc" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "vertical none" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "inline inline" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "abc" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline'] = "inline" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['scroll-timeline'] = "" should not set the property value
+PASS e.style['scroll-timeline'] = "abc abc" should not set the property value
+FAIL Property scroll-timeline value 'abc inline' assert_true: scroll-timeline doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline value 'none vertical' assert_true: scroll-timeline doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline value 'horizontal abc' assert_true: scroll-timeline doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline value 'vertical vertical' assert_true: scroll-timeline doesn't seem to be supported in the computed style expected true got false
+FAIL e.style['scroll-timeline'] = "vertical abc" should set scroll-timeline-axis assert_equals: scroll-timeline-axis should be canonical expected (string) "vertical" but got (undefined) undefined
+FAIL e.style['scroll-timeline'] = "vertical abc" should set scroll-timeline-name assert_equals: scroll-timeline-name should be canonical expected (string) "abc" but got (undefined) undefined
+FAIL e.style['scroll-timeline'] = "vertical abc" should not set unrelated longhands assert_true: expected true got false
+FAIL e.style['scroll-timeline'] = "horizontal inline" should set scroll-timeline-axis assert_equals: scroll-timeline-axis should be canonical expected (string) "horizontal" but got (undefined) undefined
+FAIL e.style['scroll-timeline'] = "horizontal inline" should set scroll-timeline-name assert_equals: scroll-timeline-name should be canonical expected (string) "inline" but got (undefined) undefined
+FAIL e.style['scroll-timeline'] = "horizontal inline" should not set unrelated longhands assert_true: expected true got false
+Harness: the test ran to completion.
+

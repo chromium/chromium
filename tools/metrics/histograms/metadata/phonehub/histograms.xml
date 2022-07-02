@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.BubbleOpened.Connectable.Page" enum="PhoneHubScreen"
+    expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The page which is shown in the Phone Hub tray bubble when it is first
+    opened. This is only emitted when we know the phone is connectable because
+    it has been discovered nearby in the past 10 minutes.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.AndroidHasStoragePermission"
     enum="PhoneHubCameraRollBooleanStorageAccessPermission"
     expires_after="2023-02-01">
@@ -68,7 +79,7 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
-<histogram name="PhoneHub.CameraRoll.Content.Present" units="BooleanPresent"
+<histogram name="PhoneHub.CameraRoll.Content.Present" enum="BooleanPresent"
     expires_after="2023-02-01">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -178,7 +189,22 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Measures PhoneHub connection success rate, considering attempts where the
-    phone is not nearby as failures.
+    phone is not nearby as failures. This is recorded at the end of each
+    connection attempt, whether it fails or succeeds and the failures are broken
+    down into more specific categories in
+    PhoneHub.Connection.Result.FailureReason
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Connection.Result.FailureReason"
+    enum="SecureChannelConnectionAttemptFailureReason"
+    expires_after="2023-02-01">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The reason for which a connection attempt to the phone has failed. This is a
+    breakdown of the failure bucket of PhoneHub.Connection.Result and is
+    recorded on each connection failure.
   </summary>
 </histogram>
 
@@ -238,7 +264,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
     units="ms" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the time it takes for the user to successfully go through the
@@ -251,7 +277,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.NotificationAccessSetup.{AllStatusesOrLastStatus}"
     enum="PhoneHubNotificationAccessSetupStatus" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records {AllStatusesOrLastStatus} the Chromebook UI that guides them through
@@ -289,7 +315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.NotificationMessageLength" units="characters"
     expires_after="2023-02-01">
-  <owner>benjshen@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The message length of a mirrored PhoneHub notification, not including the

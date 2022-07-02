@@ -5,5 +5,9 @@
 [
     Exposed=SharedStorage
 ] interface SharedStorageWorklet {
-    [CallWith=ScriptState, RaisesException] Promise<void> addModule(USVString moduleURL);
+    [
+      CallWith=ScriptState,
+      RaisesException,
+      MeasureAs=SharedStorageAPI_AddModule_Method
+    ] Promise<void> addModule(USVString moduleURL);
 };

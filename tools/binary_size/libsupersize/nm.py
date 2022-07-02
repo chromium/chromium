@@ -265,7 +265,7 @@ def CreateUniqueSymbols(elf_path, section_ranges):
     sym.section_name = section_name
 
     if i + 1 < len(sorted_symbols):
-      next_addr = sorted_symbols[i + 1].address
+      next_addr = min(section_end, sorted_symbols[i + 1].address)
     else:
       next_addr = section_end
 

@@ -493,8 +493,8 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   EXPECT_FALSE(load_index_result.flush_required);
 
   EXPECT_EQ(kNumHashes, load_index_result.entries.size());
-  for (size_t i = 0; i < kNumHashes; ++i)
-    EXPECT_EQ(1U, load_index_result.entries.count(kHashes[i]));
+  for (uint64_t hash : kHashes)
+    EXPECT_EQ(1U, load_index_result.entries.count(hash));
 }
 
 TEST_F(SimpleIndexFileTest, LoadCorruptIndex) {
@@ -603,10 +603,10 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
       /*file_tracker=*/nullptr, 0, net::DISK_CACHE,
       /*net_log=*/nullptr);
   net::TestCompletionCallback cb;
-  int rv = simple_cache->Init(cb.callback());
-  EXPECT_THAT(cb.GetResult(rv), IsOk());
+  simple_cache->Init(cb.callback());
+  EXPECT_THAT(cb.WaitForResult(), IsOk());
   simple_cache->index()->ExecuteWhenReady(cb.callback());
-  rv = cb.WaitForResult();
+  int rv = cb.WaitForResult();
   EXPECT_THAT(rv, IsOk());
   simple_cache.reset();
   cleanup_tracker = nullptr;

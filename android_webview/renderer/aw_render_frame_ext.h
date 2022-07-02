@@ -19,6 +19,7 @@
 
 namespace blink {
 class WebFrameWidget;
+class WebHitTestResult;
 class WebView;
 }
 
@@ -47,6 +48,7 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
 
   void FocusedElementChanged(const blink::WebElement& element) override;
+  void DidCreateDocumentElement() override;
   void OnDestruct() override;
 
   // mojom::LocalMainFrame overrides:
@@ -62,6 +64,8 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
 
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);
+
+  void HandleHitTestResult(const blink::WebHitTestResult& result);
 
   const mojo::AssociatedRemote<mojom::FrameHost>& GetFrameHost();
 

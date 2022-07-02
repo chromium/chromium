@@ -63,8 +63,10 @@ void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
   // When the user tries to enable the feature, show the modal dialog. The
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();
-  content::RenderWidgetHostView* view =
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
+  content::RenderWidgetHostView* view = web_contents->GetPrimaryMainFrame()
+                                            ->GetRenderViewHost()
+                                            ->GetWidget()
+                                            ->GetView();
   gfx::Rect rect = view->GetViewBounds();
   auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
       Profile::FromWebUI(web_ui()), web_contents, true /* enable always */);

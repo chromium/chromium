@@ -126,7 +126,7 @@ void BluetoothTestMac::InitWithoutDefaultAdapter() {
   mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
       [[MockCentralManager alloc] init]);
   [mock_central_manager_->get() setBluetoothTestMac:this];
-  [mock_central_manager_->get() setState:CBCentralManagerStateUnsupported];
+  [mock_central_manager_->get() setState:CBManagerStateUnsupported];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
 }
 
@@ -140,7 +140,7 @@ void BluetoothTestMac::InitWithFakeAdapter() {
   mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
       [[MockCentralManager alloc] init]);
   mock_central_manager_->get().bluetoothTestMac = this;
-  [mock_central_manager_->get() setState:CBCentralManagerStatePoweredOn];
+  [mock_central_manager_->get() setState:CBManagerStatePoweredOn];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
   adapter_mac_->SetPowerStateFunctionForTesting(base::BindRepeating(
       &BluetoothTestMac::SetMockControllerPowerState, base::Unretained(this)));
@@ -153,7 +153,7 @@ void BluetoothTestMac::ResetEventCounts() {
 }
 
 void BluetoothTestMac::SimulateAdapterPoweredOff() {
-  [mock_central_manager_->get() setState:CBCentralManagerStatePoweredOff];
+  [mock_central_manager_->get() setState:CBManagerStatePoweredOff];
 
   for (BluetoothDevice* device : adapter_->GetDevices()) {
     MockCBPeripheral* peripheral_mock = GetMockCBPeripheral(device);
@@ -639,9 +639,8 @@ void BluetoothTestMac::SetMockControllerPowerState(int powered) {
             auto* mock_central_manager =
                 base::mac::ObjCCastStrict<MockCentralManager>(
                     adapter_mac->GetCentralManager());
-            [mock_central_manager
-                setState:powered ? CBCentralManagerStatePoweredOn
-                                 : CBCentralManagerStatePoweredOff];
+            [mock_central_manager setState:powered ? CBManagerStatePoweredOn
+                                                   : CBManagerStatePoweredOff];
             [mock_central_manager.delegate
                 centralManagerDidUpdateState:adapter_mac->GetCentralManager()];
             // On real devices, the Bluetooth classic code will call

@@ -87,6 +87,30 @@ def _CheckFeatureNames(input_api, output_api):
 
   return warnings
 
+def _CheckWebViewExposedExperiments(input_api, output_api):
+  """Checks that changes to autofill features are exposed to webview."""
+
+  _PRODUCTION_SUPPORT_FILE = ('android_webview/java/src/org/chromium/' +
+      'android_webview/common/ProductionSupportedFlagList.java')
+
+  def is_autofill_features_file(f):
+    return (f.LocalPath().startswith('components/autofill/') and
+        f.LocalPath().endswith('features.cc'))
+
+  def is_webview_features_file(f):
+    return f.LocalPath() == _PRODUCTION_SUPPORT_FILE
+
+  def any_file_matches(matcher):
+    return any(matcher(f) for f in input_api.change.AffectedTestableFiles())
+
+  warnings = []
+  if (any_file_matches(is_autofill_features_file)
+      and not any_file_matches(is_webview_features_file)):
+    warnings += [ output_api.PresubmitPromptWarning(
+        'You may need to modify {} if your feature affects WebView.'
+            .format(_PRODUCTION_SUPPORT_FILE)) ]
+
+  return warnings
 
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
@@ -94,6 +118,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
   results.extend(_CheckNoServerFieldTypeCasts(input_api, output_api))
   results.extend(_CheckFeatureNames(input_api, output_api))
+  results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):

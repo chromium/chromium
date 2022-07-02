@@ -9,9 +9,7 @@
 
 #include <vector>
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 // BitWriter acts as a buffer to which bits can be written. The bits are stored
 // as bytes in a vector. BitWriter will buffer bits until it contains 8 bits at
@@ -55,8 +53,6 @@ class BitWriter {
   std::vector<uint8_t> bytes_;
 };
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie
 
 #endif  // NET_TOOLS_HUFFMAN_TRIE_BIT_WRITER_H_

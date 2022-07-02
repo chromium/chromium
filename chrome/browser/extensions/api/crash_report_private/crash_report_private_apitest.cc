@@ -8,7 +8,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
@@ -71,7 +71,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
     test_dir.WriteFile(FILE_PATH_LITERAL("test.js"),
                        R"(chrome.test.sendMessage('ready');)");
 
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     extension_ = LoadExtension(test_dir.UnpackedPath());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
 
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
   EXPECT_EQ(report.content, "");
 }
 
-using CrashReportPrivateCalledFromSwaTest = SystemWebAppIntegrationTest;
+using CrashReportPrivateCalledFromSwaTest = ash::SystemWebAppIntegrationTest;
 
 // Test WEB_APP is detected when |CrashReportPrivate| is called from an app
 // window.
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInSwaWindow) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_content = LaunchApp(web_app::SystemAppType::MEDIA);
+  content::WebContents* web_content = LaunchApp(ash::SystemWebAppType::MEDIA);
   MockCrashEndpoint endpoint(embedded_test_server());
   ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 

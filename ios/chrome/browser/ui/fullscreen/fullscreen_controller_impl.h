@@ -58,12 +58,12 @@ class FullscreenControllerImpl : public FullscreenController {
   FullscreenModel model_;
   // Object that manages sending signals to FullscreenControllerImplObservers.
   FullscreenMediator mediator_;
-  // A WebStateListObserver that updates |model_| for WebStateList changes.
+  // A WebStateListObserver that updates `model_` for WebStateList changes.
   FullscreenWebStateListObserver web_state_list_observer_;
-  // A FullscreenBrowserObserver that resets |web_state_list_| when the Browser
+  // A FullscreenBrowserObserver that resets `web_state_list_` when the Browser
   // is destroyed.
   FullscreenBrowserObserver fullscreen_browser_observer_;
-  // The bridge used to forward brodcasted UI to |model_|.
+  // The bridge used to forward brodcasted UI to `model_`.
   __strong ChromeBroadcastOberverBridge* bridge_ = nil;
   // A helper object that listens for system notifications.
   __strong FullscreenSystemNotificationObserver* notification_observer_ = nil;

@@ -183,6 +183,8 @@ void FakeFidoHidManager::AddFidoHidDevice(std::string guid) {
       HidBlocklist::Get().GetProtectedReportIds(
           HidBlocklist::kReportTypeFeature, device->vendor_id,
           device->product_id, device->collections);
+  device->is_excluded_by_blocklist = HidBlocklist::Get().IsVendorProductBlocked(
+      device->vendor_id, device->product_id);
   AddDevice(std::move(device));
 }
 

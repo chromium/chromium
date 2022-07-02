@@ -154,6 +154,10 @@ class ProfilePolicyConnector final {
       nullptr;
   raw_ptr<const CloudPolicyStore> policy_store_ = nullptr;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ConfigurationPolicyProvider> restricted_mgs_policy_provider;
+#endif
+
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.
   //
@@ -174,7 +178,7 @@ class ProfilePolicyConnector final {
   // The |browser_policy_connector_| is owned by the |BrowserProcess| whereas
   // the |ProfilePolicyConnector| is owned by the Profile - which gets deleted
   // first - so the lifetime of the pointer is guaranteed.
-  ChromeBrowserPolicyConnector* browser_policy_connector_ = nullptr;
+  raw_ptr<ChromeBrowserPolicyConnector> browser_policy_connector_ = nullptr;
 #endif
 };
 

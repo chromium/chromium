@@ -8,8 +8,7 @@
 #include "base/callback_forward.h"
 #include "net/dns/notify_watcher_mac.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 // Watches DNS configuration on Mac.
 class DnsConfigWatcher {
@@ -23,7 +22,6 @@ class DnsConfigWatcher {
   NotifyWatcherMac watcher_;
 };
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_DNS_DNS_CONFIG_WATCHER_MAC_H_

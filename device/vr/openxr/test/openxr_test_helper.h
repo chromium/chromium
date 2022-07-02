@@ -200,6 +200,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       const XrCompositionLayerProjectionView& projection_view,
       uint32_t view_count,
       uint32_t index);
+  bool GetCanCreateSession();
 
   // Properties of the mock OpenXR runtime that doesn't change throughout the
   // lifetime of the instance. However, these aren't static because they are

@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -299,7 +299,7 @@ String SerializedScriptValue::ToWireString() const {
   // This requires direct use of uninitialized strings, though.
   UChar* destination;
   wtf_size_t string_size_bytes =
-      SafeCast<wtf_size_t>((data_buffer_size_ + 1) & ~1);
+      base::checked_cast<wtf_size_t>((data_buffer_size_ + 1) & ~1);
   String wire_string =
       String::CreateUninitialized(string_size_bytes / 2, destination);
   memcpy(destination, data_buffer_.get(), data_buffer_size_);

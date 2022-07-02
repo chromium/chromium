@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/browser/speculation_rules/speculation_host_impl.h"
+#include <functional>
 
+#include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -17,7 +20,7 @@
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
@@ -39,6 +42,12 @@ bool CandidatesAreValid(
 }
 
 }  // namespace
+
+struct SpeculationHostImpl::PrerenderInfo {
+  GURL url;
+  Referrer referrer;
+  int prerender_host_id;
+};
 
 // static
 void SpeculationHostImpl::Bind(
@@ -121,7 +130,7 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
 void SpeculationHostImpl::ProcessCandidatesForPrerender(
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
-  if (!registry_ || candidates.empty())
+  if (!registry_)
     return;
   DCHECK(blink::features::IsPrerender2Enabled());
 
@@ -135,34 +144,131 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     return;
   }
 
+  // Extract only the candidates which apply to prerender, and sort them by URL
+  // so we can efficiently compare them to `started_prerenders_`.
+  std::vector<blink::mojom::SpeculationCandidatePtr> prerender_candidates;
+  for (const auto& candidate : candidates) {
+    if (candidate->action == blink::mojom::SpeculationAction::kPrerender)
+      prerender_candidates.push_back(candidate.Clone());
+  }
+  base::ranges::sort(prerender_candidates, std::less<>(),
+                     &blink::mojom::SpeculationCandidate::url);
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_to_start;
+
+  // Compare the sorted candidate and started prerender lists to one another.
+  // Since they are sorted, we process the lexicographically earlier of the two
+  // URLs pointed at by the iterators, and compare the range of entries in each
+  // that match that URL.
+  //
+  // URLs which are present in the prerender list but not the candidate list can
+  // no longer proceed and are cancelled.
+  //
+  // URLs which are present in the candidate list but not the prerender list
+  // could be started and are gathered in `candidates_to_start`.
+  auto candidate_it = prerender_candidates.begin();
+  auto started_it = started_prerenders_.begin();
+  while (candidate_it != prerender_candidates.end() ||
+         started_it != started_prerenders_.end()) {
+    // Select the lesser of the two URLs to diff.
+    GURL url;
+    if (started_it == started_prerenders_.end())
+      url = (*candidate_it)->url;
+    else if (candidate_it == prerender_candidates.end())
+      url = started_it->url;
+    else
+      url = std::min((*candidate_it)->url, started_it->url);
+
+    // Select the ranges from both that match the URL in question.
+    auto equal_prerender_end = base::ranges::find_if(
+        started_it, started_prerenders_.end(),
+        [&](const auto& started) { return started.url != url; });
+    base::span<PrerenderInfo> matching_prerenders(started_it,
+                                                  equal_prerender_end);
+    auto equal_candidate_end = base::ranges::find_if(
+        candidate_it, prerender_candidates.end(),
+        [&](const auto& candidate) { return candidate->url != url; });
+    base::span<blink::mojom::SpeculationCandidatePtr> matching_candidates(
+        candidate_it, equal_candidate_end);
+
+    // Decide what started prerenders to cancel.
+    for (PrerenderInfo& prerender : matching_prerenders) {
+      if (prerender.prerender_host_id == RenderFrameHost::kNoFrameTreeNodeId)
+        continue;
+      // TODO(jbroman): This doesn't currently care about other aspects, like
+      // the referrer. This doesn't presently matter, but in the future we might
+      // want to cancel if there are candidates which match by URL but none of
+      // which permit this prerender.
+      if (matching_candidates.empty()) {
+        registry_->OnTriggerDestroyed(prerender.prerender_host_id);
+        prerender.prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
+      }
+    }
+
+    // Decide what new candidates to start.
+    // For now, start the first candidate for a URL only if there are no
+    // matching prerenders. We could be cleverer in the future.
+    if (matching_prerenders.empty()) {
+      DCHECK_GT(matching_candidates.size(), 0u);
+      candidates_to_start.push_back(std::move(matching_candidates[0]));
+    }
+
+    // Advance the iterators past all matching entries.
+    candidate_it = equal_candidate_end;
+    started_it = equal_prerender_end;
+  }
+
+  // Actually start the candidates once the diffing is done.
   auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host());
-  for (const auto& it : candidates) {
-    if (it->action != blink::mojom::SpeculationAction::kPrerender)
-      continue;
+  for (const auto& it : candidates_to_start) {
+    DCHECK_EQ(it->action, blink::mojom::SpeculationAction::kPrerender);
+
+    auto [begin, end] = base::ranges::equal_range(
+        started_prerenders_.begin(), started_prerenders_.end(), it->url,
+        std::less<>(), &PrerenderInfo::url);
+    DCHECK(begin == end)
+        << "cannot currently start a second prerender with the same URL";
 
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
+    // TODO(crbug.com/1176054): Remove it after supporting cross-origin
+    // prerender.
+    if (!rfhi->GetLastCommittedOrigin().IsSameOriginWith(it->url)) {
+      rfhi->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf(
+              "The SpeculationRules API does not support cross-origin "
+              "prerender yet. (initiator origin: %s, prerender origin: %s). "
+              "https://crbug.com/1176054 tracks cross-origin support.",
+              rfhi->GetLastCommittedOrigin().Serialize().c_str(),
+              url::Origin::Create(it->url).Serialize().c_str()));
+    }
+
+    Referrer referrer(*(it->referrer));
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(
             it->url, PrerenderTriggerType::kSpeculationRule,
-            /*embedder_histogram_suffix=*/"", Referrer(*(it->referrer)),
+            /*embedder_histogram_suffix=*/"", referrer,
             rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
             rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
             rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
             ui::PAGE_TRANSITION_LINK,
             /*url_match_predicate=*/absl::nullopt),
         *web_contents);
-    if (prerender_host_id != RenderFrameHost::kNoFrameTreeNodeId)
-      started_prerender_host_ids_.insert(prerender_host_id);
+    started_prerenders_.insert(end, {.url = it->url,
+                                     .referrer = referrer,
+                                     .prerender_host_id = prerender_host_id});
   }
 }
 
 void SpeculationHostImpl::CancelStartedPrerenders() {
   if (registry_) {
-    for (const auto id : started_prerender_host_ids_)
-      registry_->OnTriggerDestroyed(id);
-    started_prerender_host_ids_.clear();
+    for (const auto& prerender : started_prerenders_) {
+      int host_id = prerender.prerender_host_id;
+      if (host_id != RenderFrameHost::kNoFrameTreeNodeId)
+        registry_->OnTriggerDestroyed(host_id);
+    }
+    started_prerenders_.clear();
   }
 }
 

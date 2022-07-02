@@ -931,7 +931,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::ValuesIn(kMultiScale)));
 
 // Flaky on MSAN. https://crbug.com/959924
-#if defined(MEMORY_SANITIZER)
+// Flaky on Linux Wayland and Lacros. https://crbug.com/1158437
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ScrollNestedLocalNonFastScrollableDiv \
   DISABLED_ScrollNestedLocalNonFastScrollableDiv
 #else
@@ -4588,7 +4590,7 @@ class SitePerProcessMouseWheelHitTestBrowserTest
   }
 
  private:
-  raw_ptr<RenderWidgetHostViewAura> rwhv_root_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhv_root_;
 };
 
 // Fails on Windows official build, see // https://crbug.com/800822
@@ -5840,8 +5842,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHighDPIHitTestBrowserTest,
 // Test that clicking a select element in an out-of-process iframe creates
 // a popup menu in the correct position.
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/cross_site_iframe_factory.html?a(a)"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -6084,7 +6086,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // On Mac and Android, the reported menu coordinates are relative to the
 // OOPIF, and its screen position is computed later, so this test isn't
 // relevant on those platforms.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMECAST)
+// This has been disabled on CastOS due to flakiness per crbug.com/1074249.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                        ScrolledNestedPopupMenuTest) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -6194,7 +6197,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // they access deleted state.
   RunPostedTasks();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
 
 #if defined(USE_AURA)
 class SitePerProcessGestureHitTestBrowserTest
@@ -6407,10 +6410,10 @@ class SitePerProcessGestureHitTestBrowserTest
   }
 
  protected:
-  raw_ptr<RenderWidgetHostViewBase> rwhv_child_;
-  raw_ptr<RenderWidgetHostViewAura> rwhva_root_;
-  raw_ptr<RenderWidgetHostImpl> rwhi_child_;
-  raw_ptr<RenderWidgetHostImpl> rwhi_root_;
+  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> rwhv_child_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhva_root_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwhi_child_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwhi_root_;
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessGestureHitTestBrowserTest,
@@ -7302,10 +7305,6 @@ class SitePerProcessDelegatedInkBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
                        MAYBE_MetadataAndPointGoThroughOOPIF) {
-  // Delegated ink is only supported on Skia Renderer for now.
-  if (!features::IsUsingSkiaRenderer())
-    return;
-
   GURL main_url(embedded_test_server()->GetURL(
       "/frame_tree/page_with_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

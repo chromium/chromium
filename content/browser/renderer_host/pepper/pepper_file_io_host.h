@@ -105,7 +105,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
 
   void GotUIThreadStuffForInternalFileSystems(
       ppapi::host::ReplyMessageContext reply_context,
-      int platform_file_flags,
+      uint32_t platform_file_flags,
       UIThreadStuff ui_thread_stuff);
   void DidOpenInternalFile(ppapi::host::ReplyMessageContext reply_context,
                            base::File file,
@@ -113,7 +113,7 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   void GotResolvedRenderProcessId(
       ppapi::host::ReplyMessageContext reply_context,
       base::FilePath path,
-      int file_flags,
+      uint32_t file_flags,
       base::ProcessId resolved_render_process_id);
 
   void DidOpenQuotaFile(ppapi::host::ReplyMessageContext reply_context,

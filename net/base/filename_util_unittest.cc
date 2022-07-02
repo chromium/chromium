@@ -65,7 +65,7 @@ std::string GetLocaleWarningString() {
   // Note: some platforms (MACOSX, Chromecast) don't have this problem:
   // setlocale returns "c" but it functions as utf8.  And Android doesn't
   // have setlocale at all.
-  std::string locale = setlocale(LC_CTYPE, NULL);
+  std::string locale = setlocale(LC_CTYPE, nullptr);
   return " this test may have failed because the current LC_CTYPE locale is "
          "not utf8 (currently set to " +
          locale + ")";

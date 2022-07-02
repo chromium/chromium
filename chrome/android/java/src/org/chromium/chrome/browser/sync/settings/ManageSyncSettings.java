@@ -51,7 +51,8 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -61,6 +62,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.HashSet;
@@ -75,11 +77,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
                    PassphraseTypeDialogFragment.Listener, Preference.OnPreferenceChangeListener,
                    SyncService.SyncStateChangedListener, SettingsActivity.OnBackPressedListener,
-                   SignOutDialogFragment.SignOutDialogListener,
-                   SyncErrorCardPreference.SyncErrorCardPreferenceListener {
+                   Listener, SyncErrorCardPreference.SyncErrorCardPreferenceListener {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
-    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
 
     @VisibleForTesting
     public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
@@ -104,6 +104,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     public static final String PREF_SYNC_HISTORY = "sync_history";
     @VisibleForTesting
     public static final String PREF_SYNC_PASSWORDS = "sync_passwords";
+    @VisibleForTesting
+    public static final String PREF_SYNC_READING_LIST = "sync_reading_list";
     @VisibleForTesting
     public static final String PREF_SYNC_RECENT_TABS = "sync_recent_tabs";
     @VisibleForTesting
@@ -138,6 +140,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private CheckBoxPreference mSyncPaymentsIntegration;
     private CheckBoxPreference mSyncHistory;
     private CheckBoxPreference mSyncPasswords;
+    private CheckBoxPreference mSyncReadingList;
     private CheckBoxPreference mSyncRecentTabs;
     private CheckBoxPreference mSyncSettings;
     // Contains preferences for all sync data types.
@@ -188,6 +191,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 (CheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
         mSyncHistory = (CheckBoxPreference) findPreference(PREF_SYNC_HISTORY);
         mSyncPasswords = (CheckBoxPreference) findPreference(PREF_SYNC_PASSWORDS);
+        mSyncReadingList = (CheckBoxPreference) findPreference(PREF_SYNC_READING_LIST);
         mSyncRecentTabs = (CheckBoxPreference) findPreference(PREF_SYNC_RECENT_TABS);
         mSyncSettings = (CheckBoxPreference) findPreference(PREF_SYNC_SETTINGS);
 
@@ -218,19 +222,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             }
 
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
-
-            /**
-             * Prior to the launch of MOBILE_IDENTITY_CONSISTENCY, sync request was done through a
-             * toggle that has now been removed. Currently sync is requested if the user checks
-             * any data type to sync. If no data type is checked then sync is not requested.
-             *
-             * This code is should be kept in place until M104 so that the users that had toggled
-             * sync request off prior to MOBILE_IDENTITY_CONSISTENCY get a chance to migrate to the
-             * new flow.
-             */
-            if (!SyncService.get().isSyncRequested()) {
-                SyncService.get().setChosenDataTypes(false, new HashSet<>());
-            }
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
@@ -241,9 +232,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mReviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
-        mSyncTypePreferences =
-                new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks, mSyncPaymentsIntegration,
-                        mSyncHistory, mSyncPasswords, mSyncRecentTabs, mSyncSettings};
+        mSyncTypePreferences = new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks,
+                mSyncPaymentsIntegration, mSyncHistory, mSyncPasswords, mSyncReadingList,
+                mSyncRecentTabs, mSyncSettings};
         for (CheckBoxPreference type : mSyncTypePreferences) {
             type.setOnPreferenceChangeListener(this);
         }
@@ -391,24 +382,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
      * and {@link PersonalDataManager}.
      */
     private void updateSyncStateFromSelectedModelTypes() {
-        Set<Integer> selectedModelTypes = getSelectedModelTypes();
-        mSyncService.setChosenDataTypes(mSyncEverything.isChecked(), selectedModelTypes);
+        mSyncService.setChosenDataTypes(mSyncEverything.isChecked(), getSelectedModelTypes());
         // Note: mSyncPaymentsIntegration should be checked if mSyncEverything is checked, but if
         // mSyncEverything was just enabled, then that state may not have propagated to
         // mSyncPaymentsIntegration yet. See crbug.com/972863.
         PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
-
-        // For child profiles sync should always be on.
-        if (!Profile.getLastUsedRegularProfile().isChild()) {
-            boolean atLeastOneDataTypeEnabled =
-                    mSyncEverything.isChecked() || selectedModelTypes.size() > 0;
-            if (mSyncService.isSyncRequested() && !atLeastOneDataTypeEnabled) {
-                mSyncService.setSyncRequested(false);
-            } else if (!mSyncService.isSyncRequested() && atLeastOneDataTypeEnabled) {
-                mSyncService.setSyncRequested(true);
-            }
-        }
 
         // Some calls to setChosenDataTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
@@ -467,6 +446,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         if (mSyncBookmarks.isChecked()) types.add(ModelType.BOOKMARKS);
         if (mSyncHistory.isChecked()) types.add(ModelType.TYPED_URLS);
         if (mSyncPasswords.isChecked()) types.add(ModelType.PASSWORDS);
+        if (mSyncReadingList.isChecked()) types.add(ModelType.READING_LIST);
         if (mSyncRecentTabs.isChecked()) types.add(ModelType.PROXY_TABS);
         if (mSyncSettings.isChecked()) types.add(ModelType.PREFERENCES);
         return types;
@@ -574,11 +554,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogFragment signOutFragment =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        signOutFragment.setTargetFragment(this, 0);
-        signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
+        SignOutDialogCoordinator.show(requireContext(),
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void onTurnOffSyncClicked() {
@@ -587,11 +566,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogFragment signOutFragment =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        signOutFragment.setTargetFragment(this, 0);
-        signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
+        SignOutDialogCoordinator.show(requireContext(),
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                SignOutDialogCoordinator.ActionType.REVOKE_SYNC_CONSENT,
+                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void onSyncEncryptionClicked() {
@@ -636,6 +614,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncHistory.setEnabled(true);
         mSyncPasswords.setChecked(syncTypes.contains(ModelType.PASSWORDS));
         mSyncPasswords.setEnabled(true);
+        mSyncReadingList.setChecked(syncTypes.contains(ModelType.READING_LIST));
+        mSyncReadingList.setEnabled(true);
         mSyncRecentTabs.setChecked(syncTypes.contains(ModelType.PROXY_TABS));
         mSyncRecentTabs.setEnabled(true);
         mSyncSettings.setChecked(syncTypes.contains(ModelType.PREFERENCES));
@@ -707,12 +687,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 startActivity(intent);
                 return;
             case SyncError.OTHER_ERRORS:
-                SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
-                        profile.isChild() ? SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT
-                                          : SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                SignOutDialogCoordinator.show(requireContext(),
+                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                        profile.isChild()
+                                ? SignOutDialogCoordinator.ActionType.REVOKE_SYNC_CONSENT
+                                : SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-                signOutFragment.setTargetFragment(this, 0);
-                signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
                 displayPassphraseDialog();

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -32,13 +33,16 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
  public:
   static void CreateForWebContents(content::WebContents* contents);
 
+  // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns nullptr
+  // if there is no tab helper or app ID.
+  static const AppId* GetAppId(content::WebContents* web_contents);
+
   explicit WebAppTabHelper(content::WebContents* web_contents);
   WebAppTabHelper(const WebAppTabHelper&) = delete;
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
 
-  const AppId& GetAppId() const;
-  void SetAppId(const AppId& app_id);
+  void SetAppId(absl::optional<AppId> app_id);
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   bool acting_as_app() const { return acting_as_app_; }
@@ -69,8 +73,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void ResetAppId();
 
   // Runs any logic when the associated app either changes or is removed.
-  void OnAssociatedAppChanged(const AppId& previous_app_id,
-                              const AppId& new_app_id);
+  void OnAssociatedAppChanged(const absl::optional<AppId>& previous_app_id,
+                              const absl::optional<AppId>& new_app_id);
 
   // Updates the audio focus group id based on the current web app.
   void UpdateAudioFocusGroupId();
@@ -78,10 +82,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Triggers a reinstall of a placeholder app for |url|.
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
-  AppId FindAppIdWithUrlInScope(const GURL& url) const;
+  absl::optional<AppId> FindAppWithUrlInScope(const GURL& url) const;
 
-  // WebApp associated with this tab. Empty string if no app associated.
-  AppId app_id_;
+  // WebApp associated with this tab.
+  absl::optional<AppId> app_id_;
 
   // True when the associated `WebContents` is acting as an app. Specifically,
   // this should only be true if `app_id_` is non empty, and the WebContents was

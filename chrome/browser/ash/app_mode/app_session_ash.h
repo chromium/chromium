@@ -9,10 +9,12 @@
 
 namespace ash {
 
+class NetworkConnectivityMetricsService;
+
 // AppSessionAsh maintains a kiosk session and handles its lifetime.
 class AppSessionAsh : public chromeos::AppSession {
  public:
-  AppSessionAsh() = default;
+  AppSessionAsh();
   AppSessionAsh(const AppSessionAsh&) = delete;
   AppSessionAsh& operator=(const AppSessionAsh&) = delete;
   ~AppSessionAsh() override;
@@ -20,7 +22,12 @@ class AppSessionAsh : public chromeos::AppSession {
   // chromeos::AppSession:
   void Init(Profile* profile, const std::string& app_id) override;
   void InitForWebKiosk(Browser* browser) override;
-  void InitForWebKioskWithLacros(Profile* profile) override;
+
+  // Initializes an app session for Web kiosk with lacros.
+  void InitForWebKioskWithLacros(Profile* profile);
+
+  // Destroys ash observers.
+  void ShuttingDown();
 
  private:
   // Initialize the Kiosk app update service. The external update will be
@@ -31,6 +38,10 @@ class AppSessionAsh : public chromeos::AppSession {
   // and create a user security message which shows the user the application
   // name and author after some idle timeout.
   void SetRebootAfterUpdateIfNecessary();
+
+  // Tracks network connectivity drops.
+  // Init in ctor and destroyed while ShuttingDown.
+  std::unique_ptr<NetworkConnectivityMetricsService> network_metrics_service_;
 };
 
 }  // namespace ash

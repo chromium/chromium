@@ -40,7 +40,8 @@ const char kCustomTraceConfigString[] =
     "}"
     "]"
     "},"
-    "\"record_mode\":\"record-continuously\""
+    "\"record_mode\":\"record-continuously\","
+    "\"trace_buffer_size_in_kb\":262144"
     "}";
 
 const char kCustomTraceConfigStringDevToolsStyle[] =
@@ -67,7 +68,8 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
     "}"
     "]"
     "},"
-    "\"recordMode\":\"recordContinuously\""
+    "\"recordMode\":\"recordContinuously\","
+    "\"traceBufferSizeInKb\":262144"
     "}";
 
 }  // namespace

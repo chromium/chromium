@@ -5,26 +5,6 @@
 import("//chromecast/chromecast.gni")
 import("//third_party/cast_core/public/src/proto/proto.gni")
 
-cast_source_set("grpc_factory") {
-  sources = [
-    "grpc_server_builder.cc",
-    "grpc_server_builder.h",
-  ]
-
-  public_deps = [ "//third_party/grpc:grpc++" ]
-}
-
-cast_source_set("grpc_factory_linux") {
-  sources = [ "grpc_factory_linux.cc" ]
-
-  deps = [
-    ":grpc_factory",
-    "//base",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/grpc:grpc++",
-  ]
-}
-
 cast_source_set("grpc") {
   sources = [
     "cancellable_reactor.h",
@@ -50,7 +30,6 @@ cast_source_set("grpc") {
   ]
 
   public_deps = [
-    ":grpc_factory",
     "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/grpc:grpc++",
@@ -68,6 +47,44 @@ cast_source_set("status_matchers") {
   deps = [ "//testing/gmock" ]
 }
 
+cast_source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "grpc_server_streaming_test.cc",
+    "grpc_status_or_test.cc",
+    "grpc_unary_test.cc",
+  ]
+
+  deps = [
+    ":grpc",
+    ":test_service_proto_castcore",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+cast_source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  deps = [
+    ":grpc",
+    "//base",
+    "//testing/gmock",
+    "//third_party/grpc:grpc++",
+  ]
+
+  public_deps = [ ":status_matchers" ]
+}
+
 cast_core_proto_library("test_service_messages_proto") {
   sources = [ "test_service_messages.proto" ]
 }
@@ -81,24 +98,4 @@ cast_core_grpc_library("test_service_proto") {
   deps = [ ":test_service_messages_proto" ]
 
   generate_castcore_stubs = true
-}
-
-cast_source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "grpc_server_streaming_test.cc",
-    "grpc_status_or_test.cc",
-    "grpc_unary_test.cc",
-  ]
-
-  deps = [
-    ":grpc",
-    ":status_matchers",
-    ":test_service_proto_castcore",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

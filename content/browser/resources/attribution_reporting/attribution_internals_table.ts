@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
+import {getTemplate} from './attribution_internals_table.html.js';
 import {TableModel} from './table_model.js';
 
 /**
@@ -36,7 +36,7 @@ function setSortAttrs(th: HTMLElement, sortDesc: boolean|null) {
  */
 export class AttributionInternalsTableElement<T> extends CustomElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   private model_: TableModel<T>|null = null;

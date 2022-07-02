@@ -16,10 +16,10 @@
 
 class GlassBrowserFrameView;
 class TabSearchBubbleHost;
-class Windows10CaptionButton;
-class Windows10TabSearchCaptionButton;
+class WindowsCaptionButton;
+class WindowsTabSearchCaptionButton;
 
-// Provides a container for Windows 10 caption buttons that can be moved between
+// Provides a container for Windows caption buttons that can be moved between
 // frame and browser window as needed. When extended horizontally, becomes a
 // grab bar for moving the window.
 class GlassBrowserCaptionButtonContainer : public views::View,
@@ -68,11 +68,11 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   void UpdateButtonToolTipsForWindowControlsOverlay();
 
   const raw_ptr<GlassBrowserFrameView> frame_view_;
-  raw_ptr<Windows10TabSearchCaptionButton> tab_search_button_ = nullptr;
-  const raw_ptr<Windows10CaptionButton> minimize_button_;
-  const raw_ptr<Windows10CaptionButton> maximize_button_;
-  const raw_ptr<Windows10CaptionButton> restore_button_;
-  const raw_ptr<Windows10CaptionButton> close_button_;
+  raw_ptr<WindowsTabSearchCaptionButton> tab_search_button_ = nullptr;
+  const raw_ptr<WindowsCaptionButton> minimize_button_;
+  const raw_ptr<WindowsCaptionButton> maximize_button_;
+  const raw_ptr<WindowsCaptionButton> restore_button_;
+  const raw_ptr<WindowsCaptionButton> close_button_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

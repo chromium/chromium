@@ -45,7 +45,7 @@ export type NamedDestinationMessageData = {
 
 /**
  * Enumeration of save message request types. Must match `SaveRequestType` in
- * pdf/pdf_view_plugin_base.h.
+ * pdf/pdf_view_web_plugin.h.
  */
 export enum SaveRequestType {
   ANNOTATION,

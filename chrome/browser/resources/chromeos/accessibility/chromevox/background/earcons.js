@@ -7,6 +7,7 @@
  * auditory cues.
  */
 
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {EarconEngine} from '/chromevox/background/earcon_engine.js';
 
 export class Earcons extends AbstractEarcons {
@@ -88,7 +89,7 @@ export class Earcons extends AbstractEarcons {
    * @private
    */
   updateShouldPanForDevices_(devices) {
-    this.shouldPan_ = !devices.some((device) => {
+    this.shouldPan_ = !devices.some(device => {
       return device.isActive &&
           device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
     });

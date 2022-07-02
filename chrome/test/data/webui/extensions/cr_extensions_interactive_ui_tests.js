@@ -40,7 +40,7 @@ const CrExtensionsInteractiveUITest = class extends PolymerInteractiveUITest {
 var CrExtensionsOptionsPageTest = class extends CrExtensionsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/extension_options_dialog_test.js&host=webui-test';
+    return 'chrome://extensions/test_loader.html?module=extensions/extension_options_dialog_test.js';
   }
 
   /** @override */
@@ -63,7 +63,7 @@ var CrExtensionsShortcutInputTest =
     class extends CrExtensionsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/shortcut_input_test.js&host=webui-test';
+    return 'chrome://extensions/test_loader.html?module=extensions/shortcut_input_test.js';
   }
 
   /** @override */

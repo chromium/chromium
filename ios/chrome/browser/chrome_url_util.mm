@@ -22,7 +22,8 @@
 
 bool UrlIsExternalFileReference(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) &&
-         base::LowerCaseEqualsASCII(url.host(), kChromeUIExternalFileHost);
+         base::EqualsCaseInsensitiveASCII(url.host(),
+                                          kChromeUIExternalFileHost);
 }
 
 bool UrlHasChromeScheme(const GURL& url) {

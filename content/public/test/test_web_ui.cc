@@ -26,7 +26,7 @@ void TestWebUI::ClearTrackedCalls() {
 }
 
 void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
-                                      const base::ListValue* args) {
+                                      const base::Value::List& args) {
   const auto callbacks_map_it = message_callbacks_.find(handler_name);
   if (callbacks_map_it != message_callbacks_.end()) {
     // Create a copy of the callbacks before running them. Without this, it
@@ -34,21 +34,28 @@ void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
     // handler during iteration of the vector, resulting in undefined behavior.
     std::vector<MessageCallback> callbacks_to_run = callbacks_map_it->second;
     for (auto& callback : callbacks_to_run)
-      callback.Run(args->GetList());
+      callback.Run(args);
     return;
   }
 
   const auto deprecated_callbacks_map_it =
       deprecated_message_callbacks_.find(handler_name);
   if (deprecated_callbacks_map_it != deprecated_message_callbacks_.end()) {
+    base::Value args_copy(args.Clone());
     // Create a copy of the callbacks before running them. Without this, it
     // could be possible for the callback's handler to register a new message
     // handler during iteration of the vector, resulting in undefined behavior.
     std::vector<DeprecatedMessageCallback> callbacks_to_run =
         deprecated_callbacks_map_it->second;
+    const base::ListValue& args_list = base::Value::AsListValue(args_copy);
     for (auto& callback : callbacks_to_run)
-      callback.Run(args);
+      callback.Run(&args_list);
   }
+}
+
+void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
+                                      const base::ListValue* args) {
+  HandleReceivedMessage(handler_name, args->GetList());
 }
 
 WebContents* TestWebUI::GetWebContents() {

@@ -160,9 +160,9 @@ TailoredSecurityUrlObserver::TailoredSecurityUrlObserver(
     service_->AddObserver(this);
   }
 
-  if (web_contents && web_contents->GetMainFrame() &&
-      web_contents->GetMainFrame()->GetView()) {
-    focused = web_contents->GetMainFrame()->GetView()->HasFocus();
+  if (web_contents && web_contents->GetPrimaryMainFrame() &&
+      web_contents->GetPrimaryMainFrame()->GetView()) {
+    focused = web_contents->GetPrimaryMainFrame()->GetView()->HasFocus();
   }
   UpdateFocusAndURL(focused, web_contents->GetLastCommittedURL());
 }

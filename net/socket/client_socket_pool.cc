@@ -162,9 +162,9 @@ void ClientSocketPool::NetLogTcpClientSocketPoolRequestedSocket(
 }
 
 base::Value ClientSocketPool::NetLogGroupIdParams(const GroupId& group_id) {
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  event_params.SetStringKey("group_id", group_id.ToString());
-  return event_params;
+  base::Value::Dict event_params;
+  event_params.Set("group_id", group_id.ToString());
+  return base::Value(std::move(event_params));
 }
 
 std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(

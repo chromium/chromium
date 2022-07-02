@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1059913517121127803">Non se puido iniciar o escaneo</translation>
+<translation id="1062407476771304334">Substituír</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
@@ -15,9 +16,12 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A ventá de actualización do firmware dos dispositivos externos está aberta. Hai <ph name="NUM_UPDATES" /> actualizacións dispoñibles.</translation>
+<translation id="1145516343487477149">Atopa artigos de axuda e respostas a preguntas frecuentes en relación co Chromebook</translation>
+<translation id="1165039591588034296">Erro</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1190378975642195988">Acelerómetro da base</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pór en pausa</translation>
@@ -32,12 +36,15 @@
 <translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Activar a protección contra a escritura</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1310380015393971138">Non hai ningunha rede <ph name="NETWORK_NAME" /> dispoñible</translation>
 <translation id="131421566576084655">Non está dispoñible a data do último restablecemento dos datos</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Rede doméstica, sen itinerancia</translation>
+<translation id="132712914231403017">Instalar imaxe do firmware</translation>
 <translation id="1327977588028644528">Pasarela</translation>
+<translation id="1328223165223065150">Cor do fondo de pantalla</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Axustar á zona de escaneo</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
@@ -55,14 +62,19 @@
 <translation id="1442433966118452622">Fonte da imaxe</translation>
 <translation id="1451536289672181509">O dispositivo é un teclado.</translation>
 <translation id="1459693405370120464">O tempo</translation>
+<translation id="1459784442280469416">Gardar na unidade USB</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
+<translation id="147809995039451286">Non se puido descargar a actualización</translation>
 <translation id="1478594628797167447">Escáner</translation>
-<translation id="1486019694341708158">Activa o interruptor para seleccionar as opcións do protector de pantalla</translation>
+<translation id="1483493594462132177">Enviar</translation>
 <translation id="1491076385728777984">Actualizando firmware do dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> xestiona este usuario, e pode axustar a súa configuración e supervisar a súa actividade de forma remota.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
+<translation id="1512982610995527443">O dispositivo apagarase dentro de 5 segundos</translation>
+<translation id="1522984060396982789">Reparouse correctamente. Podes apagar o dispositivo ou tomar medidas adicionais.</translation>
+<translation id="1526389707933164996">Animación do protector de pantalla</translation>
 <translation id="152892567002884378">Sube o volume</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
@@ -71,21 +83,28 @@
 <translation id="1572585716423026576">Definir como fondo de pantalla</translation>
 <translation id="1578784163189013834">Escoller o fondo do salvapantallas</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Cámara</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
+<translation id="1631385268983122904">Non montes aínda o dispositivo</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
 <translation id="1643449475550628585">Cambiar imaxe de fondo de pantalla todos os días</translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="1645954272419197032">Confirma a información do dispositivo</translation>
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1672499492233627739">Feed de vídeo da cámara web</translation>
+<translation id="1676557873873341166">Gravando vídeo</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
 <translation id="1715359911173058521">Produciuse un erro ao establecer comunicación co escáner. Comproba a conexión USB ou de rede e téntao de novo.</translation>
 <translation id="1717874160321062422">Dispositivo xestionado por <ph name="FIRST_MANAGER" /> e por <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Panel táctil con conexión por Bluetooth</translation>
+<translation id="1745577949879301685">Non se puideron cargar as imaxes. Comproba a túa conexión de rede ou tenta cargalas de novo.</translation>
 <translation id="1751249301761991853">Personalizar</translation>
 <translation id="1753496554272155572">Saír da vista previa do fondo de pantalla</translation>
+<translation id="1755556344721611131">Aplicación Diagnósticos</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -102,9 +121,11 @@
 <translation id="1871569928317311284">Quitar tema escuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Quitar modo escuro</translation>
+<translation id="1881188606372070653">Accede á <ph name="BEGIN_LINK1" />páxina Axuda legal<ph name="END_LINK1" /> para solicitar cambios de contido por razóns legais. Pódese enviar parte da información da conta e do sistema a Google. Utilizaremos os datos que nos indiques para solucionar problemas técnicos e mellorar os nosos servizos segundo o estipulado na <ph name="BEGIN_LINK2" />Política de privacidade<ph name="END_LINK2" /> e nas <ph name="BEGIN_LINK3" />Condicións de servizo<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión do hardware</translation>
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
 <translation id="1908234395526491708">Erros nas solicitudes de UDP</translation>
+<translation id="1932611479324127242">Desconectar batería</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1977994649430373166">Foto do perfil de Google</translation>
@@ -112,7 +133,9 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2006864819935886708">Conectividade</translation>
 <translation id="2008685064673031089">Busca principal</translation>
+<translation id="2011174342667534258">Versión do SDK:</translation>
 <translation id="2016697457005847575">Probar os pasos para tentar solucionar o problema</translation>
+<translation id="2016848882344942759">--sen etiqueta branca--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2085089206770112532">Reducir brillo da pantalla</translation>
@@ -123,12 +146,14 @@
 <translation id="2138109643290557664">Flotación</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
+<translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
 <translation id="2177831236093724629">Detectáronse <ph name="LINK_BEGIN" />compoñentes non compatibles<ph name="LINK_END" />. Para asegurarte de que se identifiquen todos os compoñentes compatibles, actualiza Chrome OS á última versión.</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
+<translation id="2182088270354640012">Grazas polos comentarios. Os teus comentarios axudan a mellorar ChromeOS. O equipo de ChromeOS revisaraos. Non vas recibir unha resposta directa debido ao gran número de informes que se envían.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nomes</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
@@ -140,17 +165,20 @@
 <translation id="2240366984605217732">Alternar entre deseños</translation>
 <translation id="225692081236532131">Estado de activación</translation>
 <translation id="2271469253353559191">Modo escuro programado</translation>
+<translation id="2275586345903859204">Completouse a reparación</translation>
+<translation id="2276999893457278469">Contido de axuda principal</translation>
 <translation id="2287186687001756809">Non hai ningunha imaxe dispoñible. Para engadir fotos, vai a <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Insire un dispositivo de almacenamento externo, como unha unidade USB ou unha tarxeta SD, coa imaxe descargada de Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Usar par de claves actual</translation>
 <translation id="2320295602967756579">Activar tema claro</translation>
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
+<translation id="2340422556570134524">A protección contra a escritura activouse inesperadamente. Desactívaa manualmente antes de tentalo de novo.</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360257214555822463">Detectáronse <ph name="LINK_BEGIN" />compoñentes non compatibles<ph name="LINK_END" />. Se decides confirmar que se instalaron, faino agora.</translation>
-<translation id="2363636958541445404">Activa a función para seleccionar as opcións de protector de pantalla</translation>
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="236594517359128026">Antes de continuar, coloca o ordenador portátil nunha superficie plana</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -160,6 +188,7 @@
 <translation id="2418150275289244458">Abrir en Configuración</translation>
 <translation id="2421798028054665193">Imaxe <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisión do punto flotante</translation>
+<translation id="2447969267935997922">Completouse a instalación. Xa podes quitar a unidade USB ou a tarxeta SD.</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactivar manualmente</translation>
@@ -171,7 +200,9 @@
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="253029298928638905">Reiniciando…</translation>
+<translation id="2533048460510040082">Contido de axuda suxerido</translation>
 <translation id="2536159006530886390">Non foi posible conectarse a Internet.</translation>
+<translation id="256360469103926202">Os teus comentarios axudan a mellorar ChromeOS. O noso equipo revisaraos. Non imos poder enviar unha resposta debido ao gran número de informes que recibimos.</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
 <translation id="2619761439309613843">Actualización diaria</translation>
@@ -181,8 +212,10 @@
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
+<translation id="2727250716596204208">Non se puido atopar a imaxe do firmware. Insire un dispositivo de almacenamento externo, como unha unidade USB ou unha tarxeta SD, coa imaxe descargada de Chromebook Recovery Utility.</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
+<translation id="2756652381241102009">Executar diagnóstico</translation>
 <translation id="2783010256799387990">PROBA SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
@@ -195,10 +228,10 @@
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="291142119251986300">Compoñentes non compatibles</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
-<translation id="2928420929544864228">Completouse a instalación.</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
+<translation id="3027578600144895987">Pechar cámara</translation>
 <translation id="3031560714565892478">O dispositivo é unha cámara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
@@ -207,21 +240,25 @@
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
+<translation id="3096753366938912951">Colocar a tapa do dispositivo sobre unha superficie plana</translation>
 <translation id="3102119246920354026">Caché</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está conectado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Queres quitar a páxina?}=1{Queres quitar a páxina {PAGE_NUMBER}?}other{Queres quitar a páxina {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Preparando dispositivo…</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
 <translation id="3156846309055100599">Escaneando páxina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Detectouse un portal cativo</translation>
 <translation id="3170673040743561620">Coloca o documento no escáner</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="319101249942218879">Modificouse a imaxe do avatar</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="320091191259649613">Se o problema persiste tras a actualización, é posible que o compoñente sexa compatible desde hai pouco e aínda non estea na base de datos.</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
+<translation id="3275729367986477355">Imaxe de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Dirección da clave</translation>
@@ -232,11 +269,13 @@
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
+<translation id="3383751554789092165">Cambia a información do dispositivo segundo sexa necesario.</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3404770484521709967">Os compoñentes instaláronse correctamente.</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Seguranza</translation>
+<translation id="3441653493275994384">Pantalla</translation>
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
 <translation id="345898999683440380">Escaneando páxina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Impresión</translation>
@@ -244,6 +283,7 @@
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
+<translation id="3492982278147736083">Xiroscopio da tapa</translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
@@ -259,10 +299,14 @@
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
+<translation id="361575905210396100">Grazas polos teus comentarios</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
+<translation id="3643198267586205643">Actualizar o sistema operativo</translation>
 <translation id="3643810137582748570">Omitir calibración</translation>
-<translation id="3678765385266369662">Selecciona como queres desactivar a protección da escritura</translation>
+<translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
+<translation id="3678765385266369662">Selecciona como queres desactivar a protección contra a escritura</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
@@ -270,15 +314,21 @@
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
+<translation id="3774059845329307709">Número de serie</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="38114475217616659">Borrar todo o historial</translation>
 <translation id="3820172043799983114">O PIN non é válido.</translation>
+<translation id="3824259034819781947">Anexar ficheiros</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3856304145690230735">Xiroscopio da base</translation>
 <translation id="385832974417157471">Antes de apagar o dispositivo, utiliza a función Powerwash. Se o dispositivo ten tapa, agarda a que conclúa esta función para pechala. Powerwash pode tardar ata un minuto en rematar.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3862598938296403232">A descrición é obrigatoria</translation>
 <translation id="3865414814144988605">Resolución</translation>
+<translation id="3866249974567520381">Descrición</translation>
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
+<translation id="3885327323343477505">Cambiar protector de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3924044641767672375">Recomendámosche que te conectes á wifi para que o proceso de reparación sexa máis sinxelo. Gardarase a túa rede.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
@@ -306,6 +356,7 @@
 <translation id="4140251671072434548">Levar a cabo o desbloqueo do servidor de autorización de devolución de mercadoría</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Pantalla</translation>
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4170180284036919717">Tirar unha foto</translation>
@@ -332,6 +383,7 @@
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">Reiniciando dispositivo (<ph name="DEVICE_NAME" />)</translation>
+<translation id="4415951057168511744">Avatar actual</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desactivada</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
@@ -342,6 +394,7 @@
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
+<translation id="4500213108254186382">Acelerómetro da tapa</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia do nome alternativo do asunto</translation>
@@ -352,6 +405,8 @@
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sen servizo</translation>
+<translation id="4568938274596692027">Completouse a instalación. Preparándose para reiniciar o dispositivo…</translation>
+<translation id="4576943788798178439">Compatibilidade co lapis óptico</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
@@ -367,7 +422,9 @@
 <translation id="469379815867856270">Intensidade do sinal</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4740255236714854844">Colocar a base do dispositivo sobre unha superficie plana</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
+<translation id="4751272708893364980">Ver rexistros de autorización de devolución de mercadoría</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4774530504324923332">Vas precisar unha chave de seguranza co RSU activado, un escáner de códigos QR e outro dispositivo con conexión a Internet</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
@@ -375,6 +432,8 @@
 <translation id="4793710386569335688">Para obter máis axuda, vai ao <ph name="BEGIN_LINK" />Centro de Axuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
+<translation id="4800589996161293643">Comunidade de Chromebook</translation>
+<translation id="4804818685124855865">Desconectar</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">As miñas imaxes</translation>
@@ -393,9 +452,12 @@
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
 <translation id="4891842000192098784">Estrés</translation>
 <translation id="4897058166682006107">Nivel de batería do auricular esquerdo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Activa a función para seleccionar as opcións de protector de pantalla</translation>
+<translation id="4908030561598728899">Instalando firmware…</translation>
 <translation id="4915052247106771211">Ao marcar esta opción, restablecerase a configuración de fábrica do dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
+<translation id="491791267030419270">Consellos para escribir comentarios</translation>
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para axustar ou actualizar unha conexión, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -409,6 +471,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación.</translation>
 <translation id="5039804452771397117">Permitir</translation>
+<translation id="5044978354634658544">Inserir a unidade USB</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única páxina. Ao realizar esta acción, redirixirásete á pantalla de inicio da función do escáner.</translation>
@@ -422,11 +485,14 @@
 <translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
+<translation id="5179530508336824319">Activa a protección contra a escritura para ir á pantalla seguinte. Consulta as instrucións na páxina de asistencia do fabricante do dispositivo.</translation>
+<translation id="5181140330217080051">Descargando</translation>
 <translation id="5190187232518914472">Revive os teus recordos favoritos. Para engadir ou editar álbums, vai a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
 Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
+<translation id="522307662484862935">Non incluír enderezo de correo electrónico</translation>
 <translation id="5227902338748591677">Tema escuro programado</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5252456968953390977">Itinerancia</translation>
@@ -451,9 +517,12 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5372659122375744710">A rede wifi non é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">O dispositivo utilizarao un usuario ou unha organización diferente</translation>
+<translation id="5389159777326897627">Estilo e fondo de pantalla</translation>
+<translation id="5389224261615877010">Arco da vella</translation>
 <translation id="5395600419410242651">Borrar todos os datos</translation>
 <translation id="5400907029458559844">O dispositivo estase conectando.</translation>
 <translation id="5401938042319910061">Executar todas as rutinas</translation>
+<translation id="5406131354638931058">Desconecta a batería dos dispositivos que se van enviar ou almacenar</translation>
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Cor</translation>
@@ -462,6 +531,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento}other{Quedan {0} intentos}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Non se puido completar o escaneamento</translation>
+<translation id="5499762266711462226">A cor do teclado baséase no fondo de pantalla</translation>
 <translation id="5502931783115429516">Android non se está executando</translation>
 <translation id="5507300744274596613">Asegúrate de que Chrome OS estea actualizado</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -474,7 +544,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5649768706273821470">Escoitar</translation>
 <translation id="5655283760733841251">Aumentar brillo do teclado</translation>
-<translation id="5661196929408385351">Usar Powerwash e apagar</translation>
+<translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -487,6 +557,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="578753362485952307">Se estás adaptando unha placa base para utilizala noutro dispositivo, vai ao <ph name="LINK_BEGIN" />fluxo de adaptación<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Correcto</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -498,6 +569,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5866840822086176774">Moi forte</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5898758006340607522">Botón de acendido</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903200662178656908">O dispositivo é unha combinación de teclado e rato.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
@@ -506,6 +578,8 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
+<translation id="5947494881799873997">Reverter</translation>
+<translation id="5951259522948394825">Confirma que todo está correcto e consulta o informe de diagnóstico</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -545,6 +619,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6295178529664209245">Queres continuar coa reparación?</translation>
 <translation id="6302401976930124515">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
+<translation id="631063167932043783">Aplicación Explorar</translation>
 <translation id="6319207335391420837">Actualizar o firmware deste dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar o protector de pantalla</translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
@@ -556,6 +631,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Probar o teclado</translation>
 <translation id="6388847657025262518">O alimentador de documentos do escáner está atascado. Revísao e téntao de novo.</translation>
+<translation id="6394634179843537518">Engadir ficheiro</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -572,6 +648,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6516990319416533844">Se queres comprobar a taxa de carga da batería, agarda un anaco para deixar que se descargue un pouco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
+<translation id="6535178685492749208">Estás sen conexión. Os comentarios enviaranse máis tarde.</translation>
 <translation id="65587193855025101">Superficie plana</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
 <translation id="6566314079205407217">Escaneo de varias páxinas</translation>
@@ -589,6 +666,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6659594942844771486">Pestana</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
+<translation id="6721744718589119342">Podemos poñernos en contacto contigo por correo electrónico para pedirche máis información ou manterte ao tanto das novidades</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6723847290197874913">Luz traseira do teclado</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
@@ -602,18 +680,20 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
+<translation id="6822504384524564824">O número de referencia (SKU) só se debería cambiar se os compoñentes novos son distintos dos que se substituíron por eles (por exemplo, ao cambiar unha pantalla táctil por unha non táctil ou ao ampliar a memoria de 8 GB a 16 GB).</translation>
 <translation id="6840315122969944400">Reparación do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
+<translation id="6876833053687020046">Referencia da DRAM</translation>
 <translation id="6889786074662672253">Mentres se reinicia este dispositivo externo, non o desenchufes nin apagues o ordenador. Podes minimizar esta ventá. Esta acción pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tapa do escáner está aberta. Péchaa e téntao de novo.</translation>
 <translation id="6911383237894364323">Non se puido establecer conexión cos servidores multimedia</translation>
-<translation id="6935486296377631201">Protector de pantalla</translation>
 <translation id="6943893908656559156">Identidade remota (opcional)</translation>
 <translation id="6957231940976260713">Nome do servizo</translation>
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
+<translation id="6995564396478647735">Asegúrate de que a protección contra a escritura estea activada</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">O dispositivo non está conectado.</translation>
@@ -624,10 +704,12 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Produciuse un erro de autorización</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">A protección contra a escritura está desactivada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
+<translation id="7154020516215182599">Comparte os teus comentarios ou describe o problema. Se é posible, inclúe os pasos para reproducilo.</translation>
 <translation id="7155171745945906037">Foto existente da cámara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7170236477717446850">Imaxe do perfil</translation>
@@ -635,7 +717,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7191009787982536050">Animación do protector de pantalla</translation>
 <translation id="7212734716605298123">Actualizacións de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
@@ -646,12 +727,14 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Pregúntalles ás persoas expertas do foro de axuda de Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
+<translation id="73631062356239394">Compartir datos de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378886533986123738">Cambiar protector de pantalla</translation>
+<translation id="7378553660733179982">Número de referencia (SKU)</translation>
 <translation id="7397270852490618635">Quitar tema claro</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP moi alta</translation>
@@ -680,12 +763,14 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7657530360897961171">Produciuse un erro de reparación no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>
+<translation id="7682274994254393134">Inicio da reparación</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
+<translation id="7762839321248874531">Enviar <ph name="BEGIN_LINK1" />información do sistema e da aplicación<ph name="END_LINK1" />, así como <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Coincidencia do sufixo de dominio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
@@ -708,12 +793,14 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para unirte a unha rede <ph name="NETWORK_NAME" />, vai a Configuración</translation>
 <translation id="7978412674231730200">Clave privada</translation>
+<translation id="7982789257301363584">Rede</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Activar modo de cores automáticas</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8045012663542226664">Desactivar micrófono</translation>
+<translation id="8063022551652308521">A protección contra a escritura aínda está desactivada. Actívaa para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións Android</translation>
 <translation id="8083281199617904460">Este proceso de reparación debe efectualo un técnico cualificado, e só se debe iniciar despois de substituír os compoñentes que non funcionen correctamente.</translation>
@@ -726,6 +813,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Intro</translation>
+<translation id="819552138404104974">Rexistros de autorización de devolución de mercadoría</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8217675307824400706">Conéctate</translation>
@@ -749,8 +837,10 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>
 <translation id="8372477600026034341">Hosts extra</translation>
 <translation id="8378855320830505539">Rexión</translation>
+<translation id="8382302752385457774">Etiqueta branca</translation>
 <translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
+<translation id="8420955526972171689">Fai probas e soluciona problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado integrado</translation>
 <translation id="8431300646573772016">Novidades de Chrome OS</translation>
@@ -759,6 +849,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8456761643544401578">Modo escuro automático</translation>
 <translation id="8461329675984532579">Nome do fornecedor de orixe</translation>
 <translation id="8467104829907989997">Calibrando compoñentes…</translation>
+<translation id="8474030592808010086">Desenchufa o dispositivo para desconectar a batería</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
 <translation id="8483248364096924578">Enderezo IP</translation>
@@ -781,7 +872,9 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizar teclas frecha cara á esquerda ou frecha arriba para xestionar esta función.</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
+<translation id="8717030727630712160">Retomando proceso de reparación…</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
+<translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
@@ -796,16 +889,21 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8855781559874488009">Non se puido establecer conexión con sitios web HTTP a través do firewall</translation>
+<translation id="885701979325669005">Almacenamento</translation>
 <translation id="8863170912498892583">Activar tema escuro</translation>
 <translation id="8863888432376731307">Obtén a <ph name="INTENT" /> de "<ph name="QUERY" />" e moito máis</translation>
+<translation id="8864415976656252616">Non hai contido suxerido. Consulta o contido de axuda destacado.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
+<translation id="8897267175591692539">Xa podes montar o dispositivo</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">Consulta o que se corrixiu</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8923267550422472772">Día do mes no que debe restablecerse o uso de datos</translation>
+<translation id="8925613211674558308">VPD almacenados na memoria caché</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
 <translation id="8930521118335213258">Semellante</translation>
 <translation id="8930622219860340959">Sen fíos</translation>
@@ -814,12 +912,12 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="894617464444543719">O dispositivo é un teléfono.</translation>
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
-<translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escanear}=1{Escanear páxina {NUMBER_OF_PAGES}}other{Escanear páxina {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Nivel de batería do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9025198690966128418">Utilizar como dispositivo persoal</translation>
+<translation id="9028832514430399253">Activa o interruptor para seleccionar as opcións do protector de pantalla</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolución de DNS ten latencia alta</translation>
 <translation id="9063121522582193837">Non se puideron calibrar algúns compoñentes</translation>
@@ -838,14 +936,17 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9126720536733509015">Gardar varias páxinas nun mesmo PDF</translation>
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9138630967333032450">Maiúsculas (esquerda)</translation>
+<translation id="9148058034647219655">Saír</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="917720651393141712">Probar</translation>
+<translation id="9188992814426075118">O teclado pode combinar automaticamente co teu fondo de pantalla</translation>
 <translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións Android</translation>
 <translation id="9211490828691860325">Todos os ordenadores</translation>
 <translation id="922179502584117429">A versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="952992212772159698">Non activado</translation>
 <translation id="960719561871045870">Código do operador</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>

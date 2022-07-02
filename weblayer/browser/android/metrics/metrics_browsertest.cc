@@ -11,6 +11,7 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "weblayer/browser/android/metrics/metrics_test_helper.h"
@@ -147,6 +148,7 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, PageLoadsEnableMultipleUploads) {
 }
 
 IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   metrics::ChromeUserMetricsExtension log = WaitForNextMetricsLog();
   // The initial log should not have a page load count (because nothing was
@@ -155,6 +157,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
     const metrics::SystemProfileProto& system_profile = log.system_profile();
     ASSERT_TRUE(system_profile.has_stability());
     EXPECT_EQ(0, system_profile.stability().page_load_count());
+    histogram_tester.ExpectBucketCount(
+        "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
   }
 
   // Loading a page should increment the page load count.
@@ -165,6 +169,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
     const metrics::SystemProfileProto& system_profile = log.system_profile();
     ASSERT_TRUE(system_profile.has_stability());
     EXPECT_EQ(1, system_profile.stability().page_load_count());
+    histogram_tester.ExpectBucketCount(
+        "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
   }
 }
 

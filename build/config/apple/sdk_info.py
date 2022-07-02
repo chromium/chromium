@@ -13,11 +13,6 @@ import subprocess
 import sys
 
 
-# src directory
-ROOT_SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.realpath(__file__)))))
-
 # This script prints information about the build system, the operating
 # system and the iOS or Mac SDK (depending on the platform "iphonesimulator",
 # "iphoneos" or "macosx" generally).
@@ -97,14 +92,14 @@ def FillSDKPathAndVersion(settings, platform, xcode_version):
       'Toolchains/XcodeDefault.xctoolchain')
 
 
-def CreateXcodeSymlinkAt(src, dst):
+def CreateXcodeSymlinkAt(src, dst, root_build_dir):
   """Create symlink to Xcode directory at target location."""
 
   if not os.path.isdir(dst):
     os.makedirs(dst)
 
   dst = os.path.join(dst, os.path.basename(src))
-  updated_value = '//' + os.path.relpath(dst, ROOT_SRC_DIR)
+  updated_value = os.path.join(root_build_dir, dst)
 
   # Update the symlink only if it is different from the current destination.
   if os.path.islink(dst):
@@ -135,6 +130,9 @@ def main():
                       help='Create symlink of SDK at given location and '
                       'returns the symlinked paths as SDK info instead '
                       'of the original location.')
+  parser.add_argument('--root_build_dir',
+                      default='.',
+                      help='Value of gn $root_build_dir')
   parser.add_argument('platform',
                       choices=['iphoneos', 'iphonesimulator', 'macosx'])
   args = parser.parse_args()
@@ -151,7 +149,8 @@ def main():
   for key in sorted(settings):
     value = settings[key]
     if args.create_symlink_at and '_path' in key:
-      value = CreateXcodeSymlinkAt(value, args.create_symlink_at)
+      value = CreateXcodeSymlinkAt(value, args.create_symlink_at,
+                                   args.root_build_dir)
     if isinstance(value, str):
       value = '"%s"' % value
     print('%s=%s' % (key, value))

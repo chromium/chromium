@@ -41,14 +41,14 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'OnValueChangedSlider',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<input type="range"></input>`;
       const root = await this.runWithLoadedTree(site);
       const slider = root.find({role: RoleType.SLIDER});
-      assertTrue(!!slider);
+      assertTrue(Boolean(slider));
 
       let sliderValue = '50%';
       Object.defineProperty(slider, 'value', {get: () => sliderValue});
@@ -89,7 +89,7 @@ TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'TaskManagerTableView',
     function() {
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedDesktop((desktop) => {
+      this.runWithLoadedDesktop(desktop => {
         mockFeedback
             .call(() => {
               EventGenerator.sendKeyPress(KeyCode.ESCAPE, {search: true});
@@ -111,7 +111,7 @@ TEST_F(
     });
 
 // Ensures behavior when IME candidates are selected.
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<button>First</button><button>Second</button>`;
@@ -141,14 +141,14 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'IgnoreRepeatedAlerts',
     async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `<button>Hello world</button>`;
       const root = await this.runWithLoadedTree(site);
       const button = root.find({role: RoleType.BUTTON});
-      assertTrue(!!button);
+      assertTrue(Boolean(button));
       const event = new CustomAutomationEvent(EventType.ALERT, button);
       mockFeedback
           .call(() => {
@@ -167,7 +167,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'DatalistSelection',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -183,7 +183,7 @@ TEST_F(
         role: RoleType.TEXT_FIELD_WITH_COMBO_BOX,
         attributes: {name: 'Choose one'}
       });
-      assertTrue(!!combobox);
+      assertTrue(Boolean(combobox));
       combobox.focus();
       await new Promise(r => combobox.addEventListener(EventType.FOCUS, r));
 

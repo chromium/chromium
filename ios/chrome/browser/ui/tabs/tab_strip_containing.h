@@ -11,7 +11,7 @@
 // Returns a snapshot of the Tab Strip view.
 - (UIView*)screenshotForAnimation;
 
-// Adjusts |transform| to take the current RTL mode into account.
+// Adjusts `transform` to take the current RTL mode into account.
 - (CGAffineTransform)adjustTransformForRTL:(CGAffineTransform)transform;
 
 @end

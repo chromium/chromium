@@ -40,10 +40,11 @@ void ChromeOmniboxEditController::OnAutocompleteAccept(
       match_selection_timestamp, destination_url_entered_without_scheme, text,
       match, alternative_nav_match);
 
-  auto navigation = chrome::OpenCurrentURL(browser_);
-
-  ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
-                                          match, alternative_nav_match);
+  if (browser_) {
+    auto navigation = chrome::OpenCurrentURL(browser_);
+    ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
+                                            match, alternative_nav_match);
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::MaybeShowExtensionControlledSearchNotification(

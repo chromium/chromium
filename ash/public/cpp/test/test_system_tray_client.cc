@@ -116,7 +116,12 @@ void TestSystemTrayClient::ShowAccessCodeCastingDialog(
 
 void TestSystemTrayClient::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,
+    const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {}
+
+version_info::Channel TestSystemTrayClient::GetChannel() {
+  return channel_;
+}
 
 }  // namespace ash

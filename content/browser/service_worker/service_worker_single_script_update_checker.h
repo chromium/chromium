@@ -160,8 +160,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
                         OnUploadProgressCallback ack_callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle consumer) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   bool network_accessed() const { return network_accessed_; }
@@ -225,16 +223,9 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   // Represents the state of |network_loader_|.
   // Corresponds to the steps described in the class comments.
   //
-  // When response body exists:
   // CreateLoaderAndStart(): kNotStarted -> kLoadingHeader
-  // OnReceiveResponse(): kLoadingHeader -> kWaitingForBody
-  // OnStartLoadingResponseBody(): kWaitingForBody -> kLoadingBody
+  // OnReceiveResponse(): kLoadingHeader -> kLoadingBody
   // OnComplete(): kLoadingBody -> kCompleted
-  //
-  // When response body is empty:
-  // CreateLoaderAndStart(): kNotStarted -> kLoadingHeader
-  // OnReceiveResponse(): kLoadingHeader -> kWaitingForBody
-  // OnComplete(): kWaitingForBody -> kCompleted
   ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state_ =
       ServiceWorkerUpdatedScriptLoader::LoaderState::kNotStarted;
 
@@ -254,7 +245,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   // difference.
   //
   // When response body exists:
-  // OnStartLoadingResponseBody() && OnWriteHeadersComplete():
+  // OnReceiveResponsey() && OnWriteHeadersComplete():
   //     kNotStarted -> kWriting
   // OnNetworkDataAvailable() && MOJO_RESULT_FAILED_PRECONDITION:
   //     kWriting -> kCompleted

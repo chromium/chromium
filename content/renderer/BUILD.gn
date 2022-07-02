@@ -245,6 +245,7 @@ target(link_target_type, "renderer") {
     "//cc/mojom",
     "//cc/paint",
     "//components/cast_streaming/public",
+    "//components/cast_streaming/renderer:resource_provider",
     "//components/cast_streaming/renderer:wrapping_renderer_factory_selector",
     "//components/discardable_memory/client",
     "//components/metrics",
@@ -362,14 +363,15 @@ target(link_target_type, "renderer") {
     ]
   }
 
-  if (enable_media_remoting || is_chromecast) {
+  # TODO(crbug.com/1293520): Remove this dependency on cast devices.
+  if (enable_media_remoting || is_castos || is_cast_android) {
     deps += [ "//media/mojo/mojom:remoting" ]
 
     if (enable_media_remoting) {
       deps += [ "//media/remoting:remoting_sender" ]
     }
 
-    if (is_chromecast) {
+    if (is_castos || is_cast_android) {
       if (enable_cast_audio_renderer) {
         sources += [
           "media/cast_renderer_factory.cc",
@@ -554,7 +556,7 @@ target(link_target_type, "renderer") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos:chromeos_export" ]
     if (target_cpu == "x64") {
-      deps += [ "//chromeos/memory/userspace_swap" ]
+      deps += [ "//chromeos/ash/components/memory/userspace_swap" ]
     }
   }
 
@@ -571,7 +573,7 @@ target(link_target_type, "renderer") {
 group("for_content_tests") {
   visibility = [
     "//content/test/*",
-    "//content/web_test:web_test_renderer",
+    "//content/web_test:web_test_renderer_public_deps",
   ]
 
   if (!is_component_build) {

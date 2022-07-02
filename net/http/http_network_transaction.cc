@@ -113,32 +113,10 @@ const int HttpNetworkTransaction::kDrainBodyBufferSize;
 
 HttpNetworkTransaction::HttpNetworkTransaction(RequestPriority priority,
                                                HttpNetworkSession* session)
-    : pending_auth_target_(HttpAuth::AUTH_NONE),
-      io_callback_(base::BindRepeating(&HttpNetworkTransaction::OnIOComplete,
+    : io_callback_(base::BindRepeating(&HttpNetworkTransaction::OnIOComplete,
                                        base::Unretained(this))),
       session_(session),
-      request_(nullptr),
-      priority_(priority),
-      headers_valid_(false),
-      can_send_early_data_(false),
-      configured_client_cert_for_server_(false),
-      request_headers_(),
-#if BUILDFLAG(ENABLE_REPORTING)
-      network_error_logging_report_generated_(false),
-      request_reporting_upload_depth_(0),
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-      read_buf_len_(0),
-      total_received_bytes_(0),
-      total_sent_bytes_(0),
-      next_state_(STATE_NONE),
-      establishing_tunnel_(false),
-      enable_ip_based_pooling_(true),
-      enable_alternative_services_(true),
-      websocket_handshake_stream_base_create_helper_(nullptr),
-      net_error_details_(),
-      retry_attempts_(0),
-      num_restarts_(0) {
-}
+      priority_(priority) {}
 
 HttpNetworkTransaction::~HttpNetworkTransaction() {
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -908,8 +886,17 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   // HttpStream::GetAcceptChViaAlps() needs the HttpRequestInfo to retrieve
   // the ACCEPT_CH frame payload.
   stream_->RegisterRequest(request_);
-  stream_->GetRemoteEndpoint(&remote_endpoint_);
   next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
+
+  int result = stream_->GetRemoteEndpoint(&remote_endpoint_);
+  if (result != OK) {
+    // `GetRemoteEndpoint()` fails when the underlying socket is not connected
+    // anymore, even though the peer's address is known. This can happen when
+    // we picked a socket from socket pools while it was still connected, but
+    // the remote side closes it before we get a chance to send our request.
+    // See if we should retry the request based on the error code we got.
+    return HandleIOError(result);
+  }
 
   if (connected_callback_.is_null()) {
     return OK;
@@ -1294,7 +1281,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
 
 int HttpNetworkTransaction::DoReadBody() {
   DCHECK(read_buf_.get());
-  DCHECK_GT(read_buf_len_, 0);
+  // TODO(https://crbug.com/1335423): Change to DCHECK_GT() or remove after bug
+  // is fixed.
+  CHECK_GT(read_buf_len_, 0);
   DCHECK(stream_ != nullptr);
 
   next_state_ = STATE_READ_BODY_COMPLETE;
@@ -1581,9 +1570,10 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
 }
 
 // This method determines whether it is safe to resend the request after an
-// IO error.  It can only be called in response to request header or body
-// write errors or response header read errors.  It should not be used in
-// other cases, such as a Connect error.
+// IO error. It should only be called in response to errors received before
+// final set of response headers have been successfully parsed, that the
+// transaction may need to be retried on.
+// It should not be used in other cases, such as a Connect error.
 int HttpNetworkTransaction::HandleIOError(int error) {
   // Because the peer may request renegotiation with client authentication at
   // any time, check and handle client authentication errors.
@@ -1730,9 +1720,7 @@ bool HttpNetworkTransaction::ShouldResendRequest() const {
   // NOTE: we resend a request only if we reused a keep-alive connection.
   // This automatically prevents an infinite resend loop because we'll run
   // out of the cached keep-alive connections eventually.
-  if (connection_is_proven && !has_received_headers)
-    return true;
-  return false;
+  return connection_is_proven && !has_received_headers;
 }
 
 bool HttpNetworkTransaction::HasExceededMaxRetries() const {

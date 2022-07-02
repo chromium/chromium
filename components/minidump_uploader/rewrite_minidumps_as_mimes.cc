@@ -103,12 +103,8 @@ bool MimeifyReportWithKeyValuePairs(
               static_cast<uint32_t>(crashpad::Signals::kSimulatedSigno)) {
             UMA_HISTOGRAM_ENUMERATION(
                 "Stability.Android.ProcessedRealMinidumps", count_type);
-          } else {
-            UMA_HISTOGRAM_ENUMERATION(
-                "Stability.Android.ProcessedSimulatedMinidumps", count_type);
           }
         }
-        // TODO(wnwen): Add histogram for number of null exceptions.
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }

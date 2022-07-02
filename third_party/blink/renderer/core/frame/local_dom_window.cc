@@ -179,9 +179,7 @@ class LocalDOMWindow::NetworkStateObserver final
       online_observer_handle_;
 };
 
-LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
-                               WindowAgent* agent,
-                               bool anonymous)
+LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
     : DOMWindow(frame),
       ExecutionContext(V8PerIsolateData::MainThreadIsolate(), agent),
       script_controller_(MakeGarbageCollected<ScriptController>(
@@ -201,7 +199,6 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
       token_(frame.GetLocalFrameToken()),
       post_message_counter_(PostMessagePartition::kSameProcess),
       network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
-      isAnonymouslyFramed_(anonymous),
       closewatcher_stack_(
           MakeGarbageCollected<CloseWatcher::WatcherStack>(this)) {}
 
@@ -269,6 +266,8 @@ TrustedTypePolicyFactory* LocalDOMWindow::trustedTypes(
 bool LocalDOMWindow::IsCrossSiteSubframe() const {
   if (!GetFrame())
     return false;
+  if (GetFrame()->IsInFencedFrameTree())
+    return true;
   // It'd be nice to avoid the url::Origin temporaries, but that would require
   // exposing the net internal helper.
   // TODO: If the helper gets exposed, we could do this without any new
@@ -281,7 +280,11 @@ bool LocalDOMWindow::IsCrossSiteSubframe() const {
 }
 
 bool LocalDOMWindow::IsCrossSiteSubframeIncludingScheme() const {
-  return GetFrame() && top()->GetFrame() &&
+  if (!GetFrame())
+    return false;
+  if (GetFrame()->IsInFencedFrameTree())
+    return true;
+  return top()->GetFrame() &&
          !top()
               ->GetFrame()
               ->GetSecurityContext()
@@ -721,8 +724,8 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
 
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();
   frame_scheduler->TraceUrlChange(document_->Url().GetString());
-  frame_scheduler->SetCrossOriginToMainFrame(
-      GetFrame()->IsCrossOriginToMainFrame());
+  frame_scheduler->SetCrossOriginToNearestMainFrame(
+      GetFrame()->IsCrossOriginToNearestMainFrame());
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
 
@@ -1058,6 +1061,15 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
                                       source->GetStorageKey(), UkmSourceID(),
                                       GetStorageKey(), UkmRecorder());
 
+  // Notify the host if the message contained a delegated capability. That state
+  // should be tracked by the browser, and messages from remote hosts already
+  // signal the browser via RemoteFrameHost's RouteMessageEvent.
+  if (posted_message->delegated_capability !=
+      mojom::blink::DelegatedCapability::kNone) {
+    GetFrame()->GetLocalFrameHostRemote().ReceivedDelegatedCapability(
+        posted_message->delegated_capability);
+  }
+
   // Convert the posted message to a MessageEvent so it can be unpacked for
   // local dispatch.
   MessageEvent* event = MessageEvent::Create(
@@ -1185,7 +1197,6 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
           mojom::blink::DelegatedCapability::kFullscreenRequest) {
     UseCounter::Count(this,
                       WebFeature::kCapabilityDelegationOfFullscreenRequest);
-    // TODO(crbug.com/1293083): Activate a corresponding token in the browser.
     fullscreen_request_token_.Activate();
   }
 
@@ -1820,14 +1831,6 @@ void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
                 WrapPersistent(callback), nullptr));
 }
 
-const Vector<String>& LocalDOMWindow::originPolicyIds() const {
-  return origin_policy_ids_;
-}
-
-void LocalDOMWindow::SetOriginPolicyIds(const Vector<String>& ids) {
-  origin_policy_ids_ = ids;
-}
-
 bool LocalDOMWindow::originAgentCluster() const {
   return GetAgent()->IsOriginKeyed();
 }
@@ -1950,22 +1953,21 @@ void LocalDOMWindow::DispatchLoadEvent() {
     DispatchEvent(load_event, document());
   }
 
-  if (GetFrame()) {
+  if (LocalFrame* frame = GetFrame()) {
     WindowPerformance* performance = DOMWindowPerformance::performance(*this);
     DCHECK(performance);
     performance->NotifyNavigationTimingToObservers();
+
+    // For load events, send a separate load event to the enclosing frame only.
+    // This is a DOM extension and is independent of bubbling/capturing rules of
+    // the DOM.
+    if (FrameOwner* owner = frame->Owner())
+      owner->DispatchLoad();
+
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+        "MarkLoad", inspector_mark_load_event::Data, frame);
+    probe::LoadEventFired(frame);
   }
-
-  // For load events, send a separate load event to the enclosing frame only.
-  // This is a DOM extension and is independent of bubbling/capturing rules of
-  // the DOM.
-  FrameOwner* owner = GetFrame() ? GetFrame()->Owner() : nullptr;
-  if (owner)
-    owner->DispatchLoad();
-
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "MarkLoad", inspector_mark_load_event::Data, GetFrame());
-  probe::LoadEventFired(GetFrame());
 }
 
 DispatchEventResult LocalDOMWindow::DispatchEvent(Event& event,
@@ -2050,8 +2052,10 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                 const AtomicString& target,
                                 const String& features,
                                 ExceptionState& exception_state) {
-  LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
+
+  if (!IsCurrentlyDisplayedInFrame())
+    return nullptr;
 
   // If the bindings implementation is 100% correct, the current realm and the
   // entered realm should be same origin-domain. However, to be on the safe
@@ -2059,25 +2063,25 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // as well here.
   if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this,
                                             exception_state)) {
+    // Trigger DCHECK() failure, while gracefully failing on release builds.
+    NOTREACHED();
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kWindowOpenRealmMismatch);
     return nullptr;
   }
 
-  if (!IsCurrentlyDisplayedInFrame())
-    return nullptr;
-  if (!incumbent_window->GetFrame() || !entered_window->GetFrame())
+  if (!entered_window->GetFrame())
     return nullptr;
 
-  UseCounter::Count(*incumbent_window, WebFeature::kDOMWindowOpen);
+  UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
   if (!features.IsEmpty())
-    UseCounter::Count(*incumbent_window, WebFeature::kDOMWindowOpenFeatures);
+    UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpenFeatures);
 
   KURL completed_url = url_string.IsEmpty()
                            ? KURL(g_empty_string)
                            : entered_window->CompleteURL(url_string);
   if (!completed_url.IsEmpty() && !completed_url.IsValid()) {
-    UseCounter::Count(incumbent_window, WebFeature::kWindowOpenWithInvalidURL);
+    UseCounter::Count(entered_window, WebFeature::kWindowOpenWithInvalidURL);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "Unable to open a window with invalid URL '" +
@@ -2086,14 +2090,14 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   }
 
   WebWindowFeatures window_features =
-      GetWindowFeaturesFromString(features, incumbent_window);
+      GetWindowFeaturesFromString(features, entered_window);
 
   // In fenced frames, we should always use `noopener`.
   if (GetFrame()->IsInFencedFrameTree()) {
     window_features.noopener = true;
   }
 
-  FrameLoadRequest frame_request(incumbent_window,
+  FrameLoadRequest frame_request(entered_window,
                                  ResourceRequest(completed_url));
   frame_request.SetFeaturesForWindowOpen(window_features);
 
@@ -2104,9 +2108,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // for generating an embedder-initiated navigation's referrer, so we need to
   // ensure the proper referrer is set now.
   Referrer referrer = SecurityPolicy::GenerateReferrer(
-      incumbent_window->GetReferrerPolicy(), completed_url,
+      entered_window->GetReferrerPolicy(), completed_url,
       window_features.noreferrer ? Referrer::NoReferrer()
-                                 : incumbent_window->OutgoingReferrer());
+                                 : entered_window->OutgoingReferrer());
   frame_request.GetResourceRequest().SetReferrerString(referrer.referrer);
   frame_request.GetResourceRequest().SetReferrerPolicy(
       referrer.referrer_policy);
@@ -2128,7 +2132,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   if (window_features.x_set || window_features.y_set) {
     // This runs after FindOrCreateFrameForNavigation() so blocked popups are
     // not counted.
-    UseCounter::Count(*incumbent_window,
+    UseCounter::Count(*entered_window,
                       WebFeature::kDOMWindowOpenPositioningFeatures);
 
     // Coarsely measure whether coordinates may be requesting another screen.
@@ -2138,7 +2142,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                            window_features.width, window_features.height);
     if (!screen.Contains(window)) {
       UseCounter::Count(
-          *incumbent_window,
+          *entered_window,
           WebFeature::kDOMWindowOpenPositioningFeaturesCrossScreen);
     }
   }
@@ -2168,9 +2172,11 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
     v8::Isolate* isolate,
     const WebPictureInPictureWindowOptions& options,
     ExceptionState& exception_state) {
-  LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
   DCHECK(isSecureContext());
+
+  if (!IsCurrentlyDisplayedInFrame())
+    return nullptr;
 
   // If the bindings implementation is 100% correct, the current realm and the
   // entered realm should be same origin-domain. However, to be on the safe
@@ -2178,17 +2184,17 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   // as well here.
   if (!BindingSecurity::ShouldAllowAccessTo(entered_window, this,
                                             exception_state)) {
+    // Trigger DCHECK() failure, while gracefully failing on release builds.
+    NOTREACHED();
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kWindowOpenRealmMismatch);
     return nullptr;
   }
 
-  if (!IsCurrentlyDisplayedInFrame())
-    return nullptr;
-  if (!incumbent_window->GetFrame() || !entered_window->GetFrame())
+  if (!entered_window->GetFrame())
     return nullptr;
 
-  FrameLoadRequest frame_request(incumbent_window,
+  FrameLoadRequest frame_request(entered_window,
                                  ResourceRequest(KURL(g_empty_string)));
   frame_request.SetPictureInPictureWindowOptions(options);
 
@@ -2294,10 +2300,30 @@ void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
 }
 
+bool LocalDOMWindow::isAnonymouslyFramed() const {
+  return GetExecutionContext()
+      ->GetPolicyContainer()
+      ->GetPolicies()
+      .is_anonymous;
+}
+
+bool LocalDOMWindow::IsInFencedFrame() const {
+  return GetFrame() && GetFrame()->IsInFencedFrameTree();
+}
+
 Fence* LocalDOMWindow::fence() {
   // Return nullptr if we aren't in a fenced subtree.
-  if (!GetFrame() || !GetFrame()->IsInFencedFrameTree()) {
+  if (!GetFrame()) {
     return nullptr;
+  }
+  if (!GetFrame()->IsInFencedFrameTree()) {
+    // We temporarily allow window.fence in iframes with fenced frame reporting
+    // metadata (navigated by urn:uuids).
+    // If we are in an iframe that doesn't qualify, return nullptr.
+    if (!blink::features::IsAllowURNsInIframeEnabled() ||
+        !GetFrame()->GetDocument()->Loader()->FencedFrameReporting()) {
+      return nullptr;
+    }
   }
 
   if (!fence_) {

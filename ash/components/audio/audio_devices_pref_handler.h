@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
                                bool* activate_by_user) = 0;
 
   // Reads the audio output allowed value from prefs.
-  virtual bool GetAudioOutputAllowedValue() = 0;
+  virtual bool GetAudioOutputAllowedValue() const = 0;
 
   // Adds an audio preference observer.
   virtual void AddAudioPrefObserver(AudioPrefObserver* observer) = 0;

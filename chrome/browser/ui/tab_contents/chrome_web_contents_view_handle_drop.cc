@@ -131,7 +131,7 @@ void HandleOnPerformDrop(
   content::WebContentsViewDelegate::DropCompletionCallback scan_callback =
       base::DoNothing();
   if (data.settings.block_until_verdict ==
-      enterprise_connectors::BlockUntilVerdict::BLOCK) {
+      enterprise_connectors::BlockUntilVerdict::kBlock) {
     scan_callback = std::move(callback);
   }
 

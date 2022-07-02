@@ -14,8 +14,8 @@
 // Delegates the cell's text field's events.
 @protocol BookmarkTextFieldItemDelegate<UITextFieldDelegate>
 
-// Called when the |text| of the item was changed via the textfield. The item's
-// |text| is up-to-date when this is called.
+// Called when the `text` of the item was changed via the textfield. The item's
+// `text` is up-to-date when this is called.
 - (void)textDidChangeForItem:(BookmarkTextFieldItem*)item;
 
 @end
@@ -35,13 +35,13 @@
 
 @interface BookmarkTextFieldCell : TableViewCell
 
-// Label to display the type of content |self.textField| is displaying.
+// Label to display the type of content `self.textField` is displaying.
 @property(nonatomic, strong) UILabel* titleLabel;
 
 // Text field to display the title or the URL of the bookmark node.
 @property(nonatomic, strong) UITextField* textField;
 
-// Returns the appropriate text color to use for the given |editing| state.
+// Returns the appropriate text color to use for the given `editing` state.
 + (UIColor*)textColorForEditing:(BOOL)editing;
 
 @end

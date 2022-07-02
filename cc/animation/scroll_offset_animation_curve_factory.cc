@@ -35,7 +35,7 @@ ScrollOffsetAnimationCurveFactory::CreateAnimation(
   if (scroll_type == ScrollType::kAutoScroll)
     return CreateLinearAnimation(target_value);
 
-  if (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations))
+  if (features::IsImpulseScrollAnimationEnabled())
     return CreateImpulseAnimation(target_value);
 
   return CreateEaseInOutAnimation(

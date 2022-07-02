@@ -122,7 +122,6 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 "cpn_safe_browsing"),  // help_center_article_link
             true,                      // should_trigger_reporting
             /*history_service=*/nullptr,
-            /*get_user_population_callback=*/base::NullCallback(),
             /*navigation_observer_manager=*/nullptr,
             /*metrics_collector=*/nullptr,
             /*trigger_manager=*/nullptr) {
@@ -236,7 +235,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
       const char* url,
       bool is_subresource) {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        web_contents()->GetMainFrame()->GetGlobalId();
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;

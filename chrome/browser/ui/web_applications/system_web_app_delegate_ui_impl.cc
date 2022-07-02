@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
 #include <vector>
 
@@ -19,14 +19,14 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-namespace web_app {
+namespace ash {
 
 // TODO(crbug.com/1231886): Reduce code duplication between SWA launch code and
 // web app launch code, so SWAs can easily maintain feature parity with regular
 // web apps (e.g. launch_handler behaviours).
 Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
-    WebAppProvider* provider,
+    web_app::WebAppProvider* provider,
     const GURL& url,
     const apps::AppLaunchParams& params) const {
   Browser::Type browser_type =
@@ -36,7 +36,8 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
 
   // Always find an existing window, so that we can offset the screen
   // coordinates from a previously opened one.
-  Browser* browser = FindSystemWebAppBrowser(profile, GetType(), browser_type);
+  Browser* browser =
+      web_app::FindSystemWebAppBrowser(profile, GetType(), browser_type);
 
   // System Web App windows can't be properly restored without storing the app
   // type. Until that is implemented, skip them for session restore.
@@ -52,14 +53,14 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
 
   bool started_new_navigation = false;
   if (!browser) {
-    browser = CreateWebApplicationWindow(
+    browser = web_app::CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());
     started_new_navigation = true;
   } else if (!reuse_existing_window) {
     gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
     initial_bounds.Offset(20, 20);
-    browser = CreateWebApplicationWindow(
+    browser = web_app::CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),
         initial_bounds);
@@ -72,7 +73,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
-      GetType() == SystemAppType::HELP) {
+      GetType() == ash::SystemWebAppType::HELP) {
     NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
@@ -80,7 +81,8 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
       nav_params.tabstrip_add_types |= TabStripModel::ADD_PINNED;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    web_contents = NavigateWebAppUsingParams(params.app_id, nav_params);
+    web_contents =
+        web_app::NavigateWebAppUsingParams(params.app_id, nav_params);
     started_new_navigation = true;
   }
 
@@ -90,13 +92,13 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     base::FilePath launch_dir = GetLaunchDirectory(params);
 
     if (!launch_dir.empty() || !params.launch_files.empty()) {
-      WebAppLaunchParams launch_params;
+      web_app::WebAppLaunchParams launch_params;
       launch_params.started_new_navigation = started_new_navigation;
       launch_params.app_id = params.app_id;
       launch_params.target_url = web_contents->GetURL();
       launch_params.dir = std::move(launch_dir);
       launch_params.paths = params.launch_files;
-      WebAppTabHelper::FromWebContents(web_contents)
+      web_app::WebAppTabHelper::FromWebContents(web_contents)
           ->EnsureLaunchQueue()
           .Enqueue(std::move(launch_params));
     }
@@ -105,4 +107,4 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   return browser;
 }
 
-}  // namespace web_app
+}  // namespace ash

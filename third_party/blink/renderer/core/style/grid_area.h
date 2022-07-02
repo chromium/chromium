@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_AREA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_AREA_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -45,10 +46,7 @@ namespace blink {
 // Legacy grid expands out auto-repeaters, so it has a lower cap than GridNG.
 // Note that this actually allows a [-999,999] range.
 const int kLegacyGridMaxTracks = 1000;
-// GridNG's cap can be higher than 100k tracks. What would prevent us from
-// having an extremely large cap (say, INT_MAX - 1) is rendering tracks but
-// being unable to query their computed style.
-const int kGridMaxTracks = 100000;
+const int kGridMaxTracks = INT_MAX - 1;
 
 // A span in a single direction (either rows or columns). Note that |start_line|
 // and |end_line| are grid lines' indexes.
@@ -163,12 +161,12 @@ struct GridSpan {
                                     : kLegacyGridMaxTracks;
     start_line_ =
         ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
-    end_line_ = ClampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
+    end_line_ = ClampTo<int>(end_line, start_line_ + 1, grid_max_tracks);
 
 #if DCHECK_IS_ON()
-    DCHECK_LT(start_line, end_line);
+    DCHECK_LT(start_line_, end_line_);
     if (type == kTranslatedDefinite)
-      DCHECK_GE(start_line, static_cast<T>(0));
+      DCHECK_GE(start_line_, 0);
 #endif
   }
 

@@ -30,6 +30,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -37,10 +40,10 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
  * Unit tests for CachedImageFetcher.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowPostTask.class})
 public class CachedImageFetcherTest {
     private static final String UMA_CLIENT_NAME = "TestUmaClient";
-    private static final String URL = "http://google.com/test.png";
+    private static final String URL = JUnitTestGURLs.RED_1;
     private static final String PATH = "test/path/cache/test.png";
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;
@@ -106,13 +109,18 @@ public class CachedImageFetcherTest {
     }
 
     @Test
-    public void testFetchImage_fileFoundOnDisk() {
+    public void testFetchImage_fileFoundOnDisk_imageNotResized() {
         doReturn(mBitmap).when(mImageLoader).tryToLoadImageFromDisk(PATH);
 
-        ImageFetcher.Params params =
-                ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        ImageFetcher.Params params = ImageFetcher.Params.createNoResizing(
+                new GURL(URL), UMA_CLIENT_NAME, WIDTH_PX + 1, HEIGHT_PX + 1);
         mCachedImageFetcher.fetchImage(params, mBitmapCallback);
-        verify(mBitmapCallback).onResult(mBitmap);
+
+        // Unresized bitmap should be returned.
+        ArgumentCaptor<Bitmap> bitmapCaptor = ArgumentCaptor.forClass(Bitmap.class);
+        verify(mBitmapCallback).onResult(bitmapCaptor.capture());
+        Assert.assertEquals(mBitmap, bitmapCaptor.getValue());
+
         verify(mBridge, never())
                 .fetchImage(eq(ImageFetcherConfig.DISK_CACHE_ONLY), eq(params), any());
         verify(mBridge).reportEvent(UMA_CLIENT_NAME, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);

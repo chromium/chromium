@@ -123,8 +123,8 @@ const char kPdfPrinterCapability[] =
 // Used as a callback to StartGetCapability() in tests.
 // Records values returned by StartGetCapability().
 void RecordCapability(base::OnceClosure done_closure,
-                      base::Value* capability_out,
-                      base::Value capability) {
+                      base::Value::Dict* capability_out,
+                      base::Value::Dict capability) {
   *capability_out = std::move(capability);
   std::move(done_closure).Run();
 }
@@ -162,9 +162,9 @@ class PdfPrinterHandlerGetCapabilityTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  base::Value StartGetCapabilityAndWaitForResults() {
+  base::Value::Dict StartGetCapabilityAndWaitForResults() {
     base::RunLoop run_loop;
-    base::Value capability;
+    base::Value::Dict capability;
     pdf_printer_handler_->StartGetCapability(
         kPdfDeviceName,
         base::BindOnce(&RecordCapability, run_loop.QuitClosure(), &capability));
@@ -271,8 +271,9 @@ TEST_F(PdfPrinterHandlerTest, GetFileName) {
 TEST_F(PdfPrinterHandlerGetCapabilityTest, GetCapability) {
   base::Value expected_capability =
       base::test::ParseJson(kPdfPrinterCapability);
-  base::Value capability = StartGetCapabilityAndWaitForResults();
-  EXPECT_EQ(expected_capability, capability);
+  ASSERT_TRUE(expected_capability.is_dict());
+  base::Value::Dict capability = StartGetCapabilityAndWaitForResults();
+  EXPECT_EQ(expected_capability.GetDict(), capability);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -290,20 +291,19 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest,
       base::test::ParseJson(kPdfPrinterCapability);
   ASSERT_TRUE(expected_capability.is_dict());
 
-  base::Value* expected_paper_options =
-      expected_capability.FindListPath(kPaperOptionPath);
+  base::Value::List* expected_paper_options =
+      expected_capability.GetDict().FindListByDottedPath(kPaperOptionPath);
   ASSERT_TRUE(expected_paper_options);
 
-  for (const PrinterSemanticCapsAndDefaults::Paper& paper : kTestPapers) {
+  for (const PrinterSemanticCapsAndDefaults::Paper& paper : kTestPapers)
     expected_paper_options->Append(GetValueFromCustomPaper(paper));
-  }
 
   SetMacCustomPaperSizesForTesting(kTestPapers);
 
-  base::Value capability = StartGetCapabilityAndWaitForResults();
-  ASSERT_TRUE(capability.is_dict());
+  base::Value::Dict capability = StartGetCapabilityAndWaitForResults();
 
-  base::Value* paper_options = capability.FindListPath(kPaperOptionPath);
+  const base::Value::List* paper_options =
+      capability.FindListByDottedPath(kPaperOptionPath);
   ASSERT_TRUE(paper_options);
   EXPECT_EQ(*expected_paper_options, *paper_options);
 }

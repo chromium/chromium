@@ -81,6 +81,14 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
                       "WebAuthNFreeCredentialAttestation");
     BIND_FN_OR_RETURN(free_assertion_, webauthn_dll_, "WebAuthNFreeAssertion");
 
+    // The platform credential list set of functions was added in version 4.
+    BIND_FN(get_platform_credential_list_, webauthn_dll_,
+            "WebAuthNGetPlatformCredentialList");
+    if (get_platform_credential_list_) {
+      BIND_FN_OR_RETURN(free_platform_credential_list_, webauthn_dll_,
+                        "WebAuthNFreePlatformCredentialList");
+    }
+
     is_bound_ = true;
 
     // Determine the API version of webauthn.dll. There is a version currently
@@ -99,6 +107,10 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
   // WinWebAuthnApi:
   bool IsAvailable() const override {
     return is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_1);
+  }
+
+  bool SupportsSilentDiscovery() const override {
+    return get_platform_credential_list_;
   }
 
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -146,6 +158,13 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     return cancel_current_operation_(cancellation_id);
   }
 
+  HRESULT GetPlatformCredentialList(
+      PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
+      PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) override {
+    DCHECK(is_bound_ && get_platform_credential_list_);
+    return get_platform_credential_list_(options, credentials);
+  }
+
   PCWSTR GetErrorName(HRESULT hr) override {
     DCHECK(is_bound_);
     return get_error_name_(hr);
@@ -160,6 +179,12 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
   void FreeAssertion(PWEBAUTHN_ASSERTION assertion_ptr) override {
     DCHECK(is_bound_);
     return free_assertion_(assertion_ptr);
+  }
+
+  void FreePlatformCredentialList(
+      PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials) override {
+    DCHECK(is_bound_ && free_platform_credential_list_);
+    free_platform_credential_list_(credentials);
   }
 
   int Version() override { return api_version_; }
@@ -177,10 +202,14 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
   decltype(&WebAuthNAuthenticatorGetAssertion) authenticator_get_assertion_ =
       nullptr;
   decltype(&WebAuthNCancelCurrentOperation) cancel_current_operation_ = nullptr;
+  decltype(&WebAuthNGetPlatformCredentialList) get_platform_credential_list_ =
+      nullptr;
   decltype(&WebAuthNGetErrorName) get_error_name_ = nullptr;
   decltype(&WebAuthNFreeCredentialAttestation) free_credential_attestation_ =
       nullptr;
   decltype(&WebAuthNFreeAssertion) free_assertion_ = nullptr;
+  decltype(&WebAuthNFreePlatformCredentialList) free_platform_credential_list_ =
+      nullptr;
 
   // This method is not available in all versions of webauthn.dll.
   decltype(&WebAuthNGetApiVersionNumber) get_api_version_number_ = nullptr;

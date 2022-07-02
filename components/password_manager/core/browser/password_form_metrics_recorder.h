@@ -430,6 +430,11 @@ class PasswordFormMetricsRecorder
 
   void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
 
+  void set_submitted_form_frame(
+      metrics_util::SubmittedFormFrame submitted_form_frame) {
+    submitted_form_frame_ = submitted_form_frame;
+  }
+
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
 
@@ -518,6 +523,7 @@ class PasswordFormMetricsRecorder
   absl::optional<FillingSource> filling_source_;
   absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
+  absl::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
 
   // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;

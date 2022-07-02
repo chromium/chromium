@@ -141,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Now dynamically try to load `included_script.js` in the primary frame.
   // Ensure it is not filtered.
-  EXPECT_TRUE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 // Test that we don't start filtering an unactivated prerendering page when the
@@ -237,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
     // But ensure we haven't shown the notification UI yet since the page is
     // still prerendering.
-    EXPECT_FALSE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        AdsBlockedInContentSettings(web_contents()->GetPrimaryMainFrame()));
     EXPECT_FALSE(AdsBlockedInContentSettings(prerender_rfh));
   }
 
@@ -248,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     EXPECT_CALL(observer, OnPageActivationComputed(_, _)).Times(0);
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
 
-    ASSERT_EQ(web_contents()->GetMainFrame(), prerender_rfh);
+    ASSERT_EQ(web_contents()->GetPrimaryMainFrame(), prerender_rfh);
     EXPECT_TRUE(AdsBlockedInContentSettings(prerender_rfh));
   }
 }
@@ -364,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   // filtered.
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
-    EXPECT_FALSE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   }
 }
 
@@ -413,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
     ASSERT_EQ(kPrerenderingUrl, web_contents()->GetLastCommittedURL());
-    EXPECT_TRUE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_TRUE(
+        IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   }
 }
 

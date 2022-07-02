@@ -20,6 +20,8 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
+#include "minidump/minidump_extensions.h"
 #include "util/file/file_reader.h"
 
 namespace crashpad {
@@ -34,6 +36,11 @@ bool ReadMinidumpUTF8String(FileReaderInterface* file_reader,
                             RVA rva,
                             std::string* string);
 
+//! \brief 64-bit specialization of ReadMinidumpUTF8String.
+bool ReadMinidumpUTF8String(FileReaderInterface* file_reader,
+                            RVA64 rva,
+                            std::string* string);
+
 //! \brief Reads a MinidumpUTF16String from a minidump file at offset \a rva in
 //!     \a file_reader, and returns it in \a string.
 //!
@@ -43,6 +50,11 @@ bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
                              RVA rva,
                              std::u16string* string);
 
+//! \brief 64-bit specialization of ReadMinidumpUTF16String.
+bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
+                             RVA64 rva,
+                             std::u16string* string);
+
 //! \brief Reads a MinidumpUTF16String from a minidump file at offset \a rva in
 //!     \a file_reader, and returns it in \a string.
 //!
@@ -50,6 +62,11 @@ bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
 //!     message logged.
 bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
                              RVA rva,
+                             std::string* string);
+
+//! \brief 64-bit specialization of ReadMinidumpUTF16String.
+bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
+                             RVA64 rva,
                              std::string* string);
 
 }  // namespace internal

@@ -18,7 +18,7 @@ bool IsOfferValid(AutofillOfferData* offer) {
   if (!offer)
     return false;
 
-  if (offer->merchant_origins.empty())
+  if (offer->GetMerchantOrigins().empty())
     return false;
 
   if (offer->IsPromoCodeOffer() &&
@@ -63,8 +63,8 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
   }
 
   client->UpdateOfferNotification(
-      offer, shown_notification_ids_.contains(offer->offer_id));
-  shown_notification_ids_.insert(offer->offer_id);
+      offer, shown_notification_ids_.contains(offer->GetOfferId()));
+  shown_notification_ids_.insert(offer->GetOfferId());
 }
 
 void OfferNotificationHandler::ClearShownNotificationIdForTesting() {

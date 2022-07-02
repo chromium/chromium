@@ -24,10 +24,7 @@
 
 namespace net {
 
-SslSetClearMask::SslSetClearMask()
-    : set_mask(0),
-      clear_mask(0) {
-}
+SslSetClearMask::SslSetClearMask() = default;
 
 void SslSetClearMask::ConfigureFlag(long flag, bool state) {
   (state ? set_mask : clear_mask) |= flag;
@@ -132,18 +129,18 @@ int MapOpenSSLErrorSSL(uint32_t error_code) {
 base::Value NetLogOpenSSLErrorParams(int net_error,
                                      int ssl_error,
                                      const OpenSSLErrorInfo& error_info) {
-  base::DictionaryValue dict;
-  dict.SetInteger("net_error", net_error);
-  dict.SetInteger("ssl_error", ssl_error);
+  base::Value::Dict dict;
+  dict.Set("net_error", net_error);
+  dict.Set("ssl_error", ssl_error);
   if (error_info.error_code != 0) {
-    dict.SetInteger("error_lib", ERR_GET_LIB(error_info.error_code));
-    dict.SetInteger("error_reason", ERR_GET_REASON(error_info.error_code));
+    dict.Set("error_lib", ERR_GET_LIB(error_info.error_code));
+    dict.Set("error_reason", ERR_GET_REASON(error_info.error_code));
   }
   if (error_info.file != nullptr)
-    dict.SetString("file", error_info.file);
+    dict.Set("file", error_info.file);
   if (error_info.line != 0)
-    dict.SetInteger("line", error_info.line);
-  return std::move(dict);
+    dict.Set("line", error_info.line);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

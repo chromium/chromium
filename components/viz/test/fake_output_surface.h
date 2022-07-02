@@ -37,17 +37,11 @@ class FakeSoftwareOutputSurface : public OutputSurface {
   void BindToClient(OutputSurfaceClient* client) override;
   void EnsureBackbuffer() override {}
   void DiscardBackbuffer() override {}
-  void BindFramebuffer() override;
   void SetDrawRectangle(const gfx::Rect& rect) override;
   void SetEnableDCLayers(bool enabled) override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override {}
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
-  unsigned UpdateGpuFence() override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;

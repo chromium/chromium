@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -293,6 +294,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   if (const auto* token = BreakToken())
     previously_consumed_block_size = token->ConsumedBlockSize();
 
+  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(), BreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
@@ -330,10 +332,10 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
 #endif
   }
 
-  // TODO(mstensho): We need to do more here (vertical alignment, for instance),
-  // if this is a table cell.
-  if (ConstraintSpace().IsTableCell())
-    container_builder_.SetIsTableNGPart();
+  if (ConstraintSpace().IsTableCell()) {
+    NGTableAlgorithmUtils::FinalizeTableCellLayout(
+        unconstrained_intrinsic_block_size, &container_builder_);
+  }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
@@ -759,7 +761,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       if (result->HasForcedBreak())
         forced_break_count++;
 
-      column_break_token = To<NGBlockBreakToken>(column.BreakToken());
+      column_break_token = column.BreakToken();
 
       // If we're participating in an outer fragmentation context, we'll only
       // allow as many columns as the used value of column-count, so that we
@@ -848,7 +850,11 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       // inside breaks; see https://www.w3.org/TR/css-break-3/#box-splitting
       if (!is_constrained_by_outer_fragmentation_context_)
         break;
-      new_column_block_size = FragmentainerSpaceAtBfcStart(ConstraintSpace());
+      // We'll get properly constrained right below. Rely on that, rather than
+      // calculating the exact amount here (we could check the available outer
+      // fragmentainer size and subtract the row offset and stuff, but that's
+      // duplicated logic). We'll use as much as we're allowed to.
+      new_column_block_size = LayoutUnit::Max();
     } else {
       new_column_block_size = column_size.block_size +
                               minimal_space_shortage.value_or(LayoutUnit());
@@ -1238,7 +1244,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSizeInternal(
     if (result->HasForcedBreak())
       forced_break_count++;
 
-    break_token = To<NGBlockBreakToken>(fragment.BreakToken());
+    break_token = fragment.BreakToken();
   } while (break_token);
 
   if (ConstraintSpace().IsInitialColumnBalancingPass()) {
@@ -1283,6 +1289,14 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
         UnclampedFragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
     size = std::min(size, available_outer_space.ClampNegativeToZero());
   }
+
+  // Table-cell sizing is special. The aspects of specified block-size (and its
+  // min/max variants) that are actually honored by table cells is taken care of
+  // in the table layout algorithm. A constraint space with fixed block-size
+  // will be passed from the table layout algorithm if necessary. Leave it
+  // alone.
+  if (ConstraintSpace().IsTableCell())
+    return size;
 
   // The {,min-,max-}block-size properties are specified on the multicol
   // container, but here we're calculating the column block sizes inside the

@@ -1,4 +1,5 @@
 add_and_true_to_loop_condition
+add_fence_for_same_gl_context
 adjust_src_dst_region_for_blitframebuffer
 avoid_one_component_egl_images
 avoid_stencil_buffers

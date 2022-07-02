@@ -58,7 +58,7 @@ class FontIndexer {
   void SetMoreSlopeChecks() { more_slope_checks_ = true; }
 
  private:
-  void FontListHasLoaded(std::unique_ptr<base::ListValue> list);
+  void FontListHasLoaded(base::Value::List list);
   void WaitForFontListToLoad();
 
   // Determines whether the fonts with |name| appear to vary along the specified

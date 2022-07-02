@@ -60,6 +60,14 @@ void HapticsTrackingTestInputController::GetAutoRepeatRate(
 void HapticsTrackingTestInputController::SetCurrentLayoutByName(
     const std::string& layout_name) {}
 
+void HapticsTrackingTestInputController::SetKeyboardKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {}
+
+std::vector<uint64_t> HapticsTrackingTestInputController::GetKeyboardKeyBits(
+    int id) {
+  return std::vector<uint64_t>();
+}
+
 void HapticsTrackingTestInputController::SetTouchpadSensitivity(int value) {}
 
 void HapticsTrackingTestInputController::SetTouchpadScrollSensitivity(
@@ -110,6 +118,14 @@ void HapticsTrackingTestInputController::SetPointingStickPrimaryButtonRight(
 
 void HapticsTrackingTestInputController::SetPointingStickAcceleration(
     bool enabled) {}
+
+void HapticsTrackingTestInputController::SetGamepadKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {}
+
+std::vector<uint64_t> HapticsTrackingTestInputController::GetGamepadKeyBits(
+    int id) {
+  return std::vector<uint64_t>();
+}
 
 void HapticsTrackingTestInputController::GetTouchDeviceStatus(
     GetTouchDeviceStatusReply reply) {

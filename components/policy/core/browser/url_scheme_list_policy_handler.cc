@@ -68,13 +68,14 @@ void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!schemes)
     return;
-  std::vector<base::Value> filtered_schemes;
-  for (const auto& entry : schemes->GetListDeprecated()) {
+  base::Value::List filtered_schemes;
+  for (const auto& entry : schemes->GetList()) {
+    if (filtered_schemes.size() >= policy::kMaxUrlFiltersPerPolicy)
+      break;
+
     if (ValidatePolicyEntry(entry.GetIfString()))
-      filtered_schemes.push_back(entry.Clone());
+      filtered_schemes.Append(entry.Clone());
   }
-  if (filtered_schemes.size() > policy::kMaxUrlFiltersPerPolicy)
-    filtered_schemes.resize(policy::kMaxUrlFiltersPerPolicy);
 
   prefs->SetValue(pref_path_, base::Value(std::move(filtered_schemes)));
 }

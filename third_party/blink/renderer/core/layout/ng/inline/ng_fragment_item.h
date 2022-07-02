@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_
 
+#include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -24,6 +25,7 @@ namespace blink {
 
 class NGFragmentItems;
 class NGInlineBreakToken;
+class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct NGLogicalLineItem;
 
@@ -81,8 +83,6 @@ class CORE_EXPORT NGFragmentItem final {
   // (e.g., <span>text</span>) and atomic inlines.
   struct BoxItem {
     DISALLOW_NEW();
-    // This copy constructor looks up the "post-layout" fragment.
-    BoxItem(const BoxItem&);
     BoxItem(const NGPhysicalBoxFragment*, wtf_size_t descendants_count);
 
     // If this item is an inline box, its children are stored as following
@@ -225,6 +225,7 @@ class CORE_EXPORT NGFragmentItem final {
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
   }
+  const PhysicalOffset ContentOffsetInContainerFragment() const;
   const PhysicalSize& Size() const { return rect_.size; }
   PhysicalRect LocalRect() const { return {PhysicalOffset(), Size()}; }
   void SetOffset(const PhysicalOffset& offset) { rect_.offset = offset; }
@@ -306,7 +307,9 @@ class CORE_EXPORT NGFragmentItem final {
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
 
   // Re-compute the ink overflow for the |cursor| until its end.
-  static PhysicalRect RecalcInkOverflowForCursor(NGInlineCursor* cursor);
+  static PhysicalRect RecalcInkOverflowForCursor(
+      NGInlineCursor* cursor,
+      NGInlinePaintContext* inline_context);
 
   // Painters can use const methods only, except for these explicitly declared
   // methods.
@@ -316,8 +319,10 @@ class CORE_EXPORT NGFragmentItem final {
    public:
     void InvalidateInkOverflow() { return item_.InvalidateInkOverflow(); }
     void RecalcInkOverflow(const NGInlineCursor& cursor,
+                           NGInlinePaintContext* inline_context,
                            PhysicalRect* self_and_contents_rect_out) {
-      return item_.RecalcInkOverflow(cursor, self_and_contents_rect_out);
+      return item_.RecalcInkOverflow(cursor, inline_context,
+                                     self_and_contents_rect_out);
     }
 
    private:
@@ -332,9 +337,7 @@ class CORE_EXPORT NGFragmentItem final {
     return MutableForPainting(*this);
   }
 
-  // Out-of-flow in nested block fragmentation may require us to replace a
-  // fragment on a line.
-  class MutableForOOFFragmentation {
+  class MutableForCloning {
     STACK_ALLOCATED();
 
    public:
@@ -345,14 +348,14 @@ class CORE_EXPORT NGFragmentItem final {
 
    private:
     friend class NGFragmentItem;
-    explicit MutableForOOFFragmentation(const NGFragmentItem& item)
+    explicit MutableForCloning(const NGFragmentItem& item)
         : item_(const_cast<NGFragmentItem&>(item)) {}
 
     NGFragmentItem& item_;
   };
 
-  MutableForOOFFragmentation GetMutableForOOFFragmentation() const {
-    return MutableForOOFFragmentation(*this);
+  MutableForCloning GetMutableForCloning() const {
+    return MutableForCloning(*this);
   }
 
   bool IsHorizontal() const {
@@ -511,6 +514,8 @@ class CORE_EXPORT NGFragmentItem final {
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
 
+  bool IsTextDecorationBoundary() const;
+
   // Get a description of |this| for the debug purposes.
   String ToString() const;
 
@@ -560,7 +565,11 @@ class CORE_EXPORT NGFragmentItem final {
 
   // Re-compute the ink overflow for this item. |cursor| should be at |this|.
   void RecalcInkOverflow(const NGInlineCursor& cursor,
+                         NGInlinePaintContext* inline_context,
                          PhysicalRect* self_and_contents_rect_out);
+  PhysicalRect RecalcInkOverflowForDescendantsOf(
+      const NGInlineCursor& cursor,
+      NGInlinePaintContext* inline_context) const;
 
   // Compute the inline position from text offset, in logical coordinate
   // relative to this fragment.

@@ -58,7 +58,6 @@ class ChildIOThread : public base::Thread {
 }
 
 ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
-                           const std::string& thread_pool_name,
                            std::unique_ptr<base::ThreadPoolInstance::InitParams>
                                thread_pool_init_params)
     : ref_count_(0),
@@ -87,19 +86,39 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   }
 #endif
 
-  // Initialize ThreadPoolInstance if not already done. A ThreadPoolInstance may
-  // already exist when ChildProcess is instantiated in the browser process or
-  // in a test process.
-  if (!base::ThreadPoolInstance::Get()) {
-    if (thread_pool_init_params) {
-      base::ThreadPoolInstance::Create(thread_pool_name);
-      base::ThreadPoolInstance::Get()->Start(*thread_pool_init_params.get());
-    } else {
-      base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-          thread_pool_name);
-    }
-
-    DCHECK(base::ThreadPoolInstance::Get());
+  // Start ThreadPoolInstance if not already done. A ThreadPoolInstance
+  // should already exist, and may already be running when ChildProcess is
+  // instantiated in the browser process or in a test process.
+  //
+  // There are 3 possibilities:
+  //
+  // 1. ChildProcess is actually being constructed on a thread in the browser
+  //    process (eg. for single-process mode). The ThreadPool was already
+  //    started on the main thread, but this happened before the ChildProcess
+  //    thread was created, which creates a happens-before relationship. So
+  //    it's safe to check WasStartedUnsafe().
+  // 2. ChildProcess is being constructed in a test. The ThreadPool was
+  //    already started by TaskEnvironment on the main thread. Depending on
+  //    the test, ChildProcess might be constructed on the main thread or
+  //    another thread that was created after the test start. Either way, it's
+  //    safe to check WasStartedUnsafe().
+  // 3. ChildProcess is being constructed in a subprocess from ContentMain, on
+  //    the main thread. This is the same thread that created the ThreadPool
+  //    so it's safe to check WasStartedUnsafe().
+  //
+  // Note that the only case we expect WasStartedUnsafe() to return true
+  // should be running on the main thread. So if there's a logic error and a
+  // stale read causes WasStartedUnsafe() to return false after the
+  // ThreadPool was started, Start() will correctly DCHECK as it's called on the
+  // wrong thread. (The result never flips from true to false so a stale read
+  // should never return true.)
+  auto* thread_pool = base::ThreadPoolInstance::Get();
+  DCHECK(thread_pool);
+  if (!thread_pool->WasStartedUnsafe()) {
+    if (thread_pool_init_params)
+      thread_pool->Start(*thread_pool_init_params.get());
+    else
+      thread_pool->StartWithDefaultParams();
     initialized_thread_pool_ = true;
   }
 

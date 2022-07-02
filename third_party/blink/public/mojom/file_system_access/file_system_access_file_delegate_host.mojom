@@ -14,20 +14,24 @@ import "mojo/public/mojom/base/file_error.mojom";
 // behavior of the corresponding methods of the SyncAccessHandle.
 interface FileSystemAccessFileDelegateHost {
   // Read up to `bytes_to_read` from the associated file starting at `offset`.
-  // If the read is successful, returns a buffer with the read data, the number
-  // of bytes read (which may be less than the length of `data`), and an `error`
-  //  of `base::File::Error::FILE_OK`.
+  // Ideally these would each be unsigned, but the backend code expects signed
+  // ints. The FileSystemAccessFileDelegateHostImpl will report a bad message if
+  // either of these values is negative. If the read is successful, returns a
+  // buffer with the read data, the number of bytes read (which may be less than
+  // the length of `data`), and an `error` of `base::File::Error::FILE_OK`.
   // `data` is null and `bytes_to_read` is 0 if the read fails.
   [Sync]
-  Read(uint64 offset, uint64 bytes_to_read) => (mojo_base.mojom.BigBuffer? data,
+  Read(int64 offset, int32 bytes_to_read) => (mojo_base.mojom.BigBuffer? data,
                                               mojo_base.mojom.FileError error,
                                               int32 bytes_read);
 
-  // Writes `data` to the associated file starting at `offset`.
-  // Returns the number of bytes written and a file error, which is
+  // Writes `data` to the associated file starting at `offset`. Ideally `offset`
+  // would be a uint64, but the backend code expects an int64. The
+  // FileSystemAccessFileDelegateHostImpl will report a bad message if `offset`
+  // is negative. Returns the number of bytes written and a file error, which is
   // `base::File::Error::FILE_OK` if the write completed successfully.
   [Sync]
-  Write(uint64 offset, handle<data_pipe_consumer> data) =>
+  Write(int64 offset, handle<data_pipe_consumer> data) =>
       (mojo_base.mojom.FileError error, int32 bytes_written);
 
   // Returns the `length` of the associated file and a file error, which is
@@ -36,8 +40,10 @@ interface FileSystemAccessFileDelegateHost {
   GetLength() => (mojo_base.mojom.FileError error, uint64 length);
 
   // Truncates a file to `length`. If `length` is larger than the file size, the
-  // file will be extended with null bytes.
-  // Returns a file error, which is `base::File::Error::FILE_OK` if the
-  // operation completed successfully.
-  SetLength(uint64 length) => (mojo_base.mojom.FileError error);
+  // file will be extended with null bytes. Ideally `length` would be a uint64,
+  // but the backend code expects an int64. The
+  // FileSystemAccessFileDelegateHostImpl will report a bad message if `length`
+  // is negative. Returns a file error, which is `base::File::Error::FILE_OK` if
+  // the operation completed successfully.
+  SetLength(int64 length) => (mojo_base.mojom.FileError error);
 };

@@ -15,9 +15,7 @@
 #include "base/third_party/icu/icu_utf.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 namespace {
 
@@ -298,48 +296,6 @@ bool operator>=(const GeneralizedTime& lhs, const GeneralizedTime& rhs) {
   return !(lhs < rhs);
 }
 
-// A UTC Time in DER encoding should be YYMMDDHHMMSSZ, but some CAs encode
-// the time following BER rules, which allows for YYMMDDHHMMZ. If the length
-// is 11, assume it's YYMMDDHHMMZ, and in converting it to a GeneralizedTime,
-// add in the seconds (set to 0).
-bool ParseUTCTimeRelaxed(const Input& in, GeneralizedTime* value) {
-  ByteReader reader(in);
-  GeneralizedTime time;
-  if (!DecimalStringToUint(reader, 2, &time.year) ||
-      !DecimalStringToUint(reader, 2, &time.month) ||
-      !DecimalStringToUint(reader, 2, &time.day) ||
-      !DecimalStringToUint(reader, 2, &time.hours) ||
-      !DecimalStringToUint(reader, 2, &time.minutes)) {
-    return false;
-  }
-
-  // Try to read the 'Z' at the end. If we read something else, then for it to
-  // be valid the next bytes should be seconds (and then followed by 'Z').
-  uint8_t zulu;
-  ByteReader zulu_reader = reader;
-  if (!zulu_reader.ReadByte(&zulu))
-    return false;
-  if (zulu == 'Z' && !zulu_reader.HasMore()) {
-    time.seconds = 0;
-    *value = time;
-  } else {
-    if (!DecimalStringToUint(reader, 2, &time.seconds))
-      return false;
-    if (!reader.ReadByte(&zulu) || zulu != 'Z' || reader.HasMore())
-      return false;
-  }
-
-  if (time.year < 50) {
-    time.year += 2000;
-  } else {
-    time.year += 1900;
-  }
-  if (!ValidateGeneralizedTime(time))
-    return false;
-  *value = time;
-  return true;
-}
-
 bool ParseUTCTime(const Input& in, GeneralizedTime* value) {
   ByteReader reader(in);
   GeneralizedTime time;
@@ -452,7 +408,7 @@ bool ParseUniversalString(Input in, std::string* out) {
     memcpy(in_32bit.data(), in.UnsafeData(), in.Length());
   for (const uint32_t c : in_32bit) {
     // UniversalString is UCS-4 in big-endian order.
-    uint32_t codepoint = base::NetToHost32(c);
+    auto codepoint = static_cast<base_icu::UChar32>(base::NetToHost32(c));
     if (!CBU_IS_UNICODE_CHAR(codepoint))
       return false;
 
@@ -471,7 +427,7 @@ bool ParseBmpString(Input in, std::string* out) {
     memcpy(in_16bit.data(), in.UnsafeData(), in.Length());
   for (const uint16_t c : in_16bit) {
     // BMPString is UCS-2 in big-endian order.
-    uint32_t codepoint = base::NetToHost16(c);
+    base_icu::UChar32 codepoint = base::NetToHost16(c);
 
     // BMPString only supports codepoints in the Basic Multilingual Plane;
     // surrogates are not allowed. CBU_IS_UNICODE_CHAR excludes the surrogate
@@ -484,6 +440,4 @@ bool ParseBmpString(Input in, std::string* out) {
   return true;
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

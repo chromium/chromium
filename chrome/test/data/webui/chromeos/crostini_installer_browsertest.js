@@ -15,7 +15,7 @@ CrostiniInstallerBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
 
   browsePreload:
-      'chrome://crostini-installer/test_loader.html?module=chromeos/crostini_installer_app_test.js',
+      'chrome://crostini-installer/test_loader.html?module=chromeos/crostini_installer_app_test.js&host=test',
 };
 
 

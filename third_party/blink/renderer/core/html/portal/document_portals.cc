@@ -15,7 +15,12 @@ namespace blink {
 const char DocumentPortals::kSupplementName[] = "DocumentPortals";
 
 // static
-DocumentPortals& DocumentPortals::From(Document& document) {
+DocumentPortals* DocumentPortals::Get(Document& document) {
+  return Supplement<Document>::From<DocumentPortals>(document);
+}
+
+// static
+DocumentPortals& DocumentPortals::GetOrCreate(Document& document) {
   DocumentPortals* supplement =
       Supplement<Document>::From<DocumentPortals>(document);
   if (!supplement) {

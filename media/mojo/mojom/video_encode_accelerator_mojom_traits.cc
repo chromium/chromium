@@ -7,10 +7,54 @@
 #include "base/notreached.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
+#include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
+
+// static
+media::mojom::VideoEncodeAcceleratorSupportedRateControlMode
+EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
+           media::VideoEncodeAccelerator::SupportedRateControlMode>::
+    ToMojom(media::VideoEncodeAccelerator::SupportedRateControlMode mode) {
+  switch (mode) {
+    case media::VideoEncodeAccelerator::kNoMode:
+      return media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+          kNoMode;
+    case media::VideoEncodeAccelerator::kConstantMode:
+      return media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+          kConstantMode;
+    case media::VideoEncodeAccelerator::kVariableMode:
+      return media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+          kVariableMode;
+  }
+  NOTREACHED();
+  return media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+      kConstantMode;
+}
+
+// static
+bool EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
+                media::VideoEncodeAccelerator::SupportedRateControlMode>::
+    FromMojom(media::mojom::VideoEncodeAcceleratorSupportedRateControlMode mode,
+              media::VideoEncodeAccelerator::SupportedRateControlMode* out) {
+  switch (mode) {
+    case media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::kNoMode:
+      *out = media::VideoEncodeAccelerator::kNoMode;
+      return true;
+    case media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+        kConstantMode:
+      *out = media::VideoEncodeAccelerator::kConstantMode;
+      return true;
+    case media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
+        kVariableMode:
+      *out = media::VideoEncodeAccelerator::kVariableMode;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
 
 // static
 bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
@@ -25,6 +69,13 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 
   out->max_framerate_numerator = data.max_framerate_numerator();
   out->max_framerate_denominator = data.max_framerate_denominator();
+  out->rate_control_modes = media::VideoEncodeAccelerator::kNoMode;
+  std::vector<media::VideoEncodeAccelerator::SupportedRateControlMode> modes;
+  if (!data.ReadRateControlModes(&modes))
+    return false;
+  for (const auto& mode : modes) {
+    out->rate_control_modes |= mode;
+  }
 
   std::vector<media::SVCScalabilityMode> scalability_modes;
   if (!data.ReadScalabilityModes(&scalability_modes))

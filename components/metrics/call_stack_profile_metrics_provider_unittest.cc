@@ -4,6 +4,7 @@
 
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 
+#include <string>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
@@ -67,7 +68,7 @@ TEST_F(CallStackProfileMetricsProviderTest,
     profile.SerializeToString(&contents);
   }
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      base::TimeTicks::Now(), contents);
+      base::TimeTicks::Now(), /*is_heap_profile=*/false, std::move(contents));
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
   ASSERT_EQ(1, uma_proto.sampled_profile().size());
@@ -96,7 +97,7 @@ TEST_F(CallStackProfileMetricsProviderTest,
     serialized_profile.SerializeToString(&contents);
   }
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      base::TimeTicks::Now(), std::move(contents));
+      base::TimeTicks::Now(), /*is_heap_profile=*/false, std::move(contents));
 
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
@@ -215,9 +216,18 @@ TEST_F(CallStackProfileMetricsProviderTest,
   CallStackProfileMetricsProvider provider;
   provider.OnRecordingDisabled();
   base::TimeTicks profile_start_time = base::TimeTicks::Now();
+
+  // Unserialized profile.
   SampledProfile profile;
   profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
+
+  // Serialized profile.
+  std::string contents;
+  profile.SerializeToString(&contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/true, std::move(contents));
+
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
   EXPECT_EQ(0, uma_proto.sampled_profile_size());
@@ -229,12 +239,21 @@ TEST_F(CallStackProfileMetricsProviderTest, HeapProfileProvidedWhenEnabled) {
   CallStackProfileMetricsProvider provider;
   provider.OnRecordingEnabled();
   base::TimeTicks profile_start_time = base::TimeTicks::Now();
+
+  // Unserialized profile.
   SampledProfile profile;
   profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
+
+  // Serialized profile.
+  std::string contents;
+  profile.SerializeToString(&contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/true, std::move(contents));
+
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
-  EXPECT_EQ(1, uma_proto.sampled_profile_size());
+  EXPECT_EQ(2, uma_proto.sampled_profile_size());
 }
 
 // Checks that heap profiles but not CPU profiles are reported when sampling CPU
@@ -246,6 +265,7 @@ TEST_F(CallStackProfileMetricsProviderTest, CpuProfileNotProvidedWithoutFinch) {
   CallStackProfileMetricsProvider provider;
   base::TimeTicks profile_start_time = base::TimeTicks::Now();
 
+  // Unserialized profiles.
   SampledProfile profile;
   profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
@@ -255,11 +275,24 @@ TEST_F(CallStackProfileMetricsProviderTest, CpuProfileNotProvidedWithoutFinch) {
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time,
                                                   heap_profile);
 
+  // Serialized profiles.
+  std::string contents;
+  profile.SerializeToString(&contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/false, std::move(contents));
+
+  std::string heap_contents;
+  heap_profile.SerializeToString(&heap_contents);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      profile_start_time, /*is_heap_profile=*/true, std::move(heap_contents));
+
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
-  ASSERT_EQ(1, uma_proto.sampled_profile_size());
+  ASSERT_EQ(2, uma_proto.sampled_profile_size());
   EXPECT_EQ(SampledProfile::PERIODIC_HEAP_COLLECTION,
             uma_proto.sampled_profile(0).trigger_event());
+  EXPECT_EQ(SampledProfile::PERIODIC_HEAP_COLLECTION,
+            uma_proto.sampled_profile(1).trigger_event());
 }
 
 }  // namespace metrics

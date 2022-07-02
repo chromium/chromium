@@ -10,7 +10,8 @@
 
 #include <string.h>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -18,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -33,7 +33,7 @@ static_assert(
     sizeof(PartitionTag) == internal::tag_bitmap::kPartitionTagSize,
     "sizeof(PartitionTag) must be equal to bitmap::kPartitionTagSize.");
 
-ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
+PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
   // TODO(crbug.com/1307514): Add direct map support. For now, just assume
   // that direct maps don't have tags.
   PA_DCHECK(internal::IsManagedByNormalBuckets(addr));
@@ -51,16 +51,16 @@ ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
   return reinterpret_cast<PartitionTag*>(bitmap_base + offset_in_bitmap);
 }
 
-ALWAYS_INLINE PartitionTag* PartitionTagPointer(const void* ptr) {
+PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(const void* ptr) {
   return PartitionTagPointer(
       internal::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr)));
 }
 
 namespace internal {
 
-ALWAYS_INLINE void PartitionTagSetValue(uintptr_t addr,
-                                        size_t size,
-                                        PartitionTag value) {
+PA_ALWAYS_INLINE void PartitionTagSetValue(uintptr_t addr,
+                                           size_t size,
+                                           PartitionTag value) {
   PA_DCHECK((size % tag_bitmap::kBytesPerPartitionTag) == 0);
   size_t tag_count = size >> tag_bitmap::kBytesPerPartitionTagShift;
   PartitionTag* tag_ptr = PartitionTagPointer(addr);
@@ -72,29 +72,29 @@ ALWAYS_INLINE void PartitionTagSetValue(uintptr_t addr,
   }
 }
 
-ALWAYS_INLINE void PartitionTagSetValue(void* ptr,
-                                        size_t size,
-                                        PartitionTag value) {
+PA_ALWAYS_INLINE void PartitionTagSetValue(void* ptr,
+                                           size_t size,
+                                           PartitionTag value) {
   PartitionTagSetValue(reinterpret_cast<uintptr_t>(ptr), size, value);
 }
 
-ALWAYS_INLINE PartitionTag PartitionTagGetValue(void* ptr) {
+PA_ALWAYS_INLINE PartitionTag PartitionTagGetValue(void* ptr) {
   return *PartitionTagPointer(ptr);
 }
 
-ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t size) {
+PA_ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t size) {
   size_t tag_region_size = size >> tag_bitmap::kBytesPerPartitionTagShift
                                        << tag_bitmap::kPartitionTagSizeShift;
   PA_DCHECK(!memchr(PartitionTagPointer(ptr), 0, tag_region_size));
   memset(PartitionTagPointer(ptr), 0, tag_region_size);
 }
 
-ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
+PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
   PartitionTag tag = PartitionTagGetValue(ptr);
   PartitionTag new_tag = tag;
   ++new_tag;
   new_tag += !new_tag;  // Avoid 0.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // This verifies that tags for the entire slot have the same value and that
   // |size| doesn't exceed the slot size.
   size_t tag_count = size >> tag_bitmap::kBytesPerPartitionTagShift;
@@ -113,22 +113,22 @@ ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
 
 using PartitionTag = uint8_t;
 
-ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
+PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   PA_NOTREACHED();
   return nullptr;
 }
 
 namespace internal {
 
-ALWAYS_INLINE void PartitionTagSetValue(void*, size_t, PartitionTag) {}
+PA_ALWAYS_INLINE void PartitionTagSetValue(void*, size_t, PartitionTag) {}
 
-ALWAYS_INLINE PartitionTag PartitionTagGetValue(void*) {
+PA_ALWAYS_INLINE PartitionTag PartitionTagGetValue(void*) {
   return 0;
 }
 
-ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t) {}
+PA_ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t) {}
 
-ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {}
+PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {}
 
 }  // namespace internal
 

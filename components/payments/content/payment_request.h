@@ -128,6 +128,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // object and close any related connections.
   void OnUserCancelled();
 
+  // Called when the user explicitly opts out of the flow. Only used for
+  // SecurePaymentConfirmation currently.
+  void OnUserOptedOut();
+
   // Called when the PaymentRequest is about to be destroyed. This reports
   // the reason for destruction.
   void WillBeDestroyed(content::DocumentServiceDestructionReason reason) final;

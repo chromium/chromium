@@ -149,6 +149,15 @@ displayStreamHandler.setStreamActionObserver(
            titleArray, messageArray, message.notificationType);
      });
 
+ guestMessagePipe.registerHandler(Message.SHOW_TOAST, async (message) => {
+   // The C++ layer uses std::u16string, which use 16 bit characters. JS
+   // strings support either 8 or 16 bit characters, and must be converted
+   // to an array of 16 bit character codes that match std::u16string.
+   const textArray = {data: Array.from(message.text, c => c.charCodeAt())};
+   console.log('echeapi browser_proxy.js showToast');
+   notificationGenerator.showToast(textArray);
+ });
+
  guestMessagePipe.registerHandler(
      Message.TIME_HISTOGRAM_MESSAGE, async (message) => {
        console.log('echeapi browser_proxy.js recordTime');
@@ -190,3 +199,17 @@ displayStreamHandler.setStreamActionObserver(
  }
 
 window.onhashchange = locationHashChanged;
+
+if ('virtualKeyboard' in navigator) {
+  navigator['virtualKeyboard'].overlaysContent = true;
+  navigator['virtualKeyboard'].addEventListener('geometrychange', (event) => {
+    const {x, y, width, height} = event.target['boundingRect'];
+    console.log('Virtual keyboard geometry:', x, y, width, height);
+    const isVirtualKeyboardEnabled = width > 0 && height > 0;
+    guestMessagePipe.sendMessage(
+        Message.IS_VIRTUAL_KEYBOARD_ENABLED,
+        {/** @type {boolean} */ isVirtualKeyboardEnabled});
+  });
+} else {
+  console.log('virtual keyboard is not supported!');
+}

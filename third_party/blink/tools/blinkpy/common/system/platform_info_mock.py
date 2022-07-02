@@ -34,13 +34,13 @@ class MockPlatformInfo(object):
                  linux_distribution=None,
                  is_highdpi=False,
                  is_running_rosetta=False,
-                 machine='x86_64'):
+                 machine=None):
         self.os_name = os_name
         self.os_version = os_version
         self._linux_distribution = linux_distribution
         self._is_highdpi = is_highdpi
         self._is_running_rosetta = is_running_rosetta
-        self._machine = machine
+        self._machine = machine or 'x86_64'
 
     def is_mac(self):
         return self.os_name == 'mac'

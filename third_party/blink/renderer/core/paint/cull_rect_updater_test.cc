@@ -221,6 +221,17 @@ TEST_F(CullRectUpdaterTest, LayerUnderSVGHiddenContainer) {
   EXPECT_TRUE(GetCullRect("svg1").Rect().IsEmpty());
 }
 
+TEST_F(CullRectUpdaterTest, PerspectiveDescendants) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="perspective: 1000px">
+      <div style="height: 300px; transform-style: preserve-3d; contain: strict">
+        <div id="target" style="transform: rotateX(20deg)">TARGET</div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetCullRect("target").IsInfinite());
+}
+
 class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
  protected:
   void Check(const String& old_style,

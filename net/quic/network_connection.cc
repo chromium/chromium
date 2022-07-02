@@ -9,9 +9,7 @@
 
 namespace net {
 
-NetworkConnection::NetworkConnection()
-    : connection_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
-      connection_description_(nullptr) {
+NetworkConnection::NetworkConnection() {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
   OnIPAddressChanged();

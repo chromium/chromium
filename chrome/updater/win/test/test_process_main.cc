@@ -70,6 +70,14 @@ int main(int, char**) {
     EventForSwitch(*command_line, updater::kTestEventToWaitOn).Wait();
   }
 
+  if (command_line->HasSwitch(updater::kTestExitCode)) {
+    int exit_code = 0;
+    CHECK(base::StringToInt(
+        command_line->GetSwitchValueASCII(updater::kTestExitCode), &exit_code));
+    VLOG(1) << "Process ending with exit code: " << exit_code;
+    return exit_code;
+  }
+
   VLOG(1) << "Process ended.";
   return 0;
 }

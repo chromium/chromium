@@ -20,23 +20,23 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/network/cellular_metrics_logger.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -73,12 +73,12 @@
 using testing::Return;
 using testing::_;
 
+using ash::UserDataAuthClient;
 using chromeos::ShillDeviceClient;
 using chromeos::ShillIPConfigClient;
 using chromeos::ShillManagerClient;
 using chromeos::ShillProfileClient;
 using chromeos::ShillServiceClient;
-using chromeos::UserDataAuthClient;
 
 using extensions::NetworkingPrivateDelegate;
 using extensions::NetworkingPrivateDelegateFactory;
@@ -163,7 +163,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     request.set_username(
         cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId())
             .account_id());
-    chromeos::CryptohomeMiscClient::Get()->GetSanitizedUsername(
+    ash::CryptohomeMiscClient::Get()->GetSanitizedUsername(
         request,
         base::BindOnce(
             [](std::string* out,
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        OnCertificateListsChangedEvent) {
-  ExtensionTestMessageListener listener("eventListenerReady", false);
+  ExtensionTestMessageListener listener("eventListenerReady");
   listener.SetOnSatisfied(base::BindOnce([](const std::string& message) {
     chromeos::NetworkHandler::Get()
         ->network_certificate_handler()
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
   service_test()->RemoveService("stub_ethernet");
   service_test()->RemoveService("stub_vpn1");
 
-  ExtensionTestMessageListener listener("notifyPortalDetectorObservers", false);
+  ExtensionTestMessageListener listener("notifyPortalDetectorObservers");
   listener.SetOnSatisfied(
       base::BindLambdaForTesting([&](const std::string& message) {
         service_test()->SetServiceProperty(

@@ -109,6 +109,12 @@ function copyToClipboard() {
   navigator.clipboard.writeText($('copy-content').innerText);
 }
 
+// <if expr="chromeos_lacros">
+function copyOSContentToClipboard() {
+  navigator.clipboard.writeText($('copy-os-content').innerText);
+}
+// </if>
+
 /* All the work we do onload. */
 function onLoadWork() {
   // <if expr="chromeos_ash or is_win">
@@ -138,6 +144,11 @@ function onLoadWork() {
   }
 
   $('copy-to-clipboard').addEventListener('click', copyToClipboard);
+
+  // <if expr="chromeos_lacros">
+  $('copy-os-content-to-clipboard')
+      .addEventListener('click', copyOSContentToClipboard);
+  // </if>
 }
 
 document.addEventListener('DOMContentLoaded', onLoadWork);

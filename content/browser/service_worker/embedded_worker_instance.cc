@@ -37,6 +37,7 @@
 #include "content/common/url_schemes.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/hid_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
@@ -558,8 +559,10 @@ void EmbeddedWorkerInstance::SendStartWorker(
 
   // The host must be alive as long as |params->provider_info| is alive.
   owner_version_->worker_host()->CompleteStartWorkerPreparation(
-      process_id(), params->provider_info->browser_interface_broker
-                        .InitWithNewPipeAndPassReceiver());
+      process_id(),
+      params->provider_info->browser_interface_broker
+          .InitWithNewPipeAndPassReceiver(),
+      params->interface_provider.InitWithNewPipeAndPassRemote());
 
   // TODO(bashi): Always pass a valid outside fetch client settings object.
   // See crbug.com/937177.
@@ -704,6 +707,10 @@ void EmbeddedWorkerInstance::Detach() {
 
 void EmbeddedWorkerInstance::UpdateForegroundPriority() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (status() == EmbeddedWorkerStatus::STOPPING) {
+    return;
+  }
+
   if (process_handle_ &&
       owner_version_->ShouldRequireForegroundPriority(process_id())) {
     NotifyForegroundServiceWorkerAdded();
@@ -739,6 +746,26 @@ void EmbeddedWorkerInstance::BindCacheStorage(
   BindCacheStorageInternal();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void EmbeddedWorkerInstance::BindHidService(
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* rph = static_cast<RenderProcessHostImpl*>(
+      RenderProcessHost::FromID(process_id()));
+  if (!rph)
+    return;
+
+  HidDelegate* hid_delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!hid_delegate) {
+    return;
+  }
+  if (hid_delegate->IsServiceWorkerAllowedForOrigin(origin)) {
+    rph->BindHidService(origin, std::move(receiver));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 base::WeakPtr<EmbeddedWorkerInstance> EmbeddedWorkerInstance::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -771,7 +798,6 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     client_security_state = network::mojom::ClientSecurityState::New();
   }
 
-  // TODO(crbug.com/1231019): Tag CL with this bug.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           rph, origin,
@@ -906,7 +932,12 @@ void EmbeddedWorkerInstance::OnNetworkAccessedForScriptLoad() {
 void EmbeddedWorkerInstance::ReleaseProcess() {
   // Abort an inflight start task.
   inflight_start_info_.reset();
-
+  // NotifyForegroundServiceWorkerRemoved() may trigger a call to
+  // UpdateForegroundPriority(). By setting status_ to STOPPING we
+  // prevent NotifyForegroundServiceWorkerAdded() from being called
+  // from UpdateForegroundPriority() since we don't want it to be
+  // re-added at this stage.
+  status_ = EmbeddedWorkerStatus::STOPPING;
   NotifyForegroundServiceWorkerRemoved();
 
   instance_host_receiver_.reset();
@@ -918,6 +949,8 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   starting_phase_ = NOT_STARTING;
   thread_id_ = ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId;
   token_ = absl::nullopt;
+
+  DCHECK(!foreground_notified_);
 }
 
 void EmbeddedWorkerInstance::OnSetupFailed(

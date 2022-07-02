@@ -11,6 +11,12 @@ namespace remoting::features {
 
 // Enable to allow CRD to stream other monitors than the primary display.
 extern const base::Feature kEnableMultiMonitorsInCrd;
+// Enable to allow CRD remote admin connections when the ChromeOS device is at
+// the login screen.
+extern const base::Feature kEnableCrdAdminRemoteAccess;
+
+// Enable to allow FrameSinkDesktopCapturer to be used for CRD video streaming.
+extern const base::Feature kEnableFrameSinkDesktopCapturerInCrd;
 
 }  // namespace remoting::features
 

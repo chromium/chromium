@@ -41,9 +41,9 @@ class BridgedNativeWidgetUITest : public WidgetTest {
     init_params.delegate = new views::WidgetDelegate;
     init_params.delegate->SetOwnedByWidget(true);
 
-    // Provide a resizable Widget by default. Starting in 10.11, OSX doesn't
-    // correctly restore the window size when coming out of fullscreen if the
-    // window is not user-sizable.
+    // Provide a resizable Widget by default, as macOS doesn't correctly restore
+    // the window size when coming out of fullscreen if the window is not
+    // user-sizable.
     init_params.delegate->SetCanResize(true);
 
     widget_ = std::make_unique<Widget>();

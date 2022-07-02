@@ -13,7 +13,6 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
-#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,11 +20,11 @@ namespace network {
 
 CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
-    FirstPartySetsManager* const first_party_sets_manager,
+    FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
     const CookieSettings* cookie_settings)
     : type_(type),
       cookie_settings_(cookie_settings),
-      first_party_sets_manager_(first_party_sets_manager) {
+      first_party_sets_access_delegate_(first_party_sets_access_delegate) {
   if (type == mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS) {
     DCHECK(cookie_settings);
   }
@@ -67,39 +66,43 @@ CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
-  if (!first_party_sets_manager_)
+  if (!first_party_sets_access_delegate_)
     return {net::FirstPartySetMetadata()};
-  return first_party_sets_manager_->ComputeMetadata(
+  return first_party_sets_access_delegate_->ComputeMetadata(
       site, top_frame_site, party_context, std::move(callback));
 }
 
-absl::optional<FirstPartySetsManager::OwnerResult>
+absl::optional<FirstPartySetsAccessDelegate::OwnerResult>
 CookieAccessDelegateImpl::FindFirstPartySetOwner(
     const net::SchemefulSite& site,
     base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback)
     const {
-  if (!first_party_sets_manager_)
-    return {absl::nullopt};
-  return first_party_sets_manager_->FindOwner(site, std::move(callback));
+  if (!first_party_sets_access_delegate_) {
+    return absl::make_optional<FirstPartySetsManager::OwnerResult>(
+        absl::nullopt);
+  }
+  return first_party_sets_access_delegate_->FindOwner(site,
+                                                      std::move(callback));
 }
 
-absl::optional<FirstPartySetsManager::OwnersResult>
+absl::optional<FirstPartySetsAccessDelegate::OwnersResult>
 CookieAccessDelegateImpl::FindFirstPartySetOwners(
     const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySetsManager::OwnersResult)> callback)
-    const {
-  if (!first_party_sets_manager_)
+    base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
+        callback) const {
+  if (!first_party_sets_access_delegate_)
     return {{}};
-  return first_party_sets_manager_->FindOwners(sites, std::move(callback));
+  return first_party_sets_access_delegate_->FindOwners(sites,
+                                                       std::move(callback));
 }
 
-absl::optional<FirstPartySetsManager::SetsByOwner>
+absl::optional<FirstPartySetsAccessDelegate::SetsByOwner>
 CookieAccessDelegateImpl::RetrieveFirstPartySets(
-    base::OnceCallback<void(FirstPartySetsManager::SetsByOwner)> callback)
-    const {
-  if (!first_party_sets_manager_)
+    base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>
+        callback) const {
+  if (!first_party_sets_access_delegate_)
     return {{}};
-  return first_party_sets_manager_->Sets(std::move(callback));
+  return first_party_sets_access_delegate_->Sets(std::move(callback));
 }
 
 }  // namespace network

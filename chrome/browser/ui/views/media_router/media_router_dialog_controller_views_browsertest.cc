@@ -36,8 +36,9 @@ namespace media_router {
 std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
     content::WebContents* content) {
   return std::make_unique<StartPresentationContext>(
-      content::PresentationRequest(content->GetMainFrame()->GetGlobalId(),
-                                   {GURL(), GURL()}, url::Origin()),
+      content::PresentationRequest(
+          content->GetPrimaryMainFrame()->GetGlobalId(), {GURL(), GURL()},
+          url::Origin()),
       base::DoNothing(), base::DoNothing());
 }
 
@@ -76,7 +77,8 @@ void MediaRouterDialogControllerViewsTest::CreateDialogController() {
 void MediaRouterDialogControllerViewsTest::OpenMediaRouterDialog() {
   CreateDialogController();
   // Show the media router dialog for the initiator.
-  dialog_controller_->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
+  dialog_controller_->ShowMediaRouterDialog(
+      MediaRouterDialogActivationLocation::PAGE);
   ASSERT_TRUE(dialog_controller_->IsShowingMediaRouterDialog());
 }
 

@@ -115,17 +115,23 @@ bool PathProviderMac(int key, base::FilePath* result) {
       return base::mac::GetUserDirectory(NSDesktopDirectory, result);
 #endif
     case base::DIR_ASSETS:
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_MACCATALYST)
       // On iOS, the assets are located next to the module binary.
       return PathService::Get(base::DIR_MODULE, result);
 #else
       if (!base::mac::AmIBundled()) {
         return PathService::Get(base::DIR_MODULE, result);
       }
+#if BUILDFLAG(IS_IOS_MACCATALYST)
+      *result = base::mac::MainBundlePath()
+                    .Append(FILE_PATH_LITERAL("Contents"))
+                    .Append(FILE_PATH_LITERAL("Resources"));
+#else
       *result = base::mac::FrameworkBundlePath().Append(
           FILE_PATH_LITERAL("Resources"));
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
       return true;
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_MACCATALYST)
     case base::DIR_CACHE:
       return base::mac::GetUserDirectory(NSCachesDirectory, result);
     default:

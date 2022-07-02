@@ -335,6 +335,10 @@ const char kEnableExperimentalCookieFeatures[] =
 const char kEnableExperimentalWebAssemblyFeatures[] =
     "enable-experimental-webassembly-features";
 
+// Enables experimental WebAssembly stack switching.
+const char kEnableExperimentalWebAssemblyStackSwitching[] =
+    "enable-experimental-webassembly-stack-switching";
+
 // Enables Web Platform features that are in development.
 const char kEnableExperimentalWebPlatformFeatures[] =
     "enable-experimental-web-platform-features";
@@ -462,10 +466,6 @@ const char kFileUrlPathAlias[] = "file-url-path-alias";
 // Forces the Chrome major version to the minor position in the User-Agent
 // string. Locks major version to 99.
 const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";
-
-// Forces use of hardware overlay for fullscreen video playback. Useful for
-// testing the Android overlay fullscreen functionality on other platforms.
-const char kForceOverlayFullscreenVideo[]   = "force-overlay-fullscreen-video";
 
 // This forces pages to be loaded as presentation receivers.  Useful for testing
 // behavior specific to presentation receivers.

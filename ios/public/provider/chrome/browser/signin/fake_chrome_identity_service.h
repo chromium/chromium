@@ -62,9 +62,6 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Simulates reloading the identities from the keychain by SSOAuth.
   void FireChromeIdentityReload();
 
-  // Sets up the mock methods for integration tests.
-  void SetUpForIntegrationTests();
-
   // Adds the managed identities given their name.
   void AddManagedIdentities(NSArray* identitiesName);
 

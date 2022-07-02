@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "build/build_config.h"
 #include "ipcz/ipcz.h"
 #include "util/ref_counted.h"
 
@@ -19,19 +20,32 @@ class Object : public RefCounted {
     kTransport,
     kMemory,
     kMapping,
+
+    // A non-standard driver object type, used to exercise more complex, custom
+    // driver object de/serialization via boxing and unboxing in tests. See the
+    // Blob definition in src/reference_drivers/blob.h.
+    kBlob,
+
+#if defined(OS_LINUX)
+    // A non-standard driver object type which wraps a FileDescriptor object.
+    kFileDescriptor,
+#endif
   };
 
   explicit Object(Type type);
 
   Type type() const { return type_; }
 
+  IpczDriverHandle handle() const {
+    return reinterpret_cast<IpczDriverHandle>(this);
+  }
+
   static Object* FromHandle(IpczDriverHandle handle) {
-    return reinterpret_cast<Object*>(static_cast<uintptr_t>(handle));
+    return reinterpret_cast<Object*>(handle);
   }
 
   static IpczDriverHandle ReleaseAsHandle(Ref<Object> object) {
-    return static_cast<IpczDriverHandle>(
-        reinterpret_cast<uintptr_t>(object.release()));
+    return reinterpret_cast<IpczDriverHandle>(object.release());
   }
 
   static Ref<Object> TakeFromHandle(IpczDriverHandle handle) {
@@ -52,12 +66,23 @@ class ObjectImpl : public Object {
  public:
   ObjectImpl() : Object(kType) {}
 
-  static T* FromHandle(IpczDriverHandle handle) {
-    Object* object = Object::FromHandle(handle);
+  static T* FromObject(Object* object) {
     if (!object || object->type() != kType) {
       return nullptr;
     }
     return static_cast<T*>(object);
+  }
+
+  static T* FromHandle(IpczDriverHandle handle) {
+    return FromObject(Object::FromHandle(handle));
+  }
+
+  static Ref<T> TakeFromObject(Object* object) {
+    return AdoptRef(FromObject(object));
+  }
+
+  static Ref<T> TakeFromHandle(IpczDriverHandle handle) {
+    return AdoptRef(FromHandle(handle));
   }
 
  protected:

@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -86,7 +85,7 @@ public interface RenderFrameHost {
      *
      * Callers are responsible to ensure that the renderer Frame exists before
      * trying to make a mojo connection to it. This can be done via
-     * isRenderFrameCreated() if the caller is not inside the call-stack of an
+     * isRenderFrameLive() if the caller is not inside the call-stack of an
      * IPC form the renderer (which would guarantee its existence at that time).
      *
      * @param pipe The message pipe to be connected to the renderer. If it fails
@@ -122,11 +121,11 @@ public interface RenderFrameHost {
     boolean isIncognito();
 
     /**
-     * See native RenderFrameHost::IsRenderFrameCreated().
+     * See native RenderFrameHost::IsRenderFrameLive().
      *
      * @return {@code true} if render frame is created.
      */
-    boolean isRenderFrameCreated();
+    boolean isRenderFrameLive();
 
     /**
      * @return Whether input events from the renderer are ignored on the browser side.
@@ -162,17 +161,6 @@ public interface RenderFrameHost {
      */
     int performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation);
-
-    /**
-     * Provides a list of credentials for WebAuthn Conditional UI. These credentials become
-     * available as options for autofill UI on sign-in input fields. The callback is invoked when
-     * a user selects one of the credentials from the list.
-     *
-     * @param credentialList The list of credentials that can be used as autofill suggestions.
-     * @param callback The callback to be invoked with the credential ID of a selected credential.
-     */
-    void onCredentialsDetailsListReceived(@NonNull List<WebAuthnCredentialDetails> credentialList,
-            @NonNull Callback<byte[]> callback);
 
     /**
      * @return An identifier for this RenderFrameHost.

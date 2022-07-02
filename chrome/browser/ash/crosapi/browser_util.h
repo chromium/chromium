@@ -90,6 +90,13 @@ struct ComponentInfo {
   const char* const crx_id;
 };
 
+// Specifies the mode of migration. The values correspond to `MigratorDelegate`
+// either being `CopyMigrator` or `MoveMigrator`.
+enum class MigrationMode {
+  kCopy = 0,  // Migrate using `CopyMigrator`.
+  kMove = 1,  // Migrate using `MoveMigrator`.
+};
+
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
@@ -183,8 +190,22 @@ void SetLacrosEnabledForTest(bool force_enabled);
 // enabled and is the only browser.
 bool IsAshWebBrowserEnabled();
 
+// Similar to `IsAshWebBrowserEnabled()` but it is calleable even before primary
+// profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsAshWebBrowserEnabled()`.
+bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state);
+
 // Returns true if the lacros should be used as a primary browser.
 bool IsLacrosPrimaryBrowser();
+
+// Similar to `IsLacrosPrimaryBrowser()` but is calleable even before primary
+// profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsLacrosPrimaryBrowser()`.
+bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
+                                        PolicyInitState policy_init_state);
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Passing absl::nullopt will reset the state.
@@ -195,6 +216,14 @@ void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
 bool IsLacrosPrimaryBrowserAllowed();
+
+// Similar to `IsLacrosPrimaryBrowserAllowed()` but is calleable even before
+// primary profile and policy are initialized.
+// TODO(crbug.com/1265800): Refactor to reduce code duplication with
+// `IsLacrosPrimaryBrowserAllowed()`.
+bool IsLacrosPrimaryBrowserAllowedForMigration(
+    const user_manager::User* user,
+    LacrosAvailability lacros_availability);
 
 // Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
 bool IsLacrosPrimaryFlagAllowed();
@@ -216,6 +245,9 @@ bool IsLacrosChromeAppsEnabled();
 
 // Returns true if Lacros is used in the web Kiosk session.
 bool IsLacrosEnabledInWebKioskSession();
+
+// Returns true if Lacros is used in the Chrome App Kiosk session.
+bool IsLacrosEnabledInChromeKioskSession();
 
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
@@ -240,7 +272,8 @@ void RecordDataVer(PrefService* local_state,
 
 // Checks if lacros' data directory needs to be wiped for backward incompatible
 // data.
-bool IsDataWipeRequired(const std::string& user_id_hash);
+bool IsDataWipeRequired(PrefService* local_state,
+                        const std::string& user_id_hash);
 
 // Exposed for testing. The arguments are passed to
 // `IsDataWipeRequiredInternal()`.
@@ -267,6 +300,10 @@ ComponentInfo GetLacrosComponentInfo();
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
 
+// Exposed for testing. Sets lacros-availability cache for testing.
+void SetCachedLacrosAvailabilityForTesting(
+    LacrosAvailability lacros_availability);
+
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosAvailability GetCachedLacrosAvailabilityForTesting();
@@ -279,15 +316,30 @@ bool IsProfileMigrationEnabled(const AccountId& account_id);
 // Returns true if the profile migration can run, but not yet completed.
 bool IsProfileMigrationAvailable();
 
+// Returns `MigrationMode::kMove` if LacrosOnly or `kLacrosMoveProfileMigration`
+// is enabled and `MigrationMode::kCopy` otherwise.
+MigrationMode GetMigrationMode(const user_manager::User* user,
+                               PolicyInitState policy_init_state);
+
+// Returns true if either copy or move migration is completed. Used as a wrapper
+// over `IsProfileMigrationCompletedForUser()`.
+// TODO(crbug.com/1340438): This function is introduced to prevent running
+// profile move migration for users who have already completed copy migration.
+bool IsCopyOrMoveProfileMigrationCompletedForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
 // Checks if profile migration has been completed. This is reset if profile
 // migration is initiated for example due to lacros data directory being wiped.
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
-                                        const std::string& user_id_hash);
+                                        const std::string& user_id_hash,
+                                        MigrationMode mode);
 
 // Sets the value of `kProfileMigrationCompletedForUser1Pref` to be true
 // for the user identified by `user_id_hash`.
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
-                                         const std::string& user_id_hash);
+                                         const std::string& user_id_hash,
+                                         MigrationMode mode);
 
 // Clears the value of `kProfileMigrationCompletedForUser1Pref` for user
 // identified by `user_id_hash`.
@@ -331,6 +383,9 @@ void ClearGotoFilesClicked(PrefService* local_state,
 // clicked.
 bool WasGotoFilesClicked(PrefService* local_state,
                          const std::string& user_id_hash);
+
+// Returns true if ash 1st party extension keep list should be enforced.
+bool ShouldEnforceAshExtensionKeepList();
 
 }  // namespace browser_util
 }  // namespace crosapi

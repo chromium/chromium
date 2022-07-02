@@ -14,6 +14,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -101,9 +102,11 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   explicit SharesheetImagePreview(size_t file_count) {
     ScopedLightModeAsDefault scoped_light_mode_as_default;
     auto* color_provider = AshColorProvider::Get();
+    const bool is_dark_mode_enabled =
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
     SetBackground(views::CreateRoundedRectBackground(
         cros_styles::ResolveColor(cros_styles::ColorName::kHighlightColor,
-                                  color_provider->IsDarkModeEnabled(),
+                                  is_dark_mode_enabled,
                                   /*use_debug_colors=*/false),
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
@@ -142,8 +145,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
                 CONTEXT_SHARESHEET_BUBBLE_SMALL, STYLE_SHARESHEET));
         label->SetLineHeight(kImagePreviewFileEnumerationLineHeight);
         label->SetEnabledColor(cros_styles::ResolveColor(
-            cros_styles::ColorName::kTextColorProminent,
-            color_provider->IsDarkModeEnabled(),
+            cros_styles::ColorName::kTextColorProminent, is_dark_mode_enabled,
             /*use_debug_colors=*/false));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
         auto second_tone_icon_color_prominent =
@@ -470,11 +472,13 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
           /*use_light_mode_as_default=*/true));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   ScopedLightModeAsDefault scoped_light_mode_as_default;
+  const bool is_dark_mode_enabled =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   image_preview_->GetImageViewAt(index)->SetImage(
-      image->GetImageSkia(size, AshColorProvider::Get()->IsDarkModeEnabled()));
+      image->GetImageSkia(size, is_dark_mode_enabled));
 
-  const auto icon_color = chromeos::GetIconColorForPath(
-      file_path, AshColorProvider::Get()->IsDarkModeEnabled());
+  const auto icon_color =
+      chromeos::GetIconColorForPath(file_path, is_dark_mode_enabled);
   image_preview_->SetBackgroundColorForIndex(index, icon_color);
   image_subscription_.push_back(image->AddImageSkiaChangedCallback(
       base::BindRepeating(&SharesheetHeaderView::OnImageLoaded,
@@ -497,7 +501,7 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   ScopedLightModeAsDefault scoped_light_mode_as_default;
   image_preview_->GetImageViewAt(index)->SetImage(images_[index]->GetImageSkia(
-      size, AshColorProvider::Get()->IsDarkModeEnabled()));
+      size, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
   // TODO(crbug.com/1293668): Investigate why this SchedulePaint is needed.
   image_preview_->GetImageViewAt(index)->SchedulePaint();
 }

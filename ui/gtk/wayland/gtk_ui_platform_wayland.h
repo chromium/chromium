@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
@@ -38,7 +39,7 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   // SetGtkWidgetTransientFor.
   void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
 
-  GdkDisplay* default_display_ = nullptr;
+  raw_ptr<GdkDisplay> default_display_ = nullptr;
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 

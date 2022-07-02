@@ -28,7 +28,7 @@ std::unique_ptr<content::WebContents>
 DeclarativeContentConditionTrackerTest::MakeTab() {
   std::unique_ptr<content::WebContents> tab(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  content::RenderFrameHostTester::For(tab->GetMainFrame())
+  content::RenderFrameHostTester::For(tab->GetPrimaryMainFrame())
       ->InitializeRenderFrameIfNeeded();
   return tab;
 }
@@ -37,7 +37,7 @@ content::MockRenderProcessHost*
 DeclarativeContentConditionTrackerTest::GetMockRenderProcessHost(
     content::WebContents* contents) {
   return static_cast<content::MockRenderProcessHost*>(
-      contents->GetMainFrame()->GetProcess());
+      contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 TestingProfile::TestingFactories

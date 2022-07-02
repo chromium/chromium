@@ -68,6 +68,9 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void GetAutoRepeatRate(base::TimeDelta* delay,
                                  base::TimeDelta* interval) = 0;
   virtual void SetCurrentLayoutByName(const std::string& layout_name) = 0;
+  virtual void SetKeyboardKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
+  virtual std::vector<uint64_t> GetKeyboardKeyBits(int id) = 0;
 
   // Touchpad settings.
   virtual void SetTouchpadSensitivity(int value) = 0;
@@ -101,6 +104,11 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // button as primary, while false (the default) sets the left as primary.
   virtual void SetPointingStickPrimaryButtonRight(bool right) = 0;
   virtual void SetPointingStickAcceleration(bool enabled) = 0;
+
+  // Gamepad settings.
+  virtual void SetGamepadKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
+  virtual std::vector<uint64_t> GetGamepadKeyBits(int id) = 0;
 
   // Touch log collection.
   virtual void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) = 0;

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -256,7 +257,7 @@ class Buffer final : public ui::GbmBuffer {
     buffer->mmap_data_ = nullptr;
   }
 
-  gbm_bo* const bo_;
+  const raw_ptr<gbm_bo> bo_;
   void* mmap_data_ = nullptr;
 
   const uint32_t format_;
@@ -399,7 +400,7 @@ class Device final : public ui::GbmDevice {
   }
 
  private:
-  gbm_device* const device_;
+  const raw_ptr<gbm_device> device_;
 };
 
 }  // namespace gbm_wrapper

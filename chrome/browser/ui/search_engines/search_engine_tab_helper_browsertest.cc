@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
   // Submits a search query.
   content::TestNavigationObserver observer(GetWebContents());
-  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetMainFrame(),
+  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
                                      "submit_form();"));
   observer.Wait();
 

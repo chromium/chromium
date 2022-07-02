@@ -9,6 +9,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "sheriff_rotations")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
+load("//lib/structs.star", "structs")
 
 ci.defaults.set(
     builder_group = "chromium.gpu",
@@ -34,6 +35,29 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_vr_test_apks",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "Android",
@@ -105,6 +129,24 @@ ci.gpu.mac_builder(
     cq_mirrors_console_view = "mirrors",
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = None,
+)
+
+ci.gpu.mac_builder(
+    name = "GPU Mac Builder (reclient shadow)",
+    builder_spec = builder_config.copy_from(
+        "ci/GPU Mac Builder",
+        lambda spec: structs.evolve(
+            spec,
+            build_gs_bucket = None,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac",
+        short_name = "rec",
+    ),
+    goma_backend = None,
+    tree_closing = False,
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.gpu.mac_builder(

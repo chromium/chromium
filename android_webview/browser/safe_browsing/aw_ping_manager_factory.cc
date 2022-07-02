@@ -7,7 +7,9 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 
 namespace safe_browsing {
 
@@ -40,7 +42,13 @@ KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
       safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
                                          /*disable_auto_update=*/false),
       GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
-      get_should_fetch_access_token);
+      get_should_fetch_access_token,
+      safe_browsing::WebUIInfoSingleton::GetInstance(),
+      content::GetUIThreadTaskRunner({}),
+      // TODO(crbug.com/1284979) If features get added that can alter
+      // user population values in android_webview, we should consider
+      // threading the user population through for client reports
+      /*get_user_population_callback=*/base::NullCallback());
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

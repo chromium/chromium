@@ -53,6 +53,7 @@ class IOSIntermediateDumpReaderTest : public testing::Test {
   }
 
   void TearDown() override {
+    ASSERT_TRUE(writer_->Close());
     fd_.reset();
     writer_.reset();
     EXPECT_FALSE(IsRegularFile(path_));

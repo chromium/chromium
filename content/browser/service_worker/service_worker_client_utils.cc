@@ -169,7 +169,7 @@ void DidOpenURL(OpenURLCallback callback, WebContents* web_contents) {
   static_cast<WebContentsImpl*>(web_contents)->Activate();
 
   RenderFrameHostImpl* rfhi =
-      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
   new OpenURLObserver(web_contents,
                       rfhi->frame_tree_node()->frame_tree_node_id(),
                       std::move(callback));
@@ -532,7 +532,6 @@ void NavigateClient(const GURL& url,
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
       WindowOpenDisposition::CURRENT_TAB,
       false /* should_replace_current_entry */, false /* user_gesture */,
-      false /* is_unfenced_top_navigation */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
       absl::nullopt);

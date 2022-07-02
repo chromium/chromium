@@ -83,7 +83,7 @@ CodecPressureGauge& CodecPressureGauge::EncoderInstance() {
 #undef USE_SHARED_INSTANCE
 
 void CodecPressureGauge::Increment() {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   DCHECK(pressure_callbacks_.size());
 
   ++global_pressure_;
@@ -92,7 +92,7 @@ void CodecPressureGauge::Increment() {
 }
 
 void CodecPressureGauge::Decrement() {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   DCHECK(pressure_callbacks_.size());
 
   DCHECK(global_pressure_);
@@ -104,7 +104,7 @@ void CodecPressureGauge::Decrement() {
 std::pair<CodecPressureGauge::PressureCallbackId, bool>
 CodecPressureGauge::RegisterPressureCallback(
     PressureThresholdChangedCallback pressure_callback) {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   PressureCallbackId id = next_pressure_callback_id_++;
 
   auto result = pressure_callbacks_.insert(id, std::move(pressure_callback));
@@ -116,7 +116,7 @@ CodecPressureGauge::RegisterPressureCallback(
 void CodecPressureGauge::UnregisterPressureCallback(
     PressureCallbackId callback_id,
     size_t pressure_released) {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
 
   DCHECK(pressure_callbacks_.Contains(callback_id));
   pressure_callbacks_.erase(callback_id);

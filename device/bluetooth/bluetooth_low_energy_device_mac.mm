@@ -22,18 +22,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
-// Remove when Chrome no longer supports 10.12.
-#if defined(MAC_OS_X_VERSION_10_13)
-
-// In the 10.13 SDK, CBPeripheral became a subclass of CBPeer, which defines
-// -[CBPeer identifier] as partially available. Pretend it still exists on
-// CBPeripheral. At runtime the implementation on CBPeer will be invoked.
-@interface CBPeripheral (HighSierraSDK)
-@property(readonly, nonatomic) NSUUID* identifier;
-@end
-
-#endif  // MAC_OS_X_VERSION_10_13
-
 namespace device {
 
 BluetoothLowEnergyDeviceMac::BluetoothLowEnergyDeviceMac(

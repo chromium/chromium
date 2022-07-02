@@ -45,6 +45,7 @@ class TtsHandler : public SettingsPageUIHandler,
  private:
   void WakeTtsEngine(const base::Value::List& args);
   void OnTtsEngineAwake(bool success);
+  void RefreshTtsVoices(const base::Value::List& args);
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);
   void RemoveTtsControllerDelegates();

@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../assert.js';
+import * as expert from '../expert.js';
 import * as localStorage from '../models/local_storage.js';
-import * as state from '../state.js';
 import {
   AspectRatioSet,
+  LocalStorageKey,
   Mode,
   NON_CROP_ASPECT_RATIO_SETS,
   PhotoResolutionLevel,
@@ -36,13 +37,6 @@ import {
   VideoResolutionOption,
   VideoResolutionOptionListener,
 } from './type.js';
-
-const PREF_DEVICE_PHOTO_RESOLUTION_LEVEL_KEY = 'devicePhotoResolutionLevel';
-const PREF_DEVICE_PHOTO_ASPECT_RATIO_SET_KEY = 'devicePhotoAspectRatioSet';
-const PREF_DEVICE_VIDEO_RESOLUTION_LEVEL_KEY = 'deviceVideoResolutionLevel';
-const PREF_DEVICE_VIDEO_RESOLUTION_FPS_KEY = 'deviceVideoResolutionFps';
-const PREF_DEVICE_PHOTO_RESOLUTION_EXPERT_KEY = 'devicePhotoResolutionExpert';
-const PREF_DEVICE_VIDEO_RESOLUTION_EXPERT_KEY = 'deviceVideoResolutionExpert';
 
 interface VideoLevelResolution {
   level: VideoResolutionLevel;
@@ -86,28 +80,32 @@ export class CaptureCandidatePreferrer {
    */
   private prefVideoFpsesMap:
       Record<string, Record<VideoResolutionLevel, number>> =
-          localStorage.getObject(PREF_DEVICE_VIDEO_RESOLUTION_FPS_KEY);
+          localStorage.getObject(
+              LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_FPS);
 
   /**
    * Map saving preference that each of its key as device id and value to be
    * preferred photo resolution level.
    */
   private prefPhotoResolutionLevelMap: Record<string, PhotoResolutionLevel> =
-      localStorage.getObject(PREF_DEVICE_PHOTO_RESOLUTION_LEVEL_KEY);
+      localStorage.getObject(
+          LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_LEVEL);
 
   /**
    * Map saving preference that each of its key as device id and
    * value to be preferred photo aspect ratio set.
    */
   private prefPhotoAspectRatioSetMap: Record<string, AspectRatioSet> =
-      localStorage.getObject(PREF_DEVICE_PHOTO_ASPECT_RATIO_SET_KEY);
+      localStorage.getObject(
+          LocalStorageKey.PREF_DEVICE_PHOTO_ASPECT_RATIO_SET);
 
   /**
    * Map saving preference that each of its key as device id and value to be
    * preferred video resolution level.
    */
   private prefVideoResolutionLevelMap: Record<string, VideoResolutionLevel> =
-      localStorage.getObject(PREF_DEVICE_VIDEO_RESOLUTION_LEVEL_KEY);
+      localStorage.getObject(
+          LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_LEVEL);
 
   /**
    * Map saving preference that each of its key as device id and value to be
@@ -115,14 +113,16 @@ export class CaptureCandidatePreferrer {
    */
   private prefPhotoResolutionMap:
       Record<string, Record<AspectRatioSet, Resolution>> =
-          localStorage.getObject(PREF_DEVICE_PHOTO_RESOLUTION_EXPERT_KEY);
+          localStorage.getObject(
+              LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_EXPERT);
 
   /**
    * Map saving preference that each of its key as device id and value to be
    * preferred video resolution. It is used when showing all resolutions is on.
    */
   private prefVideoResolutionMap: Record<string, Resolution> =
-      localStorage.getObject(PREF_DEVICE_VIDEO_RESOLUTION_EXPERT_KEY);
+      localStorage.getObject(
+          LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_EXPERT);
 
   private readonly photoResolutionOptionListeners:
       PhotoResolutionOptionListener[] = [];
@@ -204,7 +204,7 @@ export class CaptureCandidatePreferrer {
       deviceId: string, resolutionLevel: PhotoResolutionLevel): void {
     this.prefPhotoResolutionLevelMap[deviceId] = resolutionLevel;
     localStorage.set(
-        PREF_DEVICE_PHOTO_RESOLUTION_LEVEL_KEY,
+        LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_LEVEL,
         this.prefPhotoResolutionLevelMap);
 
     // For opening camera, it will be notified after the reconfigure.
@@ -220,7 +220,7 @@ export class CaptureCandidatePreferrer {
       void {
     this.prefPhotoAspectRatioSetMap[deviceId] = aspectRatioSet;
     localStorage.set(
-        PREF_DEVICE_PHOTO_ASPECT_RATIO_SET_KEY,
+        LocalStorageKey.PREF_DEVICE_PHOTO_ASPECT_RATIO_SET,
         this.prefPhotoAspectRatioSetMap);
 
     // For opening camera, it will be notified after the reconfigure.
@@ -236,7 +236,7 @@ export class CaptureCandidatePreferrer {
       deviceId: string, resolutionLevel: VideoResolutionLevel): void {
     this.prefVideoResolutionLevelMap[deviceId] = resolutionLevel;
     localStorage.set(
-        PREF_DEVICE_VIDEO_RESOLUTION_LEVEL_KEY,
+        LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_LEVEL,
         this.prefVideoResolutionLevelMap);
 
     // For opening camera, it will be notified after the reconfigure.
@@ -254,7 +254,8 @@ export class CaptureCandidatePreferrer {
     this.prefVideoFpsesMap[deviceId] =
         {...this.prefVideoFpsesMap[deviceId], [resolutionLevel]: prefFps};
     localStorage.set(
-        PREF_DEVICE_VIDEO_RESOLUTION_FPS_KEY, this.prefVideoFpsesMap);
+        LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_FPS,
+        this.prefVideoFpsesMap);
 
     // For opening camera, it will be notified after the reconfigure.
     if (!shouldReconfigure) {
@@ -271,7 +272,8 @@ export class CaptureCandidatePreferrer {
         toAspectRatioSet(resolution);
     this.setPreferPhotoResolution(deviceId, aspectRatioSet, resolution);
     localStorage.set(
-        PREF_DEVICE_PHOTO_RESOLUTION_EXPERT_KEY, this.prefPhotoResolutionMap);
+        LocalStorageKey.PREF_DEVICE_PHOTO_RESOLUTION_EXPERT,
+        this.prefPhotoResolutionMap);
 
     // For opening camera, it will be notified after the reconfigure.
     if (deviceId !== this.cameraConfig?.deviceId) {
@@ -285,7 +287,8 @@ export class CaptureCandidatePreferrer {
   setPrefVideoResolution(deviceId: string, resolution: Resolution): void {
     this.prefVideoResolutionMap[deviceId] = resolution;
     localStorage.set(
-        PREF_DEVICE_VIDEO_RESOLUTION_EXPERT_KEY, this.prefVideoResolutionMap);
+        LocalStorageKey.PREF_DEVICE_VIDEO_RESOLUTION_EXPERT,
+        this.prefVideoResolutionMap);
 
     // For opening camera, it will be notified after the reconfigure.
     if (deviceId !== this.cameraConfig?.deviceId) {
@@ -384,7 +387,8 @@ export class CaptureCandidatePreferrer {
     const candidates = [];
 
     const prefLevel = this.prefPhotoResolutionLevelMap[deviceId];
-    const showAllResolutions = state.get(state.State.SHOW_ALL_RESOLUTIONS);
+    const showAllResolutions =
+        expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     const prefAspectRatioSet = this.prefPhotoAspectRatioSetMap[deviceId];
     const aspectRatioOptions = this.photoOptions.get(deviceId);
     assert(aspectRatioOptions !== undefined);
@@ -424,13 +428,14 @@ export class CaptureCandidatePreferrer {
     const cameraInfo = this.cameraInfos.get(deviceId);
     assert(cameraInfo !== undefined);
     const enableMultiStreamRecording =
-        state.get(state.State.ENABLE_MULTISTREAM_RECORDING);
+        expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING);
 
     const candidates = [];
     const prefLevel = this.prefVideoResolutionLevelMap[deviceId];
     const prefResolution = this.prefVideoResolutionMap[deviceId] ?? null;
     const options = this.videoOptions.get(deviceId);
-    const showAllResolutions = state.get(state.State.SHOW_ALL_RESOLUTIONS);
+    const showAllResolutions =
+        expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     assert(options !== undefined);
     for (const option of options) {
       const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
@@ -508,7 +513,7 @@ export class CaptureCandidatePreferrer {
           },
       );
     }
-    if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       return options.flatMap(
           (option) =>
               option.resolutions.map((r) => ({
@@ -630,7 +635,7 @@ export class CaptureCandidatePreferrer {
       },
     ];
     let matches: VideoLevelResolution[] = [];
-    if (!state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (!expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       for (const resolution of resolutions) {
         const option = COMMON_VIDEO_OPTIONS.find(
             (option) => option.resolution.equals(resolution));
@@ -664,7 +669,7 @@ export class CaptureCandidatePreferrer {
       }
     }
 
-    if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       matches =
           matches.flatMap((match) => match.resolutions.map((r) => ({
                                                              level: match.level,
@@ -723,7 +728,7 @@ export class CaptureCandidatePreferrer {
         option.checked =
             option.resolutions.some((r) => r.equals(currentResolution));
       } else {
-        if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+        if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
           option.checked = option.resolutions[0].equals(prefResolution);
         } else {
           option.checked = option.resolutionLevel === prefResolutionLevel;
@@ -746,7 +751,7 @@ export class CaptureCandidatePreferrer {
     const prefResolution =
         this.getPreferPhotoResolution(deviceId, AspectRatioSet.RATIO_SQUARE);
     for (const option of options) {
-      if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+      if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
         option.checked = option.resolutions[0].equals(prefResolution);
       } else {
         option.checked = option.resolutionLevel === prefResolutionLevel;
@@ -833,7 +838,7 @@ export class CaptureCandidatePreferrer {
             this.cameraConfig?.mode === Mode.VIDEO) {
           option.checked = isRunningCameraOption;
         } else {
-          if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+          if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
             option.checked = option.fpsOptions.some(
                 (fpsOption) => fpsOption.resolutions[0].equals(prefResolution));
           } else {

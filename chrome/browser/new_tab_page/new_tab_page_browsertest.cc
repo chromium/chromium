@@ -33,7 +33,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/command_line.h"
-#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 #endif
 
 class NewTabPageTest : public InProcessBrowserTest,
@@ -170,12 +170,10 @@ class NewTabPageTest : public InProcessBrowserTest,
             "browser-ui-tests-verify-pixels")) {
       return true;
     }
-    BrowserSkiaGoldPixelDiff pixel_diff;
-    pixel_diff.Init(views::Widget::GetWidgetForNativeWindow(
-                        browser()->window()->GetNativeWindow()),
-                    screenshot_prefix);
-    return pixel_diff.CompareScreenshot(screenshot_name,
-                                        browser_view_->contents_web_view());
+    views::ViewSkiaGoldPixelDiff pixel_diff;
+    pixel_diff.Init(screenshot_prefix);
+    return pixel_diff.CompareViewScreenshot(screenshot_name,
+                                            browser_view_->contents_web_view());
 #else
     return true;
 #endif

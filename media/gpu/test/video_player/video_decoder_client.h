@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -27,7 +27,7 @@ class VideoFrame;
 namespace test {
 
 class EncodedDataHelper;
-class FrameRenderer;
+class FrameRendererDummy;
 class VideoFrameProcessor;
 
 // The supported video decoding implementation.
@@ -63,16 +63,13 @@ class VideoDecoderClient {
 
   ~VideoDecoderClient();
 
-  // Return an instance of the VideoDecoderClient. The
-  // |gpu_memory_buffer_factory| will not be owned by the decoder client, the
-  // caller should guarantee it outlives the decoder client. The |event_cb| will
-  // be called whenever an event occurs (e.g. frame decoded) and should be
-  // thread-safe. Initialization is performed asynchronous, upon completion a
-  // 'kInitialized' event will be thrown.
+  // Return an instance of the VideoDecoderClient. The |event_cb| will be called
+  // whenever an event occurs (e.g. frame decoded) and should be thread-safe.
+  // Initialization is performed asynchronous, upon completion a 'kInitialized'
+  // event will be thrown.
   static std::unique_ptr<VideoDecoderClient> Create(
       const VideoPlayer::EventCallback& event_cb,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const VideoDecoderClientConfig& config);
 
@@ -82,7 +79,7 @@ class VideoDecoderClient {
   // Wait until the renderer has finished rendering all queued frames.
   void WaitForRenderer();
   // Get the frame renderer associated with the video decoder client.
-  FrameRenderer* GetFrameRenderer() const;
+  FrameRendererDummy* GetFrameRenderer() const;
 
   // Initialize the video decoder for the specified |video|. This function can
   // be called multiple times and needs to be called before Play().
@@ -111,8 +108,7 @@ class VideoDecoderClient {
 
   VideoDecoderClient(
       const VideoPlayer::EventCallback& event_cb,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-      std::unique_ptr<FrameRenderer> renderer,
+      std::unique_ptr<FrameRendererDummy> renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const VideoDecoderClientConfig& config);
 
@@ -160,7 +156,7 @@ class VideoDecoderClient {
   bool FireEvent(VideoPlayerEvent event);
 
   VideoPlayer::EventCallback event_cb_;
-  std::unique_ptr<FrameRenderer> frame_renderer_;
+  std::unique_ptr<FrameRendererDummy> frame_renderer_;
   std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;
@@ -178,10 +174,7 @@ class VideoDecoderClient {
   // TODO(dstaessens@) Replace with StreamParser.
   std::unique_ptr<media::test::EncodedDataHelper> encoded_data_helper_;
   // The video being decoded.
-  const Video* video_ = nullptr;
-
-  // Owned by VideoPlayerTestEnvironment.
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  raw_ptr<const Video> video_ = nullptr;
 
   SEQUENCE_CHECKER(video_player_sequence_checker_);
   SEQUENCE_CHECKER(decoder_client_sequence_checker_);

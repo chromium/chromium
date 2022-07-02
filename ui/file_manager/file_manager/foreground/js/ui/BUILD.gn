@@ -5,7 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/js/cr.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
@@ -15,7 +15,7 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
@@ -30,6 +30,7 @@ group("js_modules") {
     ":commandbutton",
     ":default_task_dialog",
     ":dialog_footer",
+    ":dialogs",
     ":directory_tree",
     ":drag_selector",
     ":file_grid",
@@ -52,6 +53,8 @@ group("js_modules") {
     ":progress_center_panel",
     ":providers_menu",
     ":search_box",
+    ":splitter",
+    ":tree",
   ]
 }
 
@@ -63,10 +66,12 @@ html_to_js("web_components") {
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=gen/ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                   ]
 
   deps = [
@@ -80,6 +85,7 @@ js_type_check("closure_compile_jsmodules") {
     ":commandbutton",
     ":default_task_dialog",
     ":dialog_footer",
+    ":dialogs",
     ":directory_tree",
     ":drag_selector",
     ":file_grid",
@@ -102,12 +108,15 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center_panel",
     ":providers_menu",
     ":search_box",
+    ":splitter",
+    ":tree",
     "table:table",
     "table:table_column",
     "table:table_column_model",
     "table:table_header",
     "table:table_list",
     "table:table_splitter",
+    "//ui/file_manager:js_from_ts",
   ]
 }
 
@@ -132,7 +141,7 @@ js_library("actions_submenu") {
   ]
 }
 
-js_unittest("actions_submenu_unittest.m") {
+js_unittest("actions_submenu_unittest") {
   deps = [
     ":actions_submenu",
     "//chrome/test/data/webui:chai_assert",
@@ -149,7 +158,7 @@ js_library("breadcrumb") {
   ]
 }
 
-js_unittest("breadcrumb_unittest.m") {
+js_unittest("breadcrumb_unittest") {
   deps = [
     ":breadcrumb",
     "//chrome/test/data/webui:chai_assert",
@@ -199,9 +208,15 @@ js_library("dialog_footer") {
   ]
 }
 
+js_library("dialogs") {
+}
+
 js_library("directory_tree") {
   deps = [
+    ":tree",
     "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:icon_util",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -219,13 +234,12 @@ js_library("directory_tree") {
     "//ui/webui/resources/js/cr/ui:command.m",
     "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
-    "//ui/webui/resources/js/cr/ui:tree",
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps" ]
 }
 
-js_unittest("directory_tree_unittest.m") {
+js_unittest("directory_tree_unittest") {
   deps = [
     ":directory_tree",
     "//chrome/test/data/webui:chai_assert",
@@ -285,7 +299,7 @@ js_library("file_list_selection_model") {
   ]
 }
 
-js_unittest("file_list_selection_model_unittest.m") {
+js_unittest("file_list_selection_model_unittest") {
   deps = [
     ":file_list_selection_model",
     "//chrome/test/data/webui:chai_assert",
@@ -294,13 +308,13 @@ js_unittest("file_list_selection_model_unittest.m") {
 
 js_library("file_manager_dialog_base") {
   deps = [
+    ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:xfm",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 
-js_unittest("file_manager_dialog_base_unittest.m") {
+js_unittest("file_manager_dialog_base_unittest") {
   deps = [
     ":file_manager_dialog_base",
     "//chrome/test/data/webui:chai_assert",
@@ -318,6 +332,7 @@ js_library("file_manager_ui") {
     ":combobutton",
     ":default_task_dialog",
     ":dialog_footer",
+    ":dialogs",
     ":directory_tree",
     ":file_grid",
     ":file_table",
@@ -333,6 +348,7 @@ js_library("file_manager_ui") {
     ":progress_center_panel",
     ":providers_menu",
     ":search_box",
+    ":splitter",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -347,10 +363,8 @@ js_library("file_manager_ui") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
     "//ui/webui/resources/js/cr/ui:menu_item.m",
-    "//ui/webui/resources/js/cr/ui:splitter",
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps" ]
@@ -394,7 +408,7 @@ js_library("file_table") {
   ]
 }
 
-js_unittest("file_table_unittest.m") {
+js_unittest("file_table_unittest") {
   deps = [
     ":file_table",
     "table:table_column",
@@ -412,6 +426,7 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -422,7 +437,7 @@ js_library("file_table_list") {
   ]
 }
 
-js_unittest("file_table_list_unittest.m") {
+js_unittest("file_table_list_unittest") {
   deps = [
     ":a11y_announce",
     ":file_list_selection_model",
@@ -437,6 +452,7 @@ js_unittest("file_table_list_unittest.m") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -444,7 +460,7 @@ js_library("file_tap_handler") {
   deps = [ "//ui/webui/resources/js:assert.m" ]
 }
 
-js_unittest("file_tap_handler_unittest.m") {
+js_unittest("file_tap_handler_unittest") {
   deps = [
     ":file_tap_handler",
     "//chrome/test/data/webui:chai_assert",
@@ -456,8 +472,8 @@ js_unittest("file_tap_handler_unittest.m") {
 
 js_library("files_alert_dialog") {
   deps = [
+    ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 
@@ -465,8 +481,8 @@ js_library("files_alert_dialog") {
 
 js_library("files_confirm_dialog") {
   deps = [
+    ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 
@@ -496,7 +512,7 @@ js_library("install_linux_package_dialog") {
   ]
 }
 
-js_unittest("install_linux_package_dialog_unittest.m") {
+js_unittest("install_linux_package_dialog_unittest") {
   deps = [
     ":install_linux_package_dialog",
     "//chrome/test/data/webui:chai_assert",
@@ -507,8 +523,8 @@ js_unittest("install_linux_package_dialog_unittest.m") {
 
 js_library("import_crostini_image_dialog") {
   deps = [
+    ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 
@@ -566,7 +582,7 @@ js_library("multi_menu_button") {
   ]
 }
 
-js_unittest("multi_menu_unittest.m") {
+js_unittest("multi_menu_unittest") {
   deps = [
     ":multi_menu_button",
     "//chrome/test/data/webui:chai_assert",
@@ -615,6 +631,26 @@ js_library("search_box") {
   externs_list = [ "//ui/file_manager/file_manager/externs/search_item.js" ]
 }
 
+js_library("splitter") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("splitter_unittest") {
+  deps = [
+    ":splitter",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("tree") {
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+}
+
 js_library("autocomplete_list") {
   deps = [
     "//ui/webui/resources/js:cr.m",
@@ -626,18 +662,19 @@ js_library("autocomplete_list") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
-    ":actions_submenu_unittest.m",
-    ":breadcrumb_unittest.m",
-    ":directory_tree_unittest.m",
-    ":file_list_selection_model_unittest.m",
-    ":file_manager_dialog_base_unittest.m",
-    ":file_table_list_unittest.m",
-    ":file_table_unittest.m",
-    ":file_tap_handler_unittest.m",
-    ":install_linux_package_dialog_unittest.m",
-    ":multi_menu_unittest.m",
+    ":actions_submenu_unittest",
+    ":breadcrumb_unittest",
+    ":directory_tree_unittest",
+    ":file_list_selection_model_unittest",
+    ":file_manager_dialog_base_unittest",
+    ":file_table_list_unittest",
+    ":file_table_unittest",
+    ":file_tap_handler_unittest",
+    ":install_linux_package_dialog_unittest",
+    ":multi_menu_unittest",
+    ":splitter_unittest",
   ]
   is_polymer3 = true
 
@@ -647,7 +684,7 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=./gen/ui/file_manager/",
                     "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",

@@ -409,6 +409,8 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   commit_completion_event_ = std::move(completion);
+  pending_commit_state()->previous_surfaces_visual_update_duration =
+      base::TimeDelta();
   return result;
 }
 
@@ -1104,6 +1106,11 @@ void LayerTreeHost::NotifyThroughputTrackerResults(
   client_->NotifyThroughputTrackerResults(std::move(results));
 }
 
+void LayerTreeHost::ReportEventLatency(
+    std::vector<EventLatencyTracker::LatencyData> latencies) {
+  client_->ReportEventLatency(std::move(latencies));
+}
+
 const base::WeakPtr<CompositorDelegateForInput>&
 LayerTreeHost::GetDelegateForInput() const {
   DCHECK(IsMainThread());
@@ -1512,6 +1519,13 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   pending_commit_state()->local_surface_id_from_parent =
       local_surface_id_from_parent;
 
+  // When we are switching to a new viz::LocalSurfaceId add our current visual
+  // update duration to that of previous surfaces, and clear out the total. So
+  // that we can begin to track the updates for this new Surface.
+  pending_commit_state()->previous_surfaces_visual_update_duration +=
+      pending_commit_state()->visual_update_duration;
+  pending_commit_state()->visual_update_duration = base::TimeDelta();
+
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has
   // advanced. Which means that child has changed visual properites, and the
@@ -1703,6 +1717,9 @@ void LayerTreeHost::SetMutatorsNeedRebuildPropertyTrees() {
 void LayerTreeHost::SetElementFilterMutated(ElementId element_id,
                                             ElementListType list_type,
                                             const FilterOperations& filters) {
+  if (list_type != ElementListType::ACTIVE)
+    return;
+
   if (IsUsingLayerLists()) {
     // In BlinkGenPropertyTrees/CompositeAfterPaint we always have property
     // tree nodes and can set the filter directly on the effect node.
@@ -1720,6 +1737,9 @@ void LayerTreeHost::SetElementBackdropFilterMutated(
     ElementId element_id,
     ElementListType list_type,
     const FilterOperations& backdrop_filters) {
+  if (list_type != ElementListType::ACTIVE)
+    return;
+
   if (IsUsingLayerLists()) {
     // In BlinkGenPropertyTrees/CompositeAfterPaint we always have property
     // tree nodes and can set the backdrop_filter directly on the effect node.
@@ -1738,6 +1758,9 @@ void LayerTreeHost::SetElementOpacityMutated(ElementId element_id,
                                              float opacity) {
   DCHECK_GE(opacity, 0.f);
   DCHECK_LE(opacity, 1.f);
+
+  if (list_type != ElementListType::ACTIVE)
+    return;
 
   if (IsUsingLayerLists()) {
     property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
@@ -1766,6 +1789,9 @@ void LayerTreeHost::SetElementTransformMutated(
     ElementId element_id,
     ElementListType list_type,
     const gfx::Transform& transform) {
+  if (list_type != ElementListType::ACTIVE)
+    return;
+
   if (IsUsingLayerLists()) {
     property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
                                                                    transform);
@@ -1939,6 +1965,11 @@ LayerTreeHost::TakeDocumentTransitionCallbacksForTesting() {
 uint32_t LayerTreeHost::GetAverageThroughput() const {
   DCHECK(IsMainThread());
   return proxy_->GetAverageThroughput();
+}
+
+void LayerTreeHost::IncrementVisualUpdateDuration(
+    base::TimeDelta visual_update_duration) {
+  pending_commit_state()->visual_update_duration += visual_update_duration;
 }
 
 }  // namespace cc

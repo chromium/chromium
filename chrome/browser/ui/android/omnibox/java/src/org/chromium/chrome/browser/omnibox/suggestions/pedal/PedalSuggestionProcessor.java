@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewProperties.PedalIcon;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,18 +41,17 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
      * @param editingTextProvider A means of accessing the text in the omnibox.
-     * @param iconBridgeSupplier A means of accessing the large icon bridge.
+     * @param faviconFetcher A means of accessing the large icon bridge.
      * @param bookmarkBridgeSupplier A means of accessing the bookmark information.
      * @param omniboxPedalDelegate A delegate that will responsible for pedals.
      */
     public PedalSuggestionProcessor(@NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
-            @NonNull BookmarkState bookmarkState,
+            @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             @NonNull AutocompleteDelegate autocompleteDelegate) {
-        super(context, suggestionHost, editingTextProvider, iconBridgeSupplier, bookmarkState);
+        super(context, suggestionHost, editingTextProvider, faviconFetcher, bookmarkState);
         mOmniboxPedalDelegate = omniboxPedalDelegate;
         mAutocompleteDelegate = autocompleteDelegate;
     }

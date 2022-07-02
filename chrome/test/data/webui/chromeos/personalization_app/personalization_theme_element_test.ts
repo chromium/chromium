@@ -44,7 +44,7 @@ suite('PersonalizationThemeTest', function() {
 
     assertEquals(
         personalizationThemeElement.i18n('themeLabel'),
-        personalizationThemeElement.shadowRoot!.querySelector('p')!.innerText);
+        personalizationThemeElement.shadowRoot!.querySelector('h2')!.innerText);
   });
 
   test('sets color mode in store on first load', async () => {
@@ -125,6 +125,10 @@ suite('PersonalizationThemeTest', function() {
         SetDarkModeEnabledAction;
     assertTrue(action.enabled);
     assertTrue(personalizationStore.data.theme.colorModeAutoScheduleEnabled);
+    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+
+    // reclicking the button does not disable auto mode.
+    radioButton.click();
     assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
   });
 });

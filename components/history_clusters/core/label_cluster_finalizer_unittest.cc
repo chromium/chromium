@@ -64,6 +64,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.raw_label, absl::nullopt);
     EXPECT_EQ(cluster.label, absl::nullopt);
   }
 
@@ -80,6 +81,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
   }
 
@@ -94,6 +96,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.raw_label, u"baz.com");
     EXPECT_EQ(cluster.label, u"baz.com and more");
   }
 
@@ -108,6 +111,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.raw_label, u"chosenlabel");
     EXPECT_EQ(cluster.label, u"chosenlabel");
   }
 }
@@ -144,6 +148,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   history::Cluster cluster;
   cluster.visits = {visit, visit2, visit3};
   FinalizeCluster(cluster);
+  EXPECT_THAT(cluster.raw_label, u"searchtermlabel");
   EXPECT_THAT(cluster.label, u"“searchtermlabel”");
 }
 

@@ -11,6 +11,7 @@
 @protocol BrowserCommands;
 @class NamedGuide;
 @class OmniboxTextFieldIOS;
+@protocol QRScannerCommands;
 
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
@@ -21,7 +22,7 @@
 // Notifies the delegate that a touch up occurred in the Camera Search button.
 - (void)keyboardAccessoryCameraSearchTouchUp;
 
-// Notifies the delegate that a key with the title |title| was pressed.
+// Notifies the delegate that a key with the title `title` was pressed.
 - (void)keyPressed:(NSString*)title;
 
 @end
@@ -31,9 +32,9 @@
 @interface OmniboxAssistiveKeyboardDelegateImpl
     : NSObject <OmniboxAssistiveKeyboardDelegate>
 
-// TODO(crbug.com/1323775): This should just be an id<QRScannerCommands> handler
-// (not named 'dispatcher').
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+@property(nonatomic, weak) id<BrowserCommands> browserCommandsHandler;
+@property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
 @property(nonatomic, weak) NamedGuide* voiceSearchButtonGuide;
 

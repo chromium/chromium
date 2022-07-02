@@ -56,7 +56,11 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
@@ -112,13 +116,9 @@
 
 namespace {
 
-NSString* const kSyncAndGoogleServicesImageName = @"sync_and_google_services";
-NSString* const kSyncAndGoogleServicesSyncErrorImageName =
-    @"google_services_sync_error";
-NSString* const kSyncAndGoogleServicesSyncOffImageName =
-    @"sync_and_google_services_sync_off";
-NSString* const kSyncAndGoogleServicesSyncOnImageName =
-    @"sync_and_google_services_sync_on";
+NSString* const kSyncErrorImageName = @"google_services_sync_error";
+NSString* const kSyncOffImageName = @"sync_and_google_services_sync_off";
+NSString* const kSyncOnImageName = @"sync_and_google_services_sync_on";
 NSString* const kSettingsGoogleServicesImageName = @"settings_google_services";
 NSString* const kSettingsSearchEngineImageName = @"settings_search_engine";
 NSString* const kLegacySettingsPasswordsImageName = @"legacy_settings_passwords";
@@ -206,7 +206,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
   Browser* _browser;
-  // The browser state for |_browser|. Never off the record.
+  // The browser state for `_browser`. Never off the record.
   ChromeBrowserState* _browserState;  // weak
   // Bridge for TemplateURLServiceObserver.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserverBridge;
@@ -324,7 +324,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         IdentityManagerFactory::GetForBrowserState(_browserState);
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
-    // It is expected that |identityManager| should never be nil except in
+    // It is expected that `identityManager` should never be nil except in
     // tests. In that case, the tests should be fixed.
     DCHECK(identityManager);
     _identityObserverBridge.reset(
@@ -468,13 +468,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if ([_contentSuggestionPolicyEnabled value]) {
-    [model addItem:self.articlesForYouItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  } else {
-    [model addItem:self.managedArticlesForYouItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  if (!IsFeedAblationEnabled()) {
+    if ([_contentSuggestionPolicyEnabled value]) {
+      [model addItem:self.articlesForYouItem
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+    } else {
+      [model addItem:self.managedArticlesForYouItem
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    }
   }
   [model addItem:[self languageSettingsDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -701,7 +704,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   syncItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   syncItem.accessibilityIdentifier = kSettingsGoogleSyncAndServicesCellId;
-  syncItem.image = [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
+  syncItem.image = [UIImage imageNamed:kSyncOffImageName];
   return syncItem;
 }
 
@@ -1168,18 +1171,22 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   switch (itemType) {
     case SettingsItemTypeSignInButton:
       signin_metrics::RecordSigninUserActionForAccessPoint(
-          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
       [self showSignInWithIdentity:nil
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NO_SIGNIN_PROMO
                         completion:nil];
       break;
-    case SettingsItemTypeAccount:
+    case SettingsItemTypeAccount: {
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-      controller = [[AccountsTableViewController alloc] initWithBrowser:_browser
-                                              closeSettingsOnAddAccount:NO];
+      AccountsTableViewController* accountsTableViewController =
+          [[AccountsTableViewController alloc] initWithBrowser:_browser
+                                     closeSettingsOnAddAccount:NO];
+      accountsTableViewController.applicationCommandsHandler =
+          self.applicationCommandsHandler;
+      controller = accountsTableViewController;
       break;
+    }
     case SettingsItemTypeGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showGoogleServices];
@@ -1271,10 +1278,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       controller = [[BandwidthManagementTableViewController alloc]
           initWithBrowserState:_browserState];
       break;
-    case SettingsItemTypeAboutChrome:
+    case SettingsItemTypeAboutChrome: {
       base::RecordAction(base::UserMetricsAction("AboutChrome"));
-      controller = [[AboutChromeTableViewController alloc] init];
+      AboutChromeTableViewController* aboutChromeTableViewController =
+          [[AboutChromeTableViewController alloc] init];
+      aboutChromeTableViewController.applicationCommandsHandler =
+          self.applicationCommandsHandler;
+      aboutChromeTableViewController.snackbarCommandsHandler =
+          self.snackbarCommandsHandler;
+      controller = aboutChromeTableViewController;
       break;
+    }
     case SettingsItemTypeMemoryDebugging:
     case SettingsItemTypeViewSource:
       // Taps on these don't do anything. They have a switch as accessory view
@@ -1451,7 +1465,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return !_passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
 }
 
-// Displays a red issue state on |_safetyCheckItem| if there is a reamining
+// Displays a red issue state on `_safetyCheckItem` if there is a reamining
 // issue for any of the checks.
 - (void)setSafetyCheckIssueStateUnsafe:(BOOL)isUnsafe {
   if (isUnsafe && PreviousSafetyCheckIssueFound()) {
@@ -1476,7 +1490,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_privacyCoordinator start];
 }
 
-// Sets the NSUserDefaults BOOL |value| for |key|.
+// Sets the NSUserDefaults BOOL `value` for `key`.
 - (void)setBooleanNSUserDefaultsValue:(BOOL)value forKey:(NSString*)key {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setBool:value forKey:key];
@@ -1532,66 +1546,19 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 }
 
-// Updates the Sync & Google services item to display the right icon and status
-// message in the detail text of the cell.
-- (void)updateSyncAndGoogleServicesItem:
-    (SettingsImageDetailTextItem*)googleServicesItem {
-  googleServicesItem.detailTextColor = nil;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(_browserState);
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // No sync status when the user is not signed-in.
-    googleServicesItem.detailText = nil;
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesImageName];
-  } else if (syncService->GetDisableReasons().Has(
-                 syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    googleServicesItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_STATUS);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
-  } else if (!syncSetupService->IsFirstSetupComplete()) {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SYNC_SETUP_IN_PROGRESS);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOnImageName];
-  } else if (!IsTransientSyncError(syncSetupService->GetSyncServiceState())) {
-    googleServicesItem.detailTextColor = [UIColor colorNamed:kRedColor];
-    googleServicesItem.detailText =
-        GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncErrorImageName];
-  } else if (syncSetupService->CanSyncFeatureStart()) {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOnImageName];
-  } else {
-    googleServicesItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_OFF);
-    googleServicesItem.image =
-        [UIImage imageNamed:kSyncAndGoogleServicesSyncOffImageName];
-  }
-  DCHECK(googleServicesItem.image);
-}
-
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
   switch (GetSyncStateFromBrowserState(_browserState)) {
     case kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+      googleSyncItem.iconImageName = kSyncOffImageName;
       break;
     }
     case kSyncOff:
     case kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOffImageName;
+      googleSyncItem.iconImageName = kSyncOffImageName;
       break;
     }
     case kSyncEnabledWithError: {
@@ -1599,7 +1566,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           SyncSetupServiceFactory::GetForBrowserState(_browserState);
       googleSyncItem.detailText =
           GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncErrorImageName;
+      googleSyncItem.iconImageName = kSyncErrorImageName;
 
       // Return a vertical layout of title / subtitle in the case of a sync
       // error.
@@ -1608,7 +1575,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case kSyncEnabled: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
-      googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncOnImageName;
+      googleSyncItem.iconImageName = kSyncOnImageName;
       break;
     }
     case kSyncDisabledByAdministrator:
@@ -1618,31 +1585,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // Needed to update the item text layout in the case that it was previously
   // set to UILayoutConstraintAxisVertical due to a sync error.
   googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
-}
-
-// Updates and reloads the Google service cell.
-- (void)reloadSyncAndGoogleServicesCell {
-  if (!_syncItem)
-    return;
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    NSIndexPath* itemIndexPath =
-        [self.tableViewModel indexPathForItem:_syncItem];
-    [self.tableViewModel removeItemWithType:SettingsItemTypeGoogleSync
-                  fromSectionWithIdentifier:SettingsSectionIdentifierAccount];
-    _syncItem = [self syncItem];
-    [self.tableViewModel insertItem:_syncItem
-            inSectionWithIdentifier:SettingsSectionIdentifierAccount
-                            atIndex:itemIndexPath.row];
-    [self.tableView reloadRowsAtIndexPaths:@[ itemIndexPath ]
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-    return;
-  }
-  [self.tableViewModel removeItemWithType:SettingsItemTypeGoogleSync
-                fromSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  _syncItem = nil;
 }
 
 // Check if the default search engine is managed by policy.
@@ -1676,7 +1618,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  [self.dispatcher showSignin:command baseViewController:self];
+  [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
 #pragma mark Sign in
@@ -1688,7 +1630,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_SIGNIN
+      initWithOperation:AuthenticationOperationSigninAndSync
                identity:identity
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:promoAction
@@ -1697,7 +1639,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                    completion(success);
                  [weakSelf didFinishSignin:success];
                }];
-  [self.dispatcher showSignin:command baseViewController:self];
+  [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
 - (void)didFinishSignin:(BOOL)signedIn {
@@ -1767,7 +1709,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  [self reloadSyncAndGoogleServicesCell];
   [self updateSigninSection];
   // The Identity section may be added or removed depending on sign-in is
   // allowed. Reload all sections in the model to account for the change.

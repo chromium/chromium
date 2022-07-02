@@ -101,7 +101,7 @@ bool DoScheme(const CHAR* spec,
               const Component& scheme,
               CanonOutput* output,
               Component* out_scheme) {
-  if (scheme.len <= 0) {
+  if (!scheme.is_nonempty()) {
     // Scheme is unspecified or empty, convert to empty by appending a colon.
     *out_scheme = Component(output->length(), 0);
     output->push_back(':');
@@ -117,12 +117,13 @@ bool DoScheme(const CHAR* spec,
   // FindAndCompareScheme, which could cause some security checks on
   // schemes to be incorrect.
   bool success = true;
-  int end = scheme.end();
-  for (int i = scheme.begin; i < end; i++) {
+  size_t begin = static_cast<size_t>(scheme.begin);
+  size_t end = static_cast<size_t>(scheme.end());
+  for (size_t i = begin; i < end; i++) {
     UCHAR ch = static_cast<UCHAR>(spec[i]);
     char replacement = 0;
     if (ch < 0x80) {
-      if (i == scheme.begin) {
+      if (i == begin) {
         // Need to do a special check for the first letter of the scheme.
         if (IsSchemeFirstChar(static_cast<unsigned char>(ch)))
           replacement = kSchemeCanonical[ch];
@@ -179,8 +180,9 @@ bool DoUserInfo(const CHAR* username_spec,
   out_username->begin = output->length();
   if (username.len > 0) {
     // This will escape characters not valid for the username.
-    AppendStringOfType(&username_spec[username.begin], username.len,
-                       CHAR_USERINFO, output);
+    AppendStringOfType(&username_spec[username.begin],
+                       static_cast<size_t>(username.len), CHAR_USERINFO,
+                       output);
   }
   out_username->len = output->length() - out_username->begin;
 
@@ -189,8 +191,9 @@ bool DoUserInfo(const CHAR* username_spec,
   if (password.len > 0) {
     output->push_back(':');
     out_password->begin = output->length();
-    AppendStringOfType(&password_spec[password.begin], password.len,
-                       CHAR_USERINFO, output);
+    AppendStringOfType(&password_spec[password.begin],
+                       static_cast<size_t>(password.len), CHAR_USERINFO,
+                       output);
     out_password->len = output->length() - out_password->begin;
   } else {
     *out_password = Component();
@@ -223,7 +226,8 @@ bool DoPort(const CHAR* spec,
     // what the error was, and mark the URL as invalid by returning false.
     output->push_back(':');
     out_port->begin = output->length();
-    AppendInvalidNarrowString(spec, port.begin, port.end(), output);
+    AppendInvalidNarrowString(spec, static_cast<size_t>(port.begin),
+                              static_cast<size_t>(port.end()), output);
     out_port->len = output->length() - out_port->begin;
     return false;
   }
@@ -285,7 +289,7 @@ void DoCanonicalizeRef(const CHAR* spec,
                        const Component& ref,
                        CanonOutput* output,
                        Component* out_ref) {
-  if (ref.len < 0) {
+  if (!ref.is_valid()) {
     // Common case of no ref.
     *out_ref = Component();
     return;
@@ -297,8 +301,8 @@ void DoCanonicalizeRef(const CHAR* spec,
   out_ref->begin = output->length();
 
   // Now iterate through all the characters, converting to UTF-8 and validating.
-  int end = ref.end();
-  for (int i = ref.begin; i < end; i++) {
+  size_t end = static_cast<size_t>(ref.end());
+  for (size_t i = static_cast<size_t>(ref.begin); i < end; i++) {
     UCHAR current_char = static_cast<UCHAR>(spec[i]);
     if (current_char < 0x80) {
       if (kShouldEscapeCharInFragment[current_char])

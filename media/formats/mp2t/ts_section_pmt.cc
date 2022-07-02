@@ -105,8 +105,10 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Once the PMT has been proved to be correct, register the PIDs.
-  for (const auto& it : pid_map)
-    register_pes_cb_.Run(it.first, it.second.first, it.second.second);
+  for (const auto& [pid_es, stream_info] : pid_map) {
+    const auto& [stream_type, descriptors] = stream_info;
+    register_pes_cb_.Run(pid_es, stream_type, descriptors);
+  }
 
   return true;
 }

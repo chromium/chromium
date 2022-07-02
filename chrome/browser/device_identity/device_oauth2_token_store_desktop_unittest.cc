@@ -15,6 +15,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+const char kTestRobotEmail[] = "foo@system.gserviceaccount.com";
+const char kTestOtherRobotEmail[] = "bar@system.gserviceaccount.com";
+
 class TestObserver : public DeviceOAuth2TokenStore::Observer {
  public:
   int called_count() const { return called_count_; }
@@ -70,7 +74,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
   scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 "foo@g.com");
+                                                 kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
@@ -92,13 +96,14 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
   store.Init(base::BindOnce([](bool, bool) {}));
 
   EXPECT_EQ(1, observer.called_count());
-  EXPECT_EQ(store.GetAccountId(), CoreAccountId::FromEmail("foo@g.com"));
+  EXPECT_EQ(store.GetAccountId(),
+            CoreAccountId::FromRobotEmail(kTestRobotEmail));
   EXPECT_EQ(store.GetRefreshToken(), token);
 }
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
   scoped_testing_local_state()->Get()->SetString(kCBCMServiceAccountEmail,
-                                                 "foo@g.com");
+                                                 kTestRobotEmail);
 
   std::string token = "test_token";
   std::string encrypted_token;
@@ -121,10 +126,11 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 
   EXPECT_EQ(1, test_observer.called_count());
 
-  EXPECT_EQ(store.GetAccountId(), CoreAccountId::FromEmail("foo@g.com"));
+  EXPECT_EQ(store.GetAccountId(),
+            CoreAccountId::FromRobotEmail(kTestRobotEmail));
   EXPECT_EQ(store.GetRefreshToken(), token);
 
-  store.SetAccountEmail("bar@g.com");
+  store.SetAccountEmail(kTestOtherRobotEmail);
 
   EXPECT_EQ(2, test_observer.called_count());
 }

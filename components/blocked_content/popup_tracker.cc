@@ -50,7 +50,7 @@ PopupTracker::PopupTracker(content::WebContents* contents,
       visibility_tracker_(
           base::DefaultTickClock::GetInstance(),
           contents->GetVisibility() != content::Visibility::HIDDEN),
-      opener_source_id_(opener->GetMainFrame()->GetPageUkmSourceId()),
+      opener_source_id_(opener->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       window_open_disposition_(disposition) {
   if (auto* popup_opener = PopupOpenerTabHelper::FromWebContents(opener))
     popup_opener->OnOpenedPopup(this);

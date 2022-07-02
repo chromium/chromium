@@ -28,6 +28,8 @@ source_set("wayland") {
     "wayland_display_observer.h",
     "wayland_display_output.cc",
     "wayland_display_output.h",
+    "wayland_display_util.cc",
+    "wayland_display_util.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
     "wayland_pointer_delegate.cc",
@@ -73,6 +75,7 @@ source_set("wayland") {
     "//components/exo",
     "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//device/gamepad",
@@ -142,15 +145,6 @@ source_set("wayland") {
 
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
-  }
-
-  if (is_chromecast) {
-    defines += [ "USE_FULLSCREEN_SHELL" ]
-    sources += [
-      "zwp_fullscreen_shell.cc",
-      "zwp_fullscreen_shell.h",
-    ]
-    deps += [ "//third_party/wayland-protocols:fullscreen_shell_protocol" ]
   }
 
   if (is_chromeos_ash) {
@@ -240,6 +234,7 @@ static_library("weston_test") {
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:weston_test",
     "//ui/base:test_support",
+    "//ui/compositor",
     "//ui/wm",
   ]
   sources = [ "weston_test.cc" ]
@@ -283,6 +278,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "wayland_display_observer_unittest.cc",
+      "wayland_display_util_unittest.cc",
       "wayland_keyboard_delegate_unittest.cc",
       "wayland_positioner_unittest.cc",
       "zaura_shell_unittest.cc",
@@ -294,6 +291,7 @@ source_set("unit_tests") {
       "//ash:test_support",
       "//ash/public/cpp",
       "//third_party/wayland-protocols:remote_shell_protocol",
+      "//third_party/wayland-protocols:xdg_output_protocol",
       "//third_party/wayland-protocols:xdg_shell_protocol",
       "//ui/compositor",
       "//ui/compositor:test_support",
@@ -606,6 +604,7 @@ test("wayland_client_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "clients/capability_binding_test.cc",
     "clients/interface_binding_test.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -614,7 +613,10 @@ test("wayland_client_tests") {
     ":client_support",
     ":client_version_test",
     ":wayland_client_test_helper",
+    "//components/exo",
+    "//components/exo/wayland",
     "//ui/base",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 
@@ -661,6 +663,7 @@ test("wayland_client_perftests") {
     "//testing/perf",
     "//ui/aura:test_support",
     "//ui/base",
+    "//ui/color:color",
     "//ui/compositor:test_support",
     "//ui/gl:test_support",
   ]
@@ -706,6 +709,7 @@ test("wayland_client_compatibility_tests") {
     "//components/exo/wayland/compatibility_test:generated_client_helper_headers",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 
@@ -718,7 +722,10 @@ test("wayland_client_compatibility_tests") {
 
 if (ozone_platform_drm) {
   test("wayland_client_integration_tests") {
-    sources = [ "clients/wayland_client_integration_tests.cc" ]
+    sources = [
+      "test/integration/buffer_checker_test.cc",
+      "test/integration/wayland_client_integration_tests_main.cc",
+    ]
     deps = [
       ":client_support",
       "//base",

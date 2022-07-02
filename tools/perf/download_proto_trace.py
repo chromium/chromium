@@ -14,8 +14,8 @@ path_util.AddPyUtilsToPath()
 
 from cli_tools.tbmv3 import trace_downloader
 
-EXAMPLE_TRACE = ('https://console.developers.google.com/m/cloudstorage/b/'
-                 'chrome-telemetry-output/o/20201029T003106_99943/'
+EXAMPLE_TRACE = ('https://storage.cloud.google.com/'
+                 'chrome-telemetry-output/20201029T003106_99943/'
                  'v8.browsing_mobile/browse_shopping_amazon_2019/'
                  'retry_0/trace.html')
 

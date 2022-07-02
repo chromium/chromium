@@ -5,30 +5,30 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 
 namespace ash {
 
 ScopedLightModeAsDefault::ScopedLightModeAsDefault()
     : previous_override_light_mode_as_default_(
-          AshColorProvider::Get()->override_light_mode_as_default_) {
-  AshColorProvider::Get()->override_light_mode_as_default_ = true;
+          DarkLightModeControllerImpl::Get()->override_light_mode_as_default_) {
+  DarkLightModeControllerImpl::Get()->override_light_mode_as_default_ = true;
 }
 
 ScopedLightModeAsDefault::~ScopedLightModeAsDefault() {
-  AshColorProvider::Get()->override_light_mode_as_default_ =
+  DarkLightModeControllerImpl::Get()->override_light_mode_as_default_ =
       previous_override_light_mode_as_default_;
 }
 
 ScopedAssistantLightModeAsDefault::ScopedAssistantLightModeAsDefault()
     : previous_override_light_mode_as_default_(
-          AshColorProvider::Get()->override_light_mode_as_default_) {
+          DarkLightModeControllerImpl::Get()->override_light_mode_as_default_) {
   if (!features::IsProductivityLauncherEnabled())
-    AshColorProvider::Get()->override_light_mode_as_default_ = true;
+    DarkLightModeControllerImpl::Get()->override_light_mode_as_default_ = true;
 }
 
 ScopedAssistantLightModeAsDefault::~ScopedAssistantLightModeAsDefault() {
-  AshColorProvider::Get()->override_light_mode_as_default_ =
+  DarkLightModeControllerImpl::Get()->override_light_mode_as_default_ =
       previous_override_light_mode_as_default_;
 }
 

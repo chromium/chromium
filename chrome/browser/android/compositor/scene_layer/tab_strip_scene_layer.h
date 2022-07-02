@@ -74,6 +74,7 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat y,
       jfloat width,
       jfloat height,
+      jfloat touch_target_offset,
       jboolean visible,
       jint tint,
       jfloat button_alpha,

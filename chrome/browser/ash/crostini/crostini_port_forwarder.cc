@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -81,13 +82,13 @@ bool CrostiniPortForwarder::MatchPortRuleDict(const base::Value& dict,
   return (port_number && port_number.value() == key.port_number) &&
          (protocol_type &&
           protocol_type.value() == static_cast<int>(key.protocol_type)) &&
-         ContainerId(dict) == ContainerId(key.container_id);
+         guest_os::GuestId(dict) == guest_os::GuestId(key.container_id);
 }
 
 bool CrostiniPortForwarder::MatchPortRuleContainerId(
     const base::Value& dict,
-    const ContainerId& container_id) {
-  return ContainerId(dict) == container_id;
+    const guest_os::GuestId& container_id) {
+  return guest_os::GuestId(dict) == container_id;
 }
 
 void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
@@ -100,8 +101,9 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
   new_port_metadata.SetIntKey(kPortProtocolKey,
                               static_cast<int>(key.protocol_type));
   new_port_metadata.SetStringKey(kPortLabelKey, label);
-  new_port_metadata.SetStringKey(prefs::kVmKey, key.container_id.vm_name);
-  new_port_metadata.SetStringKey(prefs::kContainerKey,
+  new_port_metadata.SetStringKey(guest_os::prefs::kVmNameKey,
+                                 key.container_id.vm_name);
+  new_port_metadata.SetStringKey(guest_os::prefs::kContainerNameKey,
                                  key.container_id.container_name);
   all_ports->Append(std::move(new_port_metadata));
 }
@@ -155,7 +157,7 @@ void CrostiniPortForwarder::OnRemoveOrDeactivatePortCompleted(
 
 void CrostiniPortForwarder::TryActivatePort(
     const PortRuleKey& key,
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::OnceCallback<void(bool)> result_callback) {
   auto info =
       CrostiniManager::GetForProfile(profile_)->GetContainerInfo(container_id);
@@ -202,7 +204,7 @@ void CrostiniPortForwarder::TryActivatePort(
 
 void CrostiniPortForwarder::TryDeactivatePort(
     const PortRuleKey& key,
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::OnceCallback<void(bool)> result_callback) {
   auto info =
       CrostiniManager::GetForProfile(profile_)->GetContainerInfo(container_id);
@@ -239,7 +241,7 @@ void CrostiniPortForwarder::TryDeactivatePort(
   }
 }
 
-void CrostiniPortForwarder::AddPort(const ContainerId& container_id,
+void CrostiniPortForwarder::AddPort(const guest_os::GuestId& container_id,
                                     uint16_t port_number,
                                     const Protocol& protocol_type,
                                     const std::string& label,
@@ -260,7 +262,7 @@ void CrostiniPortForwarder::AddPort(const ContainerId& container_id,
                std::move(result_callback));
 }
 
-void CrostiniPortForwarder::ActivatePort(const ContainerId& container_id,
+void CrostiniPortForwarder::ActivatePort(const guest_os::GuestId& container_id,
                                          uint16_t port_number,
                                          const Protocol& protocol_type,
                                          ResultCallback result_callback) {
@@ -290,10 +292,11 @@ void CrostiniPortForwarder::ActivatePort(const ContainerId& container_id,
                                          std::move(on_activate_port_completed));
 }
 
-void CrostiniPortForwarder::DeactivatePort(const ContainerId& container_id,
-                                           uint16_t port_number,
-                                           const Protocol& protocol_type,
-                                           ResultCallback result_callback) {
+void CrostiniPortForwarder::DeactivatePort(
+    const guest_os::GuestId& container_id,
+    uint16_t port_number,
+    const Protocol& protocol_type,
+    ResultCallback result_callback) {
   PortRuleKey existing_port_key = {
       .port_number = port_number,
       .protocol_type = protocol_type,
@@ -314,7 +317,7 @@ void CrostiniPortForwarder::DeactivatePort(const ContainerId& container_id,
       existing_port_key, container_id, std::move(on_deactivate_port_completed));
 }
 
-void CrostiniPortForwarder::RemovePort(const ContainerId& container_id,
+void CrostiniPortForwarder::RemovePort(const guest_os::GuestId& container_id,
                                        uint16_t port_number,
                                        const Protocol& protocol_type,
                                        ResultCallback result_callback) {
@@ -339,7 +342,7 @@ void CrostiniPortForwarder::RemovePort(const ContainerId& container_id,
 }
 
 void CrostiniPortForwarder::DeactivateAllActivePorts(
-    const ContainerId& container_id) {
+    const guest_os::GuestId& container_id) {
   auto it = forwarded_ports_.begin();
   while (it != forwarded_ports_.end()) {
     if (it->first.container_id == container_id) {
@@ -352,7 +355,8 @@ void CrostiniPortForwarder::DeactivateAllActivePorts(
   SignalActivePortsChanged();
 }
 
-void CrostiniPortForwarder::RemoveAllPorts(const ContainerId& container_id) {
+void CrostiniPortForwarder::RemoveAllPorts(
+    const guest_os::GuestId& container_id) {
   PrefService* pref_service = profile_->GetPrefs();
   ListPrefUpdate update(pref_service, crostini::prefs::kCrostiniPortForwarding);
   update->EraseListValueIf([&container_id, this](const auto& dict) {

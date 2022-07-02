@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -99,12 +101,62 @@ public class TabUtils {
         if (forcedByUser) {
             @TabUserAgent
             int tabUserAgent = switchToDesktop ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;
-            if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)
-                    && isDesktopSiteGlobalEnabled(Profile.fromWebContents(tab.getWebContents()))
-                            == switchToDesktop) {
+            if (isDesktopSiteGlobalEnabled(Profile.fromWebContents(tab.getWebContents()))
+                    == switchToDesktop) {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
             CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+        }
+    }
+
+    /**
+     * Get UseDesktopUserAgent setting from webContents.
+     * @param webContents The webContents used to retrieve UseDesktopUserAgent setting.
+     * @return Whether the webContents is set to use desktop user agent.
+     */
+    public static boolean isUsingDesktopUserAgent(WebContents webContents) {
+        return webContents != null
+                && webContents.getNavigationController().getUseDesktopUserAgent();
+    }
+
+    /**
+     * Get tabUserAgent from the tab, which represents the tab level RDS setting.
+     * @param tab The tab used to retrieve tabUserAgent.
+     * @return The tab level RDS setting.
+     */
+    public static @TabUserAgent int getTabUserAgent(Tab tab) {
+        @TabUserAgent
+        int tabUserAgent = CriticalPersistedTabData.from(tab).getUserAgent();
+        WebContents webContents = tab.getWebContents();
+        boolean currentRequestDesktopSite = isUsingDesktopUserAgent(webContents);
+        // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
+        // we set the TabUserAgent bit based on last committed entry's user agent. If webContents is
+        // null, this method is triggered too early, and we cannot read the last committed entry's
+        // user agent yet. We will skip for now and let the following call set the TabUserAgent bit.
+        if (webContents != null && tabUserAgent == TabUserAgent.UNSET) {
+            if (currentRequestDesktopSite) {
+                tabUserAgent = TabUserAgent.DESKTOP;
+            } else {
+                tabUserAgent = TabUserAgent.DEFAULT;
+            }
+            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+        }
+        return tabUserAgent;
+    }
+
+    /**
+     * Read Request Desktop Site ContentSettings.
+     * @param profile The profile used to retrieve ContentSettings.
+     * @param webContents The webContents used to retrieve Url for site level setting.
+     * @return Whether Request Desktop Site is enabled in ContentSettings.
+     */
+    public static boolean readRequestDesktopSiteContentSettings(
+            Profile profile, WebContents webContents) {
+        if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
+            return webContents != null
+                    && TabUtils.isDesktopSiteEnabled(profile, webContents.getVisibleUrl());
+        } else {
+            return TabUtils.isDesktopSiteGlobalEnabled(profile);
         }
     }
 
@@ -175,5 +227,48 @@ public class TabUtils {
         }
         float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
         return MathUtils.clamp(value, 0.5f, 2.0f);
+    }
+
+    /**
+     * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
+     * @param cardWidthPx width of the card
+     * @param context to derive view margins
+     * @return computed card height.
+     */
+    public static int deriveGridCardHeight(int cardWidthPx, Context context) {
+        int tabThumbnailHeight = (int) ((cardWidthPx - getThumbnailWidthDiff(context))
+                / getTabThumbnailAspectRatio(context));
+        int cardHeightPx = tabThumbnailHeight + getThumbnailHeightDiff(context);
+        return cardHeightPx;
+    }
+
+    /**
+     * Derive thumbnail size based on parent card size.
+     * @param gridCardWidth width of parent card.
+     * @param gridCardHeight height of parent card.
+     * @param context to derive view margins.
+     * @return computed width and height of thumbnail.
+     */
+    public static Size deriveThumbnailSize(int gridCardWidth, int gridCardHeight, Context context) {
+        int thumbnailWidth = gridCardWidth - getThumbnailWidthDiff(context);
+        int thumbnailHeight = gridCardHeight - getThumbnailHeightDiff(context);
+        return new Size(thumbnailWidth, thumbnailHeight);
+    }
+
+    private static int getThumbnailHeightDiff(Context context) {
+        final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
+        final int thumbnailMargin = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        int heightMargins = (2 * tabGridCardMargin) + thumbnailMargin;
+        final int titleHeight = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_list_card_title_height);
+        return titleHeight + heightMargins;
+    }
+
+    private static int getThumbnailWidthDiff(Context context) {
+        final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
+        final int thumbnailMargin = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        return 2 * (tabGridCardMargin + thumbnailMargin);
     }
 }

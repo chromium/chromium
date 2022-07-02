@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -116,7 +116,7 @@ void ArcBootPhaseMonitorBridge::OnBootCompleted() {
   VLOG(2) << "OnBootCompleted";
   boot_completed_ = true;
 
-  chromeos::SessionManagerClient::Get()->EmitArcBooted(
+  ash::SessionManagerClient::Get()->EmitArcBooted(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
       base::BindOnce(&OnEmitArcBooted));
 

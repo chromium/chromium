@@ -478,11 +478,6 @@ TEST_F(V4LocalDatabaseManagerTest, TestGetThreatSource) {
             v4_local_database_manager_->GetThreatSource());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestIsSupported) {
-  WaitForTasksOnTaskRunner();
-  EXPECT_TRUE(v4_local_database_manager_->IsSupported());
-}
-
 TEST_F(V4LocalDatabaseManagerTest, TestCanCheckUrl) {
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(

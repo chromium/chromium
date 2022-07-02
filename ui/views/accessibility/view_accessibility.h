@@ -104,6 +104,17 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideDescription(const std::string& description);
   void OverrideDescription(const std::u16string& description);
 
+  // Sets the platform-specific accessible name/title property of the
+  // NativeViewAccessible window. This is needed on platforms where the name
+  // of the NativeViewAccessible window is automatically calculated by the
+  // platform's accessibility API. For instance on the Mac, the label of the
+  // NativeWidgetMacNSWindow of a JavaScript alert is taken from the name of
+  // the child RootView. Note: the first function does the string conversion
+  // and calls the second, thus only the latter needs to be implemented by
+  // interested platforms.
+  void OverrideNativeWindowTitle(const std::u16string& title);
+  virtual void OverrideNativeWindowTitle(const std::string& title);
+
   // Sets whether this View hides all its descendants from the accessibility
   // tree that is exposed to platform APIs. This is similar, but not exactly
   // identical to aria-hidden="true".
@@ -188,7 +199,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // Adds |virtual_view| as a child of this View at an index.
   // We take ownership of our virtual children.
   void AddVirtualChildViewAt(std::unique_ptr<AXVirtualView> virtual_view,
-                             int index);
+                             size_t index);
 
   // Removes |virtual_view| from this View. The virtual view's parent will
   // change to nullptr. Hands ownership back to the caller.
@@ -205,9 +216,9 @@ class VIEWS_EXPORT ViewAccessibility {
   // View, even as an indirect descendant.
   bool Contains(const AXVirtualView* virtual_view) const;
 
-  // Returns the index of |virtual_view|, or -1 if |virtual_view| is not a child
-  // of this View.
-  int GetIndexOf(const AXVirtualView* virtual_view) const;
+  // Returns the index of |virtual_view|, or nullopt if |virtual_view| is not a
+  // child of this View.
+  absl::optional<size_t> GetIndexOf(const AXVirtualView* virtual_view) const;
 
   // Returns the native accessibility object associated with the AXVirtualView
   // descendant that is currently focused. If no virtual descendants are

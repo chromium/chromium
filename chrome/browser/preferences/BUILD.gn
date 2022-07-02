@@ -53,10 +53,7 @@ generate_jni("jni_headers") {
   sources = [ "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java" ]
 }
 
-java_library("preferences_junit_tests") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("preferences_junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyCheckerTest.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java",

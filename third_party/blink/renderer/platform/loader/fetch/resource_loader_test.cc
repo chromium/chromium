@@ -9,7 +9,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "net/base/features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -30,6 +34,7 @@
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -107,6 +112,9 @@ class ResourceLoaderTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
   }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -788,6 +796,108 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   CnameAliasMetricInfo info = {.has_aliases = false};
 
   ExpectHistogramsMatching(info);
+}
+
+class ResourceLoaderCacheTransparencyTest : public ResourceLoaderTest {
+ public:
+  ResourceLoaderCacheTransparencyTest() = default;
+  ~ResourceLoaderCacheTransparencyTest() override = default;
+
+  void SetUp() override {
+    std::string pervasive_payloads_params =
+        "1,http://127.0.0.1:4353/pervasive.js,"
+        "87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3";
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kPervasivePayloadsList,
+          {{"pervasive-payloads", pervasive_payloads_params}}},
+         {network::features::kCacheTransparency, {}},
+         {net::features::kSplitCacheByNetworkIsolationKey, {}}},
+        {/* disabled_features */});
+
+    ResourceLoaderTest::SetUp();
+  }
+
+  const ukm::TestUkmRecorder* GetUkmRecorder() {
+    return scoped_fake_ukm_recorder_.recorder();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
+};
+
+TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadRequested) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("http://127.0.0.1:4353/pervasive.js");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  loader->DidReceiveResponse(WrappedResourceResponse(response));
+  loader->DidFinishLoading(base::TimeTicks(),
+                           /*encoded_data_length=*/0,
+                           /*encoded_body_length=*/0,
+                           /*decoded_body_length=*/0,
+                           /*should_report_corb_blocking=*/false,
+                           /*pervasive_payload_requested=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check UKM recording
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Network_CacheTransparency::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  GetUkmRecorder()->ExpectEntryMetric(
+      entry,
+      ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
+      true);
+}
+
+TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadNotRequested) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("http://127.0.0.1:4353/cacheable.js");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  loader->DidReceiveResponse(WrappedResourceResponse(response));
+  loader->DidFinishLoading(base::TimeTicks(),
+                           /*encoded_data_length=*/0,
+                           /*encoded_body_length=*/0,
+                           /*decoded_body_length=*/0,
+                           /*should_report_corb_blocking=*/false,
+                           /*pervasive_payload_requested=*/false);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check UKM recording
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Network_CacheTransparency::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  GetUkmRecorder()->ExpectEntryMetric(
+      entry,
+      ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
+      false);
 }
 
 }  // namespace blink

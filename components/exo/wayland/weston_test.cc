@@ -19,9 +19,11 @@
 #include "components/exo/wm_helper.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -68,6 +70,17 @@ using WestonTestState = WestonTest::WestonTestState;
 
 constexpr uint32_t kWestonTestVersion = 1;
 
+int WaylandToUIControlsTouchType(int type) {
+  switch (type) {
+    case WL_TOUCH_DOWN:
+      return ui_controls::PRESS;
+    case WL_TOUCH_UP:
+      return ui_controls::RELEASE;
+    default:
+      return ui_controls::MOVE;
+  }
+}
+
 static void weston_test_move_surface(struct wl_client* client,
                                      struct wl_resource* resource,
                                      struct wl_resource* surface_resource,
@@ -87,15 +100,14 @@ static void weston_test_move_pointer(struct wl_client* client,
   auto* weston_test = GetUserDataAs<WestonTestState>(resource);
 
   // Convert cursor point from window space to root space
-  gfx::Point point_in_root(x, y);
+  gfx::Point point_in_screen(x, y);
   if (surface_resource) {
     aura::Window* window = GetUserDataAs<Surface>(surface_resource)->window();
-    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                       &point_in_root);
+    wm::ConvertPointToScreen(window, &point_in_screen);
   }
   base::RunLoop run_loop;
-  ui_controls::SendMouseMoveNotifyWhenDone(point_in_root.x(), point_in_root.y(),
-                                           run_loop.QuitClosure());
+  ui_controls::SendMouseMoveNotifyWhenDone(
+      point_in_screen.x(), point_in_screen.y(), run_loop.QuitClosure());
   {
     // Do not process incoming wayland events which may destroy resources.
     ScopedEventDispatchDisabler disable(weston_test->server);
@@ -103,7 +115,8 @@ static void weston_test_move_pointer(struct wl_client* client,
   }
 
   // TODO(https://crbug.com/1284726): This should not be necessary.
-  weston_test_send_pointer_position(resource, x, y);
+  weston_test_send_pointer_position(resource, wl_fixed_from_int(x),
+                                    wl_fixed_from_int(y));
 }
 
 static void weston_test_send_button(struct wl_client* client,
@@ -296,7 +309,20 @@ static void weston_test_send_touch(struct wl_client* client,
                                    wl_fixed_t x,
                                    wl_fixed_t y,
                                    uint32_t touch_type) {
-  NOTIMPLEMENTED();
+  auto* weston_test = GetUserDataAs<WestonTestState>(resource);
+
+  base::RunLoop run_loop;
+  ui_controls::SendTouchEventsNotifyWhenDone(
+      WaylandToUIControlsTouchType(touch_type), touch_id, wl_fixed_to_int(x),
+      wl_fixed_to_int(y), run_loop.QuitClosure());
+  {
+    // Do not process incoming wayland events which may destroy resources.
+    ScopedEventDispatchDisabler disable(weston_test->server);
+    run_loop.Run();
+  }
+
+  // TODO(https://crbug.com/1284726): This should not be necessary.
+  weston_test_send_touch_received(resource, x, y);
 }
 
 const struct weston_test_interface weston_test_implementation = {
@@ -322,6 +348,8 @@ void bind_weston_test(wl_client* client,
 
 WestonTest::WestonTest(Server* server)
     : data_(std::make_unique<WestonTestState>(server)) {
+  ui::CompositorAnimationObserver::DisableCheckActiveDuration();
+
   wl_global_create(server->GetWaylandDisplay(), &weston_test_interface,
                    kWestonTestVersion, data_.get(), bind_weston_test);
 }

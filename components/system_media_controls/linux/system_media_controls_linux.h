@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -135,7 +136,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   std::unique_ptr<DbusProperties> properties_;
 
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ExportedObject* exported_object_;
+  raw_ptr<dbus::ExportedObject> exported_object_;
 
   // The generated service name given to |bus_| when requesting ownership.
   const std::string service_name_;

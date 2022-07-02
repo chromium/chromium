@@ -5,6 +5,7 @@
 #include "ash/system/unified/date_tray.h"
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -14,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
@@ -38,6 +40,10 @@ bool DateTray::PerformAction(const ui::Event& event) {
   if (is_active()) {
     unified_system_tray_->CloseBubble();
   } else {
+    // Need to set the date tray as active before notifying the system tray of
+    // an action because we need the system tray to know that the date tray is
+    // already active when it is creating the `UnifiedSystemTrayBubble`.
+    SetIsActive(true);
     unified_system_tray_->OnDateTrayActionPerformed(event);
   }
 
@@ -57,10 +63,12 @@ void DateTray::HandleLocaleChange() {
 
 std::u16string DateTray::GetAccessibleNameForTray() {
   base::Time now = base::Time::Now();
-  return base::TimeFormatTimeOfDayWithHourClockType(
-             now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
-             base::kKeepAmPm) +
-         u", " + base::TimeFormatFriendlyDate(now);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatFriendlyDate(now),
+      base::TimeFormatTimeOfDayWithHourClockType(
+          now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+          base::kKeepAmPm));
 }
 
 void DateTray::UpdateLayout() {

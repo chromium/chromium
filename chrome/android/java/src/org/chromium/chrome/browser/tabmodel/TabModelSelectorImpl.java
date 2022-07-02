@@ -214,6 +214,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 @Override
                 public void run() {
                     notifyChanged();
+                    // The tab model has changed to regular and all the visual elements wrt regular
+                    // mode is in-place. We can now signal the re-auth to hide the dialog.
+                    if (mIncognitoReauthDialogDelegate != null && !newModel.isIncognito()) {
+                        mIncognitoReauthDialogDelegate.onAfterRegularTabModelChanged();
+                    }
                 }
             });
         }

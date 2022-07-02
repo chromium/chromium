@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include <cstdio>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -36,9 +38,11 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -54,26 +58,22 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/tether_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-using chromeos::DBusThreadManager;
-using chromeos::UpdateEngineClient;
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
@@ -172,20 +172,26 @@ bool IsAppInstalled(std::string app_id) {
 }
 
 void OpenInBrowser(const GURL& event_url) {
-  ash::NewWindowDelegate* primary_delegate =
-      ash::NewWindowDelegate::GetPrimary();
-  if (!primary_delegate) {
-    LOG(ERROR) << __FUNCTION__ << " failed to get primary window delegate";
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    auto* browser_manager = crosapi::BrowserManager::Get();
+    browser_manager->SwitchToTab(
+        event_url,
+        /*path_behavior=*/NavigateParams::IGNORE_AND_NAVIGATE);
     return;
   }
 
-  primary_delegate->OpenUrl(event_url,
-                            ash::NewWindowDelegate::OpenUrlFrom::kUnspecified);
+  // Lacros is not the primary browser, so use this workaround.
+  chrome::ScopedTabbedBrowserDisplayer displayer(
+      ProfileManager::GetActiveUserProfile());
+  NavigateParams params(
+      GetSingletonTabNavigateParams(displayer.browser(), event_url));
+  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
     policy::BrowserPolicyConnectorAsh* connector) {
-  if (connector->IsDeviceEnterpriseManaged())
+  if (!connector->IsDeviceEnterpriseManaged())
     return ash::ManagementDeviceMode::kNone;
 
   if (connector->IsKioskEnrolled())
@@ -502,14 +508,15 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
   web_app::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP,
                                    params);
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromePaletteHelpURL));
+        GURL(chrome::kChromePaletteHelpURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 
@@ -535,7 +542,8 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // Otherwise show enterprise management info page.
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeUIManagementURL));
+        GURL(chrome::kChromeUIManagementURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 
@@ -688,21 +696,33 @@ void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
 
 void SystemTrayClientImpl::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,
+    const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {
   // Default is that we didn't open the calendar PWA.
   opened_pwa = false;
 
-  // By default, open the calendar to no particular event, i.e. today's date.
+  // Calendar URL we'll actually open, today's date by default.
   GURL official_url(kOfficialCalendarUrlPrefix);
 
-  // Needed in order for us to pass the "in app scope" guards in
-  // WebAppLaunchProcess::Run().  See http://b/214428922
+  // Compose the actual URL to be opened.
   if (event_url.has_value()) {
+    // An event URL was passed in, so modify it as needed for us to pass the "in
+    // app scope" guards in WebAppLaunchProcess::Run().  See http://b/214428922
     GURL::Replacements replacements;
     replacements.SetSchemeStr("https");
     replacements.SetHostStr("calendar.google.com");
     official_url = event_url->ReplaceComponents(replacements);
+  } else {
+    // No event URL provided, so fall back on opening calendar with `date`.
+    std::string calendar_url_str = kOfficialCalendarUrlPrefix;
+    base::Time::Exploded date_exp;
+    date.UTCExplode(&date_exp);
+    std::string date_url =
+        base::StringPrintf("r/week/%d/%d/%d", date_exp.year, date_exp.month,
+                           date_exp.day_of_month);
+    calendar_url_str.append(date_url);
+    official_url = GURL(calendar_url_str);
   }
 
   // Return the URL we actually opened.
@@ -724,13 +744,15 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(
-      web_app::kGoogleCalendarAppId,
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
-                          /*prefer_container=*/true),
-      official_url, apps::mojom::LaunchSource::kFromShelf);
+  proxy->LaunchAppWithUrl(web_app::kGoogleCalendarAppId,
+                          apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                              /*prefer_container=*/true),
+                          official_url, apps::mojom::LaunchSource::kFromShelf);
   opened_pwa = true;
+}
+
+version_info::Channel SystemTrayClientImpl::GetChannel() {
+  return chrome::GetChannel();
 }
 
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)

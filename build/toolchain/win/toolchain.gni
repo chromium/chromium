@@ -254,11 +254,20 @@ template("msvc_toolchain") {
           ml = "armasm64.exe"
         }
       } else {
-        # x86/x64 builds always use the MSVC assembler.
-        if (toolchain_args.current_cpu == "x64") {
-          ml = "ml64.exe"
+        if (toolchain_is_clang) {
+          prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+          ml = "$prefix/llvm-ml${_exe}"
+          if (toolchain_args.current_cpu == "x64") {
+            ml += " -m64"
+          } else {
+            ml += " -m32"
+          }
         } else {
-          ml = "ml.exe"
+          if (toolchain_args.current_cpu == "x64") {
+            ml = "ml64.exe"
+          } else {
+            ml = "ml.exe"
+          }
         }
       }
 
@@ -270,18 +279,16 @@ template("msvc_toolchain") {
         if (toolchain_args.current_cpu != "arm64") {
           ml += " /c"
         }
-        if (use_lld) {
+        if (use_lld && !toolchain_is_clang) {
           # Wrap ml(64).exe with a script that makes its output deterministic.
           # It's lld only because the script zaps obj Timestamp which
           # link.exe /incremental looks at.
-          # TODO(https://crbug.com/762167): If we end up writing an llvm-ml64,
-          # make sure it has deterministic output (maybe with /Brepro or
-          # something) and remove this wrapper.
           ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
           ml = "$python_path $ml_py $ml"
         }
       }
       if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
+        # TODO(thakis): Stop using asm-wrapper when using clang.
         command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
       } else {
         # armasm64.exe does not support definitions passed via the command

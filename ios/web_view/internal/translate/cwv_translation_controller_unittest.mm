@@ -17,10 +17,7 @@
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/web_client.h"
@@ -54,12 +51,11 @@ NSString* const kTestPageHost = @"www.chromium.org";
 
 class MockWebViewTranslateClient : public WebViewTranslateClient {
  public:
-  MockWebViewTranslateClient(
-      PrefService* pref_service,
-      translate::TranslateRanker* translate_ranker,
-      language::LanguageModel* language_model,
-      web::WebState* web_state,
-      translate::TranslateAcceptLanguages* accept_languages)
+  MockWebViewTranslateClient(PrefService* pref_service,
+                             translate::TranslateRanker* translate_ranker,
+                             language::LanguageModel* language_model,
+                             web::WebState* web_state,
+                             language::AcceptLanguagesService* accept_languages)
       : WebViewTranslateClient(pref_service,
                                translate_ranker,
                                language_model,
@@ -78,17 +74,12 @@ class TestLanguageModel : public language::LanguageModel {
 class CWVTranslationControllerTest : public TestWithLocaleAndResources {
  protected:
   CWVTranslationControllerTest() {
-    auto test_navigation_manager =
-        std::make_unique<web::FakeNavigationManager>();
-    test_navigation_manager->SetBrowserState(&browser_state_);
-    web_state_.SetBrowserState(&browser_state_);
-    web_state_.SetNavigationManager(std::move(test_navigation_manager));
-    CRWTestJSInjectionReceiver* injection_receiver =
-        [[CRWTestJSInjectionReceiver alloc] init];
-    web_state_.SetJSInjectionReceiver(injection_receiver);
+    web::WebState::CreateParams params(&browser_state_);
+    web_state_ = web::WebState::Create(params);
+    web_state_->SetKeepRenderProcessAlive(true);
 
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        &web_state_,
+        web_state_.get(),
         /*url_language_histogram=*/nullptr);
 
     pref_service_.registry()->RegisterStringPref(
@@ -127,16 +118,16 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateAutoNeverCount);
 
-    accept_languages_ = std::make_unique<translate::TranslateAcceptLanguages>(
+    accept_languages_ = std::make_unique<language::AcceptLanguagesService>(
         &pref_service_, language::prefs::kAcceptLanguages);
 
     auto translate_client = std::make_unique<MockWebViewTranslateClient>(
-        &pref_service_, &translate_ranker_, &language_model_, &web_state_,
+        &pref_service_, &translate_ranker_, &language_model_, web_state_.get(),
         accept_languages_.get());
     translate_client_ = translate_client.get();
 
     translation_controller_ = [[CWVTranslationController alloc]
-        initWithWebState:&web_state_
+        initWithWebState:web_state_.get()
          translateClient:std::move(translate_client)];
 
     translate_prefs_ = translate_client_->GetTranslatePrefs();
@@ -158,9 +149,9 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
   translate::testing::MockTranslateRanker translate_ranker_;
   TestLanguageModel language_model_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<translate::TranslateAcceptLanguages> accept_languages_;
+  std::unique_ptr<language::AcceptLanguagesService> accept_languages_;
   web::FakeBrowserState browser_state_;
-  web::FakeWebState web_state_;
+  std::unique_ptr<web::WebState> web_state_;
   MockWebViewTranslateClient* translate_client_;
   CWVTranslationController* translation_controller_;
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_;

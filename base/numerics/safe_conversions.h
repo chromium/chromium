@@ -120,21 +120,27 @@ constexpr Dst checked_cast(Src value) {
 template <typename T>
 struct SaturationDefaultLimits : public std::numeric_limits<T> {
   static constexpr T NaN() {
-    return std::numeric_limits<T>::has_quiet_NaN
-               ? std::numeric_limits<T>::quiet_NaN()
-               : T();
+    if constexpr (std::numeric_limits<T>::has_quiet_NaN) {
+      return std::numeric_limits<T>::quiet_NaN();
+    } else {
+      return T();
+    }
   }
   using std::numeric_limits<T>::max;
   static constexpr T Overflow() {
-    return std::numeric_limits<T>::has_infinity
-               ? std::numeric_limits<T>::infinity()
-               : std::numeric_limits<T>::max();
+    if constexpr (std::numeric_limits<T>::has_infinity) {
+      return std::numeric_limits<T>::infinity();
+    } else {
+      return std::numeric_limits<T>::max();
+    }
   }
   using std::numeric_limits<T>::lowest;
   static constexpr T Underflow() {
-    return std::numeric_limits<T>::has_infinity
-               ? std::numeric_limits<T>::infinity() * -1
-               : std::numeric_limits<T>::lowest();
+    if constexpr (std::numeric_limits<T>::has_infinity) {
+      return std::numeric_limits<T>::infinity() * -1;
+    } else {
+      return std::numeric_limits<T>::lowest();
+    }
   }
 };
 

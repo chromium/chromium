@@ -19,7 +19,7 @@ class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
  public:
   ~GetOpenDeviceRequestCallbacks() override = default;
 
-  void OnSuccess(MediaStream* stream) override {}
+  void OnSuccess(const MediaStreamVector& streams) override {}
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {}
 };

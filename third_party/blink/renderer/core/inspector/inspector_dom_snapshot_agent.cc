@@ -203,7 +203,9 @@ InspectorDOMSnapshotAgent::InspectorDOMSnapshotAgent(
     InspectorDOMDebuggerAgent* dom_debugger_agent)
     : inspected_frames_(inspected_frames),
       dom_debugger_agent_(dom_debugger_agent),
-      enabled_(&agent_state_, /*default_value=*/false) {}
+      enabled_(&agent_state_, /*default_value=*/false) {
+  DCHECK(dom_debugger_agent);
+}
 
 InspectorDOMSnapshotAgent::~InspectorDOMSnapshotAgent() = default;
 
@@ -406,6 +408,7 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
                   .setOptionSelected(BooleanData())
                   .setContentDocumentIndex(IntegerData())
                   .setPseudoType(StringData())
+                  .setPseudoIdentifier(StringData())
                   .setIsClickable(BooleanData())
                   .setCurrentSourceURL(StringData())
                   .setOriginURL(StringData())
@@ -540,14 +543,14 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
     }
 
     if (auto* textarea_element = DynamicTo<HTMLTextAreaElement>(*element)) {
-      SetRare(nodes->getTextValue(nullptr), index, textarea_element->value());
+      SetRare(nodes->getTextValue(nullptr), index, textarea_element->Value());
     }
 
     if (auto* input_element = DynamicTo<HTMLInputElement>(*element)) {
-      SetRare(nodes->getInputValue(nullptr), index, input_element->value());
+      SetRare(nodes->getInputValue(nullptr), index, input_element->Value());
       if ((input_element->type() == input_type_names::kRadio) ||
           (input_element->type() == input_type_names::kCheckbox)) {
-        if (input_element->checked()) {
+        if (input_element->Checked()) {
           SetRare(nodes->getInputChecked(nullptr), index);
         }
       }
@@ -563,6 +566,9 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(
           nodes->getPseudoType(nullptr), index,
           InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
+      if (auto tag = To<PseudoElement>(element)->document_transition_tag()) {
+        SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
+      }
     }
     VisitPseudoElements(element, index, contrast);
 

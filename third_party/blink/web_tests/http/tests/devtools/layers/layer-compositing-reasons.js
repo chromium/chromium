@@ -17,7 +17,8 @@
   }
 
   const idsToTest = [
-    'transform3d', 'transform3d-individual', 'backface-visibility', 'animation', 'animation-individual',
+    'transform3d', 'scale3d', 'rotate3d', 'translate3d', 'backface-visibility',
+    'animation', 'animation-scale', 'animation-rotate', 'animation-translate',
     'transformWithCompositedDescendants', 'transformWithCompositedDescendants-individual',
     'opacityWithCompositedDescendants', 'reflectionWithCompositedDescendants', 'perspective', 'preserve3d'
   ];

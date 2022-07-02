@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
-#include <ostream>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"

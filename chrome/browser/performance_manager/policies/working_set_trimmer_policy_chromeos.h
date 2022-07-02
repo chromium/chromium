@@ -156,7 +156,8 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
       mechanism::ArcVmReclaimType reclaim_type,
       bool success,
       const std::string& failure_reason);
-  virtual void OnArcVmTrimEnded(bool success);
+  virtual void OnArcVmTrimEnded(mechanism::ArcVmReclaimType reclaim_type,
+                                bool success);
 
   features::TrimOnMemoryPressureParams params_;
 

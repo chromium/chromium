@@ -27,11 +27,15 @@ class DesktopResizerMac : public DesktopResizer {
   DesktopResizerMac& operator=(const DesktopResizerMac&) = delete;
 
   // DesktopResizer interface
-  ScreenResolution GetCurrentResolution() override;
+  ScreenResolution GetCurrentResolution(
+      absl::optional<webrtc::ScreenId> screen_id) override;
   std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override;
-  void SetResolution(const ScreenResolution& resolution) override;
-  void RestoreResolution(const ScreenResolution& original) override;
+      const ScreenResolution& preferred,
+      absl::optional<webrtc::ScreenId> screen_id) override;
+  void SetResolution(const ScreenResolution& resolution,
+                     absl::optional<webrtc::ScreenId> screen_id) override;
+  void RestoreResolution(const ScreenResolution& original,
+                         absl::optional<webrtc::ScreenId> screen_id) override;
 
  private:
   // If there is a single display, get its id and return true, otherwise return
@@ -43,7 +47,8 @@ class DesktopResizerMac : public DesktopResizer {
       std::list<ScreenResolution>* resolutions);
 };
 
-ScreenResolution DesktopResizerMac::GetCurrentResolution() {
+ScreenResolution DesktopResizerMac::GetCurrentResolution(
+    absl::optional<webrtc::ScreenId> screen_id) {
   CGDirectDisplayID display;
   if (GetSoleDisplayId(&display)) {
     CGRect rect = CGDisplayBounds(display);
@@ -55,14 +60,17 @@ ScreenResolution DesktopResizerMac::GetCurrentResolution() {
 }
 
 std::list<ScreenResolution> DesktopResizerMac::GetSupportedResolutions(
-    const ScreenResolution& preferred) {
+    const ScreenResolution& preferred,
+    absl::optional<webrtc::ScreenId> screen_id) {
   base::ScopedCFTypeRef<CFMutableArrayRef> modes;
   std::list<ScreenResolution> resolutions;
   GetSupportedModesAndResolutions(&modes, &resolutions);
   return resolutions;
 }
 
-void DesktopResizerMac::SetResolution(const ScreenResolution& resolution) {
+void DesktopResizerMac::SetResolution(
+    const ScreenResolution& resolution,
+    absl::optional<webrtc::ScreenId> screen_id) {
   CGDirectDisplayID display;
   if (!GetSoleDisplayId(&display)) {
     return;
@@ -112,8 +120,10 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution) {
   }
 }
 
-void DesktopResizerMac::RestoreResolution(const ScreenResolution& original) {
-  SetResolution(original);
+void DesktopResizerMac::RestoreResolution(
+    const ScreenResolution& original,
+    absl::optional<webrtc::ScreenId> screen_id) {
+  SetResolution(original, screen_id);
 }
 
 void DesktopResizerMac::GetSupportedModesAndResolutions(

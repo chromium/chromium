@@ -18,13 +18,13 @@ class GURL;
 // Object creating the configuration (action items...) for the context menu.
 @interface ContextMenuConfigurationProvider : NSObject
 
-// Instantiates with a |browser|.
+// Instantiates with a `browser`.
 - (instancetype)initWithBrowser:(Browser*)browser
              baseViewController:(UIViewController*)baseViewController;
 
 // Returns a configuration for a context menu, based on its associated
-// |webState|, |params| and |baseViewController|.
-// |params| is copied in order to be used in blocks.
+// `webState`, `params` and `baseViewController`.
+// `params` is copied in order to be used in blocks.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;

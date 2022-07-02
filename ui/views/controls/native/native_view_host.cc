@@ -234,7 +234,7 @@ gfx::NativeViewAccessible NativeViewHost::GetNativeViewAccessible() {
   return View::GetNativeViewAccessible();
 }
 
-gfx::NativeCursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
   return native_wrapper_->GetCursor(event.x(), event.y());
 }
 
@@ -245,17 +245,16 @@ void NativeViewHost::SetVisible(bool visible) {
 }
 
 bool NativeViewHost::OnMousePressed(const ui::MouseEvent& event) {
-  NOTREACHED()
-      << "This view is not expected to receive events directly. Event "
-         "targeting should find the native view as target window instead of "
-         "the view hierarchy. This is likely due to an overlapping View that "
-         "receives but is not handling this event. See crbug.com/1263413 and "
-         "Widget::ShouldDescendIntoChildForEventHandling() for some more "
-         "leads. If the overlapping view was not intended to receive events, "
-         "call SetCanProcessEventsWithinSubtree(false) on the overlapping "
-         "View that paints to a layer. If it's intended to receive some, but "
-         "not this event, event targeting needs to be fixed for this case.\n"
-      << GetViewDebugInfo(this);
+  // In the typical case the attached NativeView receives the events directly
+  // from the system and this function is not called. There are scenarios
+  // where that may not happen. For example, if the NativeView is configured
+  // not to receive events, then this function will be called. An additional
+  // scenario is if the WidgetDelegate overrides
+  // ShouldDescendIntoChildForEventHandling(). In that case the NativeView
+  // will not receive the events, and this function will be called. Regardless,
+  // this function does not need to forward to the NativeView, because it is
+  // expected to be done by the system, and the only cases where this is called
+  // is if the NativeView should not receive events.
   return View::OnMousePressed(event);
 }
 

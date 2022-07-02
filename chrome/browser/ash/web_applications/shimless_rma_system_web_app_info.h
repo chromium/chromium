@@ -6,17 +6,17 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
 #include "ash/webui/shimless_rma/url_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "ui/gfx/geometry/size.h"
 
 struct WebAppInstallInfo;
 
-class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegate {
+class ShimlessRMASystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit ShimlessRMASystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInLauncher() const override;

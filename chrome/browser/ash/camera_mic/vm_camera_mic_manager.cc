@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "base/bind.h"
@@ -271,7 +272,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         /*origin_url=*/GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT,
-            ash::kVmCameraMicNotifierId),
+            ash::kVmCameraMicNotifierId, NotificationCatalogName::kVMCameraMic),
         rich_notification_data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetWeakPtr()));

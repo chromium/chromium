@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -93,8 +93,10 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
 
         Log.i(TAG, "[Test started]");
 
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mParameters.getDomainUrl().getSpec()));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(),
+                        mParameters.getDomainUrl().getSpec()));
 
         /**
          * PasswordStoreBridge requests credentials from the password store on initialization. The

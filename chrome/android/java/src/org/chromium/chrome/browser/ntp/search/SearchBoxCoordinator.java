@@ -125,10 +125,6 @@ public class SearchBoxCoordinator {
         mMediator.setEndPadding(endPadding);
     }
 
-    public void setTextSize(float textSize) {
-        mMediator.setTextSize(textSize);
-    }
-
     public void setTextViewTranslationX(float translationX) {
         mMediator.setTextViewTranslationX(translationX);
     }

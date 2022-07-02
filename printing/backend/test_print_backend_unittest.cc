@@ -101,7 +101,7 @@ TEST_F(TestPrintBackendTest, EnumeratePrinters) {
 
   AddPrinters();
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_THAT(printer_list, testing::ContainerEq(kPrinterList));
 }
@@ -111,7 +111,7 @@ TEST_F(TestPrintBackendTest, EnumeratePrintersNoneFound) {
   PrinterList printer_list;
 
   // Should return true even when there are no printers in the environment.
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }

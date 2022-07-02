@@ -42,10 +42,10 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/net_buildflags.h"
 #include "services/network/cors/preflight_controller.h"
+#include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/network_qualities_pref_delegate.h"
-#include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/transferable_directory.h"
@@ -54,7 +54,6 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -289,8 +288,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void ClearDomainReliability(mojom::ClearDataFilterPtr filter,
                               DomainReliabilityClearMode mode,
                               ClearDomainReliabilityCallback callback) override;
-  void GetDomainReliabilityJSON(
-      GetDomainReliabilityJSONCallback callback) override;
   void CloseAllConnections(CloseAllConnectionsCallback callback) override;
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override;
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
@@ -455,7 +452,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const absl::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
-      base::Value body) override;
+      base::Value::Dict body) override;
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override;
@@ -490,8 +487,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override;
 #endif
-  void GetOriginPolicyManager(
-      mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -542,10 +537,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CreateTrustedUrlLoaderFactoryForNetworkService(
       mojo::PendingReceiver<mojom::URLLoaderFactory>
           url_loader_factory_pending_receiver);
-
-  mojom::OriginPolicyManager* origin_policy_manager() const {
-    return origin_policy_manager_.get();
-  }
 
   domain_reliability::DomainReliabilityMonitor* domain_reliability_monitor() {
     return domain_reliability_monitor_.get();
@@ -732,6 +723,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   mojo::Receiver<mojom::NetworkContext> receiver_;
 
+  FirstPartySetsAccessDelegate first_party_sets_access_delegate_;
+
   std::unique_ptr<CookieManager> cookie_manager_;
 
   std::unique_ptr<SocketFactory> socket_factory_;
@@ -814,7 +807,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  CertVerifierWithTrustAnchors* cert_verifier_with_trust_anchors_ = nullptr;
+  raw_ptr<CertVerifierWithTrustAnchors> cert_verifier_with_trust_anchors_ =
+      nullptr;
 #endif
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
@@ -875,8 +869,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   std::unique_ptr<domain_reliability::DomainReliabilityMonitor>
       domain_reliability_monitor_;
-
-  std::unique_ptr<OriginPolicyManager> origin_policy_manager_;
 
   // Each network context holds its own HttpAuthPreferences.
   // The dynamic preferences of |NetworkService| and the static

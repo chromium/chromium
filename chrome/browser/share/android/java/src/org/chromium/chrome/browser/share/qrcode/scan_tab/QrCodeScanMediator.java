@@ -21,12 +21,19 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
+import org.chromium.base.Consumer;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.components.permissions.AndroidPermissionRequester;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -50,6 +57,7 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
 
     private BarcodeDetector mDetector;
     private Toast mToast;
+    private WindowAndroid mWindowAndroid;
 
     /**
      * The QrCodeScanMediator constructor.
@@ -58,13 +66,15 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
      * @param propertyModel The property modelto use to communicate with views.
      * @param observer The observer for navigation event.
      */
-    QrCodeScanMediator(Context context, PropertyModel propertyModel, NavigationObserver observer) {
+    QrCodeScanMediator(Context context, PropertyModel propertyModel, NavigationObserver observer,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) mContext));
         updatePermissionSettings();
         mNavigationObserver = observer;
+        mWindowAndroid = windowAndroid;
 
         // Set detector to null until it gets initialized asynchronously.
         mDetector = null;
@@ -109,30 +119,57 @@ public class QrCodeScanMediator implements Camera.PreviewCallback {
      * Prompts the user for camera permission and processes the results.
      */
     public void promptForCameraPermission() {
-        final PermissionCallback callback = new PermissionCallback() {
-            // Handle the results from prompting the user for camera permission.
-            @Override
-            public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
-                // No results were produced (Does this ever happen?)
-                if (grantResults.length == 0) {
-                    return;
+        requestCameraAccessPermissionHelper(mWindowAndroid, granted -> {
+            if (granted) {
+                mPropertyModel.set(QrCodeScanViewProperties.HAS_CAMERA_PERMISSION, true);
+            } else {
+                // The order in which these fields are important because it causes updates to
+                // the view. CanPromptForPermission must be updated first so that it doesn't
+                // cause the view to be updated twice creating a flicker effect.
+                if (!mPermissionDelegate.canRequestPermission(permission.CAMERA)) {
+                    mPropertyModel.set(QrCodeScanViewProperties.CAN_PROMPT_FOR_PERMISSION, false);
                 }
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPropertyModel.set(QrCodeScanViewProperties.HAS_CAMERA_PERMISSION, true);
-                } else {
-                    // The order in which these fields are important because it causes updates to
-                    // the view. CanPromptForPermission must be updated first so that it doesn't
-                    // cause the view to be updated twice creating a flicker effect.
-                    if (!mPermissionDelegate.canRequestPermission(permission.CAMERA)) {
-                        mPropertyModel.set(
-                                QrCodeScanViewProperties.CAN_PROMPT_FOR_PERMISSION, false);
-                    }
-                    mPropertyModel.set(QrCodeScanViewProperties.HAS_CAMERA_PERMISSION, false);
-                }
+                mPropertyModel.set(QrCodeScanViewProperties.HAS_CAMERA_PERMISSION, false);
             }
+        });
+    }
+
+    private void requestCameraAccessPermissionHelper(
+            WindowAndroid windowAndroid, final Callback<Boolean> callback) {
+        AndroidPermissionDelegate permissionDelegate = windowAndroid;
+
+        if (windowAndroid.hasPermission(permission.CAMERA)) {
+            callback.onResult(true);
+            return;
+        }
+
+        if (mContext == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        Consumer<PropertyModel> requestPermissions = (model) -> {
+            final PermissionCallback permissionCallback = (permissions, grantResults) -> {
+                ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+                if (modalDialogManager != null && model != null) {
+                    modalDialogManager.dismissDialog(
+                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                }
+                callback.onResult(grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            };
+
+            permissionDelegate.requestPermissions(
+                    new String[] {permission.CAMERA}, permissionCallback);
         };
 
-        mPermissionDelegate.requestPermissions(new String[] {permission.CAMERA}, callback);
+        if (windowAndroid.getModalDialogManager() != null) {
+            AndroidPermissionRequester.showMissingPermissionDialog(windowAndroid,
+                    mContext.getString(
+                            org.chromium.chrome.R.string.infobar_missing_camera_permission_text,
+                            BuildInfo.getInstance().hostPackageLabel),
+                    requestPermissions, callback.bind(false));
+        }
     }
 
     /**

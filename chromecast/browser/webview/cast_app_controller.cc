@@ -15,15 +15,15 @@ CastAppController::CastAppController(Client* client,
   content::WebContentsObserver::Observe(contents_);
 
   // There may be existing RenderWidgets that we need to observe.
-  contents->ForEachFrame(base::BindRepeating(
+  contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       &WebContentController::
           RegisterRenderWidgetInputObserverFromRenderFrameHost,
-      this));
+      base::Unretained(this)));
 
   std::unique_ptr<webview::WebviewResponse> response =
       std::make_unique<webview::WebviewResponse>();
 
-  auto ax_id = contents->GetMainFrame()->GetAXTreeID().ToString();
+  auto ax_id = contents->GetPrimaryMainFrame()->GetAXTreeID().ToString();
   response->mutable_create_response()
       ->mutable_accessibility_info()
       ->set_ax_tree_id(ax_id);

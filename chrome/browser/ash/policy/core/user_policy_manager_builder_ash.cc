@@ -32,9 +32,9 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -249,9 +249,9 @@ void CreateConfigurationPolicyProvider(
 
   std::unique_ptr<UserCloudPolicyStoreAsh> store =
       std::make_unique<UserCloudPolicyStoreAsh>(
-          chromeos::CryptohomeMiscClient::Get(),
-          chromeos::SessionManagerClient::Get(), background_task_runner,
-          account_id, policy_key_dir, is_active_directory);
+          ash::CryptohomeMiscClient::Get(), ash::SessionManagerClient::Get(),
+          background_task_runner, account_id, policy_key_dir,
+          is_active_directory);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

@@ -150,7 +150,7 @@ void StoreUpdateData::CopyPredictionModelIntoUpdateData(
     expiry_duration =
         base::Seconds(prediction_model.model_info().valid_duration().seconds());
   } else {
-    expiry_duration = features::StoredFetchedHintsFreshnessDuration();
+    expiry_duration = features::StoredModelsValidDuration();
   }
   expiry_time_ = base::Time::Now() + expiry_duration;
   entry_proto.set_expiry_time_secs(

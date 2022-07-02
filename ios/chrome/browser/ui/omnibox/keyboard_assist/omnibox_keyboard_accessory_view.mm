@@ -24,7 +24,7 @@
 
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
-// Creates a button shortcut for |title|.
+// Creates a button shortcut for `title`.
 - (UIView*)shortcutButtonWithTitle:(NSString*)title;
 
 @end

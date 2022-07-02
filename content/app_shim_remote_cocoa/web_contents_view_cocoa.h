@@ -6,6 +6,7 @@
 #define CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 #import "ui/base/cocoa/base_view.h"
@@ -30,10 +31,10 @@ CONTENT_EXPORT
   // Instances of this class are owned by both host_ and AppKit. It is
   // possible for an instance to outlive its webContentsView_. The host_ must
   // call -clearHostAndView in its destructor.
-  remote_cocoa::mojom::WebContentsNSViewHost* _host;
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
 
   // The interface exported to views::Views that embed this as a sub-view.
-  ui::ViewsHostableView* _viewsHostableView;
+  raw_ptr<ui::ViewsHostableView> _viewsHostableView;
 
   base::scoped_nsobject<WebDragSource> _dragSource;
   BOOL _mouseDownCanMoveWindow;
@@ -70,15 +71,28 @@ CONTENT_EXPORT
                         image:(NSImage*)image
                        offset:(NSPoint)offset;
 - (void)clearViewsHostableView;
-// Updates the web contents's visibility state based on its window's visibility.
-- (void)updateWebContentsVisibilityFromWindowVisibility:
-    (remote_cocoa::mojom::Visibility)windowVisibilityState;
 - (void)viewDidBecomeFirstResponder:(NSNotification*)notification;
+
+// API exposed for testing.
+
+// Used to set the web contents's visibility status to occluded after a delay.
+- (void)performDelayedSetWebContentsOccluded;
+
+// Returns YES if the WCVC is scheduled to set its web contents's to the
+// occluded state.
+- (BOOL)willSetWebContentsOccludedAfterDelayForTesting;
+
+// Updates the WCVC's web contents's visibility state. The update may occur
+// immediately or in the near future.
+- (void)updateWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility;
+
 @end
 
 @interface NSWindow (WebContentsViewCocoa)
 // Returns all the WebContentsViewCocoas in the window.
 - (NSArray<WebContentsViewCocoa*>*)webContentsViewCocoa;
+// Returns YES if the window contains at least one WebContentsViewCocoa.
+- (BOOL)containsWebContentsViewCocoa;
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_

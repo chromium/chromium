@@ -20,6 +20,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/enterprise_util.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
@@ -44,10 +45,14 @@
 #include "base/win/windows_version.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/critical_policy_section_metrics_win.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/settings_resetter_win.h"
@@ -92,6 +97,7 @@
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/os_crypt.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -383,74 +389,6 @@ bool TryGetModuleTimeDateStamp(void* module_load_address,
   return true;
 }
 
-// Used as the callback for ModuleWatcher events in this process. Dispatches
-// them to the ModuleDatabase.
-// Note: This callback may be invoked on any thread, even those not owned by the
-//       task scheduler, under the loader lock, directly on the thread where the
-//       DLL is currently loading.
-void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
-  {
-    TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
-                 event.module_path.BaseName().AsUTF8Unsafe());
-
-    switch (event.event_type) {
-      case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
-        // kModuleAlreadyLoaded comes from the enumeration of loaded modules
-        // using CreateToolhelp32Snapshot().
-        uint32_t time_date_stamp = 0;
-        if (TryGetModuleTimeDateStamp(event.module_load_address,
-                                      event.module_path, event.module_size,
-                                      &time_date_stamp)) {
-          ModuleDatabase::HandleModuleLoadEvent(
-              content::PROCESS_TYPE_BROWSER, event.module_path,
-              event.module_size, time_date_stamp);
-        } else {
-          // Failed to get the TimeDateStamp directly from memory. The next step
-          // to try is to read the file on disk. This must be done in a blocking
-          // task.
-          base::ThreadPool::PostTask(
-              FROM_HERE,
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-              base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
-                             event.module_path, event.module_size));
-        }
-        break;
-      }
-      case ModuleWatcher::ModuleEventType::kModuleLoaded: {
-        ModuleDatabase::HandleModuleLoadEvent(
-            content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-            GetModuleTimeDateStamp(event.module_load_address));
-        break;
-      }
-    }
-  }
-  // Since OnModuleEvent can be invoked from any thread, the above trace event's
-  // END might be the last event on this thread, emit an empty event to force
-  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
-}
-
-// Helper function for initializing the module database subsystem and populating
-// the provided |module_watcher|.
-void SetupModuleDatabase(std::unique_ptr<ModuleWatcher>* module_watcher) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(module_watcher);
-
-  bool third_party_blocking_policy_enabled =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      ModuleDatabase::IsThirdPartyBlockingPolicyEnabled();
-#else
-      false;
-#endif
-
-  ModuleDatabase::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&InitializeModuleDatabase,
-                                third_party_blocking_policy_enabled));
-
-  *module_watcher = ModuleWatcher::Create(base::BindRepeating(&OnModuleEvent));
-}
-
 void ShowCloseBrowserFirstMessageBox() {
   chrome::ShowWarningMessageBox(
       nullptr, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
@@ -603,7 +541,12 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   // be used to better identify whether crashes are from enterprise users.
   static crash_reporter::CrashKeyString<4> is_enterprise_managed(
       "is-enterprise-managed");
-  is_enterprise_managed.Set(base::IsManagedOrEnterpriseDevice() ? "yes" : "no");
+  is_enterprise_managed.Set(
+      policy::ManagementServiceFactory::GetForPlatform()
+                  ->GetManagementAuthorityTrustworthiness() >=
+              policy::ManagementAuthorityTrustworthiness::TRUSTED
+          ? "yes"
+          : "no");
 
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.
@@ -709,6 +652,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   // Use a delayed task to minimize the impact on startup time.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap), base::Minutes(1));
+
+  // Query feature first, to include full population in field trial.
+  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&
+      install_static::IsSystemInstall()) {
+    os_crypt::MeasureAppBoundEncryptionStatus(g_browser_process->local_state());
+  }
 
   // Record Processor Metrics. This is very low priority, hence posting as
   // BEST_EFFORT to start after Chrome startup has completed. This metric is
@@ -933,4 +882,75 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
   // TODO(crbug.com/964541): Remove other unneeded switches, including
   // duplicates, perhaps harmonize with switches::RemoveSwitchesForAutostart.
   return restart_command;
+}
+
+// Used as the callback for ModuleWatcher events in this process. Dispatches
+// them to the ModuleDatabase.
+// Note: This callback may be invoked on any thread, even those not owned by the
+//       task scheduler, under the loader lock, directly on the thread where the
+//       DLL is currently loading.
+void ChromeBrowserMainPartsWin::OnModuleEvent(
+    const ModuleWatcher::ModuleEvent& event) {
+  {
+    TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
+                 event.module_path.BaseName().AsUTF8Unsafe());
+
+    switch (event.event_type) {
+      case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
+        // kModuleAlreadyLoaded comes from the enumeration of loaded modules
+        // using CreateToolhelp32Snapshot().
+        uint32_t time_date_stamp = 0;
+        if (TryGetModuleTimeDateStamp(event.module_load_address,
+                                      event.module_path, event.module_size,
+                                      &time_date_stamp)) {
+          ModuleDatabase::HandleModuleLoadEvent(
+              content::PROCESS_TYPE_BROWSER, event.module_path,
+              event.module_size, time_date_stamp);
+        } else {
+          // Failed to get the TimeDateStamp directly from memory. The next step
+          // to try is to read the file on disk. This must be done in a blocking
+          // task.
+          base::ThreadPool::PostTask(
+              FROM_HERE,
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+              base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
+                             event.module_path, event.module_size));
+        }
+        break;
+      }
+      case ModuleWatcher::ModuleEventType::kModuleLoaded: {
+        ModuleDatabase::HandleModuleLoadEvent(
+            content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
+            GetModuleTimeDateStamp(event.module_load_address));
+        break;
+      }
+    }
+  }
+  // Since OnModuleEvent can be invoked from any thread, the above trace event's
+  // END might be the last event on this thread, emit an empty event to force
+  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+}
+
+// Helper function for initializing the module database subsystem and populating
+// the provided |module_watcher|.
+void ChromeBrowserMainPartsWin::SetupModuleDatabase(
+    std::unique_ptr<ModuleWatcher>* module_watcher) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(module_watcher);
+
+  bool third_party_blocking_policy_enabled =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ModuleDatabase::IsThirdPartyBlockingPolicyEnabled();
+#else
+      false;
+#endif
+
+  ModuleDatabase::GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&InitializeModuleDatabase,
+                                third_party_blocking_policy_enabled));
+
+  *module_watcher = ModuleWatcher::Create(base::BindRepeating(
+      &ChromeBrowserMainPartsWin::OnModuleEvent, base::Unretained(this)));
 }

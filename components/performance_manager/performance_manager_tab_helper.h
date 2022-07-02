@@ -197,7 +197,7 @@ class PerformanceManagerTabHelper
   base::flat_set<std::unique_ptr<PageData>, PageDataComparator> pages_;
 
   // Tracks the primary page associated with this WebContents.
-  raw_ptr<PageData> primary_page_ = nullptr;
+  raw_ptr<PageData, DanglingUntriaged> primary_page_ = nullptr;
 
   // Maps from RenderFrameHost to the associated PM node. This is a single
   // map across all pages associated with this WebContents.

@@ -5,11 +5,21 @@ include_rules = [
   # Please do not add any chromeos/ dependencies here: https://crbug.com/863439
   "+components/device_event_log",
   "+components/policy/proto",
-  "+crypto",
   "+dbus",
   "+net",
   "+testing",
-  "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",
   "+url",
+
+  # Abseil features must be allowlisted explicitly for now. See
+  # //styleguide/c++/c++11.html. Allowed features' headers will be listed
+  # explicitly here.
+  # Please keep this section in sync with //DEPS.
+  '-absl',
+  '-third_party/abseil-cpp',
+  '+third_party/abseil-cpp/absl/base/attributes.h',
+  "+third_party/abseil-cpp/absl/numeric/int128.h",
+  '+third_party/abseil-cpp/absl/types/optional.h',
+  '+third_party/abseil-cpp/absl/types/variant.h',
+  '+third_party/abseil-cpp/absl/utility/utility.h',
 ]

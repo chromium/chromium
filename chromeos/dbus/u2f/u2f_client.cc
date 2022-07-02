@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -124,7 +125,7 @@ class U2FClientImpl : public U2FClient {
       DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) override;
 
  private:
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<U2FClientImpl> weak_factory_{this};
 };

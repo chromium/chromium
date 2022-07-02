@@ -23,12 +23,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -381,10 +385,10 @@ class TabStripModelTest : public testing::Test {
   std::unique_ptr<WebContents> CreateWebContentsWithSharedRPH(
       WebContents* web_contents) {
     WebContents::CreateParams create_params(
-        profile(), web_contents->GetMainFrame()->GetSiteInstance());
+        profile(), web_contents->GetPrimaryMainFrame()->GetSiteInstance());
     std::unique_ptr<WebContents> retval = WebContents::Create(create_params);
-    EXPECT_EQ(retval->GetMainFrame()->GetProcess(),
-              web_contents->GetMainFrame()->GetProcess());
+    EXPECT_EQ(retval->GetPrimaryMainFrame()->GetProcess(),
+              web_contents->GetPrimaryMainFrame()->GetProcess());
     return retval;
   }
 
@@ -536,7 +540,9 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
 
   // Test ActivateTabAt
   {
-    tabstrip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+    tabstrip.ActivateTabAt(
+        2, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
     EXPECT_EQ(3, observer.GetStateCount());
     State s1(raw_contents2, 1, MockTabStripModelObserver::DEACTIVATE);
     observer.ExpectStateEquals(0, s1);
@@ -679,7 +685,9 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
   // Test SelectNextTab, SelectPreviousTab, SelectLastTab
   {
     // Make sure the second of the two tabs is selected first...
-    tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+    tabstrip.ActivateTabAt(
+        1, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
     tabstrip.SelectPreviousTab();
     EXPECT_EQ(0, tabstrip.active_index());
     tabstrip.SelectLastTab();
@@ -795,8 +803,7 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
 }
 
 static int GetInsertionIndex(TabStripModel* tabstrip) {
-  return tabstrip->order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_LINK, false);
+  return tabstrip->DetermineInsertionIndex(ui::PAGE_TRANSITION_LINK, false);
 }
 
 static void InsertWebContentses(TabStripModel* tabstrip,
@@ -812,6 +819,17 @@ static void InsertWebContentses(TabStripModel* tabstrip,
   tabstrip->InsertWebContentsAt(GetInsertionIndex(tabstrip),
                                 std::move(contents3),
                                 TabStripModel::ADD_INHERIT_OPENER);
+}
+
+static bool IsSiteInContentSettingExceptionList(
+    HostContentSettingsMap* settings,
+    GURL& url,
+    ContentSettingsType type) {
+  content_settings::SettingInfo info;
+  settings->GetWebsiteSetting(url, url, type, &info);
+  auto pattern = ContentSettingsPattern::FromURLNoWildcard(url);
+  return info.primary_pattern.Compare(pattern) ==
+         ContentSettingsPattern::IDENTITY;
 }
 
 // Tests opening background tabs.
@@ -887,8 +905,8 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   // opener tab.
   std::unique_ptr<WebContents> fg_link_contents = CreateWebContents();
   WebContents* raw_fg_link_contents = fg_link_contents.get();
-  int insert_index = tabstrip.order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_LINK, true);
+  int insert_index =
+      tabstrip.DetermineInsertionIndex(ui::PAGE_TRANSITION_LINK, true);
   EXPECT_EQ(1, insert_index);
   tabstrip.InsertWebContentsAt(
       insert_index, std::move(fg_link_contents),
@@ -903,8 +921,8 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   // Now open a new empty tab. It should open at the end of the strip.
   std::unique_ptr<WebContents> fg_nonlink_contents = CreateWebContents();
   WebContents* raw_fg_nonlink_contents = fg_nonlink_contents.get();
-  insert_index = tabstrip.order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, true);
+  insert_index =
+      tabstrip.DetermineInsertionIndex(ui::PAGE_TRANSITION_AUTO_BOOKMARK, true);
   EXPECT_EQ(tabstrip.count(), insert_index);
   // We break the opener relationship...
   tabstrip.InsertWebContentsAt(insert_index, std::move(fg_nonlink_contents),
@@ -912,7 +930,8 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   // Now select it, so that GestureType != kNone causes the opener
   // relationship to be forgotten...
   tabstrip.ActivateTabAt(tabstrip.count() - 1,
-                         {TabStripModel::GestureType::kOther});
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(tabstrip.count() - 1, tabstrip.active_index());
   EXPECT_EQ(raw_fg_nonlink_contents, tabstrip.GetActiveWebContents());
 
@@ -962,7 +981,9 @@ TEST_F(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
   EXPECT_EQ(raw_opener1, tabstrip.GetOpenerOfWebContentsAt(2));
 
   // Activate the parent tab again.
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1, GetID(tabstrip.GetActiveWebContents()));
 
   // Open another link in a new background tab.
@@ -1004,7 +1025,9 @@ TEST_F(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   EXPECT_EQ(1, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener1, 0));
 
   // Activate the child tab:
-  tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(11, GetID(tabstrip.GetActiveWebContents()));
 
   // Open a link in a new background grandchild tab.
@@ -1019,7 +1042,9 @@ TEST_F(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   EXPECT_EQ(2, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_child11, 1));
 
   // Activate the parent tab again:
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1, GetID(tabstrip.GetActiveWebContents()));
 
   // Open another link in a new background child tab (a sibling of child11).
@@ -1086,7 +1111,9 @@ TEST_F(TabStripModelTest, CloseActiveTabShiftsSelectionRight) {
   ASSERT_EQ(0, tabstrip.active_index());
 
   tabstrip.ForgetAllOpeners();
-  tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(1, tabstrip.active_index());
 
   tabstrip.CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
@@ -1117,7 +1144,9 @@ TEST_F(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
 
   tabstrip.ForgetAllOpeners();
   tabstrip.AddToNewGroup({0, 1, 2});
-  tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(1, tabstrip.active_index());
 
   tabstrip.CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
@@ -1147,7 +1176,9 @@ TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
 
   tabstrip.ForgetAllOpeners();
   tab_groups::TabGroupId group = tabstrip.AddToNewGroup({0, 1});
-  tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(1, tabstrip.active_index());
 
   absl::optional<int> next_active =
@@ -1175,7 +1206,9 @@ TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
 
   tabstrip.ForgetAllOpeners();
   tab_groups::TabGroupId group = tabstrip.AddToNewGroup({2, 3});
-  tabstrip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(2,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(2, tabstrip.active_index());
 
   absl::optional<int> next_active =
@@ -1203,7 +1236,9 @@ TEST_F(TabStripModelTest, CollapseGroupShiftsSelection_NoAvailableTabs) {
 
   tabstrip.ForgetAllOpeners();
   tab_groups::TabGroupId group = tabstrip.AddToNewGroup({0, 1, 2, 3});
-  tabstrip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(1, tabstrip.active_index());
 
   absl::optional<int> next_active =
@@ -1229,7 +1264,9 @@ TEST_F(TabStripModelTest, CloseTabWithOpenerShiftsSelectionWithinOpened) {
                       CreateWebContents());
   ASSERT_EQ(0, tabstrip.active_index());
 
-  tabstrip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(2,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(2, tabstrip.active_index());
 
   tabstrip.CloseWebContentsAt(2, TabStripModel::CLOSE_NONE);
@@ -1525,7 +1562,9 @@ TEST_F(TabStripModelTest, TestContextMenuCloseCommands) {
   EXPECT_EQ(5, tabstrip.count());
 
   int dummy_index = tabstrip.count() - 1;
-  tabstrip.ActivateTabAt(dummy_index, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(dummy_index,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(raw_dummy, tabstrip.GetActiveWebContents());
 
   tabstrip.ExecuteContextMenuCommand(dummy_index,
@@ -1611,7 +1650,9 @@ TEST_F(TabStripModelTest, AddWebContents_MiddleClickLinksAndClose) {
   EXPECT_EQ(2, tabstrip.count());
 
   // Re-select the home page.
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a bunch of tabs by simulating middle clicking on links on the home
   // page.
@@ -1641,7 +1682,9 @@ TEST_F(TabStripModelTest, AddWebContents_MiddleClickLinksAndClose) {
   // is constructed to start at the middle WebContents in the tree to make sure
   // the cursor wraps around to the first WebContents in the tree before
   // closing the opener or any other WebContents.
-  tabstrip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(2,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   tabstrip.CloseSelectedTabs();
   EXPECT_EQ(raw_middle_click_contents3, tabstrip.GetActiveWebContents());
   tabstrip.CloseSelectedTabs();
@@ -1681,7 +1724,9 @@ TEST_F(TabStripModelTest, AddWebContents_LeftClickPopup) {
   EXPECT_EQ(2, tabstrip.count());
 
   // Re-select the home page.
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a tab by simulating a left click on a link that opens in a new tab.
   std::unique_ptr<WebContents> left_click_contents = CreateWebContents();
@@ -1733,7 +1778,9 @@ TEST_F(TabStripModelTest, AddWebContents_CreateNewBlankTab) {
   EXPECT_EQ(2, tabstrip.count());
 
   // Re-select the home page.
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a new blank tab in the foreground.
   std::unique_ptr<WebContents> new_blank_contents = CreateWebContents();
@@ -1793,7 +1840,9 @@ TEST_F(TabStripModelTest, AddWebContents_ForgetOpeners) {
   EXPECT_EQ(2, tabstrip.count());
 
   // Re-select the first tab (home page).
-  tabstrip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a bunch of tabs by simulating middle clicking on links on the home
   // page.
@@ -1816,7 +1865,9 @@ TEST_F(TabStripModelTest, AddWebContents_ForgetOpeners) {
   EXPECT_EQ(raw_typed_page_contents, tabstrip.GetActiveWebContents());
 
   // Step back into the context by selecting a tab inside it.
-  tabstrip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  tabstrip.ActivateTabAt(2,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(raw_middle_click_contents2, tabstrip.GetActiveWebContents());
 
   // Now test that closing tabs selects to the right until there are no more,
@@ -1957,7 +2008,8 @@ TEST_F(TabStripModelTest, ReselectionConsidersChildrenTest) {
                        ui::PAGE_TRANSITION_LINK, TabStripModel::ADD_NONE);
 
   // Select page A.A
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(raw_page_a_a_contents, strip.GetActiveWebContents());
 
   // Simulate a middle click to open page A.A.A
@@ -2006,7 +2058,8 @@ TEST_F(TabStripModelTest, NewTabAtEndOfStripInheritsOpener) {
   }
 
   // Switch to page B's tab.
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a New Tab at the end of the strip (simulate Ctrl+T)
   std::unique_ptr<WebContents> new_contents = CreateWebContents();
@@ -2093,7 +2146,8 @@ TEST_F(TabStripModelTest, NavigationForgetsOpeners) {
                        TabStripModel::ADD_NONE);
 
   // Tell the TabStripModel that we are navigating page D via a link click.
-  strip.ActivateTabAt(3, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(3, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   strip.TabNavigating(raw_page_d_contents, ui::PAGE_TRANSITION_LINK);
 
   // Close page D, page C should be selected. (part of same opener tree).
@@ -2135,7 +2189,8 @@ TEST_F(TabStripModelTest, NavigationForgettingDoesntAffectNewTab) {
   strip.AddWebContents(std::move(page_d_contents), -1, ui::PAGE_TRANSITION_LINK,
                        TabStripModel::ADD_NONE);
 
-  strip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(2, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // TEST 1: A tab in the middle of a bunch of tabs is active and the user opens
   // a new tab at the end of the strip. Closing that new tab will select the tab
@@ -2168,10 +2223,13 @@ TEST_F(TabStripModelTest, NavigationForgettingDoesntAffectNewTab) {
                        TabStripModel::ADD_ACTIVE);
 
   // Now select the first tab.
-  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Now select the last tab.
-  strip.ActivateTabAt(strip.count() - 1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(strip.count() - 1,
+                      TabStripUserGestureDetails(
+                          TabStripUserGestureDetails::GestureType::kOther));
 
   // Now close the last tab. The next adjacent should be selected.
   strip.CloseWebContentsAt(strip.count() - 1, TabStripModel::CLOSE_NONE);
@@ -2179,7 +2237,8 @@ TEST_F(TabStripModelTest, NavigationForgettingDoesntAffectNewTab) {
 
   // TEST 3: As above, but the user does multiple navigations and thus the tab's
   // opener relationship is forgotten.
-  strip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(2, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open a new tab but navigate away from the new tab page.
   new_tab_contents = CreateWebContents();
@@ -2256,8 +2315,9 @@ TEST_F(TabStripModelTest, FastShutdown) {
     tabstrip.CloseAllTabs();
     // On a mock RPH this checks whether we *attempted* fast shutdown.
     // A real RPH would reject our attempt since there is an unload handler.
-    EXPECT_TRUE(
-        raw_contents1->GetMainFrame()->GetProcess()->FastShutdownStarted());
+    EXPECT_TRUE(raw_contents1->GetPrimaryMainFrame()
+                    ->GetProcess()
+                    ->FastShutdownStarted());
     EXPECT_EQ(2, tabstrip.count());
 
     delegate.set_run_unload_listener(false);
@@ -2280,8 +2340,9 @@ TEST_F(TabStripModelTest, FastShutdown) {
     tabstrip.AppendWebContents(std::move(contents2), true);
 
     tabstrip.CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
-    EXPECT_FALSE(
-        raw_contents1->GetMainFrame()->GetProcess()->FastShutdownStarted());
+    EXPECT_FALSE(raw_contents1->GetPrimaryMainFrame()
+                     ->GetProcess()
+                     ->FastShutdownStarted());
     EXPECT_EQ(1, tabstrip.count());
 
     tabstrip.CloseAllTabs();
@@ -2600,6 +2661,25 @@ TEST_F(TabStripModelTest, MoveTabNext_Group) {
   strip.CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, MoveTabNext_GroupAtEnd) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "0"));
+  EXPECT_EQ("0 1", GetTabStripStateString(strip));
+
+  tab_groups::TabGroupId group = strip.AddToNewGroup({0, 1});
+
+  strip.MoveTabNext();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(1), group);
+
+  strip.MoveTabNext();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(1), absl::nullopt);
+
+  strip.CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -2676,6 +2756,25 @@ TEST_F(TabStripModelTest, MoveTabPrevious_Group) {
   strip.MoveTabPrevious();
   EXPECT_EQ("0 3 1 2", GetTabStripStateString(strip));
   EXPECT_EQ(strip.GetTabGroupForTab(1), absl::nullopt);
+
+  strip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "1"));
+  EXPECT_EQ("0 1", GetTabStripStateString(strip));
+
+  tab_groups::TabGroupId group = strip.AddToNewGroup({0, 1});
+
+  strip.MoveTabPrevious();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(0), group);
+
+  strip.MoveTabPrevious();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(0), absl::nullopt);
 
   strip.CloseAllTabs();
 }
@@ -2790,7 +2889,8 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
   EXPECT_EQ(raw_page_b1_contents, strip.GetWebContentsAt(4));
 
   // Switch to A.
-  strip.ActivateTabAt(2, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(2, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(raw_page_a_contents, strip.GetActiveWebContents());
 
   // Open page A2 in the background from A. It should end up after A1.
@@ -2837,7 +2937,8 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   strip.AddObserver(&observer);
 
   // Selection and active tab change.
-  strip.ActivateTabAt(3, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(3, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(2, observer.GetStateCount());
   ASSERT_EQ(observer.GetStateAt(0).action, MockTabStripModelObserver::ACTIVATE);
   State s1(raw_contents3, 3, MockTabStripModelObserver::SELECT);
@@ -2935,7 +3036,8 @@ TEST_F(TabStripModelTest, MultipleToSingle) {
   strip.AddObserver(&observer);
   // This changes the selection (0 is no longer selected) but the selected_index
   // still remains at 1.
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(1, observer.GetStateCount());
   State s(raw_contents2, 1, MockTabStripModelObserver::SELECT);
   s.src_index = 1;
@@ -3095,7 +3197,8 @@ TEST_F(TabStripModelTest, LinkClicksWithPinnedTabOrdering) {
                        TabStripModel::ADD_ACTIVE | TabStripModel::ADD_PINNED);
 
   // Activate the first tab (a).
-  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
 
   // Open two more tabs as link clicks. The first tab, c, should appear after
   // the pinned tabs followed by the second tab (d).
@@ -3127,7 +3230,8 @@ TEST_F(TabStripModelTest, MoveWebContentsAt) {
   strip.AppendWebContents(CreateWebContents(), false);
   strip.AddObserver(&observer);
 
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1, strip.active_index());
 
   strip.MoveWebContentsAt(2, 3, true);
@@ -3143,7 +3247,8 @@ TEST_F(TabStripModelTest, NewTabsUngrouped) {
 
   EXPECT_FALSE(strip.GetTabGroupForTab(0).has_value());
 
-  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   strip.CloseAllTabs();
 }
 
@@ -3158,7 +3263,8 @@ TEST_F(TabStripModelTest, AddTabToNewGroup) {
 
   EXPECT_TRUE(strip.GetTabGroupForTab(0).has_value());
 
-  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   strip.CloseAllTabs();
 }
 
@@ -4218,13 +4324,181 @@ TEST_F(TabStripModelTest, ActivateRecordsStartTime) {
   ASSERT_FALSE(has_tab_switch_start_time(1));
 
   // ActivateTabAt should only update the start time if the active tab changes.
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(has_tab_switch_start_time(0));
   EXPECT_FALSE(has_tab_switch_start_time(1));
-  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(0, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(has_tab_switch_start_time(0));
   EXPECT_FALSE(has_tab_switch_start_time(1));
-  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  strip.ActivateTabAt(1, TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(has_tab_switch_start_time(0));
   EXPECT_TRUE(has_tab_switch_start_time(1));
+}
+
+TEST_F(TabStripModelTest, ToggleSiteMuted) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  GURL url("https://example.com/");
+  HostContentSettingsMap* settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  std::unique_ptr<WebContents> new_tab_contents = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents.get())
+      ->SetLastCommittedURL(url);
+
+  tabstrip.AddWebContents(std::move(new_tab_contents), -1,
+                          ui::PAGE_TRANSITION_TYPED, TabStripModel::ADD_ACTIVE);
+
+  // Validate if the mute site menu item shows up and the site is unmuted
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleSiteMuted));
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Validate if toggling the state successfully mutes the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
+                                                  ContentSettingsType::SOUND));
+
+  // Toggling the state again to successfully unmute the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
+                                                   ContentSettingsType::SOUND));
+
+  tabstrip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  GURL url("https://example.com/");
+  HostContentSettingsMap* settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  std::unique_ptr<WebContents> new_tab_contents = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents.get())
+      ->SetLastCommittedURL(url);
+
+  tabstrip.AddWebContents(std::move(new_tab_contents), -1,
+                          ui::PAGE_TRANSITION_TYPED, TabStripModel::ADD_ACTIVE);
+
+  // Validate if the mute site menu item shows up and the site is unmuted
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleSiteMuted));
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Add a wildcard to mute all HTTPS sites as a custom behavior
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("https://*");
+  ContentSettingsPattern secondary_pattern =
+      ContentSettingsPattern::FromString("*");
+  settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
+                                         ContentSettingsType::SOUND,
+                                         CONTENT_SETTING_BLOCK);
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Validate we are able to unmute the site (with the wildcard custom behavior)
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
+                                                  ContentSettingsType::SOUND));
+
+  // Validate we are able to mute the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Validate we are able to unmute the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
+                                                  ContentSettingsType::SOUND));
+
+  tabstrip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  GURL url("https://example.com/");
+  HostContentSettingsMap* settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  std::unique_ptr<WebContents> new_tab_contents = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents.get())
+      ->SetLastCommittedURL(url);
+
+  tabstrip.AddWebContents(std::move(new_tab_contents), -1,
+                          ui::PAGE_TRANSITION_TYPED, TabStripModel::ADD_ACTIVE);
+
+  // Validate if the mute site menu item shows up and the site is unmuted
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleSiteMuted));
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Add a wildcard to mute all HTTPS sites as a custom behavior
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("https://www.google.com");
+  ContentSettingsPattern secondary_pattern =
+      ContentSettingsPattern::FromString("*");
+  settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
+                                         ContentSettingsType::SOUND,
+                                         CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Validate we are able to mute the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
+                                                  ContentSettingsType::SOUND));
+
+  // Validate we are able to unmute the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
+                                                   ContentSettingsType::SOUND));
+
+  tabstrip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  GURL url("https://example.com/");
+  HostContentSettingsMap* settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  std::unique_ptr<WebContents> new_tab_contents = CreateWebContents();
+  content::WebContentsTester::For(new_tab_contents.get())
+      ->SetLastCommittedURL(url);
+
+  tabstrip.AddWebContents(std::move(new_tab_contents), -1,
+                          ui::PAGE_TRANSITION_TYPED, TabStripModel::ADD_ACTIVE);
+
+  settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
+                                     ContentSetting::CONTENT_SETTING_BLOCK);
+
+  // Validate if the mute site menu item shows up and the site is muted
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleSiteMuted));
+  EXPECT_TRUE(chrome::IsSiteMuted(tabstrip, 0));
+
+  // Validate if toggling the state successfully unmutes the site
+  tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
+  EXPECT_FALSE(chrome::IsSiteMuted(tabstrip, 0));
+  EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
+                                                  ContentSettingsType::SOUND));
+
+  tabstrip.CloseAllTabs();
 }

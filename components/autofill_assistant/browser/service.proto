@@ -28,7 +28,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
-// Next ID: 21
+// Next ID: 24
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -137,7 +137,21 @@ message ClientContextProto {
   }
   optional PlatformType platform_type = 20;
 
-  reserved 19;
+  // The model for semantic dom annotation.
+  message AnnotateDomModelContextProto {
+    optional int64 model_version = 1;
+
+    // If set to true, serve semantic selectors even if a user is not part of
+    // an official server side experiment. This is used for emulator use cases
+    // that do not necessarily have a signed in user or an account.
+    optional bool force_semantic_selection = 2;
+  }
+  optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
+
+  // Set if the client has the JS flow library needed for JS flow execution.
+  optional bool js_flow_library_loaded = 23;
+
+  reserved 19, 21;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -742,6 +756,11 @@ message ActionsResponseProto {
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
 
+  // Needs to be evaluated before each JS flow action. Contains function
+  // definitions that js flows might call.
+  // Only set if ClientContextProto::js_flow_library_loaded is false.
+  optional string js_flow_library = 13;
+
   // Id of the current run.
   optional uint64 run_id = 12;
 
@@ -1047,6 +1066,8 @@ message ActionProto {
     ExecuteJsProto execute_js = 93;
     RegisterPasswordResetRequestProto register_password_reset_request = 94;
     ExternalActionProto external_action = 95;
+    SetNativeValueProto set_native_value = 96;
+    SetNativeCheckedProto set_native_checked = 97;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1148,6 +1169,8 @@ message ProcessedActionProto {
     JsFlowProto.Result js_flow_result = 37;
     // Should be set as a result of SaveSubmittedPassword.
     SaveSubmittedPasswordProto.Result save_submitted_password_result = 38;
+    // Should be set as a result of an ExternalAction.
+    ExternalActionProto.Result external_action_result = 39;
   }
 
   // Reports information about navigation that happened while
@@ -1234,6 +1257,18 @@ message UnexpectedErrorInfoProto {
   // JavaScript exception class name, if reporting a JavaScript error.
   optional string js_exception_classname = 3;
 
+  enum JsExceptionLocation {
+    UNKNOWN = 0;
+    // Corresponds to ActionsResponseProto::js_flow_library
+    JS_FLOW_LIBRARY = 1;
+    // Corresponds to JsFlowProto::js_flow
+    JS_FLOW = 2;
+  }
+
+  // The location that caused the JavaScript exception. Guaranteed to have the
+  // same number of entries as js_exception_line_numbers and
+  // js_exception_column_numbers.
+  repeated JsExceptionLocation js_exception_locations = 8 [packed = true];
   // JavaScript exception line numbers, within the js snippet that was sent to
   // devtools runtime by the client, if reporting a JavaScript error. Together
   // with |js_exception_column_numbers| this forms a stack trace.
@@ -1457,12 +1492,12 @@ message ElementFinderInfoProto {
     MODEL_LOAD_TIMEOUT = 5;
   }
   message PredictedElement {
-    // Whether the inference returned the expectation.
-    optional bool matches_css_element = 1;
     // The predicted objective and predicted role of this element.
-    optional SelectorProto.SemanticInformation semantic_information = 2;
+    optional SelectorProto.SemanticFilter semantic_filter = 4;
     // The element's backend node id.
     optional int32 backend_node_id = 3;
+
+    reserved 1, 2;
   }
   message SemanticInferenceResult {
     // If this is empty, the model inference did not find any results.
@@ -1496,7 +1531,7 @@ enum PseudoType {
 }
 
 // A reference to one or more elements on the page, possibly nested in frames.
-// Next ID: 15
+// Next ID: 12
 message SelectorProto {
   // Filters for the element on the page. Filter are applied sequentially, using
   // the output of the previous filter as input. The root of these filters is
@@ -1515,6 +1550,8 @@ message SelectorProto {
   // The returned elements will be sorted by their order in the document.
   // Elements that were matched via the labelled filter will have the same order
   // as their label.
+  //
+  // Next ID: 17
   message Filter {
     oneof filter {
       // Enter the document of an iframe or shadow root. The next filters apply
@@ -1622,6 +1659,16 @@ message SelectorProto {
 
       // Retrieve parent of current elements.
       EmptyFilter parent = 15;
+
+      // Run the ML model over extracted node signals and retrieve a matching
+      // result.
+      // TODO(b/233340267): By convention this must be the first filter in the
+      // list. It can be followed by any set of other filters.
+      // TODO(b/233340267): The filter only supports returning a single element,
+      // although that element can have any number of children. Should it find
+      // multiple elements, the Selector will return a |TOO_MANY_ELEMENTS|
+      // error.
+      SemanticFilter semantic = 16;
     }
 
     reserved 10;
@@ -1710,27 +1757,22 @@ message SelectorProto {
     optional int32 index = 1;
   }
 
-  // If set, and the model inference is enabled on the client, will run model
-  // inference and compare if the found element has been inferred along
-  // the expectation.
-  message SemanticInformation {
+  message SemanticFilter {
     // The objective we expect this Selector to have.
     optional int32 objective = 1;
     // The role we expect this Selector to have.
-    optional int32 semantic_role = 2;
+    optional int32 role = 2;
     // Timeout, defaults to 5s.
     // TODO(b/218482826): Consider moving this to settings.
     optional int32 model_timeout_ms = 3 [default = 5000];
     // If true, ignore the objective and treat it as a wildcard '*' when
     // matching.
     optional bool ignore_objective = 4;
-    // If true, executes CSS alongside, comparing the results at the end. Uses
-    // the CSS result going forward.
-    optional bool check_matches_css_element = 5;
-  }
-  optional SemanticInformation semantic_information = 11;
 
-  reserved 1 to 8;
+    reserved 5;
+  }
+
+  reserved 1 to 8, 11;
 }
 
 enum OptionalStep {
@@ -2659,7 +2701,14 @@ message CollectUserDataProto {
   }
 
   // Specifies information about the data source to be used.
-  message DataSource {}
+  message DataSource {
+    // If enabled and the user data request fails, fall back to the Chrome
+    // Autofill data instead where possible. E.g. in WebLayer this setting is
+    // ignored (Chrome Autofill data is not available). If this is false, the
+    // action will fail if the user data request fails, even if Chrome Autofill
+    // data would have been available.
+    optional bool allow_fallback = 1 [default = true];
+  }
 
   optional string prompt = 1;
   // NOTE: The action does not ask separately for billing address.
@@ -3412,15 +3461,17 @@ message JsFlowProto {
     // field will be empty and the action will return INVALID_ACTION.
     optional string result_json = 1;
   }
-  // The JS flow to execute in a sandbox.
+
+  // The JS flow to execute in a sandbox. If present
+  // ActionsResponseProto::js_flow_library needs to be evaluated first.
   optional string js_flow = 1;
 }
 
-// Action which forwards a proto to the owner of the |ExternalScriptController|
+// Action which forwards a proto to the owner of the |HeadlessScriptController|
 // for the current flow. Not supported for internal flows.
 message ExternalActionProto {
   // The opaque proto to be forwarded to the owner of the
-  // |ExternalScriptController| for this flow.
+  // |HeadlessScriptController| for this flow.
   optional external.ActionInfo info = 1;
 
   // Whether to show the touchable area in the overlay.
@@ -3430,4 +3481,19 @@ message ExternalActionProto {
   // Whether interrupts should be executed while Autofill Assistant is in prompt
   // state.
   optional bool allow_interrupt = 3;
+
+  // A condition on the DOM. Whenever its status changes a notification is sent
+  // to the external caller.
+  message ExternalCondition {
+    // The identifier to be used in the external notification.
+    optional int32 id = 1;
+
+    // The condition to be checked internally.
+    optional ElementConditionProto element_condition = 2;
+  }
+  repeated ExternalCondition conditions = 4;
+
+  message Result {
+    optional external.ResultInfo result_info = 1;
+  }
 }

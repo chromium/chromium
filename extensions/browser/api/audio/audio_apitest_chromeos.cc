@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
@@ -25,9 +25,9 @@ namespace extensions {
 
 using ::ash::AudioDevice;
 using ::ash::AudioDeviceList;
+using ::ash::AudioNode;
+using ::ash::AudioNodeList;
 using ::ash::CrasAudioHandler;
-using ::chromeos::AudioNode;
-using ::chromeos::AudioNodeList;
 
 const uint64_t kJabraSpeaker1Id = 30001;
 const uint64_t kJabraSpeaker1StableDeviceId = 80001;
@@ -110,8 +110,8 @@ class AudioApiTest : public ShellApiTest {
   }
 
   void ChangeAudioNodes(const AudioNodeList& audio_nodes) {
-    chromeos::FakeCrasAudioClient::Get()
-        ->SetAudioNodesAndNotifyObserversForTesting(audio_nodes);
+    ash::FakeCrasAudioClient::Get()->SetAudioNodesAndNotifyObserversForTesting(
+        audio_nodes);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnLevelChangedOutputDevice) {
 
   // Loads background app.
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener load_listener("loaded", false);
+  ExtensionTestMessageListener load_listener("loaded");
   ASSERT_TRUE(LoadApp("api_test/audio/volume_change"));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnOutputMuteChanged) {
 
   // Loads background app.
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener load_listener("loaded", false);
+  ExtensionTestMessageListener load_listener("loaded");
   ASSERT_TRUE(LoadApp("api_test/audio/output_mute_change"));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
 
   // Loads background app.
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener load_listener("loaded", false);
+  ExtensionTestMessageListener load_listener("loaded");
   ASSERT_TRUE(LoadApp("api_test/audio/input_mute_change"));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedAddNodes) {
 
   // Load background app.
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener load_listener("loaded", false);
+  ExtensionTestMessageListener load_listener("loaded");
   ASSERT_TRUE(LoadApp("api_test/audio/add_nodes"));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedRemoveNodes) {
 
   // Load background app.
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener load_listener("loaded", false);
+  ExtensionTestMessageListener load_listener("loaded");
   ASSERT_TRUE(LoadApp("api_test/audio/remove_nodes"));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
@@ -276,30 +276,6 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedRemoveNodes) {
   // Verify the background app got the onNodesChanged event
   // with the last node removed.
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-}
-
-class AllowlistedAudioApiTest : public AudioApiTest {
- public:
-  AllowlistedAudioApiTest() = default;
-  ~AllowlistedAudioApiTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID,
-        "jlgnoeceollaejlkenecblnjmdcfhfgc");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AllowlistedAudioApiTest, DeprecatedApi) {
-  // Set up the audio nodes for testing.
-  AudioNodeList audio_nodes = {
-      CreateAudioNode(kJabraSpeaker1, 2), CreateAudioNode(kJabraSpeaker2, 2),
-      CreateAudioNode(kHDMIOutput, 2),    CreateAudioNode(kJabraMic1, 2),
-      CreateAudioNode(kJabraMic2, 2),     CreateAudioNode(kUSBCameraMic, 2)};
-
-  ChangeAudioNodes(audio_nodes);
-
-  EXPECT_TRUE(RunAppTest("api_test/audio/deprecated_api")) << message_;
 }
 
 }  // namespace extensions

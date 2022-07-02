@@ -4,6 +4,8 @@
 
 // Tests behavior when quitting apps with app shims.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <unistd.h>
 
@@ -56,7 +58,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
 
   void SetUpAppShim() {
     ASSERT_EQ(0u, [[NSApp windows] count]);
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
     ASSERT_EQ(1u, [[NSApp windows] count]);
 
@@ -101,7 +103,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
   }
 
   base::FilePath app_path_;
-  AppShimManager* manager_ = nullptr;
+  raw_ptr<AppShimManager> manager_ = nullptr;
   std::string extension_id_;
 };
 

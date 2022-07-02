@@ -17,7 +17,7 @@ namespace {
 
 using BYOTextFieldItemTest = PlatformTest;
 
-// Tests that the textfield is set properly after a call to |configureCell:|.
+// Tests that the textfield is set properly after a call to `configureCell:`.
 TEST_F(BYOTextFieldItemTest, ConfigureCell) {
   BYOTextFieldItem* item = [[BYOTextFieldItem alloc] initWithType:0];
   BYOTextFieldCell* cell = [[[item cellClass] alloc] init];

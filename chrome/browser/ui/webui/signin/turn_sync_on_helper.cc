@@ -29,6 +29,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -497,26 +498,34 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
     if (may_have_cloud_policies &&
-        SyncStartupTracker::GetSyncServiceState(sync_service) ==
-            SyncStartupTracker::SYNC_STARTUP_PENDING) {
-      sync_startup_tracker_ =
-          std::make_unique<SyncStartupTracker>(sync_service, this);
+        SyncStartupTracker::GetServiceStartupState(sync_service) ==
+            SyncStartupTracker::ServiceStartupState::kPending) {
+      sync_startup_tracker_ = std::make_unique<SyncStartupTracker>(
+          sync_service,
+          base::BindOnce(&TurnSyncOnHelper::OnSyncStartupStateChanged,
+                         weak_pointer_factory_.GetWeakPtr()));
       return;
     }
   }
   ShowSyncConfirmationUI();
 }
 
-void TurnSyncOnHelper::SyncStartupCompleted() {
-  DCHECK(sync_startup_tracker_);
-  sync_startup_tracker_.reset();
-  ShowSyncConfirmationUI();
-}
-
-void TurnSyncOnHelper::SyncStartupFailed() {
-  DCHECK(sync_startup_tracker_);
-  sync_startup_tracker_.reset();
-  ShowSyncConfirmationUI();
+void TurnSyncOnHelper::OnSyncStartupStateChanged(
+    SyncStartupTracker::ServiceStartupState state) {
+  switch (state) {
+    case SyncStartupTracker::ServiceStartupState::kPending:
+      NOTREACHED();
+      break;
+    case SyncStartupTracker::ServiceStartupState::kTimeout:
+      LOG(WARNING) << "Waiting for Sync Service to start timed out.";
+      [[fallthrough]];
+    case SyncStartupTracker::ServiceStartupState::kError:
+    case SyncStartupTracker::ServiceStartupState::kComplete:
+      DCHECK(sync_startup_tracker_);
+      sync_startup_tracker_.reset();
+      ShowSyncConfirmationUI();
+      break;
+  }
 }
 
 // static

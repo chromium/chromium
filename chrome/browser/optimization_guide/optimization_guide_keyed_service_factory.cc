@@ -46,14 +46,11 @@ OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
 KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Do not build the OptimizationGuideKeyedService if it's a sign-in profile
-  // since it basically is an ephemeral profile anyway and we cannot provide
-  // hints or models to it anyway. Additionally, sign in profiles do not go
-  // through the standard profile initialization flow, so a lot of things that
-  // are required are not available when the browser context for the signin
-  // profile is created.
+  // Do not build the OptimizationGuideKeyedService if it's a sign-in or
+  // lockscreen profile since it basically is an ephemeral profile anyway and we
+  // cannot provide hints or models to it anyway.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (ash::ProfileHelper::IsSigninProfile(profile))
+  if (!ash::ProfileHelper::IsRegularProfile(profile))
     return nullptr;
 #endif
   return new OptimizationGuideKeyedService(context);

@@ -46,17 +46,11 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
     std::set<std::string> dns_aliases)
-    : result_(HandshakeResult::HTTP2_INCOMPLETE),
-      session_(session),
+    : session_(session),
       connect_delegate_(connect_delegate),
-      http_response_info_(nullptr),
       requested_sub_protocols_(requested_sub_protocols),
       requested_extensions_(requested_extensions),
       stream_request_(request),
-      request_info_(nullptr),
-      stream_closed_(false),
-      stream_error_(OK),
-      response_headers_complete_(false),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
   DCHECK(request);
@@ -219,8 +213,11 @@ void WebSocketHttp2HandshakeStream::GetSSLCertRequestInfo(
   NOTREACHED();
 }
 
-bool WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  return session_ && session_->GetRemoteEndpoint(endpoint);
+int WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+  if (!session_)
+    return ERR_SOCKET_NOT_CONNECTED;
+
+  return session_->GetRemoteEndpoint(endpoint);
 }
 
 void WebSocketHttp2HandshakeStream::PopulateNetErrorDetails(

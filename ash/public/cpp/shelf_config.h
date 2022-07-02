@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/splitview/split_view_observer.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +67,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
+
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state);
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -184,6 +188,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   bool is_in_app() const { return is_in_app_; }
 
+  bool in_split_view_with_overview() const {
+    return in_split_view_with_overview_;
+  }
+
   bool shelf_controls_shown() const { return shelf_controls_shown_; }
 
   bool is_virtual_keyboard_shown() const { return is_virtual_keyboard_shown_; }
@@ -230,6 +238,7 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   friend class ShelfConfigTest;
 
   class ShelfAccessibilityObserver;
+  class ShelfSplitViewObserver;
 
   // Called whenever something has changed in the shelf configuration. Notifies
   // all observers.
@@ -269,6 +278,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   // Whether the shelf is currently in in-app state.
   bool is_in_app_;
+
+  // Whether the device is in split view. Only tracked in overview mode.
+  bool in_split_view_with_overview_;
 
   // Whether the shelf buttons (navigation controls, and overview tray button)
   // should be shown.
@@ -342,6 +354,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Object responsible for observing accessibility settings relevant to shelf
   // config.
   std::unique_ptr<ShelfAccessibilityObserver> accessibility_observer_;
+
+  // Object responsible for observing overview mode split state changes relevant
+  // to shelf config.
+  std::unique_ptr<ShelfSplitViewObserver> split_view_observer_;
 
   // Receive callbacks from DisplayObserver.
   absl::optional<display::ScopedDisplayObserver> display_observer_;

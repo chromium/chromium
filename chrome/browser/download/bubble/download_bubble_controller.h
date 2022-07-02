@@ -52,10 +52,11 @@ class DownloadBubbleUIController
   // offline items.
   std::vector<DownloadUIModelPtr> GetAllItemsToDisplay();
 
-  // The list is needed by DownloadDisplayController to check a few things,
-  // for example in progress download count, last completed time, and getting
-  // progress for animation.
+  // The list is needed to populate GetAllItemsToDisplay.
   virtual const OfflineItemList& GetOfflineItems();
+
+  // The list is needed to populate GetAllItemsToDisplay.
+  virtual const std::vector<download::DownloadItem*> GetDownloadItems();
 
   // This function makes sure that the offline items field is
   // populated, and then calls the given callback. After this, GetOfflineItems
@@ -79,6 +80,12 @@ class DownloadBubbleUIController
   // Notify when a new download is ready to be shown on UI, and if the window
   // this controller belongs to should show the partial view.
   void OnNewItem(download::DownloadItem* item, bool show_details);
+
+  // Returns the DownloadDisplayController. Should always return a valid
+  // controller.
+  DownloadDisplayController* display_controller_for_testing() {
+    return display_controller_;
+  }
 
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;
@@ -135,6 +142,9 @@ class DownloadBubbleUIController
   // download to feedback service for non-mixed content downloads.
   void ProcessDownloadWarningButtonPress(DownloadUIModel* model,
                                          DownloadCommands::Command command);
+
+  // Kick off retrying an eligible interrupted download.
+  void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
 
   raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;

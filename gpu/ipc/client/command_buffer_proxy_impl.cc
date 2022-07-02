@@ -259,12 +259,6 @@ void CommandBufferProxyImpl::OrderingBarrierHelper(int32_t put_offset) {
       route_id_, put_offset, std::move(pending_sync_token_fences_));
 }
 
-void CommandBufferProxyImpl::SetUpdateVSyncParametersCallback(
-    const UpdateVSyncParametersCallback& callback) {
-  CheckLock();
-  update_vsync_parameters_completion_callback_ = callback;
-}
-
 gpu::CommandBuffer::State CommandBufferProxyImpl::WaitForTokenInRange(
     int32_t start,
     int32_t end) {
@@ -396,6 +390,22 @@ void CommandBufferProxyImpl::DestroyTransferBuffer(int32_t id) {
                              NewDestroyTransferBuffer(id))));
 }
 
+void CommandBufferProxyImpl::ForceLostContext(error::ContextLostReason reason) {
+  CheckLock();
+  base::AutoLock lock(last_state_lock_);
+  if (last_state_.error == gpu::error::kLostContext) {
+    // Per specification, do nothing if the context is already lost.
+    return;
+  }
+  last_state_.error = gpu::error::kLostContext;
+  // The caller determines the context lost reason.
+  last_state_.context_lost_reason = reason;
+  // Calling code may be in an indeterminate state (possibly including
+  // being in a GpuControlClient callback), so avoid re-entering the
+  // GpuControlClient here.
+  DisconnectChannelInFreshCallStack();
+}
+
 void CommandBufferProxyImpl::SetGpuControlClient(GpuControlClient* client) {
   CheckLock();
   gpu_control_client_ = client;
@@ -516,11 +526,6 @@ void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,
   gfx::GpuFence* gpu_fence = gfx::GpuFence::FromClientGpuFence(source);
   command_buffer_->CreateGpuFenceFromHandle(
       gpu_fence_id, gpu_fence->GetGpuFenceHandle().Clone());
-}
-
-void CommandBufferProxyImpl::SetDisplayTransform(
-    gfx::OverlayTransform transform) {
-  NOTREACHED();
 }
 
 void CommandBufferProxyImpl::GetGpuFence(
@@ -705,27 +710,6 @@ CommandBufferProxyImpl::GetUMAHistogramEnsureWorkVisibleDuration() {
             base::HistogramBase::kUmaTargetedHistogramFlag);
   }
   return uma_histogram_ensure_work_visible_duration_;
-}
-
-void CommandBufferProxyImpl::OnSwapBuffersCompleted(
-    const SwapBuffersCompleteParams& params) {
-  if (gpu_control_client_)
-    gpu_control_client_->OnGpuControlSwapBuffersCompleted(
-        params, /*release_fence=*/gfx::GpuFenceHandle());
-}
-
-void CommandBufferProxyImpl::OnBufferPresented(
-    uint64_t swap_id,
-    const gfx::PresentationFeedback& feedback) {
-  base::AutoLockMaybe lock(lock_.get());
-  if (gpu_control_client_)
-    gpu_control_client_->OnSwapBufferPresented(swap_id, feedback);
-
-  if (update_vsync_parameters_completion_callback_ &&
-      ShouldUpdateVsyncParams(feedback)) {
-    update_vsync_parameters_completion_callback_.Run(feedback.timestamp,
-                                                     feedback.interval);
-  }
 }
 
 void CommandBufferProxyImpl::OnGpuSyncReplyError() {

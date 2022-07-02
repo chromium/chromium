@@ -40,7 +40,6 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.test.PolicyData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHistory;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -713,7 +712,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         Assert.assertEquals(indirectLoadCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
 
         // Simulate touch, hasUserGesture must be true only on the first call.
-        DOMUtils.clickNode(mAwContents.getWebContents(), "link");
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
 
         mShouldOverrideUrlLoadingHelper.waitForCallback(indirectLoadCallCount, 1);
         Assert.assertEquals(

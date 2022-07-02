@@ -39,7 +39,7 @@ constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
 
 int GetCaptureBufferSize(bool need_webrtc_processing,
                          const AudioParameters device_format) {
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)
   // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
   // https://crbug.com/638081
   return 2 * device_format.sample_rate() / 100;
@@ -248,6 +248,13 @@ AudioProcessor::AudioProcessor(
   if (webrtc_audio_processing_) {
     DCHECK_EQ(output_format_.sample_rate() / 100,
               output_format_.frames_per_buffer());
+  }
+  if (input_format_.sample_rate() % 100 != 0 ||
+      output_format_.sample_rate() % 100 != 0) {
+    SendLogMessage(base::StringPrintf(
+        "%s: WARNING: Sample rate not divisible by 100, processing is provided "
+        "on a best-effort basis. input rate=[%d], output rate=[%d]",
+        __func__, input_format_.sample_rate(), output_format_.sample_rate()));
   }
   SendLogMessage(base::StringPrintf(
       "%s({input_format_=[%s], output_format_=[%s]})", __func__,
@@ -548,11 +555,6 @@ absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
     return absl::nullopt;
   }
 
-  // The audio processor code assumes that sample rates are divisible by 100.
-  if (device_format.sample_rate() % 100 != 0) {
-    return absl::nullopt;
-  }
-
   AudioParameters params(
       device_format.format(), channel_layout, device_format.sample_rate(),
       GetCaptureBufferSize(
@@ -577,14 +579,16 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
     const AudioProcessingSettings& settings) {
   const bool need_webrtc_audio_processing =
       settings.NeedWebrtcAudioProcessing();
+  // TODO(crbug.com/1336055): Investigate why chromecast devices need special
+  // logic here.
   const int output_sample_rate =
       need_webrtc_audio_processing ?
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
                                    std::min(media::kAudioProcessingSampleRateHz,
                                             input_format.sample_rate())
 #else
                                    media::kAudioProcessingSampleRateHz
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif
                                    : input_format.sample_rate();
 
   media::ChannelLayout output_channel_layout;

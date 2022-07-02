@@ -19,7 +19,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "media/base/media_switches.h"
@@ -29,55 +28,6 @@ namespace media {
 
 using ProtoVideoStatsEntry =
     leveldb_proto::ProtoDatabase<WebrtcVideoStatsEntryProto>;
-
-namespace {
-
-// Timeout threshold for DB operations. See OnOperationTimeout().
-// NOTE: Used by UmaHistogramOpTime. Change the name if you change the time.
-static constexpr base::TimeDelta kPendingOpTimeout = base::Seconds(30);
-
-void UmaHistogramOpTime(const std::string& op_name, base::TimeDelta duration) {
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "Media.WebrtcVideoStatsDB.OpTiming." + op_name, duration,
-      base::Milliseconds(1), kPendingOpTimeout, 50);
-}
-
-}  // namespace
-
-WebrtcVideoStatsDBImpl::PendingOperation::PendingOperation(
-    std::string uma_str,
-    std::unique_ptr<base::CancelableOnceClosure> timeout_closure)
-    : uma_str_(uma_str),
-      timeout_closure_(std::move(timeout_closure)),
-      start_ticks_(base::TimeTicks::Now()) {
-  DVLOG(3) << __func__ << " Started " << uma_str_;
-}
-
-WebrtcVideoStatsDBImpl::PendingOperation::~PendingOperation() {
-  // Destroying a pending operation that hasn't timed out yet implies the
-  // operation has completed.
-  if (timeout_closure_ && !timeout_closure_->IsCancelled()) {
-    base::TimeDelta op_duration = base::TimeTicks::Now() - start_ticks_;
-    UmaHistogramOpTime(uma_str_, op_duration);
-    DVLOG(3) << __func__ << " Completed " << uma_str_ << " ("
-             << op_duration.InMilliseconds() << ")";
-
-    // Ensure the timeout doesn't fire. Destruction should cancel the callback
-    // implicitly, but that's not a documented contract, so just taking the safe
-    // route.
-    timeout_closure_->Cancel();
-  }
-}
-
-void WebrtcVideoStatsDBImpl::PendingOperation::OnTimeout() {
-  UmaHistogramOpTime(uma_str_, kPendingOpTimeout);
-  LOG(WARNING) << " Timeout performing " << uma_str_
-               << " operation on WebrtcVideoStatsDB";
-
-  // Cancel the closure to ensure we don't double report the task as completed
-  // in ~PendingOperation().
-  timeout_closure_->Cancel();
-}
 
 // static
 std::unique_ptr<WebrtcVideoStatsDBImpl> WebrtcVideoStatsDBImpl::Create(
@@ -97,7 +47,9 @@ std::unique_ptr<WebrtcVideoStatsDBImpl> WebrtcVideoStatsDBImpl::Create(
 WebrtcVideoStatsDBImpl::WebrtcVideoStatsDBImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<WebrtcVideoStatsEntryProto>>
         db)
-    : db_(std::move(db)), wall_clock_(base::DefaultClock::GetInstance()) {
+    : pending_operations_(/*uma_prefix=*/"Media.WebrtcVideoStatsDB.OpTiming."),
+      db_(std::move(db)),
+      wall_clock_(base::DefaultClock::GetInstance()) {
   DCHECK(db_);
 }
 
@@ -105,61 +57,24 @@ WebrtcVideoStatsDBImpl::~WebrtcVideoStatsDBImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-WebrtcVideoStatsDBImpl::PendingOpId WebrtcVideoStatsDBImpl::StartPendingOp(
-    std::string uma_str) {
-  PendingOpId op_id = next_op_id_++;
-
-  auto timeout_closure = std::make_unique<base::CancelableOnceClosure>(
-      base::BindOnce(&WebrtcVideoStatsDBImpl::OnPendingOpTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), op_id));
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, timeout_closure->callback(), kPendingOpTimeout);
-
-  pending_ops_.emplace(op_id, std::make_unique<PendingOperation>(
-                                  uma_str, std::move(timeout_closure)));
-
-  return op_id;
-}
-
-void WebrtcVideoStatsDBImpl::CompletePendingOp(PendingOpId op_id) {
-  // Destructing the PendingOperation will trigger UMA for completion timing.
-  int count = pending_ops_.erase(op_id);
-
-  // No big deal, but very unusual. Timeout is very generous, so tasks that
-  // timeout are generally assumed to be permanently hung.
-  if (!count)
-    DVLOG(2) << __func__ << " DB operation completed after timeout.";
-}
-
-void WebrtcVideoStatsDBImpl::OnPendingOpTimeout(PendingOpId op_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto it = pending_ops_.find(op_id);
-  DCHECK(it != pending_ops_.end());
-
-  it->second->OnTimeout();
-  pending_ops_.erase(it);
-}
-
 void WebrtcVideoStatsDBImpl::Initialize(InitializeCB init_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(init_cb);
   DCHECK(!IsInitialized());
 
-  db_->Init(base::BindOnce(&WebrtcVideoStatsDBImpl::OnInit,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           StartPendingOp("Initialize"), std::move(init_cb)));
+  db_->Init(base::BindOnce(
+      &WebrtcVideoStatsDBImpl::OnInit, weak_ptr_factory_.GetWeakPtr(),
+      pending_operations_.Start("Initialize"), std::move(init_cb)));
 }
 
-void WebrtcVideoStatsDBImpl::OnInit(PendingOpId op_id,
+void WebrtcVideoStatsDBImpl::OnInit(PendingOperations::Id op_id,
                                     InitializeCB init_cb,
                                     leveldb_proto::Enums::InitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(status, leveldb_proto::Enums::InitStatus::kInvalidOperation);
   bool success = status == leveldb_proto::Enums::InitStatus::kOK;
   DVLOG(2) << __func__ << (success ? " succeeded" : " FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Initialize",
                         success);
 
@@ -188,11 +103,11 @@ void WebrtcVideoStatsDBImpl::AppendVideoStats(
            << " from DB with intent to update with "
            << video_stats.ToLogString();
 
-  db_->GetEntry(
-      key.Serialize(),
-      base::BindOnce(&WebrtcVideoStatsDBImpl::WriteUpdatedEntry,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
-                     key, video_stats, std::move(append_done_cb)));
+  db_->GetEntry(key.Serialize(),
+                base::BindOnce(&WebrtcVideoStatsDBImpl::WriteUpdatedEntry,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               pending_operations_.Start("Read"), key,
+                               video_stats, std::move(append_done_cb)));
 }
 
 void WebrtcVideoStatsDBImpl::GetVideoStats(const VideoDescKey& key,
@@ -202,11 +117,11 @@ void WebrtcVideoStatsDBImpl::GetVideoStats(const VideoDescKey& key,
 
   DVLOG(3) << __func__ << " " << key.ToLogStringForDebug();
 
-  db_->GetEntry(
-      key.Serialize(),
-      base::BindOnce(&WebrtcVideoStatsDBImpl::OnGotVideoStats,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
-                     std::move(get_stats_cb)));
+  db_->GetEntry(key.Serialize(),
+                base::BindOnce(&WebrtcVideoStatsDBImpl::OnGotVideoStats,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               pending_operations_.Start("Read"),
+                               std::move(get_stats_cb)));
 }
 
 void WebrtcVideoStatsDBImpl::GetVideoStatsCollection(
@@ -237,7 +152,8 @@ void WebrtcVideoStatsDBImpl::GetVideoStatsCollection(
   db_->LoadKeysAndEntriesWhile(
       key_without_pixels, key_iterator_controller,
       base::BindOnce(&WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     pending_operations_.Start("Read"),
                      std::move(get_stats_cb)));
 }
 
@@ -269,7 +185,7 @@ bool WebrtcVideoStatsDBImpl::AreStatsValid(
 }
 
 void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
-    PendingOpId op_id,
+    PendingOperations::Id op_id,
     const VideoDescKey& key,
     const VideoStats& new_video_stats,
     AppendVideoStatsCB append_done_cb,
@@ -278,7 +194,7 @@ void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized());
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
 
   // Note: outcome of "Write" operation logged in OnEntryUpdated().
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read",
@@ -345,31 +261,32 @@ void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
   std::unique_ptr<DBType::KeyEntryVector> entries =
       std::make_unique<DBType::KeyEntryVector>();
   entries->emplace_back(key.Serialize(), new_entry_proto);
-  db_->UpdateEntries(
-      std::move(entries), std::make_unique<leveldb_proto::KeyVector>(),
-      base::BindOnce(&WebrtcVideoStatsDBImpl::OnEntryUpdated,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Write"),
-                     std::move(append_done_cb)));
+  db_->UpdateEntries(std::move(entries),
+                     std::make_unique<leveldb_proto::KeyVector>(),
+                     base::BindOnce(&WebrtcVideoStatsDBImpl::OnEntryUpdated,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    pending_operations_.Start("Write"),
+                                    std::move(append_done_cb)));
 }
 
-void WebrtcVideoStatsDBImpl::OnEntryUpdated(PendingOpId op_id,
+void WebrtcVideoStatsDBImpl::OnEntryUpdated(PendingOperations::Id op_id,
                                             AppendVideoStatsCB append_done_cb,
                                             bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " update " << (success ? "succeeded" : "FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Write", success);
   std::move(append_done_cb).Run(success);
 }
 
 void WebrtcVideoStatsDBImpl::OnGotVideoStats(
-    PendingOpId op_id,
+    PendingOperations::Id op_id,
     GetVideoStatsCB get_stats_cb,
     bool success,
     std::unique_ptr<WebrtcVideoStatsEntryProto> stats_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " get " << (success ? "succeeded" : "FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
 
   // Convert from WebrtcVideoStatsEntryProto to VideoStatsEntry.
@@ -397,14 +314,14 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStats(
 }
 
 void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
-    PendingOpId op_id,
+    PendingOperations::Id op_id,
     GetVideoStatsCollectionCB get_stats_cb,
     bool success,
     std::unique_ptr<std::map<std::string, WebrtcVideoStatsEntryProto>>
         stats_proto_collection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " get " << (success ? "succeeded" : "FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
   // Convert from map of WebrtcVideoStatsEntryProto to VideoStatsCollection.
   absl::optional<VideoStatsCollection> collection;
@@ -413,10 +330,10 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
     collection.emplace();
     const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
 
-    for (auto const& stats_proto : *stats_proto_collection) {
-      if (AreStatsValid(&stats_proto.second)) {
+    for (auto const& [pixel_key, video_stats_entry] : *stats_proto_collection) {
+      if (AreStatsValid(&video_stats_entry)) {
         VideoStatsEntry entry;
-        for (auto const& stats : stats_proto.second.stats()) {
+        for (auto const& stats : video_stats_entry.stats()) {
           if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
               max_time_to_keep_stats) {
             entry.emplace_back(stats.timestamp(), stats.frames_processed(),
@@ -427,7 +344,7 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
 
         if (!entry.empty()) {
           absl::optional<int> pixels =
-              VideoDescKey::ParsePixelsFromKey(stats_proto.first);
+              VideoDescKey::ParsePixelsFromKey(pixel_key);
           if (pixels) {
             collection->insert({*pixels, std::move(entry)});
           }
@@ -450,17 +367,18 @@ void WebrtcVideoStatsDBImpl::ClearStats(base::OnceClosure clear_done_cb) {
       std::make_unique<ProtoVideoStatsEntry::KeyEntryVector>(),
       base::BindRepeating([](const std::string& key) { return true; }),
       base::BindOnce(&WebrtcVideoStatsDBImpl::OnStatsCleared,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Clear"),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     pending_operations_.Start("Clear"),
                      std::move(clear_done_cb)));
 }
 
-void WebrtcVideoStatsDBImpl::OnStatsCleared(PendingOpId op_id,
+void WebrtcVideoStatsDBImpl::OnStatsCleared(PendingOperations::Id op_id,
                                             base::OnceClosure clear_done_cb,
                                             bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__ << (success ? " succeeded" : " FAILED!");
 
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
 
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Clear", success);
 

@@ -39,7 +39,7 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -81,7 +81,7 @@ class CupsPrintersManagerImpl
       public EnterprisePrintersProvider::Observer,
       public PrintServersManager::Observer,
       public SyncedPrintersManager::Observer,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   // Identifiers for each of the underlying PrinterDetectors this
   // class observes.
@@ -282,7 +282,7 @@ class CupsPrintersManagerImpl
     NotifyObservers({PrinterClass::kEnterprise});
   }
 
-  // mojom::CrosNetworkConfigObserver implementation.
+  // CrosNetworkConfigObserver implementation.
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks) override {
@@ -302,15 +302,6 @@ class CupsPrintersManagerImpl
     // Notify observers that the printer list has changed.
     RebuildDetectedLists();
   }
-
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
-      override {}
-  void OnNetworkStateListChanged() override {}
-  void OnDeviceStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Callback for PrinterDetectors.
   void OnPrintersFound(

@@ -4,15 +4,19 @@
 
 from __future__ import print_function
 
-import sys
 import os
+import sys
+import typing
+import unittest
 
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
 test_harness_script = r"""
   function VerifyHardwareAccelerated(feature) {
     feature += ': '
-    var list = document.querySelector('.feature-status-list');
+    var list = document.querySelector('info-view').shadowRoot.querySelector(
+        '.feature-status-list');
     for (var i=0; i < list.childElementCount; i++) {
       var span_list = list.children[i].getElementsByTagName('span');
       var feature_str = span_list[0].textContent;
@@ -27,7 +31,7 @@ test_harness_script = r"""
 """
 
 
-def safe_feature_name(feature):
+def safe_feature_name(feature: str) -> str:
   return feature.lower().replace(' ', '_')
 
 
@@ -36,18 +40,18 @@ class HardwareAcceleratedFeatureIntegrationTest(
   """Tests GPU acceleration is reported as active for various features."""
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     """The name by which this test is invoked on the command line."""
     return 'hardware_accelerated_feature'
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(cls, HardwareAcceleratedFeatureIntegrationTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs([])
 
-  def _Navigate(self, url):
+  def _Navigate(self, url: str) -> None:
     # It's crucial to use the action_runner, rather than the tab's
     # Navigate method directly. It waits for the document ready state
     # to become interactive or better, avoiding critical race
@@ -56,13 +60,13 @@ class HardwareAcceleratedFeatureIntegrationTest(
         url, script_to_evaluate_on_commit=test_harness_script)
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = ('WebGL', 'Canvas')
     for feature in tests:
       yield ('HardwareAcceleratedFeature_%s_accelerated' %
-             safe_feature_name(feature), 'chrome://gpu', (feature))
+             safe_feature_name(feature), 'chrome://gpu', [feature])
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     feature = args[0]
     self._Navigate(test_path)
     tab = self.tab
@@ -74,7 +78,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
       self.fail('%s not hardware accelerated' % feature)
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -82,6 +86,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
     ]
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

@@ -96,8 +96,9 @@ void JSChecker::Evaluate(const std::string& expression) {
 void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
-  web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::UTF8ToUTF16(new_script), base::NullCallback());
+  web_contents_->GetPrimaryMainFrame()
+      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
+                                                 base::NullCallback());
 }
 
 bool JSChecker::GetBool(const std::string& expression) {
@@ -466,6 +467,12 @@ void JSChecker::TapOnPath(
     std::initializer_list<base::StringPiece> element_ids) {
   ExpectVisiblePath(element_ids);
   Evaluate(GetOobeElementPath(element_ids) + ".click()");
+}
+
+void JSChecker::TapOnPathAsync(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectVisiblePath(element_ids);
+  ExecuteAsync(GetOobeElementPath(element_ids) + ".click()");
 }
 
 void JSChecker::TapOn(const std::string& element_id) {

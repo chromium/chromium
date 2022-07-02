@@ -8,34 +8,20 @@
 #include <string>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "components/cbor/values.h"
-#include "components/cbor/writer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
-#include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
 namespace content {
-
-namespace {
-
-int64_t EncodeTimeRoundDownToWholeDayInSeconds(base::Time time) {
-  return (time - base::Time::UnixEpoch())
-      .FloorToMultiple(base::Days(1))
-      .InSeconds();
-}
-
-}  // namespace
 
 AttributionReport::EventLevelData::EventLevelData(
     uint64_t trigger_data,
@@ -201,15 +187,6 @@ base::Value::Dict AttributionReport::ReportBody() const {
       const CommonSourceInfo& common_info =
           report->attribution_info().source.common_info();
 
-      dict.Set("source_site", common_info.ImpressionSite().Serialize());
-      dict.Set("attribution_destination",
-               common_info.ConversionDestination().Serialize());
-
-      // source_registration_time is rounded down to whole day and in seconds.
-      dict.Set("source_registration_time",
-               base::NumberToString(EncodeTimeRoundDownToWholeDayInSeconds(
-                   common_info.impression_time())));
-
       if (absl::optional<uint64_t> debug_key = common_info.debug_key())
         dict.Set("source_debug_key", base::NumberToString(*debug_key));
 
@@ -227,35 +204,6 @@ base::Value::Dict AttributionReport::ReportBody() const {
 
 AttributionReport::Id AttributionReport::ReportId() const {
   return absl::visit([](const auto& v) { return Id(v.id); }, data_);
-}
-
-std::string AttributionReport::PrivacyBudgetKey() const {
-  DCHECK(absl::holds_alternative<AggregatableAttributionData>(data_));
-
-  const CommonSourceInfo& common_source_info =
-      attribution_info_.source.common_info();
-
-  // Use CBOR to be deterministic.
-  cbor::Value::MapValue value;
-  value.emplace("reporting_origin",
-                common_source_info.reporting_origin().Serialize());
-  value.emplace("source_site", common_source_info.ImpressionSite().Serialize());
-  value.emplace("destination",
-                common_source_info.ConversionDestination().Serialize());
-
-  // TODO(linnan): Replace with a real version once a version string is decided.
-  static constexpr char kVersion[] = "";
-  value.emplace("version", kVersion);
-
-  value.emplace("source_registration_time",
-                EncodeTimeRoundDownToWholeDayInSeconds(
-                    common_source_info.impression_time()));
-
-  absl::optional<std::vector<uint8_t>> bytes =
-      cbor::Writer::Write(cbor::Value(std::move(value)));
-  DCHECK(bytes.has_value());
-
-  return base::Base64Encode(crypto::SHA256Hash(*bytes));
 }
 
 void AttributionReport::set_report_time(base::Time report_time) {

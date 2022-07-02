@@ -53,8 +53,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   fuchsia::ui::views::ViewRef CloneViewRef();
 
   // ui::PlatformWindow implementation.
-  gfx::Rect GetBounds() const override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInPixels() const override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
   gfx::Rect GetBoundsInDIP() const override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
   void SetTitle(const std::u16string& title) override;

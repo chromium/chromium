@@ -4,6 +4,7 @@
 
 import browserbench
 import time
+import logging
 
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -21,16 +22,36 @@ class Speedometer(browserbench.BrowserBench):
   def RunAndExtractMeasurements(self, driver, optargs):
     URL = 'https://browserbench.org/Speedometer2.0/'
     driver.get(URL)
-    WebDriverWait(driver,
-                  timeout=100000).until(lambda driver: driver.execute_script(
-                      '''return window.benchmarkClient !== undefined'''))
-    driver.execute_script('''startTest();''')
-    WebDriverWait(
-        driver, timeout=100000,
-        poll_frequency=30).until(lambda driver: driver.execute_script('''
-            return benchmarkClient.stepCount &&
-            benchmarkClient._finishedTestCount === benchmarkClient.stepCount''')
-                                 )
+    # Wait a short amount of time for the system to settle down before starting.
+    time.sleep(2)
+    WebDriverWait(driver, timeout=60).until(
+        lambda driver: driver.execute_script('''return Suites !== undefined &&
+                         window.benchmarkClient !== undefined'''))
+    logging.info('Page should be ready, test count=%s' %
+                 driver.execute_script('return Suites.length;'))
+    driver.execute_script('startTest();')
+    finished = False
+    # This gives 3 minutes for the test to run before stopping. Generally the
+    # test takes less than a minute, so this should be plenty of time.
+    for i in range(3):
+      time.sleep(60)
+      logging.info('Checking if done')
+      stepCount = driver.execute_script('''
+          return benchmarkClient.stepCount !== undefined ?
+          benchmarkClient.stepCount : -1''')
+      finishedTestCount = driver.execute_script('''
+          return benchmarkClient.stepCount !== undefined ?
+          benchmarkClient._finishedTestCount : -1''')
+      logging.info('Checking if done, stepCount %s finishedTestCount %s' %
+                   (stepCount, finishedTestCount))
+      if stepCount != -1 and stepCount == finishedTestCount:
+        finished = True
+        break
+    if not finished:
+      logging.info('Test did not complete in time, restarting')
+      raise RuntimeError('Test did not complete in time')
+
+    logging.info('Test done, extracting measurements')
     results = driver.execute_script('''
         return benchmarkClient._computeResults(
             benchmarkClient._measuredValuesList,

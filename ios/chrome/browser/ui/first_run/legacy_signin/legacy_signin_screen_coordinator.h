@@ -13,9 +13,9 @@
 // Need to remove this class when crbug.com/1290848 is fixed.
 @interface LegacySigninScreenCoordinator : InterruptibleChromeCoordinator
 
-// Initiates a LegacySigninScreenCoordinator with |navigationController|,
-// |browser| and |delegate|.
-// The |delegate| parameter is for handling the transfer between screens.
+// Initiates a LegacySigninScreenCoordinator with `navigationController`,
+// `browser` and `delegate`.
+// The `delegate` parameter is for handling the transfer between screens.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

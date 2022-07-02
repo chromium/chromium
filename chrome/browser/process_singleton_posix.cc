@@ -65,6 +65,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -98,11 +99,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/process_singleton_dialog_linux.h"
-#endif
-
-#if defined(TOOLKIT_VIEWS) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/views/linux_ui/linux_ui.h"
 #endif
 
 using content::BrowserThread;
@@ -555,7 +551,7 @@ class ProcessSingleton::LinuxWatcher
         fd_watch_controller_;
 
     // The ProcessSingleton::LinuxWatcher that owns us.
-    ProcessSingleton::LinuxWatcher* const parent_;
+    const raw_ptr<ProcessSingleton::LinuxWatcher> parent_;
 
     // A reference to the UI task runner.
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
@@ -611,7 +607,7 @@ class ProcessSingleton::LinuxWatcher
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   // The ProcessSingleton that owns us.
-  ProcessSingleton* const parent_;
+  const raw_ptr<ProcessSingleton> parent_;
 
   std::set<std::unique_ptr<SocketReader>, base::UniquePtrComparator> readers_;
 };
@@ -923,14 +919,6 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
         REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
   } else if (strncmp(buf, kACKToken, std::size(kACKToken) - 1) == 0) {
-#if defined(TOOLKIT_VIEWS) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    // Likely NULL in unit tests.
-    views::LinuxUI* linux_ui = views::LinuxUI::instance();
-    if (linux_ui)
-      linux_ui->NotifyWindowManagerStartupComplete();
-#endif
-
     // Assume the other process is handling the request.
     return PROCESS_NOTIFIED;
   }

@@ -9,6 +9,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -22,7 +23,9 @@ import org.chromium.ui.modelutil.PropertyKey;
 public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Supplier<Integer> mScrollOffsetSupplier;
-    private @Nullable Supplier<Boolean> mBackPressHandler;
+    private @Nullable Runnable mBackPressHandler;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Constructs the AccountSelection bottom sheet view.
@@ -32,8 +35,15 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         mScrollOffsetSupplier = scrollOffsetSupplier;
     }
 
-    public void setBackPressHandler(Supplier<Boolean> backPressHandler) {
+    /**
+     * Updates the sheet content back press handling behavior. This should be invoked during an
+     * event that updates the back press handling behavior of the sheet content.
+     * @param backPressHandler A runnable that will be invoked by the sheet content to handle a back
+     *         press. A null value indicates that back press will not be handled by the content.
+     */
+    public void setCustomBackPressBehavior(@Nullable Runnable backPressHandler) {
         mBackPressHandler = backPressHandler;
+        mBackPressStateChangedSupplier.set(backPressHandler != null);
     }
 
     public void focusForAccessibility(PropertyKey focusItem) {
@@ -112,7 +122,21 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean handleBackPress() {
-        return mBackPressHandler != null && mBackPressHandler.get();
+        if (mBackPressHandler != null) {
+            mBackPressHandler.run();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        handleBackPress();
     }
 
     @Override

@@ -20,8 +20,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -34,7 +34,6 @@
 
 namespace {
 
-using ::chromeos::DBusThreadManager;
 using ::chromeos::OwnerSettingsServiceAsh;
 using ::chromeos::OwnerSettingsServiceAshFactory;
 using ::chromeos::UpdateEngineClient;
@@ -145,13 +144,11 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
   if (!EnsureCanUpdate(false /* interactive */, callback_))
     return;
 
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
 
-  this->UpdateStatusChanged(
-      DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
+  this->UpdateStatusChanged(update_engine_client->GetLastStatus());
 }
 
 void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
@@ -162,8 +159,7 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
   if (!EnsureCanUpdate(true /* interactive */, callback_))
     return;
 
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
 
@@ -192,8 +188,7 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
   // For local owner set the field in the policy blob.
   if (service)
     service->SetString(ash::kReleaseChannel, channel);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->
-      SetChannel(channel, is_powerwash_allowed);
+  UpdateEngineClient::Get()->SetChannel(channel, is_powerwash_allowed);
 }
 
 void VersionUpdaterCros::SetUpdateOverCellularOneTimePermission(
@@ -201,13 +196,11 @@ void VersionUpdaterCros::SetUpdateOverCellularOneTimePermission(
     const std::string& update_version,
     int64_t update_size) {
   callback_ = std::move(callback);
-  DBusThreadManager::Get()
-      ->GetUpdateEngineClient()
-      ->SetUpdateOverCellularOneTimePermission(
-          update_version, update_size,
-          base::BindOnce(
-              &VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission,
-              weak_ptr_factory_.GetWeakPtr()));
+  UpdateEngineClient::Get()->SetUpdateOverCellularOneTimePermission(
+      update_version, update_size,
+      base::BindOnce(
+          &VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
@@ -226,12 +219,9 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
 
 void VersionUpdaterCros::GetChannel(bool get_current_channel,
                                     ChannelCallback cb) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the channel information. Bind to a weak_ptr bound method rather
   // than passing |cb| directly so that |cb| does not outlive |this|.
-  update_engine_client->GetChannel(
+  UpdateEngineClient::Get()->GetChannel(
       get_current_channel,
       base::BindOnce(&VersionUpdaterCros::OnGetChannel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
@@ -243,12 +233,9 @@ void VersionUpdaterCros::OnGetChannel(ChannelCallback cb,
 }
 
 void VersionUpdaterCros::GetEolInfo(EolInfoCallback cb) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the EolInfo. Bind to a weak_ptr bound method rather than passing
   // |cb| directly so that |cb| does not outlive |this|.
-  update_engine_client->GetEolInfo(
+  UpdateEngineClient::Get()->GetEolInfo(
       base::BindOnce(&VersionUpdaterCros::OnGetEolInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
 }
@@ -261,18 +248,12 @@ void VersionUpdaterCros::OnGetEolInfo(
 
 void VersionUpdaterCros::ToggleFeature(const std::string& feature,
                                        bool enable) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
-  update_engine_client->ToggleFeature(feature, enable);
+  UpdateEngineClient::Get()->ToggleFeature(feature, enable);
 }
 
 void VersionUpdaterCros::IsFeatureEnabled(const std::string& feature,
                                           IsFeatureEnabledCallback callback) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
-  update_engine_client->IsFeatureEnabled(
+  UpdateEngineClient::Get()->IsFeatureEnabled(
       feature,
       base::BindOnce(&VersionUpdaterCros::OnIsFeatureEnabled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -293,9 +274,7 @@ VersionUpdaterCros::VersionUpdaterCros(content::WebContents* web_contents)
       check_for_update_when_idle_(false) {}
 
 VersionUpdaterCros::~VersionUpdaterCros() {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-  update_engine_client->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void VersionUpdaterCros::UpdateStatusChanged(

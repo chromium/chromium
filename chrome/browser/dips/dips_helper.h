@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 #define CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 
-#include "chrome/browser/dips/cookie_mode.h"
 #include "chrome/browser/dips/dips_state.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

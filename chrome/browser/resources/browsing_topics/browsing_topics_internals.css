@@ -97,12 +97,17 @@ button {
   text-decoration: none;
 }
 
-button:hover {
+button:hover:enabled {
   background-color: silver;
 }
 
-button:active {
+button:active:enabled {
   transform: translateY(1px);
+}
+
+button:disabled {
+  color: white;
+  cursor: not-allowed;
 }
 
 .epochs-header {
@@ -112,6 +117,12 @@ button:active {
   padding-top: 20px;
 }
 
+.refresh-state-button {
+  display: inline-block;
+  margin-inline-end: 10px;
+}
+
+.refresh-state-buttons-div,
 .epoch-div,
 .topics-state-div,
 .model-info-div,

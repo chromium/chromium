@@ -58,6 +58,7 @@ class UserCreationScreenTest
   }
 
   void SelectUserTypeOnUserCreationScreen(test::UIPath element_id) {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_TRUE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
     test::OobeJS().ExpectHasAttribute("checked", kSelfButton);
@@ -66,6 +67,7 @@ class UserCreationScreenTest
   }
 
   void SelectSetUpMethodOnChildScreen(test::UIPath element_id) {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
     test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
     test::OobeJS().ExpectVisiblePath(kChildSignInDialog);

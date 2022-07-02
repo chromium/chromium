@@ -37,6 +37,9 @@ buildflag_header("buildflags") {
 
 action("regex_patterns_inl_h") {
   visibility = [ ":*" ]
+
+  # The order of sources must be so that it matches the PatternSource enum
+  # values in regex_patterns.h.
   if (!use_internal_autofill_patterns) {
     sources = [ "form_parsing/resources/legacy_regex_patterns.json" ]
   } else {
@@ -156,6 +159,8 @@ static_library("browser") {
     "data_model/data_model_utils.h",
     "data_model/form_group.cc",
     "data_model/form_group.h",
+    "data_model/iban.cc",
+    "data_model/iban.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
     "data_model/test_data_creator.cc",
@@ -232,6 +237,8 @@ static_library("browser") {
     "logging/log_receiver.h",
     "logging/log_router.cc",
     "logging/log_router.h",
+    "merchant_promo_code_manager.cc",
+    "merchant_promo_code_manager.h",
     "metrics/autofill_metrics.cc",
     "metrics/autofill_metrics.h",
     "metrics/form_events/address_form_event_logger.cc",
@@ -282,6 +289,14 @@ static_library("browser") {
     "payments/payments_customer_data.h",
     "payments/payments_requests/get_details_for_enrollment_request.cc",
     "payments/payments_requests/get_details_for_enrollment_request.h",
+    "payments/payments_requests/get_unmask_details_request.cc",
+    "payments/payments_requests/get_unmask_details_request.h",
+    "payments/payments_requests/get_upload_details_request.cc",
+    "payments/payments_requests/get_upload_details_request.h",
+    "payments/payments_requests/migrate_cards_request.cc",
+    "payments/payments_requests/migrate_cards_request.h",
+    "payments/payments_requests/opt_change_request.cc",
+    "payments/payments_requests/opt_change_request.h",
     "payments/payments_requests/payments_request.cc",
     "payments/payments_requests/payments_request.h",
     "payments/payments_requests/select_challenge_option_request.cc",
@@ -290,6 +305,8 @@ static_library("browser") {
     "payments/payments_requests/unmask_card_request.h",
     "payments/payments_requests/update_virtual_card_enrollment_request.cc",
     "payments/payments_requests/update_virtual_card_enrollment_request.h",
+    "payments/payments_requests/upload_card_request.cc",
+    "payments/payments_requests/upload_card_request.h",
     "payments/payments_service_url.cc",
     "payments/payments_service_url.h",
     "payments/payments_util.cc",
@@ -324,8 +341,11 @@ static_library("browser") {
     "strike_database_integrator_base.h",
     "strike_database_integrator_test_strike_database.cc",
     "strike_database_integrator_test_strike_database.h",
+    "suggestions_context.cc",
     "suggestions_context.h",
     "sync_utils.h",
+    "touch_to_fill_delegate_impl.cc",
+    "touch_to_fill_delegate_impl.h",
     "ui/accessory_sheet_data.cc",
     "ui/accessory_sheet_data.h",
     "ui/accessory_sheet_enums.h",
@@ -364,6 +384,7 @@ static_library("browser") {
     "ui/suggestion.h",
     "ui/suggestion_selection.cc",
     "ui/suggestion_selection.h",
+    "ui/touch_to_fill_delegate.h",
     "validation.cc",
     "validation.h",
     "webdata/autocomplete_sync_bridge.cc",
@@ -372,8 +393,6 @@ static_library("browser") {
     "webdata/autofill_change.h",
     "webdata/autofill_entry.cc",
     "webdata/autofill_entry.h",
-    "webdata/autofill_profile_model_type_controller.cc",
-    "webdata/autofill_profile_model_type_controller.h",
     "webdata/autofill_profile_sync_bridge.cc",
     "webdata/autofill_profile_sync_bridge.h",
     "webdata/autofill_profile_sync_difference_tracker.cc",
@@ -404,13 +423,6 @@ static_library("browser") {
   ]
 
   sources += get_target_outputs(":regex_patterns_inl_h")
-
-  if (is_win) {
-    sources += [
-      "autofill_ie_toolbar_import_win.cc",
-      "autofill_ie_toolbar_import_win.h",
-    ]
-  }
 
   if (is_ios) {
     sources += [
@@ -475,6 +487,7 @@ static_library("browser") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//third_party/libaddressinput",
+    "//third_party/libaddressinput:strings_grit",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
@@ -488,6 +501,7 @@ static_library("browser") {
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/autofill_assistant/core/public:public",
     "//components/feature_engagement",
     "//components/google/core/common",
     "//components/history/core/browser",
@@ -594,6 +608,8 @@ static_library("test_support") {
     "metrics/autofill_metrics_test_base.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
+    "mock_merchant_promo_code_manager.cc",
+    "mock_merchant_promo_code_manager.h",
     "mock_single_field_form_fill_router.cc",
     "mock_single_field_form_fill_router.h",
     "payments/test/test_credit_card_otp_authenticator.cc",
@@ -783,6 +799,7 @@ source_set("unit_tests") {
     "data_model/borrowed_transliterator_unittest.cc",
     "data_model/contact_info_unittest.cc",
     "data_model/credit_card_unittest.cc",
+    "data_model/iban_unittest.cc",
     "data_model/phone_number_unittest.cc",
     "field_filler_unittest.cc",
     "field_types_unittest.cc",
@@ -813,6 +830,7 @@ source_set("unit_tests") {
     "logging/log_buffer_submitter_unittest.cc",
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
+    "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
     "metrics/shadow_prediction_metrics_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
@@ -855,10 +873,6 @@ source_set("unit_tests") {
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
-
-  if (is_win) {
-    sources += [ "autofill_ie_toolbar_import_win_unittest.cc" ]
-  }
 
   if (is_ios) {
     sources +=
@@ -906,6 +920,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/autofill/core/common",
+    "//components/autofill_assistant/core/public:public",
     "//components/feature_engagement",
     "//components/image_fetcher/core:core",
     "//components/image_fetcher/core:test_support",

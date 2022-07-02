@@ -124,7 +124,7 @@ void PromoteMatchingVisitsAboveNonMatchingVisits(
 
 GURL ComputeURLForDeduping(const GURL& url) {
   // Below is a simplified version of `AutocompleteMatch::GURLToStrippedGURL`
-  // that is thread-safe, stateless, never hits the disk, a bit more aggressive,
+  // that is thread-safe, stateless, never hits the disk, a lot more aggressive,
   // and without a dependency on omnibox components.
   if (!url.is_valid())
     return url;
@@ -141,6 +141,12 @@ GURL ComputeURLForDeduping(const GURL& url) {
   // Replace http protocol with https. It's just for deduplication.
   if (url_for_deduping.SchemeIs(url::kHttpScheme))
     replacements.SetSchemeStr(url::kHttpsScheme);
+
+  // It's unusual to clear the query for deduping, because it's normally
+  // considered a meaningful part of the URL. However, the return value of this
+  // function isn't used naively. Details at `ClusterVisit::url_for_deduping`.
+  if (url.has_query())
+    replacements.ClearQuery();
 
   if (url.has_ref())
     replacements.ClearRef();
@@ -208,7 +214,8 @@ void ApplySearchQuery(const std::string& query,
     }
 
     cluster.search_match_score = total_matching_visit_score;
-    if (DoesQueryMatchClusterKeywords(find_nodes, cluster.keywords)) {
+
+    if (DoesQueryMatchClusterKeywords(find_nodes, cluster.GetKeywords())) {
       // Arbitrarily chosen that cluster keyword matches are worth three points.
       // TODO(crbug.com/1307071): Use relevancy score for each cluster keyword
       // once support for that is added to the backend.

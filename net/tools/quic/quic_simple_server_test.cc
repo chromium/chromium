@@ -20,11 +20,10 @@
 
 using ::testing::_;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // TODO(dmz) Remove "Chrome" part of name once net/tools/quic is deleted.
-class QuicChromeServerDispatchPacketTest : public QuicTest {
+class QuicChromeServerDispatchPacketTest : public ::testing::Test {
  public:
   QuicChromeServerDispatchPacketTest()
       : crypto_config_("blah",
@@ -76,5 +75,4 @@ TEST_F(QuicChromeServerDispatchPacketTest, DispatchPacket) {
   DispatchPacket(encrypted_valid_packet);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -13,9 +13,11 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -175,7 +177,7 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 
   if (web_contents) {
     return base::StringPrintf(
-        "web.%d", web_contents->GetMainFrame()->GetFrameTreeNodeId());
+        "web.%d", web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
   }
   LOG(ERROR) << "Unable to generate a RoutingID";
   return "";
@@ -196,10 +198,10 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
       : chromeos::SystemWebDialogDelegate(url, title),
         id_(id),
         parent_(std::move(parent)) {
-    ash::ColorProvider::Get()->AddObserver(this);
+    ash::DarkLightModeController::Get()->AddObserver(this);
   }
   ~SystemFilesAppDialogDelegate() override {
-    ash::ColorProvider::Get()->RemoveObserver(this);
+    ash::DarkLightModeController::Get()->RemoveObserver(this);
   }
 
   void SetModal(bool modal) {
@@ -281,8 +283,10 @@ void SelectFileDialogExtension::ListenerDestroyed() {
 
 void SelectFileDialogExtension::ExtensionDialogClosing(
     ExtensionDialog* /*dialog*/) {
-  if (!ash::features::IsFileManagerSwaEnabled() && ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->RemoveObserver(this);
+  if (!ash::features::IsFileManagerSwaEnabled() &&
+      ash::DarkLightModeController::Get()) {
+    ash::DarkLightModeController::Get()->RemoveObserver(this);
+  }
   profile_ = nullptr;
   owner_window_ = nullptr;
   // Release our reference to the underlying dialog to allow it to close.
@@ -362,11 +366,11 @@ void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
   dialog->selection_index_ = 0;
 }
 
-content::RenderFrameHost* SelectFileDialogExtension::GetMainFrame() {
+content::RenderFrameHost* SelectFileDialogExtension::GetPrimaryMainFrame() {
   if (extension_dialog_)
     return extension_dialog_->host()->main_frame_host();
   else if (system_files_app_web_contents_)
-    return system_files_app_web_contents_->GetMainFrame();
+    return system_files_app_web_contents_->GetPrimaryMainFrame();
   return nullptr;
 }
 
@@ -399,8 +403,13 @@ GURL SelectFileDialogExtension::MakeDialogURL(
     // as |default_path| (crbug.com/178013 #9-#11). In such a case, we use the
     // last selected directory as a workaround. Real fix is tracked at
     // crbug.com/110119.
+    base::FilePath base_name = default_path.BaseName();
     if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-            profile, fallback_path.Append(default_path.BaseName()),
+            profile,
+            // If the base_name is absolute (happens for default_path '/') it's
+            // not usable in Append.
+            base_name.IsAbsolute() ? fallback_path
+                                   : fallback_path.Append(base_name),
             file_manager::util::GetFileManagerURL(), &selection_url)) {
       DVLOG(1) << "Unable to resolve the selection URL.";
     }
@@ -435,7 +444,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     void* params,
     const Owner& owner,
     const std::string& search_query,
-    bool show_android_picker_apps) {
+    bool show_android_picker_apps,
+    bool use_media_store_filter) {
   if (owner_window_) {
     LOG(ERROR) << "File dialog already in use!";
     return;
@@ -480,11 +490,16 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   if (PendingExists(routing_id))
     return;
 
-  // If SelectFileAsh is opening the dialog, use fusebox volumes in the File
-  // Manager UI to return real file descriptors to SelectFileAsh.
   std::vector<std::string> volume_filter;
   if (owner.is_lacros) {
+    // SelectFileAsh (Lacros) is opening the dialog: only show fusebox volumes
+    // in File Manager UI to return real file descriptors to SelectFileAsh.
     volume_filter.push_back("fusebox-only");
+  } else if (use_media_store_filter) {
+    // ArcSelectFile is opening the dialog: add 'media-store-files-only' filter
+    // to only show volumes in File Manager UI that are indexed by the Android
+    // MediaStore.
+    volume_filter.push_back("media-store-files-only");
   }
 
   GURL file_manager_url = SelectFileDialogExtension::MakeDialogURL(
@@ -519,7 +534,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     dialog_params.title_inactive_color =
         color_provider->GetInactiveDialogTitleBarColor();
 
-    ash::ColorProvider::Get()->AddObserver(this);
+    ash::DarkLightModeController::Get()->AddObserver(this);
 
     ExtensionDialog* dialog = ExtensionDialog::Show(
         file_manager_url, parent_window, profile_, web_contents,

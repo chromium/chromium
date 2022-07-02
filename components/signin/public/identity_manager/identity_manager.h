@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -369,10 +370,11 @@ class IdentityManager : public KeyedService,
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SigninClient* signin_client = nullptr;
+    raw_ptr<SigninClient> signin_client = nullptr;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    account_manager::AccountManagerFacade* account_manager_facade = nullptr;
+    raw_ptr<account_manager::AccountManagerFacade> account_manager_facade =
+        nullptr;
 #endif
 
     InitParameters();
@@ -397,6 +399,7 @@ class IdentityManager : public KeyedService,
   // initialized.
   void OnNetworkInitialized();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Methods related to migration of account IDs from email to Gaia ID.
   // TODO(https://crbug.com/883272): Remove these once all platforms have
   // migrated to the new account_id based on gaia (currently, only ChromeOS
@@ -413,6 +416,7 @@ class IdentityManager : public KeyedService,
 
   // Returns the currently saved state of the migration of account IDs.
   AccountIdMigrationState GetAccountIdMigrationState() const;
+#endif
 
   // Picks the correct account_id for the specified account depending on the
   // migration state.
@@ -684,10 +688,10 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<PrimaryAccountManager> primary_account_manager_;
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SigninClient* const signin_client_;
+  const raw_ptr<SigninClient> signin_client_;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 #endif
 
   IdentityMutator identity_mutator_;

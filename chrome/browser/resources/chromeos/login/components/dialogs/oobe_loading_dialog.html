@@ -29,11 +29,15 @@
     <oobe-adaptive-dialog id="dialog" role="dialog">
       <slot slot="icon" name="icon"></slot>
       <h1 slot="title">
-        <slot name="title" aria-label="[[i18nDynamic(locale, titleLabelKey)]]">
-          [[i18nDynamic(locale, titleKey)]]
+        <slot name="title" aria-label="[[getAriaLabel(locale, titleLabelKey, titleKey)]]">
+          <template is="dom-if" if="[[titleKey]]">
+            [[i18nDynamic(locale, titleKey)]]
+          </template>
         </slot>
       </h1>
-      <div slot="subtitle">[[localizeSubtitle_(locale, subtitleKey)]]</div>
+      <template is="dom-if" if="[[subtitleKey]]">
+        <div slot="subtitle">[[i18nDynamic(locale, subtitleKey)]]</div>
+      </template>
       <div slot="content" class="flex layout vertical center center-justified">
         <oobe-cr-lottie id="spinner" animation-url="spinner.json">
         </oobe-cr-lottie>

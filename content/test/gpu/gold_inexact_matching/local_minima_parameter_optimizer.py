@@ -11,6 +11,7 @@ import sys
 
 import gold_inexact_matching.iterative_parameter_optimizer\
     as iterative_optimizer
+from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
 
 
@@ -24,7 +25,7 @@ class LocalMinimaParameterOptimizer(
   MIN_EDGE_THRESHOLD_WEIGHT = 0
   MIN_MAX_DIFF_WEIGHT = MIN_DELTA_THRESHOLD_WEIGHT = 0
 
-  def __init__(self, args, test_name):
+  def __init__(self, args: ct.ParsedCmdArgs, test_name: str):
     super().__init__(args, test_name)
     # These are (or will be) maps of ints to maps of ints to ints, i.e. a 2D
     # array containing ints, just using maps instead of lists. They hold the
@@ -40,7 +41,7 @@ class LocalMinimaParameterOptimizer(
     self._permissive_edge_map = {}
 
   @classmethod
-  def AddArguments(cls, parser):
+  def AddArguments(cls, parser: ct.CmdArgParser) -> ct.ArgumentGroupTuple:
     common_group, sobel_group, fuzzy_group = super(
         LocalMinimaParameterOptimizer, cls).AddArguments(parser)
 
@@ -75,7 +76,7 @@ class LocalMinimaParameterOptimizer(
 
     return common_group, sobel_group, fuzzy_group
 
-  def _VerifyArgs(self):
+  def _VerifyArgs(self) -> None:
     super()._VerifyArgs()
 
     assert self._args.edge_threshold_weight >= self.MIN_EDGE_THRESHOLD_WEIGHT
@@ -83,7 +84,7 @@ class LocalMinimaParameterOptimizer(
     assert self._args.max_diff_weight >= self.MIN_MAX_DIFF_WEIGHT
     assert self._args.delta_threshold_weight >= self.MIN_DELTA_THRESHOLD_WEIGHT
 
-  def _RunOptimizationImpl(self):
+  def _RunOptimizationImpl(self) -> None:
     visited_parameters = set()
     to_visit = collections.deque()
     smallest_weight = sys.maxsize
@@ -130,7 +131,9 @@ class LocalMinimaParameterOptimizer(
     for p in smallest_parameters:
       print(p)
 
-  def _ParametersAreGuaranteedToFail(self, parameters):
+  def _ParametersAreGuaranteedToFail(self,
+                                     parameters: parameter_set.ParameterSet
+                                     ) -> bool:
     """Checks whether the given ParameterSet is guaranteed to fail.
 
     A ParameterSet is guaranteed to fail if we have already tried and failed
@@ -163,7 +166,8 @@ class LocalMinimaParameterOptimizer(
 
     return False
 
-  def _UpdateMostPermissiveFailedParameters(self, parameters):
+  def _UpdateMostPermissiveFailedParameters(
+      self, parameters: parameter_set.ParameterSet) -> None:
     """Updates the array of most permissive failed parameters.
 
     This is used in conjunction with _ParametersAreGuaranteedToFail to prune
@@ -222,7 +226,7 @@ class LocalMinimaParameterOptimizer(
       if adjacent != starting_parameters:
         yield adjacent
 
-  def _GetWeight(self, parameters):
+  def _GetWeight(self, parameters: parameter_set.ParameterSet) -> int:
     return (parameters.max_diff * self._args.max_diff_weight +
             parameters.delta_threshold * self._args.delta_threshold_weight +
             (self.MAX_EDGE_THRESHOLD - parameters.edge_threshold) *

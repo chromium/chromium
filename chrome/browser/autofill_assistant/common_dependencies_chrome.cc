@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -44,11 +45,10 @@ std::string CommonDependenciesChrome::GetCountryCode() const {
       g_browser_process->variations_service());
 }
 
-PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager() const {
-  // TODO(b/201964911): Using |GetLastUsedProfile| is probably not the best
-  // option for desktop. Consider passing a profile on instantiation instead.
-  return autofill::PersonalDataManagerFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile());
+PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager(
+    content::BrowserContext* browser_context) const {
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
+      browser_context);
 }
 
 PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
@@ -57,15 +57,33 @@ PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
 }
 
 std::string CommonDependenciesChrome::GetSignedInEmail(
-    WebContents* web_contents) const {
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+          Profile::FromBrowserContext(browser_context));
   if (!identity_manager) {
     return std::string();
   }
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
       .email;
+}
+
+bool CommonDependenciesChrome::IsSupervisedUser(
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!identity_manager) {
+    return false;
+  }
+
+  std::string gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
+  return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
+             .capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
 }
 
 AnnotateDomModelService*

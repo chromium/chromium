@@ -15,7 +15,7 @@ SettingsIdleLoadBrowserTest.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://settings/test_loader.html?module=settings/idle_load_tests.js&host=webui-test',
+      'chrome://settings/test_loader.html?module=settings/idle_load_tests.js',
 
   /** @override */
   isAsync: true,

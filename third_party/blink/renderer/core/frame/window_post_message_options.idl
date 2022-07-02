@@ -6,5 +6,5 @@
 
 dictionary WindowPostMessageOptions : PostMessageOptions {
     USVString targetOrigin = "/";
-    DOMString delegate = "";
+    DOMString? delegate;
 };

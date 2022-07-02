@@ -19,7 +19,9 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/statusor.h"
-#endif
+#elif BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/browser/signals_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #include "extensions/browser/extension_function.h"
 
@@ -75,9 +77,9 @@ class EnterpriseReportingPrivateGetPersistentSecretFunction
   // Callback once the data was retrieved from the file.
   void OnDataRetrieved(scoped_refptr<base::SequencedTaskRunner> task_runner,
                        const std::string& data,
-                       long int status);
+                       int32_t status);
 
-  void SendResponse(const std::string& data, long int status);
+  void SendResponse(const std::string& data, int32_t status);
 };
 
 #endif  // !BUILDFLAG(IS_LINUX)
@@ -261,6 +263,58 @@ class EnterpriseReportingPrivateEnqueueRecordFunction
 };
 
 #endif
+
+#if BUILDFLAG(IS_WIN)
+
+class EnterpriseReportingPrivateGetAvInfoFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getAvInfo",
+                             ENTERPRISEREPORTINGPRIVATE_GETAVINFO)
+
+  EnterpriseReportingPrivateGetAvInfoFunction();
+  EnterpriseReportingPrivateGetAvInfoFunction(
+      const EnterpriseReportingPrivateGetAvInfoFunction&) = delete;
+  EnterpriseReportingPrivateGetAvInfoFunction& operator=(
+      const EnterpriseReportingPrivateGetAvInfoFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateGetAvInfoFunction() override;
+
+  // ExtensionFunction
+  ExtensionFunction::ResponseAction Run() override;
+
+  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kAntiVirus;
+  }
+};
+
+class EnterpriseReportingPrivateGetHotfixesFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getHotfixes",
+                             ENTERPRISEREPORTINGPRIVATE_GETHOTFIXES)
+
+  EnterpriseReportingPrivateGetHotfixesFunction();
+  EnterpriseReportingPrivateGetHotfixesFunction(
+      const EnterpriseReportingPrivateGetHotfixesFunction&) = delete;
+  EnterpriseReportingPrivateGetHotfixesFunction& operator=(
+      const EnterpriseReportingPrivateGetHotfixesFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateGetHotfixesFunction() override;
+
+  // ExtensionFunction
+  ExtensionFunction::ResponseAction Run() override;
+
+  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kHotfixes;
+  }
+};
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions
 

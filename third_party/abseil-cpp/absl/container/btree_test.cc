@@ -14,11 +14,14 @@
 
 #include "absl/container/btree_test.h"
 
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <functional>
 #include <limits>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -1291,7 +1294,7 @@ TEST(Btree, BtreeMapCanHoldMoveOnlyTypes) {
 
   std::unique_ptr<std::string> &v = m["A"];
   EXPECT_TRUE(v == nullptr);
-  v.reset(new std::string("X"));
+  v = absl::make_unique<std::string>("X");
 
   auto iter = m.find("A");
   EXPECT_EQ("X", *iter->second);
@@ -3080,6 +3083,170 @@ TEST(Btree, InvalidIteratorUse) {
   }
 }
 #endif
+
+class OnlyConstructibleByAllocator {
+  explicit OnlyConstructibleByAllocator(int i) : i_(i) {}
+
+ public:
+  OnlyConstructibleByAllocator(const OnlyConstructibleByAllocator &other)
+      : i_(other.i_) {}
+  OnlyConstructibleByAllocator &operator=(
+      const OnlyConstructibleByAllocator &other) {
+    i_ = other.i_;
+    return *this;
+  }
+  int Get() const { return i_; }
+  bool operator==(int i) const { return i_ == i; }
+
+ private:
+  template <typename T>
+  friend class OnlyConstructibleAllocator;
+
+  int i_;
+};
+
+template <typename T = OnlyConstructibleByAllocator>
+class OnlyConstructibleAllocator : public std::allocator<T> {
+ public:
+  OnlyConstructibleAllocator() = default;
+  template <class U>
+  explicit OnlyConstructibleAllocator(const OnlyConstructibleAllocator<U> &) {}
+
+  void construct(OnlyConstructibleByAllocator *p, int i) {
+    new (p) OnlyConstructibleByAllocator(i);
+  }
+  template <typename Pair>
+  void construct(Pair *p, const int i) {
+    OnlyConstructibleByAllocator only(i);
+    new (p) Pair(std::move(only), i);
+  }
+
+  template <class U>
+  struct rebind {
+    using other = OnlyConstructibleAllocator<U>;
+  };
+};
+
+struct OnlyConstructibleByAllocatorComp {
+  using is_transparent = void;
+  bool operator()(OnlyConstructibleByAllocator a,
+                  OnlyConstructibleByAllocator b) const {
+    return a.Get() < b.Get();
+  }
+  bool operator()(int a, OnlyConstructibleByAllocator b) const {
+    return a < b.Get();
+  }
+  bool operator()(OnlyConstructibleByAllocator a, int b) const {
+    return a.Get() < b;
+  }
+};
+
+TEST(Btree, OnlyConstructibleByAllocatorType) {
+  const std::array<int, 2> arr = {3, 4};
+  {
+    absl::btree_set<OnlyConstructibleByAllocator,
+                    OnlyConstructibleByAllocatorComp,
+                    OnlyConstructibleAllocator<>>
+        set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(arr.begin(), arr.end());
+    EXPECT_THAT(set, ElementsAre(1, 2, 3, 4));
+  }
+  {
+    absl::btree_multiset<OnlyConstructibleByAllocator,
+                         OnlyConstructibleByAllocatorComp,
+                         OnlyConstructibleAllocator<>>
+        set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    // TODO(ezb): fix insert_multi to allow this to compile.
+    // set.insert(arr.begin(), arr.end());
+    EXPECT_THAT(set, ElementsAre(1, 2));
+  }
+  {
+    absl::btree_map<OnlyConstructibleByAllocator, int,
+                    OnlyConstructibleByAllocatorComp,
+                    OnlyConstructibleAllocator<>>
+        map;
+    map.emplace(1);
+    map.emplace_hint(map.end(), 2);
+    map.insert(arr.begin(), arr.end());
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+  }
+  {
+    absl::btree_multimap<OnlyConstructibleByAllocator, int,
+                         OnlyConstructibleByAllocatorComp,
+                         OnlyConstructibleAllocator<>>
+        map;
+    map.emplace(1);
+    map.emplace_hint(map.end(), 2);
+    // TODO(ezb): fix insert_multi to allow this to compile.
+    // map.insert(arr.begin(), arr.end());
+    EXPECT_THAT(map, ElementsAre(Pair(1, 1), Pair(2, 2)));
+  }
+}
+
+class NotAssignable {
+ public:
+  explicit NotAssignable(int i) : i_(i) {}
+  NotAssignable(const NotAssignable &other) : i_(other.i_) {}
+  NotAssignable &operator=(NotAssignable &&other) = delete;
+  int Get() const { return i_; }
+  bool operator==(int i) const { return i_ == i; }
+  friend bool operator<(NotAssignable a, NotAssignable b) {
+    return a.i_ < b.i_;
+  }
+
+ private:
+  int i_;
+};
+
+TEST(Btree, NotAssignableType) {
+  {
+    absl::btree_set<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(3));
+    set.insert(set.end(), NotAssignable(4));
+    EXPECT_THAT(set, ElementsAre(1, 2, 3, 4));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 3, 4));
+  }
+  {
+    absl::btree_multiset<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(2));
+    set.insert(set.end(), NotAssignable(3));
+    EXPECT_THAT(set, ElementsAre(1, 2, 2, 3));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 2, 3));
+  }
+  {
+    absl::btree_map<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(3), 3});
+    map.insert(map.end(), {NotAssignable(4), 4});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+  }
+  {
+    absl::btree_multimap<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(2), 3});
+    map.insert(map.end(), {NotAssignable(3), 3});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+  }
+}
 
 }  // namespace
 }  // namespace container_internal

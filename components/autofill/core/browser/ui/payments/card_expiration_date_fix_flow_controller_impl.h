@@ -19,9 +19,7 @@ namespace autofill {
 class CardExpirationDateFixFlowView;
 
 // Enables the user to accept or deny expiration date fix flow prompt.
-// Only used on mobile. This class is responsible for its destruction.
-// Destruction is achieved by calling delete when the prompt is
-// dismissed.
+// Only used on mobile.
 class CardExpirationDateFixFlowControllerImpl
     : public CardExpirationDateFixFlowController {
  public:
@@ -34,6 +32,9 @@ class CardExpirationDateFixFlowControllerImpl
 
   ~CardExpirationDateFixFlowControllerImpl() override;
 
+  // Show the card expiration date fix flow view. If another view is triggered
+  // when the current view has not been dismissed by user yet, the current
+  // view will be destroyed.
   void Show(CardExpirationDateFixFlowView* card_expiration_date_fix_flow_view,
             const CreditCard& card,
             base::OnceCallback<void(const std::u16string&,
@@ -71,6 +72,10 @@ class CardExpirationDateFixFlowControllerImpl
 
   // Label of the card describing the network and the last four digits.
   std::u16string card_label_;
+
+  // Destroy |card_expiration_date_fix_flow_view_| if it is valid.
+  // |controller_gone| is true if |this| controller is being destroyed.
+  void MaybeDestroyExpirationDateFixFlowView(bool controller_gone);
 };
 
 }  // namespace autofill

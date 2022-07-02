@@ -8,10 +8,12 @@
 #include <limits>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/favicon_size.h"
 
 namespace ash {
 
@@ -21,6 +23,15 @@ ShelfApplicationMenuModel::ShelfApplicationMenuModel(
     ShelfItemDelegate* delegate)
     : ui::SimpleMenuModel(this), delegate_(delegate) {
   AddTitle(title);
+  // Add an empty icon to the title for it to be aligned with the other menu
+  // item elements. See crbug/1117650.
+  SetIcon(0,
+          ui::ImageModel::FromImageGenerator(
+              base::BindRepeating([](const ui::ColorProvider* color_provider) {
+                return gfx::ImageSkia();
+              }),
+              gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize)));
+
   for (const auto& item : items) {
     enabled_commands_.emplace(item.command_id);
     AddItemWithIcon(item.command_id, item.title,

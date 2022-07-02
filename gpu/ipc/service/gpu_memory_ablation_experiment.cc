@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "components/viz/common/features.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
@@ -210,7 +209,7 @@ bool GpuMemoryAblationExperiment::InitGpu(GpuChannelManager* channel_manager) {
       channel_manager->mailbox_manager(),
       channel_manager->shared_image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
-      features::IsUsingSkiaRenderer(),
+      /*enable_wrapped_sk_image=*/true,
       /*is_for_display_compositor=*/false);
 
   rep_factory_ = std::make_unique<SharedImageRepresentationFactory>(

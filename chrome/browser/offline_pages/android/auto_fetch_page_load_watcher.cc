@@ -437,7 +437,8 @@ void AutoFetchPageLoadWatcher::HandleNavigation(
   }
 
   // Ignore if the URL didn't change.
-  const GURL& previous_url = navigation_handle->GetPreviousMainFrameURL();
+  const GURL& previous_url =
+      navigation_handle->GetPreviousPrimaryMainFrameURL();
   if (navigation_handle->GetURL() == previous_url)
     return;
 

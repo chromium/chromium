@@ -6,17 +6,21 @@ package org.chromium.ui.dragdrop;
 
 import android.content.ClipData;
 import android.content.ClipData.Item;
+import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -26,6 +30,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -81,6 +86,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     private long mDragStartSystemElapsedTime;
 
+    private @Nullable DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
+
     // Implements ViewAndroidDelegate.DragAndDropDelegate
     /**
      * Wrapper to call {@link android.view.View#startDragAndDrop}.
@@ -107,10 +114,20 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         mDragTargetType = getDragTargetType(dropData);
         int windowWidth = containerView.getRootView().getWidth();
         int windowHeight = containerView.getRootView().getHeight();
+        Object myLocalState = null;
+        if (mDragAndDropBrowserDelegate != null
+                && mDragAndDropBrowserDelegate.getSupportDropInChrome()) {
+            myLocalState = dropData;
+        }
         return ApiHelperForN.startDragAndDrop(containerView, clipdata,
                 createDragShadowBuilder(containerView.getContext(), shadowImage,
                         dropData.hasImage(), windowWidth, windowHeight),
-                null, buildFlags(dropData));
+                myLocalState, buildFlags(dropData));
+    }
+
+    @Override
+    public void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {
+        mDragAndDropBrowserDelegate = delegate;
     }
 
     // Implements DragStateTracker
@@ -137,8 +154,14 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     // Implements View.OnDragListener
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
-        // Only tracks drag event that started from the #startDragAndDrop.
-        if (!mIsDragStarted) return false;
+        if (!mIsDragStarted) {
+            if (mDragAndDropBrowserDelegate != null
+                    && mDragAndDropBrowserDelegate.getSupportDropInChrome()
+                    && dragEvent.getAction() == DragEvent.ACTION_DROP) {
+                onDropFromOutside(dragEvent);
+            }
+            return false;
+        }
 
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
@@ -180,6 +203,16 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 }
                 return clipData;
             case DragTargetType.LINK:
+                if (mDragAndDropBrowserDelegate != null) {
+                    Intent intent =
+                            mDragAndDropBrowserDelegate.createLinkIntent(dropData.gurl.getSpec());
+                    if (intent != null) {
+                        return new ClipData(null,
+                                new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN,
+                                        ClipDescription.MIMETYPE_TEXT_INTENT},
+                                new Item(getTextForLinkData(dropData), intent, null));
+                    }
+                }
                 return ClipData.newPlainText(null, getTextForLinkData(dropData));
             case DragTargetType.INVALID:
                 return null;
@@ -323,6 +356,21 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
     }
 
+    private void onDropFromOutside(DragEvent dropEvent) {
+        if (mDragAndDropBrowserDelegate == null) {
+            return;
+        }
+        DragAndDropPermissions dragAndDropPermissions =
+                mDragAndDropBrowserDelegate.getDragAndDropPermissions(dropEvent);
+        if (dragAndDropPermissions == null) {
+            return;
+        }
+        // TODO(shuyng): Read image data in background thread.
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            dragAndDropPermissions.release();
+        }
+    }
+
     private void onDragEnd(DragEvent dragEndEvent) {
         boolean dragResult = dragEndEvent.getResult();
 
@@ -386,5 +434,15 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
         String suffix = result ? "Success" : "Canceled";
         RecordHistogram.recordMediumTimesHistogram(histogramPrefix + suffix, duration);
+    }
+
+    @VisibleForTesting
+    float getDragStartXDp() {
+        return mDragStartXDp;
+    }
+
+    @VisibleForTesting
+    float getDragStartYDp() {
+        return mDragStartYDp;
     }
 }

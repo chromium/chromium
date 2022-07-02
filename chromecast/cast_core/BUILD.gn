@@ -4,6 +4,10 @@
 
 import("//chromecast/chromecast.gni")
 
+cast_source_set("cast_core_switches") {
+  sources = [ "cast_core_switches.h" ]
+}
+
 # When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_source_set("core_runtime_lib_simple") {
   data_deps = [ "//chromecast:cast_shell_pak" ]
@@ -11,7 +15,6 @@ cast_source_set("core_runtime_lib_simple") {
   deps = [
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser",
-    "//chromecast/cast_core/grpc:grpc_factory_linux",
     "//chromecast/cast_core/runtime/browser:browser_simple",
     "//chromecast/cast_core/runtime/renderer",
   ]
@@ -49,7 +52,6 @@ test("cast_cast_core_unittests") {
     ":all_unit_tests",
     "//chromecast/browser:prefs_simple",
     "//chromecast/browser:simple_main_parts",
-    "//chromecast/cast_core/grpc:grpc_factory_linux",
     "//chromecast/cast_core/runtime/browser:browser_simple",
     "//chromecast/cast_core/runtime/renderer",
     "//mojo/core/test:run_all_unittests",

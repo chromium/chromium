@@ -12,6 +12,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/layer_tree_pixel_test.h"
+#include "cc/test/pixel_comparator.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/test/buildflags.h"
@@ -328,11 +329,18 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, GenericRGB) {
   SetColorSpace(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
                                 gfx::ColorSpace::TransferID::GAMMA18));
 
-  RunPixelTest(picture_layer_,
-               base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));
+  // Software rasterizer ignores XYZD50 matrix
+  const auto* target_png =
+      renderer_type() == viz::RendererType::kSoftware
+          ? FILE_PATH_LITERAL("primary_colors.png")
+          : FILE_PATH_LITERAL("primary_colors_sRGB_in_AdobeRGB.png");
+  RunPixelTest(picture_layer_, base::FilePath(target_png));
 }
 
 TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
+#if BUILDFLAG(IS_FUCHSIA)
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
+#endif
   // Create a color space with a different blue point.
   SkColorSpacePrimaries primaries;
   skcms_Matrix3x3 to_XYZD50;
@@ -348,8 +356,11 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
   SetColorSpace(gfx::ColorSpace::CreateCustom(
       to_XYZD50, gfx::ColorSpace::TransferID::SRGB));
 
-  RunPixelTest(picture_layer_,
-               base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));
+  // Software rasterizer ignores XYZD50 matrix
+  const auto* target_png = renderer_type() == viz::RendererType::kSoftware
+                               ? FILE_PATH_LITERAL("primary_colors.png")
+                               : FILE_PATH_LITERAL("primary_colors_icced.png");
+  RunPixelTest(picture_layer_, base::FilePath(target_png));
 }
 
 // This test doesn't work on Vulkan because on our hardware we can't render to

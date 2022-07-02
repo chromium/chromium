@@ -46,6 +46,19 @@ extern const char kWindowsDomain[];
 
 }  // namespace names
 
+// Error strings that can be returned to indicated why signal values were not
+// returned.
+namespace errors {
+
+extern const char kConsentRequired[];
+extern const char kUnaffiliatedUser[];
+extern const char kInvalidUser[];
+extern const char kUnsupported[];
+extern const char kMissingSystemService[];
+extern const char kMissingBundle[];
+
+}  // namespace errors
+
 }  // namespace device_signals
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_CONSTANTS_H_

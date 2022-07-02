@@ -31,9 +31,7 @@ Color.getColorDescription = function(color) {
  * @param {number} color An integer representation of a color.
  * @return {number}
  */
-Color.getOpacityPercentage = function(color) {
-  return Math.round(((color >>> 24) / 256) * 100);
-};
+Color.getOpacityPercentage = color => Math.round(((color >>> 24) / 256) * 100);
 
 /**
  * Finds the most similar stored color given an rgb value.
@@ -41,22 +39,19 @@ Color.getOpacityPercentage = function(color) {
  * @return {string}
  */
 Color.findClosestMatchingColor = function(target) {
-  let bestMessageId;
-  let bestDistance = Number.MAX_VALUE;
-
-  Color.ColorObjectArray.forEach(function(obj) {
-    const val = obj.value;
-    const distance = Color.findDistance(target, val);
-    if (distance < bestDistance) {
-      bestMessageId = obj.colorMessageId;
-      bestDistance = distance;
+  const bestMatch = Color.ColorObjectArray.reduce((closest, color) => {
+    const distance = Color.findDistance(target, color.value);
+    if (distance < closest.distance) {
+      return {color, distance};
     }
-  });
+    return closest;
+  }, {distance: Number.MAX_VALUE});
+
   // Do not report color if most similar color is too inaccurate.
-  if (bestDistance > Color.DISTANCE_THRESHOLD) {
+  if (bestMatch.distance > Color.DISTANCE_THRESHOLD) {
     return '';
   }
-  return Msgs.getMsg(bestMessageId);
+  return Msgs.getMsg(bestMatch.color.colorMessageId);
 };
 
 /**

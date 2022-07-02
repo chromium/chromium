@@ -25,7 +25,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -37,6 +36,7 @@
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "third_party/leveldatabase/chromium_logger.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
+#include "third_party/leveldatabase/port/port_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -1111,7 +1111,7 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
 
   ~TrackedDBImpl() override {
     tracker_->DatabaseDestroyed(this, shared_read_cache_use_);
-    base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+    leveldb::port::ScopedAllowWait scoped_allow_wait;
     db_.reset();
   }
 

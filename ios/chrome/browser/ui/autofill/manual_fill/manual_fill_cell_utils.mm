@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-// Horizontal spacing between views in |AppendHorizontalConstraintsForViews|.
+// Horizontal spacing between views in `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
 }  // namespace
 

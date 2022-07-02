@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace aura {
 class Window;

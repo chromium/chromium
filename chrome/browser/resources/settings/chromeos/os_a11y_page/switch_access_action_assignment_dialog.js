@@ -9,65 +9,81 @@
  * internally and action used for user-facing UI.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
-import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {SwitchAccessCommand} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-switch-access-action-assignment-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsSwitchAccessActionAssignmentDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+class SettingsSwitchAccessActionAssignmentDialogElement extends
+    SettingsSwitchAccessActionAssignmentDialogElementBase {
+  static get is() {
+    return 'settings-switch-access-action-assignment-dialog';
+  }
 
-  properties: {
-    /**
-     * Set by the main Switch Access subpage to specify which switch action this
-     * dialog handles.
-     * @type {SwitchAccessCommand}
-     */
-    action: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The localized action label.
-     * @private {string}
-     */
-    dialogTitle_: {
-      type: String,
-      computed: 'getDialogTitleForAction_(action)',
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Set by the main Switch Access subpage to specify which switch action
+       * this dialog handles.
+       * @type {SwitchAccessCommand}
+       */
+      action: {
+        type: String,
+      },
 
-  listeners: {
-    'exit-pane': 'onPaneExit_',
-  },
+      /**
+       * The localized action label.
+       * @private {string}
+       */
+      dialogTitle_: {
+        type: String,
+        computed: 'getDialogTitleForAction_(action)',
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!SwitchAccessSubpageBrowserProxy} */
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
-  },
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('exit-pane', this.onPaneExit_);
+  }
 
   /** @private */
   onPaneExit_() {
     this.$.switchAccessActionAssignmentDialog.close();
-  },
+  }
 
   /** @private */
   onExitClick_() {
     this.$.switchAccessActionAssignmentDialog.close();
-  },
+  }
 
   /**
    * @param {SwitchAccessCommand} action
@@ -78,7 +94,7 @@ Polymer({
     return this.i18n(
         'switchAccessActionAssignmentDialogTitle',
         this.getLabelForAction_(action));
-  },
+  }
 
   /**
    * @param {SwitchAccessCommand} action
@@ -96,5 +112,9 @@ Polymer({
       default:
         return '';
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSwitchAccessActionAssignmentDialogElement.is,
+    SettingsSwitchAccessActionAssignmentDialogElement);

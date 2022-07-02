@@ -343,12 +343,26 @@ void ImeAdapterAndroid::CancelComposition() {
     Java_ImeAdapterImpl_cancelComposition(env, obj);
 }
 
-void ImeAdapterAndroid::FocusedNodeChanged(bool is_editable_node) {
+void ImeAdapterAndroid::FocusedNodeChanged(
+    bool is_editable_node,
+    const gfx::Rect& node_bounds_in_screen) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
   if (!obj.is_null()) {
-    Java_ImeAdapterImpl_focusedNodeChanged(env, obj, is_editable_node);
+    Java_ImeAdapterImpl_focusedNodeChanged(
+        env, obj, is_editable_node, node_bounds_in_screen.x(),
+        node_bounds_in_screen.y(), node_bounds_in_screen.right(),
+        node_bounds_in_screen.bottom());
   }
+}
+
+bool ImeAdapterAndroid::RequestStartStylusWriting() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    return Java_ImeAdapterImpl_requestStartStylusWriting(env, obj);
+  }
+  return false;
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,

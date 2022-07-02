@@ -43,10 +43,6 @@ class SyncChannel;
 class SyncMessageFilter;
 }  // namespace IPC
 
-namespace v8 {
-class Extension;
-}  // namespace v8
-
 namespace content {
 class RenderThreadObserver;
 
@@ -96,9 +92,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // delegate is kept alive while a request may be dispatched.
   virtual void SetResourceRequestSenderDelegate(
       blink::WebResourceRequestSenderDelegate* delegate) = 0;
-
-  // Registers the given V8 extension with WebKit.
-  virtual void RegisterExtension(std::unique_ptr<v8::Extension> extension) = 0;
 
   // Post task to all worker threads. Returns number of workers.
   virtual int PostTaskToAllWebWorkers(base::RepeatingClosure closure) = 0;

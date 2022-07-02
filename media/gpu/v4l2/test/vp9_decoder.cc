@@ -4,7 +4,13 @@
 
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
+#include <linux/v4l2-controls.h>
+
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 #include <linux/media/vp9-ctrls-upstream.h>
+#endif
+
 #include <sys/ioctl.h>
 
 #include "base/bits.h"
@@ -94,118 +100,15 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
   SafeArrayMemcpy(v4l2_seg->feature_data, vp9_seg_params.feature_data);
 }
 
-// Detiles a single MM21 plane. MM21 is an NV12-like pixel format that is stored
-// in 16x32 tiles in the Y plane and 16x16 tiles in the UV plane (since it's
-// 4:2:0 subsampled, but UV are interlaced). This function converts a single
-// MM21 plane into its equivalent NV12 plane.
-void DetilePlane(std::vector<char>& dest,
-                 char* src,
-                 gfx::Size size,
-                 gfx::Size tile_size) {
-  // Tile size in bytes.
-  const int tile_len = tile_size.GetArea();
-  // |width| rounded down to the nearest multiple of |tile_width|.
-  const int aligned_width =
-      base::bits::AlignDown(size.width(), tile_size.width());
-  // |width| rounded up to the nearest multiple of |tile_width|.
-  const int padded_width = base::bits::AlignUp(size.width(), tile_size.width());
-  // |height| rounded up to the nearest multiple of |tile_height|.
-  const int padded_height =
-      base::bits::AlignUp(size.height(), tile_size.height());
-  // Size of one row of tiles in bytes.
-  const int src_row_size = padded_width * tile_size.height();
-  // Size of the entire coded image.
-  const int coded_image_num_pixels = padded_width * padded_height;
-
-  // Index in bytes to the start of the current tile row.
-  int src_tile_row_start = 0;
-  // Offset in pixels from top of the screen of the current tile row.
-  int y_offset = 0;
-
-  // Iterates over each row of tiles.
-  while (src_tile_row_start < coded_image_num_pixels) {
-    // Maximum relative y-axis value that we should process for the given tile
-    // row. Important for cropping.
-    const int max_in_tile_row_index =
-        size.height() - y_offset < tile_size.height()
-            ? (size.height() - y_offset)
-            : tile_size.height();
-
-    // Offset in bytes into the current tile row to start reading data for the
-    // next pixel row.
-    int src_row_start = 0;
-
-    // Iterates over each row of pixels within the tile row.
-    for (int in_tile_row_index = 0; in_tile_row_index < max_in_tile_row_index;
-         in_tile_row_index++) {
-      int src_index = src_tile_row_start + src_row_start;
-
-      // Iterates over each pixel in the row of pixels.
-      for (int col_index = 0; col_index < aligned_width;
-           col_index += tile_size.width()) {
-        dest.insert(dest.end(), src + src_index,
-                    src + src_index + tile_size.width());
-        src_index += tile_len;
-      }
-      // Finish last partial tile in the row.
-      dest.insert(dest.end(), src + src_index,
-                  src + src_index + size.width() - aligned_width);
-
-      // Shift to the next pixel row in the tile row.
-      src_row_start += tile_size.width();
-    }
-
-    src_tile_row_start += src_row_size;
-    y_offset += tile_size.height();
-  }
-}
-
-// Unpacks an NV12 UV plane into separate U and V planes.
-void UnpackUVPlane(std::vector<char>& dest_u,
-                   std::vector<char>& dest_v,
-                   std::vector<char>& src_uv,
-                   gfx::Size size) {
-  dest_u.reserve(size.GetArea() / 4);
-  dest_v.reserve(size.GetArea() / 4);
-  for (int i = 0; i < size.GetArea() / 4; i++) {
-    dest_u.push_back(src_uv[2 * i]);
-    dest_v.push_back(src_uv[2 * i + 1]);
-  }
-}
-
-void ConvertMM21ToYUV(std::vector<char>& dest_y,
-                      std::vector<char>& dest_u,
-                      std::vector<char>& dest_v,
-                      char* src_y,
-                      char* src_uv,
-                      gfx::Size size) {
-  // Detile MM21's luma plane.
-  constexpr int kMM21TileWidth = 16;
-  constexpr int kMM21TileHeight = 32;
-  constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  dest_y.reserve(size.GetArea());
-  DetilePlane(dest_y, src_y, size, kYTileSize);
-
-  // Detile MM21's chroma plane in a temporary |detiled_uv|.
-  std::vector<char> detiled_uv;
-  const gfx::Size uv_size(size.width(), size.height() / 2);
-  constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
-  detiled_uv.reserve(size.GetArea() / 2);
-  DetilePlane(detiled_uv, src_uv, uv_size, kUVTileSize);
-
-  // Unpack NV12's UV plane into separate U and V planes.
-  UnpackUVPlane(dest_u, dest_v, detiled_uv, size);
-}
-
 // TODO(b/228876644): assert that |parsing_compressed_header| is indeed false.
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
                        std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
-                                 std::move(v4l2_ioctl),
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
                                  std::move(OUTPUT_queue),
                                  std::move(CAPTURE_queue)),
+      ivf_parser_(std::move(ivf_parser)),
       vp9_parser_(
           std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)) {
   DCHECK(v4l2_ioctl_);
@@ -230,9 +133,30 @@ Vp9Decoder::~Vp9Decoder() = default;
 
 // static
 std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
-    std::unique_ptr<IvfParser> ivf_parser,
-    const media::IvfFileHeader& file_header) {
+    const base::MemoryMappedFile& stream) {
   constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_VP9_FRAME;
+
+  VLOG(2) << "Attempting to create decoder with codec "
+          << media::FourccToString(kDriverCodecFourcc);
+
+  // Set up video parser.
+  auto ivf_parser = std::make_unique<media::IvfParser>();
+  media::IvfFileHeader file_header{};
+
+  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+    LOG(ERROR) << "Couldn't initialize IVF parser";
+    return nullptr;
+  }
+
+  const auto driver_codec_fourcc =
+      media::v4l2_test::FileFourccToDriverFourcc(file_header.fourcc);
+
+  if (driver_codec_fourcc != kDriverCodecFourcc) {
+    VLOG(2) << "File fourcc (" << media::FourccToString(driver_codec_fourcc)
+            << ") does not match expected fourcc("
+            << media::FourccToString(kDriverCodecFourcc) << ").";
+    return nullptr;
+  }
 
   // MM21 is an uncompressed opaque format that is produced by MediaTek
   // video decoders.
@@ -492,8 +416,7 @@ void Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
 
   scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
 
-  memcpy(static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
-         frame_hdr.data, frame_hdr.frame_size);
+  buffer->mmaped_planes()[0].CopyIn(frame_hdr.data, frame_hdr.frame_size);
 }
 
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
@@ -536,7 +459,11 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   SetupFrameParams(frame_hdr, &v4l2_frame_params);
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, v4l2_frame_params))
+  struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_VP9_FRAME,
+                                      .size = sizeof(v4l2_frame_params),
+                                      .ptr = &v4l2_frame_params};
+
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, ext_ctrl))
     LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))

@@ -227,7 +227,7 @@ class AppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
  private:
   std::vector<std::string> updated_ids_;
   std::vector<apps::AppType> app_types_;
-  apps::AppRegistryCache* cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
 };
 
 }  // namespace
@@ -642,7 +642,7 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
 
 class StandaloneBrowserPublisherTest : public PublisherTest {
  public:
-  StandaloneBrowserPublisherTest() : PublisherTest() {
+  StandaloneBrowserPublisherTest() {
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
@@ -1000,27 +1000,18 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   EXPECT_EQ(app_id6, observer.updated_ids()[5]);
 }
 
-// Check that when Lacros is primary, the app is disabled by policy and does
-// not handle intents.
-TEST_F(StandaloneBrowserPublisherTest, ExtensionAppsDisabledByPolicy) {
+// Check that when Lacros is primary, extension apps are not published to the
+// app service.
+TEST_F(StandaloneBrowserPublisherTest, ExtensionAppsNotPublished) {
   // Install a "web store" app.
   scoped_refptr<extensions::Extension> store =
       MakeExtensionApp("webstore", "0.0", "http://google.com",
                        std::string(extensions::kWebStoreAppId));
   service_->AddExtension(store.get());
 
-  AppServiceTest app_service_test;
-  app_service_test.SetUp(profile());
-  VerifyApp(AppType::kChromeApp, store->id(), store->name(),
-            Readiness::kDisabledByPolicy, InstallReason::kDefault,
-            InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
-            apps::Permissions(),
-            /*is_platform_app=*/true, /*recommendable=*/true,
-            /*searchable=*/true,
-            /*show_in_launcher=*/false, /*show_in_shelf=*/false,
-            /*show_in_search=*/false, /*show_in_management=*/false,
-            /*handles_intents=*/false, /*allow_uninstall=*/true,
-            /*has_badge=*/false, /*paused=*/false);
+  AppRegistryCache& cache =
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+  EXPECT_EQ(AppType::kUnknown, cache.GetAppType(store->id()));
 }
 
 // This framework conveniently sets up everything but borealis.

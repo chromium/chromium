@@ -25,7 +25,7 @@ void TestRootCerts::ClearImpl() {
   android::ClearTestRootCertificates();
 }
 
-TestRootCerts::~TestRootCerts() {}
+TestRootCerts::~TestRootCerts() = default;
 
 void TestRootCerts::Init() {}
 

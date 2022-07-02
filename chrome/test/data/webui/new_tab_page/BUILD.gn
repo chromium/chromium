@@ -27,15 +27,6 @@ non_preprocessed_files = [
                            "voice_search_overlay_test.ts",
                          ] + modules_test_files + realbox_test_files
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_new_tab_page"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "new_tab_page"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -57,4 +48,14 @@ ts_library("build_ts") {
 
   deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_new_tab_page"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "new_tab_page"
 }

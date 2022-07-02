@@ -63,9 +63,6 @@ bool TranslateBubbleModelImpl::ShouldShowAlwaysTranslateShortcut() const {
 void TranslateBubbleModelImpl::SetViewState(
     TranslateBubbleModel::ViewState view_state) {
   current_view_state_ = view_state;
-  if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
-    translate::ReportUiAction(translate::SET_STATE_OPTIONS);
 }
 
 void TranslateBubbleModelImpl::ShowError(
@@ -187,4 +184,8 @@ bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
 void TranslateBubbleModelImpl::ReportUIInteraction(
     translate::UIInteraction ui_interaction) {
   ui_delegate_->ReportUIInteraction(ui_interaction);
+}
+
+void TranslateBubbleModelImpl::ReportUIChange(bool is_ui_shown) {
+  ui_delegate_->ReportUIChange(is_ui_shown);
 }

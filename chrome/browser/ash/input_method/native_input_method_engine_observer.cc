@@ -50,6 +50,11 @@ namespace {
 
 namespace mojom = ::ash::ime::mojom;
 
+struct InputFieldContext {
+  bool multiword_enabled = false;
+  bool multiword_allowed = false;
+};
+
 // These are persisted to logs. Entries should not be renumbered. Numeric values
 // should not be reused. Must stay in sync with IMENonAutocorrectDiacriticStatus
 // enum in: tools/metrics/histograms/enums.xml
@@ -117,13 +122,9 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 
-bool IsLacrosEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
-}
-
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
-  return (!IsLacrosEnabled() && features::IsAssistiveMultiWordEnabled() &&
+  return (features::IsAssistiveMultiWordEnabled() &&
           IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
           IsUsEnglishEngine(engine_id));
 }
@@ -398,13 +399,12 @@ mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
 }
 
 uint32_t Utf16ToCodepoint(const std::u16string& str) {
-  int32_t index = 0;
-  uint32_t codepoint = 0;
+  size_t index = 0;
+  base_icu::UChar32 codepoint = 0;
   base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
 
   // Should only contain a single codepoint.
-  DCHECK_GE(index, 0);
-  DCHECK_EQ(static_cast<size_t>(index), str.length() - 1);
+  DCHECK_EQ(index, str.length() - 1);
   return codepoint;
 }
 
@@ -449,7 +449,6 @@ void OnError(base::Time start) {
 InputFieldContext CreateInputFieldContext(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   return InputFieldContext{
-      .lacros_enabled = IsLacrosEnabled(),
       .multiword_enabled = features::IsAssistiveMultiWordEnabled(),
       .multiword_allowed = enabled_suggestions.multi_word_suggestions};
 }
@@ -458,9 +457,7 @@ mojom::TextPredictionMode GetTextPredictionMode(
     const std::string& engine_id,
     const InputFieldContext& context,
     const PrefService& prefs) {
-  // TODO(crbug.com/1263335): Enable text prediction for Lacros.
   return context.multiword_enabled && context.multiword_allowed &&
-                 !context.lacros_enabled &&
                  prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
                  IsUsEnglishEngine(engine_id)
              ? mojom::TextPredictionMode::kEnabled
@@ -508,6 +505,32 @@ void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
   if (settings && settings->is_pinyin_settings()) {
     keyboard->SetCurrentKeyboardLayoutByName(
         MojomLayoutToXkbLayout(settings->get_pinyin_settings()->layout));
+  }
+}
+
+void MigratePinyinAndZhuyinSettings(PrefService* prefs,
+                                    const std::string& engine_id) {
+  // We are using legacy pref keys for pinyin and zhuyin. To get rid of them, we
+  // need to write existing settings under the correct pref keys as the first
+  // step.
+  // TODO(b/175085612): Remove this function once we have migrated from the
+  // legacy pref keys.
+  if (engine_id != "zh-t-i0-pinyin" && engine_id != "zh-hant-t-i0-und")
+    return;
+
+  const base::Value& all_input_method_pref =
+      *prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
+
+  // Check if the settings are already migrated.
+  if (all_input_method_pref.FindDictKey(engine_id))
+    return;
+
+  const base::Value* existing_pref_or_null = all_input_method_pref.FindDictKey(
+      engine_id == "zh-t-i0-pinyin" ? "pinyin" : "zhuyin");
+  if (existing_pref_or_null) {
+    DictionaryPrefUpdate update(prefs,
+                                ::prefs::kLanguageInputMethodSpecificSettings);
+    update->SetPath(engine_id, existing_pref_or_null->Clone());
   }
 }
 
@@ -596,7 +619,10 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
 
   ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id, InputFieldContext{});
+      CreateSettingsFromPrefs(*prefs_, engine_id);
+
+  MigratePinyinAndZhuyinSettings(prefs_, engine_id);
+
   connection_factory_->ConnectToInputMethod(
       engine_id, input_method_.BindNewEndpointAndPassReceiver(),
       std::move(input_method_host), std::move(settings),
@@ -616,6 +642,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   UpdateCandidatesWindow(nullptr);
   ui::ime::InputMethodMenuManager::GetInstance()
       ->SetCurrentInputMethodMenuItemList({});
+  assistive_suggester_->OnActivate(engine_id);
 
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
@@ -637,8 +664,6 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
     ConnectToImeService(mojom::ConnectionTarget::kDecoder, engine_id);
-    // Inform the assistive suggester of the new engine activation.
-    assistive_suggester_->OnActivate(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
@@ -707,17 +732,17 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
     return;
   }
 
+  // TODO(b/200611333): Make input_method_->OnFocus return the overriding
+  // XKB layout instead of having the logic here in Chromium.
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id);
+  OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
+                            settings);
+
   InputFieldContext input_field_context =
       features::IsAssistiveMultiWordEnabled()
           ? CreateInputFieldContext(enabled_suggestions)
           : InputFieldContext{};
-  // TODO(b/200611333): Make input_method_->OnFocus return the overriding
-  // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context);
-  OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
-                            settings);
-
   const bool is_normal_screen =
       InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
       InputMethodManager::UIStyle::kNormal;
@@ -856,6 +881,11 @@ void NativeInputMethodEngineObserver::OnCompositionBoundsChanged(
   ime_base_observer_->OnCompositionBoundsChanged(bounds);
 }
 
+void NativeInputMethodEngineObserver::OnCaretBoundsChanged(
+    const gfx::Rect& caret_bounds) {
+  ime_base_observer_->OnCaretBoundsChanged(caret_bounds);
+}
+
 void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
     const std::string& engine_id,
     const std::u16string& text,
@@ -970,6 +1000,16 @@ void NativeInputMethodEngineObserver::OnSuggestionsGathered(
     RequestSuggestionsCallback callback,
     mojom::SuggestionsResponsePtr response) {
   std::move(callback).Run(std::move(response));
+}
+
+bool NativeInputMethodEngineObserver::IsReadyForTesting() {
+  if (input_method_.is_bound() && input_method_.is_connected()) {
+    bool is_ready = false;
+    const bool successful =
+        input_method_->IsReadyForTesting(&is_ready);  // IN-TEST
+    return successful && is_ready;
+  }
+  return false;
 }
 
 void NativeInputMethodEngineObserver::OnSuggestionsChanged(

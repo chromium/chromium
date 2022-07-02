@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.FeedActionsHandler.FeedIdentifier;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -144,6 +145,14 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
                     FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
             mActionDelegate.addToReadingList(title, url);
+        }
+
+        @Override
+        public void navigateCrow(String url) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportOtherUserAction(
+                    mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_CROW_BUTTON);
+            mActionDelegate.openCrow(url);
         }
 
         @Override
@@ -273,6 +282,9 @@ public class FeedStream implements Stream {
     class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
+        // This is based on the menu animation time (218ms) from BottomSheet.java.
+        // It is private to an internal target, so we can't link, to it here.
+        private static final int MENU_DISMISS_TASK_DELAY = 318;
 
         @VisibleForTesting
         static final String FEEDBACK_REPORT_TYPE =
@@ -283,8 +295,6 @@ public class FeedStream implements Stream {
         @Override
         public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
             assert ThreadUtils.runningOnUiThread();
-            // TODO(crbug.com/1268575): Forward loggingParameters to FeedApi, and check that they
-            // match the current state.
             FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data,
                     FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
         }
@@ -295,9 +305,6 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_SEND_FEEDBACK);
 
-            // Make sure the bottom sheet is dismissed before we take a snapshot.
-            dismissBottomSheet();
-
             Profile profile = Profile.getLastUsedRegularProfile();
             if (profile == null) {
                 return;
@@ -307,11 +314,19 @@ public class FeedStream implements Stream {
 
             Map<String, String> feedContext = convertNameFormat(productSpecificDataMap);
 
+            // We want to hide the bottom sheet before sending feedback so the snapshot doesn't show
+            // the menu covering the article.  However the menu is animating down, we need to wait
+            // for the animation to finish.  We post a task to wait for the duration of the
+            // animation, then call send feedback.
+
             // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
             // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
             // matching an allow list rule.
-            mHelpAndFeedbackLauncher.showFeedback(
-                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext);
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                    ()
+                            -> mHelpAndFeedbackLauncher.showFeedback(
+                                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext),
+                    MENU_DISMISS_TASK_DELAY);
         }
 
         @Override
@@ -388,30 +403,6 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void reportNoticeCreated(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeCreated(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeViewed(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeViewed(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeOpenAction(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeOpenAction(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
-        public void reportNoticeDismissed(String key) {
-            assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportNoticeDismissed(mNativeFeedStream, FeedStream.this, key);
-        }
-
-        @Override
         public void reportInfoCardTrackViewStarted(int type) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportInfoCardTrackViewStarted(
@@ -442,6 +433,26 @@ public class FeedStream implements Stream {
         public void resetInfoCardStates(int type) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().resetInfoCardStates(mNativeFeedStream, FeedStream.this, type);
+        }
+
+        private @StreamType int feedIdentifierToType(@FeedIdentifier int fid) {
+            switch (fid) {
+                case FeedIdentifier.MAIN_FEED:
+                    return StreamType.FOR_YOU;
+                case FeedIdentifier.FOLLOWING_FEED:
+                    return StreamType.WEB_FEED;
+            }
+            return StreamType.UNSPECIFIED;
+        }
+
+        @Override
+        public void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {
+            @StreamType
+            int feedKindToInvalidate = feedIdentifierToType(feedToInvalidate);
+            if (feedKindToInvalidate != StreamType.UNSPECIFIED) {
+                FeedStreamJni.get().invalidateContentCacheFor(
+                        mNativeFeedStream, FeedStream.this, feedKindToInvalidate);
+            }
         }
 
         // Since the XSurface client strings are slightly different than the Feed strings, convert
@@ -504,6 +515,7 @@ public class FeedStream implements Stream {
     private WindowAndroid mWindowAndroid;
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
+    FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -558,7 +570,8 @@ public class FeedStream implements Stream {
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
             int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
-            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            FeedContentFirstLoadWatcher feedContentFirstLoadWatcher) {
         this.mActivity = activity;
         mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -573,6 +586,7 @@ public class FeedStream implements Stream {
         mWindowAndroid = windowAndroid;
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
+        mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -944,6 +958,8 @@ public class FeedStream implements Stream {
             mRenderer.update(state.getXsurfaceSharedState().toByteArray());
         }
 
+        boolean foundNewContent = false;
+
         // Builds the new list containing:
         // * existing headers
         // * both new and existing contents
@@ -955,12 +971,18 @@ public class FeedStream implements Stream {
                         createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
                 if (content != null) {
                     newContentList.add(content);
+                    if (!content.isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
             } else {
                 String existingSliceId = sliceUpdate.getSliceId();
                 int position = mContentManager.findContentPositionByKey(existingSliceId);
                 if (position != -1) {
                     newContentList.add(mContentManager.getContent(position));
+                    if (!mContentManager.getContent(position).isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
                 // We intentionially don't add the spacer back in. The spacer has a key SPACER_KEY,
                 // not a slice id.
@@ -976,6 +998,13 @@ public class FeedStream implements Stream {
 
         updateContentsInPlace(newContentList);
         mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
+
+        // If we have new content, and the new content callback is set, then call it, and clear the
+        // callback.
+        if (mFeedContentFirstLoadWatcher != null && foundNewContent) {
+            mFeedContentFirstLoadWatcher.nonNativeContentLoaded(mStreamKind);
+            mFeedContentFirstLoadWatcher = null;
+        }
 
         // If all of the cards fit on the screen, load more content. The view
         // may not be scrollable, preventing the user from otherwise triggering
@@ -1263,15 +1292,13 @@ public class FeedStream implements Stream {
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
         long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
-        void reportNoticeCreated(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
-        void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
         void reportInfoCardTrackViewStarted(long nativeFeedStream, FeedStream caller, int type);
         void reportInfoCardViewed(
                 long nativeFeedStream, FeedStream caller, int type, int minimumViewIntervalSeconds);
         void reportInfoCardClicked(long nativeFeedStream, FeedStream caller, int type);
         void reportInfoCardDismissedExplicitly(long nativeFeedStream, FeedStream caller, int type);
         void resetInfoCardStates(long nativeFeedStream, FeedStream caller, int type);
+        void invalidateContentCacheFor(
+                long nativeFeedStream, FeedStream caller, @StreamType int feedToInvalidate);
     }
 }

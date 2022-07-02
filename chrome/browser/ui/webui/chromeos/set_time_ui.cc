@@ -54,19 +54,19 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
   // WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "setTimePageReady",
         base::BindRepeating(&SetTimeMessageHandler::OnPageReady,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "setTimeInSeconds",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTime,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "setTimezone",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTimezone,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "doneClicked", base::BindRepeating(&SetTimeMessageHandler::DoneClicked,
                                            base::Unretained(this)));
   }
@@ -82,7 +82,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
  private:
-  void OnPageReady(const base::ListValue* args) { AllowJavascript(); }
+  void OnPageReady(const base::Value::List& args) { AllowJavascript(); }
 
   // SystemClockClient::Observer:
   void SystemClockUpdated() override {
@@ -102,35 +102,34 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // Handler for Javascript call to set the system clock when the user sets a
   // new time. Expects the time as the number of seconds since the Unix
   // epoch, treated as a double.
-  void OnSetTime(const base::ListValue* args) {
-    double seconds = args->GetListDeprecated()[0].GetDouble();
+  void OnSetTime(const base::Value::List& args) {
+    double seconds = args[0].GetDouble();
     SystemClockClient::Get()->SetTime(static_cast<int64_t>(seconds));
   }
 
   // Handler for Javascript call to change the system time zone when the user
   // selects a new time zone. Expects the time zone ID as a string, as it
   // appears in the time zone option values.
-  void OnSetTimezone(const base::ListValue* args) {
-    if (args->GetListDeprecated().empty() ||
-        !args->GetListDeprecated()[0].is_string()) {
+  void OnSetTimezone(const base::Value::List& args) {
+    if (args.empty() || !args[0].is_string()) {
       NOTREACHED();
       return;
     }
-    std::string timezone_id = args->GetListDeprecated()[0].GetString();
+    std::string timezone_id = args[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
     DCHECK(profile);
     system::SetTimezoneFromUI(profile, timezone_id);
   }
 
-  void DoneClicked(const base::ListValue* args) {
+  void DoneClicked(const base::Value::List& args) {
     if (!parent_access::ParentAccessService::IsApprovalRequired(
             ash::SupervisedAction::kUpdateClock)) {
       OnParentAccessValidation(true);
       return;
     }
 
-    double seconds = args->GetListDeprecated()[0].GetDouble();
+    double seconds = args[0].GetDouble();
     AccountId account_id;
     bool is_user_logged_in = user_manager::UserManager::Get()->IsUserLoggedIn();
     if (is_user_logged_in) {

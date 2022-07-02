@@ -5,6 +5,7 @@
 import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -141,8 +142,10 @@ export class MainWindowComponent {
         'focus', this.onFileListFocus_.bind(this));
     ui.listContainer.grid.addEventListener(
         'focus', this.onFileListFocus_.bind(this));
-    ui.breadcrumbController.addEventListener(
-        'pathclick', this.onBreadcrumbClick_.bind(this));
+    if (!util.isFilesAppExperimental()) {
+      ui.breadcrumbController.addEventListener(
+          'pathclick', this.onBreadcrumbClick_.bind(this));
+    }
     /**
      * We are binding both click/keyup event here because "click" event will
      * be triggered multiple times if the Enter/Space key is being pressed
@@ -274,6 +277,13 @@ export class MainWindowComponent {
    */
   acceptSelection_() {
     if (this.dialogType_ === DialogType.FULL_PAGE) {
+      // Files within the trash root should not have default tasks. They should
+      // be restored first.
+      if (this.directoryModel_.getCurrentRootType() ===
+          VolumeManagerCommon.RootType.TRASH) {
+        this.ui_.alertDialog.show(str('OPEN_TRASHED_FILES_ERROR'), null, null);
+        return false;
+      }
       this.taskController_.getFileTasks()
           .then(tasks => {
             tasks.executeDefault();
@@ -477,7 +487,9 @@ export class MainWindowComponent {
     this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
     if (event.newDirEntry) {
-      this.ui_.breadcrumbController.show(event.newDirEntry);
+      if (!util.isFilesAppExperimental()) {
+        this.ui_.breadcrumbController.show(event.newDirEntry);
+      }
       // Updates UI.
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
@@ -492,7 +504,9 @@ export class MainWindowComponent {
         }
       }
     } else {
-      this.ui_.breadcrumbController.hide();
+      if (!util.isFilesAppExperimental()) {
+        this.ui_.breadcrumbController.hide();
+      }
     }
   }
 

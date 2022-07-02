@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Variations.AppliedSeed.Size" units="bytes"
-    expires_after="2022-11-20">
+    expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.AppliedSeed.StudyCount" units="studies"
-    expires_after="2022-11-20">
+    expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileDeserializationError"
-    enum="JsonDeserializationError" expires_after="2022-10-09">
+    enum="JsonDeserializationError" expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -72,50 +72,43 @@ chromium-metrics-reviews@google.com.
     during CleanExitBeacon initialization when the beacon file cannot be
     deserialized. In other words, it is emitted whenever the &quot;Not
     deserializable&quot; bucket of the BeaconFileStateAtStartup histogram is
-    emitted. Note that this file is used by only one branch of the Extended
-    Variations Safe Mode experiment.
+    emitted.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileStateAtStartup"
-    enum="BeaconFileState" expires_after="2022-10-09">
+    enum="BeaconFileState" expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
   <summary>
     The state of the beacon file and its contents, e.g. readable or not
     deserializable. See the BeaconFileDeserializationError histogram for more
-    details on why the file was not deserializable. Note that this file is used
-    by only one branch of the Extended Variations Safe Mode experiment. Recorded
-    when the CleanExitBeacon is initialized.
+    details on why the file was not deserializable. Emitted when the
+    CleanExitBeacon is initialized.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
-    enum="BooleanSuccess" expires_after="2022-10-09">
+    enum="BooleanSuccess" expires_after="2023-05-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
   <summary>
-    Denotes whether the beacon file was successfully written. Note that this
-    file is used by only one branch of the Extended Variations Safe Mode
-    experiment. Recorded immediately after Chrome tries to write the file.
-  </summary>
-</histogram>
+    Denotes whether the beacon file was successfully written. Recorded
+    immediately after Chrome tries to write the file.
 
-<histogram name="Variations.ExtendedSafeMode.WritePrefsTime"
-    units="microseconds" expires_after="2022-10-09">
-  <owner>caitlinfischer@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics&gt;Variations</component>
-  <summary>
-    The time it takes to write prefs to disk. The time is capped at 1s. The
-    metric is emitted before field trials are set up. Only clients on non-stable
-    channels in the ExtendedVariationsSafeMode experiment's WritePrefs and
-    SignalEarlyAndWritePrefs groups emit the metric.
-
-    Note that clients without high-resolution clocks will report 0 for very
-    short times.
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
   </summary>
 </histogram>
 
@@ -369,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.Crashes" units="crashes"
-    expires_after="2022-09-11">
+    expires_after="2023-05-31">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -383,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.Streak.FetchFailures" units="failures"
-    expires_after="2022-09-11">
+    expires_after="2023-05-31">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -470,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFreshness" units="minutes"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -515,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedLoadResult" enum="VariationsSeedLoadResult"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -527,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedProcessingTime" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-05-31">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -661,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.UserChannel" enum="UserChannels"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

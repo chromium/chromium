@@ -89,13 +89,32 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
     "IOSEnablePasswordManagerBrandingUpdate",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_IOS)
+// Removes the list of passwords from the Settings UI and adds a separate
+// Password Manager view.
+const base::Feature kIOSPasswordUISplit = {"IOSPasswordUISplit",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // IS_IOS
+
 // Enables (un)muting compromised passwords from bulk leak check in settings.
-const base::Feature kMuteCompromisedPasswords{
-    "MuteCompromisedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMuteCompromisedPasswords {
+  "MuteCompromisedPasswords",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables adding, displaying and modifying extra notes to stored credentials.
+// When enabled, "PasswordViewPageInSettings" feature is ignored and the new
+// password view subpage is force enabled.
 const base::Feature kPasswordNotes{"PasswordNotes",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the new password viewing subpage.
+const base::Feature kPasswordViewPageInSettings{
+    "PasswordViewPageInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables sending credentials from the settings UI.
 const base::Feature kSendPasswords{"SendPasswords",
@@ -137,7 +156,7 @@ const base::Feature kPasswordReuseDetectionEnabled = {
 // Enables a revised opt-in flow for the account-scoped password storage.
 const base::Feature kPasswordsAccountStorageRevisedOptInFlow = {
     "PasswordsAccountStorageRevisedOptInFlow",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables password scripts fetching for the |PasswordChangeInSettings| feature.
 const base::Feature kPasswordScriptsFetching = {
@@ -157,16 +176,6 @@ const base::Feature kSecondaryServerFieldPredictions = {
 // manager
 const base::Feature kSkipUndecryptablePasswords = {
     "SkipUndecryptablePasswords", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
-// Enables the addition of passwords in Chrome Settings.
-// TODO(crbug/1226008): Remove once it's launched.
-#if BUILDFLAG(IS_IOS)
-const base::Feature kSupportForAddPasswordsInSettings = {
-    "SupportForAddPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-#else
-const base::Feature kSupportForAddPasswordsInSettings = {
-    "SupportForAddPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_LINUX)

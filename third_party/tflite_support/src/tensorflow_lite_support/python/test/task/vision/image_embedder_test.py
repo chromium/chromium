@@ -16,8 +16,9 @@
 import enum
 
 from absl.testing import parameterized
-
+import numpy as np
 import tensorflow as tf
+
 from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import bounding_box_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
@@ -25,6 +26,7 @@ from tensorflow_lite_support.python.task.processor.proto import embedding_pb2
 from tensorflow_lite_support.python.task.vision import image_embedder
 from tensorflow_lite_support.python.task.vision.core import tensor_image
 from tensorflow_lite_support.python.test import test_util
+
 
 _BaseOptions = base_options_pb2.BaseOptions
 _ImageEmbedder = image_embedder.ImageEmbedder
@@ -74,13 +76,13 @@ class ImageEmbedderTest(parameterized.TestCase, tf.test.TestCase):
       self.assertIsInstance(embedder, _ImageEmbedder)
 
   @parameterized.parameters(
-      (False, False, False, ModelFileType.FILE_NAME, 0.932738),
-      (True, False, False, ModelFileType.FILE_NAME, 0.932738),
-      (True, True, False, ModelFileType.FILE_CONTENT, 0.929717),
-      (False, False, True, ModelFileType.FILE_CONTENT, 0.999914),
+      (False, False, False, ModelFileType.FILE_NAME, 0.932738, -0.20580328),
+      (True, False, False, ModelFileType.FILE_NAME, 0.932738, -0.0135661615),
+      (True, True, False, ModelFileType.FILE_CONTENT, 0.929717, 254),
+      (False, False, True, ModelFileType.FILE_CONTENT, 0.999914, -0.16619979),
   )
   def test_embed(self, l2_normalize, quantize, with_bounding_box,
-                 model_file_type, expected_similarity):
+                 model_file_type, expected_similarity, expected_first_value):
     # Creates embedder.
     if model_file_type is ModelFileType.FILE_NAME:
       base_options = _BaseOptions(file_name=self.model_path)
@@ -119,12 +121,17 @@ class ImageEmbedderTest(parameterized.TestCase, tf.test.TestCase):
     image_feature_vector = image_result.embeddings[0].feature_vector
     self.assertLen(crop_result.embeddings, 1)
     crop_feature_vector = crop_result.embeddings[0].feature_vector
+
+    self.assertLen(image_feature_vector.value, 1024)
+    self.assertLen(crop_feature_vector.value, 1024)
+
     if quantize:
-      self.assertLen(image_feature_vector.value_string, 1024)
-      self.assertLen(crop_feature_vector.value_string, 1024)
+      self.assertEqual(image_feature_vector.value.dtype, np.uint8)
     else:
-      self.assertLen(image_feature_vector.value_float, 1024)
-      self.assertLen(crop_feature_vector.value_float, 1024)
+      self.assertEqual(image_feature_vector.value.dtype, float)
+
+    # Check embedding value.
+    self.assertAlmostEqual(image_feature_vector.value[0], expected_first_value)
 
     # Checks cosine similarity.
     similarity = embedder.cosine_similarity(image_feature_vector,
@@ -137,16 +144,15 @@ class ImageEmbedderTest(parameterized.TestCase, tf.test.TestCase):
     embedder = _ImageEmbedder.create_from_options(options)
 
     # Builds test data.
-    embedding = embedding_pb2.Embedding(output_index=0)
-    embedding.feature_vector.value_float.append(1.0)
-    embedding.feature_vector.value_float.append(0.0)
-    embedding_result = embedding_pb2.EmbeddingResult()
-    embedding_result.embeddings.append(embedding)
+    feature_vector = embedding_pb2.FeatureVector(value=np.array([1.0, 0.0]))
+    embedding = embedding_pb2.Embedding(
+        output_index=0, feature_vector=feature_vector)
+    embedding_result = embedding_pb2.EmbeddingResult(embeddings=[embedding])
 
     result0 = embedder.get_embedding_by_index(embedding_result, 0)
     self.assertEqual(result0.output_index, 0)
-    self.assertEqual(result0.feature_vector.value_float[0], 1.0)
-    self.assertEqual(result0.feature_vector.value_float[1], 0.0)
+    self.assertEqual(result0.feature_vector.value[0], 1.0)
+    self.assertEqual(result0.feature_vector.value[1], 0.0)
 
     with self.assertRaisesRegex(ValueError, r"Output index is out of bound\."):
       embedder.get_embedding_by_index(embedding_result, 1)

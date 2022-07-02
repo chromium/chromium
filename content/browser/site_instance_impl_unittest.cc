@@ -27,7 +27,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -117,9 +116,6 @@ class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
 
   int site_instance_delete_count_ = 0;
   int browsing_instance_delete_count_ = 0;
-
-  ScopedWebUIControllerFactoryRegistration factory_registration_{
-      ContentWebUIControllerFactory::GetInstance()};
 };
 
 class SiteInstanceTest : public testing::Test {
@@ -513,7 +509,7 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   EXPECT_TRUE(site_instance->HasSite());
   EXPECT_EQ(site_instance->GetSiteInfo(),
             SiteInfo::CreateForDefaultSiteInstance(
-                &browser_context,
+                site_instance->GetIsolationContext(),
                 StoragePartitionConfig::CreateDefault(&browser_context),
                 WebExposedIsolationInfo::CreateNonIsolated()));
   EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
@@ -1781,15 +1777,17 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   }
 
   // Verify that a SiteInstance created with CreateForGuest() is considered
-  // a <webview> guest and has a site URL that reflects the guest's
-  // StoragePartition configuration.
+  // a <webview> guest.  Without site isolation for guests, its site URL
+  // should reflect the guest's StoragePartition configuration.
   const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(
       context(), "appid", "partition_name", /*in_memory=*/false);
   const GURL kGuestSiteUrl(std::string(kGuestScheme) +
                            "://appid/persist?partition_name#nofallback");
   auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestConfig);
   EXPECT_TRUE(instance2->IsGuest());
-  EXPECT_EQ(kGuestSiteUrl, instance2->GetSiteURL());
+  EXPECT_EQ(instance2->GetStoragePartitionConfig(), kGuestConfig);
+  if (!SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
+    EXPECT_EQ(kGuestSiteUrl, instance2->GetSiteURL());
 }
 
 TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {

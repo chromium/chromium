@@ -31,6 +31,7 @@
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
 #include "device/fido/u2f_command_constructor.h"
+#include "device/fido/virtual_fido_device.h"
 
 namespace device {
 

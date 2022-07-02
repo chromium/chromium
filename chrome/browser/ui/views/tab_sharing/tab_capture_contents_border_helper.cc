@@ -23,7 +23,7 @@ constexpr int kMinContentsBorderWidth = 20;
 constexpr int kMinContentsBorderHeight = 20;
 
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class BorderView : public views::View {
  public:
   BorderView() = default;
@@ -55,7 +55,6 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
 
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   views::Widget* frame = browser_view->contents_web_view()->GetWidget();
   params.parent = frame->GetNativeView();
@@ -84,7 +83,7 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
   // After this fix, capturing a given tab X twice will still yield one widget.
   browser_view->set_contents_border_widget(widget);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -111,8 +110,7 @@ void TabCaptureContentsBorderHelper::OnCapturerRemoved(
 
   // TODO(crbug.com/1294187): Destroy widget when the size of
   // `session_to_bounds_` hits 0. Same for `this`.
-  const size_t erased_count = session_to_bounds_.erase(capture_session_id);
-  DCHECK_EQ(erased_count, 1u);
+  session_to_bounds_.erase(capture_session_id);
 
   Update();
 }
@@ -142,7 +140,7 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
 
 void TabCaptureContentsBorderHelper::Update() {
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* const web_contents = &GetWebContents();
@@ -179,7 +177,7 @@ void TabCaptureContentsBorderHelper::Update() {
   } else {
     contents_border_widget->Hide();
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void TabCaptureContentsBorderHelper::UpdateBlueBorderLocation() {

@@ -692,17 +692,17 @@
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER" desc="The header label of the 'About this site' subpage in Page Info bubble.">
     From the web
   </message>
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
+    About this page
+  </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP" desc="The tooltip of the button that opens 'About this site' subpage in Page Info bubble.">
     Show information from the web
   </message>
+  <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP" desc="The tooltip of the button that opens 'About this page' details in Page Info bubble.">
+    Learn about this page's source &amp; topic
+  </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
     From <ph name="SOURCE_NAME">$1<ex>Wikipedia</ex></ph>
-  </message>
-  <message name="IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE" desc="Link in page info to learn more about the current page. Opens a website with details on the source and more information about the topic of a site.">
-    More about this page
-  </message>
-  <message name="IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE_TOOLTIP" desc="Tooltip for link in page info to learn more about the current page. Opens a website with details on the source and more information about the topic of a site.">
-    Show more information about this page
   </message>
   <!-- History strings -->
   <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">

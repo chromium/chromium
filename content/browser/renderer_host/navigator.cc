@@ -77,8 +77,10 @@ absl::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
       return WebFeature::kCrossOriginOpenerPolicySameOrigin;
     case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return WebFeature::kCrossOriginOpenerPolicySameOriginAllowPopups;
+    case CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return WebFeature::kCrossOriginOpenerPolicyRestrictProperties;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep:
+    case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolated;
   }
 }
@@ -94,8 +96,10 @@ absl::optional<WebFeature> FeatureCoopRO(CrossOriginOpenerPolicyValue value) {
     case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return WebFeature::
           kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly;
+    case CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return WebFeature::kCrossOriginOpenerPolicyRestrictPropertiesReportOnly;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep:
+    case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolatedReportOnly;
   }
 }
@@ -247,72 +251,6 @@ bool HasEmbeddingControl(NavigationRequest* navigation_request) {
   }
 
   return false;
-}
-
-bool ValidateUnfencedTopNavigation(RenderFrameHostImpl* render_frame_host,
-                                   const GURL& url,
-                                   int initiator_process_id,
-                                   bool user_gesture) {
-  // It should only be possible to send this IPC with this flag from an
-  // MPArch opaque-ads fenced frame. Opaque-ads fenced frames should always
-  // have the sandbox flag `allow-top-navigation-by-user-activation`.
-  if (!render_frame_host->frame_tree_node()->IsInFencedFrameTree() ||
-      !blink::features::IsFencedFramesMPArchBased() ||
-      (render_frame_host->GetMainFrame()
-           ->frame_tree_node()
-           ->GetFencedFrameMode() !=
-       blink::mojom::FencedFrameMode::kOpaqueAds) ||
-      render_frame_host->IsSandboxed(
-          network::mojom::WebSandboxFlags::kTopNavigationByUserActivation)) {
-    // If we get the IPC elsewhere, assume the renderer is compromised.
-    bad_message::ReceivedBadMessage(
-        initiator_process_id,
-        bad_message::RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME);
-    return false;
-  }
-
-  // Perform checks that normally would be performed in
-  // `blink::CanNavigateHelper` but that we skipped because the target
-  // frame wasn't available in the renderer.
-  // TODO(crbug.com/1123606): Clean this up (make it use a common code path
-  // for maintainability) after OT if possible.
-
-  // Javascript URLs are not allowed, because they can be used to
-  // communicate from the fenced frame to the embedder.
-  // TODO(crbug.com/1315802): It does not seem possible to reach this code
-  // with an uncompromised renderer, because javascript URLs don't reach
-  // the same IPC; instead they run inside the fenced frame as _self.
-  // It also seems that Javascript URLs would be caught earlier in this
-  // particular code path by VerifyOpenURLParams().
-  // In this code's final IPC resting place after the factor, make sure
-  // to check whether this code is redundant.
-  if (url.SchemeIs(url::kJavaScriptScheme)) {
-    render_frame_host->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "The frame attempting navigation must be in the same fenced "
-        "frame tree as the target if navigating to a javascript: url");
-    return false;
-  }
-
-  // User activation is required, because fenced frames use the sandbox
-  // flag `allow-top-navigation-by-user-activation`.
-  // It would be better to instead check
-  // `render_frame_host->frame_tree_node()->HasTransientUserActivation()`,
-  // but it has already been consumed at this point.
-  // TODO(crbug.com/848778): use the browser's source of truth for user
-  // activation here (and elsewhere in this file) rather than trust the
-  // renderer.
-  if (!user_gesture) {
-    render_frame_host->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "The frame attempting navigation of the top-level window is "
-        "sandboxed with the 'allow-top-navigation-by-user-activation' "
-        "flag, but has no user activation (aka gesture). See "
-        "https://www.chromestatus.com/feature/5629582019395584.");
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -503,11 +441,6 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
-  // At this point we have already chosen a SiteInstance for this navigation, so
-  // set OriginIsolationRequest to kNone in the conversion to UrlInfo below:
-  // this is done implicitly in the UrlInfoInit constructor.
-  const UrlInfo url_info(UrlInfoInit(params.url));
-
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
     // BrowsingInstance swap but we're reusing the old page's process, and we
@@ -564,13 +497,20 @@ void Navigator::DidNavigate(
     frame_tree_node->ResetForNavigation();
   }
 
-  // Update the site of the SiteInstance if it doesn't have one yet, unless
-  // assigning a site is not necessary for this URL. In that case, the
-  // SiteInstance can still be considered unused until a navigation to a real
-  // page.
+  // If the committing URL requires the SiteInstance's site to be assigned,
+  // that site assignment should've already happened at ReadyToCommit time. We
+  // should never get here with a SiteInstance that doesn't have a site
+  // assigned in that case.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   if (!site_instance->HasSite() &&
-      SiteInstanceImpl::ShouldAssignSiteForURL(url_info.url)) {
+      SiteInstanceImpl::ShouldAssignSiteForURL(params.url)) {
+    NOTREACHED() << "SiteInstance should have already set a site: "
+                 << params.url;
+    // TODO(alexmos): convert this to a CHECK and remove the fallback call to
+    // ConvertToDefaultOrSetSite() after verifying that this doesn't happen in
+    // practice.
+    base::debug::DumpWithoutCrashing();
+    const UrlInfo url_info(UrlInfoInit(params.url));
     site_instance->ConvertToDefaultOrSetSite(url_info);
   }
 
@@ -797,7 +737,6 @@ void Navigator::RequestOpenURL(
     WindowOpenDisposition disposition,
     bool should_replace_current_entry,
     bool user_gesture,
-    bool is_unfenced_top_navigation,
     blink::mojom::TriggeringEventInfo triggering_event_info,
     const std::string& href_translate,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -826,46 +765,8 @@ void Navigator::RequestOpenURL(
   // (possibly of a new or different WebContents) otherwise.
   if (disposition == WindowOpenDisposition::CURRENT_TAB &&
       render_frame_host->GetParentOrOuterDocument()) {
-    if (is_unfenced_top_navigation) {
-      // If the flag `is_unfenced_top_navigation` is set, this is a special code
-      // path for MPArch fenced frames. The target frame doesn't have a handle
-      // inside the MPArch renderer process, so we need to set it here.
-      // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
-
-      // Check that the IPC parameters are valid and that the navigation
-      // is allowed.
-      if (!ValidateUnfencedTopNavigation(render_frame_host, url,
-                                         initiator_process_id, user_gesture)) {
-        return;
-      }
-
-      // Change the navigation target to the outermost frame.
-      // This escapes Portals but not GuestViews.
-      // - We don't especially care about Portals, because the frame won't be
-      //   user activated until it's no longer in a portal
-      // - We don't want _unfencedTop navigations to escape a GuestView
-      //   (<webview>) and affect their embedder.
-      // You can represent the primary NavigationController's FrameTree root
-      // with`RenderFrameHost::kNoFrameTreeNodeId`, but we will pick out the
-      // exact node to be safe.
-      frame_tree_node_id = render_frame_host->GetOutermostMainFrame()
-                               ->frame_tree_node()
-                               ->frame_tree_node_id();
-
-      // Fenced frames are enforced to have a history of length 1. Because the
-      // renderer thinks this navigation is to the fenced frame root, it sets
-      // `should_replace_current_entry` to true, but we do not want this
-      // restriction for navigations outside the fenced frame.
-      // TODO(crbug.com/1315802): Make sure that the browser doesn't rely on
-      // whether the renderer says we should replace the current entry, i.e.
-      // make sure there are no situations where we should actually replace the
-      // current entry but don't, due to this line.
-      should_replace_current_entry = false;
-    } else {
-      // Otherwise, proceed normally.
-      frame_tree_node_id =
-          render_frame_host->frame_tree_node()->frame_tree_node_id();
-    }
+    frame_tree_node_id =
+        render_frame_host->frame_tree_node()->frame_tree_node_id();
   }
 
   // Prerendering frames need to have an FTN id set, so OpenURL() can find
@@ -933,6 +834,7 @@ void Navigator::NavigateFromFrameProxy(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     network::mojom::SourceLocationPtr source_location,
     bool has_user_gesture,
+    bool is_form_submission,
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
     absl::optional<bool> is_fenced_frame_opaque_url) {
@@ -978,7 +880,8 @@ void Navigator::NavigateFromFrameProxy(
       referrer_to_use, page_transition, should_replace_current_entry,
       download_policy, method, post_body, extra_headers,
       std::move(source_location), std::move(blob_url_loader_factory),
-      impression, navigation_start_time, is_fenced_frame_opaque_url);
+      is_form_submission, impression, navigation_start_time,
+      is_fenced_frame_opaque_url);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
@@ -1300,6 +1203,10 @@ void Navigator::RecordNavigationMetrics(
       navigation_data_->commit_navigation_sent_) {
     base::TimeTicks unload_start = params.unload_start.value();
     base::TimeTicks unload_end = params.unload_end.value();
+    // Note: we expect `commit_navigation_end` to be later than `unload_end`.
+    // `unload_end` is recorded when the unload handlers finish running, which
+    // happens prior to the navigation committing and recording
+    // `commit_navigation_end` in this same-process case.
     base::TimeTicks commit_navigation_end =
         params.commit_navigation_end.value();
 
@@ -1310,7 +1217,7 @@ void Navigator::RecordNavigationMetrics(
           blink::LocalTimeTicks::FromTimeTicks(first_before_unload_start_time),
           blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
           blink::RemoteTimeTicks::FromTimeTicks(unload_start),
-          blink::RemoteTimeTicks::FromTimeTicks(unload_end));
+          blink::RemoteTimeTicks::FromTimeTicks(commit_navigation_end));
       blink::LocalTimeTicks converted_unload_start = converter.ToLocalTimeTicks(
           blink::RemoteTimeTicks::FromTimeTicks(unload_start));
       blink::LocalTimeTicks converted_unload_end = converter.ToLocalTimeTicks(
@@ -1348,12 +1255,9 @@ NavigationEntryImpl*
 Navigator::GetNavigationEntryForRendererInitiatedNavigation(
     const blink::mojom::CommonNavigationParams& common_params,
     FrameTreeNode* frame_tree_node) {
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify embedded frames. In this
-  // case, we use IsMainFrame since our only instance of embedded main frames
-  // (fenced frames) have their own NavigationController, and we will enforce
-  // main frame behavior at that level. Will need to follow up to confirm
-  // correctness.
+  // With MPArch, there may be multiple main frames, but each one has its own
+  // NavigationController. Thus, it's correct to check for NavigationEntries for
+  // each main frame, even if one is embedded (e.g., a fenced frame).
   if (!frame_tree_node->IsMainFrame())
     return nullptr;
 

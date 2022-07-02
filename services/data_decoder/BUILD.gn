@@ -6,6 +6,16 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("lib") {
+  # This target should only be depeneded upon by components that host a
+  # data_decoder service. Consumers should depend on a a target in the
+  # public/ directory.
+  visibility = [
+    ":*",
+    "public/cpp:*",
+    "//chrome/utility",
+    "//content/utility",
+  ]
+
   sources = [
     "data_decoder_service.cc",
     "data_decoder_service.h",

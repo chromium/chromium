@@ -462,4 +462,19 @@ bool VideoFrameCompositor::CallRender(base::TimeTicks deadline_min,
   return new_frame || had_new_background_frame;
 }
 
+void VideoFrameCompositor::OnContextLost() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  // current_frame_'s resource in the context has been lost, so current_frame_
+  // is not valid any more. current_frame_ should be reset. Now the compositor
+  // has no concept of resetting current_frame_, so a black frame is set.
+  base::AutoLock lock(current_frame_lock_);
+  if (!current_frame_ || (!current_frame_->HasTextures() &&
+                          !current_frame_->HasGpuMemoryBuffer())) {
+    return;
+  }
+  scoped_refptr<media::VideoFrame> black_frame =
+      media::VideoFrame::CreateBlackFrame(current_frame_->natural_size());
+  SetCurrentFrame_Locked(std::move(black_frame), tick_clock_->NowTicks());
+}
+
 }  // namespace blink

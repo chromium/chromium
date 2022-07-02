@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "chromeos/network/mock_managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

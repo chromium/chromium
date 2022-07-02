@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "content/browser/renderer_host/text_input_client_mac.h"
 
 #include <stddef.h>
@@ -113,7 +115,7 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
  private:
   friend class ScopedTestingThread;
 
-  RenderWidgetHost* widget_;
+  raw_ptr<RenderWidgetHost> widget_;
   std::unique_ptr<TextInputClientLocalFrame> local_frame_;
 
   base::Thread thread_;

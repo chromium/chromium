@@ -148,6 +148,9 @@ bool StructTraits<display::mojom::DisplayDataView, display::Display>::Read(
   out->set_is_monochrome(data.is_monochrome());
   out->set_display_frequency(data.display_frequency());
 
+  if (!data.ReadLabel(&out->label_))
+    return false;
+
   return true;
 }
 

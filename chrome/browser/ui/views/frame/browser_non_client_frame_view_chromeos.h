@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
@@ -25,6 +26,7 @@ namespace {
 class WebAppNonClientFrameViewAshTest;
 }
 
+class HighlightBorderOverlay;
 class ProfileIndicatorIcon;
 class TabIconView;
 
@@ -126,6 +128,7 @@ class BrowserNonClientFrameViewChromeOS
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void AddedToWidget() override;
 
  private:
   // TODO(pkasting): Test the public API or create a test helper class, don't
@@ -143,8 +146,6 @@ class BrowserNonClientFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            BrowserHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           AppHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ImmersiveModeTopViewInset);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ToggleTabletModeOnMinimizedWindow);
@@ -152,6 +153,8 @@ class BrowserNonClientFrameViewChromeOS
                            ActiveStateOfButtonMatchesWidget);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            RestoreMinimizedBrowserUpdatesCaption);
+  FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
+                           AppHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeControllerChromeosWebAppBrowserTest,
                            FrameLayoutToggleTabletMode);
   FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
@@ -231,21 +234,30 @@ class BrowserNonClientFrameViewChromeOS
   // Called any time the theme has changed and may need to be animated.
   void MaybeAnimateThemeChanged();
 
+  // Returns whether the associated window is currently floated or not.
+  bool IsFloated() const;
+
+  // Helper to check whether we should enable immersive mode.
+  bool ShouldEnableImmersiveModeController() const;
+
   // Returns the top level aura::Window for this browser window.
   const aura::Window* GetFrameWindow() const;
   aura::Window* GetFrameWindow();
 
+  // Generates a nine patch layer painted with a highlight border.
+  std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
+
   // View which contains the window controls.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+  raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
 
-  TabSearchBubbleHost* tab_search_bubble_host_ = nullptr;
+  raw_ptr<TabSearchBubbleHost> tab_search_bubble_host_ = nullptr;
 
   // For popups, the window icon.
   TabIconView* window_icon_ = nullptr;
 
   // This is used for teleported windows (in multi-profile mode).
-  ProfileIndicatorIcon* profile_indicator_icon_ = nullptr;
+  raw_ptr<ProfileIndicatorIcon> profile_indicator_icon_ = nullptr;
 
   // Helper class for painting the header.
   std::unique_ptr<chromeos::FrameHeader> frame_header_;

@@ -88,6 +88,7 @@ chrome.developerPrivate.ViewType = {
   EXTENSION_POPUP: 'EXTENSION_POPUP',
   EXTENSION_SERVICE_WORKER_BACKGROUND: 'EXTENSION_SERVICE_WORKER_BACKGROUND',
   TAB_CONTENTS: 'TAB_CONTENTS',
+  OFFSCREEN_DOCUMENT: 'OFFSCREEN_DOCUMENT',
 };
 
 /**
@@ -448,6 +449,22 @@ chrome.developerPrivate.UserSiteSettingsOptions;
  * }}
  */
 chrome.developerPrivate.UserSiteSettings;
+
+/**
+ * @typedef {{
+ *   siteList: !chrome.developerPrivate.UserSiteSet,
+ *   site: string
+ * }}
+ */
+chrome.developerPrivate.SiteInfo;
+
+/**
+ * @typedef {{
+ *   etldPlusOne: string,
+ *   sites: !Array<!chrome.developerPrivate.SiteInfo>
+ * }}
+ */
+chrome.developerPrivate.SiteGroup;
 
 /**
  * @enum {string}
@@ -824,8 +841,14 @@ chrome.developerPrivate.addUserSpecifiedSites = function(options, callback) {};
  * @param {!chrome.developerPrivate.UserSiteSettingsOptions} options
  * @param {function(): void=} callback
  */
-chrome.developerPrivate.removeUserSpecifiedSites = function(
-    options, callback) {};
+chrome.developerPrivate.removeUserSpecifiedSites = function(options, callback) {};
+
+/**
+ * Returns all hosts specified by user site settings, grouped by each host's
+ * eTLD+1. TODO(crbug.com/1331137): Get extension specified sites as well.
+ * @param {function(!Array<!chrome.developerPrivate.SiteGroup>): void=} callback
+ */
+chrome.developerPrivate.getUserAndExtensionSitesByEtld = function(callback) {};
 
 /**
  * @param {string} id

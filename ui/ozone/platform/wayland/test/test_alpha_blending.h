@@ -7,6 +7,7 @@
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -24,7 +25,7 @@ class TestAlphaBlending : public ServerObject {
 
  private:
   // Surface resource that is the ground for this Viewport.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 };
 
 }  // namespace wl

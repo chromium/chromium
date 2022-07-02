@@ -29,8 +29,7 @@ GenerationConfirmationBubbleController::GenerationConfirmationBubbleController(
 
 GenerationConfirmationBubbleController::
     ~GenerationConfirmationBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void GenerationConfirmationBubbleController::

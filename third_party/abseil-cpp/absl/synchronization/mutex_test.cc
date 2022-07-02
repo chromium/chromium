@@ -1704,4 +1704,30 @@ TEST(Mutex, MuTime) {
   EXPECT_EQ(RunTest(&TestMuTime, threads, iterations, 1), threads * iterations);
 }
 
+TEST(Mutex, SignalExitedThread) {
+  // The test may expose a race when Mutex::Unlock signals a thread
+  // that has already exited.
+#if defined(__wasm__) || defined(__asmjs__)
+  constexpr int kThreads = 1;  // OOMs under WASM
+#else
+  constexpr int kThreads = 100;
+#endif
+  std::vector<std::thread> top;
+  for (unsigned i = 0; i < 2 * std::thread::hardware_concurrency(); i++) {
+    top.emplace_back([&]() {
+      for (int i = 0; i < kThreads; i++) {
+        absl::Mutex mu;
+        std::thread t([&]() {
+          mu.Lock();
+          mu.Unlock();
+        });
+        mu.Lock();
+        mu.Unlock();
+        t.join();
+      }
+    });
+  }
+  for (auto &th : top) th.join();
+}
+
 }  // namespace

@@ -109,7 +109,7 @@ class TestExternalProviderVisitor
 
   bool OnExternalExtensionUpdateUrlFound(
       const extensions::ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override {
+      bool force_update) override {
     return true;
   }
 

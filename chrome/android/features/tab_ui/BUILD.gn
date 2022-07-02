@@ -59,6 +59,7 @@ android_resources("java_resources") {
     "java/res/layout/bottom_tab_strip_toolbar.xml",
     "java/res/layout/closable_tab_grid_card_item.xml",
     "java/res/layout/closable_tab_list_card_item.xml",
+    "java/res/layout/coupon_card.xml",
     "java/res/layout/incognito_description_container_layout.xml",
     "java/res/layout/iph_drag_and_drop_dialog_layout.xml",
     "java/res/layout/large_message_card_item.xml",
@@ -93,6 +94,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabGridView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/CouponCardView.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoMessageService.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageCardViewModel.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/IphMessageService.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardView.java",
@@ -171,19 +174,22 @@ android_library("java") {
 
   deps = [
     ":java_resources",
+    ":tab_suggestions_java",
     "//base:base_java",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/android:ui_locale_string_resources",
     "//chrome/android/features/start_surface:public_java",
+    "//chrome/android/features/tab_ui/public:java",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -232,6 +238,114 @@ android_library("java") {
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.tab_ui"
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceCardViewTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListViewHolderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinderTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    ":test_support_javalib",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/android/features/tab_ui:java",
+    "//chrome/android/features/tab_ui:tab_suggestions_java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/optimization_guide/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/test/android:chrome_java_integration_only_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/commerce/core:proto_java",
+    "//components/embedder_support/android:util_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//components/payments/content/android:full_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_library("tab_suggestions_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabContext.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestion.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionFeedback.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestions.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsObserver.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//components/site_engagement/content/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_library("test_support_javalib") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabUiTestHelper.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/test:java",
+    "//chrome/test/android:chrome_java_integration_only_test_support",
+    "//components/browser_ui/widget/android:test_support_java",
+    "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+  ]
 }
 
 module_desc_java("module_desc_java") {

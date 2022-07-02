@@ -3,16 +3,13 @@
 # found in the LICENSE file.
 
 start_surface_test_java_sources = [
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/BottomBarViewBinderTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinderTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartFeedTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartNewTabFromLauncherTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartTabSwitcherTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/InstantStartToolbarTest.java",
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinderTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceBackButtonTest.java",
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceFinaleTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceMVTilesTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceNoTabsTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceTabSwitcherTest.java",
@@ -20,7 +17,4 @@ start_surface_test_java_sources = [
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceTestUtils.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/TabSwitcherAndStartSurfaceLayoutPerfTest.java",
   "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/TabSwitcherAndStartSurfaceLayoutTest.java",
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinderTest.java",
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/tasks/SingleTabViewBinderTest.java",
-  "//chrome/android/features/start_surface/javatests/src/org/chromium/chrome/features/tasks/TasksViewBinderTest.java",
 ]

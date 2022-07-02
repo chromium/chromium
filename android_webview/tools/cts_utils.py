@@ -85,11 +85,23 @@ class CTSConfig:
     with open(self._path) as f:
       self._config = json.load(f)
 
+  def save(self):
+    with open(self._path, 'w') as file:
+      json.dump(self._config, file, indent=2)
+      file.write("\n")
+
   def get_platforms(self):
     return sorted(self._config.keys())
 
   def get_archs(self, platform):
     return sorted(self._config[platform]['arch'].keys())
+
+  def get_git_tag_prefix(self, platform):
+    return self._config[platform]['git']['tag_prefix']
+
+  def iter_platforms(self):
+    for p in self.get_platforms():
+      yield p
 
   def iter_platform_archs(self):
     for p in self.get_platforms():
@@ -107,6 +119,25 @@ class CTSConfig:
 
   def get_apks(self, platform):
     return sorted([r['apk'] for r in self._config[platform]['test_runs']])
+
+  def get_additional_apks(self, platform):
+    return [
+        apk['apk'] for r in self._config[platform]['test_runs']
+        for apk in r.get('additional_apks', [])
+    ]
+
+  def set_release_version(self, platform, arch, release):
+    pattern = re.compile(r'(?<=_r)\d*')
+
+    def update_release_version(field):
+      return pattern.sub(str(release),
+                         self._config[platform]['arch'][arch][field])
+
+    self._config[platform]['arch'][arch] = {
+        'filename': update_release_version('filename'),
+        '_origin': update_release_version('_origin'),
+        'unzip_dir': update_release_version('unzip_dir'),
+    }
 
 
 class CTSCIPDYaml:
@@ -277,7 +308,8 @@ def filter_cts_file(cts_config, cts_zip_file, dest_dir):
       o = cts_config.get_origin(p, a)
       base_name = os.path.basename(o)
       if base_name == os.path.basename(cts_zip_file):
-        filterzip(cts_zip_file, cts_config.get_apks(p),
+        filterzip(cts_zip_file,
+                  cts_config.get_apks(p) + cts_config.get_additional_apks(p),
                   os.path.join(dest_dir, base_name))
         return
   raise ValueError('Could not find platform and arch for: ' + cts_zip_file)

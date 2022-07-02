@@ -19,7 +19,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The FindBarView managed by this view controller. This is the same as the
-// |view| property.
+// `view` property.
 @property(nonatomic, strong, readonly) FindBarView* findBarView;
 
 @end

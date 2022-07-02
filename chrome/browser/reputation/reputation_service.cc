@@ -70,12 +70,13 @@ class ReputationServiceFactory : public BrowserContextKeyedServiceFactory {
   }
 };
 
-// Returns whether or not the Safety Tip should be suppressed for the given URL.
-// Checks SafeBrowsing-style permutations of |url| against the component updater
-// allowlist, as well as any enterprise-set allowlisting of the hostname, and
-// returns whether the URL is explicitly allowed. Fails closed, so that warnings
-// are suppressed if the component is unavailable.
-bool ShouldSuppressWarning(Profile* profile, const GURL& url) {
+// Returns whether or not the Safety Tip should be suppressed on the given URL,
+// if it's accused of spoofing |victim_url|. Checks both against the component
+// updater allowlist, as well as any enterprise-set allowlist.  Fails closed, so
+// that warnings are suppressed if the component is unavailable.
+bool ShouldSuppressWarning(Profile* profile,
+                           const GURL& url,
+                           const GURL& victim_url) {
   // Check any policy-set allowlist.
   if (IsAllowedByEnterprisePolicy(profile->GetPrefs(), url)) {
     return true;
@@ -90,7 +91,8 @@ bool ShouldSuppressWarning(Profile* profile, const GURL& url) {
     // flag on any known false positives until the client received the update.
     return true;
   }
-  return reputation::IsUrlAllowlistedBySafetyTipsComponent(proto, url);
+  return reputation::IsUrlAllowlistedBySafetyTipsComponent(
+      proto, url.GetWithEmptyPath(), victim_url.GetWithEmptyPath());
 }
 
 // Gets the eTLD+1 of the provided hostname, including private registries (e.g.
@@ -185,13 +187,6 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   // decision with other heuristics that may trigger later.
   bool done_checking_reputation_status = false;
 
-  // 0. Server-side warning suppression.
-  // If the URL is on the allowlist list, do nothing else. This is only used to
-  // mitigate false positives, so no further processing should be done.
-  if (ShouldSuppressWarning(profile_, url)) {
-    done_checking_reputation_status = true;
-  }
-
   // 1. Engagement check
   // Ensure that this URL is not already engaged. We can't use the synchronous
   // SiteEngagementService::IsEngagementAtLeast as it has side effects.  This
@@ -248,6 +243,16 @@ void ReputationService::GetReputationStatusWithEngagedSites(
 
     result.triggered_heuristics.keywords_heuristic_triggered = true;
     done_checking_reputation_status = true;
+  }
+
+  // If we found a SafetyTipStatus, possibly clear it if the URL is on the
+  // allowlist.
+  if (result.safety_tip_status != SafetyTipStatus::kUnknown &&
+      result.safety_tip_status != SafetyTipStatus::kNone &&
+      result.safety_tip_status != SafetyTipStatus::kBadKeyword &&
+      ShouldSuppressWarning(profile_, url, result.suggested_url)) {
+    result.safety_tip_status = SafetyTipStatus::kNone;
+    result.suggested_url = GURL();
   }
 
   if (IsIgnored(url)) {

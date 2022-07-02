@@ -81,13 +81,14 @@ class MockSelectFileDialogHolder : public SelectFileDialogHolder {
   explicit MockSelectFileDialogHolder(ui::SelectFileDialog::Listener* listener)
       : SelectFileDialogHolder(listener) {}
   ~MockSelectFileDialogHolder() override = default;
-  MOCK_METHOD6(SelectFile,
+  MOCK_METHOD7(SelectFile,
                bool(ui::SelectFileDialog::Type type,
                     const base::FilePath& default_path,
                     const ui::SelectFileDialog::FileTypeInfo* file_types,
                     int task_id,
                     const std::string& search_query,
-                    bool show_android_picker_apps));
+                    bool show_android_picker_apps,
+                    bool use_media_store_filter));
   MOCK_METHOD2(ExecuteJavaScript,
                void(const std::string&, JavaScriptResultCallback));
 };
@@ -114,7 +115,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
     mock_dialog_holder_ = mock_dialog_holder.get();
     arc_select_files_handler_->SetDialogHolderForTesting(
         std::move(mock_dialog_holder));
-    ON_CALL(*mock_dialog_holder_, SelectFile(_, _, _, _, _, _))
+    ON_CALL(*mock_dialog_holder_, SelectFile(_, _, _, _, _, _, _))
         .WillByDefault(Return(true));
   }
 
@@ -128,14 +129,16 @@ class ArcSelectFilesHandlerTest : public testing::Test {
       SelectFilesActionType request_action_type,
       bool request_allow_multiple,
       SelectFileDialog::Type expected_dialog_type,
-      bool expected_show_android_picker_apps) {
+      bool expected_show_android_picker_apps,
+      bool expected_use_media_store_filter) {
     SelectFilesRequestPtr request = SelectFilesRequest::New();
     request->action_type = request_action_type;
     request->allow_multiple = request_allow_multiple;
 
     EXPECT_CALL(*mock_dialog_holder_,
                 SelectFile(expected_dialog_type, _, _, _, _,
-                           expected_show_android_picker_apps))
+                           expected_show_android_picker_apps,
+                           expected_use_media_store_filter))
         .Times(1);
 
     SelectFilesCallback callback;
@@ -170,21 +173,29 @@ class ArcSelectFilesHandlerTest : public testing::Test {
 
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_DialogType) {
   CallSelectFilesAndCheckDialogType(SelectFilesActionType::GET_CONTENT, false,
-                                    SelectFileDialog::SELECT_OPEN_FILE, true);
+                                    SelectFileDialog::SELECT_OPEN_FILE, true,
+                                    false);
   CallSelectFilesAndCheckDialogType(SelectFilesActionType::GET_CONTENT, true,
                                     SelectFileDialog::SELECT_OPEN_MULTI_FILE,
-                                    true);
+                                    true, false);
   CallSelectFilesAndCheckDialogType(SelectFilesActionType::OPEN_DOCUMENT, false,
-                                    SelectFileDialog::SELECT_OPEN_FILE, false);
+                                    SelectFileDialog::SELECT_OPEN_FILE, false,
+                                    false);
   CallSelectFilesAndCheckDialogType(SelectFilesActionType::OPEN_DOCUMENT, true,
                                     SelectFileDialog::SELECT_OPEN_MULTI_FILE,
-                                    false);
+                                    false, false);
   CallSelectFilesAndCheckDialogType(
       SelectFilesActionType::OPEN_DOCUMENT_TREE, false,
-      SelectFileDialog::SELECT_EXISTING_FOLDER, false);
+      SelectFileDialog::SELECT_EXISTING_FOLDER, false, false);
   CallSelectFilesAndCheckDialogType(SelectFilesActionType::CREATE_DOCUMENT,
                                     true, SelectFileDialog::SELECT_SAVEAS_FILE,
-                                    false);
+                                    false, false);
+  CallSelectFilesAndCheckDialogType(
+      SelectFilesActionType::OPEN_MEDIA_STORE_FILES, false,
+      SelectFileDialog::SELECT_OPEN_FILE, false, true);
+  CallSelectFilesAndCheckDialogType(
+      SelectFilesActionType::OPEN_MEDIA_STORE_FILES, true,
+      SelectFileDialog::SELECT_OPEN_MULTI_FILE, false, true);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo) {
@@ -205,7 +216,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo) {
       *mock_dialog_holder_,
       SelectFile(_, _,
                  testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
-                 1234, _, _))
+                 1234, _, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
@@ -233,7 +244,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_UnknownExtension) {
       *mock_dialog_holder_,
       SelectFile(_, _,
                  testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
-                 1234, _, _))
+                 1234, _, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
@@ -260,7 +271,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_Asterisk) {
       *mock_dialog_holder_,
       SelectFile(_, _,
                  testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
-                 1234, _, _))
+                 1234, _, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
@@ -279,7 +290,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_InitialDocumentPath) {
       "/special/arc-documents-provider/testing.provider/doc:root");
 
   EXPECT_CALL(*mock_dialog_holder_,
-              SelectFile(_, FilePathMatcher(expected_file_path), _, _, _, _))
+              SelectFile(_, FilePathMatcher(expected_file_path), _, _, _, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;

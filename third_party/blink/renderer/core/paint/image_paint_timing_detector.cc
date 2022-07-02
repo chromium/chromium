@@ -215,7 +215,7 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   // Clear the records queued for presentation callback to ensure no new updates
   // occur.
   records_manager_.ClearImagesQueuedForPaintTime();
-  if (frame_view_->GetFrame().IsMainFrame()) {
+  if (frame_view_->GetFrame().IsOutermostMainFrame()) {
     DCHECK(frame_view_->GetFrame().GetDocument());
     ukm::builders::Blink_PaintTiming(
         frame_view_->GetFrame().GetDocument()->UkmSourceID())
@@ -277,7 +277,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
   }
 }
 
-void ImagePaintTimingDetector::RecordImage(
+bool ImagePaintTimingDetector::RecordImage(
     const LayoutObject& object,
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
@@ -287,12 +287,12 @@ void ImagePaintTimingDetector::RecordImage(
   Node* node = object.GetNode();
 
   if (!node)
-    return;
+    return false;
 
   // Before the image resource starts loading, <img> has no size info. We wait
   // until the size is known.
   if (image_border.IsEmpty())
-    return;
+    return false;
 
   RecordId record_id = std::make_pair(&object, &media_timing);
 
@@ -311,14 +311,14 @@ void ImagePaintTimingDetector::RecordImage(
       records_manager_.MaybeUpdateLargestIgnoredImage(
           record_id, rect_size, image_border, mapped_visual_rect);
     }
-    return;
+    return false;
   }
 
   if (records_manager_.IsRecordedImage(record_id)) {
     base::WeakPtr<ImageRecord> record =
         records_manager_.GetPendingImage(record_id);
     if (!record)
-      return;
+      return false;
     if (ShouldReportAnimatedImages() && media_timing.IsPaintedFirstFrame()) {
       added_entry_in_latest_frame_ |=
           records_manager_.OnFirstAnimatedFramePainted(record_id, frame_index_);
@@ -334,8 +334,9 @@ void ImagePaintTimingDetector::RecordImage(
         visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
                                            media_timing);
       }
+      return true;
     }
-    return;
+    return false;
   }
 
   gfx::RectF mapped_visual_rect =
@@ -352,7 +353,7 @@ void ImagePaintTimingDetector::RecordImage(
   bool added_pending = records_manager_.RecordFirstPaintAndReturnIsPending(
       record_id, rect_size, image_border, mapped_visual_rect, bpp);
   if (!added_pending)
-    return;
+    return false;
 
   if (ShouldReportAnimatedImages() && media_timing.IsPaintedFirstFrame()) {
     added_entry_in_latest_frame_ |=
@@ -361,7 +362,9 @@ void ImagePaintTimingDetector::RecordImage(
   if (media_timing.IsSufficientContentLoadedForPaint()) {
     records_manager_.OnImageLoaded(record_id, frame_index_, style_image);
     added_entry_in_latest_frame_ = true;
+    return true;
   }
+  return false;
 }
 
 uint64_t ImagePaintTimingDetector::ComputeImageRectSize(

@@ -47,7 +47,7 @@ const CGFloat kPrefHeight = 300;
   NSString* _title;
   // Callback for the cancel button.
   ProceduralBlock _cancelHandler;
-  // View Controller which will be displayed on |baseViewController|.
+  // View Controller which will be displayed on `baseViewController`.
   UIViewController* _presentedViewController;
 }
 
@@ -68,7 +68,7 @@ const CGFloat kPrefHeight = 300;
   MDCDialogTransitionController* _transitionDelegate;
 }
 
-// Initializes with the |title| of the dialog and the |coordinator| which will
+// Initializes with the `title` of the dialog and the `coordinator` which will
 // be notified if the cancel callback occurs.
 - (instancetype)initWithTitle:(NSString*)title
                   coordinator:(LoadingAlertCoordinator*)coordinator;

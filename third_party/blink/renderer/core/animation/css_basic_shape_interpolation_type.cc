@@ -47,6 +47,8 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
 
       return shape;
     }
+    case CSSPropertyID::kObjectViewBox:
+      return style.ObjectViewBox();
     default:
       NOTREACHED();
       return nullptr;
@@ -190,6 +192,9 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
     case CSSPropertyID::kClipPath:
       state.Style()->SetClipPath(
           ShapeClipPathOperation::Create(std::move(shape)));
+      break;
+    case CSSPropertyID::kObjectViewBox:
+      state.Style()->SetObjectViewBox(std::move(shape));
       break;
     default:
       NOTREACHED();

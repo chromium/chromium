@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -43,9 +44,7 @@ namespace blink {
 
 class LocalDOMWindow;
 class MediaErrorState;
-class MediaStream;
 class MediaStreamConstraints;
-class MediaStreamDescriptor;
 class ScriptWrappable;
 class TransferredMediaStreamTrack;
 class UserMediaController;
@@ -71,13 +70,13 @@ class MODULES_EXPORT UserMediaRequest final
     kDeviceInUse
   };
 
-  enum class MediaType { kUserMedia, kDisplayMedia };
+  enum class MediaType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
 
   class Callbacks : public GarbageCollected<Callbacks> {
    public:
     virtual ~Callbacks() = default;
 
-    virtual void OnSuccess(MediaStream*) = 0;
+    virtual void OnSuccess(const MediaStreamVector&) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
                          const V8MediaStreamError* error) = 0;
 
@@ -113,8 +112,9 @@ class MODULES_EXPORT UserMediaRequest final
 
   void Start();
 
-  void Succeed(MediaStreamDescriptor*);
+  void Succeed(const MediaStreamDescriptorVector& streams);
   void OnMediaStreamInitialized(MediaStream* stream);
+  void OnMediaStreamsInitialized(MediaStreamVector streams);
   void FailConstraint(const String& constraint_name, const String& message);
   void Fail(Error name, const String& message);
 
@@ -147,6 +147,9 @@ class MODULES_EXPORT UserMediaRequest final
 
   bool should_prefer_current_tab() const { return should_prefer_current_tab_; }
 
+  void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
+  bool exclude_system_audio() const { return exclude_system_audio_; }
+
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
   void SetTransferData(const base::UnguessableToken& session_id,
@@ -167,6 +170,7 @@ class MODULES_EXPORT UserMediaRequest final
   MediaConstraints audio_;
   MediaConstraints video_;
   const bool should_prefer_current_tab_ = false;
+  bool exclude_system_audio_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;

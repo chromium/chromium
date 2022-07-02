@@ -20,6 +20,8 @@ extern const char kSwReporterLastExitCode[];
 extern const char kSwReporterLastTimeTriggered[];
 extern const char kSwReporterLastTimeSentReport[];
 extern const char kSwReporterEnabled[];
+extern const char kSwReporterCohort[];
+extern const char kSwReporterCohortSelectionTime[];
 
 // Profile prefs.
 extern const char kSwReporterPromptReason[];

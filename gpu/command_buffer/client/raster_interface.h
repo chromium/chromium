@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -84,7 +85,7 @@ class RasterInterface : public InterfaceBase {
   // OOP-Raster
 
   // msaa_sample_count has no effect unless msaa_mode is set to kMSAA
-  virtual void BeginRasterCHROMIUM(GLuint sk_color,
+  virtual void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                                    GLboolean needs_clear,
                                    GLuint msaa_sample_count,
                                    MsaaMode msaa_mode,

@@ -81,8 +81,8 @@ class AudioEmbedder(object):
       `AudioEmbedderOptions` such as missing the model.
       RuntimeError: If other types of error occurred.
     """
-    embedder = _CppAudioEmbedder.create_from_options(options.base_options,
-                                                     options.embedding_options)
+    embedder = _CppAudioEmbedder.create_from_options(
+        options.base_options, options.embedding_options.to_pb2())
     return cls(options, embedder)
 
   def create_input_tensor_audio(self) -> tensor_audio.TensorAudio:
@@ -119,13 +119,14 @@ class AudioEmbedder(object):
       ValueError: If any of the input arguments is invalid.
       RuntimeError: If failed to calculate the embedding vector.
     """
-    return self._embedder.embed(
+    embedding_result = self._embedder.embed(
         _CppAudioBuffer(audio.buffer, audio.buffer_size, audio.format))
+    return embedding_pb2.EmbeddingResult.create_from_pb2(embedding_result)
 
   def cosine_similarity(self, u: embedding_pb2.FeatureVector,
                         v: embedding_pb2.FeatureVector) -> float:
     """Computes cosine similarity [1] between two feature vectors."""
-    return self._embedder.cosine_similarity(u, v)
+    return self._embedder.cosine_similarity(u.to_pb2(), v.to_pb2())
 
   def get_embedding_dimension(self, output_index: int) -> int:
     """Gets the dimensionality of the embedding output.
@@ -151,5 +152,9 @@ class AudioEmbedder(object):
 
   @property
   def required_audio_format(self) -> _CppAudioFormat:
-    """Gets the required audio format for the model."""
+    """Gets the required audio format for the model.
+
+    Raises:
+      RuntimeError: If failed to get the required audio format.
+    """
     return self._embedder.get_required_audio_format()

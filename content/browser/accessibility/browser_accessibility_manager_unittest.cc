@@ -961,62 +961,59 @@ TEST_F(BrowserAccessibilityManagerTest, TestFindIndicesInCommonParent) {
   ASSERT_NE(nullptr, paragraph_line2_accessible);
 
   BrowserAccessibility* common_parent = nullptr;
-  int child_index1, child_index2;
+  size_t child_index1, child_index2;
   EXPECT_FALSE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *root_accessible, *root_accessible, &common_parent, &child_index1,
       &child_index2));
-  EXPECT_EQ(nullptr, common_parent);
-  EXPECT_EQ(-1, child_index1);
-  EXPECT_EQ(-1, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *div_accessible, *paragraph_accessible, &common_parent, &child_index1,
       &child_index2));
   EXPECT_EQ(root_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *div_accessible, *paragraph_line1_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(root_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *line_break_accessible, *paragraph_text_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(root_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *button_text_accessible, *line_break_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(div_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *paragraph_accessible, *paragraph_line2_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(root_accessible, common_parent);
-  EXPECT_EQ(1, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(1u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *paragraph_text_accessible, *paragraph_line1_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(paragraph_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(0, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(0u, child_index2);
 
   EXPECT_TRUE(BrowserAccessibilityManager::FindIndicesInCommonParent(
       *paragraph_line1_accessible, *paragraph_line2_accessible, &common_parent,
       &child_index1, &child_index2));
   EXPECT_EQ(paragraph_text_accessible, common_parent);
-  EXPECT_EQ(0, child_index1);
-  EXPECT_EQ(1, child_index2);
+  EXPECT_EQ(0u, child_index1);
+  EXPECT_EQ(1u, child_index2);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 

@@ -33,7 +33,7 @@ class ChromeAppKioskServiceAsh : public mojom::ChromeAppKioskService {
       override;
 
   void InstallKioskApp(
-      mojom::AppInstallParamsPtr params,
+      const mojom::AppInstallParams& params,
       mojom::ChromeKioskLaunchController::InstallKioskAppCallback callback);
 
   void LaunchKioskApp(

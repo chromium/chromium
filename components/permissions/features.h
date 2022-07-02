@@ -47,9 +47,6 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChipRequestTypeSensitive;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::Feature kPermissionChipIsProminentStyle;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -76,9 +73,6 @@ extern const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<bool> kPermissionPredictionServiceUseJson;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<double>

@@ -40,7 +40,7 @@ NSString* const kHasBrowserStateBeenRemovedKey = @"HasBrowserStateBeenRemoved";
 const char kGmailDomain[] = "gmail.com";
 
 // Removes from disk the directories used by the browser states in
-// |browser_states_paths|.
+// `browser_states_paths`.
 void NukeBrowserStates(const std::vector<base::FilePath>& browser_states_path) {
   for (const base::FilePath& browser_state_path : browser_states_path) {
     // Delete both the browser state directory and its corresponding cache.
@@ -51,7 +51,7 @@ void NukeBrowserStates(const std::vector<base::FilePath>& browser_states_path) {
   }
 }
 
-// Returns the GAIA Id of the given |browser_state_path| using the |info_cache|.
+// Returns the GAIA Id of the given `browser_state_path` using the `info_cache`.
 std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
                                      BrowserStateInfoCache* info_cache) {
   base::FilePath path = info_cache->GetUserDataDir().Append(browser_state_path);
@@ -61,7 +61,7 @@ std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
   return info_cache->GetGAIAIdOfBrowserStateAtIndex(index);
 }
 
-// Returns the email's domain of the identity associated with |gaia_id|.
+// Returns the email's domain of the identity associated with `gaia_id`.
 std::string GetDomainForGaiaId(ChromeBrowserState* browser_state,
                                const std::string& gaia_id) {
   ChromeAccountManagerService* account_manager_service =

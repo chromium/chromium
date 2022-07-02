@@ -92,12 +92,6 @@ const CALLBACK_USER_ACTED = 'userActed';
   },
 
   /**
-   * Screen will ignore accelerators when true.
-   * @type {boolean}
-   */
-  ignoreAccelerators: false,
-
-  /**
    * If defined, invoked for the currently active screen when screen size
    * changes.
    * @type {function()|undefined}

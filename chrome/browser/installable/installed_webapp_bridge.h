@@ -31,6 +31,7 @@ class InstalledWebappBridge {
 
   static void DecidePermission(ContentSettingsType type,
                                const GURL& origin_url,
+                               const GURL& last_committed_url,
                                PermissionCallback callback);
 };
 

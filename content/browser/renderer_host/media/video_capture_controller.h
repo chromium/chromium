@@ -127,6 +127,7 @@ class CONTENT_EXPORT VideoCaptureController
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
@@ -164,6 +165,7 @@ class CONTENT_EXPORT VideoCaptureController
   const std::string& device_id() const { return device_id_; }
   blink::mojom::MediaStreamType stream_type() const { return stream_type_; }
   const media::VideoCaptureParams& parameters() const { return parameters_; }
+  bool was_crop_ever_called() const { return was_crop_ever_called_; }
 
  private:
   friend class base::RefCountedThreadSafe<VideoCaptureController>;
@@ -300,6 +302,13 @@ class CONTENT_EXPORT VideoCaptureController
   base::TimeTicks time_of_start_request_;
 
   absl::optional<media::VideoCaptureFormat> video_capture_format_;
+
+  // As a work-around to technical limitations, we don't allow multiple
+  // captures of the same tab, by the same capturer, if the first capturer
+  // invoked cropping. (Any capturer but the first one would have been
+  // blocked earlier in the pipeline.) That is because the `crop_version`
+  // would otherwise not line up between the various ControllerClients.
+  bool was_crop_ever_called_ = false;
 
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};
 };

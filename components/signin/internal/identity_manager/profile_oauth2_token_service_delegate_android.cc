@@ -160,20 +160,6 @@ ProfileOAuth2TokenServiceDelegateAndroid::
           env, reinterpret_cast<intptr_t>(this),
           account_tracker_service_->GetJavaObject());
   java_ref_.Reset(env, local_java_ref.obj());
-
-  if (account_tracker_service_->GetMigrationState() ==
-      AccountTrackerService::MIGRATION_IN_PROGRESS) {
-    std::vector<CoreAccountId> accounts = GetAccounts();
-    std::vector<CoreAccountId> accounts_id;
-    for (auto account_name : accounts) {
-      std::string email = account_name.ToString();
-      AccountInfo account_info =
-          account_tracker_service_->FindAccountInfoByEmail(email);
-      DCHECK(!account_info.gaia.empty());
-      accounts_id.push_back(CoreAccountId::FromGaiaId(account_info.gaia));
-    }
-    SetAccounts(accounts_id);
-  }
 }
 
 ProfileOAuth2TokenServiceDelegateAndroid::
@@ -364,14 +350,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   for (const AccountInfo& info : accounts_info) {
     if (!base::Contains(curr_ids, info.account_id))
       account_tracker_service_->RemoveAccount(info.account_id);
-  }
-
-  // No need to wait for PrimaryAccountManager to finish migration if not signed
-  // in.
-  if (account_tracker_service_->GetMigrationState() ==
-          AccountTrackerService::MIGRATION_IN_PROGRESS &&
-      !signed_in_account_id.has_value()) {
-    account_tracker_service_->SetMigrationDone();
   }
 }
 

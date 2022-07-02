@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages.prefetch;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 
@@ -22,16 +21,6 @@ public class PrefetchConfiguration {
      */
     public static boolean isPrefetchingFlagEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING);
-    }
-
-    /**
-     * Returns true if PrefetchBackgroundTask should load native in minimal browser mode.
-     *
-     * Can be called even when native is not loaded yet.
-     */
-    public static boolean isMinimalBrowserForBackgroundPrefetchEnabled() {
-        return CachedFeatureFlags.isEnabled(
-                ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH);
     }
 
     /**

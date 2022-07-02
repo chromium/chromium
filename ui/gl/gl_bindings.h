@@ -186,23 +186,12 @@ struct XVisualInfo;
 // GL_CHROMIUM_ycbcr_p010_image
 #define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
 
-// GL_CHROMIUM_schedule_overlay_plane
-#define GL_OVERLAY_TRANSFORM_NONE_CHROMIUM               0x9245
-#define GL_OVERLAY_TRANSFORM_FLIP_HORIZONTAL_CHROMIUM    0x9246
-#define GL_OVERLAY_TRANSFORM_FLIP_VERTICAL_CHROMIUM      0x9247
-#define GL_OVERLAY_TRANSFORM_ROTATE_90_CHROMIUM          0x9248
-#define GL_OVERLAY_TRANSFORM_ROTATE_180_CHROMIUM         0x9249
-#define GL_OVERLAY_TRANSFORM_ROTATE_270_CHROMIUM         0x924A
-
 // GL_CHROMIUM_subscribe_uniforms
 #define GL_SUBSCRIBED_VALUES_BUFFER_CHROMIUM             0x924B
 #define GL_MOUSE_POSITION_CHROMIUM                       0x924C
 
 // GL_CHROMIUM_texture_filtering_hint
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM               0x8AF0
-
-// GL_CHROMIUM_texture_storage_image
-#define GL_SCANOUT_CHROMIUM 0x6000
 
 // GL_OES_texure_3D
 #define GL_SAMPLER_3D_OES                                0x8B5F
@@ -549,16 +538,10 @@ struct GL_EXPORT CurrentGL {
 #if defined(USE_EGL)
 struct GL_EXPORT DriverEGL {
   void InitializeStaticBindings();
-  void InitializeClientExtensionBindings();
-  void InitializeExtensionBindings();
   void ClearBindings();
-  void UpdateConditionalExtensionBindings();
 
   ProcsEGL fn;
-  ExtensionsEGL ext;
-
-  static std::string GetPlatformExtensions();
-  static std::string GetClientExtensions();
+  ClientExtensionsEGL client_ext;
 };
 #endif
 

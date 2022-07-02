@@ -710,12 +710,12 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
                                         kTestLogicalWindow};
   // Create windows that will be associated with the tasks. Without this,
   // GetAppMenuItems() will only return an empty list.
-  std::vector<std::unique_ptr<exo::ShellSurface>> test_windows;
+  std::vector<std::unique_ptr<exo::ClientControlledShellSurface>> test_windows;
 
   for (int task_id = 1; task_id <= 7; task_id++) {
     test_windows.push_back(exo::test::ShellSurfaceBuilder({640, 480})
                                .SetCentered()
-                               .BuildShellSurface());
+                               .BuildClientControlledShellSurface());
 
     aura::Window* aura_window =
         test_windows[task_id - 1]->GetWidget()->GetNativeWindow();

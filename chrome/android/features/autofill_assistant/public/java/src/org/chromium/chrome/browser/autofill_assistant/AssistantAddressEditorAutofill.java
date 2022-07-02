@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -18,6 +19,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.UUID;
 
 /**
  * Editor for addresses in Chrome using Autofill as a base.
@@ -54,6 +57,12 @@ public class AssistantAddressEditorAutofill implements AssistantAddressEditor {
                     PersonalDataManager.getInstance()
                             .getShippingAddressLabelWithoutCountryForPaymentRequest(
                                     editedAddress.getProfile());
+            if (TextUtils.isEmpty(editedAddress.getProfile().getGUID())) {
+                // crbug/1332561: In the case where the address is not stored, it may come without
+                // GUID. Combined with the missing "update" signal from the PersonalDataManager this
+                // causes our UI to show the address twice.
+                editedAddress.getProfile().setGUID(UUID.randomUUID().toString());
+            }
             doneCallback.onResult(new AddressModel(
                     AssistantAutofillUtilChrome.autofillProfileToAssistantAutofillProfile(
                             editedAddress.getProfile()),

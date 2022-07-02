@@ -55,14 +55,17 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& pcm_byte_buffer,
-      const base::android::JavaParamRef<jobject>& timestamp_byte_buffer);
+      const base::android::JavaParamRef<jobject>& rendering_delay_byte_buffer,
+      const base::android::JavaParamRef<jobject>&
+          audio_track_timestamp_byte_buffer);
 
-  // AudioSinkAndroid implementation
+  // AudioSinkAndroid implementation:
   void WritePcm(scoped_refptr<DecoderBufferBase> data) override;
   void SetPaused(bool paused) override;
   void SetStreamVolumeMultiplier(float multiplier) override;
   void SetLimiterVolumeMultiplier(float multiplier) override;
   float EffectiveVolume() const override;
+  MediaPipelineBackendAndroid::RenderingDelay GetRenderingDelay() override;
 
   // Getters
   int input_samples_per_second() const override;
@@ -106,8 +109,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
 
   void TrackRawMonotonicClockDeviation();
 
-  void PostPcmCallback(
-      const MediaPipelineBackendAndroid::RenderingDelay& delay);
+  void PostPcmCallback();
 
   void SignalError(AudioSinkAndroid::SinkError error);
   void PostError(AudioSinkAndroid::SinkError error);
@@ -135,6 +137,8 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   uint8_t* direct_pcm_buffer_address_;  // PCM audio data native->java
   // rendering delay+timestamp return value, java->native
   uint64_t* direct_rendering_delay_address_;
+  // AudioTrack.getTimestamp return value, java->native
+  uint64_t* direct_audio_track_timestamp_address_;
 
   // Java AudioSinkAudioTrackImpl instance.
   const base::android::ScopedJavaGlobalRef<jobject>

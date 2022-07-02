@@ -6,8 +6,8 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/follow/follow_block_types.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
@@ -40,6 +40,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Saved placement of the item that was last attempted to unfollow.
 @property(nonatomic, strong) NSIndexPath* indexPathOfLastUnfollowAttempt;
+
+// Saved indexPath of the item that is being selected.
+@property(nonatomic, strong) NSIndexPath* indexPathOfSelectedRow;
 
 // Saved item that was attempted to unfollow.
 @property(nonatomic, strong)
@@ -111,7 +114,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  self.indexPathOfSelectedRow = indexPath;
+
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  UIMenuItem* visitSiteOption = [[UIMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_FOLLOW_MANAGEMENT_VISIT_SITE_ACTION)
+             action:@selector(visitSiteTapped)];
+  UIMenuItem* unfollowOption = [[UIMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION)
+             action:@selector(unfollowTapped)];
+  menu.menuItems = @[ visitSiteOption, unfollowOption ];
+
+  // UIMenuController requires that this view controller be the first responder
+  // in order to display the menu and handle the menu options.
+  [self becomeFirstResponder];
+
+  [menu showMenuFromView:tableView
+                    rect:[tableView rectForRowAtIndexPath:indexPath]];
+
+  // When the menu is manually presented, it doesn't get focused by
+  // Voiceover. This notification forces voiceover to select the
+  // presented menu.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  menu);
 }
 
 - (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
@@ -163,20 +190,67 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                actionProvider:actionProvider];
 }
 
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (BOOL)becomeFirstResponder {
+  // starts listening for UIMenuControllerDidHideMenuNotification and triggers
+  // resignFirstResponder if received.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(resignFirstResponder)
+             name:UIMenuControllerDidHideMenuNotification
+           object:nil];
+  return [super becomeFirstResponder];
+}
+
+- (BOOL)resignFirstResponder {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIMenuControllerDidHideMenuNotification
+              object:nil];
+  self.indexPathOfSelectedRow = nil;
+  return [super resignFirstResponder];
+}
+
+#pragma mark - Edit Menu Actions
+
+- (void)visitSiteTapped {
+  FollowedWebChannelItem* followedWebChannelItem =
+      base::mac::ObjCCastStrict<FollowedWebChannelItem>(
+          [self.tableViewModel itemAtIndexPath:self.indexPathOfSelectedRow]);
+  const GURL& webPageURL =
+      followedWebChannelItem.followedWebChannel.webPageURL.gurl;
+  __weak FollowManagementViewController* weakSelf = self;
+  [self dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf.navigationDelegate
+                                 handleNavigateToFollowedURL:webPageURL];
+                           }];
+}
+
+- (void)unfollowTapped {
+  [self requestUnfollowWebChannelAtIndexPath:self.indexPathOfSelectedRow];
+}
+
 #pragma mark - FollowManagementUIUpdater
 
 - (void)removeFollowedWebChannel:(FollowedWebChannel*)channel {
-  for (id cell in self.tableView.visibleCells) {
+  for (UITableViewCell* cell in self.tableView.visibleCells) {
     FollowedWebChannelCell* followedWebChannelCell =
         base::mac::ObjCCastStrict<FollowedWebChannelCell>(cell);
 
     if ([followedWebChannelCell.followedWebChannel isEqual:channel]) {
       NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+      [followedWebChannelCell stopAnimatingActivityIndicator];
       self.lastUnfollowedWebChannelItem =
           base::mac::ObjCCastStrict<FollowedWebChannelItem>(
               [self.tableViewModel itemAtIndexPath:indexPath]);
       self.indexPathOfLastUnfollowAttempt = indexPath;
-      [self deleteItemAtIndexPath:indexPath];
+      [self deleteItemAtIndex:indexPath];
       return;
     }
   }
@@ -186,7 +260,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(
       [self.lastUnfollowedWebChannelItem.followedWebChannel isEqual:channel]);
   [self addItem:self.lastUnfollowedWebChannelItem
-      AtIndexPath:self.indexPathOfLastUnfollowAttempt];
+        atIndex:self.indexPathOfLastUnfollowAttempt];
 }
 
 #pragma mark - Helpers
@@ -211,54 +285,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.indexPathOfLastUnfollowAttempt = indexPath;
 
-  FollowedWebChannelItem* followedWebChannelItem =
-      base::mac::ObjCCastStrict<FollowedWebChannelItem>(
-          [self.tableViewModel itemAtIndexPath:indexPath]);
   FollowedWebChannelCell* followedWebChannelCell =
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(
           [self.tableView cellForRowAtIndexPath:indexPath]);
   [followedWebChannelCell startAnimatingActivityIndicator];
 
-  __weak FollowManagementViewController* weakSelf = self;
-  followedWebChannelItem.followedWebChannel.unfollowRequestBlock(
-      ^(BOOL success) {
-        [followedWebChannelCell stopAnimatingActivityIndicator];
-        if (success) {
-          // TODO(crbug.com/1296745): Show success snackbar
-          // with undo button.
-          weakSelf.lastUnfollowedWebChannelItem = followedWebChannelItem;
-          [weakSelf deleteItemAtIndexPath:indexPath];
-        } else {
-          // TODO(crbug.com/1296745): Show failure snackbar
-          // with try again button.
-        }
-      });
+  // TODO(crbug.com/1264872): replace the unfollowRequestBlock with one that
+  // doesn't take a parameter.
+  followedWebChannelCell.followedWebChannel.unfollowRequestBlock(nil);
 }
-
-- (void)retryUnfollow {
-  [self.feedMetricsRecorder recordManagementTappedUnfollowTryAgainOnSnackbar];
-  [self
-      requestUnfollowWebChannelAtIndexPath:self.indexPathOfLastUnfollowAttempt];
-}
-
-- (void)undoUnfollow {
-  [self.feedMetricsRecorder
-          recordManagementTappedRefollowAfterUnfollowOnSnackbar];
-
-  // TODO(crbug.com/1296745): Start spinner over UNDO text in snackbar.
-  FollowedWebChannelItem* unfollowedItem = self.lastUnfollowedWebChannelItem;
-  __weak FollowManagementViewController* weakSelf = self;
-  unfollowedItem.followedWebChannel.refollowRequestBlock(^(BOOL success) {
-    // TODO(crbug.com/1296745): Stop spinner over UNDO text in snackbar.
-    if (success) {
-      [weakSelf reinsertLastUnfollowedItem];
-    } else {
-      // TODO(crbug.com/1296745): Show undo failure snackbar.
-    }
-  });
-}
-
-#pragma mark - Helpers
 
 - (void)showOrHideEmptyTableViewBackground {
   TableViewModel* model = self.tableViewModel;
@@ -266,7 +301,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [model sectionForSectionIdentifier:DefaultSectionIdentifier];
   NSInteger itemCount = [model numberOfItemsInSection:section];
   if (itemCount == 0) {
-    [self addEmptyTableViewWithImage:nil
+    [self addEmptyTableViewWithImage:[UIImage imageNamed:@"following_empty"]
                                title:l10n_util::GetNSString(
                                          IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TITLE)
                             subtitle:l10n_util::GetNSString(
@@ -276,8 +311,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-// Deletes item at |indexPath| from both model and UI.
-- (void)deleteItemAtIndexPath:(NSIndexPath*)indexPath {
+// Deletes item at `indexPath` from both model and UI.
+- (void)deleteItemAtIndex:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger sectionID =
       [model sectionIdentifierForSectionIndex:indexPath.section];
@@ -291,8 +326,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self showOrHideEmptyTableViewBackground];
 }
 
-- (void)addItem:(FollowedWebChannelItem*)item
-    AtIndexPath:(NSIndexPath*)indexPath {
+- (void)addItem:(FollowedWebChannelItem*)item atIndex:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger sectionID =
       [model sectionIdentifierForSectionIndex:indexPath.section];
@@ -302,25 +336,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 
-  self.lastUnfollowedWebChannelItem = nil;
-  self.indexPathOfLastUnfollowAttempt = nil;
-  [self showOrHideEmptyTableViewBackground];
-}
-
-// Reinserts last unfollowed item into both model and UI.
-- (void)reinsertLastUnfollowedItem {
-  TableViewModel* model = self.tableViewModel;
-  NSIndexPath* indexPath = self.indexPathOfLastUnfollowAttempt;
-
-  NSInteger sectionID =
-      [model sectionIdentifierForSectionIndex:indexPath.section];
-  NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
-
-  [model insertItem:self.lastUnfollowedWebChannelItem
-      inSectionWithIdentifier:sectionID
-                      atIndex:index];
-  [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
-                        withRowAnimation:UITableViewRowAnimationAutomatic];
   self.lastUnfollowedWebChannelItem = nil;
   self.indexPathOfLastUnfollowAttempt = nil;
   [self showOrHideEmptyTableViewBackground];

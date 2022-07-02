@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/device_context.h"
@@ -93,6 +94,10 @@ class ServiceImpl : public Service {
 
   void SetDisableRpcSigning(bool disable_rpc_signing) override;
 
+  void UpdateAnnotateDomModelContext(int64_t model_version) override;
+
+  void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded) override;
+
  private:
   void SendUserDataRequest(
       uint64_t run_id,
@@ -107,7 +112,7 @@ class ServiceImpl : public Service {
       ServiceRequestSender::ResponseCallback callback,
       const std::string& client_token);
 
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // The request sender responsible for communicating with a remote endpoint.
   std::unique_ptr<ServiceRequestSender> request_sender_;

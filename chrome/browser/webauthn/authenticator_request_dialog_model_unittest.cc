@@ -58,6 +58,7 @@ class MockDialogModelObserver
   MockDialogModelObserver(const MockDialogModelObserver&) = delete;
   MockDialogModelObserver& operator=(const MockDialogModelObserver&) = delete;
 
+  MOCK_METHOD0(OnStartOver, void());
   MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
@@ -274,7 +275,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       transports_info.win_native_api_authenticator_id = "some_authenticator_id";
     }
 
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
 
     absl::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
@@ -301,7 +302,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     model.StartFlow(
         std::move(transports_info),
-        /*use_location_bar_bubble=*/false,
+        /*is_conditional_mediation=*/false,
         /*prefer_native_api=*/
         base::Contains(test.params,
                        TransportAvailabilityParam::kPreferNativeAPI));
@@ -337,12 +338,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     tai.available_transports.insert(
         device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
 
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
                                    "fido:/1234");
 
     model.StartFlow(std::move(tai),
-                    /*use_location_bar_bubble=*/false, prefer_native_api);
+                    /*is_conditional_mediation=*/false, prefer_native_api);
 
     if (prefer_native_api) {
       // The Windows native UI should have been triggered.
@@ -362,12 +363,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
 
 TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
   model.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(TransportAvailabilityInfo(),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -435,7 +436,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;
 
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
 
     std::array<uint8_t, device::kP256X962Length> public_key = {0};
     std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones(
@@ -445,7 +446,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
                                    absl::nullopt);
 
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     ASSERT_EQ(model.mechanisms().size(), 2u);
 
@@ -499,7 +500,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
   for (const auto& test_case : kTestCases) {
     testing::StrictMock<MockDialogModelObserver> mock_observer;
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.AddObserver(&mock_observer);
 
     TransportAvailabilityInfo transports_info;
@@ -507,7 +508,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     EXPECT_EQ(Step::kMechanismSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -544,11 +545,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     transports_info.is_ble_powered = true;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
@@ -574,12 +575,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
 
     testing::NiceMock<MockDialogModelObserver> mock_observer;
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.AddObserver(&mock_observer);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
@@ -617,11 +618,11 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     transports_info.is_ble_powered = false;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false,
+                    /*is_conditional_mediation=*/false,
                     /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
@@ -648,7 +649,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       AuthenticatorTransport::kUsbHumanInterfaceDevice};
 
   int num_called = 0;
-  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
       &num_called));
@@ -656,7 +657,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kMechanismSelection,
             model.current_step());
@@ -665,7 +666,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   // Simulate switching back and forth between transports. The request callback
   // should only be invoked once (USB is not dispatched through the UI).
   model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
-  EXPECT_TRUE(model.should_dialog_be_hidden());
+  EXPECT_TRUE(model.should_dialog_be_closed());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, num_called);
   model.StartTransportFlowForTesting(
@@ -673,9 +674,10 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate,
             model.current_step());
   task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_FALSE(model.should_dialog_be_closed());
   EXPECT_EQ(1, num_called);
   model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
-  EXPECT_TRUE(model.should_dialog_be_hidden());
+  EXPECT_TRUE(model.should_dialog_be_closed());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, num_called);
 }
@@ -691,7 +693,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.win_native_api_authenticator_id = kWinAuthenticatorId;
 
   std::vector<std::string> dispatched_authenticator_ids;
-  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
   model.SetRequestCallback(base::BindRepeating(
       [](std::vector<std::string>* ids, const std::string& authenticator_id) {
         ids->push_back(authenticator_id);
@@ -699,22 +701,29 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       &dispatched_authenticator_ids));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false,
+                  /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
 
-  EXPECT_TRUE(model.should_dialog_be_hidden());
+  EXPECT_TRUE(model.should_dialog_be_closed());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_THAT(dispatched_authenticator_ids, ElementsAre(kWinAuthenticatorId));
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest,
        ConditionalUINoRecognizedCredential) {
-  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
 
-  int num_called = 0;
+  int preselect_num_called = 0;
+  model.SetAccountPreselectedCallback(base::BindRepeating(
+      [](int* i, std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, std::vector<uint8_t>({1, 2, 3, 4}));
+        ++(*i);
+      },
+      &preselect_num_called));
+  int request_num_called = 0;
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
-      &num_called));
+      &request_num_called));
   model.saved_authenticators().AddAuthenticator(
       AuthenticatorReference(/*device_id=*/"authenticator",
                              AuthenticatorTransport::kUsbHumanInterfaceDevice));
@@ -726,23 +735,31 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
-  EXPECT_TRUE(model.should_dialog_be_hidden());
-  EXPECT_EQ(num_called, 0);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  EXPECT_TRUE(model.should_dialog_be_closed());
+  EXPECT_EQ(preselect_num_called, 0);
+  EXPECT_EQ(request_num_called, 0);
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
-  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
-
-  int num_called = 0;
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  int preselect_num_called = 0;
+  model.SetAccountPreselectedCallback(base::BindRepeating(
+      [](int* i, std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, std::vector<uint8_t>({0}));
+        ++(*i);
+      },
+      &preselect_num_called));
+  int request_num_called = 0;
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) {
         EXPECT_EQ(authenticator_id, "internal");
         ++(*i);
       },
-      &num_called));
+      &request_num_called));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
@@ -759,42 +776,70 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.recognized_platform_authenticator_credentials = {cred_1,
                                                                    cred_2};
   model.StartFlow(std::move(transports_info),
-                  /*is_location_bar_bubble_ui==*/true,
+                  /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
-  EXPECT_TRUE(model.should_dialog_be_hidden());
-  EXPECT_EQ(num_called, 0);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  EXPECT_TRUE(model.should_dialog_be_closed());
+  EXPECT_EQ(request_num_called, 0);
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
   model.OnAccountPreselected({1, 2, 3, 4});
   task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(num_called, 1);
-
-  static const uint8_t kAppParam[32] = {0};
-  static const uint8_t kSignatureCounter[4] = {0};
-  device::AuthenticatorData auth_data(kAppParam, /*flags=*/0, kSignatureCounter,
-                                      absl::nullopt);
-  device::AuthenticatorGetAssertionResponse response_1(
-      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                absl::nullopt),
-      /*signature=*/{1});
-  response_1.user_entity = cred_1.user;
-  device::AuthenticatorGetAssertionResponse response_2(
-      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                absl::nullopt),
-      /*signature=*/{2});
-  response_2.user_entity = cred_2.user;
-
-  uint8_t selected_id = -1;
-  std::vector<device::AuthenticatorGetAssertionResponse> responses;
-  responses.push_back(std::move(response_1));
-  responses.push_back(std::move(response_2));
-  model.SelectAccount(
-      std::move(responses),
-      base::BindLambdaForTesting(
-          [&](device::AuthenticatorGetAssertionResponse selected) {
-            selected_id = selected.signature[0];
-          }));
-  EXPECT_EQ(selected_id, 1);
+  EXPECT_EQ(preselect_num_called, 1);
+  EXPECT_EQ(request_num_called, 1);
 }
+
+// Tests that cancelling a Conditional UI request that has completed restarts
+// it.
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
+  testing::StrictMock<MockDialogModelObserver> mock_observer;
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  model.AddObserver(&mock_observer);
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  model.StartFlow(std::move(TransportAvailabilityInfo()),
+                  /*is_conditional_mediation=*/true,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Cancel an ongoing request (as if e.g. the user clicked the accept button).
+  // The request should be restarted.
+  EXPECT_CALL(mock_observer, OnStartOver());
+  EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
+  model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
+  model.Cancel();
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  model.RemoveObserver(&mock_observer);
+}
+
+#if BUILDFLAG(IS_WIN)
+// Tests that cancelling the Windows Platform authenticator during a Conditional
+// UI request restarts it.
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
+  testing::StrictMock<MockDialogModelObserver> mock_observer;
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  model.AddObserver(&mock_observer);
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  model.StartFlow(std::move(TransportAvailabilityInfo()),
+                  /*is_conditional_mediation=*/true,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Simulate the Windows authenticator cancelling.
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  EXPECT_CALL(mock_observer, OnStartOver());
+  model.OnWinUserCancelled();
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  model.RemoveObserver(&mock_observer);
+}
+#endif  // BUILDFLAG(IS_WIN)

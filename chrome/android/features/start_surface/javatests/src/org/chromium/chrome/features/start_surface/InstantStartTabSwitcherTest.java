@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -84,7 +83,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -387,27 +385,6 @@ public class InstantStartTabSwitcherTest {
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
-    public void doNotRestoreEmptyTabs() throws IOException {
-        // clang-format on
-        StartSurfaceTestUtils.createTabStateFile(
-                new int[] {0, 1}, new String[] {"", "about:blank"});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1);
-        TabAttributeCache.setTitleForTesting(0, "");
-        TabAttributeCache.setTitleForTesting(0, "Google");
-
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForOverviewVisible(mActivityTestRule.getActivity());
-        ViewUtils.onViewWaiting(withId(org.chromium.chrome.test.R.id.tab_list_view));
-        Assert.assertEquals(
-                1, PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity()).size());
-    }
-
-    @Test
-    @MediumTest
-    // clang-format off
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
     public void testSingleAsHomepage_Landscape_TabSize() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -480,8 +457,8 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(startSurfaceCoordinator.getController().getStartSurfaceState(),
-                    StartSurfaceState.NOT_SHOWN);
+            Assert.assertEquals(
+                    startSurfaceCoordinator.getStartSurfaceState(), StartSurfaceState.NOT_SHOWN);
         });
     }
 

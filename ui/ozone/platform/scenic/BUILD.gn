@@ -4,6 +4,7 @@
 
 assert(is_fuchsia)
 
+import("//build/config/dcheck_always_on.gni")
 import("//gpu/vulkan/features.gni")
 
 visibility = [ "//ui/ozone/*" ]
@@ -71,7 +72,6 @@ source_set("scenic") {
     "//ui/ozone/common",
     "//ui/ozone/platform/scenic/mojom",
   ]
-
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
@@ -88,9 +88,14 @@ source_set("scenic") {
     ]
     defines += [ "VK_USE_PLATFORM_MAGMA_KHR" ]
     deps += [ "//gpu/ipc/common:vulkan_ycbcr_info" ]
-    data_deps += [
-      "//third_party/angle:libEGL",
-      "//third_party/angle:libGLESv2",
-    ]
+    data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan" ]
+
+    # VulkanInstance enables validation layer in Debug builds and when DCHECKs
+    # are enabled in Release builds. In these cases the validation layer
+    # libraries and configs need to be included in the generated Fuchsia
+    # package.
+    if (is_debug || dcheck_always_on) {
+      data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
+    }
   }
 }

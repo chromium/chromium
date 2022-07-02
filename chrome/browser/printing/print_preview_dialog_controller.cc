@@ -228,7 +228,7 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
     WebContents* initiator) {
   DCHECK(initiator);
 
-  // Get the print preview dialog for |initiator|.
+  // Get the print preview dialog for `initiator`.
   WebContents* preview_dialog = GetPrintPreviewForContents(initiator);
   if (!preview_dialog)
     return CreatePrintPreviewDialog(initiator);
@@ -240,13 +240,13 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
 
 WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
     WebContents* contents) const {
-  // |preview_dialog_map_| is keyed by the preview dialog, so if
-  // base::Contains() succeeds, then |contents| is the preview dialog.
+  // `preview_dialog_map_` is keyed by the preview dialog, so if
+  // base::Contains() succeeds, then `contents` is the preview dialog.
   if (base::Contains(preview_dialog_map_, contents))
     return contents;
 
   for (const auto& it : preview_dialog_map_) {
-    // If |contents| is an initiator.
+    // If `contents` is an initiator.
     if (contents == it.second) {
       // Return the associated preview dialog.
       return it.first;
@@ -294,18 +294,19 @@ PrintPreviewDialogController::~PrintPreviewDialogController() = default;
 void PrintPreviewDialogController::RenderProcessGone(
     content::WebContents* web_contents,
     base::TerminationStatus status) {
-  content::RenderProcessHost* rph = web_contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* rph =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Store contents in a vector and deal with them after iterating through
-  // |preview_dialog_map_| because RemoveFoo() can change |preview_dialog_map_|.
+  // `preview_dialog_map_` because RemoveFoo() can change `preview_dialog_map_`.
   std::vector<WebContents*> closed_initiators;
   std::vector<WebContents*> closed_preview_dialogs;
   for (auto& it : preview_dialog_map_) {
     WebContents* preview_dialog = it.first;
     WebContents* initiator = it.second;
-    if (preview_dialog->GetMainFrame()->GetProcess() == rph)
+    if (preview_dialog->GetPrimaryMainFrame()->GetProcess() == rph)
       closed_preview_dialogs.push_back(preview_dialog);
-    else if (initiator && initiator->GetMainFrame()->GetProcess() == rph)
+    else if (initiator && initiator->GetPrimaryMainFrame()->GetProcess() == rph)
       closed_initiators.push_back(initiator);
   }
 
@@ -371,7 +372,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
     const content::LoadCommittedDetails& details) {
   ui::PageTransition type = details.entry->GetTransitionType();
 
-  // New |preview_dialog| is created. Don't update/erase map entry.
+  // New `preview_dialog` is created. Don't update/erase map entry.
   if (details.previous_main_frame_url.is_empty() && details.entry &&
       IsPrintPreviewURL(details.entry->GetURL()) &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&

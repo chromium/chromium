@@ -48,7 +48,8 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     const blink::StorageKey& key,
     int64_t registration_id,
-    base::WeakPtr<ServiceWorkerContextCore> context)
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    blink::mojom::AncestorFrameType ancestor_frame_type)
     : scope_(options.scope),
       key_(key),
       update_via_cache_(options.update_via_cache),
@@ -58,7 +59,8 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
       should_activate_when_ready_(false),
       resources_total_size_bytes_(0),
       context_(context),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      ancestor_frame_type_(ancestor_frame_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
   DCHECK(context_);

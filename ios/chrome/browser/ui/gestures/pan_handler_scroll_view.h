@@ -10,7 +10,7 @@
 @class CRWWebViewScrollViewProxy;
 
 // This private class handles forwarding updates to these properties to an
-// underlying |UIScrollView| or |CRWWebViewScrollViewProxy|.
+// underlying `UIScrollView` or `CRWWebViewScrollViewProxy`.
 @interface PanHandlerScrollView : NSObject
 
 @property(nonatomic) CGPoint contentOffset;

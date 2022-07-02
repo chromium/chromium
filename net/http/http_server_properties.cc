@@ -143,7 +143,6 @@ HttpServerProperties::HttpServerProperties(
       use_network_isolation_key_(base::FeatureList::IsEnabled(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey)),
       is_initialized_(pref_delegate.get() == nullptr),
-      queue_write_on_load_(false),
       properties_manager_(
           pref_delegate
               ? std::make_unique<HttpServerPropertiesManager>(
@@ -379,11 +378,11 @@ void HttpServerProperties::OnDefaultNetworkChanged() {
 base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
   const base::Time now = clock_->Now();
   const base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  base::Value dict_list(base::Value::Type::LIST);
+  base::Value::List dict_list;
   for (const auto& server_info : server_info_map_) {
     if (!server_info.second.alternative_services.has_value())
       continue;
-    base::Value alternative_service_list(base::Value::Type::LIST);
+    base::Value::List alternative_service_list;
     const ServerInfoMapKey& key = server_info.first;
     for (const AlternativeServiceInfo& alternative_service_info :
          server_info.second.alternative_services.value()) {
@@ -416,16 +415,16 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
       }
       alternative_service_list.Append(std::move(alternative_service_string));
     }
-    if (alternative_service_list.GetListDeprecated().empty())
+    if (alternative_service_list.empty())
       continue;
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetStringKey("server", key.server.Serialize());
-    dict.SetStringKey("network_isolation_key",
-                      key.network_isolation_key.ToDebugString());
-    dict.SetKey("alternative_service", std::move(alternative_service_list));
+    base::Value::Dict dict;
+    dict.Set("server", key.server.Serialize());
+    dict.Set("network_isolation_key",
+             key.network_isolation_key.ToDebugString());
+    dict.Set("alternative_service", std::move(alternative_service_list));
     dict_list.Append(std::move(dict));
   }
-  return dict_list;
+  return base::Value(std::move(dict_list));
 }
 
 bool HttpServerProperties::WasLastLocalAddressWhenQuicWorked(
@@ -1152,19 +1151,19 @@ void HttpServerProperties::OnServerInfoLoaded(
   // Attempt to find canonical servers. Canonical suffix only apply to HTTPS.
   const uint16_t kCanonicalPort = 443;
   const char* kCanonicalScheme = "https";
-  for (auto it = server_info_map_.begin(); it != server_info_map_.end(); ++it) {
-    if (!it->second.alternative_services ||
-        it->first.server.scheme() != kCanonicalScheme) {
+  for (const auto& it : server_info_map_) {
+    if (!it.second.alternative_services ||
+        it.first.server.scheme() != kCanonicalScheme) {
       continue;
     }
     const std::string* canonical_suffix =
-        GetCanonicalSuffix(it->first.server.host());
+        GetCanonicalSuffix(it.first.server.host());
     if (!canonical_suffix)
       continue;
     ServerInfoMapKey key = CreateServerInfoKey(
         url::SchemeHostPort(kCanonicalScheme, *canonical_suffix,
                             kCanonicalPort),
-        it->first.network_isolation_key);
+        it.first.network_isolation_key);
     // If we already have a valid canonical server, we're done.
     if (base::Contains(canonical_alt_svc_map_, key)) {
       auto key_it = server_info_map_.Peek(key);
@@ -1173,7 +1172,7 @@ void HttpServerProperties::OnServerInfoLoaded(
         continue;
       }
     }
-    canonical_alt_svc_map_[key] = it->first.server;
+    canonical_alt_svc_map_[key] = it.first.server;
   }
 }
 

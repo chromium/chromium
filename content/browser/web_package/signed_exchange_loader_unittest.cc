@@ -80,8 +80,6 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
                  void(int64_t, int64_t, base::OnceCallback<void()> callback));
     MOCK_METHOD1(OnReceiveCachedMetadata, void(mojo_base::BigBuffer));
     MOCK_METHOD1(OnTransferSizeUpdated, void(int32_t));
-    MOCK_METHOD1(OnStartLoadingResponseBody,
-                 void(mojo::ScopedDataPipeConsumerHandle));
     MOCK_METHOD1(OnComplete, void(const network::URLLoaderCompletionStatus&));
 
    private:

@@ -164,7 +164,9 @@ TEST_F(TabMenuModelTest, FollowOrUnfollow) {
   feed::WebFeedTabHelper* web_feed_tab_helper2 =
       feed::WebFeedTabHelper::FromWebContents(web_contents2);
 
-  tab_strip->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   tab_strip->ExtendSelectionTo(2);
 
   // Neither "Follow site" nor "Unfollow site" should be added when there is at

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -22,6 +23,7 @@ class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
+class FedCmMetrics;
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
 }  // namespace content
@@ -72,7 +74,7 @@ class METRICS_EXPORT UkmRecorder {
   // Use TestAutoSetUkmRecorder for capturing data written this way in tests.
   static UkmRecorder* Get();
 
-  // Get the new source ID, which is unique for the duration of a browser
+  // Get the new SourceId, which is unique for the duration of a browser
   // session.
   static SourceId GetNewSourceID();
 
@@ -82,6 +84,13 @@ class METRICS_EXPORT UkmRecorder {
   // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
   virtual void SetSamplingForTesting(int rate) {}
 
+  // Gets a new SourceId for WEB_IDENTITY_ID type and updates the source url
+  // from the identity provider. This method should only be called in the
+  // FedCmMetrics class.
+  static SourceId GetSourceIdForWebIdentityFromScope(
+      base::PassKey<content::FedCmMetrics>,
+      const GURL& provider_url);
+
  protected:
   // Type-safe wrappers for Update<X> functions.
   void RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url);
@@ -89,19 +98,26 @@ class METRICS_EXPORT UkmRecorder {
                     const GURL& url,
                     const AppType app_type);
 
-  // Gets new source Id for WEBAPK_ID type and updates the manifest url. This
-  // method should only be called by WebApkUkmRecorder class.
+  // TODO(crbug.com/1340241): change all GetSourceId* methods to use PassKeys
+  // instead of relying on friend classes, as is currently done in
+  // GetSourceIdForWebIdentityFromScope(). Gets new SourceId for WEBAPK_ID type
+  // and updates the manifest url. This method should only be called by
+  // WebApkUkmRecorder class.
   static SourceId GetSourceIdForWebApkManifestUrl(const GURL& manifest_url);
 
-  // Gets new source ID for a desktop web app, using the start_url from the web
+  // Gets new SourceId for a desktop web app, using the start_url from the web
   // app manifest. This method should only be called by DailyMetricsHelper.
   static SourceId GetSourceIdForDesktopWebAppStartUrl(const GURL& start_url);
 
-  // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
+  // Gets new SourceId for PAYMENT_APP_ID type and updates the source url to
   // the scope of the app. This method should only be called by
   // PaymentAppProviderUtil class when the payment app window is opened.
   static SourceId GetSourceIdForPaymentAppFromScope(
       const GURL& service_worker_scope);
+
+  // Returns a new SourceId for the given GURL and SourceIDType.
+  static SourceId GetSourceIdFromScopeImpl(const GURL& scope_url,
+                                           SourceIdType type);
 
  private:
   friend weblayer::BackgroundSyncDelegateImpl;

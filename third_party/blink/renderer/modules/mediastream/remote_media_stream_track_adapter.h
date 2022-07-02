@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -91,10 +91,10 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
     auto* source = MakeGarbageCollected<MediaStreamSource>(
         id_, type, id_, true /*remote*/, std::move(platform_source));
     if (platform_track) {
-      component_ = MakeGarbageCollected<MediaStreamComponent>(
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
           id_, source, std::move(platform_track));
     } else {
-      component_ = MakeGarbageCollected<MediaStreamComponent>(id_, source);
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(id_, source);
     }
     // If we have a reference to a window frame where the track was created,
     // store it on the component. This allows other code to use the correct

@@ -85,6 +85,8 @@ class MockClientCommandBuffer : public CommandBuffer,
 
   void SetTokenForSetGetBuffer(int32_t token) { token_ = token; }
 
+  void ForceLostContext(error::ContextLostReason reason) override;
+
  private:
   int32_t put_offset_ = 0;
   int32_t token_ = 10000;  // All token checks in the tests should pass.

@@ -149,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
         web_contents());
     enforce_console_observer.SetPattern(kActivationConsoleMessage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), enforce_url));
-    EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_FALSE(
+        WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
     EXPECT_EQ(kActivationConsoleMessage,
               enforce_console_observer.GetMessageAt(0u));
   }
@@ -159,7 +160,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
     warn_console_observer.SetPattern(kActivationWarningConsoleMessage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), warn_url));
     warn_console_observer.Wait();
-    EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+    EXPECT_TRUE(
+        WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
     EXPECT_EQ(kActivationWarningConsoleMessage,
               warn_console_observer.GetMessageAt(0u));
   }
@@ -199,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
   GURL url = InitializeSafeBrowsingForOutOfOrderResponses("a.com", redirect_url,
                                                           base::Seconds(0));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 }  // namespace subresource_filter

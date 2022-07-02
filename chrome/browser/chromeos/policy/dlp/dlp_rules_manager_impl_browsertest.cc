@@ -2,61 +2,81 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/policy/login/login_policy_test_base.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 
-// TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
 
 namespace {
 constexpr char kUrlStr1[] = "https://wwww.example.com";
-}
 
-class DlpRulesPolicyTest : public LoginPolicyTestBase {
+class FakeDlpRulesManager : public DlpRulesManagerImpl {
+ public:
+  explicit FakeDlpRulesManager(PrefService* local_state)
+      : DlpRulesManagerImpl(local_state) {}
+  ~FakeDlpRulesManager() override = default;
+};
+}  // namespace
+
+class DlpRulesPolicyTest : public InProcessBrowserTest {
  public:
   DlpRulesPolicyTest() = default;
 
-  void SetDlpRulesPolicy(const base::Value& rules) {
-    std::string json;
-    base::JSONWriter::Write(rules, &json);
-
-    enterprise_management::CloudPolicySettings policy;
-    policy.mutable_dataleakpreventionruleslist()->set_value(json);
-    user_policy_helper()->SetPolicyAndWait(
-        policy, ProfileManager::GetActiveUserProfile());
+  void InitializeRulesManager() {
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(&DlpRulesPolicyTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+    ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto new_rules_manager =
+        std::make_unique<FakeDlpRulesManager>(g_browser_process->local_state());
+    rules_manager_ = new_rules_manager.get();
+    return new_rules_manager;
+  }
+
+  raw_ptr<DlpRulesManager> rules_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
-  SkipToLoginScreen();
-  LogIn();
+  InitializeRulesManager();
 
-  base::Value rules(base::Value::Type::LIST);
+  {
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
 
-  base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrlStr1);
+    base::Value rules(base::Value::Type::LIST);
 
-  base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+    base::Value src_urls(base::Value::Type::LIST);
+    src_urls.Append(kUrlStr1);
 
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions)));
+    base::Value restrictions(base::Value::Type::LIST);
+    restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+        dlp::kScreenshotRestriction, dlp::kBlockLevel));
 
-  SetDlpRulesPolicy(rules);
+    update->Append(dlp_test_util::CreateRule(
+        "rule #1", "Block", std::move(src_urls),
+        /*dst_urls=*/base::Value(base::Value::Type::LIST),
+        /*dst_components=*/base::Value(base::Value::Type::LIST),
+        std::move(restrictions)));
+  }
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestricted(
@@ -64,12 +84,9 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
 }
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingEnabled) {
-  enterprise_management::CloudPolicySettings policy;
-  policy.mutable_dataleakpreventionreportingenabled()->set_value(true);
-  user_policy_helper()->SetPolicy(policy);
-
-  SkipToLoginScreen();
-  LogIn();
+  g_browser_process->local_state()->SetBoolean(
+      policy_prefs::kDlpReportingEnabled, true);
+  InitializeRulesManager();
 
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -78,12 +95,9 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingEnabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingDisabled) {
-  enterprise_management::CloudPolicySettings policy;
-  policy.mutable_dataleakpreventionreportingenabled()->set_value(false);
-  user_policy_helper()->SetPolicy(policy);
-
-  SkipToLoginScreen();
-  LogIn();
+  g_browser_process->local_state()->SetBoolean(
+      policy_prefs::kDlpReportingEnabled, false);
+  InitializeRulesManager();
 
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();

@@ -174,9 +174,12 @@ class ABSL_LOCKABLE Mutex {
 
   // Mutex::AssertHeld()
   //
-  // Return immediately if this thread holds the `Mutex` exclusively (in write
-  // mode). Otherwise, may report an error (typically by crashing with a
-  // diagnostic), or may return immediately.
+  // Require that the mutex be held exclusively (write mode) by this thread.
+  //
+  // If the mutex is not currently held by this thread, this function may report
+  // an error (typically by crashing with a diagnostic) or it may do nothing.
+  // This function is intended only as a tool to assist debugging; it doesn't
+  // guarantee correctness.
   void AssertHeld() const ABSL_ASSERT_EXCLUSIVE_LOCK();
 
   // ---------------------------------------------------------------------------
@@ -236,9 +239,13 @@ class ABSL_LOCKABLE Mutex {
 
   // Mutex::AssertReaderHeld()
   //
-  // Returns immediately if this thread holds the `Mutex` in at least shared
-  // mode (read mode). Otherwise, may report an error (typically by
-  // crashing with a diagnostic), or may return immediately.
+  // Require that the mutex be held at least in shared mode (read mode) by this
+  // thread.
+  //
+  // If the mutex is not currently held by this thread, this function may report
+  // an error (typically by crashing with a diagnostic) or it may do nothing.
+  // This function is intended only as a tool to assist debugging; it doesn't
+  // guarantee correctness.
   void AssertReaderHeld() const ABSL_ASSERT_SHARED_LOCK();
 
   // Mutex::WriterLock()

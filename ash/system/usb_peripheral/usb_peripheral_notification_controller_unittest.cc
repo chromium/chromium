@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -31,9 +30,7 @@ const char kUsbPeripheralSpeedLimitingCableNotificationId[] =
 
 class UsbPeripheralNotificationControllerTest : public AshTestBase {
  public:
-  UsbPeripheralNotificationControllerTest() {
-    feature_list_.InitAndEnableFeature(features::kUsbNotificationController);
-  }
+  UsbPeripheralNotificationControllerTest() = default;
   UsbPeripheralNotificationControllerTest(
       const UsbPeripheralNotificationControllerTest&) = delete;
   UsbPeripheralNotificationControllerTest& operator=(
@@ -45,7 +42,6 @@ class UsbPeripheralNotificationControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UsbPeripheralNotificationControllerTest, InvalidDpCableNotification) {

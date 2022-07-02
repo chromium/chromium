@@ -15,10 +15,6 @@ namespace cast_streaming {
 class ResourceProvider;
 }
 
-namespace media {
-class Demuxer;
-}
-
 namespace chromecast {
 
 class CastRuntimeContentRendererClient
@@ -36,14 +32,11 @@ class CastRuntimeContentRendererClient
       CastRuntimeContentRendererClient&&) = delete;
 
   // content::ContentRendererClient overrides.
-  void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  std::unique_ptr<::media::Demuxer> OverrideDemuxerForUrl(
-      content::RenderFrame* render_frame,
-      const GURL& url,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType type) override;
+  std::unique_ptr<cast_streaming::ResourceProvider>
+  CreateCastStreamingResourceProvider() override;
 
  private:
   std::unique_ptr<cast_streaming::ResourceProvider>

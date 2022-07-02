@@ -47,6 +47,7 @@
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/gl/gl_switches.h"
 
 using content::RenderViewHost;
@@ -293,6 +294,10 @@ void PPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kAllowNaClSocketAPI, "127.0.0.1");
   if (in_process_)
     command_line->AppendSwitch(switches::kPpapiInProcess);
+
+  // TODO(https://crbug.com/1172495): Remove once NaCl code can be deleted.
+  command_line->AppendSwitchASCII(blink::switches::kBlinkSettings,
+                                  "allowNonEmptyNavigatorPlugins=true");
 }
 
 std::string PPAPITest::BuildQuery(const std::string& base,
@@ -332,7 +337,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RenderViewHost* rvh = browser()
                             ->tab_strip_model()
                             ->GetActiveWebContents()
-                            ->GetMainFrame()
+                            ->GetPrimaryMainFrame()
                             ->GetRenderViewHost();
   auto watcher = content::RenderViewHostTester::CreateInputWatcher(
       rvh, blink::WebInputEvent::Type::kTouchStart);
@@ -343,7 +348,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->InsertVisualStateCallback(base::BindOnce(
           [](base::OnceClosure quit_closure, bool result) {
             EXPECT_TRUE(result);

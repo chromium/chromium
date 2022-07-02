@@ -238,6 +238,12 @@ blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
   }
 }
 
+blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
+  DCHECK(in);
+  return blink::VariantsHeader::New(ConvertToBlink(in->name),
+                                    ConvertToBlink(in->available_values));
+}
+
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
   DCHECK(in);
   return blink::ParsedHeaders::New(
@@ -254,6 +260,12 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       ConvertToBlink(in->timing_allow_origin), in->bfcache_opt_in_unload,
       in->reporting_endpoints.has_value()
           ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
+          : absl::nullopt,
+      in->variants_headers.has_value()
+          ? absl::make_optional(ConvertToBlink(in->variants_headers.value()))
+          : absl::nullopt,
+      in->content_language.has_value()
+          ? absl::make_optional(ConvertToBlink(in->content_language.value()))
           : absl::nullopt);
 }
 
@@ -784,6 +796,8 @@ std::unique_ptr<ServerTimingHeaderVector> ParseServerTimingHeader(
 
       ServerTimingHeader header(name.ToString());
 
+      tokenizer.ConsumeBeforeAnyCharMatch({',', ';'});
+
       while (tokenizer.Consume(';')) {
         StringView parameter_name;
         if (!tokenizer.ConsumeToken(ParsedContentType::Mode::kNormal,
@@ -818,7 +832,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers.get(), url));
+      network::PopulateParsedHeaders(headers.get(), GURL(url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
@@ -830,7 +844,7 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicySource source,
     const KURL& base_url) {
   return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
-      raw_policies.Utf8(), type, source, base_url));
+      raw_policies.Utf8(), type, source, GURL(base_url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and

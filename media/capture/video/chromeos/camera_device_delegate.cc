@@ -281,10 +281,10 @@ ResultMetadata::~ResultMetadata() = default;
 
 CameraDeviceDelegate::CameraDeviceDelegate(
     VideoCaptureDeviceDescriptor device_descriptor,
-    scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+    CameraHalDelegate* camera_hal_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
     : device_descriptor_(device_descriptor),
-      camera_hal_delegate_(std::move(camera_hal_delegate)),
+      camera_hal_delegate_(camera_hal_delegate),
       ipc_task_runner_(std::move(ipc_task_runner)) {}
 
 CameraDeviceDelegate::~CameraDeviceDelegate() = default;
@@ -906,10 +906,10 @@ void CameraDeviceDelegate::ConfigureStreams(
     switch (param.first) {
       case ClientType::kPreviewClient:
         usage = cros::mojom::GRALLOC_USAGE_HW_COMPOSER;
-        // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage
-        // when multiple streams enabled.
-        if (camera_app_device && camera_app_device->GetCaptureIntent() ==
-                                     cros::mojom::CaptureIntent::VIDEO_RECORD) {
+        if (camera_app_device &&
+            camera_app_device->GetCaptureIntent() ==
+                cros::mojom::CaptureIntent::VIDEO_RECORD &&
+            !camera_app_device->IsMultipleStreamsEnabled()) {
           usage |= cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
         }
         break;

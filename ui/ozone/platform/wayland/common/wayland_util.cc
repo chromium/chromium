@@ -325,10 +325,8 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
   DCHECK(parent_window);
   DCHECK_EQ(window->window_scale(), parent_window->window_scale());
   DCHECK_EQ(window->ui_scale(), parent_window->ui_scale());
-  return gfx::ScaleToRoundedRect(
-      wl::TranslateBoundsToParentCoordinates(window->GetBounds(),
-                                             parent_window->GetBounds()),
-      1.0f / window->window_scale());
+  return wl::TranslateBoundsToParentCoordinates(
+      window->GetBoundsInDIP(), parent_window->GetBoundsInDIP());
 }
 
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {

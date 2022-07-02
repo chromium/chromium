@@ -22,7 +22,7 @@ extern const base::Feature kSharedHighlightingIOS;
 // Feature flag for testing the 'default browser' screen in FRE and different
 // experiments to suggest the users to update the default browser in the
 // Settings.app.
-extern const base::Feature kEnableFREDefaultBrowserScreenTesting;
+extern const base::Feature kEnableFREDefaultBrowserPromoScreen;
 
 // Feature flag that enables using the FRE UI module to show first run screens.
 extern const base::Feature kEnableFREUIModuleIOS;
@@ -37,8 +37,14 @@ extern const base::Feature kIncognitoBrandConsistencyForIOS;
 // Feature flag to enable revamped Incognito NTP page.
 extern const base::Feature kIncognitoNtpRevamp;
 
+// Feature flag to enable third-party intents in Incognito.
+extern const base::Feature kIOS3PIntentsInIncognito;
+
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
+
+// Feature flag that allows external apps to show default browser settings.
+extern const base::Feature kDefaultBrowserIntentsShowSettings;
 
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.
@@ -79,16 +85,17 @@ extern const base::Feature kEnableShortenedPasswordAutoFillInstruction;
 // (Desktop/Mobile) in which the pages will be requested by default.
 extern const base::Feature kAddSettingForDefaultPageMode;
 
-// Feature flag to switch some images to SFSymbols when enabled.
-extern const base::Feature kUseSFSymbolsSamples;
+// Feature flag to switch images to SFSymbols when enabled.
+extern const base::Feature kUseSFSymbols;
 
-// Feature flag to enable Calandar event in experience kit.
+// Feature flag to enable Calendar event in experience kit.
 extern const base::Feature kCalendarExperienceKit;
 
-// Feature flag to use UIKit menus instead of custom ones.
-extern const base::Feature kUseUIKitPopupMenu;
+// Feature flag to enable Apple Calendar event in experience kit.
+extern const base::Feature kEnableExpKitAppleCalendar;
 
-// Whether the kUseUIKitPopupMenu flag is enabled.
-bool ShouldUseUIKitPopupMenu();
+// Feature flag to enable Text Classifier entity detection in experience kit
+// calendar.
+extern const base::Feature kEnableExpKitCalendarTextClassifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

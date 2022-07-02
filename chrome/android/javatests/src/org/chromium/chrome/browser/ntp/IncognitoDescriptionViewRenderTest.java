@@ -28,9 +28,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render test of incognito description in the incognito ntp.
- */
+/** Render test of incognito description in the incognito ntp. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestCase {

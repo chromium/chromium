@@ -81,6 +81,7 @@ const extension_item_tests = {
     RemoveButton: 'remove button hidden when necessary',
     HtmlInName: 'html in extension name',
     RepairButton: 'Repair button visibility',
+    InspectableViewSortOrder: 'inspectable view sort order',
   },
 };
 
@@ -424,4 +425,37 @@ suite(extension_item_tests.suiteName, function() {
     flush();
     testVisible(item, '#repair-button', false);
   });
+
+  test(
+      assert(extension_item_tests.TestNames.InspectableViewSortOrder),
+      function() {
+        function getUrl(path: string) {
+          return `chrome-extension://${extensionData.id}/${path}`;
+        }
+        item.set('data.views', [
+          {
+            type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
+            url: getUrl('popup.html')
+          },
+          {
+            type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
+            url: getUrl('_generated_background_page.html')
+          },
+          {
+            type: chrome.developerPrivate.ViewType
+                      .EXTENSION_SERVICE_WORKER_BACKGROUND,
+            url: getUrl('sw.js')
+          }
+        ]);
+        item.set('inDevMode', true);
+        flush();
+
+        // Check that when multiple views are available, the service worker is
+        // sorted first.
+        assertEquals(
+            'service worker,',
+            item.shadowRoot!
+                .querySelector<HTMLElement>(
+                    '#inspect-views a:first-of-type')!.textContent!.trim());
+      });
 });

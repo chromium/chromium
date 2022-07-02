@@ -7,8 +7,6 @@ source_set("encoder") {
     "audio_encoder.h",
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
-    "frame_processing_time_estimator.cc",
-    "frame_processing_time_estimator.h",
     "video_encoder.cc",
     "video_encoder.h",
     "video_encoder_helper.cc",
@@ -20,10 +18,6 @@ source_set("encoder") {
     "webrtc_video_encoder.cc",
     "webrtc_video_encoder_av1.cc",
     "webrtc_video_encoder_av1.h",
-    "webrtc_video_encoder_proxy.cc",
-    "webrtc_video_encoder_proxy.h",
-    "webrtc_video_encoder_selector.cc",
-    "webrtc_video_encoder_selector.h",
     "webrtc_video_encoder_vpx.cc",
     "webrtc_video_encoder_vpx.h",
   ]
@@ -131,12 +125,10 @@ source_set("unit_tests") {
     "codec_test.cc",
     "codec_test.h",
     "encoder_bitrate_filter_unittest.cc",
-    "frame_processing_time_estimator_unittest.cc",
     "video_decoder_vpx_unittest.cc",
     "video_encoder_helper_unittest.cc",
     "video_encoder_verbatim_unittest.cc",
     "video_encoder_vpx_unittest.cc",
-    "webrtc_video_encoder_selector_unittest.cc",
   ]
 
   deps = [

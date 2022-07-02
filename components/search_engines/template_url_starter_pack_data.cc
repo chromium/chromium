@@ -4,6 +4,7 @@
 
 #include "components/search_engines/template_url_starter_pack_data.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -12,30 +13,45 @@
 
 namespace TemplateURLStarterPackData {
 
-const int kMaxStarterPackEngineID = 3;
-const int kCurrentDataVersion = 1;
+const int kCurrentDataVersion = 2;
 
 const StarterPackEngine bookmarks = {
-    IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,
-    IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_KEYWORD,
-    nullptr,
-    "chrome://bookmarks/?q={searchTerms}",
-    1,
-    SEARCH_ENGINE_STARTER_PACK_BOOKMARKS,
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_KEYWORD,
+    .favicon_url = nullptr,
+    .search_url = "chrome://bookmarks/?q={searchTerms}",
+    .destination_url = "chrome://bookmarks",
+    .id = StarterPackID::kBookmarks,
+    .type = SEARCH_ENGINE_STARTER_PACK_BOOKMARKS,
 };
 
 const StarterPackEngine history = {
-    IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_NAME,
-    IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_KEYWORD,
-    nullptr,
-    "chrome://history/?q={searchTerms}",
-    2,
-    SEARCH_ENGINE_STARTER_PACK_HISTORY,
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_KEYWORD,
+    .favicon_url = nullptr,
+    .search_url = "chrome://history/?q={searchTerms}",
+    .destination_url = "chrome://history",
+    .id = StarterPackID::kHistory,
+    .type = SEARCH_ENGINE_STARTER_PACK_HISTORY,
+};
+
+const StarterPackEngine tabs = {
+    .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_TABS_NAME,
+    .keyword_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_TABS_KEYWORD,
+    .favicon_url = nullptr,
+    // This search_url and destination_url are placeholder URLs to make
+    // templateURL happy.  chrome://tabs does not currently exist and the tab
+    // search engine will only provide suggestions from the OpenTabProvider.
+    .search_url = "chrome://tabs/?q={searchTerms}",
+    .destination_url = "chrome://tabs",
+    .id = StarterPackID::kTabs,
+    .type = SEARCH_ENGINE_STARTER_PACK_TABS,
 };
 
 const StarterPackEngine* engines[] = {
     &bookmarks,
     &history,
+    &tabs,
 };
 
 int GetDataVersion() {
@@ -49,6 +65,16 @@ std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines() {
     t_urls.push_back(TemplateURLDataFromStarterPackEngine(*engine));
   }
   return t_urls;
+}
+
+std::u16string GetDestinationUrlForStarterPackID(int id) {
+  for (auto* engine : engines) {
+    if (engine->id == id) {
+      return base::UTF8ToUTF16(engine->destination_url);
+    }
+  }
+
+  return u"";
 }
 
 }  // namespace TemplateURLStarterPackData

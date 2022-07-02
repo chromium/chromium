@@ -142,7 +142,7 @@ public class DownloadController {
      */
     @CalledByNative
     private static void enqueueAndroidDownloadManagerRequest(GURL url, String userAgent,
-            String fileName, String mimeType, String cookie, String referrer) {
+            String fileName, String mimeType, String cookie, GURL referrer) {
         DownloadInfo downloadInfo = new DownloadInfo.Builder()
                 .setUrl(url)
                 .setUserAgent(userAgent)

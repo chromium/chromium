@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#include "base/strings/string_util_win.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
@@ -101,16 +102,25 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
 }
 
 #if BUILDFLAG(IS_WIN)
-BOOL CALLBACK TopLevelCurrentProcessHwndCollector(HWND hwnd, LPARAM param) {
+// These Collector functions are repeatedly invoked by `::EnumWindows` and they
+// add HWNDs to the vector contained in `param`. Return TRUE to continue the
+// enumeration or FALSE to end early.
+//
+// Collects all capturable HWNDs which are owned by the current process.
+BOOL CALLBACK CapturableCurrentProcessHwndCollector(HWND hwnd, LPARAM param) {
   DWORD process_id;
   ::GetWindowThreadProcessId(hwnd, &process_id);
   if (process_id != ::GetCurrentProcessId())
     return TRUE;
 
+  // Skip windows that aren't visible or are minimized.
+  if (!::IsWindowVisible(hwnd) || ::IsIconic(hwnd))
+    return TRUE;
+
   // Skip windows which are not presented in the taskbar, e.g. the "Restore
   // pages?" window.
   HWND owner = ::GetWindow(hwnd, GW_OWNER);
-  LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+  LONG exstyle = ::GetWindowLong(hwnd, GWL_EXSTYLE);
   if (owner && !(exstyle & WS_EX_APPWINDOW))
     return TRUE;
 
@@ -119,6 +129,8 @@ BOOL CALLBACK TopLevelCurrentProcessHwndCollector(HWND hwnd, LPARAM param) {
   return TRUE;
 }
 
+// Collects all HWNDs, which are enumerated in z-order, to create a reference
+// for sorting.
 BOOL CALLBACK AllHwndCollector(HWND hwnd, LPARAM param) {
   auto* hwnds = reinterpret_cast<std::vector<HWND>*>(param);
   hwnds->push_back(hwnd);
@@ -243,9 +255,9 @@ void NativeDesktopMediaList::Worker::Refresh(
       FormatSources(sources, view_dialog_id, type_);
 
 #if BUILDFLAG(IS_WIN)
-  // If |add_current_process_windows_| is set to false, |capturer_| will
-  // find the windows owned by the current process for us. Otherwise, we must do
-  // this.
+  // If |add_current_process_windows_| is set to false, |capturer_| will have
+  // found the windows owned by the current process for us. Otherwise, we must
+  // do this.
   if (add_current_process_windows_) {
     DCHECK_EQ(type_, DesktopMediaList::Type::kWindow);
     // WebRTC returns the windows in order of highest z-order to lowest, but
@@ -337,7 +349,7 @@ NativeDesktopMediaList::Worker::FormatSources(
 std::vector<DesktopMediaListBase::SourceDescription>
 NativeDesktopMediaList::Worker::GetCurrentProcessWindows() {
   std::vector<HWND> current_process_windows;
-  if (!::EnumWindows(TopLevelCurrentProcessHwndCollector,
+  if (!::EnumWindows(CapturableCurrentProcessHwndCollector,
                      reinterpret_cast<LPARAM>(&current_process_windows))) {
     return std::vector<SourceDescription>();
   }
@@ -469,8 +481,10 @@ NativeDesktopMediaList::NativeDesktopMediaList(
   DCHECK(type_ == DesktopMediaList::Type::kWindow ||
          !add_current_process_windows_);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // On Windows/OSX the thread must be a UI thread.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+  // webrtc::DesktopCapturer implementations on Windows, MacOS and Fuchsia
+  // expect to run on a thread with a UI message pump. Under Fuchsia the
+  // capturer needs an async loop to support FIDL I/O.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
 #else
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;

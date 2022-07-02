@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 
 source_set("util") {
   sources = [
@@ -16,13 +17,16 @@ source_set("util") {
   ]
 }
 
-js_type_check("closure_compile") {
-  deps = [ ":ukm_internals" ]
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = target_gen_dir
+  in_files = [ "ukm_internals.ts" ]
 }
 
-js_library("ukm_internals") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-  ]
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "ukm_internals.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
 }

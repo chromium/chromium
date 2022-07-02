@@ -119,6 +119,13 @@ FakeBrowserDMTokenStorage::MockDelegate::SaveDMTokenTask(
                         storage_enabled_);
 }
 
+BrowserDMTokenStorage::StoreTask
+FakeBrowserDMTokenStorage::MockDelegate::DeleteDMTokenTask(
+    const std::string& client_id) {
+  return base::BindOnce([](bool enabled) -> bool { return enabled; },
+                        storage_enabled_);
+}
+
 scoped_refptr<base::TaskRunner>
 FakeBrowserDMTokenStorage::MockDelegate::SaveDMTokenTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();

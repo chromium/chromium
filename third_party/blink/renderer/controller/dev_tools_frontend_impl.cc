@@ -131,7 +131,7 @@ void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
 
 void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value::Dict message) {
   if (host_.is_bound())
-    host_->DispatchEmbedderMessage(base::Value(std::move(message)));
+    host_->DispatchEmbedderMessage(std::move(message));
 }
 
 void DevToolsFrontendImpl::DestroyOnHostGone() {

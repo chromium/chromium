@@ -24,6 +24,8 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_java",
+    "//content/public/common:common_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -69,6 +71,7 @@ android_resources("java_resources") {
     "java/res/drawable-v24/touch_to_fill_credential_background_modern_rounded_up.xml",
     "java/res/drawable/touch_to_fill_credential_background.xml",
     "java/res/drawable/touch_to_fill_header_image.xml",
+    "java/res/drawable/touch_to_fill_webauthn_icon.xml",
     "java/res/layout/touch_to_fill_credential_item.xml",
     "java/res/layout/touch_to_fill_credential_item_modern.xml",
     "java/res/layout/touch_to_fill_fill_button.xml",
@@ -76,7 +79,8 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_header_item.xml",
     "java/res/layout/touch_to_fill_header_item_modern.xml",
     "java/res/layout/touch_to_fill_sheet.xml",
-    "java/res/layout/touch_to_fill_sheet_modern.xml",
+    "java/res/layout/touch_to_fill_webauthn_credential_item.xml",
+    "java/res/layout/touch_to_fill_webauthn_credential_item_modern.xml",
     "java/res/values/dimens.xml",
   ]
 }

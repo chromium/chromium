@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Nuskaityti brūkšninį kodą</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Atsisiunčiama dokumentų nuskaitymo funkcija</translation>
 <translation id="4118525110028899586">Pristabdyti įrašymą</translation>
 <translation id="4121305183798804752">Aptiktas dokumentas</translation>
 <translation id="414641094616694804">Negalima pakeisti šio fotoaparato skyros</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Sustabdyti fotografavimą</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiks.</translation>
 <translation id="4570032796877367747">Priekinis fotoaparatas</translation>
+<translation id="4620818268515773682">Perjungti mikrofono nutildymą. Nutildymas išjungtas</translation>
 <translation id="4628948037717959914">Nuotrauka</translation>
 <translation id="4649291346448517080">Nepavyko išsaugoti failo</translation>
 <translation id="4695379108709712600">Perkeliama aukštyn</translation>
@@ -145,6 +147,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7670511624014457267">60 KPS</translation>
 <translation id="7671804233658741790">Apatinis dešinysis dokumento kampas</translation>
+<translation id="7692090236657809299">Įgalinti pastūmimo, pakreipimo ir mastelio keitimo parinktis</translation>
 <translation id="7726641833034062494">Įrašyti įprastą vaizdo įrašą</translation>
 <translation id="7748344063862150053">Viršutinis dešinysis dokumento kampas</translation>
 <translation id="7933675232020478311">Perkeliama žemyn, dešinėn</translation>
@@ -158,6 +161,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8425673304802773841">Nukreipti žemyn</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>

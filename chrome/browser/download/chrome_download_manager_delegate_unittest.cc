@@ -124,7 +124,6 @@ struct DetermineDownloadTargetResult {
   base::FilePath display_name;
   download::DownloadInterruptReason interrupt_reason =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
-  absl::optional<download::DownloadSchedule> download_schedule;
   std::string mime_type;
 };
 
@@ -332,12 +331,6 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
   pref_service_->SetInteger(prefs::kPromptForDownloadAndroid,
                             static_cast<int>(DownloadPromptStatus::DONT_SHOW));
-
-  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
-    pref_service_->SetInteger(
-        prefs::kDownloadLaterPromptStatus,
-        static_cast<int>(DownloadLaterPromptStatus::kDontShow));
-  }
 #endif
 }
 
@@ -414,7 +407,6 @@ void StoreDownloadTargetInfo(
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
     const std::string& mime_type,
-    absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason) {
   result->target_path = target_path;
   result->disposition = target_disposition;
@@ -423,7 +415,6 @@ void StoreDownloadTargetInfo(
   result->intermediate_path = intermediate_path;
   result->display_name = display_name;
   result->interrupt_reason = interrupt_reason;
-  result->download_schedule = std::move(download_schedule);
   result->mime_type = mime_type;
   quit_runloop.Run();
 }
@@ -1271,8 +1262,6 @@ void VerifyFilePickerConfirmation(
     const base::FilePath& virtual_path,
     absl::optional<download::DownloadSchedule> download_schedule) {
   ASSERT_EQ(result, expected_result);
-  ASSERT_FALSE(download_schedule)
-      << "DownloadSchedule is only used on Android.";
   std::move(completion_closure).Run();
 }
 }  // namespace
@@ -1752,8 +1741,6 @@ class TestDownloadDialogBridge : public DownloadDialogBridge {
                   ConnectionType connection_type,
                   DownloadLocationDialogType dialog_type,
                   const base::FilePath& suggested_path,
-                  bool supports_later_dialog,
-                  bool show_date_time_picker,
                   bool is_incognito,
                   DownloadDialogBridge::DialogCallback callback) override {
     dialog_shown_count_++;
@@ -1908,85 +1895,5 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_Android) {
         .WillRepeatedly(Return(DownloadItem::COMPLETE));
     download_item->NotifyObserversDownloadUpdated();
   }
-}
-
-class MockNetworkChangeNotifier : public net::NetworkChangeNotifier {
- public:
-  explicit MockNetworkChangeNotifier(ConnectionType type)
-      : connection_type_(type) {}
-
-  // net::NetworkChangeNotifier implementation.
-  ConnectionType GetCurrentConnectionType() const override {
-    return connection_type_;
-  }
-
- private:
-  ConnectionType connection_type_;
-};
-
-class DownloadLaterTriggerTest : public ChromeDownloadManagerDelegateTest {
- public:
-  void SetUp() override {
-    // Enable the download later feature first to ensure download pref loads
-    // correctly.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        download::features::kDownloadLater,
-        {{download::features::kDownloadLaterMinFileSizeKb, "204800"},
-         {download::features::kDownloadLaterShowDateTimePicker, "false"}});
-    ChromeDownloadManagerDelegateTest::SetUp();
-  }
-
-  void SetConnectionType(ConnectionType connection_type) {
-    ResetNetworkNotifier();
-    mock_network_notifier_ =
-        std::make_unique<MockNetworkChangeNotifier>(connection_type);
-  }
-
-  void ResetNetworkNotifier() { mock_network_notifier_.reset(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockNetworkChangeNotifier> mock_network_notifier_;
-};
-
-TEST_F(DownloadLaterTriggerTest, DownloadLaterTrigger) {
-  net::NetworkChangeNotifier::DisableForTest disable_for_test;
-  SetConnectionType(ConnectionType::CONNECTION_2G);
-
-  std::unique_ptr<download::MockDownloadItem> download_item =
-      CreateActiveDownloadItem(1);
-  ON_CALL(*download_item, GetTotalBytes()).WillByDefault(Return(0));
-
-  // Slow connection.
-  pref_service()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kShowInitial));
-  EXPECT_EQ(ConnectionType::CONNECTION_2G,
-            net::NetworkChangeNotifier::GetConnectionType());
-  EXPECT_TRUE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-
-  SetConnectionType(ConnectionType::CONNECTION_4G);
-  EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-
-  // Large file.
-  ON_CALL(*download_item, GetTotalBytes())
-      .WillByDefault(Return(400 * 1024 * 1024));
-  EXPECT_TRUE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-  SetConnectionType(ConnectionType::CONNECTION_WIFI);
-  EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-
-  // Small file.
-  SetConnectionType(ConnectionType::CONNECTION_4G);
-  ON_CALL(*download_item, GetTotalBytes())
-      .WillByDefault(Return(190 * 1024 * 1024));
-  EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-
-  // Pref turn off.
-  SetConnectionType(ConnectionType::CONNECTION_2G);
-  pref_service()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kDontShow));
-  EXPECT_FALSE(delegate()->ShouldShowDownloadLaterDialog(download_item.get()));
-  ResetNetworkNotifier();
 }
 #endif  // BUILDFLAG(IS_ANDROID)

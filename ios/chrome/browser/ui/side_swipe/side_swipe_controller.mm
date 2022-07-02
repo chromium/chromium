@@ -64,7 +64,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
                                    WebStateListObserving> {
  @private
 
-  // Zeroes out |_browser| when it is destroyed.
+  // Zeroes out `_browser` when it is destroyed.
   std::unique_ptr<SideSwipeControllerBrowserRemover> _browserRemover;
 
   // Side swipe view for tab navigation.
@@ -122,8 +122,8 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // The webStateList owned by the current browser.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
-// Load grey snapshots for the next |kIpadGreySwipeTabCount| tabs in
-// |direction|.
+// Load grey snapshots for the next `kIpadGreySwipeTabCount` tabs in
+// `direction`.
 - (void)createGreyCache:(UISwipeGestureRecognizerDirection)direction;
 // Tell snapshot cache to clear grey cache.
 - (void)deleteGreyCache;
@@ -132,15 +132,15 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // Handle tab side swipe for iPhone. Introduces a CardSideSwipeView to convey
 // the tab change.
 - (void)handleiPhoneTabSwipe:(SideSwipeGestureRecognizer*)gesture;
-// Overlays |curtain_| as a white view to hide the web view while it updates.
-// Calls |completionHandler| when the curtain is removed.
+// Overlays `curtain_` as a white view to hide the web view while it updates.
+// Calls `completionHandler` when the curtain is removed.
 - (void)addCurtainWithCompletionHandler:(ProceduralBlock)completionHandler;
-// Removes the |curtain_| and calls |completionHandler| when the curtain is
+// Removes the `curtain_` and calls `completionHandler` when the curtain is
 // removed.
 - (void)dismissCurtainWithCompletionHandler:(ProceduralBlock)completionHandler;
 
-// Removes the |curtain_| if there was an active swipe, and resets
-// |inSwipe_| value.
+// Removes the `curtain_` if there was an active swipe, and resets
+// `inSwipe_` value.
 - (void)dismissCurtain;
 // Cleans up Browser, WebStateList, and WebState references in the instance of a
 // BrowserDestroyed BrowserObserver call.
@@ -293,7 +293,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   return NO;
 }
 
-// Gestures should only be recognized within |contentArea_| or the toolbar.
+// Gestures should only be recognized within `contentArea_` or the toolbar.
 - (BOOL)gestureRecognizerShouldBegin:(SideSwipeGestureRecognizer*)gesture {
   if (_inSwipe) {
     return NO;
@@ -315,7 +315,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     return [_swipeDelegate canBeginToolbarSwipe];
   }
 
-  // Otherwise, only allow contentView touches with |swipeGestureRecognizer_|.
+  // Otherwise, only allow contentView touches with `swipeGestureRecognizer_`.
   // The content view frame is inset by -1 because CGRectContainsPoint does
   // include points on the max X and Y edges, which will happen frequently with
   // edge swipes from the right side.
@@ -420,7 +420,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
     // Side swipe for iPad involves changing the selected tab as the swipe moves
     // across the width of the view.  The screen is broken up into
-    // |kIpadTabSwipeDistance| / |width| segments, with the current tab in the
+    // `kIpadTabSwipeDistance` / `width` segments, with the current tab in the
     // first section.  The swipe does not wrap edges.
     CGFloat distance = [gesture locationInView:gesture.view].x;
     if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {

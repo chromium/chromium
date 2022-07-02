@@ -733,8 +733,9 @@ TEST_P(FrameThrottlingTest, ChangeOriginInThrottledFrame) {
   CompositeFrame();
 
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
-  EXPECT_TRUE(
-      frame_element->contentDocument()->GetFrame()->IsCrossOriginToMainFrame());
+  EXPECT_TRUE(frame_element->contentDocument()
+                  ->GetFrame()
+                  ->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(frame_element->contentDocument()
                    ->View()
                    ->GetLayoutView()
@@ -747,8 +748,9 @@ TEST_P(FrameThrottlingTest, ChangeOriginInThrottledFrame) {
   frame_element->contentDocument()->setDomain(String("example.com"),
                                               exception_state);
 
-  EXPECT_FALSE(
-      frame_element->contentDocument()->GetFrame()->IsCrossOriginToMainFrame());
+  EXPECT_FALSE(frame_element->contentDocument()
+                   ->GetFrame()
+                   ->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(
       frame_element->contentDocument()->View()->CanThrottleRendering());
   EXPECT_TRUE(frame_element->contentDocument()
@@ -774,7 +776,7 @@ TEST_P(FrameThrottlingTest, MainFrameOriginChangeInvalidatesDescendants) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   EXPECT_TRUE(frame_document->View()->CanThrottleRendering());
-  EXPECT_TRUE(frame_document->GetFrame()->IsCrossOriginToMainFrame());
+  EXPECT_TRUE(frame_document->GetFrame()->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(
       frame_document->View()->GetLayoutView()->NeedsPaintPropertyUpdate());
 
@@ -784,14 +786,14 @@ TEST_P(FrameThrottlingTest, MainFrameOriginChangeInvalidatesDescendants) {
   frame_element->contentDocument()->setDomain(String("example.com"),
                                               exception_state);
   EXPECT_TRUE(frame_document->View()->CanThrottleRendering());
-  EXPECT_TRUE(frame_document->GetFrame()->IsCrossOriginToMainFrame());
+  EXPECT_TRUE(frame_document->GetFrame()->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(
       frame_document->View()->GetLayoutView()->NeedsPaintPropertyUpdate());
 
   // Then change the main frame origin which needs to invalidate the newly
   // cross-origin child.
   GetDocument().setDomain(String("example.com"), exception_state);
-  EXPECT_FALSE(frame_document->GetFrame()->IsCrossOriginToMainFrame());
+  EXPECT_FALSE(frame_document->GetFrame()->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
   EXPECT_TRUE(
       frame_document->View()->GetLayoutView()->NeedsPaintPropertyUpdate());

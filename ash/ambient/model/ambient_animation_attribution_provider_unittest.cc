@@ -15,6 +15,7 @@
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -126,9 +127,22 @@ class AmbientAnimationAttributionProviderTest2DynamicAssets
  protected:
   AmbientAnimationAttributionProviderTest2DynamicAssets()
       : AmbientAnimationAttributionProviderTest(
-            GenerateLottieCustomizableIdForTesting(0) + "Attribution",
-            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text0",
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text1",
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
+                                                   /*idx=*/2)) {}
+};
+
+class AmbientAnimationAttributionProviderTestMultipleDigitIndex
+    : public AmbientAnimationAttributionProviderTest {
+ protected:
+  AmbientAnimationAttributionProviderTestMultipleDigitIndex()
+      : AmbientAnimationAttributionProviderTest(
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text10",
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text2",
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
+                                                   /*idx=*/10),
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
                                                    /*idx=*/2)) {}
 };
@@ -139,7 +153,7 @@ class AmbientAnimationAttributionProviderTest1DynamicAsset
   AmbientAnimationAttributionProviderTest1DynamicAsset()
       : AmbientAnimationAttributionProviderTest(
             "static-text-node",
-            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text1",
             "static-asset-id",
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
                                                    /*idx=*/1)) {}
@@ -151,7 +165,7 @@ class AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution
   AmbientAnimationAttributionProviderTest2DynamicAssets1Attribution()
       : AmbientAnimationAttributionProviderTest(
             "static-text-node",
-            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            std::string(kLottieCustomizableIdPrefix) + "_Attribution_Text1",
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
             GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
                                                    /*idx=*/2)) {}
@@ -197,6 +211,18 @@ TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
           Pair(cc::HashSkottieResourceId(attribution_node_0_),
                HasText("attribution_text_0_b")),
           Pair(cc::HashSkottieResourceId(attribution_node_1_), HasText(""))));
+}
+
+TEST_F(AmbientAnimationAttributionProviderTestMultipleDigitIndex,
+       SetsTextInAnimation) {
+  RefreshDynamicImageAssets("attribution_text_for_asset_10",
+                            "attribution_text_for_asset_2");
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                HasText("attribution_text_for_asset_10")),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                HasText("attribution_text_for_asset_2"))));
 }
 
 TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,

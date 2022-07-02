@@ -17,6 +17,16 @@ function getSlowURL(hostname) {
   return getServerURL('slow?10', hostname);
 }
 
+function getInitiatorURLForExtension() {
+  var url = getURL('');
+  return url.slice(0, -1);
+}
+
+function getInitiatorURLForHostname(hostname) {
+  var url = getServerURL('', hostname);
+  return url.slice(0, -1);
+}
+
 // Get the URL of a page that inserts a frame with the given URL upon load.
 function getPageWithFrame(frameUrl, hostname) {
   return getServerURL('extensions/api_test/webrequest/unload/load_frame.html?' +

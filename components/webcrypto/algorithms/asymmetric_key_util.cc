@@ -9,8 +9,6 @@
 
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
-#include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -18,8 +16,6 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace webcrypto {
-
-namespace {
 
 // Exports an EVP_PKEY public key to the SPKI format.
 Status ExportPKeySpki(EVP_PKEY* key, std::vector<uint8_t>* buffer) {
@@ -55,22 +51,13 @@ Status ExportPKeyPkcs8(EVP_PKEY* key, std::vector<uint8_t>* buffer) {
   return Status::Success();
 }
 
-}  // namespace
-
 Status CreateWebCryptoPublicKey(bssl::UniquePtr<EVP_PKEY> public_key,
                                 const blink::WebCryptoKeyAlgorithm& algorithm,
                                 bool extractable,
                                 blink::WebCryptoKeyUsageMask usages,
                                 blink::WebCryptoKey* key) {
-  // Serialize the key at creation time so that if structured cloning is
-  // requested it can be done synchronously from the Blink thread.
-  std::vector<uint8_t> spki_data;
-  Status status = ExportPKeySpki(public_key.get(), &spki_data);
-  if (status.IsError())
-    return status;
-
   *key = blink::WebCryptoKey::Create(
-      CreateAsymmetricKeyHandle(std::move(public_key), spki_data),
+      CreateAsymmetricKeyHandle(std::move(public_key)),
       blink::kWebCryptoKeyTypePublic, extractable, algorithm, usages);
   return Status::Success();
 }
@@ -80,26 +67,19 @@ Status CreateWebCryptoPrivateKey(bssl::UniquePtr<EVP_PKEY> private_key,
                                  bool extractable,
                                  blink::WebCryptoKeyUsageMask usages,
                                  blink::WebCryptoKey* key) {
-  // Serialize the key at creation time so that if structured cloning is
-  // requested it can be done synchronously from the Blink thread.
-  std::vector<uint8_t> pkcs8_data;
-  Status status = ExportPKeyPkcs8(private_key.get(), &pkcs8_data);
-  if (status.IsError())
-    return status;
-
   *key = blink::WebCryptoKey::Create(
-      CreateAsymmetricKeyHandle(std::move(private_key), pkcs8_data),
+      CreateAsymmetricKeyHandle(std::move(private_key)),
       blink::kWebCryptoKeyTypePrivate, extractable, algorithm, usages);
   return Status::Success();
 }
 
-Status ImportUnverifiedPkeyFromSpki(const CryptoData& key_data,
+Status ImportUnverifiedPkeyFromSpki(base::span<const uint8_t> key_data,
                                     int expected_pkey_id,
                                     bssl::UniquePtr<EVP_PKEY>* out_pkey) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
-  CBS_init(&cbs, key_data.bytes(), key_data.byte_length());
+  CBS_init(&cbs, key_data.data(), key_data.size());
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
   if (!pkey || CBS_len(&cbs) != 0)
     return Status::DataError();
@@ -111,13 +91,13 @@ Status ImportUnverifiedPkeyFromSpki(const CryptoData& key_data,
   return Status::Success();
 }
 
-Status ImportUnverifiedPkeyFromPkcs8(const CryptoData& key_data,
+Status ImportUnverifiedPkeyFromPkcs8(base::span<const uint8_t> key_data,
                                      int expected_pkey_id,
                                      bssl::UniquePtr<EVP_PKEY>* out_pkey) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
-  CBS_init(&cbs, key_data.bytes(), key_data.byte_length());
+  CBS_init(&cbs, key_data.data(), key_data.size());
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_private_key(&cbs));
   if (!pkey || CBS_len(&cbs) != 0)
     return Status::DataError();

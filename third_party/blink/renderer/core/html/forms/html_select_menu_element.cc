@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -254,7 +256,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   Element* new_popup;
   new_popup = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValuePopup);
+  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValueAuto);
   new_popup->setAttribute(html_names::kPartAttr, kListboxPartName);
   new_popup->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
   new_popup->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
@@ -302,6 +304,19 @@ String HTMLSelectMenuElement::value() const {
   return "";
 }
 
+void HTMLSelectMenuElement::setValueForBinding(const String& value) {
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    setValue(value);
+  } else {
+    String old_value = this->value();
+    setValue(value);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
+                                                               old_value);
+    }
+  }
+}
+
 void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
   // Find the option with innerText matching the given parameter and make it the
   // current selection.
@@ -327,7 +342,7 @@ bool HTMLSelectMenuElement::open() const {
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
-    listbox_part_->showPopup(ASSERT_NO_EXCEPTION);
+    listbox_part_->showPopUp(ASSERT_NO_EXCEPTION);
     if (selectedOption()) {
       selectedOption()->Focus();
     }
@@ -338,7 +353,10 @@ void HTMLSelectMenuElement::OpenListbox() {
 void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
     if (listbox_part_->HasValidPopupAttribute()) {
-      listbox_part_->hidePopup(ASSERT_NO_EXCEPTION);
+      // We will handle focus directly.
+      listbox_part_->HidePopUpInternal(
+          HidePopupFocusBehavior::kNone,
+          HidePopupForcingLevel::kHideAfterAnimations);
     }
     if (button_part_) {
       button_part_->Focus();

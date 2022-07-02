@@ -18,7 +18,6 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/memory_file_stream_reader.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
-#include "storage/browser/file_system/plugin_private_file_system_backend.h"
 
 // TODO(kinuko): Remove this temporary namespace hack after we move both
 // blob and fileapi into content namespace.
@@ -92,17 +91,8 @@ void SandboxFileStreamReader::DidCreateSnapshot(
   snapshot_ref_ = std::move(file_ref);
 
   if (file_system_context_->is_incognito()) {
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate;
-    if (url_.type() == kFileSystemTypePluginPrivate) {
-      auto* backend = static_cast<PluginPrivateFileSystemBackend*>(
-          file_system_context_->GetFileSystemBackend(
-              kFileSystemTypePluginPrivate));
-      memory_file_util_delegate =
-          backend->obfuscated_file_util_memory_delegate()->GetWeakPtr();
-    } else {
-      memory_file_util_delegate =
-          file_system_context_->sandbox_delegate()->memory_file_util_delegate();
-    }
+    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate =
+        file_system_context_->sandbox_delegate()->memory_file_util_delegate();
     file_reader_ = std::make_unique<MemoryFileStreamReader>(
         file_system_context_->default_file_task_runner(),
         memory_file_util_delegate, platform_path, initial_offset_,

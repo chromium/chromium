@@ -51,9 +51,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
@@ -63,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should display the proceed link.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 }
 
 // Test that when SSL error overriding is allowed, the origin list is ignored
@@ -82,14 +81,13 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Add a policy to allow overriding on specific sites only. Since
   // kSSLErrorOverrideAllowed is enabled, this should do nothing.
-  std::vector<base::Value> allow_list;
-  allow_list.emplace_back(base::Value("example.com"));
+  base::Value::List allow_list;
+  allow_list.Append("example.com");
   PolicyMap policies;
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
@@ -97,9 +95,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   UpdateProviderPolicy(policies);
 
   // Policy should be set.
-  EXPECT_FALSE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                   ->GetListDeprecated()
-                   .empty());
+  EXPECT_FALSE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
@@ -109,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should display the proceed link.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 }
 
 // Test that when SSL error overriding is disabled, the proceed link does not
@@ -144,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should not display the proceed link.
   EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 
   // The interstitial should not proceed, even if the command is sent in
   // some other way (e.g., via the keyboard shortcut).
@@ -169,9 +166,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -179,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   // Add a policy to allow overriding on specific sites only.
-  std::vector<base::Value> allow_list;
-  allow_list.emplace_back(base::Value("example.com"));
+  base::Value::List allow_list;
+  allow_list.Append("example.com");
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allow_list)), nullptr);
@@ -188,9 +184,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy should be set.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_FALSE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                   ->GetListDeprecated()
-                   .empty());
+  EXPECT_FALSE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -200,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should not display the proceed link.
   EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 
   // The interstitial should not proceed, even if the command is sent in
   // some other way (e.g., via the keyboard shortcut).
@@ -222,19 +217,18 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
   policies.Set(key::kSSLErrorOverrideAllowed, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
-  std::vector<base::Value> allow_list;
+  base::Value::List allow_list;
   // We ignore "*" or badly formed patterns as inputs.
-  allow_list.emplace_back(base::Value("*"));
-  allow_list.emplace_back(base::Value("bad 127.0.0.1 input"));
+  allow_list.Append("*");
+  allow_list.Append("bad 127.0.0.1 input");
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allow_list)), nullptr);
@@ -242,9 +236,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy should not allow overriding.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_FALSE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                   ->GetListDeprecated()
-                   .empty());
+  EXPECT_FALSE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -254,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should not display the proceed link.
   EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 
   // The interstitial should not proceed, even if the command is sent in
   // some other way (e.g., via the keyboard shortcut).
@@ -275,9 +268,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -285,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   // The policy is intentionally configured with an empty list for this test.
-  std::vector<base::Value> allow_list;
+  base::Value::List allow_list;
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allow_list)), nullptr);
@@ -293,9 +285,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy should not allow overriding.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -305,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should not display the proceed link.
   EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 
   // The interstitial should not proceed, even if the command is sent in
   // some other way (e.g., via the keyboard shortcut).
@@ -330,9 +321,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                  ->GetListDeprecated()
-                  .empty());
+  EXPECT_TRUE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -341,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                nullptr);
   // Add a policy to allow overriding on specific sites only. The path should be
   // ignored.
-  std::vector<base::Value> allow_list;
-  allow_list.emplace_back(base::Value("127.0.0.1/my/path/to/file.ext"));
+  base::Value::List allow_list;
+  allow_list.Append("127.0.0.1/my/path/to/file.ext");
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allow_list)), nullptr);
@@ -350,9 +340,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy should be set.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
-  EXPECT_FALSE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-                   ->GetListDeprecated()
-                   .empty());
+  EXPECT_FALSE(
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
@@ -362,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // The interstitial should display the proceed link.
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      tab->GetMainFrame(), "proceed-link"));
+      tab->GetPrimaryMainFrame(), "proceed-link"));
 }
 
 }  // namespace policy

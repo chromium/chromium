@@ -19,6 +19,10 @@ class ShimlessRmaDelegate {
 
   // Starts the post-boot diagnostics app.
   virtual void ShowDiagnosticsDialog() = 0;
+
+  // Sets the AccessibilityManager profile to the active profile to enable
+  // accessibility features.
+  virtual void RefreshAccessibilityManagerProfile() = 0;
 };
 
 }  // namespace shimless_rma

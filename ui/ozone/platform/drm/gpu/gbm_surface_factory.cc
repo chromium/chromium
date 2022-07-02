@@ -141,24 +141,14 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     // Default to null platform
     native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
 
-    gl::g_driver_egl.InitializeClientExtensionBindings();
-
-    const char* client_extensions_string =
-        eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
-
-    gfx::ExtensionSet client_extensions =
-        client_extensions_string
-            ? gfx::MakeExtensionSet(client_extensions_string)
-            : gfx::ExtensionSet();
-
-    if (gfx::HasExtension(client_extensions, "EGL_MESA_platform_surfaceless")) {
+    if (gl::g_driver_egl.client_ext.b_EGL_MESA_platform_surfaceless) {
       native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY,
                                                EGL_PLATFORM_SURFACELESS_MESA);
     }
 
-    if (!(gfx::HasExtension(client_extensions, "EGL_EXT_device_query") &&
-          gfx::HasExtension(client_extensions, "EGL_EXT_platform_device") &&
-          gfx::HasExtension(client_extensions, "EGL_EXT_device_enumeration"))) {
+    if (!(gl::g_driver_egl.client_ext.b_EGL_EXT_device_query &&
+          gl::g_driver_egl.client_ext.b_EGL_EXT_platform_device &&
+          gl::g_driver_egl.client_ext.b_EGL_EXT_device_enumeration)) {
       LOG(WARNING) << "Platform device extensions not found.";
       return native_display_;
     }
@@ -199,7 +189,7 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
 
     // Skip the virtual graphics memory manager device.
     ScopedDrmVersionPtr version(drmGetVersion(dev_path_file.GetPlatformFile()));
-    if (!version || base::LowerCaseEqualsASCII(version->name, "vgem")) {
+    if (!version || base::EqualsCaseInsensitiveASCII(version->name, "vgem")) {
       continue;
     }
 

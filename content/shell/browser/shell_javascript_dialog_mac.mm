@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_javascript_dialog.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
@@ -18,7 +20,7 @@
   NSTextField* _textField;  // WEAK; owned by alert_
 
   // Copies of the fields in ShellJavaScriptDialog because they're private.
-  content::ShellJavaScriptDialogManager* _manager;
+  raw_ptr<content::ShellJavaScriptDialogManager> _manager;
   content::JavaScriptDialogManager::DialogClosedCallback _callback;
 }
 

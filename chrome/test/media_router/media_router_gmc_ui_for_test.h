@@ -6,6 +6,7 @@
 #define CHROME_TEST_MEDIA_ROUTER_MEDIA_ROUTER_GMC_UI_FOR_TEST_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -61,7 +62,7 @@ class MediaRouterGmcUiForTest
 
   Browser* browser() const { return browser_; }
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
   MediaDialogUiForTest dialog_ui_{
       base::BindRepeating(&MediaRouterGmcUiForTest::browser,
                           base::Unretained(this))};

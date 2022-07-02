@@ -3,25 +3,28 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Tests for model.py.
-"""
+"""Tests for model.py."""
 
 # TODO(crbug.com/1148168): Set up these tests to run on the tryjobs.
 
+import model
 import unittest
+
 from model import Model
 
 
 class ModelTest(unittest.TestCase):
   """Tests for model.py"""
 
-  def assert_project(self, project, name, id_, summary, owners):
+  def assert_project(self, project, name, id_, summary, owners,
+                     key_rotation_period):
     self.assertEqual(project.name, name)
     self.assertEqual(project.id, id_)
     self.assertEqual(project.summary.strip(), summary)
     self.assertEqual(len(project.owners), len(owners))
     for actual, expected in zip(project.owners, owners):
       self.assertEqual(actual, expected)
+    self.assertEqual(int(project.key_rotation_period), key_rotation_period)
 
   def assert_event(self, event, name, summary):
     self.assertEqual(event.name, name)
@@ -47,7 +50,9 @@ class ModelTest(unittest.TestCase):
             <owner>test1@chromium.org</owner>
             <owner>test2@chromium.org</owner>
             <id>none</id>
+            <scope>profile</scope>
             <summary> Test project. </summary>
+            <key-rotation>65</key-rotation>
 
             <event name="EventOne">
               <summary> Test event. </summary>
@@ -70,6 +75,7 @@ class ModelTest(unittest.TestCase):
           <project name="ProjectTwo">
             <owner>test@chromium.org</owner>
             <id>uma</id>
+            <scope>device</scope>
             <summary> Test project. </summary>
 
             <event name="EventThree">
@@ -86,9 +92,10 @@ class ModelTest(unittest.TestCase):
     self.assertEqual(len(data.projects), 2)
     project_one, project_two = data.projects
     self.assert_project(project_one, 'ProjectOne', 'none', 'Test project.',
-                        ('test1@chromium.org', 'test2@chromium.org'))
+                        ('test1@chromium.org', 'test2@chromium.org'), 65)
     self.assert_project(project_two, 'ProjectTwo', 'uma', 'Test project.',
-                        ('test@chromium.org', ))
+                        ('test@chromium.org', ),
+                        model.DEFAULT_KEY_ROTATION_PERIOD)
 
     self.assertEqual(len(project_one.events), 2)
     self.assertEqual(len(project_two.events), 1)
@@ -291,6 +298,24 @@ class ModelTest(unittest.TestCase):
               <summary> Test metric. </summary>
             </metric>
           </event>
+        </project>
+        </structured-metrics>""")
+
+  def test_key_rotation_validation(self):
+    # Key rotation not a number.
+    self.assert_model_raises("""\
+        <structured-metrics>
+        <project name="project">
+        <id>uma</id>
+        <summary> Test project. </summary>
+        <owner>test@chromium.org</owner>
+        <key-rotation>NaN123</key-rotation>
+        <event name="EventThree">
+          <summary> Test event. </summary>
+          <metric name="MetricFour" type="int">
+            <summary> Test metric. </summary>
+          </metric>
+        </event>
         </project>
         </structured-metrics>""")
 

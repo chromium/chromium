@@ -20,10 +20,12 @@ namespace updater {
 
 namespace {
 
+constexpr char kTestDmToken[] = "TestDMToken";
+
 class TestTokenService : public TokenServiceInterface {
  public:
   TestTokenService()
-      : enrollment_token_("TestEnrollmentToken"), dm_token_("TestDMToken") {}
+      : enrollment_token_("TestEnrollmentToken"), dm_token_(kTestDmToken) {}
   ~TestTokenService() override = default;
 
   // Overrides for TokenServiceInterface.
@@ -40,6 +42,12 @@ class TestTokenService : public TokenServiceInterface {
     dm_token_ = dm_token;
     return true;
   }
+
+  bool DeleteDmToken() override {
+    dm_token_.clear();
+    return true;
+  }
+
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -97,6 +105,36 @@ TEST(DMStorage, LoadDeviceID) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST(DMStorage, DMToken) {
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token invalidation.
+  storage->InvalidateDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
+
+  storage->StoreDmToken(kTestDmToken);
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token deletion.
+  storage->DeleteDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_TRUE(storage->GetDmToken().empty());
+  // Although the device is deregistered, it is not treated as deregistered due
+  // to potential re-registration. Instead, it is treated as having an empty DM
+  // token.
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+}
+
 TEST(DMStorage, PersistPolicies) {
   DMPolicyMap policies({
       {"google/machine-level-omaha", "serialized-omaha-policy-data"},
@@ -142,10 +180,10 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   enterprise_management::PolicyData policy_data;
   policy_data.set_policy_value("SerializedProtobufDataFromPolicy");
   policy_data.set_policy_type("TestPolicyType1");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_request_token(kTestDmToken);
   policy_data.set_timestamp(12340000);
-  policy_data.set_device_id("TestDMToken");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_device_id(kTestDmToken);
+  policy_data.set_request_token(kTestDmToken);
 
   std::string new_public_key = "SampleNewPublicKeyData";
   enterprise_management::PublicKeyVerificationData key_verif_data;
@@ -213,7 +251,8 @@ TEST(DMStorage, ReadCachedOmahaPolicy) {
                 ROLLBACK_TO_TARGET_VERSION_ENABLED);
 
   // Verify no policy settings once device is de-registered.
-  EXPECT_TRUE(storage->DeregisterDevice());
+  EXPECT_TRUE(storage->InvalidateDMToken());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
   EXPECT_FALSE(storage->IsValidDMToken());
   ASSERT_EQ(storage->GetOmahaPolicySettings(), nullptr);
 }

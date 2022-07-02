@@ -48,7 +48,7 @@ void SurfaceLayerBridge::CreateSolidColorLayer() {
   // TODO(lethalantidote): Remove this logic. It should be covered by setting
   // the layer's opacity to false.
   solid_color_layer_ = cc::SolidColorLayer::Create();
-  solid_color_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  solid_color_layer_->SetBackgroundColor(SkColors::kTransparent);
   if (observer_)
     observer_->RegisterContentsLayer(solid_color_layer_.get());
 }

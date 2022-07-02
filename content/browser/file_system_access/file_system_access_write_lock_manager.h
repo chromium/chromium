@@ -7,12 +7,20 @@
 
 #include <map>
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/common/content_export.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+
+namespace storage {
+class FileSystemURL;
+}  // namespace storage
 
 namespace content {
 
@@ -33,13 +41,46 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
     kShared
   };
 
-  // This class represents an active write lock on a file. The lock is released
-  // on destruction.
+  enum class EntryPathType {
+    // A path on the local file system. Files with these paths can be operated
+    // on by base::File.
+    kLocal,
+
+    // A path on an "external" file system. These paths can only be accessed via
+    // the filesystem abstraction in //storage/browser/file_system, and a
+    // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
+    kExternal,
+
+    // A path from a sandboxed file system. These paths can be accessed by a
+    // storage::FileSystemURL of type storage::kFileSystemTypeTemporary.
+    kSandboxed,
+  };
+
+  struct EntryLocator {
+    static EntryLocator FromFileSystemURL(const storage::FileSystemURL& url);
+
+    EntryLocator(const EntryPathType& type,
+                 const base::FilePath& path,
+                 const absl::optional<storage::BucketLocator>& bucket_locator);
+    EntryLocator(const EntryLocator&);
+    ~EntryLocator();
+
+    bool operator<(const EntryLocator& other) const;
+
+    const EntryPathType type;
+    const base::FilePath path;
+    // Non-null iff `type` is kSandboxed.
+    const absl::optional<storage::BucketLocator> bucket_locator;
+  };
+
+  // This class represents an active write lock on a file or directory. The lock
+  // is released on destruction.
   class CONTENT_EXPORT WriteLock : public base::RefCounted<WriteLock> {
    public:
     WriteLock(base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager,
-              const storage::FileSystemURL& url,
+              const EntryLocator& entry_locator,
               const WriteLockType& type,
+              const scoped_refptr<WriteLock> parent_lock,
               base::PassKey<FileSystemAccessWriteLockManager> pass_key);
 
     WriteLock(WriteLock const&) = delete;
@@ -52,15 +93,25 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
     // The lock is released on destruction.
     ~WriteLock();
 
+    SEQUENCE_CHECKER(sequence_checker_);
+
     // The FileSystemAccessWriteLockManager that created this instance. Used on
     // destruction to release the lock on the file.
-    base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager_;
+    base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager_
+        GUARDED_BY_CONTEXT(sequence_checker_);
 
-    // URL of the file associated with this lock. It is used to unlock the
-    // exclusive write lock on closure/destruction.
-    const storage::FileSystemURL url_;
+    // Locator of the file or directory associated with this lock. It is used to
+    // unlock the exclusive write lock on closure/destruction.
+    const EntryLocator entry_locator_;
 
     const WriteLockType type_;
+
+    // When a file or directory is locked, it acquires a shared lock on its
+    // parent directory, which acquires a shared lock on its parent, and so
+    // forth. When this instance goes away, the associated ancestor locks are
+    // automatically released. May be null if this instance represents the root
+    // of its file system.
+    const scoped_refptr<WriteLock> parent_lock_;
   };
 
   explicit FileSystemAccessWriteLockManager(
@@ -73,19 +124,23 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
       FileSystemAccessWriteLockManager const&) = delete;
 
   // Attempts to take a lock on `url`. Returns the lock if successful.
-  absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
-  TakeLock(const storage::FileSystemURL& url, WriteLockType lock_type);
+  scoped_refptr<WriteLock> TakeLock(const storage::FileSystemURL& url,
+                                    WriteLockType lock_type);
 
  private:
-  // Releases the lock on `url`. Called from the WriteLock destructor.
-  void ReleaseLock(const storage::FileSystemURL& url);
+  scoped_refptr<WriteLock> TakeLockImpl(const EntryLocator& entry_locator,
+                                        WriteLockType lock_type);
 
-  std::map<storage::FileSystemURL,
-           FileSystemAccessWriteLockManager::WriteLock*,
-           storage::FileSystemURL::Comparator>
-      locks_;
+  // Releases the lock on `entry_locator`. Called from the WriteLock destructor.
+  void ReleaseLock(const EntryLocator& entry_locator);
 
-  base::WeakPtrFactory<FileSystemAccessWriteLockManager> weak_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::map<EntryLocator, WriteLock*> locks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<FileSystemAccessWriteLockManager> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content

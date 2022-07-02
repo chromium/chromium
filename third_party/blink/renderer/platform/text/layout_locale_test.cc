@@ -178,6 +178,34 @@ TEST(LayoutLocaleTest, BreakKeyword) {
   }
 }
 
+TEST(LayoutLocaleTest, GetQuotesData) {
+  auto enQuotes = (QuotesData::Create(0x201c, 0x201d, 0x2018, 0x2019));
+  auto frQuotes = (QuotesData::Create(0xab, 0xbb, 0xab, 0xbb));
+  auto frCAQuotes = (QuotesData::Create(0xab, 0xbb, 0x201d, 0x201c));
+  struct {
+    const char* locale;
+    const scoped_refptr<QuotesData> expected;
+  } tests[] = {
+      {nullptr, nullptr},    // no match
+      {"loc-DNE", nullptr},  // no match
+      {"en", enQuotes},      {"fr", frQuotes},
+      {"fr-CA", frCAQuotes}, {"fr-DNE", frQuotes},  // use fr
+  };
+  for (const auto& test : tests) {
+    scoped_refptr<LayoutLocale> locale =
+        LayoutLocale::CreateForTesting(test.locale);
+    scoped_refptr<QuotesData> quotes = locale->GetQuotesData();
+    if (test.expected) {
+      EXPECT_EQ(test.expected->GetOpenQuote(0), quotes->GetOpenQuote(0));
+      EXPECT_EQ(test.expected->GetOpenQuote(1), quotes->GetOpenQuote(1));
+      EXPECT_EQ(test.expected->GetCloseQuote(-1), quotes->GetCloseQuote(-1));
+      EXPECT_EQ(test.expected->GetCloseQuote(0), quotes->GetCloseQuote(0));
+    } else {
+      EXPECT_EQ(test.expected, quotes);
+    }
+  }
+}
+
 TEST(LayoutLocaleTest, ExistingKeywordName) {
   const char* tests[] = {
       "en@x=", "en@lb=xyz", "en@ =",

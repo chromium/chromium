@@ -46,8 +46,6 @@ class GPU_GLES2_EXPORT SharedImageVideoImageReader
 
   // SharedImageBacking implementation.
   size_t EstimatedSizeForMemTracking() const override;
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBuffer() override;
 
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(

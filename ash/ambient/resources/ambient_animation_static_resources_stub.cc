@@ -18,7 +18,11 @@ namespace ash {
 
 // static
 std::unique_ptr<AmbientAnimationStaticResources>
-AmbientAnimationStaticResources::Create(AmbientAnimationTheme theme) {
+AmbientAnimationStaticResources::Create(AmbientAnimationTheme theme,
+                                        bool serializable) {
+  if (theme == AmbientAnimationTheme::kSlideshow)
+    return nullptr;
+
   LOG(FATAL) << "Ambient animation resources are not available on this build. "
                 "To enable, an internal chrome-branded checkout is required, "
                 "and the include_ash_ambient_animation_resources GN flag must "

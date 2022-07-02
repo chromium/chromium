@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_IMAGE_WRITER_CONTROLLER_LACROS_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -86,7 +87,7 @@ class ImageWriterControllerLacros : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI with |browser_context_| which will handle the
   // destruction of BrowserContext gracefully by shutting down the service
   // and removing itself from the factory.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Pending image writer clients by extension id.
   // For each extension, we only allow one pending remote client to request

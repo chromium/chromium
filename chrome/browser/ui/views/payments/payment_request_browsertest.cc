@@ -27,7 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
@@ -617,9 +617,8 @@ class PaymentRequestSettingsLinkTest : public PaymentRequestBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 #endif
 
   NavigateTo("/payment_request_no_shipping_test.html");
@@ -637,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
           static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
   EXPECT_TRUE(styled_label);
   content::WebContentsAddedObserver web_contents_added_observer;
-  styled_label->ClickLinkForTesting();
+  styled_label->ClickFirstLinkForTesting();
   content::WebContents* new_tab_contents =
       web_contents_added_observer.GetWebContents();
 
@@ -672,9 +671,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkWithBasicCardDisabledTest,
                        ClickSettingsLink) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 #endif
 
   // Installs two apps so that the Payment Request UI will be shown.
@@ -696,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkWithBasicCardDisabledTest,
           static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
   EXPECT_TRUE(styled_label);
   content::WebContentsAddedObserver web_contents_added_observer;
-  styled_label->ClickLinkForTesting();
+  styled_label->ClickFirstLinkForTesting();
   content::WebContents* new_tab_contents =
       web_contents_added_observer.GetWebContents();
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -32,6 +33,8 @@ mojom::blink::ReportingDestination ToMojom(
       return mojom::blink::ReportingDestination::kSeller;
     case V8FenceReportingDestination::Enum::kComponentSeller:
       return mojom::blink::ReportingDestination::kComponentSeller;
+    case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
+      return mojom::blink::ReportingDestination::kSharedStorageSelectUrl;
   }
 }
 
@@ -56,17 +59,34 @@ void Fence::reportEvent(ScriptState* script_state,
 
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame);
-  DCHECK(frame->IsInFencedFrameTree());
 
-  if (frame->GetFencedFrameMode() !=
-      mojom::blink::FencedFrameMode::kOpaqueAds) {
-    AddConsoleMessage(
-        "fence.reportEvent is only available in the 'opaque-ads' mode.");
-    return;
+  LocalFrame* fenced_frame = nullptr;
+  if (blink::features::IsAllowURNsInIframeEnabled() &&
+      !frame->IsInFencedFrameTree()) {
+    // The only way to get a Fence outside a fenced frame is from
+    // LocalDOMWindow::fence(), when both:
+    // - blink::features::IsAllowURNsInIframeEnabled() is true
+    // - the Document itself was loaded from a urn:uuid
+    // In that case, pretend that the frame is a fenced frame root for this
+    // temporary experiment.
+    // TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+    // In order to disable, run the else branch unconditionally.
+    // Also remove the features.h include above.
+    fenced_frame = frame;
+  } else {
+    DCHECK(frame->IsInFencedFrameTree());
+
+    if (frame->GetFencedFrameMode() !=
+        mojom::blink::FencedFrameMode::kOpaqueAds) {
+      AddConsoleMessage(
+          "fence.reportEvent is only available in the 'opaque-ads' mode.");
+      return;
+    }
+
+    fenced_frame = DynamicTo<LocalFrame>(
+        DomWindow()->GetFrame()->Top(FrameTreeBoundary::kFenced));
   }
 
-  LocalFrame* fenced_frame = DynamicTo<LocalFrame>(
-      DomWindow()->GetFrame()->Top(FrameTreeBoundary::kFenced));
   DCHECK(fenced_frame);
   DCHECK(fenced_frame->GetDocument());
 

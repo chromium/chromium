@@ -19,7 +19,6 @@
 #include "google_apis/google_api_keys.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #else
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -71,9 +70,8 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With UpdateEngineClient, we can provide more detailed information about
   // system updates on ChromeOS.
-  const update_engine::StatusResult status = chromeos::DBusThreadManager::Get()
-                                                 ->GetUpdateEngineClient()
-                                                 ->GetLastStatus();
+  const update_engine::StatusResult status =
+      chromeos::UpdateEngineClient::Get()->GetLastStatus();
   // |download_progress| is set to 1 after download finishes
   // (i.e. verify, finalize and need-reboot phase) to indicate the progress
   // even though |status.download_progress| is 0 in these phases.

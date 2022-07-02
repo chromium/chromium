@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -134,7 +135,7 @@ void RenderViewImpl::Initialize(
       params->session_storage_namespace_id, params->base_background_color);
 
   g_view_map.Get().insert(std::make_pair(GetWebView(), this));
-  g_routing_id_view_map.Get().insert(std::make_pair(GetRoutingID(), this));
+  g_routing_id_view_map.Get().insert(std::make_pair(routing_id_, this));
 
   bool local_main_frame = params->main_frame->is_local_params();
 
@@ -154,7 +155,7 @@ void RenderViewImpl::Initialize(
     RenderFrameProxy::CreateFrameProxy(
         agent_scheduling_group_, params->main_frame->get_remote_params()->token,
         params->main_frame->get_remote_params()->routing_id,
-        params->opener_frame_token, GetRoutingID(), MSG_ROUTING_NONE,
+        params->opener_frame_token, routing_id_, absl::nullopt,
         blink::mojom::TreeScopeType::kDocument /* ignored for main frames */,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(
@@ -192,7 +193,7 @@ RenderViewImpl::~RenderViewImpl() {
 }
 
 /*static*/
-RenderView* RenderView::FromWebView(blink::WebView* webview) {
+RenderViewImpl* RenderViewImpl::FromWebView(blink::WebView* webview) {
   DCHECK(RenderThread::IsMainThread());
   ViewMap* views = g_view_map.Pointer();
   auto it = views->find(webview);
@@ -260,7 +261,9 @@ WebView* RenderViewImpl::CreateView(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture,
-    const absl::optional<blink::Impression>& impression) {
+    const absl::optional<blink::Impression>& impression,
+    const absl::optional<blink::WebPictureInPictureWindowOptions>&
+        pip_options) {
   consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
@@ -293,7 +296,20 @@ WebView* RenderViewImpl::CreateView(
   }
   params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
 
+  params->is_form_submission = request.IsFormSubmission();
+  params->form_submission_post_data =
+      blink::GetRequestBodyForWebURLRequest(request);
+  params->form_submission_post_content_type = request.HttpContentType().Utf8();
+
   params->impression = impression;
+
+  if (pip_options) {
+    CHECK_EQ(policy, blink::kWebNavigationPolicyPictureInPicture);
+    auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
+    pip_mojom_opts->initial_aspect_ratio = pip_options->initial_aspect_ratio;
+    pip_mojom_opts->lock_aspect_ratio = pip_options->lock_aspect_ratio;
+    params->pip_options = std::move(pip_mojom_opts);
+  }
 
   params->download_policy.ApplyDownloadFramePolicy(
       /*is_opener_navigation=*/false, request.HasUserGesture(),
@@ -364,7 +380,7 @@ WebView* RenderViewImpl::CreateView(
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
 
   view_params->opener_frame_token = creator->GetFrameToken();
-  DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
+  DCHECK_EQ(routing_id_, creator_frame->render_view()->routing_id_);
 
   view_params->window_was_opened_by_another_window = true;
   view_params->renderer_preferences = webview_->GetRendererPreferences();
@@ -416,10 +432,6 @@ WebView* RenderViewImpl::CreateView(
 }
 
 // RenderView implementation ---------------------------------------------------
-
-int RenderViewImpl::GetRoutingID() {
-  return routing_id_;
-}
 
 blink::WebView* RenderViewImpl::GetWebView() {
   return webview_;

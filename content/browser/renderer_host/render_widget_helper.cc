@@ -93,13 +93,4 @@ void RenderWidgetHelper::StoreNextFrameRoutingID(
   DCHECK(result);
 }
 
-// static
-RenderWidgetHelper* RenderWidgetHelper::FromProcessHostID(
-    int render_process_host_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  WidgetHelperMap::const_iterator ci = g_widget_helpers.Get().find(
-      render_process_host_id);
-  return (ci == g_widget_helpers.Get().end())? NULL : ci->second;
-}
-
 }  // namespace content

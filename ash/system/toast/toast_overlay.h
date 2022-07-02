@@ -71,6 +71,14 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   const std::u16string GetText();
 
+  // Returns true if the toast has a button and it can be highlighted for
+  // accessibility, false otherwise.
+  bool MaybeToggleA11yHighlightOnDismissButton();
+
+  // Activates the dismiss button in `overlay_view_` if it is highlighted.
+  // Returns false if `is_dismiss_button_highlighted_` is false.
+  bool MaybeActivateHighlightedDismissButton();
+
  private:
   friend class ToastManagerImplTest;
   friend class DesksTestApi;

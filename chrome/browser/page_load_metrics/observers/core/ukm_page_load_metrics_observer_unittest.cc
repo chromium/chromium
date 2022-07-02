@@ -53,6 +53,7 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -161,7 +162,9 @@ class UkmPageLoadMetricsObserverTest
   void TestLCP(int value,
                LargestContentTextOrImage text_or_image,
                bool test_main_frame,
-               uint32_t bpp_bucket = 0) {
+               uint32_t bpp_bucket = 0,
+               blink::LargestContentfulPaintType type =
+                   blink::LargestContentfulPaintType::kNone) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad::kEntryName);
@@ -192,6 +195,10 @@ class UkmPageLoadMetricsObserverTest
           bpp_bucket);
     }
 
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        entry, PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(type));
+
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad_Internal::kEntryName);
@@ -209,6 +216,21 @@ class UkmPageLoadMetricsObserverTest
         PageLoad_Internal::
             kPaintTiming_LargestContentfulPaint_TerminationStateName,
         static_cast<int>(LargestContentState::kReported));
+  }
+
+  // Tests that the main frame LCP reports the given |value| as its timestamp.
+  void TestMainFrameLCPTimestamp(int value) {
+    std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+        tester()->test_ukm_recorder().GetMergedEntriesByName(
+            PageLoad::kEntryName);
+    EXPECT_EQ(1ul, merged_entries.size());
+
+    const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        entry,
+        PageLoad::
+            kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
+        value);
   }
 
   void TestNoLCP(LargestContentState state) {
@@ -436,6 +458,144 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
 
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
           30 /* image_bpp = "8.0 - 9.0" */);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintAnimated) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(600);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kAnimatedImage);
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  NavigateAndCommit(GURL(kTestUrl1));
+  tester()->SimulateTimingUpdate(timing);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
+          30 /* image_bpp = "8.0 - 9.0" */,
+          blink::LargestContentfulPaintType::kAnimatedImage);
+}
+
+// Test that when the main frame and a subframe both have LCP candidates, and
+// the subframe's image is larger, that all of the values in the merged LCP are
+// taken from the subframe. The main frame LCP entry should still reflect the
+// timing of the main frame's image.
+TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromSubframeMerged) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(600);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kNone);
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(4780);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 100u;
+  subframe_timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kAnimatedImage);
+  subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kTestUrl1));
+  RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("subframe"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, subframe);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Test that the largest paint came from the subframe. Type and bpp fields
+  // should be set correctly. Don't check main frame here, as the timing will be
+  // different for that paint.
+  TestLCP(4780, LargestContentTextOrImage::kImage, false /* test_main_frame */,
+          23 /* image_bpp = "1.0 - 2.0" */,
+          blink::LargestContentfulPaintType::kAnimatedImage);
+
+  // Test that the main frame largest paint is also correct.
+  TestMainFrameLCPTimestamp(600);
+}
+
+// Test that when the main frame and a subframe both have LCP candidates, and
+// the main frame's image is larger, that all of the values in the merged LCP
+// are taken from the main frame.
+TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromMainFrameMerged) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(600);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size =
+      100u;
+  timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kNone);
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(4780);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 50u;
+  subframe_timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kAnimatedImage);
+  subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kTestUrl1));
+  RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("subframe"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, subframe);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Test that the largest paint came from the main frame. Type and bpp fields
+  // should be set correctly. Verify that the main frame LCP timing is also set
+  // correctly.
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
+          30 /* image_bpp = "8.0 - 9.0" */,
+          blink::LargestContentfulPaintType::kNone);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImageLoading) {
@@ -828,7 +988,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -880,7 +1040,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -915,7 +1075,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -970,12 +1130,12 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* same_site_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSameSiteSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("same_site_subframe"));
   RenderFrameHost* cross_site_subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kCrossSiteSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("cross_site_subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1011,6 +1171,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::Milliseconds(4780);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -1021,6 +1182,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       base::Milliseconds(990);
   subframe_timing.paint_timing->largest_contentful_paint
       ->largest_image_paint_size = 100u;
+  subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
   PopulateExperimentalLCP(subframe_timing.paint_timing);
   PopulateRequiredTimingFields(&subframe_timing);
 
@@ -1029,7 +1191,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate timing updates in the main frame and the subframe.
@@ -1039,7 +1201,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(990, LargestContentTextOrImage::kImage, false /* test_main_frame */);
+  TestLCP(990, LargestContentTextOrImage::kImage, false /* test_main_frame */,
+          23 /* image_bpp = "1.0 - 2.0" */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
@@ -1680,6 +1843,30 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
               testing::ElementsAre(base::Bucket(25, 1)));
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  tester()->SimulateSoftNavigationCountUpdate(1);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(ukm_entry,
+                                   PageLoad::kSoftNavigationCountName, 1);
+    ukm_recorder.ExpectEntryMetric(kv.second.get(),
+                                   PageLoad::kNavigation_PageEndReason3Name,
+                                   page_load_metrics::END_CLOSE);
+  }
+}
+
 TEST_F(UkmPageLoadMetricsObserverTest,
        ExperimentalLayoutInstabilityRecordOnHidden) {
   NavigateAndCommit(GURL(kTestUrl1));
@@ -1880,7 +2067,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
   RenderFrameHost* subframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
           GURL(kSubframeTestUrl),
-          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
               ->AppendChild("subframe"));
 
   // Simulate layout instability in the subframe.
@@ -2089,6 +2276,46 @@ TEST_F(UkmPageLoadMetricsObserverTest, DefaultSearchReported) {
         kv.second.get(), GeneratedNavigation::kFirstURLIsHomePageName, false);
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), GeneratedNavigation::kFinalURLIsHomePageName, false);
+  }
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, NavigationIsScopedSearchLikeNavigation) {
+  static const char16_t kShortName[] = u"test";
+  static const char kSearchURL[] =
+      "https://www.searchurl.com/search?q={searchTerms}";
+  static const char kSearchURLWithQuery[] =
+      "https://www.searchurl.com/search?q=somequery";
+
+  TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context()));
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data;
+  data.SetShortName(kShortName);
+  data.SetKeyword(data.short_name());
+  data.SetURL(kSearchURL);
+
+  // Set the DSE to the test URL.
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+
+  NavigateAndCommit(GURL(kSearchURLWithQuery));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
+        kv.second.get(), GURL(kSearchURLWithQuery));
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), PageLoad::kIsScopedSearchLikeNavigationName, true);
   }
 }
 
@@ -2473,7 +2700,7 @@ void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
 RenderFrameHost* CLSUkmPageLoadMetricsObserverTest::NavigateSubframe() {
   return NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(kSubframeTestUrl),
-      RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendChild("subframe"));
 }
 
@@ -2512,7 +2739,7 @@ void CLSUkmPageLoadMetricsObserverTest::RunBeforeInputOrScrollCase(
     bool input_in_subframe) {
   NavigateAndCommit(GURL(kTestUrl1));
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* subframe = NavigateSubframe();
 
   SimulateShiftDelta(1.0, main_frame);

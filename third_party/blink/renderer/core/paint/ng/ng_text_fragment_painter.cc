@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -61,10 +62,18 @@ inline PhysicalRect BoxInPhysicalSpace(
     const PhysicalOffset& parent_offset,
     const LayoutNGTextCombine* text_combine) {
   PhysicalRect box_rect;
-  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData())
+  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
-  else
+    const float scale = svg_data->length_adjust_scale;
+    if (scale != 1.0f) {
+      if (cursor.CurrentItem()->IsHorizontal())
+        box_rect.SetWidth(LayoutUnit(svg_data->rect.width() / scale));
+      else
+        box_rect.SetHeight(LayoutUnit(svg_data->rect.height() / scale));
+    }
+  } else {
     box_rect = cursor.CurrentItem()->RectInContainerFragment();
+  }
   box_rect.offset.left += paint_offset.left;
   // We round the y-axis to ensure consistent line heights.
   box_rect.offset.top =
@@ -317,7 +326,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           : physical_box.offset.top + ascent);
 
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
-                             text_origin, physical_box, is_horizontal);
+                             text_origin, physical_box, inline_context_,
+                             is_horizontal);
   NGTextDecorationPainter decoration_painter(text_painter, text_item,
                                              paint_info, style, text_style,
                                              rotated_box, selection);
@@ -387,6 +397,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
       node_id = layout_text->EnsureNodeId();
   }
+  NGInlinePaintContext::ScopedPaintOffset scoped_paint_offset(paint_offset,
+                                                              inline_context_);
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));

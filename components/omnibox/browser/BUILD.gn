@@ -53,6 +53,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "https_valid_in_chip.icon",
     "incognito.icon",
     "install_desktop.icon",
+    "journeys.icon",
     "keyword_search.icon",
     "offline_pin.icon",
     "page.icon",
@@ -257,7 +258,6 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
-    "//components/ntp_tiles",
     "//components/open_from_clipboard",
     "//components/pref_registry",
     "//components/prefs",
@@ -293,10 +293,13 @@ static_library("browser") {
     sources += [
       "actions/history_clusters_action.cc",
       "actions/history_clusters_action.h",
+      "history_cluster_provider.cc",
+      "history_cluster_provider.h",
     ]
     deps += [
       "//components/history_clusters/core",
       "//components/keyed_service/content",
+      "//components/optimization_guide/core:entities",
     ]
   }
 
@@ -445,12 +448,38 @@ if (is_android) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+    deps = [
+      ":browser_java",
+      ":junit_test_support",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+      "//url:gurl_junit_shadows",
+    ]
+  }
+
+  android_library("junit_test_support") {
+    testonly = true
+    sources = [ "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java" ]
+    deps = [
+      "//components/omnibox/browser:browser_java",
+      "//components/query_tiles:query_tile_java",
+      "//third_party/androidx:androidx_collection_collection_java",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
+    ]
+  }
+
   java_cpp_enum("browser_java_enums_srcjar") {
     sources = [
       "actions/omnibox_action_concepts.h",
       "actions/omnibox_pedal_concepts.h",
       "autocomplete_match.h",
       "autocomplete_match_type.h",
+      "most_visited_sites_provider.cc",
       "suggestion_answer.h",
     ]
   }
@@ -581,6 +610,7 @@ source_set("unit_tests") {
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
     "omnibox_prefs_unittest.cc",
+    "omnibox_triggered_feature_service_unittest.cc",
     "omnibox_view_unittest.cc",
     "on_device_head_model_unittest.cc",
     "on_device_head_provider_unittest.cc",
@@ -646,6 +676,14 @@ source_set("unit_tests") {
       "//components/omnibox/browser:vector_icons",
       "//components/vector_icons:vector_icons",
     ]
+  }
+
+  if (!is_ios) {
+    sources += [
+      "actions/history_clusters_action_unittest.cc",
+      "history_cluster_provider_unittest.cc",
+    ]
+    deps += [ "//components/history_clusters/core:test_support" ]
   }
 }
 

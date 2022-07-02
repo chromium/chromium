@@ -83,8 +83,9 @@ public class PageInfoHistoryController
                 /* isSeparateActivity */ false,
                 /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, mTabSupplier);
-        mContentManager.initialize();
+                /* selectionDelegate */ null, mTabSupplier, false,
+                vg -> null, new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
+        mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
 

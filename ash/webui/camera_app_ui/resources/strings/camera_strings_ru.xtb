@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Сканировать штрихкод</translation>
 <translation id="3892148308691398805">Копировать текст</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mпкс</translation>
+<translation id="4096701159033358951">Скачивание функции для сканирования документов.</translation>
 <translation id="4118525110028899586">Приостановить запись</translation>
 <translation id="4121305183798804752">Обнаружен документ</translation>
 <translation id="414641094616694804">Разрешение этой камеры нельзя изменить</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Отменить съемку</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Мп</translation>
 <translation id="4570032796877367747">Фронтальная камера</translation>
+<translation id="4620818268515773682">Микрофон включен.</translation>
 <translation id="4628948037717959914">Фото</translation>
 <translation id="4649291346448517080">Не удалось сохранить файл.</translation>
 <translation id="4695379108709712600">Перемещение вверх</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7670511624014457267">60 кадров/с</translation>
 <translation id="7671804233658741790">Правый нижний угол документа</translation>
+<translation id="7692090236657809299">Включить панорамирование, наклон, масштабирование</translation>
 <translation id="7726641833034062494">Записать обычное видео</translation>
 <translation id="7748344063862150053">Правый верхний угол документа</translation>
 <translation id="7933675232020478311">Перемещение вниз и вправо</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">Наклонить вниз</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Микрофон отключен.</translation>
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Просмотр метаданных</translation>

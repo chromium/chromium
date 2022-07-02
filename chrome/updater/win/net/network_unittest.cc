@@ -19,7 +19,7 @@ TEST(UpdaterTestNetwork, NetworkFetcherWinHTTPFactory) {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
   PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
 

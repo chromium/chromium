@@ -46,44 +46,6 @@ std::unique_ptr<gfx::GpuFence> TakeGpuFence(std::vector<gfx::GpuFence> fences) {
                         : std::make_unique<gfx::GpuFence>(std::move(fences[0]));
 }
 
-#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-// Helper function for getting a fence from the access. If it's a shared image
-// created for raster && scanout with DelegatedCompositing enabled, the access
-// mustn't have a fence, and we have to create a fence here and store it as
-// |current_frame_fence|. The |current_frame_fence| must be the same for the set
-// of overlays. Then, it will be dupped and returned for each overlay backed by
-// a raster image.
-// TODO(crbug.com/1254033): this code block shall be removed after cc is able to
-// set a single (duplicated) fence for bunch of tiles.
-std::unique_ptr<gfx::GpuFence> TakeGpuFenceForOverlay(
-    SkiaOutputSurfaceDependency* dep,
-    gpu::SharedImageRepresentationOverlay::ScopedReadAccess* access,
-    std::unique_ptr<gl::GLFence>& current_frame_fence) {
-  auto fence = access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr;
-#if defined(USE_OZONE)
-  if (gl::GLFence::IsGpuFenceSupported() && dep && access &&
-      (access->representation()->usage() &
-       gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING)) {
-    DCHECK(!fence);
-    DCHECK(features::IsDelegatedCompositingEnabled());
-    DCHECK_EQ(gpu::GrContextType::kGL, dep->gr_context_type());
-    // Create a single fence that will be duplicated and inserted into each
-    // overlay plane data. This avoids unnecessary cost as creating multiple
-    // number of fences at the end of each raster task at the ShareImage
-    // level is costly. Thus, at this point, the gpu tasks have been
-    // dispatched and it's safe to create just a single fence.
-    if (!current_frame_fence)
-      current_frame_fence = gl::GLFence::CreateForGpuFence();
-
-    // Dup the fence - it must be inserted into each shared image before
-    // ScopedReadAccess is created.
-    fence = current_frame_fence->GetGpuFence();
-  }
-#endif
-  return fence;
-}
-#endif  // BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-
 class PresenterImageGL : public OutputPresenter::Image {
  public:
   PresenterImageGL() = default;
@@ -413,32 +375,6 @@ void OutputPresenterGL::SchedulePrimaryPlane(
           /*hdr_metadata=*/absl::nullopt));
 }
 
-void OutputPresenterGL::ScheduleOneOverlay(const OverlayCandidate& overlay,
-                                           ScopedOverlayAccess* access) {
-#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-  auto* gl_image = access ? access->gl_image() : nullptr;
-  if (gl_image || overlay.is_solid_color) {
-#if DCHECK_IS_ON()
-    if (overlay.is_solid_color) {
-      LOG_IF(FATAL, !overlay.color.has_value())
-          << "Solid color quads must have color set.";
-    }
-    CHECK(!overlay.gpu_fence_id);
-#endif
-    gl_surface_->ScheduleOverlayPlane(
-        gl_image, access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr,
-        gfx::OverlayPlaneData(
-            overlay.plane_z_order, overlay.transform, overlay.display_rect,
-            overlay.uv_rect, !overlay.is_opaque,
-            ToEnclosingRect(overlay.damage_rect), overlay.opacity,
-            overlay.priority_hint, overlay.rounded_corners, overlay.color_space,
-            overlay.hdr_metadata, overlay.color, overlay.is_solid_color));
-  }
-#else   //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-  NOTREACHED();
-#endif  //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-}
-
 void OutputPresenterGL::CommitOverlayPlanes(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
@@ -452,72 +388,72 @@ void OutputPresenterGL::CommitOverlayPlanes(
   }
 }
 
-void OutputPresenterGL::ScheduleOverlays(
-    SkiaOutputSurface::OverlayList overlays,
-    std::vector<ScopedOverlayAccess*> accesses) {
-  DCHECK_EQ(overlays.size(), accesses.size());
+void OutputPresenterGL::ScheduleOverlayPlane(
+    const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
+    ScopedOverlayAccess* access,
+    std::unique_ptr<gfx::GpuFence> acquire_fence) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-  // The fence that will be created for current ScheduleOverlays. This fence is
-  // required and passed with overlay data iff DelegatedCompositing is enabled
-  // and the overlay's shared image backing is created for raster op. Given
-  // rasterization tasks create fences when gpu operations are issued, we end up
-  // having multiple number of fences, which creation is costly. Instead, a
-  // single fence is created during overlays' scheduling, which is dupped and
-  // inserted into each OverlayPlaneData if the underlying shared image was
-  // created for rasterization.
-  std::unique_ptr<gl::GLFence> current_frame_fence;
-
-  // Note while reading through this for-loop that |overlay| has different
-  // types on different platforms. On Android and Ozone it is an
-  // OverlayCandidate, on Windows it is a DCLayerOverlay, and on macOS it is
-  // a CALayerOverlay.
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    const auto& overlay = overlays[i];
-    auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
+  // Note that |overlay_plane_candidate| has different types on different
+  // platforms. On Android and Ozone it is an OverlayCandidate, on Windows it is
+  // a DCLayerOverlay, and on macOS it is a CALayeroverlay.
+  auto* gl_image = access ? access->gl_image() : nullptr;
 #if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-    // TODO(msisov): Once shared image factory allows creating a non backed
-    // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
-    // condition that checks if this is a solid color overlay plane.
-    //
-    // Solid color overlays can be non-backed and are delegated for processing
-    // to underlying backend. The only backend that uses them is Wayland - it
-    // may have a protocol that asks Wayland compositor to create a solid color
-    // buffer for a client. OverlayProcessorDelegated decides if a solid color
-    // overlay is an overlay candidate and should be scheduled.
-    if (gl_image || overlay.is_solid_color) {
+  // TODO(msisov): Once shared image factory allows creating a non backed
+  // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
+  // condition that checks if this is a solid color overlay plane.
+  //
+  // Solid color overlays can be non-backed and are delegated for processing
+  // to underlying backend. The only backend that uses them is Wayland - it
+  // may have a protocol that asks Wayland compositor to create a solid color
+  // buffer for a client. OverlayProcessorDelegated decides if a solid color
+  // overlay is an overlay candidate and should be scheduled.
+  if (gl_image || overlay_plane_candidate.is_solid_color) {
 #if DCHECK_IS_ON()
-      if (overlay.is_solid_color) {
-        LOG_IF(FATAL, !overlay.color.has_value())
-            << "Solid color quads must have color set.";
-      }
-      CHECK(!overlay.gpu_fence_id);
-#endif
-      gl_surface_->ScheduleOverlayPlane(
-          gl_image,
-          TakeGpuFenceForOverlay(dependency_, accesses[i], current_frame_fence),
-          gfx::OverlayPlaneData(
-              overlay.plane_z_order, overlay.transform, overlay.display_rect,
-              overlay.uv_rect, !overlay.is_opaque,
-              ToEnclosingRect(overlay.damage_rect), overlay.opacity,
-              overlay.priority_hint, overlay.rounded_corners,
-              overlay.color_space, overlay.hdr_metadata, overlay.color,
-              overlay.is_solid_color));
+    if (overlay_plane_candidate.is_solid_color) {
+      LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
+          << "Solid color quads must have color set.";
     }
-#elif BUILDFLAG(IS_APPLE)
-    // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
-    // when the ddl is recorded, so the content already is with opacity applied.
-    float opacity = overlay.ddl ? 1.0 : overlay.shared_state->opacity;
-    gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
-        overlay.shared_state->is_clipped,
-        gfx::ToEnclosingRect(overlay.shared_state->clip_rect),
-        overlay.shared_state->rounded_corner_bounds,
-        overlay.shared_state->sorting_context_id,
-        gfx::Transform(overlay.shared_state->transform), gl_image,
-        overlay.contents_rect, gfx::ToEnclosingRect(overlay.bounds_rect),
-        overlay.background_color, overlay.edge_aa_mask, opacity, overlay.filter,
-        overlay.protected_video_type));
+    CHECK(!overlay_plane_candidate.gpu_fence_id);
+
+    if (acquire_fence && !acquire_fence->GetGpuFenceHandle().is_null()) {
+      CHECK(access);
+      CHECK_EQ(gpu::GrContextType::kGL, dependency_->gr_context_type());
+      CHECK(features::IsDelegatedCompositingEnabled());
+      CHECK(access->representation()->usage() &
+            gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
+    }
 #endif
+    gl_surface_->ScheduleOverlayPlane(
+        gl_image,
+        (access ? TakeGpuFence(access->TakeAcquireFences())
+                : std::move(acquire_fence)),
+        gfx::OverlayPlaneData(
+            overlay_plane_candidate.plane_z_order,
+            overlay_plane_candidate.transform,
+            overlay_plane_candidate.display_rect,
+            overlay_plane_candidate.uv_rect, !overlay_plane_candidate.is_opaque,
+            ToEnclosingRect(overlay_plane_candidate.damage_rect),
+            overlay_plane_candidate.opacity,
+            overlay_plane_candidate.priority_hint,
+            overlay_plane_candidate.rounded_corners,
+            overlay_plane_candidate.color_space,
+            overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
+            overlay_plane_candidate.is_solid_color));
   }
+#elif BUILDFLAG(IS_APPLE)
+  gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
+      overlay_plane_candidate.shared_state->is_clipped,
+      gfx::ToEnclosingRect(overlay_plane_candidate.shared_state->clip_rect),
+      overlay_plane_candidate.shared_state->rounded_corner_bounds,
+      overlay_plane_candidate.shared_state->sorting_context_id,
+      gfx::Transform(overlay_plane_candidate.shared_state->transform), gl_image,
+      overlay_plane_candidate.contents_rect,
+      gfx::ToEnclosingRect(overlay_plane_candidate.bounds_rect),
+      overlay_plane_candidate.background_color.toSkColor(),
+      overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
+      overlay_plane_candidate.filter,
+      overlay_plane_candidate.protected_video_type));
+#endif
 #endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 }
 

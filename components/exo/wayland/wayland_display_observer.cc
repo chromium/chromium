@@ -9,10 +9,16 @@
 
 #include <string>
 
+#include "chrome-color-management-server-protocol.h"
+#include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/wayland_display_util.h"
+#include "components/exo/wayland/zcr_color_manager.h"
 #include "components/exo/wm_helper.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "wayland-server-protocol-core.h"
 
 namespace exo {
 namespace wayland {
@@ -73,6 +79,20 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
   for (auto& observer : observers_)
     needs_done |= observer.SendDisplayMetrics(display, changed_metrics);
 
+  // if the color space changed, send a
+  // zcr_color_management_output.color_space_changed() event as well as
+  // wl_output_send_done() event.
+  if ((changed_metrics & DISPLAY_METRIC_COLOR_SPACE) ==
+      DISPLAY_METRIC_COLOR_SPACE) {
+    if (color_management_output_resource_) {
+      // TODO(b/217795369): will need to track and send events for each
+      // potential client's zcr color management output resource.
+      zcr_color_management_output_v1_send_color_space_changed(
+          color_management_output_resource_);
+      needs_done = true;
+    }
+  }
+
   if (needs_done) {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_DONE_SINCE_VERSION) {
@@ -98,6 +118,37 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
 void WaylandDisplayHandler::UnsetXdgOutputResource() {
   DCHECK(xdg_output_resource_);
   xdg_output_resource_ = nullptr;
+}
+
+void WaylandDisplayHandler::OnGetColorManagementOutput(
+    wl_resource* color_management_output_resource) {
+  DCHECK(!color_management_output_resource_);
+  color_management_output_resource_ = color_management_output_resource;
+
+  // TODO(b/215778539): send an appropriate EDR value. Currently using dummy
+  // value of 3000. Also find out when dynamic range changes and if it happens
+  // in OnDisplayMetricsChanged().
+  zcr_color_management_output_v1_send_extended_dynamic_range(
+      color_management_output_resource_, 3000);
+
+  wl_output_send_done(output_resource_);
+  wl_client_flush(wl_resource_get_client(output_resource_));
+}
+
+void WaylandDisplayHandler::UnsetColorManagementOutputResource() {
+  DCHECK(color_management_output_resource_);
+  color_management_output_resource_ = nullptr;
+}
+
+void WaylandDisplayHandler::XdgOutputSendLogicalPosition(
+    const gfx::Point& position) {
+  zxdg_output_v1_send_logical_position(xdg_output_resource_, position.x(),
+                                       position.y());
+}
+
+void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
+  zxdg_output_v1_send_logical_size(xdg_output_resource_, size.width(),
+                                   size.height());
 }
 
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
@@ -166,10 +217,8 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
                       static_cast<int>(60000));
 
   if (xdg_output_resource_) {
-    const gfx::Size logical_size = ScaleToRoundedSize(
-        physical_size_px, 1.0f / display.device_scale_factor());
-    zxdg_output_v1_send_logical_size(xdg_output_resource_, logical_size.width(),
-                                     logical_size.height());
+    XdgOutputSendLogicalPosition(origin);
+    XdgOutputSendLogicalSize(display.bounds().size());
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {
@@ -181,25 +230,6 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   }
 
   return true;
-}
-
-wl_output_transform WaylandDisplayHandler::OutputTransform(
-    display::Display::Rotation rotation) {
-  // Note: |rotation| describes the counter clockwise rotation that a
-  // display's output is currently adjusted for, which is the inverse
-  // of what we need to return.
-  switch (rotation) {
-    case display::Display::ROTATE_0:
-      return WL_OUTPUT_TRANSFORM_NORMAL;
-    case display::Display::ROTATE_90:
-      return WL_OUTPUT_TRANSFORM_270;
-    case display::Display::ROTATE_180:
-      return WL_OUTPUT_TRANSFORM_180;
-    case display::Display::ROTATE_270:
-      return WL_OUTPUT_TRANSFORM_90;
-  }
-  NOTREACHED();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 
 }  // namespace wayland

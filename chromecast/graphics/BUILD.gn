@@ -22,7 +22,7 @@ cast_source_set("graphics") {
 
   public_deps = [ "//chromecast/ui/mojom" ]
 
-  if (use_aura) {
+  if (use_aura && !is_fuchsia) {
     sources += [
       "accessibility/accessibility_cursor_ring_layer.cc",
       "accessibility/accessibility_cursor_ring_layer.h",
@@ -142,7 +142,7 @@ cast_shared_library("libcast_graphics_1.0") {
   ]
 }
 
-if (use_aura && !is_cast_audio_only) {
+if (use_aura && !is_cast_audio_only && !is_fuchsia) {
   test("cast_graphics_unittests") {
     sources = [
       "accessibility/accessibility_focus_ring_controller_unittest.cc",

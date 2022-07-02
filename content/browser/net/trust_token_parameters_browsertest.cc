@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenPermissionsPolicyFencedFrameTest,
           }));
 
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+      shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url));
 
   run_loop.Run();
 }

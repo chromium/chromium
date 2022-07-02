@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
+#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -138,59 +140,63 @@ static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
-  return Eval(query, Results());
+  return Eval(query, nullptr /* result_flags */);
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
+bool MediaQueryEvaluator::Eval(const MediaQuery& query,
+                               MediaQueryResultFlags* result_flags) const {
   if (!MediaTypeMatch(query.MediaType()))
     return ApplyRestrictor(query.Restrictor(), KleeneValue::kFalse);
   if (!query.ExpNode())
     return ApplyRestrictor(query.Restrictor(), KleeneValue::kTrue);
-  return ApplyRestrictor(query.Restrictor(), Eval(*query.ExpNode(), results));
+  return ApplyRestrictor(query.Restrictor(),
+                         Eval(*query.ExpNode(), result_flags));
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
-  return Eval(query_set, Results());
+  return Eval(query_set, nullptr /* result_flags */);
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
-                               Results results) const {
-  const Vector<std::unique_ptr<MediaQuery>>& queries = query_set.QueryVector();
+                               MediaQueryResultFlags* result_flags) const {
+  const HeapVector<Member<const MediaQuery>>& queries = query_set.QueryVector();
   if (!queries.size())
     return true;  // Empty query list evaluates to true.
 
   // Iterate over queries, stop if any of them eval to true (OR semantics).
   bool result = false;
   for (wtf_size_t i = 0; i < queries.size() && !result; ++i)
-    result = Eval(*queries[i], results);
+    result = Eval(*queries[i], result_flags);
 
   return result;
 }
 
 KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
-  return Eval(node, Results());
+  return Eval(node, nullptr /* result_flags */);
 }
 
-KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
-                                      Results results) const {
+KleeneValue MediaQueryEvaluator::Eval(
+    const MediaQueryExpNode& node,
+    MediaQueryResultFlags* result_flags) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
-    return Eval(n->Operand(), results);
+    return Eval(n->Operand(), result_flags);
   if (auto* n = DynamicTo<MediaQueryFunctionExpNode>(node))
-    return Eval(n->Operand(), results);
+    return Eval(n->Operand(), result_flags);
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
-    return EvalNot(n->Operand(), results);
+    return EvalNot(n->Operand(), result_flags);
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
-    return EvalAnd(n->Left(), n->Right(), results);
+    return EvalAnd(n->Left(), n->Right(), result_flags);
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node))
-    return EvalOr(n->Left(), n->Right(), results);
+    return EvalOr(n->Left(), n->Right(), result_flags);
   if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node))
     return KleeneValue::kUnknown;
-  return EvalFeature(To<MediaQueryFeatureExpNode>(node).Expression(), results);
+  return EvalFeature(To<MediaQueryFeatureExpNode>(node), result_flags);
 }
 
-KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
-                                         Results results) const {
-  switch (Eval(operand_node, results)) {
+KleeneValue MediaQueryEvaluator::EvalNot(
+    const MediaQueryExpNode& operand_node,
+    MediaQueryResultFlags* result_flags) const {
+  switch (Eval(operand_node, result_flags)) {
     case KleeneValue::kTrue:
       return KleeneValue::kFalse;
     case KleeneValue::kFalse:
@@ -200,48 +206,33 @@ KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
   }
 }
 
-KleeneValue MediaQueryEvaluator::EvalAnd(const MediaQueryExpNode& left_node,
-                                         const MediaQueryExpNode& right_node,
-                                         Results results) const {
-  KleeneValue left = Eval(left_node, results);
+KleeneValue MediaQueryEvaluator::EvalAnd(
+    const MediaQueryExpNode& left_node,
+    const MediaQueryExpNode& right_node,
+    MediaQueryResultFlags* result_flags) const {
+  KleeneValue left = Eval(left_node, result_flags);
   // Short-circuiting before calling Eval on |right_node| prevents
   // unnecessary entries in |results|.
   if (left != KleeneValue::kTrue)
     return left;
-  return Eval(right_node, results);
+  return Eval(right_node, result_flags);
 }
 
-KleeneValue MediaQueryEvaluator::EvalOr(const MediaQueryExpNode& left_node,
-                                        const MediaQueryExpNode& right_node,
-                                        Results results) const {
-  KleeneValue left = Eval(left_node, results);
+KleeneValue MediaQueryEvaluator::EvalOr(
+    const MediaQueryExpNode& left_node,
+    const MediaQueryExpNode& right_node,
+    MediaQueryResultFlags* result_flags) const {
+  KleeneValue left = Eval(left_node, result_flags);
   // Short-circuiting before calling Eval on |right_node| prevents
   // unnecessary entries in |results|.
   if (left == KleeneValue::kTrue)
     return left;
-  return Eval(right_node, results);
-}
-
-KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
-                                             Results results) const {
-  if (media_values_) {
-    if (!media_values_->Width().has_value() && expr.IsWidthDependent())
-      return KleeneValue::kUnknown;
-    if (!media_values_->Height().has_value() && expr.IsHeightDependent())
-      return KleeneValue::kUnknown;
-    if (!media_values_->InlineSize().has_value() &&
-        expr.IsInlineSizeDependent()) {
-      return KleeneValue::kUnknown;
-    }
-    if (!media_values_->BlockSize().has_value() && expr.IsBlockSizeDependent())
-      return KleeneValue::kUnknown;
-  }
-  return Eval(expr, results) ? KleeneValue::kTrue : KleeneValue::kFalse;
+  return Eval(right_node, result_flags);
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
-    const Vector<MediaQuerySetResult>& results) const {
-  for (const auto& result : results) {
+    const HeapVector<MediaQuerySetResult>& result_flags) const {
+  for (const auto& result : result_flags) {
     if (result.Result() != Eval(result.MediaQueries()))
       return true;
   }
@@ -563,6 +554,12 @@ static bool GridMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ComputeLength(const MediaQueryExpValue& value,
                           const MediaValues& media_values,
                           double& result) {
+  if (value.IsCSSValue()) {
+    result = To<CSSPrimitiveValue>(value.GetCSSValue())
+                 .ComputeLength<double>(media_values);
+    return true;
+  }
+
   if (!value.IsNumeric())
     return false;
 
@@ -1296,33 +1293,41 @@ void MediaQueryEvaluator::Init() {
 #undef ADD_TO_FUNCTIONMAP
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
-  return Eval(expr, Results());
-}
-
-bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
-                               Results results) const {
+KleeneValue MediaQueryEvaluator::EvalFeature(
+    const MediaQueryFeatureExpNode& feature,
+    MediaQueryResultFlags* result_flags) const {
   if (!media_values_ || !media_values_->HasValues()) {
     // media_values_ should only be nullptr when parsing UA stylesheets. The
     // only media queries we support in UA stylesheets are media type queries.
     // If HasValues() return false, it means the document frame is nullptr.
     NOTREACHED();
-    return false;
+    return KleeneValue::kFalse;
   }
 
-  DCHECK(media_values_->Width().has_value() || !expr.IsWidthDependent());
-  DCHECK(media_values_->Height().has_value() || !expr.IsHeightDependent());
+  if (!media_values_->Width().has_value() && feature.IsWidthDependent())
+    return KleeneValue::kUnknown;
+  if (!media_values_->Height().has_value() && feature.IsHeightDependent())
+    return KleeneValue::kUnknown;
+  if (!media_values_->InlineSize().has_value() &&
+      feature.IsInlineSizeDependent()) {
+    return KleeneValue::kUnknown;
+  }
+  if (!media_values_->BlockSize().has_value() && feature.IsBlockSizeDependent())
+    return KleeneValue::kUnknown;
+
+  if (CSSVariableParser::IsValidVariableName(feature.Name()))
+    return EvalStyleFeature(feature, result_flags);
 
   DCHECK(g_function_map);
 
   // Call the media feature evaluation function. Assume no prefix and let
   // trampoline functions override the prefix if prefix is used.
-  EvalFunc func = g_function_map->at(expr.MediaFeature().Impl());
+  EvalFunc func = g_function_map->at(feature.Name().Impl());
 
   if (!func)
-    return false;
+    return KleeneValue::kFalse;
 
-  const auto& bounds = expr.Bounds();
+  const auto& bounds = feature.Bounds();
 
   bool result = true;
 
@@ -1337,14 +1342,42 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
     result &= func(bounds.left.value, op, *media_values_);
   }
 
-  if (results.viewport_dependent && expr.IsViewportDependent())
-    results.viewport_dependent->push_back(MediaQueryResult(expr, result));
-  if (results.device_dependent && expr.IsDeviceDependent())
-    results.device_dependent->push_back(MediaQueryResult(expr, result));
-  if (results.unit_flags)
-    *results.unit_flags |= expr.GetUnitFlags();
+  if (result_flags) {
+    result_flags->is_viewport_dependent =
+        result_flags->is_viewport_dependent || feature.IsViewportDependent();
+    result_flags->is_device_dependent =
+        result_flags->is_device_dependent || feature.IsDeviceDependent();
+    result_flags->unit_flags |= feature.GetUnitFlags();
+  }
 
-  return result;
+  return result ? KleeneValue::kTrue : KleeneValue::kFalse;
+}
+
+KleeneValue MediaQueryEvaluator::EvalStyleFeature(
+    const MediaQueryFeatureExpNode& feature,
+    MediaQueryResultFlags* result_flags) const {
+  if (!media_values_ || !media_values_->HasValues()) {
+    NOTREACHED()
+        << "media_values has to be initialized for style() container queries";
+    return KleeneValue::kFalse;
+  }
+
+  const MediaQueryExpBounds& bounds = feature.Bounds();
+
+  // Style features always have the form of "property(feature): value".
+  DCHECK(!bounds.IsRange());
+  DCHECK(bounds.right.op == MediaQueryOperator::kNone);
+  DCHECK(bounds.right.IsValid());
+  DCHECK(bounds.right.value.IsCSSValue());
+  DCHECK(media_values_->GetComputedStyle());
+
+  return base::ValuesEquivalent(
+             media_values_->GetComputedStyle()->GetVariableData(
+                 AtomicString(feature.Name())),
+             To<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue())
+                 .Value())
+             ? KleeneValue::kTrue
+             : KleeneValue::kFalse;
 }
 
 }  // namespace blink

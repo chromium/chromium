@@ -35,6 +35,7 @@
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
@@ -780,7 +781,7 @@ void TestMetricsReporter::OnLoadStream(
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
     const ContentStats& content_stats,
-    const RequestMetadata& request_metadata,
+    ContentOrder content_order,
     std::unique_ptr<LoadLatencyTimes> latencies) {
   load_stream_from_store_status = load_from_store_status;
   load_stream_status = final_status;
@@ -789,7 +790,7 @@ void TestMetricsReporter::OnLoadStream(
   MetricsReporter::OnLoadStream(
       stream_type, load_from_store_status, final_status, is_initial_load,
       loaded_new_content_from_network, stored_content_age, content_stats,
-      request_metadata, std::move(latencies));
+      content_order, std::move(latencies));
 }
 void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
                                           SurfaceId surface_id) {
@@ -840,9 +841,9 @@ void FeedApiTest::SetUp() {
   // Disable fetching of recommended web feeds at startup to
   // avoid a delayed task in tests that don't need it.
   config.fetch_web_feed_info_delay = base::TimeDelta();
-  // `use_feed_query_requests_for_web_feeds` is a temporary option for
+  // `use_feed_query_requests` is a temporary option for
   // debugging, setting it to false tests the preferred endpoint.
-  config.use_feed_query_requests_for_web_feeds = false;
+  config.use_feed_query_requests = false;
   SetFeedConfigForTesting(config);
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
@@ -958,6 +959,11 @@ void FeedApiTest::WaitForIdleTaskQueue() {
 
         return ss.str();
       }));
+}
+
+void FeedApiTest::WaitForModelToAutoUnload() {
+  task_environment_.FastForwardBy(GetFeedConfig().model_unload_timeout +
+                                  base::Seconds(1));
 }
 
 void FeedApiTest::UnloadModel(const StreamType& stream_type) {

@@ -107,6 +107,26 @@ if (is_android) {
     sources = [ "$proto_path/thumbnail_cache_entry.proto" ]
   }
 
+  android_library("unit_device_javatests") {
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailDiskStorageTest.java" ]
+
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/browser_ui/util/android:java",
+      "//content/public/test/android:content_java_test_support",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+    ]
+  }
+
   android_library("javatests") {
     testonly = true
 
@@ -117,7 +137,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",
       "//chrome/browser/util:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
@@ -133,7 +153,6 @@ if (is_android) {
     data = [ "//chrome/browser/thumbnail/generator/test/data/android/" ]
 
     sources = [
-      "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailDiskStorageTest.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailMediaParserTest.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailProviderImplTest.java",
     ]

@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="3472200483164753384">Chromium Canary 不支援這項功能</translation>
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
+<translation id="3619462831205197427">登入這個網站、Google 帳戶和 Chromium。</translation>
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
@@ -77,7 +78,6 @@
 1. 開啟「設定」
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
-<translation id="6155422572367400359">登入這個網站、Google 帳戶和 Chromium。你可以稍後再開啟同步功能。</translation>
 <translation id="6183442264225539303">登入這個網站和 Chromium。你可以稍後再開啟同步功能。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />將 Chromium 移至 Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
+<translation id="8308172444429103994">Chromium 實用提示。在鍵盤頂端選取已儲存的密碼，即可加快登入速度。</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>

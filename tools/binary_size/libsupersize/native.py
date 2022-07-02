@@ -664,15 +664,15 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
       raw_symbols, lambda s: s.section_name):
     seen_sections.add(section_name)
     # Get last Last symbol in group.
+    sym = None  # Needed for pylint.
     for sym in group:
       pass
     end_address = sym.end_address  # pylint: disable=undefined-loop-variable
     size_from_syms = end_address - section_ranges[section_name][0]
     overhead = section_ranges[section_name][1] - size_from_syms
     assert overhead >= 0, (
-        ('End of last symbol (%x) in section %s is %d bytes after the end of '
-         'section from readelf (%x).') % (end_address, section_name, -overhead,
-                                          sum(section_ranges[section_name])))
+        'Last symbol (%s) ends %d bytes after section boundary (%x)' %
+        (sym, -overhead, sum(section_ranges[section_name])))
     if overhead > 0 and section_name not in models.BSS_SECTIONS:
       new_syms_by_section[section_name].append(
           models.Symbol(section_name,

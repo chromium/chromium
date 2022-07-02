@@ -25,8 +25,8 @@ class MultideviceSetupHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetProfileInfo(const base::ListValue* args);
-  void HandleOpenMultiDeviceSettings(const base::ListValue* args);
+  void HandleGetProfileInfo(const base::Value::List& args);
+  void HandleOpenMultiDeviceSettings(const base::Value::List& args);
 };
 
 }  // namespace multidevice_setup

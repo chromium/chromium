@@ -51,11 +51,13 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -84,8 +86,11 @@ void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
   if (manager && manager->core() && manager->core()->client())
     client_id = manager->core()->client()->client_id();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1252802): Add the client ID for LaCrOS.
-  std::string client_id = "";
+  Profile* main_profile = GetMainProfileLacros();
+  std::string client_id;
+  if (main_profile) {
+    client_id = reporting::GetUserClientId(main_profile).value_or("");
+  }
 #else
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
@@ -110,118 +115,28 @@ bool IsURLExemptFromAnalysis(const GURL& url) {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+absl::optional<std::string> GetDeviceDMToken() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns the single main profile, or nullptr if none is found.
-Profile* GetMainProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
-    return nullptr;
-  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(
-      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
-  if (main_it == profiles.end())
-    return nullptr;
-  return *main_it;
-}
-
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::BrowserInitParams::Get();
+  if (init_params && init_params->device_properties) {
+    return init_params->device_properties->device_dm_token;
+  }
+  return absl::nullopt;
+#else
+  const enterprise_management::PolicyData* policy_data =
+      ash::DeviceSettingsService::Get()->policy_data();
+  if (policy_data && policy_data->has_request_token())
+    return policy_data->request_token();
+  return absl::nullopt;
 #endif
-
+}
+#endif
 }  // namespace
 
 const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const char kServiceProviderConfig[] = R"({
-  "version": "1",
-  "service_providers" : [
-    {
-      "name": "google",
-      "display_name": "Google Cloud",
-      "version": {
-        "1": {
-          "analysis": {
-            "url": "https://safebrowsing.google.com/safebrowsing/uploads/scan",
-            "supported_tags": [
-              {
-                "name": "malware",
-                "display_name": "Threat protection",
-                "mime_types": [
-                  "application/vnd.microsoft.portable-executable",
-                  "application/vnd.rar",
-                  "application/x-msdos-program",
-                  "application/zip"
-                ],
-                "max_file_size": 52428800
-              },
-              {
-                "name": "dlp",
-                "display_name": "Sensitive data protection",
-                "mime_types": [
-                  "application/gzip",
-                  "application/msword",
-                  "application/pdf",
-                  "application/postscript",
-                  "application/rtf",
-                  "application/vnd.google-apps.document.internal",
-                  "application/vnd.google-apps.spreadsheet.internal",
-                  "application/vnd.ms-cab-compressed",
-                  "application/vnd.ms-excel",
-                  "application/vnd.ms-powerpoint",
-                  "application/vnd.ms-xpsdocument",
-                  "application/vnd.oasis.opendocument.text",
-                  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                  "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-                  "application/vnd.ms-excel.sheet.macroenabled.12",
-                  "application/vnd.ms-excel.template.macroenabled.12",
-                  "application/vnd.ms-word.document.macroenabled.12",
-                  "application/vnd.ms-word.template.macroenabled.12",
-                  "application/vnd.rar",
-                  "application/vnd.wordperfect",
-                  "application/x-7z-compressed",
-                  "application/x-bzip",
-                  "application/x-bzip2",
-                  "application/x-tar",
-                  "application/zip",
-                  "text/csv",
-                  "text/plain"
-                ],
-                "max_file_size": 52428800
-              }
-            ]
-          },
-          "reporting": {
-            "url": "https://chromereporting-pa.googleapis.com/v1/events"
-          }
-        }
-      }
-    },
-    {
-      "name": "box",
-      "display_name": "Box",
-      "version":  {
-        "1": {
-          "file_system": {
-            "home": "https://box.com",
-            "authorization_endpoint": "https://account.box.com/api/oauth2/authorize",
-            "token_endpoint": "https://api.box.com/oauth2/token",
-            "max_direct_size": 20971520,
-            "scopes": [],
-            "disable": [ "box.com", "boxcloud.com" ]
-          }
-        }
-      }
-    }
-  ]
-})";
-
-ServiceProviderConfig* GetServiceProviderConfig() {
-  static base::NoDestructor<ServiceProviderConfig> config(
-      kServiceProviderConfig);
-  return config.get();
-}
 
 // --------------------------------
 // ConnectorsService implementation
@@ -246,6 +161,21 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   if (!settings.has_value())
     return absl::nullopt;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  Profile* profile = Profile::FromBrowserContext(context_);
+  if (enterprise_connectors::IncludeDeviceInfo(profile,
+                                               /*per_profile=*/false)) {
+    // The device dm token includes additional information like a device id,
+    // which is relevant for reporting and should only be used for
+    // IncludeDeviceInfo==true.
+    absl::optional<std::string> device_dm_token = GetDeviceDMToken();
+    if (device_dm_token.has_value()) {
+      settings.value().dm_token = device_dm_token.value();
+      settings.value().per_profile = false;
+      return settings;
+    }
+  }
+#endif
   absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
     return absl::nullopt;
@@ -275,7 +205,11 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (!dm_token.has_value())
     return absl::nullopt;
 
-  settings.value().dm_token = dm_token.value().value;
+  if (settings.value().cloud_or_local_settings.is_cloud_analysis()) {
+    absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
+        .dm_token = dm_token.value().value;
+  }
+
   settings.value().per_profile =
       dm_token.value().scope == policy::POLICY_SCOPE_USER;
   settings.value().client_metadata = BuildClientMetadata();
@@ -628,7 +562,7 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
     if (primary_profile)
       return primary_profile;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    Profile* main_profile = GetMainProfile();
+    Profile* main_profile = GetMainProfileLacros();
     if (main_profile)
       return main_profile;
 #endif

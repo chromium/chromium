@@ -49,11 +49,13 @@
 <translation id="2182457891543959921">Perguntar antes de permitir que sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera (recomendado)</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="2238944249568001759">Pesquisas sugeridas com base na sua última guia</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228">Remover <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Perguntar quando um site quer descobrir dispositivos Bluetooth nas proximidades (recomendado)</translation>
 <translation id="2315043854645842844">A seleção de certificado do cliente não é compatível com o sistema operacional.</translation>
 <translation id="2321958826496381788">Arraste o controle deslizante até a leitura ficar confortável. Com o toque duplo em um parágrafo, o texto ficará pelo menos deste tamanho.</translation>
+<translation id="2329473609445770916">Este site define interesses que outros sites podem usar para mostrar anúncios</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplicar o tema escuro para sites, quando possível, ao usar o tema escuro no Chrome</translation>
 <translation id="2387895666653383613">Escala do texto</translation>
@@ -77,7 +79,7 @@
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2717722538473713889">Endereços de e-mail</translation>
-<translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identidade.</translation>
+<translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identificação.</translation>
 <translation id="2785051990912111074">Essa ação vai apagar os cookies de <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -90,6 +92,7 @@
 <translation id="300526633675317032">Essa ação vai apagar tudo, <ph name="SIZE_IN_KB" /> de dados de armazenamento de sites.</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
+<translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
@@ -97,6 +100,7 @@
 <translation id="3203366800380907218">Da Web</translation>
 <translation id="321187648315454507">Para permitir que o app <ph name="APP_NAME" /> envie notificações, também é necessário ativá-las nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfone</translation>
+<translation id="3248611290851046188">Este site define interesses que outros sites podem usar para mostrar anúncios. Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="3277252321222022663">Permitir que sites acessem os sensores (recomendado)</translation>
 <translation id="3295602654194328831">Ocultar informações</translation>
 <translation id="3328801116991980348">Informações do site</translation>
@@ -113,6 +117,7 @@
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
 <translation id="3797520601150691162">Não aplicar o tema escuro para um site específico</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Números de telefone</translation>
 <translation id="3826050100957962900">Login de terceiros</translation>
 <translation id="3835233591525155343">Uso do seu dispositivo</translation>
@@ -123,11 +128,13 @@
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3987993985790029246">Copiar link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permita cookies de um site específico.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
@@ -222,6 +229,7 @@
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6320088164292336938">Vibrar</translation>
+<translation id="6367753977865761591">Bloqueie o login de terceiros em um site específico.</translation>
 <translation id="6388207532828177975">Limpar e redefinir</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6439114592976064011">Impedir que sites usem seus dispositivos e dados de realidade virtual</translation>
@@ -238,7 +246,7 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
-<translation id="6722828510648505498">Bloquear solicitações de login de serviços de identidade.</translation>
+<translation id="6722828510648505498">Bloquear solicitações de login de serviços de identificação.</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Redefinir permissões?</translation>
 <translation id="6766622839693428701">Deslize para baixo para fechar.</translation>

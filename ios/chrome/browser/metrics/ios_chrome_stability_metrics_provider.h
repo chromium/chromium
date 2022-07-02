@@ -52,9 +52,6 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
   // metrics::MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
-  void ProvideStabilityMetrics(
-      metrics::SystemProfileProto* system_profile_proto) override;
-  void ClearSavedStabilityMetrics() override;
 
   // web::GlobalWebStateObserver:
   void WebStateDidStartLoading(web::WebState* web_state) override;

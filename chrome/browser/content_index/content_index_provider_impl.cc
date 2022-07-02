@@ -401,9 +401,3 @@ void ContentIndexProviderImpl::RenameItem(const ContentId& id,
                                           RenameCallback callback) {
   NOTREACHED();
 }
-
-void ContentIndexProviderImpl::ChangeSchedule(
-    const ContentId& id,
-    absl::optional<OfflineItemSchedule> schedule) {
-  NOTREACHED();
-}

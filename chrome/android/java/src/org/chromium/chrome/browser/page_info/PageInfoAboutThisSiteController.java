@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,6 +15,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -82,10 +84,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         view.setSiteInfo(mSiteInfo,
                 ()
                         -> openUrl(mSiteInfo.getDescription().getSource().getUrl(),
-                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED),
-                ()
-                        -> openUrl(mSiteInfo.getMoreAbout().getUrl(),
-                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED));
+                                PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
         return view;
     }
 
@@ -93,9 +92,15 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mMainController.recordAction(action);
         if (mEphemeralTabCoordinatorSupplier != null
                 && mEphemeralTabCoordinatorSupplier.get() != null) {
-            String title = mRowView.getContext().getString(R.string.page_info_more_about_this_page);
-            mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(
-                    new GURL(url), title, /*isIncognito=*/false);
+            // Append parameter to open the page with reduced UI elements in the bottomsheet.
+            Uri.Builder builder = Uri.parse(url).buildUpon();
+            if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
+                builder.appendQueryParameter("ilrm", "minimal");
+            }
+            GURL bottomSheetUrl = new GURL(builder.toString());
+            GURL fullPageUrl = new GURL(url);
+            mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
+                    bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
             mMainController.dismiss();
         } else {
             new TabDelegate(/*incognito=*/false)
@@ -121,19 +126,31 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             return;
         }
 
+        boolean more_info_enabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO);
+
         assert mSiteInfo.hasDescription();
         String subtitle = mSiteInfo.getDescription().getDescription();
-
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        rowParams.title = mRowView.getContext().getResources().getString(
-                R.string.page_info_about_this_site_title);
+        rowParams.title = getTitle();
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
         rowParams.visible = true;
-        rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
+        rowParams.iconResId =
+                more_info_enabled ? R.drawable.ic_globe_24dp : R.drawable.ic_info_outline_grey_24dp;
         rowParams.decreaseIconSize = true;
-        rowParams.clickCallback = this::launchSubpage;
+        rowParams.clickCallback = more_info_enabled ? ()
+                -> openUrl(mSiteInfo.getMoreAbout().getUrl(),
+                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED)
+                : this::launchSubpage;
         mRowView.setParams(rowParams);
+    }
+
+    private String getTitle() {
+        return mRowView.getContext().getResources().getString(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
+                        ? R.string.page_info_about_this_page_title
+                        : R.string.page_info_about_this_site_title);
     }
 
     private @Nullable SiteInfo getSiteInfo() {

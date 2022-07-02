@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/gr_cache_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -26,7 +27,7 @@ namespace raster {
 class GrCacheControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
     gpu::GpuDriverBugWorkarounds workarounds;
 
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
@@ -53,7 +54,7 @@ class GrCacheControllerTest : public testing::Test {
     controller_ = nullptr;
     context_state_ = nullptr;
     task_runner_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
@@ -62,6 +63,7 @@ class GrCacheControllerTest : public testing::Test {
   scoped_refptr<SharedContextState> context_state_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<GrCacheController> controller_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(GrCacheControllerTest, PurgeGrCache) {

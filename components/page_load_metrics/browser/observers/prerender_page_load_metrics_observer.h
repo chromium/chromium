@@ -18,6 +18,9 @@ extern const char kHistogramPrerenderActivationToLargestContentfulPaint2[];
 extern const char kHistogramPrerenderFirstInputDelay4[];
 extern const char kHistogramPrerenderCumulativeShiftScore[];
 extern const char kHistogramPrerenderCumulativeShiftScoreMainFrame[];
+extern const char
+    kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
+        [];
 
 }  // namespace internal
 

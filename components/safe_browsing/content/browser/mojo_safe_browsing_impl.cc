@@ -108,8 +108,7 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
-  if (!resource_context || !delegate ||
-      !delegate->GetDatabaseManager()->IsSupported())
+  if (!resource_context || !delegate)
     return;
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(

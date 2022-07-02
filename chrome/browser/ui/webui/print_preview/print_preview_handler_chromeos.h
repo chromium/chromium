@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -81,7 +82,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // printer capabilities.
   void SendPrinterSetup(const std::string& callback_id,
                         const std::string& printer_name,
-                        base::Value settings_info);
+                        base::Value::Dict settings_info);
 
   // Called when an extension reports information requested for a provisional
   // printer.
@@ -112,7 +113,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // Note that this is not propagated to LocalPrinterHandlerLacros.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
+  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 };

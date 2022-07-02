@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_TPM_ERROR_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_TPM_ERROR_SCREEN_H_
 
-#include <string>
-
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
@@ -16,22 +15,18 @@ namespace ash {
 // Controller for the tpm error screen.
 class TpmErrorScreen : public BaseScreen {
  public:
-  explicit TpmErrorScreen(TpmErrorView* view);
+  explicit TpmErrorScreen(base::WeakPtr<TpmErrorView> view);
   TpmErrorScreen(const TpmErrorScreen&) = delete;
   TpmErrorScreen& operator=(const TpmErrorScreen&) = delete;
   ~TpmErrorScreen() override;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(TpmErrorView* view);
 
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  TpmErrorView* view_ = nullptr;
+  base::WeakPtr<TpmErrorView> view_;
 };
 
 }  // namespace ash

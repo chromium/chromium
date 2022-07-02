@@ -33,7 +33,7 @@ PCMQueueInAudioInputStream::PCMQueueInAudioInputStream(
     AudioManagerMac* manager,
     const AudioParameters& params)
     : manager_(manager),
-      callback_(NULL),
+      callback_(nullptr),
       audio_queue_(NULL),
       buffer_size_bytes_(0),
       started_(false),
@@ -136,7 +136,7 @@ void PCMQueueInAudioInputStream::Stop() {
 
   SetInputCallbackIsActive(false);
   started_ = false;
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void PCMQueueInAudioInputStream::Close() {

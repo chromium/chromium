@@ -2,10 +2,10 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++staticText name='"'
-++++++++++inlineTextBox name='"'
+++++++++staticText name='%E2%80%9C'
+++++++++++inlineTextBox name='%E2%80%9C'
 ++++genericContainer
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
-++++++++++staticText name='''
-++++++++++++inlineTextBox name='''
+++++++++++staticText name='%E2%80%98'
+++++++++++++inlineTextBox name='%E2%80%98'

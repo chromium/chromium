@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-
 /**
  * @fileoverview A helper object used from the "CUPS printing" section to
  * interact with the browser. Used only on Chrome OS.
  */
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{
@@ -227,10 +227,23 @@ export class CupsPrintersBrowserProxy {
   openScanningApp() {}
 }
 
+/** @type {?CupsPrintersBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {CupsPrintersBrowserProxy}
  */
 export class CupsPrintersBrowserProxyImpl {
+  /** @return {!CupsPrintersBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new CupsPrintersBrowserProxyImpl());
+  }
+
+  /** @param {!CupsPrintersBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getCupsSavedPrintersList() {
     return sendWithPromise('getCupsSavedPrintersList');
@@ -326,5 +339,3 @@ export class CupsPrintersBrowserProxyImpl {
     chrome.send('openScanningApp');
   }
 }
-
-addSingletonGetter(CupsPrintersBrowserProxyImpl);

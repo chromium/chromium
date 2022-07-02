@@ -243,6 +243,17 @@ void MaybeAppendManagePasswordsEntry(
   suggestions->push_back(std::move(suggestion));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+autofill::Suggestion CreateWebAuthnEntry() {
+  // TODO(crbug.com/1329958): i18n this string.
+  autofill::Suggestion suggestion(u"Sign in with another device…");
+  suggestion.icon = "fingerprint";
+  suggestion.frontend_id =
+      autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE;
+  return suggestion;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 autofill::Suggestion CreateGenerationEntry() {
   autofill::Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
@@ -391,7 +402,10 @@ void PasswordAutofillManager::DidSelectSuggestion(
       frontend_id ==
           autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN ||
       frontend_id ==
-          autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE)
+          autofill::
+              POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE ||
+      frontend_id ==
+          autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE)
     return;
   bool success =
       PreviewSuggestion(GetUsernameFromSuggestion(value), frontend_id);
@@ -419,10 +433,11 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
                      autofill_client_->GetReopenPopupArgs()));
 }
 
-void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
-                                                  int frontend_id,
-                                                  const std::string& backend_id,
-                                                  int position) {
+void PasswordAutofillManager::DidAcceptSuggestion(
+    const std::u16string& value,
+    int frontend_id,
+    const autofill::Suggestion::Payload& payload,
+    int position) {
   using metrics_util::PasswordDropdownSelectedOption;
   if (frontend_id == autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY) {
     password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
@@ -467,7 +482,15 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
         PasswordDropdownSelectedOption::kWebAuthn,
         password_client_->IsIncognito());
     password_client_->GetWebAuthnCredentialsDelegate()
-        ->SelectWebAuthnCredential(backend_id);
+        ->SelectWebAuthnCredential(absl::holds_alternative<std::string>(payload)
+                                       ? absl::get<std::string>(payload)
+                                       : std::string());
+  } else if (frontend_id ==
+             autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE) {
+    metrics_util::LogPasswordDropdownItemSelected(
+        PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice,
+        password_client_->IsIncognito());
+    password_client_->GetWebAuthnCredentialsDelegate()->LaunchWebAuthnFlow();
   } else {
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kPassword,
@@ -666,10 +689,9 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   }
 
   // Add WebAuthn credentials suitable for an ongoing request if available.
-  if (show_webauthn_credentials) {
-    WebAuthnCredentialsDelegate* delegate =
-        password_client_->GetWebAuthnCredentialsDelegate();
-    DCHECK(delegate->IsWebAuthnAutofillEnabled());
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegate();
+  if (show_webauthn_credentials && delegate->IsWebAuthnAutofillEnabled()) {
     std::vector<autofill::Suggestion> webauthn_suggestions =
         delegate->GetWebAuthnSuggestions();
     suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
@@ -682,6 +704,13 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
                    show_all_passwords.value(), for_password_field.value(),
                    &suggestions);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Add "Sign in with another device" button.
+  if (show_webauthn_credentials && delegate->IsWebAuthnAutofillEnabled()) {
+    suggestions.push_back(CreateWebAuthnEntry());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add password generation entry, if available.
   if (offers_generation) {

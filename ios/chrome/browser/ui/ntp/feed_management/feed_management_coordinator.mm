@@ -79,6 +79,7 @@
       initWithBrowserState:self.browser->GetBrowserState()];
   followManagementViewController.followedWebChannelsDataSource = mediator;
   followManagementViewController.faviconDataSource = mediator;
+  followManagementViewController.navigationDelegate = self.navigationDelegate;
   self.followManagementMediator = mediator;
   followManagementViewController.feedMetricsRecorder = self.feedMetricsRecorder;
 

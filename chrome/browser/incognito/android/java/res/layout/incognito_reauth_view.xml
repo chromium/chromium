@@ -3,58 +3,61 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- TODO(crbug.com/1227656): This Layout is now only used in test.
-     Therefore, possible UnusedResource warnings. Remove it when used in production. -->
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ntp_bg_incognito"
-    tools:ignore="UnusedResources">
+    android:background="@color/ntp_bg_incognito">
 
     <!-- TODO(crbug.com/1308392): The attribute app:menuMaxWidth might needs to be
          changed depending on the UX requirement. -->
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/incognito_reauth_menu_button"
-        android:layout_alignParentEnd="true"
         android:layout_marginTop="24dp"
         android:background="@null"
-        android:layout_gravity="top"
+        android:layout_gravity="end"
         android:layout_height="48dp"
         android:layout_width="48dp"
-        android:visibility="gone"
         app:srcCompat="@drawable/ic_more_vert_24dp_on_dark_bg"
         app:menuMaxWidth="256dp"
         style="@style/ToolbarButton"/>
 
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </Space>
+
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_reauth_icon"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:layout_width="72dp"
         android:layout_height="72dp"
+        android:layout_gravity="center"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/incognito_splash"
         app:tint="@color/ntp_incognito_icon_color" />
 
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </Space>
+
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="24dp"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
         android:orientation="vertical">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/incognito_reauth_unlock_incognito_button"
             style="@style/FilledButton.Flat"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
             android:text="@string/incognito_reauth_page_unlock_incognito_button_label" />
 
         <org.chromium.ui.widget.ButtonCompat
@@ -62,10 +65,9 @@
             style="@style/TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:visibility="gone"
+            android:layout_marginTop="16dp"
             android:text="@string/incognito_reauth_page_see_other_tabs_label"
             android:textAppearance="@style/TextAppearance.TextMedium.Blue.Baseline.Light"
             app:buttonTextColor="@color/default_icon_color_blue_light" />
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

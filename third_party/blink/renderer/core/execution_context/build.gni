@@ -24,3 +24,6 @@ blink_core_sources_execution_context = [
   "window_agent_factory.cc",
   "window_agent_factory.h",
 ]
+
+blink_core_tests_execution_context =
+    [ "execution_context_lifecycle_state_observer_test.cc" ]

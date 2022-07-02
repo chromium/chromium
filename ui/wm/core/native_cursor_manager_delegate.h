@@ -5,8 +5,8 @@
 #ifndef UI_WM_CORE_NATIVE_CURSOR_MANAGER_DELEGATE_H_
 #define UI_WM_CORE_NATIVE_CURSOR_MANAGER_DELEGATE_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace ui {
 enum class CursorSize;
@@ -17,7 +17,7 @@ namespace wm {
 // The non-public interface that CursorManager exposes to its users. This
 // gives accessors to all the current state, and mutators to all the current
 // state.
-class WM_CORE_EXPORT NativeCursorManagerDelegate {
+class COMPONENT_EXPORT(UI_WM) NativeCursorManagerDelegate {
  public:
   virtual ~NativeCursorManagerDelegate() {}
 

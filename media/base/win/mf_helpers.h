@@ -108,6 +108,9 @@ using ChannelConfig = uint32_t;
 // speakers are different in these two definitions.
 MF_UTIL_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 
+// Converts a GUID (little endian) to a bytes array (big endian).
+MF_UTIL_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_HELPERS_H_

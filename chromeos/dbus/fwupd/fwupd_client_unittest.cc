@@ -223,8 +223,7 @@ class FwupdClientTest : public testing::Test {
     CHECK_EQ(expected_description_, (*updates)[0].description);
     // This value is returned by DBus as a uint32_t and is added to a dictionary
     // that doesn't support unsigned numbers. So it needs to be casted to int.
-    CHECK_EQ(static_cast<int>(kFakeUpdatePriorityForTesting),
-             (*updates)[0].priority);
+    CHECK_EQ(expected_priority_, (*updates)[0].priority);
     CHECK_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
     CHECK_EQ(expected_checksum_, (*updates)[0].checksum);
   }
@@ -239,6 +238,10 @@ class FwupdClientTest : public testing::Test {
 
   void SetExpectedDescription(const std::string& description) {
     expected_description_ = description;
+  }
+
+  void SetExpectedPriority(const int priority) {
+    expected_priority_ = priority;
   }
 
   void SetExpectNoUpdates(bool no_updates) { expect_no_updates_ = no_updates; }
@@ -315,6 +318,7 @@ class FwupdClientTest : public testing::Test {
 
   std::string expected_checksum_;
   std::string expected_description_;
+  int expected_priority_ = kFakeUpdatePriorityForTesting;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -423,6 +427,65 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   response_writer.CloseContainer(&response_array_writer);
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  auto response = dbus::Response::CreateEmpty();
+
+  dbus::MessageWriter response_writer(response.get());
+  dbus::MessageWriter response_array_writer(nullptr);
+  dbus::MessageWriter device_array_writer(nullptr);
+  dbus::MessageWriter dict_writer(nullptr);
+
+  // The response is an array of arrays of dictionaries. Each dictionary is one
+  // update description.
+  response_writer.OpenArray("a{sv}", &response_array_writer);
+  response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kDescriptionKey);
+  dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+  SetExpectedDescription(kFakeUpdateDescriptionForTesting);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kVersionKey);
+  dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kUriKey);
+  dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kChecksumKey);
+  dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+  SetExpectedChecksum(kFakeSha256ForTesting);
+
+  response_array_writer.CloseContainer(&device_array_writer);
+  response_writer.CloseContainer(&response_array_writer);
+
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  // Since priority is not specified, we want to use lowest priority
+  SetExpectedPriority(0);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 

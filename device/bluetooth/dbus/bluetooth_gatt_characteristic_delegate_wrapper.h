@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
@@ -55,7 +56,7 @@ class BluetoothGattCharacteristicDelegateWrapper
   void StopNotifications(const dbus::ObjectPath& device_path) override;
 
  private:
-  BluetoothLocalGattCharacteristicBlueZ* characteristic_;
+  raw_ptr<BluetoothLocalGattCharacteristicBlueZ> characteristic_;
 };
 
 }  // namespace bluez

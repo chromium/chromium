@@ -1332,22 +1332,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.Timing2.NavigationToLoadEventFired"/>
 </histogram_suffixes>
 
-<!-- TODO(https://crbug.com/1275800): convert this to patterned histograms -->
-
-<histogram_suffixes
-    name="ComponentUpdater.AndroidComponentLoader.ComponentName" separator=".">
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <owner>src/components/component_updater/android/OWNERS</owner>
-  <suffix name="ClientSidePhishing" label=""/>
-  <suffix name="OriginTrials" label=""/>
-  <suffix name="TrustTokenKeyCommitments" label=""/>
-  <suffix name="WebViewAppsPackageNamesAllowlist" label=""/>
-  <suffix name="WebViewEmptyComponent" label=""/>
-  <affected-histogram
-      name="ComponentUpdater.AndroidComponentLoader.LoadStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CompositorPendingTreeType" separator=".">
   <suffix name="Impl" label="Impl side invalidation initiated pending tree"/>
   <suffix name="Main" label="Commit initiated pending tree"/>
@@ -2457,46 +2441,6 @@ chromium-metrics-reviews@google.com.
       name="Net.DNS.DnsTransaction.SecureValidated.FailureTime"/>
   <affected-histogram
       name="Net.DNS.DnsTransaction.SecureValidated.SuccessTime"/>
-<!-- Histograms for HTTPSSVC experiment -->
-
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeHttpsRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeHttpsRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.RecordWithError"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.RecordReceived"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DomainGoogle" separator="">
@@ -2516,7 +2460,6 @@ chromium-metrics-reviews@google.com.
       label="Moderate purge was triggered on memory pressure."/>
   <suffix name="SizeLimitExceeded" label="Cache size exceeded limit."/>
   <affected-histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB"/>
-  <affected-histogram name="LocalStorageContext.CachePurgedInKB"/>
   <affected-histogram name="SessionStorageContext.CachePurgedInKB"/>
 </histogram_suffixes>
 
@@ -2650,6 +2593,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Navigation" label="Navigation."/>
   <suffix name="OfflinePage" label="OfflinePage."/>
   <suffix name="Retry" label="Retry."/>
+  <suffix name="RetryFromBubble" label="RetryFromBubble."/>
   <suffix name="UnknownSource" label="UnknownSource."/>
   <suffix name="WebContentsAPI" label="WebContentsAPI."/>
   <affected-histogram name="Download.Counts"/>
@@ -3364,30 +3308,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="NetConnectivity.Pipeline.CanarySuccess"/>
   <affected-histogram name="NetConnectivity.Pipeline.Depth"/>
   <affected-histogram name="NetConnectivity.Pipeline.Success"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HttpssvcIntegrityExpectation" separator="."
-    ordering="prefix,4">
-  <suffix name="ExpectIntact"
-      label="Querying the experiment domain. INTEGRITY record should be
-             intact."/>
-  <suffix name="ExpectNoerror"
-      label="Querying non-experiment domain. Should get NOERROR on INTEGRITY
-             queries."/>
-<!-- Inserts the suffix name after "RecordIntegrity" in the histograms
-         below. These are the metrics common to both the ExpectIntact and
-         ExpectNoerror branches of the HTTPSSVC metrics tree. -->
-
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="IdleSktToImpact" separator="_">
@@ -6210,22 +6130,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OmniboxProviderTime" separator=".">
-  <suffix name="Bookmark" label=""/>
-  <suffix name="Builtin" label=""/>
-  <suffix name="Contact" label=""/>
-  <suffix name="ExtensionApp" label=""/>
-  <suffix name="HistoryContents" label=""/>
-  <suffix name="HistoryQuick" label=""/>
-  <suffix name="HistoryURL" label=""/>
-  <suffix name="Keyword" label=""/>
-  <suffix name="Search" label=""/>
-  <suffix name="Shortcuts" label=""/>
-  <suffix name="ZeroSuggest" label=""/>
-  <affected-histogram name="Omnibox.ProviderTime"/>
-  <affected-histogram name="Omnibox.ProviderTime2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OobeMarketingCountries" separator=".">
   <suffix name="au" label="Australia"/>
   <suffix name="ca" label="Canada"/>
@@ -6564,8 +6468,6 @@ chromium-metrics-reviews@google.com.
              document.written scripts that could be blocked if the
              document.write script blocking feature is enabled."/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
@@ -6762,8 +6664,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
@@ -6944,8 +6844,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3"/>
@@ -7143,65 +7041,152 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordManager.TotalAccounts"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordProtectionTrigger" separator=".">
+<histogram_suffixes name="PasswordProtectionTriggerForAnyPasswordEntry"
+    separator=".">
   <suffix name="AnyPasswordEntry"
       label="Password protection triggered by entering a password that
              matches either/both the sync password, signed-in non-syncing
              password, or a saved password. This is a superset of (and should
              be equal to or larger than) SyncPasswordEntry +
              SavedPasswordEntry + NonSyncPasswordEntry"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes
+    name="PasswordProtectionTriggerForGmailNonSyncPasswordEntry" separator=".">
   <suffix name="GmailNonSyncPasswordEntry"
       label="Password protection triggered by entering a non-syncing gaia
              password that is associated with a Gmail account. This is a
              subset of NonSyncPasswordEntry."/>
+  <affected-histogram name="PasswordProtection.InterstitialAction"/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForGmailSyncPasswordEntry"
+    separator=".">
   <suffix name="GmailSyncPasswordEntry"
       label="Password protection triggered by entering the sync password that
              is associated with a Gmail account. This is a subset of
              SyncPasswordEntry."/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes
+    name="PasswordProtectionTriggerForGSuiteNonSyncPasswordEntry" separator=".">
   <suffix name="GSuiteNonSyncPasswordEntry"
       label="Password protection triggered by entering a non-syncing gaia
              password that is associated with a GSuite account. This is a
              subset of NonSyncPasswordEntry. Note that GSuite non-sync
              password reuse detection is only triggered if configured
              appropriate enterprise policy."/>
+  <affected-histogram name="PasswordProtection.InterstitialAction"/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.PasswordAlertModeOutcome"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForGSuiteSyncPasswordEntry"
+    separator=".">
   <suffix name="GSuiteSyncPasswordEntry"
       label="Password protection triggered by entering the sync password that
              is associated with a GSuite account. This is a subset of
              SyncPasswordEntry. Note that GSuite sync password reuse
              detection is only triggered if configured appropriate enterprise
              policy."/>
-  <suffix name="NonGaiaEnterprisePasswordEntry"
-      label="Password protection triggered by entering a password that
-             matches a non-Gaia enterprise password. Note that non-Gaia
-             enterprise password reuse detection is only triggered if
-             configured appropriate enterprise policy."/>
-  <suffix name="NonSyncPasswordEntry"
-      label="Password protection triggered by entering an unconsented primary
-             account password."/>
-  <suffix name="PasswordFieldOnFocus"
-      label="Password protection triggered by password field on focus event."/>
-  <suffix name="SavedPasswordEntry"
-      label="Password protection triggered by entering a password saved in
-             the password manager where the account is not signed-in to
-             Google."/>
-  <suffix name="SyncPasswordEntry"
-      label="Password protection triggered by entering the sync password,
-             which may or may not also match a saved password. (This was
-             called SyncProtectedPasswordEntry before M62)"/>
-  <suffix name="UnknownNonPrimaryPasswordEntry"
-      label="Password protection triggered by entering a password that does
-             not match a primary account password but no current signed-in
-             account is found."/>
-  <suffix name="UnknownPrimaryPasswordEntry"
-      label="Password protection triggered by entering a password that
-             matches a primary account password but no current signed-in
-             account is found."/>
-  <affected-histogram name="PasswordProtection.ChromeSettingsAction"/>
   <affected-histogram name="PasswordProtection.InterstitialAction"/>
   <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
   <affected-histogram name="PasswordProtection.PageInfoAction"/>
   <affected-histogram name="PasswordProtection.PasswordAlertModeOutcome"/>
   <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes
+    name="PasswordProtectionTriggerForNonGaiaEnterprisePasswordEntry"
+    separator=".">
+  <suffix name="NonGaiaEnterprisePasswordEntry"
+      label="Password protection triggered by entering a password that
+             matches a non-Gaia enterprise password. Note that non-Gaia
+             enterprise password reuse detection is only triggered if
+             configured appropriate enterprise policy."/>
+  <affected-histogram name="PasswordProtection.InterstitialAction"/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForNonSyncPasswordEntry"
+    separator=".">
+  <suffix name="NonSyncPasswordEntry"
+      label="Password protection triggered by entering an unconsented primary
+             account password."/>
+  <affected-histogram name="PasswordProtection.InterstitialAction"/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForPasswordFieldOnFocus"
+    separator=".">
+  <suffix name="PasswordFieldOnFocus"
+      label="Password protection triggered by password field on focus event."/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForSavedPasswordEntry"
+    separator=".">
+  <suffix name="SavedPasswordEntry"
+      label="Password protection triggered by entering a password saved in
+             the password manager where the account is not signed-in to
+             Google."/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PasswordProtectionTriggerForSyncPasswordEntry"
+    separator=".">
+  <suffix name="SyncPasswordEntry"
+      label="Password protection triggered by entering the sync password,
+             which may or may not also match a saved password. (This was
+             called SyncProtectedPasswordEntry before M62)"/>
+  <affected-histogram name="PasswordProtection.InterstitialAction"/>
+  <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
+  <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes
+    name="PasswordProtectionTriggerForUnknownNonPrimaryPasswordEntry"
+    separator=".">
+  <suffix name="UnknownNonPrimaryPasswordEntry"
+      label="Password protection triggered by entering a password that does
+             not match a primary account password but no current signed-in
+             account is found."/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
+<histogram_suffixes
+    name="PasswordProtectionTriggerForUnknownPrimaryPasswordEntry"
+    separator=".">
+  <suffix name="UnknownPrimaryPasswordEntry"
+      label="Password protection triggered by entering a password that
+             matches a primary account password but no current signed-in
+             account is found."/>
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
@@ -7361,12 +7346,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Permissions.Action"/>
   <affected-histogram name="Permissions.DSE.AutoPermissionRevertTransition"/>
   <affected-histogram name="Permissions.DSE.EffectiveSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.BackedUpSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EffectiveSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EndStateSetting"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.Action"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.ShouldShow"/>
   <affected-histogram name="Permissions.Prompt.Accepted.Persisted"/>
@@ -7803,6 +7782,10 @@ chromium-metrics-reviews@google.com.
       label="Only counting memory used by Extension value store database."/>
   <suffix name="GpuMemory" label="Only counting memory allocated for the GPU."/>
   <suffix name="IOSurface" label="Memory used for IOSurfaces, on macOS."/>
+  <suffix name="IOSurface.DirtyMemory"
+      label="Memory used for IOSurfaces, on macOS. Only account for dirty
+             (resident and swapped) memory, which is part of private memory
+             footprint."/>
   <suffix name="JavaHeap"
       label="Only counting memory used by Java heap in Android."/>
   <suffix name="Malloc"
@@ -8106,6 +8089,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantined"
       label="Memory used by objects quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.BRPQuarantinedBytesPerMinute"
+      label="Total size of BRP quarantined bytes per minute, averaged during
+             the last memory dump interval."/>
   <suffix name="Malloc.BRPQuarantinedCount"
       label="Number of slots quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
@@ -8176,6 +8162,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocatorTiny2" separator=".">
+  <suffix name="Malloc.BRPQuarantinedCountPerMinute"
+      label="Number of BRP quarantined allocations per minute, averaged
+             during the last memory dump interval."/>
   <suffix name="Malloc.SyscallsPerMinute"
       label="Number of system calls made per minute, averaged during the last
              memory dump interval. Only collected when PartitionAlloc is
@@ -8333,43 +8322,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PLT.BeginToFinish_LinkLoadReload"/>
   <affected-histogram name="PLT.BeginToFinish_LinkLoadStaleOk"/>
   <affected-histogram name="PLT.BeginToFinish_NormalLoad"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PurgeAndSuspendExperiment" separator=".">
-  <suffix base="true" name="BlinkGCKB"
-      label="Constrained to the BlinkGC allocator"/>
-  <suffix base="true" name="DiscardableKB"
-      label="Constrained to discardable memory usage"/>
-  <suffix base="true" name="MallocKB" label="Constrained to malloc usage"/>
-  <suffix base="true" name="PartitionAllocKB"
-      label="Constrained to the ParitionAlloc allocator"/>
-  <suffix base="true" name="TotalAllocatedKB"
-      label="Summed over the PartitionAlloc, malloc, discardable memory,
-             mainThreadIsolate() and BlinkGC allocators"/>
-  <suffix base="true" name="V8MainThreadIsolateKB"
-      label="Constrained to memory usage by mainThreadIsolate()"/>
-  <affected-histogram name="PurgeAndSuspend.Experimental.MemoryGrowth"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PurgeAndSuspendExperimentPerHalfHour" separator=".">
-  <suffix name="30min"
-      label="Constrained to each allocator 30min after purging"/>
-  <suffix name="60min"
-      label="Constrained to each allocator 60min after purging"/>
-  <suffix name="90min"
-      label="Constrained to each allocator 90min after purging"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.BlinkGCKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.DiscardableKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.MallocKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.PartitionAllocKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.TotalAllocatedKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.V8MainThreadIsolateKB"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="QueryTimeSuffix" separator=".">
@@ -8620,51 +8572,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Event.Latency.Renderer"/>
   <affected-histogram name="Event.Latency.Renderer2"/>
   <affected-histogram name="Event.Latency.RendererImpl"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererMemoryAllocator" separator=".">
-  <suffix base="true" name="BlinkGC"
-      label="Constrained to the BlinkGC allocator"/>
-  <suffix base="true" name="Discardable"
-      label="Constrained to discardable memory usage"/>
-  <suffix base="true" name="Malloc" label="Constrained to malloc usage"/>
-  <suffix base="true" name="NonDiscardableTotalAllocated"
-      label="Summed over the PartitionAlloc, malloc, mainThreadIsolate() and
-             BlinkGC allocators"/>
-  <suffix base="true" name="PartitionAlloc"
-      label="Constrained to the PartitionAlloc allocator"/>
-  <suffix base="true" name="TotalAllocated"
-      label="Summed over the PartitionAlloc, malloc, discardable memory,
-             mainThreadIsolate() and BlinkGC allocators"/>
-  <suffix base="true" name="TotalAllocatedPerRenderView"
-      label="TotalAllocated divided by the number of RenderViews"/>
-  <suffix base="true" name="V8MainThreadIsolate"
-      label="Constrained to memory usage by mainThreadIsolate()"/>
-  <affected-histogram name="Memory.Experimental.Renderer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererMemoryTiming" separator=".">
-  <suffix name="AfterBackgrounded.5min"
-      label="Recorded 5 minutes after backgrounded."/>
-  <suffix name="AfterBackgrounded.10min"
-      label="Recorded 10 minutes after backgrounded."/>
-  <suffix name="AfterBackgrounded.15min"
-      label="Recorded 15 minutes after backgrounded."/>
-  <suffix name="DidFinishLoad"
-      label="Recorded each time DidFinishLoad is called for *any* frame
-             within the page."/>
-  <suffix name="MainFrameDidFinishLoad"
-      label="Recorded when DidFinishLoad is called for the main frame."/>
-  <affected-histogram name="Memory.Experimental.Renderer.BlinkGC"/>
-  <affected-histogram name="Memory.Experimental.Renderer.Discardable"/>
-  <affected-histogram name="Memory.Experimental.Renderer.Malloc"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.NonDiscardableTotalAllocated"/>
-  <affected-histogram name="Memory.Experimental.Renderer.PartitionAlloc"/>
-  <affected-histogram name="Memory.Experimental.Renderer.TotalAllocated"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.TotalAllocatedPerRenderView"/>
-  <affected-histogram name="Memory.Experimental.Renderer.V8MainThreadIsolate"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererScheduler_AfterNthMinuteInBackgroundSplit"
@@ -9952,21 +9859,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.SSLProtocolErrorReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SoftwareReporterEngine" separator="_">
-  <suffix name="ESET" label=""/>
-  <suffix name="URZA" label=""/>
-  <affected-histogram name="SoftwareReporter.CreateJobResult"/>
-  <affected-histogram name="SoftwareReporter.FoundUwSReadError"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadEnabled"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadResult"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadResultRegistryError"/>
-  <affected-histogram name="SoftwareReporter.MajorVersion"/>
-  <affected-histogram name="SoftwareReporter.MemoryUsed"/>
-  <affected-histogram name="SoftwareReporter.MinorVersion"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome2"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SpdyImpact" separator="_">
   <suffix name="npn_with_http"
       label="with NPN negotiated but using HTTP instead of SPDY"/>
@@ -10108,18 +10000,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.LoadTime.ProcessCreateToExeMain2"/>
   <affected-histogram name="Startup.SystemUptime"/>
   <affected-histogram name="Startup.TimeSinceLastStartup"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Storage_BlobEvictReason" separator=".">
-  <suffix name="OnMemoryPressure"
-      label="Eviction was triggered because of memory pressure signal."/>
-  <suffix name="SizeExceededInMemoryLimit"
-      label="Eviction was triggered because the total size exceeded maximum
-             in memory size allwed"/>
-  <suffix name="SizeExceededMaxDiskSpace"
-      label="Eviction was triggered because the total size exceeded maximum
-             available disk space"/>
-  <affected-histogram name="Storage.Blob.SizeEvictedToDiskInKB"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Storage_Bytes" separator=".">
@@ -10269,18 +10149,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ThreadPool.NumWorkers.Browser"/>
   <affected-histogram name="ThreadPool.NumWorkers.ContentChild"/>
   <affected-histogram name="ThreadPool.NumWorkers.Renderer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ThreadWatcher" separator=".">
-  <suffix name="CACHE" label="where watched thread is CACHE BrowserThread."/>
-  <suffix name="DB" label="where watched thread is DB BrowserThread."/>
-  <suffix name="FILE" label="where watched thread is FILE BrowserThread."/>
-  <suffix name="IO" label="where watched thread is IO BrowserThread."/>
-  <suffix name="UI" label="where watched thread is UI BrowserThread."/>
-  <affected-histogram name="ThreadWatcher.ResponseTime"/>
-  <affected-histogram name="ThreadWatcher.ResponsiveThreads"/>
-  <affected-histogram name="ThreadWatcher.Unresponsive"/>
-  <affected-histogram name="ThreadWatcher.UnresponsiveThreads"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TileUiSurface" separator="." ordering="prefix,2">
@@ -10552,6 +10420,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="WebappType" separator=".">
   <suffix name="Default" label="Default-installed app"/>
   <suffix name="Policy" label="Policy-installed app"/>
+  <suffix name="Sync" label="Sync-installed app"/>
   <suffix base="true" name="System" label="System-installed app"/>
   <affected-histogram name="Webapp.InstallResult"/>
 </histogram_suffixes>

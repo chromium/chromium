@@ -12,7 +12,7 @@ bool TestRootCerts::AddImpl(X509Certificate* certificate) {
 
 void TestRootCerts::ClearImpl() {}
 
-TestRootCerts::~TestRootCerts() {}
+TestRootCerts::~TestRootCerts() = default;
 
 void TestRootCerts::Init() {}
 

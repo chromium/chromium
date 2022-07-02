@@ -41,7 +41,7 @@ class MockCastTransport : public CastTransport {
   MOCK_METHOD1(AddRtpReceiverReport,
                void(const RtcpReportBlock& rtp_report_block));
   MOCK_METHOD0(SendRtcpFromRtpReceiver, void());
-  MOCK_METHOD1(SetOptions, void(const base::DictionaryValue& options));
+  MOCK_METHOD1(SetOptions, void(const base::Value::Dict& options));
 };
 
 }  // namespace cast

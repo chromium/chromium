@@ -56,6 +56,8 @@ class MockClient : public Client {
                void(base::OnceCallback<void(const std::string&)>));
   MOCK_METHOD0(GetScriptExecutorUiDelegate, ScriptExecutorUiDelegate*());
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
+  MOCK_CONST_METHOD1(GetAnnotateDomModelVersion,
+                     void(base::OnceCallback<void(absl::optional<int64_t>)>));
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;

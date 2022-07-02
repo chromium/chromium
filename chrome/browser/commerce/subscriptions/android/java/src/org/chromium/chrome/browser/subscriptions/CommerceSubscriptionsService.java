@@ -11,9 +11,10 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
@@ -50,7 +51,7 @@ public class CommerceSubscriptionsService {
         };
         mIdentityManager.addObserver(mIdentityManagerObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mPriceDropNotificationManager = new PriceDropNotificationManager();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
         mMetrics = new CommerceSubscriptionsMetrics();
     }
 
@@ -106,7 +107,7 @@ public class CommerceSubscriptionsService {
         mSharedPreferencesManager.writeLong(
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
         mMetrics.recordAccountWaaStatus();
-        if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return;
+        if (!PriceTrackingFeatures.isPriceDropNotificationEligible()) return;
         recordMetricsForEligibleAccount();
         if (mImplicitPriceDropSubscriptionsManager != null) {
             mImplicitPriceDropSubscriptionsManager.initializeSubscriptions();

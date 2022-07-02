@@ -7,12 +7,12 @@
 No popup should be displayed here.<p>
 
 <div style="display:none">
-    <div popup=popup>This content should be hidden</div>
+    <div popup>This content should be hidden</div>
 </div>
 
 <script>
   const popup = document.querySelector('[popup]');
-  popup.showPopup();
-  if (!popup.matches(':popup-open'))
+  popup.showPopUp();
+  if (!popup.matches(':top-layer'))
     document.body.appendChild(document.createTextNode('FAIL'));
 </script>

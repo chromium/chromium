@@ -28,8 +28,8 @@
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |viewController|: navigation controller.
-// |browser|: browser.
+// `viewController`: navigation controller.
+// `browser`: browser.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

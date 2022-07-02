@@ -32,8 +32,10 @@
 
 namespace blink {
 
-LayoutSVGForeignObject::LayoutSVGForeignObject(SVGForeignObjectElement* node)
-    : LayoutSVGBlock(node) {}
+LayoutSVGForeignObject::LayoutSVGForeignObject(Element* element)
+    : LayoutSVGBlock(element) {
+  DCHECK(IsA<SVGForeignObjectElement>(element));
+}
 
 LayoutSVGForeignObject::~LayoutSVGForeignObject() = default;
 

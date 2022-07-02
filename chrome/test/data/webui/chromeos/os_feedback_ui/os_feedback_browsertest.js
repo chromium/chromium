@@ -7,14 +7,14 @@
  * Unifieid polymer testing suite for feedback tool.
  *
  * To run all tests in a single instance (default, faster):
- * `browser_tests --gtest_filter=OSFeedback*``
+ * `browser_tests --gtest_filter=OSFeedbackBrowserTest*``
  *
  * To run each test in a new instance:
- * `browser_tests --run-manual --gtest_filter=OSFeedback.MANUAL_*``
+ * `browser_tests --run-manual --gtest_filter=OSFeedbackBrowserTest.MANUAL_*``
  *
  * To run a single test suite, such as 'ConfirmationPageTest':
  * `browser_tests --run-manual \
- *  --gtest_filter=OSFeedback.MANUAL_ConfirmationPageTest`
+ *  --gtest_filter=OSFeedbackBrowserTest.MANUAL_ConfirmationPageTest`
  *
  */
 
@@ -27,7 +27,7 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-feedback/test_loader.html?module=chromeos/' +
-        'os_feedback_ui/os_feedback_unified_test.js';
+        'os_feedback_ui/os_feedback_unified_test.js&host=test';
   }
 
   /** @override */
@@ -44,6 +44,7 @@ const debug_suites_list = [
   'fakeHelpContentProviderTest',
   'fakeMojoProviderTest',
   'feedbackFlowTest',
+  'fileAttachmentTest',
   'helpContentTest',
   'searchPageTest',
   'shareDataPageTest',

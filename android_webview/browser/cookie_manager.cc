@@ -469,7 +469,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
-      net::CookiePartitionKey::Todo()));
+      absl::nullopt /* cookie_partition_key */));
 
   if (!cc || !should_allow_cookie) {
     MaybeRunCookieCallback(std::move(callback), false);

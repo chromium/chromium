@@ -22,7 +22,6 @@
 
 namespace blink {
 
-class ComputedStyle;
 class LayoutBox;
 class LayoutObject;
 class NGBlockBreakToken;
@@ -57,7 +56,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       bool is_absolute_container,
       bool is_fixed_container,
       bool is_grid_container,
-      const ComputedStyle& container_style,
       const NGConstraintSpace& container_space,
       NGBoxFragmentBuilder* container_builder,
       absl::optional<LogicalSize> initial_containing_block_fixed_size =
@@ -224,6 +222,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       return kFragmentPage;
     return kFragmentColumn;
   }
+  const NGConstraintSpace& ConstraintSpace() const {
+    return container_builder_->ConstraintSpace();
+  }
 
   void ComputeInlineContainingBlocks(
       const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
@@ -344,8 +345,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>
       containing_blocks_map_;
-  const WritingMode writing_mode_;
-  const WritingDirectionMode default_writing_direction_;
 
   // Out-of-flow positioned nodes that we should lay out at a later time. For
   // example, if the containing block has not finished layout.

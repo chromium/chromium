@@ -6,9 +6,12 @@
 #define ASH_WM_FLOAT_FLOAT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace ash {
 
@@ -16,23 +19,62 @@ namespace ash {
 // pips. When a window is 'floated', it remains always on top for the user so
 // that they can complete secondary tasks. Floated window stays in the
 // |float_container|.
-class ASH_EXPORT FloatController : public aura::WindowObserver {
+class ASH_EXPORT FloatController : public aura::WindowObserver,
+                                   public TabletModeObserver,
+                                   public display::DisplayObserver {
  public:
+  // The possible corners that a floated window can be placed in tablet mode.
+  // The default is `kBottomRight` and this is changed by dragging the window.
+  enum class MagnetismCorner {
+    kTopLeft = 0,
+    kTopRight,
+    kBottomLeft,
+    kBottomRight,
+  };
+
   FloatController();
   FloatController(const FloatController&) = delete;
   FloatController& operator=(const FloatController&) = delete;
   ~FloatController() override;
 
+  // The distance from the edge of the floated window to the edge of the work
+  // area when it is floated.
+  static constexpr int kFloatWindowPaddingDp = 8;
+
+  // Gets the ideal float bounds of `window` in tablet mode if it were to be
+  // floated.
+  static gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
+
+  // Determines if a window can be floated in tablet mode.
+  static bool CanFloatWindowInTablet(aura::Window* window);
+
   aura::Window* float_window() { return float_window_; }
 
+  MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
+
   // Return true if `window` is floated, otherwise false.
-  bool IsFloated(aura::Window* window) const;
+  bool IsFloated(const aura::Window* window) const;
+
+  // Called by the resizer when a drag is completed. This assumes the dragged
+  // window associated with the resizer is `float_window_`. Updates the bounds
+  // and magnetism of the floated window.
+  void OnDragCompleted(const gfx::PointF& last_location_in_parent);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // TabletModeObserver:
+  void OnTabletModeStarting() override;
+  void OnTabletModeEnded() override;
+  void OnTabletControllerDestroyed() override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
  private:
-  friend class WindowState;
+  friend class DefaultState;
+  friend class TabletModeWindowState;
 
   // Floats/Unfloats `window`.
   // Only one floating window is allowed, floating a new window will
@@ -43,13 +85,26 @@ class ASH_EXPORT FloatController : public aura::WindowObserver {
   // Unfloats floated window.
   void ResetFloatedWindow();
 
+  // Updates `window`'s shadow and bounds depending on whether is in floated and
+  // if it is in tablet mode.
+  void MaybeUpdateWindowUIAndBoundsForTablet(aura::Window* window);
+
   // Only one floating window is allowed, updated when a new window
   // is floated.
   aura::Window* float_window_ = nullptr;
 
+  // The corner a floated window should be magnetized to. It persists throughout
+  // the session; if you drag a window to the bottom left and float another
+  // window, that window will also be magnetized to the bottom left.
+  MagnetismCorner magnetism_corner_ = MagnetismCorner::kBottomRight;
+
   // Observes floated window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       float_window_observation_{this};
+
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 };
 
 }  // namespace ash

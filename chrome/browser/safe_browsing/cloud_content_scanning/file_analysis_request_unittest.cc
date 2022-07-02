@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,6 +28,11 @@ namespace {
 enterprise_connectors::AnalysisSettings settings(bool block_unsupported_types) {
   enterprise_connectors::AnalysisSettings settings;
   settings.block_unsupported_file_types = block_unsupported_types;
+  settings.tags["dlp"].supported_files =
+      enterprise_connectors::GetServiceProviderConfig()
+          ->at("google")
+          .analysis->supported_tags[1]
+          .supported_files;
   return settings;
 }
 

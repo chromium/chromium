@@ -114,6 +114,11 @@ void PageNodeImpl::SetLoadingState(LoadingState loading_state) {
   loading_state_.SetAndMaybeNotify(this, loading_state);
 }
 
+void PageNodeImpl::SetType(PageType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  type_.SetAndMaybeNotify(this, type);
+}
+
 void PageNodeImpl::SetIsVisible(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_visible_.SetAndMaybeNotify(this, is_visible)) {
@@ -214,6 +219,11 @@ PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
   return embedding_type_;
+}
+
+PageType PageNodeImpl::type() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return type_.value();
 }
 
 bool PageNodeImpl::is_visible() const {
@@ -451,6 +461,11 @@ const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
 PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return embedding_type();
+}
+
+PageType PageNodeImpl::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return type();
 }
 
 bool PageNodeImpl::IsVisible() const {

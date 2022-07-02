@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +23,6 @@
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/threading/watchdog.h"
 #include "components/webrtc/net_address_utils.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
@@ -81,10 +81,6 @@ constexpr base::TimeDelta kDefaultDataChannelStatePollingInterval =
 // The maximum amount of time we will wait for the data channels to close before
 // closing the PeerConnection.
 constexpr base::TimeDelta kWaitForDataChannelsClosedTimeout = base::Seconds(5);
-
-// The maximum amount of time we will wait for a thread join before we crash the
-// host.
-constexpr base::TimeDelta kWaitForThreadJoinTimeout = base::Seconds(30);
 
 base::TimeDelta data_channel_state_polling_interval =
     kDefaultDataChannelStatePollingInterval;
@@ -149,7 +145,8 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
 // Initializes default parameters for a sender that may be different from
 // WebRTC's defaults.
 void SetDefaultSenderParameters(
-    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+    int video_frame_rate) {
   if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
     webrtc::RtpParameters parameters = sender->GetParameters();
     if (parameters.encodings.empty()) {
@@ -158,7 +155,7 @@ void SetDefaultSenderParameters(
     }
 
     for (auto& encoding : parameters.encodings) {
-      encoding.max_framerate = kTargetFrameRate;
+      encoding.max_framerate = video_frame_rate;
     }
 
     webrtc::RTCError result = sender->SetParameters(parameters);
@@ -264,26 +261,6 @@ class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
   WebrtcEventLogData& event_log_data_;
 };
 
-// Helper class to monitor the thread join process (on a temporary thread) when
-// tearing down the peer connection, which has been observed to occasionally
-// block the network thread and zombify the host. This class crashes the ME2ME
-// host if the thread join process takes too long, so that the ME2ME daemon
-// process can respawn the host.
-// See: crbug.com/1130090
-class ThreadJoinWatchdog : public base::Watchdog {
- public:
-  ThreadJoinWatchdog()
-      : base::Watchdog(kWaitForThreadJoinTimeout,
-                       "WebRTC Thread Join Watchdog",
-                       /* enabled= */ true) {}
-  ~ThreadJoinWatchdog() override = default;
-
-  void Alarm() override {
-    // Crash the host if thread join takes too long.
-    CHECK(false) << "WebRTC thread join process timed out.";
-  }
-};
-
 }  // namespace
 
 class WebrtcTransport::PeerConnectionWrapper
@@ -343,15 +320,12 @@ class WebrtcTransport::PeerConnectionWrapper
       return;
     }
     peer_connection_ = result.MoveValue();
-    thread_join_watchdog_ = std::make_unique<ThreadJoinWatchdog>();
   }
 
   PeerConnectionWrapper(const PeerConnectionWrapper&) = delete;
   PeerConnectionWrapper& operator=(const PeerConnectionWrapper&) = delete;
 
   ~PeerConnectionWrapper() override {
-    thread_join_watchdog_->Arm();
-
     {
       // |peer_connection_| creates threads internally, which are joined when
       // the connection is closed. See crbug.com/660081.
@@ -362,18 +336,6 @@ class WebrtcTransport::PeerConnectionWrapper
     }
 
     audio_module_ = nullptr;
-
-    if (before_disarm_thread_join_watchdog_callback_) {
-      std::move(before_disarm_thread_join_watchdog_callback_).Run();
-    }
-    thread_join_watchdog_->Disarm();
-
-    {
-      // |thread_join_watchdog_| uses a lock internally so we need to allow sync
-      // primitives when destroying the watchdog.
-      ScopedAllowSyncPrimitivesForWebRtcTransport allow_sync_primitives;
-      thread_join_watchdog_.reset();
-    }
   }
 
   WebrtcAudioModule* audio_module() {
@@ -386,14 +348,6 @@ class WebrtcTransport::PeerConnectionWrapper
 
   webrtc::PeerConnectionFactoryInterface* peer_connection_factory() {
     return peer_connection_factory_.get();
-  }
-
-  void SetThreadJoinWatchdogForTests(std::unique_ptr<base::Watchdog> watchdog) {
-    thread_join_watchdog_ = std::move(watchdog);
-  }
-
-  void SetBeforeDisarmThreadJoinWatchdogCallbackForTests(base::OnceClosure cb) {
-    before_disarm_thread_join_watchdog_callback_ = std::move(cb);
   }
 
   // webrtc::PeerConnectionObserver interface.
@@ -446,8 +400,6 @@ class WebrtcTransport::PeerConnectionWrapper
   rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  std::unique_ptr<base::Watchdog> thread_join_watchdog_;
-  base::OnceClosure before_disarm_thread_join_watchdog_callback_;
 
   base::WeakPtr<WebrtcTransport> transport_;
 };
@@ -795,6 +747,12 @@ void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
+  absl::optional<int> frame_rate = session_options().GetInt("Video-Frame-Rate");
+  if (frame_rate) {
+    // Clamp the range to prevent a bad experience in case of a client bug.
+    frame_rate = base::clamp<int>(frame_rate.value(), kTargetFrameRate, 1000);
+    desired_video_frame_rate_ = frame_rate.value();
+  }
 }
 
 void WebrtcTransport::OnAudioTransceiverCreated(
@@ -807,7 +765,7 @@ void WebrtcTransport::OnVideoTransceiverCreated(
   auto sender = transceiver->sender();
   auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
   SetSenderBitrates(sender, min_bitrate_bps, max_bitrate_bps);
-  SetDefaultSenderParameters(sender);
+  SetDefaultSenderParameters(sender, desired_video_frame_rate_);
 }
 
 void WebrtcTransport::OnLocalSessionDescriptionCreated(
@@ -895,7 +853,7 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
   // maximum framerate.
   auto senders = peer_connection()->GetSenders();
   for (const auto& sender : senders) {
-    SetDefaultSenderParameters(sender);
+    SetDefaultSenderParameters(sender, desired_video_frame_rate_);
   }
 }
 
@@ -1267,19 +1225,6 @@ void WebrtcTransport::StopRtcEventLogging() {
     ScopedAllowThreadJoinForWebRtcTransport allow_wait;
     peer_connection()->StopRtcEventLog();
   }
-}
-
-void WebrtcTransport::SetThreadJoinWatchdogForTests(
-    std::unique_ptr<base::Watchdog> watchdog) {
-  peer_connection_wrapper_->SetThreadJoinWatchdogForTests(  // IN-TEST
-      std::move(watchdog));
-}
-
-void WebrtcTransport::SetBeforeDisarmThreadJoinWatchdogCallbackForTests(
-    base::OnceClosure cb) {
-  peer_connection_wrapper_
-      ->SetBeforeDisarmThreadJoinWatchdogCallbackForTests(  // IN-TEST
-          std::move(cb));
 }
 
 }  // namespace protocol

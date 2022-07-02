@@ -181,7 +181,7 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
 void AppBannerManager::OnInstall(blink::mojom::DisplayMode display) {
   TrackInstallDisplayMode(display);
   mojo::Remote<blink::mojom::InstallationService> installation_service;
-  web_contents()->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+  web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
       installation_service.BindNewPipeAndPassReceiver());
   DCHECK(installation_service);
   installation_service->OnInstall();
@@ -613,7 +613,7 @@ void AppBannerManager::SendBannerPromptRequest() {
   ResetBindings();
 
   mojo::Remote<blink::mojom::AppBannerController> controller;
-  web_contents()->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+  web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
       controller.BindNewPipeAndPassReceiver());
 
   // Get a raw controller pointer before we move out of the smart pointer to
@@ -653,15 +653,15 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
     }
   }
 
+  if (state_ != State::COMPLETE && state_ != State::INACTIVE)
+    Terminate();
+  ResetCurrentPageData();
+
   if (base::FeatureList::IsEnabled(
           blink::features::kBackForwardCacheAppBanner) &&
       handle->IsServedFromBackForwardCache()) {
     UpdateState(State::INACTIVE);
     RequestAppBanner(validated_url_);
-  } else {
-    if (state_ != State::COMPLETE && state_ != State::INACTIVE)
-      Terminate();
-    ResetCurrentPageData();
   }
 }
 
@@ -695,7 +695,7 @@ void AppBannerManager::DidActivatePortal(
   // instantiated after DidFinishLoad. Trigger the banner pipeline now (on
   // portal activation) if we missed the load event.
   if (!load_finished_ && !web_contents()->ShouldShowLoadingUI()) {
-    DidFinishLoad(web_contents()->GetMainFrame(),
+    DidFinishLoad(web_contents()->GetPrimaryMainFrame(),
                   web_contents()->GetLastCommittedURL());
   }
 }
@@ -895,7 +895,7 @@ void AppBannerManager::OnBannerPromptReply(
   if (event_canceled) {
     TrackBeforeInstallEvent(BEFORE_INSTALL_EVENT_PREVENT_DEFAULT_CALLED);
     if (ShouldBypassEngagementChecks()) {
-      web_contents()->GetMainFrame()->AddMessageToConsole(
+      web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kInfo,
           "Banner not shown: beforeinstallpromptevent.preventDefault() called. "
           "The page must call beforeinstallpromptevent.prompt() to show the "

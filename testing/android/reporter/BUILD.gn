@@ -9,7 +9,6 @@ android_library("reporter_java") {
   chromium_code = true
 
   deps = [
-    "//build/android:build_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//third_party/android_sdk:android_test_base_java",
   ]

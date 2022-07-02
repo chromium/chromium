@@ -10,7 +10,10 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"
@@ -36,6 +39,34 @@ void LoadStimsFromYUV(const uint8_t y_src[],
     stims[i].SetPoint(y_src[i] / 255.0f, u_src[i / 2] / 255.0f,
                       v_src[i / 2] / 255.0f);
   }
+}
+
+void LoadStimsFromYUV(const uint8_t y_src[],
+                      const uint16_t uv_src[],
+                      int width,
+                      TriStim stims[]) {
+// https://docs.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
+// "All of the Y samples appear first in memory as an array of unsigned char
+// values with an even number of lines. The Y plane is followed immediately by
+// an array of unsigned char values that contains packed U (Cb) and V (Cr)
+// samples. When the combined U-V array is addressed as an array of
+// little-endian WORD values, the LSBs contain the U values, and the MSBs
+// contain the V values."
+#if defined(SK_CPU_BENDIAN)
+  for (int i = 0; i < width; ++i) {
+    stims[i].SetPoint(
+        y_src[i] / 255.0f,
+        (uv_src[i / 2] >> 8) / 255.0f,  // MSB contains U values on LE
+        (uv_src[i / 2] & 0xFF) / 255.0f);
+  }
+#else
+  for (int i = 0; i < width; ++i) {
+    stims[i].SetPoint(
+        y_src[i] / 255.0f,
+        (uv_src[i / 2] & 0xFF) / 255.0f,  // LSB contains U values on LE
+        (uv_src[i / 2] >> 8) / 255.0f);
+  }
+#endif
 }
 
 // Maps [0.0,1.0]⇒[0,255], rounding to the nearest integer.
@@ -82,13 +113,24 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
   // Convert one row at a time.
   std::vector<gfx::ColorTransform::TriStim> stims(bitmap.width());
   for (int row = 0; row < bitmap.height(); ++row) {
-    LoadStimsFromYUV(frame.visible_data(media::VideoFrame::kYPlane) +
-                         row * frame.stride(media::VideoFrame::kYPlane),
-                     frame.visible_data(media::VideoFrame::kUPlane) +
-                         (row / 2) * frame.stride(media::VideoFrame::kUPlane),
-                     frame.visible_data(media::VideoFrame::kVPlane) +
-                         (row / 2) * frame.stride(media::VideoFrame::kVPlane),
-                     bitmap.width(), stims.data());
+    if (frame.format() == media::VideoPixelFormat::PIXEL_FORMAT_I420) {
+      LoadStimsFromYUV(frame.visible_data(media::VideoFrame::kYPlane) +
+                           row * frame.stride(media::VideoFrame::kYPlane),
+                       frame.visible_data(media::VideoFrame::kUPlane) +
+                           (row / 2) * frame.stride(media::VideoFrame::kUPlane),
+                       frame.visible_data(media::VideoFrame::kVPlane) +
+                           (row / 2) * frame.stride(media::VideoFrame::kVPlane),
+                       bitmap.width(), stims.data());
+    } else {
+      CHECK_EQ(frame.format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+      LoadStimsFromYUV(
+          frame.visible_data(media::VideoFrame::kYPlane) +
+              row * frame.stride(media::VideoFrame::kYPlane),
+          reinterpret_cast<const uint16_t*>(
+              frame.visible_data(media::VideoFrame::kUVPlane) +
+              (row / 2) * frame.stride(media::VideoFrame::kUVPlane)),
+          bitmap.width(), stims.data());
+    }
     transform->Transform(stims.data(), stims.size());
     StimsToN32Row(stims.data(), bitmap.width(),
                   reinterpret_cast<uint8_t*>(bitmap.getAddr32(0, row)));
@@ -134,10 +176,11 @@ FrameTestUtil::RGB FrameTestUtil::ComputeAverageColor(
        ++y) {
     for (int x = include_rect.x(), right = include_rect.right(); x < right;
          ++x) {
-      const SkColor color = frame.getColor(x, y);
       if (exclude_rect.Contains(x, y)) {
         continue;
       }
+
+      const SkColor color = frame.getColor(x, y);
       include_sums[0] += SkColorGetR(color);
       include_sums[1] += SkColorGetG(color);
       include_sums[2] += SkColorGetB(color);
@@ -165,6 +208,49 @@ bool FrameTestUtil::IsApproximatelySameColor(SkColor color,
   const double g_diff = std::abs(SkColorGetG(color) - rgb.g);
   const double b_diff = std::abs(SkColorGetB(color) - rgb.b);
   return r_diff < max_diff && g_diff < max_diff && b_diff < max_diff;
+}
+
+// static
+bool FrameTestUtil::IsApproximatelySameColor(SkColor color,
+                                             SkColor expected_color,
+                                             int max_diff) {
+  const int r_diff = std::abs(static_cast<int>(SkColorGetR(color)) -
+                              static_cast<int>(SkColorGetR(expected_color)));
+  const int g_diff = std::abs(static_cast<int>(SkColorGetG(color)) -
+                              static_cast<int>(SkColorGetG(expected_color)));
+  const int b_diff = std::abs(static_cast<int>(SkColorGetB(color)) -
+                              static_cast<int>(SkColorGetB(expected_color)));
+  return r_diff < max_diff && g_diff < max_diff && b_diff < max_diff;
+}
+
+bool FrameTestUtil::IsApproximatelySameColor(SkBitmap frame,
+                                             const gfx::Rect& raw_include_rect,
+                                             const gfx::Rect& raw_exclude_rect,
+                                             SkColor expected_color,
+                                             int max_diff) {
+  // Clip the rects to the valid region within |frame|. Also, only the subregion
+  // of |exclude_rect| within |include_rect| is relevant.
+  gfx::Rect include_rect = raw_include_rect;
+  include_rect.Intersect(gfx::Rect(0, 0, frame.width(), frame.height()));
+  gfx::Rect exclude_rect = raw_exclude_rect;
+  exclude_rect.Intersect(include_rect);
+
+  for (int y = include_rect.y(), bottom = include_rect.bottom(); y < bottom;
+       ++y) {
+    for (int x = include_rect.x(), right = include_rect.right(); x < right;
+         ++x) {
+      if (exclude_rect.Contains(x, y)) {
+        continue;
+      }
+
+      const SkColor color = frame.getColor(x, y);
+      if (!IsApproximatelySameColor(color, expected_color, max_diff)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 // static

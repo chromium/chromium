@@ -74,6 +74,12 @@ class TestPerUserStateManager : public PerUserStateManagerChromeOS {
 
   bool IsDeviceOwned() const override { return is_device_owned_; }
 
+  void WaitForOwnershipStatus() override {
+    InitializeProfileMetricsState(
+        is_device_owned_ ? ash::DeviceSettingsService::OWNERSHIP_TAKEN
+                         : ash::DeviceSettingsService::OWNERSHIP_NONE);
+  }
+
  private:
   bool is_log_store_set_ = false;
   bool is_client_id_reset_ = false;

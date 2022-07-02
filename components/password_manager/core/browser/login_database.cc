@@ -533,7 +533,23 @@ bool InsecureCredentialsPostMigrationStepCallback(
     sql::Database* db,
     unsigned new_version) {
   if (new_version == 29) {
-    if (!insecure_credentials_builder->CreateTable(db)) {
+    std::string create_table_statement =
+        "CREATE TABLE insecure_credentials ("
+        "parent_id INTEGER REFERENCES logins ON UPDATE CASCADE ON DELETE "
+        "CASCADE DEFERRABLE INITIALLY DEFERRED, "
+        "insecurity_type INTEGER NOT NULL, "
+        "create_time INTEGER NOT NULL, "
+        "is_muted INTEGER NOT NULL DEFAULT 0, "
+        "UNIQUE (parent_id, insecurity_type))";
+    std::string create_index_statement =
+        "CREATE INDEX foreign_key_index ON insecure_credentials "
+        "(parent_id)";
+    sql::Transaction creation_transaction(db);
+    bool table_creation_success = creation_transaction.Begin() &&
+                                  db->Execute(create_table_statement.c_str()) &&
+                                  db->Execute(create_index_statement.c_str()) &&
+                                  creation_transaction.Commit();
+    if (!table_creation_success) {
       LOG(ERROR) << "Failed to create the 'insecure_credentials' table";
       LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
       return false;
@@ -568,7 +584,23 @@ bool PasswordNotesPostMigrationStepCallback(
     sql::Database* db,
     unsigned new_version) {
   if (new_version == 33) {
-    if (!password_notes_builder->CreateTable(db)) {
+    std::string create_table_statement =
+        "CREATE TABLE password_notes ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "parent_id INTEGER NOT NULL REFERENCES logins ON UPDATE CASCADE ON "
+        "DELETE CASCADE DEFERRABLE INITIALLY DEFERRED, "
+        "key VARCHAR NOT NULL, "
+        "value BLOB, "
+        "date_created INTEGER NOT NULL, "
+        "confidential INTEGER, "
+        "UNIQUE (parent_id, key))";
+    std::string create_index_statement =
+        "CREATE INDEX foreign_key_index_notes ON password_notes (parent_id)";
+    sql::Transaction transaction(db);
+    bool table_creation_success =
+        transaction.Begin() && db->Execute(create_table_statement.c_str()) &&
+        db->Execute(create_index_statement.c_str()) && transaction.Commit();
+    if (!table_creation_success) {
       LOG(ERROR) << "Failed to create the 'password_notes' table";
       LogDatabaseInitError(INIT_PASSWORD_NOTES_ERROR);
       return false;
@@ -1013,7 +1045,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       UpdateInsecureCredentials(primary_key,
                                 form_with_encrypted_password.password_issues);
     }
-    UpdatePasswordNote(primary_key, form.note);
+    UpdatePasswordNotes(primary_key, form.notes);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password), primary_key,
                       /*password_changed=*/false);
@@ -1042,7 +1074,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       insecure_changed = UpdateInsecureCredentials(
           primary_key, form_with_encrypted_password.password_issues);
     }
-    UpdatePasswordNote(primary_key, form_with_encrypted_password.note);
+    UpdatePasswordNotes(primary_key, form_with_encrypted_password.notes);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
                       FormPrimaryKey(db_.GetLastInsertRowId()),
@@ -1159,8 +1191,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   InsecureCredentialsChanged insecure_changed = UpdateInsecureCredentials(
       FormPrimaryKey(old_primary_key_password.primary_key),
       form_with_encrypted_password.password_issues);
-  UpdatePasswordNote(FormPrimaryKey(old_primary_key_password.primary_key),
-                     form.note);
+  UpdatePasswordNotes(FormPrimaryKey(old_primary_key_password.primary_key),
+                      form.notes);
 
   PasswordStoreChangeList list;
   FillFormInStore(&form_with_encrypted_password);
@@ -1386,7 +1418,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->date_password_modified = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(s.ColumnInt64(COLUMN_DATE_PASSWORD_MODIFIED)));
   PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
-  PopulateFormWithNote(FormPrimaryKey(*primary_key), form);
+  PopulateFormWithNotes(FormPrimaryKey(*primary_key), form);
 
   return ENCRYPTION_RESULT_SUCCESS;
 }
@@ -1994,24 +2026,22 @@ InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(
   return InsecureCredentialsChanged(changed);
 }
 
-void LoginDatabase::PopulateFormWithNote(FormPrimaryKey primary_key,
-                                         PasswordForm* form) const {
+void LoginDatabase::PopulateFormWithNotes(FormPrimaryKey primary_key,
+                                          PasswordForm* form) const {
   if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
     return;
-  absl::optional<PasswordNote> note =
-      password_notes_table_.GetPasswordNote(primary_key);
-  form->note = note ? note.value() : PasswordNote();
+  form->notes = password_notes_table_.GetPasswordNotes(primary_key);
 }
 
-void LoginDatabase::UpdatePasswordNote(FormPrimaryKey primary_key,
-                                       PasswordNote note) {
+void LoginDatabase::UpdatePasswordNotes(
+    FormPrimaryKey primary_key,
+    const std::vector<PasswordNote>& notes) {
   if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
     return;
-  if (note.value.empty()) {
-    password_notes_table_.RemovePasswordNote(primary_key);
-    return;
-  }
-  password_notes_table_.InsertOrReplace(primary_key, note);
+
+  password_notes_table_.RemovePasswordNotes(primary_key);
+  for (const PasswordNote& note : notes)
+    password_notes_table_.InsertOrReplace(primary_key, note);
 }
 
 }  // namespace password_manager

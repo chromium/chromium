@@ -15,7 +15,7 @@ WebviewManagerTest.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://chrome-signin/test_loader.html?module=webview_manager/webview_manager_test.js',
+      'chrome://chrome-signin/test_loader.html?module=webview_manager/webview_manager_test.js&host=test',
 
   extraLibraries: [
     '//third_party/mocha/mocha.js',

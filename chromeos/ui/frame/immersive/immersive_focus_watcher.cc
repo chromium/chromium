@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -85,7 +86,7 @@ class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  ImmersiveFullscreenController* controller_;
+  raw_ptr<ImmersiveFullscreenController> controller_;
 
   std::set<aura::Window*> bubbles_;
 

@@ -224,6 +224,13 @@
       },
     },
   },
+  'chrome-finch-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chrome.tests.finch',
+      },
+    },
+  },
   'chrome-swarming-pool': {
     'swarming': {
       'dimensions': {
@@ -389,6 +396,9 @@
       ],
     },
   },
+  'disable_check_flakiness_web_tests': {
+     'check_flakiness_for_new_tests': False,
+  },
   'disable_field_trial_config_for_earl_grey': {
     '$mixin_append': {
       'args': [
@@ -430,6 +440,13 @@
       ],
     },
   },
+  'finch-chromium-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.finch',
+      },
+    },
+  },
   'flame': {
     # Pixel 4
     'swarming': {
@@ -443,7 +460,8 @@
     '$mixin_append': {
       'args': [
         '--code-coverage',
-        '--code-coverage-dir=${ISOLATED_OUTDIR}'
+        '--code-coverage-dir=${ISOLATED_OUTDIR}',
+        '--test-launcher-jobs=2'
       ],
     },
   },
@@ -581,13 +599,25 @@
       },
     },
   },
-  'ios_runtime_cache_15_4': {
+  'ios_runtime_cache_15_5': {
     '$mixin_append': {
       'swarming': {
         'named_caches': [
           {
-            'name': 'runtime_ios_15_4',
-            'path': 'Runtime-ios-15.4',
+            'name': 'runtime_ios_15_5',
+            'path': 'Runtime-ios-15.5',
+          },
+        ],
+      },
+    },
+  },
+  'ios_runtime_cache_16_0': {
+    '$mixin_append': {
+      'swarming': {
+        'named_caches': [
+          {
+            'name': 'runtime_ios_16_0',
+            'path': 'Runtime-ios-16.0',
           },
         ],
       },
@@ -659,8 +689,8 @@
     'swarming': {
       'dimensions': {
         'gpu': '1002:7340',
-        'os': 'Ubuntu',
-        'pool': 'chromium.tests.gpu.experimental',
+        'os': 'Ubuntu-18.04.6',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -686,12 +716,10 @@
   'linux_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:3e92-20.0.8',
-        'os': 'Ubuntu-18.04.5',
+        'gpu': '8086:9bc5-20.0.8',
+        'os': 'Ubuntu-18.04.6',
         'pool': 'chromium.tests.gpu',
       },
-      # Increase max pending time to 2 hours due to lack of capacity.
-      'expiration': 7200,
     }
   },
   'linux_nvidia_gtx_1660_experimental': {
@@ -740,22 +768,6 @@
       'mac-release/sizes',
     ],
   },
-  'mac_10.11': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-10.11',
-      },
-    },
-  },
-  'mac_10.12': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-10.12.6',
-      },
-    },
-  },
   'mac_10.13': {
     'swarming': {
       'dimensions': {
@@ -785,6 +797,23 @@
       'dimensions': {
         'cpu': 'arm64',
         'os': 'Mac-11',
+      },
+    },
+  },
+  # TODO(crbug.com/1325185) Remove Mac11 once testers have been upgraded to Mac12
+  'mac_11_or_12_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-11|Mac-12',
+      },
+    },
+  },
+  'mac_11_or_12_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-11|Mac-10.16|Mac-12',
       },
     },
   },
@@ -820,7 +849,18 @@
       },
     },
   },
-  'mac_arm64_apple_m1_gpu': {
+  'mac_arm64_apple_m1_gpu_experimental': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'mac_model': 'Macmini9,1',
+        'os': 'Mac-12',
+        'pool': 'chromium.tests',
+        'display_attached': '1',
+      },
+    },
+  },
+  'mac_arm64_apple_m1_gpu_stable': {
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
@@ -836,7 +876,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-11.5.2',
+        'os': 'Mac-12.4',
         'display_attached': '1',
       },
     },
@@ -846,7 +886,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-11.5.2',
+        'os': 'Mac-11.5.2|Mac-12.4',
         'display_attached': '1',
       },
     },
@@ -856,7 +896,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '1002:679e',
-        'os': 'Mac-10.12.6',
+        'os': 'Mac-12.4',
         'pool': 'chromium.tests.gpu',
         'display_attached': '1',
       },
@@ -928,7 +968,7 @@
     'swarming': {
       'dimension_sets': [
          {
-           'os': 'Mac-10.15',
+           'os': 'Mac-12',
            'cpu': 'x86-64',
          },
       ],
@@ -1160,7 +1200,7 @@
       ],
       'linux_args': [
         '--no-xvfb',
-        '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
+        '--additional-driver-flag=--enable-features=Vulkan',
       ],
     },
     'merge': {
@@ -1321,13 +1361,13 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13e113'
+        '13f17a'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13e113',
+          'name': 'xcode_ios_13f17a',
           'path': 'Xcode.app',
         },
       ],
@@ -1345,6 +1385,23 @@
       'named_caches': [
         {
           'name': 'xcode_ios_13c100',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  # Default Xcode 14 beta.
+  'xcode_14_beta': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
+        '14a5229c'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_14a5229c',
           'path': 'Xcode.app',
         },
       ],

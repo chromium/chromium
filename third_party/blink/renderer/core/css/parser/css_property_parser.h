@@ -52,7 +52,7 @@ class CORE_EXPORT CSSPropertyParser {
                          bool important,
                          const CSSParserTokenRange&,
                          const CSSParserContext*,
-                         HeapVector<CSSPropertyValue, 256>&,
+                         HeapVector<CSSPropertyValue, 64>&,
                          StyleRule::RuleType);
 
   // Parses a non-shorthand CSS property
@@ -63,11 +63,15 @@ class CORE_EXPORT CSSPropertyParser {
  private:
   CSSPropertyParser(const CSSParserTokenRange&,
                     const CSSParserContext*,
-                    HeapVector<CSSPropertyValue, 256>*);
+                    HeapVector<CSSPropertyValue, 64>*);
 
   // TODO(timloh): Rename once the CSSParserValue-based parseValue is removed
-  bool ParseValueStart(CSSPropertyID unresolved_property, bool important);
-  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property, bool important);
+  bool ParseValueStart(CSSPropertyID unresolved_property,
+                       StyleRule::RuleType rule_type,
+                       bool important);
+  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
+                             bool important,
+                             StyleRule::RuleType rule_type);
 
   bool ParseViewportDescriptor(CSSPropertyID prop_id, bool important);
   bool ParseFontFaceDescriptor(CSSPropertyID);
@@ -77,7 +81,7 @@ class CORE_EXPORT CSSPropertyParser {
   CSSParserTokenRange range_;
   const CSSParserContext* context_;
   // Outputs:
-  HeapVector<CSSPropertyValue, 256>* parsed_properties_;
+  HeapVector<CSSPropertyValue, 64>* parsed_properties_;
 };
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext*,

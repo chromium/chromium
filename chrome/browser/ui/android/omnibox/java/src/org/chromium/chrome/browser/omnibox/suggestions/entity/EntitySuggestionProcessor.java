@@ -54,7 +54,7 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, null);
         mSuggestionHost = suggestionHost;
         mPendingImageRequests = new HashMap<>();
         mImageFetcherSupplier = imageFetcherSupplier;

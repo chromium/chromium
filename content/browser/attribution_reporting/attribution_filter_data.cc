@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 
@@ -76,6 +77,60 @@ absl::optional<AttributionFilterData>
 AttributionFilterData::FromTriggerFilterValues(FilterValues&& filter_values) {
   return FromFilterValues(std::move(filter_values),
                           /*extra_filters_allowed=*/0);
+}
+
+// static
+absl::optional<AttributionFilterData> AttributionFilterData::FromSourceJSON(
+    base::Value* value) {
+  // TODO(johnidel): Consider logging registration JSON metrics here.
+  if (!value)
+    return AttributionFilterData();
+
+  base::Value::Dict* dict = value->GetIfDict();
+  if (!dict)
+    return absl::nullopt;
+
+  const size_t num_filters = dict->size();
+  if (num_filters > blink::kMaxAttributionFiltersPerSource)
+    return absl::nullopt;
+
+  if (dict->contains(kFilterSourceType))
+    return absl::nullopt;
+
+  FilterValues::container_type filter_values;
+  filter_values.reserve(dict->size());
+
+  for (auto [filter, value] : *dict) {
+    if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
+      return absl::nullopt;
+
+    base::Value::List* list = value.GetIfList();
+    if (!list)
+      return absl::nullopt;
+
+    const size_t num_values = list->size();
+    if (num_values > blink::kMaxValuesPerAttributionFilter)
+      return absl::nullopt;
+
+    std::vector<std::string> values;
+    values.reserve(num_values);
+
+    for (base::Value& value : *list) {
+      std::string* string = value.GetIfString();
+      if (!string)
+        return absl::nullopt;
+
+      if (string->size() > blink::kMaxBytesPerAttributionFilterString)
+        return absl::nullopt;
+
+      values.push_back(std::move(*string));
+    }
+
+    filter_values.emplace_back(filter, std::move(values));
+  }
+
+  return AttributionFilterData(
+      FilterValues(base::sorted_unique, std::move(filter_values)));
 }
 
 // static

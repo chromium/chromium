@@ -37,7 +37,7 @@ public class NotificationChannelPreserverTest {
     private static final String CHANNEL_ID = "red-channel-id";
     private static final Origin ORIGIN_WITHOUT_CHANNEL = Origin.create("https://www.blue.com");
 
-    @Mock TrustedWebActivityPermissionStore mStore;
+    @Mock InstalledWebappPermissionStore mStore;
     @Mock SiteChannelsManager mSiteChannelsManager;
 
     private NotificationChannelPreserver mPreserver;
@@ -67,7 +67,7 @@ public class NotificationChannelPreserverTest {
 
         mPreserver.deleteChannel(ORIGIN_WITH_CHANNEL);
 
-        verify(mStore).setPreTwaNotificationState(eq(ORIGIN_WITH_CHANNEL), eq(enabled));
+        verify(mStore).setPreInstallNotificationState(eq(ORIGIN_WITH_CHANNEL), eq(enabled));
         verify(mSiteChannelsManager).deleteSiteChannel(eq(CHANNEL_ID));
     }
 
@@ -75,7 +75,7 @@ public class NotificationChannelPreserverTest {
     public void delete_nopIfNoChannel() {
         mPreserver.deleteChannel(ORIGIN_WITHOUT_CHANNEL);
 
-        verify(mStore, never()).setPreTwaNotificationState(any(), anyBoolean());
+        verify(mStore, never()).setPreInstallNotificationState(any(), anyBoolean());
         verify(mSiteChannelsManager, never()).deleteSiteChannel(any());
     }
 
@@ -109,6 +109,6 @@ public class NotificationChannelPreserverTest {
     }
 
     private void setPreTwaChannelStatus(Origin origin, Boolean value) {
-        when(mStore.getPreTwaNotificationState(origin)).thenReturn(value);
+        when(mStore.getPreInstallNotificationState(origin)).thenReturn(value);
     }
 }

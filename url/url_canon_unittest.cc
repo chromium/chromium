@@ -173,9 +173,9 @@ TEST(URLCanonTest, UTF) {
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      int input_len = static_cast<int>(strlen(utf_cases[i].input8));
+      size_t input_len = strlen(utf_cases[i].input8);
       bool success = true;
-      for (int ch = 0; ch < input_len; ch++) {
+      for (size_t ch = 0; ch < input_len; ch++) {
         success &= AppendUTF8EscapedChar(utf_cases[i].input8, &ch, input_len,
                                          &output);
       }
@@ -189,9 +189,9 @@ TEST(URLCanonTest, UTF) {
 
       std::u16string input_str(
           test_utils::TruncateWStringToUTF16(utf_cases[i].input16));
-      int input_len = static_cast<int>(input_str.length());
+      size_t input_len = input_str.length();
       bool success = true;
-      for (int ch = 0; ch < input_len; ch++) {
+      for (size_t ch = 0; ch < input_len; ch++) {
         success &= AppendUTF8EscapedChar(input_str.c_str(), &ch, input_len,
                                          &output);
       }

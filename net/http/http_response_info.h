@@ -147,45 +147,60 @@ class NET_EXPORT HttpResponseInfo {
   // when reloading previously visited pages (without going over the network).
   // Note also that under normal circumstances, was_cached is set to the correct
   // value even if the request fails.
-  bool was_cached;
+  bool was_cached = false;
 
   // How this response was handled by the HTTP cache.
-  CacheEntryStatus cache_entry_status;
+  CacheEntryStatus cache_entry_status = CacheEntryStatus::ENTRY_UNDEFINED;
 
   // True if the request accessed the network in the process of retrieving
   // data.
-  bool network_accessed;
+  bool network_accessed = false;
 
   // True if the request was fetched over a SPDY channel.
-  bool was_fetched_via_spdy;
+  bool was_fetched_via_spdy = false;
 
   // True if ALPN was negotiated for this request.
-  bool was_alpn_negotiated;
+  bool was_alpn_negotiated = false;
 
-  // True if the request was fetched via an explicit proxy.  The proxy could
+  // True if the response was fetched via an explicit proxy.  The proxy could
   // be any type of proxy, HTTP or SOCKS.  Note, we do not know if a
-  // transparent proxy may have been involved. If true, |proxy_server| contains
-  // the proxy server that was used.
-  // TODO(tbansal): crbug.com/653354. Remove |was_fetched_via_proxy|.
-  bool was_fetched_via_proxy;
+  // transparent proxy may have been involved.
+  //
+  // If true and this struct was not restored from pickled data, |proxy_server|
+  // contains the proxy server that was used.
+  //
+  // TODO(https://crbug.com/653354): Remove this in favor of |proxy_server|.
+  bool was_fetched_via_proxy = false;
+
+  // Information about the proxy used to fetch this response, if any.
+  //
+  // This field is not persisted by |Persist()| and not restored by
+  // |InitFromPickle()|.
+  //
+  // TODO(https://crbug.com/653354): Support this field in |Persist()| and
+  // |InitFromPickle()| then use it to replace |was_fetched_via_proxy|.
   ProxyServer proxy_server;
 
   // Whether the request use http proxy or server authentication.
-  bool did_use_http_auth;
+  bool did_use_http_auth = false;
 
   // True if the resource was originally fetched for a prefetch and has not been
   // used since.
-  bool unused_since_prefetch;
+  bool unused_since_prefetch = false;
 
   // True if the response is a prefetch whose reuse is "restricted". This means
   // it can only be reused from the cache by requests that are marked as able to
   // use restricted prefetches.
-  bool restricted_prefetch;
+  bool restricted_prefetch = false;
 
   // True if this resource is stale and needs async revalidation.
   // This value is not persisted by Persist(); it is only ever set when the
   // response is retrieved from the cache.
-  bool async_revalidation_requested;
+  bool async_revalidation_requested = false;
+
+  // True if this entry in the single-keyed cache is unusable due to a checksum
+  // mismatch.
+  bool single_keyed_cache_entry_unusable = false;
 
   // stale-while-revalidate, if any, will be honored until time given by
   // |stale_revalidate_timeout|. This value is latched the first time
@@ -205,7 +220,7 @@ class NET_EXPORT HttpResponseInfo {
   std::string alpn_negotiated_protocol;
 
   // The type of connection used for this response.
-  ConnectionInfo connection_info;
+  ConnectionInfo connection_info = CONNECTION_INFO_UNKNOWN;
 
   // The time at which the request was made that resulted in this response.
   // For cached responses, this is the last time the cache entry was validated.

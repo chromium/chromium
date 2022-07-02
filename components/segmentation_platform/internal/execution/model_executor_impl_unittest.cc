@@ -18,19 +18,20 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,8 +45,8 @@ using testing::SetArgReferee;
 
 namespace segmentation_platform {
 
-const OptimizationTarget kSegmentId =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const SegmentId kSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 
 class ModelExecutorTest : public testing::Test {
  public:
@@ -77,10 +78,14 @@ class ModelExecutorTest : public testing::Test {
                     ModelProvider* model,
                     const std::pair<float, ModelExecutionStatus>& expected) {
     base::RunLoop loop;
-    model_executor_->ExecuteModel(
-        info, model, /*record_metrics_for_default=*/false,
+    auto request = std::make_unique<ExecutionRequest>();
+    request->segment_info = &info;
+    request->model_provider = model;
+    request->save_result_to_db = false;
+    request->callback =
         base::BindOnce(&ModelExecutorTest::OnExecutionCallback,
-                       base::Unretained(this), loop.QuitClosure(), expected));
+                       base::Unretained(this), loop.QuitClosure(), expected);
+    model_executor_->ExecuteModel(std::move(request));
     loop.Run();
   }
 
@@ -145,7 +150,7 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   // Initialize with required metadata.
   test::TestSegmentInfoDatabase metadata_writer;
-  const OptimizationTarget segment_id = kSegmentId;
+  const SegmentId segment_id = kSegmentId;
   metadata_writer.SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
   std::string user_action_name = "some_user_action";
   metadata_writer.AddUserActionFeature(segment_id, user_action_name, 3, 3,
@@ -153,9 +158,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>{1, 2, 3},
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>{1, 2, 3},
                                    std::vector<float>()));
 
   // The input tensor should contain all values flattened to a single vector.
@@ -168,9 +173,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>(),
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>(),
                                    std::vector<float>()));
   ExecuteModel(
       *metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
@@ -189,9 +194,9 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, kSegmentId, clock_.Now(),
+                  _, _, kSegmentId, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/false,
+      .WillOnce(RunOnceCallback<5>(/*error=*/false,
                                    std::vector<float>{1, 2, 3, 4, 5, 6, 7},
                                    std::vector<float>()));
 

@@ -16,11 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The name of the icon image for the save card banner.
-NSString* const kIconImageName = @"infobar_save_card_icon";
-}
-
 namespace save_card_infobar_overlays {
 
 OVERLAY_USER_DATA_SETUP_IMPL(SaveCardBannerRequestConfig);
@@ -41,7 +36,6 @@ SaveCardBannerRequestConfig::SaveCardBannerRequestConfig(
       delegate->upload()
           ? l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_ELLIPSIS)
           : delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
-  icon_image_name_ = kIconImageName;
   should_upload_credentials_ = delegate->upload();
 }
 
@@ -51,7 +45,7 @@ void SaveCardBannerRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
       user_data, static_cast<InfoBarIOS*>(infobar_),
-      InfobarOverlayType::kBanner, false, true);
+      InfobarOverlayType::kBanner, false);
 }
 
 }  // namespace save_card_infobar_overlays

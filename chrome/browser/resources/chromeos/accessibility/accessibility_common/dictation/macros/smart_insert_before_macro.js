@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {Macro, MacroError} from '/accessibility_common/dictation/macros/macro.js';
+import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
+
+/**
+ * Implements a macro that inserts a word or phrase before another word or
+ * phrase
+ */
+export class SmartInsertBeforeMacro extends Macro {
+  /**
+   * @param {!InputController} inputController
+   * @param {string} insertPhrase
+   * @param {string} beforePhrase
+   */
+  constructor(inputController, insertPhrase, beforePhrase) {
+    super(MacroName.SMART_INSERT_BEFORE);
+    /** @private {!InputController} */
+    this.inputController_ = inputController;
+    /** @private {string} */
+    this.insertPhrase_ = insertPhrase;
+    /** @private {string} */
+    this.beforePhrase_ = beforePhrase;
+  }
+
+  /** @override */
+  checkContext() {
+    return this.createSuccessCheckContextResult_(
+        /*willImmediatelyDisambiguate=*/ false);
+  }
+
+  /** @override */
+  runMacro() {
+    if (!this.inputController_.isActive()) {
+      return this.createRunMacroResult_(
+          /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
+    }
+    this.inputController_.insertBefore(this.insertPhrase_, this.beforePhrase_);
+    return this.createRunMacroResult_(/*isSuccess=*/ true);
+  }
+}

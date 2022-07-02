@@ -8,7 +8,9 @@
 
 #include <algorithm>
 
+#include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "ui/base/models/table_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
@@ -117,6 +119,21 @@ int GetClosestVisibleColumnIndex(const TableView* table, int x) {
       return static_cast<int>(i);
   }
   return static_cast<int>(columns.size()) - 1;
+}
+
+ui::TableColumn::Alignment GetMirroredTableColumnAlignment(
+    ui::TableColumn::Alignment alignment) {
+  if (!base::i18n::IsRTL())
+    return alignment;
+
+  switch (alignment) {
+    case ui::TableColumn::LEFT:
+      return ui::TableColumn::RIGHT;
+    case ui::TableColumn::RIGHT:
+      return ui::TableColumn::LEFT;
+    case ui::TableColumn::CENTER:
+      return ui::TableColumn::CENTER;
+  }
 }
 
 }  // namespace views

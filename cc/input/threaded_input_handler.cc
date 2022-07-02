@@ -376,6 +376,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   if (!CurrentlyScrollingNode())
     return InputHandlerScrollResult();
 
+  const ScrollNode& scroll_node = *CurrentlyScrollingNode();
   last_scroll_update_state_ = *scroll_state;
 
   // Snap on update if interacting with the scrollbar track or arrow buttons.
@@ -388,7 +389,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   }
 
   gfx::Vector2dF resolvedScrollDelta = ResolveScrollGranularityToPixels(
-      *CurrentlyScrollingNode(),
+      scroll_node,
       gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
       scroll_state->delta_granularity());
 
@@ -407,7 +408,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   compositor_delegate_.AccumulateScrollDeltaForTracing(
       gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()));
 
-  compositor_delegate_.WillScrollContent(CurrentlyScrollingNode()->element_id);
+  compositor_delegate_.WillScrollContent(scroll_node.element_id);
 
   float initial_top_controls_offset = compositor_delegate_.GetImplDeprecated()
                                           .browser_controls_manager()
@@ -424,7 +425,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   bool did_scroll_content = did_scroll_x || did_scroll_y;
   if (did_scroll_content) {
     bool is_animated_scroll = ShouldAnimateScroll(*scroll_state);
-    compositor_delegate_.DidScrollContent(CurrentlyScrollingNode()->element_id,
+    compositor_delegate_.DidScrollContent(scroll_node.element_id,
                                           is_animated_scroll);
   } else {
     overscroll_delta_for_main_thread_ +=
@@ -440,7 +441,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
     accumulated_root_overscroll_.set_y(0);
 
   gfx::Vector2dF unused_root_delta;
-  if (GetViewport().ShouldScroll(*CurrentlyScrollingNode())) {
+  if (GetViewport().ShouldScroll(scroll_node)) {
     unused_root_delta =
         gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y());
   }
@@ -474,10 +475,14 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
     UpdateRootLayerStateForSynchronousInputHandler();
   }
 
-  scroll_result.current_visual_offset =
-      GetVisualScrollOffset(*CurrentlyScrollingNode());
+  scroll_result.current_visual_offset = GetVisualScrollOffset(scroll_node);
   float scale_factor = ActiveTree().page_scale_factor_for_scroll();
   scroll_result.current_visual_offset.Scale(scale_factor);
+
+  if (base::FeatureList::IsEnabled(features::kScrollUnification) &&
+      !GetScrollTree().CanRealizeScrollsOnCompositor(scroll_node)) {
+    scroll_result.needs_main_thread_repaint = true;
+  }
 
   // Run animations which need to respond to updated scroll offset.
   compositor_delegate_.GetImplDeprecated().mutator_host()->TickScrollAnimations(

@@ -58,16 +58,6 @@ void FillInStatsFeatures(const PredictionRequestFeatures::ActionCounts& counts,
 std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
     const PredictionRequestFeatures& entity);
 
-// Convert a GeneratePredictionsRequest from Message to Json String.
-// Returns empty string if the conversion is unsuccessful.
-std::string GeneratePredictionsRequestMessageToJson(
-    const GeneratePredictionsRequest&);
-
-// Convert a GeneratePredictionsResponse from Json String to Message.
-// Returns nullptr if the conversion is unsuccessful.
-std::unique_ptr<GeneratePredictionsResponse>
-    GeneratePredictionsResponseJsonToMessage(std::string);
-
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_COMMON_H_

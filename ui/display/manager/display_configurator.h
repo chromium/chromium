@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -124,7 +125,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     base::TimeDelta GetConfigureDelay() const;
 
    private:
-    DisplayConfigurator* configurator_;  // not owned
+    raw_ptr<DisplayConfigurator> configurator_;  // not owned
   };
 
   // Flags that can be passed to SetDisplayPower().
@@ -362,8 +363,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void SendRelinquishDisplayControl(DisplayControlCallback callback,
                                     bool success);
 
-  StateController* state_controller_;
-  SoftwareMirroringController* mirroring_controller_;
+  raw_ptr<StateController> state_controller_;
+  raw_ptr<SoftwareMirroringController> mirroring_controller_;
   std::unique_ptr<NativeDisplayDelegate> native_display_delegate_;
 
   // Used to enable modes which rely on panel fitting.

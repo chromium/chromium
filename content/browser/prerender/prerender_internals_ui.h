@@ -7,8 +7,19 @@
 
 #include "content/browser/prerender/prerender_internals.mojom-forward.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
+
+class PrerenderInternalsUI;
+
+class PrerenderInternalsUIConfig
+    : public DefaultWebUIConfig<PrerenderInternalsUI> {
+ public:
+  PrerenderInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIPrerenderInternalsHost) {}
+};
 
 // The WebUI for chrome://prerender-internals.
 class PrerenderInternalsUI : public WebUIController {

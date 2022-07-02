@@ -25,6 +25,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -1317,7 +1318,7 @@ struct HashTableBucketInitializer<true> {
       memset(&bucket, 0, sizeof(bucket));
       return;
     }
-    AtomicMemzero<sizeof(bucket)>(&bucket);
+    AtomicMemzero<sizeof(bucket), alignof(Value)>(&bucket);
   }
 };
 

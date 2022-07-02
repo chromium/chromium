@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 
 namespace autofill {
 
@@ -68,6 +68,9 @@ class FormEventLoggerBase {
 
   void OnTypedIntoNonFilledField();
   void OnEditedAutofilledField();
+
+  void SetAutofillAssistantIntentForFilling(
+      const autofill_assistant::AutofillAssistantIntent intent);
 
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
@@ -138,6 +141,13 @@ class FormEventLoggerBase {
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;
+
+  // The Autofill Assistant intent triggering Autofill, if existing
+  autofill_assistant::AutofillAssistantIntent intent_ =
+      autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT;
+
+  // Form types of the submitted form
+  DenseSet<FormType> submitted_form_types_;
 
   // Weak reference.
   raw_ptr<AutofillMetrics::FormInteractionsUkmLogger>

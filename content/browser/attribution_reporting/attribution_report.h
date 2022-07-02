@@ -90,6 +90,11 @@ class CONTENT_EXPORT AttributionReport {
     // Returns the sum of the contributions (values) across all buckets.
     base::CheckedNumeric<int64_t> BudgetRequired() const;
 
+    static constexpr char kVersion[] = "0.1";
+
+    // Enum string identifying this API for use in reports.
+    static constexpr char kApiIdentifier[] = "attribution-reporting";
+
     // The historgram contributions.
     std::vector<AggregatableHistogramContribution> contributions;
 
@@ -135,11 +140,6 @@ class CONTENT_EXPORT AttributionReport {
   base::Value::Dict ReportBody() const;
 
   Id ReportId() const;
-
-  // This will be included in aggregatable report to allow aggregation service
-  // to do privacy budgeting. Note that this will DCHECK that the underlying
-  // data is `AggregatableAttributionData`.
-  std::string PrivacyBudgetKey() const;
 
   const AttributionInfo& attribution_info() const { return attribution_info_; }
 

@@ -126,17 +126,6 @@ static_assert(
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-enum class EmeSessionTypeSupport {
-  // Invalid default value.
-  INVALID,
-  // The session type is not supported.
-  NOT_SUPPORTED,
-  // The session type is supported if a distinctive identifier is available.
-  SUPPORTED_WITH_IDENTIFIER,
-  // The session type is always supported.
-  SUPPORTED,
-};
-
 // Used to declare support for distinctive identifier and persistent state.
 // These are purposefully limited to not allow one to require the other, so that
 // transitive requirements are not possible. Non-trivial refactoring would be

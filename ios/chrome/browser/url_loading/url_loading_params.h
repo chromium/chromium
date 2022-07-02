@@ -88,6 +88,10 @@ struct UrlLoadParams {
   // Opaque way of changing loading behavior.
   UrlLoadStrategy load_strategy;
 
+  // The number of parameters that were experimentally removed from the URL
+  // being loaded.
+  int filtered_param_count;
+
   bool in_background() const {
     return disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
   }

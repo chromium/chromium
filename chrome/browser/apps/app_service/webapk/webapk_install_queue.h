@@ -48,7 +48,7 @@ class WebApkInstallQueue
   Profile* profile_;
   base::circular_deque<std::unique_ptr<WebApkInstallTask>> pending_installs_;
   std::unique_ptr<WebApkInstallTask> current_install_;
-  bool connection_ready_;
+  bool connection_ready_ = false;
 
   base::WeakPtrFactory<WebApkInstallQueue> weak_ptr_factory_{this};
 };

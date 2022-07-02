@@ -107,6 +107,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   void RemoveObserver(ShellSurfaceObserver* observer);
 
   // Overridden from SurfaceDelegate:
+  void OnSetFrame(SurfaceFrameType type) override;
   void OnSetParent(Surface* parent, const gfx::Point& position) override;
 
   // Overridden from ShellSurfaceBase:
@@ -195,6 +196,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool ignore_window_bounds_changes_ = false;
+  bool window_state_is_changing_ = false;
 
   base::ObserverList<ShellSurfaceObserver> observers_;
 };

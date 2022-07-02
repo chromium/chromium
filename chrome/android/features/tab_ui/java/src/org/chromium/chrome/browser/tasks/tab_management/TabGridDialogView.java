@@ -108,7 +108,7 @@ public class TabGridDialogView extends FrameLayout {
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMarginForDialogAnimation(mContext);
+        mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMargin(mContext);
         mToolbarHeight =
                 (int) mContext.getResources().getDimension(R.dimen.tab_group_toolbar_height);
         mBackgroundDrawableColor =
@@ -727,7 +727,9 @@ public class TabGridDialogView extends FrameLayout {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mHideDialogAnimation;
-        mScrimCoordinator.hideScrim(true);
+        if (mScrimCoordinator.isShowingScrim()) {
+            mScrimCoordinator.hideScrim(true);
+        }
         mHideDialogAnimation.start();
     }
 

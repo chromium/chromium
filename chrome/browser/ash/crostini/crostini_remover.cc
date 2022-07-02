@@ -9,13 +9,10 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,9 +45,7 @@ void CrostiniRemover::StopVmFinished(CrostiniResult result) {
 
   VLOG(1) << "Clearing application list";
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-      ->ClearApplicationList(guest_os::GuestOsRegistryService::VmType::
-                                 ApplicationList_VmType_TERMINA,
-                             vm_name_, "");
+      ->ClearApplicationList(guest_os::VmType::TERMINA, vm_name_, "");
   guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_)
       ->ClearMimeTypes(vm_name_, "");
   VLOG(1) << "Destroying disk image";
@@ -75,14 +70,13 @@ void CrostiniRemover::DestroyDiskImageFinished(bool success) {
 void CrostiniRemover::UninstallTerminaFinished(bool success) {
   if (!success) {
     LOG(ERROR) << "Failed to uninstall Termina";
-    std::move(callback_).Run(CrostiniResult::UNKNOWN_ERROR);
+    std::move(callback_).Run(CrostiniResult::UNINSTALL_TERMINA_FAILED);
     return;
   }
 
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
-  profile_->GetPrefs()->Set(prefs::kCrostiniContainers,
-                            base::Value(base::Value::Type::LIST));
+  guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniDefaultContainerConfigured);
   std::move(callback_).Run(CrostiniResult::SUCCESS);
 }

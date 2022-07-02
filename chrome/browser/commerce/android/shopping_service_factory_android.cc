@@ -6,6 +6,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/commerce/android/shopping_service_jni/ShoppingServiceFactory_jni.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/commerce/core/android/shopping_service_android.h"
 #include "components/commerce/core/shopping_service.h"
@@ -22,9 +23,11 @@ namespace commerce {
 ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
-  ShoppingService* service = ShoppingServiceFactory::GetForBrowserContext(
-      ProfileAndroid::FromProfileAndroid(j_profile));
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  CHECK(profile);
 
+  ShoppingService* service =
+      ShoppingServiceFactory::GetForBrowserContext(profile);
   CHECK(service);
 
   ShoppingServiceAndroid* bridge = static_cast<ShoppingServiceAndroid*>(

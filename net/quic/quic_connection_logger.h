@@ -154,11 +154,11 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   // The last packet number received.
   quic::QuicPacketNumber last_received_packet_number_;
   // The size of the most recently received packet.
-  size_t last_received_packet_size_;
+  size_t last_received_packet_size_ = 0;
   // True if a PING frame has been sent and no packet has been received.
-  bool no_packet_received_after_ping_;
+  bool no_packet_received_after_ping_ = false;
   // The size of the previously received packet.
-  size_t previous_received_packet_size_;
+  size_t previous_received_packet_size_ = 0;
   // The first received packet number. Used as the left edge of
   // received_packets_ and received_acks_. In the case where packets are
   // received out of order, packets with numbers smaller than
@@ -169,35 +169,35 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   quic::QuicPacketNumber largest_received_packet_number_;
   // Number of times that the current received packet number is
   // smaller than the last received packet number.
-  size_t num_out_of_order_received_packets_;
+  size_t num_out_of_order_received_packets_ = 0;
   // Number of times that the current received packet number is
   // smaller than the last received packet number and where the
   // size of the current packet is larger than the size of the previous
   // packet.
-  size_t num_out_of_order_large_received_packets_;
+  size_t num_out_of_order_large_received_packets_ = 0;
   // The number of times that OnPacketHeader was called.
   // If the network replicates packets, then this number may be slightly
   // different from the real number of distinct packets received.
-  quic::QuicPacketCount num_packets_received_;
+  quic::QuicPacketCount num_packets_received_ = 0;
   // The quic::kCADR value provided by the server in ServerHello.
   IPEndPoint local_address_from_shlo_;
   // The first local address from which a packet was received.
   IPEndPoint local_address_from_self_;
   // Count of the number of frames received.
-  int num_frames_received_;
+  int num_frames_received_ = 0;
   // Count of the number of duplicate frames received.
-  int num_duplicate_frames_received_;
+  int num_duplicate_frames_received_ = 0;
   // Count of the number of packets received with incorrect connection IDs.
-  int num_incorrect_connection_ids_;
+  int num_incorrect_connection_ids_ = 0;
   // Count of the number of undecryptable packets received.
-  int num_undecryptable_packets_;
+  int num_undecryptable_packets_ = 0;
   // Count of the number of duplicate packets received.
-  int num_duplicate_packets_;
+  int num_duplicate_packets_ = 0;
   // Count of the number of BLOCKED frames received.
-  int num_blocked_frames_received_;
+  int num_blocked_frames_received_ = 0;
   // Count of the number of BLOCKED frames sent.
-  int num_blocked_frames_sent_;
-  // Vector of inital packets status' indexed by packet numbers, where
+  int num_blocked_frames_sent_ = 0;
+  // Vector of initial packets status' indexed by packet numbers, where
   // false means never received. We track 150 packets starting from
   // first_received_packet_number_.
   std::bitset<150> received_packets_;

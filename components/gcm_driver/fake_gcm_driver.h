@@ -10,6 +10,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace base {
+class FilePath;
 class SequencedTaskRunner;
 }
 
@@ -18,7 +19,8 @@ namespace gcm {
 class FakeGCMDriver : public GCMDriver {
  public:
   FakeGCMDriver();
-  explicit FakeGCMDriver(
+  FakeGCMDriver(
+      const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
 
   FakeGCMDriver(const FakeGCMDriver&) = delete;

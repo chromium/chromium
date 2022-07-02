@@ -12,21 +12,21 @@
 // Commands related to Snackbar.
 @protocol SnackbarCommands
 
-// Shows a snackbar with |message|. It will use the Bottom toolbar height as
+// Shows a snackbar with `message`. It will use the Bottom toolbar height as
 // bottom offset. Use this method if displaying a Snackbar while the Web content
 // is visible. If there's no bottom toolbar offset will be 0.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message;
 
-// Shows a snackbar with |message| while having a haptic feedback with |type|.
+// Shows a snackbar with `message` while having a haptic feedback with `type`.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
              withHapticType:(UINotificationFeedbackType)type;
 
-// Shows a snackbar with |message| using |bottomOffset| as bottom offset.
+// Shows a snackbar with `message` using `bottomOffset` as bottom offset.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset;
 
-// Shows a snackbar displaying a message with |messageText| and a button with
-// |buttonText| which triggers |messageAction| on tap. |completionAction| will
+// Shows a snackbar displaying a message with `messageText` and a button with
+// `buttonText` which triggers `messageAction` on tap. `completionAction` will
 // be called when the snackbar finishes presenting, BOOL is YES if the dismissal
 // was caused by a user action and NO if not. It will use the Bottom toolbar
 // height as bottom offset. Use this method if displaying a Snackbar while the

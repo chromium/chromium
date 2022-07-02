@@ -25,141 +25,9 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "net/base/filename_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace {
-
-base::FilePath GetGenRoot() {
-  base::FilePath executable_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &executable_path));
-  return executable_path.AppendASCII("gen");
-}
-
-// URLDataSource for the test URL chrome://file_manager_test/. It reads files
-// directly from repository source.
-class TestFilesDataSource : public content::URLDataSource {
- public:
-  TestFilesDataSource() {}
-
-  TestFilesDataSource(const TestFilesDataSource&) = delete;
-  TestFilesDataSource& operator=(const TestFilesDataSource&) = delete;
-
-  ~TestFilesDataSource() override {}
-
- private:
-  // This has to match TestResourceUrl()
-  std::string GetSource() override { return "file_manager_test"; }
-
-  void StartDataRequest(
-      const GURL& url,
-      const content::WebContents::Getter& wc_getter,
-      content::URLDataSource::GotDataCallback callback) override {
-    const std::string path = content::URLDataSource::URLToRequestPath(url);
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(&TestFilesDataSource::ReadFile, base::Unretained(this),
-                       path, std::move(callback)));
-  }
-
-  void ReadFile(const std::string& path,
-                content::URLDataSource::GotDataCallback callback) {
-    if (source_root_.empty()) {
-      CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_));
-    }
-    if (gen_root_.empty()) {
-      CHECK(base::PathService::Get(base::DIR_EXE, &gen_root_));
-      gen_root_ = GetGenRoot();
-    }
-
-    std::string content;
-
-    base::FilePath src_file_path =
-        source_root_.Append(base::FilePath::FromUTF8Unsafe(path));
-    base::FilePath gen_file_path =
-        gen_root_.Append(base::FilePath::FromUTF8Unsafe(path));
-
-    // File manager sets up the embedded test server with a specific base path,
-    // and the server assumes all paths are relative to this path without
-    // checking for absolute URLs. Hence, absolute URLS are transformed to
-    // requests for <some_base_path>/chrome://resources/<path_to_resource>.
-    // Strip off the assumed base path and replace chrome://resources with
-    // ui/webui/resources in this case.
-    const char kResourcesUrl[] = "chrome://resources";
-    size_t url_pos = path.find(kResourcesUrl);
-    if (url_pos != std::string::npos) {
-      std::string new_path =
-          "ui/webui/resources" +
-          path.substr(url_pos + std::size(kResourcesUrl) - 1);
-      src_file_path =
-          source_root_.Append(base::FilePath::FromUTF8Unsafe(new_path));
-      gen_file_path =
-          gen_root_.Append(base::FilePath::FromUTF8Unsafe(new_path));
-    }
-
-    // Do some basic validation of the file extension.
-    CHECK(src_file_path.Extension() == ".html" ||
-          src_file_path.Extension() == ".js" ||
-          src_file_path.Extension() == ".css" ||
-          src_file_path.Extension() == ".svg")
-        << "chrome://file_manager_test/ only supports .html/.js/.css/.svg "
-           "extension files";
-
-    CHECK(base::PathExists(src_file_path) || base::PathExists(gen_file_path))
-        << src_file_path << " or: " << gen_file_path << " input path: " << path;
-    CHECK(base::ReadFileToString(gen_file_path, &content) ||
-          base::ReadFileToString(src_file_path, &content))
-        << src_file_path << " or: " << gen_file_path;
-
-    scoped_refptr<base::RefCountedString> response =
-        base::RefCountedString::TakeString(&content);
-    std::move(callback).Run(response.get());
-  }
-
-  bool ShouldServeMimeTypeAsContentTypeHeader() override { return true; }
-
-  // It currently only serves HTML/JS/CSS/SVG.
-  std::string GetMimeType(const std::string& path) override {
-    if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
-      return "text/html";
-    }
-
-    if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
-      return "text/css";
-    }
-
-    if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII)) {
-      return "application/javascript";
-    }
-
-    if (base::EndsWith(path, ".svg", base::CompareCase::INSENSITIVE_ASCII)) {
-      return "image/svg+xml";
-    }
-
-    LOG(FATAL) << "unsupported file type: " << path;
-    return {};
-  }
-
-  std::string GetContentSecurityPolicy(
-      const network::mojom::CSPDirectiveName directive) override {
-    if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
-      // Add 'unsafe-inline' to CSP to allow the inline <script> in the
-      // generated HTML to run see js_test_gen_html.py.
-      return "script-src chrome://resources chrome://test 'self'  "
-             "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-             "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
-             "'unsafe-inline'; ";
-    } else if (directive ==
-                   network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
-               directive == network::mojom::CSPDirectiveName::TrustedTypes) {
-      return std::string();
-    }
-
-    return content::URLDataSource::GetContentSecurityPolicy(directive);
-  }
-
-  // Root of repository source, where files are served directly from.
-  base::FilePath source_root_;
-  base::FilePath gen_root_;
-};
 
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
 // Used to start the unittest from a chrome:// URL which allows unittest files
@@ -176,13 +44,26 @@ class TestWebUIProvider
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override {
-    auto* profile = Profile::FromWebUI(web_ui);
-    content::URLDataSource::Add(profile,
-                                std::make_unique<TestFilesDataSource>());
-    content::URLDataSource::Add(profile,
-                                std::make_unique<TestDataSource>("webui"));
-
     return std::make_unique<content::WebUIController>(web_ui);
+  }
+
+  void DataSourceOverrides(content::WebUIDataSource* source) override {
+    // Add 'unsafe-inline' to CSP to allow the inline <script> in the
+    // generated HTML to run see js_test_gen_html.py.
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src chrome://resources chrome://webui-test "
+        "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ");
+
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrcElem,
+        "script-src chrome://resources chrome://webui-test "
+        "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
+
+    // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
+    source->DisableTrustedTypesCSP();
   }
 };
 
@@ -190,7 +71,7 @@ base::LazyInstance<TestWebUIProvider>::DestructorAtExit test_webui_provider_ =
     LAZY_INSTANCE_INITIALIZER;
 
 static const GURL TestResourceUrl() {
-  static GURL url(content::GetWebUIURLString("file_manager_test"));
+  static GURL url(content::GetWebUIURLString("webui-test"));
   return url;
 }
 
@@ -201,46 +82,35 @@ FileManagerJsTestBase::FileManagerJsTestBase(const base::FilePath& base_path)
 
 FileManagerJsTestBase::~FileManagerJsTestBase() {}
 
-void FileManagerJsTestBase::RunTest(const base::FilePath& file) {
-  base::FilePath root_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
-  base::FilePath full_path = root_path.Append(base_path_).Append(file);
-  {
-    base::ScopedAllowBlockingForTesting allow_io;
-    ASSERT_TRUE(base::PathExists(full_path)) << full_path.value();
-  }
-  RunTestImpl(net::FilePathToFileURL(full_path));
-}
-
-void FileManagerJsTestBase::RunGeneratedTest(const std::string& file) {
-  base::FilePath path = GetGenRoot();
-
-  // Serve the generated html file from out/gen. It references files from
-  // DIR_SOURCE_ROOT, so serve from there as well. An alternative would be to
-  // copy the js files as a build step and serve file:// URLs, but the embedded
-  // test server gives better output for troubleshooting errors.
-  embedded_test_server()->ServeFilesFromDirectory(path.Append(base_path_));
-  embedded_test_server()->ServeFilesFromSourceDirectory(base::FilePath());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  RunTestImpl(embedded_test_server()->GetURL(file));
-}
-
 void FileManagerJsTestBase::RunTestURL(const std::string& file) {
-  RunTestImpl(
-      GURL("chrome://file_manager_test/" + base_path_.Append(file).value()));
-}
-
-void FileManagerJsTestBase::RunTestImpl(const GURL& url) {
+  // Open a new tab with the Files app test harness.
+  auto url =
+      GURL("chrome://webui-test/base/js/test_harness.html?test_module=/" +
+           base_path_.Append(file).value());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+
+  // Wait for the JS modules to be loaded and exported to window.
+  content::DOMMessageQueue message_queue(web_contents);
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ(message, "\"LOADED\"");
+
+  // Execute the WebUI test harness.
   EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
 void FileManagerJsTestBase::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
+
+  base::FilePath pak_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+  pak_path = pak_path.AppendASCII("browser_tests.pak");
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      pak_path, ui::kScaleFactorNone);
 
   webui_controller_factory_ =
       std::make_unique<TestChromeWebUIControllerFactory>();

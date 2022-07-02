@@ -22,7 +22,7 @@ class TestProcessNodeImpl : public ProcessNodeImpl {
 
   void SetProcessWithPid(base::ProcessId pid,
                          base::Process process,
-                         base::Time launch_time);
+                         base::TimeTicks launch_time);
 };
 
 // The following graph topology is created to emulate a scenario when a single

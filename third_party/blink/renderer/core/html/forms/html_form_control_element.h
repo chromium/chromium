@@ -88,6 +88,31 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   virtual bool IsActivatedSubmit() const { return false; }
   virtual void SetActivatedSubmit(bool) {}
 
+  struct TogglePopupElement final {
+   public:
+    DISALLOW_NEW();
+    WeakMember<Element> element;
+    PopupTriggerAction action;
+    QualifiedName attribute_name;
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+  };
+
+  enum class PopupTriggerSupport {
+    kNone,
+    kActivate,
+    kDownArrow,
+  };
+
+  // Retrieves the element pointed to by 'togglepopup', 'showpopup', and/or
+  // 'hidepopup' content attributes, if any, and only if this form control
+  // element supports popup triggering.
+  TogglePopupElement togglePopupElement() const;
+  virtual PopupTriggerSupport SupportsPopupTriggering() const {
+    return PopupTriggerSupport::kNone;
+  }
+
+  void DefaultEventHandler(Event&) override;
+
   // Getter and setter for the PII type of the element derived from the autofill
   // field semantic prediction.
   virtual FormElementPiiType GetFormElementPiiType() const {

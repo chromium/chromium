@@ -19,6 +19,14 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
     window.doBrailleKeyEvent = this.doBrailleKeyEvent.bind(this);
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'CommandHandlerInterface',
+        '/chromevox/background/command_handler_interface.js');
+  }
+
   async runOnLearnModePage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();
@@ -92,7 +100,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
 // Test times out flakily.
-TEST_F('ChromeVoxLearnModeTest', 'DISABLED_KeyboardInput', async function() {
+AX_TEST_F('ChromeVoxLearnModeTest', 'DISABLED_KeyboardInput', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
   // Press Search+Right.
   mockFeedback.call(doKeyDown({keyCode: KeyCode.SEARCH, metaKey: true}))
@@ -111,7 +119,7 @@ TEST_F('ChromeVoxLearnModeTest', 'DISABLED_KeyboardInput', async function() {
       .replay();
 });
 
-TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
+AX_TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
   // Press Search repeatedly.
   mockFeedback.call(doKeyDown({keyCode: KeyCode.SEARCH, metaKey: true}))
@@ -131,7 +139,7 @@ TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
       .replay();
 });
 
-TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
+AX_TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
   chrome.runtime.sendMessage(
       {target: 'LearnMode', action: 'clearTouchExploreOutputTime'});
@@ -157,7 +165,7 @@ TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
       .replay();
 });
 
-TEST_F('ChromeVoxLearnModeTest', 'Braille', async function() {
+AX_TEST_F('ChromeVoxLearnModeTest', 'Braille', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
   // Hit the left panning hardware key on a braille display.
   mockFeedback.call(doBrailleKeyEvent({command: BrailleKeyCommand.PAN_LEFT}))
@@ -179,7 +187,7 @@ TEST_F('ChromeVoxLearnModeTest', 'Braille', async function() {
       .replay();
 });
 
-TEST_F('ChromeVoxLearnModeTest', 'HardwareFunctionKeys', async function() {
+AX_TEST_F('ChromeVoxLearnModeTest', 'HardwareFunctionKeys', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
   mockFeedback.call(doKeyDown({keyCode: KeyCode.BRIGHTNESS_UP}))
       .expectSpeechWithQueueMode('Brightness up', QueueMode.CATEGORY_FLUSH)

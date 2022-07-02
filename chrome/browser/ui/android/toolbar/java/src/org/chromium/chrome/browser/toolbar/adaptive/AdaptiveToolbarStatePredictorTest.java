@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.HashMap;
@@ -103,21 +103,6 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
                 true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
         UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
-        statePredictor.recomputeUiState(verifyResultCallback(expected));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void
-    testWorksWithDataCollectionFeatureFlag() {
-        ShadowChromeFeatureList.sParamValues.put("mode", "always-voice");
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
-                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
                 AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
@@ -272,22 +257,22 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
-    public void testOptimizationTargetToAdaptiveToolbarButtonVariantConversion() {
+    public void testSegmentIdToAdaptiveToolbarButtonVariantConversion() {
         Assert.assertEquals(AdaptiveToolbarButtonVariant.NEW_TAB,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromOptimizationTarget(
-                        OptimizationTarget.OPTIMIZATION_TARGET_UNKNOWN));
+                AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
+                        SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
     }
 
     private AdaptiveToolbarStatePredictor buildStatePredictor(boolean toolbarSettingsToggleEnabled,

@@ -292,8 +292,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
       SharedGpuContext::IsGpuCompositingEnabled() && needs_vertical_flip;
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SK_ColorTRANSPARENT, vertex_opacity, yflipped,
-               nearest_neighbor, /*secure_output_only=*/false,
+               uv_bottom_right, SkColors::kTransparent, vertex_opacity,
+               yflipped, nearest_neighbor, /*secure_output_only=*/false,
                gfx::ProtectedVideoType::kClear);
 
   frame->render_pass_list.push_back(std::move(pass));

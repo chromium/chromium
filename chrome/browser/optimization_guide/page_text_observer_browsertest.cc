@@ -149,7 +149,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::Milliseconds(500));
+              base::Milliseconds(1500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(std::string());
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"hello"),
@@ -260,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
       SCOPED_TRACE(result);
 
       // These fields are the same for both events.
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+      EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+                result.rfh_id());
       EXPECT_FALSE(result.amp_frame());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
@@ -348,7 +349,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
       has_amp_result = true;
     } else {
       EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+      EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+                result.rfh_id());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
           result.unique_navigation_id());
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
   const auto& result = *consumer.result()->frame_results().begin();
 
   EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+            result.rfh_id());
   EXPECT_FALSE(result.amp_frame());
   EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
             result.unique_navigation_id());
@@ -401,26 +404,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
                                                base::TrimPositions::TRIM_ALL));
 }
 
-class PageTextObserverSingleProcessBrowserTest
-    : public PageTextObserverBrowserTest {
- public:
-  PageTextObserverSingleProcessBrowserTest() = default;
-  ~PageTextObserverSingleProcessBrowserTest() override = default;
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SameProcessIframe) {
+  // Give the browser a moment to startup (helps to reduce flakes by ensuring
+  // renderer and browser are ready to go).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("a.com", "/hello.html"))));
 
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    PageTextObserverBrowserTest::SetUpCommandLine(cmd_line);
-    cmd_line->AppendSwitch("single-process");
-  }
-};
-
-#if BUILDFLAG(IS_MAC)
-// https://crbug.com/1189556
-#define MAYBE_SameProcessIframe DISABLED_SameProcessIframe
-#else
-#define MAYBE_SameProcessIframe SameProcessIframe
-#endif
-IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       MAYBE_SameProcessIframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -447,16 +436,19 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe\n\nhello"),
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       // TODO(crbug.com/1295025): Re-enable this test
-                       DISABLED_SameProcessAMPSubframe) {
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SameProcessAMPSubframe) {
+  // Give the browser a moment to startup (helps to reduce flakes by ensuring
+  // renderer and browser are ready to go).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("a.com", "/hello.html"))));
+
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -485,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalId(),
+              web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe"),
@@ -529,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   // Loading a URL in a fenced frame should not increase

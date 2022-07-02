@@ -354,7 +354,17 @@ void MessageView::OnThemeChanged() {
 }
 
 ui::Layer* MessageView::GetSlideOutLayer() {
-  return is_nested_ ? layer() : GetWidget()->GetLayer();
+  // If a message view is contained in a parent message view it should give up
+  // slide behavior to the parent message view when the parent view is
+  // collapsed.
+  auto* nested_layer =
+      (parent_message_view_ && !parent_message_view_->IsExpanded())
+          ? parent_message_view_->layer()
+          : layer();
+  bool is_nested = (parent_message_view_ && !parent_message_view_->IsExpanded())
+                       ? parent_message_view_->is_nested()
+                       : is_nested_;
+  return is_nested ? nested_layer : GetWidget()->GetLayer();
 }
 
 void MessageView::OnSlideStarted() {
@@ -364,6 +374,21 @@ void MessageView::OnSlideStarted() {
 }
 
 void MessageView::OnSlideChanged(bool in_progress) {
+  // crbug/1333664: We need to make sure to disable scrolling while a
+  // notification view is sliding. This is to ensure the notification view can
+  // only move horizontally or vertically at one time.
+  if (scroller_ && !is_sliding_ && slide_out_controller_.GetGestureAmount()) {
+    is_sliding_ = true;
+    scroller_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+  }
+
+  if (scroller_ && !in_progress) {
+    is_sliding_ = false;
+    scroller_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kEnabled);
+  }
+
   for (auto& observer : observers_) {
     if (in_progress)
       observer.OnSlideChanged(notification_id_);

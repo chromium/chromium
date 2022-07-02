@@ -15,6 +15,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/memory/raw_ptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/xbox_controller_mac.h"
 
@@ -56,7 +57,7 @@ class XboxDataFetcher : public GamepadDataFetcher,
     PendingController& operator=(const PendingController& entry);
     ~PendingController();
 
-    XboxDataFetcher* fetcher;
+    raw_ptr<XboxDataFetcher> fetcher;
     std::unique_ptr<XboxControllerMac> controller;
     base::mac::ScopedIOObject<io_iterator_t> notify;
   };

@@ -177,7 +177,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   defaultUIStep() {
-    return OobeTypes.EnrollmentStep.SIGNIN;
+    return OobeTypes.EnrollmentStep.LOADING;
   }
 
   get UI_STEPS() {
@@ -285,6 +285,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     if (data.gaia_buttons_type) {
       this.gaiaDialogButtonsType_ = data.gaia_buttons_type;
     }
+    if (this.gaiaDialogButtonsType_ ==
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
+      this.licenseType_ = OobeTypes.LicenseType.KIOSK;
+    }
     this.isManualEnrollment_ = 'enrollment_mode' in data ?
         data.enrollment_mode === 'manual' :
         undefined;
@@ -299,7 +303,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     cr.ui.login.invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
     this.showStep(
         this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
-                             OobeTypes.EnrollmentStep.SIGNIN);
+                             OobeTypes.EnrollmentStep.LOADING);
   }
 
   /**
@@ -373,7 +377,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||
-        step == OobeTypes.EnrollmentStep.TPM_CHECKING;
+        step === OobeTypes.EnrollmentStep.TPM_CHECKING ||
+        step === OobeTypes.EnrollmentStep.LOADING;
     if (this.isCancelDisabled) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
@@ -496,6 +501,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   onReady() {
+    if (this.uiStep == OobeTypes.EnrollmentStep.LOADING) {
+      this.showStep(OobeTypes.EnrollmentStep.SIGNIN);
+    }
     if (this.uiStep != OobeTypes.EnrollmentStep.SIGNIN) {
       return;
     }

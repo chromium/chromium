@@ -172,7 +172,7 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
 
   const BookmarkNode* node;
   if (url_string.length()) {
-    node = model->AddURL(parent, index, title, url, meta_info);
+    node = model->AddNewURL(parent, index, title, url, meta_info);
   } else {
     node = model->AddFolder(parent, index, title, meta_info);
     model->SetDateFolderModified(parent, base::Time::Now());
@@ -248,7 +248,7 @@ BookmarkEventRouter::~BookmarkEventRouter() {
 
 void BookmarkEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                         const std::string& event_name,
-                                        std::vector<base::Value> event_args) {
+                                        base::Value::List event_args) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     event_router->BroadcastEvent(std::make_unique<extensions::Event>(

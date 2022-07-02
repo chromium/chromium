@@ -177,6 +177,12 @@ export class AboutPageBrowserProxy {
   openFirmwareUpdatesPage() {}
 
   /**
+   * Requests the number of firmware updates.
+   * @return {!Promise<number>}
+   */
+  getFirmwareUpdateCount() {}
+
+  /**
    * Checks for available update and applies if it exists.
    */
   requestUpdate() {}
@@ -246,10 +252,23 @@ export class AboutPageBrowserProxy {
   setConsumerAutoUpdate(enable) {}
 }
 
+/** @type {?AboutPageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {AboutPageBrowserProxy}
  */
 export class AboutPageBrowserProxyImpl {
+  /** @return {!AboutPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AboutPageBrowserProxyImpl());
+  }
+
+  /** @param {!AboutPageBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   pageReady() {
     chrome.send('aboutPageReady');
@@ -286,6 +305,11 @@ export class AboutPageBrowserProxyImpl {
   /** @override */
   openFirmwareUpdatesPage() {
     chrome.send('openFirmwareUpdatesPage');
+  }
+
+  /** @override */
+  getFirmwareUpdateCount() {
+    return sendWithPromise('getFirmwareUpdateCount');
   }
 
   /** @override */
@@ -352,17 +376,4 @@ export class AboutPageBrowserProxyImpl {
   setConsumerAutoUpdate(enable) {
     chrome.send('setConsumerAutoUpdate', [enable]);
   }
-
-  /** @return {!AboutPageBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new AboutPageBrowserProxyImpl());
-  }
-
-  /** @param {!AboutPageBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?AboutPageBrowserProxy} */
-let instance = null;

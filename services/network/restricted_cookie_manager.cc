@@ -638,7 +638,11 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // TODO(pwnall): Validate the CanonicalCookie fields.
 
   // Update the creation and last access times.
-  base::Time now = base::Time::NowFromSystemTime();
+  // Note: This used to be a call to NowFromSystemTime, but this caused
+  // inconsistency with the expiration date, which was capped checking
+  // against Now. If any issues crop up related to this change please
+  // contact the owners of http://crbug.com/1335859.
+  base::Time now = base::Time::Now();
   // TODO(http://crbug.com/1024053): Log metrics
   const GURL& origin_url = origin_.GetURL();
   net::CookieSourceScheme source_scheme =
@@ -903,6 +907,16 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   mojo::ReportBadMessage("Incorrect url origin");
   return false;
+}
+
+void RestrictedCookieManager::ConvertPartitionedCookiesToUnpartitioned(
+    const GURL& url) {
+  DCHECK(base::FeatureList::IsEnabled(net::features::kPartitionedCookies));
+  if (base::FeatureList::IsEnabled(
+          net::features::kPartitionedCookiesBypassOriginTrial)) {
+    return;
+  }
+  cookie_store_->ConvertPartitionedCookiesToUnpartitioned(url);
 }
 
 }  // namespace network

@@ -78,13 +78,13 @@ bool IsNotCancellation(const ResourceError& error) {
 }
 
 KURL SuccessURL() {
-  return KURL("http://example.com/success").Copy();
+  return KURL("http://example.com/success");
 }
 KURL ErrorURL() {
-  return KURL("http://example.com/error").Copy();
+  return KURL("http://example.com/error");
 }
 KURL RedirectURL() {
-  return KURL("http://example.com/redirect").Copy();
+  return KURL("http://example.com/redirect");
 }
 
 void SetUpSuccessURL() {

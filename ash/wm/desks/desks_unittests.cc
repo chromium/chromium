@@ -501,6 +501,36 @@ TEST_F(DesksTest, OnDeskNameChanged) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(DesksTest, DesksTextfieldAddTooltipText) {
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+
+  // Set the first desk with a name which is short enough to be fit in the desk
+  // name view.
+  controller->desks()[0]->SetName(u"test1", /*set_by_user=*/true);
+
+  // Set the second desk with a name which is long enough to be truncated in the
+  // desk name view.
+  std::u16string desk_name2(
+      u"test2 a very long desk name to test tooltip text");
+  controller->desks()[1]->SetName(desk_name2, /*set_by_user=*/true);
+
+  // Start overview.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Expect there to be no tooltip when the desk name is short enough.
+  auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  auto* desk_name_view1 = desks_bar_view->mini_views()[0]->desk_name_view();
+  EXPECT_TRUE(desk_name_view1->GetTooltipText(gfx::Point()).empty());
+
+  auto* desk_name_view2 = desks_bar_view->mini_views()[1]->desk_name_view();
+  EXPECT_EQ(desk_name2, desk_name_view2->GetTooltipText(gfx::Point()));
+}
+
 TEST_F(DesksTest, DesksBarViewDeskCreation) {
   auto* controller = DesksController::Get();
 
@@ -4241,8 +4271,7 @@ class PerDeskShelfTest : public AshTestBase,
   // given |window| is equal to the given |expected_visibility|.
   void VerifyViewVisibility(aura::Window* window,
                             bool expected_visibility) const {
-    const int index = GetShelfItemIndexForWindow(window);
-    EXPECT_GE(index, 0);
+    const size_t index = GetShelfItemIndexForWindow(window);
     auto* shelf_view = GetShelfView();
     auto* view_model = shelf_view->view_model();
 
@@ -7486,6 +7515,34 @@ TEST_F(DesksCloseAllTest, ShortcutCloseAll) {
   EXPECT_FALSE(window2.is_valid());
 }
 
+TEST_F(DesksCloseAllTest, ShortcutUndoCloseAll) {
+  WindowHolder window1(CreateAppWindow());
+  WindowHolder window2(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+
+  EnterOverview();
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  // Closes the active desk.
+  ClickOnCloseAllButtonForDesk(0);
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  ASSERT_EQ(1u, controller->desks().size());
+
+  // Tests that after hitting Ctrl + Z, the desk deleting is undone.
+  SendKey(ui::VKEY_Z, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(2u, controller->desks().size());
+  EXPECT_TRUE(window1.is_valid());
+  EXPECT_TRUE(window2.is_valid());
+}
+
 // Tests CloseAll on active desk will close app windows on it.
 TEST_F(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
   WindowHolder window1(CreateAppWindow());
@@ -7503,7 +7560,7 @@ TEST_F(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
   // Closes the active desk.
   RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
 
-  // Waits for the toaster to disappear.
+  // Waits for the toast to disappear.
   WaitForMilliseconds(
       ToastData::kDefaultToastDuration.InMilliseconds() +
       DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
@@ -7815,6 +7872,81 @@ TEST_F(DesksCloseAllTest, CanCloseMultipleDesksInSuccessionAndUndo) {
   ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
   ClickOnUndoDeskRemovalButton();
   EXPECT_EQ(2u, controller->desks().size());
+}
+
+// Tests that an active desk's windows are restored with an identity transform
+// when it's removal is undone outside of overview mode.
+TEST_F(DesksCloseAllTest,
+       ActiveDeskWindowsAreRestoredProperlyOutsideOfOverview) {
+  WindowHolder window(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  controller->SendToDeskAtIndex(window.window(), 0);
+  Desk* desk_1 = controller->desks()[0].get();
+  Desk* desk_2 = controller->desks()[1].get();
+  ASSERT_EQ(1u, desk_1->windows().size());
+  ASSERT_EQ(0u, desk_2->windows().size());
+  ASSERT_TRUE(desk_1->is_active());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(window.window()->transform().IsIdentity());
+
+  ClickOnCloseAllButtonForDesk(0);
+  ExitOverview();
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Overview is destroyed asynchronously so we have to wait for it to finish.
+  base::RunLoop().RunUntilIdle();
+
+  // Clicking the undo button outside of overview triggers a desk switch
+  // animation, so we have to wait for that.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnUndoDeskRemovalButton();
+  waiter.Wait();
+  EXPECT_TRUE(window.is_valid());
+
+  // At this point, the transformation applied to the window by overview mode
+  // should have been removed by the desk removal operation.
+  EXPECT_TRUE(window.window()->transform().IsIdentity());
+}
+
+// Tests that we can undo close-all solely via keyboard navigation (tabbing to
+// the undo toast and pressing enter).
+TEST_F(DesksCloseAllTest, CanUndoDeskClosureThroughKeyboardNavigation) {
+  NewDesk();
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Tab to the first mini view and perform close-all on it.
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(GetPrimaryRootDesksBarView()->mini_views()[0],
+            Shell::Get()
+                ->overview_controller()
+                ->overview_session()
+                ->highlight_controller()
+                ->highlighted_view());
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  ASSERT_EQ(1u, DesksController::Get()->desks().size());
+
+  // Tab to the undo toast.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+
+  // If the highlight controller returns a nullptr after tabbing, then the undo
+  // toast's button should be highlighted.
+  ASSERT_EQ(nullptr, Shell::Get()
+                         ->overview_controller()
+                         ->overview_session()
+                         ->highlight_controller()
+                         ->highlighted_view());
+
+  // Pressing enter should restore the desk.
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
 }
 
 // TODO(afakhry): Add more tests:

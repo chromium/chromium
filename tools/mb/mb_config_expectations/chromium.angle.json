@@ -8,7 +8,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -24,7 +23,6 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -62,7 +60,6 @@
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -74,7 +71,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -97,7 +93,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -110,7 +105,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -121,7 +115,6 @@
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

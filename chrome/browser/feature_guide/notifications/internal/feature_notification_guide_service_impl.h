@@ -66,7 +66,7 @@ class FeatureNotificationGuideServiceImpl
   raw_ptr<feature_engagement::Tracker> tracker_;
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       segmentation_platform_service_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   Config config_;
 
   std::set<std::string> scheduled_feature_guids_;

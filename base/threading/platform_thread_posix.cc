@@ -78,12 +78,13 @@ void* ThreadFunc(void* params) {
 
 #if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    internal::PCScan::NotifyThreadCreated(internal::GetStackPointer());
+    partition_alloc::internal::PCScan::NotifyThreadCreated(
+        partition_alloc::internal::GetStackPointer());
 #endif
 
 #if BUILDFLAG(IS_APPLE)
     PlatformThread::SetCurrentThreadRealtimePeriodValue(
-        PlatformThread::GetRealtimePeriod(delegate));
+        delegate->GetRealtimePeriod());
 #endif
 
     // Threads on linux/android may inherit their priority from the thread
@@ -104,7 +105,7 @@ void* ThreadFunc(void* params) {
       PlatformThread::CurrentId());
 
 #if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::PCScan::NotifyThreadDestroyed();
+  partition_alloc::internal::PCScan::NotifyThreadDestroyed();
 #endif
 
   base::TerminateOnThread();

@@ -21,7 +21,7 @@ namespace {
 using SettingsCheckItemTest = PlatformTest;
 
 // Tests that the text and detail text are honoured after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(SettingsCheckItemTest, ConfigureCell) {
   SettingsCheckItem* item = [[SettingsCheckItem alloc] initWithType:0];
   NSString* text = @"Test Text";

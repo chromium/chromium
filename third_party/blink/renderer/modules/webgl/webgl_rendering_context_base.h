@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/containers/lru_cache.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -722,11 +724,11 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;
-  void CopyRenderingResultsToVideoFrame(
+  bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,
       const gfx::ColorSpace&,
-      VideoFrameCopyCompletedCallback&) override;
+      VideoFrameCopyCompletedCallback) override;
 
   cc::Layer* CcLayer() const override;
   void Stop() override;
@@ -746,6 +748,26 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void DrawingBufferClientRestorePixelPackBufferBinding() override;
   bool DrawingBufferClientUserAllocatedMultisampledRenderbuffers() override;
   void DrawingBufferClientForceLostContextWithAutoRecovery() override;
+
+  // All draw calls should go through this wrapper so that various
+  // bookkeeping related to compositing and preserveDrawingBuffer
+  // can happen.
+  template <typename Func>
+  void DrawWrapper(const char* func_name,
+                   CanvasPerformanceMonitor::DrawType draw_type,
+                   Func draw_func) {
+    if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
+      SynthesizeGLError(GL_INVALID_OPERATION, func_name,
+                        "no buffer is bound to enabled attribute");
+      return;
+    }
+
+    ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+                                                     drawing_buffer_.get());
+    OnBeforeDrawCall(draw_type);
+    draw_func();
+    RecordUKMCanvasDrawnToAtFirstDrawCall();
+  }
 
   virtual void DestroyContext();
   void MarkContextChanged(ContentChangeType,
@@ -947,17 +969,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   class ExtensionTracker : public GarbageCollected<ExtensionTracker>,
                            public NameClient {
    public:
-    ExtensionTracker(ExtensionFlags flags, const char* const* prefixes)
+    explicit ExtensionTracker(ExtensionFlags flags)
         : draft_(flags & kDraftExtension),
-          developer_(flags & kDeveloperExtension),
-          prefixes_(prefixes) {}
+          developer_(flags & kDeveloperExtension) {}
     ~ExtensionTracker() override = default;
 
     bool Draft() const { return draft_; }
     bool Developer() const { return developer_; }
 
-    const char* const* Prefixes() const;
-    bool MatchesNameWithPrefixes(const String&) const;
+    bool MatchesName(const String&) const;
 
     virtual WebGLExtension* GetExtension(WebGLRenderingContextBase*) = 0;
     virtual bool Supported(WebGLRenderingContextBase*) const = 0;
@@ -975,17 +995,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
    private:
     bool draft_;
     bool developer_;
-    const char* const* prefixes_;
   };
 
   template <typename T>
   class TypedExtensionTracker final : public ExtensionTracker {
    public:
-    TypedExtensionTracker(Member<T>& extension_field,
-                          ExtensionFlags flags,
-                          const char* const* prefixes)
-        : ExtensionTracker(flags, prefixes),
-          extension_field_(extension_field) {}
+    TypedExtensionTracker(Member<T>& extension_field, ExtensionFlags flags)
+        : ExtensionTracker(flags), extension_field_(extension_field) {}
 
     WebGLExtension* GetExtension(WebGLRenderingContextBase* context) override {
       if (!extension_) {
@@ -1032,10 +1048,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   template <typename T>
   void RegisterExtension(Member<T>& extension_ptr,
-                         ExtensionFlags flags = kApprovedExtension,
-                         const char* const* prefixes = nullptr) {
-    extensions_.push_back(MakeGarbageCollected<TypedExtensionTracker<T>>(
-        extension_ptr, flags, prefixes));
+                         ExtensionFlags flags = kApprovedExtension) {
+    extensions_.push_back(
+        MakeGarbageCollected<TypedExtensionTracker<T>>(extension_ptr, flags));
   }
 
   bool ExtensionSupportedAndAllowed(const ExtensionTracker*);
@@ -1351,8 +1366,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                   GLenum shader_type);
 
   // Helper function to check texture binding target and texture bound to the
-  // target.  Generate GL errors and return 0 if target is invalid or texture
-  // bound is null.  Otherwise, return the texture bound to the target.
+  // target.  Generates GL errors and returns 0 if target is invalid or texture
+  // bound is null.  Otherwise, returns the texture bound to the target.
   WebGLTexture* ValidateTextureBinding(const char* function_name,
                                        GLenum target);
 
@@ -1363,8 +1378,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // Helper function to check texture 2D target and texture bound to the target.
   // Generate GL errors and return 0 if target is invalid or texture bound is
   // null.  Otherwise, return the texture bound to the target.
+  // If |validate_opaque_textures| is true, the helper will also generate a GL
+  // error when the texture bound to the target is opaque.
+  // See https://www.w3.org/TR/webxrlayers-1/#opaque-texture for details about
+  // opaque textures.
   WebGLTexture* ValidateTexture2DBinding(const char* function_name,
-                                         GLenum target);
+                                         GLenum target,
+                                         bool validate_opaque_textures = false);
 
   void AddExtensionSupportedFormatsTypes();
   void AddExtensionSupportedFormatsTypesWebGL2();

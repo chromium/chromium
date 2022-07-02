@@ -108,7 +108,7 @@ class ServiceWorkerDiskCache {
                   int64_t cache_size,
                   base::OnceClosure post_cleanup_callback,
                   net::CompletionOnceCallback callback);
-  void OnCreateBackendComplete(int return_value);
+  void OnCreateBackendComplete(disk_cache::BackendResult result);
 
   uint64_t GetNextCallId();
 

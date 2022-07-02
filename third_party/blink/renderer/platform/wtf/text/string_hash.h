@@ -22,6 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -90,6 +91,15 @@ struct AlreadyHashed : IntHash<unsigned> {
 };
 
 }  // namespace WTF
+
+namespace std {
+template <>
+struct hash<WTF::String> {
+  size_t operator()(const WTF::String& string) const {
+    return WTF::StringHash::GetHash(string);
+  }
+};
+}  // namespace std
 
 using WTF::AlreadyHashed;
 using WTF::StringHash;

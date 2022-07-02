@@ -167,6 +167,7 @@ class WebPlugin {
 
   virtual bool CanUndo() const { return false; }
   virtual bool CanRedo() const { return false; }
+  virtual bool CanCopy() const { return true; }
 
   virtual bool ExecuteEditCommand(const WebString& name,
                                   const WebString& value) {

@@ -184,6 +184,10 @@ void PaintOpWriter::Write(const SkRRect& rect) {
   WriteSimple(rect);
 }
 
+void PaintOpWriter::Write(const SkColor4f& color) {
+  WriteSimple(color);
+}
+
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   auto id = path.getGenerationID();
   if (!options_.for_identifiability_study)

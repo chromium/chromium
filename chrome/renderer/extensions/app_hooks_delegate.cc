@@ -109,7 +109,8 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
     APIRequestHandler::RequestDetails request_details =
         request_handler_->AddPendingRequest(
             context, binding::AsyncResponseType::kCallback,
-            (*parse_result.arguments)[0].As<v8::Function>());
+            (*parse_result.arguments)[0].As<v8::Function>(),
+            binding::ResultModifierFunction());
     GetInstallState(script_context, request_details.request_id);
   } else {
     NOTREACHED();
@@ -150,8 +151,8 @@ v8::Local<v8::Value> AppHooksDelegate::GetDetails(
   if (!extension)
     return v8::Null(isolate);
 
-  std::unique_ptr<base::DictionaryValue> manifest_copy =
-      extension->manifest()->value()->CreateDeepCopy();
+  auto manifest_copy = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(extension->manifest()->value()->Clone()));
   manifest_copy->SetStringKey("id", extension->id());
   return content::V8ValueConverter::Create()->ToV8Value(
       manifest_copy.get(), script_context->v8_context());
@@ -172,6 +173,11 @@ void AppHooksDelegate::GetInstallState(ScriptContext* script_context,
 
 const char* AppHooksDelegate::GetRunningState(
     ScriptContext* script_context) const {
+  // If we are in a fenced frame tree then the top security origin
+  // does not make sense to look at.
+  if (script_context->web_frame()->IsInFencedFrameTree())
+    return extension_misc::kAppStateCannotRun;
+
   // To distinguish between ready_to_run and cannot_run states, we need the app
   // from the top frame.
   const RendererExtensionRegistry* extensions =

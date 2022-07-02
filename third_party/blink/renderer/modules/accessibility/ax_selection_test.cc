@@ -1258,7 +1258,7 @@ TEST_F(AccessibilitySelectionTest,
   ASSERT_TRUE(IsTextControl(input));
   TextControlElement& text_control = ToTextControl(*input);
   // The "value" attribute should not contain the extra spaces.
-  ASSERT_EQ(valid_email.length(), text_control.value().length());
+  ASSERT_EQ(valid_email.length(), text_control.Value().length());
 
   const AXObject* ax_input = GetAXObjectByElementId("input");
   ASSERT_NE(nullptr, ax_input);
@@ -1507,13 +1507,13 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   TextControlElement& text_control = ToTextControl(*textarea);
-  ASSERT_LE(1u, text_control.value().length());
+  ASSERT_LE(1u, text_control.Value().length());
 
   const AXObject* ax_textarea = GetAXObjectByElementId("textarea");
   ASSERT_NE(nullptr, ax_textarea);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_textarea->RoleValue());
 
-  for (unsigned int i = 0; i < text_control.value().length() - 1; ++i) {
+  for (unsigned int i = 0; i < text_control.Value().length() - 1; ++i) {
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_textarea, i))
@@ -1523,7 +1523,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting forward character "
-            << static_cast<char>(text_control.value()[i]) << " at position "
+            << static_cast<char>(text_control.Value()[i]) << " at position "
             << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
@@ -1533,7 +1533,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
     EXPECT_EQ("forward", text_control.selectionDirection());
   }
 
-  for (unsigned int i = text_control.value().length(); i > 0; --i) {
+  for (unsigned int i = text_control.Value().length(); i > 0; --i) {
     AXSelection::Builder builder;
     AXSelection ax_selection =
         builder.SetBase(AXPosition::CreatePositionInTextObject(*ax_textarea, i))
@@ -1543,7 +1543,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
 
     testing::Message message;
     message << "While selecting backward character "
-            << static_cast<char>(text_control.value()[i]) << " at position "
+            << static_cast<char>(text_control.Value()[i]) << " at position "
             << i << " in textarea.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());

@@ -89,16 +89,16 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
     FileMetaInfo();
 
     // Size of the file.
-    int64_t file_size;
+    int64_t file_size = 0;
     // Mime type associated with the file.
     std::string mime_type;
     // Result returned from GetMimeTypeFromFile(), i.e. flag showing whether
     // obtaining of the mime type was successful.
-    bool mime_type_result;
+    bool mime_type_result = false;
     // Flag showing whether the file exists.
-    bool file_exists;
+    bool file_exists = false;
     // Flag showing whether the file name actually refers to a directory.
-    bool is_directory;
+    bool is_directory = false;
     // Absolute path of the file (i.e. symbolic link is resolved).
     base::FilePath absolute_path;
   };
@@ -126,10 +126,10 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
 
   std::vector<HttpByteRange> byte_ranges_;
   HttpByteRange byte_range_;
-  int64_t remaining_bytes_;
+  int64_t remaining_bytes_ = 0;
   bool serve_mime_type_as_content_type_ = false;
 
-  Error range_parse_result_;
+  Error range_parse_result_ = OK;
 
   base::WeakPtrFactory<URLRequestTestJobBackedByFile> weak_ptr_factory_{this};
 };

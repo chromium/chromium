@@ -53,9 +53,9 @@ base::Value CookieKeyedLoadNetLogParams(const std::string& key,
                                         net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
     return base::Value();
-  base::DictionaryValue dict;
-  dict.SetString("key", key);
-  return std::move(dict);
+  base::Value::Dict dict;
+  dict.Set("key", key);
+  return base::Value(std::move(dict));
 }
 
 // Used to populate a histogram for problems when loading cookies.
@@ -263,10 +263,7 @@ class SQLitePersistentCookieStore::Backend
                                          kCompatibleVersionNumber,
                                          std::move(background_task_runner),
                                          std::move(client_task_runner)),
-        num_pending_(0),
         restore_old_session_cookies_(restore_old_session_cookies),
-        num_priority_waiting_(0),
-        total_priority_requests_(0),
         crypto_(crypto_delegate) {}
 
   Backend(const Backend&) = delete;
@@ -401,7 +398,7 @@ class SQLitePersistentCookieStore::Backend
   typedef std::map<CanonicalCookie::UniqueCookieKey, PendingOperationsForKey>
       PendingOperationsMap;
   PendingOperationsMap pending_ GUARDED_BY(lock_);
-  PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_);
+  PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_) = 0;
   // Guard |cookies_|, |pending_|, |num_pending_|.
   base::Lock lock_;
 
@@ -423,9 +420,9 @@ class SQLitePersistentCookieStore::Backend
   // Guards the following metrics-related properties (only accessed when
   // starting/completing priority loads or completing the total load).
   base::Lock metrics_lock_;
-  int num_priority_waiting_ GUARDED_BY(metrics_lock_);
+  int num_priority_waiting_ GUARDED_BY(metrics_lock_) = 0;
   // The total number of priority requests.
-  int total_priority_requests_ GUARDED_BY(metrics_lock_);
+  int total_priority_requests_ GUARDED_BY(metrics_lock_) = 0;
   // The time when |num_priority_waiting_| incremented to 1.
   base::Time current_priority_wait_start_ GUARDED_BY(metrics_lock_);
   // The cumulative duration of time when |num_priority_waiting_| was greater
@@ -867,8 +864,7 @@ bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
     host_keys.push_back(smt.ColumnString(0));
 
   // Build a map of domain keys (always eTLD+1) to domains.
-  for (size_t idx = 0; idx < host_keys.size(); ++idx) {
-    const std::string& domain = host_keys[idx];
+  for (const auto& domain : host_keys) {
     std::string key = CookieMonster::GetKey(domain);
     keys_to_load_[key].insert(domain);
   }

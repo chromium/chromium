@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 
+#include "base/check_op.h"
+
 namespace blink {
 
 static unsigned g_context_menu_allowed_count = 0;

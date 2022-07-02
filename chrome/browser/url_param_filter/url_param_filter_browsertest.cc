@@ -10,12 +10,16 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -28,11 +32,20 @@ namespace url_param_filter {
 namespace {
 
 constexpr static const char kCrossOtrResponseMetricName[] =
+    "Navigation.CrossOtr.ContextMenu.ResponseCode";
+constexpr static const char kCrossOtrResponseExperimentalMetricName[] =
     "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
 constexpr static const char kCrossOtrRefreshCountMetricName[] =
-    "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
+    "Navigation.CrossOtr.ContextMenu.RefreshCount";
 constexpr static const char kFilteredParamCountMetricName[] =
-    "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+    "Navigation.UrlParamFilter.FilteredParamCount";
+constexpr static const char kApplicableSourceClassificationCount[] =
+    "Navigation.UrlParamFilter.ApplicableClassificationCount.Source";
+constexpr static const char kApplicableDestinationClassificationCount[] =
+    "Navigation.UrlParamFilter.ApplicableClassificationCount.Destination";
+constexpr static const char kDefaultTag[] = "default";
+
+}  // namespace
 
 class ContextMenuIncognitoFilterDisabledBrowserTest
     : public InProcessBrowserTest {
@@ -81,9 +94,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterDisabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -153,9 +168,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -198,9 +215,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -258,9 +277,11 @@ IN_PROC_BROWSER_TEST_F(
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -311,9 +332,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -366,9 +389,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -418,9 +443,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -473,9 +500,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = redirect_page;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -530,9 +559,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in New Tab" and wait for the tab to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
@@ -573,9 +604,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -617,9 +650,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -674,9 +709,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -729,9 +766,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -777,9 +816,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -856,9 +897,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -903,9 +946,11 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   context_menu_params.link_url = test_root;
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
-  TestRenderViewContextMenu menu(
-      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      context_menu_params);
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
 
@@ -917,6 +962,337 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 }
 
-}  // namespace
+// Several subclasses must be created in order to test the end-to-end component
+// updater + "Open in Incognito" flow, since it relies on the
+// kIncognitoParamFilterEnabled feature flag and the UrlParamClassification
+// Component, and these must be instantiated within
+// SetUpInProcessBrowserTextFixture() rather than from within a test.
+class ContextMenuIncognitoFilterComponentUpdaterBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled, {{"should_filter", "true"}});
+    // Force install the component.
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Enable open in incognito param filtering, with rules for:
+    // a destination of: 127.0.0.1, with outgoing param plzblock
+    // or a source of: foo.com with outgoing param plzblock1
+    component_updater::UrlParamClassificationComponentInstallerPolicy::
+        WriteComponentForTesting(
+            component_dir_.GetPath(),
+            CreateSerializedUrlParamFilterClassificationForTesting(
+                {{"foo.com", {"plzblock1"}},
+                 {"127.0.0.1", {"plzblockredirect"}}},
+                {{"127.0.0.1", {"plzblock"}}}, {kDefaultTag}));
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ protected:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
+    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
+    // Remove this switch to allow components to be updated.
+    test_launcher_utils::RemoveCommandLineSwitch(
+        default_command_line, switches::kDisableComponentUpdate, command_line);
+  }
+
+  void TearDown() override {
+    ClassificationsLoader::GetInstance()->ResetListsForTesting();
+    component_updater::UrlParamClassificationComponentInstallerPolicy::
+        ResetForTesting();
+    InProcessBrowserTest::TearDown();
+  }
+  base::ScopedTempDir component_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
+};
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it filters as expected.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterComponentUpdaterBrowserTest,
+                       OpenIncognitoUrlParamFilter) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200 (params filtered => metrics collected), and the
+  // navigation went from normal --> OTR browsing.
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  // All params being removed are `default`, and no experiment override is
+  // specified on the feature.
+  histogram_tester_.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName,
+                                     0);
+}
+
+class ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest
+    : public ContextMenuIncognitoFilterComponentUpdaterBrowserTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    // Set up the feature to use an experiment override.
+    std::string dummy_experiment = "mattwashere";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"should_filter", "true"},
+         {"experiment_identifier", dummy_experiment}});
+    // Force install the component.
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Enable open in incognito param filtering. These are default
+    // classifications that should not be applied due to our use of an
+    // experiment override.
+    FilterClassifications classifications = MakeClassificationsProtoFromMap(
+        {{"foo.com", {"plzblock1"}}, {"127.0.0.1", {"plzblockredirect"}}},
+        {{"127.0.0.1", {"plzblock"}}});
+    // Because we use `dummy_experiment`, we should only filter this param; the
+    // rules above are ignored.
+    AddClassification(classifications.add_classifications(), "foo.com",
+                      FilterClassification_SiteRole_SOURCE,
+                      {"plzblockexperiment"}, {}, {dummy_experiment});
+
+    component_updater::UrlParamClassificationComponentInstallerPolicy::
+        WriteComponentForTesting(component_dir_.GetPath(),
+                                 classifications.SerializeAsString());
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+};
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it filters as expected.
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest,
+    OpenIncognitoUrlParamFilter) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(
+      embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2&"
+                                     "plzblock1=2&plzblockexperiment=asdf"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL. Because we use an experiment tag,
+  // the default blocking of `plzblock` and `plzblock1` do not occur.
+  GURL expected(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200 (params filtered => metrics collected), and the
+  // navigation went from normal --> OTR browsing. Because an experimental param
+  // was removed, we also validate that the segmented metric was written.
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseExperimentalMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectTotalCount(kApplicableSourceClassificationCount, 1);
+  histogram_tester_.ExpectTotalCount(kApplicableDestinationClassificationCount,
+                                     1);
+  // Although additional classifications are passed, they are not applicable
+  // given the experiment override.
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kApplicableSourceClassificationCount),
+            1);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalSum(kApplicableDestinationClassificationCount),
+      0);
+}
+
+class ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest
+    : public ContextMenuIncognitoFilterComponentUpdaterBrowserTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    // Set up the feature to use an experiment override.
+    std::string dummy_experiment = "mattwashere";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"should_filter", "true"},
+         {"experiment_identifier", dummy_experiment}});
+    // Force install the component.
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Enable open in incognito param filtering. This verifies that
+    // classifications with both the experiment and the default are applied as
+    // expected.
+    FilterClassifications classifications;
+    AddClassification(classifications.add_classifications(), "foo.com",
+                      FilterClassification_SiteRole_SOURCE, {"plzblock1"}, {},
+                      {kDefaultTag, dummy_experiment});
+    AddClassification(classifications.add_classifications(), "127.0.0.1",
+                      FilterClassification_SiteRole_DESTINATION,
+                      {"plzblock", "plzblockredirect"}, {},
+                      {kDefaultTag, dummy_experiment});
+    AddClassification(classifications.add_classifications(), "foo.com",
+                      FilterClassification_SiteRole_SOURCE,
+                      {"plzblockexperiment"}, {}, {dummy_experiment});
+
+    component_updater::UrlParamClassificationComponentInstallerPolicy::
+        WriteComponentForTesting(component_dir_.GetPath(),
+                                 classifications.SerializeAsString());
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+};
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it filters as expected.
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest,
+    OpenIncognitoUrlParamFilter) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(
+      embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2&"
+                                     "plzblock1=2&plzblockexperiment=asdf"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL. Because we use an experiment tag,
+  // `plzblockexperiment` is removed in addition to the default blocking of
+  // `plzblock` and `plzblock1`.
+  GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200 (params filtered => metrics collected), and the
+  // navigation went from normal --> OTR browsing. Because a param included in
+  // the experiment was removed, we should also see that metric written.
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseExperimentalMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectTotalCount(kApplicableSourceClassificationCount, 1);
+  histogram_tester_.ExpectTotalCount(kApplicableDestinationClassificationCount,
+                                     1);
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kApplicableSourceClassificationCount),
+            2);
+  EXPECT_EQ(
+      histogram_tester_.GetTotalSum(kApplicableDestinationClassificationCount),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest,
+    OpenIncognitoUrlParamFilterNoExperimentalParamFiltered) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(
+      embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2&"
+                                     "plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200 (params filtered => metrics collected), and the
+  // navigation went from normal --> OTR browsing. Because no non-default param
+  // was removed, the experimental metric should not be written.
+  histogram_tester_.ExpectUniqueSample(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+  histogram_tester_.ExpectTotalCount(kCrossOtrResponseExperimentalMetricName,
+                                     0);
+}
 
 }  // namespace url_param_filter

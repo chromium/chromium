@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 /**
  * Utility class for holding a Tab and relevant objects for media notification tests.
  */
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
     @Mock
     UrlFormatter.Natives mUrlFormatterJniMock;
@@ -129,7 +130,7 @@ public class MediaNotificationTestTabHolder {
                 true /* isInPrimaryMainFrame */, isSameDocument, false /* isRendererInitiated */,
                 null /* initiatorOrigin */, 0 /* pageTransition */, false /* isPost */,
                 false /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                0 /* navigationId */, false /* isPageActivation */, false /* isReload */);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.didStartNavigation(
                 navigation);
 

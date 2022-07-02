@@ -111,14 +111,14 @@ async function write(writer, value) {
   return writer.write(encoder.encode(value)).then(() => true, () => false);
 }
 
-async function readTcpOnError(socket) {
+async function readTcpOnError(socket, expected_read_success) {
   try {
     let { readable } = await socket.connection;
 
     let reader = readable.getReader();
 
     let read_request_success = await read(reader);
-    if (!read_request_success) {
+    if (read_request_success === expected_read_success) {
       return 'readTcpOnError succeeded.';
     } else {
       throw new TypeError(`read_request_success = ${read_request_success}`);
@@ -160,5 +160,32 @@ async function readWriteTcpOnError(socket) {
     }
   } catch (error) {
     return 'readWriteTcpOnError failed: ' + error;
+  }
+}
+
+async function waitForClosedPromise(socket, expected_closed_result, cancel_reader = false, close_writer = false) {
+  try {
+    let { readable, writable } = await socket.connection;
+
+    let reader = readable.getReader();
+    let writer = writable.getWriter();
+
+    if (cancel_reader) {
+      reader.cancel();
+    }
+
+    if (close_writer) {
+      writer.close();
+    }
+
+    const closed_result = await socket.closed.then(() => true, () => false);
+
+    if (closed_result === expected_closed_result) {
+      return 'waitForClosedPromise succeeded.';
+    } else {
+      throw new TypeError(`closed_result = ${closed_result}, expected_close_result = ${expected_closed_result}`);
+    }
+  } catch (error) {
+    return 'waitForClosedPromise failed: ' + error;
   }
 }

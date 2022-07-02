@@ -46,10 +46,17 @@ const std::vector<TestItem>& TestItems() {
       {
           GURL("view-source:http://www.google.com"),
           "view-source:www.google.com",
-          "view-source:www.google.com",
       },
       {
           GURL(chrome::kChromeUINewTabURL),
+          "",
+      },
+      // After executing the associated JS code, the "javascript:" scheme
+      // will cause the address in the location bar to revert to whatever
+      // it was prior to execution of the JS code (i.e. the URL of the
+      // previous test case)
+      {
+          GURL("javascript:alert(1);"),
           "",
       },
       {
@@ -75,9 +82,53 @@ const std::vector<TestItem>& TestItems() {
           "google.com/search?q=tractor+supply",
       },
       {
+          GURL("https://www.google.com/search?q=tractor+supply"),
+          "https://www.google.com/search?q=tractor+supply",
+          "google.com/search?q=tractor+supply",
+      },
+      {
           GURL("https://m.google.ca/search?q=tractor+supply"),
           "https://m.google.ca/search?q=tractor+supply",
           "m.google.ca/search?q=tractor+supply",
+      },
+      {
+          GURL("http://m.google.ca/search?q=tractor+supply"),
+          "m.google.ca/search?q=tractor+supply",
+      },
+      {
+          GURL("http://en.wikipedia.org"),
+          "en.wikipedia.org",
+      },
+      {
+          GURL("https://en.wikipedia.org"),
+          "https://en.wikipedia.org",
+          "en.wikipedia.org",
+      },
+      {
+          GURL("http://www3.nhk.or.jp/nhkworld"),
+          "www3.nhk.or.jp/nhkworld",
+      },
+      {
+          GURL("https://www3.nhk.or.jp/nhkworld"),
+          "https://www3.nhk.or.jp/nhkworld",
+          "www3.nhk.or.jp/nhkworld",
+      },
+#if BUILDFLAG(IS_WIN)
+      {
+          GURL("file:///c:/path/to/file"),
+          "file:///C:/path/to/file",
+          "C:/path/to/file",
+      },
+#else
+      {
+          GURL("file:///path/to/file"),
+          "file:///path/to/file",
+          "/path/to/file",
+      },
+#endif
+      {
+          GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="),
+          "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       },
   }};
   return *items;

@@ -4,7 +4,7 @@
 
 import("//build/config/chromecast_build.gni")
 
-assert(is_chromecast)
+assert(is_castos || is_cast_android)
 
 config("static_config") {
   if (!is_clang) {

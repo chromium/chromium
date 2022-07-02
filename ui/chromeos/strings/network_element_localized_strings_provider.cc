@@ -369,6 +369,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkSimLockEnableSublabel",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE_SUBLABEL},
       {"networkSimLockedTitle", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE},
+      {"networkSimLockPolicyAdminSubtitle",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_POLICY_ADMIN_SUBTITLE},
       {"networkSimPukDialogSubtitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE},
       {"networkSimPukDialogWarningNoFailures",
@@ -426,10 +428,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("useAttachApn",
                           chromeos::features::ShouldUseAttachApn());
-  html_source->AddBoolean("esimPolicyEnabled",
-                          chromeos::features::IsESimPolicyEnabled());
-  html_source->AddBoolean("extendedOpenVpnSettingsEnabled",
-                          ash::features::IsExtendedOpenVpnSettingsEnabled());
+  html_source->AddBoolean("isSimLockPolicyEnabled",
+                          chromeos::features::IsSimLockPolicyEnabled());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -459,6 +459,10 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
       base::FeatureList::IsEnabled(ash::features::kHiddenNetworkWarning));
+
+  html_source->AddBoolean(
+      "enableHiddenNetworkMigration",
+      base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.

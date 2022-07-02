@@ -41,7 +41,8 @@ void SharedHighlightingPromo::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHDesktopSharedHighlightingFeature)) {
+          feature_engagement::kIPHDesktopSharedHighlightingFeature) ||
+      !render_frame_host->GetOutermostMainFrame()) {
     return;
   }
 
@@ -51,8 +52,9 @@ void SharedHighlightingPromo::DidFinishLoad(
 
 void SharedHighlightingPromo::CheckExistingSelectors(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host->GetOutermostMainFrame());
   if (!remote_.is_bound()) {
-    render_frame_host->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
         remote_.BindNewPipeAndPassReceiver());
   }
 

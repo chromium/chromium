@@ -46,7 +46,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
             base::WrapUnique(pushable_video_source_))) {}
 
   ~MediaStreamVideoTrackUnderlyingSourceTest() override {
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -71,6 +71,16 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
     return CreateSource(script_state, track, 1u);
   }
 
+ private:
+  void RunIOUntilIdle() const {
+    // Make sure that tasks on IO thread are completed before moving on.
+    base::RunLoop run_loop;
+    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   void PushFrame(
       const absl::optional<base::TimeDelta>& timestamp = absl::nullopt) {
@@ -79,7 +89,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
     if (timestamp)
       frame->set_timestamp(*timestamp);
     pushable_video_source_->PushFrame(frame, base::TimeTicks());
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
   }
 
   static MediaStreamSource* CreateDevicePushableSource(

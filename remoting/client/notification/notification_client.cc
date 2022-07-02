@@ -220,7 +220,8 @@ class MessageAndLinkTextResults
   std::string locale_;
   Callback done_;
   raw_ptr<std::string> out_message_translation_;
-  raw_ptr<std::string> out_link_translation_;
+  // TODO(crbug.com/1298696): Breaks remoting_unittests.
+  raw_ptr<std::string, DegradeToNoOpWhenMTE> out_link_translation_;
   bool is_message_translation_fetched_ = false;
   bool is_link_translation_fetched_ = false;
 };

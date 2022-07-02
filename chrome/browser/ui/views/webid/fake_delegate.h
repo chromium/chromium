@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -24,7 +25,7 @@ class FakeDelegate : public AccountSelectionView::Delegate {
   content::WebContents* GetWebContents() override;
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_

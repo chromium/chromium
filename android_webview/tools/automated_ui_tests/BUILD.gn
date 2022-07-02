@@ -28,7 +28,6 @@ android_library("webview_ui_test_app_java") {
   deps = [
     ":webview_ui_test_app_apk_resources",
     "//base:base_java",
-    "//build/android:build_java",
   ]
 }
 
@@ -59,15 +58,14 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     ":webview_ui_test_app_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
     "//ui/android:ui_java_test_support",
   ]
   data = [ "test/data/" ]

@@ -25,10 +25,14 @@ void SetSafetyTipsRemoteConfigProto(std::unique_ptr<SafetyTipsConfig> proto);
 // a safety tip.
 const SafetyTipsConfig* GetSafetyTipsRemoteConfigProto();
 
-// Checks SafeBrowsing-style permutations of |url| against the component updater
-// allowlist and returns whether the URL is explicitly allowed.
+// Checks permutations of |visited_url| against the component updater allowlist
+// and returns whether the URL is explicitly allowed to spoof |canonical_url|.
+//
+// Cases when canonical_url is unknown (as in kFailedSpoofChecks) are treated as
+// if they're trying to spoof themselves, so set canonical_url = visited_url.
 bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                           const GURL& url);
+                                           const GURL& visited_url,
+                                           const GURL& canonical_url);
 
 // Checks |hostname| against the component updater target allowlist and returns
 // whether it is explicitly allowed.

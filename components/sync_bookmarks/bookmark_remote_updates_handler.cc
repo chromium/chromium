@@ -782,8 +782,9 @@ void BookmarkRemoteUpdatesHandler::RemoveEntityAndChildrenFromTracker(
   DCHECK(entity);
   bookmark_tracker_->Remove(entity);
 
-  for (const auto& child : node->children())
+  for (const auto& child : node->children()) {
     RemoveEntityAndChildrenFromTracker(child.get());
+  }
 }
 
 const bookmarks::BookmarkNode* BookmarkRemoteUpdatesHandler::GetParentNode(

@@ -208,14 +208,15 @@ void BackgroundSyncBaseBrowserTest::ClearStoragePartitionData() {
       StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
   uint32_t quota_storage_mask =
       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL;
-  GURL delete_origin = GURL();
+  blink::StorageKey delete_storage_key = blink::StorageKey();
   const base::Time delete_begin = base::Time();
   base::Time delete_end = base::Time::Max();
 
   base::RunLoop run_loop;
 
-  storage->ClearData(storage_partition_mask, quota_storage_mask, delete_origin,
-                     delete_begin, delete_end, run_loop.QuitClosure());
+  storage->ClearData(storage_partition_mask, quota_storage_mask,
+                     delete_storage_key, delete_begin, delete_end,
+                     run_loop.QuitClosure());
 
   run_loop.Run();
 }

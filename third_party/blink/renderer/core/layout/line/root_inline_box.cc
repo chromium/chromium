@@ -40,8 +40,9 @@ namespace blink {
 
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
+  Member<void*> member1;
+  Member<void*> member2;
   void* pointers[1];
-  Member<void*> members[2];
   LayoutUnit layout_variables[6];
 };
 
@@ -416,7 +417,7 @@ LineLayoutBlockFlow RootInlineBox::Block() const {
 
 static bool IsEditableLeaf(InlineBox* leaf) {
   return leaf && leaf->GetLineLayoutItem().GetNode() &&
-         HasEditableStyle(*leaf->GetLineLayoutItem().GetNode());
+         IsEditable(*leaf->GetLineLayoutItem().GetNode());
 }
 
 const LayoutObject* RootInlineBox::ClosestLeafChildForPoint(

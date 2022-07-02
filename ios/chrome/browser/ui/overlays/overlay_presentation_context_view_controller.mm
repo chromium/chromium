@@ -13,10 +13,10 @@
 
 @interface OverlayPresentationContextViewController ()
 // The view used to lay out the presentation context.  The presentation context
-// view is resized to match |layoutView|'s frame.
+// view is resized to match `layoutView`'s frame.
 @property(nonatomic, readonly) UIView* layoutView;
 // Whether the presented view controller is presented using an
-// OverlayPresentationController whose |resizesPresentationContainer| property
+// OverlayPresentationController whose `resizesPresentationContainer` property
 // returns YES.
 @property(nonatomic, readonly) BOOL presentedViewControllerResizesContainer;
 @end
@@ -63,7 +63,7 @@
   CGRect layoutFrame = [window convertRect:layoutView.bounds
                                   fromView:layoutView];
   // Lay out the presentation context and its container view to match
-  // |layoutView|.
+  // `layoutView`.
   if (layoutView) {
     containerView.frame = [containerView.superview convertRect:layoutFrame
                                                       fromView:window];
@@ -72,7 +72,7 @@
     containerView.frame = CGRectZero;
     view.frame = CGRectZero;
   }
-  // If |layoutView| is not laid out using constraints, its frame may have been
+  // If `layoutView` is not laid out using constraints, its frame may have been
   // updated by the container and presentation context layout above.  Reset the
   // frame by converting back from the window coordinates.
   if (self.presentedViewControllerResizesContainer &&

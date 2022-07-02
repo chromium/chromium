@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_NAME_OR_KEYWORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_NAME_OR_KEYWORD_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/style_name.h"

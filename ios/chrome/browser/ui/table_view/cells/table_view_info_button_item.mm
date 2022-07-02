@@ -19,6 +19,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewInfoButtonCell class];
+    _accessibilityActivationPointOnButton = YES;
   }
   return self;
 }
@@ -48,6 +49,7 @@
   if (self.accessibilityDelegate) {
     cell.accessibilityCustomActions = [self createAccessibilityActions];
   }
+  cell.isButtonSelectedForVoiceOver = self.accessibilityActivationPointOnButton;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Update the icon image, if one is present.
@@ -61,17 +63,25 @@
 
 // Creates custom accessibility actions.
 - (NSArray*)createAccessibilityActions {
-  UIAccessibilityCustomAction* tapAction = [[UIAccessibilityCustomAction alloc]
-      initWithName:l10n_util::GetNSString(
-                       IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP)
-            target:self
-          selector:@selector(handleTapOutsideInfoButtonForItem)];
-  return @[ tapAction ];
+  NSMutableArray* customActions = [[NSMutableArray alloc] init];
+
+  // Custom action for when the activation point is on the center of row.
+  if (!self.accessibilityActivationPointOnButton) {
+    UIAccessibilityCustomAction* tapButtonAction =
+        [[UIAccessibilityCustomAction alloc]
+            initWithName:l10n_util::GetNSString(
+                             IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)
+                  target:self
+                selector:@selector(handleTappedInfoButtonForItem)];
+    [customActions addObject:tapButtonAction];
+  }
+
+  return customActions;
 }
 
 // Handles accessibility action for tapping outside the info button.
-- (void)handleTapOutsideInfoButtonForItem {
-  [self.accessibilityDelegate handleTapOutsideInfoButtonForItem:self];
+- (void)handleTappedInfoButtonForItem {
+  [self.accessibilityDelegate handleTappedInfoButtonForItem:self];
 }
 
 @end

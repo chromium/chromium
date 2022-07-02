@@ -35,7 +35,7 @@ InstanceRegistryUpdater::InstanceRegistryUpdater(
       &browser_app_instance_registry_);
 }
 
-InstanceRegistryUpdater::~InstanceRegistryUpdater() {}
+InstanceRegistryUpdater::~InstanceRegistryUpdater() = default;
 
 void InstanceRegistryUpdater::OnBrowserWindowAdded(
     const BrowserWindowInstance& instance) {

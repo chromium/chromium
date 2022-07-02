@@ -6,26 +6,26 @@
  * @fileoverview 'os-settings-search-box' is the container for the search input
  * and settings search results.
  */
-import '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import '//resources/js/cr/ui/focus_row.m.js';
-import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import './os_search_result_row.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import 'chrome://resources/js/cr/ui/focus_row.m.js';
+import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared_css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Router} from '../../router.js';
 import {combinedSearch, SearchResult} from '../combined_search_handler.js';
 import {recordSearch} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {getPersonalizationSearchHandler} from '../personalization_search_handler.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import {getSettingsSearchHandler} from '../settings_search_handler.js';
+
+import {OsSearchResultRowElement} from './os_search_result_row.js';
 
 const MAX_NUM_SEARCH_RESULTS = 5;
 
@@ -55,131 +55,148 @@ const OsSettingSearchBoxUserAction = {
   CLICKED_OUT_OF_SEARCH_BOX: 1,
 };
 
-
 /**
- * @implements {ash.personalizationApp.mojom.SearchResultObserverInterface}
- * @implements {chromeos.settings.mojom.SearchResultObserverInterface}
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-search-box',
+const OsSettingsSearchBoxElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase {
+  static get is() {
+    return 'os-settings-search-box';
+  }
 
-  /**
-   * Receiver for observing settings search result availability changes.
-   * @private {?chromeos.settings.mojom.SearchResultsObserverReceiver}
-   */
-  settingsSearchResultObserverReceiver_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Receiver for observing personalization search result changes.
-   * @private {?ash.personalizationApp.mojom.SearchResultsObserverReceiver}
-   */
-  personalizationSearchResultObserverReceiver_: null,
+  static get properties() {
+    return {
+      // True when the toolbar is displaying in narrow mode.
+      // TODO(hsuregan): Change narrow to isNarrow here and associated elements.
+      narrow: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-  properties: {
-    // True when the toolbar is displaying in narrow mode.
-    // TODO(hsuregan): Change narrow to isNarrow here and associated elements.
-    narrow: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      // Controls whether the search field is shown.
+      showingSearch: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        reflectToAttribute: true,
+      },
 
-    // Controls whether the search field is shown.
-    showingSearch: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      reflectToAttribute: true,
-    },
+      hasSearchQuery: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    hasSearchQuery: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+      // Value is proxied through to cr-toolbar-search-field. When true,
+      // the search field will show a processing spinner.
+      spinnerActive: Boolean,
 
-    // Value is proxied through to cr-toolbar-search-field. When true,
-    // the search field will show a processing spinner.
-    spinnerActive: Boolean,
+      /**
+       * The currently selected search result associated with an
+       * <os-search-result-row>. This property is bound to the <iron-list>. Note
+       * that when an item is selected, its associated <os-search-result-row>
+       * is not focus()ed at the same time unless it is explicitly
+       * clicked/tapped.
+       * @private {!SearchResult}
+       */
+      selectedItem_: {
+        type: Object,
+      },
+
+      /**
+       * Prevent user deselection by tracking last item selected. This item must
+       * only be assigned to an item within |this.$.searchResultList|, and not
+       * directly to |this.selectedItem_| or an item within
+       * |this.searchResults_|.
+       * @private {!SearchResult}
+       */
+      lastSelectedItem_: {
+        type: Object,
+      },
+
+      /**
+       * Passed into <iron-list>. Exactly one result is the selectedItem_.
+       * @private {!Array<!SearchResult>}
+       */
+      searchResults_: {
+        type: Array,
+        value: [],
+        observer: 'onSearchResultsChanged_',
+      },
+
+      /** @private */
+      shouldShowDropdown_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /** @private */
+      searchResultsExist_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeSearchResultsExist_(searchResults_)',
+      },
+
+      /**
+       * Used by FocusRowBehavior to track the last focused element inside a
+       * <os-search-result-row> with the attribute 'focus-row-control'.
+       * @private {HTMLElement}
+       */
+      lastFocused_: Object,
+
+      /**
+       * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
+       */
+      listBlurred_: Boolean,
+
+      /**
+       * The number of searches performed in one lifecycle of the search box.
+       * @private
+       */
+      searchRequestCount_: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?chromeos.settings.mojom.SearchResultsObserverReceiver} */
+    this.settingsSearchResultObserverReceiver_ = null;
 
     /**
-     * The currently selected search result associated with an
-     * <os-search-result-row>. This property is bound to the <iron-list>. Note
-     * that when an item is selected, its associated <os-search-result-row>
-     * is not focus()ed at the same time unless it is explicitly clicked/tapped.
-     * @private {!SearchResult}
+     * @private {?ash.personalizationApp.mojom.SearchResultsObserverReceiver}
      */
-    selectedItem_: {
-      type: Object,
-    },
+    this.personalizationSearchResultObserverReceiver_ = null;
+  }
 
-    /**
-     * Prevent user deselection by tracking last item selected. This item must
-     * only be assigned to an item within |this.$.searchResultList|, and not
-     * directly to |this.selectedItem_| or an item within |this.searchResults_|.
-     * @private {!SearchResult}
-     */
-    lastSelectedItem_: {
-      type: Object,
-    },
+  ready() {
+    super.ready();
 
-    /**
-     * Passed into <iron-list>. Exactly one result is the selectedItem_.
-     * @private {!Array<!SearchResult>}
-     */
-    searchResults_: {
-      type: Array,
-      value: [],
-      observer: 'onSearchResultsChanged_',
-    },
-
-    /** @private */
-    shouldShowDropdown_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /** @private */
-    searchResultsExist_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeSearchResultsExist_(searchResults_)',
-    },
-
-    /**
-     * Used by FocusRowBehavior to track the last focused element inside a
-     * <os-search-result-row> with the attribute 'focus-row-control'.
-     * @private {HTMLElement}
-     */
-    lastFocused_: Object,
-
-    /**
-     * Used by FocusRowBehavior to track if the list has been blurred.
-     * @private
-     */
-    listBlurred_: Boolean,
-
-    /**
-     * The number of searches performed in one lifecycle of the search box.
-     * @private
-     */
-    searchRequestCount_: {
-      type: Number,
-      value: 0,
-    },
-  },
-
-  listeners: {
-    'blur': 'onBlur_',
-    'keydown': 'onKeyDown_',
-    'search-changed': 'onSearchChanged_',
-  },
+    this.addEventListener('blur', this.onBlur_);
+    this.addEventListener(
+        'keydown',
+        (event) => this.onKeyDown_(/** @type {!KeyboardEvent} */ (event)));
+    this.addEventListener('search-changed', this.onSearchChanged_);
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     const toolbarSearchField = this.$.search;
     const searchInput = toolbarSearchField.getSearchInput();
     if (Router.getInstance().currentRoute === routes.BASIC) {
@@ -232,10 +249,12 @@ Polymer({
     getSettingsSearchHandler().observe(
         this.settingsSearchResultObserverReceiver_.$
             .bindNewPipeAndPassRemote());
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
       assert(
           this.personalizationSearchResultObserverReceiver_ !== null,
@@ -243,7 +262,7 @@ Polymer({
       this.personalizationSearchResultObserverReceiver_.$.close();
     }
     this.settingsSearchResultObserverReceiver_.$.close();
-  },
+  }
 
   /**
    * Overrides chromeos.settings.mojom.SearchResultsObserverInterface
@@ -251,7 +270,7 @@ Polymer({
    */
   onSearchResultsChanged() {
     this.fetchSearchResults_();
-  },
+  }
 
   /**
    * @return {!OsSearchResultRowElement} The <os-search-result-row> that is
@@ -264,7 +283,7 @@ Polymer({
             this.$.searchResultList.querySelector(
                 'os-search-result-row[selected]')),
         'No OsSearchResultRow is selected.');
-  },
+  }
 
   /**
    * @return {string} The current input string.
@@ -272,7 +291,7 @@ Polymer({
    */
   getCurrentQuery_() {
     return this.$.search.getSearchInput().value;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -280,13 +299,13 @@ Polymer({
    */
   computeSearchResultsExist_() {
     return this.searchResults_.length !== 0;
-  },
+  }
 
   /** @private */
   onSearchChanged_() {
     this.hasSearchQuery = !!this.getCurrentQuery_();
     this.fetchSearchResults_();
-  },
+  }
 
   /** @private */
   fetchSearchResults_() {
@@ -311,7 +330,9 @@ Polymer({
           chrome.metricsPrivate.recordTime(
               'ChromeOS.Settings.SearchLatency', latencyMs);
           this.onSearchResultsReceived_(query, response.results);
-          this.fire('search-results-fetched');
+          const event = new CustomEvent(
+              'search-results-fetched', {bubbles: true, composed: true});
+          this.dispatchEvent(event);
         });
 
     ++this.searchRequestCount_;
@@ -321,7 +342,7 @@ Polymer({
         Object.keys(OsSettingSearchRequestTypes).length);
     chrome.metricsPrivate.recordSparseValue(
         'ChromeOS.Settings.NumCharsOfQueries', query.length);
-  },
+  }
 
   /**
    * Updates search results UI when settings search results are fetched.
@@ -351,7 +372,7 @@ Polymer({
     this.lastFocused_ = null;
     this.searchResults_ = results;
     recordSearch();
-  },
+  }
 
   /** @private */
   onNavigatedToResultRowRoute_() {
@@ -368,7 +389,7 @@ Polymer({
         USER_ACTION_ON_SEARCH_RESULTS_SHOWN_METRIC_NAME,
         OsSettingSearchBoxUserAction.SEARCH_RESULT_CLICKED,
         Object.keys(OsSettingSearchBoxUserAction).length);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -392,7 +413,7 @@ Polymer({
 
     // Close the dropdown because  a region outside the search box was clicked.
     this.shouldShowDropdown_ = false;
-  },
+  }
 
   /** @private */
   onSearchInputFocused_() {
@@ -405,7 +426,7 @@ Polymer({
     }
 
     this.fetchSearchResults_();
-  },
+  }
 
   /* @private */
   onSearchInputMousedown_() {
@@ -421,7 +442,7 @@ Polymer({
       const searchInput = this.$.search.getSearchInput();
       afterNextRender(this, () => searchInput.select());
     }
-  },
+  }
 
   /**
    * @param {!SearchResult} item The search result item in searchResults_.
@@ -431,7 +452,7 @@ Polymer({
   isItemSelected_(item) {
     return this.searchResults_.indexOf(item) ===
         this.searchResults_.indexOf(this.selectedItem_);
-  },
+  }
 
   /**
    * @return {number} Length of the search results array.
@@ -439,7 +460,7 @@ Polymer({
    */
   getListLength_() {
     return this.searchResults_.length;
-  },
+  }
 
   /**
    * Returns the correct tab index since <iron-list>'s default tabIndex property
@@ -452,7 +473,7 @@ Polymer({
    */
   getRowTabIndex_(item) {
     return this.isItemSelected_(item) && this.shouldShowDropdown_ ? 0 : -1;
-  },
+  }
 
   /** @private */
   onSearchResultsChanged_() {
@@ -473,7 +494,7 @@ Polymer({
       getAnnouncerInstance().announce(this.i18n('searchNoResults'));
       return;
     }
-  },
+  }
 
   /**
    * |selectedItem| is not changed by the time this is called. The value that
@@ -494,7 +515,7 @@ Polymer({
       this.$.searchResultList.selectItem(this.lastSelectedItem_);
     }
     this.lastSelectedItem_ = this.$.searchResultList.selectedItem;
-  },
+  }
 
   /**
    * @param {string} key The string associated with a key.
@@ -521,7 +542,7 @@ Polymer({
     // The newly selected item might not be visible because the list needs
     // to be scrolled. So scroll the dropdown if necessary.
     this.getSelectedOsSearchResultRow_().scrollIntoViewIfNeeded();
-  },
+  }
 
   /**
    * Keydown handler to specify how enter-key, arrow-up key, and arrow-down-key
@@ -550,7 +571,7 @@ Polymer({
       this.selectRowViaKeys_(e.key);
       return;
     }
-  },
+  }
 
   /* @private */
   onSearchIconClicked_() {
@@ -558,5 +579,8 @@ Polymer({
     if (this.getCurrentQuery_()) {
       this.shouldShowDropdown_ = true;
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsSearchBoxElement.is, OsSettingsSearchBoxElement);

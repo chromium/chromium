@@ -39,7 +39,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetContentsBackgroundColor() const override;
   SkColor GetGridBackgroundCardActiveColor() const override;
   SkColor GetGridBackgroundCardInactiveColor() const override;
-  SkColor GetSeparatorColor() const override;
+  ui::ColorId GetSeparatorColorId() const override;
   SkColor GetFocusRingColor() const override;
   SkColor GetInkDropBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const override;

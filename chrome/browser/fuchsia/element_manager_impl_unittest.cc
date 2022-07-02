@@ -97,43 +97,59 @@ class TestElementManagerImpl : public testing::Test {
 };
 
 TEST_F(TestElementManagerImpl, TestCorrectSpec) {
-  fuchsia::element::Spec spec;
-  spec.set_component_url("fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
-
   auto element_manager = GetElementManagerPtr();
-  base::RunLoop run_loop;
-  absl::optional<fuchsia::element::Manager_ProposeElement_Result>
-      received_result;
-  element_manager->ProposeElement(
-      std::move(spec), {},
-      [&](fuchsia::element::Manager_ProposeElement_Result result) {
-        received_result = std::move(result);
-        run_loop.Quit();
-      });
-  run_loop.Run();
-  ASSERT_TRUE(received_result);
-  EXPECT_FALSE(received_result->is_err());
-  EXPECT_TRUE(received_command_line_);
+  for (const char* url : {
+           "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm",
+           "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm",
+           "fuchsia-pkg://chrome.com/chrome#meta/chrome.cm",
+       }) {
+    fuchsia::element::Spec spec;
+    spec.set_component_url(url);
+
+    base::RunLoop run_loop;
+    absl::optional<fuchsia::element::Manager_ProposeElement_Result>
+        received_result;
+    element_manager->ProposeElement(
+        std::move(spec), {},
+        [&](fuchsia::element::Manager_ProposeElement_Result result) {
+          received_result = std::move(result);
+          run_loop.Quit();
+        });
+    run_loop.Run();
+    ASSERT_TRUE(received_result);
+    EXPECT_FALSE(received_result->is_err()) << url;
+    EXPECT_TRUE(received_command_line_);
+  }
 }
 
 TEST_F(TestElementManagerImpl, TestIncorrectSpec) {
-  fuchsia::element::Spec spec;
-  spec.set_component_url("foobar");
-
   auto element_manager = GetElementManagerPtr();
-  base::RunLoop run_loop;
-  absl::optional<fuchsia::element::Manager_ProposeElement_Result>
-      received_result;
-  element_manager->ProposeElement(
-      std::move(spec), {},
-      [&](fuchsia::element::Manager_ProposeElement_Result result) {
-        received_result = std::move(result);
-        run_loop.Quit();
-      });
-  run_loop.Run();
-  ASSERT_TRUE(received_result);
-  EXPECT_TRUE(received_result->is_err());
-  EXPECT_FALSE(received_command_line_);
+  for (const char* url : {
+           "foobar",
+           "fuchsia-pkg://chromium.org/web_engine#meta/chrome.cm",
+           "fuchsia-pkg://chromium.org/chrome#meta/web_engine.cm",
+           "fuchsia-pkg://chromium.org/chrome",
+           "fuchsia-pkg://chromium.org/#meta/chrome.cm",
+           "fuchsia-pkg://chromium.org/mychrome#meta/chrome.cm",
+           "chrome#meta/chrome.cm",
+       }) {
+    fuchsia::element::Spec spec;
+    spec.set_component_url(url);
+
+    base::RunLoop run_loop;
+    absl::optional<fuchsia::element::Manager_ProposeElement_Result>
+        received_result;
+    element_manager->ProposeElement(
+        std::move(spec), {},
+        [&](fuchsia::element::Manager_ProposeElement_Result result) {
+          received_result = std::move(result);
+          run_loop.Quit();
+        });
+    run_loop.Run();
+    ASSERT_TRUE(received_result);
+    EXPECT_TRUE(received_result->is_err()) << url;
+    EXPECT_FALSE(received_command_line_);
+  }
 }
 
 TEST_F(TestElementManagerImpl, TestController) {
@@ -142,7 +158,7 @@ TEST_F(TestElementManagerImpl, TestController) {
   fuchsia::element::ControllerPtr controller;
   fuchsia::element::Spec valid_spec;
   valid_spec.set_component_url(
-      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+      "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm");
 
   element_manager->ProposeElement(
       std::move(valid_spec), controller.NewRequest(),
@@ -172,7 +188,7 @@ TEST_F(TestElementManagerImpl, Annotations) {
     base::RunLoop run_loop;
     fuchsia::element::Spec valid_spec;
     valid_spec.set_component_url(
-        "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+        "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm");
     *valid_spec.mutable_annotations() = TestAnnotations(
         {{"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}});
     element_manager->ProposeElement(std::move(valid_spec),
@@ -236,7 +252,7 @@ TEST_F(TestElementManagerImpl, ControllerLifeCycle) {
   fuchsia::element::ControllerPtr controller;
   fuchsia::element::Spec valid_spec;
   valid_spec.set_component_url(
-      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+      "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm");
 
   element_manager->ProposeElement(
       std::move(valid_spec), controller.NewRequest(),
@@ -262,7 +278,7 @@ TEST_F(TestElementManagerImpl, ControllerLifeCycle) {
 
   // A new connection to the manager should allow a new controller to be bounded
   valid_spec.set_component_url(
-      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+      "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm");
 
   element_manager->ProposeElement(
       std::move(valid_spec), controller.NewRequest(),

@@ -89,10 +89,9 @@ public class WebXrArSessionTest {
     public void testArPermissionPersistance() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "test_ar_request_session_succeeds", PAGE_LOAD_TIMEOUT_S);
-        WebContents contents = mWebXrArTestFramework.getCurrentWebContents();
 
         // Start new session, accepting the consent prompt
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(contents);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/false);
         mWebXrArTestFramework.endSession();
         mWebXrArTestFramework.assertNoJavaScriptErrors();
         mWebXrArTestFramework.pollJavaScriptBooleanOrFail(
@@ -136,7 +135,7 @@ public class WebXrArSessionTest {
         WebContents contents = mWebXrArTestFramework.getCurrentWebContents();
 
         // Start new session, accepting the consent prompt
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(contents);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/false);
         mWebXrArTestFramework.assertNoJavaScriptErrors();
 
         // Trigger a new permission prompt to show when tapping on the canvas, then tap on it.

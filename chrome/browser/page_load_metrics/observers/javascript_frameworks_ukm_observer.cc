@@ -14,11 +14,13 @@ JavascriptFrameworksUkmObserver::JavascriptFrameworksUkmObserver() = default;
 
 JavascriptFrameworksUkmObserver::~JavascriptFrameworksUkmObserver() = default;
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 JavascriptFrameworksUkmObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // OnLoadingBehaviorObserved events for detecting JavaScript frameworks are
+  // only kicked for outermost frames. See DetectJavascriptFrameworksOnLoad in
+  // third_party/blink/renderer/core/script/detect_javascript_frameworks.cc
   return STOP_OBSERVING;
 }
 

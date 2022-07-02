@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -46,6 +48,7 @@ import android.content.res.Resources;
 import android.view.View;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,8 +68,10 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -87,6 +92,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherV
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SecondaryTasksSurfaceInitializer;
 import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -148,6 +154,8 @@ public class StartSurfaceMediatorUnitTest {
     private Runnable mInitializeMVTilesRunnable;
     @Mock
     private FeedReliabilityLogger mFeedReliabilityLogger;
+    @Mock
+    private BackPressManager mBackPressManager;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -159,6 +167,15 @@ public class StartSurfaceMediatorUnitTest {
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderCaptor;
+
+    private ObservableSupplierImpl<Boolean> mControllerBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mControllerDialogVisibleSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mSecondaryControllerBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -179,16 +196,19 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mNormalTabModel).isIncognito();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
         doReturn(TabSwitcherType.CAROUSEL).when(mMainTabGridController).getTabSwitcherType();
-        doReturn(new ObservableSupplierImpl<Boolean>())
+        doReturn(mControllerBackPressStateSupplier)
                 .when(mMainTabGridController)
                 .getHandleBackPressChangedSupplier();
+        doReturn(mControllerDialogVisibleSupplier)
+                .when(mMainTabGridController)
+                .isDialogVisibleSupplier();
         doReturn(mSecondaryTasksSurfaceController)
                 .when(mSecondaryTasksSurfaceInitializer)
                 .initialize();
-        doReturn(new ObservableSupplierImpl<Boolean>())
+        doReturn(mSecondaryControllerBackPressStateSupplier)
                 .when(mSecondaryTasksSurfaceController)
                 .getHandleBackPressChangedSupplier();
-        doReturn(new ObservableSupplierImpl<Boolean>())
+        doReturn(mSecondaryControllerDialogVisibleSupplier)
                 .when(mSecondaryTasksSurfaceController)
                 .isDialogVisibleSupplier();
         doReturn(false).when(mActivityStateChecker).isFinishingOrDestroyed();
@@ -1370,6 +1390,159 @@ public class StartSurfaceMediatorUnitTest {
         verify(mFeedReliabilityLogger).onNavigateBack();
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPressHandler() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        doAnswer((inv) -> mControllerDialogVisibleSupplier.get())
+                .when(mMainTabGridController)
+                .isDialogVisible();
+        doAnswer((inv) -> mSecondaryControllerDialogVisibleSupplier.get())
+                .when(mSecondaryTasksSurfaceController)
+                .isDialogVisible();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
+        mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        Assert.assertFalse(
+                "Should not intercept back press by default", mediator.shouldInterceptBackPress());
+        mControllerDialogVisibleSupplier.set(true);
+        Assert.assertTrue(mediator.shouldInterceptBackPress());
+        mediator.onBackPressed();
+        verify(mMainTabGridController).onBackPressed(false);
+
+        mControllerDialogVisibleSupplier.set(false);
+        Assert.assertFalse(mediator.shouldInterceptBackPress());
+
+        mControllerDialogVisibleSupplier.set(true);
+        mSecondaryControllerDialogVisibleSupplier.set(true);
+        Assert.assertTrue(mediator.shouldInterceptBackPress());
+        mediator.onBackPressed();
+        verify(mMainTabGridController).onBackPressed(false);
+        verify(mSecondaryTasksSurfaceController,
+                description("Secondary task surface has a higher priority of handling back press"))
+                .onBackPressed(false);
+
+        mSecondaryControllerDialogVisibleSupplier.set(false);
+        mControllerDialogVisibleSupplier.set(false);
+        verify(mSecondaryTasksSurfaceController,
+                description(
+                        "Secondary task surface consumes back press when no dialog is visible."))
+                .onBackPressed(false);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        Assert.assertTrue(mediator.onBackPressed());
+        Assert.assertEquals("Should return to home page on back press.",
+                StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+    }
+
+    /**
+     * Tests the logic of StartSurfaceMediator#onBackPressedInternal() when the Start surface is
+     * showing but Tab switcher hasn't been created yet.
+     */
+    @Test
+    public void testBackPressHandlerOnStartSurfaceWithoutTabSwitcherCreated() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        Assert.assertEquals(StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+
+        doReturn(true).when(mMainTabGridController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController).onBackPressed(true);
+
+        doReturn(false).when(mMainTabGridController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController, times(2)).onBackPressed(true);
+    }
+
+    /**
+     * Tests the logic of StartSurfaceMediator#onBackPressedInternal() when the Start surface is
+     * showing and the Tab switcher has been created.
+     */
+    @Test
+    public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
+        mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        Assert.assertEquals(StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+
+        doReturn(true).when(mMainTabGridController).isDialogVisible();
+        doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController, never()).onBackPressed(true);
+        verify(mSecondaryTasksSurfaceController,
+                description("Secondary task surface has a higher priority of handling back press"))
+                .onBackPressed(true);
+
+        doReturn(true).when(mMainTabGridController).isDialogVisible();
+        doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController).onBackPressed(true);
+
+        doReturn(false).when(mMainTabGridController).isDialogVisible();
+        doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController, times(2)).onBackPressed(true);
+    }
+
+    /**
+     * Tests the logic of StartSurfaceMediator#onBackPressedInternal() when the Tab switcher is
+     * showing.
+     */
+    @Test
+    public void testBackPressHandlerOnTabSwitcher() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true, false);
+        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
+        mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
+        // The primary task surface is invisible when showing the Tab Switcher.
+        doReturn(false).when(mMainTabGridController).isDialogVisible();
+
+        doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
+        mediator.onBackPressed();
+        verify(mMainTabGridController, never()).onBackPressed(false);
+        verify(mSecondaryTasksSurfaceController).onBackPressed(false);
+
+        doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
+        verify(mSecondaryTasksSurfaceController).onBackPressed(false);
+
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
+        mediator.onBackPressed();
+        Assert.assertEquals("Should return to home page on back press.",
+                StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+    }
+
     private StartSurfaceMediator createStartSurfaceMediator(
             boolean isStartSurfaceEnabled, boolean excludeMVTiles) {
         return createStartSurfaceMediator(
@@ -1398,7 +1571,7 @@ public class StartSurfaceMediatorUnitTest {
                         isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                         mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
                         true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                        new DummyJankTracker(), mInitializeMVTilesRunnable, null);
+                        new DummyJankTracker(), mInitializeMVTilesRunnable, mBackPressManager);
         return mediator;
     }
 

@@ -10,6 +10,8 @@
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
+namespace ash {
+
 namespace {
 
 void CreateAndAddURLDataSource(Profile* profile,
@@ -64,3 +66,5 @@ void SystemExtensionsWebUIConfig::RegisterURLDataSource(
   CreateAndAddURLDataSource(profile, system_extension_id_,
                             system_extension_base_url_);
 }
+
+}  // namespace ash

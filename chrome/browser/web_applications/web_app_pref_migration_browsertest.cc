@@ -44,7 +44,8 @@ class WebAppPrefMigrationBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, PRE_Migration) {
   AppId app_id = test::InstallDummyWebApp(browser()->profile(), "Test app 1",
-                                          GURL("https://example.com/app_1"));
+                                          GURL("https://example.com/app_1"),
+                                          webapps::WebappInstallSource::ARC);
   // New installs should no longer write into prefs.
   EXPECT_FALSE(GetWebAppInstallSourceDeprecated(
       browser()->profile()->GetPrefs(), app_id));

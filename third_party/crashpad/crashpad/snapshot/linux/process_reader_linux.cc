@@ -24,6 +24,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "snapshot/linux/debug_rendezvous.h"
 #include "util/linux/auxiliary_vector.h"
@@ -52,6 +53,7 @@ ProcessReaderLinux::Thread::Thread()
     : thread_info(),
       stack_region_address(0),
       stack_region_size(0),
+      name(),
       tid(-1),
       static_priority(-1),
       nice_value(-1) {}
@@ -62,6 +64,23 @@ bool ProcessReaderLinux::Thread::InitializePtrace(
     PtraceConnection* connection) {
   if (!connection->GetThreadInfo(tid, &thread_info)) {
     return false;
+  }
+
+  // From man proc(5):
+  //
+  // /proc/[pid]/comm (since Linux 2.6.33)
+  //
+  // Different threads in the same process may have different comm values,
+  // accessible via /proc/[pid]/task/[tid]/comm.
+  const std::string path = base::StringPrintf(
+      "/proc/%d/task/%d/comm", connection->GetProcessID(), tid);
+  if (connection->ReadFileContents(base::FilePath(path), &name)) {
+    if (!name.empty() && name.back() == '\n') {
+      // Remove the final newline character.
+      name.pop_back();
+    }
+  } else {
+    // Continue on without the thread name.
   }
 
   // TODO(jperaza): Collect scheduling priorities via the broker when they can't

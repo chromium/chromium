@@ -6,52 +6,66 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
-#include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
+#include "ui/views/window/dialog_delegate.h"
 
-// View that displays the onboarding/ consent prompt for autofill assistant.
-// It uses the legal text supplied by the AssistantOnboardingController
-// to which it holds a raw pointer.
-// The AssistantOnboardingView is owned by the |views::View| that it is a child
-// of. It therefore needs to be created via new/ a factory method and passes
-// ownership of itself to the |AssistantDisplayDelegate| during its
-// construction.
-// The View and its controller notify each other when one is destroyed so
-// that the other can invalidate the pointer it holds.
-// TODO(crbug.com/1322387): Check whether the derive from BoxView or FlexView.
-class AssistantOnboardingView : public views::View,
+namespace content {
+class WebContents;
+}  // namespace content
+
+class AssistantOnboardingController;
+
+// View that displays the onboarding/consent prompt for autofill assistant.
+// It uses the text supplied by the AssistantOnboardingController
+// to which it holds a weak pointer.
+// As all other `DialogDelegateView` extensions, the `AssistantOnboardingView`
+// is owned by the widget inside which it is placed after calling `Show()`.
+// It must therefore created via `new` in the static factory function and must
+// not be deleted manually. In addition, `Show()` should always be called after
+// constructing it.
+// The view and its controller notify each other when one is destroyed.
+class AssistantOnboardingView : public views::DialogDelegateView,
                                 public AssistantOnboardingPrompt {
  public:
   METADATA_HEADER(AssistantOnboardingView);
-  AssistantOnboardingView(AssistantOnboardingController* controller,
-                          AssistantDisplayDelegate* display_delegate);
+
+  // IDs that identify a view within the dialog that was used in browsertests.
+  enum class DialogViewID : int {
+    VIEW_ID_NONE = 0,
+    HEADER_ICON,
+    TITLE,
+    DESCRIPTION,
+    CONSENT_TEXT,
+  };
+
+  explicit AssistantOnboardingView(
+      base::WeakPtr<AssistantOnboardingController> controller);
   ~AssistantOnboardingView() override;
 
   AssistantOnboardingView(const AssistantOnboardingView&) = delete;
   AssistantOnboardingView& operator=(const AssistantOnboardingView&) = delete;
 
   // AssistantOnboardingPrompt:
-  void Show() override;
+  void Show(content::WebContents* web_contents) override;
   void OnControllerGone() override;
 
-  // Callbacks for the dialog buttons that inform the controller, null the
-  // controller and close the view.
-  void OnCancel();
-  void OnAccept();
+  // Returns a weak pointer to itself.
+  base::WeakPtr<AssistantOnboardingView> GetWeakPtr();
 
  private:
-  // Closes the view by removing itself from the display. CHECKs that the raw
-  // pointer to the controller is a nullptr.
-  void Close();
+  // Sets up the parameters of `DialogDelegate`.
+  void InitDelegate();
+
+  // Creates the content of the dialog by adding the relevant views.
+  void InitDialog();
 
   // The controller belonging to this view.
-  raw_ptr<AssistantOnboardingController> controller_;
+  base::WeakPtr<AssistantOnboardingController> controller_;
 
-  // The display that owns this view.
-  raw_ptr<AssistantDisplayDelegate> display_delegate_;
+  // Factory for weak pointers to this view.
+  base::WeakPtrFactory<AssistantOnboardingView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_VIEW_H_

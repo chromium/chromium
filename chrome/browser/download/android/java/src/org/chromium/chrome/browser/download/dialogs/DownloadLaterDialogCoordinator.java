@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.download.DownloadLaterMetrics;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.dialogs.DownloadDateTimePickerDialogProperties.State;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -173,24 +172,12 @@ public class DownloadLaterDialogCoordinator implements ModalDialogProperties.Con
 
     private void notifyComplete(long time) {
         assert mController != null;
-        maybeUpdatePromptStatus();
         mController.onDownloadLaterDialogComplete(mDownloadLaterChoice, time);
     }
 
     private void notifyCancel() {
         assert mController != null;
-        maybeUpdatePromptStatus();
         mController.onDownloadLaterDialogCanceled();
-    }
-
-    private void maybeUpdatePromptStatus() {
-        assert mCustomView != null;
-        assert mPrefService != null;
-        Integer promptStatus = mCustomView.getPromptStatus();
-        if (promptStatus != null) {
-            mPrefService.setInteger(
-                    Pref.DOWNLOAD_LATER_PROMPT_STATUS, mCustomView.getPromptStatus());
-        }
     }
 
     // ModalDialogProperties.Controller implementation.

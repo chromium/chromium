@@ -28,12 +28,14 @@ namespace arc {
 extern const char kPlayStoreActivity[];
 extern const char kPlayStorePackage[];
 
+extern const char kAndroidContactsAppId[];
 extern const char kCameraMigrationAppId[];
 extern const char kGmailAppId[];
 extern const char kGoogleCalendarAppId[];
 extern const char kGoogleDuoAppId[];
 extern const char kGoogleMapsAppId[];
 extern const char kGooglePhotosAppId[];
+extern const char kGoogleTVAppId[];
 extern const char kInfinitePainterAppId[];
 extern const char kLightRoomAppId[];
 extern const char kPlayBooksAppId[];
@@ -45,7 +47,6 @@ extern const char kSettingsAppId[];
 extern const char kYoutubeAppId[];
 extern const char kYoutubeMusicAppId[];
 extern const char kYoutubeMusicWebApkAppId[];
-extern const char kAndroidContactsAppId[];
 
 // Observes ARC app launches.
 class AppLaunchObserver : public base::CheckedObserver {

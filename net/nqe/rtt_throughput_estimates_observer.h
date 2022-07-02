@@ -38,10 +38,10 @@ class NET_EXPORT_PRIVATE RTTAndThroughputEstimatesObserver {
   RTTAndThroughputEstimatesObserver& operator=(
       const RTTAndThroughputEstimatesObserver&) = delete;
 
-  virtual ~RTTAndThroughputEstimatesObserver() {}
+  virtual ~RTTAndThroughputEstimatesObserver() = default;
 
  protected:
-  RTTAndThroughputEstimatesObserver() {}
+  RTTAndThroughputEstimatesObserver() = default;
 };
 
 }  // namespace net

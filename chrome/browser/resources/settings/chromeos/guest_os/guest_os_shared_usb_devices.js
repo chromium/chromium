@@ -8,57 +8,78 @@
  * guest OSes.
  */
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-guest-os-shared-usb-devices',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsGuestOsSharedUsbDevicesElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+/** @polymer */
+class SettingsGuestOsSharedUsbDevicesElement extends
+    SettingsGuestOsSharedUsbDevicesElementBase {
+  static get is() {
+    return 'settings-guest-os-shared-usb-devices';
+  }
 
-  properties: {
-    /**
-     * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
-     */
-    guestOsType: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The USB Devices available for connection to a VM.
-     * @private {Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
-     */
-    sharedUsbDevices_: Array,
+  static get properties() {
+    return {
+      /**
+       * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
+       */
+      guestOsType: String,
 
-    /**
-     * The USB device which was toggled to be shared, but is already shared
-     * with another VM. When non-null the reassign dialog is shown.
-     * @private {?GuestOsSharedUsbDevice}
-     */
-    reassignDevice_: {
-      type: Object,
-      value: null,
-    },
-  },
+      /**
+       * The USB Devices available for connection to a VM.
+       * @private {Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
+       */
+      sharedUsbDevices_: Array,
 
-  /** @private {GuestOsBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * The USB device which was toggled to be shared, but is already shared
+       * with another VM. When non-null the reassign dialog is shown.
+       * @private {?GuestOsSharedUsbDevice}
+       */
+      reassignDevice_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!GuestOsBrowserProxy} */
+    this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
   ready() {
-    this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
+    super.ready();
+
     this.addWebUIListener(
         'guest-os-shared-usb-devices-changed',
         this.onGuestOsSharedUsbDevicesChanged_.bind(this));
     this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();
-  },
+  }
 
   /**
    * @param {!Array<GuestOsSharedUsbDevice>} devices
@@ -68,7 +89,7 @@ Polymer({
     this.sharedUsbDevices_ = devices.map((device) => {
       return {shared: device.sharedWith === this.vmName_(), device: device};
     });
-  },
+  }
 
   /**
    * @param {!CustomEvent<!GuestOsSharedUsbDevice>} event
@@ -85,12 +106,12 @@ Polymer({
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), device.guid, event.target.checked);
     recordSettingChange();
-  },
+  }
 
   /** @private */
   onReassignCancel_() {
     this.reassignDevice_ = null;
-  },
+  }
 
   /** @private */
   onReassignContinueClick_() {
@@ -98,7 +119,7 @@ Polymer({
         this.vmName_(), this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
     recordSettingChange();
-  },
+  }
 
   /**
    * @private
@@ -108,9 +129,10 @@ Polymer({
     return {
       crostini: 'termina',
       pluginVm: 'PvmDefault',
-      arcvm: 'arcvm'
+      arcvm: 'arcvm',
+      bruschetta: 'bru'
     }[this.guestOsType];
-  },
+  }
 
   /**
    * @private
@@ -118,7 +140,7 @@ Polymer({
    */
   getDescriptionText_() {
     return this.i18n(this.guestOsType + 'SharedUsbDevicesDescription');
-  },
+  }
 
   /**
    * @param {!GuestOsSharedUsbDevice} device USB device.
@@ -127,5 +149,9 @@ Polymer({
    */
   getReassignDialogText_(device) {
     return this.i18n('guestOsSharedUsbDevicesReassign', device.label);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsGuestOsSharedUsbDevicesElement.is,
+    SettingsGuestOsSharedUsbDevicesElement);

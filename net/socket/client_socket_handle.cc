@@ -21,13 +21,7 @@
 namespace net {
 
 ClientSocketHandle::ClientSocketHandle()
-    : is_initialized_(false),
-      pool_(nullptr),
-      higher_pool_(nullptr),
-      reuse_type_(ClientSocketHandle::UNUSED),
-      group_generation_(-1),
-      resolve_error_info_(ResolveErrorInfo(OK)),
-      is_ssl_error_(false) {}
+    : resolve_error_info_(ResolveErrorInfo(OK)) {}
 
 ClientSocketHandle::~ClientSocketHandle() {
   Reset();

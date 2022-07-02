@@ -8,35 +8,31 @@ found in the LICENSE file.
 <head>
 <meta name="viewport" content="width=device-width" />
 <style>
-* {
-  box-sizing: border-box;
-  user-select: none;
-}
+  * {
+    box-sizing: border-box;
+    user-select: none;
+  }
 
-body {
-  background-color: white;
-  cursor: default;
-  font-family: sans-serif;
-  padding: 0;
-}
+  body {
+    background-color: white;
+    cursor: default;
+    font-family: sans-serif;
+    margin: 8px;
+    padding: 0;
+  }
 
-#debug-div {
-  border: 1px solid red;
-  display: -webkit-box;
-  left: 50%;
-  position: fixed;
-  top: 0;
-}
-
+  #debug-div {
+    border: 1px solid red;
+    display: flex;
+    left: 50%;
+    position: fixed;
+    top: 0;
+  }
 </style>
-<link rel="stylesheet" href="info_view.css">
-<link rel="stylesheet" href="chrome://resources/css/widgets.css">
 <script type="module" src="gpu_internals.js"></script>
 </head>
 <body>
-  <div id="debug-div">
-  </div>
-  <include src="info_view.html">
-  <script src="chrome://resources/js/jstemplate_compiled.js"></script>
+  <div id="debug-div"></div>
+  <info-view></info-view>
 </body>
 </html>

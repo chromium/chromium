@@ -5,8 +5,8 @@
 #include "third_party/blink/common/use_counter/use_counter_feature_mojom_traits.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 namespace mojo {
 namespace {

@@ -219,18 +219,18 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // The last time (context time) that his handler ran its Process() method.
   // For each render quantum, we only want to process just once to handle fanout
   // of this handler.
-  double last_processing_time_;
+  double last_processing_time_ = -1;
 
   // The last time (context time) when this node did not have silent inputs.
-  double last_non_silent_time_;
+  double last_non_silent_time_ = 0;
 
  private:
   void SetNodeType(NodeType);
 
   void SendLogMessage(const String& message);
 
-  bool is_initialized_;
-  NodeType node_type_;
+  bool is_initialized_ = false;
+  NodeType node_type_ = kNodeTypeUnknown;
 
   // The owner AudioNode. Accessed only on the main thread.
   const WeakPersistent<AudioNode> node_;
@@ -241,16 +241,16 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // See http://crbug.com/404527 for the detail.
   UntracedMember<BaseAudioContext> context_;
 
-  // Legal to access even when |context_| may be gone, such as during the
+  // Legal to access even when `context_` may be gone, such as during the
   // destructor.
   const scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 
   Vector<std::unique_ptr<AudioNodeInput>> inputs_;
   Vector<std::unique_ptr<AudioNodeOutput>> outputs_;
 
-  int connection_ref_count_;
+  int connection_ref_count_ = 0;
 
-  bool is_disabled_;
+  bool is_disabled_ = false;
 
   // Used to trigger one single textlog indicating that processing started as
   // intended. Set to true once in the first call to the ProcessIfNecessary
@@ -272,7 +272,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   void SetInternalChannelCountMode(ChannelCountMode);
   void SetInternalChannelInterpretation(AudioBus::ChannelInterpretation);
 
-  unsigned channel_count_;
+  unsigned channel_count_ = 2;
   // The new channel count mode that will be used to set the actual mode in the
   // pre or post rendering phase.
   ChannelCountMode new_channel_count_mode_;

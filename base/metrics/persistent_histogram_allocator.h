@@ -5,12 +5,12 @@
 #ifndef BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H_
 #define BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H_
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -314,8 +314,8 @@ class BASE_EXPORT PersistentHistogramAllocator {
 
   // Gets the reference of the last histogram created, used to avoid
   // trying to import what was just created.
-  PersistentHistogramAllocator::Reference last_created() {
-    return subtle::NoBarrier_Load(&last_created_);
+  Reference last_created() {
+    return last_created_.load(std::memory_order_relaxed);
   }
 
   // Gets the next histogram in persistent data based on iterator while
@@ -350,8 +350,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
 
   // A reference to the last-created histogram in the allocator, used to avoid
   // trying to import what was just created.
-  // TODO(bcwhite): Change this to std::atomic<PMA::Reference> when available.
-  subtle::Atomic32 last_created_ = 0;
+  std::atomic<Reference> last_created_ = 0;
 };
 
 

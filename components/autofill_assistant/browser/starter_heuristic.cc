@@ -55,14 +55,16 @@ void StarterHeuristic::InitFromTrialParams() {
     VLOG(2) << "Field trial parameter not set";
     return;
   }
-  absl::optional<base::Value> dict = base::JSONReader::Read(parameters);
-  if (!dict || !dict->is_dict()) {
+  auto dict = base::JSONReader::ReadAndReturnValueWithError(parameters);
+  if (!dict.has_value() || !dict->is_dict()) {
     VLOG(1) << "Failed to parse field trial params as JSON object: "
             << parameters;
     if (VLOG_IS_ON(1)) {
-      auto err = base::JSONReader::ReadAndReturnValueWithError(parameters);
-      VLOG(1) << err.error_message << ", line: " << err.error_line
-              << ", col: " << err.error_column;
+      if (dict.has_value())
+        VLOG(1) << "Expecting a dictionary";
+      else
+        VLOG(1) << dict.error().message << ", line: " << dict.error().line
+                << ", col: " << dict.error().column;
     }
     return;
   }
@@ -74,8 +76,8 @@ void StarterHeuristic::InitFromTrialParams() {
     return;
   }
   url_matcher::URLMatcherConditionSet::Vector condition_sets;
-  base::flat_map<url_matcher::URLMatcherConditionSet::ID, std::string> mapping;
-  url_matcher::URLMatcherConditionSet::ID next_condition_set_id = 0;
+  base::flat_map<base::MatcherStringPattern::ID, std::string> mapping;
+  base::MatcherStringPattern::ID next_condition_set_id = 0;
   for (const auto& heuristic : heuristics->GetListDeprecated()) {
     auto* intent =
         heuristic.FindKeyOfType(kHeuristicIntentKey, base::Value::Type::STRING);
@@ -130,8 +132,7 @@ base::flat_set<std::string> StarterHeuristic::IsHeuristicMatch(
     return matching_intents;
   }
 
-  std::set<url_matcher::URLMatcherConditionSet::ID> matches =
-      url_matcher_.MatchURL(url);
+  std::set<base::MatcherStringPattern::ID> matches = url_matcher_.MatchURL(url);
   for (const auto& match : matches) {
     auto intent = matcher_id_to_intent_map_.find(match);
     if (intent == matcher_id_to_intent_map_.end()) {

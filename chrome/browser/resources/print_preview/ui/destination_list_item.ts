@@ -29,9 +29,7 @@ export class PrintPreviewDestinationListItemElement extends PolymerElement {
   static get properties() {
     return {
       destination: Object,
-
       searchQuery: Object,
-
       searchHint_: String,
     };
   }
@@ -46,7 +44,7 @@ export class PrintPreviewDestinationListItemElement extends PolymerElement {
 
   destination: Destination;
   searchQuery: RegExp|null;
-  destinationIcon_: string;
+  private destinationIcon_: string;
   private searchHint_: string;
 
   private highlights_: Node[] = [];

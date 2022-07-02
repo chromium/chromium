@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
@@ -43,11 +44,32 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
   builder->Add("passwordChangedProceedAnywayTitle",
                IDS_LOGIN_PASSWORD_CHANGED_PROCEED_ANYWAY);
   builder->Add("passwordChangedTryAgain", IDS_LOGIN_PASSWORD_CHANGED_TRY_AGAIN);
+  builder->Add("dataLossWarningTitle",
+               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE);
+  builder->Add("dataLossWarningSubtitleP1",
+               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P1);
+  builder->Add("dataLossWarningSubtitleP2",
+               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P2);
+  builder->Add("recoverLocalDataTitle",
+               IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_TITLE);
+  builder->Add("recoverLocalDataSubtitle",
+               IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_SUBTITLE);
+  builder->Add("continueAndDeleteDataButton",
+               IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON);
+  builder->Add("continueWithoutLocalDataButton",
+               IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON);
 }
 
 void GaiaPasswordChangedScreenHandler::InitializeDeprecated() {
   AddCallback("migrateUserData",
               &GaiaPasswordChangedScreenHandler::HandleMigrateUserData);
+}
+
+void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
+    base::Value::Dict* dict) {
+  dict->Set("isCryptohomeRecoveryUIFlowEnabled",
+            ash::features::IsCryptohomeRecoveryFlowUIEnabled());
+  BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
 void GaiaPasswordChangedScreenHandler::Show(const std::string& email,

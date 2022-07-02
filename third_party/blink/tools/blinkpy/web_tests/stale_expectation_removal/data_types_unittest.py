@@ -9,6 +9,10 @@ import unittest
 from blinkpy.web_tests.stale_expectation_removal import data_types
 from unexpected_passes_common import data_types as common_data_types
 
+FULL_PASS = common_data_types.FULL_PASS
+NEVER_PASS = common_data_types.NEVER_PASS
+PARTIAL_PASS = common_data_types.PARTIAL_PASS
+
 
 class WebTestExpectationUnittest(unittest.TestCase):
     def testCompareWildcard(self):
@@ -208,7 +212,16 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         self.assertFalse(stats.AlwaysNeededExpectation(expectation))
 
 
+def _CreateEmptyPassMap():
+    return {
+        FULL_PASS: common_data_types.BuilderStepMap(),
+        NEVER_PASS: common_data_types.BuilderStepMap(),
+        PARTIAL_PASS: common_data_types.BuilderStepMap(),
+    }
+
+
 class WebTestTestExpectationMapUnittest(unittest.TestCase):
+
     def testAddSingleResult(self):
         expectation_map = data_types.WebTestTestExpectationMap()
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
@@ -229,6 +242,77 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expected_stats.AddPassedBuild()
         expected_stats.AddSlowBuild('build_id')
         self.assertEqual(stats, expected_stats)
+
+    def testShouldTreatSemiStaleAsActiveOnlySanitizersPass(self):
+        """Tests behavior when only sanitizer bots fully pass."""
+        expectation_map = data_types.WebTestTestExpectationMap()
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[NEVER_PASS]['Some Bot'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertTrue(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[PARTIAL_PASS]['Some Bot'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertTrue(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
+
+    def testShouldTreatSemiStaleAsActiveOnlySanitizersPassNoOthers(self):
+        """Tests behavior when sanitizers fully pass without other results."""
+        expectation_map = data_types.WebTestTestExpectationMap()
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertFalse(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
+
+    def testShouldTreatSemiStaleAsActiveOnlyOneSanitizerPasses(self):
+        """Tests behavior when one sanitizer passes but not the other."""
+        expectation_map = data_types.WebTestTestExpectationMap()
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[NEVER_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertTrue(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[NEVER_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertTrue(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
+
+    def testShouldTreatSemiStaleAsActiveOthersPass(self):
+        """Tests behavior when other bots pass in addition to the sanitizers."""
+        expectation_map = data_types.WebTestTestExpectationMap()
+
+        pass_map = _CreateEmptyPassMap()
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux ASAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['chromium/ci:WebKit Linux MSAN'] = (
+            common_data_types.StepBuildStatsMap())
+        pass_map[FULL_PASS]['Foo Bot'] = common_data_types.StepBuildStatsMap()
+        pass_map[NEVER_PASS]['Some Bot'] = (
+            common_data_types.StepBuildStatsMap())
+        self.assertFalse(
+            expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
 
 if __name__ == '__main__':

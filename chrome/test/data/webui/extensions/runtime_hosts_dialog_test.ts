@@ -47,7 +47,7 @@ suite('RuntimeHostsDialog', function() {
     dialog.remove();
   });
 
-  test('valid input', function() {
+  test('valid input', async function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     const site = 'http://www.example.com';
@@ -58,12 +58,9 @@ suite('RuntimeHostsDialog', function() {
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);
     submit.click();
-    return delegate.whenCalled('addRuntimeHostPermission').then((args) => {
-      const id = args[0];
-      const input = args[1];
-      assertEquals(ITEM_ID, id);
-      assertEquals('http://www.example.com/*', input);
-    });
+    const [id, pattern] = await delegate.whenCalled('addRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals('http://www.example.com/*', pattern);
   });
 
   test('invalid input', function() {
@@ -89,7 +86,7 @@ suite('RuntimeHostsDialog', function() {
     assertFalse(submit.disabled);
   });
 
-  test('delegate indicates invalid input', function() {
+  test('delegate indicates invalid input', async function() {
     delegate.acceptRuntimeHostPermission = false;
 
     const input = dialog.shadowRoot!.querySelector('cr-input');
@@ -102,13 +99,12 @@ suite('RuntimeHostsDialog', function() {
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);
     submit.click();
-    return delegate.whenCalled('addRuntimeHostPermission').then(() => {
-      assertTrue(input.invalid);
-      assertTrue(submit.disabled);
-    });
+    await delegate.whenCalled('addRuntimeHostPermission');
+    assertTrue(input.invalid);
+    assertTrue(submit.disabled);
   });
 
-  test('editing current entry', function() {
+  test('editing current entry', async function() {
     const oldPattern = 'http://example.com/*';
     const newPattern = 'http://chromium.org/*';
 
@@ -120,24 +116,21 @@ suite('RuntimeHostsDialog', function() {
     const submit = dialog.$.submit;
 
     submit.click();
-    return delegate.whenCalled('removeRuntimeHostPermission')
-        .then((args) => {
-          assertEquals(ITEM_ID, args[0] /* id */);
-          assertEquals(oldPattern, args[1] /* pattern */);
-          return delegate.whenCalled('addRuntimeHostPermission');
-        })
-        .then((args) => {
-          assertEquals(ITEM_ID, args[0] /* id */);
-          assertEquals(newPattern, args[1] /* pattern */);
-          return eventToPromise('close', dialog);
-        })
-        .then(() => {
-          assertFalse(dialog.isOpen());
-          assertEquals(
-              metricsPrivateMock.getUserActionCount(
-                  'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
-              1);
-        });
+    let [id, pattern] =
+        await delegate.whenCalled('removeRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(oldPattern, pattern);
+
+    [id, pattern] = await delegate.whenCalled('addRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(newPattern, pattern);
+
+    await eventToPromise('close', dialog);
+    assertFalse(dialog.isOpen());
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
+        1);
   });
 
   test('get pattern from url', function() {
@@ -158,7 +151,7 @@ suite('RuntimeHostsDialog', function() {
         'http://localhost:3030/*', getPatternFromSite('http://localhost:3030'));
   });
 
-  test('update site access', function() {
+  test('update site access', async function() {
     dialog.updateHostAccess = true;
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
@@ -170,13 +163,9 @@ suite('RuntimeHostsDialog', function() {
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);
     submit.click();
-    return delegate.whenCalled('setItemHostAccess').then((args) => {
-      const id = args[0];
-      const access = args[1];
-      assertEquals(ITEM_ID, id);
-      assertEquals(
-          chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES, access);
-    });
+    const [id, access] = await delegate.whenCalled('setItemHostAccess');
+    assertEquals(ITEM_ID, id);
+    assertEquals(chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES, access);
   });
 
   test('get matching user specified sites', function() {
@@ -237,13 +226,13 @@ suite('RuntimeHostsDialog', function() {
     input.fire('input');
     assertFalse(input.invalid);
     assertFalse(isVisible(dialog.shadowRoot!.querySelector(
-        '#matching-restricted-sites-warning')));
+        '.matching-restricted-sites-warning')));
 
     input.value = 'http://*.restricted.com';
     input.fire('input');
     assertFalse(input.invalid);
     assertTrue(isVisible(dialog.shadowRoot!.querySelector(
-        '#matching-restricted-sites-warning')));
+        '.matching-restricted-sites-warning')));
 
     const submit = dialog.$.submit;
     assertFalse(submit.disabled);

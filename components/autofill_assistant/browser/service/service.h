@@ -60,6 +60,10 @@ class Service {
 
   virtual void SetDisableRpcSigning(bool disable_rpc_signing) {}
 
+  virtual void UpdateAnnotateDomModelContext(int64_t model_version) {}
+
+  virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded){};
+
  protected:
   Service() = default;
 };

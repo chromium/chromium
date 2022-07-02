@@ -48,11 +48,8 @@ const CGFloat kDividerWidth = 1;
 
 @implementation TextZoomViewController
 
-- (instancetype)initWithDarkAppearance:(BOOL)darkAppearance {
-  if (self = [super initWithNibName:nil bundle:nil]) {
-    _darkAppearance = darkAppearance;
-  }
-  return self;
+- (instancetype)init {
+  return [super initWithNibName:nil bundle:nil];
 }
 
 #pragma mark - UIViewController

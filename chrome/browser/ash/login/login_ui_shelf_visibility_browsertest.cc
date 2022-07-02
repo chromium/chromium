@@ -15,11 +15,14 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -177,6 +180,75 @@ IN_PROC_BROWSER_TEST_F(SamlInterstitialTest, AppsGuestButton) {
   KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+}
+
+namespace {
+
+// This is the constant that exists on the server side. It corresponds to
+// the type of enrollment license.
+constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
+
+}  // namespace
+
+class KioskSkuVisibilityTest : public LoginUIShelfVisibilityTest {
+ public:
+  KioskSkuVisibilityTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableKioskLoginScreen);
+  }
+  ~KioskSkuVisibilityTest() override = default;
+  KioskSkuVisibilityTest(const KioskSkuVisibilityTest&) = delete;
+  void operator=(const KioskSkuVisibilityTest&) = delete;
+
+ protected:
+  policy::DevicePolicyCrosTestHelper* policy_helper() {
+    return &policy_helper_;
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  policy::DevicePolicyCrosTestHelper policy_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that shelf buttons of Guest mode and Add user are shown, and kiosk
+// instruction bubble is hidden without kiosk SKU.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithoutKioskSku) {
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, and kiosk
+// instruction bubble is hidden too without kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithoutApps) {
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
+}
+
+// Verifies that shelf buttons of Guest mode and Add user are hidden, and kiosk
+// instruction bubble is shown with kiosk apps.
+IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithApps) {
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  KioskAppsMixin::AppendKioskAccount(
+      &policy_helper()->device_policy()->payload());
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
 }
 
 }  // namespace ash

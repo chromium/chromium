@@ -14,6 +14,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
@@ -34,7 +36,7 @@
 #endif
 
 @interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate> {
-  // Observer that updates |toolbarViewController| for fullscreen events.
+  // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 
@@ -70,20 +72,21 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
+  // LocationBarCoordinator dispatches OmniboxCommands therefore Location Bar
+  // setup should be done before using OmniboxCommands handler (below).
+  [self setUpLocationBar];
+
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP =
       !self.browser->GetBrowserState()->IsOffTheRecord();
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.viewController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.viewController.omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.viewController.delegate = self;
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
   self.orchestrator.toolbarAnimatee = self.viewController;
-
-  [self setUpLocationBar];
 
   // Button factory requires that the omnibox commands are set up, which is
   // done by the location bar.

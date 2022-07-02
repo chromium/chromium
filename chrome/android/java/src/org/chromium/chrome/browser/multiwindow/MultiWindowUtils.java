@@ -244,7 +244,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Creates and returns an {@link Intent} that instantiates a new Chrome instance.
-     * @param activity The activity firing the intent.
+     * @param context The application context of the activity firing the intent.
      * @param instanceId ID of the new Chrome instance to be created.
      * @param preferNew {@code true} if the new instance should be instanted as a fresh
      *        new one not loading any tabs from a persistent disk file.
@@ -253,9 +253,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The created intent.
      */
     public static Intent createNewWindowIntent(
-            Activity activity, int instanceId, boolean preferNew, boolean openAdjacently) {
-        assert instanceSwitcherEnabled();
-        Intent intent = new Intent(activity, ChromeTabbedActivity.class);
+            Context context, int instanceId, boolean preferNew, boolean openAdjacently) {
+        assert isMultiInstanceApi31Enabled();
+        Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         if (instanceId != INVALID_INSTANCE_ID) {
@@ -263,7 +263,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
         if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
         if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;
@@ -587,6 +587,11 @@ public class MultiWindowUtils implements ActivityStateListener {
                 String.valueOf(index));
     }
 
+    /**
+     * Read the time when an instance was last accessed.
+     * @param index Instance ID
+     * @return The time when the instance was last accessed.
+     */
     static long readLastAccessedTime(int index) {
         return SharedPreferencesManager.getInstance().readLong(lastAccessedTimeKey(index));
     }
@@ -753,5 +758,24 @@ public class MultiWindowUtils implements ActivityStateListener {
                 "Android.MultiWindowState", "WindowState",
                 isInMultiWindowMode(activity) ? MultiWindowState.MULTI_WINDOW
                                               : MultiWindowState.SINGLE_WINDOW);
+    }
+
+    /**
+     * @return The instance ID of the Chrome window that was accessed last if the maximum number of
+     *         instances is open. If fewer than the maximum number is open, the default ID will be
+     *         returned, indicative of an unused window ID that can be potentially allocated to
+     *         launch a VIEW intent.
+     */
+    public static int getInstanceIdForViewIntent() {
+        int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
+        int maxInstances = MultiWindowUtils.getMaxInstances();
+        if (MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
+        for (int i = 0; i < maxInstances; i++) {
+            if (MultiWindowUtils.readLastAccessedTime(i)
+                    > MultiWindowUtils.readLastAccessedTime(windowId)) {
+                windowId = i;
+            }
+        }
+        return windowId;
     }
 }

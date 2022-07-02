@@ -569,7 +569,8 @@ void FrameTreeNode::CreatedNavigationRequest(
   DCHECK(!navigation_request->common_params().url.SchemeIs(
       url::kJavaScriptScheme));
 
-  bool was_previously_loading = frame_tree()->LoadingTree()->IsLoading();
+  bool was_previously_loading =
+      frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
 
   // There's no need to reset the state: there's still an ongoing load, and the
   // RenderFrameHostManager will take care of updates to the speculative
@@ -933,19 +934,30 @@ void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
 
 absl::optional<blink::mojom::FencedFrameMode>
 FrameTreeNode::GetFencedFrameMode() {
-  if (!IsFencedFrameRoot())
+  if (!IsInFencedFrameTree()) {
     return absl::nullopt;
+  }
 
-  if (blink::features::IsFencedFramesShadowDOMBased())
-    return pending_frame_policy_.fenced_frame_mode;
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch: {
+      FrameTreeNode* outer_delegate_node =
+          render_manager()->GetOuterDelegateNode();
+      DCHECK(outer_delegate_node);
 
-  FrameTreeNode* outer_delegate = render_manager()->GetOuterDelegateNode();
-  DCHECK(outer_delegate);
+      FencedFrame* fenced_frame = FindFencedFrame(outer_delegate_node);
+      DCHECK(fenced_frame);
 
-  FencedFrame* fenced_frame = FindFencedFrame(outer_delegate);
-  DCHECK(fenced_frame);
-
-  return fenced_frame->mode();
+      return fenced_frame->mode();
+    }
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      FrameTreeNode* node = this;
+      while (!node->IsFencedFrameRoot()) {
+        FrameTreeNode* next_node = parent()->frame_tree_node();
+        node = next_node;
+      }
+      return node->pending_frame_policy_.fenced_frame_mode;
+    }
+  }
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
@@ -959,6 +971,26 @@ bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
 
 void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
+}
+
+FencedFrameURLMapping::SharedStorageBudgetMetadata*
+FrameTreeNode::FindSharedStorageBudgetMetadata() {
+  FrameTreeNode* node = this;
+
+  while (true) {
+    if (node->shared_storage_budget_metadata()) {
+      DCHECK(node->IsFencedFrameRoot());
+      return node->shared_storage_budget_metadata();
+    }
+
+    if (node->GetParentOrOuterDocument()) {
+      node = node->GetParentOrOuterDocument()->frame_tree_node();
+    } else {
+      break;
+    }
+  }
+
+  return nullptr;
 }
 
 const scoped_refptr<BrowsingContextState>&

@@ -29,10 +29,13 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
@@ -57,9 +60,8 @@
 #include "third_party/blink/renderer/platform/timer.h"
 
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc_overrides/webrtc_timer.h"
+#include "third_party/webrtc_overrides/low_precision_timer.h"
 
 namespace cc {
 class Layer;
@@ -85,6 +87,7 @@ class HTMLSourceElement;
 class HTMLTrackElement;
 class MediaError;
 class MediaSourceAttachment;
+class MediaSourceHandle;
 class MediaSourceTracer;
 class MediaStreamDescriptor;
 class ScriptPromiseResolver;
@@ -112,6 +115,20 @@ class CORE_EXPORT HTMLMediaElement
   // Limits the range of media playback rate.
   static constexpr double kMinPlaybackRate = 0.0625;
   static constexpr double kMaxPlaybackRate = 16.0;
+
+  enum class PlayPromiseError {
+    kNotSupported,
+    kPaused_Unknown,
+    kPaused_PauseCalled,
+    kPaused_EndOfPlayback,
+    kPaused_RemovedFromDocument,
+    kPaused_AutoplayAutoPause,
+    kPaused_BackgroundVideoOptimization,
+    kPaused_SuspendedPlayerIdleTimeout,
+    kPaused_RemotePlayStateChange,
+    kPaused_PauseRequestedByUser,
+    kPaused_PauseRequestedInternally,
+  };
 
   bool IsMediaElement() const override { return true; }
 
@@ -163,7 +180,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // network state
   void SetSrc(const AtomicString&);
-  const KURL& currentSrc() const { return current_src_; }
+  const KURL& currentSrc() const { return current_src_.GetSourceIfVisible(); }
 
   // Return the URL to be used for downloading the media.
   const KURL& downloadURL() const {
@@ -175,8 +192,10 @@ class CORE_EXPORT HTMLMediaElement
     return current_src_after_redirects_;
   }
 
-  void SetSrcObject(MediaStreamDescriptor*);
-  MediaStreamDescriptor* GetSrcObject() const { return src_object_.Get(); }
+  using SrcObjectVariant =
+      absl::variant<MediaStreamDescriptor*, MediaSourceHandle*>;
+  void SetSrcObjectVariant(SrcObjectVariant src_object_variant);
+  SrcObjectVariant GetSrcObjectVariant() const;
 
   enum NetworkState {
     kNetworkEmpty,
@@ -438,6 +457,30 @@ class CORE_EXPORT HTMLMediaElement
   friend class PictureInPictureControllerTest;
   friend class VideoWakeLockTest;
 
+  class SourceMetadata {
+    DISALLOW_NEW();
+
+   public:
+    enum class SourceVisibility { kVisibleToApp, kInvisibleToApp };
+    SourceMetadata() = default;
+    void SetSource(const KURL& src, SourceVisibility visibility) {
+      src_ = src;
+      invisible_to_app_ = visibility == SourceVisibility::kInvisibleToApp;
+    }
+    const KURL& GetSourceIfVisible() const {
+      return invisible_to_app_ ? NullURL() : src_;
+    }
+    const KURL& GetSource() const { return src_; }
+
+   private:
+    KURL src_;
+
+    // If true, then |current_src| is used only for internal loading and safety
+    // checks, and for logging that is not visible to apps, either. For example,
+    // when loading from a MediaSourceHandle as srcObject, this would be true.
+    bool invisible_to_app_ = false;
+  };
+
   bool HasPendingActivityInternal() const;
 
   void ResetMediaPlayerAndMediaSource();
@@ -509,7 +552,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAutoplayInitiated() override;
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
-  void PausePlayback() final;
+  void PausePlayback(PauseReason) final;
   void DidPlayerStartPlaying() override;
   void DidPlayerPaused(bool stream_ended) override;
   void DidPlayerMutedStatusChange(bool muted) override;
@@ -599,7 +642,7 @@ class CORE_EXPORT HTMLMediaElement
   void PlayInternal();
 
   // This does not stop autoplay visibility observation.
-  void PauseInternal();
+  void PauseInternal(PlayPromiseError code);
 
   void UpdatePlayState();
   bool PotentiallyPlaying() const;
@@ -646,7 +689,7 @@ class CORE_EXPORT HTMLMediaElement
   void AudioTracksTimerFired(TimerBase*);
 
   void ScheduleResolvePlayPromises();
-  void ScheduleRejectPlayPromises(DOMExceptionCode);
+  void ScheduleRejectPlayPromises(PlayPromiseError);
   void ScheduleNotifyPlaying();
   void ResolveScheduledPlayPromises();
   void RejectScheduledPlayPromises();
@@ -670,13 +713,11 @@ class CORE_EXPORT HTMLMediaElement
   HeapTaskRunnerTimer<HTMLMediaElement> load_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
-  // Timers used to schedule repeating tasks. For this a lower precision timer,
-  // WebRtcTimer, is used. This may reduce Idle Wake Ups when WebRTC is used.
-  // TODO(https://crbug.com/1267874): When there exists a low resolution timer
-  // in base/ that does not have a dependency on WebRTC, use such a timer
-  // instead.
-  WebRtcTimer progress_event_timer_;
-  WebRtcTimer playback_progress_timer_;
+  // Use a low precision timer for repeating tasks to avoid excessive Idle Wake
+  // Up frequency, especially when WebRTC is used and the page contains many
+  // HTMLMediaElements.
+  LowPrecisionTimer progress_event_timer_;
+  LowPrecisionTimer playback_progress_timer_;
 
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
@@ -686,9 +727,12 @@ class CORE_EXPORT HTMLMediaElement
   NetworkState network_state_;
   ReadyState ready_state_;
   ReadyState ready_state_maximum_;
-  KURL current_src_;
+
+  SourceMetadata current_src_;
   KURL current_src_after_redirects_;
-  Member<MediaStreamDescriptor> src_object_;
+
+  Member<MediaStreamDescriptor> src_object_stream_descriptor_;
+  Member<MediaSourceHandle> src_object_media_source_handle_;
 
   // To prevent potential regression when extended by the MSE API, do not set
   // |error_| outside of constructor and SetError().
@@ -802,7 +846,7 @@ class CORE_EXPORT HTMLMediaElement
   TaskHandle play_promise_reject_task_handle_;
   HeapVector<Member<ScriptPromiseResolver>> play_promise_resolve_list_;
   HeapVector<Member<ScriptPromiseResolver>> play_promise_reject_list_;
-  DOMExceptionCode play_promise_error_code_;
+  PlayPromiseError play_promise_error_code_;
 
   // HTMLMediaElement and its MediaElementAudioSourceNode in case it is provided
   // die together.
@@ -846,9 +890,10 @@ class CORE_EXPORT HTMLMediaElement
     void Trace(Visitor*) const;
 
    private:
-    scoped_refptr<WebAudioSourceProviderImpl> web_audio_source_provider_;
+    base::Lock provide_input_lock;
+    scoped_refptr<WebAudioSourceProviderImpl> web_audio_source_provider_
+        GUARDED_BY(provide_input_lock);
     Member<AudioClientImpl> client_;
-    Mutex provide_input_lock;
   };
 
   AudioSourceProviderImpl audio_source_provider_;

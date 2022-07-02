@@ -51,10 +51,9 @@ sync_pb::EntitySpecifics SyncArcPackageHelper::GetTestSpecifics(size_t id) {
   return specifics;
 }
 
-SyncArcPackageHelper::SyncArcPackageHelper()
-    : test_(nullptr), setup_completed_(false) {}
+SyncArcPackageHelper::SyncArcPackageHelper() = default;
 
-SyncArcPackageHelper::~SyncArcPackageHelper() {}
+SyncArcPackageHelper::~SyncArcPackageHelper() = default;
 
 void SyncArcPackageHelper::SetupTest(SyncTest* test) {
   if (setup_completed_) {
@@ -220,13 +219,15 @@ bool SyncArcPackageHelper::ArcPackagesMatch(Profile* profile1,
       prefs1->GetPackagesFromPrefs();
   const std::vector<std::string> pref2_packages =
       prefs2->GetPackagesFromPrefs();
-  if (pref1_packages.size() != pref2_packages.size())
+  if (pref1_packages.size() != pref2_packages.size()) {
     return false;
+  }
   for (const std::string& package : pref1_packages) {
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package_info =
         prefs2->GetPackage(package);
-    if (!package_info.get())
+    if (!package_info.get()) {
       return false;
+    }
   }
   return true;
 }
@@ -244,15 +245,19 @@ bool SyncArcPackageHelper::ArcPackageDetailsMatch(Profile* profile1,
         prefs1->GetPackage(package);
     std::unique_ptr<ArcAppListPrefs::PackageInfo> package2_info =
         prefs2->GetPackage(package);
-    if (!package2_info.get())
+    if (!package2_info.get()) {
       return false;
-    if (package1_info->package_version != package2_info->package_version)
+    }
+    if (package1_info->package_version != package2_info->package_version) {
       return false;
+    }
     if (package1_info->last_backup_android_id !=
-        package2_info->last_backup_android_id)
+        package2_info->last_backup_android_id) {
       return false;
-    if (package1_info->last_backup_time != package2_info->last_backup_time)
+    }
+    if (package1_info->last_backup_time != package2_info->last_backup_time) {
       return false;
+    }
   }
   return true;
 }

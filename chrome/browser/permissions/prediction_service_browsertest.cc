@@ -64,7 +64,10 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   PermissionRequestManager* GetPermissionRequestManager() {

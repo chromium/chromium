@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 /**
  * @fileoverview Polymer behavior for scrolling/focusing/indicating
  * setting elements with deep links.

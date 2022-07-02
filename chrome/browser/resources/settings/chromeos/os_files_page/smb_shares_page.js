@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import '//resources/js/action_link.js';
-import '//resources/cr_elements/action_link_css.m.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';

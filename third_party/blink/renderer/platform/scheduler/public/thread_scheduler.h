@@ -43,6 +43,10 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Return the current thread's ThreadScheduler.
   static ThreadScheduler* Current();
 
+  // Returns compositor thread scheduler for the compositor thread
+  // of the current process.
+  static ThreadScheduler* CompositorThreadScheduler();
+
   virtual ~ThreadScheduler() = default;
 
   // Called to prevent any more pending tasks from running. Must be called on
@@ -102,6 +106,13 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   CompositorTaskRunner() = 0;
 
+  // Returns a task runner for input-blocking tasks on the compositor thread.
+  // (For input tasks on the main thread, use WebWidgetScheduler instead.)
+  virtual scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() {
+    NOTREACHED();
+    return nullptr;
+  }
+
   // Returns a default task runner. This is basically same as the default task
   // runner, but is explicitly allowed to run JavaScript. We plan to forbid V8
   // execution on per-thread task runners (crbug.com/913912). If you need to
@@ -145,10 +156,6 @@ class PLATFORM_EXPORT ThreadScheduler {
       bool include_continuous) const {
     return {};
   }
-
-  // Returns true if BeginMainFrame should be called soon, for example if it
-  // hasn't been called for a long period of time.
-  virtual bool DontDeferBeginMainFrame() const { return true; }
 
   // Associates |isolate| to the scheduler.
   virtual void SetV8Isolate(v8::Isolate* isolate) = 0;

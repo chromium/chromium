@@ -37,7 +37,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -197,13 +196,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         checkOpenImageInNewTab("testImage", "/chrome/test/data/android/contextmenu/test_image.png");
     }
 
-    /**
-     * @MediumTest
-     * @Feature({"Browser"})
-     * @CommandLineFlags.Add(ChromeSwitches.DISABLE_DOCUMENT_MODE)
-     */
     @Test
-    @FlakyTest(message = "http://crbug.com/606939")
+    @MediumTest
+    @Feature({"Browser"})
     public void testLongPressOnImageLink() throws TimeoutException {
         checkOpenImageInNewTab(
                 "testImageLink", "/chrome/test/data/android/contextmenu/test_image.png");

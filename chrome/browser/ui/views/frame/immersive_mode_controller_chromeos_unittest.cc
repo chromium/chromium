@@ -78,7 +78,8 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
     FullscreenNotificationObserver waiter(browser());
     auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
     if (tab_fullscreen)
-      delegate->EnterFullscreenModeForTab(web_contents->GetMainFrame(), {});
+      delegate->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(),
+                                          {});
     else
       delegate->ExitFullscreenModeForTab(web_contents);
     waiter.Wait();
@@ -87,8 +88,8 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
-      revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+      revealed_lock_ = controller_->GetRevealedLock(
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
     }
   }
 

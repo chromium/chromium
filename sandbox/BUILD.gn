@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//sandbox/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 
 # Several targets want to include this header file. We separate it out
 # here so multiple targets can depend on it.
@@ -23,6 +24,18 @@ source_set("common") {
     "//base:base",
     "//sandbox:sandbox_buildflags",
   ]
+}
+
+test("sandbox_unittests") {
+  deps = [
+    "//base/test:run_all_unittests",
+    "//sandbox/policy:tests",
+    "//testing/gtest",
+  ]
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:sandbox_unittests" ]
+  }
 }
 
 # Meta-target that forwards to the proper platform one.

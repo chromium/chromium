@@ -54,13 +54,18 @@ class DeviceListenerOutputStream final
                  base::TimeTicks delay_timestamp,
                  int prior_frames_skipped,
                  media::AudioBus* dest) final;
+  int OnMoreData(base::TimeDelta delay,
+                 base::TimeTicks delay_timestamp,
+                 int prior_frames_skipped,
+                 media::AudioBus* dest,
+                 bool is_mixing) final;
   void OnError(ErrorType type) final;
 
   void ReportError(ErrorType type);
 
   const raw_ptr<media::AudioManager> audio_manager_;
 
-  const raw_ptr<media::AudioOutputStream> stream_;
+  const raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
 
   // Callback to process the device change.
   base::OnceClosure on_device_change_callback_;

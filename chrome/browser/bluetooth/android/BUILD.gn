@@ -42,22 +42,16 @@ generate_jni("jni_headers") {
       [ "java/src/org/chromium/chrome/browser/bluetooth/BluetoothBridge.java" ]
 }
 
-android_library("junit") {
-  testonly = true
-
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-
+robolectric_library("junit") {
   sources = [ "junit/src/org/chromium/chrome/browser/bluetooth/BluetoothNotificationManagerTest.java" ]
 
   deps = [
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -77,8 +78,17 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
+    if (IsNotificationsRefreshEnabled()) {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{features::kNotificationsRefresh,
+                                chromeos::features::kDarkLightMode},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kNotificationsRefresh,
+                                 chromeos::features::kDarkLightMode});
+    }
 
     AshTestBase::SetUp();
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);

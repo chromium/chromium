@@ -7,7 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 namespace personalization_app {
@@ -28,6 +31,10 @@ class TestKeyboardBacklightObserver
  public:
   void OnBacklightColorChanged(mojom::BacklightColor backlight_color) override {
     backlight_color_ = backlight_color;
+  }
+
+  void OnWallpaperColorChanged(SkColor wallpaper_color) override {
+    wallpaper_color_ = wallpaper_color;
   }
 
   mojo::PendingRemote<
@@ -45,11 +52,17 @@ class TestKeyboardBacklightObserver
     return backlight_color_;
   }
 
+  SkColor wallpaper_color() {
+    keyboard_backlight_observer_receiver_.FlushForTesting();
+    return wallpaper_color_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightObserver>
       keyboard_backlight_observer_receiver_{this};
 
   mojom::BacklightColor backlight_color_ = mojom::BacklightColor::kWallpaper;
+  SkColor wallpaper_color_ = SK_ColorTRANSPARENT;
 };
 
 }  // namespace
@@ -93,6 +106,10 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     ChromeAshTestBase::TearDown();
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   TestingProfile* profile() { return profile_; }
 
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightProvider>*
@@ -115,6 +132,11 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return test_keyboard_backlight_observer_.backlight_color();
   }
 
+  SkColor ObservedWallpaperColor() {
+    keyboard_backlight_provider_remote_.FlushForTesting();
+    return test_keyboard_backlight_observer_.wallpaper_color();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -127,6 +149,7 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   std::unique_ptr<PersonalizationAppKeyboardBacklightProviderImpl>
       keyboard_backlight_provider_;
   TestKeyboardBacklightObserver test_keyboard_backlight_observer_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
@@ -138,6 +161,19 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
 
   // Verify JS side is notified.
   EXPECT_EQ(mojom::BacklightColor::kBlue, ObservedBacklightColor());
+  histogram_tester().ExpectBucketCount(
+      kPersonalizationKeyboardBacklightColorHistogramName,
+      mojom::BacklightColor::kBlue, 1);
+}
+
+TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
+       ObserveWallpaperColor) {
+  SetKeyboardBacklightObserver();
+  keyboard_backlight_provider_remote()->FlushForTesting();
+  keyboard_backlight_provider()->OnWallpaperColorsChanged();
+
+  // Verify JS side is notified.
+  EXPECT_EQ(SK_ColorTRANSPARENT, ObservedWallpaperColor());
 }
 
 }  // namespace personalization_app

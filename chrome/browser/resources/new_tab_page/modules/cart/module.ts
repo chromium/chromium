@@ -93,7 +93,7 @@ export class ChromeCartModuleElement extends I18nMixin
           {type: Array, computed: 'computeFirstThreeCartItems_(cartItems)'},
 
       /** This is used for animation when the consent become invisible. */
-      discountConsentVisible_: {
+      discountConsentVisible: {
         type: Boolean,
         reflectToAttribute: true,
       }
@@ -104,8 +104,8 @@ export class ChromeCartModuleElement extends I18nMixin
   headerChipText: string;
   headerDescriptionText: string;
   showDiscountConsent: boolean;
-  discountConsentVisible_: boolean;
   scrollBehavior: ScrollBehavior = 'smooth';
+  discountConsentVisible: boolean;
   private showLeftScrollButton_: boolean;
   private showRightScrollButton_: boolean;
   private cartMenuHideItem_: string;
@@ -182,9 +182,9 @@ export class ChromeCartModuleElement extends I18nMixin
   private getFaviconUrl_(url: string): string {
     const faviconUrl = new URL('chrome://favicon2/');
     faviconUrl.searchParams.set('size', '24');
-    faviconUrl.searchParams.set('scale_factor', '1x');
-    faviconUrl.searchParams.set('show_fallback_monogram', '');
-    faviconUrl.searchParams.set('page_url', url);
+    faviconUrl.searchParams.set('scaleFactor', '1x');
+    faviconUrl.searchParams.set('showFallbackMonogram', '');
+    faviconUrl.searchParams.set('pageUrl', url);
     return faviconUrl.href;
   }
 
@@ -421,7 +421,7 @@ export class ChromeCartModuleElement extends I18nMixin
   }
 
   private onDiscountConsentHidden_() {
-    if (this.showDiscountConsent && !this.discountConsentVisible_ &&
+    if (this.showDiscountConsent && !this.discountConsentVisible &&
         this.consentStatus_ !== undefined) {
       this.showDiscountConsent = false;
       switch (this.consentStatus_) {
@@ -452,7 +452,7 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentRejected_() {
     this.consentStatus_ = ConsentStatus.REJECTED;
-    this.discountConsentVisible_ = false;
+    this.discountConsentVisible = false;
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(false);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.RejectDiscountConsent');
@@ -460,7 +460,7 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentAccepted_() {
     this.consentStatus_ = ConsentStatus.ACCEPTED;
-    this.discountConsentVisible_ = false;
+    this.discountConsentVisible = false;
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(true);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.AcceptDiscountConsent');
@@ -468,7 +468,7 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentDismissed_() {
     this.consentStatus_ = ConsentStatus.DISMISSED;
-    this.discountConsentVisible_ = false;
+    this.discountConsentVisible = false;
     ChromeCartProxy.getHandler().onDiscountConsentDismissed();
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.DismissDiscountConsent');
@@ -556,7 +556,7 @@ async function createCartElement(): Promise<HTMLElement|null> {
   }
   element.cartItems = carts;
   element.showDiscountConsent = consentVisible;
-  element.discountConsentVisible_ = consentVisible;
+  element.discountConsentVisible = consentVisible;
   return element;
 }
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEAK_WRAPPER_RESOURCE_LOAD_INFO_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEAK_WRAPPER_RESOURCE_LOAD_INFO_NOTIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -26,12 +27,15 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
 
   // blink::mojom::ResourceLoadInfoNotifier overrides, these methods should be
   // called from the same thread.
+#if BUILDFLAG(IS_ANDROID)
+  void NotifyUpdateUserGestureCarryoverInfo() override;
+#endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;
   void NotifyResourceResponseReceived(
       int64_t request_id,
-      const GURL& final_url,
+      const url::SchemeHostPort& final_response_url,
       network::mojom::URLResponseHeadPtr response_head,
       network::mojom::RequestDestination request_destination) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,
@@ -51,7 +55,7 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
   // content::WebWorkerFetchContextImpl or content::RenderFrameImpl own
   // `resource_load_info_notifier_` and `this`, which ensure that
   // `resource_load_info_notifier_` outlives `this`.
-  mojom::ResourceLoadInfoNotifier* resource_load_info_notifier_;
+  raw_ptr<mojom::ResourceLoadInfoNotifier> resource_load_info_notifier_;
 
   base::WeakPtrFactory<WeakWrapperResourceLoadInfoNotifier> weak_factory_{this};
 };

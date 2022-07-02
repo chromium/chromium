@@ -27,7 +27,7 @@
     {
       name: "ParseShorthand",
       return_type: "bool",
-      parameters: "(bool, CSSParserTokenRange&, const CSSParserContext&, const CSSParserLocalContext&, HeapVector<CSSPropertyValue, 256>&)",
+      parameters: "(bool, CSSParserTokenRange&, const CSSParserContext&, const CSSParserLocalContext&, HeapVector<CSSPropertyValue, 64>&)",
     },
     {
       name: "CSSValueFromComputedStyleInternal",

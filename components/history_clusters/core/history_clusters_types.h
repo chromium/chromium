@@ -19,17 +19,17 @@ struct QueryClustersContinuationParams {
   QueryClustersContinuationParams(base::Time continuation_time,
                                   bool is_continuation,
                                   bool is_partial_day,
-                                  bool exhausted_history,
-                                  bool is_done)
+                                  bool exhausted_unclustered_visits,
+                                  bool exhausted_all_visits)
       : continuation_time(continuation_time),
         is_continuation(is_continuation),
         is_partial_day(is_partial_day),
-        exhausted_history(exhausted_history),
-        is_done(is_done) {}
+        exhausted_unclustered_visits(exhausted_unclustered_visits),
+        exhausted_all_visits(exhausted_all_visits) {}
 
   // Returns a `QueryClustersContinuationParams` representing the done state.
-  // Most of the values don't matter, but `exhausted_history` and `is_done`
-  // should be true.
+  // Most of the values don't matter, but `exhausted_unclustered_visits` and
+  // `exhausted_all_visits` should be true.
   static const QueryClustersContinuationParams DoneParams() {
     static QueryClustersContinuationParams kDoneParams = {base::Time(), true,
                                                           false, true, true};
@@ -45,11 +45,11 @@ struct QueryClustersContinuationParams {
   // visit threshold was reached.
   bool is_partial_day = false;
   // True if unclustered visits were exhausted. If we're searching oldest to
-  // newest, this is true iff `is_done` is true. Otherwise, this may be true
-  // before `is_done` is true but not the reverse.
-  bool exhausted_history = false;
-  // True if history was exhausted.
-  bool is_done = false;
+  // newest, this is true iff `exhausted_all_visits` is true. Otherwise, this
+  // may be true before `exhausted_all_visits` is true but not the reverse.
+  bool exhausted_unclustered_visits = false;
+  // True if both unclustered and clustered were exhausted.
+  bool exhausted_all_visits = false;
 };
 
 using QueryClustersCallback =

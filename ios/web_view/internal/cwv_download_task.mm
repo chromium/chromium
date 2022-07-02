@@ -14,7 +14,6 @@
 #include "ios/web_view/internal/cwv_web_view_internal.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/files/scoped_file.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
 
@@ -29,6 +30,11 @@ class COMPONENT_EXPORT(DLP) DlpClient {
       base::OnceCallback<void(const dlp::AddFileResponse response)>;
   using GetFilesSourcesCallback =
       base::OnceCallback<void(const dlp::GetFilesSourcesResponse response)>;
+  using CheckFilesTransferCallback =
+      base::OnceCallback<void(const dlp::CheckFilesTransferResponse response)>;
+  using RequestFileAccessCallback =
+      base::OnceCallback<void(const dlp::RequestFileAccessResponse response,
+                              base::ScopedFD fd)>;
 
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
@@ -39,6 +45,13 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
     // Sets source url string to be returned for any file inode.
     virtual void SetFakeSource(const std::string&) = 0;
+
+    // Sets CheckFilesTransfer response proto.
+    virtual void SetCheckFilesTransferResponse(
+        dlp::CheckFilesTransferResponse response) = 0;
+
+    // Sets response for RequestFileAccess call.
+    virtual void SetFileAccessAllowed(bool allowed) = 0;
 
    protected:
     virtual ~TestInterface() {}
@@ -68,6 +81,11 @@ class COMPONENT_EXPORT(DLP) DlpClient {
                        AddFileCallback callback) = 0;
   virtual void GetFilesSources(const dlp::GetFilesSourcesRequest request,
                                GetFilesSourcesCallback callback) const = 0;
+  virtual void CheckFilesTransfer(
+      const dlp::CheckFilesTransferRequest request,
+      CheckFilesTransferCallback callback) const = 0;
+  virtual void RequestFileAccess(const dlp::RequestFileAccessRequest request,
+                                 RequestFileAccessCallback callback) = 0;
 
   virtual bool IsAlive() const = 0;
 

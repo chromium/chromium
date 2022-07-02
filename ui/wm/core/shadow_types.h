@@ -5,9 +5,9 @@
 #ifndef UI_WM_CORE_SHADOW_TYPES_H_
 #define UI_WM_CORE_SHADOW_TYPES_H_
 
+#include "base/component_export.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
@@ -31,20 +31,22 @@ constexpr int kShadowElevationInactiveWindow = 8;
 #endif
 constexpr int kShadowElevationActiveWindow = 24;
 
-WM_CORE_EXPORT void SetShadowElevation(aura::Window* window, int elevation);
+COMPONENT_EXPORT(UI_WM)
+void SetShadowElevation(aura::Window* window, int elevation);
 
 // Returns the default shadow elevaltion value for |window|.
-WM_CORE_EXPORT int GetDefaultShadowElevationForWindow(
-    const aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+int GetDefaultShadowElevationForWindow(const aura::Window* window);
 
 // Returns the shadow elevation property value for |window|, converting
 // |kShadowElevationDefault| to the appropriate value.
-WM_CORE_EXPORT int GetShadowElevationConvertDefault(const aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+int GetShadowElevationConvertDefault(const aura::Window* window);
 
 // A property key describing the drop shadow that should be displayed under the
 // window. A null value is interpreted as using the default.
-WM_CORE_EXPORT extern const aura::WindowProperty<int>* const
-    kShadowElevationKey;
+COMPONENT_EXPORT(UI_WM)
+extern const aura::WindowProperty<int>* const kShadowElevationKey;
 
 }  // namespace wm
 

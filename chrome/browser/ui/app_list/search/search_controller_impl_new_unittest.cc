@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,33 +29,14 @@ namespace app_list {
 namespace {
 
 // TODO(crbug.com/1258415): Since we have a lot of class fakes now, we should
-// generalize them and split them into a test utils directory.
+// generalize them and split them into a test utils directory. This has been
+// done for the TestResult class, and could also be done for various util
+// functions such as MakeResults().
 
 using testing::ElementsAreArray;
 using testing::UnorderedElementsAreArray;
 using Category = ash::AppListSearchResultCategory;
 using Result = ash::AppListSearchResultType;
-
-class TestSearchResult : public ChromeSearchResult {
- public:
-  TestSearchResult(const std::string& id,
-                   Category category,
-                   int best_match_rank,
-                   double relevance) {
-    set_id(id);
-    SetCategory(category);
-    scoring().best_match_rank = best_match_rank;
-    set_relevance(relevance);
-    scoring().ftrl_result_score = relevance;
-  }
-
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
-  ~TestSearchResult() override = default;
-
- private:
-  void Open(int event_flags) override { NOTIMPLEMENTED(); }
-};
 
 class TestSearchProvider : public SearchProvider {
  public:
@@ -150,8 +132,9 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
     std::vector<double> scores) {
   std::vector<std::unique_ptr<ChromeSearchResult>> results;
   for (size_t i = 0; i < ids.size(); ++i) {
-    results.emplace_back(std::make_unique<TestSearchResult>(
-        ids[i], categories[i], best_match_ranks[i], scores[i]));
+    results.emplace_back(std::make_unique<TestResult>(
+        ids[i], categories[i], best_match_ranks[i],
+        /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]));
   }
   return results;
 }

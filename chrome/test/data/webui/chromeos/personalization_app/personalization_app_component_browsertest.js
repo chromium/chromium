@@ -19,12 +19,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   }
 
   get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kWallpaperWebUI',
-        'ash::features::kWallpaperGooglePhotosIntegration'
-      ]
-    };
+    return {enabled: ['ash::features::kWallpaperGooglePhotosIntegration']};
   }
 };
 
@@ -64,8 +59,8 @@ function registerTest(testName, module, caseName) {
   this[className] = class extends PersonalizationAppComponentBrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://personalization/test_loader.html?host=webui-test` +
-          `&module=chromeos/personalization_app/${module}`;
+      return `chrome://personalization/test_loader.html` +
+          `?module=chromeos/personalization_app/${module}`;
     }
   };
 

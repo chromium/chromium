@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -194,12 +194,17 @@ public class StartSurfaceTestUtils {
      * @param layoutChangedCallbackHelper The call back function to help check whether layout is
      *         changed.
      * @param currentlyActiveLayout The current active layout.
+     * @param cta The ChromeTabbedActivity under test.
      */
-    public static void waitForOverviewVisible(
-            CallbackHelper layoutChangedCallbackHelper, @LayoutType int currentlyActiveLayout) {
-        if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) return;
+    public static void waitForOverviewVisible(CallbackHelper layoutChangedCallbackHelper,
+            @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
+        if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) {
+            StartSurfaceTestUtils.waitForTabModel(cta);
+            return;
+        }
         try {
             layoutChangedCallbackHelper.waitForNext(30L, TimeUnit.SECONDS);
+            StartSurfaceTestUtils.waitForTabModel(cta);
         } catch (TimeoutException ex) {
             assert false : "Timeout waiting for browser to enter tab switcher / start surface.";
         }
@@ -220,16 +225,6 @@ public class StartSurfaceTestUtils {
      */
     public static void createTabStateFile(int[] tabIds) throws IOException {
         createTabStateFile(tabIds, null, 0);
-    }
-
-    /**
-     * Create all the files so that tab models can be restored.
-     * @param tabIds all the Tab IDs in the normal tab model.
-     * @param urls all of the URLs in the normal tab model.
-     */
-    public static void createTabStateFile(int[] tabIds, @Nullable String[] urls)
-            throws IOException {
-        createTabStateFile(tabIds, urls, 0);
     }
 
     /**

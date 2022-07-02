@@ -137,7 +137,7 @@ constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
 // sorted vector as the backing store. Do not use directly.
 //
 // The use of "value" in this is like std::map uses, meaning it's the thing
-// contained (in the case of map it's a <Kay, Mapped> pair). The Key is how
+// contained (in the case of map it's a <Key, Mapped> pair). The Key is how
 // things are looked up. In the case of a set, Key == Value. In the case of
 // a map, the Key is a component of a Value.
 //
@@ -825,10 +825,12 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Provide a convenience lambda to obtain an iterator pointing past the last
   // old element. This needs to be dymanic due to possible re-allocations.
-  auto middle = [this, size = size()] { return std::next(begin(), size); };
+  auto middle = [this, size = size()] {
+    return std::next(begin(), static_cast<difference_type>(size));
+  };
 
   // For batch updates initialize the first insertion point.
-  difference_type pos_first_new = size();
+  auto pos_first_new = static_cast<difference_type>(size());
 
   // Loop over the input range while appending new values and overwriting
   // existing ones, if applicable. Keep track of the first insertion point.
@@ -904,7 +906,8 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(const K& val)
     -> size_type {
   auto eq_range = equal_range(val);
-  auto res = std::distance(eq_range.first, eq_range.second);
+  auto res =
+      static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
   erase(eq_range.first, eq_range.second);
   return res;
 }
@@ -941,7 +944,7 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::count(
     const K& key) const -> size_type {
   auto eq_range = equal_range(key);
-  return std::distance(eq_range.first, eq_range.second);
+  return static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

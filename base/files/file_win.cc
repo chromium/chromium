@@ -62,21 +62,25 @@ int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
-  if (size < 0)
+  if (size < 0 || offset < 0)
     return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
 
-  LARGE_INTEGER offset_li;
-  offset_li.QuadPart = offset;
+  ULARGE_INTEGER offset_li;
+  offset_li.QuadPart = static_cast<uint64_t>(offset);
 
   OVERLAPPED overlapped = {};
   overlapped.Offset = offset_li.LowPart;
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_read;
-  if (::ReadFile(file_.get(), data, size, &bytes_read, &overlapped))
-    return bytes_read;
+  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
+                 &overlapped)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(bytes_read);
+  }
   if (ERROR_HANDLE_EOF == GetLastError())
     return 0;
 
@@ -93,8 +97,12 @@ int File::ReadAtCurrentPos(char* data, int size) {
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
   DWORD bytes_read;
-  if (::ReadFile(file_.get(), data, size, &bytes_read, NULL))
-    return bytes_read;
+  if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
+                 NULL)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(bytes_read);
+  }
   if (ERROR_HANDLE_EOF == GetLastError())
     return 0;
 
@@ -115,19 +123,22 @@ int File::Write(int64_t offset, const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   DCHECK(!async_);
+  if (size < 0 || offset < 0)
+    return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
 
-  LARGE_INTEGER offset_li;
-  offset_li.QuadPart = offset;
+  ULARGE_INTEGER offset_li;
+  offset_li.QuadPart = static_cast<uint64_t>(offset);
 
   OVERLAPPED overlapped = {};
   overlapped.Offset = offset_li.LowPart;
   overlapped.OffsetHigh = offset_li.HighPart;
 
   DWORD bytes_written;
-  if (::WriteFile(file_.get(), data, size, &bytes_written, &overlapped))
-    return bytes_written;
+  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
+                  &overlapped))
+    return static_cast<int>(bytes_written);
 
   return -1;
 }
@@ -142,8 +153,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
   DWORD bytes_written;
-  if (::WriteFile(file_.get(), data, size, &bytes_written, NULL))
-    return bytes_written;
+  if (::WriteFile(file_.get(), data, static_cast<DWORD>(size), &bytes_written,
+                  NULL))
+    return static_cast<int>(bytes_written);
 
   return -1;
 }
@@ -218,10 +230,12 @@ bool File::GetInfo(Info* info) {
   if (!GetFileInformationByHandle(file_.get(), &file_info))
     return false;
 
-  LARGE_INTEGER size;
+  ULARGE_INTEGER size;
   size.HighPart = file_info.nFileSizeHigh;
   size.LowPart = file_info.nFileSizeLow;
-  info->size = size.QuadPart;
+  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // cast.
+  info->size = checked_cast<int64_t>(size.QuadPart);
   info->is_directory =
       (file_info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
   info->is_symbolic_link = false;  // Windows doesn't have symbolic links.
@@ -341,7 +355,8 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
     case ERROR_DISK_CORRUPT:  // The disk structure is corrupted and unreadable.
       return FILE_ERROR_IO;
     default:
-      UmaHistogramSparse("PlatformFile.UnknownErrors.Windows", last_error);
+      UmaHistogramSparse("PlatformFile.UnknownErrors.Windows",
+                         static_cast<int>(last_error));
       // This function should only be called for errors.
       DCHECK_NE(static_cast<DWORD>(ERROR_SUCCESS), last_error);
       return FILE_ERROR_FAILED;

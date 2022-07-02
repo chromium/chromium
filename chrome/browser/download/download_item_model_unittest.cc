@@ -17,22 +17,31 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_commands.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/vector_icons.h"
+#endif
+
 using download::DownloadItem;
+using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
+using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
-using ::testing::_;
 
 namespace {
 
@@ -115,6 +124,12 @@ class DownloadItemModelTest : public testing::Test {
         .WillByDefault(
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
     ON_CALL(item_, IsPaused()).WillByDefault(Return(false));
+    ON_CALL(item_, CanResume()).WillByDefault(Return(false));
+    ON_CALL(item_, GetMixedContentStatus())
+        .WillByDefault(
+            Return(download::DownloadItem::MixedContentStatus::SAFE));
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
   }
 
   void SetupInterruptedDownloadItem(download::DownloadInterruptReason reason) {
@@ -126,12 +141,12 @@ class DownloadItemModelTest : public testing::Test {
                        : DownloadItem::INTERRUPTED));
   }
 
-  void SetupCompletedDownloadItem() {
+  void SetupCompletedDownloadItem(base::TimeDelta time_since_complete) {
     ON_CALL(item_, GetFileExternallyRemoved()).WillByDefault(Return(false));
     EXPECT_CALL(item_, GetState())
         .WillRepeatedly(Return(DownloadItem::COMPLETE));
     base::Time now = base::Time::Now();
-    base::TimeDelta diff = base::Hours(23);
+    base::TimeDelta diff = time_since_complete;
     clock_.SetNow(now);
     model_.set_clock_for_testing(&clock_);
     ON_CALL(item_, GetEndTime()).WillByDefault(Return(now - diff));
@@ -146,6 +161,12 @@ class DownloadItemModelTest : public testing::Test {
   void SetStatusTextBuilder(bool for_bubble) {
     model_.set_status_text_builder_for_testing(for_bubble);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetIsBubbleV2Enabled(bool is_enabled) {
+    model_.set_is_bubble_v2_enabled_for_testing(is_enabled);
+  }
+#endif
 
  private:
   NiceMock<download::MockDownloadItem> item_;
@@ -385,11 +406,6 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
       // For GetReceivedBytes()/GetTotalBytes(), we only check whether each is
       // non-zero. In addition, if |total_bytes| is zero, then
       // |time_remaining_known| is also false.
-      //
-      //         .-- .TimeRemaining() is known.
-      //        |       .-- .GetOpenWhenComplete()
-      //        |      |      .---- .IsPaused()
-      //        |      |     |     .---- .GetRerouteInfo()
       {0,
        0,
        false,
@@ -429,7 +445,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        false,
        {},
        "0/2 B, 10 secs left",
-       "\xE2\x86\x93 0/2 B \xE2\x80\xA2 10 secs left"},
+       "\xE2\x86\x93 0/2 B \xE2\x80\xA2 10 seconds left"},
       {1,
        2,
        true,
@@ -437,7 +453,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        false,
        {},
        "1/2 B, 10 secs left",
-       "\xE2\x86\x93 1/2 B \xE2\x80\xA2 10 secs left"},
+       "\xE2\x86\x93 1/2 B \xE2\x80\xA2 10 seconds left"},
       {0,
        0,
        false,
@@ -477,7 +493,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        false,
        {},
        "Opening in 10 secs\xE2\x80\xA6",
-       "\xE2\x86\x93 0/2 B \xE2\x80\xA2 Opening in 10 secs\xE2\x80\xA6"},
+       "\xE2\x86\x93 0/2 B \xE2\x80\xA2 Opening in 10 seconds\xE2\x80\xA6"},
       {1,
        2,
        true,
@@ -485,7 +501,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        false,
        {},
        "Opening in 10 secs\xE2\x80\xA6",
-       "\xE2\x86\x93 1/2 B \xE2\x80\xA2 Opening in 10 secs\xE2\x80\xA6"},
+       "\xE2\x86\x93 1/2 B \xE2\x80\xA2 Opening in 10 seconds\xE2\x80\xA6"},
       {0, 0, false, false, true, {}, "0 B, Paused", "0 B \xE2\x80\xA2 Paused"},
       {1, 0, false, false, true, {}, "1 B, Paused", "1 B \xE2\x80\xA2 Paused"},
       {0,
@@ -554,6 +570,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        {},
        "1/2 B, Paused",
        "1/2 B \xE2\x80\xA2 Paused"},
+      {5, 5, false, false, false, {}, "", "5 B \xE2\x80\xA2 Done"},
       {5, 5, true, true, false, kTestRerouteInfo, reroute_status,
        base::StrCat({"5 B \xE2\x80\xA2 ", reroute_status})}};
 
@@ -590,13 +607,30 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
 
 TEST_F(DownloadItemModelTest, CompletedStatus) {
   SetupDownloadItemDefaults();
-  SetupCompletedDownloadItem();
 
-  SetStatusTextBuilder(/*for_bubble=*/false);
-  EXPECT_TRUE(model().GetStatusText().empty());
+  const struct TimeElapsedTestCase {
+    base::TimeDelta time_since_download_complete;
+    std::string expected_status_message;
+    std::string expected_bubble_status_msg;
+  } kTimeElapsedTestCases[] = {
+      {base::Seconds(10), "", "2 B \xE2\x80\xA2 Done"},
+      {base::Seconds(50), "", "2 B \xE2\x80\xA2 Done"},
+      {base::Seconds(60), "", "2 B \xE2\x80\xA2 1 minute ago"},
+      {base::Hours(23), "", "2 B \xE2\x80\xA2 23 hours ago"},
+  };
+  for (const auto& test_case : kTimeElapsedTestCases) {
+    SetupCompletedDownloadItem(test_case.time_since_download_complete);
+    SetStatusTextBuilder(/*for_bubble=*/false);
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_status_message);
+    SetStatusTextBuilder(/*for_bubble=*/true);
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
 
-  SetStatusTextBuilder(/*for_bubble=*/true);
-  EXPECT_EQ("2 B \xE2\x80\xA2 23 hours ago",
+  EXPECT_CALL(item(), GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE));
+  EXPECT_EQ("2 B \xE2\x80\xA2 Done, no issues found",
             base::UTF16ToUTF8(model().GetStatusText()));
 
 #if BUILDFLAG(IS_MAC)
@@ -618,6 +652,210 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
   EXPECT_EQ(expected_show_in_folder_text,
             base::UTF16ToUTF8(model().GetShowInFolderText()));
 }
+
+TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetStatusTextBuilder(/*for_bubble=*/true);
+
+  const struct MixedContentStatusTestCase {
+    download::DownloadItem::MixedContentStatus mixed_content_status;
+    std::string expected_bubble_status_msg;
+  } kMixedContentStatusTestCases[] = {
+      {download::DownloadItem::MixedContentStatus::BLOCK,
+       "Blocked \xE2\x80\xA2 Insecure download"},
+      {download::DownloadItem::MixedContentStatus::WARN,
+       "Blocked \xE2\x80\xA2 Insecure download"},
+  };
+  for (const auto& test_case : kMixedContentStatusTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetMixedContentStatus())
+        .WillByDefault(Return(test_case.mixed_content_status));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
+
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    std::string expected_bubble_status_msg;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED,
+       "Blocked \xE2\x80\xA2 Encrypted"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       "Blocked \xE2\x80\xA2 Malware"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE,
+       "Blocked \xE2\x80\xA2 Too big"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       "Sensitive content"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK,
+       "Blocked by your organization"},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       "Scan before opening"},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
+  std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT};
+  std::vector<download::DownloadInterruptReason> retry_interrupt_reasons = {
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
+      download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
+      download::DOWNLOAD_INTERRUPT_REASON_CRASH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
+      download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
+      download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT};
+
+  const struct TestCase {
+    std::vector<download::DownloadInterruptReason> interrupt_reasons;
+    bool can_resume;
+
+    std::string expected_warning_summary;
+    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
+    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+  } kTestCases[] = {
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
+       false,
+       "Your organization blocked this file because it didn't meet a security "
+       "policy",
+       &views::kInfoIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
+       false,
+       "Try using a shorter file name or saving to a different folder",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
+       false,
+       "Free up space on your device. Then, try to download again",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
+       false,
+       "Try to sign in to the site. Then, download again",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {no_retry_interrupt_reasons, false, "",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+      {retry_interrupt_reasons, false, "", &vector_icons::kFileDownloadOffIcon,
+       DownloadCommands::Command::RETRY},
+      {retry_interrupt_reasons, true, "", &vector_icons::kFileDownloadOffIcon,
+       DownloadCommands::Command::RESUME},
+  };
+
+  SetIsBubbleV2Enabled(true);
+  SetupDownloadItemDefaults();
+  for (const auto& test_case : kTestCases) {
+    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
+      SetupInterruptedDownloadItem(interrupt_reason);
+      EXPECT_CALL(item(), CanResume())
+          .WillRepeatedly(Return(test_case.can_resume));
+
+      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      EXPECT_EQ(test_case.expected_warning_summary,
+                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
+      EXPECT_EQ(test_case.expected_icon_model_override,
+                bubble_ui_info.icon_model_override);
+      if (!test_case.expected_primary_button_command.has_value()) {
+        EXPECT_FALSE(bubble_ui_info.has_primary_button);
+      } else {
+        EXPECT_EQ(test_case.expected_primary_button_command.value(),
+                  bubble_ui_info.primary_button_command);
+      }
+      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
+    }
+  }
+}
+
+TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_BubbleV2Off) {
+  const struct TestCase {
+    std::vector<download::DownloadInterruptReason> interrupt_reasons;
+
+    std::string expected_warning_summary;
+    raw_ptr<const gfx::VectorIcon> expected_icon_model_override;
+    absl::optional<DownloadCommands::Command> expected_primary_button_command;
+  } kTestCases[] = {
+      {{
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
+           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
+           download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN,
+           download::DOWNLOAD_INTERRUPT_REASON_CRASH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
+           download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
+           download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
+       },
+       "",
+       &vector_icons::kFileDownloadOffIcon,
+       absl::optional<DownloadCommands::Command>()},
+  };
+
+  SetIsBubbleV2Enabled(false);
+  SetupDownloadItemDefaults();
+  for (const auto& test_case : kTestCases) {
+    for (const auto& interrupt_reason : test_case.interrupt_reasons) {
+      SetupInterruptedDownloadItem(interrupt_reason);
+      DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
+      EXPECT_EQ(test_case.expected_warning_summary,
+                base::UTF16ToUTF8(bubble_ui_info.warning_summary));
+      EXPECT_EQ(test_case.expected_icon_model_override,
+                bubble_ui_info.icon_model_override);
+      if (!test_case.expected_primary_button_command.has_value()) {
+        EXPECT_FALSE(bubble_ui_info.has_primary_button);
+      } else {
+        EXPECT_EQ(test_case.expected_primary_button_command.value(),
+                  bubble_ui_info.primary_button_command);
+      }
+      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_FALSE(bubble_ui_info.has_progress_bar);
+    }
+  }
+}
+#endif
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
   SetupDownloadItemDefaults();

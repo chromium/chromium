@@ -101,6 +101,11 @@ interface SynchronousCompositor {
   ReclaimResources(uint32 layer_tree_frame_sink_id,
                    array<viz.mojom.ReturnedResource> resources);
 
+  // Notifies the client when a directive for DocumentTransition, submitted in
+  // a previous CompositorFrame, has finished executing.
+  OnCompositorFrameTransitionDirectiveProcessed(uint32 layer_tree_frame_sink_id,
+                                                uint32 sequence_id);
+
   // Adjust the scroll to the given offset.
   SetScroll(gfx.mojom.PointF offset);
 

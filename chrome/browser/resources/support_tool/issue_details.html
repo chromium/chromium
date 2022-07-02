@@ -4,8 +4,8 @@
 
 <style include="md-select cr-input-style support-tool-shared">
   .md-select {
-    height: 32px;
-    margin-bottom: 30px;
+    height: 27px;
+    margin-bottom: 5px;
     width: 248px;
   }
 
@@ -20,7 +20,6 @@
     display: block;
     font-family: inherit;
     height: 120px;
-    margin-top: 8px;
     outline: none;
     padding-bottom: 8px;
     padding-inline-start: 10px;
@@ -30,20 +29,22 @@
   }
 </style>
 
-<h2>Collect diagnostics data for support</h2>
+<h1 tabindex="0">Step 1 of 4: Describe the issue</h1>
 <div class="support-tool-title">Support Case ID</div>
 <cr-input class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20">
+  spellcheck="false" maxlength="20" aria-label="Support Case ID">
 </cr-input>
-<div class="support-tool-title">Email</div>
-<select class="md-select" value="{{selectedEmail_::change}}">
-  <option value=""></option>
+<div id="email-title" class="support-tool-title" aria-hidden="true">Email</div>
+<select class="md-select" value="{{selectedEmail_::change}}"
+    aria-labelledby="email-title">
   <template is="dom-repeat" items="[[emails_]]">
   <option value="[[item]]">[[item]]</option>
   </template>
 </select>
-<div class="support-tool-title">Describe the issue</div>
-<textarea id="description" class="support-tool-text" value="{{issueDescription_::input}}"
-  spellcheck="true"
+<div id="description-title" class="support-tool-title" aria-hidden="true">
+  Describe the issue
+</div>
+<textarea id="description" class="support-tool-text" spellcheck="true"
+  value="{{issueDescription_::input}}" aria-labelledby="description-title"
   placeholder="Provide a clear desciption of the issue and steps to reproduce the issue (if possible)">
 </textarea>

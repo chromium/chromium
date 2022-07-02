@@ -40,6 +40,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test NetworkFetcherTask. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class NetworkFetcherTaskTest {
     private HttpURLConnection mConnection;
     private Context mContext;

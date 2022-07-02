@@ -1,0 +1,28 @@
+Document
+++Group IsControlElement=false
+++++Edit Value.Value='Readonly-false input'
+++Group IsControlElement=false
+++++Edit Value.Value='Readonly-true input'
+++Group Name='Readonly-false plain div'
+++Group Name='Readonly-true plain div'
+++Group Name='Readonly-false contenteditable div'
+++Group Name='Readonly-true contenteditable div'
+++Edit Name='Readonly-false role unimplemented textbox'
+++Edit Name='Readonly-true role unimplemented textbox'
+++Edit Name='Readonly-false contenteditable textbox'
+++Edit Name='Readonly-true contenteditable textbox'
+++DataGrid Grid.ColumnCount=3 Grid.RowCount=1 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
+++++DataItem
+++++++DataItem Name='Readonly-false gridcell' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++DataItem Name='Readonly-true gridcell' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++DataItem Name='Readonly not specified gridcell' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++CheckBox Name='Readonly checkbox' Toggle.ToggleState='Off'
+++ComboBox Name='Readonly combobox' ExpandCollapse.ExpandCollapseState='LeafNode'
+++List Name='Readonly listbox' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++Group Name='Readonly radiogroup' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++Slider Name='Readonly slider' RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=50.00 Value.Value='50'
+++Spinner Name='Readonly spinbutton' RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='0'
+++CheckBox Name='Readonly menuitemcheckbox' Toggle.ToggleState='Off'
+++RadioButton Name='Readonly menuitemradio' SelectionItem.IsSelected=false
+++Edit Name='Readonly searchbox'
+++Button Name='Readonly switch' Toggle.ToggleState='Off'

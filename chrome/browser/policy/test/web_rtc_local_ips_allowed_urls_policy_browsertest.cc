@@ -33,11 +33,11 @@ class WebRtcLocalIpsAllowedUrlsTest : public PolicyTest,
     provider_.UpdateChromePolicy(policies);
   }
 
-  base::Value::ListStorage GenerateUrlList() {
+  base::Value::List GenerateUrlList() {
     int num_urls = GetParam();
-    base::Value::ListStorage ret;
+    base::Value::List ret;
     for (int i = 0; i < num_urls; ++i)
-      ret.push_back(base::Value(base::NumberToString(i) + ".example.com"));
+      ret.Append(base::NumberToString(i) + ".example.com");
 
     return ret;
   }
@@ -48,8 +48,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcLocalIpsAllowedUrlsTest, RunTest) {
       user_prefs::UserPrefs::Get(browser()->profile())
           ->FindPreference(prefs::kWebRtcLocalIpsAllowedUrls);
   EXPECT_TRUE(pref->IsManaged());
-  base::Value::ConstListView allowed_urls =
-      pref->GetValue()->GetListDeprecated();
+  const base::Value::List& allowed_urls = pref->GetValue()->GetList();
   const auto& expected_urls = GenerateUrlList();
   EXPECT_EQ(expected_urls.size(), allowed_urls.size());
   for (const auto& allowed_url : allowed_urls) {

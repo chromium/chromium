@@ -339,17 +339,17 @@ bool InsertListCommand::DoApplyForSingleParagraph(
   Node* list_child_node = EnclosingListChild(selection_node);
   bool switch_list_type = false;
   if (list_child_node) {
-    if (!HasEditableStyle(*list_child_node->parentNode()))
+    if (!IsEditable(*list_child_node->parentNode()))
       return false;
     // Remove the list child.
     HTMLElement* list_element = EnclosingList(list_child_node);
     if (list_element) {
-      if (!HasEditableStyle(*list_element)) {
+      if (!IsEditable(*list_element)) {
         // Since, |listElement| is uneditable, we can't move |listChild|
         // out from |listElement|.
         return false;
       }
-      if (!HasEditableStyle(*list_element->parentNode())) {
+      if (!IsEditable(*list_element->parentNode())) {
         // Since parent of |listElement| is uneditable, we can not remove
         // |listElement| for switching list type neither unlistify.
         return false;
@@ -364,8 +364,8 @@ bool InsertListCommand::DoApplyForSingleParagraph(
         return false;
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     }
-    DCHECK(HasEditableStyle(*list_element));
-    DCHECK(HasEditableStyle(*list_element->parentNode()));
+    DCHECK(IsEditable(*list_element));
+    DCHECK(IsEditable(*list_element->parentNode()));
     if (!list_element->HasTagName(list_tag)) {
       // |list_child_node| will be removed from the list and a list of type
       // |type_| will be created.
@@ -471,7 +471,7 @@ void InsertListCommand::UnlistifyParagraph(
     EditingState* editing_state) {
   // Since, unlistify paragraph inserts nodes into parent and removes node
   // from parent, if parent of |listElement| should be editable.
-  DCHECK(HasEditableStyle(*list_element->parentNode()));
+  DCHECK(IsEditable(*list_element->parentNode()));
   Node* next_list_child;
   Node* previous_list_child;
   Position start;

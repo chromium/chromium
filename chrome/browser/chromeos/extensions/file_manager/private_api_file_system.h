@@ -299,6 +299,29 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
   storage::FileSystemURL destination_url_;
 };
 
+// Implements the chrome.fileManagerPrivateInternal.getDlpMetadata method.
+class FileManagerPrivateInternalGetDlpMetadataFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateInternalGetDlpMetadataFunction();
+
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getDlpMetadata",
+                             FILEMANAGERPRIVATEINTERNAL_GETDLPMETADATA)
+
+ protected:
+  ~FileManagerPrivateInternalGetDlpMetadataFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnGetDlpMetadata(
+      std::vector<policy::DlpFilesController::DlpFileMetadata> dlp_metadata);
+
+  std::unique_ptr<policy::DlpFilesController> files_controller_;
+  std::vector<storage::FileSystemURL> source_urls_;
+};
+
 // Implements the chrome.fileManagerPrivate.startCopy method.
 class FileManagerPrivateInternalStartCopyFunction
     : public LoggedExtensionFunction {

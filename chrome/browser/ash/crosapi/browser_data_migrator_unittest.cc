@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -21,10 +22,13 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -99,8 +103,10 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+  migrator->Migrate(
+      crosapi::browser_util::MigrationMode::kCopy,
+      base::BindLambdaForTesting([&out_result = result, &run_loop](
+                                     BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -114,7 +120,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   // Check that migration is marked as completed for the user.
   EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+      &pref_service_, user_id_hash,
+      crosapi::browser_util::MigrationMode::kCopy));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -144,8 +151,10 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+  migrator->Migrate(
+      crosapi::browser_util::MigrationMode::kCopy,
+      base::BindLambdaForTesting([&out_result = result, &run_loop](
+                                     BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -158,7 +167,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       new_user_data_dir.Append("Default");
   EXPECT_FALSE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+      &pref_service_, user_id_hash,
+      crosapi::browser_util::MigrationMode::kCopy));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -192,8 +202,10 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForCopy) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+  migrator->Migrate(
+      crosapi::browser_util::MigrationMode::kCopy,
+      base::BindLambdaForTesting([&out_result = result, &run_loop](
+                                     BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -226,8 +238,10 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForMove) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
+  migrator->Migrate(
+      crosapi::browser_util::MigrationMode::kMove,
+      base::BindLambdaForTesting([&out_result = result, &run_loop](
+                                     BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -245,26 +259,40 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   ~BrowserDataMigratorRestartTest() override = default;
 
   void SetUp() override {
-    user_manager_.CreateLocalState();
+    fake_user_manager_ = new ash::FakeChromeUserManager;
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(fake_user_manager_));
+    fake_user_manager_->CreateLocalState();
+
     auto* local_state_simple =
         static_cast<TestingPrefServiceSimple*>(local_state());
     BrowserDataMigratorImpl::RegisterLocalStatePrefs(
         local_state_simple->registry());
     crosapi::browser_util::RegisterLocalStatePrefs(
         local_state_simple->registry());
-    user_manager_.Initialize();
   }
 
-  void TearDown() override { user_manager_.Destroy(); }
+  void AddRegularUser(const std::string& email) {
+    AccountId account_id = AccountId::FromUserEmail(email);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, &testing_profile_);
+  }
 
  protected:
-  ash::FakeChromeUserManager* user_manager() { return &user_manager_; }
-  PrefService* local_state() { return user_manager_.GetLocalState(); }
+  TestingProfile* testing_profile() { return &testing_profile_; }
+  ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
+  PrefService* local_state() { return fake_user_manager_->GetLocalState(); }
 
  private:
-  ash::FakeChromeUserManager user_manager_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile testing_profile_;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   FakeSessionManagerClient session_manager_;
-  base::test::TaskEnvironment task_environment;
 };
 
 TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithMigrationStep) {
@@ -297,12 +325,17 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       base::BindLambdaForTesting(
           [&restart_called]() { restart_called = true; }));
+
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
   {
     base::test::ScopedCommandLine command_line;
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
   {
@@ -310,7 +343,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-migration");
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
 }
@@ -321,6 +354,10 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
       base::BindLambdaForTesting(
           [&restart_called]() { restart_called = true; }));
 
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
   // If MaybeRestartToMigrate will skip the restarting, WithDiskCheck variation
   // also skips it.
   {
@@ -330,7 +367,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
     absl::optional<bool> result;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result](bool result,
                                    const absl::optional<uint64_t>& size) {
@@ -356,7 +393,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     absl::optional<uint64_t> out_size;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &out_size, &run_loop](
                 bool result, const absl::optional<uint64_t>& size) {
@@ -383,7 +420,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     absl::optional<bool> result;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &run_loop](
                 bool result, const absl::optional<uint64_t>& size) {
@@ -397,4 +434,105 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
   }
 }
 
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
+  // Check that `MaybeRestartToMigrateInternal()` returns true after completion
+  // of copy migration if move migration is enabled.
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+
+  crosapi::browser_util::RecordDataVer(
+      local_state(), user->username_hash(),
+      base::Version(
+          base::StringPiece(crosapi::browser_util::kRequiredDataVersion)));
+
+  {
+    // If Lacros is not enabled, migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosProfileMigrationForAnyUser}, {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  {
+    // If Lacros is enabled, migration should run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  // Mark copy migration as completed.
+  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+      local_state(), user->username_hash(),
+      crosapi::browser_util::MigrationMode::kCopy);
+  {
+    // If migration is marked as completed, migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kCopy);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  {
+    // If copy migration is marked as completed then migration should not run
+    // even if move migration is enabled.
+    // TODO(crbug.com/1340438): This previously checked the opposite where the
+    // expectation was to run move migration even if copy migration is
+    // completed. Revisit this part if we decide to restore that behaviour.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kMove);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  // Mark move migration as completed.
+  crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+      local_state(), user->username_hash());
+  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+      local_state(), user->username_hash(),
+      crosapi::browser_util::MigrationMode::kMove);
+  {
+    // If move migration is marked as completed, move migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+    EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
+                  user, crosapi::browser_util::PolicyInitState::kAfterInit),
+              crosapi::browser_util::MigrationMode::kMove);
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
 }  // namespace ash

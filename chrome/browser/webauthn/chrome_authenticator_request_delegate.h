@@ -139,7 +139,7 @@ class ChromeAuthenticatorRequestDelegate
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
   AuthenticatorRequestDialogModel* dialog_model() const {
-    return weak_dialog_model_;
+    return dialog_model_.get();
   }
 
   // content::AuthenticatorRequestClientDelegate:
@@ -148,6 +148,7 @@ class ChromeAuthenticatorRequestDelegate
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
   void ShouldReturnAttestation(
@@ -224,16 +225,10 @@ class ChromeAuthenticatorRequestDelegate
   void OnInvalidatedCablePairing(size_t failed_contact_index);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
-  // Holds ownership of AuthenticatorRequestDialogModel until
-  // OnTransportAvailabilityEnumerated() is invoked, at which point the
-  // ownership of the model is transferred to AuthenticatorRequestDialogView and
-  // |this| instead holds weak pointer of the model via above
-  // |weak_dialog_model_|.
-  std::unique_ptr<AuthenticatorRequestDialogModel>
-      transient_dialog_model_holder_;
-  raw_ptr<AuthenticatorRequestDialogModel> weak_dialog_model_ = nullptr;
+  const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
+  AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
   // The next two fields are the same length and contain the names and public

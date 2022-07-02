@@ -317,10 +317,12 @@ IDNSpoofChecker::IDNSpoofChecker() {
 
   // These characters are, or look like, digits. A domain label entirely made of
   // digit-lookalikes or digits is blocked.
+  // IMPORTANT: When you add a new character here, make sure to add it to
+  // extra_confusable_mapper_ in skeleton_generator.cc too.
   digits_ = icu::UnicodeSet(UNICODE_STRING_SIMPLE("[0-9]"), status);
   digits_.freeze();
   digit_lookalikes_ = icu::UnicodeSet(
-      icu::UnicodeString::fromUTF8("[θ२২੨੨૨೩೭շзҙӡउওਤ੩૩౩ဒვპੜ੫丩ㄐճ৪੪୫૭୨౨]"),
+      icu::UnicodeString::fromUTF8("[θ२২੨੨૨೩೭շзҙӡउওਤ੩૩౩ဒვპੜკ੫丩ㄐճ৪੪୫૭୨౨]"),
       status);
   digit_lookalikes_.freeze();
 
@@ -417,6 +419,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
       }
     }
     // Disallow domains that contain only numbers and number-spoofs.
+    // This check is reached if domain characters come from single script.
     if (IsDigitLookalike(label_string))
       return Result::kDigitLookalikes;
 
@@ -424,6 +427,10 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
+  // This check is reached if domain characters are from different scripts.
+  // This is generally rare. An example case when it would return true is when
+  // the domain contains Latin + Japanese characters that are also digit
+  // lookalikes.
   if (IsDigitLookalike(label_string))
     return Result::kDigitLookalikes;
 

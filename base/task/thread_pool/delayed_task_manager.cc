@@ -45,38 +45,41 @@ bool DelayedTaskManager::DelayedTask::operator>(
          std::tie(other_latest_delayed_run_time, other.task.sequence_num);
 }
 
-bool DelayedTaskManager::DelayedTask::IsScheduled() const {
-  return scheduled_;
-}
-void DelayedTaskManager::DelayedTask::SetScheduled() {
-  DCHECK(!scheduled_);
-  scheduled_ = true;
-}
-
 DelayedTaskManager::DelayedTaskManager(const TickClock* tick_clock)
     : process_ripe_tasks_closure_(
           BindRepeating(&DelayedTaskManager::ProcessRipeTasks,
                         Unretained(this))),
+      schedule_process_ripe_tasks_closure_(BindRepeating(
+          &DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread,
+          Unretained(this))),
       tick_clock_(tick_clock) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(tick_clock_);
 }
 
-DelayedTaskManager::~DelayedTaskManager() = default;
+DelayedTaskManager::~DelayedTaskManager() {
+  delayed_task_handle_.CancelTask();
+}
 
 void DelayedTaskManager::Start(
     scoped_refptr<SequencedTaskRunner> service_thread_task_runner) {
   DCHECK(service_thread_task_runner);
 
   TimeTicks process_ripe_tasks_time;
+  subtle::DelayPolicy delay_policy;
   {
     CheckedAutoLock auto_lock(queue_lock_);
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
-    process_ripe_tasks_time = GetTimeToScheduleProcessRipeTasksLockRequired();
     align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
     task_leeway_ = kTaskLeewayParam.Get();
+    std::tie(process_ripe_tasks_time, delay_policy) =
+        GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
   }
-  ScheduleProcessRipeTasksOnServiceThread(process_ripe_tasks_time);
+  if (!process_ripe_tasks_time.is_max()) {
+    service_thread_task_runner_->PostTask(FROM_HERE,
+                                          schedule_process_ripe_tasks_closure_);
+  }
 }
 
 void DelayedTaskManager::AddDelayedTask(
@@ -90,17 +93,32 @@ void DelayedTaskManager::AddDelayedTask(
   // for details.
   CHECK(task.task);
   TimeTicks process_ripe_tasks_time;
+  subtle::DelayPolicy delay_policy;
   {
     CheckedAutoLock auto_lock(queue_lock_);
+    auto [old_process_ripe_tasks_time, old_delay_policy] =
+        GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
+    pending_high_res_task_count_ +=
+        (task.delay_policy == subtle::DelayPolicy::kPrecise);
     delayed_task_queue_.insert(DelayedTask(std::move(task),
                                            std::move(post_task_now_callback),
                                            std::move(task_runner)));
     // Not started yet.
     if (service_thread_task_runner_ == nullptr)
       return;
-    process_ripe_tasks_time = GetTimeToScheduleProcessRipeTasksLockRequired();
+
+    std::tie(process_ripe_tasks_time, delay_policy) =
+        GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
+    // The next invocation of ProcessRipeTasks() doesn't need to change.
+    if (old_process_ripe_tasks_time == process_ripe_tasks_time &&
+        old_delay_policy == delay_policy) {
+      return;
+    }
   }
-  ScheduleProcessRipeTasksOnServiceThread(process_ripe_tasks_time);
+  if (!process_ripe_tasks_time.is_max()) {
+    service_thread_task_runner_->PostTask(FROM_HERE,
+                                          schedule_process_ripe_tasks_closure_);
+  }
 }
 
 void DelayedTaskManager::ProcessRipeTasks() {
@@ -122,11 +140,24 @@ void DelayedTaskManager::ProcessRipeTasks() {
       // and the move doesn't alter the sort order.
       ripe_delayed_tasks.push_back(
           std::move(const_cast<DelayedTask&>(delayed_task_queue_.top())));
+      pending_high_res_task_count_ -=
+          (delayed_task_queue_.top().task.delay_policy ==
+           subtle::DelayPolicy::kPrecise);
+      DCHECK_GE(pending_high_res_task_count_, 0);
       delayed_task_queue_.pop();
     }
-    process_ripe_tasks_time = GetTimeToScheduleProcessRipeTasksLockRequired();
+    std::tie(process_ripe_tasks_time, std::ignore) =
+        GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
   }
-  ScheduleProcessRipeTasksOnServiceThread(process_ripe_tasks_time);
+  if (!process_ripe_tasks_time.is_max()) {
+    if (service_thread_task_runner_->RunsTasksInCurrentSequence()) {
+      ScheduleProcessRipeTasksOnServiceThread();
+    } else {
+      // ProcessRipeTasks may be called on another thread under tests.
+      service_thread_task_runner_->PostTask(
+          FROM_HERE, schedule_process_ripe_tasks_closure_);
+    }
+  }
 
   for (auto& delayed_task : ripe_delayed_tasks) {
     std::move(delayed_task.callback).Run(std::move(delayed_task.task));
@@ -140,36 +171,53 @@ absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
   return delayed_task_queue_.top().task.delayed_run_time;
 }
 
-TimeTicks DelayedTaskManager::GetTimeToScheduleProcessRipeTasksLockRequired() {
-  queue_lock_.AssertAcquired();
-  if (delayed_task_queue_.empty())
-    return TimeTicks::Max();
-  // The const_cast on top is okay since |IsScheduled()| and |SetScheduled()|
-  // don't alter the sort order.
-  DelayedTask& ripest_delayed_task =
-      const_cast<DelayedTask&>(delayed_task_queue_.top());
-  if (ripest_delayed_task.IsScheduled())
-    return TimeTicks::Max();
-  ripest_delayed_task.SetScheduled();
+bool DelayedTaskManager::HasPendingHighResolutionTasksForTesting() const {
+  CheckedAutoLock auto_lock(queue_lock_);
+  return pending_high_res_task_count_;
+}
 
+std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
+    GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired() {
+  queue_lock_.AssertAcquired();
+  if (delayed_task_queue_.empty()) {
+    return std::make_pair(TimeTicks::Max(),
+                          subtle::DelayPolicy::kFlexibleNoSooner);
+  }
+
+  const DelayedTask& ripest_delayed_task = delayed_task_queue_.top();
+  subtle::DelayPolicy delay_policy =
+      pending_high_res_task_count_ ? subtle::DelayPolicy::kPrecise
+                                   : ripest_delayed_task.task.delay_policy;
+
+  TimeTicks delayed_run_time = ripest_delayed_task.task.delayed_run_time;
   if (align_wake_ups_) {
     TimeTicks aligned_run_time =
         ripest_delayed_task.task.earliest_delayed_run_time().SnappedToNextTick(
             TimeTicks(), task_leeway_);
-    return std::min(aligned_run_time,
-                    ripest_delayed_task.task.latest_delayed_run_time());
+    delayed_run_time = std::min(
+        aligned_run_time, ripest_delayed_task.task.latest_delayed_run_time());
   }
-  return ripest_delayed_task.task.delayed_run_time;
+  return std::make_pair(delayed_run_time, delay_policy);
 }
 
-void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread(
-    TimeTicks next_delayed_task_run_time) {
-  DCHECK(!next_delayed_task_run_time.is_null());
-  if (next_delayed_task_run_time.is_max())
+void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  TimeTicks process_ripe_tasks_time;
+  subtle::DelayPolicy delay_policy;
+  {
+    CheckedAutoLock auto_lock(queue_lock_);
+    std::tie(process_ripe_tasks_time, delay_policy) =
+        GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
+  }
+  DCHECK(!process_ripe_tasks_time.is_null());
+  if (process_ripe_tasks_time.is_max())
     return;
-  service_thread_task_runner_->PostDelayedTaskAt(
-      subtle::PostDelayedTaskPassKey(), FROM_HERE, process_ripe_tasks_closure_,
-      next_delayed_task_run_time, subtle::DelayPolicy::kPrecise);
+  delayed_task_handle_.CancelTask();
+  delayed_task_handle_ =
+      service_thread_task_runner_->PostCancelableDelayedTaskAt(
+          subtle::PostDelayedTaskPassKey(), FROM_HERE,
+          process_ripe_tasks_closure_, process_ripe_tasks_time, delay_policy);
 }
 
 }  // namespace internal

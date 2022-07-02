@@ -84,7 +84,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetWidgetHost() {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }
@@ -147,7 +147,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
       // latency histograms being logged).
       // We must install a callback for each gesture since they are one-shot
       // callbacks.
-      shell()->web_contents()->GetMainFrame()->InsertVisualStateCallback(
+      shell()->web_contents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
           base::BindOnce(&ScrollLatencyBrowserTest::InvokeVisualStateCallback,
                          base::Unretained(this)));
 

@@ -9,6 +9,11 @@ from unexpected_passes_common import data_types
 
 VIRTUAL_PREFIX = 'virtual/'
 
+SANITIZER_BUILDERS = {
+    'chromium/ci:WebKit Linux ASAN',
+    'chromium/ci:WebKit Linux MSAN',
+}
+
 
 class WebTestExpectation(data_types.BaseExpectation):
     """Web test-specific container for a test expectation.
@@ -125,6 +130,24 @@ class WebTestTestExpectationMap(data_types.BaseTestExpectationMap):
         super(WebTestTestExpectationMap, self)._AddSingleResult(result, stats)
         if result.is_slow_result:
             stats.AddSlowBuild(result.build_id)
+
+    def _ShouldTreatSemiStaleAsActive(self, pass_map):
+        # The ASAN/MSAN builders pass in a runtime flag that causes the test
+        # runner to only fail if a crash or a timeout occurs, i.e. a regular
+        # failure is treated as a pass. As a result, the vast majority of
+        # semi-stale expectations without this workaround have a test failing
+        # everywhere except the ASAN/MSAN builders. This causes a lot of clutter
+        # and makes it very tedious to audit the semi-stale expectations. So,
+        # if we have a semi-stale expectation and the only fully passing
+        # builders are the ASAN/MSAN ones, treat it as an active expectation
+        # instead. For reference, this behavior is caused by the _run_crash_test
+        # call here
+        # https://source.chromium.org/chromium/chromium/src/+/6bae9bfe93a299104790b2a35cb031fda36d2980:third_party/blink/tools/blinkpy/web_tests/controllers/single_test_runner.py;l=113
+        only_passed_on_sanitizers = (set(pass_map[data_types.FULL_PASS].keys())
+                                     <= SANITIZER_BUILDERS)
+        ran_elsewhere = bool(pass_map[data_types.NEVER_PASS]
+                             or pass_map[data_types.PARTIAL_PASS])
+        return only_passed_on_sanitizers and ran_elsewhere
 
 
 def _StripOffVirtualPrefix(test_name):

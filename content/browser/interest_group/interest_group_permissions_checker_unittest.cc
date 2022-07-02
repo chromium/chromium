@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/network_isolation_key.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -21,6 +22,10 @@
 
 namespace content {
 namespace {
+
+// Very short time used by some tests that want to wait until just after a
+// timer triggers.
+constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 
 // Response body that allows everything.
 const char kAllowAllResponse[] = R"({
@@ -220,6 +225,10 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, ResponseBodyHandling) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.response_body);
 
+    // Since all requests use the same arguments, need to clear the cache
+    // between calls.
+    interest_group_permissions_checker_.ClearCache();
+
     BoolCallback bool_callback;
     auction_worklet::AddJsonResponse(&url_loader_factory_, validation_url_,
                                      test_case.response_body);
@@ -298,7 +307,8 @@ TEST_F(InterestGroupPermissionsCheckerTest,
   EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
-// Test that permission checks with different frame origins can't be merged.
+// Test that permission checks with different frame origins can't be merged, and
+// are cached separately.
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentFrameOrigin) {
   // The only way two permissions checks from different frame origins can share
   // a NetworkIsolationKey is if they are same-site. So use an origin that's
@@ -330,10 +340,24 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentFrameOrigin) {
 
   // There should have been one network request for each frame owner.
   EXPECT_EQ(2u, url_loader_factory_.total_requests());
+
+  // Repeat checks. Results should be the same, but with no new network
+  // requests.
+  BoolCallback bool_callback3;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
+      url_loader_factory_, bool_callback3.callback());
+  BoolCallback bool_callback4;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kOtherFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
+      url_loader_factory_, bool_callback4.callback());
+  EXPECT_TRUE(bool_callback3.GetResult());
+  EXPECT_FALSE(bool_callback4.GetResult());
+  EXPECT_EQ(2u, url_loader_factory_.total_requests());
 }
 
 // Test that permission checks with different interest group owners can't be
-// merged.
+// merged, and are cached separately.
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentOwner) {
   const url::Origin kOtherGroupOrigin =
       url::Origin::Create(GURL("https://group2.test"));
@@ -359,10 +383,24 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentOwner) {
 
   // There should have been one network request for each origin.
   EXPECT_EQ(2u, url_loader_factory_.total_requests());
+
+  // Repeat checks. Results should be the same, but with no new network
+  // requests.
+  BoolCallback bool_callback3;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
+      url_loader_factory_, bool_callback3.callback());
+  BoolCallback bool_callback4;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kFrameOrigin, kOtherGroupOrigin, kNetworkIsolationKey,
+      url_loader_factory_, bool_callback4.callback());
+  EXPECT_TRUE(bool_callback3.GetResult());
+  EXPECT_FALSE(bool_callback4.GetResult());
+  EXPECT_EQ(2u, url_loader_factory_.total_requests());
 }
 
 // Test that permission checks with different NetworkIsolationKeys can't be
-// merged.
+// merged, and are cached separately.
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
        DifferentNetworkIsolationKey) {
   const net::NetworkIsolationKey kOtherNetworkIsolationKey(
@@ -376,22 +414,62 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
       GetOperation(), kFrameOrigin, kGroupOrigin, kOtherNetworkIsolationKey,
       url_loader_factory_, bool_callback2.callback());
 
-  // Both requests are for the same URL, since they have the same frame and
-  // group origins. The reason it's important to separate them is to protect
-  // against identifying a user across NetworkIsolationKeys.
-  auction_worklet::AddJsonResponse(&url_loader_factory_, validation_url_,
-                                   kAllowAllResponse);
+  // There should be two pending network requests.
+  ASSERT_EQ(2u, url_loader_factory_.pending_requests()->size());
+
+  // Make the first response grant permissions and the second refuse
+  // them. Since there's a single URLLoaderFactory pipe, the requests should be
+  // in the order of the CheckPermissions calls above.
+  for (int i = 0; i < 2; ++i) {
+    auto& pending_request = (*url_loader_factory_.pending_requests())[i];
+    EXPECT_EQ(validation_url_, pending_request.request.url);
+
+    auto head = network::mojom::URLResponseHead::New();
+    head->mime_type = "application/json";
+    head->headers =
+        net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n\r\n");
+    ASSERT_TRUE(head->headers);
+
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    std::string response_body = i == 0 ? kAllowAllResponse : kAllowNoneResponse;
+    mojo::ScopedDataPipeConsumerHandle body;
+    ASSERT_EQ(mojo::CreateDataPipe(response_body.size(), producer_handle, body),
+              MOJO_RESULT_OK);
+    uint32_t bytes_written = response_body.size();
+    ASSERT_EQ(MOJO_RESULT_OK,
+              producer_handle->WriteData(response_body.data(), &bytes_written,
+                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+
+    pending_request.client->OnReceiveResponse(std::move(head), std::move(body));
+
+    auto status = network::URLLoaderCompletionStatus();
+    status.decoded_body_length = response_body.size();
+    pending_request.client->OnComplete(status);
+  }
 
   EXPECT_TRUE(bool_callback_.GetResult());
-  EXPECT_TRUE(bool_callback2.GetResult());
+  EXPECT_FALSE(bool_callback2.GetResult());
 
-  // There should have been one network request for each NetworkIsolationKey.
+  // Repeat checks. Results should be the same, but with no new network
+  // requests.
+  BoolCallback bool_callback3;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
+      url_loader_factory_, bool_callback3.callback());
+  BoolCallback bool_callback4;
+  interest_group_permissions_checker_.CheckPermissions(
+      GetOperation(), kFrameOrigin, kGroupOrigin, kOtherNetworkIsolationKey,
+      url_loader_factory_, bool_callback4.callback());
+  EXPECT_TRUE(bool_callback3.GetResult());
+  EXPECT_FALSE(bool_callback4.GetResult());
   EXPECT_EQ(2u, url_loader_factory_.total_requests());
 }
 
-// Test case with two sequential requests, which should result in two network
-// requests.
-TEST_F(InterestGroupPermissionsCheckerTest, SequentialRequests) {
+// Check the case the same parameters are repeatedly fed into
+// CheckPermissions(), both before and after a cache entry expires.
+TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, CacheExpires) {
+  // Set up a response that denies permissions, and send a request. Permissions
+  // should be denied.
   auction_worklet::AddJsonResponse(&url_loader_factory_, validation_url_,
                                    kAllowNoneResponse);
   interest_group_permissions_checker_.CheckPermissions(
@@ -399,17 +477,33 @@ TEST_F(InterestGroupPermissionsCheckerTest, SequentialRequests) {
       kGroupOrigin, kNetworkIsolationKey, url_loader_factory_,
       bool_callback_.callback());
   EXPECT_FALSE(bool_callback_.GetResult());
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 
+  // Make future responses allow permissions.
   auction_worklet::AddJsonResponse(&url_loader_factory_, validation_url_,
                                    kAllowAllResponse);
+
+  // Wait until just before the cache entry expired. The original cached
+  // response should be returned.
+  task_environment_.FastForwardBy(
+      InterestGroupPermissionsCache::kCacheDuration);
   BoolCallback bool_callback2;
   interest_group_permissions_checker_.CheckPermissions(
       InterestGroupPermissionsChecker::Operation::kJoin, kFrameOrigin,
       kGroupOrigin, kNetworkIsolationKey, url_loader_factory_,
       bool_callback2.callback());
-  EXPECT_TRUE(bool_callback2.GetResult());
+  EXPECT_FALSE(bool_callback2.GetResult());
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 
-  // Requests should not have been merged or response cached.
+  // Wait until the cache entry expires and check permissions again. The result
+  // should change, and there should be a new network request.
+  task_environment_.FastForwardBy(kTinyTime);
+  BoolCallback bool_callback3;
+  interest_group_permissions_checker_.CheckPermissions(
+      InterestGroupPermissionsChecker::Operation::kJoin, kFrameOrigin,
+      kGroupOrigin, kNetworkIsolationKey, url_loader_factory_,
+      bool_callback3.callback());
+  EXPECT_TRUE(bool_callback3.GetResult());
   EXPECT_EQ(2u, url_loader_factory_.total_requests());
 }
 

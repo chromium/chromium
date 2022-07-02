@@ -80,6 +80,8 @@ class FakeV4L2Impl::OpenedDevice {
     timeperframe_.denominator = kDefaultFrameInternvalDenominator;
   }
 
+  ~OpenedDevice() { DCHECK(!frame_production_thread_.IsRunning()); }
+
   const std::string& device_id() const { return config_.descriptor.device_id; }
 
   int open_flags() const { return open_flags_; }

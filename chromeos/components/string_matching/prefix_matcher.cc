@@ -12,26 +12,54 @@ namespace chromeos {
 namespace string_matching {
 
 namespace {
+// TODO(crbug.com/1336160): Add unit tests.
+//
+// TODO(crbug.com/1336160): Paradigm shift 1: Reconsider the value of
+// search-via-acronym, i.e. the logic around `kIsFrontOfWordMultiplier`.
+//
+// TODO(crbug.com/1336160): Paradigm shift 2: Consider scoring matching prefixes
+// of tokens with equal value, regardless of whether the token is a first token
+// or non-first token. Currently, PrefixMatcher advances monotonically through
+// the chars of the query. This means that a strong prefix match in a non-first
+// text token will be missed if there is a weaker match in the first text token.
+// Consider modifying algorithm such that these matches won't be missed. Example
+// of current behavior:
+//
+//   Query `abcde` and text `aff abcde`. The first `a` of query and text match,
+//   therefore the `a` of query is consumed and is never considered for rematch
+//   elsewhere.
+//
+// PrefixMatcher:
+//
 // The factors below are applied when the current char of query matches
 // the current char of the text to be matched. Different factors are chosen
-// based on where the match happens. kIsPrefixMultiplier is used when the
-// matched portion is a prefix of both the query and the text, which implies
-// that the matched chars are at the same position in query and text. This is
-// the most preferred case thus it has the highest score. When the current char
-// of the query and the text does not match, the algorithm moves to the next
-// token in the text and try to match from there. kIsFrontOfWordMultipler will
-// be used if the first char of the token matches the current char of the query.
-// Otherwise, the match is considered as weak and kIsWeakHitMultiplier is
+// based on where the match happens:
+//
+// 1) `kIsPrefixMultiplier` is used when the matched portion is a prefix of both
+// the query and the text, which implies that the matched chars are at the same
+// position in query and text. This is the most preferred case thus it has the
+// highest score.
+//
+// When the current char of the query and the text do not match, the algorithm
+// moves to the next token in the text and tries to match from there.
+//
+// 2) `kIsFrontOfWordMultiplier` will be used if the first char of the token
+// matches the current char of the query.
+//
+// 3) Otherwise, the match is considered as weak, and `kIsWeakHitMultiplier` is
 // used.
+//
 // Examples:
-//   Suppose the text to be matched is 'Google Chrome'.
+//
+//   For text: 'Google Chrome'.
+//
 //   Query 'go' would yield kIsPrefixMultiplier for each char.
 //   Query 'gc' would use kIsPrefixMultiplier for 'g' and
-//       kIsFrontOfWordMultipler for 'c'.
-//   Query 'ch' would use kIsFrontOfWordMultipler for 'c' and
+//       kIsFrontOfWordMultiplier for 'c'.
+//   Query 'ch' would use kIsFrontOfWordMultiplier for 'c' and
 //       kIsWeakHitMultiplier for 'h'.
 const double kIsPrefixMultiplier = 1.0;
-const double kIsFrontOfWordMultipler = 0.8;
+const double kIsFrontOfWordMultiplier = 0.8;
 const double kIsWeakHitMultiplier = 0.6;
 
 // A relevance score that represents no match.
@@ -89,7 +117,7 @@ bool PrefixMatcher::RunMatch() {
       if (query_iter_.GetArrayPos() == text_iter_.GetArrayPos())
         current_relevance_ += kIsPrefixMultiplier;
       else if (text_iter_.IsFirstCharOfToken())
-        current_relevance_ += kIsFrontOfWordMultipler;
+        current_relevance_ += kIsFrontOfWordMultiplier;
       else
         current_relevance_ += kIsWeakHitMultiplier;
 

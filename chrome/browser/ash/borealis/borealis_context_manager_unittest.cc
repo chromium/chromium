@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -89,7 +89,7 @@ using StartupCallbackFactory =
     StrictCallbackFactory<void(BorealisContextManager::ContextOrFailure)>;
 
 class BorealisContextManagerTest : public testing::Test,
-                                   protected FakeVmServicesHelper {
+                                   protected guest_os::FakeVmServicesHelper {
  public:
   BorealisContextManagerTest() = default;
   BorealisContextManagerTest(const BorealisContextManagerTest&) = delete;

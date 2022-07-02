@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -57,6 +58,7 @@ ShelfControlButton::ShelfControlButton(
     : ShelfButton(shelf, shelf_button_delegate) {
   SetHasInkDropActionOnClick(true);
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ShelfControlButtonHighlightPathGenerator>());
   SetPaintToLayer();
@@ -94,13 +96,6 @@ void ShelfControlButton::PaintBackground(gfx::Canvas* canvas,
   flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor());
   canvas->DrawRoundRect(bounds, ShelfConfig::Get()->control_border_radius(),
                         flags);
-}
-
-void ShelfControlButton::OnThemeChanged() {
-  ShelfButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace ash

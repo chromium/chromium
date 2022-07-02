@@ -267,8 +267,8 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
     bool* has_line_through_decoration) {
   *has_line_through_decoration = false;
 
-  const NGTextDecorationOffset decoration_offset(decoration_info.Style(),
-                                                 text_item.Style(), nullptr);
+  const NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
+                                                 text_item.Style());
 
   if (svg_text_paint_state_.has_value()) {
     GraphicsContextStateSaver state_saver(paint_info.context, false);
@@ -340,9 +340,14 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
                                  gfx::PointF(text_origin_), node_id,
                                  auto_dark_mode);
     }
-    // TODO(npm): Check that there are non-whitespace characters. See
-    // crbug.com/788444.
-    graphics_context_.GetPaintController().SetTextPainted();
+
+    // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
+    // for all whitespace characters as defined in the spec definition of
+    // whitespace. See https://w3c.github.io/paint-timing/#non-empty
+    // In particular 0xb and 0xc are not checked.
+    if (!fragment_paint_info_.text.SubstringContainsOnlyWhitespaceOrEmpty(from,
+                                                                          to))
+      graphics_context_.GetPaintController().SetTextPainted();
 
     if (!font_.ShouldSkipDrawing())
       PaintTimingDetector::NotifyTextPaint(visual_rect_);

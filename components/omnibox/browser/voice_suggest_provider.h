@@ -14,15 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Autocomplete provider serving Voice suggestions on Android.
 class VoiceSuggestProvider : public BaseSearchProvider {
  public:
-  VoiceSuggestProvider(AutocompleteProviderClient* client,
-                       AutocompleteProviderListener* listener);
+  explicit VoiceSuggestProvider(AutocompleteProviderClient* client);
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;

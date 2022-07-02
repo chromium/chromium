@@ -89,6 +89,8 @@ class StarterPlatformDelegate {
   virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const = 0;
   // Returns whether the user is logged in or not.
   virtual bool GetIsLoggedIn() = 0;
+  // Returns whether the user is restricted to any supervision.
+  virtual bool GetIsSupervisedUser() = 0;
   // Returns whether this is a custom tab or not.
   virtual bool GetIsCustomTab() const = 0;
   // Returns whether this is running in WebLayer or not.
@@ -102,9 +104,9 @@ class StarterPlatformDelegate {
   // as it might not be able to perform its functions while detached.
   virtual bool IsAttached() = 0;
   // Returns the common dependencies.
-  virtual const CommonDependencies* GetCommonDependencies() = 0;
+  virtual const CommonDependencies* GetCommonDependencies() const = 0;
   // Returns the platform dependencies.
-  virtual const PlatformDependencies* GetPlatformDependencies() = 0;
+  virtual const PlatformDependencies* GetPlatformDependencies() const = 0;
 
   virtual base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() = 0;
 };

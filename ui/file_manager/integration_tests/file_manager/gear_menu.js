@@ -677,3 +677,51 @@ testcase.showAvailableStorageDocProvider = async () => {
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
 };
+
+/**
+ * Test that the "Mange synced folders" gear menu item is hidden and is also
+ * disabled when the DriveFsMirroring flag is disabled.
+ */
+testcase.showManageMirrorSyncShowsOnlyInLocalRoot = async () => {
+  // Open Files app on Downloads containing ENTRIES.photos.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // If the flag is disabled, the "Manage synced folders" menu item should be
+  // hidden and disabled.
+  if ((await sendTestMessage({name: 'isMirrorSyncEnabled'})) === 'false') {
+    await remoteCall.waitForElement(
+        appId,
+        '#gear-menu:not([hidden]) cr-menu-item' +
+            '[command=\'#manage-mirrorsync\'][disabled][hidden]');
+    return;
+  }
+
+  // The "Manage synced folders" item should be visible and enabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#manage-mirrorsync\']:not([disabled][hidden])');
+
+  // Navigate to the Google Drive root.
+  await navigateWithDirectoryTree(appId, '/My Drive');
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // The "Manage synced folders" item should not be visible and should be
+  // disabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#manage-mirrorsync\'][disabled][hidden]');
+};

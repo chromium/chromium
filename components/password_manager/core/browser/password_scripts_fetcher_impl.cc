@@ -103,17 +103,21 @@ constexpr base::FeatureParam<std::string> kScriptsListUrlParam{
     kDefaultChangePasswordScriptsListUrl};
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
+    bool is_supervised_user,
     const base::Version& version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : PasswordScriptsFetcherImpl(version,
+    : PasswordScriptsFetcherImpl(is_supervised_user,
+                                 version,
                                  std::move(url_loader_factory),
                                  kScriptsListUrlParam.Get()) {}
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
+    bool is_supervised_user,
     const base::Version& version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string scripts_list_url)
-    : version_(version),
+    : is_supervised_user_(is_supervised_user),
+      version_(version),
       scripts_list_url_(std::move(scripts_list_url)),
       url_loader_factory_(std::move(url_loader_factory)) {}
 
@@ -258,18 +262,17 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
   if (!response_body)
     return {ParsingResult::kNoResponse};
 
-  base::JSONReader::ValueWithError data =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+  auto data = base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == absl::nullopt) {
-    DVLOG(1) << "Parse error: " << data.error_message;
+  if (!data.has_value()) {
+    DVLOG(1) << "Parse error: " << data.error().message;
     return {ParsingResult::kInvalidJson};
   }
-  if (!data.value->is_dict())
+  if (!data->is_dict())
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
-  for (const auto script_it : data.value->DictItems()) {
+  for (const auto script_it : data->DictItems()) {
     // |script_it.first| is an identifier (normally, a domain name, e.g.
     // example.com) that we don't care about.
     // |script_it.second| provides domain-specific parameters.
@@ -282,6 +285,12 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
 }
 
 bool PasswordScriptsFetcherImpl::IsCacheStale() const {
+  // For supervised users, we always simulate a fresh cache to avoid fetching
+  // scripts.
+  if (is_supervised_user_) {
+    return false;
+  }
+
   static const base::TimeDelta kCacheTimeout(
       base::Minutes(kCacheTimeoutInMinutes));
   return last_fetch_timestamp_.is_null() ||

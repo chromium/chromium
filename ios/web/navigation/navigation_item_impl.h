@@ -61,8 +61,8 @@ class NavigationItemImpl : public web::NavigationItem {
   bool HasPostData() const override;
   NSDictionary* GetHttpRequestHeaders() const override;
   void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
-  void SetUpgradedToHttps() override;
-  bool IsUpgradedToHttps() const override;
+  void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) override;
+  HttpsUpgradeType GetHttpsUpgradeType() const override;
 
   // Serialized representation of the state object that was used in conjunction
   // with a JavaScript window.history.pushState() or
@@ -162,9 +162,8 @@ class NavigationItemImpl : public web::NavigationItem {
   // virtual URL, or title is set, this should be cleared to force a refresh.
   mutable std::u16string cached_display_title_;
 
-  // True if this navigation was typed without a scheme and its URL is using
-  // https:// as the default scheme.
-  bool is_upgraded_to_https_;
+  // Type of the HTTPS upgrade applied to this navigation, if any.
+  HttpsUpgradeType https_upgrade_type_;
 
   // Copy and assignment is explicitly allowed for this class.
 };

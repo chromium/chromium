@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class IsolationInfo;
 class NetworkIsolationKey;
 }  // namespace net
 

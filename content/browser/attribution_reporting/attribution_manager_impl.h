@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -72,15 +71,19 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionReportSender> report_sender,
       StoragePartitionImpl* storage_partition);
 
+  static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
+      StoragePartitionImpl* storage_partition,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-  AttributionManagerImpl(const AttributionManagerImpl& other) = delete;
-  AttributionManagerImpl& operator=(const AttributionManagerImpl& other) =
-      delete;
-  AttributionManagerImpl(AttributionManagerImpl&& other) = delete;
-  AttributionManagerImpl& operator=(AttributionManagerImpl&& other) = delete;
+  AttributionManagerImpl(const AttributionManagerImpl&) = delete;
+  AttributionManagerImpl& operator=(const AttributionManagerImpl&) = delete;
+  AttributionManagerImpl(AttributionManagerImpl&&) = delete;
+  AttributionManagerImpl& operator=(AttributionManagerImpl&&) = delete;
   ~AttributionManagerImpl() override;
 
   // AttributionManager:
@@ -92,7 +95,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForInternalUse(
-      AttributionReport::ReportType report_type,
+      AttributionReport::ReportTypes report_types,
+      int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
   void SendReportsForWebUI(const std::vector<AttributionReport::Id>& ids,
@@ -100,6 +104,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
+                 bool delete_rate_limit_data,
                  base::OnceClosure done) override;
 
  private:
@@ -162,11 +167,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
 
   bool IsReportAllowed(const AttributionReport&) const;
-
-  // Friend to expose the AttributionStorage for certain tests.
-  friend std::vector<AttributionReport> GetAttributionReportsForTesting(
-      AttributionManagerImpl* manager,
-      base::Time max_report_time);
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;

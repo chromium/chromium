@@ -277,6 +277,8 @@ class LayerTreeHostImplTest : public testing::Test,
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
@@ -679,7 +681,7 @@ class LayerTreeHostImplTest : public testing::Test,
         FakeRasterSource::CreateFromRecordingSource(recording_source.get());
 
     // Create the pending tree.
-    host_impl_->BeginCommit(0);
+    host_impl_->BeginCommit(0, /*trace_id=*/1);
     LayerTreeImpl* pending_tree = host_impl_->pending_tree();
     LayerImpl* root = SetupRootLayer<FakePictureLayerImpl>(
         pending_tree, layer_size, raster_source);
@@ -1131,6 +1133,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        GPUMemoryForSmallLayerHistogramTest) {
   base::HistogramTester histogram_tester;
   SetClientNameForMetrics("Renderer");
+  host_impl_->SetDownsampleMetricsForTesting(false);
   // With default tile size being set to 256 * 256, the following layer needs
   // one tile only which costs 256 * 256 * 4 / 1024 = 256KB memory.
   TestGPUMemoryForTilings(gfx::Size(200, 200));
@@ -1144,6 +1147,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        GPUMemoryForLargeLayerHistogramTest) {
   base::HistogramTester histogram_tester;
   SetClientNameForMetrics("Renderer");
+  host_impl_->SetDownsampleMetricsForTesting(false);
   // With default tile size being set to 256 * 256, the following layer needs
   // 4 tiles which cost 256 * 256 * 4 * 4 / 1024 = 1024KB memory.
   TestGPUMemoryForTilings(gfx::Size(500, 500));
@@ -3490,7 +3494,6 @@ class MissingTilesLayer : public LayerImpl {
                    AppendQuadsData* append_quads_data) override {
     append_quads_data->num_missing_tiles += 10;
     append_quads_data->checkerboarded_no_recording_content_area += 200;
-    append_quads_data->checkerboarded_needs_raster_content_area += 200;
     append_quads_data->visible_layer_area += 200;
   }
 };
@@ -4412,9 +4415,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncSubpixelScrollDelta) {
 
   // Verify this scroll delta is consistent with the snapped position of the
   // scroll layer.
-  draw_property_utils::ComputeTransforms(&scroll_layer->layer_tree_impl()
-                                              ->property_trees()
-                                              ->transform_tree_mutable());
+  draw_property_utils::ComputeTransforms(
+      &scroll_layer->layer_tree_impl()
+           ->property_trees()
+           ->transform_tree_mutable(),
+      scroll_layer->layer_tree_impl()->viewport_property_ids());
   EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, -19),
                       scroll_layer->ScreenSpaceTransform().To2dTranslation());
 }
@@ -6247,7 +6252,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   auto* layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
   layer->SetBounds(gfx::Size(10, 10));
   layer->SetDrawsContent(true);
-  layer->SetBackgroundColor(SK_ColorRED);
+  layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root, layer);
 
   UpdateDrawProperties(host_impl_->active_tree());
@@ -6280,7 +6285,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   // The background is default to transparent. If the background is opaque, we
   // would fill the frame with background colour when no layers are contributing
   // quads. This means we would end up with 0 quad.
-  EXPECT_EQ(host_impl_->active_tree()->background_color(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(host_impl_->active_tree()->background_color(),
+            SkColors::kTransparent);
 
   {
     TestFrameData frame;
@@ -10723,7 +10729,7 @@ class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
   }
 
   void SetupActiveTreeLayers() {
-    host_impl_->active_tree()->set_background_color(SK_ColorGRAY);
+    host_impl_->active_tree()->set_background_color(SkColors::kGray);
     LayerImpl* root = SetupDefaultRootLayer(viewport_size_);
     child_ = AddLayer<BlendStateCheckLayer>(host_impl_->active_tree(),
                                             host_impl_->resource_provider());
@@ -11048,7 +11054,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
 
   layer_tree_host_impl->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
   // This will damage everything.
-  root->SetBackgroundColor(SK_ColorBLACK);
+  root->SetBackgroundColor(SkColors::kBlack);
   args = viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
@@ -11095,7 +11101,7 @@ class FakeLayerWithQuads : public LayerImpl {
         render_pass->CreateAndAppendSharedQuadState();
     PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-    SkColor gray = SkColorSetRGB(100, 100, 100);
+    SkColor4f gray = SkColors::kGray;
     gfx::Rect quad_rect(bounds());
     gfx::Rect visible_quad_rect(quad_rect);
     auto* my_quad =
@@ -11145,7 +11151,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, LayersFreeTextures) {
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, HasTransparentBackground) {
   SetupDefaultRootLayer(gfx::Size(10, 10));
-  host_impl_->active_tree()->set_background_color(SK_ColorWHITE);
+  host_impl_->active_tree()->set_background_color(SkColors::kWhite);
   UpdateDrawProperties(host_impl_->active_tree());
 
   // Verify one quad is drawn when transparent background set is not set.
@@ -11169,7 +11175,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, HasTransparentBackground) {
   host_impl_->SetFullViewportDamage();
 
   // Verify no quads are drawn when transparent background is set.
-  host_impl_->active_tree()->set_background_color(SK_ColorTRANSPARENT);
+  host_impl_->active_tree()->set_background_color(SkColors::kTransparent);
   host_impl_->SetFullViewportDamage();
   args = viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
@@ -11188,7 +11194,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, HasTransparentBackground) {
   host_impl_->SetFullViewportDamage();
 
   // Verify no quads are drawn when semi-transparent background is set.
-  host_impl_->active_tree()->set_background_color(SkColorSetARGB(5, 255, 0, 0));
+  host_impl_->active_tree()->set_background_color({1.0f, 0.0f, 0.0f, 0.1f});
   host_impl_->SetFullViewportDamage();
   host_impl_->WillBeginImplFrame(viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
@@ -11255,13 +11261,13 @@ TEST_F(LayerTreeHostImplTestDrawAndTestDamage, FrameIncludesDamageRect) {
   auto* root = SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                                    gfx::Size(10, 10));
   root->SetDrawsContent(true);
-  root->SetBackgroundColor(SK_ColorRED);
+  root->SetBackgroundColor(SkColors::kRed);
 
   // Child layer is in the bottom right corner.
   auto* child = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
   child->SetBounds(gfx::Size(1, 1));
   child->SetDrawsContent(true);
-  child->SetBackgroundColor(SK_ColorRED);
+  child->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(9, 9));
 
@@ -11526,7 +11532,7 @@ TEST_F(LayerTreeHostImplTestDrawAndTestDamage,
 
   LayerImpl* root = SetupRootLayer<SolidColorLayerImpl>(
       host_impl_->active_tree(), gfx::Size(10, 10));
-  root->SetBackgroundColor(SK_ColorRED);
+  root->SetBackgroundColor(SkColors::kRed);
   UpdateDrawProperties(host_impl_->active_tree());
 
   // RequiresHighResToDraw is set when new output surface is used.
@@ -16173,7 +16179,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   // Create the pending tree.
-  host_impl_->BeginCommit(0);
+  host_impl_->BeginCommit(0, /*trace_id=*/1);
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   auto* root = SetupRootLayer<FakePictureLayerImpl>(pending_tree, layer_size,
                                                     raster_source);

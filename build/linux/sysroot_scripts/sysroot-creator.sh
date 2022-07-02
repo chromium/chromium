@@ -373,8 +373,13 @@ HacksAndPatchesCommon() {
 
   # __GLIBC_MINOR__ is used as a feature test macro.  Replace it with the
   # earliest supported version of glibc (2.17, https://crbug.com/376567).
-  local features_h="${INSTALL_ROOT}/usr/include/features.h"
+  local usr_include="${INSTALL_ROOT}/usr/include"
+  local features_h="${usr_include}/features.h"
   sed -i 's|\(#define\s\+__GLIBC_MINOR__\)|\1 17 //|' "${features_h}"
+  # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
+  local cppconfig_h="${usr_include}/${arch}-${os}/c++/10/bits/c++config.h"
+  sed -i 's|\(#define\s\+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT\)|// \1|' \
+    "${cppconfig_h}"
 
   # This is for chrome's ./build/linux/pkg-config-wrapper
   # which overwrites PKG_CONFIG_LIBDIR internally

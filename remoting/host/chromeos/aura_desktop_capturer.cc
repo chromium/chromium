@@ -17,9 +17,8 @@ namespace remoting {
 
 namespace {
 
-std::unique_ptr<webrtc::DesktopFrame> ToDesktopFrame(
-    int dpi,
-    absl::optional<SkBitmap> bitmap) {
+std::unique_ptr<webrtc::DesktopFrame>
+ToDesktopFrame(int dpi, gfx::Point origin, absl::optional<SkBitmap> bitmap) {
   if (!bitmap)
     return nullptr;
 
@@ -27,6 +26,7 @@ std::unique_ptr<webrtc::DesktopFrame> ToDesktopFrame(
       std::make_unique<SkBitmap>(std::move(bitmap.value()))));
 
   frame->set_dpi(webrtc::DesktopVector(dpi, dpi));
+  frame->set_top_left(webrtc::DesktopVector(origin.x(), origin.y()));
 
   // |VideoFramePump| will not encode the frame if |updated_region| is empty.
   const webrtc::DesktopRect& rect = webrtc::DesktopRect::MakeWH(
@@ -65,7 +65,8 @@ void AuraDesktopCapturer::CaptureFrame() {
 
   util_.TakeScreenshotOfDisplay(
       source_display_id_,
-      base::BindOnce(ToDesktopFrame, util_.GetDpi(*source))
+      base::BindOnce(ToDesktopFrame, util_.GetDpi(*source),
+                     source->bounds().origin())
           .Then(base::BindOnce(&AuraDesktopCapturer::OnFrameCaptured,
                                weak_factory_.GetWeakPtr())));
 }

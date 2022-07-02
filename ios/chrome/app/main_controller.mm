@@ -25,6 +25,7 @@
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -100,6 +101,7 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
@@ -140,6 +142,10 @@
 #endif
 
 namespace {
+
+// Skip chromeMain.reset() on shutdown, see crbug.com/1328891 for details.
+const base::Feature kFastApplicationWillTerminate{
+    "FastApplicationWillTerminate", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Constants for deferring resetting the startup attempt count (to give the app
 // a little while to make sure it says alive).
@@ -210,6 +216,7 @@ void RegisterComponentsForUpdate() {
   RegisterAutofillStatesComponent(cus,
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
+  RegisterUrlParamClassificationComponent(cus);
 }
 
 // The delay, in seconds, for cleaning external files.
@@ -769,6 +776,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     sceneState.activationLevel = SceneActivationLevelUnattached;
   }
 
+  // _chromeMain.reset() is a blocking call that regularly causes
+  // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
+  // this shutdown call. See: crbug.com/1328891
+  if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate))
+    return;
+
   _chromeMain.reset();
 }
 
@@ -961,8 +974,23 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
+// Some experiments value may be useful for first-party applications, so save
+// the value in the shared application group.
+- (void)saveFieldTrialValuesForGroupApp {
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSNumber* supportsShowDefaultBrowserPromo =
+      @(base::FeatureList::IsEnabled(kDefaultBrowserIntentsShowSettings));
+
+  NSDictionary* capabilities = @{
+    app_group::
+    kChromeShowDefaultBrowserPromoCapability : supportsShowDefaultBrowserPromo
+  };
+  [sharedDefaults setObject:capabilities
+                     forKey:app_group::kChromeCapabilitiesPreference];
+}
+
 // Some extensions need the value of field trials but can't get them because the
-// field trial infrastruction isn't in extensions. Save the necessary values to
+// field trial infrastructure isn't in extensions. Save the necessary values to
 // NSUserDefaults here.
 - (void)saveFieldTrialValuesForExtensions {
   using password_manager::features::kIOSEnablePasswordManagerBrandingUpdate;
@@ -1114,15 +1142,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleFaviconsCleanup {
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+  __weak MainController* weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kFaviconsCleanup
                   block:^{
-#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+                    MainController* strongSelf = weakSelf;
+                    if (!strongSelf || !strongSelf.currentBrowserState) {
+                      return;
+                    }
                     UpdateFaviconsStorage(
                         IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                            self.currentBrowserState));
-#endif
+                            strongSelf.currentBrowserState));
                   }];
+#endif
 }
 
 - (void)expireFirstUserActionRecorder {

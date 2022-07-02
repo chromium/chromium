@@ -21,11 +21,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -1014,22 +1014,18 @@ TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
   EXPECT_EQ("Has Battery: true", log_contents[9]);
 }
 
-TEST_F(SystemDataProviderTest, ResetReceiverOnDisconnect) {
-  ASSERT_FALSE(system_data_provider_->ReceiverIsBound());
+TEST_F(SystemDataProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
   mojo::Remote<mojom::SystemDataProvider> remote;
   system_data_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_data_provider_->ReceiverIsBound());
-
-  // Unbind remote to trigger disconnect and disconnect handler.
-  remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(system_data_provider_->ReceiverIsBound());
 
-  // Test intent is to ensure interface can be rebound when application is
-  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
-  // will reset the receiver to its unbound state.
+  remote.reset();
+
   system_data_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_data_provider_->ReceiverIsBound());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(SystemDataProviderTest, BatteryInfoPtrDataValidation) {
@@ -1093,6 +1089,65 @@ TEST_F(SystemDataProviderTest, BatteryInfoPtrDataValidation) {
   EXPECT_FALSE(isnan(battery_health_three->battery_wear_percentage));
   EXPECT_FALSE(isnan(battery_health_three->charge_full_now_milliamp_hours));
   EXPECT_FALSE(isnan(battery_health_three->charge_full_design_milliamp_hours));
+}
+
+TEST_F(SystemDataProviderTest, CpuUsagePtrDataValidation) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  FakeCpuUsageObserver cpu_usage_observer;
+  system_data_provider_->ObserveCpuUsage(
+      cpu_usage_observer.receiver.BindNewPipeAndPassRemote());
+
+  // Simulate receiving a nullptr for CpuInfo.
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[0]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[0]->scaling_current_frequency_khz);
+
+  // Simulate receiving a CpuInfo with no data set.
+  healthd_mojom::CpuInfoPtr cpu_info_no_data = healthd_mojom::CpuInfo::New();
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
+                                std::move(cpu_info_no_data),
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[1]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[1]->scaling_current_frequency_khz);
+
+  // Simulate receiving a CpuInfo with and empty temperature channel and empty
+  // logical cpu.
+  std::vector<healthd_mojom::PhysicalCpuInfoPtr> physical_cpus;
+  physical_cpus.emplace_back(healthd_mojom::PhysicalCpuInfo::New());
+  std::vector<healthd_mojom::CpuTemperatureChannelPtr> temperature_channels;
+  healthd_mojom::CpuInfoPtr cpu_info_no_temperatures =
+      healthd_mojom::CpuInfo::New(/*num_total_threads=*/0u,
+                                  healthd_mojom::CpuArchitectureEnum::kUnknown,
+                                  std::move(physical_cpus),
+                                  std::move(temperature_channels), nullptr);
+  SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
+                                std::move(cpu_info_no_temperatures),
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Trigger timer to update data.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, cpu_usage_observer.updates.size());
+  EXPECT_EQ(0u, cpu_usage_observer.updates[2]->average_cpu_temp_celsius);
+  EXPECT_EQ(0u, cpu_usage_observer.updates[2]->scaling_current_frequency_khz);
 }
 
 }  // namespace diagnostics

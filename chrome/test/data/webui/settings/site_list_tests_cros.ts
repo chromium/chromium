@@ -73,7 +73,7 @@ suite('SiteListChromeOS', function() {
     testElement.category = ContentSettingsTypes.NOTIFICATIONS;
   }
 
-  test('update androidSmsInfo', function() {
+  test('update androidSmsInfo', async function() {
     setUpAndroidSmsNotifications();
     assertEquals(0, androidInfoBrowserProxy.getCallCount('getAndroidSmsInfo'));
 
@@ -82,26 +82,24 @@ suite('SiteListChromeOS', function() {
     // Assert 2 calls since the observer observes 2 properties.
     assertEquals(2, androidInfoBrowserProxy.getCallCount('getAndroidSmsInfo'));
 
-    return Promise
-        .all([
-          androidInfoBrowserProxy.whenCalled('getAndroidSmsInfo'),
-          browserProxy.whenCalled('getExceptionList'),
-        ])
-        .then(results => {
-          const contentType = results[1] as ContentSettingsTypes;
-          flush();
-          assertEquals(ContentSettingsTypes.NOTIFICATIONS, contentType);
-          assertEquals(2, testElement.sites.length);
+    const results = await Promise.all([
+      androidInfoBrowserProxy.whenCalled('getAndroidSmsInfo'),
+      browserProxy.whenCalled('getExceptionList'),
+    ]);
 
-          assertEquals(
-              prefsAndroidSms.exceptions[contentType][0]!.origin,
-              testElement.sites[0]!.origin);
-          assertTrue(testElement.sites[0]!.showAndroidSmsNote!);
+    const contentType = results[1] as ContentSettingsTypes;
+    flush();
+    assertEquals(ContentSettingsTypes.NOTIFICATIONS, contentType);
+    assertEquals(2, testElement.sites.length);
 
-          assertEquals(
-              prefsAndroidSms.exceptions[contentType][1]!.origin,
-              testElement.sites[1]!.origin);
-          assertEquals(undefined, testElement.sites[1]!.showAndroidSmsNote);
-        });
+    assertEquals(
+        prefsAndroidSms.exceptions[contentType][0]!.origin,
+        testElement.sites[0]!.origin);
+    assertTrue(testElement.sites[0]!.showAndroidSmsNote!);
+
+    assertEquals(
+        prefsAndroidSms.exceptions[contentType][1]!.origin,
+        testElement.sites[1]!.origin);
+    assertEquals(undefined, testElement.sites[1]!.showAndroidSmsNote);
   });
 });

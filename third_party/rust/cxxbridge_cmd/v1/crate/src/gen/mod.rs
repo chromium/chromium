@@ -3,24 +3,30 @@
 
 mod block;
 mod builtin;
+mod cfg;
 mod check;
 pub(super) mod error;
 mod file;
 pub(super) mod fs;
 mod ifndef;
 pub(super) mod include;
+mod names;
 mod namespace;
 mod nested;
 pub(super) mod out;
 mod write;
 
-pub(super) use self::error::Error;
+use self::cfg::UnsupportedCfgEvaluator;
 use self::error::{format_err, Result};
 use self::file::File;
 use self::include::Include;
+use crate::syntax::cfg::CfgExpr;
 use crate::syntax::report::Errors;
-use crate::syntax::{self, Types};
+use crate::syntax::{self, attrs, Types};
+use std::collections::BTreeSet as Set;
 use std::path::Path;
+
+pub(super) use self::error::Error;
 
 /// Options for C++ code generation.
 ///
@@ -52,6 +58,17 @@ pub struct Opt {
     pub(super) gen_header: bool,
     pub(super) gen_implementation: bool,
     pub(super) allow_dot_includes: bool,
+    pub(super) cfg_evaluator: Box<dyn CfgEvaluator>,
+}
+
+pub(super) trait CfgEvaluator {
+    fn eval(&self, name: &str, value: Option<&str>) -> CfgResult;
+}
+
+pub(super) enum CfgResult {
+    True,
+    False,
+    Undetermined { msg: String },
 }
 
 /// Results of code generation.
@@ -71,6 +88,7 @@ impl Default for Opt {
             gen_header: true,
             gen_implementation: true,
             allow_dot_includes: true,
+            cfg_evaluator: Box::new(UnsupportedCfgEvaluator),
         }
     }
 }
@@ -116,20 +134,37 @@ pub(super) fn generate(syntax: File, opt: &Opt) -> Result<GeneratedCode> {
 
     let ref mut apis = Vec::new();
     let ref mut errors = Errors::new();
+    let ref mut cfg_errors = Set::new();
     for bridge in syntax.modules {
-        let ref namespace = bridge.namespace;
-        let trusted = bridge.unsafety.is_some();
-        apis.extend(syntax::parse_items(
+        let mut cfg = CfgExpr::Unconditional;
+        attrs::parse(
             errors,
-            bridge.content,
-            trusted,
-            namespace,
-        ));
+            bridge.attrs,
+            attrs::Parser {
+                cfg: Some(&mut cfg),
+                ignore_unrecognized: true,
+                ..Default::default()
+            },
+        );
+        if cfg::eval(errors, cfg_errors, opt.cfg_evaluator.as_ref(), &cfg) {
+            let ref namespace = bridge.namespace;
+            let trusted = bridge.unsafety.is_some();
+            apis.extend(syntax::parse_items(
+                errors,
+                bridge.content,
+                trusted,
+                namespace,
+            ));
+        }
     }
+
+    cfg::strip(errors, cfg_errors, opt.cfg_evaluator.as_ref(), apis);
+    errors.propagate()?;
 
     let ref types = Types::collect(errors, apis);
     check::precheck(errors, apis, opt);
     errors.propagate()?;
+
     let generator = check::Generator::Build;
     check::typecheck(errors, apis, types, generator);
     errors.propagate()?;

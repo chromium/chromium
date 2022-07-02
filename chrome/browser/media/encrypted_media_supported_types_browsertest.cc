@@ -112,6 +112,26 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 #define EXPECT_WV_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
+// For Widevine key system with software secure robustness, persistent license
+// session is supported on Windows and Mac. On ChromeOS, it is supported when
+// the protected media identifier permission is allowed. See
+// kUnsafelyAllowProtectedMediaIdentifierForDomain used below.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_WV
+#else
+#define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
+#endif
+
+// For Widevine key system with hardware secure robustness, persistent license
+// session is only supported on ChromeOS when the protected media identifier
+// permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
+// used below.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_WV
+#else
+#define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
+#endif
+
 }  // namespace
 
 class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
@@ -119,6 +139,10 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   EncryptedMediaSupportedTypesTest() {
     // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
     disabled_features_.push_back(features::kChromeWhatsNewUI);
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    enabled_features_.push_back(media::kPlatformHEVCDecoderSupport);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
     audio_webm_codecs_.push_back("vorbis");
 
@@ -348,9 +372,11 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   }
 
   std::string IsSessionTypeSupported(const std::string& key_system,
-                                     SessionType session_type) {
+                                     SessionType session_type,
+                                     const char* robustness = nullptr) {
     return IsSupportedByKeySystem(key_system, kVideoWebMMimeType,
-                                  video_webm_codecs(), session_type);
+                                  video_webm_codecs(), session_type,
+                                  robustness);
   }
 
   std::string IsAudioRobustnessSupported(const std::string& key_system,
@@ -404,6 +430,32 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     return IsSupportedByKeySystem(key_system, kVideoWebMMimeType,
                                   video_webm_codecs(), SessionType::kTemporary,
                                   robustness, encryption_scheme);
+  }
+
+  void CheckPlatformHevcSupport(const std::string& key_system) {
+    auto hevc_supported = IsSupportedByKeySystem(key_system, kVideoMP4MimeType,
+                                                 video_mp4_hevc_codecs());
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#if BUILDFLAG(IS_WIN)
+    // On Windows platforms, HEVC support is detected through the GPU
+    // capabilities which won't indicate support when running the tests.
+    // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+    // Windows.
+    EXPECT_UNSUPPORTED(hevc_supported);
+#elif BUILDFLAG(IS_MAC)
+    // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
+    // and kPlatformHEVCDecoderSupport is enabled.
+    if (__builtin_available(macOS 11.0, *)) {
+      EXPECT_ECK_PROPRIETARY(hevc_supported);
+    } else {
+      EXPECT_UNSUPPORTED(hevc_supported);
+    }
+#else
+    EXPECT_ECK_PROPRIETARY(hevc_supported);
+#endif  // BUILDFLAG(IS_WIN)
+#else
+    EXPECT_UNSUPPORTED(hevc_supported);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   }
 
  protected:
@@ -678,8 +730,9 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_MP4) {
   // Valid video types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hevc_codecs()));
+
+  CheckPlatformHevcSupport(kClearKey);
+
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                         vp9_profile0_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
@@ -795,13 +848,9 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     audio_mp4_flac_codecs()));
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
-#else
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
-#endif
+
+  CheckPlatformHevcSupport(kExternalClearKey);
+
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
 }
@@ -911,13 +960,9 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
-#else
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
-      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
-#endif
+
+  CheckPlatformHevcSupport(kExternalClearKey);
+
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
                                     vp9_profile0_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
@@ -1218,18 +1263,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
 
   // Persistent license session support varies by platform.
-  auto result =
-      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Persistent license session supported by Widevine key system on Windows and
-  // Mac. On ChromeOS, it is supported when the protected media identifier
-  // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
-  // used above.
-  EXPECT_WV(result);
-#else
-  EXPECT_UNSUPPORTED(result);
-#endif
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
@@ -1433,6 +1468,31 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_UNSUPPORTED(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9", "HW_SECURE_ALL"));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
+                       SessionType) {
+  // Temporary session always supported.
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "SW_SECURE_DECODE"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "HW_SECURE_CRYPTO"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "HW_SECURE_ALL"));
+
+  // Persistent session for software secure Widevine is platform specific.
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "SW_SECURE_CRYPTO"));
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "SW_SECURE_DECODE"));
+
+  // Persistent session for hardware secure Widevine is platform specific.
+  EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "HW_SECURE_CRYPTO"));
+  EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "HW_SECURE_ALL"));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,

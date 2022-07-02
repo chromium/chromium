@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/app_list/search/search_features.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace search_features {
 
@@ -15,7 +15,7 @@ const base::Feature kLauncherGameSearch{"LauncherGameSearch",
 
 bool IsLauncherGameSearchEnabled() {
   return base::FeatureList::IsEnabled(kLauncherGameSearch) ||
-         base::FeatureList::IsEnabled(ash::features::kCloudGamingDevice);
+         chromeos::features::IsCloudGamingDeviceEnabled();
 }
 
 }  // namespace search_features

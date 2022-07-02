@@ -50,7 +50,7 @@ class PasswordImporterTest : public testing::Test {
     if (result != password_manager::PasswordImporter::SUCCESS)
       return;
     for (const auto& pwd : seq) {
-      imported_passwords_.push_back(pwd.ParseValid());
+      imported_passwords_.push_back(pwd.ToPasswordForm());
     }
   }
 

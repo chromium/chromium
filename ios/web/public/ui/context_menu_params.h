@@ -57,18 +57,6 @@ struct ContextMenuParams {
   // The text for the "alt" attribute of an HTML img element. Can be null.
   NSString* alt_text;
 
-  // The natural width of the HTML img element. Can be null = 0.
-  double natural_width;
-
-  // The natural height of the HTML img element. Can be null = 0.
-  double natural_height;
-
-  // The client bounding box of the HTML element. Can be null = CGRectZero.
-  CGRect bounding_box;
-
-  // The screenshot of the HTML element. Can be null = nil.
-  UIImage* screenshot;
-
   // The offset in text where the tap occurs. Can be null = 0.
   double text_offset;
 };

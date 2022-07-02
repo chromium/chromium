@@ -99,22 +99,6 @@ void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
       transfer_size_diff);
 }
 
-void NavigationBodyLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle handle) {
-  TRACE_EVENT1("loading", "NavigationBodyLoader::OnStartLoadingResponseBody",
-               "url", original_url_.GetString().Utf8());
-  DCHECK(!has_received_body_handle_);
-  DCHECK(!has_received_completion_);
-  has_received_body_handle_ = true;
-  has_seen_end_of_data_ = false;
-  handle_ = std::move(handle);
-  DCHECK(handle_.is_valid());
-  handle_watcher_.Watch(handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                        base::BindRepeating(&NavigationBodyLoader::OnReadable,
-                                            base::Unretained(this)));
-  OnReadable(MOJO_RESULT_OK);
-}
-
 void NavigationBodyLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   // Except for errors, there must always be a response's body.
@@ -345,14 +329,24 @@ void NavigationBodyLoader::
   // to read from the data pipe immediately which may potentially postpone the
   // method calls from the remote. That causes the flakiness of some layout
   // tests.
-  // TODO(minggang): The binding was executed after OnStartLoadingResponseBody
+  // TODO(minggang): The binding was executed after OnReceiveResponse
   // originally (prior to passing the response body from the browser process
   // during navigation), we should try to put it back if all the
   // webkit_layout_tests can pass in that way.
   BindURLLoaderAndContinue();
 
   DCHECK(response_body_.is_valid());
-  OnStartLoadingResponseBody(std::move(response_body_));
+
+  DCHECK(!has_received_body_handle_);
+  DCHECK(!has_received_completion_);
+  has_received_body_handle_ = true;
+  has_seen_end_of_data_ = false;
+  handle_ = std::move(response_body_);
+  DCHECK(handle_.is_valid());
+  handle_watcher_.Watch(handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                        base::BindRepeating(&NavigationBodyLoader::OnReadable,
+                                            base::Unretained(this)));
+  OnReadable(MOJO_RESULT_OK);
   // Don't use |this| here as it might have been destroyed.
 }
 
@@ -376,7 +370,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
                                 : KURL(common_params->url);
   KURL url = original_url;
   resource_load_info_notifier_wrapper->NotifyResourceLoadInitiated(
-      request_id, url,
+      request_id, GURL(url),
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
       common_params->referrer->url, common_params->request_destination,

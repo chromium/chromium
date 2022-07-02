@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -537,7 +536,9 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // is no need for immersive mode.
   // TODO(crbug.com/801619): This adds a little extra animation
   // when minimizing or unminimizing window.
-  return ash::TabletMode::IsInTabletMode() && CanResize() && !IsMinimized();
+  return ash::TabletMode::IsInTabletMode() && CanResize() && !IsMinimized() &&
+         GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) !=
+             chromeos::WindowStateType::kFloated;
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::UpdateImmersiveMode() {
@@ -570,24 +571,12 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
         proxy->AppRegistryCache().GetAppType(app_window()->extension_id());
 
     if (app_type != apps::AppType::kUnknown) {
-      if (base::FeatureList::IsEnabled(
-              features::kAppServiceLoadIconWithoutMojom)) {
-        proxy->LoadIcon(
-            app_type, app_window()->extension_id(), apps::IconType::kStandard,
-            app_window()->app_delegate()->PreferredIconSize(),
-            allow_placeholder_icon,
-            base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
-                           weak_ptr_factory_.GetWeakPtr()));
-      } else {
-        proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type),
-                        app_window()->extension_id(),
-                        apps::mojom::IconType::kStandard,
-                        app_window()->app_delegate()->PreferredIconSize(),
-                        allow_placeholder_icon,
-                        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-                            &ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
-                            weak_ptr_factory_.GetWeakPtr())));
-      }
+      proxy->LoadIcon(
+          app_type, app_window()->extension_id(), apps::IconType::kStandard,
+          app_window()->app_delegate()->PreferredIconSize(),
+          allow_placeholder_icon,
+          base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 

@@ -99,6 +99,15 @@ class AutomationInternalEnableDesktopFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutomationInternalDisableDesktopFunction : public ExtensionFunction {
+  DECLARE_EXTENSION_FUNCTION("automationInternal.disableDesktop",
+                             AUTOMATIONINTERNAL_DISABLEDESKTOP)
+ protected:
+  ~AutomationInternalDisableDesktopFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 class AutomationInternalQuerySelectorFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("automationInternal.querySelector",
                              AUTOMATIONINTERNAL_QUERYSELECTOR)

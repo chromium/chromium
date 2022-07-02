@@ -434,12 +434,19 @@ HWNDMessageHandler::~HWNDMessageHandler() {
   ClearUserData();
 }
 
-void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
+void HWNDMessageHandler::Init(HWND parent,
+                              const gfx::Rect& bounds,
+                              bool headless_mode) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Init");
   GetMonitorAndRects(bounds.ToRECT(), &last_monitor_, &last_monitor_rect_,
                      &last_work_area_);
 
   initial_bounds_valid_ = !bounds.IsEmpty();
+
+  // Provide the headless mode window state container.
+  if (headless_mode)
+    headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
+
   // Create the window.
   WindowImpl::Init(parent, bounds);
 
@@ -540,6 +547,11 @@ gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
 }
 
 gfx::Rect HWNDMessageHandler::GetRestoredBounds() const {
+  // Headless mode window never goes fullscreen, so just return an empty
+  // rectangle here.
+  if (IsHeadless())
+    return gfx::Rect();
+
   // If we're in fullscreen mode, we've changed the normal bounds to the monitor
   // rect, so return the saved bounds instead.
   if (IsFullscreen())
@@ -650,6 +662,15 @@ void HWNDMessageHandler::StackAtTop() {
 void HWNDMessageHandler::Show(ui::WindowShowState show_state,
                               const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Show");
+
+  // In headless mode the platform window is always hidden, so instead of
+  // showing it just maintain a local flag to track the expected headless
+  // window visibility state.
+  if (IsHeadless()) {
+    headless_mode_window_->visibility_state = true;
+    return;
+  }
+
   DWORD native_show_state;
   if (show_state == ui::SHOW_STATE_MAXIMIZED &&
       !pixel_restore_bounds.IsEmpty()) {
@@ -694,14 +715,6 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
         break;
     }
 
-    // In headless mode the platform window is always hidden, so instead of
-    // showing it just maintain a local flag to track the expected headless
-    // window visibility state.
-    if (IsHeadless()) {
-      headless_window_visibility_state_ = true;
-      return;
-    }
-
     ShowWindow(hwnd(), native_show_state);
     // When launched from certain programs like bash and Windows Live
     // Messenger, show_state is set to SW_HIDE, so we need to correct that
@@ -732,7 +745,7 @@ void HWNDMessageHandler::Hide() {
   // hiding it just maintain a local flag to track the expected headless
   // window visibility state.
   if (IsHeadless()) {
-    headless_window_visibility_state_ = false;
+    headless_mode_window_->visibility_state = false;
     return;
   }
 
@@ -748,15 +761,30 @@ void HWNDMessageHandler::Hide() {
 }
 
 void HWNDMessageHandler::Maximize() {
+  if (IsHeadless()) {
+    headless_mode_window_->minmax_state = HeadlessModeWindow::kMaximized;
+    return;
+  }
+
   ExecuteSystemMenuCommand(SC_MAXIMIZE);
 }
 
 void HWNDMessageHandler::Minimize() {
+  if (IsHeadless()) {
+    headless_mode_window_->minmax_state = HeadlessModeWindow::kMinimized;
+    return;
+  }
+
   ExecuteSystemMenuCommand(SC_MINIMIZE);
   delegate_->HandleNativeBlur(nullptr);
 }
 
 void HWNDMessageHandler::Restore() {
+  if (IsHeadless()) {
+    headless_mode_window_->minmax_state = HeadlessModeWindow::kNormal;
+    return;
+  }
+
   ExecuteSystemMenuCommand(SC_RESTORE);
 }
 
@@ -791,7 +819,7 @@ bool HWNDMessageHandler::IsVisible() const {
   // In headless mode the platform window is always hidden, so instead of
   // returning the actual window visibility state return the expected visibility
   // state maintained by Show/Hide() calls.
-  return IsHeadless() ? headless_window_visibility_state_
+  return IsHeadless() ? headless_mode_window_->visibility_state
                       : !!::IsWindowVisible(hwnd());
 }
 
@@ -800,15 +828,21 @@ bool HWNDMessageHandler::IsActive() const {
 }
 
 bool HWNDMessageHandler::IsMinimized() const {
-  return !!::IsIconic(hwnd());
+  return IsHeadless() ? headless_mode_window_->IsMinimized()
+                      : !!::IsIconic(hwnd());
 }
 
 bool HWNDMessageHandler::IsMaximized() const {
-  return !!::IsZoomed(hwnd()) && !IsFullscreen();
+  return (IsHeadless() ? headless_mode_window_->IsMaximized()
+                       : !!::IsZoomed(hwnd())) &&
+         !IsFullscreen();
 }
 
 bool HWNDMessageHandler::IsFullscreen() const {
-  return fullscreen_handler_->fullscreen();
+  // In headless mode report the requested window state instead of the actual
+  // one.
+  return IsHeadless() ? headless_mode_window_->fullscreen_state
+                      : fullscreen_handler_->fullscreen();
 }
 
 bool HWNDMessageHandler::IsAlwaysOnTop() const {
@@ -816,7 +850,7 @@ bool HWNDMessageHandler::IsAlwaysOnTop() const {
 }
 
 bool HWNDMessageHandler::IsHeadless() const {
-  return delegate_->IsHeadless();
+  return headless_mode_window_.has_value();
 }
 
 bool HWNDMessageHandler::RunMoveLoop(const gfx::Vector2d& drag_offset,
@@ -931,9 +965,12 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 }
 
 void HWNDMessageHandler::SetFullscreen(bool fullscreen) {
-  // Avoid setting fullscreen mode when in headless mode.
-  if (IsHeadless())
+  // Avoid setting fullscreen mode when in headless mode, but keep track
+  // of the requested state for IsFullscreen() to report.
+  if (IsHeadless()) {
+    headless_mode_window_->fullscreen_state = fullscreen;
     return;
+  }
 
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
@@ -3193,6 +3230,28 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
   // so use the weak ptr to check if destruction occurred or not.
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   bool handled = false;
+
+  if (event.type() == ui::ET_MOUSE_DRAGGED) {
+    POINT point;
+    point.x = event.x();
+    point.y = event.y();
+    ::ClientToScreen(hwnd(), &point);
+    // Windows sometimes sends spurious WM_MOUSEMOVEs at 0,0. If this happens
+    // after a mouse down on a tab, it can cause a detach of the tab to 0,0.
+    // In general, it would cause weird behavior while dragging, so ignore
+    // these events if they're fairly far from the cursor.
+    if (point.x == 0 && point.y == 0) {
+      POINT cursor_pos;
+      ::GetCursorPos(&cursor_pos);
+      constexpr int kMinSpuriousDistance = 200;
+      auto distance = sqrt(pow(static_cast<float>(abs(cursor_pos.x)), 2) +
+                           pow(static_cast<float>(abs(cursor_pos.y)), 2));
+      if (distance > kMinSpuriousDistance) {
+        SetMsgHandled(true);
+        return 0;
+      }
+    }
+  }
 
   // Don't send right mouse button up to the delegate when displaying system
   // command menu. This prevents left clicking in the upper left hand corner of

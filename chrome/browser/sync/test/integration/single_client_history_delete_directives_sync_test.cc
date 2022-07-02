@@ -24,8 +24,6 @@
 
 namespace {
 
-using sync_pb::HistoryDeleteDirectiveSpecifics;
-
 int64_t TimeToUnixUsec(base::Time time) {
   DCHECK(!time.is_null());
   return (time - base::Time::UnixEpoch()).InMicroseconds();
@@ -79,7 +77,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
   SingleClientHistoryDeleteDirectivesSyncTest& operator=(
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
 
-  ~SingleClientHistoryDeleteDirectivesSyncTest() override {}
+  ~SingleClientHistoryDeleteDirectivesSyncTest() override = default;
 
   bool WaitForHistoryDeleteDirectives(size_t num_expected_directives) {
     return HistoryDeleteDirectivesEqualityChecker(

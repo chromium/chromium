@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;
@@ -326,28 +327,28 @@ TEST_F(WebAccessibleResourcesManifestTest,
     EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
     return ManifestData(std::move(manifest_value), "test");
   };
-  scoped_refptr<const Extension> extension1 =
+  scoped_refptr<const Extension> extension_callee =
       LoadAndExpectSuccess(get_manifest_data());
-  scoped_refptr<const Extension> extension2 =
-      LoadAndExpectSuccess(get_manifest_data(extension1->id()));
-  auto initiator_origin = url::Origin::Create(extension2->url());
+  scoped_refptr<const Extension> extension_caller =
+      LoadAndExpectSuccess(get_manifest_data(extension_callee->id()));
+  auto caller_origin = url::Origin::Create(extension_caller->url());
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2.get(), "test", initiator_origin));
+      extension_caller.get(), "test", caller_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2.get(), "inaccessible", initiator_origin));
-  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension1.get(), "test", initiator_origin));
+      extension_caller.get(), "inaccessible", caller_origin));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension_callee.get(), "test", caller_origin));
 
   // Test web accessible resource access by specifying an extension wildcard.
   scoped_refptr<const Extension> wildcard_extension =
       LoadAndExpectSuccess(get_manifest_data("*"));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "test", initiator_origin));
+      wildcard_extension.get(), "test", caller_origin));
   auto web_origin = url::Origin::Create(GURL("http://example.com"));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
       wildcard_extension.get(), "test", web_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "inaccessible", initiator_origin));
+      wildcard_extension.get(), "inaccessible", caller_origin));
 }
 
 // Tests wildcards of matches.
@@ -432,4 +433,55 @@ TEST_F(WebAccessibleResourcesManifestTest, MatchFromInitiator) {
     test_match_from_initiator(test_case.match, test_case.origin,
                               test_case.expected_accessible);
   }
+}
+
+// Verify whether dynamic url should be used.
+TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
+  // Common uses of web accessible resources.
+  auto test_should_use_dynamic_url = [&](bool use_dynamic_url,
+                                         const char* resource,
+                                         bool expected_use_dynamic_url) {
+    auto manifest = content::JsReplace(
+        // clang-format off
+      R"([{
+        "resources": ["web_accessible_resource.html"],
+        "matches": ["<all_urls>"],
+        "use_dynamic_url": $1
+      }])",
+        // clang-format on
+        use_dynamic_url);
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess(GetManifestData(manifest)));
+    EXPECT_EQ(expected_use_dynamic_url,
+              WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension.get(),
+                                                              resource));
+  };
+  struct {
+    bool use_dynamic_url;
+    const char* resource;
+    bool expected_use_dynamic_url;
+  } test_cases[] = {
+      {true, "web_accessible_resource.html", true},
+      {false, "web_accessible_resource.html", false},
+      {true, "undefined.html", false},
+      {false, "undefined.html", false},
+  };
+  for (const auto& test_case : test_cases) {
+    test_should_use_dynamic_url(test_case.use_dynamic_url, test_case.resource,
+                                test_case.expected_use_dynamic_url);
+  }
+
+  // Web accessible rexources undefined.
+  constexpr char kManifestStub[] =
+      R"({
+        "name": "Test",
+        "version": "1.0",
+        "manifest_version": 3
+    })";
+  base::Value manifest_value = base::test::ParseJson(kManifestStub);
+  EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+  auto manifest_data = ManifestData(std::move(manifest_value), "test");
+  scoped_refptr<Extension> extension(LoadAndExpectSuccess(manifest_data));
+  EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+                       extension.get(), "resource.html"));
 }

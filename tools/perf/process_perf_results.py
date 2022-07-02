@@ -134,7 +134,7 @@ def _is_gtest(json_file):
 
 def _determine_data_format(json_file):
   if json_file not in _data_format_cache:
-    with open(json_file) as f:
+    with open(json_file, 'rb') as f:
       data = json.load(f)
       if isinstance(data, list):
         _data_format_cache[json_file] = DATA_FORMAT_HISTOGRAMS

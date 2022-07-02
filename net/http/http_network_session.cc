@@ -78,34 +78,9 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 }  // unnamed namespace
 
 HttpNetworkSessionParams::HttpNetworkSessionParams()
-    : enable_server_push_cancellation(false),
-      ignore_certificate_errors(false),
-      testing_fixed_http_port(0),
-      testing_fixed_https_port(0),
-      enable_user_alternate_protocol_ports(false),
-      enable_spdy_ping_based_connection_checking(true),
-      enable_http2(true),
-      spdy_session_max_recv_window_size(kSpdySessionMaxRecvWindowSize),
+    : spdy_session_max_recv_window_size(kSpdySessionMaxRecvWindowSize),
       spdy_session_max_queued_capped_frames(kSpdySessionMaxQueuedCappedFrames),
-// For OSs that terminate TCP connections upon relevant network changes,
-// attempt to preserve active streams by marking all sessions as going
-// away, rather than explicitly closing them. Streams may still fail due
-// to a generated TCP reset.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-      spdy_go_away_on_ip_change(true),
-#else
-      spdy_go_away_on_ip_change(false),
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-      enable_http2_settings_grease(false),
-      http2_end_stream_with_data_frame(false),
-      time_func(&base::TimeTicks::Now),
-      enable_http2_alternative_service(false),
-      enable_quic(true),
-      enable_quic_proxies_for_https_urls(false),
-      disable_idle_sockets_close_on_memory_pressure(false),
-      key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false),
-      ignore_ip_address_changes(false) {
+      time_func(&base::TimeTicks::Now) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }
@@ -167,7 +142,6 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                           context.ct_policy_enforcer,
                           &ssl_client_session_cache_,
                           context.sct_auditing_delegate),
-      push_delegate_(nullptr),
       quic_stream_factory_(context.net_log,
                            context.host_resolver,
                            context.ssl_config_service,
@@ -274,7 +248,7 @@ ClientSocketPool* HttpNetworkSession::GetSocketPool(
   return GetSocketPoolManager(pool_type)->GetSocketPool(proxy_server);
 }
 
-std::unique_ptr<base::Value> HttpNetworkSession::SocketPoolInfoToValue() const {
+base::Value HttpNetworkSession::SocketPoolInfoToValue() const {
   // TODO(yutak): Should merge values from normal pools and WebSocket pools.
   return normal_socket_pool_manager_->SocketPoolInfoToValue();
 }
@@ -285,74 +259,74 @@ std::unique_ptr<base::Value> HttpNetworkSession::SpdySessionPoolInfoToValue()
 }
 
 base::Value HttpNetworkSession::QuicInfoToValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("sessions",
-              base::Value::FromUniquePtrValue(
-                  quic_stream_factory_.QuicStreamFactoryInfoToValue()));
-  dict.SetBoolKey("quic_enabled", IsQuicEnabled());
+  base::Value::Dict dict;
+  dict.Set("sessions", quic_stream_factory_.QuicStreamFactoryInfoToValue());
+  dict.Set("quic_enabled", IsQuicEnabled());
 
   const QuicParams* quic_params = context_.quic_context->params();
 
-  base::Value connection_options(base::Value::Type::LIST);
+  base::Value::List connection_options;
   for (const auto& option : quic_params->connection_options)
     connection_options.Append(quic::QuicTagToString(option));
-  dict.SetKey("connection_options", std::move(connection_options));
+  dict.Set("connection_options", std::move(connection_options));
 
-  base::Value supported_versions(base::Value::Type::LIST);
+  base::Value::List supported_versions;
   for (const auto& version : quic_params->supported_versions)
     supported_versions.Append(ParsedQuicVersionToString(version));
-  dict.SetKey("supported_versions", std::move(supported_versions));
+  dict.Set("supported_versions", std::move(supported_versions));
 
-  base::Value origins_to_force_quic_on(base::Value::Type::LIST);
+  base::Value::List origins_to_force_quic_on;
   for (const auto& origin : quic_params->origins_to_force_quic_on)
     origins_to_force_quic_on.Append(origin.ToString());
-  dict.SetKey("origins_to_force_quic_on", std::move(origins_to_force_quic_on));
+  dict.Set("origins_to_force_quic_on", std::move(origins_to_force_quic_on));
 
-  dict.SetIntKey("max_packet_length", quic_params->max_packet_length);
-  dict.SetIntKey("max_server_configs_stored_in_properties",
-                 quic_params->max_server_configs_stored_in_properties);
-  dict.SetIntKey("idle_connection_timeout_seconds",
-                 quic_params->idle_connection_timeout.InSeconds());
-  dict.SetIntKey("reduced_ping_timeout_seconds",
-                 quic_params->reduced_ping_timeout.InSeconds());
-  dict.SetBoolKey("retry_without_alt_svc_on_quic_errors",
-                  quic_params->retry_without_alt_svc_on_quic_errors);
-  dict.SetBoolKey("disable_bidirectional_streams",
-                  quic_params->disable_bidirectional_streams);
-  dict.SetBoolKey("close_sessions_on_ip_change",
-                  quic_params->close_sessions_on_ip_change);
-  dict.SetBoolKey("goaway_sessions_on_ip_change",
-                  quic_params->goaway_sessions_on_ip_change);
-  dict.SetBoolKey("migrate_sessions_on_network_change_v2",
-                  quic_params->migrate_sessions_on_network_change_v2);
-  dict.SetBoolKey("migrate_sessions_early_v2",
-                  quic_params->migrate_sessions_early_v2);
-  dict.SetIntKey("retransmittable_on_wire_timeout_milliseconds",
-                 quic_params->retransmittable_on_wire_timeout.InMilliseconds());
-  dict.SetBoolKey("retry_on_alternate_network_before_handshake",
-                  quic_params->retry_on_alternate_network_before_handshake);
-  dict.SetBoolKey("migrate_idle_sessions", quic_params->migrate_idle_sessions);
-  dict.SetIntKey("idle_session_migration_period_seconds",
-                 quic_params->idle_session_migration_period.InSeconds());
-  dict.SetIntKey("max_time_on_non_default_network_seconds",
-                 quic_params->max_time_on_non_default_network.InSeconds());
-  dict.SetIntKey(
-      "max_num_migrations_to_non_default_network_on_write_error",
-      quic_params->max_migrations_to_non_default_network_on_write_error);
-  dict.SetIntKey(
+  dict.Set("max_packet_length",
+           static_cast<int>(quic_params->max_packet_length));
+  dict.Set(
+      "max_server_configs_stored_in_properties",
+      static_cast<int>(quic_params->max_server_configs_stored_in_properties));
+  dict.Set("idle_connection_timeout_seconds",
+           static_cast<int>(quic_params->idle_connection_timeout.InSeconds()));
+  dict.Set("reduced_ping_timeout_seconds",
+           static_cast<int>(quic_params->reduced_ping_timeout.InSeconds()));
+  dict.Set("retry_without_alt_svc_on_quic_errors",
+           quic_params->retry_without_alt_svc_on_quic_errors);
+  dict.Set("disable_bidirectional_streams",
+           quic_params->disable_bidirectional_streams);
+  dict.Set("close_sessions_on_ip_change",
+           quic_params->close_sessions_on_ip_change);
+  dict.Set("goaway_sessions_on_ip_change",
+           quic_params->goaway_sessions_on_ip_change);
+  dict.Set("migrate_sessions_on_network_change_v2",
+           quic_params->migrate_sessions_on_network_change_v2);
+  dict.Set("migrate_sessions_early_v2", quic_params->migrate_sessions_early_v2);
+  dict.Set("retransmittable_on_wire_timeout_milliseconds",
+           static_cast<int>(
+               quic_params->retransmittable_on_wire_timeout.InMilliseconds()));
+  dict.Set("retry_on_alternate_network_before_handshake",
+           quic_params->retry_on_alternate_network_before_handshake);
+  dict.Set("migrate_idle_sessions", quic_params->migrate_idle_sessions);
+  dict.Set(
+      "idle_session_migration_period_seconds",
+      static_cast<int>(quic_params->idle_session_migration_period.InSeconds()));
+  dict.Set("max_time_on_non_default_network_seconds",
+           static_cast<int>(
+               quic_params->max_time_on_non_default_network.InSeconds()));
+  dict.Set("max_num_migrations_to_non_default_network_on_write_error",
+           quic_params->max_migrations_to_non_default_network_on_write_error);
+  dict.Set(
       "max_num_migrations_to_non_default_network_on_path_degrading",
       quic_params->max_migrations_to_non_default_network_on_path_degrading);
-  dict.SetBoolKey("allow_server_migration",
-                  quic_params->allow_server_migration);
-  dict.SetBoolKey("race_stale_dns_on_connection",
-                  quic_params->race_stale_dns_on_connection);
-  dict.SetBoolKey("estimate_initial_rtt", quic_params->estimate_initial_rtt);
-  dict.SetBoolKey("server_push_cancellation",
-                  params_.enable_server_push_cancellation);
-  dict.SetIntKey("initial_rtt_for_handshake_milliseconds",
-                 quic_params->initial_rtt_for_handshake.InMilliseconds());
+  dict.Set("allow_server_migration", quic_params->allow_server_migration);
+  dict.Set("race_stale_dns_on_connection",
+           quic_params->race_stale_dns_on_connection);
+  dict.Set("estimate_initial_rtt", quic_params->estimate_initial_rtt);
+  dict.Set("server_push_cancellation", params_.enable_server_push_cancellation);
+  dict.Set("initial_rtt_for_handshake_milliseconds",
+           static_cast<int>(
+               quic_params->initial_rtt_for_handshake.InMilliseconds()));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void HttpNetworkSession::CloseAllConnections(int net_error,

@@ -28,6 +28,7 @@ class GPU_EXPORT ImageFactory {
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      const gfx::ColorSpace& color_space,
       gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) = 0;

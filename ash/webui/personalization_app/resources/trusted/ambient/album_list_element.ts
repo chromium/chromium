@@ -7,7 +7,7 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../../common/styles.js';
+import '../../css/common.css.js';
 
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -16,6 +16,7 @@ import {getCountText, isSelectionEvent} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
+
 import {getTemplate} from './album_list_element.html.js';
 
 export interface AlbumList {
@@ -78,6 +79,12 @@ export class AlbumList extends WithPersonalizationStore {
     return !!album && album.checked;
   }
 
+  private getAriaSelected_(
+      changedAlbum: AmbientModeAlbum|null,
+      albums: AmbientModeAlbum[]|null): string {
+    return this.isAlbumSelected_(changedAlbum, albums).toString();
+  }
+
   private getAlbumItemClass_(
       album: AmbientModeAlbum|null, albums: AmbientModeAlbum[]|null): string {
     return album && this.isAlbumSelected_(album, albums) ?
@@ -101,6 +108,10 @@ export class AlbumList extends WithPersonalizationStore {
       return album.description;
     }
     return '';
+  }
+
+  private getAriaIndex_(index: number): number {
+    return index + 1;
   }
 }
 

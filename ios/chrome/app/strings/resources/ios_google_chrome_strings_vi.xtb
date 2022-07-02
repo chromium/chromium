@@ -14,7 +14,7 @@
 <translation id="1917964099031477364">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chrome cũng như các ứng dụng khác của Google trên thiết bị này.</translation>
 <translation id="1968388653333775699">Hoàn thành thêm nhiều việc nhờ Chrome</translation>
 <translation id="2009224836393115614">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
-<translation id="2056123005618757196">Với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
+<translation id="2056123005618757196">Bạn có thể làm được nhiều việc hơn với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay.</translation>
 <translation id="2147651015520127414">Chrome xác minh <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
 <translation id="2199719347983604670">Dữ liệu từ Chrome Sync</translation>
 <translation id="2313070403598893276">Google Chrome giờ đây đơn giản, an toàn và nhanh hơn bao giờ hết</translation>
@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Chrome giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3345341804167540816">Sử dụng Chrome ở mọi nơi</translation>
+<translation id="3428998300753080128">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chrome.</translation>
 <translation id="3522659714780527202">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chrome, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="3533694711092285624">Bạn chưa lưu mật khẩu nào. Chrome có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="3641179212828090796">Sử dụng mật khẩu bạn đã lưu trong Chrome để đăng nhập nhanh hơn</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">Một số tiện ích bổ sung khiến Chrome trục trặc. Hãy gỡ cài đặt:</translation>
 <translation id="4633328489441962921">Chrome không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4698415050768537821">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">Mẹo khi dùng Chrome Đăng nhập nhanh hơn bằng cách chọn mật khẩu bạn đã lưu ở đầu bàn phím.</translation>
 <translation id="4819268619367838612">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chưa hỗ trợ trên Chrome phiên bản thử nghiệm</translation>
 <translation id="5030102366287574140">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="81358522153858150">Chrome giờ đây hỗ trợ chính sách người dùng cho tài khoản được quản lý</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
-<translation id="8263079278049777200">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chrome. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
 <translation id="8357607116237445042">Chọn xem bạn muốn xóa dữ liệu của mình trên Chrome khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="840168496893712993">Một số tiện ích bổ sung khiến Chrome trục trặc. Hãy thử gỡ cài đặt chúng.</translation>

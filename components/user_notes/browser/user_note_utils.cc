@@ -15,11 +15,11 @@
 
 namespace user_notes {
 
-std::vector<FrameUserNoteChanges> CalculateNoteChanges(
+std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
     const UserNoteService& note_service,
     const std::vector<content::RenderFrameHost*>& rfhs,
     const UserNoteMetadataSnapshot& metadata_snapshot) {
-  std::vector<FrameUserNoteChanges> result;
+  std::vector<std::unique_ptr<FrameUserNoteChanges>> result;
 
   // Create an empty metadata map to simplify the algorithm below for cases
   // where there's no entry in the metadata snapshot for a frame's URL.
@@ -55,7 +55,15 @@ std::vector<FrameUserNoteChanges> CalculateNoteChanges(
     for (UserNoteInstance* instance : instances) {
       const UserNote& model = instance->model();
       const auto& metadata_it = metadata_map->find(model.id());
+
       if (metadata_it == metadata_map->end()) {
+        // In-progress notes have an instance in the manager, but are not part
+        // of the metadata snapshot because they haven't been persisted to disk
+        // yet. Ignore them.
+        if (note_service.IsNoteInProgress(model.id())) {
+          continue;
+        }
+
         if (url == model.target().target_page()) {
           // Note has been removed.
           removed.emplace_back(base::UnguessableToken(model.id()));
@@ -78,9 +86,9 @@ std::vector<FrameUserNoteChanges> CalculateNoteChanges(
     }
 
     if (!added.empty() || !removed.empty() || !modified.empty()) {
-      result.emplace_back(
-          FrameUserNoteChanges(note_service.GetSafeRef(), rfh, std::move(added),
-                               std::move(modified), std::move(removed)));
+      result.emplace_back(std::make_unique<FrameUserNoteChanges>(
+          note_service.GetSafeRef(), rfh, std::move(added), std::move(modified),
+          std::move(removed)));
     }
   }
 

@@ -15,6 +15,7 @@ void NetworkContextOnFileUploadRequested(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
     network::mojom::NetworkContextClient::OnFileUploadRequestedCallback
         callback);
 

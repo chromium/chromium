@@ -17,7 +17,7 @@ if (use_gio) {
 # Looking for libspeechd? Use //third_party/speech-dispatcher
 
 if (use_system_freetype) {
-  assert(!is_chromecast)
+  assert(!is_castos)
 
   # Only provided for distributions which prefer to keep linking to FreeType on
   # the system, use with caution,for details see build/config/freetype/BUILD.gn.

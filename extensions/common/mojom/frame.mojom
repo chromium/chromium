@@ -35,7 +35,7 @@ struct RequestParams {
   // Message name.
   string name;
   // List of message arguments.
-  mojo_base.mojom.DeprecatedListValue arguments;
+  mojo_base.mojom.ListValue arguments;
   // Extension ID this request was sent from. This can be empty, in the case
   // where we expose APIs to normal web pages using the extension function
   // system.

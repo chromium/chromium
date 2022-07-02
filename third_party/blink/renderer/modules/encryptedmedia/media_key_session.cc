@@ -28,6 +28,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/numerics/safe_conversions.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 #define MEDIA_KEY_SESSION_LOG_LEVEL 3
@@ -959,8 +959,9 @@ void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
       init->setMessageType("individualization-request");
       break;
   }
-  init->setMessage(DOMArrayBuffer::Create(static_cast<const void*>(message),
-                                          SafeCast<uint32_t>(message_length)));
+  init->setMessage(
+      DOMArrayBuffer::Create(static_cast<const void*>(message),
+                             base::checked_cast<uint32_t>(message_length)));
 
   MediaKeyMessageEvent* event =
       MediaKeyMessageEvent::Create(event_type_names::kMessage, init);

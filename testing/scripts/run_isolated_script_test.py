@@ -26,10 +26,9 @@ import sys
 import tempfile
 
 
-# Add src/testing/ into sys.path for importing xvfb and common.
+# Add src/testing/ into sys.path for importing common.
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-import xvfb
 from scripts import common
 
 

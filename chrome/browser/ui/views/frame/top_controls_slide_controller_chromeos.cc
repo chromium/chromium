@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -114,7 +115,7 @@ cc::BrowserControlsState GetBrowserControlsStateConstraints(
 void SynchronizeVisualProperties(content::WebContents* contents) {
   DCHECK(contents);
 
-  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   if (!main_frame)
     return;
 
@@ -210,7 +211,7 @@ class TopControlsSlideTabObserver
                    const GURL& validated_url,
                    int error_code) override {
     if (render_frame_host->IsActive() &&
-        (render_frame_host == web_contents()->GetMainFrame())) {
+        (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }
@@ -242,7 +243,7 @@ class TopControlsSlideTabObserver
     owner_->UpdateBrowserControlsStateShown(web_contents(), animate);
   }
 
-  TopControlsSlideControllerChromeOS* const owner_;
+  const raw_ptr<TopControlsSlideControllerChromeOS> owner_;
 
   // Tracks the current shown ratio of this tab as synchronized with its
   // renderer. This is needed because when switching tabs, we must restore the

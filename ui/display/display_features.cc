@@ -4,6 +4,7 @@
 
 #include "ui/display/display_features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -11,6 +12,15 @@ namespace display {
 namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Enables the rounded corners for the internal display.
+const base::Feature kRoundedDisplay{"RoundedDisplay",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsRoundedDisplayEnabled() {
+  return base::FeatureList::IsEnabled(kRoundedDisplay);
+}
+
 // Enables using HDR transfer function if the monitor says it supports it.
 const base::Feature kUseHDRTransferFunction {
   "UseHDRTransferFunction",
@@ -21,6 +31,7 @@ const base::Feature kUseHDRTransferFunction {
       base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 };
+
 #endif
 
 // This features allows listing all display modes of external displays in the

@@ -63,23 +63,25 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
                   TrackedRef<Delegate> delegate);
 
   // Creates threads, allowing existing and future tasks to run. The thread
-  // group runs at most |max_tasks| / |max_best_effort_tasks| unblocked task
+  // group runs at most |max_tasks| / `max_best_effort_tasks` unblocked task
   // with any / BEST_EFFORT priority concurrently. It reclaims unused threads
-  // after |suggested_reclaim_time|. It uses |service_thread_task_runner| to
-  // monitor for blocked tasks. If specified, it notifies
-  // |worker_thread_observer| when a worker enters and exits its main function
-  // (the observer must not be destroyed before JoinForTesting() has returned).
-  // |worker_environment| specifies the environment in which tasks are executed.
+  // after `suggested_reclaim_time`. It uses `service_thread_task_runner` to
+  // monitor for blocked tasks, `service_thread_task_runner` is used to setup
+  // FileDescriptorWatcher on worker threads. It must refer to a Thread with
+  // MessagePumpType::IO. If specified, it notifies |worker_thread_observer|
+  // when a worker enters and exits its main function (the observer must not be
+  // destroyed before JoinForTesting() has returned). |worker_environment|
+  // specifies the environment in which tasks are executed.
   // |may_block_threshold| is the timeout after which a task in a MAY_BLOCK
   // ScopedBlockingCall is considered blocked (the thread group will choose an
   // appropriate value if none is specified).
-  // |synchronous_thread_start_for_testing| is true if this ThreadGroupImpl
+  // `synchronous_thread_start_for_testing` is true if this ThreadGroupImpl
   // should synchronously wait for OnMainEntry() after starting each worker. Can
   // only be called once. CHECKs on failure.
-  void Start(int max_tasks,
-             int max_best_effort_tasks,
+  void Start(size_t max_tasks,
+             size_t max_best_effort_tasks,
              TimeDelta suggested_reclaim_time,
-             scoped_refptr<SequencedTaskRunner> service_thread_task_runner,
+             scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
              WorkerThreadObserver* worker_thread_observer,
              WorkerEnvironment worker_environment,
              bool synchronous_thread_start_for_testing = false,
@@ -246,7 +248,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     // Environment to be initialized per worker.
     WorkerEnvironment worker_environment = WorkerEnvironment::NONE;
 
-    scoped_refptr<SequencedTaskRunner> service_thread_task_runner;
+    scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner;
 
     // Optional observer notified when a worker enters and exits its main.
     raw_ptr<WorkerThreadObserver> worker_thread_observer = nullptr;

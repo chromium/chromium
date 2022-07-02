@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
+#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -558,18 +561,35 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  auto* about_this_site_button = about_this_site_section->AddChildView(
-      std::make_unique<PageInfoHoverButton>(
-          base::BindRepeating(&PageInfoNavigationHandler::OpenAboutThisSitePage,
-                              base::Unretained(navigation_handler_), info),
-          PageInfoViewFactory::GetAboutThisSiteIcon(),
-          IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER, std::u16string(),
-          PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
-          base::UTF8ToUTF16(info.description().description()),
-          PageInfoViewFactory::GetOpenSubpageIcon()));
-  about_this_site_button->SetSubtitleMultiline(false);
+  PageInfoHoverButton* about_this_site_button = nullptr;
 
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
+    about_this_site_button = about_this_site_section->AddChildView(
+        std::make_unique<PageInfoHoverButton>(
+            // TODO(crbug.com/1318000): Open side-panel instead.
+            base::BindRepeating(
+                &ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl,
+                base::Unretained(ui_delegate_), GURL(info.more_about().url())),
+            PageInfoViewFactory::GetAboutThisPageIcon(),
+            IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE, std::u16string(),
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
+            base::UTF8ToUTF16(info.description().description()),
+            PageInfoViewFactory::GetLaunchIcon()));
+  } else {
+    about_this_site_button = about_this_site_section->AddChildView(
+        std::make_unique<PageInfoHoverButton>(
+            base::BindRepeating(
+                &PageInfoNavigationHandler::OpenAboutThisSitePage,
+                base::Unretained(navigation_handler_), info),
+            PageInfoViewFactory::GetAboutThisSiteIcon(),
+            IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER, std::u16string(),
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
+            base::UTF8ToUTF16(info.description().description()),
+            PageInfoViewFactory::GetOpenSubpageIcon()));
+  }
+  about_this_site_button->SetSubtitleMultiline(false);
   return about_this_site_section;
 }
 

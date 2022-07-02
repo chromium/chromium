@@ -16,7 +16,7 @@
 <script>
 createDOMTree(document.querySelector("main"), 4, 6);
 PerfTestRunner.measureTime({
-    description: 'Measure impact of highlight inheritance on content with universal ::selection rules',
+    description: 'Measure impact of highlight inheritance on content with universal ::selection rules (no selection, no paint)',
     run: () => {
         document.documentElement.classList.toggle("green");
         forceStyleRecalc(document.documentElement);

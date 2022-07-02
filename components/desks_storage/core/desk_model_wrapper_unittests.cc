@@ -24,6 +24,7 @@
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -48,8 +49,6 @@ namespace {
 constexpr char kTemplateFileNameFormat[] = "%s.saveddesk";
 constexpr char kUuidFormat[] = "1c186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kTemplateNameFormat[] = "desk_%d";
-constexpr char kDeskOneTemplateDuplicateExpectedName[] = "desk_01 (1)";
-constexpr char kDeskOneTemplateDuplicateTwoExpectedName[] = "desk_01 (2)";
 const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
 const std::string kTestUuid2 = base::StringPrintf(kUuidFormat, 2);
 const std::string kTestUuid3 = base::StringPrintf(kUuidFormat, 3);
@@ -71,7 +70,7 @@ const std::string kPolicyWithOneTemplate =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
-// Search |entry_list| for |entry_query| as a uuid and returns true if
+// Search `entry_list` for `uuid_query` as a uuid and returns true if
 // found, false if not.
 bool FindUuidInUuidList(
     const std::string& uuid_query,
@@ -87,23 +86,14 @@ bool FindUuidInUuidList(
   return false;
 }
 
-// Takes in a vector of DeskTemplate pointers and a uuid, returns a pointer to
-// the DeskTemplate with matching uuid if found in vector, nullptr if not.
-const ash::DeskTemplate* FindEntryInEntryList(
-    const std::string& uuid_string,
-    const std::vector<const ash::DeskTemplate*>& entries) {
-  base::GUID uuid = base::GUID::ParseLowercase(uuid_string);
-  auto found_entry = std::find_if(entries.begin(), entries.end(),
-                                  [&uuid](const ash::DeskTemplate* entry) {
-                                    return uuid == entry->uuid();
-                                  });
-
-  return found_entry != entries.end() ? *found_entry : nullptr;
-}
-
 // Verifies that the status passed into it is kOk
 void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+}
+
+void VerifyEntryAddedErrorHitMaximumLimit(
+    DeskModel::AddOrUpdateEntryStatus status) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kHitMaximumLimit);
 }
 
 // Make test template with ID containing the index. Defaults to desk template
@@ -201,7 +191,7 @@ class DeskModelWrapperTest : public testing::Test {
     data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath(),
                                                            account_id_);
     data_manager_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
-    desk_template_util::PopulateAppRegistryCache(account_id_, cache_.get());
+    desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
     model_wrapper_ = std::make_unique<DeskModelWrapper>(data_manager_.get());
     task_environment_.RunUntilIdle();
     testing::Test::SetUp();
@@ -277,6 +267,18 @@ class DeskModelWrapperTest : public testing::Test {
               loop2.Quit();
             }));
     loop2.Run();
+  }
+
+  void AddSavedDeskToDeskModel(std::unique_ptr<ash::DeskTemplate> entry) {
+    base::RunLoop loop;
+    model_wrapper_->AddOrUpdateEntry(
+        std::move(entry),
+        base::BindLambdaForTesting(
+            [&](DeskModel::AddOrUpdateEntryStatus status) {
+              EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+              loop.Quit();
+            }));
+    loop.Run();
   }
 
   void VerifyAllEntries(size_t expected_size, const std::string& trace_string) {
@@ -356,6 +358,23 @@ TEST_F(DeskModelWrapperTest, CanAddSaveAndRecallDeskEntry) {
   loop.Run();
 }
 
+TEST_F(DeskModelWrapperTest,
+       ReturnsErrorWhenAddingTooManySaveAndRecallDeskEntry) {
+  InitializeBridge();
+  for (std::size_t index = 0;
+       index < model_wrapper_->GetMaxSaveAndRecallDeskEntryCount(); ++index) {
+    AddSavedDeskToDeskModel(
+        MakeTestDeskTemplate(index, ash::DeskTemplateType::kSaveAndRecall));
+  }
+
+  model_wrapper_->AddOrUpdateEntry(
+      MakeTestDeskTemplate(
+          model_wrapper_->GetMaxSaveAndRecallDeskEntryCount() + 1,
+          ash::DeskTemplateType::kSaveAndRecall),
+      base::BindOnce(&VerifyEntryAddedErrorHitMaximumLimit));
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(DeskModelWrapperTest, CanGetAllEntries) {
   InitializeBridge();
 
@@ -410,57 +429,119 @@ TEST_F(DeskModelWrapperTest, GetAllEntriesIncludesPolicyValues) {
   model_wrapper_->SetPolicyDeskTemplates("");
 }
 
-TEST_F(DeskModelWrapperTest, CanMarkDuplicateEntryNames) {
+TEST_F(DeskModelWrapperTest, CanDetectDuplicateEntryNames) {
   InitializeBridge();
 
-  model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  // Add desk template entry to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_desk_template_one_));
+  // Add desk template entry with the duplicated name to desk model.
   auto dupe_template_uuid = base::StringPrintf(kUuidFormat, 6);
   auto dupe_desk_template =
       MakeTestDeskTemplate(dupe_template_uuid, ash::DeskTemplateSource::kUser,
                            "desk_01", base::Time::Now());
-  model_wrapper_->AddOrUpdateEntry(std::move(dupe_desk_template),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  AddSavedDeskToDeskModel(std::move(dupe_desk_template));
+  // Add save and recall desk to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_save_and_recall_desk_one_));
+  // Add save and recall entry with the duplicated name to desk model.
+  auto dupe_save_and_recall_uuid = base::StringPrintf(kUuidFormat, 7);
+  auto dupe_save_and_recall_desk = MakeTestSaveAndRecallDesk(
+      dupe_save_and_recall_uuid, "save_and_recall_desk_01", base::Time::Now());
+  AddSavedDeskToDeskModel(std::move(dupe_save_and_recall_desk));
 
-  auto second_dupe_template_uuid = base::StringPrintf(kUuidFormat, 7);
-  auto second_dupe_desk_template = MakeTestDeskTemplate(
-      second_dupe_template_uuid, ash::DeskTemplateSource::kUser, "desk_01",
-      base::Time::Now());
-  model_wrapper_->AddOrUpdateEntry(std::move(second_dupe_desk_template),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
-
+  // Add save and recall entry with the duplicated name as a desk template to
+  // desk model. This is to test that the two desk types don't share the same
+  // namespace for the sake of duplication checks.
+  auto dupe_second_save_and_recall_uuid = base::StringPrintf(kUuidFormat, 8);
+  auto dupe_second_save_and_recall_desk = MakeTestSaveAndRecallDesk(
+      dupe_second_save_and_recall_uuid, "desk_01", base::Time::Now());
+  AddSavedDeskToDeskModel(std::move(dupe_second_save_and_recall_desk));
   base::RunLoop loop;
   model_wrapper_->GetAllEntries(base::BindLambdaForTesting(
       [&](DeskModel::GetAllEntriesStatus status,
           const std::vector<const ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
-        EXPECT_EQ(entries.size(), 3ul);
-        EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
-        EXPECT_TRUE(FindUuidInUuidList(dupe_template_uuid, entries));
-        EXPECT_TRUE(FindUuidInUuidList(second_dupe_template_uuid, entries));
-        const ash::DeskTemplate* duplicate_one =
-            FindEntryInEntryList(dupe_template_uuid, entries);
-        EXPECT_NE(duplicate_one, nullptr);
-        EXPECT_EQ(base::UTF16ToUTF8(duplicate_one->template_name()),
-                  kDeskOneTemplateDuplicateExpectedName);
+        EXPECT_EQ(entries.size(), 5ul);
 
-        const ash::DeskTemplate* duplicate_two =
-            FindEntryInEntryList(second_dupe_template_uuid, entries);
-        EXPECT_NE(duplicate_two, nullptr);
-        EXPECT_EQ(base::UTF16ToUTF8(duplicate_two->template_name()),
-                  kDeskOneTemplateDuplicateTwoExpectedName);
+        const ash::DeskTemplate* duplicate_desk_template =
+            model_wrapper_->FindOtherEntryWithName(
+                u"desk_01", ash::DeskTemplateType::kTemplate,
+                base::GUID::ParseCaseInsensitive(dupe_template_uuid));
+        EXPECT_TRUE(duplicate_desk_template);
+
+        const ash::DeskTemplate* duplicate_save_and_recall =
+            model_wrapper_->FindOtherEntryWithName(
+                u"save_and_recall_desk_01",
+                ash::DeskTemplateType::kSaveAndRecall,
+                base::GUID::ParseCaseInsensitive(dupe_template_uuid));
+        EXPECT_TRUE(duplicate_save_and_recall);
+
+        const ash::DeskTemplate* duplicate_save_and_recall_not_found =
+            model_wrapper_->FindOtherEntryWithName(
+                u"desk_01", ash::DeskTemplateType::kSaveAndRecall,
+                base::GUID::ParseCaseInsensitive(
+                    dupe_second_save_and_recall_uuid));
+        EXPECT_FALSE(duplicate_save_and_recall_not_found);
 
         loop.Quit();
       }));
   loop.Run();
 }
 
-TEST_F(DeskModelWrapperTest, CanGetDeskTemplateEntryByUuid) {
+TEST_F(DeskModelWrapperTest, CanDetectNoDuplicateEntryNames) {
   InitializeBridge();
 
-  model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  // Add desk template entry to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_desk_template_one_));
 
+  // Add a second desk template entry to the desk model with a unique name.
+  auto second_template_uuid = base::StringPrintf(kUuidFormat, 7);
+  auto second_desk_template =
+      MakeTestDeskTemplate(second_template_uuid, ash::DeskTemplateSource::kUser,
+                           "desk_02", base::Time::Now());
+  AddSavedDeskToDeskModel(std::move(second_desk_template));
+
+  // Add save and recall desk to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_save_and_recall_desk_one_));
+  // Add save and recall entry with the duplicated name to desk model.
+  auto second_save_and_recall_uuid = base::StringPrintf(kUuidFormat, 7);
+  auto second_save_and_recall_desk =
+      MakeTestSaveAndRecallDesk(second_save_and_recall_uuid,
+                                "save_and_recall_desk_02", base::Time::Now());
+  AddSavedDeskToDeskModel(std::move(second_save_and_recall_desk));
+  base::RunLoop loop;
+  model_wrapper_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<const ash::DeskTemplate*>& entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 4ul);
+
+        const ash::DeskTemplate* duplicate_desk_template =
+            model_wrapper_->FindOtherEntryWithName(
+                u"desk_02", ash::DeskTemplateType::kTemplate,
+                base::GUID::ParseCaseInsensitive(second_template_uuid));
+        EXPECT_FALSE(duplicate_desk_template);
+
+        const ash::DeskTemplate* duplicate_save_and_recall =
+            model_wrapper_->FindOtherEntryWithName(
+                u"save_and_recall_desk_02",
+                ash::DeskTemplateType::kSaveAndRecall,
+                base::GUID::ParseCaseInsensitive(second_save_and_recall_uuid));
+        EXPECT_FALSE(duplicate_save_and_recall);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+TEST_F(DeskModelWrapperTest, CanGetEntryByUuid) {
+  InitializeBridge();
+
+  // Add desk template entry to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_desk_template_one_));
+
+  // Add save and recall desk to desk model.
+  AddSavedDeskToDeskModel(std::move(sample_save_and_recall_desk_one_));
+
+  // Find the desk template by its uuid.
   model_wrapper_->GetEntryByUUID(
       kTestUuid1,
       base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
@@ -471,15 +552,7 @@ TEST_F(DeskModelWrapperTest, CanGetDeskTemplateEntryByUuid) {
         EXPECT_EQ(base::UTF16ToUTF8(entry->template_name()), "desk_01");
       }));
 
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(DeskModelWrapperTest, CanGetSaveAndRecallEntryByUuid) {
-  InitializeBridge();
-
-  model_wrapper_->AddOrUpdateEntry(std::move(sample_save_and_recall_desk_one_),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
-
+  // Find the save and recall desk by its uuid.
   model_wrapper_->GetEntryByUUID(
       kTestUuid3,
       base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
@@ -490,18 +563,19 @@ TEST_F(DeskModelWrapperTest, CanGetSaveAndRecallEntryByUuid) {
         EXPECT_EQ(base::UTF16ToUTF8(entry->template_name()),
                   "save_and_recall_desk_01");
       }));
-
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(DeskModelWrapperTest, GetEntryByUuidShouldReturnAdminTemplate) {
   InitializeBridge();
 
-  model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  AddSavedDeskToDeskModel(std::move(sample_desk_template_one_));
 
   // Set admin template with UUID: kTestUuid5.
   model_wrapper_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
+
+  // Check that the admin template is included as an entry.
+  EXPECT_EQ(model_wrapper_->GetAllEntryUuids().size(), 2ul);
 
   model_wrapper_->GetEntryByUUID(
       kTestUuid5,
@@ -513,8 +587,6 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidShouldReturnAdminTemplate) {
         EXPECT_EQ(base::UTF16ToUTF8(entry->template_name()),
                   "Admin Template 1");
       }));
-
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(DeskModelWrapperTest, GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
@@ -535,16 +607,25 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
 TEST_F(DeskModelWrapperTest, CanUpdateEntry) {
   InitializeBridge();
 
+  // Make a clone of a desk template and modify its name.
   auto modified_desk_template = sample_desk_template_one_->Clone();
   modified_desk_template->set_template_name(u"desk_01_mod");
 
-  model_wrapper_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  AddSavedDeskToDeskModel(std::move(sample_desk_template_one_));
 
-  model_wrapper_->AddOrUpdateEntry(std::move(modified_desk_template),
-                                   base::BindOnce(&VerifyEntryAddedCorrectly));
+  AddSavedDeskToDeskModel(std::move(modified_desk_template));
 
-  base::RunLoop loop;
+  // Make a clone of a save and recall desk and modify its name.
+  auto modified_save_and_recall_desk =
+      sample_save_and_recall_desk_one_->Clone();
+  modified_save_and_recall_desk->set_template_name(
+      u"save_and_recall_desk_01_mod");
+
+  AddSavedDeskToDeskModel(std::move(sample_save_and_recall_desk_one_));
+
+  AddSavedDeskToDeskModel(std::move(modified_save_and_recall_desk));
+
+  // Check that the entries are updated.
   model_wrapper_->GetEntryByUUID(
       kTestUuid1,
       base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
@@ -554,9 +635,18 @@ TEST_F(DeskModelWrapperTest, CanUpdateEntry) {
         EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid1));
         EXPECT_EQ(entry->template_name(),
                   base::UTF8ToUTF16(std::string("desk_01_mod")));
-        loop.Quit();
       }));
-  loop.Run();
+
+  model_wrapper_->GetEntryByUUID(
+      kTestUuid3,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kOk);
+
+        EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid3));
+        EXPECT_EQ(entry->template_name(), u"save_and_recall_desk_01_mod");
+      }));
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(DeskModelWrapperTest, CanDeleteDeskTemplateEntry) {
@@ -620,6 +710,9 @@ TEST_F(DeskModelWrapperTest,
   // There should be 5 templates: 2 user templates + 1 admin template + 2 save
   // and recall desks.
   EXPECT_EQ(model_wrapper_->GetEntryCount(), 5ul);
+  // MaxEntryCount should be 6 max save and recall desks + 6 max user templates
+  // + 1 admin template.
+  EXPECT_EQ(model_wrapper_->GetMaxEntryCount(), 13ul);
 }
 
 TEST_F(DeskModelWrapperTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {

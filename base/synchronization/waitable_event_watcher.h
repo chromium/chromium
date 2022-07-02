@@ -145,7 +145,9 @@ class BASE_EXPORT WaitableEventWatcher
   scoped_refptr<Flag> cancel_flag_;
 
   // Enqueued in the wait list of the watched WaitableEvent.
-  raw_ptr<AsyncWaiter> waiter_ = nullptr;
+  //
+  // TODO(crbug.com/1298696): Breaks base_unittests.
+  raw_ptr<AsyncWaiter, DanglingUntriagedDegradeToNoOpWhenMTE> waiter_ = nullptr;
 
   // Kernel of the watched WaitableEvent.
   scoped_refptr<WaitableEvent::WaitableEventKernel> kernel_;

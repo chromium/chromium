@@ -105,6 +105,9 @@ extern const char kUserCancelled[];
 // credentials
 extern const char kWebAuthnOperationTimedOutOrNotAllowed[];
 
+// Used when the user opts out of SPC for a given RP.
+extern const char kSpcUserOptedOut[];
+
 // Used when the renderer does not provide valid payment details, such as a null
 // struct or missing ID or total.
 extern const char kInvalidPaymentDetails[];

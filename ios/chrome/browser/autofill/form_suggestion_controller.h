@@ -30,7 +30,7 @@ class WebState;
 
 // Initializes a new FormSuggestionController with the specified WebState and a
 // list of FormSuggestionProviders.
-// When suggestions are required for an input field, the |providers| will be
+// When suggestions are required for an input field, the `providers` will be
 // asked (in order) if they can handle the field; the first provider to return
 // YES from [FormSuggestionProvider canProviderSuggestionsForForm:field:] will
 // be expected to provide those suggestions using [FormSuggestionProvider

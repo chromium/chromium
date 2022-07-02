@@ -16,7 +16,7 @@ declare_args() {
   # TODO(crbug.com/764576): Enable the feature on more environments.
   # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
-      !is_chromeos && !is_android && !is_chromecast && !is_fuchsia &&
+      !is_chromeos && !is_android && !is_castos && !is_fuchsia &&
       !(host_os == "mac" && current_cpu == "x86") &&
       # Android may build for both 64 bit and 32bit. When this happens, the
       # v8_target_cpu will not equal the target_cpu (for example,

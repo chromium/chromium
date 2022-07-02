@@ -7,9 +7,9 @@
 
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
-#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 
 namespace storage {
 
@@ -17,9 +17,13 @@ namespace storage {
 //
 // These attributes are used for creating the bucket in the database.
 struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInitParams {
-  // Creates a default bucket for the given storage key.
-  explicit BucketInitParams(blink::StorageKey storage_key);
+ public:
+  // Creates an object that represents the `default` bucket for the given
+  // storage key.
+  static BucketInitParams ForDefaultBucket(
+      const blink::StorageKey& storage_key);
 
+  BucketInitParams(blink::StorageKey storage_key, const std::string& name);
   ~BucketInitParams();
 
   BucketInitParams(const BucketInitParams&);
@@ -28,9 +32,17 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInitParams {
   BucketInitParams& operator=(BucketInitParams&&) noexcept;
 
   blink::StorageKey storage_key;
-  std::string name{kDefaultBucketName};
-  base::Time expiration = base::Time::Max();
+  std::string name;
+
+  // `is_null()` when not specified.
+  base::Time expiration = base::Time();
+
+  // 0 when not specified.
   int64_t quota = 0;
+
+  // nullopt when not specified.
+  absl::optional<bool> persistent;
+  absl::optional<blink::mojom::BucketDurability> durability;
 };
 
 }  // namespace storage

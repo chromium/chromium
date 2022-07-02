@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -13,13 +14,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace shared_highlighting {
@@ -171,7 +176,7 @@ std::string SharedHighlightingBrowserTest::GetFirstHighlightedText() {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRemoteInterfaces()
       ->GetInterface(remote.BindNewPipeAndPassReceiver());
   remote->ExtractTextFragmentsMatches(
@@ -243,7 +248,7 @@ class ContextMenuObserver {
     run_loop_.Quit();
   }
 
-  RenderViewContextMenu* context_menu_;
+  raw_ptr<RenderViewContextMenu> context_menu_;
   base::RunLoop run_loop_;
 };
 
@@ -293,6 +298,93 @@ IN_PROC_BROWSER_TEST_F(SharedHighlightingBrowserTest,
 
   // Extract and check that highlighted text matches the selected text.
   EXPECT_EQ("This is a test page", GetFirstHighlightedText());
+}
+
+class MockTextFragmentReceiver
+    : public blink::mojom::TextFragmentReceiverInterceptorForTesting {
+ public:
+  MockTextFragmentReceiver() = default;
+  ~MockTextFragmentReceiver() override = default;
+
+  MockTextFragmentReceiver(const MockTextFragmentReceiver&) = delete;
+  MockTextFragmentReceiver& operator=(const MockTextFragmentReceiver&) = delete;
+
+  TextFragmentReceiver* GetForwardingInterface() override { return this; }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    bound_ = true;
+    receiver_.Bind(mojo::PendingReceiver<blink::mojom::TextFragmentReceiver>(
+        std::move(handle)));
+  }
+
+  bool bound() { return bound_; }
+
+  MOCK_METHOD1(GetExistingSelectors, void(GetExistingSelectorsCallback));
+
+ private:
+  mojo::Receiver<blink::mojom::TextFragmentReceiver> receiver_{this};
+  bool bound_ = false;
+};
+
+class SharedHighlightingFencedFrameBrowserTest
+    : public SharedHighlightingBrowserTest {
+ public:
+  SharedHighlightingFencedFrameBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHDesktopSharedHighlightingFeature);
+  }
+  ~SharedHighlightingFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SharedHighlightingFencedFrameBrowserTest,
+    EnsureTextFragmentReceiverMojoMethodIsNotCalledForFencedFrame) {
+  GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  // Intercept TextFragmentReceiver Mojo connection.
+  MockTextFragmentReceiver text_fragment_receiver;
+  service_manager::InterfaceProvider::TestApi interface_overrider(
+      web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces());
+  interface_overrider.SetBinderForName(
+      blink::mojom::TextFragmentReceiver::Name_,
+      base::BindRepeating(&MockTextFragmentReceiver::Bind,
+                          base::Unretained(&text_fragment_receiver)));
+
+  // GetExistingSelectors method should not be called by the navigation on a
+  // fenced frame.
+  EXPECT_CALL(text_fragment_receiver, GetExistingSelectors(testing::_))
+      .Times(0);
+
+  GURL text_fragment_url =
+      embedded_test_server()->GetURL("/fenced_frames/title2.html#:~:text=");
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            text_fragment_url);
+  EXPECT_FALSE(text_fragment_receiver.bound());
 }
 
 }  // namespace shared_highlighting

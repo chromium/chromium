@@ -43,7 +43,7 @@ static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
   CSSTokenizer tokenizer(value);
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, false, range,
       StrictCSSParserContext(SecureContextMode::kSecureContext),
@@ -118,14 +118,14 @@ TEST(CSSPropertyParserTest, GridTrackLimit3) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kGridTemplateColumns, "repeat(1000000, 10%)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit4) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kGridTemplateRows, "repeat(1000000, 10%)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit5) {
@@ -133,7 +133,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit5) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(1000000, [first] min-content [last])",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit6) {
@@ -141,21 +141,21 @@ TEST(CSSPropertyParserTest, GridTrackLimit6) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(1000000, [first] min-content [last])",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit7) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kGridTemplateColumns, "repeat(1000001, auto)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000001);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit8) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kGridTemplateRows, "repeat(1000001, auto)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1000001);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit9) {
@@ -163,7 +163,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit9) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(400000, 2em minmax(10px, max-content) 0.5fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99999);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1200000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit10) {
@@ -171,7 +171,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit10) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(400000, 2em minmax(10px, max-content) 0.5fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99999);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 1200000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit11) {
@@ -179,7 +179,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit11) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(600000, [first] 3vh 10% 2fr [nav] 10px auto 1fr 6em [last])",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99995);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 4200000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit12) {
@@ -187,7 +187,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit12) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(600000, [first] 3vh 10% 2fr [nav] 10px auto 1fr 6em [last])",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99995);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 4200000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit13) {
@@ -195,7 +195,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit13) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(100000000000000000000, 10% 1fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit14) {
@@ -203,7 +203,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit14) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(100000000000000000000, 10% 1fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 100000);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit15) {
@@ -211,7 +211,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit15) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(100000000000000000000, 10% 5em 1fr auto auto 15px min-content)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99995);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit16) {
@@ -219,7 +219,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit16) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(100000000000000000000, 10% 5em 1fr auto auto 15px min-content)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 99995);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
 }
 
 static int GetGridPositionInteger(const CSSValue& value) {
@@ -243,7 +243,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit2) {
       CSSPropertyID::kGridColumnEnd, "1000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), 100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), 1000000);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit3) {
@@ -251,7 +251,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit3) {
       CSSPropertyID::kGridRowStart, "1000001",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), 100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), 1000001);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit4) {
@@ -259,7 +259,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit4) {
       CSSPropertyID::kGridRowEnd, "5000000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), 100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), INT_MAX - 1);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit5) {
@@ -275,7 +275,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit6) {
       CSSPropertyID::kGridColumnEnd, "-1000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), -100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), -1000000);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit7) {
@@ -283,7 +283,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit7) {
       CSSPropertyID::kGridRowStart, "-1000001",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), -100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), -1000001);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit8) {
@@ -291,7 +291,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit8) {
       CSSPropertyID::kGridRowEnd, "-5000000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), -100000);
+  EXPECT_EQ(GetGridPositionInteger(*value), 1 - INT_MAX);
 }
 
 TEST(CSSPropertyParserTest, ColorFunction) {
@@ -770,7 +770,7 @@ bool ParseCSSValue(CSSPropertyID property_id,
   CSSTokenizer tokenizer(value);
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(property_id, false, range, context,
                                        parsed_properties,
                                        StyleRule::RuleType::kStyle);
@@ -831,6 +831,23 @@ TEST(CSSPropertyParserTest, ParseRevertLayer) {
       CSSPropertyID::kMarginLeft, CSSParserTokenRange(tokens), context);
   ASSERT_TRUE(value);
   EXPECT_TRUE(value->IsRevertLayerValue());
+}
+
+// anchor() and anchor-size() shouldn't parse when the feature is disabled.
+TEST(CSSPropertyParserTest, AnchorPositioningDisabled) {
+  ScopedCSSAnchorPositioningForTest disabled_scope(false);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  EXPECT_FALSE(
+      ParseCSSValue(CSSPropertyID::kTop, "anchor(--foo top)", context));
+  EXPECT_FALSE(
+      ParseCSSValue(CSSPropertyID::kBottom, "anchor(--foo bottom)", context));
+  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kWidth, "anchor-size(--foo width)",
+                             context));
+  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kHeight,
+                             "anchor-size(--foo height)", context));
 }
 
 }  // namespace blink

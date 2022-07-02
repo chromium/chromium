@@ -15,11 +15,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
@@ -28,13 +24,15 @@ base::Value NetworkQualityChangedNetLogParams(
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps,
     EffectiveConnectionType effective_connection_type) {
-  base::DictionaryValue dict;
-  dict.SetInteger("http_rtt_ms", http_rtt.InMilliseconds());
-  dict.SetInteger("transport_rtt_ms", transport_rtt.InMilliseconds());
-  dict.SetInteger("downstream_throughput_kbps", downstream_throughput_kbps);
-  dict.SetString("effective_connection_type",
-                 GetNameForEffectiveConnectionType(effective_connection_type));
-  return std::move(dict);
+  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict& dict = value.GetDict();
+  dict.Set("http_rtt_ms", static_cast<int>(http_rtt.InMilliseconds()));
+  dict.Set("transport_rtt_ms",
+           static_cast<int>(transport_rtt.InMilliseconds()));
+  dict.Set("downstream_throughput_kbps", downstream_throughput_kbps);
+  dict.Set("effective_connection_type",
+           GetNameForEffectiveConnectionType(effective_connection_type));
+  return value;
 }
 
 bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {
@@ -70,9 +68,7 @@ bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {
 
 }  // namespace
 
-EventCreator::EventCreator(NetLogWithSource net_log)
-    : net_log_(net_log),
-      past_effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {}
+EventCreator::EventCreator(NetLogWithSource net_log) : net_log_(net_log) {}
 
 EventCreator::~EventCreator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,8 +110,4 @@ void EventCreator::MaybeAddNetworkQualityChangedEventToNetLog(
   });
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

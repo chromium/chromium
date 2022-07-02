@@ -9,8 +9,9 @@
 
 class ImageLoaderJsTest : public FileManagerJsTestBase {
  protected:
-  ImageLoaderJsTest() : FileManagerJsTestBase(
-      base::FilePath(FILE_PATH_LITERAL("ui/file_manager/image_loader"))) {}
+  ImageLoaderJsTest()
+      : FileManagerJsTestBase(
+            base::FilePath(FILE_PATH_LITERAL("image_loader"))) {}
 
   void SetUpCommandLine(base::CommandLine* command_lin) override {
     // Until Files SWA is fully launched Image Loader imports using
@@ -22,17 +23,17 @@ class ImageLoaderJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderClientTest) {
-  RunTestURL("image_loader_client_unittest.m_gen.html");
+  RunTestURL("image_loader_client_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, CacheTest) {
-  RunTestURL("cache_unittest.m_gen.html");
+  RunTestURL("cache_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderTest) {
-  RunTestURL("image_loader_unittest.m_gen.html");
+  RunTestURL("image_loader_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, SchedulerTest) {
-  RunTestURL("scheduler_unittest.m_gen.html");
+  RunTestURL("scheduler_unittest.js");
 }

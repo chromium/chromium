@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -122,6 +124,12 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
 }
 
+void DisableDeferredShaping(Document& doc, LocalFrameView& frame_view) {
+  frame_view.DisallowDeferredShaping();
+  UseCounter::Count(doc, WebFeature::kDeferredShapingDisabledByPositioned);
+  DEFERRED_SHAPING_VLOG(1) << "Disabled DeferredShaping by positioned objects.";
+}
+
 }  // namespace
 
 // The HashMap for storing continuation pointers.
@@ -153,22 +161,6 @@ void LayoutBoxModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
   // A continuation of this LayoutObject should be destroyed at subclasses.
   DCHECK(!Continuation());
-
-  if (IsPositioned()) {
-    // Don't use view() because the document's layoutView has been set to
-    // 0 during destruction.
-    if (LocalFrame* frame = GetFrame()) {
-      if (LocalFrameView* frame_view = frame->View()) {
-        if (StyleRef().HasViewportConstrainedPosition()) {
-          frame_view->RemoveViewportConstrainedObject(
-              *this, LocalFrameView::ViewportConstrainedType::kFixed);
-        } else if (StyleRef().HasStickyConstrainedPosition()) {
-          frame_view->RemoveViewportConstrainedObject(
-              *this, LocalFrameView::ViewportConstrainedType::kSticky);
-        }
-      }
-    }
-  }
 
   LayoutObject::WillBeDestroyed();
 
@@ -361,43 +353,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (LocalFrameView* frame_view = View()->GetFrameView()) {
-    bool new_style_is_viewport_constained =
-        StyleRef().GetPosition() == EPosition::kFixed;
-    bool old_style_is_viewport_constrained =
-        old_style && old_style->GetPosition() == EPosition::kFixed;
-    bool new_style_is_sticky = StyleRef().HasStickyConstrainedPosition();
-    bool old_style_is_sticky =
-        old_style && old_style->HasStickyConstrainedPosition();
-
-    if (old_style_is_sticky && !new_style_is_sticky) {
-      // This may get re-added to viewport constrained objects if the object
-      // went from sticky to fixed.
-      frame_view->RemoveViewportConstrainedObject(
-          *this, LocalFrameView::ViewportConstrainedType::kSticky);
-
-      // Remove sticky constraints for this layer.
-      if (Layer()) {
-        if (const PaintLayer* ancestor_scroll_container_layer =
-                Layer()->AncestorScrollContainerLayer()) {
-          if (PaintLayerScrollableArea* scrollable_area =
-                  ancestor_scroll_container_layer->GetScrollableArea())
-            scrollable_area->InvalidateStickyConstraintsFor(Layer());
-        }
-      }
-    }
-
-    if (new_style_is_viewport_constained != old_style_is_viewport_constrained) {
-      if (new_style_is_viewport_constained && Layer()) {
-        frame_view->AddViewportConstrainedObject(
-            *this, LocalFrameView::ViewportConstrainedType::kFixed);
-      } else {
-        frame_view->RemoveViewportConstrainedObject(
-            *this, LocalFrameView::ViewportConstrainedType::kFixed);
-      }
-    }
-  }
-
   if (old_style &&
       old_style->BackfaceVisibility() != StyleRef().BackfaceVisibility()) {
     SetNeedsPaintPropertyUpdate();
@@ -463,9 +418,7 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
     // negative_vertical_position is true, the box might be painted above
     // containing_block. We need the precise position of the containing_block.
     if (!clipping_containing_block && negative_vertical_position) {
-      GetFrameView()->DisallowDeferredShaping();
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDeferredShapingDisabledByPositioned);
+      DisableDeferredShaping(GetDocument(), *GetFrameView());
       return;
     }
 
@@ -475,9 +428,7 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
     if (StyleRef().Left().IsAuto() && StyleRef().Right().IsAuto() &&
         (!top.IsAuto() || !bottom.IsAuto())) {
       if (HasIfcAncestorWithinContainingBlock(*this, *containing_block)) {
-        GetFrameView()->DisallowDeferredShaping();
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kDeferredShapingDisabledByPositioned);
+        DisableDeferredShaping(GetDocument(), *GetFrameView());
         return;
       }
     }
@@ -488,11 +439,8 @@ void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
   // If this box is not clipped by containing_block and
   // negative_vertical_position is true, the box might be painted above
   // containing_block. We need the precise position of the containing_block.
-  if (!clipping_containing_block && negative_vertical_position) {
-    GetFrameView()->DisallowDeferredShaping();
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kDeferredShapingDisabledByPositioned);
-  }
+  if (!clipping_containing_block && negative_vertical_position)
+    DisableDeferredShaping(GetDocument(), *GetFrameView());
 }
 
 void LayoutBoxModelObject::InvalidateStickyConstraints() {
@@ -634,8 +582,12 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     NGInlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
-      cursor.Current().RecalcInkOverflow(cursor);
+    NGInlinePaintContext inline_context;
+    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+      NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+          cursor, &inline_context);
+      cursor.Current().RecalcInkOverflow(cursor, &inline_context);
+    }
     return;
   }
 

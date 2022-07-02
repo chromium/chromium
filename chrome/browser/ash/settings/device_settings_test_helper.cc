@@ -15,10 +15,10 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -59,8 +59,8 @@ void DeviceSettingsTestBase::SetUp() {
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
   ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-  chromeos::UserDataAuthClient::InitializeFake();
-  chromeos::CryptohomeMiscClient::InitializeFake();
+  UserDataAuthClient::InitializeFake();
+  CryptohomeMiscClient::InitializeFake();
   PowerManagerClient::InitializeFake();
   chromeos::TpmManagerClient::InitializeFake();
   OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(
@@ -87,8 +87,8 @@ void DeviceSettingsTestBase::TearDown() {
   device_settings_service_.reset();
   chromeos::TpmManagerClient::Shutdown();
   PowerManagerClient::Shutdown();
-  chromeos::CryptohomeMiscClient::Shutdown();
-  chromeos::UserDataAuthClient::Shutdown();
+  CryptohomeMiscClient::Shutdown();
+  UserDataAuthClient::Shutdown();
   ConciergeClient::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();

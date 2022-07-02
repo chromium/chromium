@@ -15,7 +15,7 @@
       async function setUpDeviceOrientation()
       {
           const {sensorMocks, setMockSensorDataForType} =
-              await import('/wpt_internal/orientation-event/resources/sensor-helpers.js');
+              await import('/resources/sensor-helpers.js');
           sensorProvider = sensorMocks();
           let mockDataPromise = setMockSensorDataForType(
               sensorProvider,

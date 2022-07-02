@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmldivelement_htmliframeelement.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -75,9 +74,11 @@ class MODULES_EXPORT MediaDevices final
                               const CaptureHandleConfig*,
                               ExceptionState&);
 
-  ScriptPromise produceCropId(ScriptState*,
-                              V8UnionHTMLDivElementOrHTMLIFrameElement*,
-                              ExceptionState&);
+  // Using ProduceCropTarget(), CropTarget.fromElement() can communicate
+  // with the browser process through the mojom pipe that `this` owns.
+  // TODO(crbug.com/1332628): Move most of the logic into crop_target.cc/h,
+  // leaving only communication in MediaDevices.
+  ScriptPromise ProduceCropTarget(ScriptState*, Element*, ExceptionState&);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;

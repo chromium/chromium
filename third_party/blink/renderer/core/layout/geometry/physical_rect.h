@@ -41,8 +41,14 @@ struct CORE_EXPORT PhysicalRect {
                          LayoutUnit height)
       : offset(left, top), size(width, height) {}
 
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter,
+  // or use EnclosingRect() or FastAndLossyFromRectF() instead.
+  PhysicalRect(double, double, double, double) = delete;
+
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
-  inline PhysicalRect(int left, int top, int width, int height);
+  // 'constexpr' is to let compiler detect usage from production code.
+  constexpr PhysicalRect(int left, int top, int width, int height);
 
   PhysicalOffset offset;
   PhysicalSize size;

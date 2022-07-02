@@ -10,11 +10,13 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_util.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -25,8 +27,11 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -41,7 +46,10 @@ constexpr int kDistanceFromArrowToTouchPoint = 64;
 
 constexpr int kArrowSize = 20;
 constexpr int kBackgroundRadius = 20;
+
 // The background shadow for the circle.
+// TODO(michelefan@): Clean up the shadows after the
+// `chromeos::features::IsDarkLightModeEnabled()` is enabled by default.
 constexpr int kBackNudgeShadowOffsetY1 = 1;
 constexpr int kBackNudgeShadowBlurRadius1 = 2;
 constexpr SkColor kBackNudgeShadowColor1 = SkColorSetA(SK_ColorBLACK, 0x4D);
@@ -148,18 +156,27 @@ class AffordanceView : public views::View {
     const bool is_activated =
         x_offset_ >= kDistanceForFullRadius ||
         state_ == BackGestureAffordance::State::COMPLETING;
+
+    if (chromeos::features::IsDarkLightModeEnabled())
+      // Draw highlight border circles.
+      DrawCircleHighlightBorder(canvas, center_point, kBackgroundRadius);
+
     // Draw the arrow background circle.
     cc::PaintFlags bg_flags;
     bg_flags.setAntiAlias(true);
     bg_flags.setStyle(cc::PaintFlags::kFill_Style);
-    gfx::ShadowValues shadows;
-    shadows.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
-                         kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
-    shadows.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
-                         kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
-    bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+
+    if (!chromeos::features::IsDarkLightModeEnabled()) {
+      gfx::ShadowValues shadows;
+      shadows.push_back(gfx::ShadowValue(
+          gfx::Vector2d(0, kBackNudgeShadowOffsetY1),
+          kBackNudgeShadowBlurRadius1, kBackNudgeShadowColor1));
+      shadows.push_back(gfx::ShadowValue(
+          gfx::Vector2d(0, kBackNudgeShadowOffsetY2),
+          kBackNudgeShadowBlurRadius2, kBackNudgeShadowColor2));
+      bg_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
+    }
+
     bg_flags.setColor(is_activated
                           ? DeprecatedGetControlsLayerColor(
                                 AshColorProvider::ControlsLayerType::

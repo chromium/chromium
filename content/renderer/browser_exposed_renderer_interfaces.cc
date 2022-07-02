@@ -169,7 +169,8 @@ void ExposeRendererInterfacesToBrowser(
                base::ThreadTaskRunnerHandle::Get());
 #if BUILDFLAG(IS_ANDROID)
   binders->Add(
-      base::BindRepeating(&auction_worklet::AuctionWorkletServiceImpl::Create),
+      base::BindRepeating(
+          &auction_worklet::AuctionWorkletServiceImpl::CreateForRenderer),
       base::ThreadTaskRunnerHandle::Get());
 #endif
 

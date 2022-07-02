@@ -6,8 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -92,6 +94,15 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 
   os_proto->set_dark_mode_state(
       ToProtoDarkModeState(chrome::android::GetDarkModeState()));
+
+  if (base::FeatureList::IsEnabled(chrome::android::kCCTPackageNameRecording) &&
+      chrome::android::CustomTabSessionStateTracker::GetInstance()
+          .HasCustomTabSessionState()) {
+    uma_proto->mutable_custom_tab_session()->Swap(
+        chrome::android::CustomTabSessionStateTracker::GetInstance()
+            .GetSession()
+            .get());
+  }
 
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();

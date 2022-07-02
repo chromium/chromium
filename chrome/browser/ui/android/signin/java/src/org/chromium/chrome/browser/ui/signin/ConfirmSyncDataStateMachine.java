@@ -46,8 +46,9 @@ import java.lang.annotation.RetentionPolicy;
  * At any dialog, the user can cancel the dialog and end the whole process (resulting in
  * {@link ConfirmImportSyncDataDialogCoordinator.Listener#onCancel}).
  */
-public class ConfirmSyncDataStateMachine implements ConfirmImportSyncDataDialogCoordinator.Listener,
-                                                    ConfirmManagedSyncDataDialog.Listener {
+public class ConfirmSyncDataStateMachine
+        implements ConfirmImportSyncDataDialogCoordinator.Listener,
+                   ConfirmManagedSyncDataDialogCoordinator.Listener {
     @IntDef({State.BEFORE_OLD_ACCOUNT_DIALOG, State.BEFORE_NEW_ACCOUNT_DIALOG,
             State.AFTER_NEW_ACCOUNT_DIALOG, State.DONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -245,21 +246,23 @@ public class ConfirmSyncDataStateMachine implements ConfirmImportSyncDataDialogC
                 });
     }
 
-    // ConfirmImportSyncDataDialogCoordinator.Listener implementation.
+    /** {@link ConfirmImportSyncDataDialogCoordinator.Listener} implementation. */
     @Override
     public void onConfirm(boolean wipeData) {
         mWipeData = wipeData;
         progress();
     }
 
-    // ConfirmManagedSyncDataDialog.Listener implementation.
+    /** {@link ConfirmManagedSyncDataDialogCoordinator.Listener} implementation. */
     @Override
     public void onConfirm() {
         progress();
     }
 
-    // ConfirmImportSyncDataDialogCoordinator.Listener & ConfirmManagedSyncDataDialog.Listener
-    // implementation.
+    /**
+     * {@link ConfirmImportSyncDataDialogCoordinator.Listener} & {@link
+     * ConfirmManagedSyncDataDialogCoordinator.Listener} implementation.
+     */
     @Override
     public void onCancel() {
         cancel(false);

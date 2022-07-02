@@ -50,9 +50,7 @@ using testing::Test;
 using testing::StrictMock;
 using testing::_;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
  protected:
@@ -1059,6 +1057,4 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   ASSERT_EQ(ERR_CONNECTION_CLOSED, rv);
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

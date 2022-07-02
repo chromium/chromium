@@ -60,23 +60,23 @@ enum AuthenticationState {
 // switched. Possible values:
 //   * User choice: present an alert view asking the user whether the data
 //     should be cleared or merged.
-//   * Clear data: data is removed before signing in with |identity|.
-//   * Merge data: data is not removed before signing in with |identity|.
+//   * Clear data: data is removed before signing in with `identity`.
+//   * Merge data: data is not removed before signing in with `identity`.
 @property(nonatomic, assign) ShouldClearData localDataClearingStrategy;
 
 // Checks which sign-in steps to perform and updates member variables
 // accordingly.
 - (void)checkSigninSteps;
 
-// Continues the sign-in state machine starting from |_state| and invokes
-// |completion_| when finished.
+// Continues the sign-in state machine starting from `_state` and invokes
+// `_signInCompletion` when finished.
 - (void)continueSignin;
 
 // Handles authentication related errors or continues sign-in if the
 // authentication was successful.
 - (void)handlePostAuthenticationFlow:(BOOL)success;
 
-// Runs |completion_| asynchronously with |success| argument.
+// Runs `_signInCompletion` asynchronously with `success` argument.
 - (void)completeSignInWithSuccess:(BOOL)success;
 
 // Cancels the current sign-in flow.
@@ -115,9 +115,9 @@ enum AuthenticationState {
   // ID of the client that is registered for user policy.
   NSString* _clientID;
 
-  // This AuthenticationFlow keeps a reference to |self| while a sign-in flow is
+  // This AuthenticationFlow keeps a reference to `self` while a sign-in flow is
   // is in progress to ensure it outlives any attempt to destroy it in
-  // |_signInCompletion|.
+  // `_signInCompletion`.
   AuthenticationFlow* _selfRetainer;
 }
 
@@ -367,7 +367,7 @@ enum AuthenticationState {
       [self completeSignInWithSuccess:NO];
       return;
     case CLEANUP_BEFORE_DONE: {
-      // Clean up asynchronously to ensure that |self| does not die while
+      // Clean up asynchronously to ensure that `self` does not die while
       // the flow is running.
       DCHECK([NSThread isMainThread]);
       dispatch_async(dispatch_get_main_queue(), ^{

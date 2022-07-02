@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
+import {BrowserProxy, DialogCloseReason} from 'chrome://access-code-cast/browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 declare const chrome: {
@@ -199,5 +199,33 @@ suite('BrowserProxyTest', () => {
     loadTimeData.getBoolean = getBoolean;
     proxy.isBarcodeApiAvailable = proxyBarcodeDetector;
     proxy.isCameraAvailable = proxyCamera;
+  });
+
+  test('metrics are properly recorded', () => {
+    const realChromeSend = chrome.send;
+    let receivedMessage: string;
+    let receivedParams: any[]|undefined;
+    const mockChromeSend = (message: string, params?: any[]) => {
+      receivedMessage = message;
+      receivedParams = params;
+    };
+    chrome.send = mockChromeSend;
+
+    BrowserProxy.recordAccessCodeEntryTime(1000);
+    assertEquals(receivedMessage!, 'metricsHandler:recordMediumTime');
+    assertEquals(receivedParams![0], 'AccessCodeCast.Ui.AccessCodeInputTime');
+    assertEquals(receivedParams![1], 1000);
+
+    BrowserProxy.recordCastAttemptLength(500);
+    assertEquals(receivedMessage!, 'metricsHandler:recordMediumTime');
+    assertEquals(receivedParams![0], 'AccessCodeCast.Ui.CastAttemptLength');
+    assertEquals(receivedParams![1], 500);
+
+    BrowserProxy.recordDialogCloseReason(DialogCloseReason.CANCEL_BUTTON);
+    assertEquals(receivedMessage!, 'metricsHandler:recordInHistogram');
+    assertEquals(receivedParams![0], 'AccessCodeCast.Ui.DialogCloseReason');
+    assertEquals(receivedParams![1], 1);
+
+    chrome.send = realChromeSend;
   });
 });

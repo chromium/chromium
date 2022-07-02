@@ -200,7 +200,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * selection (and the underlying radio button if the toggle has just been
    * enabled).
    */
-  onToggleChanged_() {
+  private onToggleChanged_() {
     this.showRadioGroup_ = this.secureDnsToggle_.value;
     if (this.secureDnsRadio_ === SecureDnsMode.SECURE &&
         !this.$.secureResolverSelect.value) {
@@ -275,7 +275,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * resolver and displays the corresponding privacy policy. Focuses the custom
    * text field if the custom option has been selected.
    */
-  onDropdownSelectionChanged_() {
+  private onDropdownSelectionChanged_() {
     // If we're already in secure mode, update the prefs.
     if (this.secureDnsRadio_ === SecureDnsMode.SECURE) {
       this.updateDnsPrefs_(SecureDnsMode.SECURE);

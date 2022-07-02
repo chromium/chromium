@@ -15,11 +15,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chromeos/network/cellular_connection_handler.h"
-#include "chromeos/network/cellular_esim_installer.h"
-#include "chromeos/network/cellular_esim_profile.h"
-#include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/hermes_metrics_util.h"
+#include "chromeos/ash/components/network/cellular_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_installer.h"
+#include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/hermes_metrics_util.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
@@ -92,6 +92,7 @@ void Euicc::GetProfileList(GetProfileListCallback callback) {
 void Euicc::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
+    bool is_install_via_qr_code,
     InstallProfileFromActivationCodeCallback callback) {
   ESimProfile* profile_info = nullptr;
   mojom::ProfileInstallResult status =
@@ -123,7 +124,8 @@ void Euicc::InstallProfileFromActivationCode(
       activation_code, confirmation_code, path_,
       /*new_shill_properties=*/base::DictionaryValue(),
       base::BindOnce(&Euicc::OnESimInstallProfileResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      /*is_initial_install=*/true, is_install_via_qr_code);
 }
 
 void Euicc::OnESimInstallProfileResult(
@@ -279,8 +281,7 @@ void Euicc::OnRequestPendingProfilesResult(
   mojom::ESimOperationResult operation_result;
 
   if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Request Pending events failed status="
-                   << static_cast<int>(status);
+    NET_LOG(ERROR) << "Request Pending events failed status=" << status;
     metrics_result = RequestPendingProfilesResult::kHermesRequestFailed;
     operation_result = mojom::ESimOperationResult::kFailure;
   } else {

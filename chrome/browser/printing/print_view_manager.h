@@ -158,6 +158,10 @@ class PrintViewManager : public PrintViewManagerBase,
       base::OnceCallback<void(bool should_proceed)> callback);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
+  // Virtual method that tests can override, in order to avoid actually
+  // displaying a system print dialog.
+  virtual void PrintForSystemDialogImpl();
+
   // Virtual method to be overridden in tests, in order to be notified whether
   // the print preview is shown or not due to policies or user actions.
   virtual void PrintPreviewRejectedForTesting();

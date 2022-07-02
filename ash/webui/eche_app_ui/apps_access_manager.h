@@ -17,6 +17,9 @@
 namespace ash {
 namespace eche_app {
 
+// Histogram for tracking Phone Hub Apps setup requests.
+constexpr char kEcheOnboardingHistogramName[] = "Eche.Onboarding.UserAction";
+
 using AccessStatus =
     ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 // Tracks the status of whether the user has enabled apps access on
@@ -36,7 +39,26 @@ class AppsAccessManager {
     // The permission is granted by user action.
     kUserActionPermissionGranted = 2,
 
-    kMaxValue = kUserActionPermissionGranted
+    // Users explicitly decline the permission request.
+    kUserActionPermissionRejected = 3,
+
+    // The permission request time out after 20 seconds.
+    kUserActionTimeout = 4,
+
+    // The permission request is canceled from the remote device, e.g. device
+    // screen off.
+    kUserActionRemoteInterrupt = 5,
+
+    // System exceptions thrown out.
+    kSystemError = 6,
+
+    // The permission request is canceled from the onboarding UI.
+    kUserActionCanceled = 7,
+
+    // The permission request is canceled when the device is disconnected.
+    kFailedConnection = 8,
+
+    kMaxValue = kFailedConnection
   };
 
   class Observer : public base::CheckedObserver {
@@ -53,6 +75,7 @@ class AppsAccessManager {
   virtual ~AppsAccessManager();
 
   virtual AccessStatus GetAccessStatus() const = 0;
+  virtual void NotifyAppsAccessCanceled() = 0;
 
   // Starts an attempt to enable the apps access.
   std::unique_ptr<AppsAccessSetupOperation> AttemptAppsAccessSetup(

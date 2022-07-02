@@ -30,6 +30,13 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // Returns work area parameters associated with the given |window|.
   static WorkAreaInsets* ForWindow(const aura::Window* window);
 
+  // Test API that updates work area through `ShelfLayoutManager`.
+  static void UpdateWorkAreaInsetsForTest(
+      aura::Window* window,
+      const gfx::Rect& shelf_bounds_for_workarea_calculation,
+      const gfx::Insets& shelf_insets,
+      const gfx::Insets& in_session_shelf_insets);
+
   explicit WorkAreaInsets(RootWindowController* root_window_controller);
 
   WorkAreaInsets(const WorkAreaInsets&) = delete;
@@ -54,6 +61,12 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // Returns cached user work area insets in DIPs for this root window.
   const gfx::Insets& user_work_area_insets() const {
     return user_work_area_insets_;
+  }
+
+  // Returns cached user work area insets in DIPs for this root window in
+  // session with true shelf alignment instead of `BottomLocked`.
+  const gfx::Insets& in_session_user_work_area_insets() const {
+    return in_session_user_work_area_insets_;
   }
 
   // Returns accessibility insets in DIPs.
@@ -93,7 +106,8 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // window. |bounds| and |insets| are passed separately, because insets depend
   // on shelf visibility and can be different than calculated from bounds.
   void SetShelfBoundsAndInsets(const gfx::Rect& bounds,
-                               const gfx::Insets& insets);
+                               const gfx::Insets& insets,
+                               const gfx::Insets& in_session_insets);
 
   // KeyboardControllerObserver:
   void OnKeyboardAppearanceChanged(
@@ -113,6 +127,10 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   // Cached insets of user work area in DIPs.
   gfx::Insets user_work_area_insets_;
 
+  // Cached insets of user work area in DIPs in session with true shelf
+  // alignment instead of `BottomLocked`.
+  gfx::Insets in_session_user_work_area_insets_;
+
   // Cached occluded bounds of the keyboard in window coordinates. It needs to
   // be removed from the available work area. See
   // ui/keyboard/keyboard_controller_observer.h for details.
@@ -127,6 +145,10 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
 
   // Cached insets of the shelf in DIPs.
   gfx::Insets shelf_insets_;
+
+  // Cached insets of the shelf in DIPs in session with true shelf alignment
+  // instead of `BottomLocked`.
+  gfx::Insets in_session_shelf_insets_;
 
   // Cached height of the docked magnifier in DIPs at the top of the screen.
   // It needs to be removed from the available work area.

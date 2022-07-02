@@ -112,6 +112,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -122,8 +123,8 @@ class AudioManagerWin;
 class AudioSessionEventListener;
 
 // AudioOutputStream implementation using Windows Core Audio APIs.
-class MEDIA_EXPORT WASAPIAudioOutputStream :
-      public AudioOutputStream,
+class MEDIA_EXPORT WASAPIAudioOutputStream
+    : public AudioOutputStream,
       public base::DelegateSimpleThread::Delegate {
  public:
   // The ctor takes all the usual parameters, plus |manager| which is the
@@ -193,6 +194,10 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
 
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
+
   // Rendering is driven by this thread (which has no message loop).
   // All OnMoreData() callbacks will be called from this thread.
   std::unique_ptr<base::DelegateSimpleThread> render_thread_;
@@ -242,15 +247,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
 
   // The performance counter read during the last call to RenderAudioFromSource
   UINT64 last_qpc_position_ = 0;
-
-  // The number of glitches detected while this stream was active.
-  int num_glitches_detected_ = 0;
-
-  // The approximate amount of audio lost due to glitches.
-  base::TimeDelta cumulative_audio_lost_;
-
-  // The largest single glitch recorded.
-  base::TimeDelta largest_glitch_;
 
   // Pointer to the client that will deliver audio samples to be played out.
   raw_ptr<AudioSourceCallback> source_;

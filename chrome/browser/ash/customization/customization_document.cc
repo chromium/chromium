@@ -269,17 +269,16 @@ bool CustomizationDocument::LoadManifestFromFile(
 
 bool CustomizationDocument::LoadManifestFromString(
     const std::string& manifest) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          manifest, base::JSON_ALLOW_TRAILING_COMMAS |
-                        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!parsed_json.value) {
-    LOG(ERROR) << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      manifest,
+      base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!parsed_json.has_value()) {
+    LOG(ERROR) << parsed_json.error().message;
     NOTREACHED();
     return false;
   }
   std::unique_ptr<base::Value> root =
-      base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+      base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
   root_ = base::DictionaryValue::From(std::move(root));
   if (!root_) {

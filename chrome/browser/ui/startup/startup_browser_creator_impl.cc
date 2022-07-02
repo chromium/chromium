@@ -92,7 +92,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace {
@@ -241,11 +241,14 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // at the state of the MessageLoop.
     Browser::CreateParams params = Browser::CreateParams(profile_, false);
     params.creation_source = Browser::CreationSource::kStartupCreator;
+#if BUILDFLAG(IS_LINUX)
+    params.startup_id = command_line_.GetSwitchValueASCII("desktop-startup-id");
+#endif
     browser = Browser::Create(params);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::LacrosService::Get()->init_params();
+  auto* init_params = chromeos::BrowserInitParams::Get();
   bool from_arc =
       init_params->initial_browser_action ==
           crosapi::mojom::InitialBrowserAction::kOpenWindowWithUrls &&

@@ -13,7 +13,8 @@ namespace net {
 // Host resolution error info.
 struct NET_EXPORT ResolveErrorInfo {
   ResolveErrorInfo();
-  ResolveErrorInfo(int resolve_error, bool is_secure_network_error = false);
+  explicit ResolveErrorInfo(int resolve_error,
+                            bool is_secure_network_error = false);
   ResolveErrorInfo(const ResolveErrorInfo& resolve_error_info);
   ResolveErrorInfo(ResolveErrorInfo&& other);
 

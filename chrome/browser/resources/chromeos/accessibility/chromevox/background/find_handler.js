@@ -5,6 +5,8 @@
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {Output} from '/chromevox/background/output/output.js';
 
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 
@@ -18,7 +20,7 @@ export class FindHandler {
     this.lastFindMarkerReceived = new Date();
 
     /** @private {function(chrome.automation.TreeChange)} */
-    this.treeChangeObserver_ = (change) => this.onTextMatch_(change);
+    this.treeChangeObserver_ = change => this.onTextMatch_(change);
 
     chrome.automation.addTreeChangeObserver(
         TreeChangeObserverFilter.TEXT_MARKER_CHANGES, this.treeChangeObserver_);

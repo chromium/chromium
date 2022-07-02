@@ -122,18 +122,14 @@ class EventServiceListSizeMatcher
 
   virtual bool MatchAndExplain(const Event& e,
                                testing::MatchResultListener* listener) const {
-    if (!e.event_args) {
-      *listener << "event.event_arg is null when it shouldn't be";
-      return false;
-    }
-    if (e.event_args->GetListDeprecated().size() != 1) {
+    if (e.event_args.size() != 1) {
       *listener << "event.event_arg.GetSize() should be 1 but is "
-                << e.event_args->GetListDeprecated().size();
+                << e.event_args.size();
       return false;
     }
     const base::ListValue* services = nullptr;
     {
-      const base::Value& out = e.event_args->GetListDeprecated()[0];
+      const base::Value& out = e.event_args[0];
       services = static_cast<const base::ListValue*>(&out);
     }
     if (!services) {

@@ -382,7 +382,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - ReadingListDataSink Helpers
 
-// Returns the items for the |sectionID|.
+// Returns the items for the `sectionID`.
 - (NSArray<id<ReadingListListItem>>*)itemsForSection:
     (SectionIdentifier)sectionID {
   TableViewModel* model = self.tableViewModel;
@@ -619,8 +619,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self updateToolbarItems];
 }
 
-// Adds |items| to self.tableViewModel for the section designated by
-// |sectionID|.
+// Adds `items` to self.tableViewModel for the section designated by
+// `sectionID`.
 - (void)loadItemsFromArray:(NSArray<id<ReadingListListItem>>*)items
                  toSection:(SectionIdentifier)sectionID {
   if (!items.count)
@@ -638,7 +638,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 
 // Returns a TableViewTextItem that displays the title for the section
-// designated by |sectionID|.
+// designated by `sectionID`.
 - (TableViewHeaderFooterItem*)headerForSectionIndex:
     (SectionIdentifier)sectionID {
   TableViewTextHeaderFooterItem* header =
@@ -671,13 +671,13 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - Item Editing Helpers
 
-// Returns |item| cast as a TableViewItem.
+// Returns `item` cast as a TableViewItem.
 - (TableViewItem<ReadingListListItem>*)tableItemForReadingListItem:
     (id<ReadingListListItem>)item {
   return base::mac::ObjCCastStrict<TableViewItem<ReadingListListItem>>(item);
 }
 
-// Applies |updater| to the items in |section|. The updates are done in reverse
+// Applies `updater` to the items in `section`. The updates are done in reverse
 // order of the cells in the section to keep the order. Monitoring of the
 // data source updates are suspended during this time.
 - (void)updateItemsInSection:(SectionIdentifier)section
@@ -692,8 +692,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.dataSource endBatchUpdates];
 }
 
-// Applies |updater| to the items in |indexPaths|. The updates are done in
-// reverse order |indexPaths| to keep the order. The monitoring of the data
+// Applies `updater` to the items in `indexPaths`. The updates are done in
+// reverse order `indexPaths` to keep the order. The monitoring of the data
 // source updates are suspended during this time.
 - (void)updateItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths
                 withItemUpdater:(ReadingListListItemUpdater)updater {
@@ -706,7 +706,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.dataSource endBatchUpdates];
 }
 
-// Moves all the items from |fromSection| to |toSection| and removes the empty
+// Moves all the items from `fromSection` to `toSection` and removes the empty
 // section from the collection.
 - (void)moveItemsFromSection:(SectionIdentifier)fromSection
                    toSection:(SectionIdentifier)toSection {
@@ -728,7 +728,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self moveItemsAtIndexPaths:sortedIndexPaths toSection:toSection];
 }
 
-// Moves the items at |sortedIndexPaths| to |toSection|, removing any empty
+// Moves the items at `sortedIndexPaths` to `toSection`, removing any empty
 // sections.
 - (void)moveItemsAtIndexPaths:(NSArray*)sortedIndexPaths
                     toSection:(SectionIdentifier)toSection {
@@ -749,7 +749,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
     NSInteger newItemIndex = 0;
     for (NSIndexPath* indexPath in sortedIndexPaths) {
-      // The |sortedIndexPaths| is a copy of the index paths before the
+      // The `sortedIndexPaths` is a copy of the index paths before the
       // destination section has been added if necessary. The section part of
       // the index potentially needs to be updated.
       NSInteger updatedSection = indexPath.section;
@@ -783,15 +783,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self performBatchTableViewUpdates:updates completion:completion];
 }
 
-// Moves the ListItem within self.tableViewModel at |modelIndex| and the
-// UITableViewCell at |tableViewIndex| to |toIndexPath|.
+// Moves the ListItem within self.tableViewModel at `modelIndex` and the
+// UITableViewCell at `tableViewIndex` to `toIndexPath`.
 - (void)moveItemWithModelIndex:(NSIndexPath*)modelIndex
                 tableViewIndex:(NSIndexPath*)tableViewIndex
                        toIndex:(NSIndexPath*)toIndexPath {
   TableViewModel* model = self.tableViewModel;
   TableViewItem* item = [model itemAtIndexPath:modelIndex];
 
-  // Move the item in |model|.
+  // Move the item in `model`.
   [self deleteItemAtIndexPathFromModel:modelIndex];
   NSInteger toSectionID =
       [model sectionIdentifierForSectionIndex:toIndexPath.section];
@@ -803,7 +803,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.tableView moveRowAtIndexPath:tableViewIndex toIndexPath:toIndexPath];
 }
 
-// Makes sure the table view section with |sectionID| exists with the correct
+// Makes sure the table view section with `sectionID` exists with the correct
 // header. Returns the index of the new section in the table view, or
 // NSIntegerMax if no section has been created.
 - (NSInteger)initializeTableViewSection:(SectionIdentifier)sectionID {
@@ -830,12 +830,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   return sectionIndex;
 }
 
-// Whether the model has items in |sectionID|.
+// Whether the model has items in `sectionID`.
 - (BOOL)hasItemInSection:(SectionIdentifier)sectionID {
   return [self itemsForSection:sectionID].count > 0;
 }
 
-// Deletes the items at |indexPaths|, exiting editing and removing empty
+// Deletes the items at `indexPaths`, exiting editing and removing empty
 // sections upon completion.
 - (void)deleteItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
   [self deleteItemsAtIndexPaths:indexPaths
@@ -843,8 +843,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
             removeEmptySections:YES];
 }
 
-// Deletes the items at |indexPaths|.  Exits editing mode if |endEditing| is
-// YES.  Removes empty sections upon completion if |removeEmptySections| is YES.
+// Deletes the items at `indexPaths`.  Exits editing mode if `endEditing` is
+// YES.  Removes empty sections upon completion if `removeEmptySections` is YES.
 - (void)deleteItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths
                      endEditing:(BOOL)endEditing
             removeEmptySections:(BOOL)removeEmptySections {
@@ -878,7 +878,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   }
 }
 
-// Deletes the ListItem corresponding to |indexPath| in the model.
+// Deletes the ListItem corresponding to `indexPath` in the model.
 - (void)deleteItemAtIndexPathFromModel:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger sectionID =
@@ -890,14 +890,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                         atIndex:index];
 }
 
-// Marks all the items at |indexPaths| as read or unread depending on |read|.
+// Marks all the items at `indexPaths` as read or unread depending on `read`.
 - (void)markItemsAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths
                withReadStatus:(BOOL)read {
   // Record metric.
   base::RecordAction(base::UserMetricsAction(
       read ? "MobileReadingListMarkRead" : "MobileReadingListMarkUnread"));
 
-  // Mark the items as |read| and exit editing.
+  // Mark the items as `read` and exit editing.
   ReadingListListItemUpdater updater = ^(id<ReadingListListItem> item) {
     [self.dataSource setReadStatus:read forItem:item];
   };
@@ -912,7 +912,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self exitEditingModeAnimated:YES];
 }
 
-// Marks items from |section| with as read or unread dending on |read|.
+// Marks items from `section` with as read or unread dending on `read`.
 - (void)markItemsInSection:(SectionIdentifier)section
             withReadStatus:(BOOL)read {
   if (![self.tableViewModel hasSectionForSectionIdentifier:section]) {
@@ -920,7 +920,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return;
   }
 
-  // Mark the items as |read| and exit editing.
+  // Mark the items as `read` and exit editing.
   ReadingListListItemUpdater updater = ^(id<ReadingListListItem> item) {
     [self.dataSource setReadStatus:read forItem:item];
   };
@@ -956,7 +956,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
       if ([model hasSectionForSectionIdentifier:section] &&
           ![self hasItemInSection:section]) {
-        // If |section| has no items, remove it from the model and the table
+        // If `section` has no items, remove it from the model and the table
         // view.
         NSInteger sectionIndex = [model sectionForSectionIdentifier:section];
         [tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]

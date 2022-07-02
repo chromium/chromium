@@ -18,7 +18,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,16 +74,6 @@ const int64_t kCurrentLocalStorageSchemaVersion = 1;
 // After this many consecutive commit errors we'll throw away the entire
 // database.
 const int kCommitErrorThreshold = 8;
-
-// Limits on the cache size and number of areas in memory, over which the areas
-// are purged.
-#if BUILDFLAG(IS_ANDROID)
-const unsigned kMaxLocalStorageAreaCount = 10;
-const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
-#else
-const unsigned kMaxLocalStorageAreaCount = 50;
-const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
-#endif
 
 DomStorageDatabase::Key CreateMetaDataKey(
     const blink::StorageKey& storage_key) {
@@ -149,45 +138,6 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
           },
           storage_keys),
       std::move(callback));
-}
-
-enum class CachePurgeReason {
-  NotNeeded,
-  SizeLimitExceeded,
-  AreaCountLimitExceeded,
-  InactiveOnLowEndDevice,
-  AggressivePurgeTriggered
-};
-
-void RecordCachePurgedHistogram(CachePurgeReason reason,
-                                size_t purged_size_kib) {
-  UMA_HISTOGRAM_COUNTS_100000("LocalStorageContext.CachePurgedInKB",
-                              purged_size_kib);
-  switch (reason) {
-    case CachePurgeReason::SizeLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.SizeLimitExceeded",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::AreaCountLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.AreaCountLimitExceeded",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::InactiveOnLowEndDevice:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.InactiveOnLowEndDevice",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::AggressivePurgeTriggered:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "LocalStorageContext.CachePurgedInKB.AggressivePurgeTriggered",
-          purged_size_kib);
-      break;
-    case CachePurgeReason::NotNeeded:
-      NOTREACHED();
-      break;
-  }
 }
 
 }  // namespace
@@ -265,10 +215,6 @@ class LocalStorageImpl::StorageAreaHolder final
   }
 
   void DidCommit(leveldb::Status status) override {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.CommitResult",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-
     context_->OnCommitResult(status);
   }
   void Bind(mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
@@ -285,7 +231,7 @@ class LocalStorageImpl::StorageAreaHolder final
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
   // could already be null, but this field should still be valid.
-  raw_ptr<StorageAreaImpl> area_ptr_;
+  raw_ptr<StorageAreaImpl, DanglingUntriaged> area_ptr_;
   std::unique_ptr<StorageAreaImpl> area_;
   bool has_bindings_ = false;
 };
@@ -446,9 +392,6 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
 }
 
 void LocalStorageImpl::PurgeMemory() {
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-
   for (auto it = areas_.begin(); it != areas_.end();) {
     if (it->second->has_bindings()) {
       it->second->storage_area()->PurgeMemory();
@@ -457,13 +400,6 @@ void LocalStorageImpl::PurgeMemory() {
       it = areas_.erase(it);
     }
   }
-
-  // Track the size of cache purged.
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordCachePurgedHistogram(CachePurgeReason::AggressivePurgeTriggered,
-                             purged_size_kib);
 }
 
 void LocalStorageImpl::ApplyPolicyUpdates(
@@ -487,30 +423,12 @@ void LocalStorageImpl::PurgeUnusedAreasIfNeeded() {
   if (!unused_area_count)
     return;
 
-  CachePurgeReason purge_reason = CachePurgeReason::NotNeeded;
-
-  if (total_cache_size > kMaxLocalStorageCacheSize)
-    purge_reason = CachePurgeReason::SizeLimitExceeded;
-  else if (areas_.size() > kMaxLocalStorageAreaCount)
-    purge_reason = CachePurgeReason::AreaCountLimitExceeded;
-  else if (is_low_end_device_)
-    purge_reason = CachePurgeReason::InactiveOnLowEndDevice;
-
-  if (purge_reason == CachePurgeReason::NotNeeded)
-    return;
-
   for (auto it = areas_.begin(); it != areas_.end();) {
     if (it->second->has_bindings())
       ++it;
     else
       it = areas_.erase(it);
   }
-
-  // Track the size of cache purged.
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordCachePurgedHistogram(purge_reason, purged_size_kib);
 }
 
 void LocalStorageImpl::ForceKeepSessionState() {
@@ -629,10 +547,9 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   if (!status.ok()) {
-    LogDatabaseOpenResult(OpenResult::DATABASE_OPEN_FAILED);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase("LocalStorageContext.OpenResultAfterOpenFailed");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -660,21 +577,14 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
                              &db_version) ||
         db_version < kMinSchemaVersion ||
         db_version > kCurrentLocalStorageSchemaVersion) {
-      LogDatabaseOpenResult(OpenResult::INVALID_VERSION);
-      DeleteAndRecreateDatabase(
-          "LocalStorageContext.OpenResultAfterInvalidVersion");
+      DeleteAndRecreateDatabase();
       return;
     }
 
     database_initialized_ = true;
   } else {
     // Other read error. Possibly database corruption.
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.ReadVersionError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-    LogDatabaseOpenResult(OpenResult::VERSION_READ_ERROR);
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterReadVersionError");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -691,9 +601,6 @@ void LocalStorageImpl::OnConnectionFinished() {
   if (database_)
     tried_to_recreate_during_open_ = false;
 
-  LogDatabaseOpenResult(OpenResult::SUCCESS);
-  open_result_histogram_ = nullptr;
-
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
   connection_state_ = CONNECTION_FINISHED;
@@ -702,7 +609,7 @@ void LocalStorageImpl::OnConnectionFinished() {
   on_database_opened_callbacks_.clear();
 }
 
-void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
+void LocalStorageImpl::DeleteAndRecreateDatabase() {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
@@ -715,7 +622,6 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   connection_state_ = CONNECTION_IN_PROGRESS;
   commit_error_count_ = 0;
   database_.reset();
-  open_result_histogram_ = histogram_name;
 
   bool recreate_in_memory = false;
 
@@ -758,13 +664,6 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
   if (found != areas_.end()) {
     return found->second.get();
   }
-
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-
-  // Track the total localStorage cache size.
-  UMA_HISTOGRAM_COUNTS_100000("LocalStorageContext.CacheSizeInKB",
-                              total_cache_size / 1024);
 
   PurgeUnusedAreasIfNeeded();
 
@@ -911,19 +810,7 @@ void LocalStorageImpl::OnCommitResult(leveldb::Status status) {
     // Deleting StorageAreas in here could cause more commits (and commit
     // errors), but those commits won't reach OnCommitResult because the area
     // will have been deleted before the commit finishes.
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterCommitErrors");
-  }
-}
-
-void LocalStorageImpl::LogDatabaseOpenResult(OpenResult result) {
-  if (result != OpenResult::SUCCESS) {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.OpenError", result,
-                              OpenResult::MAX);
-  }
-  if (open_result_histogram_) {
-    base::UmaHistogramEnumeration(open_result_histogram_, result,
-                                  OpenResult::MAX);
+    DeleteAndRecreateDatabase();
   }
 }
 

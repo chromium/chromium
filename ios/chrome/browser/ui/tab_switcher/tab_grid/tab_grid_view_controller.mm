@@ -94,17 +94,17 @@ void RecordPageChangeInteraction(TabSwitcherPageChangeInteraction interaction) {
                             interaction);
 }
 
-// Computes the page from the offset and width of |scrollView|.
+// Computes the page from the offset and width of `scrollView`.
 TabGridPage GetPageFromScrollView(UIScrollView* scrollView) {
   CGFloat pageWidth = scrollView.frame.size.width;
   CGFloat offset = scrollView.contentOffset.x;
   NSUInteger page = lround(offset / pageWidth);
-  // Fence |page| to valid values; page values of 3 (rounded up from 2.5) are
-  // possible, as are large int values if |pageWidth| is somehow very small.
+  // Fence `page` to valid values; page values of 3 (rounded up from 2.5) are
+  // possible, as are large int values if `pageWidth` is somehow very small.
   page = page < TabGridPageIncognitoTabs ? TabGridPageIncognitoTabs : page;
   page = page > TabGridPageRemoteTabs ? TabGridPageRemoteTabs : page;
   if (UseRTLLayout()) {
-    // In RTL, page indexes are inverted, so subtract |page| from the highest-
+    // In RTL, page indexes are inverted, so subtract `page` from the highest-
     // index TabGridPage value.
     return static_cast<TabGridPage>(TabGridPageRemoteTabs - page);
   }
@@ -113,7 +113,7 @@ TabGridPage GetPageFromScrollView(UIScrollView* scrollView) {
 
 NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (UseRTLLayout()) {
-    // In RTL, page indexes are inverted, so subtract |page| from the highest-
+    // In RTL, page indexes are inverted, so subtract `page` from the highest-
     // index TabGridPage value.
     return static_cast<NSUInteger>(TabGridPageRemoteTabs - page);
   }
@@ -129,8 +129,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      UISearchBarDelegate,
                                      ViewRevealingAnimatee,
                                      UIGestureRecognizerDelegate>
-// Whether the view is visible. Bookkeeping is based on |-viewWillAppear:| and
-// |-viewWillDisappear methods. Note that the |Did| methods are not reliably
+// Whether the view is visible. Bookkeeping is based on `-viewWillAppear:` and
+// `-viewWillDisappear methods. Note that the `Did` methods are not reliably
 // called (e.g., edge case in multitasking).
 @property(nonatomic, assign) BOOL viewVisible;
 // Child view controllers.
@@ -159,9 +159,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Setting the current page doesn't scroll the scroll view; use
 // -scrollToPage:animated: for that.
 @property(nonatomic, assign) TabGridPage currentPage;
-// The UIViewController corresponding with |currentPage|.
+// The UIViewController corresponding with `currentPage`.
 @property(nonatomic, readonly) UIViewController* currentPageViewController;
-// The frame of |self.view| when it initially appeared.
+// The frame of `self.view` when it initially appeared.
 @property(nonatomic, assign) CGRect initialFrame;
 // Whether the scroll view is animating its content offset to the current page.
 @property(nonatomic, assign, getter=isScrollViewAnimatingContentOffset)
@@ -174,7 +174,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Button with a plus sign that opens a new tab, located on the right side of
 // the thumb strip, shown when the plus sign cell isn't visible.
 @property(nonatomic, weak) ThumbStripPlusSignButton* plusSignButton;
-// Bottom constraint for |plusSignButton|.
+// Bottom constraint for `plusSignButton`.
 @property(nonatomic, weak) NSLayoutConstraint* plusSignButtonBottomConstraint;
 
 // The current state of the tab grid when using the thumb strip.
@@ -462,7 +462,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureViewControllerForCurrentSizeClassesAndPage];
   // The toolbars should be hidden (alpha 0.0) before the tab appears, so that
   // they can be animated in. They can't be set to 0.0 here, because if
-  // |animated| is YES, this method is being called inside the animation block.
+  // `animated` is YES, this method is being called inside the animation block.
   if (animated && self.transitionCoordinator) {
     [self animateToolbarsForAppearance];
   } else {
@@ -530,7 +530,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Sets the current search terms on |page|. This allows the content to update
+// Sets the current search terms on `page`. This allows the content to update
 // while the page is still hidden before the page change animation begins.
 - (void)updatePageWithCurrentSearchTerms:(TabGridPage)page {
   if (self.tabGridMode != TabGridModeSearch ||
@@ -549,8 +549,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   if (page == TabGridPageRegularTabs) {
     // Search terms will be non-empty when switching pages. This is important
-    // because |searchItemsWithText:| will show items from all windows. When no
-    // search terms exist, |resetToAllItems| is used instead.
+    // because `searchItemsWithText:` will show items from all windows. When no
+    // search terms exist, `resetToAllItems` is used instead.
     DCHECK(searchTerms.length);
     self.regularTabsViewController.searchText = searchTerms;
     [self.regularTabsDelegate searchItemsWithText:searchTerms];
@@ -937,7 +937,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Show the thumb strip's plus sign button by translating it back into position
-// and setting its alpha to |opacity|.
+// and setting its alpha to `opacity`.
 - (void)showPlusSignButtonWithAlpha:(CGFloat)opacity {
   self.plusSignButton.transform = CGAffineTransformIdentity;
   self.plusSignButton.alpha = opacity;
@@ -1012,7 +1012,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.regularTabsViewController.gridView.contentInset = inset;
 }
 
-// Returns the corresponding GridViewController for |page|. Returns |nil| if
+// Returns the corresponding GridViewController for `page`. Returns `nil` if
 // page does not have a corresponding GridViewController.
 - (GridViewController*)gridViewControllerForPage:(TabGridPage)page {
   switch (page) {
@@ -1033,10 +1033,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _currentPage = currentPage;
   self.currentPageViewController.view.accessibilityElementsHidden = NO;
   if (self.tabGridMode == TabGridModeSearch) {
-    // |UIAccessibilityLayoutChangedNotification| doesn't change the current
+    // `UIAccessibilityLayoutChangedNotification` doesn't change the current
     // item focused by the voiceOver if the notification argument provided with
-    // it is |nil|. In search mode, the item focused by the voiceOver needs to
-    // be reset and to do that |UIAccessibilityScreenChangedNotification| should
+    // it is `nil`. In search mode, the item focused by the voiceOver needs to
+    // be reset and to do that `UIAccessibilityScreenChangedNotification` should
     // be posted instead.
     UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                     nil);
@@ -1053,11 +1053,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Sets the value of |currentPage|, adjusting the position of the scroll view
-// to match. If |animated| is YES, the scroll view change may animate; if it is
+// Sets the value of `currentPage`, adjusting the position of the scroll view
+// to match. If `animated` is YES, the scroll view change may animate; if it is
 // NO, it will never animate.
 - (void)scrollToPage:(TabGridPage)targetPage animated:(BOOL)animated {
-  // This method should never early return if |targetPage| == |_currentPage|;
+  // This method should never early return if `targetPage` == `_currentPage`;
   // the ivar may have been set before the scroll view could be updated. Calling
   // this method should always update the scroll view's offset if possible.
 
@@ -1069,7 +1069,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     animated = NO;
   }
 
-  // If the view isn't loaded yet, just do bookkeeping on |currentPage|.
+  // If the view isn't loaded yet, just do bookkeeping on `currentPage`.
   if (!self.viewLoaded) {
     self.currentPage = targetPage;
     return;
@@ -1082,24 +1082,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL scrolled =
       !CGPointEqualToPoint(self.scrollView.contentOffset, targetOffset);
 
-  // If the view is visible and |animated| is YES, animate the change.
+  // If the view is visible and `animated` is YES, animate the change.
   // Otherwise don't.
   if (!self.viewVisible || !animated) {
     [self.scrollView setContentOffset:targetOffset animated:NO];
     self.currentPage = targetPage;
     // Important updates (e.g., button configurations, incognito visibility) are
-    // made at the end of scrolling animations after |self.currentPage| is set.
+    // made at the end of scrolling animations after `self.currentPage` is set.
     // Since this codepath has no animations, updates must be called manually.
     [self broadcastIncognitoContentVisibility];
     [self configureButtonsForActiveAndCurrentPage];
   } else {
-    // Only set |scrollViewAnimatingContentOffset| to YES if there's an actual
-    // change in the contentOffset, as |-scrollViewDidEndScrollingAnimation:| is
+    // Only set `scrollViewAnimatingContentOffset` to YES if there's an actual
+    // change in the contentOffset, as `-scrollViewDidEndScrollingAnimation:` is
     // never called if the animation does not occur.
     if (scrolled) {
       self.scrollViewAnimatingContentOffset = YES;
       [self.scrollView setContentOffset:targetOffset animated:YES];
-      // |self.currentPage| is set in scrollViewDidEndScrollingAnimation:
+      // `self.currentPage` is set in scrollViewDidEndScrollingAnimation:
     } else {
       self.currentPage = targetPage;
       if (changed) {
@@ -1784,7 +1784,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           TabSwitcherPageChangeInteraction::kControlDrag);
       break;
   }
-  // Don't reset |self.pageChangeInteraction| here, because a drag may still be
+  // Don't reset `self.pageChangeInteraction` here, because a drag may still be
   // in process.
 }
 
@@ -2440,7 +2440,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat offsetWidth =
       self.scrollView.contentSize.width - self.scrollView.frame.size.width;
   CGPoint contentOffset = self.scrollView.contentOffset;
-  // Find the final offset by using |offset| as a fraction of the available
+  // Find the final offset by using `offset` as a fraction of the available
   // scroll width.
   contentOffset.x = offsetWidth * offset;
   self.scrollView.contentOffset = contentOffset;

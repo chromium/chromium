@@ -13,9 +13,9 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -38,7 +38,7 @@ class SegmentInfo;
 class ModelExecutionManagerImpl : public ModelExecutionManager {
  public:
   ModelExecutionManagerImpl(
-      const base::flat_set<OptimizationTarget>& segment_ids,
+      const base::flat_set<SegmentId>& segment_ids,
       ModelProviderFactory* model_provider_factory,
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
@@ -51,8 +51,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       delete;
 
   // ModelExecutionManager override:
-  ModelProvider* GetProvider(
-      optimization_guide::proto::OptimizationTarget segment_id) override;
+  ModelProvider* GetProvider(proto::SegmentId segment_id) override;
 
  private:
   friend class SegmentationPlatformServiceImplTest;
@@ -61,10 +60,9 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Callback for whenever a SegmentationModelHandler is informed that the
   // underlying ML model file has been updated. If there is an available
   // model, this will be called at least once per session.
-  void OnSegmentationModelUpdated(
-      optimization_guide::proto::OptimizationTarget segment_id,
-      proto::SegmentationModelMetadata metadata,
-      int64_t model_version);
+  void OnSegmentationModelUpdated(proto::SegmentId segment_id,
+                                  proto::SegmentationModelMetadata metadata,
+                                  int64_t model_version);
 
   // Callback after fetching the current SegmentInfo from the
   // SegmentInfoDatabase. This is part of the flow for informing the
@@ -72,7 +70,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Merges the PredictionResult from the previously stored SegmentInfo with
   // the newly updated one, and stores the new version in the DB.
   void OnSegmentInfoFetchedForModelUpdate(
-      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentId segment_id,
       proto::SegmentationModelMetadata metadata,
       int64_t model_version,
       absl::optional<proto::SegmentInfo> segment_info);
@@ -83,7 +81,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                                   bool success);
 
   // All the relevant handlers for each of the segments.
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>> model_providers_;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> model_providers_;
 
   // Used to access the current time.
   raw_ptr<base::Clock> clock_;

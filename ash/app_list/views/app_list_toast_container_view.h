@@ -117,8 +117,10 @@ class AppListToastContainerView : public views::View {
   views::Button* GetCloseButton();
 
   AppListToastView* toast_view() { return toast_view_; }
-  bool is_toast_visible() const { return toast_view_; }
   AppListToastType current_toast() const { return current_toast_; }
+
+  // Whether toast view exists and is not being hidden.
+  bool IsToastVisible() const;
 
   AppListA11yAnnouncer* a11y_announcer_for_test() { return a11y_announcer_; }
 

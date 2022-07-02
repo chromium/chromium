@@ -18,9 +18,9 @@ class PrefService;
 // Activity that adds the page to bookmarks.
 @interface BookmarkActivity : UIActivity
 
-// Initializes the bookmark activity with a page's |URL| and |title|. The
-// |bookmarkModel| to verify if the page has already been bookmarked or not. The
-// |handler| is used to add the page to the bookmarks. The |prefService| is used
+// Initializes the bookmark activity with a page's `URL` and `title`. The
+// `bookmarkModel` to verify if the page has already been bookmarked or not. The
+// `handler` is used to add the page to the bookmarks. The `prefService` is used
 // to verify if the user can edit their bookmarks or not.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title

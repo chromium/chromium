@@ -161,7 +161,9 @@ class NodeUnittest(unittest.TestCase):
     node.AddChild(message.PhNode())
     node.AppendContent(u" space before two after  '''")
 
-    order = [message.MessageNode, message.PhNode, message.ExNode, message.PhNode]
+    order = [
+        message.MessageNode, message.PhNode, message.ExNode, message.PhNode
+    ]
     for n in node:
       self.failUnless(type(n) == order[0])
       order = order[1:]
@@ -213,13 +215,16 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "is_linux", {}, 'linux2', {})  # Python 2 used 'linux2'.
     AssertExpr(False, "is_linux", {}, 'linux-foo', {})  # Must match exactly.
     AssertExpr(False, "is_linux", {}, 'foollinux', {})
-    # TODO(crbug.com/1307455): is_linux should be false for Chrome OS once the
-    # bug is fixed. However, this exact expression may not change. Update to
-    # test the actual conditions for Chrome OS.
-    AssertExpr(True, "is_linux", {'chromeos_ash': True}, 'linux', {})
-    AssertExpr(True, "is_linux", {'chromeos_lacros': True}, 'linux', {})
-    AssertExpr(False, "is_chromeos", {'is_chromeos': False}, 'linux', {})
+    AssertExpr(True, "is_linux", {'chromeos_ash': False}, 'linux', {})
+    AssertExpr(False, "is_linux", {'chromeos_ash': True}, 'linux', {})
+    AssertExpr(True, "is_linux", {'chromeos_lacros': False}, 'linux', {})
+    AssertExpr(False, "is_linux", {'chromeos_lacros': True}, 'linux', {})
+    # `is_chromeos` is not used with GRIT and is thus ignored.
     AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux', {})
+    # `is_chromeos` is not currently supported.
+    # TODO(crbug.com/1316150): Uncomment and update these tests when fixed.
+    # AssertExpr(False, "is_chromeos", {}, 'linux', {})
+    # AssertExpr(True, "is_chromeos", {<some condition>}, 'linux', {})
     AssertExpr(False, "is_fuchsia", {}, 'linux', {})
     AssertExpr(False, "is_linux", {}, 'win32', {})
     AssertExpr(True, "is_macosx", {}, 'darwin', {})

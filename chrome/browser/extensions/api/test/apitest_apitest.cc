@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, SendMessage_WithPromise) {
              chrome.test.succeed();
            },
          ]);)";
-  ExtensionTestMessageListener ping_listener("ping", true /* will_reply */);
+  ExtensionTestMessageListener ping_listener("ping", ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
                                              ContextType::kServiceWorker,
                                              /*manifest_version=*/3));

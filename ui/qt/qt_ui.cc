@@ -8,29 +8,127 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/time/time.h"
+#include "chrome/browser/themes/theme_properties.h"  // nogncheck
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_skia_source.h"
+#include "ui/native_theme/native_theme_aura.h"
+#include "ui/native_theme/native_theme_base.h"
+#include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/linux_ui/linux_ui.h"
 
 namespace qt {
 
-QtUi::QtUi() = default;
+namespace {
+
+int QtWeightToCssWeight(int weight) {
+  struct {
+    int qt_weight;
+    int css_weight;
+  } constexpr kMapping[] = {
+      // https://doc.qt.io/qt-5/qfont.html#Weight-enum
+      {0, 100},  {12, 200}, {25, 300}, {50, 400}, {57, 500},
+      {63, 600}, {75, 700}, {81, 800}, {87, 900}, {99, 1000},
+  };
+
+  weight = base::clamp(weight, 0, 99);
+  for (size_t i = 0; i < std::size(kMapping) - 1; i++) {
+    const auto& lo = kMapping[i];
+    const auto& hi = kMapping[i + 1];
+    if (weight <= hi.qt_weight) {
+      return (weight - lo.qt_weight) * (hi.css_weight - lo.css_weight) /
+                 (hi.qt_weight - lo.qt_weight) +
+             lo.css_weight;
+    }
+  }
+  NOTREACHED();
+  return kMapping[std::size(kMapping) - 1].css_weight;
+}
+
+gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
+    qt::FontHinting hinting,
+    gfx::FontRenderParams::Hinting default_hinting) {
+  switch (hinting) {
+    case FontHinting::kDefault:
+      return default_hinting;
+    case FontHinting::kNone:
+      return gfx::FontRenderParams::HINTING_NONE;
+    case FontHinting::kLight:
+      return gfx::FontRenderParams::HINTING_SLIGHT;
+    case FontHinting::kFull:
+      return gfx::FontRenderParams::HINTING_FULL;
+  }
+}
+
+}  // namespace
+
+class QtNativeTheme : public ui::NativeThemeAura {
+ public:
+  explicit QtNativeTheme(QtInterface* shim)
+      : ui::NativeThemeAura(/*use_overlay_scrollbars=*/false,
+                            /*should_only_use_dark_colors=*/false,
+                            /*is_custom_system_theme=*/true),
+        shim_(shim) {}
+  QtNativeTheme(const QtNativeTheme&) = delete;
+  QtNativeTheme& operator=(const QtNativeTheme&) = delete;
+  ~QtNativeTheme() override = default;
+
+  // ui::NativeTheme:
+  void PaintFrameTopArea(cc::PaintCanvas* canvas,
+                         State state,
+                         const gfx::Rect& rect,
+                         const FrameTopAreaExtraParams& frame_top_area,
+                         ColorScheme color_scheme) const override {
+    auto image = shim_->DrawHeader(
+        rect.width(), rect.height(), frame_top_area.default_background_color,
+        frame_top_area.is_active ? ColorState::kNormal : ColorState::kInactive,
+        frame_top_area.use_custom_frame);
+    SkImageInfo image_info = SkImageInfo::Make(
+        image.width, image.height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+    SkBitmap bitmap;
+    bitmap.installPixels(
+        image_info, image.data_argb.Take(), image_info.minRowBytes(),
+        [](void* data, void*) { free(data); }, nullptr);
+    bitmap.setImmutable();
+    canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
+                      rect.x(), rect.y());
+  }
+
+ private:
+  raw_ptr<QtInterface> const shim_;
+};
+
+QtUi::QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_ui)
+    : fallback_linux_ui_(std::move(fallback_linux_ui)) {}
 
 QtUi::~QtUi() = default;
 
 std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
-    ui::LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+    ui::LinuxInputMethodContextDelegate* delegate) const {
+  return fallback_linux_ui_
+             ? fallback_linux_ui_->CreateInputMethodContext(delegate)
+             : nullptr;
 }
 
 gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+  return font_params_;
 }
 
 void QtUi::GetDefaultFontDescription(std::string* family_out,
@@ -38,14 +136,24 @@ void QtUi::GetDefaultFontDescription(std::string* family_out,
                                      int* style_out,
                                      gfx::Font::Weight* weight_out,
                                      gfx::FontRenderParams* params_out) const {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (family_out)
+    *family_out = font_family_;
+  if (size_pixels_out)
+    *size_pixels_out = font_size_pixels_;
+  if (style_out)
+    *style_out = font_style_;
+  if (weight_out)
+    *weight_out = font_weight_;
+  if (params_out)
+    *params_out = font_params_;
 }
 
 ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return fallback_linux_ui_ ? fallback_linux_ui_->CreateSelectFileDialog(
+                                  listener, std::move(policy))
+                            : nullptr;
 }
 
 bool QtUi::Initialize() {
@@ -61,179 +169,341 @@ bool QtUi::Initialize() {
 
   cmd_line_ = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
-      create_qt_interface)(&cmd_line_.argc, cmd_line_.argv.data())));
+      create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
+  native_theme_ = std::make_unique<QtNativeTheme>(shim_.get());
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
+  FontChanged();
 
   return true;
 }
 
-bool QtUi::GetTint(int id, color_utils::HSL* tint) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
 bool QtUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  auto value = GetColor(id, use_custom_frame);
+  if (value)
+    *color = *value;
+  return value.has_value();
 }
 
 bool QtUi::GetDisplayProperty(int id, int* result) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  switch (id) {
+    case ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR:
+      *result = false;
+      return true;
+    default:
+      return false;
+  }
 }
 
 SkColor QtUi::GetFocusRingColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetActiveSelectionBgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetActiveSelectionFgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetInactiveSelectionBgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kInactive);
 }
 
 SkColor QtUi::GetInactiveSelectionFgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
 }
 
 base::TimeDelta QtUi::GetCursorBlinkInterval() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return base::TimeDelta();
-}
-
-ui::NativeTheme* QtUi::GetNativeTheme(aura::Window* window) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
-ui::NativeTheme* QtUi::GetNativeTheme(bool use_system_theme) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
-void QtUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool QtUi::GetDefaultUsesSystemTheme() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return base::Milliseconds(shim_->GetCursorBlinkIntervalMs());
 }
 
 gfx::Image QtUi::GetIconForContentType(const std::string& content_type,
                                        int size,
                                        float scale) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Image();
-}
+  Image image =
+      shim_->GetIconForContentType(String(content_type.c_str()), size * scale);
+  if (!image.data_argb.size())
+    return {};
 
-std::unique_ptr<views::Border> QtUi::CreateNativeBorder(
-    views::LabelButton* owning_button,
-    std::unique_ptr<views::LabelButtonBorder> border) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
-void QtUi::AddWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::RemoveWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  SkImageInfo image_info = SkImageInfo::Make(
+      image.width, image.height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  SkBitmap bitmap;
+  bitmap.installPixels(
+      image_info, image.data_argb.Take(), image_info.minRowBytes(),
+      [](void* data, void*) { free(data); }, nullptr);
+  gfx::ImageSkia image_skia =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, image.scale);
+  image_skia.MakeThreadSafe();
+  return gfx::Image(image_skia);
 }
 
 QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return views::LinuxUI::WindowFrameAction::kNone;
-}
-
-void QtUi::NotifyWindowManagerStartupComplete() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::UpdateDeviceScaleFactor() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT doesn't have settings for the window frame action since it prefers
+  // server-side decorations.  So use the hardcoded behavior of a QMdiSubWindow,
+  // which also matches the default Chrome behavior when there's no LinuxUI.
+  switch (source) {
+    case WindowFrameActionSource::kDoubleClick:
+      return WindowFrameAction::kToggleMaximize;
+    case WindowFrameActionSource::kMiddleClick:
+      return WindowFrameAction::kNone;
+    case WindowFrameActionSource::kRightClick:
+      return WindowFrameAction::kMenu;
+  }
 }
 
 float QtUi::GetDeviceScaleFactor() const {
   return shim_->GetScaleFactor();
 }
 
-void QtUi::AddDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::RemoveDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 bool QtUi::PreferDarkTheme() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return color_utils::IsDark(
+      shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal));
 }
 
 bool QtUi::AnimationsEnabled() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return true;
+  return shim_->GetAnimationDurationMs() > 0;
 }
 
 std::unique_ptr<views::NavButtonProvider> QtUi::CreateNavButtonProvider() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT prefers server-side decorations.
   return nullptr;
 }
 
 views::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT prefers server-side decorations.
   return nullptr;
 }
 
 base::flat_map<std::string, std::string> QtUi::GetKeyboardLayoutMap() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+  return fallback_linux_ui_ ? fallback_linux_ui_->GetKeyboardLayoutMap()
+                            : base::flat_map<std::string, std::string>{};
 }
 
 std::string QtUi::GetCursorThemeName() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // This is only used on X11 where QT obtains the cursor theme from XSettings.
+  // However, ui/base/x/x11_cursor_loader.cc already handles this.
   return std::string();
 }
 
 int QtUi::GetCursorThemeSize() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // This is only used on X11 where QT obtains the cursor size from XSettings.
+  // However, ui/base/x/x11_cursor_loader.cc already handles this.
   return 0;
+}
+
+std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
+  // In QT, themes are binary plugins that are loaded on start and can't be
+  // changed at runtime.  The style may change, but there's no common interface
+  // for doing this from a client.  Return a single empty theme here to
+  // represent the current theme.
+  return {std::string()};
+}
+
+void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
+  // Ensure we only get passed the "current theme" name that we returned from
+  // GetAvailableSystemThemeNamesForTest() above.
+  DCHECK(theme_name.empty());
+}
+
+ui::NativeTheme* QtUi::GetNativeTheme() const {
+  return native_theme_.get();
 }
 
 bool QtUi::MatchEvent(const ui::Event& event,
                       std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT doesn't have "key themes" (eg. readline bindings) like GTK.
   return false;
 }
 
-std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+#if BUILDFLAG(ENABLE_PRINTING)
+printing::PrintDialogLinuxInterface* QtUi::CreatePrintDialog(
+    printing::PrintingContextLinux* context) {
+  return fallback_linux_ui_ ? fallback_linux_ui_->CreatePrintDialog(context)
+                            : nullptr;
 }
 
-void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
-  NOTIMPLEMENTED_LOG_ONCE();
+gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
+  return fallback_linux_ui_ ? fallback_linux_ui_->GetPdfPaperSize(context)
+                            : gfx::Size();
+}
+#endif
+
+void QtUi::FontChanged() {
+  auto params = shim_->GetFontRenderParams();
+  auto desc = shim_->GetFontDescription();
+
+  font_family_ = desc.family.c_str();
+  if (desc.size_pixels > 0) {
+    font_size_pixels_ = desc.size_pixels;
+    font_size_points_ = font_size_pixels_ / GetDeviceScaleFactor();
+  } else {
+    font_size_points_ = desc.size_points;
+    font_size_pixels_ = font_size_points_ * GetDeviceScaleFactor();
+  }
+  font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
+  font_weight_ =
+      static_cast<gfx::Font::Weight>(QtWeightToCssWeight(desc.weight));
+
+  gfx::FontRenderParamsQuery query;
+  query.families = {font_family_};
+  query.pixel_size = font_size_pixels_;
+  query.point_size = font_size_points_;
+  query.style = font_style_;
+  query.weight = font_weight_;
+
+  gfx::FontRenderParams fc_params;
+  gfx::QueryFontconfig(query, &fc_params, nullptr);
+  font_params_ = gfx::FontRenderParams{
+      .antialiasing = params.antialiasing,
+      .use_bitmaps = params.use_bitmaps,
+      .hinting = QtHintingToGfxHinting(params.hinting, fc_params.hinting),
+      // QT doesn't expose a subpixel rendering setting, so fall back to
+      // fontconfig for it.
+      .subpixel_rendering = fc_params.subpixel_rendering,
+  };
 }
 
-std::unique_ptr<views::LinuxUI> CreateQtUi() {
-  return std::make_unique<QtUi>();
+void QtUi::ThemeChanged() {
+  native_theme_->NotifyOnNativeThemeUpdated();
+}
+
+void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
+                               const ui::ColorProviderManager::Key& key) {
+  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+    return;
+
+  ui::ColorMixer& mixer = provider->AddMixer();
+  // These color constants are required by native_chrome_color_mixer_linux.cc
+  struct {
+    ui::ColorId id;
+    ColorType role;
+    ColorState state = ColorState::kNormal;
+  } const kMaps[] = {
+      // Core colors
+      {ui::kColorAccent, ColorType::kHighlightBg},
+      {ui::kColorDisabledForeground, ColorType::kWindowFg,
+       ColorState::kDisabled},
+      {ui::kColorEndpointBackground, ColorType::kEntryBg},
+      {ui::kColorEndpointForeground, ColorType::kEntryFg},
+      {ui::kColorItemHighlight, ColorType::kHighlightBg},
+      {ui::kColorItemSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorMenuSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorMidground, ColorType::kMidground},
+      {ui::kColorPrimaryBackground, ColorType::kWindowBg},
+      {ui::kColorPrimaryForeground, ColorType::kWindowFg},
+      {ui::kColorSecondaryForeground, ColorType::kWindowFg,
+       ColorState::kDisabled},
+      {ui::kColorSubtleAccent, ColorType::kHighlightBg, ColorState::kInactive},
+      {ui::kColorSubtleEmphasisBackground, ColorType::kWindowBg},
+      {ui::kColorTextSelectionBackground, ColorType::kHighlightBg},
+      {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
+
+      // UI element colors
+      {ui::kColorMenuBackground, ColorType::kEntryBg},
+      {ui::kColorMenuItemBackgroundHighlighted, ColorType::kHighlightBg},
+      {ui::kColorMenuItemBackgroundSelected, ColorType::kHighlightBg},
+      {ui::kColorMenuItemForeground, ColorType::kEntryFg},
+      {ui::kColorMenuItemForegroundHighlighted, ColorType::kHighlightFg},
+      {ui::kColorMenuItemForegroundSelected, ColorType::kHighlightFg},
+
+      // Platform-specific UI elements
+      {ui::kColorNativeButtonBorder,
+       // For flat-styled buttons, QT uses the text color as the button border.
+       ColorType::kWindowFg},
+      {ui::kColorNativeHeaderButtonBorderActive, ColorType::kWindowFg},
+      {ui::kColorNativeHeaderButtonBorderInactive, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeHeaderSeparatorBorderActive, ColorType::kWindowFg},
+      {ui::kColorNativeHeaderSeparatorBorderInactive, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeLabelForeground, ColorType::kWindowFg},
+      {ui::kColorNativeTabForegroundInactiveFrameActive, ColorType::kButtonFg},
+      {ui::kColorNativeTabForegroundInactiveFrameInactive, ColorType::kButtonFg,
+       ColorState::kInactive},
+      {ui::kColorNativeTextfieldBorderUnfocused, ColorType::kWindowFg,
+       ColorState::kInactive},
+      {ui::kColorNativeToolbarBackground, ColorType::kButtonBg},
+  };
+  for (const auto& map : kMaps)
+    mixer[map.id] = {shim_->GetColor(map.role, map.state)};
+
+  mixer[ui::kColorFrameActive] = {
+      shim_->GetFrameColor(ColorState::kNormal, true)};
+  mixer[ui::kColorFrameInactive] = {
+      shim_->GetFrameColor(ColorState::kInactive, true)};
+}
+
+absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
+  switch (id) {
+    case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
+      return shim_->GetColor(ColorType::kEntryFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
+      return shim_->GetColor(ColorType::kButtonFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR:
+      return shim_->GetColor(ColorType::kButtonFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_NTP_BACKGROUND:
+      return shim_->GetColor(ColorType::kEntryBg, ColorState::kNormal);
+    case ThemeProperties::COLOR_NTP_TEXT:
+      return shim_->GetColor(ColorType::kEntryFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_NTP_HEADER:
+      return shim_->GetColor(ColorType::kButtonFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON:
+      return shim_->GetColor(ColorType::kWindowFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
+      return shim_->GetColor(ColorType::kWindowFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:
+      return shim_->GetColor(ColorType::kWindowFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TOOLBAR_TEXT:
+      return shim_->GetColor(ColorType::kWindowFg, ColorState::kNormal);
+    case ThemeProperties::COLOR_NTP_LINK:
+      return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
+    case ThemeProperties::COLOR_FRAME_ACTIVE:
+      return shim_->GetFrameColor(ColorState::kNormal, use_custom_frame);
+    case ThemeProperties::COLOR_FRAME_INACTIVE:
+      return shim_->GetFrameColor(ColorState::kInactive, use_custom_frame);
+    case ThemeProperties::COLOR_FRAME_ACTIVE_INCOGNITO:
+      return shim_->GetFrameColor(ColorState::kNormal, use_custom_frame);
+    case ThemeProperties::COLOR_FRAME_INACTIVE_INCOGNITO:
+      return shim_->GetFrameColor(ColorState::kInactive, use_custom_frame);
+    case ThemeProperties::COLOR_TOOLBAR:
+      return shim_->GetColor(ColorType::kButtonBg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
+      return shim_->GetColor(ColorType::kButtonBg, ColorState::kNormal);
+    case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE:
+      return shim_->GetColor(ColorType::kButtonBg, ColorState::kInactive);
+    case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
+      return color_utils::BlendForMinContrast(
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kNormal),
+                 shim_->GetFrameColor(ColorState::kNormal, use_custom_frame))
+          .color;
+    case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
+      return color_utils::BlendForMinContrast(
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kInactive),
+                 shim_->GetFrameColor(ColorState::kInactive, use_custom_frame))
+          .color;
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
+      return color_utils::BlendForMinContrast(
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kNormal),
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kNormal),
+                 SK_ColorBLACK, 2.0)
+          .color;
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE:
+      return color_utils::BlendForMinContrast(
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kInactive),
+                 shim_->GetColor(ColorType::kButtonBg, ColorState::kInactive),
+                 SK_ColorBLACK, 2.0)
+          .color;
+    default:
+      return absl::nullopt;
+  }
+}
+
+std::unique_ptr<views::LinuxUI> CreateQtUi(
+    std::unique_ptr<views::LinuxUI> fallback_linux_ui) {
+  return std::make_unique<QtUi>(std::move(fallback_linux_ui));
 }
 
 }  // namespace qt

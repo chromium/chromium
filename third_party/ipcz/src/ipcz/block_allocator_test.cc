@@ -36,15 +36,15 @@ TEST_F(BlockAllocatorTest, Basic) {
 
   std::set<void*> blocks;
   for (size_t i = 0; i < allocator().capacity(); ++i) {
-    void* block = allocator().Alloc();
+    void* block = allocator().Allocate();
     ASSERT_TRUE(block);
     memset(block, 0xaa, kBlockSize);
     auto [it, inserted] = blocks.insert(block);
     EXPECT_TRUE(inserted);
   }
 
-  // All capacity has been allocated, so Alloc() should fail.
-  EXPECT_FALSE(allocator().Alloc());
+  // All capacity has been allocated, so Allocate() should fail.
+  EXPECT_FALSE(allocator().Allocate());
 
   // The entire region (except the first block) should be filled with 0xaa
   // bytes, as all blocks were allocated and filled completely.
@@ -72,7 +72,7 @@ TEST_F(BlockAllocatorTest, AllocUseFreeRace) {
     for (size_t i = 0; i < kNumIterations; ++i) {
       size_t* data;
       do {
-        data = static_cast<size_t*>(allocator().Alloc());
+        data = static_cast<size_t*>(allocator().Allocate());
       } while (!data);
       *data = i;
       allocated_blocks[i].store(data, std::memory_order_release);
@@ -97,7 +97,7 @@ TEST_F(BlockAllocatorTest, AllocUseFreeRace) {
 }
 
 TEST_F(BlockAllocatorTest, StressTest) {
-  // This test creates a bunch of worker threads to race Alloc() and Free()
+  // This test creates a bunch of worker threads to race Allocate() and Free()
   // operations. Workers mark their allocated blocks and verify consistency of
   // markers when freeing them. Once all workers have finished, the test
   // verifies that all blocks are still allocable and none were lost due to racy
@@ -111,7 +111,7 @@ TEST_F(BlockAllocatorTest, StressTest) {
       size_t num_allocations = 0;
       for (size_t j = 0; j < kNumAllocationsPerIteration; ++j) {
         if (auto* p =
-                static_cast<std::atomic<uint32_t>*>(allocator().Alloc())) {
+                static_cast<std::atomic<uint32_t>*>(allocator().Allocate())) {
           allocations[num_allocations++] = p;
           p->store(id, std::memory_order_relaxed);
         }
@@ -136,7 +136,7 @@ TEST_F(BlockAllocatorTest, StressTest) {
 
   size_t allocable_capacity = 0;
   for (size_t i = 0; i < allocator().capacity(); ++i) {
-    void* p = allocator().Alloc();
+    void* p = allocator().Allocate();
     if (p) {
       ++allocable_capacity;
     }

@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">બારકોડ સ્કૅન કરો</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">દસ્તાવેજ સ્કૅનિંગ સુવિધા ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="4118525110028899586">રેકોર્ડિંગ થોભાવો</translation>
 <translation id="4121305183798804752">દસ્તાવેજની ભાળ મળી</translation>
 <translation id="414641094616694804">આ કૅમેરા રિઝોલ્યુશનમાં ફેરફાર કરી શકતો નથી</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">ફોટા લેવાનું બંધ કરો</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> મેગાપિક્સેલ</translation>
 <translation id="4570032796877367747">આગળનો કૅમેરા</translation>
+<translation id="4620818268515773682">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો. મ્યૂટ બટન બંધ છે</translation>
 <translation id="4628948037717959914">ફોટો</translation>
 <translation id="4649291346448517080">ફાઇલ સાચવવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4695379108709712600">સૌથી ઉપરની દિશામાં ખસેડી રહ્યાં છીએ</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">દસ્તાવેજનો સૌથી નીચેનો જમણો ખૂણો</translation>
+<translation id="7692090236657809299">પૅન, ટિલ્ટ કે નાનું-મોટું કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="7726641833034062494">સામાન્ય વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7748344063862150053">દસ્તાવેજનો સૌથી ઉપરનો જમણો ખૂણો</translation>
 <translation id="7933675232020478311">સૌથી નીચે જમણી દિશામાં ખસેડી રહ્યાં છીએ</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">નીચે ટિલ્ટ કરો</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો. મ્યૂટ બટન ચાલુ છે</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8732462232047530626">મેટાડેટાનું પ્રીવ્યૂ કરો</translation>

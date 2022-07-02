@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_helper.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
@@ -63,7 +65,7 @@ class GLImageTestDelegateBase {
 
   virtual absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const;
-  virtual bool SkipTest() const;
+  virtual bool SkipTest(GLDisplay* display) const;
 };
 
 template <typename GLImageTestDelegate>
@@ -72,7 +74,7 @@ class GLImageTest : public testing::Test {
   // Overridden from testing::Test:
   void SetUp() override {
     auto prefered_impl = delegate_.GetPreferedGLImplementation();
-    GLImageTestSupport::InitializeGL(prefered_impl);
+    display_ = GLImageTestSupport::InitializeGL(prefered_impl);
     surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     context_ =
         gl::init::CreateGLContext(nullptr, surface_.get(), GLContextAttribs());
@@ -84,19 +86,20 @@ class GLImageTest : public testing::Test {
     context_->ReleaseCurrent(surface_.get());
     context_ = nullptr;
     surface_ = nullptr;
-    GLImageTestSupport::CleanupGL();
+    GLImageTestSupport::CleanupGL(display_);
   }
 
  protected:
   scoped_refptr<GLSurface> surface_;
   scoped_refptr<GLContext> context_;
   GLImageTestDelegate delegate_;
+  raw_ptr<GLDisplay> display_ = nullptr;
 };
 
 TYPED_TEST_SUITE_P(GLImageTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   // NOTE: On some drm devices (mediatek) the mininum width/height to add an fb
@@ -133,7 +136,7 @@ class GLImageOddSizeTest : public GLImageTest<GLImageTestDelegate> {};
 TYPED_TEST_SUITE_P(GLImageOddSizeTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   const gfx::Size odd_image_size(17, 53);
@@ -159,7 +162,7 @@ class GLImageCopyTest : public GLImageTest<GLImageTestDelegate> {};
 TYPED_TEST_SUITE_P(GLImageCopyTest);
 
 TYPED_TEST_P(GLImageCopyTest, CopyTexImage) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   // CopyTexImage follows different code paths depending whether the image is

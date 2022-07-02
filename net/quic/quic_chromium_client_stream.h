@@ -178,17 +178,17 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     raw_ptr<QuicChromiumClientStream> stream_;  // Unowned.
 
-    bool may_invoke_callbacks_;  // True when callbacks may be invoked.
+    bool may_invoke_callbacks_ = true;  // True when callbacks may be invoked.
 
     // Callback to be invoked when ReadInitialHeaders completes asynchronously.
     CompletionOnceCallback read_headers_callback_;
     // Provided by the owner of this handle when ReadInitialHeaders is called.
-    raw_ptr<spdy::Http2HeaderBlock> read_headers_buffer_;
+    raw_ptr<spdy::Http2HeaderBlock> read_headers_buffer_ = nullptr;
 
     // Callback to be invoked when ReadBody completes asynchronously.
     CompletionOnceCallback read_body_callback_;
     raw_ptr<IOBuffer> read_body_buffer_;
-    int read_body_buffer_len_;
+    int read_body_buffer_len_ = 0;
 
     // Callback to be invoked when WriteStreamData or WritevStreamData completes
     // asynchronously.
@@ -206,7 +206,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     size_t num_bytes_consumed_;
     Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
-    int net_error_;
+    int net_error_ = ERR_UNEXPECTED;
 
     NetLogWithSource net_log_;
 
@@ -312,30 +312,30 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   void NotifyHandleOfDataAvailable();
 
   NetLogWithSource net_log_;
-  raw_ptr<Handle> handle_;
+  raw_ptr<Handle> handle_ = nullptr;
 
   // True when initial headers have been sent.
-  bool initial_headers_sent_;
+  bool initial_headers_sent_ = false;
 
   raw_ptr<quic::QuicSpdyClientSessionBase> session_;
   quic::QuicTransportVersion quic_version_;
 
   // Set to false if this stream should not be migrated to a cellular network
   // during connection migration.
-  bool can_migrate_to_cellular_network_;
+  bool can_migrate_to_cellular_network_ = true;
 
   // True if non-informational (non-1xx) initial headers have arrived.
-  bool initial_headers_arrived_;
+  bool initial_headers_arrived_ = false;
   // True if non-informational (non-1xx) initial headers have been delivered to
   // the handle.
-  bool headers_delivered_;
+  bool headers_delivered_ = false;
   // Stores the initial header until they are delivered to the handle.
   spdy::Http2HeaderBlock initial_headers_;
   // Length of the HEADERS frame containing initial headers.
-  size_t initial_headers_frame_len_;
+  size_t initial_headers_frame_len_ = 0;
 
   // Length of the HEADERS frame containing trailing headers.
-  size_t trailing_headers_frame_len_;
+  size_t trailing_headers_frame_len_ = 0;
 
   struct EarlyHints {
     EarlyHints(spdy::Http2HeaderBlock headers, size_t frame_len)

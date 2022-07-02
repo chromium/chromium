@@ -1,99 +1,39 @@
 This is a testharness.js-based test.
-FAIL .inline-contained 1 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="150"></video>
-width expected 0 but got 300
-FAIL .inline-contained 2 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="150" controls=""></video>
-width expected 0 but got 300
-FAIL .inline-contained 3 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="100" poster="support/blue-100x100.png"></video>
-width expected 0 but got 100
-FAIL .inline-contained 4 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="100" poster="support/blue-100x100.png" controls=""></video>
-width expected 0 but got 100
-FAIL .inline-contained 5 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="240" src="support/white.webm" controls=""></video>
-width expected 0 but got 320
-FAIL .inline-contained 6 assert_equals: 
-<video class="inline-contained" data-expected-width="0" data-expected-height="240" src="support/white.webm" controls=""></video>
-width expected 0 but got 320
+PASS .inline-contained 1
+PASS .inline-contained 2
+PASS .inline-contained 3
+PASS .inline-contained 4
+PASS .inline-contained 5
+PASS .inline-contained 6
 FAIL .inline-contained 7 assert_equals: 
 <audio class="inline-contained" data-expected-width="0" data-expected-height="40" controls=""></audio>
 height expected 40 but got 0
-FAIL .inline-contained 8 assert_equals: 
-<canvas class="inline-contained" data-expected-width="0" data-expected-height="150"></canvas>
-width expected 0 but got 300
-FAIL .inline-contained 9 assert_equals: 
-<svg class="inline-contained" data-expected-bounding-client-rect-width="0" data-expected-bounding-client-rect-height="150"></svg>
-getBoundingClientRect().width expected 0 but got 300
-FAIL .inline-contained 10 assert_equals: 
-<img class="inline-contained" data-expected-width="0" data-expected-height="24" src="broken">
-height expected 24 but got 16
-FAIL .inline-contained 11 assert_equals: 
-<img class="inline-contained" data-expected-width="0" data-expected-height="100" src="support/blue-100x100.png">
-width expected 0 but got 100
-FAIL .inline-contained 12 assert_equals: 
-<img class="inline-contained" data-expected-width="0" data-expected-height="100">
-width expected 0 but got 100
-FAIL .inline-contained 13 assert_equals: 
-<embed class="inline-contained" data-expected-width="0" data-expected-height="100" src="support/blue-100x100.png">
-width expected 0 but got 100
-FAIL .inline-contained 14 assert_equals: 
-<object class="inline-contained" data-expected-width="0" data-expected-height="100" data="support/blue-100x100.png"></object>
-width expected 0 but got 100
-FAIL .inline-contained 15 assert_equals: 
-<iframe class="inline-contained" data-expected-width="0" data-expected-height="150"></iframe>
-width expected 0 but got 300
-FAIL .inline-contained 16 assert_equals: 
-<iframe class="inline-contained" data-expected-width="0" data-expected-height="150" src="support/blue-100x100.png"></iframe>
-width expected 0 but got 300
-FAIL .inline-contained 17 assert_equals: 
-<video class="inline-contained" data-expected-width="300" data-expected-height="0"></video>
-height expected 0 but got 150
-FAIL .inline-contained 18 assert_equals: 
-<video class="inline-contained" data-expected-width="300" data-expected-height="0" controls=""></video>
-height expected 0 but got 150
-FAIL .inline-contained 19 assert_equals: 
-<video class="inline-contained" data-expected-width="100" data-expected-height="0" poster="support/blue-100x100.png"></video>
-height expected 0 but got 100
-FAIL .inline-contained 20 assert_equals: 
-<video class="inline-contained" data-expected-width="100" data-expected-height="0" poster="support/blue-100x100.png" controls=""></video>
-height expected 0 but got 100
-FAIL .inline-contained 21 assert_equals: 
-<video class="inline-contained" data-expected-width="320" data-expected-height="0" src="support/white.webm" controls=""></video>
-height expected 0 but got 240
-FAIL .inline-contained 22 assert_equals: 
-<video class="inline-contained" data-expected-width="320" data-expected-height="0" src="support/white.webm" controls=""></video>
-height expected 0 but got 240
+PASS .inline-contained 8
+PASS .inline-contained 9
+PASS .inline-contained 10
+PASS .inline-contained 11
+PASS .inline-contained 12
+PASS .inline-contained 13
+PASS .inline-contained 14
+PASS .inline-contained 15
+PASS .inline-contained 16
+PASS .inline-contained 17
+PASS .inline-contained 18
+PASS .inline-contained 19
+PASS .inline-contained 20
+PASS .inline-contained 21
+PASS .inline-contained 22
 FAIL .inline-contained 23 assert_equals: 
 <audio class="inline-contained" data-expected-width="300" data-expected-height="0" controls=""></audio>
 width expected 300 but got 0
-FAIL .inline-contained 24 assert_equals: 
-<canvas class="inline-contained" data-expected-width="300" data-expected-height="0"></canvas>
-height expected 0 but got 150
-FAIL .inline-contained 25 assert_equals: 
-<svg class="inline-contained" data-expected-bounding-client-rect-width="300" data-expected-bounding-client-rect-height="0"></svg>
-getBoundingClientRect().height expected 0 but got 150
-FAIL .inline-contained 26 assert_equals: 
-<img class="inline-contained" data-expected-width="24" data-expected-height="0" src="broken">
-width expected 24 but got 16
-FAIL .inline-contained 27 assert_equals: 
-<img class="inline-contained" data-expected-width="100" data-expected-height="0" src="support/blue-100x100.png">
-height expected 0 but got 100
-FAIL .inline-contained 28 assert_equals: 
-<img class="inline-contained" data-expected-width="100" data-expected-height="0">
-height expected 0 but got 100
-FAIL .inline-contained 29 assert_equals: 
-<embed class="inline-contained" data-expected-width="100" data-expected-height="0" src="support/blue-100x100.png">
-height expected 0 but got 100
-FAIL .inline-contained 30 assert_equals: 
-<object class="inline-contained" data-expected-width="100" data-expected-height="0" data="support/blue-100x100.png"></object>
-height expected 0 but got 100
-FAIL .inline-contained 31 assert_equals: 
-<iframe class="inline-contained" data-expected-width="300" data-expected-height="0"></iframe>
-height expected 0 but got 150
-FAIL .inline-contained 32 assert_equals: 
-<iframe class="inline-contained" data-expected-width="300" data-expected-height="0" src="support/blue-100x100.png"></iframe>
-height expected 0 but got 150
+PASS .inline-contained 24
+PASS .inline-contained 25
+PASS .inline-contained 26
+PASS .inline-contained 27
+PASS .inline-contained 28
+PASS .inline-contained 29
+PASS .inline-contained 30
+PASS .inline-contained 31
+PASS .inline-contained 32
 Harness: the test ran to completion.
 

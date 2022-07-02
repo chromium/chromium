@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -565,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
   std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
-  EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Unpin");
+  EXPECT_EQ(visibility_label, u"Unpin");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
@@ -597,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
   std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
-  EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Pin");
+  EXPECT_EQ(visibility_label, u"Pin");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
@@ -743,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   std::vector<InstalledExtensionMenuItemView*> active_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          extensions::SitePermissionsHelper::SiteInteraction::kActive);
+          extensions::SitePermissionsHelper::SiteInteraction::kGranted);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -757,6 +756,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                                ContextMenuSource::kMenuItem));
   ASSERT_TRUE(context_menu);
   {
+    // Since we are revoking permissions, automatically accept the reload page
+    // bubble to update the permissions.
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    extensions::ExtensionActionRunner::GetForWebContents(web_contents)
+        ->accept_bubble_for_testing(true);
     content::WindowedNotificationObserver permissions_observer(
         extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
         content::NotificationService::AllSources());
@@ -775,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       item_button->GetTooltipText());
   std::vector<InstalledExtensionMenuItemView*> pending_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          extensions::SitePermissionsHelper::SiteInteraction::kPending);
+          extensions::SitePermissionsHelper::SiteInteraction::kWithheld);
   ASSERT_EQ(1u, pending_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", pending_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -799,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                 u"\n"),
             item_button->GetTooltipText());
   active_menu_items = ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-      extensions::SitePermissionsHelper::SiteInteraction::kActive);
+      extensions::SitePermissionsHelper::SiteInteraction::kGranted);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()

@@ -24,15 +24,15 @@ td {
   padding: 1px 4px;
 }
 
-tabpanel {
+div[slot='panel'] {
   padding-bottom: 10px;
 }
 
-tabpanel > div {
+div[slot='panel'] > div {
   display: flex;
 }
 
-tabpanel > div > div {
+div[slot='panel'] > div > div {
   flex: 1;
 }
 

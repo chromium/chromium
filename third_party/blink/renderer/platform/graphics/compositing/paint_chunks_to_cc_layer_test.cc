@@ -1418,5 +1418,25 @@ TEST_P(PaintChunksToCcLayerTest,
       layer->capture_bounds().bounds().find(kThirdCropId.value())->second);
 }
 
+TEST_P(PaintChunksToCcLayerTest, NonCompositedBackdropFilter) {
+  CompositorFilterOperations filter;
+  filter.AppendBlurFilter(5);
+  auto e1 = CreateBackdropFilterEffect(e0(), filter);
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), *e1, gfx::Rect(0, 0, 50, 50));
+
+  sk_sp<PaintRecord> output =
+      PaintChunksToCcLayer::Convert(
+          chunks.Build(), PropertyTreeState::Root(), gfx::Vector2dF(),
+          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
+          ->ReleaseAsRecord();
+  // TODO(crbug.com/1334293): For now non-composited backdrop filters are
+  // ignored.
+  EXPECT_THAT(*output,
+              PaintRecordMatcher::Make({cc::PaintOpType::SaveLayerAlpha,
+                                        cc::PaintOpType::DrawRecord,
+                                        cc::PaintOpType::Restore}));
+}
+
 }  // namespace
 }  // namespace blink

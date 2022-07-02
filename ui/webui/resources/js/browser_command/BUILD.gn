@@ -51,7 +51,8 @@ preprocess_if_expr("preprocess_src") {
 generate_grd("build_grdp") {
   grd_prefix = "webui_js_browser_command"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   resource_path_prefix = "js/browser_command"
 }

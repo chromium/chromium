@@ -13,7 +13,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Factory class to build a DownloadManagerCoordinator instance. */
@@ -24,12 +23,10 @@ public class DownloadManagerCoordinatorFactory {
     public static DownloadManagerCoordinator create(Activity activity,
             DownloadManagerUiConfig config, Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
-            FaviconProvider faviconProvider, OfflineContentProvider provider,
-            DiscardableReferencePool discardableReferencePool) {
+            ModalDialogManager modalDialogManager, Tracker tracker, FaviconProvider faviconProvider,
+            OfflineContentProvider provider, DiscardableReferencePool discardableReferencePool) {
         return new DownloadManagerCoordinatorImpl(activity, config,
                 exploreOfflineTabVisibilitySupplier, settingsLauncher, snackbarManager,
-                modalDialogManager, prefService, tracker, faviconProvider, provider,
-                discardableReferencePool);
+                modalDialogManager, tracker, faviconProvider, provider, discardableReferencePool);
     }
 }

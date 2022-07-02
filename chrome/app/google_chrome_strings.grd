@@ -678,17 +678,9 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">
         Extensions, apps, and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ENCRYPTED"
-               desc="Summary of dangerous warning for an encrypted file.">
-        Chrome blocked this file because it's encrypted. Ask its owner to decrypt it
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_MALWARE"
                desc="Subpage summary for malware warning for the user.">
         Chrome blocked this file because it has malware
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG"
-               desc="Subpage summary of warning for a file blocked for being too large.">
-        Chrome blocked this file because it's too big for a security check. Try again with files up to 50 MB
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
                desc="Subpage summary of warning for Deep Scanning.">
@@ -950,9 +942,12 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <if expr="not chromeos_ash and not is_android">
-        <!-- Profile Customization Bubble-->
+        <!-- Profile Customization Web UI -->
         <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
           Customize your new Chrome profile
+        </message>
+        <message name="IDS_PROFILE_CUSTOMIZATION_TITLE_V2" desc="Title of the profile customization dialog">
+          Customize your Chrome profile
         </message>
       </if>
 
@@ -1445,7 +1440,7 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
 
           <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
-            The following accounts are available for this Chrome profile
+            Sign in to Chrome
           </message>
         </if>
         <if expr="not chromeos_lacros">
@@ -1480,6 +1475,22 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
           A Chrome profile with this account already exists on this device
         </message>
+
+        <!-- First Run Experience -->
+        <if expr="chromeos_lacros">
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE" desc="Title of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
+            Welcome to Chrome, <ph name="ACCOUNT_FIRST_NAME">$1<ex>Jane</ex></ph>
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE" desc="Title of the screen shown when the user runs Chrome for the first time. A simple, generic welcome message.">
+            Welcome to Chrome
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE" desc="Subtitle of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
+            Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the landing screen in first run experience for the primary profile, informing that the session is managed by an administrator.">
+            Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
+          </message>
+        </if>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
@@ -1568,6 +1579,97 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BOTTOM_SUMMARY" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”. * “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
         You can learn more about these features in Chrome settings.
       </message>
+
+      <!-- GoogleUpdater Strings -->
+      <if expr="is_win">
+        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name">
+          Google
+        </message>
+        <message name="IDS_NO_UPDATE_RESPONSE" desc="Updater response for no updates when handling install result.">
+          No update is available.
+        </message>
+        <message name="IDS_INSTALL_UPDATER_FAILED" desc="Updater response for failure when handling install result.">
+          Installation failed. Please try again.
+        </message>
+        <message name="IDS_INSTALLER_DISPLAY_NAME" desc="Name for the updater metainstaller.">
+          <ph name="COMPANY_NAME">$1<ex>Google</ex></ph> Installer
+        </message>
+        <message name="IDS_CLOSE_BUTTON" desc="Close button tooltip">
+          Close
+        </message>
+        <message name="IDS_MINIMIZE_BUTTON" desc="Minimize button tooltip">
+          Minimize
+        </message>
+        <message name="IDS_INITIALIZING" desc="Initial message for the progress window.">
+          Initializing...
+        </message>
+        <message name="IDS_WAITING_TO_CONNECT" desc="Message to show while checking for updates.">
+          Connecting to the Internet...
+        </message>
+        <message name="IDS_DOWNLOADING_SHORT" desc="Shows how many seconds are remaining in the download.">
+          Downloading... <ph name="SECONDS">$1<ex>0</ex></ph> second(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_LONG" desc="Shows how many minutes are remaining in the download.">
+          Downloading... <ph name="MINUTE">$1<ex>0</ex></ph> minute(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_VERY_LONG" desc="Shows how many hours are remaining in the download.">
+          Downloading... <ph name="HOURS">$1<ex>0</ex></ph> hour(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_COMPLETED" desc="For when donwload is completed.">
+          Download complete.
+        </message>
+        <message name="IDS_DOWNLOADING" desc="For when time remaining is less than 0.">
+          Downloading...
+        </message>
+        <message name="IDS_WAITING_TO_INSTALL" desc="While waiting to install between downloading and installing.">
+          Waiting to install...
+        </message>
+        <message name="IDS_INSTALLING" desc="Message shown during install.">
+          Installing...
+        </message>
+        <message name="IDS_CANCELING" desc="For when requesting to cancel the installation.">
+          Canceling...
+        </message>
+        <message name="IDS_TEXT_RESTART_BROWSER" desc="For when a browser must be restarted to complete the installation.">
+          Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_TEXT_RESTART_ALL_BROWSERS" desc="For when all browsers must be restarted to complete the installation.">
+          Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_TEXT_RESTART_COMPUTER" desc="For when the computer must be restarted to complete the installation.">
+          Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_UPDATER_CLOSE" desc="For close button on the UI post install completion.">
+          Close
+        </message>
+        <message name="IDS_RESTART_NOW" desc="For button to restart now to complete installation.">
+          Restart Now
+        </message>
+        <message name="IDS_RESTART_LATER" desc="For button to restart later to complete installation.">
+          Restart Later
+        </message>
+        <message name="IDS_GET_HELP_TEXT" desc="For button to get help.">
+          Help
+        </message>
+        <message name="IDS_INSTALLATION_STOPPED_WINDOW_TITLE" desc="For dialog when user chooses to close the installation window.">
+          Installation Stopped.
+        </message>
+        <message name="IDS_INSTALL_STOPPED" desc="Message of the dialog when user chooses to close the installation window.">
+          Installation not complete. Are you sure you want to cancel?
+        </message>
+        <message name="IDS_RESUME_INSTALLATION" desc="For button to resume the installation.">
+          Resume Installation
+        </message>
+        <message name="IDS_CANCEL_INSTALLATION" desc="For button to cancel the installation.">
+          Cancel Installation
+        </message>
+        <message name="IDS_SPLASH_SCREEN_MESSAGE" desc="Main message on the splash screen.">
+          On your marks...
+        </message>
+        <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
+          Installation complete.
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

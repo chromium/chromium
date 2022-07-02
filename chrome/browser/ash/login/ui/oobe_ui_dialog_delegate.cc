@@ -98,12 +98,6 @@ class OobeWebDialogView : public views::WebDialogView {
     web_contents()->FocusThroughTabTraversal(reverse);
     GetWidget()->Activate();
     web_contents()->Focus();
-
-    if (!GetOobeUI())
-      return;
-    CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-    if (view)
-      view->FocusReturned(reverse);
   }
 
  private:

@@ -134,7 +134,7 @@ bool HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
     return true;
 
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-          contents->GetMainFrame()->GetProcess()->GetID())) {
+          contents->GetPrimaryMainFrame()->GetProcess()->GetID())) {
     auto identity_api_config =
         extensions::WebAuthFlow::GetWebViewPartitionConfig(
             extensions::WebAuthFlow::GET_AUTH_TOKEN,

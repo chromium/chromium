@@ -9,9 +9,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/safe_browsing/buildflags.h"
@@ -23,7 +25,6 @@
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "crypto/sha2.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,30 +49,32 @@ class TestChromeContentRendererClient : public ChromeContentRendererClient {
   }
 };
 
-class PhishingClassifierTest : public ChromeRenderViewTest,
-                               public ::testing::WithParamInterface<bool> {
+class PhishingClassifierTest
+    : public ChromeRenderViewTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   PhishingClassifierTest()
       : url_tld_token_net_(features::kUrlTldToken + std::string("net")),
         page_link_domain_phishing_(features::kPageLinkDomain +
                                    std::string("phishing.com")),
         page_term_login_(features::kPageTerm + std::string("login")),
-        page_text_(u"login"),
-        phishy_score_(PhishingClassifier::kInvalidScore) {}
+        page_text_(u"login") {}
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    if (GetParam()) {
-      PrepareModel();
+    bool is_protobuf, use_tflite;
+    std::tie(is_protobuf, use_tflite) = GetParam();
+    if (is_protobuf) {
+      PrepareModel(use_tflite);
     } else {
-      PrepareFlatModel();
+      PrepareFlatModel(use_tflite);
     }
     SetUpClassifier();
 
     base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
   }
 
-  void PrepareFlatModel() {
+  void PrepareFlatModel(bool use_tflite) {
     flatbuffers::FlatBufferBuilder builder(1024);
     std::vector<flatbuffers::Offset<flat::Hash>> hashes;
     // Make sure this is sorted.
@@ -130,10 +133,43 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
         builder.CreateVector(page_words_vector);
 
     std::vector<flatbuffers::Offset<flat::TfLiteModelMetadata_::Threshold>>
-        thresholds_vector = {};
+        thresholds_vector;
+    if (use_tflite) {
+      thresholds_vector = {
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "502fd246eb6fad3eae0387c54e4ebe74", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "7c4065b088444b37d273872b771e6940", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "712036bd72bf185a2a4f88de9141d02d", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "9e9c15bfa7cb3f8699e2271116a4175c", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "6c2cb3f559e7a03f37dd873fc007dc65", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "1cbeb74661a5e7e05c993f2524781611", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "989790016b6adca9d46b9c8ec6b8fe3a", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "501067590331ca2d243c669e6084c47e", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "40aed7e33c100058e54c73af3ed49524", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "62f53ea23c7ad2590db711235a45fd38", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "ee6fb9baa44f192bc3c53d8d3c6f7a3d", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "ea54b0830d871286e2b4023bbb431710", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "25645a55b844f970337218ea8f1f26b7", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+          flat::TfLiteModelMetadata_::CreateThresholdDirect(
+              builder, "953255ea26aa8578d06593ff33e99298", 2.0)};
+    }
     flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
-        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
-                                              0);
+        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
+                                              48, 48);
 
     flat::ClientSideModelBuilder csd_model_builder(builder);
     csd_model_builder.add_hashes(hashes_flat);
@@ -145,6 +181,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     csd_model_builder.add_max_shingles_per_page(100);
     csd_model_builder.add_shingle_size(3);
     csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+    csd_model_builder.add_dom_model_version(123);
 
     builder.Finish(csd_model_builder.Finish());
     std::string model_str(reinterpret_cast<char*>(builder.GetBufferPointer()),
@@ -155,11 +192,18 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     ASSERT_TRUE(mapped_region_.IsValid());
     memcpy(mapped_region_.mapping.memory(), model_str.data(),
            model_str.length());
+    base::File tflite_model;
+    if (use_tflite) {
+      base::FilePath tflite_path;
+      GetTfliteModelPath(&tflite_path),
+          tflite_model = base::File(
+              tflite_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    }
     ScorerStorage::GetInstance()->SetScorer(FlatBufferModelScorer::Create(
-        mapped_region_.region.Duplicate(), base::File()));
+        mapped_region_.region.Duplicate(), std::move(tflite_model)));
   }
 
-  void PrepareModel() {
+  void PrepareModel(bool use_tflite) {
     // Construct a model to test with.  We include one feature from each of
     // the feature extractors, which allows us to verify that they all ran.
     ClientSideModel model;
@@ -195,9 +239,54 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     model.set_max_words_per_term(1);
     model.set_max_shingles_per_page(100);
     model.set_shingle_size(3);
+    model.set_dom_model_version(123);
 
-    ScorerStorage::GetInstance()->SetScorer(
-        ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
+    base::File tflite_model;
+    if (use_tflite) {
+      base::FilePath tflite_path;
+      GetTfliteModelPath(&tflite_path),
+          tflite_model = base::File(
+              tflite_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+      model.mutable_tflite_metadata()->set_input_width(48);
+      model.mutable_tflite_metadata()->set_input_height(48);
+
+      std::vector<std::pair<std::string, double>> thresholds{
+          {"502fd246eb6fad3eae0387c54e4ebe74", 2.0},
+          {"7c4065b088444b37d273872b771e6940", 2.0},
+          {"712036bd72bf185a2a4f88de9141d02d", 2.0},
+          {"9e9c15bfa7cb3f8699e2271116a4175c", 2.0},
+          {"6c2cb3f559e7a03f37dd873fc007dc65", 2.0},
+          {"1cbeb74661a5e7e05c993f2524781611", 2.0},
+          {"989790016b6adca9d46b9c8ec6b8fe3a", 2.0},
+          {"501067590331ca2d243c669e6084c47e", 2.0},
+          {"40aed7e33c100058e54c73af3ed49524", 2.0},
+          {"62f53ea23c7ad2590db711235a45fd38", 2.0},
+          {"ee6fb9baa44f192bc3c53d8d3c6f7a3d", 2.0},
+          {"ea54b0830d871286e2b4023bbb431710", 2.0},
+          {"25645a55b844f970337218ea8f1f26b7", 2.0},
+          {"c9a8640be09f97f170f1a2708058c48f", 2.0},
+          {"953255ea26aa8578d06593ff33e99298", 2.0}};
+      for (const auto& label_and_threshold : thresholds) {
+        TfLiteModelMetadata::Threshold* threshold =
+            model.mutable_tflite_metadata()->add_thresholds();
+        threshold->set_label(label_and_threshold.first);
+        threshold->set_threshold(label_and_threshold.second);
+      }
+    }
+    ScorerStorage::GetInstance()->SetScorer(ProtobufModelScorer::Create(
+        model.SerializeAsString(), std::move(tflite_model)));
+  }
+
+  void GetTfliteModelPath(base::FilePath* path) {
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, path));
+#if BUILDFLAG(IS_ANDROID)
+    *path = path->AppendASCII("safe_browsing")
+                .AppendASCII("visual_model_android.tflite");
+#else
+    *path = path->AppendASCII("safe_browsing")
+                .AppendASCII("visual_model_desktop.tflite");
+#endif
   }
 
   void SetUpClassifier() {
@@ -217,14 +306,11 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
 
   // Completion callback for classification.
   void ClassificationFinished(const ClientPhishingRequest& verdict) {
-    phishy_score_ = verdict.client_score();
+    verdict_ = verdict;
     for (int i = 0; i < verdict.feature_map_size(); ++i) {
       feature_map_.AddRealFeature(verdict.feature_map(i).name(),
                                   verdict.feature_map(i).value());
     }
-    is_phishing_ = verdict.is_phishing();
-    is_dom_match_ = verdict.is_dom_match();
-
     run_loop_.Quit();
   }
 
@@ -250,10 +336,8 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
   std::u16string page_text_;
 
   // Outputs of phishing classifier.
+  ClientPhishingRequest verdict_;
   FeatureMap feature_map_;
-  float phishy_score_;
-  bool is_phishing_;
-  bool is_dom_match_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
   base::TestDiscardableMemoryAllocator test_allocator_;
@@ -271,8 +355,8 @@ TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttp) {
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
                     Contains(Pair(page_link_domain_phishing_, 1.0)),
                     Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, phishy_score_);
-  EXPECT_TRUE(is_phishing_);
+  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
@@ -288,8 +372,8 @@ TEST_P(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
                     Contains(Pair(page_link_domain_phishing_, 1.0)),
                     Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, phishy_score_);
-  EXPECT_TRUE(is_phishing_);
+  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
@@ -303,9 +387,9 @@ TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
                     Contains(Pair(page_term_login_, 1.0))));
   EXPECT_THAT(feature_map_.features(),
               Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(phishy_score_, 0.0);
-  EXPECT_LT(phishy_score_, 0.5);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_GE(verdict_.client_score(), 0.0);
+  EXPECT_LT(verdict_.client_score(), 0.5);
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
@@ -320,9 +404,9 @@ TEST_P(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
                     Contains(Pair(page_term_login_, 1.0))));
   EXPECT_THAT(feature_map_.features(),
               Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(phishy_score_, 0.0);
-  EXPECT_LT(phishy_score_, 0.5);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_GE(verdict_.client_score(), 0.0);
+  EXPECT_LT(verdict_.client_score(), 0.5);
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationWhenNoTld) {
@@ -331,8 +415,8 @@ TEST_P(PhishingClassifierTest, TestClassificationWhenNoTld) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
@@ -342,8 +426,8 @@ TEST_P(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
   RunPhishingClassifier(&page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kInvalidScore, phishy_score_);
-  EXPECT_FALSE(is_phishing_);
+  EXPECT_EQ(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
 }
 
 TEST_P(PhishingClassifierTest, DisableDetection) {
@@ -359,8 +443,9 @@ TEST_P(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_TRUE(is_phishing_);
-  EXPECT_TRUE(is_dom_match_);
+  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_TRUE(verdict_.is_phishing());
+  EXPECT_TRUE(verdict_.is_dom_match());
 }
 
 TEST_P(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
@@ -368,13 +453,24 @@ TEST_P(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
   RunPhishingClassifier(&page_text_);
 
-  EXPECT_FALSE(is_phishing_);
-  EXPECT_FALSE(is_dom_match_);
+  EXPECT_NE(PhishingClassifier::kInvalidScore, verdict_.client_score());
+  EXPECT_FALSE(verdict_.is_phishing());
+  EXPECT_FALSE(verdict_.is_dom_match());
+}
+
+TEST_P(PhishingClassifierTest, TestDomModelVersionPopulated) {
+  LoadHtml(
+      GURL("http://host.net"),
+      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
+  RunPhishingClassifier(&page_text_);
+
+  EXPECT_EQ(verdict_.dom_model_version(), 123);
 }
 
 INSTANTIATE_TEST_SUITE_P(CSDModelTypes,
                          PhishingClassifierTest,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in

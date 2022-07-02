@@ -21,12 +21,20 @@ const base::Feature kSingleCellContentSuggestions{
 
 // Feature disabled by default.
 const base::Feature kContentSuggestionsHeaderMigration{
-    "ContentSuggestionsHeaderMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ContentSuggestionsHeaderMigration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature disabled by default.
 const base::Feature kContentSuggestionsUIViewControllerMigration{
     "ContentSuggestionsUIViewControllerMigration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Feature disabled by default.
+const base::Feature kContentSuggestionsUIModuleRefresh{
+    "ContentSuggestionsUIModuleRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature disabled by default.
+const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
@@ -34,10 +42,6 @@ const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
 
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
-}
-
-bool IsSingleNtpEnabled() {
-  return base::FeatureList::IsEnabled(kSingleNtp);
 }
 
 bool IsSingleCellContentSuggestionsEnabled() {
@@ -51,4 +55,12 @@ bool IsContentSuggestionsHeaderMigrationEnabled() {
 bool IsContentSuggestionsUIViewControllerMigrationEnabled() {
   return base::FeatureList::IsEnabled(
       kContentSuggestionsUIViewControllerMigration);
+}
+
+bool IsContentSuggestionsUIModuleRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh);
+}
+
+bool IsTrendingQueriesModuleEnabled() {
+  return base::FeatureList::IsEnabled(kTrendingQueriesModule);
 }

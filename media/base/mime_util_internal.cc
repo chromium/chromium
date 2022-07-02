@@ -130,7 +130,8 @@ static bool IsValidH264Level(uint8_t level_idc) {
           (level_idc >= 20 && level_idc <= 22) ||
           (level_idc >= 30 && level_idc <= 32) ||
           (level_idc >= 40 && level_idc <= 42) ||
-          (level_idc >= 50 && level_idc <= 52));
+          (level_idc >= 50 && level_idc <= 52) ||
+          (level_idc >= 60 && level_idc <= 62));
 }
 
 // Make a default ParsedCodecResult. Values should indicate "unspecified"
@@ -423,8 +424,7 @@ void MimeUtil::AddContainerWithCodecs(const std::string& mime_type,
 }
 
 bool MimeUtil::IsSupportedMediaMimeType(const std::string& mime_type) const {
-  return media_format_map_.find(base::ToLowerASCII(mime_type)) !=
-         media_format_map_.end();
+  return media_format_map_.contains(base::ToLowerASCII(mime_type));
 }
 
 void MimeUtil::SplitCodecs(const std::string& codecs,

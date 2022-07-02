@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 #import <Metal/Metal.h>
 
 #include "base/mac/scoped_nsobject.h"
@@ -38,7 +40,7 @@ class MTLLibraryCache;
 
   // Weak pointer to the progress reporter used to avoid watchdog timeouts.
   // This must be re-set to nullptr when it is no longer known to be valid.
-  gl::ProgressReporter* _progressReporter;
+  raw_ptr<gl::ProgressReporter> _progressReporter;
 
   std::unique_ptr<MTLLibraryCache> _libraryCache;
 }

@@ -221,6 +221,9 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   void GetRootSize(GetRootSizeCallback callback);
 
  private:
+  friend class ArcDocumentsProviderRootMapTest;
+  FRIEND_TEST_ALL_PREFIXES(ArcDocumentsProviderRootMapTest, Lookup);
+
   struct WatcherData;
   struct DirectoryCache;
 

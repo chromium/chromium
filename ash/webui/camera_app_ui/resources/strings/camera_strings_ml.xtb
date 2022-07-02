@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">ബാർകോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">ഡോക്യുമെന്റ് സ്‌കാൻ ചെയ്യൽ ഫീച്ചർ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4118525110028899586">റെക്കോർഡ് ചെയ്യൽ തൽക്കാലം നിർത്തുക</translation>
 <translation id="4121305183798804752">ഡോക്യുമെന്റ് കണ്ടെത്തി</translation>
 <translation id="414641094616694804">ഈ ക്യാമറയ്ക്ക് റെസല്യൂഷൻ മാറ്റാനാകില്ല</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">ഫോട്ടോ എടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> മെഗാപിക്‌സൽ</translation>
 <translation id="4570032796877367747">മുൻ ക്യാമറ</translation>
+<translation id="4620818268515773682">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ മാറ്റുക. മ്യൂട്ട് ചെയ്യൽ ഓഫാണ്</translation>
 <translation id="4628948037717959914">ഫോട്ടോ</translation>
 <translation id="4649291346448517080">ഫയൽ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="4695379108709712600">മുകളിലേക്കുള്ള ദിശയിൽ നീങ്ങുന്നു</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ഡോക്യുമെന്റിന്റെ താഴ് ഭാഗത്തെ വലത് മൂല</translation>
+<translation id="7692090236657809299">പാൻ ടിൽറ്റ് സൂം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7726641833034062494">സാധാരണ വീഡിയോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7748344063862150053">ഡോക്യുമെന്റിന്റെ മുകൾ ഭാഗത്തെ വലത് മൂല</translation>
 <translation id="7933675232020478311">താഴെ വലത് ദിശയിൽ നീങ്ങുന്നു</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">താഴേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ മാറ്റുക. മ്യൂട്ട് ചെയ്യൽ ഓണാണ്</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8732462232047530626">മെറ്റാഡാറ്റ പ്രിവ്യൂ ചെയ്യൂ</translation>

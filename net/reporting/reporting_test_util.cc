@@ -28,6 +28,7 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,8 +57,8 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
   const url::Origin& report_origin() const override { return report_origin_; }
   const GURL& url() const override { return url_; }
   const std::string& json() const override { return json_; }
-  std::unique_ptr<base::Value> GetValue() const override {
-    return base::JSONReader::ReadDeprecated(json_);
+  absl::optional<base::Value> GetValue() const override {
+    return base::JSONReader::Read(json_);
   }
 
   void Complete(ReportingUploader::Outcome outcome) override {
@@ -190,7 +191,7 @@ TestReportingContext::~TestReportingContext() {
   garbage_collection_timer_ = nullptr;
 }
 
-ReportingTestBase::ReportingTestBase() : store_(nullptr) {
+ReportingTestBase::ReportingTestBase() {
   // For tests, disable jitter.
   ReportingPolicy policy;
   policy.endpoint_backoff_policy.jitter_factor = 0.0;
@@ -338,10 +339,11 @@ void TestReportingService::QueueReport(
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
-    std::unique_ptr<const base::Value> body,
+    base::Value::Dict body,
     int depth) {
-  reports_.emplace_back(Report(url, network_isolation_key, user_agent, group,
-                               type, std::move(body), depth));
+  reports_.emplace_back(
+      Report(url, network_isolation_key, user_agent, group, type,
+             std::make_unique<base::Value>(std::move(body)), depth));
 }
 
 void TestReportingService::ProcessReportToHeader(

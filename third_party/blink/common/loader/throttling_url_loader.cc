@@ -241,7 +241,7 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
   };
 
   raw_ptr<ThrottlingURLLoader> loader_;
-  const raw_ptr<URLLoaderThrottle> throttle_;
+  const raw_ptr<URLLoaderThrottle, DanglingUntriaged> throttle_;
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(
@@ -838,16 +838,6 @@ void ThrottlingURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   DCHECK(!loader_completed_);
 
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void ThrottlingURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
-  DCHECK(!loader_completed_);
-  TRACE_EVENT1("loading", "ThrottlingURLLoader::OnStartLoadingResponseBody",
-               "url", response_url_.possibly_invalid_spec());
-
-  forwarding_client_->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ThrottlingURLLoader::OnComplete(

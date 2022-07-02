@@ -32,7 +32,13 @@ void FakeVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void FakeVideoStream::SelectSource(webrtc::ScreenId id) {}
+void FakeVideoStream::SelectSource(webrtc::ScreenId id) {
+  selected_source_ = id;
+}
+
+webrtc::ScreenId FakeVideoStream::selected_source() const {
+  return selected_source_;
+}
 
 base::WeakPtr<FakeVideoStream> FakeVideoStream::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

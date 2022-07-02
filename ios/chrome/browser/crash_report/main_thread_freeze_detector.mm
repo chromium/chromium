@@ -34,6 +34,11 @@ void LogRecoveryTime(base::TimeDelta time) {
   UMA_HISTOGRAM_TIMES("IOS.MainThreadFreezeDetection.RecoveredAfter", time);
 }
 
+void LogRecordHangGenerationTime(base::TimeTicks start_time) {
+  UMA_HISTOGRAM_TIMES("IOS.MainThreadFreezeDetection.RecordGenerationTime",
+                      base::TimeTicks::Now() - start_time);
+}
+
 // Key indicating that UI thread is frozen.
 NSString* const kHangReportKey = @"hang-report";
 
@@ -225,6 +230,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   if ([[NSDate date] timeIntervalSinceDate:self.lastSeenMainThread] >
       self.delay) {
     if (crash_reporter::IsCrashpadRunning()) {
+      const base::TimeTicks start = base::TimeTicks::Now();
       static crash_reporter::CrashKeyString<4> key("hang-report");
       crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
       NSString* intermediate_dump = [_UTEDirectory
@@ -243,12 +249,15 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
           setObject:@{@"dump" : @"", @"config" : @"", @"date" : [NSDate date]}
              forKey:@(kNsUserDefaultKeyLastSessionInfo)];
       self.reportGenerated = YES;
+      LogRecordHangGenerationTime(start);
       return;
     }
 
     [[BreakpadController sharedInstance]
         withBreakpadRef:^(BreakpadRef breakpadRef) {
+          const base::TimeTicks start = base::TimeTicks::Now();
           [self recordHangWithBreakpadRef:breakpadRef];
+          LogRecordHangGenerationTime(start);
         }];
     return;
   }

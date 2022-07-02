@@ -24,9 +24,15 @@ import logging
 import os
 import subprocess
 import sys
+import typing
+
+SummaryType = typing.Dict[str, typing.Dict[str, float]]
+ResultType = typing.Dict[str, typing.Any]
+MetricType = typing.Dict[str, typing.Union[typing.List[str], typing.
+                                           List[float]]]
 
 
-def LocateIPG():
+def LocateIPG() -> str:
   if sys.platform == 'win32':
     ipg_dir = os.getenv('IPG_Dir')
     if not ipg_dir:
@@ -40,11 +46,11 @@ def LocateIPG():
   raise Exception('Only supported on Windows/Mac')
 
 
-def GenerateIPGLogFilename(log_prefix='PowerLog',
-                           log_dir=None,
-                           current_run=1,
-                           total_runs=1,
-                           timestamp=False):
+def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
+                           log_dir: typing.Optional[str] = None,
+                           current_run: int = 1,
+                           total_runs: int = 1,
+                           timestamp: bool = False) -> str:
   # If all args take default value, it is the IPG's default log path.
   log_dir = log_dir or os.getcwd()
   log_dir = os.path.abspath(log_dir)
@@ -56,7 +62,9 @@ def GenerateIPGLogFilename(log_prefix='PowerLog',
   return os.path.join(log_dir, log_prefix + '.csv')
 
 
-def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
+def RunIPG(duration_in_s: int = 60,
+           resolution_in_ms: int = 100,
+           logfile: typing.Optional[str] = None) -> None:
   intel_power_gadget_path = LocateIPG()
   command = ('"%s" -duration %d -resolution %d' %
              (intel_power_gadget_path, duration_in_s, resolution_in_ms))
@@ -76,7 +84,8 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
   logging.debug(output)
 
 
-def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
+def AnalyzeIPGLogFile(logfile: typing.Optional[str] = None,
+                      skip_in_sec: int = 0) -> ResultType:
   if not logfile:
     logfile = GenerateIPGLogFilename()
   if not os.path.isfile(logfile):
@@ -119,11 +128,13 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
   return results
 
 
-def ProcessResultsFromMultipleIPGRuns(logfiles,
-                                      skip_in_seconds=0,
-                                      outliers=0,
-                                      output_json=None):
-  def _ScrapeDataFromIPGLogFiles():
+def ProcessResultsFromMultipleIPGRuns(logfiles: typing.List[str],
+                                      skip_in_seconds: int = 0,
+                                      outliers: int = 0,
+                                      output_json: typing.Optional[str] = None
+                                      ) -> SummaryType:
+  def _ScrapeDataFromIPGLogFiles(
+  ) -> typing.Tuple[typing.Dict[str, ResultType], MetricType]:
     """Scrapes data from IPG log files.
 
     Returns:
@@ -149,7 +160,7 @@ def ProcessResultsFromMultipleIPGRuns(logfiles,
         metrics.setdefault(key, []).append(results[key])
     return per_core_results, metrics
 
-  def _CalculateSummaryStatistics(metrics):
+  def _CalculateSummaryStatistics(metrics: MetricType) -> SummaryType:
     """Calculates summary statistics for the given metrics.
 
     Args:

@@ -37,7 +37,6 @@ namespace syncer {
 using base::Time;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::FeatureSpecificFields;
-using sync_pb::ModelTypeState;
 using sync_pb::SharingSpecificFields;
 
 using Record = ModelTypeStore::Record;
@@ -595,8 +594,9 @@ void DeviceInfoSyncBridge::ForcePulseForTest() {
 }
 
 void DeviceInfoSyncBridge::NotifyObservers() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();
+  }
 }
 
 void DeviceInfoSyncBridge::StoreSpecifics(
@@ -623,8 +623,9 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
   // |sync_mode_| may not be ready when this function is called.
   if (!sync_mode_) {
     auto device_it = all_data_.find(local_cache_guid_);
-    if (device_it != all_data_.end())
+    if (device_it != all_data_.end()) {
       return device_it->second->client_name();
+    }
   }
 
   return sync_mode_ == SyncMode::kFull

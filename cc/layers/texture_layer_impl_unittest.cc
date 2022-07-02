@@ -36,15 +36,15 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
 
   // Verify initial conditions.
   EXPECT_FALSE(layer->contents_opaque());
-  EXPECT_EQ(0u, layer->background_color());
+  EXPECT_EQ(SkColors::kTransparent, layer->background_color());
   EXPECT_EQ(Region().ToString(), layer->VisibleOpaqueRegion().ToString());
 
   // Opaque background.
-  layer->SetBackgroundColor(SK_ColorWHITE);
+  layer->SetBackgroundColor(SkColors::kWhite);
   EXPECT_EQ(layer_region.ToString(), layer->VisibleOpaqueRegion().ToString());
 
   // Transparent background.
-  layer->SetBackgroundColor(SkColorSetARGB(100, 255, 255, 255));
+  layer->SetBackgroundColor({1.0f, 1.0f, 1.0f, 0.5f});
   EXPECT_EQ(Region().ToString(), layer->VisibleOpaqueRegion().ToString());
 }
 

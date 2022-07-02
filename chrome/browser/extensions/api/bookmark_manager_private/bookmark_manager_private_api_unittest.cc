@@ -10,6 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -32,19 +34,38 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
     params.enable_bookmark_model = true;
     InitializeExtensionService(params);
 
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams browser_params(profile(), true);
+    browser_params.type = Browser::TYPE_NORMAL;
+    browser_params.window = browser_window_.get();
+    browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
+
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
 
-    const bookmarks::BookmarkNode* node = model_->AddURL(
-        model_->other_node(), 0, u"Goog", GURL("https://www.google.com"));
+    url_ = GURL("https://www.google.com");
+    const bookmarks::BookmarkNode* node =
+        model_->AddURL(model_->other_node(), 0, u"Goog", url_);
     // Store node->id() as we will delete |node| in RunOnDeletedNode().
     node_id_ = base::NumberToString(node->id());
   }
 
-  const bookmarks::BookmarkModel* model() const { return model_; }
+  void TearDown() override {
+    browser_->tab_strip_model()->CloseAllTabs();
+    browser_.reset();
+    browser_window_.reset();
+    ExtensionServiceTestBase::TearDown();
+  }
+
+  Browser* browser() { return browser_.get(); }
+  bookmarks::BookmarkModel* model() { return model_; }
   std::string node_id() const { return node_id_; }
+  GURL& url() { return url_; }
 
  private:
+  GURL url_;
+  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
   std::string node_id_;
 };
@@ -81,6 +102,82 @@ TEST_F(BookmarkManagerPrivateApiUnitTest, RunCutOnPermanentNode) {
             api_test_utils::RunFunctionAndReturnError(
                 cut_function.get(),
                 base::StringPrintf("[[\"%s\"]]", node_id.c_str()), profile()));
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewTabFunction) {
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewTabFunction>();
+  std::string args = base::StringPrintf(R"(["%s", false])", node_id().c_str());
+  ASSERT_TRUE(
+      api_test_utils::RunFunction(new_tab_function.get(), args, profile()));
+
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(url(), browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewTabFunctionFolder) {
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewTabFunction>();
+  std::string node_id =
+      base::NumberToString(model()->bookmark_bar_node()->id());
+  std::string args = base::StringPrintf(R"(["%s", false])", node_id.c_str());
+  EXPECT_EQ("Cannot open a folder in a new tab.",
+            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+                                                      args, profile()));
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewWindowFunctionFolder) {
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
+  std::string node_id =
+      base::NumberToString(model()->bookmark_bar_node()->id());
+  std::string args = base::StringPrintf(R"([["%s"], false])", node_id.c_str());
+  EXPECT_EQ("Cannot open a folder in a new window.",
+            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+                                                      args, profile()));
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest,
+       RunOpenInNewWindowFunctionIncognitoDisabled) {
+  // Incognito disabled.
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
+  std::string args = base::StringPrintf(R"([["%s"], true])", node_id().c_str());
+  EXPECT_EQ("Incognito mode is disabled.",
+            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+                                                      args, profile()));
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest,
+       RunOpenInNewWindowFunctionIncognitoForced) {
+  // Incognito forced.
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
+
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
+  std::string args =
+      base::StringPrintf(R"([["%s"], false])", node_id().c_str());
+  EXPECT_EQ("Incognito mode is forced. Cannot open normal windows.",
+            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+                                                      args, profile()));
+}
+
+TEST_F(BookmarkManagerPrivateApiUnitTest,
+       RunOpenInNewWindowFunctionIncognitoIncompatibleNode) {
+  const bookmarks::BookmarkNode* node = model()->AddURL(
+      model()->other_node(), 0, u"history", GURL("chrome://history"));
+  std::string node_id = base::NumberToString(node->id());
+
+  auto new_tab_function =
+      base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
+  std::string args = base::StringPrintf(R"([["%s"], true])", node_id.c_str());
+  EXPECT_EQ("Cannot open URL \"chrome://history/\" in an incognito window.",
+            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+                                                      args, profile()));
 }
 
 }  // namespace extensions

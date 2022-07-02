@@ -7,6 +7,7 @@
 
 #include <wayland-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -42,9 +43,9 @@ class TestSeat : public GlobalObject {
   TestTouch* touch() const { return touch_; }
 
  private:
-  MockPointer* pointer_;
-  TestKeyboard* keyboard_;
-  TestTouch* touch_;
+  raw_ptr<MockPointer> pointer_;
+  raw_ptr<TestKeyboard> keyboard_;
+  raw_ptr<TestTouch> touch_;
 };
 
 }  // namespace wl

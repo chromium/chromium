@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "chromeos/network/certificate_helper.h"
+#include "chromeos/ash/components/network/certificate_helper.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_util_nss.h"
 

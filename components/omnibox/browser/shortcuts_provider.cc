@@ -145,10 +145,17 @@ int CalculateScoreFromFactors(size_t typed_length,
   DCHECK_GT(typed_length, 0u);
   DCHECK_LE(typed_length, shortcut_text_length);
   // The initial score is based on how much of the shortcut the user has typed.
-  // `shortcut.text` may be up to 3 chars longer than previous inputs navigating
-  // to the shortcut (see `ShortcutsBackend::AddOrUpdateShortcut`).
+  // Due to appending 3 chars when updating shortcuts, and expanding the last
+  // word when updating or creating shortcuts, the shortcut text can be longer
+  // than the user's previous inputs (see
+  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore the
+  // 10 chars in the shortcut text, though this can overestimate or
+  // underestimate the actual previous inputs. Shortcuts are often deduped with
+  // higher scoring history suggestions anyway.
+  const size_t adjustment =
+      OmniboxFieldTrial::IsShortcutExpandingEnabled() ? 10 : 3;
   const size_t adjusted_text_length =
-      std::max(shortcut_text_length, typed_length + 3) - 3;
+      std::max(shortcut_text_length, typed_length + adjustment) - adjustment;
   const double typed_fraction =
       static_cast<double>(typed_length) / adjusted_text_length;
 
@@ -448,15 +455,27 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
             !input.prevent_inline_autocomplete() ||
             match.inline_autocompletion.empty();
       }
-    } else if (!match.TryRichAutocompletion(match.contents, match.description,
-                                            input, shortcut.text)) {
-      const size_t inline_autocomplete_offset =
-          URLPrefix::GetInlineAutocompleteOffset(
-              input.text(), fixed_up_input_text, true, match.fill_into_edit);
-      if (inline_autocomplete_offset != std::u16string::npos) {
-        match.inline_autocompletion =
-            match.fill_into_edit.substr(inline_autocomplete_offset);
-        match.SetAllowedToBeDefault(input);
+    } else {
+      // Try rich autocompletion first. For document suggestions,
+      // `match.contents` is the title, while `description` is something like
+      // 'Google Docs' and shouldn't be autocompleted. For all other nav
+      // suggestions, `contents` is the URL and `description` is the title.
+      bool autocompleted =
+          match.type == AutocompleteMatch::Type::DOCUMENT_SUGGESTION
+              ? match.TryRichAutocompletion(u"", match.contents, input,
+                                            shortcut.text)
+              : match.TryRichAutocompletion(match.contents, match.description,
+                                            input, shortcut.text);
+
+      if (!autocompleted) {
+        const size_t inline_autocomplete_offset =
+            URLPrefix::GetInlineAutocompleteOffset(
+                input.text(), fixed_up_input_text, true, match.fill_into_edit);
+        if (inline_autocomplete_offset != std::u16string::npos) {
+          match.inline_autocompletion =
+              match.fill_into_edit.substr(inline_autocomplete_offset);
+          match.SetAllowedToBeDefault(input);
+        }
       }
     }
   }

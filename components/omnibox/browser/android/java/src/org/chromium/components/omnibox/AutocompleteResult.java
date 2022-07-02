@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.MockedInTests;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.annotation.Retention;
@@ -25,6 +26,7 @@ import java.util.List;
 /**
  * AutocompleteResult encompasses and manages autocomplete results.
  */
+@MockedInTests
 public class AutocompleteResult {
     /** Describes details of the Suggestions group. */
     public static class GroupDetails {

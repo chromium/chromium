@@ -89,11 +89,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_ShowDeviceList) {
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_ShowSigninPromo) {
+  // Last updated in crrev.com/c/3669248.
+  set_baseline("3669248");
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
                        InvokeUi_ShowNoTargetDevicePromo) {
+  // Last updated in crrev.com/c/3669248.
+  set_baseline("3669248");
   ShowAndVerifyUi();
 }
 

@@ -460,9 +460,34 @@ bool NGGridLayoutTrackCollection::Range::IsCollapsed() const {
   return properties.HasProperty(TrackSpanProperties::kIsCollapsed);
 }
 
+NGGridLayoutTrackCollection::NGGridLayoutTrackCollection(
+    const NGGridLayoutTrackCollection& other,
+    const NGBoxStrut& subgrid_border_scrollbar_padding,
+    const NGBoxStrut& subgrid_margins)
+    : NGGridLayoutTrackCollection(other) {
+  const bool is_for_columns = Direction() == kForColumns;
+
+  sets_geometry_start_offset_ += is_for_columns ? subgrid_margins.inline_start
+                                                : subgrid_margins.block_start;
+  start_extra_margin_ =
+      sets_geometry_start_offset_ +
+      (is_for_columns ? subgrid_border_scrollbar_padding.inline_start
+                      : subgrid_border_scrollbar_padding.block_start);
+
+  end_extra_margin_ += is_for_columns
+                           ? subgrid_margins.inline_end +
+                                 subgrid_border_scrollbar_padding.inline_end
+                           : subgrid_margins.block_end +
+                                 subgrid_border_scrollbar_padding.block_end;
+}
+
 bool NGGridLayoutTrackCollection::operator==(
     const NGGridLayoutTrackCollection& other) const {
-  return gutter_size_ == other.gutter_size_ && ranges_ == other.ranges_ &&
+  return gutter_size_ == other.gutter_size_ &&
+         sets_geometry_start_offset_ == other.sets_geometry_start_offset_ &&
+         start_extra_margin_ == other.start_extra_margin_ &&
+         end_extra_margin_ == other.end_extra_margin_ &&
+         ranges_ == other.ranges_ &&
          major_baselines_ == other.major_baselines_ &&
          minor_baselines_ == other.minor_baselines_ &&
          sets_geometry_ == other.sets_geometry_;
@@ -522,7 +547,18 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetCount() const {
 LayoutUnit NGGridLayoutTrackCollection::GetSetOffset(
     wtf_size_t set_index) const {
   DCHECK_LT(set_index, sets_geometry_.size());
-  return sets_geometry_[set_index].offset;
+
+  // This extra margin is added to set offsets within a subgrid to account for
+  // its accumulated margin, border, scrollbar, padding, and gutter size.
+  LayoutUnit extra_margin;
+
+  if (!set_index)
+    extra_margin = start_extra_margin_;
+  else if (set_index == sets_geometry_.size() - 1)
+    extra_margin = -end_extra_margin_;
+
+  return sets_geometry_[set_index].offset + extra_margin -
+         sets_geometry_start_offset_;
 }
 
 wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
@@ -566,14 +602,12 @@ LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize(
   if (IsSpanningIndefiniteSet(begin_set_index, end_set_index))
     return kIndefiniteSize;
 
-  // The size of a set span is the end offset minus the gutter size and start
-  // offset. It is floored at zero so that the size is not negative when the
-  // gutter size is greater than the difference between the offsets.
-  auto set_span_size = sets_geometry_[end_set_index].offset -
-                       sets_geometry_[begin_set_index].offset;
-
-  DCHECK_GE(set_span_size, 0);
-  return (set_span_size - gutter_size_).ClampNegativeToZero();
+  // While the set offsets are guaranteed to be in non-decreasing order, if an
+  // extra margin is larger than any of the offsets or the gutter size saturates
+  // the end offset, the following difference may become negative.
+  return (GetSetOffset(end_set_index) - gutter_size_ -
+          GetSetOffset(begin_set_index))
+      .ClampNegativeToZero();
 }
 
 NGGridLayoutTrackCollection
@@ -631,6 +665,10 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   }
 
   subgrid_collection.gutter_size_ = gutter_size_;
+  subgrid_collection.sets_geometry_start_offset_ =
+      subgrid_collection.start_extra_margin_ = start_extra_margin_;
+  subgrid_collection.end_extra_margin_ = end_extra_margin_;
+
   return subgrid_collection;
 }
 
@@ -720,6 +758,8 @@ void NGGridSizingTrackCollection::InitializeSetsGeometry(
       first_set_offset += set.GrowthLimit() + set.track_count * gutter_size;
       last_indefinite_indices_.push_back(last_indefinite_indices_.back());
     }
+
+    DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
     sets_geometry_.emplace_back(first_set_offset, set.track_count);
   }
   gutter_size_ = gutter_size;
@@ -733,6 +773,7 @@ void NGGridSizingTrackCollection::CacheSetsGeometry(LayoutUnit first_set_offset,
   sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
   for (const auto& set : sets_) {
     first_set_offset += set.BaseSize() + set.track_count * gutter_size;
+    DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
     sets_geometry_.emplace_back(first_set_offset, set.track_count);
   }
   gutter_size_ = gutter_size;

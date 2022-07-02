@@ -13,6 +13,8 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -65,7 +67,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/common/constants.h"
@@ -415,6 +417,11 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 }
 
 void AppListControllerImpl::ShowAppList() {
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
   if (IsKioskSession())
     return;
 
@@ -446,10 +453,6 @@ bool AppListControllerImpl::IsVisible() {
   return IsVisible(absl::nullopt);
 }
 
-void AppListControllerImpl::HideContinueSection() {
-  SetHideContinueSection(true);
-}
-
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (IsKioskSession())
@@ -474,10 +477,14 @@ void AppListControllerImpl::OnSessionStateChanged(
   if (state == session_manager::SessionState::ACTIVE)
     has_session_started_ = true;
 
-  if (!IsTabletMode())
+  const bool in_clamshell = !IsTabletMode();
+  if (state != session_manager::SessionState::ACTIVE || IsKioskSession()) {
+    if (in_clamshell)
+      DismissAppList();
     return;
+  }
 
-  if (state != session_manager::SessionState::ACTIVE || IsKioskSession())
+  if (in_clamshell)
     return;
 
   // Show the app list after signing in in tablet mode. For metrics, the app
@@ -495,7 +502,7 @@ void AppListControllerImpl::OnSessionStateChanged(
 }
 
 void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
-  if (!ash::features::IsLauncherAppSortEnabled())
+  if (!features::IsLauncherAppSortEnabled())
     return;
 
   if (!client_)
@@ -518,7 +525,7 @@ bool AppListControllerImpl::GetTargetVisibility(
     const absl::optional<int64_t>& display_id) const {
   return last_target_visible_ &&
          (!display_id.has_value() ||
-          display_id.value() == last_visible_display_id_);
+          display_id.value() == last_target_visible_display_id_);
 }
 
 void AppListControllerImpl::Show(int64_t display_id,
@@ -583,6 +590,9 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
         FeatureDiscoveryDurationReporter::GetInstance();
     reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
                                          kAppListReorderAfterEducationNudge);
+    reporter->MaybeFinishObservation(
+        feature_discovery::TrackableFeature::
+            kAppListReorderAfterEducationNudgePerTabletMode);
     reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
                                          kAppListReorderAfterSessionActivation);
   }
@@ -609,6 +619,11 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     int64_t display_id,
     AppListShowSource show_source,
     base::TimeTicks event_time_stamp) {
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return SHELF_ACTION_APP_LIST_DISMISSED;
+  }
+
   if (IsKioskSession())
     return SHELF_ACTION_APP_LIST_DISMISSED;
 
@@ -1161,6 +1176,7 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
     return;
 
   keyboard_traversal_engaged_ = engaged;
+  AssistantUiController::Get()->SetKeyboardTraversalMode(engaged);
 
   // No need to schedule paint for bubble presenter.
   if (features::IsProductivityLauncherEnabled() &&
@@ -1180,11 +1196,12 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 
   // When the search box has focus, it is actually the textfield that has focus.
   // As such, the |SearchBoxView| must be told to repaint directly.
-  if (focused_view ==
-      fullscreen_presenter_->GetView()->search_box_view()->search_box()) {
-    SearchBoxView* search_box_view =
-        fullscreen_presenter_->GetView()->search_box_view();
-    search_box_view->UpdateSearchBoxFocusPaint();
+  if (focused_view == app_list_view->search_box_view()->search_box()) {
+    app_list_view->search_box_view()->UpdateSearchBoxFocusPaint();
+  } else if (AppListToastView::IsToastButton(focused_view)) {
+    // Toast button can become focused after app list sorting, so make sure the
+    // focus ring appears correctly when updating `keyboard_traversal_engaged_`.
+    focused_view->SchedulePaint();
   } else {
     // Ensure that when an app list item's focus ring is triggered by key
     // events, the item is selected.
@@ -1464,6 +1481,10 @@ bool AppListControllerImpl::ShouldDismissImmediately() {
   if (should_dismiss_immediately_)
     return true;
 
+  if (features::IsProductivityLauncherEnabled())
+    return false;
+
+  // Dismiss immediately if the peeking launcher is below the shelf's top edge.
   DCHECK(Shell::HasInstance());
   const int ideal_shelf_y =
       Shelf::ForWindow(
@@ -1643,6 +1664,9 @@ bool AppListControllerImpl::ShouldHideContinueSection() const {
 
 void AppListControllerImpl::SetHideContinueSection(bool hide) {
   PrefService* prefs = GetLastActiveUserPrefService();
+  bool is_hidden = prefs->GetBoolean(prefs::kLauncherContinueSectionHidden);
+  if (hide == is_hidden)
+    return;
   prefs->SetBoolean(prefs::kLauncherContinueSectionHidden, hide);
   fullscreen_presenter_->UpdateContinueSectionVisibility();
   bubble_presenter_->UpdateContinueSectionVisibility();

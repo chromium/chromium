@@ -279,14 +279,30 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   PaintPropertyChangeType UpdatePaintPropertyNodesIfNeeded(
       PaintPropertyTreeBuilderFragmentContext& context);
 
-  void SetNeedsPaintPropertyUpdate() { needs_paint_property_update_ = true; }
-  bool NeedsPaintPropertyUpdate() const { return needs_paint_property_update_; }
+  void SetNeedsPaintPropertyUpdate() {
+    DCHECK(IsActiveViewport());
+    needs_paint_property_update_ = true;
+  }
+  bool NeedsPaintPropertyUpdate() const {
+    DCHECK(IsActiveViewport());
+    return needs_paint_property_update_;
+  }
 
   void DisposeImpl() override;
 
   void Paint(GraphicsContext&) const;
 
   void UsedColorSchemeChanged();
+
+  // Returns whether this VisualViewport is "active", that is, whether it'll
+  // affect paint property trees. If false, this renderer cannot be
+  // independently scaled.
+  //
+  // A VisualViewport is created in renderers for remote frames / nested pages;
+  // however, in those cases it is "inert", it cannot change scale or location
+  // values. Only a <portal> or outermost main frame can have an active
+  // viewport.
+  bool IsActiveViewport() const;
 
  private:
   bool DidSetScaleOrLocation(float scale,
@@ -305,12 +321,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void NotifyRootFrameViewport() const;
 
   RootFrameViewport* GetRootFrameViewport() const;
-
-  // VisualViewport is created in renderers for remote frames / nested pages.
-  // However, in those cases it is "inert", it cannot change scale or location
-  // values. Only the VisualViewport created in the outermost main frame's
-  // renderer is "active".
-  bool IsActiveViewport() const;
 
   // Returns the local main frame, this can only be called for an active
   // VisualViewport.

@@ -1,0 +1,191 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("network") {
+  # TODO(https://crbug.com/1164001): Allow circular dependency during the
+  # migration and others should depend on via chromeos/network.
+  visibility = [ "//chromeos/network" ]
+
+  configs += [ "//chromeos/network:network_config" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
+    "//chromeos/components/feature_usage",
+    "//chromeos/components/onc",
+    "//chromeos/dbus/hermes",
+    "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/shill",
+    "//chromeos/login/login_state",
+    "//components/device_event_log",
+    "//components/onc",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//crypto",
+    "//dbus",
+    "//net",
+    "//services/preferences/public/cpp",
+  ]
+
+  # Allow circular dependency from sub-directories of
+  # chromeos/ash/components/network.
+  allow_circular_includes_from = [
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/proxy",
+  ]
+  sources = [
+    "auto_connect_handler.cc",
+    "auto_connect_handler.h",
+    "cellular_connection_handler.cc",
+    "cellular_connection_handler.h",
+    "cellular_esim_installer.cc",
+    "cellular_esim_installer.h",
+    "cellular_esim_profile.cc",
+    "cellular_esim_profile.h",
+    "cellular_esim_profile_handler.cc",
+    "cellular_esim_profile_handler.h",
+    "cellular_esim_profile_handler_impl.cc",
+    "cellular_esim_profile_handler_impl.h",
+    "cellular_esim_uninstall_handler.cc",
+    "cellular_esim_uninstall_handler.h",
+    "cellular_inhibitor.cc",
+    "cellular_inhibitor.h",
+    "cellular_metrics_logger.cc",
+    "cellular_metrics_logger.h",
+    "cellular_policy_handler.cc",
+    "cellular_policy_handler.h",
+    "cellular_utils.cc",
+    "cellular_utils.h",
+    "certificate_helper.cc",
+    "certificate_helper.h",
+    "client_cert_resolver.cc",
+    "client_cert_resolver.h",
+    "client_cert_util.cc",
+    "client_cert_util.h",
+    "device_state.cc",
+    "device_state.h",
+    "fast_transition_observer.cc",
+    "fast_transition_observer.h",
+    "firewall_hole.cc",
+    "firewall_hole.h",
+    "geolocation_handler.cc",
+    "geolocation_handler.h",
+    "hermes_metrics_util.cc",
+    "hermes_metrics_util.h",
+    "managed_cellular_pref_handler.cc",
+    "managed_cellular_pref_handler.h",
+    "managed_network_configuration_handler.cc",
+    "managed_network_configuration_handler.h",
+    "managed_network_configuration_handler_impl.cc",
+    "managed_network_configuration_handler_impl.h",
+    "managed_state.cc",
+    "managed_state.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    "//chromeos/components/onc",
+    "//chromeos/dbus/hermes",
+    "//chromeos/network",
+    "//dbus",
+  ]
+  deps = [
+    "//base",
+    "//chromeos:test_utils",
+    "//chromeos/components/onc:test_support",
+    "//chromeos/dbus:test_support",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/onc",
+    "//components/sync_preferences:test_support",
+    "//dbus",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "fake_network_activation_handler.cc",
+    "fake_network_activation_handler.h",
+    "fake_network_connection_handler.cc",
+    "fake_network_connection_handler.h",
+    "fake_network_device_handler.cc",
+    "fake_network_device_handler.h",
+    "fake_stub_cellular_networks_provider.cc",
+    "fake_stub_cellular_networks_provider.h",
+    "mock_managed_network_configuration_handler.cc",
+    "mock_managed_network_configuration_handler.h",
+    "mock_network_device_handler.cc",
+    "mock_network_device_handler.h",
+    "mock_network_state_handler.cc",
+    "mock_network_state_handler.h",
+    "network_handler_test_helper.cc",
+    "network_handler_test_helper.h",
+    "network_state_test_helper.cc",
+    "network_state_test_helper.h",
+    "network_test_helper_base.cc",
+    "network_test_helper_base.h",
+    "system_token_cert_db_storage_test_util.cc",
+    "system_token_cert_db_storage_test_util.h",
+    "test_cellular_esim_profile_handler.cc",
+    "test_cellular_esim_profile_handler.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/components/feature_usage",
+    "//chromeos/components/onc",
+    "//chromeos/components/onc:test_support",
+    "//chromeos/dbus:test_support",
+    "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/shill",
+    "//chromeos/login/login_state",
+    "//chromeos/network",
+    "//components/onc",
+    "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//components/sync_preferences:test_support",
+    "//crypto",
+    "//crypto:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "auto_connect_handler_unittest.cc",
+    "cellular_connection_handler_unittest.cc",
+    "cellular_esim_installer_unittest.cc",
+    "cellular_esim_profile_handler_impl_unittest.cc",
+    "cellular_esim_profile_unittest.cc",
+    "cellular_esim_uninstall_handler_unittest.cc",
+    "cellular_inhibitor_unittest.cc",
+    "cellular_metrics_logger_unittest.cc",
+    "cellular_policy_handler_unittest.cc",
+    "cellular_utils_unittest.cc",
+    "certificate_helper_unittest.cc",
+    "client_cert_resolver_unittest.cc",
+    "client_cert_util_unittest.cc",
+    "device_state_unittest.cc",
+    "fast_transition_observer_unittest.cc",
+    "firewall_hole_unittest.cc",
+    "geolocation_handler_unittest.cc",
+    "managed_cellular_pref_handler_unittest.cc",
+    "managed_network_configuration_handler_unittest.cc",
+  ]
+}

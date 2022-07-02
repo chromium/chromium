@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -21,7 +22,12 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
@@ -101,6 +107,8 @@ class BuiltinProviderTest : public testing::Test {
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
+    client_->set_template_url_service(
+        std::make_unique<TemplateURLService>(nullptr, 0));
     provider_ = new BuiltinProvider(client_.get());
   }
   void TearDown() override { provider_ = nullptr; }
@@ -330,6 +338,58 @@ TEST_F(BuiltinProviderTest, Subpages) {
   };
 
   RunTest(settings_subpage_cases, std::size(settings_subpage_cases));
+}
+
+TEST_F(BuiltinProviderTest, StarterPack) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
+
+  const GURL kBookmarksUrl =
+      GURL(TemplateURLStarterPackData::bookmarks.destination_url);
+  const GURL kHistoryUrl =
+      GURL(TemplateURLStarterPackData::history.destination_url);
+  const GURL kTabsUrl = GURL(TemplateURLStarterPackData::tabs.destination_url);
+
+  const std::u16string kBookmarksKeyword = u"@bookmarks";
+  const std::u16string kHistoryKeyword = u"@history";
+  const std::u16string kTabsKeyword = u"@tabs";
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    client_->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+
+  TestData typing_scheme_cases[] = {
+      // Typing the keyword without '@' or past the keyword shouldn't produce
+      // results.
+      {u"b", {}},
+      {u"bookmarks", {}},
+      {u"his", {}},
+      {u"history", {}},
+      {u"@historyasdjflk", {}},
+      {u"@bookmarksasld", {}},
+      {u"tabs", {}},
+
+      // Typing '@' should give all the starter pack suggestions.
+      {u"@", {kBookmarksUrl, kHistoryUrl, kTabsUrl}},
+
+      // Typing a portion of "@bookmarks" should give the bookmarks suggestion.
+      {kBookmarksKeyword.substr(0, 3), {kBookmarksUrl}},
+      {kBookmarksKeyword, {kBookmarksUrl}},
+
+      // Typing a portion of "@history" should give the default urls.
+      {kHistoryKeyword.substr(0, 3), {kHistoryUrl}},
+      {kHistoryKeyword, {kHistoryUrl}},
+
+      // Typing a portion of "@tabs" should give the default urls.
+      {kTabsKeyword.substr(0, 3), {kTabsUrl}},
+      {kTabsKeyword, {kTabsUrl}},
+  };
+
+  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
 
 TEST_F(BuiltinProviderTest, Inlining) {

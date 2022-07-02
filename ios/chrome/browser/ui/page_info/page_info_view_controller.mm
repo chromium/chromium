@@ -9,7 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/net/crurl.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -94,7 +94,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self.handler
+                           target:self.pageInfoCommandsHandler
                            action:@selector(hidePageInfo)];
   self.navigationItem.rightBarButtonItem = dismissButton;
   self.tableView.separatorInset =
@@ -242,19 +242,19 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   DCHECK(URL.gurl == GURL(kPageInfoHelpCenterURL));
-  [self.handler showSecurityHelpPage];
+  [self.pageInfoCommandsHandler showSecurityHelpPage];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.handler hidePageInfo];
+  [self.pageInfoCommandsHandler hidePageInfo];
 }
 
 #pragma mark - Private
 
-// Returns the navigationItem titleView for |siteURL|.
+// Returns the navigationItem titleView for `siteURL`.
 - (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
   UILabel* labelURL = [[UILabel alloc] init];
   labelURL.lineBreakMode = NSLineBreakByTruncatingHead;

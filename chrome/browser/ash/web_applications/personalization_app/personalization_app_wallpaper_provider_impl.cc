@@ -72,15 +72,16 @@ using ash::personalization_app::GetAccountId;
 using ash::personalization_app::GetUser;
 
 constexpr int kLocalImageThumbnailSizeDip = 256;
+constexpr int kCurrentWallpaperThumbnailSizeDip = 512;
 
 const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
   // Resize the image maintaining our aspect ratio.
   float aspect_ratio =
       static_cast<float>(image.width()) / static_cast<float>(image.height());
-  int height = kLocalImageThumbnailSizeDip;
+  int height = kCurrentWallpaperThumbnailSizeDip;
   int width = static_cast<int>(aspect_ratio * height);
-  if (width > kLocalImageThumbnailSizeDip) {
-    width = kLocalImageThumbnailSizeDip;
+  if (width > kCurrentWallpaperThumbnailSizeDip) {
+    width = kCurrentWallpaperThumbnailSizeDip;
     height = static_cast<int>(width / aspect_ratio);
   }
   return gfx::ImageSkiaOperations::CreateResizedImage(
@@ -281,7 +282,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
             profile_);
   }
   google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
-      item_id, album_id, resume_token, std::move(callback));
+      item_id, album_id, resume_token, /*shuffle=*/false, std::move(callback));
 }
 
 void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(
@@ -393,15 +394,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 
       return;
     }
-    case ash::WallpaperType::kOnceGooglePhotos:
-      client->FetchGooglePhotosPhoto(
-          GetAccountId(profile_), info.location,
-          base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
-                             SendGooglePhotosAttribution,
-                         weak_ptr_factory_.GetWeakPtr(), info,
-                         wallpaper_data_url));
-      return;
     case ash::WallpaperType::kDailyGooglePhotos:
+    case ash::WallpaperType::kOnceGooglePhotos:
       client->FetchGooglePhotosPhoto(
           GetAccountId(profile_), info.location,
           base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
@@ -535,7 +529,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   client->SetGooglePhotosWallpaper(
       ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,
                                        /*daily_refresh_enabled=*/false, layout,
-                                       preview_mode),
+                                       preview_mode,
+                                       /*dedup_key=*/absl::nullopt),
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          OnGooglePhotosWallpaperSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
@@ -564,7 +559,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
           GetAccountId(profile_), id,
           /*daily_refresh=*/true,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-          /*preview_mode=*/false),
+          /*preview_mode=*/false,
+          /*dedup_key=*/absl::nullopt),
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnGooglePhotosAlbumSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
@@ -599,13 +595,18 @@ void PersonalizationAppWallpaperProviderImpl::GetDailyRefreshCollectionId(
 
 void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
     UpdateDailyRefreshWallpaperCallback callback) {
-  if (pending_update_daily_refresh_wallpaper_callback_)
+  if (pending_update_daily_refresh_wallpaper_callback_) {
     std::move(pending_update_daily_refresh_wallpaper_callback_)
         .Run(/*success=*/false);
+  }
+
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
-  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
-      ash::WallpaperType::kDaily);
+  auto* client = WallpaperControllerClientImpl::Get();
+  ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
+  DCHECK(info.type == WallpaperType::kDaily ||
+         info.type == WallpaperType::kDailyGooglePhotos);
+  client->RecordWallpaperSourceUMA(info.type);
 
   WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated,
@@ -853,13 +854,32 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     const GURL& wallpaper_data_url,
     mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo,
     bool success) {
+  // If the fetch for |photo| succeeded but |photo| does not exist, that means
+  // it has been removed from the user's library. When this occurs, the user's
+  // wallpaper should be either (a) reset to default or (b) updated to a new
+  // photo from the same collection depending on whether daily refresh is
+  // enabled.
+  if (success && !photo) {
+    if (info.type == WallpaperType::kOnceGooglePhotos) {
+      SelectDefaultImage(/*callback=*/base::DoNothing());
+    } else if (info.type == WallpaperType::kDailyGooglePhotos) {
+      UpdateDailyRefreshWallpaper(/*callback=*/base::DoNothing());
+    } else {
+      NOTREACHED();
+    }
+    return;
+  }
+
   std::vector<std::string> attribution;
   if (!photo.is_null()) {
     attribution.push_back(photo->name);
   }
+
+  // NOTE: Old clients may not support |dedup_key| when setting Google Photos
+  // wallpaper, so use |location| in such cases for backwards compatibility.
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       wallpaper_data_url, attribution, info.layout, info.type,
-      /*key=*/info.location));
+      /*key=*/info.dedup_key.value_or(info.location)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(

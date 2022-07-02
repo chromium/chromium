@@ -4,8 +4,13 @@
 
 #include "ui/gl/glx_util.h"
 
+#include <unistd.h>
+
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/linux/native_pixmap_dmabuf.h"
+#include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_bindings.h"
@@ -63,7 +68,61 @@ x11::Glx::FbConfig GetConfigForWindow(x11::Connection* conn,
   return {};
 }
 
+int Depth(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::BGR_565:
+      return 16;
+    case gfx::BufferFormat::BGRX_8888:
+      return 24;
+    case gfx::BufferFormat::BGRA_1010102:
+    case gfx::BufferFormat::BGRA_8888:
+      return 32;
+    default:
+      NOTREACHED();
+      return 0;
+  }
+}
+
+int Bpp(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::BGR_565:
+      return 16;
+    case gfx::BufferFormat::BGRX_8888:
+    case gfx::BufferFormat::BGRA_1010102:
+    case gfx::BufferFormat::BGRA_8888:
+      return 32;
+    default:
+      NOTREACHED();
+      return 0;
+  }
+}
+
 }  // namespace
+
+x11::Pixmap XPixmapFromNativePixmap(
+    const gfx::NativePixmapDmaBuf& native_pixmap,
+    gfx::BufferFormat buffer_format) {
+  int depth = Depth(buffer_format);
+  int bpp = Bpp(buffer_format);
+  auto fd = HANDLE_EINTR(dup(native_pixmap.GetDmaBufFd(0)));
+  if (fd < 0)
+    return x11::Pixmap::None;
+  x11::RefCountedFD ref_counted_fd(fd);
+
+  auto* connection = x11::Connection::Get();
+  x11::Pixmap pixmap_id = connection->GenerateId<x11::Pixmap>();
+  // This should be synced. Otherwise, glXCreatePixmap may fail on ChromeOS
+  // with "failed to create a drawable" error.
+  connection->dri3()
+      .PixmapFromBuffer(pixmap_id, connection->default_root(),
+                        native_pixmap.GetDmaBufPlaneSize(0),
+                        native_pixmap.GetBufferSize().width(),
+                        native_pixmap.GetBufferSize().height(),
+                        native_pixmap.GetDmaBufPitch(0), depth, bpp,
+                        ref_counted_fd)
+      .Sync();
+  return pixmap_id;
+}
 
 GLXFBConfig GetFbConfigForWindow(x11::Connection* connection,
                                  x11::Window window) {

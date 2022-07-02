@@ -7,12 +7,8 @@
 
 #include <string>
 
-#include "components/permissions/object_permission_context_base.h"
+#include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
-
-namespace base {
-class Value;
-}
 
 namespace content {
 class BrowserContext;
@@ -23,7 +19,7 @@ class BrowserContext;
 // Provider.
 class FederatedIdentityActiveSessionPermissionContext
     : public content::FederatedIdentityActiveSessionPermissionContextDelegate,
-      public permissions::ObjectPermissionContextBase {
+      public FederatedIdentityAccountKeyedPermissionContext {
  public:
   explicit FederatedIdentityActiveSessionPermissionContext(
       content::BrowserContext* browser_context);
@@ -45,12 +41,6 @@ class FederatedIdentityActiveSessionPermissionContext
   void RevokeActiveSession(const url::Origin& relying_party,
                            const url::Origin& identity_provider,
                            const std::string& account_identifier) override;
-
- private:
-  // permissions:ObjectPermissionContextBase:
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
-  std::string GetKeyForObject(const base::Value& object) override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_ACTIVE_SESSION_PERMISSION_CONTEXT_H_

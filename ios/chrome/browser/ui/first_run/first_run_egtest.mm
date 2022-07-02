@@ -6,6 +6,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -135,6 +136,8 @@ GREYLayoutConstraint* BelowConstraint() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFREUIModuleIOS);
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
 
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
@@ -171,9 +174,10 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the forced sign-in screen is displayed.
 - (void)verifyForcedSigninScreenIsDisplayed {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -208,7 +212,7 @@ GREYLayoutConstraint* BelowConstraint() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Scrolls down to |elementMatcher| in the scrollable content of the first run
+// Scrolls down to `elementMatcher` in the scrollable content of the first run
 // screen.
 - (void)scrollToElementAndAssertVisibility:(id<GREYMatcher>)elementMatcher {
   id<GREYMatcher> scrollView = grey_accessibilityID(kScrollViewIdentifier);
@@ -388,7 +392,6 @@ GREYLayoutConstraint* BelowConstraint() {
 // Tests that the forced sign-in screen is shown when the policy is enabled.
 // If the user says no during the FRE, then they should be re-prompted at the
 // end of the FRE.
-// TODO(crbug.com/1282047): Re-enable when fixed.
 - (void)testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration configToSetPolicy = self.appConfigurationForTestCase;
 
@@ -605,7 +608,7 @@ GREYLayoutConstraint* BelowConstraint() {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  // Check that the title of the primary button updates for |fakeIdentity|.
+  // Check that the title of the primary button updates for `fakeIdentity`.
   [[EarlGrey selectElementWithMatcher:GetYesImInButton()]
       performAction:grey_tap()];
 
@@ -631,7 +634,7 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:identityButton];
   [[EarlGrey selectElementWithMatcher:identityButton] performAction:grey_tap()];
 
-  // Check that |fakeIdentity2| is displayed.
+  // Check that `fakeIdentity2` is displayed.
   [self scrollToElementAndAssertVisibility:IdentityCellMatcherForEmail(
                                                fakeIdentity2.userEmail)];
   // Check that 'Add Account' is displayed.
@@ -639,12 +642,12 @@ GREYLayoutConstraint* BelowConstraint() {
             grey_accessibilityLabel(l10n_util::GetNSString(
                 IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT))];
 
-  // Select |fakeIdentity2|.
+  // Select `fakeIdentity2`.
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
 
-  // Check that the title of the primary button updates for |fakeIdentity2|.
+  // Check that the title of the primary button updates for `fakeIdentity2`.
   [self scrollToElementAndAssertVisibility:GetYesImInButton()];
 }
 

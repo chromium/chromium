@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -192,13 +192,13 @@
                         prefService:prefs
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
                             browser:self.browser];
-  self.contentSuggestionsMediator.discoverFeedDelegate =
-      self.discoverFeedDelegate;
+  self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.contentSuggestionsMediator.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
-                     SnackbarCommands>>(self.browser->GetCommandDispatcher());
+      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands,
+                     OmniboxCommands, SnackbarCommands>>(
+          self.browser->GetCommandDispatcher());
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;
@@ -287,7 +287,7 @@
   [self.ntpMediator shutdown];
   self.ntpMediator = nil;
   // Reset the observer bridge object before setting
-  // |contentSuggestionsMediator| nil.
+  // `contentSuggestionsMediator` nil.
   if (_startSurfaceObserver) {
     StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
         ->RemoveObserver(_startSurfaceObserver.get());
@@ -555,8 +555,8 @@
   }
 }
 
-// Triggers the URL sharing flow for the given |URL| and |title|, with the
-// origin |view| representing the UI component for that URL.
+// Triggers the URL sharing flow for the given `URL` and `title`, with the
+// origin `view` representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {

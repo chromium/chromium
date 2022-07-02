@@ -76,7 +76,7 @@
 - (void)showOverlay {
   NSArray<UIWindow*>* windows = self.sceneState.scene.windows;
 
-  // Adding |self.overlayView| to sceneState.window won't cover overlay windows
+  // Adding `self.overlayView` to sceneState.window won't cover overlay windows
   // such as fullscreen video.  Instead use the topmost window.
 
   NSArray<UIWindow*>* sortedWindows =

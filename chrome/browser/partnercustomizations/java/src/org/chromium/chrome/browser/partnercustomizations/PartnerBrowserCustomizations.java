@@ -380,7 +380,7 @@ public class PartnerBrowserCustomizations {
     }
 
     @VisibleForTesting
-    public void setHomepageForTests(String homepage) {
-        mHomepage = new GURL(homepage);
+    public static void setInstanceForTesting(PartnerBrowserCustomizations instance) {
+        sInstance = instance;
     }
 }

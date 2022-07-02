@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
@@ -127,7 +128,8 @@ class BASE_EXPORT CurrentThread {
   // Registers a OnceClosure to be called on this thread the next time it goes
   // idle. This is meant for internal usage; callers should use BEST_EFFORT
   // tasks instead of this for generic work that needs to wait until quiescence
-  // to run. There can only be one OnNextIdleCallback at a time.
+  // to run. There can only be one OnNextIdleCallback at a time. Can be called
+  // with a null callback to clear any potentially pending callbacks.
   void RegisterOnNextIdleCallback(OnceClosure on_next_idle_callback);
 
   // Enables nested task processing in scope of an upcoming native message loop.
@@ -155,7 +157,8 @@ class BASE_EXPORT CurrentThread {
     ~ScopedAllowApplicationTasksInNativeNestedLoop();
 
    private:
-    sequence_manager::internal::SequenceManagerImpl* const sequence_manager_;
+    const raw_ptr<sequence_manager::internal::SequenceManagerImpl>
+        sequence_manager_;
     const bool previous_state_;
   };
 
@@ -194,7 +197,7 @@ class BASE_EXPORT CurrentThread {
   friend class MessageLoopTaskRunnerTest;
   friend class web::WebTaskEnvironment;
 
-  sequence_manager::internal::SequenceManagerImpl* current_;
+  raw_ptr<sequence_manager::internal::SequenceManagerImpl> current_;
 };
 
 #if !BUILDFLAG(IS_NACL)

@@ -1232,8 +1232,9 @@ void IndexedDBContextImpl::GetOrCreateDefaultBucket(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   const auto& bucket_locator = storage_key_to_bucket_locator_.find(storage_key);
   if (bucket_locator == storage_key_to_bucket_locator_.end()) {
-    quota_manager_proxy_->GetOrCreateBucket(
-        storage::BucketInitParams(storage_key), idb_task_runner_,
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
+        idb_task_runner_,
         base::BindOnce(
             [](base::WeakPtr<IndexedDBContextImpl> context,
                DidGetBucketLocatorCallback inner_callback,

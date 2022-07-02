@@ -39,14 +39,21 @@ culprit Chrome crash and backtrace.
 
 ### Disabling a test
 
-There a couple ways to disable a test on Chrome's builders:
-- **With a full CrOS checkout**: If you have a full CrOS checkout, you can add
+If you are a Chrome Sheriff, please read the sheriff documentation
+[here](http://go/chrome-sheriff-tast) before disabling any tests.
+
+Tast tests are run under both Chrome's builders and CrOS's builders. They can be
+disabled either completely (in all builders), or in Chrome's builders alone. The
+latter should be used only for changes which are not expected to occur on CrOS's
+builders.
+
+- **Disabling in all builders**: If you have a full CrOS checkout, you can add
 the `informational` [attribute] to the test's definition. (You may be able to
 bypass the need for a full CrOS checkout by using the `Edit code` button in
 codesearch UI, but this flow is unverified.) This can take time (ie: many hours)
 to land and propagate onto Chrome's builders. So if you need the test disabled
 ASAP, consult the next option.
-- **With only a Chromium checkout**: You can also add the test to the list of
+- **Disabling in only Chrome's builders**: You can add the test to the list of
 disabled tests for the step's GN target. For example, to disable a test in the
 `chrome_all_tast_tests` step, add it to [this list]. **Note**: If the test is
 failing consistently, and you only disable it here, it will likely start to fail

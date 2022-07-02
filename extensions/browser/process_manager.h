@@ -119,8 +119,12 @@ class ProcessManager : public KeyedService,
   // the extension isn't running or doesn't have a background page.
   ExtensionHost* GetBackgroundHostForExtension(const std::string& extension_id);
 
-  // Returns the ExtensionHost for the given |render_frame_host|, if there is
-  // one.
+  // Returns the background page ExtensionHost for the given
+  // |render_frame_host|, if |render_frame_host| is within the extension's
+  // background. Note that this will return the background page host for
+  // iframes embedded in the background page, even if they are not extension
+  // frames.
+  // TODO(https://crbug.com/1340001): Make these "gotchas" less subtle.
   ExtensionHost* GetExtensionHostForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 

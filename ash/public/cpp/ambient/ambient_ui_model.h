@@ -36,6 +36,9 @@ constexpr base::TimeDelta kLockScreenBackgroundTimeout = base::Seconds(5);
 // The default interval to refresh photos.
 constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
 
+// The default animation playback speed. Not used in slideshow mode.
+constexpr float kAnimationPlaybackSpeed = 1.f;
+
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.
 class ASH_PUBLIC_EXPORT AmbientUiModelObserver : public base::CheckedObserver {
@@ -84,6 +87,12 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
     return photo_refresh_interval_;
   }
 
+  void set_animation_playback_speed(float animation_playback_speed) {
+    animation_playback_speed_ = animation_playback_speed;
+  }
+
+  float animation_playback_speed() const { return animation_playback_speed_; }
+
  private:
   void NotifyAmbientUiVisibilityChanged();
 
@@ -103,6 +112,9 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   // The interval to refresh photos.
   base::TimeDelta photo_refresh_interval_ = kPhotoRefreshInterval;
+
+  // Animation playback speed. Not used in slideshow mode.
+  float animation_playback_speed_ = kAnimationPlaybackSpeed;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_NS_WINDOW_BRIDGE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_NS_WINDOW_BRIDGE_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -25,6 +27,7 @@
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/cocoa/command_dispatcher.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/display_observer.h"
 
@@ -198,9 +201,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // NativeWidgetNSWindowFullscreenController::Client:
   void FullscreenControllerTransitionStart(bool is_target_fullscreen) override;
   void FullscreenControllerTransitionComplete(bool is_fullscreen) override;
-  void FullscreenControllerSetFrame(const gfx::Rect& frame,
-                                    bool animate,
-                                    base::TimeDelta& transition_time) override;
+  void FullscreenControllerSetFrame(
+      const gfx::Rect& frame,
+      bool animate,
+      base::OnceCallback<void()> completion_callback) override;
   void FullscreenControllerToggleFullscreen() override;
   void FullscreenControllerCloseWindow() override;
   int64_t FullscreenControllerGetDisplayId() const override;
@@ -273,6 +277,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       const mojom::WindowControlsOverlayNSViewType overlay_type) override;
   void RemoveWindowControlsOverlayNSView(
       const mojom::WindowControlsOverlayNSViewType overlay_type) override;
+  void SetCursor(const ui::Cursor& cursor) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.
@@ -321,10 +326,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   NSWindow* GetWindow() const override;
 
   const uint64_t id_;
-  NativeWidgetNSWindowHost* const host_;  // Weak. Owns this.
-  NativeWidgetNSWindowHostHelper* const
+  const raw_ptr<NativeWidgetNSWindowHost> host_;  // Weak. Owns this.
+  const raw_ptr<NativeWidgetNSWindowHostHelper>
       host_helper_;  // Weak, owned by |host_|.
-  remote_cocoa::mojom::TextInputHost* const
+  const raw_ptr<remote_cocoa::mojom::TextInputHost>
       text_input_host_;  // Weak, owned by |host_|.
 
   base::scoped_nsobject<NativeWidgetMacNSWindow> window_;
@@ -349,7 +354,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   base::scoped_nsobject<WindowControlsOverlayNSView>
       web_app_frame_toolbar_overlay_nsview_;
 
-  NativeWidgetNSWindowBridge* parent_ =
+  raw_ptr<NativeWidgetNSWindowBridge> parent_ =
       nullptr;  // Weak. If non-null, owns this.
   std::vector<NativeWidgetNSWindowBridge*> child_windows_;
 
@@ -397,19 +402,15 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
 
-  // A structure to hold a headless mode window state. This is present iff the
-  // window has been created in headless mode.
+  // This tracks headless window visibility and fullscreen states.
+  // In headless mode the platform window is never made visible or change its
+  // state, so this structure holds the requested state for reporting.
   struct HeadlessModeWindow {
-    // This tracks headless window visibility state. In headless mode
-    // the platform window is always hidden, so we use this boolean
-    // to track the window's expected visibility state.
     bool visibility_state = false;
-    // This tracks headless window fullscreen state. In headless mode the
-    // platform window is never made fullscreen because AppKit implicitly
-    // makes fullscreen windows visible.
     bool fullscreen_state = false;
   };
 
+  // This is present iff the window has been created in headless mode.
   absl::optional<HeadlessModeWindow> headless_mode_window_;
 
   display::ScopedDisplayObserver display_observer_{this};

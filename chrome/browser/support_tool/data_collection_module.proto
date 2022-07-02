@@ -24,6 +24,7 @@ enum DataCollectorType {
   CHROMEOS_LACROS = 10;
   CHROMEOS_REVEN = 11;
   CHROMEOS_DBUS = 12;
+  CHROMEOS_NETWORK_ROUTES = 13;
 }
 
 // Used for storing the information about which data colllectors will be used

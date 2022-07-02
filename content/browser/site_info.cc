@@ -188,11 +188,13 @@ SiteInfo SiteInfo::CreateForErrorPage(
 
 // static
 SiteInfo SiteInfo::CreateForDefaultSiteInstance(
-    BrowserContext* browser_context,
+    const IsolationContext& isolation_context,
     const StoragePartitionConfig storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
   // Get default JIT policy for this browser_context by passing in an empty
   // site_url.
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
 
@@ -200,7 +202,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   SiteInstanceImpl::GetDefaultSiteURL(),
                   false /* requires_origin_keyed_process */,
                   false /* is_sandboxed */, storage_partition_config,
-                  web_exposed_isolation_info, false /* is_guest */,
+                  web_exposed_isolation_info, isolation_context.is_guest(),
                   false /* does_site_request_dedicated_process_for_coop */,
                   is_jit_disabled, false /* is_pdf */);
 }
@@ -810,8 +812,18 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     // we won't hit this for hosted app effective URLs (see
     // https://crbug.com/961386).
     if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
-        origin.GetURL().SchemeIsHTTPOrHTTPS())
+        origin.GetURL().SchemeIsHTTPOrHTTPS()) {
       return origin.GetURL();
+    }
+
+    // For isolated sandboxed iframes in per-origin mode we also just return the
+    // origin, as we should be using the full origin for the SiteInstance, but
+    // we don't need to track the origin like we do for OriginAgentCluster.
+    if (real_url_info.is_sandboxed &&
+        features::kIsolateSandboxedIframesGroupingParam.Get() ==
+            features::IsolateSandboxedIframesGrouping::kPerOrigin) {
+      return origin.GetURL();
+    }
 
     site_url = GetSiteForOrigin(origin);
 

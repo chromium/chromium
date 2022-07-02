@@ -23,7 +23,7 @@ class NET_EXPORT ProxyResolverFactory {
   // A handle to a request. Deleting it will cancel the request.
   class Request {
    public:
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
   // See |expects_pac_bytes()| for the meaning of |expects_pac_bytes|.

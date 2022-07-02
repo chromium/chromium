@@ -119,7 +119,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(test_dict, priority_, a.cb());
+  report_queue_->Enqueue(test_dict.Clone(), priority_, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -133,15 +133,16 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
 // Enqueues a |TestMessage| and ensures that it arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
-  reporting::test::TestMessage test_message;
+  test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
 
-  reporting::test::TestMessage result_message;
+  test::TestMessage result_message;
   ASSERT_TRUE(
       result_message.ParseFromString(test_storage_module()->record().data()));
   ASSERT_EQ(result_message.test(), test_message.test());
@@ -157,10 +158,11 @@ TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
             std::move(callback).Run(Status(error::UNKNOWN, "Failing for Test"));
           })));
 
-  reporting::test::TestMessage test_message;
+  test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
@@ -171,7 +173,7 @@ TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(kTestString, priority_, a.cb());
+  report_queue_->Enqueue(std::string(kTestString), priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
@@ -180,10 +182,11 @@ TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
 TEST_F(ReportQueueImplTest, EnqueueProtoFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
-  reporting::test::TestMessage test_message;
+  test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
@@ -197,17 +200,18 @@ TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(test_dict, priority_, a.cb());
+  report_queue_->Enqueue(test_dict.Clone(), priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
 TEST_F(ReportQueueImplTest, EnqueueAndFlushSuccess) {
-  reporting::test::TestMessage test_message;
+  test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
   EXPECT_OK(a.result());
   test::TestEvent<Status> f;
   report_queue_->Flush(priority_, f.cb());
@@ -215,10 +219,11 @@ TEST_F(ReportQueueImplTest, EnqueueAndFlushSuccess) {
 }
 
 TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
-  reporting::test::TestMessage test_message;
+  test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_CALL(*test_storage_module(), Flush(Eq(priority_), _))
@@ -240,7 +245,8 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-  speculative_report_queue->Enqueue(kTestString, priority_, a.cb());
+  speculative_report_queue->Enqueue(std::string(kTestString), priority_,
+                                    a.cb());
   EXPECT_OK(a.result());
 
   speculative_report_queue->AttachActualQueue(std::move(report_queue_));
@@ -263,29 +269,31 @@ TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
 
   // Call `Enqueue` for 2 records before report queue is ready, both will be
   // added to pending records.
-  speculative_report_queue->Enqueue(kTestString1, priority_, event1.cb());
+  speculative_report_queue->Enqueue(std::string(kTestString1), priority_,
+                                    event1.cb());
   EXPECT_OK(event1.result());
-  speculative_report_queue->Enqueue(kTestString2, priority_, event2.cb());
+  speculative_report_queue->Enqueue(std::string(kTestString2), priority_,
+                                    event2.cb());
   EXPECT_OK(event2.result());
 
   base::queue<ReportQueue::EnqueueCallback> enqueue_cb_queue;
   int enqueue_count = 0;
-  auto mock_queue = std::make_unique<testing::NiceMock<MockReportQueue>>();
+  auto mock_queue = std::make_unique<MockReportQueue>();
   EXPECT_CALL(*mock_queue, AddRecord)
       .Times(3)
-      .WillRepeatedly(
-          [&enqueue_cb_queue, &enqueue_count](base::StringPiece record_string,
-                                              Priority event_priority,
-                                              ReportQueue::EnqueueCallback cb) {
-            ++enqueue_count;
-            enqueue_cb_queue.emplace(std::move(cb));
-          });
+      .WillRepeatedly([&enqueue_cb_queue, &enqueue_count](
+                          std::string record_string, Priority event_priority,
+                          ReportQueue::EnqueueCallback cb) {
+        ++enqueue_count;
+        enqueue_cb_queue.emplace(std::move(cb));
+      });
 
   // First record should be enqueued after calling `AttachActualQueue`.
   speculative_report_queue->AttachActualQueue(std::move(mock_queue));
   // Second record should be enqueued after calling `Enqueue` for the third
   // record, and third record should be added to pending records.
-  speculative_report_queue->Enqueue(kTestString3, priority_, event3.cb());
+  speculative_report_queue->Enqueue(std::string(kTestString3), priority_,
+                                    event3.cb());
   task_environment_.RunUntilIdle();
   ASSERT_EQ(enqueue_count, 2);
 
@@ -312,8 +320,8 @@ TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
 
 TEST_F(ReportQueueImplTest, EnqueueRecordWithInvalidPriority) {
   test::TestEvent<Status> event;
-  report_queue_->Enqueue(kTestMessage, Priority::UNDEFINED_PRIORITY,
-                         event.cb());
+  report_queue_->Enqueue(std::string(kTestMessage),
+                         Priority::UNDEFINED_PRIORITY, event.cb());
   const auto result = event.result();
 
   ASSERT_FALSE(result.ok());
@@ -350,5 +358,74 @@ TEST_F(ReportQueueImplTest, FlushUninitializedSpeculativeReportQueue) {
   EXPECT_EQ(result.error_code(), error::FAILED_PRECONDITION);
 }
 
+TEST_F(ReportQueueImplTest, AsyncProcessingReportQueue) {
+  auto mock_queue = std::make_unique<MockReportQueue>();
+  EXPECT_CALL(*mock_queue, AddProducedRecord)
+      .Times(3)
+      .WillRepeatedly([](ReportQueue::RecordProducer record_producer,
+                         Priority event_priority,
+                         ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status::StatusOK());
+      });
+
+  test::TestEvent<Status> a_string;
+  mock_queue->Enqueue(std::string(kTestMessage), priority_, a_string.cb());
+
+  test::TestEvent<Status> a_proto;
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  mock_queue->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                      priority_, a_proto.cb());
+
+  test::TestEvent<Status> a_json;
+  constexpr char kTestKey[] = "TEST_KEY";
+  constexpr char kTestValue[] = "TEST_VALUE";
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
+  mock_queue->Enqueue(std::move(test_dict), priority_, a_json.cb());
+
+  EXPECT_OK(a_string.result());
+  EXPECT_OK(a_proto.result());
+  EXPECT_OK(a_json.result());
+}
+
+TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+
+  test::TestEvent<Status> a_string;
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    a_string.cb());
+
+  test::TestEvent<Status> a_proto;
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+  speculative_report_queue->Enqueue(
+      std::make_unique<test::TestMessage>(test_message), priority_,
+      a_proto.cb());
+
+  test::TestEvent<Status> a_json;
+  constexpr char kTestKey[] = "TEST_KEY";
+  constexpr char kTestValue[] = "TEST_VALUE";
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
+  speculative_report_queue->Enqueue(std::move(test_dict), priority_,
+                                    a_json.cb());
+
+  EXPECT_OK(a_string.result());
+  EXPECT_OK(a_proto.result());
+  EXPECT_OK(a_json.result());
+
+  auto mock_queue = std::make_unique<MockReportQueue>();
+  EXPECT_CALL(*mock_queue, AddProducedRecord)
+      .Times(3)
+      .WillRepeatedly([](ReportQueue::RecordProducer record_producer,
+                         Priority event_priority,
+                         ReportQueue::EnqueueCallback cb) {
+        std::move(cb).Run(Status::StatusOK());
+      });
+  speculative_report_queue->AttachActualQueue(std::move(mock_queue));
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+}
 }  // namespace
 }  // namespace reporting

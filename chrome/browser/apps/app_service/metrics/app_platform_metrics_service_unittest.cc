@@ -25,7 +25,9 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -291,7 +293,13 @@ class AppPlatformMetricsServiceTest : public testing::Test,
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
+    vm_tools::apps::ApplicationList app_list =
+        crostini::CrostiniTestHelper::BasicAppList("test");
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(
+        testing_profile_.get())
+        ->UpdateApplicationList(app_list);
+    AddApp(cache, /*app_id=*/
+           crostini::CrostiniTestHelper::GenerateAppId("test"),
            AppType::kCrostini, "", Readiness::kReady, InstallReason::kUser,
            InstallSource::kUnknown, true /* should_notify_initialized */);
 
@@ -387,19 +395,19 @@ class AppPlatformMetricsServiceTest : public testing::Test,
   void VerifyMetrics() {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kArc, apps::InstallReason::kUser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBuiltIn),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
-        /*expected_count=*/1);
+        /*count=*/1);
 
     // Should be 3 Borealis apps: The installer/launcher created by the
     // BorealisApps class, plus the two created in this test.
@@ -408,102 +416,102 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBorealis),
         /*sample=*/borealis_apps_count,
-        /*bucket_count=*/1);
+        /*expected_bucket_count=*/1);
 
     // The installer/launcher is preinstalled, the others are user-installed.
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kDefault),
         /*sample=*/1,
-        /*bucket_count=*/1);
+        /*expected_bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kUser),
         /*sample=*/borealis_apps_count - 1,
-        /*bucket_count=*/1);
+        /*expected_bucket_count=*/1);
 
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kCrostini),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kCrostini, apps::InstallReason::kUser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kChromeApp),
-        /*expected_count=*/0);
+        /*count=*/0);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             GetWebAppTypeName()),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             GetWebAppTypeName(), apps::InstallReason::kSync),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kMacOs),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kMacOs, apps::InstallReason::kUnknown),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kPluginVm),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kPluginVm, apps::InstallReason::kUser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowser, apps::InstallReason::kSystem),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
             apps::InstallReason::kUser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kStandaloneBrowserChromeApp,
             apps::InstallReason::kUser),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kRemote),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kRemote, apps::InstallReason::kPolicy),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kSystemWeb),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kSystemWeb, apps::InstallReason::kSystem),
-        /*expected_count=*/1);
+        /*count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             GetWebAppTypeName(), apps::InstallReason::kSubApp),
-        /*expected_count=*/1);
+        /*count=*/1);
   }
 
   void ModifyInstance(const std::string& app_id,
@@ -599,30 +607,32 @@ class AppPlatformMetricsServiceTest : public testing::Test,
     EXPECT_EQ(time_delta, unreported_duration.value());
   }
 
-  void VerifyAppRunningDurationCountHistogram(base::HistogramBase::Count count,
-                                              AppTypeName app_type_name) {
+  void VerifyAppRunningDurationCountHistogram(
+      base::HistogramBase::Count expected_count,
+      AppTypeName app_type_name) {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
             app_type_name),
-        count);
+        expected_count);
   }
 
-  void VerifyAppRunningDurationHistogram(base::TimeDelta time_delta,
-                                         base::HistogramBase::Count count,
-                                         AppTypeName app_type_name) {
+  void VerifyAppRunningDurationHistogram(
+      base::TimeDelta time_delta,
+      base::HistogramBase::Count expected_count,
+      AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
             app_type_name),
-        time_delta, count);
+        time_delta, expected_count);
   }
 
   void VerifyAppRunningPercentageCountHistogram(
-      base::HistogramBase::Count count,
+      base::HistogramBase::Count expected_count,
       AppTypeName app_type_name) {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
             app_type_name),
-        count);
+        expected_count);
   }
 
   void VerifyAppRunningPercentageHistogram(
@@ -635,26 +645,27 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         count, expected_count);
   }
 
-  void VerifyAppActivatedCount(int count, AppTypeName app_type_name) {
+  void VerifyAppActivatedCount(int expected_count, AppTypeName app_type_name) {
     DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     absl::optional<int> activated_count = update->FindIntPath(key);
-    if (count == 0) {
+    if (expected_count == 0) {
       EXPECT_FALSE(activated_count.has_value());
       return;
     }
 
     ASSERT_TRUE(activated_count.has_value());
-    EXPECT_EQ(count, activated_count.value());
+    EXPECT_EQ(expected_count, activated_count.value());
   }
 
-  void VerifyAppActivatedCountHistogram(base::HistogramBase::Count count,
-                                        AppTypeName app_type_name) {
+  void VerifyAppActivatedCountHistogram(
+      base::HistogramBase::Count expected_count,
+      AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
             app_type_name),
-        count);
+        expected_count);
   }
 
   void VerifyAppActivatedHistogram(int count,
@@ -666,34 +677,36 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         count, expected_count);
   }
 
-  void VerifyAppUsageTimeCountHistogram(base::HistogramBase::Count count,
-                                        AppTypeName app_type_name) {
+  void VerifyAppUsageTimeCountHistogram(
+      base::HistogramBase::Count expected_count,
+      AppTypeName app_type_name) {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
-        count);
+        expected_count);
   }
 
-  void VerifyAppUsageTimeCountHistogram(base::HistogramBase::Count count,
-                                        AppTypeNameV2 app_type_name) {
+  void VerifyAppUsageTimeCountHistogram(
+      base::HistogramBase::Count expected_count,
+      AppTypeNameV2 app_type_name) {
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
-        count);
+        expected_count);
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count count,
+                                   base::HistogramBase::Count expected_count,
                                    AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
-        time_delta, count);
+        time_delta, expected_count);
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count count,
+                                   base::HistogramBase::Count expected_count,
                                    AppTypeNameV2 app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
-        time_delta, count);
+        time_delta, expected_count);
   }
 
   void VerifyAppUsageTimeUkmWithUkmName(const std::string& ukm_name,
@@ -904,7 +917,7 @@ TEST_P(AppPlatformMetricsServiceTest, LessThanOneDay) {
   task_environment_.FastForwardBy(base::Hours(1));
   histogram_tester().ExpectTotalCount(
       AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
-      /*expected_count=*/0);
+      /*count=*/0);
   EXPECT_EQ(AppPlatformMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }
@@ -930,7 +943,7 @@ TEST_P(AppPlatformMetricsServiceTest, InstallApps) {
   task_environment_.FastForwardBy(base::Days(1));
   histogram_tester().ExpectTotalCount(
       AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kArc),
-      /*expected_count=*/2);
+      /*count=*/2);
 }
 
 TEST_P(AppPlatformMetricsServiceTest, BrowserWindow) {
@@ -2038,9 +2051,9 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(2, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
-      /*app_id=*/crostini::kCrostiniTerminalSystemAppId, ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
-  VerifyAppsLaunchUkm("app://CrostiniTerminal/Terminal", AppTypeName::kCrostini,
+      /*app_id=*/crostini::CrostiniTestHelper::GenerateAppId("test"),
+      ui::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://test/test", AppTypeName::kCrostini,
                       apps::mojom::LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
@@ -2169,13 +2182,6 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-
-  proxy->UninstallSilently(
-      /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
-      apps::mojom::UninstallSource::kAppList);
-  VerifyAppsUninstallUkm("app://CrostiniTerminal/Terminal",
-                         AppTypeName::kCrostini,
-                         apps::mojom::UninstallSource::kAppList);
 
   proxy->UninstallSilently(
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);

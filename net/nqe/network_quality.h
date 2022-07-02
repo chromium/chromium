@@ -12,9 +12,7 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 
-namespace net {
-namespace nqe {
-namespace internal {
+namespace net::nqe::internal {
 
 // RTT and throughput values are set to |INVALID_RTT_THROUGHPUT| if a valid
 // value is unavailable.
@@ -105,8 +103,6 @@ class NET_EXPORT_PRIVATE NetworkQuality {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace internal
-}  // namespace nqe
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_QUALITY_H_

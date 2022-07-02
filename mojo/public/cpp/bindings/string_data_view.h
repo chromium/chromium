@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_STRING_DATA_VIEW_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_STRING_DATA_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 
 namespace mojo {
@@ -25,7 +26,7 @@ class StringDataView {
   size_t size() const { return data_->size(); }
 
  private:
-  internal::String_Data* data_ = nullptr;
+  raw_ptr<internal::String_Data> data_ = nullptr;
 };
 
 }  // namespace mojo

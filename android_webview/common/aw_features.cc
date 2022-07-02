@@ -14,7 +14,7 @@ namespace features {
 // Enables package name logging for the most popular WebView embedders that are
 // on a dynamically generated allowlist.
 const base::Feature kWebViewAppsPackageNamesAllowlist{
-    "WebViewAppsPackageNamesAllowlist", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebViewAppsPackageNamesAllowlist", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Maximum time to throttle querying the app package names allowlist from the
 // component updater service, used when there is a valid cached allowlist
@@ -36,8 +36,8 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kWebViewBrotliSupport{"WebViewBrotliSupport",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use the SafeBrowsingApiHandler which uses the connectionless GMS APIs. This
-// Feature is checked and used in downstream internal code.
+// Use the SafeBrowsingApiHandlerBridge which uses the connectionless GMS APIs.
+// This Feature is checked and used in downstream internal code.
 const base::Feature kWebViewConnectionlessSafeBrowsing{
     "WebViewConnectionlessSafeBrowsing", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -45,6 +45,9 @@ const base::Feature kWebViewConnectionlessSafeBrowsing{
 // the app's theme is dark.
 const base::Feature kWebViewForceDarkModeMatchTheme{
     "WebViewForceDarkModeMatchTheme", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kWebViewHitTestInBlinkOnTouchStart{
+    "WebViewHitTestInBlinkOnTouchStart", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable display cutout support for Android P and above.
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
@@ -89,9 +92,10 @@ const base::Feature kWebViewMeasureScreenCoverage{
 const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether WebView will send variations headers on URLs where applicable.
-const base::Feature kWebViewSendVariationsHeaders{
-    "WebViewSendVariationsHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
+// Whether to record size of the embedding app's data directory to the UMA
+// histogram Android.WebView.AppDataDirectorySize.
+const base::Feature kWebViewRecordAppDataDirectorySize{
+    "WebViewRecordAppDataDirectorySize", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.

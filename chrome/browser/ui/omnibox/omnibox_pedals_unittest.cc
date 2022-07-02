@@ -24,7 +24,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({omnibox::kOmniboxPedalsBatch3NonEnglish}, {});
+  feature_list.InitWithFeatures({}, {});
 
   // This used to have a vector of strings for specific trigger testing in each
   // language but those depended on pedal_processor, which is deprecated, so

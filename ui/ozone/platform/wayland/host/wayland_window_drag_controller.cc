@@ -21,6 +21,8 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -38,6 +40,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -216,12 +220,15 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   DCHECK(data_source_);
   DCHECK(data_offer_);
 
+  drag_target_window_ = window;
+
   // Forward focus change event to the input delegate, so other components, such
   // as WaylandScreen, are able to properly retrieve focus related info during
   // window dragging sesstions.
   pointer_location_ = location;
 
   DCHECK(drag_source_.has_value());
+  // Check if this is necessary.
   if (*drag_source_ == DragSource::kMouse)
     pointer_delegate_->OnPointerFocusChanged(window, location);
   else
@@ -243,6 +250,8 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 }
 
 void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
+  DCHECK(drag_target_window_);
+
   DCHECK_GE(state_, State::kAttached);
   DVLOG(2) << "OnMotion. location=" << location.ToString();
 
@@ -261,13 +270,16 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     base::TimeTicks timestamp = base::TimeTicks::Now();
     auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchMotionEvent(location, timestamp,
-                                        touch_pointer_ids[0]);
+    touch_delegate_->OnTouchMotionEvent(
+        location, timestamp, touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 }
 
 void WaylandWindowDragController::OnDragLeave() {
   DCHECK_GE(state_, State::kAttached);
+
+  drag_target_window_ = nullptr;
 
   // In order to guarantee ET_MOUSE_RELEASED event is delivered once the DND
   // session finishes, the focused window is not reset here. This is similar to
@@ -288,15 +300,15 @@ void WaylandWindowDragController::OnDragLeave() {
   DVLOG(1) << "OnLeave";
   data_offer_.reset();
 
-  // As Wayland clients are only aware of surface-local coordinates and there is
-  // no implicit grab during DND sessions, a fake motion event with negative
-  // y coordinate is used here to allow higher level UI components to detect
-  // when a window should be detached. E.g: On Chrome, dragging a tab all the
-  // way up to the top edge of the window won't work without this fake motion
-  // event upon wl_data_device::leave events. This is a workaround and should
-  // ideally be reworked in the future, at higher level layers such that they
-  // properly handle platforms that do not support global screen coordinates,
-  // like Wayland.
+  // As wl-shell/xdg-shell clients are only aware of surface-local coordinates
+  // and there is no implicit grab during DND sessions, a fake motion event with
+  // negative y coordinate is used here to allow higher level UI components to
+  // detect when a window should be detached. E.g: On Chrome, dragging a tab all
+  // the way up to the top edge of the window won't work without this fake
+  // motion event upon wl_data_device::leave events. This is a workaround and
+  // should ideally be reworked in the future, at higher level layers such that
+  // they properly handle platforms that do not support global screen
+  // coordinates, like Wayland.
   //
   // TODO(https://crbug.com/1282186): Find a better solution for upwards tab
   // detaching.
@@ -317,7 +329,8 @@ void WaylandWindowDragController::OnDragLeave() {
     // the drag event is discarded.
     touch_delegate_->OnTouchMotionEvent(
         {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
-        touch_pointer_ids[0]);
+        touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 }
 
@@ -328,6 +341,12 @@ void WaylandWindowDragController::OnDragDrop() {
   DCHECK(data_offer_);
   data_offer_->FinishOffer();
   data_offer_.reset();
+
+  drag_target_window_ = nullptr;
+}
+
+const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
+  return drag_target_window_;
 }
 
 // This function is called when either 'cancelled' or 'finished' data source
@@ -355,6 +374,8 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // In case of touch, though, we simply reset the focus altogether.
   if (IsExtendedDragAvailableInternal() && dragged_window_) {
     if (*drag_source_ == DragSource::kMouse) {
+      // TODO: check if this usage is correct.
+
       pointer_delegate_->OnPointerFocusChanged(dragged_window_,
                                                pointer_location_);
     } else {
@@ -408,7 +429,7 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
     return;
 
   DCHECK(window);
-  auto origin = window->GetBounds().origin();
+  auto origin = window->GetBoundsInDIP().origin();
   gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
   DVLOG(1) << "Toplevel window created (detached)."
            << " widget=" << window->GetWidget()
@@ -438,21 +459,13 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   if (!should_process_drag_event_)
     return;
 
-  // Update current cursor position relative to the event source
-  // (pointer_grab_owner_) so it can be retrieved later on through
-  // |Screen::GetCursorScreenPoint| API.
-  if (pointer_grab_owner_)
-    pointer_grab_owner_->UpdateCursorPositionFromEvent(Event::Clone(*event));
-
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag
   // offset. Note that setting a new location (i.e: bounds.origin()) for a
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
   if (dragged_window_) {
-    gfx::Point new_location = event->location() - drag_offset_;
-    gfx::Size size = dragged_window_->GetBounds().size();
-    dragged_window_->SetBounds({new_location, size});
+    dragged_window_->SetOrigin(event->location() - drag_offset_);
   }
 
   should_process_drag_event_ = false;
@@ -482,8 +495,9 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   } else {
     auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     DCHECK_EQ(touch_pointer_ids.size(), 1u);
-    touch_delegate_->OnTouchReleaseEvent(base::TimeTicks::Now(),
-                                         touch_pointer_ids[0]);
+    touch_delegate_->OnTouchReleaseEvent(
+        base::TimeTicks::Now(), touch_pointer_ids[0],
+        WaylandTouch::Delegate::EventDispatchPolicy::kImmediate);
   }
 
   pointer_grab_owner_ = nullptr;

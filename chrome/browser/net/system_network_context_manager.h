@@ -111,7 +111,7 @@ class SystemNetworkContextManager {
   void DisableQuic();
 
   // Returns an mojo::PendingReceiver<SSLConfigClient> that can be passed as a
-  // NetorkContextParam.
+  // NetworkContextParam.
   mojo::PendingReceiver<network::mojom::SSLConfigClient>
   GetSSLConfigClientReceiver();
 

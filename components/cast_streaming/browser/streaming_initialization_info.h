@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_STREAMING_INITIALIZATION_INFO_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_STREAMING_INITIALIZATION_INFO_H_
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "components/cast_streaming/browser/demuxer_stream_client.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,8 +27,7 @@ struct StreamingInitializationInfo {
                     openscreen::cast::Receiver* cast_receiver);
     AudioStreamInfo(media::AudioDecoderConfig audio_config,
                     openscreen::cast::Receiver* cast_receiver,
-                    base::RepeatingClosure on_no_buffers_cb,
-                    base::OnceClosure on_error_cb);
+                    base::WeakPtr<DemuxerStreamClient> ds_client);
     AudioStreamInfo();
     AudioStreamInfo(const AudioStreamInfo& other);
     ~AudioStreamInfo();
@@ -40,11 +39,9 @@ struct StreamingInitializationInfo {
     // duration of the streaming session.
     openscreen::cast::Receiver* receiver;
 
-    // Callback to be called when no buffers are available for reading.
-    base::RepeatingClosure on_no_buffers_callback;
-
-    // Callback to be called when a non-recoverable error occurs.
-    base::OnceClosure on_error_callback;
+    // Client with methods to be called when the DemuxerStream requires an
+    // action be executed.
+    base::WeakPtr<DemuxerStreamClient> demuxer_stream_client;
   };
 
   struct VideoStreamInfo {
@@ -52,8 +49,7 @@ struct StreamingInitializationInfo {
                     openscreen::cast::Receiver* cast_receiver);
     VideoStreamInfo(media::VideoDecoderConfig video_config,
                     openscreen::cast::Receiver* cast_receiver,
-                    base::RepeatingClosure on_no_buffers_cb,
-                    base::OnceClosure on_error_cb);
+                    base::WeakPtr<DemuxerStreamClient> ds_client);
     VideoStreamInfo();
     VideoStreamInfo(const VideoStreamInfo& other);
     ~VideoStreamInfo();
@@ -65,11 +61,9 @@ struct StreamingInitializationInfo {
     // duration of the streaming session.
     openscreen::cast::Receiver* receiver;
 
-    // Callback to be called when no buffers are available for reading.
-    base::RepeatingClosure on_no_buffers_callback;
-
-    // Callback to be called when a non-recoverable error occurs.
-    base::OnceClosure on_error_callback;
+    // Client with methods to be called when the DemuxerStream requires an
+    // action be executed.
+    base::WeakPtr<DemuxerStreamClient> demuxer_stream_client;
   };
 
   StreamingInitializationInfo(

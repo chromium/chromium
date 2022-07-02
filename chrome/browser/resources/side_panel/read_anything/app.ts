@@ -4,13 +4,35 @@
 
 import '../strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentNode, ContentType} from './read_anything.mojom-webui.js';
-import {ReadAnythingApiProxy, ReadAnythingApiProxyImpl} from './read_anything_api_proxy.js';
+import {getTemplate} from './app.html.js';
 
 const ReadAnythingElementBase = WebUIListenerMixin(PolymerElement);
+
+////////////////////////////////////////////////////////////
+// Called by ReadAnythingPageHandler via callback router. //
+////////////////////////////////////////////////////////////
+
+// The chrome.readAnything context is created by the ReadAnythingAppController
+// which is only instantiated when the kReadAnything feature is enabled. This
+// check if chrome.readAnything exists prevents runtime errors when the feature
+// is disabled.
+if (chrome.readAnything) {
+  chrome.readAnything.updateFontName = function() {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateFontName();
+  };
+
+  chrome.readAnything.updateContent = function() {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateContent();
+  };
+}
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
   static get is() {
@@ -18,7 +40,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -29,9 +51,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
   }
 
-  private apiProxy_: ReadAnythingApiProxy =
-      ReadAnythingApiProxyImpl.getInstance();
-  private listenerIds_: number[];
   private fontName_: string;
 
   // Defines the valid font names that can be passed to front-end and maps
@@ -39,7 +58,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // the names set in read_anything_font_model.cc.
   private defaultFontName: string = 'standard';
   private validFontNames: {name: string, cssClass: string}[] = [
-    {name: 'Standard', cssClass: 'standard'},
+    {name: 'Standard font', cssClass: 'standard'},
     {name: 'Serif', cssClass: 'serif'},
     {name: 'Sans-serif', cssClass: 'sans-serif'},
     {name: 'Arial', cssClass: 'arial'},
@@ -49,97 +68,81 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-
-    const callbackRouter = this.apiProxy_.getCallbackRouter();
-    this.listenerIds_ = [
-      callbackRouter.showContent.addListener(
-          (contentNodes: ContentNode[]) => this.showContent_(contentNodes)),
-
-      callbackRouter.onFontNameChange.addListener(
-          (newFontName: string) => this.updateFontName_(newFontName))
-    ];
-    this.apiProxy_.onUIReady();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.listenerIds_.forEach(
-        id => this.apiProxy_.getCallbackRouter().removeListener(id));
-  }
-
-  private buildNode_(contentNode: ContentNode): Node|null {
-    switch (contentNode.type) {
-      case ContentType.kHeading:
-        return this.buildHeadingElement_(contentNode);
-      case ContentType.kLink:
-        return this.buildLinkElement_(contentNode);
-      case ContentType.kParagraph:
-        return this.buildParagraphElement_(contentNode);
-      case ContentType.kStaticText:
-        return this.buildStaticTextElement_(contentNode);
-      default:
-        return null;
+    if (chrome.readAnything) {
+      chrome.readAnything.onConnected();
     }
   }
 
-  private buildHeadingElement_(contentNode: ContentNode): HTMLHeadingElement {
-    let headingLevel: number = contentNode.headingLevel;
+  private buildNode_(nodeId: number): Node|null {
+    if (chrome.readAnything.isHeading(nodeId)) {
+      return this.buildHeadingElement_(nodeId);
+    }
+    if (chrome.readAnything.isLink(nodeId)) {
+      return this.buildLinkElement_(nodeId);
+    }
+    if (chrome.readAnything.isParagraph(nodeId)) {
+      return this.buildParagraphElement_(nodeId);
+    }
+    if (chrome.readAnything.isStaticText(nodeId)) {
+      return this.buildStaticTextElement_(nodeId);
+    }
+    return null;
+  }
+
+  private buildHeadingElement_(nodeId: number): HTMLHeadingElement {
+    let headingLevel = chrome.readAnything.getHeadingLevel(nodeId);
     // In ARIA 1.1, the default heading level is 2.
     // See AXNodeObject::kDefaultHeadingLevel.
     if (headingLevel < 1 || headingLevel > 6) {
       headingLevel = 2;
     }
-    const tagName: string = 'h' + headingLevel;
-    const element: HTMLElement = document.createElement(tagName);
+    const tagName = 'h' + headingLevel;
+    const element = document.createElement(tagName);
     element.setAttribute('align', 'left');
-    this.appendChildNodes_(contentNode, element);
+    this.appendChildNodes_(element, nodeId);
     return element as HTMLHeadingElement;
   }
 
-  private buildLinkElement_(contentNode: ContentNode): HTMLAnchorElement|null {
-    if (!contentNode.url.url) {
+  private buildLinkElement_(nodeId: number): HTMLAnchorElement|null {
+    const url = chrome.readAnything.getUrl(nodeId);
+    if (!url.length) {
       return null;
     }
-    const element: HTMLAnchorElement = document.createElement('a');
-    element.setAttribute('href', contentNode.url.url);
-    this.appendChildNodes_(contentNode, element);
+    const element = document.createElement('a');
+    element.setAttribute('href', url);
+    this.appendChildNodes_(element, nodeId);
     return element;
   }
 
-  private buildParagraphElement_(contentNode: ContentNode):
-      HTMLParagraphElement {
-    const element: HTMLParagraphElement = document.createElement('p');
-    this.appendChildNodes_(contentNode, element);
+  private buildParagraphElement_(nodeId: number): HTMLParagraphElement {
+    const element = document.createElement('p');
+    this.appendChildNodes_(element, nodeId);
     return element;
   }
 
-  private buildStaticTextElement_(contentNode: ContentNode): Text|null {
-    if (!contentNode.text || contentNode.children.length) {
+  private buildStaticTextElement_(nodeId: number): Text|null {
+    const textContent = chrome.readAnything.getTextContent(nodeId);
+    if (!textContent.length) {
       return null;
     }
-    return document.createTextNode(contentNode.text);
+    return document.createTextNode(textContent);
   }
 
-  private appendChildNodes_(contentNode: ContentNode, node: Node) {
-    for (const childContentNode of contentNode.children) {
-      const childNode: Node|null = this.buildNode_(childContentNode);
+  private appendChildNodes_(node: Node, nodeId: number) {
+    for (const childNodeId of chrome.readAnything.getChildren(nodeId)) {
+      const childNode = this.buildNode_(childNodeId);
       if (childNode) {
         node.appendChild(childNode);
       }
     }
   }
 
-  ////////////////////////////////////////////////////////////
-  // Called by ReadAnythingPageHandler via callback router. //
-  ////////////////////////////////////////////////////////////
-
-  showContent_(contentNodes: ContentNode[]) {
-    const shadowRoot: ShadowRoot|null = this.shadowRoot;
+  updateContent() {
+    const shadowRoot = this.shadowRoot;
     if (!shadowRoot) {
       return;
     }
-    const container: HTMLElement|null = shadowRoot.getElementById('container');
+    const container = shadowRoot.getElementById('container');
     if (!container) {
       return;
     }
@@ -148,28 +151,26 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // setting `innerHTML = ''` in order to remove all listeners, too.
     container.replaceChildren();
 
-    // Construct a dom node corresponding to each ContentNode and append it to
+    // Construct a dom node corresponding to each AXNode and append it to
     // container. This does not use polymer's templating abstraction, which
-    // would create a shadow node element representing each ContentNode, because
+    // would create a shadow node element representing each AXNode, because
     // experimentation found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
-    for (const contentNode of contentNodes) {
-      const node: Node|null = this.buildNode_(contentNode);
+    for (const nodeId of chrome.readAnything.contentNodeIds) {
+      const node = this.buildNode_(nodeId);
       if (node) {
         container.appendChild(node);
       }
     }
   }
 
-  updateFontName_(newFontName: string) {
+  updateFontName() {
     // Validate that the given font name is a valid choice, or use the default.
     const validFontName = this.validFontNames.find(
-        (f: {name: string, cssClass: string}) => f.name === newFontName);
-    if (!validFontName) {
-      this.fontName_ = this.defaultFontName;
-    } else {
-      this.fontName_ = validFontName.cssClass;
-    }
+        (f: {name: string, cssClass: string}) =>
+            f.name === chrome.readAnything.fontName);
+    this.fontName_ =
+        validFontName ? validFontName.cssClass : this.defaultFontName;
   }
 }
 

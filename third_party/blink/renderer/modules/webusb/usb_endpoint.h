@@ -14,6 +14,7 @@ namespace blink {
 
 class ExceptionState;
 class USBAlternateInterface;
+class V8USBDirection;
 
 class USBEndpoint : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,7 +24,7 @@ class USBEndpoint : public ScriptWrappable {
                              wtf_size_t endpoint_index);
   static USBEndpoint* Create(const USBAlternateInterface*,
                              uint8_t endpoint_number,
-                             const String& direction,
+                             const V8USBDirection& direction,
                              ExceptionState&);
 
   USBEndpoint(const USBAlternateInterface*, wtf_size_t endpoint_index);

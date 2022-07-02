@@ -131,7 +131,7 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   CVCItem* _CVCItem;
   StatusItem* _statusItem;
 
-  // Owns |self|.
+  // Owns `self`.
   autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
 }
 

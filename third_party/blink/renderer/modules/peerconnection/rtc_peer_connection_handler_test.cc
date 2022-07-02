@@ -50,7 +50,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
@@ -380,7 +380,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
     HeapVector<Member<MediaStreamComponent>> audio_components(
         static_cast<size_t>(1));
-    audio_components[0] = MakeGarbageCollected<MediaStreamComponent>(
+    audio_components[0] = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source->Id(), audio_source);
     EXPECT_CALL(
         *webrtc_audio_device_platform_support_->mock_audio_capturer_source(),

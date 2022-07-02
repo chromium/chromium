@@ -68,6 +68,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsFromMainProfile(content::BrowserContext* context) override;
+#endif
   bool IsGuestSession(content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
       const std::string& extension_id,
@@ -187,6 +190,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                   base::OnceCallback<
                       void(scoped_refptr<base::RefCountedMemory> bitmap_data)>
                       callback) const override;
+  std::vector<content::BrowserContext*> GetRelatedContextsForExtension(
+      content::BrowserContext* browser_context,
+      const Extension& extension) const override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

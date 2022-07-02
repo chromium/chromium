@@ -14,9 +14,7 @@
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 class NetworkActivityMontiorTest : public testing::Test {
  public:
@@ -66,6 +64,4 @@ TEST_F(NetworkActivityMontiorTest, Threading) {
             activity_monitor::GetBytesReceived());
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

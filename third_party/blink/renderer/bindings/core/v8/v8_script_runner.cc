@@ -126,14 +126,14 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   // TODO(kouhei): Plumb the ScriptState into this function and replace all
   // Isolate->GetCurrentContext in this function with ScriptState->GetContext.
   if (ScriptStreamer* streamer = classic_script.Streamer()) {
-    // Final compile call for a streamed compilation.
-    // Streaming compilation may involve use of code cache.
-    // TODO(leszeks): Add compile timer to streaming compilation.
-    DCHECK(streamer->IsFinished());
-    DCHECK(!streamer->IsStreamingSuppressed());
-    return v8::ScriptCompiler::Compile(
-        script_state->GetContext(), streamer->Source(v8::ScriptType::kClassic),
-        code, origin);
+    if (v8::ScriptCompiler::StreamedSource* source =
+            streamer->Source(v8::ScriptType::kClassic)) {
+      // Final compile call for a streamed compilation.
+      // Streaming compilation may involve use of code cache.
+      // TODO(leszeks): Add compile timer to streaming compilation.
+      return v8::ScriptCompiler::Compile(script_state->GetContext(), source,
+                                         code, origin);
+    }
   }
 
   // Allow inspector to use its own compilation cache store.
@@ -318,8 +318,6 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     // Final compile call for a streamed compilation.
     // Streaming compilation may involve use of code cache.
     // TODO(leszeks): Add compile timer to streaming compilation.
-    DCHECK(streamer->IsFinished());
-    DCHECK(!streamer->IsStreamingSuppressed());
     script = v8::ScriptCompiler::CompileModule(
         isolate->GetCurrentContext(), streamer->Source(v8::ScriptType::kModule),
         code, origin);
@@ -619,72 +617,35 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
       // called at top-level worker script evaluation.
       try_catch.ReThrow();
-      return ScriptEvaluationResult::FromClassicException();
+      return ScriptEvaluationResult::FromClassicExceptionRethrown();
+    }
+
+    // Step 8.1.3. Otherwise, rethrow errors is false. Perform the following
+    // steps: [spec text]
+    if (!rethrow_errors.ShouldRethrow()) {
+      // #report-the-error for rethrow errors == true is already handled via
+      // `TryCatch::SetVerbose(true)` above.
+      return ScriptEvaluationResult::FromClassicException(
+          try_catch.Exception());
     }
   }
   // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
 
-  if (rethrow_errors.ShouldRethrow()) {
-    // kDoNotSanitize case is processed and early-exited above.
-    DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
+  // kDoNotSanitize case is processed and early-exited above.
+  DCHECK(rethrow_errors.ShouldRethrow());
+  DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
 
-    // Step 8.2. If rethrow errors is true and script's muted errors is
-    // true, then: [spec text]
-    //
-    // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
-    //
-    // We don't supply any message here to avoid leaking details of muted
-    // errors.
-    V8ThrowException::ThrowException(
-        isolate, V8ThrowDOMException::CreateOrEmpty(
-                     isolate, DOMExceptionCode::kNetworkError,
-                     rethrow_errors.Message()));
-    return ScriptEvaluationResult::FromClassicException();
-  }
-
-  // #report-the-error for rethrow errors == true is already handled via
-  // |TryCatch::SetVerbose(true)| above.
-  return ScriptEvaluationResult::FromClassicException();
-}
-
-v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
-    v8::Isolate* isolate,
-    ScriptState* script_state,
-    const ClassicScript& classic_script) {
-  DCHECK_EQ(isolate, script_state->GetIsolate());
-
-  const ReferrerScriptInfo referrer_info(classic_script.BaseUrl(),
-                                         classic_script.FetchOptions());
-  v8::Local<v8::Data> host_defined_options =
-      referrer_info.ToV8HostDefinedOptions(isolate, classic_script.SourceUrl());
-
-  v8::ScriptCompiler::CompileOptions compile_options;
-  V8CodeCache::ProduceCacheOptions produce_cache_options;
-  v8::ScriptCompiler::NoCacheReason no_cache_reason;
-  std::tie(compile_options, produce_cache_options, no_cache_reason) =
-      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     classic_script);
-  // Currently internal scripts don't have cache handlers. So we should not
-  // produce cache for them.
-  DCHECK_EQ(produce_cache_options,
-            V8CodeCache::ProduceCacheOptions::kNoProduceCache);
-  v8::Local<v8::Script> script;
-  if (!V8ScriptRunner::CompileScript(script_state, classic_script,
-                                     compile_options, no_cache_reason,
-                                     host_defined_options)
-           .ToLocal(&script))
-    return v8::MaybeLocal<v8::Value>();
-
-  TRACE_EVENT0("v8", "v8.run");
-  RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
-  RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
-  v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::MaybeLocal<v8::Value> result = script->Run(isolate->GetCurrentContext());
-  CHECK(!isolate->IsDead());
-  return result;
+  // Step 8.2. If rethrow errors is true and script's muted errors is true,
+  // then: [spec text]
+  //
+  // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
+  //
+  // We don't supply any message here to avoid leaking details of muted errors.
+  V8ThrowException::ThrowException(
+      isolate,
+      V8ThrowDOMException::CreateOrEmpty(
+          isolate, DOMExceptionCode::kNetworkError, rethrow_errors.Message()));
+  return ScriptEvaluationResult::FromClassicExceptionRethrown();
 }
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(

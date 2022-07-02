@@ -14,7 +14,7 @@ ProfileAccountManager::ProfileAccountManager(AccountProfileMapper* mapper,
                                              const base::FilePath& profile_path)
     : mapper_(mapper), profile_path_(profile_path) {
   DCHECK(mapper_);
-  mapper_observation_.Observe(mapper_);
+  mapper_observation_.Observe(mapper_.get());
 }
 
 ProfileAccountManager::~ProfileAccountManager() = default;

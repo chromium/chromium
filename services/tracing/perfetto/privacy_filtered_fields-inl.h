@@ -172,7 +172,7 @@ constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
-constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, -1};
+constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
@@ -438,11 +438,23 @@ constexpr MessageInfo kInternedMappingPath = {kInternedMappingPathIndices,
 constexpr int kMappingIndices[] = {1, 2, 3, 4, 5, 7, -1};
 constexpr MessageInfo kMapping = {kMappingIndices, nullptr};
 
+// Proto Message: UnsymbolizedSourceLocation
+constexpr int kUnsymbolizedSourceLocationIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kUnsymbolizedSourceLocation = {
+    kUnsymbolizedSourceLocationIndices, nullptr};
+
 // Proto Message: InternedData
-constexpr int kInternedDataIndices[] = {1, 2, 4, 6, 7, 16, 17, 19, -1};
+constexpr int kInternedDataIndices[] = {1, 2, 4, 6, 7, 16, 17, 19, 28, -1};
 constexpr MessageInfo const* kInternedDataComplexMessages[] = {
-    &kEventCategory, &kEventName,       &kSourceLocation,      &kFrame,
-    &kCallstack,     &kInternedBuildId, &kInternedMappingPath, &kMapping};
+    &kEventCategory,
+    &kEventName,
+    &kSourceLocation,
+    &kFrame,
+    &kCallstack,
+    &kInternedBuildId,
+    &kInternedMappingPath,
+    &kMapping,
+    &kUnsymbolizedSourceLocation};
 constexpr MessageInfo kInternedData = {kInternedDataIndices,
                                        kInternedDataComplexMessages};
 

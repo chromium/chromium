@@ -8,7 +8,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -83,8 +82,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
       PrefService* prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
-      base::RepeatingCallback<ChromeUserPopulation()>
-          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider);
 
   // Called to create an ad sample report.
@@ -116,7 +113,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
   raw_ptr<PrefService> prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<history::HistoryService> history_service_;
-  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
   raw_ptr<ReferrerChainProvider> referrer_chain_provider_;
 
   // Task runner for posting delayed tasks. Normally set to the runner for the

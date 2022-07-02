@@ -45,9 +45,6 @@ class WebTestBuilders(builders.Builders):
                     'linux-blink-rel',
                     'v8_linux_blink_rel',
                 },
-                'mac10.12-blink-rel-dummy': {
-                    'mac10.12-blink-rel',
-                },
                 'mac10.13-blink-rel-dummy': {
                     'mac10.13-blink-rel',
                 },
@@ -66,9 +63,6 @@ class WebTestBuilders(builders.Builders):
                 'WebKit Linux layout_ng_disabled Builder': {
                     'linux_layout_tests_layout_ng_disabled',
                 },
-                'win7-blink-rel-dummy': {
-                    'win7-blink-rel',
-                },
                 'win10.20h2-blink-rel-dummy': {
                     'win10.20h2-blink-rel',
                 },
@@ -76,10 +70,6 @@ class WebTestBuilders(builders.Builders):
                     'win11-blink-rel',
                 },
                 # tryserver.chromium.linux
-                # Explicit trybot.
-                'linux-blink-web-tests-force-accessibility-rel': {
-                    'linux-blink-web-tests-force-accessibility-rel',
-                },
                 # Explicit trybot.
                 'linux-layout-tests-edit-ng': {
                     'linux-layout-tests-edit-ng',

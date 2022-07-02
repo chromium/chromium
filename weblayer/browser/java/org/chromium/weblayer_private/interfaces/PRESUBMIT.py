@@ -72,6 +72,10 @@ class AidlFile:
 def _CompareApiDumpForFiles(input_api, output_api, aidl_files):
   if len(aidl_files) == 0:
     return []
+  # These tests fail to run on Windows (devil_chromium needs some non-standard
+  # Windows modules) and given the Android dependencies this is reasonable.
+  if input_api.is_windows:
+    return []
 
   repo_root = input_api.change.RepositoryRoot()
   build_android_dir = os.path.join(repo_root, 'build', 'android')

@@ -68,7 +68,8 @@ namespace developerPrivate {
     EXTENSION_GUEST,
     EXTENSION_POPUP,
     EXTENSION_SERVICE_WORKER_BACKGROUND,
-    TAB_CONTENTS
+    TAB_CONTENTS,
+    OFFSCREEN_DOCUMENT
   };
 
   enum ErrorType {
@@ -378,6 +379,16 @@ namespace developerPrivate {
     DOMString[] restrictedSites;
   };
 
+  dictionary SiteInfo {
+    UserSiteSet siteList;
+    DOMString site;
+  };
+
+  dictionary SiteGroup {
+    DOMString etldPlusOne;
+    SiteInfo[] sites;
+  };
+
   enum PackStatus {
     SUCCESS,
     ERROR,
@@ -556,6 +567,7 @@ namespace developerPrivate {
   callback LoadErrorCallback = void (optional LoadError error);
   callback DragInstallInProgressCallback = void (DOMString loadGuid);
   callback UserSiteSettingsCallback = void (UserSiteSettings settings);
+  callback UserAndExtensionSitesByEtldCallback = void (SiteGroup[] siteGroups);
 
   interface Functions {
     // Runs auto update for extensions and apps immediately.
@@ -746,6 +758,12 @@ namespace developerPrivate {
     [supportsPromises] static void removeUserSpecifiedSites(
         UserSiteSettingsOptions options,
         optional VoidCallback callback);
+
+    // Returns all hosts specified by user site settings, grouped by each host's
+    // eTLD+1.
+    // TODO(crbug.com/1331137): Get extension specified sites as well.
+    [supportsPromises] static void getUserAndExtensionSitesByEtld(
+        optional UserAndExtensionSitesByEtldCallback callback);
 
     [nocompile, deprecated="Use management.setEnabled"]
         static void enable(DOMString id,

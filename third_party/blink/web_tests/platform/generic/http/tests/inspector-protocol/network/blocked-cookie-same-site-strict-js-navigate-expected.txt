@@ -1,0 +1,26 @@
+Verifies that JavaScript cross origin navigation requests with SameSite=Strict cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding blocked cookies.
+
+Javascript initiated navigation blocked cookies:n[
+    [0] : {
+        blockedReasons : [
+            [0] : SameSiteStrict
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : false
+            sameSite : Strict
+            secure : false
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+    }
+]
+

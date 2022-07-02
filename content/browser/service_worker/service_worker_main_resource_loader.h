@@ -127,7 +127,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Calls url_loader_client_->OnReceiveResponse() with |response_head_|.
   void CommitResponseHeaders();
 
-  // Calls url_loader_client_->OnStartLoadingResponseBody() with
+  // Calls url_loader_client_->OnReceiveResponse() with
   // |response_body|.
   void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body);
 

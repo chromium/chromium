@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -66,7 +67,8 @@ std::unique_ptr<Notification> DebugdNotificationHandler::CreateNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_DESCRIPTION),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierPacketCapture),
+                                 kNotifierPacketCapture,
+                                 NotificationCatalogName::kPacketCapture),
       optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           callback_wrapper),

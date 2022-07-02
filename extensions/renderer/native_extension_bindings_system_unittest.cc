@@ -114,7 +114,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[30]"));
 
   // Respond and validate.
   bindings_system()->HandleResponse(last_params().request_id, true,
@@ -352,7 +352,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   EXPECT_EQ("idle.setDetectionInterval", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_FALSE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[50]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[50]"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
@@ -395,7 +395,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, ListValueFromString("[30]"));
 }
 
 // Tests that we can notify the browser as event listeners are added or removed.
@@ -469,9 +469,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
   // The 'chrome.app' object should have 'runtime' and 'window' entries, but
   // not the internal 'currentWindowInternal' object.
-  v8::Local<v8::Value> app_binding_keys =
-      V8ValueFromScriptSource(context,
-                              "JSON.stringify(Object.keys(chrome.app));");
+  v8::Local<v8::Value> app_binding_keys = V8ValueFromScriptSource(
+      context, "JSON.stringify(Object.keys(chrome.app));");
   ASSERT_FALSE(app_binding_keys.IsEmpty());
   ASSERT_TRUE(app_binding_keys->IsString());
   EXPECT_EQ("[\"runtime\",\"window\"]",
@@ -923,7 +922,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 // does not allow for accessing the source API (networkingPrivate) directly.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
@@ -955,7 +954,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // allow for accessing the alias.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasDoesntGiveAliasSourceAccess) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
@@ -985,7 +984,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
 TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
@@ -1135,18 +1134,19 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
   EXPECT_EQ(context, api_bridge.As<v8::Object>()->GetCreationContextChecked());
 }
 
-class ResponseValidationNativeExtensionBindingsSystemUnittest
+class SignatureValidationNativeExtensionBindingsSystemUnittest
     : public NativeExtensionBindingsSystemUnittest,
       public testing::WithParamInterface<bool> {
  public:
-  ResponseValidationNativeExtensionBindingsSystemUnittest() = default;
+  SignatureValidationNativeExtensionBindingsSystemUnittest() = default;
 
-  ResponseValidationNativeExtensionBindingsSystemUnittest(
-      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
-  ResponseValidationNativeExtensionBindingsSystemUnittest& operator=(
-      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  SignatureValidationNativeExtensionBindingsSystemUnittest(
+      const SignatureValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  SignatureValidationNativeExtensionBindingsSystemUnittest& operator=(
+      const SignatureValidationNativeExtensionBindingsSystemUnittest&) = delete;
 
-  ~ResponseValidationNativeExtensionBindingsSystemUnittest() override = default;
+  ~SignatureValidationNativeExtensionBindingsSystemUnittest() override =
+      default;
 
   void SetUp() override {
     response_validation_override_ =
@@ -1163,7 +1163,7 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
   std::unique_ptr<base::AutoReset<bool>> response_validation_override_;
 };
 
-TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
+TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
        ResponseValidation) {
   // The APIResponseValidator should only be used if response validation is
   // enabled. Otherwise, it should be null.
@@ -1239,9 +1239,98 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
   }
 }
 
+TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
+       EventArgumentValidation) {
+  // The APIResponseValidator should only be used if response validation is
+  // enabled. Otherwise, it should be null.
+  EXPECT_EQ(GetParam(), bindings_system()
+                            ->api_system()
+                            ->request_handler()
+                            ->has_response_validator_for_testing());
+
+  absl::optional<std::string> validation_failure_method_name;
+  absl::optional<std::string> validation_failure_error;
+
+  auto on_validation_failure =
+      [&validation_failure_method_name, &validation_failure_error](
+          const std::string& method_name, const std::string& error) {
+        validation_failure_method_name = method_name;
+        validation_failure_error = error;
+      };
+  APIResponseValidator::TestHandler test_validation_failure_handler(
+      base::BindLambdaForTesting(on_validation_failure));
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").AddPermissions({"idle"}).Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  const char kAddListenerFunction[] =
+      R"((function() {
+            chrome.idle.onStateChanged.addListener((state) => {
+              this.returnedState = state;
+            });
+          });)";
+  v8::Local<v8::Function> add_listener_function =
+      FunctionFromString(context, kAddListenerFunction);
+  RunFunctionOnGlobal(add_listener_function, context, 0, nullptr);
+
+  EXPECT_TRUE(bindings_system()->HasEventListenerInContext(
+      "idle.onStateChanged", script_context));
+
+  // Dispatch an event with an argument that matches the expected schema.
+  {
+    base::Value::List event_args;
+    event_args.Append("active");
+    bindings_system()->DispatchEventInContext("idle.onStateChanged", event_args,
+                                              nullptr, script_context);
+  }
+
+  // Validation should have succeeded.
+  std::string returned_state =
+      GetStringPropertyFromObject(context->Global(), context, "returnedState");
+  EXPECT_FALSE(validation_failure_method_name);
+  EXPECT_FALSE(validation_failure_error);
+  EXPECT_EQ(R"("active")", returned_state);
+
+  // Now, dispatch the event with an invalid argument.
+  {
+    base::Value::List event_args;
+    event_args.Append("bad enum");
+    bindings_system()->DispatchEventInContext("idle.onStateChanged", event_args,
+                                              nullptr, script_context);
+  }
+
+  // Event validation should have failed.
+  returned_state =
+      GetStringPropertyFromObject(context->Global(), context, "returnedState");
+
+  if (GetParam()) {
+    EXPECT_EQ(validation_failure_method_name, "idle.onStateChanged");
+    EXPECT_EQ(api_errors::ArgumentError(
+                  "newState",
+                  api_errors::InvalidEnumValue({"active", "idle", "locked"})),
+              validation_failure_error.value_or("no value"));
+  } else {
+    EXPECT_FALSE(validation_failure_method_name);
+    EXPECT_FALSE(validation_failure_error);
+  }
+
+  // Even though validation failed, we still dispatch the event.
+  EXPECT_EQ(R"("bad enum")", returned_state);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ResponseValidationNativeExtensionBindingsSystemUnittest,
+    SignatureValidationNativeExtensionBindingsSystemUnittest,
     testing::Bool());
 
 }  // namespace extensions

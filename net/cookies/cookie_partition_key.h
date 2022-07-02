@@ -92,10 +92,6 @@ class NET_EXPORT CookiePartitionKey {
     return absl::make_optional(CookiePartitionKey(true));
   }
 
-  // Temporary method, used to mark the places where we need to supply the
-  // cookie partition key to CanonicalCookie::Create.
-  static absl::optional<CookiePartitionKey> Todo() { return absl::nullopt; }
-
   const SchemefulSite& site() const { return site_; }
 
   bool from_script() const { return from_script_; }

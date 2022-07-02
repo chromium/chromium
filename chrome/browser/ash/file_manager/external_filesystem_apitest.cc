@@ -19,13 +19,13 @@
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -704,9 +704,8 @@ class FileSystemExtensionApiTestWithApps
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
-    web_app::WebAppProvider::GetForTest(profile)
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(profile)
+        ->InstallSystemAppsForTesting();
     LocalFileSystemExtensionApiTest::SetUpOnMainThread();
   }
 

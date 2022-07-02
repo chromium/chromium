@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../settings_shared_css.js';
 import '../i18n_setup.js';
 

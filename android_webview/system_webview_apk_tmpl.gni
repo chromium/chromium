@@ -45,6 +45,8 @@ template("system_webview_apk_or_module_tmpl") {
                              "include_64_bit_webview",
                            ])
 
+    _omit_dex = defined(omit_dex) && omit_dex
+
     deps += [
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
@@ -65,7 +67,7 @@ template("system_webview_apk_or_module_tmpl") {
           _bundle_target_gen_dir =
               get_label_info(invoker.bundle_target, "target_gen_dir")
           _bundle_name = get_label_info(invoker.bundle_target, "name")
-          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__weblayer_bundle_module_manifest/AndroidManifest.xml"
+          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__weblayer_bundle_module/AndroidManifest.merged.xml"
           extra_verification_manifest_dep = "${invoker.bundle_target}__weblayer_bundle_module__merge_manifests"
         }
       } else {
@@ -80,7 +82,9 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    product_config_java_packages = [ webview_product_config_java_package ]
+    if (!_omit_dex) {
+      product_config_java_packages = [ webview_product_config_java_package ]
+    }
 
     if (webview_includes_weblayer) {
       if (_is_bundle_module) {
@@ -88,7 +92,9 @@ template("system_webview_apk_or_module_tmpl") {
       } else {
         deps += [ "//weblayer:locale_pak_assets" ]
       }
-      product_config_java_packages += [ weblayer_product_config_java_package ]
+      if (!_omit_dex) {
+        product_config_java_packages += [ weblayer_product_config_java_package ]
+      }
     }
 
     if (!defined(alternative_android_sdk_dep)) {
@@ -106,14 +112,18 @@ template("system_webview_apk_or_module_tmpl") {
         "If trichrome library is used, static_library_provider must be set " +
             "so that a dep can be added on the library APK.")
 
+    _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                              invoker.include_32_bit_webview
+    if (android_64bit_target_cpu) {
+      _include_64_bit_webview = !defined(invoker.include_64_bit_webview) ||
+                                invoker.include_64_bit_webview
+    }
+
     # Pure 32-bit implies a 32-bit only Webview built on a 64-bit configuration.
-    _pure_32_bit =
-        android_64bit_target_cpu && defined(invoker.include_64_bit_webview) &&
-        !invoker.include_64_bit_webview
-    _pure_64_bit =
-        android_64bit_target_cpu && defined(invoker.include_32_bit_webview) &&
-        !invoker.include_32_bit_webview
+    _pure_32_bit = android_64bit_target_cpu && !_include_64_bit_webview
+    _pure_64_bit = android_64bit_target_cpu && !_include_32_bit_webview
     not_needed([
+                 "_include_32_bit_webview",
                  "_pure_32_bit",
                  "_pure_64_bit",
                ])
@@ -125,7 +135,8 @@ template("system_webview_apk_or_module_tmpl") {
     if (!_use_trichrome_library) {
       shared_resources = true
 
-      if (!android_64bit_target_cpu || !_pure_32_bit) {
+      if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
+          (android_64bit_target_cpu && !_pure_32_bit)) {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
         _include_primary_support = true
       }
@@ -143,16 +154,26 @@ template("system_webview_apk_or_module_tmpl") {
       if (android_64bit_target_cpu) {
         if (invoker.is_64_bit_browser) {
           native_lib_placeholders = [ "libdummy.so" ]
-          if (invoker.include_32_bit_webview) {
+          if (_include_32_bit_webview) {
             secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
             _include_secondary_support = true
           }
         } else {
-          if (invoker.include_64_bit_webview) {
+          if (_include_64_bit_webview) {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
           }
           secondary_native_lib_placeholders = [ "libdummy.so" ]
+          static_library_provider_use_secondary_abi = true
+        }
+
+        # http://crbug.com/1042107.
+        if (is_component_build) {
+          if (invoker.is_64_bit_browser) {
+            main_component_library = "libmonochrome_64.cr.so"
+          } else {
+            main_component_library = "libmonochrome.cr.so"
+          }
         }
       } else {
         native_lib_placeholders = [ "libdummy.so" ]
@@ -246,7 +267,7 @@ template("system_webview_apk_or_module_tmpl") {
       command_line_flags_file = "webview-command-line"
     }
 
-    if (!is_java_debug) {
+    if (!is_java_debug && !_omit_dex) {
       proguard_enabled = true
       if (!defined(proguard_configs)) {
         proguard_configs = []
@@ -263,13 +284,13 @@ template("system_webview_apk_or_module_tmpl") {
       if (_use_trichrome_library) {
         if (android_64bit_target_cpu) {
           if (invoker.is_64_bit_browser) {
-            if (invoker.include_32_bit_webview) {
+            if (_include_32_bit_webview) {
               version_code = trichrome_64_32_version_code
             } else {
               version_code = trichrome_64_version_code
             }
           } else {
-            if (invoker.include_64_bit_webview) {
+            if (_include_64_bit_webview) {
               version_code = trichrome_32_64_version_code
             } else {
               version_code = trichrome_32_version_code

@@ -73,7 +73,7 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(1)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -93,7 +93,7 @@ public class WebXrArCameraAccessTest {
     testConsecutiveCameraAccessImageTexturesNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(3)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -114,7 +114,7 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureCanBeDeleted() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoreAndDeleteCameraTexture()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -134,7 +134,7 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureLifetime() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepCheckCameraTextureLifetimeLimitedToOneFrame()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();

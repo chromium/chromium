@@ -53,10 +53,10 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onStop = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onStopListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onStopListener_ === listener) {
           this.onStopListener_ = null;
         }
@@ -69,10 +69,10 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onResult = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onResultListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onResultListener_ === listener) {
           this.onResultListener_ = null;
         }
@@ -85,10 +85,10 @@ class MockSpeechRecognitionPrivate {
      *  removeListener: function(Function):void}}
      */
     this.onError = {
-      addListener: (listener) => {
+      addListener: listener => {
         this.onErrorListener_ = listener;
       },
-      removeListener: (listener) => {
+      removeListener: listener => {
         if (this.onErrorListener_ === listener) {
           this.onErrorListener_ = null;
         }
@@ -159,7 +159,7 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing a result event');
     assertTrue(
-        !!this.onResultListener_,
+        Boolean(this.onResultListener_),
         'Client should have added an onResult listener');
 
     // The real API will fire an onResult event.
@@ -172,7 +172,8 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing a stop event');
     assertTrue(
-        !!this.onStopListener_, 'Client should have added an onStop listener');
+        Boolean(this.onStopListener_),
+        'Client should have added an onStop listener');
 
     // The real API will turn off speech recognition and fire an onStop event.
     this.started_ = false;
@@ -185,7 +186,7 @@ class MockSpeechRecognitionPrivate {
         this.started_,
         'Speech recognition should be active when firing an error event');
     assertTrue(
-        !!this.onErrorListener_,
+        Boolean(this.onErrorListener_),
         'Client should have added an onError listener');
 
     // The real API will fire an onError and an onStop event.

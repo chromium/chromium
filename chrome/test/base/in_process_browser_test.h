@@ -52,6 +52,10 @@ class ViewsDelegate;
 }
 #endif  // defined(TOOLKIT_VIEWS)
 
+namespace display {
+class Screen;
+}
+
 class Browser;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakeAccountManagerUI;
@@ -225,7 +229,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
   // Initializes the display::Screen instance.
-  virtual void SetScreenInstance() {}
+  virtual void SetScreenInstance();
 
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
@@ -314,6 +318,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   FakeAccountManagerUI* GetFakeAccountManagerUI() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<display::Screen> screen_;
+#endif
+
  private:
   void Initialize();
 
@@ -348,7 +356,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
 #if BUILDFLAG(IS_MAC)
-  base::mac::ScopedNSAutoreleasePool* autorelease_pool_ = nullptr;
+  raw_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_ = nullptr;
   std::unique_ptr<ScopedBundleSwizzlerMac> bundle_swizzler_;
 
   // Enable fake full keyboard access by default, so that tests don't depend on

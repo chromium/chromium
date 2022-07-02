@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -194,7 +195,14 @@ void ArcVolumeMounterBridge::OnMountEvent(
     return;
   }
 
-  // Get disks informations that are needed by Android MountService.
+  // Skip mount events if removable media is forbidden by the policy.
+  if (event == DiskMountManager::MountEvent::MOUNTING &&
+      pref_service_->GetBoolean(disks::prefs::kExternalStorageDisabled)) {
+    DVLOG(1) << "Ignoring mount event since policy disallows removable media";
+    return;
+  }
+
+  // Get disks information that are needed by Android MountService.
   const ash::disks::Disk* disk =
       DiskMountManager::GetInstance()->FindDiskBySourcePath(
           mount_info.source_path);
@@ -209,7 +217,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
     device_label = disk->device_label();
     device_type = disk->device_type();
   } else {
-    // This is needed by ChromeOS autotest (cheets_RemovableMedia) because it
+    // This is needed by ChromeOS tast test (arc.RemovableMedia) because it
     // creates a diskless volume (hence, no uuid) and Android expects the volume
     // to have a uuid.
     fs_uuid = kDummyUuid;

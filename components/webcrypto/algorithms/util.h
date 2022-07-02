@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -20,7 +21,6 @@
 
 namespace webcrypto {
 
-class CryptoData;
 class Status;
 
 // Returns the EVP_MD that corresponds with |hash_algorithm|, or nullptr on
@@ -63,9 +63,6 @@ Status CheckKeyCreationUsages(blink::WebCryptoKeyUsageMask all_possible_usages,
 bool ContainsKeyUsages(blink::WebCryptoKeyUsageMask a,
                        blink::WebCryptoKeyUsageMask b);
 
-// Allocates a new BIGNUM given a std::string big-endian representation.
-BIGNUM* CreateBIGNUM(const std::string& n);
-
 // The values of these constants correspond with the "enc" parameter of
 // EVP_CipherInit_ex(), do not change.
 enum EncryptOrDecrypt { DECRYPT = 0, ENCRYPT = 1 };
@@ -75,11 +72,11 @@ enum EncryptOrDecrypt { DECRYPT = 0, ENCRYPT = 1 };
 //   * |aead_alg| the algorithm (for instance AES-GCM)
 //   * |buffer| where the ciphertext or plaintext is written to.
 Status AeadEncryptDecrypt(EncryptOrDecrypt mode,
-                          const std::vector<uint8_t>& raw_key,
-                          const CryptoData& data,
+                          base::span<const uint8_t> raw_key,
+                          base::span<const uint8_t> data,
                           unsigned int tag_length_bytes,
-                          const CryptoData& iv,
-                          const CryptoData& additional_data,
+                          base::span<const uint8_t> iv,
+                          base::span<const uint8_t> additional_data,
                           const EVP_AEAD* aead_alg,
                           std::vector<uint8_t>* buffer);
 

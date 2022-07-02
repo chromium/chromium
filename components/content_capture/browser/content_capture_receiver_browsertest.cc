@@ -23,7 +23,7 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
     // Navigate to the initial page.
     const GURL main_frame_url = embedded_test_server()->GetURL(kMainFrameUrl);
     ASSERT_TRUE(NavigateToURL(web_contents(), main_frame_url));
-    main_frame_ = web_contents()->GetMainFrame();
+    main_frame_ = web_contents()->GetPrimaryMainFrame();
     EXPECT_NE(nullptr, main_frame_);
 
     // Create a provider and add a consumer.

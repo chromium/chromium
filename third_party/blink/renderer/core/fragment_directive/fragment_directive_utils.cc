@@ -15,7 +15,7 @@ namespace blink {
 // static
 void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
   KURL url(shared_highlighting::RemoveFragmentSelectorDirectives(
-      frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url()));
+      GURL(frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url())));
 
   // Replace the current history entry with the new url, so that the text
   // fragment shown in the URL matches the state of the highlight on the page.

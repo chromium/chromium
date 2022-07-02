@@ -41,6 +41,8 @@ class ProgramCache;
 
 // Provides accessors for GPU service objects and the serializer interface to
 // the GPU thread used by InProcessCommandBuffer.
+// TODO(crbug.com/1247756): This class should be revisited as lots of
+// functionality isn't needed anymore with GLRenderer deleted.
 class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
  public:
   CommandBufferTaskExecutor(const GpuPreferences& gpu_preferences,

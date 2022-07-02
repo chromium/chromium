@@ -34,7 +34,7 @@
 // the context.
 class OverlayPresentationContextImpl : public OverlayPresentationContext {
  public:
-  // Returns the OverlayPresentationContextImpl for |browser| at |modality|.
+  // Returns the OverlayPresentationContextImpl for `browser` at `modality`.
   static OverlayPresentationContextImpl* FromBrowser(Browser* browser,
                                                      OverlayModality modality);
 
@@ -48,7 +48,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
    public:
     ~Container() override;
 
-    // Returns the OverlayPresentationContextImpl for |modality|.
+    // Returns the OverlayPresentationContextImpl for `modality`.
     OverlayPresentationContextImpl* PresentationContextForModality(
         OverlayModality modality);
 
@@ -96,32 +96,32 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
 
  protected:
   // Constructor called by the Container to instantiate a presentation context
-  // for |browser| at |modality|, using |factory| to create
+  // for `browser` at `modality`, using `factory` to create
   // OverlayRequestCoordinators.
   OverlayPresentationContextImpl(Browser* browser,
                                  OverlayModality modality,
                                  OverlayRequestCoordinatorFactory* factory);
 
  private:
-  // Setter for |request_|.  Setting to a new value will attempt to
-  // present the UI for |request|.
+  // Setter for `request_`.  Setting to a new value will attempt to
+  // present the UI for `request`.
   void SetRequest(OverlayRequest* request);
 
-  // Returns whether |request| uses a child UIViewController.  If false, the
+  // Returns whether `request` uses a child UIViewController.  If false, the
   // request's UI is shown using presentation.
   bool RequestUsesChildViewController(OverlayRequest* request) const;
 
-  // Returns the base view controller to use for |request|'s coordinator, or
-  // nullptr if the base has not been provided.  |container_view_controller_| is
-  // returned if |request| uses a child UIViewController, and
-  // |presentation_context_view_controller_| is returned if |request| uses
+  // Returns the base view controller to use for `request`'s coordinator, or
+  // nullptr if the base has not been provided.  `container_view_controller_` is
+  // returned if `request` uses a child UIViewController, and
+  // `presentation_context_view_controller_` is returned if `request` uses
   // UIViewController presentation.
   UIViewController* GetBaseViewController(OverlayRequest* request) const;
 
-  // Returns the UI state for |request|.
+  // Returns the UI state for `request`.
   OverlayRequestUIState* GetRequestUIState(OverlayRequest* request) const;
 
-  // Returns the presentation capabilities required to show |request|.
+  // Returns the presentation capabilities required to show `request`.
   UIPresentationCapabilities GetRequiredPresentationCapabilities(
       OverlayRequest* request) const;
 
@@ -135,13 +135,13 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // Shows the UI for the presented request using the container coordinator.
   void ShowUIForPresentedRequest();
 
-  // Called when the UI for |request_| has finished being presented.
+  // Called when the UI for `request_` has finished being presented.
   void OverlayUIWasPresented();
 
-  // Dismisses the UI for the presented request for |reason|.
+  // Dismisses the UI for the presented request for `reason`.
   void DismissPresentedUI(OverlayDismissalReason reason);
 
-  // Called when the UI for |request_| has finished being dismissed.
+  // Called when the UI for `request_` has finished being dismissed.
   void OverlayUIWasDismissed();
 
   // Called when the Browser is being destroyed.
@@ -208,12 +208,12 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   __weak UIViewController* presentation_context_view_controller_ = nil;
   // Whether the UI is temporarily disabled.
   bool ui_disabled_ = false;
-  // The presentation capabilities of |coordinator_|'s view controller.
+  // The presentation capabilities of `coordinator_`'s view controller.
   UIPresentationCapabilities presentation_capabilities_ =
       UIPresentationCapabilities::kNone;
-  // The request that is currently presented by |presenter_|.  When a new
+  // The request that is currently presented by `presenter_`.  When a new
   // request is presented, the UI state for the request will be added to
-  // |states_|.
+  // `states_`.
   OverlayRequest* request_ = nullptr;
   // Map storing the UI state for each OverlayRequest.
   std::map<OverlayRequest*, std::unique_ptr<OverlayRequestUIState>> states_;

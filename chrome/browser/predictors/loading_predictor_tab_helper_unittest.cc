@@ -149,7 +149,7 @@ void LoadingPredictorTabHelperTest::
   NavigateAndCommitInFrame(url, main_rfh());
 
   EXPECT_EQ(ukm_source_id,
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   GURL gurl(url);
   EXPECT_EQ(gurl, main_frame_url);
   EXPECT_EQ(gurl, old_main_frame_url);
@@ -202,7 +202,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
       RecordFinishNavigation(_, main_frame_url, expected_main_frame_url, _));
   navigation->Commit();
 
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
             ukm_source_id);
 }
 
@@ -241,7 +241,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
 
   EXPECT_EQ(ukm_source_id,
 
-            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 // Tests that a same document navigation is not recorded.
@@ -885,9 +885,10 @@ TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
   // Navigate a fenced frame.
   GURL fenced_frame_url = GURL("https://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   EXPECT_EQ(0u, test_collector_->count_resource_loads_completed());
 

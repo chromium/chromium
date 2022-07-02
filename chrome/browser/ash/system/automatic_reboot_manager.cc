@@ -34,15 +34,12 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -160,11 +157,12 @@ AutomaticRebootManager::AutomaticRebootManager(
       prefs::kRebootAfterUpdate,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
 
   PowerManagerClient::Get()->AddObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   // If no user is logged in, a reboot may be performed whenever the user is
   // idle. Start listening for user activity to determine whether the user is
@@ -191,7 +189,7 @@ AutomaticRebootManager::~AutomaticRebootManager() {
     observer.WillDestroyAutomaticRebootManager();
 
   PowerManagerClient::Get()->RemoveObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
 }
@@ -270,18 +268,6 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
   login_screen_idle_timer_.reset();
 }
 
-void AutomaticRebootManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_APP_TERMINATING);
-  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
-    // The browser is terminating during a session, either because the session
-    // is ending or because the browser is being restarted.
-    MaybeReboot(true);
-  }
-}
-
 // static
 void AutomaticRebootManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kUptimeLimit, 0);
@@ -304,8 +290,7 @@ void AutomaticRebootManager::Init(
     update_reboot_needed_time_ =
         *system_event_times.update_reboot_needed_time + offset;
   } else {
-    UpdateStatusChanged(
-        DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
+    UpdateStatusChanged(UpdateEngineClient::Get()->GetLastStatus());
   }
 
   Reschedule();
@@ -427,6 +412,14 @@ void AutomaticRebootManager::Reboot() {
   VLOG(1) << "Rebooting immediately.";
   PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "automatic reboot manager");
+}
+
+void AutomaticRebootManager::OnAppTerminating() {
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    // The browser is terminating during a session, either because the session
+    // is ending or because the browser is being restarted.
+    MaybeReboot(true);
+  }
 }
 
 }  // namespace system

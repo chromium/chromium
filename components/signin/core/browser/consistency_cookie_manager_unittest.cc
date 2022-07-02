@@ -6,11 +6,10 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
@@ -127,14 +126,9 @@ class ConsistencyCookieManagerTest : public testing::Test {
   MockCookieManager* cookie_manager() { return cookie_manager_; }
 
  private:
-  // The kLacrosNonSyncingProfiles flags bundles several features: non-syncing
-  // profiles, signed out profiles, and Mirror Landing. The
-  // `ConsistencyCookieManager` is related to MirrorLanding.
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
-
   TestSigninClient signin_client_{/*prefs=*/nullptr};
-  MockCookieManager* cookie_manager_ = nullptr;  // Owned by `signin_client_`.
+  raw_ptr<MockCookieManager> cookie_manager_ =
+      nullptr;  // Owned by `signin_client_`.
   std::unique_ptr<AccountReconcilor> reconcilor_;
 };
 

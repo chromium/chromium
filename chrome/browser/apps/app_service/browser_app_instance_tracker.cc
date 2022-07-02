@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -172,7 +173,7 @@ class BrowserAppInstanceTracker::WebContentsObserver
   }
 
  private:
-  BrowserAppInstanceTracker* const owner_;
+  const raw_ptr<BrowserAppInstanceTracker> owner_;
 };
 
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(

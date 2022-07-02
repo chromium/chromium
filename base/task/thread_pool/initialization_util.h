@@ -5,17 +5,19 @@
 #ifndef BASE_TASK_THREAD_POOL_INITIALIZATION_UTIL_H_
 #define BASE_TASK_THREAD_POOL_INITIALIZATION_UTIL_H_
 
+#include <stddef.h>
+
 #include "base/base_export.h"
 
 namespace base {
 
 // Computes a value that may be used as the maximum number of threads in a
 // ThreadGroup. Developers may use other methods to choose this maximum.
-BASE_EXPORT int RecommendedMaxNumberOfThreadsInThreadGroup(
-    int min,
-    int max,
-    double cores_multiplier,
-    int offset);
+BASE_EXPORT size_t
+RecommendedMaxNumberOfThreadsInThreadGroup(size_t min,
+                                           size_t max,
+                                           double cores_multiplier,
+                                           size_t offset);
 
 }  // namespace base
 

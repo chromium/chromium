@@ -269,6 +269,22 @@
       "use_thin_lto": true
     }
   },
+  "lacros-arm64-generic-chrome": {
+    "args_file": "//build/args/chromeos/arm64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
   "linux-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
@@ -296,6 +312,22 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
+  "linux-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "mac-arm64-finch-smoke-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
       "use_goma": true
     }
   },
@@ -355,6 +387,13 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
       "use_goma": true
     }
   },

@@ -210,6 +210,12 @@ class ASH_EXPORT CaptureModeCameraController
   // `is_camera_preview_collapsed_` when the resize button is pressed.
   void ToggleCameraPreviewSize();
 
+  // Called when a capture session gets started so we can refresh the cameras
+  // list, since the cros-camera service might have not been running when we
+  // tried to refresh the cameras at the beginning. (See
+  // http://b/230917107#comment12 for more details).
+  void OnCaptureSessionStarted();
+
   void OnRecordingStarted(bool is_in_projector_mode);
   void OnRecordingEnded();
 
@@ -231,6 +237,8 @@ class ASH_EXPORT CaptureModeCameraController
   // ring and trigger setting a11y focus on the camera preview. Note, this is
   // only for focusing the preview while recording is in progress.
   void PseudoFocusCameraPreview();
+
+  void OnActiveUserSessionChanged();
 
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
@@ -394,6 +402,14 @@ class ASH_EXPORT CaptureModeCameraController
   // Valid only during recording to track the number of camera disconnections
   // while recording is in progress.
   absl::optional<int> in_recording_camera_disconnections_;
+
+  // Will be set to true the first time the number of connected cameras is
+  // reported.
+  bool did_report_number_of_cameras_before_ = false;
+
+  // Will be set to true the first user logs in. And we should only request the
+  // camera devices after the first user logs in.
+  bool did_first_user_login_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

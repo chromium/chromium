@@ -267,7 +267,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   const base::FilePath& path() const { return path_; }
   const GURL& url() const { return extension_url_; }
-  const url::Origin& origin() const { return extension_origin_; }
+  const GURL& dynamic_url() const { return dynamic_url_; }
+  url::Origin origin() const { return extension_origin_; }
   mojom::ManifestLocation location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;
@@ -436,6 +437,9 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // The extension origin and base url.
   url::Origin extension_origin_;
   GURL extension_url_;
+
+  // The base extension url for the extension using guid.
+  GURL dynamic_url_;
 
   // The extension's version.
   base::Version version_;

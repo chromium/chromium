@@ -35,7 +35,9 @@
 #include <queue>
 
 #include "base/auto_reset.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -68,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
@@ -376,8 +379,8 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
     return;
   }
 
-  // TODO(crbug.com/1099069): add a separate flag for keyboard event synthesis
-  if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled())
+  if (!RuntimeEnabledFeatures::
+          SynthesizedKeyboardEventsForAccessibilityActionsEnabled())
     return;
 
   // Otherwise, fire a keyboard event instead.
@@ -1836,15 +1839,13 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
                : kExpandedCollapsed;
   }
 
-  // For buttons that contain the |togglepopup|, |showpopup|, or |hidepopup|
-  // popup triggering attributes, and the pointed-to element is a valid popup
-  // with type kPopup, then set aria-expanded=false when the popup is hidden,
-  // and aria-expanded=true when it is showing.
-  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    if (auto* popup = button->togglePopupElement()) {
-      if (popup->PopupType() == PopupValueType::kPopup) {
-        return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
-      }
+  // For form controls that act as triggering elements for popups of type
+  // kPopup, then set aria-expanded=false when the popup is hidden, and
+  // aria-expanded=true when it is showing.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    if (auto popup = form_control->togglePopupElement().element;
+        popup && popup->PopupType() == PopupValueType::kAuto) {
+      return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }
 
@@ -1933,7 +1934,7 @@ unsigned AXNodeObject::HierarchicalLevel() const {
 
   uint32_t level;
   if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kLevel, level)) {
-    if (level >= 1 && level <= 9)
+    if (level >= 1)
       return level;
   }
 
@@ -2470,7 +2471,7 @@ String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
                                        kUnpremul_SkAlphaType);
   size_t row_bytes = info.minRowBytes();
   Vector<char> pixel_storage(
-      SafeCast<wtf_size_t>(info.computeByteSize(row_bytes)));
+      base::checked_cast<wtf_size_t>(info.computeByteSize(row_bytes)));
   SkPixmap pixmap(info, pixel_storage.data(), row_bytes);
   if (!SkImage::MakeFromBitmap(bitmap)->readPixels(pixmap, 0, 0))
     return String();
@@ -2500,9 +2501,9 @@ RGBA32 AXNodeObject::ColorValue() const {
   if (!EqualIgnoringASCIICase(type, "color"))
     return AXObject::ColorValue();
 
-  // HTMLInputElement::value always returns a string parseable by Color.
+  // HTMLInputElement::Value always returns a string parseable by Color.
   Color color;
-  bool success = color.SetFromString(input->value());
+  bool success = color.SetFromString(input->Value());
   DCHECK(success);
   return color.Rgb();
 }
@@ -2979,7 +2980,7 @@ String AXNodeObject::GetValueForControl() const {
         input->type() != input_type_names::kRadio &&
         input->type() != input_type_names::kReset &&
         input->type() != input_type_names::kSubmit) {
-      return input->value();
+      return input->Value();
     }
   }
 
@@ -3110,6 +3111,11 @@ bool AXNodeObject::IsEditableRoot() const {
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
+  // Catches the case where the 'contenteditable' attribute is set on an atomic
+  // text field (which shouldn't have any effect).
+  if (IsAtomicTextField())
+    return false;
+
   // The DOM inside native text fields is an implementation detail that should
   // not be exposed to platform accessibility APIs.
   if (EnclosingTextControl(node))
@@ -3180,14 +3186,14 @@ bool AXNodeObject::OnNativeSetValueAction(const String& string) {
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
   if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
-    html_input_element->setValue(
+    html_input_element->SetValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
 
   if (auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*GetNode())) {
     DCHECK(layout_object->IsTextAreaIncludingNG());
-    text_area_element->setValue(
+    text_area_element->SetValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
@@ -3236,8 +3242,7 @@ String AXNodeObject::TextAlternative(
     NameSources* name_sources) const {
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
-  if (name_sources)
-    DCHECK(related_objects);
+  DCHECK(!name_sources || related_objects);
 
   bool found_text_alternative = false;
 
@@ -3444,9 +3449,6 @@ String AXNodeObject::TextFromDescendants(
     AXObjectSet& visited,
     const AXObject* aria_label_or_description_root,
     bool recursive) const {
-#if defined(AX_FAIL_FAST_BUILD)
-  DCHECK(!is_adding_children_);
-#endif
   if (!CanHaveChildren())
     return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
 
@@ -3455,11 +3457,16 @@ String AXNodeObject::TextFromDescendants(
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kUninitialized;
 
+  // Ensure that if this node needs to invalidate its children (e.g. due to
+  // included in tree status change), that we do it now, rather than while
+  // traversing the children.
+  UpdateCachedAttributeValuesIfNeeded();
+
+  const AXObjectVector& children = ChildrenIncludingIgnored();
 #if defined(AX_FAIL_FAST_BUILD)
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
-
-  for (AXObject* child : ChildrenIncludingIgnored()) {
+  for (AXObject* child : children) {
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4155,6 +4162,10 @@ void AXNodeObject::AddChildren() {
 #endif
 
 #if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_computing_text_from_descendants_)
+      << "Should not attempt to simultaneously compute text from descendants "
+         "and add children on: "
+      << ToString(true, true);
   SANITIZER_CHECK(!is_adding_children_)
       << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
@@ -4584,16 +4595,34 @@ bool AXNodeObject::OnNativeFocusAction() {
     return true;
   }
 
-  // If the object is not natively focusable but can be focused using an ARIA
-  // active descendant, perform a native click instead. This will enable Web
-  // apps that set accessibility focus using an active descendant to capture and
-  // act on the click event. Otherwise, there is no other way to inform the app
-  // that an AT has requested the focus to be changed, except if the app is
-  // using AOM. To be extra safe, exclude objects that are clickable themselves.
-  // This won't prevent anyone from having a click handler on the object's
-  // container.
-  if (!IsClickable() && CanBeActiveDescendant()) {
-    return OnNativeClickAction();
+  // If this node is already the currently focused node, then calling
+  // focus() won't do anything.  That is a problem when focus is removed
+  // from the webpage to chrome, and then returns.  In these cases, we need
+  // to do what keyboard and mouse focus do, which is reset focus first.
+  if (document->FocusedElement() == element) {
+    document->ClearFocusedElement();
+
+    // Calling ClearFocusedElement could result in changes to the document,
+    // like this AXObject becoming detached.
+    if (IsDetached())
+      return false;
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kSimulateClickOnAXFocus)) {
+    // If the object is not natively focusable but can be focused using an ARIA
+    // active descendant, perform a native click instead. This will enable Web
+    // apps that set accessibility focus using an active descendant to capture
+    // and act on the click event. Otherwise, there is no other way to inform
+    // the app that an AT has requested the focus to be changed, except if the
+    // app is using AOM. To be extra safe, exclude objects that are clickable
+    // themselves. This won't prevent anyone from having a click handler on the
+    // object's container.
+    //
+    // This code is in the process of being removed. See the comment above
+    // |kSimulateClickOnAXFocus| in `blink/common/features.cc`.
+    if (!IsClickable() && CanBeActiveDescendant()) {
+      return OnNativeClickAction();
+    }
   }
 
   element->Focus();
@@ -4899,7 +4928,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kValueAttr));
       name_sources->back().type = name_from;
     }
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       text_alternative = value;
       if (name_sources) {
@@ -4965,7 +4994,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->back().type = name_from;
     }
     name_from = ax::mojom::blink::NameFrom::kAttribute;
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       text_alternative = value;
       if (name_sources) {
@@ -5045,7 +5074,7 @@ String AXNodeObject::NativeTextAlternative(
     name_from = ax::mojom::blink::NameFrom::kValue;
 
     String displayed_file_path = GetValueForControl();
-    String upload_button_text = input_element->UploadButton()->value();
+    String upload_button_text = input_element->UploadButton()->Value();
     if (!displayed_file_path.IsEmpty()) {
       text_alternative = displayed_file_path + ", " + upload_button_text;
     } else {
@@ -5466,7 +5495,7 @@ String AXNodeObject::Description(
           DescriptionSource(found_description, kValueAttr));
       description_sources->back().type = description_from;
     }
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       description = value;
       if (description_sources) {
@@ -5588,6 +5617,39 @@ String AXNodeObject::Description(
         description_sources->back().text = description;
       } else {
         return description;
+      }
+    }
+  }
+
+  // For form controls that act as triggering elements for popups of type kHint,
+  // then set aria-describedby to the hint popup.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    auto popup = form_control->togglePopupElement();
+    if (popup.element && popup.element->PopupType() == PopupValueType::kHint) {
+      description_from = ax::mojom::blink::DescriptionFrom::kPopupElement;
+      if (description_sources) {
+        description_sources->push_back(
+            DescriptionSource(found_description, popup.attribute_name));
+        description_sources->back().type = description_from;
+      }
+      AXObject* popup_ax_object = AXObjectCache().GetOrCreate(popup.element);
+      if (popup_ax_object) {
+        AXObjectSet visited;
+        description = RecursiveTextAlternative(*popup_ax_object,
+                                               popup_ax_object, visited);
+        if (related_objects) {
+          related_objects->push_back(
+              MakeGarbageCollected<NameSourceRelatedObject>(popup_ax_object,
+                                                            description));
+        }
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
       }
     }
   }

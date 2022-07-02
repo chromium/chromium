@@ -21,7 +21,7 @@ limitations under the License.
 extern "C" {
 #endif  // __cplusplus
 
-void NLClassifierCategoriesDelete(Categories* categories) {
+void TfLiteNLClassifierCategoriesDelete(Categories* categories) {
   for (int i = 0; i < categories->size; i++) {
     // `strdup` obtains memory using `malloc` and the memory needs to be
     // released using `free`.

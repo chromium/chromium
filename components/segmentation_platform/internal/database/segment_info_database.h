@@ -10,14 +10,14 @@
 
 #include "base/callback.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+
+using proto::SegmentId;
 
 namespace proto {
 class SegmentInfo;
@@ -29,8 +29,7 @@ class PredictionResult;
 class SegmentInfoDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
-  using SegmentInfoList =
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>;
+  using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
   using MultipleSegmentInfoCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
   using SegmentInfoCallback =
@@ -52,24 +51,24 @@ class SegmentInfoDatabase {
 
   // Called to get metadata for a given list of segments.
   virtual void GetSegmentInfoForSegments(
-      const std::vector<OptimizationTarget>& segment_ids,
+      const std::vector<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
   // Called to get the metadata for a given segment.
-  virtual void GetSegmentInfo(OptimizationTarget segment_id,
+  virtual void GetSegmentInfo(SegmentId segment_id,
                               SegmentInfoCallback callback);
 
   // Called to save or update metadata for a segment. The previous data is
   // overwritten. If |segment_info| is empty, the segment will be deleted.
   // TODO(shaktisahu): How does the client know if a segment is to be deleted?
-  virtual void UpdateSegment(OptimizationTarget segment_id,
+  virtual void UpdateSegment(SegmentId segment_id,
                              absl::optional<proto::SegmentInfo> segment_info,
                              SuccessCallback callback);
 
   // Called to write the model execution results for a given segment. It will
   // first read the currently stored result, and then overwrite it with
   // |result|. If |result| is null, the existing result will be deleted.
-  virtual void SaveSegmentResult(OptimizationTarget segment_id,
+  virtual void SaveSegmentResult(SegmentId segment_id,
                                  absl::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
 

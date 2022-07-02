@@ -26,12 +26,20 @@ test(() => {
   deleteExistingCookie(prefixedCookieLine)
 
   // Partitioned cookie with no __Host- prefix are valid as long as they have
-  // the Secure, Path=/, and no Domain attributes.
+  // the Secure and Path=/.
   const noPrefixCookie = "foo=bar";
   const noPrefixCookieLine = noPrefixCookie + validCookieAttributes;
   document.cookie = noPrefixCookieLine;
   assert_equals(document.cookie, "foo=bar");
   deleteExistingCookie(noPrefixCookieLine);
+
+  // Partitioned cookie with Domain is still valid.
+  const domainCookie = "foo=baz";
+  const domainCookieLine = domainCookie + validCookieAttributes + `; Domain=${
+      window.location.hostname}`;
+  document.cookie = domainCookieLine;
+  assert_equals(document.cookie, "foo=baz");
+  deleteExistingCookie(domainCookieLine);
 
   // Invalid Partitioned cookie: SameParty attribute.
   assertInvalidCookie(prefixedCookieLine + "; SameParty");

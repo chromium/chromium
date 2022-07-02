@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -227,7 +227,7 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
     return;
   }
 
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  SessionManagerClient::Get()->RequestLockScreen();
 }
 
 void ScreenTimeController::OnAccessCodeValidation(

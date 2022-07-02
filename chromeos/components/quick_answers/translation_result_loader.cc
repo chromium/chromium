@@ -11,6 +11,7 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,7 +35,7 @@ using base::Value;
 
 constexpr char kTranslationAPIUrl[] =
     "https://translation.googleapis.com/language/translate/v2";
-constexpr char kAuthorizationHeaderFormat[] = "Bearer ";
+constexpr char kApiKeyName[] = "key";
 
 constexpr base::StringPiece kQueryKey = "q";
 constexpr base::StringPiece kSourceLanguageKey = "source";
@@ -68,9 +69,16 @@ TranslationResultLoader::~TranslationResultLoader() = default;
 void TranslationResultLoader::BuildRequest(
     const PreprocessedOutput& preprocessed_output,
     BuildRequestCallback callback) const {
-  delegate()->RequestAccessToken(base::BindOnce(
-      &TranslationResultLoader::OnRequestAccessTokenComplete,
-      base::Unretained(this), preprocessed_output, std::move(callback)));
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = net::AppendQueryParameter(
+      GURL(kTranslationAPIUrl), kApiKeyName, google_apis::GetAPIKey());
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      "application/json");
+
+  std::move(callback).Run(
+      std::move(resource_request),
+      BuildTranslationRequestBody(preprocessed_output.intent_info));
 }
 
 void TranslationResultLoader::ProcessResponse(
@@ -82,24 +90,6 @@ void TranslationResultLoader::ProcessResponse(
   translation_response_parser_->ProcessResponse(
       std::move(response_body),
       BuildTranslationTitleText(preprocessed_output.intent_info));
-}
-
-void TranslationResultLoader::OnRequestAccessTokenComplete(
-    const PreprocessedOutput& preprocessed_output,
-    BuildRequestCallback callback,
-    const std::string& access_token) const {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kTranslationAPIUrl);
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      kAuthorizationHeaderFormat + access_token);
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      "application/json");
-
-  std::move(callback).Run(
-      std::move(resource_request),
-      BuildTranslationRequestBody(preprocessed_output.intent_info));
 }
 
 }  // namespace quick_answers

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_connection_observer.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -44,6 +46,7 @@ class MobileDataNotifications
   // NetworkStateHandlerObserver:
   void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
                                  active_networks) override;
+  void OnShuttingDown() override;
 
   // NetworkConnectionObserver:
   void ConnectSucceeded(const std::string& service_path) override;
@@ -78,6 +81,10 @@ class MobileDataNotifications
   void DelayedShowOptionalMobileDataNotification();
 
   base::OneShotTimer one_shot_notification_check_delay_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};
 };

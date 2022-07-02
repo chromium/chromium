@@ -66,6 +66,8 @@ class InstanceRegistry {
     // Observe(nullptr)).
     virtual void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) = 0;
 
+    InstanceRegistry* instance_registry() const { return instance_registry_; }
+
    protected:
     // Use this constructor when the observer |this| is tied to a single
     // InstanceRegistry for its entire lifetime, or until the observee (the

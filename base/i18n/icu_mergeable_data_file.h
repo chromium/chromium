@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base::i18n {
 
@@ -105,7 +106,7 @@ class BASE_I18N_EXPORT IcuMergeableDataFile {
 
   File lacros_file_;
   int64_t lacros_length_ = 0;
-  uint8_t* lacros_data_ = nullptr;
+  raw_ptr<uint8_t> lacros_data_ = nullptr;
   bool used_cached_hashes_ = false;
 };
 

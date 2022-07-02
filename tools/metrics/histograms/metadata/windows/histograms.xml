@@ -55,16 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
-    expires_after="2022-06-26">
-  <owner>brucedawson@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
-  <summary>
-    The result of prefetching chrome.dll on Windows, including whether a
-    fallback to slow prefetch took place, and why if so.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CreateOrUpdateShortcuts.Result"
     enum="CreateOrUpdateShortcutsResult" expires_after="2022-11-26">
   <owner>davidbienvenu@chromium.org</owner>
@@ -78,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.FileDeleteRetryCount" units="attempts"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>grt@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>
@@ -218,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.OnCurrentWorkspaceCached" enum="BooleanCacheHit"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -238,6 +228,18 @@ chromium-metrics-reviews@google.com.
     shell handler process. This is usually caused by a crash in the utility
     process. This is logged every time SelectFile() function is called and the
     WinOOPSelectFileDialog feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not parallel DLL loading is enabled for the browser
+    process executable. This is recorded once per browser session, on startup.
   </summary>
 </histogram>
 
@@ -287,6 +289,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.PathRecursivelyDeleteRetryCount" units="attempts"
+    expires_after="2022-10-16">
+  <owner>grt@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    The number of retries needed to fully delete a path recursively from
+    GetDeletePathRecursivelyCallback. 0 means it succeeded the first time, 9
+    means it never succeeded to fully delete the path and all of its contents
+    (if the path named a directory).
+  </summary>
+</histogram>
+
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
     expires_after="2022-09-11">
   <owner>rkc@chromium.org</owner>
@@ -300,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2022-08-28">
+    enum="BooleanEnabled" expires_after="2022-12-25">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -309,7 +323,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
+<histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
     expires_after="2021-12-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>dfried@chromium.org</owner>

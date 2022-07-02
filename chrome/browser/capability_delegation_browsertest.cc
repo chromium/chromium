@@ -61,13 +61,17 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   EXPECT_TRUE(
       NavigateIframeToURL(active_web_contents, "iframe", cross_site_url));
 
+  const std::string subframe_origin =
+      https_server()->GetOrigin("b.com").Serialize();
+
   // Confirm that the subframe is cross-process depending on the process
   // model.
   content::RenderFrameHost* frame_host =
-      ChildFrameAt(active_web_contents->GetMainFrame(), 0);
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(cross_site_url, frame_host->GetLastCommittedURL());
-  auto* main_instance = active_web_contents->GetMainFrame()->GetSiteInstance();
+  auto* main_instance =
+      active_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   auto* subframe_instance = frame_host->GetSiteInstance();
   if (main_instance->RequiresDedicatedProcess()) {
     // Subframe is cross process because it can't be place in the main frame's
@@ -87,33 +91,34 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   EXPECT_EQ(
       "SecurityError",
       content::EvalJs(active_web_contents,
-                      content::JsReplace("sendRequestToSubframe(false, $1)",
-                                         payment_method),
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin),
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  // Without user activation but with the delegation option, PaymentRequest
-  // dialog is not allowed.
+  // Without user activation but with the delegation option, the delegation
+  // postMessage is not allowed.
   EXPECT_EQ(
-      "SecurityError",
-      content::EvalJs(
-          active_web_contents,
-          content::JsReplace("sendRequestToSubframe(true, $1)", payment_method),
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+      "NotAllowedError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(true, $1, $2)",
+                                         payment_method, subframe_origin),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is not allowed.
   EXPECT_EQ(
       "SecurityError",
       content::EvalJs(active_web_contents,
-                      content::JsReplace("sendRequestToSubframe(false, $1)",
-                                         payment_method)));
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin)));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.
-  EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
-                                          content::JsReplace(
-                                              "sendRequestToSubframe(true, $1)",
-                                              payment_method)));
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(true, $1, $2)",
+                                         payment_method, subframe_origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
@@ -135,9 +140,11 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
       https_server()->GetURL("a.com", "/payment_request_delegation_sub.html"));
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "iframe", subframe_url));
 
+  const std::string subframe_origin = "/";
+
   // Confirm that the subframe is same-process.
   content::RenderFrameHost* frame_host =
-      ChildFrameAt(active_web_contents->GetMainFrame(), 0);
+      ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(subframe_url, frame_host->GetLastCommittedURL());
   EXPECT_FALSE(frame_host->IsCrossProcessSubframe());
@@ -147,31 +154,32 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   EXPECT_EQ(
       "SecurityError",
       content::EvalJs(active_web_contents,
-                      content::JsReplace("sendRequestToSubframe(false, $1)",
-                                         payment_method),
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin),
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  // Without user activation but with the delegation option, PaymentRequest
-  // dialog is not allowed.
+  // Without user activation but with the delegation option, the delegation
+  // postMessage is not allowed.
   EXPECT_EQ(
-      "SecurityError",
-      content::EvalJs(
-          active_web_contents,
-          content::JsReplace("sendRequestToSubframe(true, $1)", payment_method),
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+      "NotAllowedError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(true, $1, $2)",
+                                         payment_method, subframe_origin),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is shown and then successfully aborted by the script.
   EXPECT_EQ(
       "AbortError",
       content::EvalJs(active_web_contents,
-                      content::JsReplace("sendRequestToSubframe(false, $1)",
-                                         payment_method)));
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin)));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.
-  EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
-                                          content::JsReplace(
-                                              "sendRequestToSubframe(true, $1)",
-                                              payment_method)));
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(true, $1, $2)",
+                                         payment_method, subframe_origin)));
 }

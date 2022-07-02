@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSingleLock) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, DISABLED_ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -289,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
       Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
                              GURL(), nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(other_shell, GetLocksURL("a.com")));
-  RenderFrameHost* other_rfh = other_shell->web_contents()->GetMainFrame();
+  RenderFrameHost* other_rfh =
+      other_shell->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId other_rfh_id = other_rfh->GetGlobalId();
 
   {
@@ -339,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.
@@ -386,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverServiceWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.

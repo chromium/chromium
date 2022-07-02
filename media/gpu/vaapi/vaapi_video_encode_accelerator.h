@@ -278,9 +278,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // indexed by a layer resolution.
   EncodeSurfacesCountMap encode_surfaces_count_;
 
-  // VA buffers for coded frames.
-  std::vector<VABufferID> available_va_buffer_ids_;
-
   // Queue of input frames to be encoded.
   base::queue<std::unique_ptr<InputFrameRef>> input_queue_;
 

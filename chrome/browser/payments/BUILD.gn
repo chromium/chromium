@@ -33,6 +33,7 @@ source_set("browser_tests") {
     "payment_request_security_policy_browsertest.cc",
     "sec_fetch_site_browsertest.cc",
     "secure_payment_confirmation_browsertest.cc",
+    "secure_payment_confirmation_browsertest.h",
     "two_payment_requests_browsertest.cc",
   ]
 
@@ -61,6 +62,8 @@ source_set("browser_tests") {
     sources += [
       "manifest_verifier_browsertest.cc",
       "payment_manifest_parser_browsertest.cc",
+      "secure_payment_confirmation_creation_browsertest.cc",
+      "secure_payment_confirmation_opt_out_browsertest.cc",
       "service_worker_payment_app_finder_browsertest.cc",
       "site_per_process_payments_browsertest.cc",
     ]

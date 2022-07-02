@@ -67,12 +67,13 @@ TEST_F(PolicyProtoDecodersTest, StringPolicy) {
 }
 
 TEST_F(PolicyProtoDecodersTest, StringListPolicy) {
-  std::vector<base::Value> expected_disabled_sync_types;
-  expected_disabled_sync_types.emplace_back(base::Value("bookmarks"));
-  expected_disabled_sync_types.emplace_back(base::Value("readingList"));
+  base::Value::List expected_disabled_sync_types;
+  expected_disabled_sync_types.Append("bookmarks");
+  expected_disabled_sync_types.Append("readingList");
   expected_policy_map_.Set(key::kSyncTypesListDisabled, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                           base::Value(expected_disabled_sync_types), nullptr);
+                           base::Value(std::move(expected_disabled_sync_types)),
+                           nullptr);
 
   auto* disabled_sync_types =
       user_policy_.payload().mutable_synctypeslistdisabled()->mutable_value();

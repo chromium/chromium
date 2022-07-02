@@ -12,6 +12,7 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
@@ -82,21 +83,23 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   network_context_.reset();
   url_loader_factory_.reset();
 
+  PrefetchServiceDelegate* delegate =
+      prefetch_service_->GetPrefetchServiceDelegate();
+
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->user_agent = content::GetReducedUserAgent(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent),
-      "");
+      delegate ? delegate->GetMajorVersionNumber() : "");
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 
-  // TODO(https://crbug.com/1299059): Get major version of Chrome when
-  // constructing the user agent. This will require a delegate.
-  // TODO(https://crbug.com/1299059): Add the accept languages stored in prefs.
-  // This will require a delegate.
+  if (delegate) {
+    context_params->accept_language = delegate->GetAcceptLanguageHeader();
+  }
 
   context_params->http_cache_enabled = true;
   DCHECK(!context_params->http_cache_directory);
@@ -104,6 +107,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   if (prefetch_type_.IsProxyRequired()) {
     PrefetchProxyConfigurator* prefetch_proxy_configurator =
         prefetch_service_->GetPrefetchProxyConfigurator();
+    DCHECK(prefetch_proxy_configurator);
 
     context_params->initial_custom_proxy_config =
         prefetch_proxy_configurator->CreateCustomProxyConfig();

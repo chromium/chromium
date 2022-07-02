@@ -21,6 +21,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -52,7 +53,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -161,7 +162,7 @@ std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
 
   std::unique_ptr<url_matcher::URLMatcher> matcher =
       std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::URLMatcherConditionSet::ID unused_id(0);
+  base::MatcherStringPattern::ID unused_id(0);
   url_matcher::util::AddFilters(matcher.get(), true, &unused_id, it->second);
 
   return matcher;
@@ -224,7 +225,9 @@ const char
 const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
     "userJustification";
 
-// All new event names should be added to the kAllEvents array below!
+// All new event names should be added to the array
+// `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
+// `chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h`
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
     "passwordReuseEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent[] =
@@ -240,17 +243,6 @@ const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
 const char SafeBrowsingPrivateEventRouter::kKeyLoginEvent[] = "loginEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent[] =
     "passwordBreachEvent";
-// All new event names should be added to this array!
-const char* SafeBrowsingPrivateEventRouter::kAllEvents[8] = {
-    SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
-    SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
-    SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
-    SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
-    SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
-    SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
-    SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
-    SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
-};
 
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
@@ -301,8 +293,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::
@@ -338,8 +330,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     const std::string& user_name) {
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value(user_name));
+    base::Value::List event_value;
+    event_value.Append(user_name);
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_CHANGED,
         api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::
@@ -379,8 +371,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_DANGEROUS_DOWNLOAD_OPENED,
@@ -436,8 +428,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_SHOWN,
@@ -485,8 +477,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_PROCEEDED,
@@ -1028,6 +1020,13 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
 #else
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
+  if (main_profile) {
+    // Prefer the user client id if available.
+    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
+  }
+#endif
 
   // Make sure DeviceManagementService has been initialized.
   device_management_service->ScheduleInitialization(0);
@@ -1117,11 +1116,13 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
   }
 
 #ifndef NDEBUG
-  // Make sure that the event is included in the kAllEvents array.
+  // Make sure the event is a SAFE_BROWSING event in kAllReportingEvents array.
   bool found = false;
-  for (const char* known_event_name :
-       extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
-    if (name == known_event_name) {
+  for (const auto& event :
+       enterprise_connectors::ReportingServiceSettings::kAllReportingEvents) {
+    if (event.source == enterprise_connectors::ReportingConnectorEventSource::
+                            SAFE_BROWSING &&
+        event.name == name) {
       found = true;
       break;
     }

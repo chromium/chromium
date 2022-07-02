@@ -69,6 +69,11 @@ bool IsCellularPolicy(const base::Value& onc_config);
 // is not a Cellular type ONC or no ICCID field is found.
 const std::string* GetIccidFromONC(const base::Value& onc_config);
 
+// Returns the Cellular.SMDPAddress ONC field of the passed ONC
+// NetworkConfiguration if it is a Cellular NetworkConfiguration.
+// If there is no SMDPAddress, returns nullptr.
+const std::string* GetSMDPAddressFromONC(const base::Value& onc_config);
+
 }  // namespace policy_util
 
 }  // namespace chromeos

@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 // Wraps a MockTranslateMetricsLogger so that test can retain a pointer to the
@@ -155,19 +156,26 @@ class MockTranslateMetricsLoggerContainer
 
 class TranslatePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
- public:
-  void SetUp() override {
-    PageLoadMetricsObserverTestHarness::SetUp();
-
-    // Creates the MockTranslateMetricsLogger that will be used for this test.
-    mock_translate_metrics_logger_ =
-        std::make_unique<translate::testing::MockTranslateMetricsLogger>();
+ protected:
+  void PrepareMock(size_t n = 1) {
+    for (size_t i = 0; i < n; ++i) {
+      // Creates the MockTranslateMetricsLogger that will be used for this test.
+      mock_translate_metrics_loggers_.emplace_back(
+          std::make_unique<translate::testing::MockTranslateMetricsLogger>());
+    }
+  }
+  const std::vector<
+      std::unique_ptr<translate::testing::MockTranslateMetricsLogger>>&
+  mock_translate_metrics_loggers() const {
+    return mock_translate_metrics_loggers_;
   }
 
+ private:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
+    EXPECT_LT(used_mock_count_, mock_translate_metrics_loggers_.size());
     translate::testing::MockTranslateMetricsLogger*
         raw_mock_translate_metrics_logger =
-            mock_translate_metrics_logger_.get();
+            mock_translate_metrics_loggers_[used_mock_count_++].get();
 
     // Wraps the raw pointer in a container.
     std::unique_ptr<MockTranslateMetricsLoggerContainer>
@@ -179,37 +187,50 @@ class TranslatePageLoadMetricsObserverTest
         std::move(mock_translate_metrics_logger_container)));
   }
 
-  translate::testing::MockTranslateMetricsLogger&
-  mock_translate_metrics_logger() const {
-    return *mock_translate_metrics_logger_;
-  }
-
- private:
   // This is the TranslateMetricsLoggers used in a test.It is owned by the
   // TranslatePageLoadMetricsObserverTest.
-  std::unique_ptr<translate::testing::MockTranslateMetricsLogger>
-      mock_translate_metrics_logger_;
+  std::vector<std::unique_ptr<translate::testing::MockTranslateMetricsLogger>>
+      mock_translate_metrics_loggers_;
+  size_t used_mock_count_ = 0u;
 };
 
 TEST_F(TranslatePageLoadMetricsObserverTest, SinglePageLoad) {
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(false)).Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnForegroundChange(testing::_))
+  PrepareMock();
+
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(false))
       .Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(false)).Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0],
+              OnForegroundChange(testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], SetUkmSourceId(testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(false))
+      .Times(0);
 
   NavigateAndCommit(GURL("https://www.example.com"));
   tester()->NavigateToUntrackedUrl();
 }
 
 TEST_F(TranslatePageLoadMetricsObserverTest, AppEntersBackground) {
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(false)).Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnForegroundChange(testing::_))
+  PrepareMock();
+
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(false))
       .Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(false)).Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0],
+              OnForegroundChange(testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], SetUkmSourceId(testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(false))
+      .Times(1);
 
   NavigateAndCommit(GURL("https://www.example.com"));
   tester()->SimulateAppEnterBackground();
@@ -217,19 +238,72 @@ TEST_F(TranslatePageLoadMetricsObserverTest, AppEntersBackground) {
 }
 
 TEST_F(TranslatePageLoadMetricsObserverTest, RepeatedAppEntersBackground) {
+  PrepareMock();
+
   int num_times_enter_background = 100;
 
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnPageLoadStart(false)).Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), OnForegroundChange(testing::_))
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(false))
       .Times(0);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(true)).Times(1);
-  EXPECT_CALL(mock_translate_metrics_logger(), RecordMetrics(false))
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0],
+              OnForegroundChange(testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], SetUkmSourceId(testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(false))
       .Times(num_times_enter_background);
 
   NavigateAndCommit(GURL("https://www.example.com"));
   for (int i = 0; i < num_times_enter_background; ++i)
     tester()->SimulateAppEnterBackground();
+
+  tester()->NavigateToUntrackedUrl();
+}
+
+TEST_F(TranslatePageLoadMetricsObserverTest, PrerenderAndActivation) {
+  PrepareMock(2);
+
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], OnPageLoadStart(false))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0],
+              OnForegroundChange(testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], SetUkmSourceId(testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[0], RecordMetrics(false))
+      .Times(0);
+
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], OnPageLoadStart(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], OnPageLoadStart(false))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1],
+              OnForegroundChange(testing::_))
+      .Times(0);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], SetUkmSourceId(testing::_))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], RecordMetrics(true))
+      .Times(1);
+  EXPECT_CALL(*mock_translate_metrics_loggers()[1], RecordMetrics(false))
+      .Times(0);
+
+  // Navigate to the initial page to set the initiator page's origin explicitly.
+  NavigateAndCommit(GURL("https://www.example.com"));
+
+  const GURL kPrerenderingUrl("https://www.example.com/prerender");
+  content::WebContentsTester::For(web_contents())
+      ->AddPrerenderAndCommitNavigation(kPrerenderingUrl);
+
+  // Activation
+  content::WebContentsTester::For(web_contents())
+      ->ActivatePrerenderedPage(kPrerenderingUrl);
 
   tester()->NavigateToUntrackedUrl();
 }

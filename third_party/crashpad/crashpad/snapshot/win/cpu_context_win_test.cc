@@ -41,7 +41,7 @@ void TestInitializeX86Context() {
   // directly from the supplied thread, float, and debug state parameters.
   {
     CPUContextX86 cpu_context_x86 = {};
-    InitializeX86Context(context, &cpu_context_x86);
+    InitializeX86Context(&context, &cpu_context_x86);
     EXPECT_EQ(cpu_context_x86.eax, 1u);
     EXPECT_EQ(cpu_context_x86.fxsave.ftw, 2u);
     EXPECT_EQ(cpu_context_x86.dr0, 3u);
@@ -73,7 +73,7 @@ void TestInitializeX86Context_FsaveWithoutFxsave() {
 
   {
     CPUContextX86 cpu_context_x86 = {};
-    InitializeX86Context(context, &cpu_context_x86);
+    InitializeX86Context(&context, &cpu_context_x86);
 
     EXPECT_EQ(cpu_context_x86.eax, 1u);
 
@@ -117,7 +117,7 @@ TEST(CPUContextWin, InitializeX64Context) {
   // set directly from the supplied thread, float, and debug state parameters.
   {
     CPUContextX86_64 cpu_context_x86_64 = {};
-    InitializeX64Context(context, &cpu_context_x86_64);
+    InitializeX64Context(&context, &cpu_context_x86_64);
     EXPECT_EQ(cpu_context_x86_64.rax, 10u);
     EXPECT_EQ(cpu_context_x86_64.fxsave.ftw, 11u);
     EXPECT_EQ(cpu_context_x86_64.dr0, 12u);

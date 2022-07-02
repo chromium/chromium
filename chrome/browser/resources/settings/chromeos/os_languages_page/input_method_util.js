@@ -153,49 +153,68 @@ export const UiType = {
   LINK: 'link',
 };
 
+/**
+ * All possible Settings headers
+ *
+ * @enum {string}
+ */
+const SettingsHeaders = {
+  BASIC: 'basic',
+  ADVANCED: 'advanced',
+  PHYSICAL_KEYBOARD: 'physicalKeyboard',
+  VIRTUAL_KEYBOARD: 'virtualKeyboard',
+  SUGGESTIONS: 'suggestions',
+};
+
+/**
+ * Contents of the settings page for different settings types.
+ * These should be in the order they are expected to appear in
+ * the actual settings pages.
+ *
+ * @type {Object<SettingsType, !Array<!{title: SettingsHeaders, optionNames:
+ * !Array<OptionType>}>>}
+ */
 const Settings = {
-  [SettingsType.LATIN_SETTINGS]: {
-    physicalKeyboard: [{
-      name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-    }],
-    virtualKeyboard: [
-      {name: OptionType.ENABLE_SOUND_ON_KEYPRESS}, {
-        name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
-        dependentOptions: [
-          OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
-        ]
-      },
-      {name: OptionType.ENABLE_GESTURE_TYPING},
-      {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
-      {name: OptionType.EDIT_USER_DICT}
-    ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
-  },
-  [SettingsType.ZHUYIN_SETTINGS]: {
-    physicalKeyboard: [
+  [SettingsType.LATIN_SETTINGS]: [
+    {
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
+      optionNames: [{
+        name: OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+      }],
+    },
+    {
+      title: SettingsHeaders.VIRTUAL_KEYBOARD,
+      optionNames: [
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS}, {
+          name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
+          dependentOptions: [
+            OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
+          ]
+        },
+        {name: OptionType.ENABLE_GESTURE_TYPING},
+        {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
+        {name: OptionType.EDIT_USER_DICT}
+      ],
+    }
+  ],
+  [SettingsType.ZHUYIN_SETTINGS]: [{
+    title: SettingsHeaders.PHYSICAL_KEYBOARD,
+    optionNames: [
       {name: OptionType.ZHUYIN_KEYBOARD_LAYOUT},
       {name: OptionType.ZHUYIN_SELECT_KEYS},
       {name: OptionType.ZHUYIN_PAGE_SIZE},
-    ],
-    virtualKeyboard: [],
-    basic: [],
-    advanced: [],
-    suggestions: [],
-  },
-  [SettingsType.KOREAN_SETTINGS]: {
-    basic: [
+    ]
+  }],
+  [SettingsType.KOREAN_SETTINGS]: [{
+    title: SettingsHeaders.BASIC,
+    optionNames: [
       {name: OptionType.KOREAN_KEYBOARD_LAYOUT},
       {name: OptionType.KOREAN_ENABLE_SYLLABLE_INPUT},
     ],
-    virtualKeyboard: [],
-    advanced: [],
-    physicalKeyboard: [],
-    suggestions: [],
-  },
-  [SettingsType.PINYIN_FUZZY_SETTINGS]: {
-    advanced: [{
+  }],
+  [SettingsType.PINYIN_FUZZY_SETTINGS]: [{
+    title: SettingsHeaders.ADVANCED,
+    optionNames: [{
       name: OptionType.PINYIN_ENABLE_FUZZY,
       dependentOptions: [
         OptionType.PINYIN_AN_ANG,
@@ -212,53 +231,44 @@ const Settings = {
         OptionType.PINYIN_Z_ZH,
       ]
     }],
-    virtualKeyboard: [],
-    basic: [],
-    physicalKeyboard: [],
-    suggestions: [],
-  },
-  [SettingsType.PINYIN_SETTINGS]: {
-    physicalKeyboard: [
-      {name: OptionType.XKB_LAYOUT},
-      {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
-      {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
-      {name: OptionType.PINYIN_DEFAULT_CHINESE},
-      {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
-      {name: OptionType.PINYIN_CHINESE_PUNCTUATION},
-    ],
-    advanced: [{name: OptionType.EDIT_USER_DICT}],
-    basic: [],
-    virtualKeyboard: [],
-    suggestions: [],
-  },
-  [SettingsType.BASIC_SETTINGS]: {
-    physicalKeyboard: [],
-    virtualKeyboard: [
+  }],
+  [SettingsType.PINYIN_SETTINGS]: [
+    {
+      title: SettingsHeaders.ADVANCED,
+      optionNames: [{name: OptionType.EDIT_USER_DICT}],
+    },
+    {
+      title: SettingsHeaders.PHYSICAL_KEYBOARD,
+      optionNames: [
+        {name: OptionType.XKB_LAYOUT},
+        {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
+        {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
+        {name: OptionType.PINYIN_DEFAULT_CHINESE},
+        {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
+        {name: OptionType.PINYIN_CHINESE_PUNCTUATION},
+      ]
+    }
+  ],
+  [SettingsType.BASIC_SETTINGS]: [{
+    title: SettingsHeaders.VIRTUAL_KEYBOARD,
+    optionNames: [
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
     ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
-  },
-  [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: {
-    physicalKeyboard: [],
-    virtualKeyboard: [
+  }],
+  [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: [{
+    title: SettingsHeaders.VIRTUAL_KEYBOARD,
+    optionNames: [
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
       {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
     ],
-    basic: [],
-    advanced: [],
-    suggestions: [],
-  },
-  [SettingsType.SUGGESTION_SETTINGS]: {
-    physicalKeyboard: [],
-    virtualKeyboard: [],
-    basic: [],
-    advanced: [],
-    suggestions:
+  }],
+  [SettingsType.SUGGESTION_SETTINGS]: [{
+    title: SettingsHeaders.SUGGESTIONS,
+    optionNames:
         [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING}],
-  },
+  }],
 };
+
 /**
  * @param {string} id Input method ID.
  * @return {string} The corresponding engind ID of the input method.
@@ -292,48 +302,32 @@ export function hasOptionsPageInSettings(id, predictiveWritingEnabled) {
  *     displayed.
  */
 export function generateOptions(engineId, predictiveWritingEnabled) {
-  const options = {
-    basic: [],
-    advanced: [],
-    physicalKeyboard: [],
-    virtualKeyboard: [],
-    suggestions: []
-  };
+  const options = [];
+
   const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
+    const pushedOptions = {};
+
     engineSettings.forEach((settingType) => {
       const settings = Settings[settingType];
-      options.basic.push(...settings.basic);
-      options.advanced.push(...settings.advanced);
-      options.physicalKeyboard.push(...settings.physicalKeyboard);
-      options.virtualKeyboard.push(...settings.virtualKeyboard);
-      options.suggestions.push(...settings.suggestions);
+      for (const {title, optionNames} of settings) {
+        if (optionNames) {
+          if (pushedOptions[title] === undefined) {
+            pushedOptions[title] = options.length;
+            options.push({
+              title,
+              optionNames: [...optionNames],
+            });
+          } else {
+            options[pushedOptions[title]].optionNames.push(...optionNames);
+          }
+        }
+      }
     });
   }
 
-  return [
-    {
-      title: 'basic',
-      optionNames: options.basic,
-    },
-    {
-      title: 'advanced',
-      optionNames: options.advanced,
-    },
-    {
-      title: 'physicalKeyboard',
-      optionNames: options.physicalKeyboard,
-    },
-    {
-      title: 'virtualKeyboard',
-      optionNames: options.virtualKeyboard,
-    },
-    {
-      title: 'suggestions',
-      optionNames: options.suggestions,
-    },
-  ];
+  return options;
 }
 
 /**

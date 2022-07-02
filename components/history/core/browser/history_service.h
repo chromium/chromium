@@ -650,6 +650,11 @@ class HistoryService : public KeyedService {
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetTypedURLSyncControllerDelegate();
 
+  // For sync codebase only: instantiates a controller delegate to interact with
+  // HistorySyncBridge. Must be called from the UI thread.
+  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  GetHistorySyncControllerDelegate();
+
   // Override `backend_task_runner_` for testing; needs to be called before
   // Init.
   void set_backend_task_runner_for_testing(
@@ -716,13 +721,9 @@ class HistoryService : public KeyedService {
 
   // Notify all HistoryServiceObservers registered that user is visiting a URL.
   // The `row` ID will be set to the value that is currently in effect in the
-  // main history database. `redirects` is the list of redirects leading up to
-  // the URL. If we have a redirect chain A -> B -> C and user is visiting C,
-  // then `redirects[0]=B` and `redirects[1]=A`. If there are no redirects,
-  // `redirects` is an empty vector.
+  // main history database.
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or

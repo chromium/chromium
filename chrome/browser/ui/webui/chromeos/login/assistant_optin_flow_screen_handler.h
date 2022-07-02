@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

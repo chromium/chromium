@@ -14,11 +14,10 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -302,51 +301,31 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
   constexpr wchar_t kUpdaterInternalIndex[] = L"2";
   constexpr wchar_t kUpdaterLegacyIndex[] = L"3";
 
-  static const std::unordered_map<IID, const wchar_t*> kTypeLibIndexes = {
-      // Updater typelib.
-      {__uuidof(ICompleteStatus), kUpdaterIndex},
-      {__uuidof(IUpdater), kUpdaterIndex},
-      {__uuidof(IUpdaterObserver), kUpdaterIndex},
-      {__uuidof(IUpdaterRegisterAppCallback), kUpdaterIndex},
-      {__uuidof(IUpdateState), kUpdaterIndex},
-      {__uuidof(IUpdaterCallback), kUpdaterIndex},
+  static const base::NoDestructor<std::unordered_map<IID, const wchar_t*>>
+      kTypeLibIndexes{{
+          // Updater typelib.
+          {__uuidof(ICompleteStatus), kUpdaterIndex},
+          {__uuidof(IUpdater), kUpdaterIndex},
+          {__uuidof(IUpdaterObserver), kUpdaterIndex},
+          {__uuidof(IUpdaterRegisterAppCallback), kUpdaterIndex},
+          {__uuidof(IUpdateState), kUpdaterIndex},
+          {__uuidof(IUpdaterCallback), kUpdaterIndex},
 
-      // Updater internal typelib.
-      {__uuidof(IUpdaterInternal), kUpdaterInternalIndex},
-      {__uuidof(IUpdaterInternalCallback), kUpdaterInternalIndex},
+          // Updater internal typelib.
+          {__uuidof(IUpdaterInternal), kUpdaterInternalIndex},
+          {__uuidof(IUpdaterInternalCallback), kUpdaterInternalIndex},
 
-      // Updater legacy typelib.
-      {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
-      {__uuidof(IAppWeb), kUpdaterLegacyIndex},
-      {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
-      {__uuidof(ICurrentState), kUpdaterLegacyIndex},
-      {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
-      {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
-      {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
-  };
-  auto index = kTypeLibIndexes.find(iid);
-  return index != kTypeLibIndexes.end() ? index->second : L"";
-}
-
-std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
-  constexpr size_t kDepsFileSizeMax = 0x4000;  // 16KB.
-  std::string contents;
-  if (!base::ReadFileToStringWithMaxSize(deps, &contents, kDepsFileSizeMax))
-    return {};
-  const base::flat_set<const wchar_t*, CaseInsensitiveASCIICompare>
-      exclude_extensions = {L".pdb", L".js"};
-  std::vector<base::FilePath> result;
-  for (const auto& line :
-       base::SplitString(contents, "\r\n", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_NONEMPTY)) {
-    const auto filename =
-        base::FilePath(base::ASCIIToWide(line)).NormalizePathSeparators();
-    if (!base::Contains(exclude_extensions,
-                        filename.FinalExtension().c_str())) {
-      result.push_back(filename);
-    }
-  }
-  return result;
+          // Updater legacy typelib.
+          {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppWeb), kUpdaterLegacyIndex},
+          {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
+          {__uuidof(ICurrentState), kUpdaterLegacyIndex},
+          {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},
+          {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
+      }};
+  auto index = kTypeLibIndexes->find(iid);
+  return index != kTypeLibIndexes->end() ? index->second : L"";
 }
 
 void RegisterUserRunAtStartup(const std::wstring& run_value_name,

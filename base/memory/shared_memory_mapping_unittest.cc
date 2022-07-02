@@ -151,7 +151,13 @@ TEST_F(SharedMemoryMappingTest, TooBigSpanWithExplicitElementCount) {
 // the creation of a 1GB shared memory region, but don't allow the region to be
 // mapped.
 #if !BUILDFLAG(IS_IOS)
-TEST_F(SharedMemoryMappingTest, TotalMappedSizeLimit) {
+// TODO(crbug.com/1334079) Fix flakiness and re-enable on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TotalMappedSizeLimit DISABLED_TotalMappedSizeLimit
+#else
+#define MAYBE_TotalMappedSizeLimit TotalMappedSizeLimit
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(SharedMemoryMappingTest, MAYBE_TotalMappedSizeLimit) {
   // Nothing interesting to test if the address space isn't 64 bits, since
   // there's no real limit enforced on 32 bits other than complete address
   // space exhaustion.

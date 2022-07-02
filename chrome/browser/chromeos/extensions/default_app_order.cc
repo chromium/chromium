@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -15,12 +16,14 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
@@ -38,8 +41,62 @@ const char kDefaultAttr[] = "default";
 const char kNameAttr[] = "name";
 const char kImportDefaultOrderAttr[] = "import_default_order";
 
-// Canonical ordering specified in: go/default-apps
-const char* const kDefaultAppOrder[] = {
+// Reads external ordinal json file and returned the parsed value. Returns NULL
+// if the file does not exist or could not be parsed properly. Caller takes
+// ownership of the returned value.
+std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
+    const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return NULL;
+
+  JSONFileValueDeserializer deserializer(path);
+  std::string error_msg;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(NULL, &error_msg);
+  if (!value) {
+    LOG(WARNING) << "Unable to deserialize default app ordinals json data:"
+                 << error_msg << ", file=" << path.value();
+    return NULL;
+  }
+
+  std::unique_ptr<base::ListValue> ordinal_list_value =
+      base::ListValue::From(std::move(value));
+  if (!ordinal_list_value)
+    LOG(WARNING) << "Expect a JSON list in file " << path.value();
+
+  return ordinal_list_value;
+}
+
+std::string GetLocaleSpecificStringImpl(const base::DictionaryValue* root,
+                                        const std::string& locale,
+                                        const std::string& dictionary_name,
+                                        const std::string& entry_name) {
+  const base::DictionaryValue* dictionary_content = NULL;
+  if (!root || !root->GetDictionary(dictionary_name, &dictionary_content))
+    return std::string();
+
+  const base::DictionaryValue* locale_dictionary = NULL;
+  if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
+    std::string result;
+    if (locale_dictionary->GetString(entry_name, &result))
+      return result;
+  }
+
+  const base::DictionaryValue* default_dictionary = NULL;
+  if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
+    std::string result;
+    if (default_dictionary->GetString(entry_name, &result))
+      return result;
+  }
+
+  return std::string();
+}
+
+// Gets built-in default app order.
+void GetDefault(std::vector<std::string>* app_ids) {
+  // Canonical ordering specified in: go/default-apps
+  // clang-format off
+  app_ids->insert(app_ids->end(), {
     app_constants::kChromeAppId,
     arc::kPlayStoreAppId,
 
@@ -85,6 +142,7 @@ const char* const kDefaultAppOrder[] = {
 
     arc::kPlayMoviesAppId,
     extension_misc::kGooglePlayMoviesAppId,
+    arc::kGoogleTVAppId,
 
     arc::kPlayMusicAppId,
     extension_misc::kGooglePlayMusicAppId,
@@ -98,14 +156,12 @@ const char* const kDefaultAppOrder[] = {
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
-    arc::kGoogleDuoAppId,
     web_app::kStadiaAppId,
 
     // First default page break
     app_list::kDefaultPageBreak1,
 
     arc::kGoogleMapsAppId,
-    extension_misc::kGoogleMapsAppId,  // TODO(crbug.com/976578): Remove.
     web_app::kGoogleMapsAppId,
 
     ash::kInternalAppIdSettings,
@@ -123,73 +179,32 @@ const char* const kDefaultAppOrder[] = {
     web_app::kYoutubeTVAppId,
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
+
+    crostini::kCrostiniTerminalSystemAppId,
+    web_app::kMediaAppId,
+    ash::kChromeUITrustedProjectorSwaAppId,
+
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
     web_app::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
-};
+  });
+  // clang-format on
 
-// Reads external ordinal json file and returned the parsed value. Returns NULL
-// if the file does not exist or could not be parsed properly. Caller takes
-// ownership of the returned value.
-std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
-    const base::FilePath& path) {
-  if (!base::PathExists(path))
-    return NULL;
-
-  JSONFileValueDeserializer deserializer(path);
-  std::string error_msg;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(NULL, &error_msg);
-  if (!value) {
-    LOG(WARNING) << "Unable to deserialize default app ordinals json data:"
-        << error_msg << ", file=" << path.value();
-    return NULL;
+  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+    app_ids->push_back(web_app::kCloudGamingPartnerPlatform);
   }
-
-  std::unique_ptr<base::ListValue> ordinal_list_value =
-      base::ListValue::From(std::move(value));
-  if (!ordinal_list_value)
-    LOG(WARNING) << "Expect a JSON list in file " << path.value();
-
-  return ordinal_list_value;
-}
-
-std::string GetLocaleSpecificStringImpl(
-    const base::DictionaryValue* root,
-    const std::string& locale,
-    const std::string& dictionary_name,
-    const std::string& entry_name) {
-  const base::DictionaryValue* dictionary_content = NULL;
-  if (!root || !root->GetDictionary(dictionary_name, &dictionary_content))
-    return std::string();
-
-  const base::DictionaryValue* locale_dictionary = NULL;
-  if (dictionary_content->GetDictionary(locale, &locale_dictionary)) {
-    std::string result;
-    if (locale_dictionary->GetString(entry_name, &result))
-      return result;
-  }
-
-  const base::DictionaryValue* default_dictionary = NULL;
-  if (dictionary_content->GetDictionary(kDefaultAttr, &default_dictionary)) {
-    std::string result;
-    if (default_dictionary->GetString(entry_name, &result))
-      return result;
-  }
-
-  return std::string();
-}
-
-// Gets built-in default app order.
-void GetDefault(std::vector<std::string>* app_ids) {
-  for (size_t i = 0; i < std::size(kDefaultAppOrder); ++i)
-    app_ids->push_back(std::string(kDefaultAppOrder[i]));
 }
 
 }  // namespace
 
-const size_t kDefaultAppOrderCount = std::size(kDefaultAppOrder);
+size_t DefaultAppCount() {
+  std::vector<std::string> apps;
+
+  GetDefault(&apps);
+
+  return apps.size();
+}
 
 ExternalLoader::ExternalLoader(bool async)
     : loaded_(base::WaitableEvent::ResetPolicy::MANUAL,

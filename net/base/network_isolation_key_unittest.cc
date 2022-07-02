@@ -258,22 +258,20 @@ TEST_P(NetworkIsolationKeyTest, ToValueTransientSite) {
 }
 
 TEST_P(NetworkIsolationKeyTest, FromValueBadData) {
-  // Can't create these inline, since vector initialization lists require a
-  // copy, and base::Value has no copy operator, only move.
-  base::Value::ListStorage not_a_url_list;
-  not_a_url_list.emplace_back(base::Value("not-a-url"));
+  base::Value::List not_a_url_list;
+  not_a_url_list.Append("not-a-url");
 
-  base::Value::ListStorage transient_origin_list;
-  transient_origin_list.emplace_back(base::Value("data:text/html,transient"));
+  base::Value::List transient_origin_list;
+  transient_origin_list.Append("data:text/html,transient");
 
-  base::Value::ListStorage too_many_origins_list;
-  too_many_origins_list.emplace_back(base::Value("https://too/"));
-  too_many_origins_list.emplace_back(base::Value("https://many/"));
-  too_many_origins_list.emplace_back(base::Value("https://origins/"));
+  base::Value::List too_many_origins_list;
+  too_many_origins_list.Append("https://too/");
+  too_many_origins_list.Append("https://many/");
+  too_many_origins_list.Append("https://origins/");
 
   const base::Value kTestCases[] = {
-      base::Value(base::Value::Type::STRING),
-      base::Value(base::Value::Type::DICTIONARY),
+      base::Value(std::string()),
+      base::Value(base::Value::Dict()),
       base::Value(std::move(not_a_url_list)),
       base::Value(std::move(transient_origin_list)),
       base::Value(std::move(too_many_origins_list)),
@@ -283,6 +281,21 @@ TEST_P(NetworkIsolationKeyTest, FromValueBadData) {
     NetworkIsolationKey key;
     // Write the value on failure.
     EXPECT_FALSE(NetworkIsolationKey::FromValue(test_case, &key)) << test_case;
+  }
+
+  base::Value::List triple_key_list;
+  triple_key_list.Append("http://www.triple.com");
+  triple_key_list.Append("http://www.key.com");
+  NetworkIsolationKey key;
+  base::Value triple_key_case(std::move(triple_key_list));
+
+  // When double key is enabled top_level_site must equal frame_site.
+  bool expect_fail_on_different_sites =
+      ForceIsolationInfoFrameOriginToTopLevelFrameEnabled();
+
+  if (expect_fail_on_different_sites) {
+    EXPECT_FALSE(NetworkIsolationKey::FromValue(triple_key_case, &key))
+        << triple_key_case;
   }
 }
 

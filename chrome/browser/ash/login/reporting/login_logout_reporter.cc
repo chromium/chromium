@@ -177,7 +177,9 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
              reporter_helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
   }
-  reporter_helper_->ReportEvent(&record, ::reporting::Priority::SECURITY);
+  reporter_helper_->ReportEvent(
+      std::make_unique<LoginLogoutRecord>(std::move(record)),
+      ::reporting::Priority::SECURITY);
 }
 
 void LoginLogoutReporter::OnLogin(Profile* profile) {
@@ -244,10 +246,10 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
     return;
   }
 
-  LoginLogoutRecord record;
-  record.set_event_timestamp_sec(last_kiosk_login_failure_timestamp.value());
-  record.set_session_type(LoginLogoutSessionType::KIOSK_SESSION);
-  record.mutable_login_event()->mutable_failure();
+  auto record = std::make_unique<LoginLogoutRecord>();
+  record->set_event_timestamp_sec(last_kiosk_login_failure_timestamp.value());
+  record->set_session_type(LoginLogoutSessionType::KIOSK_SESSION);
+  record->mutable_login_event()->mutable_failure();
 
   auto enqueue_cb = base::BindOnce([](::reporting::Status status) {
     if (!status.ok()) {
@@ -267,7 +269,7 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   // Enqueue callback should run on the UI thread (current thread) to access
   // pref service.
   reporter_helper_->ReportEvent(
-      &record, ::reporting::Priority::SECURITY,
+      std::move(record), ::reporting::Priority::SECURITY,
       base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
                          std::move(enqueue_cb)));
 }

@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UTILS_H_
 
+#include <stddef.h>
 #include <string>
+#include <tuple>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
-#include "content/public/common/alternative_error_page_override_info.mojom.h"
 
 class GURL;
 class Profile;
@@ -114,9 +117,8 @@ GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
 
 // As above, but returns the extensions handled by the app as a vector of
 // strings.
-std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
-    Profile* profile,
-    const AppId& app_id);
+std::vector<std::u16string> TransformFileExtensionsForDisplay(
+    const std::set<std::string>& extensions);
 
 // Updates the approved or disallowed protocol list for the given app. If
 // necessary, it also updates the protocol registration with the OS.
@@ -159,6 +161,9 @@ AppId GetAppIdFromAppSettingsUrl(const GURL& url);
 
 // Check if |url|'s path is an installed web app.
 bool HasAppSettingsPage(Profile* profile, const GURL& url);
+
+// Returns whether `url` is in scope `scope`. False if scope is invalid.
+bool IsInScope(const GURL& url, const GURL& scope);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // The kLacrosPrimary and kWebAppsCrosapi features are each independently

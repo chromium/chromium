@@ -34,6 +34,8 @@ class DeviceSettingsAsh : public mojom::DeviceSettingsService,
   void AddDeviceSettingsObserver(
       mojo::PendingRemote<mojom::DeviceSettingsObserver> observer) override;
   void GetDevicePolicy(GetDevicePolicyCallback callback) override;
+  void GetDevicePolicyDeprecated(
+      GetDevicePolicyDeprecatedCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::DeviceSettingsService> receivers_;

@@ -2,54 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-    is: 'oobe-back-button',
+/* #js_imports_placeholder */
 
-    behaviors: [
-      OobeI18nBehavior
-    ],
+/**
+ * @polymer
+ */
+/* #export */ class OobeBackButton extends OobeBaseButton {
+  static get is() {
+    return 'oobe-back-button';
+  }
 
-    properties: {
-      disabled: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
+  /* #html_template_placeholder */
 
+  static get properties() {
+    return {
       /* The ID of the localized string to be used as button text.
        */
       textKey: {
         type: String,
         value: 'back',
       },
+    };
+  }
+}
 
-      labelForAria: {
-        type: String,
-      },
-
-      labelForAria_: {
-        type: String,
-        computed: 'ariaLabel_(labelForAria, locale, textKey)',
-      },
-    },
-
-    focus() {
-      this.$.button.focus();
-    },
-
-    /**
-     * @param {!Event} e
-     * @private
-     */
-    onClick_(e) {
-      // Just checking here. The event is propagated further.
-      assert(!this.disabled);
-    },
-
-    ariaLabel_(labelForAria, locale, textKey) {
-      if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
-        return labelForAria;
-      }
-      return this.i18n(textKey);
-    },
-  });
+customElements.define(OobeBackButton.is, OobeBackButton);

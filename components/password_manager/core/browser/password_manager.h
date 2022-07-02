@@ -314,10 +314,6 @@ class PasswordManager : public PasswordManagerInterface {
   PasswordFormManager* GetMatchedManager(PasswordManagerDriver* driver,
                                          autofill::FormRendererId form_id);
 
-  // Log a frame (main frame, iframe) of a submitted password form.
-  void ReportSubmittedFormFrameMetric(const PasswordManagerDriver* driver,
-                                      const PasswordForm& form);
-
   //  If |possible_username_.form_predictions| is missing, this functions tries
   //  to find predictions for the form which contains |possible_username_| in
   //  |predictions_|.

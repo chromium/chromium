@@ -27,7 +27,7 @@
 
 namespace {
 
-// Returns the popup row containing the |url| as suggestion.
+// Returns the popup row containing the `url` as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   NSString* urlString = base::SysUTF8ToNSString(url.GetContent());
   id<GREYMatcher> URLMatcher =
@@ -40,7 +40,7 @@ id<GREYMatcher> PopupRowWithUrl(GURL url) {
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
-// Returns the switch to open tab element for the |url|.
+// Returns the switch to open tab element for the `url`.
 id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
       grey_ancestor(PopupRowWithUrl(url)),
@@ -193,19 +193,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the switch to open tab button isn't displayed for the current tab.
 // TODO(crbug.com/1128463): Test is flaky on simulators.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testNotSwitchButtonOnCurrentTab \
-  DISABLED_testNotSwitchButtonOnCurrentTab
-#else
-#define MAYBE_testNotSwitchButtonOnCurrentTab testNotSwitchButtonOnCurrentTab
-#endif
-- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
+// TODO(crbug.com/1339419): Test fails on device.
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
+- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   GURL URL2 = self.testServer->GetURL(kPage2URL);
 
   // Open the first page.
@@ -469,7 +459,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad disabled.
-- (void)testScrollingDismissesKeyboardOnPhones {
+// TODO(crbug.com/1327755): Test is flaky
+- (void)DISABLED_testScrollingDismissesKeyboardOnPhones {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
                                   disabled:{kEnableSuggestionsScrollingOnIPad}
@@ -520,7 +511,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad enabled.
-- (void)testScrollingDismissesKeyboard {
+// TODO(crbug.com/1327755): Test is flaky.
+- (void)DISABLED_testScrollingDismissesKeyboard {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
                                   disabled:{}
@@ -608,13 +600,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // TODO(crbug.com/1322120): Reenable this test.
-- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
+- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   if (@available(iOS 15, *)) {
-    [super MAYBE_testNotSwitchButtonOnCurrentTab];
+    [super DISABLED_testNotSwitchButtonOnCurrentTab];
   } else {
     EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
   }
 }
+
 - (void)testSwitchToClosedTab {
   // TODO(crbug.com/1315304): Reenable this test
   EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
@@ -637,7 +630,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }
@@ -658,7 +651,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }

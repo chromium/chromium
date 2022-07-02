@@ -23,28 +23,24 @@ class CORE_EXPORT ContainerQueryParser {
   explicit ContainerQueryParser(const CSSParserContext&);
 
   // https://drafts.csswg.org/css-contain-3/#typedef-container-query
-  std::unique_ptr<MediaQueryExpNode> ParseQuery(String);
-  std::unique_ptr<MediaQueryExpNode> ParseQuery(CSSParserTokenRange);
+  const MediaQueryExpNode* ParseQuery(String);
+  const MediaQueryExpNode* ParseQuery(CSSParserTokenRange);
 
  private:
   friend class ContainerQueryParserTest;
 
   using FeatureSet = MediaQueryParser::FeatureSet;
 
-  std::unique_ptr<MediaQueryExpNode> ConsumeContainerQuery(
-      CSSParserTokenRange&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeContainerCondition(
-      CSSParserTokenRange&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeatureQuery(CSSParserTokenRange&,
-                                                         const FeatureSet&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeatureQueryInParens(
-      CSSParserTokenRange&,
-      const FeatureSet&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeatureCondition(
-      CSSParserTokenRange&,
-      const FeatureSet&);
-  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&,
-                                                    const FeatureSet&);
+  const MediaQueryExpNode* ConsumeContainerQuery(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeContainerCondition(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeFeatureQuery(CSSParserTokenRange&,
+                                               const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeatureQueryInParens(CSSParserTokenRange&,
+                                                       const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeatureCondition(CSSParserTokenRange&,
+                                                   const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenRange&,
+                                          const FeatureSet&);
 
   const CSSParserContext& context_;
   MediaQueryParser media_query_parser_;

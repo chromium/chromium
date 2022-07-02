@@ -13,8 +13,8 @@
 @interface TOSViewController : UIViewController
 
 // Initiates a TOSViewController with
-// |TOSView| UIView with ToS page in it;
-// |handler| to handle user action.
+// `TOSView` UIView with ToS page in it;
+// `handler` to handle user action.
 - (instancetype)initWithContentView:(UIView*)TOSView
                             handler:(id<TOSCommands>)handler;
 

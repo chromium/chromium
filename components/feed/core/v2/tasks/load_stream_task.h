@@ -69,7 +69,7 @@ class LoadStreamTask : public offline_pages::Task {
     // Age of content loaded from local storage. Zero if none was loaded.
     base::TimeDelta stored_content_age;
     // Set of content IDs present in the feed.
-    ContentIdSet content_ids;
+    ContentHashSet content_ids;
     LoadType load_type = LoadType::kInitialLoad;
     std::unique_ptr<StreamModelUpdateRequest> update_request;
     absl::optional<RequestSchedule> request_schedule;
@@ -130,7 +130,7 @@ class LoadStreamTask : public offline_pages::Task {
   absl::optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
   base::TimeDelta stored_content_age_;
-  ContentIdSet content_ids_;
+  ContentHashSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   absl::optional<RequestSchedule> request_schedule_;

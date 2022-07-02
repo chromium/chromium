@@ -109,9 +109,7 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 }
 
 bool ShouldCreateVirtualCard(const CreditCard* card) {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableMerchantBoundVirtualCards) &&
-         card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
+  return card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
 }
 
 const CreditCard* UnwrapCardOrVirtualCard(
@@ -126,9 +124,9 @@ PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   DCHECK(data);
   DCHECK(data->IsPromoCodeOffer());
 
-  std::u16string promo_code = base::ASCIIToUTF16(data->promo_code);
+  std::u16string promo_code = base::ASCIIToUTF16(data->GetPromoCode());
   std::u16string details_text =
-      base::ASCIIToUTF16(data->display_strings.value_prop_text);
+      base::ASCIIToUTF16(data->GetDisplayStrings().value_prop_text);
   PromoCodeInfo promo_code_info(promo_code, details_text);
 
   return promo_code_info;
@@ -479,9 +477,7 @@ AutofillManager* CreditCardAccessoryControllerImpl::GetManager() const {
     return af_manager_for_testing_;
   ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
       GetWebContents().GetFocusedFrame());
-  return driver
-             ? static_cast<BrowserAutofillManager*>(driver->autofill_manager())
-             : nullptr;
+  return driver ? driver->autofill_manager() : nullptr;
 }
 
 content::WebContents& CreditCardAccessoryControllerImpl::GetWebContents()

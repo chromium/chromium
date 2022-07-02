@@ -118,6 +118,14 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // that are baked in PaintOffsetTranslations since we entered the
     // fragmentainer.
     PhysicalOffset paint_offset_for_oof_in_fragmentainer;
+
+    // The fragmentainer index of the nearest ancestor that participates in
+    // block fragmentation. This is updated as we update properties for an
+    // object that participates in block fragmentation. If we enter monolithic
+    // content (legacy or NG), the index will be kept and inherited down the
+    // tree, so that we eventually set the correct "NG" fragment index in the
+    // FragmentData object, rather than using a bogus legacy flow-thread offset.
+    wtf_size_t fragmentainer_idx = WTF::kNotFound;
   };
 
   ContainingBlockContext current;
@@ -199,8 +207,10 @@ struct PaintPropertyTreeBuilderContext final {
   PhysicalRect repeating_table_section_bounding_box;
 
 #if DCHECK_IS_ON()
-  // When DCHECK_IS_ON() we create PaintPropertyTreeBuilderContext even if not
-  // needed. See find_paint_offset_needing_update.h.
+  // When DCHECK_IS_ON() and RuntimeEnabledFeatures::
+  // PaintUnderInvalidationCheckingEnabled(), we create
+  // PaintPropertyTreeBuilderContext even if not needed.
+  // See PrePaintTreeWalkContext constructor.
   bool is_actually_needed = true;
 #endif
 
@@ -271,13 +281,16 @@ struct NGPrePaintInfo {
                  wtf_size_t fragmentainer_idx,
                  bool is_first_for_node,
                  bool is_last_for_node,
-                 bool is_inside_fragment_child)
+                 bool is_inside_fragment_child,
+                 bool fragmentainer_is_oof_containing_block)
       : box_fragment(box_fragment),
         paint_offset(paint_offset),
         fragmentainer_idx(fragmentainer_idx),
         is_first_for_node(is_first_for_node),
         is_last_for_node(is_last_for_node),
-        is_inside_fragment_child(is_inside_fragment_child) {}
+        is_inside_fragment_child(is_inside_fragment_child),
+        fragmentainer_is_oof_containing_block(
+            fragmentainer_is_oof_containing_block) {}
 
   // The fragment for the LayoutObject currently being processed, or, in the
   // case of text and non-atomic inlines: the fragment of the containing block.
@@ -293,6 +306,14 @@ struct NGPrePaintInfo {
   // currently being processed. Otherwise, |box_fragment| is a fragment for the
   // LayoutObject itself.
   bool is_inside_fragment_child;
+
+  // Due to how out-of-flow layout inside fragmentation works, if an out-of-flow
+  // positioned element is contained by something that's part of a fragmentation
+  // context (e.g. abspos in relpos in multicol) the containing block (as far as
+  // NG layout is concerned) is a fragmentainer, not the relpos. Then this flag
+  // is true. It's false if the containing block doesn't participate in block
+  // fragmentation, e.g. if we're inside monolithic content.
+  bool fragmentainer_is_oof_containing_block;
 };
 
 struct PaintPropertiesChangeInfo {
@@ -361,7 +382,6 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE void InitSingleFragmentFromParent(bool needs_paint_properties);
   ALWAYS_INLINE bool ObjectTypeMightNeedMultipleFragmentData() const;
   ALWAYS_INLINE bool ObjectTypeMightNeedPaintProperties() const;
-  ALWAYS_INLINE void UpdateCompositedLayerPaginationOffset();
   ALWAYS_INLINE PaintPropertyTreeBuilderFragmentContext
   ContextForFragment(const absl::optional<PhysicalRect>& fragment_clip,
                      LayoutUnit logical_top_in_flow_thread) const;

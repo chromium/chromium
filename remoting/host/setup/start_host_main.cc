@@ -18,7 +18,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
-#include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -247,8 +246,6 @@ int StartHostMain(int argc, char** argv) {
       new remoting::URLRequestContextGetter(io_thread.task_runner()));
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
       url_request_context_getter);
-
-  net::URLFetcher::SetIgnoreCertificateRequests(true);
 
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(HostStarter::Create(

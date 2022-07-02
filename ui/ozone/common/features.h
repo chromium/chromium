@@ -11,9 +11,11 @@ namespace ui {
 
 extern const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates;
 extern const base::Feature kWaylandOverlayDelegation;
+extern const base::Feature kPrettyPrintDrmModesetConfigLogs;
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
+bool IsPrettyPrintDrmModesetConfigLogsEnabled();
 
 }  // namespace ui
 

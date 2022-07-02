@@ -44,8 +44,6 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       {"title", IDS_WHATS_NEW_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddBoolean("showFeedbackButton",
-                     features::kChromeWhatsNewUIFeedbackButton.Get());
 
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(
@@ -93,8 +91,8 @@ void WhatsNewUI::BindInterface(
 void WhatsNewUI::CreateBrowserCommandHandler(
     mojo::PendingReceiver<browser_command::mojom::CommandHandler>
         pending_handler) {
-  std::vector<browser_command::mojom::Command> supported_commands = {
-      browser_command::mojom::Command::kOpenFeedbackForm};
+  // No supported commands for M104 only. New command to be added for M106.
+  std::vector<browser_command::mojom::Command> supported_commands = {};
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
   command_handler_->ConfigureFeedbackCommand(

@@ -107,6 +107,25 @@ source_set("sync") {
   ]
 }
 
+source_set("sync_error_browser_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "sync_error_browser_agent.h",
+    "sync_error_browser_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

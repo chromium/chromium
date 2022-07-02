@@ -26,6 +26,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
+#include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -68,6 +69,8 @@ class DownloadController : public DownloadControllerBase {
   using AcquirePermissionCallback =
       base::OnceCallback<void(bool, const std::string&)>;
 
+  DownloadCallbackValidator* validator() { return &validator_; }
+
  private:
   friend struct base::DefaultSingletonTraits<DownloadController>;
   DownloadController();
@@ -108,6 +111,8 @@ class DownloadController : public DownloadControllerBase {
   // strong validators change after resumption starts, the download will restart
   // from the beginning and all downloaded data will be lost.
   StrongValidatorsMap strong_validators_map_;
+
+  DownloadCallbackValidator validator_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
 };

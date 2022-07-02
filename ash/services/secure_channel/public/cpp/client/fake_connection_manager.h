@@ -11,6 +11,8 @@
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -50,6 +52,8 @@ class FakeConnectionManager : public ConnectionManager {
       base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
+  void GetHostLastSeenTimestamp(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
   Status status_;
   std::vector<std::string> sent_messages_;

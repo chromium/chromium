@@ -32,16 +32,16 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
-    if (name == "bookmark_details") {
-      signin::ClearPrimaryAccount(identity_manager);
-    } else {
-      constexpr char kTestUserEmail[] = "testuser@gtest.com";
-      signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail,
-                                          signin::ConsentLevel::kSync);
-    }
+
+    signin::ConsentLevel consent_level = (name == "bookmark_details_synced_off")
+                                             ? signin::ConsentLevel::kSignin
+                                             : signin::ConsentLevel::kSync;
+    constexpr char kTestUserEmail[] = "testuser@gtest.com";
+    signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail,
+                                        consent_level);
 #endif
 
     const GURL url = GURL("https://www.google.com");
@@ -57,15 +57,15 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
   }
 };
 
-// ChromeOS is always signed in.
-#if !BUILDFLAG(IS_CHROMEOS)
+// Ash always has sync ON
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       InvokeUi_bookmark_details) {
+                       InvokeUi_bookmark_details_synced_off) {
   ShowAndVerifyUi();
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
-                       InvokeUi_bookmark_details_signed_in) {
+                       InvokeUi_bookmark_details_synced_on) {
   ShowAndVerifyUi();
 }

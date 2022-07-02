@@ -27,6 +27,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     private final HeaderView mHeader;
     private final RecyclerView mRecyclerView;
     private final BaseCarouselSuggestionSelectionManager mSelectionManager;
+    private int mItemSpacingPx;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -64,15 +65,12 @@ public class BaseCarouselSuggestionView extends LinearLayout {
                 new BaseCarouselSuggestionSelectionManager(mRecyclerView.getLayoutManager());
         mRecyclerView.addOnChildAttachStateChangeListener(mSelectionManager);
 
-        final int itemSpacing = context.getResources().getDimensionPixelOffset(
-                R.dimen.omnibox_suggestion_carousel_horizontal_spacing);
-
         mRecyclerView.addItemDecoration(new ItemDecoration() {
             @Override
             public void getItemOffsets(
                     Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.left = itemSpacing;
-                outRect.right = itemSpacing;
+                outRect.left = mItemSpacingPx;
+                outRect.right = mItemSpacingPx;
             }
         });
 
@@ -122,5 +120,15 @@ public class BaseCarouselSuggestionView extends LinearLayout {
     /** @return Recycler view used by the Carousel suggestion. */
     public RecyclerView getRecyclerViewForTest() {
         return mRecyclerView;
+    }
+
+    /**
+     * Applies a new item spacing to the carousel.
+     *
+     * @param itemSpacingPx The requested item spacing, expressed in Pixels.
+     */
+    public void setItemSpacingPx(int itemSpacingPx) {
+        mItemSpacingPx = itemSpacingPx;
+        mRecyclerView.requestLayout();
     }
 }

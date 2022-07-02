@@ -14,7 +14,6 @@
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/scoped_vpx_codec.h"
 #include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 
 typedef struct vpx_image vpx_image_t;
@@ -35,12 +34,6 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP8();
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP9();
 
-  // Checks the support for the specified protocol.
-  static bool IsSupportedByVP8(
-      const WebrtcVideoEncoderSelector::Profile& profile);
-  static bool IsSupportedByVP9(
-      const WebrtcVideoEncoderSelector::Profile& profile);
-
   WebrtcVideoEncoderVpx(const WebrtcVideoEncoderVpx&) = delete;
   WebrtcVideoEncoderVpx& operator=(const WebrtcVideoEncoderVpx&) = delete;
 
@@ -51,6 +44,7 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // WebrtcVideoEncoder interface.
   void SetLosslessEncode(bool want_lossless) override;
   void SetLosslessColor(bool want_lossless) override;
+  void SetEncoderSpeed(int encoder_speed) override;
   void Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
               const FrameParams& params,
               EncodeCallback done) override;
@@ -84,10 +78,11 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // True if the encoder is for VP9, false for VP8.
   const bool use_vp9_;
 
-  // Options controlling VP9 encode quantization and color space.
-  // These are always off (false) for VP8.
+  // Options controlling VP9 encode quantization, color space, and speed.
+  // These are not used when configuring VP8.
   bool lossless_encode_ = false;
   bool lossless_color_ = false;
+  int vp9_encoder_speed_ = -1;
 
   // Holds the initialized & configured codec.
   ScopedVpxCodec codec_;
@@ -97,9 +92,12 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // Used to generate zero-based frame timestamps.
   base::TimeTicks timestamp_base_;
 
-  // VPX image and buffer to hold the actual YUV planes.
-  std::unique_ptr<vpx_image_t> image_;
-  std::unique_ptr<uint8_t[]> image_buffer_;
+  // vpx_image_t has a custom deallocator which needs to be called before
+  // deletion.
+  using scoped_vpx_image = std::unique_ptr<vpx_image_t, void (*)(vpx_image_t*)>;
+
+  // VPX image descriptor and pixel buffer.
+  scoped_vpx_image image_;
 
   // Active map used to optimize out processing of un-changed macroblocks.
   std::unique_ptr<uint8_t[]> active_map_;

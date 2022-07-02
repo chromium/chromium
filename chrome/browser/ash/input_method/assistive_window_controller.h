@@ -46,7 +46,6 @@ class AssistiveWindowController : public views::WidgetObserver,
   ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting();
   ui::ime::UndoWindow* GetUndoWindowForTesting() const;
 
- private:
   // IMEAssistiveWindowHandlerInterface implementation.
   void SetBounds(const Bounds& bounds) override;
   void SetAssistiveWindowProperties(
@@ -66,7 +65,11 @@ class AssistiveWindowController : public views::WidgetObserver,
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;
 
-  void InitSuggestionWindow();
+ private:
+  ui::ime::SuggestionWindowView::Orientation WindowOrientationFor(
+      ui::ime::AssistiveWindowType window_type);
+  void InitSuggestionWindow(
+      ui::ime::SuggestionWindowView::Orientation orientation);
   void InitUndoWindow();
   void InitGrammarSuggestionWindow();
   void InitAccessibilityView();

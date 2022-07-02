@@ -213,7 +213,9 @@ InspectorDOMDebuggerAgent::InspectorDOMDebuggerAgent(
       pause_on_all_xhrs_(&agent_state_, /*default_value=*/false),
       xhr_breakpoints_(&agent_state_, /*default_value=*/false),
       event_listener_breakpoints_(&agent_state_, /*default_value*/ false),
-      csp_violation_breakpoints_(&agent_state_, /*default_value*/ false) {}
+      csp_violation_breakpoints_(&agent_state_, /*default_value*/ false) {
+  DCHECK(dom_agent);
+}
 
 InspectorDOMDebuggerAgent::~InspectorDOMDebuggerAgent() = default;
 

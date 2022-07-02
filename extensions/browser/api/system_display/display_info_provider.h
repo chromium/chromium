@@ -12,11 +12,13 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
 class Display;
+class Screen;
 }
 
 namespace extensions {
@@ -118,7 +120,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
                              ErrorCallback callback);
 
  protected:
-  DisplayInfoProvider();
+  explicit DisplayInfoProvider(display::Screen* screen = nullptr);
 
   // Trigger OnDisplayChangedEvent
   void DispatchOnDisplayChangedEvent();
@@ -141,6 +143,8 @@ class DisplayInfoProvider : public display::DisplayObserver {
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+
+  const raw_ptr<display::Screen> screen_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };

@@ -39,6 +39,11 @@ class StubInputController : public InputController {
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override {}
   void SetCurrentLayoutByName(const std::string& layout_name) override {}
+  void SetKeyboardKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
+  std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
+    return std::vector<uint64_t>();
+  }
   void SetTouchEventLoggingEnabled(bool enabled) override {
     NOTIMPLEMENTED_LOG_ONCE();
   }
@@ -59,6 +64,11 @@ class StubInputController : public InputController {
   void SetPointingStickSensitivity(int value) override {}
   void SetPointingStickPrimaryButtonRight(bool right) override {}
   void SetPointingStickAcceleration(bool enabled) override {}
+  void SetGamepadKeyBitsMapping(
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
+  std::vector<uint64_t> GetGamepadKeyBits(int id) override {
+    return std::vector<uint64_t>();
+  }
   void SetTouchpadAcceleration(bool enabled) override {}
   void SetTouchpadScrollAcceleration(bool enabled) override {}
   void SetTouchpadHapticFeedback(bool enabled) override {}

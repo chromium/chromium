@@ -77,7 +77,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 // Download Manager UI has 2 rows. First row is always visible and contains
 // essential download controls: close button, action button and status label.
 // Second row is hidden by default and constains Install Google Drive button.
-// The second row is visible if |_installDriveButtonVisible| is set to YES.
+// The second row is visible if `_installDriveButtonVisible` is set to YES.
 // Each row is a UIView with controls as subviews, which allows to:
 //   - vertically align all controls in the row
 //   - hide all controls in a row altogether
@@ -627,7 +627,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 // Updates and activates self.bottomMarginGuideTopConstraint.
 // self.bottomMarginGuideTopConstraint constraints kBottomMarginGuide's
-// topAnchor to installDriveControlsRow's bottom if |_installDriveButtonVisible|
+// topAnchor to installDriveControlsRow's bottom if `_installDriveButtonVisible`
 // is set to YES, otherwise self.view.bottomAnchor is constrained to
 // downloadControlsRow's bottom. This resizes self.view to show or hide
 // installDriveControlsRow view.
@@ -717,7 +717,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   [self.stateSymbol setState:_state];
 }
 
-// Updates status label text depending on |state|.
+// Updates status label text depending on `state`.
 - (void)updateStatusLabel {
   NSString* statusText = nil;
   switch (_state) {
@@ -759,7 +759,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   self.statusLabel.text = statusText;
 }
 
-// Updates title and hidden state for action button depending on |state|.
+// Updates title and hidden state for action button depending on `state`.
 - (void)updateActionButton {
   NSString* title = nil;
   switch (_state) {

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/media/video_capture_device_launch_observer.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/screenlock_observer.h"
 #include "media/base/video_facing.h"
 #include "media/capture/video/video_capture_device.h"
@@ -40,7 +41,6 @@
 namespace content {
 class VideoCaptureController;
 class VideoCaptureControllerEventHandler;
-class ScreenlockMonitor;
 
 // VideoCaptureManager is used to open/close, start/stop, enumerate available
 // video capture devices, and manage VideoCaptureController's.
@@ -58,10 +58,13 @@ class CONTENT_EXPORT VideoCaptureManager
   using DoneCB =
       base::OnceCallback<void(const base::WeakPtr<VideoCaptureController>&)>;
 
+  using SetDesktopCaptureWindowIdCallback = base::RepeatingCallback<void(
+      const media::VideoCaptureSessionId& session_id,
+      gfx::NativeViewId window_id)>;
+
   explicit VideoCaptureManager(
       std::unique_ptr<VideoCaptureProvider> video_capture_provider,
-      base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
-      ScreenlockMonitor* monitor = nullptr);
+      base::RepeatingCallback<void(const std::string&)> emit_log_message_cb);
 
   VideoCaptureManager(const VideoCaptureManager&) = delete;
   VideoCaptureManager& operator=(const VideoCaptureManager&) = delete;
@@ -178,6 +181,12 @@ class CONTENT_EXPORT VideoCaptureManager
       blink::mojom::MediaStreamType stream_type,
       const std::string& device_id);
 
+  // If there is a capture session associated with |session_id|, and the
+  // captured entity a tab, return the GlobalRoutingID of the captured tab.
+  // Otherwise, returns an empty GlobalRoutingID.
+  GlobalRoutingID GetGlobalRoutingID(
+      const base::UnguessableToken& session_id) const;
+
   // Sets the platform-dependent window ID for the desktop capture notification
   // UI for the given session.
   void SetDesktopCaptureWindowId(const media::VideoCaptureSessionId& session_id,
@@ -218,6 +227,11 @@ class CONTENT_EXPORT VideoCaptureManager
     idle_close_timeout_ = timeout;
   }
 
+  void set_desktop_capture_window_id_callback_for_testing(
+      SetDesktopCaptureWindowIdCallback callback) {
+    set_desktop_capture_window_id_callback_for_testing_ = callback;
+  }
+
  private:
   class CaptureDeviceStartRequest;
 
@@ -251,7 +265,7 @@ class CONTENT_EXPORT VideoCaptureManager
   // |device_id| and |type| (if it is already opened), by its |controller| or by
   // its |serial_id|. In all cases, if not found, nullptr is returned.
   VideoCaptureController* LookupControllerBySessionId(
-      const base::UnguessableToken& session_id);
+      const base::UnguessableToken& session_id) const;
   VideoCaptureController* LookupControllerByMediaTypeAndDeviceId(
       blink::mojom::MediaStreamType type,
       const std::string& device_id) const;
@@ -330,7 +344,6 @@ class CONTENT_EXPORT VideoCaptureManager
 
   const std::unique_ptr<VideoCaptureProvider> video_capture_provider_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
-  raw_ptr<ScreenlockMonitor> screenlock_monitor_;
 
   base::ObserverList<media::VideoCaptureObserver>::Unchecked capture_observers_;
 
@@ -347,6 +360,9 @@ class CONTENT_EXPORT VideoCaptureManager
   // chosen based on UMA metrics. See https://crbug.com/1163105#c28
   base::TimeDelta idle_close_timeout_ = base::Seconds(15);
   base::OneShotTimer idle_close_timer_;
+
+  SetDesktopCaptureWindowIdCallback
+      set_desktop_capture_window_id_callback_for_testing_;
 };
 
 }  // namespace content

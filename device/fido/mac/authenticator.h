@@ -18,12 +18,7 @@
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/operation.h"
 
-namespace device {
-
-class DiscoverableCredentialMetadata;
-
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 struct AuthenticatorConfig;
 
@@ -36,7 +31,7 @@ struct AuthenticatorConfig;
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
     : public FidoAuthenticator {
  public:
-  // IsAvailable runs |callback| with a bool incidating whether the
+  // IsAvailable runs |callback| with a bool indicating whether the
   // authenticator is available, i.e. whether the device has a Secure Enclave
   // and the current binary carries a keychain-access-groups entitlement that
   // matches the one set in |config|.
@@ -53,13 +48,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
 
   ~TouchIdAuthenticator() override;
 
-  bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request) const;
-
-  std::vector<DiscoverableCredentialMetadata> GetResidentCredentialsForRequest(
-      const CtapGetAssertionRequest& request) const;
-
-  // FidoAuthenticator
+  // FidoAuthenticator:
   void InitializeAuthenticator(base::OnceClosure callback) override;
   void MakeCredential(CtapMakeCredentialRequest request,
                       MakeCredentialOptions options,
@@ -68,6 +57,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
   void GetNextAssertion(GetAssertionCallback callback) override;
+  void GetCredentialInformationForRequest(
+      const CtapGetAssertionRequest& request,
+      GetCredentialInformationForRequestCallback callback) override;
   void Cancel() override;
   Type GetType() const override;
   std::string GetId() const override;
@@ -90,8 +82,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   base::WeakPtrFactory<TouchIdAuthenticator> weak_factory_;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_AUTHENTICATOR_H_

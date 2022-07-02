@@ -45,18 +45,18 @@ const base::Feature kForceDisableExtendedSyncPromos{
     "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Decouples signing out from clearing browsing data on Android. Users are
+// no longer signed-out when they clear browsing data. Instead they may
+// choose to sign out separately by pressing another button.
+const base::Feature kEnableCbdSignOut{"EnableCbdSignOut",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTangibleSync{"TangibleSync",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Allows local (not signed-in) profiles on lacros.
-const base::Feature kLacrosNonSyncingProfiles{"LacrosNonSyncingProfiles",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 }  // namespace switches

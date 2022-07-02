@@ -132,7 +132,7 @@ void DownloadItemUtils::AttachInfoForTesting(
     WebContents* web_contents) {
   DownloadItemUtils::AttachInfo(
       download_item, browser_context, web_contents,
-      web_contents ? web_contents->GetMainFrame()->GetGlobalId()
+      web_contents ? web_contents->GetPrimaryMainFrame()->GetGlobalId()
                    : GlobalRenderFrameHostId());
 }
 

@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -100,7 +100,7 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
       std::move(on_initialized_callback).Run();
     return;
   }
-  chromeos::CryptohomeMiscClient::Get()->CheckHealth(
+  ash::CryptohomeMiscClient::Get()->CheckHealth(
       user_data_auth::CheckHealthRequest(),
       base::BindOnce(OnCryptohomeCheckHealth,
                      std::move(on_initialized_callback)));
@@ -110,14 +110,14 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
 
 // static
 void PowerwashRequirementsChecker::Initialize() {
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, base::OnceClosure{}));
 }
 
 // static
 void PowerwashRequirementsChecker::InitializeSynchronouslyForTesting() {
   base::RunLoop run_loop;
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -205,7 +205,8 @@ void PowerwashRequirementsChecker::ShowNotification() {
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_TITLE),
       l10n_util::GetStringFUTF16(message_id, GetEnterpriseManager()),
       std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id),
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequest),
       std::move(rich_data), std::move(delegate), kNotificationIcon,
       kNotificationLevel);
 
@@ -242,8 +243,9 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
       l10n_util::GetStringUTF16(
           IDS_POWERWASH_REQUEST_UNDEFINED_STATE_ERROR_TITLE),
       l10n_util::GetStringUTF16(message_id), std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id), {},
-      std::move(delegate), kNotificationIcon, kNotificationLevel);
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequestError),
+      {}, std::move(delegate), kNotificationIcon, kNotificationLevel);
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       kNotificationHandlerType, notification_id);

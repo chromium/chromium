@@ -244,10 +244,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // more discussion of Linux implementation details.
   ChildProcessTerminationInfo GetChildTerminationInfo(bool known_dead);
 
-  // Gather the lifetime process metrics and save them to histograms. Call
-  // right before the process is about to go away.
-  void RecordProcessLifetimeMetrics();
-
   // Changes whether the process runs in the background or not.  Only call
   // this after the process has started.
   void SetProcessPriority(const ChildProcessLauncherPriority& priority);

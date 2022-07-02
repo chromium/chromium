@@ -9,9 +9,10 @@
 
 namespace translate {
 
-void ReportUiAction(translate::TranslateBubbleUiEvent action) {
-  UMA_HISTOGRAM_ENUMERATION("Translate.BubbleUiEvent", action,
-                            translate::TRANSLATE_BUBBLE_UI_EVENT_MAX);
+void ReportTranslateBubbleUiAction(translate::TranslateBubbleUiEvent action) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kTranslateBubbleUiEventHistogramName, action,
+      translate::TranslateBubbleUiEvent::TRANSLATE_BUBBLE_UI_EVENT_MAX);
 }
 
 }  // namespace translate

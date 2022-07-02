@@ -441,8 +441,9 @@ Shell* OpenPopup(const ToRenderFrameHost& opener,
   observer.Wait();
 
   Shell* new_shell = new_shell_observer.GetShell();
-  EXPECT_EQ(url,
-            new_shell->web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(
+      url,
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   return new_shell_observer.GetShell();
 }
 

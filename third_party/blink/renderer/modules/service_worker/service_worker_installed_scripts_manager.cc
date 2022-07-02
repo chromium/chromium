@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,7 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -52,7 +52,7 @@ class Receiver {
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                  std::move(task_runner)),
         remaining_bytes_(total_bytes) {
-    data_.ReserveInitialCapacity(SafeCast<wtf_size_t>(total_bytes));
+    data_.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(total_bytes));
   }
 
   void Start(base::OnceClosure callback) {
@@ -274,7 +274,7 @@ ServiceWorkerInstalledScriptsManager::ServiceWorkerInstalledScriptsManager(
   // worker thread later, so they should keep isolated from the current thread.
   for (const WebURL& url :
        installed_scripts_manager_params->installed_scripts_urls) {
-    installed_urls_.insert(KURL(url).Copy());
+    installed_urls_.insert(KURL(url));
   }
 
   PostCrossThreadTask(

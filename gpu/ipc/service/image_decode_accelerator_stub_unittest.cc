@@ -148,6 +148,7 @@ class TestImageFactory : public ImageFactory {
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      const gfx::ColorSpace& color_space,
       gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override {
@@ -303,9 +304,9 @@ class ImageDecodeAcceleratorStubTest
 
     GpuChannel* channel = CreateChannel(kChannelId, false /* is_gpu_host */);
     ASSERT_TRUE(channel);
-    ASSERT_TRUE(channel->GetImageDecodeAcceleratorStub());
-    channel->GetImageDecodeAcceleratorStub()->SetImageFactoryForTesting(
-        &image_factory_);
+    ASSERT_TRUE(channel->GetImageDecodeAcceleratorStubForTesting());
+    channel->GetImageDecodeAcceleratorStubForTesting()
+        ->SetImageFactoryForTesting(&image_factory_);
 
     // Create a raster command buffer so that the ImageDecodeAcceleratorStub can
     // have access to a TransferBufferManager. Note that we mock the

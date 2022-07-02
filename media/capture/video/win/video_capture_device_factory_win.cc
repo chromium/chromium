@@ -125,7 +125,9 @@ const char* const kModelIdsBlockedForMediaFoundation[] = {
     // Acer Aspire f5-573g. See https://crbug.com/1034644.
     "0bda:57f2",
     // Elgato Camlink 4k
-    "0fd9:0066"};
+    "0fd9:0066",
+    // ACER Aspire VN7-571G. See https://crbug.com/1327948.
+    "04f2:b469"};
 
 // Use this list only for non-USB webcams.
 const char* const kDisplayNamesBlockedForMediaFoundation[] = {
@@ -730,7 +732,7 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation() {
   DevicesInfo devices_info;
 
   if (use_d3d11_with_media_foundation_ && !dxgi_device_manager_) {
-    dxgi_device_manager_ = DXGIDeviceManager::Create();
+    dxgi_device_manager_ = DXGIDeviceManager::Create(luid_);
   }
 
   // Recent non-RGB (depth, IR) cameras could be marked as sensor cameras in
@@ -994,6 +996,11 @@ VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
   }
 
   return formats;
+}
+
+scoped_refptr<DXGIDeviceManager>
+VideoCaptureDeviceFactoryWin::GetDxgiDeviceManager() {
+  return dxgi_device_manager_;
 }
 
 }  // namespace media

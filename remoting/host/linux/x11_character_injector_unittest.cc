@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -150,14 +151,14 @@ class X11CharacterInjectorTest : public testing::Test {
   void InjectAndRun(const std::vector<uint32_t>& code_points);
 
   std::unique_ptr<X11CharacterInjector> injector_;
-  FakeX11Keyboard* keyboard_;  // Owned by |injector_|.
+  raw_ptr<FakeX11Keyboard> keyboard_;  // Owned by |injector_|.
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 void X11CharacterInjectorTest::SetUp() {
   keyboard_ = new FakeX11Keyboard({55, 54, 53, 52, 51});
-  injector_.reset(new X11CharacterInjector(base::WrapUnique(keyboard_)));
+  injector_.reset(new X11CharacterInjector(base::WrapUnique(keyboard_.get())));
 }
 
 void X11CharacterInjectorTest::TearDown() {

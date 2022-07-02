@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -70,7 +71,7 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                          const GURL& decision_logic_url,
                          const absl::optional<GURL>& trusted_coding_signals_url,
                          const absl::optional<uint16_t> experiment_group_id,
-                         blink::mojom::AuctionAdConfigNonSharedParams&
+                         const blink::AuctionConfig::NonSharedParams&
                              auction_ad_config_non_shared_params,
                          std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
@@ -169,10 +170,9 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
     std::vector<v8::Local<v8::Value>> component_auction_vector;
     for (const auto& component_auction : component_auctions) {
       if (!AppendAuctionConfig(
-              v8_helper, context, component_auction->decision_logic_url,
-              component_auction->trusted_scoring_signals_url,
-              experiment_group_id,
-              *component_auction->auction_ad_config_non_shared_params,
+              v8_helper, context, component_auction.decision_logic_url,
+              component_auction.trusted_scoring_signals_url,
+              experiment_group_id, component_auction.non_shared_params,
               &component_auction_vector)) {
         return false;
       }
@@ -267,7 +267,7 @@ int SellerWorklet::context_group_id_for_testing() const {
 void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+    const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
@@ -284,7 +284,7 @@ void SellerWorklet::ScoreAd(
   score_ad_task->ad_metadata_json = ad_metadata_json;
   score_ad_task->bid = bid;
   score_ad_task->auction_ad_config_non_shared_params =
-      std::move(auction_ad_config_non_shared_params);
+      auction_ad_config_non_shared_params;
   score_ad_task->browser_signals_other_seller =
       std::move(browser_signals_other_seller);
   score_ad_task->browser_signal_interest_group_owner =
@@ -324,7 +324,7 @@ void SellerWorklet::SendPendingSignalsRequests() {
 }
 
 void SellerWorklet::ReportResult(
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+    const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
@@ -351,7 +351,7 @@ void SellerWorklet::ReportResult(
   auto report_result_task = report_result_tasks_.begin();
 
   report_result_task->auction_ad_config_non_shared_params =
-      std::move(auction_ad_config_non_shared_params);
+      auction_ad_config_non_shared_params;
   report_result_task->browser_signals_other_seller =
       std::move(browser_signals_other_seller);
   report_result_task->browser_signal_interest_group_owner =
@@ -426,7 +426,7 @@ void SellerWorklet::V8State::SetWorkletScript(
 void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+    const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
@@ -469,7 +469,7 @@ void SellerWorklet::V8State::ScoreAd(
 
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
                            trusted_scoring_signals_url_, experiment_group_id_,
-                           *auction_ad_config_non_shared_params, &args)) {
+                           auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*component_auction_modified_bid_params=*/nullptr,
@@ -689,7 +689,7 @@ void SellerWorklet::V8State::ScoreAd(
 }
 
 void SellerWorklet::V8State::ReportResult(
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+    const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
@@ -722,7 +722,7 @@ void SellerWorklet::V8State::ReportResult(
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
                            trusted_scoring_signals_url_, experiment_group_id_,
-                           *auction_ad_config_non_shared_params, &args)) {
+                           auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,

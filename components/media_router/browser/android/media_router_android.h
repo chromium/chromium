@@ -149,7 +149,7 @@ class MediaRouterAndroid : public MediaRouterBase {
   void OnRouteRequestError(
       const std::string& error_text,
       int route_request_id,
-      base::OnceCallback<void(RouteRequestResult::ResultCode,
+      base::OnceCallback<void(mojom::RouteRequestResultCode,
                               absl::optional<mojom::MediaRouteProviderId>)>
           callback);
 

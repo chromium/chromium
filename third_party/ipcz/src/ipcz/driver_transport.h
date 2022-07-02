@@ -19,7 +19,7 @@
 
 namespace ipcz {
 
-class Node;
+class Message;
 
 // Encapsulates shared ownership of a transport endpoint created by an ipcz
 // driver. The driver calls into this object to notify ipcz of incoming messages
@@ -29,32 +29,29 @@ class DriverTransport
     : public APIObjectImpl<DriverTransport, APIObject::kTransport> {
  public:
   using Pair = std::pair<Ref<DriverTransport>, Ref<DriverTransport>>;
-  using Data = absl::Span<const uint8_t>;
 
-  // A view into a transport message. Does not own the underlying data or
-  // handles.
-  struct Message {
-    explicit Message(Data data);
-    Message(Data data, absl::Span<const IpczDriverHandle> handles);
-    Message(const Message&);
-    Message& operator=(const Message&);
-    ~Message();
-
-    Data data;
+  // A view into the unowned raw contents of an incoming transport message.
+  struct RawMessage {
+    absl::Span<const uint8_t> data;
     absl::Span<const IpczDriverHandle> handles;
   };
 
   // A Listener to receive message and error events from the driver.
-  class Listener {
+  class Listener : public RefCounted {
    public:
-    virtual ~Listener() = default;
+    ~Listener() override = default;
 
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
-    virtual IpczResult OnTransportMessage(const Message& message) = 0;
+    virtual bool OnTransportMessage(const RawMessage& message,
+                                    const DriverTransport& transport) = 0;
 
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
+
+    // Indicates that dectivation has been completed by the driver, meaning that
+    // no further methods will be invoked on this Listener.
+    virtual void OnTransportDeactivated() {}
   };
 
   // Constructs a new DriverTransport object over the driver-created transport
@@ -64,8 +61,8 @@ class DriverTransport
   // Set the object handling any incoming message or error notifications. This
   // is only safe to set before Activate() is called, or from within one of the
   // Listener methods when invoked by this DriverTransport (because invocations
-  // are mutually exclusive). `listener` must outlive this DriverTransport.
-  void set_listener(Listener* listener) { listener_ = listener; }
+  // are mutually exclusive).
+  void set_listener(Ref<Listener> listener) { listener_ = std::move(listener); }
 
   // Exposes the underlying driver handle for this transport.
   const DriverObject& driver_object() const { return transport_; }
@@ -94,26 +91,19 @@ class DriverTransport
   // reactivated.
   IpczResult Deactivate();
 
-  // Asks the driver to submit the data and driver objects in `message` for
-  // transmission from this transport endpoint to the opposite endpoint.
-  IpczResult TransmitMessage(const Message& message);
-
-  // Templated helper for transmitting macro-generated ipcz messages. This
-  // performs any necessary in-place serialization of driver objects before
-  // transmitting.
-  template <typename T>
-  IpczResult Transmit(T& message) {
-    if (!message.Serialize(*this)) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-    return TransmitMessage(
-        Message(message.data_view(), message.transmissible_driver_handles()));
-  }
+  // Helper for transmitting macro-generated ipcz messages. This performs any
+  // necessary in-place serialization of driver objects before transmitting,
+  // hence it takes a mutable reference to `message`.
+  IpczResult Transmit(Message& message);
 
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.
-  IpczResult Notify(const Message& message);
+  bool Notify(const RawMessage& message);
   void NotifyError();
+
+  // Invoked once the driver has finalized deactivation of this transport, as
+  // previously requested by a call to Deactivate().
+  void NotifyDeactivated();
 
   // APIObject:
   IpczResult Close() override;
@@ -123,7 +113,7 @@ class DriverTransport
 
   DriverObject transport_;
 
-  Listener* listener_ = nullptr;
+  Ref<Listener> listener_;
 };
 
 }  // namespace ipcz

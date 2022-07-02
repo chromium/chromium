@@ -7,22 +7,20 @@
  * 'crostini-extra-containers' is the settings extras containers subpage for
  * Crostini.
  */
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_extra_containers_create_dialog.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {hexColorToSkColor} from '//resources/js/color_utils.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-
-import {ContainerId, ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -44,7 +42,6 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
   static get properties() {
     return {
-
       showCreateContainerDialog_: {
         type: Boolean,
         value: false,
@@ -52,7 +49,10 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
       allContainers_: {
         type: Array,
-        value: [],
+        notify: true,
+        value() {
+          return [];
+        },
       },
 
       lastMenuContainerInfo_: {
@@ -93,6 +93,9 @@ class ExtraContainersElement extends ExtraContainersElementBase {
      * @private {?ContainerInfo}
      */
     this.lastMenuContainerInfo_ = null;
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -100,7 +103,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     super.ready();
     this.addWebUIListener(
         'crostini-container-info', (infos) => this.onContainerInfo_(infos));
-    CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();
+    this.browserProxy_.requestContainerInfo();
   }
 
   /** @override */
@@ -115,16 +118,15 @@ class ExtraContainersElement extends ExtraContainersElementBase {
           this.installerShowing_ = installerShowing;
         });
 
-    CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniExportImportOperationStatus();
-    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
+    this.browserProxy_.requestCrostiniExportImportOperationStatus();
+    this.browserProxy_.requestCrostiniInstallerStatus();
   }
 
   /**
    * @param {!Array<!ContainerInfo>} containerInfos
    */
   onContainerInfo_(containerInfos) {
-    this.allContainers_ = containerInfos;
+    this.set('allContainers_', containerInfos);
   }
 
   /**
@@ -149,7 +151,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onContainerMenuClick_(event) {
     const id =
-        /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);
+        /** @type {GuestId} */ (event.currentTarget['dataContainerId']);
     this.lastMenuContainerInfo_ = this.allContainers_.find(
         e => e.id.vm_name === id.vm_name &&
             e.id.container_name === id.container_name);
@@ -162,8 +164,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onDeleteContainerClick_(event) {
     if (this.lastMenuContainerInfo_) {
-      CrostiniBrowserProxyImpl.getInstance().deleteContainer(
-          this.lastMenuContainerInfo_.id);
+      this.browserProxy_.deleteContainer(this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
   }
@@ -174,8 +175,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onStopContainerClick_(event) {
     if (this.lastMenuContainerInfo_) {
-      CrostiniBrowserProxyImpl.getInstance().stopContainer(
-          this.lastMenuContainerInfo_.id);
+      this.browserProxy_.stopContainer(this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
   }
@@ -186,7 +186,19 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onExportContainerClick_(event) {
     if (this.lastMenuContainerInfo_) {
-      CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer(
+      this.browserProxy_.exportCrostiniContainer(
+          this.lastMenuContainerInfo_.id);
+    }
+    this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onImportContainerClick_(event) {
+    if (this.lastMenuContainerInfo_) {
+      this.browserProxy_.importCrostiniContainer(
           this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
@@ -198,9 +210,9 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    */
   onContainerColorChange_(event) {
     const containerId =
-        /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);
+        /** @type {GuestId} */ (event.currentTarget['dataContainerId']);
 
-    CrostiniBrowserProxyImpl.getInstance().setContainerBadgeColor(
+    this.browserProxy_.setContainerBadgeColor(
         containerId, hexColorToSkColor(event.target.value));
   }
 

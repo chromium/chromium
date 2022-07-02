@@ -22,11 +22,11 @@ namespace {
 // provided to ContainerChanged, since there are multiple sources of
 // applied containment (e.g. the 'contain' property itself).
 PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
-  LogicalAxes axes(kLogicalAxisNone);
+  LogicalAxes axes = kLogicalAxisNone;
   if (style.ContainerType() & kContainerTypeInlineSize)
-    axes |= LogicalAxes(kLogicalAxisInline);
+    axes |= kLogicalAxisInline;
   if (style.ContainerType() & kContainerTypeBlockSize)
-    axes |= LogicalAxes(kLogicalAxisBlock);
+    axes |= kLogicalAxisBlock;
   return ToPhysicalAxes(axes, style.GetWritingMode());
 }
 
@@ -52,14 +52,10 @@ bool Matches(const ComputedStyle& style,
 
 // static
 Element* ContainerQueryEvaluator::FindContainer(
-    const StyleRecalcContext& context,
+    Element* context_element,
     const ContainerSelector& container_selector) {
-  Element* container = context.container;
-  if (!container)
-    return nullptr;
-
   // TODO(crbug.com/1213888): Cache results.
-  for (Element* element = container; element;
+  for (Element* element = context_element; element;
        element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->IsContainerForSizeContainerQueries() &&
@@ -75,7 +71,7 @@ Element* ContainerQueryEvaluator::FindContainer(
 bool ContainerQueryEvaluator::EvalAndAdd(const StyleRecalcContext& context,
                                          const ContainerQuery& query,
                                          MatchResult& match_result) {
-  Element* container = FindContainer(context, query.Selector());
+  Element* container = FindContainer(context.container, query.Selector());
   if (!container)
     return false;
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
@@ -97,53 +93,53 @@ double ContainerQueryEvaluator::Height() const {
 
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
-  return Eval(container_query, MediaQueryEvaluator::Results());
+  return Eval(container_query, nullptr /* result_flags */);
 }
 
 bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
-                                   MediaQueryEvaluator::Results results) const {
+                                   MediaQueryResultFlags* result_flags) const {
   if (!media_query_evaluator_)
     return false;
-  return media_query_evaluator_->Eval(*container_query.query_, results) ==
+  return media_query_evaluator_->Eval(*container_query.query_, result_flags) ==
          KleeneValue::kTrue;
 }
 
 bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                                          Change change,
                                          MatchResult& match_result) {
-  MediaQueryResultList viewport_dependent;
-  unsigned unit_flags = MediaQueryExpValue::UnitFlags::kNone;
-
-  bool result = Eval(query, {&viewport_dependent, nullptr, &unit_flags});
-  if (!viewport_dependent.IsEmpty())
-    match_result.SetDependsOnViewportContainerQueries();
+  MediaQueryResultFlags result_flags;
+  bool result = Eval(query, &result_flags);
+  unsigned unit_flags = result_flags.unit_flags;
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kDynamicViewport)
+    match_result.SetDependsOnDynamicViewportUnits();
+  // Note that container-relative units *may* fall back to the small viewport,
+  // hence we also set the DependsOnStaticViewportUnits flag when in that case.
+  if (unit_flags & (MediaQueryExpValue::UnitFlags::kStaticViewport |
+                    MediaQueryExpValue::UnitFlags::kContainer)) {
+    match_result.SetDependsOnStaticViewportUnits();
+  }
   if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
-  if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)
-    depends_on_font_ = true;
-  results_.Set(&query, Result{result, change});
+  results_.Set(&query, Result{result, unit_flags, change});
+  unit_flags_ |= unit_flags;
   return result;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
     Document& document,
-    const ComputedStyle& style,
+    Element& container,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
   if (size_ == size && contained_axes_ == contained_axes && !font_dirty_)
     return Change::kNone;
 
-  SetData(document, style, size, contained_axes);
+  SetData(document, container, size, contained_axes);
   font_dirty_ = false;
 
   Change change = ComputeChange();
 
-  // We can clear the results here because we will always recaculate the style
-  // of all descendants which depend on this evaluator whenever we return
-  // something other than kNone from this function, so the results will always
-  // be repopulated.
   if (change != Change::kNone)
-    ClearResults();
+    ClearResults(change);
 
   return change;
 }
@@ -154,7 +150,7 @@ void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
 }
 
 void ContainerQueryEvaluator::SetData(Document& document,
-                                      const ComputedStyle& style,
+                                      Element& container,
                                       PhysicalSize size,
                                       PhysicalAxes contained_axes) {
   size_ = size;
@@ -167,7 +163,8 @@ void ContainerQueryEvaluator::SetData(Document& document,
   // 'container-type', and when containment is actually applied for that axis.
   //
   // See IsEligibleForSizeContainment (and similar).
-  PhysicalAxes supported_axes = ContainerTypeAxes(style) & contained_axes;
+  PhysicalAxes supported_axes =
+      ContainerTypeAxes(container.ComputedStyleRef()) & contained_axes;
 
   if ((supported_axes & PhysicalAxes(kPhysicalAxisHorizontal)) !=
       PhysicalAxes(kPhysicalAxisNone)) {
@@ -179,16 +176,45 @@ void ContainerQueryEvaluator::SetData(Document& document,
     height = size.height.ToDouble();
   }
 
-  auto* query_values =
-      MakeGarbageCollected<CSSContainerValues>(document, style, width, height);
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      document, container, width, height);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
-void ContainerQueryEvaluator::ClearResults() {
-  results_.clear();
-  referenced_by_unit_ = false;
-  depends_on_font_ = false;
+void ContainerQueryEvaluator::ClearResults(Change change) {
+  switch (change) {
+    case Change::kNone:
+      NOTREACHED();
+      break;
+    case Change::kNearestContainer: {
+      DCHECK(!referenced_by_unit_);
+      // We are going to recalculate the style of all descendants which depend
+      // on this container, *excluding* those that exist within nested
+      // containers. Therefore all entries with `change` greater than
+      // kNearestContainer need to remain.
+      unit_flags_ = 0;
+      HeapHashMap<Member<const ContainerQuery>, Result> new_results;
+      for (const auto& pair : results_) {
+        if (pair.value.change > change) {
+          new_results.Set(pair.key, pair.value);
+          unit_flags_ |= pair.value.unit_flags;
+        }
+      }
+      std::swap(new_results, results_);
+      break;
+    }
+    case Change::kDescendantContainers: {
+      // We are going to recalculate the style of all descendants which
+      // depend on this container, *including* those that exist within nested
+      // containers. Therefore all results will be repopulated, and we can clear
+      // everything.
+      results_.clear();
+      referenced_by_unit_ = false;
+      unit_flags_ = 0;
+      break;
+    }
+  }
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
@@ -205,10 +231,29 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   return change;
 }
 
+void ContainerQueryEvaluator::UpdateValuesIfNeeded(Document& document,
+                                                   Element& container,
+                                                   StyleRecalcChange change) {
+  if (!media_query_evaluator_)
+    return;
+  unsigned changed_flags = 0;
+  if (change.RemUnitsMaybeChanged())
+    changed_flags |= MediaQueryExpValue::kRootFontRelative;
+  if (change.ContainerRelativeUnitsMaybeChanged())
+    changed_flags |= MediaQueryExpValue::kContainer;
+  if (!(unit_flags_ & changed_flags))
+    return;
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      document, container, existing_values.Width(), existing_values.Height());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
 void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style) {
-  if (!depends_on_font_ || font_dirty_)
+  if (!(unit_flags_ & MediaQueryExpValue::kFontRelative) || font_dirty_)
     return;
   font_dirty_ = old_style.GetFont() != new_style.GetFont();
 }

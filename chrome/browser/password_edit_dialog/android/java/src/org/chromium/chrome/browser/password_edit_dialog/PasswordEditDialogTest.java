@@ -192,6 +192,20 @@ public class PasswordEditDialogTest {
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testEmptyPasswordError() {
+        Callback<String> passwordChangedCallback =
+                mDialogProperties.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK);
+        passwordChangedCallback.onResult("");
+        Assert.assertTrue("Accept button should be disabled when user enters empty password",
+                mModalDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+        Assert.assertFalse("Error should be displayed when user enters empty password",
+                mDialogProperties.get(PasswordEditDialogProperties.PASSWORD_ERROR) == null
+                        || mDialogProperties.get(PasswordEditDialogProperties.PASSWORD_ERROR)
+                                   .isEmpty());
+    }
+
     /** Tests that the username selected in spinner gets reflected in the callback parameter. */
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)

@@ -14,8 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace spdy {
-namespace test {
+namespace spdy::test {
 
 using std::map;
 
@@ -149,5 +148,4 @@ TEST(HpackFuzzUtilTest, FlipBitsMutatesBuffer) {
   EXPECT_NE(unmodified, buffer);
 }
 
-}  // namespace test
-}  // namespace spdy
+}  // namespace spdy::test

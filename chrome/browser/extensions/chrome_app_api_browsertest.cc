@@ -18,27 +18,31 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 using extensions::Extension;
 
 class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
+ protected:
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
- protected:
   bool IsAppInstalledInMainFrame() {
-    return IsAppInstalledInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return IsAppInstalledInFrame(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame());
   }
   bool IsAppInstalledInIFrame() {
     return IsAppInstalledInFrame(GetIFrame());
@@ -54,8 +58,10 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   }
 
   std::string InstallStateInMainFrame() {
-    return InstallStateInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return InstallStateInFrame(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   }
   std::string InstallStateInIFrame() {
     return InstallStateInFrame(GetIFrame());
@@ -72,8 +78,10 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   }
 
   std::string RunningStateInMainFrame() {
-    return RunningStateInFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return RunningStateInFrame(browser()
+                                   ->tab_strip_model()
+                                   ->GetActiveWebContents()
+                                   ->GetPrimaryMainFrame());
   }
   std::string RunningStateInIFrame() {
     return RunningStateInFrame(GetIFrame());
@@ -277,3 +285,54 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, InstallAndRunningStateFrame) {
   EXPECT_EQ("cannot_run", RunningStateInIFrame());
   EXPECT_FALSE(IsAppInstalledInIFrame());
 }
+
+class ChromeAppAPIFencedFrameTest
+    : public ChromeAppAPITest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ public:
+  ChromeAppAPIFencedFrameTest() {
+    // kPrivacySandboxAdsAPIOverride must also be set since kFencedFrames
+    // cannot be enabled independently without it.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+  }
+
+  ~ChromeAppAPIFencedFrameTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ChromeAppAPITest::SetUpOnMainThread();
+    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_P(ChromeAppAPIFencedFrameTest, NoInfo) {
+  GURL app_url = https_server()->GetURL(
+      "a.test", "/extensions/get_app_details_for_fenced_frame.html");
+
+  // Check the install and running state of a fenced frame running
+  // within an app.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+  auto render_frame_hosts = CollectAllRenderFrameHosts(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(2u, render_frame_hosts.size());
+
+  content::RenderFrameHost* fenced_frame = render_frame_hosts.at(1);
+  ASSERT_TRUE(fenced_frame);
+  EXPECT_EQ("cannot_run", RunningStateInFrame(fenced_frame));
+}
+
+INSTANTIATE_TEST_SUITE_P(ChromeAppAPIFencedFrameTest,
+                         ChromeAppAPIFencedFrameTest,
+                         testing::Bool());

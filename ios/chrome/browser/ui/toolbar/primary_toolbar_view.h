@@ -15,8 +15,8 @@
 // toolbar always displayed.
 @interface PrimaryToolbarView : UIView<AdaptiveToolbarView>
 
-// Initialize this View with the button |factory|. To finish the initialization
-// of the view, a call to |setUp| is needed.
+// Initialize this View with the button `factory`. To finish the initialization
+// of the view, a call to `setUp` is needed.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
 
@@ -30,7 +30,7 @@
 // Container for the location bar.
 @property(nonatomic, strong, readonly) UIView* locationBarContainer;
 
-// A tappable view overlapping |locationBarContainer| used when the omnibox is
+// A tappable view overlapping `locationBarContainer` used when the omnibox is
 // hidden by the NTP.
 @property(nonatomic, strong) UIView* fakeOmniboxTarget;
 
@@ -71,15 +71,15 @@
 // square.
 @property(nonatomic, assign) BOOL topCornersRounded;
 
-// Sets all the subviews and constraints of the view. The |topSafeAnchor| needs
+// Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.
 - (void)setUp;
 
-// Adds a view overlapping |locationBarContainer| for use when the omnibox is
+// Adds a view overlapping `locationBarContainer` for use when the omnibox is
 // hidden by the NTP.
 - (void)addFakeOmniboxTarget;
 
-// Removes |fakeOmniboxTarget| from the view hierarchy.
+// Removes `fakeOmniboxTarget` from the view hierarchy.
 - (void)removeFakeOmniboxTarget;
 
 @end

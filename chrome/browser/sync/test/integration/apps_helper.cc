@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,9 +17,11 @@
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -37,37 +40,50 @@ std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
 }
 
-std::unique_ptr<web_app::WebAppTestInstallObserver>
-SetupSyncInstallObserverForProfile(Profile* profile) {
-  auto apps_to_be_sync_installed = web_app::WebAppProvider::GetForTest(profile)
-                                       ->install_manager()
-                                       .GetEnqueuedInstallAppIdsForTesting();
+void FlushPendingOperations(std::vector<Profile*> profiles) {
+  for (Profile* profile : profiles) {
+    web_app::WebAppProvider::GetForTest(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
 
-  if (apps_to_be_sync_installed.empty()) {
-    return nullptr;
+    // First, wait for all installations to complete.
+
+    std::set<web_app::AppId> apps_to_be_installed =
+        web_app::WebAppProvider::GetForTest(profile)
+            ->install_manager()
+            .GetEnqueuedInstallAppIdsForTesting();
+
+    std::vector<web_app::AppId> apps_to_be_sync_installed =
+        web_app::WebAppProvider::GetForTest(profile)
+            ->registrar()
+            .GetAppsFromSyncAndPendingInstallation();
+    apps_to_be_installed.insert(apps_to_be_sync_installed.begin(),
+                                apps_to_be_sync_installed.end());
+
+    if (!apps_to_be_installed.empty()) {
+      // Because we don't know whether these have been installed yet or if we
+      // are waiting for installation with hooks, wait on either.
+      base::RunLoop loop;
+      auto install_listener_callback =
+          base::BindLambdaForTesting([&](const web_app::AppId& app_id) {
+            apps_to_be_installed.erase(app_id);
+            if (apps_to_be_installed.empty())
+              loop.Quit();
+          });
+
+      web_app::WebAppInstallManagerObserverAdapter install_adapter(profile);
+      install_adapter.SetWebAppInstalledDelegate(install_listener_callback);
+      install_adapter.SetWebAppInstalledWithOsHooksDelegate(
+          install_listener_callback);
+      loop.Run();
+    }
+
+    // Next, wait for uninstalls. These are easier because they don't have two
+    // stages.
+    web_app::WebAppProvider::GetForTest(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
   }
-
-  auto install_observer =
-      std::make_unique<web_app::WebAppTestInstallObserver>(profile);
-  install_observer->BeginListening(apps_to_be_sync_installed);
-  return install_observer;
-}
-
-std::unique_ptr<web_app::WebAppTestUninstallObserver>
-SetupSyncUninstallObserverForProfile(Profile* profile) {
-  std::set<web_app::AppId> apps_in_sync_uninstall =
-      web_app::WebAppProvider::GetForTest(profile)
-          ->sync_bridge()
-          .GetAppsInSyncUninstallForTest();
-
-  if (apps_in_sync_uninstall.empty()) {
-    return nullptr;
-  }
-
-  auto uninstall_observer =
-      std::make_unique<web_app::WebAppTestUninstallObserver>(profile);
-  uninstall_observer->BeginListening(apps_in_sync_uninstall);
-  return uninstall_observer;
 }
 
 }  // namespace
@@ -194,19 +210,21 @@ void FixNTPOrdinalCollisions(Profile* profile) {
   SyncAppHelper::GetInstance()->FixNTPOrdinalCollisions(profile);
 }
 
-void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
-  for (Profile* profile : profiles) {
-    std::unique_ptr<web_app::WebAppTestInstallObserver> install_observer =
-        SetupSyncInstallObserverForProfile(profile);
-    // This actually waits for all observed apps to be installed.
-    if (install_observer)
-      install_observer->Wait();
+bool AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
+  FlushPendingOperations(profiles);
 
-    std::unique_ptr<web_app::WebAppTestUninstallObserver> uninstall_observer =
-        SetupSyncUninstallObserverForProfile(profile);
-    // This actually waits for all observed apps to be installed.
-    if (uninstall_observer) {
-      uninstall_observer->Wait();
+  // If sync is off, then `AwaitQuiescence()` will crash. This code can be
+  // removed once https://crbug.com/1330792 is fixed.
+  if (sync_datatype_helper::test()) {
+    SyncTest* test = sync_datatype_helper::test();
+    bool is_sync_on = true;
+    for (SyncServiceImplHarness* client : test->GetSyncClients()) {
+      is_sync_on = is_sync_on && client->service()->IsSyncFeatureActive();
+    }
+    if (is_sync_on) {
+      if (!test->AwaitQuiescence())
+        return false;
+      FlushPendingOperations(profiles);
     }
   }
 
@@ -217,17 +235,27 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // happens asynchronously after the observer gets OnWebAppInstalled. And
     // some installs might not have OS hooks installed but they will be in the
     // registry.
-    ASSERT_TRUE(web_app::WebAppProvider::GetForTest(profile)
-                    ->registrar()
-                    .GetAppsFromSyncAndPendingInstallation()
-                    .empty());
+    std::vector<web_app::AppId> sync_apps_pending_install =
+        web_app::WebAppProvider::GetForTest(profile)
+            ->registrar()
+            .GetAppsFromSyncAndPendingInstallation();
+    if (!sync_apps_pending_install.empty()) {
+      LOG(ERROR) << "Apps from sync are still pending installation: "
+                 << sync_apps_pending_install.size();
+      return false;
+    }
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
         web_app::WebAppProvider::GetForTest(profile)
             ->sync_bridge()
             .GetAppsInSyncUninstallForTest();
-    ASSERT_TRUE(apps_in_sync_uninstall.empty());
+    if (!apps_in_sync_uninstall.empty()) {
+      LOG(ERROR) << "App uninstalls from sync are still pending: "
+                 << apps_in_sync_uninstall.size();
+      return false;
+    }
   }
+  return true;
 }
 
 web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {

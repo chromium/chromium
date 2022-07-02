@@ -13,24 +13,30 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
+class NavigationHandle;
 class PrefetchContainer;
 class PrefetchService;
 
 // Manages the state of and tracks metrics about prefetches for a single page
 // load.
 class CONTENT_EXPORT PrefetchDocumentManager
-    : public DocumentUserData<PrefetchDocumentManager> {
+    : public DocumentUserData<PrefetchDocumentManager>,
+      public WebContentsObserver {
  public:
   ~PrefetchDocumentManager() override;
 
   PrefetchDocumentManager(const PrefetchDocumentManager&) = delete;
   const PrefetchDocumentManager operator=(const PrefetchDocumentManager&) =
       delete;
+
+  // WebContentsObserver.
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
 
   // Processes the given speculation candidates to see if they can be
   // prefetched. Any candidates that can be prefetched are removed from
@@ -51,6 +57,9 @@ class CONTENT_EXPORT PrefetchDocumentManager
  private:
   explicit PrefetchDocumentManager(RenderFrameHost* rfh);
   friend DocumentUserData;
+
+  // Helper function to get the |PrefetchService| associated with |this|.
+  PrefetchService* GetPrefetchService() const;
 
   // This map holds references to all |PrefetchContainer| associated with
   // |this|, regardless of ownership.

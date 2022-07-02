@@ -16,18 +16,19 @@
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
 namespace blink {
-namespace scheduler {
 
 namespace {
 
-CompositorThreadScheduler* g_compositor_thread_scheduler = nullptr;
+scheduler::CompositorThreadScheduler* g_compositor_thread_scheduler = nullptr;
 
 }  // namespace
 
 // static
-WebThreadScheduler* WebThreadScheduler::CompositorThreadScheduler() {
+ThreadScheduler* ThreadScheduler::CompositorThreadScheduler() {
   return g_compositor_thread_scheduler;
 }
+
+namespace scheduler {
 
 CompositorThreadScheduler::CompositorThreadScheduler(
     base::sequence_manager::SequenceManager* sequence_manager)
@@ -76,7 +77,8 @@ CompositorThreadScheduler::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::DefaultTaskRunner() {
-  return GetHelper().DefaultTaskRunner();
+  NOTREACHED();
+  return nullptr;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -86,8 +88,7 @@ CompositorThreadScheduler::InputTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::CompositorTaskRunner() {
-  NOTREACHED();
-  return nullptr;
+  return GetHelper().DefaultTaskRunner();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

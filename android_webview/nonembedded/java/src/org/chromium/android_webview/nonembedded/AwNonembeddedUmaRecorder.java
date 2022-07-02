@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.Metadata;
@@ -152,6 +153,16 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
         recordHistogram(record);
     }
 
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        throw new UnsupportedOperationException();
+    }
+
     private final Object mLock = new Object();
     // Service stub object
     @GuardedBy("mLock")
@@ -222,7 +233,8 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
         final Context appContext = ContextUtils.getApplicationContext();
         final Intent intent = new Intent();
         intent.setClassName(appContext, mRecordingDelegate.getServiceName());
-        mIsBound = appContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = ServiceHelper.bindService(
+                appContext, intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         if (!mIsBound) {
             Log.w(TAG, "Could not bind to MetricsBridgeService " + intent);
         }

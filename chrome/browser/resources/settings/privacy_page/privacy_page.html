@@ -26,11 +26,6 @@
         border-radius: var(--cr-card-border-radius);
         box-shadow: var(--cr-card-shadow);
       }
-
-      :host(:not([enable-iph-demo_])) #showIPHBubble,
-      :host(:not([enable-iph-demo_])) #iphBubble {
-        display: none;
-      }
     </style>
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
       <settings-clear-browsing-data-dialog prefs="{{prefs}}"
@@ -50,13 +45,7 @@
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>
-        <cr-link-row id="showIPHBubble"
-            start-icon="settings20:lightbulb" class="hr"
-            label="Show IPH Bubble"
-            sub-label="Experimental button, click to show a test IPH bubble"
-            on-click="onShowIPHBubbleTap_">
-        </cr-link-row>
-        <template is="dom-if" if="[[enablePrivacyGuide_]]">
+        <template is="dom-if" if="[[showPrivacyGuideEntryPoint_]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
               start-icon="settings20:wind-rose"
               label="$i18n{privacyGuideLabel}"
@@ -65,11 +54,6 @@
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
-        <iph-bubble id="iphBubble"
-            anchor-id="cookiesLinkRow"
-            body="Click on the &quot;Cookies and other site data&quot; section"
-            position="below">
-        </iph-bubble>
         <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
             class="hr" label="$i18n{cookiePageTitle}"
             sub-label="[[cookieSettingDescription_]]"

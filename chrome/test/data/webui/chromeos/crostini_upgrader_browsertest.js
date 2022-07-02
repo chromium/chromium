@@ -16,7 +16,7 @@ CrostiniUpgraderBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
 
   browsePreload:
-      'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js',
+      'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js&host=test',
 };
 
 

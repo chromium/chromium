@@ -1,0 +1,23 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("offscreen") {
+  sources = [
+    "offscreen_document_manager.cc",
+    "offscreen_document_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//extensions/common",
+  ]
+
+  public_deps = [ "//extensions/browser:browser_sources" ]
+}

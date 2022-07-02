@@ -49,6 +49,12 @@ SubFeatureOptInView::SubFeatureOptInView(PhoneHubViewID view_id,
 
 SubFeatureOptInView::~SubFeatureOptInView() = default;
 
+void SubFeatureOptInView::RefreshDescription(int description_string_id) {
+  description_string_id_ = description_string_id;
+  text_label_->SetText(l10n_util::GetStringFUTF16(description_string_id_,
+                                                  ui::GetChromeOSDeviceName()));
+}
+
 void SubFeatureOptInView::InitLayout() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

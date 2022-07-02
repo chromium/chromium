@@ -16,33 +16,59 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-// Properties of history sync objects - this roughly represents one navigation,
-// and fields correspond to similarly named fields in history::VisitRow.
+import "components/sync/protocol/sync_enums.proto";
+
+// A history sync entity - this roughly represents one navigation, including its
+// full redirect chain (but not referrals). Fields correspond to similarly named
+// fields in history::VisitRow and history::URLRow.
 message HistorySpecifics {
-  // Cache GUID of the client that produced this visit, aka the "originator".
-  optional string originator_cache_guid = 1;
-  // ID of the visit on the originator client, unique within that client.
-  optional int64 originator_visit_id = 2;
+  // Timestamp, also called "global ID" in some places (e.g. in delete
+  // directives). This uniquely identifies the entity.
+  optional int64 visit_time_windows_epoch_micros = 1;
 
-  // URL that was visited.
-  optional string url = 3;
-  // Title of the page corresponding to this URL.
-  optional string title = 4;
-  // True if the URL should NOT be used for auto-complete.
-  optional bool hidden = 5;
+  // Cache GUID of the client that produced this entity, aka the "originator".
+  optional string originator_cache_guid = 2;
 
-  // Timestamp of the visit, also called "global ID" in some places (e.g. in
-  // delete directives).
-  optional int64 visit_time_windows_epoch_micros = 6;
-  // The PageTransition for the visit.
-  optional int32 page_transition = 7;
+  message RedirectEntry {
+    // ID of the visit on the originator client, unique within that client.
+    optional int64 originator_visit_id = 1;
+    // URL that was visited.
+    optional string url = 2;
+    // Title of the page corresponding to this URL.
+    optional string title = 3;
+    // True if the URL should NOT be used for auto-complete.
+    optional bool hidden = 4;
+    // The redirect type (if any).
+    optional SyncEnums.PageTransitionRedirectType redirect_type = 5;
+  }
+  // The redirect chain. The first entry is the URL the user originally
+  // navigated to; the last one is where they ended up. If there were no
+  // redirects, this has only one entry.
+  repeated RedirectEntry redirect_entries = 3;
+
+  message PageTransition {
+    // The core transition type.
+    optional SyncEnums.PageTransition core_transition = 1 [default = LINK];
+    // Qualifiers:
+    // A supervised user tried to access this URL but was blocked.
+    optional bool blocked = 2;
+    // User used the Forward or Back button to navigate among browsing history.
+    optional bool forward_back = 3;
+    // User used the address bar to trigger this navigation.
+    optional bool from_address_bar = 4;
+    // User is navigating to the home page.
+    optional bool home_page = 5;
+  }
+  // The PageTransition for the navigation.
+  optional PageTransition page_transition = 4;
+
   // The ID of the visit, on the originator client, that was a referrer for
   // this one, or 0 if no referrer exists.
-  optional int64 originator_referring_visit_id = 8;
+  optional int64 originator_referring_visit_id = 5;
   // The ID of the visit, on the originator client, that opened this one, or 0
   // if no opener exists.
-  optional int64 originator_opener_visit_id = 9;
+  optional int64 originator_opener_visit_id = 6;
   // The duration of the visit, in microseconds. Zero if the visit hasn't been
   // finished (or the duration wasn't updated for some other reason).
-  optional int64 visit_duration_micros = 10;
+  optional int64 visit_duration_micros = 7;
 }

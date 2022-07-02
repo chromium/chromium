@@ -10,7 +10,7 @@ function getURLAuthRequired(realm, subpath = 'subpath') {
       'auth-basic/' + realm + '/' + subpath + '?realm=' + realm);
 }
 
-runTests([
+let availableTests = [
   // onAuthRequired is an async function but takes no action in this variant.
   function authRequiredAsyncNoAction() {
     var realm = 'asyncnoaction';
@@ -258,4 +258,17 @@ runTests([
       ["responseHeaders", "asyncBlocking"]);
     navigateAndWait(url);
   },
-]);
+];
+
+chrome.test.getConfig(function(config) {
+  let args = JSON.parse(config.customArg);
+  let tests = availableTests.filter(function(op) {
+    return args.testName == op.name;
+  });
+  if (tests.length !== 1) {
+    chrome.test.notifyFail('Test not found: ' + args.testName);
+    return;
+  }
+
+  runTests(tests);
+});

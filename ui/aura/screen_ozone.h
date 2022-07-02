@@ -60,6 +60,8 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(
       gfx::AcceleratedWidget widget) const;
 
+  static bool IsOzoneInitialized();
+
  protected:
   ui::PlatformScreen* platform_screen() { return platform_screen_.get(); }
 
@@ -73,8 +75,20 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
 
   virtual void OnBeforePlatformScreenInit();
 
-  display::Screen* const old_screen_ = display::Screen::SetScreenInstance(this);
   std::unique_ptr<ui::PlatformScreen> platform_screen_;
+};
+
+// ScopedScreenOzone creates a ScreenOzone instead of NativeScreen
+// (created by `CreateNativeScreen()`) if the screen hasn't been set.
+class AURA_EXPORT ScopedScreenOzone : public display::ScopedNativeScreen {
+ public:
+  explicit ScopedScreenOzone(const base::Location& location = FROM_HERE);
+  ScopedScreenOzone(const ScopedScreenOzone&) = delete;
+  ScopedScreenOzone operator=(const ScopedScreenOzone&) = delete;
+  ~ScopedScreenOzone() override;
+
+ private:
+  display::Screen* CreateScreen() override;
 };
 
 }  // namespace aura

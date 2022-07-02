@@ -120,6 +120,7 @@ bool StructTraits<
     return false;
 
   out->is_focusable = data.is_focusable();
+  out->is_visible = data.is_visible();
   out->should_autocomplete = data.should_autocomplete();
 
   if (!data.ReadRole(&out->role))
@@ -146,6 +147,8 @@ bool StructTraits<
     return false;
   if (!data.ReadDatalistLabels(&out->datalist_labels))
     return false;
+
+  out->force_override = data.force_override();
 
   return true;
 }
@@ -309,6 +312,14 @@ bool StructTraits<
          data.ReadPasswordRendererId(&out->password_renderer_id) &&
          data.ReadNewPasswordRendererId(&out->new_password_renderer_id) &&
          data.ReadConfirmPasswordRendererId(&out->confirm_password_renderer_id);
+}
+
+bool StructTraits<autofill::mojom::TouchToFillEligibleDataView,
+                  autofill::TouchToFillEligible>::
+    Read(autofill::mojom::TouchToFillEligibleDataView data,
+         autofill::TouchToFillEligible* out) {
+  *out = autofill::TouchToFillEligible(data.eligible());
+  return true;
 }
 
 }  // namespace mojo

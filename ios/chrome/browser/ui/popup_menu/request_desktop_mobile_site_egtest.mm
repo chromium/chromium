@@ -138,7 +138,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 
 #pragma mark - Helper
 
-// Sets the default mode to the passed |defaultMode|.
+// Sets the default mode to the passed `defaultMode`.
 - (void)selectDefaultMode:(NSString*)defaultMode {
   [ChromeEarlGreyUI openSettingsMenu];
   [[[EarlGrey

@@ -22,91 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram
-    name="DirectWrite.Fonts.Content.FallbackFamilyAndStyleForCodepointTime"
-    units="microseconds" expires_after="2022-06-15">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.FindFamilyTime" units="microseconds"
-    expires_after="2022-10-16">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::FindFamily.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.GetFamilyCountTime"
-    units="microseconds" expires_after="2022-10-16">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::GetFamilyCount.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.GetFamilyNamesTime"
-    units="microseconds" expires_after="2022-06-15">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::GetFamilyNames.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.GetFontFilesTime"
-    units="microseconds" expires_after="2022-10-16">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::GetFontFiles.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.InitializeTime" units="microseconds"
-    expires_after="2022-06-15">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::Initialize.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Content.MapCharactersTime"
-    units="microseconds" expires_after="2022-10-16">
-  <owner>sky@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    The time in microseconds it takes to execute
-    DWriteFontProxyImpl::MapCharacters.
-
-    This metric is reported for all users.
-  </summary>
-</histogram>
-
 <histogram name="DirectWrite.Fonts.Gfx.InitializeLoopCount" units="units"
     expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
@@ -138,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.EmptyFamilyResultsRatio"
-    units="percentage of empty family results" expires_after="2022-10-15">
+    units="percentage of empty family results" expires_after="2022-12-18">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -240,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoaderType"
-    enum="DirectWriteFontLoaderType" expires_after="2022-10-15">
+    enum="DirectWriteFontLoaderType" expires_after="2022-12-18">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -262,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoadFamilyTime" units="ms"
-    expires_after="2022-10-15">
+    expires_after="2022-12-18">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -284,7 +199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableDiskCacheHit"
-    units="BooleanSuccess" expires_after="2022-10-15">
+    enum="BooleanSuccess" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -296,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTablePersistSuccess"
-    units="BooleanSuccess" expires_after="2022-10-15">
+    enum="BooleanSuccess" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>

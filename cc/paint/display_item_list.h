@@ -149,7 +149,9 @@ class CC_PAINT_EXPORT DisplayItemList
   absl::optional<DirectlyCompositedImageResult>
   GetDirectlyCompositedImageResult() const;
 
-  int num_slow_paths() const { return paint_op_buffer_.num_slow_paths(); }
+  int num_slow_paths_up_to_min_for_MSAA() const {
+    return paint_op_buffer_.num_slow_paths_up_to_min_for_MSAA();
+  }
   bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
 
   // This gives the total number of PaintOps.
@@ -173,7 +175,9 @@ class CC_PAINT_EXPORT DisplayItemList
   void EmitTraceSnapshot() const;
   void GenerateDiscardableImagesMetadata();
 
-  gfx::Rect VisualRectForTesting(int index) { return visual_rects_[index]; }
+  gfx::Rect VisualRectForTesting(int index) {
+    return visual_rects_[static_cast<size_t>(index)];
+  }
 
   // Generate a PaintRecord from this DisplayItemList, leaving |this| in
   // an empty state.

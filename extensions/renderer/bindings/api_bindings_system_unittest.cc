@@ -68,7 +68,12 @@ const char kAlphaAPISpec[] = R"(
         "parameters": [{"name": "e", "$ref": "alpha.enumRef"}]
       }],
       "events": [{
-        "name": "alphaEvent"
+        "name": "alphaEvent",
+        "parameters": [{
+          "name": "eventArg",
+          "type": "object",
+          "properties": { "key": {"type": "integer"} }
+        }]
       }, {
         "name": "alphaOtherEvent"
       }]
@@ -320,7 +325,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
         });)";
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
-    const char kResponseArgsJson[] = R"(["response",1,{"key":42}])";
+    const char kResponseArgsJson[] = R"([{"key":42}])";
     base::Value::List expected_args = ListValueFromString(kResponseArgsJson);
     bindings_system()->FireEventInContext("alpha.alphaEvent", context,
                                           expected_args, nullptr);

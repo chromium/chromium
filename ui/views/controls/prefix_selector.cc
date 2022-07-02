@@ -129,9 +129,11 @@ bool PrefixSelector::SetEditableSelectionRange(const gfx::Range& range) {
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool PrefixSelector::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool PrefixSelector::GetTextFromRange(const gfx::Range& range,
                                       std::u16string* text) const {
@@ -181,7 +183,7 @@ bool PrefixSelector::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range PrefixSelector::GetAutocorrectRange() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Range();

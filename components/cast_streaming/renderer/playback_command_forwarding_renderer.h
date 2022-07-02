@@ -90,6 +90,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // Each of these simply forwards the call to both |remote_renderer_client_|
   // and |upstream_renderer_client_|.
   void OnError(media::PipelineStatus status) override;
+  void OnFallback(media::PipelineStatus status) override;
   void OnEnded() override;
   void OnStatisticsUpdate(const media::PipelineStatistics& stats) override;
   void OnBufferingStateChange(

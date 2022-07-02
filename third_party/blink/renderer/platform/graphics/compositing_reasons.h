@@ -18,6 +18,9 @@ using CompositingReasons = uint64_t;
 #define FOR_EACH_COMPOSITING_REASON(V)                                        \
   /* Intrinsic reasons that can be known right away by the layer. */          \
   V(3DTransform)                                                              \
+  V(3DScale)                                                                  \
+  V(3DRotate)                                                                 \
+  V(3DTranslate)                                                              \
   V(Trivial3DTransform)                                                       \
   V(Video)                                                                    \
   V(Canvas)                                                                   \
@@ -26,6 +29,9 @@ using CompositingReasons = uint64_t;
   V(DocumentTransitionPseudoElement)                                          \
   V(BackfaceVisibilityHidden)                                                 \
   V(ActiveTransformAnimation)                                                 \
+  V(ActiveScaleAnimation)                                                     \
+  V(ActiveRotateAnimation)                                                    \
+  V(ActiveTranslateAnimation)                                                 \
   V(ActiveOpacityAnimation)                                                   \
   V(ActiveFilterAnimation)                                                    \
   V(ActiveBackdropFilterAnimation)                                            \
@@ -35,6 +41,9 @@ using CompositingReasons = uint64_t;
   V(StickyPosition)                                                           \
   V(OverflowScrolling)                                                        \
   V(WillChangeTransform)                                                      \
+  V(WillChangeScale)                                                          \
+  V(WillChangeRotate)                                                         \
+  V(WillChangeTranslate)                                                      \
   V(WillChangeOpacity)                                                        \
   V(WillChangeFilter)                                                         \
   V(WillChangeBackdropFilter)                                                 \
@@ -110,14 +119,24 @@ class PLATFORM_EXPORT CompositingReason {
     // Various combinations of compositing reasons are defined here also, for
     // more intuitive and faster bitwise logic.
     kComboScrollDependentPosition = kFixedPosition | kStickyPosition,
-    kPreventingSubpixelAccumulationReasons = kWillChangeTransform,
+    // Note that translate is not included, because we care about transforms
+    // that are not IsIdentityOrTranslation().
+    kPreventingSubpixelAccumulationReasons =
+        kWillChangeTransform | kWillChangeScale | kWillChangeRotate,
     kDirectReasonsForPaintOffsetTranslationProperty =
         kComboScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
         kFixedToViewport | kVideo | kCanvas | kPlugin | kIFrame,
+    // TODO(dbaron): kWillChangeOther probably shouldn't be in this list.
     kDirectReasonsForTransformProperty =
         k3DTransform | kTrivial3DTransform | kWillChangeTransform |
         kWillChangeOther | kPerspectiveWith3DDescendants |
         kPreserve3DWith3DDescendants | kActiveTransformAnimation,
+    kDirectReasonsForScaleProperty =
+        k3DScale | kWillChangeScale | kActiveScaleAnimation,
+    kDirectReasonsForRotateProperty =
+        k3DRotate | kWillChangeRotate | kActiveRotateAnimation,
+    kDirectReasonsForTranslateProperty =
+        k3DTranslate | kWillChangeTranslate | kActiveTranslateAnimation,
     kDirectReasonsForScrollTranslationProperty =
         kRootScroller | kOverflowScrolling,
     kDirectReasonsForEffectProperty =
@@ -130,14 +149,24 @@ class PLATFORM_EXPORT CompositingReason {
                                       kActiveBackdropFilterAnimation |
                                       kWillChangeBackdropFilter,
 
-    // These reasons cause any transform, effect, or filter node that
-    // exists to be composited.  They don't cause creation of a node.
-    // This is because 3D transforms and incorrect use of will-change
-    // are likely indicators that compositing is expected because
-    // certain changes will be made.
-    kAdditionalCompositingTrigger =
-        k3DTransform | kTrivial3DTransform | kWillChangeTransform |
-        kWillChangeOpacity | kWillChangeBackdropFilter | kWillChangeFilter,
+    // These reasons also cause any effect or filter node that exists
+    // to be composited. They don't cause creation of a node.
+    // This is because 3D transforms and incorrect use of will-change:transform
+    // are likely indicators that compositing of effects is expected
+    // because certain changes to opacity, filter etc. will be made.
+    // Note that kWillChangeScale, kWillChangeRotate, and
+    // kWillChangeTranslate are not included since there is no
+    // web-compatibility reason to include them.
+    kAdditionalEffectCompositingTrigger =
+        k3DTransform | kTrivial3DTransform | kWillChangeTransform,
+
+    // Cull rect expansion is required if the compositing reasons hint
+    // requirement of high-performance movement, to avoid frequent change of
+    // cull rect.
+    kRequiresCullRectExpansion =
+        kDirectReasonsForTransformProperty | kDirectReasonsForScaleProperty |
+        kDirectReasonsForRotateProperty | kDirectReasonsForTranslateProperty |
+        kDirectReasonsForScrollTranslationProperty,
 
   };
 };

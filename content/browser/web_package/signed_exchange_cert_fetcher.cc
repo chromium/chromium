@@ -286,8 +286,18 @@ void SignedExchangeCertFetcher::OnReceiveResponse(
 
   UMA_HISTOGRAM_BOOLEAN("SignedExchange.CertificateFetch.CacheHit",
                         head->was_fetched_via_cache);
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+
+  if (!body)
+    return;
+
+  body_ = std::move(body);
+  handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
+      base::SequencedTaskRunnerHandle::Get());
+  handle_watcher_->Watch(
+      body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      base::BindRepeating(&SignedExchangeCertFetcher::OnHandleReady,
+                          base::Unretained(this)));
 }
 
 void SignedExchangeCertFetcher::OnReceiveRedirect(
@@ -316,20 +326,6 @@ void SignedExchangeCertFetcher::OnReceiveCachedMetadata(
 void SignedExchangeCertFetcher::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   // Do nothing.
-}
-
-void SignedExchangeCertFetcher::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
-               "SignedExchangeCertFetcher::OnStartLoadingResponseBody");
-  body_ = std::move(body);
-  handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
-      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-      base::SequencedTaskRunnerHandle::Get());
-  handle_watcher_->Watch(
-      body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      base::BindRepeating(&SignedExchangeCertFetcher::OnHandleReady,
-                          base::Unretained(this)));
 }
 
 void SignedExchangeCertFetcher::OnComplete(

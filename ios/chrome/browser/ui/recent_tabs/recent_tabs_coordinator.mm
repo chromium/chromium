@@ -79,7 +79,7 @@
   self.recentTabsTableViewController.session =
       self.baseViewController.view.window.windowScene.session;
 
-  // Adds the "Done" button and hooks it up to |stop|.
+  // Adds the "Done" button and hooks it up to `stop`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self

@@ -23,6 +23,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
   void SetUp() override {
     optimization_guide::EntityMetadata github_md;
     github_md.human_readable_aliases = {"git hub", "github llc"};
+    github_md.collections = {"/collection/computer", "/collection/programming"};
     base::flat_map<std::string, optimization_guide::EntityMetadata>
         entity_metadata_map;
     entity_metadata_map["github"] = github_md;
@@ -32,6 +33,9 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
     config_.keyword_filter_on_noisy_visits = false;
     config_.keyword_filter_on_categories = false;
     config_.keyword_filter_on_entity_aliases = false;
+    config_.keyword_filter_on_search_terms = false;
+    config_.keyword_filter_on_visit_hosts =
+        false;  // Drop keywords match host names.
     SetConfigForTesting(config_);
   }
 
@@ -55,6 +59,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       {"github", 1}};
   visit.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit.annotated_visit.content_annotations.search_terms = u"search";
 
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -70,15 +75,30 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 1}, {"otherentity", 1}};
+      {"github", 1},
+      {"otherentity", 1},
+      {"baz", 1} /*should be filtered due to host*/};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit3.annotated_visit.content_annotations.search_terms = u"search";
 
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(cluster.keywords,
+
+  EXPECT_THAT(cluster.GetKeywords(),
               UnorderedElementsAre(u"github", u"otherentity"));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"github"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"github"),
+      history::ClusterKeywordData(
+          history::ClusterKeywordData::kEntity, 1,
+          std::vector<std::string>{
+              "/collection/computer"} /*keep only top one entity collection*/));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"otherentity"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"otherentity"),
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 1, {}));
 }
 
 class KeywordClusterFinalizerIncludeAllTest
@@ -91,6 +111,10 @@ class KeywordClusterFinalizerIncludeAllTest
     config_.keyword_filter_on_categories = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 1;
+    config_.keyword_filter_on_search_terms = true;
+    config_.keyword_filter_on_visit_hosts = true;
+    config_.category_keyword_score_weight = 0.1;
+    config_.max_num_keywords_per_cluster = 7;
     SetConfigForTesting(config_);
   }
 
@@ -107,6 +131,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
       {"github", 1}};
   visit.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit.annotated_visit.content_annotations.search_terms = u"search";
 
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -122,16 +147,50 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
   visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 1}, {"otherentity", 1}};
+      {"github", 1}, {"otherentity", 1}, {"baz", 1}, {"search", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
+      {"category2", 0},  // `category2` is dropped due to keywords capping.
       {"category", 1}};
+  visit3.annotated_visit.content_annotations.search_terms =
+      u"search";  // Keyword type should be `kSearchTerms`.
 
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(cluster.keywords,
-              UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
-                                   u"otherentity", u"git hub"));
+
+  EXPECT_THAT(
+      cluster.GetKeywords(),
+      UnorderedElementsAre(u"github", u"git hub", u"otherentity", u"baz",
+                           u"category", u"onlyinnoisyvisit", u"search"));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"github"));
+  EXPECT_EQ(cluster.keyword_to_data_map.at(u"github"),
+            history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 2,
+                                        {"/collection/computer"}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"git hub"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"git hub"),
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntityAlias, 2,
+                                  {"/collection/computer"}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"category"));
+  EXPECT_EQ(cluster.keyword_to_data_map.at(u"category"),
+            history::ClusterKeywordData(
+                history::ClusterKeywordData::kEntityCategory, 0.2, {}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"onlyinnoisyvisit"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"onlyinnoisyvisit"),
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 1, {}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"otherentity"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"otherentity"),
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 1, {}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"search"));
+  EXPECT_EQ(cluster.keyword_to_data_map.at(u"search"),
+            history::ClusterKeywordData(
+                history::ClusterKeywordData::kSearchTerms, 101, {}));
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"baz"));
+  EXPECT_EQ(
+      cluster.keyword_to_data_map.at(u"baz"),
+      history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 1, {}));
 }
 
 }  // namespace

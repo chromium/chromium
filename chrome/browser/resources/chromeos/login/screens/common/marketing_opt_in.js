@@ -99,6 +99,15 @@ class MarketingOptIn extends MarketingScreenElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether the device is cloud gaming device, which will
+       * alternate different title, subtitle and animation.
+       */
+      isCloudGamingDevice_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -141,6 +150,8 @@ class MarketingOptIn extends MarketingScreenElementBase {
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter_ =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
+    this.isCloudGamingDevice_ =
+        'cloudGamingDevice' in data && data.cloudGamingDevice;
     this.setAnimationPlay_(true);
     this.$.marketingOptInOverviewDialog.show();
   }
@@ -200,6 +211,35 @@ class MarketingOptIn extends MarketingScreenElementBase {
       this.$.a11yNavButtonToggle.checked
     ]);
   }
+
+  /**
+   * Returns the src of the icon.
+   * @private
+   */
+  getIcon_() {
+    return this.isCloudGamingDevice_ ? 'oobe-32:game-controller' :
+                                       'oobe-32:checkmark';
+  }
+
+  /**
+   * Returns the src of the illustration.
+   * @private
+   */
+  getImageSource_() {
+    return this.isDarkModeActive_ ? 'images/blazey_dark.svg' :
+                                    'images/blazey_light.svg';
+  }
+
+  /**
+   * Returns the src of the margin for the toggle.
+   * @private
+   */
+  getMarginTop_() {
+    return this.isCloudGamingDevice_ ? 'margin-top: 65px;' :
+                                       'margin-top: 20px;';
+  }
+
+
 
   /**
    * Returns the url of the animation asset.

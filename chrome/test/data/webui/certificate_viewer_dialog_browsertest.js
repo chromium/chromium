@@ -31,8 +31,16 @@ CertificateViewerUITest.prototype = {
    * Show the certificate viewer dialog.
    */
   testGenPreamble: function() {
-    GEN('ShowCertificateViewer();');
+    GEN('ShowCertificateViewerGoogleCert();');
   },
+};
+
+var CertificateViewerUIInvalidCertTest = class extends CertificateViewerUITest {
+  get testGenPreamble() {
+    return () => {
+      GEN('ShowCertificateViewerInvalidCert();');
+    };
+  }
 };
 
 // Helper for loading the Mocha test file as a JS module. Not using
@@ -78,5 +86,11 @@ TEST_F('CertificateViewerUITest', 'CommonName', function() {
 TEST_F('CertificateViewerUITest', 'Details', function() {
   loadTestModule().then(() => {
     mocha.grep('Details').run();
+  });
+});
+
+TEST_F('CertificateViewerUIInvalidCertTest', 'InvalidCert', function() {
+  loadTestModule().then(() => {
+    mocha.grep('InvalidCert').run();
   });
 });

@@ -227,13 +227,10 @@ public class DownloadDialogBridge
 
     private void showDownloadLaterDialog() {
         assert mPrefService != null;
-        @DownloadLaterPromptStatus
-        int promptStatus = mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(DownloadLaterDialogProperties.ALL_KEYS)
                         .with(DownloadLaterDialogProperties.CONTROLLER, mDownloadLaterDialog)
                         .with(DownloadLaterDialogProperties.INITIAL_CHOICE, mDownloadLaterChoice)
-                        .with(DownloadLaterDialogProperties.DONT_SHOW_AGAIN_SELECTION, promptStatus)
                         .with(DownloadLaterDialogProperties.SUBTITLE_TEXT,
                                 getDownloadLaterDialogSubtitle())
                         .with(DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION,

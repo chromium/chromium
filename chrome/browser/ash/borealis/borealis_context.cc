@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -161,7 +162,8 @@ class BorealisLifetimeObserver
         /*origin_url=*/GURL(),
         /*notifier_id=*/
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBorealis),
+            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBorealis,
+            ash::NotificationCatalogName::kBorealisContext),
         /*optional_fields=*/message_center::RichNotificationData(),
         /*delegate*/ on_click_handler);
 

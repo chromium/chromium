@@ -4,12 +4,8 @@
 
 #include "net/nqe/pref_names.h"
 
-namespace net {
-
-namespace nqe {
+namespace net::nqe {
 
 const char kNetworkQualities[] = "net.network_qualities";
 
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe

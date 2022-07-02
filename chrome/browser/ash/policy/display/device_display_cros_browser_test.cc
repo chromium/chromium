@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "ui/display/display.h"
 
@@ -95,7 +95,7 @@ void DeviceDisplayCrosTestHelper::ToggleSecondDisplay() {
 }
 
 void DeviceDisplayPolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture() {
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
   ash::DisplayConfigurationController::DisableAnimatorForTest();
   DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 }

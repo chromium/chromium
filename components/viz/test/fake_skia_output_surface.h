@@ -44,18 +44,12 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void BindToClient(OutputSurfaceClient* client) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
-  void BindFramebuffer() override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
   void ScheduleOutputSurfaceAsOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
       override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override;
-  unsigned UpdateGpuFence() override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   void SetUpdateVSyncParametersCallback(
@@ -78,7 +72,10 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  sk_sp<SkColorSpace> color_space,
                                  bool is_overlay,
                                  const gpu::Mailbox& mailbox) override;
-  void EndPaint(base::OnceClosure on_finished) override;
+  SkCanvas* RecordOverdrawForCurrentPaint() override;
+  void EndPaint(base::OnceClosure on_finished,
+                base::OnceCallback<void(gfx::GpuFenceHandle)>
+                    return_release_fence_cb) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
@@ -142,10 +139,11 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
     return delegated_ink_renderer_receiver_arrived_;
   }
 
- private:
+ protected:
   explicit FakeSkiaOutputSurface(
       scoped_refptr<ContextProvider> context_provider);
 
+ private:
   ContextProvider* context_provider() { return context_provider_.get(); }
   GrDirectContext* gr_context() { return context_provider()->GrContext(); }
 

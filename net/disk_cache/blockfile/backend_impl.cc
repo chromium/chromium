@@ -158,7 +158,6 @@ BackendImpl::BackendImpl(
       background_queue_(this, FallbackToInternalIfNull(cache_thread)),
       path_(path),
       block_files_(path),
-      mask_(0),
       user_flags_(0),
       net_log_(net_log) {
   TRACE_EVENT0("disk_cache", "BackendImpl::BackendImpl");
@@ -208,9 +207,8 @@ BackendImpl::~BackendImpl() {
   }
 }
 
-net::Error BackendImpl::Init(CompletionOnceCallback callback) {
+void BackendImpl::Init(CompletionOnceCallback callback) {
   background_queue_.Init(std::move(callback));
-  return net::ERR_IO_PENDING;
 }
 
 int BackendImpl::SyncInit() {
@@ -1879,8 +1877,8 @@ void BackendImpl::LogStats() {
   StatsItems stats;
   GetStats(&stats);
 
-  for (size_t index = 0; index < stats.size(); index++)
-    VLOG(1) << stats[index].first << ": " << stats[index].second;
+  for (const auto& stat : stats)
+    VLOG(1) << stat.first << ": " << stat.second;
 }
 
 void BackendImpl::ReportStats() {

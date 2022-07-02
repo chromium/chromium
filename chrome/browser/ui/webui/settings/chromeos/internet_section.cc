@@ -14,9 +14,9 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/internet_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -571,9 +571,6 @@ std::string GetDetailsSubpageUrl(const std::string& url_to_modify,
 bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
   if (HermesManagerClient::Get()->GetAvailableEuiccs().size() == 0)
     return false;
-
-  if (!base::FeatureList::IsEnabled(ash::features::kESimPolicy))
-    return true;
 
   return !global_policy->allow_only_policy_cellular_networks;
 }

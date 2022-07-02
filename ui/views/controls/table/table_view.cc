@@ -31,6 +31,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -980,38 +981,42 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
     else if (alternate_bg_color != default_bg_color && (i % 2))
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
     for (int j = region.min_column; j < region.max_column; ++j) {
-      const gfx::Rect cell_bounds(GetCellBounds(i, j));
-      int text_x = cell_margin + cell_bounds.x();
+      const gfx::Rect cell_bounds = GetCellBounds(i, j);
+      gfx::Rect text_bounds = cell_bounds;
+      text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
 
       // Provide space for the grouping indicator, but draw it separately.
-      if (j == 0 && grouper_)
-        text_x += kGroupingIndicatorSize + cell_element_spacing;
+      if (j == 0 && grouper_) {
+        text_bounds.Inset(gfx::Insets().set_left(kGroupingIndicatorSize +
+                                                 cell_element_spacing));
+      }
 
       // Always paint the icon in the first visible column.
       if (j == 0 && table_type_ == ICON_AND_TEXT) {
         gfx::ImageSkia image =
             model_->GetIcon(model_index).Rasterize(GetColorProvider());
         if (!image.isNull()) {
-          int image_x =
-              GetMirroredXWithWidthInView(text_x, ui::TableModel::kIconSize);
+          int image_x = GetMirroredXWithWidthInView(text_bounds.x(),
+                                                    ui::TableModel::kIconSize);
           canvas->DrawImageInt(
               image, 0, 0, image.width(), image.height(), image_x,
               cell_bounds.y() +
                   (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
               ui::TableModel::kIconSize, ui::TableModel::kIconSize, true);
         }
-        text_x += ui::TableModel::kIconSize + cell_element_spacing;
+        text_bounds.Inset(gfx::Insets().set_left(ui::TableModel::kIconSize +
+                                                 cell_element_spacing));
       }
-      if (text_x < cell_bounds.right() - cell_margin) {
+
+      // Paint text if there is still room for it after all that insetting.
+      if (!text_bounds.IsEmpty()) {
         canvas->DrawStringRectWithFlags(
             model_->GetText(model_index, visible_columns_[j].column.id),
             font_list_, is_selected ? selected_fg_color : fg_color,
-            gfx::Rect(GetMirroredXWithWidthInView(
-                          text_x, cell_bounds.right() - text_x - cell_margin),
-                      cell_bounds.y(), cell_bounds.right() - text_x,
-                      row_height_),
+            GetMirroredRect(text_bounds),
             TableColumnAlignmentToCanvasAlignment(
-                visible_columns_[j].column.alignment));
+                GetMirroredTableColumnAlignment(
+                    visible_columns_[j].column.alignment)));
       }
     }
   }
@@ -1526,11 +1531,11 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
 
 void TableView::PopulateAccessibilityRowData(AXVirtualView* ax_row,
                                              ui::AXNodeData* data) {
-  int ax_index = GetViewAccessibility().GetIndexOf(ax_row);
-  DCHECK_GE(ax_index, 0);
+  auto ax_index = GetViewAccessibility().GetIndexOf(ax_row);
+  DCHECK(ax_index.has_value());
 
-  int row_index = ax_index - (header_ ? 1 : 0);
-  int model_index = ViewToModel(row_index);
+  size_t row_index = ax_index.value() - (header_ ? 1 : 0);
+  int model_index = ViewToModel(static_cast<int>(row_index));
   DCHECK_GE(model_index, 0);
 
   // When navigating using up / down cursor keys on the Mac, we read the
@@ -1553,23 +1558,23 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   AXVirtualView* ax_row = ax_cell->virtual_parent_view();
   DCHECK(ax_row);
 
-  int ax_index = GetViewAccessibility().GetIndexOf(ax_row);
-  DCHECK_GE(ax_index, 0);
+  auto ax_index = GetViewAccessibility().GetIndexOf(ax_row);
+  DCHECK(ax_index.has_value());
 
-  int row_index = ax_index - (header_ ? 1 : 0);
-  int column_index = ax_row->GetIndexOf(ax_cell);
-  DCHECK_GE(column_index, 0);
+  size_t row_index = ax_index.value() - (header_ ? 1 : 0);
+  auto column_index = ax_row->GetIndexOf(ax_cell);
+  DCHECK(column_index.has_value());
 
-  int model_index = ViewToModel(row_index);
+  int model_index = ViewToModel(static_cast<int>(row_index));
   DCHECK_GE(model_index, 0);
 
-  gfx::Rect cell_bounds = GetCellBounds(row_index, column_index);
+  gfx::Rect cell_bounds = GetCellBounds(row_index, column_index.value());
 
   if (!GetVisibleBounds().Intersects(cell_bounds))
     data->AddState(ax::mojom::State::kInvisible);
 
   if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
-      static_cast<const int>(column_index) == GetActiveVisibleColumnIndex()) {
+      static_cast<int>(column_index.value()) == GetActiveVisibleColumnIndex()) {
     if (selection_model().IsSelected(model_index))
       data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   }
@@ -1577,8 +1582,8 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   // Set the cell's value since it changes dynamically.
   std::u16string current_name = base::UTF8ToUTF16(
       data->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  std::u16string new_name =
-      model()->GetText(model_index, GetVisibleColumn(column_index).column.id);
+  std::u16string new_name = model()->GetText(
+      model_index, GetVisibleColumn(column_index.value()).column.id);
   data->SetName(new_name);
   if (current_name != new_name) {
     ui::AXNodeData& cell_data = ax_cell->GetCustomData();

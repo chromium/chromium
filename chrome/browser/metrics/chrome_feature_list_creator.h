@@ -91,7 +91,15 @@ class ChromeFeatureListCreator {
  private:
   void CreatePrefService();
   void ConvertFlagsToSwitches();
-  void SetUpFieldTrials();
+
+  // Sets up the field trials and related initialization. Call only after
+  // about:flags have been converted to switches. However,
+  // |command_line_variation_ids| should be the value of the
+  // "--force-variation-ids" switch before it is mutated. See
+  // VariationsFieldTrialCreator::SetUpFieldTrials() for the format of
+  // |command_line_variation_ids|.
+  void SetUpFieldTrials(const std::string& command_line_variation_ids);
+
   void CreateMetricsServices();
 
   // Imports variations initial preference any preferences (to local state)

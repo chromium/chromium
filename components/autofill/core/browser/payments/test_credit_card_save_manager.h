@@ -46,7 +46,7 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_upload_request_card(const CreditCard& card);
 
-  raw_ptr<payments::PaymentsClient::UploadRequestDetails> upload_request();
+  payments::PaymentsClient::UploadRequestDetails* upload_request();
 
  private:
   void OnDidUploadCard(
@@ -59,6 +59,9 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            OnDidUploadCard_VirtualCardEnrollment);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerTest,
+      OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
 };

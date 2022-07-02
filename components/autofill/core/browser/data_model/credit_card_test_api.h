@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_CREDIT_CARD_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_CREDIT_CARD_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
 namespace autofill {
@@ -21,7 +22,7 @@ class CreditCardTestApi {
   }
 
  private:
-  CreditCard* creditcard_;
+  raw_ptr<CreditCard> creditcard_;
 };
 
 }  // namespace autofill

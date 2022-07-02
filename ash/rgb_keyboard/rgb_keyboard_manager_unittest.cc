@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+#include "rgb_keyboard_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -39,8 +40,10 @@ class RgbKeyboardManagerTest : public testing::Test {
   RgbKeyboardManagerTest(const RgbKeyboardManagerTest&) = delete;
   RgbKeyboardManagerTest& operator=(const RgbKeyboardManagerTest&) = delete;
   ~RgbKeyboardManagerTest() override {
-    // Destroy the global instance.
+    // Ordering for deletion is Manger -> Client -> IME Controller
+    manager_.reset();
     RgbkbdClient::Shutdown();
+    ime_controller_.reset();
   };
 
  protected:
@@ -137,6 +140,20 @@ TEST_F(RgbKeyboardManagerTest, OnLoginCapsLock) {
   manager_.reset();
   manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   EXPECT_TRUE(client_->get_caps_lock_state());
+}
+
+TEST_F(RgbKeyboardManagerTest, DefaultState) {
+  // Simulate RgbKeyboardManager starting up on login.
+  manager_.reset();
+  manager_ = std::make_unique<RgbKeyboardManager>(ime_controller_.get());
+
+  const RgbColor& default_rgb_values = client_->recently_sent_rgb();
+
+  EXPECT_FALSE(client_->is_rainbow_mode_set());
+
+  EXPECT_EQ(SkColorGetR(kDefaultColor), std::get<0>(default_rgb_values));
+  EXPECT_EQ(SkColorGetG(kDefaultColor), std::get<1>(default_rgb_values));
+  EXPECT_EQ(SkColorGetB(kDefaultColor), std::get<2>(default_rgb_values));
 }
 
 // TODO(jimmyxgong): This is just a stub test, there is only one enum available

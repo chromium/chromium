@@ -345,3 +345,18 @@ blink_core_sources_svg = [
   "svg_zoom_and_pan.cc",
   "svg_zoom_and_pan.h",
 ]
+
+blink_core_tests_svg = [
+  "animation/priority_queue_test.cc",
+  "animation/smil_time_container_test.cc",
+  "animation/svg_smil_element_test.cc",
+  "graphics/svg_image_test.cc",
+  "svg_element_test.cc",
+  "svg_foreign_object_element_test.cc",
+  "svg_path_parser_test.cc",
+  "svg_path_query_test.cc",
+  "svg_resource_document_content_test.cc",
+  "svg_text_content_element_test.cc",
+  "svg_use_element_test.cc",
+  "unsafe_svg_attribute_sanitization_test.cc",
+]

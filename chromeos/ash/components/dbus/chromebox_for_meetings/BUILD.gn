@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/ui.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
@@ -12,8 +12,6 @@ assert(is_cfm, "Non-CfM builds cannot depend on this library")
 component("chromebox_for_meetings") {
   defines = [ "IS_CFM_HOTLINE_CLIENT_IMPL" ]
   public_deps = [
-    "//chromeos/components/chromebox_for_meetings/buildflags",
-    "//chromeos/components/chromebox_for_meetings/features",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/common",
   ]

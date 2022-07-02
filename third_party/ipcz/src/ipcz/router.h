@@ -10,13 +10,17 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel_queue.h"
+#include "ipcz/router_descriptor.h"
 #include "ipcz/router_link.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/trap_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
+
+class NodeLink;
 
 // The Router is the main primitive responsible for routing parcels between ipcz
 // portals. This class is thread-safe.
@@ -82,11 +86,19 @@ class Router : public RefCounted {
   // queue it for retrieval or forward it further inward.
   bool AcceptInboundParcel(Parcel& parcel);
 
+  // Accepts an outbound parcel here from some other Router. The parcel is
+  // transmitted immediately or queued for later transmission over the Router's
+  // outward link. Called only on proxying Routers.
+  bool AcceptOutboundParcel(Parcel& parcel);
+
   // Accepts notification that the other end of the route has been closed and
   // that the close end transmitted a total of `sequence_length` parcels before
-  // closing.
-  bool AcceptRouteClosureFrom(LinkType link_type,
-                              SequenceNumber sequence_length);
+  // closing. If `sequence_length` is unknown and omitted (due to closure being
+  // forced by disconnection), the current sequence length in the appropriate
+  // direction is used.
+  bool AcceptRouteClosureFrom(
+      LinkType link_type,
+      absl::optional<SequenceNumber> sequence_length = absl::nullopt);
 
   // Retrieves the next available inbound parcel from this Router, if present.
   IpczResult GetNextInboundParcel(IpczGetFlags flags,
@@ -103,6 +115,26 @@ class Router : public RefCounted {
                   uint64_t context,
                   IpczTrapConditionFlags* satisfied_condition_flags,
                   IpczPortalStatus* status);
+
+  // Deserializes a new Router from `descriptor` received over `from_node_link`.
+  static Ref<Router> Deserialize(const RouterDescriptor& descriptor,
+                                 NodeLink& from_node_link);
+
+  // Serializes a description of a new Router which will be used to extend this
+  // Router's route across `to_node_link` by introducing a new Router on the
+  // remote node.
+  void SerializeNewRouter(NodeLink& to_node_link, RouterDescriptor& descriptor);
+
+  // Configures this Router to begin proxying incoming parcels toward (and
+  // outgoing parcels from) the Router described by `descriptor`, living on the
+  // remote node of `to_node_link`.
+  void BeginProxyingToNewRouter(NodeLink& to_node_link,
+                                const RouterDescriptor& descriptor);
+
+  // Notifies this Router that one of its links has been disconnected from a
+  // remote node. The link is identified by a combination of a specific NodeLink
+  // and SublinkId.
+  void NotifyLinkDisconnected(const NodeLink& node_link, SublinkId sublink);
 
  private:
   ~Router() override;
@@ -134,11 +166,17 @@ class Router : public RefCounted {
   // router, these may be retrieved by the application via a controlling portal.
   ParcelQueue inbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
-  // A link to this router's peer.
+  // A link to this router's outward peer.
   //
   // TODO(rockot): Replace this with a dynamic link that can be incrementally
   // decayed and replaced.
   Ref<RouterLink> outward_link_ ABSL_GUARDED_BY(mutex_);
+
+  // A link to this router's inward peer. Present only for proxying Routers.
+  //
+  // TODO(rockot): Replace this with a dynamic link that can be incrementally
+  // decayed and replaced.
+  Ref<RouterLink> inward_link_ ABSL_GUARDED_BY(mutex_);
 
   // Parcels transmitted directly from this router (if sent by a controlling
   // portal) or received from an inward peer which sent them outward toward this

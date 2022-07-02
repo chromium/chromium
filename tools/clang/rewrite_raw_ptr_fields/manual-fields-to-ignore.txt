@@ -63,6 +63,11 @@ viz::DirectRenderer::DrawingFrame::current_render_pass
 TabGroupViews::header_
 TabGroupViews::underline_
 TabGroupViews::highlight_
+views::LayoutManager::view_setting_visibility_on_
+FullscreenController::deactivated_contents_
+content::RenderWidgetHostInputEventRouter::touch_target_
+content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
+base::MessagePumpLibevent::run_state_
 
 # Populated manually - incompatibilities with tracing in not-rewritten platform specific code
 TabStripModelChange::RemovedTab::contents
@@ -231,6 +236,36 @@ device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody(
 # Populated manually - pointer to Objective-C object
 gfx::ScopedNSGraphicsContextSaveGState::context_
 base::mac::ScopedNSAutoreleasePool::autorelease_pool_
+content::ThemeHelperMac::theme_observer_
+content::PopupMenuHelper::menu_runner_
+content::ShellJavaScriptDialog::helper_
+ui::ClipboardFormatType::data_
+ui::WeakPtrNSObjectFactory::handle_
+content::NativeEventProcessorObserver::event_
+image_editor::EventCaptureMac::web_contents_view_
+image_editor::EventCaptureMac::window_
+content::ScopedNotifyNativeEventProcessorObserver::event_
+device::fido::mac::TouchIdCredentialStore::authentication_context_
+
+# Populated manually - struct is part of separate binary and must be a POD
+# https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64
+app_mode::ChromeAppModeInfo::argv
+
+# Populated manually - requires @property rewrite
+# In Objective-C the instance variable type and property type must be the same.
+# Currently, the rewriter can only rewrite the instance variable declaration.
+# So the types do not match, and causes a compiler error.
+# These fields can be rewritten once the rewriter can rewrite @property declarations.
+ObjCPropertyTestBase::_basePointer
+ObjCPropertyTestDerived::_derivedPointer
+ObjCPropertyTestDerived::_protoPointer
+NativeWidgetMacNSWindow::_bridge
+AlertBridgeHelper::_alertBridge
+BridgedContentView::_bridge
+WindowControlsOverlayNSView::_bridge
+AXPlatformNodeCocoa::_node
+ShellNativeAppWindowController::_appWindow
+WatchedLifetimeMenuController::_deallocCalled
 
 #######
 # BackupRefPtr-specific sections
@@ -304,6 +339,11 @@ cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
 disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
+
+# Populated manually - Field initialized with non-nullptr value in constexpr.
+enterprise_connectors::ServiceProvider::analysis
+enterprise_connectors::ServiceProvider::reporting
+enterprise_connectors::ServiceProvider::file_system
 
 # Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
 (anonymous namespace)::TlsVectorEntry::data

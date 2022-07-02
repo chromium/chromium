@@ -11,22 +11,18 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/gpu/test/video_frame_helpers.h"
-#include "media/gpu/test/video_player/frame_renderer.h"
-
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
 
 namespace media {
 namespace test {
 
-class FrameRenderer;
+class FrameRendererDummy;
 class Video;
 class VideoDecoderClient;
 struct VideoDecoderClientConfig;
@@ -65,13 +61,12 @@ class VideoPlayer {
 
   ~VideoPlayer();
 
-  // Create an instance of the video player. The |gpu_memory_buffer_factory|,
-  // |frame_renderer| and |frame_processors| will not be owned by the video
-  // player. The caller should guarantee they outlive the video player.
+  // Create an instance of the video player. The |frame_renderer| and
+  // |frame_processors| will not be owned by the video player. The caller should
+  // guarantee they outlive the video player.
   static std::unique_ptr<VideoPlayer> Create(
       const VideoDecoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors = {});
 
   // Wait until all frame processors have finished processing. Returns whether
@@ -105,7 +100,7 @@ class VideoPlayer {
   // Get the current state of the video player.
   VideoPlayerState GetState() const;
   // Get the frame renderer associated with the video player.
-  FrameRenderer* GetFrameRenderer() const;
+  FrameRendererDummy* GetFrameRenderer() const;
 
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All
@@ -133,8 +128,7 @@ class VideoPlayer {
 
   bool CreateDecoderClient(
       const VideoDecoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-      std::unique_ptr<FrameRenderer> frame_renderer,
+      std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
   void Destroy();
 
@@ -142,7 +136,7 @@ class VideoPlayer {
   // whether the decoder client should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
-  const Video* video_ = nullptr;
+  raw_ptr<const Video> video_ = nullptr;
   VideoPlayerState video_player_state_ = VideoPlayerState::kUninitialized;
   std::unique_ptr<VideoDecoderClient> decoder_client_;
 

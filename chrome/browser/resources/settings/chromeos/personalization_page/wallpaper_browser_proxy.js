@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /** @interface */
 export class WallpaperBrowserProxy {
@@ -22,10 +20,23 @@ export class WallpaperBrowserProxy {
   openWallpaperManager() {}
 }
 
+/** @type {?WallpaperBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {WallpaperBrowserProxy}
  */
 export class WallpaperBrowserProxyImpl {
+  /** @return {!WallpaperBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new WallpaperBrowserProxyImpl());
+  }
+
+  /** @param {!WallpaperBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   isWallpaperSettingVisible() {
     return sendWithPromise('isWallpaperSettingVisible');
@@ -41,5 +52,3 @@ export class WallpaperBrowserProxyImpl {
     chrome.send('openWallpaperManager');
   }
 }
-
-addSingletonGetter(WallpaperBrowserProxyImpl);

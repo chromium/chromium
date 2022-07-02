@@ -30,8 +30,7 @@ CookieStoreCommand::CookieStoreCommand(Type type, const CanonicalCookie& cookie)
 CookieStoreCommand::CookieStoreCommand(CookieStoreCommand&& other) = default;
 CookieStoreCommand::~CookieStoreCommand() = default;
 
-MockPersistentCookieStore::MockPersistentCookieStore()
-    : store_load_commands_(false), load_return_value_(true), loaded_(false) {}
+MockPersistentCookieStore::MockPersistentCookieStore() = default;
 
 void MockPersistentCookieStore::SetLoadExpectation(
     bool return_value,
@@ -135,17 +134,17 @@ void AddCookieToList(const GURL& url,
   out_list->push_back(std::move(cookie));
 }
 
-MockSimplePersistentCookieStore::MockSimplePersistentCookieStore()
-    : loaded_(false) {
-}
+MockSimplePersistentCookieStore::MockSimplePersistentCookieStore() = default;
 
 void MockSimplePersistentCookieStore::Load(
     LoadedCallback loaded_callback,
     const NetLogWithSource& /* net_log */) {
   std::vector<std::unique_ptr<CanonicalCookie>> out_cookies;
 
-  for (auto it = cookies_.begin(); it != cookies_.end(); it++)
-    out_cookies.push_back(std::make_unique<CanonicalCookie>(it->second));
+  for (const auto& cookie_map_it : cookies_) {
+    out_cookies.push_back(
+        std::make_unique<CanonicalCookie>(cookie_map_it.second));
+  }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -205,7 +204,7 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
     int num_old_non_secure_cookies,
     int days_old) {
   base::Time current(base::Time::Now());
-  base::Time past_creation(base::Time::Now() - base::Days(1000));
+  base::Time past_creation(base::Time::Now() - base::Days(100));
   scoped_refptr<MockSimplePersistentCookieStore> store(
       new MockSimplePersistentCookieStore);
   int total_cookies = num_secure_cookies + num_non_secure_cookies;

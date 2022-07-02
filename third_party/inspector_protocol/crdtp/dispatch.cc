@@ -89,10 +89,6 @@ DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
 // =============================================================================
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
 // =============================================================================
-namespace {
-constexpr size_t kEncodedEnvelopeHeaderSize = 1 + 1 + sizeof(uint32_t);
-}  // namespace
-
 Dispatchable::Dispatchable(span<uint8_t> serialized) : serialized_(serialized) {
   Status s = cbor::CheckCBORMessage(serialized);
   if (!s.ok()) {
@@ -113,9 +109,8 @@ Dispatchable::Dispatchable(span<uint8_t> serialized) : serialized_(serialized) {
   // expect to see after we're done parsing the envelope contents.
   // This way we can compare and produce an error if the contents
   // didn't fit exactly into the envelope length.
-  const size_t pos_past_envelope = tokenizer.Status().pos +
-                                   kEncodedEnvelopeHeaderSize +
-                                   tokenizer.GetEnvelopeContents().size();
+  const size_t pos_past_envelope =
+      tokenizer.Status().pos + tokenizer.GetEnvelopeHeader().outer_size();
   tokenizer.EnterEnvelope();
   if (tokenizer.TokenTag() == cbor::CBORTokenTag::ERROR_VALUE) {
     status_ = tokenizer.Status();

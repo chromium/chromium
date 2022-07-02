@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -40,7 +41,6 @@
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_workarounds.h"
@@ -86,21 +86,21 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
 
   void AppendAsTraceFormat(std::string* out) const override {
     std::string tmp;
-    base::JSONWriter::Write(*value_, &tmp);
+    base::JSONWriter::Write(value_, &tmp);
     *out += tmp;
   }
 
  private:
-  explicit DevToolsChannelData(base::Value* value) : value_(value) {}
-  std::unique_ptr<base::Value> value_;
+  explicit DevToolsChannelData(base::Value value) : value_(std::move(value)) {}
+  base::Value value_;
 };
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
 DevToolsChannelData::CreateForChannel(GpuChannel* channel) {
-  std::unique_ptr<base::DictionaryValue> res(new base::DictionaryValue);
-  res->SetInteger("renderer_pid", channel->client_pid());
-  res->SetDouble("used_bytes", channel->GetMemoryUsage());
-  return base::WrapUnique(new DevToolsChannelData(res.release()));
+  base::Value::Dict res;
+  res.Set("renderer_pid", static_cast<int>(channel->client_pid()));
+  res.Set("used_bytes", static_cast<double>(channel->GetMemoryUsage()));
+  return base::WrapUnique(new DevToolsChannelData(base::Value(std::move(res))));
 }
 
 }  // namespace
@@ -127,7 +127,9 @@ CommandBufferStub::CommandBufferStub(
       route_id_(route_id),
       last_flush_id_(0),
       previous_processed_num_(0),
-      wait_set_get_buffer_count_(0) {}
+      wait_set_get_buffer_count_(0) {
+  process_delayed_work_timer_.SetTaskRunner(channel_->task_runner());
+}
 
 CommandBufferStub::~CommandBufferStub() {
   Destroy();
@@ -174,18 +176,6 @@ bool CommandBufferStub::IsScheduled() {
 }
 
 void CommandBufferStub::PollWork() {
-  // Post another delayed task if we have not yet reached the time at which
-  // we should process delayed work.
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  DCHECK(!process_delayed_work_time_.is_null());
-  if (process_delayed_work_time_ > current_time) {
-    channel_->task_runner()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
-        process_delayed_work_time_ - current_time);
-    return;
-  }
-  process_delayed_work_time_ = base::TimeTicks();
-
   PerformWork();
 }
 
@@ -247,10 +237,13 @@ void CommandBufferStub::ScheduleDelayedWork(base::TimeDelta delay) {
   }
 
   base::TimeTicks current_time = base::TimeTicks::Now();
-  // |process_delayed_work_time_| is set if processing of delayed work is
-  // already scheduled. Just update the time if already scheduled.
-  if (!process_delayed_work_time_.is_null()) {
-    process_delayed_work_time_ = current_time + delay;
+  // Just update the time if already scheduled.
+  if (process_delayed_work_timer_.IsRunning()) {
+    process_delayed_work_timer_.Stop();
+    process_delayed_work_timer_.Start(
+        FROM_HERE, current_time + delay,
+        base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
+        base::ExactDeadline(true));
     return;
   }
 
@@ -271,10 +264,10 @@ void CommandBufferStub::ScheduleDelayedWork(base::TimeDelta delay) {
     delay = base::TimeDelta();
   }
 
-  process_delayed_work_time_ = current_time + delay;
-  channel_->task_runner()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
-      delay);
+  process_delayed_work_timer_.Start(
+      FROM_HERE, current_time + delay,
+      base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
+      base::ExactDeadline(true));
 }
 
 bool CommandBufferStub::MakeCurrent() {
@@ -348,6 +341,11 @@ void CommandBufferStub::Destroy() {
   surface_ = nullptr;
 
   if (decoder_context_) {
+    auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
+    absl::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
+    if (gr_shader_cache)
+      gr_cache_use.emplace(gr_shader_cache, channel_->client_id());
+
     decoder_context_->Destroy(have_context);
     decoder_context_.reset();
   }

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -173,8 +173,6 @@ IGNORED_FILENAMES = (
 #
 # Case-insensitive, lower-case only.
 IGNORED_PATHS = (
-  'base/third_party/libevent/autogen.sh',
-  'base/third_party/libevent/test/test.sh',
   'native_client_sdk/src/build_tools/sdk_tools/third_party/fancy_urllib/'
       '__init__.py',
   'out/',
@@ -194,7 +192,7 @@ assert set(EXECUTABLE_PATHS) & set(NON_EXECUTABLE_PATHS) == set()
 
 VALID_CHARS = set(string.ascii_lowercase + string.digits + '/-_.')
 for paths in (EXECUTABLE_PATHS, NON_EXECUTABLE_PATHS, IGNORED_PATHS):
-  assert all([set(path).issubset(VALID_CHARS) for path in paths])
+  assert all(set(path).issubset(VALID_CHARS) for path in paths)
 
 git_name = 'git.bat' if sys.platform.startswith('win') else 'git'
 
@@ -217,6 +215,8 @@ def get_git_root(dir_path):
   root = capture([git_name, 'rev-parse', '--show-toplevel'], dir_path).strip()
   if root:
     return root
+  # Should not be reached.
+  return None
 
 
 def is_ignored(rel_path):
@@ -257,13 +257,14 @@ def has_executable_bit(full_path):
     # permissions are.
     dir_part, file_part = os.path.split(full_path)
     bits = capture([git_name, 'ls-files', '-s', file_part], dir_part).strip()
-    return bits.decode().startswith('100755')
+    return bits.startswith('100755')
   permission = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
   return bool(permission & os.stat(full_path).st_mode)
 
 
 def has_shebang_or_is_elf_or_mach_o(full_path):
-  """Returns if the file starts with #!/ or is an ELF or Mach-O binary.
+  """Returns a three-element tuple that indicates if the file starts with #!/,
+  is an ELF binary, or Mach-O binary.
 
   full_path is the absolute path to the file.
   """
@@ -271,16 +272,16 @@ def has_shebang_or_is_elf_or_mach_o(full_path):
     data = f.read(4)
     return (
         data[:3] == b'#!/' or data == b'#! /',
-        data == '\x7fELF',  # ELFMAG
+        data == b'\x7fELF',  # ELFMAG
         data in (
-            '\xfe\xed\xfa\xce',  # MH_MAGIC
-            '\xce\xfa\xed\xfe',  # MH_CIGAM
-            '\xfe\xed\xfa\xcf',  # MH_MAGIC_64
-            '\xcf\xfa\xed\xfe',  # MH_CIGAM_64
-            '\xca\xfe\xba\xbe',  # FAT_MAGIC
-            '\xbe\xba\xfe\xca',  # FAT_CIGAM
-            '\xca\xfe\xba\xbf',  # FAT_MAGIC_64
-            '\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
+            b'\xfe\xed\xfa\xce',  # MH_MAGIC
+            b'\xce\xfa\xed\xfe',  # MH_CIGAM
+            b'\xfe\xed\xfa\xcf',  # MH_MAGIC_64
+            b'\xcf\xfa\xed\xfe',  # MH_CIGAM_64
+            b'\xca\xfe\xba\xbe',  # FAT_MAGIC
+            b'\xbe\xba\xfe\xca',  # FAT_CIGAM
+            b'\xca\xfe\xba\xbf',  # FAT_MAGIC_64
+            b'\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
 
 
 def check_file(root_path, rel_path):
@@ -314,13 +315,13 @@ def check_file(root_path, rel_path):
   if must_be_executable(rel_path):
     if not bit:
       return result_dict('Must have executable bit set: %s' % exec_add)
-    return
+    return None
   if must_not_be_executable(rel_path):
     if bit:
       return result_dict('Must not have executable bit set: %s' % exec_remove)
-    return
+    return None
   if ignored_extension(rel_path):
-    return
+    return None
 
   # For the others, it depends on the file header.
   (shebang, elf, mach_o) = has_shebang_or_is_elf_or_mach_o(full_path)
@@ -334,6 +335,7 @@ def check_file(root_path, rel_path):
     if elf:
       return result_dict('Has ELF header but not executable bit: %s' % exec_add)
     # Mach-O is allowed to exist in the tree with or without an executable bit.
+  return None
 
 
 def check_files(root, files):
@@ -342,7 +344,7 @@ def check_files(root, files):
   return filter(None, gen)
 
 
-class ApiBase(object):
+class ApiBase:
   def __init__(self, root_dir, bare_output):
     self.root_dir = root_dir
     self.bare_output = bare_output
@@ -492,7 +494,7 @@ Examples:
     errors = api.check(start_dir)
 
     if not options.bare:
-      print('Processed %s files, %d files where tested for shebang/ELF/Mach-O '
+      print('Processed %s files, %d files were tested for shebang/ELF/Mach-O '
             'header' % (api.count, api.count_read_header))
 
   # Convert to an actual list.

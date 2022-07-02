@@ -38,6 +38,8 @@ using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
+// TODO(crbug.com/1326554): Update the tests in this file to cover
+// reading/writing of fields other than the note value.
 class PasswordNotesTableTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -75,12 +77,14 @@ TEST_F(PasswordNotesTableTest,
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kSecondNote));
 
-  EXPECT_EQ(table()->GetPasswordNote(FormPrimaryKey(1)), kSecondNote);
+  EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
+              ElementsAre(kSecondNote));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(), SizeIs(1));
 
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kThirdNote));
 
-  EXPECT_EQ(table()->GetPasswordNote(FormPrimaryKey(1)), kThirdNote);
+  EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
+              ElementsAre(kThirdNote));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(), SizeIs(1));
 }
 
@@ -93,26 +97,31 @@ TEST_F(PasswordNotesTableTest, ReloadingDatabasePersistsEntries) {
   ReloadDatabase();
 
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(),
-              ElementsAre(std::make_pair(FormPrimaryKey(1), kFirstNote),
-                          std::make_pair(FormPrimaryKey(2), kSecondNote)));
+              UnorderedElementsAre(
+                  std::make_pair(FormPrimaryKey(1),
+                                 std::vector<PasswordNote>({kFirstNote})),
+                  std::make_pair(FormPrimaryKey(2),
+                                 std::vector<PasswordNote>({kSecondNote}))));
 }
 
-TEST_F(PasswordNotesTableTest, GetPasswordNote) {
+TEST_F(PasswordNotesTableTest, GetPasswordNotes) {
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), kSecondNote));
 
-  EXPECT_EQ(table()->GetPasswordNote(FormPrimaryKey(1)), kFirstNote);
+  EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(1)),
+              ElementsAre(kFirstNote));
 
-  EXPECT_EQ(table()->GetPasswordNote(FormPrimaryKey(2)), kSecondNote);
+  EXPECT_THAT(table()->GetPasswordNotes(FormPrimaryKey(2)),
+              ElementsAre(kSecondNote));
 }
 
-TEST_F(PasswordNotesTableTest, GetPasswordNoteWhenParentIdDoesntExist) {
-  EXPECT_EQ(table()->GetPasswordNote(FormPrimaryKey(2)), absl::nullopt);
+TEST_F(PasswordNotesTableTest, GetPasswordNotesWhenParentIdDoesntExist) {
+  EXPECT_TRUE(table()->GetPasswordNotes(FormPrimaryKey(2)).empty());
 }
 
-TEST_F(PasswordNotesTableTest, RemovePasswordNote) {
+TEST_F(PasswordNotesTableTest, RemovePasswordNotes) {
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user3")), SizeIs(1));
@@ -120,20 +129,24 @@ TEST_F(PasswordNotesTableTest, RemovePasswordNote) {
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), kSecondNote));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(3), kThirdNote));
 
-  EXPECT_TRUE(table()->RemovePasswordNote(FormPrimaryKey(2)));
+  EXPECT_TRUE(table()->RemovePasswordNotes(FormPrimaryKey(2)));
 
-  EXPECT_THAT(table()->GetAllPasswordNotesForTest(),
-              ElementsAre(std::make_pair(FormPrimaryKey(1), kFirstNote),
-                          std::make_pair(FormPrimaryKey(3), kThirdNote)));
+  EXPECT_THAT(
+      table()->GetAllPasswordNotesForTest(),
+      ElementsAre(std::make_pair(FormPrimaryKey(1),
+                                 std::vector<PasswordNote>({kFirstNote})),
+                  std::make_pair(FormPrimaryKey(3),
+                                 std::vector<PasswordNote>({kThirdNote}))));
 }
 
-TEST_F(PasswordNotesTableTest, RemovePasswordNoteWithNonExistingKey) {
+TEST_F(PasswordNotesTableTest, RemovePasswordNotesWithNonExistingKey) {
   EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), kFirstNote));
 
-  EXPECT_FALSE(table()->RemovePasswordNote(FormPrimaryKey(1000)));
+  EXPECT_FALSE(table()->RemovePasswordNotes(FormPrimaryKey(1000)));
   EXPECT_THAT(table()->GetAllPasswordNotesForTest(),
-              ElementsAre(std::make_pair(FormPrimaryKey(1), kFirstNote)));
+              ElementsAre(std::make_pair(
+                  FormPrimaryKey(1), std::vector<PasswordNote>({kFirstNote}))));
 }
 
 }  // namespace

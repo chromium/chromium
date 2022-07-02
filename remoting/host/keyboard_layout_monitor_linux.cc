@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -64,10 +65,10 @@ class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
                      GdkKeymap*);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<KeyboardLayoutMonitorLinux> weak_ptr_;
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
-  GdkDisplay* display_ = nullptr;
-  GdkKeymap* keymap_ = nullptr;
+  raw_ptr<GdkDisplay> display_ = nullptr;
+  raw_ptr<GdkKeymap> keymap_ = nullptr;
   int current_group_ = 0;
   gulong handler_id_ = 0;
 };

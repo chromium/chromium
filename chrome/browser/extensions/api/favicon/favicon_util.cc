@@ -18,6 +18,7 @@
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 
@@ -27,17 +28,36 @@ class Extension;
 namespace favicon_util {
 
 namespace {
+
+int GetResourceID(int size_in_pixels) {
+  bool is_dark = false;
+  const ui::NativeTheme* native_theme =
+      ui::NativeTheme::GetInstanceForNativeUi();
+  int resource_id = is_dark ? IDR_DEFAULT_FAVICON : IDR_DEFAULT_FAVICON_DARK;
+  is_dark = native_theme && native_theme->ShouldUseDarkColors();
+  if (size_in_pixels >= 64) {
+    resource_id =
+        is_dark ? IDR_DEFAULT_FAVICON_DARK_64 : IDR_DEFAULT_FAVICON_64;
+  } else if (size_in_pixels >= 32) {
+    resource_id =
+        is_dark ? IDR_DEFAULT_FAVICON_DARK_32 : IDR_DEFAULT_FAVICON_32;
+  }
+  return resource_id;
+}
+
 void OnFaviconAvailable(FaviconCallback callback,
+                        int size_in_pixels,
                         const favicon_base::FaviconRawBitmapResult& result) {
   if (result.is_valid()) {
     std::move(callback).Run(result.bitmap_data);
   } else {
-    // TODO(solomonkinard): Use higher-res defaults for various sizes.
     std::move(callback).Run(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-            IDR_DEFAULT_FAVICON, ui::GetSupportedResourceScaleFactor(1)));
+            GetResourceID(size_in_pixels),
+            ui::GetSupportedResourceScaleFactor(1)));
   }
 }
+
 }  // namespace
 
 void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
@@ -54,8 +74,9 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
   }
 
   // Parse url. Restrict which parameters are exposed to the Extension API.
+  // pageUrl must be present.
   chrome::ParsedFaviconPath parsed;
-  if (!ParseFaviconPath(url, &parsed)) {
+  if (!ParseFaviconPath(url, &parsed) || parsed.page_url.empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -72,7 +93,8 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
   favicon_service->GetRawFaviconForPageURL(
       GURL(parsed.page_url), {favicon_base::IconType::kFavicon}, size_in_pixels,
       kAllowFaviconServerFallback,
-      base::BindOnce(&favicon_util::OnFaviconAvailable, std::move(callback)),
+      base::BindOnce(&favicon_util::OnFaviconAvailable, std::move(callback),
+                     size_in_pixels),
       tracker);
 }
 

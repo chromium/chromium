@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PRIVILEGED_CPP_OVERLAY_STRATEGY_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "services/viz/privileged/mojom/compositing/overlay_strategy.mojom-shared.h"
 
@@ -21,8 +22,10 @@ struct EnumTraits<viz::mojom::OverlayStrategy, viz::OverlayStrategy> {
         return viz::mojom::OverlayStrategy::kSingleOnTop;
       case viz::OverlayStrategy::kUnderlay:
         return viz::mojom::OverlayStrategy::kUnderlay;
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
       case viz::OverlayStrategy::kUnderlayCast:
         return viz::mojom::OverlayStrategy::kUnderlayCast;
+#endif
       default:
         break;
     }
@@ -42,9 +45,11 @@ struct EnumTraits<viz::mojom::OverlayStrategy, viz::OverlayStrategy> {
       case viz::mojom::OverlayStrategy::kUnderlay:
         *out = viz::OverlayStrategy::kUnderlay;
         return true;
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
       case viz::mojom::OverlayStrategy::kUnderlayCast:
         *out = viz::OverlayStrategy::kUnderlayCast;
         return true;
+#endif
     }
     return false;
   }

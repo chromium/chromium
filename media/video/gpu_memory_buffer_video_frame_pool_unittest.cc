@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -237,10 +238,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   static constexpr uint8_t kUValue = 50;
   static constexpr uint8_t kVValue = 150;
 
-  uint8_t* y_data_ = nullptr;
-  uint8_t* u_data_ = nullptr;
-  uint8_t* v_data_ = nullptr;
-  uint8_t* uv_data_ = nullptr;
+  raw_ptr<uint8_t> y_data_ = nullptr;
+  raw_ptr<uint8_t> u_data_ = nullptr;
+  raw_ptr<uint8_t> v_data_ = nullptr;
+  raw_ptr<uint8_t> uv_data_ = nullptr;
 
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;

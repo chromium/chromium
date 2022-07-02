@@ -209,7 +209,7 @@ class BASE_EXPORT File {
 
   // Simplified versions of Read() and friends (see below) that check the int
   // return value and just return a boolean. They return true if and only if
-  // the function read in / wrote out exactly |size| bytes of data.
+  // the function read in / wrote out exactly |data.size()| bytes of data.
   bool ReadAndCheck(int64_t offset, span<uint8_t> data);
   bool ReadAtCurrentPosAndCheck(span<uint8_t> data);
   bool WriteAndCheck(int64_t offset, span<const uint8_t> data);

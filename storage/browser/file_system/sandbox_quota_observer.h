@@ -71,10 +71,11 @@ class SandboxQuotaObserver : public FileUpdateObserver,
   const scoped_refptr<base::SequencedTaskRunner> update_notify_runner_;
 
   // Not owned; sandbox_file_util_ should have identical lifetime with this.
-  const raw_ptr<ObfuscatedFileUtil> sandbox_file_util_;
+  const raw_ptr<ObfuscatedFileUtil, DanglingUntriaged> sandbox_file_util_;
 
   // Not owned; file_system_usage_cache_ should have longer lifetime than this.
-  const raw_ptr<FileSystemUsageCache> file_system_usage_cache_;
+  const raw_ptr<FileSystemUsageCache, DanglingUntriaged>
+      file_system_usage_cache_;
 
   std::map<base::FilePath, int64_t> pending_update_notification_;
   base::OneShotTimer delayed_cache_update_helper_;

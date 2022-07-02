@@ -66,10 +66,10 @@ void FakeSoftwareVideoEncoder::Encode(
 
   if (encoded_frame->dependency == EncodedFrame::KEY) {
     encoded_frame->encoder_utilization = 1.0;
-    encoded_frame->lossy_utilization = 6.0;
+    encoded_frame->lossiness = 6.0;
   } else {
     encoded_frame->encoder_utilization = 0.8;
-    encoded_frame->lossy_utilization = 0.8;
+    encoded_frame->lossiness = 0.8;
   }
 }
 

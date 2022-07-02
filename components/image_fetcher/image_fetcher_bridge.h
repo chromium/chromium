@@ -45,6 +45,8 @@ class ImageFetcherBridge {
       const jint j_image_fetcher_config,
       const base::android::JavaParamRef<jstring>& j_url,
       const base::android::JavaParamRef<jstring>& j_client_name,
+      const jint j_frame_width,
+      const jint j_frame_height,
       const jint j_expiration_interval_mins,
       const base::android::JavaParamRef<jobject>& j_callback);
 

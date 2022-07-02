@@ -43,7 +43,7 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
   bool unnested_is_empty = true;
   switch (target_type) {
     case base::Value::Type::LIST:
-      unnested_is_empty = unnested->GetListDeprecated().empty();
+      unnested_is_empty = unnested->GetList().empty();
       break;
     case base::Value::Type::DICTIONARY:
       unnested_is_empty = unnested->DictEmpty();
@@ -138,13 +138,12 @@ absl::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
     return absl::nullopt;
   }
   const base::Value* const ppd_metadata_list = value.FindListKey("ppdMetadata");
-  if (!ppd_metadata_list ||
-      ppd_metadata_list->GetListDeprecated().size() == 0) {
+  if (!ppd_metadata_list || ppd_metadata_list->GetList().empty()) {
     return absl::nullopt;
   }
 
   ParsedIndexValues parsed_index_values;
-  for (const base::Value& v : ppd_metadata_list->GetListDeprecated()) {
+  for (const base::Value& v : ppd_metadata_list->GetList()) {
     absl::optional<ParsedIndexLeaf> parsed_index_leaf = ParsedIndexLeafFrom(v);
     if (parsed_index_leaf.has_value()) {
       parsed_index_values.values.push_back(parsed_index_leaf.value());
@@ -189,7 +188,7 @@ absl::optional<std::vector<std::string>> ParseLocales(
   }
 
   std::vector<std::string> locales;
-  for (const auto& iter : as_value.value().GetListDeprecated()) {
+  for (const auto& iter : as_value.value().GetList()) {
     if (!iter.is_string())
       continue;
     locales.push_back(iter.GetString());
@@ -281,7 +280,7 @@ absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
   }
 
   ParsedUsbVendorIdMap usb_vendor_ids;
-  for (const auto& usb_vendor_description : as_value->GetListDeprecated()) {
+  for (const auto& usb_vendor_description : as_value->GetList()) {
     if (!usb_vendor_description.is_dict()) {
       continue;
     }
@@ -310,7 +309,7 @@ absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
   }
 
   ParsedPrinters printers;
-  for (const auto& printer_value : as_value->GetListDeprecated()) {
+  for (const auto& printer_value : as_value->GetList()) {
     if (!printer_value.is_dict()) {
       continue;
     }

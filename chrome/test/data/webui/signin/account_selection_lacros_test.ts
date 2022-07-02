@@ -31,11 +31,10 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
                                      }));
     }
 
-    async function verifyLoadSignInProfileCreationFlowCalled(gaiaId: string) {
-      const args =
-          await browserProxy.whenCalled('loadSignInProfileCreationFlow');
+    async function verifySelectAccountLacrosCalled(gaiaId: string) {
+      const args = await browserProxy.whenCalled('selectAccountLacros');
       assertEquals(args[1], gaiaId);
-      browserProxy.resetResolver('loadSignInProfileCreationFlow');
+      browserProxy.resetResolver('selectAccountLacros');
     }
 
     setup(async function() {
@@ -94,12 +93,12 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertEquals(buttons.length, 3);
       // Click account buttons.
       buttons[1]!.click();
-      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-0');
+      await verifySelectAccountLacrosCalled('gaia-id-0');
       buttons[2]!.click();
-      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-1');
+      await verifySelectAccountLacrosCalled('gaia-id-1');
       // Click "Use another account".
       buttons[0]!.click();
-      await verifyLoadSignInProfileCreationFlowCalled('');
+      await verifySelectAccountLacrosCalled('');
     });
   });
 });

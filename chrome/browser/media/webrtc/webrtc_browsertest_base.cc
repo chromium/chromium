@@ -156,7 +156,8 @@ bool WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndAccept(
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   return kOkGotStream == result;
 }
 
@@ -169,7 +170,8 @@ bool WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndAcceptIfPrompted(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   return kOkGotStream == result;
 }
 
@@ -189,7 +191,8 @@ void WebRtcTestBase::GetUserMediaWithSpecificConstraintsAndDeny(
   GetUserMedia(tab_contents, constraints);
   EXPECT_TRUE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -204,7 +207,8 @@ void WebRtcTestBase::GetUserMediaAndDismiss(
   EXPECT_TRUE(observer.request_shown());
   // A dismiss should be treated like a deny.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -226,7 +230,8 @@ void WebRtcTestBase::GetUserMediaAndExpectAutoAcceptWithoutPrompt(
   GetUserMedia(tab_contents, kAudioVideoCallConstraints);
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kOkGotStream, result);
 }
 
@@ -248,7 +253,8 @@ void WebRtcTestBase::GetUserMediaAndExpectAutoDenyWithoutPrompt(
   GetUserMedia(tab_contents, kAudioVideoCallConstraints);
   EXPECT_FALSE(observer.request_shown());
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab_contents->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      tab_contents->GetPrimaryMainFrame(), "obtainGetUserMediaResult();",
+      &result));
   EXPECT_EQ(kFailedWithNotAllowedError, result);
 }
 
@@ -299,7 +305,7 @@ WebRtcTestBase::OpenPageAndGetUserMediaInNewTabWithConstraints(
   GetUserMedia(new_tab, constraints);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      new_tab->GetMainFrame(), "obtainGetUserMediaResult();", &result));
+      new_tab->GetPrimaryMainFrame(), "obtainGetUserMediaResult();", &result));
   EXPECT_EQ(kOkGotStream, result);
   return new_tab;
 }

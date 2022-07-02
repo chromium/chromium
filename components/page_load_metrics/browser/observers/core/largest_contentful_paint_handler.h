@@ -34,22 +34,22 @@ class ContentfulPaintTimingInfo {
 
   ContentfulPaintTimingInfo(LargestContentTextOrImage largest_content_type,
                             bool in_main_frame,
-                            blink::LargestContentfulPaintTypeMask type);
+                            blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(
       const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
       const LargestContentTextOrImage largest_content_type,
       double image_bpp,
       bool in_main_frame,
-      blink::LargestContentfulPaintTypeMask type);
+      blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const absl::optional<base::TimeDelta>&,
              const uint64_t& size,
-             blink::LargestContentfulPaintTypeMask type,
+             blink::LargestContentfulPaintType type,
              double image_bpp);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
-  blink::LargestContentfulPaintTypeMask Type() const { return type_; }
+  blink::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
   LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
   double ImageBPP() const { return image_bpp_; }
@@ -76,7 +76,8 @@ class ContentfulPaintTimingInfo {
   absl::optional<base::TimeDelta> time_;
   uint64_t size_;
   LargestContentTextOrImage text_or_image_;
-  blink::LargestContentfulPaintTypeMask type_ = 0;
+  blink::LargestContentfulPaintType type_ =
+      blink::LargestContentfulPaintType::kNone;
   double image_bpp_ = 0.0;
   bool in_main_frame_;
 };
@@ -84,7 +85,7 @@ class ContentfulPaintTimingInfo {
 class ContentfulPaint {
  public:
   explicit ContentfulPaint(bool in_main_frame,
-                           blink::LargestContentfulPaintTypeMask type);
+                           blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo& Text() { return text_; }
   const ContentfulPaintTimingInfo& Text() const { return text_; }
   ContentfulPaintTimingInfo& Image() { return image_; }
@@ -179,11 +180,6 @@ class LargestContentfulPaintHandler {
   void UpdateFirstInputOrScrollNotified(
       const absl::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);
-  void MergeForSubframes(
-      ContentfulPaintTimingInfo* inout_timing,
-      const absl::optional<base::TimeDelta>& candidate_new_time,
-      const uint64_t& candidate_new_size,
-      base::TimeDelta navigation_start_offset);
   bool IsValid(const absl::optional<base::TimeDelta>& time) {
     // When |time| is not present, this means that there is no current
     // candidate. If |time| is 0, it corresponds to an image that has not

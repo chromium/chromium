@@ -89,9 +89,7 @@
 
 using std::string;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 class QuicHttpStreamPeer {
  public:
@@ -150,7 +148,7 @@ std::vector<TestParams> GetTestParams() {
 // IPV4 address.
 class TestConnectionMigrationSocketFactory : public MockClientSocketFactory {
  public:
-  TestConnectionMigrationSocketFactory() : next_source_host_num_(1u) {}
+  TestConnectionMigrationSocketFactory() = default;
 
   TestConnectionMigrationSocketFactory(
       const TestConnectionMigrationSocketFactory&) = delete;
@@ -171,14 +169,14 @@ class TestConnectionMigrationSocketFactory : public MockClientSocketFactory {
   }
 
  private:
-  uint8_t next_source_host_num_;
+  uint8_t next_source_host_num_ = 1u;
 };
 
 // TestPortMigrationSocketFactory will vend sockets with incremental port
 // number.
 class TestPortMigrationSocketFactory : public MockClientSocketFactory {
  public:
-  TestPortMigrationSocketFactory() : next_source_port_num_(1u) {}
+  TestPortMigrationSocketFactory() = default;
 
   TestPortMigrationSocketFactory(const TestPortMigrationSocketFactory&) =
       delete;
@@ -199,7 +197,7 @@ class TestPortMigrationSocketFactory : public MockClientSocketFactory {
   }
 
  private:
-  uint16_t next_source_port_num_;
+  uint16_t next_source_port_num_ = 1u;
 };
 
 class QuicStreamFactoryTestBase : public WithTaskEnvironment {
@@ -229,8 +227,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       false),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
-        scoped_mock_network_change_notifier_(nullptr),
-        factory_(nullptr),
         scheme_host_port_(url::kHttpsScheme,
                           kDefaultServerHostName,
                           kDefaultServerPort),
@@ -238,11 +234,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         url2_(kServer2Url),
         url3_(kServer3Url),
         url4_(kServer4Url),
-        privacy_mode_(PRIVACY_MODE_DISABLED),
         failed_on_default_network_callback_(base::BindRepeating(
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
-        failed_on_default_network_(false),
         quic_params_(context_.params()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     FLAGS_quic_enable_chaos_protection = false;
@@ -943,7 +937,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       std::vector<HostResolverEndpointResult> endpoints,
       bool expect_success);
 
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<MockHostResolverBase> host_resolver_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<MockClientSocketFactory> socket_factory_;
@@ -966,11 +960,11 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   GURL url3_;
   GURL url4_;
 
-  PrivacyMode privacy_mode_;
+  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   NetLogWithSource net_log_;
   TestCompletionCallback callback_;
   const CompletionRepeatingCallback failed_on_default_network_callback_;
-  bool failed_on_default_network_;
+  bool failed_on_default_network_ = false;
   NetErrorDetails net_error_details_;
 
   raw_ptr<QuicParams> quic_params_;
@@ -1958,14 +1952,7 @@ TEST_P(QuicStreamFactoryTest, HttpsPoolingWithMatchingPins) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NoHttpsPoolingWithDifferentPins \
-  DISABLED_NoHttpsPoolingWithDifferentPins
-#else
-#define MAYBE_NoHttpsPoolingWithDifferentPins NoHttpsPoolingWithDifferentPins
-#endif
-TEST_P(QuicStreamFactoryTest, MAYBE_NoHttpsPoolingWithDifferentPins) {
+TEST_P(QuicStreamFactoryTest, NoHttpsPoolingWithDifferentPins) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -1986,6 +1973,7 @@ TEST_P(QuicStreamFactoryTest, MAYBE_NoHttpsPoolingWithDifferentPins) {
   url::SchemeHostPort server1(url::kHttpsScheme, kDefaultServerHostName, 443);
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName, 443);
   transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
@@ -11300,14 +11288,14 @@ TEST_P(QuicStreamFactoryTest, SharedCryptoConfig) {
   Initialize();
 
   std::vector<string> cannoncial_suffixes;
-  cannoncial_suffixes.push_back(string(".c.youtube.com"));
-  cannoncial_suffixes.push_back(string(".googlevideo.com"));
+  cannoncial_suffixes.emplace_back(".c.youtube.com");
+  cannoncial_suffixes.emplace_back(".googlevideo.com");
 
-  for (unsigned i = 0; i < cannoncial_suffixes.size(); ++i) {
+  for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r1_host_name("r1");
     string r2_host_name("r2");
-    r1_host_name.append(cannoncial_suffixes[i]);
-    r2_host_name.append(cannoncial_suffixes[i]);
+    r1_host_name.append(cannoncial_suffix);
+    r2_host_name.append(cannoncial_suffix);
 
     url::SchemeHostPort scheme_host_port1(url::kHttpsScheme, r1_host_name, 80);
     // Need to hold onto this through the test, to keep the
@@ -11340,14 +11328,14 @@ TEST_P(QuicStreamFactoryTest, SharedCryptoConfig) {
 TEST_P(QuicStreamFactoryTest, CryptoConfigWhenProofIsInvalid) {
   Initialize();
   std::vector<string> cannoncial_suffixes;
-  cannoncial_suffixes.push_back(string(".c.youtube.com"));
-  cannoncial_suffixes.push_back(string(".googlevideo.com"));
+  cannoncial_suffixes.emplace_back(".c.youtube.com");
+  cannoncial_suffixes.emplace_back(".googlevideo.com");
 
-  for (unsigned i = 0; i < cannoncial_suffixes.size(); ++i) {
+  for (const auto& cannoncial_suffix : cannoncial_suffixes) {
     string r3_host_name("r3");
     string r4_host_name("r4");
-    r3_host_name.append(cannoncial_suffixes[i]);
-    r4_host_name.append(cannoncial_suffixes[i]);
+    r3_host_name.append(cannoncial_suffix);
+    r4_host_name.append(cannoncial_suffix);
 
     url::SchemeHostPort scheme_host_port1(url::kHttpsScheme, r3_host_name, 80);
     // Need to hold onto this through the test, to keep the
@@ -11595,7 +11583,9 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
 
 // With different NetworkIsolationKeys enabled for HttpServerProperties, there
 // should only be one global CryptoCache per NetworkIsolationKey.
-TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkIsolationKey) {
+// TODO(https://crbug.com/1335453): The test is flaky.
+TEST_P(QuicStreamFactoryTest,
+       DISABLED_CryptoConfigCacheWithNetworkIsolationKey) {
   const char kUserAgentId1[] = "spoon";
   const char kUserAgentId2[] = "fork";
   const char kUserAgentId3[] = "another spoon";
@@ -11705,7 +11695,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkIsolationKey) {
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
+    network_isolation_keys.emplace_back(site, site);
 
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -11774,7 +11764,7 @@ TEST_P(QuicStreamFactoryTest,
   std::vector<NetworkIsolationKey> network_isolation_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_isolation_keys.push_back(NetworkIsolationKey(site, site));
+    network_isolation_keys.emplace_back(site, site);
   }
 
   const quic::QuicServerId kQuicServerId(
@@ -15006,5 +14996,4 @@ TEST_P(QuicStreamFactoryDnsAliasPoolingTest, IPPooling) {
   EXPECT_EQ(expected_dns_aliases2_, stream2->GetDnsAliases());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -32,10 +32,12 @@ android_library("nonembedded_java") {
   deps = [
     ":devui_java",
     ":services_java",
+    ":util_java",
     "//android_webview:android_webview_product_config_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
     "//android_webview:common_java",
+    "//android_webview:common_platform_services_java",
     "//android_webview/glue:glue_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
@@ -74,12 +76,12 @@ android_library("devui_java") {
     "java/src/org/chromium/android_webview/devui/util/UploadedCrashesInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/WebViewCrashInfoCollector.java",
     "java/src/org/chromium/android_webview/devui/util/WebViewCrashLogParser.java",
-    "java/src/org/chromium/android_webview/devui/util/WebViewPackageHelper.java",
   ]
   deps = [
     ":devui_resources",
     ":services_java",
     ":system_webview_manifest",
+    ":util_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
     "//android_webview:common_java",
@@ -118,6 +120,7 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/VariationsSeedServer.java",
   ]
   deps = [
+    ":devui_resources",
     ":system_webview_manifest",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
@@ -136,6 +139,12 @@ android_library("services_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  resources_package = "org.chromium.android_webview.devui"
+}
+
+android_library("util_java") {
+  sources = [ "java/src/org/chromium/android_webview/nonembedded_util/WebViewPackageHelper.java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 source_set("nonembedded") {

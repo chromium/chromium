@@ -102,6 +102,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
 
   // views::View:
   const char* GetClassName() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

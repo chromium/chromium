@@ -77,7 +77,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
                                          bool is_report_only);
 
  private:
-  void QueueNavigationReport(base::DictionaryValue body,
+  void QueueNavigationReport(base::Value::Dict body,
                              const std::string& endpoint,
                              bool is_report_only);
 

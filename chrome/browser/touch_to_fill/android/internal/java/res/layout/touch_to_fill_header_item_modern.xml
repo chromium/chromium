@@ -3,11 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- Please update R.dimens.touch_to_fill_sheet_height_single_credential
-     when modifying the margins image or text sizes. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:layout_marginTop="16dp"
@@ -29,6 +26,7 @@
       android:layout_gravity="center_horizontal"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
+      android:textAlignment="center"
       android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
   <org.chromium.ui.widget.TextViewWithLeading

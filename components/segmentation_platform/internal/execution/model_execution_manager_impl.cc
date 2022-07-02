@@ -16,24 +16,23 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
-using proto::OptimizationTarget;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
-    const base::flat_set<OptimizationTarget>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     ModelProviderFactory* model_provider_factory,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
@@ -41,7 +40,7 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     : clock_(clock),
       segment_database_(segment_database),
       model_updated_callback_(model_updated_callback) {
-  for (OptimizationTarget segment_id : segment_ids) {
+  for (SegmentId segment_id : segment_ids) {
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory->CreateProvider(segment_id);
     provider->InitAndFetchModel(base::BindRepeating(
@@ -54,21 +53,20 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
 ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;
 
 ModelProvider* ModelExecutionManagerImpl::GetProvider(
-    optimization_guide::proto::OptimizationTarget segment_id) {
+    proto::SegmentId segment_id) {
   auto it = model_providers_.find(segment_id);
   DCHECK(it != model_providers_.end());
   return it->second.get();
 }
 
 void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
-    optimization_guide::proto::OptimizationTarget segment_id,
+    proto::SegmentId segment_id,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnSegmentationModelUpdated");
   stats::RecordModelDeliveryReceived(segment_id);
-  if (segment_id == optimization_guide::proto::OptimizationTarget::
-                        OPTIMIZATION_TARGET_UNKNOWN) {
+  if (segment_id == proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     return;
   }
 
@@ -91,7 +89,7 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
 }
 
 void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
-    optimization_guide::proto::OptimizationTarget segment_id,
+    proto::SegmentId segment_id,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version,
     absl::optional<proto::SegmentInfo> old_segment_info) {
@@ -131,11 +129,14 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   new_metadata->CopyFrom(metadata);
   new_segment_info.set_model_version(model_version);
 
-  if (!old_model_version.has_value() ||
-      old_model_version.value() != model_version) {
-    new_segment_info.set_model_update_time_s(
-        clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  int64_t new_model_update_time_s =
+      clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds();
+  if (old_model_version.has_value() &&
+      old_model_version.value() == model_version &&
+      old_segment_info->has_model_update_time_s()) {
+    new_model_update_time_s = old_segment_info->model_update_time_s();
   }
+  new_segment_info.set_model_update_time_s(new_model_update_time_s);
 
   // We have a valid segment id, and the new metadata was valid, therefore the
   // new metadata should be valid. We are not allowed to invoke the callback

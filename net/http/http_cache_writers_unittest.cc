@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_response_info.h"
@@ -82,7 +83,6 @@ class WritersTest : public TestWithTaskEnvironment {
   enum class DeleteTransactionType { NONE, ACTIVE, WAITING, IDLE };
   WritersTest()
       : scoped_transaction_(kSimpleGET_Transaction),
-        disk_entry_(nullptr),
         test_cache_(std::make_unique<MockNetworkLayer>(),
                     std::make_unique<MockBackendFactory>()),
         request_(kSimpleGET_Transaction) {
@@ -142,7 +142,7 @@ class WritersTest : public TestWithTaskEnvironment {
     writers_->AddTransaction(transaction.get(), parallel_writing_pattern_,
                              transaction->priority(), info);
     writers_->SetNetworkTransaction(transaction.get(),
-                                    std::move(network_transaction));
+                                    std::move(network_transaction), nullptr);
     EXPECT_TRUE(writers_->HasTransaction(transaction.get()));
     transactions_.push_back(std::move(transaction));
   }
@@ -497,7 +497,7 @@ class WritersTest : public TestWithTaskEnvironment {
   ScopedMockTransaction scoped_transaction_;
   MockHttpCache cache_;
   std::unique_ptr<HttpCache::Writers> writers_;
-  disk_cache::Entry* disk_entry_;
+  disk_cache::Entry* disk_entry_ = nullptr;
   std::unique_ptr<HttpCache::ActiveEntry> entry_;
   TestHttpCache test_cache_;
 

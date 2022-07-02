@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1835B2762851F8B80015A7E4 /* popup_visible_suggestion_count.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1835B2752851F8B80015A7E4 /* popup_visible_suggestion_count.swift */; };
 		593C4C1327C5639000FBE617 /* autocomplete_result_consumer.h in Sources */ = {isa = PBXBuildFile; fileRef = 593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */; };
 		593C4C1427C5639000FBE617 /* autocomplete_suggestion.h in Sources */ = {isa = PBXBuildFile; fileRef = 593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */; };
 		593C4C1527C5639000FBE617 /* omnibox_icon.h in Sources */ = {isa = PBXBuildFile; fileRef = 593C4C1227C5638000FBE617 /* omnibox_icon.h */; };
@@ -100,6 +101,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1835B2752851F8B80015A7E4 /* popup_visible_suggestion_count.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_visible_suggestion_count.swift; path = ../../shared/popup_visible_suggestion_count.swift; sourceTree = "<group>"; };
 		593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = autocomplete_result_consumer.h; path = ../../autocomplete_result_consumer.h; sourceTree = "<group>"; };
 		593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = autocomplete_suggestion.h; path = ../../autocomplete_suggestion.h; sourceTree = "<group>"; };
 		593C4C1227C5638000FBE617 /* omnibox_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = omnibox_icon.h; path = ../../omnibox_icon.h; sourceTree = "<group>"; };
@@ -217,6 +219,7 @@
 				8726E4BC282941860057AE77 /* toolbar_constants.mm */,
 				59C4A9BE27BFF04F0080C045 /* popup_model.swift */,
 				59C4A9BC27BFF04F0080C045 /* popup_view.swift */,
+				1835B2752851F8B80015A7E4 /* popup_visible_suggestion_count.swift */,
 				87338E5428218540009434D1 /* ntp_home_constant.h */,
 				87338E5328218540009434D1 /* ntp_home_constant.mm */,
 				87338E4A28217A55009434D1 /* popup_ui_configuration.swift */,
@@ -480,6 +483,7 @@
 				593C4C1327C5639000FBE617 /* autocomplete_result_consumer.h in Sources */,
 				593C4C1427C5639000FBE617 /* autocomplete_suggestion.h in Sources */,
 				593C4C1527C5639000FBE617 /* omnibox_icon.h in Sources */,
+				1835B2762851F8B80015A7E4 /* popup_visible_suggestion_count.swift in Sources */,
 				87EC610C2805F05E00F70AC2 /* popup_ui_variation.swift in Sources */,
 				93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */,
 				93BCA07127D2D4C300CE8602 /* fake_omnibox_icon.swift in Sources */,

@@ -48,6 +48,8 @@ struct NET_EXPORT DnsConfigOverrides {
 
   // Overriding values. See same-named fields in DnsConfig for explanations.
   absl::optional<std::vector<IPEndPoint>> nameservers;
+  absl::optional<bool> dns_over_tls_active;
+  absl::optional<std::string> dns_over_tls_hostname;
   absl::optional<std::vector<std::string>> search;
   absl::optional<bool> append_to_multi_label_name;
   absl::optional<int> ndots;

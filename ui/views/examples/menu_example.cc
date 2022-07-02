@@ -6,26 +6,28 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 using l10n_util::GetStringUTF16;
 using l10n_util::GetStringUTF8;
 
-namespace views {
-namespace examples {
-
-namespace {
+namespace views::examples {
 
 class ExampleMenuModel : public ui::SimpleMenuModel,
                          public ui::SimpleMenuModel::Delegate {
@@ -63,7 +65,7 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
 
 class ExampleMenuButton : public MenuButton {
  public:
-  explicit ExampleMenuButton(const std::u16string& test);
+  explicit ExampleMenuButton(const std::u16string& test = std::u16string());
 
   ExampleMenuButton(const ExampleMenuButton&) = delete;
   ExampleMenuButton& operator=(const ExampleMenuButton&) = delete;
@@ -78,6 +80,15 @@ class ExampleMenuButton : public MenuButton {
   std::unique_ptr<ExampleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, ExampleMenuButton, MenuButton)
+END_VIEW_BUILDER
+
+}  // namespace views::examples
+
+DEFINE_VIEW_BUILDER(/* no export */, views::examples::ExampleMenuButton)
+
+namespace views::examples {
 
 // ExampleMenuModel ---------------------------------------------------------
 
@@ -184,9 +195,13 @@ void ExampleMenuButton::ButtonPressed() {
   menu_runner_ =
       std::make_unique<MenuRunner>(GetMenuModel(), MenuRunner::HAS_MNEMONICS);
 
+  gfx::Point screen_loc;
+  views::View::ConvertPointToScreen(this, &screen_loc);
+  gfx::Rect bounds(screen_loc, this->size());
+
   menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(), button_controller(),
-                          gfx::Rect(GetMenuPosition(), gfx::Size()),
-                          MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
+                          bounds, MenuAnchorPosition::kTopLeft,
+                          ui::MENU_SOURCE_NONE);
 }
 
 ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {
@@ -195,19 +210,27 @@ ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {
   return menu_model_.get();
 }
 
-}  // namespace
-
 MenuExample::MenuExample()
     : ExampleBase(GetStringUTF8(IDS_MENU_SELECT_LABEL).c_str()) {}
 
 MenuExample::~MenuExample() = default;
 
 void MenuExample::CreateExampleView(View* container) {
+  container->SetLayoutManager(std::make_unique<FlexLayout>())
+      ->SetInteriorMargin(gfx::Insets(10))
+      .SetCrossAxisAlignment(LayoutAlignment::kStart);
+
   // We add a button to open a menu.
-  container->SetLayoutManager(std::make_unique<FillLayout>());
-  container->AddChildView(std::make_unique<ExampleMenuButton>(
-      GetStringUTF16(IDS_MENU_BUTTON_LABEL)));
+  auto example_menu_button = Builder<ExampleMenuButton>()
+                                 .SetText(GetStringUTF16(IDS_MENU_BUTTON_LABEL))
+                                 .Build();
+
+  example_menu_button->SetBorder(CreatePaddedBorder(
+      CreateThemedRoundedRectBorder(1, 5, kColorMenuButtonExampleBorder),
+      LayoutProvider::Get()->GetInsetsMetric(
+          InsetsMetric::INSETS_LABEL_BUTTON)));
+
+  container->AddChildView(std::move(example_menu_button));
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples

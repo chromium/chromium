@@ -19,7 +19,6 @@ preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   defines = [ "enable_ink=$enable_ink" ]
   in_files = ts_files
@@ -44,39 +43,12 @@ html_to_wrapper("html_wrapper_files") {
 # which aren't passed to ts_library().
 print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
 preprocess_if_expr("preprocess_print_preview_html_css") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
   in_files = [
     "index_pp.html",
     "index.css",
   ]
-}
-
-# Build the grdp for Print Preview.
-generate_grd("build_print_preview_grdp") {
-  # Get all the shared files out of the tsc folder.
-  input_files = print_preview_grdp_input_files
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-
-  manifest_files = [ "$target_gen_dir/$print_preview_html_css_manifest" ]
-  deps = [
-    ":build_ts",
-    ":preprocess_print_preview_html_css",
-  ]
-  resource_path_rewrites = [
-    "index_pp.html|index.html",
-
-    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
-    # and Print Preview viewer can use the same main.js source.
-    "pdf_viewer_pp.js|pdf_viewer_wrapper.js",
-  ]
-  grd_prefix = "print_preview_pdf"
-
-  # Print Preview expects to import from "pdf/" relative path
-  resource_path_prefix = "pdf"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
 }
 
 if (optimize_webui) {
@@ -146,38 +118,6 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  input_files = [
-    "index.css",
-    "index.html",
-  ]
-  if (enable_ink) {
-    input_files += [ "ink/index.html" ]
-  }
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [
-      ":build",
-      ":build_excluded_grdp",
-    ]
-    resource_path_rewrites =
-        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    grdp_files = [ "$target_gen_dir/excluded_resources.grdp" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-
-  deps += [ ":build_internal_plugin" ]
-  manifest_files += [ "$target_gen_dir/$build_internal_plugin_manifest" ]
-
-  grd_prefix = "pdf"
-  out_grd = "$target_gen_dir/resources.grd"
-  resource_path_prefix = "pdf"
-}
-
 grit("resources") {
   defines = chrome_grit_defines + [ "enable_ink=$enable_ink" ]
 
@@ -219,4 +159,63 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+# Build the grdp for Print Preview.
+generate_grd("build_print_preview_grdp") {
+  # Get all the shared files out of the tsc folder.
+  input_files = print_preview_grdp_input_files
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+
+  manifest_files = [ "$target_gen_dir/$print_preview_html_css_manifest" ]
+  deps = [
+    ":build_ts",
+    ":preprocess_print_preview_html_css",
+  ]
+  resource_path_rewrites = [
+    "index_pp.html|index.html",
+
+    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
+    # and Print Preview viewer can use the same main.js source.
+    "pdf_viewer_pp.js|pdf_viewer_wrapper.js",
+  ]
+  grd_prefix = "print_preview_pdf"
+
+  # Print Preview expects to import from "pdf/" relative path
+  resource_path_prefix = "pdf"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "index.css",
+    "index.html",
+  ]
+  if (enable_ink) {
+    input_files += [ "ink/index.html" ]
+  }
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [
+      ":build",
+      ":build_excluded_grdp",
+    ]
+    resource_path_rewrites =
+        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files = [ "$target_gen_dir/excluded_resources.grdp" ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
+
+  deps += [ ":build_internal_plugin" ]
+  manifest_files += [ "$target_gen_dir/$build_internal_plugin_manifest" ]
+
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grd"
+  resource_path_prefix = "pdf"
 }

@@ -8,7 +8,6 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/system_shadow.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -47,7 +46,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
-  init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
   init_params.reroute_event_handler = true;
   init_params.translucent = true;
@@ -66,17 +64,6 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
 
-  // Add a system shadow.
-  shadow_ = SystemShadow::CreateShadowForWidget(
-      bubble_widget_, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(init_params.corner_radius);
-
-  gfx::Rect shadow_bounds = gfx::Rect(GetBoundsInScreen().size());
-  // Shift the shadow origin by the insets.
-  gfx::Insets insets = bubble_view_->GetBorderInsets();
-  shadow_bounds.Offset(gfx::Vector2d(insets.left(), insets.top()));
-  shadow_->SetContentBounds(shadow_bounds);
-
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
 
@@ -89,6 +76,9 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 }
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
+  if (controller_->showing_calendar_view())
+    tray_->NotifyLeavingCalendarView();
+
   Shell::Get()->activation_client()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
@@ -176,6 +166,11 @@ void UnifiedSystemTrayBubble::ShowCalendarView(
   if (!bubble_widget_)
     return;
 
+  if (event_source == calendar_metrics::CalendarEventSource::kKeyboard) {
+    bubble_view_->SetCanActivate(true);
+    bubble_widget_->Activate();
+  }
+
   DCHECK(unified_view_);
   DCHECK(controller_);
   controller_->ShowCalendarView(show_source, event_source);
@@ -245,15 +240,6 @@ void UnifiedSystemTrayBubble::OnMessageCenterActivated() {
 
 void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
   UpdateBubbleBounds();
-}
-
-void UnifiedSystemTrayBubble::OnWidgetBoundsChanged(
-    views::Widget* widget,
-    const gfx::Rect& new_bounds) {
-  // Update the shadow bounds.
-  gfx::Rect shadow_bounds = gfx::Rect(new_bounds.size());
-  shadow_bounds.Inset(bubble_view_->GetBorderInsets());
-  shadow_->SetContentBounds(shadow_bounds);
 }
 
 void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {

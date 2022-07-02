@@ -203,12 +203,12 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
   return names;
 }
 
-base::Value PolicyUIHandler::GetPolicyValues() const {
+base::Value::List PolicyUIHandler::GetPolicyValues() const {
   auto client = std::make_unique<PolicyConversionsClientIOS>(
       ChromeBrowserState::FromWebUIIOS(web_ui()));
   return policy::ArrayPolicyConversions(std::move(client))
       .EnableConvertValues(true)
-      .ToValue();
+      .ToValueList();
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
@@ -223,7 +223,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 
 void PolicyUIHandler::SendPolicies() {
   base::Value names = GetPolicyNames();
-  base::Value values = GetPolicyValues();
+  base::Value values = base::Value(GetPolicyValues());
   std::vector<const base::Value*> args;
   args.push_back(&names);
   args.push_back(&values);
@@ -238,8 +238,7 @@ base::Value PolicyUIHandler::GetStatusValue(bool include_box_legend_key) const {
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
-  if (machine_status->HasKey("machine"))
-    machine_status->RemoveKey("machine");
+  machine_status->RemoveKey("machine");
 
   base::DictionaryValue status;
   if (!machine_status->DictEmpty()) {

@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "ui/gfx/image/image_skia.h"
@@ -40,7 +41,7 @@ class ChromeAppListItem {
     void SetName(const std::string& name);
 
    private:
-    ChromeAppListItem* const item_;
+    const raw_ptr<ChromeAppListItem> item_;
   };
 
   ChromeAppListItem(Profile* profile,
@@ -63,7 +64,7 @@ class ChromeAppListItem {
   const std::string& name() const { return metadata_->name; }
   ash::AppStatus app_status() const { return metadata_->app_status; }
   bool is_folder() const { return metadata_->is_folder; }
-  bool is_persistent() const { return metadata_->is_persistent; }
+  bool is_system_folder() const { return metadata_->is_system_folder; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   const ash::IconColor& icon_color() const { return metadata_->icon_color; }
   bool is_page_break() const { return metadata_->is_page_break; }
@@ -83,7 +84,7 @@ class ChromeAppListItem {
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsPageBreak(bool is_page_break);
-  void SetIsPersistent(bool is_persistent);
+  void SetIsSystemFolder(bool is_system_folder);
   void SetIsNewInstall(bool is_new_install);
 
   // The following methods won't make changes to Ash and it should be called
@@ -158,8 +159,8 @@ class ChromeAppListItem {
 
  private:
   std::unique_ptr<ash::AppListItemMetadata> metadata_;
-  Profile* profile_;
-  AppListModelUpdater* model_updater_ = nullptr;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_CHROME_APP_LIST_ITEM_H_

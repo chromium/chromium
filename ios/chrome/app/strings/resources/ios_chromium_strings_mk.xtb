@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
 <translation id="3567399274263440288">За да го извлечете максимумот од Chromium, најавете се на Chromium со вашата сметка на Google.</translation>
+<translation id="3619462831205197427">Најавете се на сајтов, на вашата сметка на Google и на Chromium.</translation>
 <translation id="3639997914391704523">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> користеше Chromium и остави обележувачи, лозинки и други поставки на уредов.</translation>
 <translation id="3805899903892079518">Chromium нема пристап до фотографиите или видеата. Овозможете пристап во Поставки на iOS &gt; Приватност &gt; Фотографии.</translation>
@@ -77,7 +78,6 @@
 1. Отворете „Поставки“
 2. Допрете „Стандардна апликација за прелистување“
 3. Изберете Chromium.</translation>
-<translation id="6155422572367400359">Најавете се на сајтов, на вашата сметка на Google и на Chromium. Синхронизацијата може да ја вклучите подоцна.</translation>
 <translation id="6183442264225539303">Најавете се на сајтов и на Chromium. Синхронизацијата може да ја вклучите подоцна.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
 <translation id="632825460376924298">Дозволете најавување на Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Да се избришат податоците на Chromium од уредов?</translation>
 <translation id="8175055321229419309">Совет: <ph name="BEGIN_LINK" />преместете го Chromium во приклучокот<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не може да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
+<translation id="8308172444429103994">Совет за Chromium. Најавувајте се побрзо со бирање на зачуваната лозинка најгоре на тастатурата.</translation>
 <translation id="858114650497379505">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки“ во други апликации на вашиот iPhone.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="865600487977764604">Ве заштитува на Chromium и може да се користи за да ја подобри вашата безбедност на други апликации на Google кога сте најавени.</translation>

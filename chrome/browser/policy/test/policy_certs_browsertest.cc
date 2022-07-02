@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
@@ -27,10 +28,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/onc/onc_certificate_importer.h"
-#include "chromeos/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -120,7 +121,7 @@ class NetworkCertLoaderTestObserver
   void Wait() { run_loop_.Run(); }
 
  private:
-  chromeos::NetworkCertLoader* network_cert_loader_;
+  raw_ptr<chromeos::NetworkCertLoader> network_cert_loader_;
   base::RunLoop run_loop_;
 };
 
@@ -374,7 +375,7 @@ class MultiProfilePolicyProviderHelper {
       std::move(closure).Run();
     }
   }
-  Profile* profile_1_ = nullptr;
+  raw_ptr<Profile> profile_1_ = nullptr;
   Profile* profile_2_ = nullptr;
 
   testing::NiceMock<MockConfigurationPolicyProvider> policy_for_profile_1_;

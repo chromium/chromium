@@ -14,11 +14,12 @@ static_library("shopping_list") {
 
   deps = [
     "//base",
-    "//chrome/browser/power_bookmarks:proto",
     "//chrome/common",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/power_bookmarks/core:proto",
     "//components/resources",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
@@ -39,8 +40,9 @@ static_library("unit_tests") {
   deps = [
     ":shopping_list",
     "//base/test:test_support",
-    "//chrome/browser/power_bookmarks:proto",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
+    "//components/power_bookmarks/core:proto",
     "//content/public/browser",
     "//testing/gtest",
   ]

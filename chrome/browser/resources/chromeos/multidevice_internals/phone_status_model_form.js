@@ -156,6 +156,7 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+    this.setFakePhoneModel_();
   },
 
   /** @private */

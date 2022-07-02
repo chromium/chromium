@@ -12,65 +12,57 @@
   }
 
   .data-collector-list {
-    height: 148px;
+    /* Using negative margin to cancel out the padding of the top-most item if
+    the list to set the spacing between items to 8px.*/
+    margin-top: -8px;
   }
 
-  #generatedURL {
-    height: 32px;
-    width: 520px;
+  #info-text {
+    color: var(--cr-secondary-text-color);
+    display: inline;
   }
 
-  #generatedURL[disabled] {
-    /* Set opacity to 1 for disabled state since we use this element disabled
-     * by default.*/
-    --cr-disabled-opacity: 1;
-  }
-
-  cr-button {
+  .navigation-buttons {
     margin-inline-start: 12px;
+    margin-top: -8px;
   }
 </style>
 
-<h2>Generate support tool URL</h2>
+<h1 tabindex="0">Get a Support Tool link</h1>
 <div class="support-tool-title">Support Case ID</div>
 <cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20" disabled="[[urlGenerated_]]">
+  spellcheck="false" maxlength="20" aria-label="Support Case ID">
 </cr-input>
-<div class="support-tool-title">Data sources to collect</div>
-<iron-list class="data-collector-list" items="[[dataCollectors_]]">
-  <template>
-    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
-        disabled="[[urlGenerated_]]">
+<div id="data-sources-title" class="support-tool-title" tabindex="0">
+  Data sources to collect
+</div>
+<div class="data-collector-list" aria-labelledby="data-sources-title">
+  <template is="dom-repeat" items="[[dataCollectors_]]">
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}" 
+        on-click="onDataCollectorItemClicked_" tabindex="0">
       [[item.name]]
     </cr-checkbox>
   </template>
-</iron-list>
-<div class="support-tool-title">Generated URL</div>
-<!-- Use cr-input in disabled mode since we don't want to accept input but want
-  to have the same styling as cr-input.-->
-<cr-input id="generatedURL" disabled="true" value="[[generatedURL_]]">
-</cr-input>
-<div class="navigation-buttons" hidden="[[urlGenerated_]]">
-  <cr-button id="generateButton" class="action-button"
-      on-click="onGenerateClick_">
-    Generate URL
+</div>
+
+<div class="support-tool-title" tabindex="0">Get a link</div>
+<div>
+  <p id="info-text">
+    Copy and send this link to the user to collect the logs.
+  </p>
+  <cr-button id="copyURLButton" class="navigation-buttons action-button"
+      on-click="onCopyURLClick_" disabled="[[buttonDisabled_]]">
+    Copy link
   </cr-button>
 </div>
-<div class="navigation-buttons" hidden="[[!urlGenerated_]]">
-  <cr-button id="backButton" on-click="onBackClick_">
-    Back
-  </cr-button>
-  <cr-button id="copyURLButton" class="action-button"
-      on-click="onCopyURLClick_">
-    Copy URL
-  </cr-button>
-</div>
-<cr-toast id="copyToast" duration="5000">
-  <span>URL copied to clipboard</span>
+<cr-toast id="copyToast" duration="5000" tabindex="0"
+    aria-labelledby="link-copied-message">
+  <span id="link-copied-message">Link copied</span>
 </cr-toast>
-<cr-toast id="errorMessageToast" duration="0">
-  <span>[[errorMessage_]]</span>
-  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
-      iron-icon="cr:close">
-  </cr-icon-button>
+<cr-toast id="errorMessageToast" duration="0" tabindex="0"
+    aria-labelledby="error-message">
+  <span id="error-message">[[errorMessage_]]</span>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
 </cr-toast>

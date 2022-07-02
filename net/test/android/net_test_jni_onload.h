@@ -7,12 +7,10 @@
 
 #include <jni.h>
 
-namespace net {
-namespace test {
+namespace net::test {
 
 bool OnJNIOnLoadInit();
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_TEST_ANDROID_NET_TEST_JNI_ONLOAD_H_

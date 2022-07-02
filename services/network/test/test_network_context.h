@@ -112,8 +112,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       ClearDomainReliabilityCallback callback) override {}
   void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
                            ClearTrustTokenDataCallback callback) override {}
-  void GetDomainReliabilityJSON(
-      GetDomainReliabilityJSONCallback callback) override {}
   void SetDocumentReportingEndpoints(
       const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
@@ -128,7 +126,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const absl::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
-      base::Value body) override {}
+      base::Value::Dict body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override {}
@@ -307,8 +305,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override {}
 #endif
-  void GetOriginPolicyManager(
-      mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) override {}
 };
 
 }  // namespace network

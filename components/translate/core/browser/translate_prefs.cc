@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
@@ -32,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_locale_settings.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,7 +70,7 @@ void PurgeUnsupportedLanguagesInLanguageFamily(base::StringPiece language,
     // If at least one of these same-family languages in |list| is supported by
     // Accept-Languages, then that means that none of the languages in this
     // family should be purged.
-    if (TranslateAcceptLanguages::CanBeAcceptLanguage(lang))
+    if (language::AcceptLanguagesService::CanBeAcceptLanguage(lang))
       return;
   }
 
@@ -640,7 +640,10 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
   for (auto entry : dict->DictItems()) {
     absl::optional<base::Time> time = base::ValueToTime(entry.second);
     if (!time) {
-      NOTREACHED();
+      // Badly formatted preferences may be synced from the server, see
+      // https://crbug.com/1295549
+      LOG(ERROR) << "Preference " << kPrefNeverPromptSitesWithTime
+                 << " has invalid format. Ignoring.";
       continue;
     }
     if (begin <= *time && *time < end)
@@ -875,42 +878,14 @@ void TranslatePrefs::GetUserSelectedLanguageList(
   language_prefs_->GetUserSelectedLanguagesList(languages);
 }
 
-bool TranslatePrefs::CanTranslateLanguage(
-    TranslateAcceptLanguages* accept_languages,
-    base::StringPiece language) {
-  // Languages not on the blocklist can always be translated.
-  if (!IsBlockedLanguage(language))
-    return true;
-
-  // Languages not on the Accept-Language list should not be blocked unless the
-  // detailed language settings are showing or the language can not be on the
-  // Accept-Language list (this is true for languages that do not have a ICU
-  // localization for the current UI locale.
-  bool can_be_accept_language =
-      TranslateAcceptLanguages::CanBeAcceptLanguage(language);
-  bool is_accept_language = accept_languages->IsAcceptLanguage(language);
-  if (!is_accept_language && can_be_accept_language &&
-      !IsDetailedLanguageSettingsEnabled())
-    return true;
-
+bool TranslatePrefs::CanTranslateLanguage(base::StringPiece language) {
   // Under this experiment, translate English page even though English may be
   // blocked.
   if (language == "en" && language::ShouldForceTriggerTranslateOnEnglishPages(
                               GetForceTriggerOnEnglishPagesCount()))
     return true;
-  return false;
-}
 
-// static
-bool TranslatePrefs::IsDetailedLanguageSettingsEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(language::kDetailedLanguageSettings);
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return base::FeatureList::IsEnabled(
-      language::kDesktopDetailedLanguageSettings);
-#else
-  return false;
-#endif
+  return !IsBlockedLanguage(language);
 }
 
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece source_language,

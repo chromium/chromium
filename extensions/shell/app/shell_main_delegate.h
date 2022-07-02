@@ -44,11 +44,6 @@ class ShellMainDelegate : public content::ContentMainDelegate {
 #if BUILDFLAG(IS_MAC)
   void PreBrowserMain() override;
 #endif
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void PostEarlyInitialization(bool is_running_tests) override;
-#endif
 
  private:
   // |process_type| is zygote, renderer, utility, etc. Returns true if the

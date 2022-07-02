@@ -471,7 +471,7 @@ class FileSystemURLLoaderFactoryTest
   }
 
   RenderFrameHost* render_frame_host() const {
-    return shell()->web_contents()->GetMainFrame();
+    return shell()->web_contents()->GetPrimaryMainFrame();
   }
 
   std::unique_ptr<network::TestURLLoaderClient> TestLoadHelper(
@@ -506,7 +506,7 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   // Owned by `file_system_context_` and only usable on `blocking_task_runner_`.
-  raw_ptr<storage::FileSystemFileUtil> file_util_ = nullptr;
+  raw_ptr<storage::FileSystemFileUtil, DanglingUntriaged> file_util_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

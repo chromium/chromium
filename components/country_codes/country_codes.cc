@@ -12,7 +12,7 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -135,7 +135,7 @@ int GetCountryIDFromPrefs(PrefService* prefs) {
   return prefs->GetInteger(country_codes::kCountryIDAtInstall);
 }
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(country_codes::kCountryIDAtInstall,
                                 kCountryIDUnknown);
 }

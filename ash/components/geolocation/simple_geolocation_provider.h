@@ -15,7 +15,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -29,7 +29,7 @@ namespace ash {
 // SimpleGeolocationProvider must be created and used on the same thread.
 //
 // Note: this should probably be a singleton to monitor requests rate.
-// But as it is used only diring ChromeOS Out-of-Box, it can be owned by
+// But as it is used only during ChromeOS Out-of-Box, it can be owned by
 // WizardController for now.
 class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationProvider {
  public:

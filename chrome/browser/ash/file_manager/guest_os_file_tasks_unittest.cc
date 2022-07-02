@@ -25,10 +25,8 @@ namespace file_manager {
 namespace file_tasks {
 namespace {
 
-static constexpr auto VM_TERMINA =
-    guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA;
-static constexpr auto PLUGIN_VM =
-    guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM;
+static constexpr auto VM_TERMINA = guest_os::VmType::TERMINA;
+static constexpr auto PLUGIN_VM = guest_os::VmType::PLUGIN_VM;
 
 }  // namespace
 
@@ -57,7 +55,7 @@ class GuestOsFileTasksTest : public testing::Test {
               const std::string& name,
               const std::vector<std::string>& mimes,
               const std::vector<std::string>& extensions,
-              guest_os::GuestOsRegistryService::VmType vm_type) {
+              guest_os::VmType vm_type) {
     // crostini.registry {<id>: {container_name: "penguin", name: {"": <name>},
     //                           mime_types: [<mime>,], vm_name: "termina"}}
     DictionaryPrefUpdate update(profile_.GetPrefs(),
@@ -105,7 +103,7 @@ class GuestOsFileTasksTest : public testing::Test {
   std::vector<GURL> urls_;
   std::vector<std::string> app_ids_;
   std::vector<std::string> app_names_;
-  std::vector<guest_os::GuestOsRegistryService::VmType> app_vm_types_;
+  std::vector<guest_os::VmType> app_vm_types_;
   crostini::FakeCrostiniFeatures fake_crostini_features_;
   plugin_vm::FakePluginVmFeatures fake_plugin_vm_features_;
 };

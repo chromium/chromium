@@ -10,6 +10,7 @@
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
+#include "base/memory/values_equivalent.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -85,7 +85,7 @@ bool IsAppDisabled(const std::string& app_id) {
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (app_id == ash::kChromeUITrustedProjectorSwaAppId)
       return false;
   }
@@ -204,7 +204,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> app_ids =
-      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
+      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
 
   if (app_ids.empty())
     return false;
@@ -228,10 +228,10 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   }
 
   // Don't capture if already inside the target app scope.
-  if (app_type == AppType::kWeb) {
-    auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
-      return false;
+  if (app_type == AppType::kWeb &&
+      base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
+                             &preferred_app_id.value())) {
+    return false;
   }
 
   // If this is a prerender navigation that would otherwise launch an app, we
@@ -248,13 +248,11 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
                            : apps::mojom::LaunchSource::kFromOmnibox;
   GURL redirected_url =
       RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
-  proxy->LaunchAppWithUrl(
-      preferred_app_id.value(),
-      GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                    WindowOpenDisposition::NEW_WINDOW,
-                    /*prefer_container=*/true),
-      redirected_url, launch_source,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+  proxy->LaunchAppWithUrl(preferred_app_id.value(),
+                          GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                        /*prefer_container=*/true),
+                          redirected_url, launch_source,
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
@@ -279,9 +277,9 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::vector<std::string> app_ids =
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browser=*/true, /*exclude_browser_tab_apps=*/false);
+          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
 
-  for (auto app_id : app_ids) {
+  for (const auto& app_id : app_ids) {
     if (IsAppDisabled(app_id)) {
       return true;
     }

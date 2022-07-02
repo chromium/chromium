@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 #include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -153,8 +155,9 @@ void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
 
   DCHECK_EQ(item.target, menu_listener_.get());
   int index = [menu_item_.submenu indexOfItem:item] - dynamic_items_start_;
-  model_->ActivateTabAt(index, TabStripModel::UserGestureDetails(
-                                   TabStripModel::GestureType::kTabMenu));
+  model_->ActivateTabAt(index,
+                        TabStripUserGestureDetails(
+                            TabStripUserGestureDetails::GestureType::kTabMenu));
 }
 
 void TabMenuBridge::OnTabStripModelChanged(

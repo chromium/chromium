@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
+<translation id="3428998300753080128">登入此網站、您的 Google 帳戶及 Chrome。</translation>
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3641179212828090796">使用儲存在 Chrome 中的密碼加快登入速度</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
+<translation id="4802922164792993118">Chrome 提示。喺鍵盤嘅最頂揀儲存咗嘅密碼就可以更加快登入。</translation>
 <translation id="4819268619367838612">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta 版本上不支援此功能</translation>
 <translation id="5030102366287574140">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="81358522153858150">Chrome 現在支援受管帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
-<translation id="8263079278049777200">登入此網站、您的 Google 帳戶及 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8357607116237445042">選擇要從此裝置上清除 Chrome 資料，還是要保留資料</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>

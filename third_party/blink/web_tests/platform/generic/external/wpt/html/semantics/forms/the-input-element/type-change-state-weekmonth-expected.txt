@@ -1,0 +1,86 @@
+This is a testharness.js-based test.
+Found 82 tests; 78 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS change state from hidden to month
+PASS change state from hidden to week
+PASS change state from text to month
+PASS change state from text to week
+PASS change state from search to month
+PASS change state from search to week
+PASS change state from tel to month
+PASS change state from tel to week
+PASS change state from url to month
+PASS change state from url to week
+PASS change state from email to month
+PASS change state from email to week
+PASS change state from password to month
+PASS change state from password to week
+PASS change state from datetime-local to month
+PASS change state from datetime-local to week
+PASS change state from date to month
+PASS change state from date to week
+PASS change state from month to hidden
+PASS change state from month to text
+PASS change state from month to search
+PASS change state from month to tel
+PASS change state from month to url
+PASS change state from month to email
+PASS change state from month to password
+PASS change state from month to datetime-local
+PASS change state from month to date
+PASS change state from month to week
+PASS change state from month to time
+PASS change state from month to number
+PASS change state from month to range
+PASS change state from month to color
+FAIL change state from month to checkbox assert_equals: input.value should be 'on' after change of state expected "on" but got ""
+FAIL change state from month to radio assert_equals: input.value should be 'on' after change of state expected "on" but got ""
+PASS change state from month to file
+PASS change state from month to submit
+PASS change state from month to image
+PASS change state from month to reset
+PASS change state from month to button
+PASS change state from week to hidden
+PASS change state from week to text
+PASS change state from week to search
+PASS change state from week to tel
+PASS change state from week to url
+PASS change state from week to email
+PASS change state from week to password
+PASS change state from week to datetime-local
+PASS change state from week to date
+PASS change state from week to month
+PASS change state from week to time
+PASS change state from week to number
+PASS change state from week to range
+PASS change state from week to color
+FAIL change state from week to checkbox assert_equals: input.value should be 'on' after change of state expected "on" but got ""
+FAIL change state from week to radio assert_equals: input.value should be 'on' after change of state expected "on" but got ""
+PASS change state from week to file
+PASS change state from week to submit
+PASS change state from week to image
+PASS change state from week to reset
+PASS change state from week to button
+PASS change state from time to month
+PASS change state from time to week
+PASS change state from number to month
+PASS change state from number to week
+PASS change state from range to month
+PASS change state from range to week
+PASS change state from color to month
+PASS change state from color to week
+PASS change state from checkbox to month
+PASS change state from checkbox to week
+PASS change state from radio to month
+PASS change state from radio to week
+PASS change state from file to month
+PASS change state from file to week
+PASS change state from submit to month
+PASS change state from submit to week
+PASS change state from image to month
+PASS change state from image to week
+PASS change state from reset to month
+PASS change state from reset to week
+PASS change state from button to month
+PASS change state from button to week
+Harness: the test ran to completion.
+

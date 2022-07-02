@@ -368,12 +368,12 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
 
 void FastPairPairerImpl::AttemptSendAccountKey() {
   // We only send the account key if we're doing an initial or retroactive
-  // pairing. For other FastPair protocols, we can consider the paring
-  // procedure complete at this point.
-  if (device_->protocol != Protocol::kFastPairInitial &&
-      device_->protocol != Protocol::kFastPairRetroactive) {
-    QP_LOG(INFO) << __func__ << ": Ignoring due to incorrect protocol: "
-                 << device_->protocol;
+  // pairing. For subsequent pairing, we have to save the account key
+  // locally so that we can refer to it in API calls to the server.
+  if (device_->protocol == Protocol::kFastPairSubsequent) {
+    QP_LOG(INFO) << __func__
+                 << ": Saving Account Key locally for subsequent pair";
+    FastPairRepository::Get()->AssociateAccountKeyLocally(device_);
     std::move(pairing_procedure_complete_).Run(device_);
     return;
   }

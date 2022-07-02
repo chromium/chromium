@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!-- HTML credit card form used for testing Autofill preferences. -->
+<html>
+  <head>
+ <title>Autofill Credit Card Test Form</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ </head>
+ <body>
+  <p>Autofill Credit Card Test Form</p>
+  <form id="testform" method="post">
+   <table>
+    <tbody>
+     <tr>
+      <td>
+       <label for="nameoncard">Name on Card</label>
+      </td>
+      <td>
+       <input size="40" id="CREDIT_CARD_NAME_FULL"/>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <label for="card_number">Card Number</label>
+      </td>
+      <td>
+       <input size="40" id="CREDIT_CARD_NUMBER" name="card_number"/>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <label>Expiration Date</label>
+      </td>
+      <td>
+       <input size="7" id="CREDIT_CARD_EXP_DATE" name="cc_date">
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <input type="submit" value="Submit">
+  </form>
+ </body>
+<script>
+// The following code waits for an autofill and "reformats" the credit card
+// expiration date in a simplified way of what we see quite often on the web:
+// The date "09/2022" gets nicely reformatted to "09 / 20" - even though it
+// should be "09 / 22".
+const element = document.getElementById('CREDIT_CARD_EXP_DATE');
+document.getElementById('CREDIT_CARD_EXP_DATE').addEventListener('change',
+  () => {
+    const matches = [...element.value.match(/(\d+)\s*\/\s*(\d+)/)];
+    const formattedValue = matches[1] + ' / ' + matches[2].substr(0,2);
+    if (formattedValue === '09 / 99') {
+      window.unblock = true;  // Unblocks the C++ call ListenForValueChange().
+    }
+    if (element.value !== formattedValue) {
+      element.value = formattedValue;
+    }
+  });
+</script>
+</html>
+

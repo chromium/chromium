@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -93,7 +94,13 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(SameSiteCookieSemantics::kLegacy,
                                          SameSiteCookieSemantics::kModern)));
 
-IN_PROC_BROWSER_TEST_P(CookiesApiTest, Cookies) {
+// TODO(crbug.com/1325506): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Cookies DISABLED_Cookies
+#else
+#define MAYBE_Cookies Cookies
+#endif
+IN_PROC_BROWSER_TEST_P(CookiesApiTest, MAYBE_Cookies) {
   ASSERT_TRUE(RunTest("cookies/api", /*allow_in_incognito=*/false,
                       AreSameSiteCookieSemanticsModern() ? "true" : "false"))
       << message_;

@@ -21,13 +21,10 @@ export function shimlessRMAAppTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -63,10 +60,10 @@ export function shimlessRMAAppTest() {
    */
   function assertNavButtons() {
     const nextButton = component.shadowRoot.querySelector('#next');
-    const prevButton = component.shadowRoot.querySelector('#cancel');
+    const exitButton = component.shadowRoot.querySelector('#exit');
     const backButton = component.shadowRoot.querySelector('#back');
     assertTrue(!!nextButton);
-    assertTrue(!!prevButton);
+    assertTrue(!!exitButton);
     assertTrue(!!backButton);
   }
 
@@ -96,12 +93,12 @@ export function shimlessRMAAppTest() {
   }
 
   /**
-   * Utility function to click cancel button
+   * Utility function to click exit button
    * @return {Promise}
    */
-  function clickCancel() {
-    const cancelButton = component.shadowRoot.querySelector('#cancel');
-    cancelButton.click();
+  function clickExit() {
+    const exitButton = component.shadowRoot.querySelector('#exit');
+    exitButton.click();
     return flushTasks();
   }
 
@@ -114,9 +111,9 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
 
     const prevButton = component.shadowRoot.querySelector('#back');
-    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    const exitButton = component.shadowRoot.querySelector('#exit');
     assertTrue(!!prevButton);
-    assertTrue(!!cancelButton);
+    assertTrue(!!exitButton);
 
     const initialPage =
         component.shadowRoot.querySelector('onboarding-landing-page');
@@ -124,7 +121,7 @@ export function shimlessRMAAppTest() {
     assertFalse(initialPage.hidden);
     assertFalse(initialPage.allButtonsDisabled);
     assertTrue(prevButton.hidden);
-    assertTrue(cancelButton.hidden);
+    assertTrue(exitButton.hidden);
 
     // This enables the next button on the landing page.
     service.triggerHardwareVerificationStatusObserver(true, '', 0);
@@ -138,7 +135,7 @@ export function shimlessRMAAppTest() {
     assertTrue(!!initialPage);
     assertTrue(initialPage.hidden);
     assertFalse(prevButton.hidden);
-    assertFalse(cancelButton.hidden);
+    assertFalse(exitButton.hidden);
 
     prevButton.click();
     await flushTasks();
@@ -148,10 +145,10 @@ export function shimlessRMAAppTest() {
     assertTrue(selectNetworkPage.hidden);
     assertFalse(initialPage.hidden);
     assertTrue(prevButton.hidden);
-    assertTrue(cancelButton.hidden);
+    assertTrue(exitButton.hidden);
   });
 
-  test('ShimlessRMACancellation', async () => {
+  test('ShimlessRMAExit', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     let abortRmaCount = 0;
     service.abortRma = () => {
@@ -160,14 +157,45 @@ export function shimlessRMAAppTest() {
     };
     const initialPage =
         component.shadowRoot.querySelector('onboarding-landing-page');
-    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    const exitButton = component.shadowRoot.querySelector('#exit');
 
     assertFalse(initialPage.allButtonsDisabled);
-    cancelButton.click();
+    exitButton.click();
+
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+
+    const confirmExitButton =
+        component.shadowRoot.querySelector('#confirmExitDialogButton');
+    assertTrue(!!confirmExitButton);
+    confirmExitButton.click();
     await flushTasks();
 
     assertEquals(1, abortRmaCount);
     assertTrue(initialPage.allButtonsDisabled);
+  });
+
+  test('CancelExitDialog', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    let abortRmaCount = 0;
+    service.abortRma = () => {
+      abortRmaCount++;
+      return Promise.resolve(RmadErrorCode.kOk);
+    };
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    const exitButton = component.shadowRoot.querySelector('#exit');
+
+    assertFalse(initialPage.allButtonsDisabled);
+    exitButton.click();
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    component.shadowRoot.querySelector('#cancelExitDialogButton').click();
+    assertFalse(exitDialog.open);
+    await flushTasks();
+
+    assertEquals(0, abortRmaCount);
+    assertFalse(initialPage.allButtonsDisabled);
   });
 
   test('NextButtonClickedOnReady', async () => {
@@ -185,7 +213,8 @@ export function shimlessRMAAppTest() {
     assertFalse(initialPage.hidden);
     assertTrue(initialPage.allButtonsDisabled);
 
-    resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    resolver.resolve(
+        {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}});
     await flushTasks();
 
     const updatePage =
@@ -232,7 +261,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -256,7 +285,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -270,34 +299,34 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('#nextButtonSpinner');
     const backButtonSpinner =
         component.shadowRoot.querySelector('#backButtonSpinner');
-    const cancelButtonSpinner =
-        component.shadowRoot.querySelector('#cancelButtonSpinner');
+    const exitButtonSpinner =
+        component.shadowRoot.querySelector('#exitButtonSpinner');
 
     // Next spinner
     const nextResolver = new PromiseResolver();
     initialPage.onNextButtonClick = () => nextResolver.promise;
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
 
     await clickNext();
     assertFalse(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
 
     nextResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
 
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
   });
 
   test('BackButtonSpinner', async () => {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -311,8 +340,8 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('#nextButtonSpinner');
     const backButtonSpinner =
         component.shadowRoot.querySelector('#backButtonSpinner');
-    const cancelButtonSpinner =
-        component.shadowRoot.querySelector('#cancelButtonSpinner');
+    const exitButtonSpinner =
+        component.shadowRoot.querySelector('#exitButtonSpinner');
 
     // Back spinner
     const backResolver = new PromiseResolver();
@@ -322,20 +351,21 @@ export function shimlessRMAAppTest() {
     await clickBack();
     assertTrue(nextButtonSpinner.hidden);
     assertFalse(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
 
-    backResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    backResolver.resolve(
+        {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}});
     await flushTasks();
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
   });
 
-  test('CancelButtonSpinner', async () => {
+  test('ExitButtonSpinner', async () => {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -349,24 +379,32 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('#nextButtonSpinner');
     const backButtonSpinner =
         component.shadowRoot.querySelector('#backButtonSpinner');
-    const cancelButtonSpinner =
-        component.shadowRoot.querySelector('#cancelButtonSpinner');
+    const exitButtonSpinner =
+        component.shadowRoot.querySelector('#exitButtonSpinner');
 
-    // Cancel spinner
-    const cancelResolver = new PromiseResolver();
+    // Exit spinner
+    const exitResolver = new PromiseResolver();
     service.abortRma = () => {
-      return cancelResolver.promise;
+      return exitResolver.promise;
     };
-    await clickCancel();
+    await clickExit();
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertFalse(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
 
-    cancelResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    await component.shadowRoot.querySelector('#confirmExitDialogButton')
+        .click();
+    assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertFalse(exitButtonSpinner.hidden);
+
+    exitResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
     assertTrue(nextButtonSpinner.hidden);
     assertTrue(backButtonSpinner.hidden);
-    assertTrue(cancelButtonSpinner.hidden);
+    assertTrue(exitButtonSpinner.hidden);
   });
 
   test('AllButtonsDisabled', async () => {
@@ -374,18 +412,18 @@ export function shimlessRMAAppTest() {
 
     const nextButton = component.shadowRoot.querySelector('#next');
     const backButton = component.shadowRoot.querySelector('#back');
-    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    const exitButton = component.shadowRoot.querySelector('#exit');
     const busyStateOverlay = /** @type {!HTMLElement} */ (
         component.shadowRoot.querySelector('#busyStateOverlay'));
 
     assertFalse(nextButton.disabled);
     assertFalse(backButton.disabled);
-    assertFalse(cancelButton.disabled);
+    assertFalse(exitButton.disabled);
 
     disableAllButtons(component, /*showBusyStateOverlay=*/ false);
     assertTrue(nextButton.disabled);
     assertTrue(backButton.disabled);
-    assertTrue(cancelButton.disabled);
+    assertTrue(exitButton.disabled);
     assertFalse(isVisible(busyStateOverlay));
 
     disableAllButtons(component, /*showBusyStateOverlay=*/ true);
@@ -394,17 +432,17 @@ export function shimlessRMAAppTest() {
     enableAllButtons(component);
     assertFalse(nextButton.disabled);
     assertFalse(backButton.disabled);
-    assertFalse(cancelButton.disabled);
+    assertFalse(exitButton.disabled);
     assertFalse(isVisible(busyStateOverlay));
   });
 
-  test('CancelButtonClickEventIsHandled', async () => {
+  test('ExitButtonClickEventIsHandled', async () => {
     const resolver = new PromiseResolver();
 
     await initializeShimlessRMAApp(
         [{
           state: State.kWelcomeScreen,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -417,12 +455,14 @@ export function shimlessRMAAppTest() {
     };
 
     component.dispatchEvent(new CustomEvent(
-        'click-cancel-button',
+        'click-exit-button',
         {bubbles: true, composed: true},
         ));
 
     await flushTasks();
-    assertEquals(1, callCounter);
+    const exitDialog = component.shadowRoot.querySelector('#exitDialog');
+    assertTrue(exitDialog.open);
+    assertEquals(0, callCounter);
   });
 
   test('TransitionStateListener', async () => {
@@ -440,7 +480,7 @@ export function shimlessRMAAppTest() {
           bubbles: true,
           composed: true,
           detail: () => Promise.resolve(
-              {state: State.kUpdateOs, error: RmadErrorCode.kOk})
+              {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}})
         },
         ));
     await flushTasks();

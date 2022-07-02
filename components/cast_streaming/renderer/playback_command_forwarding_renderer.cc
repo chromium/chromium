@@ -255,6 +255,11 @@ void PlaybackCommandForwardingRenderer::OnError(media::PipelineStatus status) {
     upstream_renderer_client_->OnError(status);
 }
 
+void PlaybackCommandForwardingRenderer::OnFallback(
+    media::PipelineStatus status) {
+  NOTREACHED();
+}
+
 void PlaybackCommandForwardingRenderer::OnEnded() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 

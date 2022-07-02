@@ -401,7 +401,7 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   std::unique_ptr<WebContents> web_contents(
       WebContentsTester::CreateTestWebContents(helper_->browser_context(),
                                                nullptr));
-  RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(

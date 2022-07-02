@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -246,16 +245,15 @@ void UpdateRequiredScreen::RefreshView(
 void UpdateRequiredScreen::ObserveNetworkState() {
   if (!is_network_subscribed_) {
     is_network_subscribed_ = true;
-    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
-                                                                FROM_HERE);
+    network_state_handler_observer_.Observe(
+        NetworkHandler::Get()->network_state_handler());
   }
 }
 
 void UpdateRequiredScreen::StopObservingNetworkState() {
   if (is_network_subscribed_) {
     is_network_subscribed_ = false;
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
+    network_state_handler_observer_.Reset();
   }
 }
 

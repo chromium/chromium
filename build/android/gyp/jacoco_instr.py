@@ -101,6 +101,7 @@ def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file,
   data = {}
   data['source_dirs'] = relative_sources
   data['input_path'] = []
+  data['output_dir'] = src_root
   if input_path:
     data['input_path'].append(os.path.abspath(input_path))
   with open(sources_json_file, 'w') as f:

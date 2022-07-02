@@ -9,6 +9,7 @@ import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {speak} from '../spoken_msg.js';
 import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
+import {sleep} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
@@ -24,7 +25,7 @@ import {
 let instance: StreamManager|null = null;
 
 /**
- * Device information includs MediaDeviceInfo and Camera3DeviceInfo.
+ * Device information includes MediaDeviceInfo and Camera3DeviceInfo.
  */
 export interface DeviceInfo {
   v1Info: MediaDeviceInfo;
@@ -58,8 +59,7 @@ export class StreamManager {
   /**
    * Listeners for real device change event.
    */
-  private readonly realListeners:
-      Array<(devices: DeviceInfo[]) => Promise<void>> = [];
+  private readonly realListeners: Array<(devices: DeviceInfo[]) => void> = [];
 
   /**
    * Latest result of Camera3DeviceInfo of all real video devices.
@@ -115,8 +115,7 @@ export class StreamManager {
    * Registers listener to be called when state of available real devices
    * changes.
    */
-  addRealDeviceChangeListener(
-      listener: (devices: DeviceInfo[]) => Promise<void>): void {
+  addRealDeviceChangeListener(listener: (devices: DeviceInfo[]) => void): void {
     this.realListeners.push(listener);
   }
 
@@ -126,9 +125,9 @@ export class StreamManager {
   async openCaptureStream(constraints: StreamConstraints):
       Promise<MediaStream> {
     const realDeviceId = constraints.deviceId;
-    if (await DeviceOperator.isSupported()) {
+    if (DeviceOperator.isSupported()) {
       try {
-        await this.setMultipleStreamsEnabled(realDeviceId, true);
+        await this.setVirtualDeviceEnabled(realDeviceId, true);
         assert(this.virtualMap !== null);
         constraints.deviceId = this.virtualMap.virtualId;
       } catch (e) {
@@ -146,14 +145,14 @@ export class StreamManager {
    */
   async closeCaptureStream(captureStream: MediaStream): Promise<void> {
     assertExists(captureStream.getVideoTracks()[0]).stop();
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator !== null) {
       // We need to cache |virtualId| first since it will be wiped out after
       // disabling multi-stream.
       assert(this.virtualMap !== null);
       const virtualId = this.virtualMap.virtualId;
       try {
-        await this.setMultipleStreamsEnabled(this.virtualMap.realId, false);
+        await this.setVirtualDeviceEnabled(this.virtualMap.realId, false);
       } catch (e) {
         reportError(ErrorType.MULTIPLE_STREAMS_FAILURE, ErrorLevel.ERROR, e);
       }
@@ -237,19 +236,23 @@ export class StreamManager {
   }
 
   /**
-   * Enumerates all available devices and gets their MediaDeviceInfo.
+   * Enumerates all available devices and gets their MediaDeviceInfo. Retry at
+   * one-second intervals if devices length is zero.
    */
   private async enumerateDevices(): Promise<MediaDeviceInfo[]> {
-    const devices = (await navigator.mediaDevices.enumerateDevices())
-                        .filter((device) => device.kind === 'videoinput');
-
     const deviceType = loadTimeData.getDeviceType();
     const shouldHaveBuiltinCamera =
         deviceType === 'chromebook' || deviceType === 'chromebase';
-    if (devices.length === 0 && shouldHaveBuiltinCamera) {
-      throw new Error('Device list empty.');
+    let attempts = 5;
+    while (attempts--) {
+      const devices = (await navigator.mediaDevices.enumerateDevices())
+                          .filter((device) => device.kind === 'videoinput');
+      if (!shouldHaveBuiltinCamera || devices.length > 0) {
+        return devices;
+      }
+      await sleep(1000);
     }
-    return devices;
+    throw new Error('Device list empty.');
   }
 
   /**
@@ -263,7 +266,7 @@ export class StreamManager {
   private async queryMojoDevicesInfo(): Promise<DeviceInfo[]|null> {
     const deviceInfos = await this.devicesInfo;
     assert(deviceInfos !== null);
-    const isV3Supported = await DeviceOperator.isSupported();
+    const isV3Supported = DeviceOperator.isSupported();
     return Promise.all(deviceInfos.map(
         async (d) => ({
           v1Info: d,
@@ -274,23 +277,23 @@ export class StreamManager {
   }
 
   /**
-   * Enables/Disables multiple streams on target camera device. The extra
+   * Enables/Disables virtual device on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
    *
    * @param deviceId The id of target camera device.
-   * @param enabled True for eanbling multiple streams.
+   * @param enabled True for enabling virtual device.
    */
-  async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
+  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     assert(deviceOperator !== null);
 
     if (enabled) {
       const waitEvent = new WaitableEvent<string>();
       this.waitVirtual = waitEvent;
 
-      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await deviceOperator.setVirtualDeviceEnabled(deviceId, enabled);
       await this.deviceUpdate();
 
       const virtualId = await waitEvent.timedWait(3000);
@@ -299,7 +302,7 @@ export class StreamManager {
       const waitEvent = new WaitableEvent();
       this.waitVirtualRemoved = waitEvent;
 
-      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await deviceOperator.setVirtualDeviceEnabled(deviceId, enabled);
       await this.deviceUpdate();
 
       await waitEvent.timedWait(3000);

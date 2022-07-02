@@ -30,20 +30,7 @@ void ReportingPolicy::UsePolicyForTesting(const ReportingPolicy& policy) {
   *owned_policy = policy;
 }
 
-ReportingPolicy::ReportingPolicy()
-    : max_report_count(100u),
-      max_endpoint_count(1000u),
-      max_endpoints_per_origin(40u),
-      delivery_interval(base::Minutes(1)),
-      persistence_interval(base::Minutes(1)),
-      persist_reports_across_restarts(false),
-      persist_clients_across_restarts(true),
-      garbage_collection_interval(base::Minutes(5)),
-      max_report_age(base::Minutes(15)),
-      max_group_staleness(base::Days(7)),
-      max_report_attempts(5),
-      persist_reports_across_network_changes(false),
-      persist_clients_across_network_changes(true) {
+ReportingPolicy::ReportingPolicy() {
   endpoint_backoff_policy.num_errors_to_ignore = 0;
   endpoint_backoff_policy.initial_delay_ms = 60 * 1000;  // 1 minute
   endpoint_backoff_policy.multiply_factor = 2.0;

@@ -165,17 +165,17 @@ void CastTransportImplTest::InitWithoutLogging() {
 }
 
 void CastTransportImplTest::InitWithOptions() {
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue);
-  options->SetBoolean("disable_wifi_scan", true);
-  options->SetBoolean("media_streaming_mode", true);
-  options->SetInteger("pacer_target_burst_size", 20);
-  options->SetInteger("pacer_max_burst_size", 100);
+  base::Value::Dict options;
+  options.Set("disable_wifi_scan", true);
+  options.Set("media_streaming_mode", true);
+  options.Set("pacer_target_burst_size", 20);
+  options.Set("pacer_max_burst_size", 100);
   transport_ = new FakePacketSender();
   transport_sender_ = std::make_unique<CastTransportImpl>(
       &testing_clock_, base::TimeDelta(),
       std::make_unique<TransportClient>(nullptr),
       base::WrapUnique(transport_.get()), task_runner_);
-  transport_sender_->SetOptions(*options);
+  transport_sender_->SetOptions(options);
   task_runner_->RunTasks();
 }
 

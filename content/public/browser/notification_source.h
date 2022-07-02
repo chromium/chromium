@@ -38,7 +38,7 @@ class CONTENT_EXPORT NotificationSource {
 
   // Declaring this const allows Source<T> to be used with both T = Foo and
   // T = const Foo.
-  raw_ptr<const void> ptr_;
+  raw_ptr<const void, DanglingUntriaged> ptr_;
 };
 
 template <class T>

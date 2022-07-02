@@ -240,6 +240,20 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
+  NOTREACHED();
+}
+
 void WebViewAutofillClientIOS::ShowAutofillPopup(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
@@ -311,6 +325,14 @@ bool WebViewAutofillClientIOS::AreServerCardsSupported() const {
 
 void WebViewAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
+}
+
+void WebViewAutofillClientIOS::OnPromoCodeSuggestionsFooterSelected(
+    const GURL& url) {
+  web_state_->OpenURL(web::WebState::OpenURLParams(
+      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
 }
 
 void WebViewAutofillClientIOS::LoadRiskData(

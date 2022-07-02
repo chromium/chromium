@@ -21,8 +21,11 @@ struct DownloadPingData {
   // more reasons why an extension is disabled.
   int disable_reasons = 0;
 
-  DownloadPingData() = default;
-  DownloadPingData(int rollcall, int active, bool enabled, int reasons)
+  constexpr DownloadPingData() = default;
+  constexpr DownloadPingData(int rollcall,
+                             int active,
+                             bool enabled,
+                             int reasons)
       : rollcall_days(rollcall),
         active_days(active),
         is_enabled(enabled),

@@ -22,12 +22,15 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -47,16 +50,18 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     // This is required before Concierge tests start calling
-    // DBusThreadManager::Get() for GetAnomalyDetectorClient.
+    // DBusThreadManager::Get() for GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
-
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
-    chromeos::CryptohomeMiscClient::InitializeFake();
+    ash::AnomalyDetectorClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
+    ash::VmPluginDispatcherClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
     BrowserWithTestWindowTest::SetUp();
@@ -99,10 +104,13 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::VmPluginDispatcherClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
+    ash::AnomalyDetectorClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -157,7 +165,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   }
 
   bool is_device_locked() const {
-    return chromeos::FakeCryptohomeMiscClient::Get()
+    return ash::FakeCryptohomeMiscClient::Get()
         ->is_device_locked_to_single_user();
   }
 
@@ -264,7 +272,7 @@ TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
 }
 
 TEST_F(LockToSingleUserManagerTest, DbusCallErrorTest) {
-  chromeos::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
+  ash::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
   LogInUser(false /* is_affiliated */);

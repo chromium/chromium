@@ -34,7 +34,7 @@ void EnterFullscreenModeForTabAndWait(Browser* browser,
                                       content::WebContents* web_contents) {
   FullscreenNotificationObserver waiter(browser);
   static_cast<content::WebContentsDelegate*>(browser)
-      ->EnterFullscreenModeForTab(web_contents->GetMainFrame(), {});
+      ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
   waiter.Wait();
 }
 

@@ -24,7 +24,7 @@
 @property(nonatomic) BOOL repeatedFailure;
 
 // Disconnects all delegates set by the coordinator on any web states in its web
-// state list. After |disconnect| is called, the coordinator will not add
+// state list. After `disconnect` is called, the coordinator will not add
 // delegates to further webstates.
 - (void)disconnect;
 

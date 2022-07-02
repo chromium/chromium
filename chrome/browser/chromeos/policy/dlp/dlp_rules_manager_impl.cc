@@ -15,12 +15,12 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -178,14 +178,16 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
   return max_level;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
   if (response.has_error_message()) {
+    DlpScopedFileAccessDelegate::DeleteInstance();
     LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
                << response.error_message();
+    return;
   }
+  DCHECK(chromeos::DlpClient::Get()->IsAlive());
+  DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient::Get());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
   static constexpr auto kLevelsMap =
@@ -202,6 +204,7 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
 
 DlpRulesManagerImpl::~DlpRulesManagerImpl() {
   DataTransferDlpController::DeleteInstance();
+  DlpScopedFileAccessDelegate::DeleteInstance();
 }
 
 // static
@@ -399,6 +402,14 @@ size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
       policy_prefs::kDlpClipboardCheckSizeLimit);
 }
 
+bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
+  return base::FeatureList::IsEnabled(
+             features::kDataLeakPreventionFilesRestriction) &&
+         base::Contains(restrictions_map_,
+                        DlpRulesManager::Restriction::kFiles) &&
+         chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive();
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();
@@ -519,7 +530,6 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DataTransferDlpController::DeleteInstance();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
   if (request_to_daemon.rules_size() > 0 &&
       base::FeatureList::IsEnabled(
@@ -527,8 +537,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+  } else {
+    DlpScopedFileAccessDelegate::DeleteInstance();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace policy

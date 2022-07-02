@@ -42,11 +42,7 @@ bool CheckStudyChannel(const Study::Filter& filter, Study::Channel channel) {
   if (filter.channel_size() == 0)
     return true;
 
-  for (int i = 0; i < filter.channel_size(); ++i) {
-    if (filter.channel(i) == channel)
-      return true;
-  }
-  return false;
+  return base::Contains(filter.channel(), channel);
 }
 
 bool CheckStudyFormFactor(const Study::Filter& filter,

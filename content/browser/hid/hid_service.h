@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/document_service.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/hid_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -18,22 +18,31 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
 class HidChooser;
-class RenderFrameHost;
 
 // HidService provides an implementation of the HidService mojom interface. This
 // interface is used by Blink to implement the WebHID API.
-class HidService : public content::DocumentService<blink::mojom::HidService>,
-                   public device::mojom::HidConnectionWatcher,
-                   public HidDelegate::Observer {
+class CONTENT_EXPORT HidService : public blink::mojom::HidService,
+                                  public device::mojom::HidConnectionWatcher,
+                                  public HidDelegate::Observer {
  public:
+  HidService(BrowserContext*, const url::Origin&, RenderFrameHostImpl*);
   HidService(HidService&) = delete;
   HidService& operator=(HidService&) = delete;
+  ~HidService() override;
 
-  static void Create(RenderFrameHost*,
+  // Use this when creating from a document.
+  static void Create(RenderFrameHostImpl*,
+                     mojo::PendingReceiver<blink::mojom::HidService>);
+
+  // Use this when creating from a service worker, which doesn't have
+  // RenderFrameHost.
+  static void Create(BrowserContext*,
+                     const url::Origin&,
                      mojo::PendingReceiver<blink::mojom::HidService>);
 
   // blink::mojom::HidService:
@@ -61,10 +70,8 @@ class HidService : public content::DocumentService<blink::mojom::HidService>,
   void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
-  HidService(RenderFrameHost*, mojo::PendingReceiver<blink::mojom::HidService>);
-  ~HidService() override;
-
   void OnWatcherRemoved(bool cleanup_watcher_ids);
+  void IncrementActiveFrameCount();
   void DecrementActiveFrameCount();
 
   void FinishGetDevices(GetDevicesCallback callback,
@@ -75,6 +82,15 @@ class HidService : public content::DocumentService<blink::mojom::HidService>,
   void FinishConnect(
       ConnectCallback callback,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
+
+  // The BrowserContext pointed by |browser_context_| always outlives
+  // HidService itself.
+  const raw_ptr<BrowserContext> browser_context_;
+
+  // When RenderFrameHost pointed by |render_frame_host| is destroyed, the
+  // bound HidService will be destroyed first. It should be safe to access
+  // |render_frame_host_| whenever it is not null.
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;

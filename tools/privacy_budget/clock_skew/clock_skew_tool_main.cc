@@ -44,6 +44,8 @@ std::string GetHistogramReport() {
   base::StatisticsRecorder::WriteGraph("NetworkTimeTracker", &histogram_plot);
   base::StatisticsRecorder::WriteGraph("PrivacyBudget.ClockSkew",
                                        &histogram_plot);
+  base::StatisticsRecorder::WriteGraph("PrivacyBudget.ClockDrift",
+                                       &histogram_plot);
   return histogram_plot;
 }
 

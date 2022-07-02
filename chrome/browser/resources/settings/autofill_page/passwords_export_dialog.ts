@@ -132,7 +132,7 @@ export class PasswordsExportDialogElement extends
 
     // If export started on a different tab and is still in progress, display a
     // busy UI.
-    this.passwordManager_.requestExportProgressStatus(status => {
+    this.passwordManager_.requestExportProgressStatus().then(status => {
       if (status === ProgressStatus.IN_PROGRESS) {
         this.switchToDialog_(States.IN_PROGRESS);
       }
@@ -219,9 +219,8 @@ export class PasswordsExportDialogElement extends
    * security checks.
    */
   private exportPasswords_() {
-    this.passwordManager_.exportPasswords(() => {
-      if (chrome.runtime.lastError &&
-          chrome.runtime.lastError.message === 'in-progress') {
+    this.passwordManager_.exportPasswords().catch((error) => {
+      if (error === 'in-progress') {
         // Exporting was started by a different call to exportPasswords() and is
         // is still in progress. This UI needs to be updated to the current
         // status.

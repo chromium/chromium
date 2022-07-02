@@ -8,6 +8,7 @@
 
 #include "base/strings/string_split.h"
 #include "chrome/test/chromedriver/chrome/device_manager.h"
+#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
@@ -19,11 +20,15 @@ ChromeAndroidImpl::ChromeAndroidImpl(
     std::unique_ptr<DevToolsClient> websocket_client,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
+    std::unique_ptr<DeviceMetrics> device_metrics,
+    SyncWebSocketFactory socket_factory,
     std::string page_load_strategy,
     std::unique_ptr<Device> device)
     : ChromeImpl(std::move(http_client),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
+                 std::move(device_metrics),
+                 std::move(socket_factory),
                  page_load_strategy),
       device_(std::move(device)) {}
 
@@ -51,10 +56,10 @@ Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
   if (status.IsError())
     return status;
 
-  window->left = static_cast<int>(result->GetListDeprecated()[0].GetDouble());
-  window->top = static_cast<int>(result->GetListDeprecated()[1].GetDouble());
-  window->width = static_cast<int>(result->GetListDeprecated()[2].GetDouble());
-  window->height = static_cast<int>(result->GetListDeprecated()[3].GetDouble());
+  window->left = static_cast<int>(result->GetList()[0].GetDouble());
+  window->top = static_cast<int>(result->GetList()[1].GetDouble());
+  window->width = static_cast<int>(result->GetList()[2].GetDouble());
+  window->height = static_cast<int>(result->GetList()[3].GetDouble());
   // Android does not use Window.id or have window states
   window->id = 0;
   window->state = "";

@@ -143,11 +143,8 @@ void EventRouterForwarder::CallEventRouter(
     return;
 #endif
 
-  std::vector<base::Value> arg_values(event_args.size());
-  std::transform(event_args.begin(), event_args.end(), arg_values.begin(),
-                 [](const base::Value& arg) { return arg.Clone(); });
   auto event = std::make_unique<Event>(
-      histogram_value, event_name, std::move(arg_values), restrict_to_profile);
+      histogram_value, event_name, std::move(event_args), restrict_to_profile);
   event->event_url = event_url;
   if (extension_id.empty()) {
     extensions::EventRouter::Get(profile)->BroadcastEvent(std::move(event));

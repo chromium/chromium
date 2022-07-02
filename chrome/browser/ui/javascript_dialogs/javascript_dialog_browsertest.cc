@@ -58,8 +58,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, ReloadDoesntHang) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
+                                                        base::NullCallback());
   runner->Run();
 
   // Try reloading.
@@ -80,12 +80,12 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsAddedObserver new_wc_observer;
-  tab1->GetMainFrame()->ExecuteJavaScriptForTests(
+  tab1->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"window.open('about:blank');", base::NullCallback());
   content::WebContents* tab2 = new_wc_observer.GetWebContents();
   ASSERT_NE(tab1, tab2);
-  ASSERT_EQ(tab1->GetMainFrame()->GetProcess(),
-            tab2->GetMainFrame()->GetProcess());
+  ASSERT_EQ(tab1->GetPrimaryMainFrame()->GetProcess(),
+            tab2->GetPrimaryMainFrame()->GetProcess());
 
   // Tab two shows a dialog.
   scoped_refptr<content::MessageLoopRunner> runner =
@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   javascript_dialogs::TabModalDialogManager* js_helper2 =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab2);
   js_helper2->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab2->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                  base::NullCallback());
+  tab2->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
+                                                         base::NullCallback());
   runner->Run();
 
   // Tab two is closed while the dialog is up.
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script),
-                                                 base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback());
   runner->Run();
 
   // The tab is closed while the dialog is up.
@@ -161,7 +161,7 @@ class JavaScriptCallbackHelper {
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, HandleJavaScriptDialog) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* frame = tab->GetMainFrame();
+  content::RenderFrameHost* frame = tab->GetPrimaryMainFrame();
   javascript_dialogs::TabModalDialogManager* js_helper =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab);
 
@@ -228,7 +228,7 @@ class JavaScriptDialogDismissalCauseTester {
  public:
   explicit JavaScriptDialogDismissalCauseTester(JavaScriptDialogTest* test)
       : tab_(test->browser()->tab_strip_model()->GetActiveWebContents()),
-        frame_(tab_->GetMainFrame()),
+        frame_(tab_->GetPrimaryMainFrame()),
         js_helper_(
             javascript_dialogs::TabModalDialogManager::FromWebContents(tab_)) {
     js_helper_->SetDialogDismissedCallbackForTesting(base::BindOnce(
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
   }
 
   content::RenderFrameHost* subframe =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
+      content::ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(subframe);
 
   // Verify the title that would be used for a dialog spawned by that subframe.
@@ -473,10 +473,10 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogForPrerenderTest, NoDismissalDialog) {
   prerender_helper_.AddPrerenderAsync(prerender_url);
 
   // Show an alert dialog
-  js_helper->RunJavaScriptDialog(web_contents_, web_contents_->GetMainFrame(),
-                                 content::JAVASCRIPT_DIALOG_TYPE_ALERT,
-                                 std::u16string(), std::u16string(),
-                                 callback_helper.GetCallback(), &did_suppress);
+  js_helper->RunJavaScriptDialog(
+      web_contents_, web_contents_->GetPrimaryMainFrame(),
+      content::JAVASCRIPT_DIALOG_TYPE_ALERT, std::u16string(), std::u16string(),
+      callback_helper.GetCallback(), &did_suppress);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
 
   prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);

@@ -515,9 +515,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     return true;
   }
   bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
-    for (const auto& kv : map) {
-      int track_id = kv.first;
-      const media::StreamParser::BufferQueue& queue = kv.second;
+    for (const auto& [track_id, queue] : map) {
       for (const auto& stream_parser_buffer : queue) {
         buffer_timestamps_ms_[track_id].push_back(
             stream_parser_buffer->timestamp().InMilliseconds());

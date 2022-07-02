@@ -54,6 +54,11 @@ class TestAuthenticatorModelObserver final
       : model_(model) {
     last_step_ = model_->current_step();
   }
+  ~TestAuthenticatorModelObserver() override {
+    if (model_) {
+      model_->RemoveObserver(this);
+    }
+  }
 
   AuthenticatorRequestDialogModel::Step last_step() { return last_step_; }
 
@@ -181,10 +186,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
     k3rdParty,
   };
 
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete. If updating this, also update
-  // ChromeAuthenticatorRequestDelegate.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On Linux, some configurations aren't supported because of bluez
   // limitations. This macro maps the expected result in that case.
 #define NONE_ON_LINUX(r) (Result::kNone)
@@ -315,7 +317,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     delegate.OnTransportAvailabilityEnumerated(
         AuthenticatorRequestDialogModel::TransportAvailabilityInfo());
     EXPECT_EQ(observer.last_step() ==
-                  AuthenticatorRequestDialogModel::Step::kLocationBarBubble,
+                  AuthenticatorRequestDialogModel::Step::kConditionalMediation,
               conditional_ui);
   }
 }
@@ -368,7 +370,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
 }
 
 #if BUILDFLAG(IS_MAC)
-API_AVAILABLE(macos(10.12.2))
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
                                   content::BrowserContext* browser_context) {
   return delegate.GetTouchIdAuthenticatorConfig(browser_context)
@@ -376,40 +377,33 @@ std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, TouchIdMetadataSecret) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    ChromeWebAuthenticationDelegate delegate;
-    std::string secret = TouchIdMetadataSecret(delegate, GetBrowserContext());
-    EXPECT_EQ(secret.size(), 32u);
-    // The secret should be stable.
-    EXPECT_EQ(secret, TouchIdMetadataSecret(delegate, GetBrowserContext()));
-  }
+  ChromeWebAuthenticationDelegate delegate;
+  std::string secret = TouchIdMetadataSecret(delegate, GetBrowserContext());
+  EXPECT_EQ(secret.size(), 32u);
+  // The secret should be stable.
+  EXPECT_EQ(secret, TouchIdMetadataSecret(delegate, GetBrowserContext()));
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TouchIdMetadataSecret_EqualForSameProfile) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    // Different delegates on the same BrowserContext (Profile) should return
-    // the same secret.
-    ChromeWebAuthenticationDelegate delegate1;
-    ChromeWebAuthenticationDelegate delegate2;
-    EXPECT_EQ(TouchIdMetadataSecret(delegate1, GetBrowserContext()),
-              TouchIdMetadataSecret(delegate2, GetBrowserContext()));
-  }
+  // Different delegates on the same BrowserContext (Profile) should return
+  // the same secret.
+  ChromeWebAuthenticationDelegate delegate1;
+  ChromeWebAuthenticationDelegate delegate2;
+  EXPECT_EQ(TouchIdMetadataSecret(delegate1, GetBrowserContext()),
+            TouchIdMetadataSecret(delegate2, GetBrowserContext()));
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TouchIdMetadataSecret_NotEqualForDifferentProfiles) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    // Different profiles have different secrets.
-    auto other_browser_context = CreateBrowserContext();
-    ChromeWebAuthenticationDelegate delegate;
-    EXPECT_NE(TouchIdMetadataSecret(delegate, GetBrowserContext()),
-              TouchIdMetadataSecret(delegate, other_browser_context.get()));
-    // Ensure this second secret is actually valid.
-    EXPECT_EQ(
-        32u,
-        TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
-  }
+  // Different profiles have different secrets.
+  auto other_browser_context = CreateBrowserContext();
+  ChromeWebAuthenticationDelegate delegate;
+  EXPECT_NE(TouchIdMetadataSecret(delegate, GetBrowserContext()),
+            TouchIdMetadataSecret(delegate, other_browser_context.get()));
+  // Ensure this second secret is actually valid.
+  EXPECT_EQ(
+      32u, TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
 }
 #endif  // BUILDFLAG(IS_MAC)
 

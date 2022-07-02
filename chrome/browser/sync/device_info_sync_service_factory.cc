@@ -69,7 +69,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
-DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
+DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() = default;
 
 KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

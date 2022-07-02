@@ -34,8 +34,8 @@ class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            tab->GetMainFrame()->GetProcess()->GetID(),
-            tab->GetMainFrame()->GetRoutingID()));
+            tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            tab->GetPrimaryMainFrame()->GetRoutingID()));
   }
 
   void SetFocus(const content::DesktopMediaID& media_id,

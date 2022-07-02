@@ -106,10 +106,7 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTaskTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerBitmapViewTest.java",
@@ -121,7 +118,6 @@ java_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//net/android:net_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
@@ -130,22 +126,34 @@ java_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("test_support_java") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//build/android:build_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHostTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoderTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialogTest.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java",
   ]
   deps = [
     ":java",
     ":java_resources",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",

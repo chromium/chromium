@@ -6,7 +6,7 @@
 
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 
 namespace {
 

@@ -19,6 +19,7 @@
  * To retrieve static data about user commands, see both CommandStore and
  * UserCommands.
  */
+import {KeySequence} from '/chromevox/common/key_sequence.js';
 
 export class KeyMap {
   /**
@@ -741,6 +742,10 @@ KeyMap.BINDINGS_ = [
   {
     command: 'disableChromeVoxArcSupportForCurrentApp',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}}
+  },
+  {
+    command: 'showTalkBackKeyboardShortcuts',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.K]}}
   },
   {
     command: 'forceClickOnCurrentItem',

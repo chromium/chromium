@@ -23,20 +23,20 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Before daylight saving the time difference is 7 hours.
-  EXPECT_EQ(-420, calendar_utils::GetTimeDifferenceInMinutes(date));
+  EXPECT_EQ(base::Minutes(-420), calendar_utils::GetTimeDifference(date));
 
   // Create a date after daylight saving: Dec,1st 2021.
   base::Time date2;
   ASSERT_TRUE(base::Time::FromString("1 Dec 2021 10:00 GMT", &date2));
 
   // After daylight saving the time difference is 8 hours.
-  EXPECT_EQ(-480, calendar_utils::GetTimeDifferenceInMinutes(date2));
+  EXPECT_EQ(base::Minutes(-480), calendar_utils::GetTimeDifference(date2));
 
   // Set the timezone to GMT.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
-  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date));
-  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date2));
+  EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date));
+  EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date2));
 }
 
 TEST_F(CalendarUtilsUnittest, DateFormatter) {
@@ -68,6 +68,31 @@ TEST_F(CalendarUtilsUnittest, DateFormatter) {
 
   // Test DateFormatter to return month name and year.
   EXPECT_EQ(u"August 2021", calendar_utils::GetMonthNameAndYear(date));
+}
+
+TEST_F(CalendarUtilsUnittest, IntervalFormatter) {
+  base::Time date1;
+  base::Time date2;
+  base::Time date3;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date1));
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 11:30 GMT", &date2));
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 15:49 GMT", &date3));
+
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  EXPECT_EQ(u"10:00 – 11:30 AM",
+            calendar_utils::FormatTwelveHourClockTimeInterval(date1, date2));
+
+  EXPECT_EQ(u"10:00 AM – 3:49 PM",
+            calendar_utils::FormatTwelveHourClockTimeInterval(date1, date3));
+
+  EXPECT_EQ(
+      u"10:00 – 11:30",
+      calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date2));
+
+  EXPECT_EQ(
+      u"10:00 – 15:49",
+      calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date3));
 }
 
 TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
@@ -186,6 +211,15 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   EXPECT_EQ(fetch.first, expected_start);
   EXPECT_EQ(fetch.second, expected_end);
 
+  // The month is with DST ended date. The time difference is changed from -7h
+  // to -8h.
+  ASSERT_TRUE(base::Time::FromString("01 Nov 2022 00:00 GMT", &date));
+  ASSERT_TRUE(base::Time::FromString("01 Nov 2022 07:00 GMT", &expected_start));
+  ASSERT_TRUE(base::Time::FromString("01 Dec 2022 08:00 GMT", &expected_end));
+  fetch = calendar_utils::GetFetchStartEndTimes(date);
+  EXPECT_EQ(fetch.first, expected_start);
+  EXPECT_EQ(fetch.second, expected_end);
+
   // Timezone "Asia/Bangkok" is GMT + 7h.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
       u"Asia/Bangkok");
@@ -195,6 +229,21 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   fetch = calendar_utils::GetFetchStartEndTimes(date);
   EXPECT_EQ(fetch.first, expected_start);
   EXPECT_EQ(fetch.second, expected_end);
+}
+
+TEST_F(CalendarUtilsUnittest, MinMaxTime) {
+  base::Time date_1;
+  base::Time date_2;
+  base::Time date_3;
+  base::Time date_4;
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date_1));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2023 00:00 GMT", &date_2));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 20:00 GMT", &date_3));
+  ASSERT_TRUE(base::Time::FromString("31 Mar 2022 00:00 GMT", &date_4));
+
+  EXPECT_EQ(date_2, calendar_utils::GetMaxTime(date_1, date_2));
+  EXPECT_EQ(date_3, calendar_utils::GetMaxTime(date_1, date_3));
+  EXPECT_EQ(date_4, calendar_utils::GetMinTime(date_1, date_4));
 }
 
 }  // namespace ash

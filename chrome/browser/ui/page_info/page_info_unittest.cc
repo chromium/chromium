@@ -1215,7 +1215,7 @@ TEST_F(PageInfoTest, AdPersonalization) {
 
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(pscs->HasAccessedTopics());
   EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
 

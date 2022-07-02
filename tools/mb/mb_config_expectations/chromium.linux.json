@@ -7,7 +7,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -18,7 +17,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -30,7 +28,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -40,17 +37,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
-    }
-  },
-  "Deterministic Fuchsia (dbg)": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_os": "fuchsia",
-      "use_goma": true
     }
   },
   "Deterministic Linux": {
@@ -59,7 +46,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -84,29 +70,8 @@
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1,
-        "use_rbe": true,
         "use_remoteexec": true
       }
-    }
-  },
-  "Fuchsia ARM64": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm64",
-      "target_os": "fuchsia",
-      "test_host_cpu": "arm64",
-      "use_goma": true
-    }
-  },
-  "Fuchsia x64": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_os": "fuchsia",
-      "use_goma": true
     }
   },
   "Leak Detection Linux": {
@@ -114,7 +79,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -126,7 +90,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -142,7 +105,6 @@
       "ozone_platform_wayland": true,
       "proprietary_codecs": true,
       "use_bundled_weston": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -153,7 +115,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -162,40 +123,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "fuchsia-arm64-cast": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_chromecast": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
-  "fuchsia-x64-cast": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_chromecast": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
-  "fuchsia-x64-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 0,
-      "target_os": "fuchsia",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -206,7 +133,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -216,7 +142,6 @@
       "extended_tracing_enabled": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },

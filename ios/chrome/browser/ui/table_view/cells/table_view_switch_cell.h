@@ -15,16 +15,16 @@
 // side.
 @interface TableViewSwitchCell : TableViewCell
 
-// UILabel corresponding to |text| from the item.
+// UILabel corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 
-// UILabel corresponding to |detailText| from the item.
+// UILabel corresponding to `detailText` from the item.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 // The switch view.
 @property(nonatomic, readonly, strong) UISwitch* switchView;
 
-// Returns the default text color used for the given |state|.
+// Returns the default text color used for the given `state`.
 + (UIColor*)defaultTextColorForState:(UIControlState)state;
 
 // Sets the image that should be displayed at the leading edge of the cell. If

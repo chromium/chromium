@@ -5,9 +5,6 @@
 # TODO: Move this to the target public_java too.
 start_surface_java_sources = [
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BackgroundTabAnimation.java",
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BottomBarCoordinator.java",
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BottomBarView.java",
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BottomBarViewBinder.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinatorFactory.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceFeedLifecycleManager.java",
@@ -18,10 +15,12 @@ start_surface_java_sources = [
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurface.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceDelegate.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceHomeLayout.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceMediator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceProperties.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/TabSwitcherAndStartSurfaceLayout.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinder.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/MostVisitedTileNavigationDelegate.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/SingleTabSwitcherMediator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/tasks/TasksSurface.java",

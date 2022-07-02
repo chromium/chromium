@@ -26,25 +26,20 @@ class SettingZippy extends Polymer.Element {
         value: false,
       },
 
-      expandStyle: {
-        type: Boolean,
-        value: false,
-      },
-
-      toggleStyle: {
-        type: Boolean,
-        value: false,
-      },
-
-      popupStyle: {
-        type: Boolean,
-        value: false,
-      },
-
       cardStyle: {
         type: Boolean,
         value: false,
       },
+
+      nativeIconType: {
+        type: Number,
+        value: AssistantNativeIconType.NONE,
+      },
+
+      nativeIconLabel: {
+        type: String,
+        value: null,
+      }
     };
   }
 
@@ -76,6 +71,22 @@ class SettingZippy extends Polymer.Element {
       </style>
     <body><img id="icon" aria-label="` +
         imageLabel + `" src="` + iconUri + '"></body></html>';
+  }
+
+  shouldUseWebviewIcon_(iconSrc, nativeIconType) {
+    return iconSrc !== null && nativeIconType === AssistantNativeIconType.NONE;
+  }
+
+  shouldUseWAANativeIcon_(nativeIconType) {
+    return nativeIconType === AssistantNativeIconType.WAA;
+  }
+
+  shouldUseDANativeIcon_(nativeIconType) {
+    return nativeIconType === AssistantNativeIconType.DA;
+  }
+
+  shouldUseInfoNativeIcon_(nativeIconType) {
+    return nativeIconType === AssistantNativeIconType.INFO;
   }
 }
 

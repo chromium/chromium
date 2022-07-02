@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,28 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
-
-class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
- public:
-  TestSafeBrowsingTokenFetcher() = default;
-  ~TestSafeBrowsingTokenFetcher() override { RunAccessTokenCallback(""); }
-
-  void Start(Callback callback) override {
-    callback_ = std::move(callback);
-    was_start_called_ = true;
-  }
-  void RunAccessTokenCallback(std::string token) {
-    if (callback_) {
-      std::move(callback_).Run(token);
-    }
-  }
-  bool WasStartCalled() { return was_start_called_; }
-  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  Callback callback_;
-  bool was_start_called_ = false;
-};
 
 class ExtensionTelemetryUploaderTest : public testing::Test {
  public:

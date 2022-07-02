@@ -44,7 +44,7 @@ FakeLibassistantFactory::UnwrapAssistantManagerInternal(
 }
 
 void FakeLibassistantFactory::LoadLibassistantLibraryFromDlc(
-    const std::string& root_path) {}
+    const absl::optional<std::string>& root_path) {}
 
 assistant::FakeAssistantManager& FakeLibassistantFactory::assistant_manager() {
   if (current_assistant_manager_)

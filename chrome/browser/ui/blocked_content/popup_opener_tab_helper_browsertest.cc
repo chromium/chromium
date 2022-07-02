@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      GetActiveWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      GetActiveWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 

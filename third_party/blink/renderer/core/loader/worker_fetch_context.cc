@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
@@ -187,6 +188,8 @@ void WorkerFetchContext::PrepareRequest(ResourceRequest& request,
                                         ResourceLoaderOptions& options,
                                         WebScopedVirtualTimePauser&,
                                         ResourceType resource_type) {
+  request.SetUkmSourceId(GetExecutionContext()->UkmSourceID());
+
   String user_agent = global_scope_->UserAgent();
   probe::ApplyUserAgentOverride(Probe(), &user_agent);
   DCHECK(!user_agent.IsNull());
@@ -226,17 +229,12 @@ void WorkerFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
   mojom::blink::ResourceTimingInfoPtr mojo_info =
       Performance::GenerateResourceTiming(*security_origin, info,
                                           *global_scope_);
-  // |info| is taken const-ref but this can make destructive changes to
-  // WorkerTimingContainer on |info| when a page is controlled by a service
-  // worker.
   resource_timing_notifier_->AddResourceTiming(std::move(mojo_info),
-                                               info.InitiatorType(),
-                                               info.TakeWorkerTimingReceiver());
+                                               info.InitiatorType());
 }
 
 void WorkerFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const ClientHintsPreferences& hints_preferences,
     const FetchParameters::ResourceWidth& resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
@@ -250,12 +248,6 @@ void WorkerFetchContext::PopulateResourceRequest(
   SetFirstPartyCookie(out_request);
   if (!out_request.TopFrameOrigin())
     out_request.SetTopFrameOrigin(GetTopFrameOrigin());
-}
-
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-WorkerFetchContext::TakePendingWorkerTimingReceiver(int request_id) {
-  return GetWebWorkerFetchContext()->TakePendingWorkerTimingReceiver(
-      request_id);
 }
 
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>

@@ -39,7 +39,6 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -129,11 +128,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
-
-    // The controller for the page zoom section of the page info. Instantiated only when
-    // {@link ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM} is enabled.
-    @Nullable
-    private PageInfoPageZoomController mPageZoomController;
 
     // All subpage controllers.
     private Collection<PageInfoSubpageController> mSubpageControllers;
@@ -268,23 +262,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
         mSubpageControllers.add(mCookiesController);
 
-        // Only create the controller for Page Zoom if feature flag is enabled.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            mPageZoomController = new PageInfoPageZoomController(this, mView.getPageZoomRowView(),
-                    mWebContents, new PageInfoPageZoomController.PageZoomControllerObserver() {
-                        @Override
-                        public void onSubpageCreated() {
-                            mDialog.reduceWindowDim();
-                        }
-
-                        @Override
-                        public void onSubpageRemoved() {
-                            mDialog.resetWindowDimToDefault();
-                        }
-                    });
-            mSubpageControllers.add(mPageZoomController);
-        }
-
         // TODO(crbug.com/1173154): Setup forget this site button after history delete is
         // implemented.
         // setupForgetSiteButton(mView.getForgetSiteButton());
@@ -412,7 +389,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * Updates the Topic view if present.
      */
     @CalledByNative
-    private void updateTopicsDisplay(String[] topics) {
+    private void setAdPersonalizationInfo(boolean hasJoinedUserToInterestGroup, String[] topics) {
         // This logic is a little weird. On Android we already have separate controllers for most
         // PageInfo components and they usually update themselves. On Desktop we still have one big
         // controller. Here we are reusing Desktop controller to update the Android component.
@@ -421,7 +398,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         for (PageInfoSubpageController controller : mSubpageControllers) {
             if (controller instanceof PageInfoAdPersonalizationController) {
                 ((PageInfoAdPersonalizationController) controller)
-                        .setTopicsDisplay(Arrays.asList(topics));
+                        .setAdPersonalizationInfo(
+                                hasJoinedUserToInterestGroup, Arrays.asList(topics));
             }
         }
     }

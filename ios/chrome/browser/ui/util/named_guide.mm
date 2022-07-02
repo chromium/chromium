@@ -19,17 +19,17 @@ NSString* const kActiveKeyPath = @"active";
 
 @interface NamedGuide ()
 
-// The constraints used to connect the guide to |constrainedView| or
-// |constrainedFrame|.
+// The constraints used to connect the guide to `constrainedView` or
+// `constrainedFrame`.
 @property(nonatomic, strong) NSArray* constraints;
-// A dummy view that is used to support |constrainedFrame|.
+// A dummy view that is used to support `constrainedFrame`.
 @property(nonatomic, strong) UIView* constrainedFrameView;
 
-// Updates |constraints| to constrain the guide to |view|.
+// Updates `constraints` to constrain the guide to `view`.
 - (void)updateConstraintsWithView:(UIView*)view;
 
-// Updates |constrainedFrameView| according to |constrainedFrame| and
-// |autoresizingMask|.  This function will lazily instantiate the view if
+// Updates `constrainedFrameView` according to `constrainedFrame` and
+// `autoresizingMask`.  This function will lazily instantiate the view if
 // necessary and set up constraints so that this layout guide follows the view.
 - (void)updateConstrainedFrameView;
 
@@ -186,7 +186,7 @@ NSString* const kActiveKeyPath = @"active";
 }
 
 - (void)updateConstrainedFrameView {
-  // Remove the dummy view if |constrainedFrame| is null.
+  // Remove the dummy view if `constrainedFrame` is null.
   if (CGRectIsNull(self.constrainedFrame)) {
     self.constrainedFrameView = nil;
     return;
@@ -194,8 +194,8 @@ NSString* const kActiveKeyPath = @"active";
 
   // Lazily create the view if necessary and set it up using the specified frame
   // and autoresizing mask.
-  // NOTE: The view's |translatesAutoresizingMaskIntoConstraints| remains set to
-  // the default value of |YES| in order to leverage UIKit's built in frame =>
+  // NOTE: The view's `translatesAutoresizingMaskIntoConstraints` remains set to
+  // the default value of `YES` in order to leverage UIKit's built in frame =>
   // constraint conversion.
   if (!self.constrainedFrameView) {
     self.constrainedFrameView = [[UIView alloc] init];

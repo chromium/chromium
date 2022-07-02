@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -44,6 +46,14 @@ constexpr blink::DOMHighResTimeStamp kMaxDelayForEntries =
     blink::DOMHighResTimeStamp(500);
 // The length of the timer to flush entries from the time pointerup occurs.
 constexpr base::TimeDelta kFlushTimerLength = base::Seconds(1);
+// The name for the histogram which records interaction timings, and the names
+// of the variants for keyboard, click/tap, and drag interactions.
+const char kHistogramMaxEventDuration[] =
+    "Blink.Responsiveness.UserInteraction.MaxEventDuration";
+const char kHistogramAllTypes[] = ".AllTypes";
+const char kHistogramKeyboard[] = ".Keyboard";
+const char kHistogramTapOrClick[] = ".TapOrClick";
+const char kHistogramDrag[] = ".Drag";
 
 base::TimeDelta MaxEventDuration(
     const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps) {
@@ -105,6 +115,13 @@ std::unique_ptr<TracedValue> UserInteractionTraceData(
   return traced_value;
 }
 
+void LogResponsivenessHistogram(base::TimeDelta max_event_duration,
+                                const char* suffix) {
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kHistogramMaxEventDuration, suffix}), max_event_duration,
+      base::Milliseconds(1), base::Seconds(60), 50);
+}
+
 }  // namespace
 
 ResponsivenessMetrics::ResponsivenessMetrics(
@@ -148,6 +165,19 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                UserInteractionTraceData(max_event_duration,
                                         total_event_duration, interaction_type),
                "frame", ToTraceValue(window->GetFrame()));
+
+  LogResponsivenessHistogram(max_event_duration, kHistogramAllTypes);
+  switch (interaction_type) {
+    case UserInteractionType::kKeyboard:
+      LogResponsivenessHistogram(max_event_duration, kHistogramKeyboard);
+      break;
+    case UserInteractionType::kTapOrClick:
+      LogResponsivenessHistogram(max_event_duration, kHistogramTapOrClick);
+      break;
+    case UserInteractionType::kDrag:
+      LogResponsivenessHistogram(max_event_duration, kHistogramDrag);
+      break;
+  }
 
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();

@@ -13,7 +13,6 @@
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -39,7 +38,7 @@ const EVP_CIPHER* GetAESCipherByKeyLength(size_t key_length_bytes) {
 Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
                             const blink::WebCryptoAlgorithm& algorithm,
                             const blink::WebCryptoKey& key,
-                            const CryptoData& data,
+                            base::span<const uint8_t> data,
                             std::vector<uint8_t>* buffer) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -52,7 +51,7 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
   // According to the openssl docs, the amount of data written may be as large
   // as (data_size + cipher_block_size - 1), constrained to a multiple of
   // cipher_block_size.
-  base::CheckedNumeric<int> output_max_len = data.byte_length();
+  base::CheckedNumeric<int> output_max_len = data.size();
   output_max_len += AES_BLOCK_SIZE - 1;
   if (!output_max_len.IsValid())
     return Status::ErrorDataTooLarge();
@@ -70,15 +69,15 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
 
   bssl::ScopedEVP_CIPHER_CTX context;
   if (!EVP_CipherInit_ex(context.get(), cipher, nullptr, &raw_key[0],
-                         params->Iv().Data(), cipher_operation)) {
+                         params->Iv().data(), cipher_operation)) {
     return Status::OperationError();
   }
 
   buffer->resize(base::ValueOrDieForType<size_t>(output_max_len));
 
   int output_len = 0;
-  if (!EVP_CipherUpdate(context.get(), buffer->data(), &output_len,
-                        data.bytes(), data.byte_length())) {
+  if (!EVP_CipherUpdate(context.get(), buffer->data(), &output_len, data.data(),
+                        base::checked_cast<int>(data.size()))) {
     return Status::OperationError();
   }
   int final_output_chunk_len = 0;
@@ -102,14 +101,14 @@ class AesCbcImplementation : public AesAlgorithm {
 
   Status Encrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     return AesCbcEncryptDecrypt(ENCRYPT, algorithm, key, data, buffer);
   }
 
   Status Decrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     return AesCbcEncryptDecrypt(DECRYPT, algorithm, key, data, buffer);
   }

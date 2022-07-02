@@ -431,7 +431,7 @@ void SpellChecker::RemoveSpellingAndGrammarMarkers(const HTMLElement& element,
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(element)) {
     auto* text_node = DynamicTo<Text>(node);
-    if ((elements_type == ElementsType::kAll || !HasEditableStyle(node)) &&
+    if ((elements_type == ElementsType::kAll || !IsEditable(node)) &&
         text_node) {
       GetFrame().GetDocument()->Markers().RemoveMarkersForNode(
           *text_node, DocumentMarker::MarkerTypes::Misspelling());
@@ -774,8 +774,7 @@ bool SpellChecker::IsSpellCheckingEnabledAt(const Position& position) {
   }
   HTMLElement* element =
       Traversal<HTMLElement>::FirstAncestorOrSelf(*position.AnchorNode());
-  return element && element->IsSpellCheckingEnabled() &&
-         HasEditableStyle(*element);
+  return element && element->IsSpellCheckingEnabled() && IsEditable(*element);
 }
 
 STATIC_ASSERT_ENUM(kWebTextDecorationTypeSpelling, kTextDecorationTypeSpelling);

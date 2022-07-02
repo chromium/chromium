@@ -366,6 +366,8 @@ void RecordingService::OnFrameCaptured(
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo).WithArgs(frame);
 }
 
+void RecordingService::OnNewCropVersion(uint32_t crop_version) {}
+
 void RecordingService::OnFrameWithEmptyRegionCapture() {}
 
 void RecordingService::OnStopped() {

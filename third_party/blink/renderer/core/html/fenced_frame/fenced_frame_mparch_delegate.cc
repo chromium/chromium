@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -18,10 +20,14 @@ namespace blink {
 FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
     HTMLFencedFrameElement* outer_element)
     : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
-  DCHECK_EQ(features::kFencedFramesImplementationTypeParam.Get(),
+  DCHECK_EQ(outer_element->GetDocument()
+                .GetFrame()
+                ->GetPage()
+                ->FencedFramesImplementationType()
+                .value(),
             features::FencedFramesImplementationType::kMPArch);
 
-  DocumentFencedFrames::From(GetElement().GetDocument())
+  DocumentFencedFrames::GetOrCreate(GetElement().GetDocument())
       .RegisterFencedFrame(&GetElement());
   mojo::PendingAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote;
   mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost> receiver =
@@ -43,8 +49,32 @@ void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
 void FencedFrameMPArchDelegate::Dispose() {
   DCHECK(remote_);
   remote_.reset();
-  DocumentFencedFrames::From(GetElement().GetDocument())
-      .DeregisterFencedFrame(&GetElement());
+  auto* fenced_frames = DocumentFencedFrames::Get(GetElement().GetDocument());
+  DCHECK(fenced_frames);
+  fenced_frames->DeregisterFencedFrame(&GetElement());
+}
+
+void FencedFrameMPArchDelegate::AttachLayoutTree() {
+  if (GetElement().GetLayoutEmbeddedContent() && GetElement().ContentFrame()) {
+    GetElement().SetEmbeddedContentView(GetElement().ContentFrame()->View());
+  }
+}
+
+bool FencedFrameMPArchDelegate::SupportsFocus() {
+  return true;
+}
+
+void FencedFrameMPArchDelegate::FreezeFrameSize() {
+  // With MPArch, mark the layout as stale. Do this unconditionally because
+  // we are rounding the size.
+  GetElement().GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+      "Froze MPArch fenced frame");
+
+  // Stop the `ResizeObserver`. It is needed only to compute the
+  // frozen size in MPArch. ShadowDOM stays subscribed in order to
+  // update the CSS on the inner iframe element as the outer container's
+  // size changes.
+  GetElement().StopResizeObserver();
 }
 
 }  // namespace blink

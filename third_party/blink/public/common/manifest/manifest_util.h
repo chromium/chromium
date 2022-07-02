@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
-#include "third_party/blink/public/mojom/manifest/handle_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 namespace blink {
@@ -60,9 +59,6 @@ WebScreenOrientationLockTypeFromString(const std::string& orientation);
 
 BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
     const std::string& capture_links);
-
-BLINK_COMMON_EXPORT mojom::HandleLinks HandleLinksFromString(
-    const std::string& handle_links);
 
 struct BLINK_COMMON_EXPORT ParsedRouteTo {
   Manifest::LaunchHandler::RouteTo route_to =

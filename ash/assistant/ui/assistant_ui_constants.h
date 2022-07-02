@@ -17,6 +17,8 @@ class FontList;
 namespace ash {
 
 // Appearance.
+// TODO(b/233386078): Usage of kPreferredWidthDip is discouraged as it can
+// change
 constexpr int kPreferredWidthDip = 640;
 constexpr int kSpacingDip = 8;
 constexpr int kMarginDip = 8;

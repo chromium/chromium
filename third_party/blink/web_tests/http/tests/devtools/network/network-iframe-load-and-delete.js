@@ -43,6 +43,7 @@
       }
   `);
 
+  ProtocolClient.test.suppressRequestErrors = true;
   NetworkTestRunner.recordNetwork();
   ConsoleTestRunner.addConsoleSniffer(step2);
   TestRunner.evaluateInPage('loadIframe()');

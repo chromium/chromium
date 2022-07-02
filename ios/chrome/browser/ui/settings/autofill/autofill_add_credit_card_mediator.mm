@@ -90,7 +90,7 @@
           base::SysNSStringToUTF8(cardNumber));
 
   // If the credit card number already exist in saved credit card
-  // |savedCreditCard| then update saved credit card |savedCreditCardCopy|
+  // `savedCreditCard` then update saved credit card `savedCreditCardCopy`
   // with the new data.
   if (savedCreditCard != nil) {
     autofill::CreditCard savedCreditCardCopy(*savedCreditCard);

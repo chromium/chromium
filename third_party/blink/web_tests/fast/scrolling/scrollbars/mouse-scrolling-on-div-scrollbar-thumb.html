@@ -4,105 +4,56 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
+<script src="resources/mouse-scrolling-on-div-scrollbar-thumb.js"></script>
 <style>
-.appearance {
-  width: 100px;
-  height: 100px;
-  overflow: scroll;
-  border: 1px solid black;
-}
-.standardLocation {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-}
-.space {
-  height: 1000px;
-  width: 1000px;
-}
+  .appearance {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    border: 1px solid black;
+  }
+
+  .standardLocation {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+  }
+
+  .space {
+    height: 1000px;
+    width: 1000px;
+  }
 </style>
 
 <!-- Composited non-custom scroller -->
-<div id="standard" class="appearance standardLocation">
+<div id="standard" class="appearance standardLocation" style="direction: ltr;">
   <div class="space"></div>
 </div>
 
 <script>
-if (window.internals)
+  if (window.internals)
     internals.settings.setScrollAnimatorEnabled(false);
 
-let platform = navigator.userAgent.includes("Linux") ? "linux" :
-               navigator.userAgent.includes("Windows") ? "win" :
-               navigator.userAgent.includes("Mac OS X") ? "mac" :
-               (() => { throw "Platform unsupported. See crbug.com/953847"; })();
+  let platform = navigator.userAgent.includes("Linux") ? "linux" :
+    navigator.userAgent.includes("Windows") ? "win" :
+      navigator.userAgent.includes("Mac OS X") ? "mac" :
+        (() => { throw "Platform unsupported."; })();
 
-window.onload = () => {
-  const standardDivFast = document.getElementById("standard");
-  const standardRectFast = standardDivFast.getBoundingClientRect();
+  const scroller = document.getElementById("standard");
+  const TRACK_WIDTH = calculateScrollbarThickness()
+  const params = {
+    scroller: scroller,
+    TRACK_WIDTH: TRACK_WIDTH,
+    BUTTON_WIDTH: TRACK_WIDTH,
+    SCROLL_CORNER: TRACK_WIDTH,
+    SCROLL_DELTA: 50,
+    platform: platform
+  }
 
-  const TRACK_WIDTH = calculateScrollbarThickness();
-  const BUTTON_WIDTH = TRACK_WIDTH;
-  const SCROLL_CORNER = TRACK_WIDTH;
-  const SCROLL_DELTA = 50;
-
-  promise_test (async () => {
-    await waitForCompositorCommit();
-    resetScrollOffset(standardDivFast);
-
-    // Testing the vertical scrollbar thumb.
-    let x = standardRectFast.right - TRACK_WIDTH / 2;
-    let y = standardRectFast.top + (platform == "mac" ? 0 : BUTTON_WIDTH) + 2;
-
-    await mouseMoveTo(x, y);
-    await mouseDownAt(x, y);
-    assert_equals(standardDivFast.scrollTop, 0, "Mousedown on vertical scrollbar thumb is not expected to scroll.");
-
-    await mouseMoveTo(x, y-10, Buttons.LEFT);
-    assert_equals(standardDivFast.scrollTop, 0, "Vertical thumb drag beyond the track should not cause a scroll.");
-
-    await mouseMoveTo(x, y, Buttons.LEFT);
-    assert_equals(standardDivFast.scrollTop, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
-
-    await mouseUpAt(x, y);
+  promise_test(async () => {
+    await testScrollThumbNonScrolls(params);
   }, "Test thumb drags beyond scrollbar track.");
-
-  promise_test (async () => {
-    await waitForCompositorCommit();
-    resetScrollOffset(standardDivFast);
-
-    // Testing the vertical scrollbar thumb.
-    let x = standardRectFast.right - TRACK_WIDTH / 2;
-    let y = standardRectFast.top + (platform == "mac" ? 0 : BUTTON_WIDTH) + 2;
-    let asc_increments = [15, 10, 7, 6, 2];
-    let asc_offsets = {linux: [549, 915, 915, 915, 915], win: [361, 601, 770, 915, 915], mac: [211, 351, 450, 534, 563]}[platform];
-    let desc_increments = [3, 2, 5, 9, 21];
-    let desc_offsets = {linux: [915, 915, 915, 768, 0], win: [890, 842, 722, 505, 0], mac: [520, 492, 422, 295, 0]}[platform];
-
-    await mouseMoveTo(x, y);
-    await mouseDownAt(x, y);
-
-    // Scroll down
-    for (var i = 0; i < 5; i++){
-      y += asc_increments[i];
-      await mouseMoveTo(x, y, Buttons.LEFT);
-      // TODO(crbug.com/1009892): Sometimes there is 1px difference in threaded scrollbar scrolling mode.
-      // Change assert_approx_equals(..., 1, ...) to assert_equals(...) when the bug is fixed.
-      assert_approx_equals(standardDivFast.scrollTop, asc_offsets[i], 1, "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
-    };
-
-    // Scroll up
-    for (var i = 0; i < 5; i++){
-      y -= desc_increments[i];
-      await mouseMoveTo(x, y, Buttons.LEFT);
-      // TODO(crbug.com/1009892): Ditto.
-      assert_approx_equals(standardDivFast.scrollTop, desc_offsets[i], 1, "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
-    };
-
-    await mouseUpAt(x, y);
-    assert_equals(standardDivFast.scrollTop, 0, "Mouseup on vertical scrollbar thumb is not expected to scroll.");
-
-    // Since the horizontal scrolling is essentially the same codepath as vertical,
-    // this need not be tested in the interest of making the test run faster.
+  promise_test(async () => {
+    await testThumbScrolls(params);
   }, "Test mouse drags in intervals on non-custom composited div scrollbar thumb.");
-}
 </script>

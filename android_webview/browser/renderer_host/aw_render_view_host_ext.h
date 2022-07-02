@@ -10,7 +10,6 @@
 
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
-#include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -63,14 +62,9 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   // independent pixels used by blink::WebView.
   void RequestNewHitTestDataAt(const gfx::PointF& touch_center,
                                const gfx::SizeF& touch_area);
-
-  // Optimization to avoid unnecessary Java object creation on hit test.
-  bool HasNewHitTestData() const;
-  void MarkHitTestDataRead();
-
   // Return |last_hit_test_data_|. Note that this is unavoidably racy;
   // the corresponding public WebView API is as well.
-  const mojom::HitTestData& GetLastHitTestData() const;
+  mojom::HitTestDataPtr TakeLastHitTestData();
 
   // Sets the zoom factor for text only. Used in layout modes other than
   // Text Autosizing.
@@ -113,8 +107,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   // is called in AwRenderViewExt.
   android_webview::mojom::HitTestDataPtr last_hit_test_data_;
 
-  bool has_new_hit_test_data_;
-
   // Some WebView users might want to show their own error pages / logic.
   bool will_suppress_error_page_ = false;
 
@@ -124,8 +116,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   // Associated channel to the webview LocalMainFrame extensions.
   mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace android_webview

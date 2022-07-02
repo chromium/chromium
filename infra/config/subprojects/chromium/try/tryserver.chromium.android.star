@@ -31,10 +31,16 @@ consoles.list_view(
 
 try_.builder(
     name = "android-10-arm64-rel",
+    mirrors = [
+        "ci/android-10-arm64-rel",
+    ],
 )
 
 try_.builder(
     name = "android-11-x86-rel",
+    mirrors = [
+        "ci/android-11-x86-rel",
+    ],
 )
 
 try_.builder(
@@ -48,6 +54,9 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     compilator = "android-12-x64-rel-compilator",
+    mirrors = [
+        "ci/android-12-x64-rel",
+    ],
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
@@ -69,12 +78,9 @@ try_.builder(
 
 try_.builder(
     name = "android-bfcache-rel",
-)
-
-try_.builder(
-    name = "android-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
+    mirrors = [
+        "ci/android-bfcache-rel",
+    ],
 )
 
 try_.builder(
@@ -213,6 +219,11 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-fieldtrial-fyi-rel",
+    mirrors = ["ci/android-fieldtrial-rel"],
+)
+
+try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )
@@ -223,6 +234,10 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
+    mirrors = [
+        "ci/android-marshmallow-arm64-rel",
+        "ci/Android Release (Nexus 5X)",
+    ],
     check_for_flakiness = True,
     compilator = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -242,6 +257,14 @@ try_.compilator_builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-x86-rel",
+    mirrors = [
+        "ci/android-marshmallow-x86-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
     check_for_flakiness = True,
     compilator = "android-marshmallow-x86-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -260,6 +283,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android-marshmallow-x86-rel-non-cq",
+    mirrors = [
+        "ci/android-marshmallow-x86-rel-non-cq",
+    ],
 )
 
 try_.builder(
@@ -328,6 +354,14 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
+    mirrors = [
+        "ci/android-pie-arm64-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
     compilator = "android-pie-arm64-rel-compilator",
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,
@@ -532,6 +566,13 @@ try_.builder(
 try_.builder(
     name = "android_compile_x86_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Android x86 Builder (dbg)",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
     cores = 16,
     ssd = True,
     main_list_view = "try",
@@ -551,6 +592,12 @@ try_.builder(
 
 try_.builder(
     name = "android_cronet",
+    mirrors = [
+        "ci/android-cronet-arm-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
@@ -576,6 +623,9 @@ try_.builder(
 try_.builder(
     name = "cast_shell_android",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Android (dbg)",
+    ],
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -636,12 +686,14 @@ try_.gpu.optional_tests_builder(
             ".+/[+]/media/renderers/.+",
             ".+/[+]/media/video/.+",
             ".+/[+]/services/viz/.+",
+            ".+/[+]/testing/buildbot/tryserver.chromium.android.json",
             ".+/[+]/testing/trigger_scripts/.+",
             ".+/[+]/third_party/blink/renderer/modules/mediastream/.+",
             ".+/[+]/third_party/blink/renderer/modules/webcodecs/.+",
             ".+/[+]/third_party/blink/renderer/modules/webgl/.+",
             ".+/[+]/third_party/blink/renderer/platform/graphics/gpu/.+",
             ".+/[+]/tools/clang/scripts/update.py",
+            ".+/[+]/tools/mb/mb_config_expectations/tryserver.chromium.android.json",
             ".+/[+]/ui/gl/.+",
         ],
     ),

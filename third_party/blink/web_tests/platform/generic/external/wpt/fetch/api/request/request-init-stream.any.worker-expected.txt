@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules
+Harness: the test ran to completion.
+

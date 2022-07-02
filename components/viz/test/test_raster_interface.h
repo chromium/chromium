@@ -98,7 +98,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                                   const gpu::Mailbox yuva_plane_mailboxes[],
                                   const gpu::Mailbox& source_mailbox) override {
   }
-  void BeginRasterCHROMIUM(GLuint sk_color,
+  void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            gpu::raster::MsaaMode msaa_mode,

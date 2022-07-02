@@ -26,8 +26,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch3NonEnglish},
-                                   {});
+    feature_list_.InitWithFeatures({}, {});
     InitPedals();
   }
 
@@ -16438,6 +16437,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "find chrome history",
             "find google chrome browsing history",
             "find google chrome history",
+            "find history",
             "find url history",
             "google chrome browsing history find",
             "google chrome browsing history revisit",
@@ -16451,23 +16451,32 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "google chrome history show",
             "google chrome history view",
             "google chrome history visit",
+            "history find",
+            "history revisit",
+            "history see",
+            "history show",
+            "history view",
+            "history visit",
             "revisit browser history",
             "revisit browsing history",
             "revisit chrome history",
             "revisit google chrome browsing history",
             "revisit google chrome history",
+            "revisit history",
             "revisit url history",
             "see browser history",
             "see browsing history",
             "see chrome history",
             "see google chrome browsing history",
             "see google chrome history",
+            "see history",
             "see url history",
             "show browser history",
             "show browsing history",
             "show chrome history",
             "show google chrome browsing history",
             "show google chrome history",
+            "show history",
             "show url history",
             "url history find",
             "url history revisit",
@@ -16480,12 +16489,14 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "view chrome history",
             "view google chrome browsing history",
             "view google chrome history",
+            "view history",
             "view url history",
             "visit browser history",
             "visit browsing history",
             "visit chrome history",
             "visit google chrome browsing history",
             "visit google chrome history",
+            "visit history",
             "visit url history",
         },
 

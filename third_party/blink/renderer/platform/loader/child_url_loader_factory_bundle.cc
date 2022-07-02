@@ -97,11 +97,6 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
     client_sink_->OnTransferSizeUpdated(transfer_size_diff);
   }
 
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    client_sink_->OnStartLoadingResponseBody(std::move(body));
-  }
-
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     client_sink_->OnComplete(status);
   }

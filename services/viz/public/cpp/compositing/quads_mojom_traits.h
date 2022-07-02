@@ -29,7 +29,9 @@
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -246,7 +248,7 @@ struct StructTraits<viz::mojom::VideoHoleQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad> {
-  static uint32_t color(const viz::DrawQuad& input) {
+  static SkColor4f color(const viz::DrawQuad& input) {
     const viz::DebugBorderDrawQuad* quad =
         viz::DebugBorderDrawQuad::MaterialCast(&input);
     return quad->color;
@@ -333,7 +335,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
 
 template <>
 struct StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad> {
-  static uint32_t color(const viz::DrawQuad& input) {
+  static SkColor4f color(const viz::DrawQuad& input) {
     const viz::SolidColorDrawQuad* quad =
         viz::SolidColorDrawQuad::MaterialCast(&input);
     return quad->color;
@@ -387,7 +389,7 @@ struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
     return quad->surface_range;
   }
 
-  static uint32_t default_background_color(const viz::DrawQuad& input) {
+  static const SkColor4f default_background_color(const viz::DrawQuad& input) {
     const viz::SurfaceDrawQuad* quad =
         viz::SurfaceDrawQuad::MaterialCast(&input);
     return quad->default_background_color;
@@ -447,7 +449,7 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->uv_bottom_right;
   }
 
-  static uint32_t background_color(const viz::DrawQuad& input) {
+  static SkColor4f background_color(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->background_color;

@@ -38,7 +38,7 @@ class ToolbarActionViewController {
     kCommand = 0,
 
     // The action was invoked by the user activating (via mouse or keyboard)
-    // the button in the toolbar.
+    // the action button in the toolbar.
     kToolbarButton = 1,
 
     // The action was invoked by the user activating (via mouse or keyboard)
@@ -53,7 +53,11 @@ class ToolbarActionViewController {
     // The action was invoked programmatically via an API.
     kApi = 4,
 
-    kMaxValue = kApi,
+    // The action was invoked by the user activating (via mouse or keyboard) the
+    // request access button in the toolbar
+    kRequestAccessButton = 5,
+
+    kMaxValue = kRequestAccessButton,
   };
 
   virtual ~ToolbarActionViewController() {}

@@ -105,7 +105,7 @@ suite('SiteListEntry', function() {
         siteDescription.textContent);
   });
 
-  test('not valid origin does not go to site details page', function() {
+  test('not valid origin does not go to site details page', async function() {
     browserProxy.setIsOriginValid(false);
     testElement.model = {
       category: ContentSettingsTypes.GEOLOCATION,
@@ -119,24 +119,22 @@ suite('SiteListEntry', function() {
       setting: ContentSetting.DEFAULT,
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
-    return browserProxy.whenCalled('isOriginValid').then((args) => {
-      assertEquals('example.com', args);
-      flush();
-      const settingsRow =
-          testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
-      assertFalse(settingsRow.hasAttribute('actionable'));
-      const subpageArrow = settingsRow.querySelector('.subpage-arrow');
-      assertTrue(!subpageArrow);
-      const separator = settingsRow.querySelector('.separator');
-      assertTrue(!separator);
-      settingsRow!.click();
-      assertEquals(
-          routes.SITE_SETTINGS.path,
-          Router.getInstance().getCurrentRoute().path);
-    });
+    const args = await browserProxy.whenCalled('isOriginValid');
+    assertEquals('example.com', args);
+    flush();
+    const settingsRow =
+        testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
+    assertFalse(settingsRow.hasAttribute('actionable'));
+    const subpageArrow = settingsRow.querySelector('.subpage-arrow');
+    assertTrue(!subpageArrow);
+    const separator = settingsRow.querySelector('.separator');
+    assertTrue(!separator);
+    settingsRow!.click();
+    assertEquals(
+        routes.SITE_SETTINGS.path, Router.getInstance().getCurrentRoute().path);
   });
 
-  test('valid origin goes to site details page', function() {
+  test('valid origin goes to site details page', async function() {
     browserProxy.setIsOriginValid(true);
     testElement.model = {
       category: ContentSettingsTypes.GEOLOCATION,
@@ -150,20 +148,19 @@ suite('SiteListEntry', function() {
       setting: ContentSetting.DEFAULT,
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
-    return browserProxy.whenCalled('isOriginValid').then((args) => {
-      assertEquals('http://example.com', args);
-      flush();
-      const settingsRow =
-          testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
-      assertTrue(settingsRow.hasAttribute('actionable'));
-      const subpageArrow = settingsRow.querySelector('.subpage-arrow');
-      assertFalse(!subpageArrow);
-      const separator = settingsRow.querySelector('.separator');
-      assertFalse(!separator);
-      settingsRow.click();
-      assertEquals(
-          routes.SITE_SETTINGS_SITE_DETAILS.path,
-          Router.getInstance().getCurrentRoute().path);
-    });
+    const args = await browserProxy.whenCalled('isOriginValid');
+    assertEquals('http://example.com', args);
+    flush();
+    const settingsRow =
+        testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
+    assertTrue(settingsRow.hasAttribute('actionable'));
+    const subpageArrow = settingsRow.querySelector('.subpage-arrow');
+    assertFalse(!subpageArrow);
+    const separator = settingsRow.querySelector('.separator');
+    assertFalse(!separator);
+    settingsRow.click();
+    assertEquals(
+        routes.SITE_SETTINGS_SITE_DETAILS.path,
+        Router.getInstance().getCurrentRoute().path);
   });
 });

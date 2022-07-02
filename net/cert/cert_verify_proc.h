@@ -170,9 +170,6 @@ class NET_EXPORT CertVerifyProc
   // Implementations are expected to fill in all applicable fields, excluding:
   //
   // * ocsp_result
-  // * has_md2
-  // * has_md4
-  // * has_md5
   // * has_sha1
   // * has_sha1_leaf
   //

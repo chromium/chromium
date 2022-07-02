@@ -51,7 +51,7 @@ namespace blink {
 
 namespace {
 
-static const size_t kRenderQuantumFrames = 128;
+constexpr size_t kRenderQuantumFrames = 128;
 
 }  // namespace
 
@@ -330,7 +330,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     input_buses.push_back(input_bus.get());
     output_buses.push_back(output_bus.get());
 
-    // Fill |input_channel| with 1 and zero out |output_bus|.
+    // Fill `input_channel` with 1 and zero out `output_bus`.
     std::fill(input_channel->MutableData(),
               input_channel->MutableData() + input_channel->length(), 1);
     output_bus->Zero();

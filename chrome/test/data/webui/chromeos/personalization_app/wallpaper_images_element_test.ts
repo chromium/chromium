@@ -96,6 +96,7 @@ suite('WallpaperImagesTest', function() {
   });
 
   test('displays images for current collection id', async () => {
+    loadTimeData.overrideValues({isDarkLightModeEnabled: false});
     personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': wallpaperProvider.images,
       'id_1': [
@@ -172,7 +173,8 @@ suite('WallpaperImagesTest', function() {
         Parameters<IFrameApi['sendImageTiles']>;
     assertEquals(imagesGrid, target);
     const tiles = getDarkLightImageTiles(
-        false, personalizationStore.data.wallpaper.backdrop.images['id_0']);
+        wallpaperImagesElement.isDarkModeActive,
+        personalizationStore.data.wallpaper.backdrop.images['id_0']);
     assertDeepEquals(tiles, data);
     assertEquals(data[0]!.preview.length, 2);
     // Check that light variant comes before dark variant.
@@ -195,7 +197,8 @@ suite('WallpaperImagesTest', function() {
     assertEquals(imagesGrid, target);
     assertDeepEquals(
         getDarkLightImageTiles(
-            false, personalizationStore.data.wallpaper.backdrop.images['id_1']),
+            wallpaperImagesElement.isDarkModeActive,
+            personalizationStore.data.wallpaper.backdrop.images['id_1']),
         data);
   });
 

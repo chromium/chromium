@@ -10,7 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -71,7 +71,7 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
               color_name,
               /*is_dark_mode=*/
               dark_background.value_or(
-                  AshColorProvider::Get()->IsDarkModeEnabled()),
+                  DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()),
               /*use_debug_colors=*/
               base::FeatureList::IsEnabled(
                   features::kSemanticColorsDebugOverride))));

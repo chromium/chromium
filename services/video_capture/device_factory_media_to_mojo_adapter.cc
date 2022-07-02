@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
@@ -191,6 +192,9 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
       std::move(media_device), jpeg_decoder_factory_callback_,
       jpeg_decoder_task_runner_);
+#elif BUILDFLAG(IS_WIN)
+  device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
+      std::move(media_device), capture_system_->GetFactory());
 #else
   device_entry.device =
       std::make_unique<DeviceMediaToMojoAdapter>(std::move(media_device));

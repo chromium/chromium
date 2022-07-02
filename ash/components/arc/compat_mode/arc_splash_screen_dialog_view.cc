@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
@@ -214,6 +215,10 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   highlight_border_ =
       anchor_->AddChildView(std::make_unique<HighlightBorder>());
 
+  // Observe anchor and its highlight to be notified when it's destroyed.
+  anchor_highlight_observations_.AddObservation(anchor_);
+  anchor_highlight_observations_.AddObservation(highlight_border_);
+
   // Add window observer.
   window_observer_ = std::make_unique<ArcSplashScreenWindowObserver>(
       parent,
@@ -244,6 +249,17 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);
+}
+
+void ArcSplashScreenDialogView::OnViewIsDeleting(View* observed_view) {
+  if (observed_view == anchor_)
+    anchor_ = nullptr;
+  else if (observed_view == highlight_border_)
+    highlight_border_ = nullptr;
+  else
+    NOTREACHED();
+
+  anchor_highlight_observations_.RemoveObservation(observed_view);
 }
 
 void ArcSplashScreenDialogView::OnWindowActivated(ActivationReason reason,
@@ -281,11 +297,14 @@ void ArcSplashScreenDialogView::OnCloseButtonClicked() {
   if (!close_callback_)
     return;
 
-  anchor_->RemoveChildViewT(highlight_border_);
+  if (anchor_ && highlight_border_)
+    anchor_->RemoveChildViewT(highlight_border_);
 
   std::move(close_callback_).Run();
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+
+  auto* const widget = GetWidget();
+  if (widget)
+    widget->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void ArcSplashScreenDialogView::Show(aura::Window* parent,
@@ -308,7 +327,7 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent,
   OverlayDialog::Show(
       parent,
       base::BindOnce(&ArcSplashScreenDialogView::OnCloseButtonClicked,
-                     base::Unretained(dialog_view.get())),
+                     dialog_view->weak_ptr_factory_.GetWeakPtr()),
       /*dialog_view=*/nullptr);
 
   // TODO(b/206336651): Investigate the cases when the following check fails.

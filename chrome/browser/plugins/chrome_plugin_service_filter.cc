@@ -97,23 +97,24 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
 
   // Authorize all plugins is intended for the granting access to only
   // the currently active page, so we iterate on the main frame.
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating([](content::RenderFrameHost* render_frame_host) {
         ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
             render_frame_host->GetProcess()->GetID(), base::FilePath());
       }));
 
   if (load_blocked) {
-    web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](const std::string& identifier,
-           content::RenderFrameHost* render_frame_host) {
-          mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-              chrome_render_frame;
-          render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-              &chrome_render_frame);
-          chrome_render_frame->LoadBlockedPlugins(identifier);
-        },
-        identifier));
+    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        base::BindRepeating(
+            [](const std::string& identifier,
+               content::RenderFrameHost* render_frame_host) {
+              mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+                  chrome_render_frame;
+              render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+                  &chrome_render_frame);
+              chrome_render_frame->LoadBlockedPlugins(identifier);
+            },
+            identifier));
   }
 }
 

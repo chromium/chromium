@@ -56,11 +56,54 @@ using network::mojom::SimpleCacheOpenEntryResultPtr;
 using FileEnumerationEntry =
     disk_cache::BackendFileOperations::FileEnumerationEntry;
 
+// On Mac and Fuchsia, sandboxing is always enabled, so we don't need to test
+// the non-sandboxing configuration.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+
+class NonSandboxedNetworkServiceBrowserTest : public ContentBrowserTest {
+ public:
+  NonSandboxedNetworkServiceBrowserTest() {
+    std::vector<base::Feature> kDisabledFeatures = {
+        sandbox::policy::features::kNetworkServiceSandbox,
+        features::kNetworkServiceInProcess,
+    };
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/kDisabledFeatures);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NonSandboxedNetworkServiceBrowserTest,
+                       OpeningFileIsAllowed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::RunLoop run_loop;
+
+  absl::optional<bool> result;
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  const base::FilePath path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("blank.jpg"));
+  network_service_test()->OpenFile(path,
+                                   base::BindLambdaForTesting([&](bool ok) {
+                                     result = ok;
+                                     run_loop.Quit();
+                                   }));
+  run_loop.Run();
+
+  EXPECT_EQ(result, absl::make_optional(true));
+}
+
+#endif
+
 class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
   SandboxedHttpCacheBrowserTest() {
     std::vector<base::Feature> enabled_features = {
-      net::features::kSandboxHttpCache,
+      features::kBrokerFileOperationsOnDiskCacheInNetworkService,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.

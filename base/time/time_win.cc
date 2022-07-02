@@ -163,7 +163,7 @@ void UpdateTimerIntervalLocked() {
 }
 
 // Returns the current value of the performance counter.
-uint64_t QPCNowRaw() {
+int64_t QPCNowRaw() {
   LARGE_INTEGER perf_counter_now = {};
   // According to the MSDN documentation for QueryPerformanceCounter(), this
   // will never fail on systems that run XP or later.
@@ -406,7 +406,7 @@ DWORD (*g_tick_function)(void) = &timeGetTimeWrapper;
 // "rollover" counter.
 union LastTimeAndRolloversState {
   // The state as a single 32-bit opaque value.
-  std::atomic<int32_t> as_opaque_32;
+  std::atomic<int32_t> as_opaque_32{0};
 
   // The state as usable values.
   struct {
@@ -760,12 +760,12 @@ double TSCTicksPerSecond() {
   // TSC and the performance counter.
 
   static const uint64_t tsc_initial = __rdtsc();
-  static const uint64_t perf_counter_initial = QPCNowRaw();
+  static const int64_t perf_counter_initial = QPCNowRaw();
 
   // Make a another reading of the TSC and the performance counter every time
   // that this function is called.
   const uint64_t tsc_now = __rdtsc();
-  const uint64_t perf_counter_now = QPCNowRaw();
+  const int64_t perf_counter_now = QPCNowRaw();
 
   // Reset the thread priority.
   ::SetThreadPriority(::GetCurrentThread(), previous_priority);
@@ -782,7 +782,7 @@ double TSCTicksPerSecond() {
   LARGE_INTEGER perf_counter_frequency = {};
   ::QueryPerformanceFrequency(&perf_counter_frequency);
   DCHECK_GE(perf_counter_now, perf_counter_initial);
-  const uint64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
+  const int64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
       perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
 

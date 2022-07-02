@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_context_menu_model.h"
@@ -22,13 +23,6 @@
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
-
-namespace {
-
-// Close command id; avoids colliding with ShelfContextMenuModel command ids.
-const int kCloseCommandId = ShelfContextMenuModel::MENU_ASH_END + 1;
-
-}  // namespace
 
 ShelfWindowWatcherItemDelegate::ShelfWindowWatcherItemDelegate(
     const ShelfID& id,
@@ -66,7 +60,7 @@ void ShelfWindowWatcherItemDelegate::GetContextMenu(
   auto menu = std::make_unique<ShelfContextMenuModel>(this, display_id);
   // Show a default context menu with just an extra close item.
   menu->AddItemWithStringIdAndIcon(
-      kCloseCommandId, IDS_CLOSE,
+      CommandId::MENU_CLOSE, IDS_CLOSE,
       ui::ImageModel::FromVectorIcon(views::kCloseIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   std::move(callback).Run(std::move(menu));
@@ -76,7 +70,8 @@ void ShelfWindowWatcherItemDelegate::ExecuteCommand(bool from_context_menu,
                                                     int64_t command_id,
                                                     int32_t event_flags,
                                                     int64_t display_id) {
-  DCHECK_EQ(command_id, kCloseCommandId) << "Unknown ShelfItemDelegate command";
+  DCHECK_EQ(command_id, CommandId::MENU_CLOSE)
+      << "Unknown ShelfItemDelegate command";
   Close();
 }
 

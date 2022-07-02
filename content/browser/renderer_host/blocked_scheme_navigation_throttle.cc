@@ -21,6 +21,7 @@ namespace content {
 
 namespace {
 const char kConsoleError[] = "Not allowed to navigate top frame to %s URL: %s";
+const char kAnyFrameConsoleError[] = "Not allowed to navigate to %s URL: %s";
 }
 
 BlockedSchemeNavigationThrottle::BlockedSchemeNavigationThrottle(
@@ -28,6 +29,26 @@ BlockedSchemeNavigationThrottle::BlockedSchemeNavigationThrottle(
     : NavigationThrottle(navigation_handle) {}
 
 BlockedSchemeNavigationThrottle::~BlockedSchemeNavigationThrottle() {}
+
+NavigationThrottle::ThrottleCheckResult
+BlockedSchemeNavigationThrottle::WillStartRequest() {
+  NavigationRequest* request = NavigationRequest::From(navigation_handle());
+  if (!request->GetURL().SchemeIs(url::kFileSystemScheme))
+    return PROCEED;
+
+  if (base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
+    return PROCEED;
+
+  RenderFrameHost* top_frame =
+      request->frame_tree_node()->frame_tree()->root()->current_frame_host();
+  top_frame->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError,
+      base::StringPrintf(kAnyFrameConsoleError,
+                         request->GetURL().scheme().c_str(),
+                         request->GetURL().spec().c_str()));
+
+  return CANCEL;
+}
 
 NavigationThrottle::ThrottleCheckResult
 BlockedSchemeNavigationThrottle::WillProcessResponse() {
@@ -65,6 +86,15 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
        request->GetURL().SchemeIs(url::kFileSystemScheme)) &&
       !base::FeatureList::IsEnabled(
           features::kAllowContentInitiatedDataUrlNavigations)) {
+    return std::make_unique<BlockedSchemeNavigationThrottle>(request);
+  }
+  // Block all renderer initiated navigations to filesystem: URLs. These won't
+  // load anyway since no URL Loader exists for them, but the throttle lets us
+  // add a message to the console.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFileSystemUrlNavigation) &&
+      request->IsRendererInitiated() &&
+      request->GetURL().SchemeIs(url::kFileSystemScheme)) {
     return std::make_unique<BlockedSchemeNavigationThrottle>(request);
   }
   return nullptr;

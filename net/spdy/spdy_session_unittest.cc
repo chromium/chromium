@@ -176,8 +176,6 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
         old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        test_push_delegate_(nullptr),
-        spdy_session_pool_(nullptr),
         test_url_(kDefaultUrl),
         test_server_(test_url_),
         key_(HostPortPair::FromURL(test_url_),
@@ -391,8 +389,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
   base::WeakPtr<SpdySession> session_;
-  raw_ptr<TestServerPushDelegate> test_push_delegate_;
-  raw_ptr<SpdySessionPool> spdy_session_pool_;
+  raw_ptr<TestServerPushDelegate> test_push_delegate_ = nullptr;
+  raw_ptr<SpdySessionPool> spdy_session_pool_ = nullptr;
   const GURL test_url_;
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;
@@ -2247,26 +2245,26 @@ TEST_F(SpdySessionTest, ChangeStreamRequestPriority) {
 // makes |source| an invalid source on failure.
 bool NetLogSourceFromEventParameters(const base::Value* event_params,
                                      NetLogSource* source) {
-  const base::Value* source_dict = nullptr;
+  const base::Value::Dict* source_dict = nullptr;
   int source_id = -1;
   int source_type = static_cast<int>(NetLogSourceType::COUNT);
   if (!event_params) {
     *source = NetLogSource();
     return false;
   }
-  source_dict = event_params->FindDictKey("source_dependency");
+  source_dict = event_params->GetDict().FindDict("source_dependency");
   if (!source_dict) {
     *source = NetLogSource();
     return false;
   }
   absl::optional<int> opt_int;
-  opt_int = source_dict->FindIntKey("id");
+  opt_int = source_dict->FindInt("id");
   if (!opt_int) {
     *source = NetLogSource();
     return false;
   }
   source_id = opt_int.value();
-  opt_int = source_dict->FindIntKey("type");
+  opt_int = source_dict->FindInt("type");
   if (!opt_int) {
     *source = NetLogSource();
     return false;
@@ -6619,7 +6617,7 @@ class AltSvcFrameTest : public SpdySessionTest {
   void AddSocketData(const spdy::SpdyAltSvcIR& altsvc_ir) {
     altsvc_frame_ = spdy_util_.SerializeFrame(altsvc_ir);
     reads_.push_back(CreateMockRead(altsvc_frame_, 0));
-    reads_.push_back(MockRead(ASYNC, 0, 1));
+    reads_.emplace_back(ASYNC, 0, 1);
 
     data_ =
         std::make_unique<SequencedSocketData>(reads_, base::span<MockWrite>());
@@ -7143,7 +7141,7 @@ namespace {
 
 class TestSSLConfigService : public SSLConfigService {
  public:
-  TestSSLConfigService() {}
+  TestSSLConfigService() = default;
   ~TestSSLConfigService() override = default;
 
   SSLContextConfig GetSSLContextConfig() override { return config_; }
@@ -7469,23 +7467,23 @@ TEST(RecordPushedStreamHistogramTest, VaryResponseHeader) {
                     {1, {"vary", "fooaccept-encoding"}, 5},
                     {1, {"vary", "foo, accept-encodingbar"}, 5}};
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
+  for (const auto& test_case : test_cases) {
     spdy::Http2HeaderBlock headers;
-    for (size_t j = 0; j < test_cases[i].num_headers; ++j) {
-      headers[test_cases[i].headers[2 * j]] = test_cases[i].headers[2 * j + 1];
+    for (size_t j = 0; j < test_case.num_headers; ++j) {
+      headers[test_case.headers[2 * j]] = test_case.headers[2 * j + 1];
     }
     base::HistogramTester histograms;
     histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 0);
     SpdySession::RecordPushedStreamVaryResponseHeaderHistogram(headers);
     histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 1);
     histograms.ExpectBucketCount("Net.PushedStreamVaryResponseHeader",
-                                 test_cases[i].expected_bucket, 1);
+                                 test_case.expected_bucket, 1);
     // Adding an unrelated header field should not change how Vary is parsed.
     headers["foo"] = "bar";
     SpdySession::RecordPushedStreamVaryResponseHeaderHistogram(headers);
     histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 2);
     histograms.ExpectBucketCount("Net.PushedStreamVaryResponseHeader",
-                                 test_cases[i].expected_bucket, 2);
+                                 test_case.expected_bucket, 2);
   }
 }
 

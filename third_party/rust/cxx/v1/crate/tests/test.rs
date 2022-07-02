@@ -51,6 +51,7 @@ fn test_c_return() {
         cast::c_char_to_unsigned(ffi::c_return_slice_char(&shared)),
     );
     assert_eq!("2020", ffi::c_return_rust_string());
+    assert_eq!("Hello \u{fffd}World", ffi::c_return_rust_string_lossy());
     assert_eq!("2020", ffi::c_return_unique_ptr_string().to_str().unwrap());
     assert_eq!(4, ffi::c_return_unique_ptr_vector_u8().len());
     assert_eq!(
@@ -167,6 +168,10 @@ fn test_c_take() {
     check!(ffi::c_take_rust_vec_shared(shared_test_vec.clone()));
     check!(ffi::c_take_rust_vec_shared_index(shared_test_vec.clone()));
     check!(ffi::c_take_rust_vec_shared_push(shared_test_vec.clone()));
+    check!(ffi::c_take_rust_vec_shared_truncate(
+        shared_test_vec.clone()
+    ));
+    check!(ffi::c_take_rust_vec_shared_clear(shared_test_vec.clone()));
     check!(ffi::c_take_rust_vec_shared_forward_iterator(
         shared_test_vec,
     ));
@@ -256,7 +261,10 @@ fn test_c_method_calls() {
     assert_eq!(2023, *ffi::Shared { z: 2023 }.c_method_mut_on_shared());
 
     let val = 42;
-    let mut array = ffi::Array { a: [0, 0, 0, 0] };
+    let mut array = ffi::Array {
+        a: [0, 0, 0, 0],
+        b: ffi::Buffer::default(),
+    };
     array.c_set_array(val);
     assert_eq!(array.a.len() as i32 * val, array.r_get_array_sum());
 }

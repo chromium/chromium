@@ -14,9 +14,7 @@ namespace base {
 class Time;
 }
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 struct GeneralizedTime;
 
@@ -45,8 +43,6 @@ static const size_t kUTCTimeLength = 13;
 NET_EXPORT bool EncodeUTCTime(const GeneralizedTime& time,
                               uint8_t out[kUTCTimeLength]);
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_ENCODE_VALUES_H_

@@ -36,7 +36,7 @@ void CartMetricsTracker::TabChangedAt(content::WebContents* contents,
   if (last_interacted_url_) {
     if (last_interacted_url_ == contents->GetVisibleURL()) {
       ukm::builders::Shopping_ChromeCart(
-          contents->GetMainFrame()->GetPageUkmSourceId())
+          contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
           .SetVisitCart(true)
           .Record(ukm::UkmRecorder::Get());
     }

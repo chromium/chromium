@@ -113,6 +113,8 @@ class CORE_EXPORT QualifiedName {
     impl_ = other.impl_;
     return *this;
   }
+  QualifiedName(QualifiedName&& other) = default;
+  QualifiedName& operator=(QualifiedName&& other) = default;
 
   bool operator==(const QualifiedName& other) const {
     return impl_ == other.impl_;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace arc {
 
@@ -50,12 +51,21 @@ void FakeProcessInstance::ApplyHostMemoryPressure(
   host_memory_pressure_checked_ = false;
   host_memory_pressure_level_ = level;
   host_memory_pressure_reclaim_target_ = reclaim_target;
-  host_memory_pressure_callback_ = std::move(callback);
+
+  DCHECK(host_memory_pressure_response_);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), host_memory_pressure_response_->first,
+                     host_memory_pressure_response_->second));
+  host_memory_pressure_response_ = absl::nullopt;
 }
 
 void FakeProcessInstance::RequestLowMemoryKillCounts(
     RequestLowMemoryKillCountsCallback callback) {
-  request_low_memory_kill_counts_callback_ = std::move(callback);
+  DCHECK(low_memory_kill_counts_response_);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::move(*low_memory_kill_counts_response_)));
 }
 
 bool FakeProcessInstance::CheckLastHostMemoryPressure(
@@ -65,19 +75,6 @@ bool FakeProcessInstance::CheckLastHostMemoryPressure(
   host_memory_pressure_checked_ = true;
   return level == host_memory_pressure_level_ &&
          reclaim_target == host_memory_pressure_reclaim_target_;
-}
-
-void FakeProcessInstance::RunHostMemoryPressureCallback(uint32_t killed,
-                                                        uint64_t reclaimed) {
-  DCHECK(host_memory_pressure_callback_);
-  // NB: two moves, one to reset the unique_ptr, and one to reset the callback.
-  std::move(host_memory_pressure_callback_).Run(killed, reclaimed);
-}
-
-void FakeProcessInstance::RunRequestLowMemoryKillCountsCallback(
-    mojom::LowMemoryKillCountsPtr counts) {
-  DCHECK(request_low_memory_kill_counts_callback_);
-  std::move(request_low_memory_kill_counts_callback_).Run(std::move(counts));
 }
 
 }  // namespace arc

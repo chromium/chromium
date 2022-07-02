@@ -285,9 +285,10 @@ bool IsAXSetter(SEL selector) {
       break;
   }
 
-  // No label for windows.
+  // No label for windows or native dialogs.
   ax::mojom::Role role = _node->GetRole();
-  if (ui::IsWindow(role))
+  if (ui::IsWindow(role) ||
+      (ui::IsDialog(role) && !_node->GetDelegate()->IsWebContent()))
     return false;
 
   // VoiceOver computes the wrong description for a link.
@@ -449,7 +450,9 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuggestion:
     case ax::mojom::Role::kSuperscript:
+      return NSAccessibilityGroupRole;
     case ax::mojom::Role::kSvgRoot:
+      return NSAccessibilityImageRole;
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kTableHeaderContainer:
     case ax::mojom::Role::kTabPanel:
@@ -1022,7 +1025,7 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityGrabbedAttribute];
 
   if (ui::SupportsRequired(role)) {
-    [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
+    [axAttributes addObject:NSAccessibilityRequiredAttribute];
   }
 
   // Url: add the url attribute only if the object has a valid url.
@@ -1950,7 +1953,7 @@ bool IsAXSetter(SEL selector) {
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying
   // to set the selection range, which won't work because of 692362.
-  if (_node->GetData().IsReadOnlyOrDisabled() && IsAXSetter(selector))
+  if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
     return NO;
 
   // TODO(https://crbug.com/386671): What about role-specific selectors?

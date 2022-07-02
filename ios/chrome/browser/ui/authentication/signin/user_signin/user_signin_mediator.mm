@@ -120,7 +120,7 @@
 
 - (void)cancelSignin {
   // Cancelling the authentication flow has the side effect of setting
-  // |self.isAuthenticationInProgress| to false.
+  // `self.isAuthenticationInProgress` to false.
   // Ensure these conditions are handled separately by using a BOOL which
   // retains the initial authentication state. This way, the mediator does not
   // call sign-in finished if sign-in was in progress.

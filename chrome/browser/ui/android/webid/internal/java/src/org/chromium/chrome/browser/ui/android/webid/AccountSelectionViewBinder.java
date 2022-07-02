@@ -61,12 +61,6 @@ class AccountSelectionViewBinder {
     private static final String TAG = "AccountSelectionView";
 
     /**
-     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined
-     * in https://www.w3.org/TR/appmanifest/
-     */
-    private static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
-
-    /**
      * Returns bitmap with the maskable bitmap's safe zone as defined in
      * https://www.w3.org/TR/appmanifest/ cropped in a circle.
      * @param resources the Resources used to set initial target density.
@@ -77,10 +71,10 @@ class AccountSelectionViewBinder {
      */
     public static Drawable createBitmapWithMaskableIconSafeZone(
             Resources resources, Bitmap bitmap, int outBitmapSize) {
-        int cropWidth =
-                (int) Math.floor(bitmap.getWidth() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
-        int cropHeight =
-                (int) Math.floor(bitmap.getHeight() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropWidth = (int) Math.floor(
+                bitmap.getWidth() * AccountSelectionBridge.MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropHeight = (int) Math.floor(
+                bitmap.getHeight() * AccountSelectionBridge.MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
         int cropX = (int) Math.floor((bitmap.getWidth() - cropWidth) / 2.0f);
         int cropY = (int) Math.floor((bitmap.getHeight() - cropHeight) / 2.0f);
 
@@ -188,8 +182,8 @@ class AccountSelectionViewBinder {
             } else {
                 consentTextId = R.string.account_selection_data_sharing_consent;
             }
-            String consentText = String.format(
-                    context.getString(consentTextId), properties.mFormattedIdpEtldPlusOne);
+            String consentText =
+                    String.format(context.getString(consentTextId), properties.mIdpForDisplay);
 
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan != null) {
@@ -322,15 +316,14 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE
-                || key == HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE
+        if (key == HeaderProperties.RP_FOR_DISPLAY || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
             String title = computeHeaderTitle(resources, headerType,
-                    model.get(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE),
-                    model.get(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE));
+                    model.get(HeaderProperties.RP_FOR_DISPLAY),
+                    model.get(HeaderProperties.IDP_FOR_DISPLAY));
             headerTitleText.setText(title);
 
             // Make instructions for closing the bottom sheet part of the header's content

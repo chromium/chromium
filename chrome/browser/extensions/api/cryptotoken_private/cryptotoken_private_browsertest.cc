@@ -103,7 +103,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
                                         : browser()
                                               ->tab_strip_model()
                                               ->GetActiveWebContents()
-                                              ->GetMainFrame();
+                                              ->GetPrimaryMainFrame();
   }
 
   void ExpectChromeRuntimeIsUndefined() {
@@ -115,7 +115,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
         content::EvalJs(FrameToUseForConnecting(), script);
     EXPECT_THAT(
         result.error,
-        testing::StartsWith("a JavaScript error:\nTypeError: Cannot read "
+        testing::StartsWith("a JavaScript error: \"TypeError: Cannot read "
                             "properties of undefined (reading 'connect')"));
   }
 
@@ -376,26 +376,6 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
     // even though it is enabled via OT on the parent frame.
     ExpectConnectFailure();
   }
-}
-
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, ConnectWithEnterprisePolicy) {
-  // Connection succeeds regardless of feature flag state with the enterprise
-  // policy overriding deprecation changes.
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(kNonOriginTrialDomain, "/empty.html")));
-  ExpectConnectSuccess();
-}
-
-IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
-                       SignWithEnterprisePolicyDoesNotShowPrompt) {
-  browser()->profile()->GetPrefs()->Set(
-      extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-  GURL url = GURL(https_server_.GetURL(kNonOriginTrialDomain, "/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  std::string app_id = url::Origin::Create(url).Serialize();
-  ExpectSignSuccess(app_id, PromptExpectation::kNoPrompt);
 }
 
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {

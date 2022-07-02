@@ -390,6 +390,18 @@ message PerfDataProto {
     optional uint64 filename_md5_prefix = 5;
   }
 
+  message PerfPMUMappingsMetadata {
+    // Mapping type.
+    // It is a number the kernel uses to map to PMU devices when initializing
+    // them. It is used to reconstruct the event type across different machines.
+    optional uint32 type = 1;
+
+    // The mapping name, field 2, has been intentionally left out.
+
+    // Mapping name's md5 prefix.
+    optional uint64 name_md5_prefix = 3;
+  }
+
   repeated PerfFileAttr file_attrs = 1;
   repeated PerfEvent events = 2;
 
@@ -403,6 +415,7 @@ message PerfDataProto {
   optional PerfEventStats stats = 4;
 
   // Not added from original: repeated uint64 metadata_mask = 5;
+  // Not added from original: optional PerfTracingMetadata tracing_data = 14;
 
   // Build ID metadata.
   repeated PerfBuildID build_ids = 7;
@@ -413,6 +426,10 @@ message PerfDataProto {
   //     optional PerfCPUTopologyMetadata cpu_topology = 11;
   // Not added from original:
   //     repeated PerfNodeTopologyMetadata numa_topology = 12;
+
+  repeated PerfPMUMappingsMetadata pmu_mappings = 15;
+
+  // Not added from original: repeated PerfGroupDescMetadata group_desc = 16;
 
   message StringMetadata {
     message StringAndMd5sumPrefix {

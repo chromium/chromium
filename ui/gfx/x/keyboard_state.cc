@@ -5,6 +5,7 @@
 #include "ui/gfx/x/keyboard_state.h"
 
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
@@ -84,7 +85,7 @@ class CoreKeyboardState : public KeyboardState {
                       &mode_switch_, &num_lock_);
   }
 
-  Connection* const connection_;
+  const raw_ptr<Connection> connection_;
   GetKeyboardMappingReply keyboard_mapping_;
   uint16_t lock_meaning_ = 0;
   uint8_t mode_switch_ = 0;
@@ -124,7 +125,7 @@ class XkbKeyboardState : public KeyboardState {
       map_ = std::move(*response.reply);
   }
 
-  Connection* const connection_;
+  const raw_ptr<Connection> connection_;
   Xkb::GetMapReply map_;
 };
 

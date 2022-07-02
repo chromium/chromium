@@ -128,8 +128,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
             nullptr /* net_log */,
             nullptr /* websocket_endpoint_lock_manager */),
         pool_(1, 1, &common_connect_job_params_),
-        generator_(&GenerateNulMaskingKey),
-        expect_all_io_to_complete_(true) {}
+        generator_(&GenerateNulMaskingKey) {}
 
   ~WebSocketBasicStreamSocketTest() override {
     // stream_ has a reference to socket_data_ (via MockTCPClientSocket) and so
@@ -184,7 +183,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
   std::string extensions_;
   NetLogWithSource net_log_;
   WebSocketBasicStream::WebSocketMaskingKeyGeneratorFunction generator_;
-  bool expect_all_io_to_complete_;
+  bool expect_all_io_to_complete_ = true;
   std::unique_ptr<WebSocketBasicStream> stream_;
 };
 
@@ -234,7 +233,7 @@ class WebSocketBasicStreamSocketChunkedReadTest
           static_cast<int>(data + data_size - start) < len) {
         len = static_cast<int>(data + data_size - start);
       }
-      reads_.push_back(MockRead(mode, start, len));
+      reads_.emplace_back(mode, start, len);
       start += len;
     }
     CreateStream(reads_, base::span<MockWrite>());

@@ -304,15 +304,12 @@ class PopupSeparator : public views::Separator {
   METADATA_HEADER(PopupSeparator);
   explicit PopupSeparator(AutofillPopupBaseView* popup);
 
-  // views::Separator:
-  void OnThemeChanged() override;
-
  private:
   raw_ptr<AutofillPopupBaseView> popup_;
 };
 
 PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
-  SetPreferredHeight(views::MenuConfig::instance().separator_thickness);
+  SetPreferredLength(views::MenuConfig::instance().separator_thickness);
   // Add some spacing between the previous item and the separator.
   // If the feature AutofillVisualImprovementsForSuggestionUi is enabled, also
   // add a padding after the separator.
@@ -320,11 +317,7 @@ PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       GetContentsVerticalPadding(), 0,
       UseImprovedSuggestionUi() ? GetContentsVerticalPadding() : 0, 0)));
-}
-
-void PopupSeparator::OnThemeChanged() {
-  views::Separator::OnThemeChanged();
-  SetColor(popup_->GetSeparatorColor());
+  SetColorId(popup_->GetSeparatorColorId());
 }
 
 BEGIN_METADATA(PopupSeparator, views::Separator)
@@ -1197,7 +1190,7 @@ void AutofillPopupFooterView::RefreshStyle() {
               ? 0
               : views::MenuConfig::instance().separator_thickness,
           0, 0, 0),
-      popup_view()->GetSeparatorColor()));
+      GetColorProvider()->GetColor(popup_view()->GetSeparatorColorId())));
 }
 
 int AutofillPopupFooterView::GetPrimaryTextStyle() {
@@ -1508,6 +1501,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
       case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+      case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
         return true;
 
       default:

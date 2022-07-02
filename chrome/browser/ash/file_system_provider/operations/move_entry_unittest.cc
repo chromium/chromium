@@ -72,10 +72,10 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnMoveEntryRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetListDeprecated().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetListDeprecated()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   MoveEntryRequestedOptions options;

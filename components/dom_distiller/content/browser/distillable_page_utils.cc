@@ -38,7 +38,7 @@ void OnExtractFeaturesJsResult(const DistillablePageDetector* detector,
 void IsDistillablePageForDetector(content::WebContents* web_contents,
                                   const DistillablePageDetector* detector,
                                   base::OnceCallback<void(bool)> callback) {
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   if (!main_frame) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));

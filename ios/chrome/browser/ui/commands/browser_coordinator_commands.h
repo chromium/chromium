@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol BadgeItem;
+class GURL;
 
 // Protocol for commands that will be handled by the BrowserCoordinator.
 // TODO(crbug.com/906662) : Rename this protocol to one that is more descriptive
@@ -15,11 +16,11 @@
 @protocol BrowserCoordinatorCommands
 
 // Prints the currently active tab.
-// Print preview will be presented on top of |baseViewController|.
+// Print preview will be presented on top of `baseViewController`.
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController;
 
 // Prints an image.
-// Print preview will be presented on top of |baseViewController|.
+// Print preview will be presented on top of `baseViewController`.
 - (void)printImage:(UIImage*)image
                  title:(NSString*)title
     baseViewController:(UIViewController*)baseViewController;
@@ -30,13 +31,41 @@
 // Shows the Reading List UI.
 - (void)showReadingList;
 
+// Shows an IPH pointing to where the Reading List entry point is, if
+// applicable.
+- (void)showReadingListIPH;
+
+// Shows an IPH pointing to where the Follow entry point is, if
+// applicable.
+- (void)showFollowWhileBrowsingIPH;
+
+// Shows an IPH to explain to the user how to change the default site view, if
+// applicable.
+- (void)showDefaultSiteViewIPH;
+
+// Shows bookmarks manager.
+- (void)showBookmarksManager;
+
 // Shows recent tabs.
 - (void)showRecentTabs;
+
+// Shows the translate infobar.
+- (void)showTranslate;
 
 // Shows the AddCreditCard UI.
 - (void)showAddCreditCard;
 
-// Displays the Badge popup menu showing |badgeItems|.
+// Shows the dialog for sending the page with `url` and `title` between a user's
+// devices.
+- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
+
+// Hides the dialog shown by showSendTabToSelfUI().
+- (void)hideSendTabToSelfUI;
+
+// Shows the online help page in a tab.
+- (void)showHelpPage;
+
+// Displays the Badge popup menu showing `badgeItems`.
 - (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
 
 // Dismisses the Badge popup menu.

@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './support_tool_shared_css.js';
+import './support_tool_shared.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem} from './browser_proxy.js';
 import {getTemplate} from './data_collectors.html.js';
+import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
-export class DataCollectorsElement extends PolymerElement {
+const DataCollectorsElementBase = SupportToolPageMixin(PolymerElement);
+
+export class DataCollectorsElement extends DataCollectorsElementBase {
   static get is() {
     return 'data-collectors';
   }

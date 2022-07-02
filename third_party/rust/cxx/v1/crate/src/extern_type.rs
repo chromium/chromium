@@ -1,5 +1,6 @@
 use self::kind::{Kind, Opaque, Trivial};
 use crate::CxxString;
+#[cfg(feature = "alloc")]
 use alloc::string::String;
 
 /// A type for which the layout is determined by its C++ definition.
@@ -186,9 +187,11 @@ pub fn verify_extern_type<T: ExternType<Id = Id>, Id>() {}
 pub fn verify_extern_kind<T: ExternType<Kind = Kind>, Kind: self::Kind>() {}
 
 macro_rules! impl_extern_type {
-    ($([$kind:ident] $($ty:path = $cxxpath:literal)*)*) => {
+    ($([$kind:ident] $($(#[$($attr:tt)*])* $ty:path = $cxxpath:literal)*)*) => {
         $($(
+            $(#[$($attr)*])*
             unsafe impl ExternType for $ty {
+                #[allow(unused_attributes)] // incorrect lint; this doc(hidden) attr *is* respected by rustdoc
                 #[doc(hidden)]
                 type Id = crate::type_id!($cxxpath);
                 type Kind = $kind;
@@ -212,6 +215,9 @@ impl_extern_type! {
     isize = "rust::isize"
     f32 = "float"
     f64 = "double"
+
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(doc_cfg, doc(cfg(feature = "alloc")))]
     String = "rust::String"
 
     [Opaque]

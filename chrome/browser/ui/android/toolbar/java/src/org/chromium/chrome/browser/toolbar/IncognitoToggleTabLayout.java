@@ -116,14 +116,6 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
         mTabCountProvider.addObserverAndTrigger(this);
     }
 
-    public ImageView getIncognitoButtonIcon() {
-        return mIncognitoButtonIcon;
-    }
-
-    public ImageView getStandardButtonIcon() {
-        return mStandardButtonIcon;
-    }
-
     /**
      * Update the visual state based on number of normal (non-incognito) tabs present.
      * @param tabCount The number of normal tabs.

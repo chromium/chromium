@@ -4,6 +4,7 @@
 
 #include "base/types/token_type.h"
 
+#include "base/test/gtest_util.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +42,10 @@ TEST(TokenType, TokenApi) {
 
   // Test string representation.
   EXPECT_EQ(token2.ToString(), token2.value().ToString());
+}
+
+TEST(TokenType, TokenFromNullUnguessableToken) {
+  EXPECT_CHECK_DEATH({ FooToken{UnguessableToken::Null()}; });
 }
 
 }  // namespace base

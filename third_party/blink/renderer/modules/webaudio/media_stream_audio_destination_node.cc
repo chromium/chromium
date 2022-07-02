@@ -39,6 +39,9 @@ namespace blink {
 
 namespace {
 
+// Default to stereo; `options` will update it appropriately if needed.
+constexpr uint32_t kDefaultNumberOfChannels = 2;
+
 void DidCreateMediaStreamAndTracks(MediaStreamDescriptor* stream) {
   for (uint32_t i = 0; i < stream->NumberOfAudioComponents(); ++i) {
     MediaStreamUtils::DidCreateMediaStreamTrack(stream->AudioComponent(i));
@@ -127,9 +130,9 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
   if (!context->CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
   }
-  // Default to stereo; |options| will update it appropriately if needed.
   MediaStreamAudioDestinationNode* node =
-      MakeGarbageCollected<MediaStreamAudioDestinationNode>(*context, 2);
+      MakeGarbageCollected<MediaStreamAudioDestinationNode>(
+          *context, kDefaultNumberOfChannels);
 
   // Need to handle channelCount here ourselves because the upper
   // limit is different from the normal AudioNode::setChannelCount

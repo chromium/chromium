@@ -51,18 +51,18 @@ enum Protocol {
 };
 
 // Dictionary of benchmark options.
-std::unique_ptr<base::DictionaryValue> g_options;
+std::unique_ptr<base::Value::Dict> g_options;
 
 // Return a string configuration option.
 std::string GetConfigString(const char* key) {
-  std::string value;
-  CHECK(g_options->GetString(key, &value)) << "Cannot find key: " << key;
-  return value;
+  const std::string* value = g_options->FindString(key);
+  CHECK(value) << "Cannot find key: " << key;
+  return *value;
 }
 
 // Return an int configuration option.
 int GetConfigInt(const char* key) {
-  absl::optional<int> config = g_options->FindIntKey(key);
+  absl::optional<int> config = g_options->FindInt(key);
   CHECK(config) << "Cannot find key: " << key;
   return *config;
 }
@@ -268,7 +268,7 @@ class Benchmark {
                   Size size,
                   Protocol protocol,
                   int concurrency,
-                  base::DictionaryValue* results) {
+                  base::Value::Dict* results) {
     std::string resource;
     int iterations;
     size_t length;
@@ -327,7 +327,7 @@ class Benchmark {
             const std::string& url,
             const std::string& host,
             int port,
-            base::DictionaryValue* results)
+            base::Value::Dict* results)
       : iterations_(iterations),
         concurrency_(concurrency),
         length_(length),
@@ -383,7 +383,7 @@ class Benchmark {
     }
     run_loop.Run();
     base::TimeDelta run_time = base::TimeTicks::Now() - start_time;
-    results_->SetInteger(name_, static_cast<int>(run_time.InMilliseconds()));
+    results_->Set(name_, static_cast<int>(run_time.InMilliseconds()));
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -398,7 +398,7 @@ class Benchmark {
   Cronet_EnginePtr engine_;
   const ExecutorType executor_;
   const Direction direction_;
-  const raw_ptr<base::DictionaryValue> results_;
+  const raw_ptr<base::Value::Dict> results_;
 };
 
 }  // namespace
@@ -413,17 +413,18 @@ void PerfTest(const char* json_args) {
 
   // Parse benchmark options into |g_options|.
   std::string benchmark_options = json_args;
-  std::unique_ptr<base::Value> options_value =
-      base::JSONReader::ReadDeprecated(benchmark_options);
+  absl::optional<base::Value> options_value =
+      base::JSONReader::Read(benchmark_options);
   CHECK(options_value) << "Parsing benchmark options failed: "
                        << benchmark_options;
-  g_options = base::DictionaryValue::From(std::move(options_value));
-  CHECK(g_options) << "Benchmark options string is not a dictionary: "
-                   << benchmark_options
-                   << " See DEFAULT_BENCHMARK_CONFIG in perf_test_util.py.";
+  CHECK(options_value->is_dict())
+      << "Benchmark options string is not a dictionary: " << benchmark_options
+      << " See DEFAULT_BENCHMARK_CONFIG in perf_test_util.py.";
+  g_options =
+      std::make_unique<base::Value::Dict>(std::move(options_value->GetDict()));
 
   // Run benchmarks putting timing results into |results|.
-  base::DictionaryValue results;
+  base::Value::Dict results;
   for (ExecutorType executor : {EXECUTOR_DIRECT, EXECUTOR_THREAD}) {
     for (Direction direction : {DIRECTION_DOWN, DIRECTION_UP}) {
       for (Protocol protocol : {PROTOCOL_HTTP, PROTOCOL_QUIC}) {

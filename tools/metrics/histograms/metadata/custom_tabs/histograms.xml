@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AutoclosedSessionDuration" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-12-11">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>yusufo@chromium.org</owner>
   <summary>
     Android: AppId declared by the launching application in EXTRA_APPLICATION_ID
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId.Incognito" enum="ClientAppId"
-    expires_after="2022-09-03">
+    expires_after="M110">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
-    expires_after="2022-07-31">
+    expires_after="2022-12-11">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="2022-10-23">
+    enum="NetErrorCodes" expires_after="2022-12-25">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -173,8 +173,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Whether current CCT has seen any interactions. &quot;Interactions&quot;
+    includes any form entries for text / drop down, and whether a tab can go
+    forward / back when it is closed. Recorded when CCT tab is closed.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
-    expires_after="2022-08-07">
+    expires_after="M110">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <owner>cct-team@google.com</owner>
@@ -239,6 +250,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.PostMessage.OnMessage" enum="Boolean"
+    expires_after="M108">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the tab controlled by the CustomTabsSession
+    sends a postMessage. Always emits true.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PostMessage.PostMessageFromClientApp"
+    enum="Boolean" expires_after="M108">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the CCT client sends a postMessage request to
+    the tab. Always emits true.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PostMessage.RequestPostMessageChannel"
+    enum="Boolean" expires_after="M108">
+  <owner>sinansahin@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded when the CCT client calls requestPostMessageChannel
+    to establish a two way postMessage channel. Emits true if the request is
+    successful and false otherwise. A true value emitted here doesn't mean the
+    request cannot fail later; and a false value may be the result of multiple
+    things, e.g. the warmup hasn't been called.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
     expires_after="2020-03-01">
   <owner>lizeb@chromium.org</owner>
@@ -257,8 +304,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="CustomTabs.RetainableSessions.TimeBetweenLaunch{IdentifierType}"
+    units="seconds" expires_after="2022-11-03">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    When a CCT session is launched, if it is launch with the same Uri and same
+    taskId, record the duration between previous CCT closure and current CCT
+    launch. Recorded on CCT launch.
+
+    A CCT can be defined as retainable if: 1) it is launching with the same Uri
+    as the most recently closed CCT; 2) it is launched from the same embedded
+    app as the most recently closed CCT; 3) the most recently closed CCT had
+    user interactions. See &quot;CustomTabs.HadInteractionOnClose&quot; for
+    information on interactions.
+
+    The histogram suffix identifies whether the CCT is created with the same
+    intent Uri data and for the same embedded app, launching CCT with the same
+    taskId and package name. The package name identifier to use will depend on
+    whether the client app is using CustomTabService. If app is using the CCT
+    service, the package name will be read from CCT service; otherwise the
+    package name is read from the referrer of CCT activity.
+
+    This histogram is recorded for {IdentifierType}
+  </summary>
+  <token key="IdentifierType">
+    <variant name=".Different"
+        summary="App is not launched from the same embedded app as package
+                 name / referrer is different."/>
+    <variant name=".Mixed"
+        summary="Apps not consistently using CCT services. Referrer and
+                 package are used together."/>
+    <variant name=".PackageName"
+        summary="Apps using CCT services. Package name is used as identifier."/>
+    <variant name=".Referrer"
+        summary="Apps not connecting with CCT services. Activity referrer is
+                 used as identifier."/>
+  </token>
+</histogram>
+
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="M105">
+    expires_after="M109">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -337,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded only on Android. Reports whether warmup() has been called when a
@@ -387,8 +474,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedWebActivity.ExtraCommandSuccess.{command}"
+    enum="BooleanSuccess" expires_after="2022-11-23">
+  <owner>mvanouwerkerk@google.com</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    Records whether the extra command {command} called from
+    TrustedWebActivityClient resulted in success or failure.
+  </summary>
+  <token key="command">
+    <variant name="checkNotificationPermission"/>
+    <variant name="getNotificationPermissionRequestPendingIntent"/>
+  </token>
+</histogram>
+
 <histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -427,6 +531,21 @@ chromium-metrics-reviews@google.com.
     from the Trusted Web Activity client app. Record
     &quot;LocationUpdateError.NONE&quot; (value = 0) if there is no error and
     the geoposition is valid.
+  </summary>
+</histogram>
+
+<histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
+    enum="ContentSetting" expires_after="2022-12-04">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    The result of a TWA notification permission request for the purpose of
+    notification delegation. This is logged when the
+    NotificationPermissionUpdater receives the result from the
+    TrustedWebActivityClient.
   </summary>
 </histogram>
 

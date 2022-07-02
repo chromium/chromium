@@ -10,7 +10,7 @@
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace ash {
 namespace converters {
@@ -321,7 +321,16 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
 
 health::mojom::OsInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input) {
-  return health::mojom::OsInfo::New(std::move(input->oem_name));
+  return health::mojom::OsInfo::New(
+      std::move(input->oem_name),
+      ConvertProbePtr(std::move(input->os_version)));
+}
+
+health::mojom::OsVersionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::OsVersionPtr input) {
+  return health::mojom::OsVersion::New(
+      std::move(input->release_milestone), std::move(input->build_number),
+      std::move(input->patch_number), std::move(input->release_channel));
 }
 
 health::mojom::SystemInfoPtr UncheckedConvertPtr(

@@ -53,6 +53,9 @@ public class MessageCardProviderMediatorUnitTest {
     @Mock
     private Supplier<Boolean> mIsIncognitoSupplier;
 
+    @Mock
+    private IphMessageService.IphMessageData mIphMessageData;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -79,6 +82,11 @@ public class MessageCardProviderMediatorUnitTest {
                 when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 when(mPriceMessageData.getType()).thenReturn(PriceMessageType.PRICE_WELCOME);
                 mMediator.messageReady(type, mPriceMessageData);
+                break;
+            case MessageService.MessageType.IPH:
+                when(mIphMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
+                when(mIphMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(type, mIphMessageData);
                 break;
             default:
                 mMediator.messageReady(type, new MessageService.MessageData() {});
@@ -319,6 +327,18 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertEquals(MessageService.MessageType.PRICE_MESSAGE,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(titleText, model.get(MessageCardViewProperties.TITLE_TEXT));
+    }
+
+    @Test
+    public void buildModel_ForIphMessage() {
+        enqueueMessageItem(MessageService.MessageType.IPH, -1);
+
+        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
+                                      .get(MessageService.MessageType.IPH)
+                                      .get(0)
+                                      .model;
+        Assert.assertEquals(
+                MessageService.MessageType.IPH, model.get(MessageCardViewProperties.MESSAGE_TYPE));
     }
 
     @Test

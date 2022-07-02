@@ -9,7 +9,6 @@ import './interest_item.js';
 import '../settings.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,7 +18,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
-import {FledgeState, FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
+import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 
 /** Views of the PrivacySandboxSettings page. */
 export enum PrivacySandboxSettingsView {
@@ -44,7 +43,21 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   static get properties() {
     return {
-      flocId_: Object,
+      /**
+       * Mock preference for FLoC toggle to always display as off and disabled
+       * as the feature has been removed from the codebase.
+       * TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
+       */
+      prefFlocToggle_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            userControlDisabled: true,
+          };
+        },
+      },
 
       privacySandboxSettings3Enabled_: {
         type: Boolean,
@@ -58,7 +71,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       },
 
       /** The current view. */
-      privacySandboxSettingsView_: {
+      privacySandboxSettingsView: {
         type: String,
         value: PrivacySandboxSettingsView.MAIN,
       },
@@ -98,17 +111,13 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     };
   }
 
-  static get observers() {
-    return ['onFlocChanged_(prefs.generated.floc_enabled.*)'];
-  }
-
-  private flocId_: FlocIdentifier;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private prefFlocToggle_: chrome.settingsPrivate.PrefObject;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
   private privacySandboxSettings3Enabled_: boolean;
-  privacySandboxSettingsView_: PrivacySandboxSettingsView;
+  privacySandboxSettingsView: PrivacySandboxSettingsView;
   private topTopics_: Array<PrivacySandboxInterest>;
   private blockedTopics_: Array<PrivacySandboxInterest>;
   private joiningSites_: Array<PrivacySandboxInterest>;
@@ -120,10 +129,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
     chrome.metricsPrivate.recordSparseHashable(
         'WebUI.Settings.PathVisited', '/privacySandbox');
-
-    this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-    addWebUIListener(
-        'floc-id-changed', (id: FlocIdentifier) => this.flocId_ = id);
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
@@ -153,23 +158,15 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       const view = new URLSearchParams(window.location.search).get('view');
       if (Object.values(PrivacySandboxSettingsView)
               .includes(view as PrivacySandboxSettingsView)) {
-        this.privacySandboxSettingsView_ = view as PrivacySandboxSettingsView;
+        this.privacySandboxSettingsView = view as PrivacySandboxSettingsView;
       } else {
         // If no view has been specified, then navigate to main page.
-        this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+        this.privacySandboxSettingsView = PrivacySandboxSettingsView.MAIN;
       }
     });
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
-  }
-
-  private onFlocChanged_() {
-    this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-  }
-
-  private onResetFlocClick_() {
-    this.privacySandboxBrowserProxy_.resetFlocId();
   }
 
   private onApiToggleButtonChange_(event: Event) {
@@ -192,23 +189,16 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     }
   }
 
-  private onFlocToggleButtonChange_(event: Event) {
-    const flocEnabled = (event.target as SettingsToggleButtonElement).checked;
-    this.metricsBrowserProxy_.recordAction(
-        flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
-                      'Settings.PrivacySandbox.FlocDisabled');
-  }
-
   private showFragment_(view: PrivacySandboxSettingsView): boolean {
-    return this.privacySandboxSettingsView_ === view;
+    return this.privacySandboxSettingsView === view;
   }
 
   private onDialogClose_() {
     // This function will only be called once, regardless of how the dialog is
     // shut (either via ESC or via the button), as in the latter the dialog is
     // not "closed", but rather removed from the DOM.
-    const lastView = this.privacySandboxSettingsView_;
-    this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+    const lastView = this.privacySandboxSettingsView;
+    this.privacySandboxSettingsView = PrivacySandboxSettingsView.MAIN;
     afterNextRender(this, async () => {
       switch (lastView) {
         case PrivacySandboxSettingsView.LEARN_MORE_DIALOG:
@@ -238,14 +228,14 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     e.stopPropagation();
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.LEARN_MORE_DIALOG;
   }
 
   private onAdPersonalizationRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdPersonalization.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
@@ -265,19 +255,19 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onAdPersonalizationRemovedRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.RemovedInterests.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG;
   }
 
   private onAdPersonalizationBackButtonClick_() {
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
   private onAdMeasurementRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdMeasurement.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG;
   }
 
@@ -291,7 +281,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onSpamAndFraudRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.SpamFraud.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG;
   }
 

@@ -155,7 +155,8 @@ class MetricsWebContentsObserver
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+      uint32_t soft_navigation_count);
 
   // Informs the observers of the currently committed primary page load that
   // it's likely that prefetch will occur in this WebContents. This should
@@ -180,7 +181,23 @@ class MetricsWebContentsObserver
 
   // Gets the PageLoadTracker associated with `rfh` if it exists, or nullptr
   // otherwise.
+  //
+  // Don't use GetPageLoadTrackerLegacy in new code. See also the comment around
+  // implementation.
+  // TODO(https://crbug.com/1301880): Remove this.
+  PageLoadTracker* GetPageLoadTrackerLegacy(content::RenderFrameHost* rfh);
   PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
+  // Gets the alive PageLoadTracker corresponding to the nearest ancestral page
+  // if it exists, or nullptr otherwise.
+  //
+  // Consider to use this instead of GetPageLoadTracker if
+  //
+  // - There is a race and the target PageLoadTracker can be deleted before
+  //   receiving a event; and
+  // - PageLoadTracker forwards the event unconditionally with respect to
+  //   ObservePolicy.
+  PageLoadTracker* GetAncestralAlivePageLoadTracker(
+      content::RenderFrameHost* rfh);
 
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.
@@ -190,15 +207,16 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
-  void UpdateTiming(mojom::PageLoadTimingPtr timing,
-                    mojom::FrameMetadataPtr metadata,
-                    const std::vector<blink::UseCounterFeature>& new_features,
-                    std::vector<mojom::ResourceDataUpdatePtr> resources,
-                    mojom::FrameRenderDataUpdatePtr render_data,
-                    mojom::CpuTimingPtr cpu_timing,
-                    mojom::InputTimingPtr input_timing,
-                    const absl::optional<blink::MobileFriendliness>&
-                        mobile_friendliness) override;
+  void UpdateTiming(
+      mojom::PageLoadTimingPtr timing,
+      mojom::FrameMetadataPtr metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      mojom::FrameRenderDataUpdatePtr render_data,
+      mojom::CpuTimingPtr cpu_timing,
+      mojom::InputTimingPtr input_timing,
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+      uint32_t soft_navigation_count) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

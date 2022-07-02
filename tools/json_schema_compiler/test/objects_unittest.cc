@@ -28,8 +28,8 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetIntPath("integer", 5);
     info_value.SetBoolPath("boolean", true);
 
-    std::vector<base::Value> params_value;
-    params_value.push_back(std::move(info_value));
+    base::Value::List params_value;
+    params_value.Append(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -47,8 +47,8 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     info_value.SetKey("strings", std::move(strings));
     info_value.SetIntPath("integer", 5);
 
-    std::vector<base::Value> params_value;
-    params_value.push_back(std::move(info_value));
+    base::Value::List params_value;
+    params_value.Append(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.get());

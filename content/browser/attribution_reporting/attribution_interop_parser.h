@@ -77,6 +77,8 @@ class AttributionInteropParser {
 
   base::Value::List ParseEventLevelReports(base::Value::Dict& output);
 
+  base::Value::List ParseAggregatableReports(base::Value::Dict& output);
+
   AttributionParserErrorManager error_manager_;
 };
 

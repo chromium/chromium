@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/features.h"
@@ -30,14 +29,10 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kUAModel:
     case WebClientHintsType::kUAMobile:
     case WebClientHintsType::kUAFullVersion:
+    case WebClientHintsType::kUAFullVersionList:
     case WebClientHintsType::kUABitness:
     case WebClientHintsType::kUAWoW64:
       if (!base::FeatureList::IsEnabled(features::kUserAgentClientHint))
-        return true;
-      break;
-    case WebClientHintsType::kUAFullVersionList:
-      if (!base::FeatureList::IsEnabled(
-              features::kUserAgentClientHintFullVersionList))
         return true;
       break;
     case WebClientHintsType::kPrefersColorScheme:
@@ -83,10 +78,6 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kViewportWidth_DEPRECATED:
       if (!base::FeatureList::IsEnabled(
               features::kClientHintsViewportWidth_DEPRECATED))
-        return true;
-      break;
-    case WebClientHintsType::kPartitionedCookies:
-      if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies))
         return true;
       break;
     case WebClientHintsType::kSaveData:
@@ -159,10 +150,6 @@ void EnabledClientHints::SetIsEnabled(
   if (enabled && type == WebClientHintsType::kFullUserAgent) {
     enabled = IsOriginTrialEnabled(url, third_party_url, response_headers,
                                    "SendFullUserAgentAfterReduction");
-  }
-  if (enabled && type == WebClientHintsType::kPartitionedCookies) {
-    enabled = IsOriginTrialEnabled(url, third_party_url, response_headers,
-                                   "PartitionedCookies");
   }
   SetIsEnabled(type, enabled);
 }

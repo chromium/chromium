@@ -15,4 +15,8 @@ const char kAlternateErrorPagesEnabled[] = "alternate_error_pages.enabled";
 const char kForceMajorVersionToMinorPosition[] =
     "force_major_version_to_minor_position_in_user_agent";
 
+// Enum indicating if the user agent reduction feature should be forced enabled
+// or disabled. Defaults to blink::features::kReduceUserAgentMinorVersion trial.
+const char kReduceUserAgentMinorVersion[] = "user_agent_reduction";
+
 }  // namespace embedder_support

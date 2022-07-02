@@ -17,7 +17,7 @@ import './history_deletion_dialog.js';
 import './passwords_deletion_dialog.js';
 import './installed_app_checkbox.js';
 import '../controls/settings_checkbox.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../settings_shared_css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -30,8 +30,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';

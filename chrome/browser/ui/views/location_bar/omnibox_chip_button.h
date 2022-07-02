@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -15,25 +17,10 @@
 class OmniboxChipButton : public views::MdTextButton {
  public:
   METADATA_HEADER(OmniboxChipButton);
-  explicit OmniboxChipButton(PressedCallback callback,
-                             const gfx::VectorIcon& icon_on,
-                             const gfx::VectorIcon& icon_off,
-                             std::u16string message,
-                             bool is_prominent);
+  explicit OmniboxChipButton(PressedCallback callback);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
   ~OmniboxChipButton() override;
-
-  // Icon, text, and background colors that should be used for different types
-  // of Chip.
-  enum class Theme {
-    kNormalVisibility,
-    kLowVisibility,
-    // Shows the chip with no background, and an icon color matching other icons
-    // in the omnibox. Suitable for collapsing the chip down to a less prominent
-    // icon.
-    kIconStyle,
-  };
 
   void AnimateCollapse();
   void AnimateExpand();
@@ -54,15 +41,22 @@ class OmniboxChipButton : public views::MdTextButton {
   void UpdateBackgroundColor() override;
 
   // Set the button theme.
-  void SetTheme(Theme theme);
+  void SetTheme(OmniboxChipTheme theme);
+  void SetMessage(std::u16string message);
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
   void SetShowBlockedIcon(bool show_blocked_icon);
 
-  Theme get_theme_for_testing() { return theme_; }
+  void SetPermissionChipDelegate(
+      PermissionChipDelegate* permission_chip_delegate);
+
+  void Finalize();
+
+  OmniboxChipTheme get_theme_for_testing() { return theme_; }
 
  protected:
   virtual ui::ImageModel GetIconImageModel() const;
+  virtual const gfx::VectorIcon& GetIcon() const;
   // Updates the icon, and then updates text, icon, and background colors from
   // the theme.
   void UpdateIconAndColors();
@@ -77,20 +71,19 @@ class OmniboxChipButton : public views::MdTextButton {
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
-  Theme theme_ = Theme::kNormalVisibility;
+  OmniboxChipTheme theme_ = OmniboxChipTheme::kNormalVisibility;
 
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.
   bool fully_collapsed_ = false;
-
-  const gfx::VectorIcon& icon_on_;
-  const gfx::VectorIcon& icon_off_;
 
   bool show_blocked_icon_ = false;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
 
   bool force_expanded_for_testing_ = false;
+
+  absl::optional<PermissionChipDelegate*> permission_chip_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_

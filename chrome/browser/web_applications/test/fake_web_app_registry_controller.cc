@@ -60,8 +60,8 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
   policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
   policy_manager_->SetSubsystems(fake_externally_managed_app_manager_.get(),
                                  mutable_registrar_.get(), sync_bridge_.get(),
-                                 /*web_app_manager=*/nullptr,
                                  os_integration_manager_.get());
+  policy_manager_->SetSystemWebAppDelegateMap(nullptr);
 
   mutable_registrar_->SetSubsystems(policy_manager_.get(),
                                     translation_manager_.get());
@@ -127,7 +127,7 @@ void FakeWebAppRegistryController::UninstallFromSync(
                                                              callback);
   } else {
     for (const AppId& web_app : web_apps) {
-      callback.Run(web_app, /*uninstalled=*/true);
+      callback.Run(web_app, webapps::UninstallResultCode::kSuccess);
     }
   }
 }

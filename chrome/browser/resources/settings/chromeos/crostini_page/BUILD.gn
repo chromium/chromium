@@ -10,10 +10,12 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":bruschetta_subpage",
     ":crostini_arc_adb",
     ":crostini_arc_adb_confirmation_dialog",
     ":crostini_browser_proxy",
     ":crostini_confirmation_dialog",
+    ":crostini_container_select",
     ":crostini_disk_resize_confirmation_dialog",
     ":crostini_disk_resize_dialog",
     ":crostini_export_import",
@@ -66,9 +68,16 @@ js_library("crostini_browser_proxy") {
 
 js_library("crostini_confirmation_dialog") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:load_time_data.m",
+    ":crostini_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("crostini_container_select") {
+  deps = [
+    ":crostini_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -120,6 +129,7 @@ js_library("crostini_import_confirmation_dialog") {
 
 js_library("crostini_page") {
   deps = [
+    ":bruschetta_subpage",
     ":crostini_arc_adb",
     ":crostini_browser_proxy",
     ":crostini_export_import",
@@ -144,6 +154,7 @@ js_library("crostini_page") {
 js_library("crostini_port_forwarding") {
   deps = [
     ":crostini_browser_proxy",
+    ":crostini_container_select",
     ":crostini_port_forwarding_add_port_dialog",
     "..:metrics_recorder",
     "..:prefs_behavior",
@@ -164,6 +175,7 @@ js_library("crostini_port_forwarding") {
 js_library("crostini_port_forwarding_add_port_dialog") {
   deps = [
     ":crostini_browser_proxy",
+    ":crostini_container_select",
     "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -226,11 +238,30 @@ js_library("crostini_subpage") {
   externs_list = [ "../settings_controls_types.js" ]
 }
 
+js_library("bruschetta_subpage") {
+  deps = [
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
+    "..:prefs_behavior",
+    "..:route_observer_behavior",
+    "..:route_origin_behavior",
+    "../..:router",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "../settings_controls_types.js" ]
+}
+
 html_to_js("web_components") {
   js_files = [
+    "bruschetta_subpage.js",
     "crostini_arc_adb_confirmation_dialog.js",
     "crostini_arc_adb.js",
     "crostini_confirmation_dialog.js",
+    "crostini_container_select.js",
     "crostini_disk_resize_confirmation_dialog.js",
     "crostini_disk_resize_dialog.js",
     "crostini_export_import.js",

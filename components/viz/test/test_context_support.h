@@ -17,8 +17,6 @@
 
 namespace gfx {
 class GpuFence;
-class Rect;
-class RectF;
 }  // namespace gfx
 
 namespace viz {
@@ -42,29 +40,6 @@ class TestContextSupport : public gpu::ContextSupport {
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  void Swap(uint32_t flags,
-            SwapCompletedCallback complete_callback,
-            PresentationCallback presentation_callback) override {}
-  void SwapWithBounds(const std::vector<gfx::Rect>& rects,
-                      uint32_t flags,
-                      SwapCompletedCallback swap_completed,
-                      PresentationCallback presentation_callback) override {}
-  void PartialSwapBuffers(const gfx::Rect& sub_buffer,
-                          uint32_t flags,
-                          SwapCompletedCallback swap_completed,
-                          PresentationCallback presentation_callback) override {
-  }
-  void CommitOverlayPlanes(
-      uint32_t flags,
-      SwapCompletedCallback swap_completed,
-      PresentationCallback presentation_callback) override {}
-  void ScheduleOverlayPlane(int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            unsigned overlay_texture_id,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& uv_rect,
-                            bool enable_blend,
-                            unsigned gpu_fence_id) override;
   uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
@@ -90,21 +65,8 @@ class TestContextSupport : public gpu::ContextSupport {
   void SetGrContext(GrDirectContext* gr) override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override {}
-  void SetFrameRate(float frame_rate) override {}
 
   void CallAllSyncPointCallbacks();
-
-  using ScheduleOverlayPlaneCallback =
-      base::RepeatingCallback<void(int plane_z_order,
-                                   gfx::OverlayTransform plane_transform,
-                                   unsigned overlay_texture_id,
-                                   const gfx::Rect& display_bounds,
-                                   const gfx::RectF& crop_rect,
-                                   bool enable_blend,
-                                   unsigned gpu_fence_id)>;
-  void SetScheduleOverlayPlaneCallback(
-      const ScheduleOverlayPlaneCallback& schedule_overlay_plane_callback);
 
   // If set true, callbacks triggering will be in a reverse order as SignalQuery
   // calls.
@@ -114,7 +76,6 @@ class TestContextSupport : public gpu::ContextSupport {
 
  private:
   std::vector<base::OnceClosure> sync_point_callbacks_;
-  ScheduleOverlayPlaneCallback schedule_overlay_plane_callback_;
   bool out_of_order_callbacks_;
 
   base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};

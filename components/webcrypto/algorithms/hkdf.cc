@@ -10,7 +10,6 @@
 #include "components/webcrypto/algorithms/secret_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -30,7 +29,7 @@ class HkdfImplementation : public AlgorithmImplementation {
   HkdfImplementation() {}
 
   Status ImportKey(blink::WebCryptoKeyFormat format,
-                   const CryptoData& key_data,
+                   base::span<const uint8_t> key_data,
                    const blink::WebCryptoAlgorithm& algorithm,
                    bool extractable,
                    blink::WebCryptoKeyUsageMask usages,
@@ -43,7 +42,7 @@ class HkdfImplementation : public AlgorithmImplementation {
     }
   }
 
-  Status ImportKeyRaw(const CryptoData& key_data,
+  Status ImportKeyRaw(base::span<const uint8_t> key_data,
                       const blink::WebCryptoAlgorithm& algorithm,
                       bool extractable,
                       blink::WebCryptoKeyUsageMask usages,
@@ -88,8 +87,8 @@ class HkdfImplementation : public AlgorithmImplementation {
     // |algorithm|.
     const std::vector<uint8_t>& raw_key = GetSymmetricKeyData(base_key);
     if (!HKDF(derived_bytes->data(), derived_bytes_len, digest_algorithm,
-              raw_key.data(), raw_key.size(), params->Salt().Data(),
-              params->Salt().size(), params->Info().Data(),
+              raw_key.data(), raw_key.size(), params->Salt().data(),
+              params->Salt().size(), params->Info().data(),
               params->Info().size())) {
       uint32_t error = ERR_get_error();
       if (ERR_GET_LIB(error) == ERR_LIB_HKDF &&
@@ -106,7 +105,7 @@ class HkdfImplementation : public AlgorithmImplementation {
                                 blink::WebCryptoKeyType type,
                                 bool extractable,
                                 blink::WebCryptoKeyUsageMask usages,
-                                const CryptoData& key_data,
+                                base::span<const uint8_t> key_data,
                                 blink::WebCryptoKey* key) const override {
     if (algorithm.ParamsType() != blink::kWebCryptoKeyAlgorithmParamsTypeNone ||
         type != blink::kWebCryptoKeyTypeSecret)

@@ -16,7 +16,7 @@
     : NSObject <InfobarBadgeTabHelperDelegate>
 // Tab helper used in tests.
 @property(nonatomic) InfobarBadgeTabHelper* badgeTabHelper;
-// Returns the BadgeItem that was added to the tab helper for |type|, or nil if
+// Returns the BadgeItem that was added to the tab helper for `type`, or nil if
 // one does not exist.
 - (id<BadgeItem>)itemForInfobarType:(InfobarType)type;
 @end

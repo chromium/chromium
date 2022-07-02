@@ -1,0 +1,97 @@
+diff --git a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+index 921f25e254ce5..c583713f7792b 100644
+--- a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+@@ -41,7 +41,8 @@ cargo_crate("lib") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
+     "static",
+     "which",
+     "which-rustfmt",
+diff --git a/third_party/rust/autocxx_gen/v0_22/BUILD.gn b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+index 1f0f2a58c2674..425bd8bbce132 100644
+--- a/third_party/rust/autocxx_gen/v0_22/BUILD.gn
++++ b/third_party/rust/autocxx_gen/v0_22/BUILD.gn
+@@ -3,3 +3,25 @@
+ # found in the LICENSE file.
+ 
+ import("//build/rust/cargo_crate.gni")
++
++# TODO(crbug/1297719): work out why this isn't automatically populated by
++# crates.py
++
++cargo_crate("autocxx_gen") {
++  crate_type = "bin"
++  crate_root = "crate/src/main.rs"
++  sources = [ "crate/src/main.rs" ]
++  edition = "2018"
++  cargo_pkg_version = "0.22.2"
++  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>"
++  deps = [
++    "//third_party/rust/autocxx_engine/v0_22:lib",
++    "//third_party/rust/clap/v3:lib",
++    "//third_party/rust/env_logger/v0_9:lib",
++    "//third_party/rust/indexmap/v1:lib",
++    "//third_party/rust/miette/v4:lib",
++    "//third_party/rust/pathdiff/v0_2:lib",
++    "//third_party/rust/proc_macro2/v1:lib",
++    "//third_party/rust/quote/v1:lib",
++  ]
++}
+diff --git a/third_party/rust/bindgen/v0_59/BUILD.gn b/third_party/rust/bindgen/v0_59/BUILD.gn
+index f3e62a1b4f857..bf4d94452f9ef 100644
+--- a/third_party/rust/bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/bindgen/v0_59/BUILD.gn
+@@ -15,6 +15,8 @@ cargo_crate("bindgen") {
+   cargo_pkg_description =
+       "Automatically generates Rust FFI bindings to C and C++ libraries."
+   deps = [
++    # TODO(crbug/1314345): the executable needs to depend on the lib.
++    ":lib",
+     "//third_party/rust/bitflags/v1:lib",
+     "//third_party/rust/cexpr/v0_6:lib",
+     "//third_party/rust/clang_sys/v1:lib",
+@@ -36,7 +38,8 @@ cargo_crate("bindgen") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
+     "static",
+     "which",
+     "which-rustfmt",
+@@ -82,7 +85,8 @@ cargo_crate("lib") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
+     "static",
+     "which",
+     "which-rustfmt",
+diff --git a/third_party/rust/clang_sys/v1/BUILD.gn b/third_party/rust/clang_sys/v1/BUILD.gn
+index 360223ce1374e..efe59a44606c1 100644
+--- a/third_party/rust/clang_sys/v1/BUILD.gn
++++ b/third_party/rust/clang_sys/v1/BUILD.gn
+@@ -38,9 +38,14 @@ cargo_crate("lib") {
+     "clang_5_0",
+     "clang_6_0",
+     "libloading",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
+     "static",
+   ]
+   build_root = "crate/build.rs"
+   build_sources = [ "crate/build.rs" ]
++
++  # TODO(crbug.com/1304251): The following line arranges for dependent targets
++  # to link against clang's static libraries.
++  deps += [ "//build/rust/clanglibs" ]
+ }

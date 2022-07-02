@@ -6,7 +6,7 @@
   children: [
     {
       name: "build-info-service",
-      url: "fuchsia-pkg://fuchsia.com/fake-build-info#meta/fake_build_info.cm",
+      url: "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cm",
     },
     {
       name: "intl_property_manager",
@@ -26,12 +26,6 @@
     }
   ],
   use: [
-    {
-      // Required by the build-info-service child.
-      directory: "build-info",
-      rights: [ "r*" ],
-      path: "/config/build-info",
-    },
     {
       directory: "config-data",
       rights: [ "r*" ],
@@ -64,6 +58,7 @@
     },
     {
       protocol: [
+        "fuchsia.hwinfo.Product",
         "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",

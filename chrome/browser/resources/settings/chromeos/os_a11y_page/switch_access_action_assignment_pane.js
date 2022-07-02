@@ -9,17 +9,16 @@
  * UI.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../os_icons.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {actionToPref, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
@@ -95,115 +94,128 @@ export function getLabelForAssignment(assignment) {
   });
 }
 
-// TODO(crbug.com/1222452): Convert to use Polymer's class based syntax (e.g.
-// https://crrev.com/c/2808034).
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-switch-access-action-assignment-pane',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSwitchAccessActionAssignmentPaneElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsSwitchAccessActionAssignmentPaneElement extends
+    SettingsSwitchAccessActionAssignmentPaneElementBase {
+  static get is() {
+    return 'settings-switch-access-action-assignment-pane';
+  }
 
-  properties: {
-    /**
-     * Specify which switch action this pane handles.
-     * @type {SwitchAccessCommand}
-     */
-    action: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Specify the context this pane is located in.
-     * @type {AssignmentContext}
-     */
-    context: String,
+  static get properties() {
+    return {
+      /**
+       * Specify which switch action this pane handles.
+       * @type {SwitchAccessCommand}
+       */
+      action: {
+        type: String,
+      },
 
-    /**
-     * Enable the html template to use AssignmentState.
-     * @private {AssignmentState}
-     */
-    assignmentState_: {
-      type: Number,
-      value: AssignmentState.WAIT_FOR_KEY,
-    },
+      /**
+       * Specify the context this pane is located in.
+       * @type {AssignmentContext}
+       */
+      context: String,
 
-    /**
-     * Assignments for the current action.
-     * @private {!Array<{key: string, device: !SwitchAccessDeviceType}>}
-     */
-    assignments_: {
-      type: Array,
-      value: [],
-    },
+      /**
+       * Enable the html template to use AssignmentState.
+       * @private {AssignmentState}
+       */
+      assignmentState_: {
+        type: Number,
+        value: AssignmentState.WAIT_FOR_KEY,
+      },
 
-    /**
-     * A dictionary containing all Switch Access key codes (mapped from
-     * actions).
-     * @private {{
-     *         select: SwitchAccessKeyAssignmentInfoMapping,
-     *         next: SwitchAccessKeyAssignmentInfoMapping,
-     *         previous: SwitchAccessKeyAssignmentInfoMapping
-     * }}
-     */
-    keyCodes_: {
-      type: Object,
-      value: {select: {}, next: {}, previous: {}},
-    },
+      /**
+       * Assignments for the current action.
+       * @private {!Array<{key: string, device: !SwitchAccessDeviceType}>}
+       */
+      assignments_: {
+        type: Array,
+        value: [],
+      },
 
-    /**
-     * User prompt text shown at the top of the pane.
-     * @private
-     */
-    promptText_: {
-      type: String,
-      computed: 'computePromptText_(assignmentState_, assignments_)',
-    },
+      /**
+       * A dictionary containing all Switch Access key codes (mapped from
+       * actions).
+       * @private {{
+       *         select: SwitchAccessKeyAssignmentInfoMapping,
+       *         next: SwitchAccessKeyAssignmentInfoMapping,
+       *         previous: SwitchAccessKeyAssignmentInfoMapping
+       * }}
+       */
+      keyCodes_: {
+        type: Object,
+        value: {select: {}, next: {}, previous: {}},
+      },
 
-    /**
-     * Error text shown on the pane with error symbol. Hidden if blank.
-     * @private
-     */
-    errorText_: {
-      type: String,
-      computed: 'computeErrorText_(assignmentState_)',
-    },
+      /**
+       * User prompt text shown at the top of the pane.
+       * @private
+       */
+      promptText_: {
+        type: String,
+        computed: 'computePromptText_(assignmentState_, assignments_)',
+      },
 
-    /**
-     * The label indicating there are no switches.
-     * @private
-     */
-    noSwitchesLabel_: String,
+      /**
+       * Error text shown on the pane with error symbol. Hidden if blank.
+       * @private
+       */
+      errorText_: {
+        type: String,
+        computed: 'computeErrorText_(assignmentState_)',
+      },
 
-    /** @private {!SwitchAccessCommand} */
-    alreadyAssignedAction_: String,
+      /**
+       * The label indicating there are no switches.
+       * @private
+       */
+      noSwitchesLabel_: String,
 
-    /** @private {!string} */
-    currentKey_: String,
+      /** @private {!SwitchAccessCommand} */
+      alreadyAssignedAction_: String,
 
-    /** @private {?number} */
-    currentKeyCode_: {
-      type: Number,
-      value: null,
-    },
+      /** @private {!string} */
+      currentKey_: String,
 
-    /** @private {!SwitchAccessDeviceType} */
-    currentDeviceType_: String,
-  },
+      /** @private {?number} */
+      currentKeyCode_: {
+        type: Number,
+        value: null,
+      },
 
-  /** @private {?SwitchAccessSubpageBrowserProxy} */
-  switchAccessBrowserProxy_: null,
+      /** @private {!SwitchAccessDeviceType} */
+      currentDeviceType_: String,
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!SwitchAccessSubpageBrowserProxy} */
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Save all existing prefs.
     for (const action in actionToPref) {
       chrome.settingsPrivate.getPref(actionToPref[action], (pref) => {
@@ -225,10 +237,12 @@ Polymer({
     } else {
       this.noSwitchesLabel_ = this.i18n('noSwitchesAssigned');
     }
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneInactive();
 
@@ -237,7 +251,7 @@ Polymer({
       chrome.settingsPrivate.setPref(
           actionToPref[action], this.keyCodes_[action]);
     }
-  },
+  }
 
   /**
    * @param {{key: string, keyCode: number}} event
@@ -262,7 +276,7 @@ Polymer({
         this.fireExitPane_();
         break;
     }
-  },
+  }
 
   /**
    * In this state, the pane waits for the user to press the initial switch key
@@ -306,7 +320,7 @@ Polymer({
     this.push(
         'assignments_',
         {key: this.currentKey_, device: this.currentDeviceType_});
-  },
+  }
 
   /**
    * In this state, the user has pressed the initial switch key, which is not
@@ -340,7 +354,7 @@ Polymer({
     }
 
     this.fireExitPane_();
-  },
+  }
 
   /**
    * In this state, the user has pressed the initial switch key, which is
@@ -364,7 +378,7 @@ Polymer({
     }
 
     this.fireExitPane_();
-  },
+  }
 
   /**
    * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
@@ -373,15 +387,17 @@ Polymer({
    */
   onAssignmentsChanged_(value) {
     this.assignments_ = value[this.action];
-  },
+  }
 
   /**
    * Fires an 'exit-pane' event.
    * @private
    */
   fireExitPane_() {
-    this.fire('exit-pane');
-  },
+    const exitPaneEvent =
+        new CustomEvent('exit-pane', {bubbles: true, composed: true});
+    this.dispatchEvent(exitPaneEvent);
+  }
 
   /**
    * @param {SwitchAccessCommand} action
@@ -399,7 +415,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
@@ -408,7 +424,7 @@ Polymer({
    */
   getLabelForAssignment_(assignment) {
     return getLabelForAssignment(assignment);
-  },
+  }
 
   /**
    * Returns the image to use for the assignment's icon. The value must match
@@ -437,7 +453,7 @@ Polymer({
         return AssignmentIcon.REMOVE_ASSIGNMENT;
     }
     throw new Error('Invalid assignment state.');
-  },
+  }
 
   /**
    * Returns the icon label describing the icon for the specified assignment.
@@ -457,7 +473,7 @@ Polymer({
             'switchAccessActionAssignmentRemoveAssignmentIconLabel');
     }
     throw new Error('Invalid assignment icon.');
-  },
+  }
 
   /**
    * @param {!AssignmentState} assignmentState
@@ -502,7 +518,7 @@ Polymer({
             this.currentKey_, this.i18n(response));
     }
     throw new Error('Invalid assignment state.');
-  },
+  }
 
   /**
    * @param {!AssignmentState} assignmentState
@@ -542,5 +558,9 @@ Polymer({
         return '';
     }
     throw new Error('Invalid assignment state.');
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSwitchAccessActionAssignmentPaneElement.is,
+    SettingsSwitchAccessActionAssignmentPaneElement);

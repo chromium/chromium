@@ -127,19 +127,13 @@ void ServiceWorkerNewScriptFetcher::OnReceiveEarlyHints(
 void ServiceWorkerNewScriptFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body) {
-  response_head_ = std::move(response_head);
-  if (response_body)
-    OnStartLoadingResponseBody(std::move(response_body));
-}
-
-void ServiceWorkerNewScriptFetcher::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
-  DCHECK(response_head_);
+  if (!response_body)
+    return;
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params =
       blink::mojom::WorkerMainScriptLoadParams::New();
   main_script_load_params->request_id = request_id_;
-  main_script_load_params->response_head = std::move(response_head_);
+  main_script_load_params->response_head = std::move(response_head);
   main_script_load_params->response_body = std::move(response_body);
   main_script_load_params->url_loader_client_endpoints =
       network::mojom::URLLoaderClientEndpoints::New(

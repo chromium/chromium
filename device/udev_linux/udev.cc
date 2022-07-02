@@ -43,6 +43,11 @@ udev_device* udev_device_get_parent_with_subsystem_devtype(
       udev_device, subsystem, devtype);
 }
 
+udev_list_entry* udev_device_get_properties_list_entry(
+    struct udev_device* udev_device) {
+  return UdevLoader::Get()->udev_device_get_properties_list_entry(udev_device);
+}
+
 const char* udev_device_get_property_value(udev_device* udev_device,
                                            const char* key) {
   return UdevLoader::Get()->udev_device_get_property_value(udev_device, key);

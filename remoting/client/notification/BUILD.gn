@@ -21,6 +21,8 @@ source_set("notification") {
     "//base",
     "//net",
     "//remoting/base",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 }

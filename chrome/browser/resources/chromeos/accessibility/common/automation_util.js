@@ -99,10 +99,10 @@ AutomationUtil = class {
    *     |skipInitialAncestry|, and |skipInitialSubtree| are valid restrictions
    *     used when finding the next node.
    *     By default:
-   *        the root predicate ges set to |AutomationPredicate.root|.
+   *        the root predicate gets set to |AutomationPredicate.root|.
    *        |skipInitialSubtree| is false if |cur| is a container or matches
    *        |pred|. This alleviates the caller from syncing forwards.
-   *        Leaves are nodes matched by |prred| which are not also containers.
+   *        Leaves are nodes matched by |pred| which are not also containers.
    *        This takes care of syncing backwards.
    * @return {AutomationNode}
    */
@@ -129,10 +129,10 @@ AutomationUtil = class {
    *     |skipInitialAncestry|, and |skipInitialSubtree| are valid restrictions
    *     used when finding the next node.
    *     By default:
-   *        the root predicate ges set to |AutomationPredicate.root|.
+   *        the root predicate gets set to |AutomationPredicate.root|.
    *        |skipInitialSubtree| is false if |cur| is a container or matches
    *        |pred|. This alleviates the caller from syncing forwards.
-   *        Leaves are nodes matched by |prred| which are not also containers.
+   *        Leaves are nodes matched by |pred| which are not also containers.
    *        This takes care of syncing backwards.
    * @return {!Array<!AutomationNode>}
    */

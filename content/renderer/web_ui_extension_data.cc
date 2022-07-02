@@ -40,8 +40,8 @@ std::string WebUIExtensionData::GetValue(const std::string& key) const {
 }
 
 void WebUIExtensionData::SendMessage(const std::string& message,
-                                     std::unique_ptr<base::ListValue> args) {
-  remote_->Send(message, std::move(*args));
+                                     base::Value::List args) {
+  remote_->Send(message, std::move(args));
 }
 
 void WebUIExtensionData::SetProperty(const std::string& name,

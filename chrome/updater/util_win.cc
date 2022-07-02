@@ -46,7 +46,7 @@ std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
   return std::string();
 }
 
-absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
+absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem
                                   ? base::DIR_PROGRAM_FILES

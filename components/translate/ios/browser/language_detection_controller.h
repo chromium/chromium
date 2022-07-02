@@ -25,6 +25,9 @@ namespace web {
 class NavigationContext;
 }
 
+FORWARD_DECLARE_TEST(ChromeIOSTranslateClientTest,
+                     TFLiteLanguageDetectionDurationRecorded);
+
 namespace translate {
 
 class LanguageDetectionModel;
@@ -46,6 +49,9 @@ class LanguageDetectionController : public web::WebStateObserver {
   ~LanguageDetectionController() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(::ChromeIOSTranslateClientTest,
+                           TFLiteLanguageDetectionDurationRecorded);
+
   // Starts the page language detection and initiates the translation process.
   void StartLanguageDetection();
 

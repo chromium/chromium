@@ -5,14 +5,8 @@
   LICENSE file.
 -->
 
-<!--
-  This is a dummy manifest which is required by:
-  1. aapt when generating R.java in java.gypi:
-     Nothing in the manifest is used, but it is still required by aapt.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.dummy"
+    package="no.manifest.configured"
     android:versionCode="1"
     android:versionName="1.0">
-
 </manifest>

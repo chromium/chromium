@@ -44,8 +44,7 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
 
   bool disabled() const;
   void setDisabled(bool);
-
-  BlockingAttribute* blocking() const override { return blocking_attribute_; }
+  BlockingAttribute& blocking() const { return *blocking_attribute_; }
 
   void Trace(Visitor*) const override;
 
@@ -55,11 +54,12 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   void DispatchPendingEvent(std::unique_ptr<IncrementLoadEventDelayCount>,
                             bool is_load_event);
 
-  // overload from HTMLElement
+  // override from HTMLElement
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void ChildrenChanged(const ChildrenChange&) override;
+  bool IsPotentiallyRenderBlocking() const override;
 
   void FinishParsingChildren() override;
 

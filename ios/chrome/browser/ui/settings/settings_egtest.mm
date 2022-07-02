@@ -275,7 +275,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 - (void)testClearCookies {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  // Load |kUrl| and check that cookie is not set.
+  // Load `kUrl` and check that cookie is not set.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   NSDictionary* cookies = [ChromeEarlGrey cookies];
@@ -320,7 +320,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that breakpad reporting works properly under possible settings of
-// the preference |kMetricsReportingEnabled|.
+// the preference `kMetricsReportingEnabled`.
 // NOTE: breakpad only allows uploading for non-first-launch runs.
 - (void)testBreakpadReporting {
   [self setTearDownHandler:^{
@@ -333,7 +333,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that breakpad reporting works properly under possible settings of
-// the preference |kMetricsReportingEnabled|.
+// the preference `kMetricsReportingEnabled`.
 // NOTE: breakpad only allows uploading for non-first-launch runs.
 - (void)testBreakpadReportingFirstLaunch {
   [self setTearDownHandler:^{

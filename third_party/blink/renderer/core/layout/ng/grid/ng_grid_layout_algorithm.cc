@@ -151,7 +151,7 @@ void CacheGridTrackSpanProperties(
           grid_item.SetTrackSpanProperty(property, track_direction);
       };
 
-  Vector<GridItemData*, 16> grid_items_spanning_multiple_ranges;
+  GridItemDataVector grid_items_spanning_multiple_ranges;
   for (auto& grid_item : grid_items->item_data) {
     const auto& range_indices = grid_item.RangeIndices(track_direction);
 
@@ -633,6 +633,7 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
   const auto& container_style = Style();
   const auto& constraint_space = ConstraintSpace();
+  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
   layout_data->columns =
@@ -643,8 +644,9 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
   std::unique_ptr<NGGridBlockTrackCollection> row_builder_collection;
 
   if (const auto* subgridded_rows = constraint_space.SubgriddedRows()) {
-    layout_data->rows =
-        std::make_unique<NGGridLayoutTrackCollection>(*subgridded_rows);
+    layout_data->rows = std::make_unique<NGGridLayoutTrackCollection>(
+        *subgridded_rows, border_scrollbar_padding,
+        ComputeMarginsForSelf(constraint_space, container_style));
   } else {
     row_builder_collection = std::make_unique<NGGridBlockTrackCollection>(
         container_style, placement_data, kForRows);
@@ -703,8 +705,6 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
   };
 
   ComputeGrid();
-
-  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
   if (contain_intrinsic_block_size_) {
     *intrinsic_block_size = *contain_intrinsic_block_size_;
@@ -937,6 +937,13 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     GridItemData* grid_item) const {
   DCHECK(grid_item);
 
+  if (!grid_item->IsConsideredForSizing(track_direction)) {
+    // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
+    //   The subgrid itself [...] acts as if it was completely empty for track
+    //   sizing purposes in the subgridded dimension.
+    return LayoutUnit();
+  }
+
   const auto& node = grid_item->node;
   const auto& item_style = node.Style();
 
@@ -944,14 +951,6 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   const bool is_parallel = IsParallelWritingMode(Style().GetWritingMode(),
                                                  item_style.GetWritingMode());
   const bool is_parallel_with_track_direction = is_for_columns == is_parallel;
-
-  if (grid_item->HasSubgriddedAxis(
-          is_parallel_with_track_direction ? kForColumns : kForRows)) {
-    // From https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution:
-    //   The subgrid itself [...] acts as if it was completely empty for track
-    //   sizing purposes in the subgridded dimension.
-    return LayoutUnit();
-  }
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
@@ -1221,16 +1220,21 @@ NGGridLayoutAlgorithm::LayoutTrackCollection(
     const NGGridPlacementData& placement_data,
     const GridTrackSizingDirection track_direction,
     GridItems* grid_items) const {
+  const auto& container_style = Style();
+  const auto& constraint_space = ConstraintSpace();
+
   const auto is_for_columns = track_direction == kForColumns;
-
   const auto* subgridded_tracks = is_for_columns
-                                      ? ConstraintSpace().SubgriddedColumns()
-                                      : ConstraintSpace().SubgriddedRows();
-  if (subgridded_tracks)
-    return std::make_unique<NGGridLayoutTrackCollection>(*subgridded_tracks);
+                                      ? constraint_space.SubgriddedColumns()
+                                      : constraint_space.SubgriddedRows();
+  if (subgridded_tracks) {
+    return std::make_unique<NGGridLayoutTrackCollection>(
+        *subgridded_tracks, BorderScrollbarPadding(),
+        ComputeMarginsForSelf(constraint_space, container_style));
+  }
 
-  NGGridBlockTrackCollection track_builder_collection(Style(), placement_data,
-                                                      track_direction);
+  NGGridBlockTrackCollection track_builder_collection(
+      container_style, placement_data, track_direction);
   BuildBlockTrackCollection(grid_items, &track_builder_collection);
 
   const bool is_available_size_indefinite =
@@ -1998,25 +2002,26 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
   // potential must be able to increase its size by the same amount.
   if (growable_track_count ||
       IsDistributionForGrowthLimits(contribution_type)) {
-    auto CompareSetsByGrowthPotential = [contribution_type](NGGridSet* a,
-                                                            NGGridSet* b) {
-      LayoutUnit growth_potential_a = GrowthPotentialForSet(
-          *a, contribution_type, InfinitelyGrowableBehavior::kIgnore);
-      LayoutUnit growth_potential_b = GrowthPotentialForSet(
-          *b, contribution_type, InfinitelyGrowableBehavior::kIgnore);
+    auto CompareSetsByGrowthPotential =
+        [contribution_type](const NGGridSet* lhs, const NGGridSet* rhs) {
+          auto growth_potential_lhs = GrowthPotentialForSet(
+              *lhs, contribution_type, InfinitelyGrowableBehavior::kIgnore);
+          auto growth_potential_rhs = GrowthPotentialForSet(
+              *rhs, contribution_type, InfinitelyGrowableBehavior::kIgnore);
 
-      if (growth_potential_a == kIndefiniteSize ||
-          growth_potential_b == kIndefiniteSize) {
-        // At this point we know that there is at least one set with infinite
-        // growth potential; if |a| has a definite value, then |b| must have
-        // infinite growth potential, and thus, |a| < |b|.
-        return growth_potential_a != kIndefiniteSize;
-      }
-      // Straightforward comparison of definite growth potentials.
-      return growth_potential_a < growth_potential_b;
-    };
-    // If we only have flex growth potential, there's no need to sort because
-    // flex growth potentials are infinite.
+          if (growth_potential_lhs == kIndefiniteSize ||
+              growth_potential_rhs == kIndefiniteSize) {
+            // At this point we know that there is at least one set with
+            // infinite growth potential; if |a| has a definite value, then |b|
+            // must have infinite growth potential, and thus, |a| < |b|.
+            return growth_potential_lhs != kIndefiniteSize;
+          }
+          // Straightforward comparison of definite growth potentials.
+          return growth_potential_lhs < growth_potential_rhs;
+        };
+
+    // Only sort for equal distributions; since the growth potential of any
+    // flexible set is infinite, they don't require comparing.
     if (AreEqual<double>(flex_factor_sum, 0)) {
       DCHECK(is_equal_distribution);
       std::sort(sets_to_grow->begin(), sets_to_grow->end(),
@@ -2186,8 +2191,8 @@ void DistributeExtraSpaceToWeightedSets(
 }  // namespace
 
 void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
-    GridItems::Iterator group_begin,
-    GridItems::Iterator group_end,
+    GridItemDataVector::iterator group_begin,
+    GridItemDataVector::iterator group_end,
     const NGGridLayoutData& layout_data,
     const bool is_group_spanning_flex_track,
     const SizingConstraint sizing_constraint,
@@ -2203,27 +2208,22 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
 
   GridSetVector sets_to_grow;
   GridSetVector sets_to_grow_beyond_limit;
-  for (auto it = group_begin; it != group_end; ++it) {
-    GridItemData& grid_item = *it;
+  for (auto** it = group_begin; it != group_end; ++it) {
+    GridItemData& grid_item = **it;
 
-    // When the grid items of this group are not spanning a flexible track, we
-    // can skip the current item if it doesn't span an intrinsic track.
-    if (!grid_item.IsSpanningIntrinsicTrack(track_direction) &&
-        !is_group_spanning_flex_track) {
-      continue;
-    }
+    DCHECK(grid_item.IsSpanningIntrinsicTrack(track_direction));
 
     sets_to_grow.Shrink(0);
     sets_to_grow_beyond_limit.Shrink(0);
 
+    ClampedDouble flex_factor_sum = 0;
     LayoutUnit spanned_tracks_size = track_collection->GutterSize() *
                                      (grid_item.SpanSize(track_direction) - 1);
-
-    ClampedDouble flex_factor_sum = 0;
     for (auto set_iterator =
              GetSetIteratorForItem(grid_item, *track_collection);
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
       auto& current_set = set_iterator.CurrentSet();
+
       spanned_tracks_size +=
           AffectedSizeForContribution(current_set, contribution_type);
 
@@ -2308,6 +2308,14 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   DCHECK(track_collection && grid_items);
   const auto track_direction = track_collection->Direction();
 
+  GridItemDataVector reordered_grid_items;
+  reordered_grid_items.ReserveInitialCapacity(grid_items->Size());
+
+  for (auto& grid_item : grid_items->item_data) {
+    if (grid_item.IsSpanningIntrinsicTrack(track_direction))
+      reordered_grid_items.push_back(&grid_item);
+  }
+
   // Reorder grid items to process them as follows:
   //   - First, consider items spanning a single non-flexible track.
   //   - Next, consider items with span size of 2 not spanning a flexible track.
@@ -2315,35 +2323,34 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   not spanning a flexible track have been considered.
   //   - Finally, consider all items spanning a flexible track.
   auto CompareGridItemsForIntrinsicTrackResolution =
-      [grid_items, track_direction](wtf_size_t a, wtf_size_t b) -> bool {
-    if (grid_items->item_data[a].IsSpanningFlexibleTrack(track_direction) ||
-        grid_items->item_data[b].IsSpanningFlexibleTrack(track_direction)) {
+      [track_direction](const GridItemData* lhs,
+                        const GridItemData* rhs) -> bool {
+    if (lhs->IsSpanningFlexibleTrack(track_direction) ||
+        rhs->IsSpanningFlexibleTrack(track_direction)) {
       // Ignore span sizes if one of the items spans a track with a flexible
       // sizing function; items not spanning such tracks should come first.
-      return !grid_items->item_data[a].IsSpanningFlexibleTrack(track_direction);
+      return !lhs->IsSpanningFlexibleTrack(track_direction);
     }
-    return grid_items->item_data[a].SpanSize(track_direction) <
-           grid_items->item_data[b].SpanSize(track_direction);
+    return lhs->SpanSize(track_direction) < rhs->SpanSize(track_direction);
   };
-  std::sort(grid_items->reordered_item_indices.begin(),
-            grid_items->reordered_item_indices.end(),
+  std::sort(reordered_grid_items.begin(), reordered_grid_items.end(),
             CompareGridItemsForIntrinsicTrackResolution);
 
   // First, process the items that don't span a flexible track.
-  auto current_group_begin = grid_items->begin();
-  while (current_group_begin != grid_items->end() &&
-         !current_group_begin->IsSpanningFlexibleTrack(track_direction)) {
+  auto** current_group_begin = reordered_grid_items.begin();
+  while (current_group_begin != reordered_grid_items.end() &&
+         !(*current_group_begin)->IsSpanningFlexibleTrack(track_direction)) {
     // Each iteration considers all items with the same span size.
     wtf_size_t current_group_span_size =
-        current_group_begin->SpanSize(track_direction);
+        (*current_group_begin)->SpanSize(track_direction);
 
-    auto current_group_end = current_group_begin;
+    auto** current_group_end = current_group_begin;
     do {
-      DCHECK(!current_group_end->IsSpanningFlexibleTrack(track_direction));
+      DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
       ++current_group_end;
-    } while (current_group_end != grid_items->end() &&
-             !current_group_end->IsSpanningFlexibleTrack(track_direction) &&
-             current_group_end->SpanSize(track_direction) ==
+    } while (current_group_end != reordered_grid_items.end() &&
+             !(*current_group_end)->IsSpanningFlexibleTrack(track_direction) &&
+             (*current_group_end)->SpanSize(track_direction) ==
                  current_group_span_size);
 
     IncreaseTrackSizesToAccommodateGridItems(
@@ -2378,24 +2385,24 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  for (auto it = current_group_begin; it != grid_items->end(); ++it)
-    DCHECK(it->IsSpanningFlexibleTrack(track_direction));
+  for (auto** it = current_group_begin; it != reordered_grid_items.end(); ++it)
+    DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
 #endif
 
   // Now, process items spanning flexible tracks (if any).
-  if (current_group_begin != grid_items->end()) {
+  if (current_group_begin != reordered_grid_items.end()) {
     // We can safely skip contributions for maximums since a <flex> definition
     // does not have an intrinsic max track sizing function.
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, grid_items->end(), layout_data,
+        current_group_begin, reordered_grid_items.end(), layout_data,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForIntrinsicMinimums, track_collection);
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, grid_items->end(), layout_data,
+        current_group_begin, reordered_grid_items.end(), layout_data,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForContentBasedMinimums, track_collection);
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, grid_items->end(), layout_data,
+        current_group_begin, reordered_grid_items.end(), layout_data,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForMaxContentMinimums, track_collection);
   }
@@ -2560,20 +2567,20 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     // Otherwise, determine which sets should be treated as inflexible, exclude
     // them from the leftover space and flex factor sum computation, and keep
     // checking the condition for sets with lesser ratios.
-    auto CompareSetsByBaseSizeFlexFactorRatio = [](NGGridSet* a,
-                                                   NGGridSet* b) -> bool {
+    auto CompareSetsByBaseSizeFlexFactorRatio = [](NGGridSet* lhs,
+                                                   NGGridSet* rhs) -> bool {
       // Avoid divisions by reordering the terms of the comparison.
-      return a->BaseSize().RawValue() * b->FlexFactor() >
-             b->BaseSize().RawValue() * a->FlexFactor();
+      return lhs->BaseSize().RawValue() * rhs->FlexFactor() >
+             rhs->BaseSize().RawValue() * lhs->FlexFactor();
     };
     std::sort(flexible_sets.begin(), flexible_sets.end(),
               CompareSetsByBaseSizeFlexFactorRatio);
 
-    GridSetVector::iterator current_set = flexible_sets.begin();
+    auto** current_set = flexible_sets.begin();
     while (leftover_space > 0 && current_set != flexible_sets.end()) {
       flex_factor_sum = base::ClampMax(flex_factor_sum, 1);
 
-      GridSetVector::iterator next_set = current_set;
+      auto** next_set = current_set;
       while (next_set != flexible_sets.end() &&
              (*next_set)->FlexFactor() * leftover_space.RawValue() <
                  (*next_set)->BaseSize().RawValue() * flex_factor_sum) {
@@ -2590,7 +2597,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
       // Otherwise, treat all those sets that does not receive a share of free
       // space of at least their base size as inflexible, effectively excluding
       // them from the leftover space and flex factor sum computation.
-      for (GridSetVector::iterator it = current_set; it != next_set; ++it) {
+      for (auto** it = current_set; it != next_set; ++it) {
         flex_factor_sum -= (*it)->FlexFactor();
         leftover_space -= (*it)->BaseSize();
       }
@@ -3742,13 +3749,11 @@ void ComputeOutOfFlowOffsetAndSize(
     end_offset =
         TrackEndOffset(track_collection, item_placement.range_index.end,
                        item_placement.offset_in_range.end);
-    *size = end_offset - *start_offset;
-  } else {
-    // |start_offset| can be greater than |end_offset| if the track sizes from
-    // the grid overflow the container's respective size.
-    *size = (end_offset - *start_offset).ClampNegativeToZero();
   }
-  DCHECK(*size >= 0 || *size == kIndefiniteSize);
+
+  // |start_offset| can be greater than |end_offset| if the used track sizes or
+  // gutter size saturated the set offsets of the track collection.
+  *size = (end_offset - *start_offset).ClampNegativeToZero();
 }
 
 }  // namespace

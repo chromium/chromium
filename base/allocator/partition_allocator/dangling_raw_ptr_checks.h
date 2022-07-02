@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 // When compiled with build flags `enable_dangling_raw_ptr_checks`, dangling
 // raw_ptr are reported. Its behavior can be configured here.
@@ -30,21 +30,25 @@ namespace partition_alloc {
 // This function is called from within the allocator, and is not allowed to
 // allocate memory.
 using DanglingRawPtrDetectedFn = void(uintptr_t /*id*/);
-BASE_EXPORT DanglingRawPtrDetectedFn* GetDanglingRawPtrDetectedFn();
-BASE_EXPORT void SetDanglingRawPtrDetectedFn(DanglingRawPtrDetectedFn);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+DanglingRawPtrDetectedFn* GetDanglingRawPtrDetectedFn();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetDanglingRawPtrDetectedFn(DanglingRawPtrDetectedFn);
 
 // DanglingRawPtrReleased: Called after DanglingRawPtrDetected(id), once the
 // last dangling raw_ptr stops referencing the memory region.
 //
 // This function is allowed to allocate memory.
 using DanglingRawPtrReleasedFn = void(uintptr_t /*id*/);
-BASE_EXPORT DanglingRawPtrReleasedFn* GetDanglingRawPtrReleasedFn();
-BASE_EXPORT void SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedFn);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+DanglingRawPtrReleasedFn* GetDanglingRawPtrReleasedFn();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedFn);
 
 namespace internal {
 
-BASE_EXPORT void DanglingRawPtrDetected(uintptr_t id);
-BASE_EXPORT void DanglingRawPtrReleased(uintptr_t id);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrDetected(uintptr_t id);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrReleased(uintptr_t id);
 
 }  // namespace internal
 }  // namespace partition_alloc

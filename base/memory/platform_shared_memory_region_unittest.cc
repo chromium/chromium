@@ -16,10 +16,10 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
-#include <mach/mach_vm.h>
+#if BUILDFLAG(IS_APPLE)
+#include <mach/vm_map.h>
 #include <sys/mman.h>
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #include "base/debug/proc_maps_linux.h"
 #elif BUILDFLAG(IS_WIN)
@@ -212,7 +212,7 @@ TEST_F(PlatformSharedMemoryRegionTest, MapAtWithOverflowTest) {
   EXPECT_FALSE(mapping.IsValid());
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 // Tests that the second handle is closed after a conversion to read-only on
 // POSIX.
 TEST_F(PlatformSharedMemoryRegionTest,
@@ -238,17 +238,21 @@ TEST_F(PlatformSharedMemoryRegionTest, ConvertToUnsafeInvalidatesSecondHandle) {
 #endif
 
 void CheckReadOnlyMapProtection(void* addr) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   vm_region_basic_info_64 basic_info;
-  mach_vm_size_t dummy_size = 0;
-  void* temp_addr = addr;
-  MachVMRegionResult result = GetBasicInfo(
-      mach_task_self(), &dummy_size,
-      reinterpret_cast<mach_vm_address_t*>(&temp_addr), &basic_info);
-  ASSERT_EQ(result, MachVMRegionResult::Success);
+  vm_size_t dummy_size = 0;
+  mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
+  mach_port_t object_name;
+  kern_return_t kr = vm_region_64(
+      mach_task_self(), reinterpret_cast<vm_address_t*>(&addr), &dummy_size,
+      VM_REGION_BASIC_INFO_64, reinterpret_cast<vm_region_info_t>(&basic_info),
+      &info_count, &object_name);
+  mach_port_deallocate(mach_task_self(), object_name);
+
+  ASSERT_EQ(kr, KERN_SUCCESS);
   EXPECT_EQ(basic_info.protection & VM_PROT_ALL, VM_PROT_READ);
   EXPECT_EQ(basic_info.max_protection & VM_PROT_ALL, VM_PROT_READ);
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_POSIX)
   std::string proc_maps;
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;

@@ -18,9 +18,8 @@ class RemoteAppsAdapter {
     this.remoteApps_ = new chromeos.remoteApps.mojom.RemoteAppsRemote();
     this.callbackRouter_ =
         new chromeos.remoteApps.mojom.RemoteAppLaunchObserverCallbackRouter();
-    factory.get(
-        chrome.runtime.id,
-        this.remoteApps_.$.bindNewPipeAndPassReceiver(),
+    factory.bindRemoteAppsAndAppLaunchObserver(
+        chrome.runtime.id, this.remoteApps_.$.bindNewPipeAndPassReceiver(),
         this.callbackRouter_.$.bindNewPipeAndPassRemote());
   }
 
@@ -74,7 +73,10 @@ class RemoteAppsAdapter {
    * @return {!Promise<void>}
    */
   addRemoteAppLaunchObserver(callback) {
-    return this.callbackRouter_.onRemoteAppLaunched.addListener(callback);
+    // The second parameter from the |OnRemoteAppLaunched| Mojo method,
+    // |source_id|, is dropped.
+    return this.callbackRouter_.onRemoteAppLaunched.addListener(
+        (app_id) => callback(app_id));
   }
 }
 

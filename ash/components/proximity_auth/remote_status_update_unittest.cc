@@ -13,9 +13,8 @@ namespace {
 
 // Parses the |json| into a RemoteStatusUpdate instance.
 std::unique_ptr<RemoteStatusUpdate> ParseJson(const std::string& json) {
-  std::unique_ptr<base::DictionaryValue> as_dictionary =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(json));
-  return RemoteStatusUpdate::Deserialize(*as_dictionary);
+  absl::optional<base::Value> dict = base::JSONReader::Read(json);
+  return RemoteStatusUpdate::Deserialize(dict->GetDict());
 }
 
 }  // namespace

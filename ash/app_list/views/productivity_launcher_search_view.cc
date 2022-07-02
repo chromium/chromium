@@ -296,6 +296,9 @@ void ProductivityLauncherSearchView::OnSelectedResultChanged() {
   views::View* selected_row = result_selection_controller_->selected_result();
   selected_row->ScrollViewToVisible();
 
+  for (SearchResultContainerView* view : result_container_views_)
+    view->OnSelectedResultChanged();
+
   MaybeNotifySelectedResultChanged();
 }
 

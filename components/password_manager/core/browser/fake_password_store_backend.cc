@@ -70,7 +70,7 @@ void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
 }
 
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
@@ -82,7 +82,7 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
 
 void FakePasswordStoreBackend::AddLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::AddLoginInternal,
@@ -92,7 +92,7 @@ void FakePasswordStoreBackend::AddLoginAsync(
 
 void FakePasswordStoreBackend::UpdateLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::UpdateLoginInternal,
@@ -102,7 +102,7 @@ void FakePasswordStoreBackend::UpdateLoginAsync(
 
 void FakePasswordStoreBackend::RemoveLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::RemoveLoginInternal,
@@ -115,14 +115,14 @@ void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   NOTIMPLEMENTED();
 }
 
 void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   NOTIMPLEMENTED();
 }
 
@@ -199,7 +199,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const PasswordFormDigest& form,
     bool include_psl) {
   // Updating all matched forms is the equivalent of FillMatchingLogins();
-  ++fill_matching_logins_calls_;
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
     // The code below doesn't support PSL federated credential. It's doable but

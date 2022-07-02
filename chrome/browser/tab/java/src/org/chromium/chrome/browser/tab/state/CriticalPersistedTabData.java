@@ -507,13 +507,15 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
-                if (byteBuffer != null) {
-                    byteBuffer.rewind();
+                ByteBuffer readOnlyByteBuffer =
+                        byteBuffer == null ? null : byteBuffer.asReadOnlyBuffer();
+                if (readOnlyByteBuffer != null) {
+                    readOnlyByteBuffer.rewind();
                 }
                 FlatBufferBuilder fbb = new FlatBufferBuilder();
                 int wcs = CriticalPersistedTabDataFlatBuffer.createWebContentsStateBytesVector(fbb,
-                        byteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
-                                           : byteBuffer);
+                        readOnlyByteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
+                                                   : readOnlyByteBuffer);
                 int oaid =
                         fbb.createString(mOpenerAppId == null ? NULL_OPENER_APP_ID : mOpenerAppId);
                 CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);

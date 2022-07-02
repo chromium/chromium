@@ -62,14 +62,9 @@ class NoteTakingOnLockScreenPolicyTest : public ExtensionPolicyTestBase {
     UpdateProviderPolicy(policies);
   }
 
-  ash::NoteTakingLockScreenSupport GetAppLockScreenStatus(
+  ash::LockScreenAppSupport GetLockScreenSupportForApp(
       const std::string& app_id) {
-    std::unique_ptr<ash::NoteTakingAppInfo> info =
-        ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-            browser()->profile());
-    if (!info || info->app_id != app_id)
-      return ash::NoteTakingLockScreenSupport::kNotSupported;
-    return info->lock_screen_support;
+    return ash::LockScreenApps::GetSupport(browser()->profile(), app_id);
   }
 
   // The test app ID.
@@ -87,16 +82,16 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(base::Value(base::Value::Type::LIST));
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kNotAllowedByPolicy,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kNotAllowedByPolicy,
+            GetLockScreenSupportForApp(app->id()));
 
   SetPolicyValue(absl::nullopt);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
@@ -107,19 +102,19 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   ASSERT_EQ(kTestAppId, app->id());
 
   SetUserLevelPrefValue(app->id(), false);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
+            GetLockScreenSupportForApp(app->id()));
 
   base::Value policy(base::Value::Type::LIST);
   policy.Append(kTestAppId);
   SetPolicyValue(std::move(policy));
 
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kSupported,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
+            GetLockScreenSupportForApp(app->id()));
 
   SetUserLevelPrefValue(app->id(), true);
-  EXPECT_EQ(ash::NoteTakingLockScreenSupport::kEnabled,
-            GetAppLockScreenStatus(app->id()));
+  EXPECT_EQ(ash::LockScreenAppSupport::kEnabled,
+            GetLockScreenSupportForApp(app->id()));
 }
 
 }  // namespace policy

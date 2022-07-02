@@ -51,8 +51,14 @@ bool HasEnoughDiskSpace(const base::FilePath& root_path,
          item_metadata.file_size_bytes();
 }
 
-secure_channel::mojom::PayloadFilesPtr DoCreatePayloadFiles(
+absl::optional<secure_channel::mojom::PayloadFilesPtr> DoCreatePayloadFiles(
     const base::FilePath& file_path) {
+  if (base::PathExists(file_path)) {
+    // Perhaps a file was created at the same path for a different payload after
+    // we checkedfor its existence.
+    return absl::nullopt;
+  }
+
   base::File output_file =
       base::File(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                 base::File::Flags::FLAG_WRITE);
@@ -152,12 +158,29 @@ void CameraRollDownloadManagerImpl::OnPayloadFilesCreated(
     const base::FilePath& file_path,
     int64_t file_size_bytes,
     CreatePayloadFilesCallback payload_files_callback,
-    secure_channel::mojom::PayloadFilesPtr payload_files) {
+    absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
+  if (!payload_files) {
+    PA_LOG(WARNING) << "Failed to create files for payload " << payload_id
+                    << ": the requested file path already exists.";
+    return std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kNotUniqueFilePath, absl::nullopt);
+  }
+
   const std::string& holding_space_item_id =
       holding_space_keyed_service_->AddPhoneHubCameraRollItem(
           file_path,
           ash::HoldingSpaceProgress(/*current_bytes=*/0,
                                     /*total_bytes=*/file_size_bytes));
+  if (holding_space_item_id.empty()) {
+    // This can happen if a file was created at the same path for a previous
+    // payload but then got deleted before that payload is fully downloaded.
+    PA_LOG(WARNING) << "Failed to add payload " << payload_id
+                    << " to holding space. It's likely that an item with the "
+                       "same file path already exists.";
+    return std::move(payload_files_callback)
+        .Run(CreatePayloadFilesResult::kNotUniqueFilePath, absl::nullopt);
+  }
+
   pending_downloads_.emplace(
       payload_id, DownloadItem(payload_id, file_path, file_size_bytes,
                                holding_space_item_id));
@@ -176,22 +199,29 @@ void CameraRollDownloadManagerImpl::UpdateDownloadProgress(
   }
 
   const DownloadItem& download_item = it->second;
-  holding_space_keyed_service_->UpdateItem(download_item.holding_space_item_id)
-      ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
-                                              update->total_bytes))
-      .SetInvalidateImage(update->status ==
-                          secure_channel::mojom::FileTransferStatus::kSuccess);
+  const std::string holding_space_item_id = download_item.holding_space_item_id;
 
   switch (update->status) {
     case secure_channel::mojom::FileTransferStatus::kInProgress:
+      holding_space_keyed_service_->UpdateItem(holding_space_item_id)
+          ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
+                                                  update->total_bytes,
+                                                  /*complete=*/false));
       return;
     case secure_channel::mojom::FileTransferStatus::kFailure:
     case secure_channel::mojom::FileTransferStatus::kCanceled:
       // Delete files created for failed and canceled items, in addition to
       // removing the DownloadItem objects.
+      holding_space_keyed_service_->RemoveItem(holding_space_item_id);
       DeleteFile(update->payload_id);
       return;
     case secure_channel::mojom::FileTransferStatus::kSuccess:
+      holding_space_keyed_service_
+          ->UpdateItem(download_item.holding_space_item_id)
+          ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
+                                                  update->total_bytes,
+                                                  /*complete=*/true))
+          .SetInvalidateImage(true);
       base::UmaHistogramCounts100000(
           "PhoneHub.CameraRoll.DownloadItem.TransferRate",
           CalculateItemTransferRate(download_item));

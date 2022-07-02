@@ -18,6 +18,12 @@ var preferencesToTest = [
     preferences: {
       autoclick: false,
     }
+  },
+  {
+    root: chrome.privacy.websites,
+    preferences: {
+      protectedContentEnabled: true,
+    }
   }
 ];
 

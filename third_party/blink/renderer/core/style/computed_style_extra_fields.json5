@@ -250,6 +250,15 @@
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
     },
+    {
+      name: "HasNonUniversalHighlightPseudoStyles",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      custom_copy: true,
+      custom_compare: true,
+    },
     // Used by ::highlight
     {
       name: "PseudoArgument",
@@ -470,7 +479,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 7,
+      field_size: 8,
       default_value: "TouchAction::kAuto",
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
@@ -647,6 +656,27 @@
       default_value: "false",
     },
     {
+      name: "HasCurrentTranslateAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "HasCurrentRotateAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "HasCurrentScaleAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "HasCurrentTransformAnimation",
       field_template: "primitive",
       type_name: "bool",
@@ -700,6 +730,36 @@
     },
     {
       name: "IsRunningTransformAnimationOnCompositor",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      // This field just affects how changes of animatable values are handled,
+      // so it doesn't contribute to style differences.
+      custom_compare: true,
+      default_value: "false",
+    },
+    {
+      name: "IsRunningScaleAnimationOnCompositor",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      // This field just affects how changes of animatable values are handled,
+      // so it doesn't contribute to style differences.
+      custom_compare: true,
+      default_value: "false",
+    },
+    {
+      name: "IsRunningRotateAnimationOnCompositor",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      // This field just affects how changes of animatable values are handled,
+      // so it doesn't contribute to style differences.
+      custom_compare: true,
+      default_value: "false",
+    },
+    {
+      name: "IsRunningTranslateAnimationOnCompositor",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -776,17 +836,6 @@
       name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
-    },
-    // If this highlight pseudo matches only universal highlight rules (like
-    // ::selection) for both this element and our child, then the child need
-    // not apply any matched properties, because the result will be the same.
-    {
-      name: "DidMatchNonUniversalHighlights",
-      field_template: "primitive",
-      field_group: "inherited",
-      type_name: "bool",
-      default_value: "false",
-      inherited: true,
     },
     {
       name: "ColorIsCurrentColor",
@@ -1058,7 +1107,16 @@
       inherited: true,
     },
     {
-      name: "DependsOnContainerQueries",
+      name: "DependsOnSizeContainerQueries",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      // Set to true if this ComputedStyle is for an element whose ::first-line
+      // style depends on size container queries.
+      name: "FirstLineDependsOnSizeContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -1083,22 +1141,12 @@
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
-      // The inertness is represented with one of these values:
-      // - 'none' means that the node is not inert (the default).
-      // - 'overridable' means that the node is inert, and descendants will
-      //    inherit by default, but may change their inertness to e.g. 'none'.
-      // - 'forced' means that that the node is inert, and its decendants
-      //   won't be able to change their inertness to something else.
-      // ComputedStyle doesn't directly expose the inertness. Instead, use
-      // IsInert(), SetIsInert(bool), IsForcedInert() or SetIsForcedInert().
-      name: "Inertness",
+      name: "IsInert",
       inherited: true,
-      field_template: "keyword",
-      type_name: "Inertness",
-      keywords: ["none", "overridable", "forced"],
-      default_value: "none",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
       field_group: "*",
-      computed_style_custom_functions: ["getter", "setter"],
     },
     {
       // We need to go through LayoutObject::SetStyle with

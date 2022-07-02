@@ -23,7 +23,7 @@
 namespace {
 
 constexpr CGFloat customSpacingBeforeImageIfNoToolbar = 24;
-constexpr CGFloat customSpacingAfterImage = 1;
+constexpr CGFloat customSpacingAfterImage = 24;
 
 }  // namespace
 
@@ -31,6 +31,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
 
 - (void)viewDidLoad {
   self.imageHasFixedSize = YES;
+  self.imageEnclosedWithShadowAndBadge = YES;
   self.showDismissBarButton = NO;
   self.customSpacingBeforeImageIfNoToolbar =
       customSpacingBeforeImageIfNoToolbar;
@@ -69,6 +70,20 @@ constexpr CGFloat customSpacingAfterImage = 1;
   }
 
   [super viewDidLoad];
+}
+
+#pragma mark - ConfirmationAlertViewController
+
+- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel {
+  secondaryTitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  secondaryTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+}
+
+- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel {
+  subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  subtitleLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
 }
 
 @end

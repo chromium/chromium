@@ -12,7 +12,7 @@
 // InfobarBanner Presentation Controller.
 @interface InfobarBannerPresentationController : OverlayPresentationController
 
-// Designated initializer. |bannerPositioner| is used to position the
+// Designated initializer. `bannerPositioner` is used to position the
 // InfobarBanner, it can't be nil.
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController

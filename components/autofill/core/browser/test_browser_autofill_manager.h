@@ -49,6 +49,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                    const base::TimeTicks& interaction_time,
                                    const base::TimeTicks& submission_time,
                                    bool observed_submission) override;
+  // Immediately triggers the refill.
+  void ScheduleRefill(const FormData& form) override;
 
   // Unique to TestBrowserAutofillManager:
 
@@ -70,6 +72,15 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   const std::string GetSubmittedFormSignature();
 
+  // Helper to skip irrelevant params.
+  void OnAskForValuesToFillTest(
+      const FormData& form,
+      const FormFieldData& field,
+      int query_id = 0,
+      const gfx::RectF& bounding_box = {},
+      bool autoselect_first_suggestion = false,
+      TouchToFillEligible touch_to_fill_eligible = TouchToFillEligible(false));
+
   void SetAutofillProfileEnabled(bool profile_enabled);
 
   void SetAutofillCreditCardEnabled(bool credit_card_enabled);
@@ -84,8 +95,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   using BrowserAutofillManager::pending_form_data;
 
  private:
-  TestAutofillClient* client_;
-  TestAutofillDriver* driver_;
+  raw_ptr<TestAutofillClient> client_;
+  raw_ptr<TestAutofillDriver> driver_;
 
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;

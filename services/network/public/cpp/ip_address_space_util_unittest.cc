@@ -49,6 +49,13 @@ TransportInfo ProxiedTransport(const IPEndPoint& endpoint) {
   return result;
 }
 
+TransportInfo MakeTransport(TransportType type, const IPEndPoint& endpoint) {
+  TransportInfo result;
+  result.type = type;
+  result.endpoint = endpoint;
+  return result;
+}
+
 IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   return TransportInfoToIPAddressSpace(DirectTransport(endpoint));
 }
@@ -390,6 +397,26 @@ TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIgnoresOverrides) {
 
   EXPECT_EQ(TransportInfoToIPAddressSpace(
                 ProxiedTransport(IPEndPoint(IPAddress(127, 0, 0, 1), 80))),
+            IPAddressSpace::kUnknown);
+}
+
+TEST(IPAddressSpaceTest,
+     TransportInfoToIPAddressSpaceCachedFromProxyIsUnknown) {
+  EXPECT_EQ(TransportInfoToIPAddressSpace(
+                MakeTransport(TransportType::kCachedFromProxy,
+                              IPEndPoint(IPAddress(1, 2, 3, 4), 80))),
+            IPAddressSpace::kUnknown);
+}
+
+TEST(IPAddressSpaceTest,
+     TransportInfoToIPAddressSpaceCachedFromProxyIgnoresOverrides) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "127.0.0.1:80=public");
+
+  EXPECT_EQ(TransportInfoToIPAddressSpace(
+                MakeTransport(TransportType::kCachedFromProxy,
+                              IPEndPoint(IPAddress(127, 0, 0, 1), 80))),
             IPAddressSpace::kUnknown);
 }
 

@@ -86,7 +86,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   bool GetAlternativeService(
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
   const std::set<std::string>& GetDnsAliases() const override;
@@ -167,40 +167,40 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // After InitializeStream() is called but before OnClose() is called,
   //   |*stream_| is guaranteed to be valid.
   // After OnClose() is called, stream_ == nullptr.
-  SpdyStream* stream_;
+  SpdyStream* stream_ = nullptr;
 
   // False before OnClose() is called, true after.
-  bool stream_closed_;
+  bool stream_closed_ = false;
 
   // Set only when |stream_closed_| is true.
-  int closed_stream_status_;
-  spdy::SpdyStreamId closed_stream_id_;
+  int closed_stream_status_ = ERR_FAILED;
+  spdy::SpdyStreamId closed_stream_id_ = 0;
   bool closed_stream_has_load_timing_info_;
   LoadTimingInfo closed_stream_load_timing_info_;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes received over the network for |stream_| while it was open.
-  int64_t closed_stream_received_bytes_;
+  int64_t closed_stream_received_bytes_ = 0;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes sent over the network for |stream_| while it was open.
-  int64_t closed_stream_sent_bytes_;
+  int64_t closed_stream_sent_bytes_ = 0;
 
   // The request to send.
   // Set to null before response body is starting to be read. This is to allow
   // |this| to be shared for reading and to possibly outlive request_info_'s
   // owner. Setting to null happens after headers are completely read or upload
   // data stream is uploaded, whichever is later.
-  raw_ptr<const HttpRequestInfo> request_info_;
+  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
 
   // |response_info_| is the HTTP response data object which is filled in
   // when a response HEADERS comes in for the stream.
   // It is not owned by this stream object, or point to |push_response_info_|.
-  raw_ptr<HttpResponseInfo> response_info_;
+  raw_ptr<HttpResponseInfo> response_info_ = nullptr;
 
   std::unique_ptr<HttpResponseInfo> push_response_info_;
 
-  bool response_headers_complete_;
+  bool response_headers_complete_ = false;
 
-  bool upload_stream_in_progress_;
+  bool upload_stream_in_progress_ = false;
 
   // We buffer the response body as it arrives asynchronously from the stream.
   SpdyReadQueue response_body_queue_;
@@ -210,16 +210,16 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   // User provided buffer for the ReadResponseBody() response.
   scoped_refptr<IOBuffer> user_buffer_;
-  int user_buffer_len_;
+  int user_buffer_len_ = 0;
 
   // Temporary buffer used to read the request body from UploadDataStream.
   scoped_refptr<IOBufferWithSize> request_body_buf_;
-  int request_body_buf_size_;
+  int request_body_buf_size_ = 0;
 
   // Timer to execute DoBufferedReadCallback() with a delay.
   base::OneShotTimer buffered_read_timer_;
 
-  bool was_alpn_negotiated_;
+  bool was_alpn_negotiated_ = false;
 
   // Stores any DNS aliases for the remote endpoint. Includes all known aliases,
   // e.g. from A, AAAA, or HTTPS, not just from the address used for the

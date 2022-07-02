@@ -13,10 +13,8 @@
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/gl_surface.h"
 
 namespace gpu {
-class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class TransferBuffer;
 struct GpuFeatureInfo;
@@ -46,18 +44,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
   // service must run on the same thread as this client because GLSurface is
   // not thread safe. If |surface| is null, then the other parameters are used
   // to correctly create a surface.
-  ContextResult Initialize(
-      CommandBufferTaskExecutor* task_executor,
-      scoped_refptr<gl::GLSurface> surface,
-      bool is_offscreen,
-      SurfaceHandle window,
-      const ContextCreationAttribs& attribs,
-      const SharedMemoryLimits& memory_limits,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      ImageFactory* image_factory,
-      GpuTaskSchedulerHelper* gpu_task_scheduler,
-      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller_on_gpu,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
+                           const ContextCreationAttribs& attribs,
+                           const SharedMemoryLimits& memory_limits,
+                           ImageFactory* image_factory);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

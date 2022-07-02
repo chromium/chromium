@@ -39,10 +39,10 @@ namespace {
 
 base::Value NetLogQuicPushStreamParams(quic::QuicStreamId stream_id,
                                        const GURL& url) {
-  base::DictionaryValue dict;
-  dict.SetInteger("stream_id", stream_id);
-  dict.SetString("url", url.spec());
-  return std::move(dict);
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id));
+  dict.Set("url", url.spec());
+  return base::Value(std::move(dict));
 }
 
 void NetLogQuicPushStream(const NetLogWithSource& net_log1,
@@ -62,26 +62,6 @@ QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
     std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
-      next_state_(STATE_NONE),
-      stream_(nullptr),
-      request_info_(nullptr),
-      can_send_early_(false),
-      request_body_stream_(nullptr),
-      priority_(MINIMUM_PRIORITY),
-      response_info_(nullptr),
-      has_response_status_(false),
-      response_status_(ERR_UNEXPECTED),
-      response_headers_received_(false),
-      trailing_headers_received_(false),
-      headers_bytes_received_(0),
-      headers_bytes_sent_(0),
-      closed_stream_received_bytes_(0),
-      closed_stream_sent_bytes_(0),
-      closed_is_first_stream_(false),
-      user_buffer_len_(0),
-      session_error_(ERR_UNEXPECTED),
-      found_promise_(false),
-      in_loop_(false),
       dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {

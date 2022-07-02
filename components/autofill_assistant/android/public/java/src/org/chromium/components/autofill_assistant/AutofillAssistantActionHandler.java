@@ -73,4 +73,10 @@ public interface AutofillAssistantActionHandler {
      * Displays a generic error message to the user.
      */
     void showFatalError();
+
+    /**
+     * Check whether the user is supervised.
+     * @return supervised state
+     */
+    boolean isSupervisedUser();
 }

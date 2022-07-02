@@ -325,7 +325,7 @@ class WebContentsObserverProxy extends WebContentsObserver {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             WebContentsObserver observer = mObserversIterator.next();
-            String s = "WebContentsObserverProxy::didStartNavigation observer:"
+            String s = "WebContentsObserverProxy::didFinishLoad observer:"
                     + observer.getClass().getName();
             try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
                 observer.didFinishLoad(
@@ -386,6 +386,16 @@ class WebContentsObserverProxy extends WebContentsObserver {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().navigationEntriesChanged();
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
+    public void frameReceivedUserActivation() {
+        handleObserverCall();
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().frameReceivedUserActivation();
         }
         finishObserverCall();
     }

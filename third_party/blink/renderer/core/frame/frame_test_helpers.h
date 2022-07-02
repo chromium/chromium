@@ -80,6 +80,7 @@ class WebLocalFrameImpl;
 struct WebNavigationParams;
 class WebRemoteFrameImpl;
 class WebSettings;
+class WidgetInputHandlerManager;
 
 namespace frame_test_helpers {
 class TestWebFrameClient;
@@ -257,6 +258,21 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
       mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>,
       mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>);
 
+  WidgetInputHandlerManager* GetWidgetInputHandlerManager() const;
+  void FlushInputHandlerTasks();
+
+  // Simulates an input event arriving at the WidgetInputHandlerManager from the
+  // browser process.  The event will run synchronously through the compositor's
+  // real input handling code (InputHandlerProxy and ThreadedInputHandler).
+  //
+  // Note that with scroll unification, tests should send gesture scroll events
+  // using this method, and not through WebFrameWidgetImpl::HandleInputEvent or
+  // EventHandler::HandleGestureEvent.  Tests that use this method for scrolling
+  // should also use SimTest::ResizeView or WebViewHelper::Resize (not directly
+  // WebFrameWidgetImpl::Resize) to set the initial size of the viewport.
+  //
+  void DispatchThroughCcInputHandler(const WebInputEvent& event);
+
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
  protected:
@@ -291,15 +307,17 @@ class TestWebViewClient : public WebViewClient {
   void DestroyChildViews();
 
   // WebViewClient overrides.
-  WebView* CreateView(WebLocalFrame* opener,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString& name,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override;
+  WebView* CreateView(
+      WebLocalFrame* opener,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override;
 
  private:
   WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
@@ -346,7 +364,9 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebFrame* opener,
       TestWebFrameClient* = nullptr,
       TestWebViewClient* = nullptr,
-      void (*update_settings_func)(WebSettings*) = nullptr);
+      void (*update_settings_func)(WebSettings*) = nullptr,
+      absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode =
+          absl::nullopt);
 
   // Same as InitializeWithOpener(), but always sets the opener to null.
   WebViewImpl* Initialize(TestWebFrameClient* = nullptr,
@@ -415,6 +435,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebLocalFrameImpl* LocalMainFrame() const;
   WebRemoteFrameImpl* RemoteMainFrame() const;
   TestWebFrameWidget* GetMainFrameWidget() const;
+  WidgetInputHandlerManager* GetWidgetInputHandlerManager() const;
 
   void set_viewport_enabled(bool viewport) {
     DCHECK(!web_view_)
@@ -453,8 +474,10 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   }
 
  private:
-  void InitializeWebView(TestWebViewClient*,
-                         class WebView* opener);
+  void InitializeWebView(
+      TestWebViewClient*,
+      class WebView* opener,
+      absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode);
   void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
 
   bool viewport_enabled_ = false;

@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -390,8 +389,8 @@ bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
 
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
     content::WebContents* web_contents,
-    const AppId& previous_app_id,
-    const AppId& new_app_id) const {
+    const absl::optional<AppId>& previous_app_id,
+    const absl::optional<AppId>& new_app_id) const {
   WebAppMetrics* web_app_metrics = WebAppMetrics::Get(profile_);
   // Unavailable in guest sessions.
   if (!web_app_metrics)

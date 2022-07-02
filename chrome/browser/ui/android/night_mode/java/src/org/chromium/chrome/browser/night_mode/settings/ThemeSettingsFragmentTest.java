@@ -18,7 +18,10 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,39 +30,52 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for ThemeSettingsFragment.
  */
-// clang-format off
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class ThemeSettingsFragmentTest extends BlankUiTestActivityTestCase {
-    // clang-format on
+@RunWith(BaseJUnit4ClassRunner.class)
+@Features.DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
+public class ThemeSettingsFragmentTest {
+    @ClassRule
+    public static final DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
+
     @Rule
-    public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ThemeSettingsFragment.class);
+    public BlankUiTestActivitySettingsTestRule mSettingsTestRule =
+            new BlankUiTestActivitySettingsTestRule();
     @Rule
     public JniMocker mMocker = new JniMocker();
 
+    @Rule
+    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+
     @Mock
     public WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
+    @Mock
+    public Profile mProfile;
+    @Mock
+    public Tracker mTracker;
 
     private ThemeSettingsFragment mFragment;
     private RadioButtonGroupThemePreference mPreference;
@@ -67,15 +83,17 @@ public class ThemeSettingsFragmentTest extends BlankUiTestActivityTestCase {
     // Boolean used for web content auto dark mode.
     private boolean mForceDarkModeEnabled;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() {
         // For some reason MockitoRule does not work with JniMocker (seems like an order issue), and
         // RuleChain cannot be applied to MockitoRule since it is not a TestRule.
         MockitoAnnotations.initMocks(this);
         SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
 
         mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         // Default value for feature DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING.
         mForceDarkModeEnabled = true;
@@ -91,12 +109,13 @@ public class ThemeSettingsFragmentTest extends BlankUiTestActivityTestCase {
                         any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
+            Profile.setLastUsedProfileForTesting(null);
+            TrackerFactory.setTrackerForTests(null);
         });
-        super.tearDownTest();
     }
 
     @Test
@@ -226,9 +245,9 @@ public class ThemeSettingsFragmentTest extends BlankUiTestActivityTestCase {
     private void launchThemeSettings(@ThemeSettingsEntry Integer settingsEntry) {
         Bundle args = new Bundle();
         args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY, settingsEntry);
-        mSettingsActivityTestRule.startSettingsActivity(args);
+        mSettingsTestRule.launchPreference(ThemeSettingsFragment.class, args);
 
-        mFragment = mSettingsActivityTestRule.getFragment();
+        mFragment = (ThemeSettingsFragment) mSettingsTestRule.getPreferenceFragment();
         mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
                 ThemeSettingsFragment.PREF_UI_THEME_PREF);
         assertThemeSettingsEntryRecorded(settingsEntry);

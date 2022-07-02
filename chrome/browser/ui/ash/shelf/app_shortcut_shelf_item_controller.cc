@@ -121,7 +121,7 @@ class AppMatcher {
       : app_id_(app_id), refocus_pattern_(refocus_pattern) {
     DCHECK(profile);
     if (web_app::WebAppProvider* provider =
-            web_app::WebAppProvider::GetDeprecated(profile)) {
+            web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
       if (provider->registrar().IsLocallyInstalled(app_id)) {
         registrar_ = &provider->registrar();
       }
@@ -553,7 +553,7 @@ bool AppShortcutShelfItemController::AllowNextLaunchAttempt() {
 
 bool AppShortcutShelfItemController::IsWindowedWebApp() {
   if (web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetDeprecated(
+          web_app::WebAppProvider::GetForLocalAppsUnchecked(
               ChromeShelfController::instance()->profile())) {
     web_app::WebAppRegistrar& registrar = provider->registrar();
     if (registrar.IsLocallyInstalled(app_id())) {

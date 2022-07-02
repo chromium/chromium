@@ -27,11 +27,11 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "ui/gfx/geometry/rect.h"
@@ -130,9 +130,15 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   if (disable_delegation())
     return false;
 
-  if (quad_list->size() >= kTooManyQuads ||
-      !render_pass_backdrop_filters.empty())
+  if (quad_list->size() >= kTooManyQuads) {
+    delegated_status_ = DelegationStatus::kCompositedTooManyQuads;
     return false;
+  }
+
+  if (!render_pass_backdrop_filters.empty()) {
+    delegated_status_ = DelegationStatus::kCompositedBackdropFilter;
+    return false;
+  }
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

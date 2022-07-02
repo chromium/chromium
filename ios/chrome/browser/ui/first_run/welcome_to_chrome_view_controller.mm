@@ -116,8 +116,8 @@
   // The sign-in coordinator is part of the navigation controller, so the
   // sign-in coordinator didn't present itself. Therefore the interrupt action
   // must be SigninCoordinatorInterruptActionNoDismiss.
-  // |completion| has to be stored in order to be invoked when
-  // |firstRunDismissedWithPresentingViewController:signinAction:| is
+  // `completion` has to be stored in order to be invoked when
+  // `firstRunDismissedWithPresentingViewController:signinAction:` is
   // called.
   self.interruptCompletion = completion;
   [self.coordinator
@@ -249,7 +249,7 @@
 }
 
 // Handles the sign-in completion and proceeds to complete the first run
-// operation depending on the |signinResult| state.
+// operation depending on the `signinResult` state.
 - (void)signinCompleteResult:(SigninCoordinatorResult)signinResult
               completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
   [self.coordinator stop];

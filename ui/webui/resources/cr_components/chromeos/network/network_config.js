@@ -310,6 +310,14 @@ Polymer({
       computed: 'updateWireGuardKeyType_(wireguardKeyType_)',
     },
 
+    /** @private */
+    enableHiddenNetworkMigration_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableHiddenNetworkMigration');
+      }
+    },
+
     /**
      * Array of values for the EAP Method (Outer) dropdown.
      * @private {!Array<string>}
@@ -597,8 +605,8 @@ Polymer({
    * @private
    */
   onEnterEvent_(event) {
-    if (event.path[0].localName === 'network-config-input' ||
-        event.path[0].localName === 'network-password-input') {
+    if (event.composedPath()[0].localName === 'network-config-input' ||
+        event.composedPath()[0].localName === 'network-password-input') {
       this.onEnterPressedInInput_();
       event.stopPropagation();
     }

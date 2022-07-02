@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 
-class PrefetchedMainframeResponseContainer {
+class CONTENT_EXPORT PrefetchedMainframeResponseContainer {
  public:
   PrefetchedMainframeResponseContainer(const net::IsolationInfo& info,
                                        network::mojom::URLResponseHeadPtr head,

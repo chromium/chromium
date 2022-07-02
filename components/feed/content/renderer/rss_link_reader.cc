@@ -37,14 +37,14 @@ GURL GetRssUrlFromLinkElement(const blink::WebElement& link_element) {
   if (!web_type.ContainsOnlyASCII() || !web_rel.ContainsOnlyASCII())
     return GURL();
   std::string type = web_type.Ascii();
-  if (!(base::LowerCaseEqualsASCII(type, "application/rss+xml") ||
-        base::LowerCaseEqualsASCII(type, "application/rss+atom") ||
-        base::LowerCaseEqualsASCII(type, "application/atom+xml"))) {
+  if (!(base::EqualsCaseInsensitiveASCII(type, "application/rss+xml") ||
+        base::EqualsCaseInsensitiveASCII(type, "application/rss+atom") ||
+        base::EqualsCaseInsensitiveASCII(type, "application/atom+xml"))) {
     return GURL();
   }
   std::string rel = web_rel.Ascii();
-  if (!(base::LowerCaseEqualsASCII(rel, "alternate") ||
-        base::LowerCaseEqualsASCII(rel, "service.feed"))) {
+  if (!(base::EqualsCaseInsensitiveASCII(rel, "alternate") ||
+        base::EqualsCaseInsensitiveASCII(rel, "service.feed"))) {
     return GURL();
   }
   blink::WebURL url =

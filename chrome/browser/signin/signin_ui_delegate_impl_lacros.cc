@@ -82,7 +82,6 @@ GetAccountReauthSourceFromAccessPoint(
 }  // namespace
 
 void SigninUiDelegateImplLacros::ShowSigninUI(
-    Browser* browser,
     Profile* profile,
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
@@ -93,7 +92,6 @@ void SigninUiDelegateImplLacros::ShowSigninUI(
                      // base::Unretained() is fine because
                      // SigninUiDelegateImplLacros is a singleton.
                      base::Unretained(this), enable_sync, /*is_reauth=*/false,
-                     browser ? browser->AsWeakPtr() : nullptr,
                      profile->GetPath(), access_point, promo_action);
   signin_manager->StartLacrosSigninFlow(
       profile->GetPath(),
@@ -105,7 +103,6 @@ void SigninUiDelegateImplLacros::ShowSigninUI(
 }
 
 void SigninUiDelegateImplLacros::ShowReauthUI(
-    Browser* browser,
     Profile* profile,
     const std::string& email,
     bool enable_sync,
@@ -120,7 +117,6 @@ void SigninUiDelegateImplLacros::ShowReauthUI(
                      base::Unretained(this), enable_sync,
                      account_reconcilor->GetConsistencyCookieManager()
                          ->CreateScopedAccountUpdate(),
-                     browser ? browser->AsWeakPtr() : nullptr,
                      profile->GetPath(), access_point, promo_action, email);
   account_manager::AccountManagerFacade* account_manager_facade =
       ::GetAccountManagerFacade(profile->GetPath().value());
@@ -132,7 +128,6 @@ void SigninUiDelegateImplLacros::ShowReauthUI(
 void SigninUiDelegateImplLacros::OnAccountAdded(
     bool enable_sync,
     bool is_reauth,
-    base::WeakPtr<Browser> browser_weak,
     const base::FilePath& profile_path,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
@@ -145,11 +140,11 @@ void SigninUiDelegateImplLacros::OnAccountAdded(
   if (!profile)
     return;
 
-  Browser* browser = EnsureBrowser(browser_weak.get(), profile);
+  Browser* browser = EnsureBrowser(profile);
   if (!browser)
     return;
 
-  ShowTurnSyncOnUI(browser, profile, access_point, promo_action,
+  ShowTurnSyncOnUI(profile, access_point, promo_action,
                    is_reauth ? signin_metrics::Reason::kReauthentication
                              : signin_metrics::Reason::kSigninPrimaryAccount,
                    account_id,
@@ -161,7 +156,6 @@ void SigninUiDelegateImplLacros::OnAccountAdded(
 void SigninUiDelegateImplLacros::OnReauthComplete(
     bool enable_sync,
     signin::ConsistencyCookieManager::ScopedAccountUpdate&& update,
-    base::WeakPtr<Browser> browser_weak,
     const base::FilePath& profile_path,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
@@ -173,8 +167,8 @@ void SigninUiDelegateImplLacros::OnReauthComplete(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  OnAccountAdded(enable_sync, /*is_reauth=*/true, browser_weak, profile_path,
-                 access_point, promo_action,
+  OnAccountAdded(enable_sync, /*is_reauth=*/true, profile_path, access_point,
+                 promo_action,
                  identity_manager->FindExtendedAccountInfoByEmailAddress(email)
                      .account_id);
 }

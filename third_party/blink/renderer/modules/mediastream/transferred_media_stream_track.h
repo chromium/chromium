@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/mediastream/transferred_media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -103,6 +104,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void Trace(Visitor*) const override;
 
  private:
+  void applyConstraints(ScriptPromiseResolver*,
+                        const MediaTrackConstraints*) override;
+
   // Helper class to register as an event listener on the underlying
   // MediaStreamTrack and re-dispatch any fired events on the wrapping
   // TransferredMediaStreamTrack.
@@ -117,10 +121,15 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
     Member<TransferredMediaStreamTrack> transferred_track_;
   };
 
+  Member<TransferredMediaStreamComponent> transferred_component_;
   Member<MediaStreamTrack> track_;
+  using ConstraintsPair =
+      std::pair<ScriptPromiseResolver*, const MediaTrackConstraints*>;
+  Vector<ConstraintsPair> constraints_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;
+  HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
 };
 
 }  // namespace blink

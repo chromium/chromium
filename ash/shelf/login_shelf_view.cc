@@ -235,6 +235,7 @@ class LoginShelfButton : public views::LabelButton {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     set_suppress_default_focus_handling();
     SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     views::InstallRoundRectHighlightPathGenerator(
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     SetFocusPainter(nullptr);
@@ -300,13 +301,6 @@ class LoginShelfButton : public views::LabelButton {
     keyboard_controller->HideKeyboardImplicitlyByUser();
   }
 
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
-  }
-
  private:
   const int text_resource_id_;
   const gfx::VectorIcon& icon_;
@@ -330,6 +324,7 @@ class KioskAppsButton : public views::MenuButton,
     SetFocusBehavior(FocusBehavior::ALWAYS);
     set_suppress_default_focus_handling();
     SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     views::InstallRoundRectHighlightPathGenerator(
         this, GetButtonInsets(), ShelfConfig::Get()->control_border_radius());
     SetFocusPainter(nullptr);
@@ -444,20 +439,21 @@ class KioskAppsButton : public views::MenuButton,
     launch_app_callback_.Run(kiosk_apps_[command_id]);
   }
 
-  void OnMenuWillShow(SimpleMenuModel* source) override { on_show_menu_.Run(); }
+  void OnMenuWillShow(SimpleMenuModel* source) override {
+    is_menu_opened_ = true;
+    on_show_menu_.Run();
+  }
 
-  void MenuClosed(SimpleMenuModel* source) override { on_close_menu_.Run(); }
+  void MenuClosed(SimpleMenuModel* source) override {
+    on_close_menu_.Run();
+    is_menu_opened_ = false;
+  }
 
   bool IsCommandIdChecked(int command_id) const override { return false; }
 
   bool IsCommandIdEnabled(int command_id) const override { return true; }
 
-  void OnThemeChanged() override {
-    views::MenuButton::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
-  }
+  bool IsMenuOpened() { return is_menu_opened_; }
 
  private:
   base::RepeatingCallback<void(const KioskAppMenuEntry&)> launch_app_callback_;
@@ -467,6 +463,7 @@ class KioskAppsButton : public views::MenuButton,
   std::vector<KioskAppMenuEntry> kiosk_apps_;
 
   bool is_launch_enabled_ = true;
+  bool is_menu_opened_ = false;
 };
 
 // Class that temporarily disables Guest login buttin on shelf.
@@ -656,16 +653,8 @@ LoginShelfView::LoginShelfView(
       lock_screen_action_background);
   login_data_dispatcher_observation_.Observe(
       Shell::Get()->login_screen_controller()->data_dispatcher());
-
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (features::IsKioskEnrollmentInOobeEnabled()) {
-    kiosk_license_mode_ =
-        Shell::Get()
-            ->system_tray_model()
-            ->enterprise_domain()
-            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
-  }
+  enterprise_domain_model_observation_.Observe(
+      Shell::Get()->system_tray_model()->enterprise_domain());
 }
 
 LoginShelfView::~LoginShelfView() = default;
@@ -758,8 +747,7 @@ void LoginShelfView::SetKioskApps(
   kiosk_apps_button_->SetApps(kiosk_apps);
   UpdateUi();
   if (LockScreen::HasInstance()) {
-    LockScreen::Get()->SetKioskAppsButtonPresence(
-        kiosk_apps_button_->GetVisible());
+    LockScreen::Get()->SetHasKioskApp(kiosk_apps_button_->HasApps());
   }
 }
 
@@ -881,6 +869,21 @@ void LoginShelfView::OnOobeDialogStateChanged(OobeDialogState state) {
   SetLoginDialogState(state);
 }
 
+void LoginShelfView::OnDeviceEnterpriseInfoChanged() {
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (features::IsKioskLoginScreenEnabled()) {
+    kiosk_license_mode_ =
+        Shell::Get()
+            ->system_tray_model()
+            ->enterprise_domain()
+            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+    UpdateUi();
+  }
+}
+
+void LoginShelfView::OnEnterpriseAccountDomainChanged() {}
+
 void LoginShelfView::HandleLocaleChange() {
   for (views::View* child : children()) {
     if (child->GetClassName() == kLoginShelfButtonClassName) {
@@ -970,16 +973,18 @@ void LoginShelfView::UpdateUi() {
     // Create the bubble once the login shelf view is available for anchoring.
     if (!kiosk_instruction_bubble_) {
       Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-      kiosk_instruction_bubble_ = new KioskAppInstructionBubble(
-          GetViewByID(kApps), shelf->alignment(),
-          shelf->shelf_widget()->GetShelfBackgroundColor());
+      kiosk_instruction_bubble_ =
+          new KioskAppInstructionBubble(GetViewByID(kApps), shelf->alignment());
     }
     if (kiosk_instruction_bubble_) {
-      // Show kiosk instructions if the kiosk app button is visible.
-      if (kiosk_apps_button_->GetVisible())
+      // Show kiosk instructions if the kiosk app button is visible and the menu
+      // is not opened.
+      if (kiosk_apps_button_->GetVisible() &&
+          !kiosk_apps_button_->IsMenuOpened()) {
         kiosk_instruction_bubble_->GetWidget()->Show();
-      else
+      } else {
         kiosk_instruction_bubble_->GetWidget()->Hide();
+      }
     }
   }
 

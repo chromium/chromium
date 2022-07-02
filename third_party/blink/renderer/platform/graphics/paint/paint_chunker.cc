@@ -233,6 +233,15 @@ void PaintChunker::AddSelectionToCurrentChunk(
   }
 }
 
+void PaintChunker::RecordAnySelectionWasPainted() {
+  DCHECK(chunks_);
+  DCHECK(!chunks_->IsEmpty());
+
+  auto& chunk = chunks_->back();
+  LayerSelectionData& selection_data = chunk.EnsureLayerSelectionData();
+  selection_data.any_selection_was_painted = true;
+}
+
 void PaintChunker::CreateScrollHitTestChunk(
     const PaintChunk::Id& id,
     const DisplayItemClient& client,

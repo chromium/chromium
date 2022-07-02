@@ -224,7 +224,7 @@
     // This UI blocker will be superimposed on the one of the sign-in prompt
     // command and maybe the existing sign-in prompt (to be dismissed) to not
     // leave any gap that would allow the other scenes to handle the sign-in
-    // policy (by keeping |sceneState.presentingModalOverlay| == YES). There
+    // policy (by keeping `sceneState.presentingModalOverlay` == YES). There
     // won't be issues with the superimpositions of the UI blockers because this
     // is done on the same SceneState target, which will only increase the
     // target counter. If the scene is dismissed, the count will be decremented
@@ -247,7 +247,7 @@
 // Shows the forced sign-in prompt using the application command.
 - (void)showForcedSigninPrompt {
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_FORCED_SIGNIN
+      initWithOperation:AuthenticationOperationForcedSigninAndSync
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
             promoAction:signin_metrics::PromoAction::
@@ -278,7 +278,7 @@
   if (self.sceneState.signinInProgress) {
     // Prompting to sign-in is already in progress in that scene, no need to
     // present the forced sign-in prompt on top of that. The other scenes will
-    // have |self.sceneState.presentingModalOverlay| == YES which will stop
+    // have `self.sceneState.presentingModalOverlay` == YES which will stop
     // them from handling the policy as well. For example, this stops the scene
     // from rehandling the forced sign-in policy when foregrounded.
     return NO;

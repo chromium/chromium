@@ -18,6 +18,7 @@ namespace variations {
 
 // Specifies when UMA reports should start being annotated with a synthetic
 // field trial.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.variations
 enum class SyntheticTrialAnnotationMode {
   // Start annotating UMA reports with this trial only after the next log opens.
   // The UMA report that will be generated from the log that is open at the time

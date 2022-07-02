@@ -3,7 +3,9 @@
 // found in LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -47,6 +49,8 @@ class SchedulingAffectingFeaturesTest : public SimTest {
     }
     return result;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
@@ -146,26 +150,75 @@ TEST_F(SchedulingAffectingFeaturesTest, CacheControl_Navigation) {
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, Plugins) {
-  class PluginCreatingWebFrameClient
-      : public frame_test_helpers::TestWebFrameClient {
-   public:
-    // WebLocalFrameClient overrides:
-    WebPlugin* CreatePlugin(const WebPluginParams& params) override {
-      return new FakeWebPlugin(params);
-    }
-  };
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kBackForwardCacheEnabledForNonPluginEmbed);
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete(
+        "<object type='application/x-webkit-test-plugin'></object>");
 
-  ScopedFakePluginRegistry fake_plugins;
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(
-      "<object type='application/x-webkit-test-plugin'></object>");
+    // |RunUntilIdle| is required as |Complete| doesn't wait for loading plugin.
+    base::RunLoop().RunUntilIdle();
 
-  base::RunLoop().RunUntilIdle();
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::UnorderedElementsAre(
+                    SchedulingPolicy::Feature::kContainsPlugins));
+  }
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete(
+        "<embed type='application/x-webkit-test-plugin'></embed>");
 
-  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre(
-                  SchedulingPolicy::Feature::kContainsPlugins));
+    // |RunUntilIdle| is required as |Complete| doesn't wait for loading plugin.
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::UnorderedElementsAre(
+                    SchedulingPolicy::Feature::kContainsPlugins));
+  }
+}
+
+TEST_F(SchedulingAffectingFeaturesTest, NonPlugins) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kBackForwardCacheEnabledForNonPluginEmbed);
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete("<object type='text/html'></object>");
+
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::Not(testing::Contains(
+                    SchedulingPolicy::Feature::kContainsPlugins)));
+  }
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete("<embed type='text/html'></embed>");
+
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::Not(testing::Contains(
+                    SchedulingPolicy::Feature::kContainsPlugins)));
+  }
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete("<object type='image/png'></object>");
+
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::Not(testing::Contains(
+                    SchedulingPolicy::Feature::kContainsPlugins)));
+  }
+  {
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete("<embed type='image/png'></embed>");
+
+    EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+                testing::Not(testing::Contains(
+                    SchedulingPolicy::Feature::kContainsPlugins)));
+  }
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, WebLocks) {

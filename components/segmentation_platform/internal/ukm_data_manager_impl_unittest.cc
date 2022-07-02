@@ -113,11 +113,10 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
   }
 
   void AddModel(const proto::SegmentationModelMetadata& metadata) {
-    auto& callback =
-        model_provider_data_.model_providers_callbacks
-            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE];
-    callback.Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-                 metadata, 0);
+    auto& callback = model_provider_data_.model_providers_callbacks
+                         [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE];
+    callback.Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
+                 0);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
     segment_db_->LoadCallback(true);
@@ -128,7 +127,7 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
     return *segmentation_platform_service_impl_;
   }
 
-  void SaveSegmentResult(OptimizationTarget segment_id,
+  void SaveSegmentResult(SegmentId segment_id,
                          absl::optional<proto::PredictionResult> result) {
     const std::string key = base::NumberToString(static_cast<int>(segment_id));
     auto& segment_info = segment_db_entries_[key];
@@ -142,7 +141,7 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
     }
   }
 
-  bool HasSegmentResult(OptimizationTarget segment_id) {
+  bool HasSegmentResult(SegmentId segment_id) {
     const std::string key = base::NumberToString(static_cast<int>(segment_id));
     const auto it = segment_db_entries_.find(key);
     if (it == segment_db_entries_.end())
@@ -166,8 +165,7 @@ class UkmDataManagerImplTest : public testing::Test {
     ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     auto ukm_db = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_db.get();
-    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(),
-                                                  true /*is_ukm_allowed*/);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     data_manager_->InitializeForTesting(std::move(ukm_db), ukm_observer_.get());
   }
 
@@ -218,8 +216,8 @@ MATCHER_P(HasEventHash, event_hash, "") {
 
 TEST_F(UkmDataManagerImplTest, HistoryNotification) {
   const GURL kUrl1 = GURL("https://www.url1.com/");
-  const OptimizationTarget kSegmentId =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  const SegmentId kSegmentId =
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 
   TestServicesForPlatform& platform1 = CreatePlatform();
   platform1.AddModel(PageLoadModelMetadata());
@@ -253,7 +251,7 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
 
   // History based segment results should be removed.
   EXPECT_FALSE(platform1.HasSegmentResult(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   RemovePlatform(&platform1);
 }

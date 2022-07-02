@@ -10,14 +10,14 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -107,6 +107,7 @@ class NetworkingAttributesAshTest : public testing::Test {
         user_manager->AddUserWithAffiliation(account_id, is_affiliated);
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->SimulateUserProfileLoad(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  &profile_);
   }

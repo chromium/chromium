@@ -43,8 +43,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   content::WebContents* contents = shell()->web_contents();
   ASSERT_EQ(contents, old_contents);
   ASSERT_EQ(contents->GetLastCommittedURL().possibly_invalid_spec(), kUrl);
-  content::RenderFrameHost* rfh = contents->GetMainFrame();
-  ASSERT_TRUE(rfh->IsRenderFrameCreated());
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh->IsRenderFrameLive());
 
   base::WeakPtr<FrameNode> frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   // Jump into the graph and make sure |fenced_frame_host| does not have a
   // parent frame node.

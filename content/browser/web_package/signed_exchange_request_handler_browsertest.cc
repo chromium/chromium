@@ -326,7 +326,7 @@ class SignedExchangeRequestHandlerBrowserTest
   void WaitUntilSXGIsCached(const GURL& url) {
     scoped_refptr<PrefetchedSignedExchangeCache> cache =
         static_cast<RenderFrameHostImpl*>(
-            shell()->web_contents()->GetMainFrame())
+            shell()->web_contents()->GetPrimaryMainFrame())
             ->EnsurePrefetchedSignedExchangeCache();
 
     if (cache->GetExchanges().find(url) != cache->GetExchanges().end())

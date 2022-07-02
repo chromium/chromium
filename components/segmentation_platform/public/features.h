@@ -26,6 +26,16 @@ extern const base::Feature kSegmentationPlatformUkmEngine;
 // Feature flag for enabling low engagement segmentation key.
 extern const base::Feature kSegmentationPlatformLowEngagementFeature;
 
+// Feature flag for enabling Feed user segments feature.
+extern const base::Feature kSegmentationPlatformFeedSegmentFeature;
+
+// Feature flag for enabling contextual page actions. Only effective when at
+// least one action is enabled.
+extern const base::Feature kContextualPageActions;
+
+// Feature flag for enabling price tracking action feature.
+extern const base::Feature kContextualPageActionPriceTracking;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

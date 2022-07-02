@@ -23,6 +23,7 @@
   width: 100px;
   height: 100px;
   background: red;
+  page-transition-tag: shared;
 }
 
 div.dst { background: lightgreen; }
@@ -33,18 +34,19 @@ html::page-transition-image-wrapper(shared) { visibility: hidden }
 html::page-transition-outgoing-image(root) { animation-duration: 0s; opacity: 0 }
 html::page-transition-incoming-image(root) { animation-duration: 0s; opacity: 1 }
 </style>
+<body style="background: red">
 <div id=e1 class=box></div>
 <div id=shared></div>
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(shared, "shared");
   t.start(() => {
-    t.setElement(shared, "shared");
     e1.classList.add("dst");
+    document.body.style = "";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>
 
+</body>

@@ -263,27 +263,6 @@ std::vector<std::string> SendTabToSelfBridge::GetAllGuids() const {
   return keys;
 }
 
-void SendTabToSelfBridge::DeleteAllEntries() {
-  if (!change_processor()->IsTrackingMetadata()) {
-    DCHECK_EQ(0ul, entries_.size());
-    return;
-  }
-
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
-
-  std::vector<std::string> all_guids = GetAllGuids();
-
-  for (const auto& guid : all_guids) {
-    change_processor()->Delete(guid, batch->GetMetadataChangeList());
-    batch->DeleteData(guid);
-  }
-  entries_.clear();
-  mru_entry_ = nullptr;
-
-  NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
-}
-
 const SendTabToSelfEntry* SendTabToSelfBridge::GetEntryByGUID(
     const std::string& guid) const {
   auto it = entries_.find(guid);
@@ -720,7 +699,8 @@ void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
   for (const GURL& url : urls) {
     auto entry = entries_.begin();
     while (entry != entries_.end()) {
-      bool to_delete = (url == entry->second->GetURL());
+      bool to_delete =
+          (entry->second == nullptr || url == entry->second->GetURL());
 
       std::string guid = entry->first;
       entry++;
@@ -735,6 +715,27 @@ void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
   // entries have been removed. Regardless of if these entries were removed
   // "remotely".
   NotifyRemoteSendTabToSelfEntryDeleted(removed_guids);
+}
+
+void SendTabToSelfBridge::DeleteAllEntries() {
+  if (!change_processor()->IsTrackingMetadata()) {
+    DCHECK_EQ(0ul, entries_.size());
+    return;
+  }
+
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  std::vector<std::string> all_guids = GetAllGuids();
+
+  for (const auto& guid : all_guids) {
+    change_processor()->Delete(guid, batch->GetMetadataChangeList());
+    batch->DeleteData(guid);
+  }
+  entries_.clear();
+  mru_entry_ = nullptr;
+
+  NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
 }
 
 }  // namespace send_tab_to_self

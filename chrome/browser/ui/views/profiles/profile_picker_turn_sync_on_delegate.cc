@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -198,8 +199,13 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
 
   absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =
       GetSyncOutcome(enterprise_account_, sync_disabled_, result);
-  if (outcome)
+  if (outcome) {
     LogOutcome(*outcome);
+  } else if (IsLacrosPrimaryProfileFirstRun(profile_) &&
+             result == LoginUIService::UI_CLOSED) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
+  }
 
   FinishSyncConfirmation(result);
 }

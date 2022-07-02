@@ -137,12 +137,14 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     GridArea position;
     position.columns = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForColumns, column_auto_repeat_track_count_,
-        /* is_ng_grid */ true, placement_data_.is_parent_grid_container);
+        /* is_ng_grid */ true, placement_data_.is_parent_grid_container,
+        placement_data_.column_subgrid_span_size);
     DCHECK(!position.columns.IsTranslatedDefinite());
 
     position.rows = GridPositionsResolver::ResolveGridPositionsFromStyle(
         grid_style_, item_style, kForRows, row_auto_repeat_track_count_,
-        /* is_ng_grid */ true, placement_data_.is_parent_grid_container);
+        /* is_ng_grid */ true, placement_data_.is_parent_grid_container,
+        placement_data_.row_subgrid_span_size);
     DCHECK(!position.rows.IsTranslatedDefinite());
 
     // When we have negative indices that go beyond the start of the explicit
@@ -675,7 +677,8 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
   GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
       grid_style_, out_of_flow_item_style, track_direction,
       AutoRepeatTrackCount(track_direction), /* is_ng_grid */ true,
-      placement_data_.is_parent_grid_container);
+      placement_data_.is_parent_grid_container,
+      SubgridSpanSize(track_direction));
 
   if (span.IsIndefinite()) {
     *start_line = kNotFound;

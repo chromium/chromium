@@ -153,7 +153,10 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
   // is not "unsafe-none". This ensures a COOP document does not inherit any
   // property from an opener.
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
+  // Don't apply the limitation to a fenced frame because the fenced frame
+  // has its own set of forced sandbox flags and it also supports COOP.
   if (coop.value != network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
+      !frame_tree_node_->IsInFencedFrameTree() &&
       (frame_tree_node_->pending_frame_policy().sandbox_flags !=
        network::mojom::WebSandboxFlags::kNone)) {
     // Blob and Filesystem documents' cross-origin-opener-policy values are
@@ -201,7 +204,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   net::IsolationInfo isolation_info_for_subresources =
       frame_tree_node_->current_frame_host()
           ->ComputeIsolationInfoForSubresourcesForPendingCommit(
-              response_origin, navigation_request_->anonymous());
+              response_origin, navigation_request_->is_anonymous());
   DCHECK(!isolation_info_for_subresources.IsEmpty());
 
   // Set up endpoint if response contains Reporting-Endpoints header.
@@ -391,14 +394,8 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
   network::CrossOriginOpenerPolicy& coop =
       response_head->parsed_headers->cross_origin_opener_policy;
 
-  // Base COOP class cannot include feature checking due to circular
-  // dependencies. Instead we check it from content and pass it back to the
-  // AugmentCoopWithCoep function.
-  bool is_coop_soap_plus_coep_enabled = base::FeatureList::IsEnabled(
-      network::features::kCoopSameOriginAllowPopupsPlusCoep);
   network::AugmentCoopWithCoep(
-      &coop, response_head->parsed_headers->cross_origin_embedder_policy,
-      is_coop_soap_plus_coep_enabled);
+      &coop, response_head->parsed_headers->cross_origin_embedder_policy);
 
   if (coop == network::CrossOriginOpenerPolicy())
     return;

@@ -77,12 +77,6 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-void FakeInstallFinalizer::UninstallFromSync(
-    const std::vector<AppId>& web_apps,
-    RepeatingUninstallCallback callback) {
-  NOTREACHED();
-}
-
 bool FakeInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return false;
@@ -98,11 +92,6 @@ void FakeInstallFinalizer::UninstallWebApp(
 void FakeInstallFinalizer::RetryIncompleteUninstalls(
     const base::flat_set<AppId>& apps_to_uninstall) {
   NOTREACHED();
-}
-
-bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
-    const AppId& app_id) const {
-  return base::Contains(user_uninstalled_external_apps_, app_id);
 }
 
 bool FakeInstallFinalizer::CanReparentTab(const AppId& app_id,
@@ -138,6 +127,11 @@ void FakeInstallFinalizer::SimulateExternalAppUninstalledByUser(
     const AppId& app_id) {
   DCHECK(!base::Contains(user_uninstalled_external_apps_, app_id));
   user_uninstalled_external_apps_.insert(app_id);
+}
+
+bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
+    const AppId& app_id) {
+  return base::Contains(user_uninstalled_external_apps_, app_id);
 }
 
 void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,

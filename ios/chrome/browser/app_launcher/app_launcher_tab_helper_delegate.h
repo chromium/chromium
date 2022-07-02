@@ -16,15 +16,15 @@ class AppLauncherTabHelperDelegate {
   AppLauncherTabHelperDelegate() = default;
   virtual ~AppLauncherTabHelperDelegate() = default;
 
-  // Launches application that has |URL| if possible (optionally after
+  // Launches application that has `url` if possible (optionally after
   // confirming via dialog).
   virtual void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
                                      const GURL& url,
                                      bool link_transition) = 0;
 
   // Alerts the user that there have been repeated attempts to launch
-  // the application. |completionHandler| is called with the user's
-  // response on whether to launch the application.
+  // the application. `completion` is called with the user's response on whether
+  // to launch the application.
   virtual void ShowRepeatedAppLaunchAlert(
       AppLauncherTabHelper* tab_helper,
       base::OnceCallback<void(bool)> completion) = 0;

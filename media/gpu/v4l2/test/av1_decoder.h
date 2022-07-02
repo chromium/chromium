@@ -5,15 +5,21 @@
 #ifndef MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 
-#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
+
+// TODO(b/234019411): Move this include to v4l2_stateless_decoder.cc
+// once the bug is fixed.
+#include <linux/media/av1-ctrls.h>
 
 #include <set>
 
+#include "base/files/memory_mapped_file.h"
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
 // TODO(stevecho): Remove ANALYZER_ALLOW_UNUSED() later if this is added later
@@ -21,22 +27,16 @@
 // base/logging.h for ChromeOS.
 #define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
-// TODO(stevecho): This is temporary until the change to define
-// V4L2_PIX_FMT_AV1_FRAME lands in videodev2.h.
+// TODO(stevecho): RESTORATION_TILESIZE_MAX in the spec is not available in the
+// AV1 uAPI. It was recommended to be added in the userspace code. If the uAPI
+// stays as it is for upstreaming, then #ifndef can be removed. If the uAPI ends
+// up adding this constant, then we can remove this define at that time.
 // https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
-#ifndef V4L2_PIX_FMT_AV1
-#define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
-#endif
-#ifndef V4L2_PIX_FMT_AV1_FRAME
-#define V4L2_PIX_FMT_AV1_FRAME                        \
-  v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame \
-                                   */
+#ifndef V4L2_AV1_RESTORATION_TILESIZE_MAX
+#define V4L2_AV1_RESTORATION_TILESIZE_MAX 256
 #endif
 
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
 constexpr int8_t kAv1NumRefFrames = libgav1::kNumReferenceFrameTypes;
@@ -51,8 +51,7 @@ class Av1Decoder : public VideoDecoder {
   // Creates a Av1Decoder after verifying that the underlying implementation
   // supports AV1 stateless decoding.
   static std::unique_ptr<Av1Decoder> Create(
-      std::unique_ptr<IvfParser> ivf_parser,
-      const media::IvfFileHeader& file_header);
+      const base::MemoryMappedFile& stream);
 
   // TODO(stevecho): implement DecodeNextFrame() function
   // Parses next frame from IVF stream and decodes the frame. This method will
@@ -100,6 +99,9 @@ class Av1Decoder : public VideoDecoder {
 
   // Reference frames currently in use.
   std::array<scoped_refptr<MmapedBuffer>, kAv1NumRefFrames> ref_frames_;
+
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
 
   IvfFrameHeader ivf_frame_header_{};
   const uint8_t* ivf_frame_data_ = nullptr;

@@ -51,6 +51,18 @@ class VulkanImplementationHeadless : public gpu::VulkanImplementation {
       gfx::Size size,
       VkFormat vk_format) override;
 
+#if BUILDFLAG(IS_FUCHSIA)
+  std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(
+      VkDevice device,
+      gfx::SysmemBufferCollectionId id,
+      zx::channel token,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gfx::Size size,
+      size_t min_buffer_count,
+      bool register_with_image_pipe) override;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
  private:
   bool using_surface_ = true;
   gpu::VulkanInstance vulkan_instance_;

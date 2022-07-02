@@ -456,10 +456,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           CSSSelectorInternalMediaControlsOverlayCastButton;
       break;
-    case DeprecationIssueType::kCustomCursorIntersectsViewport:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          CustomCursorIntersectsViewport;
-      break;
     case DeprecationIssueType::kDeprecationExample:
       type = protocol::Audits::DeprecationIssueTypeEnum::DeprecationExample;
       break;
@@ -499,10 +495,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           LocalCSSFileExtensionRejected;
       break;
-    case DeprecationIssueType::kMediaElementAudioSourceNode:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          MediaElementAudioSourceNode;
-      break;
     case DeprecationIssueType::kMediaSourceAbortRemove:
       type = protocol::Audits::DeprecationIssueTypeEnum::MediaSourceAbortRemove;
       break;
@@ -529,13 +521,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type =
           protocol::Audits::DeprecationIssueTypeEnum::ObsoleteWebRtcCipherSuite;
       break;
-    case DeprecationIssueType::kPaymentRequestBasicCard:
-      type =
-          protocol::Audits::DeprecationIssueTypeEnum::PaymentRequestBasicCard;
-      break;
-    case DeprecationIssueType::kPaymentRequestShowWithoutGesture:
+    case DeprecationIssueType::kOpenWebDatabaseInsecureContext:
       type = protocol::Audits::DeprecationIssueTypeEnum::
-          PaymentRequestShowWithoutGesture;
+          OpenWebDatabaseInsecureContext;
       break;
     case DeprecationIssueType::kPictureSourceSrc:
       type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
@@ -602,9 +590,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     case DeprecationIssueType::kRtcpMuxPolicyNegotiate:
       type = protocol::Audits::DeprecationIssueTypeEnum::RtcpMuxPolicyNegotiate;
       break;
-    case DeprecationIssueType::kRTPDataChannel:
-      type = protocol::Audits::DeprecationIssueTypeEnum::RTPDataChannel;
-      break;
     case DeprecationIssueType::kSharedArrayBufferConstructedWithoutIsolation:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           SharedArrayBufferConstructedWithoutIsolation;
@@ -629,6 +614,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       break;
     case DeprecationIssueType::kXRSupportsSession:
       type = protocol::Audits::DeprecationIssueTypeEnum::XRSupportsSession;
+      break;
+    case DeprecationIssueType::kIdentityInCanMakePaymentEvent:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          IdentityInCanMakePaymentEvent;
       break;
   }
 

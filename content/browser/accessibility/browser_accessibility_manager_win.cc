@@ -186,7 +186,10 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::ALERT:
       FireWinAccessibilityEvent(EVENT_SYSTEM_ALERT, node);
-      FireUiaAccessibilityEvent(UIA_SystemAlertEventId, node);
+      // Generated 'ALERT' events come from role=alert nodes in the tree.
+      // These should just be treated as normal live region changed events,
+      // since we don't want web pages to be performing system-wide alerts.
+      FireUiaAccessibilityEvent(UIA_LiveRegionChangedEventId, node);
       break;
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
       HandleAriaPropertiesChangedEvent(*node);
@@ -563,13 +566,24 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     return;
   if (!ShouldFireEventForNode(node))
     return;
-  // Suppress events when |IGNORED_CHANGED| except for MenuClosed / MenuOpen
-  // since a change in the ignored state may show / hide a popup by exposing
-  // it to the tree or not.
+
+  // Suppress most events when the node just became ignored/unignored.
   if (IsIgnoredChangedNode(node)) {
     switch (uia_event) {
+      case UIA_LiveRegionChangedEventId:
+        // Don't suppress live region changed events on nodes that just became
+        // unignored, but suppress them on nodes that just became ignored. This
+        // ensures that ATs can announce LiveRegionChanged events on nodes that
+        // just appeared in the tree and not announce the ones that just got
+        // removed.
+        if (node->IsIgnored())
+          return;
+        break;
       case UIA_MenuClosedEventId:
       case UIA_MenuOpenedEventId:
+        // Don't suppress MenuClosed/MenuOpened events since a change in the
+        // ignored state may hide/show a popup by exposing it to the tree or
+        // not.
         break;
       default:
         return;

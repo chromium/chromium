@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

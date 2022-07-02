@@ -10,82 +10,23 @@
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "services/video_capture/lacros/video_buffer_adapters.h"
 #include "services/video_capture/public/cpp/video_frame_access_handler.h"
-#include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gfx/mojom/buffer_types.mojom.h"
-#include "ui/gfx/mojom/native_handle_types.mojom.h"
 
 namespace video_capture {
 
 namespace {
-
 mojom::ReadyFrameInBufferPtr ToVideoCaptureBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer) {
   auto video_capture_buffer = mojom::ReadyFrameInBuffer::New();
   video_capture_buffer->buffer_id = buffer->buffer_id;
   video_capture_buffer->frame_feedback_id = buffer->frame_feedback_id;
 
-  const auto& buffer_info = buffer->frame_info;
-  auto video_capture_buffer_info = media::mojom::VideoFrameInfo::New();
-  video_capture_buffer_info->timestamp = buffer_info->timestamp;
-  video_capture_buffer_info->pixel_format = buffer_info->pixel_format;
-  video_capture_buffer_info->coded_size = buffer_info->coded_size;
-  video_capture_buffer_info->visible_rect = buffer_info->visible_rect;
-
-  media::VideoFrameMetadata media_frame_metadata;
-  switch (buffer_info->rotation) {
-    case crosapi::mojom::VideoRotation::kVideoRotation0:
-      media_frame_metadata.transformation =
-          media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_0);
-      break;
-    case crosapi::mojom::VideoRotation::kVideoRotation90:
-      media_frame_metadata.transformation =
-          media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_90);
-      break;
-    case crosapi::mojom::VideoRotation::kVideoRotation180:
-      media_frame_metadata.transformation =
-          media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_180);
-      break;
-    case crosapi::mojom::VideoRotation::kVideoRotation270:
-      media_frame_metadata.transformation =
-          media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_270);
-      break;
-    default:
-      NOTREACHED() << "Unexpected rotation in video frame metadata";
-  }
-  media_frame_metadata.reference_time = buffer_info->reference_time;
-
-  video_capture_buffer_info->metadata = std::move(media_frame_metadata);
-  video_capture_buffer->frame_info = std::move(video_capture_buffer_info);
+  video_capture_buffer->frame_info =
+      ConvertToMediaVideoFrameInfo(std::move(buffer->frame_info));
 
   return video_capture_buffer;
 }
-
-gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
-    crosapi::mojom::GpuMemoryBufferHandlePtr buffer_handle) {
-  gfx::GpuMemoryBufferHandle gfx_buffer_handle;
-  gfx_buffer_handle.id = gfx::GpuMemoryBufferId(buffer_handle->id);
-  gfx_buffer_handle.offset = buffer_handle->offset;
-  gfx_buffer_handle.stride = buffer_handle->stride;
-
-  if (buffer_handle->platform_handle) {
-    auto& platform_handle = buffer_handle->platform_handle;
-    if (platform_handle->is_shared_memory_handle()) {
-      gfx_buffer_handle.region =
-          std::move(platform_handle->get_shared_memory_handle());
-    } else if (platform_handle->is_native_pixmap_handle()) {
-      auto& native_pixmap_handle = platform_handle->get_native_pixmap_handle();
-      gfx::NativePixmapHandle gfx_native_pixmap_handle;
-      gfx_native_pixmap_handle.planes = std::move(native_pixmap_handle->planes);
-      gfx_native_pixmap_handle.modifier = native_pixmap_handle->modifier;
-      gfx_buffer_handle.native_pixmap_handle =
-          std::move(gfx_native_pixmap_handle);
-    }
-  }
-  return gfx_buffer_handle;
-}
-
 }  // namespace
 
 // A reference counted map keeping
@@ -160,26 +101,8 @@ VideoFrameHandlerProxyLacros::~VideoFrameHandlerProxyLacros() = default;
 void VideoFrameHandlerProxyLacros::OnNewBuffer(
     int buffer_id,
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {
-  media::mojom::VideoBufferHandlePtr media_handle;
-
-  if (buffer_handle->is_shared_buffer_handle()) {
-    // TODO(https://crbug.com/1307959): The LaCrOS interface should be migrated
-    // to use base::UnsafeSharedMemoryRegion as well.
-    media_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-        base::UnsafeSharedMemoryRegion::Deserialize(
-            mojo::UnwrapPlatformSharedMemoryRegion(
-                std::move(buffer_handle->get_shared_buffer_handle()))));
-  } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
-    media_handle = media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
-        ToGfxGpuMemoryBufferHandle(
-            std::move(buffer_handle->get_gpu_memory_buffer_handle())));
-  } else if (buffer_handle->is_read_only_shmem_region()) {
-    media_handle = media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
-        std::move(buffer_handle->get_read_only_shmem_region()));
-  } else {
-    NOTREACHED() << "Unexpected new buffer type";
-  }
-  handler_->OnNewBuffer(buffer_id, std::move(media_handle));
+  handler_->OnNewBuffer(buffer_id,
+                        ConvertToMediaVideoBuffer(std::move(buffer_handle)));
 }
 
 void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
@@ -221,6 +144,10 @@ void VideoFrameHandlerProxyLacros::OnError(media::VideoCaptureError error) {
 void VideoFrameHandlerProxyLacros::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   handler_->OnFrameDropped(reason);
+}
+
+void VideoFrameHandlerProxyLacros::OnNewCropVersion(uint32_t crop_version) {
+  handler_->OnNewCropVersion(crop_version);
 }
 
 void VideoFrameHandlerProxyLacros::OnFrameWithEmptyRegionCapture() {

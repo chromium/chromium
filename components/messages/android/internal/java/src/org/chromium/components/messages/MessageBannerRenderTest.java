@@ -4,6 +4,9 @@
 
 package org.chromium.components.messages;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -23,12 +26,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -61,6 +67,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
@@ -87,6 +94,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_withSecondaryIcon() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
@@ -116,6 +124,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_withSpannableDescription() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
@@ -145,6 +154,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_multilineDescriptionMaxLines() throws Exception {
         Activity activity = getActivity();
         final String multilineDescription = "Line 1\nLine 2\nLine 3\nLine 4";
@@ -171,6 +181,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testLayoutAfterClearingDescription() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
@@ -198,6 +209,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testLargeIcon() throws Exception {
         Activity activity = getActivity();
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
@@ -225,6 +237,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testLargeIconWithRadius() throws Exception {
         Activity activity = getActivity();
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
@@ -258,6 +271,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testDescriptionIconWithDefaultSize() throws Exception {
         Activity activity = getActivity();
         Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
@@ -287,6 +301,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testDescriptionIconWithResizing() throws Exception {
         Activity activity = getActivity();
         Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
@@ -317,6 +332,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testDescriptionIconWithText() throws Exception {
         Activity activity = getActivity();
         Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
@@ -343,5 +359,33 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { getActivity().setContentView(view, params); });
         mRenderTestRule.render(view, "message_banner_description_icon_with_text");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    @Restriction({RESTRICTION_TYPE_LOW_END_DEVICE})
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
+    public void testBasic_lowEnd() throws Exception {
+        Activity activity = getActivity();
+        Drawable drawable = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        PropertyModel model = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                      .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                              MessageIdentifier.TEST_MESSAGE)
+                                      .with(MessageBannerProperties.ICON, drawable)
+                                      .with(MessageBannerProperties.TITLE, "Primary Title")
+                                      .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                                      .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                                      .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_basic_low_end");
     }
 }

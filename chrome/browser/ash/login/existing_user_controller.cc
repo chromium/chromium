@@ -19,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/barrier_closure.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -96,15 +98,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
@@ -333,40 +334,42 @@ AccountId GetPublicSessionAutoLoginAccountId(
 
 }  // namespace
 
-// Utility class used to wait for a Public Session policy store load if public
-// session login is requested before the associated policy store is loaded.
-// When the store gets loaded, it will run the callback passed to the
+// Utility class used to wait for a Public Session policy to be available if
+// public session login is requested before the associated policy is loaded.
+// When the policy is available, it will run the callback passed to the
 // constructor.
-class ExistingUserController::PolicyStoreLoadWaiter
-    : public policy::CloudPolicyStore::Observer {
+class ExistingUserController::DeviceLocalAccountPolicyWaiter
+    : public policy::DeviceLocalAccountPolicyService::Observer {
  public:
-  PolicyStoreLoadWaiter(policy::CloudPolicyStore* store,
-                        base::OnceClosure callback)
-      : callback_(std::move(callback)) {
-    DCHECK(!store->is_initialized());
-    scoped_observation_.Observe(store);
+  DeviceLocalAccountPolicyWaiter(
+      policy::DeviceLocalAccountPolicyService* policy_service,
+      base::OnceClosure callback)
+      : policy_service_(policy_service), callback_(std::move(callback)) {
+    scoped_observation_.Observe(policy_service);
   }
-  ~PolicyStoreLoadWaiter() override = default;
+  ~DeviceLocalAccountPolicyWaiter() override = default;
 
-  PolicyStoreLoadWaiter(const PolicyStoreLoadWaiter& other) = delete;
-  PolicyStoreLoadWaiter& operator=(const PolicyStoreLoadWaiter& other) = delete;
+  DeviceLocalAccountPolicyWaiter(const DeviceLocalAccountPolicyWaiter& other) =
+      delete;
+  DeviceLocalAccountPolicyWaiter& operator=(
+      const DeviceLocalAccountPolicyWaiter& other) = delete;
 
-  // policy::CloudPolicyStore::Observer:
-  void OnStoreLoaded(policy::CloudPolicyStore* store) override {
+  // policy::DeviceLocalAccountPolicyService::Observer:
+  void OnPolicyUpdated(const std::string& user_id) override {
+    if (!policy_service_->IsPolicyAvailableForUser(user_id))
+      return;
     scoped_observation_.Reset();
     std::move(callback_).Run();
   }
-  void OnStoreError(policy::CloudPolicyStore* store) override {
-    // If store load fails, run the callback to unblock public session login
-    // attempt, which will likely fail.
-    scoped_observation_.Reset();
-    std::move(callback_).Run();
-  }
+
+  void OnDeviceLocalAccountsChanged() override {}
 
  private:
+  base::raw_ptr<policy::DeviceLocalAccountPolicyService> policy_service_ =
+      nullptr;
   base::OnceClosure callback_;
-  base::ScopedObservation<policy::CloudPolicyStore,
-                          policy::CloudPolicyStore::Observer>
+  base::ScopedObservation<policy::DeviceLocalAccountPolicyService,
+                          policy::DeviceLocalAccountPolicyService::Observer>
       scoped_observation_{this};
 };
 
@@ -435,11 +438,18 @@ void ExistingUserController::UpdateLoginDisplay(
     // use stored cryptohome powerwash state later
     policy::PowerwashRequirementsChecker::Initialize();
   }
-  bool show_users_on_signin;
+  bool show_users_on_signin = true;
   user_manager::UserList saml_users_for_password_sync;
 
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
+  GetLoginDisplayHost()->metrics_recorder()->OnShowUsersOnSignin(
+      show_users_on_signin);
+  bool enable_ephemeral_users = false;
+  cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
+                             &enable_ephemeral_users);
+  GetLoginDisplayHost()->metrics_recorder()->OnEnableEphemeralUsers(
+      enable_ephemeral_users);
   user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
   // By default disable offline login from the error screen.
@@ -470,6 +480,7 @@ void ExistingUserController::UpdateLoginDisplay(
   // Records total number of users on the login screen.
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
+  GetLoginDisplayHost()->metrics_recorder()->OnUserCount(regular_users_counter);
 
   auto login_users = ExtractLoginUsers(users);
 
@@ -938,7 +949,8 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
 
   if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
           g_browser_process->local_state(), user_context.GetAccountId(),
-          user_context.GetUserIDHash())) {
+          user_context.GetUserIDHash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
     // TODO(crbug.com/1261730): Add an UMA.
     LOG(WARNING) << "Restarting Chrome to resume move migration.";
     return;
@@ -1013,7 +1025,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
           title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kAutoLaunchNotifierId),
+              kAutoLaunchNotifierId, NotificationCatalogName::kAutoLaunch),
           data, std::move(delegate), vector_icons::kBusinessIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();
@@ -1246,35 +1258,33 @@ void ExistingUserController::LoginAsPublicSession(
     return;
   }
 
-  // Public session login will fail if attempted if the associated policy store
-  // is not initialized - wait for the policy store load before starting the
+  // Public session login will fail if attempted if the associated policy
+  // is not ready - wait for the policy to become available before starting the
   // auto-login timer.
-  policy::CloudPolicyStore* policy_store =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceLocalAccountPolicyService()
-          ->GetBrokerForUser(user->GetAccountId().GetUserEmail())
-          ->core()
-          ->store();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  policy::DeviceLocalAccountPolicyService* policy_service =
+      connector->GetDeviceLocalAccountPolicyService();
 
-  if (!policy_store->is_initialized()) {
-    VLOG(2) << "Public session policy store not yet initialized";
-    policy_store_waiter_ = std::make_unique<PolicyStoreLoadWaiter>(
-        policy_store,
+  if (policy_service && !policy_service->IsPolicyAvailableForUser(
+                            user_context.GetAccountId().GetUserEmail())) {
+    VLOG(2) << "Policies are not yet available for public session";
+    policy_waiter_ = std::make_unique<DeviceLocalAccountPolicyWaiter>(
+        policy_service,
         base::BindOnce(
-            &ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady,
+            &ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable,
             base::Unretained(this), user_context));
 
     return;
   }
 
-  LoginAsPublicSessionWithPolicyStoreReady(user_context);
+  LoginAsPublicSessionWhenPolicyAvailable(user_context);
 }
 
-void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
+void ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable(
     const UserContext& user_context) {
-  VLOG(2) << "LoginAsPublicSessionWithPolicyStoreReady";
-  policy_store_waiter_.reset();
+  VLOG(2) << __func__;
+  policy_waiter_.reset();
 
   UserContext new_user_context = user_context;
   std::string locale = user_context.GetPublicSessionLocale();
@@ -1435,12 +1445,18 @@ void ExistingUserController::ResyncUserData() {
 }
 
 void ExistingUserController::StartAutoLoginTimer() {
+  auto session_state = session_manager::SessionManager::Get()->session_state();
   if (is_login_in_progress_ ||
-      !public_session_auto_login_account_id_.is_valid()) {
+      !public_session_auto_login_account_id_.is_valid() ||
+      (session_state == session_manager::SessionState::OOBE &&
+       !DemoSession::IsDeviceInDemoMode())) {
     VLOG(2) << "Not starting autologin timer, because:";
     VLOG_IF(2, is_login_in_progress_) << "* Login is in process;";
     VLOG_IF(2, !public_session_auto_login_account_id_.is_valid())
         << "* No valid autologin account;";
+    VLOG_IF(2, session_state == session_manager::SessionState::OOBE &&
+                   !DemoSession::IsDeviceInDemoMode())
+        << "* OOBE isn't completed and device isn't in demo mode;";
     return;
   }
   VLOG(2) << "Starting autologin timer with delay: " << auto_login_delay_;

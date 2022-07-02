@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/ozone/public/overlay_surface.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
@@ -32,6 +33,10 @@ SurfaceFactoryOzone::GetAllowedGLImplementations() {
 GLOzone* SurfaceFactoryOzone::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   return nullptr;
+}
+
+GLOzone* SurfaceFactoryOzone::GetCurrentGLOzone() {
+  return GetGLOzone(gl::GetGLImplementationParts());
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

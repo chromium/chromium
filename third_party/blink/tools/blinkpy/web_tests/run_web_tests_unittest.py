@@ -2190,6 +2190,37 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         self.assertEqual(run_details.exit_code, 0)
         self.assertNotIn('Please remove', log_stream.getvalue())
 
+    def test_testharness_expected_txt(self):
+        host = MockHost()
+        test_name = '/failures/unexpected/testharness.html'
+        expected_txt = (test.WEB_TEST_DIR +
+                        '/failures/unexpected/testharness-expected.txt')
+        # The expected.txt contains the same content as the actual output.
+        host.filesystem.write_text_file(
+            expected_txt, 'This is a testharness.js-based test.\nFAIL: bah\n'
+            'Harness: the test ran to completion.')
+
+        # Run without --ignore-testharness-expected.txt. The test should pass.
+        run_details, _, _ = logging_run([test_name],
+                                        tests_included=True,
+                                        host=host)
+        self.assertEqual(run_details.exit_code, 0)
+
+        # Run with --ignore-testharness-expected.txt. The test should fail.
+        run_details, _, _ = logging_run(
+            ['--ignore-testharness-expected-txt', test_name],
+            tests_included=True,
+            host=host)
+        self.assertNotEqual(run_details.exit_code, 0)
+        self.assertEqual(run_details.initial_results.total, 1)
+        test_result = run_details.initial_results.all_results[0]
+        self.assertEqual(test_result.test_name, test_name)
+        self.assertEqual(len(test_result.failures), 1)
+        self.assertTrue(
+            test_failures.has_failure_type(
+                test_failures.FailureTestHarnessAssertion,
+                test_result.failures))
+
     def test_additional_platform_directory(self):
         self.assertTrue(
             passing_run([

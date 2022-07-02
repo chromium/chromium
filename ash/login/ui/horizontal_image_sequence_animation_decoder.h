@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_UI_HORIZONTAL_IMAGE_SEQUENCE_ANIMATION_DECODER_H_
 #define ASH_LOGIN_UI_HORIZONTAL_IMAGE_SEQUENCE_ANIMATION_DECODER_H_
 
+#include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/time/time.h"
 
@@ -20,7 +21,7 @@ namespace ash {
 //
 //    [1][2][3][4]
 //
-class HorizontalImageSequenceAnimationDecoder
+class ASH_EXPORT HorizontalImageSequenceAnimationDecoder
     : public AnimatedRoundedImageView::AnimationDecoder {
  public:
   HorizontalImageSequenceAnimationDecoder(const gfx::ImageSkia& image,

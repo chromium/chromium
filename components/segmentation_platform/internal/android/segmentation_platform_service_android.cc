@@ -10,8 +10,10 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_jni.h"
+#include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/trigger_context.h"
 
 using base::android::AttachCurrentThread;
 
@@ -21,21 +23,25 @@ namespace {
 const char kSegmentationPlatformServiceBridgeKey[] =
     "segmentation_platform_service_bridge";
 
-ScopedJavaLocalRef<jobject> CreateJavaSegmentSelectionResult(
-    JNIEnv* env,
-    const SegmentSelectionResult& result) {
-  int selected_segment = result.segment.has_value()
-                             ? result.segment.value()
-                             : OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
-  return Java_SegmentationPlatformServiceImpl_createSegmentSelectionResult(
-      env, result.is_ready, selected_segment);
-}
-
 void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
                                    const SegmentSelectionResult& result) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(j_callback,
-                           CreateJavaSegmentSelectionResult(env, result));
+  RunObjectCallbackAndroid(
+      j_callback,
+      SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
+          env, result));
+}
+
+void RunOnDemandSegmentSelectionCallback(
+    const JavaRef<jobject>& j_callback,
+    const SegmentSelectionResult& result,
+    const TriggerContext& trigger_context) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_on_demand_result =
+      SegmentationPlatformConversionBridge::
+          CreateJavaOnDemandSegmentSelectionResult(env, result,
+                                                   trigger_context);
+  RunObjectCallbackAndroid(j_callback, j_on_demand_result);
 }
 
 }  // namespace
@@ -89,9 +95,34 @@ SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& j_segmentation_key) {
-  return CreateJavaSegmentSelectionResult(
+  return SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
       env, segmentation_platform_service_->GetCachedSegmentResult(
                ConvertJavaStringToUTF8(env, j_segmentation_key)));
+}
+
+int SegmentationPlatformServiceAndroid::
+    RegisterOnDemandSegmentSelectionCallback(
+        JNIEnv* env,
+        const JavaParamRef<jobject>& jcaller,
+        const JavaParamRef<jstring>& j_segmentation_key,
+        const JavaParamRef<jobject>& jcallback) {
+  CallbackId callback_id =
+      segmentation_platform_service_->RegisterOnDemandSegmentSelectionCallback(
+          ConvertJavaStringToUTF8(env, j_segmentation_key),
+          base::BindRepeating(&RunOnDemandSegmentSelectionCallback,
+                              ScopedJavaGlobalRef<jobject>(jcallback)));
+  return callback_id.value();
+}
+
+void SegmentationPlatformServiceAndroid::
+    UnregisterOnDemandSegmentSelectionCallback(
+        JNIEnv* env,
+        const JavaParamRef<jobject>& jcaller,
+        const JavaParamRef<jstring>& j_segmentation_key,
+        jint j_callback_id) {
+  segmentation_platform_service_->UnregisterOnDemandSegmentSelectionCallback(
+      CallbackId::FromUnsafeValue(j_callback_id),
+      ConvertJavaStringToUTF8(env, j_segmentation_key));
 }
 
 ScopedJavaLocalRef<jobject>

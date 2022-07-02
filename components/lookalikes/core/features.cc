@@ -12,5 +12,8 @@ const base::Feature kLookalikeDigitalAssetLinks{
 
 const char kLookalikeDigitalAssetLinksTimeoutParameter[] = "timeout";
 
+const base::Feature kDetectComboSquattingLookalikes{
+    "ComboSquattingLookalikes", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace lookalikes

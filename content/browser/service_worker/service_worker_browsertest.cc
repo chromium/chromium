@@ -69,6 +69,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -977,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, GetRunningServiceWorkerInfos) {
   const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/fetch_event.js"),
             running_info.script_url);
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            running_info.render_process_id);
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      running_info.render_process_id);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, StartWorkerWhileInstalling) {
@@ -1257,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   // UserAgentReduction OT.
   EXPECT_EQ(
       "DONE",
-      EvalJs(shell()->web_contents()->GetMainFrame(),
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
              base::StrCat({"register('", service_worker_url.spec(), "');"})));
   // Reload the page so that the service worker handles the request.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -1265,7 +1267,7 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   // Fetch the response containing the result of navigator.userAgent from the
   // service worker.
   const std::string navigator_user_agent =
-      EvalJs(shell()->web_contents()->GetMainFrame(),
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
              "fetch('./user_agent_sw').then(response => response.text())")
           .ExtractString();
   EXPECT_EQ(GetExpectedUserAgent(), navigator_user_agent);
@@ -1448,7 +1450,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   std::string GetTextContent() {
     base::RunLoop run_loop;
     std::string text_content;
-    shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"document.body.textContent;",
         base::BindOnce(&StoreString, &text_content, run_loop.QuitClosure()));
     run_loop.Run();
@@ -2619,7 +2621,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
                        V8CacheOnCacheStorage) {
   RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   RegisterAndActivateServiceWorker();
 
@@ -2900,7 +2902,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Extract the headers.
-  EvalJsResult result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.error.empty());
   std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
@@ -2956,7 +2958,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   // URL, since throttles should have redirected before interception.
   base::Value list(base::Value::Type::LIST);
   list.Append(redirect_url.spec());
-  EXPECT_EQ(list, EvalJs(shell()->web_contents()->GetMainFrame(), script));
+  EXPECT_EQ(list,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script));
 
   SetBrowserClientForTesting(old_content_browser_client);
 }
@@ -2982,12 +2985,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that there is a controller to check that the test is really testing
   // service worker network fallback.
-  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                          "!!navigator.serviceWorker.controller"));
 
   // The injected header should be present.
-  EXPECT_EQ("injected value", EvalJs(shell()->web_contents()->GetMainFrame(),
-                                     "document.body.textContent"));
+  EXPECT_EQ("injected value",
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.textContent"));
 
   SetBrowserClientForTesting(old_content_browser_client);
 }
@@ -3017,7 +3021,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
       "/echoheader?Service-Worker-Navigation-Preload&x-injected");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_EQ("true\ninjected value",
-            EvalJs(shell()->web_contents()->GetMainFrame(),
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    "document.body.textContent"));
 
   SetBrowserClientForTesting(old_content_browser_client);
@@ -3285,19 +3289,19 @@ class ServiceWorkerCrossOriginIsolatedBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
                        FreshInstall) {
-  // Setup the server so that the test doesn't crash when tearing down.
   StartServerAndNavigateToSetup();
 
-  std::string page_url =
+  std::string page_path =
       IsPageCrossOriginIsolated()
           ? "/service_worker/create_service_worker_from_isolated.html"
           : "/service_worker/create_service_worker.html";
-  std::string worker_url =
+  std::string worker_path =
       IsServiceWorkerCrossOriginIsolated() ? "empty_isolated.js" : "empty.js";
 
   WorkerRunningStatusObserver observer(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(page_url)));
-  EXPECT_EQ("DONE", EvalJs(shell(), "register('" + worker_url + "');"));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(page_path)));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('" + worker_path + "');"));
   observer.WaitUntilRunning();
 
   scoped_refptr<ServiceWorkerVersion> version =
@@ -3309,11 +3313,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   ASSERT_EQ(1u, infos.size());
 
   const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
-  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
+  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_path),
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
@@ -3332,35 +3336,39 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
             process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Flaky on Android, http://crbug.com/1335344.
+#define MAYBE_PostInstallRun DISABLED_PostInstallRun
+#else
+#define MAYBE_PostInstallRun PostInstallRun
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
-                       PostInstallRun) {
-  // Setup the server so that the test doesn't crash when tearing down.
+                       MAYBE_PostInstallRun) {
   StartServerAndNavigateToSetup();
 
-  std::string page_url =
+  std::string page_path =
       IsPageCrossOriginIsolated()
           ? "/service_worker/create_service_worker_from_isolated.html"
           : "/service_worker/create_service_worker.html";
-  std::string worker_url =
+  std::string worker_path =
       IsServiceWorkerCrossOriginIsolated() ? "empty_isolated.js" : "empty.js";
 
   WorkerRunningStatusObserver observer(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(page_url)));
-  EXPECT_EQ("DONE", EvalJs(shell(), "register('" + worker_url + "');"));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(page_path)));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('" + worker_path + "');"));
   observer.WaitUntilRunning();
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
 
-  {
-    // Restart the service worker. The goal is to simulate the launch of an
-    // already installed ServiceWorker.
-    StopServiceWorker(version.get());
-    EXPECT_EQ(StartServiceWorker(version.get()),
-              blink::ServiceWorkerStatusCode::kOk);
-    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
-  }
+  // Restart the service worker. The goal is to simulate the launch of an
+  // already installed ServiceWorker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(StartServiceWorker(version.get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
 
   // Wait until the running status is updated.
   base::RunLoop().RunUntilIdle();
@@ -3370,11 +3378,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   ASSERT_EQ(1u, infos.size());
 
   const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
-  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
+  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_path),
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   bool should_be_in_process =
       IsPageCrossOriginIsolated() == IsServiceWorkerCrossOriginIsolated();
@@ -3387,9 +3395,95 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
             process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
+// The following tests verify that the page starting the Serviceworker is always
+// in the same process as the worker, even when it sets COOP.
+class ServiceWorkerCoopBrowserTest : public ServiceWorkerBrowserTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  static bool IsCoopEnabledOnMainPage() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, FreshInstall) {
+  StartServerAndNavigateToSetup();
+
+  std::string page_path =
+      IsCoopEnabledOnMainPage()
+          ? "/service_worker/create_service_worker_from_coop.html"
+          : "/service_worker/create_service_worker.html";
+
+  WorkerRunningStatusObserver observer(public_context());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(page_path)));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('empty.js');"));
+  observer.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer.version_id());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+      public_context()->GetRunningServiceWorkerInfos();
+  ASSERT_EQ(1u, infos.size());
+
+  const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/empty.js"),
+            running_info.script_url);
+
+  bool is_in_process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
+      running_info.render_process_id;
+  EXPECT_TRUE(is_in_process);
+}
+
+// Sometimes disabled via the macros above
+// ServiceWorkerCrossOriginIsolatedBrowserTest.PostInstallRun, as the tests
+// flake for the same root cause.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, MAYBE_PostInstallRun) {
+  StartServerAndNavigateToSetup();
+
+  std::string page_path =
+      IsCoopEnabledOnMainPage()
+          ? "/service_worker/create_service_worker_from_coop.html"
+          : "/service_worker/create_service_worker.html";
+
+  WorkerRunningStatusObserver observer(public_context());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(page_path)));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('empty.js');"));
+  observer.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer.version_id());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  // Restart the service worker. The goal is to simulate the launch of an
+  // already installed ServiceWorker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(StartServiceWorker(version.get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+  // Wait until the running status is updated.
+  base::RunLoop().RunUntilIdle();
+
+  const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+      public_context()->GetRunningServiceWorkerInfos();
+  ASSERT_EQ(1u, infos.size());
+
+  const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/empty.js"),
+            running_info.script_url);
+
+  bool is_in_process =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
+      running_info.render_process_id;
+  EXPECT_TRUE(is_in_process);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerCrossOriginIsolatedBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, ServiceWorkerCoopBrowserTest, testing::Bool());
 
 // Tests with BackForwardCache enabled.
 class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
@@ -3600,7 +3694,7 @@ IN_PROC_BROWSER_TEST_F(
       nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(new_shell, url_2));
   RenderFrameHostImpl* rfh_2 = static_cast<RenderFrameHostImpl*>(
-      new_shell->web_contents()->GetMainFrame());
+      new_shell->web_contents()->GetPrimaryMainFrame());
 
   // |rfh_1| and |rfh_2| are in different renderer processes because they are
   // in different tabs.
@@ -3738,6 +3832,65 @@ IN_PROC_BROWSER_TEST_F(
                        loop.QuitClosure()));
     loop.Run();
   }
+}
+
+class ServiceWorkerFencedFrameBrowserTest : public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerFencedFrameBrowserTest() = default;
+  ~ServiceWorkerFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+    StartServerAndNavigateToSetup();
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
+                       AncestorFrameTypeIsStoredInServiceWorker) {
+  WorkerRunningStatusObserver observer(public_context());
+
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/service_worker/fenced_frame.html");
+
+  RenderFrameHost* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
+
+  // Register the service worker.
+  ASSERT_EQ("ok - service worker registered",
+            EvalJs(fenced_frame, "RegisterServiceWorker()"));
+  observer.WaitUntilRunning();
+
+  // Call backgroundFetch.fetch from the registered service worker, not from
+  // the fenced frame. This will be blocked if the worker is registered in the
+  // fenced frame
+  constexpr char kExpectedError[] =
+      "Failed to execute 'fetch' on 'BackgroundFetchManager': "
+      "backgroundFetch is not allowed in fenced frames.";
+  ASSERT_EQ(kExpectedError,
+            EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
+
+  // Stop service worker to save registration data to storage.
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer.version_id());
+  StopServiceWorker(version.get());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // Call backgroundFetch.fetch from the registered service worker again.
+  // This ensures if restored data in the service worker keeps the info if it
+  // was registered in the fenced frame or not, and the info is used when it
+  // became active again.
+  ASSERT_EQ(kExpectedError,
+            EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
 }
 
 }  // namespace content

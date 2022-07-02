@@ -34,8 +34,8 @@ void SearchResultExtractorClient::RequestData(
     content::WebContents* web_contents,
     const std::vector<mojom::ResultType>& result_types,
     RequestDataCallback callback) {
-  if (!web_contents || !web_contents->GetMainFrame() ||
-      !web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()) {
+  if (!web_contents || !web_contents->GetPrimaryMainFrame() ||
+      !web_contents->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces()) {
     std::move(callback).Run(SearchResultExtractorClientStatus::kWebContentsGone,
                             mojom::CategoryResults::New());
     return;
@@ -50,8 +50,9 @@ void SearchResultExtractorClient::RequestData(
   }
 
   mojo::AssociatedRemote<mojom::SearchResultExtractor> extractor;
-  web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      extractor.BindNewEndpointAndPassReceiver());
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(extractor.BindNewEndpointAndPassReceiver());
 
   mojom::SearchResultExtractor* extractor_ptr = extractor.get();
   extractor_ptr->ExtractCurrentSearchResults(

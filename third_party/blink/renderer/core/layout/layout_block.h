@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BLOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BLOCK_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -498,12 +499,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void UpdateFromStyle() override;
-
-  // Returns true if non-visible overflow should be respected. Otherwise
-  // HasNonVisibleOverflow() will be false and we won't create scrollable area
-  // for this object even if overflow is non-visible.
-  virtual bool AllowsNonVisibleOverflow() const;
+  bool RespectsCSSOverflow() const override;
 
   bool SimplifiedLayout();
   virtual void SimplifiedNormalFlowLayout();
@@ -513,7 +509,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddLayoutOverflowFromBlockChildren();
 
  protected:
-  OverflowClipAxes ComputeOverflowClipAxes() const override;
   virtual void ComputeVisualOverflow(
       bool recompute_floats);
   virtual void ComputeLayoutOverflow(LayoutUnit old_client_after_edge,

@@ -14,13 +14,13 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/system_node.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 struct UserspaceSwapConfig;
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 namespace performance_manager {
 namespace policies {
@@ -57,7 +57,7 @@ class UserspaceSwapPolicy : public GraphOwned,
 
  protected:
   explicit UserspaceSwapPolicy(
-      const chromeos::memory::userspace_swap::UserspaceSwapConfig& config);
+      const ash::memory::userspace_swap::UserspaceSwapConfig& config);
 
   // The following methods are virtual for testing.
   virtual void SwapNodesOnGraph();
@@ -89,7 +89,7 @@ class UserspaceSwapPolicy : public GraphOwned,
 
   // We cache the config object since it cannot change, this makes the code
   // easier to read and testing also becomes easier.
-  const chromeos::memory::userspace_swap::UserspaceSwapConfig& config_;
+  const ash::memory::userspace_swap::UserspaceSwapConfig& config_;
 
   // Keeps track of the last time we walked the graph looking for processes to
   // swap, the frequency we walk the graph is configurable.

@@ -45,7 +45,7 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
   MDnsSocketFactoryImpl(const MDnsSocketFactoryImpl&) = delete;
   MDnsSocketFactoryImpl& operator=(const MDnsSocketFactoryImpl&) = delete;
 
-  ~MDnsSocketFactoryImpl() override {}
+  ~MDnsSocketFactoryImpl() override = default;
 
   void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     // Handle an mDNS packet buffered in |response| with a size of |bytes_read|.
     virtual void HandlePacket(DnsResponse* response, int bytes_read) = 0;
     virtual void OnConnectionError(int error) = 0;
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit MDnsConnection(MDnsConnection::Delegate* delegate);
@@ -103,7 +103,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     IPEndPoint recv_addr_;
     DnsResponse response_;
     IPEndPoint multicast_addr_;
-    bool send_in_progress_;
+    bool send_in_progress_ = false;
     base::queue<std::pair<scoped_refptr<IOBuffer>, unsigned>> send_queue_;
   };
 
@@ -293,8 +293,8 @@ class MDnsListenerImpl : public MDnsListener,
 
   base::Time last_update_;
   uint32_t ttl_;
-  bool started_;
-  bool active_refresh_;
+  bool started_ = false;
+  bool active_refresh_ = false;
 
   base::CancelableRepeatingClosure next_refresh_;
 };
@@ -360,7 +360,7 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
 
   raw_ptr<MDnsClientImpl> client_;
 
-  bool started_;
+  bool started_ = false;
   int flags_;
 };
 

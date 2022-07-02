@@ -7,10 +7,10 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/core/wm_core_export.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -22,8 +22,9 @@ class ActivationChangeObserver;
 // that just need basic behavior (e.g. activate windows whenever requested,
 // restack windows at the top when they're activated, etc.). This object deletes
 // itself when the root window it is associated with is destroyed.
-class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
-                                               public aura::WindowObserver {
+class COMPONENT_EXPORT(UI_WM) DefaultActivationClient
+    : public ActivationClient,
+      public aura::WindowObserver {
  public:
   explicit DefaultActivationClient(aura::Window* root_window);
 

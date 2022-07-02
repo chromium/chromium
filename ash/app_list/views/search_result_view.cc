@@ -722,8 +722,7 @@ void SearchResultView::UpdateBadgeIcon() {
       result()->badge_icon().Rasterize(GetColorProvider());
 
   if (result()->use_badge_icon_background()) {
-    badge_icon_skia =
-        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+    badge_icon_skia = CreateIconWithCircleBackground(badge_icon_skia);
   }
 
   gfx::ImageSkia resized_badge_icon(
@@ -1016,6 +1015,11 @@ void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
         accepted ? SearchResultRemovalConfirmation::kRemovalConfirmed
                  : SearchResultRemovalConfirmation::kRemovalCanceled);
   }
+}
+
+void SearchResultView::OnSelectedResultChanged() {
+  if (!selected())
+    actions_view()->HideActions();
 }
 
 const char* SearchResultView::GetClassName() const {

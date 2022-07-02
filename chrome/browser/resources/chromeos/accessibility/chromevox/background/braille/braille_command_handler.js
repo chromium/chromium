@@ -5,8 +5,13 @@
 /**
  * @fileoverview ChromeVox braille commands.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
+import {EventSourceState} from '/chromevox/background/event_source.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {EventGenerator} from '/common/event_generator.js';
 
 const RoleType = chrome.automation.RoleType;

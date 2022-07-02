@@ -14,7 +14,7 @@ import urllib.request
 # MIN_VERSION is the earliest working version of the updater for self-update
 # testing. If a backwards-incompatible change to the updater is made, it may be
 # necessary to increase the version.
-MIN_VERSION = 968290
+MIN_VERSION = 1017727
 
 def get_platform():
     return 'Win_x64'
@@ -73,7 +73,7 @@ def lastDatum(platform):
     latest = int(
         urllib.request.urlopen(
             'https://storage.googleapis.com/storage/v1/b/'
-            'chromium-browser-snapshots/o/Mac%2FLAST_CHANGE?alt=media').read())
+            'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' % platform).read())
     min_datum = latest - 3000
     min_datum -= min_datum % 10000
     return max(MIN_VERSION, find(platform, min_datum, latest))

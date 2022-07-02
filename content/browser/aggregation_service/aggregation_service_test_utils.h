@@ -11,11 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -27,6 +28,8 @@ class Time;
 }  // namespace base
 
 namespace content {
+
+class AggregationServiceStorage;
 
 namespace aggregation_service {
 
@@ -58,8 +61,8 @@ testing::AssertionResult SharedInfoEqual(
 
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::AggregationMode aggregation_mode =
-        AggregationServicePayloadContents::AggregationMode::kDefault);
+    mojom::AggregationServiceMode aggregation_mode =
+        mojom::AggregationServiceMode::kDefault);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -76,7 +79,7 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(
 
 // Returns empty vector in the case of an error.
 std::vector<uint8_t> DecryptPayloadWithHpke(
-    const std::vector<uint8_t>& payload,
+    base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
     const std::string& expected_serialized_shared_info);
 
@@ -98,20 +101,19 @@ class TestAggregationServiceStorageContext
   ~TestAggregationServiceStorageContext() override;
 
   // AggregationServiceStorageContext:
-  const base::SequenceBound<content::AggregationServiceKeyStorage>&
-  GetKeyStorage() override;
+  const base::SequenceBound<content::AggregationServiceStorage>& GetStorage()
+      override;
 
  private:
-  base::SequenceBound<content::AggregationServiceKeyStorage> storage_;
+  base::SequenceBound<content::AggregationServiceStorage> storage_;
 };
 
 // Only used for logging in tests.
 std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation);
-std::ostream& operator<<(
-    std::ostream& out,
-    AggregationServicePayloadContents::AggregationMode aggregation_mode);
+std::ostream& operator<<(std::ostream& out,
+                         mojom::AggregationServiceMode aggregation_mode);
 std::ostream& operator<<(std::ostream& out,
                          AggregatableReportSharedInfo::DebugMode debug_mode);
 

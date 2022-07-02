@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/i18n/message_formatter.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -26,7 +28,6 @@
 
 namespace {
 
-const int kCdpMethodNotFoundCode = -32601;
 const char kInspectorDefaultContextError[] =
     "Cannot find default execution context";
 const char kInspectorContextError[] = "Cannot find context with specified id";
@@ -39,6 +40,9 @@ const char kInspectorPushPermissionError[] =
     "Push Permission without userVisibleOnly:true isn't supported";
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
+
+static constexpr int kSessionNotFoundInspectorCode = -32001;
+static constexpr int kCdpMethodNotFoundCode = -32601;
 static constexpr int kInvalidParamsInspectorCode = -32602;
 
 class ScopedIncrementer {
@@ -63,6 +67,15 @@ Status FakeCloseFrontends() {
   return Status(kOk);
 }
 
+struct SessionId {
+  explicit SessionId(const std::string session_id) : session_id_(session_id) {}
+  std::string session_id_;
+};
+
+std::ostream& operator<<(std::ostream& os, const SessionId& ses_manip) {
+  return os << " (session_id=" << ses_manip.session_id_ << ")";
+}
+
 }  // namespace
 
 namespace internal {
@@ -79,12 +92,14 @@ InspectorCommandResponse::~InspectorCommandResponse() {}
 
 const char DevToolsClientImpl::kBrowserwideDevToolsClientId[] = "browser";
 
-DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
+DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
+                                       const std::string& session_id,
                                        const std::string& url,
-                                       const std::string& id)
+                                       const SyncWebSocketFactory& factory)
     : socket_(factory.Run()),
       url_(url),
       owner_(nullptr),
+      session_id_(session_id),
       parent_(nullptr),
       crashed_(false),
       detached_(false),
@@ -93,7 +108,9 @@ DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
       parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
       unnotified_event_(nullptr),
       next_id_(1),
-      stack_count_(0) {
+      stack_count_(0),
+      is_remote_end_configured_(false),
+      is_main_page_(false) {
   socket_->SetId(id_);
   // If error happens during proactive event consumption we ignore it
   // as there is no active user request where the error might be returned.
@@ -104,76 +121,21 @@ DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
       base::Unretained(this)));
 }
 
-DevToolsClientImpl::DevToolsClientImpl(
-    const SyncWebSocketFactory& factory,
-    const std::string& url,
-    const std::string& id,
-    const FrontendCloserFunc& frontend_closer_func)
-    : socket_(factory.Run()),
-      url_(url),
-      owner_(nullptr),
-      parent_(nullptr),
-      crashed_(false),
-      detached_(false),
-      id_(id),
-      frontend_closer_func_(frontend_closer_func),
-      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
-      unnotified_event_(nullptr),
-      next_id_(1),
-      stack_count_(0) {
-  socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
-}
-
-DevToolsClientImpl::DevToolsClientImpl(DevToolsClientImpl* parent,
+DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
                                        const std::string& session_id)
     : owner_(nullptr),
       session_id_(session_id),
-      parent_(parent),
-      crashed_(false),
-      detached_(false),
-      id_(session_id),
-      frontend_closer_func_(base::BindRepeating(&FakeCloseFrontends)),
-      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
-      unnotified_event_(nullptr),
-      next_id_(1),
-      stack_count_(0) {
-  parent->children_[session_id] = this;
-}
-
-DevToolsClientImpl::DevToolsClientImpl(
-    const SyncWebSocketFactory& factory,
-    const std::string& url,
-    const std::string& id,
-    const FrontendCloserFunc& frontend_closer_func,
-    const ParserFunc& parser_func)
-    : socket_(factory.Run()),
-      url_(url),
-      owner_(nullptr),
       parent_(nullptr),
       crashed_(false),
       detached_(false),
       id_(id),
-      frontend_closer_func_(frontend_closer_func),
-      parser_func_(parser_func),
+      frontend_closer_func_(base::BindRepeating(&FakeCloseFrontends)),
+      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
       unnotified_event_(nullptr),
       next_id_(1),
-      stack_count_(0) {
-  socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
-}
+      stack_count_(0),
+      is_remote_end_configured_(false),
+      is_main_page_(false) {}
 
 DevToolsClientImpl::~DevToolsClientImpl() {
   if (parent_ != nullptr) {
@@ -191,6 +153,11 @@ void DevToolsClientImpl::SetParserFuncForTesting(
   parser_func_ = parser_func;
 }
 
+void DevToolsClientImpl::SetFrontendCloserFunc(
+    const FrontendCloserFunc& frontend_closer_func) {
+  frontend_closer_func_ = frontend_closer_func;
+}
+
 const std::string& DevToolsClientImpl::GetId() {
   return id_;
 }
@@ -199,13 +166,59 @@ bool DevToolsClientImpl::WasCrashed() {
   return crashed_;
 }
 
+bool DevToolsClientImpl::IsNull() const {
+  return parent_.get() == nullptr && socket_.get() == nullptr;
+}
+
+bool DevToolsClientImpl::IsConnected() const {
+  return parent_ ? parent_->IsConnected()
+                 : (socket_ ? socket_->IsConnected() : false);
+}
+
+Status DevToolsClientImpl::AttachTo(DevToolsClientImpl* parent) {
+  // checking the preconditions
+  DCHECK(parent != nullptr);
+  DCHECK(IsNull());
+  DCHECK(parent->GetParentClient() == nullptr);
+
+  if (!IsNull()) {
+    return Status{
+        kUnknownError,
+        "Attaching non-null DevToolsClient to a new parent is prohibited"};
+  }
+
+  // Class invariant: the hierarchy is flat
+  if (parent->GetParentClient() != nullptr) {
+    return Status{kUnknownError,
+                  "DevToolsClientImpl can be attached only to the root client"};
+  }
+
+  if (parent->IsConnected()) {
+    ResetListeners();
+    parent_ = parent;
+    parent_->children_[session_id_] = this;
+    Status status = OnConnected();
+    if (status.IsError()) {
+      return status;
+    }
+  } else {
+    parent_ = parent;
+    parent_->children_[session_id_] = this;
+  }
+
+  return Status{kOk};
+}
+
 Status DevToolsClientImpl::ConnectIfNecessary() {
   if (stack_count_)
     return Status(kUnknownError, "cannot connect when nested");
 
   if (parent_ == nullptr) {
+    // This is the browser level DevToolsClient
     if (socket_->IsConnected())
       return Status(kOk);
+
+    ResetListeners();
 
     if (!socket_->Connect(url_)) {
       // Try to close devtools frontend and then reconnect.
@@ -215,19 +228,72 @@ Status DevToolsClientImpl::ConnectIfNecessary() {
       if (!socket_->Connect(url_))
         return Status(kDisconnected, "unable to connect to renderer");
     }
-  }
 
-  return SetUpDevTools();
+    return OnConnected();
+
+  } else {
+    // This is a page or frame level DevToolsClient
+    return parent_->ConnectIfNecessary();
+  }
 }
 
-Status DevToolsClientImpl::SetUpDevTools() {
-  // These lines must be before the following SendCommandXxx calls
+void DevToolsClientImpl::ResetListeners() {
+  // checking the preconditions
+  DCHECK(!IsConnected());
+
+  // We are going to reconnect, therefore the remote end must be reconfigured
+  is_remote_end_configured_ = false;
+
+  // These lines must be before the SendCommandXxx calls in SetUpDevTools
   unnotified_connect_listeners_ = listeners_;
   unnotified_event_listeners_.clear();
   response_info_map_.clear();
 
+  for (auto child : children_) {
+    child.second->ResetListeners();
+  }
+}
+
+Status DevToolsClientImpl::OnConnected() {
+  // checking the preconditions
+  DCHECK(IsConnected());
+  if (!IsConnected()) {
+    return Status{kUnknownError,
+                  "The remote end can be configured only if the connection is "
+                  "established"};
+  }
+
+  Status status = SetUpDevTools();
+  if (status.IsError()) {
+    return status;
+  }
+
+  // Notify all listeners of the new connection. Do this now so that any errors
+  // that occur are reported now instead of later during some unrelated call.
+  // Also gives listeners a chance to send commands before other clients.
+  status = EnsureListenersNotifiedOfConnect();
+  if (status.IsError()) {
+    return status;
+  }
+
+  for (auto child : children_) {
+    status = child.second->OnConnected();
+    if (status.IsError()) {
+      break;
+    }
+  }
+
+  return status;
+}
+
+Status DevToolsClientImpl::SetUpDevTools() {
+  if (is_remote_end_configured_) {
+    return Status{kOk};
+  }
+
   if (id_ != kBrowserwideDevToolsClientId &&
       (GetOwner() == nullptr || !GetOwner()->IsServiceWorker())) {
+    // This is a page or frame level DevToolsClient
     base::DictionaryValue params;
     std::string script =
         "(function () {"
@@ -248,10 +314,8 @@ Status DevToolsClientImpl::SetUpDevTools() {
       return status;
   }
 
-  // Notify all listeners of the new connection. Do this now so that any errors
-  // that occur are reported now instead of later during some unrelated call.
-  // Also gives listeners a chance to send commands before other clients.
-  return EnsureListenersNotifiedOfConnect();
+  is_remote_end_configured_ = true;
+  return Status{kOk};
 }
 
 Status DevToolsClientImpl::SendCommand(
@@ -314,6 +378,7 @@ Status DevToolsClientImpl::SendCommandAndIgnoreResponse(
 
 void DevToolsClientImpl::AddListener(DevToolsEventListener* listener) {
   CHECK(listener);
+  CHECK(!IsConnected());
   listeners_.push_back(listener);
 }
 
@@ -324,11 +389,15 @@ Status DevToolsClientImpl::HandleReceivedEvents() {
 
 Status DevToolsClientImpl::HandleEventsUntil(
     const ConditionalFunc& conditional_func, const Timeout& timeout) {
-  if (!socket_->IsConnected())
+  SyncWebSocket* socket =
+      static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
+  DCHECK(socket);
+  if (!socket->IsConnected()) {
     return Status(kDisconnected, "not connected to DevTools");
+  }
 
   while (true) {
-    if (!socket_->HasNextMessage()) {
+    if (!socket->HasNextMessage()) {
       bool is_condition_met = false;
       Status status = conditional_func.Run(&is_condition_met);
       if (status.IsError())
@@ -376,7 +445,24 @@ DevToolsClientImpl::ResponseInfo::ResponseInfo(const std::string& method)
 DevToolsClientImpl::ResponseInfo::~ResponseInfo() {}
 
 DevToolsClient* DevToolsClientImpl::GetRootClient() {
-  return parent_ ? parent_.get() : this;
+  return parent_ ? parent_->GetRootClient() : this;
+}
+
+DevToolsClient* DevToolsClientImpl::GetParentClient() const {
+  return parent_.get();
+}
+
+bool DevToolsClientImpl::IsMainPage() const {
+  return is_main_page_;
+}
+
+void DevToolsClientImpl::SetMainPage(bool value) {
+  DCHECK(!IsConnected());
+  is_main_page_ = value;
+}
+
+int DevToolsClientImpl::NextMessageId() const {
+  return next_id_;
 }
 
 Status DevToolsClientImpl::SendCommandInternal(
@@ -387,6 +473,7 @@ Status DevToolsClientImpl::SendCommandInternal(
     bool wait_for_response,
     const int client_command_id,
     const Timeout* timeout) {
+  DCHECK(IsConnected());
   if (parent_ == nullptr && !socket_->IsConnected())
     return Status(kDisconnected, "not connected to DevTools");
 
@@ -396,15 +483,17 @@ Status DevToolsClientImpl::SendCommandInternal(
   command.SetInteger("id", command_id);
   command.SetString("method", method);
   command.SetKey("params", params.Clone());
-  if (parent_ != nullptr) {
+  if (!session_id_.empty()) {
     command.SetString("sessionId", session_id_);
   }
   std::string message = SerializeValue(&command);
+
   if (IsVLogOn(1)) {
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Command: " << method << " (id=" << command_id
-            << ") " << id_ << " " << FormatValueForDisplay(params);
+            << ")" << SessionId(session_id_) << " " << id_ << " "
+            << FormatValueForDisplay(params);
   }
   SyncWebSocket* socket =
       static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
@@ -463,6 +552,7 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
                                               bool log_timeout,
                                               const Timeout& timeout) {
   ScopedIncrementer increment_stack_count(&stack_count_);
+  DCHECK(IsConnected());
 
   Status status = EnsureListenersNotifiedOfConnect();
   if (status.IsError())
@@ -552,7 +642,8 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
   if (IsVLogOn(1)) {
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
-    VLOG(1) << "DevTools WebSocket Event: " << event.method << " " << id_ << " "
+    VLOG(1) << "DevTools WebSocket Event: " << event.method
+            << SessionId(session_id_) << " " << id_ << " "
             << FormatValueForDisplay(*event.params);
   }
   unnotified_event_listeners_ = listeners_;
@@ -608,11 +699,27 @@ Status DevToolsClientImpl::ProcessCommandResponse(
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Response: " << method
-            << " (id=" << response.id << ") " << id_ << " " << result;
+            << " (id=" << response.id << ")" << SessionId(session_id_) << " "
+            << id_ << " " << result;
   }
 
-  if (iter == response_info_map_.end())
+  if (iter == response_info_map_.end()) {
+    // A CDP session may become detached while a command sent to that session
+    // is still pending. When the browser eventually tries to process this
+    // command, it sends a response with an error and no session ID. Since
+    // there is no session ID, this message will be routed here to the root
+    // DevToolsClientImpl. If we receive such a response, just ignore it
+    // since the session it belongs to is already detached.
+    if (parent_ == nullptr) {
+      if (!response.result) {
+        const Status status = internal::ParseInspectorError(response.error);
+        if (status.code() == StatusCode::kNoSuchFrame) {
+          return Status(kOk);
+        }
+      }
+    }
     return Status(kUnknownError, "unexpected command response");
+  }
 
   scoped_refptr<ResponseInfo> response_info = response_info_map_[response.id];
   response_info_map_.erase(response.id);
@@ -644,6 +751,7 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfConnect() {
     if (status.IsError())
       return status;
   }
+
   return Status(kOk);
 }
 
@@ -745,6 +853,9 @@ Status ParseInspectorError(const std::string& error_json) {
     if (maybe_code.value() == kCdpMethodNotFoundCode) {
       return Status(kUnknownCommand,
                     maybe_message ? *maybe_message : "UnknownCommand");
+    } else if (maybe_code.value() == kSessionNotFoundInspectorCode) {
+      return Status(kNoSuchFrame,
+                    maybe_message ? *maybe_message : "inspector detached");
     }
   }
 

@@ -38,7 +38,7 @@ public class CustomTabTabPersistenceIntegrationTest {
     @Before
     public void setUp() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
     }

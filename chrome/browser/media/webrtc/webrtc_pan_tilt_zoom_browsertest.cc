@@ -51,24 +51,25 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomPermissionBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetUserMedia(%s);", GetParam().constraints),
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
 
   std::string microphone;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getMicrophonePermission();", &microphone));
+      tab->GetPrimaryMainFrame(), "getMicrophonePermission();", &microphone));
   EXPECT_EQ(microphone, GetParam().expected_microphone);
 
   std::string camera;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getCameraPermission();", &camera));
+      tab->GetPrimaryMainFrame(), "getCameraPermission();", &camera));
   EXPECT_EQ(camera, GetParam().expected_camera);
 
   std::string pan_tilt_zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, GetParam().expected_pan_tilt_zoom);
 }
 
@@ -235,33 +236,34 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomTrackBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetUserMedia(%s);", GetParam().constraints),
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
 
   std::string pan_tilt_zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "granted");
 
   double pan;
   EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetMainFrame(), "getTrackSetting('pan');", &pan));
+      tab->GetPrimaryMainFrame(), "getTrackSetting('pan');", &pan));
   EXPECT_EQ(pan, GetParam().expected_pan);
 
   double tilt;
   EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetMainFrame(), "getTrackSetting('tilt');", &tilt));
+      tab->GetPrimaryMainFrame(), "getTrackSetting('tilt');", &tilt));
   EXPECT_EQ(tilt, GetParam().expected_tilt);
 
   double zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractDouble(
-      tab->GetMainFrame(), "getTrackSetting('zoom');", &zoom));
+      tab->GetPrimaryMainFrame(), "getTrackSetting('zoom');", &zoom));
   EXPECT_EQ(zoom, GetParam().expected_zoom);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("checkConstraints(%s);",
                          GetParam().expected_constraints),
       &result));
@@ -340,28 +342,28 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomConstraintsBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetUserMedia({ video: { width: 640, %s: 101 } });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("checkConstraints({ width: 640, %s: 101 });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "checkConstraints-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("applyConstraints({ advanced: [{ %s: 102 }] });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "applyConstraints-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("checkConstraints({ advanced: [{ %s: 102 }] });",
                          Constraint()),
       &result));
@@ -375,28 +377,28 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomConstraintsBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetUserMedia({ video: { width: 640, %s: 101 } });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("checkConstraints({ width: 640, %s: 101 });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "checkConstraints-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetUserMedia({ video: { %s: true } });",
                          Constraint()),
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "checkConstraints({});", &result));
+      tab->GetPrimaryMainFrame(), "checkConstraints({});", &result));
   EXPECT_EQ(result, "checkConstraints-success");
 }
 
@@ -445,17 +447,18 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomPermissionRequestBrowserTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "runRequestPanTiltZoom();", &result));
+      tab->GetPrimaryMainFrame(), "runRequestPanTiltZoom();", &result));
   EXPECT_EQ(result, "runRequestPanTiltZoom-success");
 
   std::string camera;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getCameraPermission();", &camera));
+      tab->GetPrimaryMainFrame(), "getCameraPermission();", &camera));
   EXPECT_EQ(camera, "granted");
 
   std::string pan_tilt_zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, IsPanTiltZoomSupported() ? "granted" : "prompt");
 }
 
@@ -499,19 +502,20 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomCameraDevicesBrowserTest,
                         /*zoom_supported=*/false);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "runRequestPanTiltZoom();", &result));
+      tab->GetPrimaryMainFrame(), "runRequestPanTiltZoom();", &result));
   EXPECT_EQ(result, "runRequestPanTiltZoom-success");
 
   // Camera permission should be granted.
   std::string camera;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getCameraPermission();", &camera));
+      tab->GetPrimaryMainFrame(), "getCameraPermission();", &camera));
   EXPECT_EQ(camera, "granted");
 
   // Camera PTZ permission should not be granted.
   std::string pan_tilt_zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "prompt");
 
   // Simulate camera device with PTZ support.
@@ -520,7 +524,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomCameraDevicesBrowserTest,
 
   // Camera PTZ permission should still not be granted.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "prompt");
 }
 
@@ -534,19 +539,20 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomCameraDevicesBrowserTest,
                         /*zoom_supported=*/true);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "runRequestPanTiltZoom();", &result));
+      tab->GetPrimaryMainFrame(), "runRequestPanTiltZoom();", &result));
   EXPECT_EQ(result, "runRequestPanTiltZoom-success");
 
   // Camera permission should be granted.
   std::string camera;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getCameraPermission();", &camera));
+      tab->GetPrimaryMainFrame(), "getCameraPermission();", &camera));
   EXPECT_EQ(camera, "granted");
 
   // Camera PTZ permission should be granted.
   std::string pan_tilt_zoom;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "granted");
 
   // Simulate camera device with no PTZ support.
@@ -555,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomCameraDevicesBrowserTest,
 
   // Camera PTZ permission should still be granted.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "getPanTiltZoomPermission();", &pan_tilt_zoom));
+      tab->GetPrimaryMainFrame(), "getPanTiltZoomPermission();",
+      &pan_tilt_zoom));
   EXPECT_EQ(pan_tilt_zoom, "granted");
 }
 
@@ -578,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomFakeCameraDevicesBrowserTest,
   // Access PTZ camera.
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(),
+      tab->GetPrimaryMainFrame(),
       "runGetUserMedia({ video: { pan: true, tilt: true, zoom: true } });",
       &result));
   EXPECT_EQ(result, "runGetUserMedia-success");
@@ -591,20 +598,20 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomFakeCameraDevicesBrowserTest,
 
   // Pan can't be set when page is hidden.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ pan: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ pan: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-failure-SecurityError");
 
   // Tilt can't be set when page is hidden.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ tilt: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ tilt: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-failure-SecurityError");
 
   // Zoom can't be set when page is hidden.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ zoom: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ zoom: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-failure-SecurityError");
 
   // Show page.
@@ -615,19 +622,19 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomFakeCameraDevicesBrowserTest,
 
   // Pan can be set when page is shown again.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ pan: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ pan: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-success");
 
   // Tilt can be set when page is shown again.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ tilt: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ tilt: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-success");
 
   // Zoom can be set when page is shown again.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetMainFrame(), "applyConstraints({ advanced: [{ zoom: 102 }] });",
-      &result));
+      tab->GetPrimaryMainFrame(),
+      "applyConstraints({ advanced: [{ zoom: 102 }] });", &result));
   EXPECT_EQ(result, "applyConstraints-success");
 }

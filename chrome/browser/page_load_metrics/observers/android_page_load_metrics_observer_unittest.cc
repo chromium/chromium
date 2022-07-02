@@ -188,7 +188,8 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
   SetNetworkQualityMock();
   auto navigation_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://www.example.com"), web_contents()->GetMainFrame());
+          GURL("https://www.example.com"),
+          web_contents()->GetPrimaryMainFrame());
   navigation_simulator->Start();
   int frame_tree_node_id =
       navigation_simulator->GetNavigationHandle()->GetFrameTreeNodeId();
@@ -198,7 +199,7 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
   const base::TimeTicks kNow = base::TimeTicks::Now();
   load_timing_info->connect_timing.dns_start = kNow;
   page_load_metrics::ExtraRequestCompleteInfo info(
-      url::Origin::Create(GURL("https://ignored.com")), net::IPEndPoint(),
+      url::SchemeHostPort(GURL("https://ignored.com")), net::IPEndPoint(),
       frame_tree_node_id, false, /* cached */
       10 * 1024 /* size */, 0 /* original_network_content_length */,
       network::mojom::RequestDestination::kDocument, 0,

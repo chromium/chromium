@@ -17,7 +17,7 @@
 @protocol LanguageDetailsTableViewControllerDelegate
 
 // Informs the delegate that user selected whether or not to offer Translate for
-// |languageCode|.
+// `languageCode`.
 - (void)languageDetailsTableViewController:
             (LanguageDetailsTableViewController*)tableViewController
                    didSelectOfferTranslate:(BOOL)offerTranslate
@@ -29,8 +29,8 @@
 // should be offered for a given language.
 @interface LanguageDetailsTableViewController : SettingsRootTableViewController
 
-// The designated initializer. |languageItem| and |delegate| must not be nil.
-// |delegate| will not be retained.
+// The designated initializer. `languageItem` and `delegate` must not be nil.
+// `delegate` will not be retained.
 - (instancetype)initWithLanguageItem:(LanguageItem*)languageItem
                             delegate:
                                 (id<LanguageDetailsTableViewControllerDelegate>)

@@ -62,6 +62,7 @@ class CORE_EXPORT CullRectUpdater {
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
   bool force_proactive_update_ = false;
   bool subtree_is_out_of_cull_rect_ = false;
+  bool subtree_should_use_infinite_cull_rect_ = false;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a

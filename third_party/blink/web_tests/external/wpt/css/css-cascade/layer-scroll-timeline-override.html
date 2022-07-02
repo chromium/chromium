@@ -7,7 +7,7 @@
 <script src="/web-animations/testcommon.js"></script>
 <style>
 #scroller {
-  overflow: scroll;
+  overflow: hidden;
   width: 100px;
   height: 100px;
 }
@@ -26,7 +26,7 @@
 }
 
 #reference {
-  width: 150px;
+  width: 125px;
 }
 
 #target {
@@ -54,15 +54,13 @@ const testCases = [
 
       @scroll-timeline timeline {
         source: selector(#scroller);
-        start: 0px;
-        end: 50px;
+        orientation: block;
       }
 
       @layer {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 100px;
+          orientation: inline;
         }
       }
     `
@@ -80,16 +78,14 @@ const testCases = [
       @layer override {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 50px;
+          orientation: block;
         }
       }
 
       @layer base {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 100px;
+          orientation: inline;
         }
       }
     `
@@ -107,8 +103,7 @@ const testCases = [
       @layer override {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 50px;
+          orientation: block;
         }
       }
     `,
@@ -116,8 +111,7 @@ const testCases = [
       @layer base {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 100px;
+          orientation: inline;
         }
       }
     `
@@ -135,8 +129,7 @@ const testCases = [
       @layer base {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 100px;
+          orientation: inline;
         }
       }
     `,
@@ -144,8 +137,7 @@ const testCases = [
       @layer override {
         @scroll-timeline timeline {
           source: selector(#scroller);
-          start: 0px;
-          end: 50px;
+          orientation: block;
         }
       }
     `

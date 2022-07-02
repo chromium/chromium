@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,14 +22,13 @@
 namespace safe_browsing {
 
 namespace {
-// The max number of files that will be stored on disk.
-constexpr int kMaxNumFiles = 10;
 // If a file is older than `kMaxFileAge` it will be deleted instead
 // of read.
 constexpr base::TimeDelta kMaxFileAge = base::Days(3);
 // The initial index for the `read_index_` and the `write_index_`.
 constexpr int kInitialWriteIndex = 0;
 constexpr int kInitialReadIndex = -1;
+constexpr char kPersistedFileNamePrefix[] = "CRXTelemetry_";
 
 void RecordWriteResult(bool success) {
   base::UmaHistogramBoolean("SafeBrowsing.ExtensionPersister.WriteResult",
@@ -46,8 +46,12 @@ void RecordPersistedFileSize(size_t size) {
 }
 
 void RecordNumberOfFilesInCacheOnStartup(int cache_size) {
+  // `max_cache_size` is based off of a 12 hour reporting interval with a 15
+  // minute write interval. Add 1 to the `max_cache_size` to account for
+  // zero files in the cache.
+  int max_cache_size = 48;
   base::UmaHistogramExactLinear("SafeBrowsing.ExtensionPersister.CacheSize",
-                                cache_size, kMaxNumFiles);
+                                cache_size, max_cache_size + 1);
 }
 
 void RecordAgedFileFound(bool found) {
@@ -58,119 +62,70 @@ void RecordAgedFileFound(bool found) {
 
 ExtensionTelemetryPersister::~ExtensionTelemetryPersister() = default;
 
-ExtensionTelemetryPersister::ExtensionTelemetryPersister() {
-  // Shutdown behavior is CONTINUE_ON_SHUTDOWN to ensure tasks
-  // are run on the threads they were called on.
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-}
+ExtensionTelemetryPersister::ExtensionTelemetryPersister(
+    int max_num_files,
+    base::FilePath profile_path)
+    : dir_path_(profile_path), max_num_files_(max_num_files) {}
 
 void ExtensionTelemetryPersister::PersisterInit() {
-  base::ThreadPool::PostTask(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&ExtensionTelemetryPersister::InitHelper,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
-  if (initialization_complete_ && !is_shut_down_) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExtensionTelemetryPersister::SaveFile,
-                       weak_factory_.GetWeakPtr(), std::move(write_string)));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(https://crbug.com/1325864): Remove old directory clean up code after
+  // launch.
+  base::FilePath old_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &old_dir)) {
+    old_dir = old_dir.AppendASCII("CRXTelemetry");
+    if (base::DirectoryExists(old_dir)) {
+      base::DeletePathRecursively(old_dir);
+    }
   }
-}
-
-void ExtensionTelemetryPersister::WriteReportDuringShutdown(
-    const std::string write_string) {
-  if (initialization_complete_ && !is_shut_down_) {
-    is_shut_down_ = true;
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExtensionTelemetryPersister::SaveFileDuringShutdown,
-                       std::move(write_string), dir_path_, write_index_));
-  }
-}
-
-void ExtensionTelemetryPersister::ReadReport(
-    base::OnceCallback<void(std::string, bool)> callback) {
-  if (initialization_complete_ && read_index_ > kInitialReadIndex &&
-      !is_shut_down_) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExtensionTelemetryPersister::LoadFile,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    std::move(callback).Run("", false);
-  }
-}
-
-void ExtensionTelemetryPersister::ClearPersistedFiles() {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ExtensionTelemetryPersister::DeleteAllFiles,
-                                weak_factory_.GetWeakPtr()));
-}
-
-void ExtensionTelemetryPersister::InitHelper() {
   write_index_ = kInitialWriteIndex;
   read_index_ = kInitialReadIndex;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &dir_path_)) {
-    dir_path_ = dir_path_.AppendASCII("CRXTelemetry");
-    if (!base::DirectoryExists(dir_path_))
-      base::CreateDirectory(dir_path_);
-    while (base::PathExists(dir_path_.AppendASCII(
-               ("CRXTelemetry_" + base::NumberToString(read_index_ + 1)))) &&
-           (read_index_ < kMaxNumFiles - 1)) {
-      read_index_++;
-    }
-    write_index_ = (read_index_ + 1) % kMaxNumFiles;
+  dir_path_ = dir_path_.AppendASCII("CRXTelemetry");
+  if (!base::DirectoryExists(dir_path_))
+    base::CreateDirectory(dir_path_);
+  while (
+      base::PathExists(dir_path_.AppendASCII((
+          kPersistedFileNamePrefix + base::NumberToString(read_index_ + 1)))) &&
+      (read_index_ < max_num_files_ - 1)) {
+    read_index_++;
   }
+  write_index_ = (read_index_ + 1) % max_num_files_;
   initialization_complete_ = true;
   RecordNumberOfFilesInCacheOnStartup(read_index_ + 1);
 }
 
-// Static
-void ExtensionTelemetryPersister::SaveFileDuringShutdown(
-    std::string write_string,
-    base::FilePath dir_path,
-    int write_index) {
-  // If the persister directory does not exist the persister
-  // will not write.
-  if (!base::DirectoryExists(dir_path))
-    return;
-  base::FilePath path = dir_path.AppendASCII(
-      ("CRXTelemetry_" + base::NumberToString(write_index)));
-  bool success = base::WriteFile(path, write_string);
-  RecordWriteResult(success);
+void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (initialization_complete_) {
+    if (!base::DirectoryExists(dir_path_)) {
+      base::CreateDirectory(dir_path_);
+      write_index_ = kInitialWriteIndex;
+      read_index_ = kInitialReadIndex;
+    }
+    base::FilePath path = dir_path_.AppendASCII(
+        (kPersistedFileNamePrefix + base::NumberToString(write_index_)));
+    bool success = base::WriteFile(path, write_string);
+    if (success) {
+      write_index_++;
+      if (write_index_ - 1 > read_index_)
+        read_index_ = write_index_ - 1;
+      if (write_index_ >= max_num_files_)
+        write_index_ = 0;
+    }
+    RecordWriteResult(success);
+  }
 }
 
-void ExtensionTelemetryPersister::SaveFile(std::string write_string) {
-  if (!base::DirectoryExists(dir_path_)) {
-    base::CreateDirectory(dir_path_);
-    write_index_ = kInitialWriteIndex;
-    read_index_ = kInitialReadIndex;
+std::string ExtensionTelemetryPersister::ReadReport() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!initialization_complete_ || read_index_ <= kInitialReadIndex) {
+    return std::string();
   }
-  base::FilePath path = dir_path_.AppendASCII(
-      ("CRXTelemetry_" + base::NumberToString(write_index_)));
-  bool success = base::WriteFile(path, write_string);
-  if (success) {
-    write_index_++;
-    if (write_index_ - 1 > read_index_)
-      read_index_ = write_index_ - 1;
-    if (write_index_ >= kMaxNumFiles)
-      write_index_ = 0;
-  }
-  RecordWriteResult(success);
-}
-
-void ExtensionTelemetryPersister::LoadFile(
-    base::OnceCallback<void(std::string, bool)> callback) {
   bool read_success = false;
-  std::string persisted_report = "";
+  std::string persisted_report;
   base::File::Info info;
   base::FilePath path = dir_path_.AppendASCII(
-      ("CRXTelemetry_" + base::NumberToString(read_index_)));
+      (kPersistedFileNamePrefix + base::NumberToString(read_index_)));
   // Check file to see if it's older than `kMaxFileAge`,
   // if so, delete it and look for another file.
   while (base::PathExists(path) && base::DirectoryExists(dir_path_)) {
@@ -180,7 +135,7 @@ void ExtensionTelemetryPersister::LoadFile(
     read_index_--;
     write_index_ = read_index_ + 1;
     base::GetFileInfo(path, &info);
-    if (info.creation_time + kMaxFileAge > base::Time::NowFromSystemTime()) {
+    if (info.creation_time + kMaxFileAge > base::Time::Now()) {
       RecordAgedFileFound(false);
       if (base::ReadFileToString(path, &persisted_report))
         read_success = true;
@@ -192,20 +147,21 @@ void ExtensionTelemetryPersister::LoadFile(
     DeleteFile(path);
     RecordAgedFileFound(true);
     path = dir_path_.AppendASCII(
-        ("CRXTelemetry_" + base::NumberToString(read_index_)));
+        (kPersistedFileNamePrefix + base::NumberToString(read_index_)));
   }
   RecordReadResult(read_success);
-  std::move(callback).Run(std::move(persisted_report), std::move(read_success));
+  return persisted_report;
 }
 
-bool ExtensionTelemetryPersister::DeleteFile(const base::FilePath path) {
-  return (base::PathExists(path) && base::DeleteFile(path));
-}
-
-void ExtensionTelemetryPersister::DeleteAllFiles() {
+void ExtensionTelemetryPersister::ClearPersistedFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   write_index_ = kInitialWriteIndex;
   read_index_ = kInitialReadIndex;
   base::DeletePathRecursively(dir_path_);
 }
 
+bool ExtensionTelemetryPersister::DeleteFile(const base::FilePath path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return (base::PathExists(path) && base::DeleteFile(path));
+}
 }  // namespace safe_browsing

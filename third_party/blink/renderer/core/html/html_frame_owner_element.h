@@ -199,6 +199,13 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     is_swapping_frames_ = is_swapping;
   }
 
+  bool IsEligibleForLazyAds(const KURL& url);
+  void MaybeSetTimeoutToStartAdFrameLoading(const KURL& url,
+                                            bool is_loading_attr_lazy);
+  // This function is used for the call back of idle task.
+  // Trigger loading if the frame is lazy-loaded but not started yet.
+  void LoadIfLazyOnIdle(base::TimeTicks deadline);
+
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.
   bool LazyLoadIfPossible(const KURL&,

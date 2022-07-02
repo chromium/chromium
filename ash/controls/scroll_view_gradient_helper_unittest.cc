@@ -20,6 +20,7 @@ namespace {
 
 constexpr int kWidgetHeight = 100;
 constexpr int kWidgetWidth = 100;
+constexpr int kGradientSize = 16;
 
 // Uses ViewsTestBase because we may want to move this helper into //ui/views
 // in the future.
@@ -46,7 +47,8 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
         contents->AddChildView(std::make_unique<views::ScrollView>());
     scroll_view_->SetBounds(0, 0, kWidgetWidth, kWidgetHeight);
     scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+    gradient_helper_ =
+        std::make_unique<ScrollViewGradientHelper>(scroll_view_, kGradientSize);
   }
 
   void TearDown() override {

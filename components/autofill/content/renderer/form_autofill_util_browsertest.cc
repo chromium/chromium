@@ -16,7 +16,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,105 +53,11 @@ namespace autofill {
 namespace form_util {
 namespace {
 
-struct AutofillFieldLabelSourceCase {
-  const char* html;
-  const FormFieldData::LabelSource label_source;
-};
-
 struct AutofillFieldUtilCase {
   const char* description;
   const char* html;
   const char16_t* expected_label;
 };
-
-const char kElevenChildren[] =
-    "<div id='target'>"
-    "<div>child0</div>"
-    "<div>child1</div>"
-    "<div>child2</div>"
-    "<div>child3</div>"
-    "<div>child4</div>"
-    "<div>child5</div>"
-    "<div>child6</div>"
-    "<div>child7</div>"
-    "<div>child8</div>"
-    "<div>child9</div>"
-    "<div>child10</div>"
-    "</div>";
-const char16_t kElevenChildrenExpected[] =
-    u"child0child1child2child3child4child5child6child7child8";
-
-const char kElevenChildrenNested[] =
-    "<div id='target'>"
-    "<div>child0"
-    "<div>child1"
-    "<div>child2"
-    "<div>child3"
-    "<div>child4"
-    "<div>child5"
-    "<div>child6"
-    "<div>child7"
-    "<div>child8"
-    "<div>child9"
-    "<div>child10"
-    "</div></div></div></div></div></div></div></div></div></div></div></div>";
-// Take 10 elements -1 for target element, -1 as text is a leaf element.
-const char16_t kElevenChildrenNestedExpected[] =
-    u"child0child1child2child3child4";
-
-const char kSkipElement[] =
-    "<div id='target'>"
-    "<div>child0</div>"
-    "<div class='skip'>child1</div>"
-    "<div>child2</div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be child0child2
-const char16_t kSkipElementExpected[] = u"child0";
-
-const char kDivTableExample1[] =
-    "<div>"
-    "<div>label</div><div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample1Expected[] = u"label";
-
-const char kDivTableExample2[] =
-    "<div>"
-    "<div>label</div>"
-    "<div>should be skipped<input/></div>"
-    "<div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample2Expected[] = u"label";
-
-const char kDivTableExample3[] =
-    "<div>"
-    "<div>should be skipped<input/></div>"
-    "<div>label</div>"
-    "<div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample3Expected[] = u"label";
-
-const char kDivTableExample4[] =
-    "<div>"
-    "<div>should be skipped<input/></div>"
-    "label"
-    "<div><input id='target'/></div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be label
-const char16_t kDivTableExample4Expected[] = u"";
-
-const char kDivTableExample5[] =
-    "<div>"
-    "<div>label<div><input id='target'/></div>behind</div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be label
-const char16_t kDivTableExample5Expected[] = u"labelbehind";
-
-const char kDivTableExample6[] =
-    "<div>"
-    "<div>label<div><div>-<div><input id='target'/></div></div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be "label" or "label-"
-const char16_t kDivTableExample6Expected[] = u"";
 
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
@@ -184,15 +89,49 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
       {"simple test", "<div id='target'>test</div>", u"test"},
       {"Concatenate test", "<div id='target'><span>one</span>two</div>",
        u"onetwo"},
-      // TODO(crbug.com/796918): should be "onetwo"
+      // Test that "two" is not inferred, because for the purpose of label
+      // extraction, we only care about text before the input element.
       {"Ignore input", "<div id='target'>one<input value='test'/>two</div>",
        u"one"},
       {"Trim", "<div id='target'>   one<span>two  </span></div>", u"onetwo"},
-      {"eleven children", kElevenChildren, kElevenChildrenExpected},
-      // TODO(crbug.com/796918): Depth is only 5 elements
-      {"eleven children nested", kElevenChildrenNested,
-       kElevenChildrenNestedExpected},
-  };
+      {"eleven children",
+       "<div id='target'>"
+       "<div>child0</div>"
+       "<div>child1</div>"
+       "<div>child2</div>"
+       "<div>child3</div>"
+       "<div>child4</div>"
+       "<div>child5</div>"
+       "<div>child6</div>"
+       "<div>child7</div>"
+       "<div>child8</div>"
+       "<div>child9</div>"
+       "<div>child10</div>",
+       u"child0child1child2child3child4child5child6child7child8"},
+      // TODO(crbug.com/796918): Depth is only 5 elements instead of 10. This
+      // happens because every div and every text node decrease the depth.
+      {"eleven children nested",
+       "<div id='target'>"
+       "<div>child0"
+       "<div>child1"
+       "<div>child2"
+       "<div>child3"
+       "<div>child4"
+       "<div>child5"
+       "<div>child6"
+       "<div>child7"
+       "<div>child8"
+       "<div>child9"
+       "<div>child10"
+       "</div></div></div></div></div></div></div></div></div></div></div></"
+       "div>",
+       u"child0child1child2child3child4"},
+      {"Skip script tags",
+       "<div id='target'><script>alert('hello');</script>label</div>",
+       u"label"},
+      {"Script tag whitespacing",
+       "<div id='target'>Auto<script>alert('hello');</script>fill</div>",
+       u"Autofill"}};
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
     LoadHTML(test_case.html);
@@ -205,7 +144,14 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
 
 TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
   static const AutofillFieldUtilCase test_cases[] = {
-      {"Skip div element", kSkipElement, kSkipElementExpected},
+      // Test that everything after the "skip" div is discarded.
+      {"Skip div element", R"(
+       <div id=target>
+         <div>child0</div>
+         <div class=skip>child1</div>
+         <div>child2</div>
+       </div>)",
+       u"child0"},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -227,12 +173,48 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
   static const AutofillFieldUtilCase test_cases[] = {
-      {"DIV table test 1", kDivTableExample1, kDivTableExample1Expected},
-      {"DIV table test 2", kDivTableExample2, kDivTableExample2Expected},
-      {"DIV table test 3", kDivTableExample3, kDivTableExample3Expected},
-      {"DIV table test 4", kDivTableExample4, kDivTableExample4Expected},
-      {"DIV table test 5", kDivTableExample5, kDivTableExample5Expected},
-      {"DIV table test 6", kDivTableExample6, kDivTableExample6Expected},
+      {"DIV table test 1", R"(
+       <div>
+         <div>label</div><div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 2", R"(
+       <div>
+         <div>label</div>
+         <div>should be skipped<input></div>
+         <div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 3", R"(
+       <div>
+         <div>should be skipped<input></div>
+         <div>label</div>
+         <div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 4", R"(
+       <div>
+         <div>should be skipped<input></div>
+         label
+         <div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 5",
+       "<div>"
+       "<div>label<div><input id='target'/></div>behind</div>"
+       "</div>",
+       u"label"},
+      {"DIV table test 6", R"(
+       <div>
+         label
+         <div>-</div>
+         <div><input id='target'></div>
+       </div>)",
+       // TODO(crbug.com/796918): Should be "label" or "label-". This happens
+       // because "-" is inferred, but discarded because `!IsLabelValid()`.
+       u""},
+      {"Infer from next sibling",
+       "<input id='target' type='checkbox'>hello <b>world</b>", u"hello world"},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -251,6 +233,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
+  struct AutofillFieldLabelSourceCase {
+    const char* html;
+    const FormFieldData::LabelSource label_source;
+  };
   const char16_t kLabelSourceExpectedLabel[] = u"label";
   static const AutofillFieldLabelSourceCase test_cases[] = {
       {"<div><div>label</div><div><input id='target'/></div></div>",
@@ -267,7 +253,11 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
        FormFieldData::LabelSource::kAriaLabel},
       {"<input id='target' value='label'/>",
        FormFieldData::LabelSource::kValue},
+      // In the next test, the text node is picked up on the way up the DOM-tree
+      // by the div extraction logic.
       {"<li>label<div><input id='target'/></div></li>",
+       FormFieldData::LabelSource::kDivTable},
+      {"<li><span>label</span><div><input id='target'/></div></li>",
        FormFieldData::LabelSource::kLiTag},
       {"<table><tr><td>label</td><td><input id='target'/></td></tr></table>",
        FormFieldData::LabelSource::kTdTag},
@@ -520,8 +510,8 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   control_elements.push_back(
       GetFormControlElementById(web_frame->GetDocument(), "name2"));
 
-  EXPECT_TRUE(autofill::form_util::IsWebElementVisible(control_elements[0]));
-  EXPECT_FALSE(autofill::form_util::IsWebElementVisible(control_elements[1]));
+  EXPECT_TRUE(autofill::form_util::IsWebElementFocusable(control_elements[0]));
+  EXPECT_FALSE(autofill::form_util::IsWebElementFocusable(control_elements[1]));
 
   std::vector<WebElement> iframe_elements;
 
@@ -955,6 +945,9 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 }
 
 // Tests the visibility detection of iframes.
+// This test checks many scenarios. It's intentionally not a parameterized test
+// for performance reasons.
+// This test is very similar to the IsWebElementVisibleTest test.
 TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   // Test cases of <iframe> elements with different styles.
   //
@@ -968,10 +961,10 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   // IsVisibleIframe() but invisible to the human).
   //
   // The `data-false="{POSITIVE,NEGATIVE}"` attribute indicates whether the test
-  // case to be a false positive/negative compared to human visibility
-  // perception. In such a case, not meeting the expectation actually indicates
-  // an improvement of IsVisibleIframe(), as it means a false positive/negative
-  // has been fixed.
+  // case is a false positive/negative compared to human visibility perception.
+  // In such a case, not meeting the expectation actually indicates an
+  // improvement of IsVisibleIframe(), as it means a false positive/negative has
+  // been fixed.
   //
   // The sole purpose of the `data-false` attribute is to document this and to
   // print a message when such a test fails.
@@ -1005,7 +998,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
         <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; right:  -200px;" data-false="POSITIVE"></iframe>
         <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; bottom: -200px;" data-false="POSITIVE"></iframe>
 
-        <iframe srcdoc="<input>" data-visible   style=""></iframe> <!-- Finish with a visible frame to make sure all <iframe>s have been closed -->
+        <iframe srcdoc="<input>" data-visible   style=""></iframe> <!-- Finish with a visible frame to make sure all <iframe> tags have been closed -->
 
         <div style="width: 10000; height: 10000"></div>
       </body>)");
@@ -1023,7 +1016,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
     }
     return result;
   }();
-  ASSERT_GE(iframes.size(), 16u);
+  ASSERT_GE(iframes.size(), 23u);
 
   auto RunTestCases = [](const std::vector<WebElement>& iframes) {
     for (WebElement iframe : iframes) {
@@ -1053,6 +1046,125 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
     content::RunAllTasksUntilIdle();
     SCOPED_TRACE(testing::Message() << "Scrolled to bottom right");
     RunTestCases(iframes);
+  }
+}
+
+// Tests the visibility detection of iframes.
+// This test checks many scenarios. It's intentionally not a parameterized test
+// for performance reasons.
+// This test is very similar to the IsVisibleIframeTest test.
+TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
+  // Test cases of <input> elements with different types and styles.
+  //
+  // The `data-[in]visible` attribute represents whether IsWebElementVisible()
+  // is expected to classify the input as [in]visible.
+  //
+  // Since IsWebElementVisible() falls short of what the human user will
+  // consider visible or invisible, there are false positives and false
+  // negatives. For example, IsWebElementVisible() does not check opacity, so
+  // <input style="opacity: 0.0"> is a false positive (it's visible to
+  // IsWebElementVisible() but invisible to the human).
+  //
+  // The `data-false="{POSITIVE,NEGATIVE}"` attribute indicates whether the test
+  // case is a false positive/negative compared to human visibility perception.
+  // In such a case, not meeting the expectation actually indicates an
+  // improvement of IsWebElementVisible(), as it means a false positive/negative
+  // has been fixed.
+  //
+  // The sole purpose of the `data-false` attribute is to document this and to
+  // print a message when such a test fails.
+  LoadHTML(R"(
+      <body>
+        <input type="text" data-visible   style="">
+        <input type="text" data-visible   style="display: block;">
+        <input type="text" data-visible   style="visibility: visible;">
+
+        <input type="text" data-invisible style="display: none;">
+        <input type="text" data-invisible style="visibility: hidden;">
+        <div style="display: none;">     <input type="text" data-invisible></div>
+        <div style="visibility: hidden;"><input type="text" data-invisible></div>
+
+        <input type="text" data-visible   style="width: 15px; height: 15px;">
+        <input type="text" data-invisible style="width: 15px; height:  5px;">
+        <input type="text" data-invisible style="width:  5px; height: 15px;">
+        <input type="text" data-invisible style="width:  5px; height:  5px;">
+
+        <input type="text" data-invisible style="width: 1px; height: 1px;">
+        <input type="text" data-invisible style="width: 1px; height: 1px; overflow: visible;" data-false="NEGATIVE">
+
+        <input type="text" data-visible   style="opacity: 0.0;" data-false="POSITIVE">
+        <input type="text" data-visible   style="opacity: 0.0;" data-false="POSITIVE">
+        <input type="text" data-visible   style="position: absolute; clip: rect(0,0,0,0);" data-false="POSITIVE">
+
+        <input type="text" data-visible   style="width: 100px; position: absolute; left:    -75px;">
+        <input type="text" data-visible   style="width: 100px; position: absolute; top:     -75px;">
+        <input type="text" data-visible   style="width: 100px; position: absolute; left:   -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; top:    -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; right:  -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; bottom: -200px;" data-false="POSITIVE">
+
+        <input type="checkbox" data-visible   style="">
+        <input type="checkbox" data-invisible style="display: none;">
+        <input type="checkbox" data-invisible style="visibility: hidden;">
+        <input type="checkbox" data-visible   style="width: 15px; height: 15px;">
+        <input type="checkbox" data-visible   style="width: 15px; height:  5px;">
+        <input type="checkbox" data-visible   style="width:  5px; height: 15px;">
+        <input type="checkbox" data-visible   style="width:  5px; height:  5px;">
+
+        <input type="radio" data-visible   style="">
+        <input type="radio" data-invisible style="display: none;">
+        <input type="radio" data-invisible style="visibility: hidden;">
+        <input type="radio" data-visible   style="width: 15px; height: 15px;">
+        <input type="radio" data-visible   style="width: 15px; height:  5px;">
+        <input type="radio" data-visible   style="width:  5px; height: 15px;">
+        <input type="radio" data-visible   style="width:  5px; height:  5px;">
+
+        <div style="width: 10000; height: 10000"></div>
+      </body>)");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  std::vector<WebElement> inputs = [this] {
+    WebDocument doc = GetMainFrame()->GetDocument();
+    std::vector<WebElement> result;
+    WebElementCollection inputs = doc.GetElementsByHTMLTagName("input");
+    for (WebElement input = inputs.FirstItem(); !input.IsNull();
+         input = inputs.NextItem()) {
+      result.push_back(input);
+    }
+    return result;
+  }();
+  ASSERT_GE(inputs.size(), 36u);
+
+  auto RunTestCases = [](const std::vector<WebElement>& inputs) {
+    for (WebElement input : inputs) {
+      gfx::Rect bounds = input.BoundsInViewport();
+      bool expectation = input.HasAttribute("data-visible");
+      SCOPED_TRACE(
+          testing::Message()
+          << "Iframe with style \n  " << input.GetAttribute("style").Ascii()
+          << "\nwith dimensions w=" << bounds.width()
+          << ",h=" << bounds.height() << " and position x=" << bounds.x()
+          << ",y=" << bounds.y()
+          << (input.HasAttribute("data-false") ? "\nwhich used to be a FALSE "
+                                               : "")
+          << input.GetAttribute("data-false").Ascii());
+      ASSERT_TRUE(input.HasAttribute("data-visible") !=
+                  input.HasAttribute("data-invisible"));
+      EXPECT_EQ(IsWebElementVisible(input), expectation);
+    }
+  };
+
+  RunTestCases(inputs);
+
+  {
+    ExecuteJavaScriptForTests(
+        "window.scrollTo(document.body.scrollWidth,document.body.scrollHeight)"
+        ";");
+    content::RunAllTasksUntilIdle();
+    SCOPED_TRACE(testing::Message() << "Scrolled to bottom right");
+    RunTestCases(inputs);
   }
 }
 

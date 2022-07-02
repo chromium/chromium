@@ -81,7 +81,6 @@ bool DevToolsDownloadManagerDelegate::DetermineDownloadTarget(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN, empty_path,
         empty_path, std::string() /*mime_type*/,
-        absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
     return true;
   }
@@ -164,7 +163,6 @@ void DevToolsDownloadManagerDelegate::OnDownloadPathGenerated(
       download::DownloadItem::MixedContentStatus::UNKNOWN,
       suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload")),
       suggested_path.BaseName(), std::string(),
-      absl::nullopt /*download_schedule*/,
       download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 

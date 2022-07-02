@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, GuestsAreNotSuitableHosts) {
   GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHost* rph =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   // Make it believe it's a guest.
   static_cast<RenderProcessHostImpl*>(rph)->SetForGuestsOnlyForTesting();
   EXPECT_EQ(1, RenderProcessHost::GetCurrentRenderProcessCountForTesting());
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRenderProcessHostTaken) {
   EXPECT_TRUE(NavigateToURL(window, test_url));
 
   EXPECT_EQ(spare_renderer,
-            window->web_contents()->GetMainFrame()->GetProcess());
+            window->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   // The old spare render process host should no longer be available.
   EXPECT_NE(spare_renderer,
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRenderProcessHostNotTaken) {
 
   // There should have been another process created for the navigation.
   EXPECT_NE(spare_renderer,
-            window->web_contents()->GetMainFrame()->GetProcess());
+            window->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   // Check if a fresh spare is available (depending on the operating mode).
   // Note this behavior is identical to what would have happened if the
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_EQ(nullptr,
             RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
   EXPECT_EQ(spare_renderer,
-            new_window->web_contents()->GetMainFrame()->GetProcess());
+            new_window->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   // Revert to the default process limit and original ContentBrowserClient.
   RenderProcessHost::SetMaxRendererProcessCount(0);
@@ -444,10 +444,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRendererOnProcessReuse) {
 
   // This should reuse the existing process.
   Shell* new_browser = CreateBrowser();
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess(),
-            new_browser->web_contents()->GetMainFrame()->GetProcess());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            new_browser->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_NE(spare_renderer,
-            new_browser->web_contents()->GetMainFrame()->GetProcess());
+            new_browser->web_contents()->GetPrimaryMainFrame()->GetProcess());
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     EXPECT_NE(nullptr,
               RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // partition.
   Shell* window = CreateBrowser();
   RenderProcessHost* old_process =
-      window->web_contents()->GetMainFrame()->GetProcess();
+      window->web_contents()->GetPrimaryMainFrame()->GetProcess();
   EXPECT_EQ(default_storage, old_process->GetStoragePartition());
 
   // Warm up the spare process - it should be associated with the default
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // Navigate to a URL that requires a custom storage partition.
   EXPECT_TRUE(NavigateToURL(window, test_url));
   RenderProcessHost* new_process =
-      window->web_contents()->GetMainFrame()->GetProcess();
+      window->web_contents()->GetPrimaryMainFrame()->GetProcess();
   // Requirement to use a custom storage partition should force a process swap.
   EXPECT_NE(new_process, old_process);
   // The new process should be associated with the custom storage partition.
@@ -668,7 +668,7 @@ class ShellCloser : public RenderProcessHostObserver {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  raw_ptr<Shell> shell_;
+  raw_ptr<Shell, DanglingUntriaged> shell_;
   raw_ptr<std::string> logging_string_;
 };
 
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   ShellCloser shell_closer(shell(), &logging_string);
   ObserverLogger observer_logger(&logging_string);
   RenderProcessHost* rph =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
 
   // Ensure that the ShellCloser observer is first, so that it will have first
   // dibs on the ProcessExited callback.
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessOnBadMojoMessage) {
   GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHost* rph =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
 
   host_destructions_ = 0;
   process_exits_ = 0;
@@ -834,14 +834,14 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/webaudio_oscillator.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   {
     // Start audio and wait for it to become audible, in both the frame *and*
     // the page.
     base::RunLoop run_loop;
     AudioStartObserver observer(shell()->web_contents(),
-                                shell()->web_contents()->GetMainFrame(),
+                                shell()->web_contents()->GetPrimaryMainFrame(),
                                 run_loop.QuitClosure());
 
     std::string result;
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   std::string result;
   EXPECT_EQ("OK",
             EvalJs(shell(), "getUserMediaAndExpectSuccess({video: true});",
@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   std::string result;
   EXPECT_EQ("OK", EvalJs(shell(), "getUserMediaAndStop({video: true});",
                          EXECUTE_SCRIPT_USE_MANUAL_REPLY))
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   std::string result;
   EXPECT_EQ("OK",
             EvalJs(shell(), "getUserMediaAndExpectSuccess({video: true});",
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   std::string result;
   EXPECT_EQ("OK",
             EvalJs(shell(),
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(CaptureStreamRenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/media/getusermedia.html")));
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   std::string result;
   EXPECT_EQ("OK",
             EvalJs(shell(),
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
       shell(), embedded_test_server()->GetURL("/send-beacon.html")));
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderProcessHostImpl* rph =
       static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
 
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_EQ("ok", EvalJs(shell(), "setup();"));
 
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   // 1 for the service worker.
   EXPECT_EQ(rph->worker_ref_count(), 1u);
   EXPECT_EQ(rph->keep_alive_ref_count(), 0u);
@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 
   run_loop.Run();
   // We are still using the same process.
-  ASSERT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
+  ASSERT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(), rph);
   // 1 for the service worker, 1 for the keepalive fetch.
   EXPECT_EQ(rph->keep_alive_ref_count(), 1u);
   EXPECT_EQ(rph->worker_ref_count(), 1u);
@@ -1175,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderProcessHostImpl* rph =
       static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
 
@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderProcessHostImpl* rph =
       static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
 
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
   GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHost* rph =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostImpl* process = static_cast<RenderProcessHostImpl*>(rph);
 
   IsProcessBackgroundedObserver observer(process);
@@ -1430,7 +1430,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachRenderFrameHost) {
   // 1. Navigate to `url_a`; it creates 4 RenderFrameHosts that live in the
   // same process.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh_a = shell()->web_contents()->GetPrimaryMainFrame();
   std::vector<RenderFrameHost*> process_a_frames =
       CollectAllRenderFrameHosts(rfh_a);
 
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachRenderFrameHost) {
   Shell* new_window = CreateBrowser();
   ASSERT_TRUE(NavigateToURL(new_window, url_new_window));
   auto* new_window_main_frame = static_cast<RenderFrameHostImpl*>(
-      new_window->web_contents()->GetMainFrame());
+      new_window->web_contents()->GetPrimaryMainFrame());
   ASSERT_EQ(new_window_main_frame->child_count(), 1u);
   RenderFrameHost* new_window_sub_frame =
       new_window_main_frame->child_at(0)->current_frame_host();

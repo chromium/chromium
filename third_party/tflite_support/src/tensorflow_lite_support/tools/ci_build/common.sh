@@ -16,7 +16,7 @@
 # External `common.sh`
 
 # Keep in sync with tensorflow core and configure.py.
-LATEST_BAZEL_VERSION=4.2.2
+LATEST_BAZEL_VERSION=5.1.1
 
 # Run flaky functions with retries.
 # run_with_retry cmd
@@ -60,7 +60,7 @@ function install_bazelisk {
   esac
   mkdir -p "$HOME/bin"
   wget --no-verbose -O "$HOME/bin/bazel" \
-      "https://github.com/bazelbuild/bazelisk/releases/download/v1.3.0/$name"
+      "https://github.com/bazelbuild/bazelisk/releases/download/v1.11.0/$name"
   chmod u+x "$HOME/bin/bazel"
   if [[ ! ":$PATH:" =~ :"$HOME"/bin/?: ]]; then
     PATH="$HOME/bin:$PATH"

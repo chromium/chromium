@@ -61,7 +61,7 @@ class ExtensionViewViews : public views::WebView,
   void OnLoaded() override;
 
   // views::WebView:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void PreferredSizeChanged() override;
   void OnWebContentsAttached() override;
 

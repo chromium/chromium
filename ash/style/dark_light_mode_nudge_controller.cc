@@ -5,10 +5,12 @@
 #include "ash/style/dark_light_mode_nudge_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/dark_light_mode_nudge.h"
-#include "ash/style/dark_mode_controller.h"
+#include "base/command_line.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -18,7 +20,7 @@ namespace ash {
 namespace {
 
 PrefService* GetActiveUserPrefService() {
-  return DarkModeController::Get()->active_user_pref_service();
+  return DarkLightModeControllerImpl::Get()->active_user_pref_service();
 }
 
 void SetRemainingShownCount(int count) {
@@ -60,10 +62,21 @@ bool DarkLightModeNudgeController::ShouldShowNudge() const {
   if (!chromeos::features::IsDarkLightModeEnabled())
     return false;
 
+  // Do not show the nudge if it is set to be hidden in the tests.
+  if (hide_nudge_for_testing_)
+    return false;
+
+  // Do not show if the command line flag to hide nudges is set.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAshNoNudges))
+    return false;
+
+  auto* session_controller = Shell::Get()->session_controller();
+  if (!session_controller->IsActiveUserSessionStarted())
+    return false;
+
   absl::optional<user_manager::UserType> user_type =
-      Shell::Get()->session_controller()->GetUserType();
-  // This can only be called while a user is logged in, so `user_type` should
-  // never be empty.
+      session_controller->GetUserType();
+  // Must have a `user_type` because of the active user session check above.
   DCHECK(user_type);
   switch (*user_type) {
     case user_manager::USER_TYPE_REGULAR:

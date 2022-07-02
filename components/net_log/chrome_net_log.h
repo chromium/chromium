@@ -9,10 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace net_log {
 
@@ -23,7 +20,7 @@ namespace net_log {
 //  * The operating system version
 //
 //  Safe to call on any thread.
-std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
+base::Value::Dict GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string);
 

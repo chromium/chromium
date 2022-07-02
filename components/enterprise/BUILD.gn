@@ -126,17 +126,20 @@ source_set("unit_tests") {
   sources = [
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
+    "common/proto/connectors_unittest.cc",
   ]
 
   deps = [
     ":enterprise",
     ":reporting_test_support",
+    "common/proto:connectors_proto",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/policy/core/common:test_support",
     "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/content_analysis_sdk:liblcasdk",
   ]
 
   if (!is_chromeos_ash) {

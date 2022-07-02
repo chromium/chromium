@@ -9,6 +9,7 @@
 #include "base/ios/ns_range.h"
 #include "base/test/gtest_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -433,7 +434,7 @@ TEST_F(StringUtilTest, SubstringOfWidth) {
 
 // Verifies when it should return CGRectNull and when it shouldn't.
 TEST_F(StringUtilTest, TextViewLinkBound) {
-  UITextView* text_view = [[UITextView alloc] init];
+  UITextView* text_view = CreateUITextViewWithTextKit1();
   text_view.text = @"Some text.";
 
   // Returns CGRectNull for empty NSRange.

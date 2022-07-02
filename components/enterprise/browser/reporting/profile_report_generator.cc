@@ -72,7 +72,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
       policies_ = policy::DictionaryPolicyConversions(std::move(client))
                       .EnableConvertTypes(false)
                       .EnablePrettyPrint(false)
-                      .ToValue();
+                      .ToValueDict();
       GetChromePolicyInfo();
       GetExtensionPolicyInfo();
       GetPolicyFetchTimestampInfo();

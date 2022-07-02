@@ -8,8 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 
@@ -30,7 +30,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetSegmentScore(OptimizationTarget segment_id,
+  void GetSegmentScore(SegmentId segment_id,
                        SegmentScoreCallback callback) override {
     DCHECK(initialized_);
 
@@ -49,7 +49,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
     // Read results from last session to memory.
     for (const auto& pair : *all_segments) {
-      OptimizationTarget id = pair.first;
+      SegmentId id = pair.first;
       const proto::SegmentInfo& info = pair.second;
       if (!info.has_prediction_result())
         continue;
@@ -67,7 +67,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
 
   // Model scores that are read from db on startup and used for serving the
   // clients in the current session.
-  std::map<OptimizationTarget, float> scores_last_session_;
+  std::map<SegmentId, float> scores_last_session_;
 
   // Whether the initialization is complete through an Initialize call.
   bool initialized_{false};

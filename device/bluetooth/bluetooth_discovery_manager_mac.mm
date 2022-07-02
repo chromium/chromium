@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_discovery_manager_mac.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <IOBluetooth/objc/IOBluetoothDevice.h>
 #import <IOBluetooth/objc/IOBluetoothDeviceInquiry.h>
 
@@ -21,7 +23,7 @@ class BluetoothDiscoveryManagerMacClassic;
 @interface BluetoothDeviceInquiryDelegate
     : NSObject<IOBluetoothDeviceInquiryDelegate> {
  @private
-  device::BluetoothDiscoveryManagerMacClassic* _manager;  // weak
+  raw_ptr<device::BluetoothDiscoveryManagerMacClassic> _manager;  // weak
 }
 
 - (instancetype)initWithManager:

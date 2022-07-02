@@ -23,6 +23,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -43,34 +44,6 @@ class LearnMoreCallback {
  private:
   void IncrementCount(TipMarqueeView*) { ++count_; }
   int count_ = 0;
-};
-
-class WidgetCloseWaiter : public views::WidgetObserver {
- public:
-  explicit WidgetCloseWaiter(views::Widget* widget) {
-    observation_.Observe(widget);
-  }
-
-  void OnWidgetClosing(views::Widget* widget) override {
-    quit_closure_ = run_loop_.QuitClosure();
-  }
-
-  void OnWidgetDestroyed(views::Widget* widget) override {
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
-    observation_.Reset();
-  }
-
-  void WaitForClose() {
-    ASSERT_FALSE(quit_closure_.is_null());
-    run_loop_.Run();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::OnceClosure quit_closure_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
 };
 
 }  // anonymous namespace
@@ -297,10 +270,10 @@ TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
       marquee_->GetProperty(views::kAnchoredDialogKey);
   views::Widget* const overflow_widget = delegate->GetWidget();
   ASSERT_NE(static_cast<views::Widget*>(nullptr), overflow_widget);
-  WidgetCloseWaiter waiter(overflow_widget);
+  views::test::WidgetDestroyedWaiter waiter(overflow_widget);
   ui::KeyEvent press_esc(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
   overflow_widget->OnKeyEvent(&press_esc);
-  waiter.WaitForClose();
+  waiter.Wait();
   EXPECT_TRUE(marquee_->GetVisible());
 }
 
@@ -318,8 +291,8 @@ TEST_F(TipMarqueeViewTest, OverflowBubbleGotItDismissesTip) {
   SimulateMarqueeClick(kPressPoint);
   views::DialogDelegate* const delegate =
       marquee_->GetProperty(views::kAnchoredDialogKey);
-  WidgetCloseWaiter waiter(delegate->GetWidget());
+  views::test::WidgetDestroyedWaiter waiter(delegate->GetWidget());
   delegate->AcceptDialog();
-  waiter.WaitForClose();
+  waiter.Wait();
   EXPECT_FALSE(marquee_->GetVisible());
 }

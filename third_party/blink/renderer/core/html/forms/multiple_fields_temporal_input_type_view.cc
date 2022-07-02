@@ -205,7 +205,7 @@ void MultipleFieldsTemporalInputTypeView::DidFocusOnControl(
 }
 
 void MultipleFieldsTemporalInputTypeView::EditControlValueChanged() {
-  String old_value = GetElement().value();
+  String old_value = GetElement().Value();
   String new_value =
       input_type_->SanitizeValue(GetDateTimeEditElement()->Value());
   // Even if oldValue is null and newValue is "", we should assume they are
@@ -285,7 +285,7 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
   if (will_be_destroyed_)
     return;
   if (GetElement().IsValidValue(value)) {
-    GetElement().setValue(value, TextFieldEventBehavior::kDispatchInputEvent);
+    GetElement().SetValue(value, TextFieldEventBehavior::kDispatchInputEvent);
     return;
   }
 
@@ -314,7 +314,7 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     return;
   DCHECK(std::isfinite(value) || std::isnan(value));
   if (std::isnan(value)) {
-    GetElement().setValue(g_empty_string,
+    GetElement().SetValue(g_empty_string,
                           TextFieldEventBehavior::kDispatchInputEvent);
   } else {
     GetElement().setValueAsNumber(value, ASSERT_NO_EXCEPTION,
@@ -494,7 +494,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
 
 bool MultipleFieldsTemporalInputTypeView::HasBadInput() const {
   DateTimeEditElement* edit = GetDateTimeEditElement();
-  return GetElement().value().IsEmpty() && edit &&
+  return GetElement().Value().IsEmpty() && edit &&
          edit->AnyEditableFieldsHaveValues();
 }
 
@@ -568,7 +568,7 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
     has_value = input_type_->ParseToDateComponents(
         GetElement().SuggestedValue(), &date);
   else
-    has_value = input_type_->ParseToDateComponents(GetElement().value(), &date);
+    has_value = input_type_->ParseToDateComponents(GetElement().Value(), &date);
   if (!has_value)
     input_type_->SetMillisecondToDateComponents(
         layout_parameters.step_range.Minimum().ToDouble(), &date);
@@ -593,6 +593,10 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
   else
     edit->SetEmptyValue(layout_parameters, date);
   UpdateClearButtonVisibility();
+}
+
+ControlPart MultipleFieldsTemporalInputTypeView::AutoAppearance() const {
+  return kTextFieldPart;
 }
 
 void MultipleFieldsTemporalInputTypeView::OpenPopupView() {
@@ -660,7 +664,7 @@ bool MultipleFieldsTemporalInputTypeView::
 }
 
 void MultipleFieldsTemporalInputTypeView::ClearValue() {
-  GetElement().setValue("",
+  GetElement().SetValue("",
                         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   GetElement().UpdateClearButtonVisibility();
 }

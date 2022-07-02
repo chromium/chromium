@@ -42,6 +42,7 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
+#include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -72,7 +73,8 @@ class WebViewClient {
       network::mojom::WebSandboxFlags,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
-      const absl::optional<Impression>&) {
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>& pip_options) {
     return nullptr;
   }
 

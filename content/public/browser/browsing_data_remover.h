@@ -106,12 +106,14 @@ class BrowsingDataRemover {
   // storage.
   static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 16;
 
-  // Conversion measurement API
-  // (https://github.com/WICG/conversion-measurement-api) persistent storage.
-  static constexpr DataType DATA_TYPE_CONVERSIONS = 1 << 17;
+  // Attribution Reporting
+  // (https://github.com/WICG/conversion-measurement-api) persistent
+  // storage that was initiated by a site.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED =
+      1 << 17;
 
   // Aggregation Service
-  // (https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#data-processing-through-the-aggregation-service)
+  // (https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#data-processing-through-a-secure-aggregation-service)
   // persistent storage.
   static constexpr DataType DATA_TYPE_AGGREGATION_SERVICE = 1 << 18;
 
@@ -124,14 +126,25 @@ class BrowsingDataRemover {
   // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
   static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 20;
 
-  // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
-  static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
-      DATA_TYPE_TRUST_TOKENS | DATA_TYPE_CONVERSIONS |
-      DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
-      DATA_TYPE_SHARED_STORAGE;
+  // Similar to DATA_TYPE_ATTRIBUTION_REPORTING_SITE_INITIATED, but only
+  // refers to data stored internally by the API, such as privacy budgeting
+  // information.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL = 1 << 21;
 
   // Embedders can add more datatypes beyond this point.
-  static constexpr DataType DATA_TYPE_CONTENT_END = DATA_TYPE_SHARED_STORAGE;
+  static constexpr DataType DATA_TYPE_CONTENT_END =
+      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL;
+
+  // All data stored by the Attribution Reporting API.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
+      DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED |
+      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL;
+
+  // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
+  static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
+      DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
+      DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
+      DATA_TYPE_SHARED_STORAGE;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected

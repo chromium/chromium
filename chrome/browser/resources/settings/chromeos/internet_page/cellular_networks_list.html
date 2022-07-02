@@ -151,8 +151,7 @@
     <div id="eSimNoNetworkFound"
         class="cellular-network-content cellular-not-setup flex">
       <div hidden="[[!shouldShowNoESimSubtextMessage_(
-               globalPolicy.allowOnlyPolicyCellularNetworks,
-               isESimPolicyEnabled_)]]">
+               globalPolicy.allowOnlyPolicyCellularNetworks)]]">
         $i18n{eSimNetworkNotSetup}
       </div>
       <localized-link
@@ -160,8 +159,7 @@
           on-link-clicked="onEsimLearnMoreClicked_"
           localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
           hidden="[[shouldShowNoESimSubtextMessage_(
-              globalPolicy.allowOnlyPolicyCellularNetworks,
-              isESimPolicyEnabled_)]]">
+              globalPolicy.allowOnlyPolicyCellularNetworks)]]">
       </localized-link>
     </div>
   </template>

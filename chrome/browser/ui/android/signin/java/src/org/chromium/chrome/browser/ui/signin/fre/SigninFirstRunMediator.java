@@ -35,6 +35,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     void reset() {
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, false);
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
     }
 
@@ -185,10 +187,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mDelegate.advanceToNextPage();
             return;
         }
-        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        signinManager.onFirstRunCheckDone();
         signinManager.signin(
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override
@@ -199,7 +200,12 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
                     @Override
                     public void onSignInAborted() {
-                        // TODO(crbug/1248090): Handle the sign-in error here
+                        // TODO(crbug/1248090): For now we enable the buttons again to not block the
+                        // users from continuing to the next page. Should show a dialog with the
+                        // signin error.
+                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
+                                false);
+                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
                 });
     }
@@ -234,8 +240,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * See crbug.com/1294994 for details.
      */
     private boolean isContinueOrDismissClicked() {
-        // This property key is set when continue or dismiss button is clicked.
-        return mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+        // These property keys are set when continue or dismiss button is clicked respectively.
+        return mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
+                || mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
     private void setSelectedAccountName(String accountName) {
@@ -288,14 +295,18 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
-                mContext, view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
+        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
+                new NoUnderlineClickableSpan(mContext,
+                        view
+                        -> mDelegate.showInfoPage(ColorUtils.inNightMode(mContext)
+                                        ? R.string.google_terms_of_service_dark_mode_url
+                                        : R.string.google_terms_of_service_url));
         spans.add(
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan));
 
         // Metrics and Crash Reporting SpanInfo.
         if (!isMetricsReportingDisabled) {
-            footerString += "\n" + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
+            footerString += " " + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
             final NoUnderlineClickableSpan clickableUMADialogSpan =
                     new NoUnderlineClickableSpan(mContext, view -> mDelegate.openUmaDialog());
             spans.add(

@@ -7,21 +7,39 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
 
-// Routes single field form filling requests, such as choosing whether to direct
-// them to Autocomplete or merchant promo code filling functionality.
+class FormStructure;
+class MerchantPromoCodeManager;
+struct SuggestionsContext;
+
+// Owned by AutofillClient, and is one per tab. Routes single field form filling
+// requests, such as choosing whether to direct them to Autocomplete or merchant
+// promo code filling functionality.
 class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  public:
   explicit SingleFieldFormFillRouter(
-      AutocompleteHistoryManager* autocomplete_history_manager);
+      AutocompleteHistoryManager* autocomplete_history_manager,
+      MerchantPromoCodeManager* merchant_promo_code_manager);
   ~SingleFieldFormFillRouter() override;
   SingleFieldFormFillRouter(const SingleFieldFormFillRouter&) = delete;
   SingleFieldFormFillRouter& operator=(const SingleFieldFormFillRouter&) =
       delete;
+
+  // Routes every field in a form to its correct SingleFieldFormFiller, calling
+  // SingleFieldFormFiller::OnWillSubmitFormWithFields() with the vector of
+  // fields for that specific SingleFieldFormFiller. If |form_structure| is not
+  // nullptr, then the fields in |form| and |form_structure| should be 1:1. It
+  // is possible for |form_structure| to be nullptr while |form| has data, which
+  // means there were fields in the form that were not able to be parsed as
+  // autofill fields.
+  virtual void OnWillSubmitForm(const FormData& form,
+                                const FormStructure* form_structure,
+                                bool is_autocomplete_enabled);
 
   // SingleFieldFormFiller overrides:
   void OnGetSingleFieldSuggestions(
@@ -31,24 +49,25 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
       const std::u16string& name,
       const std::u16string& prefix,
       const std::string& form_control_type,
-      base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler)
-      override;
-  void OnWillSubmitForm(const FormData& form,
-                        bool is_autocomplete_enabled) override;
+      base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+      const SuggestionsContext& context) override;
+  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
+                                  bool is_autocomplete_enabled) override;
   void CancelPendingQueries(
       const SingleFieldFormFiller::SuggestionsHandler* handler) override;
-  void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
+  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
+                                            const std::u16string& value,
+                                            int frontend_id) override;
+  void OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                       int frontend_id) override;
 
  private:
-  // The SingleFieldFormFiller being used to fill the current field. Reset
-  // whenever suggestions are requested for a new field.
-  base::WeakPtr<SingleFieldFormFiller> current_single_field_form_filler_;
-
-  // Available single field form fillers:
+  // Handles autocompleting single fields.
   base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
+
+  // Handles autofilling merchant promo code fields (can be null for unsupported
+  // platforms).
+  base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager_;
 };
 
 }  // namespace autofill

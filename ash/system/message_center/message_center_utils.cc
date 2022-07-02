@@ -6,13 +6,20 @@
 
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/message_center/notification_grouping_controller.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -70,6 +77,29 @@ size_t GetNotificationCount() {
     ++count;
   }
   return count;
+}
+
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
+  RootWindowController* root_window_controller =
+      Shell::GetRootWindowControllerWithDisplayId(display_id);
+  if (!root_window_controller || !root_window_controller->GetStatusAreaWidget())
+    return nullptr;
+
+  return root_window_controller->GetStatusAreaWidget()
+      ->unified_system_tray()
+      ->GetNotificationGroupingController()
+      ->GetActiveNotificationViewController();
+}
+
+message_center::NotificationViewController*
+GetActiveNotificationViewControllerForNotificationView(
+    views::View* notification_view) {
+  aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
+  auto display_id =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+
+  return GetActiveNotificationViewControllerForDisplay(display_id);
 }
 
 void InitLayerForAnimations(views::View* view) {
@@ -143,6 +173,42 @@ void FadeOutView(views::View* view,
       .SetDuration(base::Milliseconds(duration_in_ms))
       .SetVisibility(view, false)
       .SetOpacity(view, 0.0f, tween_type);
+}
+
+void SlideOutView(views::View* view,
+                  base::OnceClosure on_animation_ended,
+                  base::OnceClosure on_animation_aborted,
+                  int delay_in_ms,
+                  int duration_in_ms,
+                  gfx::Tween::Type tween_type,
+                  const std::string& animation_histogram_name) {
+  // If we are in testing with animation (non zero duration), we shouldn't have
+  // delays so that we can properly track when animation is completed in test.
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+    delay_in_ms = 0;
+  }
+
+  // The view must have a layer to perform animation.
+  DCHECK(view->layer());
+
+  ui::AnimationThroughputReporter reporter(
+      view->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating(
+          &ReportAnimationSmoothness, animation_histogram_name)));
+
+  gfx::Transform transform;
+  transform.Translate(gfx::Vector2dF(view->bounds().width(), 0));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(on_animation_ended))
+      .OnAborted(std::move(on_animation_aborted))
+      .Once()
+      .At(base::Milliseconds(delay_in_ms))
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetTransform(view->layer(), transform);
 }
 
 }  // namespace message_center_utils

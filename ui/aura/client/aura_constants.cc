@@ -76,6 +76,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
                              kRestoreShowStateKey,
                              ui::SHOW_STATE_NORMAL)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsRestoringKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTopViewInset, 0)

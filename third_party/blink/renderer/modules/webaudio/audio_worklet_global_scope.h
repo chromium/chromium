@@ -85,8 +85,8 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
   WorkletProcessorInfoListForSynchronization();
 
-  // Gets |processor_creation_params_| for the processor construction. If there
-  // is no on-going processor construction, this MUST return nullptr.
+  // Gets `processor_creation_params_` for the processor construction. If there
+  // is no on-going processor construction, this MUST return `nullptr`.
   ProcessorCreationParams* GetProcessorCreationParams();
 
   void SetCurrentFrame(size_t current_frame);
@@ -123,12 +123,12 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   ProcessorInstances processor_instances_;
 
   // Gets set when the processor construction is invoked, and cleared out after
-  // the construction. See the comment in |CreateProcessor()| method for the
+  // the construction. See the comment in `CreateProcessor()` method for the
   // detail.
   std::unique_ptr<ProcessorCreationParams> processor_creation_params_;
 
   size_t current_frame_ = 0;
-  float sample_rate_ = 0.0;
+  float sample_rate_ = 0.0f;
 
   // Default initialized to generate a distinct token for this worklet.
   const AudioWorkletToken token_;

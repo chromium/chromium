@@ -52,8 +52,8 @@ ConfirmPasswordChangeHandler::~ConfirmPasswordChangeHandler() {
 }
 
 void ConfirmPasswordChangeHandler::HandleGetInitialState(
-    const base::ListValue* params) {
-  const std::string callback_id = params->GetListDeprecated()[0].GetString();
+    const base::Value::List& params) {
+  const std::string callback_id = params[0].GetString();
 
   base::Value state(base::Value::Type::DICTIONARY);
   state.SetBoolKey("showOldPasswordPrompt", scraped_old_password_.empty());
@@ -65,11 +65,11 @@ void ConfirmPasswordChangeHandler::HandleGetInitialState(
 }
 
 void ConfirmPasswordChangeHandler::HandleChangePassword(
-    const base::ListValue* params) {
-  const std::string old_password = FirstNonEmpty(
-      params->GetListDeprecated()[0].GetString(), scraped_old_password_);
-  const std::string new_password = FirstNonEmpty(
-      params->GetListDeprecated()[1].GetString(), scraped_new_password_);
+    const base::Value::List& params) {
+  const std::string old_password =
+      FirstNonEmpty(params[0].GetString(), scraped_old_password_);
+  const std::string new_password =
+      FirstNonEmpty(params[1].GetString(), scraped_new_password_);
   DCHECK(!old_password.empty() && !new_password.empty());
 
   InSessionPasswordChangeManager::Get()->ChangePassword(
@@ -92,11 +92,11 @@ void ConfirmPasswordChangeHandler::OnEvent(
 }
 
 void ConfirmPasswordChangeHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getInitialState",
       base::BindRepeating(&ConfirmPasswordChangeHandler::HandleGetInitialState,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "changePassword",
       base::BindRepeating(&ConfirmPasswordChangeHandler::HandleChangePassword,
                           weak_factory_.GetWeakPtr()));

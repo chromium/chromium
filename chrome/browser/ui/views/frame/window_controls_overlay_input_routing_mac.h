@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOW_CONTROLS_OVERLAY_INPUT_ROUTING_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOW_CONTROLS_OVERLAY_INPUT_ROUTING_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/views/view_observer.h"
 
@@ -36,10 +37,12 @@ class WindowControlsOverlayInputRoutingMac : public views::ViewObserver {
  private:
   void UpdateNSViewPosition();
 
-  BrowserNonClientFrameViewMac* browser_non_client_frame_view_mac_ =
-      nullptr;                 // weak
-  views::View* overlay_view_;  // weak. Owned by BrowserNonClientFrameViewMac.
-  views::NativeWidgetMacNSWindowHost* host_;  // weak. Owned by NativeWidgetMac.
+  raw_ptr<BrowserNonClientFrameViewMac> browser_non_client_frame_view_mac_ =
+      nullptr;  // weak
+  raw_ptr<views::View>
+      overlay_view_;  // weak. Owned by BrowserNonClientFrameViewMac.
+  raw_ptr<views::NativeWidgetMacNSWindowHost>
+      host_;  // weak. Owned by NativeWidgetMac.
   remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type_;
 };
 

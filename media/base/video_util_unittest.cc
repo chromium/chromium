@@ -167,9 +167,9 @@ class VideoUtilTest : public testing::Test {
     u_stride_ = u_stride;
     v_stride_ = v_stride;
 
-    y_plane_.reset(new uint8_t[y_stride * height]);
-    u_plane_.reset(new uint8_t[u_stride * height / 2]);
-    v_plane_.reset(new uint8_t[v_stride * height / 2]);
+    y_plane_ = std::make_unique<uint8_t[]>(y_stride * height);
+    u_plane_ = std::make_unique<uint8_t[]>(u_stride * height / 2);
+    v_plane_ = std::make_unique<uint8_t[]>(v_stride * height / 2);
   }
 
   void CreateDestinationFrame(int width, int height) {
@@ -328,7 +328,7 @@ class VideoUtilRotationTest
     : public testing::TestWithParam<VideoRotationTestData> {
  public:
   VideoUtilRotationTest() {
-    dest_.reset(new uint8_t[GetParam().width * GetParam().height]);
+    dest_ = std::make_unique<uint8_t[]>(GetParam().width * GetParam().height);
   }
   VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
   VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;

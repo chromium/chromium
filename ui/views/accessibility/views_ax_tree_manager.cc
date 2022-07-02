@@ -129,15 +129,6 @@ void ViewsAXTreeManager::OnWidgetDestroyed(Widget* widget) {
   widget_ = nullptr;
 }
 
-void ViewsAXTreeManager::OnWidgetClosing(Widget* widget) {
-  // If a widget becomes disconnected from its root view, we shouldn't keep it
-  // in the map or attempt any operations on it.
-  if (widget->is_top_level() || !widget->GetRootView())
-    views::WidgetAXTreeIDMap::GetInstance().RemoveWidget(widget);
-
-  widget_ = nullptr;
-}
-
 void ViewsAXTreeManager::PerformAction(const ui::AXActionData& data) {
   if (!widget_ || !widget_->GetRootView())
     return;

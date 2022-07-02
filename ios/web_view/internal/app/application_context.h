@@ -85,6 +85,9 @@ class ApplicationContext {
   // Gets the SafeBrowsingService.
   SafeBrowsingService* GetSafeBrowsingService();
 
+  // Shuts down SafeBrowsingService if it was created.
+  void ShutdownSafeBrowsingServiceIfNecessary();
+
  private:
   friend class base::NoDestructor<ApplicationContext>;
 

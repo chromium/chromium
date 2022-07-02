@@ -65,6 +65,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
          nullptr}};
 
+extern const base::Feature kCommerceAllowLocalImages;
+extern const base::Feature kCommerceAllowServerImages;
+extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCommerceMerchantViewer;
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 extern const base::Feature kShoppingList;
@@ -77,11 +80,18 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 extern const base::Feature kDiscountConsentV2;
 
+// Feature flag for exposing commerce hint on Android.
+extern const base::Feature kCommerceHintAndroid;
+
 // Feature parameters for ChromeCart on Desktop.
 
 // Whether to use OptimizationGuide to optimize renderer signal collection.
 constexpr base::FeatureParam<bool> kOptimizeRendererSignal(
+#if !BUILDFLAG(IS_ANDROID)
     &ntp_features::kNtpChromeCartModule,
+#else
+    &kCommerceHintAndroid,
+#endif
     "optimize-renderer-signal",
     true);
 
@@ -97,8 +107,13 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 // The heuristics of cart pages are from top 100 US shopping domains.
 // https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
 constexpr base::FeatureParam<std::string> kCartPattern{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern",
-    // clang-format off
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule,
+#else
+  &kCommerceHintAndroid,
+#endif
+      "cart-pattern",
+      // clang-format off
     "(^https?://cart\\.)"
     "|"
     "(/("
@@ -114,17 +129,28 @@ constexpr base::FeatureParam<std::string> kCartPattern{
       "|"
       "(cart-show)"
     ")(/|\\.|$))"
-    // clang-format on
+  // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCartPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule,
+#else
+  &kCommerceHintAndroid,
+#endif
+      "cart-pattern-mapping",
+      // Empty JSON string.
+      ""
+};
 
 constexpr base::FeatureParam<std::string> kCheckoutPattern{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
-    // clang-format off
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule,
+#else
+  &kCommerceHintAndroid,
+#endif
+      "checkout-pattern",
+      // clang-format off
     "/("
     "("
       "("
@@ -137,13 +163,19 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
     "|"
     "(\\w+(checkout|chkout)(s)?)"
     ")(/|\\.|$|\\?)"
-    // clang-format on
+  // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
-    // Empty JSON string.
-    ""};
+#if !BUILDFLAG(IS_ANDROID)
+  &ntp_features::kNtpChromeCartModule,
+#else
+  &kCommerceHintAndroid,
+#endif
+      "checkout-pattern-mapping",
+      // Empty JSON string.
+      ""
+};
 
 // The following are Feature params for Discount user consent v2.
 // This indicates the Discount Consent v2 variation on the NTP Cart module.
@@ -241,6 +273,9 @@ extern const base::FeatureParam<bool>
 // result page.
 extern const char kContextualConsentShowOnSRPParam[];
 extern const base::FeatureParam<bool> kContextualConsentShowOnSRP;
+
+// Feature params for enabling the cart heuristics improvement on Android.
+extern const char kCommerceHintAndroidHeuristicsImprovementParam[];
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

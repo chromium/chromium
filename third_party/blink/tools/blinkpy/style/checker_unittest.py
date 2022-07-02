@@ -207,9 +207,6 @@ class GlobalVariablesTest(unittest.TestCase):
         # Third-party Python code: blinkpy/third_party
         path = "tools/blinkpy/third_party/mock.py"
         assert_no_check(path, "build/include")
-        assert_no_check(path, "pep8/E401")  # A random pep8 category.
-        assert_check(path, "pep8/W191")
-        assert_check(path, "pep8/W291")
         assert_check(path, "whitespace/carriage_return")
 
     def test_max_reports_per_category(self):
@@ -266,14 +263,9 @@ class CheckerDispatcherSkipTest(unittest.TestCase):
 
     def test_should_skip_without_warning__false(self):
         """Test should_skip_without_warning() for False return values."""
-        paths = [
-            'foo.txt',
-            os.path.join('web_tests', 'TestExpectations'),
-        ]
-
-        for path in paths:
-            self._assert_should_skip_without_warning(
-                path, is_checker_none=False, expected=False)
+        self._assert_should_skip_without_warning('foo.txt',
+                                                 is_checker_none=False,
+                                                 expected=False)
 
 
 class CheckerDispatcherCarriageReturnTest(unittest.TestCase):

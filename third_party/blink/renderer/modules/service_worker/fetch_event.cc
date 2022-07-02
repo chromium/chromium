@@ -8,7 +8,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -35,8 +34,7 @@ FetchEvent* FetchEvent::Create(ScriptState* script_state,
                                const AtomicString& type,
                                const FetchEventInit* initializer) {
   return MakeGarbageCollected<FetchEvent>(script_state, type, initializer,
-                                          nullptr, nullptr, mojo::NullRemote(),
-                                          false);
+                                          nullptr, nullptr, false);
 }
 
 Request* FetchEvent::request() const {
@@ -101,8 +99,6 @@ FetchEvent::FetchEvent(ScriptState* script_state,
                        const FetchEventInit* initializer,
                        FetchRespondWithObserver* respond_with_observer,
                        WaitUntilObserver* wait_until_observer,
-                       mojo::PendingRemote<mojom::blink::WorkerTimingContainer>
-                           worker_timing_remote,
                        bool navigation_preload_sent)
     : ExtendableEvent(type, initializer, wait_until_observer),
       ExecutionContextClient(ExecutionContext::From(script_state)),
@@ -112,11 +108,7 @@ FetchEvent::FetchEvent(ScriptState* script_state,
       handled_property_(
           MakeGarbageCollected<ScriptPromiseProperty<ToV8UndefinedGenerator,
                                                      Member<DOMException>>>(
-              ExecutionContext::From(script_state))),
-      worker_timing_remote_(ExecutionContext::From(script_state)) {
-  worker_timing_remote_.Bind(std::move(worker_timing_remote),
-                             ExecutionContext::From(script_state)
-                                 ->GetTaskRunner(TaskType::kNetworking));
+              ExecutionContext::From(script_state))) {
   if (!navigation_preload_sent)
     preload_response_property_->ResolveWithUndefined();
 
@@ -229,31 +221,12 @@ void FetchEvent::OnNavigationPreloadComplete(
       ->GenerateAndAddResourceTiming(*info);
 }
 
-void FetchEvent::addPerformanceEntry(PerformanceMark* performance_mark) {
-  if (worker_timing_remote_.is_bound()) {
-    auto mojo_performance_mark =
-        performance_mark->ToMojoPerformanceMarkOrMeasure();
-    worker_timing_remote_->AddPerformanceEntry(
-        std::move(mojo_performance_mark));
-  }
-}
-
-void FetchEvent::addPerformanceEntry(PerformanceMeasure* performance_measure) {
-  if (worker_timing_remote_.is_bound()) {
-    auto mojo_performance_measure =
-        performance_measure->ToMojoPerformanceMarkOrMeasure();
-    worker_timing_remote_->AddPerformanceEntry(
-        std::move(mojo_performance_measure));
-  }
-}
-
 void FetchEvent::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(request_);
   visitor->Trace(preload_response_property_);
   visitor->Trace(body_completion_notifier_);
   visitor->Trace(handled_property_);
-  visitor->Trace(worker_timing_remote_);
   ExtendableEvent::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

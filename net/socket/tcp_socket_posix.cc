@@ -162,7 +162,6 @@ TCPSocketPosix::TCPSocketPosix(
     NetLog* net_log,
     const NetLogSource& source)
     : socket_performance_watcher_(std::move(socket_performance_watcher)),
-      logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
@@ -475,7 +474,7 @@ void TCPSocketPosix::Close() {
 }
 
 bool TCPSocketPosix::IsValid() const {
-  return socket_ != NULL && socket_->socket_fd() != kInvalidSocket;
+  return socket_ != nullptr && socket_->socket_fd() != kInvalidSocket;
 }
 
 void TCPSocketPosix::DetachFromThread() {
@@ -499,6 +498,14 @@ void TCPSocketPosix::EndLoggingMultipleConnectAttempts(int net_error) {
   } else {
     NOTREACHED();
   }
+}
+
+int TCPSocketPosix::OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                                   SocketDescriptor* out) {
+  std::unique_ptr<SocketPosix> new_socket = std::make_unique<SocketPosix>();
+  int rv = new_socket->Open(ConvertAddressFamily(family));
+  *out = new_socket->ReleaseConnectedSocket();
+  return rv;
 }
 
 SocketDescriptor TCPSocketPosix::ReleaseSocketDescriptorForTesting() {

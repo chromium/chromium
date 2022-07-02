@@ -327,7 +327,7 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // cache writer pauses immediately.
   const bool pause_when_not_identical_;
 
-  raw_ptr<WriteObserver> write_observer_ = nullptr;
+  raw_ptr<WriteObserver, DanglingUntriaged> write_observer_ = nullptr;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader_;
   std::unique_ptr<DataPipeReader> compare_data_pipe_reader_;

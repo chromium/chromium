@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -29,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -270,9 +272,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
                                              : gfx::Insets());
 
   if (init_params.translucent) {
-    // The following code will not work with bubble's shadow.
-    DCHECK(!init_params.has_shadow);
-
     // TODO(crbug/1313073): In the dark light mode feature, remove layer
     // creation in children views of this view to improve performance.
     SetPaintToLayer(features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
@@ -298,6 +297,12 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
 
   if (init_params.transparent) {
     set_color(SK_ColorTRANSPARENT);
+  }
+
+  if (params_.has_shadow) {
+    shadow_ = std::make_unique<ViewShadow>(this, params_.shadow_elevation);
+    shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    shadow_->SetRoundedCornerRadius(params_.corner_radius);
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
@@ -394,15 +399,6 @@ bool TrayBubbleView::IsAnchoredToStatusArea() const {
 
 void TrayBubbleView::StopReroutingEvents() {
   reroute_event_handler_.reset();
-}
-
-void TrayBubbleView::OnBeforeBubbleWidgetInit(Widget::InitParams* params,
-                                              Widget* bubble_widget) const {
-  if (params_.has_shadow) {
-    // Apply a WM-provided shadow (see ui/wm/core/).
-    params->shadow_type = Widget::InitParams::ShadowType::kDrop;
-    params->shadow_elevation = wm::kShadowElevationActiveWindow;
-  }
 }
 
 void TrayBubbleView::OnWidgetClosing(Widget* widget) {

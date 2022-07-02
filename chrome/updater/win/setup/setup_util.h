@@ -84,12 +84,6 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                             bool internal_service,
                             WorkItemList* list);
 
-// Parses the run time dependency file which contains all dependencies of
-// the `updater` target. This file is a text file, where each line of
-// text represents a single dependency. Some dependencies are not needed for
-// updater to run, and are filtered out from the return value of this function.
-std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps);
-
 // Adds a worklist item to set a value in the Run key in the user registry under
 // the value `run_value_name` to start the specified `command`.
 void RegisterUserRunAtStartup(const std::wstring& run_value_name,

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -18,6 +19,8 @@
 namespace chromeos {
 
 namespace {
+
+SmbProviderClient* g_instance = nullptr;
 
 smbprovider::ErrorType GetErrorFromReader(dbus::MessageReader* reader) {
   int32_t int_error;
@@ -91,7 +94,6 @@ class SmbProviderClientImpl : public SmbProviderClient {
                &callback);
   }
 
- protected:
   // DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
@@ -225,13 +227,36 @@ class SmbProviderClientImpl : public SmbProviderClient {
 
 }  // namespace
 
-SmbProviderClient::SmbProviderClient() = default;
-
-SmbProviderClient::~SmbProviderClient() = default;
+// static
+SmbProviderClient* SmbProviderClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<SmbProviderClient> SmbProviderClient::Create() {
-  return std::make_unique<SmbProviderClientImpl>();
+void SmbProviderClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new SmbProviderClientImpl())->Init(bus);
+}
+
+// static
+void SmbProviderClient::InitializeFake() {
+  (new FakeSmbProviderClient())->Init(nullptr);
+}
+
+// static
+void SmbProviderClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+SmbProviderClient::SmbProviderClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+SmbProviderClient::~SmbProviderClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

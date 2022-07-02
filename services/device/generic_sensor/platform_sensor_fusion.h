@@ -85,7 +85,6 @@ class PlatformSensorFusion : public PlatformSensor,
                            FusionIsSignificantlyDifferent);
 
  private:
-  SensorReading reading_;
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm_;
   SourcesMap source_sensors_;
   mojom::ReportingMode reporting_mode_;

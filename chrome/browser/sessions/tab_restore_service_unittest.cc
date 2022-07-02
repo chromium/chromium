@@ -59,6 +59,7 @@
 typedef sessions::TabRestoreService::Entry Entry;
 typedef sessions::TabRestoreService::Tab Tab;
 typedef sessions::TabRestoreService::Window Window;
+typedef std::map<std::string, std::string> ExtraData;
 
 using content::NavigationEntry;
 using content::WebContentsTester;
@@ -69,6 +70,22 @@ using sessions::SerializedNavigationEntryTestHelper;
 using ::testing::_;
 using ::testing::Return;
 
+class MockLiveTab : public sessions::LiveTab {
+ public:
+  MockLiveTab() = default;
+  ~MockLiveTab() override = default;
+
+  MOCK_METHOD0(IsInitialBlankNavigation, bool());
+  MOCK_METHOD0(GetCurrentEntryIndex, int());
+  MOCK_METHOD0(GetPendingEntryIndex, int());
+  MOCK_METHOD1(GetEntryAtIndex, sessions::SerializedNavigationEntry(int index));
+  MOCK_METHOD0(GetPendingEntry, sessions::SerializedNavigationEntry());
+  MOCK_METHOD0(GetEntryCount, int());
+  MOCK_METHOD0(GetPlatformSpecificTabData,
+               std::unique_ptr<sessions::PlatformSpecificTabData>());
+  MOCK_METHOD0(GetUserAgentOverride, sessions::SerializedUserAgentOverride());
+};
+
 class MockLiveTabContext : public sessions::LiveTabContext {
  public:
   MockLiveTabContext() = default;
@@ -76,6 +93,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
 
   MOCK_METHOD0(ShowBrowserWindow, void());
   MOCK_CONST_METHOD0(GetSessionID, SessionID());
+  MOCK_CONST_METHOD0(GetWindowType, sessions::SessionWindow::WindowType());
   MOCK_CONST_METHOD0(GetTabCount, int());
   MOCK_CONST_METHOD0(GetSelectedIndex, int());
   MOCK_CONST_METHOD0(GetAppName, std::string());
@@ -134,9 +152,10 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
   MockTabRestoreServiceClient() = default;
   ~MockTabRestoreServiceClient() override = default;
 
-  MOCK_METHOD7(CreateLiveTabContext,
+  MOCK_METHOD8(CreateLiveTabContext,
                sessions::LiveTabContext*(
                    sessions::LiveTabContext* existing_context,
+                   sessions::SessionWindow::WindowType type,
                    const std::string& app_name,
                    const gfx::Rect& bounds,
                    ui::WindowShowState show_state,
@@ -266,7 +285,8 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
       bool pinned,
       absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
       absl::optional<tab_groups::TabGroupVisualData> group_visual_data =
-          absl::nullopt) {
+          absl::nullopt,
+      absl ::optional<ExtraData> extra_data = absl::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -441,6 +461,60 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
   ASSERT_EQ(1U, tab->extra_data.size());
   ASSERT_EQ(kSampleValue, tab->extra_data[kSampleKey]);
+}
+
+// Ensure fields are written and read from saved state.
+TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
+  ON_CALL(*mock_tab_restore_service_client_, ShouldTrackURLForRestore(_))
+      .WillByDefault(Return(true));
+
+  SerializedNavigationEntry navigation_entry =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  testing::NiceMock<MockLiveTab> mock_live_tab;
+  ON_CALL(mock_live_tab, GetEntryCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab, GetEntryAtIndex)
+      .WillByDefault(Return(navigation_entry));
+
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  SessionID session_id = SessionID::NewUnique();
+  ON_CALL(mock_live_tab_context, GetSessionID)
+      .WillByDefault(Return(session_id));
+  ON_CALL(mock_live_tab_context, GetWindowType)
+      .WillByDefault(Return(sessions::SessionWindow::TYPE_APP_POPUP));
+  ON_CALL(mock_live_tab_context, GetAppName).WillByDefault(Return("app-name"));
+  ON_CALL(mock_live_tab_context, GetUserTitle)
+      .WillByDefault(Return("user-title"));
+  ON_CALL(mock_live_tab_context, GetRestoredBounds)
+      .WillByDefault(Return(gfx::Rect(10, 20, 30, 40)));
+  ON_CALL(mock_live_tab_context, GetRestoredState)
+      .WillByDefault(Return(ui::SHOW_STATE_MAXIMIZED));
+  ON_CALL(mock_live_tab_context, GetWorkspace)
+      .WillByDefault(Return("workspace"));
+  ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_live_tab_context, GetLiveTabAt)
+      .WillByDefault(Return(&mock_live_tab));
+
+  service_->BrowserClosing(&mock_live_tab_context);
+
+  // Validate while entries are in memory.
+  auto validate = [&]() {
+    ASSERT_EQ(1u, service_->entries().size());
+    Entry* entry = service_->entries().front().get();
+    EXPECT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+    Window* window = static_cast<Window*>(entry);
+    EXPECT_EQ(sessions::SessionWindow::TYPE_APP_POPUP, window->type);
+    EXPECT_EQ(0, window->selected_tab_index);
+    EXPECT_EQ("app-name", window->app_name);
+    EXPECT_EQ("user-title", window->user_title);
+    EXPECT_EQ(gfx::Rect(10, 20, 30, 40), window->bounds);
+    EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED, window->show_state);
+    EXPECT_EQ("workspace", window->workspace);
+  };
+  validate();
+
+  // Validate after persisting and reading from storage.
+  RecreateService();
+  validate();
 }
 
 // Make sure TabRestoreService doesn't create an entry for a tab with no
@@ -732,6 +806,7 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSession) {
   ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry2->type);
   sessions::TabRestoreService::Window* window =
       static_cast<sessions::TabRestoreService::Window*>(entry2);
+  EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, window->type);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_EQ(0, window->selected_tab_index);
@@ -1245,4 +1320,31 @@ TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
   ASSERT_EQ(1u, window->tabs.size());
   EXPECT_EQ(group, window->tabs[0]->group);
   EXPECT_EQ(group_visual_data, window->tab_groups[group]);
+}
+
+// Ensures tab extra data is restored from previous session.
+TEST_F(TabRestoreServiceImplTest, TabExtraDataRestoredFromSessionData) {
+  const char kSampleKey[] = "test";
+  const char kSampleData[] = "true";
+
+  CreateSessionServiceWithOneWindow(false);
+  AddWindowWithOneTabToSessionService(false);
+
+  SessionService* session_service =
+      SessionServiceFactory::GetForProfile(profile());
+  session_service->AddTabExtraData(window_id(), tab_id(), kSampleKey,
+                                   kSampleData);
+
+  SessionServiceFactory::GetForProfile(profile())
+      ->MoveCurrentSessionToLastSession();
+  EXPECT_FALSE(service_->IsLoaded());
+  SynchronousLoadTabsFromLastSession();
+
+  ASSERT_EQ(2U, service_->entries().size());
+  Entry* entry = service_->entries().back().get();
+  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+  auto* window = static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(1U, window->tabs.size());
+  ASSERT_EQ(1U, window->tabs[0]->extra_data.size());
+  EXPECT_EQ(kSampleData, window->tabs[0]->extra_data[kSampleKey]);
 }

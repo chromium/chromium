@@ -14,7 +14,8 @@ APP_ENUM_TO_STRING(PermissionType,
                    kNotifications,
                    kContacts,
                    kStorage,
-                   kPrinting)
+                   kPrinting,
+                   kFileHandling)
 APP_ENUM_TO_STRING(TriState, kAllow, kBlock, kAsk)
 
 PermissionValue::PermissionValue(bool bool_value) : bool_value(bool_value) {}
@@ -143,6 +144,8 @@ PermissionType ConvertMojomPermissionTypeToPermissionType(
       return PermissionType::kStorage;
     case apps::mojom::PermissionType::kPrinting:
       return PermissionType::kPrinting;
+    case apps::mojom::PermissionType::kFileHandling:
+      return PermissionType::kFileHandling;
   }
 }
 
@@ -165,6 +168,8 @@ apps::mojom::PermissionType ConvertPermissionTypeToMojomPermissionType(
       return apps::mojom::PermissionType::kStorage;
     case PermissionType::kPrinting:
       return apps::mojom::PermissionType::kPrinting;
+    case PermissionType::kFileHandling:
+      return apps::mojom::PermissionType::kFileHandling;
   }
 }
 

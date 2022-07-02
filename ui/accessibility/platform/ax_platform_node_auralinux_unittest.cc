@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
@@ -1000,6 +1001,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActions) {
   root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   root.AddAction(ax::mojom::Action::kDecrement);
   root.AddAction(ax::mojom::Action::kIncrement);
+  // Additionally, any object will have a context menu action, that makes it 4
   Init(root);
 
   AtkObject* root_obj(GetRootAtkObject());
@@ -1009,7 +1011,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActions) {
 
   gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
 
-  EXPECT_EQ(3, number_of_actions);
+  EXPECT_EQ(4, number_of_actions);
 
   g_object_unref(root_obj);
 }
@@ -1027,7 +1029,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActionsNoActions) {
 
   gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
 
-  EXPECT_EQ(0, number_of_actions);
+  // The only action exposed would be the context menu action.
+  EXPECT_EQ(1, number_of_actions);
 
   g_object_unref(root_obj);
 }
@@ -1047,14 +1050,16 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetName) {
   g_object_ref(root_obj);
 
   const gchar* action_name = atk_action_get_name(ATK_ACTION(root_obj), 0);
-  // The index 0 is reserved for the default action. The rest of actions are
-  // presented in the order they were added.
+  // The index 0 is reserved for the default action, and the index 1 to the
+  // context menu action. The rest of actions are presented in the order they
+  // were added.
   EXPECT_STREQ("click", action_name);
   action_name = atk_action_get_name(ATK_ACTION(root_obj), 1);
-  EXPECT_STREQ("decrement", action_name);
+  EXPECT_STREQ("showContextMenu", action_name);
   action_name = atk_action_get_name(ATK_ACTION(root_obj), 2);
+  EXPECT_STREQ("decrement", action_name);
+  action_name = atk_action_get_name(ATK_ACTION(root_obj), 3);
   EXPECT_STREQ("increment", action_name);
-  atk_action_do_action(ATK_ACTION(root_obj), 2);
 
   g_object_unref(root_obj);
 }
@@ -1078,10 +1083,11 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionDoAction) {
   EXPECT_EQ(root_node, TestAXNodeWrapper::GetNodeFromLastDefaultAction());
   EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 1));
   EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 2));
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 3));
 
   // Test that querying actions out of bounds doesn't crash
   EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), -1));
-  EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), 3));
+  EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), 4));
 
   g_object_unref(root_obj);
 }
@@ -1738,7 +1744,7 @@ class ActivationTester {
     g_signal_handler_disconnect(target_, deactivate_id_);
   }
 
-  AtkObject* target_;
+  raw_ptr<AtkObject> target_;
   bool saw_activate_ = false;
   bool saw_deactivate_ = false;
   gulong activate_id_ = 0;

@@ -31,7 +31,8 @@ scoped_refptr<ParsedCertificate> ToParsedCertificate(
 TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
-          base::span<const ChromeRootCertInfo>(kChromeRootCertList));
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          /*version=*/1);
 
   // Check every certificate in test_store.certs is included.
   CertificateList certs = CreateCertificateListFromFile(

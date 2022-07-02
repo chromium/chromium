@@ -12,12 +12,13 @@
 
 namespace base {
 
-int RecommendedMaxNumberOfThreadsInThreadGroup(int min,
-                                               int max,
-                                               double cores_multiplier,
-                                               int offset) {
-  const int num_of_cores = SysInfo::NumberOfProcessors();
-  const int threads = std::ceil<int>(num_of_cores * cores_multiplier) + offset;
+size_t RecommendedMaxNumberOfThreadsInThreadGroup(size_t min,
+                                                  size_t max,
+                                                  double cores_multiplier,
+                                                  size_t offset) {
+  const auto num_of_cores = static_cast<size_t>(SysInfo::NumberOfProcessors());
+  const size_t threads =
+      std::ceil<size_t>(num_of_cores * cores_multiplier) + offset;
   return clamp(threads, min, max);
 }
 

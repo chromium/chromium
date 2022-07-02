@@ -320,7 +320,8 @@ class ConsoleLogMessageLocalFrame : public content::FakeLocalFrame {
 TEST_F(ExtensionAlarmsTest, CreateDelayBelowMinimum) {
   // Create an alarm with delay below the minimum accepted value.
   ConsoleLogMessageLocalFrame local_frame;
-  local_frame.Init(contents()->GetMainFrame()->GetRemoteAssociatedInterfaces());
+  local_frame.Init(
+      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(local_frame.message_count(), 0u);
   CreateAlarm("[\"negative\", {\"delayInMinutes\": -0.2}]");

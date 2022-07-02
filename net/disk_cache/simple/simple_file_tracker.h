@@ -75,7 +75,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   };
 
   struct EntryFileKey {
-    EntryFileKey() {}
+    EntryFileKey() = default;
     explicit EntryFileKey(uint64_t hash) : entry_hash(hash) {}
 
     uint64_t entry_hash = 0;
@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
 
   // The default limit here is half of what's available on our target OS where
   // Chrome has the lowest limit.
-  SimpleFileTracker(int file_limit = 512);
+  explicit SimpleFileTracker(int file_limit = 512);
 
   SimpleFileTracker(const SimpleFileTracker&) = delete;
   SimpleFileTracker& operator=(const SimpleFileTracker&) = delete;
@@ -186,7 +186,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // true if position_in_lru is valid. For entries where we closed everything,
     // we try not to keep them in the LRU so that we don't have to constantly
     // rescan them.
-    bool in_lru;
+    bool in_lru = false;
   };
 
   // Marks the file that was previously returned by Acquire as eligible for

@@ -159,6 +159,24 @@ var testRoutines = {
       chrome.test.succeed();
     });
   },
+  createConfigConnectForBind: function() {
+    chrome.vpnProvider.onPlatformMessage.addListener(function(config_name,
+                                                              message, error) {
+      if (message === 'connected') {
+        chrome.test.assertEq(config_name, 'testconfig');
+        chrome.vpnProvider.notifyConnectionStateChanged('connected', () => {
+          chrome.test.succeed();
+        });
+      } else {
+        chrome.test.assertEq(message, 'disconnected');
+        chrome.test.succeed();
+      }
+    });
+    chrome.vpnProvider.createConfig('testconfig', function() {
+      chrome.test.assertEq(chrome.runtime.lastError, undefined);
+      chrome.test.succeed();
+    });
+  },
   createConfigConnectAndDisconnect: function() {
     // The test sets up a set of listeners and creates a config.
     // The created config is connected to by the C++ side, which initiates the
@@ -284,6 +302,24 @@ var testRoutines = {
       chrome.test.succeed();
     });
   },
+  platformMessage: function () {
+    let i = 0;
+    chrome.vpnProvider.onPlatformMessage.addListener((config_name,
+                                                      message, error) => {
+      chrome.test.assertEq(config_name, 'testconfig');
+      if (message === 'connected') {
+        chrome.test.assertEq(i, 0);
+        chrome.test.succeed();
+        i++;
+      } else {
+        chrome.test.assertEq(i, 1);
+        chrome.test.assertEq(message, 'disconnected');
+        chrome.test.succeed();
+        i++;
+      }
+    });
+    chrome.test.succeed();
+  }
 };
 
 testRoutines[selectedTest]();

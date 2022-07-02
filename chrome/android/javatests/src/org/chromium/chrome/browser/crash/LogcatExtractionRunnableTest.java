@@ -197,20 +197,4 @@ public class LogcatExtractionRunnableTest {
 
         verifyMinidumpWithLogcat("test.dmp.try0");
     }
-
-    @Test
-    @MediumTest
-    public void testSimpleExtraction_WithJobScheduler() throws IOException {
-        // The JobScheduler API is only available as of Android M.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
-
-        final File minidump = createMinidump("test.dmp");
-        Context testContext = new TestContext(InstrumentationRegistry.getTargetContext());
-
-        LogcatExtractionRunnable runnable =
-                new LogcatExtractionRunnable(minidump, new TestLogcatCrashExtractor());
-        runnable.run();
-
-        verifyMinidumpWithLogcat("test.dmp.try0");
-    }
 }

@@ -9,10 +9,6 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace predictors {
 class AutocompleteActionPredictor;
 class LoadingPredictor;
@@ -36,16 +32,16 @@ class PredictorsHandler : public content::WebUIMessageHandler {
  private:
   // Synchronously fetches the database from AutocompleteActionPredictor and
   // calls into JS with the resulting DictionaryValue.
-  void RequestAutocompleteActionPredictorDb(const base::ListValue* args);
+  void RequestAutocompleteActionPredictorDb(const base::Value::List& args);
 
   // Fetches stats for the ResourcePrefetchPredictor and returns it as a
   // DictionaryValue to the JS.
-  void RequestResourcePrefetchPredictorDb(const base::ListValue* args);
+  void RequestResourcePrefetchPredictorDb(const base::Value::List& args);
 
   // Helpers for RequestResourcePrefetchPredictorDb.
   void AddOriginDataMapToListValue(
       const std::map<std::string, predictors::OriginData>& data_map,
-      base::ListValue* db) const;
+      base::Value::List* db) const;
 
   raw_ptr<predictors::AutocompleteActionPredictor>
       autocomplete_action_predictor_;

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchQuery} from './history_clusters.mojom-webui.js';
-import {MetricsProxyImpl, RelatedSearchAction} from './metrics_proxy.js';
-import {OpenWindowProxyImpl} from './open_window_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import {RelatedSearchAction, SearchQuery} from './history_clusters.mojom-webui.js';
+import {MetricsProxyImpl} from './metrics_proxy.js';
 import {getTemplate} from './search_query.html.js';
 
 /**
@@ -60,7 +60,7 @@ class SearchQueryElement extends PolymerElement {
 
   private onAuxClick_() {
     MetricsProxyImpl.getInstance().recordRelatedSearchAction(
-        RelatedSearchAction.CLICKED, this.index);
+        RelatedSearchAction.kClicked, this.index);
 
     // Notify the parent <history-cluster> element of this event.
     this.dispatchEvent(new CustomEvent('related-search-clicked', {
@@ -75,7 +75,7 @@ class SearchQueryElement extends PolymerElement {
     // To record metrics.
     this.onAuxClick_();
 
-    OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);
+    this.openUrl_(event);
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -87,7 +87,18 @@ class SearchQueryElement extends PolymerElement {
     // To record metrics.
     this.onAuxClick_();
 
-    OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);
+    this.openUrl_(e);
+  }
+
+  private openUrl_(event: MouseEvent|KeyboardEvent) {
+    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+        this.searchQuery.url, {
+          middleButton: false,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        });
   }
 }
 

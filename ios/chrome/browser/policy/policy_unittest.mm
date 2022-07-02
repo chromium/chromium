@@ -18,7 +18,6 @@
 #include "components/policy/policy_constants.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,13 +33,6 @@ namespace {
 
 class PolicyTest : public PlatformTest {
  public:
-  PolicyTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableEnterprisePolicy);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kInstallURLBlocklistHandlers);
-  }
-
   void SetUp() override {
     PlatformTest::SetUp();
 

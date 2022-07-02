@@ -200,7 +200,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public void startActivityCompletely(Intent intent) {
         launchActivity(intent);
         waitForActivityNativeInitializationComplete();
+        waitForActivityCompletelyLoaded();
+    }
 
+    /** Wait until the activity is completely loaded, and a tab is shown. */
+    public void waitForActivityCompletelyLoaded() {
         CriteriaHelper.pollUiThread(
                 () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
         Tab tab = getActivity().getActivityTab();
@@ -431,6 +435,14 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public void assertWaitForPageScaleFactorMatch(float expectedScale) {
         ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
+    }
+
+    /**
+     * Waits till the WebContents receives a page scale factor different
+     * from the specified value and asserts that this happens.
+     */
+    public void assertWaitForPageScaleFactorChange(float initialScale) {
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorChange(getActivity(), initialScale);
     }
 
     public String getName() {

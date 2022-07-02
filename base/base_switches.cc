@@ -171,12 +171,6 @@ const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Controls whether or not retired instruction counts are surfaced for threads
-// in trace events on Linux.
-//
-// This flag requires the BPF sandbox to be disabled.
-const char kEnableThreadInstructionCount[] = "enable-thread-instruction-count";
-
 // TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
 // Crashpad is fully enabled on Linux. Indicates that Crashpad should be
 // enabled.

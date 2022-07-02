@@ -6,7 +6,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/manifest/handle_links.mojom.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -98,23 +97,6 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
   // string isn't known.
   EXPECT_EQ(blink::mojom::CaptureLinks::kUndefined,
             CaptureLinksFromString("unknown-value"));
-}
-
-TEST(ManifestUtilTest, HandleLinksFromString) {
-  EXPECT_EQ(blink::mojom::HandleLinks::kUndefined, HandleLinksFromString(""));
-  EXPECT_EQ(blink::mojom::HandleLinks::kAuto, HandleLinksFromString("auto"));
-  EXPECT_EQ(blink::mojom::HandleLinks::kPreferred,
-            HandleLinksFromString("preferred"));
-  EXPECT_EQ(blink::mojom::HandleLinks::kNotPreferred,
-            HandleLinksFromString("not-preferred"));
-
-  // HandleLinksFromString() should work with non-lowercase strings.
-  EXPECT_EQ(blink::mojom::HandleLinks::kAuto, HandleLinksFromString("AUTO"));
-
-  // HandleLinksFromString() should return HandleLinks::kUndefined if the string
-  // isn't known.
-  EXPECT_EQ(blink::mojom::HandleLinks::kUndefined,
-            HandleLinksFromString("unknown-value"));
 }
 
 TEST(ManifestUtilTest, RouteToFromString) {

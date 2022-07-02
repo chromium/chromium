@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from './assert.js';
+import {ExpertOption} from './expert.js';
 import {
   Mode,
   PerfEvent,
@@ -13,15 +14,9 @@ import {
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
   CAMERA_SWITCHING = 'camera-switching',
-  CUSTOM_VIDEO_PARAMETERS = 'custom-video-parameters',
-  ENABLE_FPS_PICKER_FOR_BUILTIN = 'enable-fps-picker-for-builtin',
-  ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enable-full-sized-video-snapshot',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
-  ENABLE_MULTISTREAM_RECORDING = 'enable-multistream-recording',
   ENABLE_PTZ = 'enable-ptz',
-  ENABLE_PTZ_FOR_BUILTIN = 'enable-ptz-for-builtin',
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
-  EXPERT = 'expert',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -37,13 +32,13 @@ export enum State {
   HAS_ZOOM_SUPPORT = 'has-zoom-support',
   INTENT = 'intent',
   IS_NEW_FEATURE_TOAST_SHOWN = 'is-new-feature-toast-shown',
+  KEYBOARD_NAVIGATION = 'keyboard-navigation',
   MAX_WND = 'max-wnd',
   MIC = 'mic',
   MIRROR = 'mirror',
   MODE_SWITCHING = 'mode-switching',
   MULTI_CAMERA = 'multi-camera',
   PLAYING_RESULT_VIDEO = 'playing-result-video',
-  PRINT_PERFORMANCE_LOGS = 'print-performance-logs',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
@@ -52,19 +47,14 @@ export enum State {
   RECORDING_PAUSED = 'recording-paused',
   // Controls appearance of paused/resumed UI.
   RECORDING_UI_PAUSED = 'recording-ui-paused',
-  SAVE_METADATA = 'save-metadata',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
-  SHOW_ALL_RESOLUTIONS = 'show-all-resolutions',
   SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
-  SHOW_METADATA = 'show-metadata',
-  SHOW_SCAN_MODE = 'show-scan-mode',
   SHUTTER_PROGRESSING = 'shutter-progressing',
   SNAPSHOTTING = 'snapshotting',
   STREAMING = 'streaming',
   SUSPEND = 'suspend',
   TABLET = 'tablet',
   TABLET_LANDSCAPE = 'tablet-landscape',
-  TAB_NAVIGATION = 'tab-navigation',
   TAKING = 'taking',
   TALL = 'tall',
   TIMER_10SEC = 'timer-10s',
@@ -73,10 +63,15 @@ export enum State {
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 
-export type StateUnion = Mode|PerfEvent|State|ViewName;
+export type StateUnion = ExpertOption|Mode|PerfEvent|State|ViewName;
 
-const stateValues = new Set<StateUnion>(
-    [State, Mode, ViewName, PerfEvent].flatMap((s) => Object.values(s)));
+const stateValues = new Set<StateUnion>([
+  State,
+  Mode,
+  ViewName,
+  PerfEvent,
+  ExpertOption,
+].flatMap((s) => Object.values(s)));
 
 /**
  * Asserts input string is valid state.

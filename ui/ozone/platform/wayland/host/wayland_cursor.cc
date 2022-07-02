@@ -16,7 +16,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
-#include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
 namespace ui {
 
@@ -38,7 +37,6 @@ void WaylandCursor::OnBufferRelease(void* data, wl_buffer* buffer) {
 void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
                                  const gfx::Point& hotspot_in_dips,
                                  int buffer_scale) {
-  DCHECK(connection_->shm());
   if (!pointer_)
     return;
 
@@ -50,7 +48,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
     return HideCursor();
 
   gfx::Size image_size = gfx::SkISizeToSize(image.dimensions());
-  WaylandShmBuffer buffer(connection_->shm(), image_size);
+  WaylandShmBuffer buffer(connection_->wayland_buffer_factory(), image_size);
 
   if (!buffer.IsValid()) {
     LOG(ERROR) << "Failed to create SHM buffer for Cursor Bitmap.";

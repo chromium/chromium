@@ -25,6 +25,10 @@ import java.lang.annotation.Target;
  * @BeforeClass/@AfterClass may be used for one-time initialization across all tests within a single
  * suite. Tests wishing to share one-time initialization across suites in the same batch will need
  * to explicitly coordinate.
+ *
+ * Tests that are safe to run in batch should have this annotation.
+ *
+ * Tests should have either {@link Batch} or {@link DoNotBatch} annotation.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

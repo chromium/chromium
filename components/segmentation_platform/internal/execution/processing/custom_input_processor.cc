@@ -6,9 +6,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform::processing {
@@ -37,15 +38,18 @@ absl::optional<int> GetArgAsInt(
 
 }  // namespace
 
-CustomInputProcessor::CustomInputProcessor() = default;
-
-CustomInputProcessor::CustomInputProcessor(const base::Time prediction_time)
-    : prediction_time_(prediction_time) {}
+CustomInputProcessor::CustomInputProcessor(
+    const base::Time prediction_time,
+    InputDelegateHolder* input_delegate_holder)
+    : input_delegate_holder_(input_delegate_holder),
+      prediction_time_(prediction_time) {}
 
 CustomInputProcessor::CustomInputProcessor(
     base::flat_map<FeatureIndex, proto::CustomInput>&& custom_inputs,
-    const base::Time prediction_time)
-    : custom_inputs_(std::move(custom_inputs)),
+    const base::Time prediction_time,
+    InputDelegateHolder* input_delegate_holder)
+    : input_delegate_holder_(input_delegate_holder),
+      custom_inputs_(std::move(custom_inputs)),
       prediction_time_(prediction_time) {}
 
 CustomInputProcessor::~CustomInputProcessor() = default;
@@ -77,21 +81,45 @@ void CustomInputProcessor::OnFinishProcessing(
 void CustomInputProcessor::Process(
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessorCallback callback) {
+  auto result = std::make_unique<base::flat_map<FeatureIndex, Tensor>>();
   ProcessIndexType<FeatureIndex>(std::move(custom_inputs_),
                                  std::move(feature_processor_state),
-                                 std::move(callback));
+                                 std::move(result), std::move(callback));
 }
 
 template <typename IndexType>
 void CustomInputProcessor::ProcessIndexType(
     base::flat_map<IndexType, proto::CustomInput> custom_inputs,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    std::unique_ptr<base::flat_map<IndexType, Tensor>> result,
     TemplateCallback<IndexType> callback) {
-  base::flat_map<IndexType, Tensor> result;
   bool success = true;
-  for (const auto& current : custom_inputs) {
+  auto it = custom_inputs.begin();
+  for (; it != custom_inputs.end(); it = custom_inputs.begin()) {
     // Get the next feature in the list to process.
-    const proto::CustomInput& custom_input = current.second;
+    const proto::CustomInput custom_input(std::move(it->second));
+    const IndexType index = it->first;
+    custom_inputs.erase(it);
+
+    InputDelegate* input_delegate = nullptr;
+    if (input_delegate_holder_) {
+      input_delegate =
+          input_delegate_holder_->GetDelegate(custom_input.fill_policy());
+    }
+    if (input_delegate) {
+      // If a delegate is available then use it to process the input. All the
+      // state in this method is moved, so it is ok even if the client ran the
+      // callback without posting it.
+      const FeatureProcessorState& state = *feature_processor_state;
+      input_delegate->Process(
+          custom_input, state,
+          base::BindOnce(
+              &CustomInputProcessor::OnGotProcessedValue<IndexType>,
+              weak_ptr_factory_.GetWeakPtr(), std::move(custom_inputs),
+              std::move(feature_processor_state), std::move(result),
+              std::move(callback), index, custom_input.tensor_length()));
+      return;
+    }
 
     // Skip custom input with tensor length of 0.
     if (custom_input.tensor_length() == 0) {
@@ -102,27 +130,60 @@ void CustomInputProcessor::ProcessIndexType(
         metadata_utils::ValidationResult::kValidationSuccess) {
       success = false;
     } else {
-      result[current.first] =
+      (*result)[index] =
           ProcessSingleCustomInput(custom_input, feature_processor_state.get());
     }
   }
 
   // Processing of the feature list has completed.
-  custom_inputs_.clear();
+  DCHECK(custom_inputs.empty());
   if (!success || feature_processor_state->error()) {
-    result.clear();
+    result->clear();
     feature_processor_state->SetError();
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(feature_processor_state),
-                     std::move(result)));
+                     std::move(*result)));
 }
 
-template void CustomInputProcessor::ProcessIndexType(
-    base::flat_map<std::pair<int, int>, proto::CustomInput> custom_inputs,
+template <typename IndexType>
+void CustomInputProcessor::OnGotProcessedValue(
+    base::flat_map<IndexType, proto::CustomInput> custom_inputs,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    std::unique_ptr<base::flat_map<IndexType, Tensor>> result,
+    TemplateCallback<IndexType> callback,
+    IndexType current_index,
+    size_t current_tensor_length,
+    bool error,
+    Tensor current_value) {
+  if (error) {
+    feature_processor_state->SetError();
+  } else {
+    DCHECK_EQ(current_tensor_length, current_value.size());
+  }
+  (*result)[current_index] = std::move(current_value);
+  ProcessIndexType<IndexType>(std::move(custom_inputs),
+                              std::move(feature_processor_state),
+                              std::move(result), std::move(callback));
+}
+
+using SqlCustomInputIndex = std::pair<int, int>;
+template void CustomInputProcessor::ProcessIndexType(
+    base::flat_map<SqlCustomInputIndex, proto::CustomInput> custom_inputs,
+    std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    std::unique_ptr<base::flat_map<SqlCustomInputIndex, Tensor>> result,
     TemplateCallback<std::pair<int, int>> callback);
+
+template void CustomInputProcessor::OnGotProcessedValue(
+    base::flat_map<SqlCustomInputIndex, proto::CustomInput> custom_inputs,
+    std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    std::unique_ptr<base::flat_map<SqlCustomInputIndex, Tensor>> result,
+    TemplateCallback<SqlCustomInputIndex> callback,
+    SqlCustomInputIndex current_index,
+    size_t current_tensor_length,
+    bool success,
+    Tensor current_value);
 
 QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
     const proto::CustomInput& custom_input,
@@ -145,6 +206,10 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION) {
     if (!AddTimeRangeBeforePrediction(custom_input, tensor_result))
       feature_processor_state->SetError();
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::PRICE_TRACKING_HINTS) {
+    feature_processor_state->SetError();
+    NOTREACHED() << "InputDelegate is not found";
   }
   return tensor_result;
 }

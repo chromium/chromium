@@ -47,9 +47,9 @@ using StringPieceType = FilePath::StringPieceType;
 
 namespace {
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2",
-                                                      "z",  "bz", "lzma"};
-const char* const kCommonDoubleExtensions[] = { "user.js" };
+const char* const kCommonDoubleExtensionSuffixes[] = {
+    "bz", "bz2", "gz", "lz", "lzma", "lzo", "xz", "z", "zst"};
+const char* const kCommonDoubleExtensions[] = {"user.js"};
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 
@@ -152,13 +152,13 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
 
   for (auto* i : kCommonDoubleExtensions) {
     StringType extension(path, penultimate_dot + 1);
-    if (LowerCaseEqualsASCII(extension, i))
+    if (EqualsCaseInsensitiveASCII(extension, i))
       return penultimate_dot;
   }
 
   StringType extension(path, last_dot + 1);
   for (auto* i : kCommonDoubleExtensionSuffixes) {
-    if (LowerCaseEqualsASCII(extension, i)) {
+    if (EqualsCaseInsensitiveASCII(extension, i)) {
       if ((last_dot - penultimate_dot) <= 5U &&
           (last_dot - penultimate_dot) > 1U) {
         return penultimate_dot;

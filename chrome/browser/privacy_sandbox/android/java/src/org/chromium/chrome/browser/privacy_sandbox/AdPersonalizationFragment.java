@@ -13,12 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
@@ -26,18 +28,29 @@ import java.util.List;
  * Settings fragment for privacy sandbox settings.
  */
 public class AdPersonalizationFragment
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+        extends PrivacySandboxSettingsBaseFragment implements Preference.OnPreferenceClickListener {
     private static final String AD_PERSONALIZATION_DESCRIPTION = "ad_personalization_description";
+
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
-    private static final String REMOVE_TOPICS_PREFERENCE = "removed_topics";
+    private static final String REMOVED_TOPICS_PREFERENCE = "removed_topics";
+
+    private static final String FLEDGE_CATEGORY_PREFERENCE = "fledge_interests";
+    private static final String EMPTY_FLEDGE_PREFERENCE = "empty_fledge";
+    private static final String REMOVED_SITES_PREFERENCE = "removed_sites";
 
     private SnackbarManager mSnackbarManager;
 
     private PreferenceCategory mTopicsCategory;
-    private Preference mEmptyTopicsPreference;
-    private Preference mRemoveTopicsPreference;
+    private ChromeBasePreference mEmptyTopicsPreference;
+    private Preference mRemovedTopicsPreference;
+
+    private PreferenceCategory mFledgeCategory;
+    private ChromeBasePreference mEmptyFledgePreference;
+    private Preference mRemovedSitesPreference;
+
     private Preference mDescriptionPreference;
+    private LargeIconBridge mLargeIconBridge;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -48,17 +61,26 @@ public class AdPersonalizationFragment
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_ad_personalization_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_preference);
 
         mDescriptionPreference = findPreference(AD_PERSONALIZATION_DESCRIPTION);
         assert mDescriptionPreference != null;
+
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         assert mEmptyTopicsPreference != null;
-        mRemoveTopicsPreference = findPreference(REMOVE_TOPICS_PREFERENCE);
-        assert mRemoveTopicsPreference != null;
+        mRemovedTopicsPreference = findPreference(REMOVED_TOPICS_PREFERENCE);
+        assert mRemovedTopicsPreference != null;
+
+        mFledgeCategory = findPreference(FLEDGE_CATEGORY_PREFERENCE);
+        assert mFledgeCategory != null;
+        mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
+        assert mEmptyFledgePreference != null;
+        mRemovedSitesPreference = findPreference(REMOVED_SITES_PREFERENCE);
+        assert mRemovedSitesPreference != null;
     }
 
     @Override
@@ -76,18 +98,46 @@ public class AdPersonalizationFragment
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
+    }
+
     private void updatePreferences() {
+        // Load Fledge data before populating anything. All preferences are hidden initially.
+        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(this::populatePreferences);
+    }
+
+    private void populatePreferences(List<String> currentFledgeSites) {
         List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
         List<Topic> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
+        List<String> blockedFledgeSites =
+                PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay();
 
+        boolean hasAnyInterests = !(currentTopics.isEmpty() && blockedTopics.isEmpty()
+                && currentFledgeSites.isEmpty() && blockedFledgeSites.isEmpty());
+        updateDescription(hasAnyInterests);
+        populateTopics(currentTopics, blockedTopics);
+        populateFledge(currentFledgeSites, blockedFledgeSites);
+        updateEmptyState();
+    }
+
+    private void updateDescription(boolean hasAnyInterests) {
         int description = PrivacySandboxBridge.isPrivacySandboxEnabled()
-                ? (currentTopics.isEmpty() && blockedTopics.isEmpty()
-                                ? R.string.privacy_sandbox_ad_personalization_description_no_items
-                                : R.string.privacy_sandbox_ad_personalization_description_trials_on)
+                ? (hasAnyInterests
+                                ? R.string.privacy_sandbox_ad_personalization_description_trials_on
+                                : R.string.privacy_sandbox_ad_personalization_description_no_items)
                 : R.string.privacy_sandbox_ad_personalization_description_trials_off;
         mDescriptionPreference.setSummary(description);
+    }
 
+    private void populateTopics(List<Topic> currentTopics, List<Topic> blockedTopics) {
         mTopicsCategory.removeAll();
+        mTopicsCategory.setVisible(true);
         for (Topic topic : currentTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(R.drawable.btn_close,
@@ -98,12 +148,39 @@ public class AdPersonalizationFragment
             preference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(preference);
         }
-        updateEmptyState();
-        mRemoveTopicsPreference.setVisible(!currentTopics.isEmpty() || !blockedTopics.isEmpty());
+        mRemovedTopicsPreference.setVisible(!(currentTopics.isEmpty() && blockedTopics.isEmpty()));
+        // If this is the last preference, it shouldn't have a divider below.
+        mEmptyTopicsPreference.setDividerAllowedBelow(mRemovedTopicsPreference.isVisible());
+    }
+
+    private void populateFledge(List<String> currentFledgeSites, List<String> blockedFledgeSites) {
+        mFledgeCategory.removeAll();
+        mFledgeCategory.setVisible(true);
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        }
+        for (String site : currentFledgeSites) {
+            FledgePreference preference =
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
+            preference.setImage(R.drawable.btn_close,
+                    getResources().getString(
+                            R.string.privacy_sandbox_remove_site_button_description, site));
+            preference.setDividerAllowedAbove(false);
+            preference.setOnPreferenceClickListener(this);
+            mFledgeCategory.addPreference(preference);
+        }
+        mRemovedSitesPreference.setVisible(
+                !(currentFledgeSites.isEmpty() && blockedFledgeSites.isEmpty()));
+        // If this is the last preference, it shouldn't have a divider below.
+        mEmptyFledgePreference.setDividerAllowedBelow(mRemovedSitesPreference.isVisible());
     }
 
     private void blockTopic(Topic topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, false);
+    }
+
+    private void blockFledge(String site) {
+        PrivacySandboxBridge.setFledgeJoiningAllowed(site, false);
     }
 
     @Override
@@ -111,16 +188,26 @@ public class AdPersonalizationFragment
         if (preference instanceof TopicPreference) {
             blockTopic(((TopicPreference) preference).getTopic());
             mTopicsCategory.removePreference(preference);
-            updateEmptyState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
                     null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
             RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.TopicRemoved");
+        } else if (preference instanceof FledgePreference) {
+            blockFledge(((FledgePreference) preference).getSite());
+            mFledgeCategory.removePreference(preference);
+            mSnackbarManager.showSnackbar(Snackbar.make(
+                    getResources().getString(R.string.privacy_sandbox_remove_site_snackbar), null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
+            RecordUserAction.record("Settings.PrivacySandbox.AdPersonalization.SiteRemoved");
+        } else {
+            assert false; // NOTREACHED.
         }
+        updateEmptyState();
         return true;
     }
 
     private void updateEmptyState() {
         mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
+        mEmptyFledgePreference.setVisible(mFledgeCategory.getPreferenceCount() == 0);
     }
 }

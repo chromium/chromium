@@ -7,7 +7,6 @@ module blink.mojom;
 import "services/network/public/mojom/url_loader.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "third_party/blink/public/mojom/timing/worker_timing_container.mojom";
 
 // Parameters used for dispatching a FetchEvent.
 struct DispatchFetchEventParams {
@@ -19,11 +18,6 @@ struct DispatchFetchEventParams {
 
   // FetchEvent#preloadResponse.
   pending_receiver<network.mojom.URLLoaderClient>? preload_url_loader_client_receiver;
-
-  // This is currently null for navigation because it's still being implemented.
-  // TODO(https://crbug.com/900700): Make this non-nullable when implementation
-  // is complete (including support for navigation requests).
-  pending_remote<blink.mojom.WorkerTimingContainer>? worker_timing_remote;
 
   // Whether this is a "fake" fetch event used to detect the offline capability
   // of the service worker. See more details at https://crbug.com/965802.

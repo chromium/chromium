@@ -110,7 +110,7 @@ const char kTranslateScript[] = "Fake Translate Script";
 // Body text for /languagepath/.
 const char kLanguagePathText[] = "Some text here.";
 
-// Builds a HTML document with a French text and the given |html| and |meta|
+// Builds a HTML document with a French text and the given `html` and `meta`
 // tags.
 std::string GetFrenchPageHtml(const std::string& html_tag,
                               const std::string& meta_tags) {
@@ -136,7 +136,7 @@ class TestResponseProvider : public web::DataResponseProvider {
  private:
   // Generates a page with a HTTP "Content-Language" header and "httpEquiv" meta
   // tag.
-  // The URL in |request| has two parameters, "http" and "meta", that can be
+  // The URL in `request` has two parameters, "http" and "meta", that can be
   // used to set the values of the header and the meta tag. For example:
   // http://someurl?http=en&meta=fr generates a page with a "en" HTTP header and
   // a "fr" meta tag.
@@ -318,14 +318,14 @@ void TestResponseProvider::GetLanguageResponse(
   const GURL noTranslateValueURL = web::test::HttpServer::MakeUrl(
       base::StringPrintf("http://%s", kFrenchPageNoTranslateValue));
 
-  // Load some french page with |content="notranslate"| meta tag.
+  // Load some french page with `content="notranslate"| meta tag.
   [ChromeEarlGrey loadURL:noTranslateContentURL];
 
   // Check that the language has been detected.
   GREYAssertTrue([self waitForLanguageDetection],
                  @"A language has been detected");
 
-  // Load some french page with |value="notranslate"| meta tag.
+  // Load some french page with `value="notranslate"| meta tag.
   [ChromeEarlGrey loadURL:noTranslateValueURL];
 
   // Check that the language has been detected.
@@ -399,7 +399,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language in http content is detected.
-- (void)testLanguageDetectionHttpContentLanguage {
+// TODO(crbug.com/1328970): Re-enable when translate works in HTTP
+- (void)DISABLED_testLanguageDetectionHttpContentLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -436,7 +437,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language in http content is detected when navigating to a link.
-- (void)testLanguageDetectionHttpContentLanguageBehindLink {
+// TODO(crbug.com/1328970): Re-enable when translate works in HTTP
+- (void)DISABLED_testLanguageDetectionHttpContentLanguageBehindLink {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));

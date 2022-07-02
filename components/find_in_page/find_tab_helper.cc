@@ -127,8 +127,9 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
 }
 
 void FindTabHelper::ActivateFindInPageResultForAccessibility() {
-  GetWebContents().GetMainFrame()->ActivateFindInPageResultForAccessibility(
-      current_find_request_id_);
+  GetWebContents()
+      .GetPrimaryMainFrame()
+      ->ActivateFindInPageResultForAccessibility(current_find_request_id_);
 }
 
 std::u16string FindTabHelper::GetInitialSearchText() {

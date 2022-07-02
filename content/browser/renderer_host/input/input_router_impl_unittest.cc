@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,14 +27,19 @@
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
+#include "content/browser/renderer_host/mock_render_widget_host.h"
+#include "content/browser/site_instance_group.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget_input_handler.h"
+#include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/events/base_event_utils.h"
@@ -44,10 +50,6 @@
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "ui/events/event.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
 using blink::SyntheticWebGestureEventBuilder;
@@ -98,6 +100,23 @@ WebInputEvent& GetEventWithType(WebInputEvent::Type type) {
 
 }  // namespace
 
+class MockRenderWidgetHostViewForStylusWriting
+    : public TestRenderWidgetHostView {
+ public:
+  MockRenderWidgetHostViewForStylusWriting(RenderWidgetHost* host)
+      : TestRenderWidgetHostView(host) {}
+  ~MockRenderWidgetHostViewForStylusWriting() override = default;
+
+  bool RequestStartStylusWriting() override { return supports_stylus_writing_; }
+
+  void set_supports_stylus_writing(bool supports) {
+    supports_stylus_writing_ = supports;
+  }
+
+ private:
+  bool supports_stylus_writing_ = false;
+};
+
 // TODO(dtapuska): Remove this class when we don't have multiple implementations
 // of InputRouters.
 class MockInputRouterImplClient : public InputRouterImplClient {
@@ -111,6 +130,14 @@ class MockInputRouterImplClient : public InputRouterImplClient {
       const std::vector<gfx::Rect>& character_bounds) override {}
 
   void OnImeCancelComposition() override {}
+
+  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override {
+    return render_widget_host_view_;
+  }
+
+  void OnStartStylusWriting() override {
+    on_start_stylus_writing_called_ = true;
+  }
 
   void SetMouseCapture(bool capture) override {}
 
@@ -211,9 +238,18 @@ class MockInputRouterImplClient : public InputRouterImplClient {
   const blink::WebInputEvent* last_filter_event() const {
     return input_router_client_.last_filter_event();
   }
+  bool on_start_stylus_writing_called() {
+    return on_start_stylus_writing_called_;
+  }
+  void set_render_widget_host_view(
+      MockRenderWidgetHostViewForStylusWriting* view) {
+    render_widget_host_view_ = view;
+  }
 
   MockInputRouterClient input_router_client_;
   MockWidgetInputHandler widget_input_handler_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting> render_widget_host_view_;
+  bool on_start_stylus_writing_called_ = false;
 };
 
 class InputRouterImplTestBase : public testing::Test {
@@ -238,6 +274,23 @@ class InputRouterImplTestBase : public testing::Test {
 
     client_->set_input_router(input_router());
     disposition_handler_->set_input_router(input_router());
+
+    browser_context_ = std::make_unique<TestBrowserContext>();
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
+    widget_host_ = MakeNewWidgetHost();
+    mock_view_ =
+        new MockRenderWidgetHostViewForStylusWriting(widget_host_.get());
+    client_->set_render_widget_host_view(mock_view_.get());
+  }
+
+  std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
+    int32_t routing_id = process_host_->GetNextRoutingID();
+    return MockRenderWidgetHost::Create(
+        /*frame_tree=*/nullptr, &delegate_, site_instance_group_->GetSafeRef(),
+        routing_id);
   }
 
   void TearDown() override {
@@ -246,6 +299,12 @@ class InputRouterImplTestBase : public testing::Test {
 
     input_router_.reset();
     client_.reset();
+    if (mock_view_)
+      delete mock_view_;
+    widget_host_ = nullptr;
+    process_host_->Cleanup();
+    site_instance_group_.reset();
+    process_host_ = nullptr;
   }
 
   void SetUpForTouchAckTimeoutTest(int desktop_timeout_ms,
@@ -446,6 +505,15 @@ class InputRouterImplTestBase : public testing::Test {
     disposition_handler_->GetAndResetAckCount();
   }
 
+  void PressAndSetTouchActionWritable() {
+    PressTouchPoint(1, 1);
+    SendTouchEvent();
+    input_router_->SetTouchActionFromMain(
+        cc::TouchAction::kAuto & ~cc::TouchAction::kInternalNotWritable);
+    GetAndResetDispatchedMessages();
+    disposition_handler_->GetAndResetAckCount();
+  }
+
   void TouchActionSetFromMainNotOverridden() {
     input_router_->SetTouchActionFromMain(cc::TouchAction::kAuto);
     ASSERT_TRUE(input_router_->AllowedTouchAction().has_value());
@@ -518,10 +586,16 @@ class InputRouterImplTestBase : public testing::Test {
   std::unique_ptr<MockInputRouterImplClient> client_;
   std::unique_ptr<InputRouterImpl> input_router_;
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting> mock_view_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   SyntheticWebTouchEvent touch_event_;
+  std::unique_ptr<BrowserContext> browser_context_;
+  std::unique_ptr<MockRenderProcessHost> process_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
+  std::unique_ptr<RenderWidgetHostImpl> widget_host_;
+  MockRenderWidgetHostDelegate delegate_;
 };
 
 class InputRouterImplTest : public InputRouterImplTestBase {
@@ -966,17 +1040,10 @@ TEST_F(InputRouterImplTest, TouchTypesIgnoringAck) {
 }
 
 // Flaky on Linux: https://crbug.com/1295039
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GestureTypesIgnoringAck DISABLED_GestureTypesIgnoringAck
-#else
-#define MAYBE_GestureTypesIgnoringAck GestureTypesIgnoringAck
-#endif
-TEST_F(InputRouterImplTest, MAYBE_GestureTypesIgnoringAck) {
+// Flaky on at least Win7 and Win10 as well: https://crbug.com/1326564
+TEST_F(InputRouterImplTest, DISABLED_GestureTypesIgnoringAck) {
   // We test every gesture type, ensuring that the stream of gestures is valid.
 
-#if BUILDFLAG(IS_WIN)
-  display::win::test::ScopedScreenWin scoped_screen_win_;
-#endif
   const WebInputEvent::Type eventTypes[] = {
       WebInputEvent::Type::kGestureTapDown,
       WebInputEvent::Type::kGestureShowPress,
@@ -2222,6 +2289,185 @@ TEST_F(InputRouterImplTest,
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
   OnHasTouchEventConsumers(std::move(touch_event_consumers));
   StopTimeoutMonitorTest();
+}
+
+namespace {
+
+class InputRouterImplStylusWritingTest : public InputRouterImplTest {
+ public:
+  InputRouterImplStylusWritingTest() {
+    feature_list_.InitWithFeatures({blink::features::kStylusWritingToInput},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+// Tests that stylus writing is not started when touch action is not writable.
+TEST_F(InputRouterImplStylusWritingTest,
+       StylusWritingNotStartedForNotWritableTouchAction) {
+  PressAndSetTouchActionAuto();
+
+  // Set RequestStartStylusWriting() to return true, to ensure scroll events are
+  // not filtered when touch action is not writable.
+  mock_view_->set_supports_stylus_writing(true);
+  ASSERT_TRUE(
+      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+      2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
+  // scroll begin is not filtered when kInternalNotWritable is set.
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
+  EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
+  ASSERT_FALSE(client_->on_start_stylus_writing_called());
+}
+
+// Tests that stylus writing is not started when touch action is writable, but
+// request to start stylus writing returned false.
+TEST_F(InputRouterImplStylusWritingTest,
+       StylusWritingNotStartedForTouchActionWritable) {
+  PressAndSetTouchActionWritable();
+
+  // RequestStartStylusWriting() returns false by default.
+  ASSERT_FALSE(
+      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+      2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
+  ASSERT_TRUE(dispatched_messages[0]->ToEvent());
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
+            disposition_handler_->ack_event_type());
+  ASSERT_FALSE(client_->on_start_stylus_writing_called());
+
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                       blink::WebGestureDevice::kTouchscreen);
+  dispatched_messages = GetAndResetDispatchedMessages();
+  // This dispatches TouchScrollStarted and GestureScrollUpdate.
+  ASSERT_EQ(2U, dispatched_messages.size());
+  EXPECT_EQ(WebInputEvent::Type::kTouchScrollStarted,
+            dispatched_messages[0]->ToEvent()->Event()->Event().GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            dispatched_messages[1]->ToEvent()->Event()->Event().GetType());
+  dispatched_messages[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            disposition_handler_->ack_event_type());
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
+                       blink::WebGestureDevice::kTouchscreen);
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
+  ASSERT_TRUE(dispatched_messages[0]->ToEvent());
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            disposition_handler_->ack_event_type());
+}
+
+// Tests that stylus writing is not started when touch action is writable,
+// request to start stylus writing returns true but pointer count is more
+// than 1.
+TEST_F(InputRouterImplStylusWritingTest, StylusWritingNotStartedForMultiTouch) {
+  PressAndSetTouchActionWritable();
+
+  // Set RequestStartStylusWriting() to return true.
+  mock_view_->set_supports_stylus_writing(true);
+  ASSERT_TRUE(
+      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+      2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 2));
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  // Scroll begin is not filtered when pointer count is 2.
+  ASSERT_EQ(1U, dispatched_messages.size());
+  EXPECT_EQ(0U, disposition_handler_->GetAndResetAckCount());
+  // Message not sent to client that stylus writing has been started.
+  ASSERT_FALSE(client_->on_start_stylus_writing_called());
+}
+
+// Tests that stylus writing is started when touch action is writable, and
+// request to start stylus writing returns true, and pointer count is 1.
+TEST_F(InputRouterImplStylusWritingTest,
+       StylusWritingStartedForTouchActionWritable) {
+  PressAndSetTouchActionWritable();
+
+  // Set RequestStartStylusWriting() to return true.
+  mock_view_->set_supports_stylus_writing(true);
+  ASSERT_TRUE(
+      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  // GestureScrollBegin is filtered.
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+      2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(0U, dispatched_messages.size());
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
+            disposition_handler_->ack_event_type());
+  // Message sent to client that stylus writing has been started.
+  ASSERT_TRUE(client_->on_start_stylus_writing_called());
+
+  // GestureScrollUpdate and GestureScrollEnd are also filtered.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                       blink::WebGestureDevice::kTouchscreen);
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(0U, dispatched_messages.size());
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            disposition_handler_->ack_event_type());
+
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
+                       blink::WebGestureDevice::kTouchscreen);
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(0U, dispatched_messages.size());
+  EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            disposition_handler_->ack_event_type());
+}
+
+// Tests that GestureScrollBegin is filtered even if compositor touch action
+// allows scroll.
+TEST_F(InputRouterImplStylusWritingTest,
+       StylusWritingFiltersGSBEvenWhenCompositorTouchActionAllows) {
+  auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
+      HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
+  OnHasTouchEventConsumers(std::move(touch_event_consumers));
+  // Send a touchstart
+  PressTouchPoint(1, 1);
+  SendTouchEvent();
+  DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
+  ASSERT_TRUE(dispatched_messages[0]->ToEvent());
+  absl::optional<cc::TouchAction> expected_touch_action = cc::TouchAction::kPan;
+  dispatched_messages[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultSource::kCompositorThread,
+      ui::LatencyInfo(), blink::mojom::InputEventResultState::kNotConsumed,
+      nullptr, blink::mojom::TouchActionOptional::New(cc::TouchAction::kPan));
+  ASSERT_EQ(1U, disposition_handler_->GetAndResetAckCount());
+  absl::optional<cc::TouchAction> allowed_touch_action = AllowedTouchAction();
+  cc::TouchAction compositor_allowed_touch_action =
+      CompositorAllowedTouchAction();
+  EXPECT_FALSE(allowed_touch_action.has_value());
+  EXPECT_EQ(expected_touch_action.value(), compositor_allowed_touch_action);
+
+  // GestureScrollBegin is filtered until we get touch action from Main.
+  SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
+      2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(0U, dispatched_messages.size());
+
+  input_router_->SetTouchActionFromMain(cc::TouchAction::kAuto);
+  allowed_touch_action = AllowedTouchAction();
+  EXPECT_TRUE(allowed_touch_action.has_value());
+  dispatched_messages = GetAndResetDispatchedMessages();
+  ASSERT_EQ(1U, dispatched_messages.size());
 }
 
 namespace {

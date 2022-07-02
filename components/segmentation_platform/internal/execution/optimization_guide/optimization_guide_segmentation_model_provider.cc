@@ -10,11 +10,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_handler.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/segmentation_model_executor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -43,8 +44,8 @@ OptimizationGuideSegmentationModelProvider::
     OptimizationGuideSegmentationModelProvider(
         optimization_guide::OptimizationGuideModelProvider* model_provider,
         scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-        optimization_guide::proto::OptimizationTarget optimization_target)
-    : ModelProvider(optimization_target),
+        proto::SegmentId segment_id)
+    : ModelProvider(segment_id),
       model_provider_(model_provider),
       background_task_runner_(background_task_runner) {}
 
@@ -54,9 +55,16 @@ OptimizationGuideSegmentationModelProvider::
 void OptimizationGuideSegmentationModelProvider::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   DCHECK(!model_handler_);
+  absl::optional<optimization_guide::proto::OptimizationTarget> target =
+      SegmentIdToOptimizationTarget(segment_id_);
+  if (!target) {
+    // If the segment ID is not an OptimizationTarget then do not request a
+    // model.
+    return;
+  }
   model_handler_ = std::make_unique<OptimizationGuideSegmentationModelHandler>(
-      model_provider_, background_task_runner_, optimization_target_,
-      model_updated_callback, GetModelFetchConfig());
+      model_provider_, background_task_runner_, *target, model_updated_callback,
+      GetModelFetchConfig());
 }
 
 void OptimizationGuideSegmentationModelProvider::ExecuteModelWithInput(

@@ -53,16 +53,25 @@ const base::Feature kAutofillCreditCardAuthentication{
 const base::Feature kAutofillCreditCardUploadFeedback{
     "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, merchant bound virtual cards will be offered when users
-// interact with a payment form.
-const base::Feature kAutofillEnableMerchantBoundVirtualCards{
-    "AutofillEnableMerchantBoundVirtualCards",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+// When enabled, the GetDetailsForEnrollResponseDetails in the
+// UploadCardResponseDetails will be parsed, which will allow the Virtual Card
+// Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
+// optimization to improve the latency of the Virtual Card Enrollment flow.
+const base::Feature
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse{
+        "AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse",
+        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When enabled, a progress dialog will display while authenticating with FIDO.
+// TODO(crbug.com/1337380): Clean up kAutofillEnableFIDOProgressDialog when it's
+// fully rolled out.
+const base::Feature kAutofillEnableFIDOProgressDialog{
+    "AutofillEnableFIDOProgressDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, enable manual falling component for virtual cards on Android.
 const base::Feature kAutofillEnableManualFallbackForVirtualCards{
     "AutofillEnableManualFallbackForVirtualCards",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
@@ -104,8 +113,13 @@ const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId{
 // autofill flows (for example, downstream and upstream), and from the settings
 // page.
 const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
-    "AutofillEnableUpdateVirtualCardEnrollment",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+  "AutofillEnableUpdateVirtualCardEnrollment",
+#if BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // When enabled, the option of using cloud token virtual card will be offered
 // when all requirements are met.
@@ -132,12 +146,6 @@ const base::Feature kAutofillEnableVirtualCardManagementInDesktopSettingsPage{
 const base::Feature kAutofillEnableVirtualCardMetadata{
     "AutofillEnableVirtualCardMetadata", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, virtual card retrieval will pass an optional
-// authentication based on risk level.
-const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{
-    "AutofillEnableVirtualCardsRiskBasedAuthentication",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, if the previous feature offer was declined, a delay will be
 // added before Chrome attempts to show offer again.
 const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
@@ -148,12 +156,10 @@ const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
 const base::Feature kAutofillFillMerchantPromoCodeFields{
     "AutofillFillMerchantPromoCodeFields", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// The merchant bound virtual card feature introduces new customized card art
-// images. This parameter defines the expiration of the fetched image in the
-// disk cache of the image fetcher.
-const base::FeatureParam<int> kAutofillImageFetcherDiskCacheExpirationInMinutes{
-    &kAutofillEnableMerchantBoundVirtualCards,
-    "autofill_image_fetcher_disk_cache_expiration_in_minutes", 10};
+// When enabled, Autofill will attempt to find International Bank Account Number
+// (IBAN) fields when parsing forms.
+const base::Feature kAutofillParseIbanFields{"AutofillParseIbanFields",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, Autofill will attempt to find merchant promo/coupon/gift code
 // fields when parsing forms.
@@ -192,16 +198,11 @@ const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView{
     "AutofillShowUnmaskedCachedCardInManualFillingView",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, suggestions with offers will be shown at the top.
-const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence{
-    "AutofillSortSuggestionsBasedOnOfferPresence",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, merchant bound virtual cards will be suggested even if we don't
 // detect all of the card number, exp date and CVC fields in the payment form.
 const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm{
     "AutofillSuggestVirtualCardsOnIncompleteForm",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.

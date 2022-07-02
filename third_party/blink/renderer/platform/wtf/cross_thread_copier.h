@@ -97,16 +97,10 @@ struct CrossThreadCopier<Vector<T, inlineCapacity, Allocator>> {
 };
 
 template <wtf_size_t inlineCapacity, typename Allocator>
-struct CrossThreadCopier<Vector<String, inlineCapacity, Allocator>> {
+struct CrossThreadCopier<Vector<String, inlineCapacity, Allocator>>
+    : public CrossThreadCopierPassThrough<
+          Vector<String, inlineCapacity, Allocator>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = Vector<String, inlineCapacity, Allocator>;
-  static Type Copy(const Type& value) {
-    Type result;
-    result.ReserveInitialCapacity(value.size());
-    for (const auto& element : value)
-      result.push_back(element.IsolatedCopy());
-    return result;
-  }
 };
 
 template <>
@@ -116,10 +110,8 @@ struct CrossThreadCopier<AtomicString>
 };
 
 template <>
-struct CrossThreadCopier<String> {
+struct CrossThreadCopier<String> : public CrossThreadCopierPassThrough<String> {
   STATIC_ONLY(CrossThreadCopier);
-  typedef String Type;
-  WTF_EXPORT static Type Copy(const String&);
 };
 
 }  // namespace WTF

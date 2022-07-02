@@ -84,14 +84,14 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_details.h"
@@ -275,7 +275,7 @@ void CheckProfileForSanity() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
     return;
 
-  chromeos::UserDataAuthClient::Get()->IsMounted(
+  UserDataAuthClient::Get()->IsMounted(
       user_data_auth::IsMountedRequest(),
       base::BindOnce(&CheckCryptohomeIsMounted));
 
@@ -1396,7 +1396,7 @@ void ChromeUserManagerImpl::AsyncRemoveCryptohome(
 
   user_data_auth::RemoveRequest request;
   *request.mutable_identifier() = account_id_proto;
-  chromeos::UserDataAuthClient::Get()->Remove(
+  UserDataAuthClient::Get()->Remove(
       request, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 

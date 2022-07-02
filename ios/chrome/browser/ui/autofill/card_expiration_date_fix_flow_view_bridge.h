@@ -55,7 +55,7 @@ class CardExpirationDateFixFlowViewBridge
   UIViewController* view_controller_;
 
  private:
-  // The controller |this| queries for logic and state.
+  // The controller `this` queries for logic and state.
   CardExpirationDateFixFlowController* controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
@@ -69,7 +69,7 @@ class CardExpirationDateFixFlowViewBridge
 
 @interface CardExpirationDateFixFlowViewController : UITableViewController
 
-// Designated initializer. |bridge| must not be null.
+// Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:
     (autofill::CardExpirationDateFixFlowViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;

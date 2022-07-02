@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/xproto.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(X11) Event {
   template <typename T>
   T* As() {
     if (type_id_ == T::type_id)
-      return reinterpret_cast<T*>(event_);
+      return reinterpret_cast<T*>(event_.get());
     return nullptr;
   }
 
@@ -90,11 +91,11 @@ class COMPONENT_EXPORT(X11) Event {
   // XProto event state.
   int type_id_ = 0;
   void (*deleter_)(void*) = nullptr;
-  void* event_ = nullptr;
+  raw_ptr<void, DanglingUntriaged> event_ = nullptr;
 
   // This member points to a field in |event_|, or may be nullptr if there's no
   // associated window for the event.  It's owned by |event_|, not us.
-  Window* window_ = nullptr;
+  raw_ptr<Window, DanglingUntriaged> window_ = nullptr;
 };
 
 }  // namespace x11

@@ -221,7 +221,7 @@ void AudioNodeWiring::WillBeDestroyed(AudioNodeInput& input) {
   // changes to its connections.
   //
   // What does matter, however, is ensuring that no AudioNodeOutput holds a
-  // dangling pointer to |input|.
+  // dangling pointer to `input`.
 
   input.GetDeferredTaskHandler().AssertGraphOwner();
 

@@ -20,9 +20,9 @@ namespace {
 base::Value SourceEventParametersCallback(const NetLogSource source) {
   if (!source.IsValid())
     return base::Value();
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  source.AddToEventParameters(&event_params);
-  return event_params;
+  base::Value::Dict event_params;
+  source.AddToEventParameters(event_params);
+  return base::Value(std::move(event_params));
 }
 
 }  // namespace
@@ -49,12 +49,16 @@ bool NetLogSource::IsValid() const {
   return id != kInvalidId;
 }
 
+void NetLogSource::AddToEventParameters(base::Value::Dict& event_params) const {
+  base::Value::Dict dict;
+  dict.Set("type", static_cast<int>(type));
+  dict.Set("id", static_cast<int>(id));
+  event_params.Set("source_dependency", std::move(dict));
+}
+
 void NetLogSource::AddToEventParameters(base::Value* event_params) const {
   DCHECK(event_params->is_dict());
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("type", static_cast<int>(type));
-  dict.SetIntKey("id", static_cast<int>(id));
-  event_params->SetKey("source_dependency", std::move(dict));
+  AddToEventParameters(event_params->GetDict());
 }
 
 base::Value NetLogSource::ToEventParameters() const {

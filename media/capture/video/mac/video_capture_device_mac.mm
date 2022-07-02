@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/timestamp_constants.h"
 #include "media/capture/mojom/image_capture_types.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
@@ -246,8 +247,8 @@ static void SetAntiFlickerInVideoControlInterface(
   // Create the control request and launch it to the device's control interface.
   // Note how the wIndex needs the interface number OR'ed in the lowest bits.
   IOUSBDevRequest command;
-  command.bmRequestType =
-      USBmakebmRequestType(kUSBOut, kUSBClass, kUSBInterface);
+  command.bmRequestType = USBmakebmRequestType(UInt8{kUSBOut}, UInt8{kUSBClass},
+                                               UInt8{kUSBInterface});
   command.bRequest = kVcRequestCodeSetCur;
   UInt8 interface_number;
   (*control_interface)
@@ -328,8 +329,8 @@ static IOUSBDevRequest CreateEmptyPanTiltZoomRequest(
   (*control_interface)
       ->GetInterfaceNumber(control_interface, &interface_number);
   IOUSBDevRequest command;
-  command.bmRequestType =
-      USBmakebmRequestType(endpoint_direction, kUSBClass, kUSBInterface);
+  command.bmRequestType = USBmakebmRequestType(
+      endpoint_direction, UInt8{kUSBClass}, UInt8{kUSBInterface});
   command.bRequest = request_code;
   command.wIndex = (unit_id << 8) | interface_number;
   command.wValue = (control_selector << 8);
@@ -611,14 +612,17 @@ void VideoCaptureDeviceMac::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::AllocateAndStart");
   if (state_ != kIdle) {
     return;
   }
 
   client_ = std::move(client);
-  if (device_descriptor_.capture_api == VideoCaptureApi::MACOSX_AVFOUNDATION)
+  if (device_descriptor_.capture_api == VideoCaptureApi::MACOSX_AVFOUNDATION) {
     LogMessage("Using AVFoundation for device: " +
                device_descriptor_.display_name());
+  }
 
   NSString* deviceId = base::SysUTF8ToNSString(device_descriptor_.device_id);
 
@@ -658,11 +662,14 @@ void VideoCaptureDeviceMac::AllocateAndStart(
                                 GetPowerLineFrequency(params));
     }
   }
-
-  if (![capture_device_ startCapture]) {
-    SetErrorState(VideoCaptureError::kMacCouldNotStartCaptureDevice, FROM_HERE,
-                  "Could not start capture device.");
-    return;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "startCapture");
+    if (![capture_device_ startCapture]) {
+      SetErrorState(VideoCaptureError::kMacCouldNotStartCaptureDevice,
+                    FROM_HERE, "Could not start capture device.");
+      return;
+    }
   }
 
   client_->OnStarted();
@@ -929,6 +936,8 @@ void VideoCaptureDeviceMac::SetErrorState(VideoCaptureError error,
 }
 
 bool VideoCaptureDeviceMac::UpdateCaptureResolution() {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::UpdateCaptureResolution");
   if (![capture_device_ setCaptureHeight:capture_format_.frame_size.height()
                                    width:capture_format_.frame_size.width()
                                frameRate:capture_format_.frame_rate]) {

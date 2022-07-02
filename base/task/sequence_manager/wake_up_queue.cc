@@ -15,7 +15,7 @@ namespace sequence_manager {
 namespace internal {
 
 WakeUpQueue::WakeUpQueue(
-    scoped_refptr<internal::AssociatedThreadId> associated_thread)
+    scoped_refptr<const internal::AssociatedThreadId> associated_thread)
     : associated_thread_(std::move(associated_thread)) {}
 
 WakeUpQueue::~WakeUpQueue() {
@@ -134,7 +134,10 @@ absl::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
 Value WakeUpQueue::AsValue(TimeTicks now) const {
   Value state(Value::Type::DICTIONARY);
   state.SetStringKey("name", GetName());
-  state.SetIntKey("registered_delay_count", wake_up_queue_.size());
+  // TODO(crbug.com/1334256): Make base::Value able to store an int64_t and
+  // remove this cast.
+  state.SetIntKey("registered_delay_count",
+                  checked_cast<int>(wake_up_queue_.size()));
   if (!wake_up_queue_.empty()) {
     TimeDelta delay = wake_up_queue_.top().wake_up.time - now;
     state.SetDoubleKey("next_delay_ms", delay.InMillisecondsF());

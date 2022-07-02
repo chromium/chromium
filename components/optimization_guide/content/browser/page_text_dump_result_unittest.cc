@@ -127,6 +127,18 @@ TEST(FrameTextDumpResultTest, Ordering) {
                            }));
 }
 
+TEST(PageTextDumpResultTest, WhitespaceTrimmed) {
+  FrameTextDumpResult frame_result =
+      FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
+                                      content::GlobalRenderFrameHostId(1, 2),
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
+          .CompleteWithContents(u"  abc\n\n");
+
+  ASSERT_TRUE(frame_result.contents());
+  EXPECT_EQ(*frame_result.contents(), u"abc");
+}
+
 TEST(PageTextDumpResultTest, Empty) {
   PageTextDumpResult page_result;
   EXPECT_TRUE(page_result.empty());

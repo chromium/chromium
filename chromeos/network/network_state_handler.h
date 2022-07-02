@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "chromeos/network/managed_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"
@@ -124,8 +124,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Add/remove observers.
   void AddObserver(NetworkStateHandlerObserver* observer,
                    const base::Location& from_here);
+  void AddObserver(NetworkStateHandlerObserver* observer);
+
   void RemoveObserver(NetworkStateHandlerObserver* observer,
                       const base::Location& from_here);
+  void RemoveObserver(NetworkStateHandlerObserver* observer);
+
   bool HasObserver(NetworkStateHandlerObserver* observer);
 
   // Returns the state for technology |type|. Only

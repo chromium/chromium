@@ -188,12 +188,12 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   std::unique_ptr<SSLClientSocket> ssl_socket_;
 
   // True once SSL negotiation has started.
-  bool ssl_negotiation_started_;
+  bool ssl_negotiation_started_ = false;
 
   // True if legacy crypto should be disabled for the job's current connection
   // attempt. On error, the connection will be retried with legacy crypto
   // enabled.
-  bool disable_legacy_crypto_with_fallback_;
+  bool disable_legacy_crypto_with_fallback_ = true;
 
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
 

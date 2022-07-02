@@ -15,8 +15,8 @@ class Browser;
 @protocol TabContextMenuDelegate;
 
 //  RecentTabsContextMenuHelper controls the creation of context menus,
-// based on the given |browser|, |RecentTabsPresentationDelegate| and
-// |RecentTabsTableViewController|.
+// based on the given `browser`, `RecentTabsPresentationDelegate` and
+// `RecentTabsTableViewController`.
 @interface RecentTabsContextMenuHelper : NSObject <RecentTabsMenuProvider>
 - (instancetype)initWithBrowser:(Browser*)browser
     recentTabsPresentationDelegate:

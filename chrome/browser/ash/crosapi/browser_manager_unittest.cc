@@ -113,6 +113,7 @@ class BrowserManagerTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
   }
@@ -137,9 +138,11 @@ class BrowserManagerTest : public testing::Test {
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   AddRegularUser("user@test.com");
   browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(), ash::ProfileHelper::Get()
-                              ->GetUserByProfile(&testing_profile_)
-                              ->username_hash());
+      local_state_.Get(),
+      ash::ProfileHelper::Get()
+          ->GetUserByProfile(&testing_profile_)
+          ->username_hash(),
+      browser_util::MigrationMode::kCopy);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 
@@ -181,9 +184,11 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
 TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   AddRegularUser("user@test.com");
   browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(), ash::ProfileHelper::Get()
-                              ->GetUserByProfile(&testing_profile_)
-                              ->username_hash());
+      local_state_.Get(),
+      ash::ProfileHelper::Get()
+          ->GetUserByProfile(&testing_profile_)
+          ->username_hash(),
+      browser_util::MigrationMode::kCopy);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 
@@ -226,9 +231,11 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
   AddRegularUser("user@test.com");
   browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(), ash::ProfileHelper::Get()
-                              ->GetUserByProfile(&testing_profile_)
-                              ->username_hash());
+      local_state_.Get(),
+      ash::ProfileHelper::Get()
+          ->GetUserByProfile(&testing_profile_)
+          ->username_hash(),
+      browser_util::MigrationMode::kCopy);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 
@@ -263,9 +270,11 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   AddRegularUser("user@test.com");
   browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(), ash::ProfileHelper::Get()
-                              ->GetUserByProfile(&testing_profile_)
-                              ->username_hash());
+      local_state_.Get(),
+      ash::ProfileHelper::Get()
+          ->GetUserByProfile(&testing_profile_)
+          ->username_hash(),
+      browser_util::MigrationMode::kCopy);
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 

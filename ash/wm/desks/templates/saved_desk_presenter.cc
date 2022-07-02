@@ -4,9 +4,9 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
@@ -28,18 +28,25 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/time/time.h"
+#include "components/desks_storage/core/desk_template_util.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
 
-SavedDeskPresenter* g_instance = nullptr;
-
 // Toast names.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
 constexpr char kTemplateTooLargeToastName[] = "TemplateTooLargeToast";
+
+// Duplicate value format.
+constexpr char kDuplicateNumberFormat[] = "(%d)";
+// Initial duplicate number value.
+constexpr char kInitialDuplicateNumberValue[] = " (1)";
+// Regex used in determining if duplicate name should be incremented.
+constexpr char kDuplicateNumberRegex[] = "\\(([0-9]+)\\)$";
 
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
@@ -55,63 +62,69 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
     : overview_session_(overview_session) {
   DCHECK(overview_session_);
 
-  DCHECK_EQ(g_instance, nullptr);
-  g_instance = this;
-
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
+
+  should_show_templates_ui_ =
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      (GetEntryCount(DeskTemplateType::kTemplate) +
+       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 }
 
-SavedDeskPresenter::~SavedDeskPresenter() {
-  DCHECK_EQ(g_instance, this);
-  g_instance = nullptr;
+SavedDeskPresenter::~SavedDeskPresenter() = default;
+
+size_t SavedDeskPresenter::GetEntryCount(DeskTemplateType type) const {
+  auto* model = GetDeskModel();
+  return type == DeskTemplateType::kTemplate
+             ? model->GetDeskTemplateEntryCount()
+             : model->GetSaveAndRecallDeskEntryCount();
 }
 
-// static
-SavedDeskPresenter* SavedDeskPresenter::Get() {
-  DCHECK(g_instance);
-  return g_instance;
+size_t SavedDeskPresenter::GetMaxEntryCount(DeskTemplateType type) const {
+  auto* model = GetDeskModel();
+  return type == DeskTemplateType::kTemplate
+             ? model->GetMaxDeskTemplateEntryCount()
+             : model->GetMaxSaveAndRecallDeskEntryCount();
 }
 
-size_t SavedDeskPresenter::GetEntryCount() const {
-  return GetDeskModel()->GetEntryCount();
-}
-
-size_t SavedDeskPresenter::GetMaxEntryCount() const {
-  return GetDeskModel()->GetMaxEntryCount();
-}
-
-size_t SavedDeskPresenter::GetDeskTemplateEntryCount() const {
-  return GetDeskModel()->GetDeskTemplateEntryCount();
-}
-
-size_t SavedDeskPresenter::GetMaxDeskTemplateEntryCount() const {
-  return GetDeskModel()->GetMaxDeskTemplateEntryCount();
-}
-
-size_t SavedDeskPresenter::GetSaveAndRecallDeskEntryCount() const {
-  return GetDeskModel()->GetSaveAndRecallDeskEntryCount();
-}
-
-size_t SavedDeskPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
-  return GetDeskModel()->GetMaxSaveAndRecallDeskEntryCount();
+ash::DeskTemplate* SavedDeskPresenter::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return GetDeskModel()->FindOtherEntryWithName(name, type, uuid);
 }
 
 void SavedDeskPresenter::UpdateDesksTemplatesUI() {
-  // The save as desk template button is hidden in tablet mode. The desks
-  // templates button on the desk bar view and the desks templates grid are
-  // hidden in tablet mode and if there no templates to view.
+  // This function:
+  //  1. Figures out whether the library button should be shown in the desk bar.
+  //  2. Hides the library if necessary.
+  //  3. Triggers save desk buttons in the overview overgrid to update.
+  //
+  // The library and the library button is always hidden if we enter tablet
+  // mode. If not in tablet mode, the library button is visible if there are
+  // saved desks in the model, *or* we are already showing the library.
   const bool in_tablet_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode();
-  should_show_templates_ui_ = !in_tablet_mode && GetEntryCount() > 0u;
+
+  const bool has_saved_desks =
+      (GetEntryCount(DeskTemplateType::kTemplate) +
+       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
+
   for (auto& overview_grid : overview_session_->grid_list()) {
-    if (!should_show_templates_ui_ &&
-        overview_grid->IsShowingDesksTemplatesGrid()) {
-      // When deleting, it is possible to delete the last template. In this
-      // case, close the template grid and go back to overview.
+    const bool is_showing_library =
+        overview_grid->IsShowingDesksTemplatesGrid();
+
+    if (in_tablet_mode && is_showing_library) {
+      // This happens when entering tablet mode while the library is visible.
       overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
     }
+
+    // The functions below reach into this class to determine whether the
+    // buttons should be shown or not. If we are already showing saved desk
+    // library, they should not go away (unless we're in tablet mode).
+    should_show_templates_ui_ =
+        !in_tablet_mode && (is_showing_library || has_saved_desks);
 
     if (DesksBarView* desks_bar_view =
             const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
@@ -130,12 +143,14 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
       item_to_focus, root_window));
 }
 
-void SavedDeskPresenter::DeleteEntry(const std::string& template_uuid) {
+void SavedDeskPresenter::DeleteEntry(
+    const std::string& uuid,
+    absl::optional<DeskTemplateType> record_for_type) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
-      template_uuid,
+      uuid,
       base::BindOnce(&SavedDeskPresenter::OnDeleteEntry,
-                     weak_ptr_factory_.GetWeakPtr(), template_uuid));
+                     weak_ptr_factory_.GetWeakPtr(), uuid, record_for_type));
 }
 
 void SavedDeskPresenter::LaunchDeskTemplate(const std::string& template_uuid,
@@ -184,7 +199,17 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
   if (is_update)
     desk_template->set_updated_time(base::Time::Now());
   else
-    RecordWindowAndTabCountHistogram(desk_template.get());
+    RecordWindowAndTabCountHistogram(*desk_template);
+
+  // While we still find duplicate names iterate the duplicate number. i.e.
+  // if there are 4 duplicates of some template name then this iterates until
+  // the current template will be named 5.
+  while (GetDeskModel()->FindOtherEntryWithName(desk_template->template_name(),
+                                                desk_template->type(),
+                                                desk_template->uuid())) {
+    desk_template->set_template_name(
+        AppendDuplicateNumberToDuplicateName(desk_template->template_name()));
+  }
 
   // Clone the desk template so one can be sent to the model, and the other as
   // part of the callback.
@@ -193,7 +218,6 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
   auto desk_template_clone = desk_template->Clone();
 
   // Save or update `desk_template` as an entry in DeskModel.
-  weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&SavedDeskPresenter::OnAddOrUpdateEntry,
@@ -223,8 +247,6 @@ void SavedDeskPresenter::OnGetAllEntries(
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
-  DCHECK_EQ(GetEntryCount(), entries.size());
-
   // This updates `should_show_templates_ui_`.
   UpdateDesksTemplatesUI();
 
@@ -253,14 +275,20 @@ void SavedDeskPresenter::OnGetAllEntries(
 }
 
 void SavedDeskPresenter::OnDeleteEntry(
-    const std::string& template_uuid,
+    const std::string& uuid,
+    absl::optional<DeskTemplateType> record_for_type,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
 
-  RecordDeleteTemplateHistogram();
-  RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
-  RemoveUIEntries({template_uuid});
+  if (record_for_type) {
+    RecordDeleteSavedDeskHistogram(*record_for_type);
+    RecordUserSavedDeskCountHistogram(*record_for_type,
+                                      GetEntryCount(*record_for_type),
+                                      GetMaxEntryCount(*record_for_type));
+  }
+
+  RemoveUIEntries({uuid});
 }
 
 void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
@@ -277,18 +305,20 @@ void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
   base::OnceClosure on_update_ui_closure_for_testing =
       std::move(on_update_ui_closure_for_testing_);
 
-  const auto template_name = entry->template_name();
-  const bool activate_desk = entry->type() == DeskTemplateType::kTemplate;
+  const auto saved_desk_name = entry->template_name();
+  const auto saved_desk_type = entry->type();
+  const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
   DesksController::Get()->CreateNewDeskForTemplate(
-      template_name, activate_desk,
+      activate_desk,
       base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     time_launch_started, delay, root_window));
+                     time_launch_started, delay, root_window),
+      saved_desk_name);
 
   if (on_update_ui_closure_for_testing)
     std::move(on_update_ui_closure_for_testing).Run();
 
-  RecordLaunchTemplateHistogram();
+  RecordLaunchSavedDeskHistogram(saved_desk_type);
 }
 
 void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
@@ -303,9 +333,9 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
 
   // For Save & Recall, the underlying desk definition is deleted on launch. We
   // store the template ID here since we're about to move the desk template.
-  const bool delete_template_on_launch =
-      desk_template->type() == DeskTemplateType::kSaveAndRecall;
-  const std::string template_uuid = desk_template->uuid().AsLowercaseString();
+  const auto saved_desk_type = desk_template->type();
+  const auto saved_desk_creation_time = desk_template->created_time();
+  const std::string uuid = desk_template->uuid().AsLowercaseString();
 
   // Copy the index of the newly created desk to the template. This ensures that
   // apps appear on the right desk even if the user switches to another.
@@ -319,8 +349,13 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
       overview_session_->GetGridWithRootWindow(root_window)->desks_bar_view());
   desks_bar_view->NudgeDeskName(desk_index);
 
-  if (delete_template_on_launch)
-    DeleteEntry(template_uuid);
+  if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
+    // Passing nullopt as type since this indicates that we don't want to record
+    // the `delete` metric for this operation.
+    DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    RecordTimeBetweenSaveAndRecall(base::Time::Now() -
+                                   saved_desk_creation_time);
+  }
 }
 
 void SavedDeskPresenter::OnAddOrUpdateEntry(
@@ -334,10 +369,12 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
       desks_storage::DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge) {
     // Show a toast if the template we tried to save was too large to be
     // transported through Chrome Sync.
+    int toast_text_id = desk_template->type() == DeskTemplateType::kTemplate
+                            ? IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST
+                            : IDS_ASH_DESKS_TEMPLATES_DESK_TOO_LARGE_TOAST;
     ToastData toast_data(kTemplateTooLargeToastName,
                          ToastCatalogName::kDeskTemplateTooLarge,
-                         l10n_util::GetStringUTF16(
-                             IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST));
+                         l10n_util::GetStringUTF16(toast_text_id));
     ToastManager::Get()->Show(toast_data);
     return;
   }
@@ -352,6 +389,9 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
   const bool is_zero_state = overview_grid->desks_bar_view()->IsZeroState();
 
   if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
+    // TODO(dandersson): Rework literally all of this. This path is only taken
+    // if the library has been visible in a session and we then save a desk. We
+    // should not need this special case.
     AddOrUpdateUIEntries({desk_template.get()});
 
     if (!was_update) {
@@ -367,16 +407,16 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 
     if (on_update_ui_closure_for_testing_)
       std::move(on_update_ui_closure_for_testing_).Run();
-    return;
+  } else {
+    // This will update the templates button and save as desks button too. This
+    // will call `GetAllEntries`.
+    overview_session_->ShowDesksTemplatesGrids(
+        is_zero_state, desk_template->uuid(), root_window);
   }
 
-  // This will update the templates button and save as desks button too. This
-  // will call `GetAllEntries`.
-  overview_session_->ShowDesksTemplatesGrids(
-      is_zero_state, desk_template->uuid(), root_window);
-
   if (!was_update) {
-    if (desk_template->type() == DeskTemplateType::kSaveAndRecall) {
+    const auto saved_desk_type = desk_template->type();
+    if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
       // We have successfully created a *new* desk template for Save & Recall,
       // so we are now going to close all the windows on the active desk and
       // also remove the desk.
@@ -393,8 +433,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                    DeskCloseType::kCloseAllWindows);
     }
 
-    RecordNewTemplateHistogram();
-    RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
+    RecordNewSavedDeskHistogram(saved_desk_type);
+    RecordUserSavedDeskCountHistogram(saved_desk_type,
+                                      GetEntryCount(saved_desk_type),
+                                      GetMaxEntryCount(saved_desk_type));
   }
 
   // Note we do not run `on_update_ui_closure_for_testing` here as we want to
@@ -437,6 +479,23 @@ void SavedDeskPresenter::RemoveUIEntries(
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
+}
+
+std::u16string SavedDeskPresenter::AppendDuplicateNumberToDuplicateName(
+    const std::u16string& duplicate_name_u16) {
+  std::string duplicate_name = base::UTF16ToUTF8(duplicate_name_u16);
+  int found_duplicate_number;
+
+  if (RE2::PartialMatch(duplicate_name, kDuplicateNumberRegex,
+                        &found_duplicate_number)) {
+    RE2::Replace(
+        &duplicate_name, kDuplicateNumberRegex,
+        base::StringPrintf(kDuplicateNumberFormat, found_duplicate_number + 1));
+  } else {
+    duplicate_name.append(kInitialDuplicateNumberValue);
+  }
+
+  return base::UTF8ToUTF16(duplicate_name);
 }
 
 }  // namespace ash

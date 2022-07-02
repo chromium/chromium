@@ -8,6 +8,8 @@ group("unit_tests") {
   testonly = true
 
   deps = [
+    "//components/segmentation_platform/embedder:unit_tests",
+    "//components/segmentation_platform/embedder/default_model:unit_tests",
     "//components/segmentation_platform/internal:unit_tests",
     "//components/segmentation_platform/public:unit_tests",
   ]

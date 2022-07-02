@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -15,7 +16,7 @@
 
 NS_AVAILABLE_MAC(11.0)
 @implementation BlockedObserver {
-  screentime::WebpageControllerImpl* _controller;
+  raw_ptr<screentime::WebpageControllerImpl> _controller;
   STWebpageController* _nativeController;
 }
 

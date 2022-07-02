@@ -184,8 +184,9 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 void FocusWebContents(Browser* browser) {
   content::WebContents* const contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  if (contents)
+  if (contents) {
     contents->Focus();
+  }
 }
 
 void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {

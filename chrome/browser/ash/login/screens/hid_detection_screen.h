@@ -18,6 +18,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/hid_detection/hid_detection_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -72,6 +73,12 @@ class HIDDetectionScreen : public BaseScreen,
       mojo::PendingReceiver<device::mojom::InputDeviceManager>)>;
   static void OverrideInputDeviceManagerBinderForTesting(
       InputDeviceManagerBinder binder);
+
+  // Allows tests to override what HidDetectionManager implementation is used
+  // when the kOobeHidDetectionRevamp flag is enabled.
+  static void OverrideHidDetectionManagerForTesting(
+      std::unique_ptr<hid_detection::HidDetectionManager>
+          hid_detection_manager);
 
   void InputDeviceAddedForTesting(InputDeviceInfoPtr info);
   const absl::optional<Result>& get_exit_result_for_testing() const {
@@ -257,6 +264,10 @@ class HIDDetectionScreen : public BaseScreen,
   bool switch_on_adapter_when_ready_ = false;
 
   bool devices_enumerated_ = false;
+
+  size_t num_pairing_attempts_ = 0;
+
+  std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager_;
 
   base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
 };

@@ -36,7 +36,7 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::RecentTabsMenuButton;
+using chrome_test_util::RecentTabsDestinationButton;
 
 namespace {
 const char kURLOfTestPage[] = "http://testPage";
@@ -56,7 +56,7 @@ void OpenRecentTabsPanel() {
   }
 
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsMenuButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsDestinationButton()];
 }
 
 // Returns the matcher for the Recent Tabs table.

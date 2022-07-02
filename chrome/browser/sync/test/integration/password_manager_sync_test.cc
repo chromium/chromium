@@ -48,10 +48,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/public/base/signin_switches.h"
-#endif
-
 namespace {
 
 using testing::ElementsAre;
@@ -94,11 +90,8 @@ class PasswordManagerSyncTest : public SyncTest {
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
         {
-          password_manager::features::kEnablePasswordsAccountStorage,
-              password_manager::features::kFillOnAccountSelect,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-              switches::kLacrosNonSyncingProfiles,
-#endif
+            password_manager::features::kEnablePasswordsAccountStorage,
+            password_manager::features::kFillOnAccountSelect,
         },
         {});
   }

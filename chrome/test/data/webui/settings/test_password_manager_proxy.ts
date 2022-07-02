@@ -88,30 +88,34 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'addPassword',
+      'cancelExportPasswords',
+      'changeInsecureCredential',
+      'changeSavedPassword',
+      'exportPasswords',
+      'getCompromisedCredentials',
+      'getPasswordCheckStatus',
+      'getPlaintextInsecurePassword',
+      'getUrlCollection',
+      'getWeakCredentials',
+      'importPasswords',
+      'isAccountStoreDefault',
+      'isOptedInForAccountStorage',
+      'movePasswordsToAccount',
+      'muteInsecureCredential',
+      'recordChangePasswordFlowStarted',
+      'recordPasswordCheckInteraction',
+      'recordPasswordCheckReferrer',
+      'removeException',
+      'removeExceptions',
+      'removeInsecureCredential',
+      'removeSavedPassword',
+      'removeSavedPasswords',
+      'requestExportProgressStatus',
       'requestPlaintextPassword',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
-      'getCompromisedCredentials',
-      'getWeakCredentials',
-      'getPasswordCheckStatus',
-      'getPlaintextInsecurePassword',
-      'changeInsecureCredential',
-      'removeInsecureCredential',
-      'recordPasswordCheckInteraction',
-      'recordPasswordCheckReferrer',
-      'isOptedInForAccountStorage',
-      'removeSavedPassword',
-      'removeSavedPasswords',
-      'movePasswordsToAccount',
-      'removeException',
-      'removeExceptions',
-      'changeSavedPassword',
-      'isAccountStoreDefault',
-      'getUrlCollection',
-      'addPassword',
-      'muteInsecureCredential',
-      'unmuteInsecureCredential',
-      'recordChangePasswordFlowStarted',
+      'unmuteInsecureCredential'
     ]);
 
     /** @private {!PasswordManagerExpectations} */
@@ -362,6 +366,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(this.isAccountStoreDefault_);
   }
 
+  optInForAccountStorage(_optIn: boolean) {}
+
   /**
    * Sets the value to be returned by getUrlCollection.
    */
@@ -402,20 +408,27 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         'recordChangePasswordFlowStarted', insecureCredential, isManualFlow);
   }
 
-  cancelExportPasswords() {}
+  importPasswords() {
+    this.methodCalled('importPasswords');
+  }
 
-  exportPasswords(_callback: () => void) {}
+  exportPasswords() {
+    this.methodCalled('exportPasswords');
+    return Promise.resolve();
+  }
 
-  importPasswords() {}
-
-  optInForAccountStorage(_optIn: boolean) {}
+  cancelExportPasswords() {
+    this.methodCalled('cancelExportPasswords');
+  }
 
   removePasswordsFileExportProgressListener(
       _listener: PasswordsFileExportProgressListener) {}
 
-  requestExportProgressStatus(
-      _callback:
-          (status: chrome.passwordsPrivate.ExportProgressStatus) => void) {}
+  requestExportProgressStatus() {
+    this.methodCalled('requestExportProgressStatus');
+    return Promise.resolve(
+        chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
+  }
 
   undoRemoveSavedPasswordOrException() {}
 }

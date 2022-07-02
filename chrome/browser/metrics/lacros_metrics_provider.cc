@@ -8,14 +8,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
 
 EnrollmentStatus GetEnrollmentStatus() {
-  auto* service = chromeos::LacrosService::Get();
-  switch (service->init_params()->device_mode) {
+  switch (chromeos::BrowserInitParams::Get()->device_mode) {
     case crosapi::mojom::DeviceMode::kUnknown:
       return EnrollmentStatus::kErrorGettingStatus;
     case crosapi::mojom::DeviceMode::kNotSet:

@@ -92,6 +92,7 @@ class PLATFORM_EXPORT PaintChunker final {
   // Otherwise it's ignored. Returns true if a new chunk is added.
   void AddSelectionToCurrentChunk(absl::optional<PaintedSelectionBound> start,
                                   absl::optional<PaintedSelectionBound> end);
+  void RecordAnySelectionWasPainted();
 
   // Returns true if a new chunk is created.
   bool EnsureChunk() {

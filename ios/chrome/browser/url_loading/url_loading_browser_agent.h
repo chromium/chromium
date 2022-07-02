@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/weak_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 class SceneUrlLoadingService;
 class Browser;
@@ -45,8 +45,9 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;
-  explicit UrlLoadingBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit UrlLoadingBrowserAgent(Browser* browser);
 
   // Dispatches to one action method below, depending on |params.disposition|.
   void Dispatch(const UrlLoadParams& params);

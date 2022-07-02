@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -320,6 +321,51 @@ void CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone(
 
   context->nv12_planes_readback->PlaneReadbackDone(context->plane_index,
                                                    std::move(async_result));
+}
+
+NV12PlanesReadyContext::NV12PlanesReadyContext(
+    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+    std::unique_ptr<CopyOutputRequest> request,
+    const gfx::Rect& result_rect,
+    const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
+        plane_mailbox_holders,
+    const gfx::ColorSpace& color_space)
+    : request_(std::move(request)),
+      result_rect_(result_rect),
+      plane_mailbox_holders_(plane_mailbox_holders),
+      color_space_(color_space) {}
+
+NV12PlanesReadyContext::~NV12PlanesReadyContext() {
+  DCHECK_EQ(outstanding_planes_, 0);
+}
+
+void NV12PlanesReadyContext::OnNV12PlaneReady() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (impl_on_gpu_) {
+    impl_on_gpu_->ReadbackDone();
+  }
+
+  outstanding_planes_--;
+  if (outstanding_planes_ == 0) {
+    request_->SendResult(std::make_unique<CopyOutputTextureResult>(
+        CopyOutputResult::Format::NV12_PLANES, result_rect_,
+        CopyOutputResult::TextureResult(plane_mailbox_holders_, color_space_),
+        CopyOutputResult::ReleaseCallbacks()));
+  }
+}
+
+NV12SinglePlaneReadyContext::NV12SinglePlaneReadyContext(
+    scoped_refptr<NV12PlanesReadyContext> nv12_planes_flushed)
+    : nv12_planes_flushed(nv12_planes_flushed) {}
+
+NV12SinglePlaneReadyContext::~NV12SinglePlaneReadyContext() = default;
+
+// static
+void NV12SinglePlaneReadyContext::OnNV12PlaneReady(GrGpuFinishedContext c) {
+  auto context = base::WrapUnique(static_cast<NV12SinglePlaneReadyContext*>(c));
+
+  context->nv12_planes_flushed->OnNV12PlaneReady();
 }
 
 }  // namespace viz

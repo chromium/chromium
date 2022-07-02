@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/ui.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
 
@@ -14,17 +14,21 @@ source_set("unit_tests") {
     "//ash/components/tpm:test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/biod:test_support",
     "//chromeos/ash/components/dbus/hiberman",
     "//chromeos/ash/components/dbus/ip_peripheral:test_support",
+    "//chromeos/ash/components/dbus/lorgnette_manager:test_support",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/rmad:test_support",
     "//chromeos/ash/components/dbus/services:unit_tests",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/system_clock:unit_tests",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/session_manager",
     "//components/account_id",
     "//dbus",
   ]
@@ -33,9 +37,15 @@ source_set("unit_tests") {
         [ "//chromeos/ash/components/dbus/chromebox_for_meetings:unit_tests" ]
   }
   sources = [
+    "audio/cras_audio_client_unittest.cc",
     "authpolicy/fake_authpolicy_client_unittest.cc",
     "biod/biod_client_unittest.cc",
     "biod/fake_biod_client_unittest.cc",
     "hiberman/hiberman_client_unittest.cc",
+    "userdataauth/arc_quota_client_unittest.cc",
+    "userdataauth/cryptohome_misc_client_unittest.cc",
+    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
+    "userdataauth/install_attributes_client_unittest.cc",
+    "userdataauth/userdataauth_client_unittest.cc",
   ]
 }

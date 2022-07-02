@@ -56,6 +56,7 @@ class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class RemoteInputFilter;
+class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
 class ScreenResolution;
 class UrlForwarderConfigurator;
@@ -150,6 +151,7 @@ class DesktopSessionAgent
   void InjectTextEvent(const protocol::TextEvent& event) override;
   void InjectTouchEvent(const protocol::TouchEvent& event) override;
   void SetUpUrlForwarder() override;
+  void SignalWebAuthnExtension() override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
@@ -271,6 +273,9 @@ class DesktopSessionAgent
   // Checks and configures the URL forwarder.
   std::unique_ptr<::remoting::UrlForwarderConfigurator>
       url_forwarder_configurator_;
+
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+      webauthn_state_change_notifier_;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};

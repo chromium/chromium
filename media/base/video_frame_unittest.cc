@@ -62,11 +62,9 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   // media::VideoTransformation
   metadata.transformation = media::VIDEO_ROTATION_90;
 
-  // media::VideoFrameMetadata::CopyMode
-  metadata.copy_mode = media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
-
   // bools
   metadata.allow_overlay = true;
+  metadata.copy_required = true;
   metadata.end_of_stream = true;
   metadata.texture_owner = true;
   metadata.wants_promotion_hint = true;
@@ -112,7 +110,7 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
   EXPECT_EQ(a.capture_end_time, b.capture_end_time);
   EXPECT_EQ(a.capture_counter, b.capture_counter);
   EXPECT_EQ(a.capture_update_rect, b.capture_update_rect);
-  EXPECT_EQ(a.copy_mode, b.copy_mode);
+  EXPECT_EQ(a.copy_required, b.copy_required);
   EXPECT_EQ(a.end_of_stream, b.end_of_stream);
   EXPECT_EQ(a.frame_duration, b.frame_duration);
   EXPECT_EQ(a.frame_rate, b.frame_rate);

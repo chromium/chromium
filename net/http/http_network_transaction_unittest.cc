@@ -193,7 +193,7 @@ bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
 std::string GetHeaders(const base::Value& params) {
   if (!params.is_dict())
     return "";
-  const base::Value* header_list = params.FindListKey("headers");
+  const base::Value::List* header_list = params.GetDict().FindList("headers");
   if (!header_list)
     return "";
   std::string headers;
@@ -1576,7 +1576,7 @@ TEST_F(HttpNetworkTransactionTest, ReuseConnection) {
     "hello", "world"
   };
 
-  for (int i = 0; i < 2; ++i) {
+  for (const auto* expected_response_data : kExpectedResponseData) {
     HttpRequestInfo request;
     request.method = "GET";
     request.url = GURL("http://www.example.org/");
@@ -1603,7 +1603,7 @@ TEST_F(HttpNetworkTransactionTest, ReuseConnection) {
     std::string response_data;
     rv = ReadTransaction(&trans, &response_data);
     EXPECT_THAT(rv, IsOk());
-    EXPECT_EQ(kExpectedResponseData[i], response_data);
+    EXPECT_EQ(expected_response_data, response_data);
   }
 }
 
@@ -2086,7 +2086,7 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
   if (write_failure) {
     ASSERT_FALSE(read_failure);
     data1_writes.push_back(*write_failure);
-    data1_reads.push_back(MockRead(ASYNC, OK));
+    data1_reads.emplace_back(ASYNC, OK);
   } else {
     ASSERT_TRUE(read_failure);
     if (use_spdy) {
@@ -2094,10 +2094,10 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
       if (chunked_upload)
         data1_writes.push_back(CreateMockWrite(spdy_request_body));
     } else {
-      data1_writes.push_back(MockWrite(kHttpRequest));
+      data1_writes.emplace_back(kHttpRequest);
       if (chunked_upload) {
-        data1_writes.push_back(MockWrite("6\r\nfoobar\r\n"));
-        data1_writes.push_back(MockWrite("0\r\n\r\n"));
+        data1_writes.emplace_back("6\r\nfoobar\r\n");
+        data1_writes.emplace_back("0\r\n\r\n");
       }
     }
     data1_reads.push_back(*read_failure);
@@ -2116,19 +2116,18 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
       data2_writes.push_back(CreateMockWrite(spdy_request_body, seq++, ASYNC));
     data2_reads.push_back(CreateMockRead(spdy_response, seq++, ASYNC));
     data2_reads.push_back(CreateMockRead(spdy_data, seq++, ASYNC));
-    data2_reads.push_back(MockRead(ASYNC, OK, seq++));
+    data2_reads.emplace_back(ASYNC, OK, seq++);
   } else {
     int seq = 0;
-    data2_writes.push_back(
-        MockWrite(ASYNC, kHttpRequest, strlen(kHttpRequest), seq++));
+    data2_writes.emplace_back(ASYNC, kHttpRequest, strlen(kHttpRequest), seq++);
     if (chunked_upload) {
-      data2_writes.push_back(MockWrite(ASYNC, "6\r\nfoobar\r\n", 11, seq++));
-      data2_writes.push_back(MockWrite(ASYNC, "0\r\n\r\n", 5, seq++));
+      data2_writes.emplace_back(ASYNC, "6\r\nfoobar\r\n", 11, seq++);
+      data2_writes.emplace_back(ASYNC, "0\r\n\r\n", 5, seq++);
     }
-    data2_reads.push_back(
-        MockRead(ASYNC, kHttpResponse, strlen(kHttpResponse), seq++));
-    data2_reads.push_back(MockRead(ASYNC, kHttpData, strlen(kHttpData), seq++));
-    data2_reads.push_back(MockRead(ASYNC, OK, seq++));
+    data2_reads.emplace_back(ASYNC, kHttpResponse, strlen(kHttpResponse),
+                             seq++);
+    data2_reads.emplace_back(ASYNC, kHttpData, strlen(kHttpData), seq++);
+    data2_reads.emplace_back(ASYNC, OK, seq++);
   }
   SequencedSocketData data2(data2_reads, data2_writes);
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
@@ -5937,14 +5936,14 @@ TEST_F(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
 // schemes, based on the path of the URL being requests.
 class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
  public:
-  SameProxyWithDifferentSchemesProxyResolver() {}
+  SameProxyWithDifferentSchemesProxyResolver() = default;
 
   SameProxyWithDifferentSchemesProxyResolver(
       const SameProxyWithDifferentSchemesProxyResolver&) = delete;
   SameProxyWithDifferentSchemesProxyResolver& operator=(
       const SameProxyWithDifferentSchemesProxyResolver&) = delete;
 
-  ~SameProxyWithDifferentSchemesProxyResolver() override {}
+  ~SameProxyWithDifferentSchemesProxyResolver() override = default;
 
   static constexpr uint16_t kProxyPort = 10000;
 
@@ -12781,10 +12780,10 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
@@ -12797,8 +12796,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               transport_conn_pool->last_group_id_received());
     EXPECT_TRUE(transport_conn_pool->socket_requested());
   }
@@ -12839,10 +12838,10 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
@@ -12858,8 +12857,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               http_proxy_pool->last_group_id_received());
   }
 }
@@ -12917,17 +12916,17 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
       },
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
-            tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
+            test.proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
     std::unique_ptr<HttpNetworkSession> session(
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
 
     ProxyServer proxy_server(
-        ProxyUriToProxyServer(tests[i].proxy_server, ProxyServer::SCHEME_HTTP));
+        ProxyUriToProxyServer(test.proxy_server, ProxyServer::SCHEME_HTTP));
     ASSERT_TRUE(proxy_server.is_valid());
     CaptureGroupIdTransportSocketPool* socks_conn_pool =
         new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);
@@ -12939,8 +12938,8 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
     EXPECT_EQ(ERR_IO_PENDING,
-              GroupIdTransactionHelper(tests[i].url, session.get()));
-    EXPECT_EQ(tests[i].expected_group_id,
+              GroupIdTransactionHelper(test.url, session.get()));
+    EXPECT_EQ(test.expected_group_id,
               socks_conn_pool->last_group_id_received());
   }
 }
@@ -15170,8 +15169,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
     MockWrite write;
     MockRead read;
     int expected_rv;
-    const MockWrite* extra_write;
-    const MockRead* extra_read;
+    raw_ptr<const MockWrite> extra_write;
+    raw_ptr<const MockRead> extra_read;
   };
 
   static const int kNoSSL = 500;
@@ -15929,8 +15928,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       // kProxyChallenge uses Proxy-Connection: close which means that the
       // socket is closed and a new one will be created for the next request.
       if (read_write_round.read.data == kProxyChallenge.data) {
-        mock_reads.push_back(std::vector<MockRead>());
-        mock_writes.push_back(std::vector<MockWrite>());
+        mock_reads.emplace_back();
+        mock_writes.emplace_back();
       }
 
       if (read_write_round.extra_read) {
@@ -16762,9 +16761,9 @@ TEST_F(HttpNetworkTransactionTest, SSLWriteCertError) {
     ERR_CERT_AUTHORITY_INVALID,
     ERR_CERT_DATE_INVALID,
   };
-  for (size_t i = 0; i < std::size(kErrors); i++) {
-    CheckErrorIsPassedBack(kErrors[i], ASYNC);
-    CheckErrorIsPassedBack(kErrors[i], SYNCHRONOUS);
+  for (int error : kErrors) {
+    CheckErrorIsPassedBack(error, ASYNC);
+    CheckErrorIsPassedBack(error, SYNCHRONOUS);
   }
 }
 

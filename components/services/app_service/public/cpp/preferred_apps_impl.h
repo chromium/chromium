@@ -19,12 +19,11 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 
 class AppServiceMojomImpl;
+class AppServiceProxyPreferredAppsTest;
 
 // The implementation of the preferred apps to manage the PreferredAppsList.
 class PreferredAppsImpl {
@@ -69,21 +68,16 @@ class PreferredAppsImpl {
 
   ~PreferredAppsImpl();
 
-  void AddPreferredApp(apps::mojom::AppType app_type,
+  void AddPreferredApp(AppType app_type,
                        const std::string& app_id,
-                       apps::mojom::IntentFilterPtr intent_filter,
-                       apps::mojom::IntentPtr intent,
+                       IntentFilterPtr intent_filter,
+                       IntentPtr intent,
                        bool from_publisher);
-  void RemovePreferredApp(apps::mojom::AppType app_type,
-                          const std::string& app_id);
-  void RemovePreferredAppForFilter(apps::mojom::AppType app_type,
+  void RemovePreferredApp(const std::string& app_id);
+  void SetSupportedLinksPreference(AppType app_type,
                                    const std::string& app_id,
-                                   apps::mojom::IntentFilterPtr intent_filter);
-  void SetSupportedLinksPreference(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
-  void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
+                                   IntentFilters all_link_filters);
+  void RemoveSupportedLinksPreference(AppType app_type,
                                       const std::string& app_id);
 
   const PreferredAppsList& preferred_apps_list() const {
@@ -92,6 +86,7 @@ class PreferredAppsImpl {
 
  private:
   friend AppServiceMojomImpl;
+  friend class AppServiceProxyPreferredAppsTest;
 
   // Initialize the preferred apps from disk.
   void InitializePreferredApps();
@@ -110,22 +105,16 @@ class PreferredAppsImpl {
   // be run immediately if preferred apps are already initialized.
   void RunAfterPreferredAppsReady(base::OnceClosure task);
 
-  void AddPreferredAppImpl(apps::mojom::AppType app_type,
+  void AddPreferredAppImpl(AppType app_type,
                            const std::string& app_id,
-                           apps::mojom::IntentFilterPtr intent_filter,
-                           apps::mojom::IntentPtr intent,
+                           IntentFilterPtr intent_filter,
+                           IntentPtr intent,
                            bool from_publisher);
-  void RemovePreferredAppImpl(apps::mojom::AppType app_type,
-                              const std::string& app_id);
-  void RemovePreferredAppForFilterImpl(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter);
-  void SetSupportedLinksPreferenceImpl(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
-  void RemoveSupportedLinksPreferenceImpl(apps::mojom::AppType app_type,
+  void RemovePreferredAppImpl(const std::string& app_id);
+  void SetSupportedLinksPreferenceImpl(AppType app_type,
+                                       const std::string& app_id,
+                                       IntentFilters all_link_filters);
+  void RemoveSupportedLinksPreferenceImpl(AppType app_type,
                                           const std::string& app_id);
 
   // `host_` owns `this`.

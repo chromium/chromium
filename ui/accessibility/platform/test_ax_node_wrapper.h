@@ -82,8 +82,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
           ax::mojom::TextAffinity::kDownstream) const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
                           const AXClippingBehavior clipping_behavior,
                           AXOffscreenResult* offscreen_result) const override;
@@ -105,10 +105,12 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   gfx::NativeViewAccessible GetFocus() const override;
   bool IsMinimized() const override;
   bool IsWebContent() const override;
+  bool IsReadOnlySupported() const override;
+  bool IsReadOnlyOrDisabled() const override;
   AXPlatformNode* GetFromNodeID(int32_t id) override;
   AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                          int32_t id) override;
-  int GetIndexInParent() override;
+  absl::optional<size_t> GetIndexInParent() override;
   bool IsTable() const override;
   absl::optional<int> GetTableRowCount() const override;
   absl::optional<int> GetTableColCount() const override;
@@ -160,8 +162,8 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
       ui::AXPlatformNodeDelegate* start,
       ui::AXPlatformNodeDelegate* end) override;
   gfx::RectF GetLocation() const;
-  int InternalChildCount() const;
-  TestAXNodeWrapper* InternalGetChild(int index) const;
+  size_t InternalChildCount() const;
+  TestAXNodeWrapper* InternalGetChild(size_t index) const;
 
  private:
   TestAXNodeWrapper(AXTree* tree, AXNode* node);

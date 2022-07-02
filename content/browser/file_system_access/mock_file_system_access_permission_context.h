@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 
 namespace content {
 // Mock FileSystemAccessPermissionContext implementation.
@@ -83,6 +86,11 @@ class MockFileSystemAccessPermissionContext
   MOCK_METHOD(base::FilePath,
               GetWellKnownDirectoryPath,
               (blink::mojom::WellKnownDirectory directory),
+              (override));
+
+  MOCK_METHOD(std::u16string,
+              GetPickerTitle,
+              (const blink::mojom::FilePickerOptionsPtr& options),
               (override));
 };
 

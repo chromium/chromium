@@ -16,7 +16,7 @@
 
 @interface ContentSettingBackedBoolean ()
 
-// The ID of the setting in |settingsMap|.
+// The ID of the setting in `settingsMap`.
 @property(nonatomic, readonly) ContentSettingsType settingID;
 
 // Whether the boolean value reflects the state of the preference that backs it,

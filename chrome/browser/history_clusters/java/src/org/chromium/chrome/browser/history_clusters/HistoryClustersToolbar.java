@@ -11,6 +11,8 @@ import android.widget.EditText;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /**
  * Toolbar for controlling the list of history clusters in the Journeys UI.
  */
@@ -32,8 +34,20 @@ class HistoryClustersToolbar extends SelectableListToolbar<PropertyModel> {
         mSearchText = findViewById(R.id.search_text);
     }
 
+    @Override
+    public void onSelectionStateChange(List selectedItems) {
+        super.onSelectionStateChange(selectedItems);
+        if (mIsSelectionEnabled) {
+            getMenu()
+                    .findItem(R.id.selection_mode_copy_link)
+                    .setVisible(mSelectionDelegate.getSelectedItems().size() == 1);
+        }
+    }
+
     void setSearchText(String text) {
         mSearchText.setText(text);
         mSearchText.setSelection(text.length());
+        hideKeyboard();
+        mSearchText.clearFocus();
     }
 }

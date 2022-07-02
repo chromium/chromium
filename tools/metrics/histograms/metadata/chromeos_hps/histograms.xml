@@ -55,6 +55,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.HPS.SnoopingProtection.{Result}.Duration" units="ms"
+    expires_after="2023-05-31">
+  <owner>martis@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Measures the time of the SnoopingProction at the {Result} state. Recorded
+    when the snooping status changes.
+  </summary>
+  <token key="Result">
+    <variant name="Negative"/>
+    <variant name="Positive"/>
+  </token>
+</histogram>
+
 <histogram
     name="ChromeOS.HPS.SnoopingProtectionNotificationSuppression.Enabled"
     enum="BooleanEnabled" expires_after="2023-05-31">

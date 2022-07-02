@@ -82,6 +82,9 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
+  auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled(
+      "ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync");
+
   if (stream_type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     // This launcher only supports MediaStreamType::DEVICE_VIDEO_CAPTURE.
     NOTREACHED();
@@ -176,7 +179,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
           // that |this| stays alive.
           &ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback,
           base::Unretained(this), std::move(source), std::move(subscription),
-          std::move(connection_lost_cb)));
+          std::move(connection_lost_cb), std::move(scoped_trace)));
   state_ = State::DEVICE_START_IN_PROGRESS;
 }
 
@@ -191,6 +194,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
     mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
         subscription,
     base::OnceClosure connection_lost_cb,
+    std::unique_ptr<ScopedCaptureTrace> scoped_trace,
     video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
     const media::VideoCaptureParams& params) {
   DCHECK(sequence_checker_.CalledOnValidSequence());

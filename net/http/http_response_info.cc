@@ -117,6 +117,10 @@ enum {
   // This bit is set if the response has a nonempty `dns_aliases` entry.
   RESPONSE_INFO_HAS_DNS_ALIASES = 1 << 27,
 
+  // This bit is set for an entry in the single-keyed cache that has been marked
+  // unusable due to the checksum not matching.
+  RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE = 1 << 28,
+
   // TODO(darin): Add other bits to indicate alternate request methods.
   // For now, we don't support storing those.
 };
@@ -183,18 +187,7 @@ HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
   return CONNECTION_INFO_COARSE_OTHER;
 }
 
-HttpResponseInfo::HttpResponseInfo()
-    : was_cached(false),
-      cache_entry_status(CacheEntryStatus::ENTRY_UNDEFINED),
-      network_accessed(false),
-      was_fetched_via_spdy(false),
-      was_alpn_negotiated(false),
-      was_fetched_via_proxy(false),
-      did_use_http_auth(false),
-      unused_since_prefetch(false),
-      restricted_prefetch(false),
-      async_revalidation_requested(false),
-      connection_info(CONNECTION_INFO_UNKNOWN) {}
+HttpResponseInfo::HttpResponseInfo() = default;
 
 HttpResponseInfo::HttpResponseInfo(const HttpResponseInfo& rhs) = default;
 
@@ -357,6 +350,9 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 
   restricted_prefetch = (flags & RESPONSE_INFO_RESTRICTED_PREFETCH) != 0;
 
+  single_keyed_cache_entry_unusable =
+      (flags & RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE) != 0;
+
   ssl_info.pkp_bypassed = (flags & RESPONSE_INFO_PKP_BYPASSED) != 0;
 
   // Read peer_signature_algorithm.
@@ -422,6 +418,8 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
     flags |= RESPONSE_INFO_UNUSED_SINCE_PREFETCH;
   if (restricted_prefetch)
     flags |= RESPONSE_INFO_RESTRICTED_PREFETCH;
+  if (single_keyed_cache_entry_unusable)
+    flags |= RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE;
   if (ssl_info.pkp_bypassed)
     flags |= RESPONSE_INFO_PKP_BYPASSED;
   if (!stale_revalidate_timeout.is_null())

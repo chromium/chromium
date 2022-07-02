@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
 <translation id="3567399274263440288">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu.</translation>
+<translation id="3619462831205197427">Pierakstieties šajā vietnē, savā Google kontā un pārlūkā Chromium.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chromium un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
@@ -77,7 +78,6 @@
 1. Atveriet iestatījumus.
 2. Pieskarieties vienumam “Noklusējuma pārlūka lietotne”.
 3. Atlasiet Chromium.</translation>
-<translation id="6155422572367400359">Pierakstieties šajā vietnē, savā Google kontā un pārlūkprogrammā Chromium. Sinhronizāciju varēsiet ieslēgt vēlāk.</translation>
 <translation id="6183442264225539303">Pierakstieties šajā vietnē un pārlūkā Chromium. Sinhronizāciju varat ieslēgt vēlāk.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="632825460376924298">Atļaut pierakstīšanos pārlūkā Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Vai dzēst jūsu Chromium datus no šīs ierīces?</translation>
 <translation id="8175055321229419309">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chromium uz savu doku<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="8308172444429103994">Chromium padoms. Lai ātrāk pierakstītos, tastatūras augšdaļā atlasiet saglabāto paroli.</translation>
 <translation id="858114650497379505">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="865600487977764604">Šis režīms nodrošina jūsu aizsardzību pārlūkprogrammā Chromium un var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>

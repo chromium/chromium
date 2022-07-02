@@ -27,7 +27,7 @@ class GpuHostImplTestApi {
   void SetGpuService(mojo::Remote<mojom::GpuService> gpu_service);
 
  private:
-  raw_ptr<GpuHostImpl> gpu_host_;
+  raw_ptr<GpuHostImpl, DanglingUntriaged> gpu_host_;
 };
 
 }  // namespace viz

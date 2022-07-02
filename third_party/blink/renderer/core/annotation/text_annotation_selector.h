@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_TEXT_ANNOTATION_SELECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_TEXT_ANNOTATION_SELECTOR_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
@@ -36,8 +37,16 @@ class TextAnnotationSelector : public AnnotationSelector,
   void DidFindMatch(const RangeInFlatTree& range, bool is_unique) override;
   void NoMatchFound() override;
 
+  // This is specific to a metric for TextFragmentAnchor so it isn't part of
+  // the selector API. If there's other use cases for metrics gathering it may
+  // make sense to make FindRange return a more general Metrics object into
+  // which this bit could be added.
+  bool WasMatchUnique() const;
+
  private:
   TextFragmentSelector params_;
+
+  absl::optional<bool> was_unique_;
 
   FinishedCallback finished_callback_;
   Member<TextFragmentFinder> finder_;

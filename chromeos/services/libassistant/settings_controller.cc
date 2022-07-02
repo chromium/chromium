@@ -9,10 +9,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
@@ -231,6 +233,7 @@ void SettingsController::SetAuthenticationTokens(
 
 void SettingsController::SetLocale(const std::string& value) {
   locale_ = LocaleOrDefault(value);
+  UpdateLocaleOverride(locale_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
@@ -247,6 +250,12 @@ void SettingsController::SetSpokenFeedbackEnabled(bool value) {
 
 void SettingsController::SetDarkModeEnabled(bool value) {
   dark_mode_enabled_ = value;
+
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    UpdateDarkModeEnabledV2(dark_mode_enabled_);
+    return;
+  }
+
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
 }
 
@@ -298,8 +307,13 @@ void SettingsController::UpdateInternalOptions(
   if (!assistant_client_)
     return;
 
-  if (locale.has_value())
-    assistant_client_->SetLocaleOverride(locale.value());
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    if (locale.has_value() && spoken_feedback_enabled.has_value()) {
+      assistant_client_->SetInternalOptions(locale.value(),
+                                            spoken_feedback_enabled.value());
+    }
+    return;
+  }
 
   if (locale.has_value() && spoken_feedback_enabled.has_value() &&
       dark_mode_enabled.has_value()) {
@@ -307,6 +321,17 @@ void SettingsController::UpdateInternalOptions(
     assistant_client_->SetInternalOptions(locale.value(),
                                           spoken_feedback_enabled.value());
   }
+}
+
+void SettingsController::UpdateLocaleOverride(
+    const absl::optional<std::string>& locale) {
+  if (!assistant_client_)
+    return;
+
+  if (!locale.has_value())
+    return;
+
+  assistant_client_->SetLocaleOverride(locale.value());
 }
 
 void SettingsController::UpdateDeviceSettings(
@@ -321,7 +346,27 @@ void SettingsController::UpdateDeviceSettings(
   }
 }
 
-void SettingsController::OnAssistantClientStarted(
+void SettingsController::UpdateDarkModeEnabledV2(
+    absl::optional<bool> dark_mode_enabled) {
+  if (!assistant_client_)
+    return;
+
+  if (!dark_mode_enabled.has_value())
+    return;
+
+  ::assistant::display::DisplayRequest display_request;
+  display_request.mutable_set_device_properties_request()
+      ->mutable_theme_properties_to_merge()
+      ->set_mode(dark_mode_enabled.value()
+                     ? ::assistant::api::params::ThemeProperties::DARK_THEME
+                     : ::assistant::api::params::ThemeProperties::LIGHT_THEME);
+
+  ::assistant::api::OnDisplayRequestRequest request;
+  request.set_display_request_bytes(display_request.SerializeAsString());
+  assistant_client_->SendDisplayRequest(request);
+}
+
+void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_client_ = assistant_client;
 
@@ -329,7 +374,10 @@ void SettingsController::OnAssistantClientStarted(
   // Libassistant to be fully ready.
   UpdateAuthenticationTokens(authentication_tokens_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
-  UpdateListeningEnabled(listening_enabled_);
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    UpdateLocaleOverride(locale_);
+    UpdateListeningEnabled(listening_enabled_);
+  }
 }
 
 void SettingsController::OnAssistantClientRunning(
@@ -338,6 +386,11 @@ void SettingsController::OnAssistantClientRunning(
       std::make_unique<DeviceSettingsUpdater>(this, assistant_client);
 
   UpdateDeviceSettings(locale_, hotword_enabled_);
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    UpdateLocaleOverride(locale_);
+    UpdateListeningEnabled(listening_enabled_);
+    UpdateDarkModeEnabledV2(dark_mode_enabled_);
+  }
 }
 
 void SettingsController::OnDestroyingAssistantClient(

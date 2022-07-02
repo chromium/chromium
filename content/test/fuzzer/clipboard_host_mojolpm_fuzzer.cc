@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/test/fuzzer/clipboard_host_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_render_frame_host.h"
@@ -39,193 +40,139 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() {
 // The lifetime of this is scoped to a single testcase, and it is created and
 // destroyed from the fuzzer sequence.
 //
-class ClipboardHostTestcase : public content::RenderViewHostTestHarness {
+class ClipboardHostTestcase
+    : public ::mojolpm::Testcase<
+          content::fuzzing::clipboard_host::proto::Testcase,
+          content::fuzzing::clipboard_host::proto::Action> {
  public:
+  using ProtoTestcase = content::fuzzing::clipboard_host::proto::Testcase;
+  using ProtoAction = content::fuzzing::clipboard_host::proto::Action;
   explicit ClipboardHostTestcase(
       const content::fuzzing::clipboard_host::proto::Testcase& testcase);
-  ~ClipboardHostTestcase() override;
+  ~ClipboardHostTestcase();
 
-  bool IsFinished();
-  void NextAction();
+  void SetUp(base::OnceClosure done_closure) override;
+  void TearDown(base::OnceClosure done_closure) override;
+
+  void RunAction(const ProtoAction& action,
+                 base::OnceClosure done_closure) override;
 
  private:
-  using Action = content::fuzzing::clipboard_host::proto::Action;
-
-  void SetUp() override;
-  void SetUpOnUIThread();
-
-  void TearDown() override;
-  void TearDownOnUIThread();
+  void SetUpOnUIThread(base::OnceClosure done_closure);
+  void TearDownOnUIThread(base::OnceClosure done_closure);
 
   void AddClipboardHostImpl(
-      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
-  void AddClipboardHost(uint32_t id);
+      uint32_t id,
+      mojo::PendingReceiver<blink::mojom::ClipboardHost>&& receiver);
+  void AddClipboardHost(uint32_t id, base::OnceClosure done_closure);
 
-  void TestBody() override {}
-
-  // The proto message describing the test actions to perform.
-  const content::fuzzing::clipboard_host::proto::Testcase& testcase_;
-
-  // Apply a reasonable upper-bound on testcase complexity to avoid timeouts.
-  const int max_action_count_ = 512;
-
-  // Apply a reasonable upper-bound on maximum size of action that we will
-  // deserialize. (This is deliberately slightly larger than max mojo message
-  // size)
-  const size_t max_action_size_ = 300 * 1024 * 1024;
-
-  // Count of total actions performed in this testcase.
-  int action_count_ = 0;
-
-  // The index of the next sequence of actions to execute.
-  int next_sequence_idx_ = 0;
-
+  content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
   content::TestRenderFrameHost* render_frame_host_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-ClipboardHostTestcase::ClipboardHostTestcase(
-    const content::fuzzing::clipboard_host::proto::Testcase& testcase)
-    : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-          base::test::TaskEnvironment::MainThreadType::DEFAULT,
-          base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
-          base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-          content::BrowserTaskEnvironment::REAL_IO_THREAD),
-      testcase_(testcase) {
-  SetUp();
+ClipboardHostTestcase::ClipboardHostTestcase(const ProtoTestcase& testcase)
+    : Testcase<ProtoTestcase, ProtoAction>(testcase) {
+  test_adapter_.SetUp();
 }
 
 ClipboardHostTestcase::~ClipboardHostTestcase() {
-  TearDown();
+  test_adapter_.TearDown();
 }
 
-bool ClipboardHostTestcase::IsFinished() {
-  return next_sequence_idx_ >= testcase_.sequence_indexes_size();
-}
-
-void ClipboardHostTestcase::NextAction() {
-  if (next_sequence_idx_ < testcase_.sequence_indexes_size()) {
-    auto sequence_idx = testcase_.sequence_indexes(next_sequence_idx_++);
-    const auto& sequence =
-        testcase_.sequences(sequence_idx % testcase_.sequences_size());
-    for (auto action_idx : sequence.action_indexes()) {
-      if (!testcase_.actions_size() || ++action_count_ > max_action_count_) {
-        return;
+void ClipboardHostTestcase::RunAction(const ProtoAction& action,
+                                      base::OnceClosure run_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto ThreadId_UI =
+      content::fuzzing::clipboard_host::proto::RunThreadAction_ThreadId_UI;
+  const auto ThreadId_IO =
+      content::fuzzing::clipboard_host::proto::RunThreadAction_ThreadId_IO;
+  switch (action.action_case()) {
+    case ProtoAction::kRunThread:
+      // These actions ensure that any tasks currently queued on the named
+      // thread have chance to run before the fuzzer continues.
+      //
+      // We don't provide any particular guarantees here; this does not mean
+      // that the named thread is idle, nor does it prevent any other threads
+      // from running (or the consequences of any resulting callbacks, for
+      // example).
+      if (action.run_thread().id() == ThreadId_UI) {
+        content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
+      } else if (action.run_thread().id() == ThreadId_IO) {
+        content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
       }
-      const auto& action =
-          testcase_.actions(action_idx % testcase_.actions_size());
-      if (action.ByteSizeLong() > max_action_size_) {
-        return;
-      }
-      switch (action.action_case()) {
-        case Action::kRunThread: {
-          if (action.run_thread().id()) {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          } else {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetIOThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          }
-        } break;
-        case Action::kNewClipboardHost: {
-          AddClipboardHost(action.new_clipboard_host().id());
-        } break;
-        case Action::kClipboardHostRemoteAction: {
-          mojolpm::HandleRemoteAction(action.clipboard_host_remote_action());
-        } break;
-        case Action::ACTION_NOT_SET:
-          break;
-      }
-    }
+      return;
+    case ProtoAction::kNewClipboardHost:
+      AddClipboardHost(action.new_clipboard_host().id(),
+                       std::move(run_closure));
+      return;
+    case ProtoAction::kClipboardHostRemoteAction:
+      mojolpm::HandleRemoteAction(action.clipboard_host_remote_action());
+      break;
+    case ProtoAction::ACTION_NOT_SET:
+      break;
   }
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(run_closure));
 }
 
-void ClipboardHostTestcase::SetUp() {
-  RenderViewHostTestHarness::SetUp();
-  base::RunLoop run_loop;
+void ClipboardHostTestcase::SetUp(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHostTestcase::SetUpOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void ClipboardHostTestcase::SetUpOnUIThread() {
+void ClipboardHostTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
   render_frame_host_ =
-      static_cast<content::TestWebContents*>(web_contents())->GetMainFrame();
+      static_cast<content::TestWebContents*>(test_adapter_.web_contents())
+          ->GetPrimaryMainFrame();
   render_frame_host_->InitializeRenderFrameIfNeeded();
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
-void ClipboardHostTestcase::TearDown() {
-  base::RunLoop run_loop;
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+void ClipboardHostTestcase::TearDown(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHostTestcase::TearDownOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  RenderViewHostTestHarness::TearDown();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void ClipboardHostTestcase::TearDownOnUIThread() {}
+void ClipboardHostTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
 
 void ClipboardHostTestcase::AddClipboardHostImpl(
-    mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
+    uint32_t id,
+    mojo::PendingReceiver<blink::mojom::ClipboardHost>&& receiver) {
   content::ClipboardHostImpl::Create(render_frame_host_, std::move(receiver));
 }
 
-void ClipboardHostTestcase::AddClipboardHost(uint32_t id) {
-  mojo::Remote<blink::mojom::ClipboardHost> remote;
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver =
-      remote.BindNewPipeAndPassReceiver();
+static void AddClipboardHostInstance(
+    uint32_t id,
+    mojo::Remote<blink::mojom::ClipboardHost> remote,
+    base::OnceClosure run_closure) {
+  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+  std::move(run_closure).Run();
+}
 
+void ClipboardHostTestcase::AddClipboardHost(uint32_t id,
+                                             base::OnceClosure run_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::Remote<blink::mojom::ClipboardHost> remote;
+  auto receiver = remote.BindNewPipeAndPassReceiver();
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&ClipboardHostTestcase::AddClipboardHostImpl,
-                     base::Unretained(this), std::move(receiver)),
-      run_loop.QuitClosure());
-
-  run_loop.Run();
-
-  mojolpm::GetContext()->AddInstance(id, std::move(remote));
-}
-
-void NextAction(ClipboardHostTestcase* testcase,
-                base::RepeatingClosure quit_closure) {
-  if (!testcase->IsFinished()) {
-    testcase->NextAction();
-    GetFuzzerTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                  std::move(quit_closure)));
-  } else {
-    GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(quit_closure));
-  }
-}
-
-void RunTestcase(ClipboardHostTestcase* testcase) {
-  mojo::Message message;
-  auto dispatch_context =
-      std::make_unique<mojo::internal::MessageDispatchContext>(&message);
-
-  mojolpm::GetContext()->StartTestcase();
-
-  base::RunLoop fuzzer_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  GetFuzzerTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                fuzzer_run_loop.QuitClosure()));
-  fuzzer_run_loop.Run();
-
-  mojolpm::GetContext()->EndTestcase();
+                     base::Unretained(this), id, std::move(receiver)),
+      base::BindOnce(AddClipboardHostInstance, id, std::move(remote),
+                     std::move(run_closure)));
 }
 
 DEFINE_BINARY_PROTO_FUZZER(
@@ -239,11 +186,11 @@ DEFINE_BINARY_PROTO_FUZZER(
 
   ClipboardHostTestcase testcase(proto_testcase);
 
-  base::RunLoop ui_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-
-  GetFuzzerTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(RunTestcase, base::Unretained(&testcase)),
-      ui_run_loop.QuitClosure());
-
-  ui_run_loop.Run();
+  base::RunLoop main_run_loop;
+  GetFuzzerTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&mojolpm::RunTestcase<ClipboardHostTestcase>,
+                     base::Unretained(&testcase), GetFuzzerTaskRunner(),
+                     main_run_loop.QuitClosure()));
+  main_run_loop.Run();
 }

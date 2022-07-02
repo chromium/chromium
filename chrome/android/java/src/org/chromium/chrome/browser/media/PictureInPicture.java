@@ -8,6 +8,8 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.os.Build;
 
+import org.chromium.base.TraceEvent;
+
 /**
  * Utility for determining if Picture-in-Picture is available and whether the user has disabled
  * Picture-in-Picture for Chrome using the system's per-application settings.
@@ -29,12 +31,13 @@ public abstract class PictureInPicture {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return false;
         }
+        try (TraceEvent e = TraceEvent.scoped("PictureInPicture::isEnabled")) {
+            final AppOpsManager appOpsManager =
+                    (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+            final int status = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                    context.getApplicationInfo().uid, context.getPackageName());
 
-        final AppOpsManager appOpsManager =
-                (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        final int status = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                context.getApplicationInfo().uid, context.getPackageName());
-
-        return (status == AppOpsManager.MODE_ALLOWED);
+            return (status == AppOpsManager.MODE_ALLOWED);
+        }
     }
 }

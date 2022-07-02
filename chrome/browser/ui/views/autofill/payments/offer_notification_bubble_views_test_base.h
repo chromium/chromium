@@ -58,7 +58,10 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreateCardLinkedOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
-  std::unique_ptr<AutofillOfferData> CreatePromoCodeOfferDataWithDomains(
+  std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
+      const std::vector<GURL>& domains);
+
+  std::unique_ptr<AutofillOfferData> CreateFreeListingCouponDataWithDomains(
       const std::vector<GURL>& domains);
 
   void DeleteFreeListingCouponForUrl(const GURL& url);
@@ -71,6 +74,8 @@ class OfferNotificationBubbleViewsTestBase
 
   void SetUpFreeListingCouponOfferDataWithDomains(
       const std::vector<GURL>& domains);
+
+  void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
 
   void SetUpFreeListingCouponOfferDataForCouponService(
       std::unique_ptr<AutofillOfferData> offer);
@@ -103,6 +108,20 @@ class OfferNotificationBubbleViewsTestBase
   // Returns the string used for the default test promo code data, so that it
   // can be expected on UI elements if desired.
   std::string GetDefaultTestPromoCode() const;
+
+  // Returns the value prop string used for the default test GPay promo code,
+  // so that it can be expected on UI elements if desired.
+  std::string GetDefaultTestValuePropText() const;
+
+  // Returns the see details string used for the default test GPay promo code.
+  std::string GetDefaultTestSeeDetailsText() const;
+
+  // Returns the user instructions string used for the default GPay promo code
+  // data.
+  std::string GetDefaultTestUsageInstructionsText() const;
+
+  // Returns the offer details url string used for the default GPay promo code.
+  std::string GetDefaultTestDetailsUrlString() const;
 
  private:
   raw_ptr<PersonalDataManager> personal_data_;

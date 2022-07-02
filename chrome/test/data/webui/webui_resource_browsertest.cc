@@ -109,7 +109,3 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_button_test.js");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/splitter_test.js");
-}

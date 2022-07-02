@@ -10,12 +10,13 @@
     height: 0px;
   }
   #scrollers > div {
-    overflow: scroll;
+    overflow: hidden;
     width: 100px;
     height: 100px;
   }
   #scrollers > div > div {
     height: 200px;
+    width:  200px;
   }
 
   @keyframes top {
@@ -37,23 +38,19 @@
 
   @scroll-timeline top_timeline {
     source: selector(#scroller1);
-    start: 0px;
-    end: 100px;
+    orientation: block;
   }
   @scroll-timeline bottom_timeline {
     source: selector(#scroller1);
-    start: 0px;
-    end: 80px;
+    orientation: inline;
   }
   @scroll-timeline left_timeline {
     source: selector(#scroller2);
-    start: 0px;
-    end: 100px;
+    orientation: block;
   }
   @scroll-timeline right_timeline {
     source: selector(#scroller2);
-    start: 20px;
-    end: 60px;
+    orientation: inline;
   }
 
   #element {
@@ -78,14 +75,16 @@
   scroller2.offsetTop;
 
   scroller1.scrollTop = 20;
-  scroller2.scrollTop = 40;
+  scroller1.scrollLeft = 40;
+  scroller2.scrollTop = 60;
+  scroller2.scrollLeft = 80;
 
   promise_test(async (t) => {
     await waitForNextFrame();
     assert_equals(getComputedStyle(element).top, '120px');
-    assert_equals(getComputedStyle(element).bottom, '125px');
-    assert_equals(getComputedStyle(element).left, '140px');
-    assert_equals(getComputedStyle(element).right, '150px');
+    assert_equals(getComputedStyle(element).bottom, '140px');
+    assert_equals(getComputedStyle(element).left, '160px');
+    assert_equals(getComputedStyle(element).right, '180px');
   }, 'animation-timeline works with multiple timelines');
 
 </script>

@@ -74,7 +74,6 @@ using l10n_util::GetNSStringF;
       DCHECK(!name);
       DCHECK(!self.userImage);
       NSString* signInString = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
-      signinPromoView.accessibilityLabel = signInString;
       [signinPromoView.primaryButton setTitle:signInString
                                      forState:UIControlStateNormal];
       return;
@@ -83,8 +82,6 @@ using l10n_util::GetNSStringF;
       [signinPromoView.primaryButton
           setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
           forState:UIControlStateNormal];
-      signinPromoView.accessibilityLabel =
-          GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
       [signinPromoView.secondaryButton
           setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
           forState:UIControlStateNormal];
@@ -94,8 +91,6 @@ using l10n_util::GetNSStringF;
       [signinPromoView.primaryButton
           setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
           forState:UIControlStateNormal];
-      signinPromoView.accessibilityLabel =
-          GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
       break;
     }
   }
@@ -108,6 +103,28 @@ using l10n_util::GetNSStringF;
   DCHECK_EQ(avatarSize.width, image.size.width);
   DCHECK_EQ(avatarSize.height, image.size.height);
   [signinPromoView setProfileImage:image];
+}
+
+- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
+                       withStyle:(SigninPromoViewStyle)promoViewStyle {
+  switch (promoViewStyle) {
+    case SigninPromoViewStyleStandard: {
+      signinPromoView.titleLabel.hidden = YES;
+      signinPromoView.compactLayout = NO;
+      [self configureSigninPromoView:signinPromoView];
+      return;
+    }
+    case SigninPromoViewStyleTitled: {
+      signinPromoView.titleLabel.hidden = NO;
+      signinPromoView.compactLayout = NO;
+      break;
+    }
+    case SigninPromoViewStyleTitledCompact: {
+      signinPromoView.titleLabel.hidden = NO;
+      signinPromoView.compactLayout = YES;
+      break;
+    }
+  }
 }
 
 @end

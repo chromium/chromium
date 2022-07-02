@@ -552,12 +552,12 @@ void TabImpl::ExecuteScript(const std::u16string& script,
                             bool use_separate_isolate,
                             JavaScriptResultCallback callback) {
   if (use_separate_isolate) {
-    web_contents_->GetMainFrame()->ExecuteJavaScriptInIsolatedWorld(
+    web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
         script, std::move(callback), ISOLATED_WORLD_ID_WEBLAYER);
   } else {
     content::RenderFrameHost::AllowInjectingJavaScript();
-    web_contents_->GetMainFrame()->ExecuteJavaScript(script,
-                                                     std::move(callback));
+    web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(
+        script, std::move(callback));
   }
 }
 
@@ -596,8 +596,8 @@ void TabImpl::RemoveWebMessageHostFactory(
 
 void TabImpl::ExecuteScriptWithUserGestureForTests(
     const std::u16string& script) {
-  web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      script, base::NullCallback());
+  web_contents_->GetPrimaryMainFrame()
+      ->ExecuteJavaScriptWithUserGestureForTests(script, base::NullCallback());
 }
 
 std::unique_ptr<FaviconFetcher> TabImpl::CreateFaviconFetcher(
@@ -1130,7 +1130,7 @@ void TabImpl::RequestMediaAccessPermission(
   MediaStreamManager::FromWebContents(web_contents)
       ->RequestMediaAccessPermission(request, std::move(callback));
 #else
-  std::move(callback).Run(blink::mojom::StreamDevices(),
+  std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 #endif

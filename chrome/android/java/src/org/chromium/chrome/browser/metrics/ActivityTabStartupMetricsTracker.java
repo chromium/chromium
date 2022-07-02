@@ -108,13 +108,6 @@ public class ActivityTabStartupMetricsTracker {
 
             recordFirstContentfulPaint(navigationStartMicros / 1000 + firstContentfulPaintMs);
         }
-
-        void resetMetricsRecordingStateForInitialNavigation() {
-            // NOTE: |mInvokedOnFirstNavigationStart| is intentionally not reset to avoid duplicate
-            // observer notifications.
-            mNavigationId = NO_NAVIGATION_ID;
-            mShouldRecordHistograms = false;
-        }
     };
 
     private final long mActivityStartTimeMs;
@@ -188,7 +181,6 @@ public class ActivityTabStartupMetricsTracker {
                         boolean isTrackedPage = navigation.hasCommitted()
                                 && navigation.isInPrimaryMainFrame() && !navigation.isErrorPage()
                                 && !navigation.isSameDocument()
-                                && !navigation.isFragmentNavigation()
                                 && UrlUtilities.isHttpOrHttps(navigation.getUrl());
                         registerFinishNavigation(isTrackedPage);
                     }
@@ -247,21 +239,6 @@ public class ActivityTabStartupMetricsTracker {
                 }
             }
         });
-    }
-
-    /**
-     * Invoked when a tab preloaded at startup is dropped rather than taken, meaning that a new tab
-     * will need to be created to do the initial navigation. Resets state related to observation of
-     * the initial navigation to ensure that loading startup metrics are properly recorded in this
-     * case. Note that it is not necessary to reset the state of |mTabModelSelectorTabObserver| in
-     * this case, as that observer tracks state starting only from the addition of a tab to the tab
-     * model, which by definition has not yet occurred at this point.
-     */
-    public void onStartupTabPreloadDropped() {
-        // Note that observers are not created in all contexts (e.g., CCT).
-        if (mPageLoadMetricsObserver == null) return;
-
-        mPageLoadMetricsObserver.resetMetricsRecordingStateForInitialNavigation();
     }
 
     /**

@@ -107,6 +107,7 @@ constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
 #endif
 constexpr char kIncognitoIconResourceName[] = "realbox/icons/incognito.svg";
+constexpr char kJourneysIconResourceName[] = "realbox/icons/journeys.svg";
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
@@ -432,6 +433,9 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   if (icon.name == omnibox::kIncognitoIcon.name) {
     return kIncognitoIconResourceName;
   }
+  if (icon.name == omnibox::kJourneysIcon.name) {
+    return kJourneysIconResourceName;
+  }
   if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
   }
@@ -748,7 +752,7 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
       search_prefetch_service->OnResultChanged(
-          autocomplete_controller_->result());
+          web_contents_, autocomplete_controller_->result());
     }
   }
 

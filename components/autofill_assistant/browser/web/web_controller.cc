@@ -35,6 +35,8 @@
 #include "components/autofill_assistant/browser/web/element_finder_result_type.h"
 #include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
+#include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -936,17 +938,19 @@ void WebController::OnSelectorObserverFinished(SelectorObserver* observer) {
 
 void WebController::FillAddressForm(
     std::unique_ptr<autofill::AutofillProfile> profile,
+    const AutofillAssistantIntent intent,
     const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   autofill::AutofillableData data_to_autofill(profile.get());
   GetElementFormAndFieldData(
       element, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
-                              std::move(profile), std::move(callback)));
+                              std::move(profile), intent, std::move(callback)));
 }
 
 void WebController::FillCardForm(
     std::unique_ptr<autofill::CreditCard> card,
+    const AutofillAssistantIntent intent,
     const std::u16string& cvc,
     const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -954,7 +958,7 @@ void WebController::FillCardForm(
   GetElementFormAndFieldData(
       element, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
-                              std::move(card), std::move(callback)));
+                              std::move(card), intent, std::move(callback)));
 }
 
 void WebController::RetrieveElementFormAndFieldData(
@@ -1000,11 +1004,28 @@ void WebController::GetElementFormAndFieldData(
                             ContentAutofillDriver* driver,
                             const autofill::FormData&,
                             const autofill::FormFieldData&)> callback) {
-  GetBackendNodeId(
-      element,
-      base::BindOnce(&WebController::OnGetBackendNodeIdForFormAndFieldData,
-                     weak_ptr_factory_.GetWeakPtr(), element,
-                     std::move(callback)));
+  if (!element.backend_node_id()) {
+    DVLOG(1) << __func__
+             << "No backend node id on element intended for native execution.";
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
+    return;
+  }
+
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(element.render_frame_host());
+  if (driver == nullptr) {
+    DVLOG(1) << __func__ << " Failed to get the autofill driver.";
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
+    return;
+  }
+
+  driver->GetAutofillAgent()->GetElementFormAndFieldDataForDevToolsNodeId(
+      *element.backend_node_id(),
+      base::BindOnce(&WebController::OnGetFormAndFieldData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     driver));
 }
 
 void WebController::GetBackendNodeId(
@@ -1034,35 +1055,6 @@ void WebController::OnGetBackendNodeId(
                           result->GetNode()->GetBackendNodeId());
 }
 
-void WebController::OnGetBackendNodeIdForFormAndFieldData(
-    const ElementFinderResult& element,
-    base::OnceCallback<void(const ClientStatus&,
-                            ContentAutofillDriver* driver,
-                            const autofill::FormData&,
-                            const autofill::FormFieldData&)> callback,
-    const ClientStatus& node_status,
-    const int backend_node_id) {
-  if (!node_status.ok()) {
-    std::move(callback).Run(node_status, nullptr, autofill::FormData(),
-                            autofill::FormFieldData());
-    return;
-  }
-
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(element.render_frame_host());
-  if (driver == nullptr) {
-    DVLOG(1) << __func__ << " Failed to get the autofill driver.";
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
-                            autofill::FormData(), autofill::FormFieldData());
-    return;
-  }
-
-  driver->GetAutofillAgent()->GetElementFormAndFieldDataForDevToolsNodeId(
-      backend_node_id, base::BindOnce(&WebController::OnGetFormAndFieldData,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      std::move(callback), driver));
-}
-
 void WebController::OnGetFormAndFieldData(
     base::OnceCallback<void(const ClientStatus&,
                             ContentAutofillDriver* driver,
@@ -1083,6 +1075,7 @@ void WebController::OnGetFormAndFieldData(
 void WebController::OnGetFormAndFieldDataForFilling(
     const autofill::AutofillableData& data_to_autofill,
     std::unique_ptr<autofill::AutofillDataModel> retain_data,
+    const AutofillAssistantIntent intent,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& form_status,
     ContentAutofillDriver* driver,
@@ -1092,7 +1085,7 @@ void WebController::OnGetFormAndFieldDataForFilling(
     std::move(callback).Run(form_status);
     return;
   }
-  driver->FillFormForAssistant(data_to_autofill, form_data, form_field);
+  driver->FillFormForAssistant(data_to_autofill, form_data, form_field, intent);
   std::move(callback).Run(OkClientStatus());
 }
 
@@ -1633,6 +1626,60 @@ void WebController::ExecuteJS(
   ExecuteJsWithoutArguments(
       element, base::StrCat({"function() { ", js_snippet, "\n}"}),
       WebControllerErrorInfoProto::EXECUTE_JS, std::move(callback));
+}
+
+ContentAutofillAssistantDriver* WebController::GetDriverForElement(
+    const ElementFinderResult& element) const {
+  if (!element.backend_node_id()) {
+    DVLOG(1) << __func__
+             << "No backend node id on element intended for native execution.";
+    return nullptr;
+  }
+
+  auto* render_frame_host = element.render_frame_host();
+  DCHECK(render_frame_host);
+
+  return ContentAutofillAssistantDriver::GetOrCreateForRenderFrameHost(
+      render_frame_host, annotate_dom_model_service_);
+}
+
+void WebController::SetNativeValue(
+    const std::string& value,
+    const ElementFinderResult& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  ContentAutofillAssistantDriver* driver = GetDriverForElement(element);
+  if (!driver) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
+    return;
+  }
+  driver->GetAutofillAssistantAgent()->SetElementValue(
+      *element.backend_node_id(), base::UTF8ToUTF16(value),
+      /* send_events= */ true,
+      base::BindOnce(&WebController::OnSetNativeExecution,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebController::SetNativeChecked(
+    bool checked,
+    const ElementFinderResult& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  ContentAutofillAssistantDriver* driver = GetDriverForElement(element);
+  if (!driver) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
+    return;
+  }
+  driver->GetAutofillAssistantAgent()->SetElementChecked(
+      *element.backend_node_id(), checked,
+      /* send_events= */ true,
+      base::BindOnce(&WebController::OnSetNativeExecution,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebController::OnSetNativeExecution(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    bool success) const {
+  std::move(callback).Run(success ? OkClientStatus()
+                                  : UnexpectedErrorStatus(__FILE__, __LINE__));
 }
 
 base::WeakPtr<WebController> WebController::GetWeakPtr() const {

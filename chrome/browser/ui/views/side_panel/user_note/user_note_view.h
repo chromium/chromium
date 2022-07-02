@@ -7,11 +7,19 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "components/user_notes/browser/user_note_instance.h"
-#include "ui/views/controls/textarea/textarea.h"
-#include "ui/views/view.h"
 
 namespace views {
+class Label;
+class Textarea;
+class View;
+}  // namespace views
+
+namespace views {
+class Label;
+class Textarea;
+class View;
 class MenuRunner;
 }
 
@@ -34,44 +42,53 @@ class UserNoteView : public views::View {
     kCreating,
     // State that will display an existing user note to be edited.
     kEditing,
-    // State that will display an orphan user note (note without a highlight in
-    // the page).
-    kOrphaned
+    // State that will display a detached user note (note without a highlight
+    // on the page).
+    kDetached
   };
 
   explicit UserNoteView(
+      UserNoteUICoordinator* coordinator,
       user_notes::UserNoteInstance* user_note_instance,
       UserNoteView::State state = UserNoteView::State::kDefault);
   UserNoteView(const UserNoteView&) = delete;
   UserNoteView& operator=(const UserNoteView&) = delete;
   ~UserNoteView() override;
 
-  const base::UnguessableToken& UserNoteId() {
-    return user_note_instance_ != nullptr ? user_note_instance_->model().id()
-                                          : base::UnguessableToken::Null();
-  }
+  const base::UnguessableToken& user_note_id() { return id_; }
 
-  const gfx::Rect& user_note_rect() const {
-    return user_note_instance_->rect();
-  }
+  const gfx::Rect& user_note_rect() const { return rect_; }
 
  private:
-  void OnCancelNewUserNote();
+  void CreateOrUpdateNoteView(UserNoteView::State state,
+                              base::Time date,
+                              const std::string content,
+                              const std::string quote);
+  void OnCancelUserNote(UserNoteView::State state);
   void OnAddUserNote();
+  void OnSaveUserNote();
+  void OnOpenMenu();
+  void OnMenuClosed();
   void OnEditUserNote(int event_flags);
   void OnDeleteUserNote(int event_flags);
   void OnLearnUserNote(int event_flags);
-  void OnOpenMenu();
-  void OnMenuClosed();
+  void SetCreatingOrEditState(const std::string content,
+                              UserNoteView::State state);
+  void SetDefaultOrDetachedState(base::Time date,
+                                 const std::string content,
+                                 const std::string quote);
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
-  raw_ptr<views::Textarea> text_area_;
-  raw_ptr<views::View> button_container_;
-  raw_ptr<views::Label> user_note_body_;
-  raw_ptr<views::View> user_note_header_;
-  raw_ptr<views::View> user_note_quote_;
+  raw_ptr<views::Textarea> text_area_ = nullptr;
+  raw_ptr<views::View> button_container_ = nullptr;
+  raw_ptr<views::Label> user_note_body_ = nullptr;
+  raw_ptr<views::View> user_note_header_ = nullptr;
+  raw_ptr<views::View> user_note_quote_ = nullptr;
+  raw_ptr<UserNoteUICoordinator> coordinator_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::MenuModel> dialog_model_;
+  base::UnguessableToken id_;
+  gfx::Rect rect_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_

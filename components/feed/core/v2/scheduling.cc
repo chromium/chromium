@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/scheduling.h"
 
 #include "base/json/values_util.h"
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
@@ -44,6 +45,17 @@ base::TimeDelta GetThresholdTime(base::TimeDelta default_threshold,
   return server_threshold;
 }
 
+RequestSchedule::Type GetScheduleType(const base::Value* value) {
+  if (value && value->is_int()) {
+    int int_value = value->GetInt();
+    if (int_value >= 0 &&
+        int_value <= base::to_underlying(RequestSchedule::Type::kMaxValue)) {
+      return static_cast<RequestSchedule::Type>(int_value);
+    }
+  }
+  return RequestSchedule::Type::kScheduledRefresh;
+}
+
 }  // namespace
 
 RequestSchedule::RequestSchedule() = default;
@@ -57,6 +69,7 @@ base::Value RequestScheduleToValue(const RequestSchedule& schedule) {
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetKey("anchor", base::TimeToValue(schedule.anchor_time));
   result.SetKey("offsets", VectorToValue(schedule.refresh_offsets));
+  result.SetKey("type", base::Value(base::to_underlying(schedule.type)));
   return result;
 }
 
@@ -68,6 +81,8 @@ RequestSchedule RequestScheduleFromValue(const base::Value& value) {
       base::ValueToTime(value.FindKey("anchor"));
   const base::Value* offsets =
       value.FindKeyOfType("offsets", base::Value::Type::LIST);
+  result.type = GetScheduleType(value.FindKey("type"));
+
   if (!anchor || !offsets || !ValueToVector(*offsets, &result.refresh_offsets))
     return {};
   result.anchor_time = *anchor;

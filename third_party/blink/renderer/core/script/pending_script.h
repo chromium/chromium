@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_PENDING_SCRIPT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_PENDING_SCRIPT_H_
 
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -133,13 +134,14 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   virtual bool IsEligibleForDelay() const { return false; }
 
+  bool IsWatchingForLoad() const { return client_; }
+
  protected:
   PendingScript(ScriptElementBase*, const TextPosition& starting_position);
 
   virtual void DisposeInternal() = 0;
 
   PendingScriptClient* Client() { return client_; }
-  bool IsWatchingForLoad() const { return client_; }
 
   virtual void CheckState() const = 0;
 

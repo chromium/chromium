@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -38,15 +38,13 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
   // Sets the list of segment IDs that are based on history data.
   virtual void SetHistoryBasedSegments(
-      base::flat_set<optimization_guide::proto::OptimizationTarget>&&
-          history_based_segments);
+      base::flat_set<proto::SegmentId>&& history_based_segments);
 
  private:
   void DeleteResultsForHistoryBasedSegments();
@@ -56,8 +54,7 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
 
   // List of segment IDs that depend on history data, that will be cleared when
   // history is deleted.
-  absl::optional<base::flat_set<optimization_guide::proto::OptimizationTarget>>
-      history_based_segments_;
+  absl::optional<base::flat_set<proto::SegmentId>> history_based_segments_;
   bool pending_deletion_based_on_history_based_segments_ = false;
 
   base::RepeatingClosure models_refresh_callback_;

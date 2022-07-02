@@ -37,6 +37,8 @@ class BrowserDMTokenStorageAndroid : public BrowserDMTokenStorage::Delegate {
   BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
       const std::string& token,
       const std::string& client_id) override;
+  BrowserDMTokenStorage::StoreTask DeleteDMTokenTask(
+      const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
   scoped_refptr<base::TaskRunner> task_runner_;

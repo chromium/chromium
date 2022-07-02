@@ -40,6 +40,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/startup/startup_switches.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -82,7 +83,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override {}
   void NewGuestWindow(NewGuestWindowCallback callback) override {}
-  void NewTab(NewTabCallback callback) override {}
+  void NewTab(bool should_trigger_session_restore,
+              NewTabCallback callback) override {}
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override {}
@@ -94,7 +96,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
   void NotifyPolicyFetchAttempt() override {}
   void UpdateKeepAlive(bool enabled) override {}
-  void OpenForFullRestore() override {}
+  void OpenForFullRestore(bool skip_crash_restore) override {}
   void UpdateComponentPolicy(
       base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
 
@@ -170,6 +172,10 @@ base::Process LaunchTestSubprocess(std::vector<base::ScopedFD> descriptors) {
 using TestMojoConnectionManagerTest = testing::Test;
 
 TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
+  // Set fake statistics provider which is needed by crosapi_util.
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
+  chromeos::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+
   // Create temp dir before task environment, just in case lingering tasks need
   // to access it.
   base::ScopedTempDir temp_dir;

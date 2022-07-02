@@ -545,11 +545,10 @@ std::string AesDecryptor::GetSessionStateAsJWK(const std::string& session_id) {
   KeyIdAndKeyPairs keys;
   {
     base::AutoLock auto_lock(key_map_lock_);
-    for (const auto& item : key_map_) {
-      if (item.second->Contains(session_id)) {
-        std::string key_id = item.first;
+    for (const auto& [key_id, session_id_map] : key_map_) {
+      if (session_id_map->Contains(session_id)) {
         // |key| is the value used to create the decryption key.
-        std::string key = item.second->LatestDecryptionKey()->secret();
+        std::string key = session_id_map->LatestDecryptionKey()->secret();
         keys.push_back(std::make_pair(key_id, key));
       }
     }

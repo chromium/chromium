@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/event.h"
-#include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

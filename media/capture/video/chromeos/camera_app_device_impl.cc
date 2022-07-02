@@ -193,6 +193,11 @@ void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
                      rotation));
 }
 
+bool CameraAppDeviceImpl::IsMultipleStreamsEnabled() {
+  base::AutoLock lock(multi_stream_lock_);
+  return multi_stream_enabled_;
+}
+
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
   DCHECK(camera_info_);
@@ -348,6 +353,16 @@ void CameraAppDeviceImpl::RegisterDocumentCornersObserver(
 
   base::AutoLock lock(document_corners_observers_lock_);
   document_corners_observers_.Add(std::move(observer));
+  std::move(callback).Run();
+}
+
+void CameraAppDeviceImpl::SetMultipleStreamsEnabled(
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(multi_stream_lock_);
+  multi_stream_enabled_ = enabled;
   std::move(callback).Run();
 }
 

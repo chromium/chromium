@@ -25,11 +25,14 @@ constexpr bool kAnalogAgcSupported = true;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // The analog gain controller can only be disabled on Chromecast.
-#if BUILDFLAG(IS_CHROMECAST)
+//
+// TODO(crbug.com/1336055): kAllowToDisableAnalogAgc should be removed once AGC2
+// is fully launched.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 constexpr bool kAllowToDisableAnalogAgc = true;
 #else
 constexpr bool kAllowToDisableAnalogAgc = false;
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif
 
 // AGC1 mode.
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;

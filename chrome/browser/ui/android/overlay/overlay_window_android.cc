@@ -12,6 +12,7 @@
 #include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/android/window_android_compositor.h"
 
 // static
@@ -38,13 +39,41 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetMayContainVideo(true);
-  surface_layer_->SetBackgroundColor(SK_ColorBLACK);
+  surface_layer_->SetBackgroundColor(SkColors::kBlack);
+
+  auto* web_contents = controller_->GetWebContents();
+
+  gfx::Rect source_bounds = controller_->GetSourceBounds();
+  gfx::Rect unscaled_content_bounds = web_contents->GetContainerBounds();
+  auto* native_view = web_contents->GetNativeView();
+  // The java side will ignore any source bounds that are not on the screen for
+  // the source rect hint. It will use the aspect ratio only in that case.  If
+  // it's not entirely on-screen, then skip it.
+  const float dip_scale = native_view->GetDipScale();
+  gfx::Rect content_bounds(unscaled_content_bounds.x() * dip_scale,
+                           unscaled_content_bounds.y() * dip_scale,
+                           unscaled_content_bounds.width() * dip_scale,
+                           unscaled_content_bounds.height() * dip_scale);
+  const bool out_of_bounds = !content_bounds.Contains(source_bounds);
+
+  if (!out_of_bounds) {
+    // Convert to screen space.
+    gfx::PointF offset = native_view->GetLocationOnScreen(0, 0);
+    source_bounds.Offset(
+        static_cast<int>(offset.x()),
+        static_cast<int>(offset.y()) +
+            native_view->content_offset() * native_view->GetDipScale());
+  } else {
+    // Slide this offscreen, while keeping the aspect ratio the same.
+    source_bounds.set_x(-1);
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_createActivity(
       env, reinterpret_cast<intptr_t>(this),
-      TabAndroid::FromWebContents(controller_->GetWebContents())
-          ->GetJavaObject());
+      TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
+      source_bounds.x(), source_bounds.y(), source_bounds.width(),
+      source_bounds.height());
 }
 
 OverlayWindowAndroid::~OverlayWindowAndroid() {
@@ -93,7 +122,6 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
     window_android_ = nullptr;
   }
 
-  controller_->FocusInitiator();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
@@ -121,6 +149,11 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
   bounds_.set_size(content_size);
   surface_layer_->SetBounds(content_size);
   controller_->UpdateLayerBounds();
+}
+
+void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
+  controller_->FocusInitiator();
+  Hide();
 }
 
 void OverlayWindowAndroid::Close() {
@@ -163,6 +196,8 @@ gfx::Rect OverlayWindowAndroid::GetBounds() {
 void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
   if (java_ref_.is_uninitialized()) {
     video_size_ = natural_size;
+    // This isn't guaranteed to be right, but it's better than (0,0).
+    bounds_.set_size(natural_size);
     return;
   }
 

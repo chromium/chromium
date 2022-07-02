@@ -136,7 +136,7 @@ const _DIFF_STATUSES = {
  */
 const _ARTIFACT_TYPES = {
   DIRECTORY:  'D',
-  COMPONENT:  'C',
+  GROUP:      'G',
   FILE:       'F',
   JAVA_CLASS: 'J',
 };

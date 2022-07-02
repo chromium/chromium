@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -23,6 +24,9 @@ namespace syncer {
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
 const int kInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;  // 2 weeks.
+
+// Limits the number of last received buffered messages.
+const size_t kMaxBufferedLastFcmMessages = 5;
 
 FCMHandler::FCMHandler(gcm::GCMDriver* gcm_driver,
                        instance_id::InstanceIDDriver* instance_id_driver,
@@ -42,6 +46,12 @@ void FCMHandler::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsListening());
   DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
+  DCHECK(last_received_messages_.empty());
+
+  // Note that AddAppHandler() causes an immediate replay of all received
+  // messages in background on Android. Those messages will be stored in
+  // |last_received_messages_| and delivered to listeners once they have been
+  // added.
   gcm_driver_->AddAppHandler(app_id_, this);
   waiting_for_token_ = true;
   StartTokenFetch(base::BindOnce(&FCMHandler::DidRetrieveToken,
@@ -56,6 +66,7 @@ void FCMHandler::StopListening() {
   if (IsListening()) {
     gcm_driver_->RemoveAppHandler(app_id_);
     token_validation_timer_.AbandonAndStop();
+    last_received_messages_.clear();
   }
 }
 
@@ -90,7 +101,16 @@ void FCMHandler::ShutdownHandler() {
 
 void FCMHandler::AddListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (listeners_.HasObserver(listener)) {
+    return;
+  }
   listeners_.AddObserver(listener);
+
+  // Immediately replay any buffered messages received before the |listener|
+  // was added.
+  for (const std::string& message : last_received_messages_) {
+    listener->OnInvalidationReceived(message);
+  }
 }
 
 void FCMHandler::RemoveListener(InvalidationsListener* listener) {
@@ -119,6 +139,12 @@ void FCMHandler::OnMessage(const std::string& app_id,
   DCHECK_EQ(app_id, app_id_);
   DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
+  base::UmaHistogramBoolean("Sync.FCMMessageDeliveredToListeners",
+                            !listeners_.empty());
+  if (last_received_messages_.size() >= kMaxBufferedLastFcmMessages) {
+    last_received_messages_.pop_front();
+  }
+  last_received_messages_.push_back(message.raw_data);
   for (InvalidationsListener& listener : listeners_) {
     listener.OnInvalidationReceived(message.raw_data);
   }
@@ -151,6 +177,8 @@ bool FCMHandler::IsListening() const {
 void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
                                   instance_id::InstanceID::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
+                                result);
   waiting_for_token_ = false;
 
   if (!IsListening()) {
@@ -159,7 +187,6 @@ void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
     return;
   }
 
-  // TODO(crbug.com/1108783): add a UMA histogram to monitor results.
   // Notify observers only if the token has changed.
   if (result == instance_id::InstanceID::SUCCESS &&
       fcm_registration_token_ != subscription_token) {

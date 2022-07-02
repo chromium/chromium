@@ -29,9 +29,7 @@ constexpr int ConfidenceScoreToSuggestionScore(float confidence_score) {
 }
 }  // namespace
 
-VoiceSuggestProvider::VoiceSuggestProvider(
-    AutocompleteProviderClient* client,
-    AutocompleteProviderListener* listener)
+VoiceSuggestProvider::VoiceSuggestProvider(AutocompleteProviderClient* client)
     : BaseSearchProvider(TYPE_VOICE_SUGGEST, client) {}
 
 VoiceSuggestProvider::~VoiceSuggestProvider() = default;

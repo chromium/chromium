@@ -25,6 +25,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -163,25 +164,6 @@ void StandaloneBrowserExtensionApps::Connect(
                                true /* should_notify_initialized */);
 }
 
-void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
-                                              apps::mojom::IconKeyPtr icon_key,
-                                              apps::mojom::IconType icon_type,
-                                              int32_t size_hint_in_dip,
-                                              bool allow_placeholder_icon,
-                                              LoadIconCallback callback) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound()) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  controller_->LoadIcon(app_id, ConvertMojomIconKeyToIconKey(icon_key),
-                        ConvertMojomIconTypeToIconType(icon_type),
-                        size_hint_in_dip,
-                        IconValueToMojomIconValueCallback(std::move(callback)));
-}
-
 void StandaloneBrowserExtensionApps::Launch(
     const std::string& app_id,
     int32_t event_flags,
@@ -240,7 +222,8 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
-        std::vector<base::FilePath>{}, std::move(intent));
+        std::vector<base::FilePath>{},
+        apps::ConvertMojomIntentToIntent(intent));
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
                                     std::move(launch_info));
   }
@@ -356,6 +339,16 @@ void StandaloneBrowserExtensionApps::SetWindowMode(
 
   controller_->SetWindowMode(app_id,
                              ConvertMojomWindowModeToWindowMode(window_mode));
+}
+
+void StandaloneBrowserExtensionApps::OpenNativeSettings(
+    const std::string& app_id) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->OpenNativeSettings(app_id);
 }
 
 void StandaloneBrowserExtensionApps::OnApps(std::vector<AppPtr> deltas) {

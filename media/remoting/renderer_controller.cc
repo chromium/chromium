@@ -87,7 +87,8 @@ MediaObserverClient::ReasonToSwitchToLocal GetSwitchReason(
     case PEERS_OUT_OF_SYNC:
     case RPC_INVALID:
     case DATA_PIPE_CREATE_ERROR:
-    case MOJO_PIPE_ERROR:
+    case MOJO_DISCONNECTED:
+    case DATA_PIPE_WRITE_ERROR:
     case MESSAGE_SEND_FAILED:
     case DATA_SEND_FAILED:
     case UNEXPECTED_FAILURE:

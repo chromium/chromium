@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/demuxer.h"
 #include "media/base/renderer_factory.h"
@@ -238,7 +239,8 @@ blink::WebFrame* ContentRendererClient::FindFrame(
   return nullptr;
 }
 
-bool ContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
+bool ContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
+                                                 const GURL& to_url) {
   return true;
 }
 
@@ -261,6 +263,11 @@ ContentRendererClient::GetBaseRendererFactory(
     media::DecoderFactory* decoder_factory,
     base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
         get_gpu_factories_cb) {
+  return nullptr;
+}
+
+std::unique_ptr<cast_streaming::ResourceProvider>
+ContentRendererClient::CreateCastStreamingResourceProvider() {
   return nullptr;
 }
 

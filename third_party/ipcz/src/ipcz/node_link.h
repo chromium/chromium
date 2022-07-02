@@ -14,8 +14,8 @@
 #include "ipcz/driver_transport.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
-#include "ipcz/message_internal.h"
 #include "ipcz/node.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "ipcz/sequence_number.h"
@@ -28,6 +28,7 @@
 
 namespace ipcz {
 
+class Message;
 class RemoteRouterLink;
 class Router;
 
@@ -38,7 +39,7 @@ class Router;
 // NodeLinks may also allocate an arbitrary number of sublinks which are used
 // to multiplex the link and facilitate point-to-point communication between
 // specific Router instances on either end.
-class NodeLink : public RefCounted, private DriverTransport::Listener {
+class NodeLink : public msg::NodeMessageListener {
  public:
   struct Sublink {
     Sublink(Ref<RemoteRouterLink> link, Ref<Router> receiver);
@@ -58,7 +59,8 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
                               const NodeName& remote_node_name,
                               Node::Type remote_node_type,
                               uint32_t remote_protocol_version,
-                              Ref<DriverTransport> transport);
+                              Ref<DriverTransport> transport,
+                              Ref<NodeLinkMemory> memory);
 
   const Ref<Node>& node() const { return node_; }
   LinkSide link_side() const { return link_side_; }
@@ -67,6 +69,9 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
   Node::Type remote_node_type() const { return remote_node_type_; }
   uint32_t remote_protocol_version() const { return remote_protocol_version_; }
   const Ref<DriverTransport>& transport() const { return transport_; }
+
+  NodeLinkMemory& memory() { return *memory_; }
+  const NodeLinkMemory& memory() const { return *memory_; }
 
   // Binds `sublink` on this NodeLink to the given `router`. `link_side`
   // specifies which side of the link this end identifies as (A or B), and
@@ -95,12 +100,10 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
   // transport, as this is left to driver's discretion.
   void Deactivate();
 
-  template <typename T>
-  void Transmit(T& message) {
-    static_assert(std::is_base_of<internal::MessageBase, T>::value,
-                  "Invalid message type");
-    TransmitMessage(message, T::kMetadata);
-  }
+  // Finalizes serialization of DriverObjects within `message` and transmits it
+  // to the NodeLink's peer, either over the DriverTransport or through shared
+  // memory.
+  void Transmit(Message& message);
 
  private:
   NodeLink(Ref<Node> node,
@@ -109,27 +112,16 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
            const NodeName& remote_node_name,
            Node::Type remote_node_type,
            uint32_t remote_protocol_version,
-           Ref<DriverTransport> transport);
+           Ref<DriverTransport> transport,
+           Ref<NodeLinkMemory> memory);
   ~NodeLink() override;
 
   SequenceNumber GenerateOutgoingSequenceNumber();
 
-  void TransmitMessage(internal::MessageBase& message,
-                       absl::Span<const internal::ParamMetadata> metadata);
-
-  // DriverTransport::Listener:
-  IpczResult OnTransportMessage(
-      const DriverTransport::Message& message) override;
+  // NodeMessageListener overrides:
+  bool OnAcceptParcel(msg::AcceptParcel& accept) override;
+  bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   void OnTransportError() override;
-
-  // All of these methods correspond directly to remote calls from another node,
-  // either through NodeLink (for OnIntroduceNode) or via RemoteRouterLink (for
-  // everything else).
-  bool OnConnectFromBrokerToNonBroker(const msg::ConnectFromBrokerToNonBroker&);
-  bool OnConnectFromNonBrokerToBroker(const msg::ConnectFromNonBrokerToBroker&);
-  bool OnRouteClosed(const msg::RouteClosed& route_closed);
-
-  IpczResult DispatchMessage(const DriverTransport::Message& message);
 
   const Ref<Node> node_;
   const LinkSide link_side_;
@@ -138,6 +130,7 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
   const Node::Type remote_node_type_;
   const uint32_t remote_protocol_version_;
   const Ref<DriverTransport> transport_;
+  const Ref<NodeLinkMemory> memory_;
 
   absl::Mutex mutex_;
   bool active_ ABSL_GUARDED_BY(mutex_) = true;

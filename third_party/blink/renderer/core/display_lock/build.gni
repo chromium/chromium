@@ -10,3 +10,8 @@ blink_core_sources_display_lock = [
   "display_lock_utilities.cc",
   "display_lock_utilities.h",
 ]
+
+blink_core_tests_display_lock = [
+  "display_lock_context_test.cc",
+  "display_lock_utilities_test.cc",
+]

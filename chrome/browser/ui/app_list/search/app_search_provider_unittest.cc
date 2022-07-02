@@ -44,6 +44,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -643,6 +644,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -661,6 +663,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 };

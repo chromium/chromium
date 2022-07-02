@@ -173,7 +173,7 @@ bool CrostiniInstallerUI::RequestClosePage() {
 }
 
 void CrostiniInstallerUI::ClickInstallForTesting() {
-  web_ui()->GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_ui()->GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"const app = document.querySelector('crostini-installer-app');"
       // If flag CrostiniUsername or CrostiniDiskResizing is turned on, there
       // will be a "next" button and we should click it to go to the config page
@@ -213,7 +213,7 @@ void CrostiniInstallerUI::OnPageClosed() {
   page_closed_ = true;
   // CloseDialog() is a no-op if we are not in a dialog (e.g. user
   // access the page using the URL directly, which is not supported).
-  ui::MojoWebDialogUI::CloseDialog(nullptr);
+  ui::MojoWebDialogUI::CloseDialog(base::Value::List());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrostiniInstallerUI)

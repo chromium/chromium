@@ -20,7 +20,7 @@ class WebContents;
 namespace media_router {
 
 class StartPresentationContext;
-enum class MediaRouterDialogOpenOrigin;
+enum class MediaRouterDialogActivationLocation;
 
 // An abstract base class for Media Router dialog controllers. Tied to a
 // WebContents known as the |initiator|, and is lazily created when a Media
@@ -62,7 +62,7 @@ class MediaRouterDialogController {
   // Creates the dialog if it did not exist prior to this call, returns true.
   // If the dialog already exists, brings it to the front, returns false.
   virtual bool ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin activation_location);
+      MediaRouterDialogActivationLocation activation_location);
 
   // Hides the media router dialog.
   // It is a no-op to call this function if there is currently no dialog.
@@ -80,7 +80,7 @@ class MediaRouterDialogController {
   // that initiated the dialog, e.g. focuses the tab.
   void FocusOnMediaRouterDialog(
       bool dialog_needs_creation,
-      MediaRouterDialogOpenOrigin activation_location);
+      MediaRouterDialogActivationLocation activation_location);
 
   // Returns the WebContents that initiated showing the dialog.
   content::WebContents* initiator() const { return initiator_; }
@@ -89,7 +89,7 @@ class MediaRouterDialogController {
   virtual void Reset();
   // Creates a new media router dialog modal to |initiator_|.
   virtual void CreateMediaRouterDialog(
-      MediaRouterDialogOpenOrigin activation_location) = 0;
+      MediaRouterDialogActivationLocation activation_location) = 0;
   // Closes the media router dialog if it exists.
   virtual void CloseMediaRouterDialog() = 0;
 

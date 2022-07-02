@@ -46,7 +46,8 @@ public class SearchOfflineItemFilter extends OfflineItemFilter {
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
         if (TextUtils.isEmpty(mQuery)) return false;
-        return !fieldContainsQuery(formatUrl(item.originalUrl)) && !fieldContainsQuery(item.title);
+        return !fieldContainsQuery(formatUrl(item.originalUrl.getSpec()))
+                && !fieldContainsQuery(item.title);
     }
 
     private boolean fieldContainsQuery(String field) {

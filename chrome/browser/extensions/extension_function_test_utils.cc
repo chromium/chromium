@@ -62,19 +62,19 @@ absl::optional<base::Value> ParseList(const std::string& data) {
   return result;
 }
 
-base::Value::DictStorage ToDictionary(std::unique_ptr<base::Value> val) {
+base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val) {
   if (!val || !val->is_dict()) {
     ADD_FAILURE() << "val is nullptr or is not a dictonary.";
-    return base::Value::DictStorage();
+    return base::Value::Dict();
   }
-  return std::move(*val).TakeDictDeprecated();
+  return std::move(val->GetDict());
 }
 
-base::Value::DictStorage ToDictionary(const base::Value& val) {
+base::Value::Dict ToDictionary(const base::Value& val) {
   EXPECT_TRUE(val.is_dict());
   if (!val.is_dict())
-    return base::Value::DictStorage();
-  return val.Clone().TakeDictDeprecated();
+    return base::Value::Dict();
+  return val.GetDict().Clone();
 }
 
 std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val) {
@@ -85,7 +85,7 @@ std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val) {
   return base::ListValue::From(std::move(val));
 }
 
-bool HasAnyPrivacySensitiveFields(const base::Value::DictStorage& dict) {
+bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict) {
   constexpr std::array privacySensitiveKeys{keys::kUrlKey, keys::kTitleKey,
                                             keys::kFaviconUrlKey,
                                             keys::kPendingUrlKey};

@@ -31,7 +31,7 @@ std::string GetActiveUserEmail() {
 }  // namespace
 
 // Tests the successful login scenario with the correct PIN.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSamlTest, Basic) {
   StartSignIn();
   WaitForPinDialog();
   test::OobeJS().ExpectVisiblePath({"gaia-signin", "pinDialog"});
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
 
 // Tests that the login doesn't hit the timeout for Chrome waiting on Gaia to
 // signal the login completion.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NoGaiaTimeout) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSamlTest, NoGaiaTimeout) {
   // Arrange:
   base::HistogramTester histogram_tester;
 
@@ -68,5 +68,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NoGaiaTimeout) {
   histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
                                      1);
 }
+// Run tests with both implementations of cryptohome API.
+INSTANTIATE_TEST_SUITE_P(All, SecurityTokenSamlTest, testing::Bool());
 
 }  // namespace ash

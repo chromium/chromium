@@ -17,8 +17,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 constexpr int TabGroupUnderline::kStrokeThickness;
 
@@ -35,37 +37,64 @@ void TabGroupUnderline::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(path, flags);
 }
 
-void TabGroupUnderline::UpdateBounds(const gfx::Rect& group_bounds) {
-  const int start_x = GetStart(group_bounds);
-  const int end_x = GetEnd(group_bounds);
+void TabGroupUnderline::UpdateBounds(views::View* leading_view,
+                                     views::View* trailing_view) {
+  // If there are no views to underline, don't show the underline.
+  if (!leading_view) {
+    SetVisible(false);
+    return;
+  }
+
+  gfx::RectF leading_bounds = gfx::RectF(leading_view->bounds());
+  ConvertRectToTarget(leading_view->parent(), parent(), &leading_bounds);
+  leading_bounds.Inset(gfx::InsetsF(GetInsetsForUnderline(leading_view)));
+
+  gfx::RectF trailing_bounds = gfx::RectF(trailing_view->bounds());
+  ConvertRectToTarget(trailing_view->parent(), parent(), &trailing_bounds);
+  trailing_bounds.Inset(gfx::InsetsF(GetInsetsForUnderline(trailing_view)));
+
+  gfx::Rect group_bounds = ToEnclosingRect(leading_bounds);
+  group_bounds.UnionEvenIfEmpty(ToEnclosingRect(trailing_bounds));
 
   // The width may be zero if the group underline and header are initialized at
-  // the same time, as with tab restore. In this case, don't update the bounds
-  // and defer to the next paint cycle.
-  if (end_x <= start_x)
+  // the same time, as with tab restore. In this case, don't show the underline.
+  if (group_bounds.width() == 0) {
+    SetVisible(false);
     return;
+  }
 
+  SetVisible(true);
   const int y =
       group_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-  SetBounds(start_x, y - kStrokeThickness, end_x - start_x, kStrokeThickness);
+  SetBounds(group_bounds.x(), y - kStrokeThickness, group_bounds.width(),
+            kStrokeThickness);
+}
+
+gfx::Insets TabGroupUnderline::GetInsetsForUnderline(
+    views::View* sibling_view) const {
+  // Inset normally from a header - this will always be the left boundary of
+  // the group, and may be the right boundary if the group is collapsed.
+  TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(sibling_view);
+  if (header)
+    return gfx::Insets::TLBR(0, GetStrokeInset(), 0, GetStrokeInset());
+
+  Tab* tab = views::AsViewClass<Tab>(sibling_view);
+  DCHECK(tab);
+
+  // Active tabs need the rounded bits of the underline poking out the sides.
+  if (tab->IsActive())
+    return gfx::Insets::TLBR(0, -kStrokeThickness, 0, -kStrokeThickness);
+
+  // Inactive tabs are inset like group headers.
+  int left_inset = GetStrokeInset();
+  int right_inset = GetStrokeInset();
+
+  return gfx::Insets::TLBR(0, left_inset, 0, right_inset);
 }
 
 // static
 int TabGroupUnderline::GetStrokeInset() {
   return TabStyle::GetTabOverlap() + kStrokeThickness;
-}
-
-int TabGroupUnderline::GetStart(const gfx::Rect& group_bounds) const {
-  return group_bounds.x() + GetStrokeInset();
-}
-
-int TabGroupUnderline::GetEnd(const gfx::Rect& group_bounds) const {
-  const Tab* last_grouped_tab = tab_group_views_->GetLastTabInGroup();
-  if (!last_grouped_tab)
-    return group_bounds.right() - GetStrokeInset();
-
-  return group_bounds.right() +
-         (last_grouped_tab->IsActive() ? kStrokeThickness : -GetStrokeInset());
 }
 
 SkPath TabGroupUnderline::GetPath() const {

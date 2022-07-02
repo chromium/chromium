@@ -30,6 +30,8 @@ class WebGLUnownedTexture final : public WebGLTexture {
   // name and so that it should not be used anymore.
   void OnGLDeleteTextures();
 
+  bool IsOpaqueTexture() const override { return true; }
+
  private:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 };

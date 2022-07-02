@@ -33,7 +33,7 @@ class PersonalDataManagerFinishedProfileTasksWaiter
 
   ~PersonalDataManagerFinishedProfileTasksWaiter() override;
 
-  // Blocks until |OnPersonalDataFinishedProfileTasks| is invoked at the end of
+  // Blocks until `OnPersonalDataFinishedProfileTasks` is invoked at the end of
   // the asynchronous modification on the PersonalDataManager.
   void Wait();
 

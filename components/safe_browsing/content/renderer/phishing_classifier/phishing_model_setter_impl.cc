@@ -39,6 +39,10 @@ void PhishingModelSetterImpl::SetPhishingModel(const std::string& model,
       return;
   }
   ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
+
+  if (observer_for_testing_.is_bound()) {
+    observer_for_testing_->PhishingModelUpdated();
+  }
 }
 
 void PhishingModelSetterImpl::SetPhishingFlatBufferModel(
@@ -53,6 +57,19 @@ void PhishingModelSetterImpl::SetPhishingFlatBufferModel(
       return;
   }
   ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
+
+  if (observer_for_testing_.is_bound()) {
+    observer_for_testing_->PhishingModelUpdated();
+  }
+}
+
+void PhishingModelSetterImpl::SetTestObserver(
+    mojo::PendingRemote<mojom::PhishingModelSetterTestObserver> observer,
+    SetTestObserverCallback callback) {
+  if (observer_for_testing_.is_bound())
+    observer_for_testing_.reset();
+  observer_for_testing_.Bind(std::move(observer));
+  std::move(callback).Run();
 }
 
 void PhishingModelSetterImpl::OnRendererAssociatedRequest(

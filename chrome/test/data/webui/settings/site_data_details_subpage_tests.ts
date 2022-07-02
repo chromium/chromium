@@ -60,29 +60,28 @@ suite('SiteDataDetailsSubpage', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('DetailsShownForCookie', function() {
-    return browserProxy.whenCalled('getCookieDetails')
-        .then(function(actualSite: string) {
-          assertEquals(site, actualSite);
+  test('DetailsShownForCookie', async function() {
+    const actualSite: string =
+        await browserProxy.whenCalled('getCookieDetails');
+    assertEquals(site, actualSite);
 
-          flush();
-          const entries = page.shadowRoot!.querySelectorAll('.cr-row');
-          assertEquals(1, entries.length);
+    flush();
+    const entries = page.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(1, entries.length);
 
-          const listItems = page.shadowRoot!.querySelectorAll('.list-item');
-          // |cookieInfo| is a global var defined in
-          // site_settings/cookie_info.js, and specifies the fields that are
-          // shown for a cookie.
-          assertEquals(cookieInfo['cookie']!.length, listItems.length);
+    const listItems = page.shadowRoot!.querySelectorAll('.list-item');
+    // |cookieInfo| is a global var defined in
+    // site_settings/cookie_info.js, and specifies the fields that are
+    // shown for a cookie.
+    assertEquals(cookieInfo['cookie']!.length, listItems.length);
 
-          // Check that all the cookie information is presented in the DOM.
-          const cookieDetailValues =
-              page.shadowRoot!.querySelectorAll<HTMLElement>('.secondary');
-          cookieDetailValues.forEach(function(div: HTMLElement, i: number) {
-            const key = cookieInfo['cookie']![i]![0]!;
-            assertEquals(cookieDetails[key], div.textContent);
-          });
-        });
+    // Check that all the cookie information is presented in the DOM.
+    const cookieDetailValues =
+        page.shadowRoot!.querySelectorAll<HTMLElement>('.secondary');
+    cookieDetailValues.forEach(function(div: HTMLElement, i: number) {
+      const key = cookieInfo['cookie']![i]![0]!;
+      assertEquals(cookieDetails[key], div.textContent);
+    });
   });
 
   test('InteractionMetrics', async function() {

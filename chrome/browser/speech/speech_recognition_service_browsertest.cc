@@ -32,6 +32,7 @@
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -176,6 +177,8 @@ class SpeechRecognitionServiceTest
   base::FilePath test_data_dir_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  mojo::Remote<media::mojom::AudioSourceSpeechRecognitionContext>
+      audio_source_speech_recognition_context_;
   mojo::Remote<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_;
 
@@ -255,20 +258,14 @@ void SpeechRecognitionServiceTest::LaunchService() {
       static_cast<content::BrowserContext*>(browser()->profile());
   auto* service = new ChromeSpeechRecognitionService(browser_context);
 
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  service->Create(std::move(speech_recognition_context_receiver));
-
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer>
-      pending_recognizer_receiver =
-          speech_recognition_recognizer_.BindNewPipeAndPassReceiver();
+  service->BindSpeechRecognitionContext(
+      speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
   auto run_loop = std::make_unique<base::RunLoop>();
   // Bind the recognizer pipes used to send audio and receive results.
   speech_recognition_context_->BindRecognizer(
-      std::move(pending_recognizer_receiver),
+      speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
@@ -291,15 +288,13 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
       static_cast<content::BrowserContext*>(browser()->profile());
   auto* service = new ChromeSpeechRecognitionService(browser_context);
 
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  service->Create(std::move(speech_recognition_context_receiver));
+  service->BindAudioSourceSpeechRecognitionContext(
+      audio_source_speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
   auto run_loop = std::make_unique<base::RunLoop>();
   // Bind the recognizer pipes used to send audio and receive results.
-  speech_recognition_context_->BindAudioSourceFetcher(
+  audio_source_speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
@@ -387,11 +382,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   speech_recognition_recognizer_.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Sleep for 50ms to ensure SODA has returned real-time results.
+  // Sleep for 100ms to ensure SODA has returned real-time results.
 #if BUILDFLAG(IS_WIN)
-  ::Sleep(50);
+  ::Sleep(100);
 #else
-  usleep(50000);
+  usleep(100000);
 #endif
   ASSERT_GT(static_cast<int>(recognition_results_.size()), kReplayAudioCount);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
@@ -461,11 +456,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   speech_recognition_recognizer_.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Sleep for 50ms to ensure SODA has returned real-time results.
+  // Sleep for 100ms to ensure SODA has returned real-time results.
 #if BUILDFLAG(IS_WIN)
-  ::Sleep(50);
+  ::Sleep(100);
 #else
-  usleep(50000);
+  usleep(100000);
 #endif
   ASSERT_GT(static_cast<int>(recognition_results_.size()), 3);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");

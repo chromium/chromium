@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os")
+load("//lib/builders.star", "builders", "cpu", "os", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -41,6 +41,7 @@ ci.defaults.set(
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
     triggered_by = ["chromium-gitiles-trigger"],
+    free_space = builders.free_space.standard,
 )
 
 consoles.console_view(
@@ -74,7 +75,19 @@ def fyi_reclient_test_builder(
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
-        reclient_instance = "goma-foundry-experiments",
+        reclient_instance = "rbe-chromium-trusted-test",
+        **kwargs
+    )
+
+def fyi_reclient_gvisor_test_builder(
+        *,
+        name,
+        console_view_category,
+        **kwargs):
+    return fyi_reclient_staging_builder(
+        name = name,
+        console_view_category = console_view_category,
+        reclient_instance = "rbe-chromium-untrusted-test",
         **kwargs
     )
 
@@ -117,6 +130,50 @@ fyi_reclient_test_builder(
 )
 
 fyi_reclient_staging_builder(
+    name = "Mac Builder reclient staging",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_staging",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+)
+
+fyi_reclient_test_builder(
+    name = "Mac Builder reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/Mac Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+)
+
+fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
@@ -141,6 +198,29 @@ fyi_reclient_staging_builder(
 
 fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/Win x64 Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    builderless = True,
+    console_view_category = "win",
+    cores = 32,
+    execution_timeout = 5 * time.hour,
+    os = os.WINDOWS_ANY,
+)
+
+fyi_reclient_gvisor_test_builder(
+    name = "Win x64 Builder reclient gVisor cross test",
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
         lambda spec: structs.evolve(
@@ -202,4 +282,94 @@ fyi_reclient_test_builder(
             apply_configs = ["chromeos", "enable_reclient", "reclient_test"],
         ),
     ),
+)
+
+fyi_reclient_test_builder(
+    name = "ios-simulator reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/ios-simulator",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "ios",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+    xcode = xcode.x13main,
+)
+
+fyi_reclient_staging_builder(
+    name = "ios-simulator reclient staging",
+    builder_spec = builder_config.copy_from(
+        "ci/ios-simulator",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_staging",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "ios",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+    xcode = xcode.x13main,
+)
+
+fyi_reclient_staging_builder(
+    name = "mac-arm64-rel reclient staging",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-arm64-rel",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_staging",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+)
+
+fyi_reclient_test_builder(
+    name = "mac-arm64-rel reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-arm64-rel",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
 )

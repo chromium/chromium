@@ -286,33 +286,13 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
     // See SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
     if (old_squared_scale != new_affine_transform.XScaleSquared() +
                                  new_affine_transform.YScaleSquared()) {
-      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
-        box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
-                            kMarkContainerChain);
+      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this))
         To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
-      }
     }
   }
 }
 
-void LayoutBlock::UpdateFromStyle() {
-  NOT_DESTROYED();
-  LayoutBox::UpdateFromStyle();
-
-  bool should_clip_overflow = (!StyleRef().IsOverflowVisibleAlongBothAxes() ||
-                               ShouldApplyPaintContainment()) &&
-                              AllowsNonVisibleOverflow();
-  if (should_clip_overflow != HasNonVisibleOverflow()) {
-    if (GetScrollableArea())
-      GetScrollableArea()->InvalidateAllStickyConstraints();
-    // The overflow clip paint property depends on whether overflow clip is
-    // present so we need to update paint properties if this changes.
-    SetNeedsPaintPropertyUpdate();
-  }
-  SetHasNonVisibleOverflow(should_clip_overflow);
-}
-
-bool LayoutBlock::AllowsNonVisibleOverflow() const {
+bool LayoutBlock::RespectsCSSOverflow() const {
   NOT_DESTROYED();
   // If overflow has been propagated to the viewport, it has no effect here.
   return GetNode() != GetDocument().ViewportDefiningElement();
@@ -533,21 +513,6 @@ void LayoutBlock::AddLayoutOverflowFromChildren() {
     To<LayoutBlockFlow>(this)->AddLayoutOverflowFromInlineChildren();
   else
     AddLayoutOverflowFromBlockChildren();
-}
-
-OverflowClipAxes LayoutBlock::ComputeOverflowClipAxes() const {
-  const OverflowClipAxes layout_box_clip_axes =
-      LayoutBox::ComputeOverflowClipAxes();
-  if (layout_box_clip_axes != kNoOverflowClip)
-    return layout_box_clip_axes;
-  if (!HasNonVisibleOverflow())
-    return kNoOverflowClip;
-  if (IsScrollContainer())
-    return kOverflowClipBothAxis;
-  return (StyleRef().OverflowX() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipX) |
-         (StyleRef().OverflowY() == EOverflow::kVisible ? kNoOverflowClip
-                                                        : kOverflowClipY);
 }
 
 void LayoutBlock::ComputeVisualOverflow(bool) {
@@ -1423,8 +1388,8 @@ static inline bool IsEditingBoundary(const LayoutObject* ancestor,
   DCHECK(child.NonPseudoNode());
   return !ancestor || !ancestor->Parent() ||
          (ancestor->HasLayer() && IsA<LayoutView>(ancestor->Parent())) ||
-         HasEditableStyle(*ancestor->NonPseudoNode()) ==
-             HasEditableStyle(*child.NonPseudoNode());
+         IsEditable(*ancestor->NonPseudoNode()) ==
+             IsEditable(*child.NonPseudoNode());
 }
 
 // FIXME: This function should go on LayoutObject.
@@ -2310,6 +2275,9 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     case EDisplay::kFlowRoot:
       new_display = EDisplay::kFlowRoot;
       break;
+    case EDisplay::kBlockMath:
+      new_display = EDisplay::kBlockMath;
+      break;
     default:
       new_display = EDisplay::kBlock;
       break;
@@ -2328,6 +2296,9 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
                                                           *new_style, legacy);
   } else if (new_display == EDisplay::kGrid) {
     layout_block = LayoutObjectFactory::CreateGrid(parent->GetDocument(),
+                                                   *new_style, legacy);
+  } else if (new_display == EDisplay::kBlockMath) {
+    layout_block = LayoutObjectFactory::CreateMath(parent->GetDocument(),
                                                    *new_style, legacy);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||

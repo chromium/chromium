@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("send_tab_to_self") {
   sources = [
     "entry_point_display_reason.cc",
     "entry_point_display_reason.h",
-    "features.cc",
     "features.h",
     "metrics_util.cc",
     "metrics_util.h",
@@ -55,6 +58,21 @@ static_library("send_tab_to_self") {
   }
 }
 
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "entry_point_display_reason.h" ]
+  }
+
+  android_library("send_tab_to_self_java") {
+    srcjar_deps = [ ":java_enum_srcjar" ]
+
+    # Important: the generated enum uses the @IntDef annotation provided by
+    # this dependency.
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -71,7 +89,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "entry_point_display_reason_unittest.cc",
-    "features_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",

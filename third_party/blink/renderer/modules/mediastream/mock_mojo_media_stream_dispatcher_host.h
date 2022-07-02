@@ -30,12 +30,12 @@ class MockMojoMediaStreamDispatcherHost
   mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
   CreatePendingRemoteAndBind();
 
-  void GenerateStream(
+  void GenerateStreams(
       int32_t request_id,
       const StreamControls& controls,
       bool user_gesture,
       mojom::blink::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-      GenerateStreamCallback callback) override;
+      GenerateStreamsCallback callback) override;
   void CancelRequest(int32_t request_id) override;
   void StopStreamDevice(
       const WTF::String& device_id,
@@ -84,7 +84,7 @@ class MockMojoMediaStreamDispatcherHost
   base::UnguessableToken session_id_ = base::UnguessableToken::Create();
   bool do_not_run_cb_ = false;
   blink::mojom::blink::StreamDevices stream_devices_;
-  GenerateStreamCallback generate_stream_cb_;
+  GenerateStreamsCallback generate_stream_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
 };
 

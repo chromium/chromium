@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -33,7 +33,6 @@
 
 namespace ash {
 class LoginDisplayHostMojo;
-class UserContext;
 
 namespace mojom {
 enum class TrayActionState;
@@ -48,11 +47,6 @@ class GaiaScreenHandler;
 class SigninScreenHandlerDelegate {
  public:
   // --------------- Sign in/out methods.
-  // Sign in using username and password specified as a part of `user_context`.
-  // Used for both known and new users.
-  virtual void Login(const UserContext& user_context,
-                     const SigninSpecifics& specifics) = 0;
-
   // Returns true if sign in is in progress.
   virtual bool IsSigninInProgress() const = 0;
 
@@ -109,8 +103,6 @@ class SigninScreenHandler
   friend class ReportDnsCacheClearedOnUIThread;
 
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
-  void SetupAndShowOfflineMessage(NetworkStateInformer::State state,
-                                  NetworkError::ErrorReason reason);
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
   void ReloadGaia(bool force_reload);
@@ -128,9 +120,6 @@ class SigninScreenHandler
                const content::NotificationDetails& details) override;
 
   // WebUI message handlers.
-  void HandleLaunchIncognito();
-  void HandleOfflineLogin();
-
   void HandleShowLoadingTimeoutError();
 
   // Returns true if current visible screen is the Gaia sign-in page.
@@ -140,16 +129,16 @@ class SigninScreenHandler
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
 
-  // Returns true if current screen is the error screen over signin
-  // screen.
-  bool IsSigninScreenHiddenByError();
-
   net::Error FrameError() const;
 
 
   // After proxy auth information has been supplied, this function re-enables
   // responding to network state notifications.
   void ReenableNetworkStateUpdatesAfterProxyAuth();
+
+  // Error screen hide callback which records error screen metrics and shows
+  // GAIA.
+  void OnErrorScreenHide();
 
   // A delegate that glues this handler with backend LoginDisplay.
   SigninScreenHandlerDelegate* delegate_ = nullptr;

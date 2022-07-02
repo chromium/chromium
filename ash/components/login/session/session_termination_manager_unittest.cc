@@ -4,9 +4,9 @@
 
 #include "ash/components/login/session/session_termination_manager.h"
 
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

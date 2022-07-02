@@ -22,6 +22,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -73,6 +74,10 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
         mSecondaryButton.setOnClickListener((View v) -> { handleSecondaryButtonClick(); });
+        // Elevation does not work on low end device.
+        if (SysUtils.isLowEndDevice()) {
+            setBackgroundResource(R.drawable.popup_bg);
+        }
     }
 
     void setTitle(String title) {

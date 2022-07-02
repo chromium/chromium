@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -68,6 +69,14 @@ class ZWPTextInputWrapperClient {
                                   uint32_t length,
                                   const std::vector<SpanStyle>& spans) = 0;
 
+  // Called when client needs to clear all grammar fragments in |range|. All
+  // indices are measured in UTF-8 bytes.
+  virtual void OnClearGrammarFragments(const gfx::Range& range) = 0;
+
+  // Called when client requests to add a new grammar marker. All indices are
+  // measured in UTF-8 bytes.
+  virtual void OnAddGrammarFragment(const ui::GrammarFragment& fragment) = 0;
+
   // Called when the visibility state of the input panel changed.
   // There's no detailed spec of |state|, and no actual implementor except
   // components/exo is found in the world at this moment.
@@ -107,6 +116,9 @@ class ZWPTextInputWrapper {
                               ui::TextInputMode mode,
                               uint32_t flags,
                               bool should_do_learning) = 0;
+
+  virtual void SetGrammarFragmentAtCursor(
+      const ui::GrammarFragment& fragment) = 0;
 };
 
 }  // namespace ui

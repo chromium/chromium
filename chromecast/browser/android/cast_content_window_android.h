@@ -36,7 +36,6 @@ class CastContentWindowAndroid : public CastContentWindow {
   void RequestVisibility(VisibilityPriority visibility_priority) override;
   void SetActivityContext(base::Value activity_context) override;
   void SetHostContext(base::Value host_context) override;
-  void NotifyVisibilityChange(VisibilityType visibility_type) override;
   void RequestMoveOut() override;
 
   // Called through JNI.

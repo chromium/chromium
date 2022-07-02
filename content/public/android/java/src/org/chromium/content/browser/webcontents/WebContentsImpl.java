@@ -712,13 +712,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 ports);
     }
 
-    @Deprecated
-    @Override
-    public void postMessageToMainFrame(final String message, final String sourceOrigin,
-            final String targetOrigin, @Nullable final MessagePort[] ports) {
-        postMessageToMainFrame(new MessagePayload(message), sourceOrigin, targetOrigin, ports);
-    }
-
     @Override
     public AppWebMessagePort[] createMessageChannel()
             throws IllegalStateException {

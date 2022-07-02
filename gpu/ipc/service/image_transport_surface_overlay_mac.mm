@@ -33,6 +33,7 @@
 namespace gpu {
 
 namespace {
+
 // Control use of AVFoundation to draw video content.
 base::Feature kAVFoundationOverlays{"avfoundation-overlays",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -103,8 +104,6 @@ void ImageTransportSurfaceOverlayMac::BufferPresented(
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(feedback);
-  if (delegate_)
-    delegate_->BufferPresented(feedback);
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
@@ -139,61 +138,37 @@ gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
-  // Populate the swap-complete parameters to send to the browser.
-  SwapBuffersCompleteParams params;
+  // Populate the CA layer parameters to send to the browser.
+  gfx::CALayerParams params;
   {
     TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
                          "GLImpl", static_cast<int>(gl::GetGLImplementation()),
                          "width", pixel_size_.width());
     if (use_remote_layer_api_) {
-      params.ca_layer_params.ca_context_id = [ca_context_ contextId];
+      params.ca_context_id = [ca_context_ contextId];
     } else {
       IOSurfaceRef io_surface =
           ca_layer_tree_coordinator_->GetIOSurfaceForDisplay();
       if (io_surface) {
-        params.ca_layer_params.io_surface_mach_port.reset(
-            IOSurfaceCreateMachPort(io_surface));
+        params.io_surface_mach_port.reset(IOSurfaceCreateMachPort(io_surface));
       }
     }
-    params.ca_layer_params.pixel_size = pixel_size_;
-    params.ca_layer_params.scale_factor = scale_factor_;
-    params.ca_layer_params.is_empty = false;
-    params.swap_response.swap_id = 0;  // Set later, in DecoderClient.
-    params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-    // TODO(brianderson): Tie swap_start to before_flush_time.
-    params.swap_response.timings.swap_start = before_transaction_time;
-    params.swap_response.timings.swap_end = before_transaction_time;
-    for (auto& query : ca_layer_in_use_queries_) {
-      gpu::TextureInUseResponse response;
-      response.texture = query.texture;
-      bool in_use = false;
-      gl::GLImageIOSurface* io_surface_image =
-          gl::GLImageIOSurface::FromGLImage(query.image.get());
-      if (io_surface_image)
-        in_use = io_surface_image->IsInUseByWindowServer();
-      response.in_use = in_use;
-      params.texture_in_use_responses.push_back(std::move(response));
-    }
-    ca_layer_in_use_queries_.clear();
+    params.pixel_size = pixel_size_;
+    params.scale_factor = scale_factor_;
+    params.is_empty = false;
   }
 
   // Send the swap parameters to the browser.
   if (completion_callback) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(completion_callback),
-            gfx::SwapCompletionResult(
-                gfx::SwapResult::SWAP_ACK,
-                std::make_unique<gfx::CALayerParams>(params.ca_layer_params))));
+        base::BindOnce(std::move(completion_callback),
+                       gfx::SwapCompletionResult(
+                           gfx::SwapResult::SWAP_ACK,
+                           std::make_unique<gfx::CALayerParams>(params))));
   }
-  delegate_->DidSwapBuffersComplete(std::move(params),
-                                    /*release_fence=*/gfx::GpuFenceHandle());
-  constexpr int64_t kRefreshIntervalInMicroseconds =
-      base::Time::kMicrosecondsPerSecond / 60;
-  gfx::PresentationFeedback feedback(
-      base::TimeTicks::Now(),
-      base::Microseconds(kRefreshIntervalInMicroseconds), /*flags=*/0);
+  gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
+                                     /*flags=*/0);
   feedback.ca_layer_error_code = ca_layer_error_code_;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -332,11 +307,6 @@ bool ImageTransportSurfaceOverlayMac::ScheduleCALayer(
       ->ScheduleCALayer(params);
 }
 
-void ImageTransportSurfaceOverlayMac::ScheduleCALayerInUseQuery(
-    std::vector<gl::GLSurface::CALayerInUseQuery> queries) {
-  ca_layer_in_use_queries_.swap(queries);
-}
-
 bool ImageTransportSurfaceOverlayMac::IsSurfaceless() const {
   return true;
 }
@@ -453,8 +423,6 @@ void ImageTransportSurfaceOverlayMacEGL::BufferPresented(
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(feedback);
-  if (delegate_)
-    delegate_->BufferPresented(feedback);
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
@@ -489,61 +457,37 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
-  // Populate the swap-complete parameters to send to the browser.
-  SwapBuffersCompleteParams params;
+  // Populate the CA layer parameters to send to the browser.
+  gfx::CALayerParams params;
   {
     TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
                          "GLImpl", static_cast<int>(gl::GetGLImplementation()),
                          "width", pixel_size_.width());
     if (use_remote_layer_api_) {
-      params.ca_layer_params.ca_context_id = [ca_context_ contextId];
+      params.ca_context_id = [ca_context_ contextId];
     } else {
       IOSurfaceRef io_surface =
           ca_layer_tree_coordinator_->GetIOSurfaceForDisplay();
       if (io_surface) {
-        params.ca_layer_params.io_surface_mach_port.reset(
-            IOSurfaceCreateMachPort(io_surface));
+        params.io_surface_mach_port.reset(IOSurfaceCreateMachPort(io_surface));
       }
     }
-    params.ca_layer_params.pixel_size = pixel_size_;
-    params.ca_layer_params.scale_factor = scale_factor_;
-    params.ca_layer_params.is_empty = false;
-    params.swap_response.swap_id = 0;  // Set later, in DecoderClient.
-    params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-    // TODO(brianderson): Tie swap_start to before_flush_time.
-    params.swap_response.timings.swap_start = before_transaction_time;
-    params.swap_response.timings.swap_end = before_transaction_time;
-    for (auto& query : ca_layer_in_use_queries_) {
-      gpu::TextureInUseResponse response;
-      response.texture = query.texture;
-      bool in_use = false;
-      gl::GLImageIOSurface* io_surface_image =
-          gl::GLImageIOSurface::FromGLImage(query.image.get());
-      if (io_surface_image)
-        in_use = io_surface_image->IsInUseByWindowServer();
-      response.in_use = in_use;
-      params.texture_in_use_responses.push_back(std::move(response));
-    }
-    ca_layer_in_use_queries_.clear();
+    params.pixel_size = pixel_size_;
+    params.scale_factor = scale_factor_;
+    params.is_empty = false;
   }
 
   // Send the swap parameters to the browser.
   if (completion_callback) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(completion_callback),
-            gfx::SwapCompletionResult(
-                gfx::SwapResult::SWAP_ACK,
-                std::make_unique<gfx::CALayerParams>(params.ca_layer_params))));
+        base::BindOnce(std::move(completion_callback),
+                       gfx::SwapCompletionResult(
+                           gfx::SwapResult::SWAP_ACK,
+                           std::make_unique<gfx::CALayerParams>(params))));
   }
-  delegate_->DidSwapBuffersComplete(std::move(params),
-                                    /*release_fence=*/gfx::GpuFenceHandle());
-  constexpr int64_t kRefreshIntervalInMicroseconds =
-      base::Time::kMicrosecondsPerSecond / 60;
-  gfx::PresentationFeedback feedback(
-      base::TimeTicks::Now(),
-      base::Microseconds(kRefreshIntervalInMicroseconds), /*flags=*/0);
+  gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
+                                     /*flags=*/0);
   feedback.ca_layer_error_code = ca_layer_error_code_;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -680,11 +624,6 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleCALayer(
   }
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(params);
-}
-
-void ImageTransportSurfaceOverlayMacEGL::ScheduleCALayerInUseQuery(
-    std::vector<gl::GLSurface::CALayerInUseQuery> queries) {
-  ca_layer_in_use_queries_.swap(queries);
 }
 
 bool ImageTransportSurfaceOverlayMacEGL::IsSurfaceless() const {

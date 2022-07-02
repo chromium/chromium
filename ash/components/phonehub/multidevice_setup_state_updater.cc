@@ -37,6 +37,10 @@ MultideviceSetupStateUpdater::MultideviceSetupStateUpdater(
       multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   multidevice_setup_client_->AddObserver(this);
   multidevice_feature_access_manager_->AddObserver(this);
+  notification_access_status_ =
+      multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  camera_roll_access_status_ =
+      multidevice_feature_access_manager_->GetCameraRollAccessStatus();
 }
 
 MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
@@ -45,9 +49,21 @@ MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
 }
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
-  switch (multidevice_feature_access_manager_->GetNotificationAccessStatus()) {
+  MultideviceFeatureAccessManager::AccessStatus pervious_access_status =
+      notification_access_status_;
+  notification_access_status_ =
+      multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  switch (notification_access_status_) {
     case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
-      if (IsWaitingForAccessToInitiallyEnableNotifications()) {
+      if (IsPhoneHubEnabled() &&
+          pervious_access_status == MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling PhoneHubNotifications when access is changed "
+                        "from kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubNotifications, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableNotifications()) {
         PA_LOG(INFO) << "Enabling PhoneHubNotifications for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
@@ -70,9 +86,23 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
 }
 
 void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
-  switch (multidevice_feature_access_manager_->GetCameraRollAccessStatus()) {
+  MultideviceFeatureAccessManager::AccessStatus pervious_access_status =
+      camera_roll_access_status_;
+  camera_roll_access_status_ =
+      multidevice_feature_access_manager_->GetCameraRollAccessStatus();
+  switch (camera_roll_access_status_) {
     case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
-      if (IsWaitingForAccessToInitiallyEnableCameraRoll()) {
+      if (IsPhoneHubEnabled() &&
+          pervious_access_status == MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling PhoneHubCameraRoll when access is changed "
+                        "from kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubCameraRoll, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableCameraRoll()) {
+        PA_LOG(INFO) << "Enabling PhoneHubCameraRoll for the first time now "
+                     << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubCameraRoll, /*enabled=*/true,
             /*auth_token=*/absl::nullopt, base::DoNothing());
@@ -82,6 +112,9 @@ void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
     case MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted:
       [[fallthrough]];
     case MultideviceFeatureAccessManager::AccessStatus::kProhibited:
+      // Disable kPhoneHubCameraRoll if camera roll access has been revoked
+      // by the phone.
+      PA_LOG(INFO) << "Disabling PhoneHubCameraRoll feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubCameraRoll, /*enabled=*/false,
           /*auth_token=*/absl::nullopt, base::DoNothing());
@@ -109,10 +142,9 @@ bool MultideviceSetupStateUpdater::
   //   2. the phone has granted access.
   // We do *not* want to automatically enable the feature unless the opt-in flow
   // was triggered from this device
-  return multidevice_setup::IsDefaultFeatureEnabledValue(
-             Feature::kPhoneHubNotifications, pref_service_) &&
-         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
-             FeatureState::kEnabledByUser;
+  return IsPhoneHubEnabled() &&
+         multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubNotifications, pref_service_);
 }
 
 bool MultideviceSetupStateUpdater::
@@ -123,10 +155,14 @@ bool MultideviceSetupStateUpdater::
   //   2. the phone has granted access.
   // We do *not* want to automatically enable the feature unless the opt-in flow
   // was triggered from this device
-  return multidevice_setup::IsDefaultFeatureEnabledValue(
-             Feature::kPhoneHubCameraRoll, pref_service_) &&
-         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
-             FeatureState::kEnabledByUser;
+  return IsPhoneHubEnabled() &&
+         multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubCameraRoll, pref_service_);
+}
+
+bool MultideviceSetupStateUpdater::IsPhoneHubEnabled() const {
+  return multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+         FeatureState::kEnabledByUser;
 }
 
 void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {

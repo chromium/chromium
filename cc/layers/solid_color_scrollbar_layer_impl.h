@@ -52,7 +52,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int thumb_thickness_;
   int track_start_;
-  SkColor color_;
+  SkColor4f color_;
 };
 
 }  // namespace cc

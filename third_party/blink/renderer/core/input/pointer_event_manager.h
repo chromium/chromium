@@ -113,6 +113,8 @@ class CORE_EXPORT PointerEventManager final
   int GetPointerEventId(
       const WebPointerProperties& web_pointer_properties) const;
 
+  Element* CurrentTouchDownElement();
+
  private:
   class EventTargetAttributes : public GarbageCollected<EventTargetAttributes> {
    public:

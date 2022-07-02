@@ -36,8 +36,7 @@
 #define IFA_F_HOMEADDRESS 0x10
 #endif
 
-namespace net {
-namespace internal {
+namespace net::internal {
 namespace {
 
 const int kTestInterfaceEth = 1;
@@ -672,7 +671,7 @@ TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
 
   for (int i = 0; i < 10; i++) {
     char buf[IFNAMSIZ] = {0};
-    EXPECT_NE((const char*)NULL, original_get_interface_name_(i, buf));
+    EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
   }
 }
 
@@ -939,5 +938,4 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal

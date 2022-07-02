@@ -92,13 +92,8 @@ PacFileDecider::PacFileDecider(PacFileFetcher* pac_file_fetcher,
                                NetLog* net_log)
     : pac_file_fetcher_(pac_file_fetcher),
       dhcp_pac_file_fetcher_(dhcp_pac_file_fetcher),
-      current_pac_source_index_(0u),
-      pac_mandatory_(false),
-      next_state_(STATE_NONE),
-      net_log_(
-          NetLogWithSource::Make(net_log, NetLogSourceType::PAC_FILE_DECIDER)),
-      fetch_pac_bytes_(false),
-      quick_check_enabled_(true) {}
+      net_log_(NetLogWithSource::Make(net_log,
+                                      NetLogSourceType::PAC_FILE_DECIDER)) {}
 
 PacFileDecider::~PacFileDecider() {
   if (next_state_ != STATE_NONE)

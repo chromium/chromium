@@ -41,11 +41,7 @@ class PrioritizedDispatcherTest : public testing::Test {
             char tag,
             Priority priority,
             std::string* log)
-        : dispatcher_(dispatcher),
-          tag_(tag),
-          priority_(priority),
-          running_(false),
-          log_(log) {}
+        : dispatcher_(dispatcher), tag_(tag), priority_(priority), log_(log) {}
 
     bool running() const {
       return running_;
@@ -134,7 +130,7 @@ class PrioritizedDispatcherTest : public testing::Test {
     Priority priority_;
 
     PrioritizedDispatcher::Handle handle_;
-    bool running_;
+    bool running_ = false;
 
     raw_ptr<std::string> log_;
   };

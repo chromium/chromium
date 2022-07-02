@@ -47,6 +47,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_visibility_state.h"
+#include "media/base/media_switches.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,6 +121,8 @@ display::ScreenInfo RenderWidgetHostViewMac::GetCurrentScreenInfo() const {
 
 void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
     float device_scale_factor) {
+  // TODO(https://crbug.com/1337094): does this need to be upscaled by
+  // scale_override_for_capture_ for HiDPI capture mode?
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
 
@@ -205,6 +208,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   auto* screen = display::Screen::GetScreen();
   screen_infos_ = screen->GetScreenInfosNearestDisplay(
       screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
+  original_screen_infos_ = screen_infos_;
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
@@ -469,16 +473,10 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
 
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
-  DelegatedFrameHost* delegated_frame_host =
-      browser_compositor_->GetDelegatedFrameHost();
-  DCHECK(delegated_frame_host);
-  const bool record_presentation_time = has_saved_frame;
-  delegated_frame_host->WasShown(
-      browser_compositor_->GetRendererLocalSurfaceId(),
-      browser_compositor_->GetRendererSize(),
-      record_presentation_time
-          ? std::move(tab_switch_start_state)
-          : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  if (has_saved_frame && tab_switch_start_state) {
+    browser_compositor_->RequestPresentationTimeForNextFrame(
+        std::move(tab_switch_start_state));
+  }
 }
 
 void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
@@ -491,8 +489,8 @@ void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
   if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
-    browser_compositor_->GetDelegatedFrameHost()
-        ->RequestPresentationTimeForNextFrame(std::move(visible_time_request));
+    browser_compositor_->RequestPresentationTimeForNextFrame(
+        std::move(visible_time_request));
   } else {
     host()->RequestPresentationTimeForNextFrame(
         std::move(visible_time_request));
@@ -711,10 +709,11 @@ void RenderWidgetHostViewMac::OnGestureEvent(
 
 void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   last_frame_root_background_color_ = host()
                                           ->render_frame_metadata_provider()
                                           ->LastRenderFrameMetadata()
-                                          .root_background_color;
+                                          .root_background_color.toSkColor();
 }
 
 void RenderWidgetHostViewMac::RenderProcessGone() {
@@ -800,8 +799,36 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
     any_display_changed = new_screen_infos_from_shim_.value() != screen_infos_;
 
     screen_infos_ = new_screen_infos_from_shim_.value();
+    original_screen_infos_ = screen_infos_;
     new_screen_infos_from_shim_.reset();
   }
+
+  if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi)) {
+    // If HiDPI capture mode is active, adjust the device scale factor to
+    // increase the rendered pixel count. |new_screen_infos| always contains
+    // the unmodified original values for the display, and a copy of it is
+    // saved in |screen_infos_|, with a modification applied if applicable.
+    // When HiDPI mode is turned off (the scale override is 1.0), the original
+    // |new_screen_infos| value gets copied unchanged to |screen_infos_|.
+    display::ScreenInfos new_screen_infos = original_screen_infos_;
+    const float old_device_scale_factor =
+        new_screen_infos.current().device_scale_factor;
+    // On MacOS, device_scale_factor needs to be an integer value, so
+    // we need to round the final scale to the nearest whole number.
+    new_screen_infos.mutable_current().device_scale_factor =
+        std::round(old_device_scale_factor * scale_override_for_capture_);
+    if (screen_infos_ != new_screen_infos) {
+      DVLOG(1) << __func__ << ": Overriding device_scale_factor from "
+               << old_device_scale_factor << " to "
+               << new_screen_infos.current().device_scale_factor
+               << " for capture.";
+      any_display_changed = true;
+      current_display_changed |=
+          new_screen_infos.current() != screen_infos_.current();
+      screen_infos_ = new_screen_infos;
+    }
+  }
+
   bool dip_size_changed = view_bounds_in_window_dip_.size() !=
                           browser_compositor_->GetRendererSize();
 

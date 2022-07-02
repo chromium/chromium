@@ -170,7 +170,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   mojom::GpuChannel& GetGpuChannelForTesting();
 
-  ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStub() const;
+  ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStubForTesting() const;
 
 #if BUILDFLAG(IS_ANDROID)
   const CommandBufferStub* GetOneStub() const;

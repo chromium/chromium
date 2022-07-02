@@ -25,7 +25,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
@@ -51,10 +50,6 @@
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/common/android/cpu_affinity_setter.h"
-#endif
-
 namespace {
 
 void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
@@ -77,7 +72,7 @@ void SetV8FlagIfHasSwitch(const char* switch_name, const char* v8_flag) {
 
 std::unique_ptr<base::ThreadPoolInstance::InitParams>
 GetThreadPoolInitParams() {
-  constexpr int kMaxNumThreadsInForegroundPoolLowerBound = 3;
+  constexpr size_t kMaxNumThreadsInForegroundPoolLowerBound = 3;
   return std::make_unique<base::ThreadPoolInstance::InitParams>(
       std::max(kMaxNumThreadsInForegroundPoolLowerBound,
                content::GetMinForegroundThreadsInRendererThreadPool()));
@@ -97,7 +92,7 @@ void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
 namespace content {
 
 RenderProcessImpl::RenderProcessImpl()
-    : RenderProcess("Renderer", GetThreadPoolInitParams()) {
+    : RenderProcess(GetThreadPoolInitParams()) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
 #if defined(DCHECK_IS_CONFIGURABLE)
@@ -151,6 +146,13 @@ RenderProcessImpl::RenderProcessImpl()
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
+#if defined(ARCH_CPU_X86_64)
+  SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
+                     "--experimental-wasm-type-reflection");
+  SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
+                     "--experimental-wasm-stack-switching");
+#endif  // defined(ARCH_CPU_X86_64)
+
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
                      "--wasm-lazy-compilation");
   SetV8FlagIfNotFeature(features::kWebAssemblyLazyCompilation,
@@ -169,13 +171,7 @@ RenderProcessImpl::RenderProcessImpl()
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingRenderMainBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
-#else
+#if !BUILDFLAG(IS_ANDROID)
   // Bypass the SAB restriction for the Finch "kill switch".
   enable_shared_array_buffer_unconditionally =
       enable_shared_array_buffer_unconditionally ||
@@ -225,6 +221,8 @@ RenderProcessImpl::RenderProcessImpl()
                      "--wasm-dynamic-tiering");
   SetV8FlagIfNotFeature(features::kWebAssemblyDynamicTiering,
                         "--no-wasm-dynamic-tiering");
+
+  v8::V8::SetFlagsFromString("--freeze-flags-after-init");
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {

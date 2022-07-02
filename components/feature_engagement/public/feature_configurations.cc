@@ -214,6 +214,23 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(LESS_THAN, 1), 1, 360));
     return config;
   }
+  if (kIPHContextualPageActionsPriceTrackingFeature.name == feature->name) {
+    // A config that allows the Price Tracking IPH to be shown:
+    // * Once per day. 3 times max in 90 days
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("contextual_page_actions_price_tracking_iph_trigger",
+                    Comparator(LESS_THAN, 1), 1, 360);
+    config->used = EventConfig("contextual_page_actions_price_tracking_used",
+                               Comparator(EQUAL, 0), 90, 360);
+    config->event_configs.insert(
+        EventConfig("contextual_page_actions_price_tracking_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360));
+    return config;
+  }
   if (kIPHAddToHomescreenMessageFeature.name == feature->name) {
     // A config that allows the Add to homescreen message IPH to be shown:
     // * Once per 15 days
@@ -228,23 +245,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 90, 90);
     config->event_configs.insert(EventConfig(
         "add_to_homescreen_message_iph_trigger", Comparator(EQUAL, 0), 15, 90));
-    return config;
-  }
-  if (kIPHAddToHomescreenTextBubbleFeature.name == feature->name) {
-    // A config that allows the Add to homescreen text bubble IPH to be shown:
-    // * Once per 15 days
-    // * Up to 2 times but only if unused in the last 15 days.
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->trigger = EventConfig("add_to_homescreen_text_bubble_iph_trigger",
-                                  Comparator(LESS_THAN, 2), 90, 90);
-    config->used = EventConfig("add_to_homescreen_dialog_shown",
-                               Comparator(EQUAL, 0), 90, 90);
-    config->event_configs.insert(
-        EventConfig("add_to_homescreen_text_bubble_iph_trigger",
-                    Comparator(EQUAL, 0), 15, 90));
     return config;
   }
 
@@ -460,6 +460,29 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     k10YearsInDays, k10YearsInDays);
     return config;
   }
+
+  if (kIPHWebFeedAwarenessFeature.name == feature->name) {
+    // A config that allows the web feed IPH to be shown up to three times
+    // total, no more than once per session.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+
+    config->session_rate = Comparator(LESS_THAN, 1);
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::ALL;
+    config->session_rate_impact = session_rate_impact;
+
+    // Keep the IPH trigger event for 10 years, which is a relatively long time
+    // period that we could consider as being "forever".
+    config->trigger =
+        EventConfig("iph_web_feed_awareness_triggered",
+                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
+    config->used = EventConfig("web_feed_awareness_used", Comparator(ANY, 0),
+                               k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHFeedSwipeRefresh.name == feature->name) {
     // A config that allows the feed swipe refresh message IPH to be shown:
     // * Once per 15 days
@@ -655,28 +678,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
 
-    return config;
-  }
-
-  if (kIPHStartSurfaceTabSwitcherHomeButton.name == feature->name) {
-    // A config that allows the StartSurfaceTabSwitcherHomeButton IPH to be
-    // shown:
-    // * Once per day
-    // * Up to 7 times but only if the home button is not clicked when IPH is
-    // showing.
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->trigger =
-        EventConfig("start_surface_tab_switcher_home_button_iph_trigger",
-                    Comparator(LESS_THAN, 7), k10YearsInDays, k10YearsInDays);
-    config->used =
-        EventConfig("start_surface_tab_switcher_home_button_clicked",
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
-    config->event_configs.insert(
-        EventConfig("start_surface_tab_switcher_home_button_iph_trigger",
-                    Comparator(EQUAL, 0), 1, 360));
     return config;
   }
 

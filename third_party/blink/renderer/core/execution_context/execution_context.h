@@ -168,6 +168,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsThreadedWorkletGlobalScope() const { return false; }
   virtual bool IsJSExecutionForbidden() const { return false; }
 
+  // TODO(crbug.com/1335924) Change this method to be pure-virtual and each
+  // derivative explicitly override it.
+  virtual bool IsInFencedFrame() const { return false; }
+
   virtual bool IsContextThread() const { return true; }
 
   virtual bool ShouldInstallV8Extensions() const { return false; }
@@ -312,6 +316,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
+  const PolicyContainer* GetPolicyContainer() const {
+    return policy_container_.get();
+  }
   void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
   std::unique_ptr<PolicyContainer> TakePolicyContainer();
 
@@ -398,8 +405,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Reports first usage of `navigator.userAgent` and related getters
   void ReportNavigatorUserAgentAccess();
 
-  virtual ukm::UkmRecorder* UkmRecorder() { return nullptr; }
-  virtual ukm::SourceId UkmSourceID() const { return ukm::kInvalidSourceId; }
+  virtual ukm::UkmRecorder* UkmRecorder() = 0;
+  virtual ukm::SourceId UkmSourceID() const = 0;
 
   // Returns the token that uniquely identifies this ExecutionContext.
   virtual ExecutionContextToken GetExecutionContextToken() const = 0;

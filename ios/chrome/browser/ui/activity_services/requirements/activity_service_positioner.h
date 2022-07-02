@@ -22,8 +22,8 @@
 @optional
 
 // Returns the bar button item where the UIActivityViewController should be
-// presented from. If a non null value is returned, |sourceView| and
-// |sourceRect| are not used.
+// presented from. If a non null value is returned, `sourceView` and
+// `sourceRect` are not used.
 - (UIBarButtonItem*)barButtonItem;
 
 @end

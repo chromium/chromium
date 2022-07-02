@@ -169,7 +169,6 @@ void ExtractUnderlines(NSAttributedString* string,
   bool _keyboardLockActive;
   absl::optional<base::flat_set<ui::DomCode>> _lockedKeys;
 
-  API_AVAILABLE(macos(10.12.2))
   base::scoped_nsobject<NSCandidateListTouchBarItem> _candidateListTouchBarItem;
   NSInteger _textSuggestionsSequenceNumber;
   BOOL _shouldRequestTextSubstitutions;
@@ -192,18 +191,16 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)windowDidResignKey:(NSNotification*)notification;
 - (void)sendViewBoundsInWindowToHost;
 - (void)requestTextSubstitutions;
-- (void)requestTextSuggestions API_AVAILABLE(macos(10.12.2));
+- (void)requestTextSuggestions;
 - (void)sendWindowFrameInScreenToHost;
 - (bool)hostIsDisconnected;
-- (void)invalidateTouchBar API_AVAILABLE(macos(10.12.2));
+- (void)invalidateTouchBar;
 
 // NSCandidateListTouchBarItemDelegate implementation
 - (void)candidateListTouchBarItem:(NSCandidateListTouchBarItem*)anItem
-     endSelectingCandidateAtIndex:(NSInteger)index
-    API_AVAILABLE(macos(10.12.2));
+     endSelectingCandidateAtIndex:(NSInteger)index;
 - (void)candidateListTouchBarItem:(NSCandidateListTouchBarItem*)anItem
-    changedCandidateListVisibility:(BOOL)isVisible
-    API_AVAILABLE(macos(10.12.2));
+    changedCandidateListVisibility:(BOOL)isVisible;
 @end
 
 @implementation RenderWidgetHostViewCocoa
@@ -220,7 +217,7 @@ void ExtractUnderlines(NSAttributedString* string,
               withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
   self = [super initWithFrame:NSZeroRect];
   if (self) {
-    self.acceptsTouchEvents = YES;
+    self.allowedTouchTypes |= NSTouchTypeMaskDirect;
     _editCommandHelper =
         std::make_unique<RenderWidgetHostViewMacEditCommandHelper>();
 
@@ -363,13 +360,11 @@ void ExtractUnderlines(NSAttributedString* string,
       trailingRange.location < NSMaxRange(availableTextRange)) {
     NSRange trailingRangeInAvailableText = NSMakeRange(
         trailingRange.location - _availableTextOffset, trailingRange.length);
-    if (@available(macOS 10.12, *)) {
-      NSString* trailingString =
-          [attString.string substringWithRange:trailingRangeInAvailableText];
-      if ([self.spellChecker preventsAutocorrectionBeforeString:trailingString
-                                                       language:nil])
-        return;
-    }
+    NSString* trailingString =
+        [attString.string substringWithRange:trailingRangeInAvailableText];
+    if ([self.spellChecker preventsAutocorrectionBeforeString:trailingString
+                                                     language:nil])
+      return;
     if ([attString doubleClickAtIndex:trailingRangeInAvailableText.location]
             .location < trailingRangeInAvailableText.location)
       return;
@@ -496,8 +491,7 @@ void ExtractUnderlines(NSAttributedString* string,
     _shouldRequestTextSubstitutions = NO;
     [self requestTextSubstitutions];
   }
-  if (@available(macOS 10.12.2, *))
-    [self requestTextSuggestions];
+  [self requestTextSuggestions];
 }
 
 - (void)candidateListTouchBarItem:(NSCandidateListTouchBarItem*)anItem
@@ -523,8 +517,7 @@ void ExtractUnderlines(NSAttributedString* string,
     return;
   _textInputType = textInputType;
 
-  if (@available(macOS 10.12.2, *))
-    [self invalidateTouchBar];
+  [self invalidateTouchBar];
 }
 
 - (std::u16string)selectedText {
@@ -558,10 +551,8 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (void)resetCursorRects {
-  if (_currentCursor) {
+  if (_currentCursor)
     [self addCursorRect:[self visibleRect] cursor:_currentCursor];
-    [_currentCursor setOnMouseEntered:YES];
-  }
 }
 
 - (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
@@ -1035,6 +1026,19 @@ void ExtractUnderlines(NSAttributedString* string,
   // down event.
   _handlingKeyDown = YES;
 
+  // This is to handle an edge case for the "Live Conversion" feature in default
+  // Japanese IME. When the feature is on, pressing the left key at the
+  // composition boundary will reconvert previously committed text. The text
+  // input system will call setMarkedText multiple times to end the current
+  // composition and start a new one. In this case we'll need to call
+  // ImeSetComposition in setMarkedText instead of here in keyEvent:, otherwise,
+  // only the last setMarkedText will be processed.
+  ui::DomCode domCode = ui::KeycodeConverter::NativeKeycodeToDomCode(keyCode);
+  _isReconversionTriggered =
+      _hasMarkedText && domCode == ui::DomCode::ARROW_LEFT &&
+      _markedTextSelectedRange.location == 0 && _markedRange.location != 0 &&
+      _markedRange.location != NSNotFound;
+
   // These variables might be set when handling the keyboard event.
   // Clear them here so that we can know whether they have changed afterwards.
   _textToBeInserted.clear();
@@ -1117,10 +1121,12 @@ void ExtractUnderlines(NSAttributedString* string,
     // composition node in WebKit.
     // When marked text is available, |markedTextSelectedRange_| will be the
     // range being selected inside the marked text.
-    _host->ImeSetComposition(_markedText, _ime_text_spans,
-                             _setMarkedTextReplacementRange,
-                             _markedTextSelectedRange.location,
-                             NSMaxRange(_markedTextSelectedRange));
+    if (!_isReconversionTriggered) {
+      _host->ImeSetComposition(_markedText, _ime_text_spans,
+                               _setMarkedTextReplacementRange,
+                               _markedTextSelectedRange.location,
+                               NSMaxRange(_markedTextSelectedRange));
+    }
   } else if (oldHasMarkedText && !_hasMarkedText && !textInserted) {
     if (_unmarkTextCalled) {
       _host->ImeFinishComposingText();
@@ -1128,6 +1134,8 @@ void ExtractUnderlines(NSAttributedString* string,
       _host->ImeCancelCompositionFromCocoa();
     }
   }
+
+  _isReconversionTriggered = NO;
 
   // Clear information from |interpretKeyEvents:|
   _setMarkedTextReplacementRange = gfx::Range::InvalidRange();
@@ -1956,14 +1964,33 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   _markedText = base::SysNSStringToUTF16(im_text);
   _hasMarkedText = (length > 0);
 
-  // Update markedRange assuming blink sets composition text as is.
-  // We need this because the IME checks markedRange before IPC to blink.
-  // If markedRange is not updated, IME won't update the popup window position.
+  // Update markedRange/textSelectionRange assuming blink sets composition text
+  // as is. We need this because the IME checks markedRange/textSelectionRange
+  // before IPC to blink. If markedRange/textSelectionRange is not updated, IME
+  // will behave incorrectly, e.g., wrong popup window position or duplicate
+  // characters.
   if (length > 0) {
+    // If the replacement range is valid, the range should be replaced with the
+    // new text.
     if (replacementRange.location != NSNotFound)
-      _markedRange.location = replacementRange.location;
-    _markedRange.length = [string length];
+      _markedRange = NSMakeRange(replacementRange.location, length);
+    // if no replacement range and no marked range, the current selection should
+    // be replaced.
+    else if (_markedRange.location == NSNotFound)
+      _markedRange = NSMakeRange(_textSelectionRange.start(), length);
+    // if no replacement range and the marked range is valid, the current marked
+    // text should be replaced.
+    else
+      _markedRange.length = length;
+
+    _textSelectionRange =
+        gfx::Range(_markedRange.location + newSelRange.location,
+                   _markedRange.location + NSMaxRange(newSelRange));
   } else {
+    // An empty text means the composition is about to be cancelled,
+    // collapse the selection to the begining of the current marked range.
+    _textSelectionRange =
+        gfx::Range(_markedRange.location, _markedRange.location);
     _markedRange = NSMakeRange(NSNotFound, 0);
   }
 
@@ -1978,14 +2005,14 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
   }
 
-  // If we are handling a key down event, then SetComposition() will be
-  // called in keyEvent: method.
+  // If we are handling a key down event and the reconversion is not triggered,
+  // SetComposition() will be called in keyEvent: method.
   // Input methods of Mac use setMarkedText calls with an empty text to cancel
   // an ongoing composition. So, we should check whether or not the given text
   // is empty to update the input method state. (Our input method backend
   // automatically cancels an ongoing composition when we send an empty text.
   // So, it is OK to send an empty text to the renderer.)
-  if (_handlingKeyDown) {
+  if (_handlingKeyDown && !_isReconversionTriggered) {
     _setMarkedTextReplacementRange = gfx::Range(replacementRange);
   } else {
     _host->ImeSetComposition(_markedText, _ime_text_spans,
@@ -2178,9 +2205,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
+  NSString* const utf8Type = base::mac::CFToNSCast(kUTTypeUTF8PlainText);
+
   id requestor = nil;
-  BOOL sendTypeIsString = [sendType isEqual:NSStringPboardType];
-  BOOL returnTypeIsString = [returnType isEqual:NSStringPboardType];
+  BOOL sendTypeIsString = [sendType isEqualToString:utf8Type];
+  BOOL returnTypeIsString = [returnType isEqualToString:utf8Type];
   BOOL hasText = !_textSelectionRange.is_empty();
   BOOL takesText = _textInputType != ui::TEXT_INPUT_TYPE_NONE;
 
@@ -2289,21 +2318,24 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 @implementation RenderWidgetHostViewCocoa (NSServicesRequests)
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // NB: The NSServicesMenuRequestor protocol has not (as of 10.14) been
+  // NB: The NSServicesMenuRequestor protocol has not (as of macOS 12) been
   // upgraded to request UTIs rather than obsolete PboardType constants. Handle
   // either for when it is upgraded.
-  DCHECK([types containsObject:NSStringPboardType] ||
-         [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]);
-  if (_textSelectionRange.is_empty())
-    return NO;
+  bool wasAbleToWriteAtLeastOneType = false;
 
-  NSString* text = base::SysUTF16ToNSString([self selectedText]);
-  return [pboard writeObjects:@[ text ]];
+  if (([types containsObject:NSStringPboardType] ||
+       [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]) &&
+      !_textSelectionRange.is_empty()) {
+    NSString* text = base::SysUTF16ToNSString([self selectedText]);
+    wasAbleToWriteAtLeastOneType |= [pboard writeObjects:@[ text ]];
+  }
+
+  return wasAbleToWriteAtLeastOneType;
 }
 
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard*)pboard {
-  NSArray* objects =
-      [pboard readObjectsForClasses:@[ [NSString class] ] options:0];
+  NSArray* objects = [pboard readObjectsForClasses:@[ [NSString class] ]
+                                           options:nil];
   if (![objects count])
     return NO;
 

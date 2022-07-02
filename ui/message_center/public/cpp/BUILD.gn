@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 # C++ headers and sources that can be used outside message_center.
 component("cpp") {
   output_name = "ui_message_center_cpp"
@@ -29,4 +31,8 @@ component("cpp") {
     "//ui/strings",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }

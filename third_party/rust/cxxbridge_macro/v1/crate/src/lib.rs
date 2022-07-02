@@ -34,11 +34,12 @@ mod derive;
 mod expand;
 mod generics;
 mod syntax;
+mod tokens;
 mod type_id;
 
-#[cfg(feature = "experimental")]
+#[cfg(feature = "experimental-enum-variants-from-header")]
 mod clang;
-#[cfg(feature = "experimental")]
+#[cfg(feature = "experimental-enum-variants-from-header")]
 mod load;
 
 use crate::syntax::file::Module;

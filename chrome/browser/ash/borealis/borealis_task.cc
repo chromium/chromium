@@ -251,13 +251,13 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   if (external_disk) {
     base::ScopedFD fd(external_disk->TakePlatformFile());
     request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
-    ash::ConciergeClient::Get()->StartTerminaVmWithFd(
+    ash::ConciergeClient::Get()->StartVmWithFd(
         std::move(fd), std::move(request),
         base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                        weak_factory_.GetWeakPtr(), context));
     return;
   }
-  ash::ConciergeClient::Get()->StartTerminaVm(
+  ash::ConciergeClient::Get()->StartVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                                          weak_factory_.GetWeakPtr(), context));
 }

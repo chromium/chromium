@@ -125,6 +125,39 @@ int main() {
 }
 ```
 
+## Constructing a TypedStatus<T>
+There are several ways to create a typed status, depending on what data you'd
+like to encapsulate:
+
+```
+// To create an status with the default OK type, there's a helper function that
+// creates any type you want, so long as it actually has a kOk value or
+|DefaultEnumValue| implementation.
+TypedStatus<MyType> ok = OkStatus();
+
+// A status can be implicitly created from a code
+TypedStatus<MyType> status = MyType::Codes::kMyCode;
+
+// A status can be explicitly created from a code and message, or implicitly
+// created from a brace initializer list of code and message
+TypedStatus<MyType> status(MyType::Codes::kMyCode, "MyMessage");
+TypedStatus<MyType> status = {MyType::Codes::kMyCode, "MyMessage"};
+
+// If |MyType::OnCreateFrom<T>| is implemented, then a status can be created
+// from a {code, T} pack, or a {code, message, T} pack:
+TypedStatus<MyType> status = {MyType::Codes::kMyCode, 667};
+TypedStatus<MyType> status = {MyType::Codes::kMyCode, "MyMessage", 667};
+
+// A status can be created from packs of either {code, TypedStatus<Any>} or
+// {code, message, TypedStatus<Any>} where TypedStatus<Any> will become the
+// status that causes the return. Note that in this example,
+// OtherType::Codes::kOther is itself being implicitly converted from a code
+// to a TypedStatus<OtherType>.
+TypedStatus<MyType> status = {MyType::Codes::kCode, OtherType::Codes::kOther};
+TypedStatus<MyType> status = {MyType::Codes::kCode, "M", OtherType::Codes::kOther};
+```
+
+
 
 ## TypedStatus<T>::Or<D>
 

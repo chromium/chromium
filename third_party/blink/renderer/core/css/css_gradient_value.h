@@ -184,6 +184,7 @@ class CSSLinearGradientValue final : public CSSGradientValue {
                                            bool allow_visited_style) const;
 
   bool IsUsingCurrentColor() const;
+  bool IsUsingContainerRelativeUnits() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -284,6 +285,7 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
                                            bool allow_visited_style) const;
 
   bool IsUsingCurrentColor() const;
+  bool IsUsingContainerRelativeUnits() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -332,6 +334,7 @@ class CSSConicGradientValue final : public CSSGradientValue {
                                           bool allow_visited_style) const;
 
   bool IsUsingCurrentColor() const;
+  bool IsUsingContainerRelativeUnits() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

@@ -520,7 +520,7 @@ class CC_PAINT_EXPORT DrawColorOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawColor;
   static constexpr bool kIsDrawOp = true;
-  DrawColorOp(SkColor color, SkBlendMode mode)
+  DrawColorOp(SkColor4f color, SkBlendMode mode)
       : PaintOp(kType), color(color), mode(mode) {}
   static void Raster(const DrawColorOp* op,
                      SkCanvas* canvas,
@@ -529,7 +529,7 @@ class CC_PAINT_EXPORT DrawColorOp final : public PaintOp {
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   HAS_SERIALIZATION_FUNCTIONS();
 
-  SkColor color;
+  SkColor4f color;
   SkBlendMode mode;
 
  private:
@@ -1078,6 +1078,9 @@ using LargestPaintOp =
                               DrawImageRectOp,
                               DrawDRRectOp>::type;
 
+// Defined outside of the class as this const is used in multiple files.
+static constexpr int kMinNumberOfSlowPathsForMSAA = 6;
+
 class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
  public:
   enum { kInitialBufferSize = 4096 };
@@ -1133,7 +1136,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   size_t total_op_count() const { return op_count_ + subrecord_op_count_; }
 
   size_t next_op_offset() const { return used_; }
-  int num_slow_paths() const { return num_slow_paths_; }
+  int num_slow_paths_up_to_min_for_MSAA() const {
+    return num_slow_paths_up_to_min_for_MSAA_;
+  }
   bool HasNonAAPaint() const { return has_non_aa_paint_; }
   bool HasDiscardableImages() const { return has_discardable_images_; }
 
@@ -1202,8 +1207,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     static_assert(!std::is_same<T, PaintOp>::value,
                   "AnalyzeAddedOp needs a subtype of PaintOp");
 
-    num_slow_paths_ += op->CountSlowPathsFromFlags();
-    num_slow_paths_ += op->CountSlowPaths();
+    if (num_slow_paths_up_to_min_for_MSAA_ < kMinNumberOfSlowPathsForMSAA) {
+      num_slow_paths_up_to_min_for_MSAA_ += op->CountSlowPathsFromFlags();
+      num_slow_paths_up_to_min_for_MSAA_ += op->CountSlowPaths();
+    }
 
     has_non_aa_paint_ |= op->HasNonAAPaint();
 
@@ -1233,7 +1240,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   size_t GetOpOffsetForTracing(const PaintOp* op) const {
     DCHECK_GE(reinterpret_cast<const char*>(op), data_.get());
-    size_t result = reinterpret_cast<const char*>(op) - data_.get();
+    size_t result =
+        static_cast<size_t>(reinterpret_cast<const char*>(op) - data_.get());
     DCHECK_LT(result, used_);
     return result;
   }
@@ -1452,8 +1460,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   size_t subrecord_bytes_used_ = 0;
   // Record total op count of referenced sub-record and display lists.
   size_t subrecord_op_count_ = 0;
-  // Record paths for veto-to-msaa for gpu raster.
-  int num_slow_paths_ = 0;
+  // Record paths for veto-to-msaa for gpu raster. Counting slow paths can be
+  // very expensive, we stop counting them once reaching the minimum number
+  // required for an MSAA sample count for raster.
+  int num_slow_paths_up_to_min_for_MSAA_ = 0;
 
   bool has_non_aa_paint_ : 1;
   bool has_discardable_images_ : 1;

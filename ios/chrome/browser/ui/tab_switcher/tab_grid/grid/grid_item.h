@@ -12,7 +12,7 @@ class GURL;
 // Model object representing details about an item from the tab grid.
 @interface GridItem : NSObject
 
-// Create an item with |title|, and |url|.
+// Create an item with `title`, and `url`.
 - (instancetype)initWithTitle:(NSString*)title
                           url:(GURL)URL NS_DESIGNATED_INITIALIZER;
 

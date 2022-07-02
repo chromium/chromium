@@ -40,7 +40,7 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
       app_locale_(app_locale),
       focused_field_type_(focused_field_type),
       groups_(groups) {
-  const FieldTypeGroup focused_group = GetFocusedNonBillingGroup();
+  const FieldTypeGroup focused_group = AutofillType(focused_field_type).group();
   DenseSet<FieldTypeGroup> groups_for_labels{
       FieldTypeGroup::kName, FieldTypeGroup::kAddressHome,
       FieldTypeGroup::kEmail, FieldTypeGroup::kPhoneHome};
@@ -60,7 +60,7 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
     return groups_for_labels.find(
                AutofillType(AutofillType(type).GetStorableType()).group()) !=
                groups_for_labels.end() &&
-           type != ADDRESS_HOME_COUNTRY && type != ADDRESS_BILLING_COUNTRY;
+           type != ADDRESS_HOME_COUNTRY;
   };
 
   std::copy_if(field_types.begin(), field_types.end(),
@@ -73,14 +73,10 @@ LabelFormatter::~LabelFormatter() = default;
 std::vector<std::u16string> LabelFormatter::GetLabels() const {
   std::vector<std::u16string> labels;
   for (const AutofillProfile* profile : profiles_) {
-    labels.push_back(GetLabelForProfile(*profile, GetFocusedNonBillingGroup()));
+    labels.push_back(GetLabelForProfile(
+        *profile, AutofillType(focused_field_type_).group()));
   }
   return labels;
-}
-
-FieldTypeGroup LabelFormatter::GetFocusedNonBillingGroup() const {
-  return AutofillType(AutofillType(focused_field_type_).GetStorableType())
-      .group();
 }
 
 // static

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 
 namespace commerce {
 
@@ -44,10 +45,11 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 
 KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  PrefService* prefs = profile ? profile->GetPrefs() : nullptr;
   return new ShoppingService(
       BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile), prefs);
 }
 
 content::BrowserContext* ShoppingServiceFactory::GetBrowserContextToUse(

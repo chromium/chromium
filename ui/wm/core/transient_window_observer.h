@@ -5,7 +5,7 @@
 #ifndef UI_WM_CORE_TRANSIENT_WINDOW_OBSERVER_H_
 #define UI_WM_CORE_TRANSIENT_WINDOW_OBSERVER_H_
 
-#include "ui/wm/core/wm_core_export.h"
+#include "base/component_export.h"
 
 namespace aura {
 class Window;
@@ -13,7 +13,7 @@ class Window;
 
 namespace wm {
 
-class WM_CORE_EXPORT TransientWindowObserver {
+class COMPONENT_EXPORT(UI_WM) TransientWindowObserver {
  public:
   // Called when a transient child is added to |window|.
   virtual void OnTransientChildAdded(aura::Window* window,

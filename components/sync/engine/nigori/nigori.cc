@@ -238,9 +238,6 @@ bool Nigori::Permute(Type type,
 
 // Enc[Kenc,Kmac](value)
 bool Nigori::Encrypt(const std::string& value, std::string* encrypted) const {
-  if (0U >= value.size())
-    return false;
-
   std::string iv;
   crypto::RandBytes(base::WriteInto(&iv, kIvSize + 1), kIvSize);
 

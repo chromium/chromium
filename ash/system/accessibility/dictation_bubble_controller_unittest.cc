@@ -5,10 +5,12 @@
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +28,11 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kDarkLightMode,
+                               features::kNotificationsRefresh});
+
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
@@ -92,6 +99,9 @@ class DictationBubbleControllerTest : public AshTestBase {
   std::vector<std::u16string> GetVisibleHints() {
     return GetView()->GetVisibleHintsForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DictationBubbleControllerTest, ShowText) {
@@ -155,6 +165,8 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
 
 // Verifies text and icon colors when the dark light mode feature is disabled.
 TEST_F(DictationBubbleControllerTest, NoDarkMode) {
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
+
   // Show bubble UI.
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kHidden,
@@ -174,9 +186,11 @@ TEST_F(DictationBubbleControllerTest, DarkMode) {
   feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   AshColorProvider* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   // Show bubble UI.
   EXPECT_FALSE(GetView());
@@ -195,8 +209,8 @@ TEST_F(DictationBubbleControllerTest, DarkMode) {
                                           ui::kColorDialogBackground));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  dark_light_mode_controller->ToggleColorMode();
+  const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   // Verify that the text and background colors changed and still have the

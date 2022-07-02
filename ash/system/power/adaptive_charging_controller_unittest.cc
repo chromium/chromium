@@ -53,13 +53,21 @@ TEST_F(AdaptiveChargingControllerTest, IsAdaptiveDelayingCharge) {
   // Case (1) default.
   EXPECT_FALSE(adaptive_charging_controller_->is_adaptive_delaying_charge());
 
-  // Case (2) set_adaptive_delaying_charge to true.
+  // Case (2) set_adaptive_delaying_charge to true without
+  // adaptive_charging_heuristic_enabled.
   power_manager::PowerSupplyProperties power_props;
   power_props.set_adaptive_delaying_charge(true);
   power_manager_client_->UpdatePowerProperties(power_props);
+  EXPECT_FALSE(adaptive_charging_controller_->is_adaptive_delaying_charge());
+
+  // Case (3) set_adaptive_delaying_charge to true with
+  // |adaptive_charging_heuristic_enabled| == true.
+  power_props.set_adaptive_delaying_charge(true);
+  power_props.set_adaptive_charging_heuristic_enabled(true);
+  power_manager_client_->UpdatePowerProperties(power_props);
   EXPECT_TRUE(adaptive_charging_controller_->is_adaptive_delaying_charge());
 
-  // Case (3) set_adaptive_delaying_charge to false.
+  // Case (4) set_adaptive_delaying_charge to false.
   power_props.set_adaptive_delaying_charge(false);
   power_manager_client_->UpdatePowerProperties(power_props);
   EXPECT_FALSE(adaptive_charging_controller_->is_adaptive_delaying_charge());

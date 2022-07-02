@@ -27,8 +27,8 @@ static void ConvertToValuesAndRespond(
   for (auto&& item : *policies) {
     auto snapshot = base::JSONReader::ReadAndReturnValueWithError(
         item->JsonString(), base::JSON_PARSE_RFC);
-    CHECK(snapshot.value);
-    policy_values.Append(std::move(snapshot.value.value()));
+    CHECK(snapshot.has_value());
+    policy_values.Append(std::move(*snapshot));
   }
   std::move(response).Run(std::move(policy_values));
 }

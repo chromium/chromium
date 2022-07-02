@@ -59,6 +59,13 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
   }
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  static bool supports_zero_copy_webgpu_import(
+      const gfx::NativePixmapHandle& pixmap_handle) {
+    return pixmap_handle.supports_zero_copy_webgpu_import;
+  }
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
   static const absl::optional<base::UnguessableToken>& buffer_collection_id(
       const gfx::NativePixmapHandle& pixmap_handle) {

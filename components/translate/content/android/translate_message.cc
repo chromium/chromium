@@ -42,7 +42,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
  public:
   ~BridgeImpl() override;
 
-  void CreateTranslateMessage(JNIEnv* env,
+  bool CreateTranslateMessage(JNIEnv* env,
                               content::WebContents* web_contents,
                               TranslateMessage* native_translate_message,
                               jint dismissal_duration_seconds) override {
@@ -51,6 +51,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
         env, web_contents->GetJavaWebContents(),
         reinterpret_cast<intptr_t>(native_translate_message),
         dismissal_duration_seconds);
+    return !(!java_translate_message_);
   }
 
   void ShowTranslateError(JNIEnv* env,
@@ -150,10 +151,15 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (!ui_delegate_) {
+    if (!bridge_->CreateTranslateMessage(env, web_contents_, this,
+                                         GetDismissalDurationSeconds())) {
+      // The |bridge_| failed to create the Java TranslateMessage, such as when
+      // the activity is being destroyed, so there is no message to show.
+      return;
+    }
+
     ui_delegate_ = std::make_unique<TranslateUIDelegate>(
         translate_manager_, source_language, target_language);
-    bridge_->CreateTranslateMessage(env, web_contents_, this,
-                                    GetDismissalDurationSeconds());
   }
 
   if (ui_delegate_->GetSourceLanguageCode() != source_language)

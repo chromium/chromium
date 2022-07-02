@@ -287,6 +287,11 @@ openssl req -x509 -days 3650 -extensions req_san_example \
     -config ../scripts/ee.cnf -newkey rsa:2048 -text \
     -out ../certificates/subjectAltName_www_example_com.pem
 
+## certificatePolicies parsing
+openssl req -x509 -days 3650 -extensions req_policies_sanity \
+    -config ../scripts/ee.cnf -newkey rsa:2048 -text \
+    -out ../certificates/policies_sanity_check.pem
+
 ## Punycode handling
 SUBJECT_NAME="req_punycode_dn" \
   openssl req -x509 -days 3650 -extensions req_punycode \

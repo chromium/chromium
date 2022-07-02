@@ -263,7 +263,7 @@ document-local, or depends on input from the document is not a good candidate.
 
 <!-- sort, case insensitive -->
 [`blink::IdentifiableSurface`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
-[`blink::WebFeature`]: ../../third_party/blink/public/mojom/web_feature/web_feature.mojom
+[`blink::WebFeature`]: ../../third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [`decodingInfo()`]: https://www.w3.org/TR/media-capabilities/#dom-mediacapabilities-decodinginfo
 [`HTMLMediaElement.canPlayType()`]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/canPlayType
 [`MediaCapabilitiesInfo`]: https://www.w3.org/TR/media-capabilities/#dictdef-mediacapabilitiesinfo

@@ -104,8 +104,6 @@ class BrowserTabStripController : public TabStripController,
       const tab_groups::TabGroupVisualData& visual_data) override;
   absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;
-  absl::optional<int> GetLastTabInGroup(
-      const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
   bool IsFrameCondensed() const override;
@@ -126,6 +124,7 @@ class BrowserTabStripController : public TabStripController,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabWillBeAdded() override;
+  void OnTabWillBeRemoved(content::WebContents* contents, int index) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabChangedAt(content::WebContents* contents,
                     int model_index,

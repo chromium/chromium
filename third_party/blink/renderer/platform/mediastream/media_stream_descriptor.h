@@ -55,7 +55,6 @@ class PLATFORM_EXPORT MediaStreamDescriptorClient
 
   virtual ~MediaStreamDescriptorClient() = default;
 
-  virtual void StreamEnded() = 0;
   virtual void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
                                                 DispatchEventTiming) = 0;
   virtual void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,

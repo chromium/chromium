@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 
 #include "base/observer_list.h"
@@ -65,7 +66,7 @@ class SavedTabGroupModel {
   // The observers.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
   std::vector<SavedTabGroup> saved_tab_groups_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_H_

@@ -11,9 +11,10 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -65,8 +66,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // is returned containing host_id and xmpp_login, with security-sensitive
   // fields filtered out. An empty dictionary is returned if the host is not
   // configured, and nullptr if the configuration is corrupt or cannot be read.
-  typedef base::OnceCallback<void(
-      std::unique_ptr<base::DictionaryValue> config)>
+  typedef base::OnceCallback<void(absl::optional<base::Value::Dict> config)>
       GetConfigCallback;
 
   // Callback used for asynchronous operations, e.g. when
@@ -110,7 +110,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
     // Queries current host configuration. Any values that might be security
     // sensitive have been filtered out.
-    virtual std::unique_ptr<base::DictionaryValue> GetConfig() = 0;
+    virtual absl::optional<base::Value::Dict> GetConfig() = 0;
 
     // Checks to verify that the required OS permissions have been granted to
     // the host process, querying the user if necessary. Notifies the callback
@@ -121,17 +121,16 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
     // Starts the daemon process. This may require that the daemon be
     // downloaded and installed. |done| is invoked on the calling thread when
     // the operation is completed.
-    virtual void SetConfigAndStart(
-        std::unique_ptr<base::DictionaryValue> config,
-        bool consent,
-        CompletionCallback done) = 0;
+    virtual void SetConfigAndStart(base::Value::Dict config,
+                                   bool consent,
+                                   CompletionCallback done) = 0;
 
     // Updates current host configuration with the values specified in
     // |config|. Any value in the existing configuration that isn't specified in
     // |config| is preserved. |config| must not contain host_id or xmpp_login
     // values, because implementations of this method cannot change them. |done|
     // is invoked on the calling thread when the operation is completed.
-    virtual void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
+    virtual void UpdateConfig(base::Value::Dict config,
                               CompletionCallback done) = 0;
 
     // Stops the daemon process. |done| is invoked on the calling thread when
@@ -176,7 +175,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // these two steps are merged for simplicity. Consider splitting it
   // into SetConfig() and Start() once we have basic host setup flow
   // working.
-  void SetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+  void SetConfigAndStart(base::Value::Dict config,
                          bool consent,
                          CompletionCallback done);
 
@@ -185,8 +184,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // Any value in the existing configuration that isn't specified in |config|
   // is preserved. |config| must not contain host_id or xmpp_login values,
   // because implementations of this method cannot change them.
-  void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
-                    CompletionCallback done);
+  void UpdateConfig(base::Value::Dict config, CompletionCallback done);
 
   // Stop the daemon process. It is permitted to call Stop while the daemon
   // process is being installed, in which case the installation should be
@@ -205,11 +203,10 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
   // Blocking helper methods used to call the delegate.
   void DoGetConfig(GetConfigCallback done);
-  void DoSetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+  void DoSetConfigAndStart(base::Value::Dict config,
                            bool consent,
                            CompletionCallback done);
-  void DoUpdateConfig(std::unique_ptr<base::DictionaryValue> config,
-                      CompletionCallback done);
+  void DoUpdateConfig(base::Value::Dict config, CompletionCallback done);
   void DoStop(CompletionCallback done);
   void DoGetUsageStatsConsent(GetUsageStatsConsentCallback done);
 
@@ -219,7 +216,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
                                                AsyncResult result);
   void InvokeConfigCallbackAndScheduleNext(
       GetConfigCallback done,
-      std::unique_ptr<base::DictionaryValue> config);
+      absl::optional<base::Value::Dict> config);
   void InvokeConsentCallbackAndScheduleNext(GetUsageStatsConsentCallback done,
                                             const UsageStatsConsent& consent);
 

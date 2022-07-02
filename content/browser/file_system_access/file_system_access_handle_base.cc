@@ -345,7 +345,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
   std::vector<scoped_refptr<WriteLock>> locks;
   auto source_write_lock =
       manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
-  if (!source_write_lock.has_value()) {
+  if (!source_write_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
         base::StrCat(
@@ -353,14 +353,14 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
              ". A FileSystemHandle cannot be moved while it is locked."})));
     return;
   }
-  locks.emplace_back(std::move(source_write_lock.value()));
+  locks.emplace_back(std::move(source_write_lock));
 
   // Since we're using exclusive locks, we should only acquire the
   // lock of the destination URL if it is different from the source URL.
   if (url() != dest_url) {
     auto dest_write_lock =
         manager()->TakeWriteLock(dest_url, WriteLockType::kExclusive);
-    if (!dest_write_lock.has_value()) {
+    if (!dest_write_lock) {
       std::move(callback).Run(file_system_access_error::FromStatus(
           blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
           base::StrCat({"Failed to move ", GetURLDisplayName(url()), " to ",
@@ -369,7 +369,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
                         "which is locked."})));
       return;
     }
-    locks.emplace_back(std::move(dest_write_lock.value()));
+    locks.emplace_back(std::move(dest_write_lock));
   }
 
   auto safe_move_helper = std::make_unique<SafeMoveHelper>(
@@ -417,12 +417,12 @@ void FileSystemAccessHandleBase::DoRemove(
   // TODO(crbug.com/1252614): A directory should only be able to be removed if
   // none of the containing files are locked.
   auto write_lock = manager()->TakeWriteLock(url, lock_type);
-  if (!write_lock.has_value()) {
+  if (!write_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
     return;
   }
-  write_locks.push_back(std::move(write_lock.value()));
+  write_locks.push_back(std::move(write_lock));
 
   // Bind the `write_locks` to the Remove callback to guarantee the locks are
   // held until the operation completes.

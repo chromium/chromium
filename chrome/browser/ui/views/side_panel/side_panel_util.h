@@ -5,13 +5,39 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 class Browser;
 class SidePanelRegistry;
+class SidePanelContentProxy;
+
+namespace views {
+class View;
+}  // namespace views
 
 class SidePanelUtil {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SidePanelOpenTrigger {
+    kToolbarButton = 0,
+    kLensContextMenu = 1,
+    kSideSearchPageAction = 2,
+    kNotesInPageContextMenu = 3,
+    kMaxValue = kNotesInPageContextMenu,
+  };
+
   static void PopulateGlobalEntries(Browser* browser,
                                     SidePanelRegistry* global_registry);
+
+  // Gets the SidePanelContentProxy for the provided view. If one does not
+  // exist, this creates one indicating the view is available.
+  static SidePanelContentProxy* GetSidePanelContentProxy(
+      views::View* content_view);
+
+  static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
+  static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

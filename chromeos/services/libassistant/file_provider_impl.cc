@@ -5,7 +5,7 @@
 #include "chromeos/services/libassistant/file_provider_impl.h"
 
 #include "base/files/file_util.h"
-#include "chromeos/grit/chromeos_resources.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/services/libassistant/util.h"
 #include "ui/base/resource/resource_bundle.h"
 

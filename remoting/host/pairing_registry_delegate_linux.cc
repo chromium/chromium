@@ -37,8 +37,8 @@ PairingRegistryDelegateLinux::PairingRegistryDelegateLinux() = default;
 
 PairingRegistryDelegateLinux::~PairingRegistryDelegateLinux() = default;
 
-std::unique_ptr<base::ListValue> PairingRegistryDelegateLinux::LoadAll() {
-  std::unique_ptr<base::ListValue> pairings(new base::ListValue());
+base::Value::List PairingRegistryDelegateLinux::LoadAll() {
+  base::Value::List pairings;
 
   // Enumerate all pairing files in the pairing registry.
   base::FilePath registry_path = GetRegistryPath();
@@ -59,8 +59,7 @@ std::unique_ptr<base::ListValue> PairingRegistryDelegateLinux::LoadAll() {
       continue;
     }
 
-    pairings->GetList().Append(
-        base::Value::FromUniquePtrValue(std::move(pairing_json)));
+    pairings.Append(base::Value::FromUniquePtrValue(std::move(pairing_json)));
   }
 
   return pairings;
@@ -104,8 +103,7 @@ PairingRegistry::Pairing PairingRegistryDelegateLinux::Load(
     return PairingRegistry::Pairing();
   }
 
-  return PairingRegistry::Pairing::CreateFromValue(
-      base::Value::AsDictionaryValue(*pairing));
+  return PairingRegistry::Pairing::CreateFromValue(pairing->GetDict());
 }
 
 bool PairingRegistryDelegateLinux::Save(
@@ -119,7 +117,7 @@ bool PairingRegistryDelegateLinux::Save(
 
   std::string pairing_json;
   JSONStringValueSerializer serializer(&pairing_json);
-  if (!serializer.Serialize(*pairing.ToValue())) {
+  if (!serializer.Serialize(pairing.ToValue())) {
     LOG(ERROR) << "Failed to serialize pairing data for "
                << pairing.client_id();
     return false;

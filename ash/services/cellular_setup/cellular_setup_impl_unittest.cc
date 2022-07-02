@@ -15,7 +15,7 @@
 #include "ash/services/cellular_setup/public/cpp/fake_activation_delegate.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

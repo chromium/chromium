@@ -121,13 +121,10 @@ bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
     return false;
   }
 
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-
-  // Find the entry associated with the provided web app id.
-  const base::Value* v = web_apps_to_apks->FindPathOfType(
-      {app_id, kIsWebOnlyTwaKey}, base::Value::Type::BOOLEAN);
-  return v && v->GetBool();
+  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
+    return app_dict->FindBool(kIsWebOnlyTwaKey).value_or(false);
+  }
+  return false;
 }
 
 bool ApkWebAppService::IsWebAppInstalledFromArc(
@@ -135,11 +132,7 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
   if (web_app::IsWebAppsCrosapiEnabled()) {
     // The web app will only be in prefs under this key if it was installed from
     // ARC++.
-    DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                          kWebAppToApkDictPref);
-    const base::Value* v = web_apps_to_apks->FindKeyOfType(
-        web_app_id, base::Value::Type::DICTIONARY);
-    return v != nullptr;
+    return WebAppToApks().FindDict(web_app_id) != nullptr;
   } else {
     web_app::WebAppRegistrar& registrar = provider_->registrar();
     const web_app::WebApp* app = registrar.GetAppById(web_app_id);
@@ -148,36 +141,19 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
 }
 
 bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-
-  // Search the pref dict for any web app id that has a value matching the
-  // provided package name.
-  for (const auto it : web_apps_to_apks->DictItems()) {
-    const base::Value* v =
-        it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
-    if (v && (v->GetString() == package_name))
-      return true;
-  }
-
-  // If there is no associated web app id, the package name is not a
-  // web app shell package.
-  return false;
+  // If there is no associated web app ID, the package name is not a web app
+  // shell package.
+  return GetWebAppIdForPackageName(package_name).has_value();
 }
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const web_app::AppId& app_id) {
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-
-  // Find the entry associated with the provided web app id.
-  const base::Value* v = web_apps_to_apks->FindPathOfType(
-      {app_id, kPackageNameKey}, base::Value::Type::STRING);
-
-  if (!v)
-    return absl::nullopt;
-
-  return absl::optional<std::string>(v->GetString());
+  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
+    if (const std::string* value = app_dict->FindString(kPackageNameKey)) {
+      return *value;
+    }
+  }
+  return absl::nullopt;
 }
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
@@ -191,24 +167,31 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
   return GetPackageNameForWebApp(app_id.value());
 }
 
+absl::optional<std::string> ApkWebAppService::GetWebAppIdForPackageName(
+    const std::string& package_name) {
+  for (auto [web_app_id, web_app_info_value] : WebAppToApks()) {
+    const std::string* web_app_package_name =
+        web_app_info_value.GetDict().FindString(kPackageNameKey);
+    if (web_app_package_name && *web_app_package_name == package_name) {
+      return web_app_id;
+    }
+  }
+  return absl::nullopt;
+}
+
 absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
     const web_app::AppId& app_id) {
   if (!web_app::IsWebAppsCrosapiEnabled() &&
       !IsWebAppInstalledFromArc(app_id)) {
     return absl::nullopt;
   }
-
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-
-  // Find the entry associated with the provided web app id.
-  const base::Value* v = web_apps_to_apks->FindPathOfType(
-      {app_id, kSha256FingerprintKey}, base::Value::Type::STRING);
-
-  if (!v)
-    return absl::nullopt;
-
-  return absl::optional<std::string>(v->GetString());
+  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
+    if (const std::string* value =
+            app_dict->FindString(kSha256FingerprintKey)) {
+      return *value;
+    }
+  }
+  return absl::nullopt;
 }
 
 void ApkWebAppService::SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs) {
@@ -333,32 +316,21 @@ void ApkWebAppService::OnPackageInstalled(
   // packages are updated. In (b), there are two cases to handle: the package
   // could previously have been an Android app and has now become a web app, and
   // vice-versa.
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
+  absl::optional<std::string> web_app_id =
+      GetWebAppIdForPackageName(package_info.package_name);
 
-  // Search the pref dict for any |web_app_id| that has a value matching the
-  // provided package name.
-  std::string web_app_id;
-  for (const auto it : web_apps_to_apks->DictItems()) {
-    const base::Value* v =
-        it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
-
-    if (v && (v->GetString() == package_info.package_name)) {
-      web_app_id = it.first;
-      break;
-    }
-  }
-
-  bool was_previously_web_app = !web_app_id.empty();
+  bool was_previously_web_app = web_app_id.has_value();
   bool is_now_web_app = !package_info.web_app_info.is_null();
 
   // The previous and current states match.
   if (is_now_web_app == was_previously_web_app) {
-    if (is_now_web_app && package_info.web_app_info->is_web_only_twa !=
-                              IsWebOnlyTwa(web_app_id)) {
-      UpdatePackageInfo(web_app_id, package_info.web_app_info);
+    if (is_now_web_app) {
+      DCHECK(web_app_id);
+      if (package_info.web_app_info->is_web_only_twa !=
+          IsWebOnlyTwa(*web_app_id)) {
+        UpdatePackageInfo(*web_app_id, package_info.web_app_info);
+      }
     }
-
     return;
   }
 
@@ -407,35 +379,25 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   // will trigger the uninstallation of the web app. Similarly, this method
   // removes the associated web_app_id before triggering uninstallation, so
   // OnWebAppWillBeUninstalled() will do nothing.
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
 
   // Search the pref dict for any |web_app_id| that has a value matching the
   // provided package name. We need to uninstall that |web_app_id|.
-  std::string web_app_id;
-  for (const auto it : web_apps_to_apks->DictItems()) {
-    const base::Value* v =
-        it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
-
-    if (v && (v->GetString() == package_name)) {
-      web_app_id = it.first;
-      break;
-    }
+  absl::optional<std::string> web_app_id =
+      GetWebAppIdForPackageName(package_name);
+  if (!web_app_id) {
+    return;
   }
 
-  if (web_app_id.empty())
-    return;
-
   // Remove |web_app_id| so that we don't start an uninstallation loop.
-  web_apps_to_apks->RemoveKey(web_app_id);
-  UninstallWebApp(web_app_id);
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
+  web_apps_to_apks->RemoveKey(*web_app_id);
+  UninstallWebApp(*web_app_id);
 }
 
 void ApkWebAppService::OnPackageListInitialRefreshed() {
   // Scan through the list of apps to see if any were uninstalled while ARC
   // wasn't running.
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
 
   // If ARC isn't unavailable, it's not going to become available since we're
   // occupying the UI thread. We'll try again later.
@@ -445,33 +407,34 @@ void ApkWebAppService::OnPackageListInitialRefreshed() {
     return;
 
   std::map<std::string, std::string> app_ids_and_packages_to_remove;
-  for (const auto it : web_apps_to_apks->DictItems()) {
-    const base::Value* v =
-        it.second.FindKeyOfType(kShouldRemoveKey, base::Value::Type::BOOLEAN);
-
+  for (const auto [web_app_id, web_app_info_value] : WebAppToApks()) {
     // If we don't need to uninstall the package, move along.
-    if (!v || !v->GetBool())
+    if (!web_app_info_value.GetDict()
+             .FindBool(kShouldRemoveKey)
+             .value_or(false)) {
       continue;
-
-    // Without a package name, the dictionary isn't useful, so set it for
-    // removal.
-    const std::string& web_app_id = it.first;
-    std::string package_name;
-    v = it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
-    if (v) {
-      package_name = v->GetString();
     }
 
-    app_ids_and_packages_to_remove.insert({web_app_id, package_name});
+    if (const std::string* package_name =
+            web_app_info_value.GetDict().FindString(kPackageNameKey)) {
+      app_ids_and_packages_to_remove.insert({web_app_id, *package_name});
+    } else {
+      // Without a package name, the dictionary isn't useful, so drop it from
+      // prefs without uninstalling.
+      app_ids_and_packages_to_remove.insert({web_app_id, ""});
+    }
   }
 
   // Remove the web app id from prefs before uninstalling, otherwise the
   // corresponding call to OnPackageRemoved will start an uninstallation cycle.
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
   for (const auto& app_id_and_package_name : app_ids_and_packages_to_remove) {
     web_apps_to_apks->RemoveKey(app_id_and_package_name.first);
     const std::string& package_name = app_id_and_package_name.second;
-    if (!package_name.empty())
+    if (!package_name.empty()) {
       instance->UninstallPackage(package_name);
+    }
   }
 }
 
@@ -502,24 +465,17 @@ void ApkWebAppService::OnAppRegistryCacheWillBeDestroyed(
 
 void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
     const web_app::AppId& web_app_id) {
-  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
-                                        kWebAppToApkDictPref);
-
-  // Find the package name associated with the provided web app id.
-  const base::Value* package_name_value = web_apps_to_apks->FindPathOfType(
-      {web_app_id, kPackageNameKey}, base::Value::Type::STRING);
-  const std::string package_name =
-      package_name_value ? package_name_value->GetString() : "";
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_app_list_prefs_->app_connection_holder(), UninstallPackage);
-
-  if (package_name_value) {
-    if (instance) {
+  absl::optional<std::string> package_name =
+      GetPackageNameForWebApp(web_app_id);
+  if (package_name) {
+    DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                          kWebAppToApkDictPref);
+    if (auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+            arc_app_list_prefs_->app_connection_holder(), UninstallPackage)) {
       // Remove the web app id from prefs, otherwise the corresponding call to
       // OnPackageRemoved will start an uninstallation cycle.
       web_apps_to_apks->RemoveKey(web_app_id);
-      instance->UninstallPackage(package_name);
+      instance->UninstallPackage(*package_name);
     } else {
       // Set that the app should be removed next time the ARC container is
       // ready.
@@ -533,7 +489,7 @@ void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
   if (web_app_uninstalled_callback_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(web_app_uninstalled_callback_),
-                                  package_name, web_app_id));
+                                  package_name.value_or(""), web_app_id));
   }
 }
 
@@ -594,6 +550,13 @@ void ApkWebAppService::UpdatePackageInfo(
   dict_update->SetPath(
       {app_id, kSha256FingerprintKey},
       base::Value(web_app_info->certificate_sha256_fingerprint.value()));
+}
+
+const base::Value::Dict& ApkWebAppService::WebAppToApks() const {
+  const base::Value* value =
+      profile_->GetPrefs()->GetDictionary(kWebAppToApkDictPref);
+  DCHECK(value);
+  return value->GetDict();
 }
 
 }  // namespace ash

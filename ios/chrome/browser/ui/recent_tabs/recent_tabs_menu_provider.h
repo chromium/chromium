@@ -12,14 +12,14 @@
 // Protocol for instances that will provide menus to RecentTabs components.
 @protocol RecentTabsMenuProvider
 
-// Creates a context menu configuration instance for the given |item| and its
-// associated |view|.
+// Creates a context menu configuration instance for the given `item` and its
+// associated `view`.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (TableViewURLItem*)item
                                                       fromView:(UIView*)view;
 
 // Creates a context menu configuration instance for the header of the given
-// |sectionIdentifier|.
+// `sectionIdentifier`.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForHeaderWithSectionIdentifier:
         (NSInteger)sectionIdentifier;

@@ -9,9 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,11 +110,6 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   base::HistogramTester histogram_tester_;
   testing::StrictMock<MockGaiaRemoteConsentFlowDelegate> delegate_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kLacrosNonSyncingProfiles};
-#endif
 };
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult) {

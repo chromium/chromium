@@ -20,10 +20,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Handles the Link To Text action in the Sharing Hub.
  */
@@ -48,9 +44,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String INVALID_SELECTOR = "";
     private static final int TIMEOUT_MS = 100;
-    private static final Set<String> AMP_VIEWER_DOMAINS =
-            new HashSet<>(Arrays.asList("google.com/amp/", "bing.com/amp"));
-    private static final int LENGTH_AMP_DOMAIN = 15;
     private static final int PREVIEW_MAX_LENGTH = 35;
     private static final int PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH = 32;
     private static final String PREVIEW_ELLIPSIS = "...";
@@ -67,7 +60,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private ShareParams mShareTextParams;
     public @RemoteRequestStatus int mRemoteRequestStatus;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     LinkToTextCoordinator() {}
 
     public LinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
@@ -77,7 +70,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 visibleUrl, selectedText);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void initLinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
             String selectedText) {
@@ -134,10 +127,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return mSelectedText;
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(mSelectedText.substring(0, PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH));
-        sb.append(PREVIEW_ELLIPSIS);
-        return sb.toString();
+        return mSelectedText.substring(0, PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH) + PREVIEW_ELLIPSIS;
     }
 
     private void startRequestSelector() {
@@ -158,7 +148,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         requestSelector();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void reshareHighlightedText() {
         setTextFragmentReceiver();
         if (mProducer == null) {
@@ -175,7 +165,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         });
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void onReshareSelectorsRemoteRequestCompleted(String selectors) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
         if (selectors.isEmpty()) {
@@ -191,7 +181,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         });
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void reshareRequestCompleted(String selectors) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
 
@@ -229,7 +219,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void onRemoteRequestCompleted(String selector, Integer error, Integer readyStatus) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
 
@@ -259,7 +249,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         LinkToTextBridge.logLinkRequestedBeforeStatus(status, readyStatus.intValue());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void requestSelector() {
         LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
                 LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
@@ -277,7 +267,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     private void setTextFragmentReceiver() {
         if (mChromeShareExtras.getRenderFrameHost() != null
-                && mChromeShareExtras.getRenderFrameHost().isRenderFrameCreated()) {
+                && mChromeShareExtras.getRenderFrameHost().isRenderFrameLive()) {
             mProducer = mChromeShareExtras.getRenderFrameHost().getInterfaceToRendererFrame(
                     TextFragmentReceiver.MANAGER);
             return;
@@ -309,7 +299,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab.removeObserver(this);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void timeout() {
         assert (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED
                 || mRemoteRequestStatus == RemoteRequestStatus.COMPLETED);

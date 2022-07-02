@@ -213,4 +213,73 @@ bool StructTraits<blink::mojom::ManifestTranslationItemDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::HomeTabParamsDataView,
+                  ::blink::Manifest::HomeTabParams>::
+    Read(blink::mojom::HomeTabParamsDataView data,
+         ::blink::Manifest::HomeTabParams* out) {
+  return data.ReadIcons(&out->icons);
+}
+
+bool StructTraits<blink::mojom::NewTabButtonParamsDataView,
+                  ::blink::Manifest::NewTabButtonParams>::
+    Read(blink::mojom::NewTabButtonParamsDataView data,
+         ::blink::Manifest::NewTabButtonParams* out) {
+  return data.ReadUrl(&out->url);
+}
+
+bool UnionTraits<blink::mojom::HomeTabUnionDataView,
+                 ::blink::Manifest::TabStrip::HomeTab>::
+    Read(blink::mojom::HomeTabUnionDataView data,
+         blink::Manifest::TabStrip::HomeTab* out) {
+  switch (data.tag()) {
+    case blink::mojom::HomeTabUnionDataView::Tag::kVisibility:
+      ::blink::mojom::TabStripMemberVisibility visibility;
+      if (!data.ReadVisibility(&visibility))
+        return false;
+      *out = visibility;
+      return true;
+    case blink::mojom::HomeTabUnionDataView::Tag::kParams:
+      ::blink::Manifest::HomeTabParams params;
+      if (!data.ReadParams(&params))
+        return false;
+      *out = params;
+      return true;
+  }
+  return false;
+}
+
+bool UnionTraits<blink::mojom::NewTabButtonUnionDataView,
+                 ::blink::Manifest::TabStrip::NewTabButton>::
+    Read(blink::mojom::NewTabButtonUnionDataView data,
+         ::blink::Manifest::TabStrip::NewTabButton* out) {
+  switch (data.tag()) {
+    case blink::mojom::NewTabButtonUnionDataView::Tag::kVisibility:
+      ::blink::mojom::TabStripMemberVisibility visibility;
+      if (!data.ReadVisibility(&visibility))
+        return false;
+      *out = visibility;
+      return true;
+    case blink::mojom::NewTabButtonUnionDataView::Tag::kParams:
+      ::blink::Manifest::NewTabButtonParams params;
+      if (!data.ReadParams(&params))
+        return false;
+      *out = params;
+      return true;
+  }
+  return false;
+}
+
+bool StructTraits<blink::mojom::ManifestTabStripDataView,
+                  ::blink::Manifest::TabStrip>::
+    Read(blink::mojom::ManifestTabStripDataView data,
+         ::blink::Manifest::TabStrip* out) {
+  if (!data.ReadHomeTab(&out->home_tab))
+    return false;
+
+  if (!data.ReadNewTabButton(&out->new_tab_button))
+    return false;
+
+  return true;
+}
+
 }  // namespace mojo

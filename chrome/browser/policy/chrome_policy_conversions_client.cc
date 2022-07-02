@@ -276,13 +276,13 @@ Value::Dict ChromePolicyConversionsClient::GetIdentityFields() {
           connector->GetDeviceActiveDirectoryPolicyManager()
               ->store()
               ->policy());
-      identity_fields.Merge(active_directory_info);
+      identity_fields.Merge(std::move(active_directory_info));
     }
 
     if (connector->IsCloudManaged()) {
       Value::Dict cloud_info = GetIdentityFieldsFromPolicy(
           connector->GetDeviceCloudPolicyManager()->device_store()->policy());
-      identity_fields.Merge(cloud_info);
+      identity_fields.Merge(std::move(cloud_info));
     }
   }
   return identity_fields;

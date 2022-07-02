@@ -19,7 +19,7 @@
 
 namespace policy {
 
-// {{{Note}}} ERP Payload Overview
+// {{{Note}}} ERP Request Payload Overview
 //
 // EncryptedReportingJobConfiguration configures a payload for the Encrypted
 // server endpoint. A JSON version of the payload looks like this:
@@ -83,7 +83,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
  public:
   EncryptedReportingJobConfiguration(CloudPolicyClient* client,
                                      const std::string& server_url,
-                                     const base::Value::Dict& merging_payload,
+                                     base::Value::Dict merging_payload,
                                      UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;
 

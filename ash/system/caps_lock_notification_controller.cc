@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -46,7 +47,8 @@ std::unique_ptr<Notification> CreateNotification() {
       l10n_util::GetStringUTF16(string_id),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierCapsLock),
+                                 kNotifierCapsLock,
+                                 NotificationCatalogName::kCapsLock),
       message_center::RichNotificationData(), nullptr,
       kNotificationCapslockIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

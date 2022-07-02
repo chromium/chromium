@@ -101,10 +101,10 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
     }
 
     case base::Value::Type::LIST: {
-      base::Value::ConstListView list_view = value.GetListDeprecated();
+      const base::Value::List& list = value.GetList();
       CFMutableArrayRef array =
-          CFArrayCreateMutable(NULL, list_view.size(), &kCFTypeArrayCallBacks);
-      for (const base::Value& entry : list_view) {
+          CFArrayCreateMutable(NULL, list.size(), &kCFTypeArrayCallBacks);
+      for (const base::Value& entry : list) {
         // CFArrayAppendValue() retains |cf_value|, so make sure the reference
         // created by ValueToProperty() is released.
         base::ScopedCFTypeRef<CFPropertyListRef> cf_value(

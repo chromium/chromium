@@ -48,16 +48,13 @@ CachedMetadataSenderImpl::CachedMetadataSenderImpl(
 void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
                                     const uint8_t* data,
                                     size_t size) {
-  if (code_cache_host) {
-    code_cache_host->get()->DidGenerateCacheableMetadata(
-        code_cache_type_, response_url_, response_time_,
-        mojo_base::BigBuffer(base::make_span(data, size)));
-  } else {
-    // TODO(mythria): Update worklets to use the correct code_cache_host
-    // interface and remove this path.
-    Platform::Current()->CacheMetadata(code_cache_type_, response_url_,
-                                       response_time_, data, size);
-  }
+  if (!code_cache_host)
+    return;
+  // TODO(crbug.com/862940): This should use the Blink variant of the
+  // interface.
+  code_cache_host->get()->DidGenerateCacheableMetadata(
+      code_cache_type_, GURL(response_url_), response_time_,
+      mojo_base::BigBuffer(base::make_span(data, size)));
 }
 
 // This is a CachedMetadataSender implementation that does nothing.
@@ -101,18 +98,12 @@ ServiceWorkerCachedMetadataSender::ServiceWorkerCachedMetadataSender(
 void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost* code_cache_host,
                                              const uint8_t* data,
                                              size_t size) {
-  if (code_cache_host) {
-    code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-        response_url_, response_time_,
-        mojo_base::BigBuffer(base::make_span(data, size)),
-        WebSecurityOrigin(security_origin_), cache_storage_cache_name_.Utf8());
-  } else {
-    // TODO(mythria): Update worklets to use the correct code_cache_host
-    // interface and remove this path.
-    Platform::Current()->CacheMetadataInCacheStorage(
-        response_url_, response_time_, data, size,
-        WebSecurityOrigin(security_origin_), cache_storage_cache_name_);
-  }
+  if (!code_cache_host)
+    return;
+  code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
+      GURL(response_url_), response_time_,
+      mojo_base::BigBuffer(base::make_span(data, size)),
+      WebSecurityOrigin(security_origin_), cache_storage_cache_name_.Utf8());
 }
 
 // static
@@ -125,28 +116,17 @@ void CachedMetadataSender::SendToCodeCacheHost(
     const String& cache_storage_name,
     const uint8_t* data,
     size_t size) {
-  if (code_cache_host) {
-    if (cache_storage_name.IsNull()) {
-      code_cache_host->get()->DidGenerateCacheableMetadata(
-          code_cache_type, KURL(url), response_time,
-          mojo_base::BigBuffer(base::make_span(data, size)));
-    } else {
-      code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-          KURL(url), response_time,
-          mojo_base::BigBuffer(base::make_span(data, size)),
-          WebSecurityOrigin(origin), cache_storage_name.Utf8());
-    }
+  if (!code_cache_host)
+    return;
+  if (cache_storage_name.IsNull()) {
+    code_cache_host->get()->DidGenerateCacheableMetadata(
+        code_cache_type, GURL(url.Utf8()), response_time,
+        mojo_base::BigBuffer(base::make_span(data, size)));
   } else {
-    // TODO(mythria): Update worklets to use the correct code_cache_host
-    // interface and remove this path.
-    if (cache_storage_name.IsNull()) {
-      Platform::Current()->CacheMetadata(code_cache_type, KURL(url),
-                                         response_time, data, size);
-    } else {
-      Platform::Current()->CacheMetadataInCacheStorage(
-          KURL(url), response_time, data, size, WebSecurityOrigin(origin),
-          cache_storage_name);
-    }
+    code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
+        GURL(url.Utf8()), response_time,
+        mojo_base::BigBuffer(base::make_span(data, size)),
+        WebSecurityOrigin(origin), cache_storage_name.Utf8());
   }
 }
 

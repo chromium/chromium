@@ -316,27 +316,33 @@ fn main() -> miette::Result<()> {
             name_autocxxgen_h,
         )?;
     }
-    //writer.write_placeholders(header_counter.into_inner(), desired_number, "h")?;
     if matches.is_present("gen-rs-include") {
+        if !matches.is_present("fix-rs-include-name") && desired_number.is_some() {
+            return Err(miette::Report::msg(
+                "gen-rs-include and generate-exact requires fix-rs-include-name.",
+            ));
+        }
+        let mut counter = 0usize;
         let rust_buildables = parsed_files
             .iter()
             .flat_map(|parsed_file| parsed_file.get_rs_outputs());
-        for (counter, include_cxx) in rust_buildables.enumerate() {
+        for include_cxx in rust_buildables {
             let rs_code = generate_rs_single(include_cxx);
             let fname = if matches.is_present("fix-rs-include-name") {
-                format!("gen{}.include.rs", counter)
+                name_include_rs(counter)
             } else {
                 rs_code.filename
             };
             writer.write_to_file(fname, rs_code.code.as_bytes())?;
+            counter += 1;
         }
+        writer.write_placeholders(counter, desired_number, name_include_rs)?;
     }
     if matches.is_present("gen-rs-archive") {
         let rust_buildables = parsed_files
             .iter()
             .flat_map(|parsed_file| parsed_file.get_rs_outputs());
         let json = generate_rs_archive(rust_buildables);
-        eprintln!("Writing to gen.rs.json in {:?}", outdir);
         writer.write_to_file("gen.rs.json".into(), json.as_bytes())?;
     }
     if let Some(depfile) = depfile {
@@ -351,6 +357,10 @@ fn name_autocxxgen_h(counter: usize) -> String {
 
 fn name_cxxgen_h(counter: usize) -> String {
     format!("gen{}.h", counter)
+}
+
+fn name_include_rs(counter: usize) -> String {
+    format!("gen{}.include.rs", counter)
 }
 
 fn get_dependency_recorder(depfile: Rc<RefCell<Depfile>>) -> Box<dyn RebuildDependencyRecorder> {

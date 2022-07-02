@@ -188,9 +188,6 @@ HttpProxyConnectJob::HttpProxyConnectJob(
                  NetLogSourceType::HTTP_PROXY_CONNECT_JOB,
                  NetLogEventType::HTTP_PROXY_CONNECT_JOB_CONNECT),
       params_(std::move(params)),
-      next_state_(STATE_NONE),
-      has_restarted_(false),
-      has_established_connection_(false),
       http_auth_controller_(
           params_->tunnel()
               ? base::MakeRefCounted<HttpAuthController>(
@@ -203,7 +200,7 @@ HttpProxyConnectJob::HttpProxyConnectJob(
                     host_resolver())
               : nullptr) {}
 
-HttpProxyConnectJob::~HttpProxyConnectJob() {}
+HttpProxyConnectJob::~HttpProxyConnectJob() = default;
 
 const RequestPriority HttpProxyConnectJob::kH2QuicTunnelPriority =
     DEFAULT_PRIORITY;

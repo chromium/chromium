@@ -9,13 +9,12 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-[popup=popup i]:not(:popup-open),
-[popup=hint i]:not(:popup-open),
-[popup=async i]:not(:popup-open) {
+[popup]:-internal-popup-hidden {
   display: none;
 }
 
-[popup=popup i],
+[popup="" i],
+[popup=auto i],
 [popup=hint i],
 [popup=async i] {
   display: block;
@@ -34,7 +33,8 @@
   color: -internal-light-dark(black, white);
 }
 
-[popup=popup i]::backdrop,
+[popup="" i]::backdrop,
+[popup=auto i]::backdrop,
 [popup=hint i]::backdrop,
 [popup=async i]::backdrop {
     position: fixed;

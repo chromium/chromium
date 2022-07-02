@@ -26,7 +26,10 @@ struct SenderEncodedFrame final : public EncodedFrame {
   // indicating the encoder utilized more resources than a maximum sustainable
   // rate, based on the data volume of the input.  Negative values indicate the
   // field was not computed.
-  double encoder_utilization;
+  double encoder_utilization = -1.0;
+
+  // The bitrate the encoder used for encoding this frame.
+  int encoder_bitrate = 0;
 
   // The amount of "lossiness" needed to encode the frame within the targeted
   // bandwidth.  More-complex frame content and/or lower target encode bitrates
@@ -38,9 +41,7 @@ struct SenderEncodedFrame final : public EncodedFrame {
   // very small, and values greater than 1.0 indicating the encoder cannot
   // encode the frame within the target bitrate (even at its lowest quality
   // setting).  Negative values indicate the field was not computed.
-  //
-  // TODO(jophba): Rename to idealized_bitrate_utilization.
-  double lossy_utilization = {};
+  double lossiness = -1.0;
 
   // The time at which the encode of the frame completed.
   base::TimeTicks encode_completion_time;

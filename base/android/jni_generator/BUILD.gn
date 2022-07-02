@@ -66,10 +66,7 @@ shared_library("jni_sample_lib") {
 android_apk("sample_jni_apk") {
   apk_name = "SampleJni"
   android_manifest = "AndroidManifest.xml"
-  deps = [
-    ":jni_sample_java",
-    "//build/android:build_java",
-  ]
+  deps = [ ":jni_sample_java" ]
   shared_libraries = [ ":jni_sample_lib" ]
   jni_registration_header = _registration_header
 }

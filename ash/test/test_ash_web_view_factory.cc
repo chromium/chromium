@@ -14,7 +14,7 @@ TestAshWebViewFactory::~TestAshWebViewFactory() = default;
 
 std::unique_ptr<AshWebView> TestAshWebViewFactory::Create(
     const AshWebView::InitParams& params) {
-  return std::make_unique<TestAshWebView>();
+  return std::make_unique<TestAshWebView>(params);
 }
 
 }  // namespace ash

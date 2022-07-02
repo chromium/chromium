@@ -61,8 +61,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
               const FlossDeviceId& device,
               bool accept,
               const std::vector<uint8_t>& pin) override;
-  void GetBondedDevices(
-      ResponseCallback<std::vector<FlossDeviceId>> callback) override;
+  void GetBondedDevices() override;
 
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);

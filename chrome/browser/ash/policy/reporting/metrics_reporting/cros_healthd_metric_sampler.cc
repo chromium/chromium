@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 
 #include "base/logging.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cros_healthd = chromeos::cros_healthd::mojom;

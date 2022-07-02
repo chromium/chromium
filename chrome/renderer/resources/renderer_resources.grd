@@ -46,21 +46,27 @@
         <include name="IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_desktop_capture_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_logging_private_custom_bindings.js" type="BINDATA" />
         <if expr="chromeos_ash or chromeos_lacros">
+          <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\enterprise_platform_keys_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS" file="extensions\enterprise_platform_keys\key_pair.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\enterprise_platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS" file="extensions\enterprise_platform_keys\token.js" type="BINDATA" />
           <include name="IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS" file="extensions\file_browser_handler_custom_bindings.js" type="BINDATA" />
+          <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\platform_keys_custom_bindings.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_GET_PUBLIC_KEY_JS" file="extensions\platform_keys\get_public_key.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_KEY_JS" file="extensions\platform_keys\key.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_UTILS_JS" file="extensions\platform_keys\utils.js" type="BINDATA" />
+
+          <!-- Remote Apps bindings. -->
+          <include name="IDR_REMOTE_APPS_BINDINGS_JS" file="extensions\remote_apps\remote_apps_bindings.js" type="BINDATA" />
+          <include name="IDR_REMOTE_APPS_MOJOM_LITE_JS" file="${mojom_root}\chromeos\components\remote_apps\mojom\remote_apps.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_MOJO_URL_MOJOM_LITE_JS" file="${mojom_root}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+
         </if>
         <if expr="chromeos_ash">
-          <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\file_manager_private_custom_bindings.js" type="BINDATA" />
-          <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\terminal_private_custom_bindings.js" type="BINDATA" />
 
           <!-- ChromeOS IME Mojo service and bindings. -->
@@ -69,11 +75,6 @@
           <include name="IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_engine.mojom.js" use_base_dir="false" type="BINDATA" />
           <include name="IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_method.mojom.js" use_base_dir="false" type="BINDATA" />
           <include name="IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_method_host.mojom.js" use_base_dir="false" type="BINDATA" />
-
-          <!-- Remote Apps bindings. -->
-          <include name="IDR_REMOTE_APPS_BINDINGS_JS" file="extensions\remote_apps\remote_apps_bindings.js" type="BINDATA" />
-          <include name="IDR_REMOTE_APPS_MOJOM_LITE_JS" file="${mojom_root}\chromeos\components\remote_apps\mojom\remote_apps.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_MOJO_URL_MOJOM_LITE_JS" file="${mojom_root}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
           <include name="IDR_GOOGLE_TTS_STREAM_BINDINGS_JS" file="extensions\chromeos_google_tts_stream_bindings.js" type="BINDATA" />
           <include name="IDR_GOOGLE_TTS_STREAM_MOJOM_JS" file="${mojom_root}\chromeos\services\tts\public\mojom\tts_service.mojom.js" use_base_dir="false" type="BINDATA" />

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
@@ -39,7 +40,7 @@ class PropertyCacheTest : public testing::Test {
     connection_ = nullptr;
   }
 
-  Connection* connection_ = nullptr;
+  raw_ptr<Connection> connection_ = nullptr;
   Window window_ = Window::None;
 };
 

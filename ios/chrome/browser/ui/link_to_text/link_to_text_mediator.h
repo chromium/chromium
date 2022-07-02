@@ -17,9 +17,9 @@ class WebStateList;
 // link_to_text tab helpers.
 @interface LinkToTextMediator : NSObject <LinkToTextDelegate>
 
-// Initializer for a mediator. |webStateList| is the WebStateList for the
+// Initializer for a mediator. `webStateList` is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer. It must
-// be non-null. |consumer| is the consumer of link-to-text updates.
+// be non-null. `consumer` is the consumer of link-to-text updates.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             consumer:(id<LinkToTextConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;

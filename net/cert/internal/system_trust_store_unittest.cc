@@ -37,7 +37,8 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
 
   std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
-          base::span<const ChromeRootCertInfo>(kChromeRootCertList));
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          /*version=*/1);
 
   std::unique_ptr<SystemTrustStore> system_trust_store_chrome =
       CreateSystemTrustStoreChromeForTesting(

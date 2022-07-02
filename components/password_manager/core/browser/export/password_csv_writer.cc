@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/export/csv_writer.h"
-#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
@@ -21,7 +21,7 @@ const char kPasswordColumnName[] = "password";
 
 // static
 std::string PasswordCSVWriter::SerializePasswords(
-    const std::vector<std::unique_ptr<PasswordForm>>& passwords) {
+    const std::vector<CredentialUIEntry>& credentials) {
   std::vector<std::string> header(4);
   header[0] = kTitleColumnName;
   header[1] = kUrlColumnName;
@@ -29,9 +29,9 @@ std::string PasswordCSVWriter::SerializePasswords(
   header[3] = kPasswordColumnName;
 
   std::vector<std::map<std::string, std::string>> records;
-  records.reserve(passwords.size());
-  for (const auto& password : passwords) {
-    records.push_back(PasswordFormToRecord(*password));
+  records.reserve(credentials.size());
+  for (const auto& credential : credentials) {
+    records.push_back(PasswordFormToRecord(credential));
   }
 
   std::string result;
@@ -40,12 +40,12 @@ std::string PasswordCSVWriter::SerializePasswords(
 }
 
 std::map<std::string, std::string> PasswordCSVWriter::PasswordFormToRecord(
-    const PasswordForm& form) {
+    const CredentialUIEntry& credential) {
   std::map<std::string, std::string> record;
-  record[kUrlColumnName] = form.url.spec();
-  record[kUsernameColumnName] = base::UTF16ToUTF8(form.username_value);
-  record[kPasswordColumnName] = base::UTF16ToUTF8(form.password_value);
-  record[kTitleColumnName] = form.url.host();
+  record[kUrlColumnName] = credential.url.spec();
+  record[kUsernameColumnName] = base::UTF16ToUTF8(credential.username);
+  record[kPasswordColumnName] = base::UTF16ToUTF8(credential.password);
+  record[kTitleColumnName] = credential.url.host();
   return record;
 }
 

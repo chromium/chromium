@@ -34,8 +34,7 @@
 using testing::_;
 using testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
@@ -158,7 +157,7 @@ MockQuicClientSessionBase::MockQuicClientSessionBase(
       .WillByDefault(testing::Return(quic::QuicConsumedData(0, false)));
 }
 
-MockQuicClientSessionBase::~MockQuicClientSessionBase() {}
+MockQuicClientSessionBase::~MockQuicClientSessionBase() = default;
 
 class QuicChromiumClientStreamTest
     : public ::testing::TestWithParam<quic::ParsedQuicVersion>,
@@ -1179,5 +1178,4 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

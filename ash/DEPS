@@ -24,6 +24,7 @@ include_rules = [
   "+components/ui_devtools",
   "+components/url_matcher",
   "+components/vector_icons",
+  "+components/version_info",
   "+components/viz/common",
   "+components/viz/host",
   "+components/wallpaper",
@@ -58,9 +59,10 @@ include_rules = [
   # code out of //chromeos into //ash.
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
+  "+chromeos/ash/components/human_presence",
   "+chromeos/components/feature_usage",
-  "+chromeos/components/human_presence",
   "+chromeos/components/quick_answers",
+  "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
   "+chromeos/components/webauthn",
   "+chromeos/constants",
@@ -77,10 +79,12 @@ include_rules = [
   # derived from the canonical state in the browser. Using both sources could
   # create subtle inconsistencies based on when observers are called.
   "-chromeos/login/login_state",
+  "+chromeos/ash/components/network",
+  # TODO(https://crbug.com/1164001): remove when chromeos/network have migrated.
   "+chromeos/network",
   # //ash can use the public interfaces of various services.
-  "+chromeos/services/assistant/public" ,
-  "+chromeos/services/assistant/test_support",
+  "+chromeos/ash/services/assistant/public/cpp" ,
+  "+chromeos/ash/services/assistant/test_support",
   "+chromeos/services/bluetooth_config",
   "+chromeos/services/libassistant/public",
   "+chromeos/services/machine_learning/public",

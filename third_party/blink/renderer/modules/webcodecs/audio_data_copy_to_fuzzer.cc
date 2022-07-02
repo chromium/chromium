@@ -26,6 +26,9 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::AudioDataCopyToCase& proto) {
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
@@ -48,15 +51,6 @@ DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::AudioDataCopyToCase& proto) {
   // is memory-backed.
   // TODO(chcunningham): Wait for promise resolution.
   audio_data->copyTo(destination, options, IGNORE_EXCEPTION_FOR_TESTING);
-
-  // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-  //
-  // Multiple GCs may be required to ensure everything is collected (due to
-  // a chain of persistent handles), so some objects may not be collected until
-  // a subsequent iteration. This is slow enough as is, so we compromise on one
-  // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

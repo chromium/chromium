@@ -106,12 +106,12 @@ export class AccountSelectionLacrosElement extends
 
   private onAccountClick_(e: DomRepeatEvent<AvailableAccount>) {
     const gaiaId = e.model.item.gaiaId;
-    this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
+    this.manageProfilesBrowserProxy_.selectAccountLacros(
         this.profileThemeInfo.color, gaiaId);
   }
 
   private onOtherAccountClick_() {
-    this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
+    this.manageProfilesBrowserProxy_.selectAccountLacros(
         this.profileThemeInfo.color, '');
   }
 

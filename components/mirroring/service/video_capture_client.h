@@ -68,6 +68,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
       media::mojom::ReadyBufferPtr buffer,
       std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
 
  private:
   using BufferFinishedCallback = base::OnceCallback<void()>;

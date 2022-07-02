@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,19 +75,21 @@ void MoveToNextDay(int& column,
 CalendarDateCellView::CalendarDateCellView(
     CalendarViewController* calendar_view_controller,
     base::Time date,
+    base::TimeDelta time_difference,
     bool is_grayed_out_date,
-    int row_index)
+    int row_index,
+    bool is_fetched)
     : views::LabelButton(
           views::Button::PressedCallback(
               base::BindRepeating(&CalendarDateCellView::OnDateCellActivated,
                                   base::Unretained(this))),
-          calendar_utils::GetDayIntOfMonth(
-              date + base::Minutes(
-                         calendar_view_controller->time_difference_minutes())),
+          calendar_utils::GetDayIntOfMonth(date + time_difference),
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
+      is_fetched_(is_fetched),
+      time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
@@ -97,10 +100,13 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    if (calendar_utils::IsActiveUser()) {
+    if (calendar_utils::IsActiveUser() && is_fetched_) {
       event_number_ = calendar_view_controller_->GetEventNumber(date_);
     }
     SetTooltipAndAccessibleName();
+    is_selected_ = calendar_view_controller->selected_date_cell_view() == this;
+    calendar_utils::IsTheSameDay(date_,
+                                 calendar_view_controller_->selected_date());
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
@@ -111,7 +117,7 @@ void CalendarDateCellView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
-  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
                                    : calendar_utils::GetPrimaryTextColor());
 }
 
@@ -158,8 +164,8 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnSelectedDateUpdated() {
-  bool is_selected = calendar_utils::IsTheSameDay(
-      date_, calendar_view_controller_->selected_date());
+  const bool is_selected =
+      calendar_view_controller_->selected_date_cell_view() == this;
   // If the selected day changes, repaint the background.
   if (is_selected_ != is_selected) {
     is_selected_ = is_selected;
@@ -170,9 +176,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
     }
     // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
     // date] is currently selected.
-    base::Time local_date =
-        date_ +
-        base::Minutes(calendar_view_controller_->time_difference_minutes());
+    base::Time local_date = date_ + time_difference_;
     base::Time::Exploded date_exploded =
         calendar_utils::GetExplodedUTC(local_date);
     base::Time first_day_of_week =
@@ -180,7 +184,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
 
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
-        calendar_utils::GetMonthDayYear(first_day_of_week),
+        calendar_utils::GetMonthDayYearWeek(first_day_of_week),
         calendar_utils::GetDayOfMonth(date_)));
   }
 }
@@ -205,22 +209,27 @@ void CalendarDateCellView::DisableFocus() {
 }
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
-  std::u16string formatted_date = calendar_utils::GetMonthDayYear(date_);
+  std::u16string formatted_date = calendar_utils::GetMonthDayYearWeek(date_);
   if (!calendar_utils::IsActiveUser()) {
     tool_tip_ = formatted_date;
   } else {
-    const int tooltip_id =
-        event_number_ == 1 ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
-                           : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
-    tool_tip_ = l10n_util::GetStringFUTF16(
-        tooltip_id, formatted_date,
-        base::UTF8ToUTF16(base::NumberToString(event_number_)));
+    if (is_fetched_) {
+      const int tooltip_id =
+          event_number_ == 1 ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
+                             : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
+      tool_tip_ = l10n_util::GetStringFUTF16(
+          tooltip_id, formatted_date,
+          base::UTF8ToUTF16(base::NumberToString(event_number_)));
+    } else {
+      const int tooltip_id = IDS_ASH_CALENDAR_DATE_CELL_LOADING_TOOLTIP;
+      tool_tip_ = l10n_util::GetStringFUTF16(tooltip_id, formatted_date);
+    }
   }
   SetTooltipText(tool_tip_);
   SetAccessibleName(tool_tip_);
 }
 
-void CalendarDateCellView::MaybeSchedulePaint() {
+void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
   // No need to re-paint the grayed out cells, since here should be no change
   // for them.
   if (grayed_out_)
@@ -231,12 +240,23 @@ void CalendarDateCellView::MaybeSchedulePaint() {
     return;
   }
 
-  // Early return if the event number doesn't change.
-  const int event_number = calendar_view_controller_->GetEventNumber(date_);
-  if (event_number_ == event_number)
+  // If the fetching status remains unfetched, no need to schedule repaint.
+  if (!is_fetched_ && !is_fetched)
     return;
 
-  event_number_ = event_number;
+  // If the events are fetched, gets the event number and checks if the event
+  // number has been changed. If the event number hasn't been changed and the
+  // events have been fetched before (i.e. a re-fetch with no event number
+  // change), no need to repaint. In all other cases, schedules a repaint.
+  if (is_fetched) {
+    const int event_number = calendar_view_controller_->GetEventNumber(date_);
+    if (event_number_ == event_number && is_fetched_)
+      return;
+
+    event_number_ = event_number;
+  }
+
+  is_fetched_ = is_fetched;
   SetTooltipAndAccessibleName();
   SchedulePaint();
 }
@@ -244,6 +264,39 @@ void CalendarDateCellView::MaybeSchedulePaint() {
 void CalendarDateCellView::SetFirstOnFocusedAccessibilityLabel() {
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION, tool_tip_));
+}
+
+void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
+  views::LabelButton::PaintButtonContents(canvas);
+  if (grayed_out_)
+    return;
+
+  const AshColorProvider* color_provider = AshColorProvider::Get();
+  if (calendar_utils::IsToday(date_)) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
+    SetEnabledTextColors(text_color);
+  } else if (is_selected_) {
+    const SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent);
+    SetEnabledTextColors(text_color);
+  } else {
+    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                     : calendar_utils::GetPrimaryTextColor());
+  }
+  MaybeDrawEventsIndicator(canvas);
+}
+
+void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
+  if (grayed_out_ || !calendar_utils::IsActiveUser())
+    return;
+
+  // Explicitly request focus after being activated to ensure focus moves away
+  // from any CalendarDateCellView which was focused prior.
+  RequestFocus();
+  calendar_metrics::RecordCalendarDateCellActivated(event);
+  calendar_view_controller_->ShowEventListView(/*selected_date_cell_view=*/this,
+                                               date_, row_index_);
 }
 
 gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
@@ -281,38 +334,6 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
                      indicator_radius, indicator_paint_flags);
 }
 
-void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
-  views::LabelButton::PaintButtonContents(canvas);
-  if (grayed_out_)
-    return;
-
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  if (calendar_utils::IsToday(date_)) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
-    SetEnabledTextColors(text_color);
-  } else if (is_selected_) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent);
-    SetEnabledTextColors(text_color);
-  } else {
-    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                     : calendar_utils::GetPrimaryTextColor());
-  }
-  MaybeDrawEventsIndicator(canvas);
-}
-
-void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
-  if (grayed_out_ || !calendar_utils::IsActiveUser())
-    return;
-
-  // Explicitly request focus after being activated to ensure focus moves away
-  // from any CalendarDateCellView which was focused prior.
-  RequestFocus();
-  calendar_metrics::RecordCalendarDateCellActivated(event);
-  calendar_view_controller_->ShowEventListView(date_, row_index_);
-}
-
 CalendarMonthView::CalendarMonthView(
     const base::Time first_day_of_month,
     CalendarViewController* calendar_view_controller)
@@ -320,32 +341,30 @@ CalendarMonthView::CalendarMonthView(
       calendar_model_(Shell::Get()->system_tray_model()->calendar_model()) {
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
-  // The layer is required in animation.
+  // This layer is required for animations.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   calendar_utils::SetUpWeekColumns(layout);
-  calendar_view_controller_->MaybeUpdateTimeDifference(first_day_of_month);
+  base::TimeDelta const time_difference =
+      calendar_utils::GetTimeDifference(first_day_of_month);
 
   // Using the time difference to get the local `base::Time`, which is used to
   // generate the exploded.
-  base::Time first_day_of_month_local =
-      first_day_of_month +
-      base::Minutes(calendar_view_controller_->time_difference_minutes());
+  base::Time first_day_of_month_local = first_day_of_month + time_difference;
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExplodedUTC(first_day_of_month_local);
   // Find the first day of the week.
   base::Time current_date =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(first_day_of_month);
-  base::Time current_date_local =
-      current_date +
-      base::Minutes(calendar_view_controller_->time_difference_minutes());
-
+  base::Time current_date_local = current_date + time_difference;
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExplodedUTC(current_date_local);
 
   // Fetch events for the month.
   fetch_month_ = first_day_of_month_local.UTCMidnight();
   FetchEvents(fetch_month_);
+  bool is_fetched =
+      calendar_view_controller_->isSuccessfullyFetched(fetch_month_);
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
@@ -354,7 +373,8 @@ CalendarMonthView::CalendarMonthView(
   while (current_date_exploded.month % 12 ==
          (first_day_of_month_exploded.month - 1) % 12) {
     AddDateCellToLayout(current_date, column,
-                        /*is_in_current_month=*/false, /*row_index=*/0);
+                        /*is_in_current_month=*/false, /*row_index=*/0,
+                        /*is_fetched=*/is_fetched);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
   }
@@ -368,7 +388,8 @@ CalendarMonthView::CalendarMonthView(
     }
     auto* cell = AddDateCellToLayout(current_date, column,
                                      /*is_in_current_month=*/true,
-                                     /*row_index=*/row_number - 1);
+                                     /*row_index=*/row_number - 1,
+                                     /*is_fetched=*/is_fetched);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
     if (column == 0 || current_date_exploded.day_of_month == 1) {
       focused_cells_.push_back(cell);
@@ -380,7 +401,9 @@ CalendarMonthView::CalendarMonthView(
           cell->GetPreferredSize().height());
       calendar_view_controller_->set_today_row(row_number);
       focused_cells_.back() = cell;
+      DCHECK(calendar_view_controller_->todays_date_cell_view() == nullptr);
       has_today_ = true;
+      calendar_view_controller_->set_todays_date_cell_view(cell);
     }
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
@@ -391,18 +414,26 @@ CalendarMonthView::CalendarMonthView(
   // To receive the fetched events.
   scoped_calendar_model_observer_.Observe(calendar_model_);
 
-  if (calendar_utils::GetDayOfWeek(current_date) ==
-      calendar_utils::kFirstDayOfWeekString)
+  // Gets the fetched status again in case the events are fetched in the middle
+  // of rendering date cells.
+  bool updated_is_fetched =
+      calendar_view_controller_->isSuccessfullyFetched(fetch_month_);
+
+  // If the fetching status changed, schedule repaint.
+  if (updated_is_fetched != is_fetched)
+    UpdateIsFetchedAndRepaint(updated_is_fetched);
+
+  if (calendar_utils::GetDayOfWeekInt(current_date) == 1)
     return;
 
   // Adds the first several days from the next month if the last day is not the
   // end day of this week. The end date of the last row should be 6 day's away
-  // from the first day of this week. Adds 5 more hours just to cover the case
-  // 25 hours in a day due to daylight saving.
+  // from the first day of this week. Adds `kDurationForAdjustingDST` hours to
+  // cover the case 25 hours in a day due to daylight saving.
   base::Time end_of_the_last_row_local =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(current_date) +
-      base::Days(6) + base::Hours(5) +
-      base::Minutes(calendar_view_controller_->time_difference_minutes());
+      base::Days(6) + calendar_utils::kDurationForAdjustingDST +
+      time_difference;
   base::Time::Exploded end_of_row_exploded =
       calendar_utils::GetExplodedUTC(end_of_the_last_row_local);
 
@@ -412,7 +443,8 @@ CalendarMonthView::CalendarMonthView(
     // Next column is generated.
     AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false,
-                        /*row_index=*/row_number);
+                        /*row_index=*/row_number,
+                        /*is_fetched=*/is_fetched);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
   }
@@ -420,10 +452,16 @@ CalendarMonthView::CalendarMonthView(
 
 CalendarMonthView::~CalendarMonthView() {
   calendar_model_->CancelFetch(fetch_month_);
-}
 
-void CalendarMonthView::FetchEvents(const base::Time& month) {
-  calendar_model_->FetchEvents({month});
+  auto* todays_date_cell_view =
+      calendar_view_controller_->todays_date_cell_view();
+  if (todays_date_cell_view && todays_date_cell_view->parent() == this)
+    calendar_view_controller_->set_todays_date_cell_view(nullptr);
+
+  auto* selected_date_cell_view =
+      calendar_view_controller_->selected_date_cell_view();
+  if (selected_date_cell_view && selected_date_cell_view->parent() == this)
+    calendar_view_controller_->set_selected_date_cell_view(nullptr);
 }
 
 void CalendarMonthView::OnEventsFetched(
@@ -431,20 +469,7 @@ void CalendarMonthView::OnEventsFetched(
     const base::Time start_time,
     const google_apis::calendar::EventList* events) {
   if (status == CalendarModel::kSuccess && start_time == fetch_month_)
-    SchedulePaintChildren();
-}
-
-CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
-    base::Time current_date,
-    int column,
-    bool is_in_current_month,
-    int row_index) {
-  auto* layout_manager = static_cast<views::TableLayout*>(GetLayoutManager());
-  if (column == 0)
-    layout_manager->AddRows(1, views::TableLayout::kFixedSize);
-  return AddChildView(std::make_unique<CalendarDateCellView>(
-      calendar_view_controller_, current_date,
-      /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index));
+    UpdateIsFetchedAndRepaint(true);
 }
 
 void CalendarMonthView::EnableFocus() {
@@ -457,9 +482,30 @@ void CalendarMonthView::DisableFocus() {
     static_cast<CalendarDateCellView*>(cell)->DisableFocus();
 }
 
-void CalendarMonthView::SchedulePaintChildren() {
+void CalendarMonthView::UpdateIsFetchedAndRepaint(bool updated_is_fetched) {
   for (auto* cell : children())
-    static_cast<CalendarDateCellView*>(cell)->MaybeSchedulePaint();
+    static_cast<CalendarDateCellView*>(cell)->UpdateFetchStatus(
+        updated_is_fetched);
+}
+
+CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
+    base::Time current_date,
+    int column,
+    bool is_in_current_month,
+    int row_index,
+    bool is_fetched) {
+  auto* layout_manager = static_cast<views::TableLayout*>(GetLayoutManager());
+  if (column == 0)
+    layout_manager->AddRows(1, views::TableLayout::kFixedSize);
+  return AddChildView(std::make_unique<CalendarDateCellView>(
+      calendar_view_controller_, current_date,
+      calendar_utils::GetTimeDifference(current_date),
+      /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index,
+      /*is_fetched=*/is_fetched));
+}
+
+void CalendarMonthView::FetchEvents(const base::Time& month) {
+  calendar_model_->FetchEvents(month);
 }
 
 BEGIN_METADATA(CalendarDateCellView, views::View)

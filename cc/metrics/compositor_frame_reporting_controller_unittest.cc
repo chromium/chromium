@@ -1333,6 +1333,77 @@ TEST_F(CompositorFrameReportingControllerTest,
   }
 }
 
+TEST_F(CompositorFrameReportingControllerTest,
+       EventLatencyMainRepaintedScroll) {
+  base::HistogramTester histogram_tester;
+
+  // Set up two EventMetrics objects.
+  std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
+      false /* is_inertial */,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted);
+  metrics_1->set_requires_main_thread_update();
+  base::TimeTicks start_time_1 = metrics_1->GetDispatchStageTimestamp(
+      EventMetrics::DispatchStage::kGenerated);
+
+  // The second EventMetrics does not have set_requires_main_thread_update().
+  // (It's not very realistic for the same scroll gesture to produce two events
+  // with differing values for this bit, but let's test both conditions here.)
+  std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
+      false /* is_inertial */,
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued);
+  base::TimeTicks start_time_2 = metrics_2->GetDispatchStageTimestamp(
+      EventMetrics::DispatchStage::kGenerated);
+
+  // Simulate a frame getting stuck in the main thread.
+  SimulateBeginImplFrame();
+  SimulateBeginMainFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Submit a partial update with our events from the compositor thread.
+  EventMetrics::List metrics_list;
+  metrics_list.push_back(std::move(metrics_1));
+  metrics_list.push_back(std::move(metrics_2));
+  reporting_controller_.DidSubmitCompositorFrame(
+      *current_token_, AdvanceNowByMs(10), current_id_, {},
+      {{}, std::move(metrics_list)},
+      /*has_missing_content=*/false);
+
+  // Present the partial update.
+  viz::FrameTimingDetails details_1 = {};
+  details_1.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details_1);
+
+  // Let the main thread finish its work.
+  SimulateCommit(nullptr);
+  SimulateActivate();
+
+  // Submit the final update.
+  SimulateBeginImplFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  SimulateSubmitCompositorFrame({});
+
+  // Present the final update.
+  viz::FrameTimingDetails details_2 = {};
+  details_2.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details_2);
+
+  // metrics_1 has requires_main_thread_update(), so its latency is based on the
+  // final-update presentation (details_2).
+  base::TimeDelta expected_latency_1 =
+      details_2.presentation_feedback.timestamp - start_time_1;
+  histogram_tester.ExpectBucketCount(
+      "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
+      expected_latency_1.InMicroseconds(), 1);
+
+  // metrics_2 did NOT have requires_main_thread_update(), so its latency is
+  // based on the partial-update presentation (details_1).
+  base::TimeDelta expected_latency_2 =
+      details_1.presentation_feedback.timestamp - start_time_2;
+  histogram_tester.ExpectBucketCount(
+      "EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
+      expected_latency_2.InMicroseconds(), 1);
+}
+
 // Tests that EventLatency total latency histograms are reported properly for
 // pinch events when a frame is presented to the user.
 TEST_F(CompositorFrameReportingControllerTest,

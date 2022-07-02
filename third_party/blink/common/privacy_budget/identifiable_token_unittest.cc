@@ -23,6 +23,14 @@ struct ImplicitConverter {
 
 }  // namespace
 
+TEST(IdentifiableTokenTest, SampleBool) {
+  bool source_value = false;
+  auto expected_value = INT64_C(0);
+  EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
+  EXPECT_EQ(IdentifiableToken(expected_value),
+            ImplicitConverter(source_value).sample);
+}
+
 TEST(IdentifiableTokenTest, SampleSignedChar) {
   auto source_value = static_cast<signed char>(-65);
   auto expected_value = INT64_C(-65);

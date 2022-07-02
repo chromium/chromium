@@ -6,6 +6,7 @@
 #define UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -94,7 +95,7 @@ class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
   void FadeOutAnimationTicked(double progress);
   void FadeOutAnimationCancel();
 
-  Client* const client_;  // Weak, owns `this`.
+  const raw_ptr<Client> client_;  // Weak, owns `this`.
   const int thumb_width_expanded_;
   const int thumb_width_unexpanded_;
 

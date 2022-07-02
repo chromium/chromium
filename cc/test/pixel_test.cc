@@ -29,7 +29,6 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -141,8 +140,6 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
-  if (output_surface_->context_provider())
-    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   return PixelsMatchReference(ref_file, comparator);
@@ -178,8 +175,6 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
-  if (output_surface_->context_provider())
-    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   // Need to wrap |ref_pixels| in a SkBitmap.

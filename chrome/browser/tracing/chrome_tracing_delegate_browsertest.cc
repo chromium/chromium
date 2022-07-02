@@ -89,7 +89,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
         content::BackgroundTracingConfig::FromDict(std::move(dict)));
     DCHECK(config);
 
-    return content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
+    return content::BackgroundTracingManager::GetInstance().SetActiveScenario(
         std::move(config), data_filtering);
   }
 
@@ -106,14 +106,14 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     on_started_finalization_callback_ =
         std::move(on_started_finalization_callback);
     trigger_handle_ =
-        content::BackgroundTracingManager::GetInstance()->RegisterTriggerType(
+        content::BackgroundTracingManager::GetInstance().RegisterTriggerType(
             trigger_name);
 
     content::BackgroundTracingManager::StartedFinalizingCallback
         started_finalizing_callback = base::BindOnce(
             &ChromeTracingDelegateBrowserTest::OnStartedFinalizing,
             base::Unretained(this));
-    content::BackgroundTracingManager::GetInstance()->TriggerNamedEvent(
+    content::BackgroundTracingManager::GetInstance().TriggerNamedEvent(
         trigger_handle_, std::move(started_finalizing_callback));
   }
 
@@ -125,11 +125,11 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
   void WaitForUpload() {
     // No ReceiveCallback set, so wait for SetTraceToUpload to be called.
-    auto* manager = content::BackgroundTracingManager::GetInstance();
-    while (!manager->HasTraceToUpload()) {
+    auto& manager = content::BackgroundTracingManager::GetInstance();
+    while (!manager.HasTraceToUpload()) {
       base::RunLoop().RunUntilIdle();
     }
-    EXPECT_FALSE(manager->GetLatestTraceToUpload().empty());
+    EXPECT_FALSE(manager.GetLatestTraceToUpload().empty());
     receive_count_++;
   }
 
@@ -185,14 +185,14 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
       R"({"state":3,"upload_times":[{"scenario":"TestScenario","time":"*"}]})"))
       << "Actual: " << state;
 
-  content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance()->WhenIdle(
+  content::BackgroundTracingManager::GetInstance().WhenIdle(
       wait_for_abort.QuitClosure());
   wait_for_abort.Run();
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   EXPECT_FALSE(base::trace_event::TraceLog::GetInstance()->IsEnabled());
 
   // We should not be able to start a new reactive scenario immediately after
@@ -316,14 +316,14 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
 
-  content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance()->WhenIdle(
+  content::BackgroundTracingManager::GetInstance().WhenIdle(
       wait_for_abort.QuitClosure());
   wait_for_abort.Run();
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   // We should immediately be able to start a new scenario that includes a
   // crash scenario.
@@ -348,14 +348,14 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
 
-  content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   base::RunLoop wait_for_abort;
-  content::BackgroundTracingManager::GetInstance()->WhenIdle(
+  content::BackgroundTracingManager::GetInstance().WhenIdle(
       wait_for_abort.QuitClosure());
   wait_for_abort.Run();
 
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 
   // We should immediately be able to start a new scenario that includes a
   // crash scenario.
@@ -521,8 +521,9 @@ class ChromeTracingDelegateBrowserTestOnStartup
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     content::BackgroundTracingManager::GetInstance()
-        ->SetConfigTextFilterForTesting(
+        .SetConfigTextFilterForTesting(
             base::BindRepeating(&FieldTrialConfigTextFilter));
   }
 };
@@ -532,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   // This test would enable tracing and shutdown browser before 30 seconds
   // elapses. So, the profile would store incomplete state for next session.
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
   EXPECT_EQ(GetSessionStateJson(), R"({"state":1,"upload_times":[]})");
 }
@@ -542,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   // Scenario should be inactive even though we have a config because last
   // session shut down unexpectedly.
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 0 = NOT_ACTIVATED, current session is inactive.
   EXPECT_EQ(GetSessionStateJson(), R"({"state":0,"upload_times":[]})");
 }
@@ -550,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
                        PRE_StartupTracingThrottle) {
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   EXPECT_EQ(GetSessionStateJson(), R"({"state":1,"upload_times":[]})");
 
   TriggerPreemptiveScenario(base::OnceClosure());
@@ -571,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   // The startup scenario should *not* be started, since not enough
   // time has elapsed since the last upload (set in the PRE_ above).
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   std::string state = GetSessionStateJson();
   EXPECT_TRUE(base::MatchPattern(
       state,
@@ -627,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   ASSERT_FALSE(OutputPathExists());
 
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
   EXPECT_EQ(GetSessionStateJson(), R"({"state":1,"upload_times":[]})");
 
@@ -640,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        PRE_IgnoreThrottle) {
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   EXPECT_EQ(GetSessionStateJson(), R"({"state":1,"upload_times":[]})");
 
   // This updates the upload time for the test scenario to the current time,
@@ -662,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   ASSERT_FALSE(OutputPathExists());
 
   EXPECT_TRUE(
-      content::BackgroundTracingManager::GetInstance()->HasActiveScenario());
+      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
   std::string state = GetSessionStateJson();
   EXPECT_TRUE(base::MatchPattern(

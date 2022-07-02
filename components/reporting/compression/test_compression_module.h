@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 #define COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 
+#include <string>
+
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,6 +29,7 @@ class TestCompressionModuleStrict : public CompressionModule {
       void,
       CompressRecord,
       (std::string record,
+       scoped_refptr<ResourceInterface> memory_resource,
        base::OnceCallback<void(std::string,
                                absl::optional<CompressionInformation>)> cb),
       (const override));

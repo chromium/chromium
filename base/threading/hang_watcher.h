@@ -68,12 +68,12 @@ class BASE_EXPORT WatchHangsInScope {
   // A good default value needs to be large enough to represent a significant
   // hang and avoid noise while being small enough to not exclude too many
   // hangs. The nature of the work that gets executed on the thread is also
-  // important. We can be much stricter when monitoring a UI thread compared tp
+  // important. We can be much stricter when monitoring a UI thread compared to
   // a ThreadPool thread for example.
-  static const base::TimeDelta kDefaultHangWatchTime;
+  static constexpr base::TimeDelta kDefaultHangWatchTime = base::Seconds(10);
 
   // Constructing/destructing thread must be the same thread.
-  explicit WatchHangsInScope(TimeDelta timeout);
+  explicit WatchHangsInScope(TimeDelta timeout = kDefaultHangWatchTime);
   ~WatchHangsInScope();
 
   WatchHangsInScope(const WatchHangsInScope&) = delete;

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
@@ -21,8 +22,8 @@
 namespace IPC {
 
 void ParamTraits<gfx::Range>::Write(base::Pickle* m, const gfx::Range& r) {
-  m->WriteUInt32(r.start());
-  m->WriteUInt32(r.end());
+  m->WriteUInt32(static_cast<uint32_t>(r.start()));
+  m->WriteUInt32(static_cast<uint32_t>(r.end()));
 }
 
 bool ParamTraits<gfx::Range>::Read(const base::Pickle* m,
@@ -37,7 +38,7 @@ bool ParamTraits<gfx::Range>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<gfx::Range>::Log(const gfx::Range& r, std::string* l) {
-  l->append(base::StringPrintf("(%d, %d)", r.start(), r.end()));
+  l->append(base::StringPrintf("(%" PRIuS ", %" PRIuS ")", r.start(), r.end()));
 }
 
 #if BUILDFLAG(IS_MAC)

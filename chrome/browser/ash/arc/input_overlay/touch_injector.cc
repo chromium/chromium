@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -174,11 +175,11 @@ void TouchInjector::UnRegisterEventRewriter() {
   observation_.Reset();
 }
 
-void TouchInjector::OnBindingChange(Action* target_action,
-                                    std::unique_ptr<InputElement> input_element,
-                                    DisplayMode mode) {
+void TouchInjector::OnBindingChange(
+    Action* target_action,
+    std::unique_ptr<InputElement> input_element) {
   if (display_overlay_controller_)
-    display_overlay_controller_->RemoveEditErrorMsg();
+    display_overlay_controller_->RemoveEditMessage();
   Action* overlapped_action = nullptr;
   for (auto& action : actions_) {
     if (action.get() == target_action)
@@ -194,7 +195,7 @@ void TouchInjector::OnBindingChange(Action* target_action,
   if (overlapped_action)
     overlapped_action->Unbind(*input_element);
 
-  target_action->PrepareToBind(std::move(input_element), mode);
+  target_action->PrepareToBind(std::move(input_element));
 }
 
 void TouchInjector::OnApplyPendingBinding() {
@@ -204,6 +205,8 @@ void TouchInjector::OnApplyPendingBinding() {
 
 void TouchInjector::OnBindingSave() {
   OnApplyPendingBinding();
+  if (display_overlay_controller_)
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
   OnSaveProtoFile();
 }
 
@@ -234,13 +237,30 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
     auto input_element =
         InputElement::ConvertFromProto(action_proto.input_element());
     DCHECK(input_element);
-    OnBindingChange(action, std::move(input_element), DisplayMode::kView);
+    OnBindingChange(action, std::move(input_element));
   }
   OnApplyPendingBinding();
 }
 
 void TouchInjector::OnInputMenuViewRemoved() {
   OnSaveProtoFile();
+  // Record UMA stats upon |InputMenuView| close because it needs to ignore the
+  // unfinalized menu state change.
+  if (touch_injector_enable_ != touch_injector_enable_uma_) {
+    touch_injector_enable_uma_ = touch_injector_enable_;
+    RecordInputOverlayFeatureState(touch_injector_enable_uma_);
+  }
+
+  if (input_mapping_visible_ != input_mapping_visible_uma_) {
+    input_mapping_visible_uma_ = input_mapping_visible_;
+    RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
+  }
+}
+
+void TouchInjector::CleanupTouchEvents() {
+  if (is_mouse_locked_)
+    FlipMouseLockFlag();
+  DispatchTouchReleaseEvent();
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {
@@ -356,37 +376,42 @@ void TouchInjector::FlipMouseLockFlag() {
     DispatchTouchReleaseEventOnMouseUnLock();
 }
 
-bool TouchInjector::MenuAnchorPressed(const ui::Event& event,
-                                      const gfx::RectF& content_bounds) {
-  if (!event.IsMouseEvent() && !event.IsTouchEvent())
+bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
+                                            const gfx::RectF& content_bounds,
+                                            bool press_required) {
+  if (!event.IsLocatedEvent())
     return false;
 
   auto menu_anchor_bounds =
       display_overlay_controller_->GetOverlayMenuEntryBounds();
   if (!menu_anchor_bounds) {
-    DCHECK(display_mode_ != DisplayMode::kView);
+    DCHECK(display_mode_ != DisplayMode::kView &&
+           display_mode_ != DisplayMode::kPreMenu);
     return false;
   }
 
-  auto menu_anchor_bounds_in_root =
-      gfx::RectF(menu_anchor_bounds->x() + content_bounds.x(),
-                 menu_anchor_bounds->y() + content_bounds.y(),
-                 menu_anchor_bounds->width(), menu_anchor_bounds->height());
+  auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
+  target_window_->GetHost()->ConvertPixelsToDIP(&event_location);
+  // Convert |event_location| from root window location to screen location.
+  auto origin = target_window_->GetRootWindow()->GetBoundsInScreen().origin();
+  event_location.Offset(origin.x(), origin.y());
 
-  auto location = gfx::Point(event.AsLocatedEvent()->root_location());
-  target_window_->GetHost()->ConvertPixelsToDIP(&location);
-  auto location_f = gfx::PointF(location);
+  if (!press_required)
+    return menu_anchor_bounds->Contains(event_location);
+
+  if (!event.IsMouseEvent() && !event.IsTouchEvent())
+    return false;
 
   if (event.IsMouseEvent()) {
     auto* mouse = event.AsMouseEvent();
     if (mouse->type() == ui::ET_MOUSE_PRESSED &&
-        menu_anchor_bounds_in_root.Contains(location_f)) {
+        menu_anchor_bounds->Contains(event_location)) {
       return true;
     }
   } else {
     auto* touch = event.AsTouchEvent();
     if (touch->type() == ui::ET_TOUCH_PRESSED &&
-        menu_anchor_bounds_in_root.Contains(location_f)) {
+        menu_anchor_bounds->Contains(event_location)) {
       return true;
     }
   }
@@ -397,25 +422,54 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
-
   auto bounds = CalculateWindowContentBounds(target_window_);
+
+  // This is for Tab key as Accessibility requirement.
+  // - For key event, Tab key is used to enter into the |kPreMenu| mode. And any
+  // keys, except Space and Enter keys, are used to exit the |kPreMenu| and
+  // enter into the |kView| mode, and continue events in |kView| mode.
+  // - For any located events in |kPreMenu| mode, if it doesn't happen on the
+  // menu entry button, then it enters into the |kView| mode and continues
+  // events in |kView| mode.
+  if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
+      views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
+    if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
+      CleanupTouchEvents();
+      display_overlay_controller_->SetDisplayMode(DisplayMode::kPreMenu);
+    }
+    return DiscardEvent(continuation);
+  } else if (display_mode_ == DisplayMode::kPreMenu) {
+    if (event.IsKeyEvent()) {
+      auto* key_event = event.AsKeyEvent();
+      if (key_event->key_code() != ui::KeyboardCode::VKEY_SPACE &&
+          key_event->key_code() != ui::KeyboardCode::VKEY_RETURN &&
+          key_event->type() == ui::ET_KEY_PRESSED) {
+        display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+      } else {
+        return SendEvent(continuation, &event);
+      }
+    } else if (LocatedEventOnMenuEntry(event, bounds,
+                                       /*press_required=*/false)) {
+      return SendEvent(continuation, &event);
+    } else {
+      display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    }
+  }
+
+  if (display_mode_ != DisplayMode::kView)
+    return SendEvent(continuation, &event);
+
   // |display_overlay_controller_| is null for unittest.
-  if (display_overlay_controller_ && display_mode_ == DisplayMode::kView &&
-      MenuAnchorPressed(event, bounds)) {
+  if (display_overlay_controller_ &&
+      LocatedEventOnMenuEntry(event, bounds, /*press_required=*/true)) {
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
-    if (is_mouse_locked_)
-      FlipMouseLockFlag();
-    DispatchTouchReleaseEvent();
-
+    CleanupTouchEvents();
     display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }
 
   if (text_input_active_)
-    return SendEvent(continuation, &event);
-
-  if (display_mode_ != DisplayMode::kView)
     return SendEvent(continuation, &event);
 
   if (!touch_injector_enable_)
@@ -436,7 +490,15 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     if (new_touch_event)
       return SendEventFinally(continuation, new_touch_event.get());
 
-    return DiscardEvent(continuation);
+    // TODO(b/237037540): workaround for b/233785660. Theoretically it
+    // should discard the event if original touch-move or touch-release with
+    // same ID is not rewritten due to missing original touch-press. But
+    // thinking of real world user cases, it's unlikely to trigger any issues
+    // with sending original event. The logic is already complicated in
+    // |RewriteEvent()| so here it uses a workaround. The menu entry will be
+    // removed and simplify the logic in future version, then it will be
+    // fundamentally improved.
+    return SendEvent(continuation, &event);
   }
 
   if (mouse_lock_ && mouse_lock_->Process(event))
@@ -487,7 +549,9 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   auto it = rewritten_touch_infos_.find(original_id);
 
   if (it == rewritten_touch_infos_.end()) {
-    DCHECK(touch_event->type() == ui::ET_TOUCH_PRESSED);
+    // When touching on the window to regain the focus, the first
+    // |ui::ET_TOUCH_PRESSED| will not be received and then it may send
+    // |ui::ET_TOUCH_MOVED| event to the window. So no need to add DCHECK here.
     if (touch_event->type() != ui::ET_TOUCH_PRESSED)
       return nullptr;
   } else {
@@ -572,6 +636,13 @@ void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
 
   if (display_overlay_controller_)
     display_overlay_controller_->OnApplyMenuState();
+}
+
+void TouchInjector::RecordMenuStateOnLaunch() {
+  touch_injector_enable_uma_ = touch_injector_enable_;
+  input_mapping_visible_uma_ = input_mapping_visible_;
+  RecordInputOverlayFeatureState(touch_injector_enable_uma_);
+  RecordInputOverlayMappingHintState(input_mapping_visible_uma_);
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {

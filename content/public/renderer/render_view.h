@@ -36,15 +36,9 @@ class RenderViewVisitor;
 // https://www.chromium.org/developers/design-documents/site-isolation.
 class CONTENT_EXPORT RenderView {
  public:
-  // Returns the RenderView containing the given WebView.
-  static RenderView* FromWebView(blink::WebView* webview);
-
   // Visit all RenderViews with a live WebView (i.e., RenderViews that have
   // been closed but not yet destroyed are excluded).
   static void ForEach(RenderViewVisitor* visitor);
-
-  // Get the routing ID of the view.
-  virtual int GetRoutingID() = 0;
 
   // Returns the associated WebView. May return NULL when the view is closing.
   virtual blink::WebView* GetWebView() = 0;

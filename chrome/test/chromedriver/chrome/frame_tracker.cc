@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -22,8 +23,8 @@ FrameTracker::FrameTracker(DevToolsClient* client,
 
 FrameTracker::~FrameTracker() {}
 
-Status FrameTracker::GetContextIdForFrame(
-    const std::string& frame_id, int* context_id) {
+Status FrameTracker::GetContextIdForFrame(const std::string& frame_id,
+                                          std::string* context_id) {
   if (frame_to_context_map_.count(frame_id) == 0) {
     return Status(kNoSuchExecutionContext,
                   "frame does not have execution context");
@@ -105,7 +106,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     std::string frame_id;
     bool is_default = true;
 
-    absl::optional<int> context_id = context->GetDict().FindInt("id");
+    const std::string* context_id = context->GetDict().FindString("uniqueId");
     if (!context_id) {
       std::string json;
       base::JSONWriter::Write(*context, &json);
@@ -131,14 +132,22 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     if (is_default && !frame_id.empty())
       frame_to_context_map_[frame_id] = *context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
-    absl::optional<int> execution_context_id =
-        params.GetDict().FindInt("executionContextId");
-    if (!execution_context_id)
-      return Status(kUnknownError, method + " missing 'executionContextId'");
-    for (auto entry : frame_to_context_map_) {
-      if (entry.second == *execution_context_id) {
-        frame_to_context_map_.erase(entry.first);
-        break;
+    const base::Value::Dict* context = params.GetDict().FindDict("context");
+    // TODO(nechaev): Interpret the missing 'context' as an error
+    // after https://crbug.com/chromedriver/4120 is fixed.
+    if (context) {
+      const std::string* context_id = context->FindString("uniqueId");
+      if (!context_id) {
+        std::string json;
+        base::JSONWriter::Write(*context, &json);
+        return Status(kUnknownError,
+                      method + " has invalid 'context': " + json);
+      }
+      for (auto entry : frame_to_context_map_) {
+        if (entry.second == *context_id) {
+          frame_to_context_map_.erase(entry.first);
+          break;
+        }
       }
     }
   } else if (method == "Runtime.executionContextsCleared") {
@@ -153,6 +162,9 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   } else if (method == "Page.frameDetached") {
     if (const std::string* frame_id = params.GetDict().FindString("frameId")) {
       attached_frames_.erase(*frame_id);
+      // TODO(nechaev): Remove the following line
+      // after https://crbug.com/chromedriver/4120 is fixed.
+      frame_to_context_map_.erase(*frame_id);
     } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameDetached event");
@@ -191,7 +203,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                                                               *target_id));
         WebViewImplHolder child_holder(child.get());
         frame_to_target_map_[*target_id] = std::move(child);
-        frame_to_target_map_[*target_id]->SetUpDevTools();
+        frame_to_target_map_[*target_id]->ConnectIfNecessary();
       }
     }
   } else if (method == "Target.detachedFromTarget") {

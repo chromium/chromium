@@ -39,10 +39,9 @@ ClientSocketPool* MockClientSocketPoolManager::GetSocketPool(
   return nullptr;
 }
 
-std::unique_ptr<base::Value>
-MockClientSocketPoolManager::SocketPoolInfoToValue() const {
+base::Value MockClientSocketPoolManager::SocketPoolInfoToValue() const {
   NOTIMPLEMENTED();
-  return std::unique_ptr<base::Value>(nullptr);
+  return base::Value();
 }
 
 }  // namespace net

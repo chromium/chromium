@@ -58,7 +58,10 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   const base::Version this_version(kUpdaterVersion);
-  const base::Version active_version(global_prefs->GetActiveVersion());
+  base::Version active_version(global_prefs->GetActiveVersion());
+  if (!active_version.IsValid()) {
+    active_version = base::Version(std::vector<uint32_t>{0});
+  }
 
   VLOG(2) << "This version: " << this_version.GetString()
           << ", active version: " << active_version.GetString();

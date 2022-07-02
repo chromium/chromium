@@ -9,7 +9,7 @@ liblouis_library("liblouis") {
   dest_dir = "$root_build_dir/resources/chromeos/accessibility/chromevox/background/braille"
 }
 
-if (!is_chromecast) {
+if (!is_castos) {
   chromevox_test_data_dir = "$root_build_dir/chromevox_test_data/braille"
 
   liblouis_library("liblouis_test_data") {

@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1060368002126861100">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, najprije ih premjestite u mapu datoteka u Windowsima.</translation>
 <translation id="1062407476771304334">Zamijeni</translation>
-<translation id="1119069657431255176">Sažeta tar arhiva Bzip2</translation>
 <translation id="1119447706177454957">Interna pogreška</translation>
 <translation id="1120073797882051782">hangul romaja</translation>
 <translation id="112387589102719461">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalanski</translation>
 <translation id="1168100932582989117">Googleovi poslužitelji naziva</translation>
-<translation id="1171082344678443012">XZ komprimirana arhiva</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1209796539517632982">Automatski poslužitelji naziva</translation>
 <translation id="1210831758834677569">laoski</translation>
-<translation id="1223825810409523901">Chromeovo proširenje</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Promjena zajedničkih konfiguracija mreže nije dopuštena</translation>
 <translation id="1665611772925418501">Nije bilo moguće mijenjati datoteku.</translation>
 <translation id="1673103856845176271">Nije bilo moguće pristupiti datoteci zbog sigurnosnih razloga.</translation>
-<translation id="16762847117768727">ISO slika</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Vožnja biciklom</translation>
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Upravljaj na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
-<translation id="2028997212275086731">RAR arhiva</translation>
-<translation id="2036414735548252477">LZMA komprimirana tar arhiva</translation>
 <translation id="2037845485764049925">ruski</translation>
 <translation id="2044023416777079300">Modem nije registriran</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao vaš administrator, pojedinosti</translation>
 <translation id="2142680004883808240">ruski s fonetskom tipkovnicom YaZHert</translation>
 <translation id="2143778271340628265">Ručna konfiguracija proxyja</translation>
+<translation id="2148716181193084225">Danas</translation>
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalski s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="2198315389084035571">pojednostavnjeni kineski</translation>
-<translation id="2208158072373999562">Zip arhiva</translation>
 <translation id="22085916256174561">korejski</translation>
 <translation id="2208919847696382164">Instaliranje uz Linux</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Prebaci na prikaz popisa</translation>
 <translation id="2377590462528165447">S Linuxom se dijeli sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Odabrane datoteke: <ph name="SELCTED_FILE_COUNT" /></translation>
+<translation id="2387120140441437063">Datoteke u otpadu ne mogu se otvoriti. Vratite datoteke prije otvaranja.</translation>
 <translation id="2387458720915042159">Vrsta proxy veze</translation>
 <translation id="2389832672041313158">burmanski (Mjanmar)</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">Sadržaj ove mape dostupan je samo za čitanje. Neke aktivnosti nisu podržane.</translation>
 <translation id="2542049655219295786">Googleova tablica</translation>
 <translation id="2544853746127077729">Mreža je odbila certifikat za autentifikaciju</translation>
-<translation id="2547921442987553570">Dodaj u proširenje <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">američka (međunarodna)</translation>
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">tamilski fonetski</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">kineski dayi</translation>
 <translation id="3057861065630527966">Izrada sigurnosnih kopija fotografija i videozapisa</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
-<translation id="3078461028045006476">Podijeli s aplikacijom <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebitovi</translation>
 <translation id="3085752524577180175">SOCKS host</translation>
 <translation id="3104793765551262433">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao vaš administrator, pojedinosti</translation>
@@ -313,7 +306,7 @@
 <translation id="3685122418104378273">Sinkronizacija Google diska onemogućena je prema zadanim postavkama kada se upotrebljavaju mobilni podaci.</translation>
 <translation id="3689865792480713551">Otkažite <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
-<translation id="3691184985318546178">sinhaleški</translation>
+<translation id="3691184985318546178">singalski</translation>
 <translation id="3726463242007121105">Nije moguće otvoriti ovaj uređaj jer nije podržan njegov datotečni sustav.</translation>
 <translation id="3727148787322499904">Promjena te postavke utjecat će na sve dijeljene mreže</translation>
 <translation id="3737576078404241332">Ukloni s bočne trake</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3855472144336161447">njemačka (Neo 2)</translation>
 <translation id="3858860766373142691">Naziv</translation>
-<translation id="386548886866354912">Zapakiraj proširenjem <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">francuski (Kanada) s višejezičnom tipkovnicom</translation>
 <translation id="3901991538546252627">Povezivanje s mrežom <ph name="NAME" /></translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">engleski (UK)</translation>
 <translation id="3975895378829046965">bengalski fonetski</translation>
+<translation id="3991446849494482687">Time će se onemogućiti i postavka zaključavanja SIM-a na uređaju.</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4017788180641807848">engleski (SAD) s Workman tipkovnicom</translation>
 <translation id="4040753847560036377">PUK nije točan</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Klizač za glasnoću</translation>
 <translation id="4881695831933465202">Otvori</translation>
-<translation id="4886199584824489598">Bzip2 komprimirana arhiva</translation>
 <translation id="4900532980794411603">Dijeli s Parallels Desktopom</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, povežite</translation>
 <translation id="4905417359854579806">Sigurnosno kopiranje datoteka (ukupno <ph name="FILE_COUNT" />) je spremno</translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> mreža, nije povezana</translation>
 <translation id="6074825444536523002">Google obrazac</translation>
 <translation id="6079871810119356840">mađarski s QWERTY tipkovnicom</translation>
-<translation id="6082256976217156453">LZMA komprimirana arhiva</translation>
 <translation id="6096979789310008754">Pretraži izbrisani tekst, uz prikaz svih datoteka i mapa.</translation>
 <translation id="610101264611565198">Datoteka <ph name="FILE_NAME" /> premješta se u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV tekst</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">mađarski</translation>
-<translation id="6189412234224385711">Otvori proširenjem <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
 <translation id="6199801702437275229">Čekanje na informacije o prostoru...</translation>
 <translation id="6205710420833115353">Neki procesi traju dulje nego što je to uobičajeno. Želite li ih prekinuti?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">PUK nije važeći</translation>
 <translation id="6312403991423642364">Nepoznata mrežna pogreška</translation>
 <translation id="6317608858038767920">Prilagođeni poslužitelj naziva <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhiva</translation>
 <translation id="6321303798550928047">Mahanje</translation>
 <translation id="6327785803543103246">Automatsko otkrivanje putem web-proxyja</translation>
 <translation id="6339145975392024142">Američki međunarodni (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">vijetnamski s tipkovnicom TCVN</translation>
 <translation id="6485131920355264772">Dohvaćanje informacija o prostoru nije uspjelo</translation>
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
+<translation id="649877868557234318">Izdvajanje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Onemogući proxyje za dijeljene mreže</translation>
 <translation id="6509122719576673235">Norveški</translation>
 <translation id="6528513914570774834">Dopusti drugim korisnicima ovog uređaja da upotrebljavaju ovu mrežu</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Upravljanje dijeljenjem s Linuxom</translation>
 <translation id="6806796368146926706">alfanumerički s japanskom tipkovnicom</translation>
 <translation id="6808193438228982088">Lisica</translation>
-<translation id="6820687829547641339">Sažeta tar arhiva Gzip</translation>
 <translation id="6823166707458800069">Sve datoteke spremljene u ovoj mapi automatski se sigurnosno kopiraju online.</translation>
 <translation id="6825883775269213504">Ruski</translation>
 <translation id="6847101934483209767">Stavka <ph name="ENTRY_NAME" /> uklonjena je iz odabira.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">tajlandski s tipkovnicom TIS 820-2531</translation>
 <translation id="708278670402572152">Prekinite vezu da biste omogućili pretraživanje</translation>
 <translation id="7086590977277044826">tamilski s tipkovnicom InScript</translation>
+<translation id="7088615885725309056">Starije</translation>
 <translation id="7103992300314999525">makedonski</translation>
 <translation id="7106346894903675391">Kupite još prostora za pohranu...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">hindski</translation>
 <translation id="7693909743393669729">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni i uklonit će se sve postojeće particije, uključujući particije koje možda nisu vidljive. Tu radnju nije moguće poništiti.</translation>
 <translation id="7695430100978772476">Nije uspjelo formatiranje diska <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Pražnjenje otpada nije uspjelo.</translation>
 <translation id="770015031906360009">Grčki</translation>
 <translation id="7705251383879779343">Kopirano: <ph name="FILE_NAME" />.</translation>
 <translation id="7711920809702896782">Informacije o slici</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">kineski wubi</translation>
 <translation id="7765158879357617694">Pomakni</translation>
 <translation id="7774365994322694683">Ptica</translation>
+<translation id="7781829728241885113">Danas</translation>
 <translation id="7788080748068240085">Da biste izvenmrežno spremili datoteku "<ph name="FILE_NAME" />", morate osloboditi još <ph name="TOTAL_FILE_SIZE" /> prostora:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />otkvačite datoteke kojima više ne morate izvanmrežno pristupati<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />izbrišite datoteke iz mape Preuzimanja.<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">Ne upotrebljavaj mobilne podatke za sinkronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
 <translation id="7943385054491506837">američka (SAD Colemak)</translation>
-<translation id="7948417415021769876">7z arhiva</translation>
 <translation id="7953739707111622108">Nije moguće otvoriti ovaj uređaj jer nije prepoznat njegov datotečni sustav.</translation>
 <translation id="7969525169268594403">Slovenski</translation>
 <translation id="7972920761225148017">francuski (Švicarska)</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">hangul 3 set (bez tipke Shift)</translation>
 <translation id="8299269255470343364">Japanski</translation>
 <translation id="8300849813060516376">OTASP nije uspio</translation>
-<translation id="8308481408797647857">XZ komprimirana tar arhiva</translation>
 <translation id="8312871300878166382">Zalijepi u mapu</translation>
 <translation id="8329978297633540474">Običan tekst</translation>
 <translation id="8335587457941836791">Otkvači s police</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">Desnom tipkom kliknite datoteku i odaberite "Prikvači na policu" za brzi pristup datotekama na polici.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">vijetnamski VIQR</translation>
-<translation id="8466234950814670489">Tar arhiva</translation>
 <translation id="8475647382427415476">Google disk trenutačno nije mogao sinkronizirati datoteku "<ph name="FILENAME" />" i pokušat će ponovo kasnije.</translation>
 <translation id="8477649328507734757">Vrtnja</translation>
 <translation id="8484284835977497781">Birajte među svojim nedavnim fotografijama.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">Izmijenio</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947144732524271678">Odabran je raspon od <ph name="ENTRY_COUNT" /> unosa od stavke <ph name="FROM_ENTRY_NAME" /> do stavke <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Gzip komprimirana arhiva</translation>
 <translation id="965477715979482472">engleski (Južnoafrička Republika)</translation>
 <translation id="981121421437150478">Izvanmrežno</translation>
 <translation id="988685240266037636">Datoteka s nazivom "<ph name="FILE_NAME" />" već postoji. Želite li je zamijeniti?</translation>

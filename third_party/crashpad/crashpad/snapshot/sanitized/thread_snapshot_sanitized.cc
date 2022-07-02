@@ -39,6 +39,10 @@ uint64_t ThreadSnapshotSanitized::ThreadID() const {
   return snapshot_->ThreadID();
 }
 
+std::string ThreadSnapshotSanitized::ThreadName() const {
+  return snapshot_->ThreadName();
+}
+
 int ThreadSnapshotSanitized::SuspendCount() const {
   return snapshot_->SuspendCount();
 }

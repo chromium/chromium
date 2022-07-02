@@ -14,7 +14,7 @@
           "Type": "OpenVPN",
           "OpenVPN": {
               "Port": 1194,
-              "Username": "abc fake email def",
+              "Username": "abc ${LOGIN_ID} def",
               // "UNKNOWN_FIELD" is removed and "OTP" is added (issue 817617).
               "Recommended": [ "Username", "Password", "OTP" ],
               "ClientCertType": "Pattern",

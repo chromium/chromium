@@ -16,8 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 struct NET_EXPORT WlanApi {
   typedef DWORD (WINAPI *WlanOpenHandleFunc)(
@@ -85,8 +84,6 @@ NET_EXPORT bool GetNetworkListImpl(
     int policy,
     const IP_ADAPTER_ADDRESSES* ip_adapter_addresses);
 
-}  // namespace internal
-
-}  // namespace net
+}  // namespace net::internal
 
 #endif   // NET_BASE_NETWORK_INTERFACES_WIN_H_

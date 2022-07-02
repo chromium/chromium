@@ -6,70 +6,94 @@
  * @fileoverview 'os-settings-search-selection-dialog' is a dialog for setting
  * the preferred search engine.
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/md_select_css.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../settings_shared_css.js';
 
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-search-selection-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const OsSettingsSearchSelectionDialogElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [],
+/** @polymer */
+class OsSettingsSearchSelectionDialogElement extends
+    OsSettingsSearchSelectionDialogElementBase {
+  static get is() {
+    return 'os-settings-search-selection-dialog';
+  }
 
-  properties: {
-    /**
-     * List of default search engines available.
-     * @private {!Array<!SearchEngine>}
-     */
-    searchEngines_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?SearchEnginesBrowserProxy} */
-  browserProxy_: null,
+  static get properties() {
+    return {
+      /**
+       * List of default search engines available.
+       * @private {!Array<!SearchEngine>}
+       */
+      searchEngines_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
-    const updateSearchEngines = searchEngines => {
-      this.set('searchEngines_', searchEngines.defaults);
-    };
-    this.browserProxy_.getSearchEnginesList().then(updateSearchEngines);
-    addWebUIListener('search-engines-changed', updateSearchEngines);
-  },
+    super.ready();
+
+    this.browserProxy_.getSearchEnginesList().then(
+        this.updateSearchEngines_.bind(this));
+    this.addWebUIListener(
+        'search-engines-changed', this.updateSearchEngines_.bind(this));
+  }
+
+  /**
+   * @param {!SearchEnginesInfo} searchEngines
+   * @private
+   */
+  updateSearchEngines_(searchEngines) {
+    this.set('searchEngines_', searchEngines.defaults);
+  }
 
   /**
    * Enables the checked languages.
    * @private
    */
   onActionButtonClick_() {
-    const select = /** @type {!HTMLSelectElement} */ (this.$$('select'));
+    const select = /** @type {!HTMLSelectElement} */ (
+        this.shadowRoot.querySelector('select'));
     const searchEngine = this.searchEngines_[select.selectedIndex];
     this.browserProxy_.setDefaultSearchEngine(searchEngine.modelIndex);
 
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -79,5 +103,9 @@ Polymer({
     if (e.key === 'Escape') {
       this.onCancelButtonClick_();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsSearchSelectionDialogElement.is,
+    OsSettingsSearchSelectionDialogElement);

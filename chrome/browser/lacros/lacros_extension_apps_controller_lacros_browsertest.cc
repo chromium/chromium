@@ -19,6 +19,7 @@
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   extensions::AppWindowRegistry::AppWindowList app_windows =
       extensions::AppWindowRegistry::Get(profile())->app_windows();
   for (extensions::AppWindow* app_window : app_windows) {
-    std::string window_id = browser_test_util::GetWindowId(
+    std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
         app_window->GetNativeWindow()->GetRootWindow());
     app_window->GetBaseWindow()->Close();
     browser_test_util::WaitForWindowDestruction(window_id);

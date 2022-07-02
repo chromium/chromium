@@ -124,6 +124,7 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     const GURL& joining_url,
     const url::Origin& frame_origin,
     const net::NetworkIsolationKey& network_isolation_key,
+    bool report_result_only,
     network::mojom::URLLoaderFactory& url_loader_factory,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
   url::Origin interest_group_owner = group.owner;
@@ -133,14 +134,16 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
       base::BindOnce(
           &InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked,
           base::Unretained(this), std::move(group), joining_url,
-          std::move(callback)));
+          report_result_only, std::move(callback)));
 }
 
 void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
     const url::Origin& owner,
     const std::string& name,
+    const url::Origin& main_frame,
     const url::Origin& frame_origin,
     const net::NetworkIsolationKey& network_isolation_key,
+    bool report_result_only,
     network::mojom::URLLoaderFactory& url_loader_factory,
     blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback) {
   permissions_checker_.CheckPermissions(
@@ -148,7 +151,8 @@ void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
       network_isolation_key, url_loader_factory,
       base::BindOnce(
           &InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked,
-          base::Unretained(this), owner, name, std::move(callback)));
+          base::Unretained(this), owner, name, main_frame, report_result_only,
+          std::move(callback)));
 }
 
 void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
@@ -159,12 +163,14 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
       .WithArgs(std::move(group), std::move(joining_url));
 }
 
-void InterestGroupManagerImpl::LeaveInterestGroup(const ::url::Origin& owner,
-                                                  const std::string& name) {
+void InterestGroupManagerImpl::LeaveInterestGroup(
+    const ::url::Origin& owner,
+    const std::string& name,
+    const ::url::Origin& main_frame) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kLeave,
                               owner.Serialize(), name);
   impl_.AsyncCall(&InterestGroupStorage::LeaveInterestGroup)
-      .WithArgs(owner, name);
+      .WithArgs(owner, name, main_frame);
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
@@ -249,6 +255,7 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,
+    bool report_result_only,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
     bool can_join) {
   // Invoke callback before calling JoinInterestGroup(), which posts a task to
@@ -259,13 +266,15 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
   // invoking the callback may potentially leak whether the user was previously
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_join);
-  if (can_join)
+  if (!report_result_only && can_join)
     JoinInterestGroup(std::move(group), joining_url);
 }
 
 void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
     const url::Origin& owner,
     const std::string& name,
+    const url::Origin& main_frame,
+    bool report_result_only,
     blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
     bool can_leave) {
   // Invoke callback before calling LeaveInterestGroup(), which posts a task to
@@ -276,8 +285,8 @@ void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
   // invoking the callback may potentially leak whether the user was previously
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_leave);
-  if (can_leave)
-    LeaveInterestGroup(owner, name);
+  if (!report_result_only && can_leave)
+    LeaveInterestGroup(owner, name, main_frame);
 }
 
 void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
@@ -361,6 +370,10 @@ void InterestGroupManagerImpl::EnqueueReports(
     SendReports();
 }
 
+void InterestGroupManagerImpl::ClearPermissionsCache() {
+  permissions_checker_.ClearCache();
+}
+
 void InterestGroupManagerImpl::SendReports() {
   if (reporting_started_ == base::TimeTicks::Min()) {
     // It appears we're staring a new reporting round; mark the time we started
@@ -438,6 +451,14 @@ void InterestGroupManagerImpl::OnOneReportSent(
 void InterestGroupManagerImpl::set_max_active_report_requests_for_testing(
     int max_active_report_requests) {
   max_active_report_requests_ = max_active_report_requests;
+}
+
+void InterestGroupManagerImpl::SetInterestGroupPriority(
+    const url::Origin& owner,
+    const std::string& name,
+    double priority) {
+  impl_.AsyncCall(&InterestGroupStorage::SetInterestGroupPriority)
+      .WithArgs(owner, name, priority);
 }
 
 void InterestGroupManagerImpl::set_max_report_queue_length_for_testing(

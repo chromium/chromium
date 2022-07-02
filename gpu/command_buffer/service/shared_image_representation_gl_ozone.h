@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_OZONE_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -16,6 +17,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_image_native_pixmap.h"
+#include "ui/ozone/public/native_pixmap_gl_binding.h"
 
 namespace gpu {
 
@@ -27,14 +29,12 @@ class SharedImageRepresentationGLOzoneShared {
   static void EndAccess(bool need_end_fence,
                         GLenum mode,
                         SharedImageBackingOzone* ozone_backing);
-  static absl::optional<GLuint> SetupTexture(
-      scoped_refptr<gl::GLImageNativePixmap> image,
-      GLenum target);
-  static scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
+  static std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
+      SharedImageBacking* backing,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat buffer_format,
       gfx::BufferPlane plane,
-      gfx::Size size);
+      GLuint& gl_texture_service_id,
+      GLenum& target);
 };
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a
@@ -49,7 +49,6 @@ class SharedImageRepresentationGLTextureOzone
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      viz::ResourceFormat format,
       gfx::BufferPlane plane);
 
   ~SharedImageRepresentationGLTextureOzone() override;
@@ -69,7 +68,7 @@ class SharedImageRepresentationGLTextureOzone
     return static_cast<SharedImageBackingOzone*>(backing());
   }
 
-  gles2::Texture* texture_;
+  raw_ptr<gles2::Texture> texture_;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };
@@ -87,7 +86,6 @@ class SharedImageRepresentationGLTexturePassthroughOzone
          SharedImageBacking* backing,
          MemoryTypeTracker* tracker,
          scoped_refptr<gfx::NativePixmap> pixmap,
-         viz::ResourceFormat format,
          gfx::BufferPlane plane);
 
   ~SharedImageRepresentationGLTexturePassthroughOzone() override;

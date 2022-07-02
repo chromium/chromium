@@ -93,22 +93,21 @@ base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
 base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
                             std::string* error) {
   const std::string& json = proto.value();
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!value_with_error.value) {
+  if (!value_with_error.has_value()) {
     // Can't parse as JSON so return it as a string, and leave it to the handler
     // to validate.
     LOG(WARNING) << "Invalid JSON: " << json;
-    *error = value_with_error.error_message;
+    *error = value_with_error.error().message;
     return base::Value(json);
   }
 
   // Accept any Value type that parsed as JSON, and leave it to the handler to
   // convert and check the concrete type.
   error->clear();
-  return std::move(value_with_error.value.value());
+  return std::move(*value_with_error);
 }
 
 bool PerProfileMatches(bool policy_per_profile,

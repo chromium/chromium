@@ -22,7 +22,7 @@ SyncedWindowDelegateAndroid::SyncedWindowDelegateAndroid(
     bool is_tabbed_activity)
     : tab_model_(tab_model), is_tabbed_activity_(is_tabbed_activity) {}
 
-SyncedWindowDelegateAndroid::~SyncedWindowDelegateAndroid() {}
+SyncedWindowDelegateAndroid::~SyncedWindowDelegateAndroid() = default;
 
 bool SyncedWindowDelegateAndroid::HasWindow() const {
   return !tab_model_->IsOffTheRecord();

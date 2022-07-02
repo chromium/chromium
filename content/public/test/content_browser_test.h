@@ -45,7 +45,7 @@ class ContentBrowserTest : public BrowserTestBase {
   base::FilePath GetTestDataFilePath();
 
  private:
-  raw_ptr<Shell> shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
@@ -55,7 +55,7 @@ class ContentBrowserTest : public BrowserTestBase {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  base::mac::ScopedNSAutoreleasePool* pool_ = nullptr;
+  raw_ptr<base::mac::ScopedNSAutoreleasePool> pool_ = nullptr;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with

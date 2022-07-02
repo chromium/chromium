@@ -201,7 +201,7 @@ export class SettingsSyncControlsElement extends
     this.onSingleSyncDataTypeChanged_();
   }
 
-  shouldPaymentsCheckboxBeDisabled_(
+  private shouldPaymentsCheckboxBeDisabled_(
       syncAllDataTypes: boolean, autofillSynced: boolean): boolean {
     return syncAllDataTypes || !autofillSynced;
   }

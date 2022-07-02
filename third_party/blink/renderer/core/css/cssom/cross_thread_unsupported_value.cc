@@ -9,7 +9,7 @@
 namespace blink {
 
 CSSStyleValue* CrossThreadUnsupportedValue::ToCSSStyleValue() {
-  return MakeGarbageCollected<CSSUnsupportedStyleValue>(value_.IsolatedCopy());
+  return MakeGarbageCollected<CSSUnsupportedStyleValue>(value_);
 }
 
 bool CrossThreadUnsupportedValue::operator==(
@@ -21,7 +21,7 @@ bool CrossThreadUnsupportedValue::operator==(
 
 std::unique_ptr<CrossThreadStyleValue>
 CrossThreadUnsupportedValue::IsolatedCopy() const {
-  return std::make_unique<CrossThreadUnsupportedValue>(value_.IsolatedCopy());
+  return std::make_unique<CrossThreadUnsupportedValue>(value_);
 }
 
 }  // namespace blink

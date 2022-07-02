@@ -15,7 +15,7 @@ is actually used for anything. That class might look like this:
       void Init();
 
      private:
-      const string name_;
+      const std::string name_;
       const gfx::Color color_;
       const gfx::Size size_;
       const GURL url_;
@@ -39,7 +39,7 @@ this:
 
     class C {
      public:
-      C(string name, gfx::Color color, gfx::Size size, GURL url);
+      C(std::string name, gfx::Color color, gfx::Size size, GURL url);
 
       void Init();
 
@@ -75,14 +75,14 @@ this:
     class C {
      public:
       struct Params {
-        string name;
+        std::string name;
         // ...
       };
 
       C(Params params);
 
      private:
-      const string name_;
+      const std::string name_;
       // ...
     };
 
@@ -132,7 +132,7 @@ and now our `Builder` class has an interface like this:
     class Builder {
      public:
       Builder();
-      void set_name(string name);
+      void set_name(std::string name);
       void set_color(gfx::Color color):
       // ...
 
@@ -147,8 +147,8 @@ object itself:
     class Builder {
      public:
       Builder();
-      Builder& set_name(string name);
-      Builder& set_color(string name);
+      Builder& set_name(std::string name);
+      Builder& set_color(gfx::Color color);
       // ...
 
       std::unique_ptr<C> Build();
@@ -168,6 +168,57 @@ we can write this:
                          .Build();
 
 which lets us avoid naming the temporary builder object.
+
+## Parameter pattern only for optional parameters
+
+It's also possible to use a version of the parameter/builder pattern only for
+optional arguments. In this case we make use of `Params&` to be able to chain
+calls like `Params().set_foo().set_bar()`, but we may not have a Build() method.
+
+In the first example, this would be:
+
+    class C {
+     public:
+      class Params {
+       public:
+        Params();
+
+        Params& set_is_cool(bool is_cool) { is_cool_ = is_cool; return *this; }
+        ...
+
+        bool is_cool() const { return is_cool_; }
+        ...
+
+       private:
+        bool is_cool_ = false;
+        bool is_nice_ = false;
+        bool is_friendly = false;
+      };
+
+      // Populates all fields. Optional fields take their values from `params`.
+      C(std::string name, gfx::Color color, gfx::Size size, GURL url,
+        Params params = Params());
+
+     private:
+      const std::string name_;
+      const gfx::Color color_;
+      const gfx::Size size_;
+      const GURL url_;
+
+      const bool is_cool_;
+      const bool is_nice_;
+      const bool is_friendly;
+    };
+
+Doing so lets us construct an object without awareness of the optional `Params`
+argument:
+
+    C("foo", ...)
+
+While making `C` objects with optional parameters readable and without
+temporary variables:
+
+    C("foo", ..., Params().set_is_cool(true));
 
 ## Use This Pattern When
 

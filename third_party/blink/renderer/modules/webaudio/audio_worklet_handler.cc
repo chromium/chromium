@@ -33,6 +33,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
+
 AudioWorkletHandler::AudioWorkletHandler(
     AudioNode& node,
     float sample_rate,
@@ -53,7 +59,7 @@ AudioWorkletHandler::AudioWorkletHandler(
   for (unsigned i = 0; i < options->numberOfInputs(); ++i) {
     AddInput();
   }
-  // The number of inputs does not change after the construnction, so it is
+  // The number of inputs does not change after the construction, so it is
   // safe to reserve the array capacity and size.
   inputs_.ReserveInitialCapacity(options->numberOfInputs());
   inputs_.resize(options->numberOfInputs());
@@ -61,9 +67,9 @@ AudioWorkletHandler::AudioWorkletHandler(
   is_output_channel_count_given_ = options->hasOutputChannelCount();
 
   for (unsigned i = 0; i < options->numberOfOutputs(); ++i) {
-    // If |options->outputChannelCount| unspecified, all outputs are mono.
+    // If `options->outputChannelCount` unspecified, all outputs are mono.
     AddOutput(is_output_channel_count_given_ ? options->outputChannelCount()[i]
-                                             : 1);
+                                             : kDefaultNumberOfOutputChannels);
   }
   // Same for the outputs as well.
   outputs_.ReserveInitialCapacity(options->numberOfOutputs());
@@ -152,8 +158,8 @@ void AudioWorkletHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   DCHECK(input);
 
   // Dynamic channel count only works when the node has 1 input, 1 output and
-  // |outputChannelCount| is not given. Otherwise the channel count(s) should
-  // not be dynamically changed.
+  // the output channel count is not given. Otherwise the channel count(s)
+  // should not be dynamically changed.
   if (NumberOfInputs() == 1 && NumberOfOutputs() == 1 &&
       !is_output_channel_count_given_) {
     DCHECK_EQ(input, &Input(0));
@@ -197,11 +203,12 @@ double AudioWorkletHandler::TailTime() const {
 void AudioWorkletHandler::SetProcessorOnRenderThread(
     AudioWorkletProcessor* processor) {
   // TODO(hongchan): unify the thread ID check. The thread ID for this call
-  // is different from |Context()->IsAudiothread()|.
+  // is different from `Context()->IsAudiothread()`.
   DCHECK(!IsMainThread());
 
-  // |processor| can be nullptr when the invocation of user-supplied constructor
-  // fails. That failure fires at the node's 'onprocessorerror' event handler.
+  // `processor` can be `nullptr` when the invocation of user-supplied
+  // constructor fails. That failure fires at the node's `.onprocessorerror`
+  // event handler.
   if (processor) {
     processor_ = processor;
   } else {
@@ -226,8 +233,8 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
                             AsWeakPtr(), error_state));
   }
 
-  // TODO(hongchan): After this point, The handler has no more pending activity
-  // and ready for GC.
+  // After this point, the handler has no more pending activity and is ready for
+  // GC.
   Context()->NotifySourceNodeFinishedProcessing(this);
   processor_.Clear();
   tail_time_ = 0;

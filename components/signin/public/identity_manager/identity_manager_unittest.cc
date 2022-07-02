@@ -391,8 +391,9 @@ class IdentityManagerTest : public testing::Test {
 #endif
 
     auto gaia_cookie_manager_service =
-        std::make_unique<GaiaCookieManagerService>(token_service.get(),
-                                                   &signin_client_);
+        std::make_unique<GaiaCookieManagerService>(
+            account_tracker_service.get(), token_service.get(),
+            &signin_client_);
 
     auto account_fetcher_service = std::make_unique<AccountFetcherService>();
     account_fetcher_service->Initialize(
@@ -2369,14 +2370,12 @@ TEST_F(IdentityManagerTest, SetPrimaryAccount) {
   RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
                           PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
 
-  // We should have a Primary Account set up automatically.
-  ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
-          ? ConsentLevel::kSignin
-          : ConsentLevel::kSync;
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
-  EXPECT_EQ(kTestGaiaId,
-            identity_manager()->GetPrimaryAccountInfo(consent_level).gaia);
+  // We should have a non-syncing Primary Account set up automatically.
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(
+      kTestGaiaId,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
 }
 
 // TODO(https://crbug.com/1223364): Remove this when all the users are migrated.
@@ -2394,21 +2393,20 @@ TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
   // provided by the SigninClient.
   RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
                           PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
-
-  ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
-          ? ConsentLevel::kSignin
-          : ConsentLevel::kSync;
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
-  EXPECT_EQ(kTestGaiaId2,
-            identity_manager()->GetPrimaryAccountInfo(consent_level).gaia);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(
+      kTestGaiaId2,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(IdentityManagerTest, AccountIdMigration_DoneOnInitialization) {
   EXPECT_EQ(IdentityManager::AccountIdMigrationState::MIGRATION_DONE,
             identity_manager()->GetAccountIdMigrationState());
 }
+#endif
 
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info
 // is updated.
@@ -2455,6 +2453,7 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
   const CoreAccountId account_id =
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool account_id_migration_done =
       identity_manager()->GetAccountIdMigrationState() ==
       IdentityManager::AccountIdMigrationState::MIGRATION_DONE;
@@ -2463,6 +2462,9 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
   } else {
     EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, account_id.ToString()));
   }
+#else
+  EXPECT_TRUE(gaia::AreEmailsSame(kTestGaiaId, account_id.ToString()));
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

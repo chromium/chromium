@@ -99,8 +99,7 @@ TEST_F(RecommendedArcAppFetcherTest, OnLoadSuccess) {
         EXPECT_EQ(play_extras->GetContainsAds(), true);
         EXPECT_EQ(play_extras->GetOptimizedForChrome(), true);
       }));
-  absl::optional<base::Value> output =
-      base::JSONReader::ReadAndReturnValueWithError(response).value;
+  auto output = base::JSONReader::ReadAndReturnValueWithError(response);
   ASSERT_TRUE(output.has_value());
   arc_app_fetcher()->OnLoadSuccess(std::move(output.value()));
 }

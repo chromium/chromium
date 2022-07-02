@@ -6,8 +6,19 @@
 #define CONTENT_BROWSER_UKM_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
+
+class UkmInternalsUI;
+
+// Config for chrome://ukm.
+class UkmInternalsUIConfig : public DefaultWebUIConfig<UkmInternalsUI> {
+ public:
+  UkmInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIUkmHost) {}
+};
 
 // Handles serving the chrome://ukm HTML and JS.
 class UkmInternalsUI : public WebUIController {

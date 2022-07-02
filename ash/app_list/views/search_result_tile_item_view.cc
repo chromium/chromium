@@ -397,8 +397,7 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
   gfx::ImageSkia badge_icon_skia = badge_icon.Rasterize(GetColorProvider());
 
   if (use_badge_icon_background) {
-    badge_icon_skia =
-        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+    badge_icon_skia = CreateIconWithCircleBackground(badge_icon_skia);
   }
 
   gfx::ImageSkia resized_badge_icon(

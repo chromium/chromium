@@ -57,14 +57,14 @@ const RectUtil = {
    * @param {ScreenRect|undefined} rect
    * @return {number}
    */
-  area: (rect) => rect ? rect.width * rect.height : 0,
+  area: rect => (rect ? rect.width * rect.height : 0),
 
   /**
    * Finds the bottom of a rect.
    * @param {!ScreenRect} rect
    * @return {number}
    */
-  bottom: (rect) => rect.top + rect.height,
+  bottom: rect => rect.top + rect.height,
 
   /**
    * Returns the point at the center of the rectangle.
@@ -72,7 +72,7 @@ const RectUtil = {
    * @return {!{x: number, y: number}} an object containing the x and y
    *     coordinates of the center.
    */
-  center: (rect) => {
+  center: rect => {
     const x = rect.left + Math.round(rect.width / 2);
     const y = rect.top + Math.round(rect.height / 2);
     return {x, y};
@@ -118,7 +118,7 @@ const RectUtil = {
    * @param {!ScreenRect} rect
    * @return {!ScreenRect}
    */
-  deepCopy: (rect) => /** @type {!ScreenRect} */ (Object.assign({}, rect)),
+  deepCopy: rect => /** @type {!ScreenRect} */ (Object.assign({}, rect)),
 
   /**
    * Returns the largest rectangle contained within the outer rect that does not
@@ -295,7 +295,7 @@ const RectUtil = {
    * @param {!ScreenRect} rect
    * @return {number}
    */
-  right: (rect) => rect.left + rect.width,
+  right: rect => rect.left + rect.width,
 
   /*
    * @param {ScreenRect=} rect1
@@ -317,7 +317,7 @@ const RectUtil = {
    * @param {ScreenRect|undefined} rect
    * @return {string}
    */
-  toString: (rect) => {
+  toString: rect => {
     let str = '';
     if (rect) {
       str = rect.left + ',' + rect.top + ' ';
@@ -355,7 +355,7 @@ const RectUtil = {
    * @param {!Array<!ScreenRect>} rects
    * @return {!ScreenRect}
    */
-  unionAll: (rects) => {
+  unionAll: rects => {
     if (rects.length < 1) {
       return RectUtil.ZERO_RECT;
     }

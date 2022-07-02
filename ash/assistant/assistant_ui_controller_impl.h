@@ -60,16 +60,16 @@ class ASH_EXPORT AssistantUiControllerImpl
   const AssistantUiModel* GetModel() const override;
   int GetNumberOfSessionsWhereOnboardingShown() const override;
   bool HasShownOnboarding() const override;
+  void SetKeyboardTraversalMode(bool keyboard_traversal_mode) override;
   void ShowUi(AssistantEntryPoint entry_point) override;
   void ToggleUi(absl::optional<AssistantEntryPoint> entry_point,
                 absl::optional<AssistantExitPoint> exit_point) override;
   absl::optional<base::ScopedClosureRunner> CloseUi(
       AssistantExitPoint exit_point) override;
+  void SetAppListBubbleWidth(int width) override;
 
   // AssistantInteractionModelObserver:
-  void OnInputModalityChanged(InputModality input_modality) override;
   void OnInteractionStateChanged(InteractionState interaction_state) override;
-  void OnMicStateChanged(MicState mic_state) override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerConstructed() override;
@@ -97,12 +97,6 @@ class ASH_EXPORT AssistantUiControllerImpl
   void ShowUnboundErrorToast();
 
  private:
-  // Updates UI mode to |ui_mode| if specified. Otherwise UI mode is updated on
-  // the basis of interaction/widget visibility state. If |due_to_interaction|
-  // is true, the UI mode changed because of an Assistant interaction.
-  void UpdateUiMode(absl::optional<AssistantUiMode> ui_mode = absl::nullopt,
-                    bool due_to_interaction = false);
-
   AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
   AssistantUiModel model_;
   bool has_shown_onboarding_ = false;

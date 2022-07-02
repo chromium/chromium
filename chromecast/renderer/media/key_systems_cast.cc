@@ -12,6 +12,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "components/cdm/renderer/android_key_systems.h"
+#include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_properties.h"
 #include "media/media_buildflags.h"
@@ -21,11 +22,12 @@
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #endif
 
+using ::media::CdmSessionType;
 using ::media::EmeConfigRule;
 using ::media::EmeFeatureSupport;
 using ::media::EmeInitDataType;
 using ::media::EmeMediaType;
-using ::media::EmeSessionTypeSupport;
+using ::media::EncryptionScheme;
 using ::media::SupportedCodecs;
 
 namespace chromecast {
@@ -86,9 +88,9 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return persistent_license_support_ ? EmeSessionTypeSupport::SUPPORTED
-                                       : EmeSessionTypeSupport::NOT_SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return persistent_license_support_ ? EmeConfigRule::SUPPORTED
+                                       : EmeConfigRule::NOT_SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -99,8 +101,8 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
   }
 
   EmeConfigRule GetEncryptionSchemeConfigRule(
-      ::media::EncryptionScheme encryption_scheme) const override {
-    if (encryption_scheme == ::media::EncryptionScheme::kCenc)
+      EncryptionScheme encryption_scheme) const override {
+    if (encryption_scheme == EncryptionScheme::kCenc)
       return EmeConfigRule::SUPPORTED;
     return EmeConfigRule::NOT_SUPPORTED;
   }
@@ -170,17 +172,21 @@ void AddCmaKeySystems(
 #if BUILDFLAG(ENABLE_WIDEVINE)
   using Robustness = cdm::WidevineKeySystemProperties::Robustness;
 
-  base::flat_set<::media::EncryptionScheme> encryption_schemes = {
-      ::media::EncryptionScheme::kCenc, ::media::EncryptionScheme::kCbcs};
+  const base::flat_set<EncryptionScheme> kEncryptionSchemes = {
+      EncryptionScheme::kCenc, EncryptionScheme::kCbcs};
+
+  const base::flat_set<CdmSessionType> kSessionTypes = {
+      CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense};
 
   key_systems_properties->emplace_back(new cdm::WidevineKeySystemProperties(
-      codecs,                            // Regular codecs.
-      encryption_schemes,                // Encryption schemes.
-      codecs,                            // Hardware secure codecs.
-      encryption_schemes,                // Hardware secure encryption schemes.
-      Robustness::HW_SECURE_CRYPTO,      // Max audio robustness.
-      Robustness::HW_SECURE_ALL,         // Max video robustness.
-      EmeSessionTypeSupport::SUPPORTED,  // persistent-license.
+      codecs,                        // Regular codecs.
+      kEncryptionSchemes,            // Encryption schemes.
+      kSessionTypes,                 // Session types.
+      codecs,                        // Hardware secure codecs.
+      kEncryptionSchemes,            // Hardware secure encryption schemes.
+      kSessionTypes,                 // Hardware secure session types.
+      Robustness::HW_SECURE_CRYPTO,  // Max audio robustness.
+      Robustness::HW_SECURE_ALL,     // Max video robustness.
       // Note: On Chromecast, all CDMs may have persistent state.
       EmeFeatureSupport::ALWAYS_ENABLED,    // Persistent state.
       EmeFeatureSupport::ALWAYS_ENABLED));  // Distinctive identifier.

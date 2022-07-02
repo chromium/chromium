@@ -6,29 +6,20 @@
 
 #include <utility>
 
-#include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "base/logging.h"
 
 namespace cast_streaming {
 
 RendererControllerProxy::RendererControllerProxy(
-    content::RenderFrame* render_frame,
     MojoDisconnectCB disconnection_handler)
     : renderer_process_pending_receiver_(
           renderer_process_remote_.InitWithNewPipeAndPassReceiver()),
       browser_process_receiver_(this),
-      on_mojo_disconnection_(std::move(disconnection_handler)),
-      weak_factory_(this) {
-  DCHECK(render_frame);
-
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&RendererControllerProxy::BindReceiver,
-                          weak_factory_.GetWeakPtr()));
-}
+      on_mojo_disconnection_(std::move(disconnection_handler)) {}
 
 RendererControllerProxy::~RendererControllerProxy() = default;
 
-void RendererControllerProxy::BindReceiver(
+void RendererControllerProxy::BindRendererController(
     mojo::PendingAssociatedReceiver<mojom::RendererController>
         pending_receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

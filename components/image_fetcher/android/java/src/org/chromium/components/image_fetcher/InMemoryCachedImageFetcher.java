@@ -94,10 +94,11 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
     @Override
     public void fetchImage(final Params params, Callback<Bitmap> callback) {
         assert mBitmapCache != null && mImageFetcher != null : "fetchImage called after destroy";
-        Bitmap cachedBitmap = tryToGetBitmap(params.url, params.width, params.height);
+        Bitmap cachedBitmap =
+                tryToGetBitmap(params.url, params.shouldResize, params.width, params.height);
         if (cachedBitmap == null) {
             mImageFetcher.fetchImage(params, (@Nullable Bitmap bitmap) -> {
-                storeBitmap(bitmap, params.url, params.width, params.height);
+                storeBitmap(bitmap, params.url, params.shouldResize, params.width, params.height);
                 callback.onResult(bitmap);
             });
         } else {
@@ -121,15 +122,20 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * Try to get a bitmap from the in-memory cache. Returns null if this object has been destroyed.
      *
      * @param url The url of the image.
-     * @param width The width (in pixels) of the image.
-     * @param height The height (in pixels) of the image.
+     * @param wasResized Whether the bitmap was resized.
+     * @param desiredWidth If the bitmap was resized, the width that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredWidth` is used to select
+     *     the multi-resolution image frame.
+     * @param desiredHeight If the bitmap was resized, the height that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredHeight` is used to select
+     *     the multi-resolution image frame.
      * @return The Bitmap stored in memory or null.
      */
     @VisibleForTesting
-    Bitmap tryToGetBitmap(String url, int width, int height) {
+    Bitmap tryToGetBitmap(String url, boolean wasResized, int desiredWidth, int desiredHeight) {
         if (mBitmapCache == null) return null;
 
-        String key = encodeCacheKey(url, width, height);
+        String key = encodeCacheKey(url, wasResized, desiredWidth, desiredHeight);
         return mBitmapCache.getBitmap(key);
     }
 
@@ -137,15 +143,21 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * Store the bitmap in memory.
      *
      * @param url The url of the image.
-     * @param width The width (in pixels) of the image.
-     * @param height The height (in pixels) of the image.
+     * @param wasResized Whether the bitmap was resized.
+     * @param desiredWidth If the bitmap was resized, the width that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredWidth` is used to select
+     *     the multi-resolution image frame.
+     * @param desiredHeight If the bitmap was resized, the height that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredHeight` is used to select
+     *     the multi-resolution image frame.
      */
-    private void storeBitmap(@Nullable Bitmap bitmap, String url, int width, int height) {
+    private void storeBitmap(@Nullable Bitmap bitmap, String url, boolean wasResized,
+            int desiredWidth, int desiredHeight) {
         if (bitmap == null || mBitmapCache == null) {
             return;
         }
 
-        String key = encodeCacheKey(url, width, height);
+        String key = encodeCacheKey(url, wasResized, desiredWidth, desiredHeight);
         mBitmapCache.putBitmap(key, bitmap);
     }
 
@@ -153,15 +165,20 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * Use the given parameters to encode a key used in the String -> Bitmap mapping.
      *
      * @param url The url of the image.
-     * @param width The width (in pixels) of the image.
-     * @param height The height (in pixels) of the image.
+     * @param wasResized Whether the bitmap was resized.
+     * @param desiredWidth If the bitmap was resized, the width that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredWidth` is used to select
+     *     the multi-resolution image frame.
+     * @param desiredHeight If the bitmap was resized, the height that the bitmap was resized to.
+     *     If `url` is a multi-resolution image such as an .ico, `desiredHeight` is used to select
+     *     the multi-resolution image frame.
      * @return The key for the BitmapCache.
      */
     @VisibleForTesting
-    String encodeCacheKey(String url, int width, int height) {
+    String encodeCacheKey(String url, boolean wasResized, int desiredWidth, int desiredHeight) {
         // Encoding for cache key is:
         // <url>/<width>/<height>.
-        return url + "/" + width + "/" + height;
+        return url + "/" + (wasResized ? 1 : 0) + "/" + desiredWidth + "/" + desiredHeight;
     }
 
     /**

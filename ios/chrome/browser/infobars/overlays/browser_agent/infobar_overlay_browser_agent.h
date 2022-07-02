@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INFOBAR_OVERLAY_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INFOBAR_OVERLAY_BROWSER_AGENT_H_
 
-#include <map>
-#include <memory>
+#import <map>
+#import <memory>
 
-#include "base/scoped_multi_source_observation.h"
+#import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
-#include "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 
 class InfobarInteractionHandler;
 
@@ -33,10 +33,11 @@ class InfobarOverlayBrowserAgent
       std::unique_ptr<InfobarInteractionHandler> interaction_handler);
 
  private:
-  // Constructor used by CreateForBrowser().
   friend class BrowserUserData<InfobarOverlayBrowserAgent>;
-  explicit InfobarOverlayBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  // Constructor used by CreateForBrowser().
+  explicit InfobarOverlayBrowserAgent(Browser* browser);
 
   // Returns the interaction handler for the InfobarType of the infobar used to
   // configure |request|, or nullptr if |request| is not supported.

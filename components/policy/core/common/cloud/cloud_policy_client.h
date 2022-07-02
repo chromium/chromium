@@ -584,7 +584,7 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return client_id_;
   }
-  const base::DictionaryValue* configuration_seed() const {
+  const base::Value::Dict* configuration_seed() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return configuration_seed_.get();
   }
@@ -808,7 +808,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oauth_token_;
 
   std::string dm_token_;
-  std::unique_ptr<base::DictionaryValue> configuration_seed_;
+  std::unique_ptr<base::Value::Dict> configuration_seed_;
   DeviceMode device_mode_ = DEVICE_MODE_NOT_SET;
   std::string client_id_;
   base::Time last_policy_timestamp_;
@@ -899,9 +899,10 @@ class POLICY_EXPORT CloudPolicyClient {
   void CreateUniqueRequestJob(
       std::unique_ptr<RegistrationJobConfiguration> config);
 
-  // Used to store a copy of the previously used |dm_token_|. This is used
+  // Used to store a copy of the previously used `dm_token_`. This is used
   // during re-registration, which gets triggered by a failed policy fetch with
-  // error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
+  // errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
+  // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET`.
   std::string reregistration_dm_token_;
 
   // Whether extra enterprise connectors URL parameters should be included

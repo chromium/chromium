@@ -15,9 +15,11 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/display/screen.h"
 
 namespace chromeos {
@@ -150,6 +153,10 @@ void CrostiniHandler::RegisterMessages() {
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
                           handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestContainerInfo",
+      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     web_ui()->RegisterMessageCallback(
         "createContainer",
@@ -160,16 +167,16 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleDeleteContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
-        "requestContainerInfo",
-        base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
-                            handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
         "setContainerBadgeColor",
         base::BindRepeating(&CrostiniHandler::HandleSetContainerBadgeColor,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
         "stopContainer",
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "applyAnsiblePlaybook",
+        base::BindRepeating(&CrostiniHandler::HandleApplyAnsiblePlaybook,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -199,7 +206,7 @@ void CrostiniHandler::OnJavascriptAllowed() {
 
   // Observe changes to containers in general
   pref_change_registrar_.Add(
-      crostini::prefs::kCrostiniContainers,
+      guest_os::prefs::kGuestOsContainers,
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                           handler_weak_ptr_factory_.GetWeakPtr(),
                           base::Value::List()));
@@ -230,8 +237,7 @@ void CrostiniHandler::HandleRequestCrostiniInstallerView(
 void CrostiniHandler::HandleRequestRemoveCrostini(
     const base::Value::List& args) {
   AllowJavascript();
-  ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()),
-                              crostini::CrostiniUISurface::kSettings);
+  crostini::ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()));
 }
 
 namespace {
@@ -265,7 +271,7 @@ base::Value CrostiniDiskInfoToValue(
 void CrostiniHandler::HandleExportCrostiniContainer(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  crostini::ContainerId container_id(args[0]);
+  guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Exporting  = " << container_id;
 
   crostini::CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
@@ -274,9 +280,11 @@ void CrostiniHandler::HandleExportCrostiniContainer(
 
 void CrostiniHandler::HandleImportCrostiniContainer(
     const base::Value::List& args) {
-  CHECK_EQ(0U, args.size());
+  CHECK_EQ(1U, args.size());
+  guest_os::GuestId container_id(args[0]);
+  VLOG(1) << "Importing  = " << container_id;
   crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-      web_ui()->GetWebContents());
+      container_id, web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
@@ -325,7 +333,7 @@ void CrostiniHandler::OnCrostiniDialogStatusChanged(
 }
 
 void CrostiniHandler::OnContainerOsReleaseChanged(
-    const crostini::ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     bool can_upgrade) {
   if (crostini::CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(
           profile_) &&
@@ -397,10 +405,9 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
 }
 
 void CrostiniHandler::LaunchTerminal(apps::mojom::IntentPtr intent) {
-  crostini::LaunchCrostiniAppWithIntent(
-      profile_, crostini::kCrostiniTerminalSystemAppId,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      std::move(intent));
+  crostini::LaunchTerminalWithIntent(
+      profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      std::move(intent), base::DoNothing());
 }
 
 void CrostiniHandler::HandleRequestContainerUpgradeView(
@@ -482,7 +489,7 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
   CHECK_EQ(5U, args.size());
 
   std::string callback_id = args[0].GetString();
-  crostini::ContainerId container_id(args[1]);
+  guest_os::GuestId container_id(args[1]);
   int port_number = args[2].GetInt();
   int protocol_type = args[3].GetInt();
   std::string label = args[4].GetString();
@@ -507,7 +514,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
   CHECK_EQ(4U, list.size());
 
   std::string callback_id = list[0].GetString();
-  crostini::ContainerId container_id(list[1]);
+  guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
 
@@ -533,7 +540,7 @@ void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
   }
 
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveAllPorts(
-      crostini::ContainerId(args[0]));
+      guest_os::GuestId(args[0]));
 }
 
 void CrostiniHandler::HandleActivateCrostiniPortForward(
@@ -542,7 +549,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
   CHECK_EQ(4U, list.size());
 
   std::string callback_id = list[0].GetString();
-  crostini::ContainerId container_id(list[1]);
+  guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
 
@@ -565,7 +572,7 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
   CHECK_EQ(4U, list.size());
 
   std::string callback_id = list[0].GetString();
-  crostini::ContainerId container_id(list[1]);
+  guest_os::GuestId container_id(list[1]);
   int port_number = list[2].GetInt();
   int protocol_type = list[3].GetInt();
 
@@ -651,13 +658,13 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 }
 
 void CrostiniHandler::OnContainerStarted(
-    const crostini::ContainerId& container_id) {
+    const guest_os::GuestId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(true));
   HandleRequestContainerInfo(base::Value::List());
 }
 
 void CrostiniHandler::OnContainerShutdown(
-    const crostini::ContainerId& container_id) {
+    const guest_os::GuestId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(false));
   HandleRequestContainerInfo(base::Value::List());
 }
@@ -672,10 +679,11 @@ void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
 }
 
 void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
-  crostini::ContainerId container_id(args[0]);
+  CHECK_EQ(4U, args.size());
+  guest_os::GuestId container_id(args[0]);
   GURL image_server_url(args[1].GetString());
   std::string image_alias(args[2].GetString());
+  base::FilePath ansible_playbook(args[3].GetString());
 
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     return;
@@ -689,6 +697,7 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   VLOG(1) << "Creating container_id = " << container_id;
 
   crostini::CrostiniManager::RestartOptions options;
+  options.restart_source = crostini::RestartSource::kMultiContainerCreation;
   if (image_server_url.is_valid()) {
     options.image_server_url = image_server_url.spec();
     VLOG(1) << "image_server_url = " << image_server_url;
@@ -696,6 +705,10 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   if (!image_alias.empty()) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
+  }
+  if (!ansible_playbook.empty()) {
+    options.ansible_playbook = ansible_playbook;
+    VLOG(1) << "ansible_playbook = " << ansible_playbook;
   }
 
   crostini::CrostiniManager::GetForProfile(profile_)
@@ -715,7 +728,7 @@ void CrostiniHandler::HandleDeleteContainer(const base::Value::List& args) {
     return;
   }
 
-  crostini::ContainerId container_id(args[0]);
+  guest_os::GuestId container_id(args[0]);
   if (container_id == crostini::DefaultContainerId()) {
     LOG(ERROR) << "Deleting " << container_id << " not permitted";
     return;
@@ -729,8 +742,7 @@ void CrostiniHandler::HandleDeleteContainer(const base::Value::List& args) {
       container_id, std::move(options),
       base::BindOnce(
           [](base::WeakPtr<crostini::CrostiniManager> crostini_manager,
-             crostini::ContainerId container_id,
-             crostini::CrostiniResult result) {
+             guest_os::GuestId container_id, crostini::CrostiniResult result) {
             if (crostini_manager &&
                 result == crostini::CrostiniResult::SUCCESS) {
               crostini_manager->DeleteLxdContainer(container_id,
@@ -745,18 +757,10 @@ void CrostiniHandler::HandleRequestContainerInfo(
   constexpr char kIdKey[] = "id";
   constexpr char kIpv4Key[] = "ipv4";
 
-  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-    return;
-  }
   base::Value::List container_info_list;
 
-  const base::Value::List& containers =
-      profile_->GetPrefs()
-          ->Get(crostini::prefs::kCrostiniContainers)
-          ->GetList();
-
-  for (const auto& dict : containers) {
-    crostini::ContainerId container_id(dict);
+  for (const auto& container_id :
+       guest_os::GetContainers(profile_, guest_os::VmType::TERMINA)) {
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =
@@ -784,7 +788,7 @@ void CrostiniHandler::HandleSetContainerBadgeColor(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
 
-  crostini::ContainerId container_id(args[0]);
+  guest_os::GuestId container_id(args[0]);
   SkColor badge_color(args[1].FindDoubleKey("value").value());
 
   crostini::SetContainerBadgeColor(profile_, container_id, badge_color);
@@ -797,7 +801,7 @@ void CrostiniHandler::HandleStopContainer(const base::Value::List& args) {
     return;
   }
 
-  crostini::ContainerId container_id(args[0]);
+  guest_os::GuestId container_id(args[0]);
   if (crostini::ShouldStopVm(profile_, container_id)) {
     crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
         container_id.vm_name, base::DoNothing());
@@ -805,6 +809,24 @@ void CrostiniHandler::HandleStopContainer(const base::Value::List& args) {
     crostini::CrostiniManager::GetForProfile(profile_)->StopLxdContainer(
         container_id, base::DoNothing());
   }
+}
+
+void CrostiniHandler::HandleApplyAnsiblePlaybook(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  ansible_file_selector_ =
+      std::make_unique<crostini::AnsibleFileSelector>(web_ui());
+  ansible_file_selector_->SelectFile(
+      base::BindOnce(&CrostiniHandler::OnAnsiblePlaybookSelected,
+                     handler_weak_ptr_factory_.GetWeakPtr(), callback_id),
+      base::DoNothing());
+}
+
+void CrostiniHandler::OnAnsiblePlaybookSelected(const std::string& callback_id,
+                                                const base::FilePath& path) {
+  base::Value filePath(path.value());
+  ResolveJavascriptCallback(base::Value(callback_id), filePath);
 }
 
 }  // namespace settings

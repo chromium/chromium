@@ -5,7 +5,7 @@
 // https://html.spec.whatwg.org/C/#dom-media-srcobject
 
 // TODO(guidou): Add support for MediaSource and Blob, as defined in the spec.
-typedef MediaStream MediaProvider;
+typedef (MediaSourceHandle or MediaStream) MediaProvider;
 
 [
     ImplementedAs=HTMLMediaElementSrcObject

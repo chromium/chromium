@@ -210,6 +210,7 @@ class ScriptExecutor : public ActionDelegate,
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() const override;
   content::WebContents* GetWebContents() const override;
+  JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() const override;
   ElementStore* GetElementStore() const override;
   WebController* GetWebController() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;
@@ -269,9 +270,14 @@ class ScriptExecutor : public ActionDelegate,
   bool SupportsExternalActions() override;
   void RequestExternalAction(
       const ExternalActionProto& external_action,
-      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback) override;
+      base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+          start_dom_checks_callback,
+      base::OnceCallback<void(const external::Result& result)>
+          end_action_callback) override;
   bool MustUseBackendData() const override;
+  void MaybeSetPreviousAction(
+      const ProcessedActionProto& processed_action) override;
+  absl::optional<std::string> GetIntent() const override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.
@@ -346,9 +352,8 @@ class ScriptExecutor : public ActionDelegate,
   void OnExternalActionFinished(
       const ExternalActionProto& external_action,
       const bool prompt,
-      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback,
-      ExternalActionDelegate::ActionResult result);
+      base::OnceCallback<void(const external::Result& result)> callback,
+      const external::Result& result);
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.
@@ -356,6 +361,10 @@ class ScriptExecutor : public ActionDelegate,
 
   // Returns the current ActionData, or nullptr if there is no current action.
   Action::ActionData* GetCurrentActionData();
+
+  // Creates new TriggerContext from |delegate_|'s TriggerContext and
+  // |additional_context_|.
+  TriggerContext GetMergedTriggerContext() const;
 
   const std::string script_path_;
   std::unique_ptr<TriggerContext> additional_context_;
@@ -382,6 +391,8 @@ class ScriptExecutor : public ActionDelegate,
       ActionProto::ACTION_INFO_NOT_SET;
   absl::optional<DomObjectFrameStack> last_focused_element_;
   std::unique_ptr<ElementAreaProto> touchable_element_area_;
+
+  std::unique_ptr<content::WebContents> web_contents_for_js_execution_;
 
   // Steps towards the requirements for calling |on_expected_navigation_done_|
   // to be fulfilled.

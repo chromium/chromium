@@ -31,7 +31,7 @@ load("//project.star", "settings")
 load("./builder_config.star", _ = "builder_config")  # @unused
 load("./orchestrator.star", _2 = "register_orchestrator")  # @unused
 
-PROPERTIES_OPTIONAL = "PROPERTIES_OPTIONAL"
+POLYMORPHIC = "POLYMORPHIC"
 
 _NON_BOOTSTRAPPED_PROPERTIES = [
     # The led_recipes_tester recipe examines the recipe property in the input
@@ -66,8 +66,8 @@ _RECIPE_BOOTSTRAPPABILITY = nodes.create_unscoped_node_type("recipe_bootstrappab
 _BOOTSTRAP = nodes.create_bucket_scoped_node_type("bootstrap")
 
 def register_recipe_bootstrappability(name, bootstrappability):
-    if bootstrappability not in (False, True, PROPERTIES_OPTIONAL):
-        fail("bootstrap must be one of False, True or PROPERTIES_OPTIONAL")
+    if bootstrappability not in (False, True, POLYMORPHIC):
+        fail("bootstrap must be one of False, True or POLYMORPHIC")
     if bootstrappability:
         _RECIPE_BOOTSTRAPPABILITY.add(name, props = {
             "bootstrappability": bootstrappability,
@@ -136,9 +136,12 @@ def _bootstrap_properties(ctx):
             builder_properties = json.decode(builder.properties)
             bootstrapper_args = []
 
-            if recipe_bootstrappability_node.props.bootstrappability == PROPERTIES_OPTIONAL:
+            if recipe_bootstrappability_node.props.bootstrappability == POLYMORPHIC:
                 non_bootstrapped_properties = builder_properties
-                bootstrapper_args = ["-properties-optional"]
+
+                # TODO(gbeaty) Once all builder specs are migrated src-side,
+                # remove -properties-optional
+                bootstrapper_args = ["-polymorphic", "-properties-optional"]
 
             else:
                 non_bootstrapped_properties = {}

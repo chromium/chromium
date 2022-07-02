@@ -6,8 +6,7 @@
 
 namespace net {
 
-AuthChallengeInfo::AuthChallengeInfo() : is_proxy(false) {
-}
+AuthChallengeInfo::AuthChallengeInfo() = default;
 
 AuthChallengeInfo::AuthChallengeInfo(const AuthChallengeInfo& other) = default;
 

@@ -14,6 +14,7 @@ include_rules = [
   "-chrome/browser/xsurface",
 
   "+components/autofill_assistant/android/public",
+  "+components/browser_ui/accessibility/android",
   "+components/browser_ui/banners/android",
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/contacts_picker/android",

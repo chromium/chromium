@@ -109,7 +109,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   // The purpose of the test is to ensure this call doesn't result in undefined
   // behavior, which should be verified by sanitizers.
   std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params);
-  reader.Read(output_bus.get());
+  reader.Read(output_bus.get(), false);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

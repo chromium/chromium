@@ -47,14 +47,7 @@ const int kLen4 = std::size(kMsg4);
 // a read or write operation specified by SetInvokeRead or SetInvokeWrite.
 class ReentrantHelper {
  public:
-  ReentrantHelper(StreamSocket* socket)
-      : socket_(socket),
-        verify_read_(false),
-        first_read_data_(nullptr),
-        first_len_(-1),
-        second_read_(false),
-        second_write_data_(nullptr),
-        second_len_(-1) {}
+  explicit ReentrantHelper(StreamSocket* socket) : socket_(socket) {}
 
   ReentrantHelper(const ReentrantHelper&) = delete;
   ReentrantHelper& operator=(const ReentrantHelper&) = delete;
@@ -135,17 +128,17 @@ class ReentrantHelper {
 
   raw_ptr<StreamSocket> socket_;
 
-  bool verify_read_;
+  bool verify_read_ = false;
   scoped_refptr<IOBuffer> first_read_buf_;
-  const char* first_read_data_;
-  int first_len_;
+  const char* first_read_data_ = nullptr;
+  int first_len_ = -1;
 
   CompletionOnceCallback second_callback_;
-  bool second_read_;
+  bool second_read_ = false;
   int second_rv_;
   scoped_refptr<IOBuffer> second_read_buf_;
-  const char* second_write_data_;
-  int second_len_;
+  const char* second_write_data_ = nullptr;
+  int second_len_ = -1;
 };
 
 class SequencedSocketDataTest : public TestWithTaskEnvironment {
@@ -227,12 +220,12 @@ class SequencedSocketDataTest : public TestWithTaskEnvironment {
   std::unique_ptr<SequencedSocketData> data_;
 
   MockClientSocketFactory socket_factory_;
-  bool expect_eof_;
+  bool expect_eof_ = true;
 
   std::unique_ptr<StreamSocket> sock_;
 };
 
-SequencedSocketDataTest::SequencedSocketDataTest() : expect_eof_(true) {}
+SequencedSocketDataTest::SequencedSocketDataTest() = default;
 
 SequencedSocketDataTest::~SequencedSocketDataTest() {
   // Make sure no unexpected pending tasks will cause a failure.

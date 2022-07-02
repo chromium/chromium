@@ -73,7 +73,8 @@ class AnnotationList;
 class Annotation {
  public:
   //! \brief The maximum length of an annotation’s name, in bytes.
-  static constexpr size_t kNameMaxLength = 64;
+  //!    Matches the behavior of Breakpad's SimpleStringDictionary.
+  static constexpr size_t kNameMaxLength = 256;
 
   //! \brief The maximum size of an annotation’s value, in bytes.
   static constexpr size_t kValueMaxSize = 5 * 4096;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -23,19 +24,22 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 
-#if defined(USE_DBUS_MENU)
-
 namespace {
 
+#if defined(USE_DBUS_MENU)
 bool CreateGlobalMenuBar() {
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .supports_global_application_menus;
 }
+#endif  // defined(USE_DBUS_MENU)
+
+std::unordered_set<std::string>& SentStartupIds() {
+  static base::NoDestructor<std::unordered_set<std::string>> sent_startup_ids;
+  return *sent_startup_ids;
+}
 
 }  // namespace
-
-#endif  // defined(USE_DBUS_MENU)
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLinux, public:
@@ -145,7 +149,6 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
-#if BUILDFLAG(IS_LINUX)
   auto* view = static_cast<BrowserFrameViewLinux*>(
       native_frame_->browser_frame()->GetFrameView());
   auto* layout = view->layout();
@@ -231,7 +234,6 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   }
 
   SizeConstraintsChanged();
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -263,6 +265,18 @@ void BrowserDesktopWindowTreeHostLinux::CloseNow() {
   dbus_appmenu_.reset();
 #endif
   DesktopWindowTreeHostLinux::CloseNow();
+}
+
+void BrowserDesktopWindowTreeHostLinux::Show(ui::WindowShowState show_state,
+                                             const gfx::Rect& restore_bounds) {
+  DesktopWindowTreeHostLinux::Show(show_state, restore_bounds);
+
+  const std::string& startup_id =
+      browser_view_->browser()->create_params().startup_id;
+  if (!startup_id.empty() && !SentStartupIds().count(startup_id)) {
+    platform_window()->NotifyStartupComplete(startup_id);
+    SentStartupIds().insert(startup_id);
+  }
 }
 
 bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect() const {

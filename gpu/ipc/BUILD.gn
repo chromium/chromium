@@ -31,12 +31,6 @@ component("gl_in_process_context") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
-
-    # crbug.com/799267: crash_key needs to be added explicitly for Windows and
-    # Mac even though it's not directly referenced, because it's being
-    # implicitly depended upon by gpu/config/gpu_crash_keys.h but deps (even
-    # public ones) are not transitive for static libraries.
-    "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",

@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
 namespace ash::quick_unlock {
 namespace {
@@ -165,7 +165,7 @@ void PinStorageCryptohome::IsPinSetInCryptohome(const AccountId& account_id,
   request.mutable_authorization_request();
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
 
-  chromeos::UserDataAuthClient::Get()->GetKeyData(
+  UserDataAuthClient::Get()->GetKeyData(
       request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
                               false /*require_unlocked*/));
 }
@@ -217,7 +217,7 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
       cryptohome::Identification(user_context.GetAccountId()));
   *request.mutable_authorization_request() =
       cryptohome::CreateAuthorizationRequest(key.GetLabel(), key.GetSecret());
-  chromeos::UserDataAuthClient::Get()->AddKey(
+  UserDataAuthClient::Get()->AddKey(
       request,
       base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::AddKeyReply>,
                      std::move(did_set)));
@@ -242,7 +242,7 @@ void PinStorageCryptohome::RemovePin(const UserContext& user_context,
       cryptohome::CreateAuthorizationRequest(
           user_context.GetKey()->GetLabel(),
           user_context.GetKey()->GetSecret());
-  chromeos::UserDataAuthClient::Get()->RemoveKey(
+  UserDataAuthClient::Get()->RemoveKey(
       request, base::BindOnce(
                    &OnCryptohomeCallComplete<::user_data_auth::RemoveKeyReply>,
                    std::move(did_remove)));
@@ -274,7 +274,7 @@ void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id);
   request.mutable_authorization_request();
-  chromeos::UserDataAuthClient::Get()->GetKeyData(
+  UserDataAuthClient::Get()->GetKeyData(
       request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
                               true /*require_unlocked*/));
 }
@@ -299,7 +299,7 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
     request.set_unlock_webauthn_secret(true);
   }
 
-  chromeos::UserDataAuthClient::Get()->CheckKey(
+  UserDataAuthClient::Get()->CheckKey(
       request,
       base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
                      std::move(result)));

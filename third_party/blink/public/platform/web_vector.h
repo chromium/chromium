@@ -158,8 +158,8 @@ class WebVector {
     return data_[i];
   }
 
-  T* Data() { return data_.data(); }
-  const T* Data() const { return data_.data(); }
+  T* data() { return data_.data(); }
+  const T* data() const { return data_.data(); }
 
   iterator begin() { return data_.begin(); }
   iterator end() { return data_.end(); }

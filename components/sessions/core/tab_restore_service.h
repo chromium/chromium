@@ -146,6 +146,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // Entry:
     size_t EstimateMemoryUsage() const override;
 
+    // Type of window.
+    SessionWindow::WindowType type;
+
     // The tabs that comprised the window, in order.
     std::vector<std::unique_ptr<Tab>> tabs;
 

@@ -28,7 +28,7 @@ namespace {
 NSEvent* KeyEvent(const NSUInteger modifierFlags,
                   NSString* chars,
                   NSString* charsNoMods,
-                  const NSUInteger keyCode) {
+                  const NSUInteger keyCode = 0) {
   return [NSEvent keyEventWithType:NSEventTypeKeyDown
                           location:NSZeroPoint
                      modifierFlags:modifierFlags
@@ -63,7 +63,8 @@ void ExpectKeyFiresItemEq(bool result,
                           NSEvent* key,
                           NSMenuItem* item,
                           bool compareCocoa) {
-  EXPECT_EQ(result, [item cr_firesForKeyEvent:key]) << key << '\n' << item;
+  EXPECT_EQ(result, [item cr_firesForKeyEquivalentEvent:key]) << key << '\n'
+                                                              << item;
 
   // Make sure that Cocoa does in fact agree with our expectations. However,
   // in some cases cocoa behaves weirdly (if you create e.g. a new event that
@@ -90,6 +91,37 @@ void ExpectKeyDoesntFireItem(NSEvent* key,
                              NSMenuItem* item,
                              bool compareCocoa = true) {
   ExpectKeyFiresItemEq(false, key, item, compareCocoa);
+}
+
+TEST(NSMenuItemAdditionsTest, TestExtractsKeyEventModifierMask) {
+  const NSEventModifierFlags mask =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+
+  // The mask returned by ModifierMaskForKeyEvent() should include
+  // NSEventModifierFlagFunction if the user holds down the function modifier
+  // key with a non-function key.
+  NSEvent* event = KeyEvent(mask | NSEventModifierFlagFunction, @"e", @"e");
+  EXPECT_EQ(mask | NSEventModifierFlagFunction, ModifierMaskForKeyEvent(event));
+
+  // The mask returned by ModifierMaskForKeyEvent() should not include
+  // NSEventModifierFlagFunction when the user presses a function key such as
+  // up arrow (the AppKit adds NSEventModifierFlagFunction to the key event's
+  // modifiers whenever the user presses a function key regardless of the state
+  // of the function modifier key).
+  unichar buffer[2];
+  buffer[0] = NSUpArrowFunctionKey;
+  buffer[1] = 0;
+  NSString* characters = [NSString stringWithCharacters:buffer length:1];
+  event = KeyEvent(NSEventModifierFlagFunction, characters, characters);
+  EXPECT_EQ(mask, ModifierMaskForKeyEvent(event));
+
+  // The mask returned by ModifierMaskForKeyEvent() should not include
+  // NSEventModifierFlagFunction if the user does not hold down the function
+  // modifier key with a non-function key.
+  const NSEventModifierFlags kNoModifiers = 0;
+  event = KeyEvent(kNoModifiers, @"a", @"a");
+  EXPECT_EQ(mask, ModifierMaskForKeyEvent(event));
 }
 
 TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
@@ -160,7 +192,8 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   ExpectKeyFiresItem(key, item);
 
   // Turns out Cocoa fires "+ 100108 + 18" if you hit cmd-= and the menu only
-  // has a cmd-+ shortcut. But that's transparent for |cr_firesForKeyEvent:|.
+  // has a cmd-+ shortcut. But that's transparent for
+  // |cr_firesForKeyEquivalentEvent:|.
 
   // ctrl-3
   key = KeyEvent(0x40101, @"3", @"3", 0x14);

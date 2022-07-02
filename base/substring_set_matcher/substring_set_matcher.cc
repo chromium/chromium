@@ -24,17 +24,18 @@ namespace base {
 
 namespace {
 
-// Compare StringPattern instances based on their string patterns.
-bool ComparePatterns(const StringPattern* a, const StringPattern* b) {
+// Compare MatcherStringPattern instances based on their string patterns.
+bool ComparePatterns(const MatcherStringPattern* a,
+                     const MatcherStringPattern* b) {
   return a->pattern() < b->pattern();
 }
 
-std::vector<const StringPattern*> GetVectorOfPointers(
-    const std::vector<StringPattern>& patterns) {
-  std::vector<const StringPattern*> pattern_pointers;
+std::vector<const MatcherStringPattern*> GetVectorOfPointers(
+    const std::vector<MatcherStringPattern>& patterns) {
+  std::vector<const MatcherStringPattern*> pattern_pointers;
   pattern_pointers.reserve(patterns.size());
 
-  for (const StringPattern& pattern : patterns)
+  for (const MatcherStringPattern& pattern : patterns)
     pattern_pointers.push_back(&pattern);
 
   return pattern_pointers;
@@ -42,17 +43,19 @@ std::vector<const StringPattern*> GetVectorOfPointers(
 
 }  // namespace
 
-bool SubstringSetMatcher::Build(const std::vector<StringPattern>& patterns) {
+bool SubstringSetMatcher::Build(
+    const std::vector<MatcherStringPattern>& patterns) {
   return Build(GetVectorOfPointers(patterns));
 }
 
-bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
+bool SubstringSetMatcher::Build(
+    std::vector<const MatcherStringPattern*> patterns) {
   // Ensure there are no duplicate IDs and all pattern strings are distinct.
 #if DCHECK_IS_ON()
   {
-    std::set<StringPattern::ID> ids;
+    std::set<MatcherStringPattern::ID> ids;
     std::set<std::string> pattern_strings;
-    for (const StringPattern* pattern : patterns) {
+    for (const MatcherStringPattern* pattern : patterns) {
       CHECK(!base::Contains(ids, pattern->id()));
       CHECK(!base::Contains(pattern_strings, pattern->pattern()));
       ids.insert(pattern->id());
@@ -62,9 +65,8 @@ bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
 #endif
 
   // Check that all the match labels fit into an edge.
-  for (const StringPattern* pattern : patterns) {
-    if (pattern->id() < 0 ||
-        base::checked_cast<NodeID>(pattern->id()) >= kInvalidNodeID) {
+  for (const MatcherStringPattern* pattern : patterns) {
+    if (pattern->id() >= kInvalidNodeID) {
       return false;
     }
   }
@@ -88,8 +90,9 @@ bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
 
 SubstringSetMatcher::~SubstringSetMatcher() = default;
 
-bool SubstringSetMatcher::Match(const std::string& text,
-                                std::set<StringPattern::ID>* matches) const {
+bool SubstringSetMatcher::Match(
+    const std::string& text,
+    std::set<MatcherStringPattern::ID>* matches) const {
   const size_t old_number_of_matches = matches->size();
 
   // Handle patterns matching the empty string.
@@ -168,7 +171,7 @@ constexpr SubstringSetMatcher::NodeID SubstringSetMatcher::kInvalidNodeID;
 constexpr SubstringSetMatcher::NodeID SubstringSetMatcher::kRootID;
 
 SubstringSetMatcher::NodeID SubstringSetMatcher::GetTreeSize(
-    const std::vector<const StringPattern*>& patterns) const {
+    const std::vector<const MatcherStringPattern*>& patterns) const {
   DCHECK(std::is_sorted(patterns.begin(), patterns.end(), ComparePatterns));
 
   base::CheckedNumeric<NodeID> result = 1u;  // 1 for the root node.
@@ -209,14 +212,14 @@ void SubstringSetMatcher::BuildAhoCorasickTree(
   tree_.emplace_back();
 
   // Build the initial trie for all the patterns.
-  for (const StringPattern* pattern : patterns)
+  for (const MatcherStringPattern* pattern : patterns)
     InsertPatternIntoAhoCorasickTree(pattern);
 
   CreateFailureAndOutputEdges();
 }
 
 void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
-    const StringPattern* pattern) {
+    const MatcherStringPattern* pattern) {
   const std::string& text = pattern->pattern();
   const std::string::const_iterator text_end = text.end();
 
@@ -236,7 +239,8 @@ void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
   // Create new nodes if necessary.
   while (i != text_end) {
     tree_.emplace_back();
-    current_node->SetEdge(static_cast<unsigned char>(*i), tree_.size() - 1);
+    current_node->SetEdge(static_cast<unsigned char>(*i),
+                          static_cast<NodeID>(tree_.size() - 1));
     current_node = &tree_.back();
     ++i;
   }
@@ -319,7 +323,7 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
 
 void SubstringSetMatcher::AccumulateMatchesForNode(
     const AhoCorasickNode* node,
-    std::set<StringPattern::ID>* matches) const {
+    std::set<MatcherStringPattern::ID>* matches) const {
   DCHECK(matches);
 
   if (!node->has_outputs()) {
@@ -377,13 +381,13 @@ SubstringSetMatcher::NodeID
 SubstringSetMatcher::AhoCorasickNode::GetEdgeNoInline(uint32_t label) const {
   DCHECK(edges_capacity_ != 0);
 #ifdef __SSE2__
-  const __m128i lbl = _mm_set1_epi32(label);
+  const __m128i lbl = _mm_set1_epi32(static_cast<int>(label));
   const __m128i mask = _mm_set1_epi32(0x1ff);
   for (unsigned edge_idx = 0; edge_idx < num_edges(); edge_idx += 4) {
     const __m128i four = _mm_loadu_si128(
         reinterpret_cast<const __m128i*>(&edges_.edges[edge_idx]));
     const __m128i match = _mm_cmpeq_epi32(_mm_and_si128(four, mask), lbl);
-    const uint32_t match_mask = _mm_movemask_epi8(match);
+    const uint32_t match_mask = static_cast<uint32_t>(_mm_movemask_epi8(match));
     if (match_mask != 0) {
       if (match_mask & 0x1u) {
         return edges_.edges[edge_idx].node_id;
@@ -443,6 +447,9 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
         edges_capacity_ == 0 ? kNumInlineEdges : edges_capacity_;
     unsigned new_capacity = old_capacity * 2;
     DCHECK_EQ(0u, new_capacity % 4);
+    // TODO(pkasting): The header claims this condition holds, but I don't
+    // understand why.  If you do, please comment.
+    DCHECK_LE(new_capacity, kEmptyLabel + 1);
     AhoCorasickEdge* new_edges = new AhoCorasickEdge[new_capacity];
     memcpy(new_edges, edges(), sizeof(AhoCorasickEdge) * old_capacity);
     for (unsigned edge_idx = old_capacity; edge_idx < new_capacity;
@@ -453,8 +460,9 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
       delete[] edges_.edges;
     }
     edges_.edges = new_edges;
-    edges_capacity_ = new_capacity;
-    num_free_edges_ = new_capacity - old_capacity;
+    // These casts are safe due to the DCHECK above.
+    edges_capacity_ = static_cast<uint16_t>(new_capacity);
+    num_free_edges_ = static_cast<uint8_t>(new_capacity - old_capacity);
   }
 
   // Insert the new edge at the end of our heap storage.

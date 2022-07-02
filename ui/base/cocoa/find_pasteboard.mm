@@ -42,7 +42,7 @@ NSString* kFindPasteboardChangedNotification =
 }
 
 - (NSPasteboard*)findPboard {
-  return [NSPasteboard pasteboardWithName:NSFindPboard];
+  return [NSPasteboard pasteboardWithName:NSPasteboardNameFind];
 }
 
 - (void)loadTextFromPasteboard:(NSNotification*)notification {
@@ -75,7 +75,3 @@ NSString* kFindPasteboardChangedNotification =
 }
 
 @end
-
-std::u16string GetFindPboardText() {
-  return base::SysNSStringToUTF16([[FindPasteboard sharedInstance] findText]);
-}

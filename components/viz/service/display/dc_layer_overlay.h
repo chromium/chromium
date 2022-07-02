@@ -96,10 +96,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                        const gfx::RectF& display_rect,
                        const FilterOperationsMap& render_pass_filters,
                        const FilterOperationsMap& render_pass_backdrop_filters,
-                       AggregatedRenderPassList* render_passes,
+                       AggregatedRenderPass* render_pass,
                        gfx::Rect* damage_rect,
                        SurfaceDamageRectList surface_damage_rect_list,
-                       DCLayerOverlayList* dc_layer_overlays);
+                       DCLayerOverlayList* dc_layer_overlays,
+                       bool is_video_capture_enabled);
   void ClearOverlayState();
   // This is the damage contribution due to previous frame's overlays which can
   // be empty.
@@ -110,7 +111,15 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   void OnDisplayRemoved() override;
   void UpdateHasHwOverlaySupport();
 
+  void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
+    frames_since_last_qualified_multi_overlays_ = value;
+  }
+
  private:
+  // Detects overlay processing skip inside |render_pass|.
+  bool ShouldSkipOverlay(AggregatedRenderPass* render_pass,
+                         bool is_video_capture_enabled);
+
   // UpdateDCLayerOverlays() adds the quad at |it| to the overlay list
   // |dc_layer_overlays|.
   void UpdateDCLayerOverlays(const gfx::RectF& display_rect,
@@ -157,6 +166,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   bool has_overlay_support_;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
+  unsigned long frames_since_last_qualified_multi_overlays_ = 0;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;

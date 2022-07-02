@@ -270,6 +270,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             public void onFlowIsKnown(Bundle freProperties) {
                 assert freProperties != null;
                 mFreProperties = freProperties;
+                RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.ChildStatusAvailable",
+                        SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
                 onInternalStateChanged();
 
@@ -331,6 +333,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
         super.onPolicyLoadListenerAvailable(onDevicePolicyFound);
+        RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.PoliciesLoaded",
+                SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
         onInternalStateChanged();
     }
@@ -596,6 +600,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void recordNativePolicyAndChildStatusLoadedHistogram() {
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded",
+                SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+    }
+
+    @Override
+    public void recordNativeInitializedHistogram() {
+        RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.NativeInitialized",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
     }
 

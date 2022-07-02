@@ -1,0 +1,8 @@
+Tests that Page.GetNavigationHistory(), Page.NavigateToHistoryEntry(), and Page.ResetNavigationHistory() in a fenced frame are not allowed.
+Page.getNavigationHistory() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+Page.navigateToHistoryEntry() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+Page.ResetNavigationHistory() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+

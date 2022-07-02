@@ -18,22 +18,22 @@ class WebState;
 
 namespace activity_services {
 
-// Returns a ShareToData object using data from |web_state|. |share_url| is the
-// URL to be shared with share extensions. If |share_url| is empty, the visible
-// URL associated with |web_state| will be used instead. |web_state| must not be
+// Returns a ShareToData object using data from `web_state`. `share_url` is the
+// URL to be shared with share extensions. If `share_url` is empty, the visible
+// URL associated with `web_state` will be used instead. `web_state` must not be
 // nil. Function may return nil.
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url);
 
-// Returns a ShareToData object for a single |URL|, and its page's |title|,
-// which is not associated to a WebState. Will also add |additionalText|, if
+// Returns a ShareToData object for a single `URL`, and its page's `title`,
+// which is not associated to a WebState. Will also add `additionalText`, if
 // present.
 ShareToData* ShareToDataForURL(const GURL& URL,
                                NSString* title,
                                NSString* additionalText);
 
-// Returns a ShareToData object for a single |URLWithTitle|, which is not
-// associated to a WebState. Will also add |additionalText|, if present.
+// Returns a ShareToData object for a single `URLWithTitle`, which is not
+// associated to a WebState. Will also add `additionalText`, if present.
 ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle);
 
 }  // namespace activity_services

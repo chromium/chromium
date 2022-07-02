@@ -22,9 +22,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
-#if BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && BUILDFLAG(IS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
 #include "media/mojo/services/playback_events_recorder.h"
 #endif
 
@@ -263,6 +263,16 @@ void MediaMetricsProvider::OnError(const PipelineStatus& status) {
   uma_info_.last_pipeline_status = status.code();
 }
 
+void MediaMetricsProvider::OnFallback(const PipelineStatus& status) {
+  DCHECK(initialized_);
+  if (is_shutting_down_cb_.Run()) {
+    DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
+             << " ignored since it is reported during shutdown.";
+    return;
+  }
+  // Do nothing for now.
+}
+
 void MediaMetricsProvider::SetIsEME() {
   // This may be called before Initialize().
   uma_info_.is_eme = true;
@@ -340,7 +350,7 @@ void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
 
 void MediaMetricsProvider::AcquirePlaybackEventsRecorder(
     mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver) {
-#if BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_CHROMECAST) && BUILDFLAG(IS_ANDROID))
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CAST_ANDROID)
   PlaybackEventsRecorder::Create(std::move(receiver));
 #endif
 }

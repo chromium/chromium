@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
   ExtensionHost* host = ProcessManager::Get(browser()->profile())
                             ->GetBackgroundHostForExtension(extension->id());
   ASSERT_TRUE(host);
-  host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"alert('This should not crash.');", base::NullCallback());
 
   ASSERT_NO_FATAL_FAILURE(CloseDialog());
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
   size_t call_count = 0;
   for (size_t i = 0; i != num_dialogs; ++i) {
     const std::string dialog_name = "Dialog #" + base::NumberToString(i) + ".";
-    host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"alert('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckAlertResult, dialog_name,
                        base::Unretained(&call_count)));
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
   for (size_t i = 0; i != num_accepted_dialogs; ++i) {
     const std::string dialog_name =
         "Accepted dialog #" + base::NumberToString(i) + ".";
-    host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, true,
                        base::Unretained(&call_count)));
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
   for (size_t i = 0; i != num_cancelled_dialogs; ++i) {
     const std::string dialog_name =
         "Cancelled dialog #" + base::NumberToString(i) + ".";
-    host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    host->host_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('" + base::ASCIIToUTF16(dialog_name) + u"');",
         base::BindOnce(&CheckConfirmResult, dialog_name, false,
                        base::Unretained(&call_count)));

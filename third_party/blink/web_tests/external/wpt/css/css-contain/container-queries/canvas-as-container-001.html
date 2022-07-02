@@ -21,5 +21,9 @@
   <div id="target" tabIndex="1"></div>
 </canvas>
 <script>
-  target.focus();
+  requestAnimationFrame(()=> {
+    requestAnimationFrame(()=> {
+      target.focus();
+    });
+  });
 </script>

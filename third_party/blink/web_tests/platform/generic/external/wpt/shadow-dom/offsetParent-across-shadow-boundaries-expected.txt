@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS offsetParent must return the offset parent in the same shadow tree of open mode
+PASS offsetParent must return the offset parent in the same shadow tree of closed mode
+PASS offsetParent must return the offset parent in the same shadow tree of open mode even when nested
+PASS offsetParent must return the offset parent in the same shadow tree of closed mode even when nested
+FAIL offsetParent must skip offset parents of an element when the context object is assigned to a slot in a shadow tree of open mode assert_equals: expected Element node <div id="container" style="position: relative"><div><div ... but got Element node <div style="position: relative; padding-left: 85px; paddi...
+PASS offsetParent must skip offset parents of an element when the context object is assigned to a slot in a shadow tree of closed mode
+FAIL offsetParent must skip multiple offset parents of an element when the context object is assigned to a slot in a shadow tree of open mode assert_equals: expected Element node <div id="container" style="position: relative"><div style... but got Element node <div style="position: absolute; top: 10px; left: 10px;"><...
+PASS offsetParent must skip multiple offset parents of an element when the context object is assigned to a slot in a shadow tree of closed mode
+FAIL offsetParent must skip offset parents of an element when the context object is assigned to a slot in nested shadow trees of open mode assert_equals: expected Element node <div id="container" style="position: relative"><section><... but got Element node <div style="position: absolute; top: 200px; margin-left: ...
+PASS offsetParent must skip offset parents of an element when the context object is assigned to a slot in nested shadow trees of closed mode
+FAIL offsetParent must find the first offset parent which is a shadow-including ancestor of the context object even some shadow tree of open mode did not have any offset parent assert_equals: expected Element node <div id="container" style="position: relative"><section><... but got Element node <div style="position: absolute; top: 23px; left: 24px;"><...
+PASS offsetParent must find the first offset parent which is a shadow-including ancestor of the context object even some shadow tree of closed mode did not have any offset parent
+PASS offsetParent must return null on a child element of a shadow host for the shadow tree in open mode which is not assigned to any slot
+PASS offsetParent must return null on a child element of a shadow host for the shadow tree in closed mode which is not assigned to any slot
+PASS offsetParent must return null on a child element of a shadow host for the shadow tree in open mode which is not in the flat tree
+PASS offsetParent must return null on a child element of a shadow host for the shadow tree in closed mode which is not in the flat tree
+Harness: the test ran to completion.
+

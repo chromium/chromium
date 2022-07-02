@@ -51,16 +51,16 @@ bool HasHeaderValues(net::URLRequest* request,
   return false;
 }
 
-base::ListValue GetPEMEncodedChainAsList(
+base::Value::List GetPEMEncodedChainAsList(
     const net::X509Certificate* cert_chain) {
   if (!cert_chain)
-    return base::ListValue();
+    return base::Value::List();
 
-  base::ListValue result;
+  base::Value::List result;
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  for (const std::string& cert : pem_encoded_chain)
-    result.Append(cert);
+  for (std::string& cert : pem_encoded_chain)
+    result.Append(std::move(cert));
 
   return result;
 }
@@ -81,7 +81,7 @@ std::string SCTOriginToString(
 }
 
 bool AddSCT(const net::SignedCertificateTimestampAndStatus& sct,
-            base::ListValue* list) {
+            base::Value::List* list) {
   base::Value::Dict list_item;
   // Chrome implements RFC6962, not 6962-bis, so the reports contain v1 SCTs.
   list_item.Set("version", 1);
@@ -166,25 +166,26 @@ void ExpectCTReporter::OnExpectCTFailed(
   if (!base::FeatureList::IsEnabled(features::kExpectCTReporting))
     return;
 
-  base::Value outer_report(base::Value::Type::DICTIONARY);
-  base::Value* report = outer_report.SetKey(
-      "expect-ct-report", base::Value(base::Value::Type::DICTIONARY));
-  report->SetStringKey("hostname", host_port_pair.host());
-  report->SetIntKey("port", host_port_pair.port());
-  report->SetStringKey("date-time", base::TimeToISO8601(base::Time::Now()));
-  report->SetStringKey("effective-expiration-date",
-                       base::TimeToISO8601(expiration));
-  report->SetKey("served-certificate-chain",
-                 GetPEMEncodedChainAsList(served_certificate_chain));
-  report->SetKey("validated-certificate-chain",
-                 GetPEMEncodedChainAsList(validated_certificate_chain));
+  base::Value::Dict outer_report;
 
-  base::ListValue scts;
+  base::Value::Dict report;
+  report.Set("hostname", host_port_pair.host());
+  report.Set("port", host_port_pair.port());
+  report.Set("date-time", base::TimeToISO8601(base::Time::Now()));
+  report.Set("effective-expiration-date", base::TimeToISO8601(expiration));
+  report.Set("served-certificate-chain",
+             GetPEMEncodedChainAsList(served_certificate_chain));
+  report.Set("validated-certificate-chain",
+             GetPEMEncodedChainAsList(validated_certificate_chain));
+
+  base::Value::List scts;
   for (const auto& sct_and_status : signed_certificate_timestamps) {
     if (!AddSCT(sct_and_status, &scts))
       LOG(ERROR) << "Failed to add signed certificate timestamp to list";
   }
-  report->SetKey("scts", std::move(scts));
+  report.Set("scts", std::move(scts));
+
+  outer_report.Set("expect-ct-report", std::move(report));
 
   std::string serialized_report;
   if (!base::JSONWriter::Write(outer_report, &serialized_report)) {

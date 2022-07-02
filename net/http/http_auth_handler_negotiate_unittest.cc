@@ -178,13 +178,11 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
             kAuthResponse)   // Output token
     };
 
-    for (size_t i = 0; i < std::size(queries); ++i) {
-      mock_library->ExpectSecurityContext(queries[i].expected_package,
-                                          queries[i].response_code,
-                                          queries[i].minor_response_code,
-                                          queries[i].context_info,
-                                          queries[i].expected_input_token,
-                                          queries[i].output_token);
+    for (const auto& query : queries) {
+      mock_library->ExpectSecurityContext(
+          query.expected_package, query.response_code,
+          query.minor_response_code, query.context_info,
+          query.expected_input_token, query.output_token);
     }
 #endif  // BUILDFLAG(IS_WIN)
   }

@@ -5,6 +5,9 @@
 
 from __future__ import print_function
 
+import typing
+import unittest.mock as mock
+
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types
@@ -13,7 +16,7 @@ from unexpected_passes_common import queries as queries_module
 # pylint: disable=useless-object-inheritance,super-with-arguments
 
 
-def CreateStatsWithPassFails(passes, fails):
+def CreateStatsWithPassFails(passes: int, fails: int) -> data_types.BuildStats:
   stats = data_types.BuildStats()
   for _ in range(passes):
     stats.AddPassedBuild()
@@ -22,7 +25,7 @@ def CreateStatsWithPassFails(passes, fails):
   return stats
 
 
-def _CreateSimpleQueries(clauses):
+def _CreateSimpleQueries(clauses: typing.Iterable[str]) -> typing.List[str]:
   queries = []
   # Not actually a valid query since we don't specify the table, but it works.
   for c in clauses:
@@ -34,36 +37,39 @@ WHERE %s
 
 
 class SimpleFixedQueryGenerator(queries_module.FixedQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> typing.List[str]:
     return _CreateSimpleQueries(self.GetClauses())
 
 
 class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
-  def GetQueries(self):
+  def GetQueries(self) -> typing.List[str]:
     return _CreateSimpleQueries(self.GetClauses())
 
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
-  def _GetQueryGeneratorForBuilder(self, builder):
+  def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
+                                   ) -> queries_module._BaseQueryGenerator:
     if not self._large_query_mode:
-      return SimpleFixedQueryGenerator(builder.builder_type, 'AND True')
-    return SimpleSplitQueryGenerator(builder.builder_type, ['test_id'], 200)
+      return SimpleFixedQueryGenerator(builder, 'AND True')
+    return SimpleSplitQueryGenerator(builder, ['test_id'], 200)
 
-  def _GetRelevantExpectationFilesForQueryResult(self, _):
+  def _GetRelevantExpectationFilesForQueryResult(self, _) -> None:
     return None
 
-  def _StripPrefixFromTestId(self, test_id):
+  def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
 
-  def _GetActiveBuilderQuery(self, _, __):
+  def _GetActiveBuilderQuery(self, _, __) -> str:
     return ''
 
 
-def CreateGenericQuerier(suite=None,
-                         project=None,
-                         num_samples=None,
-                         large_query_mode=None,
-                         cls=None):
+def CreateGenericQuerier(
+    suite: typing.Optional[str] = None,
+    project: typing.Optional[str] = None,
+    num_samples: typing.Optional[int] = None,
+    large_query_mode: typing.Optional[bool] = None,
+    cls: typing.Optional[typing.Type[queries_module.BigQueryQuerier]] = None
+) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
   project = project or 'project'
   num_samples = num_samples or 5
@@ -72,7 +78,8 @@ def CreateGenericQuerier(suite=None,
   return cls(suite, project, num_samples, large_query_mode)
 
 
-def GetArgsForMockCall(call_args_list, call_number):
+def GetArgsForMockCall(call_args_list: typing.List[tuple],
+                       call_number: int) -> typing.Tuple[tuple, dict]:
   """Helper to more sanely get call args from a mocked method.
 
   Args:
@@ -97,33 +104,39 @@ class FakePool(object):
   multiprocessing_utils.GetProcessPool().
   """
 
-  def map(self, f, inputs):
+  def map(self, f: typing.Callable[[typing.Any], typing.Any],
+          inputs: typing.Iterable[typing.Any]) -> typing.List[typing.Any]:
     retval = []
     for i in inputs:
       retval.append(f(i))
     return retval
 
-  def apipe(self, f, inputs):
+  def apipe(self, f: typing.Callable[[typing.Any], typing.Any],
+            inputs: typing.Iterable[typing.Any]) -> 'FakeAsyncResult':
     return FakeAsyncResult(f(inputs))
 
 
 class FakeAsyncResult(object):
   """A fake AsyncResult like the one from multiprocessing or pathos."""
 
-  def __init__(self, result):
+  def __init__(self, result: typing.Any):
     self._result = result
 
-  def ready(self):
+  def ready(self) -> bool:
     return True
 
-  def get(self):
+  def get(self) -> typing.Any:
     return self._result
 
 
 class FakeProcess(object):
   """A fake subprocess Process object."""
 
-  def __init__(self, returncode=None, stdout=None, stderr=None, finish=True):
+  def __init__(self,
+               returncode: typing.Optional[int] = None,
+               stdout: typing.Optional[str] = None,
+               stderr: typing.Optional[str] = None,
+               finish: bool = True):
     if finish:
       self.returncode = returncode or 0
     else:
@@ -132,47 +145,49 @@ class FakeProcess(object):
     self.stderr = stderr or ''
     self.finish = finish
 
-  def communicate(self, _):
+  def communicate(self, _) -> typing.Tuple[str, str]:
     return self.stdout, self.stderr
 
-  def terminate(self):
+  def terminate(self) -> None:
     if self.finish:
       raise OSError('Tried to terminate a finished process')
 
 
 class GenericBuilders(builders.Builders):
   #pylint: disable=useless-super-delegation
-  def __init__(self, suite=None, include_internal_builders=False):
+  def __init__(self,
+               suite: typing.Optional[str] = None,
+               include_internal_builders: bool = False):
     super(GenericBuilders, self).__init__(suite, include_internal_builders)
   #pylint: enable=useless-super-delegation
 
-  def _BuilderRunsTestOfInterest(self, _test_map):
+  def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True
 
-  def GetIsolateNames(self):
+  def GetIsolateNames(self) -> dict:
     return {}
 
-  def GetFakeCiBuilders(self):
+  def GetFakeCiBuilders(self) -> dict:
     return {}
 
-  def GetNonChromiumBuilders(self):
+  def GetNonChromiumBuilders(self) -> dict:
     return {}
 
 
-def RegisterGenericBuildersImplementation():
+def RegisterGenericBuildersImplementation() -> None:
   builders.RegisterInstance(GenericBuilders())
 
 
 class GenericExpectations(expectations.Expectations):
-  def GetExpectationFilepaths(self):
+  def GetExpectationFilepaths(self) -> list:
     return []
 
-  def _GetExpectationFileTagHeader(self, _):
+  def _GetExpectationFileTagHeader(self, _) -> str:
     return """\
 # tags: [ linux mac win ]
 # results: [ Failure RetryOnFailure Skip Pass ]
 """
 
 
-def CreateGenericExpectations():
+def CreateGenericExpectations() -> GenericExpectations:
   return GenericExpectations()

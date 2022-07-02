@@ -159,7 +159,7 @@ TEST_F(PopupBlockerTabHelperTest, DoesNotShowPopupWithInvalidID) {
 TEST_F(PopupBlockerTabHelperTest, SetsContentSettingsPopupState) {
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::POPUPS));
 
   TestPopupNavigationDelegate::ResultHolder result;
@@ -186,12 +186,12 @@ TEST_F(PopupBlockerTabHelperTest, ClearsContentSettingsPopupStateOnNavigation) {
       std::make_unique<TestPopupNavigationDelegate>(GURL(kUrl1), &result),
       blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  web_contents()->GetMainFrame())
+                  web_contents()->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   NavigateAndCommit(GURL(kUrl2));
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
-                   web_contents()->GetMainFrame())
+                   web_contents()->GetPrimaryMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
@@ -202,24 +202,24 @@ TEST_F(PopupBlockerTabHelperTest,
       std::make_unique<TestPopupNavigationDelegate>(GURL(kUrl1), &result),
       blink::mojom::WindowFeatures(), PopupBlockType::kNoGesture);
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  web_contents()->GetMainFrame())
+                  web_contents()->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Navigating a non-primary main frame shoudn't clear the popups.
   content::MockNavigationHandle handle(GURL(kUrl2),
-                                       web_contents()->GetMainFrame());
+                                       web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   handle.set_is_in_primary_main_frame(false);
   helper()->DidFinishNavigation(&handle);
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
-                  web_contents()->GetMainFrame())
+                  web_contents()->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Navigating the primary main frame should clear the popups.
   handle.set_is_in_primary_main_frame(true);
   helper()->DidFinishNavigation(&handle);
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
-                   web_contents()->GetMainFrame())
+                   web_contents()->GetPrimaryMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 

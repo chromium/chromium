@@ -18,7 +18,7 @@ namespace browsing_topics {
 // document.browsingTopics().
 class EpochTopics {
  public:
-  EpochTopics();
+  explicit EpochTopics(base::Time calculation_time);
 
   EpochTopics(std::vector<TopicAndDomains> top_topics_and_observing_domains,
               size_t padded_top_topics_start_index,
@@ -128,8 +128,11 @@ class EpochTopics {
   // The version of the model used to calculate this epoch's topics.
   int64_t model_version_ = 0;
 
-  // The calculation start time. This also determines the time range of the
-  // underlying topics data.
+  // The calculation start time. This determines the end time of this epoch's
+  // underlying topics data, and may determine the start time of future epochs'
+  // underlying topics data. It's only best effort to read this field from a
+  // failed calculation, as historically this field is only set for successful
+  // calculations.
   base::Time calculation_time_;
 };
 

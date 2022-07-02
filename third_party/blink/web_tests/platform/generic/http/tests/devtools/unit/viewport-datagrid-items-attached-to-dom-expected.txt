@@ -6,7 +6,6 @@ a2
 a3
 a4
 a5
-a6
 
 Scrolled down to 133px
 Nodes attached to dom:
@@ -30,7 +29,6 @@ a21
 
 Scrolled down to 1000px - should be at bottom
 Nodes attached to dom:
-a23
 a24
 a25
 a26
@@ -46,7 +44,6 @@ a2
 a3
 a4
 a5
-a6
 
 Testing removal of some nodes in viewport
 Should be missing node 0, 1, 3, 5 from dom:
@@ -57,7 +54,6 @@ a6
 a7
 a8
 a9
-a10
 
 Testing adding of some nodes back into viewport
 Nodes should be the same as previous dump because of throttling:
@@ -68,7 +64,6 @@ a6
 a7
 a8
 a9
-a10
 
 Should have nodes 0, 1, 3, 5 back in dom and previously added nodes removed:
 Nodes attached to dom:
@@ -78,6 +73,5 @@ a2
 a3
 a4
 a5
-a6
 
 

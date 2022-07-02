@@ -20,6 +20,10 @@ class ChildThreadImpl;
 // Base class for child processes of the browser process (i.e. renderer and
 // plugin host). This is a singleton object for each child process.
 //
+// The constructor will call ThreadPoolInstance::Start() unless a ThreadPool is
+// already running, which can happen when the ChildProcess object is
+// instantiated in the browser process or in tests.
+//
 // During process shutdown the following sequence of actions happens in
 // order.
 //
@@ -27,8 +31,10 @@ class ChildThreadImpl;
 //   2. Shutdown event is fired. Background threads should stop.
 //   3. ChildThreadImpl::Shutdown() is called. ChildThread is also deleted.
 //   4. IO thread is stopped.
-// 5. Main message loop exits.
-// 6. Child process is now fully stopped.
+//   5. ThreadPoolInstance::Shutdown() is called if the constructor called
+//      ThreadPoolInstance::Start().
+// 6. Main message loop exits.
+// 7. Child process is now fully stopped.
 //
 // Note: IO thread outlives the ChildThreadImpl object.
 class CONTENT_EXPORT ChildProcess {
@@ -36,12 +42,11 @@ class CONTENT_EXPORT ChildProcess {
   // Child processes should have an object that derives from this class.
   // Normally you would immediately call set_main_thread after construction.
   // |io_thread_priority| is the priority of the IO thread.
-  // |thread_pool_name| and |thread_pool_init_params| are used to
-  // initialize ThreadPool. Default params are used if
-  // |thread_pool_init_params| is nullptr.
-  ChildProcess(
+  // |thread_pool_init_params| is used to start the ThreadPool. Default params
+  // are used if |thread_pool_init_params| is nullptr. It is ignored if a
+  // ThreadPool is already running.
+  explicit ChildProcess(
       base::ThreadPriority io_thread_priority = base::ThreadPriority::NORMAL,
-      const std::string& thread_pool_name = "ContentChild",
       std::unique_ptr<base::ThreadPoolInstance::InitParams>
           thread_pool_init_params = nullptr);
 

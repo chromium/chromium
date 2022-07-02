@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/scoped_multi_source_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "extensions/buildflags/buildflags.h"
 
 class Profile;
 
@@ -27,6 +29,14 @@ class PageLoadMetricsObserver;
 class PageLoadTrackerDecoratorHelper;
 class PerformanceManagerFeatureObserverClient;
 class PerformanceManagerLifetime;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionWatcher;
+#endif
+
+namespace policies {
+class HighEfficiencyModePolicyHelper;
+}
 }  // namespace performance_manager
 
 // Handles the initialization of the performance manager and a few dependent
@@ -59,6 +69,7 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 
   // ChromeBrowserMainExtraParts overrides.
   void PostCreateThreads() override;
+  void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
   // ProfileManagerObserver:
@@ -94,6 +105,15 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   // Needed to maintain the PageNode::IsLoading() property.
   std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
       page_load_tracker_decorator_helper_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<performance_manager::ExtensionWatcher> extension_watcher_;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<performance_manager::policies::HighEfficiencyModePolicyHelper>
+      high_efficiency_mode_policy_helper_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_USB_USB_EVENTS_OBSERVER_H_
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_events_observer_base.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
 using UsbEventInfoPtr = chromeos::cros_healthd::mojom::UsbEventInfoPtr;
 

@@ -414,6 +414,90 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraintInvalidation) {
                       ->scroll_container_relative_sticky_box_rect.X());
 }
 
+TEST_P(LayoutBoxModelObjectTest, StickyPositionStatusChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: auto; height: 200px; }
+      #sticky { position: sticky; top: 0; }
+    </style>
+    <div id='scroller'>
+      <div id='sticky'></div>
+      <div style='height: 500px'></div>
+    </div>
+  )HTML");
+  auto* scrollable_area =
+      GetLayoutBoxModelObjectByElementId("scroller")->GetScrollableArea();
+  auto* sticky = GetDocument().getElementById("sticky");
+  auto* sticky_layer = sticky->GetLayoutBox()->Layer();
+  ASSERT_TRUE(sticky_layer);
+  EXPECT_TRUE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change top to auto which effectively makes the object no longer sticky
+  // constrained and removed from the scrollable area's sticky constraints map.
+  sticky->setAttribute(html_names::kStyleAttr, "top: auto");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(
+      sticky->GetLayoutObject()->StyleRef().HasStickyConstrainedPosition());
+  ASSERT_EQ(sticky_layer, sticky->GetLayoutBox()->Layer());
+  EXPECT_FALSE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change top back to 0. |sticky| should be back to sticky constrained.
+  sticky->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(
+      sticky->GetLayoutObject()->StyleRef().HasStickyConstrainedPosition());
+  ASSERT_EQ(sticky_layer, sticky->GetLayoutBox()->Layer());
+  EXPECT_TRUE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change position to relative. The sticky layer should be removed from the
+  // scrollable area's sticky constraints map.
+  sticky->setAttribute(html_names::kStyleAttr, "position: relative");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_EQ(sticky_layer, sticky->GetLayoutBox()->Layer());
+  EXPECT_FALSE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change position back to sticky.
+  sticky->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_EQ(sticky_layer, sticky->GetLayoutBox()->Layer());
+  EXPECT_TRUE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change position to static, which removes the layer. There should be no
+  // dangling pointer in the sticky constraints map.
+  sticky->setAttribute(html_names::kStyleAttr, "position: static");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_FALSE(sticky->GetLayoutBox()->Layer());
+  EXPECT_FALSE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Change position back to sticky.
+  sticky->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  sticky_layer = sticky->GetLayoutBox()->Layer();
+  EXPECT_TRUE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+
+  // Remove the layout object. There should be no dangling pointer in the
+  // sticky constraints map.
+  sticky->setAttribute(html_names::kStyleAttr, "display: none");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_FALSE(sticky->GetLayoutObject());
+  EXPECT_FALSE(
+      scrollable_area->GetStickyConstraintsMap().Contains(sticky_layer));
+}
+
 // Verifies that the correct sticky-box shifting ancestor is found when
 // computing the sticky constraints. Any such ancestor is the first sticky
 // element between you and your containing block (exclusive).
@@ -1049,53 +1133,6 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
   EXPECT_TRUE(new_compositing_container->DescendantNeedsRepaint());
   EXPECT_EQ(original_compositing_container,
             target->Layer()->CompositingContainer());
-}
-
-// Tests that when a sticky object is removed from the root scroller it
-// correctly clears its viewport constrained position: https://crbug.com/755307.
-TEST_P(LayoutBoxModelObjectTest, StickyRemovedFromRootScrollableArea) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    body { height: 5000px; }
-    #scroller { height: 100px; }
-    #sticky { position: sticky; top: 0; height: 50px; width: 50px; }
-    </style>
-    <div id='scroller'>
-      <div id='sticky'></div>
-      </div>
-  )HTML");
-
-  auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
-
-  // The 'scroller' starts as as a non-scroll container, so the sticky
-  // element's ancestor overflow layer should be the outer scroller.
-  EXPECT_TRUE(sticky->Layer()->AncestorScrollContainerLayer()->IsRootLayer());
-
-  // We need the sticky element to not be a PaintLayer child of the scroller,
-  // so that it is later reparented under the scroller's PaintLayer
-  EXPECT_FALSE(scroller->Layer());
-
-  // Now make the scroller into an actual scroller. This will reparent the
-  // sticky element to be a child of the scroller, and will set its previous
-  // overflow layer to nullptr.
-  To<Element>(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "scroll");
-  UpdateAllLifecyclePhasesForTest();
-
-  // The sticky element should no longer be viewport constrained.
-  EXPECT_FALSE(GetDocument().View()->HasViewportConstrainedObjects());
-
-  // Making the scroller have visible overflow but still have a PaintLayer
-  // (in this case by making it position: relative) will cause us to need to
-  // recompute the sticky element's ancestor overflow layer.
-  To<Element>(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyID::kPosition, "relative");
-  To<Element>(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "visible");
-
-  // Now try to scroll to the sticky element, this used to crash.
-  GetDocument().GetFrame()->DomWindow()->scrollTo(0, 500);
 }
 
 TEST_P(LayoutBoxModelObjectTest, BackfaceVisibilityChange) {

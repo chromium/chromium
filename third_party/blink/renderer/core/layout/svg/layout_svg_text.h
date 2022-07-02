@@ -78,7 +78,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
   }
 
  private:
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }

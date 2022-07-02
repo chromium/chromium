@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3472200483164753384">მხარდაუჭერელია Chromium Canary-ში</translation>
 <translation id="3567399274263440288">Chromium-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით Chromium-ში თქვენი Google ანგარიშით.</translation>
+<translation id="3619462831205197427">შედით ამ საიტში, თქვენს Google ანგარიშსა და Chromium-ში.</translation>
 <translation id="3639997914391704523">პაროლების Chromium-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> იყენებდა Chromium-ს და ამ მოწყობილობაზე დატოვა სანიშნეები, პაროლები და სხვა პარამეტრები.</translation>
 <translation id="3805899903892079518">Chromium-ს არ აქვს წვდომა თქვენს ფოტოებსა და ვიდეოებზე. ჩართეთ წვდომა iOS-ის მენიუში: პარამეტრები &gt; კონფიდენციალურობა &gt; ფოტოები.</translation>
@@ -77,7 +78,6 @@
 1. გახსენით „პარამეტრები“
 2. შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“
 3. აირჩიეთ Chromium.</translation>
-<translation id="6155422572367400359">შედით ამ საიტში, თქვენს Google ანგარიშსა და Chromium-ში. სინქრონიზაციის ჩართვა მოგვიანებით შეგიძლიათ.</translation>
 <translation id="6183442264225539303">შედით ამ საიტსა და Chromium-ში. სინქრონიზაციის ჩართვა მოგვიანებით შეგიძლიათ.</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="632825460376924298">Chromium-ში შესვლის დაშვება</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">გასუფთავდეს თქვენი Chromium მონაცემები ამ მოწყობილობიდან?</translation>
 <translation id="8175055321229419309">მინიშნება: <ph name="BEGIN_LINK" />გადაიტანეთ Chromium თქვენს დოკში<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
+<translation id="8308172444429103994">Chromium-ის მინიშნება. შედით სისტემაში უფრო სწრაფად — აირჩიეთ თქვენი შენახული პაროლი კლავიატურის ზედა ნაწილში.</translation>
 <translation id="858114650497379505">თქვენს მიერ პაროლების მმართველში შენახული პაროლების გამოყენება შეგიძლიათ სხვა აპებში თქვენს iPhone-ზე.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="865600487977764604">უზრუნველყოფს თქვენს უსაფრთხოებას Chromium-სა და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ.</translation>

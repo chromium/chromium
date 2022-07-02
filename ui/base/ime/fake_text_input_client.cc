@@ -124,9 +124,11 @@ bool FakeTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool FakeTextInputClient::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool FakeTextInputClient::GetTextFromRange(const gfx::Range& range,
                                            std::u16string* text) const {
@@ -174,7 +176,7 @@ bool FakeTextInputClient::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range FakeTextInputClient::GetAutocorrectRange() const {
   return autocorrect_range_;
 }

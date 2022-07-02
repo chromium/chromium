@@ -48,9 +48,9 @@ class URLAllowlistPolicyHandlerTest : public testing::Test {
     return handler_->ValidatePolicy(policy);
   }
   base::Value GetURLAllowlistPolicyValueWithEntries(size_t len) {
-    std::vector<base::Value> allowlist(len);
-    for (auto& entry : allowlist)
-      entry = base::Value(kTestAllowlistValue);
+    base::Value::List allowlist;
+    for (size_t i = 0; i < len; ++i)
+      allowlist.Append(kTestAllowlistValue);
     return base::Value(std::move(allowlist));
   }
 

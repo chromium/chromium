@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_H_
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
 #include "cc/animation/keyframe_model.h"
@@ -183,7 +184,6 @@ struct CORE_EXPORT Timing {
 
   CalculatedTiming CalculateTimings(
       absl::optional<AnimationTimeDelta> local_time,
-      absl::optional<Phase> timeline_phase,
       bool at_progress_timeline_boundary,
       const NormalizedTiming& normalized_timing,
       AnimationDirection animation_direction,

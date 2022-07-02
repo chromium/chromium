@@ -20,9 +20,7 @@ namespace net {
 HttpByteRange::HttpByteRange()
     : first_byte_position_(kPositionNotSpecified),
       last_byte_position_(kPositionNotSpecified),
-      suffix_length_(kPositionNotSpecified),
-      has_computed_bounds_(false) {
-}
+      suffix_length_(kPositionNotSpecified) {}
 
 // static
 HttpByteRange HttpByteRange::Bounded(int64_t first_byte_position,

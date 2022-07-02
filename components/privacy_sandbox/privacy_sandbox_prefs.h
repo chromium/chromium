@@ -38,11 +38,6 @@ extern const char kPrivacySandboxManuallyControlled[];
 // updated settings page.
 extern const char kPrivacySandboxManuallyControlledV2[];
 
-// Boolean to indicate whether or not the preferences have been reconciled for
-// this device. This occurs for each device once when privacy sandbox is first
-// enabled.
-extern const char kPrivacySandboxPreferencesReconciled[];
-
 // Boolean that indicates whether the privacy sandbox desktop page at
 // chrome://settings/privacySandbox has been viewed.
 extern const char kPrivacySandboxPageViewed[];

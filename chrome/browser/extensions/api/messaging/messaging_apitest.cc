@@ -94,7 +94,7 @@ class MessageSender : public ExtensionHostRegistry::Observer {
       GURL event_url) {
     auto event = std::make_unique<Event>(
         events::TEST_ON_MESSAGE, "test.onMessage",
-        std::move(*event_args).TakeListDeprecated(), browser_context);
+        std::move(event_args->GetList()), browser_context);
     event->event_url = std::move(event_url);
     return event;
   }
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiWithoutBackForwardCacheTest, Messaging) {
 }
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
-  ExtensionTestMessageListener ready_to_crash("ready_to_crash", false);
+  ExtensionTestMessageListener ready_to_crash("ready_to_crash");
   ASSERT_TRUE(LoadExtension(
           test_data_dir_.AppendASCII("messaging/connect_crash")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -319,10 +319,11 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
   Result CanConnectAndSendMessagesToMainFrame(const Extension* extension,
                                               const char* message = NULL) {
-    return CanConnectAndSendMessagesToFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-        extension,
-        message);
+    return CanConnectAndSendMessagesToFrame(browser()
+                                                ->tab_strip_model()
+                                                ->GetActiveWebContents()
+                                                ->GetPrimaryMainFrame(),
+                                            extension, message);
   }
 
   Result CanConnectAndSendMessagesToIFrame(const Extension* extension,
@@ -347,8 +348,10 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   }
 
   testing::AssertionResult AreAnyNonWebApisDefinedForMainFrame() {
-    return AreAnyNonWebApisDefinedForFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return AreAnyNonWebApisDefinedForFrame(browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame());
   }
 
   testing::AssertionResult AreAnyNonWebApisDefinedForIFrame() {
@@ -823,8 +826,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       chromium_org_url());
-  content::RenderFrameHost* incognito_frame = incognito_browser->
-      tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* incognito_frame =
+      incognito_browser->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame();
 
   {
     IncognitoConnectability::ScopedAlertTracker alert_tracker(
@@ -861,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   content::RenderFrameHost* incognito_frame =
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
 
   IncognitoConnectability::ScopedAlertTracker alert_tracker(
       IncognitoConnectability::ScopedAlertTracker::ALWAYS_DENY);
@@ -914,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   content::RenderFrameHost* incognito_frame =
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
 
   {
     IncognitoConnectability::ScopedAlertTracker alert_tracker(
@@ -942,8 +947,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       chromium_org_url());
-  content::RenderFrameHost* incognito_frame = incognito_browser->
-      tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* incognito_frame =
+      incognito_browser->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame();
 
   {
     IncognitoConnectability::ScopedAlertTracker alert_tracker(
@@ -983,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   content::RenderFrameHost* incognito_frame1 =
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
   infobars::ContentInfoBarManager* infobar_manager1 =
       infobars::ContentInfoBarManager::FromWebContents(
           incognito_browser->tab_strip_model()->GetActiveWebContents());
@@ -994,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   content::RenderFrameHost* incognito_frame2 =
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
   infobars::ContentInfoBarManager* infobar_manager2 =
       infobars::ContentInfoBarManager::FromWebContents(
           incognito_browser->tab_strip_model()->GetActiveWebContents());
@@ -1024,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
         ui_test_utils::NavigateToURL(incognito_browser, chromium_org_url()));
     incognito_frame2 = incognito_browser->tab_strip_model()
                            ->GetActiveWebContents()
-                           ->GetMainFrame();
+                           ->GetPrimaryMainFrame();
     EXPECT_NE(incognito_frame1, incognito_frame2);
 
     EXPECT_EQ(1U, infobar_manager1->infobar_count());
@@ -1058,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   content::RenderFrameHost* incognito_frame =
       incognito_browser->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
 
   IncognitoConnectability::ScopedAlertTracker alert_tracker(
       IncognitoConnectability::ScopedAlertTracker::ALWAYS_ALLOW);
@@ -1154,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
   ASSERT_NE(nullptr, popup_contents) << "Could not find WebContents for popup";
 
   // Make sure the popup can connect and send messages to the extension.
-  content::RenderFrameHost* popup_frame = popup_contents->GetMainFrame();
+  content::RenderFrameHost* popup_frame = popup_contents->GetPrimaryMainFrame();
 
   EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(popup_frame, extension.get(),
                                                  nullptr));
@@ -1492,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("messaging/on_unload"));
-  ExtensionTestMessageListener listener("listening", false);
+  ExtensionTestMessageListener listener("listening");
   ASSERT_TRUE(extension);
   // Open a new tab to example.com. Since we'll be closing it later, we need
   // to make sure there's still a tab around to extend the life of the

@@ -21,6 +21,7 @@ function compareSenders(expected, actual) {
     chrome.test.assertFalse(!!actual.tab);
   }
 
+  chrome.test.assertEq('active', actual.documentLifecycle);
   chrome.test.assertEq(expected.frameId, actual.frameId);
   chrome.test.assertEq(expected.url, actual.url);
   chrome.test.assertEq(expected.origin, actual.origin);

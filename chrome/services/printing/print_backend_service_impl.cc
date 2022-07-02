@@ -12,6 +12,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -173,7 +174,7 @@ class DocumentContainer {
   mojom::ResultCode DoDocumentDone();
 
  private:
-  PrintingContext::Delegate* context_delegate_;
+  raw_ptr<PrintingContext::Delegate> context_delegate_;
   scoped_refptr<PrintedDocument> document_;
 
   // `context` is not initialized until the document is ready for printing.
@@ -411,7 +412,7 @@ void PrintBackendServiceImpl::EnumeratePrinters(
   }
 
   PrinterList printer_list;
-  mojom::ResultCode result = print_backend_->EnumeratePrinters(&printer_list);
+  mojom::ResultCode result = print_backend_->EnumeratePrinters(printer_list);
   if (result != mojom::ResultCode::kSuccess) {
     std::move(callback).Run(mojom::PrinterListResult::NewResultCode(result));
     return;

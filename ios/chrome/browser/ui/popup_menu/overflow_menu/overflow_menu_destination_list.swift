@@ -41,6 +41,9 @@ struct OverflowMenuDestinationList: View {
   /// The current dynamic type size.
   @Environment(\.sizeCategory) var sizeCategory
 
+  /// The current environment layout direction.
+  @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
+
   /// The destinations for this view.
   var destinations: [OverflowMenuDestination]
 
@@ -48,31 +51,39 @@ struct OverflowMenuDestinationList: View {
 
   var body: some View {
     GeometryReader { geometry in
-      ScrollView(.horizontal, showsIndicators: false) {
-        let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
-        let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
-          sizeCategory >= .accessibilityMedium
-          ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
-          : .vertical(
-            iconSpacing: spacing.iconSpacing,
-            iconPadding: spacing.iconPadding)
-        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
+      ScrollViewReader { proxy in
+        ScrollView(.horizontal, showsIndicators: false) {
+          let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
+          let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
+            sizeCategory >= .accessibilityMedium
+            ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
+            : .vertical(
+              iconSpacing: spacing.iconSpacing,
+              iconPadding: spacing.iconPadding)
+          let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
 
-        VStack {
-          Spacer(minLength: Constants.topMargin)
-          LazyHStack(alignment: alignment, spacing: 0) {
-            ForEach(destinations) { destination in
-              OverflowMenuDestinationView(
-                destination: destination, layoutParameters: layoutParameters,
-                metricsHandler: metricsHandler)
+          VStack {
+            Spacer(minLength: Constants.topMargin)
+            LazyHStack(alignment: alignment, spacing: 0) {
+              ForEach(destinations) { destination in
+                OverflowMenuDestinationView(
+                  destination: destination, layoutParameters: layoutParameters,
+                  metricsHandler: metricsHandler
+                ).id(destination.destinationName)
+              }
             }
           }
+          // Make sure the space to the first icon is constant, so add extra
+          // spacing before the first item.
+          .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
         }
-        // Make sure the space to the first icon is constant, so add extra
-        // spacing before the first item.
-        .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
+        .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
+        .onAppear {
+          if layoutDirection == .rightToLeft {
+            proxy.scrollTo(destinations.last?.destinationName)
+          }
+        }
       }
-      .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
     }
   }
 

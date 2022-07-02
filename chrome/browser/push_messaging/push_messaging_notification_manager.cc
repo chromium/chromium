@@ -212,7 +212,7 @@ bool PushMessagingNotificationManager::IsTabVisible(
     Profile* profile,
     WebContents* active_web_contents,
     const GURL& origin) {
-  if (!active_web_contents || !active_web_contents->GetMainFrame())
+  if (!active_web_contents || !active_web_contents->GetPrimaryMainFrame())
     return false;
 
   // Don't leak information from other profiles.
@@ -220,7 +220,7 @@ bool PushMessagingNotificationManager::IsTabVisible(
     return false;
 
   // Ignore minimized windows.
-  switch (active_web_contents->GetMainFrame()->GetVisibilityState()) {
+  switch (active_web_contents->GetPrimaryMainFrame()->GetVisibilityState()) {
     case content::PageVisibilityState::kHidden:
     case content::PageVisibilityState::kHiddenButPainting:
       return false;

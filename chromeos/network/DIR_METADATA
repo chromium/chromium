@@ -1,3 +1,6 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //chromeos/ash/components/network should be updated as well. We need to
+# sync both files until the migration is done.
 buganizer {
   component_id: 1131775
 }

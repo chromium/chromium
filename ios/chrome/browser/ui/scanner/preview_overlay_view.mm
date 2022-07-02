@@ -41,7 +41,7 @@ const CGFloat kViewportBorderShadowRadius = 10.0;
   // A container for the viewport border to draw a shadow under the border.
   // Sublayer of PreviewOverlayView's layer.
   CALayer* _viewportBorderContainer;
-  // The preview viewport border. Sublayer of |_viewportBorderContainer|.
+  // The preview viewport border. Sublayer of `_viewportBorderContainer`.
   CAShapeLayer* _viewportBorder;
   // The current viewport size.
   CGSize _viewportSize;

@@ -9,6 +9,8 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -95,12 +97,14 @@ bool VerifyDownloadUrlParams(SiteInstance* site_instance,
   return true;
 }
 
-bool VerifyOpenURLParams(SiteInstance* site_instance,
+bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
+                         SiteInstance* site_instance,
                          const blink::mojom::OpenURLParamsPtr& params,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*
                              out_blob_url_loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(current_rfh);
   DCHECK(site_instance);
   DCHECK(out_validated_url);
   DCHECK(out_blob_url_loader_factory);
@@ -134,6 +138,12 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
   // Verify |params.initiator_origin|.
   if (!VerifyInitiatorOrigin(process_id, params->initiator_origin))
     return false;
+
+  // Verify that the initiator frame can navigate `current_rfh`.
+  if (!VerifyNavigationInitiator(current_rfh, params->initiator_frame_token,
+                                 process_id)) {
+    return false;
+  }
 
   // Verification succeeded.
   return true;
@@ -197,6 +207,65 @@ bool VerifyBeginNavigationCommonParams(
     return false;
 
   // Verification succeeded.
+  return true;
+}
+
+bool VerifyNavigationInitiator(
+    RenderFrameHostImpl* current_rfh,
+    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+    int initiator_process_id) {
+  // Verify that a frame inside a fenced frame cannot navigate its ancestors,
+  // unless the frame being navigated is the outermost main frame.
+  if (current_rfh->IsOutermostMainFrame())
+    return true;
+
+  if (!initiator_frame_token)
+    return true;
+
+  RenderFrameHostImpl* initiator_render_frame_host =
+      RenderFrameHostImpl::FromFrameToken(initiator_process_id,
+                                          initiator_frame_token.value());
+  if (!initiator_render_frame_host)
+    return true;
+
+  // Verify that a frame cannot navigate a frame with a different fenced frame
+  // nonce, unless the navigating frame is a fenced frame root and its owner
+  // frame has the same fenced frame nonce as the initiator frame (e.g. in a
+  // A(A1,A2(FF)) setup, A, A1, and A2 are all allowed to navigate FF).
+  absl::optional<base::UnguessableToken> initiator_fenced_frame_nonce =
+      initiator_render_frame_host->frame_tree_node()->fenced_frame_nonce();
+  if (initiator_fenced_frame_nonce !=
+      current_rfh->frame_tree_node()->fenced_frame_nonce()) {
+    if (!current_rfh->IsFencedFrameRoot() ||
+        current_rfh->frame_tree_node()
+                ->GetParentOrOuterDocument()
+                ->frame_tree_node()
+                ->fenced_frame_nonce() != initiator_fenced_frame_nonce) {
+      mojo::ReportBadMessage(
+          "The fenced frame nonces of initiator and current frame don't match, "
+          "nor is the current frame a fenced frame root whose owner frame has "
+          "the same fenced frame nonce as the initiator frame.");
+      return false;
+    }
+  }
+
+  if (!initiator_render_frame_host->IsNestedWithinFencedFrame())
+    return true;
+
+  FrameTreeNode* node = initiator_render_frame_host->frame_tree_node();
+  if (node == current_rfh->frame_tree_node())
+    return true;
+
+  while (node) {
+    node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
+
+    if (node == current_rfh->frame_tree_node()) {
+      mojo::ReportBadMessage(
+          "A frame in a fenced frame tree cannot navigate an ancestor frame.");
+      return false;
+    }
+  }
+
   return true;
 }
 

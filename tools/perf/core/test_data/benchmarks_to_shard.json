@@ -340,16 +340,6 @@
   {
     "repeat": 1,
     "stories": [
-      "http://dromaeo.com?dom-attr",
-      "http://dromaeo.com?dom-modify",
-      "http://dromaeo.com?dom-query",
-      "http://dromaeo.com?dom-traverse"
-    ],
-    "name": "dromaeo"
-  },
-  {
-    "repeat": 1,
-    "stories": [
       "dummy_page.html"
     ],
     "name": "dummy_benchmark.histogram_benchmark_1"

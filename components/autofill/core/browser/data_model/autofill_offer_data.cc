@@ -11,6 +11,46 @@
 
 namespace autofill {
 
+// static
+AutofillOfferData AutofillOfferData::GPayCardLinkedOffer(
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::vector<int64_t>& eligible_instrument_id,
+    const std::string& offer_reward_amount) {
+  return AutofillOfferData(offer_id, expiry, merchant_origins,
+                           offer_details_url, display_strings,
+                           eligible_instrument_id, offer_reward_amount);
+}
+
+// static
+AutofillOfferData AutofillOfferData::FreeListingCouponOffer(
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::string& promo_code) {
+  return AutofillOfferData(OfferType::FREE_LISTING_COUPON_OFFER, offer_id,
+                           expiry, merchant_origins, offer_details_url,
+                           display_strings, promo_code);
+}
+
+// static
+AutofillOfferData AutofillOfferData::GPayPromoCodeOffer(
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::string& promo_code) {
+  return AutofillOfferData(OfferType::GPAY_PROMO_CODE_OFFER, offer_id, expiry,
+                           merchant_origins, offer_details_url, display_strings,
+                           promo_code);
+}
+
 AutofillOfferData::AutofillOfferData() = default;
 
 AutofillOfferData::~AutofillOfferData() = default;
@@ -32,28 +72,28 @@ bool AutofillOfferData::operator!=(
 
 int AutofillOfferData::Compare(
     const AutofillOfferData& other_offer_data) const {
-  int comparison = offer_id - other_offer_data.offer_id;
+  int comparison = offer_id_ - other_offer_data.offer_id_;
   if (comparison != 0)
     return comparison;
 
   comparison =
-      offer_reward_amount.compare(other_offer_data.offer_reward_amount);
+      offer_reward_amount_.compare(other_offer_data.offer_reward_amount_);
   if (comparison != 0)
     return comparison;
 
-  if (expiry < other_offer_data.expiry)
+  if (expiry_ < other_offer_data.expiry_)
     return -1;
-  if (expiry > other_offer_data.expiry)
+  if (expiry_ > other_offer_data.expiry_)
     return 1;
 
-  comparison = offer_details_url.spec().compare(
-      other_offer_data.offer_details_url.spec());
+  comparison = offer_details_url_.spec().compare(
+      other_offer_data.offer_details_url_.spec());
   if (comparison != 0)
     return comparison;
 
-  std::vector<GURL> merchant_origins_copy = merchant_origins;
+  std::vector<GURL> merchant_origins_copy = merchant_origins_;
   std::vector<GURL> other_merchant_origins_copy =
-      other_offer_data.merchant_origins;
+      other_offer_data.merchant_origins_;
   std::sort(merchant_origins_copy.begin(), merchant_origins_copy.end());
   std::sort(other_merchant_origins_copy.begin(),
             other_merchant_origins_copy.end());
@@ -62,9 +102,9 @@ int AutofillOfferData::Compare(
   if (merchant_origins_copy > other_merchant_origins_copy)
     return 1;
 
-  std::vector<int64_t> eligible_instrument_id_copy = eligible_instrument_id;
+  std::vector<int64_t> eligible_instrument_id_copy = eligible_instrument_id_;
   std::vector<int64_t> other_eligible_instrument_id_copy =
-      other_offer_data.eligible_instrument_id;
+      other_offer_data.eligible_instrument_id_;
   std::sort(eligible_instrument_id_copy.begin(),
             eligible_instrument_id_copy.end());
   std::sort(other_eligible_instrument_id_copy.begin(),
@@ -74,42 +114,26 @@ int AutofillOfferData::Compare(
   if (eligible_instrument_id_copy > other_eligible_instrument_id_copy)
     return 1;
 
-  comparison = promo_code.compare(other_offer_data.promo_code);
+  comparison = promo_code_.compare(other_offer_data.promo_code_);
   if (comparison != 0)
     return comparison;
 
-  comparison = display_strings.value_prop_text.compare(
-      other_offer_data.display_strings.value_prop_text);
+  comparison = display_strings_.value_prop_text.compare(
+      other_offer_data.display_strings_.value_prop_text);
   if (comparison != 0)
     return comparison;
 
-  comparison = display_strings.see_details_text.compare(
-      other_offer_data.display_strings.see_details_text);
+  comparison = display_strings_.see_details_text.compare(
+      other_offer_data.display_strings_.see_details_text);
   if (comparison != 0)
     return comparison;
 
-  comparison = display_strings.usage_instructions_text.compare(
-      other_offer_data.display_strings.usage_instructions_text);
+  comparison = display_strings_.usage_instructions_text.compare(
+      other_offer_data.display_strings_.usage_instructions_text);
   if (comparison != 0)
     return comparison;
 
   return 0;
-}
-
-AutofillOfferData::OfferType AutofillOfferData::GetOfferType() const {
-  // Card-linked offers have at least one |eligible_instrument_id|.
-  if (!eligible_instrument_id.empty())
-    return OfferType::GPAY_CARD_LINKED_OFFER;
-
-  // Promo code offers have the promo code field populated.
-  // TODO(crbug.com/1203811): When GPay-activated promo codes become available,
-  //     save this OfferType as a class member variable (so as to differentiate
-  //     GPay and FLC promo codes) and simply return that value for this
-  //     function instead.
-  if (!promo_code.empty())
-    return OfferType::FREE_LISTING_COUPON_OFFER;
-
-  return OfferType::UNKNOWN;
 }
 
 bool AutofillOfferData::IsCardLinkedOffer() const {
@@ -117,12 +141,53 @@ bool AutofillOfferData::IsCardLinkedOffer() const {
 }
 
 bool AutofillOfferData::IsPromoCodeOffer() const {
+  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER ||
+         GetOfferType() == OfferType::FREE_LISTING_COUPON_OFFER;
+}
+
+bool AutofillOfferData::IsGPayPromoCodeOffer() const {
+  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER;
+}
+
+bool AutofillOfferData::IsFreeListingCouponOffer() const {
   return GetOfferType() == OfferType::FREE_LISTING_COUPON_OFFER;
 }
 
 bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
-  return expiry > AutofillClock::Now() &&
-         base::ranges::count(merchant_origins, origin) > 0;
+  return expiry_ > AutofillClock::Now() &&
+         base::ranges::count(merchant_origins_, origin) > 0;
 }
+
+AutofillOfferData::AutofillOfferData(
+    int64_t offer_id,
+    const base::Time& expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::vector<int64_t>& eligible_instrument_id,
+    const std::string& offer_reward_amount)
+    : offer_type_(OfferType::GPAY_CARD_LINKED_OFFER),
+      offer_id_(offer_id),
+      expiry_(expiry),
+      offer_details_url_(offer_details_url),
+      merchant_origins_(merchant_origins),
+      display_strings_(display_strings),
+      offer_reward_amount_(offer_reward_amount),
+      eligible_instrument_id_(eligible_instrument_id) {}
+
+AutofillOfferData::AutofillOfferData(OfferType offer_type,
+                                     int64_t offer_id,
+                                     const base::Time& expiry,
+                                     const std::vector<GURL>& merchant_origins,
+                                     const GURL& offer_details_url,
+                                     const DisplayStrings& display_strings,
+                                     const std::string& promo_code)
+    : offer_type_(offer_type),
+      offer_id_(offer_id),
+      expiry_(expiry),
+      offer_details_url_(offer_details_url),
+      merchant_origins_(merchant_origins),
+      display_strings_(display_strings),
+      promo_code_(promo_code) {}
 
 }  // namespace autofill

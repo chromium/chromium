@@ -13,8 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/internal/buildflags.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
@@ -27,7 +26,6 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
@@ -348,15 +346,18 @@ void AssistantClientV1::StartServices(
 
 void AssistantClientV1::SetChromeOSApiDelegate(
     assistant_client::ChromeOSApiDelegate* delegate) {
-#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   assistant_manager_internal()
       ->GetFuchsiaApiHelperOrDie()
       ->SetChromeOSApiDelegate(delegate);
-#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 bool AssistantClientV1::StartGrpcServices() {
   return true;
+}
+
+void AssistantClientV1::StartGrpcHttpConnectionClient(
+    assistant_client::HttpConnectionFactory*) {
+  NOTIMPLEMENTED();
 }
 
 void AssistantClientV1::AddExperimentIds(

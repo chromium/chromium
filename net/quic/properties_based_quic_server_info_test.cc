@@ -15,8 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 const char kServerConfigA[] = "server_config_a";
@@ -96,5 +95,4 @@ TEST_F(PropertiesBasedQuicServerInfoTest, Update) {
   EXPECT_EQ(kCertB, state3.certs[1]);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

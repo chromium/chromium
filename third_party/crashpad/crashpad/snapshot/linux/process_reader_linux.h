@@ -60,6 +60,7 @@ class ProcessReaderLinux {
     ThreadInfo thread_info;
     LinuxVMAddress stack_region_address;
     LinuxVMSize stack_region_size;
+    std::string name;
     pid_t tid;
     int sched_policy;
     int static_priority;

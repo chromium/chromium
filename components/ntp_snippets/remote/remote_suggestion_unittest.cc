@@ -70,9 +70,10 @@ base::DictionaryValue TestSnippetJsonValue() {
 
   auto json_parsed = base::JSONReader::ReadAndReturnValueWithError(
       kJsonStr, base::JSON_PARSE_RFC);
-  CHECK(json_parsed.value) << "error_message: " << json_parsed.error_message;
+  CHECK(json_parsed.has_value())
+      << "error_message: " << json_parsed.error().message;
   auto dict = base::DictionaryValue::From(
-      std::make_unique<base::Value>(std::move(json_parsed).value.value()));
+      std::make_unique<base::Value>(std::move(*json_parsed)));
   return std::move(*dict);
 }
 

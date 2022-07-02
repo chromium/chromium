@@ -20,6 +20,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   TabStripModelObserver,
                                   views::WidgetObserver {
  public:
+  // safe_zone_diameter/icon_size as defined in
+  // https://www.w3.org/TR/appmanifest/#icon-masks
+  static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
+
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
   ~FedCmAccountSelectionView() override;
 

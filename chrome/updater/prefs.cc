@@ -94,7 +94,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
 
   const absl::optional<base::FilePath> global_prefs_dir =
-      GetBaseDirectory(scope);
+      GetBaseDataDirectory(scope);
   if (!global_prefs_dir)
     return nullptr;
   VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
@@ -117,7 +117,7 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
 
 scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   const absl::optional<base::FilePath> local_prefs_dir =
-      GetVersionedDirectory(scope);
+      GetVersionedDataDirectory(scope);
   if (!local_prefs_dir)
     return nullptr;
 

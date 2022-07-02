@@ -7,11 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/file_path.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
-#include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -29,7 +27,7 @@ using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 MATCHER_P(Title, title, "") {
-  return base::UTF16ToUTF8(arg->title()) == title;
+  return arg->title() == title;
 }
 
 apps::Result MakeAppsResult(const std::u16string& title) {
@@ -99,20 +97,18 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
                          GameProviderTest,
                          testing::Bool());
 
-// TODO(crbug.com/1305880): Enable this test once the app discovery service
-// backend has been implemented.
-TEST_P(GameProviderTest, DISABLED_SearchResultsMatchQuery) {
+TEST_P(GameProviderTest, SearchResultsMatchQuery) {
   SetUpTestingIndex();
 
   StartSearch(u"first");
   Wait();
-  EXPECT_THAT(LastResults(), ElementsAre(Title("First Title")));
+  EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
 
   StartSearch(u"title");
   Wait();
-  EXPECT_THAT(LastResults(),
-              UnorderedElementsAre(Title("First Title"), Title("Second Title"),
-                                   Title("Third Title")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"First Title"),
+                                                  Title(u"Second Title"),
+                                                  Title(u"Third Title")));
 }
 
 }  // namespace app_list

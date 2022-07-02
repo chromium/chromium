@@ -35,7 +35,7 @@ MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
 class ActionFactoryTest : public PlatformTest {
  protected:
   ActionFactoryTest() : test_title_(@"SomeTitle") {
-    feature_list_.InitAndEnableFeature(kUseSFSymbolsSamples);
+    feature_list_.InitAndEnableFeature(kUseSFSymbols);
   }
 
   // Creates a blue square.
@@ -362,8 +362,8 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(
-      kCheckMarkCircleFillSymbol, kSymbolActionPointSize);
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+                                                      kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 

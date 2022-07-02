@@ -5022,140 +5022,6 @@ TEST_F(ManifestParserTest, PermissionsPolicyInvalidAllowlistEntry) {
       errors()[1]);
 }
 
-TEST_F(ManifestParserTest, HandleLinksParseRules) {
-  {
-    ScopedWebAppHandleLinksForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
-    auto& manifest = ParseManifest(R"({ })");
-    EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kUndefined);
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-  {
-    ScopedWebAppHandleLinksForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
-    auto& manifest = ParseManifest(R"({ "handle_links": "auto" })");
-    EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kUndefined);
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-  {
-    ScopedWebAppHandleLinksForTest feature(true);
-    // Smoke test.
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": "auto" })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": ["preferred"] })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kPreferred);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest =
-          ParseManifest(R"({ "handle_links": ["not-preferred"] })");
-      EXPECT_EQ(manifest->handle_links,
-                mojom::blink::HandleLinks::kNotPreferred);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    // Unknown single string.
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": "unknown" })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("handle_links value 'unknown' ignored, unknown value.",
-                errors()[0]);
-    }
-    // Empty array is fine.
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": [] })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    // First known value in array is used.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "handle_links": ["preferred", "auto"] })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kPreferred);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "handle_links": [
-          "unknown",
-          "preferred",
-          "also-unknown",
-          "auto"
-        ]
-      })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kPreferred);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("handle_links value 'unknown' ignored, unknown value.",
-                errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "handle_links": [
-          1234,
-          "preferred",
-          null,
-          "auto"
-        ]
-      })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kPreferred);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("handle_links value '1234' ignored, string expected.",
-                errors()[0]);
-    }
-
-    // No recognized values in properly formatted array of strings.
-    {
-      auto& manifest = ParseManifest(R"({
-        "handle_links": [
-          "unknown",
-          "also-unknown"
-        ]
-      })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(2u, GetErrorCount());
-      EXPECT_EQ("handle_links value 'unknown' ignored, unknown value.",
-                errors()[0]);
-      EXPECT_EQ("handle_links value 'also-unknown' ignored, unknown value.",
-                errors()[1]);
-    }
-
-    // Don't parse if the property isn't a string or array of strings.
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": null })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ(
-          "property 'handle_links' ignored, type string or array of strings "
-          "expected.",
-          errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": 1234 })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ(
-          "property 'handle_links' ignored, type string or array of strings "
-          "expected.",
-          errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(R"({ "handle_links": [12, 34] })");
-      EXPECT_EQ(manifest->handle_links, mojom::blink::HandleLinks::kAuto);
-      EXPECT_EQ(2u, GetErrorCount());
-      EXPECT_EQ("handle_links value '12' ignored, string expected.",
-                errors()[0]);
-      EXPECT_EQ("handle_links value '34' ignored, string expected.",
-                errors()[1]);
-    }
-  }
-}
-
 TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
   using RouteTo = mojom::blink::ManifestLaunchHandler::RouteTo;
 
@@ -5654,6 +5520,171 @@ TEST_F(ManifestParserTest, UserPreferencesParseRules) {
                 0xFFFF0000u);
       EXPECT_FALSE(
           manifest->user_preferences->color_scheme_dark->has_background_color);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+  }
+}
+
+TEST_F(ManifestParserTest, TabStripParseRules) {
+  using Visibility = mojom::blink::TabStripMemberVisibility;
+  {
+    ScopedWebAppTabStripForTest feature(false);
+    // Feature not enabled, should not be parsed.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+  }
+  {
+    ScopedWebAppTabStripForTest feature(true);
+
+    // Display mode not 'tabbed', 'tab_strip' should not be parsed.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "tab_strip": {"home_tab": "auto"} })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Manifest does not contain 'tab_strip' field.
+    {
+      auto& manifest = ParseManifest(R"({ "display_override": [ "tabbed" ] })");
+      EXPECT_TRUE(manifest->tab_strip.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // 'tab_strip' object is empty.
+    {
+      auto& manifest = ParseManifest(
+          R"({  "display_override": [ "tabbed" ], "tab_strip": {} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button are empty objects.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": {}, "new_tab_button": {}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button are invalid.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "something", "new_tab_button": 42} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Unknown members of 'tab_strip' are ignored.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"unknown": {}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab with icons and new tab button with url are parsed.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {
+            "home_tab": {"icons": [{"src": "foo.jpg"}]},
+            "new_tab_button": {"url": "foo"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 1u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_params()->url,
+                KURL(DefaultDocumentUrl(), "foo"));
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // New tab button url out of scope.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"new_tab_button": {"url": "https://bar.com"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ(
+          "property 'url' ignored, should be within scope of the manifest.",
+          errors()[0]);
+    }
+
+    // Home tab and new tab button set to 'auto'.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "auto", "new_tab_button": "auto"} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab and new tab button set to 'absent'.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {"home_tab": "absent", "new_tab_button": "absent"} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
+                Visibility::kAbsent);
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
+                Visibility::kAbsent);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Home tab with 'auto' icons and new tab button with 'auto' url.
+    {
+      auto& manifest = ParseManifest(R"({
+          "display_override": [ "tabbed" ],
+          "tab_strip": {
+            "home_tab": {"icons": "auto"},
+            "new_tab_button": {"url": "auto"}} })");
+      EXPECT_FALSE(manifest->tab_strip.is_null());
+      EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+      EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
+      EXPECT_FALSE(
+          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
   }

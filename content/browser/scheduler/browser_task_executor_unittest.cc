@@ -123,7 +123,7 @@ TEST_F(BrowserTaskExecutorTest, RunAllPendingTasksForTestingOnIOIsReentrant) {
 TEST_F(BrowserTaskExecutorTest, GetTaskRunnerWithBrowserTaskTraits) {
   StrictMockTask task_1;
 
-  GetUIThreadTaskRunner({BrowserTaskType::kPreconnect})
+  GetUIThreadTaskRunner({BrowserTaskType::kUserInput})
       ->PostTask(FROM_HERE, task_1.Get());
 
   EXPECT_CALL(task_1, Run);
@@ -154,8 +154,6 @@ TEST_F(BrowserTaskTraitsMappingTest, BrowserTaskTraitsMapToProperPriorities) {
             QueueType::kUserBlocking);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kDefault}),
             QueueType::kUserBlocking);
-  EXPECT_EQ(BrowserTaskExecutor::GetQueueType({BrowserTaskType::kPreconnect}),
-            QueueType::kPreconnection);
   EXPECT_EQ(BrowserTaskExecutor::GetQueueType(
                 {BrowserTaskType::kServiceWorkerStorageControlResponse}),
             QueueType::kServiceWorkerStorageControlResponse);

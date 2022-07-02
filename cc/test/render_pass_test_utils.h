@@ -70,7 +70,7 @@ viz::AggregatedRenderPass* AddRenderPassWithDamage(
 template <typename RenderPassType>
 inline viz::SolidColorDrawQuad* AddQuad(RenderPassType* pass,
                                         const gfx::Rect& rect,
-                                        SkColor color) {
+                                        SkColor4f color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
                        absl::nullopt, false, 1, SkBlendMode::kSrcOver, 0);

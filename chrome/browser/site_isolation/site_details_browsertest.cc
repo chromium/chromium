@@ -565,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
   // be three processes estimated by IsolateExtensions: one for extension3, one
   // for extension1's background page, and one for the web iframe in tab2.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension3->GetResourceURL("blank_iframe.html")));
   details = new TestMemoryDetails();
@@ -875,6 +876,7 @@ class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
       const FencedFrameSiteDetailsBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -892,15 +894,16 @@ class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
                        MemoryDetailsForFencedFrame) {
-  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  auto initial_url = embedded_test_server()->GetURL("a.com", "/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Load a fenced frame.
   GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/iframe.html");
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/iframe.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();

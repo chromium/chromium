@@ -29,17 +29,16 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/proxy/proxy_config_handler.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -399,7 +398,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
 
   void DisconnectNetworkService(const std::string& service_path) {
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     base::Value value(shill::kStateIdle);
     service_test->SetServiceProperty(service_path, shill::kStateProperty,
                                      value);
@@ -410,7 +409,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
                                  const std::string& guid,
                                  const std::string& ssid) {
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
 
     service_test->AddService(service_path, guid, ssid, shill::kTypeWifi,
                              shill::kStateOnline, true /* add_to_visible */);
@@ -457,9 +456,9 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
  private:
   void SetupNetworkEnvironment() {
     ShillProfileClient::TestInterface* profile_test =
-        DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface();
+        ShillProfileClient::Get()->GetTestInterface();
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
 
     profile_test->AddProfile(kUserProfilePath, "user");
 

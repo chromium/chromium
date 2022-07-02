@@ -52,8 +52,8 @@ js_library("nearby_share_app_test") {
   deps = [
     "..:chai_assert",
     "..:test_util",
-    "shared:fake_nearby_contact_manager.m",
-    "shared:fake_nearby_share_settings.m",
+    "shared:fake_nearby_contact_manager",
+    "shared:fake_nearby_share_settings",
     "//chrome/browser/resources/nearby_share:app",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
   ]

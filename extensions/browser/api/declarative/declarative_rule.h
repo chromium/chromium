@@ -87,7 +87,7 @@ class DeclarativeConditionSet {
   // IsFulfilled(|match_data|). If there is no such condition, then false is
   // returned. If |url_match_trigger| is -1, this function returns whether any
   // of the conditions without URL attributes is satisfied.
-  bool IsFulfilled(url_matcher::URLMatcherConditionSet::ID url_match_trigger,
+  bool IsFulfilled(base::MatcherStringPattern::ID url_match_trigger,
                    const typename ConditionT::MatchData& match_data) const;
 
   // Appends the URLMatcherConditionSet from all conditions to |condition_sets|.
@@ -101,7 +101,7 @@ class DeclarativeConditionSet {
 
  private:
   using URLMatcherIdToCondition =
-      std::map<url_matcher::URLMatcherConditionSet::ID, const ConditionT*>;
+      std::map<base::MatcherStringPattern::ID, const ConditionT*>;
 
   DeclarativeConditionSet(
       Conditions conditions,
@@ -274,11 +274,11 @@ class DeclarativeRule {
 // DeclarativeConditionSet
 //
 
-template<typename ConditionT>
+template <typename ConditionT>
 bool DeclarativeConditionSet<ConditionT>::IsFulfilled(
-    url_matcher::URLMatcherConditionSet::ID url_match_trigger,
+    base::MatcherStringPattern::ID url_match_trigger,
     const typename ConditionT::MatchData& match_data) const {
-  if (url_match_trigger == -1) {
+  if (url_match_trigger == base::MatcherStringPattern::kInvalidId) {
     // Invalid trigger -- indication that we should only check conditions
     // without URL attributes.
     for (const ConditionT* condition : conditions_without_urls_) {

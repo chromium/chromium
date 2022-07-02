@@ -27,6 +27,10 @@
   z-index: 1;
 }
 
+.mode-subgroup > .item > input[type=radio] {
+  border-radius: var(--border-radius-rounded-with-short-side);
+}
+
 .mode-subgroup > .item > div.label {
   border-radius: var(--border-radius-rounded-with-short-side);
   font: 500 14px/20px var(--default-font-family);

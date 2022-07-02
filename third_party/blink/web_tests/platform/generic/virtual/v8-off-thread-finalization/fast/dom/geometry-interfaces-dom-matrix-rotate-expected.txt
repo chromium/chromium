@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "DOMMatrix 3d - rotateAxisAngleSelf()"
+PASS DOMMatrix 2d - rotate(rotX) and rotateSelf(rotX)
+PASS DOMMatrix 3d - rotate(rotX) and rotateSelf(rotX)
+PASS DOMMatrix 2d - rotate(rotX, rotY) and rotateSelf(rotX, rotY)
+PASS DOMMatrix 3d - rotate(rotX, rotY) and rotateSelf(rotX, rotY)
+PASS DOMMatrix 2d - rotate(rotX, rotY, rotX) and rotateSelf(rotX, rotY, rotX)
+PASS DOMMatrix 3d - rotate(rotX, rotY, rotX) and rotateSelf(rotX, rotY, rotX)
+PASS DOMMatrix 2d - rotateFromVector(x, y) and rotateFromVectorSelf(x, y)
+PASS DOMMatrix 3d - rotateFromVector(x, y) rotateFromVectorSelf(x, y)
+PASS DOMMatrix 2d - rotateAxisAngleSelf()
+PASS DOMMatrix 2d - rotateAxisAngleSelf(0, 0, 1)
+PASS DOMMatrix 2d - rotateAxisAngleSelf(1, 1, 1, 0)
+PASS DOMMatrix 2d - rotateAxisAngleSelf(1, 0, 0, 10)
+PASS DOMMatrix 2d - rotateAxisAngleSelf(0, 1, 0, 27)
+PASS DOMMatrix 2d - rotateAxisAngleSelf(0, 0, 1, 38)
+PASS DOMMatrix 2d - rotateAxisAngleSelf(1, 1, 1, 45)
+PASS DOMMatrix 3d - rotateAxisAngleSelf()
+PASS DOMMatrix 3d - rotateAxisAngleSelf(0, 0, 1)
+PASS DOMMatrix 3d - rotateAxisAngleSelf(0, 0, 1, 0)
+PASS DOMMatrix 3d - rotateAxisAngleSelf(1, 0, 0, 19)
+PASS DOMMatrix 3d - rotateAxisAngleSelf(0, 1, 0, 46)
+PASS DOMMatrix 3d - rotateAxisAngleSelf(0, 0, 1, 65)
+PASS DOMMatrix 3d - rotateAxisAngleSelf(1, 1, 1, 67)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle()
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(0, 0, 1)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(1, 1, 1, 0)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(1, 0, 0, 21)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(0, 1, 0, 35)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(0, 0, 1, 55)
+PASS DOMMatrixReadOnly 2d - rotateAxisAngle(1, 1, 1, 75)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle()
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(0, 0, 1)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(0, 0, 1, 0)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(1, 1, 1, 0)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(1, 0, 0, 105)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(0, 1, 0, 45)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(0, 0, 1, 65)
+PASS DOMMatrixReadOnly 3d - rotateAxisAngle(1, 1, 1, 78)
+PASS DOMMatrix 2d - rotateAxisAngleSelf() - do rotate +90,-90
+PASS DOMMatrix 2d - rotateAxisAngle() - do rotate -180,+180
+PASS DOMMatrix 3d - rotateAxisAngleSelf() - do rotate +90,-90
+PASS DOMMatrix 3d - rotateAxisAngle() - do rotate -180,+180
+PASS DOMMatrix 3d - rotateAxisAngle()
+PASS DOMMatrix 3d - rotateAxisAngleSelf()
+Harness: the test ran to completion.
+

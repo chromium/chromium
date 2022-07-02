@@ -17,15 +17,16 @@ class MockSignalsCollector : public SignalsCollector {
   MockSignalsCollector();
   ~MockSignalsCollector() override;
 
-  MOCK_METHOD(const std::vector<std::string>,
+  MOCK_METHOD(const std::unordered_set<SignalName>,
               GetSupportedSignalNames,
               (),
               (override));
   MOCK_METHOD(void,
               GetSignal,
-              (const std::string&,
-               const base::Value&,
-               SignalsCollector::GetSignalCallback),
+              (SignalName signal_name,
+               const SignalsAggregationRequest& request,
+               SignalsAggregationResponse& response,
+               base::OnceClosure done_closure),
               (override));
 };
 

@@ -25,8 +25,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1238654
   "lockscreen.KeyboardShortcut",
-  "apps.SystemWebAppsReinstall.all_apps_stable",
-  "apps.SystemWebAppsReinstall.default_enabled_apps_stable",
   "camera.EncodeAccelJPEG",
 
   # https://crbug.com/1252352
@@ -39,9 +37,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1259127
   "ui.TabletOperations",
-
-  # crbug.com/1257474
-  "shelf.OpenCloseSwitchApps",
 
   # crbug.com/1239838
   "graphics.FPS",
@@ -194,9 +189,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1315123
   "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 
-  # https://crbug.com/1315880
-  "u2fd.WebauthnUsingPassword.tpm1",
-
   # https://crbug.com/1318989
   "assistant.StartupInSignedOutMode",
   "login.ChangePassword",
@@ -207,12 +199,107 @@ tast_disabled_tests_from_chrome_all = [
   "policy.PolicyRefreshRate",
   "policy.PopupsForURLCheck.allowlist",
 
-  # https://crbug.com/1323628
+  # https://crbug.com/1326279
+  "policy.AccessibilityPolicies.focus_highlight",
+
+  # https://crbug.com/1326331
+  "policy.AccessibilityPolicies.high_contrast",
+
+  # https://crbug.com/1326403
+  "policy.AccessibilityPolicies.large_cursor",
+
+  # https://crbug.com/1327171
+  "policy.PopupsForURLCheck.default",
+
+  # https://crbug.com/1327345
+  "policy.ChromePolicyPageStatusTimestamps.ash",
+
+  # https://crbug.com/1327361
+  "policy.FullscreenAllowed",
+
+  # https://crbug.com/1328128
+  "policy.PopupsForURLCheck.blocklist",
+
+  # https://crbug.com/1329734
+  "health.DiagnosticsList",
+  "health.DiagnosticsCancel.urandom",
+
+  # https://crbug.com/1329761
+  "policy.DefaultSerialGuardSetting",
+
+  # https://crbug.com/1335176
+  "policy.ScreenBrightnessPercent",
+
+  # https://crbug.com/1334354
+  "arc.Boot.vm",
+  "arc.ChromeCrash.vm_logged_in",
+  "arc.Drivefs.vm",
+  "arc.OptinManaged.vm",
+  "arc.OptinNetworkError.vm",
+  "arc.RemovableMedia.vm",
+  "security.NetworkListenersARC.vm",
+  "security.SELinuxFilesDataDir.vm",
+
+  # b/233264555
+  "inputs.PhysicalKeyboardEmojiSuggestion",
+  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
+  "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
+
+  # http://b/229032436
+  "health.DiagnosticsRun.captive_portal",
+  "health.DiagnosticsRun.cpu_cache",
+  "health.DiagnosticsRun.cpu_stress",
+  "health.DiagnosticsRun.dns_latency",
+  "health.DiagnosticsRun.dns_resolution",
+  "health.DiagnosticsRun.dns_resolver_present",
+
+  # http://b234699971
+  "crostini.AppGeditUnshareFolder",
+
+  # b/235279574
+  "wmp.DragAndDropWindow",
+
+  # http://crbug.com/1336853
+  "arc.StandardizedKeyboardTyping",
+  "arc.StandardizedKeyboardTyping.tablet_mode",
+  "arc.StandardizedKeyboardKeys.tablet_mode",
+
+  # http://b/236312054
+  "crostini.AppGeditFilesharing",
+  "crostini.AppGeditFilesharing.stable",
+  "crostini.AppGeditFilesharing.clamshell_stable",
+
+  # http://b/236710501
+  "crostini.AppAndroidStudio.stable",
+  "crostini.AppGeditUnshareFolder.stable",
+  "crostini.AppGeditUnshareFolder.clamshell_stable",
+
+  # http://crbug.com/1339132
   "crostini.AppEclipse",
-  "crostini.AppAndroidStudio",
   "crostini.AppEmacs",
   "crostini.AppVscode",
-  "crostini.AppGeditFilesharing",
+  "crostini.BasicLxdNext.stable",
+  "crostini.RestartApp",
+  "crostini.RestartApp.stable",
+
+  # http://crbug.com/1338038
+  "arc.IMEBlockingVK",
+
+  # http://crbug.com/1335213
+  "arc.WindowState.clamshell",
+
+  # http://crbug.com/1338201
+  "ui.ChromeCrashLoggedIn.gpu_process_breakpad",
+
+  # http://crbug.com/1309278
+  "policy.ChromeOsLockOnIdleSuspend",
+
+  # https://crbug.com/1340557
+  "apps.LaunchSystemWebAppsFromURL",
+
+  # https://crbug.com/1341288
+  "launcher.Smoke",
+  "launcher.BubbleSmoke",
 ]
 
 # To create filters to be used on specific builders add them like this:
@@ -221,4 +308,7 @@ tast_disabled_tests_from_chrome_all = [
 # test config as 'tast_expr_key'
 # To disable a specific test in lacros_all_tast_tests, add it the following
 # list and cite a bug.
-tast_disabled_tests_from_lacros_all = []
+tast_disabled_tests_from_lacros_all = [
+  # https://crbug.com/1329764
+  "policy.HistoryClustersVisible",
+]

@@ -171,7 +171,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     form_post_observer.Wait();
 
     // Extract the body payload.
-    EvalJsResult result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "document.body.textContent");
     ASSERT_TRUE(result.error.empty());
 

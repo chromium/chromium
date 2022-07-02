@@ -143,9 +143,8 @@ class CookieSettingsBase {
   // cookie domain. The |cookie_domain| can be provided as the direct output of
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
-  virtual void GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain,
-      ContentSetting* setting) const = 0;
+  virtual ContentSetting GetSettingForLegacyCookieAccess(
+      const std::string& cookie_domain) const = 0;
 
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.

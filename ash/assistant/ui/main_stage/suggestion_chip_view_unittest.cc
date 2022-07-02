@@ -8,17 +8,18 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/pixel_comparator.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,10 +129,11 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
       chromeos::features::kDarkLightMode);
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
@@ -174,8 +176,9 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
   suggestion_chip_view->GetFocusManager()->ClearFocus();
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(label->GetEnabledColor(),
             ColorProvider::Get()->GetContentLayerColor(
@@ -201,11 +204,12 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
-
   // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
+          features::kProductivityLauncher});
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =

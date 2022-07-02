@@ -72,10 +72,10 @@ void DestroyNetworkChangeNotifier() {
 void StartThreadPool() {
   static dispatch_once_t once_token;
   dispatch_once(&once_token, ^{
-    constexpr int kMinForegroundThreads = 6;
-    constexpr int kMaxForegroundThreads = 16;
+    constexpr size_t kMinForegroundThreads = 6;
+    constexpr size_t kMaxForegroundThreads = 16;
     constexpr double kCoreMultiplierForegroundThreads = 0.6;
-    constexpr int kOffsetForegroundThreads = 0;
+    constexpr size_t kOffsetForegroundThreads = 0;
     base::ThreadPoolInstance::Get()->Start(
         {base::RecommendedMaxNumberOfThreadsInThreadGroup(
             kMinForegroundThreads, kMaxForegroundThreads,

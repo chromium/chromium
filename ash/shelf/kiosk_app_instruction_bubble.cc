@@ -5,6 +5,8 @@
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -46,9 +48,8 @@ gfx::Insets GetBubbleInsets() {
 }  // namespace
 
 KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
-                                                     ShelfAlignment alignment,
-                                                     SkColor background_color)
-    : ShelfBubble(anchor, alignment, background_color) {
+                                                     ShelfAlignment alignment)
+    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {
   set_close_on_deactivate(false);
   const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
@@ -66,7 +67,11 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  CreateBubble();
+  views::DialogDelegate::CreateDialogWidget(
+      this, nullptr /* context */,
+      Shell::GetContainer(
+          anchor_widget()->GetNativeWindow()->GetRootWindow(),
+          kShellWindowId_LockScreenRelatedContainersContainer) /* parent */);
 
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
@@ -81,7 +86,7 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
 KioskAppInstructionBubble::~KioskAppInstructionBubble() = default;
 
 void KioskAppInstructionBubble::OnThemeChanged() {
-  ShelfBubble::OnThemeChanged();
+  BubbleDialogDelegateView::OnThemeChanged();
 
   SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -99,14 +104,6 @@ gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   const int width = kBubblePreferredInternalWidth + 2 * bubble_margin;
   return gfx::Size(width, GetHeightForWidth(width));
-}
-
-bool KioskAppInstructionBubble::ShouldCloseOnPressDown() {
-  return false;
-}
-
-bool KioskAppInstructionBubble::ShouldCloseOnMouseExit() {
-  return false;
 }
 
 }  // namespace ash

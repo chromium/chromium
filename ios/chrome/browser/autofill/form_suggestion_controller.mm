@@ -52,7 +52,7 @@ struct AutofillSuggestionState {
   std::string frame_identifier;
   // The user-typed value in the field.
   std::string typed_value;
-  // The suggestions for the form field. An array of |FormSuggestion|.
+  // The suggestions for the form field. An array of `FormSuggestion`.
   NSArray* suggestions;
 };
 
@@ -90,10 +90,10 @@ AutofillSuggestionState::AutofillSuggestionState(
 // Unique id of the last request.
 @property(nonatomic, assign) NSUInteger requestIdentifier;
 
-// Updates keyboard for |suggestionState|.
+// Updates keyboard for `suggestionState`.
 - (void)updateKeyboard:(AutofillSuggestionState*)suggestionState;
 
-// Updates keyboard with |suggestions|.
+// Updates keyboard with `suggestions`.
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions;
 
 // Clears state in between page loads.
@@ -192,23 +192,21 @@ AutofillSuggestionState::AutofillSuggestionState(
   // and NO otherwise.
   NSMutableArray* findProviderBlocks = [[NSMutableArray alloc] init];
   for (NSUInteger i = 0; i < [_suggestionProviders count]; i++) {
-    passwords::PipelineBlock block =
-        ^(void (^completion)(BOOL success)) {
-          // Access all the providers through |self| to guarantee that both
-          // |self| and all the providers exist when the block is executed.
-          // |_suggestionProviders| is immutable, so the subscripting is
-          // always valid.
-          FormSuggestionController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-          id<FormSuggestionProvider> provider =
-              strongSelf->_suggestionProviders[i];
-          [provider checkIfSuggestionsAvailableForForm:formQuery
-                                           isMainFrame:isMainFrame
-                                        hasUserGesture:hasUserGesture
-                                              webState:webState
-                                     completionHandler:completion];
-        };
+    passwords::PipelineBlock block = ^(void (^completion)(BOOL success)) {
+      // Access all the providers through `self` to guarantee that both
+      // `self` and all the providers exist when the block is executed.
+      // `_suggestionProviders` is immutable, so the subscripting is
+      // always valid.
+      FormSuggestionController* strongSelf = weakSelf;
+      if (!strongSelf)
+        return;
+      id<FormSuggestionProvider> provider = strongSelf->_suggestionProviders[i];
+      [provider checkIfSuggestionsAvailableForForm:formQuery
+                                       isMainFrame:isMainFrame
+                                    hasUserGesture:hasUserGesture
+                                          webState:webState
+                                 completionHandler:completion];
+    };
     [findProviderBlocks addObject:block];
   }
 
@@ -239,9 +237,9 @@ AutofillSuggestionState::AutofillSuggestionState(
                        completionHandler:readyCompletion];
   };
 
-  // Run all the blocks in |findProviderBlocks| until one invokes its
+  // Run all the blocks in `findProviderBlocks` until one invokes its
   // completion with YES. The first one to do so will be passed to
-  // |completion|.
+  // `completion`.
   passwords::RunSearchPipeline(findProviderBlocks, completion);
 }
 
@@ -256,8 +254,8 @@ AutofillSuggestionState::AutofillSuggestionState(
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions
                   provider:(id<FormSuggestionProvider>)provider {
   // TODO(ios): crbug.com/249916. If we can also pass in the form/field for
-  // which |suggestions| are, we should check here if |suggestions| are for
-  // the current active element. If not, reset |_suggestionState|.
+  // which `suggestions` are, we should check here if `suggestions` are for
+  // the current active element. If not, reset `_suggestionState`.
   if (!_suggestionState) {
     // The suggestion state was reset in between the call to Autofill API (e.g.
     // OnAskForValuesToFill) and this method being called back. Results are

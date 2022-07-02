@@ -7,17 +7,22 @@ package org.chromium.ui.resources.dynamics;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
+import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
-import org.chromium.ui.resources.statics.NinePatchData;
 
 /**
  * A basic implementation of {@link DynamicResource} to handle updatable bitmaps.
  */
-public class BitmapDynamicResource extends DynamicResource {
+public class BitmapDynamicResource implements DynamicResource {
     private final int mResId;
     private Bitmap mBitmap;
     private final Rect mSize = new Rect();
-    private boolean mIsDirty = true;
+
+    @Nullable
+    private Callback<Resource> mOnResourceReady;
 
     public BitmapDynamicResource(int resourceId) {
         mResId = resourceId;
@@ -37,38 +42,22 @@ public class BitmapDynamicResource extends DynamicResource {
         // Not updating bitmap is still bad, but better than a crash. We will still crash if there
         // is no bitmap to start with. See http://crbug.com/471234 for more.
         if (bitmap == null) return;
-        mIsDirty = true;
         mBitmap = bitmap;
         mSize.set(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
     }
 
     @Override
-    public Bitmap getBitmap() {
-        super.getBitmap();
-        assert mBitmap != null: "setBitmap() should be called before calling getBitmap() again";
-        mIsDirty = false;
-        Bitmap bitmap = mBitmap;
-        mBitmap = null;
-        return bitmap;
+    public void onResourceRequested() {
+        if (mOnResourceReady != null && mBitmap != null) {
+            Resource resource = new DynamicResourceSnapshot(
+                    mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
+            mOnResourceReady.onResult(resource);
+            mBitmap = null;
+        }
     }
 
     @Override
-    public Rect getBitmapSize() {
-        return mSize;
-    }
-
-    @Override
-    public long createNativeResource() {
-        return ResourceFactory.createBitmapResource(null);
-    }
-
-    @Override
-    public NinePatchData getNinePatchData() {
-        return null;
-    }
-
-    @Override
-    public boolean isDirty() {
-        return mIsDirty;
+    public void setOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReady = onResourceReady;
     }
 }

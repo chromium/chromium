@@ -338,8 +338,7 @@ export class ModulesElement extends PolymerElement {
     return this.modulesLoaded_ && this.modulesVisibilityDetermined_;
   }
 
-  /** @private */
-  onModulesLoadedAndVisibilityDeterminedChange_() {
+  private onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_) {
       ModuleRegistry.getInstance().getDescriptors().forEach(({id}) => {
         chrome.metricsPrivate.recordBoolean(
@@ -412,8 +411,7 @@ export class ModulesElement extends PolymerElement {
         this.disabledModules_.ids.includes(id);
   }
 
-  /** @private */
-  onUndoRemoveModuleButtonClick_() {
+  private onUndoRemoveModuleButtonClick_() {
     if (!this.removedModuleData_) {
       return;
     }
@@ -433,9 +431,8 @@ export class ModulesElement extends PolymerElement {
 
   /**
    * Hides and reveals modules depending on removed status.
-   * @private
    */
-  onRemovedModulesChange_() {
+  private onRemovedModulesChange_() {
     this.shadowRoot!.querySelectorAll('ntp-module-wrapper')
         .forEach(moduleWrapper => {
           moduleWrapper.parentElement!.hidden =

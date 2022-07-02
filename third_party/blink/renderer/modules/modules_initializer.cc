@@ -143,8 +143,11 @@ class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
         frame->Client()->MediaStreamDeviceObserver();
     if (!media_stream_device_observer)
       return;
-
-    bool suspend = !GetPage()->IsPageVisible();
+    // Don't suspend media capture devices if page visibility is
+    // PageVisibilityState::kHiddenButPainting (e.g. Picture-in-Picture).
+    // TODO(crbug.com/1339252): Add tests.
+    bool suspend = (GetPage()->GetVisibilityState() ==
+                    mojom::blink::PageVisibilityState::kHidden);
     MediaStreamDevices video_devices =
         media_stream_device_observer->GetNonScreenCaptureDevices();
     Platform::Current()->GetVideoCaptureImplManager()->SuspendDevices(
@@ -168,7 +171,8 @@ void ModulesInitializer::Initialize() {
   const unsigned kModulesStaticStringsCount =
       event_interface_names::kModulesNamesCount +
       event_target_names::kModulesNamesCount + indexed_db_names::kNamesCount;
-  StringImpl::ReserveStaticStringsCapacityForSize(kModulesStaticStringsCount);
+  StringImpl::ReserveStaticStringsCapacityForSize(
+      kModulesStaticStringsCount + StringImpl::AllStaticStrings().size());
 
   event_interface_names::InitModules();
   event_target_names::InitModules();
@@ -267,19 +271,16 @@ void ModulesInitializer::InitInspectorAgentSession(
     InspectorDOMAgent* dom_agent,
     InspectedFrames* inspected_frames,
     Page* page) const {
-  session->Append(MakeGarbageCollected<InspectorIndexedDBAgent>(
-      inspected_frames, session->V8Session()));
-  session->Append(
-      MakeGarbageCollected<DeviceOrientationInspectorAgent>(inspected_frames));
-  session->Append(
-      MakeGarbageCollected<InspectorDOMStorageAgent>(inspected_frames));
-  session->Append(MakeGarbageCollected<InspectorAccessibilityAgent>(
-      inspected_frames, dom_agent));
-  session->Append(MakeGarbageCollected<InspectorWebAudioAgent>(page));
+  session->CreateAndAppend<InspectorIndexedDBAgent>(inspected_frames,
+                                                    session->V8Session());
+  session->CreateAndAppend<DeviceOrientationInspectorAgent>(inspected_frames);
+  session->CreateAndAppend<InspectorDOMStorageAgent>(inspected_frames);
+  session->CreateAndAppend<InspectorAccessibilityAgent>(inspected_frames,
+                                                        dom_agent);
+  session->CreateAndAppend<InspectorWebAudioAgent>(page);
   if (allow_view_agents) {
-    session->Append(MakeGarbageCollected<InspectorDatabaseAgent>(page));
-    session->Append(
-        MakeGarbageCollected<InspectorCacheStorageAgent>(inspected_frames));
+    session->CreateAndAppend<InspectorDatabaseAgent>(page);
+    session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   }
 }
 

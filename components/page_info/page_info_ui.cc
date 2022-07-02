@@ -192,13 +192,13 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
      IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM,
      IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE},
+    {ContentSettingsType::FEDERATED_IDENTITY_API,
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API,
+     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE},
     {ContentSettingsType::IDLE_DETECTION, IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION,
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
 #if !BUILDFLAG(IS_ANDROID)
     // Page Info Permissions that are not defined in Android.
-    {ContentSettingsType::FEDERATED_IDENTITY_API,
-     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API,
-     IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API_MID_SENTENCE},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
@@ -758,7 +758,10 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
     if (permissions::PermissionUtil::IsPermission(permission.type)) {
       permission_result = delegate->GetPermissionStatus(permission.type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
-      permission_result = delegate->GetEmbargoResult(permission.type);
+      absl::optional<permissions::PermissionResult> embargo_result =
+          delegate->GetEmbargoResult(permission.type);
+      if (embargo_result)
+        permission_result = *embargo_result;
     }
 
     switch (permission_result.source) {

@@ -31,11 +31,12 @@ PasswordBubbleControllerBase::~PasswordBubbleControllerBase() {
 }
 
 void PasswordBubbleControllerBase::OnBubbleClosing() {
-  ReportInteractions();
+  // This method can be reentered from OnBubbleHidden() below. Reset the things
+  // before calling it.
+  if (!std::exchange(interaction_reported_, true))
+    ReportInteractions();
   if (delegate_)
-    delegate_->OnBubbleHidden();
-  delegate_.reset();
-  interaction_reported_ = true;
+    std::exchange(delegate_, nullptr)->OnBubbleHidden();
 }
 
 Profile* PasswordBubbleControllerBase::GetProfile() const {

@@ -17,13 +17,13 @@
 // Reload cells for items. Does nothing if the model is not loaded yet.
 - (void)reloadCellsForItems;
 
-// Initializes item array for |safeBrowsingItems|.
+// Initializes item array for `safeBrowsingItems`.
 - (void)setSafeBrowsingItems:(NSArray<TableViewItem*>*)safeBrowsingItems;
 
 // Tells consumer if enterprise is enabled based on pref values in model.
 - (void)setEnterpriseEnabled:(BOOL)enterpriseEnabled;
 
-// Select |item|.
+// Select `item`.
 - (void)selectItem:(TableViewItem*)item;
 
 // Shows enterprise pop up when info button is pressed in enterprise mode.

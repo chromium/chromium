@@ -829,7 +829,8 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_start =
       position->CreateNextWordStartPosition(
-          ui::AXBoundaryBehavior::kCrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_start->IsNullPosition());
   } else {
@@ -841,7 +842,8 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_end =
       position->CreateNextWordEndPosition(
-          ui::AXBoundaryBehavior::kCrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_end->IsNullPosition());
   } else {
@@ -923,12 +925,13 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
   BrowserAccessibility* root_accessible =
       browser_accessibility_manager->GetRoot();
   ASSERT_NE(nullptr, root_accessible);
-  // Should be -1 for kRootWebArea since it doesn't have a calculated index.
-  EXPECT_EQ(-1, root_accessible->GetIndexInParent());
+  // Should be nullopt for kRootWebArea since it doesn't have a calculated
+  // index.
+  EXPECT_FALSE(root_accessible->GetIndexInParent().has_value());
   BrowserAccessibility* child_accessible = root_accessible->InternalGetChild(0);
   ASSERT_NE(nullptr, child_accessible);
   // Returns the index calculated in AXNode.
-  EXPECT_EQ(0, child_accessible->GetIndexInParent());
+  EXPECT_EQ(0u, child_accessible->GetIndexInParent());
 }
 
 TEST_F(BrowserAccessibilityTest, CreatePositionAt) {

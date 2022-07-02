@@ -119,8 +119,8 @@ class WebPerformance {
   BLINK_EXPORT base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
   BLINK_EXPORT double ExperimentalLargestImagePaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
-  BLINK_EXPORT LargestContentfulPaintTypeMask
-  LargestContentfulPaintType() const;
+  BLINK_EXPORT blink::LargestContentfulPaintType LargestContentfulPaintType()
+      const;
   BLINK_EXPORT double LargestContentfulPaintImageBPP() const;
   BLINK_EXPORT double ExperimentalLargestTextPaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestTextPaintSize() const;
@@ -128,6 +128,8 @@ class WebPerformance {
   BLINK_EXPORT double FirstInputOrScrollNotifiedTimestamp() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputDelay() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputTimestamp() const;
+  BLINK_EXPORT absl::optional<base::TimeTicks>
+  FirstInputTimestampAsMonotonicTime() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputDelay() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputTimestamp() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputProcessingTime() const;

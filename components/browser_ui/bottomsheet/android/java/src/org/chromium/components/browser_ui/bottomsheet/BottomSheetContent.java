@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -182,6 +183,23 @@ public interface BottomSheetContent {
     default boolean handleBackPress() {
         return false;
     }
+
+    /**
+     * @return An observable supplier that will hold true if the content will intercept and handle a
+     *         back press event, false otherwise. If left {@code false}, the sheet will collapse to
+     *         its minimum state on back press or do nothing if in the minimum / peeking state.
+     */
+    default ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(false);
+        return supplier;
+    }
+
+    /**
+     * Invoked in the event of a back press that is pre-emptively determined by
+     * #getBackPressStateChangedSupplier.
+     */
+    default void onBackPressed() {}
 
     /**
      * @return The resource id of the content description for the bottom sheet. This is

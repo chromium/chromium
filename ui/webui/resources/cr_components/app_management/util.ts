@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {App} from './app_management.mojom-webui.js';
+import {App, PermissionType} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
-import {PermissionType, PermissionTypeIndex} from './permission_constants.js';
+import {PermissionTypeIndex} from './permission_constants.js';
 import {isPermissionEnabled} from './permission_util.js';
 
 /**
@@ -78,7 +78,6 @@ export function toggleOptionalBool(bool: OptionalBool): OptionalBool {
       return OptionalBool.kFalse;
     default:
       assertNotReached();
-      return OptionalBool.kFalse;
   }
 }
 
@@ -90,7 +89,6 @@ export function convertOptionalBoolToBool(optionalBool: OptionalBool): boolean {
       return false;
     default:
       assertNotReached();
-      return false;
   }
 }
 
@@ -112,7 +110,6 @@ function getUserActionHistogramNameForAppType(appType: AppType): string {
       return 'AppManagement.AppDetailViews.BorealisApp';
     default:
       assertNotReached();
-      return '';
   }
 }
 

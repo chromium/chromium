@@ -44,8 +44,9 @@ suite('PrintingPageTests', function() {
 
     flush();
 
-    const deepLinkElement = printingPage.$$('#printManagement')
-                                .shadowRoot.querySelector('cr-icon-button');
+    const deepLinkElement =
+        printingPage.shadowRoot.querySelector('#printManagement')
+            .shadowRoot.querySelector('cr-icon-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -61,8 +62,9 @@ suite('PrintingPageTests', function() {
 
     flush();
 
-    const deepLinkElement = printingPage.$$('#scanningApp')
-                                .shadowRoot.querySelector('cr-icon-button');
+    const deepLinkElement =
+        printingPage.shadowRoot.querySelector('#scanningApp')
+            .shadowRoot.querySelector('cr-icon-button');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

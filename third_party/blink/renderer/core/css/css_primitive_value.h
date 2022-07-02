@@ -35,7 +35,7 @@
 
 namespace blink {
 
-class CSSToLengthConversionData;
+class CSSLengthResolver;
 
 // Dimension calculations are imprecise, often resulting in values of e.g.
 // 44.99998. We need to go ahead and round if we're really close to the next
@@ -308,6 +308,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // "global" information that cannot be changed by CSS.
   bool IsComputationallyIndependent() const;
 
+  // True if this value contains any of cq[w,h,i,b,min,max], false otherwise.
+  bool HasContainerRelativeUnits() const;
+
   // Creates either a |CSSNumericLiteralValue| or a |CSSMathFunctionValue|,
   // depending on whether |value| is calculated or not. We should never create a
   // |CSSPrimitiveValue| that's not of any of its subclasses.
@@ -319,10 +322,10 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   // Computes a length in pixels, resolving relative lengths
   template <typename T>
-  T ComputeLength(const CSSToLengthConversionData&) const;
+  T ComputeLength(const CSSLengthResolver&) const;
 
   // Converts to a Length (Fixed, Percent or Calculated)
-  Length ConvertToLength(const CSSToLengthConversionData&) const;
+  Length ConvertToLength(const CSSLengthResolver&) const;
 
   bool IsZero() const;
 
@@ -373,7 +376,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType StringToUnitType(const LChar*, unsigned length);
   static UnitType StringToUnitType(const UChar*, unsigned length);
 
-  double ComputeLengthDouble(const CSSToLengthConversionData&) const;
+  double ComputeLengthDouble(const CSSLengthResolver&) const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;
@@ -386,26 +389,24 @@ struct DowncastTraits<CSSPrimitiveValue> {
 };
 
 template <>
-int CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+int CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-Length CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+Length CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-unsigned CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+unsigned CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
-int16_t CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+int16_t CSSPrimitiveValue::ComputeLength(const CSSLengthResolver&) const;
 
 template <>
 CORE_EXPORT float CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+    const CSSLengthResolver&) const;
 
 template <>
 CORE_EXPORT double CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData&) const;
+    const CSSLengthResolver&) const;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_

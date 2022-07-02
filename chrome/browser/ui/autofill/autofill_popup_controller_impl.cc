@@ -62,11 +62,8 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     base::i18n::TextDirection text_direction) {
   if (previous && previous->delegate_.get() == delegate.get() &&
       previous->container_view() == container_view) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillDelayPopupControllerDeletion) &&
-        previous->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
+    if (previous->self_deletion_weak_ptr_factory_.HasWeakPtrs())
       previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
-    }
     previous->SetElementBounds(element_bounds);
     previous->ClearState();
     return previous;
@@ -101,10 +98,6 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
-  // TODO(crbug.com/1277218): Remove when kAutofillDelayPopupControllerDeletion
-  // is launched.
-  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
-
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -133,10 +126,6 @@ void AutofillPopupControllerImpl::Show(
                                    !suggestions.empty());
 #endif
     view_->Show();
-    // crbug.com/1055981. |this| can be destroyed synchronously at this point.
-    if (!weak_this)
-      return;
-
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
@@ -152,11 +141,6 @@ void AutofillPopupControllerImpl::Show(
 
     OnSuggestionsChanged();
   }
-  // |this| can be destroyed synchronously at this point. See crbug.com/1200766
-  // and crbug.com/1276850 and crbug.com/1277218.
-  if (!weak_this)
-    return;
-
   absl::visit(
       [&](auto* driver) {
         driver->SetKeyPressHandler(base::BindRepeating(
@@ -166,7 +150,7 @@ void AutofillPopupControllerImpl::Show(
                const content::NativeWebKeyboardEvent& event) {
               return weak_this && weak_this->HandleKeyPressEvent(event);
             },
-            weak_this));
+            GetWeakPtr()));
       },
       GetDriver());
 
@@ -357,7 +341,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 
   delegate_->DidAcceptSuggestion(suggestion.main_text.value,
-                                 suggestion.frontend_id, suggestion.backend_id,
+                                 suggestion.frontend_id, suggestion.payload,
                                  index);
 }
 
@@ -486,10 +470,10 @@ AutofillPopupControllerImpl::SetSelectedLineHelper(
   view_->OnSelectedRowChanged(previous_selected_line, selected_line_);
 
   if (selected_line_) {
-    delegate_->DidSelectSuggestion(
-        suggestions_[*selected_line_].main_text.value,
-        suggestions_[*selected_line_].frontend_id,
-        suggestions_[*selected_line_].backend_id);
+    const Suggestion& suggestion = suggestions_[*selected_line_];
+    delegate_->DidSelectSuggestion(suggestion.main_text.value,
+                                   suggestion.frontend_id,
+                                   suggestion.GetPayload<std::string>());
   } else {
     delegate_->ClearPreviewedForm();
   }
@@ -605,12 +589,6 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     FireControlsChangedEvent(false);
     view_->Hide();  // Deletes |view_|.
     view_ = nullptr;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDelayPopupControllerDeletion)) {
-    delete this;
-    return;
   }
 
   if (self_deletion_weak_ptr_factory_.HasWeakPtrs())

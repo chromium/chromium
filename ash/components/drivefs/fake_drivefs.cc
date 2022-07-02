@@ -170,6 +170,13 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
     if (--pending_callbacks_ == 0) {
       auto query = base::ToLowerASCII(
           params_->title.value_or(params_->text_content.value_or("")));
+      std::vector<std::string> mime_types;
+      if (params_->mime_types.has_value()) {
+        mime_types = params_->mime_types.value();
+      }
+      if (params_->mime_type.has_value()) {
+        mime_types.emplace_back(params_->mime_type.value() + "/*");
+      }
 
       // Filter out non-matching results.
       base::EraseIf(results_, [=](const auto& item_ptr) {
@@ -188,9 +195,19 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
         if (params_->shared_with_me) {
           return !metadata->shared;
         }
-        if (params_->mime_type.has_value()) {
-          return !net::MatchesMimeType(params_->mime_type.value() + "/*",
-                                       metadata->content_mime_type);
+        if (!mime_types.empty()) {
+          std::string content_mime_type = metadata->content_mime_type;
+          if (content_mime_type.empty()) {
+            return true;
+          }
+          const auto find_mime_type_iter = std::find_if(
+              mime_types.begin(), mime_types.end(),
+              [content_mime_type](const std::string& mime_type) {
+                return net::MatchesMimeType(mime_type, content_mime_type);
+              });
+          if (find_mime_type_iter == mime_types.end()) {
+            return true;
+          }
         }
         return false;
       });

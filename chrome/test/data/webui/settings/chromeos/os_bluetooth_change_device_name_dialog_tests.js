@@ -41,8 +41,10 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
    *     format, with 2 digits
    */
   function assertInput(value, invalid, valueLength) {
-    const input = bluetoothDeviceChangeNameDialog.$$('#changeNameInput');
-    const inputCount = bluetoothDeviceChangeNameDialog.$$('#inputCount');
+    const input = bluetoothDeviceChangeNameDialog.shadowRoot.querySelector(
+        '#changeNameInput');
+    const inputCount =
+        bluetoothDeviceChangeNameDialog.shadowRoot.querySelector('#inputCount');
     assertTrue(!!input);
     assertTrue(!!inputCount);
 
@@ -69,7 +71,8 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
     await flushAsync();
 
     await flushAsync();
-    const input = bluetoothDeviceChangeNameDialog.$$('#changeNameInput');
+    const input = bluetoothDeviceChangeNameDialog.shadowRoot.querySelector(
+        '#changeNameInput');
     assertTrue(!!input);
     assertEquals('device1', input.value);
 
@@ -109,7 +112,8 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
   test('Device name is changed', async function() {
     const id = '12//345&6789';
     const nickname = 'Nickname';
-    const getDoneBtn = () => bluetoothDeviceChangeNameDialog.$$('#done');
+    const getDoneBtn = () =>
+        bluetoothDeviceChangeNameDialog.shadowRoot.querySelector('#done');
     const device = createDefaultBluetoothDevice(
         id,
         /*publicName=*/ 'BeatsX',
@@ -121,7 +125,8 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
     bluetoothConfig.appendToPairedDeviceList([device]);
     await flushAsync();
 
-    const input = bluetoothDeviceChangeNameDialog.$$('#changeNameInput');
+    const input = bluetoothDeviceChangeNameDialog.shadowRoot.querySelector(
+        '#changeNameInput');
     assertTrue(!!input);
     assertEquals('device1', input.value);
     assertTrue(getDoneBtn().disabled);

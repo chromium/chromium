@@ -88,8 +88,11 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   // RenderAttachment for clears.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
   internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage =
-      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  // No write access to multi-planar pixmaps.
+  if (pixmap_->GetNumberOfPlanes() == 1) {
+    internalDesc.internalUsage |= WGPUTextureUsage_RenderAttachment;
+  }
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
@@ -104,8 +107,10 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   // closed twice (once by ScopedFD and once by the Vulkan implementation).
   int fd = dup(pixmap_->GetDmaBufFd(0));
   descriptor.memoryFD = fd;
-  // stride is not required for multi-planar formats.
-  descriptor.stride = pixmap_->GetDmaBufPitch(0);
+  for (uint32_t plane = 0u; plane < pixmap_->GetNumberOfPlanes(); ++plane) {
+    descriptor.planeLayouts[plane].offset = pixmap_->GetDmaBufOffset(plane);
+    descriptor.planeLayouts[plane].stride = pixmap_->GetDmaBufPitch(plane);
+  }
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};
 

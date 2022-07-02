@@ -16,7 +16,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -132,7 +132,20 @@ void MediaStringView::OnThemeChanged() {
   views::View::OnThemeChanged();
   media_text_->SetShadows(ambient::util::GetTextShadowValues(
       GetColorProvider(), settings_.text_shadow_elevation));
+
+  const bool dark_mode_enabled =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  DCHECK(icon_);
+  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
+                                        dark_mode_enabled
+                                            ? settings_.icon_dark_mode_color
+                                            : settings_.icon_light_mode_color));
+  DCHECK(media_text_);
+  media_text_->SetEnabledColor(dark_mode_enabled
+                                   ? settings_.text_dark_mode_color
+                                   : settings_.text_light_mode_color);
 }
+
 void MediaStringView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateMaskLayer();
 }
@@ -198,18 +211,6 @@ void MediaStringView::OnImplicitAnimationsCompleted() {
   ScheduleScrolling(/*is_initial=*/false);
 }
 
-void MediaStringView::OnColorModeChanged(bool dark_mode_enabled) {
-  DCHECK(icon_);
-  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
-                                        dark_mode_enabled
-                                            ? settings_.icon_dark_mode_color
-                                            : settings_.icon_light_mode_color));
-  DCHECK(media_text_);
-  media_text_->SetEnabledColor(dark_mode_enabled
-                                   ? settings_.text_dark_mode_color
-                                   : settings_.text_light_mode_color);
-}
-
 void MediaStringView::InitLayout() {
   // This view will be drawn on its own layer instead of the layer of
   // |PhotoView| which has a solid black background.
@@ -261,10 +262,6 @@ void MediaStringView::InitLayout() {
   // Compensate the shadow insets to put the text middle align with the icon.
   media_text_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(-shadow_insets.bottom(), 0, -shadow_insets.top(), 0)));
-
-  color_provider_observer_.Observe(AshColorProvider::Get());
-  // Call OnColorModeChanged() directly to capture the initial dark-mode value.
-  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
 
   BindMediaControllerObserver();
 }

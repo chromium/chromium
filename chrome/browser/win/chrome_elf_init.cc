@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/chrome_elf/blocklist_constants.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/dll_hash/dll_hash.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"

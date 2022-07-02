@@ -21,10 +21,20 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) ImageLoaderClient
     : public DBusClient {
  public:
+  // Returns the global instance if initialized. May return null.
+  static ImageLoaderClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   ImageLoaderClient(const ImageLoaderClient&) = delete;
   ImageLoaderClient& operator=(const ImageLoaderClient&) = delete;
-
-  ~ImageLoaderClient() override;
 
   // Registers a component by copying from |component_folder_abs_path| into its
   // internal storage, if and only if, the component passes verification.
@@ -58,13 +68,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) ImageLoaderClient
   virtual void UnmountComponent(const std::string& name,
                                 DBusMethodCallback<bool> callback) = 0;
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<ImageLoaderClient> Create();
-
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   ImageLoaderClient();
+  ~ImageLoaderClient() override;
 };
 
 }  // namespace chromeos

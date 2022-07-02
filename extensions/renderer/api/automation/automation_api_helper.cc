@@ -17,37 +17,35 @@ namespace extensions {
 AutomationApiHelper::AutomationApiHelper(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
   DCHECK(render_frame->GetWebFrame()->IsOutermostMainFrame());
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      base::BindRepeating(&AutomationApiHelper::BindAutomationQueryReceiver,
+                          base::Unretained(this)));
 }
 
-AutomationApiHelper::~AutomationApiHelper() {
-}
+AutomationApiHelper::~AutomationApiHelper() = default;
 
-bool AutomationApiHelper::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AutomationApiHelper, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_AutomationQuerySelector, OnQuerySelector)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
+// Since this function is called after RenderFrame destruction, RenderFrame
+// cannot be used to remove an interface binder from the registry.
 void AutomationApiHelper::OnDestruct() {
+  receivers_.Clear();
   delete this;
 }
 
-void AutomationApiHelper::OnQuerySelector(int request_id,
-                                          int acc_obj_id,
-                                          const std::u16string& selector) {
+void AutomationApiHelper::BindAutomationQueryReceiver(
+    mojo::PendingAssociatedReceiver<mojom::AutomationQuery> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
+void AutomationApiHelper::QuerySelector(int32_t acc_obj_id,
+                                        const std::string& selector,
+                                        QuerySelectorCallback callback) {
   // ExtensionMsg_AutomationQuerySelector should only be sent to an active view.
   DCHECK(render_frame()->IsMainFrame());
 
-  ExtensionHostMsg_AutomationQuerySelector_Error error;
-
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   if (document.IsNull()) {
-    error.value = ExtensionHostMsg_AutomationQuerySelector_Error::kNoDocument;
-    Send(new ExtensionHostMsg_AutomationQuerySelector_Result(
-        routing_id(), request_id, error, 0));
+    std::move(callback).Run(
+        0, extensions::mojom::AutomationQueryError::kNoDocument);
     return;
   }
   blink::WebNode start_node = document;
@@ -55,10 +53,8 @@ void AutomationApiHelper::OnQuerySelector(int request_id,
     blink::WebAXObject start_acc_obj =
         blink::WebAXObject::FromWebDocumentByID(document, acc_obj_id);
     if (start_acc_obj.IsNull()) {
-      error.value =
-          ExtensionHostMsg_AutomationQuerySelector_Error::kNodeDestroyed;
-      Send(new ExtensionHostMsg_AutomationQuerySelector_Result(
-          routing_id(), request_id, error, 0));
+      std::move(callback).Run(
+          0, extensions::mojom::AutomationQueryError::kNodeDestroyed);
       return;
     }
 
@@ -68,7 +64,7 @@ void AutomationApiHelper::OnQuerySelector(int request_id,
       start_node = start_acc_obj.GetNode();
     }
   }
-  blink::WebString web_selector = blink::WebString::FromUTF16(selector);
+  blink::WebString web_selector = blink::WebString::FromUTF8(selector);
 
   // Returns first match that has an attached, unignored node, otherwise null.
   blink::WebVector<blink::WebElement> all_matches =
@@ -83,8 +79,8 @@ void AutomationApiHelper::OnQuerySelector(int request_id,
       break;
     }
   }
-  Send(new ExtensionHostMsg_AutomationQuerySelector_Result(
-      routing_id(), request_id, error, result_acc_obj_id));
+  std::move(callback).Run(result_acc_obj_id,
+                          extensions::mojom::AutomationQueryError::kNone);
 }
 
 }  // namespace extensions

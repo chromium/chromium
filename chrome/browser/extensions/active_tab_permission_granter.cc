@@ -162,8 +162,8 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
 
   const PermissionsData* permissions_data = extension->permissions_data();
 
-  // TODO(crbug.com/698985): This should be GetLastCommittedURL().
-  const GURL& url = web_contents()->GetVisibleURL();
+  const GURL& url =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL();
 
   // If the extension requested the host permission to |url| but had it
   // withheld, we grant it active tab-style permissions, even if it doesn't have
@@ -185,7 +185,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     if (!util::AllowFileAccess(extension->id(), browser_context)) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
     }
-    new_hosts.AddOrigin(valid_schemes, url.DeprecatedGetOriginAsURL());
+    new_hosts.AddOrigin(valid_schemes, url);
     new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(
@@ -215,7 +215,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
       ProcessManager* process_manager = ProcessManager::Get(browser_context);
       SendRendererMessageToProcesses(
           process_manager->GetRenderFrameHostsForExtension(extension->id()),
-          web_contents()->GetMainFrame()->GetProcess(), update_message);
+          web_contents()->GetPrimaryMainFrame()->GetProcess(), update_message);
 
       // If more things ever need to know about this, we should consider making
       // an observer class.
@@ -284,7 +284,8 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
   RendererMessageFunction clear_message =
       base::BindRepeating(&ClearTabSpecificPermissions, extension_ids, tab_id_);
   SendRendererMessageToProcesses(
-      frame_hosts, web_contents()->GetMainFrame()->GetProcess(), clear_message);
+      frame_hosts, web_contents()->GetPrimaryMainFrame()->GetProcess(),
+      clear_message);
 
   granted_extensions_.Clear();
 }

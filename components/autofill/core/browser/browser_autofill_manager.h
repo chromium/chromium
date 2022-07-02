@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/sync_utils.h"
+#include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -196,13 +197,16 @@ class BrowserAutofillManager : public AutofillManager,
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(int unique_id);
 
-  // Remove the specified suggestion from single field filling.
+  // Remove the specified suggestion from single field filling. |frontend_id| is
+  // the PopupItemId of the suggestion.
   void RemoveCurrentSingleFieldSuggestion(const std::u16string& name,
-                                          const std::u16string& value);
+                                          const std::u16string& value,
+                                          int frontend_id);
 
   // Invoked when the user selected |value| in a suggestions list from single
-  // field filling.
-  void OnSingleFieldSuggestionSelected(const std::u16string& value);
+  // field filling. |frontend_id| is the PopupItemId of the suggestion.
+  void OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                       int frontend_id);
 
   // Invoked when the user selects the "Hide Suggestions" item in the
   // Autocomplete drop-down.
@@ -247,6 +251,10 @@ class BrowserAutofillManager : public AutofillManager,
   void OnDidEndTextFieldEditing() override;
   void OnHidePopup() override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
   void PropagateAutofillPredictions(
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;
@@ -273,6 +281,12 @@ class BrowserAutofillManager : public AutofillManager,
   // to be uploadable. Exposed for testing.
   bool ShouldUploadForm(const FormStructure& form);
 
+  void SetProfileFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
+  void SetCreditCardFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
   // Returns the last form the autofill manager considered in this frame.
   virtual const FormData& last_query_form() const;
 
@@ -298,6 +312,11 @@ class BrowserAutofillManager : public AutofillManager,
     external_delegate_ = std::move(external_delegate);
   }
 
+  void SetTouchToFillDelegateImplForTest(
+      std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate) {
+    touch_to_fill_delegate_ = std::move(touch_to_fill_delegate);
+  }
+
   // A public wrapper that calls |DeterminePossibleFieldTypesForUpload| for
   // testing purposes only.
   static void DeterminePossibleFieldTypesForUploadForTest(
@@ -309,12 +328,6 @@ class BrowserAutofillManager : public AutofillManager,
     DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                          last_unlocked_credit_card_cvc,
                                          app_locale, submitted_form);
-  }
-
-  // A public wrapper that calls |MakeFrontendID| for testing purposes only.
-  int MakeFrontendIDForTest(const std::string& cc_backend_id,
-                            const std::string& profile_backend_id) const {
-    return MakeFrontendID(cc_backend_id, profile_backend_id);
   }
 
   // A public wrapper that calls |ShouldTriggerRefill| for testing purposes
@@ -333,7 +346,11 @@ class BrowserAutofillManager : public AutofillManager,
       FormStructure* form_structure) {
     PreProcessStateMatchingTypes(profiles, form_structure);
   }
-#endif
+
+  AutofillSuggestionGenerator* suggestion_generator() {
+    return suggestion_generator_.get();
+  }
+#endif  // defined(UNIT_TEST)
 
  protected:
   // Uploads the form data to the Autofill server. |observed_submission|
@@ -350,20 +367,6 @@ class BrowserAutofillManager : public AutofillManager,
       const base::TimeTicks& submission_time,
       bool observed_submission);
 
-  // Maps suggestion backend ID to and from an integer identifying it. Two of
-  // these intermediate integers are packed by MakeFrontendID to make the IDs
-  // that this class generates for the UI and for IPC.
-  virtual int BackendIDToInt(const std::string& backend_id) const;
-  virtual std::string IntToBackendID(int int_id) const;
-
-  // Methods for packing and unpacking credit card and profile IDs for sending
-  // and receiving to and from the renderer process.
-  int MakeFrontendID(const std::string& cc_backend_id,
-                     const std::string& profile_backend_id) const;
-  void SplitFrontendID(int frontend_id,
-                       std::string* cc_backend_id,
-                       std::string* profile_backend_id) const;
-
   // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
@@ -375,11 +378,13 @@ class BrowserAutofillManager : public AutofillManager,
   void OnTextFieldDidScrollImpl(const FormData& form,
                                 const FormFieldData& field,
                                 const gfx::RectF& bounding_box) override {}
-  void OnAskForValuesToFillImpl(int query_id,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& transformed_box,
-                                bool autoselect_first_suggestion) override;
+  void OnAskForValuesToFillImpl(
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& transformed_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
@@ -445,6 +450,9 @@ class BrowserAutofillManager : public AutofillManager,
     base::OneShotTimer on_refill_timer;
     // The field type groups that were initially filled.
     std::set<FieldTypeGroup> type_groups_originally_filled;
+    // If populated, this map determines which values will be filled into a
+    // field (it does not matter whether the field already contains a value).
+    std::map<FieldGlobalId, std::u16string> forced_fill_values;
   };
 
   // CreditCardAccessManager::Accessor
@@ -456,6 +464,8 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
 
+  // TODO(crbug.com/1249665): Change unique_id to frontend_id and move the
+  // functions to AutofillSuggestionGenerator.
   // Gets the card referred to by the guid |unique_id|. Returns |nullptr| if
   // card does not exist.
   CreditCard* GetCreditCard(int unique_id);
@@ -582,6 +592,7 @@ class BrowserAutofillManager : public AutofillManager,
       AutofillField* autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
+      const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData* field_data,
       bool should_notify,
       const std::u16string& cvc,
@@ -602,9 +613,20 @@ class BrowserAutofillManager : public AutofillManager,
   //  It's been less than kLimitBeforeRefillMs since the original fill.
   bool ShouldTriggerRefill(const FormStructure& form_structure);
 
+  // Schedules a call of TriggerRefill. Virtual for testing.
+  virtual void ScheduleRefill(const FormData& form);
+
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
   void TriggerRefill(const FormData& form);
+
+  // This function is called by JavaScriptChangedAutofilledValue and may trigger
+  // a refill in case the website used JavaScript to reformat an expiration date
+  // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
+  // two digits instead of stripping the first two digits).
+  void MaybeTriggerRefillForExpirationDate(const FormData& form,
+                                           const FormFieldData& field,
+                                           const std::u16string& old_value);
 
   // Replaces the contents of |suggestions| with available suggestions for
   // |field|. |context| will contain additional information about the
@@ -636,9 +658,10 @@ class BrowserAutofillManager : public AutofillManager,
   void SetDataList(const std::vector<std::u16string>& values,
                    const std::vector<std::u16string>& labels);
 
-  // Delegate to perform external processing (display, selection) on
+  // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
+  std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
 
   std::string app_locale_;
 
@@ -708,12 +731,6 @@ class BrowserAutofillManager : public AutofillManager,
   FormFieldData credit_card_field_;
   CreditCard credit_card_;
   std::u16string last_unlocked_credit_card_cvc_;
-
-  // Suggestion backend ID to ID mapping. We keep two maps to convert back and
-  // forth. These should be used only by BackendIDToInt and IntToBackendID.
-  // Note that the integers are not frontend IDs.
-  mutable std::map<std::string, int> backend_to_int_map_;
-  mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
   raw_ptr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;

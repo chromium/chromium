@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
@@ -33,6 +34,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_status.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -43,17 +45,20 @@
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -172,12 +177,17 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(
         ambient::prefs::kAmbientAnimationTheme,
         static_cast<int>(kDefaultAmbientAnimationTheme));
+
+    registry->RegisterDoublePref(
+        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+        kAnimationPlaybackSpeed);
   }
 }
 
 AmbientController::AmbientController(
     mojo::PendingRemote<device::mojom::Fingerprint> fingerprint)
-    : fingerprint_(std::move(fingerprint)) {
+    : ambient_weather_controller_(std::make_unique<AmbientWeatherController>()),
+      fingerprint_(std::move(fingerprint)) {
   ambient_backend_controller_ = CreateAmbientBackendController();
 
   // |SessionController| is initialized before |this| in Shell. Necessary to
@@ -226,7 +236,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       StartRefreshingImages();
       break;
     case AmbientUiVisibility::kHidden:
-    case AmbientUiVisibility::kClosed:
+    case AmbientUiVisibility::kClosed: {
+      bool ambient_ui_was_rendering =
+          Shell::GetPrimaryRootWindowController()->HasAmbientWidget();
       CloseAllWidgets(/*immediately=*/false);
 
       // TODO(wutao): This will clear the image cache currently. It will not
@@ -247,10 +259,17 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // ambient mode has just started.
       if (start_time_) {
         auto elapsed = base::Time::Now() - start_time_.value();
+        AmbientAnimationTheme theme = GetCurrentTheme();
         DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
         ambient::RecordAmbientModeTimeElapsed(
-            /*time_delta=*/elapsed,
-            /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+            elapsed, Shell::Get()->IsInTabletMode(), theme);
+
+        if (!ambient_ui_was_rendering &&
+            elapsed >= ambient::kMetricsStartupTimeMax) {
+          LOG(ERROR) << "Ambient UI completely failed to start";
+          ambient::RecordAmbientModeStartupTime(elapsed, theme);
+        }
+
         start_time_.reset();
       }
 
@@ -275,6 +294,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       }
 
       break;
+    }
   }
 }
 
@@ -580,16 +600,25 @@ void AmbientController::OnEnabledPrefChanged() {
         base::BindRepeating(&AmbientController::OnAnimationThemePrefChanged,
                             weak_ptr_factory_.GetWeakPtr()));
 
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+        base::BindRepeating(&AmbientController::OnAnimationPlaybackSpeedChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+
     // Trigger the callbacks manually the first time to init AmbientUiModel.
     OnLockScreenInactivityTimeoutPrefChanged();
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
     OnAnimationThemePrefChanged();
+    OnAnimationPlaybackSpeedChanged();
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_,
-        CreatePhotoConfigForCurrentTheme());
+        *AmbientClient::Get(), access_token_controller_, delegate_,
+        // The type of photo config specified here is actually irrelevant as it
+        // always gets reset with the correct configuration anyways in
+        // StartRefreshingImages() before ambient mode starts.
+        CreateAmbientSlideshowPhotoConfig());
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
@@ -611,7 +640,8 @@ void AmbientController::OnEnabledPrefChanged() {
          {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-          ambient::prefs::kAmbientAnimationTheme}) {
+          ambient::prefs::kAmbientAnimationTheme,
+          ambient::prefs::kAmbientModeAnimationPlaybackSpeed}) {
       if (pref_change_registrar_->IsObserved(pref_name))
         pref_change_registrar_->Remove(pref_name);
     }
@@ -671,7 +701,7 @@ void AmbientController::OnAnimationThemePrefChanged() {
           static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
     LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
                  << current_theme_as_int << ". Default to "
-                 << kDefaultAmbientAnimationTheme;
+                 << ToString(kDefaultAmbientAnimationTheme);
     current_theme_as_int = static_cast<int>(kDefaultAmbientAnimationTheme);
   }
   current_theme_from_pref_ =
@@ -679,8 +709,8 @@ void AmbientController::OnAnimationThemePrefChanged() {
 
   if (previous_theme_from_pref.has_value()) {
     DVLOG(4) << "AmbientAnimationTheme changed from "
-             << *previous_theme_from_pref << " to "
-             << *current_theme_from_pref_;
+             << ToString(*previous_theme_from_pref) << " to "
+             << ToString(*current_theme_from_pref_);
     // For a given topic category, the topics downloaded from IMAX and saved to
     // cache differ from theme to theme:
     // 1) Slideshow mode keeps primary/related photos paired within a topic,
@@ -701,8 +731,15 @@ void AmbientController::OnAnimationThemePrefChanged() {
     ambient_photo_controller_->ClearCache();
   } else {
     DVLOG(4) << "AmbientAnimationTheme initialized to "
-             << *current_theme_from_pref_;
+             << ToString(*current_theme_from_pref_);
   }
+}
+
+void AmbientController::OnAnimationPlaybackSpeedChanged() {
+  DCHECK(GetPrimaryUserPrefService());
+  ambient_ui_model_.set_animation_playback_speed(
+      GetPrimaryUserPrefService()->GetDouble(
+          ambient::prefs::kAmbientModeAnimationPlaybackSpeed));
 }
 
 void AmbientController::RequestAccessToken(
@@ -736,6 +773,10 @@ AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
   return ambient_photo_controller_->ambient_backend_model();
 }
 
+AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
+  return ambient_weather_controller_->weather_model();
+}
+
 void AmbientController::OnImagesReady() {
   CreateAndShowWidgets();
 }
@@ -747,8 +788,10 @@ void AmbientController::OnImagesFailed() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
+  AmbientAnimationTheme current_theme = GetCurrentTheme();
   auto container_view = std::make_unique<AmbientContainerView>(
-      &delegate_, std::move(pending_animation_static_resources_));
+      &delegate_, AmbientAnimationStaticResources::Create(
+                      current_theme, /*serializable=*/true));
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 
@@ -766,7 +809,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
-  widget->SetContentsView(std::move(container_view));
+  auto* contents_view = widget->SetContentsView(std::move(container_view));
 
   widget->SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_BOTH);
@@ -775,6 +818,16 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   ::wm::SetWindowVisibilityChangesAnimated(widget->GetNativeWindow());
 
   widget->Show();
+
+  DCHECK(start_time_);
+  ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
+                                        current_theme);
+
+  // Only announce for the primary window.
+  if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {
+    contents_view->GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREENSAVER_STARTS));
+  }
 
   return widget;
 }
@@ -795,17 +848,27 @@ void AmbientController::StartRefreshingImages() {
   // model/controller with the appropriate config each time before calling
   // StartScreenUpdate().
   DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
-  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
-      CreatePhotoConfigForCurrentTheme());
+  AmbientAnimationTheme current_theme = GetCurrentTheme();
+  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
+
+  AmbientPhotoConfig photo_config;
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (pending_animation_static_resources_) {
-    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
-        pending_animation_static_resources_->GetSkottieWrapper()
-            ->GetImageAssetMetadata());
-  } else {
+  if (current_theme == AmbientAnimationTheme::kSlideshow) {
+    photo_config = CreateAmbientSlideshowPhotoConfig();
     topic_queue_delegate =
         std::make_unique<AmbientTopicQueueSlideshowDelegate>();
+  } else {
+    scoped_refptr<cc::SkottieWrapper> animation =
+        AmbientAnimationStaticResources::Create(current_theme,
+                                                /*serializable=*/false)
+            ->GetSkottieWrapper();
+    photo_config =
+        CreateAmbientAnimationPhotoConfig(animation->GetImageAssetMetadata());
+    topic_queue_delegate = std::make_unique<AmbientTopicQueueAnimationDelegate>(
+        animation->GetImageAssetMetadata());
   }
+  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
+      std::move(photo_config));
   ambient_photo_controller_->StartScreenUpdate(std::move(topic_queue_delegate));
 }
 
@@ -814,7 +877,7 @@ void AmbientController::StopRefreshingImages() {
   ambient_photo_controller_->StopScreenUpdate();
 }
 
-AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
+AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
   AmbientAnimationTheme current_theme = kDefaultAmbientAnimationTheme;
   absl::optional<bool> animation_experiment_enabled =
       base::FeatureList::GetStateIfOverridden(
@@ -825,26 +888,11 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
     current_theme = animation_experiment_enabled.value()
                         ? features::kAmbientModeAnimationThemeParam.Get()
                         : kDefaultAmbientAnimationTheme;
-  } else if (features::IsPersonalizationHubEnabled()) {
-    // UX testers/dogfooders only have to enable the personalization hub to get
-    // the animation. They do not turn on the dedicated animation experiment
-    // flag as that is only intended for developers who want to bypass the hub.
-    // If the hub is disabled, fallback to the default theme.
+  } else if (features::IsAmbientModeAnimationEnabled()) {
     DCHECK(current_theme_from_pref_);
     current_theme = *current_theme_from_pref_;
   }
-  DVLOG(4) << "Loaded ambient theme " << current_theme;
-
-  pending_animation_static_resources_.reset();
-  if (current_theme == AmbientAnimationTheme::kSlideshow) {
-    return CreateAmbientSlideshowPhotoConfig();
-  } else {
-    pending_animation_static_resources_ =
-        AmbientAnimationStaticResources::Create(current_theme);
-    return CreateAmbientAnimationPhotoConfig(
-        pending_animation_static_resources_->GetSkottieWrapper()
-            ->GetImageAssetMetadata());
-  }
+  return current_theme;
 }
 
 void AmbientController::set_backend_controller_for_testing(

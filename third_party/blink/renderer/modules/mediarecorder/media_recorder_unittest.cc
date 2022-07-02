@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 namespace blink {
@@ -25,7 +26,7 @@ MediaStream* CreateMediaStream(V8TestingScope* scope) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
       "video source id", MediaStreamSource::kTypeVideo, "video source name",
       false /* remote */, std::move(native_source));
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
       source,
       std::make_unique<MediaStreamVideoTrack>(
           native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),

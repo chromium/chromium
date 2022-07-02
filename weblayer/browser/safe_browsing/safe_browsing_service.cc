@@ -95,11 +95,6 @@ void SafeBrowsingService::Initialize() {
     return;
   }
 
-  safe_browsing_api_handler_ =
-      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
-  safe_browsing::SafeBrowsingApiHandler::SetInstance(
-      safe_browsing_api_handler_.get());
-
   base::FilePath user_data_dir;
   bool result =
       base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);

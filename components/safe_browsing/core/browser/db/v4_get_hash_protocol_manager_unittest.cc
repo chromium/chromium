@@ -232,6 +232,56 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingResponseCode) {
   EXPECT_TRUE(callback_called());
 }
 
+TEST_F(V4GetHashProtocolManagerTest, TestBackoffErrorHistogramCount) {
+  std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
+  base::HistogramTester histogram_tester;
+
+  FullHashToStoreAndHashPrefixesMap matched_locally;
+  matched_locally[FullHash("AHashFull")].emplace_back(GetUrlSocEngId(),
+                                                       HashPrefix("AHash"));
+
+  std::vector<FullHashInfo> expected_results;
+  pm->GetFullHashes(
+      matched_locally, {},
+      base::BindRepeating(&V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                     base::Unretained(this), expected_results));
+
+  FullHashToStoreAndHashPrefixesMap matched_locally2;
+  matched_locally2[FullHash("AHash2Full")].emplace_back(GetUrlSocEngId(),
+                                                        HashPrefix("AHash2"));
+
+  pm->GetFullHashes(matched_locally2, {},
+                    base::BindRepeating(
+                        &V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                        base::Unretained(this), expected_results));
+
+  // Failed request status should result in error.
+  SetupFullHashFetcherToReturnResponse(pm.get(), FullHash("AHashFull"),
+                                       net::ERR_CONNECTION_RESET, 200,
+                                       GetStockV4HashResponse());
+
+  EXPECT_EQ(1ul, pm->gethash_error_count_);
+  EXPECT_EQ(1ul, pm->gethash_back_off_mult_);
+
+  EXPECT_TRUE(callback_called());
+
+  reset_callback_called();
+
+  pm->GetFullHashes(matched_locally2, {},
+                    base::BindRepeating(
+                        &V4GetHashProtocolManagerTest::ValidateGetV4HashResults,
+                        base::Unretained(this), expected_results));
+
+  EXPECT_EQ(1ul, pm->backoff_error_count_);
+
+  SetupFullHashFetcherToReturnResponse(pm.get(), FullHash("AHash2Full"),
+                                       net::OK, 200, GetStockV4HashResponse());
+
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V4GetHash.Result.BackoffErrorCount",
+      1);
+}
+
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingParallelRequests) {
   std::unique_ptr<V4GetHashProtocolManager> pm(CreateProtocolManager());
   std::vector<FullHashInfo> empty_results;

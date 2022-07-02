@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -93,6 +94,7 @@ public final class ShareSheetCoordinatorTest {
     private Activity mActivity;
     private ShareParams mParams;
     private ShareSheetCoordinator mShareSheetCoordinator;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
@@ -119,14 +121,17 @@ public final class ShareSheetCoordinatorTest {
                 .thenReturn(thirdPartyPropertyModels);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
-        Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
 
         mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
                           .setCallback(mTargetChosenCallback)
                           .build();
-        mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher,
-                mTabProvider, mPropertyModelBuilder, null, null, false, null, null);
+        mShareSheetCoordinator =
+                new ShareSheetCoordinator(mController, mLifecycleDispatcher, mTabProvider,
+                        mPropertyModelBuilder, null, null, false, null, null, mProfileSupplier);
+        mShareSheetCoordinator.setDisableUsageRankingForTesting(true);
     }
 
     @Test

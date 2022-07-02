@@ -78,14 +78,14 @@ export class PrefsManager {
     var uiLocale = chrome.i18n.getMessage('@@ui_locale');
     uiLocale = uiLocale.replace('_', '-').toLowerCase();
 
-    chrome.tts.getVoices((voices) => {
+    chrome.tts.getVoices(voices => {
       this.validVoiceNames_ = new Set();
 
       if (voices.length === 0) {
         return;
       }
 
-      voices.forEach((voice) => {
+      voices.forEach(voice => {
         if (!voice.eventTypes.includes(chrome.tts.EventType.START) ||
             !voice.eventTypes.includes(chrome.tts.EventType.END) ||
             !voice.eventTypes.includes(chrome.tts.EventType.WORD) ||
@@ -126,7 +126,7 @@ export class PrefsManager {
         this.voiceNameFromLocale_ = firstVoiceName;
       }
 
-      chrome.storage.sync.get(['voice'], (prefs) => {
+      chrome.storage.sync.get(['voice'], prefs => {
         if (!prefs['voice']) {
           chrome.storage.sync.set({'voice': PrefsManager.SYSTEM_VOICE});
         }
@@ -162,7 +162,7 @@ export class PrefsManager {
     // rate before doing migration logic.
     const getPrefsPromises = [];
     getPrefsPromises.push(new Promise((resolve, reject) => {
-      chrome.settingsPrivate.getPref('settings.tts.speech_rate', (pref) => {
+      chrome.settingsPrivate.getPref('settings.tts.speech_rate', pref => {
         if (pref === undefined) {
           reject();
         }
@@ -171,7 +171,7 @@ export class PrefsManager {
       });
     }));
     getPrefsPromises.push(new Promise((resolve, reject) => {
-      chrome.settingsPrivate.getPref('settings.tts.speech_pitch', (pref) => {
+      chrome.settingsPrivate.getPref('settings.tts.speech_pitch', pref => {
         if (pref === undefined) {
           reject();
         }
@@ -204,7 +204,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_rate', stsRate,
-                      '' /* unused, see crbug.com/866161 */, (success) => {
+                      '' /* unused, see crbug.com/866161 */, success => {
                         if (success) {
                           resolve();
                         } else {
@@ -215,7 +215,7 @@ export class PrefsManager {
                 setPrefsPromises.push(new Promise((resolve, reject) => {
                   chrome.settingsPrivate.setPref(
                       'settings.tts.speech_pitch', stsPitch,
-                      '' /* unused, see crbug.com/866161 */, (success) => {
+                      '' /* unused, see crbug.com/866161 */, success => {
                         if (success) {
                           resolve();
                         } else {
@@ -225,8 +225,7 @@ export class PrefsManager {
                 }));
                 Promise.all(setPrefsPromises)
                     .then(
-                        () => this.onTtsSettingsMigrationSuccess_(),
-                        (error) => {
+                        () => this.onTtsSettingsMigrationSuccess_(), error => {
                           console.log(error);
                           this.migrationInProgress_ = false;
                         });
@@ -236,7 +235,7 @@ export class PrefsManager {
                 this.onTtsSettingsMigrationSuccess_();
               }
             },
-            (error) => {
+            error => {
               console.log(error);
               this.migrationInProgress_ = false;
             });
@@ -261,11 +260,11 @@ export class PrefsManager {
   initPreferences() {
     const updatePolicy = () => {
       chrome.settingsPrivate.getPref(
-          PrefsManager.ENHANCED_VOICES_POLICY_KEY, (pref) => {
+          PrefsManager.ENHANCED_VOICES_POLICY_KEY, pref => {
             if (pref === undefined) {
               return;
             }
-            this.enhancedNetworkVoicesAllowed_ = !!pref.value;
+            this.enhancedNetworkVoicesAllowed_ = Boolean(pref.value);
           });
     };
     const updatePrefs = () => {
@@ -275,7 +274,7 @@ export class PrefsManager {
             'backgroundShading', 'navigationControls', 'enhancedNetworkVoices',
             'enhancedVoicesDialogShown', 'enhancedVoiceName'
           ],
-          (prefs) => {
+          prefs => {
             if (prefs['voice']) {
               this.voiceNameFromPrefs_ = prefs['voice'];
             }

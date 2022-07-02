@@ -14,7 +14,7 @@
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @class FeedMetricsRecorder;
-@class DiscoverFeedWrapperViewController;
+@class FeedWrapperViewController;
 @class FeedHeaderViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
@@ -27,9 +27,9 @@
                         ThumbStripSupporting,
                         UIScrollViewDelegate>
 
-// View controller wrapping the Discover feed.
+// View controller wrapping the feed.
 @property(nonatomic, strong)
-    DiscoverFeedWrapperViewController* discoverFeedWrapperViewController;
+    FeedWrapperViewController* feedWrapperViewController;
 
 // Delegate for the overscroll actions.
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
@@ -53,7 +53,7 @@
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
-// the Google doodle. |contentSuggestionsUIViewController| is used if
+// the Google doodle. `contentSuggestionsUIViewController` is used if
 // kContentSuggestionsUIViewControllerMigration is enabled.
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsCollectionViewController;
@@ -68,6 +68,10 @@
 
 // The view controller representing the NTP feed header.
 @property(nonatomic, assign) FeedHeaderViewController* feedHeaderViewController;
+
+// The view controller representing the Feed top section (between the feed
+// header and the feed collection).
+@property(nonatomic, assign) UIViewController* feedTopSectionViewController;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
@@ -92,7 +96,7 @@
 // Stops scrolling in the scroll view.
 - (void)stopScrolling;
 
-// Sets the feed collection contentOffset from the saved state to |offset| to
+// Sets the feed collection contentOffset from the saved state to `offset` to
 // set the initial scroll position.
 - (void)setSavedContentOffset:(CGFloat)offset;
 
@@ -125,10 +129,14 @@
 // Returns the y content offset of the NTP collection view.
 - (CGFloat)scrollPosition;
 
-// Sets the NTP collection view's scroll position to |contentOffset|, unless it
+// Sets the NTP collection view's scroll position to `contentOffset`, unless it
 // is beyond the top of the feed. In that case, sets the scroll position to the
 // top of the feed.
-- (void)setContentOffsetUpToTopOfFeed:(CGFloat)contentOffset;
+- (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset;
+
+// Checks the content size of the feed and updates the bottom content inset to
+// ensure the feed is still scrollable to the minimum height.
+- (void)updateFeedInsetsForMinimumHeight;
 
 @end
 

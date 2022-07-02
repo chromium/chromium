@@ -5,41 +5,12 @@
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
+import {EventSourceState} from '/chromevox/background/event_source.js';
+import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_info.js';
+import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/background/output/output_format_parser.js';
+import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
-goog.provide('Output');
-
-goog.require('AbstractEarcons');
-goog.require('AutomationTreeWalker');
-goog.require('ChromeVox');
-goog.require('EventSourceState');
-goog.require('LocaleOutputHelper');
-goog.require('LogStore');
-goog.require('NavBraille');
-goog.require('OutputAction');
-goog.require('OutputAncestryInfo');
-goog.require('OutputContextOrder');
-goog.require('OutputEarconAction');
-goog.require('OutputEventType');
-goog.require('OutputFormatParser');
-goog.require('OutputFormatTree');
-goog.require('OutputNodeSpan');
-goog.require('OutputRoleInfo');
-goog.require('OutputRulesStr');
-goog.require('OutputSelectionSpan');
-goog.require('OutputSpeechProperties');
-goog.require('PhoneticData');
-goog.require('Spannable');
-goog.require('TextLog');
-goog.require('TtsCategory');
-goog.require('ValueSelectionSpan');
-goog.require('ValueSpan');
-goog.require('constants');
-goog.require('cursors.Cursor');
-goog.require('cursors.Range');
-goog.require('cursors.Unit');
-goog.require('goog.i18n.MessageFormat');
-
-goog.scope(function() {
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
 const DescriptionFromType = chrome.automation.DescriptionFromType;
@@ -77,7 +48,7 @@ const StateType = chrome.automation.StateType;
  *     For example, $name= would insert the name attribute only if no name
  * attribute had been inserted previously.
  */
-Output = class {
+export class Output {
   constructor() {
     // TODO(dtseng): Include braille specific rules.
     /** @type {!Array<!Spannable>} @private */
@@ -89,7 +60,7 @@ Output = class {
     /** @type {function(?)} @private */
     this.speechEndCallback_;
 
-    /** Store output rules */
+    // Store output rules.
     /** @type {!OutputRulesStr} @private */
     this.speechRulesStr_ = new OutputRulesStr('enableSpeechLogging');
     /** @type {!OutputRulesStr} @private */
@@ -179,9 +150,9 @@ Output = class {
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
-        return !!node.roleDescription;
+        return Boolean(node.roleDescription);
       case 'value':
-        return !!node.value;
+        return Boolean(node.value);
       case 'selected':
         return node.selected === true;
       default:
@@ -596,7 +567,7 @@ Output = class {
 
     // Display.
     if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
-      ChromeVoxState.instance.setFocusBounds(this.locations_);
+      FocusBounds.set(this.locations_);
     }
   }
 
@@ -1390,12 +1361,12 @@ Output = class {
     const root = node;
     const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
       visit: AutomationPredicate.leafOrStaticText,
-      leaf: (n) => {
+      leaf: n => {
         // The root might be a leaf itself, but we still want to descend
         // into it.
         return n !== root && AutomationPredicate.leafOrStaticText(n);
       },
-      root: (r) => r === root
+      root: r => r === root
     });
     const outputStrings = [];
     while (walker.next().node) {
@@ -1828,7 +1799,7 @@ Output = class {
     }
 
     const info = new OutputAncestryInfo(
-        node, prevNode, !!optionalArgs.suppressStartEndAncestry);
+        node, prevNode, Boolean(optionalArgs.suppressStartEndAncestry));
 
     // Enter, leave ancestry.
     this.ancestryHelper_({
@@ -2115,7 +2086,7 @@ Output = class {
       this.ancestry_(node, prevNode, type, buff, ruleStr, {preferEnd: true});
     }
 
-    range.start.node.boundsForRange(rangeStart, rangeEnd, (loc) => {
+    range.start.node.boundsForRange(rangeStart, rangeEnd, loc => {
       if (loc) {
         this.locations_.push(loc);
       }
@@ -2262,13 +2233,13 @@ Output = class {
       }
 
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
-          (n) => n.role === RoleType.KEYBOARD);
+          n => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
         ret.push({msgId: 'hint_double_tap'});
       }
 
       const enteredVirtualKeyboard =
-          uniqueAncestors.find((n) => n.role === RoleType.KEYBOARD);
+          uniqueAncestors.find(n => n.role === RoleType.KEYBOARD);
       if (enteredVirtualKeyboard) {
         ret.push({msgId: 'hint_touch_type'});
       }
@@ -2346,7 +2317,7 @@ Output = class {
     }
     if (uniqueAncestors.find(
             /** @type {function(?) : boolean} */ (function(n) {
-              return !!n.details;
+              return Boolean(n.details);
             }))) {
       ret.push({msgId: 'hint_details'});
     }
@@ -2563,7 +2534,7 @@ Output = class {
       buff[buff.length - 1].setSpan(speechProps, 0, 0);
     }
   }
-};
+}
 
 /**
  * Delimiter to use between output values.
@@ -2931,4 +2902,3 @@ Output.RULES = {
  * @private
  */
 Output.forceModeForNextSpeechUtterance_;
-});  // goog.scope

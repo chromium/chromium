@@ -333,14 +333,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const GURL& GetURL() override;
   const GURL& GetVisibleURL() override;
   const GURL& GetLastCommittedURL() override;
-  RenderFrameHostImpl* GetMainFrame() override;
+  RenderFrameHostImpl* GetPrimaryMainFrame() override;
   PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
   bool IsPrerenderedFrame(int frame_tree_node_id) override;
   RenderFrameHostImpl* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) override;
-  void ForEachFrame(
-      const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) override;
   void ForEachRenderFrameHost(
       RenderFrameHost::FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
@@ -557,6 +555,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;
+  float GetPictureInPictureInitialAspectRatio() override;
+  bool GetPictureInPictureLockAspectRatio() override;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
@@ -651,6 +651,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateUserGestureCarryoverInfo() override;
+#endif
   bool ShouldRouteMessageEvent(RenderFrameHostImpl* target_rfh) const override;
   void EnsureOpenerProxiesExist(RenderFrameHostImpl* source_rfh) override;
   std::unique_ptr<WebUIImpl> CreateWebUIForRenderFrameHost(
@@ -1766,8 +1769,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns UKM source id for the currently displayed page.
   // Intentionally kept private, prefer using
   // render_frame_host->GetPageUkmSourceId() if you already have a
-  // |render_frame_host| reference or GetMainFrame()->GetPageUkmSourceId()
-  // if you don't.
+  // |render_frame_host| reference or
+  // GetPrimaryMainFrame()->GetPageUkmSourceId() if you don't.
   ukm::SourceId GetCurrentPageUkmSourceId() override;
 
   // Bit mask to indicate what types of RenderViewHosts to be returned in
@@ -2294,6 +2297,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores WebContents::CreateParams::creator_location_.
   base::Location creator_location_;
+
+  // Stores WebContents::CreateParams::initial_aspect_ratio.
+  float pip_initial_aspect_ratio_ = 0;
+
+  // Stores WebContents::CreateParams::lock_aspect_ratio.
+  bool pip_lock_aspect_ratio_ = false;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 

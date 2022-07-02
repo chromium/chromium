@@ -36,3 +36,14 @@ blink_core_sources_input = [
   "widget_event_handler.cc",
   "widget_event_handler.h",
 ]
+
+blink_core_tests_input = [
+  "event_handler_test.cc",
+  "ime_on_focus_test.cc",
+  "mouse_event_manager_test.cc",
+  "overscroll_behavior_test.cc",
+  "pointer_event_manager_test.cc",
+  "scroll_snap_test.cc",
+  "touch_action_test.cc",
+  "touch_event_manager_test.cc",
+]

@@ -21,8 +21,8 @@
 #include "media/cast/logging/simple_event_subscriber.h"
 #include "media/cast/net/cast_transport_impl.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
-#include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
 #include "media/cast/test/mock_cast_transport.h"
+#include "media/cast/test/test_rtcp_packet_builder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

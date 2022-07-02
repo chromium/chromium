@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
@@ -116,29 +117,24 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                               ? 2
                               : 1));
 #elif defined(USE_OZONE)
-#if !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
-  // For chromecast, we always need OverlayProcessorOzone.
+  // For CastOS, we always need OverlayProcessorOzone.
   if (!capabilities.supports_surfaceless)
     return std::make_unique<OverlayProcessorStub>();
-#endif  // #if !BUILDFLAG(IS_CHROMECAST)
-
-  std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
-  if (!renderer_settings.overlay_strategies.empty()) {
-    auto* overlay_manager =
-        ui::OzonePlatform::GetInstance()->GetOverlayManager();
-    overlay_candidates =
-        overlay_manager->CreateOverlayCandidates(surface_handle);
-  }
+#endif  // #if !BUILDFLAG(IS_CASTOS)
 
   gpu::SharedImageInterface* sii = nullptr;
-  if (features::ShouldUseRealBuffersForPageFlipTest() &&
-      ui::OzonePlatform::GetInstance()->GetOverlayManager() &&
-      ui::OzonePlatform::GetInstance()
-          ->GetOverlayManager()
-          ->allow_sync_and_real_buffer_page_flip_testing()) {
-    sii = shared_image_interface;
-    CHECK(shared_image_interface);
+  auto* overlay_manager = ui::OzonePlatform::GetInstance()->GetOverlayManager();
+  std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
+  if (overlay_manager) {
+    overlay_candidates =
+        overlay_manager->CreateOverlayCandidates(surface_handle);
+    if (features::ShouldUseRealBuffersForPageFlipTest() &&
+        overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
+      sii = shared_image_interface;
+      CHECK(shared_image_interface);
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -207,7 +203,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.display_rect =
       gfx::RectF(viewport_size.width(), viewport_size.height());
 
-#if defined(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
+#if BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
   // On Chromecast, always use RGBA as the scanout format for the primary plane.
   overlay_plane.enable_blending = true;
 #endif

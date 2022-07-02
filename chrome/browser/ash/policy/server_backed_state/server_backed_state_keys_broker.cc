@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 namespace policy {
 
@@ -29,7 +29,7 @@ constexpr base::TimeDelta kRetryInterval = base::Minutes(1);
 }  // namespace
 
 ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
-    chromeos::SessionManagerClient* session_manager_client)
+    ash::SessionManagerClient* session_manager_client)
     : session_manager_client_(session_manager_client), requested_(false) {}
 
 ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {}

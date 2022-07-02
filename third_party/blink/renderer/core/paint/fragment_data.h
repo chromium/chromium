@@ -149,7 +149,7 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     EnsureRareData();
     if (!rare_data_->local_border_box_properties) {
       rare_data_->local_border_box_properties =
-          std::make_unique<RefCountedPropertyTreeState>(state);
+          std::make_unique<RefCountedPropertyTreeStateOrAlias>(state);
     } else {
       *rare_data_->local_border_box_properties = state;
     }
@@ -223,7 +223,8 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     PhysicalOffset legacy_pagination_offset;
     wtf_size_t fragment_id = 0;
     std::unique_ptr<ObjectPaintProperties> paint_properties;
-    std::unique_ptr<RefCountedPropertyTreeState> local_border_box_properties;
+    std::unique_ptr<RefCountedPropertyTreeStateOrAlias>
+        local_border_box_properties;
     CullRect cull_rect_;
     CullRect contents_cull_rect_;
     Member<FragmentData> next_fragment_;

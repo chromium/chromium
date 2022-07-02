@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_USE_COUNTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_USE_COUNTER_H_
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -14,7 +14,7 @@ namespace blink {
 using WebFeature = mojom::WebFeature;
 
 // Definition for UseCounter features can be found in:
-// third_party/blink/public/mojom/web_feature/web_feature.mojom
+// third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 //
 // UseCounter is used for counting the number of times features of
 // Blink are used on real web pages and help us know commonly

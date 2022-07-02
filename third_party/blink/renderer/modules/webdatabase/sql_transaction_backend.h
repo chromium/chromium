@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQL_TRANSACTION_BACKEND_H_
 
 #include <memory>
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_statement.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_statement_backend.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -127,8 +127,9 @@ class SQLTransactionBackend final
   bool read_only_;
   bool has_version_mismatch_;
 
-  Mutex statement_mutex_;
-  Deque<CrossThreadPersistent<SQLStatementBackend>> statement_queue_;
+  base::Lock statement_lock_;
+  Deque<CrossThreadPersistent<SQLStatementBackend>> statement_queue_
+      GUARDED_BY(statement_lock_);
 
   std::unique_ptr<SQLiteTransaction> sqlite_transaction_;
 };

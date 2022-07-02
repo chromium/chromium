@@ -16,7 +16,6 @@ namespace chromeos {
 
 // A cleanup handler which clears the profile's My Files and Downloads
 // directories.
-// TODO(jityao, b:200678974) Add browser tests.
 class FilesCleanupHandler : public CleanupHandler {
  public:
   FilesCleanupHandler();

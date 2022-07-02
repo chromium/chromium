@@ -5,19 +5,15 @@
   <title>Quota Internals</title>
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="chrome://resources/css/roboto.css">
-  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="quota_internals.css">
   <script type="module" src="quota_internals.js" defer></script>
 </head>
   <body>
-    <tabbox>
-      <tabs class="new-style-tabs">
-        <tab id="summary-tab">Summary</tab>
-        <tab id="usage-tab">Usage &amp; Quota</tab>
-      </tabs>
-      <tabpanels class="new-style-tabs">
-        <tabpanel id="summary-tabpanel" selected="selected">
+    <cr-tab-box>
+        <div id="summary-tab" slot="tab">Summary</div>
+        <div id="usage-tab" slot="tab">Usage &amp; Quota</div>
+        <div id="summary-tabpanel" slot="panel">
           <!-- Summary -->
           <h2>Summary</h2>
           <h3>Disk Availability</h3>
@@ -56,27 +52,25 @@
               Trigger Storage Pressure Notification
             </button>
           </form>
-        </tabpanel>
+        </div>
 
-        <tabpanel id="usage-tabpanel">
+        <div id="usage-tabpanel" slot="panel">
           <!-- Usage and Quota -->
-          <h2>Host Usage Data</h2>
+          <h2>Bucket Usage Data</h2>
           <table>
             <thead>
-              <th>Host</th>
-              <th>Total Usage</th>
-              <th>Storage Type</th>
               <th>Storage Key</th>
+              <th>Storage Type</th>
               <th>Bucket</th>
+              <th>Usage (B)</th>
               <th>Use Count</th>
               <th>Last Accessed</th>
               <th>Last Modified</th>
             </thead>
             <tbody id="usage-and-quota-tbody"></tbody>
           </table>
-        </tabpanel>
-      </tabpanels>
-    </tabbox>
+        </div>
+    </cr-tab-box>
 
     <template id="listener-row">
       <tr>
@@ -98,11 +92,10 @@
     </template>
     <template id="usage-and-quota-row">
         <tr class="usage-and-quota-template-row">
-          <td class="host"></td>
-          <td class="total-usage"></td>
-          <td class="storage-type"></td>
           <td class="storage-key"></td>
+          <td class="storage-type"></td>
           <td class="bucket"></td>
+          <td class="usage"></td>
           <td class="use-count"></td>
           <td class="last-accessed"></td>
           <td class="last-modified"></td>

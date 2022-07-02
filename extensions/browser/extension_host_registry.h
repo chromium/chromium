@@ -16,6 +16,7 @@ class BrowserContextKeyedServiceFactory;
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 }
 
 namespace extensions {
@@ -118,6 +119,13 @@ class ExtensionHostRegistry : public KeyedService {
   // storage in the registry to be an unordered_map split apart by extension.
   std::vector<ExtensionHost*> GetHostsForExtension(
       const ExtensionId& extension_id);
+
+  // Returns the ExtensionHost for the given `render_frame_host`, if one exists.
+  // `render_frame_host` must be the primary main frame host; we do this to
+  // avoid returning an ExtensionHost for a non-extension frame within an
+  // extension document.
+  ExtensionHost* GetExtensionHostForPrimaryMainFrame(
+      content::RenderFrameHost* render_frame_host);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

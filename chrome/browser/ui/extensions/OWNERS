@@ -5,3 +5,4 @@ per-file hosted_app_*=file://chrome/browser/web_applications/UI_OWNERS
 # Extension-y stuff
 finnur@chromium.org
 rdevlin.cronin@chromium.org
+emiliapaz@chromium.org

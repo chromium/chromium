@@ -90,7 +90,7 @@ std::unique_ptr<mc::Notification> FromMojo(
   if (!notification->icon.isNull())
     icon = gfx::Image(notification->icon);
   GURL origin_url = notification->origin_url.value_or(GURL());
-  // TODO(crbug.com/1113889): NotifierId support.
+  // TODO(crbug.com/1323789): Lacros NotifierId support.
   return std::make_unique<mc::Notification>(
       FromMojo(notification->type), notification->id, notification->title,
       notification->message, ui::ImageModel::FromImage(icon),

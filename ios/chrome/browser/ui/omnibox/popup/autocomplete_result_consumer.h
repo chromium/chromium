@@ -28,12 +28,12 @@
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                       didSelectRow:(NSUInteger)row
                          inSection:(NSUInteger)section;
-// Tells the delegate when a suggestion in|row| was chosen for appending to
+// Tells the delegate when a suggestion in `row` was chosen for appending to
 // omnibox.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
         didTapTrailingButtonForRow:(NSUInteger)row
                          inSection:(NSUInteger)section;
-// Tells the delegate when a suggestion in |row| was removed.
+// Tells the delegate when a suggestion in `row` was removed.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
            didSelectRowForDeletion:(NSUInteger)row
                          inSection:(NSUInteger)section;
@@ -57,6 +57,25 @@
 // Sets the semantic content attribute of the popup content.
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
+
+// Informs consumer that new result are available. Consumer can request new
+// results from its data source `AutocompleteResultDataSource`.
+- (void)newResultsAvailable;
+
+@end
+
+// An abstract data source for autocomplete results.
+@protocol AutocompleteResultDataSource <NSObject>
+
+// Request suggestions from the data source.
+// `n` is the number of suggestions that are considered visible. Meaning the
+// user doesn't have to scroll or hide the keyboard to see those `n` first
+// suggestions.
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSInteger)visibleSuggestionCount
+    __attribute__((swift_name("requestResults(visibleSuggestionCount:)")));
+;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_RESULT_CONSUMER_H_

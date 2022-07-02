@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
-#include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/loader/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
@@ -154,7 +154,7 @@ bool PreviewModeClient::IsPrintPreview() const {
   return true;
 }
 
-SkColor PreviewModeClient::GetBackgroundColor() {
+SkColor PreviewModeClient::GetBackgroundColor() const {
   NOTREACHED();
   return SK_ColorTRANSPARENT;
 }

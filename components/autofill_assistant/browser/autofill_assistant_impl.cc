@@ -9,7 +9,7 @@
 
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
-#include "components/autofill_assistant/browser/headless/external_script_controller_impl.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -80,15 +80,17 @@ std::unique_ptr<AutofillAssistantImpl> AutofillAssistantImpl::Create(
       ServerUrlFetcher(ServerUrlFetcher::GetDefaultServerUrl());
 
   return std::make_unique<AutofillAssistantImpl>(
-      std::move(request_sender), std::move(dependencies),
+      browser_context, std::move(request_sender), std::move(dependencies),
       url_fetcher.GetCapabilitiesByHashEndpoint());
 }
 
 AutofillAssistantImpl::AutofillAssistantImpl(
+    content::BrowserContext* browser_context,
     std::unique_ptr<ServiceRequestSender> request_sender,
     std::unique_ptr<CommonDependencies> dependencies,
     const GURL& script_server_url)
-    : request_sender_(std::move(request_sender)),
+    : browser_context_(browser_context),
+      request_sender_(std::move(request_sender)),
       script_server_url_(script_server_url),
       dependencies_(std::move(dependencies)) {}
 
@@ -99,6 +101,12 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
     const std::vector<uint64_t>& hash_prefixes,
     const std::string& intent,
     GetCapabilitiesResponseCallback callback) {
+  // Always return an empty response for supervised users.
+  if (dependencies_->IsSupervisedUser(browser_context_)) {
+    std::move(callback).Run(net::HTTP_OK, {});
+    return;
+  }
+
   const ScriptParameters& parameters = {
       base::flat_map<std::string, std::string>{
           {kIntentScriptParameterKey, intent}}};
@@ -126,11 +134,11 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
       RpcType::GET_CAPABILITIES_BY_HASH_PREFIX);
 }
 
-std::unique_ptr<ExternalScriptController>
-AutofillAssistantImpl::CreateExternalScriptController(
+std::unique_ptr<HeadlessScriptController>
+AutofillAssistantImpl::CreateHeadlessScriptController(
     content::WebContents* web_contents,
     ExternalActionDelegate* action_extension_delegate) {
-  return std::make_unique<ExternalScriptControllerImpl>(
+  return std::make_unique<HeadlessScriptControllerImpl>(
       web_contents, action_extension_delegate);
 }
 

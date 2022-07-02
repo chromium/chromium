@@ -9,5 +9,8 @@
     SecureContext
 ] interface GPUQuerySet {
     void destroy();
+
+    readonly attribute GPUQueryType type;
+    readonly attribute GPUSize32 count;
 };
 GPUQuerySet includes GPUObjectBase;

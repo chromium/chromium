@@ -1060,9 +1060,8 @@ void BluetoothLowEnergyEventRouter::GattCharacteristicValueChanged(
   // lists of enums correctly.
   apibtle::Characteristic api_characteristic;
   PopulateCharacteristic(characteristic, &api_characteristic);
-  std::vector<base::Value> args;
-  args.push_back(
-      base::Value(apibtle::CharacteristicToValue(&api_characteristic)));
+  base::Value::List args;
+  args.Append(apibtle::CharacteristicToValue(&api_characteristic));
 
   DispatchEventToExtensionsWithPermission(
       events::BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_VALUE_CHANGED,
@@ -1092,8 +1091,8 @@ void BluetoothLowEnergyEventRouter::GattDescriptorValueChanged(
   // lists of enums correctly.
   apibtle::Descriptor api_descriptor;
   PopulateDescriptor(descriptor, &api_descriptor);
-  std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(
       apibtle::DescriptorToValue(&api_descriptor)));
 
   DispatchEventToExtensionsWithPermission(
@@ -1477,7 +1476,7 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
     const std::string& event_name,
     const device::BluetoothUUID& uuid,
     const std::string& characteristic_id,
-    std::vector<base::Value> args) {
+    base::Value::List args) {
   // Obtain the listeners of |event_name|. The list can contain multiple
   // entries for the same extension, so we keep track of the extensions that we
   // already sent the event to, since we want the send an event to an extension
@@ -1515,14 +1514,9 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtensionsWithPermission(
         !FindNotifySession(extension_id, characteristic_id))
       continue;
 
-    std::vector<base::Value> args_copy;
-    args_copy.reserve(args.size());
-    for (const auto& arg : args) {
-      args_copy.emplace_back(arg.Clone());
-    }
     // Send the event.
-    auto event = std::make_unique<Event>(histogram_value, event_name,
-                                         std::move(args_copy));
+    auto event =
+        std::make_unique<Event>(histogram_value, event_name, args.Clone());
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }
@@ -1532,7 +1526,7 @@ void BluetoothLowEnergyEventRouter::DispatchEventToExtension(
     const std::string& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::vector<base::Value> args) {
+    base::Value::List args) {
   // For all API methods, the "low_energy" permission check is handled by
   // BluetoothLowEnergyExtensionFunction but for events we have to do the
   // check here.

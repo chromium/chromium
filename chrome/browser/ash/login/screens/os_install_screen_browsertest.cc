@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -62,6 +63,12 @@ std::string GetExpectedCountdownMessage(base::TimeDelta time_left) {
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_LONG, time_left),
       l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME));
+}
+
+// TODO(crbug.com/1324627) - Remove once fixed.
+bool IsPolymer3Enabled() {
+  return (features::IsOobeAddPersonPolymer3Enabled() ||
+          features::IsOobePolymer3Enabled());
 }
 
 }  // namespace
@@ -221,9 +228,18 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
 
 // Check that a successful install shows the success step and countdown timer,
 // which will shut down the computer automatically after 60 seconds.
-// TODO(crbug.com/1318903): Re-enable this test
+// TODO(crbug.com/1318903): Re-enable this test on linux-chromeos-dbg.
+#if !defined(NDEBUG)
+#define MAYBE_OsInstallSuccessAutoShutdown DISABLED_OsInstallSuccessAutoShutdown
+#else
+#define MAYBE_OsInstallSuccessAutoShutdown OsInstallSuccessAutoShutdown
+#endif
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest,
-                       DISABLED_OsInstallSuccessAutoShutdown) {
+                       MAYBE_OsInstallSuccessAutoShutdown) {
+  // TODO(crbug.com/1324627) - Adapt these tests to run with Polymer3 enabled.
+  if (IsPolymer3Enabled())
+    return;
+
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockForTesting(mocked_task_runner->GetMockTickClock());
   auto* ti = OsInstallClient::Get()->GetTestInterface();

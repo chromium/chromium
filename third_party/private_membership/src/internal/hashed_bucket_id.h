@@ -15,6 +15,8 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_HASHED_BUCKET_ID_H_
 
+#include <string>
+
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "absl/hash/hash.h"

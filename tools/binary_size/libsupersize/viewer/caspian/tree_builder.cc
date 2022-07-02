@@ -72,8 +72,7 @@ bool CompareAbsSize(const TreeNode* const& l, const TreeNode* const& r) {
   // Sort nodes with same size in alphabetically ascending order.
   float l_size = abs(l->size);
   float r_size = abs(r->size);
-  return (l_size != r_size) ? abs(l->size) > abs(r->size)
-                            : l->id_path < r->id_path;
+  return (l_size != r_size) ? l_size > r_size : l->id_path < r->id_path;
 }
 
 bool CompareCount(const TreeNode* const& l, const TreeNode* const& r) {
@@ -238,7 +237,7 @@ ArtifactType TreeBuilder::ArtifactTypeFromChild(GroupedPath child_path) const {
   // '/' separators for the file tree - e.g. Blink>third_party/blink/common...
   // We know that Blink is a component because its children have the form
   // Blink>third_party rather than Blink/third_party.
-  return child_path.IsTopLevelPath() ? ArtifactType::kComponent
+  return child_path.IsTopLevelPath() ? ArtifactType::kGroup
                                      : ArtifactType::kDirectory;
 }
 

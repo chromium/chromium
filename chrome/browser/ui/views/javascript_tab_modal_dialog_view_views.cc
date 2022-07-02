@@ -10,6 +10,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
@@ -46,6 +47,15 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
   auto* bubble_frame_view = static_cast<views::BubbleFrameView*>(
       GetWidget()->non_client_view()->frame_view());
   bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
+  GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+      message_text_);
+
+  // On some platforms, the platform accessibility API automatically
+  // calculates the name of the native window based on the child RootView.
+  // We override that calculation here so that we can present both the
+  // title (e.g. "url.com says") and the message text on platforms where
+  // the accessible description is ignored.
+  GetViewAccessibility().OverrideNativeWindowTitle(GetWindowTitle());
 }
 
 JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
@@ -108,6 +118,19 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   AddChildView(message_box_view_.get());
 
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
+}
+
+// static
+JavaScriptTabModalDialogViewViews*
+JavaScriptTabModalDialogViewViews::CreateAlertDialogForTesting(
+    Browser* browser,
+    std::u16string title,
+    std::u16string message) {
+  return new JavaScriptTabModalDialogViewViews(
+      browser->tab_strip_model()->GetActiveWebContents(),
+      browser->tab_strip_model()->GetActiveWebContents(), title,
+      content::JAVASCRIPT_DIALOG_TYPE_ALERT, message, std::u16string(),
+      base::NullCallback(), base::NullCallback());
 }
 
 BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)

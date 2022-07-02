@@ -37,8 +37,8 @@ jobject RunClassifier(JNIEnv* env, jlong native_handle, jstring text) {
   jmethodID category_init =
       env->GetMethodID(category_class, "<init>", "(Ljava/lang/String;F)V");
 
-  return ConvertVectorToArrayList<Category>(
-      env, results,
+  return ConvertVectorToArrayList(
+      env, results.begin(), results.end(),
       [env, category_class, category_init](const Category& category) {
         jstring class_name = env->NewStringUTF(category.class_name.data());
         // Convert double to float as Java interface exposes float as scores.

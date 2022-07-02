@@ -139,8 +139,7 @@ uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
 
 // Convert from an IOSurface's pixel format to a MTLPixelFormat. Crash on any
 // unsupported formats.
-MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer)
-    API_AVAILABLE(macos(10.13)) {
+MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer) {
   uint32_t format = IOSurfaceGetPixelFormat(buffer);
   switch (format) {
     case kCVPixelFormatType_64RGBAHalf:
@@ -154,7 +153,7 @@ MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer)
 }
 
 base::scoped_nsprotocol<id<MTLRenderPipelineState>> CreateRenderPipelineState(
-    id<MTLDevice> device) API_AVAILABLE(macos(10.13)) {
+    id<MTLDevice> device) {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> render_pipeline_state;
 
   base::scoped_nsprotocol<id<MTLLibrary>> library;

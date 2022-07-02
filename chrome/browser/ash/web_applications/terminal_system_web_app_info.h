@@ -7,19 +7,19 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
 struct WebAppInstallInfo;
 class Browser;
 
-class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit TerminalSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;

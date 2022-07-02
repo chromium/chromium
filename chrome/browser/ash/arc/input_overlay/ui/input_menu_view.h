@@ -24,11 +24,11 @@ class ToggleButton;
 //
 // The class reports back to DisplayOverlayController, who owns this.
 //   +---------------------------------+
-//   | Game Control       [ o]    [x]  |
+//   | Game Controls |Alpha| [ o]  [x] |
 //   |                                 |
-//   | Key mapping        [Customize]  |
+//   | Key mapping             [Edit]  |
 //   |                                 |
-//   | Show hint overlay         [ o]  |
+//   | Show key mapping          [ o]  |
 //   |                                 |
 //   | Send feedback                   |
 //   +---------------------------------+
@@ -59,7 +59,7 @@ class InputMenuView : public views::View {
 
   void OnToggleGameControlPressed();
   void OnToggleShowHintPressed();
-  void OnButtonCustomizedPressed();
+  void OnEditButtonPressed();
   void OnButtonSendFeedbackPressed();
   // Calculate Insets for a given |view|, taking into account specs and hosted
   // views. This is a fix due to the lack of a justify option for FlexLayout.
@@ -67,10 +67,12 @@ class InputMenuView : public views::View {
                               int left,
                               int right,
                               int other_spacing) const;
+  // Set |toggle| colors to spec.
+  void SetCustomToggleColor(views::ToggleButton* toggle);
 
   raw_ptr<views::ToggleButton> game_control_toggle_ = nullptr;
-  raw_ptr<views::ToggleButton> show_hint_toggle_ = nullptr;
-  raw_ptr<ash::PillButton> customize_button_ = nullptr;
+  raw_ptr<views::ToggleButton> show_mapping_toggle_ = nullptr;
+  raw_ptr<ash::PillButton> edit_button_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   // Kept around to determine bounds(), not owned.

@@ -13,18 +13,6 @@
     android:clickable="true"
     android:visibility="gone">
 
-    <org.chromium.chrome.browser.toolbar.HomeButton
-        android:id="@+id/home_button_on_tab_switcher"
-        style="@style/ToolbarButton"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/accessibility_toolbar_btn_home"
-        android:src="@drawable/btn_toolbar_home"
-        android:visibility="gone"
-        app:menuMaxWidth="@dimen/home_button_list_menu_width"
-        app:menuPositionedAtEnd="false"
-        app:menuVerticalOverlapAnchor="false"
-        app:tint="@color/default_icon_color_tint_list" />
-
     <ViewStub
         android:id="@+id/incognito_tabs_stub"
         android:inflatedId="@+id/incognito_toggle_tabs"

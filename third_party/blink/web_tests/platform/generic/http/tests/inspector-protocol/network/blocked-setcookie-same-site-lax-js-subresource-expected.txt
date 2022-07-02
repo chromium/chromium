@@ -1,0 +1,27 @@
+Verifies that making cross origin subresource requests from JS which set SameSite=Lax cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SameSiteLax
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : false
+            sameSite : Lax
+            secure : false
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+        cookieLine : name=value; SameSite=Lax
+    }
+]
+

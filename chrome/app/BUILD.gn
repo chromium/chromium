@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//crypto/features.gni")
@@ -167,6 +167,7 @@ static_library("test_support") {
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
+    "//components/about_ui",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",
@@ -219,15 +220,17 @@ static_library("test_support") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chromeos",
-      "//chromeos/memory:memory",
+      "//chromeos/ash/components/memory:memory",
     ]
     public_deps += [ "//ui/lottie" ]
   }
 
   if (is_chromeos_lacros) {
     deps += [
+      "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/lacros:lacros_paths",
       "//chromeos/lacros/dbus",
       "//chromeos/startup",
     ]
@@ -250,15 +253,15 @@ if (is_fuchsia) {
 
   # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
   fuchsia_component("chrome_component_v1") {
+    visibility = [ ":*" ]
     manifest = "chrome_v1.cmx"
     data_deps = [ "//chrome:chrome_initial" ]
-    visibility = [ ":*" ]
   }
 
   fuchsia_component("chrome_component") {
+    visibility = [ ":*" ]
     manifest = "chrome.cml"
     data_deps = [ "//chrome:chrome_initial" ]
-    visibility = [ ":*" ]
   }
 
   fuchsia_package("chrome_pkg") {
@@ -271,29 +274,14 @@ if (is_fuchsia) {
     excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
   }
 
-  fuchsia_package_installer("chrome_fuchsia_installer") {
+  fuchsia_package_installer("chrome_fuchsia") {
+    visibility = [
+      ":*",  # See https://crbug.com/1328459#c4.
+      "//:gn_all",
+      "//chrome/test/*",
+      "//content/test/*",
+    ]
     package = ":chrome_pkg"
     package_name = "chrome"
-  }
-
-  fuchsia_run_script_with_packages("chrome_fuchsia_runner") {
-    package = ":chrome_pkg"
-    package_name = "chrome"
-    output_name_format = "run_%package%"
-
-    executable = rebase_path("//build/fuchsia/run_ffx_command.py")
-    executable_args = [
-      "--command",
-      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx -- " +
-          "%args%",
-    ]
-    include_fuchsia_build_dir = true
-  }
-
-  group("chrome_fuchsia") {
-    deps = [
-      ":chrome_fuchsia_installer",
-      ":chrome_fuchsia_runner",
-    ]
   }
 }

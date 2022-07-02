@@ -139,9 +139,6 @@ class ExtensionsTabbedMenuView
     // The id of the string to use for the section heading. Does not include the
     // current site string.
     const int header_string_id;
-
-    // The site interaction that this section is handling.
-    const extensions::SitePermissionsHelper::SiteInteraction site_interaction;
   };
 
   // Initially creates the tabs.
@@ -192,13 +189,15 @@ class ExtensionsTabbedMenuView
   void UpdateSiteAccessSectionsVisibility(bool show_combobox);
 
   // Returns the section corresponding to `site_interaction`, or nullptr.
-  SiteAccessSection* GetSectionForSiteInteraction(
-      extensions::SitePermissionsHelper::SiteInteraction site_interaction);
+  SiteAccessSection* GetSectionForAction(ToolbarActionViewController* action);
 
   // Returns the currently-showing menu items for `section` in the
   // site access tab, if any exists.
   std::vector<SiteAccessMenuItemView*> GetVisibleMenuItemsOf(
       SiteAccessSection section) const;
+
+  // Returns the current web contents in `browser_`.
+  content::WebContents* GetActiveWebContents();
 
   // Handles the selection of a site setting radio button.
   void OnSiteSettingSelected(

@@ -39,6 +39,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsMediatorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -79,7 +80,7 @@ public class MerchantTrustSignalsMediatorTest {
         doReturn(false).when(mMockTab).isIncognito();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
         doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
-        doReturn(false).when(mMockNavigationHandle).isFragmentNavigation();
+        doReturn(false).when(mMockNavigationHandle).isPrimaryMainFrameFragmentNavigation();
         doReturn(false).when(mMockNavigationHandle).isErrorPage();
         doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
         doReturn("fake_host").when(mMockUrl).getHost();
@@ -141,8 +142,8 @@ public class MerchantTrustSignalsMediatorTest {
     }
 
     @Test
-    public void testTabObserverOnDidFinishNavigation_FragmentNavigation() {
-        doReturn(true).when(mMockNavigationHandle).isFragmentNavigation();
+    public void testTabObserverOnDidFinishNavigation_PrimaryMainFrameFragmentNavigation() {
+        doReturn(true).when(mMockNavigationHandle).isPrimaryMainFrameFragmentNavigation();
 
         mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never())

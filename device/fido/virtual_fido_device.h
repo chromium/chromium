@@ -328,6 +328,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
   State* mutable_state() const { return state_.get(); }
 
+  // FidoDevice:
+  std::string GetId() const override;
+
  protected:
   static std::vector<uint8_t> GetAttestationKey();
 
@@ -359,7 +362,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
   // FidoDevice:
   void TryWink(base::OnceClosure cb) override;
-  std::string GetId() const override;
   FidoTransportProtocol DeviceTransport() const override;
 
  private:

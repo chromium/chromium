@@ -11,8 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -35,9 +35,6 @@ constexpr const char kUserActionSkipButtonClickedOnStart[] =
     "skip-button-on-start";
 constexpr const char kUserActionSkipButtonClickedInFlow[] =
     "skip-button-in-flow";
-
-// If set to true ShouldSkipBecauseOfPolicy returns false.
-static bool g_force_no_skip_because_of_policy_for_tests = false;
 
 struct PinSetupUserAction {
   const char* name_;
@@ -85,8 +82,6 @@ std::string PinSetupScreen::GetResultString(Result result) {
 
 // static
 bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
-  if (g_force_no_skip_because_of_policy_for_tests)
-    return false;
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
       quick_unlock::IsPinDisabledByPolicy(prefs, quick_unlock::Purpose::kAny)) {
@@ -94,13 +89,6 @@ bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
   }
 
   return false;
-}
-
-// static
-std::unique_ptr<base::AutoReset<bool>>
-PinSetupScreen::SetForceNoSkipBecauseOfPolicyForTests(bool value) {
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_force_no_skip_because_of_policy_for_tests, value);
 }
 
 PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
@@ -134,23 +122,14 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
   if (!context->extra_factors_auth_session)
     return SkipScreen(context);
 
-  Profile* active_user_profile = ProfileManager::GetActiveUserProfile();
-
-  // Show setup for Family Link users on tablet and clamshell if the device
-  // supports PIN for login.
-  bool show_for_family_link_user =
-      active_user_profile->IsChild() && has_login_support_.value_or(false);
-  if (show_for_family_link_user)
+  // If cryptohome takes very long to respond, `has_login_support_` may be null
+  // here, but this is very unusual.
+  LOG_IF(WARNING, !has_login_support_.has_value())
+      << "Could not determine hardware support support for login";
+  // Show pin setup if we have hardware support for login with pin.
+  if (has_login_support_.value_or(false)) {
     return false;
-
-  // Show setup for managed users if the device supports PIN for login.
-  const bool is_managed_user =
-      active_user_profile->GetProfilePolicyConnector()->IsManaged() &&
-      !active_user_profile->IsChild();
-  const bool show_for_managed_users =
-      is_managed_user && has_login_support_.value_or(false);
-  if (show_for_managed_users)
-    return false;
+  }
 
   // Show the screen if the device is in tablet mode or tablet mode first user
   // run is forced on the device.

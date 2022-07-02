@@ -12,15 +12,19 @@
 
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
+#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
-struct BrowserInfo;
 class DevToolsClient;
+class DevToolsClientImpl;
 class DevToolsEventListener;
 class DevToolsHttpClient;
+class PageTracker;
 class Status;
 class WebView;
 class WebViewImpl;
 class WebViewsInfo;
+struct BrowserInfo;
+struct DeviceMetrics;
 
 class ChromeImpl : public Chrome {
  public:
@@ -61,9 +65,16 @@ class ChromeImpl : public Chrome {
              std::unique_ptr<DevToolsClient> websocket_client,
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
+             std::unique_ptr<DeviceMetrics> device_metrics,
+             SyncWebSocketFactory socket_factory,
              std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
+
+  Status CreateClient(const std::string& id,
+                      std::unique_ptr<DevToolsClientImpl>* client);
+  Status CloseFrontends(const std::string& for_client_id);
+  Status CloseTarget(const std::string& id);
 
   struct Window {
     int id;
@@ -81,7 +92,9 @@ class ChromeImpl : public Chrome {
                          const std::string& target_id,
                          std::unique_ptr<base::DictionaryValue> bounds);
 
-  bool quit_;
+  bool quit_ = false;
+  std::unique_ptr<DeviceMetrics> device_metrics_;
+  SyncWebSocketFactory socket_factory_;
   std::unique_ptr<DevToolsHttpClient> devtools_http_client_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;
 
@@ -91,10 +104,11 @@ class ChromeImpl : public Chrome {
       Chrome::PermissionState setting,
       std::vector<std::string>* chrome_permissions);
 
-  void UpdateWebViews(const WebViewsInfo& views_info, bool w3c_compliant);
+  Status UpdateWebViews(const WebViewsInfo& views_info, bool w3c_compliant);
 
   // Web views in this list are in the same order as they are opened.
   std::list<std::unique_ptr<WebViewImpl>> web_views_;
+  std::unique_ptr<PageTracker> page_tracker_;
   std::vector<std::unique_ptr<DevToolsEventListener>> devtools_event_listeners_;
   std::string page_load_strategy_;
 };

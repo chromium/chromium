@@ -19,9 +19,7 @@
 namespace quic {
 class MockClock;
 }  // namespace quic
-namespace net {
-
-namespace test {
+namespace net::test {
 
 typedef base::TestPendingTask PostedTask;
 
@@ -71,8 +69,6 @@ class TestTaskRunner : public base::SequencedTaskRunner {
   std::vector<PostedTask> tasks_;
 };
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_QUIC_TEST_TASK_RUNNER_H_

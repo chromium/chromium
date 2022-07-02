@@ -96,6 +96,11 @@ class SyncPrefs {
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsAppsSyncEnabledByOs() const;
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled);
+#endif
+
   // Whether Sync is forced off by enterprise policy. Note that this only covers
   // one out of two types of policy, "browser" policy. The second kind, "cloud"
   // policy, is handled directly in SyncServiceImpl.
@@ -150,7 +155,12 @@ class SyncPrefs {
 #if BUILDFLAG(IS_ANDROID)
 void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID)
+
 void MigrateSyncSuppressedPref(PrefService* pref_service);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer
 

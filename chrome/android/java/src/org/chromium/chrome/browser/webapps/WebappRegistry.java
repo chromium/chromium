@@ -21,7 +21,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionStore;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.browsing_data.UrlFilter;
 import org.chromium.chrome.browser.browsing_data.UrlFilterBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -73,9 +74,10 @@ public class WebappRegistry {
 
     private boolean mIsInitialized;
 
-    private HashMap<String, WebappDataStorage> mStorages;
+    /** Maps webapp ids to storages. */
+    private Map<String, WebappDataStorage> mStorages;
     private SharedPreferences mPreferences;
-    private TrustedWebActivityPermissionStore mTrustedWebActivityPermissionStore;
+    private InstalledWebappPermissionStore mPermissionStore;
 
     /**
      * Callback run when a WebappDataStorage object is registered for the first time. The storage
@@ -88,7 +90,7 @@ public class WebappRegistry {
     private WebappRegistry() {
         mPreferences = openSharedPreferences();
         mStorages = new HashMap<>();
-        mTrustedWebActivityPermissionStore = new TrustedWebActivityPermissionStore();
+        mPermissionStore = new InstalledWebappPermissionStore();
     }
 
     /**
@@ -178,8 +180,7 @@ public class WebappRegistry {
     public WebappDataStorage getWebappDataStorageForUrl(final String url) {
         WebappDataStorage bestMatch = null;
         int largestOverlap = 0;
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
+        for (WebappDataStorage storage : mStorages.values()) {
             if (storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) continue;
 
             String scope = storage.getScope();
@@ -192,10 +193,11 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns a string representation of the WebApk origin.
-     * @param storage The WebappDataStorage to extract origin for.
+     * Returns a string representation of the WebAPK scope URL, or the empty string if the storage
+     * is not for a WebAPK.
+     * @param storage The storage to extract the scope URL from.
      */
-    private String getScopeFromStorage(WebappDataStorage storage) {
+    private String getWebApkScopeFromStorage(WebappDataStorage storage) {
         if (!storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) {
             return "";
         }
@@ -213,10 +215,8 @@ public class WebappRegistry {
      * @param origin The origin to search a WebAPK for.
      */
     public boolean hasAtLeastOneWebApkForOrigin(String origin) {
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
-
-            String scope = getScopeFromStorage(storage);
+        for (WebappDataStorage storage : mStorages.values()) {
+            String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
             if (scope.startsWith(origin)) return true;
@@ -227,12 +227,10 @@ public class WebappRegistry {
     /**
      * Returns a Set of all origins that have an installed WebAPK.
      */
-    Set<String> getOriginsWithWebApk() {
-        HashSet<String> origins = new HashSet<String>();
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
-
-            String scope = getScopeFromStorage(storage);
+    private Set<String> getOriginsWithWebApk() {
+        Set<String> origins = new HashSet<>();
+        for (WebappDataStorage storage : mStorages.values()) {
+            String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
             origins.add(Origin.create(scope).toString());
@@ -241,12 +239,21 @@ public class WebappRegistry {
     }
 
     /**
+     * Checks whether a TWA is installed for the origin, and no WebAPK.
+     */
+    public boolean isTwaInstalled(String origin) {
+        Set<String> webApkOrigins = getOriginsWithWebApk();
+        Set<String> installedWebappOrigins = mPermissionStore.getStoredOrigins();
+        return installedWebappOrigins.contains(origin) && !webApkOrigins.contains(origin);
+    }
+
+    /**
      * Returns all origins that have a WebAPK or TWA installed.
      */
     public Set<String> getOriginsWithInstalledApp() {
-        HashSet<String> origins = new HashSet<String>();
+        Set<String> origins = new HashSet<>();
         origins.addAll(getOriginsWithWebApk());
-        origins.addAll(mTrustedWebActivityPermissionStore.getStoredOrigins());
+        origins.addAll(mPermissionStore.getStoredOrigins());
         return origins;
     }
 
@@ -255,7 +262,7 @@ public class WebappRegistry {
      * uninstalled.
      * */
     public List<String> findWebApksWithPendingUpdate() {
-        ArrayList<String> webApkIdsWithPendingUpdate = new ArrayList<String>();
+        List<String> webApkIdsWithPendingUpdate = new ArrayList<>();
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
             if (!TextUtils.isEmpty(storage.getPendingUpdateRequestPath())
@@ -344,8 +351,8 @@ public class WebappRegistry {
                 ContextUtils.getApplicationContext(), webApkPackageName);
     }
 
-    public TrustedWebActivityPermissionStore getTrustedWebActivityPermissionStore() {
-        return mTrustedWebActivityPermissionStore;
+    public InstalledWebappPermissionStore getPermissionStore() {
+        return mPermissionStore;
     }
 
     /**
@@ -384,8 +391,7 @@ public class WebappRegistry {
      */
     @VisibleForTesting
     void clearWebappHistoryForUrlsImpl(UrlFilter urlFilter) {
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
-            WebappDataStorage storage = entry.getValue();
+        for (WebappDataStorage storage : mStorages.values()) {
             if (urlFilter.matchesUrl(storage.getUrl())) {
                 storage.clearHistory();
             }
@@ -400,7 +406,7 @@ public class WebappRegistry {
 
     private static SharedPreferences openSharedPreferences() {
         // TODO(peconn): Don't open general WebappRegistry preferences when we just need the
-        // TrustedWebActivityPermissionStore.
+        // InstalledWebappPermissionStore.
         // This is required to fix https://crbug.com/952841.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ContextUtils.getApplicationContext().getSharedPreferences(
@@ -419,12 +425,11 @@ public class WebappRegistry {
         boolean initializing = initAll && !mIsInitialized;
 
         if (initAll && !mIsInitialized) {
-            mTrustedWebActivityPermissionStore.initStorage();
+            mPermissionStore.initStorage();
             mIsInitialized = true;
         }
 
-        List<Pair<String, WebappDataStorage>> initedStorages =
-                new ArrayList<Pair<String, WebappDataStorage>>();
+        List<Pair<String, WebappDataStorage>> initedStorages = new ArrayList<>();
         if (initAll) {
             for (String id : webapps) {
                 // See crbug.com/1055566 for details on bug which caused this scenario to occur.

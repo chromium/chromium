@@ -10,7 +10,7 @@
 @protocol CRWWebViewProxy;
 class FullscreenModel;
 
-// Updates |proxy|'s content offset and top padding to ensure that the content
+// Updates `proxy`'s content offset and top padding to ensure that the content
 // is fully visible under the hdeader.
 void MoveContentBelowHeader(id<CRWWebViewProxy> proxy, FullscreenModel* model);
 

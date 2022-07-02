@@ -41,10 +41,6 @@ PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
   info_container->AddChildView(CreateDescriptionLabel(info_));
   info_container->AddChildView(CreateSourceLabel(info_));
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo) &&
-      info_.has_more_about()) {
-    more_about_button_ = AddChildView(CreateMoreAboutButton(info_));
-  }
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
@@ -82,20 +78,6 @@ PageInfoAboutThisSiteContentView::CreateSourceLabel(
   source_label->AddStyleRange(details_range, link_style);
 
   return source_label;
-}
-
-std::unique_ptr<PageInfoHoverButton>
-PageInfoAboutThisSiteContentView::CreateMoreAboutButton(
-    const page_info::proto::SiteInfo& info) {
-  return std::make_unique<PageInfoHoverButton>(
-      base::BindRepeating(
-          &PageInfoAboutThisSiteContentView::MoreAboutButtonClicked,
-          base::Unretained(this)),
-      PageInfoViewFactory::GetAboutThisSiteIcon(),
-      IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE, std::u16string(),
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_MORE_ABOUT_THIS_PAGE_BUTTON,
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE_TOOLTIP),
-      std::u16string(), PageInfoViewFactory::GetLaunchIcon());
 }
 
 void PageInfoAboutThisSiteContentView::SourceLinkClicked(

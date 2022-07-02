@@ -304,7 +304,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
-      std::vector<base::Value>());
+      base::Value::List());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowFocusedEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
@@ -315,7 +315,7 @@ void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        WindowController* window_controller,
                                        std::unique_ptr<base::ListValue> args) {
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(*args).TakeListDeprecated(),
+                                       std::move(args->GetList()),
                                        window_controller->profile());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowEvent, window_controller);

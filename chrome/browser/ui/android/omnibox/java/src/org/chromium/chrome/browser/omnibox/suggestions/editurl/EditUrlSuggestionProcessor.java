@@ -11,6 +11,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
@@ -42,9 +42,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** The delegate for accessing the location bar for observation and modification. */
     private final UrlBarDelegate mUrlBarDelegate;
 
-    /** Supplies site favicons. */
-    private final Supplier<LargeIconBridge> mIconBridgeSupplier;
-
     /** The delegate for accessing the sharing feature. */
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
@@ -58,13 +55,12 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param locationBarDelegate A means of modifying the location bar.
      */
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            UrlBarDelegate locationBarDelegate, Supplier<LargeIconBridge> iconBridgeSupplier,
+            UrlBarDelegate locationBarDelegate, FaviconFetcher faviconFetcher,
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, faviconFetcher);
 
         mContext = context;
         mUrlBarDelegate = locationBarDelegate;
-        mIconBridgeSupplier = iconBridgeSupplier;
         mTabSupplier = tabSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
     }
@@ -145,7 +141,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         .build(),
                                 R.string.bookmark_item_edit, () -> onEditLink(suggestion))));
 
-        fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), null);
+        fetchSuggestionFavicon(model, suggestion.getUrl());
     }
 
     @Override

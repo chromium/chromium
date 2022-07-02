@@ -196,7 +196,6 @@ template("content_shell_apk_tmpl") {
       ":content_shell_assets",
       ":content_shell_java",
       "//base:base_java_test_support",
-      "//build/android:build_java",
       "//components/crash/android:java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//content/public/android:content_java",
@@ -251,7 +250,6 @@ android_library("content_shell_test_java") {
     ":content_shell_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//content/shell/android:content_shell_java",
@@ -277,7 +275,6 @@ android_library("content_shell_browsertests_java") {
   deps = [
     ":content_shell_java",
     "//base:base_java",
-    "//build/android:build_java",
     "//content/public/android:content_java",
     "//testing/android/native_test:native_test_java",
     "//third_party/androidx:androidx_core_core_java",

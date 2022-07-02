@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/activity_services/activities/send_tab_to_self_activity.h"
 
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#include "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -23,10 +23,11 @@ class SendTabToSelfActivityTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
+    mocked_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
   }
 
-  // Creates a ShareToData instance with |can_send_tab_to_self| set.
+  // Creates a ShareToData instance with `can_send_tab_to_self` set.
   ShareToData* CreateData(bool can_send_tab_to_self) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")
@@ -65,9 +66,10 @@ TEST_F(SendTabToSelfActivityTest, DataFalse_ActivityDisabled) {
 
 // Tests that executing the activity triggers the right handler method.
 TEST_F(SendTabToSelfActivityTest, ExecuteActivity_CallsHandler) {
-  [[mocked_handler_ expect] showSendTabToSelfUI];
-
   ShareToData* data = CreateData(true);
+
+  [[mocked_handler_ expect] showSendTabToSelfUI:data.shareURL title:data.title];
+
   SendTabToSelfActivity* activity =
       [[SendTabToSelfActivity alloc] initWithData:data handler:mocked_handler_];
 

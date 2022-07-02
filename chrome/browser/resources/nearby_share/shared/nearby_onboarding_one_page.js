@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './nearby_page_template.js';
-
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
-import {getNearbyShareSettings} from './nearby_share_settings.js';
-import {NearbySettings} from './nearby_share_settings_behavior.js';
-
 /**
  * @fileoverview The 'nearby-onboarding-one-page' component handles the Nearby
  * Share onboarding flow. It is embedded in chrome://os-settings,
  * chrome://settings and as a standalone dialog via chrome://nearby.
  */
+
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './nearby_page_template.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
+import {getNearbyShareSettings} from './nearby_share_settings.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
 /**
  * @type {string}
@@ -35,52 +35,76 @@ const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
 const ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON =
     'nearby-images:nearby-onboarding-splash-dark';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-onboarding-one-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyOnboardingOnePageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class NearbyOnboardingOnePageElement extends
+    NearbyOnboardingOnePageElementBase {
+  static get is() {
+    return 'nearby-onboarding-one-page';
+  }
 
-  properties: {
-    /** @type {?NearbySettings} */
-    settings: {
-      type: Object,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {string} */
-    errorMessage: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @type {?NearbySettings} */
+      settings: {
+        type: Object,
+      },
 
-    /**
-     * Whether the onboarding page is being rendered in dark mode.
-     * @private {boolean}
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @type {string} */
+      errorMessage: {
+        type: String,
+        value: '',
+      },
 
-  listeners: {
-    'next': 'onNext_',
-    'close': 'onClose_',
-    'keydown': 'onKeydown_',
-    'view-enter-start': 'onViewEnterStart_',
-  },
+      /**
+       * Whether the onboarding page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('next', this.onNext_);
+    this.addEventListener('close', this.onClose_);
+    this.addEventListener('keydown', (event) => {
+      this.onKeydown_(/** @type {!KeyboardEvent} */ (event));
+    });
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+  }
 
   /** @private */
   onNext_() {
     this.finishOnboarding_();
-  },
+  }
 
   /** @private */
   onClose_() {
     processOnePageOnboardingCancelledMetrics(
         NearbyShareOnboardingFinalState.INITIAL_PAGE);
-    this.fire('onboarding-cancelled');
-  },
+
+    const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(onboardingCancelledEvent);
+  }
 
   /**
    * @param {!KeyboardEvent} e Event containing the key
@@ -92,13 +116,13 @@ Polymer({
       this.finishOnboarding_();
       e.preventDefault();
     }
-  },
+  }
 
   /** @private */
   onViewEnterStart_() {
-    this.$$('#deviceName').focus();
+    this.shadowRoot.querySelector('#deviceName').focus();
     processOnePageOnboardingInitiatedMetrics(new URL(document.URL));
-  },
+  }
 
   /** @private */
   onDeviceNameInput_() {
@@ -107,7 +131,7 @@ Polymer({
         .then((result) => {
           this.updateErrorMessage_(result.result);
         });
-  },
+  }
 
   /** @private */
   finishOnboarding_() {
@@ -128,10 +152,15 @@ Polymer({
             processOnePageOnboardingCompleteMetrics(
                 NearbyShareOnboardingFinalState.INITIAL_PAGE,
                 this.getDefaultVisibility_());
-            this.fire('onboarding-complete');
+            const onboardingCompleteEvent =
+                new CustomEvent('onboarding-complete', {
+                  bubbles: true,
+                  composed: true,
+                });
+            this.dispatchEvent(onboardingCompleteEvent);
           }
         });
-  },
+  }
 
   /**
    * @private
@@ -146,8 +175,12 @@ Polymer({
      */
     this.set('settings.visibility', this.getDefaultVisibility_());
     processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics();
-    this.fire('change-page', {page: 'visibility'});
-  },
+
+    const changePageEvent = new CustomEvent(
+        'change-page',
+        {bubbles: true, composed: true, detail: {page: 'visibility'}});
+    this.dispatchEvent(changePageEvent);
+  }
 
   /**
    * @private
@@ -171,7 +204,7 @@ Polymer({
         this.errorMessage = '';
         break;
     }
-  },
+  }
 
   /**
    * @private
@@ -181,7 +214,7 @@ Polymer({
    */
   hasErrorMessage_(errorMessage) {
     return errorMessage !== '';
-  },
+  }
 
   /**
    * @private
@@ -192,7 +225,7 @@ Polymer({
   getOnboardingSplashIcon_() {
     return this.isDarkModeActive_ ? ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON :
                                     ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON;
-  },
+  }
 
   /**
    * @private
@@ -213,7 +246,7 @@ Polymer({
       return nearbyShare.mojom.Visibility.kAllContacts;
     }
     return this.settings.visibility;
-  },
+  }
 
   /**
    * @private
@@ -232,7 +265,7 @@ Polymer({
       default:
         return this.i18n('nearbyShareContactVisibilityAll');
     }
-  },
+  }
 
   /**
    * @private
@@ -251,7 +284,7 @@ Polymer({
       default:
         return 'contact-all';
     }
-  },
+  }
 
   /**
    * @private
@@ -264,5 +297,8 @@ Polymer({
   getVisibilitySelectionButtonHelpText_() {
     return this.i18n(
         'nearbyShareOnboardingPageDeviceVisibilityHelpAllContacts');
-  },
-});
+  }
+}
+
+customElements.define(
+    NearbyOnboardingOnePageElement.is, NearbyOnboardingOnePageElement);

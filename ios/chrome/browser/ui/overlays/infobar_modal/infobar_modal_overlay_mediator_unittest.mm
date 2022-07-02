@@ -52,7 +52,7 @@ class InfobarModalOverlayMediatorTest : public PlatformTest {
     callback_installer_.InstallCallbacks(request_.get());
   }
   ~InfobarModalOverlayMediatorTest() override {
-    // |callback_receiver_|'s completion callback is guaranteed to be called
+    // `callback_receiver_`'s completion callback is guaranteed to be called
     // when the test fixture is torn down.  This functionality is already tested
     // in OverlayRequestCallbackInstaller's unittests.  This EXPECT_CALL() for
     // the completion callback is added here instead of in individual tests
@@ -70,13 +70,13 @@ class InfobarModalOverlayMediatorTest : public PlatformTest {
   FakeInfobarModalOverlayMediator* mediator_ = nil;
 };
 
-// Tests that |-dismissInfobarModal| triggers dismissal via the delegate.
+// Tests that `-dismissInfobarModal` triggers dismissal via the delegate.
 TEST_F(InfobarModalOverlayMediatorTest, DismissInfobarModal) {
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
 }
 
-// Tests that |-modalInfobarButtonWasAccepted| dispatches a main action response
+// Tests that `-modalInfobarButtonWasAccepted` dispatches a main action response
 // then dismisses the modal.
 TEST_F(InfobarModalOverlayMediatorTest, ModalInfobarButtonWasAccepted) {
   EXPECT_CALL(

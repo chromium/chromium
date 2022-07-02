@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -32,6 +33,9 @@ const char kNavigationStartedKey[] = "navigationStarted";
 // runNativeAction().
 // DO NOT CHANGE
 const char kAutofillErrorInfo[] = "autofillErrorInfo";
+// By appending //# sourceUrl=some_name.js to a js snippet the snippet can be
+// identified in devtools by url = some_name.js (for example in exceptions).
+constexpr char kSourceUrlCommentPrefix[] = "\n//# sourceURL=";
 
 // Returns true for remote object types that flows are allowed to return. This
 // is mostly used to filter types like FUNCTION which would otherwise slip
@@ -99,11 +103,11 @@ ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result,
-    int js_line_offset,
+    const JsLineOffsets& js_line_offsets,
     int num_stack_entries_to_drop) {
   ClientStatus status = CheckJavaScriptResult(
       devtools_reply_status, devtools_result, __FILE__, __LINE__,
-      js_line_offset, num_stack_entries_to_drop);
+      js_line_offsets, num_stack_entries_to_drop);
   if (!status.ok()) {
     return status;
   }
@@ -150,6 +154,7 @@ ClientStatus ExtractJsFlowActionReturnValue(
   }
 
   if (!value.is_dict()) {
+    VLOG(1) << "JS flow did not return a dictionary.";
     return ClientStatusWithSourceLocation(INVALID_ACTION, __FILE__, __LINE__);
   }
 
@@ -157,6 +162,7 @@ ClientStatus ExtractJsFlowActionReturnValue(
   absl::optional<int> flow_status = dict->FindInt(kStatusKey);
   const base::Value* flow_return_value = dict->Find(kResultKey);
   if (!flow_status || !ProcessedActionStatusProto_IsValid(*flow_status)) {
+    VLOG(1) << "JS flow did not return a valid ActionStatus in " << kStatusKey;
     return ClientStatusWithSourceLocation(INVALID_ACTION, __FILE__, __LINE__);
   }
 
@@ -167,13 +173,13 @@ ClientStatus ExtractJsFlowActionReturnValue(
   return ClientStatus(static_cast<ProcessedActionStatusProto>(*flow_status));
 }
 
-namespace {
-
 std::string SerializeToBase64(const google::protobuf::MessageLite* proto) {
   std::string serialized_result_base64;
   base::Base64Encode(proto->SerializeAsString(), &serialized_result_base64);
   return serialized_result_base64;
 }
+
+namespace {
 
 absl::optional<std::string> SerializeActionResult(
     const ProcessedActionProto& processed_action) {
@@ -215,6 +221,9 @@ absl::optional<std::string> SerializeActionResult(
     case ProcessedActionProto::kSaveSubmittedPasswordResult:
       proto = &processed_action.save_submitted_password_result();
       break;
+    case ProcessedActionProto::kExternalActionResult:
+      proto = &processed_action.external_action_result();
+      break;
     case ProcessedActionProto::RESULT_DATA_NOT_SET:
       return absl::nullopt;
   }
@@ -244,6 +253,31 @@ std::unique_ptr<base::Value> NativeActionResultToResultValue(
   }
 
   return std::make_unique<base::Value>(std::move(result_value));
+}
+
+std::string GetDevtoolsSourceUrl(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location) {
+  return UnexpectedErrorInfoProto::JsExceptionLocation_Name(
+      js_exception_location);
+}
+
+UnexpectedErrorInfoProto::JsExceptionLocation GetExceptionLocation(
+    const std::string& devtools_source_url) {
+  UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location;
+  return UnexpectedErrorInfoProto::JsExceptionLocation_Parse(
+             devtools_source_url, &js_exception_location)
+             ? js_exception_location
+             : UnexpectedErrorInfoProto::UNKNOWN;
+}
+
+std::string GetDevtoolsSourceUrlCommentToAppend(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location) {
+  if (js_exception_location == UnexpectedErrorInfoProto::UNKNOWN) {
+    return "";
+  }
+
+  return base::StrCat(
+      {kSourceUrlCommentPrefix, GetDevtoolsSourceUrl(js_exception_location)});
 }
 
 }  // namespace js_flow_util

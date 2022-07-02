@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.pagecontroller.utils.TestUtils.assertLocatorResults;
 
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;

@@ -61,24 +61,31 @@ void RemoteAppsImpl::SetBypassChecksForTesting(bool bypass_checks_for_testing) {
 
 RemoteAppsImpl::RemoteAppsImpl(RemoteAppsManager* manager) : manager_(manager) {
   DCHECK(manager);
-  app_launch_observers_.set_disconnect_handler(base::BindRepeating(
-      &RemoteAppsImpl::DisconnectHandler, base::Unretained(this)));
+  app_launch_observers_with_source_id_.set_disconnect_handler(
+      base::BindRepeating(&RemoteAppsImpl::DisconnectHandler,
+                          base::Unretained(this)));
 }
 
 RemoteAppsImpl::~RemoteAppsImpl() = default;
 
-void RemoteAppsImpl::Bind(
-    const std::string& source_id,
+void RemoteAppsImpl::BindRemoteAppsAndAppLaunchObserver(
+    const absl::optional<std::string>& source_id,
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
         pending_remote_apps,
     mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
         pending_observer) {
   receivers_.Add(this, std::move(pending_remote_apps));
-  const mojo::RemoteSetElementId& remote_id = app_launch_observers_.Add(
-      mojo::Remote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>(
-          std::move(pending_observer)));
+  if (!source_id) {
+    app_launch_broadcast_observers_.Add(std::move(pending_observer));
+    return;
+  }
+
+  const mojo::RemoteSetElementId& remote_id =
+      app_launch_observers_with_source_id_.Add(
+          mojo::Remote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>(
+              std::move(pending_observer)));
   source_id_to_remote_id_map_.insert(
-      std::pair<std::string, mojo::RemoteSetElementId>(source_id, remote_id));
+      std::pair<std::string, mojo::RemoteSetElementId>(*source_id, remote_id));
 }
 
 void RemoteAppsImpl::AddFolder(const std::string& name,
@@ -123,16 +130,21 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
 
 void RemoteAppsImpl::OnAppLaunched(const std::string& source_id,
                                    const std::string& app_id) {
+  // Dispatch events to broadcast observers.
+  for (auto& observer : app_launch_broadcast_observers_)
+    observer->OnRemoteAppLaunched(app_id, source_id);
+
+  // Find remote associated with `source_id` and dispatch event to it.
   auto it = source_id_to_remote_id_map_.find(source_id);
   if (it == source_id_to_remote_id_map_.end())
     return;
 
   chromeos::remote_apps::mojom::RemoteAppLaunchObserver* observer =
-      app_launch_observers_.Get(it->second);
+      app_launch_observers_with_source_id_.Get(it->second);
   if (!observer)
     return;
 
-  observer->OnRemoteAppLaunched(app_id);
+  observer->OnRemoteAppLaunched(app_id, source_id);
 }
 
 void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,

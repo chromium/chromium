@@ -56,6 +56,10 @@ specific_include_rules = {
         "+base/allocator/partition_allocator/partition_root.h",
     ],
     ".*_stream_wrapper.cc": [
-        "+net/base/ip_endpoint.h"
-    ]
+        "+net/base/ip_endpoint.h",
+    ],
+    ".*socket.cc": [
+        "+base/barrier_callback.h",
+        "+base/functional/identity.h",
+    ],
 }

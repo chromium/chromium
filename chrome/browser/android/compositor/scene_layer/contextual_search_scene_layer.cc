@@ -43,7 +43,7 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
 
   color_overlay_->SetIsDrawable(true);
   color_overlay_->SetOpacity(0.0f);
-  color_overlay_->SetBackgroundColor(SK_ColorBLACK);
+  color_overlay_->SetBackgroundColor(SkColors::kBlack);
   color_overlay_->SetPosition(gfx::PointF(0.f, 0.f));
   layer()->AddChild(color_overlay_);
 }
@@ -83,8 +83,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jint progress_bar_resource_id,
     jint progress_bar_tint,
     jint search_promo_resource_id,
-    jint bar_banner_ripple_resource_id,
-    jint bar_banner_text_resource_id,
     jfloat dp_to_px,
     jfloat layout_width,
     jfloat layout_height,
@@ -103,13 +101,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jboolean related_searches_in_bar_visible,
     jfloat related_searches_in_bar_height,
     jfloat related_searches_in_bar_redundant_padding,
-    // Banner etc
-    jboolean search_bar_banner_visible,
-    jfloat search_bar_banner_height,
-    jfloat search_bar_banner_padding,
-    jfloat search_bar_banner_ripple_width,
-    jfloat search_bar_banner_ripple_opacity,
-    jfloat search_bar_banner_text_opacity,
+    // Panel position etc
     jfloat search_panel_x,
     jfloat search_panel_y,
     jfloat search_panel_width,
@@ -176,19 +168,14 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       drag_handlebar_resource_id, open_tab_icon_resource_id,
       close_icon_resource_id, progress_bar_background_resource_id,
       progress_bar_background_tint, progress_bar_resource_id, progress_bar_tint,
-      search_promo_resource_id, bar_banner_ripple_resource_id,
-      bar_banner_text_resource_id, dp_to_px, content_layer,
-      search_promo_visible, search_promo_height, search_promo_opacity,
-      search_promo_background_color,
+      search_promo_resource_id, dp_to_px, content_layer, search_promo_visible,
+      search_promo_height, search_promo_opacity, search_promo_background_color,
       // Related Searches
       related_searches_in_content_resource_id,
       related_searches_in_content_visible, related_searches_in_content_height,
       related_searches_in_bar_resource_id, related_searches_in_bar_visible,
       related_searches_in_bar_height, related_searches_in_bar_redundant_padding,
-      // Banner etc
-      search_bar_banner_visible, search_bar_banner_height,
-      search_bar_banner_padding, search_bar_banner_ripple_width,
-      search_bar_banner_ripple_opacity, search_bar_banner_text_opacity,
+      // Panel position etc
       search_panel_x, search_panel_y, search_panel_width, search_panel_height,
       search_bar_margin_side, search_bar_margin_top, search_bar_height,
       search_context_opacity, search_text_layer_min_height, search_term_opacity,

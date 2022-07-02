@@ -25,6 +25,7 @@
 #include "gpu/ipc/single_task_sequence.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -90,16 +91,8 @@ OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
   // Webview does not own the surface so should not clear it.
   renderer_settings_.should_clear_root_render_pass = false;
 
-  renderer_settings_.use_skia_renderer = features::IsUsingSkiaRenderer();
-  LOG_IF(FATAL, !renderer_settings_.use_skia_renderer)
-      << "WebView requires skia renderer";
-
   enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
-
-  LOG_IF(FATAL, enable_vulkan_ && !renderer_settings_.use_skia_renderer)
-      << "--webview-enable-vulkan only works with skia renderer "
-         "(--enable-features=UseSkiaRenderer).";
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   debug_settings_.tint_composited_content =
@@ -120,7 +113,7 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
   // an ANGLE context for the current native GL context.
   const bool is_angle =
-      !enable_vulkan_ && display->IsANGLEExternalContextAndSurfaceSupported();
+      !enable_vulkan_ && display->ext->b_EGL_ANGLE_external_context_and_surface;
 
   GLSurfaceContextPair real_context;
   if (enable_vulkan_) {

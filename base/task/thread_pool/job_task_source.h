@@ -103,7 +103,9 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
                                                       << kWorkerCountBitOffset;
 
     struct Value {
-      size_t worker_count() const { return value >> kWorkerCountBitOffset; }
+      uint8_t worker_count() const {
+        return static_cast<uint8_t>(value >> kWorkerCountBitOffset);
+      }
       // Returns true if canceled.
       bool is_canceled() const { return value & kCanceledMask; }
 

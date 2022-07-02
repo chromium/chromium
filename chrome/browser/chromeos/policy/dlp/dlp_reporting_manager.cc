@@ -27,7 +27,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
@@ -114,8 +114,7 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  switch (chromeos::LacrosService::Get()->init_params()->session_type) {
+  switch (chromeos::BrowserInitParams::Get()->session_type) {
     case crosapi::mojom::SessionType::kRegularSession:
     case crosapi::mojom::SessionType::kChildSession:
       return DlpPolicyEvent_UserType_REGULAR;
@@ -262,8 +261,6 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
-  report_queue_->Enqueue(&event, reporting::Priority::SLOW_BATCH,
-                         std::move(callback));
 
   switch (event.mode()) {
     case DlpPolicyEvent_Mode_BLOCK:
@@ -290,6 +287,8 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
       NOTREACHED();
       break;
   }
+  report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),
+                         reporting::Priority::SLOW_BATCH, std::move(callback));
 }
 
 }  // namespace policy

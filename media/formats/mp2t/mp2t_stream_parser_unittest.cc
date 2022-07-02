@@ -280,15 +280,15 @@ class Mp2tStreamParserTest : public testing::Test {
   bool OnNewBuffers(const StreamParser::BufferQueueMap& buffer_queue_map) {
     EXPECT_GT(config_count_, 0);
     // Ensure that track ids are properly assigned on all emitted buffers.
-    for (const auto& it : buffer_queue_map) {
-      DVLOG(3) << "Buffers for track_id=" << it.first;
-      for (const auto& buf : it.second) {
+    for (const auto& [track_id, buffer] : buffer_queue_map) {
+      DVLOG(3) << "Buffers for track_id=" << track_id;
+      for (const auto& buf : buffer) {
         DVLOG(3) << "  track_id=" << buf->track_id()
                  << ", size=" << buf->data_size()
                  << ", pts=" << buf->timestamp().InSecondsF()
                  << ", dts=" << buf->GetDecodeTimestamp().InSecondsF()
                  << ", dur=" << buf->duration().InSecondsF();
-        EXPECT_EQ(it.first, buf->track_id());
+        EXPECT_EQ(track_id, buf->track_id());
       }
     }
 

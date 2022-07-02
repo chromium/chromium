@@ -236,16 +236,16 @@ class MockImageCaptureClient
   mojom::PhotoStatePtr state_;
 };
 
-base::test::SingleThreadTaskEnvironment::MainThreadType kMainThreadType =
+constexpr auto kMainThreadType =
 #if BUILDFLAG(IS_MAC)
     // Video capture code on MacOSX must run on a CFRunLoop enabled thread
     // for interaction with AVFoundation.
-    base::test::SingleThreadTaskEnvironment::MainThreadType::UI;
+    base::test::TaskEnvironment::MainThreadType::UI;
 #elif BUILDFLAG(IS_FUCHSIA)
     // FIDL APIs on Fuchsia requires IO thread.
-    base::test::SingleThreadTaskEnvironment::MainThreadType::IO;
+    base::test::TaskEnvironment::MainThreadType::IO;
 #else
-    base::test::SingleThreadTaskEnvironment::MainThreadType::DEFAULT;
+    base::test::TaskEnvironment::MainThreadType::DEFAULT;
 #endif
 
 }  // namespace
@@ -320,6 +320,7 @@ class VideoCaptureDeviceTest
   }
 
   void TearDown() override {
+    task_environment_.RunUntilIdle();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::Shutdown();
 #endif
@@ -469,7 +470,7 @@ class VideoCaptureDeviceTest
 #if BUILDFLAG(IS_WIN)
   base::win::ScopedCOMInitializer initialize_com_;
 #endif
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::vector<VideoCaptureDeviceInfo> devices_info_;
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<base::TaskRunner> main_thread_task_runner_;

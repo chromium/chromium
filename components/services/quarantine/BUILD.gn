@@ -116,7 +116,7 @@ source_set("unit_tests") {
   # enabled, the devices use tmpfs which restricts the extended attributes that
   # can be set such that quarantining still would not work. (The platform
   # specific tests include a runtime guard to skip tests that need xattr.)
-  if (!is_chromecast) {
+  if (!is_castos && !is_cast_android) {
     sources += [ "quarantine_unittest.cc" ]
   }
 

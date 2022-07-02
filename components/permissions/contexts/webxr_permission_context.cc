@@ -37,13 +37,8 @@ bool WebXrPermissionContext::IsRestrictedToSecureOrigins() const {
 // There are two other permissions that need to check corresponding OS-level
 // permissions, and they take two different approaches to this. Geolocation only
 // stores the permission ContentSetting if both requests are granted (or if the
-// site permission is "Block"). The media permissions follow something more
-// similar to this approach, first querying and storing the site-specific
-// ContentSetting and then querying for the additional OS permissions as needed.
-// However, this is done in MediaStreamDevicesController, not their permission
-// context. By persisting and then running additional code as needed, we thus
-// mimic that flow, but keep all logic contained into the permission context
-// class.
+// site permission is "Block"). The media permissions are now following the
+// approach found here.
 void WebXrPermissionContext::NotifyPermissionSet(
     const PermissionRequestID& id,
     const GURL& requesting_origin,
@@ -53,6 +48,15 @@ void WebXrPermissionContext::NotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time) {
   DCHECK(!is_one_time);
+
+  // Note that this method calls into base class implementation version of
+  // `NotifyPermissionSet()`, which would call `UpdateTabContext()`.
+  // This is fine, even in cases where we call the base method with a parameter
+  // that does not correspond to user's answer to Chrome-level permission,
+  // because `WebXrPermissionContext` does *not* have a custom implementation
+  // for `UpdateTabContext()` - if it did, we'd need to stop calling into base
+  // class with the parameter not matching user's answer.
+
   // Only AR needs to check for additional permissions, and then only if it was
   // actually allowed.
   if (!(content_settings_type_ == ContentSettingsType::AR &&
@@ -135,5 +139,14 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
       id, requesting_origin, embedding_origin, std::move(callback),
       false /*persist*/, setting, /*is_one_time=*/false);
 }
+
+void WebXrPermissionContext::UpdateTabContext(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    bool allowed) {
+  // See the comment in `NotifyPermissionSet()` for context on why this method
+  // should be empty.
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace permissions

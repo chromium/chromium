@@ -100,6 +100,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
   // Called when the composition bounds changed.
   virtual void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) = 0;
 
+  // Called when caret bounds changed.
+  virtual void SetCaretBounds(const gfx::Rect& caret_bounds) = 0;
+
   // Gets the implementation of the keyboard controller.
   virtual ui::VirtualKeyboardController* GetVirtualKeyboardController()
       const = 0;
@@ -118,6 +121,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
   // Sets the mirroring/casting enable states.
   virtual void SetMirroringEnabled(bool mirroring_enabled) = 0;
   virtual void SetCastingEnabled(bool casting_enabled) = 0;
+
+  // Returns whether the IME is ready to accept key events for testing.
+  virtual bool IsReadyForTesting() = 0;
 
  protected:
   IMEEngineHandlerInterface() = default;

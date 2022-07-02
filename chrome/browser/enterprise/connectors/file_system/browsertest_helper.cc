@@ -176,7 +176,7 @@ bool BoxSignInObserver::GetUserNameFromSignInPage(std::string* result) {
       window.domAutomationController.send(
           document.getElementById('login').value);
     )";
-  return ExecuteScriptAndExtractString(web_contents()->GetMainFrame(),
+  return ExecuteScriptAndExtractString(web_contents()->GetPrimaryMainFrame(),
                                        get_login_value, result);
 }
 

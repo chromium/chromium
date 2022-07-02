@@ -62,7 +62,8 @@ bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
   std::string content_type_options;
   response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName,
                                     &content_type_options);
-  return base::LowerCaseEqualsASCII(content_type_options, kNoSniffHeaderValue);
+  return base::EqualsCaseInsensitiveASCII(content_type_options,
+                                          kNoSniffHeaderValue);
 }
 
 bool IsValidUuidInPackageURL(const GURL& url) {

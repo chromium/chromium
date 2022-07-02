@@ -252,8 +252,8 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
   ImmersiveModeController* immersive_controller =
       browser_view->immersive_mode_controller();
   if (immersive_controller->IsEnabled()) {
-    immersive_reveal_lock_.reset(immersive_controller->GetRevealedLock(
-        ImmersiveModeController::ANIMATE_REVEAL_YES));
+    immersive_reveal_lock_ = immersive_controller->GetRevealedLock(
+        ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
   tab_strip_->AddObserver(this);
@@ -274,7 +274,9 @@ void TabScrubberChromeOS::FinishScrub(bool activate) {
       UMA_HISTOGRAM_TIMES("Tabs.ScrubDuration",
                           base::TimeTicks::Now() - scrubbing_start_time_);
       browser_->tab_strip_model()->ActivateTabAt(
-          highlighted_tab_, {TabStripModel::GestureType::kOther});
+          highlighted_tab_,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     }
     tab_strip->RemoveObserver(this);
   }

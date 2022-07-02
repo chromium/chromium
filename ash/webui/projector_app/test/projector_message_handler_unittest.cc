@@ -5,9 +5,10 @@
 #include "ash/webui/projector_app/projector_message_handler.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
+#include "ash/webui/projector_app/projector_screencast.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -26,6 +27,8 @@ const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
 const char kTestXhrMethod[] = "POST";
 const char kTestXhrRequestBody[] = "{}";
+const char kTestXhrHeaderKey[] = "X-Goog-Drive-Resource-Keys";
+const char kTestXhrHeaderValue[] = "resource-key";
 
 const char kXhrResponseSuccessPath[] = "success";
 const char kXhrResponseErrorPath[] = "error";
@@ -44,6 +47,7 @@ const char kOnNewScreencastPreconditionChanged[] =
 const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
 const char kOnSodaInstalled[] = "onSodaInstalled";
 const char kOnSodaInstallError[] = "onSodaInstallError";
+const char kGetScreencastCallback[] = "getScreencastCallback";
 
 const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
 const char kInstallSodaCallback[] = "installSodaCallback";
@@ -206,6 +210,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
   list_args.Append(std::move(args));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
@@ -247,6 +255,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
   list_args.Append(std::move(args));
 
   web_ui().HandleReceivedMessage("sendXhr", &list_args);
@@ -525,6 +537,37 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {
   EXPECT_EQ(*(rejected_args->FindStringPath(kRejectedRequestMessageKey)),
             kRejectedRequestMessage);
   EXPECT_EQ(*(rejected_args->FindPath(kRejectedRequestArgsKey)), func_args);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, GetScreencast) {
+  base::ListValue list_args;
+  list_args.Append(kGetScreencastCallback);
+  base::ListValue args;
+  const std::string container_folder_id = "test_container_id";
+  args.Append(container_folder_id);
+
+  list_args.Append(std::move(args));
+
+  web_ui().HandleReceivedMessage("getScreencast", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kGetScreencastCallback);
+
+  // Whether the callback was rejected or not.
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& dict = std::move(call_data.arg3()->GetDict());
+
+  EXPECT_EQ(*(dict.FindString("container_folder_id")), container_folder_id);
+  // TODO(b/236857019) Updates the |name| value when getting screencast name by
+  // using DriveFS service.
+  EXPECT_EQ(*(dict.FindString("name")), "name");
+  EXPECT_EQ(*(dict.FindDict("video")),
+            ash::ProjectorScreencastVideo().ToValue());
 }
 
 class ProjectorStorageDirNameValidationTest

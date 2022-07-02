@@ -51,6 +51,9 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   static MultiDeviceSetupDialog* current_instance_;
   static gfx::NativeWindow containing_window_;
 
+  // SystemWebDialogDelegate:
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
+
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
   std::vector<base::OnceClosure> on_close_callbacks_;

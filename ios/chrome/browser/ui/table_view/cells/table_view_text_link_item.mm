@@ -12,6 +12,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,7 +61,7 @@
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     // Text Label, set font sizes using dynamic type.
-    _textView = [[UITextView alloc] init];
+    _textView = CreateUITextViewWithTextKit1();
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
@@ -79,9 +80,7 @@
       [_textView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_textView.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor
-                         constant:kTableViewLabelVerticalTopSpacing],
+      [_textView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
       [_textView.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:0],

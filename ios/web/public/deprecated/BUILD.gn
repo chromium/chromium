@@ -36,19 +36,3 @@ source_set("deprecated_web_util") {
     "crw_web_controller_util.mm",
   ]
 }
-
-source_set("test_doubles") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    ":deprecated",
-    "//ios/web/js_messaging",
-    "//ios/web/public",
-    "//url",
-  ]
-
-  sources = [
-    "crw_test_js_injection_receiver.h",
-    "crw_test_js_injection_receiver.mm",
-  ]
-}

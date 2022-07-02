@@ -222,11 +222,7 @@ void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
 
 bool BluetoothLowEnergyCharacteristicsFinder::DoesEidMatchExpectedDevice(
     const std::vector<uint8_t>& eid_value_read) {
-  // Convert the char data from a std::vector<uint8_t> to a std::string.
-  std::string eid_char_data_str;
-  char* string_contents_ptr =
-      base::WriteInto(&eid_char_data_str, eid_value_read.size() + 1);
-  memcpy(string_contents_ptr, eid_value_read.data(), eid_value_read.size());
+  std::string eid_char_data_str(eid_value_read.begin(), eid_value_read.end());
 
   multidevice::RemoteDeviceRefList remote_device_list{remote_device_};
   std::string identified_device_id =

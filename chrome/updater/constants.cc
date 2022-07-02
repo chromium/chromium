@@ -60,10 +60,6 @@ const char kBrowserVersionSwitch[] = "browser-version";
 const char kSessionIdSwitch[] = "sessionid";  // needs backward-compatibility
 const char kAppGuidSwitch[] = "appguid";
 
-#if BUILDFLAG(IS_WIN)
-const char kInstallFromOutDir[] = "install-from-out-dir";
-#endif  // BUILDFLAG(IS_WIN)
-
 const char kHealthCheckSwitch[] = "healthcheck";
 
 const char kHandoffSwitch[] = "handoff";        // needs backward-compatibility
@@ -83,6 +79,8 @@ const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
 const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
 const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
+const char kDevOverrideKeyGroupPolicies[] = "group_policies";
+const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
 
 // Developer override file name, relative to app data directory.
 const char kDevOverrideFileName[] = "overrides.json";

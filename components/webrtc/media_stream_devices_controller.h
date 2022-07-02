@@ -34,11 +34,12 @@ class MediaStreamDeviceEnumerator;
 // renderer.
 class MediaStreamDevicesController {
  public:
-  typedef base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
-                                  blink::mojom::MediaStreamRequestResult result,
-                                  bool blocked_by_permissions_policy,
-                                  ContentSetting audio_setting,
-                                  ContentSetting video_setting)>
+  typedef base::OnceCallback<void(
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      bool blocked_by_permissions_policy,
+      ContentSetting audio_setting,
+      ContentSetting video_setting)>
       ResultCallback;
 
   // Requests the mic/camera permissions described in |request|, using
@@ -66,14 +67,6 @@ class MediaStreamDevicesController {
       bool did_prompt_for_video,
       const std::vector<blink::mojom::PermissionStatus>& responses);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Called when the Android OS-level prompt is answered.
-  static void AndroidOSPromptAnswered(
-      std::unique_ptr<MediaStreamDevicesController> controller,
-      std::vector<ContentSetting> responses,
-      bool android_prompt_granted);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Returns true if audio/video should be requested through the
   // PermissionManager. We won't try to request permission if the request is
   // already blocked for some other reason, e.g. there are no devices available.
@@ -82,8 +75,8 @@ class MediaStreamDevicesController {
 
   // Returns a list of devices available for the request for the given
   // audio/video permission settings.
-  blink::mojom::StreamDevices GetDevices(ContentSetting audio_setting,
-                                         ContentSetting video_setting);
+  blink::mojom::StreamDevicesSetPtr GetDevices(ContentSetting audio_setting,
+                                               ContentSetting video_setting);
 
   // Runs |callback_| with the current audio/video permission settings.
   void RunCallback(bool blocked_by_permissions_policy);
@@ -104,7 +97,7 @@ class MediaStreamDevicesController {
 
   // Called when a permission prompt is answered through the PermissionManager.
   void PromptAnsweredGroupedRequest(
-      const std::vector<ContentSetting>& responses);
+      const std::vector<blink::mojom::PermissionStatus>& permissions_status);
 
   bool HasAvailableDevices(ContentSettingsType content_type,
                            const std::string& device_id) const;

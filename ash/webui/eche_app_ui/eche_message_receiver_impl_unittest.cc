@@ -140,7 +140,7 @@ class EcheMessageReceiverImplTest : public testing::Test {
 
 TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
   proto::GetAppsAccessStateResponse response;
-  response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
+  response.set_result(eche_app::proto::Result::RESULT_NO_ERROR);
   response.set_apps_access_state(
       eche_app::proto::AppsAccessState::ACCESS_GRANTED);
   proto::ExoMessage message;
@@ -155,7 +155,7 @@ TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
   EXPECT_EQ(0u, GetNumAppsSetupResponseCalls());
   EXPECT_EQ(0u, GetNumStatusChangeCalls());
   EXPECT_EQ(0u, GetNumAppsPolicyStateChangeCalls());
-  EXPECT_EQ(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED,
+  EXPECT_EQ(eche_app::proto::Result::RESULT_NO_ERROR,
             actual_apps_state.result());
   EXPECT_EQ(eche_app::proto::AppsAccessState::ACCESS_GRANTED,
             actual_apps_state.apps_access_state());
@@ -163,7 +163,7 @@ TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
 
 TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
   proto::SendAppsSetupResponse response;
-  response.set_result(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED);
+  response.set_result(eche_app::proto::Result::RESULT_NO_ERROR);
   response.set_apps_access_state(
       eche_app::proto::AppsAccessState::ACCESS_GRANTED);
   proto::ExoMessage message;
@@ -178,7 +178,7 @@ TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
   EXPECT_EQ(1u, GetNumAppsSetupResponseCalls());
   EXPECT_EQ(0u, GetNumStatusChangeCalls());
   EXPECT_EQ(0u, GetNumAppsPolicyStateChangeCalls());
-  EXPECT_EQ(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED,
+  EXPECT_EQ(eche_app::proto::Result::RESULT_NO_ERROR,
             actual_apps_setup_response.result());
   EXPECT_EQ(eche_app::proto::AppsAccessState::ACCESS_GRANTED,
             actual_apps_setup_response.apps_access_state());

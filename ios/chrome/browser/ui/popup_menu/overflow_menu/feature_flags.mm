@@ -11,7 +11,7 @@
 #endif
 
 const base::Feature kNewOverflowMenu{"NewOverflowMenu",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNewOverflowMenuCBDAction{
     "NewOverflowMenuCBDAction", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -19,15 +19,21 @@ const base::Feature kNewOverflowMenuCBDAction{
 const base::Feature kNewOverflowMenuSettingsAction{
     "NewOverflowMenuSettingsAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNewOverflowMenuSimpleDestinationIcons{
+    "NewOverflowMenuSimpleDestinationIcons", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSmartSortingNewOverflowMenu{
     "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kNewOverflowMenuShareChromeAction{
+    "kNewOverflowMenuShareChromeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
   }
   // The new overflow menu isn't available on iOS <= 14 because it relies on
-  // |UISheetPresentationController|, which was introduced in iOS 15.
+  // `UISheetPresentationController`, which was introduced in iOS 15.
   return false;
 }
 
@@ -39,6 +45,11 @@ bool IsNewOverflowMenuCBDActionEnabled() {
 bool IsNewOverflowMenuSettingsActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuSettingsAction);
+}
+
+bool IsNewOverflowMenuSimpleDestinationIconsEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kNewOverflowMenuSimpleDestinationIcons);
 }
 
 bool IsPasswordManagerBrandingUpdateEnabled() {
@@ -53,4 +64,9 @@ bool IsPasswordManagerBrandingUpdateEnabled() {
 bool IsSmartSortingNewOverflowMenuEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kSmartSortingNewOverflowMenu);
+}
+
+bool IsNewOverflowMenuShareChromeActionEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);
 }

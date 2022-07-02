@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace enterprise_management {
@@ -45,7 +45,7 @@ class SessionManagerOperation {
   virtual ~SessionManagerOperation();
 
   // Starts the operation.
-  void Start(chromeos::SessionManagerClient* session_manager_client,
+  void Start(SessionManagerClient* session_manager_client,
              scoped_refptr<ownership::OwnerKeyUtil> owner_key_util,
              scoped_refptr<ownership::PublicKey> public_key);
 
@@ -90,7 +90,7 @@ class SessionManagerOperation {
   // operation should not perform further processing or trigger callbacks.
   void ReportResult(DeviceSettingsService::Status status);
 
-  chromeos::SessionManagerClient* session_manager_client() {
+  SessionManagerClient* session_manager_client() {
     return session_manager_client_;
   }
 
@@ -124,13 +124,13 @@ class SessionManagerOperation {
 
   // Validates device settings after retrieval from session_manager.
   void ValidateDeviceSettings(
-      chromeos::SessionManagerClient::RetrievePolicyResponseType response_type,
+      SessionManagerClient::RetrievePolicyResponseType response_type,
       const std::string& policy_blob);
 
   // Extracts status and device settings from the validator and reports them.
   void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
 
-  chromeos::SessionManagerClient* session_manager_client_ = nullptr;
+  SessionManagerClient* session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Callback callback_;

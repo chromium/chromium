@@ -15,6 +15,8 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
@@ -44,32 +46,35 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxSmartStickyModeTest', 'PossibleRangeTypes', async function() {
-  const root = await this.runWithLoadedTree(this.relationsDoc);
-  const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
+AX_TEST_F(
+    'ChromeVoxSmartStickyModeTest', 'PossibleRangeTypes', async function() {
+      const root = await this.runWithLoadedTree(this.relationsDoc);
+      const [p, input, textarea, contenteditable, ul1, ul2] = root.children;
 
-  // First, turn on sticky mode and try changing range to various parts of
-  // the document.
-  ChromeVoxBackground.setPref('sticky', true /* value */, true /* announce */);
-  this.assertDidTurnOffForNode(input);
-  this.assertDidTurnOffForNode(textarea);
-  this.assertDidNotTurnOffForNode(p);
-  this.assertDidTurnOffForNode(contenteditable);
-  this.assertDidTurnOffForNode(ul1);
-  this.assertDidNotTurnOffForNode(p);
-  this.assertDidTurnOffForNode(ul2);
-  this.assertDidTurnOffForNode(ul1.firstChild);
-  this.assertDidNotTurnOffForNode(ul1.parent);
-  this.assertDidNotTurnOffForNode(ul2.parent);
-  this.assertDidNotTurnOffForNode(p);
-  this.assertDidTurnOffForNode(ul2.firstChild);
-  this.assertDidNotTurnOffForNode(p);
-  this.assertDidNotTurnOffForNode(contenteditable.parent);
-  this.assertDidTurnOffForNode(contenteditable.find({role: 'heading'}));
-  this.assertDidTurnOffForNode(contenteditable.find({role: 'inlineTextBox'}));
-});
+      // First, turn on sticky mode and try changing range to various parts of
+      // the document.
+      ChromeVoxBackground.setPref(
+          'sticky', true /* value */, true /* announce */);
+      this.assertDidTurnOffForNode(input);
+      this.assertDidTurnOffForNode(textarea);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(contenteditable);
+      this.assertDidTurnOffForNode(ul1);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(ul2);
+      this.assertDidTurnOffForNode(ul1.firstChild);
+      this.assertDidNotTurnOffForNode(ul1.parent);
+      this.assertDidNotTurnOffForNode(ul2.parent);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidTurnOffForNode(ul2.firstChild);
+      this.assertDidNotTurnOffForNode(p);
+      this.assertDidNotTurnOffForNode(contenteditable.parent);
+      this.assertDidTurnOffForNode(contenteditable.find({role: 'heading'}));
+      this.assertDidTurnOffForNode(
+          contenteditable.find({role: 'inlineTextBox'}));
+    });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxSmartStickyModeTest', 'UserPressesStickyModeCommand',
     async function() {
       const root = await this.runWithLoadedTree(this.relationsDoc);
@@ -112,7 +117,7 @@ TEST_F(
       this.assertDidNotTurnOffForNode(p);
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxSmartStickyModeTest', 'SmartStickyModeJumpCommands',
     async function() {
       const mockFeedback = this.createMockFeedback();
@@ -150,7 +155,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxSmartStickyModeTest', 'SmartStickyModeEarcons', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(`
@@ -173,7 +178,7 @@ TEST_F(
           .replay();
     });
 
-TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
+AX_TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
@@ -182,7 +187,7 @@ TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   // Fake the read from here/continuous read state.
-  ChromeVoxState.isReadingContinuously = true;
+  ChromeVoxState.instance.isReadingContinuously = true;
   mockFeedback.call(doCmd('toggleStickyMode'))
       .expectSpeech('Sticky mode enabled')
       .call(doCmd('nextObject'))

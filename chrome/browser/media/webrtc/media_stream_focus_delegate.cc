@@ -244,7 +244,8 @@ bool MediaStreamFocusDelegate::UpdateUMA(bool focus,
 
 bool MediaStreamFocusDelegate::BadMessage(
     bad_message::BadMessageReason reason) {
-  content::RenderFrameHost* const rfh = capturing_web_contents_->GetMainFrame();
+  content::RenderFrameHost* const rfh =
+      capturing_web_contents_->GetPrimaryMainFrame();
   if (rfh) {
     bad_message::ReceivedBadMessage(rfh->GetProcess(), reason);
   }

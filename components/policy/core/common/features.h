@@ -38,6 +38,14 @@ POLICY_EXPORT extern const base::Feature
 // Enable caching the value of the ManagementStatus.
 POLICY_EXPORT extern const base::Feature kEnableCachedManagementStatus;
 
+// Causes the DMToken to be deleted (rather than invalidated) when a browser is
+// deleted from CBCM.
+POLICY_EXPORT extern const base::Feature kDmTokenDeletion;
+
+// Allow mac to detect policy scope with a private API. The feature is limited
+// in the policy component only.
+extern const base::Feature kPolicyScopeDetectionMac;
+
 }  // namespace features
 }  // namespace policy
 

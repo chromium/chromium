@@ -44,7 +44,7 @@ inline constexpr size_t count(std::initializer_list<T> ilist, T value) {
   return c;
 }
 
-constexpr size_t pack_npos = -1;
+constexpr size_t pack_npos = static_cast<size_t>(-1);
 
 template <typename... Ts>
 struct ParameterPack {

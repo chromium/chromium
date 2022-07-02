@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -81,7 +81,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
   registry->RegisterBooleanPref(
-      prefs::kPowerAdaptiveChargingEnabled, false,
+      prefs::kPowerAdaptiveChargingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kPowerAdaptiveChargingNudgeShown, false,

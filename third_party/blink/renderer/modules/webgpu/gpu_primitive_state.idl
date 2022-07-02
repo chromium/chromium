@@ -9,7 +9,7 @@ dictionary GPUPrimitiveState {
   GPUIndexFormat stripIndexFormat;
   GPUFrontFace frontFace = "ccw";
   GPUCullMode cullMode = "none";
-  boolean? clampDepth;
+  boolean unclippedDepth = false;
 };
 
 enum GPUIndexFormat {

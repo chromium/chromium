@@ -13,7 +13,7 @@ BrowserSyncedTabDelegate::BrowserSyncedTabDelegate(
   SetWebContents(web_contents);
 }
 
-BrowserSyncedTabDelegate::~BrowserSyncedTabDelegate() {}
+BrowserSyncedTabDelegate::~BrowserSyncedTabDelegate() = default;
 
 SessionID BrowserSyncedTabDelegate::GetWindowId() const {
   return sessions::SessionTabHelper::FromWebContents(web_contents())

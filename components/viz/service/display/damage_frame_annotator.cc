@@ -28,7 +28,7 @@ void DamageFrameAnnotator::AnnotateAggregatedFrame(AggregatedFrame* frame) {
 
   annotations_.push_back(
       AnnotationData{gfx::Rect(damage_rect.size()), transform,
-                     Highlight{SkColorSetARGB(128, 255, 0, 0), 4}});
+                     Highlight{SkColor4f{1.0, 0, 0, 0.5}, 4}});
 
   AnnotateRootRenderPass(root_render_pass);
   annotations_.clear();

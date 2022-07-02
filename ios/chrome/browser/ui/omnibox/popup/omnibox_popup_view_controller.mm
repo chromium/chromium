@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 #include "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -28,11 +29,15 @@
 
 namespace {
 const CGFloat kTopAndBottomPadding = 8.0;
+// Percentage of the suggestion height that needs to be visible in order to
+// consider the suggestion as visible.
+const CGFloat kVisibleSuggestionThreshold = 0.6;
 }  // namespace
 
 @interface OmniboxPopupViewController () <UITableViewDataSource,
                                           UITableViewDelegate,
-                                          OmniboxPopupRowCellDelegate>
+                                          OmniboxPopupRowCellDelegate,
+                                          KeyboardObserverHelperConsumer>
 
 // Index path of currently highlighted row. The rows can be highlighted by
 // tapping and holding on them or by using arrow keys on a hardware keyboard.
@@ -61,6 +66,15 @@ const CGFloat kTopAndBottomPadding = 8.0;
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
 
+// Estimated maximum number of visible suggestions.
+// Only updated in `newResultsAvailable` method, were the value is used.
+@property(nonatomic, assign) NSInteger visibleSuggestionCount;
+
+// Boolean to update visible suggestion count only once on event such as device
+// orientation change or multitasking window change, where multiple keyboard and
+// view updates are received.
+@property(nonatomic, assign) BOOL shouldUpdateVisibleSuggestionCount;
+
 @end
 
 @implementation OmniboxPopupViewController
@@ -68,17 +82,34 @@ const CGFloat kTopAndBottomPadding = 8.0;
 - (instancetype)init {
   if (self = [super initWithNibName:nil bundle:nil]) {
     _forwardsScrollEvents = YES;
+    NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // The iPad keyboard can cover some of the rows of the scroll view. The
       // scroll view's content inset may need to be updated when the keyboard is
       // displayed.
-      NSNotificationCenter* defaultCenter =
-          [NSNotificationCenter defaultCenter];
       [defaultCenter addObserver:self
                         selector:@selector(keyboardDidShow:)
                             name:UIKeyboardDidShowNotification
                           object:nil];
     }
+    // Listen to keyboard observer to detect `KeyboardState` changes in order to
+    // update the estimated number of visible suggestions.
+    [KeyboardObserverHelper.sharedKeyboardObserver addConsumer:self];
+
+    // Listen to keyboard frame change event to detect keyboard frame changes
+    // (ex: when changing input method) to update the estimated number of
+    // visible suggestions.
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardDidChangeFrame:)
+                          name:UIKeyboardDidChangeFrameNotification
+                        object:nil];
+
+    // Listen to content size change to update the estimated number of visible
+    // suggestions.
+    [defaultCenter addObserver:self
+                      selector:@selector(contentSizeDidChange:)
+                          name:UIContentSizeCategoryDidChangeNotification
+                        object:nil];
   }
   return self;
 }
@@ -131,6 +162,7 @@ const CGFloat kTopAndBottomPadding = 8.0;
 
   [self.tableView registerClass:[OmniboxPopupRowCell class]
          forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  self.shouldUpdateVisibleSuggestionCount = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -149,6 +181,7 @@ const CGFloat kTopAndBottomPadding = 8.0;
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
   [self.tableView setEditing:NO animated:NO];
+  self.shouldUpdateVisibleSuggestionCount = YES;
 }
 
 #pragma mark - AutocompleteResultConsumer
@@ -186,6 +219,14 @@ const CGFloat kTopAndBottomPadding = 8.0;
 // Set text alignment for popup cells.
 - (void)setTextAlignment:(NSTextAlignment)alignment {
   self.alignment = alignment;
+}
+
+- (void)newResultsAvailable {
+  if (self.shouldUpdateVisibleSuggestionCount) {
+    [self updateVisibleSuggestionCount];
+  }
+  [self.dataSource
+      requestResultsWithVisibleSuggestionCount:self.visibleSuggestionCount];
 }
 
 #pragma mark - OmniboxSuggestionCommands
@@ -285,7 +326,7 @@ const CGFloat kTopAndBottomPadding = 8.0;
             self.currentResult[indexPath.section].suggestions.count);
   NSUInteger row = indexPath.row;
 
-  // Crash reports tell us that |row| is sometimes indexed past the end of
+  // Crash reports tell us that `row` is sometimes indexed past the end of
   // the results array. In those cases, just ignore the request and return
   // early. See b/5813291.
   if (row >= self.currentResult[indexPath.section].suggestions.count)
@@ -313,8 +354,8 @@ const CGFloat kTopAndBottomPadding = 8.0;
   DCHECK_EQ(0U, (NSUInteger)indexPath.section);
 
   // iOS doesn't check -numberOfRowsInSection before checking
-  // -canEditRowAtIndexPath in a reload call. If |indexPath.row| is too large,
-  // simple return |NO|.
+  // -canEditRowAtIndexPath in a reload call. If `indexPath.row` is too large,
+  // simple return `NO`.
   if ((NSUInteger)indexPath.row >=
       self.currentResult[indexPath.section].suggestions.count)
     return NO;
@@ -451,7 +492,7 @@ const CGFloat kTopAndBottomPadding = 8.0;
                                   inSection:indexPath.section];
 }
 
-#pragma mark - keyboard events
+#pragma mark - Keyboard events
 
 - (void)keyboardDidShow:(NSNotification*)notification {
   NSDictionary* keyboardInfo = [notification userInfo];
@@ -462,12 +503,62 @@ const CGFloat kTopAndBottomPadding = 8.0;
     [self updateContentInsetForKeyboard];
 }
 
+- (void)keyboardDidChangeFrame:(NSNotification*)notification {
+  if (KeyboardObserverHelper.sharedKeyboardObserver.visibleKeyboardHeight > 0) {
+    self.shouldUpdateVisibleSuggestionCount = YES;
+  }
+}
+
+#pragma mark - KeyboardObserverHelperConsumer
+
+- (void)keyboardWillChangeToState:(KeyboardState)keyboardState {
+  self.shouldUpdateVisibleSuggestionCount = YES;
+}
+
+#pragma mark - Content size events
+
+- (void)contentSizeDidChange:(NSNotification*)notification {
+  self.shouldUpdateVisibleSuggestionCount = YES;
+}
+
 #pragma mark - ContentProviding
 
 - (BOOL)hasContent {
-  // The table view is a |SelfSizingTableView|, so its intrinsic content size
+  // The table view is a `SelfSizingTableView`, so its intrinsic content size
   // can tell whether it has content.
   return self.view.intrinsicContentSize.height > 0;
+}
+
+#pragma mark - Private Methods
+
+- (void)updateVisibleSuggestionCount {
+  CGFloat keyboardHeight =
+      [[KeyboardObserverHelper sharedKeyboardObserver] visibleKeyboardHeight];
+  CGRect tableViewFrameInMainScreenCoordinateSpace =
+      [self.tableView convertRect:self.tableView.bounds
+                toCoordinateSpace:UIScreen.mainScreen.coordinateSpace];
+  // Computes the visible area between the omnibox and the keyboard.
+  CGFloat visibleTableViewHeight =
+      CurrentScreenHeight() -
+      tableViewFrameInMainScreenCoordinateSpace.origin.y - keyboardHeight -
+      self.tableView.contentInset.top;
+
+  // Use font size to estimate the size of a omnibox search suggestion.
+  CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
+                             NSFontAttributeName : [UIFont
+                                 preferredFontForTextStyle:UIFontTextStyleBody]
+                           }]
+                               .height;
+  // Add padding to the estimated row height and set its minimum to be at
+  // `kOmniboxPopupCellMinimumHeight`.
+  CGFloat estimatedRowHeight = MAX(fontSizeHeight + 2 * kTopAndBottomPadding,
+                                   kOmniboxPopupCellMinimumHeight);
+  CGFloat visibleRows = visibleTableViewHeight / estimatedRowHeight;
+  // A row is considered visible if `kVisibleSuggestionTreshold` percent of its
+  // height is visible.
+  self.visibleSuggestionCount =
+      floor(visibleRows + (1.0 - kVisibleSuggestionThreshold));
+  self.shouldUpdateVisibleSuggestionCount = NO;
 }
 
 @end

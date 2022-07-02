@@ -22,12 +22,12 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.tensorflow.lite.annotations.UsedByReflection;
 import org.tensorflow.lite.support.label.Category;
 import org.tensorflow.lite.task.core.BaseOptions;
 import org.tensorflow.lite.task.core.BaseTaskApi;
 import org.tensorflow.lite.task.core.TaskJniUtils;
 import org.tensorflow.lite.task.core.TaskJniUtils.EmptyHandleProvider;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 import java.io.File;
 import java.io.IOException;

@@ -46,7 +46,7 @@ void ShellTestHelperAura::InitAppWindow(AppWindow* app_window,
       app_window_contents->GetWebContents());
 
   content::RenderFrameHost* main_frame =
-      app_window_contents->GetWebContents()->GetMainFrame();
+      app_window_contents->GetWebContents()->GetPrimaryMainFrame();
   DCHECK(main_frame);
 
   AppWindow::CreateParams params;

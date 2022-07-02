@@ -165,12 +165,26 @@ void FakeScriptExecutorUiDelegate::SetShowFeedbackChip(
     bool show_feedback_chip) {}
 
 bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
-  return false;
+  return true;
 }
 
 void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
     const external::Action& external_action,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {}
+    base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+        start_dom_checks_callback,
+    base::OnceCallback<void(const external::Result& result)>
+        end_action_callback) {
+  external::Result result;
+  result.set_success(true);
+  std::move(end_action_callback).Run(result);
+}
+
+void FakeScriptExecutorUiDelegate::OnInterruptStarted() {
+  interrupt_notification_history_.emplace_back(INTERRUPT_STARTED);
+}
+
+void FakeScriptExecutorUiDelegate::OnInterruptFinished() {
+  interrupt_notification_history_.emplace_back(INTERRUPT_FINISHED);
+}
 
 }  // namespace autofill_assistant

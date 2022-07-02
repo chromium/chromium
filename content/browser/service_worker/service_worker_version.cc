@@ -250,6 +250,7 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       script_type_(script_type),
       fetch_handler_existence_(FetchHandlerExistence::UNKNOWN),
       registration_status_(registration->status()),
+      ancestor_frame_type_(registration->ancestor_frame_type()),
       context_(context),
       script_cache_map_(this, context),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -385,7 +386,8 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
       running_status(), status(), fetch_handler_existence(), script_url(),
       scope(), key(), registration_id(), version_id(),
       embedded_worker()->process_id(), embedded_worker()->thread_id(),
-      embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id());
+      embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
+      ancestor_frame_type_);
   for (const auto& controllee : controllee_map_) {
     ServiceWorkerContainerHost* container_host = controllee.second.get();
     info.clients.emplace(container_host->client_uuid(),
@@ -678,7 +680,7 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
       ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
       base::BindOnce(&ServiceWorkerVersion::CleanUpExternalRequest, this,
                      request_uuid),
-      request_timeout, KILL_ON_TIMEOUT);
+      request_timeout, CONTINUE_ON_TIMEOUT);
   external_request_uuid_to_request_id_[request_uuid] = request_id;
   return ServiceWorkerExternalRequestResult::kOk;
 }
@@ -1034,7 +1036,8 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
       worker_host_->container_host()->CreateServiceWorkerRegistrationObjectInfo(
           std::move(registration)),
       worker_host_->container_host()->CreateServiceWorkerObjectInfoToSend(this),
-      fetch_handler_existence_, std::move(reporting_observer_receiver_));
+      fetch_handler_existence_, std::move(reporting_observer_receiver_),
+      ancestor_frame_type_);
 
   is_endpoint_ready_ = true;
 }

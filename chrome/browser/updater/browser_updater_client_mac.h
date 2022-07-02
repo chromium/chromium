@@ -21,15 +21,15 @@
 
 class BrowserUpdaterClientMac : public BrowserUpdaterClient {
  public:
-  BrowserUpdaterClientMac();
+  explicit BrowserUpdaterClientMac(updater::UpdaterScope scope);
   explicit BrowserUpdaterClientMac(
       base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client);
-
   void GetUpdaterVersion(
       base::OnceCallback<void(const std::string&)> callback) override;
-  void ResetConnection(updater::UpdaterScope scope) override;
 
  private:
+  friend class UpdateClientMacTest;
+
   ~BrowserUpdaterClientMac() override;
 
   SEQUENCE_CHECKER(sequence_checker_);

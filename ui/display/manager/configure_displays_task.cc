@@ -151,12 +151,11 @@ void UpdateRefreshRateUma(const DisplayConfigureRequest& request,
 
   // Check if the refresh value is within an epsilon from one of the common
   // refresh rate values.
-  for (size_t i = 0; i < std::size(kCommonDisplayRefreshRates); ++i) {
-    const bool is_within_epsilon =
-        std::abs(request.mode->refresh_rate() - kCommonDisplayRefreshRates[i]) <
-        kRefreshRateEpsilon;
+  for (float common_rate : kCommonDisplayRefreshRates) {
+    const bool is_within_epsilon = std::abs(request.mode->refresh_rate() -
+                                            common_rate) < kRefreshRateEpsilon;
     if (is_within_epsilon) {
-      histogram->Add(kCommonDisplayRefreshRates[i]);
+      histogram->Add(common_rate);
       return;
     }
   }
@@ -185,21 +184,21 @@ void UpdateFinalStatusUma(
   int mst_external_displays = 0;
   size_t total_external_displays = requests_and_statuses.size();
   for (auto& request_and_status : requests_and_statuses) {
-    const DisplayConfigureRequest& request = request_and_status.first;
+    const DisplayConfigureRequest* request = request_and_status.first;
 
     // Is this display SST (single-stream vs. MST multi-stream).
-    const bool sst_display = request.display->base_connector_id() &&
-                             request.display->path_topology().empty();
+    const bool sst_display = request->display->base_connector_id() &&
+                             request->display->path_topology().empty();
     if (!sst_display)
       mst_external_displays++;
 
-    if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+    if (request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
       total_external_displays--;
 
-    const std::string uma_name_prefix = GetUmaNamePrefixForRequest(request);
+    const std::string uma_name_prefix = GetUmaNamePrefixForRequest(*request);
     if (request_and_status.second) {
-      UpdateResolutionUma(request, uma_name_prefix + "Success.Resolution");
-      UpdateRefreshRateUma(request, uma_name_prefix + "Success.RefreshRate");
+      UpdateResolutionUma(*request, uma_name_prefix + "Success.Resolution");
+      UpdateRefreshRateUma(*request, uma_name_prefix + "Success.RefreshRate");
     }
     base::UmaHistogramBoolean(uma_name_prefix + "FinalStatus",
                               request_and_status.second);
@@ -239,6 +238,11 @@ ConfigureDisplaysTask::ConfigureDisplaysTask(
       task_status_(SUCCESS) {
   delegate_->AddObserver(this);
 }
+
+ConfigureDisplaysTask::RequestToOriginalMode::RequestToOriginalMode(
+    DisplayConfigureRequest* request,
+    const DisplayMode* original_mode)
+    : request(request), original_mode(original_mode) {}
 
 ConfigureDisplaysTask::~ConfigureDisplaysTask() {
   delegate_->RemoveObserver(this);
@@ -284,12 +288,15 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
   UpdateAttemptSucceededUma(requests_, config_success);
 
   if (!config_success) {
-    // Partition |requests_| into smaller groups, update the task's state, and
-    // initiate the retry logic. The next time |delegate_|->Configure()
-    // terminates OnRetryConfigured() will be executed instead.
+    // Partition |requests_| into smaller groups via
+    // |pending_display_group_requests_|, update the task's state, and initiate
+    // the retry logic. The next time |delegate_|->Configure() terminates
+    // OnRetryConfigured() will be executed instead.
     PartitionRequests();
     DCHECK(!pending_display_group_requests_.empty());
-    requests_ = pending_display_group_requests_.front();
+    // Prep the first group
+    for (const auto& pair : pending_display_group_requests_.front())
+      pair.request->mode = pair.original_mode;
     task_status_ = PARTIAL_SUCCESS;
     Run();
     return;
@@ -297,10 +304,10 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
 
   // This code execute only when the first modeset attempt fully succeeds.
   // Update the displays' status and report success.
-  for (const auto& request : requests_) {
+  for (const DisplayConfigureRequest& request : requests_) {
     request.display->set_current_mode(request.mode);
     request.display->set_origin(request.origin);
-    final_requests_status_.emplace_back(std::make_pair(request, true));
+    final_requests_status_.emplace_back(std::make_pair(&request, true));
   }
 
   UpdateFinalStatusUma(final_requests_status_);
@@ -313,31 +320,40 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
   if (!config_success) {
     // If one of the largest display request can be downgraded, try again.
     // Otherwise this configuration task is a failure.
-    if (DowngradeLargestRequestWithAlternativeModes()) {
+    if (DowngradeDisplayRequestGroup()) {
       Run();
       return;
     } else {
+      // Disable all displays in the current group, since we failed to find an
+      // alternative mode. Note that we skip modeset if the latest (or a
+      // single) pending group fails. There is no point in disabling displays
+      // that are already disabled from previous attempts and failed to change
+      // mode.
+      for (const auto& pair : pending_display_group_requests_.front())
+        pair.request->mode = nullptr;
       task_status_ = ERROR;
     }
   }
 
   // This code executes only when this display group request fully succeeds or
   // fails to modeset. Update the final status of this group.
-  for (const auto& request : requests_) {
+  for (const auto& pair : pending_display_group_requests_.front()) {
+    const DisplayConfigureRequest* request = pair.request;
     final_requests_status_.emplace_back(
         std::make_pair(request, config_success));
     if (config_success) {
-      request.display->set_current_mode(request.mode);
-      request.display->set_origin(request.origin);
+      request->display->set_current_mode(request->mode);
+      request->display->set_origin(request->origin);
     }
   }
 
   // Subsequent modeset attempts will be done on the next pending display group,
   // if one exists.
   pending_display_group_requests_.pop();
-  requests_.clear();
   if (!pending_display_group_requests_.empty()) {
-    requests_ = pending_display_group_requests_.front();
+    // Prep the next group
+    for (const auto& pair : pending_display_group_requests_.front())
+      pair.request->mode = pair.original_mode;
     Run();
     return;
   }
@@ -350,25 +366,20 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
 void ConfigureDisplaysTask::PartitionRequests() {
   pending_display_group_requests_ = PartitionedRequestsQueue();
 
-  // PartitionRequests occurs when the first modeset fails and we start by
-  // modesetting the groups of connectors one after the other. When doing this,
-  // we must start by resetting the state and the allocation of resources to
-  // turn off any displays hogging the resources.
-  std::vector<DisplayConfigureRequest> disable_requests;
-  for (const DisplayConfigureRequest& request : requests_)
-    disable_requests.emplace_back(request.display, nullptr, gfx::Point());
-  pending_display_group_requests_.push(disable_requests);
-
   base::flat_set<uint64_t> handled_connectors;
   for (size_t i = 0; i < requests_.size(); ++i) {
     uint64_t connector_id = requests_[i].display->base_connector_id();
     if (handled_connectors.find(connector_id) != handled_connectors.end())
       continue;
 
-    std::vector<DisplayConfigureRequest> request_group;
+    std::vector<ConfigureDisplaysTask::RequestToOriginalMode> request_group;
     for (size_t j = i; j < requests_.size(); ++j) {
-      if (connector_id == requests_[j].display->base_connector_id())
-        request_group.push_back(requests_[j]);
+      if (connector_id == requests_[j].display->base_connector_id()) {
+        // Disable all requests in preparation increment connector retries after
+        // mapping them to their original request.
+        request_group.emplace_back(&requests_[j], requests_[j].mode);
+        requests_[j].mode = nullptr;
+      }
     }
 
     handled_connectors.insert(connector_id);
@@ -376,7 +387,7 @@ void ConfigureDisplaysTask::PartitionRequests() {
   }
 }
 
-bool ConfigureDisplaysTask::DowngradeLargestRequestWithAlternativeModes() {
+bool ConfigureDisplaysTask::DowngradeDisplayRequestGroup() {
   auto cmp = [](DisplayConfigureRequest* lhs, DisplayConfigureRequest* rhs) {
     return *lhs->mode < *rhs->mode;
   };
@@ -384,14 +395,14 @@ bool ConfigureDisplaysTask::DowngradeLargestRequestWithAlternativeModes() {
                       std::vector<DisplayConfigureRequest*>, decltype(cmp)>
       sorted_requests(cmp);
 
-  for (auto& request : requests_) {
-    if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+  for (const auto& pair : pending_display_group_requests_.front()) {
+    if (pair.request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
       continue;
 
-    if (!request.mode)
+    if (!pair.request->mode)
       continue;
 
-    sorted_requests.push(&request);
+    sorted_requests.push(pair.request);
   }
 
   // Fail if there are no viable candidates to downgrade

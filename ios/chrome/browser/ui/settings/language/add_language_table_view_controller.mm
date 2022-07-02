@@ -202,7 +202,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Helper methods
 
 // Populates the language items in the language section. Queries the data source
-// if |fromDataSource| is true. Otherwise uses the previously loaded items.
+// if `fromDataSource` is true. Otherwise uses the previously loaded items.
 - (void)populateLanguagesSectionFromDataSource:(BOOL)fromDataSource {
   TableViewModel* model = self.tableViewModel;
 
@@ -227,7 +227,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Reloads the language items in the language section. Queries the data source
-// if |fromDataSource| is true. Otherwise uses the previously loaded items.
+// if `fromDataSource` is true. Otherwise uses the previously loaded items.
 - (void)updateLanguagesSectionFromDataSource:(BOOL)fromDataSource {
   // Update the model.
   [self.tableViewModel

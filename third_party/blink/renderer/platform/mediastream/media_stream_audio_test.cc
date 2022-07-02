@@ -20,7 +20,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
@@ -249,7 +249,7 @@ class MediaStreamAudioTest : public ::testing::Test {
         String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("audio_track"), false /* remote */,
         std::make_unique<FakeMediaStreamAudioSource>());
-    audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
+    audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source_->Id(), audio_source_,
         std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   }
@@ -328,7 +328,7 @@ TEST_F(MediaStreamAudioTest, ConnectTrackAfterSourceStopped) {
   EXPECT_TRUE(source()->was_stopped());
 
   // Now, connect another track. ConnectToInitializedTrack() will return false.
-  auto* another_component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* another_component = MakeGarbageCollected<MediaStreamComponentImpl>(
       audio_source_->Id(), audio_source_,
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   EXPECT_FALSE(source()->ConnectToInitializedTrack(another_component));
@@ -415,7 +415,7 @@ TEST_F(MediaStreamAudioTest, EnableAndDisableTracks) {
   // Create a second track and a second sink, but this time the track starts out
   // disabled. Expect the sink to be notified at the start that the track is
   // disabled.
-  auto* another_component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* another_component = MakeGarbageCollected<MediaStreamComponentImpl>(
       audio_source_->Id(), audio_source_,
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   EXPECT_TRUE(source()->ConnectToInitializedTrack(another_component));

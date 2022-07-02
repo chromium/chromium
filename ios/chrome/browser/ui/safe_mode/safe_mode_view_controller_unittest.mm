@@ -34,7 +34,7 @@ class SafeModeViewControllerTest : public PlatformTest {
         [OCMockObject mockForClass:[BreakpadController class]];
 
     // Swizzle +[BreakpadController sharedInstance] to return
-    // |mock_breakpad_controller_| instead of the normal singleton instance.
+    // `mock_breakpad_controller_` instead of the normal singleton instance.
     id implementation_block = ^BreakpadController*(id self) {
       return mock_breakpad_controller_;
     };

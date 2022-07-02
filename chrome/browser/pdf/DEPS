@@ -8,6 +8,6 @@ specific_include_rules = {
     "+chrome/browser/ui/views/location_bar/zoom_bubble_view.h",
   ],
   "pdf_find_request_manager_browsertest\.cc": [
-    "+pdf/document_loader_impl.h",
+    "+pdf/loader/document_loader_impl.h",
   ],
 }

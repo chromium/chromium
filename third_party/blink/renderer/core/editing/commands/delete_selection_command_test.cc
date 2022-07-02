@@ -132,7 +132,7 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
       SetSelectionTextToBody(
           "^<style>body{-webkit-user-modify:read-write}</style>x|"),
       SetSelectionOptions());
-  EXPECT_TRUE(HasEditableStyle(*GetDocument().body()));
+  EXPECT_TRUE(IsEditable(*GetDocument().body()));
 
   DeleteSelectionCommand& command =
       *MakeGarbageCollected<DeleteSelectionCommand>(
@@ -145,7 +145,7 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
 
   // The command removes the <style>, so the <body> stops being editable,
   // and then "x" is not removed.
-  EXPECT_FALSE(HasEditableStyle(*GetDocument().body()));
+  EXPECT_FALSE(IsEditable(*GetDocument().body()));
   EXPECT_EQ("|x", GetSelectionTextFromBody());
 }
 

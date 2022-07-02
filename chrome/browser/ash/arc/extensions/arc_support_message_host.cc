@@ -41,7 +41,7 @@ ArcSupportMessageHost::~ArcSupportMessageHost() {
   }
 }
 
-void ArcSupportMessageHost::SendMessage(const base::Value& message) {
+void ArcSupportMessageHost::SendMessage(const base::ValueView& message) {
   if (!client_)
     return;
 
@@ -77,15 +77,13 @@ void ArcSupportMessageHost::OnMessage(const std::string& message_string) {
   // which on Chrome OS runs in the browser process.
   // Therefore this use of JSONReader does not violate
   // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md.
-  std::unique_ptr<base::Value> message_value =
-      base::JSONReader::ReadDeprecated(message_string);
-  base::DictionaryValue* message;
-  if (!message_value || !message_value->GetAsDictionary(&message)) {
+  absl::optional<base::Value> message = base::JSONReader::Read(message_string);
+  if (!message || !message->is_dict()) {
     NOTREACHED();
     return;
   }
 
-  observer_->OnMessage(*message);
+  observer_->OnMessage(message->GetDict());
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> ArcSupportMessageHost::task_runner()

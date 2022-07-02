@@ -8,8 +8,8 @@
 @class ChromeBroadcaster;
 @class ToolbarUIState;
 
-// Checks whether |ui_state|'s broadcast properties are being broadcast through
-// |broadcaster|. Verifies broadcast setup according to |should_broadcast|.
+// Checks whether `ui_state`'s broadcast properties are being broadcast through
+// `broadcaster`. Verifies broadcast setup according to `should_broadcast`.
 void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
                               ChromeBroadcaster* broadcaster,
                               bool should_broadcast);

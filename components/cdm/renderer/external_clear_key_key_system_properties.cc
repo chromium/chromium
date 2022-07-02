@@ -74,9 +74,9 @@ media::EmeConfigRule ExternalClearKeyProperties::GetRobustnessConfigRule(
 }
 
 // Persistent license sessions are faked.
-media::EmeSessionTypeSupport
+media::EmeConfigRule
 ExternalClearKeyProperties::GetPersistentLicenseSessionSupport() const {
-  return media::EmeSessionTypeSupport::SUPPORTED;
+  return media::EmeConfigRule::SUPPORTED;
 }
 
 media::EmeFeatureSupport ExternalClearKeyProperties::GetPersistentStateSupport()

@@ -30,6 +30,7 @@ source_set("passwords") {
     "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/strings:components_strings_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill:autofill_shared",

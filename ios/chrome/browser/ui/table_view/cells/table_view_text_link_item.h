@@ -18,7 +18,7 @@ class GURL;
 
 // Delegate for TableViewTextLinkCell.
 @protocol TableViewTextLinkCellDelegate<NSObject>
-// Notifies the delegate that |URL| should be opened.
+// Notifies the delegate that `URL` should be opened.
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
             didRequestOpenURL:(CrURL*)URL;
 @end
@@ -29,8 +29,8 @@ class GURL;
 @property(nonatomic, readwrite, strong) NSString* text;
 // URL links being stored by this item.
 @property(nonatomic, assign) std::vector<GURL> linkURLs;
-// Character range for the links in |linkURLs|. Order should match order in
-// |linkURLs|.
+// Character range for the links in `linkURLs`. Order should match order in
+// `linkURLs`.
 @property(nonatomic, strong) NSArray* linkRanges;
 
 @end
@@ -42,10 +42,10 @@ class GURL;
 // Delegate for the TableViewTextLinkCell. Is notified when a link is
 // tapped.
 @property(nonatomic, weak) id<TableViewTextLinkCellDelegate> delegate;
-// Sets the |URL| link on the cell's label if the corresponding item's |linkURL|
-// is valid and |textLabel| contains the proper LINK delimiters.
+// Sets the `URL` link on the cell's label if the corresponding item's `linkURL`
+// is valid and `textLabel` contains the proper LINK delimiters.
 - (void)setLinkURL:(CrURL*)URL;
-// Sets the |URL| link on the cell's label for |range|.
+// Sets the `URL` link on the cell's label for `range`.
 - (void)setLinkURL:(CrURL*)URL forRange:(NSRange)range;
 
 @end

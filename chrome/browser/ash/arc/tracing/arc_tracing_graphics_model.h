@@ -165,15 +165,15 @@ class ArcTracingGraphicsModel {
   // Builds the model from the common tracing model |common_model|.
   bool Build(const ArcTracingModel& common_model);
 
-  // Serializes the model to |base::DictionaryValue|, this can be passed to
+  // Serializes the model to |base::Value::Dict|, this can be passed to
   // javascript for rendering.
-  std::unique_ptr<base::DictionaryValue> Serialize() const;
+  base::Value::Dict Serialize() const;
   // Serializes the model to Json string.
   std::string SerializeToJson() const;
   // Loads the model from Json string.
   bool LoadFromJson(const std::string& json_data);
-  // Loads the model from |base::DictionaryValue|.
-  bool LoadFromValue(const base::DictionaryValue& root);
+  // Loads the model from |base::Value::Dict|.
+  bool LoadFromValue(const base::Value::Dict& root);
 
   uint64_t duration() const { return duration_; }
   base::Time timestamp() const { return timestamp_; }

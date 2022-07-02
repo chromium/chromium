@@ -50,6 +50,9 @@ def main():
     minified_js = os.path.join(tmp_out_dir, 'polymer_bundled.min.js')
     node.RunNode([
         node_modules.PathToTerser(), bundled_js,
+        '--compress',
+        '--mangle',
+        '--module',
         # TODO(dpapad): Figure out a way to deduplicate LICENSE headers. In the
         # meantime exclude such comments to reduce file size.
         '--comments', 'false',

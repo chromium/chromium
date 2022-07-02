@@ -8,6 +8,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -18,11 +20,14 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/weblayer_ping_manager_factory.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 #include "weblayer/test/weblayer_browser_test.h"
 
-namespace weblayer {
+using safe_browsing::ClientSafeBrowsingReportRequest;
+using ReportThreatDetailsResult =
+    safe_browsing::PingManager::ReportThreatDetailsResult;
 
-class TestSafeBrowsingTokenFetcher;
+namespace weblayer {
 
 class WeblayerPingManagerTest : public WebLayerBrowserTest {
  public:
@@ -44,7 +49,7 @@ class WeblayerPingManagerTest : public WebLayerBrowserTest {
   bool is_remove_cookies_feature_enabled_ = true;
 
  private:
-  TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(
+  safe_browsing::TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(
       safe_browsing::PingManager* ping_manager);
 };
 class RemoveCookiesFeatureDisabledWeblayerPingManagerTest
@@ -74,32 +79,11 @@ class IncognitoModeWeblayerPingManagerTest : public WeblayerPingManagerTest {
   IncognitoModeWeblayerPingManagerTest() { SetShellStartsInIncognitoMode(); }
 };
 
-class TestSafeBrowsingTokenFetcher
-    : public safe_browsing::SafeBrowsingTokenFetcher {
- public:
-  TestSafeBrowsingTokenFetcher() = default;
-  ~TestSafeBrowsingTokenFetcher() override { RunAccessTokenCallback(""); }
-
-  void Start(Callback callback) override {
-    callback_ = std::move(callback);
-    was_start_called_ = true;
-  }
-  void RunAccessTokenCallback(std::string token) {
-    if (callback_) {
-      std::move(callback_).Run(token);
-    }
-  }
-  bool WasStartCalled() { return was_start_called_; }
-  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  Callback callback_;
-  bool was_start_called_ = false;
-};
-
-TestSafeBrowsingTokenFetcher* WeblayerPingManagerTest::SetUpTokenFetcher(
+safe_browsing::TestSafeBrowsingTokenFetcher*
+WeblayerPingManagerTest::SetUpTokenFetcher(
     safe_browsing::PingManager* ping_manager) {
-  auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
+  auto token_fetcher =
+      std::make_unique<safe_browsing::TestSafeBrowsingTokenFetcher>();
   auto* raw_token_fetcher = token_fetcher.get();
   ping_manager->SetTokenFetcherForTesting(std::move(token_fetcher));
   return raw_token_fetcher;
@@ -110,6 +94,7 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
     bool is_signed_in,
     bool expect_access_token,
     bool expect_cookies_removed) {
+  base::RunLoop csbrr_logged_run_loop;
   base::HistogramTester histogram_tester;
   if (is_enhanced_protection) {
     SetSafeBrowsingState(GetProfile()->GetBrowserContext()->pref_service(),
@@ -121,13 +106,29 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
   auto* ping_manager = WebLayerPingManagerFactory::GetForBrowserContext(
       GetProfile()->GetBrowserContext());
   auto* raw_token_fetcher = SetUpTokenFetcher(ping_manager);
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  safe_browsing::WebUIInfoSingleton::GetInstance()
+      ->SetOnCSBRRLoggedCallbackForTesting(csbrr_logged_run_loop.QuitClosure());
 
   std::string access_token = "testing_access_token";
-  std::string report_content = "testing_report_content";
+  std::string input_report_content;
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  // The report must be non-empty. The selected property to set is arbitrary.
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+  EXPECT_TRUE(report->SerializeToString(&input_report_content));
+  ClientSafeBrowsingReportRequest expected_report;
+  expected_report.ParseFromString(input_report_content);
+  *expected_report.mutable_population() =
+      GetUserPopulationForBrowserContext(GetProfile()->GetBrowserContext());
+  std::string expected_report_content;
+  EXPECT_TRUE(expected_report.SerializeToString(&expected_report_content));
+  EXPECT_NE(input_report_content, expected_report_content);
+
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        EXPECT_EQ(GetUploadData(request), report_content);
+        EXPECT_EQ(GetUploadData(request), expected_report_content);
         std::string header_value;
         bool found_header = request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &header_value);
@@ -148,11 +149,18 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
 
-  ping_manager->ReportThreatDetails(report_content);
+  ReportThreatDetailsResult result =
+      ping_manager->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, ReportThreatDetailsResult::SUCCESS);
   EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
   if (expect_access_token) {
     raw_token_fetcher->RunAccessTokenCallback(access_token);
   }
+  csbrr_logged_run_loop.Run();
+  EXPECT_EQ(
+      safe_browsing::WebUIInfoSingleton::GetInstance()->csbrrs_sent().size(),
+      1u);
+  safe_browsing::WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,

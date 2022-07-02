@@ -96,7 +96,7 @@ void PwgRasterConverterHelper::Convert(
     return;
   }
 
-  // TODO(thestig): Write |data| into shared memory in the first place, to avoid
+  // TODO(thestig): Write `data` into shared memory in the first place, to avoid
   // this memcpy().
   memcpy(memory.mapping.memory(), data->front(), data->size());
   pdf_to_pwg_raster_converter_remote_->Convert(
@@ -209,11 +209,11 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   if (duplex_item.LoadFrom(ticket))
     duplex_value = duplex_item.value();
 
-  // This assumes |ticket| contains a color ticket item. In case it does not, or
-  // the color is invalid, |color_value| will default to AUTO_COLOR, which works
+  // This assumes `ticket` contains a color ticket item. In case it does not, or
+  // the color is invalid, `color_value` will default to AUTO_COLOR, which works
   // just fine. With AUTO_COLOR, it may be possible to better determine the
-  // value for |use_color| based on |printer_capabilities|, rather than just
-  // defaulting to the safe value of true. Parsing |printer_capabilities|
+  // value for `use_color` based on `printer_capabilities`, rather than just
+  // defaulting to the safe value of true. Parsing `printer_capabilities`
   // requires work, which this method is avoiding on purpose.
   cloud_devices::printer::Color color_value;
   cloud_devices::printer::ColorTicketItem color_item;
@@ -235,12 +235,12 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
 
     default:
       NOTREACHED();
-      use_color = true;  // Still need to initialize |color| or MSVC will warn.
+      use_color = true;  // Still need to initialize `color` or MSVC will warn.
       break;
   }
 
   cloud_devices::printer::PwgRasterConfigCapability raster_capability;
-  // If the raster capability fails to load, |raster_capability| will contain
+  // If the raster capability fails to load, `raster_capability` will contain
   // the default value.
   raster_capability.LoadFrom(printer_capabilities);
   cloud_devices::printer::DocumentSheetBack document_sheet_back =
@@ -276,7 +276,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   result.rotate_all_pages = raster_capability.value().rotate_all_pages;
   result.reverse_page_order = raster_capability.value().reverse_order_streaming;
 
-  // No need to check for SRGB_8 support in |types|. CDD spec says:
+  // No need to check for SRGB_8 support in `types`. CDD spec says:
   // "any printer that doesn't support SGRAY_8 must be able to perform
   // conversion from RGB to grayscale... "
   const auto& types = raster_capability.value().document_types_supported;

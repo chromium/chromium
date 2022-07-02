@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/version.h"
 
+using DWORD = unsigned long;  // NOLINT(runtime/int)
 using HANDLE = void*;
 struct _OSVERSIONINFOEXW;
 struct _SYSTEM_INFO;
@@ -33,29 +34,29 @@ namespace win {
 enum class Version {
   PRE_XP = 0,  // Not supported.
   XP = 1,
-  SERVER_2003 = 2,  // Also includes XP Pro x64 and Server 2003 R2.
-  VISTA = 3,        // Also includes Windows Server 2008.
-  WIN7 = 4,         // Also includes Windows Server 2008 R2.
-  WIN8 = 5,         // Also includes Windows Server 2012.
-  WIN8_1 = 6,       // Also includes Windows Server 2012 R2.
-  WIN10 = 7,        // Threshold 1: Version 1507, Build 10240.
-  WIN10_TH2 = 8,    // Threshold 2: Version 1511, Build 10586.
-  WIN10_RS1 = 9,    // Redstone 1: Version 1607, Build 14393.
-                    // Also includes Windows Server 2016
-  WIN10_RS2 = 10,   // Redstone 2: Version 1703, Build 15063.
-  WIN10_RS3 = 11,   // Redstone 3: Version 1709, Build 16299.
-  WIN10_RS4 = 12,   // Redstone 4: Version 1803, Build 17134.
-  WIN10_RS5 = 13,   // Redstone 5: Version 1809, Build 17763.
-                    // Also includes Windows Server 2019
-  WIN10_19H1 = 14,  // 19H1: Version 1903, Build 18362.
-  WIN10_19H2 = 15,  // 19H2: Version 1909, Build 18363.
-  WIN10_20H1 = 16,  // 20H1: Build 19041.
-  WIN10_20H2 = 17,  // 20H2: Build 19042.
-  WIN10_21H1 = 18,  // 21H1: Build 19043.
-  WIN10_21H2 = 19,  // Win10 21H2: Build 19044.
-  SERVER_2022 = 20, // Server 2022: Build 20348.
-  WIN11 = 21,       // Win11 21H2: Build 22000.
-  WIN_LAST,         // Indicates error condition.
+  SERVER_2003 = 2,   // Also includes XP Pro x64 and Server 2003 R2.
+  VISTA = 3,         // Also includes Windows Server 2008.
+  WIN7 = 4,          // Also includes Windows Server 2008 R2.
+  WIN8 = 5,          // Also includes Windows Server 2012.
+  WIN8_1 = 6,        // Also includes Windows Server 2012 R2.
+  WIN10 = 7,         // Threshold 1: Version 1507, Build 10240.
+  WIN10_TH2 = 8,     // Threshold 2: Version 1511, Build 10586.
+  WIN10_RS1 = 9,     // Redstone 1: Version 1607, Build 14393.
+                     // Also includes Windows Server 2016
+  WIN10_RS2 = 10,    // Redstone 2: Version 1703, Build 15063.
+  WIN10_RS3 = 11,    // Redstone 3: Version 1709, Build 16299.
+  WIN10_RS4 = 12,    // Redstone 4: Version 1803, Build 17134.
+  WIN10_RS5 = 13,    // Redstone 5: Version 1809, Build 17763.
+                     // Also includes Windows Server 2019
+  WIN10_19H1 = 14,   // 19H1: Version 1903, Build 18362.
+  WIN10_19H2 = 15,   // 19H2: Version 1909, Build 18363.
+  WIN10_20H1 = 16,   // 20H1: Build 19041.
+  WIN10_20H2 = 17,   // 20H2: Build 19042.
+  WIN10_21H1 = 18,   // 21H1: Build 19043.
+  WIN10_21H2 = 19,   // Win10 21H2: Build 19044.
+  SERVER_2022 = 20,  // Server 2022: Build 20348.
+  WIN11 = 21,        // Win11 21H2: Build 22000.
+  WIN_LAST,          // Indicates error condition.
 };
 
 // A rough bucketing of the available types of versions of Windows. This is used
@@ -183,7 +184,7 @@ class BASE_EXPORT OSInfo {
 
   OSInfo(const _OSVERSIONINFOEXW& version_info,
          const _SYSTEM_INFO& system_info,
-         int os_type);
+         DWORD os_type);
   ~OSInfo();
 
   // Returns a Version value for a given OS version tuple.

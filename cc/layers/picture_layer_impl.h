@@ -214,7 +214,7 @@ class CC_EXPORT PictureLayerImpl
 
   void SanityCheckTilingState() const;
 
-  void GetDebugBorderProperties(SkColor* color, float* width) const override;
+  void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const override;
   void AsValueInto(base::trace_event::TracedValue* dict) const override;

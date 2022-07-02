@@ -1332,14 +1332,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
       tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
 }
 
-// TODO(crbug.com/1325235): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreWebUI) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
   const GURL webui_url(chrome::kChromeUIOmniboxURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              old_tab->GetMainFrame()->GetEnabledBindings());
+              old_tab->GetPrimaryMainFrame()->GetEnabledBindings());
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
@@ -1347,7 +1346,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreWebUI) {
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              new_tab->GetMainFrame()->GetEnabledBindings());
+              new_tab->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // http://crbug.com/803510 : Flaky on dbg and ASan bots.
@@ -1361,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreWebUISettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(old_tab->GetMainFrame()->GetEnabledBindings() &
+  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
               content::BINDINGS_POLICY_WEB_UI);
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
@@ -1369,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreWebUISettings) {
   content::WebContents* new_tab =
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
-  EXPECT_TRUE(new_tab->GetMainFrame()->GetEnabledBindings() &
+  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
               content::BINDINGS_POLICY_WEB_UI);
 }
 
@@ -1833,7 +1832,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
   // Select the pinned tab.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
   Profile* profile = browser()->profile();
 
@@ -2256,7 +2256,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
   // Activate the tabs one by one following the specified activation order.
   for (int i : activation_order)
     browser()->tab_strip_model()->ActivateTabAt(
-        i, {TabStripModel::GestureType::kOther});
+        i, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
 
   // Close the browser.
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -2291,7 +2292,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
   // Activate the 2nd tab before the browser closes. This should be persisted in
   // the following test.
   new_browser->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
@@ -2366,7 +2368,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
   EXPECT_EQ(GetUrl3(), tab_strip_model->GetWebContentsAt(2)->GetURL());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // This test does not apply to ChromeOS as ChromeOS does not consider command
 // line urls while determining startup tabs.
 IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
@@ -2392,7 +2394,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithURLInCommandLineTest,
   EXPECT_EQ(command_line_url_, tab_strip_model->GetWebContentsAt(1)->GetURL());
   EXPECT_EQ(1, tab_strip_model->active_index());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class MultiOriginSessionRestoreTest : public SessionRestoreTest {
  public:
@@ -2509,7 +2511,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
     ASSERT_TRUE(ExecJs(tab1, "var w = window.open('/title2.html');"));
     old_popup = popup_observer.GetWebContents();
     EXPECT_EQ(initial_origin,
-              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_TRUE(WaitForLoadStop(old_popup));
   }
 
@@ -2521,9 +2523,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
     ASSERT_TRUE(ExecJs(tab1, "w.location.href = 'about:blank';"));
     nav_observer.Wait();
     EXPECT_EQ(GURL(url::kAboutBlankURL),
-              old_popup->GetMainFrame()->GetLastCommittedURL());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(initial_origin,
-              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // Navigate the popup to another site.
@@ -2535,8 +2537,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
         old_popup, content::JsReplace("location = $1", other_url)));
     nav_observer.Wait();
   }
-  EXPECT_EQ(other_url, old_popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, old_popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(old_popup->GetController().CanGoBack());
 
   // Kill the original browser then open a new one to trigger a restore.
@@ -2547,8 +2550,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
   old_popup = nullptr;
 
   // Verify that the restored popup hosts |other_url|.
-  EXPECT_EQ(other_url, new_popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, new_popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(new_popup->GetController().CanGoBack());
 
   // Navigate the popup back to about:blank.
@@ -2558,9 +2562,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
     nav_observer.Wait();
   }
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            new_popup->GetMainFrame()->GetLastCommittedURL());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_origin,
-            new_popup->GetMainFrame()->GetLastCommittedOrigin());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 // Test that it is possible to navigate back to a restored about:blank history
@@ -2575,8 +2579,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   content::WebContents* old_tab = GetTab(browser(), 0);
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            old_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_TRUE(old_tab->GetMainFrame()->GetLastCommittedOrigin().opaque());
+            old_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(
+      old_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 
   // Navigate the tab to another site.
   GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
@@ -2587,8 +2592,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
         old_tab, content::JsReplace("location = $1", other_url)));
     nav_observer.Wait();
   }
-  EXPECT_EQ(other_url, old_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, old_tab->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, old_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            old_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(old_tab->GetController().CanGoBack());
 
   // Kill the original browser then open a new one to trigger a restore.
@@ -2599,8 +2605,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
   old_tab = nullptr;
 
   // Verify that the restored popup hosts |other_url|.
-  EXPECT_EQ(other_url, new_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, new_tab->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, new_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            new_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(new_tab->GetController().CanGoBack());
 
   // Navigate the popup back to about:blank.
@@ -2610,8 +2617,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
     nav_observer.Wait();
   }
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            new_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_TRUE(new_tab->GetMainFrame()->GetLastCommittedOrigin().opaque());
+            new_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(
+      new_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 }
 
 // Test that it is possible to navigate back to a restored about:blank history
@@ -2632,9 +2640,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
     ASSERT_TRUE(ExecJs(tab1, "window.open('about:blank#foo')"));
     content::WebContents* old_popup = popup_observer.GetWebContents();
     EXPECT_EQ(GURL("about:blank#foo"),
-              old_popup->GetMainFrame()->GetLastCommittedURL());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(initial_origin,
-              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // Kill the original browser then open a new one to trigger a restore.
@@ -2645,9 +2653,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
 
   // Verify that the restored popup hosts about:blank#foo.
   EXPECT_EQ(GURL("about:blank#foo"),
-            new_popup->GetMainFrame()->GetLastCommittedURL());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_origin,
-            new_popup->GetMainFrame()->GetLastCommittedOrigin());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Navigate the popup to another site.
   GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
@@ -2658,8 +2666,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
         new_popup, content::JsReplace("location = $1", other_url)));
     nav_observer.Wait();
   }
-  EXPECT_EQ(other_url, new_popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, new_popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(new_popup->GetController().CanGoBack());
 
   // Navigate the popup back to about:blank#foo.
@@ -2669,9 +2678,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
     nav_observer.Wait();
   }
   EXPECT_EQ(GURL("about:blank#foo"),
-            new_popup->GetMainFrame()->GetLastCommittedURL());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_origin,
-            new_popup->GetMainFrame()->GetLastCommittedOrigin());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 // Test that it is possible to navigate back to a subframe with a restored
@@ -2687,7 +2696,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHostWrapper old_tab_main_frame(old_tab->GetMainFrame());
+  content::RenderFrameHostWrapper old_tab_main_frame(
+      old_tab->GetPrimaryMainFrame());
   EXPECT_EQ(main_url, old_tab_main_frame->GetLastCommittedURL());
   EXPECT_EQ(a_origin, old_tab_main_frame->GetLastCommittedOrigin());
   content::RenderFrameHost* subframe =
@@ -2733,7 +2743,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
   ASSERT_TRUE(new_tab->GetController().CanGoBack());
   old_tab = nullptr;
 
-  content::RenderFrameHost* new_tab_main_frame = new_tab->GetMainFrame();
+  content::RenderFrameHost* new_tab_main_frame = new_tab->GetPrimaryMainFrame();
   // Verify that the restored tab hosts: a.com(c.com).
   EXPECT_EQ(main_url, new_tab_main_frame->GetLastCommittedURL());
   EXPECT_EQ(a_origin, new_tab_main_frame->GetLastCommittedOrigin());
@@ -2783,8 +2793,9 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, RestoreInitialEntry) {
     ASSERT_TRUE(ExecJs(tab1, "window.open('/nocontent')"));
     old_popup = popup_observer.GetWebContents();
     EXPECT_EQ(GURL::EmptyGURL(),
-              old_popup->GetMainFrame()->GetLastCommittedURL());
-    EXPECT_EQ(main_origin, old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(main_origin,
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_TRUE(
         old_popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
   }
@@ -2799,9 +2810,10 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, RestoreInitialEntry) {
 
   // Verify that the restored tab is the main tab instead of the initial
   // NavigationEntry tab.
-  EXPECT_EQ(main_url, new_browser_tab->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url,
+            new_browser_tab->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(main_origin,
-            new_browser_tab->GetMainFrame()->GetLastCommittedOrigin());
+            new_browser_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_FALSE(new_browser_tab->GetController()
                    .GetLastCommittedEntry()
                    ->IsInitialEntry());
@@ -3026,8 +3038,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
     loop.Run();
   }
   // The navigation has not completed, but the renderer has come alive.
-  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+  EXPECT_TRUE(wc->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetPrimaryMainFrame()->GetLastCommittedURL().spec(), "");
 
   // Now try to navigate to `url2`. We're currently trying to load `url1` since
   // the above navigation will be delayed. Going to `url2` should be a
@@ -3107,8 +3119,8 @@ IN_PROC_BROWSER_TEST_F(
     loop.Run();
   }
   // The navigation has not completed, but the renderer has come alive.
-  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+  EXPECT_TRUE(wc->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetPrimaryMainFrame()->GetLastCommittedURL().spec(), "");
 
   content::NavigationHandleCommitObserver back_observer(wc, url1);
   // Now try to go back. We're currently at `url2`, so going back to `url1`
@@ -3708,9 +3720,10 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   web_app::AppId app_id2 = InstallPWA(profile, example_url2);
   web_app::AppId app_id3 = InstallPWA(profile, example_url3);
 
-  // Open all 3.
+  // Open all 3, browser 2 is app_popup.
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-  Browser* app_browser2 = web_app::LaunchWebAppBrowserAndWait(profile, app_id2);
+  Browser* app_browser2 = web_app::LaunchWebAppBrowserAndWait(
+      profile, app_id2, WindowOpenDisposition::NEW_POPUP);
   Browser* app_browser3 = web_app::LaunchWebAppBrowserAndWait(profile, app_id3);
 
   // 3 apps + basic browser.
@@ -3735,17 +3748,18 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   bool app3_seen = false;
   ASSERT_EQ(4u, BrowserList::GetInstance()->size());
   for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-        EXPECT_FALSE(app1_seen);
-        app1_seen = true;
-      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id2)) {
-        EXPECT_FALSE(app2_seen);
-        app2_seen = true;
-      } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id3)) {
-        EXPECT_FALSE(app3_seen);
-        app3_seen = true;
-      }
+    if (web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+      EXPECT_FALSE(app1_seen);
+      EXPECT_TRUE(browser->is_type_app());
+      app1_seen = true;
+    } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id2)) {
+      EXPECT_FALSE(app2_seen);
+      EXPECT_TRUE(browser->is_type_app_popup());
+      app2_seen = true;
+    } else if (web_app::AppBrowserController::IsForWebApp(browser, app_id3)) {
+      EXPECT_FALSE(app3_seen);
+      EXPECT_TRUE(browser->is_type_app());
+      app3_seen = true;
     }
   }
   EXPECT_TRUE(app1_seen);

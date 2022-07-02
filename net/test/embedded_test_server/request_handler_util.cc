@@ -26,8 +26,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "url/gurl.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 constexpr base::FilePath::CharType kMockHttpHeadersExtension[] =
     FILE_PATH_LITERAL("mock-http-headers");
 
@@ -254,5 +253,4 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   return http_response;
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

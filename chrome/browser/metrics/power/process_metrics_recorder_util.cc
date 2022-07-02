@@ -26,33 +26,51 @@ constexpr int kCPUUsageHistogramMin = 1;
 constexpr int kCPUUsageHistogramMax = 200 * kCPUUsageFactor;
 constexpr int kCPUUsageHistogramBucketCount = 50;
 
+#if BUILDFLAG(IS_WIN)
+bool HasConstantRateTSC() {
+#if defined(ARCH_CPU_ARM64)
+  // Constant rate TSC is never support on Arm CPUs.
+  return false;
+#else
+  // Probe the CPU to detect if constant-rate TSC is supported.
+  return base::time_internal::HasConstantRateTSC();
+#endif
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void RecordAverageCPUUsage(const char* histogram_suffix, double cpu_usage) {
+#if BUILDFLAG(IS_WIN)
+  // Skip recording the average CPU usage if the CPU doesn't support constant
+  // rate TSC, since Windows does not offer a way to get a precise measurement
+  // without it.
+  if (!HasConstantRateTSC())
+    return;
+#endif
+
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"PerformanceMonitor.AverageCPU5.", histogram_suffix}),
+      cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin, kCPUUsageHistogramMax,
+      kCPUUsageHistogramBucketCount);
+}
+
 }  // namespace
 
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics) {
-  base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU2.", histogram_suffix}),
-      metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
-      kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#if BUILDFLAG(IS_WIN)
-  base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU3.", histogram_suffix}),
-      metrics.precise_cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
-      kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#endif
+  RecordAverageCPUUsage(histogram_suffix, metrics.cpu_usage);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   base::UmaHistogramCounts10000(
-      base::StrCat({"PerformanceMonitor.IdleWakeups.", histogram_suffix}),
+      base::StrCat({"PerformanceMonitor.IdleWakeups2.", histogram_suffix}),
       metrics.idle_wakeups);
 #endif
 #if BUILDFLAG(IS_MAC)
   base::UmaHistogramCounts1000(
       base::StrCat(
-          {"PerformanceMonitor.PackageExitIdleWakeups.", histogram_suffix}),
+          {"PerformanceMonitor.PackageExitIdleWakeups2.", histogram_suffix}),
       metrics.package_idle_wakeups);
   base::UmaHistogramCounts100000(
-      base::StrCat({"PerformanceMonitor.EnergyImpact.", histogram_suffix}),
+      base::StrCat({"PerformanceMonitor.EnergyImpact2.", histogram_suffix}),
       metrics.energy_impact);
 #endif
 }

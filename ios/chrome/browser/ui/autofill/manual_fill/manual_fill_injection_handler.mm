@@ -45,7 +45,7 @@ using base::UmaHistogramEnumeration;
 // The object in charge of listening to form events and reporting back.
 @property(nonatomic, strong) FormObserverHelper* formHelper;
 
-// Interface for |reauthenticationModule|, handling mostly the case when no
+// Interface for `reauthenticationModule`, handling mostly the case when no
 // hardware for authentication is available.
 @property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
 

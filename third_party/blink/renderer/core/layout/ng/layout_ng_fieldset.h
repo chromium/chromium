@@ -37,7 +37,7 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
   void InvalidatePaint(const PaintInvalidatorContext& context) const final;
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }

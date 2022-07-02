@@ -77,6 +77,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameSchedulerImpl(PageSchedulerImpl* page_scheduler,
                      FrameScheduler::Delegate* delegate,
                      base::trace_event::BlameContext* blame_context,
+                     bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
   FrameSchedulerImpl(const FrameSchedulerImpl&) = delete;
   FrameSchedulerImpl& operator=(const FrameSchedulerImpl&) = delete;
@@ -94,11 +95,13 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetPaused(bool frame_paused) override;
   void SetShouldReportPostedTasksWhenDisabled(bool should_report) override;
 
-  void SetCrossOriginToMainFrame(bool cross_origin) override;
-  bool IsCrossOriginToMainFrame() const override;
+  void SetCrossOriginToNearestMainFrame(bool cross_origin) override;
+  bool IsCrossOriginToNearestMainFrame() const override;
 
   void SetIsAdFrame(bool is_ad_frame) override;
   bool IsAdFrame() const override;
+
+  bool IsInEmbeddedFrameTree() const override;
 
   void TraceUrlChange(const String& url) override;
   void AddTaskTime(base::TimeDelta time) override;
@@ -116,7 +119,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override;
   WebAgentGroupScheduler* GetAgentGroupScheduler() override;
   PageScheduler* GetPageScheduler() const override;
-  void DidStartProvisionalLoad(bool is_main_frame) override;
+  void DidStartProvisionalLoad() override;
   void DidCommitProvisionalLoad(bool is_web_history_inert_commit,
                                 NavigationType navigation_type) override;
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
@@ -206,6 +209,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
                      PageSchedulerImpl* parent_page_scheduler,
                      FrameScheduler::Delegate* delegate,
                      base::trace_event::BlameContext* blame_context,
+                     bool is_in_embedded_frame_tree,
                      FrameScheduler::FrameType frame_type);
 
   // This will construct a subframe that is not linked to any main thread or
@@ -306,7 +310,11 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   const FrameScheduler::FrameType frame_type_;
 
-  bool is_ad_frame_;
+  // Whether this scheduler is created for a frame that is contained
+  // inside an embedded frame tree. See /docs/frame_trees.md.
+  const bool is_in_embedded_frame_tree_;
+
+  bool is_ad_frame_ = false;
 
   // A running tally of (wall) time spent in tasks for this frame.
   // This is periodically forwarded and zeroed out.

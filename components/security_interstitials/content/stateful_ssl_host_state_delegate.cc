@@ -226,7 +226,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   DCHECK(web_contents);
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
@@ -279,7 +279,8 @@ void StatefulSSLHostStateDelegate::Clear(
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SSL_CERT_DECISIONS, base::Time(), base::Time::Max(),
       pattern_filter);
-  https_only_mode_allowlist_.Clear(pattern_filter);
+  https_only_mode_allowlist_.Clear(base::Time(), base::Time::Max(),
+                                   pattern_filter);
 }
 
 content::SSLHostStateDelegate::CertJudgment
@@ -291,7 +292,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
 
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
@@ -372,7 +373,7 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
 
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           /*can_create=*/false);
   bool is_nondefault_storage =
       !storage_partition ||
@@ -385,7 +386,7 @@ bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
     content::WebContents* web_contents) {
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           /*can_create=*/false);
   bool is_nondefault_storage =
       !storage_partition ||
@@ -540,7 +541,7 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
     content::WebContents* web_contents) {
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
-          web_contents->GetMainFrame()->GetSiteInstance(),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
           false /* can_create */);
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {

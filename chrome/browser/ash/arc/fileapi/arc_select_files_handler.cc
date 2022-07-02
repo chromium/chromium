@@ -116,6 +116,7 @@ ui::SelectFileDialog::Type GetDialogType(
   switch (request->action_type) {
     case mojom::SelectFilesActionType::GET_CONTENT:
     case mojom::SelectFilesActionType::OPEN_DOCUMENT:
+    case mojom::SelectFilesActionType::OPEN_MEDIA_STORE_FILES:
       return request->allow_multiple
                  ? ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE
                  : ui::SelectFileDialog::SELECT_OPEN_FILE;
@@ -257,9 +258,15 @@ void ArcSelectFilesHandler::SelectFiles(
   bool show_android_picker_apps =
       request->action_type == mojom::SelectFilesActionType::GET_CONTENT;
 
+  // In OPEN_MEDIA_STORE_FILES mode, only show volumes indexed in Android's
+  // MediaStore.
+  bool use_media_store_filter =
+      request->action_type ==
+      mojom::SelectFilesActionType::OPEN_MEDIA_STORE_FILES;
+
   bool success = dialog_holder_->SelectFile(
       dialog_type, default_path, &file_type_info, request->task_id,
-      search_query, show_android_picker_apps);
+      search_query, show_android_picker_apps, use_media_store_filter);
   if (!success) {
     std::move(callback_).Run(mojom::SelectFilesResult::New());
   }
@@ -383,7 +390,8 @@ bool SelectFileDialogHolder::SelectFile(
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int task_id,
     const std::string& search_query,
-    bool show_android_picker_apps) {
+    bool show_android_picker_apps,
+    bool use_media_store_filter) {
   aura::Window* owner_window = nullptr;
   for (auto* window : ChromeShelfController::instance()->GetArcWindows()) {
     if (arc::GetWindowTaskId(window) == task_id) {
@@ -404,14 +412,16 @@ bool SelectFileDialogHolder::SelectFile(
       type,
       /*title=*/std::u16string(), default_path, file_types,
       /*file_type_index=*/0,
-      /*params=*/nullptr, owner, search_query, show_android_picker_apps);
+      /*params=*/nullptr, owner, search_query, show_android_picker_apps,
+      use_media_store_filter);
   return true;
 }
 
 void SelectFileDialogHolder::ExecuteJavaScript(
     const std::string& script,
     content::RenderFrameHost::JavaScriptResultCallback callback) {
-  content::RenderFrameHost* frame_host = select_file_dialog_->GetMainFrame();
+  content::RenderFrameHost* frame_host =
+      select_file_dialog_->GetPrimaryMainFrame();
 
   if (!frame_host || !frame_host->IsRenderFrameLive()) {
     LOG(ERROR) << "Can't execute a script. SelectFileDialog is not ready.";

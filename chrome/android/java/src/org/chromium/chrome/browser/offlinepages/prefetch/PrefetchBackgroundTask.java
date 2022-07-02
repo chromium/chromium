@@ -28,7 +28,6 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     private static final int MINIMUM_BATTERY_PERCENTAGE_FOR_PREFETCHING = 50;
 
     private static boolean sSkipConditionCheckingForTesting;
-    private static boolean sAlwaysSupportMinimalBrowserForTesting;
     private static boolean sSkipCachingFlagForTesting;
 
     private long mNativeTask;
@@ -85,10 +84,6 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
         sSkipConditionCheckingForTesting = true;
     }
 
-    @VisibleForTesting
-    static void alwaysSupportMinimalBrowserForTesting() {
-        sAlwaysSupportMinimalBrowserForTesting = true;
-    }
 
     @Override
     protected void onStartTaskWithNative(
@@ -188,11 +183,7 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
 
     @Override
     protected boolean supportsMinimalBrowser() {
-        if (sAlwaysSupportMinimalBrowserForTesting) {
-            return true;
-        }
-
-        return PrefetchConfiguration.isMinimalBrowserForBackgroundPrefetchEnabled();
+        return true;
     }
 
     @NativeMethods

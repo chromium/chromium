@@ -30,8 +30,7 @@ bool GetPort(const net::StreamSocket& connection, uint16_t* port) {
 
 }  // namespace
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 ConnectionTracker::ConnectionTracker(EmbeddedTestServer* test_server)
     : connection_listener_(this) {
@@ -152,5 +151,4 @@ void ConnectionTracker::ConnectionListener::ReadFromSocket(
   }
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

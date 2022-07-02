@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 #define COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 
-#include <string>
-
+#include "base/unguessable_token.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace user_notes {
+
+class UserNoteInstance;
 
 // Interface that the UI layer of User Notes must implement. Used by the
 // business logic in the service to send commands to the UI.
@@ -22,13 +23,13 @@ class UserNotesUI {
 
   // Called when a note in the UI should be scrolled to / brought to the
   // foreground, and focused.
-  virtual void FocusNote(const std::string& guid) = 0;
+  virtual void FocusNote(const base::UnguessableToken& guid) = 0;
 
   // Called when the note creation UX should be shown in the UI layer. |bounds|
   // corresponds to the location in the webpage where the associated highlight
   // is, and should be compared with existing notes in the UI to determine where
   // the new note should be inserted.
-  virtual void StartNoteCreation(const std::string& guid, gfx::Rect bounds) = 0;
+  virtual void StartNoteCreation(UserNoteInstance* instance) = 0;
 
   // Called when the model has changed and the UI should consequently refresh
   // the notes it is displaying. The new model must be polled from the active

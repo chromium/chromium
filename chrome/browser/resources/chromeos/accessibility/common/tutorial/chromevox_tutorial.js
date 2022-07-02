@@ -407,11 +407,11 @@ Polymer({
     // finished loading.
     this.hideAllScreens();
     document.addEventListener('keydown', this.onKeyDown.bind(this));
-    this.addEventListener('startpractice', (evt) => {
+    this.addEventListener('startpractice', evt => {
       this.isPracticeAreaActive = true;
       this.startNudges(NudgeType.PRACTICE_AREA);
     });
-    this.addEventListener('endpractice', (evt) => {
+    this.addEventListener('endpractice', evt => {
       this.isPracticeAreaActive = false;
       this.startNudges(NudgeType.GENERAL);
     });
@@ -536,7 +536,7 @@ Polymer({
    * which is defined on the Panel window.
    */
   initializeNudges(type) {
-    const maybeGiveNudge = (msg) => {
+    const maybeGiveNudge = msg => {
       if (this.interactiveMode_) {
         // Do not announce message since ChromeVox blocks actions in interactive
         // mode.
@@ -720,7 +720,7 @@ Polymer({
       const link = document.createElement('a');
       link.innerText = this.getMsg(resource.msgId);
       link.href = resource.link;
-      link.addEventListener('click', (evt) => {
+      link.addEventListener('click', evt => {
         this.stopNudges();
         this.dispatchEvent(new CustomEvent(
             'openUrl', {composed: true, detail: {url: link.href}}));

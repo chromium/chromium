@@ -118,7 +118,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnGotDatabaseVersion(leveldb::Status status,
                             const std::vector<uint8_t>& value);
   void OnConnectionFinished();
-  void DeleteAndRecreateDatabase(const char* histogram_name);
+  void DeleteAndRecreateDatabase();
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
 
   StorageAreaHolder* GetOrCreateStorageArea(
@@ -137,19 +137,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
   void OnCommitResult(leveldb::Status status);
-
-  // These values are written to logs.  New enum values can be added, but
-  // existing enums must never be renumbered or deleted and reused.
-  enum class OpenResult {
-    DIRECTORY_OPEN_FAILED = 0,
-    DATABASE_OPEN_FAILED = 1,
-    INVALID_VERSION = 2,
-    VERSION_READ_ERROR = 3,
-    SUCCESS = 4,
-    MAX
-  };
-
-  void LogDatabaseOpenResult(OpenResult result);
 
   const base::FilePath directory_;
 
@@ -184,9 +171,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // The set of StorageKeys whose storage should be cleared on shutdown.
   std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
-
-  // Name of an extra histogram to log open results to, if not null.
-  const char* open_result_histogram_ = nullptr;
 
   mojo::Receiver<mojom::LocalStorageControl> control_receiver_{this};
 

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -178,7 +179,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private Context mContext;
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
-    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -221,8 +222,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Adds an account of given account name to AccountManagerFacade and waits for the seeding.
      */
     public CoreAccountInfo addAccount(String accountName) {
-        CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(accountName);
+        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(accountName);
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         return coreAccountInfo;
     }
@@ -231,7 +231,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * @return The primary account of the requested {@link ConsentLevel}.
      */
     public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return mAccountManagerTestRule.getPrimaryAccount(consentLevel);
+        return mSigninTestRule.getPrimaryAccount(consentLevel);
     }
 
     /**
@@ -258,7 +258,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * @return the test accountInfo that is signed in.
      */
     public CoreAccountInfo setUpAccountAndSignInForTesting() {
-        return mAccountManagerTestRule.addTestAccountThenSignin();
+        return mSigninTestRule.addTestAccountThenSignin();
     }
 
     /**
@@ -266,7 +266,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * @return the test account that is signed in.
      */
     public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
+        CoreAccountInfo accountInfo = mSigninTestRule.addTestAccountThenSigninAndEnableSync(
                 /* syncService= */ null);
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
@@ -297,8 +297,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void signOut() {
-        mAccountManagerTestRule.signOut();
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        mSigninTestRule.signOut();
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
     }
 
@@ -391,7 +391,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 statement.evaluate();
             }
         }, desc);
-        return mAccountManagerTestRule.apply(new Statement() {
+        return mSigninTestRule.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 base.evaluate();
@@ -467,8 +467,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     private CoreAccountInfo setUpAccountAndEnableSyncForTesting(boolean isChildAccount) {
-        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
-                mSyncService, isChildAccount);
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addTestAccountThenSigninAndEnableSync(mSyncService, isChildAccount);
 
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();

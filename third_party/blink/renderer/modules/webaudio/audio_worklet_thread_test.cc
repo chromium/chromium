@@ -73,7 +73,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
     return thread;
   }
 
-  // Attempts to run some simple script for |thread|.
+  // Attempts to run some simple script for `thread`.
   void CheckWorkletCanExecuteScript(WorkerThread* thread) {
     base::WaitableEvent wait_event;
     PostCrossThreadTask(

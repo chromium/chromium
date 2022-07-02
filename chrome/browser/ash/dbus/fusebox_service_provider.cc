@@ -4,99 +4,20 @@
 
 #include "chrome/browser/ash/dbus/fusebox_service_provider.h"
 
-#include <fcntl.h>
 #include <sys/stat.h>
 
-#include <string>
-#include <utility>
-
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/message.h"
-#include "net/base/io_buffer.h"
-#include "storage/browser/file_system/async_file_util.h"
-#include "storage/browser/file_system/file_stream_reader.h"
-#include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_operation_runner.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+// This file provides the "D-Bus protocol logic" half of the FuseBox server,
+// coupled with the "business logic" half in fusebox_server.cc.
 
 namespace ash {
 
 namespace {
-
-// ParseResult is the type returned by ParseCommonDBusMethodArguments. It is
-// a result type (see https://en.wikipedia.org/wiki/Result_type), being
-// either an error or a value. In this case, the error type is a
-// base::File::Error (a numeric code) and the value type is a pair of
-// storage::FileSystemContext and storage::FileSystemURL.
-struct ParseResult {
-  explicit ParseResult(base::File::Error error_code_arg);
-  ParseResult(scoped_refptr<storage::FileSystemContext> fs_context_arg,
-              storage::FileSystemURL fs_url_arg);
-  ~ParseResult();
-
-  base::File::Error error_code;
-  scoped_refptr<storage::FileSystemContext> fs_context;
-  storage::FileSystemURL fs_url;
-};
-
-ParseResult::ParseResult(base::File::Error error_code_arg)
-    : error_code(error_code_arg), fs_context(), fs_url() {}
-
-ParseResult::ParseResult(
-    scoped_refptr<storage::FileSystemContext> fs_context_arg,
-    storage::FileSystemURL fs_url_arg)
-    : error_code(base::File::Error::FILE_OK),
-      fs_context(std::move(fs_context_arg)),
-      fs_url(std::move(fs_url_arg)) {}
-
-ParseResult::~ParseResult() = default;
-
-// All of the FuseBoxServiceProvider D-Bus methods' arguments start with a
-// FileSystemURL (as a string). This function consumes and parses that first
-// argument, as well as finding the FileSystemContext we will need to serve
-// those methods.
-ParseResult ParseCommonDBusMethodArguments(dbus::MessageReader* reader) {
-  scoped_refptr<storage::FileSystemContext> fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(
-          ProfileManager::GetActiveUserProfile());
-  if (!fs_context) {
-    LOG(ERROR) << "No FileSystemContext";
-    return ParseResult(base::File::Error::FILE_ERROR_FAILED);
-  }
-
-  std::string fs_url_as_string;
-  if (!reader->PopString(&fs_url_as_string)) {
-    LOG(ERROR) << "No FileSystemURL";
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  }
-
-  storage::FileSystemURL fs_url =
-      fs_context->CrackURLInFirstPartyContext(GURL(fs_url_as_string));
-  if (!fs_url.is_valid()) {
-    LOG(ERROR) << "Invalid FileSystemURL";
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  } else if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
-    LOG(ERROR) << "Backend cannot handle "
-               << storage::GetFileSystemTypeString(fs_url.type());
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  }
-
-  return ParseResult(std::move(fs_context), std::move(fs_url));
-}
 
 void OnExportedCallback(const std::string& interface_name,
                         const std::string& method_name,
@@ -105,18 +26,7 @@ void OnExportedCallback(const std::string& interface_name,
                           << method_name;
 }
 
-// For the ReplyToEtc functions here and (§) below, the fs_context argument may
-// look unused, but we need to keep the storage::FileSystemContext reference
-// alive until these functions are called back.
-//
-// The ReplyToReadDir function is an exception. It does not have an fs_context
-// argument, since it's largely a placeholder D-Bus reply and calling
-// ReplyToReadDir does not coincide with the end of any file system operation.
-// The real reply (with its ongoing file system operation) is in
-// CallReverseReplyToReadDir.
-
-void ReplyToClose(scoped_refptr<storage::FileSystemContext> fs_context,
-                  dbus::MethodCall* method_call,
+void ReplyToClose(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender sender,
                   base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -130,10 +40,9 @@ void ReplyToClose(scoped_refptr<storage::FileSystemContext> fs_context,
   std::move(sender).Run(std::move(response));
 }
 
-void ReplyToOpenFailure(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method_call,
-                        dbus::ExportedObject::ResponseSender sender,
-                        base::File::Error error_code) {
+void ReplyToOpen(dbus::MethodCall* method_call,
+                 dbus::ExportedObject::ResponseSender sender,
+                 base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
@@ -141,15 +50,17 @@ void ReplyToOpenFailure(scoped_refptr<storage::FileSystemContext> fs_context,
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
+  // For historical reasons, append a second parameter that's no longer used.
   writer.AppendUint64(0);
 
   std::move(sender).Run(std::move(response));
 }
 
-void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method_call,
-                        dbus::ExportedObject::ResponseSender sender,
-                        base::File::Error error_code) {
+void ReplyToRead(dbus::MethodCall* method_call,
+                 dbus::ExportedObject::ResponseSender sender,
+                 base::File::Error error_code,
+                 const uint8_t* data_ptr,
+                 size_t data_len) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
@@ -157,82 +68,9 @@ void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
-  writer.AppendArrayOfBytes(nullptr, 0);
+  writer.AppendArrayOfBytes(data_ptr, data_len);
 
   std::move(sender).Run(std::move(response));
-}
-
-void ReplyToReadTypical(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method_call,
-                        dbus::ExportedObject::ResponseSender sender,
-                        std::unique_ptr<storage::FileStreamReader> fs_reader,
-                        scoped_refptr<net::IOBuffer> buffer,
-                        int length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  if (length < 0) {
-    writer.AppendInt32(
-        static_cast<int32_t>(storage::NetErrorToFileError(length)));
-    writer.AppendArrayOfBytes(nullptr, 0);
-  } else {
-    writer.AppendInt32(static_cast<int32_t>(base::File::Error::FILE_OK));
-    writer.AppendArrayOfBytes(reinterpret_cast<uint8_t*>(buffer->data()),
-                              length);
-  }
-
-  std::move(sender).Run(std::move(response));
-
-  // Clean-up / destroy I/O things on the I/O thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](std::unique_ptr<storage::FileStreamReader>,
-                        scoped_refptr<net::IOBuffer>) {
-                       // No-op other than smart pointers calling destructors.
-                     },
-                     std::move(fs_reader), std::move(buffer)));
-}
-
-void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
-                    storage::FileSystemURL fs_url,
-                    dbus::MethodCall* method_call,
-                    dbus::ExportedObject::ResponseSender sender,
-                    int64_t offset,
-                    int64_t length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  std::unique_ptr<storage::FileStreamReader> fs_reader =
-      fs_context->CreateFileStreamReader(fs_url, offset, length, base::Time());
-  if (!fs_reader) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ReplyToReadFailure, std::move(fs_context),
-                                  method_call, std::move(sender),
-                                  base::File::Error::FILE_ERROR_INVALID_URL));
-    return;
-  }
-
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(length);
-
-  // Save the pointer before we std::move fs_reader into a base::OnceCallback.
-  // The std::move keeps the underlying storage::FileStreamReader alive while
-  // any network I/O is pending. Without the std::move, the underlying
-  // storage::FileStreamReader would get destroyed at the end of this function.
-  auto* saved_fs_reader = fs_reader.get();
-
-  auto pair = base::SplitOnceCallback(base::BindPostTask(
-      content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&ReplyToReadTypical, fs_context, method_call,
-                     std::move(sender), std::move(fs_reader), buffer)));
-
-  int result =
-      saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
-  if (result != net::ERR_IO_PENDING) {  // The read was synchronous.
-    std::move(pair.second).Run(result);
-  }
 }
 
 // ReplyToReadDir and CallReverseReplyToReadDir form two halves of how the
@@ -260,21 +98,11 @@ void ReplyToReadDir(dbus::MethodCall* method_call,
   std::move(sender).Run(std::move(response));
 }
 
-void CallReverseReplyToReadDir(
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See (§) above.
-    uint64_t cookie,
-    base::File::Error error_code,
-    storage::AsyncFileUtil::EntryList entry_list,
-    bool has_more) {
+void CallReverseReplyToReadDir(uint64_t cookie,
+                               base::File::Error error_code,
+                               fusebox::DirEntryListProto protos,
+                               bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  fusebox::DirEntryListProto protos;
-  for (const auto& entry : entry_list) {
-    auto* proto = protos.add_entries();
-    constexpr auto directory = filesystem::mojom::FsFileType::DIRECTORY;
-    proto->set_is_directory(entry.type == directory);
-    proto->set_name(entry.name.value());
-  }
 
   if (auto* client = FuseBoxReverseClient::Get(); client) {
     client->ReplyToReadDir(cookie, static_cast<int32_t>(error_code),
@@ -282,8 +110,7 @@ void CallReverseReplyToReadDir(
   }
 }
 
-void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
-                 dbus::MethodCall* method_call,
+void ReplyToStat(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
                  base::File::Error error_code,
                  const base::File::Info& info) {
@@ -294,8 +121,7 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
-  mode_t mode = info.is_directory ? S_IFDIR : S_IFREG;
-  writer.AppendInt32(mode);
+  writer.AppendInt32(info.is_directory ? S_IFDIR : S_IFREG);
   writer.AppendInt64(info.size);
   writer.AppendDouble(info.last_accessed.ToDoubleT());
   writer.AppendDouble(info.last_modified.ToDoubleT());
@@ -306,14 +132,7 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
 
 }  // namespace
 
-FuseBoxServiceProvider::OnCloseCallbackTracker::OnCloseCallbackTracker(
-    base::ScopedClosureRunner on_close_callback)
-    : on_close_callback_runner(std::move(on_close_callback)) {}
-
-FuseBoxServiceProvider::OnCloseCallbackTracker::~OnCloseCallbackTracker() =
-    default;
-
-FuseBoxServiceProvider::FuseBoxServiceProvider() : next_tracker_key_(1) {}
+FuseBoxServiceProvider::FuseBoxServiceProvider() = default;
 
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
@@ -352,25 +171,15 @@ void FuseBoxServiceProvider::Close(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
-                 common.error_code);
-    return;
-  }
-
-  uint64_t cookie = 0;
-  if (!reader.PopUint64(&cookie)) {
-    LOG(ERROR) << "No Cookie";
-    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
+  std::string fs_url_as_string;
+  if (!reader.PopString(&fs_url_as_string)) {
+    ReplyToClose(method_call, std::move(sender),
                  base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
-  trackers_.erase(cookie);
-
-  ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
-               base::File::Error::FILE_OK);
+  server_.Close(fs_url_as_string,
+                base::BindOnce(&ReplyToClose, method_call, std::move(sender)));
 }
 
 void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
@@ -378,95 +187,15 @@ void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToOpenFailure(std::move(common.fs_context), method_call,
-                       std::move(sender), common.error_code);
+  std::string fs_url_as_string;
+  if (!reader.PopString(&fs_url_as_string)) {
+    ReplyToOpen(method_call, std::move(sender),
+                base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
-  int32_t flags = 0;
-  if (!reader.PopInt32(&flags)) {
-    LOG(ERROR) << "No Flags";
-    ReplyToOpenFailure(std::move(common.fs_context), method_call,
-                       std::move(sender),
-                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
-  int base_file_flags = base::File::FLAG_OPEN;
-  switch (mode_t(flags) & O_ACCMODE) {
-    case O_RDWR:
-      base_file_flags |= base::File::FLAG_READ | base::File::FLAG_WRITE;
-      break;
-    case O_WRONLY:
-      base_file_flags |= base::File::FLAG_WRITE;
-      break;
-    default:
-      base_file_flags |= base::File::FLAG_READ;
-      break;
-  }
-
-  auto reply_to_open_typical = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&FuseBoxServiceProvider::ReplyToOpenTypical,
-                     weak_ptr_factory_.GetWeakPtr(), common.fs_context,
-                     method_call, std::move(sender)));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&storage::FileSystemOperationRunner::OpenFile),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, base_file_flags, std::move(reply_to_open_typical)));
-}
-
-void FuseBoxServiceProvider::ReplyToOpenTypical(
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See (§) above.
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender,
-    base::File file,
-    base::ScopedClosureRunner on_close_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  uint64_t cookie = next_tracker_key_++;
-  scoped_refptr<OnCloseCallbackTracker> tracker;
-  if (on_close_callback) {
-    tracker = base::MakeRefCounted<OnCloseCallbackTracker>(
-        std::move(on_close_callback));
-    trackers_[cookie] = tracker;
-  } else {
-    // No-op. We don't need to track when client and server have closed, since
-    // the action we'd otherwise take is to run a null on_close_callback.
-  }
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(static_cast<int32_t>(file.error_details()));
-  writer.AppendUint64(cookie);
-  if (file.IsValid()) {
-    // AppendFileDescriptor will dup its file-descriptor argument.
-    writer.AppendFileDescriptor(file.GetPlatformFile());
-  }
-
-  std::move(sender).Run(std::move(response));
-
-  // Call base::File::Close, which can block, off the UI thread.
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {
-          base::MayBlock(),
-          base::TaskPriority::BEST_EFFORT,
-          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-      },
-      base::BindOnce(
-          [](base::File file, scoped_refptr<OnCloseCallbackTracker> tracker) {
-            file.Close();
-            // The |tracker| destructor will run after |file| was closed.
-          },
-          std::move(file), tracker));
+  server_.Open(fs_url_as_string,
+               base::BindOnce(&ReplyToOpen, method_call, std::move(sender)));
 }
 
 void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
@@ -474,34 +203,18 @@ void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToReadFailure(std::move(common.fs_context), method_call,
-                       std::move(sender), common.error_code);
-    return;
-  }
-
+  std::string fs_url_as_string;
   int64_t offset = 0;
-  if (!reader.PopInt64(&offset)) {
-    LOG(ERROR) << "No Offset";
-    ReplyToReadFailure(std::move(common.fs_context), method_call,
-                       std::move(sender),
-                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
   int32_t length = 0;
-  if (!reader.PopInt32(&length)) {
-    LOG(ERROR) << "No Length";
-    ReplyToReadFailure(std::move(common.fs_context), method_call,
-                       std::move(sender),
-                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
+  if (!reader.PopString(&fs_url_as_string) || !reader.PopInt64(&offset) ||
+      !reader.PopInt32(&length)) {
+    ReplyToRead(method_call, std::move(sender),
+                base::File::Error::FILE_ERROR_INVALID_OPERATION, nullptr, 0);
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ReadOnIOThread, common.fs_context,
-                                common.fs_url, method_call, std::move(sender),
-                                offset, static_cast<int64_t>(length)));
+  server_.Read(fs_url_as_string, offset, length,
+               base::BindOnce(&ReplyToRead, method_call, std::move(sender)));
 }
 
 void FuseBoxServiceProvider::ReadDir(
@@ -510,15 +223,9 @@ void FuseBoxServiceProvider::ReadDir(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToReadDir(method_call, std::move(sender), common.error_code);
-    return;
-  }
-
+  std::string fs_url_as_string;
   uint64_t cookie = 0;
-  if (!reader.PopUint64(&cookie)) {
-    LOG(ERROR) << "No Cookie";
+  if (!reader.PopString(&fs_url_as_string) || !reader.PopUint64(&cookie)) {
     ReplyToReadDir(method_call, std::move(sender),
                    base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
@@ -529,19 +236,8 @@ void FuseBoxServiceProvider::ReadDir(
   // batches, by CallReverseReplyToReadDir.
   ReplyToReadDir(method_call, std::move(sender), base::File::Error::FILE_OK);
 
-  auto callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                         base::BindRepeating(&CallReverseReplyToReadDir,
-                                             common.fs_context, cookie));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindRepeating(
-          base::IgnoreResult(
-              &storage::FileSystemOperationRunner::ReadDirectory),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, std::move(callback)));
+  server_.ReadDir(fs_url_as_string, cookie,
+                  base::BindRepeating(&CallReverseReplyToReadDir));
 }
 
 void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
@@ -549,31 +245,16 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
-    base::File::Info info;
-    ReplyToStat(std::move(common.fs_context), method_call, std::move(sender),
-                common.error_code, info);
+  std::string fs_url_as_string;
+  if (!reader.PopString(&fs_url_as_string)) {
+    ReplyToStat(method_call, std::move(sender),
+                base::File::Error::FILE_ERROR_INVALID_OPERATION,
+                base::File::Info());
     return;
   }
 
-  constexpr auto metadata_fields =
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
-
-  auto callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                         base::BindOnce(&ReplyToStat, common.fs_context,
-                                        method_call, std::move(sender)));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, metadata_fields, std::move(callback)));
+  server_.Stat(fs_url_as_string,
+               base::BindOnce(&ReplyToStat, method_call, std::move(sender)));
 }
 
 }  // namespace ash

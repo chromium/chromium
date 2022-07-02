@@ -54,6 +54,8 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                                  ExceptionState& exception_state);
   void unmap(ScriptState* script_state);
   void destroy(ScriptState* script_state);
+  uint64_t size() const;
+  uint32_t usage() const;
 
   void DetachMappedArrayBuffers(v8::Isolate* isolate);
 

@@ -33,9 +33,8 @@
 
 #include <atomic>
 
-#include "base/dcheck_is_on.h"
+#include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -48,29 +47,6 @@ class DeferredTaskHandler;
 }
 
 namespace WTF {
-
-class ThreadCondition;
-
-// Note: Prefer base::Lock to WTF::Mutex. The implementation is the same, this
-// will be removed. crbug.com/1290281.
-class LOCKABLE WTF_EXPORT Mutex {
- public:
-  Mutex() = default;
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true) { return lock_.Try(); }
-
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
-  void unlock() UNLOCK_FUNCTION() { lock_.Release(); }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    lock_.AssertAcquired();
-  }
-
- private:
-  base::Lock lock_;
-
-  friend class ThreadCondition;
-};
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
@@ -108,63 +84,8 @@ class LOCKABLE WTF_EXPORT RecursiveMutex {
   FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockThreads);
 };
 
-class SCOPED_LOCKABLE MutexLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
-    mutex_.lock();
-  }
-  MutexLocker(const MutexLocker&) = delete;
-  MutexLocker& operator=(const MutexLocker&) = delete;
-  ~MutexLocker() UNLOCK_FUNCTION() { mutex_.unlock(); }
-
- private:
-  Mutex& mutex_;
-};
-
-class MutexTryLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexTryLocker(Mutex& mutex) : mutex_(mutex), locked_(mutex.TryLock()) {}
-  MutexTryLocker(const MutexTryLocker&) = delete;
-  MutexTryLocker& operator=(const MutexTryLocker&) = delete;
-  ~MutexTryLocker() {
-    if (locked_)
-      mutex_.unlock();
-  }
-
-  bool Locked() const { return locked_; }
-
- private:
-  Mutex& mutex_;
-  bool locked_;
-};
-
-class WTF_EXPORT ThreadCondition final {
-  USING_FAST_MALLOC(ThreadCondition);  // Only HeapTest.cpp requires.
-
- public:
-  explicit ThreadCondition(Mutex& mutex) : cv_(&mutex.lock_) {}
-  ThreadCondition(const ThreadCondition&) = delete;
-  ThreadCondition& operator=(const ThreadCondition&) = delete;
-  ~ThreadCondition() = default;
-
-  void Wait() { cv_.Wait(); }
-  void Signal() { cv_.Signal(); }
-  void Broadcast() { cv_.Broadcast(); }
-
- private:
-  base::ConditionVariable cv_;
-};
-
 }  // namespace WTF
 
-using WTF::Mutex;
-using WTF::MutexLocker;
-using WTF::MutexTryLocker;
 using WTF::RecursiveMutex;
-using WTF::ThreadCondition;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_

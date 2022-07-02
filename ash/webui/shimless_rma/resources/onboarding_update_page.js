@@ -15,7 +15,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult, UpdateErrorCode} from './shimless_rma_types.js';
 import {disableAllButtons, enableAllButtons, enableNextButton} from './shimless_rma_util.js';
 
 /**
@@ -77,14 +77,6 @@ export class OnboardingUpdatePageElement extends
         value: '',
       },
 
-      /**
-       * TODO(joonbug): populate this and make private.
-       */
-      networkAvailable: {
-        type: Boolean,
-        value: true,
-      },
-
       /** @protected */
       updateInProgress_: {
         type: Boolean,
@@ -106,6 +98,13 @@ export class OnboardingUpdatePageElement extends
       unqualifiedComponentsText_: {
         type: String,
         value: '',
+      },
+
+
+      /** @protected */
+      osUpdateEncounteredError_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -168,8 +167,8 @@ export class OnboardingUpdatePageElement extends
     });
   }
 
-  /** @protected */
-  onUpdateButtonClicked_() {
+  /** @private */
+  updateOs_() {
     this.updateInProgress_ = true;
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
@@ -178,7 +177,20 @@ export class OnboardingUpdatePageElement extends
     });
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @protected */
+  onUpdateButtonClicked_() {
+    this.updateOs_();
+  }
+
+  /** @protected */
+  onRetryUpdateButtonClicked_() {
+    assert(this.osUpdateEncounteredError_);
+    this.osUpdateEncounteredError_ = false;
+
+    this.updateOs_();
+  }
+
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.updateOsSkipped();
   }
@@ -187,8 +199,9 @@ export class OnboardingUpdatePageElement extends
    * Implements OsUpdateObserver.onOsUpdateProgressUpdated()
    * @param {!OsUpdateOperation} operation
    * @param {number} progress
+   * @param {UpdateErrorCode} error
    */
-  onOsUpdateProgressUpdated(operation, progress) {
+  onOsUpdateProgressUpdated(operation, progress, error) {
     // Ignore progress when not updating, it is just the update available check.
     if (!this.updateInProgress_) {
       return;
@@ -199,6 +212,10 @@ export class OnboardingUpdatePageElement extends
         operation === OsUpdateOperation.kNeedPermissionToUpdate ||
         operation === OsUpdateOperation.kDisabled) {
       this.updateInProgress_ = false;
+
+      if (error !== UpdateErrorCode.kSuccess) {
+        this.osUpdateEncounteredError_ = true;
+      }
     }
   }
 
@@ -246,6 +263,14 @@ export class OnboardingUpdatePageElement extends
     } else {
       enableAllButtons(this);
     }
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowUpdateInstructions_() {
+    return !this.updateInProgress_ && !this.osUpdateEncounteredError_;
   }
 }
 

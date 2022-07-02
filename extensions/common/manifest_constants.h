@@ -160,11 +160,11 @@ extern const char kWebview[];
 extern const char kWebviewName[];
 extern const char kWebviewAccessibleResources[];
 extern const char kWebviewPartitions[];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kFileSystemProviderCapabilities[];
 extern const char kActionHandlers[];
 extern const char kActionHandlerActionKey[];
 extern const char kActionHandlerEnabledOnLockScreenKey[];
-extern const char kFileSystemProviderCapabilities[];
 #endif
 }  // namespace manifest_keys
 
@@ -461,14 +461,14 @@ extern const char kTtsGenderIsDeprecated[];
 extern const char kUnrecognizedManifestKey[];
 extern const char kUnrecognizedManifestProperty[];
 extern const char16_t kWebRequestConflictsWithLazyBackground[];
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char16_t kInvalidFileSystemProviderMissingCapabilities[];
+extern const char kInvalidFileSystemProviderMissingPermission[];
 extern const char kDuplicateActionHandlerFound[];
 extern const char kIllegalPlugins[];
 extern const char16_t kInvalidActionHandlerDictionary[];
 extern const char kInvalidActionHandlersActionType[];
 extern const char16_t kInvalidActionHandlersType[];
-extern const char16_t kInvalidFileSystemProviderMissingCapabilities[];
-extern const char kInvalidFileSystemProviderMissingPermission[];
 #endif
 
 }  // namespace manifest_errors

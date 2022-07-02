@@ -173,15 +173,16 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   request_->set_download_type(results.type);
-  if (results.archive_is_valid != FileAnalyzer::ArchiveValid::UNSET)
-    request_->set_archive_valid(results.archive_is_valid ==
-                                FileAnalyzer::ArchiveValid::VALID);
+  request_->set_archive_valid(results.archive_summary.parser_status() ==
+                              ClientDownloadRequest::ArchiveSummary::VALID);
+  request_->set_archive_file_count(results.archive_summary.file_count());
+  request_->set_archive_directory_count(
+      results.archive_summary.directory_count());
   request_->mutable_archived_binary()->CopyFrom(results.archived_binaries);
   request_->mutable_signature()->CopyFrom(results.signature_info);
   request_->mutable_image_headers()->CopyFrom(results.image_headers);
-  request_->set_archive_file_count(results.file_count);
-  request_->set_archive_directory_count(results.directory_count);
   request_->mutable_document_summary()->CopyFrom(results.document_summary);
+  request_->mutable_archive_summary()->CopyFrom(results.archive_summary);
 
 #if BUILDFLAG(IS_MAC)
   if (!results.disk_image_signature.empty()) {

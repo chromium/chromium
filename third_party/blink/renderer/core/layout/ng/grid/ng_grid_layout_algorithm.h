@@ -127,8 +127,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                   GridItems* grid_items) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
-      GridItems::Iterator group_begin,
-      GridItems::Iterator group_end,
+      GridItemDataVector::iterator group_begin,
+      GridItemDataVector::iterator group_end,
       const NGGridLayoutData& layout_data,
       const bool is_group_spanning_flex_track,
       const SizingConstraint sizing_constraint,

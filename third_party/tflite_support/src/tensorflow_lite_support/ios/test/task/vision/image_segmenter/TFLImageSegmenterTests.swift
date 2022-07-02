@@ -17,12 +17,12 @@ import XCTest
 
 @testable import TFLImageSegmenter
 
-class TFLImageSegmenterTests: XCTestCase {
+class ImageSegmenterTests: XCTestCase {
 
-  static let bundle = Bundle(for: TFLImageSegmenterTests.self)
+  static let bundle = Bundle(for: ImageSegmenterTests.self)
   static let modelPath = bundle.path(
     forResource: "deeplabv3",
-    ofType: "tflite")!
+    ofType: "tflite")
 
   // The maximum fraction of pixels in the candidate mask that can have a
   // different class than the golden mask for the test to pass.
@@ -38,7 +38,7 @@ class TFLImageSegmenterTests: XCTestCase {
 
   let deepLabV3SegmentationHeight = 257
 
-  func verifyDeeplabV3PartialSegmentationResult(_ coloredLabels: [TFLColoredLabel]) {
+  func verifyDeeplabV3PartialSegmentationResult(_ coloredLabels: [ColoredLabel]) {
 
     self.verifyColoredLabel(
       coloredLabels[0],
@@ -189,7 +189,7 @@ class TFLImageSegmenterTests: XCTestCase {
   }
 
   func verifyColoredLabel(
-    _ coloredLabel: TFLColoredLabel,
+    _ coloredLabel: ColoredLabel,
     expectedR: UInt,
     expectedG: UInt,
     expectedB: UInt,
@@ -211,20 +211,20 @@ class TFLImageSegmenterTests: XCTestCase {
 
   func testSuccessfullInferenceOnMLImageWithUIImage() throws {
 
-    let modelPath = try XCTUnwrap(TFLImageSegmenterTests.modelPath)
+    let modelPath = try XCTUnwrap(ImageSegmenterTests.modelPath)
 
-    let imageSegmenterOptions = try XCTUnwrap(TFLImageSegmenterOptions(modelPath: modelPath))
+    let imageSegmenterOptions = ImageSegmenterOptions(modelPath: modelPath)
 
     let imageSegmenter =
-      try TFLImageSegmenter.imageSegmenter(options: imageSegmenterOptions)
+      try ImageSegmenter.segmenter(options: imageSegmenterOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
         class: type(of: self),
         filename: "segmentation_input_rotation0",
         type: "jpg"))
-    let segmentationResult: TFLSegmentationResult =
-      try XCTUnwrap(imageSegmenter.segment(gmlImage: gmlImage))
+    let segmentationResult: SegmentationResult =
+      try XCTUnwrap(imageSegmenter.segment(mlImage: gmlImage))
 
     XCTAssertEqual(segmentationResult.segmentations.count, 1)
 

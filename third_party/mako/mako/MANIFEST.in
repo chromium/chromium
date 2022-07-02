@@ -1,0 +1,8 @@
+recursive-include doc *.html *.css *.txt *.js *.png *.py Makefile *.rst *.mako
+recursive-include examples *.py *.xml *.mako *.myt *.kid *.tmpl
+recursive-include test *.py *.html *.mako *.cfg
+
+include README* AUTHORS LICENSE CHANGES* tox.ini
+
+prune doc/build/output
+

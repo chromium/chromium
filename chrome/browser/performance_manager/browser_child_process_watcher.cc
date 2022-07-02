@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/process/process.h"
-#include "build/build_config.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -25,16 +24,17 @@ BrowserChildProcessWatcher::BrowserChildProcessWatcher() = default;
 
 BrowserChildProcessWatcher::~BrowserChildProcessWatcher() {
   DCHECK(!browser_process_node_);
-  DCHECK(gpu_process_nodes_.empty());
+  DCHECK(tracked_process_nodes_.empty());
 }
 
 void BrowserChildProcessWatcher::Initialize() {
   DCHECK(!browser_process_node_);
-  DCHECK(gpu_process_nodes_.empty());
+  DCHECK(tracked_process_nodes_.empty());
 
   browser_process_node_ = PerformanceManagerImpl::CreateProcessNode(
       content::PROCESS_TYPE_BROWSER, RenderProcessHostProxy());
-  OnProcessLaunched(base::Process::Current(), browser_process_node_.get());
+  OnProcessLaunched(base::Process::Current(), /*metrics_name=*/{},
+                    browser_process_node_.get());
   BrowserChildProcessObserver::Add(this);
 }
 
@@ -42,39 +42,42 @@ void BrowserChildProcessWatcher::TearDown() {
   BrowserChildProcessObserver::Remove(this);
 
   std::vector<std::unique_ptr<NodeBase>> nodes;
-  nodes.reserve(gpu_process_nodes_.size() + 1);
+  nodes.reserve(tracked_process_nodes_.size() + 1);
 
   nodes.push_back(std::move(browser_process_node_));
 
-  for (auto& node : gpu_process_nodes_)
+  for (auto& node : tracked_process_nodes_)
     nodes.push_back(std::move(node.second));
-  gpu_process_nodes_.clear();
+  tracked_process_nodes_.clear();
 
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 }
 
 void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
-  if (data.process_type == content::PROCESS_TYPE_GPU) {
-    std::unique_ptr<ProcessNodeImpl> gpu_node =
-        PerformanceManagerImpl::CreateProcessNode(content::PROCESS_TYPE_GPU,
-                                                  RenderProcessHostProxy());
-    OnProcessLaunched(data.GetProcess(), gpu_node.get());
-    gpu_process_nodes_[data.id] = std::move(gpu_node);
+  if (data.process_type == content::PROCESS_TYPE_GPU ||
+      data.process_type == content::PROCESS_TYPE_UTILITY) {
+    std::unique_ptr<ProcessNodeImpl> process_node =
+        PerformanceManagerImpl::CreateProcessNode(
+            static_cast<content::ProcessType>(data.process_type),
+            RenderProcessHostProxy());
+    OnProcessLaunched(data.GetProcess(), data.metrics_name, process_node.get());
+    tracked_process_nodes_[data.id] = std::move(process_node);
   }
 }
 
 void BrowserChildProcessWatcher::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
-  if (data.process_type == content::PROCESS_TYPE_GPU) {
-    auto it = gpu_process_nodes_.find(data.id);
+  if (data.process_type == content::PROCESS_TYPE_GPU ||
+      data.process_type == content::PROCESS_TYPE_UTILITY) {
+    auto it = tracked_process_nodes_.find(data.id);
     // Apparently there are cases where a disconnect notification arrives here
     // either multiple times for the same process, or else before a
     // launch-and-connect notification arrives.
     // See https://crbug.com/942500.
-    if (it != gpu_process_nodes_.end()) {
+    if (it != tracked_process_nodes_.end()) {
       PerformanceManagerImpl::DeleteNode(std::move(it->second));
-      gpu_process_nodes_.erase(it);
+      tracked_process_nodes_.erase(it);
     }
   }
 }
@@ -82,23 +85,27 @@ void BrowserChildProcessWatcher::BrowserChildProcessHostDisconnected(
 void BrowserChildProcessWatcher::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
-    GPUProcessExited(data.id, info.exit_code);
+  if (data.process_type == content::PROCESS_TYPE_GPU ||
+      data.process_type == content::PROCESS_TYPE_UTILITY) {
+    TrackedProcessExited(data.id, info.exit_code);
+  }
 }
 
 void BrowserChildProcessWatcher::BrowserChildProcessKilled(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
-  if (data.process_type == content::PROCESS_TYPE_GPU)
-    GPUProcessExited(data.id, info.exit_code);
+  if (data.process_type == content::PROCESS_TYPE_GPU ||
+      data.process_type == content::PROCESS_TYPE_UTILITY) {
+    TrackedProcessExited(data.id, info.exit_code);
+  }
 }
 
-void BrowserChildProcessWatcher::GPUProcessExited(int id, int exit_code) {
+void BrowserChildProcessWatcher::TrackedProcessExited(int id, int exit_code) {
   // It appears the exit code can be delivered either after the host is
   // disconnected, or perhaps before the HostConnected notification,
   // specifically on crash.
-  if (base::Contains(gpu_process_nodes_, id)) {
-    auto* process_node = gpu_process_nodes_[id].get();
+  if (base::Contains(tracked_process_nodes_, id)) {
+    auto* process_node = tracked_process_nodes_[id].get();
 
     DCHECK(PerformanceManagerImpl::IsAvailable());
     PerformanceManagerImpl::CallOnGraphImpl(
@@ -110,22 +117,20 @@ void BrowserChildProcessWatcher::GPUProcessExited(int id, int exit_code) {
 // static
 void BrowserChildProcessWatcher::OnProcessLaunched(
     const base::Process& process,
+    const std::string& metrics_name,
     ProcessNodeImpl* process_node) {
-  const base::Time launch_time =
-#if BUILDFLAG(IS_ANDROID)
-      // Process::CreationTime() is not available on Android. Since this method
-      // is called immediately after the process is launched, the process launch
-      // time can be approximated with the current time.
-      base::Time::Now();
-#else
-      process.CreationTime();
-#endif
-
   DCHECK(PerformanceManagerImpl::IsAvailable());
+
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
-                                base::Unretained(process_node),
-                                process.Duplicate(), launch_time));
+      FROM_HERE,
+      base::BindOnce(
+          [](ProcessNodeImpl* process_node, base::Process process,
+             base::TimeTicks launch_time, const std::string& metrics_name) {
+            process_node->SetProcessMetricsName(metrics_name);
+            process_node->SetProcess(std::move(process), launch_time);
+          },
+          base::Unretained(process_node), process.Duplicate(),
+          base::TimeTicks::Now(), metrics_name));
 }
 
 }  // namespace performance_manager

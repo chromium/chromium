@@ -20,7 +20,8 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/audio/audio_manager.h"
-#include "media/audio/audio_system.h"
+#include "media/audio/audio_system_impl.h"
+#include "media/audio/audio_thread_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,12 +39,15 @@
 
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-const char* kCmdline[] = {"media_stream_dispatcher_host_mojolpm_fuzzer",
-                          nullptr};
+const char* kCmdline[] = {
+    "media_stream_dispatcher_host_mojolpm_fuzzer",
+    "--use-fake-device-for-media-stream",  // Make sure we use fake devices to
+                                           // avoid long delays.
+    nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<content::mojolpm::FuzzerEnvironment> environment(
-      1, kCmdline);
+      2, kCmdline);
   return *environment;
 }
 
@@ -52,178 +56,174 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() {
 }
 
 class MediaStreamDispatcherHostTestcase
-    : public content::RenderViewHostTestHarness {
+    : public mojolpm::Testcase<
+          content::fuzzing::media_stream_dispatcher_host::proto::Testcase,
+          content::fuzzing::media_stream_dispatcher_host::proto::Action> {
  public:
-  explicit MediaStreamDispatcherHostTestcase(
-      const content::fuzzing::media_stream_dispatcher_host::proto::Testcase&
-          testcase);
-  ~MediaStreamDispatcherHostTestcase() override;
+  using ProtoTestcase =
+      content::fuzzing::media_stream_dispatcher_host::proto::Testcase;
+  using ProtoAction =
+      content::fuzzing::media_stream_dispatcher_host::proto::Action;
 
-  bool IsFinished();
-  void NextAction();
+  explicit MediaStreamDispatcherHostTestcase(const ProtoTestcase& testcase);
+  ~MediaStreamDispatcherHostTestcase();
 
-  // Prerequisite state.
-  base::SimpleTestTickClock clock_;
+  void SetUp(base::OnceClosure done_closure) override;
+  void TearDown(base::OnceClosure done_closure) override;
+
+  void RunAction(const ProtoAction& action,
+                 base::OnceClosure done_closure) override;
 
  private:
-  using Action = content::fuzzing::media_stream_dispatcher_host::proto::Action;
+  void SetUpOnUIThread(base::OnceClosure done_closure);
 
-  void SetUp() override;
-  void SetUpOnUIThread();
+  void TearDownOnUIThread(base::OnceClosure done_closure);
 
-  void TearDown() override;
-  void TearDownOnUIThread();
+  void AddMediaStreamDispatcherHost(uint32_t id,
+                                    base::OnceClosure done_closure);
+  void AddMediaStreamDispatcherHostImpl(
+      mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost>&&
+          receiver);
 
-  void AddMediaStreamDispatcherHost(uint32_t id);
-  void AddMediaStreamDispatcherHostImpl();
-
-  void TestBody() override {}
-
-  // The proto message describing the test actions to perform.
-  const content::fuzzing::media_stream_dispatcher_host::proto::Testcase&
-      testcase_;
-
-  // Apply a reasonable upper-bound on testcase complexity to avoid timeouts.
-  const int max_action_count_ = 512;
-
-  // Apply a reasonable upper-bound on maximum size of action that we will
-  // deserialize. (This is deliberately slightly larger than max mojo message
-  // size)
-  const size_t max_action_size_ = 300 * 1024 * 1024;
-
-  // Count of total actions performed in this testcase.
-  int action_count_ = 0;
-
-  // The index of the next sequence of actions to execute.
-  int next_sequence_idx_ = 0;
-
+  // Prerequisite state.
+  content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
+  std::unique_ptr<media::AudioManager> audio_manager_ = nullptr;
   std::unique_ptr<media::AudioSystem> audio_system_ = nullptr;
   std::unique_ptr<content::MediaStreamManager> media_stream_manager_ = nullptr;
-  content::MediaStreamDispatcherHost* media_stream_dispatcher_host_ = nullptr;
   content::TestRenderFrameHost* render_frame_host_ = nullptr;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 MediaStreamDispatcherHostTestcase::MediaStreamDispatcherHostTestcase(
-    const content::fuzzing::media_stream_dispatcher_host::proto::Testcase&
-        testcase)
-    : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-          base::test::TaskEnvironment::MainThreadType::DEFAULT,
-          base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
-          base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-          content::BrowserTaskEnvironment::REAL_IO_THREAD),
-      testcase_(testcase) {
-  SetUp();
+    const ProtoTestcase& testcase)
+    : Testcase<ProtoTestcase, ProtoAction>(testcase) {
+  test_adapter_.SetUp();
 }
 
 MediaStreamDispatcherHostTestcase::~MediaStreamDispatcherHostTestcase() {
-  TearDown();
+  test_adapter_.TearDown();
+  audio_manager_.reset();
+  media_stream_manager_.reset();
 }
 
-bool MediaStreamDispatcherHostTestcase::IsFinished() {
-  return next_sequence_idx_ >= testcase_.sequence_indexes_size();
-}
+void MediaStreamDispatcherHostTestcase::RunAction(
+    const ProtoAction& action,
+    base::OnceClosure run_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void MediaStreamDispatcherHostTestcase::NextAction() {
-  if (next_sequence_idx_ < testcase_.sequence_indexes_size()) {
-    auto sequence_idx = testcase_.sequence_indexes(next_sequence_idx_++);
-    const auto& sequence =
-        testcase_.sequences(sequence_idx % testcase_.sequences_size());
-    for (auto action_idx : sequence.action_indexes()) {
-      if (!testcase_.actions_size() || ++action_count_ > max_action_count_) {
-        return;
+  const auto ThreadId_UI = content::fuzzing::media_stream_dispatcher_host::
+      proto::RunThreadAction_ThreadId_UI;
+  const auto ThreadId_IO = content::fuzzing::media_stream_dispatcher_host::
+      proto::RunThreadAction_ThreadId_IO;
+
+  switch (action.action_case()) {
+    case ProtoAction::kRunThread:
+      // These actions ensure that any tasks currently queued on the named
+      // thread have chance to run before the fuzzer continues.
+      //
+      // We don't provide any particular guarantees here; this does not mean
+      // that the named thread is idle, nor does it prevent any other threads
+      // from running (or the consequences of any resulting callbacks, for
+      // example).
+      if (action.run_thread().id() == ThreadId_UI) {
+        content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
+      } else if (action.run_thread().id() == ThreadId_IO) {
+        content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
       }
-      const auto& action =
-          testcase_.actions(action_idx % testcase_.actions_size());
-      if (action.ByteSizeLong() > max_action_size_) {
-        return;
-      }
-      switch (action.action_case()) {
-        case Action::kRunThread: {
-          if (action.run_thread().id()) {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          } else {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetIOThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          }
-        } break;
-        case Action::kNewMediaStreamDispatcherHost: {
-          AddMediaStreamDispatcherHost(
-              action.new_media_stream_dispatcher_host().id());
-        } break;
-        case Action::kMediaStreamDispatcherHostRemoteAction: {
-          mojolpm::HandleRemoteAction(
-              action.media_stream_dispatcher_host_remote_action());
-        } break;
-        case Action::ACTION_NOT_SET:
-          break;
-      }
-    }
+      return;
+
+    case ProtoAction::kNewMediaStreamDispatcherHost:
+      AddMediaStreamDispatcherHost(
+          action.new_media_stream_dispatcher_host().id(),
+          std::move(run_closure));
+      return;
+
+    case ProtoAction::kMediaStreamDispatcherHostRemoteAction:
+      mojolpm::HandleRemoteAction(
+          action.media_stream_dispatcher_host_remote_action());
+      break;
+
+    case ProtoAction::ACTION_NOT_SET:
+      break;
   }
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(run_closure));
 }
 
-void MediaStreamDispatcherHostTestcase::SetUp() {
-  RenderViewHostTestHarness::SetUp();
-  base::RunLoop run_loop;
+void MediaStreamDispatcherHostTestcase::SetUp(base::OnceClosure done_closure) {
+  mojolpm::GetContext()->StartTestcase();
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamDispatcherHostTestcase::SetUpOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void MediaStreamDispatcherHostTestcase::SetUpOnUIThread() {
-  // content::CreateAudioSystemForAudioService();
+void MediaStreamDispatcherHostTestcase::SetUpOnUIThread(
+    base::OnceClosure done_closure) {
   render_frame_host_ =
-      static_cast<content::TestWebContents*>(web_contents())->GetMainFrame();
+      static_cast<content::TestWebContents*>(test_adapter_.web_contents())
+          ->GetPrimaryMainFrame();
+
   render_frame_host_->InitializeRenderFrameIfNeeded();
 
-  // UI thread
-  audio_system_ = content::CreateAudioSystemForAudioService();
+  audio_manager_ = media::AudioManager::CreateForTesting(
+      std::make_unique<media::AudioThreadImpl>());
 
-  // UI thread
+  audio_system_ =
+      std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
+
   media_stream_manager_ = std::make_unique<content::MediaStreamManager>(
-      audio_system_.get(), content::GetIOThreadTaskRunner({}));
+      audio_system_.get(), audio_manager_->GetTaskRunner());
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
-void MediaStreamDispatcherHostTestcase::TearDown() {
-  base::RunLoop run_loop;
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+void MediaStreamDispatcherHostTestcase::TearDown(
+    base::OnceClosure done_closure) {
+  mojolpm::GetContext()->EndTestcase();
+
+  media_stream_manager_->WillDestroyCurrentMessageLoop();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamDispatcherHostTestcase::TearDownOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  RenderViewHostTestHarness::TearDown();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void MediaStreamDispatcherHostTestcase::TearDownOnUIThread() {
-  // media_stream_manager_.reset();
-  // audio_system_.reset();
+void MediaStreamDispatcherHostTestcase::TearDownOnUIThread(
+    base::OnceClosure done_closure) {
+  audio_manager_->Shutdown();
+
+  std::move(done_closure).Run();
 }
 
-void MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHostImpl() {
-  // BrowserIO thread
-  media_stream_dispatcher_host_ = new content::MediaStreamDispatcherHost(
+void MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHostImpl(
+    mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost>&& receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // MediaStreamDispatcherHost is a self-owned receiver.
+  content::MediaStreamDispatcherHost::Create(
       render_frame_host_->GetProcess()->GetID(),
-      render_frame_host_->GetRoutingID(), media_stream_manager_.get());
+      render_frame_host_->GetRoutingID(), media_stream_manager_.get(),
+      std::move(receiver));
 }
 
 // Component(s) which we fuzz
+static void AddMediaStreamDispatcherHostInstance(
+    uint32_t id,
+    mojo::Remote<::blink::mojom::MediaStreamDispatcherHost>&& remote,
+    base::OnceClosure run_closure) {
+  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+
+  std::move(run_closure).Run();
+}
+
 void MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHost(
-    uint32_t id) {
+    uint32_t id,
+    base::OnceClosure done_closure) {
   mojo::Remote<blink::mojom::MediaStreamDispatcherHost> remote;
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
   auto receiver = remote.BindNewPipeAndPassReceiver();
 
@@ -231,44 +231,9 @@ void MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHost(
       FROM_HERE,
       base::BindOnce(
           &MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHostImpl,
-          base::Unretained(this)),
-      run_loop.QuitClosure());
-
-  run_loop.Run();
-
-  mojolpm::GetContext()->AddInstance(id, std::move(remote));
-}
-
-// Helper function to keep scheduling fuzzer actions on the current runloop
-// until the testcase has completed, and then quit the runloop.
-void NextAction(MediaStreamDispatcherHostTestcase* testcase,
-                base::RepeatingClosure quit_closure) {
-  if (!testcase->IsFinished()) {
-    testcase->NextAction();
-    GetFuzzerTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                  std::move(quit_closure)));
-  } else {
-    GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(quit_closure));
-  }
-}
-
-// Helper function to setup and run the testcase, since we need to do that from
-// the fuzzer sequence rather than the main thread.
-void RunTestcase(MediaStreamDispatcherHostTestcase* testcase) {
-  mojo::Message message;
-  auto dispatch_context =
-      std::make_unique<mojo::internal::MessageDispatchContext>(&message);
-
-  mojolpm::GetContext()->StartTestcase();
-
-  base::RunLoop fuzzer_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  GetFuzzerTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                fuzzer_run_loop.QuitClosure()));
-  fuzzer_run_loop.Run();
-
-  mojolpm::GetContext()->EndTestcase();
+          base::Unretained(this), std::move(receiver)),
+      base::BindOnce(AddMediaStreamDispatcherHostInstance, id,
+                     std::move(remote), std::move(done_closure)));
 }
 
 DEFINE_BINARY_PROTO_FUZZER(
@@ -285,13 +250,15 @@ DEFINE_BINARY_PROTO_FUZZER(
 
   MediaStreamDispatcherHostTestcase testcase(proto_testcase);
 
-  base::RunLoop ui_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  base::RunLoop main_run_loop;
 
-  // Unretained is safe here, because ui_run_loop has to finish before
+  // Unretained is safe here, because `main_run_loop` has to finish before
   // testcase goes out of scope.
-  GetFuzzerTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(RunTestcase, base::Unretained(&testcase)),
-      ui_run_loop.QuitClosure());
+  GetFuzzerTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&mojolpm::RunTestcase<MediaStreamDispatcherHostTestcase>,
+                     base::Unretained(&testcase), GetFuzzerTaskRunner(),
+                     main_run_loop.QuitClosure()));
 
-  ui_run_loop.Run();
+  main_run_loop.Run();
 }

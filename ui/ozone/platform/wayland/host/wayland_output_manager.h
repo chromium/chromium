@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_MANAGER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_OUTPUT_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <memory>
@@ -38,6 +39,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   void RemoveWaylandOutput(const uint32_t output_id);
 
   void InitializeAllXdgOutputs();
+  void InitializeAllZAuraOutputs();
 
   // Creates a platform screen.
   std::unique_ptr<WaylandScreen> CreateWaylandScreen();
@@ -53,15 +55,20 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
  private:
   // WaylandOutput::Delegate:
   void OnOutputHandleMetrics(uint32_t output_id,
-                             const gfx::Rect& new_bounds,
+                             const gfx::Point& origin,
+                             const gfx::Size& logical_size,
+                             const gfx::Size& physical_size,
+                             const gfx::Insets& insets,
                              float scale_factor,
-                             int32_t transform) override;
+                             int32_t panel_transform,
+                             int32_t logical_transform,
+                             const std::string& label) override;
 
   using OutputList = base::flat_map<uint32_t, std::unique_ptr<WaylandOutput>>;
 
   OutputList output_list_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Non-owned wayland screen instance.
   base::WeakPtr<WaylandScreen> wayland_screen_;

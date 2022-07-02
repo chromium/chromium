@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/webcrypto/algorithms/util.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 
 // JSON Web Key Format (JWK) is defined by:
@@ -198,14 +197,14 @@ JwkReader::JwkReader() {
 JwkReader::~JwkReader() {
 }
 
-Status JwkReader::Init(const CryptoData& bytes,
+Status JwkReader::Init(base::span<const uint8_t> bytes,
                        bool expected_extractable,
                        blink::WebCryptoKeyUsageMask expected_usages,
                        const std::string& expected_kty,
                        const std::string& expected_alg) {
   // Parse the incoming JWK JSON.
-  base::StringPiece json_string(reinterpret_cast<const char*>(bytes.bytes()),
-                                bytes.byte_length());
+  base::StringPiece json_string(reinterpret_cast<const char*>(bytes.data()),
+                                bytes.size());
 
   {
     // Limit the visibility for |value| as it is moved to |dict_| (via
@@ -293,7 +292,7 @@ Status JwkReader::GetOptionalList(const std::string& member_name,
 }
 
 Status JwkReader::GetBytes(const std::string& member_name,
-                           std::string* result) const {
+                           std::vector<uint8_t>* result) const {
   std::string base64_string;
   Status status = GetString(member_name, &base64_string);
   if (status.IsError())
@@ -301,17 +300,19 @@ Status JwkReader::GetBytes(const std::string& member_name,
 
   // The JSON web signature spec says that padding is omitted.
   // https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-36#section-2
+  std::string result_str;
   if (!base::Base64UrlDecode(base64_string,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             result)) {
+                             &result_str)) {
     return Status::ErrorJwkBase64Decode(member_name);
   }
 
+  result->assign(result_str.begin(), result_str.end());
   return Status::Success();
 }
 
 Status JwkReader::GetBigInteger(const std::string& member_name,
-                                std::string* result) const {
+                                std::vector<uint8_t>* result) const {
   Status status = GetBytes(member_name, result);
   if (status.IsError())
     return status;
@@ -379,13 +380,13 @@ void JwkWriter::SetString(const std::string& member_name,
 }
 
 void JwkWriter::SetBytes(const std::string& member_name,
-                         const CryptoData& value) {
+                         base::span<const uint8_t> value) {
   // The JSON web signature spec says that padding is omitted.
   // https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-36#section-2
   std::string base64url_encoded;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(value.bytes()),
-                        value.byte_length()),
+      base::StringPiece(reinterpret_cast<const char*>(value.data()),
+                        value.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &base64url_encoded);
 
   dict_.SetStringKey(member_name, base64url_encoded);

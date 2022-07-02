@@ -477,7 +477,7 @@ void LayoutShiftTracker::NotifyTextPrePaint(
 
 double LayoutShiftTracker::SubframeWeightingFactor() const {
   LocalFrame& frame = frame_view_->GetFrame();
-  if (frame.IsMainFrame())
+  if (frame.IsOutermostMainFrame())
     return 1;
 
   // Map the subframe view rect into the coordinate space of the local root.
@@ -582,9 +582,12 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
   DCHECK(performance);
 
   double input_timestamp = LastInputTimestamp();
-  LayoutShift* entry =
-      LayoutShift::Create(performance->now(), score_delta, had_recent_input,
-                          input_timestamp, CreateAttributionList());
+  LayoutShift* entry = LayoutShift::Create(
+      performance->now(), score_delta, had_recent_input, input_timestamp,
+      CreateAttributionList(),
+      PerformanceEntry::GetNavigationId(window));  // Add WPT for
+                                                   //  LayoutShift. See
+                                                   //  crbug.com/1320878.
 
   performance->AddLayoutShiftEntry(entry);
 }

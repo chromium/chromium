@@ -9,9 +9,7 @@
 goog.provide('LibLouis');
 goog.provide('LibLouis.FormType');
 
-/**
- * Encapsulates a liblouis Web Assembly instance in the page.
- */
+/** Encapsulates a liblouis Web Assembly instance in the page. */
 LibLouis = class {
   /**
    * @param {string} wasmPath Path to .wasm file for the module.
@@ -72,14 +70,14 @@ LibLouis = class {
       // TODO: save last callback.
       return;
     }
-    this.rpc_('CheckTable', {'table_names': tableNames}, function(reply) {
+    this.rpc_('CheckTable', {'table_names': tableNames}, reply => {
       if (reply['success']) {
         const translator = new LibLouis.Translator(this, tableNames);
         callback(translator);
       } else {
         callback(null /* translator */);
       }
-    }.bind(this));
+    });
   }
 
   /**
@@ -155,9 +153,9 @@ LibLouis = class {
   loadOrReload_(opt_loadCallback) {
     this.worker_ = new Worker(this.wasmPath_);
     this.worker_.addEventListener(
-        'message', this.onInstanceMessage_.bind(this), false /* useCapture */);
+        'message', e => this.onInstanceMessage_(e), false /* useCapture */);
     this.worker_.addEventListener(
-        'error', this.onInstanceError_.bind(this), false /* useCapture */);
+        'error', e => this.onInstanceError_(e), false /* useCapture */);
     this.rpc_('load', {}, () => {
       this.isLoaded_ = true;
       opt_loadCallback && opt_loadCallback(this);
@@ -218,20 +216,22 @@ LibLouis.Translator = class {
    *     Callback for result.  Takes 3 parameters: the resulting cells,
    *     mapping from text to braille positions and mapping from braille to
    *     text positions.  If translation fails for any reason, all parameters
-   * are
-   *     {@code null}.
+   *     are {@code null}.
    */
   translate(text, formTypeMap, callback) {
     if (!this.instance_.worker_) {
       callback(null /*cells*/, null /*textToBraille*/, null /*brailleToText*/);
       return;
     }
+    // TODO(https://crbug.com/1340093): the upstream LibLouis translations for
+    // form type output is broken.
+    formTypeMap = 0;
     const message = {
       'table_names': this.tableNames_,
       text,
       form_type_map: formTypeMap
     };
-    this.instance_.rpc_('Translate', message, function(reply) {
+    this.instance_.rpc_('Translate', message, reply => {
       let cells = null;
       let textToBraille = null;
       let brailleToText = null;
@@ -273,12 +273,24 @@ LibLouis.Translator = class {
       'table_names': this.tableNames_,
       'cells': LibLouis.Translator.encodeHexString_(cells)
     };
-    this.instance_.rpc_('BackTranslate', message, function(reply) {
-      if (reply['success'] && goog.isString(reply['text'])) {
-        callback(reply['text']);
-      } else {
+    this.instance_.rpc_('BackTranslate', message, reply => {
+      if (!reply['success'] || !goog.isString(reply['text'])) {
         callback(null /* text */);
+        return;
       }
+
+      let text = reply['text'];
+
+      // TODO(https://crbug.com/1340087): LibLouis has bugs in backtranslation.
+      const view = new Uint8Array(cells);
+      if (view.length > 0 && view[view.length - 1] === 0 &&
+          !text.endsWith(' ')) {
+        // LibLouis omits spaces for some backtranslated contractions even
+        // though it is passed a blank cell. This is a workaround until LibLouis
+        // fixes this issue.
+        text += ' ';
+      }
+      callback(text);
     });
   }
 
@@ -309,8 +321,7 @@ LibLouis.Translator = class {
   static encodeHexString_(arrayBuffer) {
     const array = new Uint8Array(arrayBuffer);
     let hex = '';
-    for (let i = 0; i < array.length; i++) {
-      const b = array[i];
+    for (const b of array) {
       hex += (b < 0x10 ? '0' : '') + b.toString(16);
     }
     return hex;

@@ -740,9 +740,9 @@ struct ManagedProperties {
 // Properties for SetProperties and ConfigureNetwork. All of the top level
 // properties and many nested properties are optional so that sparse
 // configurations can be provided, e.g. just the |auto_connect| property can
-// be changed. The ONC validation code (chromeos/network/onc/onc_validator.cc)
-// ensures that configurations are valid before translating and passing them to
-// Shill.
+// be changed. The ONC validation code
+// (chromeos/ash/components/network/onc/onc_validator.cc) ensures that
+// configurations are valid before translating and passing them to Shill.
 
 // Wrapper to allow optional auto_connect configuration.
 struct AutoConnectConfig {

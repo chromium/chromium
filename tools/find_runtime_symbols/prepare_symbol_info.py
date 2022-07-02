@@ -119,14 +119,13 @@ def prepare_symbol_info(maps_path,
       if os.path.exists(os.path.join(output_dir_path, 'files.json')):
         LOGGER.warn('Using the existing directory "%s".' % output_dir_path)
         return output_dir_path, used_tempdir
+      if use_tempdir:
+        output_dir_path = tempfile.mkdtemp()
+        used_tempdir = True
+        LOGGER.warn('Using a temporary directory "%s".' % output_dir_path)
       else:
-        if use_tempdir:
-          output_dir_path = tempfile.mkdtemp()
-          used_tempdir = True
-          LOGGER.warn('Using a temporary directory "%s".' % output_dir_path)
-        else:
-          LOGGER.warn('The directory "%s" is not available.' % output_dir_path)
-          return None, used_tempdir
+        LOGGER.warn('The directory "%s" is not available.' % output_dir_path)
+        return None, used_tempdir
   else:
     LOGGER.info('Creating a new directory "%s".' % output_dir_path)
     try:
@@ -238,7 +237,7 @@ def main():
   if len(args) < 2:
     option_parser.error('Argument error.')
     return 1
-  elif len(args) == 2:
+  if len(args) == 2:
     result, _ = prepare_symbol_info(args[1],
                                     alternative_dirs=alternative_dirs_dict)
   else:

@@ -150,6 +150,10 @@ class FakeSyncMojoService : public crosapi::mojom::SyncService {
     client_ash_.BindReceiver(std::move(receiver));
   }
 
+  void BindUserSettingsClient(
+      mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver)
+      override {}
+
   FakeSyncExplicitPassphraseClientAsh* client_ash() { return &client_ash_; }
 
  private:

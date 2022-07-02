@@ -24,6 +24,7 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -34,12 +35,10 @@
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_null.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -49,8 +48,6 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
-#include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,9 +105,6 @@ int64_t GetStartingTraceId() {
 gfx::PresentationFeedback SanitizePresentationFeedback(
     const gfx::PresentationFeedback& feedback,
     base::TimeTicks draw_time) {
-  // Temporary to investigate large presentation times.
-  // https://crbug.com/894440
-  DCHECK(!draw_time.is_null());
   if (feedback.timestamp.is_null())
     return feedback;
 
@@ -130,25 +124,9 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
                           gfx::PresentationFeedback::kVSync)) != 0)
           ? kAllowedDeltaFromFuture
           : base::TimeDelta();
-  if (feedback.timestamp > now + allowed_delta_from_future) {
-    const auto diff = feedback.timestamp - now;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Graphics.PresentationTimestamp.InvalidFromFuture", diff);
+  if ((feedback.timestamp > now + allowed_delta_from_future) ||
+      (feedback.timestamp < draw_time)) {
     return gfx::PresentationFeedback::Failure();
-  }
-
-  if (feedback.timestamp < draw_time) {
-    const auto diff = draw_time - feedback.timestamp;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Graphics.PresentationTimestamp.InvalidBeforeSwap", diff);
-    return gfx::PresentationFeedback::Failure();
-  }
-
-  const auto difference = feedback.timestamp - draw_time;
-  if (difference.InMinutes() > 3) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Graphics.PresentationTimestamp.LargePresentationDelta", difference,
-        base::Minutes(3), base::Hours(1), 50);
   }
   return feedback;
 }
@@ -360,15 +338,6 @@ Display::~Display() {
   if (resource_provider_) {
     resource_provider_->SetAllowAccessToGPUThread(true);
   }
-#if BUILDFLAG(IS_ANDROID)
-  // In certain cases, drivers hang when tearing down the display. Finishing
-  // before teardown appears to address this. As we're during display teardown,
-  // an additional finish should have minimal impact.
-  // TODO(ericrk): Add a more robust workaround. crbug.com/899705
-  if (auto* context = output_surface_->context_provider()) {
-    context->ContextGL()->Finish();
-  }
-#endif
 
   if (no_pending_swaps_callback_)
     std::move(no_pending_swaps_callback_).Run();
@@ -383,8 +352,6 @@ Display::~Display() {
 
   // Only do this if Initialize() happened.
   if (client_) {
-    if (auto* context = output_surface_->context_provider())
-      context->RemoveObserver(this);
     if (skia_output_surface_)
       skia_output_surface_->RemoveContextLostObserver(this);
   }
@@ -426,9 +393,6 @@ void Display::Initialize(DisplayClient* client,
   // This depends on assumptions that Display::Initialize will happen on the
   // same callstack as the ContextProvider being created/initialized or else
   // it could miss a callback before setting this.
-  if (auto* context = output_surface_->context_provider())
-    context->AddObserver(this);
-
   if (skia_output_surface_)
     skia_output_surface_->AddContextLostObserver(this);
 }
@@ -508,8 +472,7 @@ void Display::DisableSwapUntilResize(
       scheduler_->ForceImmediateSwapIfPossible();
 
     if (no_pending_swaps_callback && pending_swaps_ > 0 &&
-        (output_surface_->context_provider() ||
-         output_surface_->AsSkiaOutputSurface())) {
+        output_surface_->AsSkiaOutputSurface()) {
       no_pending_swaps_callback_ = std::move(no_pending_swaps_callback);
     }
 
@@ -561,14 +524,6 @@ void Display::InitializeRenderer(bool enable_shared_images) {
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get(),
         skia_output_surface_);
-    resource_provider_ = std::move(resource_provider);
-  } else if (output_surface_->context_provider()) {
-    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        output_surface_->context_provider(), enable_shared_images);
-    renderer_ = std::make_unique<GLRenderer>(
-        &settings_, debug_settings_, output_surface_.get(),
-        resource_provider.get(), overlay_processor_.get(),
-        current_task_runner_);
     resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->capabilities().skips_draw) {
     auto resource_provider = std::make_unique<DisplayResourceProviderNull>();
@@ -895,21 +850,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
                          std::move(frame.surface_damage_rect_list_));
-    switch (output_surface_->type()) {
-      case OutputSurface::Type::kSoftware:
-        UMA_HISTOGRAM_COUNTS_1M(
-            "Compositing.DirectRenderer.Software.DrawFrameUs",
-            draw_timer->Elapsed().InMicroseconds());
-        break;
-      case OutputSurface::Type::kOpenGL:
-        UMA_HISTOGRAM_COUNTS_1M("Compositing.DirectRenderer.GL.DrawFrameUs",
-                                draw_timer->Elapsed().InMicroseconds());
-        break;
-      case OutputSurface::Type::kVulkan:
-        UMA_HISTOGRAM_COUNTS_1M("Compositing.DirectRenderer.VK.DrawFrameUs",
-                                draw_timer->Elapsed().InMicroseconds());
-        break;
-    }
   } else {
     TRACE_EVENT_INSTANT0("viz", "Draw skipped.", TRACE_EVENT_SCOPE_THREAD);
   }
@@ -920,8 +860,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         pending_presentation_group_timings_.emplace_back();
 
     base::flat_set<base::PlatformThreadId> thread_ids;
-    for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-      surface = surface_manager_->GetSurfaceForId(id_entry.first);
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
         base::flat_set<base::PlatformThreadId> surface_thread_ids =
             surface->GetThreadIds();
@@ -931,8 +871,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     presentation_group_timing.OnDraw(params.frame_time, draw_timer->Begin(),
                                      std::move(thread_ids));
 
-    for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-      surface = surface_manager_->GetSurfaceForId(id_entry.first);
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
         std::unique_ptr<Surface::PresentationHelper> helper =
             surface->TakePresentationHelperForPresentNotification();
@@ -1111,12 +1051,6 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
     // These two values can be equal in unit tests.
     DCHECK_GE(draw_start_to_swap_end, schedule_draw_to_gpu_start);
   }
-}
-
-void Display::DidReceiveTextureInUseResponses(
-    const gpu::TextureInUseResponses& responses) {
-  if (renderer_)
-    renderer_->DidReceiveTextureInUseResponses(responses);
 }
 
 void Display::DidReceiveCALayerParams(

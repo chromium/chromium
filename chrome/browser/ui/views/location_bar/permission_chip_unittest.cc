@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -111,7 +112,9 @@ class PermissionChipUnitTest : public TestWithBrowserView {
 TEST_F(PermissionChipUnitTest, DisplayChipNoAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionRequestChip chip(browser(), &delegate, false);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -161,7 +164,9 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
 
   EXPECT_TRUE(delegate.WasCurrentRequestAlreadyDisplayed());
 
-  PermissionRequestChip chip(browser(), &delegate, false);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -186,7 +191,9 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
 TEST_F(PermissionChipUnitTest, MultiClickOnChipNoAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionRequestChip chip(browser(), &delegate, false);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -272,7 +279,9 @@ TEST_F(PermissionChipUnitTest, MultiClickOnChipNoAutoPopupTest) {
 TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionRequestChip chip(browser(), &delegate, true);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionRequestChip>(browser(), &delegate, true));
 
   // Due to animation issue, the collapse timer will not be started.
   EXPECT_FALSE(chip.is_collapse_timer_running_for_testing());
@@ -314,7 +323,9 @@ TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
 TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionRequestChip chip(browser(), &delegate, true);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionRequestChip>(browser(), &delegate, true));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -388,7 +399,9 @@ TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
 TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionQuietChip chip(browser(), &delegate, true);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionQuietChip>(browser(), &delegate, true));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -430,7 +443,9 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
 TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionQuietChip chip(browser(), &delegate, true);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionQuietChip>(browser(), &delegate, true));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -518,7 +533,9 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
 TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionQuietChip chip(browser(), &delegate, false);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionQuietChip>(browser(), &delegate, false));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -547,7 +564,9 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
 TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications});
-  PermissionQuietChip chip(browser(), &delegate, false);
+  PermissionChip chip;
+  chip.SetupChip(
+      std::make_unique<PermissionQuietChip>(browser(), &delegate, false));
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 

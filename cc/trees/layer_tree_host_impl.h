@@ -20,6 +20,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_controller_impl.h"
@@ -32,6 +33,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/metrics/average_lag_tracking_manager.h"
 #include "cc/metrics/dropped_frame_counter.h"
+#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -92,7 +94,6 @@ class MemoryHistory;
 class MutatorEvents;
 class MutatorHost;
 class PageScaleAnimation;
-class PendingTreeRasterDurationHistogramTimer;
 class RasterTilePriorityQueue;
 class RasterBufferProvider;
 class RasterQueryQueue;
@@ -182,6 +183,9 @@ class LayerTreeHostImplClient {
 
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 
+  virtual void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
+
  protected:
   virtual ~LayerTreeHostImplClient() = default;
 };
@@ -195,7 +199,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public VideoFrameControllerClient,
                                     public MutatorHostClient,
                                     public ImageAnimationController::Client,
-                                    public CompositorDelegateForInput {
+                                    public CompositorDelegateForInput,
+                                    public EventLatencyTracker {
  public:
   // This structure is used to build all the state required for producing a
   // single CompositorFrame. The |render_passes| list becomes the set of
@@ -331,7 +336,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::BeginFrameArgs& commit_args,
       const BeginMainFrameMetrics* begin_main_frame_metrics,
       bool commit_timeout = false);
-  virtual void BeginCommit(int source_frame_number);
+  virtual void BeginCommit(int source_frame_number, uint64_t trace_id);
   virtual void FinishCommit(CommitState& commit_state,
                             const ThreadUnsafeCommitState& unsafe_state);
   virtual void CommitComplete();
@@ -542,6 +547,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetNeedsRedrawForScrollbarAnimation() override;
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const override;
   void DidChangeScrollbarVisibility() override;
+  bool IsFluentScrollbar() const override;
 
   // VideoBeginFrameSource implementation.
   void AddVideoFrameController(VideoFrameController* controller) override;
@@ -567,6 +573,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
               bool skip_draw) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override;
+
+  // EventLatencyTracker implementation.
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // Called from LayerTreeImpl.
   void OnCanDrawStateChangedForTree();
@@ -888,6 +898,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool IsReadyToActivate() const;
 
+  void RequestImplSideInvalidationForRerasterTiling();
+
+  void SetDownsampleMetricsForTesting(bool value) {
+    downsample_metrics_ = value;
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1190,9 +1206,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool may_throttle_if_undrawn_frames_ = true;
 
-  std::unique_ptr<PendingTreeRasterDurationHistogramTimer>
-      pending_tree_raster_duration_timer_;
-
   // These completion states to be transfered to the main thread when we
   // begin main frame. The pair represents a request id and the completion (ie
   // success) state.
@@ -1296,6 +1309,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ThrottleDecider throttle_decider_;
 
   std::vector<uint32_t> finished_transition_request_sequence_ids_;
+
+  bool downsample_metrics_ = true;
+  base::MetricsSubSampler metrics_subsampler_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

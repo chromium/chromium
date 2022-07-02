@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/events/event_handler.h"
@@ -86,18 +87,18 @@ class QuickAnswersView : public views::View {
   std::string title_;
   bool is_internal_ = false;
 
-  views::View* base_view_ = nullptr;
-  views::View* main_view_ = nullptr;
-  views::View* content_view_ = nullptr;
-  views::View* report_query_view_ = nullptr;
-  views::Label* first_answer_label_ = nullptr;
-  views::LabelButton* retry_label_ = nullptr;
-  views::ImageButton* dogfood_feedback_button_ = nullptr;
-  views::ImageButton* settings_button_ = nullptr;
-  views::ImageButton* phonetics_audio_button_ = nullptr;
+  raw_ptr<views::View> base_view_ = nullptr;
+  raw_ptr<views::View> main_view_ = nullptr;
+  raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::View> report_query_view_ = nullptr;
+  raw_ptr<views::Label> first_answer_label_ = nullptr;
+  raw_ptr<views::LabelButton> retry_label_ = nullptr;
+  raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
 
   // Invisible web view to play phonetics audio for definition results.
-  views::WebView* phonetics_audio_web_view_ = nullptr;
+  raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;
 
   std::unique_ptr<QuickAnswersPreTargetHandler> quick_answers_view_handler_;
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;

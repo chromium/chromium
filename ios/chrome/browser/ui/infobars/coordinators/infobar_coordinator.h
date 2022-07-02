@@ -36,9 +36,9 @@ enum class InfobarBannerPresentationState;
 @interface InfobarCoordinator
     : ChromeCoordinator <InfobarBannerDelegate, InfobarModalDelegate>
 
-// Designated Initializer. |infoBarDelegate| is used to configure the Infobar
-// and subsequently perform related actions. |badgeSupport| should be YES if the
-// Infobar will add a Badge and support a Modal. |infobarType| is the unique
+// Designated Initializer. `infoBarDelegate` is used to configure the Infobar
+// and subsequently perform related actions. `badgeSupport` should be YES if the
+// Infobar will add a Badge and support a Modal. `infobarType` is the unique
 // identifier for each Infobar, there can't be more than one infobar with the
 // same type added to the InfobarManager.
 - (instancetype)initWithInfoBarDelegate:
@@ -55,15 +55,15 @@ enum class InfobarBannerPresentationState;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Present the InfobarBanner using |self.baseViewController|.
+// Present the InfobarBanner using `self.baseViewController`.
 - (void)presentInfobarBannerAnimated:(BOOL)animated
                           completion:(ProceduralBlock)completion;
 
-// Present the InfobarModal using |self.baseViewController|.
+// Present the InfobarModal using `self.baseViewController`.
 - (void)presentInfobarModal;
 
 // Dismisses the InfobarBanner immediately, if none is being presented
-// |completion| will still run.
+// `completion` will still run.
 - (void)dismissInfobarBannerAnimated:(BOOL)animated
                           completion:(void (^)())completion;
 

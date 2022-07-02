@@ -37,35 +37,24 @@ class ContextTestBase : public testing::Test {
     attributes.bind_generates_resource = false;
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
-    auto result = context->Initialize(
-        gpu_thread_holder_.GetTaskExecutor(),
-        /*surface=*/nullptr, /*offscreen=*/true,
-        /*window=*/gpu::kNullSurfaceHandle, attributes,
-        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_.get(),
-        /*image_factory=*/nullptr, /*gpu_task_runner_helper=*/nullptr,
-        /*display_compositor_memory_and_task_contoller_on_gpu=*/nullptr,
-        base::ThreadTaskRunnerHandle::Get());
+    auto result = context->Initialize(gpu_thread_holder_.GetTaskExecutor(),
+                                      attributes, gpu::SharedMemoryLimits(),
+                                      /*image_factory=*/nullptr);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     return context;
   }
 
   void SetUp() override {
-    gpu_memory_buffer_manager_ =
-        std::make_unique<viz::TestGpuMemoryBufferManager>();
     context_ = CreateGLInProcessContext();
     gl_ = context_->GetImplementation();
     context_support_ = context_->GetImplementation();
   }
 
-  void TearDown() override {
-    context_.reset();
-    gpu_memory_buffer_manager_.reset();
-  }
+  void TearDown() override { context_.reset(); }
 
  protected:
   raw_ptr<gpu::gles2::GLES2Interface> gl_;
   raw_ptr<gpu::ContextSupport> context_support_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
  private:
   gpu::InProcessGpuThreadHolder gpu_thread_holder_;

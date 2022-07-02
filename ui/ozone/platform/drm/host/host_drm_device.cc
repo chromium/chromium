@@ -186,6 +186,23 @@ bool HostDrmDevice::GpuRemoveGraphicsDevice(const base::FilePath& path) {
   return true;
 }
 
+void HostDrmDevice::GpuShouldDisplayEventTriggerConfiguration(
+    const EventPropertyMap& event_props) {
+  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
+
+  // No connection to DRM device. Block the event since the entire configuration
+  // will most likely fail.
+  if (!IsConnected()) {
+    GpuShouldDisplayEventTriggerConfigurationCallback(/*should_trigger=*/false);
+    return;
+  }
+
+  auto callback = base::BindOnce(
+      &HostDrmDevice::GpuShouldDisplayEventTriggerConfigurationCallback, this);
+  drm_device_->ShouldDisplayEventTriggerConfiguration(event_props,
+                                                      std::move(callback));
+}
+
 bool HostDrmDevice::GpuGetHDCPState(int64_t display_id) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (!IsConnected())
@@ -262,6 +279,12 @@ void HostDrmDevice::GpuTakeDisplayControlCallback(bool success) const {
 void HostDrmDevice::GpuRelinquishDisplayControlCallback(bool success) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   display_manager_->GpuRelinquishedDisplayControl(success);
+}
+
+void HostDrmDevice::GpuShouldDisplayEventTriggerConfigurationCallback(
+    bool should_trigger) const {
+  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
+  display_manager_->GpuShouldDisplayEventTriggerConfiguration(should_trigger);
 }
 
 void HostDrmDevice::GpuGetHDCPStateCallback(

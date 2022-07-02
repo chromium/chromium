@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Синхронизация</translation>
 <translation id="1076421457278169141">Код отсканирован</translation>
 <translation id="1084365883616172403">Опубликовано в Facebook.</translation>
-<translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Продолжить</translation>
 <translation id="110724200315609752">Переключиться на открытое окно</translation>
@@ -28,6 +27,7 @@
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154984953698510061">Посмотреть другие вкладки</translation>
+<translation id="1161340988127985692">Спрашивать, открывать ли ссылки из других приложений в инкогнито</translation>
 <translation id="1164064664035028907">Используйте надежный пароль:</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1172898394251786223">Следующее поле</translation>
@@ -47,6 +47,7 @@
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
+<translation id="1312721752506309252">Улучшенная защита включена</translation>
 <translation id="1321993286294231467">При сохранении изображения возникла ошибка.</translation>
 <translation id="1322735045095424339">В вашей организации обязательно использовать режим инкогнито.</translation>
 <translation id="1323735185997015385">Удалить</translation>
@@ -65,6 +66,7 @@
 <translation id="1434356225517321998">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Скрыть пароль</translation>
 <translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
+<translation id="1450170672351507823">Стандартная защита включена. Для большей безопасности используйте улучшенную защиту.</translation>
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
 <translation id="1491277525950327607">Для переключения нажмите дважды</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
@@ -98,7 +100,6 @@
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="1690731385917361335">Закладок нет</translation>
-<translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
@@ -162,6 +163,7 @@
 <translation id="236977714248711277">Сайты не могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
 Сайты не могут использовать файлы cookie, чтобы получать данные о ваших действиях в браузере, например для показа персонализированной рекламы.</translation>
+<translation id="2375243552872247702">Контент для вас</translation>
 <translation id="2381405137052800939">Основные</translation>
 <translation id="2386793615875593361">Выбрана 1 фотография</translation>
 <translation id="2421004566762153674">Блокировать сторонние файлы cookie</translation>
@@ -171,7 +173,6 @@
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
-<translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
 <translation id="2529021024822217800">Открыть все</translation>
@@ -240,6 +241,7 @@
 <translation id="2982481275546140226">Удалить данные</translation>
 <translation id="298306318844797842">Добавить способ оплаты</translation>
 <translation id="2989805286512600854">Открыть в новой вкладке</translation>
+<translation id="3020183492814296499">Ярлыки</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
 <translation id="3039722182465315531">Продолжить без входа</translation>
 <translation id="3076846064362030967">Вы останетесь в аккаунте Google. Сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте, если вы в него вошли. Их можно удалить в любое время.
@@ -248,6 +250,7 @@
 Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3081338492074632642">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
+<translation id="3103603146121354983">Автозаполнение паролей</translation>
 <translation id="3112556859945124369">Отметить…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блокировать все</translation>
@@ -288,6 +291,7 @@
 <translation id="3443810440409579745">Вкладка получена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3448016392200048164">Режим Split View</translation>
+<translation id="3450502512529866925">Добавить страницу в закладки</translation>
 <translation id="345565170154308620">Настроить пароли</translation>
 <translation id="3469166899695866866">Остановить скачивание?</translation>
 <translation id="3470502288861289375">Копирование…</translation>
@@ -320,6 +324,7 @@
 <translation id="369349502275246497">Предлагать сохранение паролей</translation>
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
 <translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
+<translation id="37207012422556617">Популярные запросы</translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
@@ -402,6 +407,7 @@
 <translation id="4502566650163919158">Проверить сейчас</translation>
 <translation id="4505980578794259603">Последняя проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыть сообщение о входе</translation>
+<translation id="4511669830082467224">Искать по изображению в Google</translation>
 <translation id="4526249700380860531">Просматривайте сохраненные пароли и управляйте ими на странице <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>
@@ -479,9 +485,9 @@
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Сохраняйте страницы, чтобы прочитать их позже или в офлайн-режиме. Перед сохранением в Chrome длинных материалов вам будет предложено подтвердить это действие.</translation>
 <translation id="5094827893301452931">Опубликовано в Твиттере.</translation>
+<translation id="509789154667432072">Добавить закладку</translation>
 <translation id="5118713593561876160">Интересы</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
-<translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
 <translation id="5140288047769711648">Вам не нужно запоминать этот пароль, так как он будет сохранен в Chrome.</translation>
 <translation id="5150492518600715772">Отправить на свое устройство</translation>
@@ -511,6 +517,7 @@
 <translation id="5416022985862681400">Последние 7 дней</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
+<translation id="5439599923922718668">Часто посещаемые</translation>
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
@@ -524,8 +531,8 @@
 Функцию Handoff нужно включить не только в Chrome, но и в настройках устройства (см. раздел "Общие"). Все ваши устройства должны синхронизироваться с одним и тем же аккаунтом iCloud.</translation>
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
+<translation id="556042886152191864">Кнопка</translation>
 <translation id="5580834567471114021">Добавить в список для чтения?</translation>
-<translation id="5592679540098330836">Включить синхронизацию для пользователя <ph name="NAME" /></translation>
 <translation id="560322036295180549">Функция отключена вашей организацией</translation>
 <translation id="5614553682702429503">Сохранение пароля</translation>
 <translation id="5626245204502895507">Не удалось скачать файлы.</translation>
@@ -580,6 +587,7 @@
 <translation id="6012140227487808125">Шифрование…</translation>
 <translation id="6021332621416007159">Открыть в…</translation>
 <translation id="6027945736510816438">Вам нужен домен <ph name="WEBSITE" />?</translation>
+<translation id="6036215966221662377">Удалить данные о работе в браузере</translation>
 <translation id="6036514205982097558">Все вкладки в одном браузере</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -591,13 +599,13 @@
 <translation id="60829778314739003">Принять и продолжить</translation>
 <translation id="6084848228346514841">Выберите вкладки</translation>
 <translation id="6103540626693881831">Шифрование на устройстве</translation>
-<translation id="6108923351542677676">Настройка…</translation>
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6136914049981179737">только что</translation>
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
 <translation id="6149061208933997199">Использовать пароль</translation>
+<translation id="6152406514676263192">Чтобы получать контент на основе своих интересов, включите синхронизацию.</translation>
 <translation id="6159839020698489198">(необязательно)</translation>
 <translation id="6177442314419606057">Поиск в Chrome</translation>
 <translation id="6184086493125982861">Показать вкладки</translation>
@@ -658,6 +666,7 @@
 
 Для каждого сайта желательно использовать уникальный пароль.</translation>
 <translation id="650279896687777322">Подробнее</translation>
+<translation id="6510072653668207258">Напомнить позже</translation>
 <translation id="651505212789431520">Отключить синхронизацию? Ее можно включить в настройках в любой момент.</translation>
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6530992499366869131">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
@@ -734,6 +743,7 @@
 <translation id="7099761977003084116">Недавние вкладки</translation>
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Скрыть</translation>
+<translation id="7108762695052995889">Перейти на сайт</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7153999225810839758">Чтение займет около <ph name="TIME" /> мин.</translation>
@@ -744,6 +754,7 @@
 <translation id="7189598951263744875">Поделиться…</translation>
 <translation id="7192050974311852563">Начать запись журнала</translation>
 <translation id="7203585745079012652">Озвучивать результаты поиска</translation>
+<translation id="7207023858769244910">Включите синхронизацию и смотрите интересный контент.</translation>
 <translation id="7207383424303353046">Новинка! Чтобы автоматически открывать сайты в Chrome, сделайте его браузером по умолчанию. <ph name="BEGIN_LINK" />Перейти в настройки<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Недопустимое название карты</translation>
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
@@ -825,6 +836,7 @@
 <translation id="7966516440812255683">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
 Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы.</translation>
+<translation id="7966904497916178308">Стандартная защита включена</translation>
 <translation id="7971521879845308059">Блок. вспл. окна</translation>
 <translation id="797413074872316787">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
 <translation id="7978018860671536736">3. Нажмите "Автозаполнение пароля".</translation>
@@ -897,7 +909,6 @@
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8590913940444621808">Больше не спрашивать</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
-<translation id="8592752150819985187">Автозаполнение паролей</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
 <translation id="8620640915598389714">Изменить</translation>
 <translation id="8626393685701737946">Вы можете изменить режим просмотра сайтов по умолчанию в меню "Настройки &gt; Настройки контента"</translation>

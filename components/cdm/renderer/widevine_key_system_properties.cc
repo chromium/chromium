@@ -17,11 +17,12 @@
 #error This file should only be built when Widevine is enabled.
 #endif
 
+using media::CdmSessionType;
 using media::EmeConfigRule;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;
 using media::EmeMediaType;
-using media::EmeSessionTypeSupport;
+using media::EncryptionScheme;
 using media::SupportedCodecs;
 using Robustness = cdm::WidevineKeySystemProperties::Robustness;
 
@@ -57,22 +58,24 @@ bool IsHardwareSecurityEnabledForKeySystem(const std::string& key_system) {
 }  // namespace
 
 WidevineKeySystemProperties::WidevineKeySystemProperties(
-    media::SupportedCodecs codecs,
-    base::flat_set<media::EncryptionScheme> encryption_schemes,
-    media::SupportedCodecs hw_secure_codecs,
-    base::flat_set<media::EncryptionScheme> hw_secure_encryption_schemes,
+    SupportedCodecs codecs,
+    base::flat_set<EncryptionScheme> encryption_schemes,
+    base::flat_set<CdmSessionType> session_types,
+    SupportedCodecs hw_secure_codecs,
+    base::flat_set<EncryptionScheme> hw_secure_encryption_schemes,
+    base::flat_set<CdmSessionType> hw_secure_session_types,
     Robustness max_audio_robustness,
     Robustness max_video_robustness,
-    media::EmeSessionTypeSupport persistent_license_support,
-    media::EmeFeatureSupport persistent_state_support,
-    media::EmeFeatureSupport distinctive_identifier_support)
+    EmeFeatureSupport persistent_state_support,
+    EmeFeatureSupport distinctive_identifier_support)
     : codecs_(codecs),
       encryption_schemes_(std::move(encryption_schemes)),
+      session_types_(std::move(session_types)),
       hw_secure_codecs_(hw_secure_codecs),
       hw_secure_encryption_schemes_(std::move(hw_secure_encryption_schemes)),
+      hw_secure_session_types_(std::move(hw_secure_session_types)),
       max_audio_robustness_(max_audio_robustness),
       max_video_robustness_(max_video_robustness),
-      persistent_license_support_(persistent_license_support),
       persistent_state_support_(persistent_state_support),
       distinctive_identifier_support_(distinctive_identifier_support) {}
 
@@ -114,10 +117,10 @@ bool WidevineKeySystemProperties::IsSupportedInitDataType(
 }
 
 EmeConfigRule WidevineKeySystemProperties::GetEncryptionSchemeConfigRule(
-    media::EncryptionScheme encryption_scheme) const {
-  bool is_supported = encryption_schemes_.count(encryption_scheme);
+    EncryptionScheme encryption_scheme) const {
+  bool is_supported = encryption_schemes_.contains(encryption_scheme);
   bool is_hw_secure_supported =
-      hw_secure_encryption_schemes_.count(encryption_scheme);
+      hw_secure_encryption_schemes_.contains(encryption_scheme);
 
   if (is_supported && is_hw_secure_supported)
     return EmeConfigRule::SUPPORTED;
@@ -202,13 +205,18 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   if (robustness >= Robustness::SW_SECURE_DECODE || hw_secure_codecs_required)
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
 #elif BUILDFLAG(IS_WIN)
-  // On Windows, hardware security uses MediaFoundation-based CDM which requires
-  // identifier and persistent state.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required) {
+  if (robustness >= Robustness::HW_SECURE_CRYPTO) {
+    // On Windows, hardware security uses MediaFoundation-based CDM which
+    // requires identifier and persistent state.
     return IsHardwareSecurityEnabledForKeySystem(key_system)
                ? EmeConfigRule::
                      IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED
                : EmeConfigRule::NOT_SUPPORTED;
+  } else if (robustness < Robustness::HW_SECURE_CRYPTO) {
+    // On Windows, when software security is queried, explicitly not allow
+    // hardware secure codecs to prevent robustness level upgrade, for stability
+    // and compatibility reasons. See https://crbug.com/1327043.
+    return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
   }
 #else
   // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
@@ -220,9 +228,37 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   return EmeConfigRule::SUPPORTED;
 }
 
-EmeSessionTypeSupport
-WidevineKeySystemProperties::GetPersistentLicenseSessionSupport() const {
-  return persistent_license_support_;
+EmeConfigRule WidevineKeySystemProperties::GetPersistentLicenseSessionSupport()
+    const {
+  bool is_supported =
+      session_types_.contains(CdmSessionType::kPersistentLicense);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The logic around hardware/software security support is complicated on
+  // ChromeOS. This code is to preserve the original logic, by deciding the
+  // support only based on `is_supported` and ignore `is_hw_secure_supported`.
+  // Note: On ChromeOS, platform verification (similar to CDM host verification)
+  // is required for persistent license support, which requires identifier.
+  // TODO(crbug.com/1324262): Fix the logic after refactoring EmeConfigRule.
+  return is_supported ? EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED
+                      : EmeConfigRule::NOT_SUPPORTED;
+#else   // BUILDFLAG(IS_CHROMEOS)
+  bool is_hw_secure_supported =
+      hw_secure_session_types_.contains(CdmSessionType::kPersistentLicense);
+
+  // Per GetPersistentLicenseSessionSupport() API, there's no need to specify
+  // the PERSISTENCE requirement here, which is implicitly assumed and enforced
+  // by `KeySystemConfigSelector`.
+  if (is_supported && is_hw_secure_supported) {
+    return EmeConfigRule::SUPPORTED;
+  } else if (is_supported && !is_hw_secure_supported) {
+    return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
+  } else if (!is_supported && is_hw_secure_supported) {
+    return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+  } else {
+    return EmeConfigRule::NOT_SUPPORTED;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 EmeFeatureSupport WidevineKeySystemProperties::GetPersistentStateSupport()

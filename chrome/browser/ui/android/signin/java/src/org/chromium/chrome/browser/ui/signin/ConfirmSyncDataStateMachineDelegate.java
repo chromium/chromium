@@ -4,17 +4,23 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ProgressBar;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management.
@@ -50,107 +56,127 @@ public class ConfirmSyncDataStateMachineDelegate {
     }
 
     /**
-     * Progress Dialog that is shown while account management policy is being fetched.
+     * A Progress Dialog that is shown while account management policy is being fetched.
      */
-    public static class ProgressDialogFragment extends DialogFragment {
-        private ProgressDialogListener mListener;
+    private static final class ProgressDialogCoordinator {
+        private final ProgressDialogListener mListener;
+        private final PropertyModel mModel;
+        private final ModalDialogManager mDialogManager;
 
-        public ProgressDialogFragment() {
-            // Fragment must have an empty public constructor
-        }
+        @MainThread
+        private ProgressDialogCoordinator(Context context, ModalDialogManager dialogManager,
+                ProgressDialogListener listener) {
+            final View view =
+                    LayoutInflater.from(context).inflate(R.layout.signin_progress_bar_dialog, null);
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // If the dialog is being recreated it won't have the listener set and so won't be
-            // functional. Therefore we dismiss, and the user will need to open the dialog again.
-            if (savedInstanceState != null) {
-                dismiss();
-            }
-
-            return new AlertDialog
-                    .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                    .setView(R.layout.signin_progress_bar_dialog)
-                    .setNegativeButton(R.string.cancel, (dialog, i) -> dialog.cancel())
-                    .create();
-        }
-
-        private void setListener(ProgressDialogListener listener) {
-            assert mListener == null;
             mListener = listener;
+            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                             .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                     context.getString(R.string.cancel))
+                             .with(ModalDialogProperties.CUSTOM_VIEW, view)
+                             .with(ModalDialogProperties.CONTROLLER, createController())
+                             .build();
+            mDialogManager = dialogManager;
+            mDialogManager.showDialog(mModel, ModalDialogType.APP);
         }
 
-        private static ProgressDialogFragment create(ProgressDialogListener listener) {
-            ProgressDialogFragment result = new ProgressDialogFragment();
-            result.setListener(listener);
-            return result;
+        @MainThread
+        private void dismissDialog() {
+            mDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
         }
 
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            super.onCancel(dialog);
-            mListener.onCancel();
+        private Controller createController() {
+            return new Controller() {
+                @Override
+                public void onClick(PropertyModel model, int buttonType) {
+                    if (buttonType == ButtonType.NEGATIVE) {
+                        mDialogManager.dismissDialog(
+                                mModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                    }
+                }
+
+                @Override
+                public void onDismiss(PropertyModel model, int dismissalCause) {
+                    if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                            || dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                        mListener.onCancel();
+                    }
+                }
+            };
         }
     }
 
     /**
-     * Timeout Dialog that is shown if account management policy fetch times out.
+     * A Timeout Dialog that is shown if account management policy fetch times out.
      */
-    public static class TimeoutDialogFragment extends DialogFragment {
-        private TimeoutDialogListener mListener;
+    private static final class TimeoutDialogCoordinator {
+        private final TimeoutDialogListener mListener;
+        private final PropertyModel mModel;
+        private final ModalDialogManager mDialogManager;
 
-        public TimeoutDialogFragment() {
-            // Fragment must have an empty public constructor
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // If the dialog is being recreated it won't have the listener set and so won't be
-            // functional. Therefore we dismiss, and the user will need to open the dialog again.
-            if (savedInstanceState != null) {
-                dismiss();
-            }
-
-            return new AlertDialog
-                    .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                    .setTitle(R.string.sign_in_timeout_title)
-                    .setMessage(R.string.sign_in_timeout_message)
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
-                    .setPositiveButton(R.string.try_again, (dialog, which) -> mListener.onRetry())
-                    .create();
-        }
-
-        private void setListener(TimeoutDialogListener listener) {
-            assert mListener == null;
+        @MainThread
+        private TimeoutDialogCoordinator(
+                Context context, ModalDialogManager dialogManager, TimeoutDialogListener listener) {
             mListener = listener;
+            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                             .with(ModalDialogProperties.TITLE,
+                                     context.getString(R.string.sign_in_timeout_title))
+                             .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                     context.getString(R.string.sign_in_timeout_message))
+                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                             .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                     context.getString(R.string.try_again))
+                             .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                     context.getString(R.string.cancel))
+                             .with(ModalDialogProperties.CONTROLLER, createController())
+                             .build();
+            mDialogManager = dialogManager;
+            mDialogManager.showDialog(mModel, ModalDialogType.APP);
         }
 
-        private static TimeoutDialogFragment create(TimeoutDialogListener listener) {
-            TimeoutDialogFragment result = new TimeoutDialogFragment();
-            result.setListener(listener);
-            return result;
+        @MainThread
+        private void dismissDialog() {
+            mDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);
         }
 
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            super.onCancel(dialog);
-            mListener.onCancel();
+        private Controller createController() {
+            return new Controller() {
+                @Override
+                public void onClick(PropertyModel model, int buttonType) {
+                    if (buttonType == ButtonType.POSITIVE) {
+                        mListener.onRetry();
+                        mDialogManager.dismissDialog(
+                                mModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    } else if (buttonType == ButtonType.NEGATIVE) {
+                        mDialogManager.dismissDialog(
+                                mModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                    }
+                }
+
+                @Override
+                public void onDismiss(PropertyModel model, int dismissalCause) {
+                    if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                            || dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                        mListener.onCancel();
+                    }
+                }
+            };
         }
     }
 
-    private static final String PROGRESS_DIALOG_TAG = "ConfirmSyncTimeoutDialog";
-    private static final String TIMEOUT_DIALOG_TAG = "ConfirmSyncProgressDialog";
-    private static final String CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG =
-            "ConfirmManagedSyncDataDialog";
-
-    private final FragmentManager mFragmentManager;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
-    private ConfirmImportSyncDataDialogCoordinator mConfirmImportSyncDataDialogCoordinator;
+    private @Nullable ProgressDialogCoordinator mProgressDialogCoordinator;
+    private @Nullable TimeoutDialogCoordinator mTimeoutDialogCoordinator;
+    private @Nullable ConfirmImportSyncDataDialogCoordinator
+            mConfirmImportSyncDataDialogCoordinator;
+    private @Nullable ConfirmManagedSyncDataDialogCoordinator
+            mConfirmManagedSyncDataDialogCoordinator;
 
     public ConfirmSyncDataStateMachineDelegate(Context context, FragmentManager fragmentManager,
             ModalDialogManager modalDialogManager) {
         mContext = context;
-        mFragmentManager = fragmentManager;
         mModalDialogManager = modalDialogManager;
     }
 
@@ -161,7 +187,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      */
     void showFetchManagementPolicyProgressDialog(ProgressDialogListener listener) {
         dismissAllDialogs();
-        showAllowingStateLoss(ProgressDialogFragment.create(listener), PROGRESS_DIALOG_TAG);
+        mProgressDialogCoordinator =
+                new ProgressDialogCoordinator(mContext, mModalDialogManager, listener);
     }
 
     /**
@@ -171,7 +198,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      */
     void showFetchManagementPolicyTimeoutDialog(TimeoutDialogListener listener) {
         dismissAllDialogs();
-        showAllowingStateLoss(TimeoutDialogFragment.create(listener), TIMEOUT_DIALOG_TAG);
+        mTimeoutDialogCoordinator =
+                new TimeoutDialogCoordinator(mContext, mModalDialogManager, listener);
     }
 
     /**
@@ -193,40 +221,43 @@ public class ConfirmSyncDataStateMachineDelegate {
     }
 
     /**
-     * Shows {@link ConfirmManagedSyncDataDialog} when signing in to a managed account
+     * Shows {@link ConfirmManagedSyncDataDialogCoordinator} when signing in to a managed account
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
      */
     void showSignInToManagedAccountDialog(
-            ConfirmManagedSyncDataDialog.Listener listener, String domain) {
+            ConfirmManagedSyncDataDialogCoordinator.Listener listener, String domain) {
         dismissAllDialogs();
-        showAllowingStateLoss(ConfirmManagedSyncDataDialog.create(listener, domain),
-                CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG);
-    }
-
-    private void showAllowingStateLoss(DialogFragment dialogFragment, String tag) {
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        transaction.add(dialogFragment, tag);
-        transaction.commitAllowingStateLoss();
+        mConfirmManagedSyncDataDialogCoordinator = new ConfirmManagedSyncDataDialogCoordinator(
+                mContext, mModalDialogManager, listener, domain);
     }
 
     /**
      * Dismisses all dialogs.
      */
     void dismissAllDialogs() {
-        dismissDialog(PROGRESS_DIALOG_TAG);
-        dismissDialog(TIMEOUT_DIALOG_TAG);
+        if (mProgressDialogCoordinator != null) {
+            mProgressDialogCoordinator.dismissDialog();
+            mProgressDialogCoordinator = null;
+        }
+        if (mTimeoutDialogCoordinator != null) {
+            mTimeoutDialogCoordinator.dismissDialog();
+            mTimeoutDialogCoordinator = null;
+        }
         if (mConfirmImportSyncDataDialogCoordinator != null) {
             mConfirmImportSyncDataDialogCoordinator.dismissDialog();
             mConfirmImportSyncDataDialogCoordinator = null;
         }
-        dismissDialog(CONFIRM_MANAGED_SYNC_DATA_DIALOG_TAG);
+        if (mConfirmManagedSyncDataDialogCoordinator != null) {
+            mConfirmManagedSyncDataDialogCoordinator.dismissDialog();
+            mConfirmManagedSyncDataDialogCoordinator = null;
+        }
     }
 
-    private void dismissDialog(String tag) {
-        DialogFragment fragment = (DialogFragment) mFragmentManager.findFragmentByTag(tag);
-        if (fragment == null) return;
-        fragment.dismissAllowingStateLoss();
+    @VisibleForTesting
+    ProgressBar getProgressBarViewForTesting() {
+        return mProgressDialogCoordinator.mModel.get(ModalDialogProperties.CUSTOM_VIEW)
+                .findViewById(R.id.progress_bar);
     }
 }

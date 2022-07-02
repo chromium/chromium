@@ -58,6 +58,9 @@
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
+#elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
+#include "media/capture/video/win/video_capture_device_factory_win.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
@@ -84,6 +87,8 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 // not on hardware performance.
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
 #if BUILDFLAG(IS_MAC)
 const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
@@ -91,8 +96,6 @@ const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
 const base::Feature kScreenCaptureKitMac{"ScreenCaptureKitMac",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
   switch (device_id.type) {
@@ -201,7 +204,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB: {
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET: {
       const DesktopMediaID desktop_id = DesktopMediaID::Parse(device_id);
       if (desktop_id.is_null()) {
         DLOG(ERROR) << "Desktop media ID is null";
@@ -289,15 +293,14 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-    default: {
-      NOTIMPLEMENTED();
-      std::move(after_start_capture_callback).Run(nullptr);
-      return;
-    }
+    default:
+      NOTREACHED() << "unsupported stream type=" << stream_type;
+      start_capture_closure =
+          base::BindOnce(std::move(after_start_capture_callback), nullptr);
   }
 
-  device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
   state_ = State::DEVICE_START_IN_PROGRESS;
+  device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
 }
 
 void InProcessVideoCaptureDeviceLauncher::AbortLaunch() {
@@ -314,9 +317,22 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
     base::WeakPtr<media::VideoFrameReceiver> receiver_on_io_thread) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<media::DXGIDeviceManager> dxgi_device_manager;
+  if (video_capture_system_ && video_capture_system_->GetFactory()) {
+    dxgi_device_manager =
+        video_capture_system_->GetFactory()->GetDxgiDeviceManager();
+  }
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
-      new media::VideoCaptureBufferPoolImpl(requested_buffer_type,
-                                            buffer_pool_max_buffer_count);
+      base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+          requested_buffer_type, buffer_pool_max_buffer_count,
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>(
+              std::move(dxgi_device_manager)));
+#else
+  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
+      base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+          requested_buffer_type, buffer_pool_max_buffer_count);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<media::VideoCaptureDeviceClient>(

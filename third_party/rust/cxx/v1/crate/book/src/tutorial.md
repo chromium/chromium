@@ -356,6 +356,7 @@ relative path of the Rust source file within the crate, and a `.rs.h` extension.
 ##include "cxx-demo/include/blobstore.h"
 ##include "cxx-demo/src/main.rs.h"
 ##include <functional>
+##include <string>
 #
 # BlobstoreClient::BlobstoreClient() {}
 #
@@ -560,9 +561,9 @@ fn main() {
 
 ```cpp,hidelines
 // include/blobstore.h
-#
-# #pragma once
-# #include "rust/cxx.h"
+
+##pragma once
+##include "rust/cxx.h"
 # #include <memory>
 
 struct MultiBuf;

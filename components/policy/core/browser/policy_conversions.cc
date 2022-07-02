@@ -92,10 +92,6 @@ PolicyConversions& PolicyConversions::SetDropDefaultValues(bool enabled) {
   return *this;
 }
 
-std::string PolicyConversions::ToJSON() {
-  return client_->ConvertValueToJSON(ToValue());
-}
-
 /**
  * DictionaryPolicyConversions
  */
@@ -105,7 +101,68 @@ DictionaryPolicyConversions::DictionaryPolicyConversions(
     : PolicyConversions(std::move(client)) {}
 DictionaryPolicyConversions::~DictionaryPolicyConversions() = default;
 
-Value DictionaryPolicyConversions::ToValue() {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+DictionaryPolicyConversions& DictionaryPolicyConversions::WithUpdaterPolicies(
+    std::unique_ptr<PolicyMap> policies) {
+  PolicyConversions::WithUpdaterPolicies(std::move(policies));
+  return *this;
+}
+
+DictionaryPolicyConversions&
+DictionaryPolicyConversions::WithUpdaterPolicySchemas(
+    PolicyToSchemaMap schemas) {
+  PolicyConversions::WithUpdaterPolicySchemas(std::move(schemas));
+  return *this;
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::EnableConvertTypes(
+    bool enabled) {
+  PolicyConversions::EnableConvertTypes(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::EnableConvertValues(
+    bool enabled) {
+  PolicyConversions::EnableConvertValues(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions&
+DictionaryPolicyConversions::EnableDeviceLocalAccountPolicies(bool enabled) {
+  PolicyConversions::EnableDeviceLocalAccountPolicies(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::EnableDeviceInfo(
+    bool enabled) {
+  PolicyConversions::EnableDeviceInfo(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::EnablePrettyPrint(
+    bool enabled) {
+  PolicyConversions::EnablePrettyPrint(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::EnableUserPolicies(
+    bool enabled) {
+  PolicyConversions::EnableUserPolicies(enabled);
+  return *this;
+}
+
+DictionaryPolicyConversions& DictionaryPolicyConversions::SetDropDefaultValues(
+    bool enabled) {
+  PolicyConversions::SetDropDefaultValues(enabled);
+  return *this;
+}
+
+std::string DictionaryPolicyConversions::ToJSON() {
+  return client()->ConvertValueToJSON(Value(ToValueDict()));
+}
+
+Value::Dict DictionaryPolicyConversions::ToValueDict() {
   Value::Dict all_policies;
 
   if (client()->HasUserPolicies()) {
@@ -132,9 +189,9 @@ Value DictionaryPolicyConversions::ToValue() {
                    GetDeviceLocalAccountPolicies());
   Value::Dict identity_fields = client()->GetIdentityFields();
   if (!identity_fields.empty())
-    all_policies.Merge(identity_fields);
+    all_policies.Merge(std::move(identity_fields));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return Value(std::move(all_policies));
+  return all_policies;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -176,12 +233,58 @@ ArrayPolicyConversions::ArrayPolicyConversions(
 ArrayPolicyConversions::~ArrayPolicyConversions() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ArrayPolicyConversions::WithAdditionalChromePolicies(Value&& policies) {
+void ArrayPolicyConversions::WithAdditionalChromePolicies(
+    Value::Dict policies) {
   additional_chrome_policies_ = std::move(policies);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-Value ArrayPolicyConversions::ToValue() {
+ArrayPolicyConversions& ArrayPolicyConversions::EnableConvertTypes(
+    bool enabled) {
+  PolicyConversions::EnableConvertTypes(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::EnableConvertValues(
+    bool enabled) {
+  PolicyConversions::EnableConvertValues(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions&
+ArrayPolicyConversions::EnableDeviceLocalAccountPolicies(bool enabled) {
+  PolicyConversions::EnableDeviceLocalAccountPolicies(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::EnableDeviceInfo(bool enabled) {
+  PolicyConversions::EnableDeviceInfo(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::EnablePrettyPrint(
+    bool enabled) {
+  PolicyConversions::EnablePrettyPrint(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::EnableUserPolicies(
+    bool enabled) {
+  PolicyConversions::EnableUserPolicies(enabled);
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::SetDropDefaultValues(
+    bool enabled) {
+  PolicyConversions::SetDropDefaultValues(enabled);
+  return *this;
+}
+
+std::string ArrayPolicyConversions::ToJSON() {
+  return client()->ConvertValueToJSON(Value(ToValueList()));
+}
+
+Value::List ArrayPolicyConversions::ToValueList() {
   Value::List all_policies;
 
   if (client()->HasUserPolicies()) {
@@ -222,7 +325,7 @@ Value ArrayPolicyConversions::ToValue() {
     all_policies.Append(std::move(identity_fields));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return Value(std::move(all_policies));
+  return all_policies;
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -233,6 +336,18 @@ Value::Dict ArrayPolicyConversions::GetUpdaterPolicies() {
   chrome_policies_data.Set("policies", client()->GetUpdaterPolicies());
   return chrome_policies_data;
 }
+
+ArrayPolicyConversions& ArrayPolicyConversions::WithUpdaterPolicies(
+    std::unique_ptr<PolicyMap> policies) {
+  PolicyConversions::WithUpdaterPolicies(std::move(policies));
+  return *this;
+}
+
+ArrayPolicyConversions& ArrayPolicyConversions::WithUpdaterPolicySchemas(
+    PolicyToSchemaMap schemas) {
+  PolicyConversions::WithUpdaterPolicySchemas(std::move(schemas));
+  return *this;
+}
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 Value::Dict ArrayPolicyConversions::GetChromePolicies() {
@@ -241,8 +356,9 @@ Value::Dict ArrayPolicyConversions::GetChromePolicies() {
   chrome_policies_data.Set("name", "Chrome Policies");
   Value::Dict chrome_policies = client()->GetChromePolicies();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (additional_chrome_policies_ != base::Value())
-    chrome_policies.Merge(additional_chrome_policies_.GetDict());
+  if (additional_chrome_policies_ != base::Value()) {
+    chrome_policies.Merge(additional_chrome_policies_.Clone());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   chrome_policies_data.Set("policies", std::move(chrome_policies));
   return chrome_policies_data;

@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
@@ -59,7 +60,7 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                                      base::OnceClosure closure,
                                      int accelerator_state) override;
   bool SendMouseClick(ui_controls::MouseButton type) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool SendTouchEvents(int action, int id, int x, int y) override;
   bool SendTouchEventsNotifyWhenDone(int action,
                                      int id,
@@ -120,7 +121,7 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
 
   // This is the default host used for events that are not scoped to a window.
   // Events scoped to a window always use the window's host.
-  WindowTreeHost* const host_;
+  const raw_ptr<WindowTreeHost> host_;
 
   // Mask of the mouse buttons currently down. This is static as it needs to
   // track the state globally for all displays. A UIControlsOzone instance is

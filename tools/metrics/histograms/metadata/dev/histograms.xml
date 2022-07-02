@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
-    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2022-09-11">
+    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2022-11-13">
   <owner>yangguo@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.Target"
-    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2022-09-11">
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2022-11-13">
   <owner>yangguo@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
@@ -354,6 +354,18 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a replay is over.</summary>
 </histogram>
 
+<histogram name="DevTools.RecordingReplaySpeed"
+    enum="DevToolsRecordingReplaySpeed" expires_after="2023-05-03">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when a recording is being replayed. Used to count number of times
+    replay started with which speed.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.RecordingReplayStarted"
     enum="DevToolsRecordingReplayStarted" expires_after="2022-12-01">
   <owner>alexrudenko@chromium.org</owner>
@@ -373,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>

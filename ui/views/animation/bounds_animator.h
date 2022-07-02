@@ -87,6 +87,10 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   // Returns true if BoundsAnimator is animating any view.
   bool IsAnimating() const;
 
+  // Finishes all animations, teleporting the views to their target bounds. Any
+  // views marked for deletion are deleted.
+  void Complete();
+
   // Cancels all animations, leaving the views at their current location and
   // size. Any views marked for deletion are deleted.
   void Cancel();

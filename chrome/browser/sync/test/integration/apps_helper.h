@@ -110,8 +110,9 @@ void CopyNTPOrdinals(Profile* source, Profile* destination, int index);
 // Fix any NTP icon collisions that are currently in |profile|.
 void FixNTPOrdinalCollisions(Profile* profile);
 
-// Wait for all the web app install and uninstall tasks to finish.
-void AwaitWebAppQuiescence(std::vector<Profile*> profiles);
+// Flushes pending changes and verifies that the profiles have no pending
+// installs or uninstalls afterwards.
+bool AwaitWebAppQuiescence(std::vector<Profile*> profiles);
 }  // namespace apps_helper
 
 // An app specific version of StatusChangeChecker which checks the exit

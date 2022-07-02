@@ -16,7 +16,7 @@ enum RTCEncodedVideoFrameType {
     Exposed=Window
 ] interface RTCEncodedVideoFrame {
     readonly attribute RTCEncodedVideoFrameType type;
-    readonly attribute unsigned long long timestamp;  // RTP timestamp. 
+    readonly attribute unsigned long timestamp;  // RTP timestamp. 
     attribute ArrayBuffer data;
     RTCEncodedVideoFrameMetadata getMetadata();
     stringifier;

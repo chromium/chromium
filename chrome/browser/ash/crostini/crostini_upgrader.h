@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,19 +40,19 @@ class CrostiniUpgrader : public KeyedService,
   void AddObserver(CrostiniUpgraderUIObserver* observer) override;
   void RemoveObserver(CrostiniUpgraderUIObserver* observer) override;
   void PageOpened() override;
-  void Backup(const ContainerId& container_id,
+  void Backup(const guest_os::GuestId& container_id,
               bool show_file_chooser,
               base::WeakPtr<content::WebContents> web_contents) override;
   void StartPrechecks() override;
-  void Upgrade(const ContainerId& container_id) override;
-  void Restore(const ContainerId& container_id,
+  void Upgrade(const guest_os::GuestId& container_id) override;
+  void Restore(const guest_os::GuestId& container_id,
                base::WeakPtr<content::WebContents> web_contents) override;
   void Cancel() override;
   void CancelBeforeStart() override;
 
   // CrostiniManager::UpgradeContainerProgressObserver:
   void OnUpgradeContainerProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       UpgradeContainerProgressStatus status,
       const std::vector<std::string>& messages) override;
 
@@ -68,7 +69,7 @@ class CrostiniUpgrader : public KeyedService,
   // `log_sequence_`, which allows blocking operations.
   void WriteLogMessages(std::vector<std::string> messages);
 
-  void OnBackupPathChecked(const ContainerId& container_id,
+  void OnBackupPathChecked(const guest_os::GuestId& container_id,
                            base::WeakPtr<content::WebContents> web_contents,
                            base::FilePath path,
                            bool path_exists);
@@ -81,7 +82,7 @@ class CrostiniUpgrader : public KeyedService,
   void OnBackupProgress(int progress_percent);
   void OnUpgrade(CrostiniResult result);
   void DoPrechecks();
-  void OnRestorePathChecked(const ContainerId& container_id,
+  void OnRestorePathChecked(const guest_os::GuestId& container_id,
                             base::WeakPtr<content::WebContents> web_contents,
                             base::FilePath path,
                             bool path_exists);
@@ -111,7 +112,7 @@ class CrostiniUpgrader : public KeyedService,
   friend class StatusTracker;
 
   Profile* profile_;
-  ContainerId container_id_;
+  guest_os::GuestId container_id_;
   base::ObserverList<CrostiniUpgraderUIObserver>::Unchecked upgrader_observers_;
 
   base::OnceClosure prechecks_callback_;

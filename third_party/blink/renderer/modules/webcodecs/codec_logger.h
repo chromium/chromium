@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_log.h"
-#include "base/location.h"
 #include "media/base/media_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -72,9 +72,20 @@ class MODULES_EXPORT CodecLogger final {
     // This allows us to destroy |parent_media_log_| and stop logging,
     // without causing problems to |media_log_| users.
     media_log_ = parent_media_log_->Clone();
+
+    task_runner_ = task_runner;
   }
 
-  ~CodecLogger() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
+  ~CodecLogger() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // media logs must be posted for destruction, since they can cause the
+    // garbage collector to trigger an immediate cleanup and delete the owning
+    // instance of |CodecLogger|.
+    if (parent_media_log_) {
+      parent_media_log_->Stop();
+      task_runner_->DeleteSoon(FROM_HERE, std::move(parent_media_log_));
+    }
+  }
 
   void SendPlayerNameInformation(const ExecutionContext& context,
                                  std::string loadedAs) {
@@ -134,6 +145,9 @@ class MODULES_EXPORT CodecLogger final {
   // We might destroy |parent_media_log_| at any point, so keep a clone which
   // can be safely accessed, and whose raw pointer can be given callbacks.
   std::unique_ptr<media::MediaLog> media_log_;
+
+  // Keep task runner around for posting the media log to upon destruction.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

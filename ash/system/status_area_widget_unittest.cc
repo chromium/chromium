@@ -33,9 +33,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromeos/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/event.h"
@@ -570,10 +570,11 @@ TEST_F(StatusAreaWidgetCollapseStateTest, TrayHiddenWhileCollapsed) {
       switches::kAshForceStatusAreaCollapsible);
   status_area_->UpdateCollapseState();
 
-  // The palette tray button should not visible initially.
   EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED, collapse_state());
   EXPECT_FALSE(ime_menu_->GetVisible());
   EXPECT_FALSE(virtual_keyboard_->GetVisible());
+
+  // The palette tray button should visible initially.
   EXPECT_TRUE(palette_->GetVisible());
 
   // Hiding it should make the virtual keyboard tray button replace it.
@@ -591,7 +592,7 @@ TEST_F(StatusAreaWidgetCollapseStateTest, AllTraysFitInCollapsedState) {
   EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED, collapse_state());
 
   // If all tray buttons can fit in the available space, the overflow button is
-  // now shown.
+  // not shown.
   select_to_speak_->SetVisiblePreferred(false);
   ime_menu_->SetVisiblePreferred(false);
   dictation_button_->SetVisiblePreferred(false);

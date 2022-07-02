@@ -144,16 +144,21 @@ public class SectionHeaderView extends LinearLayout {
     public void updateDrawable(int index, boolean isVisible) {
         if (mTabLayout == null || mTabLayout.getTabCount() <= index) return;
 
-        ImageView optionsIndicatorView =
-                mTabLayout.getTabAt(index).view.findViewById(R.id.options_indicator);
+        TabLayout.Tab tab = mTabLayout.getTabAt(index);
+
+        ImageView optionsIndicatorView = tab.view.findViewById(R.id.options_indicator);
         if (optionsIndicatorView == null) return;
 
         if (isVisible) {
             optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
                     getResources(), R.drawable.mtrl_ic_arrow_drop_up, getContext().getTheme()));
+            tab.setContentDescription(getTabState(tab).text
+                    + getResources().getString(R.string.feed_options_dropdown_description_close));
         } else {
             optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
                     getResources(), R.drawable.mtrl_ic_arrow_drop_down, getContext().getTheme()));
+            tab.setContentDescription(getTabState(tab).text
+                    + getResources().getString(R.string.feed_options_dropdown_description));
         }
     }
 
@@ -163,7 +168,7 @@ public class SectionHeaderView extends LinearLayout {
 
         mTitleView = findViewById(R.id.header_title);
         mMenuView = findViewById(R.id.header_menu);
-        mLeadingStatusIndicator = findViewById(R.id.status_indicator);
+        mLeadingStatusIndicator = findViewById(R.id.section_status_indicator);
         mTabLayout = findViewById(R.id.tab_list_view);
         mContent = findViewById(R.id.main_content);
 
@@ -405,7 +410,7 @@ public class SectionHeaderView extends LinearLayout {
                         .build());
     }
 
-    private boolean shouldUseAwarenessIPH() {
+    public boolean shouldUseWebFeedAwarenessIPH() {
         return ChromeFeatureList
                 .getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
@@ -419,6 +424,17 @@ public class SectionHeaderView extends LinearLayout {
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card,
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card)
                                       .setAnchorView(mTitleView)
+                                      .build());
+    }
+
+    /** Shows an IPH on the web feed tab in the section header. */
+    public void showWebFeedAwarenessIph(
+            UserEducationHelper helper, int tabIndex, Runnable scroller) {
+        helper.requestShowIPH(new IPHCommandBuilder(mTitleView.getContext().getResources(),
+                FeatureConstants.WEB_FEED_AWARENESS_FEATURE, R.string.web_feed_awareness,
+                R.string.web_feed_awareness)
+                                      .setAnchorView(getTabAt(tabIndex).view)
+                                      .setOnShowCallback(scroller)
                                       .build());
     }
 

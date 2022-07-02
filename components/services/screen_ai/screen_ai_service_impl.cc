@@ -4,60 +4,55 @@
 
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/process/process.h"
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
+#include "sandbox/policy/switches.h"
 #include "ui/accessibility/accessibility_features.h"
-
-namespace {
-
-enum class InitializationResult {
-  kOk = 0,
-  kErrorInvalidLibraryFunctions = 1,
-  kErrorInitializationFailed = 2,
-};
-
-}  // namespace
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace screen_ai {
 
+namespace {
+
+base::FilePath GetLibraryFilePath() {
+  base::FilePath library_path = GetPreloadedLibraryFilePath();
+  if (library_path.empty() && base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                  sandbox::policy::switches::kNoSandbox)) {
+    library_path = GetLatestLibraryFilePath();
+    SetPreloadedLibraryFilePath(library_path);
+  }
+  return library_path;
+}
+
+}  // namespace
+
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : library_(GetPreloadedLibraryFilePath()),
-      screen_ai_init_function_(reinterpret_cast<ScreenAIInitFunction>(
-          library_.GetFunctionPointer("InitScreenAI"))),
+    : library_(GetLibraryFilePath()),
+      init_function_(
+          reinterpret_cast<InitFunction>(library_.GetFunctionPointer("Init"))),
       annotate_function_(reinterpret_cast<AnnotateFunction>(
           library_.GetFunctionPointer("Annotate"))),
-      screen_2x_init_function_(reinterpret_cast<Screen2xInitFunction>(
-          library_.GetFunctionPointer("InitScreen2x"))),
       extract_main_content_function_(
           reinterpret_cast<ExtractMainContentFunction>(
               library_.GetFunctionPointer("ExtractMainContent"))),
       receiver_(this, std::move(receiver)) {
-  auto init_result = InitializationResult::kOk;
-
-  if (features::IsScreenAIVisualAnnotationsEnabled()) {
-    if (!screen_ai_init_function_ || !annotate_function_)
-      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
-    else if (!screen_ai_init_function_(features::IsScreenAIDebugModeEnabled()))
-      init_result = InitializationResult::kErrorInitializationFailed;
-  }
-
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
-    if (!screen_2x_init_function_ || !extract_main_content_function_)
-      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
-    else if (!screen_2x_init_function_(
-                 features::IsScreenAIDebugModeEnabled())) {
-      init_result = InitializationResult::kErrorInitializationFailed;
-    }
-  }
-
-  if (init_result != InitializationResult::kOk) {
+  DCHECK(init_function_ && annotate_function_ &&
+         extract_main_content_function_);
+  if (!init_function_(
+          /*init_visual_annotations = */ features::
+                  IsScreenAIVisualAnnotationsEnabled() ||
+              features::IsPdfOcrEnabled(),
+          /*init_main_content_extraction = */
+          features::IsReadAnythingWithScreen2xEnabled(),
+          /*debug_mode = */ features::IsScreenAIDebugModeEnabled(),
+          /*models_path = */ GetLibraryFilePath().DirName().MaybeAsASCII())) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
-    VLOG(1) << "Screen AI library initialization failed: "
-            << static_cast<int>(init_result);
-    base::Process::TerminateCurrentProcessImmediately(
-        static_cast<int>(init_result));
+    VLOG(0) << "Screen AI library initialization failed.";
+    base::Process::TerminateCurrentProcessImmediately(-1);
   }
 }
 
@@ -77,7 +72,7 @@ void ScreenAIService::BindMainContentExtractor(
 
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
-  ui::AXTreeUpdate updates;
+  ui::AXTreeUpdate update;
 
   VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
           << image.height() << " snapshot.";
@@ -86,12 +81,14 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
   if (annotate_function_(image, annotation_text)) {
-    updates = ScreenAIVisualAnnotationToAXTreeUpdate(annotation_text);
+    gfx::Rect image_rect(image.width(), image.height());
+    update =
+        ScreenAIVisualAnnotationToAXTreeUpdate(annotation_text, image_rect);
   } else {
     VLOG(1) << "Screen AI library could not process snapshot.";
   }
 
-  std::move(callback).Run(updates);
+  std::move(callback).Run(update);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,

@@ -61,11 +61,24 @@ PortalPageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PortalPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1271055): Prerender doesn't support combined use
+  // with Portals. So, there is no case to start with prerendering to monitor
+  // Portals related metrics.
+  DCHECK(!navigation_handle->GetWebContents()->IsPortal());
+  return STOP_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PortalPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // FencedFrames can be created inside a Portal, but as this class is
+  // interested only in Portal pages, stop observing for such FencedFrame inner
+  // pages.
   return STOP_OBSERVING;
 }
 

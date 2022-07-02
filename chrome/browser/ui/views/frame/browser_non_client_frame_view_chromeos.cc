@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/highlight_border_overlay_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_search_frame_caption_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -31,7 +33,6 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -604,25 +605,14 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   if (web_app_frame_toolbar())
     web_app_frame_toolbar()->SetVisible(should_show_caption_buttons);
 
-  if (enabled) {
-    // Enter immersive mode if the feature is enabled and the widget is not
-    // already in fullscreen mode. Popups that are not activated but not
-    // minimized are still put in immersive mode, since they may still be
-    // visible but not activated due to something transparent and/or not
-    // fullscreen (ie. fullscreen launcher).
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip() &&
-        !frame()->IsMinimized()) {
-      browser_view()->immersive_mode_controller()->SetEnabled(true);
-      return;
-    }
-  } else {
-    // Exit immersive mode if the feature is enabled and the widget is not in
-    // fullscreen mode.
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip()) {
-      browser_view()->immersive_mode_controller()->SetEnabled(false);
-      return;
-    }
-  }
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view()->immersive_mode_controller();
+  const bool was_enabled = immersive_mode_controller->IsEnabled();
+  immersive_mode_controller->SetEnabled(ShouldEnableImmersiveModeController());
+
+  // Do not relayout if immersive mode has not changed.
+  if (was_enabled == immersive_mode_controller->IsEnabled())
+    return;
 
   InvalidateLayout();
   // Can be null in tests.
@@ -671,6 +661,27 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
       ResetWindowControls();
   }
 
+  if (key == chromeos::kWindowStateTypeKey) {
+    if (!chromeos::TabletState::Get()->InTabletMode())
+      return;
+
+    // Update the window controls if we are entering or exiting float state.
+    const bool enter_floated = IsFloated();
+    const bool exit_floated = static_cast<chromeos::WindowStateType>(old) ==
+                              chromeos::WindowStateType::kFloated;
+    if (!enter_floated && !exit_floated)
+      return;
+
+    ResetWindowControls();
+
+    // Additionally updates immersive mode for PWA/SWA so that we show the title
+    // bar when floated, and hide the title bar otherwise.
+    browser_view()->immersive_mode_controller()->SetEnabled(
+        ShouldEnableImmersiveModeController());
+
+    return;
+  }
+
   if (key == chromeos::kIsShowingInOverviewKey) {
     OnAddedToOrRemovedFromOverview();
     return;
@@ -702,7 +713,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   // temporarily children of the TopContainerView while they're all painting to
   // their layers.
   auto* container = browser_view()->top_container();
-  container->AddChildViewAt(caption_button_container_, 0);
+  container->AddChildViewAt(caption_button_container_.get(), 0);
   if (web_app_frame_toolbar())
     container->AddChildViewAt(web_app_frame_toolbar(), 0);
 
@@ -722,7 +733,7 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
   ResetWindowControls();
-  AddChildViewAt(caption_button_container_, 0);
+  AddChildViewAt(caption_button_container_.get(), 0);
 
   if (web_app_frame_toolbar()) {
     views::ClientView* client_view =
@@ -757,6 +768,16 @@ void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
   UpdateProfileIcons();
 }
 
+void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
+  if (!chromeos::features::IsDarkLightModeEnabled())
+    return;
+
+  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
+      GetWidget(),
+      gfx::RoundedCornersF(chromeos::kTopCornerRadiusWhenRestored,
+                           chromeos::kTopCornerRadiusWhenRestored, 0, 0));
+}
+
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
   return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode() &&
          !GetHideCaptionButtonsForFullscreen();
@@ -764,8 +785,11 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
-  return UsePackagedAppHeaderStyle(browser_view()->browser()) ||
-         !chromeos::TabletState::Get()->InTabletMode();
+  if (UsePackagedAppHeaderStyle(browser_view()->browser()))
+    return true;
+  if (!chromeos::TabletState::Get()->InTabletMode())
+    return true;
+  return IsFloated();
 }
 
 int BrowserNonClientFrameViewChromeOS::GetToolbarLeftInset() const {
@@ -793,6 +817,10 @@ int BrowserNonClientFrameViewChromeOS::GetTabStripRightInset() const {
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
+  // Floated windows show their frame as they need to be dragged or hidden.
+  if (IsFloated())
+    return true;
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // Normal windows that have a WebUI-based tab strip do not need a browser
   // frame as no tab strip is drawn on top of the browser frame.
@@ -882,7 +910,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
       profile_indicator_icon_ = new ProfileIndicatorIcon();
-      AddChildView(profile_indicator_icon_);
+      AddChildView(profile_indicator_icon_.get());
     }
 
     gfx::Image image(
@@ -1007,6 +1035,32 @@ void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // repainting theme changes.
   render_widget_host->InsertVisualStateCallback(
       theme_changed_animation_callback_.callback());
+}
+
+bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
+  return GetFrameWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
+         chromeos::WindowStateType::kFloated;
+}
+
+bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
+    const {
+  if (chromeos::TabletState::Get()->InTabletMode()) {
+    // Tabbed browsers do not support immersive mode in tablet mode. We use the
+    // web ui touchable tabstrip, which has its own sliding mechanism to view
+    // the tabs.
+    if (browser_view()->GetSupportsTabStrip())
+      return false;
+
+    // No immersive mode for minimized windows as they aren't visible, and
+    // floated windows need a permanent header to drag.
+    if (frame()->IsMinimized() || IsFloated())
+      return false;
+
+    return true;
+  }
+
+  // In clamshell mode, we want immersive mode if fullscreen.
+  return frame()->IsFullscreen();
 }
 
 const aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() const {

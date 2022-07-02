@@ -151,7 +151,9 @@ export class ProgressCenterPanel {
                 strf('FILE_COPIED', source);
           }
           if (item.type === ProgressItemType.EXTRACT) {
-            return strf('FILE_EXTRACTED', source);
+            return hasDestination ?
+                strf('EXTRACT_FILE_NAME_LONG', source, destination) :
+                strf('FILE_EXTRACTED', source);
           }
           if (item.type === ProgressItemType.MOVE) {
             return hasDestination ?

@@ -119,6 +119,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // The device settings used in Lacros.
   crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
 
+  DeviceSettingsLacros* device_settings_for_test() {
+    return device_settings_.get();
+  }
+
   PolicyLoaderLacros* device_account_policy_loader() {
     return device_account_policy_loader_;
   }
@@ -182,7 +186,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
   // Owned by |platform_provider_|.
-  PolicyLoaderLacros* device_account_policy_loader_ = nullptr;
+  raw_ptr<PolicyLoaderLacros> device_account_policy_loader_ = nullptr;
 #endif
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that

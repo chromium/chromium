@@ -73,7 +73,7 @@ export class Autoclick {
     this.scrollableBoundsListener_ = (x, y) =>
         this.findScrollingContainerForPoint_(x, y);
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
       // We use a hit test at a point to determine what automation node is

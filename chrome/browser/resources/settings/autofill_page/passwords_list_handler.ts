@@ -33,7 +33,6 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordDialogMode} from './password_edit_dialog.js';
 import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
@@ -117,11 +116,6 @@ export class PasswordsListHandlerElement extends
         value: null,
       },
 
-      /**
-       * Request to specify how to open the password edit dialog.
-       */
-      requestedDialogMode_: {type: Object, value: null},
-
       showPasswordEditDialog_: {type: Boolean, value: false},
 
       showPasswordMoveToAccountDialog_: {type: Boolean, value: false},
@@ -163,7 +157,6 @@ export class PasswordsListHandlerElement extends
   allowMoveToAccountOption: boolean;
 
   private activePassword_: PasswordListItemElement|null;
-  private requestedDialogMode_: PasswordDialogMode|null;
   private showPasswordEditDialog_: boolean;
   private showPasswordMoveToAccountDialog_: boolean;
   private showSendPasswordButton_: boolean;
@@ -207,6 +200,9 @@ export class PasswordsListHandlerElement extends
     this.displayRemovalNotification_(
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT) === 'true',
         params.get(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE) === 'true');
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_ACCOUNT);
+    params.delete(PasswordRemovalUrlParams.REMOVED_FROM_DEVICE);
+    Router.getInstance().updateRouteParams(params);
   }
 
   override disconnectedCallback() {
@@ -252,11 +248,9 @@ export class PasswordsListHandlerElement extends
               chrome.passwordsPrivate.PlaintextReason.EDIT)
           .then(password => {
             this.set('activePassword_.entry.password', password);
-            this.requestedDialogMode_ = PasswordDialogMode.EDIT;
             this.showPasswordEditDialog_ = true;
           }, () => {});
     } else {
-      this.requestedDialogMode_ = PasswordDialogMode.FEDERATED_VIEW;
       this.showPasswordEditDialog_ = true;
     }
     this.$.menu.close();
@@ -272,7 +266,6 @@ export class PasswordsListHandlerElement extends
     this.showPasswordEditDialog_ = false;
     assert(this.activeDialogAnchor_);
     focusWithoutInk(this.activeDialogAnchor_);
-    this.requestedDialogMode_ = null;
     this.activeDialogAnchor_ = null;
     this.activePassword_!.hide();
     this.activePassword_ = null;

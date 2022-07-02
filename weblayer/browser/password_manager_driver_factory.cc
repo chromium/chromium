@@ -105,6 +105,9 @@ void PasswordManagerDriverFactory::BindPasswordManagerDriver(
     mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
+  // TODO(https://crbug.com/1233858): Similarly to the
+  // ContentPasswordManagerDriver implementation. Do not bind the interface when
+  // the RenderFrameHost is in an anonymous iframe.
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
@@ -124,7 +127,7 @@ PasswordManagerDriverFactory::GetDriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(render_frame_host));
-  DCHECK(render_frame_host->IsRenderFrameCreated());
+  DCHECK(render_frame_host->IsRenderFrameLive());
 
   auto [it, inserted] =
       frame_driver_map_.try_emplace(render_frame_host, render_frame_host);

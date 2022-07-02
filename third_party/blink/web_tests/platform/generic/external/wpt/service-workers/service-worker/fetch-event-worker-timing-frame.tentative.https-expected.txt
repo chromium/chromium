@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Set up an active service worker
-FAIL workerTiming for navigation in a frame with network fallback assert_equals: workerTiming is completed when PerformanceResourceTiming is observed expected 3 but got 0
-FAIL workerTiming for navigation in a frame for a response from a fetch handler assert_equals: workerTiming is completed when PerformanceResourceTiming is observed expected 3 but got 0
-FAIL workerTiming for subresources in a frame with network fallback assert_equals: workerTiming is completed when PerformanceResourceTiming is observed expected 3 but got 1
-FAIL workerTiming for subresources in a frame for a response from a fetchhandler assert_equals: workerTiming is completed when PerformanceResourceTiming is observed expected 3 but got 1
-PASS Unregister service worker
-Harness: the test ran to completion.
-

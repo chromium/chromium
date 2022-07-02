@@ -7,12 +7,13 @@
 
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/check.h"
-#include "base/dcheck_is_on.h"
-#include "base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
@@ -31,42 +32,50 @@
 // For official build discard log strings to reduce binary bloat.
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG)
 // See base/check.h for implementation details.
-#define PA_CHECK(condition) \
-  UNLIKELY(!(condition)) ? IMMEDIATE_CRASH() : EAT_CHECK_STREAM_PARAMS()
+#define PA_CHECK(condition)                        \
+  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
+                            : PA_EAT_CHECK_STREAM_PARAMS()
 #else
 // PartitionAlloc uses async-signal-safe RawCheck() for error reporting.
 // Async-signal-safe functions are guaranteed to not allocate as otherwise they
 // could operate with inconsistent allocator state.
 #define PA_CHECK(condition)                                                \
-  UNLIKELY(!(condition))                                                   \
-  ? ::logging::RawCheck(                                                   \
+  PA_UNLIKELY(!(condition))                                                \
+  ? ::partition_alloc::internal::logging::RawCheck(                        \
         __FILE__ "(" PA_STRINGIFY(__LINE__) ") Check failed: " #condition) \
-  : EAT_CHECK_STREAM_PARAMS()
+  : PA_EAT_CHECK_STREAM_PARAMS()
 #endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
-#define PA_DCHECK(condition) EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // DCHECK_IS_ON()
+#define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_PCHECK(condition)                                 \
   if (!(condition)) {                                        \
     int error = errno;                                       \
     ::partition_alloc::internal::base::debug::Alias(&error); \
-    IMMEDIATE_CRASH();                                       \
+    PA_IMMEDIATE_CRASH();                                    \
   }
 
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
-#define PA_CHECK(condition) CHECK(condition)
-#define PA_DCHECK(condition) DCHECK(condition)
-#define PA_PCHECK(condition) PCHECK(condition)
+#define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+
+#else
+#define PA_CHECK(condition) PA_BASE_CHECK(condition)
+#define PA_DCHECK(condition) PA_BASE_DCHECK(condition)
+#define PA_PCHECK(condition) PA_BASE_PCHECK(condition)
+#define PA_DPCHECK(condition) PA_BASE_DPCHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() DCHECK_IS_ON()
+#define PA_SCAN_DCHECK_IS_ON() BUILDFLAG(PA_DCHECK_IS_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif
@@ -74,7 +83,7 @@
 #if PA_SCAN_DCHECK_IS_ON()
 #define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)
 #else
-#define PA_SCAN_DCHECK(expr) EAT_CHECK_STREAM_PARAMS(!(expr))
+#define PA_SCAN_DCHECK(expr) PA_EAT_CHECK_STREAM_PARAMS(!(expr))
 #endif
 
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)

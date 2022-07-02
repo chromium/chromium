@@ -749,6 +749,27 @@ const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
   return "";
 }
 
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::TabGroupColor color) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, TabGroupColor,
+                     UNKNOWN_COLOR, ORANGE);
+
+  switch (color) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_COLOR);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, GREY);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, BLUE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, RED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, YELLOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, GREEN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, PINK);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, PURPLE);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, CYAN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, ORANGE);
+  }
+  NOTREACHED();
+  return "";
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

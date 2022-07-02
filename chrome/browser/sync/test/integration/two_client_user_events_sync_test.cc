@@ -20,7 +20,6 @@ namespace {
 
 using bookmarks_helper::BookmarksMatchChecker;
 using bookmarks_helper::CountBookmarksWithUrlsMatching;
-using sync_pb::UserEventSpecifics;
 
 const int kEncryptingClientId = 0;
 const int kDecryptingClientId = 1;

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './icons.js';
 

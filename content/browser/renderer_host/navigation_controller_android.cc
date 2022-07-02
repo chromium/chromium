@@ -13,6 +13,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
@@ -193,6 +195,8 @@ void NavigationControllerAndroid::ContinuePendingReload(
 void NavigationControllerAndroid::Reload(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
                                          jboolean check_for_repost) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "Reload_check",
+                        (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::NORMAL, check_for_repost);
 }
 
@@ -200,6 +204,8 @@ void NavigationControllerAndroid::ReloadBypassingCache(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean check_for_repost) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "ReloadB_check",
+                        (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::BYPASSING_CACHE, check_for_repost);
 }
 
@@ -378,9 +384,35 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
     const JavaParamRef<jobject>& obj,
     jboolean enabled,
     jboolean reload_on_state_change) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "SetUA_enabled",
+                        (bool)enabled);
   if (GetUseDesktopUserAgent(env, obj) == enabled)
     return;
 
+  if (navigation_controller_->in_navigate_to_pending_entry() &&
+      reload_on_state_change) {
+    // Sometimes it's possible to call this function  in response to a
+    // navigation to a pending entry. In this case, we should avoid triggering
+    // another navigation synchronously, as it will crash due to navigation
+    // re-entrancy checks. To do that, post a task to update the UA and
+    // reload asynchronously.
+    // TODO(https://crbug.com/1327907): Figure out the case that leads to this
+    // situation and avoid calling this function entirely in that case. For now,
+    // do a do a DumpWithoutCrashing so that we can investigate.
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &NavigationControllerAndroid::SetUseDesktopUserAgentInternal,
+            weak_factory_.GetWeakPtr(), enabled, reload_on_state_change));
+    base::debug::DumpWithoutCrashing();
+  } else {
+    SetUseDesktopUserAgentInternal(enabled, reload_on_state_change);
+  }
+}
+
+void NavigationControllerAndroid::SetUseDesktopUserAgentInternal(
+    bool enabled,
+    bool reload_on_state_change) {
   // Make sure the navigation entry actually exists.
   NavigationEntry* entry = navigation_controller_->GetLastCommittedEntry();
   if (!entry)

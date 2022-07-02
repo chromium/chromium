@@ -18,7 +18,17 @@ namespace blink {
 
 class HTMLMetricsTest : public testing::Test {
  public:
-  HTMLMetricsTest() { helper_.Initialize(nullptr, nullptr, nullptr); }
+  HTMLMetricsTest() {
+    helper_.Initialize(nullptr, nullptr, nullptr);
+    // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't
+    // launch.
+    // Turn off preload scanning since it can mess with parser yield logic.
+    helper_.LocalMainFrame()
+        ->GetFrame()
+        ->GetDocument()
+        ->GetSettings()
+        ->SetDoHtmlPreloadScanning(false);
+  }
 
   ~HTMLMetricsTest() override = default;
 

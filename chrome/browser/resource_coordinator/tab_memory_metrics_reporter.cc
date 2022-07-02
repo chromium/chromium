@@ -144,7 +144,7 @@ void TabMemoryMetricsReporter::RestartTimerIfNeeded(
 bool TabMemoryMetricsReporter::EmitMemoryMetricsAfterPageLoaded(
     const TabMemoryMetricsReporter::WebContentsData& content_data) {
   content::RenderFrameHost* render_frame_host =
-      content_data.web_contents->GetMainFrame();
+      content_data.web_contents->GetPrimaryMainFrame();
   if (!render_frame_host)
     return false;
 

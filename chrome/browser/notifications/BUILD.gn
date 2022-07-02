@@ -99,16 +99,17 @@ if (is_android) {
     ]
   }
 
-  android_library("junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
-    testonly = true
-
+  robolectric_library("junit_tests") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiverTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionControllerTest.java",
@@ -121,13 +122,14 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
-      "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/notifications/android:java",
+      "//components/embedder_support/android:junit_test_support",
+      "//components/url_formatter/android:url_formatter_java",
       "//third_party/android_deps:espresso_java",
-      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_ext_junit_java",
@@ -145,22 +147,17 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilderTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
     ]
 
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/util/android:java",
       "//components/browser_ui/widget/android:java",

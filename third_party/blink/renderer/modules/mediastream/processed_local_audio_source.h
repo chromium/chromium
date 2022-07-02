@@ -92,7 +92,9 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
   // Returns true if ProcessedLocalAudioSource produces audio at the processing
-  // sample rate, false if it outputs audio at the device sample rate.
+  // sample rate, false if it outputs audio at the device sample rate. This only
+  // applies for stream type DEVICE_AUDIO_CAPTURE, for other stream types the
+  // output is always at the processing sample rate.
   static bool OutputAudioAtProcessingSampleRate();
 
  protected:
@@ -128,6 +130,13 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // adds the current session ID (from the associated media stream device) to
   // make the log unique.
   void SendLogMessageWithSessionId(const std::string& message) const;
+
+  // If true, processing (controlled via |audio_processor_proxy_|) is done in
+  // the audio service (and Chrome-wide echo cancellation is applied if
+  // requested; otherwise, |media_stream_audio_processor_| will be applying
+  // audio processing locally, and if echo cancellation is requested then only
+  // PeerConnection audio from the same context as |this| is cancelled.
+  const bool use_remote_apm_;
 
   // The LocalFrame that will consume the audio data. Used when creating
   // AudioCapturerSources.

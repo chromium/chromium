@@ -114,7 +114,7 @@
     return;
   if (_contentBlocked) {
     // If the content was previously blocked, remove the blocking view before
-    // resetting to |contentBlocked|.
+    // resetting to `contentBlocked`.
     [self.contentBlockingView removeFromSuperview];
     self.contentBlockingView = nil;
   }

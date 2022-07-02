@@ -8,7 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
 declare_args() {
-  enable_gvr_services = is_android && !enable_cast_receiver &&
+  enable_gvr_services = is_android && !is_cast_android &&
                         (current_cpu == "arm" || current_cpu == "arm64")
 
   use_command_buffer = is_win
@@ -22,9 +22,9 @@ declare_args() {
   # Enable VR device support whenever VR device SDK(s) are supported.
   # We enable VR on Linux even though VR features aren't usable because
   # the binary size impact is small and allows many VR tests to run on Linux
-  enable_vr = enable_gvr_services || enable_openxr ||
-              (is_linux && (current_cpu == "x64" || current_cpu == "x86") &&
-               !is_chromeos_lacros && !is_castos)
+  enable_vr =
+      enable_gvr_services || enable_openxr ||
+      (is_linux && !is_castos && (current_cpu == "x64" || current_cpu == "x86"))
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
   include_vr_data = false
@@ -35,6 +35,6 @@ declare_args() {
   # Once crbug.com/920424 is resolved, this will exactly control whether ARCore
   # is supported.
   # TODO(crbug.com/843374): AR should not depend on |enable_vr|.
-  enable_arcore = enable_vr && is_android && !enable_cast_receiver &&
+  enable_arcore = enable_vr && is_android && !is_cast_android &&
                   (current_cpu == "arm" || current_cpu == "arm64")
 }

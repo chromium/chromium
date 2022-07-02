@@ -27,7 +27,7 @@ namespace downgrade {
 
 SnapshotItemDetails::SnapshotItemDetails(base::FilePath path,
                                          ItemType item_type,
-                                         int data_types,
+                                         uint64_t data_types,
                                          SnapshotItemId id)
     : path(std::move(path)),
       is_directory(item_type == ItemType::kDirectory),

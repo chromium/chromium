@@ -288,6 +288,15 @@ void HostFrameSinkManager::Throttle(const std::vector<FrameSinkId>& ids,
   frame_sink_manager_->Throttle(ids, interval);
 }
 
+void HostFrameSinkManager::StartThrottlingAllFrameSinks(
+    base::TimeDelta interval) {
+  frame_sink_manager_->StartThrottlingAllFrameSinks(interval);
+}
+
+void HostFrameSinkManager::StopThrottlingAllFrameSinks() {
+  frame_sink_manager_->StopThrottlingAllFrameSinks();
+}
+
 void HostFrameSinkManager::AddHitTestRegionObserver(
     HitTestRegionObserver* observer) {
   observers_.AddObserver(observer);

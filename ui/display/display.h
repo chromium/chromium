@@ -172,10 +172,15 @@ class DISPLAY_EXPORT Display final {
   gfx::Insets GetWorkAreaInsets() const;
 
   // Sets the device scale factor and display bounds in pixel. This
-  // updates the work are using the same insets between old bounds and
+  // updates the work area using the same insets between old bounds and
   // work area.
   void SetScaleAndBounds(float device_scale_factor,
                          const gfx::Rect& bounds_in_pixel);
+
+  // Sets the device scale factor while respecting forced scale factor and other
+  // constraints. Use this over set_device_scale_factor() unless you need to
+  // forcefully overwrite the scale.
+  void SetScale(float device_scale_factor);
 
   // Sets the display's size. This updates the work area using the same insets
   // between old bounds and work area.
@@ -250,6 +255,10 @@ class DISPLAY_EXPORT Display final {
     display_frequency_ = display_frequency;
   }
 
+  // A user-friendly label, determined by the platform.
+  const std::string& label() const { return label_; }
+  void set_label(const std::string& label) { label_ = label; }
+
   bool operator==(const Display& rhs) const;
   bool operator!=(const Display& rhs) const { return !(*this == rhs); }
 
@@ -273,6 +282,7 @@ class DISPLAY_EXPORT Display final {
   int depth_per_component_;
   bool is_monochrome_ = false;
   int display_frequency_ = 0;
+  std::string label_;
 };
 
 }  // namespace display

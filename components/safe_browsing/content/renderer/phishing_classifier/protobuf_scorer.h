@@ -54,6 +54,7 @@ class ProtobufModelScorer : public Scorer {
 #endif
 
   int model_version() const override;
+  int dom_model_version() const override;
   base::RepeatingCallback<bool(uint32_t)> find_page_word_callback()
       const override;
   base::RepeatingCallback<bool(const std::string&)> find_page_term_callback()

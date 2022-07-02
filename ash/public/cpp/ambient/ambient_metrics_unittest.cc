@@ -8,7 +8,11 @@
 #include <vector>
 
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/timer/elapsed_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace ambient {
@@ -63,6 +67,27 @@ TEST_F(AmbientMetricsTest, AmbientModePhotoSourceGooglePhotosPersonalAlbum) {
 
   EXPECT_EQ(AmbientModePhotoSource::kGooglePhotosPersonalAlbum,
             AmbientSettingsToPhotoSource(settings));
+}
+
+TEST(AmbientOrientationMetricsRecorderTest, RecordsEngagementTime) {
+  base::ScopedMockElapsedTimersForTest mock_timer;
+  base::HistogramTester histogram_tester;
+  {
+    views::View test_view;
+    AmbientOrientationMetricsRecorder recorder(
+        &test_view, AmbientAnimationTheme::kFeelTheBreeze);
+    test_view.SetSize(gfx::Size(200, 100));
+    // No change in size shouldn't count.
+    test_view.SetSize(gfx::Size(200, 100));
+    test_view.SetSize(gfx::Size(100, 200));
+    test_view.SetSize(gfx::Size(200, 100));
+  }
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.FeelTheBreeze.Landscape",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime * 2, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.FeelTheBreeze.Portrait",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 }  // namespace metrics

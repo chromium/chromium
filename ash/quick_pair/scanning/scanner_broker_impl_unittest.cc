@@ -21,7 +21,7 @@
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"

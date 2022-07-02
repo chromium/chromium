@@ -111,7 +111,10 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
   const volatile raster::cmds::BeginRasterCHROMIUMImmediate& c =
       *static_cast<const volatile raster::cmds::BeginRasterCHROMIUMImmediate*>(
           cmd_data);
-  GLuint sk_color = static_cast<GLuint>(c.sk_color);
+  GLfloat r = static_cast<GLfloat>(c.r);
+  GLfloat g = static_cast<GLfloat>(c.g);
+  GLfloat b = static_cast<GLfloat>(c.b);
+  GLfloat a = static_cast<GLfloat>(c.a);
   GLboolean needs_clear = static_cast<GLboolean>(c.needs_clear);
   GLuint msaa_sample_count = static_cast<GLuint>(c.msaa_sample_count);
   gpu::raster::MsaaMode msaa_mode =
@@ -131,7 +134,7 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoBeginRasterCHROMIUM(sk_color, needs_clear, msaa_sample_count, msaa_mode,
+  DoBeginRasterCHROMIUM(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
                         can_use_lcd_text, visible, mailbox);
   return error::kNoError;
 }

@@ -6,8 +6,10 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -150,6 +152,12 @@ export class TaskController {
     this.tasksEntries_ = [];
 
     /**
+     * Map used to track extract IOTasks in progress.
+     * @private @const {Map}
+     */
+    this.extractTasks_ = new Map();
+
+    /**
      * Selected entries from the last time onSelectionChanged_ was called.
      * @private {!Array<!Entry>}
      */
@@ -166,7 +174,7 @@ export class TaskController {
     this.taskHistory_.addEventListener(
         TaskHistory.EventType.UPDATE, this.updateTasks_.bind(this));
     chrome.fileManagerPrivate.onAppsUpdated.addListener(
-        this.updateTasks_.bind(this));
+        this.clearCacheAndUpdateTasks_.bind(this));
   }
 
   /**
@@ -361,10 +369,29 @@ export class TaskController {
   }
 
   /**
+   * Explicitly removes the cached tasks first and and re-calculates the current
+   * tasks.
+   * @private
+   */
+  clearCacheAndUpdateTasks_() {
+    this.tasks_ = null;
+    this.updateTasks_();
+  }
+
+  /**
    * Updates available tasks opened from context menu or the open button.
    * @private
    */
   updateTasks_() {
+    // The list of available tasks should not be available to trashed items.
+    if (this.directoryModel_.getCurrentRootType() ==
+        VolumeManagerCommon.RootType.TRASH) {
+      this.ui_.taskMenuButton.hidden = true;
+      if (window.IN_TEST) {
+        this.ui_.taskMenuButton.toggleAttribute('get-tasks-completed', true);
+      }
+      return;
+    }
     const selection = this.selectionHandler_.selection;
     if (this.dialogType_ === DialogType.FULL_PAGE &&
         (selection.directoryCount > 0 || selection.fileCount > 0)) {
@@ -509,5 +536,82 @@ export class TaskController {
     this.getEntryFileTasks(entry).then(tasks => {
       tasks.executeDefault();
     });
+  }
+
+  /**
+   * Stores the task ID and parameters for an extract archive task.
+   */
+  storeExtractTaskDetails(taskId, selectionEntries, parameters) {
+    this.extractTasks_.set(
+        taskId, {'entries': selectionEntries, 'params': parameters});
+  }
+
+  /**
+   * Removes information about an extract archive task.
+   */
+  deleteExtractTaskDetails(taskId) {
+    this.extractTasks_.delete(taskId);
+  }
+
+  /**
+   * Starts extraction for a single entry and stores the task details.
+   * @private
+   */
+  async startExtractTask_(entry, params) {
+    let taskId;
+    try {
+      taskId = await startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.EXTRACT, [entry], params);
+      this.storeExtractTaskDetails(taskId, [entry], params);
+    } catch (e) {
+      console.warn('Error getting extract taskID', e);
+    }
+  }
+
+  /**
+   * Triggers a password dialog and starts an extract task with the
+   * password (unless cancel is clicked on the dialog).
+   * @private
+   */
+  async startGetPasswordThenExtractTask_(entry, params) {
+    /** @type {?string} */ let password = null;
+    // Ask for password.
+    try {
+      password = await this.ui_.passwordDialog.askForPassword(
+          entry.fullPath, password);
+    } catch (error) {
+      console.warn('User cancelled password fetch ', error);
+      return;
+    }
+
+    params['password'] = password;
+    await this.startExtractTask_(entry, params);
+  }
+
+  /**
+   * If an extract operation has finished due to missing password,
+   * see if we have the operation stored and if so, pop up a password
+   * dialog and try to restart another IO operation for it.
+   */
+  handleMissingPassword(taskId) {
+    const existingOperation = this.extractTasks_.get(taskId);
+    if (existingOperation) {
+      // If we have multiple entries (from a multi-select extract) then
+      // we need to start a new task for each of them individually so
+      // that the password dialog is presented once for every file
+      // that's encrypted.
+      const selectionEntries = existingOperation['entries'];
+      const params = existingOperation['params'];
+      if (selectionEntries.length == 1) {
+        this.startGetPasswordThenExtractTask_(
+            existingOperation['entries'][0], params);
+      } else {
+        for (const entry of selectionEntries) {
+          this.startExtractTask_(entry, params);
+        }
+      }
+    }
+    // Remove the failed operation reference since it's finished.
+    this.deleteExtractTaskDetails(taskId);
   }
 }

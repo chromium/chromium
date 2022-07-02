@@ -6,6 +6,15 @@ import webdriver
 
 
 @pytest.fixture
+async def new_tab(bidi_session):
+    """Open and focus a new tab to run the test in a foreground tab."""
+    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+    yield new_tab
+    # Close the tab.
+    await bidi_session.browsing_context.close(context=new_tab["context"])
+
+
+@pytest.fixture
 def send_blocking_command(bidi_session):
     """Send a blocking command that awaits until the BiDi response has been received."""
     async def send_blocking_command(command: str, params: Mapping[str, Any]) -> Mapping[str, Any]:

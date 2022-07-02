@@ -5,6 +5,20 @@
 import {StateResult} from './shimless_rma_types.js';
 
 /**
+ * @param {!HTMLElement} element
+ */
+function makeElementTabbable(element) {
+  element.setAttribute('tabindex', '0');
+}
+
+/**
+ * @param {!HTMLElement} element
+ */
+function removeElementFromKeyboardNavigation(element) {
+  element.setAttribute('tabindex', '-1');
+}
+
+/**
  * Disables the next button from being clicked.
  * @param {!HTMLElement} element
  */
@@ -56,7 +70,7 @@ export function enableAllButtons(element) {
  * Dispatches an event captured by shimless_rma.js that will execute `fn`,
  * process the result, then transition to the next state.
  * @param {!HTMLElement} element
- * @param {!function(): !Promise<!StateResult>} fn
+ * @param {!function(): !Promise<!{stateResult: !StateResult}>} fn
  */
 export function executeThenTransitionState(element, fn) {
   element.dispatchEvent(new CustomEvent(
@@ -74,4 +88,15 @@ export function dispatchNextButtonClick(element) {
     bubbles: true,
     composed: true,
   }));
+}
+
+/**
+ * Make the first non-disabled component in the list tabbable
+ * and remove the remaining components from keyboard navigation.
+ * @param {!HTMLElement} element
+ * @param {boolean} isFirstClickableComponent
+ */
+export function modifyTabbableElement(element, isFirstClickableComponent) {
+  isFirstClickableComponent ? makeElementTabbable(element) :
+                              removeElementFromKeyboardNavigation(element);
 }

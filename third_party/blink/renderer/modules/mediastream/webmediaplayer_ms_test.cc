@@ -20,6 +20,7 @@
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
+#include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/media/display_type.h"
@@ -572,7 +573,7 @@ class WebMediaPlayerMSTest
       const WebString& remote_device_friendly_name) override {}
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
-  void PausePlayback() override {}
+  void PausePlayback(PauseReason) override {}
   void DidPlayerStartPlaying() override {}
   void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
@@ -1444,6 +1445,34 @@ TEST_P(WebMediaPlayerMSTest, ValidPreferredInterval) {
   compositor_->EnqueueFrame(std::move(frame), true);
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(compositor_->GetPreferredRenderInterval(), base::TimeDelta());
+}
+
+TEST_P(WebMediaPlayerMSTest, OnContextLost) {
+  InitializeWebMediaPlayerMS();
+  LoadAndGetFrameProvider(true);
+
+  gfx::Size frame_size(320, 240);
+  auto non_gpu_frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size), frame_size,
+      base::Seconds(10));
+  compositor_->EnqueueFrame(non_gpu_frame, true);
+  base::RunLoop().RunUntilIdle();
+  // frame without gpu resource should be remained even though context is lost
+  compositor_->OnContextLost();
+  EXPECT_EQ(non_gpu_frame, compositor_->GetCurrentFrame());
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
+      std::make_unique<media::FakeGpuMemoryBuffer>(
+          frame_size, gfx::BufferFormat::YUV_420_BIPLANAR);
+  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
+  auto gpu_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
+      gfx::Rect(frame_size), frame_size, std::move(gmb), mailbox_holders,
+      base::DoNothing(), base::TimeDelta());
+  compositor_->EnqueueFrame(gpu_frame, true);
+  base::RunLoop().RunUntilIdle();
+  // frame with gpu resource should be reset if context is lost
+  compositor_->OnContextLost();
+  EXPECT_NE(gpu_frame, compositor_->GetCurrentFrame());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

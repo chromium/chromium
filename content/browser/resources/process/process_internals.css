@@ -87,8 +87,8 @@ body {
   }
 }
 
-.tree-label {
-  user-select: text;
+html {
+  --cr-tree-label-user-select: text;
 }
 
 #isolated-origins-container {

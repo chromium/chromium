@@ -5,13 +5,13 @@
 #include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
@@ -132,6 +132,11 @@ void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
           switches::kOzonePlatform, MaybeFixPlatformName(ozone_platform_hint));
     }
   }
+
+  auto env = base::Environment::Create();
+  std::string desktop_startup_id;
+  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id))
+    command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
 #endif  // BUILDFLAG(IS_LINUX)
 
   ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization();

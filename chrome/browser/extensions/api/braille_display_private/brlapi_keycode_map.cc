@@ -50,7 +50,7 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
   brlapi_keyCode_t key_sym = code & BRLAPI_KEY_CODE_MASK;
   if (key_sym < kMaxLatin1KeySym ||
       (key_sym & BRLAPI_KEY_SYM_UNICODE) != 0) {
-    uint32_t code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
+    base_icu::UChar32 code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
     if (!base::IsValidCharacter(code_point))
       return;
     event->standard_key_char = std::make_unique<std::string>();

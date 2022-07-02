@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/policy_certificate_provider.h"
@@ -100,10 +101,11 @@ class PolicyCertService : public KeyedService,
   // is false, always returns an empty list.
   net::CertificateList GetAllowedProfileWideTrustAnchors();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // The source of certificates for this PolicyCertService.
-  chromeos::PolicyCertificateProvider* const policy_certificate_provider_;
+  const raw_ptr<chromeos::PolicyCertificateProvider>
+      policy_certificate_provider_;
 
   // If true, CA certificates |policy_certificate_provider_| that have requested
   // "Web" trust and have profile-wide scope may be used for |profile_|.

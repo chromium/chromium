@@ -75,16 +75,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
       : stream_(std::make_unique<BidirectionalStreamSpdyImpl>(session,
                                                               NetLogSource())),
         read_buf_(read_buf),
-        read_buf_len_(read_buf_len),
-        loop_(nullptr),
-        error_(OK),
-        bytes_read_(0),
-        on_data_read_count_(0),
-        on_data_sent_count_(0),
-        do_not_start_read_(false),
-        run_until_completion_(false),
-        not_expect_callback_(false),
-        on_failed_called_(false) {}
+        read_buf_len_(read_buf_len) {}
 
   TestDelegateBase(const TestDelegateBase&) = delete;
   TestDelegateBase& operator=(const TestDelegateBase&) = delete;
@@ -228,14 +219,14 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   std::unique_ptr<base::RunLoop> loop_;
   spdy::Http2HeaderBlock response_headers_;
   spdy::Http2HeaderBlock trailers_;
-  int error_;
-  int bytes_read_;
-  int on_data_read_count_;
-  int on_data_sent_count_;
-  bool do_not_start_read_;
-  bool run_until_completion_;
-  bool not_expect_callback_;
-  bool on_failed_called_;
+  int error_ = OK;
+  int bytes_read_ = 0;
+  int on_data_read_count_ = 0;
+  int on_data_sent_count_ = 0;
+  bool do_not_start_read_ = false;
+  bool run_until_completion_ = false;
+  bool not_expect_callback_ = false;
+  bool on_failed_called_ = false;
 };
 
 }  // namespace

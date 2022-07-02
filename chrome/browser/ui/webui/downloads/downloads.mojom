@@ -10,6 +10,7 @@ struct Data {
   bool file_externally_removed;
   bool is_dangerous;
   bool is_mixed_content;
+  bool is_reviewable;
   // |otr| stands for off-the-record and is true when a download entry is
   // created during an incognito or guest profile session.
   bool otr;
@@ -64,6 +65,11 @@ interface PageHandler {
   // Browsing. This completes the scan early. This requires a user gesture on
   // the WebUI.
   OpenDuringScanningRequiringGesture(string id);
+
+  // Opens a review dialog for the download with the given |id| after it has
+  // received a warning deep scanning verdict. This requires a user gesture on
+  // the WebUI.
+  ReviewDangerousRequiringGesture(string id);
 };
 
 interface Page {

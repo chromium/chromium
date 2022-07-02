@@ -63,7 +63,7 @@ void ManifestIconDownloader::OnIconFetched(
 
   if (bitmaps.empty()) {
     if (web_contents) {
-      web_contents->GetMainFrame()->AddMessageToConsole(
+      web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Error while trying to use the following icon from the Manifest: " +
               url.spec() + " (Download error or resource isn't a valid image)");
@@ -78,7 +78,7 @@ void ManifestIconDownloader::OnIconFetched(
 
   if (closest_index == -1) {
     if (web_contents) {
-      web_contents->GetMainFrame()->AddMessageToConsole(
+      web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Error while trying to use the following icon from the Manifest: " +
               url.spec() +

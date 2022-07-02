@@ -218,6 +218,34 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
 }
 
 // static
+scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
+    SiteInstanceImpl* embedder_site_instance) {
+  DCHECK(embedder_site_instance);
+  BrowserContext* browser_context = embedder_site_instance->GetBrowserContext();
+
+  if (embedder_site_instance->IsGuest()) {
+    return CreateForGuest(browser_context,
+                          embedder_site_instance->GetStoragePartitionConfig());
+  }
+
+  // Give the new fenced frame SiteInstance the same site url as its embedder's
+  // SiteInstance to allow it to reuse its embedder's process. We avoid doing
+  // this in the default SiteInstance case as the url will be invalid; process
+  // reuse will still happen below though, as the embedder's SiteInstance's
+  // process will not be locked to any site.
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
+          browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
+          embedder_site_instance->IsGuest())));
+  if (!embedder_site_instance->IsDefaultSiteInstance()) {
+    site_instance->SetSite(embedder_site_instance->GetSiteInfo());
+  }
+  site_instance->ReuseCurrentProcessIfPossible(
+      embedder_site_instance->GetProcess());
+  return site_instance;
+}
+
+// static
 scoped_refptr<SiteInstanceImpl>
 SiteInstanceImpl::CreateReusableInstanceForTesting(
     BrowserContext* browser_context,
@@ -432,7 +460,7 @@ void SiteInstanceImpl::SetSiteInfoToDefault(
   default_site_instance_state_ = std::make_unique<DefaultSiteInstanceState>();
   original_url_ = GetDefaultSiteURL();
   SetSiteInfoInternal(SiteInfo::CreateForDefaultSiteInstance(
-      GetBrowserContext(), storage_partition_config,
+      GetIsolationContext(), storage_partition_config,
       browsing_instance_->web_exposed_isolation_info()));
 }
 
@@ -1049,8 +1077,17 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   if (src_origin.scheme() != dest_origin.scheme())
     return false;
 
-  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled())
+  // Rely on an origin comparison if StrictOriginIsolation is enabled for all
+  // URLs, or if we're comparing against a sandboxed iframe in a per-origin
+  // mode. Due to an earlier check, at this point
+  // `real_src_url_info.is_sandboxed` and `real_dest_url_info.is_sandboxed` are
+  // known to have the same value.
+  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
+      (real_src_url_info.is_sandboxed &&
+       features::kIsolateSandboxedIframesGroupingParam.Get() ==
+           features::IsolateSandboxedIframesGrouping::kPerOrigin)) {
     return src_origin == dest_origin;
+  }
 
   if (!net::registry_controlled_domains::SameDomainOrHost(
           src_origin, dest_origin,
@@ -1107,7 +1144,7 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
       CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url_info.url,
                                        site_info)) {
     site_info = SiteInfo::CreateForDefaultSiteInstance(
-        GetBrowserContext(), site_info.storage_partition_config(),
+        GetIsolationContext(), site_info.storage_partition_config(),
         GetWebExposedIsolationInfo());
   }
 
@@ -1209,18 +1246,6 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   DCHECK_EQ(storage_partition->GetConfig(),
             site_info_.storage_partition_config());
 
-  // From now on, this process should be considered "tainted" for future
-  // process reuse decisions:
-  // (1) If |site_info_| required a dedicated process, this SiteInstance's
-  //     process can only host URLs for the same site.
-  // (2) Even if |site_info_| does not require a dedicated process, this
-  //     SiteInstance's process still cannot be reused to host other sites
-  //     requiring dedicated sites in the future.
-  // We can get here either when we commit a URL into a SiteInstance that does
-  // not yet have a site, or when we create a process for a SiteInstance with a
-  // preassigned site.
-  process->SetIsUsed();
-
   if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
     // Sanity check that this won't try to assign an origin lock to a
     // non-site-isolated <webview> process, which can't be locked.
@@ -1269,6 +1294,18 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           << "Unexpected process lock " << process_lock.ToString();
     }
   }
+
+  // From now on, this process should be considered "tainted" for future
+  // process reuse decisions:
+  // (1) If |site_info_| required a dedicated process, this SiteInstance's
+  //     process can only host URLs for the same site.
+  // (2) Even if |site_info_| does not require a dedicated process, this
+  //     SiteInstance's process still cannot be reused to host other sites
+  //     requiring dedicated sites in the future.
+  // We can get here either when we commit a URL into a SiteInstance that does
+  // not yet have a site, or when we create a process for a SiteInstance with a
+  // preassigned site.
+  process->SetIsUsed();
 
   // Track which isolation contexts use the given process.  This lets
   // ChildProcessSecurityPolicyImpl (e.g. CanAccessDataForOrigin) determine

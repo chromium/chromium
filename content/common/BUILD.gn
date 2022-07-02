@@ -83,7 +83,6 @@ source_set("common") {
     "font_list.cc",
     "font_list.h",
     "font_list_fontconfig.cc",
-    "frame_owner_element_type_mojom_traits.cc",
     "gin_java_bridge_messages.h",
     "in_process_child_thread_params.cc",
     "in_process_child_thread_params.h",
@@ -95,7 +94,6 @@ source_set("common") {
     "input/input_event_ack_state.cc",
     "input/input_event_stream_validator.cc",
     "input/input_event_stream_validator.h",
-    "input/input_injector_mojom_traits.cc",
     "input/synthetic_gesture_params.cc",
     "input/synthetic_gesture_params.h",
     "input/synthetic_pinch_gesture_params.cc",
@@ -185,7 +183,6 @@ source_set("common") {
     "//components/tracing:startup_tracing",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
     "//content/public/common/zygote:buildflags",
@@ -258,8 +255,6 @@ source_set("common") {
 
   if (is_android) {
     sources += [
-      "android/cpu_affinity_setter.cc",
-      "android/cpu_affinity_setter.h",
       "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/cpu_time_metrics_internal.cc",
@@ -294,6 +289,8 @@ source_set("common") {
       "mac/attributed_string_type_converters.mm",
       "mac/font_loader.h",
       "mac/font_loader.mm",
+      "mac/task_port_policy.cc",
+      "mac/task_port_policy.h",
     ]
     deps += [
       ":mac_helpers",
@@ -427,6 +424,7 @@ mojom("mojo_bindings") {
 
   sources = [
     "agent_scheduling_group.mojom",
+    "aggregatable_report.mojom",
     "associated_interfaces.mojom",
     "child_process.mojom",
     "dom_automation_controller.mojom",
@@ -439,6 +437,7 @@ mojom("mojo_bindings") {
     "media/media_log_records.mojom",
     "native_types.mojom",
     "navigation_client.mojom",
+    "private_aggregation_host.mojom",
     "render_accessibility.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
@@ -554,6 +553,11 @@ mojom("mojo_bindings") {
         "//content/common/content_param_traits_macros.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
+      ]
+
+      traits_sources = [
+        "//content/common/frame_owner_element_type_mojom_traits.cc",
+        "//content/common/input/input_injector_mojom_traits.cc",
       ]
 
       traits_public_deps = [

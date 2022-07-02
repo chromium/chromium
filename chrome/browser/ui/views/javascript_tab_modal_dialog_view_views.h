@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,6 +45,13 @@ class JavaScriptTabModalDialogViewViews
 
   // views::View:
   void AddedToWidget() override;
+
+  // TODO(crbug.com/1330353): We cannot use unique_ptr because ownership of
+  // this object gets passed to Views.
+  static JavaScriptTabModalDialogViewViews* CreateAlertDialogForTesting(
+      Browser* browser,
+      std::u16string title,
+      std::u16string message);
 
  private:
   friend class JavaScriptDialog;

@@ -85,6 +85,10 @@ enum PrefPath {
   [MinVersion=4] kPreferredLanguages = 28,
   // M100: language::prefs::kApplicationLocale (profile)
   [MinVersion=4] kApplicationLocale = 29,
+  // M104: prefs::kSharedStorage (profile)
+  [MinVersion=5] kSharedStorage = 30,
+  // M104: prefs::kProtectedContentDefault (extension)
+  [MinVersion=6] kProtectedContentDefault = 31,
 };
 
 // Information about who or what is controlling a particular pref. This is used
@@ -120,7 +124,7 @@ interface PrefObserver {
 };
 
 // Interface for prefs. Implemented by ash-chrome.
-// Next version: 3
+// Next version: 4
 // Next method id: 5
 [Stable, Uuid="815df607-0596-46f7-9ed9-14683b4826a3"]
 interface Prefs {
@@ -130,7 +134,7 @@ interface Prefs {
 
   // Gets the specified ash pref. Additionally returns the control state of the
   // pref.
-  [MinVersion=2]
+  [MinVersion=3]
   GetExtensionPrefWithControl@3(PrefPath path) => (
     mojo_base.mojom.Value? value, PrefControlState control);
 

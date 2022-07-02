@@ -13,6 +13,11 @@ import org.chromium.url.GURL;
  * counterpart.
  */
 public class PasswordChangeSuccessTrackerBridge {
+    // Key for the extra that carries the username of a credential for which a
+    // manual password change flow has been launched from GmsCore.
+    public static final String EXTRA_MANUAL_CHANGE_USERNAME_KEY =
+            "org.chromium.chrome.browser.password_change.username";
+
     /**
      * Register the start of an automated password change flow. Notifies the
      * password change success tracker.
@@ -37,7 +42,7 @@ public class PasswordChangeSuccessTrackerBridge {
      * C++ method signatures.
      */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onAutomatedPasswordChangeStarted(GURL url, String username);
         void onManualPasswordChangeStarted(GURL url, String username);
     }

@@ -51,7 +51,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   void HideAnnotationTray();
-  void OnCanvasInitializationFailed();
+  void SetTrayEnabled(bool enabled);
 
  private:
   void ToggleAnnotator();

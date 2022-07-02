@@ -132,8 +132,7 @@ TransportConnectJob::TransportConnectJob(
                  net_log,
                  NetLogSourceType::TRANSPORT_CONNECT_JOB,
                  NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
-      params_(params),
-      next_state_(STATE_NONE) {
+      params_(params) {
   if (endpoint_result_override) {
     has_dns_override_ = true;
     endpoint_results_ = {std::move(endpoint_result_override->result)};

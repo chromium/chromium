@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
@@ -199,7 +200,7 @@ class BluetoothTestMac : public BluetoothTestBase {
   // Utility function for finding CBUUIDs with relatively nice SHA256 hashes.
   std::string FindCBUUIDForHashTarget();
 
-  BluetoothAdapterMac* adapter_mac_ = nullptr;
+  raw_ptr<BluetoothAdapterMac> adapter_mac_ = nullptr;
   std::unique_ptr<ScopedMockCentralManager> mock_central_manager_;
 
   // Value set by -[CBPeripheral setNotifyValue:forCharacteristic:] call.

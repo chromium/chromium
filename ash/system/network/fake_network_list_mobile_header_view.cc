@@ -15,10 +15,9 @@ FakeNetworkListMobileHeaderView::FakeNetworkListMobileHeaderView(
 
 FakeNetworkListMobileHeaderView::~FakeNetworkListMobileHeaderView() = default;
 
-void FakeNetworkListMobileHeaderView::SetToggleState(bool enabled,
-                                                     bool visible) {
+void FakeNetworkListMobileHeaderView::SetToggleState(bool enabled, bool is_on) {
   is_toggle_enabled_ = enabled;
-  is_toggle_visible_ = visible;
+  is_toggle_on_ = is_on;
   set_toggle_state_count_++;
 };
 

@@ -13,6 +13,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
+assert(!is_android)
+
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
 }
@@ -26,10 +28,9 @@ if (optimize_webui) {
 
 preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
-  enable_removal_comments = true
+  enable_removal_comments = enable_webui_inline_sourcemaps
 }
 
 preprocess_if_expr("preprocess_gen") {
@@ -38,7 +39,7 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = html_wrapper_files
-  enable_removal_comments = true
+  enable_removal_comments = enable_webui_inline_sourcemaps
 }
 
 # Copy all Mojom generated JS files used by the NTP to a common location so that
@@ -80,56 +81,6 @@ if (optimize_webui) {
     input_files = mojo_js_files
     input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
     deps = [ ":build_ts" ]
-  }
-}
-
-generate_grd("build_grd") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "new_tab_page.html",
-    "shared_vars.css",
-    "modules/chromefetti.svg",
-    "untrusted/background_image.html",
-    "untrusted/background_image.js",
-    "untrusted/image.html",
-    "untrusted/one_google_bar.html",
-    "untrusted/one_google_bar.js",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  grdp_files = [
-    "$target_gen_dir/icons/resources.grdp",
-    "$target_gen_dir/modules/cart/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/images/resources.grdp",
-    "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
-    "$target_gen_dir/realbox/icons/resources.grdp",
-  ]
-
-  deps = [
-    "icons:build_grdp",
-    "modules/cart/icons:build_grdp",
-    "modules/photos/icons:build_grdp",
-    "modules/photos/images:build_grdp",
-    "modules/recipes_v2/icons:build_grdp",
-    "realbox/icons:build_grdp",
-  ]
-
-  if (optimize_webui) {
-    deps += [
-      ":build_mojo_grdp",
-      ":optimized_js",
-    ]
-    resource_path_rewrites = [
-      "new_tab_page.rollup.js|new_tab_page.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
@@ -196,7 +147,11 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "tsconfig_base.json"
+  if (enable_webui_inline_sourcemaps) {
+    tsconfig_base = "tsconfig_base_sourcemaps.json"
+  } else {
+    tsconfig_base = "tsconfig_base.json"
+  }
   in_files = ts_files + html_wrapper_files + mojo_js_files
 
   deps = [
@@ -216,11 +171,68 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_gen",
   ]
+
+  if (enable_webui_inline_sourcemaps) {
+    extra_deps += [ ":sourcemaps" ]
+  }
 }
 
-create_js_source_maps("sourcemaps") {
-  deps = [
-    ":preprocess",
-    ":preprocess_gen",
+if (enable_webui_inline_sourcemaps) {
+  create_js_source_maps("sourcemaps") {
+    deps = [
+      ":preprocess",
+      ":preprocess_gen",
+    ]
+  }
+}
+
+generate_grd("build_grd") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "new_tab_page.html",
+    "shared_vars.css",
+    "modules/chromefetti.svg",
+    "untrusted/background_image.html",
+    "untrusted/background_image.js",
+    "untrusted/image.html",
+    "untrusted/one_google_bar.html",
+    "untrusted/one_google_bar.js",
   ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  grdp_files = [
+    "$target_gen_dir/icons/resources.grdp",
+    "$target_gen_dir/modules/cart/icons/resources.grdp",
+    "$target_gen_dir/modules/photos/icons/resources.grdp",
+    "$target_gen_dir/modules/photos/images/resources.grdp",
+    "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
+    "$target_gen_dir/realbox/icons/resources.grdp",
+  ]
+
+  deps = [
+    "icons:build_grdp",
+    "modules/cart/icons:build_grdp",
+    "modules/photos/icons:build_grdp",
+    "modules/photos/images:build_grdp",
+    "modules/recipes_v2/icons:build_grdp",
+    "realbox/icons:build_grdp",
+  ]
+
+  if (optimize_webui) {
+    deps += [
+      ":build_mojo_grdp",
+      ":optimized_js",
+    ]
+    resource_path_rewrites = [
+      "new_tab_page.rollup.js|new_tab_page.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
+  } else {
+    deps += [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 }

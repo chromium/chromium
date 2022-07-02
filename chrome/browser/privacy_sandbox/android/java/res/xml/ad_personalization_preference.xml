@@ -17,17 +17,42 @@
 
     <PreferenceCategory
         android:key="topic_interests"
-        android:title="@string/privacy_sandbox_topic_interests_subtitle" />
+        android:title="@string/privacy_sandbox_topic_interests_subtitle"
+        app:isPreferenceVisible="false" />
 
-    <Preference
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="empty_topics"
         android:summary="@string/privacy_sandbox_topic_empty_state"
-        android:selectable="false"/>
+        android:selectable="false"
+        app:isPreferenceVisible="false"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="removed_topics"
         android:title="@string/privacy_sandbox_remove_interest_title"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
-        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"/>
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false" />
+
+    <PreferenceCategory
+        android:key="fledge_interests"
+        android:title="@string/privacy_sandbox_fledge_subtitle"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="true" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="empty_fledge"
+        android:summary="@string/privacy_sandbox_fledge_empty_state"
+        android:selectable="false"
+        app:isPreferenceVisible="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="removed_sites"
+        android:title="@string/privacy_sandbox_remove_sites_title"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
 
 </PreferenceScreen>

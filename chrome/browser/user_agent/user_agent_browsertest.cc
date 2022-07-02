@@ -24,7 +24,7 @@
 namespace policy {
 
 using ReductionPolicyState =
-    ChromeContentBrowserClient::UserAgentReductionEnterprisePolicyState;
+    embedder_support::UserAgentReductionEnterprisePolicyState;
 using ForceMajorVersionToMinorPolicyState =
     embedder_support::ForceMajorVersionToMinorPosition;
 
@@ -48,19 +48,22 @@ class UserAgentBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUp();
   }
 
-  void set_user_agent_reduction_policy(int policy) {
+  void set_user_agent_reduction_policy(ReductionPolicyState policy) {
     browser()->profile()->GetPrefs()->SetInteger(prefs::kUserAgentReduction,
-                                                 policy);
+                                                 static_cast<int>(policy));
   }
 
-  int user_agent_reduction_policy() {
-    return browser()->profile()->GetPrefs()->GetInteger(
-        prefs::kUserAgentReduction);
+  ReductionPolicyState user_agent_reduction_policy() {
+    return static_cast<ReductionPolicyState>(
+        browser()->profile()->GetPrefs()->GetInteger(
+            prefs::kUserAgentReduction));
   }
 
-  void set_force_major_version_to_minor_policy(int policy) {
+  void set_force_major_version_to_minor_policy(
+      ForceMajorVersionToMinorPolicyState policy) {
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kForceMajorVersionToMinorPositionInUserAgent, policy);
+        prefs::kForceMajorVersionToMinorPositionInUserAgent,
+        static_cast<int>(policy));
   }
 
   std::string observed_user_agent() { return observered_user_agent_; }
@@ -88,7 +91,9 @@ IN_PROC_BROWSER_TEST_P(UserAgentBrowserTest, EnterprisePolicyInitialized) {
 IN_PROC_BROWSER_TEST_P(UserAgentBrowserTest, ReductionPolicyDisabled) {
   set_user_agent_reduction_policy(ReductionPolicyState::kForceDisabled);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
-  EXPECT_EQ(observed_user_agent(), embedder_support::GetFullUserAgent());
+  EXPECT_EQ(observed_user_agent(),
+            embedder_support::GetFullUserAgent(
+                embedder_support::ForceMajorVersionToMinorPosition::kDefault));
 }
 
 IN_PROC_BROWSER_TEST_P(UserAgentBrowserTest, ReductionPolicyEnabled) {

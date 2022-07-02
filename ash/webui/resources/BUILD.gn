@@ -325,6 +325,12 @@ ash_generated_grit("eche_app_resources") {
   deps = [ "//ash/webui/eche_app_ui:build_grd" ]
 }
 
+# Resources used by chrome://guest-os-installer
+ash_generated_grit("guest_os_installer_resources") {
+  source = "$root_gen_dir/ash/webui/guest_os_installer/resources/ash_guest_os_installer_resources.grd"
+  deps = [ "//ash/webui/guest_os_installer/resources:build_grd" ]
+}
+
 # Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
 grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.

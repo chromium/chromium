@@ -44,7 +44,6 @@ TEST_F(ShareTargetsTest, UnpackResourceBundle) {
 }
 
 TEST_F(ShareTargetsTest, BadProto) {
-  base::AutoLock lock(targets_.lock_);
   EXPECT_EQ(ShareTargets::UpdateResult::FAILED_EMPTY,
             targets_.PopulateFromBinaryPb(std::string()));
 
@@ -53,7 +52,6 @@ TEST_F(ShareTargetsTest, BadProto) {
 }
 
 TEST_F(ShareTargetsTest, BadUpdateFromExisting) {
-  base::AutoLock lock(targets_.lock_);
   // Make a minimum viable config.
   mojom::MapLocaleTargets mlt;
   mlt.set_version_id(2);

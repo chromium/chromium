@@ -4,9 +4,26 @@
 """Module for outputting results in a human-readable format."""
 
 import tempfile
+import typing
+
+from flake_suppressor import common_typing as ct
+
+UrlListType = typing.List[str]
+StringTagsToUrlsType = typing.Dict[str, UrlListType]
+TestToStringTagsType = typing.Dict[str, StringTagsToUrlsType]
+StringMapType = typing.Dict[str, TestToStringTagsType]
+
+TestToUrlListType = typing.Dict[str, UrlListType]
+SuiteToTestsType = typing.Dict[str, TestToUrlListType]
+ConfigGroupedStringMapType = typing.Dict[str, SuiteToTestsType]
+
+NodeType = typing.Union[UrlListType, StringTagsToUrlsType, TestToStringTagsType,
+                        StringMapType, TestToUrlListType, SuiteToTestsType,
+                        ConfigGroupedStringMapType]
 
 
-def GenerateHtmlOutputFile(aggregated_results, outfile=None):
+def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
+                           outfile: typing.Optional[typing.IO] = None) -> None:
   """Generates an HTML results file.
 
   Args:
@@ -27,7 +44,8 @@ def GenerateHtmlOutputFile(aggregated_results, outfile=None):
   print('HTML results: %s' % outfile.name)
 
 
-def _OutputMapToHtmlFile(string_map, result_header, output_file):
+def _OutputMapToHtmlFile(string_map: StringMapType, result_header: str,
+                         output_file: typing.IO) -> None:
   """Outputs a map to a file as a nested list.
 
   Args:
@@ -42,7 +60,7 @@ def _OutputMapToHtmlFile(string_map, result_header, output_file):
   output_file.write('</ul>\n')
 
 
-def _RecursiveHtmlToFile(node, output_file):
+def _RecursiveHtmlToFile(node: NodeType, output_file: typing.IO) -> None:
   """Recursively outputs a string map to an output file as HTML.
 
   Specifically, contents are output as an unordered list (<ul>).
@@ -64,7 +82,8 @@ def _RecursiveHtmlToFile(node, output_file):
     raise RuntimeError('Unsupported type %s' % type(node).__name__)
 
 
-def _ConvertAggregatedResultsToStringMap(aggregated_results):
+def _ConvertAggregatedResultsToStringMap(
+    aggregated_results: ct.AggregatedResultsType) -> StringMapType:
   """Converts aggregated results to a format usable by _RecursiveHtmlToFile.
 
   Specifically, updates the string representation of the typ tags and replaces
@@ -94,7 +113,8 @@ def _ConvertAggregatedResultsToStringMap(aggregated_results):
   return string_map
 
 
-def _ConvertFromTestGroupingToConfigGrouping(string_map):
+def _ConvertFromTestGroupingToConfigGrouping(string_map: StringMapType
+                                             ) -> ConfigGroupedStringMapType:
   """Converts |string| map to be grouped by typ tags/configuration.
 
   Args:

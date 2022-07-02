@@ -174,12 +174,10 @@ class PLATFORM_EXPORT ShapeResultView final
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return Parts(); }
 
-  base::span<RunInfoPart> Parts() {
-    return {reinterpret_cast<RunInfoPart*>(parts_), num_parts_};
-  }
-  base::span<const RunInfoPart> Parts() const {
-    return {reinterpret_cast<const RunInfoPart*>(parts_), num_parts_};
-  }
+  base::span<RunInfoPart> Parts();
+
+  base::span<const RunInfoPart> Parts() const;
+
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
   // Returns byte size, aka allocation size, of |ShapeResultView| with

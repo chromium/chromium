@@ -74,7 +74,6 @@ void TemplateURLServiceClientImpl::OnURLVisited(
     history::HistoryService* history_service,
     ui::PageTransition transition,
     const history::URLRow& row,
-    const history::RedirectList& redirects,
     base::Time visit_time) {
   DCHECK_EQ(history_service, history_service_);
   if (!owner_)

@@ -146,7 +146,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -165,15 +164,6 @@
       "symbol_level": 0,
       "use_goma": true,
       "use_libfuzzer": true
-    }
-  },
-  "win10-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
     }
   },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {

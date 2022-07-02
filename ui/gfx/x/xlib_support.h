@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 struct _XDisplay;
 struct xcb_connection_t;
@@ -47,7 +48,7 @@ class COMPONENT_EXPORT(X11) XlibDisplay {
 
   explicit XlibDisplay(const std::string& address);
 
-  struct _XDisplay* display_ = nullptr;
+  raw_ptr<struct _XDisplay, DanglingUntriaged> display_ = nullptr;
 };
 
 // A temporary wrapper around an unowned Xlib display that adds behavior
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(X11) XlibDisplayWrapper {
 
   friend class Connection;
 
-  struct _XDisplay* display_;
+  raw_ptr<struct _XDisplay> display_;
   XlibDisplayType type_;
 };
 

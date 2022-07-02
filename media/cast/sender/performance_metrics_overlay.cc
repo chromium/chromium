@@ -221,7 +221,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
     int target_bitrate,
     int frames_ago,
     double encoder_utilization,
-    double lossy_utilization,
+    double lossiness,
     scoped_refptr<VideoFrame> source) {
   if (!VLOG_IS_ON(1))
     return source;
@@ -334,8 +334,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
   // Line 1: Recent utilization metrics.
   const int encoder_pct =
       base::saturated_cast<int>(encoder_utilization * 100.0 + 0.5);
-  const int lossy_pct =
-      base::saturated_cast<int>(lossy_utilization * 100.0 + 0.5);
+  const int lossy_pct = base::saturated_cast<int>(lossiness * 100.0 + 0.5);
   RenderLineOfText(base::StringPrintf("%d %3.1d%% %3.1d%%", frames_ago,
                                       encoder_pct, lossy_pct),
                    top, frame.get());

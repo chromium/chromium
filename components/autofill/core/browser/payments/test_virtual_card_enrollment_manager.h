@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_VIRTUAL_CARD_ENROLLMENT_MANAGER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 
@@ -16,9 +15,9 @@ class TestPersonalDataManager;
 class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
  public:
   TestVirtualCardEnrollmentManager(
-      raw_ptr<TestPersonalDataManager> personal_data_manager,
-      raw_ptr<payments::TestPaymentsClient> payments_client,
-      raw_ptr<TestAutofillClient> autofill_client);
+      TestPersonalDataManager* personal_data_manager,
+      payments::TestPaymentsClient* payments_client,
+      TestAutofillClient* autofill_client);
   TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =
       delete;
   TestVirtualCardEnrollmentManager& operator=(
@@ -27,8 +26,16 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   bool GetAvatarAnimationComplete() const { return avatar_animation_complete_; }
 
+  void SetAvatarAnimationComplete(bool avatar_animation_complete) {
+    avatar_animation_complete_ = avatar_animation_complete;
+  }
+
   bool GetEnrollResponseDetailsReceived() const {
     return enroll_response_details_received_;
+  }
+
+  void SetEnrollResponseDetailsReceived(bool enroll_response_details_received) {
+    enroll_response_details_received_ = enroll_response_details_received;
   }
 
   AutofillClient::PaymentsRpcResult GetPaymentsRpcResult() { return result_; }
@@ -43,12 +50,13 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   bool GetBubbleShown() { return bubble_shown_; }
 
-  raw_ptr<VirtualCardEnrollmentProcessState>
-  GetVirtualCardEnrollmentProcessState() {
+  void SetBubbleShown(bool bubble_shown) { bubble_shown_ = bubble_shown; }
+
+  VirtualCardEnrollmentProcessState* GetVirtualCardEnrollmentProcessState() {
     return &state_;
   }
 
-  void SetAutofillClient(raw_ptr<AutofillClient> autofill_client) {
+  void SetAutofillClient(AutofillClient* autofill_client) {
     autofill_client_ = autofill_client;
   }
 
@@ -63,7 +71,7 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   // VirtualCardEnrollmentManager:
   void LoadRiskDataAndContinueFlow(
-      raw_ptr<PrefService> user_prefs,
+      PrefService* user_prefs,
       base::OnceCallback<void(const std::string&)> callback) override;
   void OnDidGetUpdateVirtualCardEnrollmentResponse(
       VirtualCardEnrollmentRequestType type,

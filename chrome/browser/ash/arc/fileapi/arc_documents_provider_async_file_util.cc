@@ -295,7 +295,7 @@ ArcDocumentsProviderAsyncFileUtil::~ArcDocumentsProviderAsyncFileUtil() =
 void ArcDocumentsProviderAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int file_flags,
+    uint32_t file_flags,
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // TODO(nya): Implement this function if it is ever called.

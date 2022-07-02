@@ -60,7 +60,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback|.
+// Executes `_callback`.
 - (void)executeCallback;
 
 @end
@@ -99,7 +99,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |confirmed|.
+// Executes `_callback` with `confirmed`.
 - (void)executeCallbackWithConfirmation:(BOOL)confirmed;
 
 @end
@@ -138,7 +138,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |input|.
+// Executes `_callback` with `input`.
 - (void)executeCallbackWithInput:(NSString*)input;
 
 @end
@@ -177,7 +177,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |user| and |password|.
+// Executes `_callback` with `user` and `password`.
 - (void)executeCallbackWithUser:(NSString*)user password:(NSString*)password;
 
 @end
@@ -216,7 +216,7 @@ using completion_block_util::DecidePolicyCallback;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Executes |_callback| with |shouldContinue|.
+// Executes `_callback` with `shouldContinue`.
 - (void)executeCallbackToConinue:(BOOL)shouldContinue;
 
 @end

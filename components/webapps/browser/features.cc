@@ -22,11 +22,13 @@ const base::Feature kInstallableAmbientBadgeMessage{
     "InstallableAmbientBadgeMessage", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Skip the service worker all install criteria check.
+// Skip the service worker in all install criteria check. This affect both
+// "intallable" and "promotable" status of a web app.
 const base::Feature kSkipServiceWorkerCheckAll{
     "SkipServiceWorkerCheckAll", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Skip the service worker install criteria check for installing WebAPKs.
+// Skip the service worker install criteria check for installing. This affect
+// only the "installable" status but not "promotable".
 const base::Feature kSkipServiceWorkerCheckInstallOnly{
     "SkipServiceWorkerCheckInstallOnly", base::FEATURE_DISABLED_BY_DEFAULT};
 

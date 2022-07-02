@@ -23,9 +23,10 @@ WebUIController::WebUIController(WebUI* web_ui) : web_ui_(web_ui) {}
 
 WebUIController::~WebUIController() = default;
 
-bool WebUIController::OverrideHandleWebUIMessage(const GURL& source_url,
-                                                 const std::string& message,
-                                                 const base::ListValue& args) {
+bool WebUIController::OverrideHandleWebUIMessage(
+    const GURL& source_url,
+    const std::string& message,
+    const base::Value::List& args) {
   return false;
 }
 

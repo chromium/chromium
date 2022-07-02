@@ -184,32 +184,35 @@ ServiceWorkerRegistry::~ServiceWorkerRegistry() = default;
 void ServiceWorkerRegistry::CreateNewRegistration(
     blink::mojom::ServiceWorkerRegistrationOptions options,
     const blink::StorageKey& key,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
     NewRegistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
-    quota_manager_proxy_->GetOrCreateBucket(
-        storage::BucketInitParams(key), base::ThreadTaskRunnerHandle::Get(),
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(key),
+        base::ThreadTaskRunnerHandle::Get(),
         base::BindOnce(
             &ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo,
             weak_factory_.GetWeakPtr(), std::move(options), key,
-            std::move(callback)));
+            ancestor_frame_type, std::move(callback)));
   } else {
     CreateInvokerAndStartRemoteCall(
         &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
         base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
                        weak_factory_.GetWeakPtr(), std::move(options), key,
-                       std::move(callback)));
+                       ancestor_frame_type, std::move(callback)));
   }
 }
 
 void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
     blink::mojom::ServiceWorkerRegistrationOptions options,
     const blink::StorageKey& key,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
     NewRegistrationCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  // Return nullptr if GetOrCreateBucket fails.
+  // Return nullptr if `UpdateOrCreateBucket` fails.
   if (!result.ok()) {
     std::move(callback).Run(nullptr);
     return;
@@ -218,7 +221,7 @@ void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
       &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
                      weak_factory_.GetWeakPtr(), std::move(options), key,
-                     std::move(callback)));
+                     ancestor_frame_type, std::move(callback)));
 }
 
 void ServiceWorkerRegistry::CreateNewVersion(
@@ -405,6 +408,7 @@ void ServiceWorkerRegistry::StoreRegistration(
   data->script_response_time = version->GetInfo().script_response_time;
   for (const blink::mojom::WebFeature feature : version->used_features())
     data->used_features.push_back(feature);
+  data->ancestor_frame_type = registration->ancestor_frame_type();
 
   // The ServiceWorkerVersion's COEP might be null if it is stored before
   // loading the main script. This happens in many unittests.
@@ -867,7 +871,8 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   blink::mojom::ServiceWorkerRegistrationOptions options(
       data.scope, data.script_type, data.update_via_cache);
   registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, data.key, data.registration_id, context_->AsWeakPtr());
+      options, data.key, data.registration_id, context_->AsWeakPtr(),
+      data.ancestor_frame_type);
   registration->SetStored();
   registration->set_resources_total_size_bytes(data.resources_total_size_bytes);
   registration->set_last_update_check(data.last_update_check);
@@ -1425,6 +1430,7 @@ void ServiceWorkerRegistry::DidGetUserDataForAllRegistrations(
 void ServiceWorkerRegistry::DidGetNewRegistrationId(
     blink::mojom::ServiceWorkerRegistrationOptions options,
     const blink::StorageKey& key,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
     NewRegistrationCallback callback,
     int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1433,7 +1439,8 @@ void ServiceWorkerRegistry::DidGetNewRegistrationId(
     return;
   }
   std::move(callback).Run(base::MakeRefCounted<ServiceWorkerRegistration>(
-      std::move(options), key, registration_id, context_->AsWeakPtr()));
+      std::move(options), key, registration_id, context_->AsWeakPtr(),
+      ancestor_frame_type));
 }
 
 void ServiceWorkerRegistry::DidGetNewVersionId(

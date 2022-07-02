@@ -248,9 +248,10 @@ ci.builder(
             ],
         },
     },
-    # TODO(crbug.com/1320042): Turn on after it's stable.
-    tree_closing = False,
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -579,6 +580,20 @@ ci.builder(
 
 ci.builder(
     name = "win32-archive-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "win|dbg",
         short_name = "32",

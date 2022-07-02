@@ -7,6 +7,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "ui/events/event_modifiers.h"
@@ -77,7 +79,9 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchTouchEvent(const TouchEventParams& params);
 
   // Device lifecycle events.
-  void DispatchKeyboardDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchKeyboardDevicesUpdated(
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping);
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices);
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
@@ -94,7 +98,9 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   // Gamepad event and gamepad device event. These events are dispatched to
   // GamepadObserver through GamepadProviderOzone.
   void DispatchGamepadEvent(const GamepadEvent& event);
-  void DispatchGamepadDevicesUpdated(const std::vector<GamepadDevice>& devices);
+  void DispatchGamepadDevicesUpdated(
+      const std::vector<GamepadDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping);
 
  protected:
   // DeviceEventObserver overrides:
@@ -122,10 +128,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   int last_device_id_ = 0;
 
   // Interface for scanning & monitoring input devices.
-  DeviceManager* const device_manager_;  // Not owned.
+  const raw_ptr<DeviceManager> device_manager_;  // Not owned.
 
   // Gamepad provider to dispatch gamepad events.
-  GamepadProviderOzone* const gamepad_provider_;
+  const raw_ptr<GamepadProviderOzone> gamepad_provider_;
 
   // Proxy for input device factory (manages device I/O objects).
   // The real object lives on a different thread.
@@ -144,7 +150,7 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   KeyboardEvdev keyboard_;
 
   // Cursor movement.
-  CursorDelegateEvdev* const cursor_;
+  const raw_ptr<CursorDelegateEvdev> cursor_;
 
   // Object for controlling input devices.
   InputControllerEvdev input_controller_;

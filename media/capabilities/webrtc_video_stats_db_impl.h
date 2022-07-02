@@ -7,15 +7,15 @@
 
 #include <memory>
 
-#include "base/cancelable_callback.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
+#include "media/capabilities/pending_operations.h"
 #include "media/capabilities/webrtc_video_stats_db.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -60,9 +60,9 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
   void ClearStats(base::OnceClosure clear_done_cb) override;
 
  private:
+  // Test classes are friends, see comment below.
   friend class WebrtcVideoStatsDBImplTest;
-
-  using PendingOpId = int;
+  friend class WebrtcVideoPerfLPMFuzzerHelper;
 
   // Private constructor only called by tests (friends). Production code
   // should always use the static Create() method.
@@ -70,53 +70,9 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
       std::unique_ptr<leveldb_proto::ProtoDatabase<WebrtcVideoStatsEntryProto>>
           db);
 
-  // Creates a PendingOperation using `uma_str` and adds it to `pending_ops_`
-  // map. Returns PendingOpId for newly started operation. Callers must later
-  // call CompletePendingOp() with this id to destroy the PendingOperation and
-  // finalize timing UMA.
-  PendingOpId StartPendingOp(std::string uma_str);
-
-  // Removes PendingOperation from `pending_ops_` using `op_id_` as a key. This
-  // destroys the object and triggers timing UMA.
-  void CompletePendingOp(PendingOpId op_id);
-
-  // Unified handler for timeouts of pending DB operations. PendingOperation
-  // will be notified that it timed out (to trigger timing UMA) and removed from
-  // `pending_ops_`.
-  void OnPendingOpTimeout(PendingOpId id);
-
-  // Helper to report timing information for DB operations, including when they
-  // hang indefinitely.
-  class PendingOperation {
-   public:
-    PendingOperation(
-        std::string uma_str,
-        std::unique_ptr<base::CancelableOnceClosure> timeout_closure);
-    // Records task timing UMA if it hasn't already timed out.
-    virtual ~PendingOperation();
-
-    // Copies disallowed. Incompatible with move-only members and UMA logging in
-    // the destructor.
-    PendingOperation(const PendingOperation&) = delete;
-    PendingOperation& operator=(const PendingOperation&) = delete;
-
-    // Trigger UMA recording for timeout.
-    void OnTimeout();
-
-   private:
-    friend class WebrtcVideoStatsDBImplTest;
-
-    std::string uma_str_;
-    std::unique_ptr<base::CancelableOnceClosure> timeout_closure_;
-    base::TimeTicks start_ticks_;
-  };
-
-  // Map of operation id -> outstanding PendingOperations.
-  base::flat_map<PendingOpId, std::unique_ptr<PendingOperation>> pending_ops_;
-
   // Called when the database has been initialized. Will immediately call
   // `init_cb` to forward `success`.
-  void OnInit(PendingOpId id,
+  void OnInit(PendingOperations::Id id,
               InitializeCB init_cb,
               leveldb_proto::Enums::InitStatus status);
 
@@ -126,7 +82,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
   // Passed as the callback for `OnGotVideoStats` by `AppendVideoStats` to
   // update the database once we've read the existing stats entry.
   void WriteUpdatedEntry(
-      PendingOpId op_id,
+      PendingOperations::Id op_id,
       const VideoDescKey& key,
       const VideoStats& new_video_stats,
       AppendVideoStatsCB append_done_cb,
@@ -135,14 +91,14 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
 
   // Called when the database has been modified after a call to
   // `WriteUpdatedEntry`. Will run `append_done_cb` when done.
-  void OnEntryUpdated(PendingOpId op_id,
+  void OnEntryUpdated(PendingOperations::Id op_id,
                       AppendVideoStatsCB append_done_cb,
                       bool success);
 
   // Called when GetVideoStats() operation was performed. `get_stats_cb`
   // will be run with `success` and a `VideoStatsEntry` created from
   // `stats_proto` or nullptr if no entry was found for the requested key.
-  void OnGotVideoStats(PendingOpId op_id,
+  void OnGotVideoStats(PendingOperations::Id op_id,
                        GetVideoStatsCB get_stats_cb,
                        bool success,
                        std::unique_ptr<WebrtcVideoStatsEntryProto> stats_proto);
@@ -152,7 +108,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
   // created from the `stats_proto` map or nullptr if no entries were found for
   // the filtered key.
   void OnGotVideoStatsCollection(
-      PendingOpId op_id,
+      PendingOperations::Id op_id,
       GetVideoStatsCollectionCB get_stats_cb,
       bool success,
       std::unique_ptr<std::map<std::string, WebrtcVideoStatsEntryProto>>
@@ -160,7 +116,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
 
   // Internal callback for OnLoadAllKeysForClearing(), initially triggered by
   // ClearStats(). Method simply logs `success` and runs `clear_done_cb`.
-  void OnStatsCleared(PendingOpId op_id,
+  void OnStatsCleared(PendingOperations::Id op_id,
                       base::OnceClosure clear_done_cb,
                       bool success);
 
@@ -172,8 +128,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
     wall_clock_ = tick_clock;
   }
 
-  // Next PendingOpId for use in `pending_ops_` map. See StartPendingOp().
-  PendingOpId next_op_id_ = 0;
+  PendingOperations pending_operations_;
 
   // Indicates whether initialization is completed. Does not indicate whether it
   // was successful. Will be reset upon calling DestroyStats(). Failed
@@ -188,7 +143,7 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
 
   // For getting wall-clock time. Tests may override via
   // set_wall_clock_for_test().
-  const base::Clock* wall_clock_ = nullptr;
+  raw_ptr<const base::Clock> wall_clock_ = nullptr;
 
   // Ensures all access to class members come on the same sequence. API calls
   // and callbacks should occur on the same sequence used during construction.

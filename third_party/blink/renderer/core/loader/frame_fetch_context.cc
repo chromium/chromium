@@ -120,19 +120,6 @@ namespace blink {
 
 namespace {
 
-// Requested client hints are always sent for first-party subresources, but
-// third party subresources receive hints based on (1) the state of the flag
-// `kAllowClientHintsToThirdParty` and (2) whether they are a legacy client
-// hint (device-memory, resource-width, viewport-width and dpr).
-// TODO(crbug.com/1227043): Remove both of the above mechanisms.
-//
-// If `kAllowClientHintsToThirdParty` is enabled AND the requested client hint
-// is a legacy client hint, then the hint is shared to third parties regardless
-// of permissions policy. This flag is only enabled by default on Android.
-//
-// If `kAllowClientHintsToThirdParty` is disabled OR the requested client hint
-// isn't a legacy client hint, then the hint is shared only to third parties
-// specifically enabled by the permissions policy.
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   if (!frame)
     return mojom::FetchCacheMode::kDefault;
@@ -364,6 +351,8 @@ void FrameFetchContext::PrepareRequest(
   if (GetResourceFetcherProperties().IsDetached())
     return;
 
+  request.SetUkmSourceId(document_->UkmSourceID());
+
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
 
@@ -417,7 +406,6 @@ void FrameFetchContext::ModifyRequestForCSP(ResourceRequest& resource_request) {
 }
 
 void FrameFetchContext::AddClientHintsIfNecessary(
-    const ClientHintsPreferences& hints_preferences,
     const FetchParameters::ResourceWidth& resource_width,
     ResourceRequest& request) {
   // If the feature is enabled, then client hints are allowed only on secure
@@ -464,22 +452,16 @@ void FrameFetchContext::AddClientHintsIfNecessary(
     prefers_color_scheme = is_dark_mode ? "dark" : "light";
   }
 
-  // |hints_preferences| is used only in case of the preload scanner;
   // GetClientHintsPreferences() has things parsed for this document
   // by browser (from accept-ch header on this response or previously persisted)
   // with renderer-parsed http-equiv merged in.
-  ClientHintsPreferences prefs;
-  prefs.CombineWith(hints_preferences);
-  prefs.CombineWith(GetClientHintsPreferences());
-
   BaseFetchContext::AddClientHintsIfNecessary(
-      prefs, resource_origin, is_1p_origin, ua, policy, image_info,
-      prefers_color_scheme, request);
+      GetClientHintsPreferences(), resource_origin, is_1p_origin, ua, policy,
+      image_info, prefers_color_scheme, request);
 }
 
 void FrameFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const ClientHintsPreferences& hints_preferences,
     const FetchParameters::ResourceWidth& resource_width,
     ResourceRequest& request,
     const ResourceLoaderOptions& options) {
@@ -487,7 +469,7 @@ void FrameFetchContext::PopulateResourceRequest(
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
 
   ModifyRequestForCSP(request);
-  AddClientHintsIfNecessary(hints_preferences, resource_width, request);
+  AddClientHintsIfNecessary(resource_width, request);
 }
 
 bool FrameFetchContext::IsPrerendering() const {
@@ -791,12 +773,6 @@ bool FrameFetchContext::CalculateIfAdSubresource(
   const KURL& url = alias_url ? alias_url.value() : resource_request.Url();
   return GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
       document_->domWindow(), url, type, initiator_info, known_ad);
-}
-
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-FrameFetchContext::TakePendingWorkerTimingReceiver(int request_id) {
-  DCHECK(!GetResourceFetcherProperties().IsDetached());
-  return document_loader_->TakePendingWorkerTimingReceiver(request_id);
 }
 
 void FrameFetchContext::DidObserveLoadingBehavior(

@@ -16,6 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * This class is responsible for managing the Incognito re-auth dialog. It handles creation,
  * showing and hiding of the re-auth dialog.
+ *
+ * TODO(crbug.com/1227656): Clean this up to remove references to non-fullscreen logic.
  */
 class IncognitoReauthDialog {
     @NonNull
@@ -33,21 +35,20 @@ class IncognitoReauthDialog {
     IncognitoReauthDialog(
             @NonNull ModalDialogManager modalDialogManager, @NonNull View incognitoReauthView) {
         mModalDialogManager = modalDialogManager;
-        // TODO(crbug.com/1227656): Add support for high dialog priority and dialog styling.
         mModalDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                     .with(ModalDialogProperties.CONTROLLER, mController)
                                     .with(ModalDialogProperties.CUSTOM_VIEW, incognitoReauthView)
                                     .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                                     .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
+                                    .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
                                     .build();
     }
 
     void showIncognitoReauthDialog(boolean showFullScreen) {
-        // TODO(crbug.com/1227656): Tab based re-auth dialog doesn't work as they
-        // get dismissed by {@link TabModalLifetimeHandler}.
         mModalDialogManager.showDialog(mModalDialogModel,
                 (showFullScreen) ? ModalDialogManager.ModalDialogType.APP
-                                 : ModalDialogManager.ModalDialogType.TAB);
+                                 : ModalDialogManager.ModalDialogType.TAB,
+                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
     void dismissIncognitoReauthDialog(@DialogDismissalCause int dismissalCause) {

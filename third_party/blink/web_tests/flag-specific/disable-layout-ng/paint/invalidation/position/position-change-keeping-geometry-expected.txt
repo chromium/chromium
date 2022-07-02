@@ -12,12 +12,23 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='target3'",
-      "position": [420, 20],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "invalidations": [
         [0, 0, 100, 100]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [420, 20, 0, 1]
       ]
     }
   ]

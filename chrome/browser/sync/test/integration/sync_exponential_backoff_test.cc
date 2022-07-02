@@ -28,7 +28,7 @@ class SyncExponentialBackoffTest : public SyncTest {
   SyncExponentialBackoffTest& operator=(const SyncExponentialBackoffTest&) =
       delete;
 
-  ~SyncExponentialBackoffTest() override {}
+  ~SyncExponentialBackoffTest() override = default;
 
   void SetUp() override {
     // This is needed to avoid spurious notifications initiated by the platform.
@@ -37,13 +37,7 @@ class SyncExponentialBackoffTest : public SyncTest {
   }
 };
 
-// Flaky on ChromeOS, crbug.com/1170609
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_OfflineToOnline DISABLED_OfflineToOnline
-#else
-#define MAYBE_OfflineToOnline OfflineToOnline
-#endif
-IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
+IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
   const std::string kFolderTitle1 = "folder1";
   const std::string kFolderTitle2 = "folder2";
 
@@ -53,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
   ASSERT_TRUE(AddFolder(0, 0, kFolderTitle1));
   std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>
       expected_bookmarks = {{kFolderTitle1, GURL()}};
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             expected_bookmarks,
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(expected_bookmarks,
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
@@ -83,8 +76,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
 
   // Verify that sync was able to recover.
   expected_bookmarks.push_back({kFolderTitle2, GURL()});
-  EXPECT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             expected_bookmarks,
+  EXPECT_TRUE(ServerBookmarksEqualityChecker(expected_bookmarks,
                                              /*cryptographer=*/nullptr)
                   .Wait());
 

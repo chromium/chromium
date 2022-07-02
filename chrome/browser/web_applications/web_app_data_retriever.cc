@@ -39,6 +39,7 @@ WebAppDataRetriever::~WebAppDataRetriever() = default;
 void WebAppDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
     GetWebAppInstallInfoCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -65,8 +66,9 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   }
 
   mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent;
-  web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &metadata_agent);
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&metadata_agent);
 
   // Set the error handler so that we can run |get_web_app_info_callback_| if
   // the WebContents or the RenderFrameHost are destroyed and the connection
@@ -87,6 +89,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
     CheckInstallabilityCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents);
   DCHECK(installable_manager);
@@ -115,6 +118,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
                                    std::vector<GURL> icon_urls,
                                    bool skip_page_favicons,
                                    GetIconsCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -175,6 +179,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 
   fallback_install_info_.reset();
 
+  DCHECK(!get_web_app_info_callback_.is_null());
   std::move(get_web_app_info_callback_).Run(std::move(info));
 }
 
@@ -191,6 +196,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   if (!blink::IsEmptyManifest(data.manifest))
     opt_manifest = data.manifest.Clone();
 
+  DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
            is_installable);
@@ -206,6 +212,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
   Observe(nullptr);
   icon_downloader_.reset();
 
+  DCHECK(!get_icons_callback_.is_null());
   std::move(get_icons_callback_)
       .Run(result, std::move(icons_map), std::move(icons_http_results));
 }
@@ -215,6 +222,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
   DCHECK(ShouldStopRetrieval());
   icon_downloader_.reset();
   fallback_install_info_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Call a callback as a tail call. The callback may destroy |this|.
   if (get_web_app_info_callback_) {
@@ -232,7 +240,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
 }
 
 bool WebAppDataRetriever::ShouldStopRetrieval() const {
-  return !web_contents();
+  return !web_contents() || web_contents()->IsBeingDestroyed();
 }
 
 }  // namespace web_app

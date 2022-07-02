@@ -28,8 +28,8 @@ using chrome_test_util::SystemSelectionCallout;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
 
 namespace {
-// Waits for omnibox suggestion with index |suggestionID| to contain
-// |suggestion|.
+// Waits for omnibox suggestion with index `suggestionID` to contain
+// `suggestion`.
 void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   NSString* accessibilityID =
       [NSString stringWithFormat:@"omnibox suggestion %d %d", section, row];

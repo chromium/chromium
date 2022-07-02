@@ -61,7 +61,7 @@ bool IsAvoidBreakValue(const NGConstraintSpace&, Property);
 
 // Return true if we're resuming layout after a previous break.
 inline bool IsResumingLayout(const NGBlockBreakToken* token) {
-  return token && !token->IsBreakBefore();
+  return token && !token->IsBreakBefore() && !token->IsRepeated();
 }
 
 // Return true if the node may break into multiple fragments (or has already
@@ -71,7 +71,7 @@ inline bool IsResumingLayout(const NGBlockBreakToken* token) {
 // currently performing block fragmentation; we also need to know if it has
 // already been fragmented (to resume layout correctly, but not break again).
 inline bool InvolvedInBlockFragmentation(const NGBoxFragmentBuilder& builder) {
-  return builder.ConstraintSpace()->HasBlockFragmentation() ||
+  return builder.ConstraintSpace().HasBlockFragmentation() ||
          IsResumingLayout(builder.PreviousBreakToken());
 }
 

@@ -153,7 +153,9 @@
     handler(_urlForDownload);
   } else {
     _startDownloadBlock = handler;
-    [_delegate onDownloadNativeTaskBridgeReadyForDownload:self];
+    if (![_delegate onDownloadNativeTaskBridgeReadyForDownload:self]) {
+      [self cancel];
+    }
   }
 }
 

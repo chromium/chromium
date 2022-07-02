@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/browser_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/env.h"
@@ -38,7 +40,7 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
 
  private:
   // Must outlive the observer.
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   bool mouse_down_seen_ = false;
   bool mouse_up_seen_ = false;
 };
@@ -107,20 +109,6 @@ void WaitForElement(const std::string& id, bool exists) {
 
 }  // namespace
 
-std::string GetWindowId(aura::Window* window) {
-  DCHECK(window);
-  DCHECK(window->IsRootWindow());
-  // On desktop aura there is one WindowTreeHost per top-level window.
-  aura::WindowTreeHost* window_tree_host = window->GetHost();
-  DCHECK(window_tree_host);
-  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-  // aura::WindowTreeHostPlatform.
-  auto* desktop_window_tree_host_platform =
-      views::DesktopWindowTreeHostLacros::From(window_tree_host);
-  return desktop_window_tree_host_platform->platform_window()
-      ->GetWindowUniqueId();
-}
-
 void WaitForElementCreation(const std::string& element_name) {
   WaitForElement(element_name, /*exists=*/true);
 }
@@ -176,7 +164,7 @@ void WaitForShelfItem(const std::string& id, bool exists) {
 // before quitting the run loop.
 void SendAndWaitForMouseClick(aura::Window* window) {
   DCHECK(window->IsRootWindow());
-  std::string id = GetWindowId(window);
+  std::string id = lacros_window_utility::GetRootWindowUniqueId(window);
 
   base::RunLoop run_loop;
   std::unique_ptr<AuraObserver> obs = std::make_unique<AuraObserver>(&run_loop);

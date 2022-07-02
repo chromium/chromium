@@ -259,7 +259,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
       const blink::WebInputEventAttribution& original_attribution,
-      const cc::EventMetrics* original_metrics);
+      cc::EventMetrics* metrics);
   EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event);
   EventDisposition HandleTouchStart(EventWithCallback* event_with_callback);
   EventDisposition HandleTouchMove(EventWithCallback* event_with_callback);

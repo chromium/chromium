@@ -15,7 +15,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
-      #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+      #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
       #include "chrome/browser/web_applications/web_app_provider.h"
     `);
   }
@@ -23,9 +23,8 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   testGenPreamble() {
     GEN(`
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   `);
     super.testGenPreamble();
   }
@@ -37,7 +36,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxSettingsPagesTest', 'TtsRateCommandOnSettingsPage',
     async function() {
       const realTts = ChromeVox.tts;

@@ -204,10 +204,6 @@ class FirmwareUpdateManagerTest : public AshTestBase {
     loop.Run();
   }
 
-  int GetNumUpdatesCached() {
-    return firmware_update_manager_->GetNumUpdatesForTesting();
-  }
-
   void RequestDevices() {
     firmware_update_manager_->RequestDevices();
     base::RunLoop().RunUntilIdle();
@@ -588,6 +584,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesNoDevices) {
       update_observer.updates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(updates.empty());
+  ASSERT_EQ(0U, firmware_update_manager_->GetUpdateCount());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
@@ -603,6 +600,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(updates.empty());
+  ASSERT_EQ(0U, firmware_update_manager_->GetUpdateCount());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
@@ -618,6 +616,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
   EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting)),
             updates[0]->device_name);
@@ -643,7 +642,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
-  ASSERT_EQ(1, GetNumUpdatesCached());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
@@ -654,7 +653,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
   const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& new_updates =
       update_observer.updates();
   ASSERT_EQ(1U, new_updates.size());
-  ASSERT_EQ(1, GetNumUpdatesCached());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
@@ -673,6 +672,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 
   // The second device was the one with the update.
   EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "2", updates[0]->device_id);
@@ -703,6 +703,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1, update_observer.num_times_notified());
   ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 
   // Request all updates multiple times, this time while a request is already
   // being made.

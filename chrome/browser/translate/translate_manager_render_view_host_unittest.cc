@@ -36,11 +36,11 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/common/translate.mojom.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_language_list.h"
@@ -358,7 +358,7 @@ class TranslateManagerRenderViewHostTest
     params.writing_direction_right_to_left = 0;
 #endif  // BUILDFLAG(IS_MAC)
     params.edit_flags = blink::ContextMenuDataEditFlags::kCanTranslate;
-    return new TestRenderViewContextMenu(*web_contents()->GetMainFrame(),
+    return new TestRenderViewContextMenu(*web_contents()->GetPrimaryMainFrame(),
                                          params);
   }
 
@@ -555,9 +555,9 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
   }
 }
 
-// The following tests depend on the translate infobar. They should be ported to
-// use the translate bubble. On Aura there is no infobar so the tests are not
-// compiled.
+// The following tests depend on the Translate infobar. They should be ported to
+// use the Full Page Translate bubble. On Aura there is no infobar so the tests
+// are not compiled.
 #if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 TEST_F(TranslateManagerRenderViewHostTest, NormalTranslate) {
   // See BubbleNormalTranslate for corresponding bubble UX testing.
@@ -877,7 +877,7 @@ TEST_F(TranslateManagerRenderViewHostTest, ReloadFromLocationBar) {
       url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
   int pending_id =
       web_contents()->GetController().GetPendingEntry()->GetUniqueID();
-  content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
       ->SendNavigateWithTransition(pending_id, false, url,
                                    ui::PAGE_TRANSITION_TYPED);
 
@@ -1193,8 +1193,8 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateLanguagePref) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
   EXPECT_FALSE(translate_prefs->IsBlockedLanguage("fr"));
-  translate::TranslateAcceptLanguages* accept_languages =
-      ChromeTranslateClient::GetTranslateAcceptLanguages(profile);
+  language::AcceptLanguagesService* accept_languages =
+      ChromeTranslateClient::GetAcceptLanguagesService(profile);
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
   SetPrefObserverExpectation(
       translate::TranslatePrefs::kPrefTranslateBlockedLanguages);
@@ -1250,8 +1250,8 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateSitePref) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
   EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(host));
-  translate::TranslateAcceptLanguages* accept_languages =
-      ChromeTranslateClient::GetTranslateAcceptLanguages(profile);
+  language::AcceptLanguagesService* accept_languages =
+      ChromeTranslateClient::GetAcceptLanguagesService(profile);
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
   SetPrefObserverExpectation(
       translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);

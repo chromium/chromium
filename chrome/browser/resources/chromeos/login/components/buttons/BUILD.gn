@@ -12,6 +12,7 @@ group("polymer3_elements") {
     ":oobe_icon_button_module",
     ":oobe_next_button_module",
     ":oobe_text_button_module",
+    ":modulize",
   ]
 }
 
@@ -19,6 +20,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":oobe_back_button.m",
+    ":oobe_base_button.m",
     ":oobe_icon_button.m",
     ":oobe_next_button.m",
     ":oobe_text_button.m",
@@ -30,19 +32,27 @@ js_type_check("closure_compile") {
 js_library("oobe_back_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.m.js" ]
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    ":oobe_base_button.m",
+  ]
+  extra_deps = [ ":oobe_back_button_module" ]
+}
+
+js_library("oobe_base_button.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_base_button.m.js" ]
+  deps = [
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":oobe_back_button_module" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("oobe_next_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.m.js" ]
   deps = [
-    "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    ":oobe_base_button.m",
   ]
   extra_deps = [ ":oobe_next_button_module" ]
 }
@@ -50,9 +60,8 @@ js_library("oobe_next_button.m") {
 js_library("oobe_text_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.m.js" ]
   deps = [
-    "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    ":oobe_base_button.m",
   ]
   extra_deps = [ ":oobe_text_button_module" ]
 }
@@ -60,8 +69,8 @@ js_library("oobe_text_button.m") {
 js_library("oobe_icon_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.m.js" ]
   deps = [
-    "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    ":oobe_base_button.m",
   ]
   extra_deps = [ ":oobe_icon_button_module" ]
 }
@@ -95,3 +104,11 @@ polymer_modulizer("oobe_icon_button") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
 }
+
+js_modulizer("modulize") {
+  input_files = [
+    "oobe_base_button.js",
+  ]
+  namespace_rewrites = oobe_namespace_rewrites
+}
+

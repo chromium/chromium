@@ -44,6 +44,8 @@ mojom::HidDeviceInfoPtr CreateDeviceFromReportDescriptor(
   device->protected_feature_report_ids = blocklist.GetProtectedReportIds(
       HidBlocklist::kReportTypeFeature, vendor_id, product_id,
       device->collections);
+  device->is_excluded_by_blocklist =
+      blocklist.IsVendorProductBlocked(vendor_id, product_id);
   return device;
 }
 

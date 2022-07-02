@@ -41,7 +41,7 @@ ShellNaClBrowserDelegate::~ShellNaClBrowserDelegate() {
 }
 
 void ShellNaClBrowserDelegate::ShowMissingArchInfobar(int render_process_id,
-                                                      int render_view_id) {
+                                                      int render_frame_id) {
   // app_shell does not have infobars.
   LOG(ERROR) << "Missing architecture for pid " << render_process_id;
 }

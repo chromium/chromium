@@ -73,7 +73,7 @@ bool WorkletModuleResponsesMap::GetEntry(
     ModuleType module_type,
     ModuleScriptFetcher::Client* client,
     scoped_refptr<base::SingleThreadTaskRunner> client_task_runner) {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK_NE(module_type, ModuleType::kInvalid);
   if (!is_available_ || !IsValidURL(url)) {
     client_task_runner->PostTask(
@@ -113,7 +113,7 @@ bool WorkletModuleResponsesMap::GetEntry(
   // Step 5: "Create an entry in cache with key url and value "fetching"."
   std::unique_ptr<Entry> entry = std::make_unique<Entry>();
   entry->AddClient(client, client_task_runner);
-  entries_.insert(std::make_pair(url.Copy(), module_type), std::move(entry));
+  entries_.insert(std::make_pair(url, module_type), std::move(entry));
 
   // Step 6: "Fetch request."
   // Running the callback with an empty params will make the fetcher to fallback
@@ -126,7 +126,7 @@ void WorkletModuleResponsesMap::SetEntryParams(
     const KURL& url,
     ModuleType module_type,
     const absl::optional<ModuleScriptCreationParams>& params) {
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   if (!is_available_)
     return;
 
@@ -137,7 +137,7 @@ void WorkletModuleResponsesMap::SetEntryParams(
 
 void WorkletModuleResponsesMap::Dispose() {
   DCHECK(IsMainThread());
-  MutexLocker lock(mutex_);
+  base::AutoLock locker(lock_);
   is_available_ = false;
   for (auto& it : entries_) {
     switch (it.value->GetState()) {

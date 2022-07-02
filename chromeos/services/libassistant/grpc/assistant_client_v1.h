@@ -34,6 +34,8 @@ class AssistantClientV1 : public AssistantClient {
   void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
+  void StartGrpcHttpConnectionClient(
+      assistant_client::HttpConnectionFactory*) override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
   void AddSpeakerIdEnrollmentEventObserver(
       GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)

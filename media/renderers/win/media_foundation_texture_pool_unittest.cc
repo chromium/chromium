@@ -4,6 +4,7 @@
 
 #include "media/renderers/win/media_foundation_texture_pool.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
@@ -83,7 +84,7 @@ class MockD3D11Resource final : public IDXGIResource1 {
   SetPrivateDataInterface(REFGUID guid, const IUnknown* pData) override;
 
  private:
-  MockD3D11Texture2D* parent_;
+  raw_ptr<MockD3D11Texture2D> parent_;
   volatile ULONG refcount_ = 1;
 };
 
@@ -516,8 +517,8 @@ TEST_F(MediaFoundationTexturePoolTest, VerifyTextureInitialization) {
 
   class SpecialCallback {
    private:
-    base::WaitableEvent* wait_event_;
-    gfx::Size* frame_size_;
+    raw_ptr<base::WaitableEvent> wait_event_;
+    raw_ptr<gfx::Size> frame_size_;
 
    public:
     SpecialCallback(base::WaitableEvent* wait_event, gfx::Size* frame_size)

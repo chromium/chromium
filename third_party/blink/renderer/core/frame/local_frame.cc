@@ -1286,18 +1286,6 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
     View()->SetNeedsLayout();
 }
 
-void LocalFrame::DeviceScaleFactorChanged() {
-  GetDocument()->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
-  GetDocument()->GetStyleEngine().MarkViewportStyleDirty();
-  GetDocument()->GetStyleEngine().MarkAllElementsForStyleRecalc(
-      StyleChangeReasonForTracing::Create(style_change_reason::kZoom));
-  for (Frame* child = Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    if (auto* child_local_frame = DynamicTo<LocalFrame>(child))
-      child_local_frame->DeviceScaleFactorChanged();
-  }
-}
-
 void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
     MediaValueChange value) {
   GetDocument()->MediaQueryAffectingValueChanged(value);
@@ -1446,6 +1434,19 @@ bool LocalFrame::ShouldThrottleRendering() const {
   return View() && View()->ShouldThrottleRendering();
 }
 
+void LocalFrame::PortalStateChanged() {
+  if (Document* document = GetDocument())
+    document->ClearAXObjectCache();
+
+  if (IsOutermostMainFrame()) {
+    intersection_state_.occlusion_state =
+        mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
+  } else {
+    intersection_state_.occlusion_state =
+        mojom::blink::FrameOcclusionState::kUnknown;
+  }
+}
+
 LocalFrame::LocalFrame(LocalFrameClient* client,
                        Page& page,
                        FrameOwner* owner,
@@ -1469,6 +1470,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       frame_scheduler_(page.GetPageScheduler()->CreateFrameScheduler(
           this,
           client->GetFrameBlameContext(),
+          /*TODO(crbug.com/1170350): Set for portals*/ IsInFencedFrameTree(),
           IsMainFrame() ? FrameScheduler::FrameType::kMainFrame
                         : FrameScheduler::FrameType::kSubframe)),
       loader_(this),
@@ -1520,10 +1522,15 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   attribution_src_loader_ = MakeGarbageCollected<AttributionSrcLoader>(this);
   inspector_task_runner_->InitIsolate(isolate);
 
+  if (IsOutermostMainFrame()) {
+    intersection_state_.occlusion_state =
+        mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
+  }
+
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
-  absl::optional<AdTracker::AdScriptIdentifier> ad_script_on_stack;
+  absl::optional<AdScriptIdentifier> ad_script_on_stack;
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
   is_subframe_created_by_ad_script_ =
@@ -2064,7 +2071,7 @@ bool LocalFrame::ClipsContent() const {
   if (ShouldUsePrintingLayout())
     return false;
 
-  if (IsMainFrame())
+  if (IsOutermostMainFrame())
     return GetSettings()->GetMainFrameClipsContent();
   // By default clip to viewport.
   return true;
@@ -2073,6 +2080,7 @@ bool LocalFrame::ClipsContent() const {
 void LocalFrame::SetViewportIntersectionFromParent(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
   DCHECK(IsLocalRoot());
+  DCHECK(!IsOutermostMainFrame());
   // Notify the render frame observers when the main frame intersection or the
   // transform changes.
   if (intersection_state_.main_frame_intersection !=
@@ -2145,9 +2153,6 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
 mojom::blink::FrameOcclusionState LocalFrame::GetOcclusionState() const {
   if (hidden_)
     return mojom::blink::FrameOcclusionState::kPossiblyOccluded;
-  // TODO(dcheng): Get rid of this branch for the main frame.
-  if (IsMainFrame())
-    return mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
   if (IsLocalRoot())
     return intersection_state_.occlusion_state;
   return LocalFrameRoot().GetOcclusionState();

@@ -49,7 +49,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
                     rhs.content_security_policies.end()) &&
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
          lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
-         lhs.sandbox_flags == rhs.sandbox_flags;
+         lhs.sandbox_flags == rhs.sandbox_flags &&
+         lhs.is_anonymous == rhs.is_anonymous;
 }
 
 bool operator!=(const PolicyContainerPolicies& lhs,
@@ -101,6 +102,7 @@ std::ostream& operator<<(std::ostream& out,
       << " }";
 
   out << ", sandbox_flags: " << policies.sandbox_flags;
+  out << ", is_anonymous: " << policies.is_anonymous;
 
   return out << " }";
 }
@@ -115,14 +117,16 @@ PolicyContainerPolicies::PolicyContainerPolicies(
         content_security_policies,
     const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    network::mojom::WebSandboxFlags sandbox_flags)
+    network::mojom::WebSandboxFlags sandbox_flags,
+    bool is_anonymous)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       is_web_secure_context(is_web_secure_context),
       content_security_policies(std::move(content_security_policies)),
       cross_origin_opener_policy(cross_origin_opener_policy),
       cross_origin_embedder_policy(cross_origin_embedder_policy),
-      sandbox_flags(sandbox_flags) {}
+      sandbox_flags(sandbox_flags),
+      is_anonymous(is_anonymous) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(PolicyContainerPolicies&&) =
     default;
@@ -136,7 +140,7 @@ PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
   return PolicyContainerPolicies(
       referrer_policy, ip_address_space, is_web_secure_context,
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
-      cross_origin_embedder_policy, sandbox_flags);
+      cross_origin_embedder_policy, sandbox_flags, is_anonymous);
 }
 
 std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::ClonePtr()
@@ -216,8 +220,10 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
 
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerPolicies::New(
-          policies_.referrer_policy, policies_.ip_address_space,
-          mojo::Clone(policies_.content_security_policies)),
+          policies_.cross_origin_embedder_policy.value,
+          policies_.referrer_policy,
+          mojo::Clone(policies_.content_security_policies),
+          policies_.is_anonymous),
       std::move(remote));
 }
 

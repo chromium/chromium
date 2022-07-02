@@ -20,28 +20,6 @@ class NavigationHandle;
 // and defaulted to HTTPS scheme and falling back to HTTP version when needed.
 class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
  public:
-  // Recorded in histograms. Do not reorder or delete values, only append.
-  enum class Event {
-    kNone = 0,
-    // Started the load of an upgraded HTTPS URL.
-    kHttpsLoadStarted,
-    // Successfully finished loading the upgraded HTTPS URL.
-    kHttpsLoadSucceeded,
-    // Failed to load the upgraded HTTPS URL because of a cert error, fell back
-    // to the HTTP URL.
-    kHttpsLoadFailedWithCertError,
-    // Failed to load the upgraded HTTPS URL because of a net error, fell back
-    // to the HTTP URL.
-    kHttpsLoadFailedWithNetError,
-    // Failed to load the upgraded HTTPS URL within the timeout window, fell
-    // back to the HTTP URL.
-    kHttpsLoadTimedOut,
-    // Received a redirect. This doesn't necessarily imply that the HTTPS load
-    // succeeded or failed.
-    kRedirected,
-    kMaxValue = kRedirected,
-  };
-
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle);
 
@@ -68,8 +46,6 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   // non-default port.
   static void SetHttpPortForTesting(int http_port_for_testing);
   static int GetHttpsPortForTesting();
-
-  static const char kHistogramName[];
 
  private:
   explicit TypedNavigationUpgradeThrottle(content::NavigationHandle* handle);

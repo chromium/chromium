@@ -297,7 +297,6 @@ void AddChromeWorkItems(const InstallParams& install_params,
       ->set_best_effort(true);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Adds work items to register the Elevation Service with Windows. Only for
 // system level installs.
 void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
@@ -320,6 +319,7 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
   list->AddWorkItem(install_service_work_item);
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Adds work items to add the "store-dmtoken" command to Chrome's version key.
 // This method is a no-op if this is anything other than system-level Chrome.
 // The command is used when enrolling Chrome browser instances into enterprise
@@ -428,7 +428,6 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   cmd.set_is_web_accessible(true);
   cmd.AddWorkItems(root_key, cmd_key, install_list);
 }
-
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -564,7 +563,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
     // languages is a superset of Chrome's set of translations with this one
     // exception: what Chrome calls "en-us", Omaha calls "en".  sigh.
     std::wstring language(GetCurrentTranslation());
-    if (base::LowerCaseEqualsASCII(language, "en-us"))
+    if (base::EqualsCaseInsensitiveASCII(language, "en-us"))
       language.resize(2);
     list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
                                  google_update::kRegLangField, language,
@@ -855,12 +854,10 @@ void AddInstallWorkItems(const InstallParams& install_params,
       installer_state.root_key(),
       GetNotificationHelperPath(target_path, new_version), install_list);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (installer_state.system_install()) {
     AddElevationServiceWorkItems(
         GetElevationServicePath(target_path, new_version), install_list);
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
   AddUpdateDowngradeVersionItem(installer_state.root_key(), current_version,
                                 new_version, install_list);

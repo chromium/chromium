@@ -50,6 +50,11 @@ struct WinPlatformVerifierDebugInfo {
   array<uint8> authroot_sequence_number;
 };
 
+[EnableIf=is_chrome_root_store_supported]
+struct ChromeRootStoreDebugInfo {
+  int64 chrome_root_store_version;
+};
+
 // Contains additional debugging data about the verification. This information
 // does not change the meaning of the results.
 struct CertVerifierDebugInfo {
@@ -66,6 +71,7 @@ struct CertVerifierDebugInfo {
     kDomainCache = 1,
     kSimple = 2,
     kLruCache = 3,
+    kDomainCacheFullCerts = 4,
   };
   [EnableIf=is_mac]
   MacTrustImplType mac_trust_impl;
@@ -75,6 +81,9 @@ struct CertVerifierDebugInfo {
 
   [EnableIf=is_win]
   WinPlatformVerifierDebugInfo? win_platform_debug_info;
+
+  [EnableIf=is_chrome_root_store_supported]
+  ChromeRootStoreDebugInfo? chrome_root_store_debug_info;
 
   // The time as seen by CertVerifyProcBuiltin, in raw timestamp and in
   // exploded & encoded GeneralizedTime string.

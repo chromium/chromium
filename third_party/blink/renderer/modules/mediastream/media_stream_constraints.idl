@@ -2,13 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/mediacapture-main/#idl-def-mediastreamconstraints
+// https://github.com/w3c/mediacapture-screen-share/pull/222/files
+enum SystemAudioPreferenceEnum {
+  "include",
+  "exclude"
+};
 
+// https://w3c.github.io/mediacapture-main/#idl-def-mediastreamconstraints
 dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
+
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
-    [RuntimeEnabled=GetDisplayMediaSetAutoSelectAllScreens]
-    boolean autoSelectAllScreens = false;
+
+    [
+      RuntimeEnabled = GetDisplayMediaSetAutoSelectAllScreens
+    ] boolean autoSelectAllScreens = false;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/222/files
+    [
+      RuntimeEnabled = SystemAudioConstraint
+    ] SystemAudioPreferenceEnum systemAudio;
 };

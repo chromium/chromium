@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void Drain(HttpNetworkSession* session) override;
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
@@ -115,7 +115,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   HttpStreamParser* parser() const { return state_.parser(); }
 
-  HandshakeResult result_;
+  HandshakeResult result_ = HandshakeResult::INCOMPLETE;
 
   // The request URL.
   GURL url_;
@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is stored in SendRequest() for use by ReadResponseHeaders().
-  raw_ptr<HttpResponseInfo> http_response_info_;
+  raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
   // The key to be sent in the next Sec-WebSocket-Key header. Usually NULL (the
   // key is generated on the fly).

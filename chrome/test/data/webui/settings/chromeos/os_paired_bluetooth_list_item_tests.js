@@ -251,7 +251,7 @@ suite('OsPairedBluetoothListItemTest', function() {
 
   test('Enterprise-managed icon UI state', async function() {
     const getManagedIcon = () => {
-      return pairedBluetoothListItem.$$('#managedIcon');
+      return pairedBluetoothListItem.shadowRoot.querySelector('#managedIcon');
     };
     assertFalse(!!getManagedIcon());
 

@@ -194,7 +194,7 @@ class AbstractLineBox {
     const LayoutObject* const layout_object =
         cursor.Current().GetLayoutObject();
     return layout_object && layout_object->GetNode() &&
-           HasEditableStyle(*layout_object->GetNode());
+           blink::IsEditable(*layout_object->GetNode());
   }
 
   static PositionInFlatTreeWithAffinity PositionForPoint(
@@ -341,10 +341,10 @@ Node* NextAtomicLeafNode(const Node& start) {
 }
 
 Node* PreviousLeafWithSameEditability(const Node& node) {
-  const bool editable = HasEditableStyle(node);
+  const bool editable = IsEditable(node);
   for (Node* runner = PreviousAtomicLeafNode(node); runner;
        runner = PreviousAtomicLeafNode(*runner)) {
-    if (editable == HasEditableStyle(*runner))
+    if (editable == IsEditable(*runner))
       return runner;
   }
   return nullptr;
@@ -356,7 +356,7 @@ Node* NextLeafWithGivenEditability(Node* node, bool editable) {
 
   for (Node* runner = NextAtomicLeafNode(*node); runner;
        runner = NextAtomicLeafNode(*runner)) {
-    if (editable == HasEditableStyle(*runner))
+    if (editable == IsEditable(*runner))
       return runner;
   }
   return nullptr;
@@ -410,7 +410,7 @@ PositionInFlatTree NextRootInlineBoxCandidatePosition(
   // TODO(xiaochengh): We probably also need to pass in the starting editability
   // to |PreviousLeafWithSameEditability|.
   const bool is_editable =
-      HasEditableStyle(*position.GetPosition().ComputeContainerNode());
+      IsEditable(*position.GetPosition().ComputeContainerNode());
   Node* next_node = NextLeafWithGivenEditability(node, is_editable);
   while (next_node && InSameLine(*next_node, position)) {
     next_node = NextLeafWithGivenEditability(next_node, is_editable);
@@ -490,7 +490,7 @@ PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
   // Could not find a previous line. This means we must already be on the first
   // line. Move to the start of the content in this block, which effectively
   // moves us to the start of the line we're on.
-  Element* root_element = HasEditableStyle(*node)
+  Element* root_element = IsEditable(*node)
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)
@@ -562,7 +562,7 @@ PositionInFlatTreeWithAffinity SelectionModifier::NextLinePosition(
   // Could not find a next line. This means we must already be on the last line.
   // Move to the end of the content in this block, which effectively moves us
   // to the end of the line we're on.
-  Element* root_element = HasEditableStyle(*node)
+  Element* root_element = IsEditable(*node)
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)

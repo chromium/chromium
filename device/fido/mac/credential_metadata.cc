@@ -157,7 +157,7 @@ CredentialMetadata CredentialMetadata::FromPublicKeyCredentialUserEntity(
 }
 
 PublicKeyCredentialUserEntity
-CredentialMetadata::ToPublicKeyCredentialUserEntity() {
+CredentialMetadata::ToPublicKeyCredentialUserEntity() const {
   PublicKeyCredentialUserEntity user_entity(user_id);
   if (!user_name.empty()) {
     user_entity.name = user_name;

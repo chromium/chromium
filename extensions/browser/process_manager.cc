@@ -95,24 +95,10 @@ base::TimeDelta GetEventPageSuspendDelay() {
   return base::Milliseconds(kEventPageSuspendDelayMs.Get());
 }
 
-std::string GetExtensionIdForSiteInstance(
-    content::SiteInstance* site_instance) {
-  // <webview> guests always store the ExtensionId in the partition domain.
-  if (site_instance->IsGuest())
-    return site_instance->GetStoragePartitionConfig().partition_domain();
-
-  // This works for both apps and extensions because the site has been
-  // normalized to the extension URL for hosted apps.
-  const GURL& site_url = site_instance->GetSiteURL();
-  if (site_url.SchemeIs(kExtensionScheme))
-    return site_url.host();
-
-  return std::string();
-}
-
 std::string GetExtensionID(content::RenderFrameHost* render_frame_host) {
   CHECK(render_frame_host);
-  return GetExtensionIdForSiteInstance(render_frame_host->GetSiteInstance());
+  return util::GetExtensionIdForSiteInstance(
+      *render_frame_host->GetSiteInstance());
 }
 
 bool IsFrameInExtensionHost(ExtensionHost* extension_host,
@@ -205,6 +191,7 @@ struct ProcessManager::ExtensionRenderFrameData {
 
       case extensions::mojom::ViewType::kInvalid:
       case extensions::mojom::ViewType::kExtensionBackgroundPage:
+      case extensions::mojom::ViewType::kOffscreenDocument:
         return false;
     }
     NOTREACHED();
@@ -479,7 +466,8 @@ const Extension* ProcessManager::GetExtensionForWebContents(
     return nullptr;
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(
-          GetExtensionIdForSiteInstance(web_contents->GetSiteInstance()));
+          util::GetExtensionIdForSiteInstance(
+              *web_contents->GetSiteInstance()));
   if (extension && extension->is_hosted_app()) {
     // For hosted apps, be sure to exclude URLs outside of the app that might
     // be loaded in the same SiteInstance (extensions guarantee that only

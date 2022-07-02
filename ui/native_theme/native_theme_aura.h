@@ -17,8 +17,9 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   friend class NativeThemeAuraTest;
   friend class base::NoDestructor<NativeThemeAura>;
 
-  explicit NativeThemeAura(bool use_overlay_scrollbars,
-                           bool should_only_use_dark_colors);
+  NativeThemeAura(bool use_overlay_scrollbars,
+                  bool should_only_use_dark_colors,
+                  bool is_custom_system_theme = false);
 
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;

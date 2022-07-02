@@ -47,7 +47,10 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FullscreenOnFileURL) {
       base::FilePath(kEmptyFile)));
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   GetFullscreenController()->EnterFullscreenModeForTab(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
 
@@ -478,5 +481,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                        EnterFullscreenWhenInFullscreen) {
   EnterActiveTabFullscreen();
   EXPECT_TRUE(GetFullscreenController()->CanEnterFullscreenModeForTab(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame()));
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame()));
 }

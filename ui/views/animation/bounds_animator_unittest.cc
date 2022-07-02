@@ -295,6 +295,25 @@ TEST_F(BoundsAnimatorTest, HandleDuplicateAnimation) {
   EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
 }
 
+// Make sure that a duplicate animation request that specifies a different
+// delegate swaps out that delegate.
+TEST_F(BoundsAnimatorTest, DuplicateAnimationsCanReplaceDelegate) {
+  const gfx::Rect target_bounds(0, 0, 10, 10);
+
+  animator()->AnimateViewTo(child(), target_bounds);
+  animator()->SetAnimationDelegate(child(), std::make_unique<OwnedDelegate>());
+
+  // Request the animation with the same view/target bounds but a different
+  // delegate.
+  animator()->AnimateViewTo(child(), target_bounds,
+                            std::make_unique<OwnedDelegate>());
+
+  // Verify that the delegate was replaced.
+  EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
+  // The animation still should not have been canceled.
+  EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
+}
+
 // Makes sure StopAnimating works.
 TEST_F(BoundsAnimatorTest, StopAnimating) {
   std::unique_ptr<OwnedDelegate> delegate(std::make_unique<OwnedDelegate>());
@@ -311,6 +330,28 @@ TEST_F(BoundsAnimatorTest, StopAnimating) {
   // Stopping should both cancel the delegate and delete it.
   EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
   EXPECT_TRUE(OwnedDelegate::GetAndClearCanceled());
+}
+
+// Make sure Complete completes in-progress animations.
+TEST_F(BoundsAnimatorTest, CompleteAnimation) {
+  std::unique_ptr<OwnedDelegate> delegate(std::make_unique<OwnedDelegate>());
+  const gfx::Rect target_bounds = gfx::Rect(0, 0, 10, 10);
+
+  animator()->AnimateViewTo(child(), target_bounds);
+  animator()->SetAnimationDelegate(child(), std::make_unique<OwnedDelegate>());
+
+  animator()->Complete();
+
+  // Shouldn't be animating now.
+  EXPECT_FALSE(animator()->IsAnimating());
+  EXPECT_FALSE(animator()->IsAnimating(child()));
+
+  // Child should have been moved to the animation's target.
+  EXPECT_EQ(target_bounds, child()->bounds());
+
+  // Completing should delete the delegate.
+  EXPECT_TRUE(OwnedDelegate::GetAndClearDeleted());
+  EXPECT_FALSE(OwnedDelegate::GetAndClearCanceled());
 }
 
 // Verify that transform is used when the animation target bounds have the
@@ -409,6 +450,38 @@ TEST_F(BoundsAnimatorTest, UseTransformsCancelAnimation) {
   animator()->AnimateViewTo(child(), target_bounds);
   animator()->SetAnimationDelegate(child(),
                                    std::make_unique<TestAnimationDelegate>());
+  EXPECT_TRUE(animator()->IsAnimating());
+  EXPECT_TRUE(animator()->IsAnimating(child()));
+
+  // Stop halfway and cancel. The child should have its bounds updated to
+  // exactly halfway between |initial_bounds| and |target_bounds|.
+  const gfx::Rect expected_bounds(5, 5, 10, 10);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(initial_bounds, child()->bounds());
+  animator()->Cancel();
+  EXPECT_EQ(expected_bounds, child()->bounds());
+}
+
+// Test that when using the transform option on the bounds animator, cancelling
+// the animation part way under RTL results in the correct bounds applied.
+TEST_F(BoundsAnimatorTest, UseTransformsCancelAnimationRTL) {
+  // Enable RTL.
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
+
+  RecreateAnimator(/*use_transforms=*/true);
+
+  // Ensure that |initial_bounds| has the same size with |target_bounds| to
+  // create bounds animation via the transform.
+  const gfx::Rect initial_bounds(0, 0, 10, 10);
+  const gfx::Rect target_bounds(10, 10, 10, 10);
+
+  child()->SetBoundsRect(initial_bounds);
+
+  const base::TimeDelta duration = base::Milliseconds(200);
+  animator()->SetAnimationDuration(duration);
+  // Use a linear tween so we can estimate the expected bounds.
+  animator()->set_tween_type(gfx::Tween::LINEAR);
+  animator()->AnimateViewTo(child(), target_bounds);
   EXPECT_TRUE(animator()->IsAnimating());
   EXPECT_TRUE(animator()->IsAnimating(child()));
 

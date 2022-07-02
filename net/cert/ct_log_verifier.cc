@@ -67,10 +67,7 @@ scoped_refptr<const CTLogVerifier> CTLogVerifier::Create(
 }
 
 CTLogVerifier::CTLogVerifier(std::string description)
-    : description_(std::move(description)),
-      hash_algorithm_(ct::DigitallySigned::HASH_ALGO_NONE),
-      signature_algorithm_(ct::DigitallySigned::SIG_ALGO_ANONYMOUS),
-      public_key_(nullptr) {}
+    : description_(std::move(description)) {}
 
 bool CTLogVerifier::Verify(const ct::SignedEntryData& entry,
                            const ct::SignedCertificateTimestamp& sct) const {

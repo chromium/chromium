@@ -32,8 +32,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -387,10 +387,10 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // keep it revealed. |location_bar_view_| can be nullptr in unit tests.
   std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock;
   if (location_bar_view_) {
-    focus_reveal_lock.reset(
+    focus_reveal_lock =
         BrowserView::GetBrowserViewForBrowser(location_bar_view_->browser())
             ->immersive_mode_controller()
-            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
   const bool omnibox_already_focused = HasFocus();
@@ -591,9 +591,8 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  const SkColor dimmed_text_color = GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
-  set_placeholder_text_color(dimmed_text_color);
+  set_placeholder_text_color(
+      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
 
   EmphasizeURLComponents();
 }
@@ -627,13 +626,13 @@ void OmniboxViewViews::SetTextAndSelectedRanges(
   // the cursor are visible. If possible given the prior guarantee, also
   // guarantees |kPadTrailing| chars of the text following the cursor are
   // visible.
-  static const uint32_t kPadTrailing = 30;
-  static const uint32_t kPadLeading = 10;
+  static const size_t kPadTrailing = 30;
+  static const size_t kPadLeading = 10;
 
   // We use SetTextWithoutCaretBoundsChangeNotification() in order to avoid
   // triggering accessibility events multiple times.
   SetTextWithoutCaretBoundsChangeNotification(text, ranges[0].end());
-  Scroll({0, std::min<size_t>(ranges[0].end() + kPadTrailing, text.size()),
+  Scroll({0, std::min(ranges[0].end() + kPadTrailing, text.size()),
           ranges[0].end() - std::min(kPadLeading, ranges[0].end())});
   // Setting the primary selected range will also fire an appropriate final
   // accessibility event after the changes above.
@@ -667,7 +666,8 @@ void OmniboxViewViews::OnOmniboxPaste() {
       // fakebox is hidden and there's only whitespace in the omnibox, it's
       // difficult for the user to see that the focus moved to the omnibox.
       (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE &&
-       std::all_of(text.begin(), text.end(), base::IsUnicodeWhitespace))) {
+       std::all_of(text.begin(), text.end(),
+                   base::IsUnicodeWhitespace<char16_t>))) {
     return;
   }
 
@@ -988,9 +988,8 @@ int OmniboxViewViews::GetOmniboxTextLength() const {
 }
 
 void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
-  SkColor color = GetOmniboxColor(
-      GetThemeProvider(), emphasize ? OmniboxPart::LOCATION_BAR_TEXT_DEFAULT
-                                    : OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  const SkColor color = GetColorProvider()->GetColor(
+      emphasize ? kColorOmniboxText : kColorOmniboxTextDimmed);
   if (range.IsValid())
     ApplyColor(color, range);
   else
@@ -1728,7 +1727,7 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
                              &write_url);
   if (IsSelectAll()) {
-    UMA_HISTOGRAM_COUNTS_1M("Omnibox.CutOrCopyAllText", 1);
+    UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
 
     if (clipboard_buffer != ui::ClipboardBuffer::kSelection &&
         location_bar_view_) {

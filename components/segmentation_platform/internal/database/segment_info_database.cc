@@ -12,7 +12,7 @@ namespace segmentation_platform {
 
 namespace {
 
-std::string ToString(OptimizationTarget segment_id) {
+std::string ToString(SegmentId segment_id) {
   return base::NumberToString(static_cast<int>(segment_id));
 }
 
@@ -53,10 +53,10 @@ void SegmentInfoDatabase::OnMultipleSegmentInfoLoaded(
 }
 
 void SegmentInfoDatabase::GetSegmentInfoForSegments(
-    const std::vector<OptimizationTarget>& segment_ids,
+    const std::vector<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
   std::vector<std::string> keys;
-  for (OptimizationTarget target : segment_ids)
+  for (SegmentId target : segment_ids)
     keys.emplace_back(ToString(target));
 
   database_->LoadEntriesWithFilter(
@@ -69,7 +69,7 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,
+void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                          SegmentInfoCallback callback) {
   database_->GetEntry(
       ToString(segment_id),
@@ -86,7 +86,7 @@ void SegmentInfoDatabase::OnGetSegmentInfo(
 }
 
 void SegmentInfoDatabase::UpdateSegment(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     absl::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   auto entries_to_save = std::make_unique<
@@ -104,7 +104,7 @@ void SegmentInfoDatabase::UpdateSegment(
 }
 
 void SegmentInfoDatabase::SaveSegmentResult(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   GetSegmentInfo(

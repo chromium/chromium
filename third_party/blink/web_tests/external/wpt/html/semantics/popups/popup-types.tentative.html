@@ -5,84 +5,84 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div id=popup popup=popup>Popup</div>
+<div id=popup popup>Popup</div>
 <div id=hint popup=hint>Hint</div>
-<div id=async popup=async>Async</div>
-<div id=async2 popup=async>Async</div>
+<div id=manual popup=manual>Async</div>
+<div id=manual2 popup=manual>Async</div>
 
 <script>
-function assert_state_1(popupOpen,hintOpen,asyncOpen,async2Open) {
-  assert_equals(popup.matches(':popup-open'),popupOpen,'popup open state is incorrect');
-  assert_equals(hint.matches(':popup-open'),hintOpen,'hint open state is incorrect');
-  assert_equals(async.matches(':popup-open'),asyncOpen,'async open state is incorrect');
-  assert_equals(async2.matches(':popup-open'),async2Open,'async2 open state is incorrect');
+function assert_state_1(popupOpen,hintOpen,manualOpen,manual2Open) {
+  assert_equals(popup.matches(':top-layer'),popupOpen,'popup open state is incorrect');
+  assert_equals(hint.matches(':top-layer'),hintOpen,'hint open state is incorrect');
+  assert_equals(manual.matches(':top-layer'),manualOpen,'manual open state is incorrect');
+  assert_equals(manual2.matches(':top-layer'),manual2Open,'manual2 open state is incorrect');
 }
 test(() => {
   assert_state_1(false,false,false,false);
-  popup.showPopup();
+  popup.showPopUp();
   assert_state_1(true,false,false,false);
-  hint.showPopup();
+  hint.showPopUp();
   assert_state_1(true,true,false,false);
-  async.showPopup();
+  manual.showPopUp();
   assert_state_1(true,true,true,false);
-  async2.showPopup();
+  manual2.showPopUp();
   assert_state_1(true,true,true,true);
-  hint.hidePopup();
+  hint.hidePopUp();
   assert_state_1(true,false,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  popup.showPopup();
-  hint.showPopup();
+  popup.showPopUp();
+  hint.showPopUp();
   assert_state_1(true,true,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopup();
+  manual.hidePopUp();
   assert_state_1(false,false,false,true);
-  async2.hidePopup();
+  manual2.hidePopUp();
   assert_state_1(false,false,false,false);
-},'hints and asyncs do not close popups');
+},'hints and manuals do not close popups');
 
 test(() => {
   assert_state_1(false,false,false,false);
-  hint.showPopup();
-  async.showPopup();
-  async2.showPopup();
+  hint.showPopUp();
+  manual.showPopUp();
+  manual2.showPopUp();
   assert_state_1(false,true,true,true);
-  popup.showPopup();
+  popup.showPopUp();
   assert_state_1(true,false,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopup();
-  async2.hidePopup();
+  manual.hidePopUp();
+  manual2.hidePopUp();
   assert_state_1(false,false,false,false);
-},'popups close hints but not asyncs');
+},'popups close hints but not manuals');
 </script>
 
-<div id=popup1 popup=popup>Popup 1
-  <div id=popup2 popup=popup>Popup 2
+<div id=popup1 popup>Popup 1
+  <div id=popup2 popup>Popup 2
     <p id=anchorid>Anchor</p>
-    <div id=popup3 popup=popup>Popup 3</div>
+    <div id=popup3 popup>Popup 3</div>
   </div>
 </div>
 <div id=hint2 popup=hint anchor=anchorid>Hint anchored to popup</div>
 <script>
 function assert_state_2(popup1Open,popup2Open,popup3Open,hintOpen) {
-  assert_equals(popup1.matches(':popup-open'),popup1Open,'popup1 open state is incorrect');
-  assert_equals(popup2.matches(':popup-open'),popup2Open,'popup2 open state is incorrect');
-  assert_equals(popup3.matches(':popup-open'),popup3Open,'popup3 open state is incorrect');
-  assert_equals(hint2.matches(':popup-open'),hintOpen,'hint2 open state is incorrect');
+  assert_equals(popup1.matches(':top-layer'),popup1Open,'popup1 open state is incorrect');
+  assert_equals(popup2.matches(':top-layer'),popup2Open,'popup2 open state is incorrect');
+  assert_equals(popup3.matches(':top-layer'),popup3Open,'popup3 open state is incorrect');
+  assert_equals(hint2.matches(':top-layer'),hintOpen,'hint2 open state is incorrect');
 }
 test(() => {
   assert_state_2(false,false,false,false);
-  popup1.showPopup();
-  popup2.showPopup();
-  popup3.showPopup();
+  popup1.showPopUp();
+  popup2.showPopUp();
+  popup3.showPopUp();
   assert_state_2(true,true,true,false);
-  hint2.showPopup();
+  hint2.showPopUp();
   assert_state_2(true,true,true,true);
-  popup3.hidePopup(); // Should close the hint
+  popup3.hidePopUp(); // Should close the hint
   assert_state_2(true,true,false,false);
-  popup1.hidePopup();
+  popup1.hidePopUp();
   assert_state_2(false,false,false,false);
 },'hint, even with popup ancestor, closes with first popup');
 </script>

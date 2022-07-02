@@ -80,6 +80,9 @@ std::string GenerateGetUserMediaWithOptionalSourceID(
   return function_name + "({" + audio_constraint + video_constraint + "});";
 }
 
+// TODO(crbug.com/1327666): Bring back when
+// WebRtcGetUserMediaBrowserTest.DisableLocalEchoParameter is fixed.
+#if 0
 std::string GenerateGetUserMediaWithDisableLocalEcho(
     const std::string& function_name,
     const std::string& disable_local_echo) {
@@ -96,6 +99,7 @@ bool VerifyDisableLocalEcho(bool expect_value,
                             const blink::StreamControls& controls) {
   return expect_value == controls.disable_local_echo;
 }
+#endif
 
 }  // namespace
 
@@ -136,16 +140,15 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
         "getSources()");
     EXPECT_FALSE(devices_as_json.empty());
 
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
 
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    EXPECT_EQ(parsed_json->type(), base::Value::Type::LIST);
 
-    ASSERT_TRUE(parsed_json.value->is_list());
+    ASSERT_TRUE(parsed_json->is_list());
 
-    for (const auto& entry : parsed_json.value->GetListDeprecated()) {
+    for (const auto& entry : parsed_json->GetListDeprecated()) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;
@@ -513,8 +516,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
+// TODO(1337302): Flaky for tsan, mac, lacros.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestGetUserMediaAspectRatio4To3 \
+  DISABLED_TestGetUserMediaAspectRatio4To3
+#else
+#define MAYBE_TestGetUserMediaAspectRatio4To3 TestGetUserMediaAspectRatio4To3
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       TestGetUserMediaAspectRatio4To3) {
+                       MAYBE_TestGetUserMediaAspectRatio4To3) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
@@ -544,8 +555,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
+// TODO(1337302): Flaky for tsan, mac, lacros.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestGetUserMediaAspectRatio1To1 \
+  DISABLED_TestGetUserMediaAspectRatio1To1
+#else
+#define MAYBE_TestGetUserMediaAspectRatio1To1 TestGetUserMediaAspectRatio1To1
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       TestGetUserMediaAspectRatio1To1) {
+                       MAYBE_TestGetUserMediaAspectRatio1To1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
@@ -640,6 +659,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   ExecuteJavascriptAndWaitForOk(call);
 }
 
+// TODO(crbug.com/1327666): Fix this test. It seems to be broken (no audio /
+// video tracks are requested; "uncaught (in promise) undefined)") and was false
+// positive before disabling.
+#if 0
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DisableLocalEchoParameter) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -652,21 +675,22 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   MediaStreamManager* manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       base::BindOnce(&VerifyDisableLocalEcho, false));
   std::string call = GenerateGetUserMediaWithDisableLocalEcho(
       "getUserMediaAndExpectSuccess", "false");
   ExecuteJavascriptAndWaitForOk(call);
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       base::BindOnce(&VerifyDisableLocalEcho, true));
   call = GenerateGetUserMediaWithDisableLocalEcho(
       "getUserMediaAndExpectSuccess", "true");
   ExecuteJavascriptAndWaitForOk(call);
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       MediaStreamManager::GenerateStreamTestCallback());
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest, GetAudioSettingsDefault) {
   ASSERT_TRUE(embedded_test_server()->Start());

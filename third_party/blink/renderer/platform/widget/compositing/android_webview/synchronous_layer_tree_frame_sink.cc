@@ -30,7 +30,6 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/software_output_device.h"
-#include "components/viz/service/display/texture_deleter.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -109,15 +108,9 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void BindToClient(viz::OutputSurfaceClient* client) override {}
   void EnsureBackbuffer() override {}
   void DiscardBackbuffer() override {}
-  void BindFramebuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
   void Reshape(const ReshapeParams& params) override {}
-  uint32_t GetFramebufferCopyTextureFormat() override { return 0; }
   bool IsDisplayedAsOverlayPlane() const override { return false; }
-  unsigned GetOverlayTextureId() const override { return 0; }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  unsigned UpdateGpuFence() override { return 0; }
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
@@ -370,7 +363,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         viz::SurfaceRange(
             absl::nullopt,
             viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
-        SK_ColorWHITE, false /* stretch_content_to_fill_bounds */);
+        SkColors::kWhite, false /* stretch_content_to_fill_bounds */);
 
     child_support_->SubmitCompositorFrame(child_local_surface_id_,
                                           std::move(frame));
@@ -537,6 +530,15 @@ void SynchronousLayerTreeFrameSink::ReclaimResources(
   client_->ReclaimResources(std::vector<viz::ReturnedResource>(
       std::make_move_iterator(resources.begin()),
       std::make_move_iterator(resources.end())));
+}
+
+void SynchronousLayerTreeFrameSink::
+    OnCompositorFrameTransitionDirectiveProcessed(
+        uint32_t layer_tree_frame_sink_id,
+        uint32_t sequence_id) {
+  if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
+    return;
+  client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
 void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {

@@ -7,8 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 namespace {
 
 using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
@@ -110,10 +109,6 @@ BluetoothHidDetectorImpl::GetBluetoothHidDetectionStatus() {
 
 void BluetoothHidDetectorImpl::PerformStartBluetoothHidDetection(
     InputDevicesStatus input_devices_status) {
-  DCHECK(input_devices_status.pointer_is_missing ||
-         input_devices_status.keyboard_is_missing)
-      << " StartBluetoothHidDetection() called when neither pointer or "
-      << "keyboard is missing";
   DCHECK_EQ(kNotStarted, state_);
   HID_LOG(EVENT) << "Starting Bluetooth HID detection, pointer missing: "
                  << input_devices_status.pointer_is_missing
@@ -127,13 +122,16 @@ void BluetoothHidDetectorImpl::PerformStartBluetoothHidDetection(
       system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-void BluetoothHidDetectorImpl::PerformStopBluetoothHidDetection() {
+void BluetoothHidDetectorImpl::PerformStopBluetoothHidDetection(
+    bool is_using_bluetooth) {
   DCHECK_NE(kNotStarted, state_)
       << " Call to StopBluetoothHidDetection() while "
       << "HID detection is inactive.";
-  HID_LOG(EVENT) << "Stopping Bluetooth HID detection";
+  HID_LOG(EVENT) << "Stopping Bluetooth HID detection, |is_using_bluetooth|: "
+                 << is_using_bluetooth;
   state_ = kNotStarted;
-  cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive(false);
+  cros_bluetooth_config_remote_->SetBluetoothHidDetectionInactive(
+      is_using_bluetooth);
   cros_bluetooth_config_remote_.reset();
   system_properties_observer_receiver_.reset();
   ResetDiscoveryState();
@@ -159,7 +157,7 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
         HID_LOG(EVENT) << "Bluetooth adapter is disabled or disabling, "
                        << "enabling adapter";
         state_ = kEnablingAdapter;
-        cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive(true);
+        cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive();
       } else {
         HID_LOG(EVENT)
             << "Bluetooth adapter is unavailable or enabling, waiting "
@@ -430,5 +428,4 @@ void BluetoothHidDetectorImpl::RequirePairingCode(
   NotifyBluetoothHidDetectionStatusChanged();
 }
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection

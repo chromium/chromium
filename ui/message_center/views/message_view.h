@@ -20,6 +20,7 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/controls/focus_ring.h"
@@ -191,14 +192,23 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Updates the width of the buttons which are hidden and avail by swipe.
   void SetSlideButtonWidth(int coutrol_button_width);
 
-  void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
   void set_notification_id(const std::string& notification_id) {
     notification_id_ = notification_id;
   }
+
   std::string notification_id() const { return notification_id_; }
+
   NotifierId notifier_id() const { return notifier_id_; }
 
   bool is_active() const { return is_active_; }
+
+  void set_parent_message_view(MessageView* parent_message_view) {
+    parent_message_view_ = parent_message_view;
+  }
+
+  MessageView* parent_message_view() { return parent_message_view_; }
+
+  void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
 
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
@@ -248,12 +258,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   void UpdateNestedBorder();
 
   std::string notification_id_;
-
-  const NotifierId notifier_id_;
-
-  raw_ptr<views::ScrollView> scroller_ = nullptr;
-
   std::u16string accessible_name_;
+  const NotifierId notifier_id_;
 
   // Tracks whether background should be drawn as active based on gesture
   // events.
@@ -266,18 +272,22 @@ class MESSAGE_CENTER_EXPORT MessageView
   // "fixed" mode flag. See the comment in MessageView::Mode for detail.
   bool setting_mode_ = false;
 
-  views::SlideOutController slide_out_controller_;
-  base::ObserverList<Observer> observers_;
-
   // True if |this| is embedded in another view. Equivalent to |!top_level| in
   // MessageViewFactory parlance.
   bool is_nested_ = false;
 
-  bool is_grouped_ = false;
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
+  // True if the view is in a slide.
+  bool is_sliding_ = false;
+
+  raw_ptr<MessageView> parent_message_view_ = nullptr;
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+  raw_ptr<views::ScrollView> scroller_ = nullptr;
+
+  views::SlideOutController slide_out_controller_;
+  base::ObserverList<Observer> observers_;
 
   // Radius values used to determine the rounding for the rounded rectangular
   // shape of the notification.

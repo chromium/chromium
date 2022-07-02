@@ -35,6 +35,7 @@ component("media_foundation_util") {
     "mfplat.lib",
     "mfreadwrite.lib",
     "dxguid.lib",
+    "dxgi.lib",
   ]
 
   # MediaFoundation is not available on Windows N, so must be delay loaded.

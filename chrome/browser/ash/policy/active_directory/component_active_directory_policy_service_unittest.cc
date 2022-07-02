@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -162,7 +162,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
     descriptor.set_component_id(component_id);
 
     builder_.Build();
-    chromeos::SessionManagerClient::Get()->StorePolicy(
+    ash::SessionManagerClient::Get()->StorePolicy(
         descriptor, builder_.GetBlob(),
         base::BindOnce(
             &ComponentActiveDirectoryPolicyServiceTest::OnPolicyStored,
@@ -209,8 +209,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   }
 
   ComponentActiveDirectoryPolicyBuilder builder_;
-  chromeos::ScopedFakeInMemorySessionManagerClient
-      scoped_session_manager_client_;
+  ash::ScopedFakeInMemorySessionManagerClient scoped_session_manager_client_;
   std::string curr_schema_;
   int store_policy_call_count_ = 0;
   int store_policy_succeeded_count_ = 0;

@@ -44,12 +44,11 @@ public abstract class ImageFetcher {
      * ImageFetcherParams. The image resizing is done in Java.
      */
     public static class Params {
-        static final int DEFAULT_IMAGE_SIZE = 0;
         static final int INVALID_EXPIRATION_INTERVAL = 0;
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, int)}.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName) {
             return create(url.getSpec(), clientName);
@@ -57,17 +56,17 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, int)}.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName) {
-            return new Params(url, clientName, DEFAULT_IMAGE_SIZE, DEFAULT_IMAGE_SIZE,
-                    INVALID_EXPIRATION_INTERVAL);
+            return new Params(
+                    url, clientName, 0, 0, /*shouldResize=*/false, INVALID_EXPIRATION_INTERVAL);
         }
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, int)}.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName, int width, int height) {
             return create(url.getSpec(), clientName, width, height);
@@ -75,26 +74,54 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, int)}.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName, int width, int height) {
-            return new Params(url, clientName, width, height, INVALID_EXPIRATION_INTERVAL);
+            boolean shouldResize = (width > 0 && height > 0);
+            return new Params(
+                    url, clientName, width, height, shouldResize, INVALID_EXPIRATION_INTERVAL);
+        }
+
+        /**
+         * Creates image fetcher parameters with image size specified.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         */
+        public static Params createNoResizing(
+                final GURL url, String clientName, int width, int height) {
+            return new Params(url.getSpec(), clientName, width, height, /*shouldResize=*/false,
+                    INVALID_EXPIRATION_INTERVAL);
         }
 
         /**
          * Only used in rare cases. Creates image fetcher parameters that keeps the cache file for a
          * certain period of time.
-         * @See {@link #Params(String, String, int, int, int)}.
+         * @See {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params createWithExpirationInterval(final GURL url, String clientName,
                 int width, int height, int expirationIntervalMinutes) {
             assert expirationIntervalMinutes > INVALID_EXPIRATION_INTERVAL
                 : "Must specify a positive expiration interval, or use other constructors.";
-            return new Params(url.getSpec(), clientName, width, height, expirationIntervalMinutes);
+            boolean shouldResize = (width > 0 && height > 0);
+            return new Params(url.getSpec(), clientName, width, height, shouldResize,
+                    expirationIntervalMinutes);
         }
 
-        private Params(String url, String clientName, int width, int height,
+        /**
+         * Creates a new Params.
+         *
+         * @param url URL to fetch the image from.
+         * @param clientName Name of the cached image fetcher client to report UMA metrics for.
+         * @param width The bitmap's desired width (in pixels). For a multi-resolution image such as
+         *         an .ico, the desired width affects which .ico frame is selected.
+         * @param height The bitmap's desired height (in pixels). For a multi-resolution image such
+         *         as an .ico, the desired height affects which .ico frame is selected.
+         * @param shouldResize Whether the downloaded bitmaps should be resized to `width` and
+         *         `height`.
+         * @param expirationIntervalMinutes Specified in rare cases. The length of time in minutes
+         *         to keep the cache file on disk. Any value <= 0 will be ignored.
+         */
+        private Params(String url, String clientName, int width, int height, boolean shouldResize,
                 int expirationIntervalMinutes) {
             assert expirationIntervalMinutes >= INVALID_EXPIRATION_INTERVAL
                 : "Expiration interval should be non negative.";
@@ -103,6 +130,7 @@ public abstract class ImageFetcher {
             this.clientName = clientName;
             this.width = width;
             this.height = height;
+            this.shouldResize = shouldResize;
             this.expirationIntervalMinutes = expirationIntervalMinutes;
         }
 
@@ -114,6 +142,7 @@ public abstract class ImageFetcher {
             ImageFetcher.Params otherParams = (ImageFetcher.Params) other;
             return url.equals(otherParams.url) && clientName.equals(otherParams.clientName)
                     && width == otherParams.width && height == otherParams.height
+                    && shouldResize == otherParams.shouldResize
                     && expirationIntervalMinutes == otherParams.expirationIntervalMinutes;
         }
 
@@ -123,6 +152,7 @@ public abstract class ImageFetcher {
             result = 31 * result + ((clientName != null) ? clientName.hashCode() : 0);
             result = 31 * result + width;
             result = 31 * result + height;
+            result = 2 * result + (shouldResize ? 1 : 0);
             result = 31 * result + expirationIntervalMinutes;
             return result;
         }
@@ -138,16 +168,30 @@ public abstract class ImageFetcher {
         public final String clientName;
 
         /**
-         * The new bitmap's desired width (in pixels). If the given value is <= 0, the image won't
-         * be scaled.
+         * Has an effect if either:
+         * - `url` refers to a multi-resolution image such as .ico.
+         * OR
+         * - `shouldResize` == true.
+         *
+         * If `url` refers to a multi-resolution image, `width` and `height` affect which frame of
+         * the multi-resolution image is returned in callback.
+         * Example:
+         * `url`: image.ico (contains 16x16 and 32x32 frames)
+         * `width`: 31
+         * `height`: 31
+         * `shouldResize`: false
+         * 32x32 frame from image.ico will be returned.
+         *
+         * If `shouldResize` == true, the selected frame of the downloaded bitmap will be resized to
+         * `width` and `height`.
          */
         public final int width;
+        public final int height;
 
         /**
-         * The new bitmap's desired height (in pixels). If the given value is <= 0, the image won't
-         * be scaled.
+         * Whether the downloaded bitmaps should be resized to `width` and `height`.
          */
-        public final int height;
+        public final boolean shouldResize;
 
         /**
          * Only specifies in rare cases to keep the cache file on disk for certain period of time.

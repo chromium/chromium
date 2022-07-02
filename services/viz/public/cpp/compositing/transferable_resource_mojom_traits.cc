@@ -16,6 +16,43 @@
 namespace mojo {
 
 // static
+viz::mojom::SynchronizationType
+EnumTraits<viz::mojom::SynchronizationType,
+           viz::TransferableResource::SynchronizationType>::
+    ToMojom(viz::TransferableResource::SynchronizationType type) {
+  switch (type) {
+    case viz::TransferableResource::SynchronizationType::kSyncToken:
+      return viz::mojom::SynchronizationType::kSyncToken;
+    case viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted:
+      return viz::mojom::SynchronizationType::kGpuCommandsCompleted;
+    case viz::TransferableResource::SynchronizationType::kReleaseFence:
+      return viz::mojom::SynchronizationType::kReleaseFence;
+  }
+  NOTREACHED();
+  return viz::mojom::SynchronizationType::kSyncToken;
+}
+
+// static
+bool EnumTraits<viz::mojom::SynchronizationType,
+                viz::TransferableResource::SynchronizationType>::
+    FromMojom(viz::mojom::SynchronizationType input,
+              viz::TransferableResource::SynchronizationType* out) {
+  switch (input) {
+    case viz::mojom::SynchronizationType::kSyncToken:
+      *out = viz::TransferableResource::SynchronizationType::kSyncToken;
+      return true;
+    case viz::mojom::SynchronizationType::kGpuCommandsCompleted:
+      *out =
+          viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
+      return true;
+    case viz::mojom::SynchronizationType::kReleaseFence:
+      *out = viz::TransferableResource::SynchronizationType::kReleaseFence;
+      return true;
+  }
+  return false;
+}
+
+// static
 bool StructTraits<viz::mojom::TransferableResourceDataView,
                   viz::TransferableResource>::
     Read(viz::mojom::TransferableResourceDataView data,
@@ -25,12 +62,12 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
       !data.ReadMailboxHolder(&out->mailbox_holder) ||
       !data.ReadColorSpace(&out->color_space) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
-      !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id)) {
+      !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
+      !data.ReadSynchronizationType(&out->synchronization_type)) {
     return false;
   }
   out->id = id;
   out->filter = data.filter();
-  out->read_lock_fences_enabled = data.read_lock_fences_enabled();
   out->is_software = data.is_software();
   out->is_overlay_candidate = data.is_overlay_candidate();
 

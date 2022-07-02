@@ -42,14 +42,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // reading system DNS settings is not supported on the current platform.
   static std::unique_ptr<DnsConfigService> CreateSystemService();
 
-  // On detecting config change, will post and wait `config_change_delay` before
-  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
-  // Useful for platforms where multiple changes may be made and detected before
-  // the config is stabilized and ready to be read.
-  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
-                            absl::optional<base::TimeDelta>
-                                config_change_delay = base::Milliseconds(50));
-
   DnsConfigService(const DnsConfigService&) = delete;
   DnsConfigService& operator=(const DnsConfigService&) = delete;
 
@@ -168,6 +160,14 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     const base::FilePath hosts_file_path_;
   };
 
+  // On detecting config change, will post and wait `config_change_delay` before
+  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
+  // Useful for platforms where multiple changes may be made and detected before
+  // the config is stabilized and ready to be read.
+  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
+                            absl::optional<base::TimeDelta>
+                                config_change_delay = base::Milliseconds(50));
+
   // Immediately attempts to read the current configuration.
   virtual void ReadConfigNow() = 0;
   virtual void ReadHostsNow();
@@ -205,15 +205,15 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   // True if any of the necessary watchers failed. In that case, the service
   // will communicate changes via OnTimeout, but will only send empty DnsConfig.
-  bool watch_failed_;
+  bool watch_failed_ = false;
   // True after On*Read, before Invalidate*. Tells if the config is complete.
-  bool have_config_;
-  bool have_hosts_;
+  bool have_config_ = false;
+  bool have_hosts_ = false;
   // True if receiver needs to be updated when the config becomes complete.
-  bool need_update_;
+  bool need_update_ = false;
   // True if the last config sent was empty (instead of |dns_config_|).
   // Set when |timer_| expires.
-  bool last_sent_empty_;
+  bool last_sent_empty_ = true;
 
   const absl::optional<base::TimeDelta> config_change_delay_;
   const base::FilePath hosts_file_path_;

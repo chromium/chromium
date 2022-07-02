@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ui_base_features.h"
@@ -83,40 +83,8 @@ ControlPart AutoAppearanceFor(const Element& element) {
   if (const auto* select = DynamicTo<HTMLSelectElement>(element))
     return select->UsesMenuList() ? kMenulistPart : kListboxPart;
 
-  if (const auto* input = DynamicTo<HTMLInputElement>(element)) {
-    const AtomicString& type = input->type();
-    if (type == input_type_names::kCheckbox)
-      return kCheckboxPart;
-    if (type == input_type_names::kRadio)
-      return kRadioPart;
-    if (input->IsTextButton())
-      return kPushButtonPart;
-    if (type == input_type_names::kColor) {
-      return input->FastHasAttribute(html_names::kListAttr) ? kMenulistPart
-                                                            : kSquareButtonPart;
-    }
-    if (type == input_type_names::kRange)
-      return kSliderHorizontalPart;
-    if (type == input_type_names::kSearch)
-      return kSearchFieldPart;
-    if (type == input_type_names::kDate ||
-        type == input_type_names::kDatetimeLocal ||
-        type == input_type_names::kMonth || type == input_type_names::kTime ||
-        type == input_type_names::kWeek) {
-#if BUILDFLAG(IS_ANDROID)
-      return kMenulistPart;
-#else
-      return kTextFieldPart;
-#endif
-    }
-    if (type == input_type_names::kEmail || type == input_type_names::kNumber ||
-        type == input_type_names::kPassword || type == input_type_names::kTel ||
-        type == input_type_names::kText || type == input_type_names::kUrl)
-      return kTextFieldPart;
-
-    // Type=hidden/image/file.
-    return kNoControlPart;
-  }
+  if (const auto* input = DynamicTo<HTMLInputElement>(element))
+    return input->AutoAppearance();
 
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =
@@ -229,7 +197,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
   return part;
 }
 
-void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
+void LayoutTheme::AdjustStyle(const Element* element, ComputedStyle& style) {
   ControlPart original_part = style.Appearance();
   style.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
@@ -253,12 +221,12 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
     style.SetDisplay(EDisplay::kBlock);
 
   ControlPart part = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(style, e), style);
+      AdjustAppearanceWithElementType(style, element), style);
   style.SetEffectiveAppearance(part);
   DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
     return;
-  DCHECK(e);
+  DCHECK(element);
   // After this point, a Node must be non-null Element if
   // EffectiveAppearance() != kNoControlPart.
 
@@ -280,8 +248,8 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
       break;
   }
 
-  if (IsSliderContainer(*e))
-    AdjustSliderContainerStyle(*e, style);
+  if (IsSliderContainer(*element))
+    AdjustSliderContainerStyle(*element, style);
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -462,9 +430,9 @@ void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
 
 void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
+void LayoutTheme::AdjustSliderContainerStyle(const Element& element,
                                              ComputedStyle& style) const {
-  DCHECK(IsSliderContainer(e));
+  DCHECK(IsSliderContainer(element));
 
   if (style.EffectiveAppearance() == kSliderVerticalPart) {
     style.SetTouchAction(TouchAction::kPanX);
@@ -474,7 +442,7 @@ void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
   } else {
     style.SetTouchAction(TouchAction::kPanY);
     style.SetWritingMode(WritingMode::kHorizontalTb);
-    if (To<HTMLInputElement>(e.OwnerShadowHost())->list()) {
+    if (To<HTMLInputElement>(element.OwnerShadowHost())->list()) {
       style.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
                                                 OverflowAlignment::kUnsafe));
     }
@@ -736,9 +704,8 @@ Color LayoutTheme::SystemColorFromNativeTheme(
     default:
       return DefaultSystemColor(css_value_id, color_scheme);
   }
-  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
   const absl::optional<SkColor> system_color =
-      Platform::Current()->ThemeEngine()->GetSystemColor(theme_color);
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColor(theme_color);
   if (system_color)
     return Color(system_color.value());
   return DefaultSystemColor(css_value_id, color_scheme);
@@ -830,9 +797,8 @@ Color LayoutTheme::GetCustomFocusRingColor() const {
 
 void LayoutTheme::UpdateForcedColorsState() {
   in_forced_colors_mode_ =
-      Platform::Current() && Platform::Current()->ThemeEngine() &&
-      Platform::Current()->ThemeEngine()->GetForcedColors() !=
-          ForcedColors::kNone;
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
+      ForcedColors::kNone;
 }
 
 }  // namespace blink

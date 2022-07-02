@@ -66,12 +66,11 @@ android_library_factory("factory_java") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java" ]
+robolectric_library("junit") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
+  ]
 
   deps = [
     ":factory_java",
@@ -80,8 +79,8 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/tab:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",

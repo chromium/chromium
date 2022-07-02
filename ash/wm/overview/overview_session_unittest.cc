@@ -1854,7 +1854,10 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   // account.
   const int bounds_left = 200 + 4;
   int expected_x = bounds_left + (400 - (bounds_left)) / 2;
-  const int workarea_bottom_inset = ShelfConfig::Get()->in_app_shelf_size();
+  const int workarea_bottom_inset =
+      ShelfConfig::Get()->in_app_shelf_size() +
+      ShelfConfig::Get()->system_shelf_size() +
+      ShelfConfig::Get()->hotseat_bottom_padding();
   const int expected_y = (300 - workarea_bottom_inset) / 2;
   EXPECT_EQ(gfx::Point(expected_x, expected_y),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
@@ -3699,6 +3702,31 @@ TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
   EXPECT_LT(leftmost_window->target_bounds(), left_bounds);
 }
 
+// Tests that dragging a fullscreened window to snap in overview does not result
+// in a u-a-f. Regression test for crbug.com/1330042.
+TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
+  UpdateDisplay("800x600");
+
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  WindowState::Get(window.get())->OnWMEvent(&fullscreen_event);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFullscreen());
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  OverviewItem* item = GetOverviewItemForWindow(window.get());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  generator->MoveMouseTo(gfx::Point(10, 300));
+  generator->ReleaseLeftButton();
+
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+}
+
 // A unique test class for testing flings in overview as those rely on observing
 // compositor animations which require a mock time task environment.
 class OverviewSessionFlingTest : public AshTestBase {
@@ -4549,11 +4577,14 @@ TEST_F(SplitViewOverviewSessionTest,
   // Verify that when there is a snapped window, the window grid bounds remain
   // constant despite overview items being dragged left and right.
   GetOverviewSession()->Drag(overview_item, left);
-  EXPECT_EQ(GetSplitViewRightWindowBounds(), GetGridBounds());
+  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetSplitViewRightWindowBounds()),
+            GetGridBounds());
   GetOverviewSession()->Drag(overview_item, right);
-  EXPECT_EQ(GetSplitViewRightWindowBounds(), GetGridBounds());
+  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetSplitViewRightWindowBounds()),
+            GetGridBounds());
   GetOverviewSession()->Drag(overview_item, center);
-  EXPECT_EQ(GetSplitViewRightWindowBounds(), GetGridBounds());
+  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetSplitViewRightWindowBounds()),
+            GetGridBounds());
 }
 
 // Tests dragging a unsnappable window.
@@ -6071,10 +6102,11 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SplitViewController::LEFT);
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
-  EXPECT_EQ(
-      GetGridBounds(),
-      split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr));
+  EXPECT_EQ(GetGridBounds(),
+            ShrinkBoundsByHotseatInset(
+                split_view_controller()->GetSnappedWindowBoundsInScreen(
+                    SplitViewController::RIGHT,
+                    /*window_for_minimum_size=*/nullptr)));
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
@@ -6083,8 +6115,9 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
             SplitViewController::RIGHT);
   EXPECT_EQ(
       GetGridBounds(),
-      split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
+      ShrinkBoundsByHotseatInset(
+          split_view_controller()->GetSnappedWindowBoundsInScreen(
+              SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr)));
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.

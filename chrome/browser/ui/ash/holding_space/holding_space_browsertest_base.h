@@ -11,7 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 
 class Profile;
 
@@ -26,8 +26,7 @@ class HoldingSpaceTestApi;
 // Base class for holding space browser tests. Subclasses
 // SystemWebAppBrowserTestBase for the ability to test with the Media App, which
 // is the default handler for files opened from the holding space.
-class HoldingSpaceBrowserTestBase
-    : public web_app::SystemWebAppBrowserTestBase {
+class HoldingSpaceBrowserTestBase : public SystemWebAppBrowserTestBase {
  public:
   HoldingSpaceBrowserTestBase();
   ~HoldingSpaceBrowserTestBase() override;

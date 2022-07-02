@@ -177,34 +177,33 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
     return false;
 
   session->SetBrowserOnly(true);
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kBrowser, GetId(),
-      auto_attacher_.get(), session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession());
   if (only_discovery_)
     return true;
 
-  session->AddHandler(std::make_unique<protocol::BrowserHandler>(
-      session->GetClient()->MayWriteLocalFiles()));
+  session->CreateAndAddHandler<protocol::BrowserHandler>(
+      session->GetClient()->MayWriteLocalFiles());
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-  session->AddHandler(std::make_unique<protocol::VisualDebuggerHandler>());
+  session->CreateAndAddHandler<protocol::VisualDebuggerHandler>();
 #endif
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::FetchHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(),
-      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); })));
-  session->AddHandler(std::make_unique<protocol::MemoryHandler>());
-  session->AddHandler(std::make_unique<protocol::SecurityHandler>());
-  session->AddHandler(std::make_unique<protocol::StorageHandler>());
-  session->AddHandler(std::make_unique<protocol::SystemInfoHandler>());
+      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
+  session->CreateAndAddHandler<protocol::MemoryHandler>();
+  session->CreateAndAddHandler<protocol::SecurityHandler>();
+  session->CreateAndAddHandler<protocol::StorageHandler>();
+  session->CreateAndAddHandler<protocol::SystemInfoHandler>();
   if (tethering_task_runner_) {
-    session->AddHandler(std::make_unique<protocol::TetheringHandler>(
-        socket_callback_, tethering_task_runner_));
+    session->CreateAndAddHandler<protocol::TetheringHandler>(
+        socket_callback_, tethering_task_runner_);
   }
-  session->AddHandler(
-      std::make_unique<protocol::TracingHandler>(GetIOContext()));
+  session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-  session->AddHandler(std::make_unique<protocol::NativeProfilingHandler>());
+  session->CreateAndAddHandler<protocol::NativeProfilingHandler>();
 #endif
 
   return true;

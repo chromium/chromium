@@ -142,8 +142,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   if (!extension)
     return;
 
-  std::vector<base::Value> args;
-  args.emplace_back(base::Value(command));
+  base::Value::List args;
+  args.Append(command);
 
   std::unique_ptr<base::Value> tab_value;
   if (delegate_) {
@@ -180,7 +180,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     // No currently-active tab. Push a null value.
     tab_value = std::make_unique<base::Value>();
   }
-  args.push_back(base::Value::FromUniquePtrValue(std::move(tab_value)));
+  args.Append(base::Value::FromUniquePtrValue(std::move(tab_value)));
 
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,

@@ -19,6 +19,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteInput;
+class AutocompleteProviderListener;
 
 typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 
@@ -170,6 +171,7 @@ class AutocompleteProvider
     TYPE_VOICE_SUGGEST = 1 << 15,
     TYPE_HISTORY_FUZZY = 1 << 16,
     TYPE_OPEN_TAB = 1 << 17,
+    TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
   };
 
   explicit AutocompleteProvider(Type type);
@@ -180,31 +182,38 @@ class AutocompleteProvider
   // Returns a string describing a particular AutocompleteProvider type.
   static const char* TypeToString(Type type);
 
+  // Used to communicate async matches to consumers (usually the
+  // `AutocompleteController`). Consumers invoke `AddListener()` to register
+  // their interest, while child `AutocompleteProvider` implementations invoke
+  // `NotifyListeners().`
+  void AddListener(AutocompleteProviderListener* listener);
+  void NotifyListeners(bool updated_matches) const;
+
   // Called to start an autocomplete query.  The provider is responsible for
   // tracking its matches for this query and whether it is done processing the
   // query.  When new matches are available or the provider finishes, it
-  // calls the controller's OnProviderUpdate() method.  The controller can then
-  // get the new matches using the provider's accessors.
-  // Exception: Matches available immediately after starting the query (that
-  // is, synchronously) do not cause any notifications to be sent.  The
-  // controller is expected to check for these without prompting (since
+  // calls NotifyListeners() which calls the controller's OnProviderUpdate()
+  // method.  The controller can then get the new matches using the provider's
+  // accessors. Exception: Matches available immediately after starting the
+  // query (that is, synchronously) do not cause any notifications to be sent.
+  // The controller is expected to check for these without prompting (since
   // otherwise, starting each provider running would result in a flurry of
   // notifications).
   //
   // Providers should invalidate any in-progress requests and make sure *not* to
-  // call the controller's OnProviderUpdate() method for invalidated requests by
-  // calling Stop(). Once Stop() has been called, usually no more notifications
-  // should be sent. (See comments on Stop() below.)
+  // call NotifyListeners() method for invalidated requests by calling Stop().
+  // Once Stop() has been called, usually no more notifications should be sent.
+  // (See comments on Stop() below.)
   //
   // |minimal_changes| is an optimization that lets the provider do less work
   // when the |input|'s text hasn't changed.  See the body of
-  // OmniboxPopupModel::StartAutocomplete().
+  // AutocompleteController::Start().
   virtual void Start(const AutocompleteInput& input, bool minimal_changes) = 0;
 
   // Similar to Start(), but used to perform prefetch requests. Providers can
   // override this method and perform a prefetch request in order to cache the
-  // response. Providers should *not* call OnProviderUpdate() after completing
-  // a prefetch request.
+  // response. Providers should *not* call NotifyListeners() after completing a
+  // prefetch request.
   virtual void StartPrefetch(const AutocompleteInput& input) {}
 
   // Advises the provider to stop processing.  This may be called even if the
@@ -220,8 +229,7 @@ class AutocompleteProvider
   // legal if there's a good reason the user is likely to want even long-
   // delayed asynchronous results, e.g. the user has explicitly invoked a
   // keyword extension and the extension is still processing the request.
-  virtual void Stop(bool clear_cached_results,
-                    bool due_to_user_inactivity);
+  virtual void Stop(bool clear_cached_results, bool due_to_user_inactivity);
 
   // Returns the enum equivalent to the name of this provider.
   // TODO(derat): Make metrics use AutocompleteProvider::Type directly, or at
@@ -232,14 +240,14 @@ class AutocompleteProvider
   // match should not appear again in this or future queries.  This can only be
   // called for matches the provider marks as deletable.  This should only be
   // called when no query is running.
-  // NOTE: Do NOT call OnProviderUpdate() in this method, it is the
+  // NOTE: Do NOT call NotifyListeners() in this method, it is the
   // responsibility of the caller to do so after calling us.
   virtual void DeleteMatch(const AutocompleteMatch& match);
 
   // Called to delete an element of a match. This element should not appear
   // again in this or future queries. Unlike DeleteMatch, this call does not
   // delete the entire AutocompleteMatch, but focuses on just one part of it.
-  // NOTE: Do NOT call OnProviderUpdate() in this method, it is the
+  // NOTE: Do NOT call NotifyListeners() in this method, it is the
   // responsibility of the caller to do so after calling us.
   virtual void DeleteMatchElement(const AutocompleteMatch& match,
                                   size_t element_index);
@@ -269,7 +277,14 @@ class AutocompleteProvider
   // Returns the set of matches for the current query.
   const ACMatches& matches() const { return matches_; }
 
-  // Returns whether the provider is done processing the query.
+  // Returns whether the provider is done processing the last `Start()` request.
+  // Should not be set true for `StartPrefetch()` requests in order to remain
+  // consistent with `AutocompleteController::done()`; i.e., if `done_` is false
+  // for any provider, then the `AutocompleteController::done_` must also be
+  // false. This ensures the controller can determine when each provider
+  // finishes processing async requests. Should be true after either `Stop()` or
+  // `Start()` with `AutocompleteInput.want_asynchronous_matches` set to false
+  // are called.
   bool done() const { return done_; }
 
   // Returns this provider's type.
@@ -365,6 +380,8 @@ class AutocompleteProvider
   // fixup failed; this lets callers who don't care about failure simply use the
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
+
+  std::vector<AutocompleteProviderListener*> listeners_;
 
   const size_t provider_max_matches_;
 

@@ -52,6 +52,13 @@ std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
     SessionID window_id,
     const std::string& app_name);
 
+// Creates a SessionCommand storing a tab extra data.
+std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
+    SessionCommand::id_type command,
+    const SessionID& session_id,
+    const std::string& key,
+    const std::string& data);
+
 // Converts a SessionCommand previously created by
 // CreateUpdateTabNavigationCommand into a
 // SerializedNavigationEntry. Returns true on success. If
@@ -94,6 +101,13 @@ bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
 bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
                                       SessionID* window_id,
                                       std::string* user_title);
+
+// Extracts a SessionCommand as previously created by
+// CreateAddExtraDataCommand into the tab/window id, key and data.
+bool RestoreAddExtraDataCommand(const SessionCommand& command,
+                                SessionID* session_id,
+                                std::string* key,
+                                std::string* data);
 
 }  // namespace sessions
 

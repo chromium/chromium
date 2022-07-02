@@ -52,11 +52,7 @@ generate_jni("layouts_jni_headers") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserverTest.java",
@@ -69,7 +65,6 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

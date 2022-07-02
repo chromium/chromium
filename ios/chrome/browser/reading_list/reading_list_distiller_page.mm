@@ -36,8 +36,8 @@ const int64_t kPageLoadDelayInSeconds = 2;
 // This script retrieve the href parameter of the <link rel="amphtml"> element
 // of the page if it exists. If it does not exist, it returns the src of the
 // first iframe of the page.
-const char* kGetIframeURLJavaScript =
-    "(() => {"
+const char16_t* kGetIframeURLJavaScript =
+    u"(() => {"
     "  var link = document.evaluate('//link[@rel=\"amphtml\"]',"
     "                               document,"
     "                               null,"
@@ -49,8 +49,8 @@ const char* kGetIframeURLJavaScript =
     "  return document.getElementsByTagName('iframe')[0].src;"
     "})()";
 
-const char* kWikipediaWorkaround =
-    "(() => {"
+const char16_t* kWikipediaWorkaround =
+    u"(() => {"
     "  var s = document.createElement('style');"
     "  s.innerHTML='.client-js .collapsible-block { display: block }';"
     "  document.head.appendChild(s);"
@@ -249,6 +249,9 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
 
 void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
   web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  if (!web_frame) {
+    return;
+  }
   web_frame->ExecuteJavaScript(
       kGetIframeURLJavaScript,
       base::BindOnce(

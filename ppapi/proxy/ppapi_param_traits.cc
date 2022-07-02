@@ -43,16 +43,15 @@ bool ReadVectorWithoutCopy(const base::Pickle* m,
                            base::PickleIterator* iter,
                            std::vector<T>* output) {
   // This part is just a copy of the the default ParamTraits vector Read().
-  int size;
-  // ReadLength() checks for < 0 itself.
+  size_t size;
   if (!iter->ReadLength(&size))
     return false;
   // Resizing beforehand is not safe, see BUG 1006367 for details.
-  if (INT_MAX / sizeof(T) <= static_cast<size_t>(size))
+  if (size > INT_MAX / sizeof(T))
     return false;
 
   output->reserve(size);
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     T cur;
     if (!ReadParam(m, iter, &cur))
       return false;
@@ -105,7 +104,7 @@ void ParamTraits<PP_Bool>::Log(const param_type& p, std::string* l) {
 void ParamTraits<PP_NetAddress_Private>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.size);
-  m->WriteBytes(p.data, static_cast<int>(p.size));
+  m->WriteBytes(p.data, p.size);
 }
 
 // static

@@ -466,9 +466,9 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 
 // Allow ExecuteScript* methods to target either a WebContents or a
 // RenderFrameHost.  Targeting a WebContents means executing the script in the
-// RenderFrameHost returned by WebContents::GetMainFrame(), which is the main
-// frame.  Pass a specific RenderFrameHost to target it. Embedders may declare
-// additional ConvertToRenderFrameHost functions for convenience.
+// RenderFrameHost returned by WebContents::GetPrimaryMainFrame(), which is the
+// main frame.  Pass a specific RenderFrameHost to target it. Embedders may
+// declare additional ConvertToRenderFrameHost functions for convenience.
 class ToRenderFrameHost {
  public:
   template <typename T>
@@ -599,20 +599,20 @@ struct JsLiteralHelper<url::Origin> {
 };
 
 // Helper for variadic ListValueOf() -- zero-argument base case.
-inline void ConvertToBaseValueList(base::Value::ListStorage* list) {}
+inline void ConvertToBaseValueList(base::Value::List& list) {}
 
-// Helper for variadic ListValueOf() -- case with at least one argument.
+// Helper for variadic ValueListOf() -- case with at least one argument.
 //
 // |first| can be any type explicitly convertible to base::Value
 // (including int/string/StringPiece/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals.
 template <typename T, typename... Args>
-void ConvertToBaseValueList(base::Value::ListStorage* list,
+void ConvertToBaseValueList(base::Value::List& list,
                             T&& first,
                             Args&&... rest) {
   using ValueType = base::remove_cvref_t<T>;
-  list->push_back(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
+  list.Append(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
   ConvertToBaseValueList(list, std::forward<Args>(rest)...);
 }
 
@@ -623,10 +623,10 @@ void ConvertToBaseValueList(base::Value::ListStorage* list,
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
 // string literals. |args| can be a mix of different types.
 template <typename... Args>
-base::ListValue ListValueOf(Args&&... args) {
-  base::Value::ListStorage values;
-  ConvertToBaseValueList(&values, std::forward<Args>(args)...);
-  return base::ListValue(std::move(values));
+base::Value ListValueOf(Args&&... args) {
+  base::Value::List values;
+  ConvertToBaseValueList(values, std::forward<Args>(args)...);
+  return base::Value(std::move(values));
 }
 
 // Replaces $1, $2, $3, etc in |script_template| with JS literal values
@@ -659,8 +659,8 @@ base::ListValue ListValueOf(Args&&... args) {
 // supported by base::Value. Numbers, lists, and dicts also work.
 template <typename... Args>
 std::string JsReplace(base::StringPiece script_template, Args&&... args) {
-  base::Value::ListStorage values;
-  ConvertToBaseValueList(&values, std::forward<Args>(args)...);
+  base::Value::List values;
+  ConvertToBaseValueList(values, std::forward<Args>(args)...);
   std::vector<std::string> replacements(values.size());
   for (size_t i = 0; i < values.size(); ++i) {
     CHECK(base::JSONWriter::Write(values[i], &replacements[i]));
@@ -1276,6 +1276,9 @@ class DOMMessageQueue : public NotificationObserver,
   // true.  Otherwise (if the queue is empty), returns false.
   [[nodiscard]] bool PopMessage(std::string* message);
 
+  // Returns true if there are currently any messages in the queue.
+  bool HasMessages();
+
   // Overridden NotificationObserver methods.
   void Observe(int type,
                const NotificationSource& source,
@@ -1296,7 +1299,7 @@ class DOMMessageQueue : public NotificationObserver,
   base::queue<std::string> message_queue_;
   base::OnceClosure quit_closure_;
   bool renderer_crashed_ = false;
-  RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };
 
 // Used to wait for a new WebContents to be created. Instantiate this object
@@ -1781,7 +1784,7 @@ class TestActivationManager : public WebContentsObserver {
 
   // Set when a matching navigation reaches kBeforeChecks and cleared when the
   // navigation is deleted/finished.
-  NavigationRequest* request_ = nullptr;
+  raw_ptr<NavigationRequest> request_ = nullptr;
 
   // If the navigation is paused in the first or last CommitDeferringCondition
   // (i.e. the one installed by this manager for testing), this will be the
@@ -1841,7 +1844,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    raw_ptr<RenderFrameHost> source_frame;
+    raw_ptr<RenderFrameHost, DanglingUntriaged> source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;

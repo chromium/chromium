@@ -16,8 +16,11 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
@@ -114,6 +117,12 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
+  // Get the FileSystem with a custom bucket override. Must provide a binding
+  // context for this request.
+  void GetSandboxedFileSystem(
+      const BindingContext& binding_context,
+      const absl::optional<storage::BucketLocator>& bucket,
+      GetSandboxedFileSystemCallback callback);
   void ChooseEntries(blink::mojom::FilePickerOptionsPtr options,
                      blink::mojom::CommonFilePickerOptionsPtr common_options,
                      ChooseEntriesCallback callback) override;
@@ -172,9 +181,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                         const SharedHandleState& handle_state);
   // Attempts to take a write lock on `url`. The lock is released when the
   // returned object is destroyed.
-  absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
-  TakeWriteLock(const storage::FileSystemURL& url,
-                FileSystemAccessWriteLockManager::WriteLockType lock_type);
+  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> TakeWriteLock(
+      const storage::FileSystemURL& url,
+      FileSystemAccessWriteLockManager::WriteLockType lock_type);
 
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
@@ -447,10 +456,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidResolveForSerializeHandle(
       SerializeHandleCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
+  void DidGetSandboxedBucketForDeserializeHandle(
+      const FileSystemAccessHandleData& data,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token,
+      const storage::FileSystemURL& url);
 
-  // FileSystemAccessCapacityAllocationHosts may reserve too much capacity from
-  // the quota system. This function determines the file's actual size and
-  // corrects its capacity usage in the quota system.
+  // FileSystemAccessCapacityAllocationHosts may reserve too much capacity
+  // from the quota system. This function determines the file's actual size
+  // and corrects its capacity usage in the quota system.
   void CleanupAccessHandleCapacityAllocation(const storage::FileSystemURL& url,
                                              int64_t allocated_file_size,
                                              base::OnceClosure callback);

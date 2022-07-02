@@ -6,3 +6,5 @@ blink_core_sources_origin_trials = [
   "origin_trial_context.cc",
   "origin_trial_context.h",
 ]
+
+blink_core_tests_origin_trials = [ "origin_trial_context_test.cc" ]

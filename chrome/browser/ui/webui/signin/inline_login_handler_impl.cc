@@ -161,7 +161,7 @@ credential_provider::UiExitCodes ValidateSigninEmail(
     const std::string& signin_email,
     const std::string& signin_gaia_id) {
   if (!gaia_id_parameter.empty() &&
-      !base::LowerCaseEqualsASCII(gaia_id_parameter, signin_gaia_id)) {
+      !base::EqualsCaseInsensitiveASCII(gaia_id_parameter, signin_gaia_id)) {
     return credential_provider::kUiecEMailMissmatch;
   }
 

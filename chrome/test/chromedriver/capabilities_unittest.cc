@@ -159,15 +159,15 @@ TEST(ParseCapabilities, LogPath) {
 
 TEST(ParseCapabilities, Args) {
   Capabilities capabilities;
-  base::Value::ListStorage args;
-  args.emplace_back("arg1");
-  args.emplace_back("arg2=invalid");
-  args.emplace_back("arg2=val");
-  args.emplace_back("enable-blink-features=val1");
-  args.emplace_back("enable-blink-features=val2,");
-  args.emplace_back("--enable-blink-features=val3");
+  base::Value::List args;
+  args.Append("arg1");
+  args.Append("arg2=invalid");
+  args.Append("arg2=val");
+  args.Append("enable-blink-features=val1");
+  args.Append("enable-blink-features=val2,");
+  args.Append("--enable-blink-features=val3");
   base::DictionaryValue caps;
-  caps.SetPath({"goog:chromeOptions", "args"}, base::Value(args));
+  caps.SetPath({"goog:chromeOptions", "args"}, base::Value(std::move(args)));
 
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
@@ -207,11 +207,12 @@ TEST(ParseCapabilities, LocalState) {
 
 TEST(ParseCapabilities, Extensions) {
   Capabilities capabilities;
-  base::Value::ListStorage extensions;
-  extensions.emplace_back("ext1");
-  extensions.emplace_back("ext2");
+  base::Value::List extensions;
+  extensions.Append("ext1");
+  extensions.Append("ext2");
   base::DictionaryValue caps;
-  caps.SetPath({"goog:chromeOptions", "extensions"}, base::Value(extensions));
+  caps.SetPath({"goog:chromeOptions", "extensions"},
+               base::Value(std::move(extensions)));
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(2u, capabilities.extensions.size());
@@ -508,12 +509,12 @@ TEST(ParseCapabilities, PerfLoggingPrefsPerfLogOff) {
 
 TEST(ParseCapabilities, ExcludeSwitches) {
   Capabilities capabilities;
-  base::Value::ListStorage exclude_switches;
-  exclude_switches.emplace_back("switch1");
-  exclude_switches.emplace_back("switch2");
+  base::Value::List exclude_switches;
+  exclude_switches.Append("switch1");
+  exclude_switches.Append("switch2");
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "excludeSwitches"},
-               base::Value(exclude_switches));
+               base::Value(std::move(exclude_switches)));
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(2u, capabilities.exclude_switches.size());

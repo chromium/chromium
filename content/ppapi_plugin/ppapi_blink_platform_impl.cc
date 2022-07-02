@@ -75,9 +75,4 @@ blink::WebString PpapiBlinkPlatformImpl::DefaultLocale() {
   return blink::WebString::FromUTF8("en");
 }
 
-blink::WebThemeEngine* PpapiBlinkPlatformImpl::ThemeEngine() {
-  NOTREACHED();
-  return nullptr;
-}
-
 }  // namespace content

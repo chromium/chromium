@@ -154,7 +154,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
     virtual void OnReceiveRedirect(const GURL& redirected_url) = 0;
     virtual void OnReceiveResponse(
         network::mojom::URLResponseHeadPtr response_head) = 0;
-    virtual void OnStartLoadingResponseBody() = 0;
     virtual void OnComplete() = 0;
 
    protected:
@@ -173,9 +172,8 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
 
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
                          mojo::ScopedDataPipeConsumerHandle body) override {
+    response_body_ = std::move(body);
     observer_->OnReceiveResponse(std::move(response_head));
-    if (body)
-      OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -191,12 +189,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override {}
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    response_body_ = std::move(body);
-    observer_->OnStartLoadingResponseBody();
-  }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     completion_status_ = status;
@@ -263,7 +255,6 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void OnReceiveRedirect(const GURL& redirected_url) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
-  void OnStartLoadingResponseBody() override;
   void OnComplete() override;
 
   void InterceptRequest(const GURL& url,
@@ -954,9 +945,6 @@ void OfflinePageURLLoaderBuilder::OnReceiveRedirect(
 void OfflinePageURLLoaderBuilder::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   mime_type_ = response_head->mime_type;
-}
-
-void OfflinePageURLLoaderBuilder::OnStartLoadingResponseBody() {
   ReadBody();
 }
 
@@ -986,7 +974,8 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
 
   url_loader_ = OfflinePageURLLoader::Create(
       navigation_ui_data_.get(),
-      test_->web_contents()->GetMainFrame()->GetFrameTreeNodeId(), request,
+      test_->web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+      request,
       base::BindOnce(&OfflinePageURLLoaderBuilder::MaybeStartLoader,
                      base::Unretained(this), request));
 

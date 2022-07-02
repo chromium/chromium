@@ -89,6 +89,8 @@ class CORE_EXPORT V8ScriptValueSerializer
 
   bool IsForStorage() const { return for_storage_; }
 
+  const Transferables* GetTransferables() const { return transferables_; }
+
  private:
   // Transfer is split into two phases: scanning the transferables so that we
   // don't have to serialize the data (just an index), and finalizing (to

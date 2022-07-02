@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
+#include <stdint.h>
 #include <memory>
 #include <string>
 
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,8 +30,6 @@ namespace web_app {
 class AppBrowserController;
 
 absl::optional<AppId> GetWebAppForActiveTab(Browser* browser);
-
-bool IsInScope(const GURL& url, const GURL& scope_spec);
 
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,

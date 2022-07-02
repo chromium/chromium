@@ -59,7 +59,7 @@ class SourceUrlRecorderWebContentsObserverBrowserTest
 
   GURL GetAssociatedURLForWebContentsDocument() {
     const ukm::UkmSource* src = test_ukm_recorder_->GetSourceForSourceId(
-        shell()->web_contents()->GetMainFrame()->GetPageUkmSourceId());
+        shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
     return src ? src->url() : GURL();
   }
 

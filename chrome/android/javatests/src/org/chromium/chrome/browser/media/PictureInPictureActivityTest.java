@@ -10,13 +10,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+import android.util.Rational;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,12 +68,40 @@ public class PictureInPictureActivityTest {
 
     private Tab mTab;
 
+    // Source rect hint that we'll provide as the video element position.
+    private Rect mSourceRectHint = new Rect(100, 200, 300, 400);
+
+    // Helper to capture the source rect hint bounds that PictureInPictureActivity would like to use
+    // for `makeEnterIntoPip`, if any.
+    private PictureInPictureActivity.LaunchIntoPipHelper mLaunchIntoPipHelper =
+            new PictureInPictureActivity.LaunchIntoPipHelper() {
+                @Override
+                public Bundle build(Context activityContext, Rect bounds) {
+                    // Store the bounds in the parent class for easy reference.
+                    mBounds = bounds;
+                    return null;
+                }
+            };
+
+    // Helper that we replace with `mLaunchIntoPipHelper`, so that we can restore it.
+    private PictureInPictureActivity.LaunchIntoPipHelper mOriginalHelper;
+
+    // Most recently provided bounds, if any.
+    private Rect mBounds;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mMocker.mock(PictureInPictureActivityJni.TEST_HOOKS, mNativeMock);
+        mOriginalHelper = PictureInPictureActivity.setLaunchIntoPipHelper(mLaunchIntoPipHelper);
+    }
+
+    @After
+    public void teardown() {
+        // Restore the original helper.
+        PictureInPictureActivity.setLaunchIntoPipHelper(mOriginalHelper);
     }
 
     @Test
@@ -74,6 +109,10 @@ public class PictureInPictureActivityTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testStartActivity() throws Throwable {
         startPictureInPictureActivity();
+
+        // The LaunchIntoPipHelper should have been called.
+        Assert.assertTrue(mBounds != null);
+        Criteria.checkThat(mBounds, Matchers.is(mSourceRectHint));
     }
 
     @Test
@@ -90,6 +129,29 @@ public class PictureInPictureActivityTest {
     public void testExitOnCrash() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> WebContentsUtils.simulateRendererKilled(getWebContents()));
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testMakeEnterPictureInPictureWithBadSourceRect() throws Throwable {
+        mSourceRectHint.left = -1;
+        startPictureInPictureActivity();
+        // The pip helper should not be called with trivially bad bounds.
+        Assert.assertTrue(mBounds == null);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testExitOnBackToTab() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        Configuration newConfig = activity.getResources().getConfiguration();
+        testExitOn(activity,
+                ()
+                        -> activity.onPictureInPictureModeChanged(
+                                /*isInPictureInPictureMode=*/false, newConfig));
+        verify(mNativeMock, times(1)).onBackToTab(NATIVE_OVERLAY);
     }
 
     private WebContents getWebContents() {
@@ -113,7 +175,10 @@ public class PictureInPictureActivityTest {
                                 TestThreadUtils.runOnUiThreadBlocking(
                                         ()
                                                 -> PictureInPictureActivity.createActivity(
-                                                        NATIVE_OVERLAY, mTab));
+                                                        NATIVE_OVERLAY, mTab, mSourceRectHint.left,
+                                                        mSourceRectHint.top,
+                                                        mSourceRectHint.width(),
+                                                        mSourceRectHint.height()));
                                 return null;
                             }
                         });
@@ -123,6 +188,10 @@ public class PictureInPictureActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.isInPictureInPictureMode(), Matchers.is(true));
         }, PIP_TIMEOUT_MILLISECONDS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        Rational ratio = activity.getAspectRatio();
+        Criteria.checkThat(ratio,
+                Matchers.is(new Rational(mSourceRectHint.width(), mSourceRectHint.height())));
 
         return activity;
     }

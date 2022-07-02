@@ -1438,6 +1438,38 @@ IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
                               2);
 }
 
+// Verifies that the app list sort discovery duration after the education nudge
+// shows is recorded as expected.
+IN_PROC_BROWSER_TEST_P(AppListSortLoginTest, VerifySortAfterNudgeShowMetric) {
+  LoginUser(account_id1_);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  const bool is_in_tablet = GetParam();
+  ash::AppListTestApi app_list_test_api;
+  if (is_in_tablet)
+    app_list_test_api.WaitForAppListShowAnimation(/*is_bubble_window=*/false);
+  else
+    app_list_test_api.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Reorder the app list.
+  ReorderAnimationEndState actual_state;
+  base::HistogramTester histogram;
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      ash::Shell::GetPrimaryRootWindow());
+  app_list_test_api.ReorderByMouseClickAtToplevelAppsGridMenu(
+      ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu,
+      event_generator.get(),
+      /*target_state=*/ReorderAnimationEndState::kCompleted, &actual_state);
+  EXPECT_EQ(ReorderAnimationEndState::kCompleted, actual_state);
+
+  // Verify that the data is reported with the correct histogram.
+  histogram.ExpectTotalCount(
+      ash::kAppListSortDiscoveryDurationAfterNudgeClamshell, !is_in_tablet);
+  histogram.ExpectTotalCount(ash::kAppListSortDiscoveryDurationAfterNudgeTablet,
+                             is_in_tablet);
+}
+
 class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
  public:
   AppListSortLoginTalbetTest() : LoginManagerTest() {

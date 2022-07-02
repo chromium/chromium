@@ -1394,20 +1394,41 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   EXPECT_FALSE(tray->IsBubbleShown());
 }
 
-TEST_F(AcceleratorControllerTest,
-       GlobalAcceleratorsToggleProductivityLauncher) {
+class GlobalAcceleratorsToggleProductivityLauncher
+    : public AcceleratorControllerTest,
+      public testing::WithParamInterface<
+          std::pair<ui::KeyboardCode, ui::Accelerator::KeyState>> {
+ public:
+  GlobalAcceleratorsToggleProductivityLauncher() {
+    std::tie(key_, key_state_) = GetParam();
+  }
+
+ protected:
+  ui::KeyboardCode key_;
+  ui::Accelerator::KeyState key_state_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlobalAcceleratorsToggleProductivityLauncher,
+    testing::Values(std::make_pair(ui::VKEY_LWIN,
+                                   ui::Accelerator::KeyState::RELEASED),
+                    std::make_pair(ui::VKEY_BROWSER_SEARCH,
+                                   ui::Accelerator::KeyState::PRESSED),
+                    std::make_pair(ui::VKEY_ALL_APPLICATIONS,
+                                   ui::Accelerator::KeyState::PRESSED)));
+
+TEST_P(GlobalAcceleratorsToggleProductivityLauncher, ToggleLauncher) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kProductivityLauncher);
 
-  // Search key opens the launcher.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
-  // Search key again closes the launcher.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
 }
@@ -2322,185 +2343,6 @@ TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
       ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
 }
 
-// Overrides SetUp() to do nothing so that the flag can be tested in both
-// directions during setup.
-// TODO(crbug.com/1179893): Remove suite once the feature is enabled by
-// default.
-class AcceleratorControllerStartupNotificationTest
-    : public NoSessionAshTestBase {
- public:
-  AcceleratorControllerStartupNotificationTest() {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
-  }
-
-  ~AcceleratorControllerStartupNotificationTest() override {
-    // Set back to false to avoid any future test having the wrong value.
-    AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(false);
-  }
-
-  // Setup is a no-op to allow changing features/flags before SetUp(). Tests
-  // need to call SetupLater() manually.
-  void SetUp() override {}
-
- protected:
-  // Perform the setup, but defer it to be called manually by the test.
-  void SetUpLater(bool improved_shortcuts_enabled) {
-    if (improved_shortcuts_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ::features::kImprovedKeyboardShortcuts);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ::features::kImprovedKeyboardShortcuts);
-    }
-
-    NoSessionAshTestBase::SetUp();
-    AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(true);
-  }
-
-  message_center::MessageCenter* message_center() const {
-    return message_center::MessageCenter::Get();
-  }
-
-  MockNewWindowDelegate* new_window_delegate_ = nullptr;  // Not owned.
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationShownWhenEnabled) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
-  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationNotShownWhenDisabled) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/false);
-
-  // Notification should not be shown at login.
-  SimulateUserLogin("user1@email.com");
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationNotShownWhenInGuestMode) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should not be shown at login.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationNotShownWhenInFirstLogin) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  SimulateNewUserFirstLogin("user1@email.com");
-
-  // Notification should not be shown at a new user's first login.
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationShownOnlyOnce) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
-  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
-
-  // Reset the notifications.
-  message_center()->RemoveAllNotifications(
-      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
-
-  // Login again and there should not be another notification.
-  SimulateUserLogin("user1@email.com");
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationShownToEachUser) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should be shown at first login.
-  SimulateUserLogin("user1@email.com");
-  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
-
-  // Reset the notifications.
-  message_center()->RemoveAllNotifications(
-      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
-
-  // Switch to user 2, and also should be shown at first login.
-  SimulateUserLogin("user2@email.com");
-  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
-
-  // Reset the notifications.
-  message_center()->RemoveAllNotifications(
-      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
-
-  // Switch back to to user 1, and it should not be shown.
-  auto* session = GetSessionControllerClient();
-  session->SwitchActiveUser(AccountId::FromUserEmail("user1@email.com"));
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-
-  // Switch again to user 2, and it should not be shown.
-  session->SwitchActiveUser(AccountId::FromUserEmail("user2@email.com"));
-  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationLearnMoreLink) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
-  auto* notification = FindShortcutsChangedNotificationForTest();
-  EXPECT_TRUE(notification);
-
-  // Setup the expectation that the learn more button opens this shortcut
-  // help link.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kKeyboardShortcutHelpPageUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
-  // Clicking the learn more button should trigger the NewWindowDelegate and
-  // complete the expectation above.
-  notification->delegate()->Click(/*button_index=*/0,
-                                  /*reply=*/absl::nullopt);
-}
-
-TEST_F(AcceleratorControllerStartupNotificationTest,
-       StartupNotificationOpenShortcutViewer) {
-  // Set up the shell and controller.
-  SetUpLater(/*improved_shortcuts_enabled=*/true);
-
-  // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
-  auto* notification = FindShortcutsChangedNotificationForTest();
-  EXPECT_TRUE(notification);
-
-  // Setup the expectation that clicking the message body will show the
-  // shortcut viewer.
-  EXPECT_CALL(*new_window_delegate_, ShowKeyboardShortcutViewer)
-      .WillOnce(testing::Return());
-
-  // Clicking the message body should trigger the NewWindowDelegate and
-  // complete the expectation above.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
-}
-
 // defines a class to test the behavior of deprecated accelerators.
 class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
  public:
@@ -2844,6 +2686,40 @@ TEST_F(AccessibilityAcceleratorTester, DisableAccessibilityAccelerators) {
         test_data.pref_name, test_data.notification_id, test_data.histogram_id,
         test_data.accelerator);
   }
+}
+
+// Tests that the shortcuts for starting another screen capture session will be
+// treated as no-op if a capture session is already running.
+TEST_F(AccessibilityAcceleratorTester,
+       DisableScreenCaptureAcceleratorsIfSessionIsActive) {
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+
+  // Start a window capture session.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+
+  //  Accelerators for partial screenshot will be a no-op if a
+  //  session is already running.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+
+  controller->Stop();
+
+  // Start a partial screenshot capture session.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+
+  //  Accelerators for window screenshot will be a no-op if a
+  //  session is already running.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
 }
 
 struct MediaSessionAcceleratorTestConfig {

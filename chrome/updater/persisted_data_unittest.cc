@@ -17,6 +17,10 @@
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
 namespace updater {
 
 TEST(PersistedDataTest, Simple) {
@@ -125,5 +129,38 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RemoveApp("someappid2");
   EXPECT_TRUE(metadata->GetAppIds().empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST(PersistedDataTest, LastOSVersion) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(pref.get());
+
+  EXPECT_EQ(metadata->GetLastOSVersion(), absl::nullopt);
+
+  // This will persist the current OS version into the persisted data.
+  metadata->SetLastOSVersion();
+  EXPECT_NE(metadata->GetLastOSVersion(), absl::nullopt);
+
+  // Compare the persisted data OS version to the version from `::GetVersionEx`.
+  const OSVERSIONINFOEX metadata_os = metadata->GetLastOSVersion().value();
+
+  OSVERSIONINFOEX os = {};
+  os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+
+  EXPECT_EQ(metadata_os.dwOSVersionInfoSize, os.dwOSVersionInfoSize);
+  EXPECT_EQ(metadata_os.dwMajorVersion, os.dwMajorVersion);
+  EXPECT_EQ(metadata_os.dwMinorVersion, os.dwMinorVersion);
+  EXPECT_EQ(metadata_os.dwBuildNumber, os.dwBuildNumber);
+  EXPECT_EQ(metadata_os.dwPlatformId, os.dwPlatformId);
+  EXPECT_STREQ(metadata_os.szCSDVersion, os.szCSDVersion);
+  EXPECT_EQ(metadata_os.wServicePackMajor, os.wServicePackMajor);
+  EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
+  EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
+  EXPECT_EQ(metadata_os.wProductType, os.wProductType);
+}
+#endif
 
 }  // namespace updater

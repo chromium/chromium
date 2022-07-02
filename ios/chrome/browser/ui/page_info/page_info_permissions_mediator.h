@@ -19,7 +19,7 @@ API_AVAILABLE(ios(15.0))
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Designated initializer that reads information from |webState| to establish
+// Designated initializer that reads information from `webState` to establish
 // the property.
 - (instancetype)initWithWebState:(web::WebState*)webState;
 

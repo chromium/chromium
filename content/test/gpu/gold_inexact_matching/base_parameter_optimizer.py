@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import glob
 import hashlib
 import itertools
@@ -13,11 +14,13 @@ import os
 import shutil
 import subprocess
 import tempfile
+import typing
 
 from PIL import Image  # pylint: disable=import-error
 
 import requests  # pylint: disable=import-error
 
+from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
 
 CHROMIUM_SRC_DIR = os.path.realpath(
@@ -39,7 +42,7 @@ class BaseParameterOptimizer():
   # 4 channels, ranging from 0-255 each.
   MAX_DELTA_THRESHOLD = 255 * 4
 
-  def __init__(self, args, test_name):
+  def __init__(self, args: ct.ParsedCmdArgs, test_name: str):
     """
     Args:
       args: The parse arguments from an argparse.ArgumentParser.
@@ -57,13 +60,13 @@ class BaseParameterOptimizer():
     # A map of strings, denoting a resolution or trace, to an iterable of
     # strings, denoting images that are that dimension or belong to that
     # trace.
-    self._images = {}
+    self._images = collections.defaultdict(set)
     self._VerifyArgs()
     parameter_set.ParameterSet.ignored_border_thickness = \
         self._args.ignored_border_thickness
 
   @classmethod
-  def AddArguments(cls, parser):
+  def AddArguments(cls, parser: ct.CmdArgParser) -> ct.ArgumentGroupTuple:
     """Add optimizer-specific arguments to the parser.
 
     Args:
@@ -176,7 +179,7 @@ class BaseParameterOptimizer():
 
     return common_group, sobel_group, fuzzy_group
 
-  def _VerifyArgs(self):
+  def _VerifyArgs(self) -> None:
     """Verifies that the provided arguments are valid for an optimizer."""
     assert self._args.target_success_percent > 0
     assert self._args.target_success_percent <= 100
@@ -192,7 +195,7 @@ class BaseParameterOptimizer():
     assert self._args.min_delta_threshold <= self._args.max_delta_threshold
     assert self._args.ignored_border_thickness >= 0
 
-  def RunOptimization(self):
+  def RunOptimization(self) -> None:
     """Runs an optimization for whatever test and parameters were supplied.
 
     The results should be printed to stdout when they are available.
@@ -222,16 +225,16 @@ class BaseParameterOptimizer():
         for f in glob.iglob(os.path.join(tempfile.gettempdir(), 'goldctl-*')):
           shutil.rmtree(f)
 
-  def _RunOptimizationImpl(self):
+  def _RunOptimizationImpl(self) -> None:
     """Runs the algorithm-specific optimization code for an optimizer."""
     raise NotImplementedError()
 
-  def _GetMostPermissiveParameters(self):
+  def _GetMostPermissiveParameters(self) -> parameter_set.ParameterSet:
     return parameter_set.ParameterSet(self._args.max_max_diff,
                                       self._args.max_delta_threshold,
                                       self._args.min_edge_threshold)
 
-  def _DownloadData(self):
+  def _DownloadData(self) -> None:
     """Downloads all the necessary data for a test."""
     assert self._working_dir
     logging.info('Downloading images')
@@ -259,14 +262,14 @@ class BaseParameterOptimizer():
       logging.info('Found %d images for group %s', len(digests), grouping)
       logging.debug('Digests: %r', digests)
 
-  def _DownloadExpectations(self, url):
+  def _DownloadExpectations(self, url: str) -> None:
     """Downloads the expectation JSON from Gold into memory."""
     logging.info('Downloading expectations JSON')
     r = requests.get(url)
     assert r.status_code == 200
     self._expectations = r.json()
 
-  def _DownloadImagesForResolutionGrouping(self):
+  def _DownloadImagesForResolutionGrouping(self) -> None:
     """Downloads all the positive images for a test to disk.
 
     Images are grouped by resolution.
@@ -294,10 +297,9 @@ class BaseParameterOptimizer():
     for digest in positive_digests:
       content = self._DownloadImageWithDigest(digest)
       image = Image.open(io.BytesIO(content))
-      self._images.setdefault('%dx%d' % (image.size[0], image.size[1]),
-                              []).append(digest)
+      self._images['%dx%d' % (image.size[0], image.size[1])].add(digest)
 
-  def _DownloadImagesForTraceGrouping(self):
+  def _DownloadImagesForTraceGrouping(self) -> None:
     """Download all recent positive images for a test to disk.
 
     Images are grouped by Skia Gold trace ID, i.e. each hardware/software
@@ -307,7 +309,6 @@ class BaseParameterOptimizer():
     # The downloaded trace data contains a list of traces, each with a list of
     # digests. The digests should be unique within each trace, but convert to
     # sets just to be sure.
-    filtered_traces = {}
     for trace in self._expectations['traces']:
       trace_id = trace['trace_id']
       digests = set(trace['digests'])
@@ -316,12 +317,11 @@ class BaseParameterOptimizer():
             'Failed to find any positive digests for test %s and trace %s. '
             'This is likely due to the trace being old.', self._test_name,
             trace_id)
-      filtered_traces[trace_id] = digests
+      self._images[trace_id] = digests
       for d in digests:
         self._DownloadImageWithDigest(d)
-    self._images = filtered_traces
 
-  def _DownloadImageWithDigest(self, digest):
+  def _DownloadImageWithDigest(self, digest: str) -> bytes:
     """Downloads an image with the given digest and saves it to disk.
 
     Args:
@@ -337,7 +337,7 @@ class BaseParameterOptimizer():
       outfile.write(r.content)
     return r.content
 
-  def _GetImagePath(self, digest):
+  def _GetImagePath(self, digest: str) -> str:
     """Gets a filepath to an image based on digest.
 
     Args:
@@ -348,7 +348,7 @@ class BaseParameterOptimizer():
     """
     return os.path.join(self._working_dir, '%s.png' % digest)
 
-  def _GetGoldctlBinary(self):
+  def _GetGoldctlBinary(self) -> str:
     """Gets the filepath to the goldctl binary to use.
 
     Returns:
@@ -364,7 +364,8 @@ class BaseParameterOptimizer():
             'Could not find goldctl binary. Checked %s' % GOLDCTL_PATHS)
     return self._goldctl_binary
 
-  def _RunComparisonForParameters(self, parameters):
+  def _RunComparisonForParameters(self, parameters: parameter_set.ParameterSet
+                                  ) -> typing.Tuple[bool, int, int]:
     """Runs a comparison for all image combinations using some parameters.
 
     Args:
@@ -414,7 +415,9 @@ class BaseParameterOptimizer():
         '%d', successful, max_num_pixels, max_max_delta)
     return successful, max_num_pixels, max_max_delta
 
-  def _GenerateComparisonCmd(self, left_digest, right_digest, parameters):
+  def _GenerateComparisonCmd(self, left_digest: str, right_digest: str,
+                             parameters: parameter_set.ParameterSet
+                             ) -> typing.List[str]:
     """Generates a comparison command for the given arguments.
 
     The returned command can be passed directly to a subprocess call.
@@ -440,7 +443,8 @@ class BaseParameterOptimizer():
     return cmd
 
 
-def RunCommandAndExtractData(cmd):
+def RunCommandAndExtractData(cmd: typing.List[str]
+                             ) -> typing.Tuple[bool, int, int]:
   """Runs a comparison command and extracts data from it.
 
   This is outside of the parameter optimizers because it is meant to be run via

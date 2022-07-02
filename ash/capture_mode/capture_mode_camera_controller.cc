@@ -632,6 +632,10 @@ void CaptureModeCameraController::ToggleCameraPreviewSize() {
   MaybeUpdatePreviewWidget(/*animate=*/true);
 }
 
+void CaptureModeCameraController::OnCaptureSessionStarted() {
+  GetCameraDevices();
+}
+
 void CaptureModeCameraController::OnRecordingStarted(
     bool is_in_projector_mode) {
   // Check if there's a camera disconnection that happened before recording
@@ -677,8 +681,8 @@ void CaptureModeCameraController::OnFrameHandlerFatalError() {
 }
 
 void CaptureModeCameraController::OnShuttingDown() {
-  // At this point `CaptureModeController` should have already ended any ongoing
-  // recording, and there should be no camera previews available.
+  // This should destroy any camera preview if present.
+  SetShouldShowPreview(false);
   DCHECK(!should_show_preview_);
   DCHECK(!camera_preview_widget_);
 
@@ -695,6 +699,13 @@ void CaptureModeCameraController::PseudoFocusCameraPreview() {
 
   camera_preview_view_->PseudoFocus();
   camera_preview_view_->UpdateA11yOverrideWindow();
+}
+
+void CaptureModeCameraController::OnActiveUserSessionChanged() {
+  if (!did_first_user_login_) {
+    did_first_user_login_ = true;
+    GetCameraDevices();
+  }
 }
 
 void CaptureModeCameraController::OnDevicesChanged(
@@ -722,7 +733,7 @@ void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
 }
 
 void CaptureModeCameraController::GetCameraDevices() {
-  if (is_shutting_down_)
+  if (is_shutting_down_ || !did_first_user_login_)
     return;
 
   DCHECK(video_source_provider_remote_);
@@ -748,6 +759,14 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
   if (on_camera_list_received_for_test_) {
     deferred_runner.ReplaceClosure(
         std::move(on_camera_list_received_for_test_));
+  }
+
+  const bool should_report_cameras_number =
+      !did_report_number_of_cameras_before_ ||
+      (devices.size() != available_cameras_.size());
+  if (should_report_cameras_number) {
+    did_report_number_of_cameras_before_ = true;
+    RecordNumberOfConnectedCameras(devices.size());
   }
 
   if (!DidDevicesChange(devices, available_cameras_))

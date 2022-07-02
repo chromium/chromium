@@ -52,6 +52,12 @@ void AdaptiveChargingNudgeController::ShowNudge() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+#if DCHECK_IS_ON()
+void AdaptiveChargingNudgeController::ShowNudgeForTesting() {
+  SystemNudgeController::ShowNudge();
+}
+#endif  // DCHECK_IS_ON()
+
 std::unique_ptr<SystemNudge>
 AdaptiveChargingNudgeController::CreateSystemNudge() {
   return std::make_unique<AdaptiveChargingNudge>();

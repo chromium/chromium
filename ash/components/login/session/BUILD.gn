@@ -11,12 +11,12 @@ component("session") {
   defines = [ "IS_ASH_LOGIN_SESSION_IMPL" ]
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/cryptohome:cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/power:power",
-    "//chromeos/dbus/session_manager:session_manager",
-    "//chromeos/dbus/userdataauth:userdataauth",
-    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
   sources = [
@@ -30,10 +30,10 @@ source_set("unit_tests") {
   deps = [
     "//ash/components/login/session:session",
     "//base",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/cryptohome:cryptohome",
     "//chromeos/dbus/power:power",
-    "//chromeos/dbus/session_manager:session_manager",
-    "//chromeos/dbus/userdataauth:userdataauth",
     "//testing/gtest",
   ]
   sources = [ "session_termination_manager_unittest.cc" ]

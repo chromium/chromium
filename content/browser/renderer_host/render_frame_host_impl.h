@@ -51,6 +51,7 @@
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/transient_allow_popup.h"
@@ -100,6 +101,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/frame/fullscreen_request_token.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -172,10 +174,6 @@ class WebUsbService;
 }  // namespace mojom
 }  // namespace blink
 
-namespace device {
-class DiscoverableCredentialMetadata;
-}
-
 namespace gfx {
 class Range;
 }
@@ -195,6 +193,16 @@ class ClipboardFormatType;
 namespace ukm {
 class UkmRecorder;
 }
+
+namespace features {
+
+// Feature to prevent name updates to RenderFrameHost (and by extension its
+// relevant BrowsingContextState) when it is not current (i.e. is in the
+// BackForwardCache or is pending delete). This primarily will affect the
+// non-legacy implementation of BrowsingContextState.
+CONTENT_EXPORT extern const base::Feature
+    kDisableFrameNameUpdateOnNonCurrentRenderFrameHost;
+}  // namespace features
 
 namespace content {
 
@@ -393,7 +401,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
   content::PageVisibilityState GetVisibilityState() override;
   bool IsLastCommitIPAddressPubliclyRoutable() const override;
-  bool IsRenderFrameCreated() override;
   bool IsRenderFrameLive() override;
   LifecycleState GetLifecycleState() override;
   bool IsInLifecycleState(LifecycleState lifecycle_state) override;
@@ -472,14 +479,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendAccessibilityEventsToManager(
       const AXEventNotificationDetails& details);
 
-  // This is called when accessibility events arrive from renderer to browser.
-  // This could cause eviction if the page is in back/forward cache. Returns
-  // true if the eviction happens, and otherwise calls
-  // |RenderFrameHost::IsInactiveAndDisallowActivation()| and returns the value
-  // from there.
-  bool IsInactiveAndDisallowActivationForAXEvents(
-      const std::vector<ui::AXEvent>& events);
-
   // Evict the RenderFrameHostImpl with |reason| that causes the eviction. This
   // constructs a flattened list of NotRestoredReasons and calls
   // |EvictFromBackForwardCacheWithFlattenedReasons|.
@@ -532,6 +531,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int opt_request_id,
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) override;
+  // Return true if this is the root -- there are no parent frames of any kind.
   bool AccessibilityIsMainFrame() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
@@ -545,10 +545,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Creates a RenderFrame in the renderer process.
   bool CreateRenderFrame(
-      int previous_routing_id,
+      const absl::optional<blink::FrameToken>& previous_frame_token,
       const absl::optional<blink::FrameToken>& opener_frame_token,
-      int parent_routing_id,
-      int previous_sibling_routing_id);
+      const absl::optional<blink::FrameToken>& parent_frame_token,
+      const absl::optional<blink::FrameToken>& previous_sibling_frame_token);
 
   // Deletes the RenderFrame in the renderer process.
   // Postcondition: |IsPendingDeletion()| is true.
@@ -731,23 +731,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const url::Origin& ComputeTopFrameOrigin(
       const url::Origin& frame_origin) const;
 
-  // Computes the IsolationInfo for this frame to `destination`. Set `anonymous`
-  // to true if the navigation will be loaded as anonymous document (note that
-  // the navigation might be committing an anonymous document even if the
-  // document currently loaded in this RFH is not anonymous, and vice versa).
+  // Computes the IsolationInfo for this frame to `destination`. Set
+  // `is_anonymous` to true if the navigation will be loaded as anonymous
+  // document (note that the navigation might be committing an anonymous
+  // document even if the document currently loaded in this RFH is not
+  // anonymous, and vice versa).
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination,
-                                                       bool anonymous);
+                                                       bool is_anonymous);
 
   // Computes the IsolationInfo for this frame to |destination|.
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination);
 
   // Computes the IsolationInfo that should be used for subresources, if
   // |main_world_origin_for_url_loader_factory| is committed to this frame. The
-  // boolean `anonymous` specifies whether this frame will commit an anonymous
-  // document.
+  // boolean `is_anonymous` specifies whether this frame will commit an
+  // anonymous document.
   net::IsolationInfo ComputeIsolationInfoForSubresourcesForPendingCommit(
       const url::Origin& main_world_origin_for_url_loader_factory,
-      bool anonymous);
+      bool is_anonymous);
 
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
@@ -1869,7 +1870,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
-  bool anonymous() const { return anonymous_; }
+  bool IsAnonymous() const override;
 
   bool is_fenced_frame_opaque_url() const {
     return is_fenced_frame_opaque_url_;
@@ -2142,6 +2143,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FrameSizeChanged(const gfx::Size& frame_size) override;
   void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
                        const std::string& srcdoc_value) override;
+  void ReceivedDelegatedCapability(
+      blink::mojom::DelegatedCapability delegated_capability) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
@@ -2273,6 +2276,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::CookieAccessDetailsPtr details) override;
 
   void GetSavableResourceLinksFromRenderer();
+  void GetPendingBeaconHost(
+      mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
 
   // Helper for checking if a navigation to an error page should be excluded
   // from CanAccessDataForOrigin and/or CanCommitOriginAndUrl security checks.
@@ -2403,7 +2408,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const;
 
   // Computes the nonce to be used for isolation info and storage key.
-  absl::optional<base::UnguessableToken> ComputeNonce(bool anonymous);
+  absl::optional<base::UnguessableToken> ComputeNonce(bool is_anonymous);
 
   // Return the frame immediately preceding this RenderFrameHost in its parent's
   // children, or nullptr if there is no such node.
@@ -2469,15 +2474,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_payment_credential_creation,
       const blink::mojom::RemoteDesktopClientOverridePtr&
           remote_desktop_client_override);
-
-  // Provide a list of Web Authentication credentials that can be used to
-  // fulfill a WebAuthn sign-in request. These can be passed to the embedder to
-  // be displayed to the user, and the user's selection is returned through the
-  // callback. This is Android only because on desktop platforms the embedder
-  // interacts directly with the device layer.
-  void WebAuthnConditionalUiRequestPending(
-      const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
 #endif
 
   enum class FencedFrameStatus {
@@ -2485,6 +2481,26 @@ class CONTENT_EXPORT RenderFrameHostImpl
     kFencedFrameRoot,
     kIframeNestedWithinFencedFrame
   };
+
+  using JavaScriptResultAndTypeCallback =
+      base::OnceCallback<void(blink::mojom::JavaScriptExecutionResultType,
+                              base::Value)>;
+
+  // Runs JavaScript in this frame, without restrictions. ONLY FOR TESTS.
+  // This method can optionally trigger a fake user activation notification,
+  // and can wait for returned promises to be resolved.
+  void ExecuteJavaScriptForTests(const std::u16string& javascript,
+                                 bool has_user_gesture,
+                                 bool resolve_promises,
+                                 int32_t world_id,
+                                 JavaScriptResultAndTypeCallback callback);
+
+  // Call |HandleAXEvents()| for tests.
+  void HandleAXEventsForTests(const ui::AXTreeID& tree_id,
+                              mojom::AXUpdatesAndEventsPtr updates_and_events,
+                              int32_t reset_token) {
+    HandleAXEvents(tree_id, std::move(updates_and_events), reset_token);
+  }
 
  protected:
   friend class RenderFrameHostFactory;
@@ -2528,6 +2544,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
+      const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+          permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const base::UnguessableToken& devtools_navigation_token);
   virtual void SendCommitFailedNavigation(
@@ -2653,6 +2671,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, ExpectedMainWorldOrigin);
   FRIEND_TEST_ALL_PREFIXES(DocumentUserDataTest, CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
+                           BlockNameUpdateForBackForwardCache);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
+                           BlockNameUpdateForPendingDelete);
 
   class SubresourceLoaderFactoriesConfig;
 
@@ -2677,7 +2699,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   net::IsolationInfo ComputeIsolationInfoInternal(
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type,
-      bool anonymous);
+      bool is_anonymous);
 
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on
@@ -2753,6 +2775,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateState(const blink::PageState& state) override;
   void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateUserGestureCarryoverInfo() override;
+#endif
 
   friend class RenderAccessibilityHost;
   void HandleAXEvents(const ui::AXTreeID& tree_id,
@@ -4155,15 +4181,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Whether the current document is loaded inside an anonymous iframe. Updated
-  // on every cross-document navigation.
-  bool anonymous_ = false;
-
   // Indicates whether the fenced frame is navigated to an opaque url. This flag
   // can only change when the embedder navigates the fenced frame. Any
-  // subsequent navigation from within the fenced frame tree will keep the same
-  // flag. Note that this flag is only relevant for fenced frames based on
-  // MPArch.
+  // subsequent navigation from the fenced frame root will keep the same flag.
+  // Note that this flag is only relevant for fenced frames based on MPArch.
   bool is_fenced_frame_opaque_url_ = false;
 
   // The PolicyContainerHost for the current document, containing security
@@ -4223,6 +4244,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Manages a transient affordance for this frame or subframes to open a popup.
   TransientAllowPopup transient_allow_popup_;
+
+  // Manages a transient affordance for this frame to request fullscreen.
+  blink::FullscreenRequestToken fullscreen_request_token_;
 
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.

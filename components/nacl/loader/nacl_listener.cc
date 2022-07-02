@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -150,7 +151,7 @@ class BrowserValidationDBProxy : public NaClValidationDB {
 
  private:
   // The listener never dies, otherwise this might be a dangling reference.
-  NaClListener* listener_;
+  raw_ptr<NaClListener> listener_;
 };
 
 NaClListener::NaClListener()

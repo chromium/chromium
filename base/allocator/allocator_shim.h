@@ -174,6 +174,7 @@ BASE_EXPORT void InitializeAllocatorShim();
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
+using EnableBrpZapping = base::StrongAlias<class EnableBrpZappingTag, bool>;
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
 using UseDedicatedAlignedPartition =
     base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
@@ -185,12 +186,13 @@ using AlternateBucketDistribution =
 // thread-cache on the main (malloc) partition will be disabled.
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
+    EnableBrpZapping enable_brp_zapping,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
 #if defined(PA_ALLOW_PCSCAN)
-BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);
+BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

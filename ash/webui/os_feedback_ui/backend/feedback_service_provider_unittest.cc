@@ -57,6 +57,10 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
                   SendReportCallback callback) override {
     std::move(callback).Run(SendReportStatus::kSuccess);
   }
+
+  void OpenDiagnosticsApp() override {}
+
+  void OpenExploreApp() override {}
 };
 
 class FeedbackServiceProviderTest : public testing::Test {

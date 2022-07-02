@@ -40,7 +40,7 @@ class MediaRouterDialogControllerViews
   bool ShowMediaRouterDialogForPresentation(
       std::unique_ptr<StartPresentationContext> context) override;
   void CreateMediaRouterDialog(
-      MediaRouterDialogOpenOrigin activation_location) override;
+      MediaRouterDialogActivationLocation activation_location) override;
   void CloseMediaRouterDialog() override;
   bool IsShowingMediaRouterDialog() const override;
   void Reset() override;

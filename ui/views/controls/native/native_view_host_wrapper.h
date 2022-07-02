@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ui/base/cursor/cursor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -102,9 +103,8 @@ class NativeViewHostWrapper {
   // view.
   virtual gfx::NativeViewAccessible GetNativeViewAccessible() = 0;
 
-  // Returns the native cursor corresponding to the point (x, y)
-  // in the native view.
-  virtual gfx::NativeCursor GetCursor(int x, int y) = 0;
+  // Returns the cursor corresponding to the point (x, y) in the native view.
+  virtual ui::Cursor GetCursor(int x, int y) = 0;
 
   // Sets the visibility of the gfx::NativeView. This differs from
   // {Show,Hide}Widget because it doesn't affect the placement, size,

@@ -21,7 +21,7 @@ namespace net {
 // allowed for a particular peer.
 class NET_EXPORT_PRIVATE HttpAuthFilter {
  public:
-  virtual ~HttpAuthFilter() {}
+  virtual ~HttpAuthFilter() = default;
 
   // Checks if (`scheme_host_port`, `target`) is supported by the authentication
   // scheme. Only the host of `scheme_host_port` is examined.

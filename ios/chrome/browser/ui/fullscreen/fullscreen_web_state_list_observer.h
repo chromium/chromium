@@ -19,8 +19,8 @@ class FullscreenModel;
 // FullscreenModel for navigation events.
 class FullscreenWebStateListObserver : public WebStateListObserver {
  public:
-  // Constructor for an observer for |web_state_list| that updates |model|.
-  // |controller| is used to create ScopedFullscreenDisablers for WebState
+  // Constructor for an observer for `web_state_list` that updates `model`.
+  // `controller` is used to create ScopedFullscreenDisablers for WebState
   // navigation events that require the toolbar to be visible.
   FullscreenWebStateListObserver(FullscreenController* controller,
                                  FullscreenModel* model,
@@ -58,13 +58,13 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
                            int index,
                            bool user_action) override;
 
-  // Called when |web_state| is activated in |web_state_list_|.
+  // Called when `web_state` is activated in `web_state_list_`.
   void WebStateWasActivated(web::WebState* web_state);
 
-  // Called when |web_state| is removed from |web_state_list_|.
+  // Called when `web_state` is removed from `web_state_list_`.
   void WebStateWasRemoved(web::WebState* web_state);
 
-  // Whether |web_state| has been activated during the lifetime of this object.
+  // Whether `web_state` has been activated during the lifetime of this object.
   bool HasWebStateBeenActivated(web::WebState* web_state);
 
   // The controller passed on construction.
@@ -75,7 +75,7 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
   WebStateList* web_state_list_ = nullptr;
   // The observer for the active WebState.
   FullscreenWebStateObserver web_state_observer_;
-  // The WebStates that have been activated in |web_state_list_|.
+  // The WebStates that have been activated in `web_state_list_`.
   std::set<web::WebState*> activated_web_states_;
 };
 

@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PersonalizationHubBrowserProxyImpl, Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
 import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.js';
 
 let personalizationPage = null;
-
-/** @type {?TestPersonalizationHubBrowserProxy} */
-let PersonalizationHubBrowserProxy = null;
 
 /** @type {?TestWallpaperBrowserProxy} */
 let WallpaperBrowserProxy = null;
 
 function createPersonalizationPage() {
-  PersonalizationHubBrowserProxy.reset();
   WallpaperBrowserProxy.reset();
   PolymerTest.clearBody();
 
@@ -49,15 +44,15 @@ function createPersonalizationPage() {
 
 suite('PersonalizationHandler', function() {
   suiteSetup(function() {
+    assertFalse(
+        loadTimeData.getBoolean('isPersonalizationHubEnabled'),
+        'this test should only run with PersonalizationHub disabled');
     testing.Test.disableAnimationsAndTransitions();
   });
 
   setup(function() {
     WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
-    WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
-    PersonalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
-    PersonalizationHubBrowserProxyImpl.instance_ =
-        PersonalizationHubBrowserProxy;
+    WallpaperBrowserProxyImpl.setInstanceForTesting(WallpaperBrowserProxy);
     createPersonalizationPage();
   });
 
@@ -83,7 +78,8 @@ suite('PersonalizationHandler', function() {
   test('wallpaperSettingVisible', function() {
     personalizationPage.showWallpaperRow_ = false;
     flush();
-    assertTrue(personalizationPage.$$('#wallpaperButton').hidden);
+    assertTrue(personalizationPage.shadowRoot.querySelector('#wallpaperButton')
+                   .hidden);
   });
 
   test('wallpaperPolicyControlled', async () => {
@@ -93,8 +89,11 @@ suite('PersonalizationHandler', function() {
     createPersonalizationPage();
     await WallpaperBrowserProxy.whenCalled('isWallpaperPolicyControlled');
     flush();
-    assertFalse(personalizationPage.$$('#wallpaperPolicyIndicator').hidden);
-    assertTrue(personalizationPage.$$('#wallpaperButton').disabled);
+    assertFalse(personalizationPage.shadowRoot
+                    .querySelector('#wallpaperPolicyIndicator')
+                    .hidden);
+    assertTrue(personalizationPage.shadowRoot.querySelector('#wallpaperButton')
+                   .disabled);
   });
 
   test('Deep link to open wallpaper button', async () => {
@@ -124,7 +123,8 @@ suite('PersonalizationHandler', function() {
     const isAmbientModeEnabled = loadTimeData.getBoolean('isAmbientModeEnabled');
 
     if(!isGuest && isAmbientModeEnabled){
-      const row = personalizationPage.$$('#ambientModeRow');
+      const row =
+          personalizationPage.shadowRoot.querySelector('#ambientModeRow');
       assertTrue(!!row);
       row.click();
       assertEquals(routes.AMBIENT_MODE, Router.getInstance().getCurrentRoute());
@@ -140,42 +140,16 @@ suite('PersonalizationHandler', function() {
 
     await waitAfterNextRender(personalizationPage);
 
-    const changePicturePage = personalizationPage.$$('settings-change-picture');
+    const changePicturePage =
+        personalizationPage.shadowRoot.querySelector('settings-change-picture');
     assertTrue(!!changePicturePage);
-    const deepLinkElement = changePicturePage.$$('#pictureList')
-                                .$$('#selector')
-                                .$$('[class="iron-selected"]');
+    const deepLinkElement =
+        changePicturePage.shadowRoot.querySelector('#pictureList')
+            .shadowRoot.querySelector('#selector')
+            .$$('[class="iron-selected"]');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Account picture elem should be focused for settingId=503.');
-  });
-
-  test('Personalization hub feature shows only link to hub', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-    createPersonalizationPage();
-    flush();
-    await waitAfterNextRender(personalizationPage);
-
-    const crLinks =
-        personalizationPage.shadowRoot.querySelectorAll('cr-link-row');
-
-    assertEquals(1, crLinks.length);
-    assertEquals('personalizationHubButton', crLinks[0].id);
-  });
-
-  test('Opens personalization hub when clicked', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-    createPersonalizationPage();
-    flush();
-    await waitAfterNextRender(personalizationPage);
-
-    const hubLink = personalizationPage.shadowRoot.getElementById(
-        'personalizationHubButton');
-    hubLink.click();
-
-    await PersonalizationHubBrowserProxy.whenCalled('openPersonalizationHub');
   });
 });

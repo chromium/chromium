@@ -97,13 +97,12 @@ void FontIndexer::PrintAllFonts() {
   WaitForFontListToLoad();
 }
 
-void FontIndexer::FontListHasLoaded(std::unique_ptr<base::ListValue> list) {
+void FontIndexer::FontListHasLoaded(base::Value::List list) {
   std::cout << kOutputHeader << std::endl;
 
-  base::Value::ConstListView list_view = list->GetListDeprecated();
-  for (const auto& i : list_view) {
+  for (const auto& i : list) {
     DCHECK(i.is_list());
-    base::Value::ConstListView font = i.GetListDeprecated();
+    const base::Value::List& font = i.GetList();
 
     std::string non_localized_name = font[0].GetString();
     PrintAllFontsWithName(non_localized_name.c_str());

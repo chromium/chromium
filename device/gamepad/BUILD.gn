@@ -118,6 +118,8 @@ component("gamepad") {
     sources += [
       "gamepad_platform_data_fetcher_android.cc",
       "gamepad_platform_data_fetcher_android.h",
+      "haptic_gamepad_android.cc",
+      "haptic_gamepad_android.h",
     ]
     deps += [ ":jni_headers" ]
   }

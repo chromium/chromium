@@ -15,8 +15,7 @@
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
-namespace net {
-namespace features {
+namespace net::features {
 
 // Toggles the `Accept-Language` HTTP request header, which
 // https://github.com/WICG/lang-client-hint proposes that we deprecate.
@@ -315,6 +314,14 @@ NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
 NET_EXPORT extern const base::FeatureParam<int>
     kCertDualVerificationTrialCacheSize;
 #endif /* BUILDFLAG(IS_MAC) */
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// If both builtin verifier+system roots and builtin verifier+CRS flags are
+// supported in the same build, this param can be used to choose which to test
+// in the trial.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kCertDualVerificationTrialUseCrs;
+#endif
 #endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -422,10 +429,6 @@ NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
 // Android.
 NET_EXPORT extern const base::Feature kRecordRadioWakeupTrigger;
 
-// When enabled, certain operations in the HTTP cache are brokered to allow
-// the network process to be sandboxed.
-NET_EXPORT extern const base::Feature kSandboxHttpCache;
-
 // When enabled, cookies cannot have an expiry date further than 400 days in the
 // future.
 NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
@@ -433,7 +436,23 @@ NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
 // Controls whether static key pinning is enforced.
 NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
 
-}  // namespace features
-}  // namespace net
+// When enabled, cookies with a non-ASCII domain attribute will be rejected.
+NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
+
+// Blocks the 'Set-Cookie' request header on outbound fetch requests.
+NET_EXPORT extern const base::Feature kBlockSetCookieHeader;
+
+NET_EXPORT extern const base::Feature kOptimizeNetworkBuffers;
+
+NET_EXPORT
+extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown;
+
+NET_EXPORT extern const base::FeatureParam<int>
+    kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
+
+}  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

@@ -24,8 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -189,7 +189,7 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
       alt_tag_index++;
     }
 
-    // TODO(cvandermerwe): Update 5 alt tag limit to 6 and remove condition
+    // TODO(b/234730982): Update 5 alt tag limit to 6 and remove condition
     if (alt_tag_index < 5 && features::IsWifiSyncAndroidEnabled()) {
       set_up_concept.alt_tag_ids[alt_tag_index] =
           IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC;
@@ -342,6 +342,10 @@ MultiDeviceSection::MultiDeviceSection(
         ash::prefs::kEnableAutoScreenLock,
         base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        phonehub::prefs::kScreenLockStatus,
+        base::BindRepeating(&MultiDeviceSection::OnScreenLockStatusChanged,
+                            base::Unretained(this)));
   }
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
@@ -402,6 +406,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE},
       {"multideviceNotificationAccessSetupScreenLockInstruction",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION},
+      {"multideviceNotificationAccessSetupScreenLockIconInstruction",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
       {"multideviceNotificationAccessSetupInstructions",
@@ -424,10 +430,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACCESS_PROHIBITED_TITLE},
       {"multideviceNotificationAccessProhibitedTooltip",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_TOOLTIP},
-      {"multideviceNotificationAccessProhibitedDisabledByAdminTooltip",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP},
-      {"multideviceAppsAccessProhibitedDisabledByAdminTooltip",
-       IDS_SETTINGS_MULTIDEVICE_APPS_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP},
+      {"multideviceItemDisabledByPhoneAdminTooltip",
+       IDS_SETTINGS_MULTIDEVICE_ITEM_DISABLED_BY_PHONE_ADMIN_TOOLTIP},
       {"multideviceInstantTetheringItemTitle",
        IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING},
       {"multideviceInstantTetheringItemSummary",
@@ -462,6 +466,8 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY},
       {"multideviceLearnMoreWithoutURL", IDS_SETTINGS_LEARN_MORE},
+      {"multidevicePhoneHubLearnMoreAriaLabel",
+       IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL},
       {"multidevicePermissionsSetupCameraRollSummary",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_ITEM_SUMMARY},
       {"multidevicePermissionsSetupNotificationsSummary",
@@ -472,8 +478,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS},
       {"multidevicePermissionsSetupOperationsInstructions",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS},
-      {"multidevicePermissionsSetupCompletedSummary",
-       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY},
       {"multidevicePermissionsSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
       {"multidevicePermissionsSetupCouldNotEstablishConnectionTitle",
@@ -484,6 +488,24 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY},
       {"multidevicePermissionsSetupNotificationAccessProhibitedTitle",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_TITLE},
+      {"multidevicePermissionsSetupCompletedMoreFeaturesSummary",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_MORE_FEATURES_SUMMARY},
+      {"multidevicePermissionsSetupAllCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ALL_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollAndNotificationsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_NOTIFICATIONS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupNotificationsAndAppsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_AND_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollAndAppsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupNotificationsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupAppssCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupAppssCompletedFailedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -593,10 +615,6 @@ void MultiDeviceSection::AddLoadTimeData(
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE));
   html_source->AddString(
-      "multidevicePermissionsSetupCompletedTitle",
-      ui::SubstituteChromeOSDeviceType(
-          IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE));
-  html_source->AddString(
       "multidevicePermissionsSetupNotificationAccessProhibitedSummary",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY,
@@ -618,13 +636,8 @@ void MultiDeviceSection::AddLoadTimeData(
                           base::FeatureList::IsEnabled(
                               ::features::kNearbySharingBackgroundScanning));
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
-  bool is_phone_screen_lock_enabled =
-      static_cast<phonehub::ScreenLockManager::LockStatus>(
-          pref_service_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
-      phonehub::ScreenLockManager::LockStatus::kLockedOn;
-  html_source->AddBoolean("isPhoneScreenLockEnabled",
-                          is_phone_screen_lock_enabled);
   OnEnableScreenLockChanged();
+  OnScreenLockStatusChanged();
   html_source->AddBoolean("isOnePageOnboardingEnabled",
                           base::FeatureList::IsEnabled(
                               ::features::kNearbySharingOnePageOnboarding));
@@ -838,12 +851,27 @@ void MultiDeviceSection::OnIsFastInitiationHardwareSupportedChanged(
 }
 
 void MultiDeviceSection::OnEnableScreenLockChanged() {
+  // We need AddBoolean here to update value because users could into onboarding
+  // flow directly from phone hub tray.
   const bool is_screen_lock_enabled =
       SessionControllerClientImpl::CanLockScreen() &&
       SessionControllerClientImpl::ShouldLockScreenAutomatically();
   if (html_source_) {
     html_source_->AddBoolean("isChromeosScreenLockEnabled",
                              is_screen_lock_enabled);
+  }
+}
+
+void MultiDeviceSection::OnScreenLockStatusChanged() {
+  // We need AddBoolean here to update value because users could into onboarding
+  // flow directly from phone hub tray.
+  const bool is_phone_screen_lock_enabled =
+      static_cast<phonehub::ScreenLockManager::LockStatus>(
+          pref_service_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
+      phonehub::ScreenLockManager::LockStatus::kLockedOn;
+  if (html_source_) {
+    html_source_->AddBoolean("isPhoneScreenLockEnabled",
+                             is_phone_screen_lock_enabled);
   }
 }
 

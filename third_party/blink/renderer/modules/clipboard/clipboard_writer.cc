@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -160,10 +162,9 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     if (!local_frame)
       return;
     Document* document = local_frame->GetDocument();
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *document, html_string, fragment_start, fragment_end, url);
-    String sanitized_html =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_html = CreateSanitizedMarkupWithContext(
+        *document, html_string, fragment_start, fragment_end, url, kIncludeNode,
+        kResolveAllURLs);
     Write(sanitized_html, url);
   }
 
@@ -202,10 +203,9 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     if (!local_frame)
       return;
     Document* document = local_frame->GetDocument();
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *document, svg_string, fragment_start, fragment_end, url);
-    String sanitized_svg =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_svg = CreateSanitizedMarkupWithContext(
+        *document, svg_string, fragment_start, fragment_end, url, kIncludeNode,
+        kResolveAllURLs);
     Write(sanitized_svg);
   }
 
@@ -260,13 +260,16 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
 // static
 ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
-                                         ClipboardPromise* promise,
-                                         bool is_custom_format_type) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type, is_custom_format_type));
-  if (is_custom_format_type &&
-      RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled()) {
+                                         ClipboardPromise* promise) {
+  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
+  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
+      !web_custom_format.IsEmpty()) {
+    // We write the custom MIME type without the "web " prefix into the web
+    // custom format map so native applications don't have to add any string
+    // parsing logic to read format from clipboard.
     return MakeGarbageCollected<ClipboardCustomFormatWriter>(
-        system_clipboard, promise, mime_type);
+        system_clipboard, promise, web_custom_format);
   }
   if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
@@ -301,11 +304,10 @@ ClipboardWriter::~ClipboardWriter() {
 }
 
 // static
-bool ClipboardWriter::IsValidType(const String& type,
-                                  bool is_custom_format_type) {
-  if (is_custom_format_type) {
-    return RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
-           type.length() < mojom::blink::ClipboardHost::kMaxFormatSize;
+bool ClipboardWriter::IsValidType(const String& type) {
+  if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
+      !Clipboard::ParseWebCustomFormat(type).IsEmpty()) {
+    return type.length() < mojom::blink::ClipboardHost::kMaxFormatSize;
   }
   if (type == kMimeTypeImageSvg)
     return RuntimeEnabledFeatures::ClipboardSvgEnabled();

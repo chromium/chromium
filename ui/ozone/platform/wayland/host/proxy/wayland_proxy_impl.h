@@ -7,12 +7,14 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 namespace ui {
 class WaylandConnection;
 class WaylandShmBuffer;
+class WaylandWindow;
 }  // namespace ui
 
 namespace wl {
@@ -29,11 +31,12 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   void RoundTripQueue() override;
   wl_surface* GetWlSurfaceForAcceleratedWidget(
       gfx::AcceleratedWidget widget) override;
+  ui::WaylandWindow* GetWaylandWindowForAcceleratedWidget(
+      gfx::AcceleratedWidget widget) override;
   wl_buffer* CreateShmBasedWlBuffer(const gfx::Size& buffer_size) override;
   void DestroyShmForWlBuffer(wl_buffer* buffer) override;
   void ScheduleDisplayFlush() override;
   ui::PlatformWindowType GetWindowType(gfx::AcceleratedWidget widget) override;
-  gfx::Rect GetWindowBounds(gfx::AcceleratedWidget widget) override;
   bool WindowHasPointerFocus(gfx::AcceleratedWidget widget) override;
   bool WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) override;
 
@@ -43,9 +46,9 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   void OnWindowRemoved(ui::WaylandWindow* window) override;
   void OnWindowConfigured(ui::WaylandWindow* window) override;
 
-  ui::WaylandConnection* const connection_;
+  const raw_ptr<ui::WaylandConnection> connection_;
 
-  WaylandProxy::Delegate* delegate_ = nullptr;
+  raw_ptr<WaylandProxy::Delegate> delegate_ = nullptr;
 
   std::vector<ui::WaylandShmBuffer> shm_buffers_;
 };

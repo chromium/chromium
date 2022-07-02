@@ -85,7 +85,7 @@
   },
   "certificateProvider": [{
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension", "platform_app"]
   }, {
     // https://crbug.com/1194693
@@ -128,9 +128,6 @@
       // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "B620CF4203315F9F2E046EDED22C7571A935958D",  // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/590259
-      "C2ABD68C33A5B485971C9638B80D6A2E9CBA78C4",  // http://crbug.com/590259
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/1019094
       "8EBDF73405D0B84CEABB8C7513C9B9FA9F1DC2CE",  // http://crbug.com/644446
       "72445193EB86716465275D4E2E84DACF47558FCF",  // http://crbug.com/644446
       "51E46A03961884A4BA74CE7CA30A75CC6F360D74",  // http://crbug.com/644446
@@ -349,10 +346,8 @@
     ]
   },
   "favicon": {
-    "channel": "canary",
-    "extension_types": [
-      "extension"
-    ]
+    "channel": "stable",
+    "extension_types": ["extension"]
   },
   "fileBrowserHandler": {
     "channel": "stable",
@@ -371,11 +366,11 @@
   "fileSystemProvider": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
@@ -393,6 +388,22 @@
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+    ]
+  },
+  // Used by gnubbyd in ash and lacros.  Stores small amounts of data in ash
+  // prefs which is shared by ash and lacros versions of the extension.
+  // TODO(b/231890240): Once Terminal SWA runs in lacros rather than ash, we can
+  // migrate gnubbyd back to using chrome.storage.local and remove this private
+  // API.
+  "sharedStoragePrivate": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "6F9E349A0561C78A0D3F41496FE521C5151C7F71", // gnubbyd app stable
+      "C06709A259378015404ED20F75C7D08547E0F10B", // gnubbyd app dev
+      "57A1B95957F9EDB159FA9278BF87FE70DF62BED8", // ske stable
+      "05E9C7F02C6E55E1DE334A1B1EFD2D9A68F10E34"  // ske dev
     ]
   },
   "history": {
@@ -633,9 +644,7 @@
   },
   {
     "channel": "dev",
-    "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
-    "session_types": ["kiosk"]
+    "extension_types": ["extension"]
   }],
   "notifications": [{
     // The chrome.notifications functionality listed in notifications.idl is
@@ -696,7 +705,7 @@
   },
   "printingMetrics": {
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension"],
     "location": "policy"
   },
@@ -900,7 +909,7 @@
   "wallpaper": {
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "wallpaperPrivate": {
     "channel": "stable",
@@ -914,7 +923,7 @@
     "min_manifest_version": 3,
     "platforms": ["win", "linux", "mac"]
   }, {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3,
     "platforms": ["win", "linux", "mac"],
@@ -991,8 +1000,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "hosted_app"],
     "allowlist": [
-      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
-      "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
+      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
   },
   "wmDesksPrivate": {

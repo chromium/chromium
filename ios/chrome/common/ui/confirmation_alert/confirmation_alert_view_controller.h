@@ -70,6 +70,10 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // view is loaded.
 @property(nonatomic) BOOL helpButtonAvailable;
 
+// Set to YES to enclose the image in a frame with a shadow and a corner badge
+// with a green checkmark. Must be set before the view is loaded. Default is NO.
+@property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
+
 // When set, this value will be set as the accessibility label for the help
 // button.
 @property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;
@@ -87,6 +91,14 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
+
+// Updates the style of the secondary title label. The default implementation
+// does nothing, but subclasses can override to customize the styling if needed.
+- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel;
+
+// Updates the style of the subtitle label. The default implementation does
+// nothing, but subclasses can override to customize the styling if needed.
+- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel;
 
 @end
 

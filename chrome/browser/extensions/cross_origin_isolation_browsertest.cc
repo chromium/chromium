@@ -288,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(IsCrossOriginIsolated(web_contents->GetMainFrame()));
-  EXPECT_EQ(web_contents->GetMainFrame()->GetProcess(),
+  EXPECT_TRUE(IsCrossOriginIsolated(web_contents->GetPrimaryMainFrame()));
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetProcess(),
             coi_background_rfh->GetProcess());
 
   // Load test.html as a web accessible resource inside a web frame.
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
 
   content::RenderFrameHost* extension_iframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(extension_iframe);
   EXPECT_EQ(extension_test_url, extension_iframe->GetLastCommittedURL());
 
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   EXPECT_FALSE(IsCrossOriginIsolated(extension_iframe));
   EXPECT_NE(extension_iframe->GetProcess(), coi_background_rfh->GetProcess());
   EXPECT_NE(extension_iframe->GetProcess(),
-            web_contents->GetMainFrame()->GetProcess());
+            web_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Check ProcessManager APIs to ensure they work correctly for the case where
   // an extension has multiple processes for the same profile.
@@ -413,8 +413,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
     chrome.test.sendMessage(readyMessage, () => {});
   )";
 
-  ExtensionTestMessageListener ready_listener("notCrossOriginIsolated",
-                                              false /* will_reply */);
+  ExtensionTestMessageListener ready_listener("notCrossOriginIsolated");
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, {.coep_value = "require-corp",
@@ -483,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
   content::RenderFrameHost* extension_iframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
@@ -592,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
   content::RenderFrameHost* extension_iframe =
-      content::ChildFrameAt(web_contents->GetMainFrame(), 0);
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
@@ -674,7 +673,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     });
   )";
 
-  ExtensionTestMessageListener ready_listener("ready", true /* will_reply */);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, {.coep_value = "require-corp",

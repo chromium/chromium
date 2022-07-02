@@ -148,6 +148,11 @@ cr.define('cellular_setup', function() {
         type: Boolean,
         value: false,
       },
+
+      /** @private */
+      isActivationCodeFromQrCode_: {
+        type: Boolean,
+      },
     },
 
     /**
@@ -582,7 +587,8 @@ cr.define('cellular_setup', function() {
           this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING;
           this.euicc_
               .installProfileFromActivationCode(
-                  this.activationCode_, /*confirmationCode=*/ '')
+                  this.activationCode_, /*confirmationCode=*/ '',
+                  this.isActivationCodeFromQrCode_)
               .then(this.handleProfileInstallResponse_.bind(this));
           break;
         case ESimUiState.PROFILE_SELECTION:
@@ -604,7 +610,8 @@ cr.define('cellular_setup', function() {
           } else {
             this.euicc_
                 .installProfileFromActivationCode(
-                    this.activationCode_, this.confirmationCode_)
+                    this.activationCode_, this.confirmationCode_,
+                    this.isActivationCodeFromQrCode_)
                 .then(this.handleProfileInstallResponse_.bind(this));
           }
           break;

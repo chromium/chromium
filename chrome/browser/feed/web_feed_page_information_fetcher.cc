@@ -19,8 +19,9 @@ namespace {
 void FetchPageCanonicalUrl(
     const PageInformation& page_info,
     base::OnceCallback<void(const absl::optional<::GURL>&)> callback) {
-  DCHECK(page_info.web_contents->GetMainFrame()->IsRenderFrameCreated());
-  page_info.web_contents->GetMainFrame()->GetCanonicalUrl(std::move(callback));
+  DCHECK(page_info.web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  page_info.web_contents->GetPrimaryMainFrame()->GetCanonicalUrl(
+      std::move(callback));
 }
 
 }  // namespace
@@ -36,7 +37,7 @@ void WebFeedPageInformationFetcher::Start(
 
   // Make sure the renderer still exists, i.e., not crashed, since this may
   // be triggered asynchronously.
-  if (!page_info.web_contents->GetMainFrame()->IsRenderFrameCreated()) {
+  if (!page_info.web_contents->GetPrimaryMainFrame()->IsRenderFrameLive()) {
     std::move(callback).Run(WebFeedPageInformation());
     return;
   }

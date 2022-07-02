@@ -11,6 +11,7 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/file_system_access_dialogs.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -50,7 +52,10 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1330,6 +1335,25 @@ ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
   return directory_path;
 }
 
+std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
+    const blink::mojom::FilePickerOptionsPtr& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(asully): Consider adding custom strings for invocations of the file
+  // picker, as well. Returning the empty string will fall back to the platform
+  // default for the given picker type.
+  std::u16string title;
+  if (options->is_directory_picker_options() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
+    title = l10n_util::GetStringUTF16(
+        options->get_directory_picker_options()->request_writable
+            ? IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE
+            : IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_DIRECTORY_TITLE);
+  }
+  return title;
+}
+
 ChromeFileSystemAccessPermissionContext::Grants
 ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
     const url::Origin& origin) {
@@ -1444,7 +1468,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
       url::Origin tab_origin = url::Origin::Create(
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents->GetMainFrame()));
+              web_contents->GetPrimaryMainFrame()));
       // Found a tab for this origin, so early exit and don't revoke grants.
       if (tab_origin == origin)
         return;

@@ -59,7 +59,7 @@ public class LocationPermissionUpdaterTest {
     public JniMocker mocker = new JniMocker();
 
     @Mock
-    public TrustedWebActivityPermissionManager mPermissionManager;
+    public InstalledWebappPermissionManager mPermissionManager;
     @Mock
     public TrustedWebActivityClient mTrustedWebActivityClient;
     @Mock

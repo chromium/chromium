@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
 
@@ -37,7 +38,7 @@ class BreadcrumbManagerBrowserAgent
 
   // The browser whose tab strip this agent observes. Can't be nullptr because
   // |browser_| owns this object.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_BREADCRUMB_MANAGER_BROWSER_AGENT_H_

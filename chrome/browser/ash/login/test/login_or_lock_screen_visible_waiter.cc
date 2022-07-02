@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 
 #include "base/logging.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 
 namespace ash {
 
@@ -26,6 +28,12 @@ void LoginOrLockScreenVisibleWaiter::WaitEvenIfShown() {
 
 void LoginOrLockScreenVisibleWaiter::WaitImpl(
     bool should_wait_if_already_shown) {
+  // Increase the timeout of this RunLoop (TestTimeouts::action_max_timeout())
+  // to match the overall timeout of browser tests. (::test_launcher_timeout())
+  // TODO(crbug.com/1305245) - Remove once OOBE migrates to Polymer3.
+  base::test::ScopedRunLoopTimeout increase_timeout(
+      FROM_HERE, TestTimeouts::test_launcher_timeout());
+
   auto* session_manager = session_manager::SessionManager::Get();
   DCHECK(session_manager);
 

@@ -11,7 +11,10 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_container.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
 
 namespace content {
@@ -21,9 +24,32 @@ static PrefetchService* g_prefetch_service_for_testing = nullptr;
 }  // namespace
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
-    : DocumentUserData(rfh) {}
+    : DocumentUserData(rfh),
+      WebContentsObserver(WebContents::FromRenderFrameHost(rfh)) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() = default;
+
+void PrefetchDocumentManager::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  // Ignore navigations for a different RenderFrameHost.
+  if (render_frame_host().GetGlobalId() !=
+      navigation_handle->GetPreviousRenderFrameHostId())
+    return;
+
+  // Ignores any same document navigations since we can't use prefetches to
+  // speed them up.
+  if (navigation_handle->IsSameDocument())
+    return;
+
+  // Get the prefetch for the URL being navigated to. If there is no prefetch
+  // for that URL, then stop.
+  auto prefetch_iter = all_prefetches_.find(navigation_handle->GetURL());
+  if (prefetch_iter == all_prefetches_.end())
+    return;
+
+  // Inform |PrefetchService| of the navigation to the prefetch.
+  GetPrefetchService()->PrepareToServe(prefetch_iter->second);
+}
 
 void PrefetchDocumentManager::ProcessCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
@@ -89,19 +115,9 @@ void PrefetchDocumentManager::PrefetchUrl(const GURL& url,
       weak_method_factory_.GetWeakPtr());
   all_prefetches_[url] = owned_prefetches_[url]->GetWeakPtr();
 
-  if (g_prefetch_service_for_testing) {
-    g_prefetch_service_for_testing->PrefetchUrl(
-        owned_prefetches_[url]->GetWeakPtr());
-    return;
-  }
-
   // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
   // start the prefetch process.
-  DCHECK(BrowserContextImpl::From(render_frame_host().GetBrowserContext())
-             ->GetPrefetchService());
-  BrowserContextImpl::From(render_frame_host().GetBrowserContext())
-      ->GetPrefetchService()
-      ->PrefetchUrl(owned_prefetches_[url]->GetWeakPtr());
+  GetPrefetchService()->PrefetchUrl(owned_prefetches_[url]->GetWeakPtr());
 
   // TODO(https://crbug.com/1299059): Track metrics about the prefetches.
 }
@@ -119,6 +135,17 @@ PrefetchDocumentManager::ReleasePrefetchContainer(const GURL& url) {
 void PrefetchDocumentManager::SetPrefetchServiceForTesting(
     PrefetchService* prefetch_service) {
   g_prefetch_service_for_testing = prefetch_service;
+}
+
+PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
+  if (g_prefetch_service_for_testing) {
+    return g_prefetch_service_for_testing;
+  }
+
+  DCHECK(BrowserContextImpl::From(render_frame_host().GetBrowserContext())
+             ->GetPrefetchService());
+  return BrowserContextImpl::From(render_frame_host().GetBrowserContext())
+      ->GetPrefetchService();
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

@@ -6,7 +6,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
@@ -35,6 +37,10 @@ const test::UIPath kLightThemeButtonPath = {kThemeSelectionId,
                                             kLightThemeButton};
 const test::UIPath kAutoThemeButtonPath = {kThemeSelectionId, kAutoThemeButton};
 const test::UIPath kNextButtonPath = {kThemeSelectionId, "nextButton"};
+const test::UIPath kScreenSubtitleClamshellPath = {
+    kThemeSelectionId, "theme-selection-subtitle-clamshell"};
+const test::UIPath kScreenSubtitleTabletPath = {
+    kThemeSelectionId, "theme-selection-subtitle-tablet"};
 }  // namespace
 
 class ThemeSelectionScreenTest
@@ -70,6 +76,12 @@ class ThemeSelectionScreenTest
     base::RunLoop run_loop;
     quit_closure_ = base::BindOnce(run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  void setTabletMode(bool enabled) {
+    ash::TabletMode::Waiter waiter(enabled);
+    ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
+    waiter.Wait();
   }
 
   absl::optional<ThemeSelectionScreen::Result> result_;
@@ -108,16 +120,30 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   if (selectedOption == kDarkThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), true);
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
-    EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+    EXPECT_TRUE(ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   } else if (selectedOption == kLightThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), false);
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
-    EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+    EXPECT_FALSE(ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   } else if (selectedOption == kAutoThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ToggleTabletMode) {
+  ShowThemeSelectionScreen();
+  // by default clamshell mode is used
+  test::OobeJS().ExpectVisiblePath(kScreenSubtitleClamshellPath);
+
+  // switch to tablet mode
+  setTabletMode(true);
+  test::OobeJS().ExpectVisiblePath(kScreenSubtitleTabletPath);
+
+  // and back to clamshell
+  setTabletMode(false);
+  test::OobeJS().ExpectVisiblePath(kScreenSubtitleClamshellPath);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

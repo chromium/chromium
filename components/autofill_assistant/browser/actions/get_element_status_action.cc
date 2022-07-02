@@ -28,7 +28,7 @@ struct MaybeRe2 {
 
 std::string RemoveWhitespace(const std::string& value) {
   std::string copy = value;
-  base::EraseIf(copy, base::IsUnicodeWhitespace);
+  base::EraseIf(copy, base::IsUnicodeWhitespace<char>);
   return copy;
 }
 

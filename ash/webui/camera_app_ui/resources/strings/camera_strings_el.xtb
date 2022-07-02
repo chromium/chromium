@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Σάρωση γραμμωτού κώδικα</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Λήψη λειτουργίας σάρωσης εγγράφων</translation>
 <translation id="4118525110028899586">Παύση εγγραφής</translation>
 <translation id="4121305183798804752">Εντοπίστηκε έγγραφο.</translation>
 <translation id="414641094616694804">Δεν είναι δυνατή η αλλαγή ανάλυσης αυτής της κάμερας</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Διακοπή λήψης φωτογραφίας</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Μπροστινή κάμερα</translation>
+<translation id="4620818268515773682">Εναλλαγή σίγασης μικροφώνου. Η σίγαση είναι απενεργοποιημένη</translation>
 <translation id="4628948037717959914">Φωτογραφία</translation>
 <translation id="4649291346448517080">Δεν είναι δυνατή η αποθήκευση του αρχείου</translation>
 <translation id="4695379108709712600">Μετακινείται με κατεύθυνση προς τα επάνω</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670511624014457267">60 καρέ ανά δευτερόλεπτο</translation>
 <translation id="7671804233658741790">Κάτω δεξιά γωνία του εγγράφου</translation>
+<translation id="7692090236657809299">Ενεργοποίηση μετακίνησης, κλίσης, εστίασης</translation>
 <translation id="7726641833034062494">Εγγραφή κανονικού βίντεο</translation>
 <translation id="7748344063862150053">Επάνω δεξιά γωνία του εγγράφου</translation>
 <translation id="7933675232020478311">Μετακινείται με κατεύθυνση προς τα κάτω και δεξιά</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">Κλίση προς τα κάτω</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Εναλλαγή σίγασης μικροφώνου. Η σίγαση είναι ενεργοποιημένη</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8732462232047530626">Προεπισκόπηση μεταδεδομένων</translation>

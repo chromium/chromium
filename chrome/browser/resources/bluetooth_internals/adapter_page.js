@@ -16,6 +16,7 @@ const PROPERTY_NAMES = {
   address: 'Address',
   name: 'Name',
   systemName: 'System Name',
+  floss: 'Floss',
   initialized: 'Initialized',
   present: 'Present',
   powered: 'Powered',

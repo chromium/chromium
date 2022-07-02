@@ -57,6 +57,7 @@ class MockPipelineClient : public Pipeline::Client {
   ~MockPipelineClient();
 
   MOCK_METHOD1(OnError, void(PipelineStatus));
+  MOCK_METHOD1(OnFallback, void(PipelineStatus));
   MOCK_METHOD0(OnEnded, void());
   MOCK_METHOD1(OnMetadata, void(const PipelineMetadata&));
   MOCK_METHOD2(OnBufferingStateChange,
@@ -108,6 +109,7 @@ class MockPipeline : public Pipeline {
                void(const std::vector<MediaTrack::Id>&, base::OnceClosure));
   MOCK_METHOD2(OnSelectedVideoTrackChanged,
                void(absl::optional<MediaTrack::Id>, base::OnceClosure));
+  MOCK_METHOD0(OnExternalVideoFrameRequest, void());
 
   // TODO(sandersd): This should automatically return true between Start() and
   // Stop(). (Or better, remove it from the interface entirely.)
@@ -403,6 +405,7 @@ class MockRendererClient : public RendererClient {
 
   // RendererClient implementation.
   MOCK_METHOD1(OnError, void(PipelineStatus));
+  MOCK_METHOD1(OnFallback, void(PipelineStatus));
   MOCK_METHOD0(OnEnded, void());
   MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics&));
   MOCK_METHOD2(OnBufferingStateChange,

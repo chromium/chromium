@@ -69,7 +69,7 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
   content::RenderFrameHost* GetFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
   std::string GetCookieSameSite(const std::string& cookie_name) {

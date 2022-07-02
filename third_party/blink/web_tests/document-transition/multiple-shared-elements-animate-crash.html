@@ -28,18 +28,20 @@ div {
   width: 100px;
   height: 100px;
   background: green;
+  page-transition-tag: square;
 }
 .rounded {
   width: 100px;
   height: 100px;
   background: green;
   border-radius: 20%;
+  page-transition-tag: rounded;
 }
 </style>
 
 <div id=container class=left>
-  <div id=e1 class=square></div>
-  <div id=e2 class=rounded></div>
+  <div class=square></div>
+  <div class=rounded></div>
 </div>
 
 <script>
@@ -47,8 +49,6 @@ async_test((t) => {
   t.step(() => {
     requestAnimationFrame(() => requestAnimationFrame(async () => {
       let transition = document.createDocumentTransition();
-      transition.setElement(e1, "e1");
-      transition.setElement(e2, "e2");
       await transition.start(() => {
         container.classList.remove("left");
         container.classList.add("right");

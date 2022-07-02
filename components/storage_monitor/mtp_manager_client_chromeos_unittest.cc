@@ -44,6 +44,7 @@ const uint64_t kStorageFreeSpaceInBytes = 0x20000000;    // 512M bytes left
 const uint64_t kStorageFreeSpaceInObjects = 0x04000000;  // 64M Objects left
 const char kStorageDescription[] = "ExampleDescription";
 const char kStorageVolumeIdentifier[] = "ExampleVolumeId";
+const char kStorageSerialNumber[] = "0123456789ABCDEF0123456789ABCDEF";
 
 base::LazyInstance<std::map<std::string, device::mojom::MtpStorageInfo>>::Leaky
     g_fake_storage_info_map = LAZY_INSTANCE_INITIALIZER;
@@ -66,7 +67,7 @@ const device::mojom::MtpStorageInfo* GetFakeMtpStorageInfoSync(
             kStorageType, kStorageFilesystemType, kStorageAccessCapability,
             kStorageMaxCapacity, kStorageFreeSpaceInBytes,
             kStorageFreeSpaceInObjects, kStorageDescription,
-            kStorageVolumeIdentifier)));
+            kStorageVolumeIdentifier, kStorageSerialNumber)));
   }
 
   const auto it = g_fake_storage_info_map.Get().find(storage_name);

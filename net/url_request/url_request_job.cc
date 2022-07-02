@@ -84,16 +84,9 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   const raw_ptr<URLRequestJob> job_;
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request)
-    : request_(request),
-      done_(false),
-      prefilter_bytes_read_(0),
-      postfilter_bytes_read_(0),
-      has_handled_response_(false),
-      expected_content_size_(-1) {}
+URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
 
-URLRequestJob::~URLRequestJob() {
-}
+URLRequestJob::~URLRequestJob() = default;
 
 void URLRequestJob::SetUpload(UploadDataStream* upload) {
 }
@@ -413,11 +406,6 @@ bool URLRequestJob::CanSetCookie(const net::CanonicalCookie& cookie,
 void URLRequestJob::NotifyHeadersComplete() {
   if (has_handled_response_)
     return;
-
-  // The URLRequest status should still be IO_PENDING, which it was set to
-  // before the URLRequestJob was started.  On error or cancellation, this
-  // method should not be called.
-  DCHECK_EQ(ERR_IO_PENDING, request_->status());
 
   // Initialize to the current time, and let the subclass optionally override
   // the time stamps if it has that information.  The default request_time is

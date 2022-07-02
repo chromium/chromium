@@ -8,15 +8,12 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 
@@ -53,7 +50,7 @@ class NET_EXPORT ReportingHeaderParser {
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
-      std::unique_ptr<base::Value> value);
+      const base::Value::List& list);
 
   // `isolation_info` here will be stored in the cache, associated with the
   // `reporting_source`. `network_isolation_key` is the NIK which will be

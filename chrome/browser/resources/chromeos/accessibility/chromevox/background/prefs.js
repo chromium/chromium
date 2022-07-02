@@ -8,6 +8,8 @@
  *
  */
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
+import {EventStreamLogger} from '/chromevox/background/logging/event_stream_logger.js';
+import {LogUrlWatcher} from '/chromevox/background/logging/log_url_watcher.js';
 
 /**
  * This object has default values of preferences and contains the common
@@ -54,6 +56,7 @@ export class ChromeVoxPrefs {
         localStorage[pref] = ChromeVoxPrefs.DEFAULT_PREFS[pref];
       }
     }
+    this.enableOrDisableLogUrlWatcher_();
   }
 
   /**
@@ -93,6 +96,17 @@ export class ChromeVoxPrefs {
     } else if (key === 'enableEventStreamLogging') {
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
     }
+    this.enableOrDisableLogUrlWatcher_();
+  }
+
+  enableOrDisableLogUrlWatcher_() {
+    for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
+      if (localStorage[pref]) {
+        LogUrlWatcher.create();
+        return;
+      }
+    }
+    LogUrlWatcher.destroy();
   }
 }
 
@@ -201,11 +215,14 @@ ChromeVoxPrefs.loggingPrefs = {
 ChromeVoxPrefs.instance = new ChromeVoxPrefs();
 
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.GET_PREFS,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS,
     () => ChromeVoxPrefs.instance.getPrefs());
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_LOGGING_PREFS,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
     ({key, value}) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_PREF,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
     ({key, value}) => ChromeVoxPrefs.instance.setPref(key, value));

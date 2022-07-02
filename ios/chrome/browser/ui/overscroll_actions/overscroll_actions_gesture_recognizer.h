@@ -11,7 +11,7 @@
 // action is not called when the gesture ends while "Speak selection" is
 // enabled (crbug.com/699655).
 // This subclass works around the bug by calling the action of the target passed
-// in the constructor when |reset| is called.
+// in the constructor when `reset` is called.
 @interface OverscrollActionsGestureRecognizer : UIPanGestureRecognizer
 @end
 

@@ -69,7 +69,7 @@ void WarnIfMissingPauseOrResumeListener(Profile* profile,
   extensions::ExtensionHost* host =
       extensions::ProcessManager::Get(profile)->GetBackgroundHostForExtension(
           extension_id);
-  host->host_contents()->GetMainFrame()->AddMessageToConsole(
+  host->host_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
       constants::kErrorMissingPauseOrResume);
 }
@@ -277,7 +277,7 @@ void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
-      std::move(*args).TakeListDeprecated(), profile);
+      std::move(args->GetList()), profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
 }
 
@@ -286,7 +286,7 @@ void TtsExtensionEngine::Stop(content::TtsUtterance* utterance) {
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_STOP, tts_engine_events::kOnStop,
-      std::vector<base::Value>(), profile);
+      base::Value::List(), profile);
   EventRouter::Get(profile)->DispatchEventToExtension(utterance->GetEngineId(),
                                                       std::move(event));
 }
@@ -296,7 +296,7 @@ void TtsExtensionEngine::Pause(content::TtsUtterance* utterance) {
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_PAUSE, tts_engine_events::kOnPause,
-      std::vector<base::Value>(), profile);
+      base::Value::List(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   std::string id = utterance->GetEngineId();
   event_router->DispatchEventToExtension(id, std::move(event));
@@ -308,7 +308,7 @@ void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_RESUME, tts_engine_events::kOnResume,
-      std::vector<base::Value>(), profile);
+      base::Value::List(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   std::string id = utterance->GetEngineId();
   event_router->DispatchEventToExtension(id, std::move(event));
@@ -340,7 +340,7 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.
-  base::Value::Dict options = utterance->GetOptions()->GetDict().Clone();
+  base::Value::Dict options = utterance->GetOptions()->Clone();
   options.Remove(constants::kRequiredEventTypesKey);
   options.Remove(constants::kDesiredEventTypesKey);
   if (sends_end_event)

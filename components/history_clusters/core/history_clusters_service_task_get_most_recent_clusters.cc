@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_to_iso8601.h"
@@ -47,7 +48,7 @@ HistoryClustersServiceTaskGetMostRecentClusters::
 
 void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   // Shouldn't request more clusters if history has been exhausted.
-  DCHECK(!continuation_params_.is_done);
+  DCHECK(!continuation_params_.exhausted_all_visits);
 
   if (!backend_) {
     // Early exit if we won't be able to cluster visits.
@@ -64,7 +65,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
         FROM_HERE,
         std::make_unique<GetAnnotatedVisitsToCluster>(
             incomplete_visit_context_annotations_, begin_time_,
-            continuation_params_,
+            continuation_params_, true, 0,
             base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                                OnGotAnnotatedVisitsToCluster,
                            weak_ptr_factory_.GetWeakPtr())),
@@ -74,6 +75,8 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     OnGotAnnotatedVisitsToCluster(
+        // Unused because clusters aren't persisted in this flow.
+        std::vector<int64_t> old_clusters_unused,
         std::vector<history::AnnotatedVisit> annotated_visits,
         QueryClustersContinuationParams continuation_params) {
   DCHECK(backend_);
@@ -92,7 +95,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
   }
 
   base::UmaHistogramTimes(
-      "Histogram.Clusters.Backend.QueryAnnotatedVisitsLatency",
+      "History.Clusters.Backend.QueryAnnotatedVisitsLatency",
       base::TimeTicks::Now() -
           history_service_get_annotated_visits_to_cluster_start_time_);
 

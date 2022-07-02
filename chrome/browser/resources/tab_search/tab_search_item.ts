@@ -166,7 +166,7 @@ export class TabSearchItem extends TabSearchItemBase {
     }
   }
 
-  ariaLabelForText_(tabData: TabData): string {
+  private ariaLabelForText_(tabData: TabData): string {
     return ariaLabel(tabData);
   }
 

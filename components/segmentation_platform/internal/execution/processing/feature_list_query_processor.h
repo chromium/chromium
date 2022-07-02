@@ -10,12 +10,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 class StorageService;
@@ -24,8 +25,9 @@ namespace processing {
 
 class FeatureAggregator;
 class FeatureProcessorState;
+class InputDelegateHolder;
 
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes
 // each feature in the metadata's feature list in order and computes an input
@@ -34,6 +36,7 @@ class FeatureListQueryProcessor {
  public:
   FeatureListQueryProcessor(
       StorageService* storage_service,
+      std::unique_ptr<InputDelegateHolder> input_delegate_holder,
       std::unique_ptr<FeatureAggregator> feature_aggregator);
   virtual ~FeatureListQueryProcessor();
 
@@ -58,7 +61,8 @@ class FeatureListQueryProcessor {
   // time at which we predict the model execution should happen.
   virtual void ProcessFeatureList(
       const proto::SegmentationModelMetadata& model_metadata,
-      OptimizationTarget segment_id,
+      scoped_refptr<InputContext> input_context,
+      SegmentId segment_id,
       base::Time prediction_time,
       ProcessOption process_option,
       FeatureProcessorCallback callback);
@@ -88,11 +92,11 @@ class FeatureListQueryProcessor {
   // Storage service which provides signals to process.
   const raw_ptr<StorageService> storage_service_;
 
+  // Holds InputDelegate for feature processing.
+  std::unique_ptr<InputDelegateHolder> input_delegate_holder_;
+
   // Feature aggregator that aggregates data for uma features.
   const std::unique_ptr<FeatureAggregator> feature_aggregator_;
-
-  // Feature processor for uma type of input features.
-  CustomInputProcessor custom_input_processor_;
 
   base::WeakPtrFactory<FeatureListQueryProcessor> weak_ptr_factory_{this};
 };

@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
 

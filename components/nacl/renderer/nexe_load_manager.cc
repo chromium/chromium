@@ -5,6 +5,7 @@
 #include "components/nacl/renderer/nexe_load_manager.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -25,7 +26,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/private/pp_file_handle.h"
@@ -67,7 +67,7 @@ static int GetRoutingID(PP_Instance instance) {
       content::RendererPpapiHost::GetForPPInstance(instance);
   if (!host)
     return 0;
-  return host->GetRoutingIDForWidget(instance);
+  return host->GetRoutingIDForFrame(instance);
 }
 
 std::string LookupAttribute(const std::map<std::string, std::string>& args,

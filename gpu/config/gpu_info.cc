@@ -130,32 +130,6 @@ void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
 }
 #endif
 
-bool IsSoftwareRenderer(uint32_t vendor_id) {
-  switch (vendor_id) {
-    case 0x0000:  // Info collection failed to identify a GPU
-    case 0xffff:  // Chromium internal flag for software rendering
-    case 0x15ad:  // VMware
-    case 0x1414:  // Microsoft software renderer
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool IsIntegratedGpu(const gpu::GPUInfo::GPUDevice& gpu) {
-  // TODO(crbug.com/1291675): handle M1 with eGPU situation.
-  switch (gpu.vendor_id) {
-    case 0x8086:  // Intel
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool IsDiscreteGpu(const gpu::GPUInfo::GPUDevice& gpu) {
-  return !IsSoftwareRenderer(gpu.vendor_id) && !IsIntegratedGpu(gpu);
-}
-
 }  // namespace
 
 namespace gpu {
@@ -229,6 +203,18 @@ GPUInfo::GPUDevice& GPUInfo::GPUDevice::operator=(
 GPUInfo::GPUDevice& GPUInfo::GPUDevice::operator=(
     GPUInfo::GPUDevice&& other) noexcept = default;
 
+bool GPUInfo::GPUDevice::IsSoftwareRenderer() const {
+  switch (vendor_id) {
+    case 0x0000:  // Info collection failed to identify a GPU
+    case 0xffff:  // Chromium internal flag for software rendering
+    case 0x15ad:  // VMware
+    case 0x1414:  // Microsoft software renderer
+      return true;
+    default:
+      return false;
+  }
+}
+
 GPUInfo::GPUInfo()
     : optimus(false),
       amd_switchable(false),
@@ -274,68 +260,13 @@ bool GPUInfo::UsesSwiftShader() const {
 
 unsigned int GPUInfo::GpuCount() const {
   unsigned int gpu_count = 0;
-  if (!IsSoftwareRenderer(gpu.vendor_id))
+  if (!gpu.IsSoftwareRenderer())
     ++gpu_count;
   for (const auto& secondary_gpu : secondary_gpus) {
-    if (!IsSoftwareRenderer(secondary_gpu.vendor_id))
+    if (!secondary_gpu.IsSoftwareRenderer())
       ++gpu_count;
   }
   return gpu_count;
-}
-
-bool GPUInfo::GetIntegratedGpu(GPUDevice* output_integrated_gpu) const {
-  unsigned int integrated_gpu_count = 0;
-  unsigned int discrete_gpu_count = 0;
-  GPUDevice integrated_gpu;
-  if (IsIntegratedGpu(gpu)) {
-    ++integrated_gpu_count;
-    integrated_gpu = gpu;
-  } else if (IsDiscreteGpu(gpu)) {
-    ++discrete_gpu_count;
-  }
-  for (const auto& secondary_gpu : secondary_gpus) {
-    if (IsIntegratedGpu(secondary_gpu)) {
-      ++integrated_gpu_count;
-      if (integrated_gpu_count == 1)
-        integrated_gpu = secondary_gpu;
-    } else if (IsDiscreteGpu(secondary_gpu)) {
-      ++discrete_gpu_count;
-    }
-  }
-  if (integrated_gpu_count == 1 && discrete_gpu_count >= 1) {
-    if (output_integrated_gpu)
-      *output_integrated_gpu = integrated_gpu;
-    return true;
-  }
-  return false;
-}
-
-bool GPUInfo::GetDiscreteGpu(GPUDevice* output_discrete_gpu) const {
-  unsigned int integrated_gpu_count = 0;
-  unsigned int discrete_gpu_count = 0;
-  GPUDevice discrete_gpu;
-  if (IsIntegratedGpu(gpu)) {
-    ++integrated_gpu_count;
-  } else if (IsDiscreteGpu(gpu)) {
-    ++discrete_gpu_count;
-    discrete_gpu = gpu;
-  }
-  for (const auto& secondary_gpu : secondary_gpus) {
-    if (IsIntegratedGpu(secondary_gpu)) {
-      ++integrated_gpu_count;
-    } else if (IsDiscreteGpu(secondary_gpu)) {
-      ++discrete_gpu_count;
-      if (discrete_gpu_count == 1)
-        discrete_gpu = secondary_gpu;
-    }
-  }
-  if (integrated_gpu_count + discrete_gpu_count > 1 &&
-      discrete_gpu_count >= 1) {
-    if (output_discrete_gpu)
-      *output_discrete_gpu = discrete_gpu;
-    return true;
-  }
-  return false;
 }
 
 GPUInfo::GPUDevice* GPUInfo::GetGpuByPreference(gl::GpuPreference preference) {

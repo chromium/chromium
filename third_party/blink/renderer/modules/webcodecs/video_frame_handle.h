@@ -6,8 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_HANDLE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -54,6 +57,11 @@ class MODULES_EXPORT VideoFrameHandle
   VideoFrameHandle(const VideoFrameHandle&) = delete;
   VideoFrameHandle& operator=(const VideoFrameHandle&) = delete;
 
+  // Expire all GPUExternalTextures which are generated from
+  // importExternalTexture and using VideoFrame as source. This callback should
+  // be called when VideoFrameHandle is destroyed/Invalidate.
+  using WebGPUExternalTextureExpireCallback = CrossThreadOnceFunction<void()>;
+
   // Returns a copy of |frame_|, which should be re-used throughout the scope
   // of a function call, instead of calling frame() multiple times. Otherwise
   // the frame could be destroyed between calls.
@@ -80,24 +88,36 @@ class MODULES_EXPORT VideoFrameHandle
   // close auditor so warning messages aren't created for unclosed frames.
   scoped_refptr<VideoFrameHandle> CloneForInternalUse();
 
+  // GPUExternalTexture generated with VideoFrame source needs to listen to
+  // the VideoFrameHandle to expire themselves. Return false if the
+  // VideoFrameHandle has been destroyed.
+  bool WebGPURegisterExternalTextureExpireCallback(
+      WebGPUExternalTextureExpireCallback
+          webgpu_external_texture_expire_callback);
+
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
 
-  // |mutex_| must be held before calling into this.
-  void InvalidateLocked();
+  void InvalidateLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void MaybeMonitorOpenFrame();
-  void MaybeMonitorCloseFrame();
+  // Inform the GPUExternalTexture that VideoFrame is closed and expire the
+  // external texture. |mutex_| must be held before calling into this.
+  void NotifyExpiredLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void MaybeMonitorOpenFrame() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MaybeMonitorCloseFrame() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Flag that prevents the creation of a new handle during the next Clone()
   // call. Used as a temporary workaround for crbug.com/1182497.
-  bool close_on_clone_ = false;
+  bool close_on_clone_ GUARDED_BY(lock_) = false;
 
-  WTF::Mutex mutex_;
-  sk_sp<SkImage> sk_image_;
-  scoped_refptr<media::VideoFrame> frame_;
+  base::Lock lock_;
+  sk_sp<SkImage> sk_image_ GUARDED_BY(lock_);
+  scoped_refptr<media::VideoFrame> frame_ GUARDED_BY(lock_);
   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor_;
+  Vector<WebGPUExternalTextureExpireCallback>
+      webgpu_external_texture_expire_callbacks_;
   std::string monitoring_source_id_;
 };
 

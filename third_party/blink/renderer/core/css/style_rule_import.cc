@@ -37,7 +37,7 @@ namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
                                  LayerName&& layer,
-                                 scoped_refptr<MediaQuerySet> media,
+                                 const MediaQuerySet* media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),
       parent_style_sheet_(nullptr),
@@ -60,6 +60,7 @@ void StyleRuleImport::Dispose() {
 void StyleRuleImport::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_sheet_client_);
   visitor->Trace(parent_style_sheet_);
+  visitor->Trace(media_queries_);
   visitor->Trace(style_sheet_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
@@ -156,7 +157,7 @@ void StyleRuleImport::RequestStyleSheet() {
   DCHECK(!style_sheet_client_->GetResource());
 
   params.SetRenderBlockingBehavior(root_sheet->GetRenderBlockingBehavior());
-  // TODO(yoav): Set defer status based on the IsExplicitlyRenderBlocking flag.
+  // TODO(yoav): Set defer status based on the IsRenderBlocking flag.
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1001078
   CSSStyleSheetResource::Fetch(params, fetcher, style_sheet_client_);
   if (loading_) {

@@ -39,6 +39,8 @@ export enum I18nString {
   DOCUMENT_MODE_DIALOG_GOT_IT = 'document_mode_dialog_got_it',
   DOCUMENT_MODE_DIALOG_MSG = 'document_mode_dialog_msg',
   DOCUMENT_MODE_DIALOG_INTRO_TITLE = 'document_mode_dialog_intro_title',
+  DOWNLOADING_DOCUMENT_SCANNING_FEATURE =
+      'downloading_document_scanning_feature',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED = 'error_msg_file_system_failed',
@@ -114,7 +116,7 @@ export enum I18nString {
   LABEL_TIMER_3S = 'label_timer_3s',
   LABEL_OTHER_ASPECT_RATIO = 'label_other_aspect_ratio',
   LABEL_VIDEO_RESOLUTION = 'label_video_resolution',
-  LABEL_VIDEO_RESOLUTION_4K = 'label_video_resolution_4K',
+  LABEL_VIDEO_RESOLUTION_4K = 'label_video_resolution_4k',
   LABEL_VIDEO_RESOLUTION_FULL_HD = 'label_video_resolution_full_hd',
   LABEL_VIDEO_RESOLUTION_HD = 'label_video_resolution_hd',
   LABEL_VIDEO_RESOLUTION_QUAD_HD = 'label_video_resolution_quad_hd',

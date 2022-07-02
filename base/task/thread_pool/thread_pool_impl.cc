@@ -27,6 +27,7 @@
 #include "base/task/thread_pool/task_source_sort_key.h"
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/worker_thread.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -51,7 +52,7 @@ constexpr EnvironmentParams kForegroundPoolEnvironmentParams{
 constexpr EnvironmentParams kBackgroundPoolEnvironmentParams{
     "Background", base::ThreadPriority::BACKGROUND};
 
-constexpr int kMaxBestEffortTasks = 2;
+constexpr size_t kMaxBestEffortTasks = 2;
 
 // Indicates whether BEST_EFFORT tasks are disabled by a command line switch.
 bool HasDisableBestEffortTasksSwitch() {
@@ -124,7 +125,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!started_);
 
-  internal::InitializeThreadPrioritiesFeature();
   PooledSequencedTaskRunner::InitializeFeatures();
   task_leeway_.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 
@@ -135,36 +135,8 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   // The max number of concurrent BEST_EFFORT tasks is |kMaxBestEffortTasks|,
   // unless the max number of foreground threads is lower.
-  const int max_best_effort_tasks =
+  const size_t max_best_effort_tasks =
       std::min(kMaxBestEffortTasks, init_params.max_num_foreground_threads);
-
-#if HAS_NATIVE_THREAD_POOL()
-  if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
-    std::unique_ptr<ThreadGroup> old_group =
-        std::move(foreground_thread_group_);
-    foreground_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if BUILDFLAG(IS_APPLE)
-        ThreadPriority::NORMAL,
-#endif
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        old_group.get());
-    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
-        foreground_thread_group_.get());
-  }
-
-  if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
-    std::unique_ptr<ThreadGroup> old_group =
-        std::move(background_thread_group_);
-    background_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if BUILDFLAG(IS_APPLE)
-        ThreadPriority::BACKGROUND,
-#endif
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        old_group.get());
-    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
-        background_thread_group_.get());
-  }
-#endif
 
   // Start the service thread. On platforms that support it (POSIX except NaCL
   // SFI), the service thread runs a MessageLoopForIO which is used to support
@@ -181,11 +153,33 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-  // Needs to happen after starting the service thread to get its
-  // task_runner().
-  task_tracker_->set_io_thread_task_runner(service_thread_.task_runner());
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if HAS_NATIVE_THREAD_POOL()
+  if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
+    std::unique_ptr<ThreadGroup> old_group =
+        std::move(foreground_thread_group_);
+    foreground_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
+#if BUILDFLAG(IS_APPLE)
+        ThreadPriority::NORMAL, service_thread_.task_runner(),
+#endif
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
+        old_group.get());
+    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
+        foreground_thread_group_.get());
+  }
+
+  if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
+    std::unique_ptr<ThreadGroup> old_group =
+        std::move(background_thread_group_);
+    background_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
+#if BUILDFLAG(IS_APPLE)
+        ThreadPriority::BACKGROUND, service_thread_.task_runner(),
+#endif
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
+        old_group.get());
+    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
+        background_thread_group_.get());
+  }
+#endif
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
   UpdateCanRunPolicy();
@@ -194,7 +188,8 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   auto service_thread_task_runner = service_thread_.task_runner();
   delayed_task_manager_.Start(service_thread_task_runner);
 
-  single_thread_task_runner_manager_.Start(worker_thread_observer);
+  single_thread_task_runner_manager_.Start(service_thread_task_runner,
+                                           worker_thread_observer);
 
   ThreadGroup::WorkerEnvironment worker_environment;
   switch (init_params.common_thread_pool_environment) {
@@ -249,6 +244,15 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   }
 
   started_ = true;
+}
+
+bool ThreadPoolImpl::WasStarted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return started_;
+}
+
+bool ThreadPoolImpl::WasStartedUnsafe() const {
+  return TS_UNCHECKED_READ(started_);
 }
 
 bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
@@ -318,7 +322,7 @@ void ThreadPoolImpl::SetSynchronousThreadStartForTesting(bool enabled) {
   g_synchronous_thread_start_for_testing = enabled;
 }
 
-int ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+size_t ThreadPoolImpl::GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
     const TaskTraits& traits) const {
   // This method does not support getting the maximum number of BEST_EFFORT
   // tasks that can run concurrently in a pool.

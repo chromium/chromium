@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
@@ -273,15 +274,15 @@ class CORE_EXPORT HTMLTokenizer {
   // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
   InputStreamPreprocessor<HTMLTokenizer> input_stream_preprocessor_;
 
-  LiteralBuffer<UChar, 32> appropriate_end_tag_name_;
+  UCharLiteralBuffer<32> appropriate_end_tag_name_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#temporary-buffer
-  LiteralBuffer<LChar, 32> temporary_buffer_;
+  LCharLiteralBuffer<32> temporary_buffer_;
 
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag
   // token here so we remember it next time we re-enter the tokenizer.
-  LiteralBuffer<LChar, 32> buffered_end_tag_name_;
+  LCharLiteralBuffer<32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
 };

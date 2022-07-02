@@ -6,6 +6,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
 
 namespace web_app {
@@ -32,30 +33,30 @@ WebAppCommandLock::WebAppCommandLock(base::flat_set<AppId> app_ids,
       lock_requests_(std::move(lock_requests)) {}
 
 WebAppCommandLock::WebAppCommandLock(WebAppCommandLock&&) = default;
+WebAppCommandLock& WebAppCommandLock::operator=(WebAppCommandLock&&) = default;
 
 WebAppCommandLock::~WebAppCommandLock() = default;
 
 // static
 WebAppCommandLock WebAppCommandLock::CreateForFullSystemLock() {
-  LockRequestSet lock_requests;
-  lock_requests.emplace(
-      static_cast<int>(LockLevel::kStatic),
-      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kFullSystem)),
-      content::LeveledLockManager::LockType::kExclusive);
+  LockRequestSet lock_requests = {
+      content::LeveledLockManager::LeveledLockRequest(
+          static_cast<int>(LockLevel::kStatic),
+          StringToLockRange(
+              base::NumberToString(KeysOnStaticLevel::kFullSystem)),
+          content::LeveledLockManager::LockType::kExclusive)};
   return WebAppCommandLock({}, LockType::kFullSystem, std::move(lock_requests));
 }
 
 // static
 WebAppCommandLock WebAppCommandLock::CreateForBackgroundWebContentsLock() {
-  LockRequestSet lock_requests;
-  lock_requests.emplace(static_cast<int>(LockLevel::kStatic),
-                        StringToLockRange(base::NumberToString(
-                            KeysOnStaticLevel::kBackgroundWebContents)),
-                        content::LeveledLockManager::LockType::kExclusive);
-  lock_requests.emplace(
-      static_cast<int>(LockLevel::kStatic),
-      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kFullSystem)),
-      content::LeveledLockManager::LockType::kShared);
+  LockRequestSet lock_requests = {
+      GetSharedWebContentsLock(),
+      content::LeveledLockManager::LeveledLockRequest(
+          static_cast<int>(LockLevel::kStatic),
+          StringToLockRange(
+              base::NumberToString(KeysOnStaticLevel::kFullSystem)),
+          content::LeveledLockManager::LockType::kShared)};
   return WebAppCommandLock({}, LockType::kBackgroundWebContents,
                            std::move(lock_requests));
 }
@@ -80,16 +81,13 @@ WebAppCommandLock WebAppCommandLock::CreateForAppLock(
 // static
 WebAppCommandLock WebAppCommandLock::CreateForAppAndWebContentsLock(
     base::flat_set<AppId> app_ids) {
-  LockRequestSet lock_requests;
-  lock_requests.emplace(
-      static_cast<int>(LockLevel::kStatic),
-      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kFullSystem)),
-      content::LeveledLockManager::LockType::kShared);
-
-  lock_requests.emplace(static_cast<int>(LockLevel::kStatic),
-                        StringToLockRange(base::NumberToString(
-                            KeysOnStaticLevel::kBackgroundWebContents)),
-                        content::LeveledLockManager::LockType::kExclusive);
+  LockRequestSet lock_requests = {
+      GetSharedWebContentsLock(),
+      content::LeveledLockManager::LeveledLockRequest(
+          static_cast<int>(LockLevel::kStatic),
+          StringToLockRange(
+              base::NumberToString(KeysOnStaticLevel::kFullSystem)),
+          content::LeveledLockManager::LockType::kShared)};
   for (const auto& app_id : app_ids) {
     lock_requests.emplace(static_cast<int>(LockLevel::kApp),
                           StringToLockRange(app_id),
@@ -134,6 +132,16 @@ bool WebAppCommandLock::IncludesSharedWebContents() const {
     case LockType::kNoOp:
       return false;
   }
+}
+
+// static
+content::LeveledLockManager::LeveledLockRequest
+WebAppCommandLock::GetSharedWebContentsLock() {
+  return content::LeveledLockManager::LeveledLockRequest(
+      {static_cast<int>(LockLevel::kStatic),
+       StringToLockRange(
+           base::NumberToString(KeysOnStaticLevel::kBackgroundWebContents)),
+       content::LeveledLockManager::LockType::kExclusive});
 }
 
 WebAppCommand::WebAppCommand(WebAppCommandLock command_lock)

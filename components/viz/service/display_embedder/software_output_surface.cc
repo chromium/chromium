@@ -24,12 +24,12 @@
 namespace viz {
 
 SoftwareOutputSurface::SoftwareOutputSurface(
-    std::unique_ptr<SoftwareOutputDevice> software_device)
-    : OutputSurface(std::move(software_device)) {
+    std::unique_ptr<SoftwareOutputDevice> device)
+    : OutputSurface(std::move(device)) {
   capabilities_.pending_swap_params.max_pending_swaps =
-      software_device_->MaxFramesPending();
+      software_device()->MaxFramesPending();
   capabilities_.resize_based_on_root_surface =
-      software_device_->SupportsOverridePlatformSize();
+      software_device()->SupportsOverridePlatformSize();
 }
 
 SoftwareOutputSurface::~SoftwareOutputSurface() = default;
@@ -46,11 +46,6 @@ void SoftwareOutputSurface::EnsureBackbuffer() {
 
 void SoftwareOutputSurface::DiscardBackbuffer() {
   software_device()->DiscardBackbuffer();
-}
-
-void SoftwareOutputSurface::BindFramebuffer() {
-  // Not used for software surfaces.
-  NOTREACHED();
 }
 
 void SoftwareOutputSurface::Reshape(const ReshapeParams& params) {
@@ -85,22 +80,6 @@ bool SoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
 }
 
-unsigned SoftwareOutputSurface::GetOverlayTextureId() const {
-  return 0;
-}
-
-bool SoftwareOutputSurface::HasExternalStencilTest() const {
-  return false;
-}
-
-void SoftwareOutputSurface::ApplyExternalStencil() {}
-
-uint32_t SoftwareOutputSurface::GetFramebufferCopyTextureFormat() {
-  // Not used for software surfaces.
-  NOTREACHED();
-  return 0;
-}
-
 void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
                                                 const gfx::Size& pixel_size) {
   latency_tracker_.OnGpuSwapBuffersCompleted(
@@ -128,10 +107,6 @@ void SoftwareOutputSurface::UpdateVSyncParameters(base::TimeTicks timebase,
   refresh_timebase_ = timebase;
   refresh_interval_ = interval;
   update_vsync_parameters_callback_.Run(timebase, interval);
-}
-
-unsigned SoftwareOutputSurface::UpdateGpuFence() {
-  return 0;
 }
 
 void SoftwareOutputSurface::SetUpdateVSyncParametersCallback(

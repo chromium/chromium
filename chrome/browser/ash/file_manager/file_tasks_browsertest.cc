@@ -19,10 +19,10 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -112,9 +112,8 @@ class FileTasksBrowserTestBase
  public:
   void SetUpOnMainThread() override {
     test::AddDefaultComponentExtensionsOnMainThread(browser()->profile());
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   }
 
   // Tests that each of the passed expectations open by default in the expected
@@ -362,11 +361,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 // QuickOffice is not installed.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, QuickOffice) {
   std::vector<Expectation> expectations = {
-      {"doc", extension_misc::kQuickOfficeComponentExtensionId,
-       "application/msword"},
-      {"docx", extension_misc::kQuickOfficeComponentExtensionId,
-       "application/"
-       "vnd.openxmlformats-officedocument.wordprocessingml.document"},
+      {"doc", extension_misc::kQuickOfficeComponentExtensionId},
+      {"docx", extension_misc::kQuickOfficeComponentExtensionId},
       {"ppt", extension_misc::kQuickOfficeComponentExtensionId,
        "application/vnd.ms-powerpoint"},
       {"pptx", extension_misc::kQuickOfficeComponentExtensionId,

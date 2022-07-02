@@ -430,7 +430,7 @@ class MockClock : public base::Clock {
 
 class MockTimer : public base::MockOneShotTimer {
  public:
-  MockTimer() {}
+  MockTimer() = default;
 
   MockTimer(const MockTimer&) = delete;
   MockTimer& operator=(const MockTimer&) = delete;
@@ -909,8 +909,8 @@ TEST_F(MDnsTest, TransactionTimeout) {
 
   ASSERT_TRUE(transaction_privet->Start());
 
-  EXPECT_CALL(*this,
-              MockableRecordCallback(MDnsTransaction::RESULT_NO_RESULTS, NULL))
+  EXPECT_CALL(*this, MockableRecordCallback(MDnsTransaction::RESULT_NO_RESULTS,
+                                            nullptr))
       .Times(Exactly(1))
       .WillOnce(InvokeWithoutArgs(this, &MDnsTest::Stop));
 
@@ -948,7 +948,8 @@ TEST_F(MDnsTest, TransactionMultipleRecords) {
   EXPECT_TRUE(record_privet2.IsRecordWith("_privet._tcp.local",
                                           "zzzzz._privet._tcp.local"));
 
-  EXPECT_CALL(*this, MockableRecordCallback(MDnsTransaction::RESULT_DONE, NULL))
+  EXPECT_CALL(*this,
+              MockableRecordCallback(MDnsTransaction::RESULT_DONE, nullptr))
       .WillOnce(InvokeWithoutArgs(this, &MDnsTest::Stop));
 
   RunFor(base::Seconds(4));
@@ -967,14 +968,14 @@ TEST_F(MDnsTest, TransactionReentrantDelete) {
   ASSERT_TRUE(transaction_->Start());
 
   EXPECT_CALL(*this, MockableRecordCallback(MDnsTransaction::RESULT_NO_RESULTS,
-                                            NULL))
+                                            nullptr))
       .Times(Exactly(1))
       .WillOnce(DoAll(InvokeWithoutArgs(this, &MDnsTest::DeleteTransaction),
                       InvokeWithoutArgs(this, &MDnsTest::Stop)));
 
   RunFor(base::Seconds(4));
 
-  EXPECT_EQ(NULL, transaction_.get());
+  EXPECT_EQ(nullptr, transaction_.get());
 }
 
 TEST_F(MDnsTest, TransactionReentrantDeleteFromCache) {
@@ -999,7 +1000,7 @@ TEST_F(MDnsTest, TransactionReentrantDeleteFromCache) {
 
   ASSERT_TRUE(transaction_->Start());
 
-  EXPECT_EQ(NULL, transaction_.get());
+  EXPECT_EQ(nullptr, transaction_.get());
 }
 
 TEST_F(MDnsTest, TransactionReentrantCacheLookupStart) {
@@ -1090,8 +1091,8 @@ TEST_F(MDnsTest, ListenerReentrantDelete) {
 
   SimulatePacketReceive(kSamplePacket1, sizeof(kSamplePacket1));
 
-  EXPECT_EQ(NULL, listener1_.get());
-  EXPECT_EQ(NULL, listener2_.get());
+  EXPECT_EQ(nullptr, listener1_.get());
+  EXPECT_EQ(nullptr, listener2_.get());
 }
 
 ACTION_P(SaveIPAddress, ip_container) {
@@ -1154,7 +1155,7 @@ TEST_F(MDnsTest, NsecWithTransactionFromNetwork) {
   ASSERT_TRUE(transaction_privet->Start());
 
   EXPECT_CALL(*this,
-              MockableRecordCallback(MDnsTransaction::RESULT_NSEC, NULL));
+              MockableRecordCallback(MDnsTransaction::RESULT_NSEC, nullptr));
 
   SimulatePacketReceive(kSamplePacketNsec,
                         sizeof(kSamplePacketNsec));
@@ -1172,7 +1173,7 @@ TEST_F(MDnsTest, NsecWithTransactionFromCache) {
                         sizeof(kSamplePacketNsec));
 
   EXPECT_CALL(*this,
-              MockableRecordCallback(MDnsTransaction::RESULT_NSEC, NULL));
+              MockableRecordCallback(MDnsTransaction::RESULT_NSEC, nullptr));
 
   std::unique_ptr<MDnsTransaction> transaction_privet_a =
       test_client_->CreateTransaction(

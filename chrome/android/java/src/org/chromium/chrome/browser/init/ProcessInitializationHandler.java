@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.feature_guide.notifications.FeatureNotificationGuideDelegate;
+import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantHistoryDeletionObserver;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
@@ -74,6 +75,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -84,8 +86,8 @@ import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
+import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -112,7 +114,6 @@ import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
@@ -180,13 +181,6 @@ public class ProcessInitializationHandler {
      * Performs the shared class initialization.
      */
     protected void handlePreNativeInitialization() {
-        if (CachedFeatureFlags.isEnabled(
-                    ChromeFeatureList
-                            .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY)) {
-            UiThreadTaskTraits.DEFAULT
-                    .setTaskPriorityToUserBlockingForUiThreadDefaultTaskPriorityExperiment();
-        }
-
         BrowserTaskExecutor.register();
         // This function controls whether BrowserTaskExecutor posts pre-native bootstrap tasks at
         // the front or back of the Looper's queue.
@@ -353,11 +347,11 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                // Clear any Bluetooth and media notifications that existed when Chrome was last
-                // killed.
+                // Clear notifications that existed when Chrome was last killed.
                 MediaCaptureNotificationServiceImpl.clearMediaNotifications();
                 BluetoothNotificationManager.clearBluetoothNotifications(
                         BluetoothNotificationService.class);
+                UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
 
                 startModerateBindingManagementIfNeeded();
 
@@ -438,7 +432,7 @@ public class ProcessInitializationHandler {
 
         deferredStartupHandler.addDeferredTask(
                 ChromeApplicationImpl.getComponent()
-                        .resolveTwaClearDataDialogRecorder()::makeDeferredRecordings);
+                        .resolveClearDataDialogResultRecorder()::makeDeferredRecordings);
         deferredStartupHandler.addDeferredTask(WebApkUninstallUmaTracker::recordDeferredUma);
 
         deferredStartupHandler.addDeferredTask(
@@ -463,6 +457,8 @@ public class ProcessInitializationHandler {
                                 ContextUtils.getApplicationContext()));
         deferredStartupHandler.addDeferredTask(
                 () -> GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics());
+        deferredStartupHandler.addDeferredTask(
+                () -> GlobalAppLocaleController.getInstance().maybeSetupLocaleManager());
         deferredStartupHandler.addDeferredTask(() -> {
             // OptimizationTypes which we give a guarantee will be registered when we pass the
             // onDeferredStartup() signal to OptimizationGuide.
@@ -472,7 +468,7 @@ public class ProcessInitializationHandler {
             new OptimizationGuideBridgeFactory(registeredTypesAllowList)
                     .create()
                     .onDeferredStartup();
-            if (PriceTrackingUtilities.isPriceTrackingEligible()
+            if (PriceTrackingFeatures.isPriceTrackingEligible()
                     && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
                 ShoppingPersistedTabData.onDeferredStartup();
             }

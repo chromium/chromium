@@ -6,7 +6,8 @@
 // the Telemetry Extension APIs implementation but it is not currently used.
 
 // Note: this is a subset of the cros_healthd probe service interface which is
-// located in //chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.
+// located in
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.
 
 module ash.health.mojom;
 

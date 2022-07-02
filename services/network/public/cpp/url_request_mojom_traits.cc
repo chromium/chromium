@@ -216,7 +216,6 @@ bool StructTraits<
       data.is_signed_exchange_prefetch_cache_enabled();
   out->is_fetch_like_api = data.is_fetch_like_api();
   out->is_favicon = data.is_favicon();
-  out->obey_origin_policy = data.obey_origin_policy();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
   return true;

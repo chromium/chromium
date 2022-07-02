@@ -30,7 +30,7 @@ source_set("web_test") {
     # are not built, and some generated mojom headers are missing. As a
     # workaround, add this dep so that `web_test_renderer` has all of the
     # headers it needs.
-    "//content/web_test:web_test_common",
+    "//content/web_test:web_test_renderer_public_deps",
 
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public:test_headers",

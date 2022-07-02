@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/hid_detection/hid_detection_manager_impl.h"
 #include "ash/components/hid_detection/hid_detection_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -75,6 +77,13 @@ GetInputDeviceManagerBinderOverride() {
   return *binder;
 }
 
+std::unique_ptr<hid_detection::HidDetectionManager>&
+GetHidDetectionManagerOverrideForTesting() {
+  static base::NoDestructor<std::unique_ptr<hid_detection::HidDetectionManager>>
+      hid_detection_manager;
+  return *hid_detection_manager;
+}
+
 }  // namespace
 
 // static
@@ -115,6 +124,18 @@ HIDDetectionScreen::HIDDetectionScreen(HIDDetectionView* view,
   if (view_)
     view_->Bind(this);
 
+  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    const auto& hid_detection_manager_override =
+        GetHidDetectionManagerOverrideForTesting();
+    hid_detection_manager_ =
+        hid_detection_manager_override
+            ? std::unique_ptr<hid_detection::HidDetectionManager>(
+                  hid_detection_manager_override.get())
+            : std::make_unique<hid_detection::HidDetectionManagerImpl>(
+                  &content::GetDeviceService());
+    return;
+  }
+
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &HIDDetectionScreen::InitializeAdapter, weak_ptr_factory_.GetWeakPtr()));
   ConnectToInputDeviceManager();
@@ -136,7 +157,14 @@ void HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
   GetInputDeviceManagerBinderOverride() = std::move(binder);
 }
 
+// static
+void HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
+    std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager) {
+  GetHidDetectionManagerOverrideForTesting() = std::move(hid_detection_manager);
+}
+
 void HIDDetectionScreen::OnContinueButtonClicked() {
+  hid_detection::RecordBluetoothPairingAttempts(num_pairing_attempts_);
   CleanupOnExit();
   Exit(Result::NEXT);
 }
@@ -164,6 +192,11 @@ bool HIDDetectionScreen::ShouldEnableContinueButton() {
 
 void HIDDetectionScreen::CheckIsScreenRequired(
     base::OnceCallback<void(bool)> on_check_done) {
+  if (ash::features::IsOobeHidDetectionRevampEnabled()) {
+    hid_detection_manager_->GetIsHidDetectionRequired(std::move(on_check_done));
+    return;
+  }
+
   DCHECK(input_device_manager_);
   input_device_manager_->GetDevices(
       base::BindOnce(&HIDDetectionScreen::OnGetInputDevicesListForCheck,
@@ -182,6 +215,10 @@ bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
 
 void HIDDetectionScreen::ShowImpl() {
   if (!is_hidden())
+    return;
+
+  // TODO(gordonseto): Implement UI with OOBE Revamp flag enabled.
+  if (ash::features::IsOobeHidDetectionRevampEnabled())
     return;
 
   if (adapter_)
@@ -339,6 +376,7 @@ void HIDDetectionScreen::ConnectBTDevice(device::BluetoothDevice* device) {
     mouse_is_pairing_ = true;
     keyboard_is_pairing_ = true;
   }
+  ++num_pairing_attempts_;
   device->Connect(this, base::BindOnce(&HIDDetectionScreen::OnConnect,
                                        weak_ptr_factory_.GetWeakPtr(),
                                        device->GetAddress(), device_type));

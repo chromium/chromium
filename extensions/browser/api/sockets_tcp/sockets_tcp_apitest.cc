@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser_context());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   scoped_refptr<const Extension> test_extension = LoadApp("sockets_tcp/api");
   ASSERT_TRUE(test_extension);
@@ -132,9 +133,7 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, result2.error);
 }
 
-// TODO(https://crbug.com/1218531): test has a high flake score and fails quite
-// often.
-IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, DISABLED_SocketTcpExtensionTLS) {
+IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtensionTLS) {
   // Because the network service runs in a utility process, the cert of the
   // EmbeddedTestServer won't be recognized, so inject mock cert verifier
   // through the test helper interface.
@@ -157,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, DISABLED_SocketTcpExtensionTLS) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser_context());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadApp("sockets_tcp/api"));
   EXPECT_TRUE(listener.WaitUntilSatisfied());

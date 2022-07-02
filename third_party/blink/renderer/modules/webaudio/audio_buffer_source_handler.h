@@ -51,9 +51,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
              double grain_duration,
              ExceptionState&);
 
-  // Note: the attribute was originally exposed as |.looping|, but to be more
+  // Note: the attribute was originally exposed as `.looping`, but to be more
   // consistent in naming with <audio> and with how it's described in the
-  // specification, the proper attribute name is |.loop|. The old attribute is
+  // specification, the proper attribute name is `.loop`. The old attribute is
   // kept for backwards compatibility.
   bool Loop() const { return is_looping_; }
   void SetLoop(bool looping);
@@ -92,9 +92,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   //     Maximum number of frames to process; this can be less that a render
   //     quantum.
   //   start_time_offset -
-  //     Actual start time relative to the |destination_frame_offset|.  This
-  //     should be the \sart_time_offset| value returned by
-  //     |UpdateSchedulingInfo|.
+  //     Actual start time relative to the `destination_frame_offset`.  This
+  //     should be the `start_time_offset` value returned by
+  //     `UpdateSchedulingInfo`.
   bool RenderFromBuffer(AudioBus* output_bus,
                         unsigned destination_frame_offset,
                         uint32_t number_of_frames,
@@ -106,7 +106,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
                                                  uint32_t frames_to_process);
 
   // Clamps grain parameters to the duration of the given AudioBuffer.
-  void ClampGrainParameters(const SharedAudioBuffer*);
+  void ClampGrainParameters(const SharedAudioBuffer*)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Sample data for the outputs of this node. The shared buffer can safely be
   // accessed from the audio thread.
@@ -126,7 +127,7 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
     }
   }
 
-  // If m_isLooping is false, then this node will be done playing and become
+  // If `is_looping_` is false, then this node will be done playing and become
   // inactive after it reaches the end of the sample data in the buffer.  If
   // true, it will wrap around to the start of the buffer each time it reaches
   // the end.
@@ -138,21 +139,21 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // A process lock must be used to protect access.
   bool did_set_looping_ = false;
 
-  // A process lock must be used to protect access to both |loop_start_| and
-  // |loop_end_|.
+  // A process lock must be used to protect access to both `loop_start_` and
+  // `loop_end_`.
   double loop_start_ = 0;
   double loop_end_ = 0;
 
-  // m_virtualReadIndex is a sample-frame index into our buffer representing the
-  // current playback position.  Since it's floating-point, it has sub-sample
-  // accuracy.
+  // `virtual_read_index_` is a sample-frame index into our buffer representing
+  // the current playback position.  Since it's floating-point, it has
+  // sub-sample accuracy.
   double virtual_read_index_ = 0;
 
   // Granular playback
   bool is_grain_ = false;
   double grain_offset_ = 0.0;  // in seconds
   double grain_duration_;      // in seconds
-  // True if grainDuration is given explicitly (via 3 arg start method).
+  // True if `grain_duration_` is given explicitly (via 3 arg start method).
   bool is_duration_given_;
 
   // Compute playback rate (k-rate) by incorporating the sample rate
@@ -164,7 +165,7 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // The minimum playbackRate value ever used for this source.
   double min_playback_rate_ = 1.0;
 
-  // True if the |buffer| attribute has ever been set to a non-null
+  // True if the `buffer` attribute has ever been set to a non-null
   // value.  Defaults to false.
   bool buffer_has_been_set_ = false;
 };

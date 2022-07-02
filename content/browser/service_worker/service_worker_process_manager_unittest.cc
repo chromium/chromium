@@ -217,10 +217,8 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
   EXPECT_TRUE(worker_process_map().empty());
 }
 
-// Tests that ServiceWorkerProcessManager uses
-// StoragePartitionImpl::site_for_guest_service_worker_or_shared_worker() when
-// it's set. This enables finding the appropriate process when inside a
-// StoragePartition for guests (e.g., the <webview> tag).
+// Tests that ServiceWorkerProcessManager finds the appropriate process when
+// inside a StoragePartition for guests (e.g., the <webview> tag).
 // https://crbug.com/781313
 TEST_F(ServiceWorkerProcessManagerTest,
        AllocateWorkerProcess_StoragePartitionForGuests) {
@@ -266,9 +264,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
   storage_partition->set_is_guest();
   process_manager_->set_storage_partition(storage_partition);
 
-  // Allocate a process to a worker. It should use the site URL of
-  // |guest_site_instance| instead of |script_url_| as the site URL of the
-  // SiteInstance, and it should be in the guest's StoragePartition.
+  // Allocate a process to a worker. It should be in the guest's
+  // StoragePartition.
   {
     const int kEmbeddedWorkerId = 77;  // dummy value
     ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
@@ -278,9 +275,9 @@ TEST_F(ServiceWorkerProcessManagerTest,
             network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-    EXPECT_EQ(
-        guest_site_instance->GetSiteURL(),
-        render_process_host_factory_->last_site_instance_used()->GetSiteURL());
+    EXPECT_EQ(guest_site_instance->GetStoragePartitionConfig(),
+              render_process_host_factory_->last_site_instance_used()
+                  ->GetStoragePartitionConfig());
     EXPECT_TRUE(
         render_process_host_factory_->last_site_instance_used()->IsGuest());
     auto* rph = RenderProcessHost::FromID(process_info.process_id);

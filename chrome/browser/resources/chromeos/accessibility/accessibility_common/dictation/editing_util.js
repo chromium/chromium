@@ -1,0 +1,318 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * EditingUtil provides utility and helper methods for editing-related
+ * operations.
+ */
+export class EditingUtil {
+  /**
+   * Replaces a phrase to the left of the text caret with another phrase. If
+   * multiple instances of `deletePhrase` are present, this function will
+   * replace the one closest to the text caret.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @param {string} deletePhrase The phrase to be deleted.
+   * @param {string} insertPhrase The phrase to be inserted.
+   * @return {string}
+   */
+  static replacePhrase(value, caretIndex, deletePhrase, insertPhrase) {
+    const leftOfCaret = value.substring(0, caretIndex);
+    const rightOfCaret = value.substring(caretIndex);
+    const performingDelete = insertPhrase === '';
+    deletePhrase = deletePhrase.trim();
+    insertPhrase = insertPhrase.trim();
+
+    // Find the right-most occurrence of `deletePhrase`. Require `deletePhrase`
+    // to be separated by word boundaries. If we're deleting text, prefer
+    // the RegExps that include a leading/trailing space to preserve spacing.
+    const re = EditingUtil.getPhraseRegex_(deletePhrase);
+    const reWithLeadingSpace =
+        EditingUtil.getPhraseRegexLeadingSpace_(deletePhrase);
+    const reWithTrailingSpace =
+        EditingUtil.getPhraseRegexTrailingSpace_(deletePhrase);
+
+    let newLeft;
+    if (performingDelete && reWithLeadingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(reWithLeadingSpace, insertPhrase);
+    } else if (performingDelete && reWithTrailingSpace.test(leftOfCaret)) {
+      newLeft = leftOfCaret.replace(reWithTrailingSpace, insertPhrase);
+    } else {
+      newLeft = leftOfCaret.replace(re, insertPhrase);
+    }
+
+    return newLeft + rightOfCaret;
+  }
+
+  /**
+   * Inserts `insertPhrase` directly before `beforePhrase` (and separates them
+   * with a space). This function operates on the text to the left of the caret.
+   * If multiple instances of `beforePhrase` are present, this function will
+   * use the one closest to the text caret.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @param {string} insertPhrase
+   * @param {string} beforePhrase
+   * @return {string}
+   */
+  static insertBefore(value, caretIndex, insertPhrase, beforePhrase) {
+    const leftOfCaret = value.substring(0, caretIndex);
+    const rightOfCaret = value.substring(caretIndex);
+    insertPhrase = insertPhrase.trim();
+    beforePhrase = beforePhrase.trim();
+
+    const re = EditingUtil.getPhraseRegex_(beforePhrase);
+    // Runs when a regex match occurs and returns the replacement string.
+    const replacer = () => `${insertPhrase} ${beforePhrase}`;
+    const newLeft = leftOfCaret.replace(re, replacer);
+    return newLeft + rightOfCaret;
+  }
+
+  /**
+   * Returns a selection starting at `startPhrase` and ending at `endPhrase`
+   * (inclusive). The function operates on the text to the left of the text
+   * caret. If multiple instances of `startPhrase` or `endPhrase` are present,
+   * the function will use the ones closest to the text caret.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @param {string} startPhrase
+   * @param {string} endPhrase
+   * @return {{start: number, end: number}|null}
+   */
+  static selectBetween(value, caretIndex, startPhrase, endPhrase) {
+    const leftOfCaret = value.substring(0, caretIndex);
+    startPhrase = startPhrase.trim();
+    endPhrase = endPhrase.trim();
+
+    const startRe = EditingUtil.getPhraseRegex_(startPhrase);
+    const endRe = EditingUtil.getPhraseRegex_(endPhrase);
+    const start = leftOfCaret.search(startRe);
+    let end = leftOfCaret.search(endRe);
+    if (start === -1 || end === -1) {
+      return null;
+    }
+
+    // Adjust `end` so that we return an inclusive selection.
+    end += endPhrase.length;
+    if (start > end) {
+      return null;
+    }
+
+    return {start, end};
+  }
+
+  /**
+   * Returns the start index of the sentence to the right of the caret.
+   * Indices are relative to `value`. Assumes that sentences are separated by
+   * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no next
+   * sentence can be found, returns `value.length`.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @return {number}
+   */
+  static navNextSent(value, caretIndex) {
+    const rightOfCaret = value.substring(caretIndex);
+    const index = rightOfCaret.search(EditingUtil.END_OF_SENTENCE_REGEX_);
+    if (index === -1) {
+      return value.length;
+    }
+
+    // `index` should be relative to `value`;
+    return index + caretIndex + 1;
+  }
+
+  /**
+   * Returns the start index of the sentence to the left of the caret. Indices
+   * are relative to `value`. Assumes that sentences are separated by
+   * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no
+   * previous sentence can be found, returns 0.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @return {number|null}
+   */
+  static navPrevSent(value, caretIndex) {
+    let encounteredText = false;
+    if (caretIndex === value.length) {
+      --caretIndex;
+    }
+
+    while (caretIndex >= 0) {
+      const valueAtCaret = value[caretIndex];
+      if (encounteredText &&
+          EditingUtil.END_OF_SENTENCE_REGEX_.test(valueAtCaret)) {
+        // Adjust if there is whitespace immediately to the right of the caret.
+        return EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(
+                   value[caretIndex + 1]) ?
+            caretIndex + 1 :
+            caretIndex;
+      }
+
+      if (!EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(valueAtCaret) &&
+          !EditingUtil.PUNCTUATION_REGEX_.test(valueAtCaret)) {
+        encounteredText = true;
+      }
+      --caretIndex;
+    }
+
+    return 0;
+  }
+
+
+  /**
+   * This function analyzes the context and adjusts the spacing of `commitText`
+   * to maintain proper spacing between text.
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @param {string} text
+   * @return {string}
+   */
+  static smartSpacing(value, caretIndex, commitText) {
+    // There is currently a bug in SODA (b/213934503) where final speech results
+    // do not start with a space. This results in a Dictation bug
+    // (crbug.com/1294050), where final speech results are not separated by a
+    // space when committed to a text field. This is a temporary workaround
+    // until the blocking SODA bug can be fixed. Note, a similar strategy
+    // already exists in Dictation::OnSpeechResult().
+    if (!value || EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(commitText) ||
+        EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(commitText)) {
+      return commitText;
+    }
+
+    commitText = commitText.trim();
+    const leftOfCaret = value.substring(0, caretIndex);
+    const rightOfCaret = value.substring(caretIndex);
+
+    if (leftOfCaret &&
+        !EditingUtil.ENDS_WITH_WHITESPACE_REGEX_.test(leftOfCaret)) {
+      // If there is no whitespace before the caret index, prepend a space.
+      commitText = ' ' + commitText;
+    }
+
+    if (rightOfCaret &&
+        (!EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(rightOfCaret) ||
+         EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(rightOfCaret))) {
+      // If there are no spaces or there is punctuation after the caret index,
+      // append a space.
+      commitText = commitText + ' ';
+    }
+
+    return commitText;
+  }
+
+  /**
+   * This function analyzes the context and adjusts the capitalization of
+   * `commitText` as needed. See below for sample input and output: value:
+   * 'Hello world.' caretIndex: value.length commitText: 'goodnight world'
+   * return value: 'Goodnight world'
+   * @param {string} value The current value of the text field.
+   * @param {number} caretIndex
+   * @param {string} text
+   * @return {string}
+   */
+  static smartCapitalization(value, caretIndex, commitText) {
+    if (EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(commitText)) {
+      return commitText;
+    }
+
+    if (!value) {
+      return EditingUtil.capitalize_(commitText);
+    }
+
+    const leftOfCaret = value.substring(0, caretIndex).trim();
+    return EditingUtil.ENDS_WITH_PUNCTUATION_REGEX_.test(leftOfCaret) ?
+        EditingUtil.capitalize_(commitText) :
+        EditingUtil.lowercase_(commitText);
+  }
+
+  /**
+   * Returns a string where the first character is capitalized.
+   * @param {string} text
+   * @return {string}
+   * @private
+   */
+  static capitalize_(text) {
+    return text.charAt(0).toUpperCase() + text.substring(1);
+  }
+
+  /**
+   * Returns a string where the first character is lowercase.
+   * @param {string} text
+   * @return {string}
+   * @private
+   */
+  static lowercase_(text) {
+    return text.charAt(0).toLowerCase() + text.substring(1);
+  }
+
+  /**
+   * Returns a RegExp that matches on the right-most occurrence of a phrase.
+   * The returned RegExp is case insensitive and requires that `phrase` is
+   * separated by word boundaries.
+   * @param {string} phrase
+   * @return {!RegExp}
+   * @private
+   */
+  static getPhraseRegex_(phrase) {
+    return new RegExp(`(\\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+  }
+
+  /**
+   * Similar to above, but accounts for a leading space.
+   * @param {string} phrase
+   * @return {!RegExp}
+   * @private
+   */
+  static getPhraseRegexLeadingSpace_(phrase) {
+    return new RegExp(`( \\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+  }
+
+  /**
+   * Similar to above, but accounts for a trailing space.
+   * @param {string} phrase
+   * @return {!RegExp}
+   * @private
+   */
+  static getPhraseRegexTrailingSpace_(phrase) {
+    return new RegExp(`(\\b${phrase}\\b )(?!.*\\b\\1\\b)`, 'i');
+  }
+}
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?]/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.ENDS_WITH_WHITESPACE_REGEX_ = /\s$/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.PUNCTUATION_REGEX_ =
+    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_ =
+    /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.ENDS_WITH_PUNCTUATION_REGEX_ =
+    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]$/;

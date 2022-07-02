@@ -61,7 +61,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
 
 - (void)stop {
   // Reset this observer manually. We want this to go out of scope now, to
-  // ensure it detaches before |browser| and its WebStateList get destroyed.
+  // ensure it detaches before `browser` and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
 
   self.safariViewController = nil;

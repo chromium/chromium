@@ -15,6 +15,7 @@ PASS Bad mode init parameter value
 PASS Bad credentials init parameter value
 PASS Bad cache init parameter value
 PASS Bad redirect init parameter value
+PASS Request error
 PASS Request should get its content-type from the init request
 PASS Request should not get its content-type from the init request if init headers are provided
 PASS Request should get its content-type from the body if none is provided

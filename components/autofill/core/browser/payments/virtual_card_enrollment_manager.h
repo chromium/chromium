@@ -90,10 +90,9 @@ struct VirtualCardEnrollmentProcessState {
 class VirtualCardEnrollmentManager {
  public:
   // The parameters should outlive the VirtualCardEnrollmentManager.
-  VirtualCardEnrollmentManager(
-      raw_ptr<PersonalDataManager> personal_data_manager,
-      raw_ptr<payments::PaymentsClient> payments_client,
-      raw_ptr<AutofillClient> autofill_client = nullptr);
+  VirtualCardEnrollmentManager(PersonalDataManager* personal_data_manager,
+                               payments::PaymentsClient* payments_client,
+                               AutofillClient* autofill_client = nullptr);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
       delete;
@@ -109,15 +108,26 @@ class VirtualCardEnrollmentManager {
   using VirtualCardEnrollmentFieldsLoadedCallback = base::OnceCallback<void(
       VirtualCardEnrollmentFields* virtual_card_enrollment_fields)>;
 
+  using VirtualCardEnrollmentUpdateResponseCallback =
+      base::OnceCallback<void(bool)>;
+
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
   // |virtual_card_enrollment_source| will be used by
   // ShowVirtualCardEnrollBubble() to differentiate different bubbles based on
   // the source we originated from.
-  void OfferVirtualCardEnroll(
+  virtual void InitVirtualCardEnroll(
       const CreditCard& credit_card,
       VirtualCardEnrollmentSource virtual_card_enrollment_source,
+      // |get_details_for_enrollment_response_details| will be populated if we
+      // are in the optimized upstream case, where we receive the
+      // GetDetailsForEnrollmentResponseDetails from the
+      // UploadCardResponseDetails, so we can then skip the
+      // GetDetailsForEnroll request in the Virtual Card Enrollment flow.
+      absl::optional<
+          payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+          get_details_for_enrollment_response_details = absl::nullopt,
       // |user_prefs| will be populated if we are in the Android settings page,
       // to then be used for loading risk data. Otherwise it will always be
       // nullptr, and we should load risk data through |autofill_client_| as we
@@ -142,10 +152,16 @@ class VirtualCardEnrollmentManager {
   // |vcn_context_token_|, which should be set when we receive the
   // GetDetailsForEnrollResponse, is used in the
   // UpdateVirtualCardEnrollmentRequest to enroll the correct card.
-  void Enroll();
+  void Enroll(
+      // The callback lets the Android Settings page know whether
+      // (un)enrollment was successful.
+      absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+          virtual_card_enrollment_update_response_callback);
 
   // Unenrolls the card mapped to the given |instrument_id|.
-  void Unenroll(int64_t instrument_id);
+  void Unenroll(int64_t instrument_id,
+                absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+                    virtual_card_enrollment_update_response_callback);
 
   // Returns true if a credit card identified by its |instrument_id| should be
   // blocked for virtual card enrollment and is not attempting to enroll from
@@ -178,7 +194,7 @@ class VirtualCardEnrollmentManager {
   // indicates the type of the request sent, i.e., enroll or unenroll.
   // |result| represents the result from the server call to change the virtual
   // card enrollment state for the credit card passed into
-  // OfferVirtualCardEnroll().
+  // InitVirtualCardEnroll().
   virtual void OnDidGetUpdateVirtualCardEnrollmentResponse(
       VirtualCardEnrollmentRequestType type,
       AutofillClient::PaymentsRpcResult result);
@@ -215,7 +231,7 @@ class VirtualCardEnrollmentManager {
   // card enrollment flow. |user_prefs| will only be present in Clank settings
   // page use cases, as we will not have access to web contents.
   virtual void LoadRiskDataAndContinueFlow(
-      raw_ptr<PrefService> user_prefs,
+      PrefService* user_prefs,
       base::OnceCallback<void(const std::string&)> callback);
 
   // Shows the VirtualCardEnrollmentBubble. |state_|'s
@@ -228,6 +244,11 @@ class VirtualCardEnrollmentManager {
   // is not available.
   VirtualCardEnrollmentFieldsLoadedCallback
       virtual_card_enrollment_fields_loaded_callback_;
+
+  // Callback triggered after getting server response about the success of
+  // virtual card (un)enrollment.
+  absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+      virtual_card_enrollment_update_response_callback_;
 
  private:
   friend class VirtualCardEnrollmentManagerTest;
@@ -279,6 +300,33 @@ class VirtualCardEnrollmentManager {
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           response);
 
+  // Sets the corresponding fields in |state_| from the
+  // GetDetailsForEnrollmentResponseDetails in |response|. This function is used
+  // both when a GetDetailsForEnrollRequest gets a response, and when offering
+  // virtual card enrollment through the optimized upstream flow as the
+  // GetDetailsForEnrollmentResponseDetails is returned in the upload card
+  // response.
+  void SetGetDetailsForEnrollmentResponseDetails(
+      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+          response);
+
+  // Should always be called right before showing virtual card enrollment UI.
+  // This function attempts to set the card art image in |state_|, and if the
+  // card art image is not synced yet from the chrome sync server, it will fall
+  // back to the network image.
+  void EnsureCardArtImageIsSetBeforeShowingUI();
+
+  // Helper function that is called any time we offer virtual card enroll.
+  void SetInitialVirtualCardEnrollFields(
+      const CreditCard& credit_card,
+      VirtualCardEnrollmentSource virtual_card_enrollment_source);
+
+  // Returns true if the passed in GetDetailsForEnrollmentResponseDetails is
+  // valid.
+  bool IsValidGetDetailsForEnrollmentResponseDetails(
+      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+          get_details_for_enrollment_response_details);
+
   // Cancels the entire Virtual Card Enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();
 
@@ -322,6 +370,9 @@ class VirtualCardEnrollmentManager {
   // timestamp and |save_card_bubble_accepted_timestamp_| to log as the latency
   // metric. |save_card_bubble_accepted_timestamp_| will then be reset.
   absl::optional<base::Time> save_card_bubble_accepted_timestamp_;
+
+  // The timestamp when a GetDetailsForEnrollment request is sent.
+  absl::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

@@ -62,13 +62,10 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
   if (!pref_service)  // Sometimes it's not available in tests.
     return false;
 
-  const base::Value* disabled_system_features_pref =
-      pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return false;
+  const base::Value::List& disabled_system_features =
+      pref_service->GetValueList(
+          policy::policy_prefs::kSystemFeaturesDisableList);
 
-  const auto disabled_system_features =
-      disabled_system_features_pref->GetListDeprecated();
   return base::Contains(disabled_system_features,
                         base::Value(static_cast<int>(feature)));
 }
@@ -78,15 +75,15 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
     PrefValueMap* prefs) {
   DCHECK(filtered_list.is_list());
 
-  base::Value enums_list(base::Value::Type::LIST);
+  base::Value::List enums_list;
   base::Value* old_list = nullptr;
   prefs->GetValue(policy_prefs::kSystemFeaturesDisableList, &old_list);
 
-  for (const auto& element : filtered_list.GetListDeprecated()) {
+  for (const auto& element : filtered_list.GetList()) {
     SystemFeature feature = ConvertToEnum(element.GetString());
     enums_list.Append(static_cast<int>(feature));
 
-    if (!old_list || !base::Contains(old_list->GetListDeprecated(),
+    if (!old_list || !base::Contains(old_list->GetList(),
                                      base::Value(static_cast<int>(feature)))) {
       base::UmaHistogramEnumeration(kSystemFeaturesDisableListHistogram,
                                     feature);
@@ -94,13 +91,12 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool os_settings_disabled =
-      base::Contains(enums_list.GetListDeprecated(),
-                     base::Value(static_cast<int>(SystemFeature::kOsSettings)));
+  bool os_settings_disabled = base::Contains(
+      enums_list, base::Value(static_cast<int>(SystemFeature::kOsSettings)));
   prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, !os_settings_disabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->SetValue(policy_prefs::kSystemFeaturesDisableList,
-                  std::move(enums_list));
+                  base::Value(std::move(enums_list)));
 }
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(

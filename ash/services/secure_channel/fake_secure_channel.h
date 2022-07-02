@@ -54,6 +54,8 @@ class FakeSecureChannel : public SecureChannelBase {
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override {}
+  void GetLastSeenTimestamp(const std::string& remote_device_id,
+                            GetLastSeenTimestampCallback callback) override;
 
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;

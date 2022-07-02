@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chromeos::assistant::AndroidAppInfo;

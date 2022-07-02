@@ -69,6 +69,8 @@ class TestingApplicationContext : public ApplicationContext {
   breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() override;
   id<SingleSignOnService> GetSSOService() override;
+  segmentation_platform::OTRWebStateObserver*
+  GetSegmentationOTRWebStateObserver() override;
 
  private:
   base::ThreadChecker thread_checker_;

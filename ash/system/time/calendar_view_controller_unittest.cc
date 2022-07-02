@@ -31,7 +31,7 @@ TEST_F(CalendarViewControllerUnittest, UtilFunctions) {
   controller->UpdateMonth(date);
 
   base::Time::Exploded first_day_exploded;
-  base::Time first_day = controller->GetOnScreenMonthFirstDayLocal();
+  base::Time first_day = controller->GetOnScreenMonthFirstDayUTC();
   first_day.LocalExplode(&first_day_exploded);
   std::u16string month_name = controller->GetOnScreenMonthName();
 
@@ -41,7 +41,7 @@ TEST_F(CalendarViewControllerUnittest, UtilFunctions) {
   EXPECT_EQ(u"August", month_name);
 
   base::Time::Exploded previous_first_day_exploded;
-  base::Time previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  base::Time previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_first_day.LocalExplode(&previous_first_day_exploded);
   std::u16string previous_month_name = controller->GetPreviousMonthName();
 
@@ -51,7 +51,7 @@ TEST_F(CalendarViewControllerUnittest, UtilFunctions) {
   EXPECT_EQ(u"July", previous_month_name);
 
   base::Time::Exploded next_first_day_exploded;
-  base::Time next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  base::Time next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_first_day.LocalExplode(&next_first_day_exploded);
   std::u16string next_month_name = controller->GetNextMonthName();
 
@@ -72,7 +72,7 @@ TEST_F(CalendarViewControllerUnittest, CornerCases) {
   controller->UpdateMonth(last_month_date);
 
   base::Time::Exploded january_first_day_exploded;
-  base::Time january_first_day = controller->GetNextMonthFirstDayLocal(1);
+  base::Time january_first_day = controller->GetNextMonthFirstDayUTC(1);
   january_first_day.LocalExplode(&january_first_day_exploded);
   std::u16string january_month_name = controller->GetNextMonthName();
 
@@ -89,7 +89,7 @@ TEST_F(CalendarViewControllerUnittest, CornerCases) {
   controller->UpdateMonth(first_month_date);
 
   base::Time::Exploded dec_first_day_exploded;
-  base::Time dec_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  base::Time dec_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   dec_first_day.LocalExplode(&dec_first_day_exploded);
   std::u16string dec_month_name = controller->GetPreviousMonthName();
 
@@ -113,9 +113,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   controller->UpdateMonth(current_month_date);
 
-  base::Time previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  base::Time previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   std::u16string previous_month_name = controller->GetPreviousMonthName();
-  base::Time next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  base::Time next_first_day = controller->GetNextMonthFirstDayUTC(1);
   std::u16string next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"March 1, 2022",
@@ -127,9 +127,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   // Set timezone to Pacific Daylight Time. Mar 13th is the daylight saving
   // starts day.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"March 1, 2022",
@@ -146,9 +146,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   controller->UpdateMonth(current_month_date2);
 
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"February 1, 2022",
@@ -159,9 +159,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   // Set the timezone back to GMT.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"March 1, 2022",
@@ -177,9 +177,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   controller->UpdateMonth(current_month_date3);
 
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"October 1, 2022",
@@ -192,9 +192,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   // Set timezone to Pacific Daylight Time. Nov 6th is the daylight saving
   // ends day.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"October 1, 2022",
@@ -212,9 +212,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   controller->UpdateMonth(current_month_date4);
 
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"September 1, 2022",
@@ -226,9 +226,9 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   // Set the timezone back to GMT.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
-  previous_first_day = controller->GetPreviousMonthFirstDayLocal(1);
+  previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
-  next_first_day = controller->GetNextMonthFirstDayLocal(1);
+  next_first_day = controller->GetNextMonthFirstDayUTC(1);
   next_month_name = controller->GetNextMonthName();
 
   EXPECT_EQ(u"October 1, 2022",
@@ -237,6 +237,21 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   EXPECT_EQ(u"December 1, 2022",
             calendar_utils::GetMonthDayYear(next_first_day));
   EXPECT_EQ(u"December", next_month_name);
+}
+
+// Tests that Ash.Calendar.MaxDistanceBrowsed records once on destruction of
+// CalendarViewController.
+TEST_F(CalendarViewControllerUnittest, MaxDistanceBrowsedRecordedOnClose) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<CalendarViewController>();
+
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 0);
+
+  // Destroy the controller (this happens when the calendar is closed). The
+  // metric should be recorded once.
+  controller.reset();
+
+  histogram_tester.ExpectTotalCount("Ash.Calendar.MaxDistanceBrowsed", 1);
 }
 
 }  // namespace ash

@@ -23,10 +23,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "minidump/minidump_context_writer.h"
 #include "minidump/minidump_writer_util.h"
 #include "package.h"
+#include "snapshot/cpu_context.h"
 #include "snapshot/process_snapshot.h"
 #include "snapshot/system_snapshot.h"
+#include "snapshot/thread_snapshot.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/in_range_cast.h"
 #include "util/numeric/safe_assignment.h"
@@ -94,6 +97,43 @@ int AvailabilityVersionToMacOSVersionNumber(int availability) {
   return availability;
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+bool MaybeSetXStateData(const ProcessSnapshot* process_snapshot,
+                        XSTATE_CONFIG_FEATURE_MSC_INFO* xstate) {
+  // Cannot set xstate data if there are no threads.
+  auto threads = process_snapshot->Threads();
+  if (threads.size() == 0)
+    return false;
+
+  // All threads should be the same as we request contexts in the same way.
+  auto context = threads.at(0)->Context();
+
+  // Only support AMD64.
+  if (context->architecture != kCPUArchitectureX86_64)
+    return false;
+
+  // If no extended features, then we will just write the standard context.
+  if (context->x86_64->xstate.enabled_features == 0)
+    return false;
+
+  xstate->SizeOfInfo = sizeof(*xstate);
+  // Needs to match the size of the context we'll write or the dump is invalid,
+  // so ask the first thread how large it will be.
+  auto context_writer = MinidumpContextWriter::CreateFromSnapshot(context);
+  xstate->ContextSize =
+      static_cast<uint32_t>(context_writer->FreezeAndGetSizeOfObject());
+  // Note: This isn't the same as xstateenabledfeatures!
+  xstate->EnabledFeatures =
+      context->x86_64->xstate.enabled_features | XSTATE_COMPACTION_ENABLE_MASK;
+
+  // Note: if other XSAVE entries are to be supported they will be in order,
+  // and may have different offsets depending on what is saved.
+  if (context->x86_64->xstate.enabled_features & XSTATE_MASK_CET_U) {
+    xstate->Features[XSTATE_CET_U].Offset = kXSaveAreaFirstOffset;
+    xstate->Features[XSTATE_CET_U].Size = sizeof(MinidumpAMD64XSaveFormatCetU);
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -235,6 +275,11 @@ void MinidumpMiscInfoWriter::InitializeFromSnapshot(
 
   SetBuildString(BuildString(system_snapshot),
                  internal::MinidumpMiscInfoDebugBuildString());
+
+  XSTATE_CONFIG_FEATURE_MSC_INFO xstate{};
+  if (MaybeSetXStateData(process_snapshot, &xstate)) {
+    SetXStateData(xstate);
+  }
 }
 
 void MinidumpMiscInfoWriter::SetProcessID(uint32_t process_id) {
@@ -351,6 +396,10 @@ void MinidumpMiscInfoWriter::SetXStateData(
 
   misc_info_.XStateData = xstate_data;
   has_xstate_data_ = true;
+}
+
+bool MinidumpMiscInfoWriter::HasXStateData() const {
+  return has_xstate_data_;
 }
 
 void MinidumpMiscInfoWriter::SetProcessCookie(uint32_t process_cookie) {

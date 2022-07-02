@@ -19,7 +19,13 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 namespace content {
+
+class RenderProcessHost;
 
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderProcessHostImpl. It does not support creating services that require a
@@ -30,7 +36,7 @@ namespace content {
 class FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
-  FramelessMediaInterfaceProxy();
+  explicit FramelessMediaInterfaceProxy(RenderProcessHost* render_process_host);
 
   FramelessMediaInterfaceProxy(const FramelessMediaInterfaceProxy&) = delete;
   FramelessMediaInterfaceProxy& operator=(const FramelessMediaInterfaceProxy&) =
@@ -92,6 +98,24 @@ class FramelessMediaInterfaceProxy final
 
   // Connections to the renderer.
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Connection to the StableVideoDecoderFactory that lives in a utility
+  // process. This is only used for out-of-process video decoding and only when
+  // the FramelessMediaInterfaceProxy is created without a RenderProcessHost
+  // (e.g., to get the supported video decoder configurations). Note that we
+  // make this a member instead of a local variable inside CreateVideoDecoder()
+  // in order to keep the video decoder process alive for the lifetime of the
+  // FramelessMediaInterfaceProxy.
+  mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
+      stable_vd_factory_remote_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  // FramelessMediaInterfaceProxy is fully owned by the RenderProcessHostImpl,
+  // and the latter never gives up that ownership. Therefore,
+  // *|render_process_host_| will never be destroyed before it's used by
+  // *|this|.
+  const raw_ptr<RenderProcessHost> render_process_host_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };

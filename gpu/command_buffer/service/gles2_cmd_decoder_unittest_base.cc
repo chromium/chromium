@@ -196,10 +196,10 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   DCHECK(normalized_init.extensions.empty() ||
          *normalized_init.extensions.rbegin() == ' ');
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-  gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
 
   gl_ = std::make_unique<StrictMock<MockGLInterface>>();
-  ::gl::MockGLInterface::SetGLInterface(gl_.get());
+  gl::MockGLInterface::SetGLInterface(gl_.get());
 
   SetupMockGLBehaviors();
 
@@ -221,7 +221,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 
   surface_ = new gl::GLSurfaceStub;
   surface_->SetSize(gfx::Size(kBackBufferWidth, kBackBufferHeight));
-  surface_->set_supports_draw_rectangle(surface_supports_draw_rectangle_);
 
   // Context needs to be created before initializing ContextGroup, which will
   // in turn initialize FeatureInfo, which needs a context to determine
@@ -620,9 +619,9 @@ void GLES2DecoderTestBase::ResetDecoder() {
   decoder_.reset();
   group_->Destroy(mock_decoder_.get(), false);
   command_buffer_service_.reset();
-  ::gl::MockGLInterface::SetGLInterface(nullptr);
+  gl::MockGLInterface::SetGLInterface(nullptr);
   gl_.reset();
-  gl::init::ShutdownGL(false);
+  gl::GLSurfaceTestSupport::ShutdownGL(display_);
 }
 
 void GLES2DecoderTestBase::TearDown() {
@@ -2431,7 +2430,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
 
   gl::init::InitializeStaticGLBindingsImplementation(
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false);
-  gl::init::InitializeGLOneOffPlatformImplementation(
+  display_ = gl::init::InitializeGLOneOffPlatformImplementation(
       /*fallback_to_software_gl=*/false,
       /*disable_gl_drawing=*/false,
       /*init_extensions=*/true,
@@ -2493,7 +2492,7 @@ void GLES2DecoderPassthroughTestBase::TearDown() {
   decoder_.reset();
   group_ = nullptr;
   command_buffer_service_.reset();
-  gl::init::ShutdownGL(false);
+  gl::init::ShutdownGL(display_, false);
 }
 
 void GLES2DecoderPassthroughTestBase::SetBucketData(uint32_t bucket_id,

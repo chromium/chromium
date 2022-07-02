@@ -15,6 +15,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen_base.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/x11/x11_event_source.h"
@@ -215,8 +216,8 @@ class X11WindowTest : public testing::Test {
     ui::TouchFactory::GetInstance()->SetPointerDeviceForTest(pointer_devices);
 
     // X11 requires display::Screen instance.
-    test_screen_ = new TestScreen();
-    display::Screen::SetScreenInstance(test_screen_);
+    test_screen_.emplace();
+    display::Screen::SetScreenInstance(&test_screen_.value());
 
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
@@ -226,6 +227,8 @@ class X11WindowTest : public testing::Test {
  protected:
   void TearDown() override {
     x11::Connection::Get()->SynchronizeForTest(false);
+    display::Screen::SetScreenInstance(nullptr);
+    test_screen_.reset();
   }
 
   std::unique_ptr<X11Window> CreateX11Window(
@@ -252,7 +255,7 @@ class X11WindowTest : public testing::Test {
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
   std::unique_ptr<X11EventSource> event_source_;
 
-  TestScreen* test_screen_ = nullptr;
+  absl::optional<TestScreen> test_screen_;
 };
 
 // https://crbug.com/898742: Test is flaky.
@@ -273,7 +276,7 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   ASSERT_TRUE(x11_window != x11::Window::None);
 
   // Force PlatformWindowDelegate::OnBoundsChanged.
-  window->SetBounds(bounds);
+  window->SetBoundsInPixels(bounds);
   // Force update the window region.
   window->ResetWindowRegion();
 
@@ -285,19 +288,19 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
 
   // The widget was supposed to be 100x100, but the WM might have ignored this
   // suggestion.
-  int window_width = window->GetBounds().width();
+  int window_width = window->GetBoundsInPixels().width();
   EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, window_width - 15, 5));
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, window_width - 5, 5));
   EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, window_width - 5, 15));
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, window_width + 5, 15));
 
   // Changing window's size should update the shape.
-  window->SetBounds(gfx::Rect(100, 100, 200, 200));
+  window->SetBoundsInPixels(gfx::Rect(100, 100, 200, 200));
   // Force update the window region.
   window->ResetWindowRegion();
   connection->DispatchAll();
 
-  if (window->GetBounds().width() == 200) {
+  if (window->GetBoundsInPixels().width() == 200) {
     shape_rects = GetShapeRects(x11_window);
     ASSERT_FALSE(shape_rects.empty());
     EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, 85, 5));
@@ -359,7 +362,7 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 105, 15));
 
   // Changing the windows's size should not affect the shape.
-  window2->SetBounds(gfx::Rect(100, 100, 200, 200));
+  window2->SetBoundsInPixels(gfx::Rect(100, 100, 200, 200));
   shape_rects = GetShapeRects(x11_window2);
   ASSERT_FALSE(shape_rects.empty());
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 5, 5));
@@ -406,7 +409,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
 
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
-  gfx::Rect initial_bounds = window->GetBounds();
+  gfx::Rect initial_bounds = window->GetBoundsInPixels();
   {
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", true);
     window->ToggleFullscreen();
@@ -430,7 +433,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   // |initial_bounds|.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   delegate.WaitForBoundsSet(initial_bounds);
-  EXPECT_EQ(initial_bounds, window->GetBounds());
+  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 
   // Emulate window resize (through X11 configure events) while in browser
   // fullscreen mode and ensure bounds are tracked correctly.
@@ -446,14 +449,14 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   }
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   delegate.WaitForBoundsSet(initial_bounds);
-  EXPECT_EQ(initial_bounds, window->GetBounds());
+  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 
   // Calling Widget::SetFullscreen(false) should clear the widget's fullscreen
   // state and clean things up.
   window->ToggleFullscreen();
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   delegate.WaitForBoundsSet(initial_bounds);
-  EXPECT_EQ(initial_bounds, window->GetBounds());
+  EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 }
 
 // TODO(crbug.com/1294066): Flaky on both Linux and ChromeOS.

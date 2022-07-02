@@ -306,11 +306,7 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         metric_name, original_timestamp, gpu_swap_begin_timestamp);
 
-    // Report whether the top-controls visible height changed from this scroll
-    // event.
-    UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollBegin.TopControlsMoved",
-                          top_controls_visible_height_changed);
-    // Also report the latency metric separately for the scrolls that caused the
+    // Report the latency metric separately for the scrolls that caused the
     // top-controls to scroll and the ones that didn't.
     if (top_controls_visible_height_changed)
       base::StrAppend(&metric_name, {".TopControlsMoved"});
@@ -345,11 +341,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
                       ".TimeToScrollUpdateSwapBegin4"});
     UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
         metric_name, original_timestamp, gpu_swap_begin_timestamp);
-
-    // Report whether the top-controls visible height changed from this scroll
-    // event.
-    UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollUpdate.TopControlsMoved",
-                          top_controls_visible_height_changed);
 
     // Also report the latency metric separately for the scrolls that caused the
     // top-controls to scroll and the ones that didn't.

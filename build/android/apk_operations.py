@@ -597,6 +597,7 @@ class _LogcatProcessor:
       'ActivityManager',  # Shows activity lifecycle messages.
       'ActivityTaskManager',  # More activity lifecycle messages.
       'AndroidRuntime',  # Java crash dumps
+      'AppZygoteInit',  # Android's native application zygote support.
       'DEBUG',  # Native crash dump.
   }
 
@@ -855,9 +856,11 @@ def _RunLogcat(device,
 
 
 def _GetPackageProcesses(device, package_name):
+  my_names = (package_name, package_name + '_zygote')
   return [
       p for p in device.ListProcesses(package_name)
-      if p.name == package_name or p.name.startswith(package_name + ':')]
+      if p.name in my_names or p.name.startswith(package_name + ':')
+  ]
 
 
 def _RunPs(devices, package_name):

@@ -19,6 +19,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/controls/scroll_view.h"
 #include "url/origin.h"
 
 namespace content {
@@ -30,12 +31,6 @@ class Button;
 class Checkbox;
 class Widget;
 }  // namespace views
-
-namespace ui {
-class Event;
-}  // namespace ui
-
-class IntentPickerLabelButton;
 
 // A bubble that displays a list of applications (icons and names), after the
 // list the UI displays a checkbox to allow the user remember the selection and
@@ -65,6 +60,14 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   using AppInfo = apps::IntentPickerAppInfo;
   using BubbleType = apps::IntentPickerBubbleType;
+
+  // Unique identifiers for Views within the IntentPickerBubbleView hierarchy.
+  enum ViewId {
+    // The container for app selection buttons.
+    kItemContainer = 1,
+    // The "Remember my choice" checkbox.
+    kRememberCheckbox,
+  };
 
   IntentPickerBubbleView(views::View* anchor_view,
                          BubbleType bubble_type,
@@ -100,81 +103,46 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   BubbleType bubble_type() const { return bubble_type_; }
 
+  // Selects the default app for the current configuration. Must be called after
+  // the Bubble is shown.
+  void SelectDefaultItem();
+
+  // Returns the index of the currently selected item. May return nullopt to
+  // indicate no selection.
+  absl::optional<size_t> GetSelectedIndex() const;
+
+  // A ScrollView which contains a list of apps. This view manages the selection
+  // state for the dialog.
+  class IntentPickerAppsView : public views::ScrollView {
+   public:
+    virtual void SetSelectedIndex(absl::optional<size_t> index) = 0;
+    virtual absl::optional<size_t> GetSelectedIndex() const = 0;
+  };
+
+  const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
+
  protected:
   // LocationBarBubbleDelegateView overrides:
   std::u16string GetWindowTitle() const override;
   void CloseBubble() override;
 
  private:
-  friend class IntentPickerBubbleViewTest;
-  friend class IntentPickerBubbleViewBrowserTest;
-  friend class IntentPickerBubbleViewBrowserTestChromeOS;
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NullIcons);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NonNullIcons);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, LabelsPtrVectorSize);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, VerifyStartingInkDrop);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, InkDropStateTransition);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, PressButtonTwice);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ChromeNotInCandidates);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, StayInChromeTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WebContentsTiedToBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WindowTitle);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ButtonLabels);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, RememberCheckbox);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTest,
-                           DoubleClickOpensApp);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           BubblePopOut);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           OutOfScopeDoesNotShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PWAOnlyShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           NotLinkDoesNotShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           DismissBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ShowBubbleMultipleTimes);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PushStateLoadingTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PushStateURLChangeTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ReloadAfterInstall);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromePWAOnly);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromeARCOnly);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ARCAndPWACandidateLaunchPWA);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ARCAndPWACandidateLaunchARC);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromeARCAndPWA);
-
-  const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
 
   // views::BubbleDialogDelegateView overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  void AppButtonPressed(size_t index, const ui::Event& event);
-
-  // Similar to AppButtonPressed, except this controls the up/down/right/left
-  // input while focusing on the |scroll_view_|.
-  void ArrowButtonPressed(size_t index);
-
-  // ui::EventHandler overrides:
-  void OnKeyEvent(ui::KeyEvent* event) override;
+  // Called when the app at |index| is selected in the app list. If
+  // |accepted| is true, the dialog should be immediately accepted with that app
+  // selected. If |index| is nullopt, no app is selected, and the Accept button
+  // will be disabled
+  void OnAppSelected(absl::optional<size_t> index, bool accepted);
 
   void Initialize();
 
   void OnDialogAccepted();
   void OnDialogCancelled();
   void OnDialogClosed();
-
-  // Retrieves the IntentPickerLabelButton* contained at position |index| from
-  // the internal ScrollView.
-  IntentPickerLabelButton* GetIntentPickerLabelButtonAt(size_t index);
 
   // Runs |intent_picker_cb_| and closes the current bubble view.
   void RunCallbackAndCloseBubble(const std::string& launch_name,
@@ -188,40 +156,20 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // return false.
   bool HasCandidates() const;
 
-  // Accessory for |scroll_view_|'s contents size.
-  size_t GetScrollViewSize() const;
-
-  // Ensure the selected app is within the visible region of the ScrollView.
-  void AdjustScrollViewVisibleRegion();
-
-  // Set the new app selection, use the |event| (if provided) to show a more
-  // accurate ripple effect w.r.t. the user's input.
-  void SetSelectedAppIndex(size_t index, const ui::Event* event);
-
-  // Calculate the next app to select given the current selection and |delta|.
-  size_t CalculateNextAppIndex(int delta);
-
   // Updates whether the persistence checkbox is enabled or not.
-  void UpdateCheckboxState();
+  void UpdateCheckboxState(size_t index);
 
   // Clears this bubble from being considered the currently open bubble.
   void ClearIntentPickerBubbleView();
-
-  gfx::ImageSkia GetAppImageForTesting(size_t index);
-  views::InkDropState GetInkDropStateForTesting(size_t);
-  void PressButtonForTesting(size_t index, const ui::Event& event);
 
   static IntentPickerBubbleView* intent_picker_bubble_;
 
   // Callback used to respond to AppsNavigationThrottle.
   IntentPickerResponse intent_picker_cb_;
 
-  // Pre-select the first app on the list.
-  size_t selected_app_tag_ = 0;
-
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
-
   std::vector<AppInfo> app_info_;
+
+  raw_ptr<IntentPickerAppsView> apps_view_ = nullptr;
 
   raw_ptr<views::Checkbox> remember_selection_checkbox_ = nullptr;
 

@@ -12,8 +12,8 @@
 // Coordinator to present welcome and consent screen.
 @interface WelcomeScreenCoordinator : ChromeCoordinator
 
-// Initiates a WelcomeScreenCoordinator with |navigationController| and
-// |browser|.
+// Initiates a WelcomeScreenCoordinator with `navigationController` and
+// `browser`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

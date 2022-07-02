@@ -18,7 +18,7 @@ absl::optional<HidType> GetHidType(
   if (device.is_touchscreen || device.is_tablet)
     return HidType::kTouchscreen;
 
-  if (device.is_mouse || device.is_touchpad) {
+  if (IsDevicePointer(device)) {
     switch (device.type) {
       case InputDeviceType::TYPE_BLUETOOTH:
         return HidType::kBluetoothPointer;
@@ -49,6 +49,14 @@ absl::optional<HidType> GetHidType(
 
 }  // namespace
 
+bool IsDevicePointer(const device::mojom::InputDeviceInfo& device) {
+  return device.is_mouse || device.is_touchpad;
+}
+
+bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device) {
+  return device.is_touchscreen || device.is_tablet;
+}
+
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
   absl::optional<HidType> hid_type = GetHidType(device);
 
@@ -62,6 +70,11 @@ void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
 
   base::UmaHistogramEnumeration("OOBE.HidDetectionScreen.HidConnected",
                                 hid_type.value());
+}
+
+void RecordBluetoothPairingAttempts(size_t attempts) {
+  base::UmaHistogramCounts100(
+      "OOBE.HidDetectionScreen.BluetoothPairingAttempts", attempts);
 }
 
 }  // namespace ash::hid_detection

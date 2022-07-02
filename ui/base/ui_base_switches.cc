@@ -28,7 +28,7 @@ const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 // Enable resources file sharing with ash-chrome.
 // This flag is enabled when feature::kLacrosResourcesFileSharing is set and
 // ash-side operation is successfully done.
-const char kEnableResourcesFileSharing[] = "enable-resouces-file-sharing";
+const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
 #endif
 
 // Disables layer-edge anti-aliasing in the compositor.

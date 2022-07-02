@@ -38,8 +38,12 @@ class SigninFirstRunProperties {
             new ReadableObjectPropertyKey<>("on_dismiss_clicked");
 
     // Is not initialized in #createModel(...) to avoid conflicting view changes with
-    // ARE_NATIVE_AND_POLICY_LOADED. Will be set when |Continue as ...| or dismiss button is
-    // pressed.
+    // ARE_NATIVE_AND_POLICY_LOADED. Will be set when |Continue as ...| is pressed.
+    static final WritableBooleanPropertyKey SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT =
+            new WritableBooleanPropertyKey("show_signin_progress_spinner_with_text");
+
+    // Is not initialized in #createModel(...) to avoid conflicting view changes with
+    // ARE_NATIVE_AND_POLICY_LOADED. Will be set when dismiss button is pressed.
     static final WritableBooleanPropertyKey SHOW_SIGNIN_PROGRESS_SPINNER =
             new WritableBooleanPropertyKey("show_signin_progress_spinner");
 
@@ -61,6 +65,7 @@ class SigninFirstRunProperties {
             IS_SELECTED_ACCOUNT_SUPERVISED,
             ON_CONTINUE_AS_CLICKED,
             ON_DISMISS_CLICKED,
+            SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
             SHOW_SIGNIN_PROGRESS_SPINNER,
             ARE_NATIVE_AND_POLICY_LOADED,
             FRE_POLICY,

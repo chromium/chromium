@@ -23,7 +23,6 @@ if (is_chromeos_ash) {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$preprocess_folder/html"
   in_files = html_files
 }

@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
@@ -100,8 +101,10 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowAccessCodeCastingDialog(
       AccessCodeCastDialogOpenLocation open_location) override;
   void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                         const base::Time& date,
                          bool& opened_pwa,
                          GURL& finalized_event_url) override;
+  version_info::Channel GetChannel() override;
 
  protected:
   // Used by mocks in tests.
@@ -134,7 +137,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void UpdateEnterpriseAccountDomainInfo(Profile* profile);
 
   // The system tray model in ash.
-  ash::SystemTray* const system_tray_;
+  const raw_ptr<ash::SystemTray> system_tray_;
 
   // Information on whether the update is recommended or required.
   ash::RelaunchNotificationState relaunch_notification_state_;

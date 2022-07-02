@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/tagging.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -47,8 +48,7 @@ namespace partition_alloc {
 #if defined(PA_HAS_MEMORY_TAGGING)
 namespace {
 void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
-  internal::base::CPU cpu;
-  if (cpu.has_mte()) {
+  if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) {
     int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
     PA_CHECK(status == 0);
   }
@@ -158,7 +158,7 @@ void* TagRegionIncrementForMTE(void* ptr, size_t sz) {
 }
 
 void* RemaskVoidPtrForMTE(void* ptr) {
-  if (LIKELY(ptr)) {
+  if (PA_LIKELY(ptr)) {
     // Can't look up the tag for a null ptr (segfaults).
     return __arm_mte_get_tag(ptr);
   }

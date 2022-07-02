@@ -63,6 +63,13 @@ class FormField {
       LogManager* log_manager = nullptr);
 
 #if defined(UNIT_TEST)
+  static bool MatchForTesting(const AutofillField* field,
+                              base::StringPiece16 pattern,
+                              MatchParams match_type,
+                              const RegExLogging& logging = {}) {
+    return FormField::Match(field, pattern, match_type, logging);
+  }
+
   // Assign types to the fields for the testing purposes.
   void AddClassificationsForTesting(
       FieldCandidatesMap* field_candidates_for_testing) const {
@@ -131,9 +138,6 @@ class FormField {
       FieldCandidatesMap* field_candidates) const = 0;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FormFieldTest, Match);
-  FRIEND_TEST_ALL_PREFIXES(FormFieldTest, TestParseableLabels);
-
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.
   typedef std::unique_ptr<FormField> ParseFunction(

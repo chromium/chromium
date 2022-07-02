@@ -316,17 +316,19 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
   principal_expander_ = std::make_unique<VariableExpander>(substitutions);
 
   // Connect to a signal that indicates when Kerberos files change.
-  // TODO(https://crbug.com/963824): Make sure no code inside this constructor
-  // causes the daemon to start.
-  KerberosClient::Get()->ConnectToKerberosFileChangedSignal(
-      base::BindRepeating(&KerberosCredentialsManager::OnKerberosFilesChanged,
-                          weak_factory_.GetWeakPtr()));
+  kerberos_file_changed_signal_subscription_ =
+      KerberosClient::Get()->SubscribeToKerberosFileChangedSignal(
+          base::BindRepeating(
+              &KerberosCredentialsManager::OnKerberosFilesChanged,
+              weak_factory_.GetWeakPtr()));
 
   // Connect to a signal that indicates when a Kerberos ticket is about to
   // expire.
-  KerberosClient::Get()->ConnectToKerberosTicketExpiringSignal(
-      base::BindRepeating(&KerberosCredentialsManager::OnKerberosTicketExpiring,
-                          weak_factory_.GetWeakPtr()));
+  kerberos_ticket_expiring_signal_subscription_ =
+      KerberosClient::Get()->SubscribeToKerberosTicketExpiringSignal(
+          base::BindRepeating(
+              &KerberosCredentialsManager::OnKerberosTicketExpiring,
+              weak_factory_.GetWeakPtr()));
 
   // Listen to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -821,9 +823,8 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     VLOG(1) << "No or empty KerberosAccounts policy";
     NotifyRequiresLoginPassword(false);
 
-    // https://crbug.com/963824: The active principal is empty if there are no
-    // accounts, so no need to remove accounts. It would just start up the
-    // daemon unnecessarily.
+    // The active principal is empty if there are no accounts, so no need to
+    // remove accounts. It would just start up the daemon unnecessarily.
     if (!GetActivePrincipalName().empty())
       RemoveAllManagedAccountsExcept({});
     return;

@@ -60,7 +60,7 @@ const char BackgroundTracingManager::kContentTriggerConfig[] =
     "content-trigger-config";
 
 // static
-BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
+BackgroundTracingManager& BackgroundTracingManager::GetInstance() {
   return BackgroundTracingManagerImpl::GetInstance();
 }
 
@@ -71,9 +71,9 @@ void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
 }
 
 // static
-BackgroundTracingManagerImpl* BackgroundTracingManagerImpl::GetInstance() {
+BackgroundTracingManagerImpl& BackgroundTracingManagerImpl::GetInstance() {
   static base::NoDestructor<BackgroundTracingManagerImpl> manager;
-  return manager.get();
+  return *manager;
 }
 
 // static
@@ -509,14 +509,14 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
   provider.set_disconnect_handler(base::BindOnce(
       &BackgroundTracingManagerImpl::ClearPendingAgent, child_process_id));
 
-  GetInstance()->pending_agents_[child_process_id] = std::move(provider);
-  GetInstance()->MaybeConstructPendingAgents();
+  GetInstance().pending_agents_[child_process_id] = std::move(provider);
+  GetInstance().MaybeConstructPendingAgents();
 }
 
 // static
 void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetInstance()->pending_agents_.erase(child_process_id);
+  GetInstance().pending_agents_.erase(child_process_id);
 }
 
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {

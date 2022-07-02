@@ -236,7 +236,6 @@ class ThemeService : public KeyedService,
 
     // Overridden from ui::ThemeProvider:
     gfx::ImageSkia* GetImageSkiaNamed(int id) const override;
-    SkColor GetColor(int original_id) const override;
     color_utils::HSL GetTint(int original_id) const override;
     int GetDisplayProperty(int id) const override;
     bool ShouldUseNativeFrame() const override;
@@ -246,7 +245,6 @@ class ThemeService : public KeyedService,
         ui::ResourceScaleFactor scale_factor) const override;
 
    private:
-    absl::optional<SkColor> GetColorProviderColor(int id) const;
     CustomThemeSupplier* GetThemeSupplier() const;
 
     const ThemeHelper& theme_helper_;

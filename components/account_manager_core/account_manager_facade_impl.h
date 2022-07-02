@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -187,7 +188,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
 
   base::ObserverList<Observer> observer_list_;
 
-  AccountManager* account_manager_for_tests_ = nullptr;
+  raw_ptr<AccountManager> account_manager_for_tests_ = nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

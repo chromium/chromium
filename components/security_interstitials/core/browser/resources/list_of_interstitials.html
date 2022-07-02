@@ -40,27 +40,31 @@
         example.com (HSTS, non-overridable)
       </a>
     </li>
-    <li>
-      <a href="clock?clock_manipulation=2">Clock is ahead</a>
-    </li>
-    <li>
-      <a href="clock?clock_manipulation=-2">Clock is behind</a>
-    </li>
+    <if expr="not is_ios">
+      <li>
+        <a href="clock?clock_manipulation=2">Clock is ahead</a>
+      </li>
+      <li>
+        <a href="clock?clock_manipulation=-2">Clock is behind</a>
+      </li>
+    </if>
     <li>
       <a href="ssl?type=hpkp_failure">Pinned certificate error</a>
     </li>
     <li>
       <a href="ssl?type=ct_failure&overridable=1">Certificate Transparency error</a>
     </li>
-    <li>
-      <a href="mitm-software-ssl?enterprise=0">MITM software</a>
-    </li>
-    <li>
-      <a href="mitm-software-ssl?enterprise=1">MITM software on an enterprise-managed machine</a>
-    </li>
-    <li>
-      <a href="blocked-interception">Blocked interception</a>
-    </li>
+    <if expr="not is_ios">
+      <li>
+        <a href="mitm-software-ssl?enterprise=0">MITM software</a>
+      </li>
+      <li>
+        <a href="mitm-software-ssl?enterprise=1">MITM software on an enterprise-managed machine</a>
+      </li>
+      <li>
+        <a href="blocked-interception">Blocked interception</a>
+      </li>
+    </if>
   </ul>
   <h3>SafeBrowsing</h3>
   <h4>Loud</h4>
@@ -84,24 +88,26 @@
       <a href="safebrowsing?type=billing">Billing</a>
     </li>
   </ul>
-  <h4>Quiet (WebView)</h4>
-  <ul>
-    <li>
-      <a href="quietsafebrowsing?type=malware">Malware</a>
-    </li>
-    <li>
-      <a href="quietsafebrowsing?type=phishing">Phishing</a>
-    </li>
-    <li>
-      <a href="quietsafebrowsing?type=unwanted">Malicious Unwanted Software</a>
-    </li>
-    <li>
-      <a href="quietsafebrowsing?type=billing">Billing</a>
-    </li>
-    <li>
-      <a href="quietsafebrowsing?type=giant">Giant</a>
-    </li>
-  </ul>
+  <if expr="not is_ios">
+    <h4>Quiet (WebView)</h4>
+    <ul>
+      <li>
+        <a href="quietsafebrowsing?type=malware">Malware</a>
+      </li>
+      <li>
+        <a href="quietsafebrowsing?type=phishing">Phishing</a>
+      </li>
+      <li>
+        <a href="quietsafebrowsing?type=unwanted">Malicious Unwanted Software</a>
+      </li>
+      <li>
+        <a href="quietsafebrowsing?type=billing">Billing</a>
+      </li>
+      <li>
+        <a href="quietsafebrowsing?type=giant">Giant</a>
+      </li>
+    </ul>
+  </if>
   <h3>Captive Portal</h3>
   <ul>
     <li>
@@ -118,40 +124,34 @@
       </a>
     </li>
   </ul>
-  <h3>Origin Policy</h3>
-  <ul>
-    <li>
-      <a href="origin_policy">
-        Origin Policy Error
-      </a>
-    </li>
-  </ul>
-  <h3>Lookalike URL Warnings</h3>
-  <ul>
-    <li>
-      <a href="lookalike">Lookalike URL</a>
-    </li>
-    <li>
-      <a href="lookalike?no-safe-url=1">Lookalike URL (no suggested URL)</a>
-    </li>
-  </ul>
-  <h3>Insecure (Mixed) Form Submission Warnings</h3>
-  <ul>
-    <li>
-      <a href="insecure_form">Insecure Form</a>
-    </li>
-  </ul>
-  <h3>HTTPS-Only Mode Warnings</h3>
-  <ul>
-    <li>
-      <a href="https_only">HTTPS-Only Mode</a>
-    </li>
-  </ul>
-  <h3>Supervised User</h3>
-  <ul>
-    <li>
-      <a href="supervised_user?allow-access-requests=1">Supervised User Blocked Site</a>
-    </li>
-  </ul>
+  <if expr="not is_ios">
+    <h3>Lookalike URL Warnings</h3>
+    <ul>
+      <li>
+        <a href="lookalike">Lookalike URL</a>
+      </li>
+      <li>
+        <a href="lookalike?no-safe-url=1">Lookalike URL (no suggested URL)</a>
+      </li>
+    </ul>
+    <h3>Insecure (Mixed) Form Submission Warnings</h3>
+    <ul>
+      <li>
+        <a href="insecure_form">Insecure Form</a>
+      </li>
+    </ul>
+    <h3>HTTPS-Only Mode Warnings</h3>
+    <ul>
+      <li>
+        <a href="https_only">HTTPS-Only Mode</a>
+      </li>
+    </ul>
+    <h3>Supervised User</h3>
+    <ul>
+      <li>
+        <a href="supervised_user?allow-access-requests=1">Supervised User Blocked Site</a>
+      </li>
+    </ul>
+  </if>
 </body>
 </html>

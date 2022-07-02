@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-blink.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_input_ipc.h"
@@ -86,16 +85,13 @@ void AssociateInputAndOutputForAec(
 
 AudioInputIPCFactory& AudioInputIPCFactory::GetInstance() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioInputIPCFactory, instance,
-                                  (Thread::MainThread()->GetTaskRunner(),
-                                   Platform::Current()->GetIOTaskRunner()));
+                                  (Thread::MainThread()->GetTaskRunner()));
   return instance;
 }
 
 AudioInputIPCFactory::AudioInputIPCFactory(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : main_task_runner_(std::move(main_task_runner)),
-      io_task_runner_(std::move(io_task_runner)) {}
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
+    : main_task_runner_(std::move(main_task_runner)) {}
 
 AudioInputIPCFactory::~AudioInputIPCFactory() = default;
 

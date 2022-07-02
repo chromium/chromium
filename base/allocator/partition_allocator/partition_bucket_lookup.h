@@ -8,10 +8,10 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
@@ -104,8 +104,9 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  ALWAYS_INLINE constexpr static size_t GetIndexForDenserBuckets(size_t size);
-  ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
+      size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -202,13 +203,13 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
-ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
+PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
   const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
   PA_DCHECK(size <= n);
   return n;
 }
 
-ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
+PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
   const size_t next_power = RoundUpToPowerOfTwo(size);
   const size_t prev_power = next_power >> 1;
   PA_DCHECK(size <= next_power);
@@ -221,7 +222,7 @@ ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
 }
 
 // static
-ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // For any order 2^N, under the denser bucket distribution ("Distribution A"),
   // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
   // These numbers represent the maximum size of an allocation that can go into
@@ -242,18 +243,18 @@ ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
   // Distribution A, but to the 2^11 bucket under Distribution B.
   if (1 << 8 < size && size < 1 << 19)
     return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
-  else
-    return BucketIndexLookup::GetIndexForDenserBuckets(size);
+  return BucketIndexLookup::GetIndexForDenserBuckets(size);
 }
 
 // static
-ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndexForDenserBuckets(
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
     size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
-  const uint8_t order =
-      kBitsPerSizeT - base::bits::CountLeadingZeroBitsSizeT(size);
+  const size_t order =
+      kBitsPerSizeT -
+      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =
@@ -268,13 +269,5 @@ ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndexForDenserBuckets(
 }
 
 }  // namespace partition_alloc::internal
-
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::BucketIndexLookup;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_LOOKUP_H_

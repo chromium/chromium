@@ -199,9 +199,12 @@ void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
   if (delay < TimeDelta())
     delay = TimeDelta();
 
+  if (!timer_callback_) {
+    timer_callback_ = BindRepeating(&DelayTimerBase::OnScheduledTaskInvoked,
+                                    Unretained(this));
+  }
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTask(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DelayTimerBase::OnScheduledTaskInvoked, Unretained(this)),
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       delay);
   scheduled_run_time_ = desired_run_time_ = Now() + delay;
 }
@@ -369,7 +372,6 @@ void DeadlineTimer::Start(const Location& posted_from,
   subtle::DelayPolicy delay_policy =
       exact ? subtle::DelayPolicy::kPrecise
             : subtle::DelayPolicy::kFlexiblePreferEarly;
-
   ScheduleNewTask(deadline, delay_policy);
 }
 
@@ -384,9 +386,12 @@ void DeadlineTimer::ScheduleNewTask(TimeTicks deadline,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_running_ = true;
 
+  if (!timer_callback_) {
+    timer_callback_ =
+        BindRepeating(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this));
+  }
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this)),
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       deadline, delay_policy);
 }
 
@@ -398,6 +403,76 @@ void DeadlineTimer::OnScheduledTaskInvoked() {
   // |user_task_| member.
   OnceClosure task = std::move(user_task_);
   Stop();
+  std::move(task).Run();
+  // No more member accesses here: |this| could be deleted at this point.
+}
+
+MetronomeTimer::MetronomeTimer() = default;
+MetronomeTimer::~MetronomeTimer() = default;
+
+MetronomeTimer::MetronomeTimer(const Location& posted_from,
+                               TimeDelta interval,
+                               RepeatingClosure user_task,
+                               TimeTicks phase)
+    : TimerBase(posted_from),
+      interval_(interval),
+      user_task_(user_task),
+      phase_(phase) {}
+
+void MetronomeTimer::Start(const Location& posted_from,
+                           TimeDelta interval,
+                           RepeatingClosure user_task,
+                           TimeTicks phase) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  user_task_ = std::move(user_task);
+  posted_from_ = posted_from;
+  interval_ = interval;
+  phase_ = phase;
+
+  Reset();
+}
+
+void MetronomeTimer::OnStop() {
+  user_task_.Reset();
+  // No more member accesses here: |this| could be deleted after freeing
+  // |user_task_|.
+}
+
+void MetronomeTimer::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(user_task_);
+  // We can't reuse the |scheduled_task_|, so abandon it and post a new one.
+  AbandonScheduledTask();
+  ScheduleNewTask();
+}
+
+void MetronomeTimer::ScheduleNewTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_running_ = true;
+
+  // The next wake up is scheduled at the next aligned time which is at least
+  // `interval_ / 2` after now. `interval_ / 2` is added to avoid playing
+  // "catch-up" if wake ups are late.
+  TimeTicks deadline =
+      (TimeTicks::Now() + interval_ / 2).SnappedToNextTick(phase_, interval_);
+
+  if (!timer_callback_) {
+    timer_callback_ = BindRepeating(&MetronomeTimer::OnScheduledTaskInvoked,
+                                    Unretained(this));
+  }
+  delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
+      deadline, subtle::DelayPolicy::kPrecise);
+}
+
+void MetronomeTimer::OnScheduledTaskInvoked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!delayed_task_handle_.IsValid());
+
+  // Make a local copy of the task to run in case the task destroy the timer
+  // instance.
+  RepeatingClosure task = user_task_;
+  ScheduleNewTask();
   std::move(task).Run();
   // No more member accesses here: |this| could be deleted at this point.
 }

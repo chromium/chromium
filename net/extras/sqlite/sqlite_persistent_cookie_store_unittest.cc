@@ -65,7 +65,7 @@ class CookieCryptor : public CookieCryptoDelegate {
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
 
-  bool should_encrypt_;
+  bool should_encrypt_ = true;
 
  private:
   std::unique_ptr<crypto::SymmetricKey> key_;
@@ -73,8 +73,7 @@ class CookieCryptor : public CookieCryptoDelegate {
 };
 
 CookieCryptor::CookieCryptor()
-    : should_encrypt_(true),
-      key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
+    : key_(crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
           crypto::SymmetricKey::AES,
           "password",
           "saltiest",
@@ -1179,33 +1178,31 @@ bool AddV9CookiesToDBImpl(sql::Database* db,
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
-  for (size_t i = 0; i < cookies.size(); ++i) {
+  for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
-        0,
-        cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindString(1, cookies[i].Domain());
-    statement.BindString(2, cookies[i].Name());
-    statement.BindString(3, cookies[i].Value());
+        0, cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindString(1, cookie.Domain());
+    statement.BindString(2, cookie.Name());
+    statement.BindString(3, cookie.Value());
     statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
-    statement.BindString(5, cookies[i].Path());
+    statement.BindString(5, cookie.Path());
     statement.BindInt64(
-        6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindInt(7, cookies[i].IsSecure());
-    statement.BindInt(8, cookies[i].IsHttpOnly());
+        6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(7, cookie.IsSecure());
+    statement.BindInt(8, cookie.IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    statement.BindInt64(10, cookies[i]
-                                .LastAccessDate()
-                                .ToDeltaSinceWindowsEpoch()
-                                .InMicroseconds());
-    statement.BindInt(11, cookies[i].IsPersistent());
-    statement.BindInt(12, cookies[i].IsPersistent());
-    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    statement.BindInt(9, static_cast<int>(cookie.SameSite()));
+    statement.BindInt64(
+        10,
+        cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(11, cookie.IsPersistent());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookie.Priority()));
     if (!statement.Run())
       return false;
   }
@@ -1656,33 +1653,31 @@ bool AddV10CookiesToDBImpl(sql::Database* db,
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
-  for (size_t i = 0; i < cookies.size(); ++i) {
+  for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
-        0,
-        cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindString(1, cookies[i].Domain());
-    statement.BindString(2, cookies[i].Name());
-    statement.BindString(3, cookies[i].Value());
+        0, cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindString(1, cookie.Domain());
+    statement.BindString(2, cookie.Name());
+    statement.BindString(3, cookie.Value());
     statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
-    statement.BindString(5, cookies[i].Path());
+    statement.BindString(5, cookie.Path());
     statement.BindInt64(
-        6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindInt(7, cookies[i].IsSecure());
-    statement.BindInt(8, cookies[i].IsHttpOnly());
+        6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(7, cookie.IsSecure());
+    statement.BindInt(8, cookie.IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    statement.BindInt64(10, cookies[i]
-                                .LastAccessDate()
-                                .ToDeltaSinceWindowsEpoch()
-                                .InMicroseconds());
-    statement.BindInt(11, cookies[i].IsPersistent());
-    statement.BindInt(12, cookies[i].IsPersistent());
-    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    statement.BindInt(9, static_cast<int>(cookie.SameSite()));
+    statement.BindInt64(
+        10,
+        cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(11, cookie.IsPersistent());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookie.Priority()));
     if (!statement.Run())
       return false;
   }
@@ -2032,33 +2027,31 @@ bool AddV11CookiesToDB(sql::Database* db) {
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
-  for (size_t i = 0; i < cookies.size(); ++i) {
+  for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
-        0,
-        cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindString(1, cookies[i].Domain());
-    statement.BindString(2, cookies[i].Name());
-    statement.BindString(3, cookies[i].Value());
+        0, cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindString(1, cookie.Domain());
+    statement.BindString(2, cookie.Name());
+    statement.BindString(3, cookie.Value());
     statement.BindBlob(4, base::span<uint8_t>());  // encrypted_value
-    statement.BindString(5, cookies[i].Path());
+    statement.BindString(5, cookie.Path());
     statement.BindInt64(
-        6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    statement.BindInt(7, cookies[i].IsSecure());
-    statement.BindInt(8, cookies[i].IsHttpOnly());
+        6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(7, cookie.IsSecure());
+    statement.BindInt(8, cookie.IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    statement.BindInt64(10, cookies[i]
-                                .LastAccessDate()
-                                .ToDeltaSinceWindowsEpoch()
-                                .InMicroseconds());
-    statement.BindInt(11, cookies[i].IsPersistent());
-    statement.BindInt(12, cookies[i].IsPersistent());
-    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    statement.BindInt(9, static_cast<int>(cookie.SameSite()));
+    statement.BindInt64(
+        10,
+        cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    statement.BindInt(11, cookie.IsPersistent());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookie.Priority()));
     if (!statement.Run())
       return false;
   }

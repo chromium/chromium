@@ -38,7 +38,7 @@
   [super containerViewWillLayoutSubviews];
   // Trigger a layout pass for the presenting view controller.  This allows the
   // presentation context to resize itself to match the presented overlay UI if
-  // |resizesPresentationContainer| is YES.
+  // `resizesPresentationContainer` is YES.
   if (self.needsLayout) {
     [self.presentingViewController.view setNeedsLayout];
     self.needsLayout = NO;

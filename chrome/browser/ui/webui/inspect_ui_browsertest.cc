@@ -43,7 +43,7 @@ class InspectUITest : public WebUIBrowserTest {
 
     // Fake clicking the "Inspect Native UI" button.
     web_ui->ProcessWebUIMessage(GURL(), "launch-ui-devtools",
-                                base::ListValue());
+                                base::Value::List());
 
     new_tab_observer.Wait();
     EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -152,7 +152,9 @@ class InspectUIFencedFrameTest : public InspectUITest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest, FencedFrameInFrontEnd) {
+// TODO(crbug.com/1331249): Re-enable this test
+IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest,
+                       DISABLED_FencedFrameInFrontEnd) {
   ASSERT_TRUE(embedded_test_server()->Start());
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
@@ -175,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(InspectUIFencedFrameTest, FencedFrameInFrontEnd) {
   const GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      front_end_tab->GetMainFrame(), fenced_frame_url));
+      front_end_tab->GetPrimaryMainFrame(), fenced_frame_url));
 
   // Ensure that the fenced frame doesn't affect to the the front-end observer.
   // "Inspect Native UI" button is still disabled.

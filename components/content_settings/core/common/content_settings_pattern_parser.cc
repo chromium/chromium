@@ -168,8 +168,8 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       builder->WithPortWildcard();
     } else {
       // Check if the port string represents a valid port.
-      for (size_t i = 0; i < port_piece.size(); ++i) {
-        if (!base::IsAsciiDigit(port_piece[i])) {
+      for (const auto port_char : port_piece) {
+        if (!base::IsAsciiDigit(port_char)) {
           builder->Invalid();
           return;
         }
@@ -177,11 +177,11 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       // TODO(markusheintz): Check port range.
       builder->WithPort(std::string(port_piece));
     }
-  } else {
-    if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
-            scheme_piece) &&
-        scheme_piece != url::kFileScheme)
-      builder->WithPortWildcard();
+  } else if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
+                 scheme_piece) &&
+             !base::EqualsCaseInsensitiveASCII(scheme_piece,
+                                               url::kFileScheme)) {
+    builder->WithPortWildcard();
   }
 
   if (!path_piece.empty()) {

@@ -44,10 +44,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
 }
 
 EcheSystemAppDelegate::EcheSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::ECHE,
-                                    "Eche",
-                                    GURL("chrome://eche-app"),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::ECHE,
+                                "Eche",
+                                GURL("chrome://eche-app"),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> EcheSystemAppDelegate::GetWebAppInfo()
     const {

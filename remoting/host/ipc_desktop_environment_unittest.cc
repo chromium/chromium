@@ -377,7 +377,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   input_injector_ = desktop_environment_->CreateInputInjector();
 
   // Create the screen capturer.
-  video_capturer_ = desktop_environment_->CreateVideoCapturer(nullptr);
+  video_capturer_ = desktop_environment_->CreateVideoCapturer();
 
   desktop_environment_->SetCapabilities(std::string());
 
@@ -416,7 +416,7 @@ IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &IpcDesktopEnvironmentTest::CreateInputInjector));
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
@@ -805,9 +805,10 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
           this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
 
   // Change the desktop resolution.
-  screen_controls_->SetScreenResolution(ScreenResolution(
-      webrtc::DesktopSize(100, 100),
-      webrtc::DesktopVector(96, 96)));
+  screen_controls_->SetScreenResolution(
+      ScreenResolution(webrtc::DesktopSize(100, 100),
+                       webrtc::DesktopVector(96, 96)),
+      absl::nullopt);
 }
 
 TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {

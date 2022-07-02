@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -43,7 +45,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -1194,7 +1196,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>("component_id", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
   component->SetMuted(true);
   component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -1240,7 +1242,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>("component_id", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
   component->SetContentHint(
       static_cast<WebMediaStreamTrack::ContentHintType>(666));
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -1268,7 +1270,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */);
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);
 
@@ -1281,6 +1283,25 @@ TEST(V8ScriptValueSerializerForModulesTest,
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
       "DataCloneError", scope.GetScriptState(), exception_state));
 }
+
+#if !BUILDFLAG(IS_ANDROID)  // CropTarget is not exposed on Android.
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
+  V8TestingScope scope;
+
+  const String crop_id("8e7e0c22-67a0-4c39-b4dc-a20433262f8e");
+
+  CropTarget* const crop_target = MakeGarbageCollected<CropTarget>(crop_id);
+
+  v8::Local<v8::Value> wrapper = ToV8(crop_target, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+
+  ASSERT_TRUE(V8CropTarget::HasInstance(result, scope.GetIsolate()));
+
+  CropTarget* const new_crop_target =
+      V8CropTarget::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_crop_target->GetCropId(), crop_id);
+}
+#endif
 
 }  // namespace
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/eol_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -19,7 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -64,14 +65,11 @@ bool EolNotification::ShouldShowEolNotification() {
 EolNotification::EolNotification(Profile* profile)
     : clock_(base::DefaultClock::GetInstance()), profile_(profile) {}
 
-EolNotification::~EolNotification() {}
+EolNotification::~EolNotification() = default;
 
 void EolNotification::CheckEolInfo() {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the Eol Info.
-  update_engine_client->GetEolInfo(base::BindOnce(
+  UpdateEngineClient::Get()->GetEolInfo(base::BindOnce(
       &EolNotification::OnEolInfo, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -134,7 +132,8 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                                    ui::GetChromeOSDeviceName()),
         std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
+            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
+            NotificationCatalogName::kPendingEOL),
         data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetWeakPtr()),
@@ -152,7 +151,8 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                                    ui::GetChromeOSDeviceName()),
         std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
+            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
+            NotificationCatalogName::kEOL),
         data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetWeakPtr()),

@@ -23,10 +23,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/account_id/account_id.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/prefs/pref_service.h"
@@ -59,9 +58,9 @@ void ErrorCallbackFunction(const std::string& error_name,
 }
 
 void SetConnected(const std::string& service_path) {
-  DBusThreadManager::Get()->GetShillServiceClient()->Connect(
-      dbus::ObjectPath(service_path), base::DoNothing(),
-      base::BindOnce(&ErrorCallbackFunction));
+  ShillServiceClient::Get()->Connect(dbus::ObjectPath(service_path),
+                                     base::DoNothing(),
+                                     base::BindOnce(&ErrorCallbackFunction));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -88,16 +87,16 @@ class NetworkPortalDetectorImplBrowserTest
     LoginManagerTest::SetUpOnMainThread();
 
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service_test->ClearServices();
     service_test->AddService(kWifiServicePath, kWifiGuid, "wifi",
                              shill::kTypeEthernet, shill::kStateIdle,
                              true /* add_to_visible */);
-    DBusThreadManager::Get()->GetShillServiceClient()->SetProperty(
+    ShillServiceClient::Get()->SetProperty(
         dbus::ObjectPath(kWifiServicePath), shill::kStateProperty,
         base::Value(shill::kStateRedirectFound), base::DoNothing(),
         base::BindOnce(&ErrorCallbackFunction));
-    DBusThreadManager::Get()->GetShillServiceClient()->SetProperty(
+    ShillServiceClient::Get()->SetProperty(
         dbus::ObjectPath(kWifiServicePath), shill::kProbeUrlProperty,
         base::Value(kProbeUrl), base::DoNothing(),
         base::BindOnce(&ErrorCallbackFunction));

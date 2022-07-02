@@ -55,7 +55,6 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -80,7 +79,6 @@ class TracedValue;
 }  // namespace base
 
 namespace network {
-class ResourceRequestBody;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
@@ -175,13 +173,16 @@ class CONTENT_EXPORT NavigationRequest
     DID_COMMIT_ERROR_PAGE,
   };
 
-  // The SiteInstance currently associated with the navigation. Note that the
+  // The RenderFrameHost currently associated with the navigation. Note that the
   // final value will only be known when the response is received, or the
-  // navigation fails, as server redirects can modify the SiteInstance to use
+  // navigation fails, as server redirects can modify the RenderFrameHost to use
   // for the navigation.
-  enum class AssociatedSiteInstanceType {
+  enum class AssociatedRenderFrameHostType {
     NONE = 0,
+    // The navigation reuses the current RenderFrameHost.
     CURRENT,
+    // The navigation uses a new RenderFrameHost, the speculative
+    // RenderFrameHost.
     SPECULATIVE,
   };
 
@@ -219,7 +220,7 @@ class CONTENT_EXPORT NavigationRequest
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
-      const scoped_refptr<network::ResourceRequestBody>& post_body,
+      bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const absl::optional<blink::Impression>& impression,
       bool is_pdf,
@@ -328,7 +329,7 @@ class CONTENT_EXPORT NavigationRequest
   bool HasSubframeNavigationEntryCommitted() override;
   bool DidReplaceEntry() override;
   bool ShouldUpdateHistory() override;
-  const GURL& GetPreviousMainFrameURL() override;
+  const GURL& GetPreviousPrimaryMainFrameURL() override;
   net::IPEndPoint GetSocketAddress() override;
   const net::HttpRequestHeaders& GetRequestHeaders() override;
   void RemoveRequestHeader(const std::string& header_name) override;
@@ -443,11 +444,11 @@ class CONTENT_EXPORT NavigationRequest
 
   bool from_begin_navigation() const { return from_begin_navigation_; }
 
-  AssociatedSiteInstanceType associated_site_instance_type() const {
-    return associated_site_instance_type_;
+  AssociatedRenderFrameHostType associated_rfh_type() const {
+    return associated_rfh_type_;
   }
-  void set_associated_site_instance_type(AssociatedSiteInstanceType type) {
-    associated_site_instance_type_ = type;
+  void set_associated_rfh_type(AssociatedRenderFrameHostType type) {
+    associated_rfh_type_ = type;
   }
 
   void set_was_discarded() { commit_params_->was_discarded = true; }
@@ -693,7 +694,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
-  bool anonymous() const { return anonymous_; }
+  bool is_anonymous() const { return is_anonymous_; }
 
   bool is_fenced_frame_opaque_url() const {
     return is_fenced_frame_opaque_url_;
@@ -846,6 +847,10 @@ class CONTENT_EXPORT NavigationRequest
   // |commit_params_|, which is always set to the first destination URL for this
   // navigation.
   const GURL& GetOriginalRequestURL();
+
+  // The previous main frame URL. This may be empty if there was no last
+  // committed entry.
+  const GURL& GetPreviousMainFrameURL() const;
 
   // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
   // adds a const qualifier.
@@ -1598,9 +1603,9 @@ class CONTENT_EXPORT NavigationRequest
   // Whether devtools overrides were applied on the User-Agent request header.
   bool devtools_user_agent_override_ = false;
 
-  // The type of SiteInstance associated with this navigation.
-  AssociatedSiteInstanceType associated_site_instance_type_ =
-      AssociatedSiteInstanceType::NONE;
+  // The type of RenderFrameHost associated with this navigation.
+  AssociatedRenderFrameHostType associated_rfh_type_ =
+      AssociatedRenderFrameHostType::NONE;
 
   // Stores the SiteInstance created on redirects to check if there is an
   // existing RenderProcessHost that can commit the navigation so that the
@@ -1888,7 +1893,7 @@ class CONTENT_EXPORT NavigationRequest
   // Whether the document loaded by this navigation will be committed inside an
   // anonymous iframe. Documents loaded inside anonymous iframes get partitioned
   // storage and use a transient NetworkIsolationKey.
-  const bool anonymous_;
+  const bool is_anonymous_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
   absl::optional<NavigationPolicyContainerBuilder> policy_container_builder_;

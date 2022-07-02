@@ -29,13 +29,8 @@ NSString* const kLearnMoreIdentifier = @"Learn more";
 // URL of the help center page.
 char kHelpCenterURL[] = "support.google.com";
 
-// Matcher for the history button in the tools menu.
-id<GREYMatcher> HistoryButton() {
-  return grey_accessibilityID(kToolsMenuHistoryId);
-}
-
 // Matcher for an element with or without the
-// UIAccessibilityTraitSelected accessibility trait depending on |selected|.
+// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
 id<GREYMatcher> ElementIsSelected(BOOL selected) {
   return selected
              ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
@@ -43,7 +38,7 @@ id<GREYMatcher> ElementIsSelected(BOOL selected) {
 }
 
 // Returns a matcher (which always matches) that records the selection
-// state of matched element in |selected| parameter.
+// state of matched element in `selected` parameter.
 id<GREYMatcher> RecordElementSelectionState(BOOL& selected) {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     selected = ([view accessibilityTraits] & UIAccessibilityTraitSelected) != 0;
@@ -281,7 +276,8 @@ using chrome_test_util::WindowWithNumber;
 // the "Learn more" link opens the help center.
 - (void)testTapLearnMoreFromHistory {
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];

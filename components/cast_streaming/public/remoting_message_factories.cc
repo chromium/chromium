@@ -150,6 +150,13 @@ CreateMessageForDemuxerStreamReadUntil(
 }
 
 std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamEnableBitstreamConverter() {
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_ENABLEBITSTREAMCONVERTER);
+  return rpc;
+}
+
+std::unique_ptr<openscreen::cast::RpcMessage>
 CreateMessageForDemuxerStreamError() {
   auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_ONERROR);

@@ -37,10 +37,10 @@ void BackgroundTracingTrigger() {
   static content::BackgroundTracingManager::TriggerHandle trigger_handle_ = -1;
   if (trigger_handle_ == -1) {
     trigger_handle_ =
-        content::BackgroundTracingManager::GetInstance()->RegisterTriggerType(
+        content::BackgroundTracingManager::GetInstance().RegisterTriggerType(
             "session-restore-config");
   }
-  content::BackgroundTracingManager::GetInstance()->TriggerNamedEvent(
+  content::BackgroundTracingManager::GetInstance().TriggerNamedEvent(
       trigger_handle_,
       content::BackgroundTracingManager::StartedFinalizingCallback());
 }

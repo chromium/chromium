@@ -36,6 +36,8 @@ class UserNoteServiceDelegateImpl : public UserNoteServiceDelegate {
   UserNotesUI* GetUICoordinatorForFrame(
       const content::RenderFrameHost* rfh) override;
 
+  bool IsFrameInActiveTab(const content::RenderFrameHost* rfh) override;
+
  private:
   raw_ptr<Profile> profile_;
 };

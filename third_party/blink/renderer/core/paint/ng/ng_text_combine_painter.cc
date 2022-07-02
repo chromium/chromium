@@ -21,6 +21,7 @@ NGTextCombinePainter::NGTextCombinePainter(GraphicsContext& context,
                       style.GetFont(),
                       text_frame_rect.offset,
                       text_frame_rect,
+                      /* inline_context */ nullptr,
                       /* horizontal */ false),
       style_(style) {}
 
@@ -96,13 +97,11 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
                                             const TextPaintStyle& text_style) {
   // Setup arguments for painting text decorations
   const absl::optional<AppliedTextDecoration> selection_text_decoration;
-  const ComputedStyle* const decorating_box_style = nullptr;
   TextDecorationInfo decoration_info(
-      text_frame_rect_.offset, text_frame_rect_.size.width,
-      style_.GetFontBaseline(), style_, style_.GetFont(),
-      selection_text_decoration, decorating_box_style);
+      text_frame_rect_.offset, text_frame_rect_.size.width, style_,
+      /* inline_context */ nullptr, selection_text_decoration);
 
-  const NGTextDecorationOffset decoration_offset(style_, style_, nullptr);
+  const NGTextDecorationOffset decoration_offset(style_, style_);
   const auto& applied_text_decorations = style_.AppliedTextDecorations();
 
   // Paint text decorations except line through

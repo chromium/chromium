@@ -254,6 +254,10 @@ void BrowserSwitcherServiceWin::OnIeemSitelistParsed(ParsedXml xml) {
   }
 }
 
+void BrowserSwitcherServiceWin::PrefsFileDeleted(bool /*success*/) {
+  CacheFileUpdated();
+}
+
 void BrowserSwitcherServiceWin::CacheFileUpdated() {
   if (cache_file_updated_callback_for_testing_)
     std::move(cache_file_updated_callback_for_testing_).Run();
@@ -281,10 +285,12 @@ void BrowserSwitcherServiceWin::DeletePrefsFile() {
   if (path.empty())
     return;
   path = path.AppendASCII("cache.dat");
-  sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::GetDeleteFileCallback(std::move(path)),
-      base::BindOnce(&BrowserSwitcherServiceWin::CacheFileUpdated,
-                     weak_ptr_factory_.GetWeakPtr()));
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::GetDeleteFileCallback(
+          std::move(path),
+          base::BindOnce(&BrowserSwitcherServiceWin::PrefsFileDeleted,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void BrowserSwitcherServiceWin::SavePrefsToFile() {
@@ -306,10 +312,14 @@ void BrowserSwitcherServiceWin::DeleteSitelistCacheFile() {
   if (path.empty())
     return;
   path = path.AppendASCII("sitelistcache.dat");
-  sequenced_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::GetDeleteFileCallback(std::move(path)),
-      base::BindOnce(&BrowserSwitcherServiceWin::SitelistCacheFileUpdated,
-                     weak_ptr_factory_.GetWeakPtr()));
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::GetDeleteFileCallback(
+          std::move(path),
+          base::OnceCallback<void(bool)>(base::DoNothing())
+              .Then(base::BindOnce(
+                  &BrowserSwitcherServiceWin::SitelistCacheFileUpdated,
+                  weak_ptr_factory_.GetWeakPtr()))));
 }
 
 void BrowserSwitcherServiceWin::UpdateAllCacheFiles() {

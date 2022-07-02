@@ -21,9 +21,6 @@ namespace gfx {
 
 namespace {
 
-const base::Feature kToneMappingV2{"ToneMappingV2",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Additional YUV information to skia renderer to draw 9- and 10- bits color.
 struct YUVInput {
   float offset = 0.f;
@@ -89,14 +86,7 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
 
   if (!effect) {
     gfx::ColorTransform::Options options;
-
-    static const bool tone_mapping_v2_enabled =
-        base::FeatureList::IsEnabled(kToneMappingV2);
-    if (tone_mapping_v2_enabled)
-      options.tone_map_pq_and_hlg_to_dst = true;
-    else
-      options.tone_map_pq_and_hlg_to_sdr = dst_max_luminance_relative == 1.f;
-
+    options.tone_map_pq_and_hlg_to_dst = true;
     options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
     // TODO(https://crbug.com/1286076): Ensure that, when tone mapping using
     // `dst_max_luminance_relative` is implemented, the gfx::ColorTransform's
@@ -150,9 +140,13 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     sk_sp<SkColorSpace> target_color_space,
     float sdr_max_luminance_nits,
     float dst_max_luminance_relative,
+    bool enable_tone_mapping,
     GrDirectContext* context) {
   sk_sp<SkColorSpace> image_sk_color_space = image->refColorSpace();
   if (!image_sk_color_space)
+    return image->makeColorSpace(target_color_space, context);
+
+  if (!enable_tone_mapping)
     return image->makeColorSpace(target_color_space, context);
 
   gfx::ColorSpace image_color_space(*image_sk_color_space);

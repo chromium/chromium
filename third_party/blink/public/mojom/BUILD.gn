@@ -48,6 +48,7 @@ mojom("mojom_platform") {
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
     "conversions/attribution_data_host.mojom",
+    "conversions/attribution_reporting_automation.mojom",
     "conversions/conversions.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
@@ -121,7 +122,6 @@ mojom("mojom_platform") {
     "locks/lock_manager.mojom",
     "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",
-    "manifest/handle_links.mojom",
     "manifest/manifest.mojom",
     "manifest/manifest_manager.mojom",
     "manifest/manifest_observer.mojom",
@@ -156,6 +156,7 @@ mojom("mojom_platform") {
     "permissions_policy/policy_disposition.mojom",
     "permissions_policy/policy_value.mojom",
     "picture_in_picture/picture_in_picture.mojom",
+    "picture_in_picture_window_options/picture_in_picture_window_options.mojom",
     "plugins/plugin_registry.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",
@@ -173,6 +174,7 @@ mojom("mojom_platform") {
     "selection_menu/selection_menu_behavior.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
+    "service_worker/service_worker_ancestor_frame_type.mojom",
     "service_worker/service_worker_client.mojom",
     "service_worker/service_worker_container_type.mojom",
     "service_worker/service_worker_error_type.mojom",
@@ -199,7 +201,6 @@ mojom("mojom_platform") {
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
-    "timing/worker_timing_container.mojom",
     "use_counter/use_counter_feature.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
@@ -276,6 +277,7 @@ mojom("mojom_platform") {
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
+    "//url/mojom:url_mojom_scheme_host_port",
   ]
 
   if (is_android) {
@@ -514,6 +516,26 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.AuctionAdConfigNonSharedParams"
+          cpp = "::blink::AuctionConfig::NonSharedParams"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
+      traits_public_deps = [ "//url/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AuctionAdConfig"
+          cpp = "::blink::AuctionConfig"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
+      traits_public_deps = [ "//url/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.ClipboardBuffer"
           cpp = "::ui::ClipboardBuffer"
         },
@@ -627,6 +649,11 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.ManifestTranslationItem"
           cpp = "::blink::Manifest::TranslationItem"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestTabStrip"
+          cpp = "::blink::Manifest::TabStrip"
         },
       ]
       traits_headers = [
@@ -832,6 +859,7 @@ mojom("android_mojo_bindings") {
   ]
 
   public_deps = [
+    "//components/digital_goods/mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//mojo/public/mojom/base",
@@ -973,6 +1001,7 @@ mojom("mojom_core") {
     "frame/intrinsic_sizing_info.mojom",
     "frame/lifecycle.mojom",
     "frame/media_player_action.mojom",
+    "frame/pending_beacon.mojom",
     "frame/policy_container.mojom",
     "frame/reporting_observer.mojom",
     "frame/sudden_termination_disabler_type.mojom",
@@ -1420,8 +1449,8 @@ mojom_component("script_type_mojo_bindings") {
 mojom_component("web_feature_mojo_bindings") {
   generate_java = true
   sources = [
-    "use_counter/css_property_id.mojom",
-    "web_feature/web_feature.mojom",
+    "use_counter/metrics/css_property_id.mojom",
+    "use_counter/metrics/web_feature.mojom",
   ]
 
   macro_prefix = "WEB_FEATURE_MOJO_BINDINGS_MOJOM"

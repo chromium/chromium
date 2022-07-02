@@ -2,16 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../settings_shared_css.js';
-
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {Router} from '../../router.js';
-import {routes} from '../os_route.js';
-
-import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
-
 /**
  * @fileoverview 'settings-multidevice-wifi-sync-disabled-link' creates a
  * localized string with accessibility labels for the Wifi Sync feature when
@@ -21,13 +11,37 @@ import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
  * labelling since it contains two links, one to the Chrome Sync dependency
  * and the other to a Learn More page for Wifi Sync.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-multidevice-wifi-sync-disabled-link',
 
-  behaviors: [
-    MultiDeviceFeatureBehavior,
-  ],
+import '../../settings_shared_css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Router} from '../../router.js';
+import {routes} from '../os_route.js';
+
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsMultideviceWifiSyncDisabledLinkElementBase =
+    mixinBehaviors([MultiDeviceFeatureBehavior, I18nBehavior], PolymerElement);
+
+/** @polymer */
+class SettingsMultideviceWifiSyncDisabledLinkElement extends
+    SettingsMultideviceWifiSyncDisabledLinkElementBase {
+  static get is() {
+    return 'settings-multidevice-wifi-sync-disabled-link';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   getAriaLabelledContent_() {
     const tempEl = document.createElement('div');
@@ -56,16 +70,18 @@ Polymer({
     chromeSyncLink.href = '#';
 
     return tempEl.innerHTML;
-  },
+  }
 
   /** @override */
-  attached() {
-    const chromeSyncLink = this.$$('#chromeSyncLink');
+  connectedCallback() {
+    super.connectedCallback();
+
+    const chromeSyncLink = this.shadowRoot.querySelector('#chromeSyncLink');
     if (chromeSyncLink) {
       chromeSyncLink.addEventListener(
           'click', this.onChromeSyncLinkClick_.bind(this));
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -80,5 +96,9 @@ Polymer({
     } else {
       Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsMultideviceWifiSyncDisabledLinkElement.is,
+    SettingsMultideviceWifiSyncDisabledLinkElement);

@@ -12,7 +12,7 @@
 // Returns an image to the UIActivities that can take advantage of it.
 @interface ChromeActivityImageSource : NSObject <ChromeActivityItemSource>
 
-// Default initializer. |image| and |title| must not be nil.
+// Default initializer. `image` and `title` must not be nil.
 - (instancetype)initWithImage:(UIImage*)image title:(NSString*)title;
 
 @end

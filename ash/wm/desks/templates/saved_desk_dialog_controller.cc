@@ -33,8 +33,6 @@ namespace ash {
 
 namespace {
 
-SavedDeskDialogController* g_instance = nullptr;
-
 std::u16string GetStringWithQuotes(const std::u16string& str) {
   return u"\"" + str + u"\"";
 }
@@ -121,23 +119,11 @@ namespace ash {
 //-----------------------------------------------------------------------------
 // SavedDeskDialogController:
 
-SavedDeskDialogController::SavedDeskDialogController() {
-  DCHECK_EQ(nullptr, g_instance);
-  g_instance = this;
-}
+SavedDeskDialogController::SavedDeskDialogController() = default;
 
 SavedDeskDialogController::~SavedDeskDialogController() {
   if (dialog_widget_ && !dialog_widget_->IsClosed())
     dialog_widget_->CloseNow();
-
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
-
-// static
-SavedDeskDialogController* SavedDeskDialogController::Get() {
-  DCHECK(g_instance);
-  return g_instance;
 }
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
@@ -187,7 +173,10 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
 
   auto dialog =
       views::Builder<SavedDeskDialog>()
-          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
+          .SetTitleText(
+              unsupported_apps_template_->type() == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE)
           .SetConfirmButtonText(
               IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
           .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
@@ -215,37 +204,56 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
                   .PopulateIconContainerFromWindows(unsupported_apps))
           .Build();
   CreateDialogWidget(std::move(dialog), root_window);
-  RecordUnsupportedAppDialogShowHistogram();
+  RecordUnsupportedAppDialogShowHistogram(unsupported_apps_template_->type());
 }
 
 void SavedDeskDialogController::ShowReplaceDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
+    DeskTemplateType template_type,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
-  auto dialog = views::Builder<SavedDeskDialog>()
-                    .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
-                    .SetConfirmButtonText(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
-                    .SetDescriptionText(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        GetStringWithQuotes(template_name)))
-                    .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        template_name))
-                    .SetAcceptCallback(std::move(on_accept_callback))
-                    .SetCancelCallback(std::move(on_cancel_callback))
-                    .Build();
+  if (!CanShowDialog())
+    return;
+
+  auto dialog =
+      views::Builder<SavedDeskDialog>()
+          .SetTitleText(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE)
+          .SetConfirmButtonText(
+              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
+          .SetDescriptionText(l10n_util::GetStringFUTF16(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+              GetStringWithQuotes(template_name)))
+          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+              template_name))
+          .SetAcceptCallback(std::move(on_accept_callback))
+          .SetCancelCallback(std::move(on_cancel_callback))
+          .Build();
   CreateDialogWidget(std::move(dialog), root_window);
 }
 
 void SavedDeskDialogController::ShowDeleteDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
+    DeskTemplateType template_type,
     base::OnceClosure on_accept_callback) {
+  if (!CanShowDialog())
+    return;
+
   auto dialog =
       views::Builder<SavedDeskDialog>()
-          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
+          .SetTitleText(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE)
           .SetButtonLabel(
               ui::DIALOG_BUTTON_OK,
               l10n_util::GetStringUTF16(
@@ -284,8 +292,8 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
 void SavedDeskDialogController::CreateDialogWidget(
     std::unique_ptr<SavedDeskDialog> dialog,
     aura::Window* root_window) {
-  if (dialog_widget_)
-    dialog_widget_->CloseNow();
+  // We should not get here with an active dialog.
+  DCHECK_EQ(dialog_widget_, nullptr);
 
   // The dialog will show on the display associated with `root_window`, and will
   // block all input since it is system modal.
@@ -296,6 +304,11 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_);
+}
+
+bool SavedDeskDialogController::CanShowDialog() const {
+  // Cannot show a dialog while another is active.
+  return dialog_widget_ == nullptr;
 }
 
 void SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog() {

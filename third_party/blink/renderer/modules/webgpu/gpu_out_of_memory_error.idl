@@ -7,6 +7,6 @@
 [
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
-] interface GPUOutOfMemoryError {
-  constructor();
+] interface GPUOutOfMemoryError : GPUError {
+    constructor(DOMString message);
 };

@@ -8,6 +8,10 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_features.h"
@@ -16,6 +20,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
+#include "content/services/shared_storage_worklet/shared_storage_worklet_service_impl.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
@@ -49,6 +54,50 @@ static features::MBIMode GetMBIMode() {
              ? features::kMBIModeParam.Get()
              : features::MBIMode::kLegacy;
 }
+
+// A thread for running shared storage worklet operations. It hosts a worklet
+// environment belonging to one Document. The object owns itself, cleaning up
+// when the worklet has shut down.
+class SelfOwnedSharedStorageWorkletThread {
+ public:
+  SelfOwnedSharedStorageWorkletThread(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
+      : main_thread_runner_(std::move(main_thread_runner)) {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+
+    auto disconnect_handler = base::BindPostTask(
+        main_thread_runner_,
+        base::BindOnce(&SelfOwnedSharedStorageWorkletThread::
+                           OnSharedStorageWorkletServiceDestroyed,
+                       weak_factory_.GetWeakPtr()));
+
+    auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+    // Initialize the worklet service in a new thread.
+    worklet_thread_ = base::SequenceBound<
+        shared_storage_worklet::SharedStorageWorkletServiceImpl>(
+        task_runner, std::move(receiver), std::move(disconnect_handler));
+  }
+
+ private:
+  void OnSharedStorageWorkletServiceDestroyed() {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+    worklet_thread_.Reset();
+    delete this;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
+
+  base::SequenceBound<shared_storage_worklet::SharedStorageWorkletServiceImpl>
+      worklet_thread_;
+
+  base::WeakPtrFactory<SelfOwnedSharedStorageWorkletThread> weak_factory_{this};
+};
 
 }  // namespace
 
@@ -229,9 +278,9 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id) {
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
       *this, params->token, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker), params->previous_routing_id,
-      params->opener_frame_token, params->parent_routing_id,
-      params->previous_sibling_routing_id, params->devtools_frame_token,
+      std::move(params->interface_broker), params->previous_frame_token,
+      params->opener_frame_token, params->parent_frame_token,
+      params->previous_sibling_frame_token, params->devtools_frame_token,
       params->tree_scope_type, std::move(params->replication_state),
       std::move(params->widget_params),
       std::move(params->frame_owner_properties),
@@ -244,22 +293,22 @@ void AgentSchedulingGroup::CreateFrameProxy(
     int32_t routing_id,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int32_t view_routing_id,
-    int32_t parent_routing_id,
+    const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
   RenderFrameProxy::CreateFrameProxy(
       *this, token, routing_id, opener_frame_token, view_routing_id,
-      parent_routing_id, tree_scope_type, std::move(replicated_state),
+      parent_frame_token, tree_scope_type, std::move(replicated_state),
       devtools_frame_token, std::move(remote_main_frame_interfaces));
 }
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
     mojo::PendingReceiver<
         shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
-  RenderThreadImpl& renderer = ToImpl(render_thread_);
-  renderer.CreateSharedStorageWorkletService(std::move(receiver));
+  new SelfOwnedSharedStorageWorkletThread(
+      agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
 }
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(

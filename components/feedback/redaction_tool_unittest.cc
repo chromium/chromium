@@ -36,7 +36,8 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "aaaaaaaa [SSID=<SSID: 1>]aaaaa", PIIType::kSSID},
     {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
      "aaaaaaaa<URL: 1>", PIIType::kURL},
-    {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux context.
+    {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux
+                                                  // context.
      "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
     {"aaaaaemail@example.comaaa",  // Email address.
      "<email: 1>", PIIType::kEmail},
@@ -181,7 +182,9 @@ const StringWithRedaction kStringsWithRedactions[] = {
     {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
      "<URL: 3>", PIIType::kURL},  // Potentially PII in parameter.
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
-     "/root/<HASH:2754 1>/foo", PIIType::kHash},  // Hash string.
+     "/root/<HASH:2754 1>/foo", PIIType::kStableIdentifier},  // Hash string.
+    {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "<UID: 1>",
+     PIIType::kStableIdentifier},
 #if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -468,11 +471,11 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
   // The PIIType for the CustomPatternWithAlias is not relevant, only for
   // testing.
   const CustomPatternWithAlias kPattern1 = {"ID", "(\\b(?i)id:? ')(\\d+)(')",
-                                            PIIType::kUUID};
+                                            PIIType::kStableIdentifier};
   const CustomPatternWithAlias kPattern2 = {"ID", "(\\b(?i)id=')(\\d+)(')",
-                                            PIIType::kUUID};
+                                            PIIType::kStableIdentifier};
   const CustomPatternWithAlias kPattern3 = {"IDG", "(\\b(?i)idg=')(\\d+)(')",
-                                            PIIType::kCellID};
+                                            PIIType::kLocationInfo};
   EXPECT_EQ("", RedactCustomPatternWithContext("", kPattern1));
   EXPECT_EQ("foo\nbar\n",
             RedactCustomPatternWithContext("foo\nbar\n", kPattern1));
@@ -543,15 +546,23 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
   // will be redacted with the URL or Android storage path that they're part of.
   std::string redaction_output_mac_and_hashes;
   for (const auto& s : kStringsWithRedactions) {
-    if (s.pii_type == PIIType::kMACAddress || s.pii_type == PIIType::kHash) {
+    if (s.pii_type == PIIType::kMACAddress ||
+        s.pii_type == PIIType::kStableIdentifier) {
       redaction_output_mac_and_hashes.append(s.pre_redaction).append("\n");
     } else {
       redaction_output_mac_and_hashes.append(s.post_redaction).append("\n");
     }
   }
-  EXPECT_EQ(redaction_output_mac_and_hashes,
+  EXPECT_EQ(
+      redaction_output_mac_and_hashes,
+      redactor_.RedactAndKeepSelected(
+          redaction_input, {PIIType::kMACAddress, PIIType::kStableIdentifier}));
+}
+
+TEST_F(RedactionToolTest, RedactUid) {
+  EXPECT_EQ("<UID: 1>",
             redactor_.RedactAndKeepSelected(
-                redaction_input, {PIIType::kMACAddress, PIIType::kHash}));
+                "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
@@ -652,7 +663,10 @@ TEST_F(RedactionToolTest, DetectPII) {
              "::0101:ffff:c0a8:640a",
          }},
         {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
-      PIIType::kHash, { "27540283740a0897ab7c8de0f809add2bacde78f" }
+      PIIType::kStableIdentifier, {
+        "27540283740a0897ab7c8de0f809add2bacde78f",
+        "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+      }
     }
   };
 

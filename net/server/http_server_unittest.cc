@@ -178,7 +178,7 @@ struct ReceivedRequest {
 class HttpServerTest : public TestWithTaskEnvironment,
                        public HttpServer::Delegate {
  public:
-  HttpServerTest() : quit_on_close_connection_(-1) {}
+  HttpServerTest() = default;
 
   void SetUp() override {
     std::unique_ptr<ServerSocket> server_socket(
@@ -276,7 +276,7 @@ class HttpServerTest : public TestWithTaskEnvironment,
  private:
   base::test::RepeatingTestFuture<ReceivedRequest> received_requests_;
   std::unique_ptr<base::RunLoop> quit_on_create_loop_;
-  int quit_on_close_connection_;
+  int quit_on_close_connection_ = -1;
 };
 
 namespace {
@@ -943,7 +943,7 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
 
 class MockStreamSocket : public StreamSocket {
  public:
-  MockStreamSocket() : connected_(true), read_buf_(nullptr), read_buf_len_(0) {}
+  MockStreamSocket() = default;
 
   MockStreamSocket(const MockStreamSocket&) = delete;
   MockStreamSocket& operator=(const MockStreamSocket&) = delete;
@@ -1027,9 +1027,9 @@ class MockStreamSocket : public StreamSocket {
  private:
   ~MockStreamSocket() override = default;
 
-  bool connected_;
+  bool connected_ = true;
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
   CompletionOnceCallback read_callback_;
   std::string pending_read_data_;
   NetLogWithSource net_log_;

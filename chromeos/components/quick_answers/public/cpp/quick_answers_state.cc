@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -21,11 +22,11 @@ const char kQuickAnswersConsentDuration[] = "QuickAnswers.V2.Consent.Duration";
 const char kQuickAnswersConsentImpression[] =
     "QuickAnswers.V2.Consent.Impression";
 
+// Supported languages of the Quick Answers feature.
+const std::string kSupportedLanguages[] = {"en", "es", "it", "fr", "pt", "de"};
+
 bool IsQuickAnswersAllowedForLocale(const std::string& locale,
                                     const std::string& runtime_locale) {
-  if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled())
-    return true;
-
   // String literals used in some cases in the array because their
   // constant equivalents don't exist in:
   // third_party/icu/source/common/unicode/uloc.h
@@ -77,11 +78,16 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
          use_text_annotator_for_testing_;
 }
 
+bool QuickAnswersState::IsSupportedLanguage(const std::string& language) {
+  return base::Contains(kSupportedLanguages, language);
+}
+
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_) {
     observer->OnSettingsEnabled(settings_enabled_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
+    observer->OnPreferredLanguagesChanged(preferred_languages_);
     observer->OnEligibilityChanged(is_eligible_);
   }
 }
@@ -90,8 +96,17 @@ void QuickAnswersState::UpdateEligibility() {
   if (resolved_application_locale_.empty())
     return;
 
-  is_eligible_ = IsQuickAnswersAllowedForLocale(
+  bool is_eligible = IsQuickAnswersAllowedForLocale(
       resolved_application_locale_, icu::Locale::getDefault().getName());
+
+  if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled()) {
+    is_eligible = IsSupportedLanguage(
+        l10n_util::GetLanguage(resolved_application_locale_));
+  }
+
+  if (is_eligible_ == is_eligible)
+    return;
+  is_eligible_ = is_eligible;
 
   for (auto& observer : observers_) {
     observer.OnEligibilityChanged(is_eligible_);

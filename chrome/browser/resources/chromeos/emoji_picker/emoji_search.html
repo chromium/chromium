@@ -10,6 +10,22 @@
     flex-direction: column;
     overflow-y: scroll;
   }
+
+  /* TODO(b/234673508): Remove the styles after removing emoji-buttons.
+   * Until then, this one needs to be kept inline with the one defined in
+   * emoji-group.
+   */
+  :host(:not([v2-enabled])) emoji-button {
+    --emoji-hover-background: transparent;
+    margin-inline-end: 12px;
+  }
+
+  /* The following needs to be in sync with emoji_picker.html */
+  :host([v2-enabled]) emoji-group[category='emoji'] {
+    --emoji-size: var(--v2-emoji-size);
+    --emoji-spacing: var(--v2-emoji-spacing);
+  }
+
   cr-search-field {
     --cr-search-field-clear-icon-fill: var(--cros-icon-color-primary);
     --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
@@ -44,6 +60,7 @@
     display: flex;
     margin-inline-end: var(--emoji-picker-search-margins);
   }
+
   .result:focus,
   .result:active {
     border-color: var(--cros-focus-ring-color);
@@ -54,11 +71,6 @@
 
   .result:hover {
     background-color: var(--cros-ripple-color);
-  }
-
-  emoji-button {
-    --emoji-hover-background: transparent;
-    margin-inline-end: 12px;
   }
 
   .name {
@@ -85,6 +97,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
   #search-shadow {
     background-color: var(--cros-bg-color);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
@@ -123,7 +136,7 @@
   #category-button-group {
     align-items: center;
     display: flex;
-    /* 
+    /*
      * TODO(b/213141035): Change to space-between when symbol category is
      * re-introduced.
      */
@@ -136,12 +149,8 @@
     width: 240px;
   }
 
-  #emoji-result {
-    width: var(--v2-search-content-width);
-  }
-
-  #emoticon-result {
-    margin-top: 12px;
+  /* TODO(b/233133645): emoji-groups margins need to match the design. */
+  #search-results {
     width: var(--v2-search-content-width);
   }
 </style>
@@ -167,8 +176,10 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <template is="dom-if" if="[[!v2Enabled]]">
-      <template is="dom-repeat" items="[[emojiResults]]">
+    <!-- TODO(b/234673356): Merge this block into the V2 one. -->
+    <template is="dom-if"
+        if="[[shouldShowV1Results(searchResults, v2Enabled)]]">
+      <template is="dom-repeat" items="[[searchResults.0.emoji]]">
         <div class="result" tabindex="0" on-click="onResultClick">
           <emoji-button tabindex="-1"
               emoji="[[item.base.string]]"
@@ -179,17 +190,15 @@
       </template>
     </template>
     <template is="dom-if" if="[[v2Enabled]]">
-      <div id="emoji-result">  
-        <emoji-group data="[[emojiResults]]" preferred="{}">
-        </emoji-group>
-      </div>
-      <div id="emoticon-result">
-        <emoticon-group id="emoticon-result" data="[[emoticonResults]]">
-        </emoticon-group>
+      <div id="search-results">
+        <template is="dom-repeat" items="[[searchResults]]">
+          <emoji-group data="[[item.emoji]]" category$="[[item.category]]">
+          </emoji-group>
+        </template>
       </div>
     </template>
     <template is="dom-if"
-      if="[[isSearchResultEmpty(emojiResults, emoticonResults)]]">
+      if="[[!searchResults.length]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"

@@ -132,10 +132,7 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   EXPECT_EQ(worker,
             registry_->GetWorkerNodeByWorkerToken(worker->worker_token()));
 
-  // Querying an invalid token or a random token should fail.
-  EXPECT_FALSE(
-      registry_->GetExecutionContextByToken(blink::ExecutionContextToken(
-          blink::LocalFrameToken(base::UnguessableToken::Null()))));
+  // Querying a random token should fail.
   EXPECT_FALSE(
       registry_->GetExecutionContextByToken(blink::ExecutionContextToken()));
   EXPECT_FALSE(registry_->GetFrameNodeByFrameToken(blink::LocalFrameToken()));

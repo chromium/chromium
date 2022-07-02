@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 
+#include "base/time/time.h"
 
 namespace crash_helper {
 
@@ -54,6 +55,9 @@ void StartUploadingReportsInRecoveryMode();
 
 // Resets the Breakpad configuration from the main bundle.
 void RestoreDefaultConfiguration();
+
+// Deletes any reports that were recorded or uploaded within the time range.
+void ClearReportsBetween(base::Time delete_begin, base::Time delete_end);
 
 }  // namespace crash_helper
 

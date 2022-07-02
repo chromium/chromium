@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/scored_history_match.h"
@@ -34,6 +35,11 @@ AutocompleteProvider::AutocompleteProvider(Type type)
 
 // static
 const char* AutocompleteProvider::TypeToString(Type type) {
+  // When creating a new provider, add the provider type to this function and
+  // make sure to also add the appropriate OmniboxProvider variant to the
+  // Omnibox.ProviderTime2 histogram (defined in omnibox/histograms.xml) so that
+  // the run-time metrics associated with the relevant provider can be properly
+  // analyzed.
   switch (type) {
     case TYPE_BOOKMARK:
       return "Bookmark";
@@ -71,10 +77,21 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "HistoryFuzzy";
     case TYPE_OPEN_TAB:
       return "OpenTab";
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return "HistoryCluster";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
   }
+}
+
+void AutocompleteProvider::AddListener(AutocompleteProviderListener* listener) {
+  listeners_.push_back(listener);
+}
+
+void AutocompleteProvider::NotifyListeners(bool updated_matches) const {
+  for (auto* listener : listeners_)
+    listener->OnProviderUpdate(updated_matches);
 }
 
 void AutocompleteProvider::Stop(bool clear_cached_results,
@@ -114,8 +131,8 @@ ACMatchClassifications AutocompleteProvider::ClassifyAllMatchesInString(
                                                  classifications);
 }
 
-metrics::OmniboxEventProto_ProviderType AutocompleteProvider::
-    AsOmniboxEventProviderType() const {
+metrics::OmniboxEventProto_ProviderType
+AutocompleteProvider::AsOmniboxEventProviderType() const {
   switch (type_) {
     case TYPE_BOOKMARK:
       return metrics::OmniboxEventProto::BOOKMARK;
@@ -153,6 +170,8 @@ metrics::OmniboxEventProto_ProviderType AutocompleteProvider::
       return metrics::OmniboxEventProto::HISTORY_FUZZY;
     case TYPE_OPEN_TAB:
       return metrics::OmniboxEventProto::OPEN_TAB;
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return metrics::OmniboxEventProto::HISTORY_CLUSTER;
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
@@ -173,8 +192,7 @@ void AutocompleteProvider::DeleteMatchElement(const AutocompleteMatch& match,
 void AutocompleteProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 }
 
-void AutocompleteProvider::ResetSession() {
-}
+void AutocompleteProvider::ResetSession() {}
 
 size_t AutocompleteProvider::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(matches_);
@@ -207,9 +225,8 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   // "17173.com"), swap the original hostname in for the fixed-up one.
   if ((input.type() != metrics::OmniboxInputType::URL) &&
       canonical_gurl.HostIsIPAddress()) {
-    std::string original_hostname =
-        base::UTF16ToUTF8(input_text.substr(input.parts().host.begin,
-                                            input.parts().host.len));
+    std::string original_hostname = base::UTF16ToUTF8(
+        input_text.substr(input.parts().host.begin, input.parts().host.len));
     const url::Parsed& parts =
         canonical_gurl.parsed_for_possibly_invalid_spec();
     // parts.host must not be empty when HostIsIPAddress() is true.

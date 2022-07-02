@@ -55,9 +55,6 @@
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
 
-# crbug.com/1231646
--org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMediatorTest.testShowAreaSelectionDone
-
 # crbug.com/1231652
 -org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
 
@@ -74,9 +71,3 @@
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
-
-# crbug.com/1297678
--org.chromium.ui.base.ClipboardAndroidTest.*
-
-# crbug.com/1297682
--org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*

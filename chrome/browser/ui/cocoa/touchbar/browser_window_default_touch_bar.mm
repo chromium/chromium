@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 
 #include <memory>
@@ -90,7 +92,6 @@ NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
 }
 
 // Creates an NSButton for the touch bar using an existing NSImage.
-API_AVAILABLE(macos(10.12.2))
 NSButton* CreateTouchBarButtonWithImage(NSImage* image,
                                         BrowserWindowDefaultTouchBar* owner,
                                         int command,
@@ -104,7 +105,6 @@ NSButton* CreateTouchBarButtonWithImage(NSImage* image,
 }
 
 // Creates an NSButton for the touch bar using a vector icon.
-API_AVAILABLE(macos(10.12.2))
 NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
                                BrowserWindowDefaultTouchBar* owner,
                                int command,
@@ -140,12 +140,11 @@ ui::TouchBarAction TouchBarActionFromCommand(int command) {
 
 // A class registered for C++ notifications. This is used to detect changes in
 // the profile preferences and the back/forward commands.
-class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
-    : public CommandObserver,
-      public BrowserListObserver,
-      public BookmarkTabHelperObserver,
-      public TabStripModelObserver,
-      public content::WebContentsObserver {
+class TouchBarNotificationBridge : public CommandObserver,
+                                   public BrowserListObserver,
+                                   public BookmarkTabHelperObserver,
+                                   public TabStripModelObserver,
+                                   public content::WebContentsObserver {
  public:
   TouchBarNotificationBridge(BrowserWindowDefaultTouchBar* owner,
                              Browser* browser)
@@ -263,8 +262,8 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
  private:
   BrowserWindowDefaultTouchBar* owner_;  // Weak.
-  Browser* browser_;                     // Weak.
-  content::WebContents* contents_;       // Weak.
+  raw_ptr<Browser> browser_;             // Weak.
+  raw_ptr<content::WebContents> contents_;  // Weak.
 
   // Used to monitor the optional home button pref.
   BooleanPrefMember show_home_button_;

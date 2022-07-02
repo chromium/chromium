@@ -99,7 +99,6 @@ if (is_chromeos_ash) {
       "src/internal/rlwe_id_utils.h",
       "src/internal/rlwe_params.h",
       "src/internal/utils.h",
-      "src/membership_response_map.h",
       "src/private_membership_rlwe_client.h",
     ]
     sources = [
@@ -112,7 +111,6 @@ if (is_chromeos_ash) {
       "src/internal/rlwe_id_utils.cc",
       "src/internal/rlwe_params.cc",
       "src/internal/utils.cc",
-      "src/membership_response_map.cc",
       "src/private_membership_rlwe_client.cc",
     ]
     public_deps = [
@@ -143,13 +141,14 @@ if (is_chromeos_ash) {
 
       # TODO(crbug.com/1298087): Re-enable these test files to comply with
       # Chromium.
+      #"src/internal/encrypted_buckets_test.cc",
       #"src/internal/hashed_bucket_id_test.cc",
+      #"src/internal/hashed_buckets_test.cc",
 
       "src/internal/id_utils_test.cc",
       "src/internal/oprf_utils_test.cc",
       "src/internal/rlwe_id_utils_test.cc",
       "src/internal/utils_test.cc",
-      "src/membership_response_map_test.cc",
       "src/private_membership_rlwe_client_regression_test.cc",
     ]
     public_deps = [

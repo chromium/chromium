@@ -49,8 +49,7 @@
       initWithWebStateList:self.browser->GetWebStateList()
             commandHandler:self.textZoomCommandHandler];
 
-  self.textZoomViewController = [[TextZoomViewController alloc]
-      initWithDarkAppearance:self.browser->GetBrowserState()->IsOffTheRecord()];
+  self.textZoomViewController = [[TextZoomViewController alloc] init];
   self.textZoomViewController.commandHandler = self.textZoomCommandHandler;
 
   self.textZoomViewController.zoomHandler = self.mediator;

@@ -76,7 +76,7 @@ enum class ScrollViewTracking {
 
 @interface ViewRevealingVerticalPanHandler ()
 
-// Privately redeclare |currentState| as readwrite.
+// Privately redeclare `currentState` as readwrite.
 @property(nonatomic, readwrite, assign) ViewRevealState currentState;
 
 // The latest trigger that brought the view to the currentState (or nextState if
@@ -94,11 +94,11 @@ enum class ScrollViewTracking {
 // Set of UI elements which are animated during view reveal transitions.
 @property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
 // The current state tracking whether the revealed view is undergoing a
-// transition of layout. This is |::Inactive| initially. It is set to |::Active|
-// when the transition layout is created.  It is set to |::Finishing| when the
+// transition of layout. This is `::Inactive` initially. It is set to `::Active`
+// when the transition layout is created.  It is set to `::Finishing` when the
 // layout transition should start to finish. (This takes time because of
 // finishing animations/UIKit restrictions). Finally, in the transition's
-// completion block, this is set back to |::Inactive|.
+// completion block, this is set back to `::Inactive`.
 @property(nonatomic, assign) LayoutTransitionState layoutTransitionState;
 // Whether new pan gestures should be handled. Set to NO when a pan gesture ends
 // and set to YES when a pan gesture starts while layoutInTransition is NO.
@@ -377,7 +377,7 @@ enum class ScrollViewTracking {
 // Notifies the layout switcher that a layout transition should happen.
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState {
   // Don't do anything if there isn't a layout switcher available. Especially
-  // don't change the |layoutTransitionState|.
+  // don't change the `layoutTransitionState`.
   if (!self.layoutSwitcherProvider.layoutSwitcher) {
     return;
   }
@@ -413,10 +413,10 @@ enum class ScrollViewTracking {
 }
 
 // Notifies the layout switcher that a layout transition finished with
-// |success|.
+// `success`.
 - (void)didTransitionToLayoutSuccessfully:(BOOL)success {
   // Don't do anything if there isn't a layout switcher available. Especially
-  // don't change the |layoutTransitionState|.
+  // don't change the `layoutTransitionState`.
   if (!self.layoutSwitcherProvider.layoutSwitcher) {
     return;
   }
@@ -775,7 +775,7 @@ enum class ScrollViewTracking {
 #pragma mark - Private
 
 // If self.deferredScrollEnabled is YES, returns YES if the pan gesture should
-// be active for the given |scrollView| due to a top overscroll and sets up the
+// be active for the given `scrollView` due to a top overscroll and sets up the
 // initial pan state.
 - (BOOL)checkDeferredDraggingForPanHandlerScrollView:
     (PanHandlerScrollView*)scrollView {

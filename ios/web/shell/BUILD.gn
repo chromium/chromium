@@ -63,6 +63,7 @@ source_set("shell") {
     "//net",
     "//net:extras",
     "//ui/base",
+    "//ui/display",
   ]
 
   frameworks = [

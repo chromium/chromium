@@ -1,0 +1,48 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("connectivity") {
+  deps = [
+    "//base",
+    "//device/bluetooth",
+  ]
+  sources = [
+    "fast_pair_advertiser.cc",
+    "fast_pair_advertiser.h",
+    "target_device_connection_broker.cc",
+    "target_device_connection_broker.h",
+    "target_device_connection_broker_factory.cc",
+    "target_device_connection_broker_factory.h",
+    "target_device_connection_broker_impl.cc",
+    "target_device_connection_broker_impl.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":connectivity" ]
+  deps = [ "//base" ]
+  sources = [
+    "fake_target_device_connection_broker.cc",
+    "fake_target_device_connection_broker.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":connectivity",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth:mocks",
+  ]
+  sources = [
+    "fast_pair_advertiser_unittest.cc",
+    "target_device_connection_broker_impl_unittest.cc",
+  ]
+}

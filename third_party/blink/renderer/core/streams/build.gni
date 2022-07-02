@@ -55,3 +55,15 @@ blink_core_sources_streams = [
   "writable_stream_default_writer.h",
   "writable_stream_transferring_optimizer.h",
 ]
+
+blink_core_tests_streams = [
+  "miscellaneous_operations_test.cc",
+  "queue_with_sizes_test.cc",
+  "readable_stream_test.cc",
+  "stream_promise_resolver_test.cc",
+  "test_utils.cc",
+  "test_utils.h",
+  "transferable_streams_test.cc",
+  "transform_stream_test.cc",
+  "writable_stream_test.cc",
+]

@@ -169,6 +169,9 @@ void TtsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "refreshTtsVoices", base::BindRepeating(&TtsHandler::RefreshTtsVoices,
+                                              base::Unretained(this)));
 }
 
 void TtsHandler::OnJavascriptAllowed() {
@@ -202,6 +205,10 @@ void TtsHandler::WakeTtsEngine(const base::Value::List& args) {
 
 void TtsHandler::OnTtsEngineAwake(bool success) {
   OnVoicesChanged();
+}
+
+void TtsHandler::RefreshTtsVoices(const base::Value::List& args) {
+  content::TtsController::GetInstance()->RefreshVoices();
 }
 
 void TtsHandler::RemoveTtsControllerDelegates() {

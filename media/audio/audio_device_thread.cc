@@ -68,9 +68,11 @@ AudioDeviceThread::~AudioDeviceThread() {
   base::PlatformThread::Join(thread_handle_);
 }
 
+#if BUILDFLAG(IS_APPLE)
 base::TimeDelta AudioDeviceThread::GetRealtimePeriod() {
   return callback_->buffer_duration();
 }
+#endif
 
 void AudioDeviceThread::ThreadMain() {
   base::PlatformThread::SetName(thread_name_);

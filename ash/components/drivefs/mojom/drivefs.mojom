@@ -179,9 +179,26 @@ interface DriveFsDelegate {
 
   // Invoked when Drive wants to display a confirmation dialog.
   DisplayConfirmDialog(DialogReason reason) => (DialogResult result);
+
+  // Executes the given request on Chrome's networking stack and
+  // calls the necessary callbacks on the |delegate|.
+  ExecuteHttpRequest(
+    HttpRequest request, pending_remote<HttpDelegate> delegate);
+
+  // On startup, retrieve the machine ID to ensure Chromebook is reassociated
+  // with an existing Computers root based on `doc_id`. If no ID is available it
+  // will return an empty string.
+  GetMachineRootID() => (string doc_id);
+
+  // Invoked when the machine ID is calculated to store in Chrome device prefs.
+  PersistMachineRootID(string doc_id);
+
+  // Invoked when the syncing status changes for items that are being tracked by
+  // the mirror stack.
+  OnMirrorSyncingStatusUpdate(SyncingStatus status);
 };
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 struct DriveFsConfiguration {
   string user_email;
 
@@ -201,6 +218,11 @@ struct DriveFsConfiguration {
 
   [MinVersion=5]
   bool enable_verbose_logging = false;
+
+  // Whether the network service bridge is available. This is enabled on CrOS by
+  // the |drive-fs-chrome-networking| flag.
+  [MinVersion=6]
+  bool enable_cros_network = false;
 };
 
 enum AccessTokenStatus {
@@ -292,7 +314,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -349,7 +371,13 @@ struct FileMetadata {
     kDisabled,
   };
 
+  // Is it currently possible to pin this item.
   [MinVersion=4] CanPinStatus can_pin;
+
+  // Id of the associated Cello item. Useful for interacting with Drive API
+  // methods which require the server side file id, such as
+  // DriveAPIService::UpdateResource.
+  [MinVersion=5] string? item_id;
 };
 
 struct ImageMetadata {
@@ -450,7 +478,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 2
+// Next MinVersion: 3
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -490,7 +518,7 @@ struct QueryParameters {
   // Results must be only from shared with me documents.
   bool shared_with_me = false;
 
-  // Results must be only from available localy on the device. Works only
+  // Results must be only from available locally on the device. Works only
   // with |kLocalOnly|.
   bool available_offline = false;
 
@@ -500,6 +528,11 @@ struct QueryParameters {
 
   // The kind of query to perform.
   [MinVersion=1] QueryKind query_kind = kRegular;
+
+  // Search for documents whose mime types match any of the string in the array.
+  // Note: this field is preferred to "mime_type" field above, when processing
+  // the query, the "mime_type" will be merged into this "mime_types" field.
+  [MinVersion=2] array<string>? mime_types;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
@@ -570,4 +603,64 @@ union FilePathOrError {
 struct QuotaUsage {
   uint64 free_cloud_bytes;
   uint64 total_cloud_bytes;
+};
+
+// Matches errors from //net/base/net_error_list.h
+enum NetError {
+  kOk = 0,
+  kIOPending = -1,
+  kFailed = -2,
+  kAborted = -3,
+  kInvalidArgument = -4,
+  kInvalidHandle = -5,
+  kFileNotFound = -6,
+  kTimedOut = -7,
+  kNameNotResolved = -105,
+  kInternetDisconnected = -106,
+  kAddressUnreachable = -109,
+};
+
+struct HttpHeader  {
+  string key;
+  string value;
+};
+
+struct HttpRequest {
+  string method;
+  string url;
+  array<HttpHeader> headers;
+  int64 request_body_bytes;
+};
+
+struct HttpResponse {
+  int32 response_code;
+  array<HttpHeader> headers;
+};
+
+struct HttpCompletionStatus {
+  NetError error;
+  int64 response_body_bytes;
+};
+
+// This interface is backed by a |cello:HttpDelegate| on the DriveFS side and is
+// called from a |URLLoaderClient| on the Chrome side.
+interface HttpDelegate {
+  // Fetches a pipe that will provide the request body.
+  // This method should only be called once.
+  GetRequestBody(handle<data_pipe_producer> request_body);
+
+  // Called once when the response code and headers have been received.
+  // See |URLLoaderClient::OnReceiveResponse|
+  OnReceiveResponse(HttpResponse response);
+
+  // Called once after |OnReceiveResponse| when the body has been received.
+  // Provides a pipe for the response body to be read from.
+  // See |URLLoaderClient::OnStartLoadingResponseBody'
+  OnReceiveBody(handle<data_pipe_consumer> response_body);
+
+  // Called once after the URLLoader is done.
+  // NOTE: There may still be data remaining in the data pipe, so destruction
+  // should be deferred until all data is read.
+  // See |URLLoaderClient::OnComplete|
+  OnRequestComplete(HttpCompletionStatus status);
 };

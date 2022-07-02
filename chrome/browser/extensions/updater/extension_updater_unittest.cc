@@ -150,8 +150,6 @@ const net::BackoffEntry::Policy kNoBackoffPolicy = {
   false,
 };
 
-const char kEmptyUpdateUrlData[] = "";
-
 const char kAuthUserQueryKey[] = "authuser";
 
 int kExpectedLoadFlags = net::LOAD_DISABLE_CACHE;
@@ -160,11 +158,6 @@ int kExpectedLoadFlagsForDownloadWithCookies = net::LOAD_DISABLE_CACHE;
 
 // Fake authentication constants
 const char kFakeOAuth2Token[] = "ce n'est pas un jeton";
-
-const DownloadPingData kNeverPingedData(ManifestFetchData::kNeverPinged,
-                                        ManifestFetchData::kNeverPinged,
-                                        true,
-                                        0);
 
 // A class that observes the notifications sent by the ExtensionUpdater and
 // the ExtensionDownloader.
@@ -668,6 +661,17 @@ class ExtensionUpdaterTest : public testing::Test {
     return ret;
   }
 
+  const DownloadFailure* GetFailureWithId(
+      const std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>&
+          failures,
+      const ExtensionId& id) {
+    auto it = std::find_if(
+        failures.begin(), failures.end(),
+        [&](const std::pair<ExtensionDownloaderTask, DownloadFailure>&
+                failure) { return failure.first.id == id; });
+    return it == failures.end() ? nullptr : &it->second;
+  }
+
   void TestExtensionUpdateCheckRequests(bool pending) {
     // Create an extension with an update_url.
     ExtensionDownloaderTestHelper helper;
@@ -727,16 +731,17 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestUpdateUrlDataEmpty() {
+    ExtensionDownloaderTestHelper helper;
     const std::string id(32, 'a');
     const std::string version = "1.0";
 
     // Make sure that an empty update URL data string does not cause a ap=
     // option to appear in the x= parameter.
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch_data(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch_data->AddExtension(id, version, &kNeverPingedData, std::string(),
-                             std::string(), ManifestLocation::kInternal,
-                             DownloadFetchPriority::kBackground);
+        CreateManifestFetchData(kUpdateURL));
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id, version,
+                                      kUpdateURL);
 
     std::map<std::string, std::string> params;
     VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
@@ -753,8 +758,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // option to appear in the x= parameter.
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch_data->AddExtension(id, version, &kNeverPingedData, "bar",
-                             std::string(), ManifestLocation::kInternal,
+    fetch_data->AddExtension(id, version,
+                             &ExtensionDownloaderTestHelper::kNeverPingedData,
+                             "bar", std::string(), ManifestLocation::kInternal,
                              DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
     VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
@@ -771,9 +777,10 @@ class ExtensionUpdaterTest : public testing::Test {
     // option to appear in the x= parameter.
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch_data->AddExtension(id, version, &kNeverPingedData, "a=1&b=2&c",
-                             std::string(), ManifestLocation::kInternal,
-                             DownloadFetchPriority::kBackground);
+    fetch_data->AddExtension(
+        id, version, &ExtensionDownloaderTestHelper::kNeverPingedData,
+        "a=1&b=2&c", std::string(), ManifestLocation::kInternal,
+        DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
     VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
     EXPECT_EQ(id, params["id"]);
@@ -878,7 +885,8 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(GURL("http://localhost/foo")));
     fetch_data->AddExtension(
-        id, version, &kNeverPingedData, kEmptyUpdateUrlData, install_source,
+        id, version, &ExtensionDownloaderTestHelper::kNeverPingedData,
+        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData, install_source,
         ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
     VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
@@ -895,10 +903,11 @@ class ExtensionUpdaterTest : public testing::Test {
     // Make sure that installedby= appears in the x= parameter.
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch_data->AddExtension(id, version, &kNeverPingedData,
-                             kEmptyUpdateUrlData, std::string(),
-                             ManifestLocation::kExternalPrefDownload,
-                             DownloadFetchPriority::kBackground);
+    fetch_data->AddExtension(
+        id, version, &ExtensionDownloaderTestHelper::kNeverPingedData,
+        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData, std::string(),
+        ManifestLocation::kExternalPrefDownload,
+        DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
     VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
     EXPECT_EQ(id, params["id"]);
@@ -909,31 +918,30 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestDetermineUpdates() {
     ExtensionDownloaderTestHelper helper;
 
-    // Check passing an empty list of parse results to DetermineUpdates
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch_data(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
+        CreateManifestFetchData(kUpdateURL));
+
+    // Check passing an empty list of parse results to DetermineUpdates
     UpdateManifestResults updates;
-    std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     EXPECT_TRUE(updateable.empty());
-    EXPECT_TRUE(not_updateable.empty());
-    EXPECT_TRUE(errors.empty());
+    EXPECT_TRUE(failures.empty());
 
     // Create two updates - expect that DetermineUpdates will return the first
     // one (v1.0 installed, v1.1 available) but not the second one (both
     // installed and available at v2.0).
     const std::string id1 = crx_file::id_util::GenerateId("1");
     const std::string id2 = crx_file::id_util::GenerateId("2");
-    fetch_data->AddExtension(
-        id1, "1.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id1, "1.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id1, "1.1", "http://localhost/e1_1.1.crx", &updates);
-    fetch_data->AddExtension(
-        id2, "2.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id2, "2.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id2, "2.0.0.0", "http://localhost/e2_2.0.crx", &updates);
 
     EXPECT_CALL(helper.delegate(), IsExtensionPending(_))
@@ -944,22 +952,24 @@ class ExtensionUpdaterTest : public testing::Test {
         .WillOnce(DoAll(SetArgPointee<1>("2.0.0.0"), Return(true)));
 
     updateable.clear();
-    not_updateable.clear();
-    errors.clear();
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_TRUE(errors.empty());
-    EXPECT_THAT(not_updateable, testing::ElementsAre(id2));
+    failures.clear();
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
+    ASSERT_EQ(1u, failures.size());
+    EXPECT_EQ(id2, failures[0].first.id);
+    EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+              failures[0].second.error);
     ASSERT_EQ(1u, updateable.size());
-    EXPECT_EQ("1.1", updateable[0]->version);
+    EXPECT_EQ("1.1", updateable[0].second->version);
   }
 
   void TestDetermineUpdatesError() {
     ExtensionDownloaderTestHelper helper;
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
 
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch_data(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
+        CreateManifestFetchData(kUpdateURL));
     UpdateManifestResults updates;
 
     // id1 => updatable (current version (1.1) is older than update version).
@@ -976,35 +986,29 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string id5 = crx_file::id_util::GenerateId("5");
     const std::string id6 = crx_file::id_util::GenerateId("6");
 
-    fetch_data->AddExtension(
-        id1, "1.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id1, "1.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id1, "1.1", "http://localhost/e1_1.1.crx", &updates);
 
-    fetch_data->AddExtension(
-        id2, "2.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id2, "2.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id2, "2.0.0.0", "http://localhost/e2_2.0.crx", &updates);
 
-    fetch_data->AddExtension(
-        id3, "0.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
     // Empty update version in manifest.
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id3, "0.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id3, "", "http://localhost/e3_3.0.crx", &updates);
 
-    fetch_data->AddExtension(
-        id4, "0.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id4, "0.0.0.0",
+                                      kUpdateURL);
 
-    fetch_data->AddExtension(
-        id5, "0.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id5, "0.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id5, "5.0.0.0", "http://localhost/e5_5.0.crx", &updates);
 
-    fetch_data->AddExtension(
-        id6, "0.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
     // Invalid update version in manifest.
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id6, "0.0.0.0",
+                                      kUpdateURL);
     AddParseResult(id6, "invalid_version", "http://localhost/e6_6.0.crx",
                    &updates);
 
@@ -1020,25 +1024,28 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_CALL(delegate, GetExtensionExistingVersion(id6, _))
         .WillOnce(DoAll(SetArgPointee<1>("0.0.0.0"), Return(true)));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_THAT(not_updateable, testing::UnorderedElementsAre(id2, id3));
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
+    std::vector<ExtensionId> ids_not_updateable({id2, id3});
+    for (const auto& id : ids_not_updateable) {
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+                failure->error);
+    }
     std::vector<ExtensionId> ids_with_error({id4, id5, id6});
     for (const auto& id : ids_with_error) {
-      auto it = std::find_if(
-          errors.begin(), errors.end(),
-          [&](const std::pair<
-              ExtensionId, ExtensionDownloaderDelegate::FailureData>& error) {
-            return error.first == id;
-          });
-      EXPECT_TRUE(it != errors.end());
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::MANIFEST_INVALID,
+                failure->error);
     }
-    EXPECT_EQ(3u, errors.size());
+    EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(1u, updateable.size());
-    EXPECT_EQ("1.1", updateable[0]->version);
+    EXPECT_EQ("1.1", updateable[0].second->version);
   }
 
   void TestDetermineUpdatesPending() {
@@ -1051,17 +1058,17 @@ class ExtensionUpdaterTest : public testing::Test {
 
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
 
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch_data(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
+        CreateManifestFetchData(kUpdateURL));
     UpdateManifestResults updates;
 
     std::list<std::string> ids_for_update_check =
         pending_extension_manager->GetPendingIdsForUpdateCheck();
 
     for (const std::string& id : ids_for_update_check) {
-      fetch_data->AddExtension(
-          id, "1.0.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-          ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+      AddExtensionToFetchDataForTesting(fetch_data.get(), id, "1.0.0.0",
+                                        kUpdateURL);
       AddParseResult(id, "1.1", "http://localhost/e1_1.1.crx", &updates);
     }
 
@@ -1069,15 +1076,14 @@ class ExtensionUpdaterTest : public testing::Test {
     // pending.
     EXPECT_CALL(delegate, IsExtensionPending(_)).WillRepeatedly(Return(true));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
     // All the apps should be updateable.
     EXPECT_EQ(3u, updateable.size());
-    EXPECT_TRUE(not_updateable.empty());
-    EXPECT_TRUE(errors.empty());
+    EXPECT_TRUE(failures.empty());
   }
 
   void TestDetermineUpdatesDuplicates() {
@@ -1093,29 +1099,23 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string id6 = crx_file::id_util::GenerateId("6");
     const std::string id7 = crx_file::id_util::GenerateId("7");
 
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch_data(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch_data->AddExtension(
-        id1, "1.1.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id2, "1.2.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id3, "1.3.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id4, "1.4.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id5, "1.5.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id6, "1.6.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
-    fetch_data->AddExtension(
-        id7, "1.7.0.0", &kNeverPingedData, kEmptyUpdateUrlData, std::string(),
-        ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
+        CreateManifestFetchData(kUpdateURL));
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id1, "1.1.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id2, "1.2.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id3, "1.3.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id4, "1.4.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id5, "1.5.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id6, "1.6.0.0",
+                                      kUpdateURL);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), id7, "1.7.0.0",
+                                      kUpdateURL);
 
     UpdateManifestResults updates;
     AddParseResult(id1, "1.1.0.0", "http://localhost/e1_1.1.crx", &updates);
@@ -1144,26 +1144,29 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_CALL(delegate, GetExtensionExistingVersion(id6, _))
         .WillOnce(DoAll(SetArgPointee<1>("1.6.0.0"), Return(true)));
 
-    std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
-    helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_THAT(not_updateable, testing::UnorderedElementsAre(id1, id4));
+    std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>
+        updateable;
+    std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> failures;
+    helper.downloader().DetermineUpdates(fetch_data->TakeAssociatedTasks(),
+                                         updates, &updateable, &failures);
+    std::vector<ExtensionId> ids_not_updateable({id1, id4});
+    for (const auto& id : ids_not_updateable) {
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+                failure->error);
+    }
     std::vector<ExtensionId> ids_with_error({id2, id5, id7});
     for (const auto& id : ids_with_error) {
-      auto it = std::find_if(
-          errors.begin(), errors.end(),
-          [&](const std::pair<
-              ExtensionId, ExtensionDownloaderDelegate::FailureData>& error) {
-            return error.first == id;
-          });
-      EXPECT_TRUE(it != errors.end());
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::MANIFEST_INVALID,
+                failure->error);
     }
-    EXPECT_EQ(3u, errors.size());
+    EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(2u, updateable.size());
-    EXPECT_EQ("1.3.1.0", updateable[0]->version);
-    EXPECT_EQ("1.6.1.0", updateable[1]->version);
+    EXPECT_EQ("1.3.1.0", updateable[0].second->version);
+    EXPECT_EQ("1.6.1.0", updateable[1].second->version);
   }
 
   void TestMultipleManifestDownloading() {
@@ -1182,18 +1185,14 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch4(
         CreateManifestFetchData(kUpdateUrl));
     DownloadPingData zeroDays(0, 0, true, 0);
-    fetch1->AddExtension("1111", "1.0", &zeroDays, kEmptyUpdateUrlData,
-                         std::string(), ManifestLocation::kInternal,
-                         DownloadFetchPriority::kBackground);
-    fetch2->AddExtension("2222", "2.0", &zeroDays, kEmptyUpdateUrlData,
-                         std::string(), ManifestLocation::kInternal,
-                         DownloadFetchPriority::kBackground);
-    fetch3->AddExtension("3333", "3.0", &zeroDays, kEmptyUpdateUrlData,
-                         std::string(), ManifestLocation::kInternal,
-                         DownloadFetchPriority::kBackground);
-    fetch4->AddExtension("4444", "4.0", &zeroDays, kEmptyUpdateUrlData,
-                         std::string(), ManifestLocation::kInternal,
-                         DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch1.get(), "1111", "1.0", kUpdateUrl,
+                                      zeroDays);
+    AddExtensionToFetchDataForTesting(fetch2.get(), "2222", "2.0", kUpdateUrl,
+                                      zeroDays);
+    AddExtensionToFetchDataForTesting(fetch3.get(), "3333", "3.0", kUpdateUrl,
+                                      zeroDays);
+    AddExtensionToFetchDataForTesting(fetch4.get(), "4444", "4.0", kUpdateUrl,
+                                      zeroDays);
 
     // This will start the first fetcher and queue the others. The next in queue
     // is started as each fetcher receives its response. Note that the fetchers
@@ -1316,7 +1315,8 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(kUpdateUrl));
     DownloadPingData zeroDays(0, 0, true, 0);
-    fetch->AddExtension("1111", "1.0", &zeroDays, kEmptyUpdateUrlData,
+    fetch->AddExtension("1111", "1.0", &zeroDays,
+                        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                         std::string(), ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);
 
@@ -1350,7 +1350,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // For response codes that are not in the 5xx range ExtensionDownloader
     // should not retry.
     fetch.reset(CreateManifestFetchData(kUpdateUrl));
-    fetch->AddExtension("1111", "1.0", &zeroDays, kEmptyUpdateUrlData,
+    fetch->AddExtension("1111", "1.0", &zeroDays,
+                        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                         std::string(), ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);
 
@@ -1395,7 +1396,8 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(kUpdateUrl));
     DownloadPingData zeroDays(0, 0, true, 0);
-    fetch->AddExtension("1111", "1.0", &zeroDays, kEmptyUpdateUrlData,
+    fetch->AddExtension("1111", "1.0", &zeroDays,
+                        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                         std::string(), ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);
 
@@ -1423,7 +1425,8 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch(
         CreateManifestFetchData(kUpdateUrl));
     DownloadPingData zeroDays(0, 0, true, 0);
-    fetch->AddExtension("1111", "1.0", &zeroDays, kEmptyUpdateUrlData,
+    fetch->AddExtension("1111", "1.0", &zeroDays,
+                        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                         std::string(), ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);
 
@@ -1453,7 +1456,8 @@ class ExtensionUpdaterTest : public testing::Test {
         CreateManifestFetchData(test_url));
     DownloadPingData zero_days(0, 0, true, 0);
 
-    fetch->AddExtension("1111", "1.0", &zero_days, kEmptyUpdateUrlData,
+    fetch->AddExtension("1111", "1.0", &zero_days,
+                        ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                         std::string(), ManifestLocation::kInternal,
                         fetch_priority);
 
@@ -1500,10 +1504,12 @@ class ExtensionUpdaterTest : public testing::Test {
     std::string hash;
     CRXFileInfo crx_file_info;
     base::Version version("0.0.1");
-    std::set<int> requests({0});
+    ExtensionDownloaderTask task = CreateDownloaderTask(id);
+    task.fetch_priority = fetch_priority;
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests, fetch_priority);
+            std::move(task), test_url, hash, version.GetString(),
+            fetch_priority);
 
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
@@ -1546,7 +1552,7 @@ class ExtensionUpdaterTest : public testing::Test {
     requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests,
+            CreateDownloaderTask(id), test_url, hash, version.GetString(),
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
@@ -1635,12 +1641,11 @@ class ExtensionUpdaterTest : public testing::Test {
     ExtensionDownloaderTestHelper helper;
 
     // Set update manifest fetch data and result.
+    GURL kUpdateURL("http://localhost/foo");
     std::unique_ptr<ManifestFetchData> fetch(
-        CreateManifestFetchData(GURL("http://localhost/foo")));
-    fetch->AddExtension(kTestExtensionId, "1.0", &kNeverPingedData,
-                        kEmptyUpdateUrlData, std::string(),
-                        ManifestLocation::kInternal,
-                        DownloadFetchPriority::kBackground);
+        CreateManifestFetchData(kUpdateURL));
+    AddExtensionToFetchDataForTesting(fetch.get(), kTestExtensionId, "1.0",
+                                      kUpdateURL);
     const std::string manifest =
         CreateUpdateManifest(kTestExtensionId, version, hash);
     helper.test_url_loader_factory().AddResponse(fetch->full_url().spec(),
@@ -1817,11 +1822,9 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string id(32, 'a');
     std::string hash;
     base::Version version("0.0.1");
-    std::set<int> requests;
-    requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> extension_fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests,
+            CreateDownloaderTask(id), test_url, hash, version.GetString(),
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(extension_fetch),
                                                absl::nullopt);
@@ -2038,16 +2041,14 @@ class ExtensionUpdaterTest : public testing::Test {
     std::string version1 = "0.1";
     std::string version2 = "0.1";
 
-    std::set<int> requests;
-    requests.insert(0);
     // Start two fetches
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch1 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id1, url1, hash1, version1, requests,
+            CreateDownloaderTask(id1), url1, hash1, version1,
             DownloadFetchPriority::kBackground);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch2 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id2, url2, hash2, version2, requests,
+            CreateDownloaderTask(id2), url2, hash2, version2,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch1),
                                                absl::optional<std::string>());
@@ -2320,10 +2321,8 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(update_url));
     const Extension* extension = tmp[0].get();
-    fetch_data->AddExtension(extension->id(), extension->VersionString(),
-                             &kNeverPingedData, kEmptyUpdateUrlData,
-                             std::string(), ManifestLocation::kInternal,
-                             DownloadFetchPriority::kBackground);
+    AddExtensionToFetchDataForTesting(fetch_data.get(), extension->id(),
+                                      extension->VersionString(), update_url);
     auto results = std::make_unique<UpdateManifestResults>();
     constexpr int kDaystartElapsedSeconds = 750;
     results->daystart_elapsed_seconds = kDaystartElapsedSeconds;
@@ -2347,8 +2346,9 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch_data(
         CreateManifestFetchData(GURL("http://localhost/foo"), data_priority));
     ASSERT_TRUE(fetch_data->AddExtension(
-        id, version, &kNeverPingedData, std::string(), std::string(),
-        ManifestLocation::kInternal, extension_priority));
+        id, version, &ExtensionDownloaderTestHelper::kNeverPingedData,
+        std::string(), std::string(), ManifestLocation::kInternal,
+        extension_priority));
     ASSERT_EQ(expected_priority, fetch_data->fetch_priority());
   }
 
@@ -2361,7 +2361,7 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch_other(
         CreateManifestFetchData(GURL("http://localhost/foo"), other_priority));
 
-    fetch_data->Merge(*fetch_other);
+    fetch_data->Merge(std::move(fetch_other));
     ASSERT_EQ(expected_priority, fetch_data->fetch_priority());
   }
 
@@ -2674,25 +2674,22 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, DownloadFetchPriority::kBackground)));
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(id, GURL("http://example.com/update"))));
   helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground)));
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(id, GURL("http:google.com:foo"))));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground)));
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(std::string(), GURL())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2709,8 +2706,7 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtension(
-      ExtensionDownloaderTask(id, GURL(), ManifestLocation::kInternal, false, 0,
-                              DownloadFetchPriority::kBackground)));
+      CreateDownloaderTask(id, GURL())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2725,51 +2721,57 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   auto helper = std::make_unique<ExtensionDownloaderTestHelper>();
   EXPECT_EQ(0u, ManifestFetchersCount(&helper->downloader()));
 
-  // First, verify that adding valid extensions does invoke the callbacks on
-  // the delegate.
-  std::string id = crx_file::id_util::GenerateId("foo");
-  EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
-      .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  Mock::VerifyAndClearExpectations(&helper->delegate());
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // First, verify that adding valid extensions does invoke the callbacks on
+    // the delegate.
+    ExtensionId id = crx_file::id_util::GenerateId("foo");
+    EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
+        .WillOnce(Return(false));
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(id, GURL("http://example.com/update"));
+    task.version = base::Version(kVersion);
+    EXPECT_TRUE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    Mock::VerifyAndClearExpectations(&helper->delegate());
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
-  // Extensions with invalid update URLs should be rejected.
-  id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with invalid update URLs should be rejected.
+    ExtensionId id = crx_file::id_util::GenerateId("foo2");
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(id, GURL("http:google.com:foo"));
+    task.version = base::Version(kVersion);
+    EXPECT_FALSE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
-  // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with empty IDs should be rejected.
+    ExtensionDownloaderTask task = CreateDownloaderTask(std::string(), GURL());
+    task.version = base::Version(kVersion);
+    EXPECT_FALSE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
   // Reset the ExtensionDownloader so that it drops the current fetcher.
   helper = std::make_unique<ExtensionDownloaderTestHelper>();
   EXPECT_EQ(0u, ManifestFetchersCount(&helper->downloader()));
 
-  // Extensions with empty update URLs should have a default one
-  // filled in.
-  id = crx_file::id_util::GenerateId("foo3");
-  EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
-      .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with empty update URLs should have a default one
+    // filled in.
+    ExtensionId id = crx_file::id_util::GenerateId("foo3");
+    EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
+        .WillOnce(Return(false));
+    ExtensionDownloaderTask task = CreateDownloaderTask(id, GURL());
+    task.version = base::Version(kVersion);
+    EXPECT_TRUE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
   RunUntilIdle();
   auto* request = &(*helper->test_url_loader_factory().pending_requests())[0];

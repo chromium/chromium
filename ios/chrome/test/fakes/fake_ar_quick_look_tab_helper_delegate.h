@@ -17,7 +17,11 @@
 // cannot be nil.
 @property(nonatomic, readonly) NSArray* fileURLs;
 
-// The value of |allowsContentScaling| for the most recent file URL downloaded
+// The value of `canonicalWebPageURL` for the most recent file URL downloaded
+// by ARQuickLookTabHelper.
+@property(nonatomic, readonly) NSURL* canonicalWebPageURL;
+
+// The value of `allowsContentScaling` for the most recent file URL downloaded
 // by ARQuickLookTabHelper.
 @property(nonatomic, readonly) BOOL allowsContentScaling;
 

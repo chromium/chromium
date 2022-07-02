@@ -24,23 +24,30 @@ namespace {
 // the Android backend is delayed.
 constexpr int kMigrationToAndroidBackendDelay = 30;
 
+// Check the experiment stage allows migration and that user wasn't kicked out
+// from the experiment after receiving errors from the backend.
+bool ShouldAttemptMigration(PrefService* prefs) {
+  return features::RequiresMigrationForUnifiedPasswordManager() &&
+         !prefs->GetBoolean(
+             prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
 }  // namespace
 
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
-    SyncDelegate* sync_delegate)
+    std::unique_ptr<SyncDelegate> sync_delegate)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      sync_delegate_(sync_delegate),
+      sync_delegate_(std::move(sync_delegate)),
       sync_settings_helper_(prefs) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get(), prefs_,
-      sync_delegate_.get());
+      built_in_backend_.get(), android_backend_.get(), prefs_);
 }
 
 PasswordStoreBackendMigrationDecorator::
@@ -142,7 +149,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
 
   // Only start the migration when launching the UPM which needs chrome-local
   // data in the remote store. For shadow traffic, this doesn't matter.
-  if (features::RequiresMigrationForUnifiedPasswordManager()) {
+  if (ShouldAttemptMigration(prefs_)) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         built_in_backend_.get(), android_backend_.get(), prefs_,
         sync_delegate_.get());
@@ -193,7 +200,7 @@ void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   active_backend_->FillMatchingLoginsAsync(std::move(callback), include_psl,
@@ -202,19 +209,19 @@ void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
 
 void PasswordStoreBackendMigrationDecorator::AddLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->AddLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->UpdateLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginAsync(form, std::move(callback));
 }
 
@@ -223,7 +230,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, std::move(delete_begin), std::move(delete_end),
       std::move(sync_completion), std::move(callback));
@@ -232,7 +239,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsCreatedBetweenAsync(
       std::move(delete_begin), std::move(delete_end), std::move(callback));
 }
@@ -296,7 +303,7 @@ void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
 }
 
 void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
-  if (!features::RequiresMigrationForUnifiedPasswordManager())
+  if (!ShouldAttemptMigration(prefs_))
     return;
 
   sync_settings_helper_.SyncStatusChangeApplied();

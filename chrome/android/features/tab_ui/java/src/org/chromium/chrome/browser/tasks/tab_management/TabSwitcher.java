@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,13 +17,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 import java.util.List;
@@ -52,11 +48,9 @@ public interface TabSwitcher {
     void setOnTabSelectingListener(OnTabSelectingListener listener);
 
     /**
-     * Called when the native initialization is completed.
+     * Called when native initialization is completed.
      */
-    void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager);
+    void initWithNative();
 
     // TODO(1322733): Remove the following interfaces when we find a better way to notify the layout
     // that the GTS animation is finished.
@@ -124,6 +118,8 @@ public interface TabSwitcher {
          * @return Whether or not the TabSwitcher consumed the event.
          * @param isOnHomepage Whether the Start surface is showing.
          */
+        // TODO(crbug.com/1315676): Remove the parameter when tab switcher and start surface are
+        // decoupled.
         boolean onBackPressed(boolean isOnHomepage);
 
         /**
@@ -136,6 +132,8 @@ public interface TabSwitcher {
          * Called after the Chrome activity is launched.
          * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */
+        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
+        // decoupled.
         void onOverviewShownAtLaunch(long activityCreationTimeMs);
 
         /**
@@ -164,7 +162,24 @@ public interface TabSwitcher {
          * Called when start surface is showing or hiding.
          * @param isOnHomepage Whether the Start surface is showing.
          */
+        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
+        // decoupled.
         void onHomepageChanged(boolean isOnHomepage);
+
+        /**
+         * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
+         * view is restored.
+         *
+         * @param parentView The {@link ViewGroup} to attach snackbars to.
+         */
+        default void setSnackbarParentView(ViewGroup parentView){};
+
+        /**
+         * @return The Tab switcher container view.
+         */
+        default ViewGroup getTabSwitcherContainer() {
+            return null;
+        }
     }
 
     /**

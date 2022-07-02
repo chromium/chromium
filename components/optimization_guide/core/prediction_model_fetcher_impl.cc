@@ -47,7 +47,6 @@ PredictionModelFetcherImpl::~PredictionModelFetcherImpl() = default;
 
 bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     const std::vector<proto::ModelInfo>& models_request_info,
-    const std::vector<proto::FieldTrial>& active_field_trials,
     proto::RequestContext request_context,
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
@@ -68,9 +67,6 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
   pending_models_request_->set_request_context(request_context);
   pending_models_request_->set_locale(locale);
 
-  *pending_models_request_->mutable_active_field_trials() = {
-      active_field_trials.begin(), active_field_trials.end()};
-
   for (const auto& model_request_info : models_request_info)
     *pending_models_request_->add_requested_models() = model_request_info;
 
@@ -83,23 +79,25 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
         semantics {
           sender: "Optimization Guide"
           description:
-            "Requests PredictionModels from the Optimization Guide Service for "
-            "use in providing data saving and pageload optimizations for "
-            "Chrome."
+            "Requests the updated set of machine learning models from the "
+            "Optimization Guide Service that are applicable to the current "
+            "client version."
           trigger:
-            "Requested daily if Lite mode is enabled and the browser "
-            "has models provided by the Optimization Guide that are older than "
-            "a threshold set by the server."
-          data: "A list of models supported by the client and a list of the "
-            "user's websites."
+            "Requested at the beginning of each session if there are features "
+            "enabled by the current client version that require machine "
+            "learning models."
+          data: "A list of models supported by the client."
           destination: GOOGLE_OWNED_SERVICE
         }
-        policy {
+         policy {
           cookies_allowed: NO
-          setting:
-            "Users can control Lite mode on Android via 'Lite mode' setting. "
-            "Lite mode is not available on iOS."
-          policy_exception_justification: "Not implemented."
+          setting: "This feature cannot be disabled."
+          chrome_policy {
+            ComponentUpdatesEnabled {
+              policy_options {mode: MANDATORY}
+              ComponentUpdatesEnabled: false
+            }
+          }
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();

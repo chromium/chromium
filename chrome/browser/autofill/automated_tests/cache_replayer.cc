@@ -24,12 +24,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/status.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace autofill {
@@ -39,9 +39,6 @@ using base::JSONParserOptions;
 using base::JSONReader;
 
 namespace {
-
-using google::protobuf::util::Status;
-using google::protobuf::util::StatusOr;
 
 constexpr char kHTTPBodySep[] = "\r\n\r\n";
 constexpr char kLegacyServerDomain[] = "clients1.google.com";
@@ -53,10 +50,8 @@ constexpr char kApiServerUrlGetPrefix[] =
     "https://content-autofill.googleapis.com/v1/pages";
 constexpr char kApiServerQueryPath[] = "/v1/pages";
 
-// Makes an internal error that carries an error message.
-Status MakeInternalError(const std::string& error_message) {
-  return Status(google::protobuf::util::error::INTERNAL, error_message);
-}
+template <typename T>
+using ErrorOr = base::expected<T, std::string>;
 
 // Container that represents a JSON node that contains a list of
 // request/response pairs sharing the same URL.
@@ -119,27 +114,27 @@ bool CheckNodeType(const base::Value* node,
 // Parse AutofillQueryContents or AutofillQueryResponseContents from the given
 // |http_text|.
 template <class T>
-StatusOr<T> ParseProtoContents(const std::string& http_text) {
+ErrorOr<T> ParseProtoContents(const std::string& http_text) {
   T proto_contents;
   if (!proto_contents.ParseFromString(http_text)) {
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"could not parse proto:`", proto_contents.GetTypeName(),
                       "` from raw data:`", GetHexString(http_text), "`."}));
   }
-  return StatusOr<T>(std::move(proto_contents));
+  return std::move(proto_contents);
 }
 
 // Gets base64 encoded query parameter from the URL.
 template <typename Env>
-StatusOr<std::string> GetQueryParameter(const GURL& url);
+ErrorOr<std::string> GetQueryParameter(const GURL& url);
 
 template <>
-StatusOr<std::string> GetQueryParameter<LegacyEnv>(const GURL& url) {
+ErrorOr<std::string> GetQueryParameter<LegacyEnv>(const GURL& url) {
   std::string q_value;
   if (!net::GetValueForKeyInQuery(url, "q", &q_value)) {
     // This situation will never happen if check for the presence of "q=" is
     // done before calling this function.
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"could not get any value from \"q\" query parameter in "
                       "Query GET URL: ",
                       url.spec()}));
@@ -148,12 +143,12 @@ StatusOr<std::string> GetQueryParameter<LegacyEnv>(const GURL& url) {
 }
 
 template <>
-StatusOr<std::string> GetQueryParameter<ApiEnv>(const GURL& url) {
+ErrorOr<std::string> GetQueryParameter<ApiEnv>(const GURL& url) {
   std::string value = url.path();
   if (value.find(kApiServerQueryPath) != 0) {
     // This situation will never happen if check for the query path is
     // done before calling this function.
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"could not get any value from query path in "
                       "Query GET URL: ",
                       url.spec()}));
@@ -162,7 +157,7 @@ StatusOr<std::string> GetQueryParameter<ApiEnv>(const GURL& url) {
   if (slash != std::string::npos) {
     return value.substr(slash + 1);
   } else {
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"could not get any value from query path in "
                       "Query GET URL: ",
                       url.spec()}));
@@ -200,19 +195,19 @@ RequestType GetRequestTypeFromURL<ApiEnv>(const GURL& url) {
 
 // Gets query request protos from GET URL.
 template <typename Env>
-StatusOr<typename Env::Query> GetAutofillQueryFromGETQueryURL(const GURL& url) {
-  StatusOr<std::string> query_parameter = GetQueryParameter<Env>(url);
-  if (!query_parameter.ok())
-    query_parameter.status();
+ErrorOr<typename Env::Query> GetAutofillQueryFromGETQueryURL(const GURL& url) {
+  ErrorOr<std::string> query_parameter = GetQueryParameter<Env>(url);
+  if (!query_parameter.has_value())
+    return base::unexpected(query_parameter.error());
 
   // Base64-decode the query value.
   std::string decoded_query;
-  if (!base::Base64UrlDecode(query_parameter.ValueOrDie(),
+  if (!base::Base64UrlDecode(query_parameter.value(),
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &decoded_query)) {
-    return MakeInternalError(base::StrCat(
+    return base::unexpected(base::StrCat(
         {"could not base64-decode value of path in Query GET URL: \"",
-         query_parameter.ValueOrDie().c_str(), "\""}));
+         query_parameter->c_str(), "\""}));
   }
   return ParseProtoContents<typename Env::Query>(decoded_query);
 }
@@ -236,18 +231,18 @@ std::string GetStringFromDataElements(
 // Queries for the Api environment are special in the sense that the actual
 // AutofillPageQueryRequest is base64 encoded and wrapped in an
 // AutofillPageResourceQueryRequest.
-StatusOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
+ErrorOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
     const std::string& text) {
-  StatusOr<AutofillPageResourceQueryRequest> request =
+  ErrorOr<AutofillPageResourceQueryRequest> request =
       ParseProtoContents<AutofillPageResourceQueryRequest>(text);
-  if (!request.ok())
-    return request.status();
-  std::string encoded_query = request.ValueOrDie().serialized_request();
+  if (!request.has_value())
+    return base::unexpected(request.error());
+  std::string encoded_query = request->serialized_request();
   std::string query;
   if (!base::Base64UrlDecode(encoded_query,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &query)) {
-    return MakeInternalError(base::StrCat(
+    return base::unexpected(base::StrCat(
         {"could not base64-decode serialized body of a POST request: \"",
          encoded_query.c_str(), "\""}));
   }
@@ -255,13 +250,13 @@ StatusOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
 }
 
 // Gets Query request proto content from HTTP POST body.
-StatusOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
+ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
     const network::ResourceRequest& resource_request) {
-  StatusOr<std::string> query = PeelAutofillPageResourceQueryRequestWrapper(
+  ErrorOr<std::string> query = PeelAutofillPageResourceQueryRequestWrapper(
       GetStringFromDataElements(resource_request.request_body->elements()));
-  if (!query.ok())
-    return query.status();
-  return ParseProtoContents<AutofillPageQueryRequest>(query.ValueOrDie());
+  if (!query.has_value())
+    return base::unexpected(query.error());
+  return ParseProtoContents<AutofillPageQueryRequest>(query.value());
 }
 
 bool IsSingleFormRequest(const LegacyEnv::Query& query) {
@@ -300,21 +295,21 @@ bool RetrieveValueFromRequestNode(const base::Value& request_node,
 
 // Gets AutofillQueryContents from WPR recorded HTTP request body for POST.
 template <typename Env>
-StatusOr<typename Env::Query> GetAutofillQueryFromRequestNode(
+ErrorOr<typename Env::Query> GetAutofillQueryFromRequestNode(
     const base::Value& request_node) {
   std::string decoded_request_text;
   if (!RetrieveValueFromRequestNode(request_node, "SerializedRequest",
                                     &decoded_request_text)) {
-    return MakeInternalError(
+    return base::unexpected(
         "Unable to retrieve serialized request from WPR request_node");
   }
   std::string http_text = SplitHTTP(decoded_request_text).second;
   if (std::is_same<Env, ApiEnv>::value) {
-    StatusOr<std::string> query =
+    ErrorOr<std::string> query =
         PeelAutofillPageResourceQueryRequestWrapper(http_text);
-    if (!query.ok())
-      return query.status();
-    http_text = query.ValueOrDie();
+    if (!query.has_value())
+      return base::unexpected(query.error());
+    http_text = query.value();
   }
   return ParseProtoContents<typename Env::Query>(http_text);
 }
@@ -322,19 +317,19 @@ StatusOr<typename Env::Query> GetAutofillQueryFromRequestNode(
 // Gets AutofillQueryResponseContents from WPR recorded HTTP response body.
 // Also populates and returns the split |response_header_text|.
 template <typename Env>
-StatusOr<typename Env::Response> GetAutofillResponseFromRequestNode(
+ErrorOr<typename Env::Response> GetAutofillResponseFromRequestNode(
     const base::Value& request_node,
     std::string* response_header_text) {
   std::string compressed_response_text;
   if (!RetrieveValueFromRequestNode(request_node, "SerializedResponse",
                                     &compressed_response_text)) {
-    return MakeInternalError(
+    return base::unexpected(
         "Unable to retrieve serialized request from WPR request_node");
   }
   auto http_pair = SplitHTTP(compressed_response_text);
   std::string decompressed_body;
   if (!compression::GzipUncompress(http_pair.second, &decompressed_body)) {
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"Could not gzip decompress HTTP response: ",
                       GetHexString(http_pair.second)}));
   }
@@ -346,7 +341,7 @@ StatusOr<typename Env::Response> GetAutofillResponseFromRequestNode(
     // The Api Environment expects the response to be base64 encoded.
     std::string tmp;
     if (!base::Base64Decode(decompressed_body, &tmp))
-      return MakeInternalError("Unable to base64 decode the body");
+      return base::unexpected("Unable to base64 decode the body");
     decompressed_body = tmp;
   }
 
@@ -411,14 +406,14 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
 }
 
 template <typename ReadEnv>
-StatusOr<std::string> ReencodeResponseMessage(
+ErrorOr<std::string> ReencodeResponseMessage(
     const std::string& http_response,
     const typename ReadEnv::Query& query) {
   auto response_pair = SplitHTTP(http_response);
   // Decompress the body.
   std::string decompressed_body;
   if (!compression::GzipUncompress(response_pair.second, &decompressed_body)) {
-    return MakeInternalError(
+    return base::unexpected(
         base::StrCat({"Could not gzip decompress HTTP response: ",
                       GetHexString(response_pair.second)}));
   }
@@ -427,7 +422,7 @@ StatusOr<std::string> ReencodeResponseMessage(
     // The Api Environment expects the response body to be base64 encoded.
     std::string tmp;
     if (!base::Base64Decode(decompressed_body, &tmp)) {
-      return MakeInternalError(
+      return base::unexpected(
           base::StrCat({"Could not base64 decode HTTP response body: ",
                         GetHexString(response_pair.second)}));
     }
@@ -435,22 +430,22 @@ StatusOr<std::string> ReencodeResponseMessage(
   }
 
   // Parse the body.
-  StatusOr<typename ReadEnv::Response> response =
+  ErrorOr<typename ReadEnv::Response> response =
       ParseProtoContents<typename ReadEnv::Response>(decompressed_body);
-  if (!response.ok()) {
+  if (!response.has_value()) {
     VLOG(1) << "Failed to parse response body";
-    return response.status();
+    return base::unexpected(response.error());
   }
 
   // Convert the response protobuf
   AutofillQueryResponse out_response =
-      ConvertResponse<ReadEnv>(response.ValueOrDie(), query);
+      ConvertResponse<ReadEnv>(response.value(), query);
 
   // Compress that response to a string and gzip it.
   std::string serialized_response;
   if (!out_response.SerializeToString(&serialized_response)) {
     VLOG(1) << "Unable to serialize the new response!";
-    return MakeInternalError("Unable to serialize the new response.");
+    return base::unexpected("Unable to serialize the new response.");
   }
 
   // The Api Environment expects the response body to be base64 encoded.
@@ -462,7 +457,7 @@ StatusOr<std::string> ReencodeResponseMessage(
   if (!compression::GzipCompress(serialized_response,
                                  &out_compressed_response_body)) {
     VLOG(1) << "Unable to compress the new response!";
-    return MakeInternalError("Unable to compress the new response.");
+    return base::unexpected("Unable to compress the new response.");
   }
 
   return MakeHTTPTextFromSplit(response_pair.first,
@@ -470,7 +465,7 @@ StatusOr<std::string> ReencodeResponseMessage(
 }
 
 template <>
-StatusOr<std::string> ReencodeResponseMessage<ApiEnv>(
+ErrorOr<std::string> ReencodeResponseMessage<ApiEnv>(
     const std::string& compressed_response_text,
     const typename ApiEnv::Query& query) {
   return compressed_response_text;
@@ -499,19 +494,19 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
     // Get AutofillQueryContents from request.
     bool is_post_request = GetRequestTypeFromURL<ReadEnv>(query_node.url) ==
                            RequestType::kQueryProtoPOST;
-    StatusOr<typename ReadEnv::Query> query_request_statusor =
+    ErrorOr<typename ReadEnv::Query> query_request_statusor =
         is_post_request
             ? GetAutofillQueryFromRequestNode<ReadEnv>(request)
             : GetAutofillQueryFromGETQueryURL<ReadEnv>(GURL(query_node.url));
     // Only proceed if successfully parse the query request proto, else drop to
     // failure space.
-    if (query_request_statusor.ok()) {
+    if (query_request_statusor.has_value()) {
       VLOG(2) << "Getting key from Query request proto:\n "
-              << query_request_statusor.ValueOrDie();
+              << query_request_statusor.value();
       std::string key =
-          GetKeyFromQuery<ReadEnv>(query_request_statusor.ValueOrDie());
+          GetKeyFromQuery<ReadEnv>(query_request_statusor.value());
       bool is_single_form_request =
-          IsSingleFormRequest(query_request_statusor.ValueOrDie());
+          IsSingleFormRequest(query_request_statusor.value());
       // Switch to store forms as individuals or only in the groupings that they
       // were sent on recording. If only a single form in request then can use
       // old behavior still and skip decompression and combination steps.
@@ -519,41 +514,39 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
         std::string compressed_response_text;
         if (RetrieveValueFromRequestNode(request, "SerializedResponse",
                                          &compressed_response_text)) {
-          StatusOr<std::string> reencoded_compressed_response_text =
-              ReencodeResponseMessage<ReadEnv>(
-                  compressed_response_text,
-                  query_request_statusor.ValueOrDie());
-          if (!reencoded_compressed_response_text.ok()) {
-            VLOG(1) << "Unable to reencode response for key: " << key << " "
-                    << reencoded_compressed_response_text.status();
+          ErrorOr<std::string> reencoded_compressed_response_text =
+              ReencodeResponseMessage<ReadEnv>(compressed_response_text,
+                                               query_request_statusor.value());
+          if (!reencoded_compressed_response_text.has_value()) {
+            VLOG(1) << "Unable to reencode response for key: " << key << ": "
+                    << reencoded_compressed_response_text.error();
             continue;
           }
 
-          (*cache_to_fill)[key] =
-              reencoded_compressed_response_text.ValueOrDie();
+          (*cache_to_fill)[key] = reencoded_compressed_response_text.value();
           VLOG(1) << "Cached response content for key: " << key;
           continue;
         }
       } else {
         // Get AutofillQueryResponseContents and response header text.
         std::string response_header_text;
-        StatusOr<typename ReadEnv::Response> query_response_statusor =
+        ErrorOr<typename ReadEnv::Response> query_response_statusor =
             GetAutofillResponseFromRequestNode<ReadEnv>(request,
                                                         &response_header_text);
-        if (!query_response_statusor.ok()) {
+        if (!query_response_statusor.has_value()) {
           VLOG(1) << "Unable to get AutofillQueryResponseContents from WPR node"
                   << "SerializedResponse for request:" << key;
           continue;
         }
-        StatusOr<AutofillPageQueryRequest> write_query =
-            ConvertQuery<ReadEnv>(query_request_statusor.ValueOrDie());
-        StatusOr<AutofillQueryResponse> write_response =
-            ConvertResponse<ReadEnv>(query_response_statusor.ValueOrDie(),
-                                     query_request_statusor.ValueOrDie());
+        ErrorOr<AutofillPageQueryRequest> write_query =
+            ConvertQuery<ReadEnv>(query_request_statusor.value());
+        ErrorOr<AutofillQueryResponse> write_response =
+            ConvertResponse<ReadEnv>(query_response_statusor.value(),
+                                     query_request_statusor.value());
         // We have a proper request and a proper response, we can populate for
         // each form in the AutofillQueryContents.
-        if (FillFormSplitCache(write_query.ValueOrDie(), response_header_text,
-                               write_response.ValueOrDie(), cache_to_fill)) {
+        if (FillFormSplitCache(write_query.value(), response_header_text,
+                               write_response.value(), cache_to_fill)) {
           continue;
         }
       }
@@ -618,16 +611,15 @@ ServerCacheReplayer::Status PopulateCacheFromJSONFile(
   // Parse json text content to json value node.
   base::Value root_node;
   {
-    JSONReader::ValueWithError value_with_error =
-        JSONReader::ReadAndReturnValueWithError(
-            decompressed_json_text, JSONParserOptions::JSON_PARSE_RFC);
-    if (!value_with_error.value) {
+    auto value_with_error = JSONReader::ReadAndReturnValueWithError(
+        decompressed_json_text, JSONParserOptions::JSON_PARSE_RFC);
+    if (!value_with_error.has_value()) {
       return ServerCacheReplayer::Status{
           ServerCacheReplayer::StatusCode::kBadRead,
           base::StrCat({"Could not load cache from json file ",
-                        "because: ", value_with_error.error_message})};
+                        "because: ", value_with_error.error().message})};
     }
-    root_node = std::move(value_with_error.value.value());
+    root_node = std::move(*value_with_error);
   }
 
   {
@@ -1070,13 +1062,13 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
     }
     body = tmp;
 
-    StatusOr<AutofillQueryResponse> single_form_response =
+    ErrorOr<AutofillQueryResponse> single_form_response =
         ParseProtoContents<AutofillQueryResponse>(body);
-    if (!single_form_response.ok()) {
+    if (!single_form_response.has_value()) {
       VLOG(1) << "Unable to parse result contents for key:" << key;
       return false;
     }
-    AppendSingleFormResponse(single_form_response.ValueOrDie(),
+    AppendSingleFormResponse(single_form_response.value(),
                              &combined_form_response);
   }
   // If all we got were stubbed forms, return false as not a single match.
@@ -1166,7 +1158,7 @@ bool InterceptAutofillRequestHelper(
     return true;
   }
 
-  StatusOr<AutofillPageQueryRequest> query_request_statusor =
+  ErrorOr<AutofillPageQueryRequest> query_request_statusor =
       is_post_request
           ? GetAutofillQueryFromPOSTQuery(resource_request)
           : GetAutofillQueryFromGETQueryURL<ApiEnv>(resource_request.url);
@@ -1175,11 +1167,11 @@ bool InterceptAutofillRequestHelper(
   // because the request content could not be parsed back to a Query request
   // proto, which can be caused by bad data in the request from the browser
   // during capture replay.
-  CHECK(query_request_statusor.ok()) << query_request_statusor.status();
+  CHECK(query_request_statusor.has_value()) << query_request_statusor.error();
 
   // Get response from cache using query request proto as key.
   std::string http_response;
-  if (!GetResponseForQuery(cache_replayer, query_request_statusor.ValueOrDie(),
+  if (!GetResponseForQuery(cache_replayer, query_request_statusor.value(),
                            &http_response)) {
     return WriteNotFoundResponse(params);
   }

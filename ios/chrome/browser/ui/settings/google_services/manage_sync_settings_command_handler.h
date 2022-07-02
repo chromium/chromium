@@ -15,7 +15,7 @@
 - (void)openDataFromChromeSyncWebPage;
 
 // Presents the data options available when turning off Sync.
-// |targetRect| rect in table view system coordinate to display the signout
+// `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect;
 

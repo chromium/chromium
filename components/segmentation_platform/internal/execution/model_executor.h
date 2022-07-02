@@ -13,7 +13,7 @@
 
 namespace segmentation_platform {
 
-class ModelProvider;
+struct ExecutionRequest;
 
 // Class used to process features and execute the model.
 class ModelExecutor {
@@ -32,10 +32,7 @@ class ModelExecutor {
 
   // Computes input features using `segment_info` and executes the model using
   // `model_provider`, and returns result.
-  virtual void ExecuteModel(const proto::SegmentInfo& segment_info,
-                            ModelProvider* model_provider,
-                            bool record_metrics_for_default,
-                            ModelExecutionCallback callback) = 0;
+  virtual void ExecuteModel(std::unique_ptr<ExecutionRequest> request) = 0;
 };
 
 }  // namespace segmentation_platform

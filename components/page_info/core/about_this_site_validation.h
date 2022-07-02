@@ -32,8 +32,9 @@ enum class AboutThisSiteStatus {
   kMissingDescriptionSource = 14,
   kMissingBannerInfo = 15,
   kInvalidMoreAbout = 16,
+  kMissingMoreAbout = 17,
 
-  kMaxValue = kInvalidMoreAbout,
+  kMaxValue = kMissingMoreAbout,
 };
 
 AboutThisSiteStatus ValidateMetadata(

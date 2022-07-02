@@ -151,8 +151,10 @@ UIViewController* GetActiveViewController() {
   return active_view_controller;
 }
 
-id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser() {
-  return static_cast<id<ApplicationCommands, BrowserCommands>>(
+id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+HandlerForActiveBrowser() {
+  return static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>>(
       GetMainBrowser()->GetCommandDispatcher());
 }
 

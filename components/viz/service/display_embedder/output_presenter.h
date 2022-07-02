@@ -105,12 +105,22 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) = 0;
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  using OverlayPlaneCandidate = OverlayCandidate;
+#elif BUILDFLAG(IS_APPLE)
+  using OverlayPlaneCandidate = CALayerOverlay;
+#elif BUILDFLAG(IS_WIN)
+  using OverlayPlaneCandidate = DCLayerOverlay;
+#else
+  // Default.
+  using OverlayPlaneCandidate = OverlayCandidate;
+#endif
   using ScopedOverlayAccess =
       gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
-  virtual void ScheduleOneOverlay(const OverlayCandidate& overlay,
-                                  ScopedOverlayAccess* access);
-  virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
-                                std::vector<ScopedOverlayAccess*> accesses) = 0;
+  virtual void ScheduleOverlayPlane(
+      const OverlayPlaneCandidate& overlay_plane_candidate,
+      ScopedOverlayAccess* access,
+      std::unique_ptr<gfx::GpuFence> acquire_fence) = 0;
 #if BUILDFLAG(IS_MAC)
   virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
 #endif

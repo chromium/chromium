@@ -12,6 +12,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_tests = [
   "button_strip_test.ts",
   "color_settings_test.ts",
+  "destination_dialog_test.ts",
   "destination_settings_test.ts",
   "destination_store_test.ts",
   "duplex_settings_test.ts",
@@ -80,19 +81,10 @@ if (is_chromeos) {
 } else {
   non_preprocessed_tests += [
     "destination_dialog_interactive_test.ts",
-    "destination_dialog_test.ts",
     "destination_search_test.ts",
     "destination_select_test.ts",
   ]
   preprocessed_tests += [ "link_container_test.ts" ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_print_preview"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "print_preview"
 }
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
@@ -141,4 +133,13 @@ ts_library("build_ts") {
     ":preprocess",
     "..:generate_definitions",
   ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_print_preview"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "print_preview"
 }

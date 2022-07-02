@@ -53,7 +53,7 @@ int64_t ComputeFilesSize(const base::FilePath& directory,
   return running_size;
 }
 
-// Simple task to log the size of the browser state at |path|.
+// Simple task to log the size of the browser state at `path`.
 void BrowserStateSizeTask(const base::FilePath& path) {
   const int64_t kBytesInOneMB = 1024 * 1024;
 

@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -23,6 +25,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -32,6 +35,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -75,6 +79,11 @@ AppListConfig* GetAppListConfig() {
       AppListConfigType::kDense, /*can_create=*/true);
 }
 
+// Returns true if ChromeVox (spoken feedback) is enabled.
+bool IsSpokenFeedbackEnabled() {
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
+}
+
 // A simplified horizontal separator that uses a solid color layer for painting.
 // This is more efficient than using a views::Separator, which would require
 // SetPaintToLayer(ui::LAYER_TEXTURED).
@@ -82,8 +91,7 @@ class SeparatorWithLayer : public views::View {
  public:
   SeparatorWithLayer() {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
+    // Color is set in OnThemeChanged().
     layer()->SetFillsBoundsOpaquely(false);
   }
   SeparatorWithLayer(const SeparatorWithLayer&) = delete;
@@ -94,6 +102,12 @@ class SeparatorWithLayer : public views::View {
   gfx::Size CalculatePreferredSize() const override {
     // The parent's layout manager will stretch it horizontally.
     return gfx::Size(1, 1);
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    layer()->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
   }
 };
 
@@ -118,27 +132,30 @@ gfx::Rect GetShowHideAnimationBounds(bool is_side_shelf,
 
 }  // namespace
 
-// Makes focus traversal skip the assistant button when pressing the down arrow
-// key or the up arrow key. Normally views would move focus from the search box
-// to the assistant button on arrow down. However, the assistant button is
-// visually to the right, so this feels weird. Likewise, on arrow up from
-// continue tasks it feels better to put focus directly in the search box.
-class AssistantButtonFocusSkipper : public ui::EventHandler {
+// Makes focus traversal skip the assistant button and the hide continue section
+// button when pressing the down arrow key or the up arrow key. Normally views
+// would move focus from the search box to the assistant button on arrow down.
+// However, these buttons are visually to the right, so this feels weird.
+// Likewise, on arrow up from continue tasks it feels better to put focus
+// directly in the search box.
+class ButtonFocusSkipper : public ui::EventHandler {
  public:
-  explicit AssistantButtonFocusSkipper(views::View* button) : button_(button) {
-    DCHECK(button_);
-    Shell::Get()->AddPreTargetHandler(this);
-  }
+  ButtonFocusSkipper() { Shell::Get()->AddPreTargetHandler(this); }
 
-  ~AssistantButtonFocusSkipper() override {
-    Shell::Get()->RemovePreTargetHandler(this);
+  ~ButtonFocusSkipper() override { Shell::Get()->RemovePreTargetHandler(this); }
+
+  void AddButton(views::View* button) {
+    DCHECK(button);
+    buttons_.push_back(button);
   }
 
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
     // Don't adjust focus behavior if the user already focused the button.
-    if (button_->HasFocus())
-      return;
+    for (views::View* button : buttons_) {
+      if (button->HasFocus())
+        return;
+    }
 
     bool skip_focus = false;
     // This class overrides OnEvent() to examine all events so that focus
@@ -149,12 +166,14 @@ class AssistantButtonFocusSkipper : public ui::EventHandler {
         skip_focus = true;
       }
     }
-    button_->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
-                                         : views::View::FocusBehavior::ALWAYS);
+    for (views::View* button : buttons_) {
+      button->SetFocusBehavior(skip_focus ? views::View::FocusBehavior::NEVER
+                                          : views::View::FocusBehavior::ALWAYS);
+    }
   }
 
  private:
-  views::View* const button_;
+  std::vector<views::View*> buttons_;
 };
 
 AppListBubbleView::AppListBubbleView(
@@ -235,9 +254,9 @@ void AppListBubbleView::InitContentsView(
   params.increase_child_view_padding = true;
   search_box_view_->Init(params);
 
-  assistant_button_focus_skipper_ =
-      std::make_unique<AssistantButtonFocusSkipper>(
-          search_box_view_->assistant_button());
+  // Skip the assistant button on arrow up/down in app list.
+  button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
+  button_focus_skipper_->AddButton(search_box_view_->assistant_button());
 
   // The main view has a solid color layer, so the separator needs its own
   // layer to visibly paint.
@@ -264,8 +283,13 @@ void AppListBubbleView::InitContentsView(
   apps_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
-          a11y_announcer_.get(), search_page_dialog_controller_.get(),
-          /*folder_controller=*/this, /*search_box=*/search_box_view_));
+          a11y_announcer_.get(), /*folder_controller=*/this,
+          /*search_box=*/search_box_view_));
+  if (features::IsLauncherHideContinueSectionEnabled()) {
+    // Skip the "hide continue section" button on arrow up/down in app list.
+    button_focus_skipper_->AddButton(
+        apps_page_->toggle_continue_section_button());
+  }
 
   search_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(
@@ -363,6 +387,17 @@ void AppListBubbleView::StartHideAnimation(
   // Ensure any in-progress animations have their cleanup callbacks called.
   AbortAllAnimations();
 
+  if (current_page_ == AppListBubblePage::kApps)
+    apps_page_->PrepareForHideLauncher();
+
+  const gfx::Rect target_bounds = layer()->GetTargetBounds();
+
+  if (view_delegate_->ShouldDismissImmediately()) {
+    // Don't animate, just clean up.
+    OnHideAnimationEnded(target_bounds);
+    return;
+  }
+
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
       metrics_util::ForSmoothness(base::BindRepeating([](int value) {
@@ -383,12 +418,8 @@ void AppListBubbleView::StartHideAnimation(
   // Opacity: 100% → 0%
   // Duration: 100ms
   // Ease: Linear
-  const gfx::Rect target_bounds = layer()->GetTargetBounds();
   const gfx::Rect final_bounds =
       GetShowHideAnimationBounds(is_side_shelf, target_bounds);
-
-  if (current_page_ == AppListBubblePage::kApps)
-    apps_page_->AnimateHideLauncher();
 
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&AppListBubbleView::OnHideAnimationEnded,
@@ -464,6 +495,8 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kAssistant:
+      if (showing_folder_)
+        HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
       if (previous_page == AppListBubblePage::kApps)
         apps_page_->AnimateHidePage();
       else
@@ -614,8 +647,8 @@ void AppListBubbleView::CloseButtonPressed() {
 
 void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   // Nothing to do. Search box starts focused, and FocusManager handles arrow
-  // key traversal from there. AssistantButtonFocusSkipper above handles
-  // skipping the assistant button on arrow up and arrow down.
+  // key traversal from there. ButtonFocusSkipper above handles skipping the
+  // assistant and hide continue section buttons on arrow up and arrow down.
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {
@@ -643,8 +676,10 @@ void AppListBubbleView::ShowFolderForItemView(AppListItemView* folder_item_view,
                                           /*hide_for_reparent=*/false);
   if (focus_name_input) {
     folder_view_->FocusNameInput();
-  } else if (apps_page_->scrollable_apps_grid_view()->has_selected_view()) {
-    // If the user is keyboard navigating, move focus into the folder.
+  } else if (apps_page_->scrollable_apps_grid_view()->has_selected_view() ||
+             IsSpokenFeedbackEnabled()) {
+    // If the user is keyboard navigating, or using ChromeVox (spoken feedback),
+    // move focus into the folder.
     folder_view_->FocusFirstItem(/*silently=*/false);
   } else {
     // Release focus so that disabling the views below does not shift focus

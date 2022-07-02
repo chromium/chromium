@@ -218,3 +218,12 @@ device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
 void MockXRDeviceHookBase::PopulateEvent(device_test::mojom::EventData data) {
   event_data_queue_.push(data);
 }
+
+void MockXRDeviceHookBase::WaitGetCanCreateSession(
+    device_test::mojom::XRTestHook::WaitGetCanCreateSessionCallback callback) {
+  std::move(callback).Run(can_create_session_);
+}
+
+void MockXRDeviceHookBase::SetCanCreateSession(bool can_create_session) {
+  can_create_session_ = can_create_session;
+}

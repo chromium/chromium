@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
 
 namespace ash {
 
@@ -39,7 +39,7 @@ enum class AudioDeviceType {
 
 struct COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevice {
   AudioDevice();
-  explicit AudioDevice(const chromeos::AudioNode& node);
+  explicit AudioDevice(const AudioNode& node);
   AudioDevice(const AudioDevice& other);
   AudioDevice& operator=(const AudioDevice& other);
   std::string ToString() const;

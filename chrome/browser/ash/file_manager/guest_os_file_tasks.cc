@@ -145,13 +145,12 @@ auto ConvertLaunchPluginVmAppResultToTaskResult(
 
 }  // namespace
 
-void FindGuestOsApps(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    const std::vector<GURL>& file_urls,
-    std::vector<std::string>* app_ids,
-    std::vector<std::string>* app_names,
-    std::vector<guest_os::GuestOsRegistryService::VmType>* vm_types) {
+void FindGuestOsApps(Profile* profile,
+                     const std::vector<extensions::EntryInfo>& entries,
+                     const std::vector<GURL>& file_urls,
+                     std::vector<std::string>* app_ids,
+                     std::vector<std::string>* app_names,
+                     std::vector<guest_os::VmType>* vm_types) {
   // Ensure all files can be shared with VMs.
   storage::FileSystemContext* file_system_context =
       util::GetFileManagerFileSystemContext(profile);
@@ -174,18 +173,16 @@ void FindGuestOsApps(
     const std::string& app_id = pair.first;
     const auto& registration = pair.second;
 
-    guest_os::GuestOsRegistryService::VmType vm_type = registration.VmType();
+    guest_os::VmType vm_type = registration.VmType();
     switch (vm_type) {
-      case guest_os::GuestOsRegistryService::VmType::
-          ApplicationList_VmType_TERMINA:
+      case guest_os::VmType::TERMINA:
         if (!AppSupportsMimeTypeOfAllEntries(*mime_types_service, entries,
                                              registration)) {
           continue;
         }
         break;
 
-      case guest_os::GuestOsRegistryService::VmType::
-          ApplicationList_VmType_PLUGIN_VM:
+      case guest_os::VmType::PLUGIN_VM:
         if (!AppSupportsExtensionOfAllEntries(entries, registration)) {
           continue;
         }
@@ -218,7 +215,7 @@ void FindGuestOsTasks(Profile* profile,
 
   std::vector<std::string> result_app_ids;
   std::vector<std::string> result_app_names;
-  std::vector<guest_os::GuestOsRegistryService::VmType> result_vm_types;
+  std::vector<guest_os::VmType> result_vm_types;
   FindGuestOsApps(profile, entries, file_urls, &result_app_ids,
                   &result_app_names, &result_vm_types);
 
@@ -231,12 +228,10 @@ void FindGuestOsTasks(Profile* profile,
   task_types.reserve(result_vm_types.size());
   for (auto vm_type : result_vm_types) {
     switch (vm_type) {
-      case guest_os::GuestOsRegistryService::VmType::
-          ApplicationList_VmType_TERMINA:
+      case guest_os::VmType::TERMINA:
         task_types.push_back(TASK_TYPE_CROSTINI_APP);
         break;
-      case guest_os::GuestOsRegistryService::VmType::
-          ApplicationList_VmType_PLUGIN_VM:
+      case guest_os::VmType::PLUGIN_VM:
         task_types.push_back(TASK_TYPE_PLUGIN_VM_APP);
         break;
       default:
@@ -282,10 +277,9 @@ void ExecuteGuestOsTask(
   for (const auto& url : file_system_urls) {
     args.emplace_back(url);
   }
-  guest_os::GuestOsRegistryService::VmType vm_type = registration->VmType();
+  guest_os::VmType vm_type = registration->VmType();
   switch (vm_type) {
-    case guest_os::GuestOsRegistryService::VmType::
-        ApplicationList_VmType_TERMINA:
+    case guest_os::VmType::TERMINA:
       apps::RecordAppLaunchMetrics(
           profile, apps::AppType::kCrostini, task.app_id,
           apps::mojom::LaunchSource::kFromFileManager,
@@ -309,8 +303,7 @@ void ExecuteGuestOsTask(
               },
               std::move(done)));
       return;
-    case guest_os::GuestOsRegistryService::VmType::
-        ApplicationList_VmType_PLUGIN_VM:
+    case guest_os::VmType::PLUGIN_VM:
       apps::RecordAppLaunchMetrics(
           profile, apps::AppType::kPluginVm, task.app_id,
           apps::mojom::LaunchSource::kFromFileManager,

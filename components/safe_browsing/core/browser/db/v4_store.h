@@ -188,7 +188,7 @@ class V4Store {
 
   // True if this store has valid contents, either from a successful read
   // from disk or a full update.  This does not mean the checksum was verified.
-  virtual bool HasValidData() const;
+  virtual bool HasValidData();
 
   const std::string& state() const { return state_; }
 
@@ -431,6 +431,10 @@ class V4Store {
 
   // The size of the file on disk for this store.
   int64_t file_size_;
+
+  // A counter used to manage how frequently the value of `has_valid_data_`
+  // below is recorded.
+  uint8_t record_has_valid_data_counter_ = 0;
 
   // True if the file was successfully read+parsed or was populated from
   // a full update.

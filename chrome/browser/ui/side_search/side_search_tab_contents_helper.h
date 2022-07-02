@@ -113,6 +113,15 @@ class SideSearchTabContentsHelper
   bool toggled_open() const { return toggled_open_; }
   void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
 
+  // Called when the page action label is shown.
+  void DidShowPageActionLabel();
+  int page_action_label_shown_count() const {
+    return page_action_label_shown_count_;
+  }
+
+  // Gets `can_show_page_action_label_` and resets the value to false.
+  bool GetAndResetCanShowPageActionLabel();
+
   void SetSidePanelContentsForTesting(
       std::unique_ptr<content::WebContents> side_panel_contents);
 
@@ -186,6 +195,20 @@ class SideSearchTabContentsHelper
   // True if the side panel could be shown for the previously committed
   // navigation.
   bool could_show_for_last_committed_navigation_ = false;
+
+  // Tracks whether the page action icon has animated-in its label text. Track
+  // this to ensure we only show the label at most once per tab.
+  bool page_action_label_shown_ = false;
+
+  // Tracks the number of times the page action icon has animated-in its label
+  // text for this tab.
+  int page_action_label_shown_count_ = 0;
+
+  // Tracks if we can show the page action label when the entrypoint is
+  // revealed. This is set to true after a navigation to a SRP and reset when
+  // the entrypoint for the current SRP is shown. This is done to ensure we only
+  // show the label text at most once for a given SRP.
+  bool can_show_page_action_label_ = false;
 
   base::ScopedObservation<SideSearchConfig, SideSearchConfig::Observer>
       config_observation_{this};

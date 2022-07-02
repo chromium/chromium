@@ -76,7 +76,8 @@ suite('Multidevice', function() {
     document.body.appendChild(featureItem);
     flush();
 
-    featureToggle = featureItem.$$('settings-multidevice-feature-toggle');
+    featureToggle = featureItem.shadowRoot.querySelector(
+        'settings-multidevice-feature-toggle');
     featureToggle.getFeatureState = () => featureState;
 
     crToggle = featureToggle.$.toggle;
@@ -95,14 +96,17 @@ suite('Multidevice', function() {
   });
 
   test('generic click navigates to subpage', function() {
-    checkWhetherClickRoutesAway(featureItem.$$('#item-text-container'), true);
-    checkWhetherClickRoutesAway(featureItem.$$('iron-icon'), true);
-    checkWhetherClickRoutesAway(featureItem.$$('#featureSecondary'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('#item-text-container'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('iron-icon'), true);
+    checkWhetherClickRoutesAway(
+        featureItem.shadowRoot.querySelector('#featureSecondary'), true);
   });
 
   test('link click does not navigate to subpage', function() {
-    const link =
-        featureItem.$$('#featureSecondary').$.container.querySelector('a');
+    const link = featureItem.shadowRoot.querySelector('#featureSecondary')
+                     .$.container.querySelector('a');
     assertTrue(!!link);
     checkWhetherClickRoutesAway(link, false);
   });
@@ -115,7 +119,7 @@ suite('Multidevice', function() {
 
     const expectedEvent =
         eventToPromise('feature-toggle-clicked', featureToggle);
-    featureItem.$$('#linkWrapper').click();
+    featureItem.shadowRoot.querySelector('#linkWrapper').click();
     await expectedEvent;
   });
 

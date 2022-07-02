@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
@@ -67,17 +68,21 @@ void DCheckOverridesAllowed() {}
 // followed by a base::Pickle object that contains the feature and trial name.
 struct FeatureEntry {
   // SHA1(FeatureEntry): Increment this if structure changes!
-  static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 1;
+  static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 2;
 
   // Expected size for 32/64-bit check.
-  static constexpr size_t kExpectedInstanceSize = 8;
+  static constexpr size_t kExpectedInstanceSize = 16;
 
   // Specifies whether a feature override enables or disables the feature. Same
   // values as the OverrideState enum in feature_list.h
   uint32_t override_state;
 
+  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
+  // of `pickle_size` across platforms.
+  uint32_t padding;
+
   // Size of the pickled structure, NOT the total size of this entry.
-  uint32_t pickle_size;
+  uint64_t pickle_size;
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
@@ -86,7 +91,7 @@ struct FeatureEntry {
     const char* src =
         reinterpret_cast<const char*>(this) + sizeof(FeatureEntry);
 
-    Pickle pickle(src, pickle_size);
+    Pickle pickle(src, checked_cast<size_t>(pickle_size));
     PickleIterator pickle_iter(pickle);
 
     if (!pickle_iter.ReadStringPiece(feature_name))
@@ -748,6 +753,15 @@ FeatureList::Accessor::Accessor(FeatureList* feature_list)
 FeatureList::OverrideState FeatureList::Accessor::GetOverrideStateByFeatureName(
     StringPiece feature_name) {
   return feature_list_->GetOverrideStateByFeatureName(feature_name);
+}
+
+bool FeatureList::Accessor::GetParamsByFeatureName(
+    StringPiece feature_name,
+    std::map<std::string, std::string>* params) {
+  base::FieldTrial* trial =
+      feature_list_->GetAssociatedFieldTrialByFeatureName(feature_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 }  // namespace base

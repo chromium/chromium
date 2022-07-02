@@ -239,6 +239,7 @@ aggregate_vector_icons("chrome_vector_icons") {
       "sharesheet_share_with_others.icon",
       "sharesheet_text.icon",
       "shutdown_guest_os.icon",
+      "tip.icon",
     ]
   }
 
@@ -257,6 +258,7 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_chrome_branded) {
     sources += [
+      "google_chrome/assistant.icon",
       "google_chrome/google_calendar.icon",
       "google_chrome/google_g_logo.icon",
       "google_chrome/google_g_logo_monochrome.icon",
@@ -268,10 +270,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "google_chrome/google_sites.icon",
       "google_chrome/google_super_g.icon",
     ]
-  }
-
-  if (is_chrome_branded && is_chromeos_ash) {
-    sources += [ "google_chrome/assistant.icon" ]
   }
 }
 

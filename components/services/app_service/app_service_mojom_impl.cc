@@ -95,23 +95,6 @@ void AppServiceMojomImpl::RegisterSubscriber(
   subscribers_.Add(std::move(subscriber));
 }
 
-void AppServiceMojomImpl::LoadIcon(apps::mojom::AppType app_type,
-                                   const std::string& app_id,
-                                   apps::mojom::IconKeyPtr icon_key,
-                                   apps::mojom::IconType icon_type,
-                                   int32_t size_hint_in_dip,
-                                   bool allow_placeholder_icon,
-                                   LoadIconCallback callback) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-  iter->second->LoadIcon(app_id, std::move(icon_key), icon_type,
-                         size_hint_in_dip, allow_placeholder_icon,
-                         std::move(callback));
-}
-
 void AppServiceMojomImpl::Launch(apps::mojom::AppType app_type,
                                  const std::string& app_id,
                                  int32_t event_flags,
@@ -254,26 +237,17 @@ void AppServiceMojomImpl::AddPreferredApp(
     apps::mojom::IntentPtr intent,
     bool from_publisher) {
   if (preferred_apps_impl_) {
-    preferred_apps_impl_->AddPreferredApp(app_type, app_id,
-                                          std::move(intent_filter),
-                                          std::move(intent), from_publisher);
+    preferred_apps_impl_->AddPreferredApp(
+        ConvertMojomAppTypToAppType(app_type), app_id,
+        ConvertMojomIntentFilterToIntentFilter(intent_filter),
+        ConvertMojomIntentToIntent(intent), from_publisher);
   }
 }
 
 void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
                                              const std::string& app_id) {
   if (preferred_apps_impl_) {
-    preferred_apps_impl_->RemovePreferredApp(app_type, app_id);
-  }
-}
-
-void AppServiceMojomImpl::RemovePreferredAppForFilter(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter) {
-  if (preferred_apps_impl_) {
-    preferred_apps_impl_->RemovePreferredAppForFilter(app_type, app_id,
-                                                      std::move(intent_filter));
+    preferred_apps_impl_->RemovePreferredApp(app_id);
   }
 }
 
@@ -283,7 +257,8 @@ void AppServiceMojomImpl::SetSupportedLinksPreference(
     std::vector<apps::mojom::IntentFilterPtr> all_link_filters) {
   if (preferred_apps_impl_) {
     preferred_apps_impl_->SetSupportedLinksPreference(
-        app_type, app_id, std::move(all_link_filters));
+        ConvertMojomAppTypToAppType(app_type), app_id,
+        ConvertMojomIntentFiltersToIntentFilters(all_link_filters));
   }
 }
 
@@ -291,7 +266,8 @@ void AppServiceMojomImpl::RemoveSupportedLinksPreference(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
   if (preferred_apps_impl_) {
-    preferred_apps_impl_->RemoveSupportedLinksPreference(app_type, app_id);
+    preferred_apps_impl_->RemoveSupportedLinksPreference(
+        ConvertMojomAppTypToAppType(app_type), app_id);
   }
 }
 

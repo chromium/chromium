@@ -11,7 +11,7 @@ build each such crate."""
 
 from __future__ import annotations
 
-from typing import Iterator
+from typing import Iterator, Optional
 from contextlib import contextmanager
 from datetime import datetime
 from pprint import pprint
@@ -19,6 +19,7 @@ import argparse
 import tempfile
 import os
 import re
+import subprocess
 import sys
 
 from lib.build_rule import BuildRule
@@ -173,7 +174,7 @@ class PerCrateData:
         # The map of full version numbers that Cargo has requested for the crate
         # + epoch to the path where Cargo said it has found them. The path will
         # be missing if there's no local crate that matches.
-        self.cargo_full_versions: map[str, str] = {}
+        self.cargo_full_versions: dict[str, str] = {}
 
 
 class DepSet:
@@ -280,6 +281,15 @@ def run(args: argparse.Namespace):
                            last_printed,
                            done=True)
 
+    if not args.skip_patch:
+        patch_path = common.os_third_party_dir(consts.BUILD_PATCH_FILE)
+        try:
+            with open(patch_path, "r") as patch_file:
+                _apply_build_patch(patch_file.read())
+        except FileNotFoundError:
+            # If the file does not exist simply print a warning and continue.
+            print(f"Warning: file {patch_path} did not exist.")
+
 
 def _get_copyright_year(path: str) -> str:
     try:
@@ -330,6 +340,17 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                     "A crate may only appear in one section of " \
                     "third_party.toml, but '{}' appears more than " \
                     "once.".format(dep)
+
+    if args.crates is not None:
+        crate_set: set[str] = set(args.crates)
+        # This option is for testing. Include only regular dependencies. Filter
+        # out any that are not listed.
+        toml_3p.pop("dev-dependencies", None)
+        toml_3p.pop("build-dependencies", None)
+        dep_keys = set(toml_3p["dependencies"].keys())
+        for dep_key in dep_keys:
+            if dep_key not in crate_set:
+                del toml_3p["dependencies"][dep_key]
 
     # For every crate in third_party, we will generate a patch to redirect
     # crates.io to that directory, so that if we have local changes to the
@@ -522,7 +543,7 @@ def _look_for_missing_or_blocked_deps(build_data_set: BuildData,
     If a problem is found, this function will terminate the program with
     `exit(1)`.
     """
-    missing: list[tuple[str, str]] = []
+    missing: list[tuple[str, str, str]] = []
     missing_version: list[tuple[str, str, str]] = []
     blocked: list[tuple[str, str]] = []
     # Every crate appears in all 3 CrateUsage entries, so we can just look at
@@ -649,8 +670,9 @@ class ArchSpecific:
         return compiler.ArchSet(initial={target_arch})
 
 
-def _get_archs_of_interest(cargo_toml: dict, crate_usage_data: PerCrateData,
-                           user_target_arch: str) -> ArchSpecific:
+def _get_archs_of_interest(cargo_toml: dict,
+                           crate_usage_data: Optional[PerCrateData],
+                           user_target_arch: Optional[str]) -> ArchSpecific:
     """Determine which archs to check dependencies for a crate.
 
     Args:
@@ -705,7 +727,7 @@ def _get_archs_of_interest(cargo_toml: dict, crate_usage_data: PerCrateData,
         # list of `cargo.CrateKey`s.
 
         def version_from_maybe_dict(maybe_dict: dict | str) -> str:
-            if type(maybe_dict) is dict:
+            if isinstance(maybe_dict, dict):
                 return maybe_dict["version"]
             else:
                 return maybe_dict
@@ -736,19 +758,21 @@ def _crate_features_on_target_arch(crate_usage_data: PerCrateData,
 class CargoTreeDependency:
     def __init__(self,
                  key: cargo.CrateKey,
-                 full_version: str = None,
-                 crate_path: str = None,
+                 full_version: Optional[str] = None,
+                 crate_path: Optional[str] = None,
                  features: list[str] = [],
                  is_for_first_party_code: bool = False,
                  build_script_outputs: set[str] = set()):
-        self.key = key
-        self.full_version = full_version
-        self.crate_path = crate_path
-        self.features = features
-        self.is_for_first_party_code = is_for_first_party_code
-        self.build_script_outputs = build_script_outputs
+        self.key: cargo.CrateKey = key
+        self.full_version: Optional[str] = full_version
+        self.crate_path: Optional[str] = crate_path
+        self.features: list[str] = features
+        self.is_for_first_party_code: bool = is_for_first_party_code
+        self.build_script_outputs: set[str] = build_script_outputs
 
-    def __eq__(self, other: CargoTreeDependency) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, CargoTreeDependency):
+            return NotImplemented
         return (self.key == other.key
                 and self.full_version == other.full_version
                 and self.crate_path == other.crate_path
@@ -768,8 +792,8 @@ class CargoTreeDependency:
 
 def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
                                       cargo_toml: dict,
-                                      is_third_party_toml: bool,
-                                      line: str) -> CargoTreeDependency:
+                                      is_third_party_toml: bool, line: str
+                                      ) -> Optional[CargoTreeDependency]:
     m = re.search(consts.CARGO_DEPS_REGEX, line)
     if not m:
         return None
@@ -791,14 +815,13 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
             {}) else "dev-dependencies" if dep_name in cargo_toml.get(
                 "dev-dependencies", {}) else None
 
+    build_script_outputs: set[str] = set()
     if not parse_ext_key:
         # Extensions from third_party.toml that aren't in normal Cargo.toml,
         # these are the defaults for stuff outside of third_party.toml.
         for_first_party_code = False
-        build_script_outputs = set()
     else:
         for_first_party_code = True
-        build_script_outputs = set()
         # Usually the dependency value is just a version number, but if it
         # is a dict, then it can declare values for extensions.
         extensions = cargo_toml[parse_ext_key][dep_name]
@@ -816,10 +839,10 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
 
 
 def _add_edges_for_dep_on_target_arch(
-        build_data_set: BuildData, parent_crate_key: cargo.CrateKey,
+        build_data_set: BuildData, parent_crate_key: Optional[cargo.CrateKey],
         parent_arch_specific: ArchSpecific, parent_usage: cargo.CrateUsage,
         parent_output: cargo.CrateBuildOutput, dep: CargoTreeDependency,
-        target_arch: str, new_keys: set[cargo.CrateKey]) -> set[cargo.CrateKey]:
+        target_arch: str, new_keys: set[cargo.CrateKey]):
     """Adds edges between a parent crate and a dependency crate.
 
     Args:
@@ -854,8 +877,9 @@ def _add_edges_for_dep_on_target_arch(
         with build_data_set.per_crate_for_usage(u, dep.key) as crate_data:
             crate_data.for_first_party |= dep.is_for_first_party_code
             crate_data.build_script_outputs |= dep.build_script_outputs
-            crate_data.cargo_full_versions.update(
-                {dep.full_version: dep.crate_path})
+            if dep.full_version is not None and dep.crate_path is not None:
+                crate_data.cargo_full_versions.update(
+                    {dep.full_version: dep.crate_path})
 
     # The parent crate may use a dependency in various ways: to produce normal
     # output, a build script, or tests. We examine just one in this function.
@@ -913,7 +937,6 @@ def _add_edges_for_dep_on_target_arch(
                 # Adds the edge from parent to dependency for all given target
                 # architectures.
                 dep_data.archset.add_archset(archset_for_new_edges)
-    return
 
 
 def _collect_deps_for_crate(args: argparse.Namespace,
@@ -921,8 +944,8 @@ def _collect_deps_for_crate(args: argparse.Namespace,
                             build_data_set: BuildData,
                             usage: cargo.CrateUsage,
                             is_third_party_toml: bool,
-                            crate_key: cargo.CrateKey = None,
-                            depth: int = None) -> set[cargo.CrateKey]:
+                            crate_key: Optional[cargo.CrateKey] = None,
+                            depth: Optional[int] = None) -> set[cargo.CrateKey]:
     """Runs `cargo tree` and collects all dependency data for a specific crate.
 
     Args:
@@ -970,6 +993,7 @@ def _collect_deps_for_crate(args: argparse.Namespace,
                 # so there's no features (and no crate_key).
                 crate_derived_features = []
             else:
+                assert crate_key is not None
                 crate_derived_features = _crate_features_on_target_arch(
                     build_data_set.get_per_crate_data_copy(usage, crate_key),
                     target_arch)
@@ -1082,7 +1106,7 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
                 "sources": [path],
             }]
 
-    build_script_root = None
+    build_script_root: Optional[str] = None
     if "build" in cargo_toml["package"]:
         if cargo_toml["package"]["build"]:  # May be `false`
             build_script_root = path_prefix + cargo_toml["package"]["build"]
@@ -1176,3 +1200,15 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
         print("for test: ")
         pprint(vars(build_rule.test_usage))
     return build_rule
+
+
+def _apply_build_patch(patch_contents: str):
+    """Apply a git patch after generating BUILD.gn files. If the patch does not
+    apply, throws an error.
+
+    Args:
+        patch_contents: The patch contents (not the filename)"""
+
+    subprocess.run(["git", "apply", "-"],
+                   input=patch_contents.encode(),
+                   check=True)

@@ -190,6 +190,8 @@ public final class WebFeedFollowIntroControllerTest {
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
+        mBaseTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 
@@ -210,6 +212,56 @@ public final class WebFeedFollowIntroControllerTest {
                 sSharedPreferencesManager.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
                                 .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
+    }
+
+    @Test
+    @SmallTest
+    public void sameWebFeedIsNotShownMoreThan3Times() {
+        mBaseTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
+        mBaseTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
+        FeatureList.setTestValues(mBaseTestValues);
+        resetWebFeedFollowIntroController();
+
+        mWebFeedFollowIntroController.clearIntroShownForTesting();
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+        assertTrue("Intro should be shown first time",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
+
+        mWebFeedFollowIntroController.clearIntroShownForTesting();
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+        assertTrue("Intro should be shown second time",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
+
+        mWebFeedFollowIntroController.clearIntroShownForTesting();
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+        assertTrue("Intro should be shown third time",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
+
+        mWebFeedFollowIntroController.clearIntroShownForTesting();
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+        assertFalse("Intro should NOT be shown fourth time",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
     }
 
     @Test

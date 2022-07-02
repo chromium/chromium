@@ -8,6 +8,7 @@
 #include <glib-object.h>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 
 // Similar to a std::shared_ptr for GObject types.
 template <typename T>
@@ -69,7 +70,7 @@ class ScopedGObject {
       g_object_unref(obj_);
   }
 
-  T* obj_ = nullptr;
+  raw_ptr<T> obj_ = nullptr;
 };
 
 // Create a ScopedGObject and do not increase the GObject's reference count.

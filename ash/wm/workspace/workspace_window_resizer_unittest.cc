@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
@@ -103,7 +104,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     aura::Window* root = Shell::GetPrimaryRootWindow();
     gfx::Rect root_bounds(root->bounds());
     EXPECT_EQ(800, root_bounds.width());
-    Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+    WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+        root, gfx::Rect(), gfx::Insets(), gfx::Insets());
     window_ = std::make_unique<aura::Window>(&delegate_);
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
@@ -187,12 +189,14 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   }
 
   void DragToMaximize(aura::Window* window) {
+    window->SetBounds(gfx::Rect(200, 200));
     std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window);
     resizer->Drag(gfx::PointF(400.f, 400.f), 0);
     resizer->Drag(gfx::PointF(400.f, 2.f), 0);
     DwellCountdownTimerFireNow();
     resizer->CompleteDrag();
     ASSERT_TRUE(WindowState::Get(window)->IsMaximized());
+    ASSERT_TRUE(WindowState::Get(window)->HasRestoreBounds());
     resizer.reset();
   }
 
@@ -445,7 +449,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_2) {
 TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3) {
   UpdateDisplay("600x800");
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets(), gfx::Insets());
 
   window_->SetBounds(gfx::Rect(300, 100, 300, 200));
   window2_->SetBounds(gfx::Rect(300, 300, 200, 150));
@@ -895,8 +900,10 @@ TEST_F(WorkspaceWindowResizerTest, ResizeWindowOutsideRightWorkArea) {
 }
 
 TEST_F(WorkspaceWindowResizerTest, ResizeWindowOutsideBottomWorkArea) {
-  Shell::Get()->SetDisplayWorkAreaInsets(Shell::GetPrimaryRootWindow(),
-                                         gfx::Insets::TLBR(0, 0, 50, 0));
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets::TLBR(0, 0, 50, 0),
+      gfx::Insets::TLBR(0, 0, 50, 0));
   int bottom =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()).bottom();
   int delta_to_bottom = 50;
@@ -1561,7 +1568,8 @@ TEST_F(WorkspaceWindowResizerTest, DontExceedMaxHeight) {
 TEST_F(WorkspaceWindowResizerTest, DontExceedMinHeight) {
   UpdateDisplay("600x500");
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets(), gfx::Insets());
 
   // Four 100x100 windows flush against eachother, starting at 100,100.
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
@@ -1987,6 +1995,12 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeNumOfMisTriggersMetric) {
   // maximize mis-trigger on it.
   histogram_tester.ExpectBucketCount(
       "Ash.Window.DragMaximized.NumberOfMisTriggers", 1, 1);
+
+  window3_.reset();
+  // Verify that the number of mis-triggers is not recorded for `window3`, since
+  // it's never been dragged to maximized.
+  histogram_tester.ExpectBucketCount(
+      "Ash.Window.DragMaximized.NumberOfMisTriggers", 0, 0);
 }
 
 TEST_F(WorkspaceWindowResizerTest, DragToMaximizeValidMetric) {
@@ -2141,16 +2155,17 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   ASSERT_TRUE(window_state->IsSnapped());
+  const gfx::Rect snapped_bounds = window_state->window()->bounds();
 
   generator.GestureScrollSequence(gfx::Point(10, 10), gfx::Point(10, 210),
                                   base::Milliseconds(10), 10);
   ASSERT_TRUE(window_state->IsMinimized());
 
   // After unminimzing, the window bounds are the size they were before
-  // maximizing.
+  // minimizing.
   window_state->Unminimize();
-  EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_EQ(window_size, touch_resize_window_->bounds().size());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(snapped_bounds, touch_resize_window_->bounds());
 }
 
 // Tests that fling to maximize does not crash or DCHECK if the window's restore

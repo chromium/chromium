@@ -1186,25 +1186,6 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
   }
 }
 
-gfx::OverlayTransform GetGFXOverlayTransform(GLenum plane_transform) {
-  switch (plane_transform) {
-    case GL_OVERLAY_TRANSFORM_NONE_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_NONE;
-    case GL_OVERLAY_TRANSFORM_FLIP_HORIZONTAL_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL;
-    case GL_OVERLAY_TRANSFORM_FLIP_VERTICAL_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
-    case GL_OVERLAY_TRANSFORM_ROTATE_90_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
-    case GL_OVERLAY_TRANSFORM_ROTATE_180_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
-    case GL_OVERLAY_TRANSFORM_ROTATE_270_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
-    default:
-      return gfx::OVERLAY_TRANSFORM_INVALID;
-  }
-}
-
 bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format) {
   switch (internal_format) {
     case GL_RGBA8_OES:
@@ -1218,16 +1199,6 @@ bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format) {
       return true;
     case GL_R8_EXT:
       *out_format = gfx::BufferFormat::R_8;
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool GetGFXBufferUsage(GLenum buffer_usage, gfx::BufferUsage* out_usage) {
-  switch (buffer_usage) {
-    case GL_SCANOUT_CHROMIUM:
-      *out_usage = gfx::BufferUsage::SCANOUT;
       return true;
     default:
       return false;

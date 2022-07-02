@@ -12,16 +12,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/cros_network_config.h"
 #include "chromeos/services/network_config/in_process_instance.h"
@@ -171,6 +171,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   ~NetworkHealthProviderTest() override {
+    // Clear in process instance prior to destroying cros_network_config_ to
+    // avoid UaF errors.
+    network_config::OverrideInProcessInstanceForTesting(nullptr);
     // Ordering here is based on dependencies between classes,
     // CrosNetworkConfig depends on NetworkHandler and NetworkHandler
     // indirectly depends on NetworkCertLoader.
@@ -304,7 +307,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetWifiPortal() {
-    SetNetworkState(kWlan0DevicePath, shill::kStatePortal);
+    SetNetworkState(kWlan0DevicePath, shill::kStateRedirectFound);
   }
 
   void SetCellularConnected() {
@@ -1387,25 +1390,20 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   EXPECT_FALSE(log.GetNetworkInfo().empty());
 }
 
-TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
-  // Ensure required features are enabled before binding to avoid DCHECK.
+TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kEnableNetworkingInDiagnosticsApp);
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
   mojo::Remote<mojom::NetworkHealthProvider> remote;
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
-
-  // Unbind remote to trigger disconnect and disconnect handler.
-  remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
 
-  // Test intent is to ensure interface can be rebound when application is
-  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
-  // will reset the receiver to its unbound state.
+  remote.reset();
+
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace diagnostics

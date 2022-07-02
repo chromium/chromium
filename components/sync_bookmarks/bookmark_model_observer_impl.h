@@ -91,8 +91,7 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // |bookmark_tracker_| accordingly. If |node| is a bookmark, it gets marked
   // as deleted and that it requires a commit. If it's a folder, it recurses
   // over all children before processing the folder itself.
-  void ProcessDelete(const bookmarks::BookmarkNode* parent,
-                     const bookmarks::BookmarkNode* node);
+  void ProcessDelete(const bookmarks::BookmarkNode* node);
 
   // Points to the tracker owned by the processor. It keeps the mapping between
   // bookmark nodes and corresponding sync server entities.

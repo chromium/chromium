@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 
 #include "base/check_op.h"
+#include "base/i18n/number_formatting.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,16 +28,19 @@ bool IsSubset(const Set& set1, const Set& set2) {
 
 // PageLoadMetricsObserver used by the PageLoadMetricsTestWaiter to observe
 // metrics updates.
-class WaiterMetricsObserver : public PageLoadMetricsObserver {
+class WaiterMetricsObserver final : public PageLoadMetricsObserver {
  public:
   using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
   // We use a WeakPtr to the PageLoadMetricsTestWaiter because |waiter| can be
   // destroyed before this WaiterMetricsObserver.
   explicit WaiterMetricsObserver(
-      base::WeakPtr<PageLoadMetricsTestWaiter> waiter)
-      : waiter_(waiter) {}
+      base::WeakPtr<PageLoadMetricsTestWaiter> waiter,
+      const char* observer_name)
+      : waiter_(waiter), observer_name_(observer_name) {}
 
   ~WaiterMetricsObserver() override = default;
+
+  const char* GetObserverName() const override;
 
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
@@ -44,6 +48,10 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
 
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
+
+  void OnSoftNavigationCountUpdated() override;
+
+  void OnPageInputTimingUpdate(uint64_t num_input_events) override;
 
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
                          const mojom::CpuTiming& timing) override;
@@ -75,11 +83,18 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
 
  private:
   const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
+  const char* observer_name_;
 };
 
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents)
-    : MetricsLifecycleObserver(web_contents) {}
+    : MetricsLifecycleObserver(web_contents),
+      observer_name_("WaiterMetricsObserver") {}
+
+PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
+    content::WebContents* web_contents,
+    const char* observer_name_)
+    : MetricsLifecycleObserver(web_contents), observer_name_(observer_name_) {}
 
 PageLoadMetricsTestWaiter::~PageLoadMetricsTestWaiter() {
   CHECK(did_add_observer_);
@@ -207,6 +222,18 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
   else
     observed_.page_fields_.Merge(matched_bits);
 
+  if (ExpectationsSatisfied() && run_loop_)
+    run_loop_->Quit();
+}
+
+void PageLoadMetricsTestWaiter::OnSoftNavigationCountUpdated() {
+  soft_navigation_count_updated_ = true;
+}
+
+void PageLoadMetricsTestWaiter::OnPageInputTimingUpdated(
+    uint64_t num_input_events) {
+  current_num_input_events_ = num_input_events;
+  observed_.page_fields_.Set(TimingField::kTotalInputDelay);
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
 }
@@ -366,12 +393,18 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
           TimingField::kRequestAnimationFrameAfterBackForwardCacheRestore);
     }
   }
+  if (timing.interactive_timing->first_scroll_delay)
+    matched_bits.Set(TimingField::kFirstScrollDelay);
 
   if (render_data) {
     double layout_shift_score = render_data->layout_shift_score;
     if (last_main_frame_layout_shift_score_ < layout_shift_score)
       matched_bits.Set(TimingField::kLayoutShift);
     last_main_frame_layout_shift_score_ = layout_shift_score;
+  }
+  if (soft_navigation_count_updated_) {
+    soft_navigation_count_updated_ = false;
+    matched_bits.Set(TimingField::kSoftNavigationCountUpdated);
   }
 
   return matched_bits;
@@ -407,8 +440,8 @@ void PageLoadMetricsTestWaiter::OnActivate(
 void PageLoadMetricsTestWaiter::AddObserver(
     page_load_metrics::PageLoadTracker* tracker) {
   ASSERT_FALSE(did_add_observer_);
-  tracker->AddObserver(
-      std::make_unique<WaiterMetricsObserver>(weak_factory_.GetWeakPtr()));
+  tracker->AddObserver(std::make_unique<WaiterMetricsObserver>(
+      weak_factory_.GetWeakPtr(), observer_name_));
   did_add_observer_ = true;
 }
 
@@ -482,6 +515,12 @@ bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
                   observed_.memory_update_frame_ids_);
 }
 
+bool PageLoadMetricsTestWaiter::TotalInputDelayExpectationsSatisfied() const {
+  if (!expected_.page_fields_.IsSet(TimingField::kTotalInputDelay))
+    return true;
+  return current_num_input_events_ == expected_num_input_events_;
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -494,7 +533,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
-         MemoryUpdateExpectationsSatisfied();
+         MemoryUpdateExpectationsSatisfied() &&
+         TotalInputDelayExpectationsSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {
@@ -505,12 +545,15 @@ void PageLoadMetricsTestWaiter::ResetExpectations() {
   expected_minimum_aggregate_cpu_time_ = base::TimeDelta();
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* WaiterMetricsObserver::GetObserverName() const {
+  return observer_name_;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 WaiterMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  return FORWARD_OBSERVING;
 }
 
 void WaiterMetricsObserver::OnTimingUpdate(
@@ -518,6 +561,16 @@ void WaiterMetricsObserver::OnTimingUpdate(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (waiter_)
     waiter_->OnTimingUpdated(subframe_rfh, timing);
+}
+
+void WaiterMetricsObserver::OnSoftNavigationCountUpdated() {
+  if (waiter_)
+    waiter_->OnSoftNavigationCountUpdated();
+}
+
+void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_input_events) {
+  if (waiter_)
+    waiter_->OnPageInputTimingUpdated(num_input_events);
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(

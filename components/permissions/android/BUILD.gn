@@ -152,10 +152,7 @@ android_library("core_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-android_library("components_permissions_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("components_permissions_junit_tests") {
   sources = [ "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java" ]
   deps = [
     ":java",
@@ -163,7 +160,6 @@ android_library("components_permissions_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/theme/android:java_resources",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

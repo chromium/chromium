@@ -250,6 +250,7 @@ void FrameSinkVideoCapturerImpl::SetResolvedTarget(
     resolved_target_->AttachCaptureClient(this);
     RefreshEntireSourceNow();
   } else {
+    MaybeInformConsumerOfEmptyRegion();
     // The capturer will remain idle until either: 1) the requested target is
     // re-resolved by the |frame_sink_manager_|, or 2) a new target is set via a
     // call to ChangeTarget().
@@ -392,10 +393,14 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
   DCHECK_GE(crop_version, crop_version_);
 
   target_ = target;
-  crop_version_ = crop_version;
 
-  // TODO(crbug.com/1266378): Use |crop_version_| to annotate frames delivered
-  // or dropped.
+  if (crop_version_ != crop_version) {
+    crop_version_ = crop_version;
+
+    if (consumer_) {
+      consumer_->OnNewCropVersion(crop_version);
+    }
+  }
 
   ResolveTarget();
 }
@@ -580,7 +585,7 @@ void FrameSinkVideoCapturerImpl::RefreshInternal(
     // If the capture region is empty, it means one of two things: the first
     // frame has not been composited yet or the current region selected for
     // capture has a current size of zero. We schedule a frame refresh here,
-    // although its not useful in all circumstances.
+    // although it's not useful in all circumstances.
     MaybeScheduleRefreshFrame();
     return;
   }
@@ -769,7 +774,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   DVLOG(3) << __func__
            << ": compositor_frame_region=" << compositor_frame_region.ToString()
            << ", capture_region=" << capture_region.ToString()
-           << ", capture_size=" << capture_size.ToString();
+           << ", capture_size=" << capture_size.ToString()
+           << ", event=" << event;
 
   const bool can_resurrect_content = CanResurrectFrame(capture_size);
   scoped_refptr<VideoFrame> frame;
@@ -852,6 +858,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   metadata.page_scale_factor = frame_metadata.page_scale_factor;
   metadata.root_scroll_offset_x = frame_metadata.root_scroll_offset.x();
   metadata.root_scroll_offset_y = frame_metadata.root_scroll_offset.y();
+  metadata.source_size = source_size;
   if (frame_metadata.top_controls_visible_height.has_value()) {
     last_top_controls_visible_height_ =
         *frame_metadata.top_controls_visible_height;
@@ -969,11 +976,22 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
 
-  if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target)) {
+  // If the target is in a different renderer than the root renderer (indicated
+  // by having a different frame sink ID), we currently cannot provide
+  // reasonable metadata about the region capture rect. For more context, see
+  // https://crbug.com/1327560.
+  //
+  // TODO(https://crbug.com/1335175): Provide accurate bounds for elements
+  // embedded in different renderers.
+  const bool is_same_frame_sink_as_requested =
+      resolved_target_->GetFrameSinkId() == target_->frame_sink_id;
+  if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target) &&
+      is_same_frame_sink_as_requested) {
     const float scale_factor = frame_metadata.device_scale_factor;
     metadata.region_capture_rect =
         scale_factor ? ScaleToEnclosingRect(capture_region, 1.0f / scale_factor)
                      : capture_region;
+    metadata.source_size = capture_region.size();
   }
   // Note that this is done unconditionally, as a new crop version may indicate
   // that the stream has been successfully uncropped.
@@ -1000,7 +1018,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    mailbox_holders);
+                    mailbox_holders, true);
 
     // We haven't captured the frame yet, but let's pretend that we did for the
     // sake of blend information computation. We will be asking for an entire
@@ -1184,8 +1202,6 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     } else {
       frame = nullptr;
     }
-
-    UMA_HISTOGRAM_CAPTURE_SUCCEEDED("RGBA", success);
   } else {
     DCHECK_EQ(pixel_format_, media::PIXEL_FORMAT_NV12);
     // NV12 is only supported for GMBs for now, in which case there is nothing
@@ -1306,11 +1322,16 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1332628): When capture fails because the crop version has
+  // changed, expedite the capture/delivery of a new frame.
+  const bool capture_was_successful =
+      frame && frame->metadata().crop_version == crop_version_;
   // The Oracle has the final say in whether frame delivery will proceed. It
   // also rewrites the media timestamp in terms of the smooth flow of the
   // original source content.
   base::TimeTicks media_ticks;
-  if (!oracle_->CompleteCapture(oracle_frame_number, !!frame, &media_ticks)) {
+  if (!oracle_->CompleteCapture(oracle_frame_number, capture_was_successful,
+                                &media_ticks)) {
     // Note: The following is used by
     // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
     // addition to the usual runtime tracing

@@ -132,7 +132,7 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // All fields below are only accessed on the UI thread.
 
   // May be null during initialization and in unit tests.
-  raw_ptr<StoragePartitionImpl> storage_partition_;
+  raw_ptr<StoragePartitionImpl, DanglingUntriaged> storage_partition_;
 
   // Maps the ID of a running EmbeddedWorkerInstance to the SiteInstance whose
   // renderer process it's running inside. Since the embedded workers themselves

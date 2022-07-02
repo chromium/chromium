@@ -100,7 +100,7 @@ class BrowserAssociatedInterface : public Interface {
 
     ~InternalState() {}
 
-    raw_ptr<Interface> impl_;
+    raw_ptr<Interface, DanglingUntriaged> impl_;
     absl::optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
   };
 

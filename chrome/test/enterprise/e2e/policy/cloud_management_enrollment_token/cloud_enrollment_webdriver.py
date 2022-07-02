@@ -22,6 +22,8 @@ def main(argv):
     policy_url = "chrome://policy"
     driver.get(policy_url)
     driver.find_element_by_id('reload-policies').click
+    # Give the page 2 seconds to render the legend
+    time.sleep(2)
     print(driver.find_element_by_class_name('legend').text)
     print(driver.find_element_by_class_name('machine-enrollment-name').text)
     print(driver.find_element_by_class_name('machine-enrollment-token').text)

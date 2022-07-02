@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/html/parser/html_meta_charset_parser.h"
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
@@ -392,7 +393,7 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(const char* data,
 }
 
 String TextResourceDecoder::Decode(const char* data, size_t data_len) {
-  wtf_size_t len = SafeCast<wtf_size_t>(data_len);
+  wtf_size_t len = base::checked_cast<wtf_size_t>(data_len);
   // If we have previously buffered data, then add the new data to the buffer
   // and use the buffered content. Any case that depends on buffering (== return
   // the empty string) should call AddToBufferIfEmpty() if it needs more data to

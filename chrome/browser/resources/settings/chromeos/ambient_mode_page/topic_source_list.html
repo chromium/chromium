@@ -21,7 +21,8 @@
   $i18n{ambientModeTopicSourceTitle}
 </h2>
 
-<iron-list id="topicSourceList" items="[[topicSources]]">
+<iron-list id="topicSourceList" items="[[topicSources]]"
+    aria-describedby="topicSourceTitle">
   <template>
     <topic-source-item item="[[item]]" disabled$="[[disabled]]"
         tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"

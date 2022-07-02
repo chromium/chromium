@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 
@@ -261,7 +262,7 @@ class WebAppShortcutCreator {
   const base::FilePath app_data_dir_;
 
   // Information about the app. Owned by the caller of the constructor.
-  const ShortcutInfo* const info_;
+  const raw_ptr<const ShortcutInfo> info_;
 };
 
 }  // namespace web_app

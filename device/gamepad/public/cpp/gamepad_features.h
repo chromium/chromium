@@ -16,6 +16,11 @@ GAMEPAD_FEATURES_EXPORT extern const base::Feature
     kEnableWindowsGamingInputDataFetcher;
 GAMEPAD_FEATURES_EXPORT extern const base::Feature kRestrictGamepadAccess;
 
+#if BUILDFLAG(IS_ANDROID)
+GAMEPAD_FEATURES_EXPORT extern const base::Feature
+    kEnableAndroidGamepadVibration;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 GAMEPAD_FEATURES_EXPORT bool AreGamepadButtonAxisEventsEnabled();
 
 }  // namespace features

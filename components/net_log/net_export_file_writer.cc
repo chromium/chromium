@@ -84,8 +84,7 @@ NetExportFileWriter::NetExportFileWriter()
 
 NetExportFileWriter::~NetExportFileWriter() {
   if (net_log_exporter_) {
-    net_log_exporter_->Stop(base::Value(base::Value::Type::DICTIONARY),
-                            base::DoNothing());
+    net_log_exporter_->Stop(base::Value::Dict(), base::DoNothing());
   }
 }
 
@@ -142,8 +141,8 @@ void NetExportFileWriter::StartNetLog(
 
   network_context->CreateNetLogExporter(
       net_log_exporter_.BindNewPipeAndPassReceiver());
-  base::Value custom_constants = base::Value::FromUniquePtrValue(
-      GetPlatformConstantsForNetLog(command_line_string, channel_string));
+  base::Value::Dict custom_constants =
+      GetPlatformConstantsForNetLog(command_line_string, channel_string);
 
   net_log_exporter_.set_disconnect_handler(base::BindOnce(
       &NetExportFileWriter::OnConnectionError, base::Unretained(this)));
@@ -159,7 +158,7 @@ void NetExportFileWriter::StartNetLog(
 void NetExportFileWriter::StartNetLogAfterCreateFile(
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
-    base::Value custom_constants,
+    base::Value::Dict custom_constants,
     base::File output_file) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(STATE_STARTING_LOG, state_);
@@ -201,8 +200,7 @@ void NetExportFileWriter::OnStartResult(net::NetLogCaptureMode capture_mode,
   }
 }
 
-void NetExportFileWriter::StopNetLog(
-    std::unique_ptr<base::DictionaryValue> polled_data) {
+void NetExportFileWriter::StopNetLog(base::Value::Dict polled_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (state_ != STATE_LOGGING)
@@ -212,13 +210,10 @@ void NetExportFileWriter::StopNetLog(
 
   NotifyStateObserversAsync();
 
-  base::Value polled_data_value(base::Value::Type::DICTIONARY);
-  if (polled_data)
-    polled_data_value = base::Value::FromUniquePtrValue(std::move(polled_data));
   // base::Unretained(this) is safe here since |net_log_exporter_| is owned by
   // |this| and is a mojo InterfacePtr, which guarantees callback cancellation
   // upon its destruction.
-  net_log_exporter_->Stop(std::move(polled_data_value),
+  net_log_exporter_->Stop(std::move(polled_data),
                           base::BindOnce(&NetExportFileWriter::OnStopResult,
                                          base::Unretained(this)));
 }

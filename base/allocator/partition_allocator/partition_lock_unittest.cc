@@ -4,9 +4,11 @@
 
 #include "base/allocator/partition_allocator/partition_lock.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
-#include "base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -163,7 +165,7 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
 }
 
 // AssertAcquired() is only enforced with DCHECK()s.
-#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#if defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
   Lock lock;
@@ -178,7 +180,7 @@ class ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock
   explicit ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock(Lock& lock)
       : lock_(lock) {}
 
-  void ThreadMain() NO_THREAD_SAFETY_ANALYSIS override { lock_.Acquire(); }
+  void ThreadMain() PA_NO_THREAD_SAFETY_ANALYSIS override { lock_.Acquire(); }
 
  private:
   Lock& lock_;
@@ -188,8 +190,8 @@ class ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock
 
 TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   Lock lock;
-  // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
-  // is still held at the end of the function, which is what we want here.
+  // PA_NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the
+  // lock is still held at the end of the function, which is what we want here.
   ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock delegate(lock);
   base::PlatformThreadHandle handle;
   base::PlatformThreadForTesting::Create(0, &delegate, &handle);
@@ -209,7 +211,7 @@ class ThreadDelegateForReinitInOtherThread
  public:
   explicit ThreadDelegateForReinitInOtherThread(Lock& lock) : lock_(lock) {}
 
-  void ThreadMain() NO_THREAD_SAFETY_ANALYSIS override {
+  void ThreadMain() PA_NO_THREAD_SAFETY_ANALYSIS override {
     lock_.Reinit();
     lock_.Acquire();
     lock_.Release();
@@ -223,7 +225,7 @@ class ThreadDelegateForReinitInOtherThread
 
 // On Apple OSes, it is not allowed to unlock a lock from another thread, so
 // we need to re-initialize it.
-TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
+TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
   Lock lock;
   lock.Acquire();
 
@@ -234,6 +236,6 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#endif  // defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace partition_alloc::internal

@@ -107,12 +107,11 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       },
 
       /**
-       * Set to true to show the 'connect' button instead of 'disconnect'.
+       * Tracks whether network shows connect button or disconnect button.
        * @protected
        */
       networkShowConnect_: {
         type: Boolean,
-        value: true,
       },
 
       /**
@@ -191,6 +190,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     const type = networkState.type;
     const displayName = OncMojo.getNetworkStateDisplayName(networkState);
 
+    this.networkShowConnect_ =
+        (networkState.connectionState ===
+         chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+
     if (!this.canAttemptConnection_(networkState)) {
       this.showConfig_(type, networkState.guid, displayName);
       return;
@@ -263,6 +266,11 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     if (dialog.open) {
       dialog.close();
     }
+
+    // Reset the network state properties.
+    this.networkType_ = '';
+    this.networkName_ = '';
+    this.guid_ = '';
   }
 
   /** @protected */
@@ -271,6 +279,16 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
         /** @type {!NetworkConfigElement} */ (
             this.shadowRoot.querySelector('#networkConfig'));
     networkConfig.connect();
+  }
+
+  /** @protected */
+  disconnectNetwork_() {
+    this.networkConfig_.startDisconnect(this.guid_).then(response => {
+      if (!response.success) {
+        console.error('Disconnect failed for: ' + this.guid_);
+      }
+    });
+    this.closeConfig_();
   }
 
   /**
@@ -302,17 +320,14 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @protected
    */
   getDialogTitle_() {
-    // TODO(gavindodd): Is disconnect ever needed? Currently it is not used as
-    // networkShowConnect_ is always true.
     if (this.networkName_ && !this.networkShowConnect_) {
-      // TODO(gavindodd): Confirm other i18n strings don't need HTMLEscape
       return this.i18n('internetConfigName', HTMLEscape(this.networkName_));
     }
     const type = this.i18n('OncType' + this.networkType_);
     return this.i18n('internetJoinType', type);
   }
 
-  /** @return {!Promise<StateResult>} */
+  /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.networkSelectionComplete();
   }

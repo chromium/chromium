@@ -12,21 +12,23 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol ApplicationCommands;
 @class BookmarkHomeViewController;
 class Browser;
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 class GURL;
+@protocol SnackbarCommands;
 
 @protocol BookmarkHomeViewControllerDelegate
-// The view controller wants to be dismissed. If |urls| is not empty, then
+// The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs in the current tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
             (BookmarkHomeViewController*)controller
                                 navigationToUrls:(const std::vector<GURL>&)urls;
 
-// The view controller wants to be dismissed. If |urls| is not empty, then
+// The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs with specified tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
             (BookmarkHomeViewController*)controller
@@ -45,6 +47,12 @@ class GURL;
 // cases.
 @property(nonatomic, weak) id<BookmarkHomeViewControllerDelegate> homeDelegate;
 
+// Handler for Application Commands.
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+
+// Handler for Snackbar Commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
+
 // Initializers.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)tableViewStyle NS_UNAVAILABLE;
@@ -57,7 +65,7 @@ class GURL;
 
 // Returns an array of BookmarkHomeViewControllers, one per BookmarkNode in the
 // path from this view controller's node to the latest cached node (as
-// determined by BookmarkPathCache).  Includes |self| as the first element of
+// determined by BookmarkPathCache).  Includes `self` as the first element of
 // the returned array.  Sets the cached scroll position for the last element of
 // the returned array, if appropriate.
 - (NSArray<BookmarkHomeViewController*>*)cachedViewControllerStack;

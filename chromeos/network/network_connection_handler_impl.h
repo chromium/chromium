@@ -6,10 +6,12 @@
 #define CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace chromeos {
@@ -177,6 +179,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // Local references to the associated handler instances.
   NetworkCertLoader* network_cert_loader_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   NetworkConfigurationHandler* configuration_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* managed_configuration_handler_ = nullptr;
   CellularConnectionHandler* cellular_connection_handler_ = nullptr;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_PROVIDER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 #include "components/prefs/pref_change_registrar.h"
@@ -45,7 +46,7 @@ class MetricsProvider : public metrics::MetricsProvider {
   EfficiencyMode ComputeCurrentMode() const;
 
   PrefChangeRegistrar pref_change_registrar_;
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
 };
 

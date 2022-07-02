@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * User preferences for OS sync. 'Registered' means the user has the option to
  * select a type. For example, a type might not be registered due to a feature
@@ -51,10 +49,23 @@ export class OsSyncBrowserProxy {
   setOsSyncDatatypes(osSyncPrefs) {}
 }
 
+/** @type {?OsSyncBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsSyncBrowserProxy}
  */
 export class OsSyncBrowserProxyImpl {
+  /** @return {!OsSyncBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new OsSyncBrowserProxyImpl());
+  }
+
+  /** @param {!OsSyncBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   didNavigateToOsSyncPage() {
     chrome.send('DidNavigateToOsSyncPage');
@@ -75,5 +86,3 @@ export class OsSyncBrowserProxyImpl {
     return chrome.send('SetOsSyncDatatypes', [osSyncPrefs]);
   }
 }
-
-addSingletonGetter(OsSyncBrowserProxyImpl);

@@ -9,9 +9,7 @@
 
 #include <string>
 
-namespace net {
-
-namespace extras {
+namespace net::extras {
 
 // Decodes an entry from preloaded data.
 // Clients must implement ReadEntry() method to read the specific type of data
@@ -79,12 +77,12 @@ class PreloadDecoder {
     const size_t num_bits_;
     const size_t num_bytes_;
     // current_byte_index_ contains the current byte offset in |bytes_|.
-    size_t current_byte_index_;
+    size_t current_byte_index_ = 0;
     // current_byte_ contains the current byte of the input.
     uint8_t current_byte_;
     // num_bits_used_ contains the number of bits of |current_byte_| that have
     // been read.
-    unsigned num_bits_used_;
+    unsigned num_bits_used_ = 8;
   };
 
   // HuffmanDecoder is a very simple Huffman reader. The input Huffman tree is
@@ -159,8 +157,6 @@ class PreloadDecoder {
   const size_t trie_root_position_;
 };
 
-}  // namespace extras
-
-}  // namespace net
+}  // namespace net::extras
 
 #endif  // NET_EXTRAS_PRELOAD_DATA_DECODER_H_

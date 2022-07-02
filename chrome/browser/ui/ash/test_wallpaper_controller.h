@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -91,6 +92,12 @@ class TestWallpaperController : public ash::WallpaperController {
                                 SetWallpaperCallback callback) override;
   std::string GetGooglePhotosDailyRefreshAlbumId(
       const AccountId& account_id) const override;
+  bool SetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      const DailyGooglePhotosIdCache& ids) override;
+  bool GetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      DailyGooglePhotosIdCache& ids_out) const override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -129,6 +136,8 @@ class TestWallpaperController : public ash::WallpaperController {
   const std::vector<SkColor>& GetWallpaperColors() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
+  bool IsWallpaperControlledByPolicy(
+      const AccountId& account_id) const override;
   ash::WallpaperInfo GetActiveUserWallpaperInfo() const override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
@@ -150,6 +159,7 @@ class TestWallpaperController : public ash::WallpaperController {
   absl::optional<ash::WallpaperInfo> wallpaper_info_;
   int update_current_wallpaper_layout_count_ = 0;
   absl::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;
+  DailyGooglePhotosIdCache id_cache_;
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 

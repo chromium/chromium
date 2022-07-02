@@ -16,9 +16,7 @@
 #include "net/tools/transport_security_state_generator/pinsets.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 // PreloadedStateGenerator generates C++ code that contains the preloaded
 // entries in a way the Chromium code understands. The code that reads the
@@ -45,8 +43,6 @@ class PreloadedStateGenerator {
                       std::string* tpl);
 };
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_PRELOADED_STATE_GENERATOR_H_

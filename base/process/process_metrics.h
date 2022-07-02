@@ -15,6 +15,7 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -312,7 +313,7 @@ class BASE_EXPORT ProcessMetrics {
   // Queries the port provider if it's set.
   mach_port_t TaskForPid(ProcessHandle process) const;
 
-  PortProvider* port_provider_;
+  raw_ptr<PortProvider> port_provider_;
 #endif  // BUILDFLAG(IS_MAC)
 };
 

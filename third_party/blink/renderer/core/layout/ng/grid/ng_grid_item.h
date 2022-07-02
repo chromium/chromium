@@ -104,6 +104,12 @@ struct CORE_EXPORT GridItemData {
     return false;
   }
 
+  bool IsConsideredForSizing(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? is_considered_for_column_sizing
+                                            : is_considered_for_row_sizing;
+  }
+
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
 
@@ -155,6 +161,10 @@ struct CORE_EXPORT GridItemData {
   bool is_inline_axis_overflow_safe : 1;
   bool is_sizing_dependent_on_block_size : 1;
   bool is_subgridded_to_parent_grid : 1;
+  bool is_considered_for_column_sizing : 1;
+  bool is_considered_for_row_sizing : 1;
+  bool can_subgrid_items_in_column_direction : 1;
+  bool can_subgrid_items_in_row_direction : 1;
 
   AxisEdge inline_axis_alignment;
   AxisEdge block_axis_alignment;
@@ -184,12 +194,14 @@ struct CORE_EXPORT GridItemData {
   OutOfFlowItemPlacement row_placement;
 };
 
-using GridItemStorageVector = HeapVector<GridItemData, 4>;
+using GridItemDataVector = Vector<GridItemData*, 16>;
 
 struct CORE_EXPORT GridItems {
   DISALLOW_NEW();
 
  public:
+  using GridItemStorageVector = HeapVector<GridItemData, 16>;
+
   class Iterator : public std::iterator<std::input_iterator_tag, GridItemData> {
     STACK_ALLOCATED();
 
@@ -231,11 +243,9 @@ struct CORE_EXPORT GridItems {
     reordered_item_indices.push_back(item_data.size());
     item_data.emplace_back(new_item_data);
   }
-  void ReserveCapacity(const wtf_size_t capacity) {
-    reordered_item_indices.ReserveCapacity(capacity);
-    item_data.ReserveCapacity(capacity);
-  }
 
+  void ReserveInitialCapacity(wtf_size_t initial_capacity);
+  void ReserveCapacity(wtf_size_t new_capacity);
   void RemoveSubgriddedItems();
 
   wtf_size_t Size() const { return item_data.size(); }

@@ -47,14 +47,14 @@ public class TrustedWebActivityPreferencesUiTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private String mPackage;
-    private TrustedWebActivityPermissionManager mPermissionMananger;
+    private InstalledWebappPermissionManager mPermissionMananger;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
-        mPermissionMananger = ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
+        mPermissionMananger = ChromeApplicationImpl.getComponent().resolvePermissionManager();
     }
 
     /**

@@ -59,7 +59,7 @@ int HttpAuthHandlerNTLM::GenerateAuthTokenImpl(
                                       std::move(callback));
 }
 
-HttpAuthHandlerNTLM::~HttpAuthHandlerNTLM() {}
+HttpAuthHandlerNTLM::~HttpAuthHandlerNTLM() = default;
 
 // Require identity on first pass instead of second.
 bool HttpAuthHandlerNTLM::NeedsIdentity() {

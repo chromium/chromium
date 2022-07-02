@@ -117,9 +117,6 @@ class LocationBarView : public LocationBar,
   // be called when the receiving instance is attached to a view container.
   bool IsInitialized() const;
 
-  // Helper to get the color for |part| using the current ThemeProvider.
-  SkColor GetColor(OmniboxPart part) const;
-
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
   std::unique_ptr<views::Background> CreateRoundRectBackground(
@@ -176,6 +173,12 @@ class LocationBarView : public LocationBar,
   bool ActivateFirstInactiveBubbleForAccessibility();
 
   PermissionChip* chip() { return chip_; }
+
+  // Returns true if the permission chip exists, fully initialized and visible.
+  bool IsChipActive();
+
+  // Adds chip into the LocationBarView in the first position.
+  void CreateChip();
 
   // Creates and displays an instance of PermissionRequestChip.
   // If `should_bubble_start_open` is true, a permission prompt bubble will be
@@ -279,9 +282,6 @@ class LocationBarView : public LocationBar,
                           device::GeolocationManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
-
-  // Adds `chip` as the first child view.
-  PermissionChip* AddChip(std::unique_ptr<PermissionChip> chip);
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;

@@ -189,7 +189,8 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
     }
     if (mask_filter_info.HasGradientMask()) {
       MathUtil::AddToTracedValue("mask_filter_gradient_mask",
-                                 mask_filter_info.gradient_mask(), value);
+                                 mask_filter_info.gradient_mask().value(),
+                                 value);
     }
   }
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));

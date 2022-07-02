@@ -43,7 +43,7 @@ namespace {
 bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   DWORD usage_size = 0;
 
-  if (!CertGetEnhancedKeyUsage(cert, 0, NULL, &usage_size)) {
+  if (!CertGetEnhancedKeyUsage(cert, 0, nullptr, &usage_size)) {
     return false;
   }
 
@@ -153,6 +153,18 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
   GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
                                    CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
                                    L"Disallowed");
+
+  // Auto-sync all of the cert stores to get updates to the cert store.
+  // Auto-syncing on all_certs_store seems to work to resync the nested stores,
+  // although the docs at
+  // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore
+  // are somewhat unclear. If and when root store changes are linked to clearing
+  // various caches, this should be replaced with CERT_STORE_CTRL_NOTIFY_CHANGE
+  // and CERT_STORE_CTRL_RESYNC.
+  if (!CertControlStore(all_certs_store.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+                        0)) {
+    PLOG(ERROR) << "Error enabling CERT_STORE_CTRL_AUTO_RESYNC";
+  }
 
   return base::WrapUnique(new TrustStoreWin(
       std::move(root_cert_store), std::move(intermediate_cert_store),

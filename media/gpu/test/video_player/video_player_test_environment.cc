@@ -79,19 +79,12 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
       implementation_(implementation),
       linear_output_(linear_output),
       frame_output_config_(frame_output_config),
-      output_folder_(output_folder),
-      gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
+      output_folder_(output_folder) {}
 
 VideoPlayerTestEnvironment::~VideoPlayerTestEnvironment() = default;
 
 const media::test::Video* VideoPlayerTestEnvironment::Video() const {
   return video_.get();
-}
-
-gpu::GpuMemoryBufferFactory*
-VideoPlayerTestEnvironment::GetGpuMemoryBufferFactory() const {
-  return gpu_memory_buffer_factory_.get();
 }
 
 bool VideoPlayerTestEnvironment::IsValidatorEnabled() const {

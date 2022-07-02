@@ -171,6 +171,8 @@ source_set("headers") {
     "input/web_touch_event.h",
     "input/web_touch_point.h",
     "interest_group/ad_auction_constants.h",
+    "interest_group/auction_config.h",
+    "interest_group/auction_config_mojom_traits.h",
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "link_to_text/link_to_text_mojom_traits.h",

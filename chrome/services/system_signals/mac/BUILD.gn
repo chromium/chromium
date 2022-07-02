@@ -7,7 +7,7 @@ import("//build/config/features.gni")
 source_set("mac") {
   public = [ "mac_system_signals_service.h" ]
 
-  sources = [ "mac_system_signals_service.cc" ]
+  sources = [ "mac_system_signals_service.mm" ]
 
   public_deps = [ "//components/device_signals/core/common/mojom" ]
 

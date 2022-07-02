@@ -95,8 +95,11 @@ float DOMVisualViewport::pageLeft() const {
     return 0;
 
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_x = page->GetVisualViewport().GetScrollOffset().x() +
-                     view->LayoutViewport()->GetScrollOffset().x();
+  float viewport_x = view->LayoutViewport()->GetScrollOffset().x();
+
+  if (frame->IsMainFrame() && page->GetVisualViewport().IsActiveViewport())
+    viewport_x += page->GetVisualViewport().GetScrollOffset().x();
+
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_x,
                                              frame->PageZoomFactor());
 }
@@ -114,13 +117,12 @@ float DOMVisualViewport::pageTop() const {
   if (!view || !view->LayoutViewport())
     return 0;
 
-  // TODO(bokan): This is wrong for iframes, we shouldn't be adding the visual
-  // viewport offset from the page to the iframe's scroll offset.
-  // https://crbug.com/1313970.
-
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  float viewport_y = page->GetVisualViewport().GetScrollOffset().y() +
-                     view->LayoutViewport()->GetScrollOffset().y();
+  float viewport_y = view->LayoutViewport()->GetScrollOffset().y();
+
+  if (frame->IsMainFrame() && page->GetVisualViewport().IsActiveViewport())
+    viewport_y += page->GetVisualViewport().GetScrollOffset().y();
+
   return AdjustForAbsoluteZoom::AdjustScroll(viewport_y,
                                              frame->PageZoomFactor());
 }

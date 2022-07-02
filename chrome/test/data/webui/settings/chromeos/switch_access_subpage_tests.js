@@ -4,13 +4,15 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SwitchAccessSubpageBrowserProxyImpl, SwitchAccessSubpageBrowserProxy, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes, SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
-import {assertEquals, assertDeepEquals} from '../../chai_assert.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
+
+import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
  * @implements {SwitchAccessSubpageBrowserProxy}
@@ -46,7 +48,7 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
   }
 }
 
-suite('ManageAccessibilityPageTests', function() {
+suite('SwitchAccessSubpageTests', function() {
   let page = null;
   let browserProxy = null;
 
@@ -99,7 +101,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     browserProxy = new TestSwitchAccessSubpageBrowserProxy();
-    SwitchAccessSubpageBrowserProxyImpl.instance_ = browserProxy;
+    SwitchAccessSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
   });
@@ -116,13 +118,13 @@ suite('ManageAccessibilityPageTests', function() {
    * @return {string} Sub-label text from the select link row.
    */
   function getSublabelForSelectUpdates(keys) {
-    cr.webUIListenerCallback('switch-access-assignments-changed', {
+    webUIListenerCallback('switch-access-assignments-changed', {
       select: keys.map(key => ({key, device: 'usb'})),
       next: [],
       previous: []
     });
 
-    return page.$$('#selectLinkRow')
+    return page.shadowRoot.querySelector('#selectLinkRow')
         .shadowRoot.querySelector('#subLabel')
         .textContent.trim();
   }
@@ -136,7 +138,7 @@ suite('ManageAccessibilityPageTests', function() {
     assertEquals(0, page.previousAssignments_.length);
 
     // Simulate a pref change for the select action.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-assignments-changed',
         {select: [{key: 'a', device: 'usb'}], next: [], previous: []});
 
@@ -188,15 +190,15 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Make sure we populate the initial |keyCodes_| state on the
     // SwitchAccessActionAssignmentDialog.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-assignments-changed',
         {select: [], next: [], previous: []});
 
     // Simulate pressing 'a' twice.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
 
@@ -215,21 +217,23 @@ suite('ManageAccessibilityPageTests', function() {
         'notifySwitchAccessActionAssignmentPaneActive');
 
     // Simulate pressing 'a', and then 'b'.
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'a', keyCode: 65, device: 'usb'});
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'switch-access-got-key-press-for-assignment',
         {key: 'b', keyCode: 66, device: 'usb'});
 
-    const element = page.$$('#switchAccessActionAssignmentDialog');
+    const element =
+        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog');
     await waitAfterNextRender(element);
 
     // This should update the error field at the bottom of the dialog.
-    const errorText = page.$$('#switchAccessActionAssignmentDialog')
-                          .$$('#switchAccessActionAssignmentPane')
-                          .$$('#error')
-                          .textContent.trim();
+    const errorText =
+        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog')
+            .shadowRoot.querySelector('#switchAccessActionAssignmentPane')
+            .shadowRoot.querySelector('#error')
+            .textContent.trim();
     assertEquals('Keys don’t match. Press any key to exit.', errorText);
   });
 
@@ -248,8 +252,9 @@ suite('ManageAccessibilityPageTests', function() {
     Router.getInstance().navigateTo(
         routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
 
-    const deepLinkElement = page.$$('#keyboardScanSpeedSlider')
-                                .shadowRoot.querySelector('cr-slider');
+    const deepLinkElement =
+        page.shadowRoot.querySelector('#keyboardScanSpeedSlider')
+            .shadowRoot.querySelector('cr-slider');
     await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
@@ -278,8 +283,8 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Check that the dialog is open.
-    let warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    let warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "cancel" to exit the dialog.
@@ -289,18 +294,19 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Check that the dialog is closed, and the setup guide is not open.
-    warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertFalse(!!warningDialog);
-    let setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+    let setupDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-dialog');
 
     assertFalse(!!setupDialog);
 
     // Re-open the warning dialog.
     page.$.setupGuideLink.click();
     flush();
-    warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "continue" to open the setup guide.
@@ -311,7 +317,8 @@ suite('ManageAccessibilityPageTests', function() {
     await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
     // Check that the setup guide has opened.
-    setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+    setupDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-dialog');
     assertTrue(!!setupDialog);
 
     // Check that the switch assignments have been cleared.
@@ -346,8 +353,8 @@ suite('ManageAccessibilityPageTests', function() {
         flush();
         await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
-        const setupDialog =
-            page.$$('settings-switch-access-setup-guide-dialog');
+        const setupDialog = page.shadowRoot.querySelector(
+            'settings-switch-access-setup-guide-dialog');
         assertTrue(!!setupDialog);
       });
 });

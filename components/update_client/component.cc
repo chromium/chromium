@@ -642,6 +642,13 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
+
   if (component.status_ == "ok") {
     TransitionState(std::make_unique<StateCanUpdate>(&component));
     return;
@@ -703,6 +710,13 @@ void Component::StateCanUpdate::DoHandle() {
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;
     TransitionState(std::make_unique<StateUpdateError>(&component));
+    return;
+  }
+
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
     return;
   }
 
@@ -796,6 +810,13 @@ void Component::StateDownloadingDiff::DownloadComplete(
 
   crx_downloader_ = nullptr;
 
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
+
   if (download_result.error) {
     DCHECK(download_result.response.empty());
     component.diff_error_category_ = ErrorCategory::kDownload;
@@ -865,6 +886,13 @@ void Component::StateDownloading::DownloadComplete(
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
   crx_downloader_ = nullptr;
+
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
 
   if (download_result.error) {
     DCHECK(download_result.response.empty());

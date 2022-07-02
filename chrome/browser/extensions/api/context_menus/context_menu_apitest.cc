@@ -139,8 +139,10 @@ class ExtensionContextMenuVisibilityApiTest
   // Sets up the top-level model, which is the list of menu items (both related
   // and unrelated to extensions) that is passed to UI code to be displayed.
   bool SetupTopLevelMenuModel() {
-    content::RenderFrameHost* frame =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* frame = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame();
     content::ContextMenuParams params;
     params.page_url = frame->GetLastCommittedURL();
 

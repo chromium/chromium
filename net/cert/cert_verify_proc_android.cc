@@ -341,7 +341,7 @@ CertVerifyProcAndroid::CertVerifyProcAndroid(
     scoped_refptr<CertNetFetcher> cert_net_fetcher)
     : cert_net_fetcher_(std::move(cert_net_fetcher)) {}
 
-CertVerifyProcAndroid::~CertVerifyProcAndroid() {}
+CertVerifyProcAndroid::~CertVerifyProcAndroid() = default;
 
 bool CertVerifyProcAndroid::SupportsAdditionalTrustAnchors() const {
   return false;

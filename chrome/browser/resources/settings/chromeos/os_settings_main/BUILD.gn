@@ -7,7 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
-  closure_flags = os_settings_closure_flags + mojom_js_args
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [ ":os_settings_main" ]
 }

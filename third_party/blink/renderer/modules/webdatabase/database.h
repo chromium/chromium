@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_H_
 
 #include <atomic>
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -140,7 +141,8 @@ class Database final : public ScriptWrappable {
       V8DatabaseCallback* creation_callback,
       std::unique_ptr<probe::AsyncTaskContext> async_task_context);
 
-  void ScheduleTransaction();
+  void ScheduleTransaction()
+      EXCLUSIVE_LOCKS_REQUIRED(transaction_in_progress_lock_);
 
   bool GetVersionFromDatabase(String& version,
                               bool should_cache_version = true);
@@ -191,10 +193,11 @@ class Database final : public ScriptWrappable {
   DatabaseAuthorizer database_authorizer_;
   SQLiteDatabase sqlite_database_;
 
-  Deque<CrossThreadPersistent<SQLTransactionBackend>> transaction_queue_;
-  Mutex transaction_in_progress_mutex_;
-  bool transaction_in_progress_;
-  bool is_transaction_queue_enabled_;
+  base::Lock transaction_in_progress_lock_;
+  Deque<CrossThreadPersistent<SQLTransactionBackend>> transaction_queue_
+      GUARDED_BY(transaction_in_progress_lock_);
+  bool transaction_in_progress_ GUARDED_BY(transaction_in_progress_lock_);
+  bool is_transaction_queue_enabled_ GUARDED_BY(transaction_in_progress_lock_);
 
   // Gates UKM counters to execute once per database instance.
   bool did_try_to_count_transaction_;

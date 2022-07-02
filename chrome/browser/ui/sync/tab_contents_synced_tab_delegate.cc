@@ -36,15 +36,17 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
     content::WebContents* web_contents,
     int i) {
   int pending_index = web_contents->GetController().GetPendingEntryIndex();
-  if (pending_index == i)
+  if (pending_index == i) {
     return web_contents->GetController().GetPendingEntry();
+  }
   NavigationEntry* entry = web_contents->GetController().GetEntryAtIndex(i);
   // Don't use the entry for sync if it doesn't exist or is the initial
   // NavigationEntry.
   // TODO(https://crbug.com/1240138): Guarantee this won't be called when on the
   // initial NavigationEntry instead of bailing out here.
-  if (!entry || entry->IsInitialEntry())
+  if (!entry || entry->IsInitialEntry()) {
     return nullptr;
+  }
   return entry;
 }
 
@@ -53,7 +55,7 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
 TabContentsSyncedTabDelegate::TabContentsSyncedTabDelegate()
     : web_contents_(nullptr) {}
 
-TabContentsSyncedTabDelegate::~TabContentsSyncedTabDelegate() {}
+TabContentsSyncedTabDelegate::~TabContentsSyncedTabDelegate() = default;
 
 bool TabContentsSyncedTabDelegate::IsBeingDestroyed() const {
   return web_contents_->IsBeingDestroyed();
@@ -131,30 +133,36 @@ TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
 bool TabContentsSyncedTabDelegate::ShouldSync(
     sync_sessions::SyncSessionsClient* sessions_client) {
   if (sessions_client->GetSyncedWindowDelegatesGetter()->FindById(
-          GetWindowId()) == nullptr)
+          GetWindowId()) == nullptr) {
     return false;
+  }
 
-  if (ProfileHasChildAccount() && !GetBlockedNavigations()->empty())
+  if (ProfileHasChildAccount() && !GetBlockedNavigations()->empty()) {
     return true;
+  }
 
-  if (IsInitialBlankNavigation())
+  if (IsInitialBlankNavigation()) {
     return false;  // This deliberately ignores a new pending entry.
+  }
 
   // Don't try to sync the initial NavigationEntry, as it is not actually
   // associated with any navigation.
   content::NavigationEntry* last_committed_entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (last_committed_entry && last_committed_entry->IsInitialEntry())
+  if (last_committed_entry && last_committed_entry->IsInitialEntry()) {
     return false;
+  }
 
   int entry_count = GetEntryCount();
   for (int i = 0; i < entry_count; ++i) {
     const GURL& virtual_url = GetVirtualURLAtIndex(i);
-    if (!virtual_url.is_valid())
+    if (!virtual_url.is_valid()) {
       continue;
+    }
 
-    if (sessions_client->ShouldSyncURL(virtual_url))
+    if (sessions_client->ShouldSyncURL(virtual_url)) {
       return true;
+    }
   }
   return false;
 }
@@ -204,7 +212,8 @@ void TabContentsSyncedTabDelegate::SetWebContents(
 
 const tasks::TaskTabHelper* TabContentsSyncedTabDelegate::task_tab_helper()
     const {
-  if (web_contents_ == nullptr)
+  if (web_contents_ == nullptr) {
     return nullptr;
+  }
   return tasks::TaskTabHelper::FromWebContents(web_contents_);
 }

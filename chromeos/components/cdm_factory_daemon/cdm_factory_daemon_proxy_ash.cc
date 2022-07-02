@@ -22,11 +22,80 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "ui/display/manager/display_manager.h"
 
+namespace chromeos {
+
 namespace {
 constexpr char kCdmFactoryDaemonPipeName[] = "cdm-factory-daemon-pipe";
-}  // namespace
 
-namespace chromeos {
+// This is used as an implementation of cdm::mojom::BrowserCdmFactory when we
+// pass a mojo::PendingRemote to an OOP video
+// decoder so it can proxy the calls back to the browser process like the
+// corresponding methods do in ChromeOsCdmFactory and ArcCdmContext. The
+// methods marked as NOTREACHED() are never used during video decoding.
+class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
+ public:
+  BrowserCdmFactoryProxy()
+      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  BrowserCdmFactoryProxy(const BrowserCdmFactoryProxy&) = delete;
+  BrowserCdmFactoryProxy& operator=(const BrowserCdmFactoryProxy&) = delete;
+  ~BrowserCdmFactoryProxy() override = default;
+
+  // chromeos::cdm::mojom::BrowserCdmFactoryDaemon:
+  void CreateFactory(const std::string& key_system,
+                     CreateFactoryCallback callback) override {
+    NOTREACHED();
+  }
+
+  void GetHwConfigData(GetHwConfigDataCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetHwConfigData,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetHwConfigData(
+        std::move(callback));
+  }
+
+  void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
+                               output_protection) override {
+    NOTREACHED();
+  }
+
+  void GetScreenResolutions(GetScreenResolutionsCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetScreenResolutions,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetScreenResolutions(
+        std::move(callback));
+  }
+
+  void GetAndroidHwKeyData(const std::vector<uint8_t>& key_id,
+                           const std::vector<uint8_t>& hw_identifier,
+                           GetAndroidHwKeyDataCallback callback) override {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BrowserCdmFactoryProxy::GetAndroidHwKeyData,
+                         weak_factory_.GetWeakPtr(), key_id, hw_identifier,
+                         std::move(callback)));
+      return;
+    }
+    CdmFactoryDaemonProxyAsh::GetInstance().GetAndroidHwKeyData(
+        key_id, hw_identifier, std::move(callback));
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<BrowserCdmFactoryProxy> weak_factory_{this};
+};
+
+}  // namespace
 
 CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh() : CdmFactoryDaemonProxy() {
   // Check if there's a Chrome flag set to force a specific HDCP mode. We do
@@ -59,7 +128,7 @@ CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh() : CdmFactoryDaemonProxy() {
   ash::Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
-      ->set_hdcp_key_request(base::BindRepeating(
+      ->SetProvisionedKeyRequest(base::BindRepeating(
           &CdmFactoryDaemonProxyAsh::GetHdcp14Key, base::Unretained(this)));
 }
 
@@ -81,6 +150,12 @@ void CdmFactoryDaemonProxyAsh::Create(
 CdmFactoryDaemonProxyAsh& CdmFactoryDaemonProxyAsh::GetInstance() {
   static base::NoDestructor<CdmFactoryDaemonProxyAsh> instance;
   return *instance;
+}
+
+// static
+std::unique_ptr<cdm::mojom::BrowserCdmFactory>
+CdmFactoryDaemonProxyAsh::CreateBrowserCdmFactoryProxy() {
+  return std::make_unique<BrowserCdmFactoryProxy>();
 }
 
 void CdmFactoryDaemonProxyAsh::ConnectOemCrypto(
@@ -159,6 +234,24 @@ void CdmFactoryDaemonProxyAsh::GetScreenResolutions(
   std::move(callback).Run(std::move(resolutions));
 }
 
+void CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  DCHECK(mojo_task_runner_->RunsTasksInCurrentSequence());
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData called";
+  if (daemon_remote_.is_bound()) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    ProxyGetAndroidHwKeyData(key_id, hw_identifier, std::move(callback));
+    return;
+  }
+
+  // base::Unretained is safe below because this class is a singleton.
+  EstablishDaemonConnection(base::BindOnce(
+      &CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData,
+      base::Unretained(this), key_id, hw_identifier, std::move(callback)));
+}
+
 void CdmFactoryDaemonProxyAsh::EstablishDaemonConnection(
     base::OnceClosure callback) {
   // This may have happened already.
@@ -216,6 +309,19 @@ void CdmFactoryDaemonProxyAsh::ProxyGetHwConfigData(
     return;
   }
   daemon_remote_->GetHwConfigData(std::move(callback));
+}
+
+void CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  if (!daemon_remote_) {
+    LOG(ERROR) << "daemon_remote_ interface is not connected";
+    std::move(callback).Run(media::Decryptor::Status::kError, {});
+    return;
+  }
+  daemon_remote_->GetAndroidHwKeyData(key_id, hw_identifier,
+                                      std::move(callback));
 }
 
 void CdmFactoryDaemonProxyAsh::SendDBusRequest(base::ScopedFD fd,

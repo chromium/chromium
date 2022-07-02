@@ -1769,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
     old_popup = popup_observer.GetWebContents();
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
     EXPECT_EQ(initial_origin,
-              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
     EXPECT_TRUE(WaitForLoadStop(old_popup));
   }
 
@@ -1781,9 +1781,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
     ASSERT_TRUE(ExecJs(tab1, "w.location.href = 'about:blank';"));
     nav_observer.Wait();
     EXPECT_EQ(GURL(url::kAboutBlankURL),
-              old_popup->GetMainFrame()->GetLastCommittedURL());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(initial_origin,
-              old_popup->GetMainFrame()->GetLastCommittedOrigin());
+              old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // Navigate the popup to another site.
@@ -1795,8 +1795,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
         old_popup, content::JsReplace("location = $1", other_url)));
     nav_observer.Wait();
   }
-  EXPECT_EQ(other_url, old_popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, old_popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, old_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            old_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(old_popup->GetController().CanGoBack());
 
   // Close the popup.
@@ -1813,8 +1814,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
     EXPECT_EQ(2, browser()->tab_strip_model()->count());
     new_popup = restored_tab_observer.GetWebContents();
   }
-  EXPECT_EQ(other_url, new_popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(other_origin, new_popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(other_url, new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(other_origin,
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_TRUE(new_popup->GetController().CanGoBack());
   int reopened_tab_index = browser()->tab_strip_model()->active_index();
   EXPECT_EQ(1, reopened_tab_index);
@@ -1822,9 +1824,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   // Navigate the popup back to about:blank.
   GoBack(browser());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            new_popup->GetMainFrame()->GetLastCommittedURL());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(initial_origin,
-            new_popup->GetMainFrame()->GetLastCommittedOrigin());
+            new_popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 // Ensures group IDs are regenerated for restored windows so that we don't split

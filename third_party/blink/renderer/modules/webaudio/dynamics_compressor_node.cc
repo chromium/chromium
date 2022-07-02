@@ -37,53 +37,77 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultThresholdValue = -24.0;
+constexpr float kMinThresholdValue = -100.0f;
+constexpr float kMaxThresholdValue = 0.0f;
+
+constexpr double kDefaultKneeValue = 30.0;
+constexpr float kMinKneeValue = 0.0f;
+constexpr float kMaxKneeValue = 40.0f;
+
+constexpr double kDefaultRatioValue = 12.0;
+constexpr float kMinRatioValue = 1.0f;
+constexpr float kMaxRatioValue = 20.0f;
+
+constexpr double kDefaultAttackValue = 0.003;
+constexpr float kMinAttackValue = 0.0f;
+constexpr float kMaxAttackValue = 1.0f;
+
+constexpr double kDefaultReleaseValue = 0.250;
+constexpr float kMinReleaseValue = 0.0f;
+constexpr float kMaxReleaseValue = 1.0f;
+
+}  // namespace
+
 DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
     : AudioNode(context),
       threshold_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeDynamicsCompressorThreshold,
-          -24,
+          kDefaultThresholdValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed,
-          -100,
-          0)),
+          kMinThresholdValue,
+          kMaxThresholdValue)),
       knee_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeDynamicsCompressorKnee,
-          30,
+          kDefaultKneeValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed,
-          0,
-          40)),
+          kMinKneeValue,
+          kMaxKneeValue)),
       ratio_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeDynamicsCompressorRatio,
-          12,
+          kDefaultRatioValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed,
-          1,
-          20)),
+          kMinRatioValue,
+          kMaxRatioValue)),
       attack_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeDynamicsCompressorAttack,
-          0.003,
+          kDefaultAttackValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed,
-          0,
-          1)),
+          kMinAttackValue,
+          kMaxAttackValue)),
       release_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeDynamicsCompressorRelease,
-          0.250,
+          kDefaultReleaseValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed,
-          0,
-          1)) {
+          kMinReleaseValue,
+          kMaxReleaseValue)) {
   SetHandler(DynamicsCompressorHandler::Create(
       *this, context.sampleRate(), threshold_->Handler(), knee_->Handler(),
       ratio_->Handler(), attack_->Handler(), release_->Handler()));

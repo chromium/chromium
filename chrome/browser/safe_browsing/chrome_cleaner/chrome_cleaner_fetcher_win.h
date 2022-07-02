@@ -7,6 +7,8 @@
 
 #include "base/callback.h"
 
+class PrefService;
+
 namespace base {
 class FilePath;
 }
@@ -40,7 +42,8 @@ using ChromeCleanerFetchedCallback =
 // Fetches the Chrome Cleaner binary. This function can be called from any
 // sequence and |fetched_callback| will be called back on that same sequence.
 void FetchChromeCleaner(ChromeCleanerFetchedCallback fetched_callback,
-                        network::mojom::URLLoaderFactory* url_loader_factory);
+                        network::mojom::URLLoaderFactory* url_loader_factory,
+                        PrefService* prefs);
 
 }  // namespace safe_browsing
 

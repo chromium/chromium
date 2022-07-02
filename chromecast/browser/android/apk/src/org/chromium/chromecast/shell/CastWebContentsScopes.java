@@ -90,7 +90,9 @@ class CastWebContentsScopes {
                 layout.setForeground(new ColorDrawable(backgroundColor));
                 layout.removeView(contentView);
                 layout.removeView(contentViewRenderView);
-                webContents.setTopLevelNativeWindow(null);
+                if (webContents.getTopLevelNativeWindow() == window) {
+                    webContents.setTopLevelNativeWindow(null);
+                }
                 contentViewRenderView.destroy();
                 window.destroy();
             };
@@ -109,9 +111,9 @@ class CastWebContentsScopes {
                 if (!webContents.isDestroyed()) {
                     // WebContents can be destroyed by the app before CastWebContentsComponent
                     // unbinds, which is why we need this check.
-                    webContents.onHide();
 
                     if (webContents.getTopLevelNativeWindow() == window) {
+                        webContents.onHide();
                         webContents.setTopLevelNativeWindow(null);
                     }
                 }

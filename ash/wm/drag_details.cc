@@ -44,12 +44,16 @@ int GetSizeChangeDirectionForWindowComponent(int window_component) {
 }
 
 gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
+  // Floated windows should use their current bounds as a starting point, even
+  // in tablet mode.
+  if (WindowState::Get(window)->IsFloated())
+    return window->bounds();
+
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
-      gfx::Rect bounds = *override_bounds;
-      ::wm::ConvertRectFromScreen(window->GetRootWindow(), &bounds);
-      return bounds;
+      wm::ConvertRectFromScreen(window->GetRootWindow(), override_bounds);
+      return *override_bounds;
     }
   }
   return window->bounds();
@@ -59,23 +63,26 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   if (window_component != HTCAPTION)
     return gfx::Rect();
 
+  // Ignore the restore bounds of a floated window as we don't want its size to
+  // change during dragging.
+  WindowState* window_state = WindowState::Get(window);
+  if (window_state->IsFloated())
+    return gfx::Rect();
+
   // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
   // and let it return the right value.
   gfx::Rect restore_bounds;
-  WindowState* window_state = WindowState::Get(window);
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       restore_bounds = *override_bounds;
       wm::ConvertRectFromScreen(window->parent(), &restore_bounds);
     }
-  } else if (window_state->HasRestoreBounds() &&
-             (window_state->IsNormalOrSnapped() ||
-              window_state->IsMaximized())) {
-    // TODO(sammiequon): Snapped and maximized windows should always have
-    // restore bounds. This is currently not the case for lacros browser after
-    // closing and reopening, see https://crbug.com/1238928. DCHECK for restore
-    // bounds if the window is snapped or maximized after the bug is fixed.
+  } else if (window_state->IsSnapped() || window_state->IsMaximized()) {
+    DCHECK(window_state->HasRestoreBounds());
+    restore_bounds = window_state->GetRestoreBoundsInParent();
+  } else if (window_state->IsNormalStateType() &&
+             window_state->HasRestoreBounds()) {
     restore_bounds = window_state->GetRestoreBoundsInParent();
   }
   return restore_bounds;

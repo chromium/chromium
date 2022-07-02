@@ -117,7 +117,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
     CastDialogView::ShowDialog(anchor_widget_->GetContentsView(),
                                views::BubbleBorder::TOP_RIGHT, &controller_,
                                &profile_, base::Time::Now(),
-                               MediaRouterDialogOpenOrigin::PAGE);
+                               MediaRouterDialogActivationLocation::PAGE);
 
     dialog_->OnModelUpdated(model);
   }
@@ -168,7 +168,7 @@ TEST_F(CastDialogViewTest, ShowAndHideDialog) {
   CastDialogView::ShowDialog(anchor_widget_->GetContentsView(),
                              views::BubbleBorder::TOP_RIGHT, &controller_,
                              &profile_, base::Time::Now(),
-                             MediaRouterDialogOpenOrigin::PAGE);
+                             MediaRouterDialogActivationLocation::PAGE);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(CastDialogView::IsShowing());
   EXPECT_NE(nullptr, CastDialogView::GetCurrentDialogWidget());

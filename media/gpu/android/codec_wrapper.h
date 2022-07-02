@@ -107,7 +107,8 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   using OutputReleasedCB = base::RepeatingCallback<void(bool)>;
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
-               scoped_refptr<base::SequencedTaskRunner> release_task_runner);
+               scoped_refptr<base::SequencedTaskRunner> release_task_runner,
+               const gfx::Size& initial_expected_size);
 
   CodecWrapper(const CodecWrapper&) = delete;
   CodecWrapper& operator=(const CodecWrapper&) = delete;

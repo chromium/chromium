@@ -678,4 +678,8 @@ bool DrmDevice::SetGammaRamp(
                               &g[0], &b[0]) == 0);
 }
 
+absl::optional<std::string> DrmDevice::GetDriverName() const {
+  return GetDrmDriverNameFromFd(file_.GetPlatformFile());
+}
+
 }  // namespace ui

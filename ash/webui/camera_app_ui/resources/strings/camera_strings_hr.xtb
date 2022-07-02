@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Skenirajte crtični kôd</translation>
 <translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Preuzimanje značajke skeniranja dokumenata</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4121305183798804752">Otkriven je dokument</translation>
 <translation id="414641094616694804">Za ovu se kameru ne može promijeniti razlučivost</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Zaustavi snimanje fotografije</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Prednji fotoaparat</translation>
+<translation id="4620818268515773682">Prebacivanje isključivanja zvuka mikrofona. Isključivanje zvuka je isključeno</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4649291346448517080">Spremanje datoteke nije uspjelo</translation>
 <translation id="4695379108709712600">Kreće se prema gore</translation>
@@ -145,6 +147,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7670511624014457267">60 okv/s</translation>
 <translation id="7671804233658741790">Donji desni kut dokumenta</translation>
+<translation id="7692090236657809299">Omogući pomicanje/naginjanje/zumiranje</translation>
 <translation id="7726641833034062494">Snimite normalan videozapis</translation>
 <translation id="7748344063862150053">Gornji desni kut dokumenta</translation>
 <translation id="7933675232020478311">Kreće se prema dolje udesno</translation>
@@ -158,6 +161,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Prebacivanje isključivanja zvuka mikrofona. Isključivanje zvuka je uključeno</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Pregled metapodataka</translation>

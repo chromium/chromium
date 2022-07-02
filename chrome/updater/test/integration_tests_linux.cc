@@ -102,5 +102,9 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   NOTREACHED();
 }
 
+void RunOfflineInstall(UpdaterScope scope) {
+  NOTREACHED();
+}
+
 }  // namespace test
 }  // namespace updater

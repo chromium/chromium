@@ -4,11 +4,11 @@
 
 package org.chromium.android_webview.test;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.LocaleList;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -78,7 +78,6 @@ public class AcceptLanguageTest {
         return COMMA_AND_OPTIONAL_Q_VALUE.split(mActivityTestRule.maybeStripDoubleQuotes(raw));
     }
 
-    @SuppressLint("NewApi")
     private boolean isSingleLocale(String lang, String country) {
         String languageTag = String.format("%s-%s", lang, country);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -89,7 +88,6 @@ public class AcceptLanguageTest {
         }
     }
 
-    @SuppressLint("NewApi")
     private void setSingleLocale(String lang, String country) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             LocaleList.setDefault(new LocaleList(new Locale(lang, country)));
@@ -157,7 +155,7 @@ public class AcceptLanguageTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-    @SuppressLint("NewApi")
+    @RequiresApi(Build.VERSION_CODES.N)
     @Feature({"AndroidWebView"})
     public void testAcceptLanguagesWithenUS() throws Throwable {
         LocaleList.setDefault(new LocaleList(new Locale("ko", "KR")));

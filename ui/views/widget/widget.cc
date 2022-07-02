@@ -944,7 +944,7 @@ void Widget::ScheduleLayout() {
   native_widget_->ScheduleLayout();
 }
 
-void Widget::SetCursor(gfx::NativeCursor cursor) {
+void Widget::SetCursor(const ui::Cursor& cursor) {
   native_widget_->SetCursor(cursor);
 }
 

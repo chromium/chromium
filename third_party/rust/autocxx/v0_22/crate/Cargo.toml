@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "autocxx"
-version = "0.22.0"
+version = "0.22.2"
 authors = ["Adrian Taylor <adetaylor@chromium.org>"]
 exclude = [
     ".github",
@@ -34,10 +34,10 @@ resolver = "2"
 version = "0.1"
 
 [dependencies.autocxx-macro]
-version = "0.22.0"
+version = "0.22.2"
 
 [dependencies.cxx]
-version = "1.0.54"
+version = "1.0.68"
 
 [dependencies.moveit]
 version = "0.5"

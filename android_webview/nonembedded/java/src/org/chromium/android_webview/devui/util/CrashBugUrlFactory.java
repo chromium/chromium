@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.ContextUtils;
 
 import java.util.Locale;

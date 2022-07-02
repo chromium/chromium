@@ -15,8 +15,8 @@
 
 // Moves the tiles down, by setting the content offset of the collection to 0.
 - (void)shiftTilesDown;
-// Moves the tiles up by pinning the omnibox to the top. |completion| is called
-// when the collection is scrolled to top. |animations| is called only if it is
+// Moves the tiles up by pinning the omnibox to the top. `completion` is called
+// when the collection is scrolled to top. `animations` is called only if it is
 // not yet scrolled to the top.
 - (void)shiftTilesUpWithAnimations:(ProceduralBlock)animations
                         completion:

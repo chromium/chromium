@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_DELEGATED_INK_TRAIL_PRESENTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_DELEGATED_INK_TRAIL_PRESENTER_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -45,6 +46,7 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
   Member<Element> presentation_area_;
   Member<LocalFrame> local_frame_;
   uint32_t expected_improvement_;
+  base::TimeTicks last_delegated_ink_metadata_timestamp_;
 };
 
 }  // namespace blink

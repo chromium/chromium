@@ -90,7 +90,7 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
 
   // The resubmit data action cannot be presented as the view was not
   // yet added to the window or another VC is being presented. Retry after
-  // |kDelayBetweenAttemptsNanoSecs|.
+  // `kDelayBetweenAttemptsNanoSecs`.
   const NSUInteger kMaximumNumberAttempts = 10;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;

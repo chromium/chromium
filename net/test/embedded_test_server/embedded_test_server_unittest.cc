@@ -41,8 +41,7 @@
 
 using net::test::IsOk;
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // Gets notified by the EmbeddedTestServer on incoming connections being
 // accepted, read from, or closed.
@@ -50,10 +49,7 @@ class TestConnectionListener
     : public net::test_server::EmbeddedTestServerConnectionListener {
  public:
   TestConnectionListener()
-      : socket_accepted_count_(0),
-        did_read_from_socket_(false),
-        did_get_socket_on_complete_(false),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
   TestConnectionListener(const TestConnectionListener&) = delete;
   TestConnectionListener& operator=(const TestConnectionListener&) = delete;
@@ -104,9 +100,9 @@ class TestConnectionListener
   }
 
  private:
-  size_t socket_accepted_count_;
-  bool did_read_from_socket_;
-  bool did_get_socket_on_complete_;
+  size_t socket_accepted_count_ = 0;
+  bool did_read_from_socket_ = false;
+  bool did_get_socket_on_complete_ = false;
 
   base::RunLoop accept_loop_;
   base::RunLoop complete_loop_;
@@ -721,5 +717,4 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::ValuesIn(EmbeddedTestServerConfigs())));
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

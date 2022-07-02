@@ -45,13 +45,14 @@ class CodecImageTest : public testing::Test {
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
-        base::DoNothing(), base::SequencedTaskRunnerHandle::Get());
+        base::DoNothing(), base::SequencedTaskRunnerHandle::Get(),
+        gfx::Size(640, 480));
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
@@ -82,7 +83,7 @@ class CodecImageTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
     wrapper_->TakeCodecSurfacePair();
   }
 
@@ -120,6 +121,7 @@ class CodecImageTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   GLuint texture_id_ = 0;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   class PromotionHintReceiver {
    public:

@@ -41,6 +41,7 @@ scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
     case ThreadType::kRealtimeAudioWorkletThread:
     case ThreadType::kSemiRealtimeAudioWorkletThread:
     case ThreadType::kFontThread:
+    case ThreadType::kPreloadScannerThread:
       return scheduling_metrics::ThreadType::kRendererOtherBlinkThread;
   }
 }

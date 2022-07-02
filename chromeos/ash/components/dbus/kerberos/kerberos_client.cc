@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -48,7 +49,7 @@ void OnSignalConnected(const std::string& interface_name,
 }
 
 // "Real" implementation of KerberosClient talking to the Kerberos daemon on
-// the Chrome OS side.
+// the ChromeOS side.
 class KerberosClientImpl : public KerberosClient {
  public:
   KerberosClientImpl() = default;
@@ -112,28 +113,26 @@ class KerberosClientImpl : public KerberosClient {
                     std::move(callback));
   }
 
-  void ConnectToKerberosFileChangedSignal(
+  base::CallbackListSubscription SubscribeToKerberosFileChangedSignal(
       KerberosFilesChangedCallback callback) override {
-    DCHECK(callback);
-    kerberos_files_changed_callback_ = callback;
-
     proxy_->ConnectToSignal(
         kerberos::kKerberosInterface, kerberos::kKerberosFilesChangedSignal,
         base::BindRepeating(&KerberosClientImpl::OnKerberosFilesChanged,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+
+    return kerberos_files_changed_callback_list_.Add(callback);
   }
 
-  void ConnectToKerberosTicketExpiringSignal(
+  base::CallbackListSubscription SubscribeToKerberosTicketExpiringSignal(
       KerberosTicketExpiringCallback callback) override {
-    DCHECK(callback);
-    kerberos_ticket_expiring_callback_ = callback;
-
     proxy_->ConnectToSignal(
         kerberos::kKerberosInterface, kerberos::kKerberosTicketExpiringSignal,
         base::BindRepeating(&KerberosClientImpl::OnKerberosTicketExpiring,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+
+    return kerberos_ticket_expiring_callback_list_.Add(callback);
   }
 
   void OnKerberosFilesChanged(dbus::Signal* signal) {
@@ -148,8 +147,8 @@ class KerberosClientImpl : public KerberosClient {
       return;
     }
 
-    DCHECK(kerberos_files_changed_callback_);
-    kerberos_files_changed_callback_.Run(principal_name);
+    DCHECK(!kerberos_files_changed_callback_list_.empty());
+    kerberos_files_changed_callback_list_.Notify(principal_name);
   }
 
   void OnKerberosTicketExpiring(dbus::Signal* signal) {
@@ -164,8 +163,8 @@ class KerberosClientImpl : public KerberosClient {
       return;
     }
 
-    DCHECK(kerberos_ticket_expiring_callback_);
-    kerberos_ticket_expiring_callback_.Run(principal_name);
+    DCHECK(!kerberos_ticket_expiring_callback_list_.empty());
+    kerberos_ticket_expiring_callback_list_.Notify(principal_name);
   }
 
   void Init(dbus::Bus* bus) {
@@ -175,6 +174,11 @@ class KerberosClientImpl : public KerberosClient {
   }
 
  private:
+  using KerberosFilesChangedCallbackList =
+      base::RepeatingCallbackList<PrincipalNameFunc>;
+  using KerberosTicketExpiringCallbackList =
+      base::RepeatingCallbackList<PrincipalNameFunc>;
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   // Calls kerberosd's |method_name| method, passing in |request| as input. Once
@@ -227,9 +231,9 @@ class KerberosClientImpl : public KerberosClient {
   // D-Bus proxy for the Kerberos daemon, not owned.
   dbus::ObjectProxy* proxy_ = nullptr;
 
-  // Signal callbacks.
-  KerberosFilesChangedCallback kerberos_files_changed_callback_;
-  KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
+  // Signal callback lists.
+  KerberosFilesChangedCallbackList kerberos_files_changed_callback_list_;
+  KerberosFilesChangedCallbackList kerberos_ticket_expiring_callback_list_;
 
   base::WeakPtrFactory<KerberosClientImpl> weak_factory_{this};
 };

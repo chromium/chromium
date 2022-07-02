@@ -2,16 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//components/nacl/features.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":about_nacl" ]
-}
+assert(enable_nacl || is_mac)
 
-js_library("about_nacl") {
-  deps = [
-    "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "about_nacl.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
 }

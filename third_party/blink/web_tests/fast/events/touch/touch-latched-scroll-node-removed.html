@@ -62,6 +62,7 @@ childDiv.addEventListener('scroll', () => {
 
 promise_test( async () => {
   setUpForTest();
+  await waitForCompositorCommit();
   // Start scrolling on the child div and remove the div in the middle of
   // scrolling, then check that parentDiv have not scrolled.
   var x = (rect.left + rect.right) / 2;
@@ -69,6 +70,7 @@ promise_test( async () => {
   // Slow scrolling gives enough time to switch from cc to main.
   var pixels_per_sec = 100;
   await smoothScroll(400, x, y, GestureSourceType.TOUCH_INPUT, 'down', pixels_per_sec);
-  await waitFor( () => {return parentDiv.scrollTop === 0});
-}, "New node must start wheel scrolling when the latched node is removed.");
+  await conditionHolds( () => { return parentDiv.scrollTop === 0; },
+    "parentDiv has scrolled, which should not have!" );
+}, "New node must NOT start wheel scrolling when the latched node is removed.");
 </script>

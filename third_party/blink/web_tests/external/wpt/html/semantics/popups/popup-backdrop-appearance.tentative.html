@@ -39,13 +39,13 @@
 </style>
 <p>Test for [popup]::backdrop presence and stacking order. The test passes
   if there are 3 stacked boxes, with the brightest green on top.</p>
-<div popup=popup id=bottom>Bottom
+<div popup id=bottom>Bottom
   <div popup=hint id=middle>Middle
-    <div popup=async id=top>Top</div>
+    <div popup=manual id=top>Top</div>
   </div>
 </div>
 <script>
-document.getElementById('bottom').showPopup();
-document.getElementById('middle').showPopup();
-document.getElementById('top').showPopup();
+document.getElementById('bottom').showPopUp();
+document.getElementById('middle').showPopUp();
+document.getElementById('top').showPopUp();
 </script>

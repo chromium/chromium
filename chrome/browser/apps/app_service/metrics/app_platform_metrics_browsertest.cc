@@ -8,10 +8,10 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -39,12 +39,10 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   AppId InstallSystemWebApp() {
-    web_app::WebAppProvider::GetForSystemWebApps(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
 
     return *web_app::GetAppIdForSystemWebApp(profile(),
-                                             web_app::SystemAppType::HELP);
+                                             ash::SystemWebAppType::HELP);
   }
 
   apps::AppTypeName GetWebAppTypeName(const std::string& app_id,

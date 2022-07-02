@@ -146,10 +146,11 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
 
   auto key = file_manager->CreateKey(tab_id);
   auto it = tasks_.emplace(
-      tab_id, std::make_unique<TabServiceTask>(
-                  tab_id, key, contents->GetMainFrame()->GetFrameTreeNodeId(),
-                  contents->GetMainFrame()->GetGlobalId(), page_scale_factor, x,
-                  y, std::move(capture_handle)));
+      tab_id,
+      std::make_unique<TabServiceTask>(
+          tab_id, key, contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+          contents->GetPrimaryMainFrame()->GetGlobalId(), page_scale_factor, x,
+          y, std::move(capture_handle)));
   if (!it.second) {
     std::move(callback).Run(Status::kCaptureInProgress);
     return;
@@ -293,8 +294,8 @@ void PaintPreviewTabService::CaptureTabInternal(
       content::WebContents::FromFrameTreeNodeId(task->frame_tree_node_id());
   auto* rfh = content::RenderFrameHost::FromID(task->frame_routing_id());
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
-      contents->GetMainFrame() != rfh || !rfh->IsActive() ||
-      !rfh->IsRenderFrameCreated() || !rfh->IsRenderFrameLive()) {
+      contents->GetPrimaryMainFrame() != rfh || !rfh->IsActive() ||
+      !rfh->IsRenderFrameLive()) {
     task->OnCaptured(Status::kWebContentsGone);
     return;
   }

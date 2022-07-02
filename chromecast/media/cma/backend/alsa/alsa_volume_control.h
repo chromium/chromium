@@ -17,6 +17,7 @@
 
 namespace chromecast {
 namespace media {
+class ScopedAlsaMixer;
 
 // SystemVolumeControl implementation for ALSA.
 class AlsaVolumeControl : public SystemVolumeControl,
@@ -41,8 +42,6 @@ class AlsaVolumeControl : public SystemVolumeControl,
   void CheckPowerSave();
 
  private:
-  class ScopedAlsaMixer;
-
   static std::string GetVolumeElementName();
   static std::string GetVolumeDeviceName();
   static std::string GetMuteElementName(::media::AlsaWrapper* alsa,

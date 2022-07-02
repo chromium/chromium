@@ -16,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/services/assistant/service.h"
 #include "chromeos/assistant/internal/internal_constants.h"
-#include "chromeos/services/assistant/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

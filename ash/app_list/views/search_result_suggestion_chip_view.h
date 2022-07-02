@@ -66,6 +66,10 @@ class ASH_EXPORT SearchResultSuggestionChipView : public SearchResultBaseView {
   // Sets rounded corners for the layer with |corner_radius| to clip the chip.
   void SetRoundedCornersForLayer(float corner_radius);
 
+  // The color of the enabled focus ring. Stored so we can swap between this and
+  // transparent.
+  const ui::ColorId focus_ring_color_;
+
   AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 
   views::ImageView* icon_view_ = nullptr;  // Owned by view hierarchy.

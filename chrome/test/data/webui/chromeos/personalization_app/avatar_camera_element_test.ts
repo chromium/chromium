@@ -20,9 +20,12 @@ class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
   public captureFramesResponse = [];
   public pngUint8Array = new Uint8Array(10);
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   CAPTURE_SIZE = {height: 10, width: 10};
   CAPTURE_INTERVAL_MS = 10;
   CAPTURE_DURATION_MS = 20;
+  /* eslint-enable @typescript-eslint/naming-convention */
+
   kDefaultVideoConstraints = webcamUtils.kDefaultVideoConstraints;
 
   constructor() {
@@ -168,6 +171,30 @@ suite('AvatarCameraTest', function() {
         {height: 5, width: 5}, size, 'Half mock size used for video');
     assertEquals(10, interval, 'Same mock interval value used for video');
     assertEquals(2, numFrames, '2 frames requested for video');
+  });
+
+  test('displays a loading spinner button while capturing frames', async () => {
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.VIDEO});
+    await waitAfterNextRender(avatarCameraElement);
+
+    assertEquals(
+        null, avatarCameraElement.shadowRoot?.getElementById('loadingButton'),
+        'no loading button shown yet');
+
+    avatarCameraElement?.shadowRoot?.getElementById('takePhoto')?.click();
+    await mockWebcamUtils.whenCalled('captureFrames');
+
+    const loadingButton = avatarCameraElement.shadowRoot?.getElementById(
+                              'loadingButton') as HTMLButtonElement;
+    assertTrue(!!loadingButton, 'loading button is shown');
+    assertTrue(loadingButton.disabled, 'loading button is disabled');
+
+    await waitAfterNextRender(avatarCameraElement);
+
+    assertEquals(
+        null, avatarCameraElement.shadowRoot?.getElementById('loadingButton'),
+        'loading button hidden again');
   });
 
   test('calls saveCameraImage with data on confirmPhoto click', async () => {

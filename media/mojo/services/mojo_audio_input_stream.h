@@ -62,7 +62,6 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
       base::ReadOnlySharedMemoryRegion shared_memory_region,
       std::unique_ptr<base::CancelableSyncSocket> foreign_socket,
       bool initially_muted) override;
-  void OnMuted(int stream_id, bool is_muted) override;
   void OnStreamError(int stream_id) override;
 
   // Closes connection to client and notifies owner.

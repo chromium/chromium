@@ -34,7 +34,9 @@ namespace cord_internal {
 
 using ::absl::base_internal::SpinLockHolder;
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr int CordzInfo::kMaxStackDepth;
+#endif
 
 ABSL_CONST_INIT CordzInfo::List CordzInfo::global_list_{absl::kConstInit};
 

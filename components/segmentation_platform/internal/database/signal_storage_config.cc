@@ -6,7 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
 namespace segmentation_platform {
 namespace {

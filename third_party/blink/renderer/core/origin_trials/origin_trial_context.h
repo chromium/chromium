@@ -217,13 +217,6 @@ class CORE_EXPORT OriginTrialContext final
                             const OriginInfo origin_info,
                             const Vector<OriginInfo>* script_origins);
 
-  // Validate the token result returned from token validator.
-  // `token_result` is modified in place to reflect the `OriginTrialTokenStatus`
-  // change.
-  void ValidateTokenResult(bool is_secure,
-                           const Vector<OriginInfo>* script_origins,
-                           TrialTokenResult& token_result);
-
   // Installs a series of OriginTrialFeatures listed in a HashSet. The return
   // value indicates whether binding features were added, signalling that V8
   // has to proceed with installing the conditional features.

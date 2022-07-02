@@ -40,9 +40,6 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
   // have its own source of ids (e.g. an enum, or external resource bundle).
   virtual gfx::ImageSkia* GetImageSkiaNamed(int id) const = 0;
 
-  // Get the color specified by |id|.
-  virtual SkColor GetColor(int id) const = 0;
-
   // Get the HSL shift specified by |id|.
   virtual color_utils::HSL GetTint(int id) const = 0;
 

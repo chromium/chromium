@@ -17,8 +17,7 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 EmbeddedTestServerAndroid::ConnectionListener::ConnectionListener(
     EmbeddedTestServerAndroid* test_server_android)
@@ -168,5 +167,4 @@ static void JNI_EmbeddedTestServerImpl_Init(
   new EmbeddedTestServerAndroid(env, jobj, jhttps);
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

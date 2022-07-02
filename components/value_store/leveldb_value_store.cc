@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -188,7 +189,15 @@ ValueStore::WriteResult LeveldbValueStore::Remove(
     }
   }
 
-  leveldb::Status ldb_status = db()->Write(leveldb::WriteOptions(), &batch);
+  leveldb::Status ldb_status;
+  {
+    // Write() uses ConditionVariables to coordinate a batch write for
+    // efficiency. This is an allowed use of base-sync-primitives.
+    // TODO(crbug.com/1330845): The ScopedAllow should happen in leveldb rather
+    // than all the call sites.
+    base::ScopedAllowBaseSyncPrimitives scoped_allow_base_sync_primitives;
+    ldb_status = db()->Write(leveldb::WriteOptions(), &batch);
+  }
   if (!ldb_status.ok() && !ldb_status.IsNotFound()) {
     status.Merge(ToValueStoreError(ldb_status));
     return WriteResult(std::move(status));
@@ -278,6 +287,11 @@ ValueStore::Status LeveldbValueStore::AddToBatch(
 }
 
 ValueStore::Status LeveldbValueStore::WriteToDb(leveldb::WriteBatch* batch) {
+  // Write() uses ConditionVariables to coordinate a batch write for efficiency.
+  // This is an allowed use of base-sync-primitives.
+  // TODO(crbug.com/1330845): The ScopedAllow should happen in leveldb rather
+  // than all the call sites.
+  base::ScopedAllowBaseSyncPrimitives scoped_allow_base_sync_primitives;
   return ToValueStoreError(db()->Write(write_options(), batch));
 }
 

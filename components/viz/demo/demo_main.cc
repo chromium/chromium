@@ -148,7 +148,7 @@ class DemoWindow : public ui::PlatformWindowDelegate {
     // Next, create the host and the service, and pass them the right ends of
     // the message-pipes.
     host_ = std::make_unique<demo::DemoHost>(
-        widget_, platform_window_->GetBounds().size(),
+        widget_, platform_window_->GetBoundsInPixels().size(),
         std::move(frame_sink_manager_client_receiver),
         std::move(frame_sink_manager));
 

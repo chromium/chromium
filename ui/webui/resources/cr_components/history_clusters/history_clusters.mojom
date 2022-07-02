@@ -5,6 +5,7 @@
 module history_clusters.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a search query related to a visit to the search results page.
@@ -35,6 +36,44 @@ enum Annotation {
   kSearchResultsPage,
 };
 
+/**
+ * The following enums must be kept in sync with their respective variants in
+ * //tools/metrics/histograms/metadata/history/histograms.xml and
+ * //components/history_clusters/core/cluster_metrics_utils.h
+ */
+
+// Actions that can be performed on clusters.
+enum ClusterAction {
+  kDeleted,
+  kOpenedInTabGroup,
+  kRelatedSearchClicked,
+  kRelatedVisitsVisibilityToggled,
+  kVisitClicked,
+};
+
+// Actions that can be performed on related search items.
+enum RelatedSearchAction {
+  kClicked,
+};
+
+// Actions that can be performed on visits.
+enum VisitAction {
+  kClicked,
+  kDeleted,
+};
+
+// Types of visits that can be shown and acted on.
+enum VisitType {
+  kSRP,
+  kNonSRP
+};
+
+// Raw visit data needed to properly do deletion of all the duplicates.
+struct RawVisitData {
+  url.mojom.Url url;
+  mojo_base.mojom.Time visit_time;
+};
+
 // Represents the most recent visit to a URL within a Cluster. Visits for which
 // there are more recent visits to the same (or a qualifying near-duplicate) URL
 // within the Cluster are omitted.
@@ -59,17 +98,10 @@ struct URLVisit {
   array<MatchPosition> title_match_positions;
   array<MatchPosition> url_for_display_match_positions;
 
-  // Time of the most recent visit in the Cluster to the same (or a qualifying
-  // near-duplicate) URL.
-  mojo_base.mojom.Time last_visit_time;
-
-  // Time of the least recent visit in the Cluster to the same (or a qualifying
-  // near-duplicate) URL. Equals `last_visit_time` if there is only one visit in
-  // the Cluster to the same (or a qualifying near-duplicate) URL.
-  mojo_base.mojom.Time first_visit_time;
-
-  // List of raw visited URLs for `normalized_url`.
-  array<url.mojom.Url> raw_urls;
+  // Raw visit data that's not displayed by the UI, but needed to do proper
+  // deletion. Visits with no duplicates will have an empty `duplicates` array.
+  RawVisitData raw_visit_data;
+  array<RawVisitData> duplicates;
 
   // Localized string of approximate `last_visit_time`, e.g., "2 days ago".
   string relative_date;
@@ -128,8 +160,15 @@ struct QueryResult {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Opens the history cluster specified by url
+  OpenHistoryCluster(url.mojom.Url url,
+      ui.mojom.ClickModifiers click_modifiers);
+
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
+
+  // Notify the backend that the side panel UI is ready to be shown.
+  ShowSidePanelUI();
 
   // Toggles the visibility of the History Clusters. The returned Promise echos
   // the given value for `visible`. The page uses the returned value to update
@@ -146,11 +185,25 @@ interface PageHandler {
   // Requests to remove all visits to the specified URLs in the specified
   // timespan in `visits`. This includes the less recent visits to the same set
   // of URLs whose information is preserved in `visits`. The returned Promise
-  // indicates if the request was accepted by the browser.
-  RemoveVisits(array<URLVisit> visits) => (bool accepted);
+  // resolves with whether the request succeeded in the History backend layer.
+  RemoveVisits(array<URLVisit> visits) => (bool success);
 
   // Requests to open the URLs in `visits` in a new tab group.
   OpenVisitUrlsInTabGroup(array<URLVisit> visits);
+
+  // Records visit actions.
+  RecordVisitAction(VisitAction visit_action,
+                    uint32 visit_index,
+                    VisitType visit_type);
+
+  // Records related search click action.
+  RecordRelatedSearchAction(RelatedSearchAction action, uint32 visit_index);
+
+  // Records cluster actions.
+  RecordClusterAction(ClusterAction cluster_action, uint32 cluster_index);
+
+  // Records that the journeys visibility was toggled.
+  RecordToggledVisibility(bool visible);
 };
 
 // WebUI-side handler for requests from the browser.
@@ -164,4 +217,7 @@ interface Page {
   // Called with the set of removed visits when the last accepted call to
   // `RemoveVisits()` succeeds. `removed_visits` will be used to update the UI.
   OnVisitsRemoved(array<URLVisit> removed_visits);
+
+  // Called when History is deleted from a different tab.
+  OnHistoryDeleted();
 };

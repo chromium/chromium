@@ -140,7 +140,7 @@ class ASH_EXPORT ClipboardNudgeController
   const ClipboardHistory* clipboard_history_;
 
   // Owned by ash/Shell.
-  const ClipboardHistoryControllerImpl* const clipboard_history_controller_;
+  ClipboardHistoryControllerImpl* const clipboard_history_controller_;
 
   // Current clipboard state.
   ClipboardState clipboard_state_ = ClipboardState::kInit;

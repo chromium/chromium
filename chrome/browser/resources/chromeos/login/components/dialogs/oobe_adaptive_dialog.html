@@ -84,6 +84,10 @@
         --oobe-adaptive-dialog-content-top-padding: 0;
       }
 
+      :host-context([orientation=horizontal]):host([single-column]) {
+        --oobe-adaptive-dialog-header-width: 456px;
+      }
+
       :host-context([orientation=vertical]) {
         --oobe-adaptive-dialog-content-direction: column;
         --oobe-adaptive-dialog-item-alignment: center;

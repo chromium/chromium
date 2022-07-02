@@ -11,7 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-using optimization_guide::proto::OptimizationTarget;
+using segmentation_platform::proto::SegmentId;
 
 SegmentationInternalsPageHandlerImpl::SegmentationInternalsPageHandlerImpl(
     mojo::PendingReceiver<segmentation_internals::mojom::PageHandler> receiver,
@@ -40,15 +40,14 @@ void SegmentationInternalsPageHandlerImpl::GetServiceStatus() {
 void SegmentationInternalsPageHandlerImpl::ExecuteModel(int segment_id) {
   if (!service_proxy_)
     return;
-  service_proxy_->ExecuteModel(static_cast<OptimizationTarget>(segment_id));
+  service_proxy_->ExecuteModel(static_cast<SegmentId>(segment_id));
 }
 
 void SegmentationInternalsPageHandlerImpl::OverwriteResult(int segment_id,
                                                            float result) {
   if (!service_proxy_)
     return;
-  service_proxy_->OverwriteResult(static_cast<OptimizationTarget>(segment_id),
-                                  result);
+  service_proxy_->OverwriteResult(static_cast<SegmentId>(segment_id), result);
 }
 
 void SegmentationInternalsPageHandlerImpl::SetSelected(
@@ -57,8 +56,8 @@ void SegmentationInternalsPageHandlerImpl::SetSelected(
   if (!service_proxy_)
     return;
 
-  service_proxy_->SetSelectedSegment(
-      segmentation_key, static_cast<OptimizationTarget>(segment_id));
+  service_proxy_->SetSelectedSegment(segmentation_key,
+                                     static_cast<SegmentId>(segment_id));
 }
 
 void SegmentationInternalsPageHandlerImpl::OnServiceStatusChanged(
@@ -75,13 +74,11 @@ void SegmentationInternalsPageHandlerImpl::OnClientInfoAvailable(
     auto client = segmentation_internals::mojom::ClientInfo::New();
     client->segmentation_key = info.segmentation_key;
     client->selected_segment =
-        optimization_guide::GetStringNameForOptimizationTarget(
-            info.selected_segment);
+        segmentation_platform::proto::SegmentId_Name(info.selected_segment);
     for (const auto& status : info.segment_status) {
       auto segment_data = segmentation_internals::mojom::SegmentInfo::New();
       segment_data->segment_name =
-          optimization_guide::GetStringNameForOptimizationTarget(
-              status.segment_id);
+          segmentation_platform::proto::SegmentId_Name(status.segment_id);
       segment_data->segment_id = status.segment_id;
       segment_data->segment_data = status.segment_metadata;
       segment_data->prediction_result = status.prediction_result;

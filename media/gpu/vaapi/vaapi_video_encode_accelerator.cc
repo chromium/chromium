@@ -6,8 +6,6 @@
 
 #include <string.h>
 #include <va/va.h>
-#include <va/va_enc_h264.h>
-#include <va/va_enc_vp8.h>
 
 #include <algorithm>
 #include <memory>
@@ -70,55 +68,18 @@ constexpr size_t kMinNumFramesInFlight = 4;
 // VASurfaceIDs internal format.
 constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
 
-void FillVAEncRateControlParams(
-    uint32_t bps,
-    uint32_t window_size,
-    uint32_t initial_qp,
-    uint32_t min_qp,
-    uint32_t max_qp,
-    uint32_t framerate,
-    uint32_t buffer_size,
-    VAEncMiscParameterRateControl& rate_control_param,
-    VAEncMiscParameterFrameRate& framerate_param,
-    VAEncMiscParameterHRD& hrd_param) {
-  memset(&rate_control_param, 0, sizeof(rate_control_param));
-  rate_control_param.bits_per_second = bps;
-  rate_control_param.window_size = window_size;
-  rate_control_param.initial_qp = initial_qp;
-  rate_control_param.min_qp = min_qp;
-  rate_control_param.max_qp = max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
-
-  memset(&framerate_param, 0, sizeof(framerate_param));
-  framerate_param.framerate = framerate;
-
-  memset(&hrd_param, 0, sizeof(hrd_param));
-  hrd_param.buffer_size = buffer_size;
-  hrd_param.initial_buffer_fullness = buffer_size / 2;
-}
-
 // Creates one |encode_size| ScopedVASurface using |vaapi_wrapper|.
 std::unique_ptr<ScopedVASurface> CreateScopedSurface(
     VaapiWrapper& vaapi_wrapper,
     const gfx::Size& encode_size,
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
-  // iHD driver doesn't align a resolution for encoding properly. Align it only
-  // with encoder driver.
-  // TODO(https://github.com/intel/media-driver/issues/1232): Remove this
-  // workaround of aligning |encode_size|.
-  gfx::Size surface_size = encode_size;
-  if (!base::Contains(surface_usage_hints,
-                      VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite)) {
-    surface_size = gfx::Size(base::bits::AlignUp(encode_size.width(), 16u),
-                             base::bits::AlignUp(encode_size.height(), 16u));
-  }
-
   auto surfaces = vaapi_wrapper.CreateScopedVASurfaces(
-      kVaSurfaceFormat, surface_size, surface_usage_hints, 1u,
+      kVaSurfaceFormat, encode_size, surface_usage_hints, 1u,
       /*visible_size=*/absl::nullopt,
       /*va_fourcc=*/absl::nullopt);
   return surfaces.empty() ? nullptr : std::move(surfaces.front());
 }
+
 }  // namespace
 
 struct VaapiVideoEncodeAccelerator::InputFrameRef {
@@ -260,14 +221,23 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  switch (config.input_format) {
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_NV12:
-      break;
-    default:
-      MEDIA_LOG(ERROR, media_log.get())
-          << "Unsupported input format: " << config.input_format;
+  if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
+      MEDIA_LOG(ERROR, media_log.get()) << "Variable bitrate is disabled.";
       return false;
+    }
+    if (codec != VideoCodec::kH264) {
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Variable bitrate is only supported with H264 encoding.";
+      return false;
+    }
+  }
+
+  if (config.input_format != PIXEL_FORMAT_I420 &&
+      config.input_format != PIXEL_FORMAT_NV12) {
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unsupported input format: " << config.input_format;
+    return false;
   }
 
   if (config.storage_type.value_or(Config::StorageType::kShmem) ==
@@ -329,10 +299,23 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   if (!IsConfiguredForTesting()) {
-    const auto mode =
-        (output_codec_ == VideoCodec::kVP9 || output_codec_ == VideoCodec::kVP8)
-            ? VaapiWrapper::kEncodeConstantQuantizationParameter
-            : VaapiWrapper::kEncodeConstantBitrate;
+    VaapiWrapper::CodecMode mode;
+    switch (output_codec_) {
+      case VideoCodec::kH264:
+        mode = config.bitrate.mode() == Bitrate::Mode::kConstant
+                   ? VaapiWrapper::kEncodeConstantBitrate
+                   : VaapiWrapper::kEncodeVariableBitrate;
+        break;
+      case VideoCodec::kVP8:
+      case VideoCodec::kVP9:
+        mode = VaapiWrapper::kEncodeConstantQuantizationParameter;
+        break;
+      default:
+        NOTIFY_ERROR(kInvalidArgumentError,
+                     "Unsupported codec: " + GetCodecName(output_codec_));
+        return;
+    }
+
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
@@ -362,28 +345,28 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
+        // HW encoders on Intel GPUs will not put average QP in slice/tile
+        // header when it is not working at CQP mode. Currently only H264 is
+        // working at non CQP mode.
+        if (VaapiWrapper::GetImplementationType() ==
+                VAImplementation::kIntelI965 ||
+            VaapiWrapper::GetImplementationType() ==
+                VAImplementation::kIntelIHD) {
+          encoder_info_.reports_average_qp = false;
+        }
       }
-
-      DCHECK_EQ(ave_config.bitrate_control,
-                VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case VideoCodec::kVP8:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP8VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
-
-      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
-          kConstantQuantizationParameter;
       break;
     case VideoCodec::kVP9:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
-
-      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
-          kConstantQuantizationParameter;
       break;
     default:
       NOTREACHED() << "Unsupported codec type " << GetCodecName(output_codec_);
@@ -551,6 +534,20 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
 
+  if (frame) {
+    // |frame| can be nullptr to indicate a flush.
+    const bool is_expected_storage_type =
+        native_input_mode_
+            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            : frame->IsMappable();
+    if (!is_expected_storage_type) {
+      NOTIFY_ERROR(kInvalidArgumentError,
+                   "Unexpected storage: " << VideoFrame::StorageTypeToString(
+                       frame->storage_type()));
+      return;
+    }
+  }
+
   input_queue_.push(
       std::make_unique<InputFrameRef>(std::move(frame), force_keyframe));
   EncodePendingInputs();
@@ -563,14 +560,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     std::vector<scoped_refptr<VASurface>>* reconstructed_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
+  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
 
-  if (frame.storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    NOTIFY_ERROR(kPlatformFailureError,
-                 "Unexpected storage: "
-                     << VideoFrame::StorageTypeToString(frame.storage_type()));
-    return false;
-  }
   if (frame.format() != PIXEL_FORMAT_NV12) {
     NOTIFY_ERROR(
         kPlatformFailureError,
@@ -976,13 +968,6 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate) {
-  // If this is changed to use variable bitrate encoding, change the mode check
-  // to check that the mode matches the current mode.
-  if (bitrate.mode() != Bitrate::Mode::kConstant) {
-    VLOGF(1) << "Failed to update rates due to invalid bitrate mode.";
-    return;
-  }
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   VideoBitrateAllocation allocation;
@@ -1080,7 +1065,6 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
     vaapi_wrapper_->DestroyContext();
 
   available_encode_surfaces_.clear();
-  available_va_buffer_ids_.clear();
 
   if (vpp_vaapi_wrapper_)
     vpp_vaapi_wrapper_->DestroyContext();

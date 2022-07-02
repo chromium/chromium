@@ -17,6 +17,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -106,6 +108,27 @@ const char kArcAppTaskType[] = "arc";
 const char kCrostiniAppTaskType[] = "crostini";
 const char kPluginVmAppTaskType[] = "pluginvm";
 const char kWebAppTaskType[] = "web";
+
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kPdfFileExtension[] = ".pdf";
+
+void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
+                                  const std::set<std::string>& mime_types,
+                                  const std::set<std::string>& suffixes) {
+  bool hasPdfMimeType = base::Contains(mime_types, kPdfMimeType);
+  bool hasPdfSuffix = base::Contains(suffixes, kPdfFileExtension);
+  if (!hasPdfMimeType || !hasPdfSuffix) {
+    return;
+  }
+
+  if (new_default_app_id == web_app::kMediaAppId) {
+    base::RecordAction(
+        base::UserMetricsAction("MediaApp.PDF.DefaultApp.SwitchedTo"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MediaApp.PDF.DefaultApp.SwitchedAway"));
+  }
+}
 
 // Returns True if the `app_id` belongs to Files app either extension or SWA.
 inline bool isFilesAppId(const std::string& app_id) {
@@ -499,47 +522,32 @@ void PostProcessFoundTasks(
 
   std::set<std::string> disabled_actions;
 
-  // kFilesArchivemount and kFilesArchivemount2 controls what subset of
-  // filename extensions listed in ui/file_manager/file_manager/manifest.json
-  // allows the "mount-archive" action.
-  //
-  // If kFilesArchivemount is disabled then only ".rar" and ".zip" are allowed.
-  // This corresponds to the status quo as of milestone M92.
-  //
-  // If kFilesArchivemount is enabled but kFilesArchivemount2 is disabled then
-  // more extensions are allowed, including ".7z" and uncompressed tar (".tar")
-  // but not compressed tar (".tar.bz", ".tar.bz2", ".tar.gz", ".tar.lzma",
-  // ".tar.xz", ".tbz", ".tbz2", ".tgz", ".tlzma", and ".txz") or compressed
-  // general files (".bz2", ".gz", ".lzma", and ".xz").
-  //
-  // If both are enabled then everything listed in manifest.json is allowed.
-  //
-  // TODO(crbug.com/1295892): some time after M98, remove these feature flags
-  // (scheduled to expire in M112) by hard-coding them to true, so that these
-  // if-blocks are never taken and can be deleted.
-  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
+  // kFilesArchivemount2 controls what subset of filename extensions listed in
+  // ui/file_manager/file_manager/manifest.json allows the "mount-archive"
+  // action. If kFilesArchivemount2 is enabled, everything listed in
+  // manifest.json is allowed.
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
-      // Allow-list: .rar and .zip.
-      if (!entry.path.MatchesExtension(".rar") &&
-          !entry.path.MatchesExtension(".zip")) {
-        disabled_actions.emplace("mount-archive");
-        break;
-      }
-    }
-  } else if (!base::FeatureList::IsEnabled(
-                 ash::features::kFilesArchivemount2)) {
-    for (const auto& entry : entries) {
-      // Deny-list: various compressed formats.
+      // Deny-list: "slow-mounter" compressed formats.
       if (entry.path.MatchesFinalExtension(".bz") ||
           entry.path.MatchesFinalExtension(".bz2") ||
           entry.path.MatchesFinalExtension(".gz") ||
+          entry.path.MatchesFinalExtension(".lz") ||
           entry.path.MatchesFinalExtension(".lzma") ||
-          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".taz") ||
+          entry.path.MatchesFinalExtension(".tb2") ||
           entry.path.MatchesFinalExtension(".tbz") ||
           entry.path.MatchesFinalExtension(".tbz2") ||
           entry.path.MatchesFinalExtension(".tgz") ||
+          entry.path.MatchesFinalExtension(".tlz") ||
           entry.path.MatchesFinalExtension(".tlzma") ||
-          entry.path.MatchesFinalExtension(".txz")) {
+          entry.path.MatchesFinalExtension(".txz") ||
+          entry.path.MatchesFinalExtension(".tz") ||
+          entry.path.MatchesFinalExtension(".tz2") ||
+          entry.path.MatchesFinalExtension(".tzst") ||
+          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".z") ||
+          entry.path.MatchesFinalExtension(".zst")) {
         disabled_actions.emplace("mount-archive");
         break;
       }
@@ -672,14 +680,21 @@ void UpdateDefaultTask(PrefService* pref_service,
     }
   }
 
+  std::set<std::string> lowercase_suffixes;
   if (!suffixes.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
       std::string lower_suffix = base::ToLowerASCII(suffix);
+      lowercase_suffixes.insert(lower_suffix);
       mime_type_pref->SetStringKey(lower_suffix, task_id);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
+    RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types,
+                                 lowercase_suffixes);
   }
 }
 
@@ -688,7 +703,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
                              const std::string& suffix,
                              TaskDescriptor* task_out) {
   VLOG(1) << "Looking for default for MIME type: " << mime_type
-      << " and suffix: " << suffix;
+          << " and suffix: " << suffix;
   if (!mime_type.empty()) {
     const base::Value* mime_task_prefs =
         pref_service.GetDictionary(prefs::kDefaultTasksByMimeType);
@@ -723,15 +738,13 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
 std::string MakeTaskID(const std::string& app_id,
                        TaskType task_type,
                        const std::string& action_id) {
-  return base::StringPrintf("%s|%s|%s",
-                            app_id.c_str(),
+  return base::StringPrintf("%s|%s|%s", app_id.c_str(),
                             TaskTypeToString(task_type).c_str(),
                             action_id.c_str());
 }
 
 std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor) {
-  return MakeTaskID(task_descriptor.app_id,
-                    task_descriptor.task_type,
+  return MakeTaskID(task_descriptor.app_id, task_descriptor.task_type,
                     task_descriptor.action_id);
 }
 
@@ -827,7 +840,7 @@ bool ExecuteFileTask(Profile* profile,
     params.url = files_swa_url;
 
     web_app::LaunchSystemWebAppAsync(
-        profile, web_app::SystemAppType::FILE_MANAGER, params);
+        profile, ash::SystemWebAppType::FILE_MANAGER, params);
     if (done) {
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
@@ -876,10 +889,9 @@ bool ExecuteFileTask(Profile* profile,
   return false;
 }
 
-void FindFileBrowserHandlerTasks(
-    Profile* profile,
-    const std::vector<GURL>& file_urls,
-    std::vector<FullTaskDescriptor>* result_list) {
+void FindFileBrowserHandlerTasks(Profile* profile,
+                                 const std::vector<GURL>& file_urls,
+                                 std::vector<FullTaskDescriptor>* result_list) {
   DCHECK(!file_urls.empty());
   DCHECK(result_list);
 

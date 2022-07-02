@@ -2,17 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":flags" ]
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = target_gen_dir
+  in_files = [ "flags.ts" ]
 }
 
-js_library("flags") {
-  deps = [
-    "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "flags.ts" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
 }

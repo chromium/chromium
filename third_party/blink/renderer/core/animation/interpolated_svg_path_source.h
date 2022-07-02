@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATED_SVG_PATH_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATED_SVG_PATH_SOURCE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/animation/svg_path_seg_interpolation_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

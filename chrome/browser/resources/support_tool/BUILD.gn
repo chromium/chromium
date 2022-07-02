@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -12,18 +12,6 @@ import("support_tool.gni")
 assert(!is_android)
 
 resources_grd_file = "$target_gen_dir/resources.grd"
-
-generate_grd("build_grd") {
-  grd_prefix = "support_tool"
-  out_grd = resources_grd_file
-  input_files = html_files + [
-                  "support_tool_container.html",
-                  "url_generator_container.html",
-                ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
 
 grit("resources") {
   enable_input_discovery_for_gn_analyze = false
@@ -43,8 +31,8 @@ copy("copy") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
@@ -67,4 +55,17 @@ ts_library("build_ts") {
     ":html_wrapper_files",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "support_tool"
+  out_grd = resources_grd_file
+  input_files = html_files + [
+                  "support_tool_container.html",
+                  "url_generator_container.html",
+                ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

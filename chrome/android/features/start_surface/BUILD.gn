@@ -8,41 +8,18 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
-import("//tools/grit/grit_rule.gni")
-
-java_strings_grd("java_strings_grd") {
-  defines = chrome_grit_defines
-  grd_file = "java/strings/android_chrome_start_surface_strings.grd"
-  outputs = [ "values/android_chrome_start_surface_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_chrome_start_surface_strings.xml" ])
-}
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/ic_explore.png",
-    "java/res/drawable-hdpi/ic_home.png",
-    "java/res/drawable-mdpi/ic_explore.png",
-    "java/res/drawable-mdpi/ic_home.png",
-    "java/res/drawable-xhdpi/ic_explore.png",
-    "java/res/drawable-xhdpi/ic_home.png",
-    "java/res/drawable-xxhdpi/ic_explore.png",
-    "java/res/drawable-xxhdpi/ic_home.png",
-    "java/res/drawable-xxxhdpi/ic_explore.png",
-    "java/res/drawable-xxxhdpi/ic_home.png",
     "java/res/drawable/single_tab_background.xml",
     "java/res/layout/query_tiles_layout.xml",
     "java/res/layout/single_tab_view_layout.xml",
-    "java/res/layout/ss_bottom_bar_layout.xml",
-    "java/res/layout/ss_explore_button.xml",
-    "java/res/layout/ss_home_button.xml",
     "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
   deps = [
-    ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui:java_resources",
   ]
@@ -82,7 +59,6 @@ android_library("public_java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

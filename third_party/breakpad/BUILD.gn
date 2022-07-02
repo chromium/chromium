@@ -337,15 +337,6 @@ if (is_mac) {
 
       frameworks = [ "Foundation.framework" ]
 
-      if (!is_debug) {
-        # dump_syms crashes when built at -O1, -O2, and -O3.  It does
-        # not crash at -Os.  To play it safe, dump_syms is always built
-        # at -O0 until this can be sorted out.
-        # https://crbug.com/google-breakpad/329
-        configs -= [ "//build/config/compiler:default_optimization" ]
-        cflags = [ "-O0" ]
-      }
-
       deps = [ ":common" ]
     }
 
@@ -617,6 +608,9 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/client/linux/minidump_writer/linux_ptrace_dumper.h",
       "breakpad/src/client/linux/minidump_writer/minidump_writer.cc",
       "breakpad/src/client/linux/minidump_writer/minidump_writer.h",
+      "breakpad/src/client/linux/minidump_writer/pe_file.cc",
+      "breakpad/src/client/linux/minidump_writer/pe_file.h",
+      "breakpad/src/client/linux/minidump_writer/pe_structs.h",
       "breakpad/src/client/linux/minidump_writer/proc_cpuinfo_reader.h",
       "breakpad/src/client/minidump_file_writer-inl.h",
       "breakpad/src/client/minidump_file_writer.cc",
@@ -874,6 +868,8 @@ if (is_win) {
         "breakpad/src/common/windows/pe_util.h",
         "breakpad/src/common/windows/string_utils-inl.h",
         "breakpad/src/common/windows/string_utils.cc",
+        "breakpad/src/common/windows/sym_upload_v2_protocol.cc",
+        "breakpad/src/common/windows/sym_upload_v2_protocol.h",
         "breakpad/src/common/windows/symbol_collector_client.cc",
         "breakpad/src/common/windows/symbol_collector_client.h",
       ]

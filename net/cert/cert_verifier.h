@@ -76,13 +76,13 @@ class NET_EXPORT CertVerifier {
 
   class Request {
    public:
-    Request() {}
+    Request() = default;
 
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
 
     // Destruction of the Request cancels it.
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
   enum VerifyFlags {
@@ -155,7 +155,7 @@ class NET_EXPORT CertVerifier {
 
   // When the verifier is destroyed, all certificate verification requests are
   // canceled, and their completion callbacks will not be called.
-  virtual ~CertVerifier() {}
+  virtual ~CertVerifier() = default;
 
   // Verifies the given certificate against the given hostname as an SSL server.
   // Returns OK if successful or an error code upon failure.

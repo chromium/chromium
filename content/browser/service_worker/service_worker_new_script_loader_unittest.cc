@@ -113,8 +113,6 @@ class MockNetwork {
       client->OnReceiveRedirect(net::RedirectInfo(), std::move(response_head));
       return true;
     }
-    client->OnReceiveResponse(std::move(response_head),
-                              mojo::ScopedDataPipeConsumerHandle());
 
     uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
@@ -123,7 +121,7 @@ class MockNetwork {
     MojoResult result = producer->WriteData(
         response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     CHECK_EQ(MOJO_RESULT_OK, result);
-    client->OnStartLoadingResponseBody(std::move(consumer));
+    client->OnReceiveResponse(std::move(response_head), std::move(consumer));
 
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;

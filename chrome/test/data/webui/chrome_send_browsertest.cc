@@ -23,7 +23,7 @@ ChromeSendWebUITest::ChromeSendWebUIMessageHandler::
     ~ChromeSendWebUIMessageHandler() {}
 
 void ChromeSendWebUITest::ChromeSendWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "checkSend",
       base::BindRepeating(&ChromeSendWebUIMessageHandler::HandleCheckSend,
                           base::Unretained(this)));

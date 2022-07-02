@@ -15,6 +15,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/callback_helpers.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
@@ -35,6 +36,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // A callback for confirming if Set*Wallpaper operations completed
   // successfully.
   using SetWallpaperCallback = base::OnceCallback<void(bool success)>;
+
+  using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
   WallpaperController();
   virtual ~WallpaperController();
@@ -105,6 +108,16 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // `current_wallpaper_.type` is not `kDailyGooglePhotos`
   virtual std::string GetGooglePhotosDailyRefreshAlbumId(
       const AccountId& account_id) const = 0;
+
+  // Set and get the cache of hashed ids for recently shown daily Google Photos.
+  // This cache is persisted in local preferences, and is not synced across
+  // devices.
+  virtual bool SetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      const DailyGooglePhotosIdCache& ids) = 0;
+  virtual bool GetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      DailyGooglePhotosIdCache& ids_out) const = 0;
 
   // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
   // downloading the image if it is not on disk yet.
@@ -286,6 +299,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // controlled by policy (excluding device policy). If there's no active user,
   // returns false.
   virtual bool IsActiveUserWallpaperControlledByPolicy() = 0;
+
+  // Returns true if the wallpaper of the user with the given |account_id| is
+  // controlled by policy (excluding device policy). If the |account_id| is
+  // invalid, returns false.
+  virtual bool IsWallpaperControlledByPolicy(
+      const AccountId& account_id) const = 0;
 
   // Returns a struct with info about the active user's wallpaper; the location
   // is an empty string and the layout is invalid if there's no active user.

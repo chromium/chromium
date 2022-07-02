@@ -30,11 +30,11 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -173,7 +173,7 @@ class ASH_EXPORT AssistantControllerImpl
 
   AssistantViewDelegateImpl view_delegate_{this};
 
-  base::ScopedObservation<AshColorProvider, ColorModeObserver>
+  base::ScopedObservation<DarkLightModeControllerImpl, ColorModeObserver>
       color_mode_observer_{this};
 
   base::WeakPtrFactory<AssistantControllerImpl> weak_factory_{this};

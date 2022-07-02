@@ -12,10 +12,9 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -37,7 +36,6 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
-#include "third_party/blink/public/mojom/manifest/handle_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -106,33 +104,6 @@ WebAppProto::CaptureLinks CaptureLinksToProto(
       return WebAppProto_CaptureLinks_NEW_CLIENT;
     case blink::mojom::CaptureLinks::kExistingClientNavigate:
       return WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
-  }
-}
-
-blink::mojom::HandleLinks ProtoToHandleLinks(
-    WebAppProto::HandleLinks handle_links) {
-  switch (handle_links) {
-    case WebAppProto_HandleLinks_AUTO:
-      return blink::mojom::HandleLinks::kAuto;
-    case WebAppProto_HandleLinks_PREFERRED:
-      return blink::mojom::HandleLinks::kPreferred;
-    case WebAppProto_HandleLinks_NOT_PREFERRED:
-      return blink::mojom::HandleLinks::kNotPreferred;
-  }
-}
-
-WebAppProto::HandleLinks HandleLinksToProto(
-    blink::mojom::HandleLinks handle_links) {
-  switch (handle_links) {
-    case blink::mojom::HandleLinks::kUndefined:
-      NOTREACHED();
-      [[fallthrough]];
-    case blink::mojom::HandleLinks::kAuto:
-      return WebAppProto_HandleLinks_AUTO;
-    case blink::mojom::HandleLinks::kPreferred:
-      return WebAppProto_HandleLinks_PREFERRED;
-    case blink::mojom::HandleLinks::kNotPreferred:
-      return WebAppProto_HandleLinks_NOT_PREFERRED;
   }
 }
 
@@ -438,7 +409,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     auto* mutable_swa_data =
         local_data->mutable_client_data()->mutable_system_web_app_data();
     mutable_swa_data->set_system_app_type(
-        static_cast<SystemWebAppDataProto_SystemAppType>(
+        static_cast<ash::SystemWebAppDataProto_SystemWebAppType>(
             swa_data.system_app_type));
   }
 
@@ -603,6 +574,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
   }
 
+  if (web_app.lock_screen_start_url().is_valid()) {
+    local_data->set_lock_screen_start_url(
+        web_app.lock_screen_start_url().spec());
+  }
+
   if (web_app.note_taking_new_note_url().is_valid()) {
     local_data->set_note_taking_new_note_url(
         web_app.note_taking_new_note_url().spec());
@@ -612,11 +588,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_capture_links(CaptureLinksToProto(web_app.capture_links()));
   else
     local_data->clear_capture_links();
-
-  if (web_app.handle_links() != blink::mojom::HandleLinks::kUndefined)
-    local_data->set_handle_links(HandleLinksToProto(web_app.handle_links()));
-  else
-    local_data->clear_handle_links();
 
   if (!web_app.manifest_url().is_empty())
     local_data->set_manifest_url(web_app.manifest_url().spec());
@@ -797,10 +768,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.client_data().has_system_web_app_data()) {
-    WebAppSystemWebAppData& swa_data =
+    ash::SystemWebAppData& swa_data =
         web_app->client_data()->system_web_app_data.emplace();
 
-    swa_data.system_app_type = static_cast<SystemAppType>(
+    swa_data.system_app_type = static_cast<ash::SystemWebAppType>(
         local_data.client_data().system_web_app_data().system_app_type());
   }
 
@@ -1139,6 +1110,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
 
+  if (local_data.has_lock_screen_start_url()) {
+    web_app->SetLockScreenStartUrl(GURL(local_data.lock_screen_start_url()));
+  }
+
   if (local_data.has_note_taking_new_note_url()) {
     web_app->SetNoteTakingNewNoteUrl(
         GURL(local_data.note_taking_new_note_url()));
@@ -1158,11 +1133,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetCaptureLinks(ProtoToCaptureLinks(local_data.capture_links()));
   else
     web_app->SetCaptureLinks(blink::mojom::CaptureLinks::kUndefined);
-
-  if (local_data.has_handle_links())
-    web_app->SetHandleLinks(ProtoToHandleLinks(local_data.handle_links()));
-  else
-    web_app->SetHandleLinks(blink::mojom::HandleLinks::kUndefined);
 
   if (local_data.has_manifest_url()) {
     GURL manifest_url(local_data.manifest_url());
@@ -1229,8 +1199,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetPermissionsPolicy(policy);
   }
 
-  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
-      management_to_external_config;
+  WebApp::ExternalConfigMap management_to_external_config;
   for (const auto& management_proto :
        local_data.management_to_external_config_info()) {
     WebApp::ExternalManagementConfig config;

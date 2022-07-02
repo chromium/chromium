@@ -84,18 +84,19 @@ GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate,
   DCHECK(delegate);
   DCHECK_GT(time_font_size_dip_, 0);
   SetID(AmbientViewID::kAmbientGlanceableInfoView);
-  auto* backend_model = delegate_->GetAmbientBackendModel();
-  scoped_backend_model_observer_.Observe(backend_model);
+  auto* weather_model = delegate_->GetAmbientWeatherModel();
+  scoped_weather_model_observer_.Observe(weather_model);
 
   InitLayout();
 
-  if (!backend_model->weather_condition_icon().isNull()) {
+  if (!weather_model->weather_condition_icon().isNull()) {
     // already has weather info, show immediately.
     Show();
   }
 }
 
 GlanceableInfoView::~GlanceableInfoView() = default;
+
 void GlanceableInfoView::OnWeatherInfoUpdated() {
   Show();
 }
@@ -109,14 +110,13 @@ void GlanceableInfoView::OnThemeChanged() {
 }
 
 void GlanceableInfoView::Show() {
-  AmbientBackendModel* ambient_backend_model =
-      delegate_->GetAmbientBackendModel();
+  AmbientWeatherModel* weather_model = delegate_->GetAmbientWeatherModel();
 
   // When ImageView has an |image_| with different size than the |image_size_|,
   // it will resize and draw the |image_|. The quality is not as good as if we
   // resize the |image_| to be the same as the |image_size_| with |RESIZE_BEST|
   // method.
-  gfx::ImageSkia icon = ambient_backend_model->weather_condition_icon();
+  gfx::ImageSkia icon = weather_model->weather_condition_icon();
   gfx::ImageSkia icon_resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kWeatherIconSizeDip, kWeatherIconSizeDip));
@@ -126,16 +126,15 @@ void GlanceableInfoView::Show() {
 }
 
 std::u16string GlanceableInfoView::GetTemperatureText() const {
-  AmbientBackendModel* ambient_backend_model =
-      delegate_->GetAmbientBackendModel();
-  if (ambient_backend_model->show_celsius()) {
+  AmbientWeatherModel* weather_model = delegate_->GetAmbientWeatherModel();
+  if (weather_model->show_celsius()) {
     return l10n_util::GetStringFUTF16Int(
         IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS,
-        static_cast<int>(ambient_backend_model->GetTemperatureInCelsius()));
+        static_cast<int>(weather_model->GetTemperatureInCelsius()));
   }
   return l10n_util::GetStringFUTF16Int(
       IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
-      static_cast<int>(ambient_backend_model->temperature_fahrenheit()));
+      static_cast<int>(weather_model->temperature_fahrenheit()));
 }
 
 void GlanceableInfoView::InitLayout() {

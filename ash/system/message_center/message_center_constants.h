@@ -53,8 +53,8 @@ constexpr int kNotificationExpandButtonLabelFontSize = 12;
 constexpr auto kAppIconCollapsedPadding = gfx::Insets::TLBR(24, 12, 24, 0);
 constexpr auto kAppIconExpandedPadding = gfx::Insets::TLBR(20, 12, 0, 0);
 
-constexpr auto kExpandButtonCollapsedPadding = gfx::Insets::TLBR(4, 16, 0, 12);
-constexpr auto kExpandButtonExpandedPadding = gfx::Insets::TLBR(0, 16, 0, 12);
+constexpr auto kExpandButtonCollapsedPadding = gfx::Insets::TLBR(4, 0, 0, 12);
+constexpr auto kExpandButtonExpandedPadding = gfx::Insets::TLBR(0, 0, 0, 12);
 
 constexpr auto kMessageLabelInExpandedStatePadding =
     gfx::Insets::TLBR(0, 0, 4, 12);
@@ -106,6 +106,11 @@ constexpr int kToggleInlineSettingsFadeInDelayMs = 50;
 constexpr int kToggleInlineSettingsFadeInDurationMs = 100;
 constexpr int kToggleInlineSettingsFadeOutDurationMs = 50;
 
+// Animation durations for converting from single to group notification.
+constexpr int kConvertFromSingleToGroupFadeOutDurationMs = 66;
+constexpr int kConvertFromSingleToGroupFadeInDurationMs = 100;
+constexpr int kConvertFromSingleToGroupBoundsChangeDurationMs = 250;
+
 // Animation durations for swiping notification to reveal controls.
 constexpr int kNotificationSwipeControlFadeInDurationMs = 50;
 
@@ -116,6 +121,9 @@ constexpr int kInlineReplyAndGroupedParentCollapseAnimationDuration = 200;
 constexpr int kInlineSettingsExpandAndCollapseAnimationDuration = 200;
 constexpr int kGeneralExpandAnimationDuration = 300;
 constexpr int kGeneralCollapseAnimationDuration = 200;
+
+// Animation durations for adding / removing grouped child views
+constexpr int kSlideOutGroupedNotificationAnimationDurationMs = 200;
 
 }  // namespace ash
 

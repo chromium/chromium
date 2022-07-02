@@ -5,8 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
-#             mountainlion sierra
+#         mac highsierra mojave catalina bigsur monterey
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
@@ -26,8 +25,8 @@
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff
-#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
-#               intel-0x5912
+#         intel intel-hd-630-family intel-0xa2e intel-0xd26 intel-0xa011
+#               intel-0x3e92 intel-0x3e9b intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
 # Decoder
@@ -108,6 +107,13 @@ crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPU
 crbug.com/1305020 [ mac asan intel-0xd26 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 
+# Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes.
+# This hardware configuration is effectively obsolete; this won't be investigated.
+crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+
+# Vulkan enabled on linux, the crash fallback logic is different.
+crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -120,19 +126,14 @@ crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProce
 # since Windows 8 is no longer tested.
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
-# Flaky on Mac 10.7 and 10.8 resulting in crashes during browser
-# startup, so skip this test in those configurations.
-crbug.com/497411 [ mountainlion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-crbug.com/498149 [ lion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-
 # Too difficult to make this test work on Mac and Android for now. Disabling
 # GLES3 support at the GL bindings level doesn't work there yet.
 crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
-# Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes
-crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
-crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+# Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 ###################
 # Failures/Flakes #
@@ -145,6 +146,7 @@ crbug.com/1282821 [ win10 intel ] ContextLost_WebGPUBlockedAfterJSNavigation [ R
 # Flaking on Mac / Linux
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 crbug.com/1284424 [ linux ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
+crbug.com/1338955 [ mac debug intel-0x3e9b passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
@@ -160,14 +162,23 @@ crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAf
 
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
+crbug.com/1337793 [ linux display-server-wayland ] ContextLost_WebGLContextLostOverlyLargeUniform [ Failure ]
 
 # GpuCrash_Info* flakes on Mac Debug (AMD, Intel)
-crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
-crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaky on Fuchsia
 crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
+
+# Failing on android N5
+crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+
+# Flaking on Linux FYI Release
+crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromSelectElement [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
+crbug.com/1340081 [ linux release intel ] ContextLost_WebGLContextLostFromSelectElement [ RetryOnFailure ]
+crbug.com/1340081 [ linux release intel ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
+crbug.com/1340081 [ linux release intel-0x5912 ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

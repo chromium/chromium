@@ -30,7 +30,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';
-import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './destination_dialog_cros.html.js';
@@ -87,8 +86,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
         value: false,
       },
 
-      metrics_: Object,
-
       searchQuery_: {
         type: Object,
         value: null,
@@ -123,7 +120,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private printServerSelected_: string;
   private destinations_: Destination[];
   private loadingDestinations_: boolean;
-  private metrics_: MetricsContext;
   private searchQuery_: RegExp|null;
   private isSingleServerFetchingMode_: boolean;
   private printServerNames_: string[];
@@ -215,10 +211,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
-    const cancelled = this.$.dialog.getNative().returnValue !== 'success';
-    this.metrics_.record(
-        cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
-                    DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
   }
 
   private onCancelButtonClick_() {
@@ -289,13 +281,14 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   show() {
-    if (!this.metrics_) {
-      this.metrics_ = MetricsContext.destinationSearch();
-    }
     this.$.dialog.showModal();
-    this.loadingDestinations_ = this.destinationStore === undefined ||
+    const loading = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
-    this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
+    if (!loading) {
+      // All destinations have already loaded.
+      this.updateDestinations_();
+    }
+    this.loadingDestinations_ = loading;
   }
 
   /** @return Whether the dialog is open. */
@@ -331,7 +324,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   private onManageButtonClick_() {
-    this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
   }
 }

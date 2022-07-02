@@ -22,6 +22,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
@@ -55,6 +57,7 @@ struct WebServiceWorkerInstalledScriptsManagerParams;
 
 namespace content {
 
+class BlinkInterfaceRegistryImpl;
 class EmbeddedWorkerInstanceClientImpl;
 
 // ServiceWorkerContextClient is a "client" of a service worker execution
@@ -69,7 +72,9 @@ class EmbeddedWorkerInstanceClientImpl;
 //
 // Unless otherwise noted (here or in base class documentation), all methods
 // are called on the worker thread.
-class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
+class ServiceWorkerContextClient
+    : public blink::WebServiceWorkerContextClient,
+      public service_manager::mojom::InterfaceProvider {
  public:
   // Called on the initiator thread.
   // - |is_starting_installed_worker| is true if the script is already installed
@@ -97,6 +102,8 @@ class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
           controller_receiver,
       mojo::PendingAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>
           instance_host,
+      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+          interface_provider,
       blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr provider_info,
       EmbeddedWorkerInstanceClientImpl* owner,
       blink::mojom::EmbeddedWorkerStartTimingPtr start_timing,
@@ -130,6 +137,10 @@ class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
 
   // Called on the initiator thread.
   blink::WebEmbeddedWorker& worker();
+
+  // service_manager::mojom::InterfaceProvider:
+  void GetInterface(const std::string& interface_name,
+                    mojo::ScopedMessagePipeHandle interface_pipe) override;
 
   // WebServiceWorkerContextClient overrides.
   void WorkerReadyForInspectionOnInitiatorThread(
@@ -227,8 +238,20 @@ class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
       pending_service_worker_receiver_;
   mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
       controller_receiver_;
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider_receiver_;
   mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
       pending_subresource_loader_updater_;
+
+  // Holds renderer interfaces exposed to the browser.
+  service_manager::BinderRegistry registry_;
+  std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
+
+  // Receiver for the InterfaceProvider interface which is used by the browser
+  // to request interfaces that are exposed by the renderer. Bound and destroyed
+  // on the worker task runner.
+  mojo::Receiver<service_manager::mojom::InterfaceProvider>
+      interface_provider_receiver_{this};
 
   // This is bound on the initiator thread.
   mojo::SharedAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>

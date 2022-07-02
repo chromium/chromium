@@ -47,17 +47,15 @@ class SemanticElementFinder : public BaseElementFinder {
 
   ElementFinderInfoProto GetLogInfo() const override;
 
-  // Returns the backend node id of the first result (if any), or 0.
-  int GetBackendNodeId() const override;
-
  private:
   // Returns the given status and no element. This expects an error status.
   void GiveUpWithError(const ClientStatus& status);
 
-  // Builds a result from the |render_frame_host| and the |object_id| and
-  // returns it withan ok status.
-  void ResultFound(content::RenderFrameHost* render_frame_host,
-                   const std::string& object_id);
+  // Builds a result from the provided information and returns it with an
+  // ok status.
+  void ResultFound(const GlobalBackendNodeId& node_id,
+                   const std::string& object_id,
+                   const std::string& devtools_frame_id);
 
   // Call |callback_| with the |status| and |result|.
   void SendResult(const ClientStatus& status,
@@ -81,7 +79,8 @@ class SemanticElementFinder : public BaseElementFinder {
       const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
 
   void OnResolveNodeForAnnotateDom(
-      content::GlobalRenderFrameHostId host_id,
+      const GlobalBackendNodeId& node,
+      const std::string& devtools_frame_id,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::ResolveNodeResult> result);
 
@@ -89,6 +88,7 @@ class SemanticElementFinder : public BaseElementFinder {
   const raw_ptr<DevtoolsClient> devtools_client_;
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   const Selector selector_;
+  SelectorProto::SemanticFilter filter_;
   BaseElementFinder::Callback callback_;
 
   // Elements gathered through all frames. Unused if the |selector_| does not

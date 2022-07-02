@@ -5,7 +5,6 @@
 package org.chromium.chrome.features.tasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,11 +25,8 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** Coordinator of the single tab tab switcher. */
 class SingleTabSwitcherCoordinator implements TabSwitcher {
@@ -131,9 +126,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
     }
 
     @Override
-    public void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager) {
+    public void initWithNative() {
         mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
         mMediator.initWithNative();
     }

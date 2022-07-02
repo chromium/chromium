@@ -47,25 +47,27 @@ android_library("ulp_delegate_java") {
   sources = [
     "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
     "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
   ]
 
   # Allow downstream targets to provide their own implementations.
-  jar_excluded_patterns = [ "*/LanguageProfileDelegateImpl.class" ]
-}
-
-android_library("ulp_delegate_public_java") {
-  sources = [ "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java" ]
-
-  deps = [
-    ":ulp_delegate_java",
-    "//build/android:build_java",
+  jar_excluded_patterns = [
+    "*/LanguageProfileDelegateImpl.class",
+    "*/LocaleManagerDelegateImpl.class",
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+android_library("ulp_delegate_public_java") {
+  sources = [
+    "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
+    "java/src/org/chromium/components/language/LocaleManagerDelegateImpl.java",
+  ]
+
+  deps = [ ":ulp_delegate_java" ]
+}
+
+robolectric_library("junit") {
   sources = [ "java/src/org/chromium/components/language/LanguageProfileControllerUnitTest.java" ]
   deps = [
     ":java",
@@ -73,11 +75,9 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -93,9 +93,8 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/androidx:androidx_test_runner_java",

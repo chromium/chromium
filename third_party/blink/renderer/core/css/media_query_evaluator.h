@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,14 +38,12 @@ namespace blink {
 
 class LocalFrame;
 class MediaQuery;
-class MediaQueryExp;
 class MediaQueryExpNode;
-class MediaQueryResult;
+class MediaQueryFeatureExpNode;
 class MediaQuerySet;
 class MediaQuerySetResult;
 class MediaValues;
-
-using MediaQueryResultList = Vector<MediaQueryResult>;
+struct MediaQueryResultFlags;
 
 // See Kleene 3-valued logic
 //
@@ -89,47 +88,40 @@ class CORE_EXPORT MediaQueryEvaluator final
 
   ~MediaQueryEvaluator();
 
-  bool MediaTypeMatch(const String& media_type_to_match) const;
+  const MediaValues& GetMediaValues() const { return *media_values_; }
 
-  // Output from Eval functions:
-  struct Results {
-    MediaQueryResultList* viewport_dependent = nullptr;
-    MediaQueryResultList* device_dependent = nullptr;
-    // Or'ed MediaQueryExpValue::UnitFlags.
-    unsigned* unit_flags = nullptr;
-  };
+  bool MediaTypeMatch(const String& media_type_to_match) const;
 
   // Evaluates a list of media queries.
   bool Eval(const MediaQuerySet&) const;
-  bool Eval(const MediaQuerySet&, Results) const;
+  bool Eval(const MediaQuerySet&, MediaQueryResultFlags*) const;
 
   // Evaluates media query.
   bool Eval(const MediaQuery&) const;
-  bool Eval(const MediaQuery&, Results) const;
+  bool Eval(const MediaQuery&, MediaQueryResultFlags*) const;
 
   // https://drafts.csswg.org/mediaqueries-4/#evaluating
   KleeneValue Eval(const MediaQueryExpNode&) const;
-  KleeneValue Eval(const MediaQueryExpNode&, Results) const;
-
-  // Evaluates media query subexpression, ie "and (media-feature: value)" part.
-  bool Eval(const MediaQueryExp&) const;
-  bool Eval(const MediaQueryExp&, Results) const;
+  KleeneValue Eval(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
 
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.
-  bool DidResultsChange(const Vector<MediaQuerySetResult>& results) const;
+  bool DidResultsChange(const HeapVector<MediaQuerySetResult>& results) const;
 
   void Trace(Visitor*) const;
 
  private:
-  KleeneValue EvalNot(const MediaQueryExpNode&, Results) const;
+  KleeneValue EvalNot(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
   KleeneValue EvalAnd(const MediaQueryExpNode&,
                       const MediaQueryExpNode&,
-                      Results) const;
+                      MediaQueryResultFlags*) const;
   KleeneValue EvalOr(const MediaQueryExpNode&,
                      const MediaQueryExpNode&,
-                     Results) const;
-  KleeneValue EvalFeature(const MediaQueryExp&, Results) const;
+                     MediaQueryResultFlags*) const;
+  KleeneValue EvalFeature(const MediaQueryFeatureExpNode&,
+                          MediaQueryResultFlags*) const;
+  KleeneValue EvalStyleFeature(const MediaQueryFeatureExpNode&,
+                               MediaQueryResultFlags*) const;
 
   const String MediaType() const;
 

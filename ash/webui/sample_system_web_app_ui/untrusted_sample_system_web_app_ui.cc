@@ -58,7 +58,7 @@ void UntrustedSampleSystemWebAppUI::CreateParentPage(
     mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
         parent_trusted_page) {
   // Find the parent frame's controller.
-  auto* chrome_frame = web_ui()->GetWebContents()->GetMainFrame();
+  auto* chrome_frame = web_ui()->GetWebContents()->GetPrimaryMainFrame();
   if (!chrome_frame)
     return;
 

@@ -292,7 +292,10 @@ TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
                 RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE},
            {mojom::WriteProtectDisableCompleteAction::kCompleteKeepDeviceOpen,
             rmad::WriteProtectDisableCompleteState::
-                RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN}});
+                RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN},
+           {mojom::WriteProtectDisableCompleteAction::kCompleteNoOp,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_COMPLETE_NO_OP}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

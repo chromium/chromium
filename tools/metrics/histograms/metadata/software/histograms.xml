@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!--
+The SoftwareReporterEngine variants used to be defined as suffixes with a _
+separator. The leading _ keeps the generated histogram names the same.
+-->
+
+<variants name="SoftwareReporterEngine">
+  <variant name=""/>
+  <variant name="_ESET" summary="the ESET engine"/>
+  <variant name="_URZA" summary="the discontinued legacy engine"/>
+</variants>
+
 <histogram name="SoftwareReporter.Cleaner.ChromePromptChannelError"
     enum="SoftwareReporterChromePromptChannelError" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
@@ -128,27 +139,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SoftwareReporter.CreateJobResult" enum="WinGetLastError"
-    expires_after="2022-08-21">
+<histogram name="SoftwareReporter.CreateJobResult{Engine}"
+    enum="WinGetLastError" expires_after="2022-08-21">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The Windows error code from CreateJobObject, which is called just before
-    launching the Software Reporter. If this is not ERROR_SUCCESS, the reporter
-    process is not attached to a job and may outlive the browser. Not logged on
-    Windows 7, where CreateJobObject is not called because nested job objects
-    aren't supported.
+    launching the Software Reporter using {Engine}. If this is not
+    ERROR_SUCCESS, the reporter process is not attached to a job and may outlive
+    the browser. Not logged on Windows 7, where CreateJobObject is not called
+    because nested job objects aren't supported.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.FoundUwSReadError" enum="BooleanError"
-    expires_after="2022-07-03">
+<histogram name="SoftwareReporter.FoundUwSReadError{Engine}"
+    enum="BooleanError" expires_after="2023-05-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether there was an error reading the registry key containing UwS found by
-    the Software Removal Tool.
+    the Software Removal Tool when using {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
 <histogram name="SoftwareReporter.IPCDisconnected"
@@ -174,43 +187,48 @@ chromium-metrics-reviews@google.com.
   <summary>The result of the most recent SRT log upload.</summary>
 </histogram>
 
-<histogram name="SoftwareReporter.LogsUploadEnabled"
+<histogram name="SoftwareReporter.LogsUploadEnabled{Engine}"
     enum="SoftwareReporterLogsUploadEnabled" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     If logs uploads are enabled in the Software Reporter or the reason why it is
-    disabled. Recorded before each run of the Software Reporter. Warning: this
-    histogram was expired in M91 and extended in M92; data may be missing in
-    M91.
+    disabled. Recorded before each run of the Software Reporter using {Engine}.
+    Warning: this histogram was expired in M91 and extended in M92; data may be
+    missing in M91.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.LogsUploadResult"
+<histogram name="SoftwareReporter.LogsUploadResultRegistryError{Engine}"
+    enum="SoftwareReporterLogsUploadResultRegistryError"
+    expires_after="2022-10-30">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Error encountered when reading the Software Reporter logs upload result from
+    the registry for. Recorded at the same time as
+    SoftwareReporter.LogsUploadResult after the SoftwareReporter finishes when
+    using {Engine}. Warning: this histogram was expired in M91 and extended in
+    M92; data may be missing in M91.
+  </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
+</histogram>
+
+<histogram name="SoftwareReporter.LogsUploadResult{Engine}"
     enum="SoftwareReporterLogsUploadResult" expires_after="2022-10-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The result of the most recent Software Reporter logs upload. Written by the
     Software Reporter in the registry and sent by Chrome after the reporter
-    finishes. Warning: this histogram was expired in M91 and extended in M92;
-    data may be missing in M91.
+    finishes when using {Engine}. Warning: this histogram was expired in M91 and
+    extended in M92; data may be missing in M91.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.LogsUploadResultRegistryError"
-    enum="SoftwareReporterLogsUploadResultRegistryError"
-    expires_after="2022-10-30">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Error encountered when reading the software reporter logs upload result from
-    the registry. Warning: this histogram was expired in M91 and extended in
-    M92; data may be missing in M91.
-  </summary>
-</histogram>
-
-<histogram name="SoftwareReporter.MajorVersion" units="units"
+<histogram name="SoftwareReporter.MajorVersion{Engine}" units="units"
     expires_after="2022-10-23">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -219,28 +237,34 @@ chromium-metrics-reviews@google.com.
     components of the version of the software reporter. The high word is the
     first component when there are more than one, and the low word is either the
     second or third one, depending if there are at least 3, or 4 components.
+    Recorded after the reporter finishes when using {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.MemoryUsed" units="KB"
-    expires_after="2022-10-02">
+<histogram name="SoftwareReporter.MemoryUsed{Engine}" units="KB"
+    expires_after="2022-12-04">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The memory used by the software reporter tool as reported by the tool itself
-    via the registry. Logged just after the software reporter tool has finished.
+    via the registry. Logged just after the software reporter tool has finished
+    when using {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.MinorVersion" units="units"
+<histogram name="SoftwareReporter.MinorVersion{Engine}" units="units"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The last component of the version of the software reporter that was executed
     so we can identify when users are not getting their component updated as
-    quickly as we expect it.
+    quickly as we expect it. Recorded after the reporter finishes when using
+    {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
 <histogram name="SoftwareReporter.NoPromptReason"
@@ -299,8 +323,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SoftwareReporter.RunningTimeAccordingToChrome2" units="ms"
-    expires_after="2022-08-21">
+<histogram name="SoftwareReporter.RunningTimeAccordingToChrome2{Engine}"
+    units="ms" expires_after="2022-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -308,11 +332,13 @@ chromium-metrics-reviews@google.com.
     exits, in milliseconds. This includes time the computer was asleep or
     hibernating. SoftwareReporter.RunningTimeWithoutSleep2 excludes those
     periods. This replaces SoftwareReporter.RunningTimeAccordingToChrome which
-    also included queuing time of tasks before and after launch.
+    also included queuing time of tasks before and after launch. Recorded after
+    the reporter finishes when using {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
-<histogram name="SoftwareReporter.RunningTimeWithoutSleep2" units="ms"
+<histogram name="SoftwareReporter.RunningTimeWithoutSleep2{Engine}" units="ms"
     expires_after="2022-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -321,8 +347,10 @@ chromium-metrics-reviews@google.com.
     exits, in milliseconds. This does not include time the computer was asleep
     or hibernating. SoftwareReporter.RunningTimeAccordingToChrome2 includes
     those periods. This replaces SoftwareReporter.RunningTimeWithoutSleep which
-    also included queuing time of tasks before and after launch.
+    also included queuing time of tasks before and after launch. Recorded after
+    the reporter finishes when using {Engine}.
   </summary>
+  <token key="Engine" variants="SoftwareReporterEngine"/>
 </histogram>
 
 </histograms>

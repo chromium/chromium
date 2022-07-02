@@ -217,8 +217,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual gfx::NativeViewAccessible GetParent() const = 0;
 
   // Get the index in parent. Typically this is the AXNode's index_in_parent_.
-  // This should return -1 if the index in parent is unknown.
-  virtual int GetIndexInParent() = 0;
+  // This should return nullopt if the index in parent is unknown.
+  virtual absl::optional<size_t> GetIndexInParent() = 0;
 
   // Get the number of children of this node.
   //
@@ -227,7 +227,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // recursively removed from the children count. (An ignored node means that
   // the node should not be exposed to platform APIs: See
   // `IsIgnored`.)
-  virtual int GetChildCount() const = 0;
+  virtual size_t GetChildCount() const = 0;
 
   // Get a child of a node given a 0-based index.
   //
@@ -235,7 +235,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // returns only unignored children. All ignored nodes are recursively removed.
   // (An ignored node means that the node should not be exposed to platform
   // APIs: See `IsIgnored`.)
-  virtual gfx::NativeViewAccessible ChildAtIndex(int index) = 0;
+  virtual gfx::NativeViewAccessible ChildAtIndex(size_t index) = 0;
 
   // Returns true if it has a modal dialog.
   virtual bool HasModalDialog() const = 0;
@@ -335,7 +335,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
     virtual ChildIterator& operator--() = 0;
     virtual ChildIterator& operator--(int) = 0;
     virtual gfx::NativeViewAccessible GetNativeViewAccessible() const = 0;
-    virtual int GetIndexInParent() const = 0;
+    virtual absl::optional<size_t> GetIndexInParent() const = 0;
     virtual AXPlatformNodeDelegate& operator*() const = 0;
     virtual AXPlatformNodeDelegate* operator->() const = 0;
   };
@@ -452,6 +452,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Get whether this node is in web content.
   virtual bool IsWebContent() const = 0;
+
+  // Get whether this node can be marked as read-only.
+  virtual bool IsReadOnlySupported() const = 0;
+
+  // Get whether this node is marked as read-only or is disabled.
+  virtual bool IsReadOnlyOrDisabled() const = 0;
 
   // Returns true if the caret or selection is visible on this object.
   virtual bool HasVisibleCaretOrSelection() const = 0;

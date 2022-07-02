@@ -20,6 +20,10 @@ class ListValue;
 class Value;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace extensions {
 
 // Represents the set of URLs an extension uses for web content.
@@ -113,6 +117,7 @@ class URLPatternSet {
 
   // Adds a pattern based on |origin| to the set.
   bool AddOrigin(int valid_schemes, const GURL& origin);
+  bool AddOrigin(int valid_schemes, const url::Origin& origin);
 
   // Returns true if every URL that matches |set| is matched by this. In other
   // words, if every pattern in |set| is encompassed by a pattern in this.

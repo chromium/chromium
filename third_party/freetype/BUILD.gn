@@ -132,7 +132,7 @@ source_set("freetype_source") {
     ]
   }
 
-  if (is_linux || is_chromeos || is_chromecast) {
+  if (is_linux || is_chromeos || is_cast_android) {
     # Needed for content_shell on Linux and Chromecast, since fontconfig
     # requires FT_Get_BDF_Property.
     sources += [ "src/src/base/ftbdf.c" ]

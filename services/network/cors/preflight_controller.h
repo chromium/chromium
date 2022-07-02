@@ -39,6 +39,21 @@ extern const char kPreflightErrorHistogramName[];
 // Name of a histogram that records suppressed preflight errors, aka warnings.
 extern const char kPreflightWarningHistogramName[];
 
+// Dictates how the PreflightController should treat PNA preflights.
+//
+// TODO(https://crbug.com/1268378): Remove this once enforcement is always on.
+enum class PrivateNetworkAccessPreflightBehavior {
+  // Enforce the presence of PNA headers for PNA preflights.
+  kEnforce,
+
+  // Check for PNA headers, but do not fail the request in case of error.
+  // Instead, only report a warning to DevTools.
+  kWarn,
+
+  // Same as `kWarn`, also apply a short timeout to PNA preflights.
+  kWarnWithTimeout,
+};
+
 // A class to manage CORS-preflight, making a CORS-preflight request, checking
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
@@ -65,7 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const mojom::URLResponseHead& head,
       const ResourceRequest& original_request,
       bool tainted,
-      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
+      PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
       absl::optional<CorsErrorStatus>* detected_error_status);
 
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
@@ -92,7 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
-      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
+      PrivateNetworkAccessPreflightBehavior private_network_access_behavior,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,

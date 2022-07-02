@@ -500,6 +500,10 @@ enum SetNativeChromeVoxResponse {
   WINDOW_NOT_FOUND,
   TALKBACK_NOT_INSTALLED,
   FAILURE,
+
+  // Need to notify users that TalkBack is installed but
+  // it no longer support ARC++ customization.
+  NEED_DEPRECATION_CONFIRMATION,
 };
 
 // Interface for communicating to Android.

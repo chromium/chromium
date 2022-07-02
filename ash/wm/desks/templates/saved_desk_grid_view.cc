@@ -165,7 +165,7 @@ void SavedDeskGridView::AddOrUpdateTemplates(
       (*iter)->UpdateTemplate(*entry);
     } else if (grid_items_.size() < kMaxTemplateCount) {
       SavedDeskItemView* grid_item =
-          AddChildView(std::make_unique<SavedDeskItemView>(entry));
+          AddChildView(std::make_unique<SavedDeskItemView>(entry->Clone()));
       grid_items_.push_back(grid_item);
       if (!initializing_grid_view)
         new_grid_items.push_back(grid_item);
@@ -286,7 +286,7 @@ SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::GUID& uuid) {
 
   auto it = std::find_if(grid_items_.begin(), grid_items_.end(),
                          [&uuid](SavedDeskItemView* item_view) {
-                           return uuid == item_view->desk_template()->uuid();
+                           return uuid == item_view->uuid();
                          });
   return it == grid_items_.end() ? nullptr : *it;
 }

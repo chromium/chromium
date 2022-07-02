@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -124,7 +125,8 @@ void PasswordExpiryNotification::Show(Profile* profile,
 
   // NotifierId for histogram reporting.
   static const base::NoDestructor<NotifierId> kNotifierId(
-      NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      NotifierType::SYSTEM_COMPONENT, kNotificationId,
+      NotificationCatalogName::kPasswordExpiry);
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.

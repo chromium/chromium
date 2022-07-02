@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(GenericSensorBrowserTest,
   navigation_observer.Wait();
 
   content::RenderFrameHost* iframe =
-      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ("pass", iframe->GetLastCommittedURL().ref());
 }

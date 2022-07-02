@@ -113,8 +113,9 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
   do {
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
-    auto [go_results, event_logs] = CaptureEvents(base::BindOnce(
-        &ExecuteScriptAndGetValue, web_contents->GetMainFrame(), "go()"));
+    auto [go_results, event_logs] = CaptureEvents(
+        base::BindOnce(&ExecuteScriptAndGetValue,
+                       web_contents->GetPrimaryMainFrame(), "go()"));
     run_go_again = go_results.is_bool() && go_results.GetBool();
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.
@@ -790,6 +791,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("live-region-remove.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsLiveRegionChangeOnFreshlyUnignoredNode) {
+  RunEventTest(
+      FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
@@ -1135,11 +1143,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, ValueValueChanged) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMenuOpenedClosed) {
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsMenuOpenedClosedViaInnerText) {
-  RunEventTest(FILE_PATH_LITERAL("menu-opened-closed-via-inner-text.html"));
 }
 
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)

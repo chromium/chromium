@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "ui/base/ime/linux/linux_input_method_context_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -23,17 +24,9 @@ WaylandInputMethodContextFactory::~WaylandInputMethodContextFactory() = default;
 
 std::unique_ptr<LinuxInputMethodContext>
 WaylandInputMethodContextFactory::CreateInputMethodContext(
-    LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
-  return CreateWaylandInputMethodContext(delegate, is_simple);
-}
-
-std::unique_ptr<WaylandInputMethodContext>
-WaylandInputMethodContextFactory::CreateWaylandInputMethodContext(
-    LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
+    LinuxInputMethodContextDelegate* delegate) const {
   return std::make_unique<WaylandInputMethodContext>(
-      connection_, connection_->event_source(), delegate, is_simple);
+      connection_, connection_->event_source(), delegate);
 }
 
 }  // namespace ui

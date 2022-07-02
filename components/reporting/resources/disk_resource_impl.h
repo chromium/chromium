@@ -17,19 +17,20 @@ namespace reporting {
 // All APIs are non-blocking.
 class DiskResourceImpl : public ResourceInterface {
  public:
-  DiskResourceImpl();
-  ~DiskResourceImpl() override;
+  explicit DiskResourceImpl(uint64_t total_size);
 
   // Implementation of ResourceInterface methods.
   bool Reserve(uint64_t size) override;
   void Discard(uint64_t size) override;
-  uint64_t GetTotal() override;
-  uint64_t GetUsed() override;
+  uint64_t GetTotal() const override;
+  uint64_t GetUsed() const override;
   void Test_SetTotal(uint64_t test_total) override;
 
  private:
+  ~DiskResourceImpl() override;
+
   uint64_t total_;
-  std::atomic<uint64_t> used_;
+  std::atomic<uint64_t> used_{0};
 };
 
 }  // namespace reporting

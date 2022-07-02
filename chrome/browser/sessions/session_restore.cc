@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -293,7 +294,8 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     if (use_new_window) {
       browser->tab_strip_model()->ActivateTabAt(
-          0, {TabStripModel::GestureType::kOther});
+          0, TabStripUserGestureDetails(
+                 TabStripUserGestureDetails::GestureType::kOther));
       browser->window()->Show();
     }
     NotifySessionServiceOfRestoredTabs(browser,
@@ -862,8 +864,6 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.creation_source = Browser::CreationSource::kSessionRestore;
     Browser* browser = Browser::Create(params);
 
-    browser->window()->MaybeRestoreSideSearchStatePerWindow(extra_data);
-
     return browser;
   }
 
@@ -871,7 +871,9 @@ class SessionRestoreImpl : public BrowserListObserver {
     DCHECK(browser);
     DCHECK(browser->tab_strip_model()->count());
     browser->tab_strip_model()->ActivateTabAt(
-        selected_tab_index, {TabStripModel::GestureType::kOther});
+        selected_tab_index,
+        TabStripUserGestureDetails(
+            TabStripUserGestureDetails::GestureType::kOther));
 
     if (browser_ == browser)
       return;

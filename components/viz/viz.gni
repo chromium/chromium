@@ -14,10 +14,13 @@ enable_gl_backend_tests = !is_fuchsia
 # CFI issue: https://crbug.com/967819
 # Fuchsia ARM64 https://crbug.com/1058247
 enable_vulkan_backend_tests =
-    enable_vulkan && ((is_linux && !is_chromecast && !is_cfi) ||
-                      (is_fuchsia && target_cpu == "x64"))
+    enable_vulkan &&
+    ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
 
 enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
+
+# TODO(crbug.com/1336055): Determine whether is_cast_android needs this.
+enable_cast_overlay_strategy = is_castos || is_cast_android
 
 viz_remove_configs = []
 viz_add_configs = [ "//build/config:precompiled_headers" ]
@@ -68,8 +71,5 @@ template("viz_test") {
     }
     configs -= viz_remove_configs
     configs += viz_add_configs
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 }

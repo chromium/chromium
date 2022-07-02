@@ -152,6 +152,10 @@ class NearbySharingServiceImpl
   void set_free_disk_space_for_testing(int64_t free_disk_space) {
     free_disk_space_for_testing_ = free_disk_space;
   }
+  void set_visibility_reminder_timer_delay_for_testing(base::TimeDelta delay) {
+    visibility_reminder_timer_delay_ = delay;
+    UpdateVisibilityReminderTimer(true);
+  }
 
  private:
   friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTestBase;
@@ -560,6 +564,10 @@ class NearbySharingServiceImpl
   // Used to prevent the "Device nearby is sharing" notification from appearing
   // immediately after a completed share.
   base::OneShotTimer fast_initiation_scanner_cooldown_timer_;
+
+  // The duration of reminder timer. In production, this is 180 days.
+  // Can be shorten for testing efficiency purpose.
+  base::TimeDelta visibility_reminder_timer_delay_;
 
   // Used to control when to show visibility reminder notification to users.
   base::OneShotTimer visibility_reminder_timer_;

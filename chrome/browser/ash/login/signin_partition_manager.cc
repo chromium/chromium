@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -34,8 +35,9 @@ void ClearStoragePartition(content::StoragePartition* storage_partition,
                            base::OnceClosure partition_data_cleared) {
   storage_partition->ClearData(
       content::StoragePartition::REMOVE_DATA_MASK_ALL,
-      content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-      base::Time(), base::Time::Max(), std::move(partition_data_cleared));
+      content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      blink::StorageKey(), base::Time(), base::Time::Max(),
+      std::move(partition_data_cleared));
 }
 
 network::mojom::NetworkContext* GetSystemNetworkContext() {
@@ -74,7 +76,7 @@ SigninPartitionManager::SigninPartitionManager(
       get_system_network_context_task_(
           base::BindRepeating(&GetSystemNetworkContext)) {}
 
-SigninPartitionManager::~SigninPartitionManager() {}
+SigninPartitionManager::~SigninPartitionManager() = default;
 
 void SigninPartitionManager::StartSigninSession(
     content::WebContents* embedder_web_contents,
@@ -111,8 +113,11 @@ void SigninPartitionManager::CloseCurrentSigninSession(
     std::move(partition_data_cleared).Run();
     return;
   }
-  clear_storage_partition_task_.Run(current_storage_partition_,
-                                    std::move(partition_data_cleared));
+  clear_storage_partition_task_.Run(
+      current_storage_partition_,
+      base::BindOnce(&SigninPartitionManager::OnStoragePartitionCleared,
+                     weak_ptr_factory_.GetWeakPtr(), current_storage_partition_,
+                     std::move(partition_data_cleared)));
   current_storage_partition_ = nullptr;
   current_storage_partition_name_.clear();
 }
@@ -153,12 +158,37 @@ bool SigninPartitionManager::IsCurrentSigninStoragePartition(
   return IsInSigninSession() && storage_partition == current_storage_partition_;
 }
 
+void SigninPartitionManager::DisposeOldStoragePartitions() {
+  if (pending_removal_partitions_.empty())
+    return;
+
+  // Disposes all but the last storage partition. The last storage partition
+  // represents the last gaia load and there might still be references to it,
+  // e.g. fast gaia reload in All/SshWarningTest.VisibilityOnEnrollment/0 test.
+
+  content::StoragePartition* last = pending_removal_partitions_.back();
+  pending_removal_partitions_.pop_back();
+
+  for (auto* partition : pending_removal_partitions_)
+    browser_context_->DisposeStoragePartition(partition);
+
+  pending_removal_partitions_.clear();
+  pending_removal_partitions_.push_back(last);
+}
+
+void SigninPartitionManager::OnStoragePartitionCleared(
+    content::StoragePartition* storage_partition,
+    base::OnceClosure partition_data_cleared) {
+  pending_removal_partitions_.push_back(storage_partition);
+  std::move(partition_data_cleared).Run();
+}
+
 SigninPartitionManager::Factory::Factory()
     : BrowserContextKeyedServiceFactory(
           "SigninPartitionManager",
           BrowserContextDependencyManager::GetInstance()) {}
 
-SigninPartitionManager::Factory::~Factory() {}
+SigninPartitionManager::Factory::~Factory() = default;
 
 // static
 SigninPartitionManager* SigninPartitionManager::Factory::GetForBrowserContext(

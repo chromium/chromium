@@ -12,8 +12,8 @@
 // channels.
 @interface FollowWebPageURLs : NSObject
 
-// Designated initializer with |webPageURL| and |RSSLinks|.
-// |RSSlinks| can be empty.
+// Designated initializer with `webPageURL` and `RSSLinks`.
+// `RSSlinks` can be empty.
 - (instancetype)initWithWebPageURL:(NSURL*)webPageURL
                           RSSLinks:(NSArray<NSURL*>*)RSSLinks
     NS_DESIGNATED_INITIALIZER;

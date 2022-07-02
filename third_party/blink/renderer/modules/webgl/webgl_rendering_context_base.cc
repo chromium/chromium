@@ -30,6 +30,7 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -129,7 +130,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "ui/gfx/geometry/size.h"
 
 // Populates parameters from texImage2D except for border, width, height, and
@@ -168,9 +168,9 @@ namespace {
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
-Mutex& WebGLContextLimitMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& WebGLContextLimitLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 using WebGLRenderingContextBaseSet =
@@ -232,7 +232,7 @@ ScopedRGBEmulationColorMask::~ScopedRGBEmulationColorMask() {
 
 void WebGLRenderingContextBase::InitializeWebGLContextLimits(
     WebGraphicsContext3DProvider* context_provider) {
-  MutexLocker locker(WebGLContextLimitMutex());
+  base::AutoLock locker(WebGLContextLimitLock());
   if (!webgl_context_limits_initialized_) {
     // These do not change over the lifetime of the browser.
     auto webgl_preferences = context_provider->GetWebglPreferences();
@@ -244,7 +244,7 @@ void WebGLRenderingContextBase::InitializeWebGLContextLimits(
 }
 
 unsigned WebGLRenderingContextBase::CurrentMaxGLContexts() {
-  MutexLocker locker(WebGLContextLimitMutex());
+  base::AutoLock locker(WebGLContextLimitLock());
   DCHECK(webgl_context_limits_initialized_);
   return IsMainThread() ? max_active_webgl_contexts_
                         : max_active_webgl_contexts_on_worker_;
@@ -1771,24 +1771,25 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   return true;
 }
 
-void WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
+bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
     WebGraphicsContext3DVideoFramePool* frame_pool,
     SourceDrawingBuffer src_buffer,
     const gfx::ColorSpace& dst_color_space,
-    VideoFrameCopyCompletedCallback& callback) {
+    VideoFrameCopyCompletedCallback callback) {
   if (!frame_pool)
-    return;
+    return false;
 
   auto* drawing_buffer = GetDrawingBuffer();
   if (!drawing_buffer)
-    return;
+    return false;
 
   ScopedFramebufferRestorer fbo_restorer(this);
   if (!drawing_buffer->ResolveAndBindForReadAndDraw())
-    return;
+    return false;
 
-  drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer, is_origin_top_left_,
-                                   dst_color_space, callback);
+  return drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer,
+                                          is_origin_top_left_, dst_color_space,
+                                          std::move(callback));
 }
 
 gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {
@@ -2389,7 +2390,7 @@ void WebGLRenderingContextBase::compressedTexImage2D(
     MaybeShared<DOMArrayBufferView> data) {
   if (isContextLost())
     return;
-  if (!ValidateTexture2DBinding("compressedTexImage2D", target))
+  if (!ValidateTexture2DBinding("compressedTexImage2D", target, true))
     return;
   if (!ValidateCompressedTexFormat("compressedTexImage2D", internalformat))
     return;
@@ -2478,7 +2479,7 @@ void WebGLRenderingContextBase::copyTexImage2D(GLenum target,
                                                GLint border) {
   if (isContextLost())
     return;
-  if (!ValidateTexture2DBinding("copyTexImage2D", target))
+  if (!ValidateTexture2DBinding("copyTexImage2D", target, true))
     return;
   if (!ValidateCopyTexFormat("copyTexImage2D", internalformat))
     return;
@@ -2642,6 +2643,14 @@ void WebGLRenderingContextBase::deleteShader(WebGLShader* shader) {
 }
 
 void WebGLRenderingContextBase::deleteTexture(WebGLTexture* texture) {
+  if (texture && texture->IsOpaqueTexture()) {
+    // Calling deleteTexture() on opaque textures is not allowed, see
+    // https://www.w3.org/TR/webxrlayers-1/#opaque-texture
+    SynthesizeGLError(GL_INVALID_OPERATION, "deleteTexture",
+                      "opaque textures cannot be deleted");
+    return;
+  }
+
   if (!DeleteObject(texture))
     return;
 
@@ -2824,17 +2833,8 @@ void WebGLRenderingContextBase::drawArrays(GLenum mode,
   if (!ValidateDrawArrays("drawArrays"))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawArrays",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
-  ContextGL()->DrawArrays(mode, first, count);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawArrays", CanvasPerformanceMonitor::DrawType::kDrawArrays,
+              [&]() { ContextGL()->DrawArrays(mode, first, count); });
 }
 
 void WebGLRenderingContextBase::drawElements(GLenum mode,
@@ -2844,19 +2844,12 @@ void WebGLRenderingContextBase::drawElements(GLenum mode,
   if (!ValidateDrawElements("drawElements", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawElements",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawElements(
-      mode, count, type,
-      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawElements", CanvasPerformanceMonitor::DrawType::kDrawElements,
+              [&]() {
+                ContextGL()->DrawElements(
+                    mode, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+              });
 }
 
 void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
@@ -2866,17 +2859,11 @@ void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
   if (!ValidateDrawArrays("drawArraysInstancedANGLE"))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawArraysInstancedANGLE",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawArrays);
-  ContextGL()->DrawArraysInstancedANGLE(mode, first, count, primcount);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawArraysInstancedANGLE",
+              CanvasPerformanceMonitor::DrawType::kDrawArrays, [&]() {
+                ContextGL()->DrawArraysInstancedANGLE(mode, first, count,
+                                                      primcount);
+              });
 }
 
 void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
@@ -2887,19 +2874,13 @@ void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
   if (!ValidateDrawElements("drawElementsInstancedANGLE", type, offset))
     return;
 
-  if (!bound_vertex_array_object_->IsAllEnabledAttribBufferBound()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, "drawElementsInstancedANGLE",
-                      "no buffer is bound to enabled attribute");
-    return;
-  }
-
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
-                                                   drawing_buffer_.get());
-  OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType::kDrawElements);
-  ContextGL()->DrawElementsInstancedANGLE(
-      mode, count, type, reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
-      primcount);
-  RecordUKMCanvasDrawnToAtFirstDrawCall();
+  DrawWrapper("drawElementsInstancedANGLE",
+              CanvasPerformanceMonitor::DrawType::kDrawElements, [&]() {
+                ContextGL()->DrawElementsInstancedANGLE(
+                    mode, count, type,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(offset)),
+                    primcount);
+              });
 }
 
 void WebGLRenderingContextBase::enable(GLenum cap) {
@@ -3201,23 +3182,10 @@ GLenum WebGLRenderingContextBase::getError() {
   return ContextGL()->GetError();
 }
 
-const char* const* WebGLRenderingContextBase::ExtensionTracker::Prefixes()
-    const {
-  static const char* const kUnprefixed[] = {
-      "",
-      nullptr,
-  };
-  return prefixes_ ? prefixes_ : kUnprefixed;
-}
-
-bool WebGLRenderingContextBase::ExtensionTracker::MatchesNameWithPrefixes(
+bool WebGLRenderingContextBase::ExtensionTracker::MatchesName(
     const String& name) const {
-  const char* const* prefix_set = Prefixes();
-  for (; *prefix_set; ++prefix_set) {
-    String prefixed_name = String(*prefix_set) + ExtensionName();
-    if (DeprecatedEqualIgnoringCase(prefixed_name, name)) {
-      return true;
-    }
+  if (DeprecatedEqualIgnoringCase(ExtensionName(), name)) {
+    return true;
   }
   return false;
 }
@@ -3256,7 +3224,7 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
 
   if (!isContextLost()) {
     for (ExtensionTracker* tracker : extensions_) {
-      if (tracker->MatchesNameWithPrefixes(name)) {
+      if (tracker->MatchesName(name)) {
         if (ExtensionSupportedAndAllowed(tracker)) {
           extension = tracker->GetExtension(this);
           if (extension) {
@@ -3995,11 +3963,7 @@ WebGLRenderingContextBase::getSupportedExtensions() {
 
   for (ExtensionTracker* tracker : extensions_) {
     if (ExtensionSupportedAndAllowed(tracker)) {
-      const char* const* prefixes = tracker->Prefixes();
-      for (; *prefixes; ++prefixes) {
-        String prefixed_name = String(*prefixes) + tracker->ExtensionName();
-        result.push_back(prefixed_name);
-      }
+      result.push_back(tracker->ExtensionName());
     }
   }
 
@@ -5368,7 +5332,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
     const TexImageParams& params) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
-  return ValidateTexture2DBinding(func_name, params.target);
+  return ValidateTexture2DBinding(func_name, params.target, true);
 }
 
 const char* WebGLRenderingContextBase::GetTexImageFunctionName(
@@ -5897,7 +5861,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = video->GetWebMediaPlayer()) {
-    media_video_frame = wmp->GetCurrentFrame();
+    media_video_frame = wmp->GetCurrentFrameThenUpdate();
     video_renderer = wmp->GetPaintCanvasVideoRenderer();
   }
 
@@ -7067,6 +7031,13 @@ void WebGLRenderingContextBase::LoseContextImpl(
   for (wtf_size_t i = 0; i < kWebGLExtensionNameCount; ++i)
     extension_enabled_[i] = false;
 
+  // This resolver is non-null during a makeXRCompatible call, while waiting
+  // for a response from the browser and XR process. If the WebGL context is
+  // lost before we get a response, the resolver has to be rejected to be
+  // be properly disposed of.
+  xr_compatible_ = false;
+  CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kInvalidStateError);
+
   RemoveAllCompressedTextureFormats();
 
   // If the DrawingBuffer is destroyed during a real lost context event it
@@ -7397,7 +7368,8 @@ ScriptValue WebGLRenderingContextBase::GetWebGLIntArrayParameter(
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexture2DBinding(
     const char* function_name,
-    GLenum target) {
+    GLenum target,
+    bool validate_opaque_textures) {
   WebGLTexture* tex = nullptr;
   switch (target) {
     case GL_TEXTURE_2D:
@@ -7417,9 +7389,14 @@ WebGLTexture* WebGLRenderingContextBase::ValidateTexture2DBinding(
                         "invalid texture target");
       return nullptr;
   }
-  if (!tex)
+  if (!tex) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "no texture bound to target");
+  } else if (validate_opaque_textures && tex->IsOpaqueTexture()) {
+    SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                      "cannot invoke function with an opaque texture");
+    return nullptr;
+  }
   return tex;
 }
 
@@ -7483,9 +7460,10 @@ WebGLTexture* WebGLRenderingContextBase::ValidateTextureBinding(
                         "invalid texture target");
       return nullptr;
   }
-  if (!tex)
+  if (!tex) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "no texture bound to target");
+  }
   return tex;
 }
 
@@ -8236,6 +8214,22 @@ bool WebGLRenderingContextBase::ValidateUniformMatrixParameters(
   }
   if (actual_size < required_min_size || (actual_size % required_min_size)) {
     SynthesizeGLError(GL_INVALID_VALUE, function_name, "invalid size");
+    return false;
+  }
+  // By design the command buffer has an internal (signed) 32-bit
+  // limit, so ensure that the amount of data passed down to it
+  // doesn't exceed what it can handle. Only integer or float typed
+  // arrays can be passed into the uniform*v or uniformMatrix*v
+  // functions; each has 4-byte elements.
+  base::CheckedNumeric<int32_t> total_size(actual_size);
+  total_size *= 4;
+  // Add on a fixed constant to account for internal metadata in the
+  // command buffer.
+  constexpr int32_t kExtraCommandSize = 1024;
+  total_size += kExtraCommandSize;
+  if (!total_size.IsValid()) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      "size * elementSize, plus a constant, is too large");
     return false;
   }
   return true;

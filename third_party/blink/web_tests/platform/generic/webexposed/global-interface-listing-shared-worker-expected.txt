@@ -131,6 +131,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter highWaterMark
 [Worker]     getter size
 [Worker]     method constructor
+[Worker] interface CropTarget
+[Worker]     static method fromElement
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface Crypto
 [Worker]     attribute @@toStringTag
 [Worker]     getter subtle
@@ -1083,7 +1087,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter serverTiming
 [Worker]     getter transferSize
 [Worker]     getter workerStart
-[Worker]     getter workerTiming
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker] interface PerformanceServerTiming
@@ -2856,6 +2859,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter caches
+[Worker]     getter crossOriginEmbedderPolicy
 [Worker]     getter crossOriginIsolated
 [Worker]     getter crypto
 [Worker]     getter fonts

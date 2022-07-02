@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -48,7 +49,7 @@ class WaylandWindowManagerTest : public WaylandTest {
     return window;
   }
 
-  WaylandWindowManager* manager_ = nullptr;
+  raw_ptr<WaylandWindowManager> manager_ = nullptr;
 };
 
 TEST_P(WaylandWindowManagerTest, GetWindow) {

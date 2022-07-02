@@ -38,7 +38,6 @@ static_library("protocol") {
     "auth_util.h",
     "authenticator.cc",
     "authenticator.h",
-    "bandwidth_estimator.h",
     "capability_names.h",
     "channel_authenticator.h",
     "channel_dispatcher_base.cc",
@@ -210,8 +209,6 @@ static_library("protocol") {
     "webrtc_audio_module.h",
     "webrtc_audio_sink_adapter.cc",
     "webrtc_audio_sink_adapter.h",
-    "webrtc_bandwidth_estimator.cc",
-    "webrtc_bandwidth_estimator.h",
     "webrtc_connection_to_host.cc",
     "webrtc_connection_to_host.h",
     "webrtc_data_stream_adapter.cc",
@@ -251,6 +248,7 @@ static_library("protocol") {
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
     "//services/network/public/cpp:cpp",
+    "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -266,10 +264,6 @@ static_library("protocol") {
       "//media",
       "//skia",
     ]
-  }
-
-  if (is_debug) {
-    defines += [ "USE_AV1_ENCODER" ]
   }
 
   if (enable_remoting_host) {
@@ -293,8 +287,6 @@ static_library("protocol") {
       "webrtc_frame_scheduler.h",
       "webrtc_frame_scheduler_constant_rate.cc",
       "webrtc_frame_scheduler_constant_rate.h",
-      "webrtc_frame_scheduler_simple.cc",
-      "webrtc_frame_scheduler_simple.h",
       "webrtc_video_encoder_factory.cc",
       "webrtc_video_encoder_factory.h",
       "webrtc_video_encoder_wrapper.cc",

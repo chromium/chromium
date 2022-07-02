@@ -30,6 +30,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       'queryHistory',
       'queryHistoryContinuation',
       'recordHistogram',
+      'recordLongTime',
       'removeVisits',
       'startSignInFlow',
     ]);
@@ -159,6 +160,11 @@ export class TestBrowserService extends TestBrowserProxy implements
   }
 
   recordTime() {}
+
+  recordLongTime(histogram: string, value: number) {
+    this.methodCalled('recordLongTime', histogram, value);
+  }
+
   removeBookmark() {}
   startSignInFlow() {}
 }

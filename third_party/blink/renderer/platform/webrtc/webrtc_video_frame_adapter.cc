@@ -262,11 +262,10 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     }
 
     if (dst_frame) {
-      gpu::SyncToken copy_done_sync_token;
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
           raster_context_provider.get(), format, source_frame->coded_size(),
           source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),
-          dst_frame.get(), copy_done_sync_token);
+          dst_frame.get());
       if (copy_succeeded) {
         // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
         // so we must manually copy over properties relevant to the encoder.
@@ -284,8 +283,10 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         dst_frame->set_timestamp(source_frame->timestamp());
         dst_frame->set_metadata(source_frame->metadata());
 
-        // TODO(crbug.com/1224279): We should remove this wait by internalizing
-        // it into VideoFrame::Map().
+        // RI::Finish() makes sure that CopyRGBATextureToVideoFrame() finished
+        // texture copy before we call ConstructVideoFrameFromGpu(). It's not
+        // the best way to wait for completion, but it's the only sync way
+        // to wait, and making this function async is currently impractical.
         raster_context_provider->RasterInterface()->Finish();
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
         return vf;

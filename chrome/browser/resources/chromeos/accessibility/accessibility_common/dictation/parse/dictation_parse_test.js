@@ -9,7 +9,7 @@ DictationParseTest = class extends DictationE2ETestBase {};
 
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
-SYNC_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
+AX_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
   const strategy = this.getInputTextStrategy();
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
@@ -22,12 +22,14 @@ SYNC_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
 
 // Tests that the SimpleParseStrategy returns the correct type of Macro given
 // speech input.
-SYNC_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
+AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   const strategy = this.getSimpleParseStrategy();
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
   assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('delete');
+  macro = await strategy.parse('type delete the previous character');
+  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous character');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
   macro = await strategy.parse('move to the previous character');
   assertEquals('NAV_PREV_CHAR', macro.getMacroNameString());
@@ -55,6 +57,28 @@ SYNC_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   assertEquals('LIST_COMMANDS', macro.getMacroNameString());
   macro = await strategy.parse('new line');
   assertEquals('NEW_LINE', macro.getMacroNameString());
+  macro = await strategy.parse('cancel');
+  assertEquals('STOP_LISTENING', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous word');
+  assertEquals('DELETE_PREV_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous sentence');
+  assertEquals('DELETE_PREV_SENT', macro.getMacroNameString());
+  macro = await strategy.parse('move to the next word');
+  assertEquals('NAV_NEXT_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('move to the previous word');
+  assertEquals('NAV_PREV_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('delete hello world');
+  assertEquals('SMART_DELETE_PHRASE', macro.getMacroNameString());
+  macro = await strategy.parse('replace hello world with goodnight world');
+  assertEquals('SMART_REPLACE_PHRASE', macro.getMacroNameString());
+  macro = await strategy.parse('insert hello world before goodnight world');
+  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
+  macro = await strategy.parse('select from hello world to goodnight world');
+  assertEquals('SMART_SELECT_BTWN_INCL', macro.getMacroNameString());
+  macro = await strategy.parse('move to the next sentence');
+  assertEquals('NAV_NEXT_SENT', macro.getMacroNameString());
+  macro = await strategy.parse('move to the previous sentence');
+  assertEquals('NAV_PREV_SENT', macro.getMacroNameString());
 });
 
 // TODO(crbug.com/1264544): This test fails because of a memory issues
@@ -62,7 +86,7 @@ SYNC_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
 // WASM or when running Chrome with Dictation, so it is likely a limitation in
 // the Chrome test framework. The test is only run when the default-false gn
 // arg, enable_pumpkin_for_dictation, is set to true.
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationParseTest', 'DISABLED_PumpkinDeleteCommand', async function() {
       const strategy = this.getPumpkinParseStrategy();
       if (!strategy) {

@@ -16,10 +16,11 @@ class FaviconLoader;
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form);
 
-// Fetch the favicon and save it to the Chrome app group storage.
+// Fetches the favicon and saves it to the Chrome app group storage.
 void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               const GURL& site_url,
-                              NSString* filename);
+                              NSString* filename,
+                              bool skip_max_verification);
 
 // Returns the favicon file key.
 NSString* GetFaviconFileKey(const GURL& url);

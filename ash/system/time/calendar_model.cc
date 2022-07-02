@@ -193,30 +193,14 @@ void CalendarModel::ClearAllPrunableEvents() {
   mru_months_.clear();
 }
 
-void CalendarModel::ResetLifetimeMetrics(
-    const base::Time& currently_shown_date) {
-  max_distance_browsed_ = 0;
-  first_on_screen_month_ =
-      calendar_utils::GetFirstDayOfMonth(currently_shown_date);
-}
-
 void CalendarModel::UploadLifetimeMetrics() {
-  base::UmaHistogramCounts100000("Ash.Calendar.FetchEvents.MaxDistanceBrowsed",
-                                 max_distance_browsed_);
   base::UmaHistogramCounts100000(
       "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
 }
 
-void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
-  for (auto& month : months)
-    MaybeFetchMonth(month.UTCMidnight());
-}
-
-void CalendarModel::FetchEventsSurrounding(int num_months,
-                                           const base::Time day) {
-  std::set<base::Time> months =
-      calendar_utils::GetSurroundingMonthsUTC(day, num_months);
-  FetchEvents(months);
+// TODO(https://crbug.com/1327553): Should remove `MaybeFetchMonth` method.
+void CalendarModel::FetchEvents(base::Time start_of_month) {
+  MaybeFetchMonth(start_of_month);
 }
 
 void CalendarModel::CancelFetch(const base::Time& start_of_month) {
@@ -312,7 +296,18 @@ void CalendarModel::OnEventsFetched(
     PromoteMonth(start_of_month);
   } else {
     // Store the incoming events.
-    InsertEvents(events);
+    for (const auto& event : events->items()) {
+      if (IsMultiDayEvent(event.get()))
+        InsertMultiDayEvent(event.get(), start_of_month);
+      else {
+        base::Time start_time_midnight =
+            GetStartTimeMidnightAdjusted(event.get());
+        InsertEventInMonth(
+            event.get(),
+            calendar_utils::GetStartOfMonthUTC(start_time_midnight),
+            start_time_midnight);
+      }
+    }
   }
 
   // Notify observers.
@@ -328,10 +323,6 @@ void CalendarModel::OnEventsFetched(
   // Record the size of the month, and the total number of months.
   base::UmaHistogramCounts1M("Ash.Calendar.FetchEvents.SingleMonthSize",
                              GetEventMapSize(event_months_[start_of_month]));
-
-  // If `start_of_month` is further, in months, from the on-screen month when
-  // the calendar first opened, then update the max distance.
-  UpdateMaxDistanceBrowsed(start_of_month);
 }
 
 void CalendarModel::OnEventFetchFailedInternalError(
@@ -343,13 +334,6 @@ void CalendarModel::OnEventFetchFailedInternalError(
   // specific error code, retry in some cases, etc.
 }
 
-void CalendarModel::UpdateMaxDistanceBrowsed(const base::Time& start_of_month) {
-  max_distance_browsed_ =
-      std::max(max_distance_browsed_,
-               static_cast<size_t>(abs(calendar_utils::GetMonthsBetween(
-                   first_on_screen_month_, start_of_month))));
-}
-
 bool CalendarModel::ShouldInsertEvent(const CalendarEvent* event) const {
   if (!event)
     return false;
@@ -359,12 +343,62 @@ bool CalendarModel::ShouldInsertEvent(const CalendarEvent* event) const {
                         event->self_response_status());
 }
 
-void CalendarModel::InsertEvent(
-    const google_apis::calendar::CalendarEvent* event) {
+bool CalendarModel::IsMultiDayEvent(
+    google_apis::calendar::CalendarEvent* event) const {
+  DCHECK(event);
+  return (GetStartTimeMidnightAdjusted(event) <
+          GetEndTimeMidnightAdjusted(event));
+}
+
+void CalendarModel::InsertMultiDayEvent(
+    const google_apis::calendar::CalendarEvent* event,
+    const base::Time start_of_month) {
   DCHECK(event);
 
-  base::Time start_of_month =
-      calendar_utils::GetStartOfMonthUTC(GetStartTimeMidnightAdjusted(event));
+  base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event);
+  base::Time end_time_midnight = GetEndTimeMidnightAdjusted(event);
+  base::Time end_time = GetEndTimeAdjusted(event);
+
+  base::Time current_day_midnight =
+      calendar_utils::GetMaxTime(start_of_month, start_time_midnight)
+          .UTCMidnight();
+  base::Time start_of_next_month =
+      calendar_utils::GetStartOfNextMonthUTC(current_day_midnight);
+  base::Time last_day_midnight =
+      calendar_utils::GetMinTime(start_of_next_month, end_time_midnight)
+          .UTCMidnight();
+
+  // If the event ends at midnight we don't add it to that last day.
+  if (end_time == end_time_midnight)
+    last_day_midnight =
+        (last_day_midnight - calendar_utils::kDurationForGettingPreviousDay)
+            .UTCMidnight();
+
+  if (ash::features::IsCalendarModelDebugModeEnabled()) {
+    VLOG(1) << __FUNCTION__
+            << " current_day_midnight: " << current_day_midnight;
+    VLOG(1) << __FUNCTION__ << " last_day_midnight: " << last_day_midnight;
+  }
+
+  while (current_day_midnight <= last_day_midnight) {
+    InsertEventInMonth(event, start_of_month, current_day_midnight);
+    current_day_midnight =
+        calendar_utils::GetNextDayMidnight(current_day_midnight);
+  }
+}
+
+void CalendarModel::InsertEventInMonth(
+    const google_apis::calendar::CalendarEvent* event,
+    const base::Time start_of_month,
+    const base::Time start_time_midnight) {
+  DCHECK(event);
+
+  // Check the event is in the month we're trying to insert it into.
+  if (start_of_month != calendar_utils::GetStartOfMonthUTC(start_time_midnight))
+    return;
+
+  // Month is now the most-recently-used.
+  PromoteMonth(start_of_month);
 
   if (ash::features::IsCalendarModelDebugModeEnabled()) {
     VLOG(1) << __FUNCTION__ << " start_of_month " << start_of_month;
@@ -375,25 +409,22 @@ void CalendarModel::InsertEvent(
   if (it == event_months_.end()) {
     // No events for this month, so add a map for it and insert.
     SingleMonthEventMap month;
-    InsertEventInMonth(month, event);
+    InsertEventInMonthEventList(month, event, start_time_midnight);
     event_months_.emplace(start_of_month, month);
   } else {
     // Insert in a pre-existing month.
     SingleMonthEventMap& month = it->second;
-    InsertEventInMonth(month, event);
+    InsertEventInMonthEventList(month, event, start_time_midnight);
   }
-
-  // Month is now the most-recently-used.
-  PromoteMonth(start_of_month);
 }
 
-void CalendarModel::InsertEventInMonth(
+void CalendarModel::InsertEventInMonthEventList(
     SingleMonthEventMap& month,
-    const google_apis::calendar::CalendarEvent* event) {
+    const google_apis::calendar::CalendarEvent* event,
+    const base::Time start_time_midnight) {
+  DCHECK(event);
   if (!ShouldInsertEvent(event))
     return;
-
-  base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event);
 
   auto it = month.find(start_time_midnight);
   if (it == month.end()) {
@@ -411,20 +442,14 @@ void CalendarModel::InsertEventInMonth(
 
 base::Time CalendarModel::GetStartTimeAdjusted(
     const google_apis::calendar::CalendarEvent* event) const {
-  if (time_difference_minutes_.has_value()) {
-    return event->start_time().date_time() +
-           base::Minutes(time_difference_minutes_.value());
-  }
-  return event->start_time().date_time();
+  base::Time start_time = event->start_time().date_time();
+  return start_time + calendar_utils::GetTimeDifference(start_time);
 }
 
 base::Time CalendarModel::GetEndTimeAdjusted(
     const google_apis::calendar::CalendarEvent* event) const {
-  if (time_difference_minutes_.has_value()) {
-    return event->end_time().date_time() +
-           base::Minutes(time_difference_minutes_.value());
-  }
-  return event->start_time().date_time();
+  base::Time end_time = event->end_time().date_time();
+  return end_time + calendar_utils::GetTimeDifference(end_time);
 }
 
 base::Time CalendarModel::GetStartTimeMidnightAdjusted(
@@ -432,15 +457,13 @@ base::Time CalendarModel::GetStartTimeMidnightAdjusted(
   return GetStartTimeAdjusted(event).UTCMidnight();
 }
 
-void CalendarModel::InsertEvents(
-    const google_apis::calendar::EventList* events) {
-  if (!events)
-    return;
-
-  for (const auto& event : events->items())
-    InsertEvent(event.get());
+base::Time CalendarModel::GetEndTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event) const {
+  return GetEndTimeAdjusted(event).UTCMidnight();
 }
 
+// TODO(crbug/1330004): Remove function in favor of calling `OnEventsFetched`
+// directly from tests.
 void CalendarModel::InsertEventsForTesting(
     const google_apis::calendar::EventList* events) {
   if (!events)
@@ -452,10 +475,25 @@ void CalendarModel::InsertEventsForTesting(
   // Insert, and collect the set of months inserted.
   std::set<base::Time> months_inserted;
   for (const auto& event : events->items()) {
-    base::Time month =
-        calendar_utils::GetStartOfMonthUTC(event->start_time().date_time());
-    months_inserted.emplace(month);
-    InsertEvent(event.get());
+    base::Time start_time_midnight = GetStartTimeMidnightAdjusted(event.get());
+    base::Time start_of_month =
+        calendar_utils::GetStartOfMonthUTC(start_time_midnight);
+    if (IsMultiDayEvent(event.get())) {
+      const base::Time end_time_midnight =
+          GetEndTimeMidnightAdjusted(event.get());
+      // If we have multi-day events, we insert the event to every month map the
+      // event exists in. This to reproduce Google Calendar API requests, which
+      // are fetched by month, so multi-day events get inserted for every month
+      // they are active.
+      while (end_time_midnight >= start_of_month) {
+        InsertMultiDayEvent(event.get(), start_of_month);
+        start_of_month = calendar_utils::GetStartOfNextMonthUTC(start_of_month);
+        months_inserted.emplace(start_of_month);
+      }
+    } else {
+      InsertEventInMonth(event.get(), start_of_month, start_time_midnight);
+      months_inserted.emplace(start_of_month);
+    }
   }
 }
 
@@ -480,6 +518,9 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     base::Time start_time) const {
+  if (!calendar_utils::IsActiveUser())
+    return kNa;
+
   if (pending_fetches_.count(start_time))
     return kFetching;
 
@@ -585,23 +626,9 @@ void CalendarModel::DebugDump() {
   VLOG(1) << out.str();
 }
 
-void CalendarModel::RedistributeEvents(int time_difference_minutes) {
-  // Early returns if the time difference is not changed.
-  if (time_difference_minutes_.has_value() &&
-      time_difference_minutes == time_difference_minutes_.value()) {
-    return;
-  }
-
-  // Early returns if the `time_difference_minutes_` is not assigned and the
-  // difference is 0.
-  if (!time_difference_minutes_.has_value() && time_difference_minutes == 0) {
-    time_difference_minutes_ = time_difference_minutes;
-    return;
-  }
-
+void CalendarModel::RedistributeEvents() {
   // Redistributes all the fetched events to the date map with the
-  // `time_difference_minutes_`.
-  time_difference_minutes_ = time_difference_minutes;
+  // time difference.
   SingleDayEventList to_be_redistributed_events;
   for (auto month = event_months_.begin(); month != event_months_.end();
        month++) {
@@ -613,11 +640,14 @@ void CalendarModel::RedistributeEvents(int time_difference_minutes) {
     }
   }
 
-  // Clear out the entire event store, freshly insert the redistrubted events.
+  // Clear out the entire event store, freshly insert the redistributed events.
   event_months_.clear();
   for (const google_apis::calendar::CalendarEvent& event :
        to_be_redistributed_events) {
-    InsertEvent(&event);
+    base::Time start_time_midnight = GetStartTimeMidnightAdjusted(&event);
+    InsertEventInMonth(&event,
+                       calendar_utils::GetStartOfMonthUTC(start_time_midnight),
+                       start_time_midnight);
   }
 }
 
@@ -630,6 +660,14 @@ void CalendarModel::PruneEventCache() {
     months_fetched_.erase(lru_month);
     mru_months_.pop_back();
   }
+}
+
+void CalendarModel::InsertPendingFetchesForTesting(base::Time start_of_month) {
+  pending_fetches_.emplace(start_of_month, nullptr);
+}
+
+void CalendarModel::DeletePendingFetchesForTesting(base::Time start_of_month) {
+  pending_fetches_.erase(start_of_month);
 }
 
 }  // namespace ash

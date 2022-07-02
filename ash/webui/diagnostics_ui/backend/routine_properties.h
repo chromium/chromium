@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 
 namespace ash {
 namespace diagnostics {

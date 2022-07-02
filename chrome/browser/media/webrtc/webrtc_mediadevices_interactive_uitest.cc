@@ -86,14 +86,13 @@ class WebRtcMediaDevicesInteractiveUITest
     std::string devices_as_json = ExecuteJavascript("enumerateDevices()", tab);
     EXPECT_FALSE(devices_as_json.empty());
 
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
 
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    EXPECT_EQ(parsed_json->type(), base::Value::Type::LIST);
 
-    base::Value& values = *parsed_json.value;
+    base::Value& values = *parsed_json;
     ASSERT_TRUE(values.is_list());
     ASSERT_FALSE(values.GetListDeprecated().empty());
     bool found_audio_input = false;

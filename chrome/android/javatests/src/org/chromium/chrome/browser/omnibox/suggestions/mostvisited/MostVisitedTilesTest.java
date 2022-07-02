@@ -54,7 +54,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
-import org.chromium.components.omnibox.AutocompleteMatch.NavsuggestTile;
+import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -112,9 +112,9 @@ public class MostVisitedTilesTest {
     private String mStartUrl;
     private OmniboxTestUtils mOmnibox;
 
-    private NavsuggestTile mTile1;
-    private NavsuggestTile mTile2;
-    private NavsuggestTile mTile3;
+    private SuggestTile mTile1;
+    private SuggestTile mTile2;
+    private SuggestTile mTile3;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -159,11 +159,11 @@ public class MostVisitedTilesTest {
     private void setUpSuggestionsToShow() {
         // Set up basic AutocompleteResult hosting a MostVisitedTiles suggestion.
         mTestServer = sActivityTestRule.getTestServer();
-        mTile1 = new NavsuggestTile("About", new GURL(mTestServer.getURL("/echo/tile1.html")));
-        mTile2 = new NavsuggestTile(
-                "Happy Server", new GURL(mTestServer.getURL("/echo/tile2.html")));
-        mTile3 =
-                new NavsuggestTile("Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")));
+        mTile1 = new SuggestTile("About", new GURL(mTestServer.getURL("/echo/tile1.html")), false);
+        mTile2 = new SuggestTile(
+                "Happy Server", new GURL(mTestServer.getURL("/echo/tile2.html")), false);
+        mTile3 = new SuggestTile(
+                "Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")), false);
 
         AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null, null);
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
@@ -177,7 +177,7 @@ public class MostVisitedTilesTest {
 
         // Second suggestion is the MV Tiles.
         builder.setType(OmniboxSuggestionType.TILE_NAVSUGGEST);
-        builder.setNavsuggestTiles(Arrays.asList(new NavsuggestTile[] {mTile1, mTile2, mTile3}));
+        builder.setSuggestTiles(Arrays.asList(new SuggestTile[] {mTile1, mTile2, mTile3}));
         builder.setDeletable(true);
         autocompleteResult.getSuggestionsList().add(builder.build());
         builder.reset();

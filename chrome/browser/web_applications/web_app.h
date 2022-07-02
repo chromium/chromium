@@ -12,12 +12,12 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -102,7 +102,7 @@ class WebApp {
     ClientData(const ClientData& client_data);
     base::Value AsDebugValue() const;
 
-    absl::optional<WebAppSystemWebAppData> system_web_app_data;
+    absl::optional<ash::SystemWebAppData> system_web_app_data;
   };
 
   const ClientData& client_data() const { return client_data_; }
@@ -180,6 +180,10 @@ class WebApp {
     return disallowed_launch_protocols_;
   }
 
+  // URL within scope to launch for a "show on lock screen" action. Valid iff
+  // this is considered a lock-screen-capable app.
+  const GURL& lock_screen_start_url() const { return lock_screen_start_url_; }
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   const GURL& note_taking_new_note_url() const {
@@ -239,8 +243,6 @@ class WebApp {
 
   blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
 
-  blink::mojom::HandleLinks handle_links() const { return handle_links_; }
-
   const GURL& manifest_url() const { return manifest_url_; }
 
   const absl::optional<std::string>& manifest_id() const {
@@ -285,8 +287,10 @@ class WebApp {
     base::flat_set<GURL> install_urls;
   };
 
-  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-  management_to_external_config_map() const {
+  using ExternalConfigMap =
+      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>;
+
+  const ExternalConfigMap& management_to_external_config_map() const {
     return management_to_external_config_map_;
   }
 
@@ -350,6 +354,7 @@ class WebApp {
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
@@ -359,7 +364,6 @@ class WebApp {
   void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
-  void SetHandleLinks(blink::mojom::HandleLinks handle_links);
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const absl::optional<std::string>& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
@@ -372,8 +376,7 @@ class WebApp {
   void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
   void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
   void SetWebAppManagementExternalConfigMap(
-      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-          management_to_external_config_map);
+      ExternalConfigMap management_to_external_config_map);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -383,6 +386,14 @@ class WebApp {
   // WebAppManagementToInstallURLsMap.
   void AddInstallURLToManagementExternalConfigMap(WebAppManagement::Type type,
                                                   GURL install_url);
+
+  // Encapsulate the addition of install_url and is_placeholder information
+  // for cases where both need to be added.
+  void AddExternalSourceInformation(WebAppManagement::Type source_type,
+                                    GURL install_url,
+                                    bool is_placeholder);
+
+  bool RemoveInstallUrlForSource(WebAppManagement::Type type, GURL install_url);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -434,6 +445,7 @@ class WebApp {
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
   apps::UrlHandlers url_handlers_;
+  GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
@@ -447,8 +459,6 @@ class WebApp {
   SyncFallbackData sync_fallback_data_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
-  blink::mojom::HandleLinks handle_links_ =
-      blink::mojom::HandleLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
   absl::optional<std::string> manifest_id_;
@@ -476,8 +486,7 @@ class WebApp {
 
   // Maps WebAppManagement::Type to config values for externally installed apps,
   // like is_placeholder and install URLs.
-  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-      management_to_external_config_map_;
+  ExternalConfigMap management_to_external_config_map_;
 
   // New fields must be added to:
   //  - |operator==|
@@ -485,7 +494,9 @@ class WebApp {
   //  - WebAppDatabase::CreateWebApp()
   //  - WebAppDatabase::CreateWebAppProto()
   //  - CreateRandomWebApp()
+  // If parsed from manifest, also add to:
   //  - ManifestUpdateTask::IsUpdateNeededForManifest()
+  //  - SetWebAppManifestFields()
 };
 
 // For logging and debug purposes.

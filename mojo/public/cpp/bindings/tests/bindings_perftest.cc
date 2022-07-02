@@ -28,14 +28,13 @@ const double kMojoTicksPerSecond = 1000000.0;
 
 const char kTestInterfaceName[] = "TestInterface";
 
-uint32_t MessageToStableIPCHash(Message& message) {
-  return -1;
+std::pair<uint32_t, const void*> MessageToMethodInfo(Message& message) {
+  return {-1, nullptr};
 }
 
 const char* MessageToMethodName(Message& message) {
   return "method";
 }
-
 double MojoTicksToSeconds(MojoTimeTicks ticks) {
   return ticks / kMojoTicksPerSecond;
 }
@@ -214,11 +213,11 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterPingPong) {
   InterfaceEndpointClient client0(
       router0->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle0,
       nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToStableIPCHash, MessageToMethodName);
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
   InterfaceEndpointClient client1(
       router1->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle1,
       nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToStableIPCHash, MessageToMethodName);
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
   paddle0.set_sender(&client0);
   paddle1.set_sender(&client1);
@@ -266,7 +265,7 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
   InterfaceEndpointClient client(
       router->CreateLocalEndpointHandle(kPrimaryInterfaceId), &receiver,
       nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToStableIPCHash, MessageToMethodName);
+      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
   static const uint32_t kIterations[] = {1000, 3000000};
 

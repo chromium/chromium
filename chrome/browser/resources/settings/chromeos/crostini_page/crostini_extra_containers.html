@@ -51,7 +51,7 @@
         aria-hidden="true">
     </div>
   </div>
-  <template is="dom-repeat" items="[[allContainers_]]">
+  <template is="dom-repeat" items="[[allContainers_]]" mutable-data>
     <div class="list-item">
       <div class="start" aria-hidden="true">
         [[item.id.container_name]]
@@ -108,6 +108,13 @@
           on-click="onExportContainerClick_"
           disabled="[[!enableButtons_]]">
           $i18n{crostiniExport}
+      </button>
+      <button id="importContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onImportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniImport}
       </button>
     </cr-action-menu>
   </template>

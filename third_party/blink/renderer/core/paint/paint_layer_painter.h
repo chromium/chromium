@@ -45,8 +45,6 @@ class CORE_EXPORT PaintLayerPainter {
   // contents.
   static PhysicalRect ContentsVisualRect(const FragmentData&, const LayoutBox&);
 
-  bool ShouldUseInfiniteCullRect();
-
  private:
   friend class PaintLayerPainterTest;
 

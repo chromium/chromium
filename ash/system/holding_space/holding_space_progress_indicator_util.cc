@@ -98,7 +98,7 @@ class HoldingSpaceControllerProgressIndicator
 
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
                                  uint32_t updated_fields) override {
-    if (item->IsInitialized())
+    if (item->IsInitialized() && (updated_fields & UpdatedField::kProgress))
       InvalidateLayer();
   }
 
@@ -148,7 +148,7 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
                                  uint32_t updated_fields) override {
-    if (item_ == item)
+    if (item_ == item && (updated_fields & UpdatedField::kProgress))
       InvalidateLayer();
   }
 

@@ -21,7 +21,6 @@ namespace offline_items_collection {
 
 struct ContentId;
 struct OfflineItem;
-struct OfflineItemSchedule;
 struct OfflineItemShareInfo;
 struct OfflineItemVisuals;
 
@@ -158,10 +157,6 @@ class OfflineContentProvider {
   virtual void RenameItem(const ContentId& id,
                           const std::string& name,
                           RenameCallback callback) = 0;
-
-  // Called to change when to start the OfflineItem represented by |id|.
-  virtual void ChangeSchedule(const ContentId& id,
-                              absl::optional<OfflineItemSchedule> schedule) = 0;
 
   // Adds an observer that should be notified of OfflineItem list modifications.
   void AddObserver(Observer* observer);

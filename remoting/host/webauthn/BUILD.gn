@@ -10,6 +10,8 @@ source_set("webauthn") {
     "remote_webauthn_caller_security_utils.h",
     "remote_webauthn_constants.cc",
     "remote_webauthn_constants.h",
+    "remote_webauthn_delegated_state_change_notifier.cc",
+    "remote_webauthn_delegated_state_change_notifier.h",
     "remote_webauthn_extension_notifier.cc",
     "remote_webauthn_extension_notifier.h",
     "remote_webauthn_message_handler.cc",

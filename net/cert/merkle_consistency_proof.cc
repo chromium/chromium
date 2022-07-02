@@ -4,9 +4,7 @@
 
 #include "net/cert/merkle_consistency_proof.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 MerkleConsistencyProof::MerkleConsistencyProof() = default;
 
@@ -22,6 +20,4 @@ MerkleConsistencyProof::MerkleConsistencyProof(
 
 MerkleConsistencyProof::~MerkleConsistencyProof() = default;
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

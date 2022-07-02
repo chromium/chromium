@@ -458,9 +458,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
 
   // Request a pointer lock to the inner WebContents's document.body.
   EXPECT_EQ(true, PointerLockHelper::RequestPointerLockOnBody(
-                      inner_contents->GetMainFrame()));
+                      inner_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(
-                      inner_contents->GetMainFrame()));
+                      inner_contents->GetPrimaryMainFrame()));
 
   // Root (platform) RenderWidgetHostView should have the pointer locked.
   EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   // The widget doing the lock is the one from the inner WebContents. A link
   // to that RWH is saved into the outer webcontents.
   RenderWidgetHost* expected_lock_widget =
-      inner_contents->GetMainFrame()->GetView()->GetRenderWidgetHost();
+      inner_contents->GetPrimaryMainFrame()->GetView()->GetRenderWidgetHost();
   EXPECT_EQ(expected_lock_widget, web_contents()->GetMouseLockWidget());
   EXPECT_EQ(expected_lock_widget, web_contents()->mouse_lock_widget_);
   EXPECT_EQ(expected_lock_widget,

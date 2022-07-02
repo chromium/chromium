@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
@@ -46,7 +47,7 @@ class ZwpPrimarySelectionDeviceManager
  private:
   wl::Object<zwp_primary_selection_device_manager_v1> device_manager_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   std::unique_ptr<ZwpPrimarySelectionDevice> device_;
 };

@@ -6,6 +6,7 @@ package org.chromium.base.metrics;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
@@ -59,6 +60,17 @@ public final class CachingUmaRecorderTest {
                 "cachingUmaRecorderTest.recordBooleanHistogram", true);
         cachingUmaRecorder.recordBooleanHistogram(
                 "cachingUmaRecorderTest.recordBooleanHistogram", false);
+
+        assertEquals(3,
+                cachingUmaRecorder.getHistogramTotalCountForTesting(
+                        "cachingUmaRecorderTest.recordBooleanHistogram"));
+        assertEquals(2,
+                cachingUmaRecorder.getHistogramValueCountForTesting(
+                        "cachingUmaRecorderTest.recordBooleanHistogram", 1));
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramValueCountForTesting(
+                        "cachingUmaRecorderTest.recordBooleanHistogram", 0));
+
         cachingUmaRecorder.setDelegate(mUmaRecorder);
 
         verify(mUmaRecorder, times(2))
@@ -73,6 +85,12 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordExponentialHistogram(
                 "cachingUmaRecorderTest.recordExponentialHistogram", 72, 1, 1000, 50);
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramTotalCountForTesting(
+                        "cachingUmaRecorderTest.recordExponentialHistogram"));
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramValueCountForTesting(
+                        "cachingUmaRecorderTest.recordExponentialHistogram", 72));
         cachingUmaRecorder.setDelegate(mUmaRecorder);
 
         verify(mUmaRecorder)
@@ -86,6 +104,13 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordLinearHistogram(
                 "cachingUmaRecorderTest.recordLinearHistogram", 72, 1, 1000, 50);
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramTotalCountForTesting(
+                        "cachingUmaRecorderTest.recordLinearHistogram"));
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramValueCountForTesting(
+                        "cachingUmaRecorderTest.recordLinearHistogram", 72));
+
         cachingUmaRecorder.setDelegate(mUmaRecorder);
 
         verify(mUmaRecorder)
@@ -99,6 +124,12 @@ public final class CachingUmaRecorderTest {
 
         cachingUmaRecorder.recordSparseHistogram(
                 "cachingUmaRecorderTest.recordSparseHistogram", 72);
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramTotalCountForTesting(
+                        "cachingUmaRecorderTest.recordSparseHistogram"));
+        assertEquals(1,
+                cachingUmaRecorder.getHistogramValueCountForTesting(
+                        "cachingUmaRecorderTest.recordSparseHistogram", 72));
         cachingUmaRecorder.setDelegate(mUmaRecorder);
 
         verify(mUmaRecorder)
@@ -318,6 +349,16 @@ public final class CachingUmaRecorderTest {
         public void recordUserAction(String name, long elapsedRealtimeMillis) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public int getHistogramValueCountForTesting(String name, int sample) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHistogramTotalCountForTesting(String name) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test
@@ -406,6 +447,16 @@ public final class CachingUmaRecorderTest {
         @Override
         public void recordUserAction(String name, long elapsedRealtimeMillis) {
             recordedSamples.addAndGet((int) elapsedRealtimeMillis, 1);
+        }
+
+        @Override
+        public int getHistogramValueCountForTesting(String name, int sample) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getHistogramTotalCountForTesting(String name) {
+            throw new UnsupportedOperationException();
         }
     }
 

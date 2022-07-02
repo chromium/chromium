@@ -44,3 +44,22 @@ blink_core_sources_fetch = [
   "trust_token_to_mojom.cc",
   "trust_token_to_mojom.h",
 ]
+
+blink_core_tests_fetch = [
+  "blob_bytes_consumer_test.cc",
+  "body_stream_buffer_test.cc",
+  "bytes_consumer_tee_test.cc",
+  "bytes_consumer_test_util.cc",
+  "bytes_consumer_test_util.h",
+  "bytes_uploader_test.cc",
+  "fetch_data_loader_test.cc",
+  "fetch_header_list_test.cc",
+  "fetch_request_data_test.cc",
+  "fetch_response_data_test.cc",
+  "form_data_bytes_consumer_test.cc",
+  "multipart_parser_test.cc",
+  "place_holder_bytes_consumer_test.cc",
+  "readable_stream_bytes_consumer_test.cc",
+  "request_test.cc",
+  "response_test.cc",
+]

@@ -44,9 +44,6 @@ class WebView {
   // Make DevToolsCient connect to DevTools if it is disconnected.
   virtual Status ConnectIfNecessary() = 0;
 
-  // Make DevToolsCient set up DevTools.
-  virtual Status SetUpDevTools() = 0;
-
   // Handles events that have been received but not yet handled.
   virtual Status HandleReceivedEvents() = 0;
 
@@ -262,8 +259,6 @@ class WebView {
                                          int yoffset) = 0;
 
   virtual bool IsNonBlocking() const = 0;
-
-  virtual bool IsOOPIF(const std::string& frame_id) = 0;
 
   virtual FrameTracker* GetFrameTracker() const = 0;
 

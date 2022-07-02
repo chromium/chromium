@@ -80,6 +80,7 @@
 #include "absl/functional/function_ref.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/cord_analysis.h"
+#include "absl/strings/cord_buffer.h"
 #include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
@@ -244,6 +245,45 @@ class Cord {
   template <typename T, EnableIfString<T> = 0>
   void Append(T&& src);
 
+  // Appends `buffer` to this cord, unless `buffer` has a zero length in which
+  // case this method has no effect on this cord instance.
+  // This method is guaranteed to consume `buffer`.
+  void Append(CordBuffer buffer);
+
+  // Returns a CordBuffer, re-using potential existing capacity in this cord.
+  //
+  // Cord instances may have additional unused capacity in the last (or first)
+  // nodes of the underlying tree to facilitate amortized growth. This method
+  // allows applications to explicitly use this spare capacity if available,
+  // or create a new CordBuffer instance otherwise.
+  // If this cord has a final non-shared node with at least `min_capacity`
+  // available, then this method will return that buffer including its data
+  // contents. I.e.; the returned buffer will have a non-zero length, and
+  // a capacity of at least `buffer.length + min_capacity`. Otherwise, this
+  // method will return `CordBuffer::CreateWithDefaultLimit(capacity)`.
+  //
+  // Below an example of using GetAppendBuffer. Notice that in this example we
+  // use `GetAppendBuffer()` only on the first iteration. As we know nothing
+  // about any initial extra capacity in `cord`, we may be able to use the extra
+  // capacity. But as we add new buffers with fully utilized contents after that
+  // we avoid calling `GetAppendBuffer()` on subsequent iterations: while this
+  // works fine, it results in an unnecessary inspection of cord contents:
+  //
+  //   void AppendRandomDataToCord(absl::Cord &cord, size_t n) {
+  //     bool first = true;
+  //     while (n > 0) {
+  //       CordBuffer buffer = first ? cord.GetAppendBuffer(n)
+  //                                 : CordBuffer::CreateWithDefaultLimit(n);
+  //       absl::Span<char> data = buffer.available_up_to(n);
+  //       FillRandomValues(data.data(), data.size());
+  //       buffer.IncreaseLengthBy(data.size());
+  //       cord.Append(std::move(buffer));
+  //       n -= data.size();
+  //       first = false;
+  //     }
+  //   }
+  CordBuffer GetAppendBuffer(size_t capacity, size_t min_capacity = 16);
+
   // Cord::Prepend()
   //
   // Prepends data to the Cord, which may come from another Cord or other string
@@ -252,6 +292,11 @@ class Cord {
   void Prepend(absl::string_view src);
   template <typename T, EnableIfString<T> = 0>
   void Prepend(T&& src);
+
+  // Prepends `buffer` to this cord, unless `buffer` has a zero length in which
+  // case this method has no effect on this cord instance.
+  // This method is guaranteed to consume `buffer`.
+  void Prepend(CordBuffer buffer);
 
   // Cord::RemovePrefix()
   //
@@ -289,7 +334,7 @@ class Cord {
   // Cord::EstimatedMemoryUsage()
   //
   // Returns the *approximate* number of bytes held by this cord.
-  // See CordMemoryAccounting for more information on accounting method used.
+  // See CordMemoryAccounting for more information on the accounting method.
   size_t EstimatedMemoryUsage(CordMemoryAccounting accounting_method =
                                   CordMemoryAccounting::kTotal) const;
 
@@ -341,7 +386,7 @@ class Cord {
   //----------------------------------------------------------------------------
   //
   // A `Cord::ChunkIterator` allows iteration over the constituent chunks of its
-  // Cord. Such iteration allows you to perform non-const operatons on the data
+  // Cord. Such iteration allows you to perform non-const operations on the data
   // of a Cord without modifying it.
   //
   // Generally, you do not instantiate a `Cord::ChunkIterator` directly;
@@ -422,7 +467,7 @@ class Cord {
     CordRepBtreeReader btree_reader_;
   };
 
-  // Cord::ChunkIterator::chunk_begin()
+  // Cord::chunk_begin()
   //
   // Returns an iterator to the first chunk of the `Cord`.
   //
@@ -438,7 +483,7 @@ class Cord {
   //   }
   ChunkIterator chunk_begin() const;
 
-  // Cord::ChunkItertator::chunk_end()
+  // Cord::chunk_end()
   //
   // Returns an iterator one increment past the last chunk of the `Cord`.
   //
@@ -448,7 +493,7 @@ class Cord {
   ChunkIterator chunk_end() const;
 
   //----------------------------------------------------------------------------
-  // Cord::ChunkIterator::ChunkRange
+  // Cord::ChunkRange
   //----------------------------------------------------------------------------
   //
   // `ChunkRange` is a helper class for iterating over the chunks of the `Cord`,
@@ -462,7 +507,7 @@ class Cord {
   class ChunkRange {
    public:
     // Fulfill minimum c++ container requirements [container.requirements]
-    // Theses (partial) container type definitions allow ChunkRange to be used
+    // These (partial) container type definitions allow ChunkRange to be used
     // in various utilities expecting a subset of [container.requirements].
     // For example, the below enables using `::testing::ElementsAre(...)`
     using value_type = absl::string_view;
@@ -482,9 +527,9 @@ class Cord {
 
   // Cord::Chunks()
   //
-  // Returns a `Cord::ChunkIterator::ChunkRange` for iterating over the chunks
-  // of a `Cord` with a range-based for-loop. For most iteration tasks on a
-  // Cord, use `Cord::Chunks()` to retrieve this iterator.
+  // Returns a `Cord::ChunkRange` for iterating over the chunks of a `Cord` with
+  // a range-based for-loop. For most iteration tasks on a Cord, use
+  // `Cord::Chunks()` to retrieve this iterator.
   //
   // Example:
   //
@@ -550,7 +595,7 @@ class Cord {
     ChunkIterator chunk_iterator_;
   };
 
-  // Cord::CharIterator::AdvanceAndRead()
+  // Cord::AdvanceAndRead()
   //
   // Advances the `Cord::CharIterator` by `n_bytes` and returns the bytes
   // advanced as a separate `Cord`. `n_bytes` must be less than or equal to the
@@ -558,21 +603,21 @@ class Cord {
   // valid to pass `char_end()` and `0`.
   static Cord AdvanceAndRead(CharIterator* it, size_t n_bytes);
 
-  // Cord::CharIterator::Advance()
+  // Cord::Advance()
   //
   // Advances the `Cord::CharIterator` by `n_bytes`. `n_bytes` must be less than
   // or equal to the number of bytes remaining within the Cord; otherwise,
   // behavior is undefined. It is valid to pass `char_end()` and `0`.
   static void Advance(CharIterator* it, size_t n_bytes);
 
-  // Cord::CharIterator::ChunkRemaining()
+  // Cord::ChunkRemaining()
   //
   // Returns the longest contiguous view starting at the iterator's position.
   //
   // `it` must be dereferenceable.
   static absl::string_view ChunkRemaining(const CharIterator& it);
 
-  // Cord::CharIterator::char_begin()
+  // Cord::char_begin()
   //
   // Returns an iterator to the first character of the `Cord`.
   //
@@ -581,7 +626,7 @@ class Cord {
   // a `CharIterator` where range-based for-loops may not be available.
   CharIterator char_begin() const;
 
-  // Cord::CharIterator::char_end()
+  // Cord::char_end()
   //
   // Returns an iterator to one past the last character of the `Cord`.
   //
@@ -590,13 +635,13 @@ class Cord {
   // a `CharIterator` where range-based for-loops are not useful.
   CharIterator char_end() const;
 
-  // Cord::CharIterator::CharRange
+  // Cord::CharRange
   //
   // `CharRange` is a helper class for iterating over the characters of a
   // producing an iterator which can be used within a range-based for loop.
   // Construction of a `CharRange` will return an iterator pointing to the first
   // character of the Cord. Generally, do not construct a `CharRange` directly;
-  // instead, prefer to use the `Cord::Chars()` method show below.
+  // instead, prefer to use the `Cord::Chars()` method shown below.
   //
   // Implementation note: `CharRange` is simply a convenience wrapper over
   // `Cord::char_begin()` and `Cord::char_end()`.
@@ -621,11 +666,11 @@ class Cord {
     const Cord* cord_;
   };
 
-  // Cord::CharIterator::Chars()
+  // Cord::Chars()
   //
-  // Returns a `Cord::CharIterator` for iterating over the characters of a
-  // `Cord` with a range-based for-loop. For most character-based iteration
-  // tasks on a Cord, use `Cord::Chars()` to retrieve this iterator.
+  // Returns a `Cord::CharRange` for iterating over the characters of a `Cord`
+  // with a range-based for-loop. For most character-based iteration tasks on a
+  // Cord, use `Cord::Chars()` to retrieve this iterator.
   //
   // Example:
   //
@@ -927,6 +972,15 @@ class Cord {
   // Helper for Append().
   template <typename C>
   void AppendImpl(C&& src);
+
+  // Appends / Prepends `src` to this instance, using precise sizing.
+  // This method does explicitly not attempt to use any spare capacity
+  // in any pending last added private owned flat.
+  // Requires `src` to be <= kMaxFlatLength.
+  void AppendPrecise(absl::string_view src, MethodIdentifier method);
+  void PrependPrecise(absl::string_view src, MethodIdentifier method);
+
+  CordBuffer GetAppendBufferSlowPath(size_t capacity, size_t min_capacity);
 
   // Prepends the provided data to this instance. `method` contains the public
   // API method for this action which is tracked for Cordz sampling purposes.
@@ -1284,6 +1338,31 @@ inline void Cord::Prepend(absl::string_view src) {
   PrependArray(src, CordzUpdateTracker::kPrependString);
 }
 
+inline void Cord::Append(CordBuffer buffer) {
+  if (ABSL_PREDICT_FALSE(buffer.length() == 0)) return;
+  absl::string_view short_value;
+  if (CordRep* rep = buffer.ConsumeValue(short_value)) {
+    contents_.AppendTree(rep, CordzUpdateTracker::kAppendCordBuffer);
+  } else {
+    AppendPrecise(short_value, CordzUpdateTracker::kAppendCordBuffer);
+  }
+}
+
+inline void Cord::Prepend(CordBuffer buffer) {
+  if (ABSL_PREDICT_FALSE(buffer.length() == 0)) return;
+  absl::string_view short_value;
+  if (CordRep* rep = buffer.ConsumeValue(short_value)) {
+    contents_.PrependTree(rep, CordzUpdateTracker::kPrependCordBuffer);
+  } else {
+    PrependPrecise(short_value, CordzUpdateTracker::kPrependCordBuffer);
+  }
+}
+
+inline CordBuffer Cord::GetAppendBuffer(size_t capacity, size_t min_capacity) {
+  if (empty()) return CordBuffer::CreateWithDefaultLimit(capacity);
+  return GetAppendBufferSlowPath(capacity, min_capacity);
+}
+
 extern template void Cord::Append(std::string&& src);
 extern template void Cord::Prepend(std::string&& src);
 
@@ -1500,7 +1579,7 @@ inline void Cord::ForEachChunk(
   }
 }
 
-// Nonmember Cord-to-Cord relational operarators.
+// Nonmember Cord-to-Cord relational operators.
 inline bool operator==(const Cord& lhs, const Cord& rhs) {
   if (lhs.contents_.IsSame(rhs.contents_)) return true;
   size_t rhs_size = rhs.size();

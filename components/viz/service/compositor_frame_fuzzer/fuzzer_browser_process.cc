@@ -142,7 +142,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
   surface_quad->SetNew(renderer_sqs, gfx::Rect(kRendererFrameSize),
                        gfx::Rect(kRendererFrameSize),
                        SurfaceRange(absl::nullopt, renderer_surface_id),
-                       SK_ColorWHITE,
+                       SkColors::kWhite,
                        /*stretch_content_to_fill_bounds=*/false);
 
   auto* toolbar_sqs = pass->CreateAndAppendSharedQuadState();
@@ -153,7 +153,7 @@ CompositorFrame FuzzerBrowserProcess::BuildBrowserUICompositorFrame(
       /*sorting_context_id=*/0);
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   color_quad->SetNew(toolbar_sqs, gfx::Rect(kTopBarSize),
-                     gfx::Rect(kTopBarSize), SK_ColorLTGRAY,
+                     gfx::Rect(kTopBarSize), SkColors::kLtGray,
                      /*force_antialiasing_off=*/false);
   frame.render_pass_list.push_back(std::move(pass));
 

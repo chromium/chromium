@@ -141,7 +141,7 @@ class Frame;
 // ====== References ======
 // https://wiki.mozilla.org/Gecko:SplitWindow
 // https://whatwg.org/C/browsers.html#the-windowproxy-exotic-object
-class WindowProxy : public GarbageCollected<WindowProxy> {
+class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
  public:
   virtual ~WindowProxy();
 
@@ -154,7 +154,7 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
-  CORE_EXPORT v8::Local<v8::Object> GlobalProxyIfNotDetached();
+  v8::Local<v8::Object> GlobalProxyIfNotDetached();
   v8::Local<v8::Object> ReleaseGlobalProxy();
   // This does not initialize the window proxy, either Initialize or
   // InitializeIfNeeded needs to be called after this method.

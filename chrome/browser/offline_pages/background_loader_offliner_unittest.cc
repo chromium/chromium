@@ -640,7 +640,7 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnErrorPage) {
   // Create handle with net error code.
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   handle.set_is_error_page(true);
   handle.set_net_error_code(net::Error::ERR_NAME_NOT_RESOLVED);
@@ -674,7 +674,7 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnCertificateError) {
 
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   offliner()->DidFinishNavigation(&handle);
 
@@ -705,7 +705,7 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnRevocationCheckingFailure) {
 
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   offliner()->DidFinishNavigation(&handle);
 
@@ -736,7 +736,7 @@ TEST_F(BackgroundLoaderOfflinerTest, SucceedsOnHttp) {
 
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   offliner()->DidFinishNavigation(&handle);
 
@@ -763,7 +763,7 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnUnwantedContent) {
       std::move(visible_security_state));
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   offliner()->DidFinishNavigation(&handle);
 
@@ -785,7 +785,7 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnInternetDisconnected) {
   // Create handle with net error code.
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   handle.set_is_error_page(true);
   handle.set_net_error_code(net::Error::ERR_INTERNET_DISCONNECTED);
@@ -808,7 +808,7 @@ TEST_F(BackgroundLoaderOfflinerTest, DoesNotCrashWithNullResponseHeaders) {
 
   // Called after calling LoadAndSave so we have web_contents to work with.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   offliner()->DidFinishNavigation(&handle);
 }
@@ -932,7 +932,7 @@ TEST_F(BackgroundLoaderOfflinerTest,
   // Simulate that DidFinishNavigation method is called with an error in a
   // non-primary mainframe.
   content::MockNavigationHandle handle(
-      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+      GURL(kHttpUrl), offliner()->web_contents()->GetPrimaryMainFrame());
   handle.set_has_committed(true);
   handle.set_is_error_page(true);
   handle.set_net_error_code(net::Error::ERR_NAME_NOT_RESOLVED);

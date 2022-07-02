@@ -474,6 +474,8 @@ class _IRBuilder(object):
                     # Discard the arguments.
                     arguments = ()
                     name = child.GetName()
+                else:
+                    assert False
 
             return ExtendedAttribute(
                 key=key, values=values, arguments=arguments, name=name)

@@ -6,9 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 constexpr uint8_t kInput[] = {'t', 'e', 's', 't'};
 const uint8_t kInput2[] = {'t', 'e', 'a', 'l'};
@@ -106,6 +104,4 @@ TEST(ByteReaderTest, HasMore) {
   ASSERT_FALSE(reader.HasMore());
 }
 
-}  // namespace test
-}  // namespace der
-}  // namespace net
+}  // namespace net::der::test

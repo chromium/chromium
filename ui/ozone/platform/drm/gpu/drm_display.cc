@@ -154,6 +154,7 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
     uint8_t device_index) {
   std::unique_ptr<display::DisplaySnapshot> params = CreateDisplaySnapshot(
       info, drm_->get_fd(), drm_->device_path(), device_index, origin_);
+  base_connector_id_ = params->base_connector_id();
   crtc_ = info->crtc()->crtc_id;
   // TODO(crbug.com/1119499): consider taking ownership of |info->connector()|
   connector_ = ScopedDrmConnectorPtr(

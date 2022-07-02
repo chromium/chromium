@@ -15,16 +15,16 @@
 // FullscreenUIElements.
 class FullscreenUIUpdater {
  public:
-  // Constructor for an updater that updates |ui_element| for observed events
-  // from |controller|.  Both arguments must be non-null.  |ui_element| is not
-  // retained.  The updater will observe |controller| until the controller is
+  // Constructor for an updater that updates `ui_element` for observed events
+  // from `controller`.  Both arguments must be non-null.  `ui_element` is not
+  // retained.  The updater will observe `controller` until the controller is
   // shut down or the updater is destroyed.
   FullscreenUIUpdater(FullscreenController* controller,
                       id<FullscreenUIElement> ui_element);
   ~FullscreenUIUpdater();
 
  private:
-  // Stops observing |controller_|.
+  // Stops observing `controller_`.
   void Disconnect();
 
   // Helper object that forwards FullscreenControllerObserver callbacks to their
@@ -32,7 +32,7 @@ class FullscreenUIUpdater {
   class FullscreenControllerObserverForwarder
       : public FullscreenControllerObserver {
    public:
-    // Constructor for a forwarder that updates |ui_element| for |updater|.
+    // Constructor for a forwarder that updates `ui_element` for `updater`.
     FullscreenControllerObserverForwarder(FullscreenUIUpdater* updater,
                                           id<FullscreenUIElement> ui_element);
 
@@ -59,7 +59,7 @@ class FullscreenUIUpdater {
   FullscreenController* controller_ = nullptr;
   // The observer forwarder.
   FullscreenControllerObserverForwarder forwarder_;
-  // Scoped observer for |forwarder_|.
+  // Scoped observer for `forwarder_`.
   base::ScopedObservation<FullscreenController, FullscreenControllerObserver>
       observation_{&forwarder_};
 };

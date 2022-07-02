@@ -26,16 +26,17 @@ class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 class BrowserPolicyConnectorIOS;
+@class FeedMetricsRecorder;
 
 // Mediator for the popup menu. This object is in charge of creating and
 // updating the items of the popup menu.
 @interface PopupMenuMediator
     : NSObject <BrowserContainerConsumer, PopupMenuActionHandlerDelegate>
 
-// Initializes the mediator with a |type| of popup menu, whether it
-// |isIncognito|, a |readingListModel| used to display the badge for the reading
-// list entry, whether the mediator should |triggerNewIncognitoTabTip|, and a
-// |browserPolicyConnector| used to check if the browser is managed by policy.
+// Initializes the mediator with a `type` of popup menu, whether it
+// `isIncognito`, a `readingListModel` used to display the badge for the reading
+// list entry, whether the mediator should `triggerNewIncognitoTabTip`, and a
+// `browserPolicyConnector` used to check if the browser is managed by policy.
 - (instancetype)initWithType:(PopupMenuType)type
                   isIncognito:(BOOL)isIncognito
              readingListModel:(ReadingListModel*)readingListModel
@@ -68,6 +69,8 @@ class BrowserPolicyConnectorIOS;
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // The URL loading service, used to load the reverse image search.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;
+// The metrics recorder to record follow related metrics.
+@property(nonatomic, assign) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Disconnect the mediator.
 - (void)disconnect;

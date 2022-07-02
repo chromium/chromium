@@ -331,7 +331,6 @@ DownloadItemImpl::DownloadItemImpl(
     bool transient,
     const std::vector<DownloadItem::ReceivedSlice>& received_slices,
     const DownloadItemRerouteInfo& reroute_info,
-    absl::optional<DownloadSchedule> download_schedule,
     int64_t range_request_from,
     int64_t range_request_to,
     std::unique_ptr<DownloadEntry> download_entry)
@@ -377,7 +376,6 @@ DownloadItemImpl::DownloadItemImpl(
       etag_(etag),
       received_slices_(received_slices),
       is_updating_observers_(false),
-      download_schedule_(std::move(download_schedule)),
       reroute_info_(reroute_info) {
   delegate_->Attach();
   DCHECK(state_ == COMPLETE_INTERNAL || state_ == INTERRUPTED_INTERNAL ||
@@ -1737,7 +1735,6 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
     const base::FilePath& intermediate_path,
     const base::FilePath& display_name,
     const std::string& mime_type,
-    absl::optional<DownloadSchedule> download_schedule,
     DownloadInterruptReason interrupt_reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (state_ == CANCELLED_INTERNAL)
@@ -1759,10 +1756,6 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
     Cancel(true);
     return;
   }
-
-  if (download_schedule)
-    RecordDownloadLaterEvent(DownloadLaterEvent::kScheduleAdded);
-  SwapDownloadSchedule(std::move(download_schedule));
 
   // There were no other pending errors, and we just failed to determined the
   // download target. The target path, if it is non-empty, should be considered

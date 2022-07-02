@@ -8,7 +8,9 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/json_pref_store.h"
@@ -106,6 +108,8 @@ PrefService* ApplicationContext::GetLocalState() {
     signin::IdentityManager::RegisterLocalStatePrefs(pref_registry.get());
     component_updater::RegisterComponentUpdateServicePrefs(pref_registry.get());
     update_client::RegisterPrefs(pref_registry.get());
+    component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
+        pref_registry.get());
 
     base::FilePath local_state_path;
     base::PathService::Get(base::DIR_APP_DATA, &local_state_path);
@@ -226,6 +230,13 @@ SafeBrowsingService* ApplicationContext::GetSafeBrowsingService() {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
   }
   return safe_browsing_service_.get();
+}
+
+void ApplicationContext::ShutdownSafeBrowsingServiceIfNecessary() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (safe_browsing_service_) {
+    safe_browsing_service_->ShutDown();
+  }
 }
 
 }  // namespace ios_web_view

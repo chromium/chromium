@@ -3,13 +3,27 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(Browser* browser)
@@ -35,11 +49,25 @@ void ExtensionsRequestAccessButton::UpdateExtensionsRequestingAccess(
                color);
 }
 
-void ExtensionsRequestAccessButton::ShowHoverCard() {
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
+  // TODO(crbug.com/1319555): Don't show the hover card if the dialog opened by
+  // pressing the button is still open. This will be easier to add once we
+  // address the TODO below for blocked action dialog.
+  if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
+      !GetWidget()->IsMouseEventsEnabled())
+    return;
+
   ExtensionsRequestAccessButtonHoverCard::ShowBubble(
-      web_contents, this, extensions_requesting_access_);
+      GetActiveWebContents(), this, extensions_requesting_access_);
+}
+
+std::vector<std::string>
+ExtensionsRequestAccessButton::GetExtensionsNamesForTesting() {
+  std::vector<std::string> extension_names;
+  for (auto* extension : extensions_requesting_access_) {
+    extension_names.push_back(base::UTF16ToUTF8(extension->GetActionName()));
+  }
+  return extension_names;
 }
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
@@ -48,6 +76,47 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
   return std::u16string();
 }
 
-// TODO(crbug.com/1239772): Grant access to all the extensions requesting access
-// when the button is pressed.
-void ExtensionsRequestAccessButton::OnButtonPressed() {}
+void ExtensionsRequestAccessButton::OnButtonPressed() {
+  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
+    ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  }
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  extensions::ExtensionActionRunner* action_runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner)
+    return;
+
+  DCHECK_GT(extensions_requesting_access_.size(), 0u);
+  const extensions::ExtensionSet& enabled_extensions =
+      extensions::ExtensionRegistry::Get(browser_->profile())
+          ->enabled_extensions();
+  std::vector<const extensions::Extension*> extensions;
+  for (auto* extension : extensions_requesting_access_) {
+    extensions.push_back(enabled_extensions.GetByID(extension->GetId()));
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  action_runner->GrantTabPermissions(extensions);
+}
+
+// Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+// an enter event and fail to hover the button. This is effectively a no-op if
+// the button is already showing the hover card (crbug.com/1326272).
+void ExtensionsRequestAccessButton::OnMouseMoved(const ui::MouseEvent& event) {
+  MaybeShowHoverCard();
+}
+
+void ExtensionsRequestAccessButton::OnMouseEntered(
+    const ui::MouseEvent& event) {
+  MaybeShowHoverCard();
+}
+
+void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
+  ExtensionsRequestAccessButtonHoverCard::HideBubble();
+}
+
+content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents() {
+  return browser_->tab_strip_model()->GetActiveWebContents();
+}

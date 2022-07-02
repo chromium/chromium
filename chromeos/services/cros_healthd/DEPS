@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromeos/dbus",
-  "+chromeos/services/network_health/public/mojom",
-  "+mojo/public",
-]

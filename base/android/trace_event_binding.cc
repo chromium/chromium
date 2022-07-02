@@ -215,6 +215,20 @@ static void JNI_TraceEvent_Instant(JNIEnv* env,
   }
 }
 
+static void JNI_TraceEvent_InstantAndroidIPC(JNIEnv* env,
+                                             const JavaParamRef<jstring>& jname,
+                                             jlong jdur) {
+  TRACE_EVENT_INSTANT(
+      internal::kJavaTraceCategory, "AndroidIPC",
+      [&](perfetto::EventContext ctx) {
+        TraceEventDataConverter converter(env, jname, nullptr);
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* android_ipc = event->set_android_ipc();
+        android_ipc->set_name(converter.name());
+        android_ipc->set_dur_ms(jdur);
+      });
+}
+
 static void JNI_TraceEvent_Begin(JNIEnv* env,
                                  const JavaParamRef<jstring>& jname,
                                  const JavaParamRef<jstring>& jarg) {

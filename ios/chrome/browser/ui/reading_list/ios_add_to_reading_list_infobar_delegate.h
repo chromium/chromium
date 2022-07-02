@@ -25,7 +25,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
                                      web::WebState* web_state);
   ~IOSAddToReadingListInfobarDelegate() override;
 
-  // Returns |delegate| as an IOSAddToReadingListInfobarDelegate, or nullptr
+  // Returns `delegate` as an IOSAddToReadingListInfobarDelegate, or nullptr
   // if it is of another type.
   static IOSAddToReadingListInfobarDelegate* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
@@ -63,9 +63,9 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   double distilibility_score_;
   // The score of the page measuring length of the page.
   double length_score_;
-  // Reference to save |url_| to Reading List.
+  // Reference to save `url_` to Reading List.
   ReadingListModel* model_ = nullptr;
-  // WebState pointer that is showing |url_|.
+  // WebState pointer that is showing `url_`.
   web::WebState* web_state_ = nullptr;
 };
 

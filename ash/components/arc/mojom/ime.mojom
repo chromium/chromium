@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 21
+// Next MinVersion: 22
 
 module arc.mojom;
 
@@ -151,7 +151,10 @@ interface ImeInstance {
   [MinVersion=6] Init@6(pending_remote<ImeHost> host_remote) => ();
 
   // Sets composition text and attributes requested by the host IME.
-  SetCompositionText@1(string text, array<CompositionSegment> segments);
+  SetCompositionText@1(
+      string text,
+      array<CompositionSegment> segments,
+      [MinVersion=21] Range? selection_range);
 
   // Sets selection text and attributes requested by the host IME.
   [MinVersion=12] SetSelectionText@7(Range selection);
@@ -166,8 +169,8 @@ interface ImeInstance {
   // end of the text). If |new_cursor_position| <= 0, then it is relative to the
   // start (0 being the beginning of the text).
   InsertText@3(
-     string text,
-     [MinVersion=17] int32 new_cursor_position);
+      string text,
+      [MinVersion=17] int32 new_cursor_position);
 
   // Informs the virtual keyboard availability and bounds on screen is changing.
   // |is_available| whether a virtual keyboard is visible or not.

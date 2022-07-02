@@ -19,11 +19,9 @@ class FakePepperPluginInstance;
 // resources through this will get added to the test sink.
 class MockRendererPpapiHost : public RendererPpapiHost {
  public:
-  // This function takes the RenderView, RenderFrame and instance that the mock
+  // This function takes the RenderFrame and instance that the mock
   // resource host will be associated with.
-  MockRendererPpapiHost(RenderView* render_view,
-                        RenderFrame* render_frame,
-                        PP_Instance instance);
+  MockRendererPpapiHost(RenderFrame* render_frame, PP_Instance instance);
 
   MockRendererPpapiHost(const MockRendererPpapiHost&) = delete;
   MockRendererPpapiHost& operator=(const MockRendererPpapiHost&) = delete;
@@ -41,11 +39,10 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   bool IsValidInstance(PP_Instance instance) override;
   PepperPluginInstance* GetPluginInstance(PP_Instance instance) override;
   RenderFrame* GetRenderFrameForInstance(PP_Instance instance) override;
-  RenderView* GetRenderViewForInstance(PP_Instance instance) override;
   blink::WebPluginContainer* GetContainerForInstance(
       PP_Instance instance) override;
   bool HasUserGesture(PP_Instance instance) override;
-  int GetRoutingIDForWidget(PP_Instance instance) override;
+  int GetRoutingIDForFrame(PP_Instance instance) override;
   gfx::Point PluginPointToRenderFrame(PP_Instance instance,
                                       const gfx::Point& pt) override;
   IPC::PlatformFileForTransit ShareHandleWithRemote(
@@ -68,7 +65,6 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   ppapi::proxy::ResourceMessageTestSink sink_;
   ppapi::host::PpapiHost ppapi_host_;
 
-  RenderView* render_view_;
   RenderFrame* render_frame_;
   PP_Instance pp_instance_;
 

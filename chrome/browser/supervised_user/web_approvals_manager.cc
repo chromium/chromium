@@ -3,13 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/android/website_parent_approval.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -32,9 +42,11 @@ WebApprovalsManager::WebApprovalsManager() = default;
 WebApprovalsManager::~WebApprovalsManager() = default;
 
 void WebApprovalsManager::RequestLocalApproval(
+    content::WebContents* web_contents,
     const GURL& url,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1233615): pass completion_callback.
   chromeos::ParentAccessDialog::ShowError result =
       chromeos::ParentAccessDialog::Show();
 
@@ -44,18 +56,24 @@ void WebApprovalsManager::RequestLocalApproval(
     return;
   }
   std::move(callback).Run(true);
+#elif BUILDFLAG(IS_ANDROID)
+  SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetProfileKey());
+  WebsiteParentApproval::RequestLocalApproval(
+      web_contents, NormalizeUrl(url),
+      base::BindOnce(&WebApprovalsManager::OnLocalApprovalRequestCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), settings_service, url));
+  std::move(callback).Run(true);
 #endif
 }
 
 void WebApprovalsManager::RequestRemoteApproval(
     const GURL& url,
     ApprovalRequestInitiatedCallback callback) {
-  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
-  if (!effective_url.is_valid())
-    effective_url = url;
   AddRemoteApprovalRequestInternal(
-      base::BindRepeating(CreateURLAccessRequest,
-                          url_matcher::util::Normalize(effective_url)),
+      base::BindRepeating(CreateURLAccessRequest, NormalizeUrl(url)),
       std::move(callback), 0);
 }
 
@@ -80,6 +98,13 @@ size_t WebApprovalsManager::FindEnabledRemoteApprovalRequestCreator(
       return i;
   }
   return remote_approval_request_creators_.size();
+}
+
+GURL WebApprovalsManager::NormalizeUrl(const GURL& url) {
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
+  if (!effective_url.is_valid())
+    effective_url = url;
+  return url_matcher::util::Normalize(effective_url);
 }
 
 void WebApprovalsManager::AddRemoteApprovalRequestInternal(
@@ -111,4 +136,16 @@ void WebApprovalsManager::OnRemoteApprovalRequestIssued(
 
   AddRemoteApprovalRequestInternal(create_request, std::move(callback),
                                    index + 1);
+}
+
+void WebApprovalsManager::OnLocalApprovalRequestCompleted(
+    SupervisedUserSettingsService* settings_service,
+    const GURL& url,
+    bool request_approved) {
+  // TODO(crbug.com/1324945): output metrics.
+  VLOG(0) << "Local URL approval final result: " << request_approved;
+
+  if (request_approved) {
+    settings_service->RecordLocalWebsiteApproval(url.host());
+  }
 }

@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 #include "base/callback_forward.h"
@@ -98,7 +100,7 @@ CAPTURE_EXPORT
   base::Lock _lock;
   // Used to avoid UAF in -captureOutput.
   base::Lock _destructionLock;
-  media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
+  raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
       GUARDED_BY(_lock);  // weak.
   bool _capturedFirstFrame GUARDED_BY(_lock);
   bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);

@@ -432,7 +432,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
 
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override {
+      bool force_update) override {
     ++ids_found_;
     base::DictionaryValue* pref;
     // This tests is to make sure that the provider only notifies us of the
@@ -3615,6 +3615,8 @@ TEST_F(ExtensionServiceTest, WillNotLoadBlocklistedExtensionsFromDirectory) {
   service()->Init();
   ASSERT_EQ(3u, loaded_extensions().size());
 
+  // Notify service about new extension is blocklisted.
+  test_blocklist.NotifyUpdate();
   task_environment()->RunUntilIdle();
 
   ASSERT_EQ(1u, registry()->blocklisted_extensions().size());
@@ -3641,8 +3643,6 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
       good1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
       ExtensionPrefs::Get(profile()));
 
-  test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, false);
-
   // Extension service hasn't loaded yet, but IsExtensionEnabled reads out of
   // prefs. Ensure it takes into account the blocklist state (crbug.com/373842).
   EXPECT_FALSE(service()->IsExtensionEnabled(good0));
@@ -3651,12 +3651,18 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
 
   service()->Init();
 
+  // Give time for state to update
+  // Ensure that extension is loaded.
+  task_environment()->RunUntilIdle();
+
   EXPECT_EQ(2u, registry()->blocklisted_extensions().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good2));
+
+  test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, true);
 
   // Give time for the blocklist to update.
   task_environment()->RunUntilIdle();
@@ -3681,7 +3687,7 @@ TEST_F(ExtensionServiceTest, ReloadBlocklistedExtension) {
 
   test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, false);
   service()->Init();
-  test_blocklist.SetBlocklistState(good2, BLOCKLISTED_MALWARE, false);
+  test_blocklist.SetBlocklistState(good2, BLOCKLISTED_MALWARE, true);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(StringSet(good0), registry()->enabled_extensions().GetIDs());
@@ -4583,6 +4589,43 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
     registry_observer.WaitForExtensionLoaded();
     base::RunLoop().RunUntilIdle();
   }
+}
+
+// Test that if an external extension becomes force-installed, it's enabled
+// (even if the user hasn't acknowledged the prompt).
+TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
+  FeatureSwitch::ScopedOverride prompt_override(
+      FeatureSwitch::prompt_for_external_extensions(), true);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  // Initially, the extension is installed externally and is disabled.
+  MockExternalProvider* provider =
+      AddMockExternalProvider(ManifestLocation::kExternalPref);
+  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
+                                 data_dir().AppendASCII("good.crx"));
+  WaitForExternalExtensionInstalled();
+
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(good_crx));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_FALSE(prefs->IsExternalExtensionAcknowledged(good_crx));
+  EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
+            prefs->GetDisableReasons(good_crx));
+
+  // Make the extension force-installed now. It should flip from disabled to
+  // enabled.
+  TestManagementPolicyProvider policy_provider(
+      TestManagementPolicyProvider::MUST_REMAIN_ENABLED);
+  GetManagementPolicy()->RegisterProvider(&policy_provider);
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    // Mark good.crx for force-installation.
+    pref.SetIndividualExtensionAutoInstalled(
+        good_crx, "http://example.com/update_url", true);
+  }
+
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(good_crx));
+  EXPECT_TRUE(prefs->IsExternalExtensionAcknowledged(good_crx));
+  EXPECT_EQ(disable_reason::DISABLE_NONE, prefs->GetDisableReasons(good_crx));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7984,7 +8027,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
                                    GetParam() /* download_location */,
                                    Extension::NO_FLAGS /* creation_flag */,
                                    true /* mark_acknowledged */),
-      true /* is_initial_load */);
+      true /* force_update */);
 
   MockExternalProvider provider(nullptr,
                                 ManifestLocation::kExternalPolicyDownload);

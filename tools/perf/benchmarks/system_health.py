@@ -124,7 +124,7 @@ class DesktopCommonSystemHealth(_CommonSystemHealthBenchmark):
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = super(DesktopCommonSystemHealth,
                     self).CreateCoreTimelineBasedMeasurementOptions()
-    options.config.chrome_trace_config.SetTraceBufferSizeInKb(300 * 1024)
+    options.config.chrome_trace_config.SetTraceBufferSizeInKb(400 * 1024)
     return options
 
 

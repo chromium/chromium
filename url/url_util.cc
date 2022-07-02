@@ -151,9 +151,9 @@ inline bool DoCompareSchemeComponent(const CHAR* spec,
                                      const char* compare_to) {
   if (!component.is_nonempty())
     return compare_to[0] == 0;  // When component is empty, match empty scheme.
-  return base::LowerCaseEqualsASCII(
-      typename CharToStringPiece<CHAR>::Piece(
-          &spec[component.begin], component.len),
+  return base::EqualsCaseInsensitiveASCII(
+      typename CharToStringPiece<CHAR>::Piece(&spec[component.begin],
+                                              component.len),
       compare_to);
 }
 
@@ -168,9 +168,10 @@ bool DoIsInSchemes(const CHAR* spec,
     return false;  // Empty or invalid schemes are non-standard.
 
   for (const SchemeWithType& scheme_with_type : schemes) {
-    if (base::LowerCaseEqualsASCII(typename CharToStringPiece<CHAR>::Piece(
-                                       &spec[scheme.begin], scheme.len),
-                                   scheme_with_type.scheme)) {
+    if (base::EqualsCaseInsensitiveASCII(
+            typename CharToStringPiece<CHAR>::Piece(&spec[scheme.begin],
+                                                    scheme.len),
+            scheme_with_type.scheme)) {
       *type = scheme_with_type.type;
       return true;
     }
@@ -810,11 +811,15 @@ void DecodeURLEscapeSequences(const char* input,
                               int length,
                               DecodeURLMode mode,
                               CanonOutputW* output) {
+  if (length <= 0)
+    return;
+
   STACK_UNINITIALIZED RawCanonOutputT<char> unescaped_chars;
-  for (int i = 0; i < length; i++) {
+  size_t length_size_t = static_cast<size_t>(length);
+  for (size_t i = 0; i < length_size_t; i++) {
     if (input[i] == '%') {
       unsigned char ch;
-      if (DecodeEscaped(input, &i, length, &ch)) {
+      if (DecodeEscaped(input, &i, length_size_t, &ch)) {
         unescaped_chars.push_back(ch);
       } else {
         // Invalid escape sequence, copy the percent literal.
@@ -829,23 +834,25 @@ void DecodeURLEscapeSequences(const char* input,
   int output_initial_length = output->length();
   // Convert that 8-bit to UTF-16. It's not clear IE does this at all to
   // JavaScript URLs, but Firefox and Safari do.
-  for (int i = 0; i < unescaped_chars.length(); i++) {
-    unsigned char uch = static_cast<unsigned char>(unescaped_chars.at(i));
+  size_t unescaped_length = static_cast<size_t>(unescaped_chars.length());
+  for (size_t i = 0; i < unescaped_length; i++) {
+    unsigned char uch =
+        static_cast<unsigned char>(unescaped_chars.at(static_cast<int>(i)));
     if (uch < 0x80) {
       // Non-UTF-8, just append directly
       output->push_back(uch);
     } else {
       // next_ch will point to the last character of the decoded
       // character.
-      int next_character = i;
-      unsigned code_point;
-      if (ReadUTFChar(unescaped_chars.data(), &next_character,
-                      unescaped_chars.length(), &code_point)) {
+      size_t next_character = i;
+      base_icu::UChar32 code_point;
+      if (ReadUTFChar(unescaped_chars.data(), &next_character, unescaped_length,
+                      &code_point)) {
         // Valid UTF-8 character, convert to UTF-16.
         AppendUTF16Value(code_point, output);
         i = next_character;
       } else if (mode == DecodeURLMode::kUTF8) {
-        DCHECK_EQ(code_point, 0xFFFDU);
+        DCHECK_EQ(code_point, 0xFFFD);
         AppendUTF16Value(code_point, output);
         i = next_character;
       } else {

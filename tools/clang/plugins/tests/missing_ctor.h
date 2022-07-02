@@ -343,4 +343,48 @@ class TenRawPtrWarns {
   raw_ptr<TenRawPtrWarns> ten_;
 };
 
+class RawRefDoesNotWarn {
+ public:
+  RawRefDoesNotWarn() = default;
+  ~RawRefDoesNotWarn() = default;
+
+ private:
+  raw_ref<RawRefDoesNotWarn> foo_;
+};
+
+class NineRawRefDoesNotWarn {
+ public:
+  NineRawRefDoesNotWarn() = default;
+  ~NineRawRefDoesNotWarn() = default;
+
+ private:
+  raw_ref<NineRawRefDoesNotWarn> one_;
+  raw_ref<NineRawRefDoesNotWarn> two_;
+  raw_ref<NineRawRefDoesNotWarn> three_;
+  raw_ref<NineRawRefDoesNotWarn> four_;
+  raw_ref<NineRawRefDoesNotWarn> five_;
+  raw_ref<NineRawRefDoesNotWarn> six_;
+  raw_ref<NineRawRefDoesNotWarn> seven_;
+  raw_ref<NineRawRefDoesNotWarn> eight_;
+  raw_ref<NineRawRefDoesNotWarn> nine_;
+};
+
+class TenRawRefWarns {
+ public:
+  TenRawRefWarns() = default;
+  ~TenRawRefWarns() = default;
+
+ private:
+  raw_ref<TenRawRefWarns> one_;
+  raw_ref<TenRawRefWarns> two_;
+  raw_ref<TenRawRefWarns> three_;
+  raw_ref<TenRawRefWarns> four_;
+  raw_ref<TenRawRefWarns> five_;
+  raw_ref<TenRawRefWarns> six_;
+  raw_ref<TenRawRefWarns> seven_;
+  raw_ref<TenRawRefWarns> eight_;
+  raw_ref<TenRawRefWarns> nine_;
+  raw_ref<TenRawRefWarns> ten_;
+};
+
 #endif  // MISSING_CTOR_H_

@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
-#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace base {
@@ -26,6 +26,9 @@ class URLLoaderFactory;
 }  // namespace network
 
 namespace ash {
+
+constexpr char kDriveV3BaseUrl[] = "https://www.googleapis.com/drive/v3/files/";
+constexpr char kRequestMethodPatch[] = "PATCH";
 
 /**
  * Projector XHR sender. Used by Projector App to send XHR requests.
@@ -44,20 +47,22 @@ class ProjectorXhrSender {
       network::mojom::URLLoaderFactory* url_loader_factory);
   ProjectorXhrSender(const ProjectorXhrSender&) = delete;
   ProjectorXhrSender& operator=(const ProjectorXhrSender&) = delete;
-  ~ProjectorXhrSender();
+  virtual ~ProjectorXhrSender();
 
   // Send XHR request and trigger the callback when complete.
-  void Send(const GURL& url,
-            const std::string& method,
-            const std::string& request_body,
-            bool use_credentials,
-            SendRequestCallback callback);
+  virtual void Send(const GURL& url,
+                    const std::string& method,
+                    const std::string& request_body,
+                    bool use_credentials,
+                    SendRequestCallback callback,
+                    const base::Value::Dict& headers = base::Value::Dict());
 
  private:
   // Triggered when an OAuth token fetch completed.
   void OnAccessTokenRequestCompleted(const GURL& url,
                                      const std::string& method,
                                      const std::string& request_body,
+                                     const base::Value::Dict& headers,
                                      SendRequestCallback callback,
                                      const std::string& email,
                                      GoogleServiceAuthError error,
@@ -67,6 +72,7 @@ class ProjectorXhrSender {
                    const std::string& method,
                    const std::string& request_body,
                    const std::string& token,
+                   const base::Value::Dict& headers,
                    SendRequestCallback callback);
 
   // Triggered when an XHR request completed.

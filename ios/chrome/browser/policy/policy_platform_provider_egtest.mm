@@ -13,7 +13,6 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -42,18 +41,8 @@ std::unique_ptr<base::Value> GetPlatformPolicy(const std::string& key) {
 // |policy_data| must be in XML format. |policy_data| is passed to the
 // application regardless of whether |disable_policy| is true or false..
 AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
-                                                      bool disable_policy,
                                                       bool enable_cbcm) {
   AppLaunchConfiguration config;
-
-  if (disable_policy) {
-    config.additional_args.push_back(std::string("--") +
-                                     switches::kDisableEnterprisePolicy);
-  } else {
-    config.additional_args.push_back(std::string("--") +
-                                     switches::kEnableEnterprisePolicy);
-  }
-
   if (enable_cbcm) {
     config.additional_args.push_back(
         std::string("--") + switches::kEnableChromeBrowserCloudManagement);
@@ -98,7 +87,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm*/ false);
 }
 
@@ -141,45 +130,6 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 
 @end
 
-// Test case that uses the production platform policy provider and explicitly
-// disables policy.
-@interface PolicyDisabledTestCase : ChromeTestCase
-@end
-
-@implementation PolicyDisabledTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  std::string policyData = "<dict>"
-                           "    <key>EnableExperimentalPolicies</key>"
-                           "    <array>"
-                           "      <string>DefaultSearchProviderName</string>"
-                           "    </array>"
-                           "    <key>DefaultSearchProviderName</key>"
-                           "    <string>Test</string>"
-                           "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/true,
-                                        /*enable_cbcm*/ false);
-}
-
-// Tests that about:policy is not available when policy is disabled. Also serves
-// as a test that the browser does not crash on startup with policy disabled.
-- (void)testAboutPolicyNotAvailable {
-  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                        IDS_ERRORPAGES_HEADING_NOT_AVAILABLE)];
-}
-
-// Tests that policies are not loaded when policy is disabled.
-- (void)testPoliciesAreNotLoaded {
-  std::unique_ptr<base::Value> searchValue =
-      GetPlatformPolicy(policy::key::kDefaultSearchProviderName);
-  GREYAssertTrue(searchValue && searchValue->is_none(),
-                 @"searchValue was unexpectedly set");
-}
-
-@end
-
 // Test case that enables CBCM.
 @interface CBCMEnabledTestCase : ChromeTestCase
 @end
@@ -191,7 +141,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm=*/true);
 }
 
@@ -223,7 +173,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm=*/false);
 }
 

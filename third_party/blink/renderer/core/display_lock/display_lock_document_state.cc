@@ -10,8 +10,24 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+
+namespace {
+
+const char kForcedRendering[] =
+    "Rendering was performed in a subtree hidden by content-visibility:hidden.";
+const char kForcedRenderingMax[] =
+    "Rendering was performed in a subtree hidden by content-visibility:hidden. "
+    "Further messages will be suppressed.";
+constexpr unsigned kMaxConsoleMessages = 500;
+
+}  // namespace
 
 namespace blink {
 
@@ -167,6 +183,10 @@ void DisplayLockDocumentState::ScheduleAnimation() {
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks
 DisplayLockDocumentState::GetScopedForceActivatableLocks() {
   return ScopedForceActivatableDisplayLocks(this);
+}
+
+bool DisplayLockDocumentState::HasActivatableLocks() const {
+  return LockedDisplayLockCount() != DisplayLockBlockingAllActivationCount();
 }
 
 bool DisplayLockDocumentState::ActivatableDisplayLocksForced() const {
@@ -392,11 +412,225 @@ void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
 void DisplayLockDocumentState::UnlockShapingDeferredElements() {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
+  if (!HasActivatableLocks())
     return;
+
+  size_t count = 0;
   for (auto& context : display_lock_contexts_) {
-    if (context->HasElement() && context->IsShapingDeferred())
+    if (context->HasElement() && context->IsShapingDeferred()) {
       context->SetRequestedState(EContentVisibility::kVisible);
+      ++count;
+    }
+  }
+  if (count > 0) {
+    UseCounter::Count(document_,
+                      WebFeature::kDeferredShapingReshapedByForceLayout);
+    DEFERRED_SHAPING_VLOG(1) << "Unlocked all " << count << " elements.";
+  }
+}
+
+void DisplayLockDocumentState::UnlockShapingDeferredElements(
+    const Node& target,
+    CSSPropertyID property_id) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (!HasActivatableLocks())
+    return;
+  // Need to update layout tree because we access the tree and style.
+  target.GetDocument().UpdateStyleAndLayoutTreeForNode(&target);
+  if (!HasActivatableLocks())
+    return;
+  LayoutObject* target_object = target.GetLayoutObject();
+  if (!target_object)
+    return;
+
+  UnlockShapingDeferredInclusiveDescendants(*target_object);
+  if (!HasActivatableLocks())
+    return;
+
+  const ComputedStyle& style = target_object->StyleRef();
+  switch (property_id) {
+    case CSSPropertyID::kTop:
+      if (!style.Top().IsFixed())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kBottom:
+      if (!style.Bottom().IsFixed())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kLeft:
+      if (!style.Left().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kRight:
+      if (!style.Right().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kHeight:
+      if (!style.Height().IsFixed())
+        UnlockToDetermineHeight(*target_object);
+      return;
+    case CSSPropertyID::kWidth:
+      if (!style.Width().IsFixed())
+        UnlockToDetermineWidth(*target_object);
+      return;
+
+    case CSSPropertyID::kPaddingTop:
+      if (!style.PaddingTop().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingBottom:
+      if (!style.PaddingBottom().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingLeft:
+      if (!style.PaddingLeft().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kPaddingRight:
+      if (!style.PaddingRight().IsFixed())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+
+    case CSSPropertyID::kMarginTop:
+      if (style.MarginTop().IsPercent())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      else if (style.MarginTop().IsAuto())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginBottom:
+      if (style.MarginBottom().IsPercent())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      else if (style.MarginBottom().IsAuto())
+        UnlockToDetermineHeight(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginLeft:
+      if (style.MarginLeft().IsPercent() || style.MarginLeft().IsAuto())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+    case CSSPropertyID::kMarginRight:
+      if (style.MarginRight().IsPercent() || style.MarginRight().IsAuto())
+        UnlockToDetermineWidth(*target_object->ContainingBlock());
+      return;
+
+    default: {
+      LayoutObject* object = target_object;
+      while (!object->ContainingBlock()->IsLayoutView())
+        object = object->ContainingBlock();
+      const ComputedStyle& style = object->StyleRef();
+      if (object->IsOutOfFlowPositioned() &&
+          (!style.Left().IsAuto() || !style.Right().IsAuto()) &&
+          (!style.Top().IsAuto() || !style.Bottom().IsAuto()))
+        UnlockShapingDeferredInclusiveDescendants(*object);
+      else
+        UnlockShapingDeferredElements();
+    }
+  }
+}
+
+void DisplayLockDocumentState::UnlockToDetermineWidth(
+    const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (!HasActivatableLocks())
+    return;
+
+  if (object.IsInline()) {
+    UnlockShapingDeferredInclusiveDescendants(*object.ContainingBlock());
+    return;
+  }
+
+  const ComputedStyle& style = object.StyleRef();
+  if (style.BoxSizing() == EBoxSizing::kContentBox) {
+    if (style.Width().IsFixed())
+      return;
+  } else {
+    if (style.Width().IsFixed() && style.PaddingLeft().IsFixed() &&
+        style.PaddingRight().IsFixed())
+      return;
+    if ((style.PaddingLeft().IsPercent() || style.PaddingRight().IsPercent()) &&
+        object.ContainingBlock()) {
+      UnlockToDetermineWidth(*object.ContainingBlock());
+      return;
+    }
+  }
+  LayoutBlock* cb = object.ContainingBlock();
+  if (style.Left().IsAuto() || style.Right().IsAuto() || !cb) {
+    UnlockShapingDeferredInclusiveDescendants(object);
+    return;
+  }
+  UnlockToDetermineWidth(*cb);
+}
+
+void DisplayLockDocumentState::UnlockToDetermineHeight(
+    const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (!HasActivatableLocks())
+    return;
+
+  if (object.IsInline()) {
+    UnlockShapingDeferredInclusiveDescendants(*object.ContainingBlock());
+    return;
+  }
+
+  const ComputedStyle& style = object.StyleRef();
+  if (style.BoxSizing() == EBoxSizing::kContentBox) {
+    if (style.Height().IsFixed())
+      return;
+  } else {
+    if (style.Height().IsFixed() && style.PaddingTop().IsFixed() &&
+        style.PaddingBottom().IsFixed())
+      return;
+    if ((style.PaddingTop().IsPercent() || style.PaddingBottom().IsPercent()) &&
+        object.ContainingBlock()) {
+      UnlockToDetermineWidth(*object.ContainingBlock());
+      if (!HasActivatableLocks())
+        return;
+    }
+  }
+  LayoutBlock* cb = object.ContainingBlock();
+  if (style.Top().IsAuto() || style.Bottom().IsAuto() || !cb) {
+    UnlockShapingDeferredInclusiveDescendants(object);
+    return;
+  }
+  UnlockToDetermineHeight(*cb);
+}
+
+void DisplayLockDocumentState::UnlockShapingDeferredInclusiveDescendants(
+    const LayoutObject& ancestor) {
+  DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
+  DCHECK(HasActivatableLocks());
+
+  size_t count = 0;
+  for (auto& context : display_lock_contexts_) {
+    if (context->IsShapingDeferred() &&
+        context->IsInclusiveDescendantOf(ancestor)) {
+      context->SetRequestedState(EContentVisibility::kVisible);
+      ++count;
+    }
+  }
+  if (count > 0) {
+    DEFERRED_SHAPING_VLOG(1)
+        << "Partially unlocked " << count << " elements ==> remaining="
+        << (LockedDisplayLockCount() - DisplayLockBlockingAllActivationCount());
+  }
+}
+
+void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
+  // Note that this is a verbose level message, since it can happen
+  // frequently and is not necessarily a problem if the developer is
+  // accessing content-visibility: hidden subtrees intentionally.
+  if (forced_render_warnings_ < kMaxConsoleMessages) {
+    forced_render_warnings_++;
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kVerbose,
+        forced_render_warnings_ == kMaxConsoleMessages ? kForcedRenderingMax
+                                                       : kForcedRendering);
+    console_message->SetNodes(document_->GetFrame(),
+                              {DOMNodeIds::IdForNode(element)});
+    document_->AddConsoleMessage(console_message);
   }
 }
 

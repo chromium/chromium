@@ -89,8 +89,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
       gl::GLSurfaceFormat format) = 0;
   // Hold a ref of the given surface until the returned closure is fired.
   virtual base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) = 0;
-  virtual void PostTaskToClientThread(base::OnceClosure closure) = 0;
   virtual void ScheduleGrContextCleanup() = 0;
+
+  void PostTaskToClientThread(base::OnceClosure closure) {
+    GetClientTaskRunner()->PostTask(FROM_HERE, std::move(closure));
+  }
+  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
 
   // This function schedules delayed task to be run on GPUThread. It can be
   // called only from GPU Thread.

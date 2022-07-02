@@ -296,7 +296,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   std::vector<ScopedHandle> handles_;
   std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
-  raw_ptr<const ConnectionGroup::Ref> receiver_connection_group_ = nullptr;
+  raw_ptr<const ConnectionGroup::Ref, DanglingUntriaged>
+      receiver_connection_group_ = nullptr;
 
   // Indicates whether this Message object is transferable, i.e. can be sent
   // elsewhere. In general this is true unless |handle_| is invalid or

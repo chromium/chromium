@@ -42,8 +42,6 @@ cc_library(
     name = "zlib_minizip",
     srcs = [
         "contrib/minizip/ioapi.c",
-        "contrib/minizip/miniunz.c",
-        "contrib/minizip/minizip.c",
         "contrib/minizip/unzip.c",
         "contrib/minizip/zip.c",
     ],

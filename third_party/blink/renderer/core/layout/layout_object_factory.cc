@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_token_element.h"
@@ -161,7 +163,7 @@ LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
                                              const ComputedStyle& style,
                                              LegacyLayout legacy) {
-  DCHECK(IsA<MathMLElement>(node));
+  DCHECK(IsA<MathMLElement>(node) || node.IsDocumentNode() /* is_anonymous */);
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
   if (IsA<MathMLTokenElement>(node)) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,
@@ -185,6 +187,17 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
                                                     LegacyLayout legacy) {
   const Node* parent = node.parentNode();
   const ComputedStyle* parent_style = parent->GetComputedStyle();
+
+  if (legacy == LegacyLayout::kForce) {
+    // A table inside an inline element with specified columns may end up
+    // marking a list-item ancestor with a size container-type for forced legacy
+    // without re-attaching it during interleaved style recalc. Enforce
+    // legacy/ng consistency between list-item and marker.
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled());
+    DCHECK(parent->GetLayoutObject());
+    if (parent->GetLayoutObject()->IsLayoutNGObject())
+      legacy = LegacyLayout::kAuto;
+  }
   bool is_inside =
       parent_style->ListStylePosition() == EListStylePosition::kInside ||
       (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
@@ -384,6 +397,17 @@ LayoutObject* LayoutObjectFactory::CreateRubyText(Node* node,
                                                   const ComputedStyle& style,
                                                   LegacyLayout legacy) {
   return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, legacy);
+}
+
+LayoutObject* LayoutObjectFactory::CreateSVGForeignObject(
+    Node& node,
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
+  const bool disable_ng_for_type =
+      !RuntimeEnabledFeatures::LayoutNGForeignObjectEnabled();
+  return CreateObject<LayoutBlockFlow, LayoutNGSVGForeignObject,
+                      LayoutSVGForeignObject>(node, legacy,
+                                              disable_ng_for_type);
 }
 
 LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,

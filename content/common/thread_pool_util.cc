@@ -10,9 +10,10 @@
 
 namespace content {
 
-int GetMinForegroundThreadsInRendererThreadPool() {
+size_t GetMinForegroundThreadsInRendererThreadPool() {
   // Assume a busy main thread.
-  return std::max(1, base::SysInfo::NumberOfProcessors() - 1);
+  return static_cast<size_t>(
+      std::max(1, base::SysInfo::NumberOfProcessors() - 1));
 }
 
 }  // namespace content

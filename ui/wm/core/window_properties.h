@@ -5,9 +5,9 @@
 #ifndef UI_WM_CORE_WINDOW_PROPERTIES_H_
 #define UI_WM_CORE_WINDOW_PROPERTIES_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/base/class_property.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
@@ -24,28 +24,30 @@ enum WindowVisibilityAnimationTransition {
 
 // Property to tell if the container uses screen coordinates for the child
 // windows.
-WM_CORE_EXPORT extern const ui::ClassProperty<bool>* const
-    kUsesScreenCoordinatesKey;
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<bool>* const kUsesScreenCoordinatesKey;
 
-WM_CORE_EXPORT extern const ui::ClassProperty<base::TimeDelta>* const
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<base::TimeDelta>* const
     kWindowVisibilityAnimationDurationKey;
 
-WM_CORE_EXPORT extern const ui::ClassProperty<
-    WindowVisibilityAnimationTransition>* const
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<WindowVisibilityAnimationTransition>* const
     kWindowVisibilityAnimationTransitionKey;
 
-WM_CORE_EXPORT extern const ui::ClassProperty<int>* const
-    kWindowVisibilityAnimationTypeKey;
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<int>* const kWindowVisibilityAnimationTypeKey;
 
 // Used if the animation-type is WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL.
-WM_CORE_EXPORT extern const ui::ClassProperty<float>* const
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<float>* const
     kWindowVisibilityAnimationVerticalPositionKey;
 
 }  // namespace wm
 
 // These need to be declared here for jumbo builds.
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT,
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
                                         wm::WindowVisibilityAnimationTransition)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT, float)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM), float)
 
 #endif  // UI_WM_CORE_WINDOW_PROPERTIES_H_

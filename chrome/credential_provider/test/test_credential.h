@@ -5,8 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 #define CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 
-#include <atlbase.h>
-#include <atlcom.h>
+#include "base/win/atl.h"
+
 #include <atlcomcli.h>
 #include <credentialprovider.h>
 

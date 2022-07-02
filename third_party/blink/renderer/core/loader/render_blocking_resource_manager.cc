@@ -60,6 +60,9 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
 void RenderBlockingResourceManager::AddPendingPreload(
     const PendingLinkPreload& link,
     PreloadType type) {
+  // TODO(crbug.com/1271296): `kRegular` is no longer in use. Clean up the code.
+  DCHECK_EQ(type, PreloadType::kShortBlockingFont);
+
   if (type == PreloadType::kShortBlockingFont && font_preload_timer_has_fired_)
     return;
 

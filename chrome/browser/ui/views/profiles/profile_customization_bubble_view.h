@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_VIEW_H_
 
 #include "base/gtest_prod_util.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -13,6 +14,7 @@ namespace views {
 class View;
 }  // namespace views
 
+class Browser;
 class Profile;
 
 // This bubble is implemented as a WebUI page rendered inside a native bubble.
@@ -27,7 +29,7 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
   ~ProfileCustomizationBubbleView() override;
 
   // Creates and shows the bubble.
-  static ProfileCustomizationBubbleView* CreateBubble(Profile* profile,
+  static ProfileCustomizationBubbleView* CreateBubble(Browser* browser,
                                                       views::View* anchor_view);
 
  private:
@@ -37,8 +39,9 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
 
   ProfileCustomizationBubbleView(Profile* profile, views::View* anchor_view);
 
-  // Called when the "Done" button is clicked in the inner WebUI.
-  void OnDoneButtonClicked();
+  // Called when the "Done" or "Skip" button is clicked in the inner WebUI.
+  void OnCompletionButtonClicked(
+      ProfileCustomizationHandler::CustomizationResult customization_result);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_VIEW_H_

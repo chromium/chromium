@@ -11,6 +11,7 @@
 #include "ash/login/ui/media_controls_header_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -681,8 +682,12 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
+  const bool should_use_dark_color =
+      features::IsDarkLightModeEnabled() &&
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
-      message_center::kProductIcon, kAppIconSize, gfx::kGoogleGrey700);
+      message_center::kProductIcon, kAppIconSize,
+      should_use_dark_color ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700);
 
   // Verify that the icon is initialized to the default.
   EXPECT_TRUE(icon_view()->GetImage().BackedBySameObjectAs(default_icon));

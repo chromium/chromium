@@ -2,18 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("metrics") {
+static_library("browser") {
   sources = [
-    "metrics/commerce_metrics_tab_helper.cc",
-    "metrics/commerce_metrics_tab_helper.h",
+    "commerce_tab_helper.cc",
+    "commerce_tab_helper.h",
+    "web_contents_wrapper.cc",
+    "web_contents_wrapper.h",
   ]
 
   deps = [
     "//base",
-    "//components/commerce/core:metrics",
-    "//components/optimization_guide/content/browser",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/prefs",
+    "//components/commerce/core:shopping_service",
     "//content/public/browser",
   ]
 }

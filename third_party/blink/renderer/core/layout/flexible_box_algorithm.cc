@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 namespace {
@@ -142,6 +143,12 @@ LayoutUnit FlexItem::FlowAwareMarginBefore() const {
   }
   NOTREACHED();
   return LayoutUnit();
+}
+
+LayoutUnit FlexItem::MarginBlockEnd() const {
+  NGBoxStrut margins = physical_margins_.ConvertToLogical(
+      algorithm_->Style()->GetWritingDirection());
+  return margins.block_end;
 }
 
 LayoutUnit FlexItem::MainAxisMarginExtent() const {
@@ -1045,10 +1052,15 @@ ItemPosition FlexLayoutAlgorithm::AlignmentForChild(
           : child_style
                 .ResolvedAlignSelf(ItemPosition::kStretch, &flexbox_style)
                 .GetPosition();
+  return TranslateItemPosition(flexbox_style, child_style, align);
+}
+
+ItemPosition FlexLayoutAlgorithm::TranslateItemPosition(
+    const ComputedStyle& flexbox_style,
+    const ComputedStyle& child_style,
+    ItemPosition align) {
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
-  DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
-  DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
 
   if (align == ItemPosition::kStart)
     return ItemPosition::kFlexStart;
@@ -1071,6 +1083,30 @@ ItemPosition FlexLayoutAlgorithm::AlignmentForChild(
     }
     return align == ItemPosition::kSelfStart ? logical.BlockStart()
                                              : logical.BlockEnd();
+  }
+
+  if (align == ItemPosition::kLeft || align == ItemPosition::kRight) {
+    DCHECK_EQ(
+        align,
+        child_style.ResolvedJustifySelf(ItemPosition::kStretch).GetPosition())
+        << "justify-self is the only way that we can get a left or right "
+           "ItemPosition";
+    DCHECK(IsColumnFlow(flexbox_style))
+        << "We can also only get left or right ItemPositions when checking "
+           "compat data for column flexboxes. The rest of this logic assumes a "
+           "column flexbox.";
+    switch (flexbox_style.GetWritingMode()) {
+      case WritingMode::kHorizontalTb:
+      case WritingMode::kVerticalLr:
+        return align == ItemPosition::kLeft ? ItemPosition::kFlexStart
+                                            : ItemPosition::kFlexEnd;
+      case WritingMode::kVerticalRl:
+        return align == ItemPosition::kLeft ? ItemPosition::kFlexEnd
+                                            : ItemPosition::kFlexStart;
+      case WritingMode::kSidewaysLr:
+      case WritingMode::kSidewaysRl:
+        return ItemPosition::kFlexStart;
+    }
   }
 
   if (align == ItemPosition::kBaseline &&

@@ -126,9 +126,6 @@ std::unique_ptr<views::View> CreateWordmarkView() {
 
 }  // namespace
 
-// static
-TranslateBubbleView* TranslateBubbleView::translate_bubble_view_ = nullptr;
-
 TranslateBubbleView::~TranslateBubbleView() {
   // A child view could refer to a model which is owned by this class when
   // the child view is destructed. For example, |source_language_combobx_model_|
@@ -155,86 +152,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
                                       kSourceLanguageDoneButton);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
-
-// static
-views::Widget* TranslateBubbleView::ShowBubble(
-    views::View* anchor_view,
-    views::Button* highlighted_button,
-    content::WebContents* web_contents,
-    translate::TranslateStep step,
-    const std::string& source_language,
-    const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
-    LocationBarBubbleDelegateView::DisplayReason reason) {
-  if (translate_bubble_view_) {
-    // When the user reads the advanced setting panel, the bubble should not be
-    // changed because they are focusing on the bubble.
-    if (translate_bubble_view_->web_contents() == web_contents &&
-        (translate_bubble_view_->model()->GetViewState() ==
-             TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-         translate_bubble_view_->model()->GetViewState() ==
-             TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)) {
-      return nullptr;
-    }
-    if (step != translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
-      TranslateBubbleModel::ViewState state =
-          TranslateBubbleModelImpl::TranslateStepToViewState(step);
-      translate_bubble_view_->SwitchView(state);
-    } else {
-      translate_bubble_view_->SwitchToErrorView(error_type);
-    }
-    return nullptr;
-  } else {
-    if (step == translate::TRANSLATE_STEP_AFTER_TRANSLATE &&
-        reason == AUTOMATIC) {
-      return nullptr;
-    }
-  }
-  std::unique_ptr<translate::TranslateUIDelegate> ui_delegate(
-      new translate::TranslateUIDelegate(
-          ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-              ->GetWeakPtr(),
-          source_language, target_language));
-  std::unique_ptr<TranslateBubbleModel> model(
-      new TranslateBubbleModelImpl(step, std::move(ui_delegate)));
-  TranslateBubbleView* view = new TranslateBubbleView(
-      anchor_view, std::move(model), error_type, web_contents);
-
-  if (highlighted_button)
-    view->SetHighlightedButton(highlighted_button);
-  views::Widget* bubble_widget =
-      views::BubbleDialogDelegateView::CreateBubble(view);
-
-  // TAB UI has the same view throughout. Select the right tab based on |step|
-  // upon initialization.
-  if (step != translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
-    TranslateBubbleModel::ViewState state =
-        TranslateBubbleModelImpl::TranslateStepToViewState(step);
-    translate_bubble_view_->SwitchView(state);
-  } else {
-    translate_bubble_view_->SwitchToErrorView(error_type);
-  }
-
-  view->ShowForReason(reason);
-  translate::ReportUiAction(translate::BUBBLE_SHOWN);
-
-  ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-      ->GetActiveTranslateMetricsLogger()
-      ->LogUIChange(true);
-
-  return bubble_widget;
-}
-
-// static
-void TranslateBubbleView::CloseCurrentBubble() {
-  if (translate_bubble_view_)
-    translate_bubble_view_->CloseBubble();
-}
-
-// static
-TranslateBubbleView* TranslateBubbleView::GetCurrentBubble() {
-  return translate_bubble_view_;
-}
 
 void TranslateBubbleView::CloseBubble() {
   mouse_handler_.reset();
@@ -318,11 +235,11 @@ void TranslateBubbleView::WindowClosing() {
   if (web_contents())
     model_->OnBubbleClosing();
 
-  // We have to reset |translate_bubble_view_| here, not in our destructor,
-  // because we'll be destroyed asynchronously and the shown state will be
-  // checked before then.
-  DCHECK_EQ(translate_bubble_view_, this);
-  translate_bubble_view_ = nullptr;
+  // We have to reset the controller reference to the view here, not in our
+  // destructor, because we'll be destroyed asynchronously and the shown state
+  // will be checked before then.
+  if (on_closing_)
+    std::move(on_closing_).Run();
 }
 
 bool TranslateBubbleView::AcceleratorPressed(
@@ -458,8 +375,9 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       if (should_never_translate_language_) {
         should_always_translate_ = false;
         model_->SetAlwaysTranslate(should_always_translate_);
-        translate::ReportUiAction(
-            translate::NEVER_TRANSLATE_LANGUAGE_MENU_CLICKED);
+        translate::ReportTranslateBubbleUiAction(
+            translate::TranslateBubbleUiEvent::
+                NEVER_TRANSLATE_LANGUAGE_MENU_CLICKED);
         model_->SetNeverTranslateLanguage(true);
         RevertOrDeclineTranslation();
       } else {
@@ -472,7 +390,9 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
           translate::UIInteraction::kNeverTranslateSite);
       should_never_translate_site_ = !should_never_translate_site_;
       if (should_never_translate_site_) {
-        translate::ReportUiAction(translate::NEVER_TRANSLATE_SITE_MENU_CLICKED);
+        translate::ReportTranslateBubbleUiAction(
+            translate::TranslateBubbleUiEvent::
+                NEVER_TRANSLATE_SITE_MENU_CLICKED);
         model_->SetNeverTranslateSite(true);
         RevertOrDeclineTranslation();
       } else {
@@ -481,12 +401,16 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case OptionsMenuItem::CHANGE_TARGET_LANGUAGE:
-      translate::ReportUiAction(translate::ADVANCED_MENU_CLICKED);
+      translate::ReportTranslateBubbleUiAction(
+          translate::TranslateBubbleUiEvent::
+              CHANGE_SOURCE_OR_TARGET_LANGUAGE_OPTIONS_CLICKED);
       SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
       break;
 
     case OptionsMenuItem::CHANGE_SOURCE_LANGUAGE:
-      translate::ReportUiAction(translate::ADVANCED_MENU_CLICKED);
+      translate::ReportTranslateBubbleUiAction(
+          translate::TranslateBubbleUiEvent::
+              CHANGE_SOURCE_OR_TARGET_LANGUAGE_OPTIONS_CLICKED);
       SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
       break;
 
@@ -499,7 +423,6 @@ void TranslateBubbleView::OnWidgetClosing(views::Widget* widget) {
   if (GetBubbleFrameView()->GetWidget()->closed_reason() ==
       views::Widget::ClosedReason::kCloseButtonClicked) {
     model_->DeclineTranslation();
-    translate::ReportUiAction(translate::CLOSE_BUTTON_CLICKED);
     model_->ReportUIInteraction(translate::UIInteraction::kCloseUIExplicitly);
   } else {
     model_->ReportUIInteraction(translate::UIInteraction::kCloseUILostFocus);
@@ -510,18 +433,30 @@ TranslateBubbleModel::ViewState TranslateBubbleView::GetViewState() const {
   return model_->GetViewState();
 }
 
+void TranslateBubbleView::SetViewState(
+    translate::TranslateStep step,
+    translate::TranslateErrors::Type error_type) {
+  if (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
+    SwitchToErrorView(error_type);
+  } else {
+    TranslateBubbleModel::ViewState state =
+        TranslateBubbleModelImpl::TranslateStepToViewState(step);
+    SwitchView(state);
+  }
+}
+
 TranslateBubbleView::TranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<TranslateBubbleModel> model,
     translate::TranslateErrors::Type error_type,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    base::OnceClosure on_closing)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       model_(std::move(model)),
       error_type_(error_type),
       is_in_incognito_window_(
-          web_contents && web_contents->GetBrowserContext()->IsOffTheRecord()) {
-  translate_bubble_view_ = this;
-
+          web_contents && web_contents->GetBrowserContext()->IsOffTheRecord()),
+      on_closing_(std::move(on_closing)) {
   UpdateInsets(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
 
   if (web_contents)  // web_contents can be null in unit_tests.
@@ -555,14 +490,16 @@ void TranslateBubbleView::Translate() {
   model_->ReportUIInteraction(translate::UIInteraction::kTranslate);
   model_->Translate();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TRANSLATING);
-  translate::ReportUiAction(translate::TRANSLATE_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::TARGET_LANGUAGE_TAB_SELECTED);
 }
 
 void TranslateBubbleView::ShowOriginal() {
   model_->ReportUIInteraction(translate::UIInteraction::kRevert);
   model_->RevertTranslation();
   SwitchView(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
-  translate::ReportUiAction(translate::SHOW_ORIGINAL_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::SOURCE_LANGUAGE_TAB_SELECTED);
 }
 
 void TranslateBubbleView::ConfirmAdvancedOptions() {
@@ -582,7 +519,8 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
     SwitchView(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
   }
 
-  translate::ReportUiAction(translate::DONE_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::DONE_BUTTON_CLICKED);
 }
 
 void TranslateBubbleView::SourceLanguageChanged() {
@@ -590,7 +528,8 @@ void TranslateBubbleView::SourceLanguageChanged() {
   model_->UpdateSourceLanguageIndex(
       source_language_combobox_->GetSelectedIndex());
   UpdateAdvancedView();
-  translate::ReportUiAction(translate::SOURCE_LANGUAGE_MENU_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::SOURCE_LANGUAGE_MENU_ITEM_CLICKED);
 }
 
 void TranslateBubbleView::TargetLanguageChanged() {
@@ -598,16 +537,18 @@ void TranslateBubbleView::TargetLanguageChanged() {
   model_->UpdateTargetLanguageIndex(
       target_language_combobox_->GetSelectedIndex());
   UpdateAdvancedView();
-  translate::ReportUiAction(translate::TARGET_LANGUAGE_MENU_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TranslateBubbleUiEvent::TARGET_LANGUAGE_MENU_ITEM_CLICKED);
 }
 
 void TranslateBubbleView::AlwaysTranslatePressed() {
   model_->ReportUIInteraction(
       translate::UIInteraction::kAlwaysTranslateLanguage);
   should_always_translate_ = GetAlwaysTranslateCheckbox()->GetChecked();
-  translate::ReportUiAction(should_always_translate_
-                                ? translate::ALWAYS_TRANSLATE_CHECKED
-                                : translate::ALWAYS_TRANSLATE_UNCHECKED);
+  translate::ReportTranslateBubbleUiAction(
+      should_always_translate_
+          ? translate::TranslateBubbleUiEvent::ALWAYS_TRANSLATE_CHECKED
+          : translate::TranslateBubbleUiEvent::ALWAYS_TRANSLATE_UNCHECKED);
   // In the tab UI the always translate button should apply immediately
   // except for in an advanced view.
   if (GetViewState() != TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) {
@@ -803,7 +744,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   auto try_again_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
           [](TranslateBubbleModel* model) {
-            translate::ReportUiAction(translate::TRY_AGAIN_BUTTON_CLICKED);
+            translate::ReportTranslateBubbleUiAction(
+                translate::TranslateBubbleUiEvent::TRY_AGAIN_BUTTON_CLICKED);
             model->Translate();
           },
           base::Unretained(model_.get())),
@@ -1044,7 +986,8 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateCloseButton() {
   auto close_button =
       views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
           [](View* view) {
-            translate::ReportUiAction(translate::CLOSE_BUTTON_CLICKED);
+            translate::ReportTranslateBubbleUiAction(
+                translate::TranslateBubbleUiEvent::CLOSE_BUTTON_CLICKED);
             view->GetWidget()->CloseWithReason(
                 views::Widget::ClosedReason::kCloseButtonClicked);
           },
@@ -1196,9 +1139,9 @@ void TranslateBubbleView::UpdateInsets(TranslateBubbleModel::ViewState state) {
   if (state == TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
       state == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||
       state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
-    translate_bubble_view_->set_margins(kTabStateMargins);
+    set_margins(kTabStateMargins);
   } else {
-    translate_bubble_view_->set_margins(kDialogStateMargins);
+    set_margins(kDialogStateMargins);
   }
 }
 

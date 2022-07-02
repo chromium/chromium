@@ -239,7 +239,7 @@ class VIEWS_EXPORT TextfieldModel {
   // composition text.
   void SetCompositionText(const ui::CompositionText& composition);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Return the text range corresponding to the autocorrected text.
   const gfx::Range& autocorrect_range() const { return autocorrect_range_; }
 
@@ -340,7 +340,7 @@ class VIEWS_EXPORT TextfieldModel {
 
   gfx::Range composition_range_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   gfx::Range autocorrect_range_;
 #endif
 

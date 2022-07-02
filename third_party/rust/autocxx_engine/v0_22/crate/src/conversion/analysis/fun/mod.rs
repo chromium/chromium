@@ -270,7 +270,7 @@ enum TypeConversionSophistication {
 }
 
 pub(crate) struct FnAnalyzer<'a> {
-    unsafe_policy: UnsafePolicy,
+    unsafe_policy: &'a UnsafePolicy,
     extra_apis: ApiVec<NullPhase>,
     type_converter: TypeConverter<'a>,
     bridge_name_tracker: BridgeNameTracker,
@@ -281,13 +281,14 @@ pub(crate) struct FnAnalyzer<'a> {
     subclasses_by_superclass: HashMap<QualifiedName, Vec<SubclassName>>,
     nested_type_name_map: HashMap<QualifiedName, String>,
     generic_types: HashSet<QualifiedName>,
+    types_in_anonymous_namespace: HashSet<QualifiedName>,
     existing_superclass_trait_api_names: HashSet<QualifiedName>,
 }
 
 impl<'a> FnAnalyzer<'a> {
     pub(crate) fn analyze_functions(
         apis: ApiVec<PodPhase>,
-        unsafe_policy: UnsafePolicy,
+        unsafe_policy: &'a UnsafePolicy,
         config: &'a IncludeCppConfig,
     ) -> ApiVec<FnPrePhase2> {
         let mut me = Self {
@@ -303,6 +304,7 @@ impl<'a> FnAnalyzer<'a> {
             nested_type_name_map: Self::build_nested_type_map(&apis),
             generic_types: Self::build_generic_type_set(&apis),
             existing_superclass_trait_api_names: HashSet::new(),
+            types_in_anonymous_namespace: Self::build_types_in_anonymous_namespace(&apis),
         };
         let mut results = ApiVec::new();
         convert_apis(
@@ -385,6 +387,22 @@ impl<'a> FnAnalyzer<'a> {
             .collect()
     }
 
+    fn build_types_in_anonymous_namespace(apis: &ApiVec<PodPhase>) -> HashSet<QualifiedName> {
+        apis.iter()
+            .filter_map(|api| match api {
+                Api::Struct {
+                    analysis:
+                        PodAnalysis {
+                            in_anonymous_namespace: true,
+                            ..
+                        },
+                    ..
+                } => Some(api.name().clone()),
+                _ => None,
+            })
+            .collect()
+    }
+
     /// Builds a mapping from a qualified type name to the last 'nest'
     /// of its name, if it has multiple elements.
     fn build_nested_type_map(apis: &ApiVec<PodPhase>) -> HashMap<QualifiedName, String> {
@@ -458,7 +476,9 @@ impl<'a> FnAnalyzer<'a> {
                 UnsafetyNeeded::Always => UnsafetyNeeded::JustBridge,
                 _ => unsafest_param,
             },
-            _ if self.unsafe_policy == UnsafePolicy::AllFunctionsUnsafe => UnsafetyNeeded::Always,
+            _ if matches!(self.unsafe_policy, UnsafePolicy::AllFunctionsUnsafe) => {
+                UnsafetyNeeded::Always
+            }
             _ => match unsafest_non_placement_param {
                 UnsafetyNeeded::Always => UnsafetyNeeded::Always,
                 UnsafetyNeeded::JustBridge => match unsafest_param {
@@ -620,6 +640,7 @@ impl<'a> FnAnalyzer<'a> {
                     receiver_mutability,
                     sup,
                     subclass_fn_deps,
+                    self.unsafe_policy,
                 ));
 
                 // Create the trait item for the <superclass>_methods and <superclass>_supers
@@ -637,6 +658,7 @@ impl<'a> FnAnalyzer<'a> {
                         receiver_mutability,
                         sup.clone(),
                         is_pure_virtual,
+                        self.unsafe_policy,
                     ));
                 }
             }
@@ -811,7 +833,7 @@ impl<'a> FnAnalyzer<'a> {
                 }
                 rust_name = predetermined_rust_name
                     .unwrap_or_else(|| self.get_overload_name(ns, type_ident, rust_name));
-                let error_context = error_context_for_method(&self_ty, &rust_name);
+                let error_context = self.error_context_for_method(&self_ty, &rust_name);
 
                 // If this is 'None', then something weird is going on. We'll check for that
                 // later when we have enough context to generate useful errors.
@@ -874,7 +896,7 @@ impl<'a> FnAnalyzer<'a> {
             } else if matches!(fun.special_member, Some(SpecialMemberKind::Destructor)) {
                 rust_name = predetermined_rust_name
                     .unwrap_or_else(|| self.get_overload_name(ns, type_ident, rust_name));
-                let error_context = error_context_for_method(&self_ty, &rust_name);
+                let error_context = self.error_context_for_method(&self_ty, &rust_name);
                 let ty = Type::Path(self_ty.to_type_path());
                 (
                     FnKind::TraitMethod {
@@ -933,7 +955,7 @@ impl<'a> FnAnalyzer<'a> {
                 // Disambiguate overloads.
                 let rust_name = predetermined_rust_name
                     .unwrap_or_else(|| self.get_overload_name(ns, type_ident, rust_name));
-                let error_context = error_context_for_method(&self_ty, &rust_name);
+                let error_context = self.error_context_for_method(&self_ty, &rust_name);
                 (
                     FnKind::Method {
                         impl_for: self_ty,
@@ -1127,10 +1149,13 @@ impl<'a> FnAnalyzer<'a> {
                     // It may, for instance, be a private type.
                     set_ignore_reason(ConvertError::MethodOfNonAllowlistedType);
                 }
-                FnKind::Method { ref impl_for, .. } | FnKind::TraitMethod { ref impl_for, .. }
-                    if self.is_generic_type(impl_for) =>
-                {
-                    set_ignore_reason(ConvertError::MethodOfGenericType);
+                FnKind::Method { ref impl_for, .. } | FnKind::TraitMethod { ref impl_for, .. } => {
+                    if self.is_generic_type(impl_for) {
+                        set_ignore_reason(ConvertError::MethodOfGenericType);
+                    }
+                    if self.types_in_anonymous_namespace.contains(impl_for) {
+                        set_ignore_reason(ConvertError::MethodInAnonymousNamespace);
+                    }
                 }
                 _ => {}
             }
@@ -1361,6 +1386,19 @@ impl<'a> FnAnalyzer<'a> {
         };
         let name = ApiName::new_with_cpp_name(ns, cxxbridge_name, cpp_name);
         (analysis, name)
+    }
+
+    fn error_context_for_method(&self, self_ty: &QualifiedName, rust_name: &str) -> ErrorContext {
+        if self.is_generic_type(self_ty) {
+            // A 'method' error context would end up in an
+            //   impl A {
+            //      fn error_thingy
+            //   }
+            // block. We can't impl A if it would need to be impl A<B>
+            ErrorContext::new_for_item(make_ident(rust_name))
+        } else {
+            ErrorContext::new_for_method(self_ty.get_final_ident(), make_ident(rust_name))
+        }
     }
 
     /// Applies a specific `force_rust_conversion` to the parameter at index
@@ -1882,7 +1920,7 @@ impl<'a> FnAnalyzer<'a> {
             if items_found.implicit_default_constructor_needed() {
                 self.synthesize_special_member(
                     items_found,
-                    None,
+                    "default_ctor",
                     &mut apis,
                     SpecialMemberKind::DefaultConstructor,
                     parse_quote! { this: *mut #path },
@@ -1892,7 +1930,7 @@ impl<'a> FnAnalyzer<'a> {
             if items_found.implicit_move_constructor_needed() {
                 self.synthesize_special_member(
                     items_found,
-                    Some("move"),
+                    "move_ctor",
                     &mut apis,
                     SpecialMemberKind::MoveConstructor,
                     parse_quote! { this: *mut #path, other: *mut #path },
@@ -1905,7 +1943,7 @@ impl<'a> FnAnalyzer<'a> {
             if items_found.implicit_copy_constructor_needed() {
                 self.synthesize_special_member(
                     items_found,
-                    Some("const_copy"),
+                    "const_copy_ctor",
                     &mut apis,
                     SpecialMemberKind::CopyConstructor,
                     parse_quote! { this: *mut #path, other: *const #path },
@@ -1918,7 +1956,7 @@ impl<'a> FnAnalyzer<'a> {
             if items_found.implicit_destructor_needed() {
                 self.synthesize_special_member(
                     items_found,
-                    None,
+                    "destructor",
                     &mut apis,
                     SpecialMemberKind::Destructor,
                     parse_quote! { this: *mut #path },
@@ -1958,21 +1996,18 @@ impl<'a> FnAnalyzer<'a> {
     fn synthesize_special_member(
         &mut self,
         items_found: &ItemsFound,
-        label: Option<&str>,
+        label: &str,
         apis: &mut ApiVec<FnPrePhase1>,
         special_member: SpecialMemberKind,
         inputs: Punctuated<FnArg, Comma>,
         references: References,
     ) {
         let self_ty = items_found.name.as_ref().unwrap();
-        let ident = match label {
-            Some(label) => make_ident(self.config.uniquify_name_per_mod(&format!(
-                "{}_synthetic_{}_ctor",
-                self_ty.name.get_final_item(),
-                label
-            ))),
-            None => self_ty.name.get_final_ident(),
-        };
+        let ident = make_ident(self.config.uniquify_name_per_mod(&format!(
+            "{}_synthetic_{}",
+            self_ty.name.get_final_item(),
+            label
+        )));
         let cpp_name = if matches!(special_member, SpecialMemberKind::DefaultConstructor) {
             // Constructors (other than move or copy) are identified in `analyze_foreign_fn` by
             // being suffixed with the cpp_name, so we have to produce that.
@@ -2032,10 +2067,6 @@ fn constructor_with_suffix<'a>(rust_name: &'a str, nested_type_ident: &str) -> O
             None
         }
     })
-}
-
-fn error_context_for_method(self_ty: &QualifiedName, rust_name: &str) -> ErrorContext {
-    ErrorContext::new_for_method(self_ty.get_final_ident(), make_ident(rust_name))
 }
 
 impl Api<FnPhase> {

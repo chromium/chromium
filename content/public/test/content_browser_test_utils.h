@@ -165,7 +165,7 @@ class ShellAddedObserver {
  private:
   void ShellCreated(Shell* shell);
 
-  raw_ptr<Shell> shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
   std::unique_ptr<base::RunLoop> runner_;
 };
 
@@ -219,7 +219,7 @@ class RenderWidgetHostViewCocoaObserver {
       rwhvcocoa_swizzlers_;
   static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*> observers_;
 
-  WebContents* const web_contents_;
+  const raw_ptr<WebContents> web_contents_;
 };
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds);

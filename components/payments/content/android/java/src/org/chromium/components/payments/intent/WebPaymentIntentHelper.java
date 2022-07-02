@@ -56,6 +56,7 @@ public class WebPaymentIntentHelper {
     public static final String EXTRA_SHIPPING_OPTIONS = "shippingOptions";
 
     // Deprecated parameters sent to the payment app for backward compatibility.
+    // TODO(crbug.com/1338538): Remove these parameters.
     public static final String EXTRA_DEPRECATED_CERTIFICATE_CHAIN = "certificateChain";
     public static final String EXTRA_DEPRECATED_DATA = "data";
     public static final String EXTRA_DEPRECATED_DATA_MAP = "dataMap";
@@ -258,8 +259,7 @@ public class WebPaymentIntentHelper {
     }
 
     /**
-     * Create an intent to invoke a service that can answer "is ready to pay" query, or null of
-     * none.
+     * Create an intent to invoke a service that can answer "is ready to pay" query.
      *
      * @param packageName The name of the package of the payment app. Only non-empty string is
      *         allowed.
@@ -274,25 +274,24 @@ public class WebPaymentIntentHelper {
      * @param methodDataMap The payment-method specific data for all applicable payment methods,
      *         e.g., whether the app should be invoked in test or production, a merchant identifier,
      *         or a public key. The map should have at least one entry.
+     * @param isIdentityInReadyToPayEnabled Whether the IS_READY_TO_PAY intent should pass merchant
+     *         user identity to the payment app.
      * @return The intent to invoke the service.
      */
     public static Intent createIsReadyToPayIntent(String packageName, String serviceName,
             String schemelessOrigin, String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap) {
+            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
+            boolean isIdentityInReadyToPayEnabled) {
         Intent isReadyToPayIntent = new Intent();
         checkStringNotEmpty(serviceName, "serviceName");
         checkStringNotEmpty(packageName, "packageName");
         isReadyToPayIntent.setClassName(packageName, serviceName);
-
-        checkStringNotEmpty(schemelessOrigin, "schemelessOrigin");
-        checkStringNotEmpty(schemelessIframeOrigin, "schemelessIframeOrigin");
-        // certificateChain is ok to be null, left unchecked here.
-        checkNotEmpty(methodDataMap, "methodDataMap");
-        isReadyToPayIntent.putExtras(buildExtras(/*id=*/null,
-                /*merchantName=*/null, schemelessOrigin, schemelessIframeOrigin, certificateChain,
-                methodDataMap, /*total=*/null, /*displayItems=*/null, /*modifiers=*/null,
-                /*paymentOptions=*/null,
-                /*shippingOptions=*/null));
+        Bundle extras = new Bundle();
+        if (isIdentityInReadyToPayEnabled) {
+            addCommonExtrasWithIdentity(schemelessOrigin, schemelessIframeOrigin, certificateChain,
+                    methodDataMap, extras);
+        }
+        isReadyToPayIntent.putExtras(extras);
         return isReadyToPayIntent;
     }
 
@@ -318,78 +317,29 @@ public class WebPaymentIntentHelper {
             @Nullable Map<String, PaymentDetailsModifier> modifiers,
             @Nullable PaymentOptions paymentOptions,
             @Nullable List<PaymentShippingOption> shippingOptions) {
-        // The following checks follow the order of the parameters.
+        Bundle extras = new Bundle();
         checkStringNotEmpty(id, "id");
+        extras.putString(EXTRA_PAYMENT_REQUEST_ID, id);
+
         checkNotNull(merchantName, "merchantName");
+        extras.putString(EXTRA_MERCHANT_NAME, merchantName);
 
-        checkStringNotEmpty(schemelessOrigin, "schemelessOrigin");
-        checkStringNotEmpty(schemelessIframeOrigin, "schemelessIframeOrigin");
-
-        // certificateChain is ok to be null, left unchecked here.
-
-        checkNotEmpty(methodDataMap, "methodDataMap");
         checkNotNull(total, "total");
+        String serializedTotalAmount = total.amount.serialize();
+        extras.putString(EXTRA_TOTAL,
+                serializedTotalAmount == null ? EMPTY_JSON_DATA : serializedTotalAmount);
 
-        // displayItems is ok to be null, left unchecked here.
-        // modifiers is ok to be null, left unchecked here.
+        // modifiers is ok to be null.
+        if (modifiers != null) {
+            extras.putString(
+                    EXTRA_MODIFIERS, PaymentDetailsModifier.serializeModifiers(modifiers.values()));
+        }
 
         // shippingOptions should not be null when shipping is requested.
         if (paymentOptions != null && paymentOptions.requestShipping
                 && (shippingOptions == null || shippingOptions.isEmpty())) {
             throw new IllegalArgumentException(
                     "shippingOptions should not be null or empty when shipping is requested.");
-        }
-
-        return buildExtras(id, merchantName, schemelessOrigin, schemelessIframeOrigin,
-                certificateChain, methodDataMap, total, displayItems, modifiers, paymentOptions,
-                shippingOptions);
-    }
-
-    // id, merchantName, total are ok to be null only for {@link #createIsReadyToPayIntent}.
-    private static Bundle buildExtras(@Nullable String id, @Nullable String merchantName,
-            String schemelessOrigin, String schemelessIframeOrigin,
-            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
-            @Nullable PaymentItem total, @Nullable List<PaymentItem> displayItems,
-            @Nullable Map<String, PaymentDetailsModifier> modifiers,
-            @Nullable PaymentOptions paymentOptions,
-            @Nullable List<PaymentShippingOption> shippingOptions) {
-        Bundle extras = new Bundle();
-
-        if (id != null) extras.putString(EXTRA_PAYMENT_REQUEST_ID, id);
-
-        if (merchantName != null) extras.putString(EXTRA_MERCHANT_NAME, merchantName);
-
-        assert !TextUtils.isEmpty(schemelessOrigin);
-        extras.putString(EXTRA_TOP_ORIGIN, schemelessOrigin);
-
-        assert !TextUtils.isEmpty(schemelessIframeOrigin);
-        extras.putString(EXTRA_PAYMENT_REQUEST_ORIGIN, schemelessIframeOrigin);
-
-        Parcelable[] serializedCertificateChain = null;
-        if (certificateChain != null && certificateChain.length > 0) {
-            serializedCertificateChain = buildCertificateChain(certificateChain);
-            extras.putParcelableArray(EXTRA_TOP_CERTIFICATE_CHAIN, serializedCertificateChain);
-        }
-
-        assert methodDataMap != null && !methodDataMap.isEmpty();
-        extras.putStringArrayList(EXTRA_METHOD_NAMES, new ArrayList<>(methodDataMap.keySet()));
-
-        Bundle methodDataBundle = new Bundle();
-        for (Map.Entry<String, PaymentMethodData> methodData : methodDataMap.entrySet()) {
-            checkNotNull(methodData.getValue(), "methodDataMap's entry value");
-            methodDataBundle.putString(methodData.getKey(), methodData.getValue().stringifiedData);
-        }
-        extras.putParcelable(EXTRA_METHOD_DATA, methodDataBundle);
-
-        if (modifiers != null) {
-            extras.putString(
-                    EXTRA_MODIFIERS, PaymentDetailsModifier.serializeModifiers(modifiers.values()));
-        }
-
-        if (total != null) {
-            String serializedTotalAmount = total.amount.serialize();
-            extras.putString(EXTRA_TOTAL,
-                    serializedTotalAmount == null ? EMPTY_JSON_DATA : serializedTotalAmount);
         }
 
         if (paymentOptions != null) {
@@ -403,17 +353,48 @@ public class WebPaymentIntentHelper {
             extras.putParcelableArray(EXTRA_SHIPPING_OPTIONS, serializedShippingOptionList);
         }
 
-        return addDeprecatedExtras(id, schemelessOrigin, schemelessIframeOrigin,
-                serializedCertificateChain, methodDataMap, methodDataBundle, total, displayItems,
-                extras);
+        addCommonExtrasWithIdentity(
+                schemelessOrigin, schemelessIframeOrigin, certificateChain, methodDataMap, extras);
+
+        return addDeprecatedPayIntentExtras(id, total, displayItems, extras);
     }
 
-    private static Bundle addDeprecatedExtras(@Nullable String id, String schemelessOrigin,
-            String schemelessIframeOrigin, @Nullable Parcelable[] serializedCertificateChain,
-            Map<String, PaymentMethodData> methodDataMap, Bundle methodDataBundle,
-            @Nullable PaymentItem total, @Nullable List<PaymentItem> displayItems, Bundle extras) {
-        if (id != null) extras.putString(EXTRA_DEPRECATED_ID, id);
+    // Adds to the given `extras` bundle the common fields for both the IS_READY_TO_PAY (if identity
+    // in can-make-payment feature is enabled) and the PAY intents.
+    private static Bundle addCommonExtrasWithIdentity(String schemelessOrigin,
+            String schemelessIframeOrigin, @Nullable byte[][] certificateChain,
+            Map<String, PaymentMethodData> methodDataMap, Bundle extras) {
+        checkStringNotEmpty(schemelessOrigin, "schemelessOrigin");
+        extras.putString(EXTRA_TOP_ORIGIN, schemelessOrigin);
 
+        checkStringNotEmpty(schemelessIframeOrigin, "schemelessIframeOrigin");
+        extras.putString(EXTRA_PAYMENT_REQUEST_ORIGIN, schemelessIframeOrigin);
+
+        // certificateChain is ok to be null.
+        Parcelable[] serializedCertificateChain = null;
+        if (certificateChain != null && certificateChain.length > 0) {
+            serializedCertificateChain = buildCertificateChain(certificateChain);
+            extras.putParcelableArray(EXTRA_TOP_CERTIFICATE_CHAIN, serializedCertificateChain);
+        }
+
+        checkNotEmpty(methodDataMap, "methodDataMap");
+        extras.putStringArrayList(EXTRA_METHOD_NAMES, new ArrayList<>(methodDataMap.keySet()));
+
+        Bundle methodDataBundle = new Bundle();
+        for (Map.Entry<String, PaymentMethodData> methodData : methodDataMap.entrySet()) {
+            checkNotNull(methodData.getValue(), "methodDataMap's entry value");
+            methodDataBundle.putString(methodData.getKey(), methodData.getValue().stringifiedData);
+        }
+        extras.putParcelable(EXTRA_METHOD_DATA, methodDataBundle);
+
+        return addDeprecatedCommonExtrasWithIdentity(schemelessOrigin, schemelessIframeOrigin,
+                serializedCertificateChain, methodDataMap, methodDataBundle, extras);
+    }
+
+    // TODO(crbug.com/1338538): Remove this method.
+    private static Bundle addDeprecatedCommonExtrasWithIdentity(String schemelessOrigin,
+            String schemelessIframeOrigin, @Nullable Parcelable[] serializedCertificateChain,
+            Map<String, PaymentMethodData> methodDataMap, Bundle methodDataBundle, Bundle extras) {
         extras.putString(EXTRA_DEPRECATED_ORIGIN, schemelessOrigin);
 
         extras.putString(EXTRA_DEPRECATED_IFRAME_ORIGIN, schemelessIframeOrigin);
@@ -432,6 +413,15 @@ public class WebPaymentIntentHelper {
 
         extras.putParcelable(EXTRA_DEPRECATED_DATA_MAP, methodDataBundle);
 
+        return extras;
+    }
+
+    // TODO(crbug.com/1338538): Remove this method.
+    private static Bundle addDeprecatedPayIntentExtras(
+            String id, PaymentItem total, @Nullable List<PaymentItem> displayItems, Bundle extras) {
+        extras.putString(EXTRA_DEPRECATED_ID, id);
+
+        // displayItems is ok to be null.
         String details = deprecatedSerializeDetails(total, displayItems);
         extras.putString(EXTRA_DEPRECATED_DETAILS, details == null ? EMPTY_JSON_DATA : details);
 

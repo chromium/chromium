@@ -11,14 +11,11 @@
 #include "base/callback.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/presentation_feedback.h"
 
 class GrDirectContext;
 
 namespace gfx {
 class GpuFence;
-class Rect;
-class RectF;
 }
 
 namespace cc {
@@ -27,7 +24,6 @@ struct ImageHeaderMetadata;
 
 namespace gpu {
 
-struct SwapBuffersCompleteParams;
 struct SyncToken;
 
 class ContextSupport {
@@ -59,39 +55,6 @@ class ContextSupport {
   // flushed.
   virtual void SetAggressivelyFreeResources(
       bool aggressively_free_resources) = 0;
-
-  using SwapCompletedCallback =
-      base::OnceCallback<void(const SwapBuffersCompleteParams&,
-                              gfx::GpuFenceHandle)>;
-  using PresentationCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
-  virtual void Swap(uint32_t flags,
-                    SwapCompletedCallback complete_callback,
-                    PresentationCallback presentation_callback) = 0;
-  virtual void SwapWithBounds(const std::vector<gfx::Rect>& rects,
-                              uint32_t flags,
-                              SwapCompletedCallback swap_completed,
-                              PresentationCallback presentation_callback) = 0;
-  virtual void PartialSwapBuffers(
-      const gfx::Rect& sub_buffer,
-      uint32_t flags,
-      SwapCompletedCallback swap_completed,
-      PresentationCallback presentation_callback) = 0;
-  virtual void CommitOverlayPlanes(
-      uint32_t flags,
-      SwapCompletedCallback swap_completed,
-      PresentationCallback presentation_callback) = 0;
-
-  // Schedule a texture to be presented as an overlay synchronously with the
-  // primary surface during the next buffer swap or CommitOverlayPlanes.
-  // This method is not stateful and needs to be re-scheduled every frame.
-  virtual void ScheduleOverlayPlane(int plane_z_order,
-                                    gfx::OverlayTransform plane_transform,
-                                    unsigned overlay_texture_id,
-                                    const gfx::Rect& display_bounds,
-                                    const gfx::RectF& uv_rect,
-                                    bool enable_blend,
-                                    unsigned gpu_fence_id) = 0;
 
   // Returns an ID that can be used to globally identify the share group that
   // this context's resources belong to.
@@ -165,14 +128,6 @@ class ContextSupport {
   virtual void WillCallGLFromSkia() = 0;
 
   virtual void DidCallGLFromSkia() = 0;
-
-  // Notifies the onscreen surface of the display transform applied to the swaps
-  // from the client.
-  virtual void SetDisplayTransform(gfx::OverlayTransform transform) = 0;
-
-  // Notifies the onscreen surface of the rate at which content is being
-  // updated.
-  virtual void SetFrameRate(float frame_rate) = 0;
 
  protected:
   ContextSupport() = default;

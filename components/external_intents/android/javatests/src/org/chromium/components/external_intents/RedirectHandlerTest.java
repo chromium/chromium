@@ -82,7 +82,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testRealIntentRedirect() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -105,7 +105,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testEffectiveIntentRedirect_linkNavigation() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -128,7 +128,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testEffectiveIntentRedirect_formSubmit() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -151,7 +151,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNoIntent() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(null, false, false, false, false);
+        handler.updateIntent(null, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -174,7 +174,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testClear() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -202,7 +202,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNonLinkFromIntent() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, 0, false);
@@ -225,7 +225,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testUserInteraction() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -260,7 +260,7 @@ public class RedirectHandlerTest {
         RedirectHandler handler = RedirectHandler.create();
         Intent fooIntent = new Intent(sFooIntent);
         fooIntent.putExtra(Browser.EXTRA_APPLICATION_ID, TEST_PACKAGE_NAME);
-        handler.updateIntent(fooIntent, false, false, false, false);
+        handler.updateIntent(fooIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -288,7 +288,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNavigationFromUserTyping() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, 0, false);
@@ -315,7 +315,7 @@ public class RedirectHandlerTest {
         RedirectHandler handler = RedirectHandler.create();
         Intent fooIntent = new Intent(sFooIntent);
         fooIntent.setPackage(TEST_PACKAGE_NAME);
-        handler.updateIntent(fooIntent, false, false, false, false);
+        handler.updateIntent(fooIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         handler.updateNewUrlLoading(TRANS_TYPE_OF_LINK_FROM_INTENT, false, false, 0, 0, false);
@@ -346,7 +346,7 @@ public class RedirectHandlerTest {
         // 1. 3XX redirection should not override URL loading.
         /////////////////////////////////////////////////////
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
 
         handler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false);
         Assert.assertFalse(handler.shouldNotOverrideUrlLoading());
@@ -360,7 +360,7 @@ public class RedirectHandlerTest {
         // 2. Effective redirection should not override URL loading.
         /////////////////////////////////////////////////////
         handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
 
         handler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false);
         Assert.assertFalse(handler.shouldNotOverrideUrlLoading());
@@ -386,7 +386,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNavigationFromLinkWithoutUserGesture() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         long lastUserInteractionTime = SystemClock.elapsedRealtime();
@@ -417,7 +417,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNavigationFromReload() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         long lastUserInteractionTime = SystemClock.elapsedRealtime();
@@ -448,7 +448,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testNavigationWithForwardBack() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
+        handler.updateIntent(sYtIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
 
         long lastUserInteractionTime = SystemClock.elapsedRealtime();
@@ -506,7 +506,7 @@ public class RedirectHandlerTest {
     @Feature({"IntentHandling"})
     public void testClientRedirectWithoutUserGesture() {
         RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sFooIntent, false, false, false, false);
+        handler.updateIntent(sFooIntent, false, false, false);
         Assert.assertFalse(handler.isOnNavigation());
         Assert.assertFalse(handler.hasUserStartedNonInitialNavigation());
 

@@ -15,6 +15,8 @@ const int kFontSize = 16;
 const int kIconSize = 16;
 const int kIconCornerRadius = 2;
 
+const char kReadAnythingDefaultFontName[] = "Standard font";
+
 }  // namespace
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONSTANTS_H_

@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -34,7 +33,7 @@ class FIFOClient {
       : fifo_(fifo),
         bus_(AudioBus::Create(fifo->GetStateForTest().number_of_channels,
                               bus_length)),
-        client_thread_(Platform::Current()->CreateThread(
+        client_thread_(Thread::CreateThread(
             ThreadCreationParams(ThreadType::kTestThread)
                 .SetThreadNameForTest("FIFOClientThread"))),
         done_event_(std::make_unique<base::WaitableEvent>(
@@ -77,7 +76,7 @@ class FIFOClient {
     }
   }
 
-  // Should be instantiated before calling Platform::Current()->CreateThread().
+  // Should be instantiated before calling Thread::CreateThread().
   // Do not place this after the |client_thread_| below.
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;

@@ -8,11 +8,13 @@
 
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace content {
@@ -42,9 +44,7 @@ void MockClipboardHost::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(sequence_number_);
 }
 
-void MockClipboardHost::ReadAvailableTypes(
-    ui::ClipboardBuffer clipboard_buffer,
-    ReadAvailableTypesCallback callback) {
+std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
   std::vector<std::u16string> types;
   if (!plain_text_.empty())
     types.push_back(u"text/plain");
@@ -58,7 +58,14 @@ void MockClipboardHost::ReadAvailableTypes(
     CHECK(!base::Contains(types, it.first));
     types.push_back(it.first);
   }
-  std::move(callback).Run(types);
+  return types;
+}
+
+void MockClipboardHost::ReadAvailableTypes(
+    ui::ClipboardBuffer clipboard_buffer,
+    ReadAvailableTypesCallback callback) {
+  std::vector<std::u16string> types = ReadStandardFormatNames();
+  std::move(callback).Run(std::move(types));
 }
 
 void MockClipboardHost::IsFormatAvailable(blink::mojom::ClipboardFormat format,
@@ -170,10 +177,10 @@ void MockClipboardHost::CommitWrite() {
 
 void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
     ReadAvailableCustomAndStandardFormatsCallback callback) {
-  std::vector<std::u16string> format_names;
+  std::vector<std::u16string> format_names = ReadStandardFormatNames();
   for (const auto& item : unsanitized_custom_data_map_)
     format_names.emplace_back(item.first);
-  std::move(callback).Run(format_names);
+  std::move(callback).Run(std::move(format_names));
 }
 
 void MockClipboardHost::ReadUnsanitizedCustomFormat(
@@ -195,7 +202,11 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
     Reset();
   // Simulate the underlying platform copying this data.
   std::vector<uint8_t> data_copy(data.data(), data.data() + data.size());
-  unsanitized_custom_data_map_[format] = data_copy;
+  // Append the "web " prefix since it is removed by the clipboard writer during
+  // write.
+  std::u16string web_format =
+      base::StrCat({base::ASCIIToUTF16(ui::kWebClipboardFormatPrefix), format});
+  unsanitized_custom_data_map_[web_format] = std::move(data_copy);
 }
 
 #if BUILDFLAG(IS_MAC)

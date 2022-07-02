@@ -15,7 +15,7 @@
 // static
 const int WebDatabase::kCurrentVersionNumber = 104;
 
-const int WebDatabase::kDeprecatedVersionNumber = 51;
+const int WebDatabase::kDeprecatedVersionNumber = 82;
 
 const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
     FILE_PATH_LITERAL(":memory");

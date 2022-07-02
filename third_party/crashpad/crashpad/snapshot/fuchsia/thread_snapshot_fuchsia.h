@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <zircon/types.h>
 
+#include <string>
+
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/fuchsia/process_reader_fuchsia.h"
@@ -56,6 +58,7 @@ class ThreadSnapshotFuchsia final : public ThreadSnapshot {
   const CPUContext* Context() const override;
   const MemorySnapshot* Stack() const override;
   uint64_t ThreadID() const override;
+  std::string ThreadName() const override;
   int SuspendCount() const override;
   int Priority() const override;
   uint64_t ThreadSpecificDataAddress() const override;
@@ -71,6 +74,7 @@ class ThreadSnapshotFuchsia final : public ThreadSnapshot {
 #endif
   CPUContext context_;
   MemorySnapshotGeneric stack_;
+  std::string thread_name_;
   zx_koid_t thread_id_;
   zx_vaddr_t thread_specific_data_address_;
   InitializationStateDcheck initialized_;

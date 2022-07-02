@@ -39,7 +39,7 @@ void AXScreenAIAnnotator::Run() {
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetMainFrame()->GetAXTreeID()));
+                     web_contents->GetPrimaryMainFrame()->GetAXTreeID()));
 }
 
 void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
@@ -53,6 +53,8 @@ void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
 void AXScreenAIAnnotator::OnAnnotationReceived(
     const ui::AXTreeID& ax_tree_id,
     const ui::AXTreeUpdate& updates) {
+  VLOG(2) << "AxScreenAIAnnotator received:\n" << updates.ToString();
+
   ui::AXTreeManager* manager =
       ui::AXTreeManagerMap::GetInstance().GetManager(ax_tree_id);
 
@@ -62,9 +64,7 @@ void AXScreenAIAnnotator::OnAnnotationReceived(
     return;
   }
 
-  VLOG(2) << "AxScreenAIAnnotator received:\n" << updates.ToString();
-  // TODO(https://crbug.com/1278249): To keep the ScreenAI related heuristics
-  // centeralized, apply |updates| here.
+  // TODO(https://crbug.com/1278249): Use |updates|.
 }
 
 }  // namespace screen_ai

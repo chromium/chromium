@@ -135,8 +135,10 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     PasswordForm result;
     result.signon_realm = origin;
     result.url = GURL(origin);
-    result.username_value = base::ASCIIToUTF16(username);
-    result.password_value = u"hunter2";
+    if (!blocked_by_user) {
+      result.username_value = base::ASCIIToUTF16(username);
+      result.password_value = u"hunter2";
+    }
     result.blocked_by_user = blocked_by_user;
     result.date_created = time_;
     result.times_used = times_used_;
@@ -183,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, SameDomain) {
 // Tests that the counter doesn't count blocklisted entries.
 IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, blocklisted) {
   AddLogin("https://www.google.com", "user1", false);
-  AddLogin("https://www.google.com", "user2", true);
-  AddLogin("https://www.chrome.com", "user3", true);
+  AddLogin("https://www.google.com", "", true);
+  AddLogin("https://www.chrome.com", "", true);
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(

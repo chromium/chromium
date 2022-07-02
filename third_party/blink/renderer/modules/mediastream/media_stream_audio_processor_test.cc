@@ -240,6 +240,8 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   blink::AudioProcessingProperties properties;
 
+  // TODO(crbug.com/1334991): Clarify WebRTC audio processing support for 96 kHz
+  // input.
   static const int kSupportedSampleRates[] = {
     8000,
     16000,
@@ -247,10 +249,10 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
     32000,
     44100,
     48000
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
     ,
     96000
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   };
   for (int sample_rate : kSupportedSampleRates) {
     SCOPED_TRACE(testing::Message() << "sample_rate=" << sample_rate);
@@ -266,12 +268,14 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
     EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
     VerifyDefaultComponents(*audio_processor);
 
+    // TODO(crbug.com/1336055): Investigate why chromecast devices need special
+    // logic here.
     int expected_sample_rate =
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
         std::min(sample_rate, media::kAudioProcessingSampleRateHz);
 #else
         media::kAudioProcessingSampleRateHz;
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
     const int expected_output_channels =
         use_multichannel_processing ? params_.channels() : 1;
     ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_,

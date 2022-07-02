@@ -12,7 +12,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/common/result_codes.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -43,7 +43,7 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
 
 int ChromeBrowserMainPartsLacros::PreCreateThreads() {
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
+      chromeos::BrowserInitParams::Get();
   if (init_params->initial_browser_action ==
       crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -66,9 +66,11 @@ void ChromeBrowserMainPartsLacros::PostCreateThreads() {
 void ChromeBrowserMainPartsLacros::PreProfileInit() {
   ChromeBrowserMainPartsLinux::PreProfileInit();
 
-  // Apply specific flags if this is a Web Kiosk session.
-  if (chromeos::LacrosService::Get()->init_params()->session_type ==
-      crosapi::mojom::SessionType::kWebKioskSession) {
+  // Apply specific flags if this is a Kiosk session.
+  if (chromeos::BrowserInitParams::Get()->session_type ==
+          crosapi::mojom::SessionType::kWebKioskSession ||
+      chromeos::BrowserInitParams::Get()->session_type ==
+          crosapi::mojom::SessionType::kAppKioskSession) {
     // Hide certain system UI elements.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kForceAppMode);

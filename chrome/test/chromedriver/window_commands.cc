@@ -275,7 +275,7 @@ Status GetVisibleCookies(Session* for_session,
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (const base::Value& cookie_value : internal_cookies.GetListDeprecated()) {
+  for (const base::Value& cookie_value : internal_cookies.GetList()) {
     if (!cookie_value.is_dict())
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
 
@@ -610,7 +610,7 @@ Status ParsePageRanges(const base::DictionaryValue& params,
   }
 
   std::vector<std::string> ranges;
-  for (const base::Value& page_range : page_range_list->GetListDeprecated()) {
+  for (const base::Value& page_range : page_range_list->GetList()) {
     if (page_range.is_int()) {
       if (page_range.GetInt() < 0) {
         return Status(kInvalidArgument,
@@ -1287,7 +1287,7 @@ Status ProcessInputActionSequence(
 
   bool found = false;
   for (const base::Value& source_value :
-       session->active_input_sources.GetListDeprecated()) {
+       session->active_input_sources.GetList()) {
     DCHECK(source_value.is_dict());
     const base::DictionaryValue& source =
         base::Value::AsDictionaryValue(source_value);
@@ -1353,7 +1353,7 @@ Status ProcessInputActionSequence(
     return Status(kInvalidArgument, "'actions' must be an array");
 
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (const base::Value& action_item_value : actions->GetListDeprecated()) {
+  for (const base::Value& action_item_value : actions->GetList()) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
     base::Value::Dict& action_dict = action->GetDict();
 
@@ -1400,12 +1400,11 @@ Status ProcessInputActionSequence(
         bool valid = action_item->GetString("value", &key);
         if (valid) {
           // check if key is a single unicode code point
-          int32_t char_index = 0;
-          uint32_t code_point;
-          valid =
-              base::ReadUnicodeCharacter(key.c_str(), key.size(), &char_index,
-                                         &code_point) &&
-              static_cast<std::string::size_type>(char_index + 1) == key.size();
+          size_t char_index = 0;
+          base_icu::UChar32 code_point;
+          valid = base::ReadUnicodeCharacter(key.c_str(), key.size(),
+                                             &char_index, &code_point) &&
+                  char_index + 1 == key.size();
         }
         if (!valid)
           return Status(kInvalidArgument,
@@ -1580,8 +1579,7 @@ Status ExecutePerformActions(Session* session,
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (const base::Value& action_sequence :
-       actions_input->GetListDeprecated()) {
+  for (const base::Value& action_sequence : actions_input->GetList()) {
     // process input action sequence
     if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");

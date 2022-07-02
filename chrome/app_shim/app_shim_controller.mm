@@ -4,6 +4,8 @@
 
 #include "chrome/app_shim/app_shim_controller.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>
 
@@ -41,13 +43,14 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 
 // The ProfileMenuTarget bridges between Objective C (as the target for the
 // profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ProfileMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
@@ -78,7 +81,7 @@
 // the profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ApplicationDockMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
@@ -128,6 +131,7 @@ AppShimController::AppShimController(const Params& params)
       profile_menu_target_([[ProfileMenuTarget alloc] initWithController:this]),
       application_dock_menu_target_(
           [[ApplicationDockMenuTarget alloc] initWithController:this]) {
+  screen_ = std::make_unique<display::ScopedNativeScreen>();
   // Since AppShimController is created before the main message loop starts,
   // NSApp will not be set, so use sharedApplication.
   NSApplication* sharedApplication = [NSApplication sharedApplication];

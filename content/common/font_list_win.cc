@@ -18,10 +18,10 @@
 
 namespace content {
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
+base::Value::List GetFontList_SlowBlocking() {
   TRACE_EVENT0("fonts", "GetFontList_SlowBlocking");
 
-  std::unique_ptr<base::ListValue> font_list(new base::ListValue);
+  base::Value::List font_list;
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   gfx::win::CreateDWriteFactory(&factory);
@@ -63,7 +63,7 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
     base::Value::List font_item;
     font_item.Append(native_name.value());
     font_item.Append(localized_name.value());
-    font_list->GetList().Append(std::move(font_item));
+    font_list.Append(std::move(font_item));
   }
 
   return font_list;

@@ -68,7 +68,7 @@ enum ClearBrowsingDataItemType {
 // The manager's consumer.
 @property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
 
-// Default init method. |browserState| can't be nil.
+// Default init method. `browserState` can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
 
 // Designated initializer to allow dependency injection (in tests).
@@ -79,15 +79,21 @@ enum ClearBrowsingDataItemType {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Fills |model| with appropriate sections and items.
+// Call this method before actually using the data manager.
+- (void)prepare;
+
+// Call this method when data manager is not used anymore.
+- (void)disconnect;
+
+// Fills `model` with appropriate sections and items.
 - (void)loadModel:(ListModel*)model;
 
 // Restarts browsing data counters, which in turn updates UI, with those data
-// types specified by |mask|.
+// types specified by `mask`.
 - (void)restartCounters:(BrowsingDataRemoveMask)mask;
 
 // Returns a ActionSheetCoordinator that has action block to clear data of type
-// |dataTypeMaskToRemove|.
+// `dataTypeMaskToRemove`.
 - (ActionSheetCoordinator*)
     actionSheetCoordinatorWithDataTypesToRemove:
         (BrowsingDataRemoveMask)dataTypeMaskToRemove
@@ -97,7 +103,7 @@ enum ClearBrowsingDataItemType {
                             sourceBarButtonItem:
                                 (UIBarButtonItem*)sourceBarButtonItem;
 
-// Get the text to be displayed by a counter from the given |result|
+// Get the text to be displayed by a counter from the given `result`
 - (NSString*)counterTextFromResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
 

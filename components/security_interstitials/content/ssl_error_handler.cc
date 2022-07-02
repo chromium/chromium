@@ -126,7 +126,7 @@ class CommonNameMismatchRedirectObserver
 
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& /* load_details */) override {
-    GetWebContents().GetMainFrame()->AddMessageToConsole(
+    GetWebContents().GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kInfo,
         base::StringPrintf(
             "Redirecting navigation %s -> %s because the server presented a "

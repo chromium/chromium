@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -76,8 +80,21 @@ base::Value GetCustomAppIconAndNameItem() {
 
 }  // namespace
 
-class WebAppPolicyManagerTest : public InProcessBrowserTest {
+class WebAppPolicyManagerBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
+  WebAppPolicyManagerBrowserTest() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     externally_installed_app_prefs_ =
@@ -106,11 +123,20 @@ class WebAppPolicyManagerTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* RenderFrameHost() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;
+  }
+
+  void SetPolicyPrefs(base::StringPiece json,
+                      std::vector<std::string> replacements = {}) {
+    profile()->GetPrefs()->Set(
+        prefs::kWebAppInstallForceList,
+        base::JSONReader::Read(
+            base::ReplaceStringPlaceholders(json, replacements, nullptr))
+            .value());
   }
 
  private:
@@ -118,11 +144,12 @@ class WebAppPolicyManagerTest : public InProcessBrowserTest {
       externally_installed_app_prefs_;
 
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, DontOverrideManifest) {
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
@@ -141,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, DontOverrideManifest) {
   EXPECT_EQ(0u, manifest->icons.size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomName) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
@@ -158,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest,
             manifest->name.value_or(std::u16string()));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest,
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomIcon) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
@@ -179,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest,
 // specified in manifest. Next time we navigate to kStartUrl, but we still
 // need to override the manifest even though the policy key is kInstallUrl.
 // This is done by matching the AppId.
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
+                       MismatchedInstallAndStartUrl) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
@@ -231,5 +259,38 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Scenario: A policy installed web app is replacing an existing app causing it
+// to be uninstalled after the policy app is installed.
+// This test does not yet work in Lacros because
+// AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
+  // Install old app to replace.
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = GURL("https://some.app.com");
+  install_info->title = u"some app";
+  AppId old_app_id = test::InstallWebApp(profile(), std::move(install_info));
+
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({old_app_id});
+
+  // Update policy app to replace old app.
+  SetPolicyPrefs(R"([{
+    "url": "https://example.com/install",
+    "uninstall_and_replace": ["$1"]
+  }])",
+                 {old_app_id});
+
+  // Old app should get uninstalled by policy app install.
+  uninstall_observer.Wait();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppPolicyManagerBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace web_app

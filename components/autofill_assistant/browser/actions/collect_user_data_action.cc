@@ -609,34 +609,77 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
     delegate_->RequestUserData(
         UserDataEventField::NONE, *collect_user_data_options_,
         base::BindOnce(&CollectUserDataAction::OnRequestUserData,
-                       weak_ptr_factory_.GetWeakPtr(), user_data));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /* is_initial_request= */ true, user_data));
     return;
   }
 
+  UseChromeData(user_data);
+}
+
+void CollectUserDataAction::UseChromeData(UserData* user_data) {
   DCHECK(delegate_->GetPersonalDataManager());
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
   UpdatePersonalDataManagerCards(user_data);
-  UpdateMetrics(user_data);
+  UpdateMetrics(user_data, Metrics::UserDataSource::CHROME_AUTOFILL);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
 }
 
 void CollectUserDataAction::OnRequestUserData(
+    bool is_initial_request,
     UserData* user_data,
     bool success,
     const GetUserDataResponseProto& response) {
   if (!success) {
+    if (is_initial_request && !delegate_->MustUseBackendData() &&
+        proto_.collect_user_data().data_source().allow_fallback()) {
+      FallbackToChromeData(user_data);
+      return;
+    }
+
     EndAction(ClientStatus(USER_DATA_REQUEST_FAILED),
               Metrics::CollectUserDataResult::FAILURE);
     return;
   }
   UpdateUserDataFromProto(response, user_data);
-  UpdateMetrics(user_data);
+  UpdateMetrics(user_data, Metrics::UserDataSource::BACKEND);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
+}
+
+void CollectUserDataAction::FallbackToChromeData(UserData* user_data) {
+  if (collect_user_data_options_->request_phone_number_separately) {
+    collect_user_data_options_->request_payer_phone = true;
+    collect_user_data_options_->request_phone_number_separately = false;
+    collect_user_data_options_->phone_number_section_title = std::string();
+
+    for (const auto& required_data_piece :
+         collect_user_data_options_->required_phone_number_data_pieces) {
+      collect_user_data_options_->required_contact_data_pieces.emplace_back(
+          required_data_piece);
+    }
+    collect_user_data_options_->required_phone_number_data_pieces.clear();
+
+    collect_user_data_options_->contact_summary_fields.emplace_back(
+        AutofillContactField::PHONE_HOME_WHOLE_NUMBER);
+    collect_user_data_options_->contact_summary_max_lines++;
+
+    collect_user_data_options_->contact_full_fields.emplace_back(
+        AutofillContactField::PHONE_HOME_WHOLE_NUMBER);
+    collect_user_data_options_->contact_full_max_lines++;
+  }
+
+  collect_user_data_options_->data_origin_notice.reset();
+
+  collect_user_data_options_->should_store_data_changes =
+      !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord();
+  collect_user_data_options_->use_alternative_edit_dialogs = false;
+
+  UseChromeData(user_data);
 }
 
 void CollectUserDataAction::UpdateUi() {
@@ -649,16 +692,16 @@ void CollectUserDataAction::UpdateUi() {
   delegate_->CollectUserData(collect_user_data_options_.get());
 }
 
-void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
+void CollectUserDataAction::UpdateMetrics(
+    UserData* user_data,
+    Metrics::UserDataSource user_data_source) {
   DCHECK(user_data);
   if (!shown_to_user_) {
     shown_to_user_ = true;
-    metrics_data_.source_id =
-        delegate_->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
-    metrics_data_.user_data_source =
-        ShouldUseBackendData(proto_.collect_user_data())
-            ? Metrics::UserDataSource::BACKEND
-            : Metrics::UserDataSource::CHROME_AUTOFILL;
+    metrics_data_.source_id = delegate_->GetWebContents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetPageUkmSourceId();
+    metrics_data_.user_data_source = user_data_source;
     FillInitialDataStateForMetrics(user_data->available_contacts_,
                                    user_data->available_addresses_,
                                    user_data->available_payment_instruments_);
@@ -812,7 +855,8 @@ void CollectUserDataAction::ReloadUserData(UserDataEventField event_field,
   delegate_->RequestUserData(
       event_field, *collect_user_data_options_,
       base::BindOnce(&CollectUserDataAction::OnRequestUserData,
-                     weak_ptr_factory_.GetWeakPtr(), user_data));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /* is_initial_request= */ false, user_data));
 }
 
 void CollectUserDataAction::OnSelectionStateChanged(
@@ -999,8 +1043,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
   collect_user_data_options_->should_store_data_changes =
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
       !should_use_backend_data;
-  collect_user_data_options_->can_edit_contacts = !should_use_backend_data;
-  collect_user_data_options_->use_gms_core_edit_dialogs =
+  collect_user_data_options_->use_alternative_edit_dialogs =
       should_use_backend_data;
 
   collect_user_data_options_->request_login_choice =
@@ -1144,6 +1187,11 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
       delegate_->GetEmailAddressForAccessTokenAccount();
 
   if (collect_user_data.has_data_origin_notice()) {
+    if (!should_use_backend_data) {
+      VLOG(1) << "Data origin notice should only be shown for backend provided "
+                 "data.";
+      return false;
+    }
     const auto& notice = collect_user_data.data_origin_notice();
     if (notice.link_text().empty() || notice.dialog_title().empty() ||
         notice.dialog_text().empty() || notice.dialog_button_text().empty()) {
@@ -1417,6 +1465,12 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 
   if (RequiresContact(*collect_user_data_options_)) {
     user_data->available_contacts_.clear();
+    for (const auto& transient_contact : user_data->transient_contacts_) {
+      auto contact = std::make_unique<Contact>(
+          user_data::MakeUniqueFromProfile(*transient_contact->profile));
+      contact->identifier = transient_contact->identifier;
+      user_data->available_contacts_.emplace_back(std::move(contact));
+    }
     for (const auto& profile_data : proto_data.available_contacts()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
       AddProtoDataToAutofillDataModel(profile_data.values(),
@@ -1431,6 +1485,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (profile_data.has_identifier()) {
         contact->identifier = profile_data.identifier();
       }
+      contact->can_edit = false;
       user_data->available_contacts_.emplace_back(std::move(contact));
     }
     if (proto_data.has_selected_contact_identifier()) {
@@ -1458,6 +1513,13 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 
   if (RequiresPhoneNumberSeparately(*collect_user_data_options_)) {
     user_data->available_phone_numbers_.clear();
+    for (const auto& transient_phone_number :
+         user_data->transient_phone_numbers_) {
+      auto phone_number = std::make_unique<PhoneNumber>(
+          user_data::MakeUniqueFromProfile(*transient_phone_number->profile));
+      phone_number->identifier = transient_phone_number->identifier;
+      user_data->available_phone_numbers_.emplace_back(std::move(phone_number));
+    }
     for (const auto& phone_number_data : proto_data.available_phone_numbers()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
       AddAutofillEntryToDataModel(
@@ -1467,6 +1529,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (phone_number_data.has_identifier()) {
         phone_number->identifier = phone_number_data.identifier();
       }
+      phone_number->can_edit = false;
       user_data->available_phone_numbers_.emplace_back(std::move(phone_number));
     }
     if (proto_data.has_selected_phone_number_identifier()) {

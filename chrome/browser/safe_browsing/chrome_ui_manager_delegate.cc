@@ -68,7 +68,7 @@ bool ChromeSafeBrowsingUIManagerDelegate::IsHostingExtension(
 
   extensions::ExtensionHost* extension_host =
       extension_manager->GetExtensionHostForRenderFrameHost(
-          web_contents->GetMainFrame());
+          web_contents->GetPrimaryMainFrame());
   return extension_host != nullptr;
 #else
   return false;

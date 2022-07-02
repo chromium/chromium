@@ -50,6 +50,11 @@
 // FeatureEngagementTracker failed to load.
 + (BOOL)enableDefaultSiteViewTipTriggering [[nodiscard]];
 
+// Enables the Password Suggestions tip to be triggered. The tip is triggered
+// only once the first time Autofill password suggestions are shown. Returns NO
+// if FeatureEngagementTracker failed to load.
++ (BOOL)enablePasswordSuggestionsTipTriggering [[nodiscard]];
+
 // Starts manual page translation.
 + (void)showTranslate;
 

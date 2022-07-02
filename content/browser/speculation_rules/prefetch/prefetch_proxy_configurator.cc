@@ -19,19 +19,28 @@
 
 namespace content {
 
-PrefetchProxyConfigurator::PrefetchProxyConfigurator()
-    : prefetch_proxy_server_(net::ProxyServer(
-          net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-          net::HostPortPair::FromURL(PrefetchProxyHost()))),
+// static
+std::unique_ptr<PrefetchProxyConfigurator>
+PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
+    const GURL& proxy_url,
+    const std::string& api_key) {
+  if (!proxy_url.is_valid())
+    return nullptr;
+
+  return std::make_unique<PrefetchProxyConfigurator>(proxy_url, api_key);
+}
+
+PrefetchProxyConfigurator::PrefetchProxyConfigurator(const GURL& proxy_url,
+                                                     const std::string api_key)
+    : prefetch_proxy_server_(net::GetSchemeFromUriScheme(proxy_url.scheme()),
+                             net::HostPortPair::FromURL(proxy_url)),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK(PrefetchProxyHost().is_valid());
+  DCHECK(proxy_url.is_valid());
 
   std::string server_experiment_group = PrefetchProxyServerExperimentGroup();
-
-  // TODO(https://crbug.com/1299059): Add API key to header. Need a delegate for
-  // this.
   std::string header_value =
-      server_experiment_group != "" ? "exp=" + server_experiment_group : "";
+      "key=" + api_key +
+      (server_experiment_group != "" ? ",exp=" + server_experiment_group : "");
 
   connect_tunnel_headers_.SetHeader(PrefetchProxyHeaderKey(), header_value);
 }

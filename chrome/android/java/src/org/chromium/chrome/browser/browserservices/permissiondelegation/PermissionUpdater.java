@@ -24,15 +24,15 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class PermissionUpdater {
-    private static final String TAG = "TWAPermission";
+    private static final String TAG = "PermissionUpdater";
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
 
     private final NotificationPermissionUpdater mNotificationPermissionUpdater;
     private final LocationPermissionUpdater mLocationPermissionUpdater;
 
     @Inject
-    public PermissionUpdater(TrustedWebActivityPermissionManager permissionManager,
+    public PermissionUpdater(InstalledWebappPermissionManager permissionManager,
             NotificationPermissionUpdater notificationPermissionUpdater,
             LocationPermissionUpdater locationPermissionUpdater) {
         mPermissionManager = permissionManager;
@@ -41,7 +41,7 @@ public class PermissionUpdater {
     }
 
     public static PermissionUpdater get() {
-        return ChromeApplicationImpl.getComponent().resolveTwaPermissionUpdater();
+        return ChromeApplicationImpl.getComponent().resolvePermissionUpdater();
     }
 
     /**
@@ -62,6 +62,10 @@ public class PermissionUpdater {
         mNotificationPermissionUpdater.onOriginVerified(origin, packageName);
     }
 
+    public void onWebApkLaunch(Origin origin, String packageName) {
+        mNotificationPermissionUpdater.onWebApkLaunch(origin, packageName);
+    }
+
     public void onClientAppUninstalled(Origin origin) {
         mNotificationPermissionUpdater.onClientAppUninstalled(origin);
         mLocationPermissionUpdater.onClientAppUninstalled(origin);
@@ -74,7 +78,7 @@ public class PermissionUpdater {
         browsableIntent.setAction(Intent.ACTION_VIEW);
         browsableIntent.addCategory(Intent.CATEGORY_BROWSABLE);
 
-        try (TimingMetric unused = TimingMetric.mediumWallTime(
+        try (TimingMetric unused = TimingMetric.mediumUptime(
                      BrowserServicesTimingMetrics.BROWSABLE_INTENT_RESOLUTION_TIME)) {
             return PackageManagerUtils.resolveActivity(browsableIntent, 0) != null;
         }
@@ -84,7 +88,7 @@ public class PermissionUpdater {
         mLocationPermissionUpdater.checkPermission(origin, callback);
     }
 
-    void requestNotificationPermission(Origin origin, long callback) {
-        mNotificationPermissionUpdater.requestPermission(origin, callback);
+    void requestNotificationPermission(Origin origin, String lastCommittedUrl, long callback) {
+        mNotificationPermissionUpdater.requestPermission(origin, lastCommittedUrl, callback);
     }
 }

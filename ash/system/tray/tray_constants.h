@@ -134,6 +134,7 @@ constexpr int kUnifiedTrayTimeLeftPadding = 1;
 constexpr int kUnifiedTraySpacingBetweenIcons = 6;
 constexpr int kUnifiedTrayBatteryWidth = 12;
 constexpr int kUnifiedTrayBatteryBottomPadding = 1;
+constexpr int kUnifiedTrayChannelIndicatorDimension = 16;
 constexpr int kUnifiedTrayContentPadding = 12;
 constexpr int kUnifiedTopShortcutSpacing = 16;
 constexpr int kUnifiedNotificationHiddenLineHeight = 20;
@@ -219,7 +220,6 @@ constexpr int kUnifiedTopShortcutButtonDefaultSpacing = 16;
 constexpr int kUnifiedTopShortcutButtonMinSpacing = 4;
 
 // Constants used in the detailed view in UnifiedSystemTray.
-constexpr auto kUnifiedDetailedViewPadding = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kUnifiedDetailedViewTitlePadding =
     gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr int kUnifiedDetailedViewTitleRowHeight = 64;

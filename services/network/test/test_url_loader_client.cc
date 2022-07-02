@@ -34,8 +34,10 @@ void TestURLLoaderClient::OnReceiveResponse(
   response_head_ = std::move(response_head);
   if (quit_closure_for_on_receive_response_)
     std::move(quit_closure_for_on_receive_response_).Run();
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+
+  response_body_ = std::move(body);
+  if (quit_closure_for_on_start_loading_response_body_)
+    std::move(quit_closure_for_on_start_loading_response_body_).Run();
 }
 
 void TestURLLoaderClient::OnReceiveRedirect(
@@ -86,15 +88,6 @@ void TestURLLoaderClient::OnUploadProgress(
   current_upload_position_ = current_position;
   total_upload_size_ = total_size;
   std::move(ack_callback).Run();
-}
-
-void TestURLLoaderClient::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  EXPECT_TRUE(has_received_response_);
-  EXPECT_FALSE(has_received_completion_);
-  response_body_ = std::move(body);
-  if (quit_closure_for_on_start_loading_response_body_)
-    std::move(quit_closure_for_on_start_loading_response_body_).Run();
 }
 
 void TestURLLoaderClient::OnComplete(const URLLoaderCompletionStatus& status) {

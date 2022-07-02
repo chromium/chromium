@@ -260,7 +260,7 @@ bool SelectIf(const std::vector<std::wstring>& candidates,
 void SelectLanguageMatchingCandidate(
     const std::vector<std::wstring>& candidates,
     span<const LangToOffset> languages_to_offset,
-    int* selected_offset,
+    size_t* selected_offset,
     std::wstring* matched_candidate,
     std::wstring* selected_language) {
   DCHECK(selected_offset);
@@ -306,7 +306,7 @@ std::vector<std::wstring> GetCandidatesFromSystem(
     WStringPiece preferred_language) {
   std::vector<std::wstring> candidates;
 
-  // Get the intitial candidate list for this particular implementation (if
+  // Get the initial candidate list for this particular implementation (if
   // applicable).
   if (!preferred_language.empty())
     candidates.emplace_back(preferred_language);

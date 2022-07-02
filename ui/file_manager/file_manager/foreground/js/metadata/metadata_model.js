@@ -6,6 +6,7 @@ import {util} from '../../../common/js/util.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
+import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.js';
@@ -64,7 +65,8 @@ export class MetadataModel {
   static create(volumeManager) {
     return new MetadataModel(new MultiMetadataProvider(
         new FileSystemMetadataProvider(), new ExternalMetadataProvider(),
-        new ContentMetadataProvider(), volumeManager));
+        new ContentMetadataProvider(), new DlpMetadataProvider(),
+        volumeManager));
   }
 
   /**

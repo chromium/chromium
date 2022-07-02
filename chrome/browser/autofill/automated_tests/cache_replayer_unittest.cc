@@ -191,7 +191,7 @@ bool WriteJSON(const base::FilePath& file_path,
                const std::vector<RequestResponsePair>& request_response_pairs,
                RequestType request_type = RequestType::kQueryProtoPOST) {
   // Make json list node that contains all query requests.
-  base::Value::DictStorage urls_dict;
+  base::Value::Dict urls_dict;
   for (const auto& request_response_pair : request_response_pairs) {
     std::string serialized_request;
     std::string url;
@@ -200,25 +200,26 @@ bool WriteJSON(const base::FilePath& file_path,
       return false;
     }
 
-    Value::DictStorage request_response_node;
-    request_response_node.emplace("SerializedRequest",
-                                  std::move(serialized_request));
-    request_response_node.emplace(
+    Value::Dict request_response_node;
+    request_response_node.Set("SerializedRequest",
+                              std::move(serialized_request));
+    request_response_node.Set(
         "SerializedResponse",
         MakeSerializedResponse(request_response_pair.second));
     // Populate json dict node that contains Autofill Server requests per URL.
     // This will construct an empty list for `url` if it didn't exist already.
-    auto& url_list = urls_dict.emplace(url, Value::Type::LIST).first->second;
-    url_list.Append(Value(std::move(request_response_node)));
+    if (!urls_dict.contains(url))
+      urls_dict.Set(url, base::Value::List());
+    urls_dict.FindList(url)->Append(std::move(request_response_node));
   }
 
   // Make json dict node that contains requests per domain.
-  base::Value::DictStorage domains_dict;
-  domains_dict.emplace(kHostname, std::move(urls_dict));
+  base::Value::Dict domains_dict;
+  domains_dict.Set(kHostname, base::Value(std::move(urls_dict)));
 
   // Make json root dict.
-  base::Value::DictStorage root_dict;
-  root_dict.emplace("Requests", std::move(domains_dict));
+  base::Value::Dict root_dict;
+  root_dict.Set("Requests", std::move(domains_dict));
 
   // Write content to JSON file.
   return WriteJSONNode(file_path, Value(std::move(root_dict)));
@@ -297,31 +298,31 @@ TEST_P(
   // Make JSON content.
 
   // Make json list node that contains the problematic query request.
-  Value::DictStorage request_response_node;
+  Value::Dict request_response_node;
   // Put some textual content for HTTP request. Content does not matter because
   // the Query content will be parsed from the URL that corresponds to the
   // dictionary key.
-  request_response_node.emplace(
+  request_response_node.Set(
       "SerializedRequest", base::StrCat({"GET ", CreateQueryUrl("1234").c_str(),
                                          " HTTP/1.1\r\n\r\n"}));
-  request_response_node.emplace(
-      "SerializedResponse", MakeSerializedResponse(AutofillQueryResponse()));
+  request_response_node.Set("SerializedResponse",
+                            MakeSerializedResponse(AutofillQueryResponse()));
 
-  base::Value::ListStorage url_list;
-  url_list.emplace_back(std::move(request_response_node));
+  base::Value::List url_list;
+  url_list.Append(std::move(request_response_node));
 
   // Populate json dict node that contains Autofill Server requests per URL.
-  base::Value::DictStorage urls_dict;
+  base::Value::Dict urls_dict;
   // The query parameter in the URL cannot be parsed to a proto because
   // parameter value is in invalid format.
-  urls_dict.emplace(CreateQueryUrl(GetParam()), std::move(url_list));
+  urls_dict.Set(CreateQueryUrl(GetParam()), std::move(url_list));
 
   // Make json dict node that contains requests per domain.
-  base::Value::DictStorage domains_dict;
-  domains_dict.emplace(kHostname, std::move(urls_dict));
+  base::Value::Dict domains_dict;
+  domains_dict.Set(kHostname, std::move(urls_dict));
   // Make json root dict.
-  base::Value::DictStorage root_dict;
-  root_dict.emplace("Requests", std::move(domains_dict));
+  base::Value::Dict root_dict;
+  root_dict.Set("Requests", std::move(domains_dict));
   // Write content to JSON file.
   ASSERT_TRUE(WriteJSONNode(file_path, Value(std::move(root_dict))));
 

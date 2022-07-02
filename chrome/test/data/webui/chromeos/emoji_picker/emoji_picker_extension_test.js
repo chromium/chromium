@@ -22,6 +22,13 @@ suite('emoji-picker-extension', () => {
   let emojiPicker;
   /** @type {function(...!string): ?HTMLElement} */
   let findInEmojiPicker;
+  /** @type {function(...!string): ?HTMLElement} */
+  let findEmojiFirstButton;
+  /** @type {string} */
+  const emoticonGroupSelector = 'emoji-group[category="emoticon"]';
+  /** @type {string} */
+  const emoticonHistoryGroupSelector =
+        '[data-group="emoticon-history"] > emoji-group[category="emoticon"]';
 
   setup(() => {
     // Reset DOM state.
@@ -34,6 +41,14 @@ suite('emoji-picker-extension', () => {
     emojiPicker.emoticonDataUrl = '/emoticon_test_ordering.json';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
+
+    findEmojiFirstButton = (...path) => {
+        const emojiElement = deepQuerySelector(emojiPicker, path);
+        if (emojiElement) {
+            return emojiElement.firstEmojiButton();
+        }
+        return null;
+    };
 
     // Wait until emoji data is loaded before executing tests.
     return new Promise((resolve) => {
@@ -100,7 +115,8 @@ suite('emoji-picker-extension', () => {
   test('all emoticon groups should be rendered.', () => {
     assertEquals(
         emojiPicker.emoticonData.length,
-        emojiPicker.shadowRoot.querySelectorAll('emoticon-group').length);
+        emojiPicker.shadowRoot.querySelectorAll(
+            emoticonGroupSelector).length);
   });
 
   test(
@@ -108,7 +124,7 @@ suite('emoji-picker-extension', () => {
           'number of emoticon entries.',
       async () => {
         const allEmoticonGroups =
-            emojiPicker.shadowRoot.querySelectorAll('emoticon-group');
+            emojiPicker.shadowRoot.querySelectorAll(emoticonGroupSelector);
         for (let idx = 0; idx < allEmoticonGroups.length; ++idx) {
           const group = allEmoticonGroups[idx];
           const actualFirstGroupName =
@@ -120,7 +136,7 @@ suite('emoji-picker-extension', () => {
               emojiPicker.emoticonData[idx].emoji.length;
           await waitForCondition(
               () => expectedNumberOfEmoticons ===
-                  group.shadowRoot.querySelectorAll('.emoticon-button').length);
+                  group.shadowRoot.querySelectorAll('.emoji-button').length);
         }
       });
 
@@ -129,7 +145,7 @@ suite('emoji-picker-extension', () => {
           'correct emoticon string and name.',
       async () => {
         const firstEmoticonButton = await waitForCondition(
-            () => findInEmojiPicker('emoticon-group', '.emoticon-button'));
+            () => findEmojiFirstButton(emoticonGroupSelector));
         const expectedEmoticonString =
             emojiPicker.emoticonData[0].emoji[0].base.string;
         const expectedEmoticonName =
@@ -172,23 +188,16 @@ suite('emoji-picker-extension', () => {
         EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
             new Promise((resolve) => resolve({incognito: false}));
 
-        const emoticonButton = findInEmojiPicker('emoticon-group', 'button');
+        const emoticonButton = findEmojiFirstButton(emoticonGroupSelector);
         emoticonButton.click();
 
-        const recentEmoticonGroup = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=emoticon-history] emoticon-group'));
-
-        const recentlyUsedEmoticonButton =
-            deepQuerySelector(recentEmoticonGroup, ['.emoticon-button']);
+        const recentlyUsedEmoticonButton = await waitForCondition(
+            () => findEmojiFirstButton(emoticonHistoryGroupSelector));
         const buttonClickPromise = new Promise(
             (resolve) =>
                 emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
                   assertEquals(
                       emoticonButton.innerHTML.trim(), event.detail.text);
-                  assertEquals(
-                      emoticonButton.getAttribute('emoticon-name'),
-                      event.detail.name);
                   resolve();
                 }));
 
@@ -206,16 +215,16 @@ suite('emoji-picker-extension', () => {
         EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
             new Promise((resolve) => resolve({incognito: false}));
 
-        const emoticonButton = findInEmojiPicker('emoticon-group', 'button');
+        const emoticonButton = findEmojiFirstButton(emoticonGroupSelector);
         emoticonButton.click();
 
-        const recentEmoticonGroup = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=emoticon-history] emoticon-group'));
-        assert(recentEmoticonGroup);
+        const recentEmoticonButton = await waitForCondition(
+            () => findEmojiFirstButton(emoticonHistoryGroupSelector));
+        assert(recentEmoticonButton);
 
         const recentlyUsedEmoticons =
-            recentEmoticonGroup.shadowRoot.querySelectorAll('.emoticon-button');
+            findInEmojiPicker(emoticonHistoryGroupSelector
+                ).shadowRoot.querySelectorAll('.emoji-button');
         assertEquals(1, recentlyUsedEmoticons.length);
       });
 
@@ -261,83 +270,5 @@ suite('emoji-picker-extension', () => {
     await waitForCondition(
         () => leftChevron.style.display === 'flex' &&
             rightChevron.style.display === 'flex');
-  });
-
-  suite('<emoji-search>', () => {
-    let emojiSearch;
-    setup(() => {
-      emojiSearch = findInEmojiPicker('emoji-search');
-    });
-
-    test('By default, there is no search result.', () => {
-      const searchResults = findInEmojiPicker('emoji-search', '#results');
-      assert(!searchResults);
-    });
-
-    test(
-        'If matching, search should return both emoji and emoticon results.',
-        () => {
-          emojiSearch.search = 'face';
-          flush();
-          const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
-                                   .shadowRoot.querySelectorAll('emoji-button');
-          assertGT(emojiResults.length, 0);
-          const emoticonResults =
-              findInEmojiPicker('emoji-search', 'emoticon-group')
-                  .shadowRoot.querySelectorAll('.emoticon-button');
-          assertGT(emoticonResults.length, 0);
-        });
-
-    test(
-        'Search should display meaningful output when no result is found.',
-        () => {
-          emojiSearch.search = 'zyxt';
-          flush();
-          const message = findInEmojiPicker('emoji-search', '.no-result');
-          assert(message);
-          assertEquals(message.innerText, 'No result found');
-        });
-
-    test(
-        'If there is only one emoji returned, pressing Enter triggers the ' +
-            'clicking event.',
-        async () => {
-          emojiSearch.search = 'zombi';
-          await flush();
-          const enterEvent = new KeyboardEvent(
-              'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
-          const buttonClickPromise = new Promise(
-              (resolve) =>
-                  emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
-                    assertEquals('🧟', event.detail.text);
-                    assertEquals('zombie', event.detail.name.trim());
-                    resolve();
-                  }));
-          emojiSearch.onSearchKeyDown(enterEvent);
-          await waitWithTimeout(
-              buttonClickPromise, 1000,
-              'Failed to receive emoji button click event.');
-        });
-    test(
-        'If there is only emoticon returned, pressing Enter triggers the ' +
-            'clicking event.',
-        async () => {
-          emojiSearch.search = 'cat';
-          await flush();
-          const enterEvent = new KeyboardEvent(
-              'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
-
-          const buttonClickPromise = new Promise(
-              (resolve) =>
-                  emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
-                    assertEquals('=^.^=', event.detail.text);
-                    resolve();
-                  }));
-
-          emojiSearch.onSearchKeyDown(enterEvent);
-          await waitWithTimeout(
-              buttonClickPromise, 1000,
-              'Failed to receive emoji button click event.');
-        });
   });
 });

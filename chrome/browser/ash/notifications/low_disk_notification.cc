@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,13 +44,13 @@ namespace ash {
 
 LowDiskNotification::LowDiskNotification()
     : notification_interval_(kNotificationInterval) {
-  DCHECK(chromeos::UserDataAuthClient::Get());
-  chromeos::UserDataAuthClient::Get()->AddObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(chromeos::UserDataAuthClient::Get());
-  chromeos::UserDataAuthClient::Get()->RemoveObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
 void LowDiskNotification::LowDiskSpace(
@@ -107,7 +108,8 @@ LowDiskNotification::CreateNotification(Severity severity) {
   optional_fields.buttons.push_back(storage_settings);
 
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierLowDisk);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierLowDisk,
+      NotificationCatalogName::kLowDisk);
 
   auto on_click = base::BindRepeating([](absl::optional<int> button_index) {
     if (button_index) {

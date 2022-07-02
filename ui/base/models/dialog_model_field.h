@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 
@@ -42,13 +43,18 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
     // be reused with views::Link.
     using Callback = base::RepeatingCallback<void(const Event& event)>;
 
-    Link(int message_id, Callback callback);
-    Link(int message_id, base::RepeatingClosure closure);
+    Link(int message_id,
+         Callback callback,
+         std::u16string accessible_name = std::u16string());
+    Link(int message_id,
+         base::RepeatingClosure closure,
+         std::u16string accessible_name = std::u16string());
     Link(const Link&);
     ~Link();
 
     const int message_id;
     const Callback callback;
+    const std::u16string accessible_name;
   };
 
   explicit DialogModelLabel(int message_id);
@@ -101,9 +107,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 
 // These "field" classes represent entries in a DialogModel. They are owned
 // by the model and either created through the model or DialogModel::Builder.
-// These entries can be referred to by setting the field's unique id in
-// construction parameters (::Params::SetUniqueId()). They can then later be
-// acquired through DialogModel::GetFieldByUniqueId() methods.
+// These entries can be referred to by setting the field's ElementIdentifier in
+// construction parameters (::Params::SetId()). They can then
+// later be acquired through DialogModel::GetFieldByUniqueId() methods.
 // These fields own the data corresponding to their field. For instance, the
 // text of a textfield in a model is read using DialogModelTextfield::text() and
 // stays in sync with the visible dialog (through DialogModelHosts).
@@ -131,7 +137,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
       base::PassKey<DialogModelHost>) const {
     return accelerators_;
   }
-  int unique_id(base::PassKey<DialogModelHost>) const { return unique_id_; }
+  ElementIdentifier id(base::PassKey<DialogModelHost>) const { return id_; }
   DialogModelButton* AsButton(base::PassKey<DialogModelHost>);
   DialogModelBodyText* AsBodyText(base::PassKey<DialogModelHost>);
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
@@ -147,7 +153,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelField(base::PassKey<DialogModel>,
                    DialogModel* model,
                    Type type,
-                   int unique_id,
+                   ElementIdentifier id,
                    base::flat_set<Accelerator> accelerators);
 
   DialogModelButton* AsButton();
@@ -164,7 +170,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
 
   const raw_ptr<DialogModel> model_;
   const Type type_;
-  const int unique_id_;
+  const ElementIdentifier id_;
 
   const base::flat_set<Accelerator> accelerators_;
 };
@@ -179,14 +185,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
+    Params& SetId(ElementIdentifier id);
 
     Params& AddAccelerator(Accelerator accelerator);
 
    private:
     friend class DialogModelButton;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     base::flat_set<Accelerator> accelerators_;
   };
 
@@ -225,7 +231,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelBodyText : public DialogModelField {
   // fields.
   DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
-                      const DialogModelLabel& label);
+                      const DialogModelLabel& label,
+                      ElementIdentifier id);
   DialogModelBodyText(const DialogModelBodyText&) = delete;
   DialogModelBodyText& operator=(const DialogModelBodyText&) = delete;
   ~DialogModelBodyText() override;
@@ -263,7 +270,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
   // fields.
   DialogModelCheckbox(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
-                      int unique_id,
+                      ElementIdentifier id,
                       const DialogModelLabel& label,
                       const Params& params);
   DialogModelCheckbox(const DialogModelCheckbox&) = delete;
@@ -296,8 +303,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
-
     Params& AddAccelerator(Accelerator accelerator);
 
     Params& SetAccessibleName(std::u16string accessible_name) {
@@ -315,7 +320,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
    private:
     friend class DialogModelCombobox;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     std::u16string accessible_name_;
     base::RepeatingClosure callback_;
     base::flat_set<Accelerator> accelerators_;
@@ -325,6 +330,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
   // fields.
   DialogModelCombobox(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
+                      ElementIdentifier id,
                       std::u16string label,
                       std::unique_ptr<ui::ComboboxModel> combobox_model,
                       const Params& params);
@@ -363,13 +369,32 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
 // Ex: [icon] Open URL
 class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
  public:
+  class COMPONENT_EXPORT(UI_BASE) Params {
+   public:
+    Params();
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+    ~Params();
+
+    Params& set_is_enabled(bool is_enabled) {
+      is_enabled_ = is_enabled;
+      return *this;
+    }
+
+   private:
+    friend class DialogModelMenuItem;
+
+    bool is_enabled_ = true;
+  };
+
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
   DialogModelMenuItem(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
                       ImageModel icon,
                       std::u16string label,
-                      base::RepeatingCallback<void(int)> callback);
+                      base::RepeatingCallback<void(int)> callback,
+                      const Params& params);
   DialogModelMenuItem(const DialogModelMenuItem&) = delete;
   DialogModelMenuItem& operator=(const DialogModelMenuItem&) = delete;
   ~DialogModelMenuItem() override;
@@ -380,11 +405,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
   const std::u16string& label(base::PassKey<DialogModelHost>) const {
     return label_;
   }
+  bool is_enabled(base::PassKey<DialogModelHost>) const { return is_enabled_; }
   void OnActivated(base::PassKey<DialogModelHost>, int event_flags);
 
  private:
   const ImageModel icon_;
   const std::u16string label_;
+  const bool is_enabled_;
   base::RepeatingCallback<void(int)> callback_;
 };
 
@@ -413,8 +440,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
-
     Params& AddAccelerator(Accelerator accelerator);
 
     Params& SetAccessibleName(std::u16string accessible_name) {
@@ -425,7 +450,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
    private:
     friend class DialogModelTextfield;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     std::u16string accessible_name_;
     base::flat_set<Accelerator> accelerators_;
   };
@@ -434,6 +459,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
   // fields.
   DialogModelTextfield(base::PassKey<DialogModel> pass_key,
                        DialogModel* model,
+                       ElementIdentifier id,
                        std::u16string label,
                        std::u16string text,
                        const Params& params);
@@ -466,33 +492,33 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
     : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Factory {
+  // Base class for fields held by DialogModelField. Calling code is responsible
+  // for providing the subclass expected by the DialogModelHost used.
+  class COMPONENT_EXPORT(UI_BASE) Field {
    public:
-    virtual ~Factory();
+    virtual ~Field();
   };
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelCustomField(
-      base::PassKey<DialogModel> pass_key,
-      DialogModel* model,
-      int unique_id,
-      std::unique_ptr<DialogModelCustomField::Factory> factory);
+  DialogModelCustomField(base::PassKey<DialogModel> pass_key,
+                         DialogModel* model,
+                         ElementIdentifier id,
+                         std::unique_ptr<DialogModelCustomField::Field> field);
   DialogModelCustomField(const DialogModelCustomField&) = delete;
   DialogModelCustomField& operator=(const DialogModelCustomField&) = delete;
   ~DialogModelCustomField() override;
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
-  DialogModelCustomField::Factory* factory(
-      base::PassKey<DialogModelHost>) const {
-    return factory_.get();
+  DialogModelCustomField::Field* field(base::PassKey<DialogModelHost>) {
+    return field_.get();
   }
 
  private:
   friend class DialogModel;
 
-  std::unique_ptr<DialogModelCustomField::Factory> factory_;
+  std::unique_ptr<DialogModelCustomField::Field> field_;
 };
 
 }  // namespace ui

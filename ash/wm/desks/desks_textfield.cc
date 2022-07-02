@@ -10,12 +10,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/native_cursor.h"
 
 namespace ash {
 
@@ -44,6 +44,8 @@ DesksTextfield::DesksTextfield() {
     return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
            view->HasFocus();
   });
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
 }
 
@@ -87,6 +89,10 @@ bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return event.key_code() == ui::VKEY_TAB;
 }
 
+std::u16string DesksTextfield::GetTooltipText(const gfx::Point& p) const {
+  return GetPreferredSize().width() > width() ? GetText() : std::u16string();
+}
+
 void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
   node_data->SetName(GetAccessibleName());
@@ -114,14 +120,11 @@ void DesksTextfield::OnThemeChanged() {
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
 
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-
   UpdateFocusRingState();
 }
 
-gfx::NativeCursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
-  return views::GetNativeIBeamCursor();
+ui::Cursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kIBeam;
 }
 
 void DesksTextfield::OnFocus() {

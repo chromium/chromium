@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
@@ -105,6 +106,11 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
       if (foreign_object->NodeAtPointFromSVG(
               result, location, accumulated_offset, hit_test_action))
         return true;
+    } else if (auto* ng_foreign_object =
+                   DynamicTo<LayoutNGSVGForeignObject>(child)) {
+      if (ng_foreign_object->NodeAtPointFromSVG(
+              result, location, accumulated_offset, hit_test_action))
+        return true;
     } else {
       if (child->NodeAtPoint(result, location, accumulated_offset,
                              hit_test_action))
@@ -144,6 +150,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
 
   if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object))
     return foreign_object->IsObjectBoundingBoxValid();
+  if (auto* ng_foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object))
+    return ng_foreign_object->IsObjectBoundingBoxValid();
 
   if (object.IsSVGImage())
     return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
@@ -156,7 +164,7 @@ static gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
   // The local-to-parent transform for <foreignObject> contains a zoom inverse,
   // so we need to apply zoom to the bounding box that we use for propagation to
   // be in the correct coordinate space.
-  if (IsA<LayoutSVGForeignObject>(object))
+  if (object.IsSVGForeignObjectIncludingNG())
     bounds.Scale(object.StyleRef().EffectiveZoom());
   return bounds;
 }

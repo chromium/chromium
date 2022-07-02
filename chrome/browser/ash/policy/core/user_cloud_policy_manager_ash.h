@@ -256,7 +256,7 @@ class UserCloudPolicyManagerAsh
   void OnProfileAdded(Profile* profile) override;
 
   // Called on profile shutdown.
-  void ProfileShutdown();
+  void ShutdownRemoteCommands();
 
   // Profile associated with the current user.
   Profile* const profile_;

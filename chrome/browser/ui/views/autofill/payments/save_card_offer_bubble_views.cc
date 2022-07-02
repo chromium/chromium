@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -137,9 +138,23 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+
+  // Check if the save card offer ui experiment is enabled.
+  bool save_card_ui_experiment_enabled =
+      (base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
+       features::kAutofillSaveCardUiExperimentSelectorInNumber.Get());
+
+  // Ternary operator added for the save card ui experiment where the feature
+  // flag and the experiment selected would determine if the experiment is
+  // active or not. Currently, any option != 0 and experiment flag enabled
+  // should trigger the experiment.
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
-      *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
+      *bundle.GetImageSkiaNamed(save_card_ui_experiment_enabled
+                                    ? IDR_SAVE_CARD_SECURELY
+                                    : IDR_SAVE_CARD),
+      *bundle.GetImageSkiaNamed(save_card_ui_experiment_enabled
+                                    ? IDR_SAVE_CARD_SECURELY_DARK
+                                    : IDR_SAVE_CARD_DARK),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                           base::Unretained(this)));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));

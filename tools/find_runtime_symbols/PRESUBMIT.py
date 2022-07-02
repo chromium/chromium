@@ -8,12 +8,12 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+import sys
 
 USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
-  import sys
   def join(*args):
     return input_api.os_path.join(input_api.PresubmitLocalPath(), *args)
 
@@ -23,7 +23,8 @@ def CommonChecks(input_api, output_api):
     sys.path = [
       join('..', 'find_runtime_symbols'),
     ] + sys.path
-    output.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+    output.extend(
+        input_api.canned_checks.RunPylint(input_api, output_api, version='2.7'))
   finally:
     sys.path = sys_path_backup
 
@@ -33,6 +34,7 @@ def CommonChecks(input_api, output_api):
           output_api,
           input_api.os_path.join(input_api.PresubmitLocalPath(), 'tests'),
           files_to_check=[r'.+_test\.py$'],
+          run_on_python2=False,
           skip_shebang_check=True))
   return output
 

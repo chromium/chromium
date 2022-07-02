@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSugges
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
@@ -56,21 +55,19 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
+    private @Nullable FaviconFetcher mFaviconFetcher;
     private @Nullable LargeIconBridge mIconBridge;
     private @NonNull BookmarkState mBookmarkState;
-    private @NonNull ExploreIconProvider mExploreIconProvider;
     @Px
     private int mDropdownHeight;
     private boolean mBuiltListHasFullyConcealedElements;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
-            @NonNull ExploreIconProvider exploreIconProvider,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
-        mExploreIconProvider = exploreIconProvider;
         mOmniboxPedalDelegate = omniboxPedalDelegate;
     }
 
@@ -91,22 +88,23 @@ class DropdownItemViewInfoListBuilder {
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
+        mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, iconBridgeSupplier, mActivityTabSupplier, shareSupplier));
+                context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
-                new ClipboardSuggestionProcessor(context, host, iconBridgeSupplier));
+                new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, iconBridgeSupplier,
-                mExploreIconProvider, GlobalDiscardableReferencePool.getReferencePool()));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
         registerSuggestionProcessor(new PedalSuggestionProcessor(context, host, textProvider,
-                iconBridgeSupplier, mBookmarkState, mOmniboxPedalDelegate, delegate));
+                mFaviconFetcher, mBookmarkState, mOmniboxPedalDelegate, delegate));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
-                context, host, textProvider, iconBridgeSupplier, mBookmarkState));
+                context, host, textProvider, mFaviconFetcher, mBookmarkState));
     }
 
     void destroy() {
@@ -157,6 +155,10 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
+        if (mFaviconFetcher != null) {
+            mFaviconFetcher.clearCache();
+        }
+
         mIconBridge = new LargeIconBridge(profile);
         mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
                 profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
@@ -199,11 +201,9 @@ class DropdownItemViewInfoListBuilder {
      * @param hasFocus Indicates whether URL bar is now focused.
      */
     void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus && mImageFetcher != null) {
-            mImageFetcher.clear();
-        }
-
         if (!hasFocus) {
+            if (mImageFetcher != null) mImageFetcher.clear();
+            if (mFaviconFetcher != null) mFaviconFetcher.clearCache();
             mBuiltListHasFullyConcealedElements = false;
         }
 
@@ -241,15 +241,20 @@ class DropdownItemViewInfoListBuilder {
         // Take action only if we have more suggestions to offer than just a default match and
         // one suggestion (otherwise no need to perform grouping).
         if (suggestionsCount > 2) {
+            final int firstSuggestionWithHeader =
+                    getIndexOfFirstSuggestionWithHeader(autocompleteResult);
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
             // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
             // the default value if height is not known. For the time being we group the entire list
             // to mimic the native behavior.
-            autocompleteResult.groupSuggestionsBySearchVsURL(1, numVisibleSuggestions);
-            if (numVisibleSuggestions < suggestionsCount) {
+            if (firstSuggestionWithHeader > 1) {
+                autocompleteResult.groupSuggestionsBySearchVsURL(
+                        1, Math.min(numVisibleSuggestions, firstSuggestionWithHeader));
+            }
+            if (numVisibleSuggestions < firstSuggestionWithHeader) {
                 mBuiltListHasFullyConcealedElements = true;
                 autocompleteResult.groupSuggestionsBySearchVsURL(
-                        numVisibleSuggestions, suggestionsCount);
+                        numVisibleSuggestions, firstSuggestionWithHeader);
             } else {
                 mBuiltListHasFullyConcealedElements = false;
             }
@@ -335,6 +340,24 @@ class DropdownItemViewInfoListBuilder {
         }
 
         return lastVisibleIndex;
+    }
+
+    /**
+     * Returns the index of the first suggestion that has an associated group header ID.
+     * - If no suggestions have group header ID set, returns the size of the list.
+     * - If all suggestions have group header ID set, returns 0.
+     */
+    int getIndexOfFirstSuggestionWithHeader(AutocompleteResult autocompleteResult) {
+        final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
+        // Suggestions with headers, if present, are always shown last. Iterate from the bottom of
+        // the list to avoid scanning entire list when there are no headers.
+        for (int suggestionIndex = suggestions.size() - 1; suggestionIndex >= 0;
+                suggestionIndex--) {
+            if (suggestions.get(suggestionIndex).getGroupId() == AutocompleteMatch.INVALID_GROUP) {
+                return suggestionIndex + 1;
+            }
+        }
+        return 0;
     }
 
     /** @return Whether built list contains fully concealed elements. */

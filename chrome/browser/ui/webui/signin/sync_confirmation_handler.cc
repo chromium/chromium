@@ -26,7 +26,6 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -102,9 +101,6 @@ void SyncConfirmationHandler::HandleGoToSettings(
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
-#endif
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }

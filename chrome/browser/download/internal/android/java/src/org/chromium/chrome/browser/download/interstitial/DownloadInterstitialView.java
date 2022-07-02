@@ -152,4 +152,9 @@ class DownloadInterstitialView {
     void setSecondaryButtonCallback(Runnable callback) {
         mSecondaryButton.setOnClickListener(v -> callback.run());
     }
+
+    /** Removes the message shown before a download initially begins. */
+    void removePendingMessage() {
+        mView.findViewById(R.id.loading_message).setVisibility(View.GONE);
+    }
 }

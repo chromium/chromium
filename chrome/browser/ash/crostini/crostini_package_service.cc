@@ -166,7 +166,7 @@ void CrostiniPackageService::NotificationCompleted(
 }
 
 void CrostiniPackageService::GetLinuxPackageInfo(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const storage::FileSystemURL& package_url,
     CrostiniManager::GetLinuxPackageInfoCallback callback) {
   base::FilePath path;
@@ -194,7 +194,7 @@ void CrostiniPackageService::GetLinuxPackageInfo(
 }
 
 void CrostiniPackageService::OnSharePathForGetLinuxPackageInfo(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const storage::FileSystemURL& package_url,
     const base::FilePath& package_path,
     CrostiniManager::GetLinuxPackageInfoCallback callback,
@@ -215,7 +215,7 @@ void CrostiniPackageService::OnSharePathForGetLinuxPackageInfo(
 }
 
 void CrostiniPackageService::QueueInstallLinuxPackage(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const storage::FileSystemURL& package_url,
     CrostiniManager::InstallLinuxPackageCallback callback) {
   base::FilePath path;
@@ -245,7 +245,7 @@ void CrostiniPackageService::QueueInstallLinuxPackage(
 }
 
 void CrostiniPackageService::OnInstallLinuxPackageProgress(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     InstallLinuxPackageProgressStatus status,
     int progress_percent,
     const std::string& error_message) {
@@ -262,7 +262,7 @@ void CrostiniPackageService::OnInstallLinuxPackageProgress(
 }
 
 void CrostiniPackageService::OnUninstallPackageProgress(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     UninstallPackageProgressStatus status,
     int progress_percent) {
   UpdatePackageOperationStatus(
@@ -273,11 +273,10 @@ void CrostiniPackageService::OnVmShutdown(const std::string& vm_name) {
   // Making a notification as failed removes it from |running_notifications_|,
   // which invalidates the iterators. To avoid this, we record all the
   // containers that just shut down before removing any notifications.
-  std::vector<ContainerId> to_remove;
-  for (auto iter = running_notifications_.begin();
-       iter != running_notifications_.end(); iter++) {
-    if (iter->first.vm_name == vm_name) {
-      to_remove.push_back(iter->first);
+  std::vector<guest_os::GuestId> to_remove;
+  for (auto& running_notification : running_notifications_) {
+    if (running_notification.first.vm_name == vm_name) {
+      to_remove.push_back(running_notification.first);
     }
   }
   for (auto iter : to_remove) {
@@ -300,8 +299,9 @@ void CrostiniPackageService::QueueUninstallApplication(
     return;
   }
 
-  const ContainerId container_id(registration->VmName(),
-                                 registration->ContainerName());
+  const guest_os::GuestId container_id(registration->VmType(),
+                                       registration->VmName(),
+                                       registration->ContainerName());
   const std::string app_name = registration->Name();
   if (ContainerHasRunningOperation(container_id)) {
     CreateQueuedUninstall(container_id, app_id, app_name);
@@ -317,12 +317,12 @@ void CrostiniPackageService::QueueUninstallApplication(
 }
 
 bool CrostiniPackageService::ContainerHasRunningOperation(
-    const ContainerId& container_id) const {
+    const guest_os::GuestId& container_id) const {
   return base::Contains(running_notifications_, container_id);
 }
 
 bool CrostiniPackageService::ContainerHasQueuedOperation(
-    const ContainerId& container_id) const {
+    const guest_os::GuestId& container_id) const {
   return (base::Contains(queued_installs_, container_id) &&
           !queued_installs_.at(container_id).empty()) ||
          (base::Contains(queued_uninstalls_, container_id) &&
@@ -330,7 +330,7 @@ bool CrostiniPackageService::ContainerHasQueuedOperation(
 }
 
 void CrostiniPackageService::CreateRunningNotification(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     CrostiniPackageNotification::NotificationType notification_type,
     const std::string& app_name) {
   {  // Scope limit for |it|, which will become invalid shortly.
@@ -355,7 +355,7 @@ void CrostiniPackageService::CreateRunningNotification(
 }
 
 void CrostiniPackageService::CreateQueuedUninstall(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const std::string& app_id,
     const std::string& app_name) {
   queued_uninstalls_[container_id].emplace(
@@ -368,7 +368,7 @@ void CrostiniPackageService::CreateQueuedUninstall(
 }
 
 void CrostiniPackageService::CreateQueuedInstall(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const std::string& package,
     CrostiniManager::InstallLinuxPackageCallback callback) {
   queued_installs_[container_id].emplace(
@@ -381,7 +381,7 @@ void CrostiniPackageService::CreateQueuedInstall(
 }
 
 void CrostiniPackageService::UpdatePackageOperationStatus(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     PackageOperationStatus status,
     int progress_percent,
     const std::string& error_message) {
@@ -422,7 +422,7 @@ void CrostiniPackageService::UpdatePackageOperationStatus(
 }
 
 void CrostiniPackageService::OnPendingAppListUpdates(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     int count) {
   if (count != 0) {
     has_pending_app_list_updates_.insert(container_id);
@@ -442,14 +442,14 @@ void CrostiniPackageService::OnPendingAppListUpdates(
 }
 
 void CrostiniPackageService::OnGetLinuxPackageInfo(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     CrostiniManager::GetLinuxPackageInfoCallback callback,
     const LinuxPackageInfo& linux_package_info) {
   std::move(callback).Run(linux_package_info);
 }
 
 void CrostiniPackageService::OnInstallLinuxPackage(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     CrostiniManager::InstallLinuxPackageCallback callback,
     CrostiniResult result) {
   std::move(callback).Run(result);
@@ -462,8 +462,9 @@ void CrostiniPackageService::OnInstallLinuxPackage(
 void CrostiniPackageService::UninstallApplication(
     const guest_os::GuestOsRegistryService::Registration& registration,
     const std::string& app_id) {
-  const ContainerId container_id(registration.VmName(),
-                                 registration.ContainerName());
+  const guest_os::GuestId container_id(registration.VmType(),
+                                       registration.VmName(),
+                                       registration.ContainerName());
 
   // Policies can change under us, and crostini may now be forbidden.
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile_)) {
@@ -483,7 +484,7 @@ void CrostiniPackageService::UninstallApplication(
 }
 
 void CrostiniPackageService::OnCrostiniRunningForUninstall(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     const std::string& desktop_file_id,
     CrostiniResult result) {
   if (result != CrostiniResult::SUCCESS) {
@@ -499,7 +500,7 @@ void CrostiniPackageService::OnCrostiniRunningForUninstall(
 }
 
 void CrostiniPackageService::OnUninstallPackageOwningFile(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     CrostiniResult result) {
   if (result != CrostiniResult::SUCCESS) {
     // Let user know the uninstall failed.
@@ -512,7 +513,7 @@ void CrostiniPackageService::OnUninstallPackageOwningFile(
 }
 
 void CrostiniPackageService::StartQueuedOperation(
-    const ContainerId& container_id) {
+    const guest_os::GuestId& container_id) {
   auto uninstall_queue_iter = queued_uninstalls_.find(container_id);
   if (uninstall_queue_iter != queued_uninstalls_.end() &&
       !uninstall_queue_iter->second.empty()) {

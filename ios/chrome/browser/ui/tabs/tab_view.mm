@@ -55,7 +55,7 @@ const CGFloat kFaviconSize = 16.0;
 
 const CGFloat kFontSize = 14.0;
 
-// Returns a default favicon with |UIImageRenderingModeAlwaysTemplate|.
+// Returns a default favicon with `UIImageRenderingModeAlwaysTemplate`.
 UIImage* DefaultFaviconImage() {
   return [[UIImage imageNamed:@"default_world_favicon"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -82,7 +82,7 @@ UIImage* DefaultFaviconImage() {
   // Image view used to draw the favicon and spinner.
   UIImageView* _faviconView;
 
-  // If |YES|, this view will adjust its appearance and draw as a collapsed tab.
+  // If `YES`, this view will adjust its appearance and draw as a collapsed tab.
   BOOL _collapsed;
 
   MDCActivityIndicator* _activityIndicator;
@@ -118,7 +118,7 @@ UIImage* DefaultFaviconImage() {
       [self createButtonsAndLabel];
 
     // -setSelected only calls -updateStyleForSelected if the selected state
-    // changes.  |isSelected| defaults to NO, so if |selected| is also NO,
+    // changes.  `isSelected` defaults to NO, so if `selected` is also NO,
     // -updateStyleForSelected needs to be called explicitly.
     [self setSelected:selected];
     if (!selected) {
@@ -347,7 +347,7 @@ UIImage* DefaultFaviconImage() {
   AddSameCenterYConstraint(self, _faviconView, _titleLabel);
 }
 
-// Updates this tab's style based on the value of |selected| and the current
+// Updates this tab's style based on the value of `selected` and the current
 // incognito style.
 - (void)updateStyleForSelected:(BOOL)selected {
   // Style the background image first.

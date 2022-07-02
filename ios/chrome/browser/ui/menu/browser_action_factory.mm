@@ -150,9 +150,13 @@
                          completion:(ProceduralBlock)completion {
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kOpenImageActionSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"open"];
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE)
-                image:[UIImage imageNamed:@"open"]
+                image:image
                  type:MenuActionType::OpenImageInCurrentTab
                 block:^{
                   loadingAgent->Load(UrlLoadParams::InCurrentTab(URL));

@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -51,7 +50,6 @@ const base::Feature
 
 namespace {
 constexpr int64_t kUnknownDiskAvailability = -1ll;
-constexpr uint64_t kMegabyte = 1024ull * 1024;
 const int64_t kMinSecondsForPressureEvictions = 30;
 
 using FileCreationInfo = BlobMemoryController::FileCreationInfo;
@@ -122,10 +120,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 10ll);
 #endif
   }
-  if (disk_enabled) {
-    UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.MaxDiskSpace2",
-                            limits.desired_max_disk_space / kMegabyte);
-  }
+
   limits.effective_max_disk_space = limits.desired_max_disk_space;
 
   CHECK(limits.IsValid());
@@ -208,7 +203,6 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     std::vector<base::span<const uint8_t>> data,
     size_t total_size_bytes) {
   DCHECK_NE(0u, total_size_bytes);
-  UMA_HISTOGRAM_MEMORY_KB("Storage.Blob.PageFileSize", total_size_bytes / 1024);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -559,8 +553,6 @@ BlobMemoryController::BlobMemoryController(
 BlobMemoryController::~BlobMemoryController() = default;
 
 void BlobMemoryController::DisableFilePaging(base::File::Error reason) {
-  UMA_HISTOGRAM_ENUMERATION("Storage.Blob.PagingDisabled", -reason,
-                            -File::FILE_ERROR_MAX);
   DLOG(ERROR) << "Blob storage paging disabled, reason: " << reason;
   file_paging_enabled_ = false;
   in_flight_memory_used_ = 0;
@@ -794,32 +786,10 @@ void BlobMemoryController::OnStorageLimitsCalculated(BlobStorageLimits limits) {
   on_calculate_limits_callbacks_.clear();
 }
 
-namespace {
-// Used in UMA metrics, do not change values.
-enum DiskSpaceAdjustmentType {
-  FREEZE_HIT_MIN_AVAILABLE = 0,
-  LOWERED_NEAR_MIN_AVAILABLE = 1,
-  RAISED_NEAR_MIN_AVAILABLE = 2,
-  RESTORED = 3,
-  MAX_ADJUSTMENT_TYPE
-};
-
-enum DiskSpaceAdjustmentStatus { FROZEN, ADJUSTED, NORMAL };
-}  // namespace
-
 void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
   DCHECK_LE(disk_used_, limits_.desired_max_disk_space +
                             limits_.min_available_external_disk_space());
 
-  DiskSpaceAdjustmentStatus curr_status;
-  if (limits_.effective_max_disk_space == limits_.desired_max_disk_space) {
-    curr_status = NORMAL;
-  } else if (limits_.effective_max_disk_space == disk_used_) {
-    curr_status = FROZEN;
-  } else {
-    curr_status = ADJUSTED;
-  }
-  uint64_t old_effective_max_disk_space = limits_.effective_max_disk_space;
   uint64_t avail_disk_without_blobs = avail_disk + disk_used_;
 
   // Note: The UMA metrics here intended to record state change between frozen,
@@ -827,11 +797,6 @@ void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
 
   if (avail_disk <= limits_.min_available_external_disk_space()) {
     limits_.effective_max_disk_space = disk_used_;
-    if (curr_status != FROZEN &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment",
-                                FREEZE_HIT_MIN_AVAILABLE, MAX_ADJUSTMENT_TYPE);
-    }
   } else if (avail_disk_without_blobs <
              limits_.min_available_external_disk_space() +
                  limits_.desired_max_disk_space) {
@@ -839,21 +804,8 @@ void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
     // |desired_max_disk_space| by the if statement.
     limits_.effective_max_disk_space =
         avail_disk_without_blobs - limits_.min_available_external_disk_space();
-    if (curr_status != ADJUSTED &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment",
-                                curr_status == NORMAL
-                                    ? LOWERED_NEAR_MIN_AVAILABLE
-                                    : RAISED_NEAR_MIN_AVAILABLE,
-                                MAX_ADJUSTMENT_TYPE);
-    }
   } else {
     limits_.effective_max_disk_space = limits_.desired_max_disk_space;
-    if (curr_status != NORMAL &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment", RESTORED,
-                                MAX_ADJUSTMENT_TYPE);
-    }
   }
 }
 
@@ -937,14 +889,6 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
   // Size limit is a lower |memory_limit_before_paging()| if we have disk space.
   while (disk_used_ < limits_.effective_max_disk_space &&
          total_memory_usage > in_memory_limit) {
-    const char* reason = nullptr;
-    if (memory_pressure_level !=
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-      reason = "OnMemoryPressure";
-    } else {
-      reason = "SizeExceededInMemoryLimit";
-    }
-
     // We only page when we have enough items to fill a whole page file.
     if (populated_memory_items_bytes_ < min_page_file_size)
       break;
@@ -989,8 +933,7 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
                        total_items_size),
         base::BindOnce(&BlobMemoryController::OnEvictionComplete,
                        weak_factory_.GetWeakPtr(), std::move(file_reference),
-                       std::move(items_to_swap), total_items_size, reason,
-                       total_memory_usage));
+                       std::move(items_to_swap), total_items_size));
 
     last_eviction_time_ = base::TimeTicks::Now();
   }
@@ -1001,8 +944,6 @@ void BlobMemoryController::OnEvictionComplete(
     scoped_refptr<ShareableFileReference> file_reference,
     std::vector<scoped_refptr<ShareableBlobDataItem>> items,
     size_t total_items_size,
-    const char* evict_reason,
-    size_t memory_usage_before_eviction,
     std::pair<FileCreationInfo, int64_t /* avail_disk */> result) {
   if (!file_paging_enabled_)
     return;
@@ -1035,16 +976,6 @@ void BlobMemoryController::OnEvictionComplete(
     offset += shareable_item->item()->length();
   }
   in_flight_memory_used_ -= total_items_size;
-
-  // Record change in memory usage at the last eviction reply.
-  size_t total_usage = blob_memory_used_ + pending_memory_quota_total_size_;
-  if (!pending_evictions_ && memory_usage_before_eviction >= total_usage) {
-    std::string full_histogram_name =
-        std::string("Storage.Blob.SizeEvictedToDiskInKB.") + evict_reason;
-    base::UmaHistogramCounts100000(
-        full_histogram_name,
-        (memory_usage_before_eviction - total_usage) / 1024);
-  }
 
   // We want callback on blobs up to the amount we've freed.
   MaybeGrantPendingMemoryRequests();

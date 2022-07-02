@@ -4,13 +4,6 @@
 
 package org.chromium.chrome.browser.share;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,8 +19,8 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -35,12 +28,15 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -48,13 +44,13 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.TimeoutException;
 
 /** Tests {@link ShareButtonController}. */
 
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @EnableFeatures(
         {ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR, ChromeFeatureList.START_SURFACE_ANDROID})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -64,27 +60,26 @@ public final class ShareButtonControllerTest {
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAccountManagerTestRule).around(mActivityTestRule);
+            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
     private boolean mButtonExpected;
 
     @Before
     public void setUp() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.SHARE);
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        int minimumWidthDp = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR, "minimum_width",
-                ShareButtonController.MIN_WIDTH_DP);
         int deviceWidth =
                 mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp;
 
-        mButtonExpected = deviceWidth >= minimumWidthDp;
+        mButtonExpected =
+                deviceWidth >= AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton();
     }
 
     @Test
@@ -137,14 +132,12 @@ public final class ShareButtonControllerTest {
     public void
     testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
         // Sign in.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mActivityTestRule.getActivity()
-                                   .getStartSurface()
-                                   .getController()
-                                   .setStartSurfaceState(StartSurfaceState.SHOWING_START));
+                        -> mActivityTestRule.getActivity().getStartSurface().setStartSurfaceState(
+                                StartSurfaceState.SHOWING_START));
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
@@ -161,36 +154,6 @@ public final class ShareButtonControllerTest {
                     mActivityTestRule.getActivity().getResources().getString(R.string.share);
 
             assertEquals(shareString, optionalButton.getContentDescription());
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:start_surface_variation/single"})
-    @Restriction(
-            {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    @DisabledTest(message = "https://crbug.com/1229970")
-    public void
-    testShareButtonDisabledOnDataUrl() {
-        final String dataUrl = "data:,Hello%2C%20World!";
-        mActivityTestRule.loadUrl(dataUrl, /*secondsToWait=*/10);
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(), dataUrl);
-
-        ViewUtils.waitForView(allOf(withId(R.id.optional_toolbar_button),
-                anyOf(not(isDisplayed()), not(withContentDescription(R.string.share)))));
-
-        View experimentalButton = mActivityTestRule.getActivity()
-                                          .getToolbarManager()
-                                          .getToolbarLayoutForTesting()
-                                          .getOptionalButtonView();
-        if (experimentalButton != null) {
-            String shareString =
-                    mActivityTestRule.getActivity().getResources().getString(R.string.share);
-            assertTrue("Share button isnt showing",
-                    (View.GONE == experimentalButton.getVisibility()
-                            || !shareString.equals(experimentalButton.getContentDescription())));
         }
     }
 

@@ -35,7 +35,7 @@
     [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});
-    GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
+    [RaisesException] GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
 
     GPUQuerySet createQuerySet(GPUQuerySetDescriptor descriptor);
 
@@ -47,10 +47,8 @@
 GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
-    "none",
     "out-of-memory",
     "validation"
 };
 
 typedef sequence<(GPUBuffer or ArrayBuffer)> GPUMappedBuffer;
-typedef (GPUOutOfMemoryError or GPUValidationError) GPUError;

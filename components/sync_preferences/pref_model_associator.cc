@@ -33,9 +33,6 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
-using syncer::PREFERENCES;
-using syncer::PRIORITY_PREFERENCES;
-
 namespace sync_preferences {
 
 namespace {
@@ -116,15 +113,15 @@ void PrefModelAssociator::InitPrefAndAssociate(
   if (sync_pref.IsValid()) {
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_pref);
     DCHECK(pref_name == preference.name());
-    base::JSONReader::ValueWithError parsed_json =
+    base::JSONReader::Result parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(preference.value());
-    if (!parsed_json.value) {
+    if (!parsed_json.has_value()) {
       LOG(ERROR) << "Failed to deserialize value of preference '" << pref_name
-                 << "': " << parsed_json.error_message;
+                 << "': " << parsed_json.error().message;
       return;
     }
     std::unique_ptr<base::Value> sync_value =
-        base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+        base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
@@ -239,8 +236,9 @@ PrefModelAssociator::MergeDataAndStartSyncing(
     // We don't call InitPrefAndAssociate because we don't want the initial sync
     // to trigger outgoing changes -- these prefs are only tracked to send
     // updates back to older clients.
-    if (pref_service_->GetUserPrefValue(legacy_pref_name))
+    if (pref_service_->GetUserPrefValue(legacy_pref_name)) {
       synced_preferences_.insert(legacy_pref_name);
+    }
   }
 
   // Push updates to sync.
@@ -269,14 +267,17 @@ base::Value PrefModelAssociator::MergePreference(
   // to merge for all migrated values.
   if (client_) {
     std::string new_pref_name;
-    if (client_->IsMergeableListPreference(name))
+    if (client_->IsMergeableListPreference(name)) {
       return std::move(*MergeListValues(local_value, server_value));
-    if (client_->IsMergeableDictionaryPreference(name))
+    }
+    if (client_->IsMergeableDictionaryPreference(name)) {
       return MergeDictionaryValues(local_value, server_value);
+    }
     base::Value merged_value =
         client_->MaybeMergePreferenceValues(name, local_value, server_value);
-    if (!merged_value.is_none())
+    if (!merged_value.is_none()) {
       return merged_value;
+    }
   }
 
   // If this is not a specially handled preference, server wins.
@@ -314,18 +315,21 @@ bool PrefModelAssociator::CreatePrefSyncData(
 std::unique_ptr<base::Value> PrefModelAssociator::MergeListValues(
     const base::Value& from_value,
     const base::Value& to_value) {
-  if (from_value.is_none())
+  if (from_value.is_none()) {
     return base::Value::ToUniquePtrValue(to_value.Clone());
-  if (to_value.is_none())
+  }
+  if (to_value.is_none()) {
     return base::Value::ToUniquePtrValue(from_value.Clone());
+  }
 
   DCHECK(from_value.type() == base::Value::Type::LIST);
   DCHECK(to_value.type() == base::Value::Type::LIST);
 
   base::Value result = to_value.Clone();
   for (const auto& value : from_value.GetListDeprecated()) {
-    if (!base::Contains(result.GetListDeprecated(), value))
+    if (!base::Contains(result.GetListDeprecated(), value)) {
       result.Append(value.Clone());
+    }
   }
 
   return base::Value::ToUniquePtrValue(std::move(result));
@@ -334,10 +338,12 @@ std::unique_ptr<base::Value> PrefModelAssociator::MergeListValues(
 base::Value PrefModelAssociator::MergeDictionaryValues(
     const base::Value& from_value,
     const base::Value& to_value) {
-  if (from_value.is_none())
+  if (from_value.is_none()) {
     return to_value.Clone();
-  if (to_value.is_none())
+  }
+  if (to_value.is_none()) {
     return from_value.Clone();
+  }
 
   DCHECK(from_value.is_dict());
   DCHECK(to_value.is_dict());
@@ -372,12 +378,14 @@ syncer::SyncDataList PrefModelAssociator::GetAllSyncDataForTesting(
   for (const std::string& name : synced_preferences_) {
     const PrefService::Preference* pref = pref_service_->FindPreference(name);
     DCHECK(pref);
-    if (!pref->IsUserControlled() || pref->IsDefaultValue())
+    if (!pref->IsUserControlled() || pref->IsDefaultValue()) {
       continue;  // This is not data we care about.
+    }
     // TODO(zea): plumb a way to read the user controlled value.
     syncer::SyncData sync_data;
-    if (!CreatePrefSyncData(name, *pref->GetValue(), &sync_data))
+    if (!CreatePrefSyncData(name, *pref->GetValue(), &sync_data)) {
       continue;
+    }
     current_data.push_back(sync_data);
   }
   return current_data;
@@ -402,8 +410,9 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     // Windows client, the Windows client does not support
     // kConfirmToQuitEnabled. Ignore updates from these preferences.
     std::string pref_name = pref_specifics.name();
-    if (!IsPrefRegistered(pref_name))
+    if (!IsPrefRegistered(pref_name)) {
       continue;
+    }
 
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
       pref_service_->ClearPref(pref_name);
@@ -444,22 +453,22 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
 // static
 absl::optional<base::Value> PrefModelAssociator::ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
-  base::JSONReader::ValueWithError parsed_json =
+  base::JSONReader::Result parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(preference.value());
-  if (!parsed_json.value) {
-    std::string err =
-        "Failed to deserialize preference value: " + parsed_json.error_message;
-    LOG(ERROR) << err;
+  if (!parsed_json.has_value()) {
+    LOG(ERROR) << "Failed to deserialize preference value: "
+               << parsed_json.error().message;
     return absl::nullopt;
   }
-  return std::move(parsed_json.value);
+  return std::move(*parsed_json);
 }
 
 void PrefModelAssociator::AddSyncedPrefObserver(const std::string& name,
                                                 SyncedPrefObserver* observer) {
   auto& observers = synced_pref_observers_[name];
-  if (!observers)
+  if (!observers) {
     observers = std::make_unique<SyncedPrefObserverList>();
+  }
 
   observers->AddObserver(observer);
 }
@@ -468,8 +477,9 @@ void PrefModelAssociator::RemoveSyncedPrefObserver(
     const std::string& name,
     SyncedPrefObserver* observer) {
   auto observer_iter = synced_pref_observers_.find(name);
-  if (observer_iter == synced_pref_observers_.end())
+  if (observer_iter == synced_pref_observers_.end()) {
     return;
+  }
   observer_iter->second->RemoveObserver(observer);
 }
 
@@ -506,19 +516,22 @@ bool PrefModelAssociator::IsLegacyModelTypePref(const std::string& name) const {
 }
 
 void PrefModelAssociator::ProcessPrefChange(const std::string& name) {
-  if (processing_syncer_changes_)
+  if (processing_syncer_changes_) {
     return;  // These are changes originating from us, ignore.
+  }
 
   // We only process changes if we've already associated models.
   // This also filters out local changes during the initial merge.
-  if (!models_associated_)
+  if (!models_associated_) {
     return;
+  }
 
   const PrefService::Preference* preference =
       pref_service_->FindPreference(name);
   // TODO(tschumann): When can this ever happen? Should this be a DCHECK?
-  if (!preference)
+  if (!preference) {
     return;
+  }
 
   if (!IsPrefRegistered(name) && !IsLegacyModelTypePref(name)) {
     // We are not syncing this preference -- this also filters out synced
@@ -578,22 +591,25 @@ void PrefModelAssociator::SetPrefService(PrefServiceSyncable* pref_service) {
 void PrefModelAssociator::NotifySyncedPrefObservers(const std::string& path,
                                                     bool from_sync) const {
   auto observer_iter = synced_pref_observers_.find(path);
-  if (observer_iter == synced_pref_observers_.end())
+  if (observer_iter == synced_pref_observers_.end()) {
     return;
+  }
   // Don't notify for prefs we are only observing to support old clients.
   // The PrefModelAssociator for the new ModelType will notify.
   if (IsLegacyModelTypePref(path)) {
     DCHECK(!from_sync);
     return;
   }
-  for (auto& observer : *observer_iter->second)
+  for (auto& observer : *observer_iter->second) {
     observer.OnSyncedPrefChanged(path, from_sync);
+  }
 }
 
 void PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
                                                const base::Value& new_value) {
-  if (TypeMatchesUserPrefStore(pref_name, new_value))
+  if (TypeMatchesUserPrefStore(pref_name, new_value)) {
     pref_service_->Set(pref_name, new_value);
+  }
 }
 
 bool PrefModelAssociator::TypeMatchesUserPrefStore(
@@ -601,8 +617,9 @@ bool PrefModelAssociator::TypeMatchesUserPrefStore(
     const base::Value& new_value) const {
   const base::Value* local_value = nullptr;
   user_pref_store_->GetValue(pref_name, &local_value);
-  if (!local_value || local_value->type() == new_value.type())
+  if (!local_value || local_value->type() == new_value.type()) {
     return true;
+  }
 
   DLOG(WARNING) << "Unexpected type mis-match for pref. "
                 << "Synced value for " << pref_name << " is of type "
@@ -634,11 +651,13 @@ void PrefModelAssociator::EnforceRegisteredTypeInStore(
 
 void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {
   auto observer_iter = synced_pref_observers_.find(path);
-  if (observer_iter == synced_pref_observers_.end())
+  if (observer_iter == synced_pref_observers_.end()) {
     return;
+  }
 
-  for (auto& observer : *observer_iter->second)
+  for (auto& observer : *observer_iter->second) {
     observer.OnStartedSyncing(path);
+  }
 }
 
 }  // namespace sync_preferences

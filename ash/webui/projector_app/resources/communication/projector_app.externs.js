@@ -176,9 +176,7 @@ projectorApp.PendingScreencast.prototype.uploadProgress;
 /**
  * The created time of the screencast video, as the number of milliseconds since
  * the epoch.
- * TODO(b/215258794): After adding |createdTime| on Chromium side, remove the
- * 'undefined' from type definition.
- * @type {number|undefined}
+ * @type {number}
  */
 projectorApp.PendingScreencast.prototype.createdTime;
 
@@ -236,6 +234,48 @@ projectorApp.NewScreencastPreconditionState.prototype.state;
  * @type {?Array<number>}
  */
 projectorApp.NewScreencastPreconditionState.prototype.reasons;
+
+/**
+ * Structure for Screencast video object.
+ * @record
+ * @struct
+ */
+projectorApp.Video = function() {};
+
+/**
+ * The local source url of screencast video.
+ * @type {string|undefined}
+ */
+projectorApp.Video.prototype.srcURL;
+
+/**
+ * Structure for Screencast object.
+ * @record
+ * @struct
+ */
+projectorApp.Screencast = function() {};
+
+/**
+ * The container folder id of the screencast.
+ * @type {string}
+ */
+// TODO(b/236858194): Add the rest of the fields and refactor the Screencast
+// model in ../shared/screencast_model.d.ts to this file. Remove
+// PendingScreencast.
+projectorApp.Screencast.prototype.containerFolderId;
+
+/**
+ * The name of the screencast.
+ * @type {string}
+ */
+projectorApp.Screencast.prototype.name;
+
+
+/**
+ * The video object of screencast.
+ * @type {projectorApp.Video}
+ */
+projectorApp.Screencast.prototype.video;
 
 /**
  * The delegate interface that the Projector app can use to make requests to
@@ -297,10 +337,11 @@ projectorApp.ClientDelegate.prototype.getPendingScreencasts = function() {};
  * @param {string=} requestBody the request body data.
  * @param {boolean=} useCredentials authorize the request with end user
  *  credentials. Used for getting streaming URL.
+ * @param {Object=} additional headers.
  * @return {!Promise<!projectorApp.XhrResponse>}
  */
 projectorApp.ClientDelegate.prototype.sendXhr = function(
-    url, method, requestBody, useCredentials) {};
+    url, method, requestBody, useCredentials, headers) {};
 
 /**
  * Returns true if the device supports on device speech recognition.
@@ -343,6 +384,16 @@ projectorApp.ClientDelegate.prototype.setUserPref = function(
  */
 projectorApp.ClientDelegate.prototype.openFeedbackDialog = function() {};
 
+// TODO(b/236860361): Support screencast located outside DriveFS by using path
+// or blob uuid.
+
+/**
+ * Gets information about the specified screencast from DriveFS.
+ * @param {string} screencastId The Drive item id of container folder.
+ * @return {!Promise<projectorApp.Screencast>}
+ */
+projectorApp.ClientDelegate.prototype.getScreencast = function(screencastId) {};
+
 /**
  * The client Api for interacting with the Projector app instance.
  * @record
@@ -371,6 +422,9 @@ projectorApp.AppApi.prototype.onScreencastsStateChange = function(
  */
 projectorApp.AppApi.prototype.setClientDelegate = function(clientDelegate) {};
 
+// TODO(b/224705800): Don't notify the Projector client for SODA installation
+// progress updates. This number is no longer surfaced in the UI, so the
+// wiring can be cleaned up.
 /**
  * Notifies the Projector App the download and installation progress of the SODA
  * binary and language packs.

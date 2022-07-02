@@ -23,9 +23,7 @@ using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -82,7 +80,7 @@ class MockUDPSocketPosixSender : public UDPSocketPosixSender {
 #endif
 
  private:
-  ~MockUDPSocketPosixSender() override {}
+  ~MockUDPSocketPosixSender() override = default;
 };
 
 class MockUDPSocketPosix : public UDPSocketPosix {
@@ -133,8 +131,7 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   UDPSocketPosixTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        socket_(DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource()),
-        callback_fired_(false) {
+        socket_(DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource()) {
     write_callback_ = base::BindRepeating(&UDPSocketPosixTest::OnWriteComplete,
                                           weak_factory_.GetWeakPtr());
   }
@@ -150,15 +147,15 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   }
 
   void AddBuffers() {
-    for (size_t i = 0; i < kNumMsgs; i++) {
-      AddBuffer(msgs_[i]);
+    for (const auto& msg : msgs_) {
+      AddBuffer(msg);
     }
   }
 
   void SaveBufferPtrs() {
     int i = 0;
-    for (auto it = buffers_.cbegin(); it != buffers_.cend(); it++) {
-      buffer_ptrs_[i] = it->get();
+    for (const auto& buffer : buffers_) {
+      buffer_ptrs_[i] = buffer.get();
       i++;
     }
   }
@@ -223,7 +220,7 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   RecordingNetLogObserver net_log_observer_;
   MockUDPSocketPosix socket_;
   DatagramBuffers buffers_;
-  bool callback_fired_;
+  bool callback_fired_ = false;
   int rv_;
   std::string msgs_[kNumMsgs] = {kHelloMsg, kSecondMsg, kThirdMsg};
   int lengths_[kNumMsgs] = {static_cast<int>(kHelloMsg.length()),
@@ -722,6 +719,4 @@ TEST_F(UDPSocketPosixTest, WriteAsyncPostBlocks) {
   EXPECT_EQ(rv_, kWriteAsyncMaxBuffersThreshold * lengths_[0]);
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

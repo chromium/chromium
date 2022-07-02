@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FIELD_TRIAL_REGISTER_H_
 
 #include "base/strings/string_piece.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -25,6 +26,15 @@ class FieldTrialRegister {
   // previous logs already closed / staged for upload will not be changed.
   virtual void RegisterFieldTrial(base::StringPiece trial_name,
                                   base::StringPiece group_name) = 0;
+
+  // Registers subsegments based on the `subsegment_rank` of the segment when
+  // the subsegment mapping was provided by the segment. The `subsegment_rank`
+  // should be computed based on the subsegment discrete mapping in the model
+  // metadata.
+  virtual void RegisterSubsegmentFieldTrialIfNeeded(
+      base::StringPiece trial_name,
+      proto::SegmentId segment_id,
+      int subsegment_rank) = 0;
 };
 
 }  // namespace segmentation_platform

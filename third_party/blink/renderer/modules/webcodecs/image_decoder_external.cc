@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
@@ -176,7 +176,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     }
 
     decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
-        decode_task_runner_, mime_type_, /*data=*/nullptr,
+        decode_task_runner_, mime_type_.IsolatedCopy(), /*data=*/nullptr,
         /*data_complete=*/false, alpha_option, color_behavior, desired_size,
         animation_option_);
 
@@ -241,7 +241,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   data_complete_ = true;
   completed_property_->ResolveWithUndefined();
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
-      decode_task_runner_, mime_type_, std::move(segment_reader),
+      decode_task_runner_, mime_type_.IsolatedCopy(), std::move(segment_reader),
       data_complete_, alpha_option, color_behavior, desired_size,
       animation_option_);
 
@@ -372,13 +372,14 @@ void ImageDecoderExternal::close() {
   if (!data_complete_)
     completed_property_->Reject(exception);
 
-  if (consumer_)
-    consumer_->Cancel();
   CloseInternal(exception);
 }
 
 void ImageDecoderExternal::CloseInternal(DOMException* exception) {
   reset(exception);
+  if (consumer_)
+    consumer_->Cancel();
+
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;

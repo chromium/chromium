@@ -22,15 +22,17 @@ const base::Feature kConfirmSuggestionRemovals{
 const base::Feature kCacheOneGoogleBar{"CacheOneGoogleBar",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the removal of the NTP background scrim and forced dark foreground
+// colors for a specific subset of Chrome Web Store themes (see
+// crbug.com/1329552). This is enabled by default to allow finch to disable this
+// NTP treatment in the case of unexpected regressions.
+const base::Feature kCwsScrimRemoval{"CwsScrimRemoval",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
 const base::Feature kDismissPromos{"DismissNtpPromos",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, queries that are frequently repeated by the user (and are
-// expected to be issued again) are shown as most visited tiles.
-const base::Feature kNtpRepeatableQueries{"NtpRepeatableQueries",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, the NTP "realbox" will be themed like the omnibox
 // (same background/text/selected/hover colors).
@@ -47,42 +49,6 @@ const base::Feature kRealboxMatchSearchboxTheme{
 const base::Feature kRealboxUseGoogleGIcon{"NtpRealboxUseGoogleGIcon",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, handles navigations from the Most Visited tiles explicitly and
-// overrides the navigation's transition type to bookmark navigation before the
-// navigation is issued.
-// TODO(crbug.com/1147589): When removing this flag, also remove the workaround
-// in ChromeContentBrowserClient::OverrideNavigationParams.
-extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
-    "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, OneGoogleBar will be shown.
-const base::Feature kNtpOneGoogleBar{"NtpOneGoogleBar",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, logo will be shown.
-const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, shortcuts will be shown.
-const base::Feature kNtpShortcuts{"NtpShortcuts",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, middle slot promo will be shown.
-const base::Feature kNtpMiddleSlotPromo{"NtpMiddleSlotPromo",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-// If enabled, modules will be shown.
-const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, modules will be loaded even if kModules is disabled. This is
-// useful to determine if a user would have seen modules in order to
-// counterfactually log or trigger.
-const base::Feature kNtpModulesLoad{"NtpModulesLoad",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, recipe tasks module will be shown.
-const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, chrome cart module will be shown.
 const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -91,6 +57,47 @@ const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
 const base::Feature kNtpDummyModules{"NtpDummyModules",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
+
+// If enabled, Google Drive module will be shown.
+const base::Feature kNtpDriveModule{"NtpDriveModule",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, handles navigations from the Most Visited tiles explicitly and
+// overrides the navigation's transition type to bookmark navigation before the
+// navigation is issued.
+// TODO(crbug.com/1147589): When removing this flag, also remove the workaround
+// in ChromeContentBrowserClient::OverrideNavigationParams.
+extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
+    "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, logo will be shown.
+const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, middle slot promo will be shown.
+const base::Feature kNtpMiddleSlotPromo{"NtpMiddleSlotPromo",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, middle slot promo will be dismissed from New Tab Page until new
+// promo message is populated
+const base::Feature kNtpMiddleSlotPromoDismissal{
+    "NtpMiddleSlotPromoDismissal", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If enabled, modules will be shown.
+const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, modules will be able to be reordered via dragging and dropping
+const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, the first run experience for Modular NTP Desktop v1 will show.
+const base::Feature kNtpModulesFirstRunExperience{
+    "NtpModulesFirstRunExperience", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, modules will be loaded even if kModules is disabled. This is
+// useful to determine if a user would have seen modules in order to
+// counterfactually log or trigger.
+const base::Feature kNtpModulesLoad{"NtpModulesLoad",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, redesigned modules will be shown.
 const base::Feature kNtpModulesRedesigned{"NtpModulesRedesigned",
@@ -101,9 +108,9 @@ const base::Feature kNtpModulesRedesigned{"NtpModulesRedesigned",
 const base::Feature kNtpModulesRedesignedLayout{
     "NtpModulesRedesignedLayout", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, Google Drive module will be shown.
-const base::Feature kNtpDriveModule{"NtpDriveModule",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, OneGoogleBar will be shown.
+const base::Feature kNtpOneGoogleBar{"NtpOneGoogleBar",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, Google Photos module will be shown.
 const base::Feature kNtpPhotosModule{"NtpPhotosModule",
@@ -122,17 +129,23 @@ const base::Feature kNtpPhotosModuleSoftOptOut(
     "NtpPhotosModuleSoftOptOut",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the single svg image show in Photos opt-in screen will be
+// replaced by constituent images to support i18n.
+const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork(
+    "NtpPhotosModuleSplitSvgOptInArtWork",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, recipe tasks module will be shown.
+const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, SafeBrowsing module will be shown to a target user.
 const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, modules will be able to be reordered via dragging and dropping
-const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, the first run experience for Modular NTP Desktop v1 will show.
-const base::Feature kNtpModulesFirstRunExperience{
-    "NtpModulesFirstRunExperience", base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, shortcuts will be shown.
+const base::Feature kNtpShortcuts{"NtpShortcuts",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";

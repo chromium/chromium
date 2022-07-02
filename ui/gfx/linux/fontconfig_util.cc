@@ -6,6 +6,7 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/font_render_params.h"
 
@@ -65,7 +66,7 @@ class GFX_EXPORT GlobalFontConfig {
   }
 
  private:
-  FcConfig* fc_config_ = nullptr;
+  raw_ptr<FcConfig> fc_config_ = nullptr;
 };
 
 // Converts Fontconfig FC_HINT_STYLE to FontRenderParams::Hinting.

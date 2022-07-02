@@ -124,7 +124,7 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
   if (it.AtEnd())
     return;
 
-  const bool needs_text = HasEditableStyle(*container_);
+  const bool needs_text = IsEditable(*container_);
 
   // The initial buffer size can be critical for performance:
   // https://bugs.webkit.org/show_bug.cgi?id=81192
@@ -209,7 +209,7 @@ PlainTextRange CachedTextInputInfo::GetSelection(
 
 String CachedTextInputInfo::GetText() const {
   DCHECK(container_);
-  DCHECK(HasEditableStyle(*container_));
+  DCHECK(IsEditable(*container_));
   return text_;
 }
 

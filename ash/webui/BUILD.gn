@@ -41,9 +41,14 @@ test("ash_webui_unittests") {
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//ui/base:base",
+    "//ui/color:color",
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+
+  if (!is_official_build) {
+    deps += [ "//ash/webui/demo_mode_app_ui:unit_tests" ]
+  }
 
   # Tests for Camera App only work on Chrome OS device but not linux-chromeos.
   if (is_chromeos_device) {

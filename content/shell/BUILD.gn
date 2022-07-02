@@ -28,8 +28,9 @@ if (is_android) {
   import("//v8/gni/v8.gni")
 }
 
-# TODO(spang): Investigate using shell_views with is_chromecast=true.
-shell_use_toolkit_views = toolkit_views && !is_chromecast
+# TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
+# true.
+shell_use_toolkit_views = toolkit_views && !is_castos
 
 declare_args() {
   content_shell_product_name = "Content Shell"
@@ -250,7 +251,6 @@ static_library("content_shell_lib") {
     "//components/web_cache/renderer",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
@@ -309,6 +309,10 @@ static_library("content_shell_lib") {
 
   if (is_linux) {
     deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//ui/display:test_support" ]
   }
 
   if (is_android) {
@@ -415,7 +419,6 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
@@ -442,7 +445,6 @@ repack("pak") {
     "//base/tracing/protos:chrome_track_event_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
@@ -584,6 +586,10 @@ if (is_android) {
 
     fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
+      visibility = [
+        ":*",  # See https://crbug.com/1328459#c4.
+        "//:*",
+      ]
       package = ":content_shell_pkg"
       package_name = "content_shell"
     }

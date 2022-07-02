@@ -14,8 +14,12 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 
 namespace {
+
 blink::mojom::DisplayMode WindowModeToDisplayMode(
     apps::WindowMode window_mode) {
   switch (window_mode) {
@@ -43,6 +47,7 @@ web_app::UserDisplayMode WindowModeToUserDisplayMode(
       return web_app::UserDisplayMode::kBrowser;
   }
 }
+
 }  // namespace
 
 StandaloneBrowserTestController::StandaloneBrowserTestController(
@@ -74,6 +79,28 @@ void StandaloneBrowserTestController::InstallWebApp(
               weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
+void StandaloneBrowserTestController::LoadVpnExtension(
+    const std::string& extension_name,
+    LoadVpnExtensionCallback callback) {
+  std::string error;
+  auto extension = extensions::Extension::Create(
+      base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+      base::Value::AsDictionaryValue(
+          base::Value(CreateVpnExtensionManifest(extension_name))),
+      extensions::Extension::NO_FLAGS, &error);
+  if (!error.empty()) {
+    std::move(callback).Run(error);
+    return;
+  }
+
+  auto* extension_registry = extensions::ExtensionRegistry::Get(
+      ProfileManager::GetPrimaryUserProfile());
+  extension_registry->AddEnabled(extension);
+  extension_registry->TriggerOnLoaded(extension.get());
+
+  std::move(callback).Run(extension->id());
+}
+
 void StandaloneBrowserTestController::WebAppInstallationDone(
     InstallWebAppCallback callback,
     const web_app::AppId& installed_app_id,
@@ -81,4 +108,19 @@ void StandaloneBrowserTestController::WebAppInstallationDone(
   std::move(callback).Run(code == webapps::InstallResultCode::kSuccessNewInstall
                               ? installed_app_id
                               : "");
+}
+
+base::Value::Dict StandaloneBrowserTestController::CreateVpnExtensionManifest(
+    const std::string& extension_name) {
+  base::Value::Dict manifest;
+
+  manifest.Set(extensions::manifest_keys::kName, extension_name);
+  manifest.Set(extensions::manifest_keys::kVersion, "1.0");
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+
+  base::Value::List permissions;
+  permissions.Append("vpnProvider");
+  manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
+
+  return manifest;
 }

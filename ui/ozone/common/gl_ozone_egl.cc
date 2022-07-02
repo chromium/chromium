@@ -12,16 +12,19 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/ozone/common/native_pixmap_egl_binding.h"
 
 namespace ui {
 
-bool GLOzoneEGL::InitializeGLOneOffPlatform() {
-  if (!gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay(),
-                                          /*system_device_id=*/0)) {
+gl::GLDisplay* GLOzoneEGL::InitializeGLOneOffPlatform(
+    uint64_t system_device_id) {
+  gl::GLDisplay* display =
+      gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay(), system_device_id);
+  if (!display) {
     LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
-    return false;
+    return nullptr;
   }
-  return true;
+  return display;
 }
 
 bool GLOzoneEGL::InitializeStaticGLBindings(
@@ -41,14 +44,32 @@ void GLOzoneEGL::SetDisabledExtensionsPlatform(
   gl::SetDisabledExtensionsEGL(disabled_extensions);
 }
 
-bool GLOzoneEGL::InitializeExtensionSettingsOneOffPlatform() {
-  return gl::InitializeExtensionSettingsOneOffEGL();
+bool GLOzoneEGL::InitializeExtensionSettingsOneOffPlatform(
+    gl::GLDisplay* display) {
+  return gl::InitializeExtensionSettingsOneOffEGL(
+      static_cast<gl::GLDisplayEGL*>(display));
 }
 
-void GLOzoneEGL::ShutdownGL() {
-  gl::GLSurfaceEGL::ShutdownOneOff();
+void GLOzoneEGL::ShutdownGL(gl::GLDisplay* display) {
+  gl::GLSurfaceEGL::ShutdownOneOff(static_cast<gl::GLDisplayEGL*>(display));
   gl::ClearBindingsGL();
   gl::ClearBindingsEGL();
+}
+
+bool GLOzoneEGL::CanImportNativePixmap() {
+  return gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_KHR_image;
+}
+
+std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferFormat plane_format,
+    gfx::BufferPlane plane,
+    gfx::Size plane_size,
+    const gfx::ColorSpace& color_space,
+    GLenum target,
+    GLuint texture_id) {
+  return NativePixmapEGLBinding::Create(pixmap, plane_format, plane, plane_size,
+                                        color_space, target, texture_id);
 }
 
 bool GLOzoneEGL::GetGLWindowSystemBindingInfo(

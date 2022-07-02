@@ -394,41 +394,6 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   }
 }
 
-TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeviceScale) {
-  const float kScaleFactor = 0.8f;
-  mock_accessibility_bridge_->SetDeviceScaleFactor(kScaleFactor);
-
-  AXEventNotificationDetails event;
-  ui::AXTreeUpdate initial_state;
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  initial_state.tree_data.tree_id = tree_id;
-  initial_state.has_tree_data = true;
-  initial_state.tree_data.loaded = true;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-  event.updates.push_back(std::move(initial_state));
-
-  EXPECT_TRUE(manager_->OnAccessibilityEvents(std::move(event)));
-
-  {
-    const auto& node_updates = mock_accessibility_bridge_->node_updates();
-    ASSERT_FALSE(node_updates.empty());
-
-    BrowserAccessibilityFuchsia* root_node =
-        ToBrowserAccessibilityFuchsia(manager_->GetRoot());
-    ASSERT_TRUE(root_node);
-
-    EXPECT_EQ(node_updates.back().node_id(), root_node->GetFuchsiaNodeID());
-
-    ASSERT_TRUE(node_updates[0].has_node_to_container_transform());
-    const auto& transform =
-        node_updates[0].node_to_container_transform().matrix;
-    EXPECT_EQ(transform[0], 1.f / kScaleFactor);
-    EXPECT_EQ(transform[5], 1.f / kScaleFactor);
-  }
-}
-
 TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   mock_browser_accessibility_delegate_->is_root_frame_ = true;
 

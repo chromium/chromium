@@ -64,6 +64,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
     return show_caption_buttons_;
   }
   bool IsRegularOrGuestSession() const override { return true; }
+  bool CanMaximize() const override { return true; }
+  bool CanMinimize() const override { return true; }
   bool IsMaximized() const override { return maximized_; }
   bool IsMinimized() const override { return false; }
   bool IsFullscreen() const override { return false; }

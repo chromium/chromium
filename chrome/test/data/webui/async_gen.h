@@ -8,10 +8,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 // C++ support class for javascript-generated asynchronous tests.
 class WebUIBrowserAsyncGenTest : public WebUIBrowserTest {
  public:
@@ -28,10 +24,10 @@ class WebUIBrowserAsyncGenTest : public WebUIBrowserTest {
     AsyncWebUIMessageHandler();
     ~AsyncWebUIMessageHandler() override;
 
-    MOCK_METHOD1(HandleTearDown, void(const base::ListValue*));
+    MOCK_METHOD1(HandleTearDown, void(const base::Value::List&));
 
    private:
-    void HandleCallJS(const base::ListValue* list_value);
+    void HandleCallJS(const base::Value::List& list_value);
 
     // WebUIMessageHandler implementation.
     void RegisterMessages() override;

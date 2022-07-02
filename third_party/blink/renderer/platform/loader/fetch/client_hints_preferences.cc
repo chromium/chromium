@@ -96,8 +96,12 @@ bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
 
 // static
 bool ClientHintsPreferences::IsClientHintsAllowed(const KURL& url) {
+  // TODO(crbug.com/862940): This should probably be using
+  // network::IsUrlPotentiallyTrustworthy() instead of coercing the URL to an
+  // origin first.
   return (url.ProtocolIs("http") || url.ProtocolIs("https")) &&
-         network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
+         network::IsOriginPotentiallyTrustworthy(
+             url::Origin::Create(GURL(url)));
 }
 
 EnabledClientHints ClientHintsPreferences::GetEnabledClientHints() const {

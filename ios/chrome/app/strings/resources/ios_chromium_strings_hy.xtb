@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
 <translation id="3567399274263440288">Chromium-ի բոլոր գործառույթներն օգտագործելու համար մտեք ձեր Google հաշիվ։</translation>
+<translation id="3619462831205197427">Մուտք գործեք այս կայքում, ձեր Google հաշիվ և Chromium։</translation>
 <translation id="3639997914391704523">Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="3650632991272923014">Օգտատերը (<ph name="USER_EMAIL1" />) օգտագործել է Chromium-ը, և այս սարքում պահպանվել են էջանիշներ, գաղտնաբառեր և այլ կարգավորումներ։</translation>
 <translation id="3805899903892079518">Chromium-ին հասանելի չեն ձեր լուսանկարները կամ տեսանյութերը: Անցեք iOS Կարգավորումներ &gt; Գաղտնիություն &gt; Լուսանկարներ (Settings &gt; Privacy &gt; Photos) և միացրեք մուտքի թույլտվությունը:</translation>
@@ -77,7 +78,6 @@
 1. Բացեք կարգավորումները։
 2. Հպեք «Դիտարկիչի կանխադրված հավելված»։
 3. Ընտրեք Chromium-ը։</translation>
-<translation id="6155422572367400359">Մուտք գործեք այս կայքում, ձեր Google հաշիվ և Chromium։ Համաժամացումը կարող եք ավելի ուշ միացնել։</translation>
 <translation id="6183442264225539303">Մուտք գործեք այս կայք և Chromium։ Համաժամացումը կարող եք ավելի ուշ միացնել։</translation>
 <translation id="6268381023930128611">Դուրս գա՞լ Chromium-ից:</translation>
 <translation id="632825460376924298">Թույլատրել մուտքը Chromium-ում</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Հեռացնե՞լ Chromium-ի տվյալները այս սարքից</translation>
 <translation id="8175055321229419309">Խորհուրդ․ <ph name="BEGIN_LINK" />տեղափոխեք Chrome-ը Dock վահանակ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>
+<translation id="8308172444429103994">Խորհուրդ Chromium-ից։ Ավելի արագ մուտք գործեք՝ ստեղնաշարի վերևում ընտրելով ձեր պահված գաղտնաբառը։</translation>
 <translation id="858114650497379505">Դուք կարող եք Գաղտնաբառերի կառավարիչում պահված գաղտնաբառերն օգտագործել ձեր iPhone-ի այլ հավելվածներում։</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> The Chromium Authors: Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="865600487977764604">Ապահովում է ձեր անվտանգությունը Chromium-ում և Google հավելվածներում, երբ դուք գտնվում եք ձեր հաշվում։</translation>

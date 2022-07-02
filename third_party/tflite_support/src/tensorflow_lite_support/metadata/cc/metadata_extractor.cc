@@ -15,16 +15,19 @@ limitations under the License.
 
 #include "tensorflow_lite_support/metadata/cc/metadata_extractor.h"
 
-#include <functional>
+#include <string>
 
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "absl/memory/memory.h"        // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
+#include "contrib/minizip/ioapi.h"
+#include "contrib/minizip/unzip.h"
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
-#include "lib/zip.h"                  // from @org_libzip
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
+#include "tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
 
 namespace tflite {
@@ -40,27 +43,6 @@ using ::tflite::TensorMetadata;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::TfLiteSupportStatus;
 
-// Helper class that takes a callback function, and invokes it in its
-// destructor.
-class SimpleCleanUp {
- public:
-  explicit SimpleCleanUp(std::function<void()> callback)
-      : callback_(std::move(callback)) {}
-
-  ~SimpleCleanUp() {
-    if (callback_ != nullptr)
-      callback_();
-  }
-
-  // Use `std::move(simple_cleanup).Cancel()` to prevent the callback from ever
-  // executing at all. Once a SimpleCleanUp object has been `std::move(...)`-ed,
-  // it may not be read from again.
-  void Cancel() && { callback_ = nullptr; }
-
- private:
-  std::function<void()> callback_;
-};
-
 // Util to get item from src_vector specified by index.
 template <typename T>
 const T* GetItemFromVector(
@@ -70,6 +52,70 @@ const T* GetItemFromVector(
     return nullptr;
   }
   return src_vector->Get(index);
+}
+
+// Wrapper function around calls to unzip to avoid repeating conversion logic
+// from error code to Status.
+absl::Status UnzipErrorToStatus(int error) {
+  if (error != UNZ_OK) {
+    return CreateStatusWithPayload(
+        StatusCode::kUnknown, "Unable to read associated file in zip archive.",
+        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
+  }
+  return absl::OkStatus();
+}
+
+// Stores a file name, position in zip buffer and size.
+struct ZipFileInfo {
+  std::string name;
+  ZPOS64_T position;
+  ZPOS64_T size;
+};
+
+// Returns the ZipFileInfo corresponding to the current file in the provided
+// unzFile object.
+absl::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(const unzFile& zf) {
+  // Open file in raw mode, as data is expected to be uncompressed.
+  int method;
+  RETURN_IF_ERROR(UnzipErrorToStatus(
+      unzOpenCurrentFile2(zf, &method, /*level=*/nullptr, /*raw=*/1)));
+  if (method != Z_NO_COMPRESSION) {
+    return CreateStatusWithPayload(
+        StatusCode::kUnknown, "Expected uncompressed zip archive.",
+        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
+  }
+
+  // Get file info a first time to get filename size.
+  unz_file_info64 file_info;
+  RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
+      zf, &file_info, /*szFileName=*/nullptr, /*szFileNameBufferSize=*/0,
+      /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
+      /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
+
+  // Second call to get file name.
+  auto file_name_size = file_info.size_filename;
+  char* c_file_name = (char*)malloc(file_name_size);
+  RETURN_IF_ERROR(UnzipErrorToStatus(unzGetCurrentFileInfo64(
+      zf, &file_info, c_file_name, file_name_size,
+      /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
+      /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
+  std::string file_name = std::string(c_file_name, file_name_size);
+  free(c_file_name);
+
+  // Get position in file.
+  auto position = unzGetCurrentFileZStreamPos64(zf);
+  if (position == 0) {
+    return CreateStatusWithPayload(
+        StatusCode::kUnknown, "Unable to read file in zip archive.",
+        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
+  }
+  ZipFileInfo result = {.name = file_name,
+                        .position = position,
+                        .size = file_info.uncompressed_size};
+
+  // Close file and return.
+  RETURN_IF_ERROR(UnzipErrorToStatus(unzCloseCurrentFile(zf)));
+  return result;
 }
 }  // namespace
 
@@ -193,71 +239,45 @@ absl::Status ModelMetadataExtractor::InitFromModelBuffer(
 absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
     const char* buffer_data,
     size_t buffer_size) {
-  // Setup libzip error reporting.
-  zip_error_t error;
-  zip_error_init(&error);
-  auto zip_error_cleanup = SimpleCleanUp([&error] { zip_error_fini(&error); });
-
-  // Initialize zip source.
-  zip_source_t* src =
-      zip_source_buffer_create(buffer_data, buffer_size, /*freep=*/0, &error);
-  if (src == nullptr) {
-    return CreateStatusWithPayload(
-        StatusCode::kUnknown,
-        absl::StrFormat("Can't create zip source from model buffer: %s",
-                        zip_error_strerror(&error)),
-        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
-  }
-  auto zip_source_cleanup = SimpleCleanUp([src] { zip_source_free(src); });
-
-  // Try opening zip source.
-  zip* zip_archive = zip_open_from_source(src, /*flags=*/0, &error);
-  if (zip_archive == nullptr) {
+  // Create in-memory read-only zip file.
+  ZipReadOnlyMemFile mem_file = ZipReadOnlyMemFile(buffer_data, buffer_size);
+  // Open zip.
+  unzFile zf = unzOpen2_64(/*path=*/nullptr, &mem_file.GetFileFunc64Def());
+  if (zf == nullptr) {
     // It's OK if it fails: this means there are no associated files with this
     // model.
     return absl::OkStatus();
   }
-  auto zip_archive_cleanup =
-      SimpleCleanUp([zip_archive] { zip_close(zip_archive); });
-  // As per the documentation [1] for zip_source_free, it should not be called
-  // after a successful call to zip_open_from_source.
-  //
-  // [1]: https://libzip.org/documentation/zip_source_free.html
-  std::move(zip_source_cleanup).Cancel();
+  // Get number of files.
+  unz_global_info global_info;
+  if (unzGetGlobalInfo(zf, &global_info) != UNZ_OK) {
+    return CreateStatusWithPayload(
+        StatusCode::kUnknown, "Unable to get zip archive info.",
+        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
+  }
 
-  const int num_files = zip_get_num_entries(zip_archive, /*flags=*/0);
-  for (int index = 0; index < num_files; ++index) {
-    // Get file stats.
-    struct zip_stat zip_file_stat;
-    zip_stat_init(&zip_file_stat);
-    zip_stat_index(zip_archive, index, /*flags=*/0, &zip_file_stat);
-    absl::string_view filename = zip_file_stat.name;
-    const auto unzip_filesize = zip_file_stat.size;
-
-    // Open file.
-    zip_file* zip_file = zip_fopen_index(zip_archive, index, /*flags=*/0);
-    if (zip_file == nullptr) {
+  // Browse through files in archive.
+  if (global_info.number_entry > 0) {
+    int error = unzGoToFirstFile(zf);
+    while (error == UNZ_OK) {
+      ASSIGN_OR_RETURN(auto zip_file_info, GetCurrentZipFileInfo(zf));
+      // Store result in map.
+      associated_files_[zip_file_info.name] = absl::string_view(
+          buffer_data + zip_file_info.position, zip_file_info.size);
+      error = unzGoToNextFile(zf);
+    }
+    if (error != UNZ_END_OF_LIST_OF_FILE) {
       return CreateStatusWithPayload(
           StatusCode::kUnknown,
-          absl::StrFormat("Unable to open associated file with name: %s",
-                          zip_file_stat.name),
+          "Unable to read associated file in zip archive.",
           TfLiteSupportStatus::kMetadataAssociatedFileZipError);
     }
-    auto zip_file_cleanup = SimpleCleanUp([zip_file] { zip_fclose(zip_file); });
-
-    // Unzip file.
-    char* unzip_buffer = new char[unzip_filesize];
-    auto unzip_buffer_cleanup =
-        SimpleCleanUp([unzip_buffer] { delete[] unzip_buffer; });
-    if (zip_fread(zip_file, unzip_buffer, unzip_filesize) != unzip_filesize) {
-      return CreateStatusWithPayload(
-          StatusCode::kUnknown,
-          absl::StrFormat("Unzipping failed for file: %s.", filename),
-          TfLiteSupportStatus::kMetadataAssociatedFileZipError);
-    }
-
-    // Copy file contents in map.
-    associated_files_[filename] = std::string(unzip_buffer, unzip_filesize);
+  }
+  // Close zip.
+  if (unzClose(zf) != UNZ_OK) {
+    return CreateStatusWithPayload(
+        StatusCode::kUnknown, "Unable to close zip archive.",
+        TfLiteSupportStatus::kMetadataAssociatedFileZipError);
   }
   return absl::OkStatus();
 }

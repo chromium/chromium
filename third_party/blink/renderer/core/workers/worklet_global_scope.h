@@ -69,6 +69,7 @@ class CORE_EXPORT WorkletGlobalScope
   bool CrossOriginIsolatedCapability() const final;
   bool DirectSocketCapability() const final;
   ukm::UkmRecorder* UkmRecorder() final;
+  ukm::SourceId UkmSourceID() const final;
 
   // WorkerOrWorkletGlobalScope
   void Dispose() override;

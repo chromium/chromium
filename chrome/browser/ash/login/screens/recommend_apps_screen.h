@@ -9,10 +9,15 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
+#include "components/prefs/pref_service.h"
 
 namespace base {
 class Value;
@@ -34,7 +39,7 @@ class RecommendAppsScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  RecommendAppsScreen(RecommendAppsScreenView* view,
+  RecommendAppsScreen(base::WeakPtr<RecommendAppsScreenView> view,
                       const ScreenExitCallback& exit_callback);
 
   RecommendAppsScreen(const RecommendAppsScreen&) = delete;
@@ -49,13 +54,13 @@ class RecommendAppsScreen : public BaseScreen,
   void OnRetry();
 
   // Called when the user Install the selected apps.
-  void OnInstall();
-
-  // Called when the view is destroyed so there is no dead reference to it.
-  void OnViewDestroyed(RecommendAppsScreenView* view);
+  void OnInstall(base::Value::List apps);
 
   void SetSkipForTesting() { skip_for_testing_ = true; }
 
+  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
+  // launched.
+  // These are used when OobeNewRecommendApps is disabled and the screen is
   // RecommendAppsFetcherDelegate:
   void OnLoadSuccess(base::Value app_list) override;
   void OnLoadError() override;
@@ -72,14 +77,28 @@ class RecommendAppsScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  RecommendAppsScreenView* view_;
+  // These are used when OobeNewRecommendApps is enabled and AppDiscoveryService
+  // is RecommendAppsFetcherDelegate:
+  void OnRecommendationsDownloaded(const std::vector<apps::Result>& result,
+                                   apps::DiscoveryError error);
+  void UnpackResultAndShow(const std::vector<apps::Result>& result);
+
+  base::WeakPtr<RecommendAppsScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
+  base::raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
 
   // Skip the screen for testing if set to true.
   bool skip_for_testing_ = false;
+
+  int recommended_app_count_ = 0;
+
+  base::raw_ptr<PrefService> pref_service_;
+
+  base::WeakPtrFactory<RecommendAppsScreen> weak_factory_{this};
 };
 
 }  // namespace ash

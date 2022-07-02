@@ -9,8 +9,8 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -54,9 +54,10 @@ enum class PageTag {
   kLast = kV8             // Maximum tag value.
 };
 
-BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
-                                            uintptr_t alignment,
-                                            uintptr_t requested_offset);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+uintptr_t NextAlignedWithOffset(uintptr_t ptr,
+                                uintptr_t alignment,
+                                uintptr_t requested_offset);
 
 // Allocates one or more pages.
 //
@@ -78,27 +79,31 @@ BASE_EXPORT uintptr_t NextAlignedWithOffset(uintptr_t ptr,
 // allocation. Use PageTag::kChromium as a catch-all category.
 //
 // This call will return 0/nullptr if the allocation cannot be satisfied.
-BASE_EXPORT uintptr_t AllocPages(size_t length,
-                                 size_t align,
-                                 PageAccessibilityConfiguration accessibility,
-                                 PageTag page_tag);
-BASE_EXPORT uintptr_t AllocPages(uintptr_t address,
-                                 size_t length,
-                                 size_t align,
-                                 PageAccessibilityConfiguration accessibility,
-                                 PageTag page_tag);
-BASE_EXPORT void* AllocPages(void* address,
-                             size_t length,
-                             size_t align,
-                             PageAccessibilityConfiguration accessibility,
-                             PageTag page_tag);
-BASE_EXPORT uintptr_t
-AllocPagesWithAlignOffset(uintptr_t address,
-                          size_t length,
-                          size_t align,
-                          size_t align_offset,
-                          PageAccessibilityConfiguration page_accessibility,
-                          PageTag page_tag);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+uintptr_t AllocPages(size_t length,
+                     size_t align,
+                     PageAccessibilityConfiguration accessibility,
+                     PageTag page_tag);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+uintptr_t AllocPages(uintptr_t address,
+                     size_t length,
+                     size_t align,
+                     PageAccessibilityConfiguration accessibility,
+                     PageTag page_tag);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void* AllocPages(void* address,
+                 size_t length,
+                 size_t align,
+                 PageAccessibilityConfiguration accessibility,
+                 PageTag page_tag);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+uintptr_t AllocPagesWithAlignOffset(
+    uintptr_t address,
+    size_t length,
+    size_t align,
+    size_t align_offset,
+    PageAccessibilityConfiguration page_accessibility,
+    PageTag page_tag);
 
 // Frees one or more pages starting at |address| and continuing for |length|
 // bytes.
@@ -106,8 +111,10 @@ AllocPagesWithAlignOffset(uintptr_t address,
 // |address| and |length| must match a previous call to |AllocPages|. Therefore,
 // |address| must be aligned to |PageAllocationGranularity()| bytes, and
 // |length| must be a multiple of |PageAllocationGranularity()|.
-BASE_EXPORT void FreePages(uintptr_t address, size_t length);
-BASE_EXPORT void FreePages(void* address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void FreePages(uintptr_t address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void FreePages(void* address, size_t length);
 
 // Marks one or more system pages, starting at |address| with the given
 // |page_accessibility|. |length| must be a multiple of |SystemPageSize()|
@@ -115,11 +122,11 @@ BASE_EXPORT void FreePages(void* address, size_t length);
 //
 // Returns true if the permission change succeeded. In most cases you must
 // |CHECK| the result.
-[[nodiscard]] BASE_EXPORT bool TrySetSystemPagesAccess(
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool TrySetSystemPagesAccess(
     uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility);
-[[nodiscard]] BASE_EXPORT bool TrySetSystemPagesAccess(
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool TrySetSystemPagesAccess(
     void* address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility);
@@ -129,14 +136,14 @@ BASE_EXPORT void FreePages(void* address, size_t length);
 // bytes.
 //
 // Performs a CHECK that the operation succeeds.
-BASE_EXPORT void SetSystemPagesAccess(
-    uintptr_t address,
-    size_t length,
-    PageAccessibilityConfiguration page_accessibility);
-BASE_EXPORT void SetSystemPagesAccess(
-    void* address,
-    size_t length,
-    PageAccessibilityConfiguration page_accessibility);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetSystemPagesAccess(uintptr_t address,
+                          size_t length,
+                          PageAccessibilityConfiguration page_accessibility);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetSystemPagesAccess(void* address,
+                          size_t length,
+                          PageAccessibilityConfiguration page_accessibility);
 
 // Decommits one or more system pages starting at |address| and continuing for
 // |length| bytes. |address| and |length| must be aligned to a system page
@@ -170,11 +177,13 @@ BASE_EXPORT void SetSystemPagesAccess(
 // behaves in a platform-agnostic way by simulating the Windows "decommit" state
 // by both discarding the region (allowing the OS to avoid swap operations)
 // *and* changing the page protections so accesses fault.
-BASE_EXPORT void DecommitSystemPages(
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DecommitSystemPages(
     uintptr_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
-BASE_EXPORT void DecommitSystemPages(
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DecommitSystemPages(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition);
@@ -188,12 +197,15 @@ BASE_EXPORT void DecommitSystemPages(
 // setting them to PageAccessibilityConfiguration::kInaccessible).
 //
 // This API will crash if the operation cannot be performed.
-BASE_EXPORT void DecommitAndZeroSystemPages(uintptr_t address, size_t length);
-BASE_EXPORT void DecommitAndZeroSystemPages(void* address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DecommitAndZeroSystemPages(uintptr_t address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DecommitAndZeroSystemPages(void* address, size_t length);
 
 // Whether decommitted memory is guaranteed to be zeroed when it is
 // recommitted. Do not assume that this will not change over time.
-constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
+constexpr PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) bool DecommittedMemoryIsAlwaysZeroed() {
 #if BUILDFLAG(IS_APPLE)
   return false;
 #else
@@ -221,14 +233,15 @@ constexpr BASE_EXPORT bool DecommittedMemoryIsAlwaysZeroed() {
 // |DecommittedMemoryIsAlwaysZeroed()| is true.
 //
 // This operation may not be atomic on some platforms.
-BASE_EXPORT void RecommitSystemPages(
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void RecommitSystemPages(
     uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
     PageAccessibilityDisposition accessibility_disposition);
 
 // Like RecommitSystemPages(), but returns false instead of crashing.
-[[nodiscard]] BASE_EXPORT bool TryRecommitSystemPages(
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool TryRecommitSystemPages(
     uintptr_t address,
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
@@ -255,12 +268,14 @@ BASE_EXPORT void RecommitSystemPages(
 // that the page is required again. Once written to, the content of the page is
 // guaranteed stable once more. After being written to, the page content may be
 // based on the original page content, or a page of zeroes.
-BASE_EXPORT void DiscardSystemPages(uintptr_t address, size_t length);
-BASE_EXPORT void DiscardSystemPages(void* address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DiscardSystemPages(uintptr_t address, size_t length);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DiscardSystemPages(void* address, size_t length);
 
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundUpToSystemPage(uintptr_t address) {
   return (address + internal::SystemPageOffsetMask()) &
          internal::SystemPageBaseMask();
@@ -268,14 +283,14 @@ RoundUpToSystemPage(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundDownToSystemPage(uintptr_t address) {
   return address & internal::SystemPageBaseMask();
 }
 
 // Rounds up |address| to the next multiple of |PageAllocationGranularity()|.
 // Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundUpToPageAllocationGranularity(uintptr_t address) {
   return (address + internal::PageAllocationGranularityOffsetMask()) &
          internal::PageAllocationGranularityBaseMask();
@@ -283,7 +298,7 @@ RoundUpToPageAllocationGranularity(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of
 // |PageAllocationGranularity()|. Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundDownToPageAllocationGranularity(uintptr_t address) {
   return address & internal::PageAllocationGranularityBaseMask();
 }
@@ -292,25 +307,25 @@ RoundDownToPageAllocationGranularity(uintptr_t address) {
 // |PageAllocationGranularity()|. This can be called early on to make it more
 // likely that large allocations will succeed. Returns true if the reservation
 // succeeded, false if the reservation failed or a reservation was already made.
-BASE_EXPORT bool ReserveAddressSpace(size_t size);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool ReserveAddressSpace(size_t size);
 
 // Releases any reserved address space. |AllocPages| calls this automatically on
 // an allocation failure. External allocators may also call this on failure.
 //
 // Returns true when an existing reservation was released.
-BASE_EXPORT bool ReleaseReservation();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool ReleaseReservation();
 
 // Returns true if there is currently an address space reservation.
-BASE_EXPORT bool HasReservationForTesting();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool HasReservationForTesting();
 
 // Returns |errno| (POSIX) or the result of |GetLastError| (Windows) when |mmap|
 // (POSIX) or |VirtualAlloc| (Windows) fails.
-BASE_EXPORT uint32_t GetAllocPageErrorCode();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t GetAllocPageErrorCode();
 
 // Returns the total amount of mapped pages from all clients of
 // PageAllocator. These pages may or may not be committed. This is mostly useful
 // to assess address space pressure.
-BASE_EXPORT size_t GetTotalMappedSize();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetTotalMappedSize();
 
 }  // namespace partition_alloc
 

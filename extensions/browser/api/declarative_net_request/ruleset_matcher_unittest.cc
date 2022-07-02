@@ -1264,23 +1264,23 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
   ASSERT_TRUE(web_contents);
 
   GURL example_url("http://example.com");
-  simulate_navigation(web_contents->GetMainFrame(), example_url);
+  simulate_navigation(web_contents->GetPrimaryMainFrame(), example_url);
   absl::optional<RequestAction> action =
       matcher->GetAllowlistedFrameActionForTesting(
-          web_contents->GetMainFrame());
+          web_contents->GetPrimaryMainFrame());
   EXPECT_FALSE(action);
 
   GURL google_url_1("http://google.com/xyz");
-  simulate_navigation(web_contents->GetMainFrame(), google_url_1);
+  simulate_navigation(web_contents->GetPrimaryMainFrame(), google_url_1);
   action = matcher->GetAllowlistedFrameActionForTesting(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   RequestAction google_rule_2_action =
       CreateRequestActionForTesting(RequestAction::Type::ALLOW_ALL_REQUESTS,
                                     *google_rule_2.id, *google_rule_2.priority);
   EXPECT_EQ(google_rule_2_action, action);
 
   auto* rfh_tester =
-      content::RenderFrameHostTester::For(web_contents->GetMainFrame());
+      content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame());
   content::RenderFrameHost* child = rfh_tester->AppendChild("sub_frame");
   ASSERT_TRUE(child);
 
@@ -1300,9 +1300,9 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
   action = matcher->GetAllowlistedFrameActionForTesting(child);
   EXPECT_FALSE(action);
 
-  simulate_frame_destroyed(web_contents->GetMainFrame());
+  simulate_frame_destroyed(web_contents->GetPrimaryMainFrame());
   action = matcher->GetAllowlistedFrameActionForTesting(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   EXPECT_FALSE(action);
 }
 
@@ -1353,7 +1353,7 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
       ->NavigateAndCommit(google_url);
 
   testing::NiceMock<content::MockNavigationHandle> navigation_handle(
-      google_url, web_contents->GetMainFrame());
+      google_url, web_contents->GetPrimaryMainFrame());
   navigation_handle.set_has_committed(true);
   matcher->OnDidFinishNavigation(&navigation_handle);
 
@@ -1383,9 +1383,8 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
     params.first_party_origin = url::Origin::Create(google_url);
     params.is_third_party = true;
     params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
-    params.parent_routing_id = content::GlobalRenderFrameHostId(
-        web_contents->GetMainFrame()->GetProcess()->GetID(),
-        web_contents->GetMainFrame()->GetRoutingID());
+    params.parent_routing_id =
+        web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
     EXPECT_EQ(test_case.expected_action,
               matcher->GetBeforeRequestAction(params));

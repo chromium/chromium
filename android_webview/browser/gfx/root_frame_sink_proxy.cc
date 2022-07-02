@@ -28,6 +28,13 @@ class RootFrameSinkProxy::RootFrameSinkClientImpl : public RootFrameSinkClient {
     owner_->ReturnResourcesOnViz(frame_sink_id, layer_tree_frame_sink_id,
                                  std::move(resources));
   }
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) override {
+    owner_->OnCompositorFrameTransitionDirectiveProcessedOnViz(
+        frame_sink_id, layer_tree_frame_sink_id, sequence_id);
+  }
 
  private:
   const raw_ptr<RootFrameSinkProxy> owner_;
@@ -215,6 +222,28 @@ void RootFrameSinkProxy::ReturnResourcesOnViz(
       base::BindOnce(&RootFrameSinkProxy::ReturnResourcesOnUI,
                      weak_ptr_factory_.GetWeakPtr(), frame_sink_id,
                      layer_tree_frame_sink_id, std::move(resources)));
+}
+
+void RootFrameSinkProxy::OnCompositorFrameTransitionDirectiveProcessedOnUI(
+    viz::FrameSinkId frame_sink_id,
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  client_->OnCompositorFrameTransitionDirectiveProcessed(
+      frame_sink_id, layer_tree_frame_sink_id, sequence_id);
+}
+
+void RootFrameSinkProxy::OnCompositorFrameTransitionDirectiveProcessedOnViz(
+    viz::FrameSinkId frame_sink_id,
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RootFrameSinkProxy::
+                         OnCompositorFrameTransitionDirectiveProcessedOnUI,
+                     weak_ptr_factory_.GetWeakPtr(), frame_sink_id,
+                     layer_tree_frame_sink_id, sequence_id));
 }
 
 }  // namespace android_webview

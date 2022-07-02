@@ -43,8 +43,10 @@ MATCHER(HasUserNoteManager, "") {
 
 class MockUserNoteService : public UserNoteService {
  public:
-  // A service delegate is not needed for these tests, so pass nullptr.
-  MockUserNoteService() : UserNoteService(/*delegate=*/nullptr) {}
+  // A service delegate and user note storage are not needed for these tests, so
+  // pass nullptr.
+  MockUserNoteService()
+      : UserNoteService(/*delegate=*/nullptr, /*storage=*/nullptr) {}
 
   MOCK_METHOD(void,
               OnFrameNavigated,

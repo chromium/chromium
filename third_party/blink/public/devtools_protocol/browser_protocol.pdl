@@ -702,7 +702,7 @@ experimental domain Audits
       InvalidHeader
 
   # Details for issues around "Attribution Reporting API" usage.
-  # Explainer: https://github.com/WICG/conversion-measurement-api
+  # Explainer: https://github.com/WICG/attribution-reporting-api
   type AttributionReportingIssueDetails extends object
     properties
       AttributionReportingIssueType violationType
@@ -751,7 +751,6 @@ experimental domain Audits
       CrossOriginWindowAlert
       CrossOriginWindowConfirm
       CSSSelectorInternalMediaControlsOverlayCastButton
-      CustomCursorIntersectsViewport
       DeprecationExample
       DocumentDomainSettingWithoutOriginAgentClusterHeader
       EventPath
@@ -759,18 +758,17 @@ experimental domain Audits
       GeolocationInsecureOriginDeprecatedNotRemoved
       GetUserMediaInsecureOrigin
       HostCandidateAttributeGetter
+      IdentityInCanMakePaymentEvent
       InsecurePrivateNetworkSubresourceRequest
       LegacyConstraintGoogIPv6
       LocalCSSFileExtensionRejected
-      MediaElementAudioSourceNode
       MediaSourceAbortRemove
       MediaSourceDurationTruncatingBuffered
       NoSysexWebMIDIWithoutPermission
       NotificationInsecureOrigin
       NotificationPermissionRequestedIframe
       ObsoleteWebRtcCipherSuite
-      PaymentRequestBasicCard
-      PaymentRequestShowWithoutGesture
+      OpenWebDatabaseInsecureContext
       PictureSourceSrc
       PrefixedCancelAnimationFrame
       PrefixedRequestAnimationFrame
@@ -788,7 +786,6 @@ experimental domain Audits
       RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics
       RTCPeerConnectionSdpSemanticsPlanB
       RtcpMuxPolicyNegotiate
-      RTPDataChannel
       SharedArrayBufferConstructedWithoutIsolation
       TextToSpeech_DisallowedByAutoplay
       V8SharedArrayBufferConstructedInExtensionWithoutIsolation
@@ -1335,6 +1332,8 @@ experimental domain CSS
     properties
       # Pseudo element type.
       DOM.PseudoType pseudoType
+      # Pseudo element custom ident.
+      optional string pseudoIdentifier
       # Matches of CSS rules applicable to the pseudo style.
       array of RuleMatch matches
 
@@ -1445,6 +1444,9 @@ experimental domain CSS
       # Cascade layer array. Contains the layer hierarchy that this rule belongs to starting
       # with the innermost layer and going outwards.
       experimental optional array of CSSLayer layers
+      # @scope CSS at-rule array.
+      # The array enumerates @scope at-rules starting with the innermost one, going outwards.
+      experimental optional array of CSSScope scopes
 
   # CSS coverage information.
   type RuleUsage extends object
@@ -1594,6 +1596,17 @@ experimental domain CSS
       # Identifier of the stylesheet containing this object (if exists).
       optional StyleSheetId styleSheetId
 
+  # CSS Scope at-rule descriptor.
+  experimental type CSSScope extends object
+    properties
+      # Scope rule text.
+      string text
+      # The associated rule header range in the enclosing stylesheet (if
+      # available).
+      optional SourceRange range
+      # Identifier of the stylesheet containing this object (if exists).
+      optional StyleSheetId styleSheetId
+
   # CSS Layer at-rule descriptor.
   experimental type CSSLayer extends object
     properties
@@ -1654,6 +1667,8 @@ experimental domain CSS
       string fontWeight
       # The font-stretch.
       string fontStretch
+      # The font-display.
+      string fontDisplay
       # The unicode-range.
       string unicodeRange
       # The src.
@@ -1893,6 +1908,16 @@ experimental domain CSS
     returns
       # The resulting CSS Supports rule after modification.
       CSSSupports supports
+
+  # Modifies the expression of a scope at-rule.
+  experimental command setScopeText
+    parameters
+      StyleSheetId styleSheetId
+      SourceRange range
+      string text
+    returns
+      # The resulting CSS Scope rule after modification.
+      CSSScope scope
 
   # Modifies the rule selector.
   command setRuleSelector
@@ -2253,6 +2278,9 @@ domain DOM
       optional string value
       # Pseudo element type for this node.
       optional PseudoType pseudoType
+      # Pseudo element identifier for this node. Only present if there is a
+      # valid pseudoType.
+      optional string pseudoIdentifier
       # Shadow root type.
       optional ShadowRootType shadowRootType
       # Frame ID for frame owner elements.
@@ -2274,6 +2302,7 @@ domain DOM
       # Whether the node is SVG.
       optional boolean isSVG
       optional CompatibilityMode compatibilityMode
+      optional BackendNode assignedSlot
 
   # A structure holding an RGBA color.
   type RGBA extends object
@@ -2647,6 +2676,14 @@ domain DOM
       # Query selector result.
       array of NodeId nodeIds
 
+  # Returns NodeIds of current top layer elements.
+  # Top layer is rendered closest to the user within a viewport, therefore its elements always 
+  # appear on top of all other content.
+  experimental command getTopLayerElements
+    returns
+      # NodeIds of top layer elements
+      array of NodeId nodeIds
+
   # Re-does the last undone action.
   experimental command redo
 
@@ -2906,6 +2943,9 @@ domain DOM
       NodeId parentId
       # The added pseudo element.
       Node pseudoElement
+
+  # Called when top layer elements are changed.
+  experimental event topLayerElementsUpdated
 
   # Called when a pseudo element is removed from an element.
   experimental event pseudoElementRemoved
@@ -3284,6 +3324,9 @@ experimental domain DOMSnapshot
       optional RareIntegerData contentDocumentIndex
       # Type of a pseudo element node.
       optional RareStringData pseudoType
+      # Pseudo element identifier for this node. Only present if there is a
+      # valid pseudoType.
+      optional RareStringData pseudoIdentifier
       # Whether this DOM node responds to mouse clicks. This includes nodes that have had click
       # event listeners attached via JavaScript as well as anchor tags that naturally navigate when
       # clicked.
@@ -3434,12 +3477,6 @@ experimental domain DOMStorage
       StorageId storageId
       string key
       string value
-
-  command getStorageKeyForFrame
-    parameters
-      Page.FrameId frameId
-    returns
-      SerializedStorageKey storageKey
 
   event domStorageItemAdded
     parameters
@@ -3815,6 +3852,11 @@ domain Emulation
     parameters
       # Image types to disable.
       array of DisabledImageType imageTypes
+
+  experimental command setHardwareConcurrencyOverride
+    parameters
+      # Hardware concurrency to report
+      integer hardwareConcurrency
 
   # Allows overriding user agent with the given string.
   command setUserAgentOverride
@@ -6316,9 +6358,10 @@ domain Network
     enum
       SameOrigin
       SameOriginAllowPopups
+      RestrictProperties
       UnsafeNone
       SameOriginPlusCoep
-      SameOriginAllowPopupsPlusCoep
+      RestrictPropertiesPlusCoep
 
   experimental type CrossOriginOpenerPolicyStatus extends object
     properties
@@ -6959,6 +7002,16 @@ domain Page
       AdFrameType adFrameType
       optional array of AdFrameExplanation explanations
 
+  # Identifies the bottom-most script which caused the frame to be labelled
+  # as an ad.
+  experimental type AdScriptId extends object
+    properties
+      # Script Id of the bottom-most script which caused the frame to be labelled
+      # as an ad.
+      Runtime.ScriptId scriptId
+      # Id of adScriptId's debugger.
+      Runtime.UniqueDebuggerId debuggerId
+
   # Indicates whether the frame is a secure context and why it is the case.
   experimental type SecureContextType extends string
     enum
@@ -6996,13 +7049,13 @@ domain Page
       ambient-light-sensor
       attribution-reporting
       autoplay
+      bluetooth
       browsing-topics
       camera
       ch-dpr
       ch-device-memory
       ch-downlink
       ch-ect
-      ch-partitioned-cookies
       ch-prefers-color-scheme
       ch-rtt
       ch-save-data
@@ -7030,6 +7083,7 @@ domain Page
       encrypted-media
       execution-while-out-of-viewport
       execution-while-not-rendered
+      federated-credentials
       focus-without-user-activation
       fullscreen
       frobulate
@@ -7071,6 +7125,8 @@ domain Page
       IframeAttribute
       # Inside fenced frame.
       InFencedFrameTree
+      # Inside an Isolated Application.
+      InIsolatedApp
 
   experimental type PermissionsPolicyBlockLocator extends object
     properties
@@ -7634,7 +7690,8 @@ domain Page
     returns
       # Frame id that has navigated (or failed to navigate)
       FrameId frameId
-      # Loader identifier.
+      # Loader identifier. This is omitted in case of same-document navigation,
+      # as the previously committed loaderId would not change.
       optional Network.LoaderId loaderId
       # User friendly error message, present if and only if navigation has failed.
       optional string errorText
@@ -7975,12 +8032,12 @@ domain Page
     parameters
       # Id of the frame containing input node.
       experimental FrameId frameId
-      # Input node id.
-      experimental DOM.BackendNodeId backendNodeId
       # Input mode.
       enum mode
         selectSingle
         selectMultiple
+      # Input node id. Only present for file choosers opened via an <input type="file"> element.
+      experimental optional DOM.BackendNodeId backendNodeId
 
   # Fired when frame has been attached to its parent.
   event frameAttached
@@ -7991,6 +8048,9 @@ domain Page
       FrameId parentFrameId
       # JavaScript stack trace of when frame was attached, only set if frame initiated from script.
       optional Runtime.StackTrace stack
+      # Identifies the bottom-most script which caused the frame to be labelled
+      # as an ad. Only sent if frame is labelled as an ad and id is available.
+      experimental optional AdScriptId adScriptId
 
   # Fired when frame no longer has a scheduled navigation.
   deprecated event frameClearedScheduledNavigation
@@ -8251,7 +8311,6 @@ domain Page
       ContentMediaDevicesDispatcherHost
       ContentWebBluetooth
       ContentWebUSB
-      ContentMediaSession
       ContentMediaSessionService
       ContentScreenReader
 
@@ -8903,6 +8962,13 @@ experimental domain Storage
       array of InterestGroupAd ads
       array of InterestGroupAd adComponents
 
+  # Returns a storage key given a frame id.
+  command getStorageKeyForFrame
+    parameters
+      Page.FrameId frameId
+    returns
+      SerializedStorageKey storageKey
+
   # Clears storage for origin.
   command clearDataForOrigin
     parameters
@@ -9477,6 +9543,9 @@ experimental domain Tracing
         recordContinuously
         recordAsMuchAsPossible
         echoToConsole
+      # Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value
+      # of 200 MB would be used.
+      optional number traceBufferSizeInKb
       # Turns on JavaScript stack sampling.
       optional boolean enableSampling
       # Turns on system tracing.

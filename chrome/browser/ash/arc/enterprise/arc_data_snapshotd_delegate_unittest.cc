@@ -70,7 +70,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
 
     chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("user@gmail.com");
@@ -87,7 +87,7 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
       delete;
 
   ~ArcDataSnapshotdDelegateTest() override {
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

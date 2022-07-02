@@ -27,8 +27,7 @@ SaveUnsyncedCredentialsLocallyBubbleController::
 
 SaveUnsyncedCredentialsLocallyBubbleController::
     ~SaveUnsyncedCredentialsLocallyBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void SaveUnsyncedCredentialsLocallyBubbleController::OnSaveClicked(

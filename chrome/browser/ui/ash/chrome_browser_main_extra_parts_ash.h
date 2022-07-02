@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
 
 namespace ash {
@@ -30,7 +31,7 @@ class ArcOpenUrlDelegateImpl;
 class AshShellInit;
 class AshWebViewFactoryImpl;
 class CastConfigControllerMediaRouter;
-class DesksTemplatesClient;
+class DesksClient;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
@@ -99,6 +100,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
+  std::unique_ptr<ash::InSessionAuthTokenProviderImpl>
+      in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
@@ -117,7 +120,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
-  std::unique_ptr<DesksTemplatesClient> desks_templates_client_;
+  std::unique_ptr<DesksClient> desks_client_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

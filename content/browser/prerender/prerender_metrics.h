@@ -23,7 +23,7 @@ enum class PrerenderCancelledInterface {
   kUnknown = 0,  // For kCancel interfaces added by embedders or tests.
   kGamepadHapticsManager = 1,
   kGamepadMonitor = 2,
-  kNotificationService = 3,
+  // kNotificationService = 3,   Deprecated.
   kSyncEncryptionKeysExtension = 4,
   kMaxValue = kSyncEncryptionKeysExtension
 };
@@ -40,15 +40,13 @@ void RecordPrerenderActivationTime(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
-// Records the status to UMA and UKM. `initiator_ukm_id` represents the page
-// that starts prerendering and `prerendered_ukm_id` represents the prerendered
-// page. `prerendered_ukm_id` is valid after the page is activated.
-void RecordPrerenderHostFinalStatus(
-    PrerenderHost::FinalStatus status,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix,
-    ukm::SourceId initiator_ukm_id,
-    ukm::SourceId prerendered_ukm_id);
+// Records the status to UMA and UKM, and reports the status other than
+// kActivated to DevTools. In the attributes, `initiator_ukm_id` represents the
+// page that starts prerendering. `prerendered_ukm_id` represents the
+// prerendered page and is valid after the page is activated.
+void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
+                                    const PrerenderAttributes& attributes,
+                                    ukm::SourceId prerendered_ukm_id);
 
 }  // namespace content
 

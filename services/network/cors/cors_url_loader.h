@@ -98,8 +98,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
                         base::OnceCallback<void()> callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
   static network::mojom::FetchResponseType CalculateResponseTaintingForTesting(
@@ -167,8 +165,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // This is used to soft-launch Private Network Access preflights: we send
   // preflights but do not require them to succeed.
   //
-  // TODO(https://crbug.com/1268378): Remove this once it never returns true.
+  // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
+  // is enabled.
   bool ShouldIgnorePrivateNetworkAccessErrors() const;
+
+  // Returns the PNA-specific behavior to apply to the next preflight request.
+  //
+  // This is used to soft-launch Private Network Access preflights: we send
+  // preflights but do not require them to succeed.
+  //
+  // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
+  // is enabled.
+  PrivateNetworkAccessPreflightBehavior
+  GetPrivateNetworkAccessPreflightBehavior() const;
 
   static absl::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
@@ -262,6 +271,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   bool has_authorization_covered_by_wildcard_ = false;
 
+  // Whether the current preflight request is 1) solely sent for PNA, not for
+  // CORS and PNA at the same time, and 2) in warning mode.
+  //
   // If set to true, then any and all errors raised by subsequent preflight
   // requests are ignored.
   //
@@ -274,8 +286,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // `ShouldIgnorePrivateNetworkAccessErrors()` is also true.
   //
   // TODO(https://crbug.com/1268378): Remove this along with
-  // `should_ignore_private_network_access_errors_`.
-  bool should_ignore_preflight_errors_ = false;
+  // `ShouldIgnorePrivateNetworkAccessErrors()`.
+  bool sending_pna_only_warning_preflight_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 

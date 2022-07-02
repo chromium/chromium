@@ -79,7 +79,7 @@ class SearchProvider : public BaseSearchProvider,
   // AutocompleteProvider:
   void ResetSession() override;
 
-  // The verbatim score for an input which is not an URL.
+  // The verbatim score for an input which is not a URL.
   static const int kNonURLVerbatimRelevance = 1300;
 
  protected:
@@ -381,8 +381,6 @@ class SearchProvider : public BaseSearchProvider,
 
   // Finds image URLs in most relevant results and uses client to prefetch them.
   void PrefetchImages(SearchSuggestionParser::Results* results);
-
-  raw_ptr<AutocompleteProviderListener> listener_;
 
   // Maintains the TemplateURLs used.
   Providers providers_;

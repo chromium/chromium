@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_LINUX_X11_KEYBOARD_IMPL_H_
 #define REMOTING_HOST_LINUX_X11_KEYBOARD_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/linux/x11_keyboard.h"
 
 #include "ui/gfx/x/connection.h"
@@ -37,7 +38,7 @@ class X11KeyboardImpl : public X11Keyboard {
 
  private:
   // X11 graphics context.
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
 };
 
 }  // namespace remoting

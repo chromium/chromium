@@ -8,6 +8,7 @@ import("//build/config/arm.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/logging.gni")
 import("//build/config/ui.gni")
 import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
@@ -32,8 +33,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_FFMPEG=$media_use_ffmpeg",
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
     "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",
-    "ENABLE_PLATFORM_HEVC_DECODING=$enable_platform_hevc_decoding",
-    "ENABLE_PLATFORM_ENCRYPTED_HEVC=$enable_platform_encrypted_hevc",
+    "ENABLE_HEVC_PARSER_AND_HW_DECODER=$enable_hevc_parser_and_hw_decoder",
     "ENABLE_HLS_SAMPLE_AES=$enable_hls_sample_aes",
     "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
     "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",
@@ -78,6 +78,12 @@ config("media_config") {
   }
   if (use_cras) {
     defines += [ "USE_CRAS" ]
+  }
+
+  if (!use_runtime_vlog) {
+    # Enable VLOG() on ChromeOS-Ash, otherwise disabled.
+    assert(is_chromeos_ash,
+           "Non-ChromeOS-Ash builds should not use runtime vlog")
   }
 }
 

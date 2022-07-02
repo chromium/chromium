@@ -62,7 +62,7 @@ class CommandError(Exception):
   """Indicates that a dispatched shell command exited with a non-zero status."""
 
   def __init__(self, value):
-    super(CommandError, self).__init__()
+    super().__init__()
     self.value = value
 
   def __str__(self):
@@ -98,8 +98,7 @@ def _GetFileExtension(file_name):
   file_name_parts = os.path.basename(file_name).split('.')
   if len(file_name_parts) > 1:
     return file_name_parts[-1]
-  else:
-    return None
+  return None
 
 
 def _StashOutputDirectory(buildpath):
@@ -155,7 +154,7 @@ def _UnstashOutputDirectory(buildpath):
   shutil.move(stashpath, buildpath)
 
 
-class StepRecorder(object):
+class StepRecorder:
   """Records steps and timings."""
 
   def __init__(self, buildbot):
@@ -235,7 +234,7 @@ class StepRecorder(object):
     return process.returncode
 
 
-class ClankCompiler(object):
+class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
@@ -351,7 +350,7 @@ class ClankCompiler(object):
     self.Build(instrumented, use_call_graph, self._libchrome_target)
 
 
-class OrderfileUpdater(object):
+class OrderfileUpdater:
   """Handles uploading and committing a new orderfile in the repository.
 
   Only used for testing or on a bot.
@@ -452,7 +451,7 @@ class OrderfileUpdater(object):
     raise NotImplementedError
 
 
-class OrderfileGenerator(object):
+class OrderfileGenerator:
   """A utility for generating a new orderfile for Clank.
 
   Builds an instrumented binary, profiles a run of the application, and
@@ -465,6 +464,8 @@ class OrderfileGenerator(object):
 
   # Previous orderfile_generator debug files would be overwritten.
   _DIRECTORY_FOR_DEBUG_FILES = '/tmp/orderfile_generator_debug_files'
+
+  _CLOUD_STORAGE_BUCKET_FOR_DEBUG = None
 
   def _PrepareOrderfilePaths(self):
     if self._options.public:
@@ -517,8 +518,8 @@ class OrderfileGenerator(object):
       self._monochrome = False
       for device in devices:
         device_version = device.build_version_sdk
-        if (device_version >= version_codes.KITKAT
-            and device_version <= version_codes.LOLLIPOP_MR1):
+        if (version_codes.KITKAT <= device_version <=
+            version_codes.LOLLIPOP_MR1):
           return device
 
     assert not self._options.use_legacy_chrome_apk, \
@@ -968,7 +969,7 @@ class OrderfileGenerator(object):
       with open(self._options.manual_symbol_offsets) as f:
         symbol_offsets = [int(x) for x in f]
       processor = process_profiles.SymbolOffsetProcessor(
-          self._compiler.manual_libname)
+          self._options.manual_libname)
       generator = cyglog_to_orderfile.OffsetOrderfileGenerator(
           processor, cyglog_to_orderfile.ObjectFileProcessor(
               self._options.manual_objdir))

@@ -73,11 +73,13 @@ source_set("follow_management_ui") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    "resources:following_empty",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp:metrics",
+    "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon",
     "//ui/base",

@@ -85,7 +85,7 @@ ContentExtensionBridge = class {
       return;
     }
     this.backgroundPort_.onMessage.addListener(
-        (message) => this.onMessage_(message));
+        message => this.onMessage_(message));
     this.backgroundPort_.onDisconnect.addListener(() => this.onDisconnect_());
   }
 

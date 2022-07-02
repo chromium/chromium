@@ -106,7 +106,7 @@ class ChromeBrowserStateIOData {
     std::unique_ptr<net::ProxyConfigService> proxy_config_service;
 
     // SystemCookieStore should be initialized from the UI thread as it depends
-    // on the |browser_state|.
+    // on the `browser_state`.
     std::unique_ptr<net::SystemCookieStore> system_cookie_store;
 
     // The browser state this struct was populated from. It's passed as a void*
@@ -118,10 +118,10 @@ class ChromeBrowserStateIOData {
 
   void InitializeOnUIThread(ChromeBrowserState* browser_state);
 
-  // Called when the ChromeBrowserState is destroyed. |context_getters| must
+  // Called when the ChromeBrowserState is destroyed. `context_getters` must
   // include all URLRequestContextGetters that refer to the
   // ChromeBrowserStateIOData's URLRequestContexts. Triggers destruction of the
-  // ChromeBrowserStateIOData and shuts down |context_getters| safely on the IO
+  // ChromeBrowserStateIOData and shuts down `context_getters` safely on the IO
   // thread.
   // TODO(mmenke):  Passing all those URLRequestContextGetters around like this
   //     is really silly.  Can we do something cleaner?

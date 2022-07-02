@@ -6,11 +6,21 @@
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
+
+class MockNoStatePrefetchClient : public NoStatePrefetchClient {
+ public:
+  explicit MockNoStatePrefetchClient(Page& page)
+      : NoStatePrefetchClient(page, nullptr) {}
+
+ private:
+  bool IsPrefetchOnly() override { return true; }
+};
 
 class MockPrescientNetworking : public WebPrescientNetworking {
  public:
@@ -88,6 +98,33 @@ TEST_F(HTMLPreloadScannerDocumentTest, XHRResponseDocument) {
 
   EXPECT_FALSE(mock_network_hints_->DidDnsPrefetch());
   EXPECT_FALSE(mock_network_hints_->DidPreconnect());
+}
+
+TEST_F(HTMLPreloadScannerDocumentTest,
+       SetsClientHintsPreferencesOnFrameMetaName) {
+  // Create a prefetch only document since that will ensure only the preload
+  // scanner runs.
+  ProvideNoStatePrefetchClientTo(
+      *GetDocument().GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
+                                    *GetDocument().GetPage()));
+  EXPECT_TRUE(GetDocument().IsPrefetchOnly());
+  main_resource_->Complete(R"(<meta name="Accept-CH" content="sec-ch-dpr">)");
+  EXPECT_TRUE(GetDocument().GetFrame()->GetClientHintsPreferences().ShouldSend(
+      network::mojom::WebClientHintsType::kDpr));
+}
+
+TEST_F(HTMLPreloadScannerDocumentTest,
+       SetsClientHintsPreferencesOnFrameHttpEquiv) {
+  // Create a prefetch only document since that will ensure only the preload
+  // scanner runs.
+  ProvideNoStatePrefetchClientTo(
+      *GetDocument().GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
+                                    *GetDocument().GetPage()));
+  EXPECT_TRUE(GetDocument().IsPrefetchOnly());
+  main_resource_->Complete(
+      R"(<meta http-equiv="Accept-CH" content="sec-ch-dpr">)");
+  EXPECT_TRUE(GetDocument().GetFrame()->GetClientHintsPreferences().ShouldSend(
+      network::mojom::WebClientHintsType::kDpr));
 }
 
 }  // namespace blink

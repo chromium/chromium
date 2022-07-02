@@ -3,42 +3,11 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":apps_page" ]
-}
-
-# Using a single js_library() target to work around circular dependencies.
-js_library("apps_page") {
-  sources = [
-    "app_info.js",
-    "apps_page.js",
-    "card_slider.js",
-    "dot_list.js",
-    "nav_dot.js",
-    "new_tab.js",
-    "page_list_view.js",
-    "page_switcher.js",
-    "tile_page.js",
-    "touch_handler.js",
-    "trash.js",
-  ]
-
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper",
-    "//ui/webui/resources/js/cr/ui:menu.m",
-    "//ui/webui/resources/js/cr/ui:menu_item.m",
-  ]
-}
+assert(is_fuchsia || is_linux || is_mac || is_win)
 
 grit("apps_resources") {
   defines = chrome_grit_defines
@@ -57,29 +26,47 @@ grit("apps_resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
+# Note: There are no plans to migrate this page to TypeScript, as it is a fairly
+# old page with an undecided future, and would be a lot of work. Passing JS file
+# through TS compiler to get some basic static checks (mostly validating syntax
+# but not types).
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "app_info.js",
+    "apps_page.js",
+    "card_slider.js",
+    "dot_list.js",
+    "nav_dot.js",
+    "new_tab.js",
+    "page_list_view.js",
+    "page_switcher.js",
+    "tile_page.js",
+    "touch_handler.js",
+    "trash.js",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+}
+
 generate_grd("build_apps_grd") {
   grd_prefix = "apps"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
-    "app_info.js",
     "apps_page.css",
-    "apps_page.js",
-    "card_slider.js",
-    "dot_list.js",
     "images/error_yellow900.svg",
     "images/trash.png",
     "nav_dot.css",
-    "nav_dot.js",
     "new_tab.css",
     "new_tab.html",
-    "new_tab.js",
-    "page_list_view.js",
-    "page_switcher.js",
     "tile_page.css",
-    "tile_page.js",
-    "touch_handler.js",
     "trash.css",
-    "trash.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

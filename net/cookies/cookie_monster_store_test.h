@@ -119,14 +119,14 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
  private:
   CommandList commands_;
 
-  bool store_load_commands_;
+  bool store_load_commands_ = false;
 
   // Deferred result to use when Load() is called.
-  bool load_return_value_;
+  bool load_return_value_ = true;
   std::vector<std::unique_ptr<CanonicalCookie>> load_result_;
   // Indicates if the store has been fully loaded to avoid returning duplicate
   // cookies.
-  bool loaded_;
+  bool loaded_ = false;
 };
 
 // Helper to build a single CanonicalCookie.
@@ -177,7 +177,7 @@ class MockSimplePersistentCookieStore
 
   // Indicates if the store has been fully loaded to avoid return duplicate
   // cookies in subsequent load requests
-  bool loaded_;
+  bool loaded_ = false;
 };
 
 // Helper function for creating a CookieMonster backed by a

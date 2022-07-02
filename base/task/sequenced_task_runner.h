@@ -16,15 +16,18 @@
 #include "base/types/pass_key.h"
 
 namespace blink {
+class LowPrecisionTimer;
 class MetronomeSource;
 class TimerBase;
-class WebRtcMetronomeTaskQueue;
-class WebRtcTimer;
-class WebrtcTaskQueue;
+class WebRtcTaskQueue;
 }
 namespace webrtc {
 class ThreadWrapper;
 }  // namespace webrtc
+namespace media {
+class AlsaPcmOutputStream;
+class FakeAudioWorker;
+}  // namespace media
 
 namespace base {
 
@@ -33,6 +36,7 @@ class DelayTimerBase;
 class DelayedTaskManager;
 }
 class DeadlineTimer;
+class MetronomeTimer;
 class TimeDelta;
 class TimeTicks;
 
@@ -48,13 +52,15 @@ class PostDelayedTaskPassKey {
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
+  friend class base::MetronomeTimer;
+  friend class blink::LowPrecisionTimer;
   friend class blink::MetronomeSource;
   friend class blink::TimerBase;
-  friend class blink::WebRtcMetronomeTaskQueue;
-  friend class blink::WebRtcTimer;
-  friend class blink::WebrtcTaskQueue;
+  friend class blink::WebRtcTaskQueue;
   friend class PostDelayedTaskPassKeyForTesting;
   friend class webrtc::ThreadWrapper;
+  friend class media::AlsaPcmOutputStream;
+  friend class media::FakeAudioWorker;
 };
 
 class PostDelayedTaskPassKeyForTesting : public PostDelayedTaskPassKey {};

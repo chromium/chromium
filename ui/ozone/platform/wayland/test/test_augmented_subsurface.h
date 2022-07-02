@@ -7,6 +7,7 @@
 
 #include <surface-augmenter-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 namespace wl {
@@ -27,7 +28,7 @@ class TestAugmentedSubSurface : public ServerObject {
 
  private:
   // Subsurface resource that is the ground for this augmented surface.
-  wl_resource* sub_surface_ = nullptr;
+  raw_ptr<wl_resource> sub_surface_ = nullptr;
 };
 
 }  // namespace wl

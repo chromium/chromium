@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
@@ -137,6 +138,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
                   prefs::kAllowDeletingBrowserHistory),
               Optional(false));
+
+  // kIncognitoModeAvailability must be disabled for all supervised users.
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntPath(prefs::kIncognitoModeAvailability),
+      Optional(static_cast<int>(IncognitoModePrefs::Availability::kDisabled)));
 
   // kSupervisedModeManualHosts does not have a hardcoded value.
   base::DictionaryValue* manual_hosts = nullptr;

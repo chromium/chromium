@@ -49,9 +49,9 @@ namespace {
 // (?:regex) denotes non-capturing parentheses group.
 CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // ModemManager
-    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')", PIIType::kCellID},
+    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')", PIIType::kLocationInfo},
     {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
-     PIIType::kLocationAreaCode},
+     PIIType::kLocationInfo},
 
     // wpa_supplicant
     {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')", PIIType::kSSID},
@@ -87,10 +87,11 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
 
     // UUIDs given by the 'blkid' tool. These don't necessarily look like
     // standard UUIDs, so treat them specially.
-    {"UUID", R"xxx((UUID=")([0-9a-zA-Z-]+)("))xxx", PIIType::kUUID},
+    {"UUID", R"xxx((UUID=")([0-9a-zA-Z-]+)("))xxx", PIIType::kStableIdentifier},
     // Also cover UUIDs given by the 'lvs' and 'pvs' tools, which similarly
     // don't necessarily look like standard UUIDs.
-    {"UUID", R"xxx(("[lp]v_uuid":")([0-9a-zA-Z-]+)("))xxx", PIIType::kUUID},
+    {"UUID", R"xxx(("[lp]v_uuid":")([0-9a-zA-Z-]+)("))xxx",
+     PIIType::kStableIdentifier},
 
     // Volume labels presented in the 'blkid' tool, and as part of removable
     // media paths shown in various logs such as cros-disks (in syslog).
@@ -387,7 +388,11 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
     {"UUID",
      "(?i)([0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-"
      "[0-9a-zA-Z]{12})",
-     PIIType::kUUID},
+     PIIType::kStableIdentifier},
+    // Eche UID which is a base64 conversion of a 32 bytes public key.
+    {"UID",
+     "((?:[A-Za-z0-9+/]{4}){10}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=))",
+     PIIType::kStableIdentifier},
 };
 
 // Like RE2's FindAndConsume, searches for the first occurrence of |pattern| in
@@ -503,10 +508,11 @@ std::string RedactionTool::RedactAndKeepSelected(
 
   // Do hashes last since they may appear in URLs and they also prevent us
   // from properly recognizing the Android storage paths.
-  if (pii_types_to_keep.find(PIIType::kHash) == pii_types_to_keep.end()) {
+  if (pii_types_to_keep.find(PIIType::kStableIdentifier) ==
+      pii_types_to_keep.end()) {
     // URLs and Android storage paths will be partially redacted (only hashes)
     // if |pii_types_to_keep| contains PIIType::kURL or
-    // PIIType::kAndroidAppStoragePath and not PIIType::kHash.
+    // PIIType::kAndroidAppStoragePath and not PIIType::kStableIdentifier.
     redacted = RedactHashes(std::move(redacted), nullptr);
   }
   return redacted;
@@ -624,7 +630,7 @@ std::string RedactionTool::RedactHashes(
       hashes_[hash] = replacement_hash;
     }
     if (detected != nullptr) {
-      (*detected)[PIIType::kHash].insert(hash);
+      (*detected)[PIIType::kStableIdentifier].insert(hash);
     }
 
     result += replacement_hash;

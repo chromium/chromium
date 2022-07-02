@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -20,6 +21,7 @@ namespace blink {
 
 namespace {
 
+// A PannerNode only supports 1 or 2 channels
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 
@@ -98,7 +100,7 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
   // inputs.  The first time we're called during this time slice we process, but
   // after that we don't want to re-process, instead our output(s) will already
   // have the results cached in their bus
-  double current_time = Context()->currentTime();
+  const double current_time = Context()->currentTime();
   if (last_processing_time_ != current_time) {
     // important to first update this time because of feedback loops in the
     // rendering graph.
@@ -106,14 +108,14 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
 
     PullInputs(frames_to_process);
 
-    bool silent_inputs = InputsAreSilent();
+    const bool silent_inputs = InputsAreSilent();
 
     {
       // Need to protect calls to PropagetesSilence (and Process) because the
       // main thread may be changing the panning model that modifies the
       // TailTime and LatencyTime methods called by PropagatesSilence.
-      MutexTryLocker try_locker(process_lock_);
-      if (try_locker.Locked()) {
+      base::AutoTryLock try_locker(process_lock_);
+      if (try_locker.is_acquired()) {
         if (silent_inputs && PropagatesSilence()) {
           SilenceOutputs();
           // AudioParams still need to be processed so that the value can be
@@ -166,9 +168,9 @@ void PannerHandler::Process(uint32_t frames_to_process) {
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
   auto listener = Listener();
-  MutexTryLocker try_listener_locker(listener->ListenerLock());
+  base::AutoTryLock try_listener_locker(listener->ListenerLock());
 
-  if (try_listener_locker.Locked()) {
+  if (try_listener_locker.is_acquired()) {
     if (!Context()->HasRealtimeConstraint() &&
         panning_model_ == Panner::PanningModel::kHRTF) {
       // For an OfflineAudioContext, we need to make sure the HRTFDatabase
@@ -200,7 +202,7 @@ void PannerHandler::Process(uint32_t frames_to_process) {
                    frames_to_process, InternalChannelInterpretation());
 
       // Get the distance and cone gain.
-      float total_gain = DistanceConeGain();
+      const float total_gain = DistanceConeGain();
 
       // Apply gain in-place.
       destination->CopyWithGainFrom(*destination, total_gain);
@@ -389,7 +391,7 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
     BaseAudioContext::GraphAutoLocker context_locker(Context());
 
     // This synchronizes with process().
-    MutexLocker process_locker(process_lock_);
+    base::AutoLock process_locker(process_lock_);
     panner_ = Panner::Create(model, Context()->sampleRate(),
                              GetDeferredTaskHandler().RenderQuantumFrames(),
                              Listener()->HrtfDatabaseLoader());
@@ -429,7 +431,7 @@ bool PannerHandler::SetDistanceModel(unsigned model) {
     case DistanceEffect::kModelExponential:
       if (model != distance_model_) {
         // This synchronizes with process().
-        MutexLocker process_locker(process_lock_);
+        base::AutoLock process_locker(process_lock_);
         distance_effect_.SetModel(
             static_cast<DistanceEffect::ModelType>(model));
         distance_model_ = model;
@@ -449,7 +451,7 @@ void PannerHandler::SetRefDistance(double distance) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   distance_effect_.SetRefDistance(distance);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -460,7 +462,7 @@ void PannerHandler::SetMaxDistance(double distance) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   distance_effect_.SetMaxDistance(distance);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -471,7 +473,7 @@ void PannerHandler::SetRolloffFactor(double factor) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   distance_effect_.SetRolloffFactor(factor);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -482,7 +484,7 @@ void PannerHandler::SetConeInnerAngle(double angle) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   cone_effect_.SetInnerAngle(angle);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -493,7 +495,7 @@ void PannerHandler::SetConeOuterAngle(double angle) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   cone_effect_.SetOuterAngle(angle);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -504,7 +506,7 @@ void PannerHandler::SetConeOuterGain(double angle) {
   }
 
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
   cone_effect_.SetOuterGain(angle);
   MarkPannerAsDirty(PannerHandler::kDistanceConeGainDirty);
 }
@@ -514,7 +516,7 @@ void PannerHandler::SetPosition(float x,
                                 float z,
                                 ExceptionState& exceptionState) {
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   double now = Context()->currentTime();
 
@@ -531,7 +533,7 @@ void PannerHandler::SetOrientation(float x,
                                    float z,
                                    ExceptionState& exceptionState) {
   // This synchronizes with process().
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   double now = Context()->currentTime();
 
@@ -675,7 +677,6 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   DCHECK(IsMainThread());
   BaseAudioContext::GraphAutoLocker locker(Context());
 
-  // A PannerNode only supports 1 or 2 channels
   if (channel_count >= kMinimumOutputChannels &&
       channel_count <= kMaximumOutputChannels) {
     if (channel_count_ != channel_count) {

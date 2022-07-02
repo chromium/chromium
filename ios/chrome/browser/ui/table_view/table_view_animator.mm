@@ -12,10 +12,10 @@
 
 namespace {
 
-// If |direction| is TableAnimatorDirectionFromLeading returns
-// LayoutRectGetRectUsingDirection using the inverted |direction| for
-// |layoutRect|. If |direction| is TableAnimatorDirectionFromTrailing returns
-// LayoutRectGetRect for |layoutRect|.
+// If `direction` is TableAnimatorDirectionFromLeading returns
+// LayoutRectGetRectUsingDirection using the inverted `direction` for
+// `layoutRect`. If `direction` is TableAnimatorDirectionFromTrailing returns
+// LayoutRectGetRect for `layoutRect`.
 CGRect LayoutRectGetRectForDirection(LayoutRect layoutRect,
                                      TableAnimatorDirection direction) {
   if (direction == TableAnimatorDirectionFromLeading) {

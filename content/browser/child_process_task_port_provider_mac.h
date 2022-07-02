@@ -52,6 +52,14 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   ChildProcessTaskPortProvider();
   ~ChildProcessTaskPortProvider() override;
 
+  // Tests if the macOS system supports collecting task ports. Starting with
+  // macOS 12.3, running in the unsupported configuration with the
+  // amfi_get_out_of_my_way=1 kernel boot argument set, task ports are
+  // immovable. Trying to collect the task ports from child processes will
+  // result in the child process crashing in mach_msg(). See
+  // https://crbug.com/1291789 for details.
+  bool ShouldRequestTaskPorts() const;
+
   // Callback for mojom::ChildProcess::GetTaskPort reply.
   void OnTaskPortReceived(base::ProcessHandle pid,
                           mojo::PlatformHandle task_port);

@@ -20,7 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "content/public/test/test_utils.h"
 
 namespace ash {

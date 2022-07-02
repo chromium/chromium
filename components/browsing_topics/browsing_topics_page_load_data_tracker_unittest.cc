@@ -111,12 +111,12 @@ class BrowsingTopicsPageLoadDataTrackerTest
 
   BrowsingTopicsPageLoadDataTracker* GetBrowsingTopicsPageLoadDataTracker() {
     return BrowsingTopicsPageLoadDataTracker::GetOrCreateForPage(
-        web_contents()->GetMainFrame()->GetPage());
+        web_contents()->GetPrimaryMainFrame()->GetPage());
   }
 
   content::BrowsingTopicsSiteDataManager* topics_site_data_manager() {
     return web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetProcess()
         ->GetStoragePartition()
         ->GetBrowsingTopicsSiteDataManager();

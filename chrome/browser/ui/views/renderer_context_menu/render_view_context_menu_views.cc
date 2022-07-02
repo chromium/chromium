@@ -70,8 +70,12 @@ class RenderViewContextMenuViews::SubmenuViewObserver
 
   void OnViewBoundsChanged(views::View* observed_view) override {
     DCHECK_EQ(submenu_view_, observed_view);
-    parent_->OnSubmenuViewBoundsChanged(
-        submenu_view_->host()->GetWindowBoundsInScreen());
+    // Check to make sure the host exists. The SubmenuView can drop the
+    // reference to the host.
+    if (submenu_view_->host()) {
+      parent_->OnSubmenuViewBoundsChanged(
+          submenu_view_->host()->GetWindowBoundsInScreen());
+    }
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {
@@ -84,14 +88,17 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   // WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds_in_screen) override {
-    DCHECK_EQ(submenu_view_->host(), widget);
-    parent_->OnSubmenuViewBoundsChanged(new_bounds_in_screen);
+    // The SubmenuView can drop its reference to the host widget before the
+    // asynchronous widget destruction starts.
+    if (submenu_view_->host() == widget) {
+      parent_->OnSubmenuViewBoundsChanged(new_bounds_in_screen);
+    }
   }
 
-  void OnWidgetClosing(views::Widget* widget) override {
+  void OnWidgetDestroying(views::Widget* widget) override {
     // The widget is being closed, make sure the parent bubble no longer
-    // observes it.
-    DCHECK_EQ(submenu_view_->host(), widget);
+    // observes it. Note that the SubmenuView may already have dropped the
+    // reference to the host widget before this is called.
     parent_->OnSubmenuClosed();
   }
 

@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+
 /**
  * Handles toolbar triggered actions on the specific tab.
  */
-public interface ToolbarTabController {
+public interface ToolbarTabController extends BackPressHandler, Destroyable {
     /**
      * If the page is currently loading, this will trigger the tab to stop.  If the page is fully
      * loaded, this will trigger a refresh.

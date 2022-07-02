@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
@@ -34,6 +35,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
@@ -79,6 +81,8 @@ constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
 
+constexpr int kScrollViewGradientSize = 16;
+
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
 constexpr auto kVerticalScrollInsets =
@@ -100,6 +104,12 @@ void SetBackgroundViewColor(views::View* background_view,
   } else {
     background_view->layer()->SetColor(color);
   }
+}
+
+// Returns true if ChromeVox (spoken feedback) is enabled.
+bool IsSpokenFeedbackEnabled() {
+  return Shell::HasInstance() &&  // May be null in tests.
+         Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
 // Transit from the background of the folder item's icon to the opened
@@ -709,7 +719,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   PagedAppsGridView* items_grid_view =
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
           contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr,
-          /*container_delegate=*/this));
+          /*container_delegate=*/this, /*focus_delegate=*/nullptr));
   contents_container_->layer()->SetMasksToBounds(true);
   items_grid_view_ = items_grid_view;
 
@@ -752,7 +762,8 @@ void AppListFolderView::CreateScrollableAppsGrid() {
 
   // Set up fade in/fade out gradients at top/bottom of scroll view.
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+      scroll_view_, kScrollViewGradientSize);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -1254,8 +1265,10 @@ void AppListFolderView::ResetItemsGridForClose() {
 void AppListFolderView::CloseFolderPage() {
   DVLOG(1) << __FUNCTION__;
   // When a folder closes only show the selection highlight if there was already
-  // one showing.
-  const bool select_folder = items_grid_view()->has_selected_view();
+  // one showing, or if the user is using ChromeVox (spoken feedback). In the
+  // latter case it makes the close folder announcement more natural.
+  const bool select_folder =
+      items_grid_view()->has_selected_view() || IsSpokenFeedbackEnabled();
   ResetItemsGridForClose();
   folder_controller_->ShowApps(folder_item_view_, select_folder);
 }

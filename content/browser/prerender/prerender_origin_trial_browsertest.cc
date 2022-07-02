@@ -30,6 +30,9 @@
 namespace content {
 namespace {
 
+// TODO(https://crbug.com/1319296): Remove the origin trial infra for
+// Prerender2.
+
 // Generate token with the command:
 // generate_token.py https://prerender2.test:443 Prerender2
 // --expire-timestamp=2000000000
@@ -279,7 +282,7 @@ INSTANTIATE_TEST_SUITE_P(
 // ---------------|-----------|-----------|-----------|
 //     | disabled | false     | false     | false     |
 // REF | enabled  | false     | true      | IsAndroid |
-//     | default  | false     | true      | false     |
+//     | default  | false     | true      | IsAndroid |
 IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
   LoadPageWithoutTrialToken();
   switch (testing::get<0>(GetParam())) {
@@ -297,10 +300,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
       // Currently blink::features::kPrerender2 is default-enabled only on
       // Android.
 #if BUILDFLAG(IS_ANDROID)
-      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
-        CheckFeatureEnabled(true);
-      } else {
+      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kDisabled) {
         CheckFeatureDisabled();
+      } else {
+        CheckFeatureEnabled(true);
       }
 #else   // BUILDFLAG(IS_ANDROID)
       CheckFeatureDisabled();
@@ -340,10 +343,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
     case FeatureEnabledType::kDefault:
       // Currently Origin Trial for Prerender2 is available only on Android.
 #if BUILDFLAG(IS_ANDROID)
-      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
-        CheckFeatureEnabled(true);
-      } else {
+      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kDisabled) {
         CheckFeatureEnabled(false);
+      } else {
+        CheckFeatureEnabled(true);
       }
 #else   // BUILDFLAG(IS_ANDROID)
       CheckFeatureDisabled();

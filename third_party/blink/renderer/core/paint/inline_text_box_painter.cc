@@ -427,11 +427,12 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
               ? absl::optional<AppliedTextDecoration>(
                     selection_style.selection_text_decoration)
               : absl::nullopt;
-      decoration_info.emplace(local_origin, width,
-                              inline_text_box_.Root().BaselineType(),
-                              style_to_use, style_to_use.GetFont(),
-                              selection_text_decoration, decorating_box_style);
-      TextDecorationOffset decoration_offset(decoration_info->Style(),
+      decoration_info.emplace(
+          local_origin, width, style_to_use,
+          /* inline_context */ nullptr, selection_text_decoration,
+          /* font_override */ nullptr, MinimumThickness1(true), 1.0f,
+          inline_text_box_.Root().BaselineType(), decorating_box_style);
+      TextDecorationOffset decoration_offset(decoration_info->TargetStyle(),
                                              &inline_text_box_, decorating_box);
       text_painter.PaintDecorationsExceptLineThrough(
           decoration_offset, decoration_info.value(), paint_info,

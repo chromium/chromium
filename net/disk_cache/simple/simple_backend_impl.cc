@@ -86,15 +86,12 @@ SimpleCacheConsistencyResult FileStructureConsistent(
 struct BarrierContext {
   explicit BarrierContext(net::CompletionOnceCallback final_callback,
                           int expected)
-      : final_callback_(std::move(final_callback)),
-        expected(expected),
-        count(0),
-        had_error(false) {}
+      : final_callback_(std::move(final_callback)), expected(expected) {}
 
   net::CompletionOnceCallback final_callback_;
   const int expected;
-  int count;
-  bool had_error;
+  int count = 0;
+  bool had_error = false;
 };
 
 void BarrierCompletionCallbackImpl(
@@ -251,7 +248,7 @@ void SimpleBackendImpl::SetTaskRunnerForTesting(
       std::move(task_runner));
 }
 
-net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
+void SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   auto index_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::USER_BLOCKING,
@@ -276,7 +273,6 @@ net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
                      GetCacheType()),
       base::BindOnce(&SimpleBackendImpl::InitializeIndex, AsWeakPtr(),
                      std::move(completion_callback)));
-  return net::ERR_IO_PENDING;
 }
 
 bool SimpleBackendImpl::SetMaxSize(int64_t max_bytes) {
@@ -783,7 +779,7 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
     return nullptr;
 
   std::pair<EntryMap::iterator, bool> insert_result =
-      active_entries_.insert(EntryMap::value_type(entry_hash, NULL));
+      active_entries_.insert(EntryMap::value_type(entry_hash, nullptr));
   EntryMap::iterator& it = insert_result.first;
   const bool did_insert = insert_result.second;
   if (did_insert) {

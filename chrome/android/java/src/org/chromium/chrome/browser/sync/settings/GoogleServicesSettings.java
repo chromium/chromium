@@ -23,14 +23,16 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -42,14 +44,14 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * Settings fragment controlling a number of features communicating with Google services, such as
  * search autocomplete and the automatic upload of crash reports.
  */
-public class GoogleServicesSettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener,
-                                                    SignOutDialogFragment.SignOutDialogListener {
+public class GoogleServicesSettings extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceChangeListener, Listener {
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
@@ -144,7 +146,7 @@ public class GoogleServicesSettings
 
         mPriceTrackingAnnotations =
                 (ChromeSwitchPreference) findPreference(PREF_PRICE_TRACKING_ANNOTATIONS);
-        if (!PriceTrackingUtilities.allowUsersToDisablePriceAnnotations()) {
+        if (!PriceTrackingFeatures.allowUsersToDisablePriceAnnotations()) {
             removePreference(getPreferenceScreen(), mPriceTrackingAnnotations);
             mPriceTrackingAnnotations = null;
         } else {
@@ -207,11 +209,10 @@ public class GoogleServicesSettings
                 return true;
             }
 
-            SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
-                    SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+            SignOutDialogCoordinator.show(requireContext(),
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                    SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
                     GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-            signOutFragment.setTargetFragment(this, 0);
-            signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
             // Don't change the preference state yet, it will be updated by onSignOutClicked
             // if the user actually confirms the sign-out.
             return false;

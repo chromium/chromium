@@ -599,7 +599,7 @@ std::u16string TouchSelectionControllerImpl::GetSelectedText() {
   return std::u16string();
 }
 
-void TouchSelectionControllerImpl::OnWidgetClosing(Widget* widget) {
+void TouchSelectionControllerImpl::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(client_widget_, widget);
   client_widget_->RemoveObserver(this);
   client_widget_ = nullptr;

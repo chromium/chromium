@@ -27,99 +27,33 @@ class MockUsbMojoDevice : public mojom::UsbDevice {
 
   ~MockUsbMojoDevice() override;
 
-  // As current version of gmock in Chromium doesn't support move-only types,
-  // so it needs mock methods with OnceCallback pointer as parameter here.
-  void Open(OpenCallback callback) override { OpenInternal(&callback); }
-  MOCK_METHOD1(OpenInternal, void(OpenCallback*));
-
-  void Close(CloseCallback callback) override { CloseInternal(&callback); }
-  MOCK_METHOD1(CloseInternal, void(CloseCallback*));
-
-  void SetConfiguration(uint8_t value,
-                        SetConfigurationCallback callback) override {
-    SetConfigurationInternal(value, &callback);
-  }
-  MOCK_METHOD2(SetConfigurationInternal,
-               void(uint8_t, SetConfigurationCallback*));
-
-  void ClaimInterface(uint8_t interface_number,
-                      ClaimInterfaceCallback callback) override {
-    ClaimInterfaceInternal(interface_number, &callback);
-  }
-  MOCK_METHOD2(ClaimInterfaceInternal, void(uint8_t, ClaimInterfaceCallback*));
-
-  void ReleaseInterface(uint8_t interface_number,
-                        ReleaseInterfaceCallback callback) override {
-    ReleaseInterfaceInternal(interface_number, &callback);
-  }
-  MOCK_METHOD2(ReleaseInterfaceInternal,
-               void(uint8_t, ReleaseInterfaceCallback*));
-
-  void SetInterfaceAlternateSetting(
-      uint8_t interface_number,
-      uint8_t alternate_setting,
-      SetInterfaceAlternateSettingCallback callback) override {
-    SetInterfaceAlternateSettingInternal(interface_number, alternate_setting,
-                                         &callback);
-  }
-  MOCK_METHOD3(SetInterfaceAlternateSettingInternal,
-               void(uint8_t, uint8_t, SetInterfaceAlternateSettingCallback*));
-
-  void Reset(ResetCallback callback) override { ResetInternal(&callback); }
-  MOCK_METHOD1(ResetInternal, void(ResetCallback*));
-
-  void ClearHalt(mojom::UsbTransferDirection direction,
-                 uint8_t endpoint_number,
-                 ClearHaltCallback callback) override {
-    ClearHaltInternal(direction, endpoint_number, &callback);
-  }
-  MOCK_METHOD3(ClearHaltInternal,
-               void(mojom::UsbTransferDirection, uint8_t, ClearHaltCallback*));
-
-  void ControlTransferIn(mojom::UsbControlTransferParamsPtr params,
-                         uint32_t length,
-                         uint32_t timeout,
-                         ControlTransferInCallback callback) override {
-    ControlTransferInInternal(*params, length, timeout, &callback);
-  }
-  MOCK_METHOD4(ControlTransferInInternal,
-               void(const mojom::UsbControlTransferParams&,
+  MOCK_METHOD1(Open, void(OpenCallback));
+  MOCK_METHOD1(Close, void(CloseCallback));
+  MOCK_METHOD2(SetConfiguration, void(uint8_t, SetConfigurationCallback));
+  MOCK_METHOD2(ClaimInterface, void(uint8_t, ClaimInterfaceCallback));
+  MOCK_METHOD2(ReleaseInterface, void(uint8_t, ReleaseInterfaceCallback));
+  MOCK_METHOD3(SetInterfaceAlternateSetting,
+               void(uint8_t, uint8_t, SetInterfaceAlternateSettingCallback));
+  MOCK_METHOD1(Reset, void(ResetCallback));
+  MOCK_METHOD3(ClearHalt,
+               void(mojom::UsbTransferDirection, uint8_t, ClearHaltCallback));
+  MOCK_METHOD4(ControlTransferIn,
+               void(mojom::UsbControlTransferParamsPtr,
                     uint32_t,
                     uint32_t,
-                    ControlTransferInCallback*));
-
-  void ControlTransferOut(mojom::UsbControlTransferParamsPtr params,
-                          base::span<const uint8_t> data,
-                          uint32_t timeout,
-                          ControlTransferOutCallback callback) override {
-    ControlTransferOutInternal(*params, data, timeout, &callback);
-  }
-  MOCK_METHOD4(ControlTransferOutInternal,
-               void(const mojom::UsbControlTransferParams&,
+                    ControlTransferInCallback));
+  MOCK_METHOD4(ControlTransferOut,
+               void(mojom::UsbControlTransferParamsPtr,
                     base::span<const uint8_t>,
                     uint32_t,
-                    ControlTransferOutCallback*));
-
-  void GenericTransferIn(uint8_t endpoint_number,
-                         uint32_t length,
-                         uint32_t timeout,
-                         GenericTransferInCallback callback) override {
-    GenericTransferInInternal(endpoint_number, length, timeout, &callback);
-  }
-  MOCK_METHOD4(GenericTransferInInternal,
-               void(uint8_t, uint32_t, uint32_t, GenericTransferInCallback*));
-
-  void GenericTransferOut(uint8_t endpoint_number,
-                          base::span<const uint8_t> data,
-                          uint32_t timeout,
-                          GenericTransferOutCallback callback) override {
-    GenericTransferOutInternal(endpoint_number, data, timeout, &callback);
-  }
-  MOCK_METHOD4(GenericTransferOutInternal,
+                    ControlTransferOutCallback));
+  MOCK_METHOD4(GenericTransferIn,
+               void(uint8_t, uint32_t, uint32_t, GenericTransferInCallback));
+  MOCK_METHOD4(GenericTransferOut,
                void(uint8_t,
                     base::span<const uint8_t>,
                     uint32_t,
-                    GenericTransferOutCallback*));
+                    GenericTransferOutCallback));
 
   void IsochronousTransferIn(uint8_t endpoint_number,
                              const std::vector<uint32_t>& packet_lengths,

@@ -41,7 +41,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -78,8 +78,7 @@ bool ShouldShowLacrosSideBySideWarningInAsh() {
 bool ShouldShowLacrosSideBySideWarningInLacros() {
   return base::FeatureList::IsEnabled(
              syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
-         !chromeos::LacrosService::Get()
-              ->init_params()
+         !chromeos::BrowserInitParams::Get()
               ->standalone_browser_is_only_browser;
 }
 #endif
@@ -206,6 +205,8 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"linkDoctorPrefDesc", IDS_SETTINGS_LINKDOCTOR_PREF_DESC},
     {"driveSuggestPref", IDS_DRIVE_SUGGEST_PREF},
     {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
+    {"autofillAssistantPref", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF},
+    {"autofillAssistantPrefDesc", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

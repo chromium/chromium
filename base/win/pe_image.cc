@@ -100,7 +100,7 @@ PIMAGE_NT_HEADERS PEImage::GetNTHeaders() const {
       reinterpret_cast<char*>(dos_header) + dos_header->e_lfanew);
 }
 
-PIMAGE_SECTION_HEADER PEImage::GetSectionHeader(UINT section) const {
+PIMAGE_SECTION_HEADER PEImage::GetSectionHeader(WORD section) const {
   PIMAGE_NT_HEADERS nt_headers = GetNTHeaders();
   PIMAGE_SECTION_HEADER first_section = IMAGE_FIRST_SECTION(nt_headers);
 
@@ -128,7 +128,7 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionFromAddr(PVOID address) const {
   PBYTE target = reinterpret_cast<PBYTE>(address);
   PIMAGE_SECTION_HEADER section;
 
-  for (UINT i = 0; nullptr != (section = GetSectionHeader(i)); i++) {
+  for (WORD i = 0; nullptr != (section = GetSectionHeader(i)); i++) {
     // Don't use the virtual RVAToAddr.
     PBYTE start =
         reinterpret_cast<PBYTE>(PEImage::RVAToAddr(section->VirtualAddress));
@@ -144,22 +144,19 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionFromAddr(PVOID address) const {
 
 PIMAGE_SECTION_HEADER PEImage::GetImageSectionHeaderByName(
     LPCSTR section_name) const {
-  if (nullptr == section_name)
+  if (section_name == nullptr)
     return nullptr;
 
-  PIMAGE_SECTION_HEADER ret = nullptr;
-  int num_sections = GetNumSections();
-
-  for (int i = 0; i < num_sections; i++) {
+  WORD num_sections = GetNumSections();
+  for (WORD i = 0; i < num_sections; ++i) {
     PIMAGE_SECTION_HEADER section = GetSectionHeader(i);
     if (_strnicmp(reinterpret_cast<LPCSTR>(section->Name), section_name,
                   sizeof(section->Name)) == 0) {
-      ret = section;
-      break;
+      return section;
     }
   }
 
-  return ret;
+  return nullptr;
 }
 
 bool PEImage::GetDebugId(LPGUID guid,
@@ -199,7 +196,9 @@ bool PEImage::GetDebugId(LPGUID guid,
       for (const char* const end = pdb_info->PdbFileName + length_max;
            eos < end && *eos; ++eos)
         ;
-      *pdb_filename_length = eos - pdb_info->PdbFileName;
+      // This static_cast is safe because the loop above only increments eos,
+      // and ensures it won't wrap.
+      *pdb_filename_length = static_cast<size_t>(eos - pdb_info->PdbFileName);
       *pdb_filename = pdb_info->PdbFileName;
     }
     return true;
@@ -297,7 +296,7 @@ bool PEImage::EnumSections(EnumSectionsFunction callback, PVOID cookie) const {
   UINT num_sections = nt_headers->FileHeader.NumberOfSections;
   PIMAGE_SECTION_HEADER section = GetSectionHeader(0);
 
-  for (UINT i = 0; i < num_sections; i++, section++) {
+  for (WORD i = 0; i < num_sections; i++, section++) {
     PVOID section_start = RVAToAddr(section->VirtualAddress);
     DWORD size = section->Misc.VirtualSize;
 

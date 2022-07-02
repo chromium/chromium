@@ -11,4 +11,31 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]
+
+  if (is_win) {
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "device_signals.mojom.AntiVirusProductState"
+            cpp = "::device_signals::AvProductState"
+          },
+          {
+            mojom = "device_signals.mojom.AntiVirusSignal"
+            cpp = "::device_signals::AvProduct"
+          },
+          {
+            mojom = "device_signals.mojom.HotfixSignal"
+            cpp = "::device_signals::InstalledHotfix"
+          },
+        ]
+        traits_headers = [ "system_signals_mojom_traits.h" ]
+        traits_sources = [ "system_signals_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//base",
+          "//components/device_signals/core/common/win",
+        ]
+      },
+    ]
+  }
 }

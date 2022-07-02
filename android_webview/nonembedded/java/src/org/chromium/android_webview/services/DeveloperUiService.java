@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -54,10 +55,9 @@ public final class DeveloperUiService extends Service {
     private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
 
-    public static final String NOTIFICATION_TITLE =
-            "WARNING: experimental WebView features enabled";
-    public static final String NOTIFICATION_CONTENT = "Tap to see experimental features.";
-    public static final String NOTIFICATION_TICKER = "Experimental WebView features enabled";
+    public static final String NOTIFICATION_TITLE = "Experimental WebView features active";
+    public static final String NOTIFICATION_CONTENT = "Tap to see experimental WebView features.";
+    public static final String NOTIFICATION_TICKER = "Experimental WebView features active";
 
     private static final Object sLock = new Object();
     @GuardedBy("sLock")
@@ -73,6 +73,9 @@ public final class DeveloperUiService extends Service {
 
     @GuardedBy("sLock")
     private boolean mDeveloperModeEnabled;
+
+    @GuardedBy("sLock")
+    private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
 
     private final IDeveloperUiService.Stub mBinder = new IDeveloperUiService.Stub() {
         @Override
@@ -148,8 +151,9 @@ public final class DeveloperUiService extends Service {
         }
     }
 
+    @GuardedBy("sLock")
     private static boolean isFlagAllowed(String name) {
-        for (Flag flag : ProductionSupportedFlagList.sFlagList) {
+        for (Flag flag : sFlagList) {
             if (flag.getName().equals(name)) return true;
         }
         return false;
@@ -166,7 +170,8 @@ public final class DeveloperUiService extends Service {
             for (Map.Entry<String, ?> entry : allPreferences.entrySet()) {
                 String flagName = entry.getKey();
                 // Since flags may be persisted by a previous version, we need to filter by the
-                // current version's ProductionSupportedFlagList (in case flags get removed).
+                // current version's sFlagList (in case flags get removed from
+                // ProductionSupportedFlagList).
                 if (!isFlagAllowed(flagName)) {
                     Log.w(TAG, "Toggling '" + flagName + "' is no longer supported");
                     continue;
@@ -205,7 +210,6 @@ public final class DeveloperUiService extends Service {
         return mBinder;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private Notification.Builder createNotificationBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return new Notification.Builder(this, CHANNEL_ID);
@@ -238,14 +242,15 @@ public final class DeveloperUiService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
 
-        Notification.Builder builder = createNotificationBuilder()
-                                               .setContentTitle(NOTIFICATION_TITLE)
-                                               .setContentText(NOTIFICATION_CONTENT)
-                                               .setSmallIcon(android.R.drawable.stat_notify_error)
-                                               .setContentIntent(pendingIntent)
-                                               .setOngoing(true)
-                                               .setVisibility(Notification.VISIBILITY_PUBLIC)
-                                               .setTicker(NOTIFICATION_TICKER);
+        Notification.Builder builder =
+                createNotificationBuilder()
+                        .setContentTitle(NOTIFICATION_TITLE)
+                        .setContentText(NOTIFICATION_CONTENT)
+                        .setSmallIcon(org.chromium.android_webview.devui.R.drawable.ic_flag)
+                        .setContentIntent(pendingIntent)
+                        .setOngoing(true)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setTicker(NOTIFICATION_TICKER);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = builder
@@ -316,6 +321,7 @@ public final class DeveloperUiService extends Service {
      *
      * <p><b>Note:</b> {@code newFlags} are not applied atomically.
      */
+    @GuardedBy("sLock")
     private void applyFlagsToCommandLine(
             Map<String, Boolean> oldFlags, Map<String, Boolean> newFlags) {
         // Best-effort attempt to undo oldFlags back to the initial CommandLine.
@@ -332,7 +338,7 @@ public final class DeveloperUiService extends Service {
         }
 
         // Apply newFlags
-        FlagOverrideHelper helper = new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
+        FlagOverrideHelper helper = new FlagOverrideHelper(sFlagList);
         helper.applyFlagOverrides(newFlags);
     }
 
@@ -343,6 +349,13 @@ public final class DeveloperUiService extends Service {
                     .edit()
                     .clear()
                     .apply();
+        }
+    }
+
+    @VisibleForTesting
+    public static void setFlagListForTesting(@NonNull Flag[] flagList) {
+        synchronized (sLock) {
+            sFlagList = flagList;
         }
     }
 }

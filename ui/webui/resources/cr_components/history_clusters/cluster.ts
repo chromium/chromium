@@ -4,12 +4,13 @@
 
 import './menu_container.js';
 import './search_query.js';
-import './shared_style.js';
-import './shared_vars.js';
+import './history_clusters_shared_style.css.js';
+import './shared_vars.css.js';
 import './url_visit.js';
 import '../../cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
@@ -17,8 +18,8 @@ import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
-import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
-import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
+import {Cluster, ClusterAction, PageCallbackRouter, URLVisit, VisitAction} from './history_clusters.mojom-webui.js';
+import {MetricsProxyImpl} from './metrics_proxy.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
 /**
@@ -31,13 +32,16 @@ declare global {
   }
 }
 
+const HistoryClusterElementBase = I18nMixin(PolymerElement);
+
 interface HistoryClusterElement {
   $: {
     label: HTMLElement,
+    container: HTMLElement,
   };
 }
 
-class HistoryClusterElement extends PolymerElement {
+class HistoryClusterElement extends HistoryClusterElementBase {
   static get is() {
     return 'history-cluster';
   }
@@ -151,16 +155,16 @@ class HistoryClusterElement extends PolymerElement {
 
   private onRelatedSearchClicked_() {
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.RELATED_SEARCH_CLICKED, this.index);
+        ClusterAction.kRelatedSearchClicked, this.index);
   }
 
   private onVisitClicked_(event: CustomEvent<URLVisit>) {
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.VISIT_CLICKED, this.index);
+        ClusterAction.kVisitClicked, this.index);
 
     const visit = event.detail;
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.CLICKED, this.getVisitIndex_(visit),
+        VisitAction.kClicked, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
   }
 
@@ -176,7 +180,7 @@ class HistoryClusterElement extends PolymerElement {
         visitsToOpen);
 
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.OPENED_IN_TAB_GROUP, this.index);
+        ClusterAction.kOpenedInTabGroup, this.index);
   }
 
   private onRemoveAllVisits_() {
@@ -193,7 +197,7 @@ class HistoryClusterElement extends PolymerElement {
     // place to record the metric.
     const visit = event.detail;
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.DELETED, this.getVisitIndex_(visit),
+        VisitAction.kDeleted, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
 
     this.dispatchEvent(new CustomEvent('remove-visits', {
@@ -218,7 +222,7 @@ class HistoryClusterElement extends PolymerElement {
     this.expanded_ = !this.expanded_;
 
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.RELATED_VISITS_VISIBILITY_TOGGLED, this.index);
+        ClusterAction.kRelatedVisitsVisibilityToggled, this.index);
 
     // Dispatch an event to notify the parent elements of a resize. Note that
     // this simple solution only works because the child iron-collapse has
@@ -242,11 +246,17 @@ class HistoryClusterElement extends PolymerElement {
   private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
-        return visit.normalizedUrl.url === removedVisit.normalizedUrl.url &&
-            visit.lastVisitTime.internalValue <=
-            removedVisit.lastVisitTime.internalValue &&
-            visit.firstVisitTime.internalValue >=
-            removedVisit.firstVisitTime.internalValue;
+        if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {
+          return false;
+        }
+
+        // Remove the visit element if any of the removed visit's raw timestamps
+        // matches the canonical raw timestamp.
+        const rawVisitTime = visit.rawVisitData.visitTime.internalValue;
+        return (removedVisit.rawVisitData.visitTime.internalValue ===
+                rawVisitTime) ||
+            removedVisit.duplicates.map(data => data.visitTime.internalValue)
+                .includes(rawVisitTime);
       }) !== -1;
     };
 
@@ -266,7 +276,7 @@ class HistoryClusterElement extends PolymerElement {
       }));
 
       MetricsProxyImpl.getInstance().recordClusterAction(
-          ClusterAction.DELETED, this.index);
+          ClusterAction.kDeleted, this.index);
     } else {
       this.set('cluster.visits', remainingVisits);
     }
@@ -284,6 +294,12 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   private computeLabel_(): string {
+    if (!this.cluster.label) {
+      // This never happens unless we misconfigured our variations config.
+      // This sentinel string matches the Android UI.
+      return 'no_label';
+    }
+
     insertHighlightedTextWithMatchesIntoElement(
         this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
@@ -293,13 +309,6 @@ class HistoryClusterElement extends PolymerElement {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return !visit.hidden;
     });
-  }
-
-  /**
-   * Returns true if this should be considered a top visit.
-   */
-  private isTopVisit_(index: number, label: string): boolean {
-    return index === 0 && !label;
   }
 
   /**

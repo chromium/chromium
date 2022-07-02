@@ -10,8 +10,7 @@
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_util.h"
 
-namespace disk_cache {
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 using base::File;
 using base::FilePath;
@@ -131,5 +130,4 @@ bool CorruptStream0LengthFromEntry(const std::string& key,
   return true;
 }
 
-}  // namespace simple_util
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util

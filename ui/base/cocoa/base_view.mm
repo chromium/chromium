@@ -54,24 +54,6 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   }
 }
 
-- (void)updateTrackingAreas {
-  [super updateTrackingAreas];
-
-  // NSTrackingInVisibleRect doesn't work correctly with Lion's window
-  // resizing (See https://crbug.com/176725 and
-  // http://openradar.appspot.com/radar?id=2773401). It also doesn't work
-  // correctly when the window enters fullscreen
-  // (See https://crbug.com/170058).
-  //
-  // Work around it by reinstalling the tracking area after the window resizes
-  // or enters fullscreen. This AppKit bug is fixed on High Sierra, so we only
-  // apply this workaround on 10.12 or earlier.
-  if (base::mac::IsAtMostOS10_12()) {
-    [self disableTracking];
-    [self enableTracking];
-  }
-}
-
 - (void)handleLeftMouseUp:(NSEvent*)theEvent {
   DCHECK_EQ([theEvent type], NSEventTypeLeftMouseUp);
   _dragging = NO;

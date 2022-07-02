@@ -84,7 +84,9 @@ TEST_F(BrowserUnitTest, ReloadCrashedTab) {
   EXPECT_TRUE(raw_contents2->IsCrashed());
 
   // Selecting the second tab does not cause a load or clear the crash.
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(raw_contents2->IsLoading());
   EXPECT_TRUE(raw_contents2->IsCrashed());
@@ -106,7 +108,8 @@ TEST_F(BrowserUnitTest, MAYBE_SetBackgroundColorForNewTab) {
   WebContentsTester::For(raw_contents1)->NavigateAndCommit(GURL("about:blank"));
   WebContentsTester::For(raw_contents1)->TestSetIsLoading(false);
 
-  raw_contents1->GetMainFrame()->GetView()->SetBackgroundColor(SK_ColorRED);
+  raw_contents1->GetPrimaryMainFrame()->GetView()->SetBackgroundColor(
+      SK_ColorRED);
 
   // Add a second tab in the background.
   std::unique_ptr<WebContents> contents2 = CreateTestWebContents();
@@ -115,10 +118,14 @@ TEST_F(BrowserUnitTest, MAYBE_SetBackgroundColorForNewTab) {
   WebContentsTester::For(raw_contents2)->NavigateAndCommit(GURL("about:blank"));
   WebContentsTester::For(raw_contents2)->TestSetIsLoading(false);
 
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
-  ASSERT_TRUE(raw_contents2->GetMainFrame()->GetView()->GetBackgroundColor());
-  EXPECT_EQ(SK_ColorRED,
-            *raw_contents2->GetMainFrame()->GetView()->GetBackgroundColor());
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  ASSERT_TRUE(
+      raw_contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
+  EXPECT_EQ(
+      SK_ColorRED,
+      *raw_contents2->GetPrimaryMainFrame()->GetView()->GetBackgroundColor());
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -378,7 +385,8 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
 
   // Activate the 2nd tab which is non-NTP.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   EXPECT_EQ(BookmarkBar::HIDDEN, window_bookmark_bar_state());
 
@@ -389,13 +397,15 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
 
   // Activate the 1st tab which is NTP.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
   EXPECT_EQ(BookmarkBar::SHOW, window_bookmark_bar_state());
 
   // Activate the 2nd tab which is non-NTP.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
   EXPECT_EQ(BookmarkBar::SHOW, window_bookmark_bar_state());
 }

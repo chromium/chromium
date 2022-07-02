@@ -526,6 +526,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       break;
     case Feature::BLESSED_EXTENSION_CONTEXT:
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
     case Feature::UNBLESSED_EXTENSION_CONTEXT:
     case Feature::CONTENT_SCRIPT_CONTEXT:
     case Feature::WEBUI_CONTEXT:
@@ -842,7 +843,7 @@ void NativeExtensionBindingsSystem::SendRequest(
 
   auto params = mojom::RequestParams::New();
   params->name = request->method_name;
-  base::Value args(std::move(*request->arguments_list).TakeListDeprecated());
+  base::Value::List args = std::move(request->arguments_list->GetList());
   params->arguments = std::move(args);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {MultiDeviceFeature, MultiDevicePageContentData, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
@@ -118,10 +118,23 @@ export class MultiDeviceBrowserProxy {
   logPhoneHubPermissionSetUpButtonClicked(setup_mode) {}
 }
 
+/** @type {?MultiDeviceBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {MultiDeviceBrowserProxy}
  */
 export class MultiDeviceBrowserProxyImpl {
+  /** @return {!MultiDeviceBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new MultiDeviceBrowserProxyImpl());
+  }
+
+  /** @param {!MultiDeviceBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   showMultiDeviceSetupDialog() {
     chrome.send('showMultiDeviceSetupDialog');
@@ -213,5 +226,3 @@ export class MultiDeviceBrowserProxyImpl {
     chrome.send('logPhoneHubPermissionSetUpButtonClicked', [setup_mode]);
   }
 }
-
-addSingletonGetter(MultiDeviceBrowserProxyImpl);

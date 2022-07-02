@@ -32,8 +32,8 @@ void DoCanonicalizePathComponent(const CHAR* source,
     // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
     // https://url.spec.whatwg.org/#c0-control-percent-encode-set
     new_component->begin = output->length();
-    int end = component.end();
-    for (int i = component.begin; i < end; i++) {
+    size_t end = static_cast<size_t>(component.end());
+    for (size_t i = static_cast<size_t>(component.begin); i < end; i++) {
       UCHAR uch = static_cast<UCHAR>(source[i]);
       if (uch < 0x20 || uch > 0x7E)
         AppendUTF8EscapedChar(source, &i, end, output);

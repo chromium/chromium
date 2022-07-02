@@ -1,0 +1,5 @@
+Verifies that making cross origin navigation requests from browser which set SameSite=Lax cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Browser initiated navigation blocked set-cookies[
+]
+

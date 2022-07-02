@@ -11,7 +11,7 @@
 // synchronize with the header, containing the fake omnibox and the logo.
 @protocol ContentSuggestionsHeaderSynchronizing
 
-// |YES| if its view is visible.  When set to |NO| various UI updates are
+// `YES` if its view is visible.  When set to `NO` various UI updates are
 // ignored.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
 

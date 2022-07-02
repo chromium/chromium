@@ -8,10 +8,10 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
@@ -163,7 +163,7 @@ Status WritePaddedBIGNUM(const std::string& member_name,
   std::vector<uint8_t> padded_bytes(padded_length);
   if (!BN_bn2bin_padded(padded_bytes.data(), padded_bytes.size(), value))
     return Status::OperationError();
-  jwk->SetBytes(member_name, CryptoData(padded_bytes));
+  jwk->SetBytes(member_name, padded_bytes);
   return Status::Success();
 }
 
@@ -172,7 +172,7 @@ Status ReadPaddedBIGNUM(const JwkReader& jwk,
                         const std::string& member_name,
                         size_t expected_length,
                         bssl::UniquePtr<BIGNUM>* out) {
-  std::string bytes;
+  std::vector<uint8_t> bytes;
   Status status = jwk.GetBytes(member_name, &bytes);
   if (status.IsError())
     return status;
@@ -182,7 +182,7 @@ Status ReadPaddedBIGNUM(const JwkReader& jwk,
                                              bytes.size());
   }
 
-  out->reset(CreateBIGNUM(bytes));
+  out->reset(BN_bin2bn(bytes.data(), bytes.size(), nullptr));
   return Status::Success();
 }
 
@@ -292,7 +292,7 @@ Status EcAlgorithm::GenerateKey(const blink::WebCryptoAlgorithm& algorithm,
 }
 
 Status EcAlgorithm::ImportKey(blink::WebCryptoKeyFormat format,
-                              const CryptoData& key_data,
+                              base::span<const uint8_t> key_data,
                               const blink::WebCryptoAlgorithm& algorithm,
                               bool extractable,
                               blink::WebCryptoKeyUsageMask usages,
@@ -328,7 +328,7 @@ Status EcAlgorithm::ExportKey(blink::WebCryptoKeyFormat format,
   }
 }
 
-Status EcAlgorithm::ImportKeyRaw(const CryptoData& key_data,
+Status EcAlgorithm::ImportKeyRaw(base::span<const uint8_t> key_data,
                                  const blink::WebCryptoAlgorithm& algorithm,
                                  bool extractable,
                                  blink::WebCryptoKeyUsageMask usages,
@@ -354,7 +354,7 @@ Status EcAlgorithm::ImportKeyRaw(const CryptoData& key_data,
 
   // Convert the "raw" input from X9.62 format to an EC_POINT.
   if (!EC_POINT_oct2point(EC_KEY_get0_group(ec.get()), point.get(),
-                          key_data.bytes(), key_data.byte_length(), nullptr)) {
+                          key_data.data(), key_data.size(), nullptr)) {
     return Status::DataError();
   }
 
@@ -380,7 +380,7 @@ Status EcAlgorithm::ImportKeyRaw(const CryptoData& key_data,
                                   usages, key);
 }
 
-Status EcAlgorithm::ImportKeyPkcs8(const CryptoData& key_data,
+Status EcAlgorithm::ImportKeyPkcs8(base::span<const uint8_t> key_data,
                                    const blink::WebCryptoAlgorithm& algorithm,
                                    bool extractable,
                                    blink::WebCryptoKeyUsageMask usages,
@@ -408,7 +408,7 @@ Status EcAlgorithm::ImportKeyPkcs8(const CryptoData& key_data,
                                    extractable, usages, key);
 }
 
-Status EcAlgorithm::ImportKeySpki(const CryptoData& key_data,
+Status EcAlgorithm::ImportKeySpki(base::span<const uint8_t> key_data,
                                   const blink::WebCryptoAlgorithm& algorithm,
                                   bool extractable,
                                   blink::WebCryptoKeyUsageMask usages,
@@ -438,7 +438,7 @@ Status EcAlgorithm::ImportKeySpki(const CryptoData& key_data,
 
 // The format for JWK EC keys is given by:
 // https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-36#section-6.2
-Status EcAlgorithm::ImportKeyJwk(const CryptoData& key_data,
+Status EcAlgorithm::ImportKeyJwk(base::span<const uint8_t> key_data,
                                  const blink::WebCryptoAlgorithm& algorithm,
                                  bool extractable,
                                  blink::WebCryptoKeyUsageMask usages,
@@ -578,22 +578,14 @@ Status EcAlgorithm::ExportKeyPkcs8(const blink::WebCryptoKey& key,
                                    std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
     return Status::ErrorUnexpectedKeyType();
-  // This relies on the fact that PKCS8 formatted data was already
-  // associated with the key during its creation (used by
-  // structured clone).
-  *buffer = GetSerializedKeyData(key);
-  return Status::Success();
+  return ExportPKeyPkcs8(GetEVP_PKEY(key), buffer);
 }
 
 Status EcAlgorithm::ExportKeySpki(const blink::WebCryptoKey& key,
                                   std::vector<uint8_t>* buffer) const {
   if (key.GetType() != blink::kWebCryptoKeyTypePublic)
     return Status::ErrorUnexpectedKeyType();
-  // This relies on the fact that SPKI formatted data was already
-  // associated with the key during its creation (used by
-  // structured clone).
-  *buffer = GetSerializedKeyData(key);
-  return Status::Success();
+  return ExportPKeySpki(GetEVP_PKEY(key), buffer);
 }
 
 // The format for JWK EC keys is given by:
@@ -653,7 +645,7 @@ Status EcAlgorithm::DeserializeKeyForClone(
     blink::WebCryptoKeyType type,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
-    const CryptoData& key_data,
+    base::span<const uint8_t> key_data,
     blink::WebCryptoKey* key) const {
   if (algorithm.ParamsType() != blink::kWebCryptoKeyAlgorithmParamsTypeEc)
     return Status::ErrorUnexpected();

@@ -13,7 +13,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.Settings;
 
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.Log;
 
 import java.util.List;

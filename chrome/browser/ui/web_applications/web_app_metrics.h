@@ -63,9 +63,10 @@ class WebAppMetrics : public KeyedService,
   void OnSuspend() override;
 
   // Called when a web contents changes associated AppId (may be empty).
-  void NotifyOnAssociatedAppChanged(content::WebContents* web_contents,
-                                    const AppId& previous_app_id,
-                                    const AppId& new_app_id);
+  void NotifyOnAssociatedAppChanged(
+      content::WebContents* web_contents,
+      const absl::optional<AppId>& previous_app_id,
+      const absl::optional<AppId>& new_app_id);
 
   // Notify WebAppMetrics that an installability check has been completed for
   // a WebContents (see AppBannerManager::OnInstallableWebAppStatusUpdated).

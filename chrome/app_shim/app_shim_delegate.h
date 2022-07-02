@@ -5,6 +5,8 @@
 #ifndef CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 #define CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 class AppShimController;
@@ -14,7 +16,7 @@ class AppShimController;
 @interface AppShimDelegate
     : NSObject<NSApplicationDelegate, NSUserInterfaceValidations> {
  @private
-  AppShimController* _appShimController;  // Weak, owns |this|
+  raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 @end

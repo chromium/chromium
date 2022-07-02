@@ -327,8 +327,9 @@ void CameraPreviewView::Layout() {
   // a render surface. This also avoids the rendering artifacts seen in
   // https://crbug.com/1312059.
   DCHECK_EQ(width(), height());
-  camera_video_renderer_.host_window()->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(height() / 2.f));
+  auto* layer = camera_video_renderer_.host_window()->layer();
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(height() / 2.f));
+  layer->SetIsFastRoundedCorner(true);
 
   // Refocus the camera preview to relayout the focus ring on it.
   if (has_focus())

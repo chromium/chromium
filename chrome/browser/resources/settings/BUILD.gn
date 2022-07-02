@@ -8,6 +8,7 @@ import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
@@ -57,6 +58,168 @@ if (optimize_webui) {
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
     ]
   }
+}
+
+preprocess_if_expr("preprocess") {
+  defines = chrome_grit_defines
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+preprocess_if_expr("preprocess_generated") {
+  defines = chrome_grit_defines
+  deps = [
+    ":css_wrapper_files",
+    ":css_wrapper_files_old",
+    ":html_wrapper_files",
+  ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = html_wrapper_files + css_wrapper_files + css_wrapper_files_old
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/settings_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/settings_resources.h",
+    "grit/settings_resources_map.cc",
+    "grit/settings_resources_map.h",
+    "settings_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+if (is_chromeos_ash) {
+  group("closure_compile") {
+    deps = [
+      ":closure_compile_local",
+      "chromeos:closure_compile_module",
+    ]
+  }
+
+  js_type_check("closure_compile_local") {
+    is_polymer3 = true
+    closure_flags = settings_closure_flags
+    deps = [
+      ":extension_control_browser_proxy",
+      ":i18n_setup",
+      ":lifetime_browser_proxy",
+      ":router",
+      ":setting_id_param_util",
+      ":settings",
+    ]
+  }
+
+  js_library("settings") {
+    sources =
+        [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
+    deps = [
+      ":i18n_setup",
+      ":lifetime_browser_proxy",
+    ]
+    extra_deps = [ ":build_ts" ]
+  }
+
+  js_library("extension_control_browser_proxy") {
+    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/extension_control_browser_proxy.js" ]
+    deps = [ "//ui/webui/resources/js:cr.m" ]
+    externs_list = [ "$externs_path/chrome_send.js" ]
+    extra_deps = [ ":build_ts" ]
+  }
+
+  js_library("i18n_setup") {
+    sources =
+        [ "$root_gen_dir/chrome/browser/resources/settings/tsc/i18n_setup.js" ]
+    deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+    extra_deps = [ ":build_ts" ]
+  }
+
+  js_library("lifetime_browser_proxy") {
+    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
+    deps = [ "//ui/webui/resources/js:cr.m" ]
+    extra_deps = [ ":build_ts" ]
+  }
+
+  js_library("open_window_proxy") {
+    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/open_window_proxy.js" ]
+    extra_deps = [ ":build_ts" ]
+  }
+
+  js_library("router") {
+    deps = [
+      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+    externs_list = [ "$externs_path/metrics_private.js" ]
+  }
+
+  js_library("setting_id_param_util") {
+    sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/setting_id_param_util.js" ]
+    deps = [
+      ":router",
+      "//ui/webui/resources/js:load_time_data.m",
+    ]
+    extra_deps = [ ":build_ts" ]
+  }
+}
+
+html_to_js("css_wrapper_files_old") {
+  js_files = css_wrapper_files_old
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files + icons_html_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files =
+      ts_files + css_wrapper_files + css_wrapper_files_old + html_wrapper_files
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+  ]
+
+  if (use_nss_certs) {
+    deps +=
+        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
+  }
+
+  definitions = [
+    "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+    "//tools/typescript/definitions/management.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+  if (is_chromeos) {
+    definitions +=
+        [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  }
+
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
 }
 
 generate_grd("build_grd") {
@@ -142,164 +305,7 @@ generate_grd("build_grd") {
     grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
   } else {
     deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
-}
-
-preprocess_if_expr("preprocess") {
-  defines = chrome_grit_defines
-  in_folder = "."
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  defines = chrome_grit_defines
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/settings_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/settings_resources.h",
-    "grit/settings_resources_map.cc",
-    "grit/settings_resources_map.h",
-    "settings_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "chromeos:closure_compile_module" ]
-  }
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":extension_control_browser_proxy",
-    ":i18n_setup",
-    ":lifetime_browser_proxy",
-    ":router",
-    ":setting_id_param_util",
-    ":settings",
-  ]
-}
-
-js_library("settings") {
-  sources =
-      [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
-  deps = [
-    ":i18n_setup",
-    ":lifetime_browser_proxy",
-  ]
-  extra_deps = [ ":build_ts" ]
-}
-
-js_library("extension_control_browser_proxy") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/extension_control_browser_proxy.js" ]
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":build_ts" ]
-}
-
-js_library("i18n_setup") {
-  sources =
-      [ "$root_gen_dir/chrome/browser/resources/settings/tsc/i18n_setup.js" ]
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-  extra_deps = [ ":build_ts" ]
-}
-
-js_library("lifetime_browser_proxy") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":build_ts" ]
-}
-
-js_library("open_window_proxy") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/settings/tsc/open_window_proxy.js",
-  ]
-  extra_deps = [ ":build_ts" ]
-}
-
-js_library("router") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("setting_id_param_util") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/setting_id_param_util.js" ]
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  extra_deps = [ ":build_ts" ]
-}
-
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
-
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
-  ]
-
-  if (use_nss_certs) {
-    deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-  }
-
-  definitions = [
-    "//tools/typescript/definitions/autofill_private.d.ts",
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/language_settings_private.d.ts",
-    "//tools/typescript/definitions/management.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/passwords_private.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
-    "//tools/typescript/definitions/settings_private.d.ts",
-  ]
-  if (is_chromeos) {
-    definitions +=
-        [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
-  }
-
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
 }

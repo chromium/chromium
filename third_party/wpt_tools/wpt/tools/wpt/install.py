@@ -44,7 +44,7 @@ def get_parser():
     parser = argparse.ArgumentParser(
         parents=[channel_args],
         description="Install a given browser or webdriver frontend.")
-    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo'],
+    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo', 'safari'],
                         help='name of web browser product')
     parser.add_argument('component', choices=['browser', 'webdriver'],
                         help='name of component')

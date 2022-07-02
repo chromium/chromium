@@ -521,10 +521,17 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
         blink::mojom::kInvalidServiceWorkerRegistrationId);
     return;
   }
+
+  auto* render_frame_host = RenderFrameHostImpl::FromID(requesting_frame_id);
+  const blink::mojom::AncestorFrameType ancestor_frame_type =
+      render_frame_host && render_frame_host->IsNestedWithinFencedFrame()
+          ? blink::mojom::AncestorFrameType::kFencedFrame
+          : blink::mojom::AncestorFrameType::kNormalFrame;
+
   was_service_worker_registered_ = true;
   job_coordinator_->Register(
       script_url, options, key, std::move(outside_fetch_client_settings_object),
-      requesting_frame_id,
+      requesting_frame_id, ancestor_frame_type,
       base::BindOnce(&ServiceWorkerContextCore::RegistrationComplete,
                      AsWeakPtr(), options.scope, key, std::move(callback)));
 }

@@ -16,13 +16,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_display_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_pointer_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_power_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_stylus_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -1240,6 +1240,7 @@ void DeviceSection::UpdateStylusSearchTags() {
 void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kPointersStrings[] = {
+      {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
       {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},
@@ -1293,6 +1294,9 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean("allowTouchpadHapticClickSettings",
                           base::FeatureList::IsEnabled(
                               ::features::kAllowTouchpadHapticClickSettings));
+  html_source->AddBoolean(
+      "enableAudioSettingsPage",
+      base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));
 }
 
 }  // namespace settings

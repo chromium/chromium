@@ -5,12 +5,12 @@
 package org.chromium.chrome.test.pagecontroller.utils;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.StaleObjectException;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.uiautomator.StaleObjectException;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 
 import org.chromium.base.test.util.TimeoutTimer;
 

@@ -11,9 +11,12 @@
 #include "base/logging.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 
@@ -37,77 +40,42 @@ base::FilePathWatcher* CreateAndStartFilePathWatcher(
   return watcher.release();
 }
 
-}  // namespace
-
-class FileWatcher::CrostiniFileWatcher
-    : public crostini::CrostiniFileChangeObserver {
- public:
-  static std::unique_ptr<CrostiniFileWatcher> GetForPath(
-      Profile* profile,
-      const base::FilePath& local_path) {
-    base::FilePath crostini_mount = util::GetCrostiniMountDirectory(profile);
-    base::FilePath crostini_path;
-    if (local_path == crostini_mount ||
-        crostini_mount.AppendRelativePath(local_path, &crostini_path)) {
-      crostini::CrostiniManager* crostini_manager =
-          crostini::CrostiniManager::GetForProfile(profile);
-      if (crostini_manager) {
-        return std::make_unique<CrostiniFileWatcher>(crostini_manager,
-                                                     std::move(crostini_mount),
-                                                     std::move(crostini_path));
-      }
-    }
+std::unique_ptr<guest_os::GuestOsFileWatcher> GetForPath(
+    Profile* profile,
+    const base::FilePath& local_path) {
+  // TODO(b/217469540): The default Crostini mount isn't using mount providers
+  // yet so check for it explicitly and handle it differently.
+  base::FilePath crostini_mount = util::GetCrostiniMountDirectory(profile);
+  base::FilePath relative_path;
+  if (local_path == crostini_mount ||
+      crostini_mount.AppendRelativePath(local_path, &relative_path)) {
+    return std::make_unique<guest_os::GuestOsFileWatcher>(
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile),
+        crostini::DefaultContainerId(), std::move(crostini_mount),
+        std::move(relative_path));
+  }
+  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  if (!service) {
     return nullptr;
   }
-
-  CrostiniFileWatcher(crostini::CrostiniManager* crostini_manager,
-                      base::FilePath crostini_mount,
-                      base::FilePath crostini_path)
-      : crostini_manager_(crostini_manager),
-        crostini_mount_(std::move(crostini_mount)),
-        crostini_path_(std::move(crostini_path)),
-        container_id_(crostini::ContainerId::GetDefault()) {}
-
-  ~CrostiniFileWatcher() override {
-    if (file_watcher_callback_) {
-      crostini_manager_->RemoveFileChangeObserver(this);
-      crostini_manager_->RemoveFileWatch(container_id_, crostini_path_);
+  auto* registry = service->MountProviderRegistry();
+  for (const auto id : registry->List()) {
+    auto* provider = registry->Get(id);
+    base::FilePath mount_path = util::GetGuestOsMountDirectory(
+        util::GetGuestOsMountPointName(profile, provider->GuestId()));
+    if (local_path == mount_path ||
+        mount_path.AppendRelativePath(local_path, &relative_path)) {
+      return provider->CreateFileWatcher(std::move(mount_path),
+                                         std::move(relative_path));
     }
   }
-
-  void Watch(base::FilePathWatcher::Callback file_watcher_callback,
-             FileWatcher::BoolCallback callback) {
-    DCHECK(!file_watcher_callback_);
-    file_watcher_callback_ = std::move(file_watcher_callback);
-    crostini_manager_->AddFileChangeObserver(this);
-    crostini_manager_->AddFileWatch(container_id_, crostini_path_,
-                                    std::move(callback));
-  }
-
- private:
-  // crostini::CrostiniFileChangeObserver overrides
-  void OnCrostiniFileChanged(const crostini::ContainerId& container_id,
-                             const base::FilePath& path) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (container_id != container_id_) {
-      return;
-    }
-
-    DCHECK(file_watcher_callback_);
-    file_watcher_callback_.Run(crostini_mount_.Append(path), /*error=*/false);
-  }
-
-  crostini::CrostiniManager* crostini_manager_;
-  const base::FilePath crostini_mount_;
-  const base::FilePath crostini_path_;
-  const crostini::ContainerId container_id_;
-  base::FilePathWatcher::Callback file_watcher_callback_;
-};
+  return nullptr;
+}
+}  // namespace
 
 FileWatcher::FileWatcher(const base::FilePath& virtual_path)
     : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      local_file_watcher_(nullptr),
       virtual_path_(virtual_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
@@ -157,7 +125,7 @@ void FileWatcher::WatchLocalFile(
   DCHECK(!local_file_watcher_);
 
   // If this is a crostini SSHFS path, use CrostiniFileWatcher.
-  crostini_file_watcher_ = CrostiniFileWatcher::GetForPath(profile, local_path);
+  crostini_file_watcher_ = GetForPath(profile, local_path);
   if (crostini_file_watcher_) {
     crostini_file_watcher_->Watch(std::move(file_watcher_callback),
                                   std::move(callback));

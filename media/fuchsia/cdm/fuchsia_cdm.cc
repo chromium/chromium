@@ -407,7 +407,7 @@ void FuchsiaCdm::OnCreateSession(std::unique_ptr<CdmSession> session,
   }
 
   session->set_session_id(session_id);
-  DCHECK(session_map_.find(session_id) == session_map_.end())
+  DCHECK(!session_map_.contains(session_id))
       << "Duplicated session id " << session_id;
   session_map_[session_id] = std::move(session);
 }
@@ -467,7 +467,7 @@ void FuchsiaCdm::OnSessionLoaded(std::unique_ptr<CdmSession> session,
   }
 
   std::string session_id = session->session_id();
-  DCHECK(session_map_.find(session_id) == session_map_.end())
+  DCHECK(!session_map_.contains(session_id))
       << "Duplicated session id " << session_id;
 
   session_map_.emplace(session_id, std::move(session));

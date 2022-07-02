@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -109,7 +110,7 @@ class PolicyFetchTracker
     std::move(callback).Run();
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
 
   // Policy credentials we keep while determining whether to create

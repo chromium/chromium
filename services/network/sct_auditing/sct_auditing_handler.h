@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -106,7 +107,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   void OnReportsLoadedFromDisk(const std::string& serialized);
 
   // Clears the set of pending reporters for this SCTAuditingHandler.
-  void ClearPendingReports();
+  void ClearPendingReports(base::OnceClosure callback);
 
   base::LRUCache<net::HashValue, std::unique_ptr<SCTAuditingReporter>>*
   GetPendingReportersForTesting() {
@@ -135,11 +136,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
  private:
   void OnReporterStateUpdated();
   void OnReporterFinished(net::HashValue reporter_key);
+
+  // Wrapper to pass the callback back to the foreground runner, as the
+  // underlying ImportantFileWriter runs its callback on the background runner.
+  // ImportantFileWriter requires a `OnceCallback<void(bool success)>` for the
+  // write completion callback, but the boolean is currently unused here.
+  void OnWriteFinished(base::OnceClosure callback, bool /*unused*/);
+
   void ReportHWMMetrics();
+
   mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // The NetworkContext which owns this SCTAuditingHandler.
-  NetworkContext* owner_network_context_;
+  raw_ptr<NetworkContext> owner_network_context_;
 
   // The pending reporters set is an LRUCache, so that the total number of
   // pending reporters can be capped. The LRUCache means that reporters will be

@@ -9,13 +9,19 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/linux_ui/window_frame_provider.h"
 #include "ui/views/window/frame_buttons.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "printing/printing_context_linux.h"  // nogncheck
+#endif
 
 typedef struct _GParamSpec GParamSpec;
 typedef struct _GtkParamSpec GtkParamSpec;
@@ -25,7 +31,6 @@ typedef struct _GtkStyle GtkStyle;
 namespace gtk {
 using ColorMap = std::map<int, SkColor>;
 
-class DeviceScaleFactorObserver;
 class GtkKeyBindingsHandler;
 class NativeThemeGtk;
 class SettingsProvider;
@@ -53,8 +58,7 @@ class GtkUi : public views::LinuxUI {
 
   // ui::LinuxInputMethodContextFactory:
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
-      ui::LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
 
   // gfx::LinuxFontDelegate:
   gfx::FontRenderParams GetDefaultFontRenderParams() const override;
@@ -72,7 +76,6 @@ class GtkUi : public views::LinuxUI {
 
   // views::LinuxUI:
   bool Initialize() override;
-  bool GetTint(int id, color_utils::HSL* tint) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;
@@ -81,29 +84,12 @@ class GtkUi : public views::LinuxUI {
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
-  bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  std::unique_ptr<views::Border> CreateNativeBorder(
-      views::LabelButton* owning_button,
-      std::unique_ptr<views::LabelButtonBorder> border) override;
-  void AddWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
-  void RemoveWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
-  void NotifyWindowManagerStartupComplete() override;
-  void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
-  void AddDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
-  void RemoveDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
@@ -113,10 +99,18 @@ class GtkUi : public views::LinuxUI {
   int GetCursorThemeSize() override;
   std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
   void SetSystemThemeByNameForTest(const std::string& theme_name) override;
+  ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
                   std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // printing::PrintingContextLinuxDelegate:
+  printing::PrintDialogLinuxInterface* CreatePrintDialog(
+      printing::PrintingContextLinux* context) override;
+  gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
+#endif
 
  private:
   using TintMap = std::map<int, color_utils::HSL>;
@@ -151,11 +145,15 @@ class GtkUi : public views::LinuxUI {
   // Updates |default_font_*|.
   void UpdateDefaultFont();
 
+  // Updates the device scale factor so that the default font size can be
+  // recalculated.
+  void UpdateDeviceScaleFactor();
+
   float GetRawDeviceScaleFactor();
 
   std::unique_ptr<GtkUiPlatform> platform_;
 
-  NativeThemeGtk* native_theme_;
+  raw_ptr<NativeThemeGtk> native_theme_;
 
   // Colors calculated by LoadGtkValues() that are given to the
   // caller while |use_gtk_| is true.
@@ -190,22 +188,9 @@ class GtkUi : public views::LinuxUI {
   // This is only used on GTK3.
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
 
-  // Objects to notify when the window frame button order changes.
-  base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
-      window_button_order_observer_list_;
-
-  // Objects to notify when the device scale factor changes.
-  base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked
-      device_scale_factor_observer_list_;
-
   // The action to take when middle, double, or right clicking the titlebar.
   base::flat_map<WindowFrameActionSource, WindowFrameAction>
       window_frame_actions_;
-
-  // Used to determine whether the system theme should be used for a window.  If
-  // no override is provided or the callback returns true, GtkUi will default
-  // to a NativeThemeGtk instance.
-  UseSystemThemeCallback use_system_theme_callback_;
 
   float device_scale_factor_ = 1.0f;
 

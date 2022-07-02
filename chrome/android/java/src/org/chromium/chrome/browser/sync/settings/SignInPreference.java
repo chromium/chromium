@@ -158,7 +158,7 @@ public class SignInPreference
         setViewEnabled(true);
         setOnPreferenceClickListener(pref
                 -> SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                        getContext(), SigninAccessPoint.SETTINGS));
+                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
 
         if (!mWasGenericSigninPromoDisplayed) {
             RecordUserAction.record("Signin_Impression_FromSettings");

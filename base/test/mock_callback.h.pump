@@ -78,7 +78,7 @@ class MockCallback<RepeatingCallback<$run_type>> {
   MOCK_METHOD$(i)_T(Run, $run_type);
 
   RepeatingCallback<$run_type> Get() {
-    return BindRepeating(&MockCallback::Run, Unretained(this));
+    return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
   }
 };
 
@@ -93,7 +93,7 @@ class MockCallback<OnceCallback<$run_type>> {
   MOCK_METHOD$(i)_T(Run, $run_type);
 
   OnceCallback<$run_type> Get() {
-    return BindOnce(&MockCallback::Run, Unretained(this));
+    return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
   }
 };
 

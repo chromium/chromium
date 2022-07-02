@@ -16,7 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/browser/support_tool/support_packet_metadata.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -79,7 +81,11 @@ class SupportToolHandler {
   ~SupportToolHandler();
 
   // Returns the support case ID.
-  const std::string& GetCaseID();
+  const std::string& GetCaseId();
+
+  // Returns the timestamp of data collection start. Must be called after
+  // CollectSupportData() has been called.
+  const base::Time& GetDataCollectionTimestamp();
 
   // Adds `collector` to the list of DataCollectors the SupportToolHandler
   // will collect data from.
@@ -112,6 +118,11 @@ class SupportToolHandler {
   // `on_data_collection_done_callback_`.
   void OnAllDataCollected();
 
+  void OnMetadataContentsPopulated();
+
+  // Adds the contents of `pii_map` to `detected_pii_` of this instance.
+  void AddDetectedPII(const PIIMap& pii_map);
+
   // Exports collected data into the `tmp_path`. Creates a path for each
   // DataCollector with their name. The DataCollectors will export their output
   // to that path then the contents of the `tmp_path` will be put inside a zip
@@ -127,11 +138,18 @@ class SupportToolHandler {
                                     absl::optional<SupportToolError> error);
 
   // OnAllDataCollectorsDoneExporting is called by a BarrierClosure when all
-  // DataCollectors finish exporting data to their given filepaths. Archives
+  // DataCollectors finish exporting data to their given filepaths. Calls
+  // `metadata_` to add the metadata file to `tmp_path`.
+  void OnAllDataCollectorsDoneExporting(
+      base::FilePath tmp_path,
+      base::FilePath target_path,
+      std::set<feedback::PIIType> pii_types_to_keep);
+
+  // OnMetadataFileWritten is called when metadata file is written. Archives
   // the data exported by DataCollectors inside a .zip archive and calls
   // OnDataExportDone().
-  void OnAllDataCollectorsDoneExporting(base::FilePath tmp_path,
-                                        base::FilePath path);
+  void OnMetadataFileWritten(base::FilePath tmp_path,
+                             base::FilePath target_path);
 
   // Cleans up the temporary directory created to store the output files and
   // then calls `on_data_export_done_callback_`.
@@ -145,9 +163,8 @@ class SupportToolHandler {
   void CleanUp();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  std::string case_id_;
-  std::string email_address_;
-  std::string issue_description_;
+  base::Time data_collection_timestamp_;
+  SupportPacketMetadata metadata_;
   PIIMap detected_pii_;
   std::vector<std::unique_ptr<DataCollector>> data_collectors_;
   // Stores the set of errors that are returned from DataCollector calls. Reset

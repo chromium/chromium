@@ -450,6 +450,7 @@ void LayerAnimator::OnThreadedAnimationStarted(
 }
 
 void LayerAnimator::AddToCollection(LayerAnimatorCollection* collection) {
+  DCHECK_EQ(collection, GetLayerAnimatorCollection());
   if (is_animating() && !is_started_) {
     collection->StartAnimator(this);
     is_started_ = true;
@@ -457,10 +458,13 @@ void LayerAnimator::AddToCollection(LayerAnimatorCollection* collection) {
 }
 
 void LayerAnimator::RemoveFromCollection(LayerAnimatorCollection* collection) {
+  DCHECK_EQ(collection, GetLayerAnimatorCollection());
   if (is_started_) {
     collection->StopAnimator(this);
     is_started_ = false;
   }
+  DCHECK(!animation_->element_animations() ||
+         !animation_->element_animations()->HasTickingKeyframeEffect());
 }
 
 // LayerAnimator protected -----------------------------------------------------

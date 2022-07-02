@@ -6,11 +6,11 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -68,7 +68,7 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 
 variations::Study::FormFactor
 ChromeVariationsServiceClient::GetCurrentFormFactor() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(PLATFORM_CFM)
+#if BUILDFLAG(PLATFORM_CFM)
   return variations::Study::MEET_DEVICE;
 #else
   return variations::VariationsServiceClient::GetCurrentFormFactor();

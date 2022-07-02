@@ -21,8 +21,7 @@
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
     QuicStreamFactory* factory) {
@@ -88,9 +87,8 @@ bool QuicStreamFactoryPeer::HasLiveSession(
                      SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
   QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
                                                    session_key);
-  for (auto it = factory->all_sessions_.begin();
-       it != factory->all_sessions_.end(); ++it) {
-    if (it->second == alias_key)
+  for (const auto& it : factory->all_sessions_) {
+    if (it.second == alias_key)
       return true;
   }
   return false;
@@ -98,9 +96,8 @@ bool QuicStreamFactoryPeer::HasLiveSession(
 
 bool QuicStreamFactoryPeer::IsLiveSession(QuicStreamFactory* factory,
                                           QuicChromiumClientSession* session) {
-  for (auto it = factory->all_sessions_.begin();
-       it != factory->all_sessions_.end(); ++it) {
-    if (it->first == session)
+  for (const auto& it : factory->all_sessions_) {
+    if (it.first == session)
       return true;
   }
   return false;
@@ -196,5 +193,4 @@ void QuicStreamFactoryPeer::SetAlarmFactory(
   factory->alarm_factory_ = std::move(alarm_factory);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

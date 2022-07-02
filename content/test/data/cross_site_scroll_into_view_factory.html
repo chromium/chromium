@@ -1,37 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html class="rootScroller">
 <!-- This file is based on cross_site_iframe_factory.html. See comments in that
 file as well as tree_parser_util.js for more details and syntax information.
 
-This page creates a nested, non-branching, frame tree with each iframe being
+This page creates a nested, non-branching, frame tree with each child frame being
 fully outside of its embedder's initial viewport. The inner-most frame will
 create a <input> box, also outside the frame's initial viewport.
 
-The following attributes on frames are supported:
+See window.Attributes map for supported attributes.
 
-  RTL: Make's a frame's document "dir=rtl" to support testing right-to-left
-       writing modes.
+Usage Example:
 
-  ViewportMeta: Adds a viewport meta tag to a frame, making it "mobile
-        friendly". This occurs for subframes as well but only has an effect in
-        the root frame.
-
-  TouchActionNone: Adds a `touch-action: none` style to the inner-most frame's
-                   <input> box. No-op in other frames.
-
-For example:
-
-  siteA{ViewportMeta,RTL}(siteB(siteC{TouchActionNone}))
+  cross_site_scroll_into_view_factory
+      .html?siteA{MobileViewport,RTL}(siteB(siteC{TouchActionNone}))
 
  -->
 <head>
-<title>Cross-site scroll-into-view iframe factory</title>
+<title>Cross-site scroll-into-view frame tree factory</title>
+<script>
+  window.Attributes = {
+    // Make's a frame's document "dir=rtl" to support testing right-to-left
+    // writing modes.
+    RTL: 0,
+    // Adds a viewport meta tag to a frame, making it "mobile friendly". This
+    // occurs for subframes as well but only has an effect in the root frame.
+    MobileViewport: 1,
+    // Adds a viewport meta tag to a frame, making it
+    // "mobile friendly" and also limiting minimum-zoom. This occurs for
+    // subframes as well but only has an effect in the root frame.
+    MobileViewportNoZoom: 2,
+    // Adds a `touch-action: none` style to the inner-most
+    // frame's <input> box. No-op in other frames.
+    TouchActionNone: 3,
+    // Uses a <fencedframe> element rather than an <iframe> for the child
+    // frame.
+    FencedFrame: 4,
+    // Puts the <input> box into a root scroller element.
+    RootScroller: 5,
+
+    // Keep this up to date with last enum.
+    MAX_VALUE: 5
+  }
+</script>
 <style>
   html,body {
     width: 100%;
     height: 100%;
   }
-  iframe {
+  html {
+    overflow: hidden;
+  }
+  .rootScroller {
+    overflow: auto;
+  }
+  iframe, fencedframe {
     position: absolute;
     /* 4 screens worth of inset, to make sure this is off screen on Android
      * where minimum scale on load is 0.25 */
@@ -45,6 +67,14 @@ For example:
     inset-inline-start: 400%;
     inset-block-start: 400%;
     width: 50%;
+  }
+  div.rootScroller {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: coral;
   }
   .spacer {
     /* make the document scrollable */
@@ -123,51 +153,46 @@ function sitePortNumber(siteString) {
 }
 
 /**
- * Adds ".com" to an argument if it doesn't already have a top level domain.
- * This cuts down on noise in the query string, letting you use single-letter
- * names. Adds the specified port number, if any, or the default port otherwise.
+ * Adds ".test" to an argument if it doesn't already have a top level domain.
+ * Converts "siteA" to "a.test" to match test host names defined in test SSL
+ * certificate.  Adds the specified port number, if any, or the default port
+ * otherwise.
  */
 function canonicalizeSiteAndPort(siteString, defaultPort) {
   var portNumber = sitePortNumber(siteString) || defaultPort;
   var hostName = siteString.split(':')[0];
   if (hostName !== "localhost" && hostName.indexOf('.') == -1)
-    hostName = hostName + '.com';
+    hostName = hostName + '.test';
+
+  if (hostName.startsWith('site'))
+    hostName = hostName.substring('site'.length).toLowerCase();
+
   return hostName + (portNumber ? ':' + portNumber : "");
 }
 
-// Attributes:
-//
-// {RTL} - Applies `dir="rtl"` to a frame that has this attribute, making it a
-//         right-to-left writing mode.
-function shouldApplyRTL(attributes) {
-  for (var attribute of attributes) {
-    if (attribute == "RTL") {
+function hasAttribute(attribute) {
+  if (!Number.isInteger(attribute) || attribute < 0
+      || attribute > Attributes.MAX_VALUE) {
+    throw new Error("hasAttribute parameter invalid: " + attribute);
+  }
+
+  for (var frame_attribute of frame_attributes) {
+    if (frame_attribute == attribute) {
       return true;
     }
   }
+
   return false;
 }
 
-// {ViewportMeta} - Adds <meta name="viewport" width="device-width"> to a frame
-//                  that has this attribute, making it a mobile friendly page.
-function shouldApplyViewportMeta(attributes) {
-  for (var attribute of attributes) {
-    if (attribute == "ViewportMeta") {
-      return true;
-    }
-  }
-  return false;
-}
+function processFrameAttributes(frameTree) {
+  window.frame_attributes = [];
+  for (var attribute of frameTree.attributes) {
+    if (!Attributes.hasOwnProperty(attribute))
+      throw new Error("Invalid specified attribute: " + attribute);
 
-// {TouchActionNone} - Adds a `touch-action: none` style to the inner-most
-//                     frame's input. No-op on other frames.
-function shouldApplyTouchActionNone(attributes) {
-  for (var attribute of attributes) {
-    if (attribute == "TouchActionNone") {
-      return true;
-    }
+    frame_attributes.push(Attributes[attribute]);
   }
-  return false;
 }
 
 function main() {
@@ -178,15 +203,43 @@ function main() {
                       ? frameTree.value
                       : canonicalizeSiteAndPort(frameTree.value, "");
 
-  if (shouldApplyRTL(frameTree.attributes)) {
+  processFrameAttributes(frameTree);
+
+  if (hasAttribute(Attributes.RTL)) {
     document.documentElement.setAttribute('dir', 'rtl')
   }
 
-  if (shouldApplyViewportMeta(frameTree.attributes)) {
-    const meta = document.createElement("meta");
-    meta.setAttribute("name", "viewport");
-    meta.setAttribute("content", "width=device-width");
+  if (hasAttribute(Attributes.MobileViewport)) {
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width');
     document.head.appendChild(meta);
+  }
+
+  if (hasAttribute(Attributes.MobileViewportNoZoom)) {
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width,minimum-scale=1');
+    document.head.appendChild(meta);
+  }
+
+  if (hasAttribute(Attributes.RootScroller)) {
+    const html = document.documentElement;
+    const kMaxOffset = 1000000;
+    html.scrollLeft = kMaxOffset;
+    html.scrollTop = kMaxOffset;
+
+    html.classList.remove('rootScroller');
+
+    const rootScroller = document.createElement('div');
+    rootScroller.classList.add('rootScroller');
+
+    const spacer = document.createElement('div');
+    spacer.classList.add('spacer');
+    spacer.innerText = "Root Scroller";
+    rootScroller.appendChild(spacer);
+
+    document.body.appendChild(rootScroller);
   }
 
   document.getElementById('siteNameHeading').appendChild(
@@ -198,10 +251,13 @@ function main() {
   if (frameTree.children.length == 0) {
     let input = document.createElement('input');
 
-    if (shouldApplyTouchActionNone(frameTree.attributes))
+    if (hasAttribute(Attributes.TouchActionNone))
       input.classList.add('touchActionNone');
 
-    document.body.appendChild(input);
+    if (document.documentElement.classList.contains('rootScroller'))
+      document.body.appendChild(input);
+    else
+      document.querySelector('.rootScroller').appendChild(input);
 
     return;
   }
@@ -209,7 +265,7 @@ function main() {
   // ScrollIntoView tests don't need multiple children and we don't support it.
   console.assert(frameTree.children.length == 1);
 
-  // Compute the URL for this iframe.
+  // Compute the URL for this child frame.
   let url = frameTree.children[0].value;
   let siteAndPort = url;
   if (!isUrl(url)) {
@@ -222,13 +278,14 @@ function main() {
     url += '?' + encodeURIComponent(subtreeString);      // query
   }
 
-  // Construct the iframe.
-  var iframe = document.createElement('iframe');
-  iframe.src = url;
-  iframe.id = "child";
+  // Construct the child frame.
+  var elementType = hasAttribute(Attributes.FencedFrame) ? 'fencedframe' : 'iframe';
+  var frame = document.createElement(elementType);
+  frame.src = url;
+  frame.id = "childframe";
 
-  // Add the iframe to the document.
-  document.body.appendChild(iframe);
+  // Add the child frame to the document.
+  document.body.appendChild(frame);
 }
 
 main();

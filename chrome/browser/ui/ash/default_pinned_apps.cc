@@ -9,12 +9,13 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 
 namespace {
 
-base::span<StaticAppId> GetDefaultPinnedApps() {
-  constexpr const char* kDefaultPinnedApps[] = {
+std::vector<StaticAppId> GetDefaultPinnedApps() {
+  std::vector<StaticAppId> app_ids{
       extension_misc::kGmailAppId,
       web_app::kGmailAppId,
 
@@ -36,12 +37,17 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
 
       arc::kGooglePhotosAppId,
   };
-  return base::span<StaticAppId>(kDefaultPinnedApps,
-                                 std::size(kDefaultPinnedApps));
+
+  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+    app_ids.push_back(web_app::kCloudGamingPartnerPlatform);
+    app_ids.push_back(web_app::kStadiaAppId);
+  }
+
+  return app_ids;
 }
 
-base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
-  constexpr const char* kTabletFormFactorDefaultPinnedApps[] = {
+std::vector<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
+  std::vector<StaticAppId> app_ids{
       arc::kGmailAppId,
 
       arc::kGoogleCalendarAppId,
@@ -52,13 +58,12 @@ base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
 
       arc::kGooglePhotosAppId,
   };
-  return base::span<StaticAppId>(kTabletFormFactorDefaultPinnedApps,
-                                 std::size(kTabletFormFactorDefaultPinnedApps));
+  return app_ids;
 }
 
 }  // namespace
 
-base::span<StaticAppId> GetDefaultPinnedAppsForFormFactor() {
+std::vector<StaticAppId> GetDefaultPinnedAppsForFormFactor() {
   if (ash::switches::IsTabletFormFactor()) {
     return GetTabletFormFactorDefaultPinnedApps();
   }

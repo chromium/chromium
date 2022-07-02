@@ -171,8 +171,7 @@ void GetOrigins(JNIEnv* env,
       continue;
     }
 
-    if (auto_blocker->GetEmbargoResult(GURL(origin), content_type)
-            .content_setting == CONTENT_SETTING_BLOCK) {
+    if (auto_blocker->IsEmbargoed(GURL(origin), content_type)) {
       seen_origins.push_back(origin);
       insertionFunc(env, static_cast<int>(content_type), list,
                     ConvertOriginToJavaString(env, origin), jembedder,
@@ -307,9 +306,8 @@ static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
       permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
 
-  return auto_blocker
-             ->GetEmbargoResult(origin_url, ContentSettingsType::NOTIFICATIONS)
-             .content_setting == CONTENT_SETTING_BLOCK;
+  return auto_blocker->IsEmbargoed(origin_url,
+                                   ContentSettingsType::NOTIFICATIONS);
 }
 
 static void SetNotificationSettingForOrigin(

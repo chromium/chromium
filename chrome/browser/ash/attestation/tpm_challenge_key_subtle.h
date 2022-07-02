@@ -95,7 +95,7 @@ class TpmChallengeKeySubtle {
       const std::string& key_name,
       Profile* profile,
       TpmChallengeKeyCallback callback,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals) = 0;
+      const absl::optional<std::string>& signals) = 0;
 
   // Generates a VA challenge response using the key pair prepared by
   // |PrepareKey| method. Returns VA challenge response via |callback|. In case
@@ -141,14 +141,12 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   ~TpmChallengeKeySubtleImpl() override;
 
   // TpmChallengeKeySubtle
-  void StartPrepareKeyStep(
-      AttestationKeyType key_type,
-      bool will_register_key,
-      const std::string& key_name,
-      Profile* profile,
-      TpmChallengeKeyCallback callback,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals)
-      override;
+  void StartPrepareKeyStep(AttestationKeyType key_type,
+                           bool will_register_key,
+                           const std::string& key_name,
+                           Profile* profile,
+                           TpmChallengeKeyCallback callback,
+                           const absl::optional<std::string>& signals) override;
   void StartSignChallengeStep(const std::string& challenge,
                               TpmChallengeKeyCallback callback) override;
   void StartRegisterKeyStep(TpmChallengeKeyCallback callback) override;
@@ -243,7 +241,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // as corporate.
   std::string public_key_;
   // Signals from Context Aware Access.
-  absl::optional<::attestation::DeviceTrustSignals> signals_;
+  absl::optional<std::string> signals_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

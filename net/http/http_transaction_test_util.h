@@ -33,6 +33,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/log/net_log_source.h"
 #include "net/socket/connection_attempts.h"
 
 namespace net {
@@ -170,11 +171,11 @@ class TestTransactionConsumer {
 
   void OnIOComplete(int result);
 
-  State state_;
+  State state_ = State::kIdle;
   std::unique_ptr<HttpTransaction> trans_;
   std::string content_;
   scoped_refptr<IOBuffer> read_buf_;
-  int error_;
+  int error_ = OK;
 
   static int quit_counter_;
 };
@@ -276,29 +277,29 @@ class MockNetworkTransaction
   void CallbackLater(CompletionOnceCallback callback, int result);
   void RunCallback(CompletionOnceCallback callback, int result);
 
-  raw_ptr<const HttpRequestInfo> request_;
+  raw_ptr<const HttpRequestInfo> request_ = nullptr;
   HttpResponseInfo response_;
   std::string data_;
-  int64_t data_cursor_;
-  int64_t content_length_;
+  int64_t data_cursor_ = 0;
+  int64_t content_length_ = 0;
   int test_mode_;
   RequestPriority priority_;
-  MockTransactionReadHandler read_handler_;
-  raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_;
+  MockTransactionReadHandler read_handler_ = nullptr;
+  raw_ptr<CreateHelper> websocket_handshake_stream_create_helper_ = nullptr;
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   base::WeakPtr<MockNetworkLayer> transaction_factory_;
-  int64_t received_bytes_;
-  int64_t sent_bytes_;
+  int64_t received_bytes_ = 0;
+  int64_t sent_bytes_ = 0;
 
   // NetLog ID of the fake / non-existent underlying socket used by the
   // connection. Requires Start() be passed a NetLogWithSource with a real
   // NetLog to
   // be initialized.
-  unsigned int socket_log_id_;
+  unsigned int socket_log_id_ = NetLogSource::kInvalidId;
 
-  bool done_reading_called_;
-  bool reading_;
+  bool done_reading_called_ = false;
+  bool reading_ = false;
 
   CompletionOnceCallback resume_start_callback_;  // used for pause and restart.
 
@@ -356,14 +357,14 @@ class MockNetworkLayer : public HttpTransactionFactory,
   base::Time Now();
 
  private:
-  int transaction_count_;
-  bool done_reading_called_;
-  bool stop_caching_called_;
-  RequestPriority last_create_transaction_priority_;
+  int transaction_count_ = 0;
+  bool done_reading_called_ = false;
+  bool stop_caching_called_ = false;
+  RequestPriority last_create_transaction_priority_ = DEFAULT_PRIORITY;
 
   // By default clock_ is NULL but it can be set to a custom clock by test
   // frameworks using SetClock.
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<base::Clock> clock_ = nullptr;
 
   base::WeakPtr<MockNetworkTransaction> last_transaction_;
 };

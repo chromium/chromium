@@ -150,11 +150,6 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
     original_client_->OnTransferSizeUpdated(transfer_size_diff);
   }
 
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    original_client_->OnStartLoadingResponseBody(std::move(body));
-  }
-
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     original_client_->OnComplete(status);
     delete this;

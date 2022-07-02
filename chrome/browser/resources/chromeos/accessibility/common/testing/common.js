@@ -7,17 +7,21 @@
 /**
  * Similar to |TEST_F|. Generates a test for the given |testFixture|,
  * |testName|, and |testFunction|.
- * Used this variant when an |isAsync| fixture wants to temporarily mix in a
- * sync test.
+ * Use this variant when an |isAsync| fixture wants to temporarily mix in a
+ * sync test or use async/await.
  * @param {string} testFixture Fixture name.
  * @param {string} testName Test name.
  * @param {function} testFunction The test impl.
  */
-function SYNC_TEST_F(testFixture, testName, testFunction) {
+function AX_TEST_F(testFixture, testName, testFunction) {
   TEST_F(testFixture, testName, function() {
     this.newCallback(testFunction)();
   });
 }
+
+// var is used to export this function alias outside of the current context
+// while all tests are migrated to the new fixture.
+var SYNC_TEST_F = AX_TEST_F;
 
 /**
  * Helper to import a module, and expose it onto window.

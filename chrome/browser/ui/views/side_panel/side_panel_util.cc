@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -12,6 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "components/feed/feed_feature_list.h"
@@ -55,4 +59,28 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   }
 
   return;
+}
+
+SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
+    views::View* content_view) {
+  if (!content_view->GetProperty(kSidePanelContentProxyKey))
+    content_view->SetProperty(
+        kSidePanelContentProxyKey,
+        std::make_unique<SidePanelContentProxy>(true).release());
+  return content_view->GetProperty(kSidePanelContentProxyKey);
+}
+
+void SidePanelUtil::RecordSidePanelOpen(
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+  base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+
+  if (trigger.has_value())
+    base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
+}
+
+void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
+  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
+
+  base::UmaHistogramLongTimes("SidePanel.OpenDuration",
+                              base::TimeTicks::Now() - opened_timestamp);
 }

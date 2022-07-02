@@ -1,0 +1,7 @@
+Tests that global commands such as captureSnapshot, captureScreenshot, getAppManifest, startScreencast, or setDownloadBehavior returns an error with Fenced Frame target
+Page.captureSnapshot: Command can only be executed on top-level targets
+Page.captureScreenshot: Command can only be executed on top-level targets
+Page.getAppManifest: Command can only be executed on top-level targets
+Page.startScreencast: Command can only be executed on top-level targets
+Page.setDownloadBehavior: Command can only be executed on top-level targets
+

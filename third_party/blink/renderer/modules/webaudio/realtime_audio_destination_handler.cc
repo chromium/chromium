@@ -22,6 +22,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kDefaultNumberOfInputChannels = 2;
+
+}  // namespace
+
 scoped_refptr<RealtimeAudioDestinationHandler>
 RealtimeAudioDestinationHandler::Create(AudioNode& node,
                                         const WebAudioLatencyHint& latency_hint,
@@ -41,7 +47,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
       task_runner_(Context()->GetExecutionContext()->GetTaskRunner(
           TaskType::kInternalMediaRealTime)) {
   // Node-specific default channel count and mixing rules.
-  channel_count_ = 2;
+  channel_count_ = kDefaultNumberOfInputChannels;
   SetInternalChannelCountMode(kExplicit);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 }
@@ -151,7 +157,7 @@ uint32_t RealtimeAudioDestinationHandler::MaxChannelCount() const {
 
 double RealtimeAudioDestinationHandler::SampleRate() const {
   // This can be accessed from both threads (main and audio), so it is
-  // possible that |platform_destination_| is not fully functional when it
+  // possible that `platform_destination_` is not fully functional when it
   // is accssed by the audio thread.
   return platform_destination_ ? platform_destination_->SampleRate() : 0;
 }
@@ -170,8 +176,8 @@ void RealtimeAudioDestinationHandler::Render(
   AudioContext* context = static_cast<AudioContext*>(Context());
 
   // A sanity check for the associated context, but this does not guarantee the
-  // safe execution of the subsequence operations because the hanlder holds
-  // the context as |UntracedMember| and it can go away anytime.
+  // safe execution of the subsequence operations because the handler holds
+  // the context as UntracedMember and it can go away anytime.
   DCHECK(context);
   if (!context) {
     return;
@@ -205,7 +211,7 @@ void RealtimeAudioDestinationHandler::Render(
       destination_bus->Zero();
     } else if (rendered_bus != destination_bus) {
       // In-place processing was not possible. Copy the rendered result to the
-      // given |destination_bus| buffer.
+      // given `destination_bus` buffer.
       destination_bus->CopyFrom(*rendered_bus);
     }
   } else {

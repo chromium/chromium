@@ -14,8 +14,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -45,8 +45,7 @@ enum class ReauthenticationStatus {
 @implementation PasswordSerializerBridge
 
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-                passwords
+            (const std::vector<password_manager::CredentialUIEntry>&)passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
@@ -166,7 +165,7 @@ enum class ReauthenticationStatus {
 }
 
 - (void)startExportFlow:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)passwords {
+    (const std::vector<password_manager::CredentialUIEntry>&)passwords {
   DCHECK(!passwords.empty());
   DCHECK(self.exportState == ExportState::IDLE);
   if ([_weakReauthenticationModule canAttemptReauth]) {
@@ -190,7 +189,7 @@ enum class ReauthenticationStatus {
 }
 
 - (void)serializePasswords:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)passwords {
+    (const std::vector<password_manager::CredentialUIEntry>&)passwords {
   self.passwordCount = passwords.size();
 
   __weak PasswordExporter* weakSelf = self;
@@ -325,7 +324,7 @@ enum class ReauthenticationStatus {
   NSData* serializedPasswordsData =
       [self.serializedPasswords dataUsingEncoding:NSUTF8StringEncoding];
 
-  // Drop |serializedPasswords| as it is no longer needed.
+  // Drop `serializedPasswords` as it is no longer needed.
   self.serializedPasswords = nil;
 
   [_passwordFileWriter writeData:serializedPasswordsData

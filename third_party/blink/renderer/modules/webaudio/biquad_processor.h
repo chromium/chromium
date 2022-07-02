@@ -94,7 +94,7 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
   void SetType(FilterType);
 
  private:
-  FilterType type_;
+  FilterType type_ = FilterType::kLowPass;
 
   scoped_refptr<AudioParamHandler> parameter1_;
   scoped_refptr<AudioParamHandler> parameter2_;
@@ -102,10 +102,10 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
   scoped_refptr<AudioParamHandler> parameter4_;
 
   // so DSP kernels know when to re-compute coefficients
-  bool filter_coefficients_dirty_;
+  bool filter_coefficients_dirty_ = true;
 
   // Set to true if any of the filter parameters are sample-accurate.
-  bool has_sample_accurate_values_;
+  bool has_sample_accurate_values_ = false;
 
   // Set to true if any of the filter parameters are a-rate.
   bool is_audio_rate_;

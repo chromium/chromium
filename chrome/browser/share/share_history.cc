@@ -35,6 +35,8 @@ const char* const kShareHistoryFolder = "share_history";
 // do not fold these constants together.
 const char* const kShareHistoryKey = "share_history";
 
+constexpr auto kMaxHistoryAge = base::Days(90);
+
 int TodaysDay() {
   return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 }
@@ -200,7 +202,7 @@ void ShareHistory::OnInitialReadDone(
   init_finished_ = true;
   post_init_callbacks_.Notify();
 
-  // TODO(ellyjones): Expire entries older than WINDOW days.
+  Clear(base::Time(), base::Time::Now() - kMaxHistoryAge);
 }
 
 void ShareHistory::FlushToBackingDb() {

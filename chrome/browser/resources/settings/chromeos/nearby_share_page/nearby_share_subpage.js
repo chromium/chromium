@@ -8,9 +8,9 @@
  * Nearby Share feature.
  */
 
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
@@ -19,16 +19,16 @@ import './nearby_share_device_name_dialog.js';
 import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
@@ -40,120 +40,144 @@ import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
  */
 const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-nearby-share-subpage',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsNearbyShareSubpageElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsNearbyShareSubpageElement extends
+    SettingsNearbyShareSubpageElementBase {
+  static get is() {
+    return 'settings-nearby-share-subpage';
+  }
 
-  properties: {
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    profileName_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    profileLabel_: {
-      type: String,
-      value: '',
-    },
+      profileName_: {
+        type: String,
+        value: '',
+      },
 
-    /** @type {NearbySettings} */
-    settings: {
-      type: Object,
-      notify: true,
-      value: {},
-    },
+      profileLabel_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {boolean} */
-    isSettingsRetreived: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {NearbySettings} */
+      settings: {
+        type: Object,
+        notify: true,
+        value: {},
+      },
 
-    /** @private {boolean} */
-    showDeviceNameDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      isSettingsRetreived: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showVisibilityDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showDeviceNameDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showDataUsageDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showVisibilityDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showReceiveDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showDataUsageDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    manageContactsUrl_: {
-      type: String,
-      value: () => loadTimeData.getString('nearbyShareManageContactsUrl')
-    },
+      /** @private {boolean} */
+      showReceiveDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    inHighVisibility_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      manageContactsUrl_: {
+        type: String,
+        value: () => loadTimeData.getString('nearbyShareManageContactsUrl')
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kNearbyShareOnOff,
-        chromeos.settings.mojom.Setting.kNearbyShareDeviceName,
-        chromeos.settings.mojom.Setting.kNearbyShareDeviceVisibility,
-        chromeos.settings.mojom.Setting.kNearbyShareContacts,
-        chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
-        chromeos.settings.mojom.Setting
-            .kDevicesNearbyAreSharingNotificationOnOff,
-      ]),
-    },
+      /** @private {boolean} */
+      inHighVisibility_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    shouldShowFastInititationNotificationToggle_: {
-      type: Boolean,
-      computed: `computeShouldShowFastInititationNotificationToggle_(
-              settings.isFastInitiationHardwareSupported)`,
-    },
-  },
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kNearbyShareOnOff,
+          chromeos.settings.mojom.Setting.kNearbyShareDeviceName,
+          chromeos.settings.mojom.Setting.kNearbyShareDeviceVisibility,
+          chromeos.settings.mojom.Setting.kNearbyShareContacts,
+          chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
+          chromeos.settings.mojom.Setting
+              .kDevicesNearbyAreSharingNotificationOnOff,
+        ]),
+      },
 
-  listeners: {
-    'onboarding-cancelled': 'onOnboardingCancelled_',
-    'settings-loaded': 'onSettingsLoaded_'
-  },
+      /** @private */
+      shouldShowFastInititationNotificationToggle_: {
+        type: Boolean,
+        computed: `computeShouldShowFastInititationNotificationToggle_(
+                settings.isFastInitiationHardwareSupported)`,
+      },
+    };
+  }
 
-  observers: ['enabledChange_(settings.enabled)'],
+  static get observers() {
+    return ['enabledChange_(settings.enabled)'];
+  }
 
-  /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
-  receiveObserver_: null,
+  constructor() {
+    super();
+
+    /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
+    this.receiveObserver_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+
+    this.addEventListener('onboarding-cancelled', this.onOnboardingCancelled_);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     // TODO(b/166779043): Check whether the Account Manager is enabled and fall
     // back to profile name, or just hide the row. This is not urgent because
     // the Account Manager should be available whenever Nearby Share is enabled.
@@ -168,7 +192,7 @@ Polymer({
         });
     this.receiveObserver_ = observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
-  },
+  }
 
   /** @private */
   enabledChange_(newValue, oldValue) {
@@ -179,7 +203,7 @@ Polymer({
       // the receiver.
       getContactManager().downloadContacts();
     }
-  },
+  }
 
   /** @private */
   onDeviceNameTap_() {
@@ -187,17 +211,17 @@ Polymer({
       return;
     }
     this.showDeviceNameDialog_ = true;
-  },
+  }
 
   /** @private */
   onVisibilityTap_() {
     this.showVisibilityDialog_ = true;
-  },
+  }
 
   /** @private */
   onDataUsageTap_() {
     this.showDataUsageDialog_ = true;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -205,7 +229,7 @@ Polymer({
    */
   onDeviceNameDialogClose_(event) {
     this.showDeviceNameDialog_ = false;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -213,7 +237,7 @@ Polymer({
    */
   onVisibilityDialogClose_(event) {
     this.showVisibilityDialog_ = false;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -221,7 +245,7 @@ Polymer({
    */
   onDataUsageDialogClose_(event) {
     this.showDataUsageDialog_ = false;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -230,7 +254,7 @@ Polymer({
   onReceiveDialogClose_(event) {
     this.showReceiveDialog_ = false;
     this.inHighVisibility_ = false;
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -238,7 +262,7 @@ Polymer({
    */
   onManageContactsTap_(event) {
     window.open(this.manageContactsUrl_);
-  },
+  }
 
   /**
    * @private
@@ -247,7 +271,7 @@ Polymer({
   getManageContactsSubLabel_() {
     // Remove the protocol part of the contacts url.
     return this.manageContactsUrl_.replace(/(^\w+:|^)\/\//, '');
-  },
+  }
 
   /**
    * Mojo callback when high visibility changes.
@@ -255,7 +279,7 @@ Polymer({
    */
   onHighVisibilityChanged(inHighVisibility) {
     this.inHighVisibility_ = inHighVisibility;
-  },
+  }
 
   /**
    * Mojo callback when transfer status changes.
@@ -264,28 +288,28 @@ Polymer({
    */
   onTransferUpdate(shareTarget, metadata) {
     // Note: Intentionally left empty.
-  },
+  }
 
   /**
    * Mojo callback when the Nearby utility process stops.
    */
   onNearbyProcessStopped() {
     this.inHighVisibility_ = false;
-  },
+  }
 
   /**
    * Mojo callback when advertising fails to start.
    */
   onStartAdvertisingFailure() {
     this.inHighVisibility_ = false;
-  },
+  }
 
   /** @private */
   onInHighVisibilityToggledByUser_() {
     if (this.inHighVisibility_) {
       this.showHighVisibilityPage_();
     }
-  },
+  }
 
   /**
    * @param {boolean} state boolean state that determines which string to show
@@ -296,7 +320,7 @@ Polymer({
    */
   getOnOffString_(state, onstr, offstr) {
     return state ? onstr : offstr;
-  },
+  }
 
   /**
    * @param {string} name name of device
@@ -305,7 +329,7 @@ Polymer({
    */
   getEditNameButtonAriaDescription_(name) {
     return this.i18n('nearbyShareDeviceNameAriaDescription', name);
-  },
+  }
 
   /**
    * @param {nearbyShare.mojom.Visibility} visibility
@@ -325,7 +349,7 @@ Polymer({
       default:
         return '';  // Make closure happy.
     }
-  },
+  }
 
   /**
    * @param {nearbyShare.mojom.Visibility} visibility
@@ -345,7 +369,7 @@ Polymer({
       default:
         return '';  // Make closure happy.
     }
-  },
+  }
 
   /**
    * @param {boolean} inHighVisibility
@@ -357,7 +381,7 @@ Polymer({
         this.i18n('nearbyShareHighVisibilityOn', 5) :
         this.i18nAdvanced(
             'nearbyShareHighVisibilityOff', {substitutions: ['5']});
-  },
+  }
 
   /**
    * @param {string} dataUsageValue enum value of data usage setting.
@@ -374,7 +398,7 @@ Polymer({
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyLabel');
     }
-  },
+  }
 
   /**
    * @param {string} dataUsageValue enum value of data usage setting.
@@ -391,7 +415,7 @@ Polymer({
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyDescription');
     }
-  },
+  }
 
   /**
    * @param {string} dataUsageValue enum value of data usage setting.
@@ -408,7 +432,7 @@ Polymer({
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyEditButtonDescription');
     }
-  },
+  }
 
   /**
    * @param {!Route} route
@@ -437,7 +461,7 @@ Polymer({
     if (queryParams.has('confirm')) {
       this.showReceiveDialog_ = true;
       flush();
-      this.$$('#receiveDialog').showConfirmPage();
+      this.shadowRoot.querySelector('#receiveDialog').showConfirmPage();
     }
 
     if (queryParams.has('onboarding')) {
@@ -445,7 +469,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @param {number=} timeoutInSeconds
@@ -456,8 +480,9 @@ Polymer({
         timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
     this.showReceiveDialog_ = true;
     flush();
-    this.$$('#receiveDialog').showHighVisibilityPage(shutoffTimeoutInSeconds);
-  },
+    this.shadowRoot.querySelector('#receiveDialog')
+        .showHighVisibilityPage(shutoffTimeoutInSeconds);
+  }
 
   /**
    * @param {string} profileName The user's full name.
@@ -467,7 +492,7 @@ Polymer({
    */
   getAccountRowLabel(profileName, profileLabel) {
     return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
-  },
+  }
 
   /** @private */
   getEnabledToggleClassName_() {
@@ -475,13 +500,13 @@ Polymer({
       return 'enabled-toggle-on';
     }
     return 'enabled-toggle-off';
-  },
+  }
 
   /** @private */
   onOnboardingCancelled_() {
     // Return to main settings page multidevice section
     Router.getInstance().navigateTo(routes.MULTIDEVICE);
-  },
+  }
 
   /** @private */
   onFastInitiationNotificationToggledByUser_() {
@@ -490,7 +515,7 @@ Polymer({
         this.isFastInitiationNotificationEnabled_() ?
             nearbyShare.mojom.FastInitiationNotificationState.kDisabledByUser :
             nearbyShare.mojom.FastInitiationNotificationState.kEnabled);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -499,7 +524,7 @@ Polymer({
   isFastInitiationNotificationEnabled_() {
     return this.get('settings.fastInitiationNotificationState') ===
         nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
-  },
+  }
 
   /**
    * @param {boolean} isNearbySharingEnabled
@@ -516,14 +541,14 @@ Polymer({
     }
     return isNearbySharingEnabled ||
         shouldShowFastInititationNotificationToggle;
-  },
+  }
 
   /** @private */
   showOnboarding_() {
     this.showReceiveDialog_ = true;
     flush();
-    this.$$('#receiveDialog').showOnboarding();
-  },
+    this.shadowRoot.querySelector('#receiveDialog').showOnboarding();
+  }
 
   /**
    * @param {boolean} is_hardware_supported
@@ -533,5 +558,8 @@ Polymer({
   computeShouldShowFastInititationNotificationToggle_(is_hardware_supported) {
     return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
         is_hardware_supported;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsNearbyShareSubpageElement.is, SettingsNearbyShareSubpageElement);

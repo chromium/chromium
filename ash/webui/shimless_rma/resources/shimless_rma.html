@@ -37,8 +37,9 @@
 
   #back {
     border: 0;
-    height: 100%;
-    padding-inline-start: 0;
+    border-radius: 16px;
+    height: 32px;
+    padding-inline-start: 16px;
   }
 
   #next {
@@ -46,7 +47,7 @@
     top: 24px;
   }
 
-  #cancel {
+  #exit {
     margin-inline-end: 8px;
     top: 24px;
   }
@@ -61,7 +62,7 @@
     width: var(--cr-icon-size);
   }
 
-  #cancelButtonSpinner,
+  #exitButtonSpinner,
   #nextButtonCaret,
   #nextButtonSpinner {
     margin-inline-start: 8px;
@@ -108,14 +109,14 @@
   <div id="contentContainer"></div>
   <div id="footer">
     <cr-button
-      id="cancel" class="pill" on-click="onCancelButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
-      hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
-      <span id="cancelButtonLabel">
-        [[getCancelButtonLabel_(currentPage_.buttonCancelLabelKey)]]
+      id="exit" class="pill" on-click="onExitButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonExit, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonExit)]]">
+      <span id="exitButtonLabel">
+        [[getExitButtonLabel_(currentPage_.buttonExitLabelKey)]]
       </span>
-      <paper-spinner-lite id="cancelButtonSpinner" class="busy-icon"
-          hidden$="[[!cancelButtonClicked_]]" active>
+      <paper-spinner-lite id="exitButtonSpinner" class="busy-icon"
+          hidden$="[[!confirmExitButtonClicked_]]" active>
       </paper-spinner-lite>
     </cr-button>
     <cr-button
@@ -134,3 +135,21 @@
     </cr-button>
   </div>
 </div>
+<cr-dialog id="exitDialog">
+  <div slot="title">
+    [[i18n('exitDialogTitleText')]]
+  </div>
+  <div slot="body">
+    [[i18n('exitDialogDescriptionText')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="cancelExitDialogButton" class="pill"
+        on-click="closeDialog_">
+      [[i18n('exitDialogCancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="confirmExitDialogButton" class="action-button"
+        on-click="onConfirmExitButtonClicked_">
+      [[i18n('exitDialogConfirmButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

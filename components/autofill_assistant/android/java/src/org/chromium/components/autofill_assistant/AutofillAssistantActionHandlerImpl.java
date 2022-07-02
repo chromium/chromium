@@ -128,6 +128,15 @@ public class AutofillAssistantActionHandlerImpl implements AutofillAssistantActi
         client.showFatalError();
     }
 
+    @Override
+    public boolean isSupervisedUser() {
+        AutofillAssistantClient client = getOrCreateClient();
+        if (client == null) {
+            return false;
+        }
+        return client.isSupervisedUser();
+    }
+
     /**
      * Returns a client for the current tab or {@code null} if there's no current tab or the current
      * tab doesn't have an associated browser content.

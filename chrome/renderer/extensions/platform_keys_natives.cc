@@ -68,7 +68,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
             rsa_hashed_key_gen->PublicExponent();
         v8::Local<v8::ArrayBuffer> buffer =
             v8::ArrayBuffer::New(isolate, public_exponent.size());
-        memcpy(buffer->GetBackingStore()->Data(), public_exponent.Data(),
+        memcpy(buffer->GetBackingStore()->Data(), public_exponent.data(),
                public_exponent.size());
         builder.Set("publicExponent", buffer);
 

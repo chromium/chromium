@@ -891,6 +891,8 @@ class WaylandDesktop(Desktop):
       # attempting to relaunch.
       sys.exit(1)
     logging.info("Launching wayland server.")
+    if self.ssh_auth_sockname:
+      self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
     self.server_proc = subprocess.Popen(self._gnome_shell_cmd(),
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT,

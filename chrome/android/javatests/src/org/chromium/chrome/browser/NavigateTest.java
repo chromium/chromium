@@ -238,18 +238,20 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisabledTest(message = "crbug.com/879153")
     public void testRequestDesktopSiteSettingPers() throws Exception {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
         navigateAndObserve(url1);
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                                true /* useDesktop */, true /* reloadOnChange */));
+                ()
+                        -> TabUtils.switchUserAgent(
+                                tab, /* switchToDesktop */ true, /* forcedByUser */ true));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
+        mActivityTestRule.assertWaitForPageScaleFactorChange(0.5f);
 
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);

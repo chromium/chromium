@@ -16,20 +16,12 @@ HeadlessWindow::HeadlessWindow(PlatformWindowDelegate* delegate,
                                HeadlessWindowManager* manager,
                                const gfx::Rect& bounds)
     : StubWindow(delegate, false, bounds), manager_(manager) {
-#if BUILDFLAG(IS_WIN)
-  widget_ = reinterpret_cast<gfx::AcceleratedWidget>(manager_->AddWindow(this));
-#else
   widget_ = manager_->AddWindow(this);
-#endif
   delegate->OnAcceleratedWidgetAvailable(widget_);
 }
 
 HeadlessWindow::~HeadlessWindow() {
-#if BUILDFLAG(IS_WIN)
-  manager_->RemoveWindow(reinterpret_cast<uint64_t>(widget_), this);
-#else
   manager_->RemoveWindow(widget_, this);
-#endif
 }
 
 }  // namespace ui

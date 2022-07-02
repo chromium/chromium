@@ -259,7 +259,7 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
     wchar_t class_name[MAX_PATH] = {0};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
-    if (base::LowerCaseEqualsASCII(class_name, "#32768")) {
+    if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {
       // Select the New Tab option and then send the enter key to execute it.
       ::PostMessage(reinterpret_cast<HWND>(w_param), WM_CHAR, 'T', 0);
       ::PostMessage(reinterpret_cast<HWND>(w_param), WM_KEYDOWN, VK_RETURN, 0);
@@ -311,7 +311,7 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
     wchar_t class_name[MAX_PATH] = {0};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
-    if (base::LowerCaseEqualsASCII(class_name, "#32768")) {
+    if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {
       // Send 'E' for the Reopen closed tab option.
       ::PostMessage(reinterpret_cast<HWND>(w_param), WM_CHAR, 'E', 0);
     }

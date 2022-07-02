@@ -39,6 +39,7 @@ class MockSystemHost(object):
                  log_executive=False,
                  os_name=None,
                  os_version=None,
+                 machine=None,
                  executive=None,
                  filesystem=None,
                  time_return_val=123):
@@ -46,7 +47,7 @@ class MockSystemHost(object):
         self.executive = executive or MockExecutive(should_log=log_executive)
         self.filesystem = filesystem or MockFileSystem()
         self.user = MockUser()
-        self.platform = MockPlatformInfo()
+        self.platform = MockPlatformInfo(machine=machine)
         if os_name:
             self.platform.os_name = os_name
         if os_version:

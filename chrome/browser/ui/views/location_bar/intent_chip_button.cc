@@ -25,13 +25,10 @@
 IntentChipButton::IntentChipButton(Browser* browser,
                                    PageActionIconView::Delegate* delegate)
     : OmniboxChipButton(base::BindRepeating(&IntentChipButton::HandlePressed,
-                                            base::Unretained(this)),
-                        vector_icons::kOpenInNewIcon,
-                        vector_icons::kOpenInNewIcon,
-                        l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP),
-                        true),
+                                            base::Unretained(this))),
       browser_(browser),
       delegate_(delegate) {
+  SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
@@ -47,7 +44,8 @@ void IntentChipButton::Update() {
   if (is_visible) {
     bool collapsed = GetChipCollapsed();
     ResetAnimation(!collapsed);
-    SetTheme(collapsed ? Theme::kIconStyle : Theme::kLowVisibility);
+    SetTheme(collapsed ? OmniboxChipTheme::kIconStyle
+                       : OmniboxChipTheme::kLowVisibility);
     UpdateIconAndColors();
   }
   if (browser_->window()) {
@@ -67,6 +65,10 @@ ui::ImageModel IntentChipButton::GetIconImageModel() const {
   if (icon.IsEmpty())
     return OmniboxChipButton::GetIconImageModel();
   return icon;
+}
+
+const gfx::VectorIcon& IntentChipButton::GetIcon() const {
+  return vector_icons::kOpenInNewIcon;
 }
 
 bool IntentChipButton::GetShowChip() const {

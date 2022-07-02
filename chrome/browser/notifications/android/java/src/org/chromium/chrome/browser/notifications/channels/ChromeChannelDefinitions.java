@@ -74,7 +74,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             ChannelId.COMPLETED_DOWNLOADS, ChannelId.PERMISSION_REQUESTS,
             ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT, ChannelId.WEBAPPS,
             ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP, ChannelId.SECURITY_KEY,
-            ChannelId.CHROME_TIPS, ChannelId.BLUETOOTH})
+            ChannelId.CHROME_TIPS, ChannelId.BLUETOOTH, ChannelId.USB})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
@@ -100,6 +100,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String SECURITY_KEY = "security_key";
         String CHROME_TIPS = "chrome_tips";
         String BLUETOOTH = "bluetooth";
+        String USB = "usb";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -251,6 +252,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             map.put(ChannelId.BLUETOOTH,
                     PredefinedChannel.create(ChannelId.BLUETOOTH,
                             R.string.notification_category_bluetooth,
+                            NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
+
+            // The usb notification channel will only appear for users
+            // who are targeted for this feature.
+            map.put(ChannelId.USB,
+                    PredefinedChannel.create(ChannelId.USB, R.string.notification_category_usb,
                             NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);

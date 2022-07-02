@@ -27,6 +27,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/check_op.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -255,16 +256,6 @@ void ClipboardHistoryControllerImpl::Shutdown() {
   nudge_controller_.reset();
 }
 
-void ClipboardHistoryControllerImpl::AddObserver(
-    ClipboardHistoryController::Observer* observer) const {
-  observers_.AddObserver(observer);
-}
-
-void ClipboardHistoryControllerImpl::RemoveObserver(
-    ClipboardHistoryController::Observer* observer) const {
-  observers_.RemoveObserver(observer);
-}
-
 bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
 }
@@ -286,6 +277,16 @@ void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator() {
 
   ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD,
            crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
+}
+
+void ClipboardHistoryControllerImpl::AddObserver(
+    ClipboardHistoryController::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ClipboardHistoryControllerImpl::RemoveObserver(
+    ClipboardHistoryController::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ClipboardHistoryControllerImpl::ShowMenu(
@@ -620,33 +621,34 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
   static int confirmed_paste_count = 0;
 
   // Here we assume that a paste operation from the clipboard history menu never
-  // interleaves with a copy operation or a paste operation from other ways (
-  // including pressing the ctrl-v accelerator or clicking a context menu
-  // option). In other words, when `pastes_to_be_confirmed_` is positive, it
-  // means that the incoming operation should be a paste from clipboard history.
-  // It should be held in most cases given that the clipboard history menu is
-  // always closed after one paste and it usually takes relatively long time for
-  // a user to conduct the next copy or paste. For this metric, we are tolerable
-  // of a small portion of erroneous recordings.
-
-  // When `pastes_to_be_confirmed_` is positive, `copy` should be
-  // false in most cases based on the assumption above. But theoretically
-  // `copy` could be true.
+  // interleaves with a user-initiated copy or paste operation from another
+  // source, such as pressing the ctrl-v accelerator or clicking a context menu
+  // option. In other words, when `pastes_to_be_confirmed_` is positive, the
+  // next confirmed operation is expected to be a paste from clipboard history.
+  // This assumption should hold in most cases given that the clipboard history
+  // menu is always closed after one paste, and it usually takes a relatively
+  // long time for a user to perform the next copy or paste. For this metric, we
+  // tolerate a small margin of error.
   if (pastes_to_be_confirmed_ > 0 && !copy) {
     ++confirmed_paste_count;
     --pastes_to_be_confirmed_;
   } else {
-    // Reset if the assumption is not held for some reasons.
-    DCHECK_LE(0, pastes_to_be_confirmed_);
-    if (pastes_to_be_confirmed_ > 0)
-      pastes_to_be_confirmed_ = 0;
-
-    DCHECK_LE(0, confirmed_paste_count);
-    if (confirmed_paste_count) {
+    // Note that both copies and pastes from the standard clipboard cause the
+    // clipboard history consecutive paste count to be emitted and reset.
+    if (confirmed_paste_count > 0) {
       base::UmaHistogramCounts100("Ash.ClipboardHistory.ConsecutivePastes",
                                   confirmed_paste_count);
       confirmed_paste_count = 0;
     }
+
+    // Verify that this operation did not interleave with a clipboard history
+    // paste.
+    DCHECK_EQ(pastes_to_be_confirmed_, 0);
+    // Whether or not the non-interleaving assumption has held, always reset
+    // `pastes_to_be_confirmed_` to prevent standard clipboard pastes from
+    // possibly being counted as clipboard history pastes, which could
+    // significantly affect the clipboard history consecutive pastes metric.
+    pastes_to_be_confirmed_ = 0;
   }
 
   if (confirmed_operation_callback_for_test_)
@@ -753,34 +755,55 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     return;
   }
 
+  // Get information about the data to be pasted.
+  bool paste_plain_text = IsPlainTextPaste(paste_type);
   auto* clipboard = GetClipboard();
-  std::unique_ptr<ui::ClipboardData> original_data;
-
-  // If necessary, replace the clipboard's |original_data| temporarily so that
-  // we can paste the selected history item.
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* current_clipboard_data = clipboard->GetClipboardData(&data_dst);
-  bool paste_plain_text = IsPlainTextPaste(paste_type);
-  if (paste_plain_text || !current_clipboard_data ||
-      *current_clipboard_data != item.data()) {
-    std::unique_ptr<ui::ClipboardData> temp_data;
-    if (paste_plain_text) {
-      // When the shift key is pressed, we only paste plain text.
-      temp_data = std::make_unique<ui::ClipboardData>();
-      temp_data->set_commit_time(item.data().commit_time());
-      temp_data->set_text(item.data().text());
-      ui::DataTransferEndpoint* data_src = item.data().source();
-      if (data_src) {
-        temp_data->set_source(
-            std::make_unique<ui::DataTransferEndpoint>(*data_src));
-      }
-    } else {
-      temp_data = std::make_unique<ui::ClipboardData>(item.data());
-    }
+  bool item_not_on_clipboard =
+      !current_clipboard_data || *current_clipboard_data != item.data();
 
-    // Pause clipboard history when manipulating the clipboard for a paste.
-    ScopedClipboardHistoryPauseImpl scoped_pause(clipboard_history_.get());
-    original_data = clipboard->WriteClipboardData(std::move(temp_data));
+  // Clipboard history pastes are performed by temporarily writing data to the
+  // system clipboard, if necessary, and then issuing a standard paste.
+  // Determine the data we should temporarily write to the clipboard, if any, so
+  // that we can paste the selected history item.
+  std::unique_ptr<ui::ClipboardData> data_to_paste;
+  bool should_restore_clipboard = false;
+  if (paste_plain_text) {
+    data_to_paste = std::make_unique<ui::ClipboardData>();
+    data_to_paste->set_commit_time(item.data().commit_time());
+    data_to_paste->set_text(item.data().text());
+    ui::DataTransferEndpoint* data_src = item.data().source();
+    if (data_src) {
+      data_to_paste->set_source(
+          std::make_unique<ui::DataTransferEndpoint>(*data_src));
+    }
+    // When pasting new data that doesn't correspond to any clipboard history
+    // item, we always need to restore the clipboard buffer after pasting.
+    should_restore_clipboard = true;
+  } else if (item_not_on_clipboard) {
+    data_to_paste = std::make_unique<ui::ClipboardData>(item.data());
+    // If we are reordering clipboard history on paste, then we do not need to
+    // restore the clipboard buffer after modifying it for a rich text paste,
+    // because the clipboard already reflects the history list's top item.
+    should_restore_clipboard = !features::IsClipboardHistoryReorderEnabled();
+  }
+
+  // If necessary, replace the clipboard's current data before issuing a paste.
+  bool paste_reorders_history =
+      item_not_on_clipboard && features::IsClipboardHistoryReorderEnabled();
+  std::unique_ptr<ui::ClipboardData> original_data;
+  if (data_to_paste) {
+    // Pausing clipboard history while manipulating the clipboard prevents the
+    // paste item from being added to clipboard history. In cases where we
+    // actually want the paste item to end up at the top of history, we
+    // accomplish that by not pausing clipboard history entirely; however, we do
+    // pause clipboard history metrics. If we did not pause metrics, clipboard
+    // history reorders would be erroneously interpreted as copy events.
+    ScopedClipboardHistoryPauseImpl scoped_pause(
+        clipboard_history_.get(),
+        /*metrics_only=*/paste_reorders_history && !paste_plain_text);
+    original_data = clipboard->WriteClipboardData(std::move(data_to_paste));
   }
 
   auto* host = GetWindowTreeHostForDisplay(
@@ -806,34 +829,42 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   for (auto& observer : observers_)
     observer.OnClipboardHistoryPasted();
 
-  // `original_data` only exists if the clipboard was modified.
-  if (!original_data)
+  if (!should_restore_clipboard)
     return;
 
+  // `currently_pasting_` only needs to be set when clipboard history and the
+  // clipboard buffer are not in a consistent state for subsequent pastes.
   currently_pasting_ = true;
 
-  // Replace the original item back on top of the clipboard. Some apps take a
-  // long time to receive the paste event, also some apps will read from the
-  // clipboard multiple times per paste. Wait a bit before replacing the item
-  // back onto the clipboard.
+  // Replace the clipboard data. Some apps take a long time to receive the paste
+  // event, and some apps will read from the clipboard multiple times per paste.
+  // Wait a bit before writing `data_to_restore` back to the clipboard.
+  auto data_to_restore = paste_reorders_history
+                             ? std::make_unique<ui::ClipboardData>(item.data())
+                             : std::move(original_data);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](const base::WeakPtr<ClipboardHistoryControllerImpl>& weak_ptr,
-             std::unique_ptr<ui::ClipboardData> original_data) {
-            // When restoring the original item back on top of the clipboard we
-            // need to pause clipboard history. Failure to do so will result in
-            // the original item being re-recorded when this restoration step
-            // should actually be opaque to the user.
+             std::unique_ptr<ui::ClipboardData> data_to_restore,
+             bool paste_reorders_history) {
             std::unique_ptr<ScopedClipboardHistoryPauseImpl> scoped_pause;
             if (weak_ptr) {
               weak_ptr->currently_pasting_ = false;
+              // When restoring the original clipboard content, pause clipboard
+              // history to avoid committing data already at the top of the
+              // clipboard history list. When restoring an item not originally
+              // at the top of the clipboard history list, do not pause history
+              // entirely, but do pause metrics so that the reorder is not
+              // erroneously interpreted as a copy event.
               scoped_pause = std::make_unique<ScopedClipboardHistoryPauseImpl>(
-                  weak_ptr->clipboard_history_.get());
+                  weak_ptr->clipboard_history_.get(),
+                  /*metrics_only=*/paste_reorders_history);
             }
-            GetClipboard()->WriteClipboardData(std::move(original_data));
+            GetClipboard()->WriteClipboardData(std::move(data_to_restore));
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(original_data)),
+          weak_ptr_factory_.GetWeakPtr(), std::move(data_to_restore),
+          paste_reorders_history),
       buffer_restoration_delay_for_test_.value_or(base::Milliseconds(200)));
 }
 

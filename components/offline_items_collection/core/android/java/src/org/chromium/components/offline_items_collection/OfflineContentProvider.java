@@ -44,9 +44,6 @@ public interface OfflineContentProvider {
     /** See OfflineContentProvider::ResumeDownload(...). */
     void resumeDownload(ContentId id, boolean hasUserGesture);
 
-    /** See OfflineContentProvider::ChangeSchedule(...). */
-    void changeSchedule(final ContentId id, final OfflineItemSchedule schedule);
-
     /** See OfflineContentProvider::GetItemById(...). */
     void getItemById(ContentId id, Callback<OfflineItem> callback);
 

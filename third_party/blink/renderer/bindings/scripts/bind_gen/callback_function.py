@@ -269,6 +269,15 @@ if (!callback_relevant_script_state) {
             template_params.append(
                 "bindings::"
                 "CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull")
+        else:
+            template_params.append(
+                "bindings::CallbackInvokeHelperMode::kDefault")
+        if func_like.return_type.unwrap(typedef=True).is_promise:
+            template_params.append(
+                "bindings::CallbackReturnTypeIsPromise::kYes")
+        else:
+            template_params.append(
+                "bindings::CallbackReturnTypeIsPromise::kNo")
     elif cg_context.callback_interface:
         template_params = ["CallbackInterfaceBase"]
     body.extend([

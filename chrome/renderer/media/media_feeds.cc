@@ -47,7 +47,7 @@ absl::optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
 
     // The <link> rel must be media-feed.
     std::string rel = elem.GetAttribute("rel").Utf8();
-    if (!base::LowerCaseEqualsASCII(rel, "media-feed"))
+    if (!base::EqualsCaseInsensitiveASCII(rel, "media-feed"))
       continue;
 
     WebString href = elem.GetAttribute("href");

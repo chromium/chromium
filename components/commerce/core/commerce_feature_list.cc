@@ -64,6 +64,15 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
+const base::Feature kCommerceAllowLocalImages{
+    "CommerceAllowLocalImages", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceAllowServerImages{
+    "CommerceAllowServerImages", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCommerceCoupons{"CommerceCoupons",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -90,6 +99,9 @@ const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 // Params use for Discount Consent v2.
 const base::Feature kDiscountConsentV2{"DiscountConsentV2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceHintAndroid{"CommerceHintAndroid",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
@@ -191,6 +203,9 @@ const base::FeatureParam<bool> kContextualConsentShowOnCartAndCheckoutPage{
 const char kContextualConsentShowOnSRPParam[] = "show-on-srp";
 const base::FeatureParam<bool> kContextualConsentShowOnSRP{
     &commerce::kDiscountConsentV2, kContextualConsentShowOnSRPParam, false};
+
+const char kCommerceHintAndroidHeuristicsImprovementParam[] =
+    "CommerceHintAndroidHeuristicsImprovementParam";
 
 bool IsPartnerMerchant(const GURL& url) {
   return commerce::IsCouponDiscountPartnerMerchant(url) ||

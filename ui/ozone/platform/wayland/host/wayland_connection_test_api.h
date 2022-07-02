@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 
@@ -32,7 +33,7 @@ class WaylandConnectionTestApi {
   }
 
  private:
-  WaylandConnection* const impl_;
+  const raw_ptr<WaylandConnection> impl_;
 };
 
 }  // namespace ui

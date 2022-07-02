@@ -42,7 +42,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-  PrefService* GetPrefs() override;
+  sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
@@ -67,9 +67,9 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   base::FilePath state_path_;
 
   // The incognito ChromeBrowserState instance that is associated with this
-  // ChromeBrowserState instance. NULL if |GetOffTheRecordChromeBrowserState()|
+  // ChromeBrowserState instance. NULL if `GetOffTheRecordChromeBrowserState()`
   // has never been called or has not been called since
-  // |DestroyOffTheRecordChromeBrowserState()|.
+  // `DestroyOffTheRecordChromeBrowserState()`.
   std::unique_ptr<ChromeBrowserState> otr_state_;
   base::FilePath otr_state_path_;
 
@@ -79,15 +79,15 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   //  that the declaration occurs AFTER things it depends on as destruction
   //  happens in reverse order of declaration.
 
-  // |policy_connector_| and its associated |policy_schema_registry_| must
-  // outlive |prefs_|. |policy_connector_| depends on the policy provider
-  // |user_cloud_policy_manager_| which depends on |policy_schema_registry_|.
+  // `policy_connector_` and its associated `policy_schema_registry_` must
+  // outlive `prefs_`. `policy_connector_` depends on the policy provider
+  // `user_cloud_policy_manager_` which depends on `policy_schema_registry_`.
   std::unique_ptr<policy::SchemaRegistry> policy_schema_registry_;
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
 
-  // Keep |prefs_| above the rest for destruction order because |io_data_| and
-  // others store pointers to |prefs_| and shall be destructed first.
+  // Keep `prefs_` above the rest for destruction order because `io_data_` and
+  // others store pointers to `prefs_` and shall be destructed first.
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   std::unique_ptr<ChromeBrowserStateImplIOData::Handle> io_data_;

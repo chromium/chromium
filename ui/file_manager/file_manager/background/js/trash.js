@@ -8,9 +8,9 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
@@ -50,7 +50,7 @@ export class Trash {
    */
   getConfig_(volumeManager, entry) {
     const info = volumeManager.getLocationInfo(entry);
-    if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
+    if (!util.isTrashEnabled() || !info) {
       return null;
     }
     const fullPathSlash = entry.fullPath + '/';

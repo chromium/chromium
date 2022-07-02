@@ -415,31 +415,6 @@ class WebCryptoPbkdf2Params : public WebCryptoAlgorithmParamsWithHash {
   const unsigned iterations_;
 };
 
-class WebCryptoEd25519Params : public WebCryptoAlgorithmParamsWithHash {
- public:
-  explicit WebCryptoEd25519Params(const WebCryptoAlgorithm& hash)
-      : WebCryptoAlgorithmParamsWithHash(hash) {}
-
-  WebCryptoAlgorithmParamsType GetType() const override {
-    return kWebCryptoAlgorithmParamsTypeEd25519Params;
-  }
-};
-
-class WebCryptoX25519KeyDeriveParams : public WebCryptoAlgorithmParams {
- public:
-  explicit WebCryptoX25519KeyDeriveParams(const WebCryptoKey& public_key)
-      : public_key_(public_key) {}
-
-  WebCryptoAlgorithmParamsType GetType() const override {
-    return kWebCryptoAlgorithmParamsTypeX25519KeyDeriveParams;
-  }
-
-  const WebCryptoKey& PublicKey() const { return public_key_; }
-
- private:
-  const WebCryptoKey public_key_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_

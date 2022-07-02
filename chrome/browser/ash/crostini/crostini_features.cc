@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -180,6 +179,7 @@ CrostiniFeatures::~CrostiniFeatures() = default;
 bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   if (!base::FeatureList::IsEnabled(features::kCrostini)) {
     VLOG(1) << "Crostini is not enabled in feature list.";
+    // Prior to M105, the /dev/kvm check used the same reason string.
     *reason = "Crostini is not supported on this device";
     return false;
   }
@@ -187,7 +187,7 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   if (!crostini::CrostiniManager::IsDevKvmPresent()) {
     // Hardware is physically incapable, no matter what the user wants.
     VLOG(1) << "Cannot run crostini because /dev/kvm is not present.";
-    *reason = "Crostini is not supported on this device";
+    *reason = "Virtualization is not supported on this device";
     return false;
   }
 

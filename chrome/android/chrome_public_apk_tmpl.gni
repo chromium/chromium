@@ -235,6 +235,19 @@ template("chrome_public_common_apk_or_module_tmpl") {
       use_chromium_linker = chromium_linker_supported
     }
 
+    if (_is_trichrome) {
+      static_library_provider_use_secondary_abi = _is_secondary_abi_primary
+
+      # http://crbug.com/1042107.
+      if (is_component_build) {
+        if (android_64bit_target_cpu && _is_64_bit_browser) {
+          main_component_library = "libmonochrome_64.cr.so"
+        } else {
+          main_component_library = "libmonochrome.cr.so"
+        }
+      }
+    }
+
     if (!_is_monochrome && !_is_trichrome) {
       deps += [
         "//chrome/android:chrome_public_v8_assets",
@@ -319,8 +332,8 @@ template("chrome_public_common_apk_or_module_tmpl") {
       command_line_flags_file = "chrome-command-line"
     }
     if (!_is_trichrome) {
-      product_version_resources_dep =
-          "//chrome/android:product_version_resources"
+      build_config_include_product_version_resource = true
+      deps += [ "//chrome/android:product_version_resources" ]
     }
 
     if (defined(_unwind_asset_target)) {
@@ -458,7 +471,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           _bundle_target_gen_dir =
               get_label_info(invoker.bundle_target, "target_gen_dir")
           _bundle_name = get_label_info(invoker.bundle_target, "name")
-          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__chrome_bundle_module_manifest/AndroidManifest.xml"
+          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__chrome_bundle_module/AndroidManifest.merged.xml"
           extra_verification_manifest_dep =
               "${invoker.bundle_target}__chrome_bundle_module__merge_manifests"
         }

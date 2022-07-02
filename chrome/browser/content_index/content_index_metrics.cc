@@ -58,7 +58,7 @@ void ContentIndexMetrics::RecordContentOpened(
   base::UmaHistogramEnumeration("ContentIndex.ContentOpened", category);
 
   ukm::builders::ContentIndex_Opened(
-      web_contents->GetMainFrame()->GetPageUkmSourceId())
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
       .SetIsOffline(net::NetworkChangeNotifier::IsOffline())
       .Record(ukm::UkmRecorder::Get());
 }

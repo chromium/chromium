@@ -8,12 +8,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -38,6 +38,12 @@ class AccessibilityPrivateApiTest
 
  protected:
   // ExtensionApiTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationWithPumpkin);
+  }
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     dictation_bubble_test_helper_ =
@@ -54,6 +60,7 @@ class AccessibilityPrivateApiTest
 
  private:
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SendSyntheticKeyEvent) {
@@ -69,9 +76,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ASSERT_TRUE(RunSubtest("testOpenSettingsSubpage")) << message_;
 
@@ -95,9 +100,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ASSERT_TRUE(RunSubtest("testOpenSettingsSubpageInvalidSubpage")) << message_;
 
@@ -211,13 +214,15 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
 
   // This test requires some back and forth communication between C++ and JS.
   // Use message listeners to force the synchronicity of this test.
-  ExtensionTestMessageListener standby_listener("Standby", /*will_reply=*/true);
+  ExtensionTestMessageListener standby_listener("Standby",
+                                                ReplyBehavior::kWillReply);
   ExtensionTestMessageListener show_text_listener("Show text",
-                                                  /*will_reply=*/true);
-  ExtensionTestMessageListener macro_success_listener("Show macro success",
-                                                      /*will_reply=*/true);
-  ExtensionTestMessageListener reset_listener("Reset", /*will_reply=*/true);
-  ExtensionTestMessageListener hide_listener("Hide", /*will_reply=*/false);
+                                                  ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener macro_success_listener(
+      "Show macro success", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener reset_listener("Reset",
+                                              ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener hide_listener("Hide");
 
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(RunSubtest("testUpdateDictationBubble")) << message_;
@@ -262,9 +267,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
                        UpdateDictationBubbleWithHints) {
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
-  ExtensionTestMessageListener show_listener("Some hints", /*will_reply=*/true);
-  ExtensionTestMessageListener no_hints_listener("No hints",
-                                                 /*will_reply=*/false);
+  ExtensionTestMessageListener show_listener("Some hints",
+                                             ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener no_hints_listener("No hints");
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(RunSubtest("testUpdateDictationBubbleWithHints")) << message_;
 
@@ -281,6 +286,13 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
       std::vector<std::u16string>()));
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       InstallPumpkinForDictation) {
+  // Enable Dictation to allow the API to work.
+  Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
+  ASSERT_TRUE(RunSubtest("testInstallPumpkinForDictation")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

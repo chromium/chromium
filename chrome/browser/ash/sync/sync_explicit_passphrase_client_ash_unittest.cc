@@ -86,7 +86,7 @@ class SyncExplicitPassphraseClientAshTest : public testing::Test {
       const SyncExplicitPassphraseClientAshTest&) = delete;
   SyncExplicitPassphraseClientAshTest& operator=(
       const SyncExplicitPassphraseClientAshTest&) = delete;
-  ~SyncExplicitPassphraseClientAshTest() = default;
+  ~SyncExplicitPassphraseClientAshTest() override = default;
 
   void SetUp() override {
     ON_CALL(sync_service_, GetAccountInfo())

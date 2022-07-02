@@ -38,14 +38,15 @@
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -57,6 +58,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -157,6 +161,35 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
 
   return true;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+gfx::Rect CalculateInitialPictureInPictureWindowBounds(
+    float initial_aspect_ratio) {
+  // TODO(https://crbug.com/1327797): This copies a bunch of logic from
+  // OverlayWindowViews. The sizing logic should be delegated to a PiP-specific
+  // controller.
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  gfx::Rect window_bounds(work_area.width() / 5, work_area.height() / 5);
+  float aspect_ratio = (initial_aspect_ratio > 0) ? initial_aspect_ratio : 1.0;
+  gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, aspect_ratio,
+                             gfx::Size(0, 0), work_area.size(), &window_bounds);
+
+  int window_diff_width = work_area.right() - window_bounds.width();
+  int window_diff_height = work_area.bottom() - window_bounds.height();
+
+  // Keep a margin distance of 2% the average of the two window size
+  // differences, keeping the margins consistent.
+  int buffer = (window_diff_width + window_diff_height) / 2 * 0.02;
+
+  gfx::Point default_origin =
+      gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
+  default_origin += work_area.OffsetFromOrigin();
+  window_bounds.set_origin(default_origin);
+
+  return window_bounds;
+}
+#endif  // !IS_CHROMEOS_LACROS
 
 // Returns a Browser and tab index. The browser can host the navigation or
 // tab addition specified in |params|.  This might just return the same
@@ -272,7 +305,15 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
                                              profile, params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
-        browser_params.initial_bounds = params.window_bounds;
+        browser_params.picture_in_picture_window_title =
+            params.source_contents->GetLastCommittedURL().GetContent();
+        if (params.contents_to_insert) {
+          browser_params.initial_bounds =
+              CalculateInitialPictureInPictureWindowBounds(
+                  params.contents_to_insert
+                      ->GetPictureInPictureInitialAspectRatio());
+        }
+
         return {Browser::Create(browser_params), -1};
       }
 #else   // !IS_CHROMEOS_LACROS
@@ -360,7 +401,7 @@ void NormalizeDisposition(NavigateParams* params) {
 
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
       // Always show a new picture in picture window.
-      params->window_action = NavigateParams::SHOW_WINDOW;
+      params->window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
       break;
 
     case WindowOpenDisposition::NEW_WINDOW:
@@ -532,7 +573,10 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   }
 #endif
   url_param_filter::CrossOtrObserver::MaybeCreateForWebContents(
-      target_contents.get(), params);
+      target_contents.get(),
+      params.privacy_sensitivity ==
+          NavigateParams::PrivacySensitivity::CROSS_OTR,
+      params.started_from_context_menu, params.transition);
 
   return target_contents;
 }
@@ -556,7 +600,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/1096345): Remove this code after we integrate with intent
   // handling.
-  const absl::optional<web_app::SystemAppType> capturing_system_app_type =
+  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       web_app::GetCapturingSystemAppForURL(params->initiating_profile,
                                            params->url);
   if (capturing_system_app_type &&
@@ -805,8 +849,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     if (params->source_contents != contents_to_navigate_or_insert) {
       // Use the index before the potential close below, because it could
       // make the index refer to a different tab.
-      auto gesture_type = user_initiated ? TabStripModel::GestureType::kOther
-                                         : TabStripModel::GestureType::kNone;
+      auto gesture_type = user_initiated
+                              ? TabStripUserGestureDetails::GestureType::kOther
+                              : TabStripUserGestureDetails::GestureType::kNone;
       bool should_close_this_tab = false;
       if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
         // Close orphaned NTP (and the like) with no history when the user
@@ -824,12 +869,20 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
           }
         }
       }
-      params->browser->tab_strip_model()->ActivateTabAt(singleton_index,
-                                                        {gesture_type});
+      params->browser->tab_strip_model()->ActivateTabAt(
+          singleton_index, TabStripUserGestureDetails(gesture_type));
       // Close tab after switch so index remains correct.
       if (should_close_this_tab)
         params->source_contents->Close();
     }
+  }
+
+  // If this is a Picture in Picture window, then notify the pip manager about
+  // it. This enables the opener and pip window to stay connected, so that (for
+  // example), the pip window does not outlive the opener.
+  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+        params->source_contents, contents_to_navigate_or_insert);
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;

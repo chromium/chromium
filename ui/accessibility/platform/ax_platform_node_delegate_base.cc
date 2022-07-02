@@ -233,7 +233,7 @@ std::u16string AXPlatformNodeDelegateBase::GetTextContentUTF16() const {
     return GetString16Attribute(ax::mojom::StringAttribute::kName);
 
   std::u16string text_content;
-  for (int i = 0; i < GetChildCount(); ++i) {
+  for (size_t i = 0; i < GetChildCount(); ++i) {
     // TODO(nektar): Add const to all tree traversal methods and remove
     // const_cast.
     const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
@@ -292,11 +292,12 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetParent() const {
   return nullptr;
 }
 
-int AXPlatformNodeDelegateBase::GetChildCount() const {
+size_t AXPlatformNodeDelegateBase::GetChildCount() const {
   return 0;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegateBase::ChildAtIndex(int index) {
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::ChildAtIndex(
+    size_t index) {
   return nullptr;
 }
 
@@ -318,9 +319,12 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetLastChild() {
 
 gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetNextSibling() {
   AXPlatformNodeDelegate* parent = GetParentDelegate();
-  if (parent && GetIndexInParent() >= 0) {
-    int next_index = GetIndexInParent() + 1;
-    if (next_index >= 0 && next_index < parent->GetChildCount())
+  if (!parent)
+    return nullptr;
+  auto index = GetIndexInParent();
+  if (index.has_value()) {
+    size_t next_index = index.value() + 1;
+    if (next_index < parent->GetChildCount())
       return parent->ChildAtIndex(next_index);
   }
   return nullptr;
@@ -328,9 +332,12 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetNextSibling() {
 
 gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetPreviousSibling() {
   AXPlatformNodeDelegate* parent = GetParentDelegate();
-  if (parent && GetIndexInParent() >= 0) {
-    int next_index = GetIndexInParent() - 1;
-    if (next_index >= 0 && next_index < parent->GetChildCount())
+  if (!parent)
+    return nullptr;
+  auto index = GetIndexInParent();
+  if (index.has_value()) {
+    size_t next_index = index.value() - 1;
+    if (next_index < parent->GetChildCount())
       return parent->ChildAtIndex(next_index);
   }
   return nullptr;
@@ -475,10 +482,10 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetTableAncestor() const {
 
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
     AXPlatformNodeDelegateBase* parent,
-    int index)
+    size_t index)
     : index_(index), parent_(parent) {
   DCHECK(parent);
-  DCHECK(0 <= index && index <= parent->GetChildCount());
+  DCHECK(index <= parent->GetChildCount());
 }
 
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
@@ -501,14 +508,14 @@ AXPlatformNodeDelegateBase::ChildIteratorBase::operator++(int) {
 
 AXPlatformNodeDelegateBase::ChildIteratorBase&
 AXPlatformNodeDelegateBase::ChildIteratorBase::operator--() {
-  DCHECK_GT(index_, 0);
+  DCHECK_GT(index_, 0u);
   index_--;
   return *this;
 }
 
 AXPlatformNodeDelegateBase::ChildIteratorBase&
 AXPlatformNodeDelegateBase::ChildIteratorBase::operator--(int) {
-  DCHECK_GT(index_, 0);
+  DCHECK_GT(index_, 0u);
   index_--;
   return *this;
 }
@@ -521,7 +528,8 @@ AXPlatformNodeDelegateBase::ChildIteratorBase::GetNativeViewAccessible() const {
   return nullptr;
 }
 
-int AXPlatformNodeDelegateBase::ChildIteratorBase::GetIndexInParent() const {
+absl::optional<size_t>
+AXPlatformNodeDelegateBase::ChildIteratorBase::GetIndexInParent() const {
   return index_;
 }
 
@@ -621,18 +629,18 @@ AXPlatformNode* AXPlatformNodeDelegateBase::GetFromTreeIDAndNodeID(
   return nullptr;
 }
 
-int AXPlatformNodeDelegateBase::GetIndexInParent() {
+absl::optional<size_t> AXPlatformNodeDelegateBase::GetIndexInParent() {
   AXPlatformNodeDelegate* parent = GetParentDelegate();
   if (!parent)
-    return -1;
+    return absl::nullopt;
 
-  for (int i = 0; i < parent->GetChildCount(); i++) {
+  for (size_t i = 0; i < parent->GetChildCount(); i++) {
     AXPlatformNode* child_node =
         AXPlatformNode::FromNativeViewAccessible(parent->ChildAtIndex(i));
     if (child_node && child_node->GetDelegate() == this)
       return i;
   }
-  return -1;
+  return absl::nullopt;
 }
 
 gfx::AcceleratedWidget
@@ -863,6 +871,14 @@ bool AXPlatformNodeDelegateBase::IsText() const {
 }
 
 bool AXPlatformNodeDelegateBase::IsWebContent() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegateBase::IsReadOnlySupported() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegateBase::IsReadOnlyOrDisabled() const {
   return false;
 }
 

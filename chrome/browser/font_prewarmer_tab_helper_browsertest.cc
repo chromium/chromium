@@ -7,8 +7,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -31,11 +29,6 @@
 
 class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
  public:
-  FontPrewarmerTabHelperTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPrewarmSearchResultsPageFonts);
-  }
-
   TemplateURLService* LoadTemplateUrlService() {
     TemplateURLService* service =
         TemplateURLServiceFactory::GetInstance()->GetForProfile(
@@ -102,9 +95,6 @@ class FontPrewarmerTabHelperTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FontPrewarmerTabHelperTest, Basic) {

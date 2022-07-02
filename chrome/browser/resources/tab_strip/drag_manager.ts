@@ -259,8 +259,8 @@ class DragSession {
     this.element_.setDraggedOut(false);
   }
 
-  shouldOffsetIndexForGroup_(dragOverElement: TabElement|
-                             TabGroupElement): boolean {
+  private shouldOffsetIndexForGroup_(dragOverElement: TabElement|
+                                     TabGroupElement): boolean {
     // Since TabGroupElements do not have any TabElements, they need to offset
     // the index for any elements that come after it as if there is at least
     // one element inside of it.

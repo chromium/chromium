@@ -6,7 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/include_polymer.gni")
@@ -27,7 +26,7 @@ if (include_polymer) {
   generate_grd("build_grdp") {
     grd_prefix = "cr_elements"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-    deps = [ ":preprocess" ]
+    public_deps = [ ":preprocess" ]
     manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
 
     if (is_chromeos_ash) {
@@ -42,13 +41,13 @@ if (include_polymer) {
 }
 
 group("preprocess") {
-  public_deps = [ ":preprocess_generated_ts" ]
+  public_deps = [
+    ":preprocess_generated_ts",
+    ":preprocess_src_ts",
+  ]
 
   if (include_polymer) {
-    public_deps += [
-      ":preprocess_generated",
-      ":preprocess_src_ts",
-    ]
+    public_deps += [ ":preprocess_generated" ]
   }
 
   if (is_chromeos_ash) {
@@ -76,11 +75,18 @@ if (is_chromeos_ash) {
 
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
-if (include_polymer) {
-  preprocess_if_expr("preprocess_src_ts") {
-    in_folder = "."
-    out_folder = preprocess_folder
-    in_files = [
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = [
+    "cr_splitter/cr_splitter.ts",
+    "cr_tab_box/cr_tab_box.ts",
+    "cr_tree/cr_tree_base.ts",
+    "cr_tree/cr_tree_item.ts",
+    "cr_tree/cr_tree.ts",
+  ]
+  if (include_polymer) {
+    in_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
       "cr_action_menu/cr_action_menu.ts",
       "cr_auto_img/cr_auto_img.ts",
@@ -94,7 +100,6 @@ if (include_polymer) {
       "cr_search_field/cr_search_field_mixin.ts",
       "cr_search_field/cr_search_field.ts",
       "cr_slider/cr_slider.ts",
-      "cr_splitter/cr_splitter.ts",
       "cr_tabs/cr_tabs.ts",
       "cr_toast/cr_toast_manager.ts",
       "cr_toast/cr_toast.ts",
@@ -230,10 +235,14 @@ if (include_polymer) {
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
 preprocess_if_expr("preprocess_generated_ts") {
-  deps = [ ":custom_elements" ]
+  deps = [ ":html_wrapper_files_native" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [ "cr_tab_box/cr_tab_box.ts" ]
+  in_files = [
+    "cr_tab_box/cr_tab_box.html.ts",
+    "cr_tree/cr_tree.html.ts",
+    "cr_tree/cr_tree_item.html.ts",
+  ]
   if (include_polymer) {
     deps += [
       ":css_wrapper_files",
@@ -275,10 +284,8 @@ if (include_polymer) {
   group("closure_compile") {
     deps = [
       ":cr_elements_resources",
-      "cr_button:closure_compile",
       "cr_checkbox:closure_compile",
       "cr_dialog:closure_compile",
-      "cr_expand_button:closure_compile",
       "cr_fingerprint:closure_compile",
       "cr_icon_button:closure_compile",
       "cr_input:closure_compile",
@@ -305,8 +312,12 @@ if (include_polymer) {
       "policy:closure_compile_module",
     ]
 
-    if (is_chromeos) {
-      deps += [ "chromeos:closure_compile" ]
+    if (is_chromeos_ash) {
+      deps += [
+        "chromeos:closure_compile",
+        "cr_button:closure_compile",
+        "cr_expand_button:closure_compile",
+      ]
     }
   }
 
@@ -385,10 +396,9 @@ if (include_polymer) {
   }
 }
 
-group("custom_elements") {
-  public_deps = [ ":web_components" ]
-  if (include_polymer) {
-    public_deps += [
+if (include_polymer) {
+  group("custom_elements") {
+    public_deps = [
       ":action_link_css_module",
       ":cr_actionable_row_style_module",
       ":cr_icons_css_module",
@@ -398,7 +408,6 @@ group("custom_elements") {
       ":modulize",
       ":shared_style_css_module",
       ":shared_vars_css_module",
-      ":web_components",
       "cr_button:cr_button_module",
       "cr_checkbox:cr_checkbox_module",
       "cr_dialog:cr_dialog_module",
@@ -413,10 +422,10 @@ group("custom_elements") {
       "cr_toggle:cr_toggle_module",
       "policy:polymer3_elements",
     ]
-  }
 
-  if (is_chromeos) {
-    public_deps += [ "chromeos:polymer3_elements" ]
+    if (is_chromeos) {
+      public_deps += [ "chromeos:polymer3_elements" ]
+    }
   }
 }
 
@@ -460,6 +469,15 @@ if (is_chromeos_ash) {
   }
 }
 
+html_to_wrapper("html_wrapper_files_native") {
+  in_files = [
+    "cr_tab_box/cr_tab_box.html",
+    "cr_tree/cr_tree.html",
+    "cr_tree/cr_tree_item.html",
+  ]
+  template = "native"
+}
+
 if (include_polymer) {
   html_to_wrapper("html_wrapper_files") {
     in_files = [
@@ -486,9 +504,7 @@ if (include_polymer) {
       in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.html" ]
     }
   }
-}
 
-if (include_polymer) {
   css_to_wrapper("css_wrapper_files") {
     in_files = [
       "cr_nav_menu_item_style.css",
@@ -499,8 +515,4 @@ if (include_polymer) {
       "cr_page_host_style.css",
     ]
   }
-}
-
-html_to_js("web_components") {
-  js_files = [ "cr_tab_box/cr_tab_box.ts" ]
 }

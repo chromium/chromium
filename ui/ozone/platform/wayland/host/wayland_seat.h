@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -54,10 +55,12 @@ class WaylandSeat : public wl::GlobalObjectRegistrar<WaylandSeat> {
   static void Capabilities(void* data, wl_seat* seat, uint32_t capabilities);
   static void Name(void* data, wl_seat* seat, const char* name);
 
+  void OnCapabilities(void* data, wl_seat* seat, uint32_t capabilities);
+
   // Wayland object wrapped by this class.
   wl::Object<wl_seat> obj_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Input device objects.
   std::unique_ptr<WaylandKeyboard> keyboard_;

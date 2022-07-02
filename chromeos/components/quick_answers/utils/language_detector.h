@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,7 +51,8 @@ class LanguageDetector {
           languages);
 
   // Owned by IntentGenerator.
-  chromeos::machine_learning::mojom::TextClassifier* text_classifier_ = nullptr;
+  raw_ptr<chromeos::machine_learning::mojom::TextClassifier> text_classifier_ =
+      nullptr;
 
   base::WeakPtrFactory<LanguageDetector> weak_factory_{this};
 };

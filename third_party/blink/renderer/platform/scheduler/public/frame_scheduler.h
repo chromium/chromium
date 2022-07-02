@@ -82,11 +82,15 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Set whether this frame is cross origin w.r.t. the top level frame. Cross
   // origin frames may use a different scheduling policy from same origin
   // frames.
-  virtual void SetCrossOriginToMainFrame(bool) = 0;
-  virtual bool IsCrossOriginToMainFrame() const = 0;
+  virtual void SetCrossOriginToNearestMainFrame(bool) = 0;
+  virtual bool IsCrossOriginToNearestMainFrame() const = 0;
 
   virtual void SetIsAdFrame(bool is_ad_frame) = 0;
   virtual bool IsAdFrame() const = 0;
+
+  // Returns whether this frame scheduler is contained in an embedded frame
+  // tree.
+  virtual bool IsInEmbeddedFrameTree() const = 0;
 
   virtual void TraceUrlChange(const String&) = 0;
 
@@ -138,7 +142,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Tells the scheduler that a provisional load has started, the scheduler may
   // reset the task cost estimators and the UserModel. Must be called from the
   // main thread.
-  virtual void DidStartProvisionalLoad(bool is_main_frame) = 0;
+  virtual void DidStartProvisionalLoad() = 0;
 
   // Tells the scheduler that a provisional load has committed, the scheduler
   // may reset the task cost estimators and the UserModel. Must be called from

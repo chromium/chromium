@@ -24,10 +24,6 @@ class COLOR_SPACE_EXPORT ColorTransform {
     uint32_t src_bit_depth = kDefaultBitDepth;
     uint32_t dst_bit_depth = kDefaultBitDepth;
 
-    // If set to true, then PQ and HLG inputs are tone mapped to fit into
-    // the SDR range.
-    bool tone_map_pq_and_hlg_to_sdr = false;
-
     // If set to true, then map PQ and HLG imputs such that their maximum
     // luminance will be `dst_max_luminance_relative`.
     bool tone_map_pq_and_hlg_to_dst = false;

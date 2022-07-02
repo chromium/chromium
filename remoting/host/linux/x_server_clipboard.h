@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xfixes.h"
@@ -108,7 +109,7 @@ class XServerClipboard {
   bool IsSelectionOwner(x11::Atom selection);
 
   // Stores the connection supplied to Init().
-  x11::Connection* connection_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
 
   // Window through which clipboard events are received, or BadValue if the
   // window could not be created.

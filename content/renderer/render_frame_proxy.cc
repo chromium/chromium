@@ -72,7 +72,7 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
       tree_scope_type, proxy.get(), proxy->blink_interface_registry_.get(),
       proxy->GetRemoteAssociatedInterfaces(), proxy_frame_token);
 
-  proxy->Init(web_frame, frame_to_replace->render_view());
+  proxy->Init(web_frame);
   return proxy.release();
 }
 
@@ -83,14 +83,14 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     int routing_id,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
-    int parent_routing_id,
+    const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  RenderFrameProxy* parent = nullptr;
-  if (parent_routing_id != MSG_ROUTING_NONE) {
-    parent = RenderFrameProxy::FromRoutingID(parent_routing_id);
+  blink::WebRemoteFrame* parent = nullptr;
+  if (parent_frame_token) {
+    parent = blink::WebRemoteFrame::FromFrameToken(parent_frame_token.value());
     // It is possible that the parent proxy has been detached in this renderer
     // process, just as the parent's real frame was creating this child frame.
     // In this case, do not create the proxy. See https://crbug.com/568670.
@@ -100,7 +100,6 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 
   std::unique_ptr<RenderFrameProxy> proxy(
       new RenderFrameProxy(agent_scheduling_group, routing_id));
-  RenderViewImpl* render_view = nullptr;
   blink::WebRemoteFrame* web_frame = nullptr;
 
   blink::WebFrame* opener = nullptr;
@@ -108,7 +107,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     opener = blink::WebFrame::FromFrameToken(*opener_frame_token);
   if (!parent) {
     // Create a top level WebRemoteFrame.
-    render_view = RenderViewImpl::FromRoutingID(render_view_routing_id);
+    RenderViewImpl* render_view =
+        RenderViewImpl::FromRoutingID(render_view_routing_id);
     blink::WebView* web_view = render_view->GetWebView();
     web_frame = blink::WebRemoteFrame::CreateMainFrame(
         web_view, proxy.get(), proxy->blink_interface_registry_.get(),
@@ -125,16 +125,15 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // Create a frame under an existing parent. The parent is always expected
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
-    web_frame = parent->web_frame()->CreateRemoteChild(
+    web_frame = parent->CreateRemoteChild(
         tree_scope_type, blink::WebString::FromUTF8(replicated_state->name),
         replicated_state->frame_policy, proxy.get(),
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token,
         devtools_frame_token, opener);
-    render_view = parent->render_view();
   }
 
-  proxy->Init(web_frame, render_view);
+  proxy->Init(web_frame);
 
   // Initialize proxy's WebRemoteFrame with the security origin and other
   // replicated information.
@@ -163,15 +162,8 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
           proxy->blink_interface_registry_.get(),
           proxy->GetRemoteAssociatedInterfaces(), frame_token,
           devtools_frame_token, frame_owner);
-  proxy->Init(web_frame, parent->render_view());
+  proxy->Init(web_frame);
   return proxy.release();
-}
-
-// static
-RenderFrameProxy* RenderFrameProxy::FromRoutingID(int32_t routing_id) {
-  RoutingIDProxyMap* proxies = g_routing_id_proxy_map.Pointer();
-  auto it = proxies->find(routing_id);
-  return it == proxies->end() ? NULL : it->second;
 }
 
 // static
@@ -211,13 +203,9 @@ RenderFrameProxy::~RenderFrameProxy() {
   g_routing_id_proxy_map.Get().erase(routing_id_);
 }
 
-void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
-                            RenderViewImpl* render_view) {
+void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame) {
   CHECK(web_frame);
-  CHECK(render_view);
-
   web_frame_ = web_frame;
-  render_view_ = render_view;
 
   std::pair<FrameProxyMap::iterator, bool> result =
       g_frame_proxy_map.Get().insert(std::make_pair(web_frame_, this));
@@ -270,11 +258,6 @@ void RenderFrameProxy::SetReplicatedState(
   }
   web_frame_->SetHadStickyUserActivationBeforeNavigation(
       state->has_received_user_gesture_before_nav);
-}
-
-std::string RenderFrameProxy::unique_name() const {
-  DCHECK(web_frame_);
-  return web_frame_->UniqueName().Utf8();
 }
 
 bool RenderFrameProxy::OnMessageReceived(const IPC::Message& msg) {

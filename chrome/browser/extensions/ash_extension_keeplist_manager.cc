@@ -25,16 +25,9 @@ AshExtensionKeeplistManager::AshExtensionKeeplistManager(
     ExtensionService* extension_service)
     : extension_prefs_(extension_prefs),
       extension_service_(extension_service),
-      registry_(ExtensionRegistry::Get(profile)) {
-  // We should enforce the keep list when Lacros is the only browser. However,
-  // Lacros as the only browser is not supported yet. To make it easy to test,
-  // allow enforcing the keep list with Lacros as primary browser.
-  // TODO(crbug.com/1268846): Enable the enforcement when Lacros is the only
-  // browser when Lacros as the only browser is supported.
-  should_enforce_keeplist_ =
-      crosapi::browser_util::IsLacrosPrimaryBrowser() &&
-      base::FeatureList::IsEnabled(
-          chromeos::features::kEnforceAshExtensionKeeplist);
+      registry_(ExtensionRegistry::Get(profile)),
+      should_enforce_keeplist_(
+          crosapi::browser_util::ShouldEnforceAshExtensionKeepList()) {
   if (should_enforce_keeplist_)
     registry_observation_.Observe(registry_);
 }

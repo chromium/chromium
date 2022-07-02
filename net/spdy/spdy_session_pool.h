@@ -52,7 +52,7 @@ class NET_EXPORT SpdySessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
-  typedef base::TimeTicks (*TimeFunc)(void);
+  typedef base::TimeTicks (*TimeFunc)();
 
   // Struct to hold randomly generated frame parameters to be used for sending
   // frames on the wire to "grease" frame type.  Frame type has to be one of
@@ -442,7 +442,7 @@ class NET_EXPORT SpdySessionPool
   const quic::ParsedQuicVersionVector quic_supported_versions_;
 
   // Defaults to true. May be controlled via SpdySessionPoolPeer for tests.
-  bool enable_sending_initial_data_;
+  bool enable_sending_initial_data_ = true;
   bool enable_ping_based_connection_checking_;
 
   const bool is_http2_enabled_;
@@ -493,7 +493,7 @@ class NET_EXPORT SpdySessionPool
   SpdySessionRequestMap spdy_session_request_map_;
 
   TimeFunc time_func_;
-  raw_ptr<ServerPushDelegate> push_delegate_;
+  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 

@@ -14,21 +14,11 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/in_process_command_buffer.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display_embedder/output_device_backing.h"
 #endif
-
-namespace gpu {
-class CommandBufferTaskExecutor;
-class GpuChannelManagerDelegate;
-class GpuMemoryBufferManager;
-class ImageFactory;
-class SharedContextState;
-}  // namespace gpu
 
 namespace viz {
 class GpuServiceImpl;
@@ -38,13 +28,7 @@ class SoftwareOutputDevice;
 class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
     : public OutputSurfaceProvider {
  public:
-  OutputSurfaceProviderImpl(
-      GpuServiceImpl* gpu_service_impl,
-      gpu::CommandBufferTaskExecutor* task_executor,
-      gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gpu::ImageFactory* image_factory,
-      bool headless);
+  OutputSurfaceProviderImpl(GpuServiceImpl* gpu_service_impl, bool headless);
   // Software compositing only.
   explicit OutputSurfaceProviderImpl(bool headless);
 
@@ -56,8 +40,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
 
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
       bool gpu_compositing,
-      gpu::SurfaceHandle surface_handle,
-      const RendererSettings& renderer_settings) override;
+      gpu::SurfaceHandle surface_handle) override;
 
   // OutputSurfaceProvider implementation.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
@@ -74,10 +57,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
       mojom::DisplayClient* display_client);
 
   const raw_ptr<GpuServiceImpl> gpu_service_impl_;
-  const raw_ptr<gpu::CommandBufferTaskExecutor> task_executor_;
-  const raw_ptr<gpu::GpuChannelManagerDelegate> gpu_channel_manager_delegate_;
-  const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
-  const raw_ptr<gpu::ImageFactory> image_factory_;
 
 #if BUILDFLAG(IS_WIN)
   // Used for software compositing output on Windows.
@@ -85,11 +64,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
 #endif
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  // A shared context which will be used on display compositor thread.
-  scoped_refptr<gpu::SharedContextState> shared_context_state_;
-  std::unique_ptr<gpu::MailboxManager> mailbox_manager_;
-  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
 
   const bool headless_;
 };

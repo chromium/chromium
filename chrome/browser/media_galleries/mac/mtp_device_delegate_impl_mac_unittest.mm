@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
@@ -153,7 +155,7 @@ const char kTestFileContents[] = "test";
 
 class MTPDeviceDelegateImplMacTest : public testing::Test {
  public:
-  MTPDeviceDelegateImplMacTest() : camera_(NULL), delegate_(NULL) {}
+  MTPDeviceDelegateImplMacTest() : camera_(NULL), delegate_(nullptr) {}
 
   MTPDeviceDelegateImplMacTest(const MTPDeviceDelegateImplMacTest&) = delete;
   MTPDeviceDelegateImplMacTest& operator=(const MTPDeviceDelegateImplMacTest&) =
@@ -281,7 +283,7 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
   MockMTPICCameraDevice* camera_;
 
   // This object needs special deletion inside the above |task_runner_|.
-  MTPDeviceDelegateImplMac* delegate_;
+  raw_ptr<MTPDeviceDelegateImplMac> delegate_;
 
   base::File::Error error_;
   base::File::Info info_;

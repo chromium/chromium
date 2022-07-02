@@ -36,8 +36,8 @@ class MerchantTrustSignalsMediator {
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
                 if ((tab.isIncognito()) || (!navigation.hasCommitted())
                         || (!navigation.isInPrimaryMainFrame())
-                        || (navigation.isFragmentNavigation()) || (navigation.isErrorPage())
-                        || (navigation.getUrl() == null)
+                        || (navigation.isPrimaryMainFrameFragmentNavigation())
+                        || (navigation.isErrorPage()) || (navigation.getUrl() == null)
                         || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
                     return;
                 }

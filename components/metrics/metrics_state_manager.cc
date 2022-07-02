@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -226,6 +227,9 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 // static
 bool MetricsStateManager::instance_exists_ = false;
 
+// static
+bool MetricsStateManager::enable_provisional_client_id_for_testing_ = false;
+
 MetricsStateManager::MetricsStateManager(
     PrefService* local_state,
     EnabledStateProvider* enabled_state_provider,
@@ -283,33 +287,26 @@ MetricsStateManager::MetricsStateManager(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-#if !BUILDFLAG(IS_WIN)
-  if (is_first_run) {
-    // If this is a first run (no install date) and there's no client id, then
-    // generate a provisional client id now. This id will be used for field
-    // trial randomization on first run and will be promoted to become the
-    // client id if UMA is enabled during this session, via the logic in
-    // ForceClientIdCreation().
-    //
-    // Note: We don't do this on Windows because on Windows, there's no UMA
-    // checkbox on first run and instead it comes from the install page. So if
-    // UMA is not enabled at this point, it's unlikely it will be enabled in
-    // the same session since that requires the user to manually do that via
-    // settings page after they unchecked it on the download page.
-    //
-    // Note: Windows first run is covered by browser tests
-    // FirstRunMasterPrefsVariationsSeedTest.PRE_SecondRun and
-    // FirstRunMasterPrefsVariationsSeedTest.SecondRun. If the platform ifdef
-    // for this logic changes, the tests should be updated as well.
-    if (client_id_.empty())
-      provisional_client_id_ = base::GenerateGUID();
+  // Generate and store a provisional client ID if necessary. This ID will be
+  // used for field trial randomization on first run (and possibly in future
+  // runs if the user closes Chrome during the FRE) and will be promoted to
+  // become the client ID if UMA is enabled during this session, via the logic
+  // in ForceClientIdCreation(). If UMA is disabled (refused), we discard it.
+  //
+  // Note: This means that if a provisional client ID is used for this session,
+  // and the user disables (refuses) UMA, then starting from the next run, the
+  // field trial randomization (group assignment) will be different.
+  if (ShouldGenerateProvisionalClientId(is_first_run)) {
+    local_state_->SetString(prefs::kMetricsProvisionalClientID,
+                            base::GenerateGUID());
   }
-#endif  // !BUILDFLAG(IS_WIN)
 
   // The |initial_client_id_| should only be set if UMA is enabled or there's a
   // provisional client id.
   initial_client_id_ =
-      (client_id_.empty() ? provisional_client_id_ : client_id_);
+      (client_id_.empty()
+           ? local_state_->GetString(prefs::kMetricsProvisionalClientID)
+           : client_id_);
   DCHECK(!instance_exists_);
   instance_exists_ = true;
 }
@@ -501,7 +498,9 @@ void MetricsStateManager::ForceClientIdCreation() {
   // so generate a new one. If there's a provisional client id (e.g. UMA
   // was enabled as part of first run), promote that to the client id,
   // otherwise (e.g. UMA enabled in a future session), generate a new one.
-  if (provisional_client_id_.empty()) {
+  std::string provisional_client_id =
+      local_state_->GetString(prefs::kMetricsProvisionalClientID);
+  if (provisional_client_id.empty()) {
     client_id_ = base::GenerateGUID();
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdNew);
@@ -511,8 +510,8 @@ void MetricsStateManager::ForceClientIdCreation() {
         previous_client_id);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
-    client_id_ = provisional_client_id_;
-    provisional_client_id_.clear();
+    client_id_ = provisional_client_id;
+    local_state_->ClearPref(prefs::kMetricsProvisionalClientID);
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdFromProvisionalId);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -593,6 +592,8 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
 
 // static
 void MetricsStateManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kMetricsProvisionalClientID,
+                               std::string());
   registry->RegisterStringPref(prefs::kMetricsClientID, std::string());
   registry->RegisterInt64Pref(prefs::kMetricsReportingEnabledTimestamp, 0);
   registry->RegisterInt64Pref(prefs::kInstallDate, 0);
@@ -670,6 +671,55 @@ void MetricsStateManager::ResetMetricsIDsIfNecessary() {
   // Also clear the backed up client info. This is asynchronus; any reads
   // shortly after may retrieve the old ClientInfo from the backup.
   store_client_info_.Run(ClientInfo());
+}
+
+bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
+#if BUILDFLAG(IS_WIN)
+  // We do not want to generate a provisional client ID on Windows because
+  // there's no UMA checkbox on first run. Instead it comes from the install
+  // page. So if UMA is not enabled at this point, it's unlikely it will be
+  // enabled in the same session since that requires the user to manually do
+  // that via settings page after they unchecked it on the download page.
+  //
+  // Note: Windows first run is covered by browser tests
+  // FirstRunMasterPrefsVariationsSeedTest.PRE_SecondRun and
+  // FirstRunMasterPrefsVariationsSeedTest.SecondRun. If the platform ifdef
+  // for this logic changes, the tests should be updated as well.
+  return false;
+#else
+  // We should only generate a provisional client ID on the first run. If for
+  // some reason there is already a client ID, we do not generate one either.
+  // This can happen if metrics reporting is managed by a policy.
+  if (!is_first_run || !client_id_.empty())
+    return false;
+
+  // Return false if |kMetricsReportingEnabled| is managed by a policy. For
+  // example, if metrics reporting is disabled by a policy, then
+  // |kMetricsReportingEnabled| will always be set to false, so there is no
+  // reason to generate a provisional client ID. If metrics reporting is enabled
+  // by a policy, then the default value of |kMetricsReportingEnabled| will be
+  // true, and so a client ID will have already been generated (we would have
+  // returned false already because of the previous check).
+  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled))
+    return false;
+
+  // If this is a non-Google-Chrome-branded build, we do not want to generate a
+  // provisional client ID because metrics reporting is not enabled on those
+  // builds. This would be problematic because we store the provisional client
+  // ID in the Local State, and clear it when either 1) we enable UMA (the
+  // provisional client ID becomes the client ID), or 2) we disable UMA. Since
+  // in non-Google-Chrome-branded builds we never actually go through the code
+  // paths to either enable or disable UMA, the pref storing the provisional
+  // client ID would never be cleared. However, for test consistency between
+  // the different builds, we do not return false here if
+  // |enable_provisional_client_id_for_testing_| is set to true.
+  if (!BUILDFLAG(GOOGLE_CHROME_BRANDING) &&
+      !enable_provisional_client_id_for_testing_) {
+    return false;
+  }
+
+  return true;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

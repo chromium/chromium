@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
-#import "ios/chrome/browser/ui/follow/follow_block_types.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
@@ -31,8 +30,7 @@ namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 // An example favicon URL given from the Discover backend.
-static NSString* const kExampleFaviconURL =
-    @"https://www.google.com/s2/favicons?domain=the-sun.com&sz=48";
+static NSString* const kExampleFaviconURL = @"https://www.the-sun.com/";
 
 // Specific symbols used to create favicons.
 NSString* kGlobeSymbol = @"globe";
@@ -137,12 +135,13 @@ NSInteger kFaviconSymbolPointSize = 17;
   FollowedWebChannel* ch1 = [[FollowedWebChannel alloc] init];
   ch1.title = @"First Web Channel";
   ch1.available = YES;
-  ch1.faviconURL =
+  ch1.webPageURL =
       [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
 
   firstFollowViewController.followedWebChannel = ch1;
   self.alerter.baseViewController = firstFollowViewController;
   firstFollowViewController.faviconDataSource = self;
+  firstFollowViewController.imageEnclosedWithShadowAndBadge = YES;
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =
@@ -186,22 +185,6 @@ NSInteger kFaviconSymbolPointSize = 17;
   channel.available = YES;
   channel.faviconURL =
       [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
-
-  __weak FollowedWebChannel* weakChannel = channel;
-  channel.unfollowRequestBlock = ^(RequestCompletionBlock completion) {
-    // This mimics a successful unfollow on the server.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [self.followManagementUIUpdater
-                         removeFollowedWebChannel:weakChannel];
-                   });
-    // This mimics refollowing after a few seconds.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 13 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [self.followManagementUIUpdater
-                         addFollowedWebChannel:weakChannel];
-                   });
-  };
   return channel;
 }
 

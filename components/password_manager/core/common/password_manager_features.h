@@ -36,8 +36,12 @@ extern const base::Feature kForceInitialSyncWhenDecryptionFails;
 #endif
 extern const base::Feature kInferConfirmationPasswordField;
 extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
+#if BUILDFLAG(IS_IOS)
+extern const base::Feature kIOSPasswordUISplit;
+#endif  // IS_IOS
 extern const base::Feature kMuteCompromisedPasswords;
 extern const base::Feature kPasswordNotes;
+extern const base::Feature kPasswordViewPageInSettings;
 extern const base::Feature kSendPasswords;
 extern const base::Feature kLeakDetectionUnauthenticated;
 extern const base::Feature kPasswordChange;
@@ -53,7 +57,6 @@ extern const base::Feature kSecondaryServerFieldPredictions;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const base::Feature kSkipUndecryptablePasswords;
 #endif
-extern const base::Feature kSupportForAddPasswordsInSettings;
 #if BUILDFLAG(IS_LINUX)
 extern const base::Feature kSyncUndecryptablePasswordsLinux;
 #endif

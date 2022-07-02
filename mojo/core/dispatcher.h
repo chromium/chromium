@@ -51,7 +51,7 @@ using DispatcherVector = std::vector<scoped_refptr<Dispatcher>>;
 class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
     : public base::RefCountedThreadSafe<Dispatcher> {
  public:
-  struct DispatcherInTransit {
+  struct MOJO_SYSTEM_IMPL_EXPORT DispatcherInTransit {
     DispatcherInTransit();
     DispatcherInTransit(const DispatcherInTransit& other);
     ~DispatcherInTransit();

@@ -233,9 +233,6 @@ class CONTENT_EXPORT FrameTreeNode {
     return render_manager_.current_replication_state().origin;
   }
 
-  // Set the current name and notify proxies about the update.
-  void SetFrameName(const std::string& name, const std::string& unique_name);
-
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
   // flags from the <iframe> element hosting this frame. The returned policies
@@ -496,8 +493,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // by FrameTree::Init() or FrameTree::AddFrame().
   void SetFencedFrameNonceIfNeeded();
 
-  // Returns the mode attribute set on the fenced frame if this is a fenced
-  // frame root, otherwise returns `absl::nullopt`.
+  // Returns the mode attribute set on the fenced frame root if this frame is
+  // in a fenced frame tree, otherwise returns `absl::nullopt`.
   absl::optional<blink::mojom::FencedFrameMode> GetFencedFrameMode();
 
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
@@ -524,6 +521,27 @@ class CONTENT_EXPORT FrameTreeNode {
   // FrameTreeNode.
   void SetSrcdocValue(const std::string& srcdoc_value);
   const std::string& srcdoc_value() const { return srcdoc_value_; }
+
+  void set_shared_storage_budget_metadata(
+      FencedFrameURLMapping::SharedStorageBudgetMetadata*
+          shared_storage_budget_metadata) {
+    DCHECK_EQ(fenced_frame_status_,
+              RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
+    shared_storage_budget_metadata_ = shared_storage_budget_metadata;
+  }
+
+  FencedFrameURLMapping::SharedStorageBudgetMetadata*
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+
+  // Traverse up from this node. The `shared_storage_budget_metadata()` of the
+  // first seen node with a non-null budget metadata will be returned (i.e. this
+  // node inherits that budget metadata), and this node is expected to be an
+  // outermost fenced frame root. Return nullptr if not found (i.e. this node is
+  // not subjected to shared storage budgeting).
+  FencedFrameURLMapping::SharedStorageBudgetMetadata*
+  FindSharedStorageBudgetMetadata();
 
   // Accessor to BrowsingContextState for subframes only. Only main frame
   // navigations can change BrowsingInstances and BrowsingContextStates,
@@ -718,18 +736,38 @@ class CONTENT_EXPORT FrameTreeNode {
   // fenced frame's FrameTree. Note that this could be a field in FrameTree for
   // the MPArch version but for the shadow DOM version we need to keep it here
   // since the fenced frame root is not a main frame for the latter. The value
-  // of the nonce will be the same for all of the the frames inside a fenced
+  // of the nonce will be the same for all of the the iframes inside a fenced
   // frame tree. If there is a nested fenced frame it will have a different
   // nonce than its parent fenced frame. The nonce will stay the same across
-  // navigations because it is always used in conjunction with other fields of
-  // the keys. If the navigation is same-origin/site then the same network stack
-  // partition/storage will be reused and if it's cross-origin/site then other
-  // parts of the key will change and so, even with the same nonce, another
-  // partition will be used.
+  // navigations initiated from the fenced frame tree because it is always used
+  // in conjunction with other fields of the keys and would be good to access
+  // the same storage across same-origin navigations. If the navigation is
+  // same-origin/site then the same network stack partition/storage will be
+  // reused and if it's cross-origin/site then other parts of the key will
+  // change and so, even with the same nonce, another partition will be used.
+  // But if the navigation is initiated from the embedder, the nonce will be
+  // reinitialized irrespective of same or cross origin such that there is no
+  // privacy leak via storage shared between two embedder initiated navigations.
+  // Note that this reinitialization is only implemented for MPArch.
   absl::optional<base::UnguessableToken> fenced_frame_nonce_;
 
   const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
       RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+
+  // If this is a fenced frame resulting from a shared storage url selection
+  // operation, this contains the metadata for shared storage budget charging.
+  // This metadata will persist across self navigations, or be replaced by a new
+  // metadata if this gets navigated to another shared storage generated URN.
+  //
+  // This can only be possibly set for the outermost fenced frame root, because
+  // selectURL() is disallowed inside fenced frame, and the URN generated
+  // outside the a fenced frame cannot be recognized from inside, so a nested
+  // fenced frame can never navigate to a shared storage generated URN.
+  //
+  // This metadata is stored to the outermost page's FencedFrameURLMapping, thus
+  // `shared_storage_budget_metadata_` must outlive `this`.
+  raw_ptr<FencedFrameURLMapping::SharedStorageBudgetMetadata>
+      shared_storage_budget_metadata_ = nullptr;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

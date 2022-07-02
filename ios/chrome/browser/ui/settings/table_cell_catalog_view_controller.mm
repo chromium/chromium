@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -130,6 +131,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textHeaderFooterItem.text = @"Simple Text Header";
   [model setHeader:textHeaderFooterItem
       forSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* symbolItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  symbolItem.text = @"Detail Icon using SF Symbols";
+  symbolItem.symbolImage = DefaultSymbolWithPointSize(kGearShapeSymbol, 18);
+  symbolItem.symbolBackgroundColor = UIColorFromRGB(0xFBBC04);
+  [model addItem:symbolItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewTextItem* textItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeText];

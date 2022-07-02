@@ -42,7 +42,7 @@ double UkmTaskSampler::GetConditionalSamplingProbability(bool has_thread_time) {
 
 bool UkmTaskSampler::ShouldRecordTaskUkm(bool has_thread_time) {
   double probability = GetConditionalSamplingProbability(has_thread_time);
-  return random_generator_.RandDouble() < probability;
+  return metrics_subsampler_.ShouldSample(probability);
 }
 
 void UkmTaskSampler::SetUkmTaskSamplingRate(double rate) {

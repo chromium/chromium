@@ -10,8 +10,7 @@
 #include "net/base/features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace net {
-namespace android {
+namespace net::android {
 
 namespace {
 
@@ -109,5 +108,4 @@ void MaybeRecordUDPWriteForWakeupTrigger(
                            traffic_annotation.unique_id_hash_code);
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

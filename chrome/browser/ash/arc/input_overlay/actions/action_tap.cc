@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_tag.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -20,26 +20,22 @@ namespace arc {
 namespace input_overlay {
 namespace {
 // UI specs.
-constexpr int kTagPositionToSide = 36;
-constexpr int kTagMargin = 2;
+constexpr int kLabelPositionToSide = 36;
+constexpr int kLabelMargin = 2;
 
-// Create |ActionTag| for |ActionTap|.
-std::unique_ptr<ActionTag> CreateActionTag(InputElement& input_element) {
-  std::unique_ptr<ActionTag> tag;
+// Create |ActionLabel| for |ActionTap|.
+std::unique_ptr<ActionLabel> CreateActionLabel(InputElement& input_element) {
+  std::unique_ptr<ActionLabel> label;
   if (IsKeyboardBound(input_element)) {
     DCHECK(input_element.keys().size() == 1);
-    tag =
-        ActionTag::CreateTextActionTag(GetDisplayText(input_element.keys()[0]));
-    tag->SetSize(tag->GetPreferredSize());
+    label = ActionLabel::CreateTextActionLabel(
+        GetDisplayText(input_element.keys()[0]));
+  } else if (IsMouseBound(input_element)) {
+    label = ActionLabel::CreateImageActionLabel(input_element.mouse_action());
   } else {
-    if (IsMouseBound(input_element)) {
-      tag = ActionTag::CreateImageActionTag(input_element.mouse_action());
-    } else {
-      tag = ActionTag::CreateTextActionTag("?");
-    }
-    tag->SetSize(tag->GetPreferredSize());
+    label = ActionLabel::CreateTextActionLabel(kUnknownBind);
   }
-  return tag;
+  return label;
 }
 
 }  // namespace
@@ -61,7 +57,7 @@ class ActionTap::ActionTapView : public ActionView {
                       const gfx::RectF& content_bounds) override {
     // Add circle if it doesn't exist.
     int radius = action_->GetUIRadius(content_bounds);
-    if (!circle_) {
+    if (show_circle() && !circle_) {
       auto circle = std::make_unique<ActionCircle>(radius);
       circle_ = AddChildView(std::move(circle));
     }
@@ -83,53 +79,32 @@ class ActionTap::ActionTapView : public ActionView {
     if (!binding)
       return;
 
-    if (tags_.empty()) {
-      // Create new action tag when initializing.
-      auto tag = CreateActionTag(*binding);
-      tags_.emplace_back(AddChildView(std::move(tag)));
+    if (labels_.empty()) {
+      // Create new action label when initializing.
+      auto label = CreateActionLabel(*binding);
+      labels_.emplace_back(AddChildView(std::move(label)));
     } else if (!IsBound(*binding)) {
-      // Action tag exists but without any bindings.
-      tags_[0]->SetTextActionTag(std::move(GetDisplayText(ui::DomCode::NONE)));
+      // Action label exists but without any bindings.
+      labels_[0]->SetTextActionLabel(
+          std::move(GetDisplayText(ui::DomCode::NONE)));
     } else if (IsKeyboardBound(*binding)) {
-      // Action tag is bound to keyboard key.
-      tags_[0]->SetTextActionTag(std::move(GetDisplayText(binding->keys()[0])));
+      // Action label is bound to keyboard key.
+      labels_[0]->SetTextActionLabel(
+          std::move(GetDisplayText(binding->keys()[0])));
     } else {
-      // Action tag is bound to mouse.
-      tags_[0]->SetImageActionTag(binding->mouse_action());
-    }
-    auto* tag = tags_[0];
-    auto tag_size = tag->GetPreferredSize();
-    int width = std::max(radius * 2,
-                         radius * 2 - kTagPositionToSide + tag_size.width());
-    SetSize(gfx::Size(width, radius * 2));
-
-    if (action_->on_left_or_middle_side()) {
-      circle_->SetPosition(gfx::Point());
-      tag->SetPosition(gfx::Point(tag_size.width() > kTagPositionToSide
-                                      ? width - tag_size.width()
-                                      : width - kTagPositionToSide,
-                                  radius * 2 - tag_size.height() - kTagMargin));
-      center_.set_x(radius);
-      center_.set_y(radius);
-    } else {
-      circle_->SetPosition(gfx::Point(width - radius * 2, 0));
-      tag->SetPosition(
-          gfx::Point(0, radius * 2 - tag_size.height() - kTagMargin));
-      center_.set_x(width - radius);
-      center_.set_y(radius);
+      // Action label is bound to mouse.
+      labels_[0]->SetImageActionLabel(binding->mouse_action());
     }
   }
 
-  void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {
-    if (ShouldShowErrorMsg(code))
-      return;
-    DCHECK(tags_.size() == 1 && tags_[0] == action_tag);
-    if (tags_.size() != 1 || tags_[0] != action_tag)
+  void OnKeyBindingChange(ActionLabel* action_label,
+                          ui::DomCode code) override {
+    DCHECK(labels_.size() == 1 && labels_[0] == action_label);
+    if (labels_.size() != 1 || labels_[0] != action_label)
       return;
 
     auto input_element = InputElement::CreateActionTapKeyElement(code);
-    display_overlay_controller_->OnBindingChange(action_,
-                                                 std::move(input_element));
+    ChangeBinding(action_, action_label, std::move(input_element));
   }
 
   void OnBindingToKeyboard() override {
@@ -141,7 +116,6 @@ class ActionTap::ActionTapView : public ActionView {
     action_->set_pending_binding(std::move(input_element));
     auto bounds = CalculateWindowContentBounds(action_->target_window());
     SetViewContent(BindingOption::kPending, bounds);
-    SetDisplayMode(DisplayMode::kEdited);
   }
 
   void OnBindingToMouse(std::string mouse_action) override {
@@ -156,8 +130,7 @@ class ActionTap::ActionTapView : public ActionView {
 
     auto input_element =
         InputElement::CreateActionTapMouseElement(mouse_action);
-    display_overlay_controller_->OnBindingChange(action_,
-                                                 std::move(input_element));
+    ChangeBinding(action_, /*ActionLabel=*/nullptr, std::move(input_element));
   }
 
   void OnMenuEntryPressed() override {
@@ -166,6 +139,42 @@ class ActionTap::ActionTapView : public ActionView {
     if (!menu_entry_)
       return;
     menu_entry_->RequestFocus();
+  }
+
+  void ChildPreferredSizeChanged(View* child) override {
+    DCHECK(labels_.size() == 1);
+    if (static_cast<ActionLabel*>(child) != labels_[0])
+      return;
+
+    auto content_bounds =
+        CalculateWindowContentBounds(action_->target_window());
+    int radius = action_->GetUIRadius(content_bounds);
+    auto* label = labels_[0];
+    auto label_size = label->CalculatePreferredSize();
+    int width = std::max(
+        radius * 2, radius * 2 - kLabelPositionToSide + label_size.width());
+    if (action_->on_left_or_middle_side()) {
+      if (show_circle())
+        circle_->SetPosition(gfx::Point());
+      label->SetPosition(
+          gfx::Point(label_size.width() > kLabelPositionToSide
+                         ? width - label_size.width()
+                         : width - kLabelPositionToSide,
+                     radius * 2 - label_size.height() - kLabelMargin));
+      center_.set_x(radius);
+      center_.set_y(radius);
+    } else {
+      if (show_circle())
+        circle_->SetPosition(gfx::Point(width - radius * 2, 0));
+      label->SetPosition(
+          gfx::Point(0, radius * 2 - label_size.height() - kLabelMargin));
+      center_.set_x(width - radius);
+      center_.set_y(radius);
+    }
+    label->SetSize(label_size);
+    SetSize(gfx::Size(width, radius * 2));
+    auto center_pos = action_->GetUICenterPosition(content_bounds);
+    SetPositionFromCenterPosition(center_pos);
   }
 };
 
@@ -231,7 +240,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   // Rewrite for key event.
   if (IsKeyboardBound(*current_binding())) {
     auto* key_event = origin.AsKeyEvent();
-    bool rewritten = RewriteKeyEvent(key_event, touch_events, content_bounds,
+    bool rewritten = RewriteKeyEvent(key_event, content_bounds, touch_events,
                                      keep_original_event);
     LogTouchEvents(touch_events);
     return rewritten;
@@ -256,8 +265,6 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
   auto view = std::make_unique<ActionTapView>(this, display_overlay_controller,
                                               content_bounds);
   view->set_editable(true);
-  auto center_pos = GetUICenterPosition(content_bounds);
-  view->SetPositionFromCenterPosition(center_pos);
   action_view_ = view.get();
   return view;
 }
@@ -266,13 +273,14 @@ void ActionTap::Unbind(const InputElement& input_element) {
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::make_unique<InputElement>();
-
+  if (action_view_)
+    action_view_->set_unbind_label_index(0);
   PostUnbindProcess();
 }
 
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
-                                std::list<ui::TouchEvent>& rewritten_events,
                                 const gfx::RectF& content_bounds,
+                                std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
   DCHECK(key_event);
   if (!IsSameDomCode(key_event->code(), current_binding_->keys()[0]))
@@ -321,12 +329,8 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
       OnTouchReleased();
     }
   } else {
-    if (!touch_id_) {
-      LOG(ERROR) << "There should be a touch ID for the release {"
-                 << ui::KeycodeConverter::DomCodeToCodeString(key_event->code())
-                 << "}.";
-      return false;
-    }
+    if (!VerifyOnKeyRelease(key_event->code()))
+      return true;
 
     rewritten_events.emplace_back(ui::TouchEvent(
         ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,

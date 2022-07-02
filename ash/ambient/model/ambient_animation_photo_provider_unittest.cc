@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -702,6 +703,54 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
   EXPECT_CALL(observer, OnDynamicImageAssetsRefreshed(_)).Times(0);
   GetFrameDataForAssets(all_assets, /*timestamp=*/1);
   Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(AmbientAnimationPhotoProviderTest, RecordsPhotoOrientationMatch) {
+  static_resources_.set_ambient_animation_theme(
+      AmbientAnimationTheme::kFeelTheBreeze);
+
+  // 2 landscape 2 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/20));
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets =
+      LoadAllDynamicAssets({gfx::Size(100, 50), gfx::Size(50, 100),
+                            gfx::Size(100, 50), gfx::Size(50, 100)});
+  {
+    base::HistogramTester histogram_tester;
+    GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+    GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Ash.AmbientMode.PhotoOrientationMatch.FeelTheBreeze", 100, 1);
+  }
+
+  // 3 landscape 1 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/60, /*height=*/30));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/80, /*height=*/40));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/100, /*height=*/50));
+  {
+    base::HistogramTester histogram_tester;
+    GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+    GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Ash.AmbientMode.PhotoOrientationMatch.FeelTheBreeze", 75, 1);
+  }
+
+  // // 1 landscape 3 portrait
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/30, /*height=*/60));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/10));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/40, /*height=*/80));
+  AddImageToModel(gfx::test::CreateImageSkia(/*width=*/50, /*height=*/100));
+  {
+    base::HistogramTester histogram_tester;
+    GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+    GetFrameDataForAssets(all_assets, /*timestamp=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Ash.AmbientMode.PhotoOrientationMatch.FeelTheBreeze", 75, 1);
+  }
 }
 
 }  // namespace ash

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_MOVE_LOOP_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_MOVE_LOOP_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/callback.h"
@@ -37,14 +39,14 @@ class CocoaWindowMoveLoop {
     WINDOW_DESTROYED,
   };
 
-  NativeWidgetNSWindowBridge* owner_;  // Weak. Owns this.
+  raw_ptr<NativeWidgetNSWindowBridge> owner_;  // Weak. Owns this.
 
   // Initial mouse location at the time before the CocoaWindowMoveLoop is
   // created.
   NSPoint initial_mouse_in_screen_;
 
   // Pointer to a stack variable holding the exit reason.
-  LoopExitReason* exit_reason_ref_ = nullptr;
+  raw_ptr<LoopExitReason> exit_reason_ref_ = nullptr;
   base::OnceClosure quit_closure_;
 
   std::unique_ptr<gfx::ScopedCocoaDisableScreenUpdates> screen_disabler_;

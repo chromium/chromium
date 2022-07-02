@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 #if !defined(NDEBUG)
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -142,6 +143,41 @@ std::string PrintViewGraphImpl(const View* view) {
 #endif
 
 }  // namespace
+
+void PrintWidgetInformation(const Widget& widget,
+                            bool detailed,
+                            std::ostringstream* out) {
+  *out << " name=" << widget.GetName();
+  *out << " (" << &widget << ")";
+
+  if (widget.parent())
+    *out << " parent=" << widget.parent();
+  else
+    *out << " parent=none";
+
+  const ui::Layer* layer = widget.GetLayer();
+  if (layer)
+    *out << " layer=" << layer;
+  else
+    *out << " layer=none";
+
+  *out << (widget.is_top_level() ? " [top_level]" : " [!top_level]");
+
+  if (detailed) {
+    *out << (widget.IsActive() ? " [active]" : " [!active]");
+    *out << (widget.IsVisible() ? " [visible]" : " [!visible]");
+  }
+
+  *out << (widget.IsClosed() ? " [closed]" : "");
+  *out << (widget.IsMaximized() ? " [maximized]" : "");
+  *out << (widget.IsMinimized() ? " [minimized]" : "");
+  *out << (widget.IsFullscreen() ? " [fullscreen]" : "");
+
+  if (detailed)
+    *out << " " << widget.GetWindowBoundsInScreen().ToString();
+
+  *out << '\n';
+}
 
 void PrintViewHierarchy(const View* view) {
   std::ostringstream out;

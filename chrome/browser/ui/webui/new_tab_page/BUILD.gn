@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_android)
+
 mojom("mojo_bindings") {
   sources = [ "new_tab_page.mojom" ]
   webui_module_path = "/"

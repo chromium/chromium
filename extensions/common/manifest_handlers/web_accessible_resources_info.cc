@@ -187,6 +187,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
         return true;
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
+           extension->id() == initiator_url.host() ||
            base::Contains(entry.extension_ids, initiator_url.host()))) {
         return true;
       }
@@ -200,6 +201,21 @@ bool WebAccessibleResourcesInfo::HasWebAccessibleResources(
     const Extension* extension) {
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
   return info && (info->web_accessible_resources.size() > 0);
+}
+
+// static
+bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
+                                                     const std::string& path) {
+  const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
+  if (!info)
+    return false;
+  for (const auto& entry : info->web_accessible_resources) {
+    if (extension->ResourceMatches(entry.resources, path) &&
+        entry.use_dynamic_url) {
+      return true;
+    }
+  }
+  return false;
 }
 
 WebAccessibleResourcesInfo::Entry::Entry() = default;

@@ -152,6 +152,14 @@ bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
   }
 }
 
+TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
+    const std::string& poa_param) {
+  if (poa_param == "default-browser-settings") {
+    return SHOW_DEFAULT_BROWSER_SETTINGS;
+  }
+  return NO_ACTION;
+}
+
 }  // namespace
 
 @implementation ChromeAppStartupParameters {
@@ -254,12 +262,19 @@ bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
         (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme))) {
       return nil;
     }
+    TabOpeningPostOpeningAction postOpeningAction =
+        XCallbackPoaToPostOpeningAction(parameters["poa"]);
 
-    return [[ChromeAppStartupParameters alloc] initWithExternalURL:url
-                                                 declaredSourceApp:appId
-                                                   secureSourceApp:nil
-                                                       completeURL:completeURL];
-
+    ChromeAppStartupParameters* startupParameters =
+        [[ChromeAppStartupParameters alloc] initWithExternalURL:url
+                                              declaredSourceApp:appId
+                                                secureSourceApp:nil
+                                                    completeURL:completeURL];
+    // postOpeningAction can only be NO_ACTION or SHOW_DEFAULT_BROWSER_SETTINGS
+    // (these are the only values returned by `XCallbackPoaToPostOpeningAction`)
+    // so this assignment should not DCHECK, no matter what the URL is.
+    startupParameters.postOpeningAction = postOpeningAction;
+    return startupParameters;
   } else if (gurl.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,

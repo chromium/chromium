@@ -88,8 +88,7 @@ void OnGetSessions(const Status& status,
                    bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(value.get());
-  std::vector<base::Value> sessions_list =
-      base::Value::FromUniquePtrValue(std::move(value)).TakeListDeprecated();
+  const base::Value::List& sessions_list = value->GetList();
   ASSERT_EQ(static_cast<size_t>(2), sessions_list.size());
 
   const base::Value& session1 = sessions_list[0];
@@ -512,7 +511,7 @@ TEST(CommandsTest, FailedFindElements) {
                                      &result, nullptr)
                      .code());
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(0U, result->GetListDeprecated().size());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, SuccessfulFindChildElement) {
@@ -590,7 +589,7 @@ TEST(CommandsTest, FailedFindChildElements) {
                      base::Value::AsDictionaryValue(params), &result)
                      .code());
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(0U, result->GetListDeprecated().size());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, TimeoutInFindElement) {

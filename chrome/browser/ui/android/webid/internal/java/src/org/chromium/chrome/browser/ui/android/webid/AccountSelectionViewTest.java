@@ -11,10 +11,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-
 import static java.util.Arrays.asList;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -22,18 +21,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.MediumTest;
+import androidx.test.core.app.ActivityScenario;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
@@ -46,13 +44,10 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -62,8 +57,7 @@ import java.util.Collections;
  * View tests for the Account Selection component ensure that model changes are reflected in the
  * sheet.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class AccountSelectionViewTest {
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -77,77 +71,68 @@ public class AccountSelectionViewTest {
     private Callback<Account> mAccountCallback;
     private Runnable mAutoSignInCancelCallback;
 
-    private BlankUiTestActivity mActivity;
+    private ActivityScenario<TestActivity> mActivityScenario;
+    private Resources mResources;
     private PropertyModel mModel;
     private ModelList mSheetAccountItems;
     private View mContentView;
-    @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mActivityTestRule.launchActivity(null);
-        mActivity = mActivityTestRule.getActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        mActivityScenario = ActivityScenario.launch(TestActivity.class);
+
+        mActivityScenario.onActivity(activity -> {
             mModel = new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS)
                              .build();
             mSheetAccountItems = new ModelList();
             mContentView = AccountSelectionCoordinator.setupContentView(
-                    mActivity, mModel, mSheetAccountItems);
-            mActivity.setContentView(mContentView);
+                    activity, mModel, mSheetAccountItems);
+            activity.setContentView(mContentView);
+            mResources = activity.getResources();
         });
     }
 
     @Test
-    @MediumTest
     public void testSignInTitleDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build());
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(
+                mResources.getString(
                         R.string.account_selection_sheet_title_explicit, "example.org", "idp.org"),
                 title.getText());
     }
 
     @Test
-    @MediumTest
     public void testVerifyingTitleDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build());
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.VERIFY)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);
 
-        assertEquals("Incorrect title", mActivity.getString(R.string.verify_sheet_title),
+        assertEquals("Incorrect title", mResources.getString(R.string.verify_sheet_title),
                 title.getText());
     }
 
     @Test
-    @MediumTest
     public void testAccountsChangedByModel() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetAccountItems.addAll(
-                    asList(buildAccountItem(ANA), buildAccountItem(NO_ONE), buildAccountItem(BOB)));
-        });
+        mSheetAccountItems.addAll(
+                asList(buildAccountItem(ANA), buildAccountItem(NO_ONE), buildAccountItem(BOB)));
+        ShadowLooper.shadowMainLooper().idle();
 
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
         assertEquals("Incorrect account count", 3, getAccounts().getChildCount());
         assertEquals("Incorrect name", ANA.getName(), getAccountNameAt(0).getText());
         assertEquals("Incorrect email", ANA.getEmail(), getAccountEmailAt(0).getText());
@@ -158,100 +143,90 @@ public class AccountSelectionViewTest {
     }
 
     @Test
-    @MediumTest
     public void testAccountsAreClickable() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetAccountItems.addAll(Collections.singletonList(buildAccountItem(ANA)));
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mSheetAccountItems.addAll(Collections.singletonList(buildAccountItem(ANA)));
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
 
-        TouchCommon.singleClickView(getAccounts().getChildAt(0));
+        getAccounts().getChildAt(0).performClick();
 
         waitForEvent(mAccountCallback).onResult(eq(ANA));
     }
 
     @Test
-    @MediumTest
     public void testSingleAccountHasClickableButton() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Create an account with no callback to ensure the button callback
-            // is the one that gets invoked.
-            mSheetAccountItems.add(
-                    new MVCListAdapter.ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                            new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                                    .with(AccountProperties.ACCOUNT, ANA)
-                                    .with(AccountProperties.ON_CLICK_LISTENER, null)
-                                    .build()));
+        // Create an account with no callback to ensure the button callback
+        // is the one that gets invoked.
+        mSheetAccountItems.add(
+                new MVCListAdapter.ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                        new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                                .with(AccountProperties.ACCOUNT, ANA)
+                                .with(AccountProperties.ON_CLICK_LISTENER, null)
+                                .build()));
+        ShadowLooper.shadowMainLooper().idle();
 
-            mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, null));
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, null));
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
 
         View continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
         assertTrue(continueButton.isShown());
-        TouchCommon.singleClickView(continueButton);
+        continueButton.performClick();
 
         waitForEvent(mAccountCallback).onResult(eq(ANA));
     }
 
     @Test
-    @MediumTest
-    public void testAutoSignInCancellButtonDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Create an account with no callback to ensure the button callback
-            // is the one that gets invoked.
-            mSheetAccountItems.add(
-                    new MVCListAdapter.ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                            new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                                    .with(AccountProperties.ACCOUNT, ANA)
-                                    .with(AccountProperties.ON_CLICK_LISTENER, null)
-                                    .build()));
+    public void testAutoSignInCancelButtonDisplayed() {
+        // Create an account with no callback to ensure the button callback
+        // is the one that gets invoked.
+        mSheetAccountItems.add(
+                new MVCListAdapter.ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                        new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                                .with(AccountProperties.ACCOUNT, ANA)
+                                .with(AccountProperties.ON_CLICK_LISTENER, null)
+                                .build()));
 
-            mModel.set(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON, buildCancelButton());
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON, buildCancelButton());
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         assertNotNull(getAccounts().getChildAt(0));
         assertTrue(mContentView.findViewById(R.id.auto_sign_in_cancel_btn).isShown());
     }
 
     @Test
-    @MediumTest
     public void testHeaderDisplayedForAutoSignIn() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build());
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(
+                mResources.getString(
                         R.string.account_selection_sheet_title_auto, "example.org", "idp.org"),
                 title.getText());
     }
 
     @Test
-    @MediumTest
     public void testDataSharingConsentDisplayed() {
         final String idpEtldPlusOne = "idp.org";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ItemProperties.DATA_SHARING_CONSENT,
-                    buildDataSharingConsentItem(idpEtldPlusOne));
-        });
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        mModel.set(
+                ItemProperties.DATA_SHARING_CONSENT, buildDataSharingConsentItem(idpEtldPlusOne));
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
         assertTrue(consent.isShown());
         String expectedSharingConsentText =
-                mActivity.getString(R.string.account_selection_data_sharing_consent, "idp.org");
+                mResources.getString(R.string.account_selection_data_sharing_consent, "idp.org");
         expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
@@ -267,17 +242,14 @@ public class AccountSelectionViewTest {
      * Tests that the brand foreground and the brand icon are used in the "Continue" button.
      */
     @Test
-    @MediumTest
     public void testContinueButtonBranding() {
         final int expectedTextColor = Color.BLUE;
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(expectedTextColor,
-                    /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example");
+        IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(expectedTextColor,
+                /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example");
 
-            mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, idpMetadata));
-        });
+        mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, idpMetadata));
 
-        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
 
         TextView continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
 
@@ -331,7 +303,7 @@ public class AccountSelectionViewTest {
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedIdpEtldPlusOne = idpEtldPlusOne;
+        properties.mIdpForDisplay = idpEtldPlusOne;
         properties.mTermsOfServiceUrl = "https://rp.com/tos";
         properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
 

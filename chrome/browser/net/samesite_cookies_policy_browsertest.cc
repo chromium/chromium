@@ -76,13 +76,13 @@ class SameSiteCookiesPolicyTest : public PolicyTest,
   content::RenderFrameHost* GetChildFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
-  content::RenderFrameHost* GetMainFrame() {
+  content::RenderFrameHost* GetPrimaryMainFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
 
   void NavigateToHttpPageWithFrame(const std::string& host) {
@@ -306,9 +306,10 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   NavigateToHttpPageWithFrame("a.test");
 
   GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
-  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetMainFrame(), "strictcookie=1");
+  ExpectFrameContent(GetPrimaryMainFrame(), "strictcookie=1");
 }
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
@@ -324,9 +325,10 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   NavigateToHttpPageWithFrame("a.test");
 
   GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
-  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetMainFrame(),
+  ExpectFrameContent(GetPrimaryMainFrame(),
                      IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
 }
 

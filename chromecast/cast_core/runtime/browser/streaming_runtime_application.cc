@@ -22,10 +22,11 @@
 namespace chromecast {
 namespace {
 
-const char kCastTransportBindingName[] = "cast.__platform__.cast_transport";
-const char kMediaCapabilitiesBindingName[] = "cast.__platform__.canDisplayType";
+constexpr char kCastTransportBindingName[] = "cast.__platform__.cast_transport";
+constexpr char kMediaCapabilitiesBindingName[] =
+    "cast.__platform__.canDisplayType";
 
-const char kStreamingPageUrlTemplate[] =
+constexpr char kStreamingPageUrlTemplate[] =
     "data:text/html;charset=UTF-8, <video style='position:absolute; "
     "top:50%%; left:50%%; transform:translate(-50%%,-50%%); "
     "max-width:100%%; max-height:100%%; min-width: 100%%; min-height: 100%%' "
@@ -52,14 +53,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication();
-}
-
-const GURL& StreamingRuntimeApplication::GetApplicationUrl() const {
-  static const GURL kStreamingUrl(base::StringPrintf(
-      kStreamingPageUrlTemplate,
-      cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str()));
-  return kStreamingUrl;
+  StopApplication(cast::v2::ApplicationStatusRequest::USER_REQUEST);
 }
 
 cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
@@ -70,19 +64,13 @@ StreamingRuntimeApplication::HandlePortMessage(cast::web::Message message) {
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetApplicationState(
-      cast::v2::ApplicationStatusRequest::STARTED,
-      base::BindPostTask(
-          task_runner(),
-          base::BindOnce(
-              &StreamingRuntimeApplication::OnApplicationStateChanged,
-              weak_factory_.GetWeakPtr())));
+  OnApplicationLaunched();
 }
 
 void StreamingRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
-  StopApplication();
+  StopApplication(cast::v2::ApplicationStatusRequest::RUNTIME_ERROR);
 }
 
 void StreamingRuntimeApplication::StartAvSettingsQuery(
@@ -101,8 +89,7 @@ void StreamingRuntimeApplication::OnResolutionChanged(
   video_plane_controller_->SetGeometryFromMediaType(size, transformation);
 }
 
-void StreamingRuntimeApplication::InitializeApplication(
-    base::OnceClosure app_initialized_callback) {
+void StreamingRuntimeApplication::LaunchApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   message_port_service_ =
@@ -124,11 +111,14 @@ void StreamingRuntimeApplication::InitializeApplication(
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
 
-  // Application is initialized now.
-  std::move(app_initialized_callback).Run();
+  // Application is initialized now - we can load the URL.
+  LoadPage(GURL(base::StringPrintf(
+      kStreamingPageUrlTemplate,
+      cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str())));
 }
 
-void StreamingRuntimeApplication::StopApplication() {
+void StreamingRuntimeApplication::StopApplication(
+    cast::v2::ApplicationStatusRequest::StopReason stop_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receiver_session_client_) {
     DLOG(INFO) << "Streaming session never started prior to " << *this
@@ -136,26 +126,13 @@ void StreamingRuntimeApplication::StopApplication() {
   }
 
   receiver_session_client_.reset();
-  RuntimeApplicationBase::StopApplication();
+  RuntimeApplicationBase::StopApplication(stop_reason);
   message_port_service_.reset();
 }
 
 bool StreamingRuntimeApplication::IsStreamingApplication() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
-}
-
-void StreamingRuntimeApplication::OnApplicationStateChanged(
-    grpc::Status status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to set application state to started: " << *this
-               << ", status=" << cast::utils::GrpcStatusToString(status);
-    StopApplication();
-    return;
-  }
-
-  LOG(INFO) << "Cast streaming application started: " << *this;
 }
 
 }  // namespace chromecast

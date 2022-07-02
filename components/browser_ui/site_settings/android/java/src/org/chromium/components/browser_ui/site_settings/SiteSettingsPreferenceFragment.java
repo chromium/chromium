@@ -36,4 +36,10 @@ public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentC
     public boolean hasSiteSettingsDelegate() {
         return mSiteSettingsDelegate != null;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mSiteSettingsDelegate.onDestroyView();
+    }
 }

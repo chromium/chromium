@@ -100,7 +100,8 @@ bool VulkanInstance::BindUnassignedFunctionPointers(
     loader_library_ =
         base::LoadNativeLibrary(vulkan_loader_library_path, &error);
     if (!loader_library_) {
-      LOG(ERROR) << "Failed to load vulkan:" << error.ToString();
+      LOG(ERROR) << "Failed to load '" << vulkan_loader_library_path
+                 << "': " << error.ToString();
       return false;
     }
     if (!vulkan_function_pointers

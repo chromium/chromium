@@ -217,8 +217,11 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   DCHECK(client == GetTextInputClient());
   DCHECK(!IsTextInputTypeNone());
 
-  if (GetEngine())
-    GetEngine()->SetCompositionBounds(GetCompositionBounds(client));
+  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  if (engine) {
+    engine->SetCompositionBounds(GetCompositionBounds(client));
+    engine->SetCaretBounds(client->GetCaretBounds());
+  }
 
   ash::IMECandidateWindowHandlerInterface* candidate_window =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
@@ -244,7 +247,6 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     ash::Bounds bounds;
     bounds.caret = caret_rect;
     bounds.autocorrect = client->GetAutocorrectCharacterBounds();
-    client->GetCompositionCharacterBounds(0, &bounds.composition_text);
     assistive_window->SetBounds(bounds);
   }
 
@@ -454,11 +456,10 @@ bool InputMethodAsh::SetAutocorrectRange(const gfx::Range& range) {
   }
 }
 
-absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragmentAtCursor() {
   if (IsTextInputTypeNone())
     return absl::nullopt;
-  return GetTextInputClient()->GetGrammarFragment(range);
+  return GetTextInputClient()->GetGrammarFragmentAtCursor();
 }
 
 bool InputMethodAsh::ClearGrammarFragments(const gfx::Range& range) {

@@ -62,7 +62,7 @@ AtomicSequenceNumber g_next_id;
 // Gets the next non-zero identifier. It is only unique within a process.
 uint32_t GetNextDataId() {
   uint32_t id;
-  while ((id = g_next_id.GetNext()) == 0) {
+  while ((id = static_cast<uint32_t>(g_next_id.GetNext())) == 0) {
   }
   return id;
 }
@@ -394,9 +394,9 @@ bool ActivityUserData::CreateSnapshot(Snapshot* output_snapshot) const {
       } break;
       case BOOL_VALUE:
       case CHAR_VALUE:
-        value.short_value_ =
+        value.short_value_ = static_cast<uint64_t>(
             reinterpret_cast<std::atomic<char>*>(entry.second.memory.get())
-                ->load(std::memory_order_relaxed);
+                ->load(std::memory_order_relaxed));
         break;
       case SIGNED_VALUE:
       case UNSIGNED_VALUE:
@@ -450,17 +450,11 @@ void* ActivityUserData::Set(StringPiece name,
                             ValueType type,
                             const void* memory,
                             size_t size) {
-  DCHECK_GE(std::numeric_limits<uint8_t>::max(), name.length());
-  size = std::min(std::numeric_limits<uint16_t>::max() - (kMemoryAlignment - 1),
-                  size);
+  DCHECK_LT(name.length(), kMaxUserDataNameLength);
 
   // It's possible that no user data is being stored.
   if (!memory_)
     return nullptr;
-
-  // The storage of a name is limited so use that limit during lookup.
-  if (name.length() > kMaxUserDataNameLength)
-    name = StringPiece(name.data(), kMaxUserDataNameLength);
 
   ValueInfo* info;
   auto existing = values_.find(name);
@@ -484,12 +478,18 @@ void* ActivityUserData::Set(StringPiece name,
     if (base_size > available_)
       return nullptr;
 
-    // The "full size" is the size for storing the entire value.
-    size_t full_size = std::min(base_size + value_extent, available_);
+    // The "full size" is the size for storing the entire value.  This must fit
+    // into a uint16_t.
+    size_t full_size =
+        std::min({base_size + value_extent, available_,
+                  bits::AlignDown(std::numeric_limits<uint16_t>::max(),
+                                  kMemoryAlignment)});
 
     // If the value is actually a single byte, see if it can be stuffed at the
     // end of the name extent rather than wasting kMemoryAlignment bytes.
     if (size == 1 && name_extent > name_size) {
+      // This assignment is safe because `base_size` cannot be much larger than
+      // UINT8_MAX.
       full_size = base_size;
       --name_extent;
       --base_size;
@@ -513,7 +513,7 @@ void* ActivityUserData::Set(StringPiece name,
     DCHECK_EQ(END_OF_VALUES, header->type.load(std::memory_order_relaxed));
     DCHECK_EQ(0, header->value_size.load(std::memory_order_relaxed));
     header->name_size = static_cast<uint8_t>(name_size);
-    header->record_size = full_size;
+    header->record_size = static_cast<uint16_t>(full_size);
     char* name_memory = reinterpret_cast<char*>(header) + sizeof(FieldHeader);
     void* value_memory =
         reinterpret_cast<char*>(header) + sizeof(FieldHeader) + name_extent;
@@ -541,7 +541,9 @@ void* ActivityUserData::Set(StringPiece name,
   size = std::min(size, info->extent);
   info->size_ptr->store(0, std::memory_order_seq_cst);
   memcpy(info->memory, memory, size);
-  info->size_ptr->store(size, std::memory_order_release);
+  // This cast is safe because `size` <= info->extent < `full_size`, and
+  // `full_size` fits in a uint16_t.
+  info->size_ptr->store(static_cast<uint16_t>(size), std::memory_order_release);
 
   // The address of the stored value is returned so it can be re-used by the
   // caller, so long as it's done in an atomic way.
@@ -1162,7 +1164,7 @@ GlobalActivityTracker::ModuleInfoRecord::CreateFrom(
   record->age = info.age;
   memcpy(record->identifier, info.identifier, sizeof(identifier));
   memcpy(record->pickle, pickler.data(), pickler.size());
-  record->pickle_size = pickler.size();
+  record->pickle_size = checked_cast<uint16_t>(pickler.size());
   record->changes.store(0, std::memory_order_relaxed);
 
   // Initialize the owner info.
@@ -1739,14 +1741,13 @@ void ScopedActivity::ChangeActionAndInfo(uint8_t action, int32_t info) {
                     ActivityData::ForGeneric(id_, info));
 }
 
-ScopedTaskRunActivity::ScopedTaskRunActivity(
-    const void* program_counter,
-    const base::PendingTask& task)
+ScopedTaskRunActivity::ScopedTaskRunActivity(const void* program_counter,
+                                             const base::PendingTask& task)
     : GlobalActivityTracker::ScopedThreadActivity(
           program_counter,
           task.posted_from.program_counter(),
           Activity::ACT_TASK_RUN,
-          ActivityData::ForTask(task.sequence_num),
+          ActivityData::ForTask(static_cast<uint64_t>(task.sequence_num)),
           /*lock_allowed=*/true) {}
 
 ScopedLockAcquireActivity::ScopedLockAcquireActivity(

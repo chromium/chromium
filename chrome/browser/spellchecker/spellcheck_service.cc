@@ -845,13 +845,8 @@ void SpellcheckService::OnUseSpellingServiceChanged() {
 }
 
 void SpellcheckService::OnAcceptLanguagesChanged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Accept-Languages and spell check are decoupled in LSV2 Update 2.
-  if (base::FeatureList::IsEnabled(ash::features::kLanguageSettingsUpdate2)) {
-    return;
-  }
-#endif
-
+  // Accept-Languages and spell check are decoupled on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::string> accept_languages = GetNormalizedAcceptLanguages();
 
   StringListPrefMember dictionaries_pref;
@@ -871,6 +866,7 @@ void SpellcheckService::OnAcceptLanguagesChanged() {
 #if BUILDFLAG(IS_WIN)
   RecordChromeLocalesStats();
 #endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 std::vector<std::string> SpellcheckService::GetNormalizedAcceptLanguages(

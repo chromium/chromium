@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/bus.h"
@@ -28,9 +29,11 @@ namespace bluez {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(b/213229904): Remove this constant and replace with
 // |bluetooth_device::kDisconnectOld| once it has been uprev'd.
 constexpr char kDisconnectOldPlaceholder[] = "DisconnectOld";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Value returned for the the RSSI or TX power if it cannot be read.
 const int kUnknownPower = 127;
@@ -377,7 +380,7 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
                                   ? bluetooth_device::kDisconnect
                                   : kDisconnectOldPlaceholder;
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    const char* method_name = kDisconnectOldPlaceholder;
+    const char* method_name = bluetooth_device::kDisconnect;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
                                  method_name);
@@ -786,7 +789,7 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothDeviceClient::Observer>::Unchecked observers_;

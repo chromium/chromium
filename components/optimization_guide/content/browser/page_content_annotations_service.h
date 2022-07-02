@@ -34,6 +34,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class OptimizationGuideLogger;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -106,6 +108,7 @@ class PageContentAnnotationsService : public KeyedService,
       history::HistoryService* history_service,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
+      OptimizationGuideLogger* optimization_guide_logger,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
@@ -236,6 +239,14 @@ class PageContentAnnotationsService : public KeyedService,
       const HistoryVisit& visit,
       const proto::PageEntitiesMetadata& page_metadata);
 
+  // Called when entity metadata for |entity_id| that had weight |weight| on
+  // page with |url| has been retrieved.
+  void OnEntityMetadataRetrieved(
+      const GURL& url,
+      const std::string& entity_id,
+      int weight,
+      const absl::optional<EntityMetadata>& entity_metadata);
+
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.
   // |callback| will be invoked to write the bound content annotations to
@@ -295,6 +306,8 @@ class PageContentAnnotationsService : public KeyedService,
   // Set during this' ctor if the corresponding command line or feature flags
   // are set.
   std::unique_ptr<PageContentAnnotationsValidator> validator_;
+
+  OptimizationGuideLogger* optimization_guide_logger_ = nullptr;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

@@ -5,18 +5,14 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace arc {
 namespace input_overlay {
 namespace {
 constexpr int kMenuEntryOffset = 4;
-
-// UI strings.
-// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
-// after UX/UI strings are confirmed.
-constexpr base::StringPiece kEditErrorUnsupportedKey("Unsupported key");
-constexpr base::StringPiece kEditErrorDuplicatedKey(
-    "Duplicated key in the same action");
 
 // For the keys that are caught by display overlay, check if they are reserved
 // for special use.
@@ -24,8 +20,14 @@ bool IsReservedDomCode(ui::DomCode code) {
   switch (code) {
     // Audio, brightness key events won't be caught by display overlay so no
     // need to add them.
-    case ui::DomCode::ESCAPE:  // Used for mouse lock.
-      // TODO(cuicuiruan): Add more reserved keys as needed.
+    // Used for mouse lock.
+    case ui::DomCode::ESCAPE:
+    // Used for traversing the views, which is also required by Accessibility.
+    case ui::DomCode::TAB:
+    // Don't support according to UX requirement.
+    case ui::DomCode::BROWSER_BACK:
+    case ui::DomCode::BROWSER_FORWARD:
+    case ui::DomCode::BROWSER_REFRESH:
       return true;
     default:
       return false;
@@ -41,9 +43,15 @@ ActionView::ActionView(Action* action,
       display_overlay_controller_(display_overlay_controller) {}
 ActionView::~ActionView() = default;
 
-void ActionView::SetDisplayMode(DisplayMode mode) {
-  DCHECK(mode != DisplayMode::kEducation);
-  if ((!editable_ && mode == DisplayMode::kEdit) || mode == DisplayMode::kMenu)
+void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
+  DCHECK(mode != DisplayMode::kEducation && mode != DisplayMode::kMenu &&
+         mode != DisplayMode::kPreMenu);
+  if (mode == DisplayMode::kEducation || mode == DisplayMode::kMenu ||
+      mode == DisplayMode::kPreMenu) {
+    return;
+  }
+
+  if (!editable_ && mode == DisplayMode::kEdit)
     return;
   if (mode == DisplayMode::kView) {
     RemoveEditButton();
@@ -56,10 +64,14 @@ void ActionView::SetDisplayMode(DisplayMode mode) {
       SetVisible(true);
   }
 
-  if (circle_)
+  if (show_circle() && circle_)
     circle_->SetDisplayMode(mode);
-  for (auto* tag : tags_)
-    tag->SetDisplayMode(mode);
+  if (!editing_label) {
+    for (auto* label : labels_)
+      label->SetDisplayMode(mode);
+  } else {
+    editing_label->SetDisplayMode(mode);
+  }
 }
 
 void ActionView::SetPositionFromCenterPosition(gfx::PointF& center_position) {
@@ -86,9 +98,32 @@ void ActionView::RemoveEditMenu() {
   display_overlay_controller_->RemoveActionEditMenu();
 }
 
-void ActionView::ShowErrorMsg(base::StringPiece error_msg) {
-  display_overlay_controller_->AddEditErrorMsg(this, error_msg);
-  SetDisplayMode(DisplayMode::kEdited);
+void ActionView::ShowErrorMsg(const base::StringPiece& message,
+                              ActionLabel* editing_label) {
+  display_overlay_controller_->AddEditMessage(message, MessageType::kError);
+  SetDisplayMode(DisplayMode::kEditedError, editing_label);
+}
+
+void ActionView::ShowInfoMsg(const base::StringPiece& message,
+                             ActionLabel* editing_label) {
+  display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
+}
+
+void ActionView::ShowLabelFocusInfoMsg(const base::StringPiece& message) {
+  display_overlay_controller_->AddEditMessage(message,
+                                              MessageType::kInfoLabelFocus);
+}
+
+void ActionView::RemoveMessage() {
+  display_overlay_controller_->RemoveEditMessage();
+}
+
+void ActionView::ChangeBinding(Action* action,
+                               ActionLabel* action_label,
+                               std::unique_ptr<InputElement> input_element) {
+  display_overlay_controller_->OnBindingChange(action,
+                                               std::move(input_element));
+  SetDisplayMode(DisplayMode::kEditedSuccess, action_label);
 }
 
 void ActionView::OnResetBinding() {
@@ -100,6 +135,19 @@ void ActionView::OnResetBinding() {
       std::make_unique<InputElement>(*(action_->current_binding()));
   display_overlay_controller_->OnBindingChange(action_,
                                                std::move(input_element));
+}
+
+bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
+                                    ActionLabel* editing_label) {
+  if ((!action_->support_modifier_key() &&
+       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
+      IsReservedDomCode(code)) {
+    ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
+                 editing_label);
+    return true;
+  }
+
+  return false;
 }
 
 void ActionView::AddEditButton() {
@@ -122,31 +170,6 @@ void ActionView::RemoveEditButton() {
     return;
   RemoveChildViewT(menu_entry_);
   menu_entry_ = nullptr;
-}
-
-bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
-  // Check if |code| is duplicated with the keys in its action. For example,
-  // there are four keys involved in the key-bound |ActionMove|.
-  auto& binding = action_->GetCurrentDisplayedBinding();
-  if (IsKeyboardBound(binding)) {
-    for (const auto& key : binding.keys()) {
-      if (key != code)
-        continue;
-      display_overlay_controller_->AddEditErrorMsg(this,
-                                                   kEditErrorDuplicatedKey);
-      return true;
-    }
-  }
-
-  if ((!action_->support_modifier_key() &&
-       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
-      IsReservedDomCode(code)) {
-    display_overlay_controller_->AddEditErrorMsg(this,
-                                                 kEditErrorUnsupportedKey);
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace input_overlay

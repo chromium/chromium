@@ -21,15 +21,11 @@ if (current_toolchain == default_toolchain &&
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
 
-  # iostream.cpp (initializer offset 0x142e930 size 0x2)
-  #   [empty ctor, but it still has cost on gcc <4.6]
-  expected_static_initializer_count = 1
-
   # TODO(https://crbug.com/1177849): Remove from tflite:
   # tflite_engine.cc (initializer offset 0x34cb88c size 0x2c)
   #   __ThumbV7PILongThunk__ZNSt3__18ios_base4InitC1Ev
   #   __ThumbV7PILongThunk___cxa_atexit
-  expected_static_initializer_count += 1
+  expected_static_initializer_count = 1
 
   # From v8 I think:
   # token.cc (initializer offset 0x27f024c size 0x11c)
@@ -41,8 +37,7 @@ if (current_toolchain == default_toolchain &&
 
   if (build_with_internal_optimization_guide) {
     # 000081d1 t _GLOBAL__I_000101
-    # 000081dd t _GLOBAL__sub_I_iostream.cpp
-    expected_static_initializer_count += 2
+    expected_static_initializer_count += 1
   }
 
   if (use_static_angle && !is_official_build &&

@@ -34,7 +34,7 @@ LocaleOutputHelper = class {
     /** @private {!Array<!chrome.tts.TtsVoice>} */
     this.availableVoices_ = [];
     const setAvailableVoices = () => {
-      chrome.tts.getVoices((voices) => {
+      chrome.tts.getVoices(voices => {
         this.availableVoices_ = voices || [];
       });
     };

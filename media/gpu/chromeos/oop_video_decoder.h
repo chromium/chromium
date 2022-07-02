@@ -21,17 +21,18 @@ class MojoDecoderBufferWriter;
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
 class OOPVideoDecoder : public VideoDecoderMixin,
-                        public stable::mojom::VideoDecoderClient {
+                        public stable::mojom::VideoDecoderClient,
+                        public stable::mojom::MediaLog {
  public:
   OOPVideoDecoder(const OOPVideoDecoder&) = delete;
   OOPVideoDecoder& operator=(const OOPVideoDecoder&) = delete;
 
   static std::unique_ptr<VideoDecoderMixin> Create(
-      std::unique_ptr<MediaLog> media_log,
-      scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<VideoDecoderMixin::Client> client,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-          pending_remote_decoder);
+          pending_remote_decoder,
+      std::unique_ptr<media::MediaLog> media_log,
+      scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
+      base::WeakPtr<VideoDecoderMixin::Client> client);
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
@@ -57,8 +58,11 @@ class OOPVideoDecoder : public VideoDecoderMixin,
                            const base::UnguessableToken& release_token) final;
   void OnWaiting(WaitingReason reason) final;
 
+  // stable::mojom::MediaLog implementation.
+  void AddLogRecord(const MediaLogRecord& event) final;
+
  private:
-  OOPVideoDecoder(std::unique_ptr<MediaLog> media_log,
+  OOPVideoDecoder(std::unique_ptr<media::MediaLog> media_log,
                   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
                   base::WeakPtr<VideoDecoderMixin::Client> client,
                   mojo::PendingRemote<stable::mojom::StableVideoDecoder>
@@ -91,6 +95,9 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   base::OnceClosure reset_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::AssociatedReceiver<stable::mojom::VideoDecoderClient> client_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  mojo::Receiver<stable::mojom::MediaLog> stable_media_log_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =

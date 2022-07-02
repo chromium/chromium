@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.CanonicalURLResult" enum="CanonicalURLResult"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>pkl@chromium.org</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
@@ -184,28 +184,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.Legacy.Translate.Toggle.Delay" units="ms"
-    expires_after="2020-12-13">
-  <owner>sczs@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>
-    Records the time between tapping the target and source language in a legacy
-    infobar. If only one of either is tapped, nothing is logged.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Legacy.Translate.Unused.Duration" units="ms"
-    expires_after="2020-10-11">
-  <owner>sczs@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>
-    Records the time an unused legacy infobar persists on screen. This is logged
-    when the infobar is closed.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2022-07-24">
+    enum="MobileMessagesBadgeState" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -214,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
-    enum="MobileMessagesBannerDismissType" expires_after="2022-07-24">
+    enum="MobileMessagesBannerDismissType" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -223,14 +203,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2022-07-31">
+    enum="MobileMessagesBannerEvent" expires_after="2023-07-31">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-25">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -251,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Accept.Time" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-25">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -263,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Event"
-    enum="MobileMessagesConfirmInfobarEvents" expires_after="2022-10-16">
+    enum="MobileMessagesConfirmInfobarEvents" expires_after="2022-12-25">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -275,14 +255,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Modal.Event.{MobileInfobarType}"
-    enum="MobileMessagesModalEvent" expires_after="2022-07-24">
+    enum="MobileMessagesModalEvent" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
-    enum="MobileMessagesInfobarType" expires_after="2022-07-20">
+    enum="MobileMessagesInfobarType" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records a tap on an Infobar overflow menu row.</summary>
@@ -307,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Present"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2022-07-20">
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2023-07-20">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -316,14 +296,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
-    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-10-16">
+    enum="MobileMessagesSaveCardModalEvent" expires_after="2023-10-16">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records Save Card specific Infobar Modal events.</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2022-07-20">
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -343,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2022-07-20">
+    enum="MobileMessagesTranslateModalPresent" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -579,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Translate.Unused.Count" units="units"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -760,7 +740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -783,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.FromLaunch.{Target}" units="ms"
-    expires_after="2022-08-21">
+    expires_after="2024-08-21">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -793,6 +773,8 @@ chromium-metrics-reviews@google.com.
   <token key="Target">
     <variant name="ActivityInflated"
         summary="the activity is ready to be drawn, although likely empty"/>
+    <variant name="ChildStatusAvailable"
+        summary="the child account status is loaded"/>
     <variant name="FirstFragmentInflatedV2"
         summary="the first fragment is ready to be drawn, the first
                  meaningful paint. Version V2 fixed an issue that previous
@@ -804,9 +786,11 @@ chromium-metrics-reviews@google.com.
         Removed in 2022/05. Replaced by NativePolicyAndChildStatusLoaded.
       </obsolete>
     </variant>
+    <variant name="NativeInitialized" summary="the native code is initialized"/>
     <variant name="NativePolicyAndChildStatusLoaded"
         summary="the native code, policies and child account status are
                  loaded"/>
+    <variant name="PoliciesLoaded" summary="policies are loaded"/>
     <variant name="TosAccepted" summary="the ToS is accepted"/>
     <variant name="TriggerLayoutInflation"
         summary="layout inflation is triggered"/>
@@ -852,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -880,7 +864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -900,6 +884,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: How the user left the sign-in part of the &quot;first run
     experience&quot; activity (M-38+).
+  </summary>
+</histogram>
+
+<histogram name="MobileFre.SlowestLoadPoint" enum="LoadPoint"
+    expires_after="2022-11-01">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.org</owner>
+  <summary>
+    Slowest loading point among native, policy and child account status in the
+    signin mobile FRE. Not emitted for the light-weight FRE. Android chrome
+    only.
   </summary>
 </histogram>
 
@@ -1036,7 +1031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1097,6 +1092,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the signin promo is implicitly dismissed (by leaving
+    the NTP) per impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times one of the &quot;sign in&quot; buttons (any of the
+    signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
+    |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
+    impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton"
+    units="impressions" expires_after="2023-06-01">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
+    per impression of the NTP feed top section sign in promo.
+  </summary>
+</histogram>
+
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
     units="impressions" expires_after="2023-04-01">
   <owner>jlebel@chromium.org</owner>
@@ -1130,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1163,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1188,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.LaunchType" enum="LaunchType"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

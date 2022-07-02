@@ -32,30 +32,8 @@ Node::Node(Type type, const IpczDriver& driver, IpczDriverHandle driver_node)
 Node::~Node() = default;
 
 IpczResult Node::Close() {
-  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links;
-  {
-    absl::MutexLock lock(&mutex_);
-    node_links_.swap(node_links);
-    broker_link_.reset();
-  }
-
-  for (const auto& entry : node_links) {
-    entry.second->Deactivate();
-  }
+  ShutDown();
   return IPCZ_RESULT_OK;
-}
-
-void Node::ShutDown() {
-  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links;
-  {
-    absl::MutexLock lock(&mutex_);
-    std::swap(node_links_, node_links);
-    broker_link_.reset();
-  }
-
-  for (const auto& entry : node_links) {
-    entry.second->Deactivate();
-  }
 }
 
 IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
@@ -69,8 +47,8 @@ IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
     initial_portals[i] = Portal::ReleaseAsHandle(std::move(portal));
   }
 
-  auto transport = MakeRefCounted<DriverTransport>(
-      DriverObject(WrapRefCounted(this), driver_transport));
+  auto transport =
+      MakeRefCounted<DriverTransport>(DriverObject(driver_, driver_transport));
   IpczResult result = NodeConnector::ConnectNode(WrapRefCounted(this),
                                                  transport, flags, portals);
   if (result != IPCZ_RESULT_OK) {
@@ -111,9 +89,16 @@ void Node::SetAssignedName(const NodeName& name) {
 }
 
 bool Node::AddLink(const NodeName& remote_node_name, Ref<NodeLink> link) {
-  absl::MutexLock lock(&mutex_);
-  auto [it, inserted] = node_links_.insert({remote_node_name, std::move(link)});
-  return inserted;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto [it, inserted] = node_links_.insert({remote_node_name, link});
+    if (inserted) {
+      return true;
+    }
+  }
+
+  link->Deactivate();
+  return false;
 }
 
 NodeName Node::GenerateRandomName() const {
@@ -122,6 +107,19 @@ NodeName Node::GenerateRandomName() const {
       driver_.GenerateRandomBytes(sizeof(name), IPCZ_NO_FLAGS, nullptr, &name);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
   return name;
+}
+
+void Node::ShutDown() {
+  NodeLinkMap node_links;
+  {
+    absl::MutexLock lock(&mutex_);
+    std::swap(node_links_, node_links);
+    broker_link_.reset();
+  }
+
+  for (const auto& entry : node_links) {
+    entry.second->Deactivate();
+  }
 }
 
 }  // namespace ipcz

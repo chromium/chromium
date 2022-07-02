@@ -56,9 +56,11 @@ class TestAggregationService {
                     int value,
                     AggregationMode aggregation_mode,
                     url::Origin reporting_origin,
-                    std::string privacy_budget_key,
                     std::vector<GURL> processing_urls,
-                    bool is_debug_mode_enabled);
+                    bool is_debug_mode_enabled,
+                    base::Value::Dict additional_fields,
+                    std::string api_version,
+                    std::string api_identifier);
     AssembleRequest(AssembleRequest&& other);
     AssembleRequest& operator=(AssembleRequest&& other);
     ~AssembleRequest();
@@ -79,6 +81,15 @@ class TestAggregationService {
     std::vector<GURL> processing_urls;
     // Whether debug_mode should be enabled for the report.
     bool is_debug_mode_enabled;
+
+    // Additional fields to add to shared_info.
+    base::Value::Dict additional_fields;
+
+    // Specifies the API version.
+    std::string api_version;
+
+    // Enum string identifying which API created the report request.
+    std::string api_identifier;
   };
 
   virtual ~TestAggregationService() = default;

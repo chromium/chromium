@@ -9,11 +9,15 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -59,6 +63,48 @@ TEST_F(AppListFolderViewProductivityLauncherTest,
   // The scroll view has space for at least 4 full rows, but not 5.
   EXPECT_GE(scroll_view->height(), tile_height * 4);
   EXPECT_LT(scroll_view->height(), tile_height * 5);
+}
+
+TEST_F(AppListFolderViewProductivityLauncherTest,
+       CloseFolderMakesA11yAnnouncement) {
+  // Create a folder with a couple items.
+  app_list_test_model_->CreateAndPopulateFolderWithApps(2);
+
+  // Open the app list and open the folder.
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  views::View* folder_item = apps_grid_view->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+  ASSERT_TRUE(helper->IsInFolderView());
+
+  // Get the accessibility announcement view.
+  auto* folder_view = helper->GetBubbleFolderView();
+  views::View* announcement_view =
+      folder_view->a11y_announcer_for_test()->announcement_view_for_test();
+  ASSERT_TRUE(announcement_view);
+
+  // Add a callback to wait for an accessibility event.
+  ax::mojom::Event event = ax::mojom::Event::kNone;
+  base::RunLoop run_loop;
+  announcement_view->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting([&](const ui::AXPlatformNodeDelegate* unused,
+                                     const ax::mojom::Event event_in) {
+        event = event_in;
+        run_loop.Quit();
+      }));
+
+  // Press escape to close the folder.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  run_loop.Run();
+  ASSERT_FALSE(helper->IsInFolderView());
+
+  // An alert fired with a message.
+  EXPECT_EQ(event, ax::mojom::Event::kAlert);
+  ui::AXNodeData node_data;
+  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Close folder");
 }
 
 }  // namespace ash

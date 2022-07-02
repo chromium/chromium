@@ -143,22 +143,22 @@ class MODULES_EXPORT AudioNodeOutput final {
   scoped_refptr<AudioBus> in_place_bus_;
   // If m_isInPlace is true, use m_inPlaceBus as the valid AudioBus; If false,
   // use the default m_internalBus.
-  bool is_in_place_;
+  bool is_in_place_ = false;
 
   // This HashSet holds connection references. We must call
   // AudioNode::makeConnection when we add an AudioNodeInput to this, and must
   // call AudioNode::breakConnection() when we remove an AudioNodeInput from
   // this.
   HashSet<AudioNodeInput*> inputs_;
-  bool is_enabled_;
+  bool is_enabled_ = true;
 
-  bool did_call_dispose_;
+  bool did_call_dispose_ = false;
 
   // For the purposes of rendering, keeps track of the number of inputs and
   // AudioParams we're connected to.  These value should only be changed at the
   // very start or end of the rendering quantum.
-  unsigned rendering_fan_out_count_;
-  unsigned rendering_param_fan_out_count_;
+  unsigned rendering_fan_out_count_ = 0;
+  unsigned rendering_param_fan_out_count_ = 0;
 
   // This collection of raw pointers is safe because they are retained by
   // AudioParam objects retained by m_connectedParams of the owner AudioNode.

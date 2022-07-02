@@ -147,8 +147,8 @@
       "input_sources": [
         "keyboard"
       ],
-      "name": "Setting",
-      "key": "Escape",
+      "name": "Pause",
+      "key": "Backspace",
       "location": [
         {
           "type": "dependent_position",

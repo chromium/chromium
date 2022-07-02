@@ -134,9 +134,7 @@ SSLConnectJob::SSLConnectJob(
           NetLogEventType::SSL_CONNECT_JOB_CONNECT),
       params_(std::move(params)),
       callback_(base::BindRepeating(&SSLConnectJob::OnIOComplete,
-                                    base::Unretained(this))),
-      ssl_negotiation_started_(false),
-      disable_legacy_crypto_with_fallback_(true) {}
+                                    base::Unretained(this))) {}
 
 SSLConnectJob::~SSLConnectJob() {
   // In the case the job was canceled, need to delete nested job first to
@@ -440,8 +438,14 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
-  if (base::FeatureList::IsEnabled(features::kEncryptedClientHello) &&
-      !ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED) {
+  // We record metrics based on whether the server advertised ECH support in
+  // DNS. This allows the metrics to measure the same set of servers in both
+  // control and experiment group.
+  const bool is_ech_capable =
+      endpoint_result_ && !endpoint_result_->metadata.ech_config_list.empty();
+
+  if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED &&
+      base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
     // We used ECH, and the server could not decrypt the ClientHello. However,
     // it was able to handshake with the public name and send authenticated
     // retry configs. If this is not the first time around, retry the connection
@@ -450,14 +454,13 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     //
     // See
     // https://www.ietf.org/archive/id/draft-ietf-tls-esni-13.html#section-6.1.6
-    DCHECK(endpoint_result_ &&
-           !endpoint_result_->metadata.ech_config_list.empty());
+    DCHECK(is_ech_capable);
     ech_retry_configs_ = ssl_socket_->GetECHRetryConfigs();
     net_log().AddEvent(
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
-          base::Value dict(base::Value::Type::DICTIONARY);
-          dict.SetKey("bytes", NetLogBinaryValue(*ech_retry_configs_));
-          return dict;
+          base::Value::Dict dict;
+          dict.Set("bytes", NetLogBinaryValue(*ech_retry_configs_));
+          return base::Value(std::move(dict));
         });
 
     // TODO(https://crbug.com/1091403): Add histograms for how often this
@@ -468,6 +471,39 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   }
 
   const std::string& host = params_->host_and_port().host();
+  if (is_ech_capable &&
+      base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+    // These values are persisted to logs. Entries should not be renumbered
+    // and numeric values should never be reused.
+    enum class ECHResult {
+      // The connection succeeded on the initial connection.
+      kSuccessInitial = 0,
+      // The connection failed on the initial connection, without providing
+      // retry configs.
+      kErrorInitial = 1,
+      // The connection succeeded after getting retry configs.
+      kSuccessRetry = 2,
+      // The connection failed after getting retry configs.
+      kErrorRetry = 3,
+      // The connection succeeded after getting a rollback signal.
+      kSuccessRollback = 4,
+      // The connection failed after getting a rollback signal.
+      kErrorRollback = 5,
+      kMaxValue = kErrorRollback,
+    };
+    const bool is_ok = result == OK;
+    ECHResult ech_result;
+    if (!ech_retry_configs_.has_value()) {
+      ech_result =
+          is_ok ? ECHResult::kSuccessInitial : ECHResult::kErrorInitial;
+    } else if (ech_retry_configs_->empty()) {
+      ech_result =
+          is_ok ? ECHResult::kSuccessRollback : ECHResult::kErrorRollback;
+    } else {
+      ech_result = is_ok ? ECHResult::kSuccessRetry : ECHResult::kErrorRetry;
+    }
+    base::UmaHistogramEnumeration("Net.SSL.ECHResult", ech_result);
+  }
 
   if (result == OK) {
     DCHECK(!connect_timing_.ssl_start.is_null());
@@ -475,6 +511,11 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         connect_timing_.ssl_end - connect_timing_.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
                                base::Milliseconds(1), base::Minutes(1), 100);
+    if (is_ech_capable) {
+      UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_ECH",
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(1), 100);
+    }
 
     SSLInfo ssl_info;
     bool has_ssl_info = ssl_socket_->GetSSLInfo(&ssl_info);
@@ -538,6 +579,9 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
+  if (is_ech_capable) {
+    base::UmaHistogramSparse("Net.SSL_Connection_Error_ECH", std::abs(result));
+  }
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));

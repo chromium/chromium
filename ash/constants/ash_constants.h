@@ -70,9 +70,6 @@ constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 // Whether dark mode is enabled by default.
 constexpr bool kDefaultDarkModeEnabled = false;
 
-// Whether color mode is themed by default.
-constexpr bool kDefaultColorModeThemed = true;
-
 // Maximum number of times that dark/light mode educational nudge can be shown.
 constexpr int kDarkLightModeNudgeMaxShownCount = 3;
 

@@ -1,4 +1,4 @@
-<style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+<style include="cr-shared-style diagnostics-shared">
   #banner {
     align-items: center;
     background-color: var(--cros-highlight-color);
@@ -18,15 +18,11 @@
     padding-inline-start: 40px;
   }
 
-  #bannerMsg {
-    @apply --diagnostics-caution-banner-font;
-  }
-
   .elevation-2 {
     box-shadow: var(--diagnostics-box-shadow-elevation-2);
   }
 </style>
 <div id="banner" hidden$="[[!bannerMessage]]" class$="[[scrollingClass_]]">
   <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
-  <span id="bannerMsg">[[bannerMessage]]</span>
+  <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
 </div>

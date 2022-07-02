@@ -38,8 +38,7 @@ class GeolocationPermissionContextExtensions {
   // permission has been set to |new_permission|. Consumes |callback| if it
   // returns true while setting |permission_set| to false, otherwise |callback|
   // is not used.
-  bool DecidePermission(content::WebContents* web_contents,
-                        const permissions::PermissionRequestID& request_id,
+  bool DecidePermission(const permissions::PermissionRequestID& request_id,
                         const GURL& requesting_frame,
                         bool user_gesture,
                         base::OnceCallback<void(ContentSetting)>* callback,

@@ -48,7 +48,6 @@ group("headless_lib") {
 repack("resource_pack_data") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
@@ -62,7 +61,6 @@ repack("resource_pack_data") {
     "//components/resources:components_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
@@ -241,24 +239,6 @@ action("gen_devtools_client_api") {
   ]
 }
 
-if (headless_fontconfig_utils && !is_fuchsia) {
-  static_library("headless_fontconfig_utils") {
-    sources = [
-      "public/headless_export.h",
-      "public/util/fontconfig.cc",
-      "public/util/fontconfig.h",
-    ]
-
-    deps = [
-      "//base",
-      "//build/config/freetype",
-      "//third_party/fontconfig",
-    ]
-
-    configs += [ ":inside_headless_component" ]
-  }
-}
-
 inspector_protocol_generate("protocol_sources") {
   visibility = [
     ":backend_cdp_bindings",
@@ -393,6 +373,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_quota_permission_context.h",
     "lib/browser/headless_request_context_manager.cc",
     "lib/browser/headless_request_context_manager.h",
+    "lib/browser/headless_select_file_dialog_factory.cc",
+    "lib/browser/headless_select_file_dialog_factory.h",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -497,6 +479,7 @@ component("headless_non_renderer") {
     "//ui/display",
     "//ui/events/devices",
     "//ui/gfx",
+    "//ui/shell_dialogs",
     "//url",
   ]
 
@@ -624,10 +607,6 @@ component("headless_non_renderer") {
   if (use_dbus) {
     defines += [ "USE_DBUS" ]
     deps += [ "//device/bluetooth" ]
-  }
-
-  if (headless_fontconfig_utils && !is_fuchsia) {
-    deps += [ ":headless_fontconfig_utils" ]
   }
 
   configs += [ ":inside_headless_component" ]
@@ -834,15 +813,16 @@ test("headless_browsertests") {
   data_deps = []
 
   if (is_fuchsia) {
-    use_cfv2 = false
+    use_cfv1 = false
+
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
     additional_manifest_fragments = [
-      "//build/config/fuchsia/test/font_capabilities.test-cmx",
-
-      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-
-      "//build/config/fuchsia/test/network_capabilities.test-cmx",
-      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/network.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
 
@@ -869,6 +849,7 @@ test("headless_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/clipboard",
+    "//ui/shell_dialogs",
   ]
 
   if (is_mac) {

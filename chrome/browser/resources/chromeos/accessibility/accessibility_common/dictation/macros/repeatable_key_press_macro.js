@@ -51,9 +51,7 @@ export class RepeatableKeyPressMacro extends Macro {
   doKeyPress() {}
 }
 
-/**
- * Macro to delete by character.
- */
+/** Macro to delete by character. */
 export class DeletePreviousCharacterMacro extends RepeatableKeyPressMacro {
   /**
    * @param {number=} repeat The number of characters to delete.
@@ -68,9 +66,7 @@ export class DeletePreviousCharacterMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to navigate to the previous character.
- */
+/** Macro to navigate to the previous character. */
 export class NavPreviousCharMacro extends RepeatableKeyPressMacro {
   /**
    * @param {boolean} isRTLLocale Whether the Dictation speech recognition
@@ -91,9 +87,7 @@ export class NavPreviousCharMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to navigate to the next character.
- */
+/** Macro to navigate to the next character. */
 export class NavNextCharMacro extends RepeatableKeyPressMacro {
   /**
    * @param {boolean} isRTLLocale Whether the Dictation speech recognition
@@ -114,13 +108,9 @@ export class NavNextCharMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to navigate to the previous line.
- */
+/** Macro to navigate to the previous line. */
 export class NavPreviousLineMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {number=} repeat The number of lines to move.
-   */
+  /** @param {number=} repeat The number of lines to move. */
   constructor(repeat = 1) {
     super(MacroName.NAV_PREV_LINE, repeat);
   }
@@ -131,13 +121,9 @@ export class NavPreviousLineMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to navigate to the next line.
- */
+/** Macro to navigate to the next line. */
 export class NavNextLineMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {number=} repeat The number of lines to move.
-   */
+  /** @param {number=} repeat The number of lines to move. */
   constructor(repeat = 1) {
     super(MacroName.NAV_NEXT_LINE, repeat);
   }
@@ -148,9 +134,7 @@ export class NavNextLineMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to copy selected text.
- */
+/** Macro to copy selected text. */
 export class CopySelectedTextMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.COPY_SELECTED_TEXT, /*repeat=*/ 1);
@@ -162,9 +146,7 @@ export class CopySelectedTextMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to paste text.
- */
+/** Macro to paste text. */
 export class PasteTextMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.PASTE_TEXT, /*repeat=*/ 1);
@@ -176,9 +158,7 @@ export class PasteTextMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to cut selected text.
- */
+/** Macro to cut selected text. */
 export class CutSelectedTextMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.CUT_SELECTED_TEXT, /*repeat=*/ 1);
@@ -190,9 +170,7 @@ export class CutSelectedTextMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to undo a text editing action.
- */
+/** Macro to undo a text editing action. */
 export class UndoTextEditMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.UNDO_TEXT_EDIT, /*repeat=*/ 1);
@@ -204,9 +182,7 @@ export class UndoTextEditMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to redo a text editing action.
- */
+/** Macro to redo a text editing action. */
 export class RedoActionMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.REDO_ACTION, /*repeat=*/ 1);
@@ -218,9 +194,7 @@ export class RedoActionMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to select all text.
- */
+/** Macro to select all text. */
 export class SelectAllTextMacro extends RepeatableKeyPressMacro {
   constructor() {
     super(MacroName.SELECT_ALL_TEXT, /*repeat=*/ 1);
@@ -232,9 +206,7 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
   }
 }
 
-/**
- * Macro to unselect text.
- */
+/** Macro to unselect text. */
 export class UnselectTextMacro extends RepeatableKeyPressMacro {
   /**
    * @param {boolean} isRTLLocale Whether the Dictation speech recognition
@@ -250,5 +222,59 @@ export class UnselectTextMacro extends RepeatableKeyPressMacro {
   doKeyPress() {
     EventGenerator.sendKeyPress(
         this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT);
+  }
+}
+
+/** Macro to delete the previous word. */
+export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
+  constructor() {
+    super(MacroName.DELETE_PREV_WORD, /*repeat=*/ 1);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.BACK, {ctrl: true});
+  }
+}
+
+/** Macro to navigate to the next word. */
+export class NavNextWordMacro extends RepeatableKeyPressMacro {
+  /**
+   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
+   *     locale is right-to-left.
+   * @param {number=} repeat The number of words to move.
+   */
+  constructor(isRTLLocale, repeat = 1) {
+    super(MacroName.NAV_NEXT_WORD, repeat);
+
+    /** @private {boolean} */
+    this.isRTLLocale_ = isRTLLocale;
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(
+        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT, {ctrl: true});
+  }
+}
+
+/** Macro to navigate to the previous word. */
+export class NavPrevWordMacro extends RepeatableKeyPressMacro {
+  /**
+   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
+   *     locale is right-to-left.
+   * @param {number=} repeat The number of words to move.
+   */
+  constructor(isRTLLocale, repeat = 1) {
+    super(MacroName.NAV_PREV_WORD, repeat);
+
+    /** @private {boolean} */
+    this.isRTLLocale_ = isRTLLocale;
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(
+        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
   }
 }

@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var ArcAccountPickerTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://chrome-signin/test_loader.html?module=chromeos/arc_account_picker/arc_account_picker_test.js';
+    return 'chrome://chrome-signin/test_loader.html?module=chromeos/arc_account_picker/arc_account_picker_test.js&host=test';
   }
 
   get suiteName() {

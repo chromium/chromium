@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_action_menu/cr_action_menu.js';
+import '../../cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {URLVisit} from './history_clusters.mojom-webui.js';
 import {getTemplate} from './menu_container.html.js';
@@ -26,6 +29,8 @@ declare global {
   }
 }
 
+const MenuContainerElementBase = I18nMixin(PolymerElement);
+
 interface MenuContainerElement {
   $: {
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
@@ -33,7 +38,7 @@ interface MenuContainerElement {
   };
 }
 
-class MenuContainerElement extends PolymerElement {
+class MenuContainerElement extends MenuContainerElementBase {
   static get is() {
     return 'menu-container';
   }
@@ -48,6 +53,15 @@ class MenuContainerElement extends PolymerElement {
        * The visit associated with this menu.
        */
       visit: Object,
+
+      /**
+       * Usually this is true, but this can be false if deleting history is
+       * prohibited by Enterprise policy.
+       */
+      allowDeletingHistory_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('allowDeletingHistory'),
+      },
     };
   }
 
@@ -56,17 +70,18 @@ class MenuContainerElement extends PolymerElement {
   //============================================================================
 
   visit: URLVisit;
+  private allowDeletingHistory_: boolean;
 
   //============================================================================
   // Event handlers
   //============================================================================
 
-  private onActionMenuButtonClick_(event: MouseEvent) {
+  private onActionMenuButtonClick_(event: Event) {
     this.$.actionMenu.get().showAt(this.$.actionMenuButton);
     event.preventDefault();  // Prevent default browser action (navigation).
   }
 
-  private onOpenAllButtonClick_(event: MouseEvent) {
+  private onOpenAllButtonClick_(event: Event) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
     this.dispatchEvent(new CustomEvent('open-all-visits', {
@@ -77,24 +92,12 @@ class MenuContainerElement extends PolymerElement {
     this.$.actionMenu.get().close();
   }
 
-  private onRemoveAllButtonClick_(event: MouseEvent) {
+  private onRemoveAllButtonClick_(event: Event) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
     this.dispatchEvent(new CustomEvent('remove-all-visits', {
       bubbles: true,
       composed: true,
-    }));
-
-    this.$.actionMenu.get().close();
-  }
-
-  private onRemoveSelfButtonClick_(event: MouseEvent) {
-    event.preventDefault();  // Prevent default browser action (navigation).
-
-    this.dispatchEvent(new CustomEvent('remove-visit', {
-      bubbles: true,
-      composed: true,
-      detail: this.visit,
     }));
 
     this.$.actionMenu.get().close();

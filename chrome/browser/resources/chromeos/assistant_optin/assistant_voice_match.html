@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/util.html">
@@ -31,7 +32,10 @@
       }
 
       #ready-img {
-        height: 260px;
+        height: 95%;
+        max-height: 95%;
+        max-width: 95%;
+        width: 95%;
       }
 
       @media screen and (max-height: 736px) {
@@ -61,7 +65,8 @@
       </h1>
       <div slot="subtitle" id="voice-match-animation">
         <oobe-cr-lottie id="voice-match-lottie"
-            animation-url="voice_match_animation.json">
+            animation-url="[[getVoiceMatchAnimationUrl_(isDarkModeActive_,
+                                                        isTabletMode_)]]">
         </oobe-cr-lottie>
       </div>
       <div slot="content" class="landscape-vertical-centered">
@@ -151,8 +156,12 @@
             'assistantVoiceMatchAlreadySetupMessageForChild', childName_)]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img id="ready-img" class="oobe-illustration" aria-hidden="true"
-            srcset="./assistant_optin/assistant_ready_1x.svg 1x, ./assistant_optin/assistant_ready_2x.svg 2x">
+        <iron-media-query query="(prefers-color-scheme: dark)"
+                          query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
+        <cr-lottie id="ready-img" aria-hidden="true"
+            animation-url="[[getReadyImgUrl_(isDarkModeActive_)]]">
+        </cr-lottie>
       </div>
     </oobe-adaptive-dialog>
   </template>

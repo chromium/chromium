@@ -5,23 +5,122 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_EXTERNAL_ACTION_DELEGATE_H_
 #define CHROME_BROWSER_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_EXTERNAL_ACTION_DELEGATE_H_
 
-#include "components/autofill_assistant/browser/public/external_action_delegate.h"
+#include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
+#include "components/autofill_assistant/browser/public/external_action.pb.h"
+#include "components/autofill_assistant/browser/public/external_action_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PasswordChangeRunDisplay;
+class AssistantDisplayDelegate;
+
+// Receives actions from the `HeadlessScriptController` and passes them on an
+// implementation of a `PasswordChangeRunDisplay`.
+// Currently `ApcExternalActionDelegate` implements two interfaces. If the
+// class becomes too complex, we may later separate out the
+// `PasswordChangeRunController` implementation and compose it instead.
 class ApcExternalActionDelegate
-    : public autofill_assistant::ExternalActionDelegate {
+    : public autofill_assistant::ExternalActionDelegate,
+      public PasswordChangeRunController {
  public:
-  ApcExternalActionDelegate();
+  explicit ApcExternalActionDelegate(
+      AssistantDisplayDelegate* display_delegate);
   ApcExternalActionDelegate(const ApcExternalActionDelegate&) = delete;
   ApcExternalActionDelegate& operator=(const ApcExternalActionDelegate&) =
       delete;
-  ~ApcExternalActionDelegate() = default;
+  ~ApcExternalActionDelegate() override;
 
-  // ExternalActionDelegate
+  // Sets up the display to render a password change run UI,
+  // needs to be called BEFORE starting a script.
+  void SetupDisplay();
+
+  // ExternalActionDelegate:
   void OnActionRequested(
-      const autofill_assistant::external::Action& action_info,
-      base::OnceCallback<void(
-          autofill_assistant::ExternalActionDelegate::ActionResult)> callback)
+      const autofill_assistant::external::Action& action,
+      base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
+      base::OnceCallback<void(const autofill_assistant::external::Result&
+                                  result)> end_action_callback) override;
+  void OnInterruptStarted() override;
+  void OnInterruptFinished() override;
+
+  // PasswordChangeRunController:
+  void SetTopIcon(
+      autofill_assistant::password_change::TopIcon top_icon) override;
+  void SetTitle(const std::u16string& title) override;
+  void SetDescription(const std::u16string& description) override;
+  void SetProgressBarStep(
+      autofill_assistant::password_change::ProgressStep progress_step) override;
+  base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override;
+  void ShowBasePrompt(
+      const autofill_assistant::password_change::BasePromptSpecification&
+          base_prompt) override;
+  void OnBasePromptChoiceSelected(size_t choice_index) override;
+  void ShowUseGeneratedPasswordPrompt(
+      const autofill_assistant::password_change::
+          UseGeneratedPasswordPromptSpecification& password_prompt,
+      const std::u16string& generated_password) override;
+  void OnGeneratedPasswordSelected(bool selected) override;
+  void ShowStartingScreen(const GURL& url) override;
+
+ private:
+  friend class ApcExternalActionDelegateTest;
+
+  // PasswordChangeRunController:
+  void Show(base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display)
       override;
+
+  // Ends the current action by notifying the `ExternalActionController` about
+  // the `success` of the action. If non-empty, `serialized_result` is passed
+  // as the result payload. Otherwise, no payload is set.
+  void EndAction(bool success, std::string serialized_result = std::string());
+
+  // Handler methods for the different actions that `ApcExternalActionDelegate`
+  // supports.
+  void HandleBasePrompt(
+      const autofill_assistant::password_change::BasePromptSpecification&
+          specification);
+  void HandleGeneratedPasswordPrompt(
+      const autofill_assistant::password_change::
+          UseGeneratedPasswordPromptSpecification& specification);
+  void HandleUpdateSidePanel(
+      const autofill_assistant::password_change::UpdateSidePanelSpecification&
+          specification);
+
+  void OnBasePromptDomUpdateReceived(
+      const autofill_assistant::external::ElementConditionsUpdate& update);
+
+  // The callback that terminates the current action.
+  base::OnceCallback<void(const autofill_assistant::external::Result& result)>
+      end_action_callback_;
+
+  // The callback that starts regular DOM checks.
+  base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback_;
+
+  // Indicates whether a base prompt should send back a result payload.
+  bool base_prompt_should_send_payload_ = false;
+
+  // Stores the UI state of a password change run.
+  PasswordChangeRunController::Model model_;
+
+  // Back up for the state before the start of an interrupt.
+  absl::optional<PasswordChangeRunController::Model> model_before_interrupt_;
+
+  // The return values associated with each currently shown base prompt choice.
+  // It is empty when no prompt is being displayed.
+  std::vector<std::string> base_prompt_return_values_;
+
+  // The view that renders a password change run flow.
+  base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display_ =
+      nullptr;
+
+  // The display where we render the UI for a password change run.
+  raw_ptr<AssistantDisplayDelegate> display_delegate_ = nullptr;
+
+  // Factory for weak pointers to this class.
+  base::WeakPtrFactory<PasswordChangeRunController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_EXTERNAL_ACTION_DELEGATE_H_

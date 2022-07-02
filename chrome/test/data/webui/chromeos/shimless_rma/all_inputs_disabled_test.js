@@ -36,14 +36,11 @@ export function allInputsDisabledTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
+  setup(() => {
+    document.body.innerHTML = '';
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
     setupFakeService();
-  });
-
-  setup(() => {
-    document.body.innerHTML = '';
   });
 
   teardown(() => {

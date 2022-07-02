@@ -11,7 +11,7 @@
 
 // The background color for the table view.
 @property(nonatomic, readwrite, strong) UIColor* tableViewBackgroundColor;
-// The background color for the cell. It overrides |tableViewBackgroundColor|
+// The background color for the cell. It overrides `tableViewBackgroundColor`
 // for the cell background if it is not nil.
 @property(nonatomic, readwrite, strong) UIColor* cellBackgroundColor;
 // Text colors.

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,10 +75,16 @@ ChromeOSAuthenticator::AuthenticatorTransport() const {
 
 void ChromeOSAuthenticator::InitializeAuthenticator(
     base::OnceClosure callback) {
+  auto barrier = base::BarrierClosure(2, std::move(callback));
+
   u2f::GetAlgorithmsRequest request;
   chromeos::U2FClient::Get()->GetAlgorithms(
       request, base::BindOnce(&ChromeOSAuthenticator::OnGetAlgorithmsResponse,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+                              weak_factory_.GetWeakPtr(), barrier));
+
+  IsPowerButtonModeEnabled(
+      base::BindOnce(&ChromeOSAuthenticator::OnIsPowerButtonModeEnabled,
+                     weak_factory_.GetWeakPtr(), barrier));
 }
 
 void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
@@ -96,6 +103,13 @@ void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
     supported_algorithms_ = absl::nullopt;
   }
 
+  std::move(callback).Run();
+}
+
+void ChromeOSAuthenticator::OnIsPowerButtonModeEnabled(
+    base::OnceClosure callback,
+    bool enabled) {
+  u2f_enabled_ = enabled;
   std::move(callback).Run();
 }
 
@@ -256,6 +270,38 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                           std::move(callback)));
 }
 
+void ChromeOSAuthenticator::GetCredentialInformationForRequest(
+    const CtapGetAssertionRequest& request,
+    GetCredentialInformationForRequestCallback callback) {
+  u2f::HasCredentialsRequest req;
+  req.set_rp_id(request.rp_id);
+  if (request.app_id) {
+    req.set_app_id(*request.app_id);
+  }
+
+  for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
+    req.add_credential_id(
+        std::string(descriptor.id.begin(), descriptor.id.end()));
+  }
+
+  chromeos::U2FClient::Get()->HasCredentials(
+      req, base::BindOnce(
+               &ChromeOSAuthenticator::OnHasCredentialInformationForRequest,
+               weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
+    GetCredentialInformationForRequestCallback callback,
+    absl::optional<u2f::HasCredentialsResponse> response) {
+  std::move(callback).Run(
+      /*credentials=*/{},
+      /*has_credential=*/
+      response &&
+          response->status() ==
+              u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
+          response->credential_id().size() > 0);
+}
+
 void ChromeOSAuthenticator::OnGetAssertionResponse(
     CtapGetAssertionRequest request,
     GetAssertionCallback callback,
@@ -299,34 +345,6 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
       std::vector<uint8_t>(credential_id.begin(), credential_id.end()));
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                           std::move(authenticator_response));
-}
-
-void ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
-    const CtapGetAssertionRequest& request,
-    base::OnceCallback<void(bool has_credential)> callback) {
-  u2f::HasCredentialsRequest req;
-  req.set_rp_id(request.rp_id);
-  if (request.app_id) {
-    req.set_app_id(*request.app_id);
-  }
-
-  for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
-    req.add_credential_id(
-        std::string(descriptor.id.begin(), descriptor.id.end()));
-  }
-
-  chromeos::U2FClient::Get()->HasCredentials(
-      req,
-      base::BindOnce(
-          [](base::OnceCallback<void(bool has_credential)> callback,
-             absl::optional<u2f::HasCredentialsResponse> response) {
-            std::move(callback).Run(
-                response &&
-                response->status() ==
-                    u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
-                response->credential_id().size() > 0);
-          },
-          std::move(callback)));
 }
 
 void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
@@ -436,6 +454,12 @@ bool ChromeOSAuthenticator::IsPaired() const {
 
 bool ChromeOSAuthenticator::RequiresBlePairingPin() const {
   return false;
+}
+
+bool ChromeOSAuthenticator::SupportsEnterpriseAttestation() const {
+  // Enterprise attestation is enabled in the authenticator if its U2F/G2F mode
+  // is enabled.
+  return u2f_enabled_;
 }
 
 base::WeakPtr<FidoAuthenticator> ChromeOSAuthenticator::GetWeakPtr() {

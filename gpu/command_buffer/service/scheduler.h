@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -378,21 +379,29 @@ class GPU_EXPORT Scheduler {
     PerThreadState(PerThreadState&&);
     ~PerThreadState();
     PerThreadState& operator=(PerThreadState&&);
+
     // Used as a priority queue for scheduling sequences. Min heap of
     // SchedulingState with highest priority (lowest order) in front.
     std::vector<SchedulingState> scheduling_queue;
+
+    // Indicates if the scheduling queue for this thread should be rebuilt due
+    // to priority changes, sequences becoming unblocked, etc.
     bool rebuild_scheduling_queue = false;
+
+    // Indicates if the scheduler is actively running tasks on this thread.
     bool running = false;
+
+    // Indicates when the next task run was scheduled
+    base::TimeTicks run_next_task_scheduled;
+
+    base::CpuReductionExperimentFilter cpu_reduction_experiment_filter;
   };
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
-      per_thread_state_map_;
+      per_thread_state_map_ GUARDED_BY(lock_);
 
   // Accumulated time the thread was blocked during running task
-  base::TimeDelta total_blocked_time_;
+  base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);
   const bool blocked_time_collection_enabled_;
-
-  // Indicate when the next task run was scheduled
-  base::TimeTicks run_next_task_scheduled_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorities);

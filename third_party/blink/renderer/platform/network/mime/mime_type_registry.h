@@ -70,8 +70,6 @@ class PLATFORM_EXPORT MIMETypeRegistry {
   // https://mimesniff.spec.whatwg.org/#json-mime-type
   static bool IsJSONMimeType(const String& mime_type);
 
-  static bool IsLegacySupportedJavaScriptLanguage(const String& language);
-
   // Checks to see if a non-image mime type is suitable for being loaded as a
   // document in a frame. Includes supported JavaScript MIME types.
   static bool IsSupportedNonImageMIMEType(const String& mime_type);

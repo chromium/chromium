@@ -10,8 +10,8 @@
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -67,10 +67,6 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       std::unique_ptr<base::RepeatingTimer> timer);
 
   void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
-
-  // Handler for when remote attached to |receiver_| disconnects.
-  void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
 
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();

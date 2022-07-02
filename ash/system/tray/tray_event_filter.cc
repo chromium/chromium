@@ -55,6 +55,11 @@ void TrayEventFilter::OnTouchEvent(ui::TouchEvent* event) {
     ProcessPressedEvent(*event);
 }
 
+void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+    ProcessPressedEvent(*event);
+}
+
 void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   // Users in a capture session may be trying to capture tray bubble(s).
   if (capture_mode_util::IsCaptureModeActive())
@@ -126,10 +131,13 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
               ->GetStatusAreaWidget();
       UnifiedSystemTray* tray = status_area->unified_system_tray();
 
-      // See the `DateTray` and the `UnifiedSystemTray` together as one button
-      // when clicking outside of the tray.
-      if (features::IsCalendarViewEnabled())
-        bounds.Union(status_area->date_tray()->GetBoundsInScreen());
+      // When Quick Settings bubble is opened and the date tray is clicked, the
+      // bubble should not be closed since it will transition to show calendar.
+      if (features::IsCalendarViewEnabled() &&
+          status_area->date_tray()->GetBoundsInScreen().Contains(
+              screen_location)) {
+        continue;
+      }
 
       TrayBubbleBase* system_tray_bubble = tray->bubble();
       if (tray->IsBubbleShown() && system_tray_bubble != bubble) {
@@ -145,12 +153,15 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     if (bounds.Contains(screen_location))
       continue;
     if (bubble->GetTray()) {
-      // If the user clicks on the parent tray, don't process the event here,
-      // let the tray logic handle the event and determine show/hide behavior.
+      // Maybe close the parent tray if the user drags on it. Otherwise, let the
+      // tray logic handle the event and determine show/hide behavior if the
+      // user clicks on the parent tray.
       bounds = bubble->GetTray()->GetBoundsInScreen();
-      if (bubble->GetTray()->GetVisible() && bounds.Contains(screen_location))
+      if (bubble->GetTray()->GetVisible() && bounds.Contains(screen_location) &&
+          event.type() != ui::ET_GESTURE_SCROLL_BEGIN)
         continue;
     }
+
     trays.insert(bubble->GetTray());
   }
 

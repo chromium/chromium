@@ -30,10 +30,6 @@ class Rect;
 class Transform;
 }  // namespace gfx
 
-namespace gpu {
-class SharedImageInterface;
-}  // namespace gpu
-
 namespace viz {
 class ClientResourceProvider;
 class ContextProvider;
@@ -201,15 +197,10 @@ class MEDIA_EXPORT VideoResourceUpdater
   void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
                      const gpu::SyncToken& sync_token,
                      bool lost_resource);
-  void DestroyMailbox(gpu::Mailbox mailbox,
-                      scoped_refptr<VideoFrame> video_frame,
-                      const gpu::SyncToken& sync_token,
-                      bool lost_resource);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
-  gpu::SharedImageInterface* SharedImageInterface() const;
   const raw_ptr<viz::ContextProvider> context_provider_;
   const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
   const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;

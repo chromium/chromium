@@ -59,6 +59,7 @@ class PageNodeImpl
   // dereferenced on the UI thread.
   const WebContentsProxy& contents_proxy() const;
 
+  void SetType(PageType type);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
   void SetLoadingState(LoadingState loading_state);
@@ -90,6 +91,7 @@ class PageNodeImpl
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
   EmbeddingType embedding_type() const;
+  PageType type() const;
   bool is_visible() const;
   bool is_audible() const;
   LoadingState loading_state() const;
@@ -200,6 +202,7 @@ class PageNodeImpl
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
   EmbeddingType GetEmbeddingType() const override;
+  PageType GetType() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
   bool IsAudible() const override;
@@ -292,6 +295,11 @@ class PageNodeImpl
   // The way in which this page was embedded, if it was embedded.
   EmbeddingType embedding_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       EmbeddingType::kInvalid;
+
+  // The type of the page.
+  ObservedProperty::NotifiesOnlyOnChanges<PageType,
+                                          &PageNodeObserver::OnTypeChanged>
+      type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.

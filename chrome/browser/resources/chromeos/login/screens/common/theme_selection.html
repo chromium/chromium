@@ -18,10 +18,6 @@ found in the LICENSE file. -->
 <dom-module id="theme-selection-element">
   <template>
     <style include="oobe-dialog-host-styles cr-card-radio-group-styles">
-      .help-text {
-        margin-top: 16px;
-      }
-
       * {
         transition: color 250ms linear, background-color 250ms linear;
       }
@@ -68,8 +64,13 @@ found in the LICENSE file. -->
       <h1 slot="title" id="theme-selection-title">
         [[i18nDynamic(locale, 'themeSelectionScreenTitle')]]
       </h1>
-      <div slot="subtitle" id="theme-selection-subtitle">
-        [[i18nDynamic(locale, 'themeSelectionScreenDescription')]]
+      <div hidden="[[isInTabletMode_]]" slot="subtitle"
+          id="theme-selection-subtitle-clamshell">
+        [[i18nDynamic(locale, 'themeSelectionScreenDescriptionClamshell')]]
+      </div>
+      <div hidden="[[!isInTabletMode_]]" slot="subtitle"
+          id="theme-selection-subtitle-tablet">
+        [[i18nDynamic(locale, 'themeSelectionScreenDescriptionTablet')]]
       </div>
       <div slot="content" class="layout vertical landscape-vertical-centered">
         <cr-radio-group id="theme" selected="{{selectedTheme}}">

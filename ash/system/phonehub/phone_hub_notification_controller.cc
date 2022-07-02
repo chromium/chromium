@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -513,7 +514,8 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
           std::u16string() /*display_source */, GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kPhoneHubInstantTetherNotificationId),
+              kPhoneHubInstantTetherNotificationId,
+              NotificationCatalogName::kPhoneHubTetherFailed),
           message_center::RichNotificationData(), std::move(delegate),
           kPhoneHubEnableHotspotIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);

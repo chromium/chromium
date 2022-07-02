@@ -19,8 +19,8 @@ To produce an executable built with a custom PGO profile:
 
 * Run representative benchmarks to produce profiles
 
-  * `vpython tools/perf/run_benchmark system_health.common_desktop --assert-gpu-compositing --run-abridged-story-set --browser=exact --browser-executable=out/path/to/chrome`
-  * `vpython tools/perf/run_benchmark speedometer2 --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome`
+  * `vpython3 tools/perf/run_benchmark system_health.common_desktop --assert-gpu-compositing --run-abridged-story-set --browser=exact --browser-executable=out/path/to/chrome`
+  * `vpython3 tools/perf/run_benchmark speedometer2 --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome`
   * This will produce `*.profraw` files in the current working directory
 
   If this fails with `ServiceException: 401 Anonymous caller does not have storage.objects.get

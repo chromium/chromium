@@ -4,13 +4,15 @@
 
 #include "base/win/message_window.h"
 
+#include <windows.h>
+
+#include <utility>
+
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/win/current_module.h"
 #include "base/win/wrapped_window_proc.h"
-
-#include <windows.h>
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef FindWindow

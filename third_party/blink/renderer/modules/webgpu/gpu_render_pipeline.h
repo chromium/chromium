@@ -44,7 +44,7 @@ struct OwnedPrimitiveState {
   OwnedPrimitiveState& operator=(OwnedPrimitiveState&& desc) = delete;
 
   WGPUPrimitiveState dawn_desc = {};
-  WGPUPrimitiveDepthClampingState depth_clamping_state = {};
+  WGPUPrimitiveDepthClipControl depth_clip_control = {};
 };
 
 struct OwnedRenderPipelineDescriptor {

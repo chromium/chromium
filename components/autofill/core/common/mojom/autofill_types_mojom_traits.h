@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -60,7 +61,7 @@ struct StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
 template <>
 struct StructTraits<autofill::mojom::FormRendererIdDataView,
                     autofill::FormRendererId> {
-  static uint32_t id(autofill::FormRendererId r) { return r.value(); }
+  static uint64_t id(autofill::FormRendererId r) { return r.value(); }
 
   static bool Read(autofill::mojom::FormRendererIdDataView data,
                    autofill::FormRendererId* out);
@@ -69,7 +70,7 @@ struct StructTraits<autofill::mojom::FormRendererIdDataView,
 template <>
 struct StructTraits<autofill::mojom::FieldRendererIdDataView,
                     autofill::FieldRendererId> {
-  static uint32_t id(autofill::FieldRendererId r) { return r.value(); }
+  static uint64_t id(autofill::FieldRendererId r) { return r.value(); }
 
   static bool Read(autofill::mojom::FieldRendererIdDataView data,
                    autofill::FieldRendererId* out);
@@ -180,6 +181,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_focusable;
   }
 
+  static bool is_visible(const autofill::FormFieldData& r) {
+    return r.is_visible;
+  }
+
   static bool should_autocomplete(const autofill::FormFieldData& r) {
     return r.should_autocomplete;
   }
@@ -232,6 +237,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 
   static bool Read(autofill::mojom::FormFieldDataDataView data,
                    autofill::FormFieldData* out);
+
+  static bool force_override(const autofill::FormFieldData& r) {
+    return r.force_override;
+  }
 };
 
 template <>
@@ -537,6 +546,15 @@ struct StructTraits<autofill::mojom::ParsingResultDataView,
 
   static bool Read(autofill::mojom::ParsingResultDataView data,
                    autofill::ParsingResult* out);
+};
+
+template <>
+struct StructTraits<autofill::mojom::TouchToFillEligibleDataView,
+                    autofill::TouchToFillEligible> {
+  static bool eligible(autofill::TouchToFillEligible r) { return r.value(); }
+
+  static bool Read(autofill::mojom::TouchToFillEligibleDataView data,
+                   autofill::TouchToFillEligible* out);
 };
 
 }  // namespace mojo

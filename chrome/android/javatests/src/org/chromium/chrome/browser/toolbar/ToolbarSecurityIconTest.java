@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.test.util.ToolbarTestUtils;
+import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -107,7 +107,7 @@ public final class ToolbarSecurityIconTest {
         // clang-format off
         mLocationBarModel = spy(
                 new LocationBarModel(context, NewTabPageDelegate.EMPTY,
-                        (url) -> url.getSpec(), (window) -> null, ToolbarTestUtils.OFFLINE_STATUS,
+                        (url) -> url.getSpec(), (window) -> null, ToolbarUnitTestUtils.OFFLINE_STATUS,
                         mSearchEngineLogoUtils));
         // clang-format on
         Profile.setLastUsedProfileForTesting(mMockProfile);

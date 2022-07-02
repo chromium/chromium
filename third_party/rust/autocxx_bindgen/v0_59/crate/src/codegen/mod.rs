@@ -3040,12 +3040,13 @@ impl CodeGenerator for Enum {
 
         let mut attrs = vec![];
 
+        let mut semantic_annotations = CppSemanticAttributeAdder::new(ctx.options(), &mut attrs);
         if let Some(original_name) = item.original_name(ctx) {
             if name != original_name {
-                let mut semantic_annotations = CppSemanticAttributeAdder::new(ctx.options(), &mut attrs);
                 semantic_annotations.original_name(&original_name);
             }
         }
+        semantic_annotations.visibility(self.visibility);
 
         // TODO(emilio): Delegate this to the builders?
         match variation {

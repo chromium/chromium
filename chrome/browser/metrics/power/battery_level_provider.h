@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
 
+#include <stdint.h>
 #include <memory>
 #include <vector>
 
@@ -26,29 +27,18 @@ class BatteryLevelProvider {
   // Represents an aggregated state of all the batteries on the system at a
   // certain point in time.
   struct BatteryState {
-    BatteryState(size_t interface_count,
-                 size_t battery_count,
-                 absl::optional<double> charge_level,
-                 bool on_battery,
-                 base::TimeTicks capture_time);
-    BatteryState(const BatteryState&);
-    BatteryState& operator=(const BatteryState&);
+    // Number of batteries on the system.
+    int battery_count = 0;
 
-    // Number of device interfaces that accept a battery on the system.
-    size_t interface_count = 0;
+    // Whether the system is connected to an external source of power. Defaults
+    // to `true` if `battery_count` is 0.
+    bool is_external_power_connected = false;
 
-    // Number of batteries detected on the system.
-    size_t battery_count = 0;
+    // Current battery capacity. nullopt if `battery_count` != 1.
+    absl::optional<uint64_t> current_capacity;
 
-    // A fraction of the maximal battery capacity of the system, in the range
-    // [0.00, 1.00], or nullopt if no battery is present or querying charge
-    // level failed. This may be nullopt even if |on_battery == true|, which
-    // indicates a failure to grab the battery level.
-    absl::optional<double> charge_level = 0;
-
-    // True if the system is running on battery power, false if the system is
-    // drawing power from an external power source.
-    bool on_battery = false;
+    // Fully charged battery capacity. nullopt if `battery_count` != 1.
+    absl::optional<uint64_t> full_charged_capacity;
 
     // The time at which the battery state capture took place.
     base::TimeTicks capture_time;
@@ -63,18 +53,19 @@ class BatteryLevelProvider {
   BatteryLevelProvider(const BatteryLevelProvider& other) = delete;
   BatteryLevelProvider& operator=(const BatteryLevelProvider& other) = delete;
 
-  // Queries the current battery state and returns it to |callback| when ready.
-  // |callback| will not be invoked if the BatteryLevelProvider is destroyed.
+  // Queries the current battery state and forwards it to `callback` when ready
+  // (forwards nullopt on retrieval error). `callback` will not be invoked if
+  // the BatteryLevelProvider is destroyed.
   virtual void GetBatteryState(
-      base::OnceCallback<void(const BatteryState&)> callback) = 0;
+      base::OnceCallback<void(const absl::optional<BatteryState>&)>
+          callback) = 0;
 
  protected:
   BatteryLevelProvider() = default;
 
   struct BatteryDetails {
-    // True if the battery is connected and drawing power from external power
-    // source.
-    bool is_connected;
+    // Whether the battery is connected to an external power source.
+    bool is_external_power_connected;
 
     // The current battery capacity.
     uint64_t current_capacity;
@@ -83,24 +74,10 @@ class BatteryLevelProvider {
     uint64_t full_charged_capacity;
   };
 
-  struct BatteryInterface {
-    // Indicates whether a battery is present on the interface, without
-    // additional battery details.
-    explicit BatteryInterface(bool battery_present_in);
-    // Provides the details of a battery that was detected on the interface.
-    explicit BatteryInterface(const BatteryDetails& details_in);
-    BatteryInterface(const BatteryInterface&);
-
-    // True if a battery is detected.
-    const bool battery_present;
-
-    // Detailed power state of the battery. This may be nullopt even if
-    // |battery_present == true| when the details couldn't be queried.
-    const absl::optional<BatteryDetails> details;
-  };
-
+  // Constructs a `BatteryState` from a list of `BatteryDetails`. The list can
+  // be empty if there are no batteries on the system.
   static BatteryState MakeBatteryState(
-      const std::vector<BatteryInterface>& battery_interfaces);
+      const std::vector<BatteryDetails>& battery_details);
 };
 
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()

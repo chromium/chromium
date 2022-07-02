@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -56,7 +57,8 @@ void PasswordChangeSuccessNotification::Show(Profile* profile) {
 
   // NotifierId for histogram reporting.
   static const base::NoDestructor<NotifierId> kNotifierId(
-      NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      NotifierType::SYSTEM_COMPONENT, kNotificationId,
+      NotificationCatalogName::kPasswordChange);
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.

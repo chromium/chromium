@@ -57,11 +57,17 @@ class StabilityMetricsHelper {
 
   ~StabilityMetricsHelper();
 
+#if BUILDFLAG(IS_ANDROID)
+  // A couple Local-State-pref-based stability counts are retained for Android
+  // WebView. Other platforms, including Android Chrome and WebLayer, should use
+  // Stability.Counts2 as the source of truth for these counts.
+
   // Provides stability metrics.
   void ProvideStabilityMetrics(SystemProfileProto* system_profile_proto);
 
   // Clears the gathered stability metrics.
   void ClearSavedStabilityMetrics();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Records a utility process launch with name |metrics_name|.
   void BrowserUtilityProcessLaunched(const std::string& metrics_name);

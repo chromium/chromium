@@ -54,9 +54,7 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
   ~ShellDesktopControllerAuraTest() override = default;
 
   void SetUp() override {
-    ShellTestBaseAura::SetUp();
-
-    // Set up a screen with 2 displays.
+    // Set up a screen with 2 displays before `ShellTestBaseAura::SetUp()`
     screen_ = std::make_unique<display::ScreenBase>();
     screen_->display_list().AddDisplay(
         display::Display(100, gfx::Rect(0, 0, 1920, 1080)),
@@ -66,6 +64,7 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
         display::DisplayList::Type::NOT_PRIMARY);
     screen_override_ =
         std::make_unique<display::test::ScopedScreenOverride>(screen_.get());
+    ShellTestBaseAura::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::InitializeFake();
@@ -80,9 +79,9 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::Shutdown();
 #endif
+    ShellTestBaseAura::TearDown();
     screen_override_.reset();
     screen_.reset();
-    ShellTestBaseAura::TearDown();
   }
 
  protected:

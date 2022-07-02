@@ -61,17 +61,18 @@ MockMediaRouteProvider::~MockMediaRouteProvider() {}
 
 void MockMediaRouteProvider::RouteRequestSuccess(RouteCallback& cb) const {
   DCHECK(route_);
-  std::move(cb).Run(route_, nullptr, std::string(), RouteRequestResult::OK);
+  std::move(cb).Run(route_, nullptr, std::string(),
+                    mojom::RouteRequestResultCode::OK);
 }
 
 void MockMediaRouteProvider::RouteRequestTimeout(RouteCallback& cb) const {
   std::move(cb).Run(absl::nullopt, nullptr, std::string("error"),
-                    RouteRequestResult::TIMED_OUT);
+                    mojom::RouteRequestResultCode::TIMED_OUT);
 }
 
 void MockMediaRouteProvider::TerminateRouteSuccess(
     TerminateRouteCallback& cb) const {
-  std::move(cb).Run(std::string(), RouteRequestResult::OK);
+  std::move(cb).Run(std::string(), mojom::RouteRequestResultCode::OK);
 }
 
 void MockMediaRouteProvider::CreateMediaRouteControllerSuccess(
@@ -183,12 +184,12 @@ void MediaRouterMojoTest::TestCreateRoute() {
                           base::TimeDelta timeout, bool incognito,
                           mojom::MediaRouteProvider::CreateRouteCallback& cb) {
         std::move(cb).Run(CreateMediaRoute(), nullptr, std::string(),
-                          RouteRequestResult::OK);
+                          mojom::RouteRequestResultCode::OK);
       }));
 
   RouteResponseCallbackHandler handler;
   EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
-                                RouteRequestResult::OK, _));
+                                mojom::RouteRequestResultCode::OK, _));
   router()->CreateRoute(kSource, kSinkId, url::Origin::Create(GURL(kOrigin)),
                         nullptr,
                         base::BindOnce(&RouteResponseCallbackHandler::Invoke,
@@ -226,12 +227,12 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
                           base::TimeDelta timeout, bool incognito,
                           mojom::MediaRouteProvider::JoinRouteCallback& cb) {
             std::move(cb).Run(route, nullptr, std::string(),
-                              RouteRequestResult::OK);
+                              mojom::RouteRequestResultCode::OK);
           }));
 
   RouteResponseCallbackHandler handler;
   EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
-                                RouteRequestResult::OK, _));
+                                mojom::RouteRequestResultCode::OK, _));
   router()->JoinRoute(kSource, presentation_id,
                       url::Origin::Create(GURL(kOrigin)), nullptr,
                       base::BindOnce(&RouteResponseCallbackHandler::Invoke,
@@ -246,7 +247,7 @@ void MediaRouterMojoTest::TestTerminateRoute() {
       .WillOnce(
           Invoke([](const std::string& route_id,
                     mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
-            std::move(cb).Run(absl::nullopt, RouteRequestResult::OK);
+            std::move(cb).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
           }));
   router()->TerminateRoute(kRouteId);
   base::RunLoop().RunUntilIdle();

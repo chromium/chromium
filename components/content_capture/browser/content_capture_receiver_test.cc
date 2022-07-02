@@ -45,7 +45,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     // This needed to keep the WebContentsObserverConsistencyChecker checks
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL(kMainFrameUrl));
-    main_frame_ = web_contents()->GetMainFrame();
+    main_frame_ = web_contents()->GetPrimaryMainFrame();
     EXPECT_TRUE(main_frame_);
 
     main_frame_sender_ = std::make_unique<FakeContentCaptureSender>();
@@ -57,7 +57,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   void NavigateMainFrame(const GURL& url) {
     consumer()->Reset();
     NavigateAndCommit(url);
-    main_frame_ = web_contents()->GetMainFrame();
+    main_frame_ = web_contents()->GetPrimaryMainFrame();
   }
 
   void NavigateMainFrameSameDocument() {
@@ -302,7 +302,7 @@ TEST_P(ContentCaptureReceiverTest, ChildFrameDidCaptureContent) {
 // This test is for issue crbug.com/995121 .
 TEST_P(ContentCaptureReceiverTest, RenderFrameHostGone) {
   auto* receiver = provider()->ContentCaptureReceiverForFrameForTesting(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   // No good way to simulate crbug.com/995121, just set rfh_ to nullptr in
   // ContentCaptureReceiver, so content::WebContents::FromRenderFrameHost()
   // won't return WebContents.
@@ -316,7 +316,7 @@ TEST_P(ContentCaptureReceiverTest, RenderFrameHostGone) {
 
 TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   auto* receiver = provider()->ContentCaptureReceiverForFrameForTesting(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   // Uses TestMockTimeTaskRunner to check the task state.
   receiver->title_update_task_runner_ = task_runner;
@@ -550,7 +550,7 @@ class ContentCaptureReceiverMultipleFrameTest
     // This needed to keep the WebContentsObserverConsistencyChecker checks
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
-    content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+    content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
         ->AppendChild("child");
 
     helper_.CreateProviderAndConsumer(web_contents());

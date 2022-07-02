@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -60,7 +59,7 @@ class OfflinePageArchivePublisher {
       base::OnceCallback<void(const OfflinePageItem& /* offline_page */,
                               PublishArchiveResult /* archive_result */)>;
 
-  virtual ~OfflinePageArchivePublisher() {}
+  virtual ~OfflinePageArchivePublisher() = default;
 
   // Publishes the page on a background thread, then returns to the
   // OfflinePageModelTaskified's done callback.
@@ -72,6 +71,8 @@ class OfflinePageArchivePublisher {
   // Removes  archives from downloads.
   virtual void UnpublishArchives(
       const std::vector<PublishedArchiveId>& archive_ids) const = 0;
+
+  virtual base::WeakPtr<OfflinePageArchivePublisher> GetWeakPtr() = 0;
 };
 
 }  // namespace offline_pages

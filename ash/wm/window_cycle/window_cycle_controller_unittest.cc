@@ -30,6 +30,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desk.h"
@@ -1017,6 +1018,34 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
                                ->currently_pressed_keys();
   EXPECT_EQ(0u, currently_pressed_keys.size());
   EXPECT_FALSE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
+}
+
+// Tests that system tray will be closed when alt-tab cycling starts. Also tests
+// releasing the alt key will end the alt-tab cycling successfully.
+TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
+  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  // Open system tray.
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  event_generator->MoveMouseTo(system_tray->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+
+  // Start window cycling by press Alt + Tab key.
+  WindowState::Get(window0.get())->Activate();
+  event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+  // Verify the system tray is closed after the alt-tab cycling starts.
+  EXPECT_FALSE(system_tray->IsBubbleShown());
+
+  // Release Alt key, verify alt-tab cycling is ended.
+  event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_FALSE(controller->IsCycling());
 }
 
 // Test alt-tab will be shown on the display where the cursor is located

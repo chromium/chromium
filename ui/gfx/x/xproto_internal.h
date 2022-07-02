@@ -5,6 +5,8 @@
 #ifndef UI_GFX_X_XPROTO_INTERNAL_H_
 #define UI_GFX_X_XPROTO_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
+
 #ifndef IS_X11_IMPL
 #error "This file should only be included by //ui/gfx/x:xprotos"
 #endif
@@ -55,7 +57,7 @@ class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
  private:
   ~MallocedRefCountedMemory() override;
 
-  uint8_t* const data_;
+  const raw_ptr<uint8_t, DanglingUntriaged> data_;
 };
 
 // Wraps another RefCountedMemory, giving a view into it.  Similar to

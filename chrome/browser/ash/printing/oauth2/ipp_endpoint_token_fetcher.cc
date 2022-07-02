@@ -35,7 +35,7 @@ void IppEndpointTokenFetcher::AddToWaitingList(StatusCallback callback) {
   callbacks_.push_back(std::move(callback));
 }
 
-std::vector<StatusCallback> IppEndpointTokenFetcher::MoveWaitingList() {
+std::vector<StatusCallback> IppEndpointTokenFetcher::TakeWaitingList() {
   std::vector<StatusCallback> waitlist;
   waitlist.swap(callbacks_);
   return waitlist;

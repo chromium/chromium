@@ -14,9 +14,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,7 +58,7 @@ class AggregationServiceStorageSqlTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_directory_;
-  std::unique_ptr<AggregationServiceKeyStorage> storage_;
+  std::unique_ptr<AggregationServiceStorage> storage_;
   base::SimpleTestClock clock_;
 };
 
@@ -74,7 +76,7 @@ class AggregationServiceStorageSqlInMemoryTest : public testing::Test {
   void CloseDatabase() { storage_.reset(); }
 
  protected:
-  std::unique_ptr<AggregationServiceKeyStorage> storage_;
+  std::unique_ptr<AggregationServiceStorage> storage_;
   base::SimpleTestClock clock_;
 };
 
@@ -341,6 +343,33 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
       keys_2, storage_->GetPublicKeys(url_2)));
+}
+
+TEST_F(AggregationServiceStorageSqlTest, VersionTooNew_RazesDB) {
+  OpenDatabase();
+
+  GURL url(kExampleUrl);
+  PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
+                      /*expiry_time=*/base::Time::Max());
+  storage_->SetPublicKeys(url, keyset);
+  EXPECT_EQ(storage_->GetPublicKeys(url).size(), 1u);
+  CloseDatabase();
+
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    sql::MetaTable meta;
+    // The values here are irrelevant, as the meta table already exists.
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
+
+    meta.SetVersionNumber(meta.GetVersionNumber() + 1);
+    meta.SetCompatibleVersionNumber(meta.GetVersionNumber() + 1);
+  }
+
+  // The DB should be razed because the version is too new.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase());
+  EXPECT_TRUE(storage_->GetPublicKeys(url).empty());
 }
 
 TEST_F(AggregationServiceStorageSqlInMemoryTest,

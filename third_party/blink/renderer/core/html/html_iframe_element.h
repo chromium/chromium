@@ -59,6 +59,10 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
     return FrameOwnerElementType::kIframe;
   }
 
+  bool Anonymous() const override { return anonymous_; }
+
+  bool IsSupportedByRegionCapture() const override { return true; }
+
  private:
   void SetCollapsed(bool) override;
 

@@ -41,16 +41,21 @@ void TaskUpdate::Run() {
     return;
   }
 
-  update_engine_->Update(is_foreground_, is_install_, ids_,
-                         std::move(crx_data_callback_),
-                         std::move(crx_state_change_callback_),
-                         base::BindOnce(&TaskUpdate::TaskComplete, this));
+  if (cancelled_) {
+    TaskComplete(Error::UPDATE_CANCELED);
+    return;
+  }
+
+  cancel_callback_ = update_engine_->Update(
+      is_foreground_, is_install_, ids_, std::move(crx_data_callback_),
+      std::move(crx_state_change_callback_),
+      base::BindOnce(&TaskUpdate::TaskComplete, this));
 }
 
 void TaskUpdate::Cancel() {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  TaskComplete(Error::UPDATE_CANCELED);
+  cancelled_ = true;
+  cancel_callback_.Run();
 }
 
 std::vector<std::string> TaskUpdate::GetIds() const {

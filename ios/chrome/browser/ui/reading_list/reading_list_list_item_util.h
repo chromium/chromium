@@ -11,8 +11,8 @@
 
 @protocol ReadingListListItem;
 
-// Returns the a11y label to use for a reading list cell with |title|,
-// |subtitle|, and |distillation_state|.
+// Returns the a11y label to use for a reading list cell with `title`,
+// `subtitle`, and `distillation_state`.
 NSString* GetReadingListCellAccessibilityLabel(
     NSString* title,
     NSString* subtitle,
@@ -26,7 +26,7 @@ NSString* GetReadingListCellDistillationSizeText(int64_t distillation_size);
 // cells.  The date is in microseconds since Jan 1st 1970.
 NSString* GetReadingListCellDistillationDateText(int64_t distillation_date);
 
-// Returns whether |first| is equivalent to |second|.
+// Returns whether `first` is equivalent to `second`.
 BOOL AreReadingListListItemsEqual(id<ReadingListListItem> first,
                                   id<ReadingListListItem> second);
 

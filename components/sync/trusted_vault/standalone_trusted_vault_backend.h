@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
@@ -121,8 +120,34 @@ class StandaloneTrustedVaultBackend
 
   void SetClockForTesting(base::Clock* clock);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Exposed publicly for testing.
+  enum class TrustedVaultDownloadKeysStatusForUMA {
+    kSuccess = 0,
+    // Deprecated in favor of the more fine-grained buckets.
+    kDeprecatedMembershipNotFoundOrCorrupted = 1,
+    kNoNewKeys = 2,
+    kKeyProofsVerificationFailed = 3,
+    kAccessTokenFetchingFailure = 4,
+    kOtherError = 5,
+    kMemberNotFound = 6,
+    kMembershipNotFound = 7,
+    kMembershipCorrupted = 8,
+    kMembershipEmpty = 9,
+    kNoPrimaryAccount = 10,
+    kDeviceNotRegistered = 11,
+    kThrottledClientSide = 12,
+    kCorruptedLocalDeviceRegistration = 13,
+    kAborted = 14,
+    kMaxValue = kAborted
+  };
+
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
+
+  static TrustedVaultDownloadKeysStatusForUMA
+  GetDownloadKeysStatusForUMAFromResponse(
+      TrustedVaultDownloadKeysStatus response_status);
 
   ~StandaloneTrustedVaultBackend();
 
@@ -155,7 +180,8 @@ class StandaloneTrustedVaultBackend
 
   void AbandonConnectionRequest();
 
-  void FulfillOngoingFetchKeys();
+  void FulfillOngoingFetchKeys(
+      absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
   // Returns true if the last failed request time imply that upcoming requests
   // should be throttled now (certain amount of time should pass since the last
@@ -170,6 +196,8 @@ class StandaloneTrustedVaultBackend
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
+
+  void VerifyDeviceRegistrationForUMA(const std::string& gaia_id);
 
   const base::FilePath file_path_;
 
@@ -214,6 +242,8 @@ class StandaloneTrustedVaultBackend
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_connection_request_;
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_verify_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.

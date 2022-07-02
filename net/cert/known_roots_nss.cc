@@ -64,8 +64,7 @@ bool IsKnownRoot(CERTCertificate* root) {
         if (PK11_IsPresent(slot) && PK11_HasRootCerts(slot)) {
           CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, root, nullptr);
           if (handle != CK_INVALID_HANDLE &&
-              pk11_has_attribute_set(root->slot, handle,
-                                     CKA_NSS_MOZILLA_CA_POLICY,
+              pk11_has_attribute_set(slot, handle, CKA_NSS_MOZILLA_CA_POLICY,
                                      PR_FALSE) == CK_TRUE) {
             return true;
           }

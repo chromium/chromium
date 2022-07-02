@@ -536,7 +536,7 @@ public class ChildProcessConnection {
 
     private void recordChildAppInfoError(@ChildAppInfoError int error) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.ChildMismatch.AppInfoError", error, ChildAppInfoError.MAX_VALUE);
+                "Android.ChildMismatch.AppInfoError2", error, ChildAppInfoError.MAX_VALUE);
     }
 
     @VisibleForTesting
@@ -570,7 +570,7 @@ public class ChildProcessConnection {
             }
 
             // Validate that the child process is running the same code as the parent process.
-            String childMismatchError;
+            String childMismatchError = null;
             try {
                 ApplicationInfo child = mService.getAppInfo();
                 ApplicationInfo parent = BuildInfo.getInstance().getBrowserApplicationInfo();
@@ -579,8 +579,7 @@ public class ChildProcessConnection {
                     recordChildAppInfoError(ChildAppInfoError.SOURCE_DIR_MISMATCH);
                     childMismatchError = "sourceDir mismatch; parent=" + parent.sourceDir
                             + " child=" + child.sourceDir;
-                }
-                if (!Arrays.equals(parent.sharedLibraryFiles, child.sharedLibraryFiles)) {
+                } else if (!Arrays.equals(parent.sharedLibraryFiles, child.sharedLibraryFiles)) {
                     recordChildAppInfoError(ChildAppInfoError.SHARED_LIB_MISMATCH);
                     childMismatchError = "sharedLibraryFiles mismatch; parent="
                             + Arrays.toString(parent.sharedLibraryFiles)
@@ -588,7 +587,6 @@ public class ChildProcessConnection {
                 }
                 // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc make
                 // this potentially complicated.
-                childMismatchError = null;
             } catch (RemoteException ex) {
                 recordChildAppInfoError(ChildAppInfoError.REMOTE_EXCEPTION);
                 childMismatchError = "child didn't handle getAppInfo()";
@@ -609,7 +607,7 @@ public class ChildProcessConnection {
                     versionHasChanged = true;
                 }
                 RecordHistogram.recordBooleanHistogram(
-                        "Android.ChildMismatch.BrowserVersionChanged", versionHasChanged);
+                        "Android.ChildMismatch.BrowserVersionChanged2", versionHasChanged);
                 childMismatchError += "; browser version has changed: " + versionHasChanged;
                 Log.e(TAG, "Child process code mismatch: %s", childMismatchError);
                 boolean crashIfBrowserChanged = BaseFeatureList.isEnabled(
@@ -937,12 +935,11 @@ public class ChildProcessConnection {
         return mModerateBinding.isBound();
     }
 
-    /**
-     * @param waiveCpuPriority Normally moderate binding may raise the CPU scheduling priority
-     * as well as the importance for memory management. Pass true to not affect CPU scheduling
-     * priority. Note the refcounts for waiveCpuPriority and not are separate,
-     * so removeModerateBinding parameter must match.
-     */
+    public int getModerateBindingCount() {
+        assert isRunningOnLauncherThread();
+        return mModerateBindingCount;
+    }
+
     public void addModerateBinding() {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {
@@ -956,9 +953,6 @@ public class ChildProcessConnection {
         mModerateBindingCount++;
     }
 
-    /**
-     * @param waiveCpuPriority See addModerateBinding.
-     */
     public void removeModerateBinding() {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {

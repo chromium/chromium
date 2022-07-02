@@ -339,16 +339,4 @@ public class ModelListAdapterTest {
         mBindIntCallbackHelper.waitForCallback(0);
         mBindObjectCallbackHelper.waitForCallback(0);
     }
-
-    @Test(expected = AssertionError.class)
-    public void testBindNewModel_RewriteReadOnlyProperty() {
-        PropertyModel oldModel = new PropertyModel.Builder(READONLY_BOOLEAN_PROPERTY)
-                                         .with(READONLY_BOOLEAN_PROPERTY, false)
-                                         .build();
-        PropertyModel newModel = new PropertyModel.Builder(READONLY_BOOLEAN_PROPERTY)
-                                         .with(READONLY_BOOLEAN_PROPERTY, true)
-                                         .build();
-        ModelListAdapter.bindNewModel(
-                newModel, oldModel, new View(RuntimeEnvironment.application), new TestViewBinder());
-    }
 }

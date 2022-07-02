@@ -27,7 +27,7 @@ class NET_EXPORT_PRIVATE SocketPerformanceWatcherFactory {
   SocketPerformanceWatcherFactory& operator=(
       const SocketPerformanceWatcherFactory&) = delete;
 
-  virtual ~SocketPerformanceWatcherFactory() {}
+  virtual ~SocketPerformanceWatcherFactory() = default;
 
   // Creates a socket performance watcher that will record statistics for a
   // single socket that uses |protocol| as the transport layer protocol.
@@ -40,7 +40,7 @@ class NET_EXPORT_PRIVATE SocketPerformanceWatcherFactory {
                                  const AddressList& address_list) = 0;
 
  protected:
-  SocketPerformanceWatcherFactory() {}
+  SocketPerformanceWatcherFactory() = default;
 };
 
 }  // namespace net

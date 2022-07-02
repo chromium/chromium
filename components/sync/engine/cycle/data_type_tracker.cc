@@ -84,6 +84,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case APP_LIST:
     case ARC_PACKAGE:
     case PRINTERS:
+    case PRINTERS_AUTHORIZATION_SERVERS:
     case READING_LIST:
     case USER_CONSENTS:
     case SEND_TAB_TO_SELF:
@@ -138,6 +139,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case APP_LIST:
     case ARC_PACKAGE:
     case PRINTERS:
+    case PRINTERS_AUTHORIZATION_SERVERS:
     case READING_LIST:
     case USER_CONSENTS:
     case SEND_TAB_TO_SELF:
@@ -355,25 +357,6 @@ bool DataTypeTracker::IsInitialSyncRequired() const {
 
 bool DataTypeTracker::IsSyncRequiredToResolveConflict() const {
   return sync_required_to_resolve_conflict_;
-}
-
-void DataTypeTracker::SetLegacyNotificationHint(
-    sync_pb::DataTypeProgressMarker* progress) const {
-  DCHECK(!IsBlocked())
-      << "We should not make requests if the type is throttled or backed off.";
-
-  if (!pending_invalidations_.empty() &&
-      !pending_invalidations_.back()->IsUnknownVersion()) {
-    // The old-style source info can contain only one hint per type.  We grab
-    // the most recent, to mimic the old coalescing behaviour.
-    progress->set_notification_hint(
-        pending_invalidations_.back()->GetPayload());
-  } else if (HasLocalChangePending()) {
-    // The old-style source info sent up an empty string (as opposed to
-    // nothing at all) when the type was locally nudged, but had not received
-    // any invalidations.
-    progress->set_notification_hint(std::string());
-  }
 }
 
 void DataTypeTracker::FillGetUpdatesTriggersMessage(

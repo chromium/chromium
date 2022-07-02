@@ -113,7 +113,7 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     const base::ListValue* call_frames = nullptr;
     if (!stack_trace->GetList("callFrames", &call_frames))
       return Status(kUnknownError, "missing or invalid callFrames");
-    const base::Value& call_frame_value = call_frames->GetListDeprecated()[0];
+    const base::Value& call_frame_value = call_frames->GetList()[0];
     if (call_frame_value.is_dict()) {
       const base::DictionaryValue& call_frame =
           base::Value::AsDictionaryValue(call_frame_value);
@@ -135,13 +135,13 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   std::string text;
   const base::ListValue* args = nullptr;
 
-  if (!params.GetList("args", &args) || args->GetListDeprecated().size() < 1) {
+  if (!params.GetList("args", &args) || args->GetList().size() < 1) {
     return Status(kUnknownError, "missing or invalid args");
   }
 
-  int arg_count = args->GetListDeprecated().size();
+  int arg_count = args->GetList().size();
   for (int i = 0; i < arg_count; i++) {
-    const base::Value& current_arg_value = args->GetListDeprecated()[i];
+    const base::Value& current_arg_value = args->GetList()[i];
     if (!current_arg_value.is_dict()) {
       std::string error_message = base::StringPrintf("Argument %d is missing or invalid", i);
       return Status(kUnknownError, error_message );
@@ -202,7 +202,7 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
       preview->GetList("properties", &properties)) {
     // If the event contains an object which is an instance of the JS Error
     // class, attempt to get the message property for the exception.
-    for (const base::Value& property_value : properties->GetListDeprecated()) {
+    for (const base::Value& property_value : properties->GetList()) {
       if (property_value.is_dict()) {
         const base::DictionaryValue& property =
             base::Value::AsDictionaryValue(property_value);

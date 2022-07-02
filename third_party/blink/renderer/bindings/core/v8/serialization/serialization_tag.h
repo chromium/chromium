@@ -75,11 +75,12 @@ enum SerializationTag {
   kReadableStreamTransferTag = 'r',   // index:uint32_t
   kTransformStreamTransferTag = 'm',  // index:uint32_t
   kWritableStreamTransferTag = 'w',   // index:uint32_t
-  kMediaStreamTrack = 's',  // session_id.high:uint64_t, session_id.low:uint64_t,
-                            // kind:WebCoreString, id:WebCoreString,
-                            // label:WebCoreString, enabled:byte, muted:byte,
-                            // contentHint:Uint32Enum, readyState:Uint32Enum
-  kDOMPointTag = 'Q',       // x:Double, y:Double, z:Double, w:Double
+  kMediaStreamTrack =
+      's',             // session_id.high:uint64_t, session_id.low:uint64_t,
+                       // kind:WebCoreString, id:WebCoreString,
+                       // label:WebCoreString, enabled:byte, muted:byte,
+                       // contentHint:Uint32Enum, readyState:Uint32Enum
+  kDOMPointTag = 'Q',  // x:Double, y:Double, z:Double, w:Double
   kDOMPointReadOnlyTag = 'W',  // x:Double, y:Double, z:Double, w:Double
   kDOMRectTag = 'E',          // x:Double, y:Double, width:Double, height:Double
   kDOMRectReadOnlyTag = 'R',  // x:Double, y:Double, width:Double, height:Double
@@ -112,6 +113,10 @@ enum SerializationTag {
   kVideoFrameTag = 'v',         // uint32_t -> transferred video frame ID
   kEncodedAudioChunkTag = 'y',  // uint32_t -> transferred chunk
   kEncodedVideoChunkTag = 'z',  // uint32_t -> transferred chunk
+
+  kCropTargetTag = 'c',  // crop_id:WebCoreString
+
+  kMediaSourceHandleTag = 'S',  // uint32_t -> transferred MediaSourceHandle
 
   // The following tags were used by the Shape Detection API implementation
   // between M71 and M81. During these milestones, the API was always behind

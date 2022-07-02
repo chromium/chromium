@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
+<translation id="3619462831205197427">Mag-sign in sa site na ito, sa iyong Google Account, at sa Chromium.</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3650632991272923014">Ginamit ni <ph name="USER_EMAIL1" /> ang Chromium at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
@@ -77,7 +78,6 @@
 1. Buksan ang Settings
 2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
-<translation id="6155422572367400359">Mag-sign in sa site na ito, sa iyong Google Account, at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="6183442264225539303">Mag-sign in sa site na ito at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">I-clear ang iyong data sa Chromium sa device na ito?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Ilipat ang Chromium sa iyong dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Hindi matingnan ng Chromium kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="8308172444429103994">Tip sa Chromium. Mag-sign in nang mas mabilis sa pamamagitan ng pagpili ng iyong naka-save na password sa itaas ng keyboard.</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>

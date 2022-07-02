@@ -24,7 +24,7 @@ typedef struct {
 @protocol KeyboardObserverHelperConsumer <NSObject>
 
 // Indicates that the keyboard state changed, at least on one of the
-// |KeyboardState| aspects.
+// `KeyboardState` aspects.
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState;
 
 @end
@@ -32,13 +32,22 @@ typedef struct {
 // Helper to observe the keyboard and report updates.
 @interface KeyboardObserverHelper : NSObject
 
+// Singleton for KeyboardObserverHelper.
++ (instancetype)sharedKeyboardObserver;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Adds consumer of KeyboardObserverHelper.
+- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer;
+
 // Flag that indicates if the keyboard is on screen.
 // TODO(crbug.com/974226): look into deprecating keyboardOnScreen for
 // isKeyboardVisible.
 @property(nonatomic, readonly, getter=isKeyboardOnScreen) BOOL keyboardOnScreen;
 
-// The consumer to inform of the keyboard state changes.
-@property(nonatomic, weak) id<KeyboardObserverHelperConsumer> consumer;
+// Returns keyboard's height if it covers the full width of the display,
+// otherwise returns 0. Note: This includes the keyboard accessory's height.
+@property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
 
 @end
 

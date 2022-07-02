@@ -41,7 +41,7 @@
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
-#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
@@ -114,14 +114,14 @@
 #include "ash/services/quick_pair/quick_pair_service.h"
 #include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
-#include "chromeos/assistant/buildflags.h"  // nogncheck
+#include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
 #include "chromeos/components/local_search_service/local_search_service.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
+#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
 #include "chromeos/services/libassistant/libassistant_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

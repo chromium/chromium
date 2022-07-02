@@ -122,6 +122,13 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // service.
   virtual void DisconnectAndRemoveSink(const MediaSinkInternal& sink);
 
+  // Returns cast socket open parameters.
+  // Connect / liveness timeout value are dynamically calculated
+  // based on results of previous connection attempts.
+  // |sink|: Sink to open cast channel to.
+  cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
+      const MediaSinkInternal& sink);
+
  private:
   friend class CastMediaSinkServiceImplTest;
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
@@ -242,13 +249,6 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;
-
-  // Returns cast socket open parameters. Parameters are read from Finch.
-  // Connect / liveness timeout value are dynamically calculated
-  // based on results of previous connection attempts.
-  // |sink|: Sink to open cast channel to.
-  cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
-      const MediaSinkInternal& sink);
 
   // Invoked when opening cast channel on IO thread completes.
   // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or

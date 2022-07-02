@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_profile_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
@@ -24,7 +23,7 @@
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
-#include "components/history/core/browser/sync/typed_url_model_type_controller.h"
+#include "components/history/core/browser/sync/history_model_type_controller.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
@@ -33,6 +32,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_prefs.h"
@@ -193,14 +193,12 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // Autofill sync is enabled by default.  Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_PROFILE)) {
-      controllers.push_back(
-          std::make_unique<AutofillProfileModelTypeController>(
-              std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-                  db_thread_,
-                  base::BindRepeating(
-                      &AutofillProfileDelegateFromDataService,
-                      base::RetainedRef(web_data_service_on_disk_))),
-              sync_client_->GetPrefService(), sync_service));
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::AUTOFILL_PROFILE,
+          std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+              db_thread_, base::BindRepeating(
+                              &AutofillProfileDelegateFromDataService,
+                              base::RetainedRef(web_data_service_on_disk_)))));
     }
 
     // Wallet data sync is enabled by default. Register unless explicitly
@@ -224,8 +222,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
     // Wallet offer data is enabled by default. Register unless explicitly
     // disabled.
-    // TODO(crbug.com/1112095): Currently the offer data depends on Wallet data
-    // sync, but revisit after other offer types are implemented.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_OFFER)) {
       controllers.push_back(CreateWalletModelTypeController(
@@ -253,12 +249,18 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
   // TypedUrl sync is enabled by default.  Register unless explicitly disabled.
   if (!disabled_types.Has(syncer::TYPED_URLS)) {
-    // TypedURLModelTypeController uses a proxy delegate internally, as
+    // HistoryModelTypeController uses a proxy delegate internally, as
     // provided by HistoryService.
-    controllers.push_back(
-        std::make_unique<history::TypedURLModelTypeController>(
-            sync_service, sync_client_->GetHistoryService(),
-            sync_client_->GetPrefService()));
+    controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
+        syncer::TYPED_URLS, sync_service, sync_client_->GetHistoryService(),
+        sync_client_->GetPrefService()));
+  }
+
+  if (!disabled_types.Has(syncer::HISTORY) &&
+      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    controllers.push_back(std::make_unique<history::HistoryModelTypeController>(
+        syncer::HISTORY, sync_service, sync_client_->GetHistoryService(),
+        sync_client_->GetPrefService()));
   }
 
   // Delete directive sync is enabled by default.

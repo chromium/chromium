@@ -13,7 +13,6 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/metrics_proto/system_profile.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,13 +44,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
   // A navigation should not increment metrics if recording is disabled.
   provider.WebStateDidStartNavigation(kNullWebState, &context);
 
-  metrics::SystemProfileProto system_profile;
-
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
-  provider.ProvideStabilityMetrics(&system_profile);
-
-  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
   EXPECT_TRUE(histogram_tester_
                   .GetTotalCountsForPrefix(
                       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric)
@@ -61,10 +55,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
   provider.OnRecordingEnabled();
   provider.WebStateDidStartNavigation(kNullWebState, &context);
 
-  system_profile.Clear();
-  provider.ProvideStabilityMetrics(&system_profile);
-
-  EXPECT_EQ(1, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
       static_cast<base::HistogramBase::Sample>(
@@ -89,9 +81,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
               SAME_DOCUMENT_WEB_NAVIGATION),
       1);
 
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,
@@ -110,10 +101,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               CHROME_URL_NAVIGATION),
       1);
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,
@@ -132,10 +121,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               CHROME_URL_NAVIGATION),
       1);
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 0);
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest, WebNavigationShouldLogPageLoad) {
@@ -150,10 +137,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest, WebNavigationShouldLogPageLoad) {
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               PAGE_LOAD_NAVIGATION),
       1);
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(1, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,
@@ -165,12 +150,8 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
   provider.LogRendererCrash();
   histogram_tester_.ExpectBucketCount(
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 0);
-
-  // Verify that |system_profile| is not populated with a renderer crash.
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kExtensionCrash, 0);
 
   // A crash should increment the renderer crash count if recording is
   // enabled.
@@ -178,10 +159,6 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
   provider.LogRendererCrash();
   histogram_tester_.ExpectBucketCount(
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
-
-  // Verify that |system_profile| is populated with a renderer crash.
-  system_profile.Clear();
-  provider.ProvideStabilityMetrics(&system_profile);
-  EXPECT_EQ(1, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
+  histogram_tester_.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kExtensionCrash, 0);
 }

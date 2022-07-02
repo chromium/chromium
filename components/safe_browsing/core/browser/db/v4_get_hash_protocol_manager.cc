@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/timer/timer.h"
@@ -36,6 +37,12 @@ void RecordGetHashResult(safe_browsing::V4OperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.V4GetHash.Result", result,
       safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
+}
+
+// Record a backoff error count
+void RecordBackoffErrorCountResult(size_t count) {
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.V4GetHash.Result.BackoffErrorCount", count);
 }
 
 // Enumerate parsing failures for histogramming purposes.  DO NOT CHANGE
@@ -303,6 +310,7 @@ void V4GetHashProtocolManager::GetFullHashes(
   if (clock_->Now() <= next_gethash_time_) {
     if (gethash_error_count_) {
       RecordGetHashResult(V4OperationResult::BACKOFF_ERROR);
+      backoff_error_count_++;
     } else {
       RecordGetHashResult(V4OperationResult::MIN_WAIT_DURATION_ERROR);
     }
@@ -714,6 +722,7 @@ void V4GetHashProtocolManager::ParseMetadata(const ThreatMatch& match,
 void V4GetHashProtocolManager::ResetGetHashErrors() {
   gethash_error_count_ = 0;
   gethash_back_off_mult_ = 1;
+  backoff_error_count_ = 0;
   next_gethash_time_ = base::Time();
 }
 
@@ -808,6 +817,7 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
   Time negative_cache_expire;
   if (net_error == net::OK && response_code == net::HTTP_OK) {
     RecordGetHashResult(V4OperationResult::STATUS_200);
+    if (gethash_error_count_) RecordBackoffErrorCountResult(backoff_error_count_);
     ResetGetHashErrors();
     if (!ParseHashResponse(data, &full_hash_infos, &negative_cache_expire)) {
       full_hash_infos.clear();

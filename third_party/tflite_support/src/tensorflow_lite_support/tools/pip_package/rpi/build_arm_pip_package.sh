@@ -18,7 +18,7 @@ set -ex
 
 NIGHTLY_FLAG=$1
 
-bazel build -c opt --config=elinux_armhf tensorflow_lite_support/tools/pip_package:build_pip_package
+bazel build -c opt --config=elinux_armhf --define darwinn_portable=1 --linkopt=-L/usr/lib/arm-linux-gnueabihf tensorflow_lite_support/tools/pip_package:build_pip_package
 EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-armv7l" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}
-bazel build -c opt --config=elinux_aarch64 tensorflow_lite_support/tools/pip_package:build_pip_package
+bazel build -c opt --config=elinux_aarch64 --define darwinn_portable=1 --linkopt=-L/usr/lib/aarch64-linux-gnu tensorflow_lite_support/tools/pip_package:build_pip_package
 EXTRA_PKG_NAME_FLAG="--plat-name=manylinux2014-aarch64" ./bazel-bin/tensorflow_lite_support/tools/pip_package/build_pip_package --dst wheels ${NIGHTLY_FLAG}

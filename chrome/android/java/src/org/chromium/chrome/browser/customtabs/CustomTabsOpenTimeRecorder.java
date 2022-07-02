@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -35,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private final CustomTabActivityNavigationController mNavigationController;
     private final BooleanSupplier mIsCctFinishing;
+    private final BrowserServicesIntentDataProvider mIntent;
 
     private long mOnStartTimestampMs;
 
@@ -53,10 +57,11 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
     public CustomTabsOpenTimeRecorder(ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabActivityNavigationController navigationController,
-            BooleanSupplier isCctFinishing) {
+            BooleanSupplier isCctFinishing, BrowserServicesIntentDataProvider intent) {
         lifecycleDispatcher.register(this);
         mNavigationController = navigationController;
         mIsCctFinishing = isCctFinishing;
+        mIntent = intent;
     }
 
     @Override
@@ -71,13 +76,29 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.CloseCause", mCloseCause, CloseCause.COUNT);
 
+        long duration = SystemClock.elapsedRealtime() - mOnStartTimestampMs;
         // Additional check with |mIsCctFinishing| can eliminate some false positives.
         // See Javadoc for more details.
         if (mCloseCause == CloseCause.AUTOCLOSE && mIsCctFinishing.getAsBoolean()) {
-            long duration = SystemClock.elapsedRealtime() - mOnStartTimestampMs;
             RecordHistogram.recordLongTimesHistogram(
                     "CustomTabs.AutoclosedSessionDuration", duration);
         }
+
+        if (mIsCctFinishing.getAsBoolean()) {
+            long time = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
+            String packageName = mIntent.getClientPackageName();
+            boolean wasUserClose = mCloseCause != CloseCause.AUTOCLOSE;
+            boolean isPartial = mIntent.isPartialHeightCustomTab();
+
+            long recordDuration = Math.min(duration / DateUtils.SECOND_IN_MILLIS, 300);
+            // For the real implementation, there'll be a native method on this class or a new
+            // class entirely. Just for the proof-of-concept I tacked the native method onto another
+            // class that already have natives.
+            CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(time,
+                    (packageName != null ? packageName : ""), recordDuration, wasUserClose,
+                    isPartial);
+        }
+
         mOnStartTimestampMs = 0;
     }
 
@@ -89,5 +110,11 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
     void onUserLeaveHint() {
         mCloseCause = CloseCause.USER_ACTION_ANDROID;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void recordCustomTabSession(long time, String packageName, long sessionDuration,
+                boolean wasAutomaticallyClosed, boolean isPartialCct);
     }
 }

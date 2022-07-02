@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -201,7 +202,7 @@ class BluetoothAdvertisementMonitorManagerClientImpl final
 
   base::ObserverList<Observer> observers_;
 
-  dbus::ObjectManager* object_manager_ = nullptr;
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   base::WeakPtrFactory<BluetoothAdvertisementMonitorManagerClientImpl>
       weak_ptr_factory_{this};

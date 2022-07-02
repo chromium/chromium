@@ -554,8 +554,8 @@ const DisplayMode* DisplayConfigurator::FindDisplayModeMatchingSize(
 }
 
 DisplayConfigurator::DisplayConfigurator()
-    : state_controller_(NULL),
-      mirroring_controller_(NULL),
+    : state_controller_(nullptr),
+      mirroring_controller_(nullptr),
       is_panel_fitting_enabled_(false),
       configure_display_(chromeos::IsRunningAsSystemCompositor()),
       current_display_state_(MULTIPLE_DISPLAY_STATE_INVALID),

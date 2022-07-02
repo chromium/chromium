@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -95,6 +96,10 @@ class MockSystemTrustStore : public SystemTrustStore {
 
   void AddTrustStore(TrustStore* store) { trust_store_.AddTrustStore(store); }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version() override { return 0; }
+#endif
+
  private:
   TrustStoreCollection trust_store_;
 };
@@ -184,7 +189,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   CertVerifier::Config config_;
   std::unique_ptr<net::URLRequestContext> context_;
-  MockSystemTrustStore* mock_system_trust_store_;
+  raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };

@@ -100,8 +100,8 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
                : EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfigRule::NOT_SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -158,8 +158,8 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfigRule::SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -303,10 +303,10 @@ TestMediaClient::GetAudioRendererAlgorithmParameters(
 KeySystemPropertiesVector TestMediaClient::GetSupportedKeySystemsInternal() {
   KeySystemPropertiesVector key_systems;
 
-  key_systems.emplace_back(new AesKeySystemProperties(kUsesAes));
+  key_systems.emplace_back(std::make_unique<AesKeySystemProperties>(kUsesAes));
 
   if (supports_external_key_system_)
-    key_systems.emplace_back(new ExternalKeySystemProperties());
+    key_systems.emplace_back(std::make_unique<ExternalKeySystemProperties>());
 
   return key_systems;
 }

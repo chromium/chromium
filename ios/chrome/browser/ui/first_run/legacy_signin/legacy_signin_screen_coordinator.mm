@@ -195,6 +195,24 @@
       self.mediator.selectedIdentity;
 }
 
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
+            withIdentityPicker:(BOOL)identityPickerVisible
+                     andFooter:(BOOL)footerVisible {
+  first_run::FirstRunScreenType screenType;
+  if (identityPickerVisible && footerVisible) {
+    screenType =
+        first_run::FirstRunScreenType::kSignInScreenWithFooterAndIdentityPicker;
+  } else if (identityPickerVisible) {
+    screenType = first_run::FirstRunScreenType::kSignInScreenWithIdentityPicker;
+  } else if (footerVisible) {
+    screenType = first_run::FirstRunScreenType::kSignInScreenWithFooter;
+  } else {
+    screenType = first_run::FirstRunScreenType::
+        kSignInScreenWithoutFooterOrIdentityPicker;
+  }
+  RecordFirstRunScrollButtonVisibilityMetrics(screenType, scrollButtonVisible);
+}
+
 - (void)didTapPrimaryActionButton {
   if (self.mediator.selectedIdentity) {
     [self startSignIn];
@@ -258,7 +276,7 @@
 
 #pragma mark - Private
 
-// Dismisses the Signed Out modal if it is still present and |skipScreens|.
+// Dismisses the Signed Out modal if it is still present and `skipScreens`.
 - (void)dismissSignedOutModalAndSkipScreens:(BOOL)skipScreens {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
@@ -277,7 +295,7 @@
 }
 
 // Completes the presentation of the screen, recording the metrics and notifying
-// the delegate to skip the rest of the FRE if |skipRemainingScreens| is YES, or
+// the delegate to skip the rest of the FRE if `skipRemainingScreens` is YES, or
 // to continue the FRE.
 - (void)finishPresentingAndSkipRemainingScreens:(BOOL)skipRemainingScreens {
   if (self.firstRun) {

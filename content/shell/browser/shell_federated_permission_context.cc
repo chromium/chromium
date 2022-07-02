@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
+#include "content/shell/common/shell_switches.h"
 
 namespace content {
 
@@ -27,18 +28,6 @@ void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
 void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
     const url::Origin& rp_origin) {}
 
-bool ShellFederatedPermissionContext::HasSharingPermissionForAnyAccount(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider) {
-  for (const std::tuple<std::string, std::string, std::string>& permission :
-       sharing_permissions_) {
-    if (std::get<0>(permission) == relying_party.Serialize() &&
-        std::get<1>(permission) == identity_provider.Serialize())
-      return true;
-  }
-  return false;
-}
-
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party,
     const url::Origin& identity_provider,
@@ -53,14 +42,6 @@ void ShellFederatedPermissionContext::GrantSharingPermission(
     const url::Origin& identity_provider,
     const std::string& account_id) {
   sharing_permissions_.insert(std::tuple(
-      relying_party.Serialize(), identity_provider.Serialize(), account_id));
-}
-
-void ShellFederatedPermissionContext::RevokeSharingPermission(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider,
-    const std::string& account_id) {
-  sharing_permissions_.erase(std::tuple(
       relying_party.Serialize(), identity_provider.Serialize(), account_id));
 }
 
@@ -90,6 +71,10 @@ void ShellFederatedPermissionContext::RevokeActiveSession(
   active_sessions_.erase(std::tuple(relying_party.Serialize(),
                                     identity_provider.Serialize(),
                                     account_identifier));
+}
+
+bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
+  return switches::IsRunWebTestsSwitchPresent();
 }
 
 }  // namespace content

@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_widget_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 
 namespace blink {
@@ -174,17 +175,26 @@ class HandledEventCallbackTracker {
   base::WeakPtrFactory<HandledEventCallbackTracker> weak_ptr_factory_{this};
 };
 
+class MockWidgetScheduler : public scheduler::FakeWidgetScheduler {
+ public:
+  MockWidgetScheduler() = default;
+
+  MOCK_METHOD2(DidHandleInputEventOnMainThread,
+               void(const WebInputEvent&, WebInputEventResult));
+};
+
 class MainThreadEventQueueTest : public testing::Test,
                                  public MainThreadEventQueueClient {
  public:
   MainThreadEventQueueTest()
       : main_task_runner_(new base::TestSimpleTaskRunner()) {
+    widget_scheduler_ = base::MakeRefCounted<MockWidgetScheduler>();
     handler_callback_ = std::make_unique<HandledEventCallbackTracker>();
   }
 
   void SetUp() override {
     queue_ = new MainThreadEventQueue(this, main_task_runner_,
-                                      &thread_scheduler_, true);
+                                      widget_scheduler_, true);
     queue_->ClearRafFallbackTimerForTesting();
   }
 
@@ -272,7 +282,7 @@ class MainThreadEventQueueTest : public testing::Test,
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> main_task_runner_;
-  blink::scheduler::WebMockThreadScheduler thread_scheduler_;
+  scoped_refptr<MockWidgetScheduler> widget_scheduler_;
   scoped_refptr<MainThreadEventQueue> queue_;
   std::vector<std::unique_ptr<HandledTask>> handled_tasks_;
   std::unique_ptr<HandledEventCallbackTracker> handler_callback_;
@@ -292,7 +302,7 @@ TEST_F(MainThreadEventQueueTest, ClientDoesntHandleInputEvent) {
   set_handle_input_event(false);
 
   // The blocking event used in this test is reported to the scheduler.
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(1);
 
@@ -336,7 +346,7 @@ TEST_F(MainThreadEventQueueTest, NonBlockingWheel) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -416,7 +426,7 @@ TEST_F(MainThreadEventQueueTest, NonBlockingWheel) {
 }
 
 TEST_F(MainThreadEventQueueTest, NonBlockingTouch) {
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -521,7 +531,7 @@ TEST_F(MainThreadEventQueueTest, BlockingTouch) {
   kEvents[3].PressPoint(10, 10);
   kEvents[3].MovePoint(0, 35, 35);
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
   {
@@ -578,7 +588,7 @@ TEST_F(MainThreadEventQueueTest, InterleavedEvents) {
   kTouchEvents[1].PressPoint(10, 10);
   kTouchEvents[1].MovePoint(0, 30, 30);
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -652,7 +662,7 @@ TEST_F(MainThreadEventQueueTest, RafAlignedMouseInput) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -730,7 +740,7 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInput) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
 
@@ -804,7 +814,7 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
   kEvents[1].MovePoint(0, 20, 20);
   kEvents[0].dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(4);
 
@@ -867,7 +877,7 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
 }
 
 TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputThrottlingMoves) {
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
 
@@ -922,7 +932,7 @@ TEST_F(MainThreadEventQueueTest, LowLatency) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -991,7 +1001,7 @@ TEST_F(MainThreadEventQueueTest, BlockingTouchesDuringFling) {
   kEvents.PressPoint(10, 10);
   kEvents.touch_start_or_first_touch_move = true;
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(4);
 
@@ -1076,7 +1086,7 @@ TEST_F(MainThreadEventQueueTest, BlockingTouchesOutsideFling) {
   kEvents.PressPoint(10, 10);
   kEvents.touch_start_or_first_touch_move = true;
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(4);
 
@@ -1165,7 +1175,7 @@ class MainThreadEventQueueInitializationTest
 
  protected:
   scoped_refptr<MainThreadEventQueue> queue_;
-  blink::scheduler::WebMockThreadScheduler thread_scheduler_;
+  blink::scheduler::WebMockThreadScheduler widget_scheduler_;
   scoped_refptr<base::TestSimpleTaskRunner> main_task_runner_;
 };
 
@@ -1197,7 +1207,7 @@ TEST_F(MainThreadEventQueueTest, QueuingClosureWithRafEvent) {
   EXPECT_TRUE(main_task_runner_->HasPendingTask());
   EXPECT_FALSE(needs_main_frame_);
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(2);
 
@@ -1241,7 +1251,7 @@ TEST_F(MainThreadEventQueueTest, QueuingClosuresBetweenEvents) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(2);
 
@@ -1282,7 +1292,7 @@ TEST_F(MainThreadEventQueueTest, BlockingTouchMoveBecomesNonBlocking) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
   EXPECT_EQ(WebInputEvent::DispatchType::kBlocking, kEvents[0].dispatch_type);
@@ -1328,7 +1338,7 @@ TEST_F(MainThreadEventQueueTest, BlockingTouchMoveWithTouchEnd) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
   EXPECT_EQ(WebInputEvent::DispatchType::kBlocking, kEvents[0].dispatch_type);
@@ -1366,7 +1376,7 @@ TEST_F(MainThreadEventQueueTest, UnbufferedDispatchTouchEvent) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(3);
 
@@ -1428,7 +1438,7 @@ TEST_F(MainThreadEventQueueTest, PointerRawUpdateEvents) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -1474,7 +1484,7 @@ TEST_F(MainThreadEventQueueTest, UnbufferedDispatchMouseEvent) {
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
   EXPECT_EQ(0u, event_queue().size());
 
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 
@@ -1512,7 +1522,7 @@ TEST_F(MainThreadEventQueueTest, PointerEventsWithRelativeMotionCoalescing) {
   EXPECT_EQ(0u, event_queue().size());
 
   // Non blocking events are not reported to the scheduler.
-  EXPECT_CALL(thread_scheduler_,
+  EXPECT_CALL(*widget_scheduler_,
               DidHandleInputEventOnMainThread(testing::_, testing::_))
       .Times(0);
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/color_change_listener/color_change_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
@@ -59,16 +60,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
 
-  // Add a load time string for the frame color to allow the tab strip to paint
-  // a background color that matches the frame before any content loads.
-  // TODO(https://crbug.com/1060398): Update the tab strip color to respond
-  // appopriately to activation changes.
-  const auto& color_provider = web_ui->GetWebContents()->GetColorProvider();
-  const SkColor frame_color =
-      color_provider.GetColor(kColorThumbnailTabStripBackgroundActive);
-  html_source->AddString("frameColor",
-                         color_utils::SkColorToRgbaString(frame_color));
-
   static constexpr webui::LocalizedString kStrings[] = {
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
       {"closeTab", IDS_ACCNAME_CLOSE},
@@ -107,6 +98,12 @@ void TabStripUI::BindInterface(
     mojo::PendingReceiver<tab_strip::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void TabStripUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void TabStripUI::CreatePageHandler(

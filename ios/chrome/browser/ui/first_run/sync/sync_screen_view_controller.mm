@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,7 +69,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   self.primaryActionString =
       [self contentTextWithStringID:self.activateSyncButtonID];
 
-  self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
+  self.bannerName = @"sync_screen_banner";
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
   self.readMoreString =
@@ -99,6 +100,11 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   [super viewDidLoad];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.delegate logScrollButtonVisible:!self.didReachBottom];
+}
+
 #pragma mark - Properties
 
 - (ActivityOverlayView*)overlay {
@@ -111,7 +117,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
 - (UITextView*)learnMoreTextView {
   if (!_learnMoreTextView) {
-    _learnMoreTextView = [[UITextView alloc] init];
+    _learnMoreTextView = CreateUITextViewWithTextKit1();
     _learnMoreTextView.scrollEnabled = NO;
     _learnMoreTextView.editable = NO;
     _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
@@ -171,7 +177,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
 
 #pragma mark - Private
 
-// Push the string id to |_contentStringIds| and returns NSString.
+// Push the string id to `_contentStringIds` and returns NSString.
 - (NSString*)contentTextWithStringID:(const int)stringID {
   [self.delegate addConsentStringID:stringID];
   return l10n_util::GetNSString(stringID);

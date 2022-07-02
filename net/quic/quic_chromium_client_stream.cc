@@ -45,12 +45,7 @@ class ScopedBoolSaver {
 }  // namespace
 
 QuicChromiumClientStream::Handle::Handle(QuicChromiumClientStream* stream)
-    : stream_(stream),
-      may_invoke_callbacks_(true),
-      read_headers_buffer_(nullptr),
-      read_body_buffer_len_(0),
-      net_error_(ERR_UNEXPECTED),
-      net_log_(stream->net_log()) {
+    : stream_(stream), net_log_(stream->net_log()) {
   SaveState();
 }
 
@@ -449,15 +444,8 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(id, session, type),
       net_log_(net_log),
-      handle_(nullptr),
-      initial_headers_sent_(false),
       session_(session),
-      quic_version_(session->connection()->transport_version()),
-      can_migrate_to_cellular_network_(true),
-      initial_headers_arrived_(false),
-      headers_delivered_(false),
-      initial_headers_frame_len_(0),
-      trailing_headers_frame_len_(0) {}
+      quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::PendingStream* pending,
@@ -466,15 +454,8 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : quic::QuicSpdyStream(pending, session),
       net_log_(net_log),
-      handle_(nullptr),
-      initial_headers_sent_(false),
       session_(session),
-      quic_version_(session->connection()->transport_version()),
-      can_migrate_to_cellular_network_(true),
-      initial_headers_arrived_(false),
-      headers_delivered_(false),
-      initial_headers_frame_len_(0),
-      trailing_headers_frame_len_(0) {}
+      quic_version_(session->connection()->transport_version()) {}
 
 QuicChromiumClientStream::~QuicChromiumClientStream() {
   if (handle_)
@@ -684,6 +665,10 @@ void QuicChromiumClientStream::OnError(int error) {
 }
 
 int QuicChromiumClientStream::Read(IOBuffer* buf, int buf_len) {
+  // TODO(https://crbug.com/1335423): Change to DCHECK_GT() or remove after bug
+  // is fixed.
+  CHECK_GT(buf_len, 0);
+
   if (IsDoneReading())
     return 0;  // EOF
 

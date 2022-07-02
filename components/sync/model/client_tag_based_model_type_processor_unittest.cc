@@ -131,7 +131,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   }
 
   sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
-      const sync_pb::EntitySpecifics& entity_specifics) override {
+      const sync_pb::EntitySpecifics& entity_specifics) const override {
     DCHECK(entity_specifics.has_preference());
     sync_pb::EntitySpecifics trimmed_specifics = entity_specifics;
     trimmed_specifics.mutable_preference()->clear_value();
@@ -2679,7 +2679,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->OnCommitCompleted(
       model_type_state(),
       /*committed_response_list=*/CommitResponseDataList(),
-      /*rror_response_list=*/FailedCommitResponseDataList());
+      /*error_response_list=*/FailedCommitResponseDataList());
   EXPECT_EQ(0, bridge()->commit_failures_count());
 }
 

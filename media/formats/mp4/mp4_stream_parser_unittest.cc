@@ -158,22 +158,22 @@ class MP4StreamParserTest : public testing::Test {
 
   bool NewBuffersF(const StreamParser::BufferQueueMap& buffer_queue_map) {
     DecodeTimestamp lowest_end_dts = kNoDecodeTimestamp;
-    for (const auto& it : buffer_queue_map) {
-      DVLOG(3) << "Buffers for track_id=" << it.first;
-      DCHECK(!it.second.empty());
+    for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+      DVLOG(3) << "Buffers for track_id=" << track_id;
+      DCHECK(!buffer_queue.empty());
 
       if (lowest_end_dts == kNoDecodeTimestamp ||
-          lowest_end_dts > it.second.back()->GetDecodeTimestamp())
-        lowest_end_dts = it.second.back()->GetDecodeTimestamp();
+          lowest_end_dts > buffer_queue.back()->GetDecodeTimestamp())
+        lowest_end_dts = buffer_queue.back()->GetDecodeTimestamp();
 
-      for (const auto& buf : it.second) {
+      for (const auto& buf : buffer_queue) {
         DVLOG(3) << "  track_id=" << buf->track_id()
                  << ", size=" << buf->data_size()
                  << ", pts=" << buf->timestamp().InSecondsF()
                  << ", dts=" << buf->GetDecodeTimestamp().InSecondsF()
                  << ", dur=" << buf->duration().InSecondsF();
         // Ensure that track ids are properly assigned on all emitted buffers.
-        EXPECT_EQ(it.first, buf->track_id());
+        EXPECT_EQ(track_id, buf->track_id());
 
         // Let single-track tests verify the sequence of keyframes/nonkeyframes.
         if (verifying_keyframeness_sequence_) {

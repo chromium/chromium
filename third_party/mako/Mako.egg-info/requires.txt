@@ -1,7 +1,0 @@
-MarkupSafe>=0.9.2
-
-[babel]
-Babel
-
-[lingua]
-lingua

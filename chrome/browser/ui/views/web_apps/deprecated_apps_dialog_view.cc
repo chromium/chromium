@@ -111,10 +111,13 @@ DeprecatedAppsDialogView::~DeprecatedAppsDialogView() {
 
 // static
 DeprecatedAppsDialogView* DeprecatedAppsDialogView::CreateAndShowDialog(
+    const extensions::ExtensionId& optional_launched_extension_id,
     const std::set<extensions::ExtensionId>& deprecated_app_ids,
-    content::WebContents* web_contents) {
-  DeprecatedAppsDialogView* view =
-      new DeprecatedAppsDialogView(deprecated_app_ids, web_contents);
+    content::WebContents* web_contents,
+    base::OnceClosure launch_anyways) {
+  DeprecatedAppsDialogView* view = new DeprecatedAppsDialogView(
+      optional_launched_extension_id, deprecated_app_ids, web_contents,
+      std::move(launch_anyways));
   view->InitDialog();
   constrained_window::ShowWebModalDialogViews(view, web_contents);
   return view;
@@ -125,15 +128,42 @@ base::WeakPtr<DeprecatedAppsDialogView> DeprecatedAppsDialogView::AsWeakPtr() {
 }
 
 std::u16string DeprecatedAppsDialogView::GetWindowTitle() const {
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_DEPRECATED_APPS_RENDERER_TITLE,
+  if (launched_extension_name_) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME,
+        launched_extension_name_.value());
+  }
+  if (single_app_name_) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME,
+        single_app_name_.value());
+  }
+  return l10n_util::GetStringFUTF16Int(
+      IDS_DEPRECATED_APPS_RENDERER_TITLE_PLURAL,
       deprecated_apps_table_model_->RowCount());
 }
 
 DeprecatedAppsDialogView::DeprecatedAppsDialogView(
+    const extensions::ExtensionId& optional_launched_extension_id,
     const std::set<extensions::ExtensionId>& deprecated_app_ids,
-    content::WebContents* web_contents)
-    : deprecated_app_ids_(deprecated_app_ids), web_contents_(web_contents) {
+    content::WebContents* web_contents,
+    base::OnceClosure launch_anyways)
+    : deprecated_app_ids_(deprecated_app_ids),
+      launch_anyways_(std::move(launch_anyways)),
+      web_contents_(web_contents) {
+  if (!optional_launched_extension_id.empty()) {
+    const extensions::Extension* extension =
+        extensions::ExtensionRegistry::Get(web_contents_->GetBrowserContext())
+            ->GetInstalledExtension(optional_launched_extension_id);
+    launched_extension_name_ = base::UTF8ToUTF16(extension->name());
+  }
+  if (deprecated_app_ids_.size() == 1) {
+    const extensions::Extension* extension =
+        extensions::ExtensionRegistry::Get(web_contents_->GetBrowserContext())
+            ->GetInstalledExtension(*deprecated_app_ids_.begin());
+    DCHECK(extension);
+    single_app_name_ = base::UTF8ToUTF16(extension->name());
+  }
   deprecated_apps_table_model_ = std::make_unique<DeprecatedAppsTableModel>(
       deprecated_app_ids, web_contents,
       base::BindRepeating(&DeprecatedAppsDialogView::OnIconsLoadedForTable,
@@ -153,24 +183,29 @@ void DeprecatedAppsDialogView::InitDialog() {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-
   // Set up buttons.
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetPluralStringFUTF16(
                      IDS_DEPRECATED_APPS_OK_LABEL,
                      deprecated_apps_table_model_->RowCount()));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_CANCEL_LABEL));
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
-  SetCancelCallback(base::BindOnce(&DeprecatedAppsDialogView::CloseDialog,
+  SetAcceptCallback(base::BindOnce(&DeprecatedAppsDialogView::OnAccept,
                                    base::Unretained(this)));
-  SetAcceptCallback(base::BindOnce(
-      &DeprecatedAppsDialogView::UninstallExtensions, base::Unretained(this)));
 
-  info_label_ = AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetPluralStringFUTF16(
-          IDS_DEPRECATED_APPS_MONITOR_RENDERER,
-          deprecated_apps_table_model_->RowCount())));
+  if (launched_extension_name_) {
+    SetButtonLabel(
+        ui::DIALOG_BUTTON_CANCEL,
+        l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
+  } else {
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                   l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_CANCEL_LABEL));
+  }
+  SetCancelCallback(base::BindOnce(&DeprecatedAppsDialogView::OnCancel,
+                                   base::Unretained(this)));
+
+  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+
+  info_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_MONITOR_RENDERER)));
   info_label_->SetMultiLine(true);
   info_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
@@ -186,8 +221,8 @@ void DeprecatedAppsDialogView::InitDialog() {
             ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
       },
       web_contents_));
-  learn_more->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
+  learn_more->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Set up the table view.
@@ -218,13 +253,18 @@ void DeprecatedAppsDialogView::OnIconsLoadedForTable() {
   deprecated_apps_table_view_->SchedulePaint();
 }
 
-void DeprecatedAppsDialogView::UninstallExtensions() {
+void DeprecatedAppsDialogView::OnAccept() {
   for (extensions::ExtensionId id : deprecated_app_ids_) {
     extensions::ExtensionSystem::Get(web_contents_->GetBrowserContext())
         ->extension_service()
         ->UninstallExtension(id, extensions::UNINSTALL_REASON_USER_INITIATED,
                              /*error=*/nullptr);
   }
+  CloseDialog();
+}
+
+void DeprecatedAppsDialogView::OnCancel() {
+  std::move(launch_anyways_).Run();
   CloseDialog();
 }
 

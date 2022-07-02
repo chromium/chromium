@@ -408,13 +408,13 @@ class NET_EXPORT URLRequestJob {
   // Indicates that the job is done producing data, either it has completed
   // all the data or an error has been encountered. Set exclusively by
   // NotifyDone so that it is kept in sync with the request.
-  bool done_;
+  bool done_ = false;
 
   // Number of raw network bytes read from job subclass.
-  int64_t prefilter_bytes_read_;
+  int64_t prefilter_bytes_read_ = 0;
 
   // Number of bytes after applying |source_stream_| filters.
-  int64_t postfilter_bytes_read_;
+  int64_t postfilter_bytes_read_ = 0;
 
   // The first SourceStream of the SourceStream chain used.
   std::unique_ptr<SourceStream> source_stream_;
@@ -429,10 +429,10 @@ class NET_EXPORT URLRequestJob {
 
   // Used by HandleResponseIfNecessary to track whether we've sent the
   // OnResponseStarted callback and potentially redirect callbacks as well.
-  bool has_handled_response_;
+  bool has_handled_response_ = false;
 
   // Expected content size
-  int64_t expected_content_size_;
+  int64_t expected_content_size_ = -1;
 
   // Set when a redirect is deferred. Redirects are deferred after validity
   // checks are performed, so this field must not be modified.

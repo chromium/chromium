@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -31,7 +32,10 @@
 #include "chrome/grit/discards_resources.h"
 #include "chrome/grit/discards_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -203,6 +207,27 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
         g_browser_process->GetTabManager();
     tab_manager->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
     std::move(callback).Run();
+  }
+
+  void ToggleLocalStatePref(const std::string& pref_name) {
+    bool val = g_browser_process->local_state()->GetBoolean(pref_name);
+    g_browser_process->local_state()->SetBoolean(pref_name, !val);
+  }
+
+  void ToggleHighEfficiencyMode() override {
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kHighEfficiencyModeAvailable)) {
+      ToggleLocalStatePref(
+          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+    }
+  }
+
+  void ToggleBatterySaverMode() override {
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kBatterySaverModeAvailable)) {
+      ToggleLocalStatePref(
+          performance_manager::user_tuning::prefs::kBatterySaverModeEnabled);
+    }
   }
 
  private:

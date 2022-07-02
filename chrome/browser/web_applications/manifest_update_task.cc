@@ -312,6 +312,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     return;
   }
 
+  CHECK(!web_contents()->IsBeingDestroyed());
+
   install_info_.emplace();
   UpdateWebAppInfoFromManifest(data.manifest, data.manifest_url,
                                &install_info_.value());
@@ -387,15 +389,18 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (install_info_->url_handlers != app->url_handlers())
     return true;
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLockScreen) &&
+      install_info_->lock_screen_start_url != app->lock_screen_start_url()) {
+    return true;
+  }
+
   if (install_info_->note_taking_new_note_url !=
       app->note_taking_new_note_url()) {
     return true;
   }
 
   if (install_info_->capture_links != app->capture_links())
-    return true;
-
-  if (install_info_->handle_links != app->handle_links())
     return true;
 
   if (app->file_handlers() != install_info_->file_handlers)

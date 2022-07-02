@@ -340,7 +340,7 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
 
   // Pins |item2| by dragging it to ShelfView.
   ShelfView* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  ASSERT_EQ(0, shelf_view->view_model()->view_size());
+  ASSERT_EQ(0u, shelf_view->view_model()->view_size());
   GetEventGenerator()->MoveMouseTo(item2->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
   item2->FireMouseDragTimerForTest();
@@ -348,7 +348,7 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
       shelf_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetAppsGridView()->FireDragToShelfTimerForTest());
   GetEventGenerator()->ReleaseLeftButton();
-  ASSERT_EQ(1, shelf_view->view_model()->view_size());
+  ASSERT_EQ(1u, shelf_view->view_model()->view_size());
 
   // Verifies that the dragged item has the correct previous/next focusable
   // view after drag.
@@ -1311,6 +1311,9 @@ TEST_F(AppListControllerImplAppListBubbleTest,
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
   auto* controller = Shell::Get()->app_list_controller();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -1328,12 +1331,280 @@ TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
   controller->SetHideContinueSection(false);
   EXPECT_FALSE(controller->ShouldHideContinueSection());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kLauncherContinueSectionHidden));
+}
 
-  // Hiding continue section can be done via the AppListController interface
-  // exposed in //ash/public.
-  AppListController::Get()->HideContinueSection();
-  EXPECT_TRUE(controller->ShouldHideContinueSection());
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kLauncherContinueSectionHidden));
+// AppListControllerImpl test that start in inactive session.
+class AppListControllerImplNotLoggedInTest
+    : public AppListControllerImplAppListBubbleTest {
+ public:
+  AppListControllerImplNotLoggedInTest() = default;
+  ~AppListControllerImplNotLoggedInTest() override = default;
+
+  void SetUp() override {
+    AppListControllerImplAppListBubbleTest::SetUp();
+    SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
+  }
+
+  void SetSessionState(session_manager::SessionState state) {
+    SessionInfo info;
+    info.state = state;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+  }
+};
+
+TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLoginScreen) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Verify app list cannot be toggled in logged in but inactive state.
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Toggle app list works when session is active.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLoginScreen) {
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Verify app list cannot be toggled in logged in but inactive state.
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Toggle app list works when session is active.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ShowAppList();
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListInOobe) {
+  SetSessionState(session_manager::SessionState::OOBE);
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Toggle app list works when session is active.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListInOobe) {
+  SetSessionState(session_manager::SessionState::OOBE);
+  auto* controller = Shell::Get()->app_list_controller();
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Verify app list cannot be toggled in logged in but inactive state.
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Toggle app list works when session is active.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ShowAppList();
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ToggleAppListOnLockScreen) {
+  SetSessionState(session_manager::SessionState::ACTIVE);
+
+  auto* controller = Shell::Get()->app_list_controller();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Lock screen - toggling app list should fail.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Unlock and verify toggling app list works.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ToggleAppList(GetPrimaryDisplay().id(),
+                            AppListShowSource::kSearchKey,
+                            /*event_time_stamp=*/{});
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Locking the session hides the app list.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListOnLockScreen) {
+  SetSessionState(session_manager::SessionState::ACTIVE);
+
+  auto* controller = Shell::Get()->app_list_controller();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Lock screen - toggling app list should fail.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Unlock and verify toggling app list works.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  controller->ShowAppList();
+
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Locking the session hides the app list.
+  SetSessionState(session_manager::SessionState::LOCKED);
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  controller->ShowAppList();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest, ShowAppListWhenInTabletMode) {
+  // Enable tablet mode while on login screen.
+  EnableTabletMode();
+
+  auto* controller = Shell::Get()->app_list_controller();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  // Fullscreen app list should be shown upon login.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest,
+       FullscreenLauncherInTabletModeWhenLocked) {
+  auto* controller = Shell::Get()->app_list_controller();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  // Enable tablet mode and lock screen - fullscreen launcher should be shown
+  // (behind the lock screen).
+  EnableTabletMode();
+  SetSessionState(session_manager::SessionState::LOCKED);
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplNotLoggedInTest,
+       FullscreenLauncherShownWhenEnteringTabletModeOnLockScreen) {
+  auto* controller = Shell::Get()->app_list_controller();
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  SetSessionState(session_manager::SessionState::LOCKED);
+
+  // Enable tablet mode and lock screen - fullscreen launcher should be shown
+  // (behind the lock screen).
+  EnableTabletMode();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_FALSE(controller->IsVisible());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->fullscreen_presenter()->GetTargetVisibility());
+  EXPECT_TRUE(controller->IsVisible());
 }
 
 // Kiosk tests with the bubble launcher enabled.

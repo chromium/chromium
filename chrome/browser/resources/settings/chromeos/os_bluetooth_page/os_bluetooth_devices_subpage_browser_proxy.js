@@ -9,17 +9,29 @@ export class OsBluetoothDevicesSubpageBrowserProxy {
    * Returned by the 'fast-pair-device-supported' WebUI listener event.
    */
   requestFastPairDeviceSupport() {}
+
+  /**
+   * Requests Fast Pair Saved Devices opt-in status and list of devices.
+   * Returned by the 'fast-pair-saved-devices-opt-in-status' and the
+   * 'fast-pair-saved-devices-list' WebUI listener event.
+   */
+  requestFastPairSavedDevices() {}
+
+  /**
+   * Invokes the removal of a Fast Pair device by the account key |accountKey|
+   * from a user's account.
+   * @param {string} accountKey
+   */
+  deleteFastPairSavedDevice(accountKey) {}
 }
+
+/** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+let instance = null;
 
 /**
  * @implements {OsBluetoothDevicesSubpageBrowserProxy}
  */
 export class OsBluetoothDevicesSubpageBrowserProxyImpl {
-  /** @override */
-  requestFastPairDeviceSupport() {
-    chrome.send('requestFastPairDeviceSupportStatus');
-  }
-
   /** @return {!OsBluetoothDevicesSubpageBrowserProxy} */
   static getInstance() {
     return instance ||
@@ -27,10 +39,25 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   }
 
   /** @param {!OsBluetoothDevicesSubpageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
-}
 
-/** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
-let instance = null;
+  /** @override */
+  requestFastPairDeviceSupport() {
+    chrome.send('requestFastPairDeviceSupportStatus');
+  }
+
+  /** @override */
+  requestFastPairSavedDevices() {
+    chrome.send('loadSavedDevicePage');
+  }
+
+  /**
+   * @override
+   * @param {string} accountKey
+   */
+  deleteFastPairSavedDevice(accountKey) {
+    chrome.send('removeSavedDevice', [accountKey]);
+  }
+}

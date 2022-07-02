@@ -94,6 +94,7 @@ public class AutofillExpirationDateFixFlowPrompt
                 cardholderAccount, confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
+        // Infobar: show masked card number only.
         TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
         cardDetailsMasked.setText(cardLabel);
         mDialogView.findViewById(R.id.message_divider).setVisibility(View.GONE);
@@ -118,6 +119,7 @@ public class AutofillExpirationDateFixFlowPrompt
         // Set drawable id as 0 to remove the icon on the title.
         this(context, delegate, title, /*drawableId=*/0, cardLabel, cardholderAccount,
                 confirmButtonLabel, true);
+        // Message: show masked card number, divider and gpay logo.
         mDialogView.findViewById(R.id.message_divider).setVisibility(View.VISIBLE);
         mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.VISIBLE);
     }
@@ -149,8 +151,7 @@ public class AutofillExpirationDateFixFlowPrompt
     public void onDismiss(PropertyModel model, int dismissalCause) {
         // Do not call onUserDismiss if dialog was dismissed either because the user
         // accepted to save the card or was dismissed by native code.
-        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                && dismissalCause != DialogDismissalCause.DISMISSED_BY_NATIVE) {
+        if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
             mDelegate.onUserDismiss();
         }
         // Call whenever the dialog is dismissed.

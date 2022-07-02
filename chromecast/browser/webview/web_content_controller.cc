@@ -97,6 +97,9 @@ WebContentController::~WebContentController() {
     // Therefore, it is not safe to call RemoveInputEventObserver on every
     // RenderWidgetHost that we started observing; we need to remove only
     // from currently live RenderWidgetHosts.
+    //
+    // Or, consider listening to
+    // |RenderWidgetHostObserver::RenderWidgetHostDestroyed| instead.
     std::unique_ptr<content::RenderWidgetHostIterator> widgets(
         content::RenderWidgetHost::GetRenderWidgetHosts());
     while (content::RenderWidgetHost* widget = widgets->GetNextHost()) {
@@ -448,7 +451,7 @@ void WebContentController::JavascriptCallback(int64_t id, base::Value result) {
 void WebContentController::HandleEvaluateJavascript(
     int64_t id,
     const webview::EvaluateJavascriptRequest& request) {
-  GetWebContents()->GetMainFrame()->ExecuteJavaScript(
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScript(
       base::UTF8ToUTF16(request.javascript_blob()),
       base::BindOnce(&WebContentController::JavascriptCallback,
                      weak_ptr_factory_.GetWeakPtr(), id));

@@ -11,12 +11,10 @@
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp.h"
 
-namespace net {
-
 // Functions for converting non-string attributes of
 // net::ct::SignedCertificateTimestamp and net::ct::SCTVerifyStatus values to
 // strings.
-namespace ct {
+namespace net::ct {
 
 // Returns a textual representation of |hash_algorithm|.
 NET_EXPORT const std::string HashAlgorithmToString(
@@ -33,8 +31,6 @@ NET_EXPORT const std::string SignatureAlgorithmToString(
 // Returns a textual representation of |status|.
 NET_EXPORT const std::string StatusToString(SCTVerifyStatus status);
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_CT_SCT_TO_STRING_H_

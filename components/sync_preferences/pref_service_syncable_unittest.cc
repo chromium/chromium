@@ -50,9 +50,7 @@ using syncer::SyncData;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Matches;
-using testing::Not;
 using testing::NotNull;
-using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using user_prefs::PrefRegistrySyncable;
 
@@ -88,13 +86,14 @@ MATCHER_P(MatchesModelType, model_type, "") {
 class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
  public:
   explicit TestSyncProcessorStub(syncer::SyncChangeList* output)
-      : output_(output), fail_next_(false) {}
+      : output_(output) {}
 
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override {
-    if (output_)
+    if (output_) {
       output_->insert(output_->end(), change_list.begin(), change_list.end());
+    }
     if (fail_next_) {
       fail_next_ = false;
       return syncer::ModelError(FROM_HERE, "Error");
@@ -106,7 +105,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
 
  private:
   raw_ptr<syncer::SyncChangeList> output_;
-  bool fail_next_;
+  bool fail_next_ = false;
 };
 
 class TestSyncedPrefObserver : public SyncedPrefObserver {
@@ -137,8 +136,9 @@ class TestPrefServiceSyncableObserver : public PrefServiceSyncableObserver {
   ~TestPrefServiceSyncableObserver() override = default;
 
   void OnIsSyncingChanged() override {
-    if (sync_pref_observer_ && sync_pref_observer_->sync_started_count_ > 0)
+    if (sync_pref_observer_ && sync_pref_observer_->sync_started_count_ > 0) {
       is_syncing_changed_ = true;
+    }
   }
 
   void SetSyncedPrefObserver(const TestSyncedPrefObserver* sync_pref_observer) {

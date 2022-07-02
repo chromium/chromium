@@ -168,7 +168,7 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(OnPictureInPictureStateChange, void());
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(ResumePlayback, void());
-  MOCK_METHOD0(PausePlayback, void());
+  MOCK_METHOD1(PausePlayback, void(WebMediaPlayerClient::PauseReason));
   MOCK_METHOD0(DidPlayerStartPlaying, void());
   MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
@@ -1967,7 +1967,10 @@ TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
   ScheduleIdlePauseTimer();
   EXPECT_TRUE(IsIdlePauseTimerRunning());
 
-  EXPECT_CALL(client_, PausePlayback());
+  EXPECT_CALL(
+      client_,
+      PausePlayback(
+          WebMediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
   FireIdlePauseTimer();
   base::RunLoop().RunUntilIdle();
 }
@@ -2284,7 +2287,7 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     }
 
     if (IsVideoBeingCaptured())
-      wmpi_->GetCurrentFrame();
+      wmpi_->GetCurrentFrameThenUpdate();
 
     BackgroundPlayer();
   }

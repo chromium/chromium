@@ -15,6 +15,7 @@ bool StructTraits<
     media::internal::StatusData>::Read(media::mojom::StatusDataDataView data,
                                        media::internal::StatusData* output) {
   output->code = data.code();
+  output->packed_root_cause = data.packed_root_cause();
 
   if (!data.ReadGroup(&output->group))
     return false;

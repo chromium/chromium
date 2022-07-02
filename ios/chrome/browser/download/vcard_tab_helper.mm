@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 
+#import "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -1,0 +1,11 @@
+Verifies that making subresource requests from JS which set nonsecure SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyConflictsWithOtherAttributes
+        ]
+        cookieLine : name=value; SameSite=None; SameParty
+    }
+]
+

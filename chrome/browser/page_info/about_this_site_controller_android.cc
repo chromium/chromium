@@ -37,7 +37,7 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
     return nullptr;
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
   auto source_id = content::WebContents::FromJavaWebContents(j_webContents)
-                       ->GetMainFrame()
+                       ->GetPrimaryMainFrame()
                        ->GetPageUkmSourceId();
   auto info = service->GetAboutThisSiteInfo(*url, source_id);
   if (!info)

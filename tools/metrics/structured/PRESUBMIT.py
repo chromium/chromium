@@ -27,7 +27,7 @@ def CheckChange(input_api, output_api):
     if basename == STRUCTURED_XML:
       cwd = input_api.os_path.dirname(path)
       exit_code = input_api.subprocess.call(
-          [input_api.python_executable, 'pretty_print.py', '--presubmit'],
+          [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
           cwd=cwd)
       if exit_code != 0:
         errors.append(

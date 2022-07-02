@@ -13,7 +13,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 
 import java.util.List;
 

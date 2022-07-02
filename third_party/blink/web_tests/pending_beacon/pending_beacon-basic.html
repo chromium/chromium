@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+    test(() => {
+        let beacon = new PendingBeacon('https://www.google.com',
+                        {method: 'GET', pageHideTimeout: 200});
+        assert_equals("pending", beacon.state);
+        assert_equals("https://www.google.com", beacon.url);
+        assert_equals(200, beacon.pageHideTimeout);
+        beacon.pageHideTimeout = 400;
+        assert_equals(400, beacon.pageHideTimeout);
+        assert_equals("GET", beacon.method);
+        beacon.method = "POST";
+        assert_equals("POST", beacon.method);
+        // Non-valid methods get ignored in the setter.
+        beacon.method = "FOO";
+        assert_equals("POST", beacon.method);
+    }, "Basic configuration of a pending beacon.");
+
+    test(() => {
+        let beacon = new PendingBeacon("https://www.google.com");
+        assert_equals("POST", beacon.method);
+    }, "Verify that beacons default to POST if no options are provided.");
+</script>
+</body>
+</html>

@@ -18,10 +18,10 @@
 // Image view for the cell.
 @property(nonatomic, strong) UIImageView* imageView;
 
-// Constraint used for leading text constraint without |imageView|.
+// Constraint used for leading text constraint without `imageView`.
 @property(nonatomic, strong) NSLayoutConstraint* textNoImageConstraint;
 
-// Constraint used for leading text constraint with |imageView| showing.
+// Constraint used for leading text constraint with `imageView` showing.
 @property(nonatomic, strong) NSLayoutConstraint* textWithImageConstraint;
 
 // Constraint used for aligning the image with the content view centerYAnchor.
@@ -129,7 +129,7 @@
                                     constant:
                                         kTableViewTwoLabelsCellVerticalSpacing],
 
-    // Leading constraint for |customSepartor|.
+    // Leading constraint for `customSepartor`.
     [self.customSeparator.leadingAnchor
         constraintEqualToAnchor:self.textLabel.leadingAnchor],
   ]];
@@ -139,7 +139,7 @@
   BOOL hidden = !image;
   self.imageView.image = image;
   self.imageView.hidden = hidden;
-  // Update the leading text constraint based on |image| being provided.
+  // Update the leading text constraint based on `image` being provided.
   if (hidden) {
     self.textWithImageConstraint.active = NO;
     self.textNoImageConstraint.active = YES;

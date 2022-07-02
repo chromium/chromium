@@ -38,7 +38,8 @@ class CORE_EXPORT Variable : public Longhand {
   explicit constexpr Variable(CSSProperty::Flags flags)
       : Longhand(CSSPropertyID::kVariable,
                  kProperty | kValidForFirstLetter | kValidForFirstLine |
-                     kValidForMarker | kValidForHighlight | flags,
+                     kValidForMarker | kValidForHighlightLegacy |
+                     kValidForHighlight | flags,
                  '\0') {}
 };
 

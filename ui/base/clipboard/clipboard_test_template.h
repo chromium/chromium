@@ -138,13 +138,6 @@ struct NullClipboardTraits {
 TYPED_TEST_SUITE(ClipboardTest, TypesToTest, NamesOfTypesToTest);
 
 TYPED_TEST(ClipboardTest, ClearTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(u"clear me");
@@ -163,13 +156,6 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 }
 
 TYPED_TEST(ClipboardTest, TextTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string text(u"This is a std::u16string!#$"), text_result;
   std::string ascii_text;
 
@@ -199,13 +185,6 @@ TYPED_TEST(ClipboardTest, TextTest) {
 }
 
 TYPED_TEST(ClipboardTest, HTMLTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string markup(u"<string>Hi!</string>"), markup_result;
   std::u16string plain(u"Hi!"), plain_result;
   std::string url("http://www.example.com/"), url_result;
@@ -237,13 +216,6 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
 }
 
 TYPED_TEST(ClipboardTest, SvgTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string markup(u"<svg> <circle r=\"40\" /> </svg>");
 
   {
@@ -268,13 +240,6 @@ TYPED_TEST(ClipboardTest, SvgTest) {
 // TODO(crbug/1064968): This test fails with ClipboardAndroid, but passes with
 // the TestClipboard as RTF isn't implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, RTFTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::string rtf =
       "{\\rtf1\\ansi{\\fonttbl\\f0\\fswiss Helvetica;}\\f0\\pard\n"
       "This is some {\\b bold} text.\\par\n"
@@ -356,13 +321,6 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
 #endif  // BUILDFLAG(IS_LINUX)
 
 TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string markup(u"<em>Bye!<!--EndFragment --></em>"), markup_result;
   std::string url, url_result;
   std::u16string plain(u"Bye!"), plain_result;
@@ -396,13 +354,6 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
 // Some platforms store HTML as UTF-8 internally. Make sure fragment indices are
 // adjusted appropriately when converting back to UTF-16.
 TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string markup(u"<div>A ø 水</div>"), markup_result;
   std::string url, url_result;
 
@@ -436,13 +387,6 @@ TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
 // TODO(estade): Port the following test (decide what target we use for urls)
 #if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 TYPED_TEST(ClipboardTest, BookmarkTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string title(u"The Example Company"), title_result;
   std::string url("http://www.example.com/"), url_result;
 
@@ -469,13 +413,6 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 #if !BUILDFLAG(IS_ANDROID)
 // Filenames is not implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, FilenamesTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -507,13 +444,6 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TYPED_TEST(ClipboardTest, MultiFormatTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string text(u"Hi!"), text_result;
   std::u16string markup(u"<strong>Hi!</string>"), markup_result;
   std::string url("http://www.example.com/"), url_result;
@@ -562,13 +492,6 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
 }
 
 TYPED_TEST(ClipboardTest, URLTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   std::u16string url(u"http://www.google.com/");
 
   {
@@ -670,13 +593,6 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
   constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
   EXPECT_DEATH(
@@ -689,13 +605,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_F16_Premul) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   constexpr U8x4 b[4 * 3] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
       {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
@@ -709,13 +618,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul) {
 }
 
 TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   constexpr U8x4 b[2 * 7] = {
       {0x26, 0x16, 0x06, 0x46}, {0x88, 0x59, 0x9f, 0xf6},
       {0x37, 0x29, 0x3f, 0x79}, {0x86, 0xb9, 0x55, 0xfa},
@@ -732,13 +634,6 @@ TYPED_TEST(ClipboardTest, BitmapWriteAndPngRead_N32_Premul_2x7) {
 }  // namespace
 
 TYPED_TEST(ClipboardTest, PickleTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   const ClipboardFormatType kFormat =
       ClipboardFormatType::GetType("chromium/x-test-format");
   std::string payload("test string");
@@ -764,13 +659,6 @@ TYPED_TEST(ClipboardTest, PickleTest) {
 }
 
 TYPED_TEST(ClipboardTest, MultiplePickleTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   const ClipboardFormatType kFormat1 =
       ClipboardFormatType::GetType("chromium/x-test-format1");
   std::string payload1("test string1");
@@ -833,14 +721,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
 // TODO(crbug.com/106449): Implement multiple custom format write on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TYPED_TEST(ClipboardTest, DataTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  const std::string kFormatString = "chromium/x-test-format";
+  const std::string kFormatString = "web chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
   const std::string payload = "test string";
   base::span<const uint8_t> payload_span(
@@ -866,20 +747,13 @@ TYPED_TEST(ClipboardTest, DataTest) {
 }
 
 TYPED_TEST(ClipboardTest, MultipleDataTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
   base::span<const uint8_t> payload_span1(
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
 
-  const std::string kFormatString2 = "chromium/x-test-format2";
+  const std::string kFormatString2 = "web chromium/x-test-format2";
   const std::u16string kFormatString216 = u"chromium/x-test-format2";
   const std::string payload2("test string2");
   base::span<const uint8_t> payload_span2(
@@ -897,7 +771,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 1.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString116));
+              Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
   this->clipboard().ReadData(ClipboardFormatType::WebCustomFormatMap(),
                              /* data_dst = */ nullptr, &custom_format_json);
@@ -915,7 +789,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   // Check format 2.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString216));
+              Contains(u"web chromium/x-test-format2"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
               custom_format_names.end());
   std::string output2;
@@ -926,20 +800,13 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
 }
 
 TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::string kFormatString1 = "web chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const std::string payload1("test string1");
   base::span<const uint8_t> payload_span1(
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
 
-  const std::string kFormatString2 = "text/plain";
+  const std::string kFormatString2 = "web text/plain";
   const std::u16string kFormatString216 = u"text/plain";
   const std::string payload2("test string2");
   base::span<const uint8_t> payload_span2(
@@ -957,7 +824,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 1.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString116));
+              Contains(u"web chromium/x-test-format1"));
   std::string custom_format_json;
   this->clipboard().ReadData(ClipboardFormatType::WebCustomFormatMap(),
                              /* data_dst = */ nullptr, &custom_format_json);
@@ -975,7 +842,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   // Check format 2.
   EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
-              Contains(kFormatString216));
+              Contains(u"web text/plain"));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
               custom_format_names.end());
   std::string output2;
@@ -990,13 +857,6 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
 // On Windows, this test uses a pre-defined ANSI format, CF_TEXT, and tests that
 // the Windows implicitly converts this to UNICODE as expected.
 TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   // We're testing platform-specific behavior, so use PlatformClipboardTest.
   // TODO(https://crbug.com/1083050): The template shouldn't know about its
   // instantiations. Move this information up using a flag, virtual method, or
@@ -1008,7 +868,8 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
     return;
 
   const std::string text = "test string";
-  const std::string kFormatString = "text/plain";
+  const std::string kFormatString = "web text/plain";
+  const std::u16string kFormatString16 = u"text/plain";
 #if BUILDFLAG(IS_WIN)
   // Windows requires an extra '\0' at the end for a raw write.
   const std::string kPlatformSpecificText = text + '\0';
@@ -1020,7 +881,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
       kPlatformSpecificText.size());
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteData(ASCIIToUTF16(kFormatString),
+    clipboard_writer.WriteData(kFormatString16,
                                mojo_base::BigBuffer(text_span));
   }
 
@@ -1072,13 +933,6 @@ TYPED_TEST(ClipboardTest, HyperlinkTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, WebSmartPasteTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteWebSmartPaste();
@@ -1137,13 +991,6 @@ TYPED_TEST(ClipboardTest, HtmlTest) {
 
 // Test writing all formats we have simultaneously.
 TYPED_TEST(ClipboardTest, WriteEverything) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"foo");
@@ -1166,13 +1013,6 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
 // written to.
 // TODO(dcheng): Add a version to test ClipboardBuffer::kSelection.
 TYPED_TEST(ClipboardTest, GetSequenceNumber) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   const ClipboardSequenceNumberToken first_sequence_number =
       this->clipboard().GetSequenceNumber(ClipboardBuffer::kCopyPaste);
 
@@ -1195,97 +1035,41 @@ TYPED_TEST(ClipboardTest, GetSequenceNumber) {
 // Test that writing empty parameters doesn't try to dereference an empty data
 // vector. Not crashing = passing.
 TYPED_TEST(ClipboardTest, WriteTextEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHTMLEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteHTML(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, EmptySvgTest) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteSvg(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteRTF(std::string());
 }
 
 TYPED_TEST(ClipboardTest, WriteBookmarkEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteBookmark(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHyperlinkEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteHyperlink(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WritePickledData) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WritePickledData(base::Pickle(), ClipboardFormatType::PlainTextType());
 }
 
 TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtMostOS10_11()) {
-    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
-                    "code. https://crbug.com/1232472";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteImage(SkBitmap());
 }

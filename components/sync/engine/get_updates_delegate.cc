@@ -48,7 +48,6 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
     DCHECK(!nudge_tracker_.IsTypeBlocked(type))
         << "Throttled types should have been removed from the request_types.";
 
-    nudge_tracker_.SetLegacyNotificationHint(type, progress_marker);
     nudge_tracker_.FillProtoMessage(
         type, progress_marker->mutable_get_update_triggers());
   }

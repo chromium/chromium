@@ -12,24 +12,24 @@ import {CupsPrinterInfo, PrinterSetupResult, PrintServerResult} from './cups_pri
  * @fileoverview  Utility functions that are used in Cups printer setup dialogs.
  */
 
-  /**
-   * @param {string} protocol
-   * @return {boolean} Whether |protocol| is a network protocol
-   */
+/**
+ * @param {string} protocol
+ * @return {boolean} Whether |protocol| is a network protocol
+ */
 export function isNetworkProtocol(protocol) {
   return ['ipp', 'ipps', 'http', 'https', 'socket', 'lpd'].includes(protocol);
 }
 
-  /**
-   * Returns true if the printer's name and address is valid. This function
-   * uses regular expressions to determine whether the provided printer name
-   * and address are valid. Address can be either an ipv4/6 address or a
-   * hostname followed by an optional port.
-   * NOTE: The regular expression for hostnames will allow hostnames that are
-   * over 255 characters.
-   * @param {CupsPrinterInfo} printer
-   * @return {boolean}
-   */
+/**
+ * Returns true if the printer's name and address is valid. This function
+ * uses regular expressions to determine whether the provided printer name
+ * and address are valid. Address can be either an ipv4/6 address or a
+ * hostname followed by an optional port.
+ * NOTE: The regular expression for hostnames will allow hostnames that are
+ * over 255 characters.
+ * @param {CupsPrinterInfo} printer
+ * @return {boolean}
+ */
 export function isNameAndAddressValid(printer) {
   if (!printer) {
     return false;
@@ -78,22 +78,22 @@ export function isNameAndAddressValid(printer) {
       (ipv6AddressRegex.test(address) && !invalidIpv6Regex.test(address));
 }
 
-  /**
-   * Returns true if the printer's manufacturer and model or ppd path is valid.
-   * @param {string} manufacturer
-   * @param {string} model
-   * @param {string} ppdPath
-   * @return {boolean}
-   */
+/**
+ * Returns true if the printer's manufacturer and model or ppd path is valid.
+ * @param {string} manufacturer
+ * @param {string} model
+ * @param {string} ppdPath
+ * @return {boolean}
+ */
 export function isPPDInfoValid(manufacturer, model, ppdPath) {
   return !!((manufacturer && model) || ppdPath);
 }
 
-  /**
-   * Returns the base name of a filepath.
-   * @param {string} path The full path of the file
-   * @return {string} The base name of the file
-   */
+/**
+ * Returns the base name of a filepath.
+ * @param {string} path The full path of the file
+ * @return {string} The base name of the file
+ */
 export function getBaseName(path) {
   if (path && path.length > 0) {
     return path.substring(path.lastIndexOf('/') + 1);
@@ -101,110 +101,110 @@ export function getBaseName(path) {
   return '';
 }
 
-  /**
-   * A function used for sorting printer names based on the current locale's
-   * collation order.
-   * @param {!CupsPrinterInfo} first
-   * @param {!CupsPrinterInfo} second
-   * @return {number} The result of the comparison.
-   */
-  function alphabeticalSort(first, second) {
-    return first.printerName.toLocaleLowerCase().localeCompare(
-        second.printerName.toLocaleLowerCase());
+/**
+ * A function used for sorting printer names based on the current locale's
+ * collation order.
+ * @param {!CupsPrinterInfo} first
+ * @param {!CupsPrinterInfo} second
+ * @return {number} The result of the comparison.
+ */
+function alphabeticalSort(first, second) {
+  return first.printerName.toLocaleLowerCase().localeCompare(
+      second.printerName.toLocaleLowerCase());
+}
+
+/**
+ * Return the error string corresponding to the result code.
+ * @param {!PrinterSetupResult} result
+ * @return {string}
+ */
+export function getErrorText(result) {
+  switch (result) {
+    case PrinterSetupResult.FATAL_ERROR:
+      return loadTimeData.getString('printerAddedFatalErrorMessage');
+    case PrinterSetupResult.PRINTER_UNREACHABLE:
+      return loadTimeData.getString('printerAddedUnreachableMessage');
+    case PrinterSetupResult.DBUS_ERROR:
+      // Simply return a generic error message as this error should only
+      // occur when a call to Dbus fails which isn't meaningful to the user.
+      return loadTimeData.getString('printerAddedFailedMessage');
+    case PrinterSetupResult.NATIVE_PRINTERS_NOT_ALLOWED:
+      return loadTimeData.getString(
+          'printerAddedNativePrintersNotAllowedMessage');
+    case PrinterSetupResult.INVALID_PRINTER_UPDATE:
+      return loadTimeData.getString('editPrinterInvalidPrinterUpdate');
+    case PrinterSetupResult.PPD_TOO_LARGE:
+      return loadTimeData.getString('printerAddedPpdTooLargeMessage');
+    case PrinterSetupResult.INVALID_PPD:
+      return loadTimeData.getString('printerAddedInvalidPpdMessage');
+    case PrinterSetupResult.PPD_NOT_FOUND:
+      return loadTimeData.getString('printerAddedPpdNotFoundMessage');
+    case PrinterSetupResult.PPD_UNRETRIEVABLE:
+      return loadTimeData.getString('printerAddedPpdUnretrievableMessage');
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * Return the error string corresponding to the result code for print servers.
+ * @param {!PrintServerResult} result
+ * @return {string}
+ */
+export function getPrintServerErrorText(result) {
+  switch (result) {
+    case PrintServerResult.CONNECTION_ERROR:
+      return loadTimeData.getString('printServerConnectionError');
+    case PrintServerResult.CANNOT_PARSE_IPP_RESPONSE:
+    case PrintServerResult.HTTP_ERROR:
+      return loadTimeData.getString('printServerConfigurationErrorMessage');
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * We sort by printer type, which is based off of a maintained list in
+ * cups_printers_types.js. If the types are the same, we sort alphabetically.
+ * @param {!PrinterListEntry} first
+ * @param {!PrinterListEntry} second
+ * @return {number}
+ */
+export function sortPrinters(first, second) {
+  if (first.printerType === second.printerType) {
+    return alphabeticalSort(first.printerInfo, second.printerInfo);
   }
 
-  /**
-   * Return the error string corresponding to the result code.
-   * @param {!PrinterSetupResult} result
-   * @return {string}
-   */
-  export function getErrorText(result) {
-    switch (result) {
-      case PrinterSetupResult.FATAL_ERROR:
-        return loadTimeData.getString('printerAddedFatalErrorMessage');
-      case PrinterSetupResult.PRINTER_UNREACHABLE:
-        return loadTimeData.getString('printerAddedUnreachableMessage');
-      case PrinterSetupResult.DBUS_ERROR:
-        // Simply return a generic error message as this error should only
-        // occur when a call to Dbus fails which isn't meaningful to the user.
-        return loadTimeData.getString('printerAddedFailedMessage');
-      case PrinterSetupResult.NATIVE_PRINTERS_NOT_ALLOWED:
-        return loadTimeData.getString(
-            'printerAddedNativePrintersNotAllowedMessage');
-      case PrinterSetupResult.INVALID_PRINTER_UPDATE:
-        return loadTimeData.getString('editPrinterInvalidPrinterUpdate');
-      case PrinterSetupResult.PPD_TOO_LARGE:
-        return loadTimeData.getString('printerAddedPpdTooLargeMessage');
-      case PrinterSetupResult.INVALID_PPD:
-        return loadTimeData.getString('printerAddedInvalidPpdMessage');
-      case PrinterSetupResult.PPD_NOT_FOUND:
-        return loadTimeData.getString('printerAddedPpdNotFoundMessage');
-      case PrinterSetupResult.PPD_UNRETRIEVABLE:
-        return loadTimeData.getString('printerAddedPpdUnretrievableMessage');
-      default:
-        assertNotReached();
-    }
-  }
+  return first.printerType - second.printerType;
+}
 
-  /**
-   * Return the error string corresponding to the result code for print servers.
-   * @param {!PrintServerResult} result
-   * @return {string}
-   */
-  export function getPrintServerErrorText(result) {
-    switch (result) {
-      case PrintServerResult.CONNECTION_ERROR:
-        return loadTimeData.getString('printServerConnectionError');
-      case PrintServerResult.CANNOT_PARSE_IPP_RESPONSE:
-      case PrintServerResult.HTTP_ERROR:
-        return loadTimeData.getString('printServerConfigurationErrorMessage');
-      default:
-        assertNotReached();
-    }
-  }
+/**
+ * @param {!CupsPrinterInfo} printer
+ * @param {string} searchTerm
+ * @return {boolean} True if the printer has |searchTerm| in its name.
+ */
+export function matchesSearchTerm(printer, searchTerm) {
+  return printer.printerName.toLowerCase().includes(searchTerm.toLowerCase());
+}
 
-  /**
-   * We sort by printer type, which is based off of a maintained list in
-   * cups_printers_types.js. If the types are the same, we sort alphabetically.
-   * @param {!PrinterListEntry} first
-   * @param {!PrinterListEntry} second
-   * @return {number}
-   */
-  export function sortPrinters(first, second) {
-    if (first.printerType === second.printerType) {
-      return alphabeticalSort(first.printerInfo, second.printerInfo);
-    }
+/**
+ * @param {!PrinterListEntry} first
+ * @param {!PrinterListEntry} second
+ * @return {boolean}
+ */
+function arePrinterIdsEqual(first, second) {
+  return first.printerInfo.printerId === second.printerInfo.printerId;
+}
 
-    return first.printerType - second.printerType;
-  }
-
-  /**
-   * @param {!CupsPrinterInfo} printer
-   * @param {string} searchTerm
-   * @return {boolean} True if the printer has |searchTerm| in its name.
-   */
-  export function matchesSearchTerm(printer, searchTerm) {
-    return printer.printerName.toLowerCase().includes(searchTerm.toLowerCase());
-  }
-
-  /**
-   * @param {!PrinterListEntry} first
-   * @param {!PrinterListEntry} second
-   * @return {boolean}
-   */
-  function arePrinterIdsEqual(first, second) {
-    return first.printerInfo.printerId === second.printerInfo.printerId;
-  }
-
-  /**
-   * Finds the printers that are in |firstArr| but not in |secondArr|.
-   * @param {!Array<!PrinterListEntry>} firstArr
-   * @param {!Array<!PrinterListEntry>} secondArr
-   * @return {!Array<!PrinterListEntry>}
-   */
-  export function findDifference(firstArr, secondArr) {
-    return firstArr.filter(p1 => {
-      return !secondArr.some(
-          p2 => p2.printerInfo.printerId === p1.printerInfo.printerId);
-    });
-  }
+/**
+ * Finds the printers that are in |firstArr| but not in |secondArr|.
+ * @param {!Array<!PrinterListEntry>} firstArr
+ * @param {!Array<!PrinterListEntry>} secondArr
+ * @return {!Array<!PrinterListEntry>}
+ */
+export function findDifference(firstArr, secondArr) {
+  return firstArr.filter(p1 => {
+    return !secondArr.some(
+        p2 => p2.printerInfo.printerId === p1.printerInfo.printerId);
+  });
+}

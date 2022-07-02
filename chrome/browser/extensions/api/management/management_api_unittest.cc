@@ -137,7 +137,7 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
   scoped_refptr<ManagementSetEnabledFunction> function =
       base::MakeRefCounted<ManagementSetEnabledFunction>();
   if (web_contents)
-    function->SetRenderFrameHost(web_contents->GetMainFrame());
+    function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   base::Value args(base::Value::Type::LIST);
   args.Append(extension_id);
   args.Append(enabled);

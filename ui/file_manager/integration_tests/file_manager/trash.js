@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPat
 import {testcase} from '../testcase.js';
 
 import {expandTreeItem, IGNORE_APP_ERRORS, mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -360,4 +361,67 @@ testcase.trashDeleteFromTrash = async () => {
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+};
+
+/**
+ * When selecting items whilst in the trash root, no files tasks should be
+ * available.
+ */
+testcase.trashNoTasksInTrashRoot = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
+
+  // Select hello.txt and make sure tasks are visible.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
+
+  // Delete item and wait for it to be removed (no dialog).
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to /Trash and ensure the file is shown and the tasks button is
+  // hidden.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+  await remoteCall.waitForElement(appId, '#tasks[hidden]');
+};
+
+/**
+ * Double clicking on a file while in Trash shows a disallowed alert dialog.
+ */
+testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  await remoteCall.callRemoteTestUtil(
+      'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
+
+  // Select hello.txt and make sure a default task is executed when double
+  // clicking.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId, ['#file-list [file-name="hello.txt"]']));
+  await remoteCall.waitUntilTaskExecutes(
+      appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
+
+  // Delete item and wait for it to be removed (no dialog).
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to /Trash and ensure the file is shown.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+  await remoteCall.waitForElement(appId, '#tasks[hidden]');
+
+  // Double-click the file and ensure an alert dialog is displayed.
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list [file-name="My files › Downloads › hello.txt"]']);
+  await remoteCall.waitForElement(appId, '.files-alert-dialog');
 };

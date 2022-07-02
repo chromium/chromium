@@ -103,7 +103,7 @@ class WaveShaperDSPKernel final : public AudioDSPKernel {
   // such that a zero input produces a non-zero output.  In this case, the node
   // has an infinite tail so that silent input continues to produce non-silent
   // output.
-  double tail_time_;
+  double tail_time_ = 0;
 
   // Work arrays needed by WaveShaperCurveValues().  Mutable so this
   // const function can modify these arrays.  There's no state or

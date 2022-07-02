@@ -226,9 +226,8 @@ void AppBannerManagerDesktop::OnWebAppInstalled(
 void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
   // WebAppTabHelper has a app_id but it is reset during
-  // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
-  auto local_app_id = registrar().FindAppWithUrlInScope(validated_url());
-  if (app_id == local_app_id)
+  // OnWebAppWillBeUninstalled so use IsUrlInAppScope() instead.
+  if (registrar().IsUrlInAppScope(validated_url(), app_id))
     uninstalling_app_id_ = app_id;
 }
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
@@ -139,9 +140,9 @@ class DbusAppmenu : public AvatarMenuObserver,
                                   ui::Accelerator* accelerator) const override;
 
   // State for the browser window we're tracking.
-  Browser* const browser_;
-  Profile* profile_;
-  BrowserView* browser_view_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<BrowserView> browser_view_;
   // XID of the browser's frame window that owns this menu.  Deliberately stored
   // as plain int (and not as x11::Window) because it is never used for any
   // calls to the X server, but it is always used for building string paths and
@@ -163,15 +164,15 @@ class DbusAppmenu : public AvatarMenuObserver,
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> toplevel_menus_;
   std::vector<std::unique_ptr<ui::SimpleMenuModel>>
       recently_closed_window_menus_;
-  ui::SimpleMenuModel* history_menu_ = nullptr;
-  ui::SimpleMenuModel* profiles_menu_ = nullptr;
+  raw_ptr<ui::SimpleMenuModel> history_menu_ = nullptr;
+  raw_ptr<ui::SimpleMenuModel> profiles_menu_ = nullptr;
 
   // Tracks value of the kShowBookmarkBar preference.
   PrefChangeRegistrar pref_change_registrar_;
 
   scoped_refptr<history::TopSites> top_sites_;
 
-  sessions::TabRestoreService* tab_restore_service_;  // weak
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_;  // weak
 
   std::unique_ptr<AvatarMenu> avatar_menu_;
 

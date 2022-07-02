@@ -67,6 +67,7 @@ class ChromeAutofillClient
   version_info::Channel GetChannel() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
+  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -102,8 +103,7 @@ class ChromeAutofillClient
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
-  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager()
-      override;
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   void ShowVirtualCardEnrollDialog(
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
@@ -165,6 +165,10 @@ class ChromeAutofillClient
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool IsTouchToFillCreditCardSupported() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate) override;
+  void HideTouchToFillCreditCard() override;
   void ShowAutofillPopup(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
@@ -186,7 +190,9 @@ class ChromeAutofillClient
       const std::u16string& cvc,
       const gfx::Image& card_image) override;
   void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
-  void ShowAutofillProgressDialog(base::OnceClosure cancel_callback) override;
+  void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing) override;
   bool IsAutofillAssistantShowing() override;
@@ -201,6 +207,7 @@ class ChromeAutofillClient
   bool ShouldShowSigninPromo() override;
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
+  void OnPromoCodeSuggestionsFooterSelected(const GURL& url) override;
   LogManager* GetLogManager() const override;
 
   // RiskDataLoader:

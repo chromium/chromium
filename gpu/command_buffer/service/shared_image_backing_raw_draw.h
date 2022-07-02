@@ -62,17 +62,17 @@ class SharedImageBackingRawDraw : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state,
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
-      const absl::optional<SkColor>& clear_color,
+      const absl::optional<SkColor4f>& clear_color,
       bool visible);
   void EndRasterWriteAccess(base::OnceClosure callback);
   cc::PaintOpBuffer* BeginRasterReadAccess(
-      absl::optional<SkColor>& clear_color);
+      absl::optional<SkColor4f>& clear_color);
   sk_sp<SkPromiseImageTexture> BeginSkiaReadAccess();
   void EndReadAccess();
 
   int32_t final_msaa_count_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
   SkSurfaceProps surface_props_ GUARDED_BY_CONTEXT(thread_checker_){};
-  absl::optional<SkColor> clear_color_ GUARDED_BY(lock_);
+  absl::optional<SkColor4f> clear_color_ GUARDED_BY(lock_);
   bool visible_ GUARDED_BY(lock_) = false;
   sk_sp<cc::PaintOpBuffer> paint_op_buffer_ GUARDED_BY(lock_);
   base::OnceClosure paint_op_release_callback_

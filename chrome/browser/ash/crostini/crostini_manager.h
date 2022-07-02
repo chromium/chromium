@@ -10,10 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
@@ -21,22 +22,22 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/vm_shutdown_observer.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector.pb.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/device/public/mojom/usb_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -60,14 +61,14 @@ class LinuxPackageOperationProgressObserver {
   // DOWNLOADING or INSTALLING. If |status| is FAILED, the |error_message|
   // will contain output of the failing installation command.
   virtual void OnInstallLinuxPackageProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       InstallLinuxPackageProgressStatus status,
       int progress_percent,
       const std::string& error_message) = 0;
 
   // A successfully started package uninstall will continually fire progress
   // events until it returns a status of SUCCEEDED or FAILED.
-  virtual void OnUninstallPackageProgress(const ContainerId& container_id,
+  virtual void OnUninstallPackageProgress(const guest_os::GuestId& container_id,
                                           UninstallPackageProgressStatus status,
                                           int progress_percent) = 0;
 };
@@ -75,7 +76,7 @@ class LinuxPackageOperationProgressObserver {
 class PendingAppListUpdatesObserver : public base::CheckedObserver {
  public:
   // Called whenever the kPendingAppListUpdatesMethod signal is sent.
-  virtual void OnPendingAppListUpdates(const ContainerId& container_id,
+  virtual void OnPendingAppListUpdates(const guest_os::GuestId& container_id,
                                        int count) = 0;
 };
 
@@ -84,7 +85,7 @@ class ExportContainerProgressObserver {
   // A successfully started container export will continually fire progress
   // events until the original callback from ExportLxdContainer is invoked with
   // a status of SUCCESS or CONTAINER_EXPORT_FAILED.
-  virtual void OnExportContainerProgress(const ContainerId& container_id,
+  virtual void OnExportContainerProgress(const guest_os::GuestId& container_id,
                                          const StreamingExportStatus&) = 0;
 };
 
@@ -94,7 +95,7 @@ class ImportContainerProgressObserver {
   // events until the original callback from ImportLxdContainer is invoked with
   // a status of SUCCESS or CONTAINER_IMPORT_FAILED[_*].
   virtual void OnImportContainerProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       ImportContainerProgressStatus status,
       int progress_percent,
       uint64_t progress_speed,
@@ -107,7 +108,7 @@ class ImportContainerProgressObserver {
 class UpgradeContainerProgressObserver {
  public:
   virtual void OnUpgradeContainerProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       UpgradeContainerProgressStatus status,
       const std::vector<std::string>& messages) = 0;
 };
@@ -123,27 +124,21 @@ class CrostiniDialogStatusObserver : public base::CheckedObserver {
 class CrostiniContainerPropertiesObserver : public base::CheckedObserver {
  public:
   // Called when a container's OS release version changes.
-  virtual void OnContainerOsReleaseChanged(const ContainerId& container_id,
-                                           bool can_upgrade) = 0;
+  virtual void OnContainerOsReleaseChanged(
+      const guest_os::GuestId& container_id,
+      bool can_upgrade) = 0;
 };
 
 class ContainerStartedObserver : public base::CheckedObserver {
  public:
   // Called when the container has started.
-  virtual void OnContainerStarted(const ContainerId& container_id) = 0;
+  virtual void OnContainerStarted(const guest_os::GuestId& container_id) = 0;
 };
 
 class ContainerShutdownObserver : public base::CheckedObserver {
  public:
   // Called when the container has shutdown.
-  virtual void OnContainerShutdown(const ContainerId& container_id) = 0;
-};
-
-class CrostiniFileChangeObserver : public base::CheckedObserver {
- public:
-  // Called when a path registered via AddFileWatch() is changed.
-  virtual void OnCrostiniFileChanged(const ContainerId& container_id,
-                                     const base::FilePath& path) = 0;
+  virtual void OnContainerShutdown(const guest_os::GuestId& container_id) = 0;
 };
 
 // CrostiniManager is a singleton which is used to check arguments for
@@ -153,7 +148,7 @@ class CrostiniFileChangeObserver : public base::CheckedObserver {
 // possible. The existence of Cicerone is abstracted behind this class and
 // only the Concierge name is exposed outside of here.
 class CrostiniManager : public KeyedService,
-                        public chromeos::AnomalyDetectorClient::Observer,
+                        public ash::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
                         public ash::ConciergeClient::ContainerObserver,
                         public ash::CiceroneClient::Observer,
@@ -175,11 +170,11 @@ class CrostiniManager : public KeyedService,
   // Observer class for the Crostini restart flow.
   class RestartObserver {
    public:
-    virtual ~RestartObserver() {}
+    virtual ~RestartObserver() = default;
     virtual void OnStageStarted(mojom::InstallerState stage) {}
     virtual void OnComponentLoaded(CrostiniResult result) {}
     virtual void OnDiskImageCreated(bool success,
-                                    vm_tools::concierge::DiskImageStatus status,
+                                    CrostiniResult result,
                                     int64_t disk_size_bytes) {}
     virtual void OnVmStarted(bool success) {}
     virtual void OnLxdStarted(CrostiniResult result) {}
@@ -190,15 +185,17 @@ class CrostiniManager : public KeyedService,
   };
 
   struct RestartOptions {
+    RestartSource restart_source = RestartSource::kOther;
     bool start_vm_only = false;
     bool stop_after_lxd_available = false;
     // Paths to share with VM on startup.
     std::vector<base::FilePath> share_paths;
-    // These four options only affect new containers.
+    // These five options only affect new containers.
     absl::optional<std::string> container_username;
     absl::optional<int64_t> disk_size_bytes;
     absl::optional<std::string> image_server_url;
     absl::optional<std::string> image_alias;
+    absl::optional<base::FilePath> ansible_playbook;
 
     RestartOptions();
     ~RestartOptions();
@@ -226,13 +223,11 @@ class CrostiniManager : public KeyedService,
   // enabled.
   void MaybeUpdateCrostini();
 
-  // Installs termina using either component updater or the DLC service
-  // depending on the value of chromeos::features::kCrostiniUseDlc
+  // Installs termina using the DLC service.
   void InstallTermina(CrostiniResultCallback callback, bool is_initial_install);
 
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
-  // basis, and we cannot signal if/when it succeeds, but once called the
-  // callback passed to InstallTermina will never be run.
+  // basis. The callback passed to InstallTermina is still run upon completion.
   void CancelInstallTermina();
 
   // Unloads and removes termina.
@@ -243,8 +238,7 @@ class CrostiniManager : public KeyedService,
   // |callback| is called if the arguments are bad, or after the method call
   // finishes.
   using CreateDiskImageCallback =
-      base::OnceCallback<void(bool success,
-                              vm_tools::concierge::DiskImageStatus,
+      base::OnceCallback<void(CrostiniResult result,
                               const base::FilePath& disk_path)>;
   void CreateDiskImage(
       // The path to the disk image, including the name of
@@ -302,7 +296,7 @@ class CrostiniManager : public KeyedService,
   // Checks the arguments for creating an Lxd container via
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been created.
-  void CreateLxdContainer(ContainerId container_id,
+  void CreateLxdContainer(guest_os::GuestId container_id,
                           absl::optional<std::string> opt_image_server_url,
                           absl::optional<std::string> opt_image_alias,
                           CrostiniResultCallback callback);
@@ -310,63 +304,64 @@ class CrostiniManager : public KeyedService,
   // Checks the arguments for deleting an Lxd container via
   // CiceroneClient::DeleteLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been deleted.
-  void DeleteLxdContainer(ContainerId container_id, BoolCallback callback);
+  void DeleteLxdContainer(guest_os::GuestId container_id,
+                          BoolCallback callback);
 
   // Checks the arguments for starting an Lxd container via
   // CiceroneClient::StartLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been created.
-  void StartLxdContainer(ContainerId container_id,
+  void StartLxdContainer(guest_os::GuestId container_id,
                          CrostiniResultCallback callback);
 
   // Checks the arguments for stopping an Lxd container via
   // CiceroneClient::StopLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been stopped.
-  void StopLxdContainer(ContainerId container_id,
+  void StopLxdContainer(guest_os::GuestId container_id,
                         CrostiniResultCallback callback);
 
   // Checks the arguments for setting up an Lxd container user via
   // CiceroneClient::SetUpLxdContainerUser. |callback| is called immediately if
   // the arguments are bad, or once garcon has been started.
-  void SetUpLxdContainerUser(ContainerId container_id,
+  void SetUpLxdContainerUser(guest_os::GuestId container_id,
                              std::string container_username,
                              BoolCallback callback);
 
   // Checks the arguments for exporting an Lxd container via
   // CiceroneClient::ExportLxdContainer. |callback| is called immediately if the
   // arguments are bad, or after the method call finishes.
-  void ExportLxdContainer(ContainerId container_id,
+  void ExportLxdContainer(guest_os::GuestId container_id,
                           base::FilePath export_path,
                           ExportLxdContainerResultCallback callback);
 
   // Checks the arguments for importing an Lxd container via
   // CiceroneClient::ImportLxdContainer. |callback| is called immediately if the
   // arguments are bad, or after the method call finishes.
-  void ImportLxdContainer(ContainerId container_id,
+  void ImportLxdContainer(guest_os::GuestId container_id,
                           base::FilePath import_path,
                           CrostiniResultCallback callback);
 
   // Checks the arguments for cancelling a Lxd container export via
   // CiceroneClient::CancelExportLxdContainer .
-  void CancelExportLxdContainer(ContainerId key);
+  void CancelExportLxdContainer(guest_os::GuestId key);
 
   // Checks the arguments for cancelling a Lxd container import via
   // CiceroneClient::CancelImportLxdContainer.
-  void CancelImportLxdContainer(ContainerId key);
+  void CancelImportLxdContainer(guest_os::GuestId key);
 
   // Checks the arguments for upgrading an existing container via
   // CiceroneClient::UpgradeContainer. An UpgradeProgressObserver should be used
   // to monitor further results.
-  void UpgradeContainer(const ContainerId& key,
+  void UpgradeContainer(const guest_os::GuestId& key,
                         ContainerVersion target_version,
                         CrostiniResultCallback callback);
 
   // Checks the arguments for canceling the upgrade of an existing container via
   // CiceroneClient::CancelUpgradeContainer.
-  void CancelUpgradeContainer(const ContainerId& key,
+  void CancelUpgradeContainer(const guest_os::GuestId& key,
                               CrostiniResultCallback callback);
 
   // Asynchronously launches an app as specified by its desktop file id.
-  void LaunchContainerApplication(const ContainerId& container_id,
+  void LaunchContainerApplication(const guest_os::GuestId& container_id,
                                   std::string desktop_file_id,
                                   const std::vector<std::string>& files,
                                   bool display_scaled,
@@ -376,7 +371,7 @@ class CrostiniManager : public KeyedService,
   // |callback| is called after the method call finishes.
   using GetContainerAppIconsCallback =
       base::OnceCallback<void(bool success, const std::vector<Icon>& icons)>;
-  void GetContainerAppIcons(const ContainerId& container_id,
+  void GetContainerAppIcons(const guest_os::GuestId& container_id,
                             std::vector<std::string> desktop_file_ids,
                             int icon_size,
                             int scale,
@@ -386,7 +381,7 @@ class CrostiniManager : public KeyedService,
   // container.
   using GetLinuxPackageInfoCallback =
       base::OnceCallback<void(const LinuxPackageInfo&)>;
-  void GetLinuxPackageInfo(const ContainerId& container_id,
+  void GetLinuxPackageInfo(const guest_os::GuestId& container_id,
                            std::string package_path,
                            GetLinuxPackageInfoCallback callback);
 
@@ -394,7 +389,7 @@ class CrostiniManager : public KeyedService,
   // installation is successfully started, further updates will be sent to
   // added LinuxPackageOperationProgressObservers.
   using InstallLinuxPackageCallback = CrostiniResultCallback;
-  void InstallLinuxPackage(const ContainerId& container_id,
+  void InstallLinuxPackage(const guest_os::GuestId& container_id,
                            std::string package_path,
                            InstallLinuxPackageCallback callback);
 
@@ -403,7 +398,7 @@ class CrostiniManager : public KeyedService,
   // added LinuxPackageOperationProgressObservers. Uses a package_id, given
   // by "package_name;version;arch;data", to identify the package to install
   // from the APT repository.
-  void InstallLinuxPackageFromApt(const ContainerId& container_id,
+  void InstallLinuxPackageFromApt(const guest_os::GuestId& container_id,
                                   std::string package_id,
                                   InstallLinuxPackageCallback callback);
 
@@ -412,7 +407,7 @@ class CrostiniManager : public KeyedService,
   // to avoid problems with stale package_ids (such as after upgrades). If the
   // uninstallation is successfully started, further updates will be sent to
   // added LinuxPackageOperationProgressObservers.
-  void UninstallPackageOwningFile(const ContainerId& container_id,
+  void UninstallPackageOwningFile(const guest_os::GuestId& container_id,
                                   std::string desktop_file_id,
                                   CrostiniResultCallback callback);
 
@@ -424,53 +419,34 @@ class CrostiniManager : public KeyedService,
                               const std::string& container_public_key,
                               const std::string& host_private_key,
                               const std::string& hostname)>;
-  void GetContainerSshKeys(const ContainerId& container_id,
+  void GetContainerSshKeys(const guest_os::GuestId& container_id,
                            GetContainerSshKeysCallback callback);
-
-  // Add a relative path to watch within the container homedir. Register as a
-  // CrostiniFileChangeObserver to be notified when changes occur. Used by
-  // FilesApp.
-  void AddFileWatch(const ContainerId& container_id,
-                    const base::FilePath& path,
-                    BoolCallback callback);
-  void RemoveFileWatch(const ContainerId& container_id,
-                       const base::FilePath& path);
-  void AddFileChangeObserver(CrostiniFileChangeObserver* observer);
-  void RemoveFileChangeObserver(CrostiniFileChangeObserver* observer);
-
-  // Lookup vsh session from pid. Used by terminal to open new tabs in cwd.
-  using VshSessionCallback =
-      base::OnceCallback<void(bool success,
-                              const std::string& failure_reason,
-                              int32_t container_shell_pid)>;
-  void GetVshSession(const ContainerId& container_id,
-                     int32_t host_vsh_pid,
-                     VshSessionCallback callback);
 
   // Runs all the steps required to restart the given crostini vm and container.
   // The optional |observer| tracks progress. If provided, it must be alive
-  // until the restart completes (i.e. when |callback| is called) or the restart
-  // is aborted via |AbortRestartCrostini|.
-  RestartId RestartCrostini(ContainerId container_id,
+  // until the restart completes (i.e. when |callback| is called) or the request
+  // is cancelled via |CancelRestartCrostini|.
+  RestartId RestartCrostini(guest_os::GuestId container_id,
                             CrostiniResultCallback callback,
                             RestartObserver* observer = nullptr);
 
-  RestartId RestartCrostiniWithOptions(ContainerId container_id,
+  RestartId RestartCrostiniWithOptions(guest_os::GuestId container_id,
                                        RestartOptions options,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
-  // Aborts a restart. A "next" restarter with the same ContainerId will run, if
-  // there is one. |callback| will be called once the restart has finished
-  // aborting
-  void AbortRestartCrostini(RestartId restart_id, base::OnceClosure callback);
+  // Cancel a restart request. The associated result callback will be fired
+  // immediately and the observer will be removed. If there were multiple
+  // restart requests for the same container id, the restart may actually keep
+  // going.
+  void CancelRestartCrostini(RestartId restart_id);
 
   // Returns true if the Restart corresponding to |restart_id| is not yet
   // complete.
   bool IsRestartPending(RestartId restart_id);
 
   // Adds a callback to receive notification of container shutdown.
-  void AddShutdownContainerCallback(ContainerId container_id,
+  void AddShutdownContainerCallback(guest_os::GuestId container_id,
                                     base::OnceClosure shutdown_callback);
 
   // Adds a callback to receive uninstall notification.
@@ -564,12 +540,11 @@ class CrostiniManager : public KeyedService,
       override;
   void OnStartLxdProgress(
       const vm_tools::cicerone::StartLxdProgressSignal& signal) override;
-  void OnFileWatchTriggered(
-      const vm_tools::cicerone::FileWatchTriggeredSignal& signal) override;
 
   // chromeos::NetworkStateHandlerObserver overrides:
   void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
                                  active_networks) override;
+  void OnShuttingDown() override;
 
   // chromeos::PowerManagerClient::Observer overrides:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
@@ -591,13 +566,13 @@ class CrostiniManager : public KeyedService,
   void AddRunningVmForTesting(std::string vm_name);
   void AddStoppingVmForTesting(std::string vm_name);
 
-  void SetContainerOsRelease(const ContainerId& container_id,
+  void SetContainerOsRelease(const guest_os::GuestId& container_id,
                              const vm_tools::cicerone::OsRelease& os_release);
   const vm_tools::cicerone::OsRelease* GetContainerOsRelease(
-      const ContainerId& container_id) const;
+      const guest_os::GuestId& container_id) const;
   // Returns null if VM or container is not running.
   absl::optional<ContainerInfo> GetContainerInfo(
-      const ContainerId& container_id);
+      const guest_os::GuestId& container_id);
   void AddRunningContainerForTesting(std::string vm_name, ContainerInfo info);
 
   // If the Crostini reporting policy is set, save the last app launch
@@ -608,10 +583,6 @@ class CrostiniManager : public KeyedService,
   // Can be called for testing to skip restart.
   void set_skip_restart_for_testing() { skip_restart_for_testing_ = true; }
   bool skip_restart_for_testing() { return skip_restart_for_testing_; }
-  void set_component_manager_load_error_for_testing(
-      component_updater::CrOSComponentManager::Error error) {
-    component_manager_load_error_for_testing_ = error;
-  }
 
   void SetCrostiniDialogStatus(DialogType dialog_type, bool open);
   // Returns true if the dialog is open.
@@ -630,14 +601,15 @@ class CrostiniManager : public KeyedService,
   void AddContainerShutdownObserver(ContainerShutdownObserver* observer);
   void RemoveContainerShutdownObserver(ContainerShutdownObserver* observer);
 
-  bool IsContainerUpgradeable(const ContainerId& container_id) const;
-  bool ShouldPromptContainerUpgrade(const ContainerId& container_id) const;
-  void UpgradePromptShown(const ContainerId& container_id);
+  bool IsContainerUpgradeable(const guest_os::GuestId& container_id) const;
+  bool ShouldPromptContainerUpgrade(
+      const guest_os::GuestId& container_id) const;
+  void UpgradePromptShown(const guest_os::GuestId& container_id);
   bool IsUncleanStartup() const;
   void SetUncleanStartupForTesting(bool is_unclean_startup);
   void RemoveUncleanSshfsMounts();
   void DeallocateForwardedPortsCallback(Profile* profile,
-                                        const ContainerId& container_id);
+                                        const guest_os::GuestId& container_id);
 
   void CallRestarterStartLxdContainerFinishedForTesting(
       CrostiniManager::RestartId id,
@@ -651,7 +623,7 @@ class CrostiniManager : public KeyedService,
   // mounted. If this is something running in the background set background to
   // true, if failures are user-visible set it to false. If you're setting
   // base::DoNothing as the callback then background should be true.
-  void MountCrostiniFiles(ContainerId container_id,
+  void MountCrostiniFiles(guest_os::GuestId container_id,
                           CrostiniResultCallback callback,
                           bool background);
 
@@ -680,7 +652,7 @@ class CrostiniManager : public KeyedService,
       ListVmDisksCallback callback,
       absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
-  // Callback for ConciergeClient::StartTerminaVm. Called after the Concierge
+  // Callback for ConciergeClient::StartVm. Called after the Concierge
   // service method finishes.  Updates running containers list then calls the
   // |callback| if the container has already been started, otherwise passes the
   // callback to OnStartTremplin.
@@ -718,54 +690,54 @@ class CrostiniManager : public KeyedService,
   // is still being created, in which case we will wait for an
   // OnLxdContainerCreated event.
   void OnCreateLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::CreateLxdContainerResponse> response);
 
   // Callback for CiceroneClient::DeleteLxdContainer.
   void OnDeleteLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       BoolCallback callback,
       absl::optional<vm_tools::cicerone::DeleteLxdContainerResponse> response);
 
   // Callback for CiceroneClient::StartLxdContainer.
   void OnStartLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::StartLxdContainerResponse> response);
 
   // Callback for CiceroneClient::StopLxdContainer.
   void OnStopLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response);
 
   // Callback for CiceroneClient::SetUpLxdContainerUser.
   void OnSetUpLxdContainerUser(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       BoolCallback callback,
       absl::optional<vm_tools::cicerone::SetUpLxdContainerUserResponse>
           response);
 
   // Callback for CiceroneClient::ExportLxdContainer.
   void OnExportLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       absl::optional<vm_tools::cicerone::ExportLxdContainerResponse> response);
 
   // Callback for CiceroneClient::ImportLxdContainer.
   void OnImportLxdContainer(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       absl::optional<vm_tools::cicerone::ImportLxdContainerResponse> response);
 
   // Callback for CiceroneClient::CancelExportLxdContainer.
   void OnCancelExportLxdContainer(
-      const ContainerId& key,
+      const guest_os::GuestId& key,
       absl::optional<vm_tools::cicerone::CancelExportLxdContainerResponse>
           response);
 
   // Callback for CiceroneClient::CancelImportLxdContainer.
   void OnCancelImportLxdContainer(
-      const ContainerId& key,
+      const guest_os::GuestId& key,
       absl::optional<vm_tools::cicerone::CancelImportLxdContainerResponse>
           response);
 
@@ -814,9 +786,6 @@ class CrostiniManager : public KeyedService,
       GetContainerSshKeysCallback callback,
       absl::optional<vm_tools::concierge::ContainerSshKeysResponse> response);
 
-  // Callback for AnsibleManagementService::ConfigureDefaultContainer
-  void OnDefaultContainerConfigured(bool success);
-
   // Helper for CrostiniManager::MaybeUpdateCrostini. Makes blocking calls to
   // check for /dev/kvm.
   static void CheckPaths();
@@ -825,7 +794,12 @@ class CrostiniManager : public KeyedService,
   // checking component registration code may block.
   void MaybeUpdateCrostiniAfterChecks();
 
-  void FinishRestart(CrostiniRestarter* restarter, CrostiniResult result);
+  // Called by CrostiniRestarter once it's done with a specific restart request.
+  void RemoveRestartId(RestartId restart_id);
+  // Called by CrostiniRestarter once it's finished. |closure| encapsulates any
+  // outstanding callbacks passed to RestartCrostini*().
+  void RestartCompleted(CrostiniRestarter* restarter,
+                        base::OnceClosure closure);
 
   // Callback for CrostiniManager::RemoveCrostini.
   void OnRemoveCrostini(CrostiniResult result);
@@ -840,15 +814,23 @@ class CrostiniManager : public KeyedService,
   void EmitVmDiskTypeMetric(const std::string vm_name);
 
   // Removes specified container id from running_containers list.
-  void RemoveStoppedContainer(const ContainerId& container_id);
+  void RemoveStoppedContainer(const guest_os::GuestId& container_id);
+
+  // Registers a container with GuestOsService's registries. No-op if it's
+  // already registered.
+  void RegisterContainer(const guest_os::GuestId& container_id);
+
+  // Unregisters a container from GuestOsService's registries. No-op if it's
+  // not registered.
+  void UnregisterContainer(const guest_os::GuestId& container_id);
+
+  // Unregisters all container from GuestOsService's registries.
+  void UnregisterAllContainers();
 
   Profile* profile_;
   std::string owner_id_;
 
   bool skip_restart_for_testing_ = false;
-  component_updater::CrOSComponentManager::Error
-      component_manager_load_error_for_testing_ =
-          component_updater::CrOSComponentManager::Error::NONE;
 
   static bool is_dev_kvm_present_;
 
@@ -857,15 +839,20 @@ class CrostiniManager : public KeyedService,
   bool is_unclean_startup_ = false;
 
   // Callbacks that are waiting on a signal
-  std::multimap<ContainerId, CrostiniResultCallback> start_container_callbacks_;
-  std::multimap<ContainerId, CrostiniResultCallback> stop_container_callbacks_;
-  std::multimap<ContainerId, base::OnceClosure> shutdown_container_callbacks_;
-  std::multimap<ContainerId, CrostiniResultCallback>
+  std::multimap<guest_os::GuestId, CrostiniResultCallback>
+      start_container_callbacks_;
+  std::multimap<guest_os::GuestId, CrostiniResultCallback>
+      stop_container_callbacks_;
+  std::multimap<guest_os::GuestId, base::OnceClosure>
+      shutdown_container_callbacks_;
+  std::multimap<guest_os::GuestId, CrostiniResultCallback>
       create_lxd_container_callbacks_;
-  std::multimap<ContainerId, BoolCallback> delete_lxd_container_callbacks_;
-  std::map<ContainerId, ExportLxdContainerResultCallback>
+  std::multimap<guest_os::GuestId, BoolCallback>
+      delete_lxd_container_callbacks_;
+  std::map<guest_os::GuestId, ExportLxdContainerResultCallback>
       export_lxd_container_callbacks_;
-  std::map<ContainerId, CrostiniResultCallback> import_lxd_container_callbacks_;
+  std::map<guest_os::GuestId, CrostiniResultCallback>
+      import_lxd_container_callbacks_;
 
   // Callbacks to run after Tremplin is started, keyed by vm_name. These are
   // used if StartTerminaVm completes but we need to wait from Tremplin to
@@ -881,10 +868,11 @@ class CrostiniManager : public KeyedService,
   // Running containers as keyed by vm name.
   std::multimap<std::string, ContainerInfo> running_containers_;
 
-  // OsRelease protos keyed by ContainerId. We populate this map even if a
+  // OsRelease protos keyed by guest_os::GuestId. We populate this map even if a
   // container fails to start normally.
-  std::map<ContainerId, vm_tools::cicerone::OsRelease> container_os_releases_;
-  std::set<ContainerId> container_upgrade_prompt_shown_;
+  std::map<guest_os::GuestId, vm_tools::cicerone::OsRelease>
+      container_os_releases_;
+  std::set<guest_os::GuestId> container_upgrade_prompt_shown_;
 
   std::vector<RemoveCrostiniCallback> remove_crostini_callbacks_;
 
@@ -905,14 +893,12 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<ash::VmShutdownObserver> vm_shutdown_observers_;
   base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
 
-  // Only one restarter flow is actually running for a given container, other
-  // restarters will just have their callback called when the running restarter
-  // completes.
-  std::multimap<ContainerId, CrostiniManager::RestartId>
+  // RestartIds present in |restarters_by_id_| will always have a restarter in
+  // |restarters_by_container_| for the corresponding guest_os::GuestId.
+  std::map<CrostiniManager::RestartId, guest_os::GuestId> restarters_by_id_;
+  std::map<guest_os::GuestId, std::unique_ptr<CrostiniRestarter>>
       restarters_by_container_;
-
-  std::map<CrostiniManager::RestartId, std::unique_ptr<CrostiniRestarter>>
-      restarters_by_id_;
+  static RestartId next_restart_id_;
 
   base::ObserverList<CrostiniDialogStatusObserver>
       crostini_dialog_status_observers_;
@@ -921,8 +907,6 @@ class CrostiniManager : public KeyedService,
 
   base::ObserverList<ContainerStartedObserver> container_started_observers_;
   base::ObserverList<ContainerShutdownObserver> container_shutdown_observers_;
-
-  base::ObserverList<CrostiniFileChangeObserver> file_change_observers_;
 
   // Contains the types of crostini dialogs currently open. It is generally
   // invalid to show more than one. e.g. uninstalling and installing are
@@ -946,6 +930,17 @@ class CrostiniManager : public KeyedService,
   bool install_termina_never_completes_ = false;
 
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
+
+  base::flat_map<guest_os::GuestId,
+                 guest_os::GuestOsTerminalProviderRegistry::Id>
+      terminal_provider_ids_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
+  base::flat_map<guest_os::GuestId, guest_os::GuestOsMountProviderRegistry::Id>
+      mount_provider_ids_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

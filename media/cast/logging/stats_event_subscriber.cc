@@ -64,16 +64,15 @@ void StatsEventSubscriber::SimpleHistogram::Reset() {
   buckets_.assign(buckets_.size(), 0);
 }
 
-std::unique_ptr<base::ListValue>
-StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
-  std::unique_ptr<base::ListValue> histo(new base::ListValue);
+base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
+  base::Value::List histo;
 
-  std::unique_ptr<base::DictionaryValue> bucket(new base::DictionaryValue);
+  base::Value::Dict bucket;
 
   if (buckets_.front()) {
     base::Value::Dict bucket;
     bucket.Set(base::StringPrintf("<%" PRId64, min_), buckets_.front());
-    histo->Append(base::Value(std::move(bucket)));
+    histo.Append(std::move(bucket));
   }
 
   for (size_t i = 1; i < buckets_.size() - 1; i++) {
@@ -84,13 +83,13 @@ StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
     int64_t upper = lower + width_ - 1;
     bucket.Set(base::StringPrintf("%" PRId64 "-%" PRId64, lower, upper),
                buckets_[i]);
-    histo->Append(base::Value(std::move(bucket)));
+    histo.Append(std::move(bucket));
   }
 
   if (buckets_.back()) {
     base::Value::Dict bucket;
     bucket.Set(base::StringPrintf(">=%" PRId64, max_), buckets_.back());
-    histo->Append(base::Value(std::move(bucket)));
+    histo.Append(std::move(bucket));
   }
   return histo;
 }
@@ -223,27 +222,25 @@ void StatsEventSubscriber::UpdateFirstLastEventTime(base::TimeTicks timestamp,
   }
 }
 
-std::unique_ptr<base::DictionaryValue> StatsEventSubscriber::GetStats() const {
+base::Value::Dict StatsEventSubscriber::GetStats() const {
   StatsMap stats_map;
   GetStatsInternal(&stats_map);
-  auto ret = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict ret;
 
-  base::DictionaryValue stats;
+  base::Value::Dict stats;
   for (StatsMap::const_iterator it = stats_map.begin(); it != stats_map.end();
        ++it) {
     // Round to 3 digits after the decimal point.
-    stats.SetDouble(CastStatToString(it->first),
-                    round(it->second * 1000.0) / 1000.0);
+    stats.Set(CastStatToString(it->first), round(it->second * 1000.0) / 1000.0);
   }
 
   // Populate all histograms.
   for (auto it = histograms_.begin(); it != histograms_.end(); ++it) {
-    stats.SetKey(CastStatToString(it->first),
-                 base::Value::FromUniquePtrValue(it->second->GetHistogram()));
+    stats.Set(CastStatToString(it->first), it->second->GetHistogram());
   }
 
-  ret->SetKey(event_media_type_ == AUDIO_EVENT ? "audio" : "video",
-              std::move(stats));
+  ret.Set(event_media_type_ == AUDIO_EVENT ? "audio" : "video",
+          std::move(stats));
 
   return ret;
 }

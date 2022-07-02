@@ -41,7 +41,6 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderSecureSurfaceControl:
       return true;
     case TextureOwner::Mode::kAImageReaderInsecure:
-    case TextureOwner::Mode::kAImageReaderInsecureMultithreaded:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
       NOTREACHED();
@@ -65,21 +64,10 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
 // display compositor, 1 frame in flight and 1 frame being prepared by the
 // renderer.
 uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
-  if (IsSurfaceControl(mode) ||
-      mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
+  if (IsSurfaceControl(mode)) {
     DCHECK(!features::LimitAImageReaderMaxSizeToOne());
     if (features::IncreaseBufferCountForHighFrameRate())
       return 5;
-
-    // WebView overlays relies on WebView zero copy at the moment, which
-    // requires at least 3 buffers (one renderer prepares, one is locked by
-    // display compositor in latest compositor frame and one is pending
-    // deletion). These are additional to normal 3 that we need to surface
-    // control.
-    // TODO(vasilyt): This needs to be resolved before feature launch, but
-    // should work for dogfoog.
-    if (features::IncreaseBufferCountForWebViewOverlays())
-      return 6;
 
     return 3;
   }

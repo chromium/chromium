@@ -686,7 +686,9 @@ Request* Request::CreateRequestWithRequestOrString(
     // "If |this|’s request’s mode is neither "same-origin" nor "cors", then
     // throw a TypeError."
     if (request->Mode() != network::mojom::RequestMode::kSameOrigin &&
-        request->Mode() != network::mojom::RequestMode::kCors) {
+        request->Mode() != network::mojom::RequestMode::kCors &&
+        request->Mode() !=
+            network::mojom::RequestMode::kCorsWithForcedPreflight) {
       exception_state.ThrowTypeError(
           "If request is made from ReadableStream, mode should be"
           "\"same-origin\" or \"cors\"");

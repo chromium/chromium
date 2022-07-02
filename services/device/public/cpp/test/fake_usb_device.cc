@@ -61,7 +61,6 @@ void FakeUsbDevice::CloseHandle() {
   MockUsbMojoDevice* mock_device = device_->mock_device();
   if (mock_device) {
     mock_device->Close(base::DoNothing());
-    return;
   }
 
   if (client_)
@@ -72,34 +71,34 @@ void FakeUsbDevice::CloseHandle() {
 
 // Device implementation:
 void FakeUsbDevice::Open(OpenCallback callback) {
-  // Go on with mock device for testing.
-  MockUsbMojoDevice* mock_device = device_->mock_device();
-  if (mock_device) {
-    mock_device->Open(std::move(callback));
-    is_opened_ = true;
-    return;
-  }
-
   if (is_opened_) {
     std::move(callback).Run(mojom::UsbOpenDeviceError::ALREADY_OPEN);
     return;
   }
 
+  // Go on with mock device for testing.
+  MockUsbMojoDevice* mock_device = device_->mock_device();
+  if (mock_device) {
+    mock_device->Open(base::BindOnce(&FakeUsbDevice::FinishOpen,
+                                     base::Unretained(this),
+                                     std::move(callback)));
+    return;
+  }
+
+  FinishOpen(std::move(callback), mojom::UsbOpenDeviceError::OK);
+}
+
+void FakeUsbDevice::FinishOpen(OpenCallback callback,
+                               mojom::UsbOpenDeviceError error) {
+  DCHECK(!is_opened_);
   is_opened_ = true;
   if (client_)
     client_->OnDeviceOpened();
 
-  std::move(callback).Run(mojom::UsbOpenDeviceError::OK);
+  std::move(callback).Run(error);
 }
 
 void FakeUsbDevice::Close(CloseCallback callback) {
-  // Go on with mock device for testing.
-  MockUsbMojoDevice* mock_device = device_->mock_device();
-  if (mock_device) {
-    mock_device->Close(std::move(callback));
-    return;
-  }
-
   CloseHandle();
   std::move(callback).Run();
 }

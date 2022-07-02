@@ -21,7 +21,7 @@ HistoryClustersMetricsLogger::HistoryClustersMetricsLogger(content::Page& page)
 HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   if (!navigation_id_)
     return;
-  if (!init_state_)
+  if (!initial_state_)
     return;
 
   // Record UKM metrics.
@@ -30,25 +30,35 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
       ukm::ConvertToSourceId(*navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::HistoryClusters builder(ukm_source_id);
 
-  if (!final_state_) {
-    // If `final_state_` is not set and `this` is being destructed,
-    // we assume the UI is being closed either via tab or
-    // window closing.
-    final_state_ = HistoryClustersFinalState::kCloseTab;
-  }
-  builder.SetInitialState(static_cast<int>(*init_state_));
-  builder.SetFinalState(static_cast<int>(*final_state_));
+  // TODO(crbug.com/1326954): Add UI-driven counts to UKM.
+  builder.SetInitialState(static_cast<int>(*initial_state_));
   builder.SetNumQueries(num_queries_);
   builder.SetNumTogglesToBasicHistory(num_toggles_to_basic_history_);
   builder.Record(ukm::UkmRecorder::Get());
 
-  // Record UMA metrics.
-  base::UmaHistogramExactLinear("History.Clusters.Actions.LinksOpened",
-                                links_opened_count_, 100);
   base::UmaHistogramEnumeration("History.Clusters.Actions.InitialState",
-                                *init_state_);
-  base::UmaHistogramEnumeration("History.Clusters.Actions.FinalState",
-                                *final_state_);
+                                *initial_state_);
+
+  // These metrics capture the total interactions on the page
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberLinksOpened",
+      links_opened_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberRelatedSearchesClicked",
+      related_searches_click_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberVisibilityToggles",
+      toggled_visiblity_count_);
+
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberClustersDeleted",
+      clusters_deleted_count_);
+  base::UmaHistogramCounts100(
+      "History.Clusters.Actions.FinalState.NumberIndividualVisitsDeleted",
+      visits_deleted_count_);
+  base::UmaHistogramBoolean("History.Clusters.Actions.FinalState.WasSuccessful",
+                            IsCurrentlySuccessfulHistoryClustersOutcome());
+
   base::UmaHistogramBoolean("History.Clusters.Actions.DidMakeQuery",
                             num_queries_ > 0);
   if (num_queries_ > 0) {
@@ -57,6 +67,74 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
     base::UmaHistogramCounts100("History.Clusters.Actions.NumQueries",
                                 num_queries_);
   }
+}
+
+void HistoryClustersMetricsLogger::RecordVisitAction(VisitAction visit_action,
+                                                     uint32_t visit_index,
+                                                     VisitType visit_type) {
+  base::UmaHistogramCounts100(
+      "History.Clusters.UIActions.Visit." + VisitActionToString(visit_action),
+      visit_index);
+
+  base::UmaHistogramCounts100("History.Clusters.UIActions." +
+                                  VisitTypeToString(visit_type) + "Visit." +
+                                  VisitActionToString(visit_action),
+                              visit_index);
+  if (visit_action == VisitAction::kClicked) {
+    links_opened_count_++;
+    return;
+  }
+  if (visit_action == VisitAction::kDeleted) {
+    visits_deleted_count_++;
+    return;
+  }
+}
+
+void HistoryClustersMetricsLogger::RecordClusterAction(
+    ClusterAction cluster_action,
+    uint32_t cluster_index) {
+  base::UmaHistogramCounts100("History.Clusters.UIActions.Cluster." +
+                                  ClusterActionToString(cluster_action),
+                              cluster_index);
+  if (cluster_action == ClusterAction::kOpenedInTabGroup) {
+    // ClusterAction::VisitClicked will have click counted in VisitAction.
+    links_opened_count_++;
+    return;
+  }
+  if (cluster_action == ClusterAction::kDeleted) {
+    clusters_deleted_count_++;
+    return;
+  }
+}
+
+void HistoryClustersMetricsLogger::RecordRelatedSearchAction(
+    RelatedSearchAction action,
+    uint32_t related_search_index) {
+  base::UmaHistogramCounts100("History.Clusters.UIActions.RelatedSearch." +
+                                  RelatedSearchActionToString(action),
+                              related_search_index);
+  if (action == RelatedSearchAction::kClicked)
+    related_searches_click_count_++;
+}
+
+void HistoryClustersMetricsLogger::RecordToggledVisibility(bool visible) {
+  base::UmaHistogramBoolean("History.Clusters.UIActions.ToggledVisiblity",
+                            visible);
+  toggled_visiblity_count_++;
+}
+
+bool HistoryClustersMetricsLogger::
+    IsCurrentlySuccessfulHistoryClustersOutcome() {
+  if (related_searches_click_count_ > 0)
+    return true;
+  if (links_opened_count_ > 0)
+    return true;
+  if (visits_deleted_count_ > 0)
+    return true;
+  if (clusters_deleted_count_ > 0)
+    return true;
+
+  return false;
 }
 
 PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger);

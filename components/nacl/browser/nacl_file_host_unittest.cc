@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -44,7 +45,8 @@ class NaClFileHostTest : public testing::Test {
 
   void SetUp() override {
     nacl_browser_delegate_ = new FileHostTestNaClBrowserDelegate;
-    nacl::NaClBrowser::SetDelegate(base::WrapUnique(nacl_browser_delegate_));
+    nacl::NaClBrowser::SetDelegate(
+        base::WrapUnique(nacl_browser_delegate_.get()));
   }
 
   void TearDown() override {
@@ -57,7 +59,7 @@ class NaClFileHostTest : public testing::Test {
   }
 
  private:
-  FileHostTestNaClBrowserDelegate* nacl_browser_delegate_;
+  raw_ptr<FileHostTestNaClBrowserDelegate> nacl_browser_delegate_;
 };
 
 NaClFileHostTest::NaClFileHostTest() : nacl_browser_delegate_(nullptr) {}

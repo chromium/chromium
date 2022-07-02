@@ -6,12 +6,15 @@
 
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -159,7 +162,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
       auto timer = aggregator().GetScopedTimer(i);
       if (mark_fcp && i == static_cast<int>(LocalFrameUkmAggregator::kPaint))
-        aggregator().DidReachFirstContentfulPaint(true);
+        aggregator().DidReachFirstContentfulPaint();
       test_task_runner_->FastForwardBy(
           base::Milliseconds(millisecond_per_step));
     }
@@ -579,12 +582,81 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         ->EnsureUkmAggregator()
         .ChooseNextFrameForTest();
   }
+
+  void TestIntersectionObserverCounts(Document& document) {
+    base::HistogramTester histogram_tester;
+
+    Element* target1 = document.getElementById("target1");
+    Element* target2 = document.getElementById("target2");
+
+    // Create internal observer
+    IntersectionObserverInit* observer_init =
+        IntersectionObserverInit::Create();
+    TestIntersectionObserverDelegate* internal_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(
+            document, LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+    IntersectionObserver* internal_observer =
+        IntersectionObserver::Create(observer_init, *internal_delegate);
+    DCHECK(!Compositor().NeedsBeginFrame());
+    internal_observer->observe(target1);
+    internal_observer->observe(target2);
+    Compositor().BeginFrame();
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
+        2);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
+        0);
+
+    TestIntersectionObserverDelegate* javascript_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(
+            document, LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
+    IntersectionObserver* javascript_observer =
+        IntersectionObserver::Create(observer_init, *javascript_delegate);
+    javascript_observer->observe(target1);
+    javascript_observer->observe(target2);
+    Compositor().BeginFrame();
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
+        4);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
+        2);
+
+    // Simulate the first contentful paint in the main frame.
+    document.View()->EnsureUkmAggregator().BeginMainFrame();
+    PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
+    document.View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+        base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+
+    target1->setAttribute(html_names::kStyleAttr, "width: 60px");
+    Compositor().BeginFrame();
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
+        4);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
+        2);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationInternalCount.UpdateTime.PostFCP"),
+        2);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(
+            "Blink.IntersectionObservationJavascriptCount.UpdateTime.PostFCP"),
+        2);
+  }
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
       base::StatisticsRecorder::CreateTemporaryForTesting();
-  base::HistogramTester histogram_tester;
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -599,44 +671,64 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   )HTML");
   Compositor().BeginFrame();
   ChooseNextFrameForTest();
-
-  Element* target1 = GetDocument().getElementById("target1");
-  Element* target2 = GetDocument().getElementById("target2");
-
-  // Create internal observer
-  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
-  TestIntersectionObserverDelegate* internal_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(
-          GetDocument(),
-          LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
-  IntersectionObserver* internal_observer =
-      IntersectionObserver::Create(observer_init, *internal_delegate);
-  internal_observer->observe(target1);
-  internal_observer->observe(target2);
-  Compositor().BeginFrame();
-  EXPECT_EQ(histogram_tester.GetTotalSum(
-                "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-            2);
-  EXPECT_EQ(
-      histogram_tester.GetTotalSum(
-          "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
-      0);
-
-  TestIntersectionObserverDelegate* javascript_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(
-          GetDocument(),
-          LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
-  IntersectionObserver* javascript_observer =
-      IntersectionObserver::Create(observer_init, *javascript_delegate);
-  javascript_observer->observe(target1);
-  javascript_observer->observe(target2);
-  Compositor().BeginFrame();
-  EXPECT_EQ(histogram_tester.GetTotalSum(
-                "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-            4);
-  EXPECT_EQ(
-      histogram_tester.GetTotalSum(
-          "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
-      2);
+  TestIntersectionObserverCounts(GetDocument());
 }
+
+TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCountsInChildFrame) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLocalFrameRootPrePostFCPMetrics);
+
+  std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
+      base::StatisticsRecorder::CreateTemporaryForTesting();
+  base::HistogramTester histogram_tester;
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/frame.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<iframe id=frame src='frame.html'></iframe>");
+  frame_resource.Complete(R"HTML(
+    <style>
+    .target { width: 50px; height: 50px; }
+    .spacer { height: 1000px; }
+    </style>
+    <div id=target1 class=target></div>
+    <div id=target2 class=target></div>
+    <div class=spacer></div>"
+  )HTML");
+  Compositor().BeginFrame();
+  ChooseNextFrameForTest();
+  TestIntersectionObserverCounts(
+      *To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
+           ->contentDocument());
+}
+
+static void TestLocalFrameRootPrePostFCPMetrics(
+    const LocalFrame& local_frame_root) {
+  ASSERT_FALSE(local_frame_root.IsMainFrame());
+  ASSERT_TRUE(local_frame_root.IsLocalRoot());
+  auto& ukm_aggregator = local_frame_root.View()->EnsureUkmAggregator();
+  EXPECT_TRUE(ukm_aggregator.IsBeforeFCPForTesting());
+  // Simulate the first contentful paint.
+  PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kLocalFrameRootPrePostFCPMetrics),
+      !ukm_aggregator.IsBeforeFCPForTesting());
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLocalFrameRootPrePostFCPMetrics);
+  InitializeRemote();
+  TestLocalFrameRootPrePostFCPMetrics(*LocalFrameRoot().GetFrame());
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest,
+       LocalFrameRootPrePostFCPMetricsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kLocalFrameRootPrePostFCPMetrics);
+  InitializeRemote();
+  TestLocalFrameRootPrePostFCPMetrics(*LocalFrameRoot().GetFrame());
+}
+
 }  // namespace blink

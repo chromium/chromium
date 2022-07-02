@@ -69,6 +69,11 @@ const std::array<TrackableFeatureInfo, static_cast<int>(TrackableFeature::kMax)>
         TrackableFeatureInfo{
             TrackableFeature::kAppListReorderAfterSessionActivation,
             "AppListReorderAfterSessionActivation",
-            kAppListSortDiscoveryDurationAfterActivation}};
+            kAppListSortDiscoveryDurationAfterActivation},
+        TrackableFeatureInfo{
+            TrackableFeature::kAppListReorderAfterEducationNudgePerTabletMode,
+            "AppListReorderAfterEducationNudgeSeparated",
+            kAppListSortDiscoveryDurationAfterNudgeClamshell,
+            kAppListSortDiscoveryDurationAfterNudgeTablet}};
 
 }  // namespace ash::feature_discovery

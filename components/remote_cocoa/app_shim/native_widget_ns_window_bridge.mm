@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
 #import <objc/runtime.h>
@@ -35,6 +37,7 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -144,7 +147,7 @@ display::Display GetDisplayForWindow(NSWindow* window) {
 @implementation ModalShowAnimationWithLayer {
   // This is the "real" delegate, but this class acts as the NSAnimationDelegate
   // to avoid a separate object.
-  remote_cocoa::NativeWidgetNSWindowBridge* _bridgedNativeWidget;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> _bridgedNativeWidget;
 }
 - (instancetype)initWithBridgedNativeWidget:
     (remote_cocoa::NativeWidgetNSWindowBridge*)widget {
@@ -422,7 +425,7 @@ void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
 }
 
 void NativeWidgetNSWindowBridge::StackAtTop() {
-  [window_ setOrderedIndex:0];
+  [window_ orderWindow:NSWindowAbove relativeTo:0];
 }
 
 void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
@@ -747,7 +750,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
   // If the parent (or an ancestor) is hidden, return and wait for it to become
   // visible.
-  for (auto* ancestor = parent_; ancestor; ancestor = ancestor->parent_) {
+  for (auto* ancestor = parent_.get(); ancestor; ancestor = ancestor->parent_) {
     if (!ancestor->window_visible_)
       return;
   }
@@ -911,6 +914,10 @@ void NativeWidgetNSWindowBridge::EndMoveLoop() {
 
 void NativeWidgetNSWindowBridge::SetCursor(NSCursor* cursor) {
   [window_delegate_ setCursor:cursor];
+}
+
+void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
+  SetCursor(ui::GetNativeCursor(cursor));
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
@@ -1218,13 +1225,21 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
 void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
     const gfx::Rect& frame,
     bool animate,
-    base::TimeDelta& transition_time) {
+    base::OnceCallback<void()> completion_callback) {
   NSRect ns_frame = gfx::ScreenRectToNSRect(frame);
+  base::TimeDelta transition_time = base::Seconds(0);
   if (animate)
     transition_time = base::Seconds([window_ animationResizeTime:ns_frame]);
-  else
-    transition_time = base::Seconds(0);
-  [window_ setFrame:ns_frame display:NO animate:animate];
+
+  __block base::OnceCallback<void()> complete = std::move(completion_callback);
+  [NSAnimationContext
+      runAnimationGroup:^(NSAnimationContext* context) {
+        [context setDuration:transition_time.InSecondsF()];
+        [[window_ animator] setFrame:ns_frame display:YES animate:animate];
+      }
+      completionHandler:^{
+        std::move(complete).Run();
+      }];
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
@@ -1245,7 +1260,11 @@ void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
     return;
   }
 
+  bool is_key_window = [window_ isKeyWindow];
   [window_ toggleFullScreen:nil];
+  // Ensure the transitioning window maintains focus (crbug.com/1338659).
+  if (is_key_window)
+    [window_ makeKeyAndOrderFront:nil];
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerCloseWindow() {
@@ -1261,7 +1280,10 @@ gfx::Rect NativeWidgetNSWindowBridge::FullscreenControllerGetFrameForDisplay(
   display::Display display;
   if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
                                                             &display)) {
-    return display.work_area();
+    // Use the current window size to avoid unexpected window resizes on
+    // subsequent cross-screen window drag and drops; see crbug.com/1338664
+    return gfx::Rect(display.work_area().origin(),
+                     FullscreenControllerGetFrame().size());
   }
   return gfx::Rect();
 }
@@ -1359,6 +1381,16 @@ void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
 }
 
 void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
+  // In headless mode the platform window is always hidden and WebKit
+  // will not deminiaturize hidden windows. So instead of changing the window
+  // miniaturization state just lie to the upper layer pretending the window did
+  // change its state. We don't need to keep track of the requested state here
+  // because the host will do this.
+  if (headless_mode_window_) {
+    host_->OnWindowMiniaturizedChanged(miniaturized);
+    return;
+  }
+
   if (miniaturized) {
     // Calling performMiniaturize: will momentarily highlight the button, but
     // AppKit will reject it if there is no miniaturize button.
@@ -1454,10 +1486,7 @@ void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
 }
 
 void NativeWidgetNSWindowBridge::ClearTouchBar() {
-  if (@available(macOS 10.12.2, *)) {
-    if ([bridged_view_ respondsToSelector:@selector(setTouchBar:)])
-      [bridged_view_ setTouchBar:nil];
-  }
+  [bridged_view_ setTouchBar:nil];
 }
 
 void NativeWidgetNSWindowBridge::UpdateTooltip() {
@@ -1516,11 +1545,7 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
     } else {
       if (child_window.parentWindow == window)
         continue;
-      // Attaching a window to be a child window resets the window level, so
-      // restore the window level afterwards.
-      NSInteger level = child_window.level;
       [window addChildWindow:child_window ordered:NSWindowAbove];
-      child_window.level = level;
     }
   }
 }

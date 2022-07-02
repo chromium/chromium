@@ -8,10 +8,8 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//remoting/build/config/remoting_features.gni")
 
-# TODO(crbug.com/1052397): Remove is_chromeos_lacros once the target_os switch
-# is completed.
-remoting_use_x11 = ozone_platform_x11 && is_linux && !is_chromecast &&
-                   !is_chromeos_lacros && !remoting_use_wayland
+remoting_use_x11 =
+    ozone_platform_x11 && (is_linux && !is_castos) && !remoting_use_wayland
 
 enable_remoting_host = is_win || is_mac || is_chromeos_ash ||
                        remoting_use_x11 || (is_linux && remoting_use_wayland)

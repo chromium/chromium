@@ -20,11 +20,6 @@
 
 using infobars::InfoBar;
 
-namespace {
-// The name of the icon image for the reading list banner.
-NSString* const kIconImageName = @"infobar_reading_list";
-}  // namespace
-
 namespace reading_list_infobar_overlay {
 
 OVERLAY_USER_DATA_SETUP_IMPL(ReadingListBannerRequestConfig);
@@ -45,7 +40,6 @@ ReadingListBannerRequestConfig::ReadingListBannerRequestConfig(InfoBar* infobar)
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_BANNER_TITLE);
   button_text_ =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MAIN_ACTION);
-  icon_image_name_ = kIconImageName;
 }
 
 ReadingListBannerRequestConfig::~ReadingListBannerRequestConfig() = default;

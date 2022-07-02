@@ -129,6 +129,11 @@ class AuctionV8Helper
     return v8_runner_;
   }
 
+  // Note: `callback` will be called on `v8_runner()`. This method may be called
+  // on the creation thread if done before any non-initialization work on v8
+  // thread begins.
+  void SetDestroyedCallback(base::OnceClosure callback);
+
   v8::Isolate* isolate() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return isolate_holder_->isolate();
@@ -352,6 +357,8 @@ class AuctionV8Helper
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<v8_inspector::V8Inspector> v8_inspector_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::OnceClosure destroyed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

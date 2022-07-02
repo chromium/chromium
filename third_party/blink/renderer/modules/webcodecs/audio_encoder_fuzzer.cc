@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/at_exit.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
@@ -27,7 +26,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -157,6 +155,9 @@ DEFINE_TEXT_PROTO_FUZZER(
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+
 #if HAS_AAC_ENCODER
   base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);
   static const bool kSetTestBinder = []() {
@@ -170,10 +171,6 @@ DEFINE_TEXT_PROTO_FUZZER(
   }();
   CHECK(kSetTestBinder) << "Failed to register media interface binder.";
 #endif
-
-  // Some Image related classes that use base::Singleton will expect this to
-  // exist for registering exit callbacks (e.g. DarkModeImageClassifier).
-  base::AtExitManager exit_manager;
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
@@ -254,15 +251,6 @@ DEFINE_TEXT_PROTO_FUZZER(
       }
     }
   }
-
-  // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-  //
-  // Multiple GCs may be required to ensure everything is collected (due to
-  // a chain of persistent handles), so some objects may not be collected until
-  // a subsequent iteration. This is slow enough as is, so we compromise on one
-  // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

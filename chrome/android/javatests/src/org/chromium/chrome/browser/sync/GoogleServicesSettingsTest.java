@@ -26,16 +26,18 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -53,7 +55,7 @@ public class GoogleServicesSettingsTest {
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -88,7 +90,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void allowSigninOptionHiddenFromChildUser() {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
@@ -104,7 +106,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void signOutUserWithoutShowingSignOutDialog() {
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
                 (ChromeSwitchPreference) googleServicesSettings.findPreference(
@@ -129,7 +131,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void showSignOutDialogBeforeSigningUserOut() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
                 (ChromeSwitchPreference) googleServicesSettings.findPreference(
@@ -340,7 +342,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -368,7 +370,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations_FeatureDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -388,7 +390,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations_NotSignedIn() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 

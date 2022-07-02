@@ -19,7 +19,7 @@ MediaResourceShim::MediaResourceShim(
   DCHECK(demuxer_ready_cb_);
 
   for (auto& s : streams) {
-    streams_.emplace_back(new MojoDemuxerStreamAdapter(
+    streams_.emplace_back(std::make_unique<MojoDemuxerStreamAdapter>(
         std::move(s), base::BindOnce(&MediaResourceShim::OnStreamReady,
                                      weak_factory_.GetWeakPtr())));
   }

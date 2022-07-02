@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.state.CouponPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.StorePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
@@ -241,6 +244,28 @@ class TabListMediator {
          */
         public void fetch(Callback<StorePersistedTabData> callback) {
             StorePersistedTabData.from(mTab, (res) -> { callback.onResult(res); });
+        }
+    }
+
+    /**
+     * Asynchronously acquire {@link CouponPersistedTabData}
+     */
+    static class CouponPersistedTabDataFetcher {
+        protected Tab mTab;
+
+        /**
+         * @param tab {@link Tab} {@link CouponPersistedTabData} will be acquired for.
+         */
+        CouponPersistedTabDataFetcher(Tab tab) {
+            mTab = tab;
+        }
+
+        /**
+         * Asynchronously acquire {@link CouponPersistedTabData}
+         * @param callback {@link Callback} to pass {@link CouponPersistedTabData} back in
+         */
+        public void fetch(Callback<CouponPersistedTabData> callback) {
+            CouponPersistedTabData.from(mTab, (res) -> { callback.onResult(res); });
         }
     }
 
@@ -727,7 +752,7 @@ class TabListMediator {
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
         if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE
-                && PriceTrackingUtilities.isPriceTrackingEnabled()) {
+                && PriceTrackingFeatures.isPriceTrackingEnabled()) {
             mListObserver = new ListObserver<Void>() {
                 @Override
                 public void onItemRangeInserted(ListObservable source, int index, int count) {
@@ -917,6 +942,8 @@ class TabListMediator {
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
                     int curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
                     if (curPosition == TabModel.INVALID_TAB_INDEX) {
+                        // Model is uninitialized if reordering from tab strip before opening GTS.
+                        if (mModel.size() == 0) return;
                         // Sync TabListModel with updated TabGroupModelFilter.
                         int indexToUpdate = mModel.indexOfNthTabCard(
                                 filter.indexOf(tabModel.getTabAt(tabModelOldIndex)));
@@ -1692,7 +1719,14 @@ class TabListMediator {
             } else {
                 mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER, null);
             }
+            if (CouponUtilities.isCouponsOnTabsEnabled() && isUngroupedTab(pseudoTab.getId())) {
+                mModel.get(index).model.set(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER,
+                        new CouponPersistedTabDataFetcher(pseudoTab.getTab()));
+            } else {
+                mModel.get(index).model.set(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER, null);
+            }
         } else {
+            mModel.get(index).model.set(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER, null);
             mModel.get(index).model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
             mModel.get(index).model.set(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER, null);
         }
@@ -1928,7 +1962,7 @@ class TabListMediator {
     @VisibleForTesting
     void recordPriceAnnotationsEnabledMetrics() {
         if (mMode != TabListMode.GRID || !mActionsOnAllRelatedTabs
-                || !PriceTrackingUtilities.isPriceTrackingEligible()) {
+                || !PriceTrackingFeatures.isPriceTrackingEligible()) {
             return;
         }
         SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
@@ -1937,8 +1971,7 @@ class TabListMediator {
                                 ChromePreferenceKeys
                                         .PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                                 -1)
-                >= PriceTrackingUtilities
-                           .getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
+                >= PriceTrackingFeatures.getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
             RecordHistogram.recordBooleanHistogram("Commerce.PriceDrop.AnnotationsEnabled",
                     PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
             preferencesManager.writeLong(

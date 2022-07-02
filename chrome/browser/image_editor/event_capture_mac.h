@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
@@ -38,12 +39,18 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
   NSWindow* GetWindow() const override;
 
  private:
+  // Mouse capture uses CocoaMouseCapture. We create a narrow
+  // local event monitor with NSEventMaskKeyDown, to only listen
+  // for keydown events and detect ESC to close the capture scrim.
+  void CreateKeyDownLocalMonitor(ui::EventHandler* event_handler,
+                                 gfx::NativeWindow target_native_window);
   base::OnceClosure capture_lost_callback_;
   NSView* web_contents_view_;
   NSWindow* window_;
-  ui::EventHandler* event_handler_;
+  raw_ptr<ui::EventHandler> event_handler_;
   ui::WeakPtrNSObjectFactory<EventCaptureMac> factory_;
   std::unique_ptr<remote_cocoa::CocoaMouseCapture> mouse_capture_;
+  id local_keyboard_monitor_ = 0;
 };
 
 }  // namespace image_editor

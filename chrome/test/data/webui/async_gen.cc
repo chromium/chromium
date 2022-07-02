@@ -20,18 +20,17 @@ WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::
     ~AsyncWebUIMessageHandler() {}
 
 void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::HandleCallJS(
-    const base::ListValue* list_value) {
-  base::Value::ConstListView list_view = list_value->GetListDeprecated();
-  ASSERT_TRUE(0u < list_view.size() && list_view[0].is_string());
-  std::string call_js = list_view[0].GetString();
+    const base::Value::List& list_value) {
+  ASSERT_TRUE(0u < list_value.size() && list_value[0].is_string());
+  std::string call_js = list_value[0].GetString();
   web_ui()->CallJavascriptFunctionUnsafe(call_js);
 }
 
 void WebUIBrowserAsyncGenTest::AsyncWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "callJS", base::BindRepeating(&AsyncWebUIMessageHandler::HandleCallJS,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "tearDown", base::BindRepeating(&AsyncWebUIMessageHandler::HandleTearDown,
                                       base::Unretained(this)));
 }

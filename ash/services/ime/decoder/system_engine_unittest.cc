@@ -62,6 +62,10 @@ struct MockInputMethod : public mojom::InputMethod {
               OnQuickSettingsUpdated,
               (mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
+  MOCK_METHOD(void,
+              IsReadyForTesting,
+              (IsReadyForTestingCallback callback),
+              (override));
 };
 
 class TestDecoderState {

@@ -14,9 +14,12 @@ struct wl_display;
 struct wl_surface;
 
 namespace gfx {
-class Rect;
 class Size;
 }  // namespace gfx
+
+namespace ui {
+class WaylandWindow;
+}
 
 namespace wl {
 
@@ -64,6 +67,9 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // Returns wl_surface that backs the |widget|.
   virtual wl_surface* GetWlSurfaceForAcceleratedWidget(
       gfx::AcceleratedWidget widget) = 0;
+  // Returns WaylandWindow backed by |widget|.
+  virtual ui::WaylandWindow* GetWaylandWindowForAcceleratedWidget(
+      gfx::AcceleratedWidget widget) = 0;
 
   // Creates and returns a shm based wl_buffer with |buffer_size|. The shared
   // memory is hold until DestroyShmForWlBuffer is called.
@@ -78,9 +84,6 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // Returns platform window type of a window backed by the |widget|.
   virtual ui::PlatformWindowType GetWindowType(
       gfx::AcceleratedWidget widget) = 0;
-
-  // Returns bounds in px of the window backed by |widget|.
-  virtual gfx::Rect GetWindowBounds(gfx::AcceleratedWidget widget) = 0;
 
   virtual bool WindowHasPointerFocus(gfx::AcceleratedWidget widget) = 0;
   virtual bool WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) = 0;

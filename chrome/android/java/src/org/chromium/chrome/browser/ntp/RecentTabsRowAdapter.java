@@ -528,6 +528,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             // lead to wrong pairings of domain & title texts.
             viewHolder.domainView.setText("");
             viewHolder.domainView.setVisibility(View.GONE);
+            // Reset content description.
+            viewHolder.textView.setContentDescription(null);
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
                 Bitmap historyIcon = BitmapFactory.decodeResource(
@@ -560,9 +562,17 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     if (TextUtils.isEmpty(groupTitle)) {
                         viewHolder.textView.setText(mActivity.getResources().getString(
                                 R.string.recent_tabs_group_closure_without_title, tabCount));
+                        String contentDescription = mActivity.getResources().getString(
+                                R.string.recent_tabs_group_closure_without_title_accessibility,
+                                tabCount);
+                        viewHolder.textView.setContentDescription(contentDescription);
                     } else {
                         viewHolder.textView.setText(mActivity.getResources().getString(
                                 R.string.recent_tabs_group_closure_with_title, groupTitle));
+                        viewHolder.textView.setContentDescription(
+                                mActivity.getResources().getString(
+                                        R.string.recent_tabs_group_closure_with_title_accessibility,
+                                        groupTitle));
                     }
                 }
                 if (entry instanceof RecentlyClosedBulkEvent) {
@@ -572,6 +582,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
                     viewHolder.textView.setText(mActivity.getResources().getString(
                             R.string.recent_tabs_bulk_closure, tabCount));
+                    viewHolder.textView.setContentDescription(mActivity.getResources().getString(
+                            R.string.recent_tabs_bulk_closure_accessibility, tabCount));
                 }
 
                 // Entries without dates have a time of 0. TabRestoreService may not save timestamps

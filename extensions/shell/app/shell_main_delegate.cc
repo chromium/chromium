@@ -178,12 +178,6 @@ void ShellMainDelegate::ZygoteStarting(
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {}
-#endif
-
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
     const std::string& process_type) {

@@ -19,8 +19,6 @@
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -45,7 +43,6 @@ class LoginDisplayHostWebUI;
 // WebUI based start up and lock screens. It contains a WebView.
 class WebUILoginView : public views::View,
                        public content::WebContentsDelegate,
-                       public content::NotificationObserver,
                        public session_manager::SessionManagerObserver,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
@@ -132,16 +129,13 @@ class WebUILoginView : public views::View,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // Overridden from content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
   void OnLoginOrLockScreenVisible() override;
 
  private:
+  void OnAppTerminating();
+
   // Map type for the accelerator-to-identifier map.
   typedef std::map<ui::Accelerator, LoginAcceleratorAction> AccelMap;
 
@@ -172,7 +166,7 @@ class WebUILoginView : public views::View,
   // 2. Notifies OOBE/sign classes.
   void OnLoginPromptVisible();
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

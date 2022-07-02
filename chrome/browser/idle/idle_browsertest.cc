@@ -87,7 +87,7 @@ class IdleBrowserTest : public InProcessBrowserTest {
     std::string script = "IdleDetector.requestPermission();";
 
     content::RenderFrameHost* child =
-        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
     EXPECT_EQ(positive_test ? "granted" : "denied", EvalJs(child, script));
   }

@@ -176,6 +176,15 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
     return;
   }
 
+  // Handle scroll gesture events for stylus writing. If we could not start
+  // writing for any reason, we should not filter the scroll events.
+  if (HandleGestureScrollForStylusWriting(gesture_event.event)) {
+    disposition_handler_->OnGestureEventAck(
+        gesture_event, blink::mojom::InputEventResultSource::kBrowser,
+        blink::mojom::InputEventResultState::kConsumed);
+    return;
+  }
+
   wheel_event_queue_.OnGestureScrollEvent(gesture_event);
 
   if (gesture_event.event.SourceDevice() ==
@@ -208,6 +217,60 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
         gesture_event, blink::mojom::InputEventResultSource::kBrowser,
         blink::mojom::InputEventResultState::kConsumed);
   }
+}
+
+bool InputRouterImpl::HandleGestureScrollForStylusWriting(
+    const blink::WebGestureEvent& event) {
+  switch (event.GetType()) {
+    case WebInputEvent::Type::kGestureScrollBegin: {
+      if (event.data.scroll_begin.pointer_count != 1)
+        break;
+
+      const float& deltaXHint = event.data.scroll_begin.delta_x_hint;
+      const float& deltaYHint = event.data.scroll_begin.delta_y_hint;
+      if (deltaXHint == 0.0 && deltaYHint == 0.0)
+        break;
+
+      if (!client_->GetRenderWidgetHostViewBase())
+        break;
+
+      absl::optional<cc::TouchAction> allowed_touch_action =
+          AllowedTouchAction();
+      // Don't handle for non-writable areas as kInternalNotWritable bit is set.
+      if (!allowed_touch_action.has_value() ||
+          (allowed_touch_action.value() &
+           cc::TouchAction::kInternalNotWritable) ==
+              cc::TouchAction::kInternalNotWritable)
+        break;
+
+      // Request to start stylus writing as we have detected stylus writing
+      // movement, and treat scroll gesture as stylus input if started.
+      if (client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting()) {
+        stylus_writing_started_ = true;
+        // The below call is done to Focus the stylus writable input element.
+        client_->OnStartStylusWriting();
+        return true;
+      }
+      break;
+    }
+    case WebInputEvent::Type::kGestureScrollUpdate:
+      // TODO(crbug.com/1330817): Pass the queued scroll delta to stylus
+      // writing recognition system.
+      return stylus_writing_started_;
+    case WebInputEvent::Type::kGestureScrollEnd: {
+      // When stylus writing starts, Touch Move events would be forwarded to
+      // stylus recognition system and gesture detection would be reset. We
+      // would receive the GestureScrollEnd here after that.
+      if (stylus_writing_started_) {
+        stylus_writing_started_ = false;
+        return true;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  return false;
 }
 
 void InputRouterImpl::SendTouchEvent(

@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -100,6 +101,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chromecast/app/android/crash_handler.h"
+#include "chromecast/base/pref_names.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
 #include "net/android/network_change_notifier_factory_android.h"
@@ -146,10 +148,6 @@
 #include "extensions/browser/extension_prefs.h"  // nogncheck
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-#include "chromecast/browser/exo/wayland_server_controller.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #include "device/bluetooth/cast/bluetooth_adapter_cast.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -163,7 +161,8 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 int kSignalsToRunClosure[] = {
-    SIGTERM, SIGINT,
+    SIGTERM,
+    SIGINT,
 };
 // Closure to run on SIGTERM and SIGINT.
 base::OnceClosure* g_signal_closure = nullptr;
@@ -518,7 +517,8 @@ void CastBrowserMainParts::ToolkitInitialized() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath dir_font = GetApplicationFontsDir();
-  const FcChar8 *dir_font_char8 = reinterpret_cast<const FcChar8*>(dir_font.value().data());
+  const FcChar8* dir_font_char8 =
+      reinterpret_cast<const FcChar8*>(dir_font.value().data());
   if (!FcConfigAppFontAddDir(gfx::GetGlobalFontConfig(), dir_font_char8)) {
     LOG(ERROR) << "Cannot load fonts from " << dir_font_char8;
   }
@@ -603,10 +603,7 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  crash_reporter_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastBrowserMainParts::StartPeriodicCrashReportUpload,
-                     base::Unretained(this)));
+  StartPeriodicCrashReportUpload();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   cast_browser_process_->SetBrowserContext(
@@ -747,11 +744,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       cast_browser_process_->browser_context());
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  wayland_server_controller_ =
-      std::make_unique<WaylandServerController>(window_manager_.get());
-#endif
-
   // Initializing metrics service and network delegates must happen after cast
   // service is initialized because CastMetricsServiceClient,
   // CastURLLoaderThrottle and CastNetworkDelegate may use components
@@ -787,13 +779,23 @@ void CastBrowserMainParts::StartPeriodicCrashReportUpload() {
 }
 
 void CastBrowserMainParts::OnStartPeriodicCrashReportUpload() {
+  crash_reporter_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CastBrowserMainParts::UploadCrashReport,
+                     weak_factory_.GetWeakPtr(),
+                     cast_browser_process_->pref_service()->GetBoolean(
+                         prefs::kOptInStats)));
+}
+
+void CastBrowserMainParts::UploadCrashReport(bool opt_in_stats) {
+  DCHECK(crash_reporter_runner_->RunsTasksInCurrentSequence());
   base::FilePath crash_dir;
   if (!CrashHandler::GetCrashDumpLocation(&crash_dir))
     return;
   base::FilePath reports_dir;
   if (!CrashHandler::GetCrashReportsLocation(&reports_dir))
     return;
-  CrashHandler::UploadDumps(crash_dir, reports_dir, "", "");
+  CrashHandler::UploadDumps(crash_dir, reports_dir, "", "", opt_in_stats);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -822,9 +824,6 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 
   cast_browser_process_->cast_service()->Stop();
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  wayland_server_controller_.reset();
-#endif
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
       browser_context());

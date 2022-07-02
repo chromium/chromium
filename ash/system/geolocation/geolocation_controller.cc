@@ -184,8 +184,8 @@ void GeolocationController::RequestGeoposition() {
 
 base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
-    LOG(ERROR) << "Invalid geoposition. Using default time for "
-               << (sunrise ? "sunrise." : "sunset.");
+    VLOG(1) << "Invalid geoposition. Using default time for "
+            << (sunrise ? "sunrise." : "sunset.");
     return TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
                              : kDefaultSunsetTimeOffsetMinutes)
         .SetClock(clock_)

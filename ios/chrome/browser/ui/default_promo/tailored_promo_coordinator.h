@@ -13,7 +13,7 @@
 // Coordinator for a fullscreen modal default browser promo.
 @interface TailoredPromoCoordinator : ChromeCoordinator
 
-// Creates a coordinator that uses |viewController|, |browser| and |type|.
+// Creates a coordinator that uses `viewController`, `browser` and `type`.
 // Only DefaultPromoTypeStaySafe, DefaultPromoTypeMadeForIOS and
 // DefaultPromoTypeAllTabs are supported.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

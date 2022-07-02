@@ -104,7 +104,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
     }
 
     if (web_content->IsHidden()) {
-      web_content->GetMainFrame()->AddMessageToConsole(
+      web_content->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Unable to fetch payment handler manifest (for name and icon) for "
           "\"" +
@@ -115,7 +115,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
 
     if (!url::IsSameOriginWith(context_url,
                                web_content->GetLastCommittedURL())) {
-      web_content->GetMainFrame()->AddMessageToConsole(
+      web_content->GetPrimaryMainFrame()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Unable to fetch payment handler manifest (for name and icon) for "
           "\"" +
@@ -299,7 +299,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::WarnIfPossible(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (web_contents_) {
-    web_contents_->GetMainFrame()->AddMessageToConsole(
+    web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, message);
   } else {
     LOG(WARNING) << message;

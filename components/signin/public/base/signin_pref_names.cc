@@ -13,12 +13,12 @@ namespace prefs {
 // automatically. Default value is false.
 const char kForceLogoutUnauthenticatedUserEnabled[] =
     "profile.force_logout_unauthenticated_user_enabled";
-#endif
 
 // An integer property indicating the state of account id migration from
 // email to gaia id for the the profile.  See account_tracker_service.h
 // for possible values.
 const char kAccountIdMigrationState[] = "account_id_migration_state";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Name of the preference property that persists the account information
 // tracked by this signin.
@@ -84,9 +84,6 @@ const char kSignedInWithCredentialProvider[] =
 
 // Boolean which stores if the user is allowed to signin to chrome.
 const char kSigninAllowed[] = "signin.allowed";
-
-// True if the token service has been prepared for Dice migration.
-const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 
 // Contains last |ListAccounts| data which corresponds to Gaia cookies.
 const char kGaiaCookieLastListAccountsData[] =

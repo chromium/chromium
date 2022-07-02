@@ -14,3 +14,7 @@ include_rules = [
     "+tensorflow_text",
     "+tflite",
 ]
+
+skip_child_includes = [
+    "src",
+]

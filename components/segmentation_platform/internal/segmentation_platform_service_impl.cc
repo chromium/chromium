@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
@@ -29,16 +31,16 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
-
-using optimization_guide::proto::OptimizationTarget;
+#include "components/segmentation_platform/public/trigger_context.h"
 
 namespace segmentation_platform {
-
 namespace {
 
-base::flat_set<OptimizationTarget> GetAllSegmentIds(
+using proto::SegmentId;
+
+base::flat_set<SegmentId> GetAllSegmentIds(
     const std::vector<std::unique_ptr<Config>>& configs) {
-  base::flat_set<OptimizationTarget> all_segment_ids;
+  base::flat_set<SegmentId> all_segment_ids;
   for (const auto& config : configs) {
     for (const auto& segment_id : config->segment_ids)
       all_segment_ids.insert(segment_id);
@@ -55,12 +57,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<InitParams> init_params)
     : model_provider_factory_(std::move(init_params->model_provider)),
       task_runner_(init_params->task_runner),
-      clock_(init_params->clock),
+      clock_(init_params->clock.get()),
       platform_options_(PlatformOptions::CreateDefault()),
+      input_delegate_holder_(std::move(init_params->input_delegate_holder)),
       configs_(std::move(init_params->configs)),
       all_segment_ids_(GetAllSegmentIds(configs_)),
       field_trial_register_(std::move(init_params->field_trial_register)),
-      profile_prefs_(init_params->profile_prefs),
+      profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
@@ -83,8 +86,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         model_provider_factory_.get());
   }
 
-  std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
-                                                 all_segment_ids_.end());
+  std::vector<SegmentId> segment_id_vec(all_segment_ids_.begin(),
+                                        all_segment_ids_.end());
 
   // Construct signal processors.
   signal_handler_.Initialize(
@@ -101,6 +104,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
             init_params->profile_prefs, config.get(),
             field_trial_register_.get(), init_params->clock, platform_options_,
             storage_service_->default_model_manager());
+    if (config->trigger != TriggerType::kNone) {
+      clients_for_trigger_[config->trigger].insert(config->segmentation_key);
+    }
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(
@@ -136,6 +142,57 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
   return selector->GetCachedSegmentResult();
 }
 
+CallbackId
+SegmentationPlatformServiceImpl::RegisterOnDemandSegmentSelectionCallback(
+    const std::string& segmentation_key,
+    const OnDemandSegmentSelectionCallback& callback) {
+  static auto callback_id_generator = CallbackId::Generator();
+  const CallbackId callback_id = callback_id_generator.GenerateNextId();
+  callback_map_[callback_id] = callback;
+  segment_selection_callback_ids_[segmentation_key].insert(callback_id);
+  return callback_id;
+}
+
+void SegmentationPlatformServiceImpl::
+    UnregisterOnDemandSegmentSelectionCallback(
+        CallbackId callback_id,
+        const std::string& segmentation_key) {
+  segment_selection_callback_ids_[segmentation_key].erase(callback_id);
+  if (segment_selection_callback_ids_[segmentation_key].empty()) {
+    segment_selection_callback_ids_.erase(segmentation_key);
+  }
+}
+
+void SegmentationPlatformServiceImpl::OnTrigger(
+    std::unique_ptr<TriggerContext> trigger_context) {
+  const TriggerType trigger = trigger_context->trigger_type();
+  if (clients_for_trigger_.find(trigger) == clients_for_trigger_.end())
+    return;
+  scoped_refptr<InputContext> input_context =
+      base::MakeRefCounted<InputContext>(*trigger_context);
+  for (const auto& segmentation_key : clients_for_trigger_[trigger]) {
+    CHECK(segment_selectors_.find(segmentation_key) !=
+          segment_selectors_.end());
+    auto& selector = segment_selectors_.at(segmentation_key);
+    selector->GetSelectedSegmentOnDemand(
+        input_context,
+        base::BindOnce(
+            &SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger,
+            weak_ptr_factory_.GetWeakPtr(), segmentation_key,
+            std::move(trigger_context)));
+  }
+}
+
+void SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger(
+    const std::string& segmentation_key,
+    std::unique_ptr<TriggerContext> trigger_context,
+    const SegmentSelectionResult& selected_segment) {
+  for (auto callback_id : segment_selection_callback_ids_[segmentation_key]) {
+    const auto& callback = callback_map_[callback_id];
+    callback.Run(selected_segment, *trigger_context);
+  }
+}
+
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
   signal_handler_.EnableMetrics(signal_collection_allowed);
@@ -169,13 +226,15 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
+  observers.push_back(proxy_.get());
   execution_service_.Initialize(
       storage_service_.get(), &signal_handler_, clock_,
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
           weak_ptr_factory_.GetWeakPtr()),
       task_runner_, all_segment_ids_, model_provider_factory_.get(),
-      std::move(observers), platform_options_, &configs_, profile_prefs_);
+      std::move(observers), platform_options_,
+      std::move(input_delegate_holder_), &configs_, profile_prefs_);
 
   proxy_->SetExecutionService(&execution_service_);
 

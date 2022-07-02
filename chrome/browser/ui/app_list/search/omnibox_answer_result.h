@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_ANSWER_RESULT_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_ANSWER_RESULT_H_
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -21,7 +22,8 @@ namespace app_list {
 // cards at the top of the categorical search launcher, so are separated in the
 // UI from other Omnibox results.
 class OmniboxAnswerResult : public ChromeSearchResult,
-                            public BitmapFetcherDelegate {
+                            public BitmapFetcherDelegate,
+                            public ash::ColorModeObserver {
  public:
   OmniboxAnswerResult(Profile* profile,
                       AppListControllerDelegate* list_controller,
@@ -40,6 +42,9 @@ class OmniboxAnswerResult : public ChromeSearchResult,
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
  private:
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
   void UpdateIcon();
   // Updates title and details for the productivity launcher.
   void UpdateTitleAndDetails();

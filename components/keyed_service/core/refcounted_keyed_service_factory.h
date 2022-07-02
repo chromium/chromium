@@ -30,6 +30,10 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   RefcountedKeyedServiceFactory& operator=(
       const RefcountedKeyedServiceFactory&) = delete;
 
+  // Returns the number of RefCountedKeyedServices that are currently active for
+  // a given context.
+  static int GetServicesCount(void* context);
+
  protected:
   RefcountedKeyedServiceFactory(const char* name,
                                 DependencyManager* manager,
@@ -87,6 +91,7 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   void SetEmptyTestingFactory(void* context) override;
   bool HasTestingFactory(void* context) override;
   void CreateServiceNow(void* context) override;
+  bool IsServiceCreated(void* context) const override;
 
  private:
   // The mapping between a context and its refcounted service.

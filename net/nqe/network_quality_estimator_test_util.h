@@ -247,7 +247,8 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   absl::optional<EffectiveConnectionType> effective_connection_type_;
   absl::optional<EffectiveConnectionType> recent_effective_connection_type_;
 
-  NetworkChangeNotifier::ConnectionType current_network_type_;
+  NetworkChangeNotifier::ConnectionType current_network_type_ =
+      NetworkChangeNotifier::CONNECTION_UNKNOWN;
   std::string current_network_id_;
 
   // If set, GetRecentHttpRTT() would return one of the set values.

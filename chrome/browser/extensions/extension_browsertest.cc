@@ -787,11 +787,11 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
   }
 
   if (newtab_process_should_equal_opener) {
-    EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance(),
-              newtab->GetMainFrame()->GetSiteInstance());
+    EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
   } else {
-    EXPECT_NE(contents->GetMainFrame()->GetSiteInstance(),
-              newtab->GetMainFrame()->GetSiteInstance());
+    EXPECT_NE(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
   }
 
   if (newtab_result)

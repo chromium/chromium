@@ -18,12 +18,7 @@ namespace disk_cache {
 
 template <typename T>
 StorageBlock<T>::StorageBlock(MappedFile* file, Addr address)
-    : data_(nullptr),
-      file_(file),
-      address_(address),
-      modified_(false),
-      own_data_(false),
-      extended_(false) {
+    : file_(file), address_(address) {
   if (address.num_blocks() > 1)
     extended_ = true;
   DCHECK(!address.is_initialized() || sizeof(*data_) == address.BlockSize())

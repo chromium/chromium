@@ -204,7 +204,7 @@ void FakeWebState::SetWebViewProxy(CRWWebViewProxyType web_view_proxy) {
 }
 
 CRWJSInjectionReceiver* FakeWebState::GetJSInjectionReceiver() const {
-  return injection_receiver_;
+  return nullptr;
 }
 
 void FakeWebState::LoadData(NSData* data,
@@ -278,11 +278,6 @@ void FakeWebState::SetBrowserState(BrowserState* browser_state) {
 
 void FakeWebState::SetIsRealized(bool value) {
   is_realized_ = value;
-}
-
-void FakeWebState::SetJSInjectionReceiver(
-    CRWJSInjectionReceiver* injection_receiver) {
-  injection_receiver_ = injection_receiver;
 }
 
 void FakeWebState::SetContentIsHTML(bool content_is_html) {

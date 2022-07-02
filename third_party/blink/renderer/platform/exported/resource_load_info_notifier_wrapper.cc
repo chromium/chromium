@@ -41,6 +41,23 @@ ResourceLoadInfoNotifierWrapper::ResourceLoadInfoNotifierWrapper(
 
 ResourceLoadInfoNotifierWrapper::~ResourceLoadInfoNotifierWrapper() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+void ResourceLoadInfoNotifierWrapper::NotifyUpdateUserGestureCarryoverInfo() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (task_runner_->BelongsToCurrentThread()) {
+    if (weak_wrapper_resource_load_info_notifier_) {
+      weak_wrapper_resource_load_info_notifier_
+          ->NotifyUpdateUserGestureCarryoverInfo();
+    }
+    return;
+  }
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&mojom::ResourceLoadInfoNotifier::
+                                    NotifyUpdateUserGestureCarryoverInfo,
+                                weak_wrapper_resource_load_info_notifier_));
+}
+#endif
+
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
     int64_t request_id,
     const GURL& request_url,
@@ -114,7 +131,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {
       weak_wrapper_resource_load_info_notifier_->NotifyResourceResponseReceived(
-          resource_load_info_->request_id, resource_load_info_->final_url,
+          resource_load_info_->request_id,
+          url::SchemeHostPort(resource_load_info_->final_url),
           std::move(response_head), resource_load_info_->request_destination);
     }
     return;
@@ -130,7 +148,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       base::BindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceResponseReceived,
           weak_wrapper_resource_load_info_notifier_,
-          resource_load_info_->request_id, resource_load_info_->final_url,
+          resource_load_info_->request_id,
+          url::SchemeHostPort(resource_load_info_->final_url),
           std::move(response_head), resource_load_info_->request_destination));
 }
 

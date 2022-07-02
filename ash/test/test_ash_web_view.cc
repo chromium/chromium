@@ -10,7 +10,8 @@
 
 namespace ash {
 
-TestAshWebView::TestAshWebView() = default;
+TestAshWebView::TestAshWebView(const AshWebView::InitParams& init_params)
+    : init_params_(init_params) {}
 
 TestAshWebView::~TestAshWebView() = default;
 

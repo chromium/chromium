@@ -732,8 +732,7 @@ ColorSpace::RangeID ColorSpace::GetRangeID() const {
 }
 
 bool ColorSpace::HasExtendedSkTransferFn() const {
-  return transfer_ == TransferID::LINEAR_HDR ||
-         transfer_ == TransferID::SRGB_HDR;
+  return matrix_ == MatrixID::RGB;
 }
 
 bool ColorSpace::Contains(const ColorSpace& other) const {

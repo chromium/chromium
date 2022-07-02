@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium сырсөздөрүңүздү текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="3472200483164753384">Chromium Canary'де колдоого алынбайт</translation>
 <translation id="3567399274263440288">Chromium'дун бардык мүмкүнчүлүктөрүн пайдалануу үчүн Google аккаунтуңуз менен Chromium'га кириңиз.</translation>
+<translation id="3619462831205197427">Бул сайтка, Google аккаунтуңузга жана Chromium'га кириңиз.</translation>
 <translation id="3639997914391704523">Google аккаунтуңуз менен киргенде Chromium сырсөздөрүңүздү текшерет.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> бул түзмөктө Chromium'ду колдонуп, кыстармаларды, сырсөздөрдү жана башка жөндөөлөрдү өчүрбөй калды.</translation>
 <translation id="3805899903892079518">Chromium сүрөттөрүңүздү же видеолоруңузду көрө албайт. Көрүү үчүн iOS Жөндөөлөрү &gt; Купуялык &gt; Сүрөттөргө өтүңүз.</translation>
@@ -77,7 +78,6 @@
 1. Жөндөөлөрдү ачыңыз
 2. Демейки серепчи колдонмосун басыңыз
 3. Chromium'ду тандаңыз.</translation>
-<translation id="6155422572367400359">Бул сайтка, Google аккаунтуңузга жана Chromium'га кириңиз. Шайкештирүүнү кийинчерээк күйгүзө аласыз.</translation>
 <translation id="6183442264225539303">Бул сайтка жана Chromium'га кириңиз. Шайкештирүүнү кийинчерээк күйгүзө аласыз.</translation>
 <translation id="6268381023930128611">Chromium'дан чыгасызбы?</translation>
 <translation id="632825460376924298">Chromium'га кирүүгө уруксат берүү</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Chromium'дагы дайын-даректериңиз бул түзмөктөн өчүрүлсүнбү?</translation>
 <translation id="8175055321229419309">Кеңеш: <ph name="BEGIN_LINK" />Chromium'ду Dock панелине көчүрүңүз<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium жаңыртууларды текшере алган жок. Кийинчерээк кайталаңыз.</translation>
+<translation id="8308172444429103994">Chromium кеңеши. Баскычтоптун өйдө жагындагы сакталган сырсөзүңүздү тандоо менен аккаунтуңузга тезирээк кириңиз.</translation>
 <translation id="858114650497379505">Сырсөздөрдү башкаргычка сакталган сырсөздөрдү iPhone'догу башка колдонмолордо колдонууга болот.</translation>
 <translation id="8586442755830160949">Автордук укук <ph name="YEAR" /> Chromium авторлору. Бардык укуктар корголгон.</translation>
 <translation id="865600487977764604">Аккаунтуңузга киргенде Chromium'да жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат.</translation>

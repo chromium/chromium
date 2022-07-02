@@ -33,6 +33,7 @@ TEST(HardeningTest, PartialCorruption) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
@@ -63,6 +64,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
@@ -89,6 +91,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
@@ -116,6 +119,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   root.UncapEmptySlotSpanMemoryForTesting();

@@ -33,7 +33,7 @@ namespace {
 bool CheckValues(const std::string& name,
                  int minimum,
                  int maximum,
-                 uint32_t bucket_count) {
+                 size_t bucket_count) {
   if (!base::Histogram::InspectConstructionArguments(
       name, &minimum, &maximum, &bucket_count))
     return false;

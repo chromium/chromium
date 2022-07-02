@@ -33,16 +33,12 @@ class RasterInProcessContext {
 
   ~RasterInProcessContext();
 
-  // |gpu_channel_manager| should be non-null when used in the GPU process.
-  ContextResult Initialize(
-      CommandBufferTaskExecutor* task_executor,
-      const ContextCreationAttribs& attribs,
-      const SharedMemoryLimits& memory_limits,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      ImageFactory* image_factory,
-      GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-      gpu::raster::GrShaderCache* gr_shader_cache,
-      GpuProcessActivityFlags* activity_flags);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
+                           const ContextCreationAttribs& attribs,
+                           const SharedMemoryLimits& memory_limits,
+                           ImageFactory* image_factory,
+                           gpu::raster::GrShaderCache* gr_shader_cache,
+                           GpuProcessActivityFlags* activity_flags);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

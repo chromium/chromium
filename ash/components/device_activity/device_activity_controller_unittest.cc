@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -45,7 +45,7 @@ class DeviceActivityControllerTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFake();
+    SessionManagerClient::InitializeFake();
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
 

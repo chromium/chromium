@@ -41,6 +41,7 @@ namespace blink {
 
 class CSSStyleSheet;
 class Element;
+class ElementRuleCollector;
 class HTMLSlotElement;
 class PartNames;
 class RuleData;
@@ -50,7 +51,19 @@ class StyleRuleUsageTracker;
 class MatchedRule {
   DISALLOW_NEW();
 
- public:
+  // Everything in this class is private to ElementRuleCollector, since it
+  // contains non-owned references to RuleData (see the constructor), but we
+  // cannot make the class itself private, since
+  // WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS() needs it to be visible from
+  // the outside.
+ private:
+  // Does not take overship of rule_data (it is owned by the appropriate
+  // bucket in RuleSet), so the RuleData must live for at least as long as
+  // the MatchedRule, ie., those buckets must not be modified (which would
+  // invalidate the RuleData pointers). This is fine, because MatchedRule
+  // is only used during matching (in ElementRuleCollector), and the
+  // RuleData itself never escapes SortAndTransferMatchedRules() -- only
+  // the other elements that it points to.
   MatchedRule(const RuleData* rule_data,
               unsigned layer_order,
               unsigned proximity,
@@ -73,18 +86,17 @@ class MatchedRule {
   unsigned LayerOrder() const { return layer_order_; }
   unsigned Proximity() const { return proximity_; }
   const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parent_style_sheet_);
-    visitor->Trace(rule_data_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(parent_style_sheet_); }
 
  private:
-  Member<const RuleData> rule_data_;
+  const RuleData* rule_data_;
   unsigned layer_order_;
   // https://drafts.csswg.org/css-cascade-6/#weak-scoping-proximity
   unsigned proximity_;
   uint64_t position_;
   Member<const CSSStyleSheet> parent_style_sheet_;
+
+  friend class ElementRuleCollector;
 };
 
 }  // namespace blink
@@ -101,7 +113,11 @@ using StyleRuleList = HeapVector<Member<StyleRule>>;
 //
 // ElementRuleCollector is designed to be used as a stack object.
 // Create one, ask what rules the ElementResolveContext matches
-// and then let it go out of scope.
+// and then let it go out of scope. In particular, do not change
+// values in the RuleSet buckets (which would invalidate the RuleData
+// pointers) before you have extracted the results, typically with
+// SortAndTransferMatchedRules().
+//
 // FIXME: Currently it modifies the ComputedStyle but should not!
 class CORE_EXPORT ElementRuleCollector {
   STACK_ALLOCATED();
@@ -150,8 +166,6 @@ class CORE_EXPORT ElementRuleCollector {
   void FinishAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
   }
-  void SetIncludeEmptyRules(bool include) { include_empty_rules_ = include; }
-  bool IncludeEmptyRules() const { return include_empty_rules_; }
 
   // Return the pseudo id if the style request is for rules associated with a
   // pseudo element, or kPseudoNone if not.
@@ -198,16 +212,15 @@ class CORE_EXPORT ElementRuleCollector {
   };
 
   template <bool perf_trace_enabled>
-  void CollectMatchingRulesForListInternal(
-      const HeapVector<Member<const RuleData>>*,
-      const MatchRequest&,
-      const RuleSet*,
-      const CSSStyleSheet*,
-      int,
-      const SelectorChecker&,
-      PartRequest* = nullptr);
+  void CollectMatchingRulesForListInternal(const HeapVector<RuleData>*,
+                                           const MatchRequest&,
+                                           const RuleSet*,
+                                           const CSSStyleSheet*,
+                                           int,
+                                           const SelectorChecker&,
+                                           PartRequest* = nullptr);
 
-  void CollectMatchingRulesForList(const HeapVector<Member<const RuleData>>*,
+  void CollectMatchingRulesForList(const HeapVector<RuleData>*,
                                    const MatchRequest&,
                                    const RuleSet*,
                                    const CSSStyleSheet*,
@@ -220,6 +233,7 @@ class CORE_EXPORT ElementRuleCollector {
              MatchResult&);
   void DidMatchRule(const RuleData*,
                     unsigned layer_order,
+                    const ContainerQuery*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
                     const CSSStyleSheet* style_sheet,
@@ -227,7 +241,7 @@ class CORE_EXPORT ElementRuleCollector {
 
   template <class CSSRuleCollection>
   CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
-  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*);
+  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*, wtf_size_t);
 
   void SortMatchedRules();
 
@@ -235,6 +249,9 @@ class CORE_EXPORT ElementRuleCollector {
   StyleRuleList* EnsureStyleRuleList();
 
  private:
+  static inline bool CompareRules(const MatchedRule& matched_rule1,
+                                  const MatchedRule& matched_rule2);
+
   const ElementResolveContext& context_;
   StyleRecalcContext style_recalc_context_;
   const SelectorFilter& selector_filter_;
@@ -246,7 +263,6 @@ class CORE_EXPORT ElementRuleCollector {
   bool can_use_fast_reject_;
   bool same_origin_only_;
   bool matching_ua_rules_;
-  bool include_empty_rules_;
   EInsideLink inside_link_;
 
   HeapVector<MatchedRule, 32> matched_rules_;

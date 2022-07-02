@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 
 #include "chrome/common/extensions/api/login_screen_storage.h"
+#include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-#include "chromeos/dbus/login_manager/login_screen_storage.pb.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace crosapi {
@@ -47,7 +47,7 @@ void LoginScreenStorageAsh::StoreInternal(
   auto dbus_callback = base::BindOnce(
       &LoginScreenStorageAsh::OnStored, weak_ptr_factory_.GetWeakPtr(),
       std::move(keys), metadata, data, std::move(callback));
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageStore(
+  ash::SessionManagerClient::Get()->LoginScreenStorageStore(
       key, metadata, data, std::move(dbus_callback));
 }
 
@@ -75,7 +75,7 @@ void LoginScreenStorageAsh::Retrieve(const std::string& key,
   auto dbus_callback =
       base::BindOnce(&LoginScreenStorageAsh::OnRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
+  ash::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
       key, std::move(dbus_callback));
 }
 

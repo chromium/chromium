@@ -1,4 +1,5 @@
 # Placeholder for internal Python strict library compatibility macro.
+load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_cc_proto_library", "support_py_proto_library")
 
 package(
     default_visibility = ["//tensorflow_lite_support:internal"],
@@ -9,7 +10,9 @@ py_library(
     name = "embedding_pb2",
     srcs = ["embedding_pb2.py"],
     deps = [
+        # build rule placeholder: numpy dep,
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -18,6 +21,7 @@ py_library(
     srcs = ["embedding_options_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -26,6 +30,7 @@ py_library(
     srcs = ["bounding_box_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:bounding_box_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -34,6 +39,7 @@ py_library(
     srcs = ["class_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:class_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -41,7 +47,9 @@ py_library(
     name = "classifications_pb2",
     srcs = ["classifications_pb2.py"],
     deps = [
+        ":class_pb2",
         "//tensorflow_lite_support/cc/task/processor/proto:classifications_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -50,6 +58,7 @@ py_library(
     srcs = ["classification_options_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:classification_options_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -57,7 +66,10 @@ py_library(
     name = "detections_pb2",
     srcs = ["detections_pb2.py"],
     deps = [
+        ":bounding_box_pb2",
+        ":class_pb2",
         "//tensorflow_lite_support/cc/task/processor/proto:detections_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -66,6 +78,7 @@ py_library(
     srcs = ["detection_options_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:detection_options_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -74,6 +87,8 @@ py_library(
     srcs = ["segmentations_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/vision/proto:segmentations_py_pb2",
+        # build rule placeholder: numpy dep,
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
     ],
 )
 
@@ -82,5 +97,33 @@ py_library(
     srcs = ["segmentation_options_pb2.py"],
     deps = [
         "//tensorflow_lite_support/cc/task/processor/proto:segmentation_options_py_pb2",
+        "//tensorflow_lite_support/python/task/core:optional_dependencies",
+    ],
+)
+
+proto_library(
+    name = "search_options_proto",
+    srcs = ["search_options.proto"],
+)
+
+support_cc_proto_library(
+    name = "search_options_cc_proto",
+    deps = [
+        ":search_options_proto",
+    ],
+)
+
+support_py_proto_library(
+    name = "search_options_py_pb2",
+    srcs = ["search_options.proto"],
+    api_version = 2,
+    proto_deps = [":search_options_proto"],
+)
+
+py_library(
+    name = "search_result_pb2",
+    srcs = ["search_result_pb2.py"],
+    deps = [
+        "//tensorflow_lite_support/cc/task/processor/proto:search_result_py_pb2",
     ],
 )

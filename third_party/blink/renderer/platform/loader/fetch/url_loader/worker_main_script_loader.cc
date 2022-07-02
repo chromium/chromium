@@ -55,7 +55,8 @@ void WorkerMainScriptLoader::Start(
   // worker top-level scripts, if off-the-main-thread fetch is enabled.
 
   resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
-      request_id_, initial_request_url_, initial_request_.HttpMethod().Latin1(),
+      request_id_, GURL(initial_request_url_),
+      initial_request_.HttpMethod().Latin1(),
       WebStringToGURL(WebString(initial_request_.ReferrerString())),
       initial_request_.GetRequestDestination(), net::HIGHEST);
 
@@ -153,12 +154,6 @@ void WorkerMainScriptLoader::OnReceiveCachedMetadata(
     mojo_base::BigBuffer data) {}
 
 void WorkerMainScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
-}
-
-void WorkerMainScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle handle) {
-  // This has already happened in the browser process.
-  NOTREACHED();
 }
 
 void WorkerMainScriptLoader::OnComplete(

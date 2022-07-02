@@ -220,13 +220,10 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
           kAuthResponse)   // Output token
   };
 
-  for (size_t i = 0; i < std::size(queries); ++i) {
-    mock_library->ExpectSecurityContext(queries[i].expected_package,
-                                        queries[i].response_code,
-                                        queries[i].minor_response_code,
-                                        queries[i].context_info,
-                                        queries[i].expected_input_token,
-                                        queries[i].output_token);
+  for (const auto& query : queries) {
+    mock_library->ExpectSecurityContext(
+        query.expected_package, query.response_code, query.minor_response_code,
+        query.context_info, query.expected_input_token, query.output_token);
   }
 
   OM_uint32 major_status = 0;
@@ -243,7 +240,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
   gss_buffer_desc output_token = {0, nullptr};
   OM_uint32 ret_flags = 0;
   OM_uint32 time_rec = 0;
-  for (size_t i = 0; i < std::size(queries); ++i) {
+  for (const auto& query : queries) {
     major_status = mock_library->init_sec_context(&minor_status,
                                                   initiator_cred_handle,
                                                   &context_handle,
@@ -257,7 +254,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
                                                   &output_token,
                                                   &ret_flags,
                                                   &time_rec);
-    EXPECT_EQ(queries[i].response_code, major_status);
+    EXPECT_EQ(query.response_code, major_status);
     CopyBuffer(&input_token, &output_token);
     ClearBuffer(&output_token);
   }

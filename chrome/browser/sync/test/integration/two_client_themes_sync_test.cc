@@ -11,7 +11,6 @@ namespace {
 
 using themes_helper::GetCustomTheme;
 using themes_helper::GetThemeID;
-using themes_helper::UseCustomTheme;
 using themes_helper::UseDefaultTheme;
 using themes_helper::UseSystemTheme;
 using themes_helper::UsingCustomTheme;
@@ -25,7 +24,7 @@ class TwoClientThemesSyncTest : public SyncTest {
   TwoClientThemesSyncTest(const TwoClientThemesSyncTest&) = delete;
   TwoClientThemesSyncTest& operator=(const TwoClientThemesSyncTest&) = delete;
 
-  ~TwoClientThemesSyncTest() override {}
+  ~TwoClientThemesSyncTest() override = default;
 };
 
 // Starts with default themes, then sets up sync and uses it to set all

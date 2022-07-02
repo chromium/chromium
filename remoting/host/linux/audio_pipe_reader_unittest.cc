@@ -105,7 +105,7 @@ TEST_F(AudioPipeReaderTest, CreateAndDestroyPipe) {
 
 // Verifies that the reader reads at the right speed.
 TEST_F(AudioPipeReaderTest, Pacing) {
-  int test_data_size = AudioPipeReader::kSamplingRate *
+  int test_data_size = int{AudioPipeReader::kSamplingRate} *
                        AudioPipeReader::kChannels *
                        AudioPipeReader::kBytesPerSample / 2;
   std::string test_data(test_data_size, '\0');

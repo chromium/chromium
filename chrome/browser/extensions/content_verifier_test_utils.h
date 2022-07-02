@@ -27,7 +27,6 @@ namespace extensions {
 
 class ExtensionDownloader;
 class ExtensionDownloaderDelegate;
-class ManifestFetchData;
 
 namespace content_verifier_test {
 
@@ -49,16 +48,16 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                    const std::string& version_string,
                    const base::FilePath& crx_path);
 
-  const std::vector<std::unique_ptr<ManifestFetchData>>& requests();
+  const std::vector<ExtensionDownloaderTask>& requests();
 
   // ExtensionDownloaderTestDelegate:
   void StartUpdateCheck(ExtensionDownloader* downloader,
                         ExtensionDownloaderDelegate* delegate,
-                        std::unique_ptr<ManifestFetchData> fetch_data) override;
+                        std::vector<ExtensionDownloaderTask> tasks) override;
 
  private:
   // The requests we've received.
-  std::vector<std::unique_ptr<ManifestFetchData>> requests_;
+  std::vector<ExtensionDownloaderTask> requests_;
 
   // The prepared responses - this maps an extension id to a (version string,
   // crx file path) pair.

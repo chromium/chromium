@@ -324,6 +324,10 @@ ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {
   return ukm_recorder_.get();
 }
 
+ukm::SourceId WorkletGlobalScope::UkmSourceID() const {
+  return ukm::kInvalidSourceId;
+}
+
 void WorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   WorkerOrWorkletGlobalScope::Trace(visitor);

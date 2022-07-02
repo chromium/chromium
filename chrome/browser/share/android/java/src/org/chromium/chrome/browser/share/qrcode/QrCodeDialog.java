@@ -128,7 +128,8 @@ public class QrCodeDialog extends DialogFragment {
 
         QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(
                 context, this::dismiss, getArguments().getString(URL_KEY), mWindowAndroid);
-        QrCodeScanCoordinator scanCoordinator = new QrCodeScanCoordinator(context, this::dismiss);
+        QrCodeScanCoordinator scanCoordinator =
+                new QrCodeScanCoordinator(context, this::dismiss, mWindowAndroid);
 
         mTabs = new ArrayList<>();
         mTabs.add(shareCoordinator);

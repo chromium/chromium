@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -68,6 +69,8 @@ AmbientAnimationPlayer::AmbientAnimationPlayer(
     DCHECK(cycle_restart_timestamp_.is_zero());
   }
   animation_observation_.Observe(animation);
+  animation->SetPlaybackSpeed(
+      AmbientUiModel::Get()->animation_playback_speed());
   animated_image_view_->Play(lottie::Animation::Style::kLinear);
 }
 

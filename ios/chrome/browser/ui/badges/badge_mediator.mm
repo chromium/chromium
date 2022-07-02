@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -90,7 +90,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   self = [super init];
   if (self) {
     DCHECK(browser);
-    // Create the incognito badge if |browser| is off-the-record.
+    // Create the incognito badge if `browser` is off-the-record.
     if (browser->GetBrowserState()->IsOffTheRecord()) {
       _offTheRecordBadge =
           [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
@@ -118,7 +118,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)dealloc {
-  // |-disconnect| must be called before deallocation.
+  // `-disconnect` must be called before deallocation.
   DCHECK(!_webStateList);
 }
 
@@ -297,7 +297,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   // Log overflow badge tap.
   base::RecordAction(
       base::UserMetricsAction(kInfobarOverflowBadgeTappedUserAction));
-  if (!ShouldUseUIKitPopupMenu()) {
+  if (!UseSymbols()) {
     NSMutableArray<id<BadgeItem>>* popupMenuBadges =
         [[NSMutableArray alloc] init];
     // Get all non-fullscreen badges.
@@ -439,7 +439,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 #pragma mark - Private
 
-// Mark the |item|'s infobar type's read status to YES.
+// Mark the `item`'s infobar type's read status to YES.
 - (void)onBadgeItemRead:(id<BadgeItem>)item {
   item.badgeState |= BadgeStateRead;
   if (self.badgeTabHelper) {
@@ -460,14 +460,14 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self.consumer markDisplayedBadgeAsRead:YES];
 }
 
-// Shows the modal UI when |button| is tapped.
+// Shows the modal UI when `button` is tapped.
 - (void)handleTappedBadgeButton:(BadgeButton*)button {
   InfobarType infobarType = InfobarTypeForBadgeType(button.badgeType);
   [self addModalRequestForInfobarType:infobarType];
   [self recordMetricsForBadgeButton:button infobarType:infobarType];
 }
 
-// Adds a modal request for the Infobar of |infobarType|.
+// Adds a modal request for the Infobar of `infobarType`.
 - (void)addModalRequestForInfobarType:(InfobarType)infobarType {
   DCHECK(self.webState);
   InfoBarIOS* infobar = [self infobarWithType:infobarType];
@@ -485,7 +485,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   }
 }
 
-// Returns the infobar in the active WebState's InfoBarManager with |type|.
+// Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
   for (size_t index = 0; index < manager->infobar_count(); ++index) {

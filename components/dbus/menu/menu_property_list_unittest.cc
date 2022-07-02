@@ -326,7 +326,7 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
   // The Wayland implementation requires the keyboard layout to be set.
   // The ScopedKeyboardLayout does not unset the already existing layout engine,
@@ -366,7 +366,7 @@ TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
   if (old_layout)
     ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(old_layout);
 }
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 
 TEST(MenuPropertyListTest, ComputePropertyChanges) {
   MenuItemProperties old_props;

@@ -35,7 +35,6 @@
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
-#include "components/security_interstitials/content/origin_policy_ui.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
@@ -55,7 +54,6 @@
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -307,7 +305,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
     }
   }
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
@@ -363,7 +361,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
     }
   }
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
   resource.is_subresource = request_url != main_frame_url;
@@ -431,14 +429,6 @@ std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
   return blocking_page;
 }
 #endif
-
-std::unique_ptr<security_interstitials::SecurityInterstitialPage>
-CreateOriginPolicyInterstitialPage(content::WebContents* web_contents) {
-  return base::WrapUnique<security_interstitials::SecurityInterstitialPage>(
-      security_interstitials::OriginPolicyUI::GetBlockingPage(
-          network::OriginPolicyState::kCannotLoadPolicy, web_contents,
-          GURL("https://example.com/broken/origin/policy")));
-}
 
 }  //  namespace
 
@@ -512,8 +502,6 @@ void InterstitialHTMLSource::StartDataRequest(
   } else if (path_without_query == "/captiveportal") {
     interstitial_delegate = CreateCaptivePortalBlockingPage(web_contents);
 #endif
-  } else if (path_without_query == "/origin_policy") {
-    interstitial_delegate = CreateOriginPolicyInterstitialPage(web_contents);
   } else if (path_without_query == "/insecure_form") {
     interstitial_delegate = CreateInsecureFormPage(web_contents);
   } else if (path_without_query == "/https_only") {

@@ -104,17 +104,24 @@ bool DummyTextInputClient::GetCompositionTextRange(gfx::Range* range) const {
 }
 
 bool DummyTextInputClient::GetEditableSelectionRange(gfx::Range* range) const {
-  return false;
+  if (!cursor_range_.IsValid())
+    return false;
+  range->set_start(cursor_range_.start());
+  range->set_end(cursor_range_.end());
+  return true;
 }
 
 bool DummyTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   selection_history_.push_back(range);
-  return false;
+  cursor_range_ = range;
+  return true;
 }
 
+#if BUILDFLAG(IS_MAC)
 bool DummyTextInputClient::DeleteRange(const gfx::Range& range) {
   return false;
 }
+#endif
 
 bool DummyTextInputClient::GetTextFromRange(const gfx::Range& range,
                                             std::u16string* text) const {
@@ -159,7 +166,7 @@ bool DummyTextInputClient::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range DummyTextInputClient::GetAutocorrectRange() const {
   return autocorrect_range_;
 }
@@ -173,10 +180,10 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return true;
 }
 
-absl::optional<GrammarFragment> DummyTextInputClient::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment>
+DummyTextInputClient::GetGrammarFragmentAtCursor() const {
   for (const auto& fragment : grammar_fragments_) {
-    if (fragment.range.Contains(range)) {
+    if (fragment.range.Contains(cursor_range_)) {
       return fragment;
     }
   }

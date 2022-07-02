@@ -7,9 +7,7 @@
 namespace media {
 namespace cast {
 
-SenderEncodedFrame::SenderEncodedFrame()
-    : EncodedFrame(), encoder_utilization(-1.0), lossy_utilization(-1.0) {}
-
+SenderEncodedFrame::SenderEncodedFrame() = default;
 SenderEncodedFrame::~SenderEncodedFrame() = default;
 
 }  //  namespace cast

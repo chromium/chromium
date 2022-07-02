@@ -24,6 +24,7 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   // and could lead to subtle bugs.
   const LayoutUnit intrinsic_block_size =
       ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+                          /* override_available_size */ absl::nullopt,
                           ReplacedSizeMode::kIgnoreBlockLengths)
           .block_size;
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
@@ -39,6 +40,7 @@ MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   // the min/max content size.
   MinMaxSizes sizes;
   sizes = ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
+                              /* override_available_size */ absl::nullopt,
                               ReplacedSizeMode::kIgnoreInlineLengths)
               .inline_size;
 

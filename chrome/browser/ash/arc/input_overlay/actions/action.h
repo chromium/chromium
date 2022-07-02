@@ -88,8 +88,7 @@ class Action {
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
-  void PrepareToBind(std::unique_ptr<InputElement> input_element,
-                     DisplayMode mode = DisplayMode::kEdit);
+  void PrepareToBind(std::unique_ptr<InputElement> input_element);
   // Save |pending_binding_| as |current_binding_|.
   void BindPending();
   // Cancel |pending_binding_|.
@@ -138,6 +137,9 @@ class Action {
   absl::optional<gfx::PointF> CalculateTouchPosition(
       const gfx::RectF& content_bounds);
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
+  // Verify the key release event. If it is verified, it continues to simulate
+  // the touch event. Otherwise, consider it as discard.
+  bool VerifyOnKeyRelease(ui::DomCode code);
   void OnTouchReleased();
   void OnTouchCancelled();
   // Process after unbinding the input mapping.

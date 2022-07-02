@@ -18,6 +18,8 @@
 #include <mach/mach.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/mac/process_reader_mac.h"
@@ -60,6 +62,7 @@ class ThreadSnapshotMac final : public ThreadSnapshot {
   const CPUContext* Context() const override;
   const MemorySnapshot* Stack() const override;
   uint64_t ThreadID() const override;
+  std::string ThreadName() const override;
   int SuspendCount() const override;
   int Priority() const override;
   uint64_t ThreadSpecificDataAddress() const override;
@@ -78,6 +81,7 @@ class ThreadSnapshotMac final : public ThreadSnapshot {
   } context_union_;
   CPUContext context_;
   MemorySnapshotGeneric stack_;
+  std::string thread_name_;
   uint64_t thread_id_;
   uint64_t thread_specific_data_address_;
   thread_t thread_;

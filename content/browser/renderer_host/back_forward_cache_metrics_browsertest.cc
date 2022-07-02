@@ -299,12 +299,25 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
 
   // First two new navigations happen in the original tab.
   // The third navigation reloads the tab for the cloned WebContents.
-  // The fourth goes back, but the metrics are not recorded due to it being
-  // cloned and the metrics objects missing.
-  // The last two navigations, however, should have metrics.
+  // The fourth goes back, and records an empty entry because its
+  // NavigationEntry was cloned and the metrics objects was empty.
+  // The last two navigations records non-empty entries.
   EXPECT_THAT(recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
-              testing::ElementsAre(UkmEntry{id5, {{last_navigation_id, id3}}},
+              testing::ElementsAre(UkmEntry{id4, {}},
+                                   UkmEntry{id5, {{last_navigation_id, id3}}},
                                    UkmEntry{id6, {{last_navigation_id, id4}}}));
+
+  // Ensure that for the first navigation, we record "session restored" as one
+  // of the NotRestoredReasons, which is added by the metrics recording code.
+  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
+  std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+      recorded_not_restored_reasons =
+          recorder.FilteredHumanReadableMetricForEntry("HistoryNavigation",
+                                                       not_restored_reasons);
+  ASSERT_EQ(recorded_not_restored_reasons.size(), 3u);
+  EXPECT_EQ(recorded_not_restored_reasons[0][not_restored_reasons],
+            1 << static_cast<int>(
+                BackForwardCacheMetrics::NotRestoredReason::kSessionRestored));
 }
 
 // Confirms that UKMs are not recorded on reloading.
@@ -669,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ("success", EvalJs(main_frame, R"(
     new Promise(resolve => {
       navigator.geolocation.getCurrentPosition(
@@ -965,7 +978,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
-  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
@@ -1017,7 +1030,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   auto* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), fenced_frame_url1);
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url1);
   NavigationEntryImpl* fenced_frame_entry = FrameTreeNode::From(fenced_frame)
                                                 ->frame_tree()
                                                 ->controller()

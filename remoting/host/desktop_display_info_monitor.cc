@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/client_session_control.h"
+#include "remoting/proto/control.pb.h"
 
 namespace remoting {
 
@@ -26,10 +26,8 @@ constexpr base::TimeDelta kPollingInterval = base::Milliseconds(100);
 }  // namespace
 
 DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<ClientSessionControl> client_session_control)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ui_task_runner_(ui_task_runner),
-      client_session_control_(client_session_control),
       desktop_display_info_loader_(DesktopDisplayInfoLoader::Create()) {
   // The loader must be initialized and used on the UI thread (though it can be
   // created on any thread).
@@ -47,13 +45,32 @@ DesktopDisplayInfoMonitor::~DesktopDisplayInfoMonitor() {
 
 void DesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_running_ = true;
   timer_.Start(FROM_HERE, kPollingInterval, this,
-               &DesktopDisplayInfoMonitor::QueryDisplayInfo);
+               &DesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
 }
 
 void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (client_session_control_) {
+  if (!timer_running_) {
+    QueryDisplayInfoImpl();
+  }
+}
+
+void DesktopDisplayInfoMonitor::AddCallback(
+    DesktopDisplayInfoMonitor::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Adding callbacks is not supported after displays have already been
+  // loaded.
+  DCHECK_EQ(desktop_display_info_.NumDisplays(), 0);
+
+  callback_list_.AddUnsafe(std::move(callback));
+}
+
+void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!callback_list_.empty()) {
     ui_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DesktopDisplayInfoLoader::GetCurrentDisplayInfo,
@@ -66,28 +83,12 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
 void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!client_session_control_ || desktop_display_info_ == info) {
+  if (callback_list_.empty() || desktop_display_info_ == info) {
     return;
   }
 
   desktop_display_info_ = std::move(info);
-
-  auto layout = std::make_unique<protocol::VideoLayout>();
-  HOST_LOG << "DDIM::OnDisplayInfoLoaded";
-  for (const auto& display : desktop_display_info_.displays()) {
-    protocol::VideoTrackLayout* track = layout->add_video_track();
-    track->set_position_x(display.x);
-    track->set_position_y(display.y);
-    track->set_width(display.width);
-    track->set_height(display.height);
-    track->set_x_dpi(display.dpi);
-    track->set_y_dpi(display.dpi);
-    track->set_screen_id(display.id);
-    HOST_LOG << "   Display: " << display.x << "," << display.y << " "
-             << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id;
-  }
-  client_session_control_->OnDesktopDisplayChanged(std::move(layout));
+  callback_list_.Notify(desktop_display_info_);
 }
 
 }  // namespace remoting

@@ -86,24 +86,24 @@ http_archive(
 # https://github.com/bazelbuild/rules_apple/releases
 http_archive(
     name = "build_bazel_rules_apple",
-    sha256 = "0052d452af7742c8f3a4e0929763388a66403de363775db7e90adecb2ba4944b",
+    sha256 = "a5f00fd89eff67291f6cd3efdc8fad30f4727e6ebb90718f3f05bbf3c3dd5ed7",
     urls = [
-        "https://github.com/bazelbuild/rules_apple/releases/download/0.31.3/rules_apple.0.31.3.tar.gz",
+        "https://github.com/bazelbuild/rules_apple/releases/download/0.33.0/rules_apple.0.33.0.tar.gz",
     ],
 )
 
 # https://github.com/bazelbuild/rules_swift/releases
 http_archive(
     name = "build_bazel_rules_swift",
-    sha256 = "8407fa0fd04a7ce1d6bb95e90b216404466f809eda459c23cb57b5fa1ef9d639",
+    sha256 = "8a49da750560b185804a4bc95c82d3f9cc4c2caf788960b0e21945759155fdd9",
     urls = [
-        "https://github.com/bazelbuild/rules_swift/releases/download/0.21.0/rules_swift.0.21.0.tar.gz",
+        "https://github.com/bazelbuild/rules_swift/releases/download/0.25.0/rules_swift.0.25.0.tar.gz",
     ],
 )
 
-# TF on 2022-01-28.
-TENSORFLOW_COMMIT = "f2c2144d767a64236261fb4e4dd45947bd5f5815"
-TENSORFLOW_SHA256 = "32ba2f6ea07572fd05cdae7520fe1bc38409f1a21bb4524076df27f1e23d09c1"
+# TF on 2022-04-20.
+TENSORFLOW_COMMIT = "314479be97046e0db0ff7662b1fbdb17af2ef4b4"
+TENSORFLOW_SHA256 = "b3c439aa7da6780956780e0cb312011416fcd476201f8033f90b3c4fc1cff7a0"
 http_archive(
     name = "org_tensorflow",
     sha256 = TENSORFLOW_SHA256,
@@ -138,9 +138,8 @@ third_party_http_archive(
     build_file = "@pybind11_bazel//:pybind11.BUILD",
 )
 
-# TODO(b/211393391): Updates the commit number once the new change is ready.
-PP_COMMIT = "30f02dd9ccd2fc7046c36ed913ed510fd1aa7301"
-PP_SHA256 = "178bcd587956b0f449fff2f46e663dc10baa6d4951a0a7f48cddfeef57d593a8"
+PP_COMMIT = "3594106f2df3d725e65015ffb4c7886d6eeee683"
+PP_SHA256 = "baa1f53568283630a5055c85f0898b8810f7a6431bd01bbaedd32b4c1defbcb1"
 http_archive(
     name = "pybind11_protobuf",
     sha256 = PP_SHA256,
@@ -253,19 +252,12 @@ http_archive(
         "http://mirror.bazel.build/zlib.net/fossils/zlib-1.2.11.tar.gz",
         "http://zlib.net/fossils/zlib-1.2.11.tar.gz",  # 2017-01-15
     ],
-)
-
-http_archive(
-    name = "org_libzip",
-    build_file = "//third_party:libzip.BUILD",
-    sha256 = "a5d22f0c87a2625450eaa5e10db18b8ee4ef17042102d04c62e311993a2ba363",
-    strip_prefix = "libzip-rel-1-5-1",
-    urls = [
-        # Bazel does not like the official download link at libzip.org,
-        # so use the GitHub release tag.
-        "https://mirror.bazel.build/github.com/nih-at/libzip/archive/rel-1-5-1.zip",
-        "https://github.com/nih-at/libzip/archive/rel-1-5-1.zip",
+    patches = [
+        "@//third_party:zlib.patch"
     ],
+    patch_args = [
+        "-p1"
+    ]
 )
 
 http_archive(

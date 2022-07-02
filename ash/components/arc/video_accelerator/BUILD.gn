@@ -30,6 +30,7 @@ if (use_v4l2_codec || use_vaapi) {
       ":common",
       "//ash/components/arc:arc_features",
       "//ash/components/arc/mojom:media",
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
       "//gpu/ipc/common:common",
       "//media",
       "//media/gpu:buffer_validation",

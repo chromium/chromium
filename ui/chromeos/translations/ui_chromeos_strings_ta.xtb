@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">நெட்வொர்க்குகள் இல்லை</translation>
 <translation id="1060368002126861100">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows ஃபைல்கள்  ஃபோல்டருக்கு நகர்த்தவும்.</translation>
 <translation id="1062407476771304334">மாற்றியமை</translation>
-<translation id="1119069657431255176">Bzip2 compressed tar archive</translation>
 <translation id="1119447706177454957">அகப் பிழை</translation>
 <translation id="1120073797882051782">ஹாங்குல் ரோமஜா</translation>
 <translation id="112387589102719461">ஆங்கிலம் (யூஎஸ்) - புரோகிராமர் டிவோர்க் கீபோர்டு</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">ஹாங்குல் ஹமாதே</translation>
 <translation id="1155759005174418845">கேட்டலன்</translation>
 <translation id="1168100932582989117">Google பெயர் சேவையகங்கள்</translation>
-<translation id="1171082344678443012">XZ சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="1172970565351728681">சுமார் <ph name="REMAINING_TIME" /> மீதமுள்ளது</translation>
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
 <translation id="1173916544412572294">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1209796539517632982">தானியங்கி பெயர் சேவையகங்கள்</translation>
 <translation id="1210831758834677569">லாவோ</translation>
-<translation id="1223825810409523901">Chrome நீட்டிப்பு</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
 <translation id="1249250836236328755">ஆடியோ வகை</translation>
 <translation id="1254593899333212300">நேரடி இணைய இணைப்பு</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">பகிர்ந்த நெட்வொர்க் உள்ளமைவுகளை மாற்றுவதற்கு அனுமதியில்லை</translation>
 <translation id="1665611772925418501">ஃபைலை மாற்ற முடியவில்லை.</translation>
 <translation id="1673103856845176271">பாதுகாப்பு காரணங்களுக்காக ஃபைலை அணுக முடியவில்லை.</translation>
-<translation id="16762847117768727">ISO படம்</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">பைக் ஓட்டும் நபர்</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை ஜிப் செய்கிறது...</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">இயக்ககத்தில் நிர்வகி</translation>
 <translation id="2009067268969781306">இயக்ககத்தை ஃபார்மேட் செய்தால் அதில் சேமிக்கப்பட்டுள்ள தரவு அனைத்தும் நீக்கப்படும். அவற்றைத் திரும்பப் பெற முடியாது.</translation>
 <translation id="2025955442973426285">டிக்ரின்யா</translation>
-<translation id="2028997212275086731">RAR archive</translation>
-<translation id="2036414735548252477">LZMA சுருக்கப்பட்ட tar காப்பகம்</translation>
 <translation id="2037845485764049925">ரஷ்யன்</translation>
 <translation id="2044023416777079300">மோடம் பதிவுசெய்யப்படவில்லை</translation>
 <translation id="2046702855113914483">ரேமன்</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி தடுத்துள்ளார், விவரங்கள்</translation>
 <translation id="2142680004883808240">ரஷ்யன் - ஒலிப்புமுறை YaZHert கீபோர்டு</translation>
 <translation id="2143778271340628265">கைமுறை ப்ராக்ஸி உள்ளமைவு</translation>
+<translation id="2148716181193084225">இன்று</translation>
 <translation id="2163152940313951844">செல்லாத எழுத்து: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">போர்ச்சுகீஸ் - யூஎஸ் சர்வதேச PC கீபோர்டு</translation>
 <translation id="2198315389084035571">எளிய சீன மொழி</translation>
-<translation id="2208158072373999562">ஜிப் காப்பகம்</translation>
 <translation id="22085916256174561">கொரியன்</translation>
 <translation id="2208919847696382164">Linux தொகுப்பை நிறுவு</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் Linuxஸுடன் பகிரப்பட்டன</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ஃபைல்கள்  தேர்ந்தெடுக்கப்பட்டன</translation>
+<translation id="2387120140441437063">நீக்கிய ஃபைல்களைத் திறக்க முடியாது. திறக்கும் முன் ஃபைல்களை மீட்டெடுக்கவும்.</translation>
 <translation id="2387458720915042159">ப்ராக்ஸி இணைப்பு வகை</translation>
 <translation id="2389832672041313158">பர்மீஸ்/மியான்மர்</translation>
 <translation id="2392369802118427583">செயல்படுத்து</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">இந்த ஃபோல்டரில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
 <translation id="2544853746127077729">அங்கீகரிப்புச் சான்றிதழ் நெட்வொர்க்கால் நிராகரிக்கப்பட்டது</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> இல் சேர்</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
 <translation id="2563185590376525700">தவளை</translation>
 <translation id="2578394532502990878">தமிழ் ஒலிப்புமுறை</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">சீனம் (தூயே)</translation>
 <translation id="3057861065630527966">உங்கள் படங்கள் மற்றும் வீடியோக்களைக் காப்புப் பிரதியெடுக்கவும்</translation>
 <translation id="3067790092342515856">Windows ஃபைல்கள் </translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> மூலம் பகிர்</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ஹோஸ்ட்</translation>
 <translation id="3104793765551262433">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி தடுத்துள்ளார், விவரங்கள்</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
 <translation id="3858860766373142691">பெயர்</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> மூலம் தொகுப்பாக்கு</translation>
 <translation id="3866249974567520381">விவரம்</translation>
 <translation id="3899991606604168269">ஃபிரெஞ்சு (கனடா) பன்மொழி கீபோர்டு</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> க்கு இணைக்கிறது</translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ஆங்கிலம் (யுகே)</translation>
 <translation id="3975895378829046965">வங்காளம் ஒலிப்புமுறை</translation>
+<translation id="3991446849494482687">இது இந்தச் சாதனத்தில் சிம் பூட்டு அமைப்பையும் முடக்கும்.</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4017788180641807848">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் கீபோர்டு</translation>
 <translation id="4040753847560036377">தவறான PUK</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> பைட்கள்</translation>
 <translation id="4880214202172289027">ஒலியளவு ஸ்லைடர்</translation>
 <translation id="4881695831933465202">திற</translation>
-<translation id="4886199584824489598">Bzip2 சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="4900532980794411603">Parallels Desktop மூலம் பகிர்</translation>
 <translation id="4902546322522096650">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> கோப்புகளைக் காப்புப் பிரதி எடுக்கத் தயாராக உள்ளது</translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> நெட்வொர்க், இணைக்கப்படவில்லை</translation>
 <translation id="6074825444536523002">Google படிவம்</translation>
 <translation id="6079871810119356840">ஹங்கேரியன் - Qwerty கீபோர்டு</translation>
-<translation id="6082256976217156453">LZMA சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="6096979789310008754">தேடல் உரை அழிக்கப்பட்டது, அனைத்துக் கோப்புகளையும் ஃபோல்டர்களையும் காட்டுகிறது.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> ஐ <ph name="FOLDER_NAME" />க்கு நகர்த்துகிறது</translation>
 <translation id="61118516107968648">CSV வார்த்தை</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6170470584681422115">சாண்ட்விச்</translation>
 <translation id="6187719147498869044">ஹங்கேரியன்</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> மூலம் திற</translation>
 <translation id="6198252989419008588">PIN ஐ மாற்றவும்</translation>
 <translation id="6199801702437275229">இடத் தகவலுக்காக காத்திருக்கிறது...</translation>
 <translation id="6205710420833115353">சில செயல்பாடுகள் எதிர்பார்த்ததை விட அதிக நேரம் எடுக்கிறது. அவற்றை நிறுத்த விரும்புகிறீர்களா?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">தவறான PUK</translation>
 <translation id="6312403991423642364">அறியப்படாத நெட்வொர்க் பிழை</translation>
 <translation id="6317608858038767920">பிரத்தியேகப் பெயர்மாற்றி <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> காப்பக ஃபைல்</translation>
 <translation id="6321303798550928047">கை அசைத்தல்</translation>
 <translation id="6327785803543103246">இணைய ப்ராக்ஸியைத் தானாகக் கண்டறி</translation>
 <translation id="6339145975392024142">யுஎஸ் சர்வதேச கீபோர்டு (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">வியட்நாமிஸ் - TCVN கீபோர்டு</translation>
 <translation id="6485131920355264772">இடத் தகவலை மீட்டெடுப்பதில் தோல்வி</translation>
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> ஃபைல் <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பிரித்தெடுக்கப்படுகிறது</translation>
 <translation id="6499681088828539489">பகிர்ந்த நெட்வொர்க்குகளுக்கு ப்ராக்ஸிகளை அனுமதிக்காதே</translation>
 <translation id="6509122719576673235">நார்வேஜியன்</translation>
 <translation id="6528513914570774834">இந்தச் சாதனத்தின் பிற பயனர்களையும் இந்த நெட்வொர்க்கைப் பயன்படுத்த அனுமதி</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Linux பகிர்வை நிர்வகி</translation>
 <translation id="6806796368146926706">ஜாப்பனீஸ் கீபோர்டு (எண்ணெழுத்துகள்)</translation>
 <translation id="6808193438228982088">நரி</translation>
-<translation id="6820687829547641339">Gzip compressed tar archive</translation>
 <translation id="6823166707458800069">இந்த ஃபோல்டரில் சேமிக்கப்படும் அனைத்துக் கோப்புகளும் ஆன்லைனில் தானாகவே காப்புப் பிரதி எடுக்கப்படும்.</translation>
 <translation id="6825883775269213504">ரஷ்யன்</translation>
 <translation id="6847101934483209767">தேர்விலிருந்து <ph name="ENTRY_NAME" /> அகற்றப்பட்டது.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">தாய் - TIS 820-2531 கீபோர்டு</translation>
 <translation id="708278670402572152">ஸ்கேன் செய்வதை இயக்க, இணைப்பைத் துண்டிக்கவும்</translation>
 <translation id="7086590977277044826">தமிழ் - இன்ஸ்கிரிப்ட் கீபோர்டு</translation>
+<translation id="7088615885725309056">பழையவை</translation>
 <translation id="7103992300314999525">மாஸிடோனியன்</translation>
 <translation id="7106346894903675391">கூடுதல் சேமிப்பிடத்தை வாங்கு...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;இயக்ககத்தில் தேடு&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">இந்தி</translation>
 <translation id="7693909743393669729">டிரைவை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். அத்துடன் காட்டப்படாத பார்ட்டிஷன்கள் உட்பட அதிலுள்ள அனைத்துப் பார்ட்டிஷன்களும் அகற்றப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்ய முடியவில்லை</translation>
+<translation id="76959938259365003">நீக்கியவை ஃபோல்டரில் உள்ளவற்றை அழிக்க முடியவில்லை.</translation>
 <translation id="770015031906360009">கிரேக்கம்</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> நகலெடுக்கப்பட்டது.</translation>
 <translation id="7711920809702896782">படத் தகவல்</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">சீனம் (உபி)</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7774365994322694683">பறவை</translation>
+<translation id="7781829728241885113">நேற்று</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" ஃபைலை ஆஃப்லைனில் சேமிக்க, கூடுதலாக <ph name="TOTAL_FILE_SIZE" /> இடத்தைக் காலியாக்க வேண்டும்:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ஆஃப்லைனில் இனி அணுகத் தேவையற்ற கோப்புகளை அகற்றவும்<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />பதிவிறக்கக் ஃபோல்டரிலிருந்து கோப்புகளை நீக்கவும்<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">ஒத்திசைப்பதற்கு, மொபைல் டேட்டா பயன்படுத்தாதே</translation>
 <translation id="7928710562641958568">சாதனத்தை வெளித்தள்ளு</translation>
 <translation id="7943385054491506837">யு.எஸ். கோல்மேக்</translation>
-<translation id="7948417415021769876">7z காப்பகம்</translation>
 <translation id="7953739707111622108">இந்த சாதனத்தின் கோப்புமுறைமை அறியப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="7969525169268594403">ஸ்லோவேனியன்</translation>
 <translation id="7972920761225148017">ஃபிரெஞ்சு (சுவிட்சர்லாந்து)</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">ஹாங்குல் 3 செட் (ஷிஃப்ட் இல்லை)</translation>
 <translation id="8299269255470343364">ஜாப்பனீஸ்</translation>
 <translation id="8300849813060516376">OTASP தோல்வியுற்றது</translation>
-<translation id="8308481408797647857">XZ சுருக்கப்பட்ட tar காப்பகம்</translation>
 <translation id="8312871300878166382">ஃபோல்டரில் ஒட்டு</translation>
 <translation id="8329978297633540474">எளிய உரை</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">ஃபைலை வலது கிளிக் செய்து "ஷெல்ஃபில் பின் செய்" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள ஃபைல்களுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
 <translation id="8461914792118322307">ப்ராக்ஸி</translation>
 <translation id="8463494891489624050">வியட்நாமிஸ் (VIQR)</translation>
-<translation id="8466234950814670489">Tar archive</translation>
 <translation id="8475647382427415476">Google இயக்ககத்தால் "<ph name="FILENAME" />"ஐ இப்போது ஒத்திசைக்க முடியவில்லை. Google இயக்ககம் பிறகு முயற்சிக்கும்.</translation>
 <translation id="8477649328507734757">சுழல்</translation>
 <translation id="8484284835977497781">உங்கள் சமீபத்திய படங்களில் இருந்து தேர்வுசெய்யுங்கள்.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">மாற்றியவர்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> முதல் <ph name="TO_ENTRY_NAME" /> வரை <ph name="ENTRY_COUNT" /> உள்ளீடுகள் தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
-<translation id="961973045258256291">Gzip சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="965477715979482472">ஆங்கிலம் (தென் ஆப்பிரிக்கா)</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" என்ற பெயருள்ள ஃபைல் ஏற்கனவே உள்ளது. அதை இடமாற்றவா?</translation>

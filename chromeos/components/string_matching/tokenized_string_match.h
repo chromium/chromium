@@ -17,8 +17,10 @@ class TokenizedString;
 
 // TokenizedStringMatch takes two tokenized strings: one as the text and
 // the other one as the query. It matches the query against the text,
-// calculates a relevance score between [0, 1] and marks the matched portions
-// of text. A relevance of zero means the two are completely different to each
+// calculates a relevance score between [0, 1] and records the matched portions
+// of text ("hits").
+//
+// A relevance score of zero means the two are completely different to each
 // other. The higher the relevance score, the better the two strings are
 // matched. Matched portions of text are stored as index ranges.
 class TokenizedStringMatch {
@@ -32,8 +34,12 @@ class TokenizedStringMatch {
 
   ~TokenizedStringMatch();
 
+  // TODO(crbug.com/1336160): Consider refactoring this method to directly
+  // return the relevance score, instead of a bool. This would remove the need
+  // to subsequently call relevance().
+  //
   // Calculates the relevance and hits. Returns true if the two strings are
-  // somewhat matched, i.e. relevance score is not zero.
+  // somewhat matched, i.e. relevance score is greater than zero.
   bool Calculate(const TokenizedString& query, const TokenizedString& text);
 
   // Convenience wrapper to calculate match from raw string input.

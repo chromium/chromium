@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// The HTTP methods that pending beacons can use.
+enum BeaconMethod {
+  kPost,
+  kGet
+};
+
+// Interface for creating browser-side pending beacon objects.
+// API explainer here:
+// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+interface PendingBeaconHost {
+
+  // Creates a new pending beacon object in the browser side.
+  // The corresponding remote for `receiver` will be connected to a new browser
+  // side `PendingBeacon` object.
+  // `url` is the target url for the beacon.
+  // `method` is the method used to send the beacon.
+  // `timeout` is the timeout after running the page hide event on the current
+  // document after which the beacon will be sent (or zero to not send after
+  // page hide, instead only send on document discard).
+  CreateBeacon(pending_receiver<blink.mojom.PendingBeacon> receiver,
+               url.mojom.Url url,
+               BeaconMethod method,
+               mojo_base.mojom.TimeDelta timeout);
+
+};
+
+// Interface for configuring and acting on pending beacons.
+interface PendingBeacon {
+
+  // Deactivates the pending beacon. After this call it will not be sent.
+  // Calling this will close the message pipe for the interface as well, so no
+  // further calls can be made.
+  Deactivate();
+
+  // Sets data for the pending beacon.
+  SetData(string data);
+
+  // Sends the pending beacon immediately.
+  // Calling this will close the message pipe for the interface as well, so no
+  // further calls can be made.
+  SendNow();
+
+};

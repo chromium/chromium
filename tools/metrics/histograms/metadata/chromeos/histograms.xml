@@ -42,6 +42,10 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>cros-connectivity@google.com</owner>
     <owner>hsuregan@chromium.org</owner>
   </variant>
+  <variant name="FakeKeyboardHeuristic" summary="Fake Keyboard Heuristic">
+    <owner>wmahon@chromium.org</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
   <variant name="FastPair" summary="Fast Pair">
     <owner>shanefitz@google.com</owner>
     <owner>julietlevesque@google.com</owner>
@@ -58,7 +62,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>cros-oac@google.com</owner>
   </variant>
   <variant name="NearbyShare" summary="Nearby Share">
-    <owner>nohle@chromium.org</owner>
+    <owner>hansenmichael@google.com</owner>
     <owner>nearby-share-chromeos-eng@google.com</owner>
   </variant>
   <variant name="NearbyShareBackgroundScanning"
@@ -201,7 +205,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Attestation.AttestationFlowStatus"
-    enum="AttestationFlowStatus" expires_after="2022-10-08">
+    enum="AttestationFlowStatus" expires_after="2022-12-11">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
@@ -250,7 +254,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.ErrorType" enum="ChromeOSCameraErrorType"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -281,7 +285,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.Facing" enum="ChromeOSCameraFacing"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -413,7 +417,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Camera.Jpeg.Latency" units="microseconds"
-    expires_after="2022-10-01">
+    expires_after="2022-12-25">
 <!-- Name completed by histogram_suffixes
      name="ChromeOS.Camera.JpegProcessMethod" and
      name="ChromeOS.Camera.JpegProcessType" -->
@@ -432,7 +436,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Camera.Jpeg.Resolution" units="pixels"
-    expires_after="2022-10-01">
+    expires_after="2022-12-18">
 <!-- Name completed by histogram_suffixes
      name="ChromeOS.Camera.JpegProcessMethod" and
      name="ChromeOS.Camera.JpegProcessType" -->
@@ -470,7 +474,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Camera.SessionDuration" units="seconds"
-    expires_after="2022-10-01">
+    expires_after="2022-12-04">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>Records the session duration in Chrome OS camera service.</summary>
@@ -595,7 +599,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.ParsePSIMemory" enum="ChromeOSParsePSIMemStatus"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -679,8 +683,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
-    units="CrosDiagnosticsNavigationView" expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+    units="CrosDiagnosticsNavigationView" expires_after="2022-12-04">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -689,8 +694,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
-    expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+    expires_after="2022-12-04">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -700,8 +706,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+    expires_after="2022-12-04">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -711,8 +718,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
-    expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+    expires_after="2022-12-04">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -723,8 +731,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2022-06-15">
-  <owner>gavindodd@chromium.org</owner>
+    enum="CrosDiagnosticsRoutineResult" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
@@ -947,7 +956,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2022-10-09">
+    enum="IntentPickerDialogAction" expires_after="2022-12-25">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -975,7 +984,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerIconEvent"
-    enum="IntentPickerIconEvent" expires_after="2022-10-04">
+    enum="IntentPickerIconEvent" expires_after="2022-12-04">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1103,8 +1112,19 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.GetPackState.LanguageCode"
+    enum="LanguagePackLanguageCodes" expires_after="2023-01-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records which language was requested from Language Packs Manager;
+    specifically an entry is recorded each time GetPackState is called.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
-    enum="BooleanSuccess" expires_after="2022-10-01">
+    enum="BooleanSuccess" expires_after="2022-12-11">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
@@ -1115,7 +1135,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-10-01">
+    enum="LanguagePackMojoFeatureId" expires_after="2022-12-04">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1125,7 +1145,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.InstallPack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-10-01">
+    enum="LanguagePackMojoFeatureId" expires_after="2022-12-11">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1172,7 +1192,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Liveness.PingResponseTime" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>rtinkoff@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -1337,7 +1357,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.PlatformVerification.Result2"
-    enum="ChromeOSPlatformVerificationResult2" expires_after="2022-09-11">
+    enum="ChromeOSPlatformVerificationResult2" expires_after="2022-11-13">
   <owner>erikchen@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1395,7 +1415,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
-    expires_after="2022-09-21">
+    expires_after="2022-11-20">
   <owner>mslus@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
@@ -1418,7 +1438,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomaly" enum="SecurityAnomaly"
-    expires_after="2022-10-03">
+    expires_after="2022-12-04">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -1431,7 +1451,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomalyUploadSuccess" enum="Boolean"
-    expires_after="2022-10-03">
+    expires_after="2022-12-11">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -1478,7 +1498,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
-    expires_after="2022-10-08">
+    expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1488,7 +1508,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetFormFactor" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
@@ -1515,7 +1535,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
-    enum="ChromeOSSharesheetLaunchSource" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetLaunchSource" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1537,7 +1557,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.UserAction"
-    enum="ChromeOSSharesheetAction" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetAction" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records user action on sharesheet invocations.</summary>
@@ -1760,7 +1780,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.TypeC.UsbDeviceSpeed" enum="UsbDeviceSpeedMetric"
-    expires_after="2022-09-30">
+    expires_after="2022-12-11">
   <owner>wonchung@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -1781,7 +1801,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2022-10-10">
+    expires_after="2022-12-11">
   <owner>jorgelo@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>
@@ -1792,7 +1812,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.USB.DeviceAttached"
-    enum="ChromeOSUsbEventTiming" expires_after="2022-09-08">
+    enum="ChromeOSUsbEventTiming" expires_after="2022-11-13">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
@@ -1848,7 +1868,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.WXMountCount" units="count"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -1857,6 +1877,99 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     hours of runtime. This metric is reported regardless of whether users are
     logged in or not. This metric is only reported on Chrome OS.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{CountMetric}" units="count"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {CountMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="CountMetric">
+    <variant name="BdCount"
+        summary="the number of blocks currently written on the backing device"/>
+    <variant name="BdReads"
+        summary="the number of block reads from backing device"/>
+    <variant name="BdWrites"
+        summary="the number of block writes to backing device"/>
+    <variant name="FailedReads" summary="the number of failed reads in zram"/>
+    <variant name="FailedWrites" summary="the number of failed writes in zram"/>
+    <variant name="HugePages" summary="the number of incompressible pages"/>
+    <variant name="HugePagesSince"
+        summary="number of huge pages since zram set up"/>
+    <variant name="InvalidIo"
+        summary="number of non-page-size-aligned I/O requests in zram"/>
+    <variant name="NotifyFree"
+        summary="depending on device usage scenario it may account a) the
+                 number of pages freed because of swap slot free
+                 notifications or b) the number of pages freed because of
+                 REQ_OP_DISCARD requests sent by bio"/>
+    <variant name="PagesCompacted"
+        summary="the number of pages freed during compaction"/>
+    <variant name="SamePages"
+        summary="the number of same element filled pages written to this disk"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{HugePageActivityMetric}" units="pages"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records the {HugePageActivityMetric} in a period of time. Recorded every 10s
+    from boot to shutdown. Period is the time between recordings (10s).
+  </summary>
+  <token key="HugePageActivityMetric">
+    <variant name="HugePagesRemoved"
+        summary="number of incompressible(huge) pages removed"/>
+    <variant name="HugePagesStored"
+        summary="number of incompressible(huge) pages added"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{PctMetric}" units="%"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {PctMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="PctMetric">
+    <variant name="CompressedSizePct"
+        summary="the overall compression ratio of data store in zram disk"/>
+    <variant name="HugePagesPct"
+        summary="the percentage of incompressible pages in zram"/>
+    <variant name="SamePagesPct"
+        summary="the percentage of stored pages which are same pages, these
+                 pages have only repeated content"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{SizeMetric}" units="MB"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {SizeMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="SizeMetric">
+    <variant name="ComprDataSizeMB"
+        summary="the compressed size of data stored in zram disk"/>
+    <variant name="MemLimitMB"
+        summary="the maximum amount of memory zram can use to store The
+                 compressed data"/>
+    <variant name="MemUsedMaxMB" summary="the peak memory that has zram used"/>
+    <variant name="MemUsedTotalMB"
+        summary="the total amount of memory in use for a zram disk"/>
+    <variant name="OrigDataSizeMB"
+        summary="the uncompressed size of data stored in zram disk"/>
+  </token>
 </histogram>
 
 </histograms>

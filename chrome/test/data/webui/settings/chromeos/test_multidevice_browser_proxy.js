@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
@@ -83,7 +84,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
         'setFeatureEnabledState', [feature, enabled, opt_authToken]);
     if (feature === MultiDeviceFeature.MESSAGES) {
       this.androidSmsInfo.enabled = enabled;
-      cr.webUIListenerCallback(
+      webUIListenerCallback(
           'settings.onAndroidSmsInfoChange', this.androidSmsInfo);
     }
   }
@@ -102,7 +103,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
   /** @override */
   setSmartLockSignInEnabled(enabled, opt_authToken) {
     this.methodCalled('setSmartLockSignInEnabled', [enabled, opt_authToken]);
-    cr.webUIListenerCallback('smart-lock-signin-enabled-changed', enabled);
+    webUIListenerCallback('smart-lock-signin-enabled-changed', enabled);
   }
 
   /** @override */
@@ -153,7 +154,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
    */
   setInstantTetheringStateForTest(state) {
     this.data.instantTetheringState = state;
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'settings.updateMultidevicePageContentData',
         Object.assign({}, this.data));
   }

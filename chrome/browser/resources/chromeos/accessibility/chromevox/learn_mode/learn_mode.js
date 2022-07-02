@@ -195,7 +195,7 @@ export class LearnMode {
         const cells = new ArrayBuffer(1);
         const view = new Uint8Array(cells);
         view[0] = dots;
-        BackgroundBridge.BrailleBackground.backTranslate(cells).then((res) => {
+        BackgroundBridge.BrailleBackground.backTranslate(cells).then(res => {
           if (res !== null) {
             LearnMode.output(res);
           }
@@ -306,9 +306,9 @@ export class LearnMode {
   static maybeClose_() {
     // Reset listeners and close this page if we somehow move outside of the
     // explorer window.
-    chrome.windows.getLastFocused({populate: true}, (focusedWindow) => {
+    chrome.windows.getLastFocused({populate: true}, focusedWindow => {
       if (focusedWindow && focusedWindow.focused &&
-          focusedWindow.tabs.find((tab) => {
+          focusedWindow.tabs.find(tab => {
             return tab.url === location.href;
           })) {
         return;

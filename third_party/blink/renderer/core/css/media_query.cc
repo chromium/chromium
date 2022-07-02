@@ -70,27 +70,31 @@ String MediaQuery::Serialize() const {
   return result.ReleaseString();
 }
 
-std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {
-  return std::make_unique<MediaQuery>(MediaQuery::kNot, media_type_names::kAll,
-                                      std::unique_ptr<MediaQueryExpNode>());
+MediaQuery* MediaQuery::CreateNotAll() {
+  return MakeGarbageCollected<MediaQuery>(
+      MediaQuery::kNot, media_type_names::kAll, nullptr /* exp_node */);
 }
 
 MediaQuery::MediaQuery(RestrictorType restrictor,
                        String media_type,
-                       std::unique_ptr<MediaQueryExpNode> exp_node)
+                       const MediaQueryExpNode* exp_node)
     : restrictor_(restrictor),
       media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
-      exp_node_(std::move(exp_node)),
+      exp_node_(exp_node),
       has_unknown_(exp_node_ ? exp_node_->HasUnknown() : false) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : restrictor_(o.restrictor_),
       media_type_(o.media_type_),
-      exp_node_(o.exp_node_ ? o.exp_node_->Copy() : nullptr),
+      exp_node_(o.exp_node_),
       serialization_cache_(o.serialization_cache_),
       has_unknown_(o.has_unknown_) {}
 
 MediaQuery::~MediaQuery() = default;
+
+void MediaQuery::Trace(Visitor* visitor) const {
+  visitor->Trace(exp_node_);
+}
 
 MediaQuery::RestrictorType MediaQuery::Restrictor() const {
   if (BehaveAsNotAll())
@@ -101,7 +105,7 @@ MediaQuery::RestrictorType MediaQuery::Restrictor() const {
 const MediaQueryExpNode* MediaQuery::ExpNode() const {
   if (BehaveAsNotAll())
     return nullptr;
-  return exp_node_.get();
+  return exp_node_.Get();
 }
 
 const String& MediaQuery::MediaType() const {

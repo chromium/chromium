@@ -11,15 +11,16 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::processing {
 
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // FeatureProcessorState is responsible for storing all necessary state during
 // the processing of a model's metadata.
@@ -43,8 +44,9 @@ class FeatureProcessorState {
   FeatureProcessorState(
       base::Time prediction_time,
       base::TimeDelta bucket_duration,
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       std::deque<Data> data,
+      scoped_refptr<InputContext> input_context,
       FeatureListQueryProcessor::FeatureProcessorCallback callback);
   virtual ~FeatureProcessorState();
 
@@ -57,9 +59,13 @@ class FeatureProcessorState {
 
   base::Time prediction_time() const { return prediction_time_; }
 
-  OptimizationTarget segment_id() const { return segment_id_; }
+  SegmentId segment_id() const { return segment_id_; }
 
   bool error() const { return error_; }
+
+  const scoped_refptr<InputContext> input_context() const {
+    return input_context_;
+  }
 
   // Returns and pops the next input feature or output feature, wrapped inside
   // `Data` structure. Return an empty struct if no input and output are
@@ -80,11 +86,18 @@ class FeatureProcessorState {
   // Update the input tensor vector.
   void AppendTensor(const std::vector<ProcessedValue>& data, bool is_input);
 
+  // For testing only.
+  void set_input_context_for_testing(
+      scoped_refptr<InputContext> input_context) {
+    input_context_ = input_context;
+  }
+
  private:
   const base::Time prediction_time_;
   const base::TimeDelta bucket_duration_;
-  const OptimizationTarget segment_id_;
+  const SegmentId segment_id_;
   std::deque<Data> data_;
+  scoped_refptr<InputContext> input_context_;
 
   // Feature processing results.
   std::vector<float> input_tensor_;

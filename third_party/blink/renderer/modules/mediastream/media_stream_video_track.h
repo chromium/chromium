@@ -88,6 +88,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   void StopAndNotify(base::OnceClosure callback) override;
   void GetSettings(MediaStreamTrackPlatform::Settings& settings) override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
+  void AddCropVersionCallback(uint32_t crop_version,
+                              base::OnceClosure callback) override;
+  void RemoveCropVersionCallback(uint32_t crop_version) override;
 
   // Add |sink| to receive state changes on the main render thread and video
   // frames in the |callback| method on the IO-thread.
@@ -96,6 +99,12 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
                const VideoCaptureDeliverFrameCB& callback,
                MediaStreamVideoSink::IsSecure is_secure,
                MediaStreamVideoSink::UsesAlpha uses_alpha);
+  // Sets |sink|'s dropped frame notification callback which will receive calls
+  // on the IO thread. |callback| will be reset on the render thread.
+  // Note: the method needs to be called after a sink has been added.
+  void SetSinkNotifyFrameDroppedCallback(
+      WebMediaStreamSink* sink,
+      const VideoCaptureNotifyFrameDroppedCB& callback);
   void RemoveSink(WebMediaStreamSink* sink);
 
   // Returns the number of currently connected sinks.

@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SessionMetricsFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html"));
   RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::XR_WebXR_Session::kEntryName);

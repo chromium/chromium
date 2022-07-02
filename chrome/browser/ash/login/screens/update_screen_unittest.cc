@@ -15,13 +15,13 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,15 +76,14 @@ class UpdateScreenUnitTest : public testing::Test {
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     PowerManagerClient::InitializeFake();
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::Initialize();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
-    mock_error_screen_ = std::make_unique<MockErrorScreen>(&mock_error_view_);
+    mock_error_screen_ =
+        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
 
     // Ensure proper behavior of UpdateScreen's supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
@@ -104,6 +103,7 @@ class UpdateScreenUnitTest : public testing::Test {
     network_portal_detector::Shutdown();
     network_handler_test_helper_.reset();
     PowerManagerClient::Shutdown();
+    UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

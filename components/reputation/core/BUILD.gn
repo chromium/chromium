@@ -29,6 +29,7 @@ source_set("unit_tests") {
   sources = [ "safety_tips_config_unittest.cc" ]
   deps = [
     ":core",
+    ":proto",
     "//testing/gtest",
     "//url",
   ]

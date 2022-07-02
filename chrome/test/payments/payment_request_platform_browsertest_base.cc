@@ -121,7 +121,7 @@ void PaymentRequestPlatformBrowserTestBase::
             std::pair<const std::string&, net::EmbeddedTestServer*>>&
             payment_methods) {
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
-      payment_methods, GetActiveWebContents()->GetMainFrame());
+      payment_methods, GetActiveWebContents()->GetPrimaryMainFrame());
 }
 
 void PaymentRequestPlatformBrowserTestBase::OnCanMakePaymentCalled() {

@@ -65,7 +65,7 @@ class FileSystemBrowserTest : public ContentBrowserTest,
 
  protected:
   bool is_incognito_;
-  raw_ptr<Shell> browser_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FileSystemBrowserTest, ::testing::Bool());

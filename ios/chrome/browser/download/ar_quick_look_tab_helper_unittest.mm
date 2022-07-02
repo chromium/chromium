@@ -18,8 +18,8 @@
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"
-#import "net/url_request/url_fetcher_response_writer.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -34,6 +34,9 @@ const char kHistogramName[] = "Download.IOSDownloadARModelState.USDZ";
 const char kUrl[] = "https://test.test/";
 const char kUrlDisallowingScaling[] =
     "https://test.test/#allowsContentScaling=0";
+const char kUrlWithCanonicalWebPageUrl[] =
+    "https://test.test/#canonicalWebPageURL=https%3A%2F%2Fwww.google.com";
+const char kCanonicalWebPageUrlValue[] = "https://www.google.com";
 
 const base::FilePath::CharType kTestSuggestedFileName[] =
     FILE_PATH_LITERAL("important_file.zip");
@@ -83,6 +86,7 @@ TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
   EXPECT_TRUE(delegate().allowsContentScaling);
+  EXPECT_FALSE(delegate().canonicalWebPageURL);
 
   // Downloaded file should be located in download directory.
   base::FilePath file = task_ptr->GetResponsePath();
@@ -123,6 +127,7 @@ TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
   EXPECT_TRUE(delegate().allowsContentScaling);
+  EXPECT_FALSE(delegate().canonicalWebPageURL);
 
   // Downloaded file should be located in download directory.
   base::FilePath file = task_ptr->GetResponsePath();
@@ -165,6 +170,7 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
   EXPECT_FALSE(delegate().allowsContentScaling);
+  EXPECT_FALSE(delegate().canonicalWebPageURL);
 
   // Downloaded file should be located in download directory.
   base::FilePath file = task_ptr->GetResponsePath();
@@ -226,6 +232,7 @@ TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
   EXPECT_EQ(1U, delegate().fileURLs.count);
   EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
   EXPECT_TRUE(delegate().allowsContentScaling);
+  EXPECT_FALSE(delegate().canonicalWebPageURL);
 
   // Downloaded file should be located in download directory.
   base::FilePath file = task_ptr->GetResponsePath();
@@ -284,6 +291,50 @@ TEST_P(ARQuickLookTabHelperTest, AllowContentScalingEqualToRandomValue) {
 
   task_ptr->SetDone(true);
   EXPECT_TRUE(delegate().allowsContentScaling);
+}
+
+// Tests successfully downloading a USDZ file when the specified URL includes
+// a canonical url to use when presenting the share sheet.
+TEST_P(ARQuickLookTabHelperTest, CanonicalWebPageURL) {
+  auto task = std::make_unique<web::FakeDownloadTask>(
+      GURL(kUrlWithCanonicalWebPageUrl), GetParam());
+  task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
+  web::FakeDownloadTask* task_ptr = task.get();
+
+  {
+    web::test::WaitDownloadTaskUpdated observer(task_ptr);
+    tab_helper()->Download(std::move(task));
+    observer.Wait();
+  }
+
+  task_ptr->SetDone(true);
+  EXPECT_EQ(1U, delegate().fileURLs.count);
+  EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
+  EXPECT_TRUE(delegate().allowsContentScaling);
+  EXPECT_NSEQ(delegate().canonicalWebPageURL,
+              net::NSURLWithGURL(GURL(kCanonicalWebPageUrlValue)));
+
+  // Downloaded file should be located in download directory.
+  base::FilePath file = task_ptr->GetResponsePath();
+  base::FilePath download_dir;
+  ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
+  EXPECT_TRUE(download_dir.IsParent(file));
+
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kCreated),
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kStarted),
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kSuccessful),
+      1);
 }
 
 // Tests replacing the download task before it make any progress.

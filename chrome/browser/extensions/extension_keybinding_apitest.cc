@@ -170,8 +170,7 @@ void SendKeyPressToAction(Browser* browser,
                           ui::KeyboardCode keyboard_code,
                           const char* event_name,
                           bool expect_dispatch) {
-  ExtensionTestMessageListener click_listener("clicked",
-                                              false);  // Won't reply.
+  ExtensionTestMessageListener click_listener("clicked");
   click_listener.set_extension_id(extension.id());
 
   Profile* profile = browser->profile();
@@ -328,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
 
   EXPECT_FALSE(IsGrantedForTab(extension, tab));
 
-  ExtensionTestMessageListener test_listener(false);  // Won't reply.
+  ExtensionTestMessageListener test_listener;  // Won't reply.
   // Activate the browser action shortcut (Ctrl+Shift+F).
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_F, true, true, false, false));
@@ -453,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, PageActionOverrideChromeShortcut) {
   SetActionVisibleOnTab(profile(), *extension, tab_id);
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
-  ExtensionTestMessageListener test_listener(false);  // Won't reply.
+  ExtensionTestMessageListener test_listener;  // Won't reply.
   test_listener.set_extension_id(extension->id());
 
   // Note: The following incantation uses too many custom bits to comfortably
@@ -502,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, DontOverwriteSystemShortcuts) {
       browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   // Activate the regular shortcut (Alt+Shift+F).
-  ExtensionTestMessageListener alt_shift_f_listener("alt_shift_f", false);
+  ExtensionTestMessageListener alt_shift_f_listener("alt_shift_f");
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_F, false, true, true, false));
   EXPECT_TRUE(alt_shift_f_listener.WaitUntilSatisfied());
@@ -513,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, DontOverwriteSystemShortcuts) {
   // and listening for both. If, by the time we receive the Alt+Shift+F
   // response, we haven't received a response for Ctrl+F, it is safe to say we
   // won't receive one.
-  ExtensionTestMessageListener ctrl_f_listener("ctrl_f", false);
+  ExtensionTestMessageListener ctrl_f_listener("ctrl_f");
   alt_shift_f_listener.Reset();
   // Send Ctrl+F.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, true,
@@ -548,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
       browser(), embedded_test_server()->GetURL(
                      "/extensions/test_file_with_ctrl-d_keybinding.html")));
 
-  ExtensionTestMessageListener test_listener(false);  // Won't reply.
+  ExtensionTestMessageListener test_listener;
   // Activate the shortcut (Ctrl+D) which should be handled by the extension.
   ASSERT_TRUE(SendBookmarkKeyPressSync(browser()));
   EXPECT_TRUE(test_listener.WaitUntilSatisfied());
@@ -1125,7 +1124,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
                      base::StringPrintf(kBackgroundScriptTemplate,
                                         GetAPINameForActionType(action_type)));
 
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1139,7 +1138,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
     ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   }
 
-  ExtensionTestMessageListener click_listener("clicked", /*will_reply=*/false);
+  ExtensionTestMessageListener click_listener("clicked");
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_U, false,
                                               true, true, false));
   EXPECT_TRUE(click_listener.WaitUntilSatisfied());

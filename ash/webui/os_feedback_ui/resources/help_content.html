@@ -1,24 +1,34 @@
 <style>
+  .help-content-label {
+    color: var(--cros-text-color-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 24px 0 0;
+  }
+
   .help-item {
     display: flex;
     margin:  12px 0 0;
   }
 
-  iron-icon {
-    padding-inline-end: 12px;
+  .help-item a {
+    color: var(--cros-text-color-primary);
+    font-size: 13px;
+    text-decoration: none;
   }
 
-  #helpContentLabel {
-    margin: 24px 0 0;
+  .help-item-icon {
+    padding-inline-end: 12px;
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
   }
 </style>
 <div id="helpContentContainer">
-  <p id="helpContentLabel">[[getLabel_(searchResult)]]</p>
+  <h2 class="help-content-label">[[getLabel_(searchResult)]]</h2>
   <dom-repeat items="[[searchResult.contentList]]">
     <template>
       <div class="help-item">
         <a href="[[getUrl_(item)]]" target="_blank">
-          <iron-icon icon="[[getIcon_(item.contentType)]]"></iron-icon>
+          <iron-icon icon="[[getIcon_(item.contentType)]]" class="help-item-icon"></iron-icon>
           <span>[[getTitle_(item)]]</span>
         </a>
       </div>

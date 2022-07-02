@@ -51,7 +51,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)
 public class RequestDesktopSiteTest {
     private static final String URL_1 = "https://www.chromium.org/";
     private static final String URL_2 = "https://www.example.com/";

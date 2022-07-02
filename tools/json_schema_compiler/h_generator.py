@@ -343,7 +343,7 @@ class _Generator(object):
     (c.Sblock('struct Params {')
       .Append('static std::unique_ptr<Params> Create(%s);' %
                   self._GenerateParams(
-                      ('const base::Value::ConstListView& args',)))
+                      ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
       .Append('~Params();')
@@ -441,7 +441,7 @@ class _Generator(object):
         c.Comment(param.description)
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
-    c.Append('std::vector<base::Value> Create(%s);' %
+    c.Append('base::Value::List Create(%s);' %
              ', '.join(declaration_list))
     return c
 

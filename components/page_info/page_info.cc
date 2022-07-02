@@ -42,8 +42,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #endif
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
 #include "components/safe_browsing/buildflags.h"
@@ -421,7 +419,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
 
   if (web_contents_) {
     ukm::builders::PageInfoBubble(
-        web_contents_->GetMainFrame()->GetPageUkmSourceId())
+        web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId())
         .SetActionTaken(action)
         .Record(ukm::UkmRecorder::Get());
   }
@@ -1067,9 +1065,11 @@ void PageInfo::PresentSitePermissions() {
             delegate_->GetPermissionStatus(permission_info.type, site_url_);
       } else if (permission_info.type ==
                  ContentSettingsType::FEDERATED_IDENTITY_API) {
-        permission_result =
+        absl::optional<permissions::PermissionResult> embargo_result =
             delegate_->GetPermissionDecisionAutoblocker()->GetEmbargoResult(
                 site_url_, permission_info.type);
+        if (embargo_result)
+          permission_result = *embargo_result;
       }
 
       // If under embargo, update |permission_info| to reflect that.
@@ -1137,10 +1137,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
 void PageInfo::PresentSiteData(base::OnceClosure done) {
   auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    SCOPED_CRASH_KEY_STRING256("page_info", "site_scheme", site_url_.scheme());
-    base::debug::DumpWithoutCrashing();
-  } else {
+  if (settings) {
     settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
         base::BindOnce(&PageInfo::PresentSiteDataInternal,
                        weak_factory_.GetWeakPtr(), std::move(done)));
@@ -1291,7 +1288,7 @@ PageInfo::GetPageSpecificContentSettings() const {
   // anything?
   DCHECK(web_contents_);
   return content_settings::PageSpecificContentSettings::GetForFrame(
-      web_contents_->GetMainFrame());
+      web_contents_->GetPrimaryMainFrame());
 }
 
 bool PageInfo::HasContentSettingChangedViaPageInfo(ContentSettingsType type) {

@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockNonsecureURL));
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
   EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(
       location_bar_view->location_icon_view()->GetText(), "not secure"));
 }
 
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_FALSE(geolocation_icon.GetVisible());
 
   // Query current position, and wait for the query to complete.
-  content::RenderFrameHost* rfh_a = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh_a = web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ("received", EvalJs(rfh_a, R"(
       new Promise(resolve => {
         navigator.geolocation.getCurrentPosition(() => resolve('received'));
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   // 2) Navigate away to B.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  content::RenderFrameHost* rfh_b = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh_b = web_contents()->GetPrimaryMainFrame();
 
   // Geolocation icon should be off after navigation.
   EXPECT_FALSE(geolocation_icon.GetVisible());
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_a|.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_EQ(web_contents()->GetMainFrame(), rfh_a);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), rfh_a);
   EXPECT_EQ(rfh_b->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_b|.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_EQ(web_contents()->GetMainFrame(), rfh_b);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), rfh_b);
 
   // Geolocation icon should be off.
   EXPECT_FALSE(geolocation_icon.GetVisible());

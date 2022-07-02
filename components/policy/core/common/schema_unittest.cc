@@ -841,13 +841,13 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema.GetProperty("ArrayOfObjects");
     ASSERT_TRUE(subschema.valid());
-    base::ListValue root;
-    base::Value::ListView root_view = root.GetListDeprecated();
+    base::Value root(base::Value::Type::LIST);
+    base::Value::List& root_list = root.GetList();
 
     // Unknown property.
     base::Value dict_value(base::Value::Type::DICTIONARY);
     dict_value.SetBoolKey("three", true);
-    root.Append(std::move(dict_value));
+    root_list.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
@@ -855,12 +855,12 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          true);
     TestSchemaValidationWithPath(subschema, root, "items[0]");
-    root.EraseListIter(root_view.begin() + (root_view.size() - 1));
+    root_list.erase(root_list.end() - 1);
 
     // Invalid property.
     dict_value = base::Value(base::Value::Type::DICTIONARY);
     dict_value.SetBoolKey("two", true);
-    root.Append(std::move(dict_value));
+    root_list.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -868,7 +868,6 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
     TestSchemaValidationWithPath(subschema, root, "items[0].two");
-    root.EraseListIter(root_view.begin() + (root_view.size() - 1));
   }
 
   // Tests on ObjectOfArray.

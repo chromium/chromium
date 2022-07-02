@@ -51,8 +51,8 @@ namespace touch_adjustment {
 const float kZeroTolerance = 1e-6f;
 // The touch adjustment range (diameters) in dip, using same as the value in
 // gesture_configuration_android.cc
-constexpr float kMaxAdjustmentSizeDip = 32.f;
-constexpr float kMinAdjustmentSizeDip = 20.f;
+constexpr LayoutUnit kMaxAdjustmentSizeDip(32);
+constexpr LayoutUnit kMinAdjustmentSizeDip(20);
 
 // Class for remembering absolute quads of a target node and what node they
 // represent.
@@ -133,7 +133,7 @@ bool ProvidesContextMenuItems(Node* node) {
   if (!node->GetLayoutObject())
     return false;
   node->GetDocument().UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*node))
+  if (IsEditable(*node))
     return true;
   if (node->IsLink())
     return true;
@@ -308,13 +308,13 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
     if (editable_ancestors.Contains(candidate))
       continue;
     candidate->GetDocument().UpdateStyleAndLayoutTree();
-    if (HasEditableStyle(*candidate)) {
+    if (IsEditable(*candidate)) {
       Node* replacement = candidate;
       Node* parent = candidate->ParentOrShadowHostNode();
 
       // Ignore parents without layout objects.  E.g. editable elements with
       // display:contents.  https://crbug.com/1196872
-      while (parent && HasEditableStyle(*parent) && parent->GetLayoutObject()) {
+      while (parent && IsEditable(*parent) && parent->GetLayoutObject()) {
         replacement = parent;
         if (editable_ancestors.Contains(replacement)) {
           replacement = nullptr;

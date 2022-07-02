@@ -92,13 +92,6 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
                   const base::android::JavaParamRef<jstring>& j_name,
                   const base::android::JavaParamRef<jobject>& j_callback);
 
-  void ChangeSchedule(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj,
-                      const base::android::JavaParamRef<jstring>& j_namespace,
-                      const base::android::JavaParamRef<jstring>& j_id,
-                      jboolean j_only_on_wifi,
-                      jlong j_start_time_ms);
-
  private:
   OfflineContentAggregatorBridge(OfflineContentAggregator* aggregator);
 

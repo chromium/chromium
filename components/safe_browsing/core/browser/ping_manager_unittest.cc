@@ -5,6 +5,7 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -34,7 +35,8 @@ class PingManagerTest : public testing::Test {
 
     ping_manager_.reset(
         new PingManager(safe_browsing::GetTestV4ProtocolConfig(), nullptr,
-                        nullptr, base::BindRepeating([]() { return false; })));
+                        nullptr, base::BindRepeating([]() { return false; }),
+                        nullptr, nullptr, base::NullCallback()));
   }
 
   PingManager* ping_manager() { return ping_manager_.get(); }
@@ -211,6 +213,14 @@ TEST_F(PingManagerTest, TestThreatDetailsUrl) {
       "client=unittest&appver=1.0&pver=4.0" +
           key_param_,
       ping_manager()->ThreatDetailsUrl().spec());
+}
+
+TEST_F(PingManagerTest, TestReportThreatDetails_EmptyReport) {
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  PingManager::ReportThreatDetailsResult result =
+      ping_manager()->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::EMPTY_REPORT);
 }
 
 }  // namespace safe_browsing

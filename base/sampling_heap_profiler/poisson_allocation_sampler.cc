@@ -344,8 +344,8 @@ void InstallStandardAllocatorHooks() {
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-  PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
-                                        &PartitionFreeHook);
+  partition_alloc::PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
+                                                         &PartitionFreeHook);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
 }
 
@@ -355,7 +355,7 @@ void RemoveStandardAllocatorHooksForTesting() {
       &g_allocator_dispatch);  // IN-TEST
 #endif
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-  PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
+  partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
 #endif
 }
 
@@ -578,7 +578,9 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     }
   }
 
-  size_t samples = accumulated_bytes / mean_interval;
+  // This cast is safe because this function is only called with a positive
+  // value of `accumulated_bytes`.
+  size_t samples = static_cast<size_t>(accumulated_bytes) / mean_interval;
   accumulated_bytes %= mean_interval;
 
   do {

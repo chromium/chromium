@@ -110,7 +110,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
                         content::RenderProcessHost** target_host,
                         content::WebContents* guest_contents) {
       *guests_found = *guests_found + 1;
-      *target_host = guest_contents->GetMainFrame()->GetProcess();
+      *target_host = guest_contents->GetPrimaryMainFrame()->GetProcess();
       // Don't short-circuit, so we can count how many other guest contents
       // there are.
       return false;
@@ -179,7 +179,8 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
     return nullptr;
   }
 
-  content::RenderProcessHost* rph = contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* rph =
+      contents->GetPrimaryMainFrame()->GetProcess();
   if (!rph) {
     *error = "Failed to get RPH.";
   }

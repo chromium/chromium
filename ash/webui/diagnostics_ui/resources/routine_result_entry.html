@@ -26,16 +26,12 @@
     width: auto;
   }
 
-  .entryRow {
+  .entry-row {
     align-items: center;
     column-gap: 16px;
     display: grid;
     grid-template-columns: minmax(56px, auto) 1fr;
     height: 40px;
-  }
-
-  .green {
-    border-left: 1px dashed var(--cros-color-positive);
   }
 
   .line {
@@ -48,38 +44,39 @@
     position: absolute;
   }
 
+  .green {
+    border-inline-start: 1px dashed var(--cros-color-positive);
+  }
+
   .red {
-    border-left: 1px dashed var(--cros-color-alert);
+    border-inline-start: 1px dashed var(--cros-color-alert);
     position: relative;
   }
 
+  .yellow {
+    border-inline-start: 1px dashed var(--cros-color-warning);
+  }
+
   #routine {
-    @apply --diagnostics-routine-name-font;
     align-items: center;
+    color: var(--cros-text-color-primary);
     display: inline-flex;
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
   }
 
-  .failedTestTextContainer {
-    margin-left: 8px;
-  }
-
-  .routineLink {
-    --iron-icon-fill-color: var(--cros-icon-color-primary);
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
+  .failed-test-text-container {
+    margin-inline-start: 8px;
   }
 
   #status {
     z-index: 1;
   }
 
-  .yellow {
-    border-left: 1px dashed #F9AB00;
-  }
-
-  #failedTestText {
-    color: #5F6368;
-    margin-left: 12px;
+  #failed-test-text {
+    color: var(--cros-text-color-secondary);
+    margin-inline-start: 12px;
   }
 
   @keyframes fadeInLine1 {
@@ -115,7 +112,7 @@
     }
   }
 </style>
-<div class="entryRow">
+<div class="entry-row">
   <div class="badge-container">
     <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
         aria-labelledby="routine">
@@ -131,7 +128,7 @@
  </div>
   <div id="routine" aria-hidden="true">
     <span tabindex="0">[[routineType_]]</span>
-    <span id="failedTestText" class="failedTestTextContainer"
+    <span id="failed-test-text" class="failed-test-text-container"
         hidden$="[[!item.failedTest]]"
         tabindex="0">
       [[computeFailedTestText_(item.failedTest)]]

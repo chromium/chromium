@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TEST_EXTENSION_EVENT_OBSERVER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TEST_EXTENSION_EVENT_OBSERVER_H_
 
+#include "base/values.h"
 #include "extensions/browser/test_event_router.h"
 
 class GURL;
@@ -38,7 +39,7 @@ class TestExtensionEventObserver
 
  private:
   // The arguments passed for the last observed event.
-  base::Value latest_event_args_;
+  base::Value::List latest_event_args_;
   std::string latest_event_name_;
 };
 

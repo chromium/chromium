@@ -51,10 +51,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -102,22 +104,6 @@ class FakeIconLoader : public apps::IconLoader {
 
     std::move(callback).Run(std::move(iv));
     return nullptr;
-  }
-
-  std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr mojom_icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override {
-    auto icon_key = apps::ConvertMojomIconKeyToIconKey(mojom_icon_key);
-    return LoadIconFromIconKey(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
-        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-        allow_placeholder_icon,
-        apps::IconValueToMojomIconValueCallback(std::move(callback)));
   }
 };
 
@@ -242,7 +228,8 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
   views::Checkbox* remember_selection_checkbox() {
-    return intent_picker_bubble()->remember_selection_checkbox_;
+    return static_cast<views::Checkbox*>(intent_picker_bubble()->GetViewByID(
+        IntentPickerBubbleView::ViewId::kRememberCheckbox));
   }
 
   // TODO(crbug.com/1265991): There should be an explicit signal we can wait on
@@ -324,6 +311,20 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     return web_app::AppBrowserController::IsForWebApp(app_browser, app_id);
   }
 
+  size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
+    return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+        ->children()
+        .size();
+  }
+
+  views::View* GetButtonAtIndex(IntentPickerBubbleView* bubble, size_t index) {
+    auto children =
+        bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+            ->children();
+    CHECK_LT(index, children.size());
+    return children[index];
+  }
+
   GURL InScopeAppUrl() {
     return embedded_test_server()->GetURL("/web_apps/site_a/basic.html");
   }
@@ -366,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -522,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
 
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -561,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_FALSE(intent_picker_bubble());
 
   ClickIconToShowBubble();
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -596,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -620,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_FALSE(intent_picker_bubble());
 
   ClickIconToShowBubble();
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& new_app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, new_app_info.size());
   EXPECT_EQ(app_id, new_app_info[0].launch_name);
@@ -640,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto* bubble_1 = intent_picker_bubble();
   ASSERT_TRUE(bubble_1);
   EXPECT_TRUE(bubble_1->GetVisible());
-  EXPECT_EQ(2U, bubble_1->GetScrollViewSize());
+  EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
 
   WidgetDestroyedWaiter bubble_1_waiter(bubble_1->GetWidget());
 
@@ -648,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto* bubble_2 = intent_picker_bubble();
   ASSERT_TRUE(bubble_2);
   EXPECT_TRUE(bubble_2->GetVisible());
-  EXPECT_EQ(2U, bubble_2->GetScrollViewSize());
+  EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   // Bubble 1 should be fully destroyed after the second bubble appears.
   bubble_1_waiter.WaitForDestroyed();
 
@@ -658,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto* bubble_3 = intent_picker_bubble();
   ASSERT_TRUE(bubble_3);
   EXPECT_TRUE(bubble_3->GetVisible());
-  EXPECT_EQ(2U, bubble_3->GetScrollViewSize());
+  EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   // Bubble 2 should be fully destroyed after the third bubble appears.
   bubble_2_waiter.WaitForDestroyed();
 }
@@ -690,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -729,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -779,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
   ClickIconToShowBubble();
-  EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(app_id, app_info[0].launch_name);
@@ -873,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(2U, app_info.size());
   const apps::IntentPickerAppInfo* pwa_app_info;
@@ -886,10 +887,12 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
     arc_app_info = &app_info[0];
 
     // Select the PWA when it is not automatically selected.
-    intent_picker_bubble()->PressButtonForTesting(
-        /* index= */ 1,
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0));
+    auto event_generator = ui::test::EventGenerator(
+        views::GetRootWindow(intent_picker_bubble()->GetWidget()));
+    event_generator.MoveMouseTo(GetButtonAtIndex(intent_picker_bubble(), 1)
+                                    ->GetBoundsInScreen()
+                                    .CenterPoint());
+    event_generator.ClickLeftButton();
   }
 
   EXPECT_EQ(app_id_pwa, pwa_app_info->launch_name);
@@ -960,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_view->GetVisible());
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(2U, intent_picker_bubble()->GetScrollViewSize());
+  EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(2U, app_info.size());
   const apps::IntentPickerAppInfo* pwa_app_info;
@@ -970,10 +973,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
     arc_app_info = &app_info[1];
 
     // Select the ARC app when it is not automatically selected.
-    intent_picker_bubble()->PressButtonForTesting(
-        /* index= */ 1,
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0));
+    auto event_generator = ui::test::EventGenerator(
+        views::GetRootWindow(intent_picker_bubble()->GetWidget()));
+
+    event_generator.MoveMouseTo(GetButtonAtIndex(intent_picker_bubble(), 1)
+                                    ->GetBoundsInScreen()
+                                    .CenterPoint());
+    event_generator.ClickLeftButton();
   } else {
     pwa_app_info = &app_info[1];
     arc_app_info = &app_info[0];

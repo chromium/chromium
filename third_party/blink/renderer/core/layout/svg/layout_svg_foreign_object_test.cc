@@ -395,4 +395,16 @@ TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
   EXPECT_EQ(parent_g.StrokeBoundingBox(), gfx::RectF(6, 5, 100, 50));
 }
 
+// crbug.com/1335655
+TEST_F(LayoutSVGForeignObjectTest, SetNeedsCollectInlines) {
+  SetBodyInnerHTML(R"HTML(
+    <svg><foreignObject id="target">abc</foreignObject></svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = GetElementById("target");
+  target->setAttribute("unicode-bidi", "bidi-override");
+  GetDocument().body()->innerText();
+  // Pass if no crash.
+}
+
 }  // namespace blink

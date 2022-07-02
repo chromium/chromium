@@ -99,6 +99,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // Returns the RenderViewImpl for the given routing ID.
   static RenderViewImpl* FromRoutingID(int routing_id);
 
+  // Returns the RenderViewImpl for the given blink::WebView.
+  static RenderViewImpl* FromWebView(blink::WebView* web_view);
+
   // blink::WebViewClient implementation --------------------------------------
 
   blink::WebView* CreateView(
@@ -110,11 +113,12 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
-      const absl::optional<blink::Impression>& impression) override;
+      const absl::optional<blink::Impression>& impression,
+      const absl::optional<blink::WebPictureInPictureWindowOptions>&
+          pip_options) override;
 
   // RenderView implementation -------------------------------------------------
 
-  int GetRoutingID() override;
   blink::WebView* GetWebView() override;
 
   // Please do not add your stuff randomly to the end here. If there is an

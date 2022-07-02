@@ -52,7 +52,10 @@ namespace blink {
 TransferredMediaStreamTrack::TransferredMediaStreamTrack(
     ExecutionContext* execution_context,
     const TransferredValues& data)
-    : execution_context_(execution_context), data_(data) {}
+    : transferred_component_(
+          MakeGarbageCollected<TransferredMediaStreamComponent>()),
+      execution_context_(execution_context),
+      data_(data) {}
 
 String TransferredMediaStreamTrack::kind() const {
   if (track_) {
@@ -172,23 +175,44 @@ CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
 
 ScriptPromise TransferredMediaStreamTrack::applyConstraints(
     ScriptState* script_state,
-    const MediaTrackConstraints* constrints) {
+    const MediaTrackConstraints* constraints) {
   if (track_) {
-    return track_->applyConstraints(script_state, constrints);
+    return track_->applyConstraints(script_state, constraints);
   }
-  // TODO(https://crbug.com/1288839): return a promise which resolves once
-  // track_ is set.
-  return ScriptPromise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  applyConstraints(resolver, constraints);
+  return promise;
+}
+
+void TransferredMediaStreamTrack::applyConstraints(
+    ScriptPromiseResolver* resolver,
+    const MediaTrackConstraints* constraints) {
+  constraints_list_.push_back(std::make_pair(resolver, constraints));
 }
 
 void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   track_ = track;
-  // TODO(https://crbug.com/1288839): Replay mutations which have happened
-  // before this point.
+  transferred_component_.Clear();
+
+  // Replaying mutations which happened before this point.
+  for (auto it : constraints_list_) {
+    track->applyConstraints(it.first, it.second);
+  }
+  constraints_list_.clear();
 
   // Set up an EventPropagator helper to forward any events fired on track so
   // that they're re-dispatched to anything that's listening on this.
   event_propagator_ = MakeGarbageCollected<EventPropagator>(track, this);
+
+  // Observers may dispatch events which create and add new Observers. Such
+  // observers are added directly to the implementation track since track_ is
+  // now set.
+  for (auto observer : observers_) {
+    observer->TrackChangedState();
+    track_->AddObserver(observer);
+  }
+  observers_.clear();
 }
 
 void TransferredMediaStreamTrack::SetConstraints(
@@ -211,8 +235,7 @@ MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
   if (track_) {
     return track_->Component();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return nullptr;
+  return transferred_component_;
 }
 
 bool TransferredMediaStreamTrack::Ended() const {
@@ -304,9 +327,9 @@ void TransferredMediaStreamTrack::CloseFocusWindowOfOpportunity() {
 void TransferredMediaStreamTrack::AddObserver(Observer* observer) {
   if (track_) {
     track_->AddObserver(observer);
+  } else {
+    observers_.insert(observer);
   }
-  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
-  // initialized.
 }
 
 TransferredMediaStreamTrack::EventPropagator::EventPropagator(
@@ -335,9 +358,11 @@ void TransferredMediaStreamTrack::EventPropagator::Trace(
 
 void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
   MediaStreamTrack::Trace(visitor);
+  visitor->Trace(transferred_component_);
   visitor->Trace(track_);
   visitor->Trace(execution_context_);
   visitor->Trace(event_propagator_);
+  visitor->Trace(observers_);
 }
 
 }  // namespace blink

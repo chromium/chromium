@@ -55,6 +55,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
                              kWindowStateTypeKey,
                              WindowStateType::kDefault)
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowFloatTypeKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowToggleFloatKey, false)
 
 }  // namespace chromeos

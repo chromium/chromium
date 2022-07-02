@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/common/x_callback_url.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 
@@ -126,13 +128,18 @@ const char kRequestIDKey[] = "requestId";
     return;
   }
 
+  web::WebFrame* mainFrame = web::GetMainFrame(webState);
+  if (!mainFrame) {
+    return;
+  }
+
   // If the URLs match and the page URL is trusted, inject the response JS.
   web::URLVerificationTrustLevel trustLevel =
       web::URLVerificationTrustLevel::kNone;
   GURL currentTabURL = webState->GetCurrentURL(&trustLevel);
   if (trustLevel == web::URLVerificationTrustLevel::kAbsolute &&
       GURL(base::SysNSStringToUTF8(originalTabURL)) == currentTabURL) {
-    webState->ExecuteJavaScript([self JSStringFromReponseURL:U2FURL]);
+    mainFrame->ExecuteJavaScript([self JSStringFromReponseURL:U2FURL]);
   }
 
   // Remove bookkept URL for returned U2F call.

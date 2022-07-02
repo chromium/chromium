@@ -69,7 +69,7 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
   message_->SetIconResourceId(icon_resource_id);
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message_->SetSecondaryActionCallback(base::BindOnce(
+  message_->SetSecondaryActionCallback(base::BindRepeating(
       &TailoredSecurityConsentedModalAndroid::HandleSettingsClicked,
       base::Unretained(this)));
 

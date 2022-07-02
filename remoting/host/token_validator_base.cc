@@ -150,7 +150,7 @@ const std::string& TokenValidatorBase::token_scope() const {
   return token_scope_;
 }
 
-// URLFetcherDelegate interface.
+// URLRequest::Delegate interface.
 void TokenValidatorBase::OnResponseStarted(net::URLRequest* source,
                                            int net_result) {
   DCHECK_NE(net_result, net::ERR_IO_PENDING);

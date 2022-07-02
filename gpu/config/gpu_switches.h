@@ -19,6 +19,7 @@ GPU_EXPORT extern const char kIgnoreGpuBlocklist[];
 GPU_EXPORT extern const char kShaderDiskCacheSizeKB[];
 GPU_EXPORT extern const char kDisableGpuProcessForDX12InfoCollection[];
 GPU_EXPORT extern const char kEnableUnsafeWebGPU[];
+GPU_EXPORT extern const char kEnableWebGPUDeveloperFeatures[];
 GPU_EXPORT extern const char kEnableDawnBackendValidation[];
 GPU_EXPORT extern const char kUseWebGPUAdapter[];
 GPU_EXPORT extern const char kEnableDawnFeatures[];

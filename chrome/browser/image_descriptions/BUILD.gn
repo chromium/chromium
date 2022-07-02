@@ -57,13 +57,12 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
     "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsControllerTest.java",
     "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialogTest.java",
-    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsSettingsTest.java",
   ]
 
   deps = [
@@ -74,7 +73,6 @@ android_library("javatests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
@@ -91,5 +89,34 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsSettingsTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/device:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

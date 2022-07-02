@@ -2076,7 +2076,7 @@ Try tapping the mic to ask me anything.
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
-        Personalization
+        Wallpaper &amp; style
       </message>
       <message name="IDS_PERSONALIZATION_APP_WALLPAPER_LABEL" desc="Label for wallpaper element in personalization hub">
         Wallpaper
@@ -2097,10 +2097,10 @@ Try tapping the mic to ask me anything.
         Google Photos
       </message>
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ERROR" desc="Message for the error shown when something goes wrong in the Google Photos page in the wallpaper app.">
-        Something went wrong.
+        Couldn’t load images. Check your network connection or try loading the images again.
       </message>
-      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_RETRY" desc="Message for the retry button shown when something goes wrong in the Google Photos page in the wallpaper app.">
-        Retry
+      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_TRY_AGAIN" desc="Message for the try again button shown when something goes wrong in the Google Photos page in the wallpaper app.">
+        Try again
       </message>
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB" desc="Label for the Albums tab in the Google Photos page in the wallpaper app.">
         Albums
@@ -2151,7 +2151,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING" desc="Aria label for wallpaper collection while it is still loading and unable to be selected">
         Loading
       </message>
-      <message name="IDS_PERSONALIZATION_APP_NETWORK_ERROR" desc="Label for the error page when wallpaper information cannot be downloaded">
+      <message name="IDS_PERSONALIZATION_APP_WALLPAPER_NETWORK_ERROR" desc="Error message displayed when wallpaper information cannot be downloaded">
         Please connect to a network and reload the page to view wallpaper.
       </message>
       <message name="IDS_PERSONALIZATION_APP_LOAD_WALLPAPER_ERROR" desc="Label for the error toast notification when loading current wallpaper failed">
@@ -2193,6 +2193,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO" desc="Label for the button to take a webcam photo">
         Take a photo
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_WEBCAM_VIDEO" desc="Aria label for the webcam video feed">
+        Webcam video feed
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO" desc="Label for the button to take a short webcam video">
         Create a looping video
       </message>
@@ -2202,11 +2205,21 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO" desc="Label for the button to confirm webcam video">
         Use this video
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CAPTURE_IN_PROGRESS" desc="Label to indicate a webcam video capture is in progress">
+        Taking video
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
         Retake
       </message>
-      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
-        Screensaver
+      <message name="IDS_PERSONALIZATION_APP_ARIA_ANNOUNCE_AVATAR_CHANGED" desc="Text read out by the screen reader after the user avatar image changes">
+        Avatar image changed
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_CLOSE_CAMERA" desc="Aria label for the button to close the webcam interface modal">
+        Close the camera
+      </message>
+
+      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screen saver page in Personalization app.">
+        Screen saver
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
         When your screen is idle, show photos, time, weather, and media info.
@@ -2244,6 +2257,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_TITLE" desc="Label for the radio button group of ambient mode weather unit.">
         Weather
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_DESCRIPTION_AMBIENT_MODE_WEATHER" desc="Aria description for the radio button group of ambient mode weather unit.">
+        Select a temperature unit
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT" desc="Label for the radio button to choose weather unit as Fahrenheit.">
         Fahrenheit
       </message>
@@ -2278,7 +2294,7 @@ Try tapping the mic to ask me anything.
         Got it
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE" desc="Label for the ambient mode animation section.">
-        Screensaver animation
+        Screen saver animation
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_SLIDESHOW_LABEL" desc="Label for the ambient mode slideshow animation.">
         Slide show
@@ -2290,16 +2306,19 @@ Try tapping the mic to ask me anything.
         Float on by
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage in the personalization hub when ambient mode is disabled.">
-        Turn on the toggle to select the screensaver options
+        Turn on the toggle to select the screen saver options
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MULTIPLE_ALBUMS_DESC" desc="Album description shown in the Ambient preview when more than 3 albums are selected">
         <ph name="TITLE">$1<ex>Sweden 2020</ex></ph>, +<ph name="NUMBER">$2<ex>2</ex></ph> more albums
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
-        Turn the feature on to select screensaver options
+        Turn the feature on to select screen saver options
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
         Turn on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR" desc="Error message displayed when screen saver information cannot be downloaded.">
+        Please connect to a network and reload the page to view screen saver.
       </message>
       <message name="IDS_PERSONALIZATION_APP_MANAGED_SETTING" desc="Message to show in the personalization hub for a setting which is enterprise managed by administrators.">
         This setting is managed by your administrators
@@ -2311,7 +2330,7 @@ Try tapping the mic to ask me anything.
         Change wallpaper
       </message>
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER" desc="Aria label for the button to enter ambient subpage.">
-        Change screensaver
+        Change screen saver
       </message>
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_DARK_COLOR_MODE" desc="Aria label for the button to enable dark color mode.">
         Enable dark color mode
@@ -2343,6 +2362,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL" desc="Label for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
         Wallpaper color
       </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_TOOLTIP_TEXT" desc="The text label of the tooltip for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
+        Keyboard color is based on wallpaper
+      </message>
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WHITE_COLOR_LABEL" desc="Label for the white color in the keyboard backlight section of personalization hub.">
         White
       </message>
@@ -2370,6 +2392,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR" desc="Aria label for the currently set avatar image.">
         Current Avatar
       </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT" desc="The text of the educational nudge for keyboard backlight wallpaper-extracted color.">
+        Your keyboard can automatically match your wallpaper
+      </message>
 
       <!-- Personalization App Search Results -->
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">
@@ -2395,6 +2420,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Login image', 'Profile picture'">
         Profile image
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT5" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternative phrase for: 'Change device account image'">
+        Avatar image
       </message>
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Background', 'Desktop'">
         Change wallpaper
@@ -2637,78 +2665,75 @@ Try tapping the mic to ask me anything.
 
       <!-- Shimless RMA -->
       <!-- Component names. Used by select components and calibration pages-->
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_AUDIO" translateable="false" desc="Name of device audio processing component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_AUDIO" desc="Name of device audio processing component.">
         Audio
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BATTERY" translateable="false" desc="Name of device battery component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BATTERY" desc="Name of device battery component.">
         Battery
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_STORAGE" translateable="false" desc="Name of device SSD storage component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STORAGE" desc="Name of device SSD storage component.">
         Storage
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" translateable="false" desc="Name of device Vital Product Data SPI flash storage component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" desc="Name of device Vital Product Data SPI flash storage component.">
         Vpd Cached
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" translateable="false" desc="Name of device network component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" desc="Name of device network component.">
         Network
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" translateable="false" desc="Name of device camera component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" desc="Name of device camera component.">
         Camera
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" translateable="false" desc="Name of device stylus component. TODO(gavindodd) clarify this.">
-        Stylus
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" desc="Name of device stylus support component.">
+        Stylus support
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" translateable="false" desc="Name of device touchpad component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" desc="Name of device touchpad component.">
         Touchpad
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN" translateable="false" desc="Name of device touchscreen component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN" desc="Name of device touchscreen component.">
         Touchscreen
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" translateable="false" desc="Name of device memory components.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" desc="Name of device memory components.">
         Memory
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" translateable="false" desc="Name of device display panel component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" desc="Name of device display panel component.">
         Display
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" translateable="false" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
         Cellular
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_ETHERNET" translateable="false" desc="Name of device ethernet component. Used for wired internet connection.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_ETHERNET" desc="Name of device ethernet component. Used for wired internet connection.">
         Ethernet
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_WIRELESS" translateable="false" desc="Name of device Wi-Fi network component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_WIRELESS" desc="Name of device Wi-Fi network component.">
         Wireless
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the base (e.g. mainboard and keyboard) part of the device.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER" desc="Name of device accelerometer component in the base (e.g. mainboard and keyboard) part of the device.">
         Base Accelerometer
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the lid (e.g. screen) of the component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER" desc="Name of device accelerometer component in the lid (e.g. screen) of the component.">
         Lid Accelerometer
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE" translateable="false" desc="Name of device gyroscope component in the base (e.g. mainboard and keyboard) part of the device.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE" desc="Name of device gyroscope component in the base (e.g. mainboard and keyboard) part of the device.">
         Base Gyroscope
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" translateable="false" desc="Name of device component in the lid (e.g. screen) of the component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" desc="Name of device component in the lid (e.g. screen) of the component.">
         Lid Gyroscope
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" translateable="false" desc="Name of device screen component. TODO(gavindodd) clarify this.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" desc="Name of device screen component.">
         Screen
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" translateable="false" desc="Name of device keyboard component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" desc="Name of device keyboard component.">
         Keyboard
       </message>
-      <message name="IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON" translateable="false" desc="Name of device power button component.">
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON" desc="Name of device power button component.">
         Power Button
       </message>
       <!-- Splash screen -->
-      <message name="IDS_SHIMLESS_RMA_SPLASH_TITLE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
+      <message name="IDS_SHIMLESS_RMA_SPLASH_TITLE" desc="Message to display while waiting for RMA to initialize at boot.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
-      <message name="IDS_SHIMLESS_RMA_SPLASH_REMEMBERING" translateable="false" desc="Message that lets the user know that we are resuming repair.">
-        Remembering where you left off...
-      </message>
-      <message name="IDS_SHIMLESS_RMA_SPLASH_LOADING" translateable="false" desc="Message that lets the user know that we are loading the previous repair state.">
-        Loading state... may last ~10 seconds
+      <message name="IDS_SHIMLESS_RMA_SPLASH_REMEMBERING" desc="Message that lets the user know that we are resuming repair.">
+        Resuming repair process…
       </message>
       <!-- Common buttons -->
       <message name="IDS_SHIMLESS_RMA_EXIT_BUTTON" desc="Button used to exit RMA finalization, when allowed.">
@@ -2731,6 +2756,22 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_RETRY_BUTTON" desc="Default text for Retry button used to retry an action.">
         Retry
+      </message>
+      <message name="IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON" desc="Default text for Try Again button used to retry an action.">
+        Try again
+      </message>
+      <!-- Exit dialog -->
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE" translateable="false" desc="Title for the exit dialog.">
+        Exit repair?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION" translateable="false" desc="Detailed description for the exit dialog.">
+        Are you sure you want to exit?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CANCEL_BUTTON_LABEL" translateable="false" desc="Button used to close the exit dialog.">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CONFIRM_BUTTON_LABEL" translateable="false" desc="Button used to confirm exiting the RMA process and close the exit dialog.">
+        Confirm
       </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" desc="Title for the landing page at the start of RMA.">
@@ -2769,6 +2810,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONNECT" desc="Text for connect to wifi button.">
         Connect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_DISCONNECT" desc="Text for disconnect to wifi button.">
+        Disconnect
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL" desc="Text for cancel connect to wifi button.">
         Cancel
@@ -2835,17 +2879,14 @@ Try tapping the mic to ask me anything.
         Done
       </message>
       <!-- Manual write protect disable complete page -->
-      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" translateable="false" desc="Title for the write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" desc="Title for the write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">
         Write Protect is turned off
       </message>
-      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_SKIPPED_MESSAGE" translateable="false" desc="If the device already had write protection disabled before reaching the 'choose method' page the flow skips straight to this page and informs the user they can manually re-enable if it is currently manually disabled. It is not possible for the device to determine this automatically, so the instructions must cover both cases.">
-        Write protection is already disabled. If the device is disassembled you may reassemble it now.
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_REASSEMBLE_NOW_MESSAGE" desc="Inform the user they can reassemble their device i.e. put the battery back in.">
+        You can put the device back together now
       </message>
-      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_REASSEMBLE_NOW_MESSAGE" translateable="false" desc="If the device does not need write protection to be disabled for the remainder of RMA then inform user they can enable now.">
-        Write protection disable complete, you can reassemble the device.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_LEAVE_DISASSEMBLED_MESSAGE" translateable="false" desc="If the device needs write protection to remain disabled for the remainder of RMA then inform user they can must leave it disabled.">
-        Write protection disable complete, you must keep the device disassembled.
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_LEAVE_DISASSEMBLED_MESSAGE" desc="Warn the user to leave their device disassembled i.e. leave the battery out.">
+        Don't put the device back together yet
       </message>
       <!-- Check calibration page -->
       <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_PAGE_TITLE" desc="Title for the page shown when confirming components to calibrate after calibration fails.">
@@ -2892,9 +2933,21 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry finalization.">
         Retry finalization
       </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_WP_DISABLED_DIALOG_TITLE" desc="The title of the dialog that shows up when finalization failed because Write Protect is off.">
+        Make sure Write Protect is on
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_WP_DISABLED_DIALOG_BODY" desc="The body of the dialog that shows up when finalization failed because Write Protect is off.">
+        Write Protect is still turned off. To proceed, turn on Write Protect.
+      </message>
       <!-- Device provisioning page -->
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
         Provisioning the device...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_WP_ENABLED_DIALOG_TITLE" desc="The title of the dialog that shows up when provisioning failed because Write Protect is still on.">
+        Turn off Write Protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_WP_ENABLED_DIALOG_BODY" desc="The body of the dialog that shows up when provisioning failed because Write Protect is still on.">
+        Write Protect has been turned on unexpectedly. Please turn off Write Protect manually before trying again.
       </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
@@ -2999,6 +3052,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_UPDATING_OS_VERSION" desc="The message shown while updating the device's OS version.">
         Updating OS version
       </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ERROR_MESSAGE" desc="The message shown if there were errors while updating the OS.">
+        Couldn't download the update
+      </message>
       <!-- Manually disable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS" desc="The text instructions for how to manually disable write-protect on the device.">
         Disable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions.
@@ -3020,7 +3076,7 @@ Try tapping the mic to ask me anything.
         You can continue with the full repair or powerwash (factory reset) the device to restock the mainboard.
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" desc="Label for the button that triggers device shutdown on the restock page.">
-        Powerwash &amp; Shut down
+        Shut down
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" desc="Label for the continue button on the restock page.">
         Continue
@@ -3030,7 +3086,7 @@ Try tapping the mic to ask me anything.
         Turn on Write Protect
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS" desc="The text instructions to manually enable write-protect on the device.">
-        Enable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions. 
+        Enable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions.
       </message>
       <!-- Confirm device information page -->
       <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_TITLE" desc="The title for the page for confirming the device info.">
@@ -3054,8 +3110,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_LABEL" desc="The label for the text input showing the device's SKU.">
         SKU
       </message>
-      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_RESET_BUTTON_LABEL" desc="The label for the button that resets the text input.">
-        Reset
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_REVERT_BUTTON_LABEL" desc="The label for the button that resets the input back to its original value.">
+        Revert
       </message>
       <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING" desc="The text warning explaining when the device's SKU should be changed.">
         The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
@@ -3080,12 +3136,9 @@ Try tapping the mic to ask me anything.
         Install is complete. Preparing to restart...
       </message>
       <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE" desc="The message when firmware installation is complete and the device has rebooted.">
-        Installation complete.
+        Install is complete. You can now remove your USB drive or SD card.
       </message>
       <!-- Onboarding update page -->
-      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT" translateable="false" desc="The message that you can connect to the internet on the prevous page.">
-        To check if OS is up to date, connect to the internet in previous screen
-      </message>
       <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS" translateable="false" desc="The update progress label.">
         OS update progress received <ph name="OPERATION_NAME">$1</ph> <ph name="PROGRESS">$2</ph>%
       </message>
@@ -3147,6 +3200,31 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION" desc="Label for the option to preserve/save the data on the device.">
         Keep user data
+      </message>
+      <!-- Illustrations -->
+      <message name="IDS_SHIMLESS_RMA_BASE_ON_FLAT_SURFACE_ALT_TEXT" desc="Alt text for illustration showing how to put the device base flat on a surface.">
+        Put base on flat surface
+      </message>
+      <message name="IDS_SHIMLESS_RMA_DOWNLOADING_ALT_TEXT" desc="Alt text for illustration showing a downloading arrow.">
+        Downloading
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ERROR_ALT_TEXT" desc="Alt text for illustration showing an error screen.">
+        Error
+      </message>
+      <message name="IDS_SHIMLESS_RMA_INSERT_USB_ALT_TEXT" desc="Alt text for illustration showing how to insert a USB.">
+        Insert USB
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LID_ON_FLAT_SURFACE_ALT_TEXT" desc="Alt text for illustration showing how to put the device lid flat on a surface.">
+        Put lid on flat surface
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_START_ALT_TEXT" desc="Alt text for illustration showing a person repairing.">
+        Repair start
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SUCCESS_ALT_TEXT" desc="Alt text for illustration showing a success checkmark.">
+        Success
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT" desc="Alt text for illustration showing an hourglass representing updating the OS.">
+        Update OS
       </message>
       <!-- Peripheral Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
@@ -3292,25 +3370,121 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
       </message>
-
+      <!-- ARC SDK Version Labels-->
+      <message name="IDS_ARC_SDK_VERSION_LABEL" desc="Label for Android SDK Version bundled with ARC">
+        SDK Version:
+      </message>
+      <message name="IDS_ARC_SDK_VERSION_UNKNOWN" desc="Message displayed when the Android SDK Version can not be found">
+        Unknown
+      </message>
       <!-- Feedback Tool-->
-      <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" translateable="false" desc="Label of the continue button.">
+      <!-- Search Page -->
+      <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
         Continue
       </message>
-      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL" translateable="false" desc="Label of the text box where users can describe a problem they are having">
+      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_LABEL" desc="Label of the text box where users can describe a problem they are having">
         Description
       </message>
-      <message name="IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS" translateable="false" desc="Label for help content when there are no matched results.">
-        No matched results, see popular help content
+      <message name="IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS" desc="Label for help content when there are no matched results.">
+        No suggested content. See top help content.
       </message>
-      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" translateable="false" desc="Label showing the title of the feedback tool before a report has been sent">
+      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE" desc="Label showing the title of the feedback tool before a report has been sent">
         Send feedback
       </message>
-      <message name="IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT" translateable="false" desc="Label for help content when there is no query entered yet.">
-        Popular help content
+      <message name="IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT" desc="Label for help content when there is no query entered yet.">
+        Top help content
       </message>
-      <message name="IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT" translateable="false" desc="Label for help content when there are matched results.">
+      <message name="IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT" desc="Label for help content when there are matched results.">
         Suggested help content
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_REQUIRED" desc="Label showing error message when clicking continue button without a description.">
+        Description is required
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL" desc="The text used for the link that navigates to the feedback help webpage.">
+        Tips on writing feedback
+      </message>
+      <!-- Share Data Page -->
+      <message name="IDS_FEEDBACK_TOOL_BACK_BUTTON_LABEL" desc="label for the back button to return to a prior page">
+        Back
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_HINT" desc="Label for the hint in description textarea">
+        Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL" desc="Label for adding a screenshot and/or a filename.">
+        Attach files
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label for replacing a file.">
+        Replace
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_ADD_FILE_LABEL" desc="Label for the field of adding a file">
+        Add file
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_FILE_TOO_BIG_ERROR_MESSAGE" translateable="false" desc="Error message when the upload file is larger than 10MB.">
+        Can't upload file larger than 10 MB
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_INCLUDE_SYSTEM_INFO_AND_METRICS_CHECKBOX_LABEL" desc="Checkbox for including system information and metrics on the bug report dialog box">
+        Send <ph name="BEGIN_LINK1">&lt;a id="sysInfoLink"&gt;</ph>system and app info<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="histogramsLink"&gt;</ph>metrics<ph name="END_LINK2">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_PRIVACY_NOTE" desc="Text for the privacy note included in the feedback app">
+        Go to the <ph name="BEGIN_LINK1">&lt;a id="legalHelpPageUrl"&gt;</ph>Legal Help page<ph name="END_LINK1">&lt;/a&gt;</ph> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2">&lt;a id="privacyPolicyUrl"&gt;</ph>Privacy Policy<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="termsOfServiceUrl"&gt;</ph>Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL" desc="Label showing the e-mail address that will be reported.">
+        Email
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_SEND_BUTTON_LABEL" desc="label for the send button to send feedback.">
+        Send
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_ANONYMOUS_EMAIL_OPTION" desc="Option in the drop down menu to let the user send the feedback report without attaching their email.">
+        Don't include email address
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL" desc="Label showing the share diagnostic data.">
+        Share diagnostic data
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_SCREENSHOT_LABEL" desc="Label for the screenshot field">
+        Screenshot
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_USER_CONSENT_LABEL" desc="Label for checkbox indicating whether the user agrees to be contacted back.">
+        We may email you for more information or updates
+      </message>
+      <!-- Confirmation Page -->
+      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT" desc="Label showing a thank you message as the title of the confirmation page after a report has been sent.">
+        Thanks for your feedback
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_OFFLINE" desc="Thank you note when feedback tool is offline">
+        Thanks for the feedback. Your feedback helps improve Chrome OS and will be reviewed by the Chrome OS team. Because of the number of reports submitted, you won’t receive a direct reply.
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_ONLINE" desc="Thank you note when feedback tool is online">
+        Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_SEND_OFFLINE" desc="Label showing the title of the feedback tool when the user attempts to send a report while offline.">
+        You're offline. Feedback will be sent later.
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_DESCRIPTION" desc="Description of the explore app that links to some resourses like help articals and new features of Chromebook.">
+        Find help articles and answers to common Chromebook questions
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_HELP_RESOURCES_LABEL" desc="Label of some other help resources.">
+        Here are some other helpful resources:
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_LABEL" desc="Label of the explore app">
+        Explore app
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL" desc="Label of the diagnostics app">
+        Diagnostics app
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_DESCRIPTION" desc="Description of the diagnostics app resource indicating that they can debug and run hardware tests in the Diagnostics app.">
+        Run tests and troubleshooting for hardware issues
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_ASK_COMMUNITY_LABEL" desc="Label of the ask community that opens an external link to the Chromebook community.">
+        Chromebook community
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_ASK_COMMUNITY_DESCRIPTION" desc="Description of the ask community link">
+        Ask the experts in the Chromebook help forum
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_SEND_NEW_REPORT_BUTTON_LABEL" desc="label for the send new report button to send a new report.">
+        Send new report
+      </message>
+      <message name="IDS_FEEDBACK_TOOL_DONE_BUTTON_LABEL" desc="label for the done button to close the feedback app.">
+        Done
       </message>
       <!-- End of Feedback Tool -->
     </messages>

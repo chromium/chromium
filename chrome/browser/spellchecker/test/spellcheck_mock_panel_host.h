@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SPELLCHECKER_TEST_SPELLCHECK_MOCK_PANEL_HOST_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,7 +36,7 @@ class SpellCheckMockPanelHost : public spellcheck::mojom::SpellCheckPanelHost {
       const std::u16string& word) override;
 
   mojo::ReceiverSet<spellcheck::mojom::SpellCheckPanelHost> receivers_;
-  content::RenderProcessHost* process_host_;
+  raw_ptr<content::RenderProcessHost> process_host_;
   bool show_spelling_panel_called_ = false;
   bool spelling_panel_visible_ = false;
   base::OnceClosure quit_;

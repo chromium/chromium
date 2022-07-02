@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -44,6 +43,11 @@ class NetObserver : public net::NetworkChangeNotifier::NetworkChangeObserver {
       net::NetworkChangeNotifier::ConnectionType type) override {
     change_count_++;
     last_connection_type_ = type;
+
+    // TODO(b/229673213): Remove log once flakiness is fixed.
+    LOG(INFO) << "NetworkChangeObserver was called, change count increased to "
+              << change_count_
+              << " Last connection type is now: " << last_connection_type_;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -60,6 +64,8 @@ class NetworkServiceObserver
  public:
   NetworkServiceObserver() {
     content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+    // TODO(b/229673213): Remove log once flakiness is fixed.
+    LOG(INFO) << "NetworkServiceObserver get connection type";
     content::GetNetworkConnectionTracker()->GetConnectionType(
         &last_connection_type_,
         base::BindOnce(&NetworkServiceObserver::OnConnectionChanged,
@@ -83,6 +89,11 @@ class NetworkServiceObserver
   void OnConnectionChanged(network::mojom::ConnectionType type) override {
     change_count_++;
     last_connection_type_ = type;
+
+    // TODO(b/229673213): Remove log once flakiness is fixed.
+    LOG(INFO) << "NetworkServiceObserver was called, change count increased to "
+              << change_count_
+              << " Last connection type is now: " << last_connection_type_;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -101,8 +112,7 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    service_client_ =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+    service_client_ = ShillServiceClient::Get()->GetTestInterface();
     service_client_->ClearServices();
 
     // Make sure everyone thinks we have an ethernet connection.
@@ -110,6 +120,11 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
         net::NetworkChangeNotifier::CONNECTION_ETHERNET);
     NetworkServiceObserver().WaitForConnectionType(
         network::mojom::ConnectionType::CONNECTION_ETHERNET);
+
+    // Wait for all services to be removed.
+    base::RunLoop().RunUntilIdle();
+    // TODO(b/229673213): Remove log once flakiness is fixed.
+    LOG(INFO) << "Setup Main thread completed";
   }
 
   ShillServiceClient::TestInterface* service_client() {
@@ -122,12 +137,15 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
 
 // Tests that network changes from shill are received by both the
 // NetworkChangeNotifier and NetworkConnectionTracker.
-// Flaky: https://crbug.com/1291300
 IN_PROC_BROWSER_TEST_F(NetworkChangeManagerClientBrowserTest,
-                       DISABLED_ReceiveNotifications) {
+                       ReceiveNotifications) {
+  // TODO(b/229673213): Remove log once flakiness is fixed.
+  LOG(INFO) << "ReceiveNotifications test start";
   NetObserver net_observer;
   NetworkServiceObserver network_service_observer;
 
+  // TODO(b/229673213): Remove log once flakiness is fixed.
+  LOG(INFO) << "ReceiveNotificationsTEST: Add service test start";
   service_client()->AddService("wifi", "wifi", "wifi", shill::kTypeWifi,
                                shill::kStateOnline, true);
 

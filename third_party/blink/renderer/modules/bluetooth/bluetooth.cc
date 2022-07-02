@@ -14,8 +14,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -60,6 +63,8 @@ const char kHandleGestureForPermissionRequest[] =
     "Must be handling a user gesture to show a permission request.";
 const char kFencedFrameError[] =
     "Web Bluetooth is not allowed in a fenced frame tree.";
+const char kPermissionsPolicyBlocked[] =
+    "Access to the feature \"bluetooth\" is disallowed by permissions policy.";
 
 // Does basic checks that are common to all IDL calls, mainly that the window is
 // valid, and the request is not being done from a fenced frame tree. Returns
@@ -73,6 +78,14 @@ bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
   }
 
   return exception_state.HadException();
+}
+
+// Checks whether the document is allowed by Permissions Policy to call Web
+// Bluetooth API methods.
+bool IsFeatureEnabled(LocalDOMWindow* window) {
+  return window->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kBluetooth,
+      ReportOptions::kReportOnFailure);
 }
 
 // Remind developers when they are using Web Bluetooth on unsupported platforms.
@@ -282,6 +295,13 @@ ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  // If Bluetooth is disallowed by Permissions Policy, getAvailability should
+  // return false.
+  if (!IsFeatureEnabled(window)) {
+    return ScriptPromise::Cast(script_state,
+                               ScriptValue::From(script_state, false));
+  }
+
   CHECK(window->IsSecureContext());
   EnsureServiceConnection(window);
 
@@ -337,6 +357,11 @@ ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
+    return ScriptPromise();
+  }
+
   AddUnsupportedPlatformConsoleMessage(window);
   CHECK(window->IsSecureContext());
 
@@ -356,6 +381,11 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (IsRequestDenied(window, exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
     return ScriptPromise();
   }
 
@@ -455,6 +485,11 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (IsRequestDenied(window, exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!IsFeatureEnabled(window)) {
+    exception_state.ThrowSecurityError(kPermissionsPolicyBlocked);
     return ScriptPromise();
   }
 

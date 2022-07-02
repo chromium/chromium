@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
@@ -66,14 +68,15 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
   // TODO(crbug.com/1299925): Always mock theme provider in tests so that
   // `theme_provider` is never nullptr.
   if (theme_provider) {
+    const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
     source->AddString("backgroundPosition",
                       GetNewTabBackgroundPositionCSS(*theme_provider));
     source->AddString("backgroundTiling",
                       GetNewTabBackgroundTilingCSS(*theme_provider));
     source->AddString("colorBackground",
                       color_utils::SkColorToRgbaString(GetThemeColor(
-                          webui::GetNativeTheme(web_contents), *theme_provider,
-                          ThemeProperties::COLOR_NTP_BACKGROUND)));
+                          webui::GetNativeTheme(web_contents), color_provider,
+                          kColorNewTabPageBackground)));
     // TODO(crbug.com/1056758): don't get theme id from profile.
     source->AddString("themeId",
                       profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
@@ -81,10 +84,11 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
                       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)
                           ? "has-custom-background"
                           : "");
-    source->AddString("isdark", !color_utils::IsDark(theme_provider->GetColor(
-                                    ThemeProperties::COLOR_NTP_TEXT))
-                                    ? "dark"
-                                    : "");
+    source->AddString(
+        "isdark",
+        !color_utils::IsDark(color_provider.GetColor(kColorNewTabPageText))
+            ? "dark"
+            : "");
   } else {
     source->AddString("backgroundPosition", "");
     source->AddString("backgroundTiling", "");

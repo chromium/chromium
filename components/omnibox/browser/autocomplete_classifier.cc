@@ -21,6 +21,10 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "components/history_clusters/core/config.h"
+#endif
+
 AutocompleteClassifier::AutocompleteClassifier(
     std::unique_ptr<AutocompleteController> controller,
     std::unique_ptr<AutocompleteSchemeClassifier> scheme_classifier)
@@ -43,6 +47,9 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Custom search engines cannot be used on mobile.
       AutocompleteProvider::TYPE_KEYWORD |
+      (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()
+           ? AutocompleteProvider::TYPE_OPEN_TAB
+           : 0) |
 #else
       AutocompleteProvider::TYPE_CLIPBOARD |
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |
@@ -50,6 +57,12 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
 #endif
 #if BUILDFLAG(IS_ANDROID)
       AutocompleteProvider::TYPE_VOICE_SUGGEST |
+#endif
+#if !BUILDFLAG(IS_IOS)
+      (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
+               history_clusters::GetConfig().omnibox_history_cluster_provider
+           ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
+           : 0) |
 #endif
       AutocompleteProvider::TYPE_ZERO_SUGGEST |
       AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |

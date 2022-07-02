@@ -18,9 +18,9 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
-#include "base/fuchsia/fuchsia_logging.h"
 
 namespace partition_alloc::internal {
 
@@ -79,7 +79,7 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   zx::vmo vmo;
   zx_status_t status = zx::vmo::create(length, 0, &vmo);
   if (status != ZX_OK) {
-    ZX_DLOG(INFO, status) << "zx_vmo_create";
+    PA_ZX_DLOG(INFO, status) << "zx_vmo_create";
     return 0;
   }
 
@@ -88,14 +88,14 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
 
   // VMO names are used only for debugging, so failure to set a name is not
   // fatal.
-  ZX_DCHECK(status == ZX_OK, status);
+  PA_ZX_DCHECK(status == ZX_OK, status);
 
   if (page_tag == PageTag::kV8) {
     // V8 uses JIT. Call zx_vmo_replace_as_executable() to allow code execution
     // in the new VMO.
     status = vmo.replace_as_executable(zx::resource(), &vmo);
     if (status != ZX_OK) {
-      ZX_DLOG(INFO, status) << "zx_vmo_replace_as_executable";
+      PA_ZX_DLOG(INFO, status) << "zx_vmo_replace_as_executable";
       return 0;
     }
   }
@@ -115,7 +115,7 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   if (status != ZX_OK) {
     // map() is expected to fail if |hint| is set to an already-in-use location.
     if (!hint) {
-      ZX_DLOG(ERROR, status) << "zx_vmar_map";
+      PA_ZX_DLOG(ERROR, status) << "zx_vmar_map";
     }
     return 0;
   }
@@ -134,14 +134,14 @@ uintptr_t TrimMappingInternal(uintptr_t base_address,
   // Unmap head if necessary.
   if (pre_slack) {
     zx_status_t status = zx::vmar::root_self()->unmap(base_address, pre_slack);
-    ZX_CHECK(status == ZX_OK, status);
+    PA_ZX_CHECK(status == ZX_OK, status);
   }
 
   // Unmap tail if necessary.
   if (post_slack) {
     zx_status_t status = zx::vmar::root_self()->unmap(
         base_address + pre_slack + trim_length, post_slack);
-    ZX_CHECK(status == ZX_OK, status);
+    PA_ZX_CHECK(status == ZX_OK, status);
   }
 
   return base_address + pre_slack;
@@ -162,12 +162,12 @@ void SetSystemPagesAccessInternal(
     PageAccessibilityConfiguration accessibility) {
   zx_status_t status = zx::vmar::root_self()->protect(
       PageAccessibilityToZxVmOptions(accessibility), address, length);
-  ZX_CHECK(status == ZX_OK, status);
+  PA_ZX_CHECK(status == ZX_OK, status);
 }
 
 void FreePagesInternal(uint64_t address, size_t length) {
   zx_status_t status = zx::vmar::root_self()->unmap(address, length);
-  ZX_CHECK(status == ZX_OK, status);
+  PA_ZX_CHECK(status == ZX_OK, status);
 }
 
 void DiscardSystemPagesInternal(uint64_t address, size_t length) {
@@ -175,7 +175,7 @@ void DiscardSystemPagesInternal(uint64_t address, size_t length) {
   // forcibly de-committing them immediately, when Fuchsia supports it.
   zx_status_t status = zx::vmar::root_self()->op_range(
       ZX_VMO_OP_DECOMMIT, address, length, nullptr, 0);
-  ZX_CHECK(status == ZX_OK, status);
+  PA_ZX_CHECK(status == ZX_OK, status);
 }
 
 void DecommitSystemPagesInternal(

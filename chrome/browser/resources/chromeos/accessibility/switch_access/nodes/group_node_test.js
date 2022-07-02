@@ -18,7 +18,7 @@ SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {
 
 TEST_F('SwitchAccessGroupNodeTest', 'NodesRemoved', function() {
   const website = `<button></button>`;
-  this.runWithLoadedTree(website, (rootWebArea) => {
+  this.runWithLoadedTree(website, rootWebArea => {
     const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
     assertNotEquals(undefined, button);
 
@@ -33,10 +33,10 @@ TEST_F('SwitchAccessGroupNodeTest', 'NodesRemoved', function() {
     root.children_ = [groupNode];
 
     // Try asking for the location of the group.
-    assertTrue(!!groupNode.location);
+    assertTrue(Boolean(groupNode.location));
 
     // Try again after clearing one of the button's underlying node.
     buttonNode.baseNode_ = undefined;
-    assertTrue(!!groupNode.location);
+    assertTrue(Boolean(groupNode.location));
   });
 });

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/style_scope.h"
+#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -25,6 +28,45 @@ unsigned StyleScope::Specificity() const {
         from_.MaximumSpecificity() + (parent_ ? parent_->Specificity() : 0);
   }
   return *specificity_;
+}
+
+StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
+                              const CSSParserContext* context,
+                              StyleSheetContents* style_sheet) {
+  absl::optional<CSSSelectorList> from;
+  absl::optional<CSSSelectorList> to;
+
+  prelude.ConsumeWhitespace();
+  if (prelude.Peek().GetType() != kLeftParenthesisToken)
+    return nullptr;
+
+  // <scope-start>
+  {
+    auto block = prelude.ConsumeBlock();
+    from = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
+    if (!from)
+      return nullptr;
+  }
+
+  prelude.ConsumeWhitespace();
+
+  // to (<scope-end>)
+  if (css_parsing_utils::ConsumeIfIdent(prelude, "to")) {
+    if (prelude.Peek().GetType() != kLeftParenthesisToken)
+      return nullptr;
+
+    auto block = prelude.ConsumeBlock();
+    to = CSSSelectorParser::ParseScopeBoundary(block, context, style_sheet);
+    if (!to)
+      return nullptr;
+  }
+
+  prelude.ConsumeWhitespace();
+
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  return MakeGarbageCollected<StyleScope>(std::move(*from), std::move(to));
 }
 
 }  // namespace blink

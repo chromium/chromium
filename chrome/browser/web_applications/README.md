@@ -64,8 +64,8 @@ A document is considered "promotable" if it fulfils a set of criteria. This crit
   * `start_url`
   * `icons` with at least one icon with a valid response that is a parsable image.
   * `display` field that is not `"browser"`
-* "Serviceworker check": The `start_url` is 'controlled' (can be served by) a [serviceworker](https://developers.google.com/web/ilt/pwa/introduction-to-service-worker). **Optionally turned off** 
-* "Engagement check": The user has engaged with, or interacted with, the page or origin a certain amount (currently at least one click and some seconds on the site). **Optionally turned off** 
+* "Serviceworker check": The `start_url` is 'controlled' (can be served by) a [serviceworker](https://developers.google.com/web/ilt/pwa/introduction-to-service-worker). **Optionally turned off**
+* "Engagement check": The user has engaged with, or interacted with, the page or origin a certain amount (currently at least one click and some seconds on the site). **Optionally turned off**
 
 Notes:
 * Per spec, the document origin and the `start_url` origin must match.
@@ -73,7 +73,7 @@ Notes:
 * The `start_url` could be different than the `document_url`.
 
 ### Manifest id
-The `id` specified in manifest represents the identity of the web app. The manifest id is processed following the algorithm described in [appmanifest specification](https://www.w3.org/TR/appmanifest/#id-member) to produce the app's identity. In web app system, the app's [identity](https://www.w3.org/TR/appmanifest/#dfn-identity) is [hashed](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.cc;l=69;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97) to be stored to [WebApp->app_id()](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app.h;l=43;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97;bpv=1;bpt=1). 
+The `id` specified in manifest represents the identity of the web app. The manifest id is processed following the algorithm described in [appmanifest specification](https://www.w3.org/TR/appmanifest/#id-member) to produce the app's identity. In web app system, the app's [identity](https://www.w3.org/TR/appmanifest/#dfn-identity) is [hashed](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.cc;l=69;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97) to be stored to [WebApp->app_id()](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app.h;l=43;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97;bpv=1;bpt=1).
 
 The app identity is verified in manifest updating process, if an app gets a manifest with [mismatched identity](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/manifest_update_task.cc;l=315?q=manifest_update_task&ss=chromium%2Fchromium%2Fsrc), the update process is aborted.
 ### Scope
@@ -200,7 +200,7 @@ manifest data it specifies" with a few inbetweens.
 This is for all installs that are not initiated by the user. This includes
 [preinstalled apps](preinstalled_web_app_manager.h),
 [policy installed apps](policy/web_app_policy_manager.h) and
-[system web apps](system_web_apps/system_web_app_manager.h).
+[system web apps](../ash/system_web_apps/system_web_app_manager.h).
 
 These all specify a set of [install URLs](external_install_options.h)
 which the `ExternallyManagedAppManager` synchronises the set of currently

@@ -198,6 +198,9 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Adds one match for the given corrected `text`.
   void AddMatchForText(std::u16string text);
 
+  // Add multiple matches, converting them to fuzzy suggestions in the process.
+  void AddConvertedMatches(const ACMatches& matches);
+
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
 
@@ -206,7 +209,6 @@ class HistoryFuzzyProvider : public HistoryProvider,
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
 
   // Removes deleted (or all) URLs from trie.

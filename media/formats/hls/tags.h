@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_TAGS_H_
 #define MEDIA_FORMATS_HLS_TAGS_H_
 
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tag_name.h"
@@ -61,8 +62,8 @@ struct MEDIA_EXPORT InfTag {
   static constexpr auto kName = MediaPlaylistTagName::kInf;
   static ParseStatus::Or<InfTag> Parse(TagItem);
 
-  // Target duration of the media segment, in seconds.
-  types::DecimalFloatingPoint duration;
+  // Target duration of the media segment.
+  base::TimeDelta duration;
 
   // Human-readable title of the media segment.
   SourceString title;
@@ -159,11 +160,49 @@ struct MEDIA_EXPORT XTargetDurationTag {
   static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
   static ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
 
-  // The upper bound on the duration (in seconds) of all media segments in the
+  // The upper bound on the duration of all media segments in the
   // media playlist. The EXTINF duration of each Media Segment in a Playlist
   // file, when rounded to the nearest integer, MUST be less than or equal to
   // this duration.
-  types::DecimalInteger duration;
+  base::TimeDelta duration;
+};
+
+// Represents the contents of the #EXT-PART-INF tag.
+struct MEDIA_EXPORT XPartInfTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPartInf;
+  static ParseStatus::Or<XPartInfTag> Parse(TagItem);
+
+  // This value indicates the target duration for partial media segments.
+  base::TimeDelta target_duration;
+};
+
+// Represents the contents of the #EXT-X-SERVER-CONTROL tag.
+struct MEDIA_EXPORT XServerControlTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXServerControl;
+  static ParseStatus::Or<XServerControlTag> Parse(TagItem);
+
+  // This value (given by the 'CAN-SKIP-UNTIL' attribute) represents the
+  // distance from the last media segment that the server is able
+  // to produce a playlist delta update.
+  absl::optional<base::TimeDelta> skip_boundary;
+
+  // This indicates whether the server supports skipping EXT-X-DATERANGE tags
+  // older than the skip boundary when producing playlist delta updates.
+  bool can_skip_dateranges = false;
+
+  // This indicates the distance from the end of the playlist
+  // at which clients should begin playback. This MUST be at least three times
+  // the playlist's target duration.
+  absl::optional<base::TimeDelta> hold_back;
+
+  // This indicates the distance from the end of the playlist
+  // at which clients should begin playback when playing in low-latency mode.
+  // This value MUST be at least twice the playlist's partial segment target
+  // duration, and SHOULD be at least three times that.
+  absl::optional<base::TimeDelta> part_hold_back;
+
+  // This indicates whether the server supports blocking playlist reloads.
+  bool can_block_reload = false;
 };
 
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
@@ -176,6 +215,36 @@ struct MEDIA_EXPORT XMediaSequenceTag {
   // playlist across reloads, but not for synchronizing media segments between
   // playlists.
   types::DecimalInteger number;
+};
+
+// Represents the contents of the #EXT-X-DISCONTINUITY-SEQUENCE tag.
+struct MEDIA_EXPORT XDiscontinuitySequenceTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuitySequence;
+  static ParseStatus::Or<XDiscontinuitySequenceTag> Parse(TagItem);
+
+  // Indicates the discontinuity sequence number to assign to the first media
+  // segment in this playlist. These numbers are useful for synchronizing
+  // between variant stream timelines.
+  types::DecimalInteger number;
+};
+
+// Represents the contents of the #EXT-X-BYTERANGE tag.
+struct MEDIA_EXPORT XByteRangeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
+  static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+
+  types::ByteRangeExpression range;
+};
+
+// Represents the contents of the #EXT-X-BITRATE tag.
+struct MEDIA_EXPORT XBitrateTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXBitrate;
+  static ParseStatus::Or<XBitrateTag> Parse(TagItem);
+
+  // The approximate bitrate of the following media segments, (except those that
+  // have the EXT-X-BYTERANGE tag) expressed in kilobits per second. The value
+  // must be within +-10% of the actual segment bitrate.
+  types::DecimalInteger bitrate;
 };
 
 }  // namespace media::hls

@@ -5,19 +5,21 @@
 #ifndef UI_GL_TEST_GL_SURFACE_TEST_SUPPORT_H_
 #define UI_GL_TEST_GL_SURFACE_TEST_SUPPORT_H_
 
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
 
 class GLSurfaceTestSupport {
  public:
-  static void InitializeOneOff();
-  static void InitializeNoExtensionsOneOff();
-  static void InitializeOneOffImplementation(GLImplementationParts impl,
-                                             bool fallback_to_swiftshader);
-  static void InitializeOneOffWithMockBindings();
-  static void InitializeOneOffWithStubBindings();
-  static void ShutdownGL();
+  static GLDisplay* InitializeOneOff();
+  static GLDisplay* InitializeNoExtensionsOneOff();
+  static GLDisplay* InitializeOneOffImplementation(
+      GLImplementationParts impl,
+      bool fallback_to_swiftshader);
+  static GLDisplay* InitializeOneOffWithMockBindings();
+  static GLDisplay* InitializeOneOffWithStubBindings();
+  static void ShutdownGL(GLDisplay* display);
 };
 
 }  // namespace gl

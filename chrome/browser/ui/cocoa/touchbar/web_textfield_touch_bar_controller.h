@@ -22,7 +22,6 @@ class WebContents;
 
 // Provides a touch bar for the textfields in the WebContents. This class
 // implements the NSTouchBarDelegate and handles the items in the touch bar.
-API_AVAILABLE(macos(10.12.2))
 @interface WebTextfieldTouchBarController : NSObject<NSTouchBarDelegate> {
   BrowserWindowTouchBarController* _controller;  // weak.
   base::scoped_nsobject<CreditCardAutofillTouchBarController>

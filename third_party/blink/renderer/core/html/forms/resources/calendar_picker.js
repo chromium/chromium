@@ -1525,6 +1525,8 @@ class ScrollView extends View {
 
     this._onWindowTouchMoveBound = this.onWindowTouchMove.bind(this);
     this._onWindowTouchEndBound = this.onWindowTouchEnd.bind(this);
+    this._onFlingGestureAnimatorStepBound =
+        this.onFlingGestureAnimatorStep.bind(this);
 
     this.element.addEventListener(
         'mousewheel', this.onMouseWheel.bind(this), false);
@@ -1580,7 +1582,7 @@ class ScrollView extends View {
     if (Math.abs(this._lastTouchVelocity) > 0.01) {
       this._scrollAnimator = new FlingGestureAnimator(
           this._lastTouchVelocity, this._contentOffset);
-      this._scrollAnimator.step = this.onFlingGestureAnimatorStep;
+      this._scrollAnimator.step = this._onFlingGestureAnimatorStepBound;
       this._scrollAnimator.start();
     }
     window.removeEventListener('touchmove', this._onWindowTouchMoveBound);
@@ -2244,7 +2246,8 @@ class ScrubbyScrollBar extends View {
    */
   onWindowTouchEnd(event) {
     this._thumbStyleTopAnimator = new TransitionAnimator();
-    this._thumbStyleTopAnimator.step = this.onThumbStyleTopAnimationStep;
+    this._thumbStyleTopAnimator.step =
+        this.onThumbStyleTopAnimationStep.bind(this);
     this._thumbStyleTopAnimator.setFrom(this.thumb.offsetTop);
     this._thumbStyleTopAnimator.setTo((this._height - this._thumbHeight) / 2);
     this._thumbStyleTopAnimator.timingFunction =

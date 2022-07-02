@@ -26,14 +26,19 @@ import java.util.Arrays;
  * forwards native calls to it.
  */
 class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
+    /**
+     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined
+     * in https://www.w3.org/TR/appmanifest/
+     */
+    public static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
+
     private long mNativeView;
     private final AccountSelectionComponent mAccountSelectionComponent;
 
     private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
-        mAccountSelectionComponent = new AccountSelectionCoordinator();
-        mAccountSelectionComponent.initialize(
+        mAccountSelectionComponent = new AccountSelectionCoordinator(
                 windowAndroid.getContext().get(), bottomSheetController, this);
     }
 
@@ -50,7 +55,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     static int getBrandIconIdealSize() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size));
+        return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size)
+                / MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
     }
 
     @CalledByNative
@@ -64,23 +70,23 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private void destroy() {
-        mAccountSelectionComponent.hideBottomSheet();
+        mAccountSelectionComponent.close();
         mNativeView = 0;
     }
 
     /* Shows the accounts in a bottom sheet UI allowing user to select one.
      *
-     * @param rpEtldPlusOne is the ETLD+1 for RP that has initiated the WebID flow.
-     * @param idpEtldPlusOne is the ETLD+1 for the IDP that is providing the accounts.
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
      * @param isAutoSignIn represents whether this is an auto sign in flow.
      */
     @CalledByNative
-    private void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, Account[] accounts,
+    private void showAccounts(String rpForDisplay, String idpForDisplay, Account[] accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientIdMetadata,
             boolean isAutoSignIn) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(rpEtldPlusOne, idpEtldPlusOne,
+        mAccountSelectionComponent.showAccounts(rpForDisplay, idpForDisplay,
                 Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoSignIn);
     }
 

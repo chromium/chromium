@@ -70,58 +70,64 @@ class TryFlagTest(unittest.TestCase):
     def _setup_mock_results(self, results_fetcher):
         results_fetcher.set_results(
             self.linux_build,
-            WebTestResults({
-                'tests': {
-                    'something': {
-                        'fail-everywhere.html': {
-                            'expected': 'FAIL',
-                            'actual': 'FAIL',
-                            'is_unexpected': True
-                        },
-                        'fail-win-and-linux.html': {
-                            'expected': 'FAIL',
-                            'actual': 'FAIL',
-                            'is_unexpected': True
+            WebTestResults(
+                {
+                    'tests': {
+                        'something': {
+                            'fail-everywhere.html': {
+                                'expected': 'FAIL',
+                                'actual': 'FAIL',
+                                'is_unexpected': True
+                            },
+                            'fail-win-and-linux.html': {
+                                'expected': 'FAIL',
+                                'actual': 'FAIL',
+                                'is_unexpected': True
+                            }
                         }
                     }
-                }
-            }))
+                },
+                step_name='blink_web_tests (with patch)'))
         results_fetcher.set_results(
             self.win_build,
-            WebTestResults({
-                'tests': {
-                    'something': {
-                        'fail-everywhere.html': {
-                            'expected': 'FAIL',
-                            'actual': 'FAIL',
-                            'is_unexpected': True
-                        },
-                        'fail-win-and-linux.html': {
-                            'expected': 'FAIL',
-                            'actual': 'FAIL',
-                            'is_unexpected': True
+            WebTestResults(
+                {
+                    'tests': {
+                        'something': {
+                            'fail-everywhere.html': {
+                                'expected': 'FAIL',
+                                'actual': 'FAIL',
+                                'is_unexpected': True
+                            },
+                            'fail-win-and-linux.html': {
+                                'expected': 'FAIL',
+                                'actual': 'FAIL',
+                                'is_unexpected': True
+                            }
                         }
                     }
-                }
-            }))
+                },
+                step_name='blink_web_tests (with patch)'))
         results_fetcher.set_results(
             self.mac_build,
-            WebTestResults({
-                'tests': {
-                    'something': {
-                        'pass-unexpectedly-mac.html': {
-                            'expected': 'FAIL',
-                            'actual': 'PASS',
-                            'is_unexpected': True
-                        },
-                        'fail-everywhere.html': {
-                            'expected': 'FAIL',
-                            'actual': 'FAIL',
-                            'is_unexpected': True
+            WebTestResults(
+                {
+                    'tests': {
+                        'something': {
+                            'pass-unexpectedly-mac.html': {
+                                'expected': 'FAIL',
+                                'actual': 'PASS',
+                                'is_unexpected': True
+                            },
+                            'fail-everywhere.html': {
+                                'expected': 'FAIL',
+                                'actual': 'FAIL',
+                                'is_unexpected': True
+                            }
                         }
                     }
-                }
-            }))
+                },
+                step_name='blink_web_tests (with patch)'))
 
     def test_update(self):
         host = MockHost()

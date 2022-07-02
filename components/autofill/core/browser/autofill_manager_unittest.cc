@@ -76,6 +76,14 @@ class MockAutofillManager : public AutofillManager {
                const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
+              SetProfileFillViaAutofillAssistantIntent,
+              (const autofill_assistant::AutofillAssistantIntent intent),
+              (override));
+  MOCK_METHOD(void,
+              SetCreditCardFillViaAutofillAssistantIntent,
+              (const autofill_assistant::AutofillAssistantIntent intent),
+              (override));
+  MOCK_METHOD(void,
               OnFocusNoLongerOnForm,
               (bool had_interacted_form),
               (override));
@@ -89,6 +97,12 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               SelectFieldOptionsDidChange,
               (const FormData& form),
+              (override));
+  MOCK_METHOD(void,
+              JavaScriptChangedAutofilledValue,
+              (const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& old_value),
               (override));
   MOCK_METHOD(void,
               PropagateAutofillPredictions,
@@ -119,7 +133,8 @@ class MockAutofillManager : public AutofillManager {
                const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounding_box,
-               bool autoselect_first_suggestion),
+               bool autoselect_first_suggestion,
+               TouchToFillEligible touch_to_fill_eligible),
               (override));
   MOCK_METHOD(void,
               OnFocusOnFormFieldImpl,

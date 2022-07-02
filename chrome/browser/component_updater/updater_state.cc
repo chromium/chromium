@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -51,9 +52,9 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
         // Create a `StateReaderChromiumUpdater` instance only if a prefs.json
         // file for the updater can be found and parsed successfully.
         const absl::optional<base::FilePath> global_prefs_dir =
-            updater::GetBaseDirectory(is_machine
-                                          ? updater::UpdaterScope::kSystem
-                                          : updater::UpdaterScope::kUser);
+            updater::GetBaseDataDirectory(is_machine
+                                              ? updater::UpdaterScope::kSystem
+                                              : updater::UpdaterScope::kUser);
         if (!global_prefs_dir)
           return nullptr;
         std::string contents;

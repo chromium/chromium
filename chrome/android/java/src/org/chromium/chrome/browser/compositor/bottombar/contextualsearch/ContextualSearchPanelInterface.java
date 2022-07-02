@@ -51,7 +51,6 @@ public interface ContextualSearchPanelInterface {
     void hideCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);
     void setManagementDelegate(ContextualSearchManagementDelegate delegate);
-    void onPanelNavigatedToPrefetchedSearch(boolean didResolve);
     void setWasSearchContentViewSeen();
     void maximizePanelThenPromoteToTab(@StateChangeReason int reason);
     void updateBasePageSelectionYPx(float y);

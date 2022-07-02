@@ -112,7 +112,6 @@ class CC_EXPORT CompositorTimingHistory {
   bool enabled_;
 
   // Used to calculate frame rates of Main and Impl threads.
-  bool did_send_begin_main_frame_;
   bool compositor_drawing_continuously_;
   base::TimeTicks new_active_tree_draw_end_time_prev_;
   base::TimeTicks draw_end_time_prev_;
@@ -142,10 +141,18 @@ class CC_EXPORT CompositorTimingHistory {
   RollingTimeDeltaHistory bmf_queue_to_activate_critical_history_;
   double bmf_queue_to_activate_critical_percentile_;
 
+  // The time between when BMF was posted to the main thread task queue, and the
+  // timestamp taken on the main thread when the BMF started running.
   base::TimeDelta begin_main_frame_queue_duration_;
-  base::TimeDelta bmf_start_to_activate_duration_;
+  // The value of begin_main_frame_queue_duration_ that was measured for the
+  // pending tree.
+  base::TimeDelta pending_tree_bmf_queue_duration_;
+  // The time between when BMF was posted to the main thread task queue, and
+  // when the result of the BMF finished activation.
+  base::TimeDelta bmf_start_to_ready_to_activate_duration_;
 
-  bool begin_main_frame_on_critical_path_;
+  bool begin_main_frame_on_critical_path_ = false;
+  bool pending_tree_on_critical_path_ = false;
   base::TimeTicks begin_main_frame_sent_time_;
   base::TimeTicks begin_main_frame_start_time_;
   base::TimeTicks commit_start_time_;

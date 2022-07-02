@@ -73,7 +73,8 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   ~BackendImpl() override;
 
   // Performs general initialization for this current instance of the cache.
-  net::Error Init(CompletionOnceCallback callback);
+  // `callback` is always invoked asynchronously.
+  void Init(CompletionOnceCallback callback);
 
   // Performs the actual initialization and final cleanup on destruction.
   int SyncInit();

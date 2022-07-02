@@ -133,9 +133,9 @@ int InitSocketPoolHelper(
                              : absl::optional<NetworkTrafficAnnotationTag>(
                                    proxy_info.traffic_annotation());
   if (num_preconnect_streams) {
-    pool->RequestSockets(connection_group, std::move(socket_params),
-                         proxy_annotation, num_preconnect_streams, net_log);
-    return OK;
+    return pool->RequestSockets(connection_group, std::move(socket_params),
+                                proxy_annotation, num_preconnect_streams,
+                                std::move(callback), net_log);
   }
 
   return socket_handle->Init(connection_group, std::move(socket_params),
@@ -289,7 +289,8 @@ int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
                                     NetworkIsolationKey network_isolation_key,
                                     SecureDnsPolicy secure_dns_policy,
                                     const NetLogWithSource& net_log,
-                                    int num_preconnect_streams) {
+                                    int num_preconnect_streams,
+                                    CompletionOnceCallback callback) {
   // QUIC proxies are currently not supported through this method.
   DCHECK(!proxy_info.is_quic());
 
@@ -303,7 +304,7 @@ int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       false /* force_tunnel */, privacy_mode, std::move(network_isolation_key),
       secure_dns_policy, SocketTag(), net_log, num_preconnect_streams, nullptr,
-      HttpNetworkSession::NORMAL_SOCKET_POOL, CompletionOnceCallback(),
+      HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
       ClientSocketPool::ProxyAuthCallback());
 }
 

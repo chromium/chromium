@@ -202,6 +202,16 @@ void BackForwardCacheCanStoreDocumentResult::WriteIntoTrace(
   }
 }
 
+bool BackForwardCacheCanStoreDocumentResult::operator==(
+    const BackForwardCacheCanStoreDocumentResult& other) const {
+  return not_restored_reasons() == other.not_restored_reasons() &&
+         blocklisted_features() == other.blocklisted_features() &&
+         disabled_reasons() == other.disabled_reasons() &&
+         browsing_instance_swap_result() ==
+             other.browsing_instance_swap_result() &&
+         disallow_activation_reasons() == other.disallow_activation_reasons();
+}
+
 bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) const {
   return not_restored_reasons_.Has(reason);
@@ -459,16 +469,6 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToDisallowActivation(
   disallow_activation_reasons_.insert(reason);
 }
 
-void BackForwardCacheCanStoreDocumentResult::NoDueToAXEvents(
-    const std::vector<ui::AXEvent>& events) {
-  for (auto& event : events) {
-    ax_events_.insert(event.event_type);
-  }
-  AddNotRestoredReason(
-      BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
-  disallow_activation_reasons_.insert(DisallowActivationReasonId::kAXEvent);
-}
-
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
@@ -481,9 +481,6 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     browsing_instance_swap_result_ = other.browsing_instance_swap_result_;
   for (const auto reason : other.disallow_activation_reasons()) {
     disallow_activation_reasons_.insert(reason);
-  }
-  for (const auto event : other.ax_events()) {
-    ax_events_.insert(event);
   }
 }
 

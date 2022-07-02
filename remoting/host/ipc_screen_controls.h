@@ -23,8 +23,9 @@ class IpcScreenControls : public ScreenControls {
 
   ~IpcScreenControls() override;
 
-  // SessionController interface.
-  void SetScreenResolution(const ScreenResolution& resolution) override;
+  // ScreenControls interface.
+  void SetScreenResolution(const ScreenResolution& resolution,
+                           absl::optional<webrtc::ScreenId> screen_id) override;
 
  private:
   // Wraps the IPC channel to the desktop session agent.

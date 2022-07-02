@@ -5,9 +5,7 @@
 #ifndef NET_CERT_CT_POLICY_STATUS_H_
 #define NET_CERT_CT_POLICY_STATUS_H_
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 // Information about the connection's compliance with the CT policy. This value
 // is histogrammed, so do not re-order or change values, and add new values at
@@ -30,8 +28,6 @@ enum class CTPolicyCompliance {
   CT_POLICY_COUNT
 };
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_CT_POLICY_STATUS_H_

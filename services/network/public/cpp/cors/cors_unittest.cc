@@ -158,7 +158,6 @@ enum class AccessCheckResult {
 constexpr char kAccessCheckHistogram[] = "Net.Cors.AccessCheckResult";
 constexpr char kAccessCheckHistogramNotSecure[] =
     "Net.Cors.AccessCheckResult.NotSecureRequestor";
-constexpr char kAccessCheckHistogramError[] = "Net.Cors.AccessCheckError";
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedSecureOrigin) {
   base::HistogramTester histogram_tester;
@@ -172,7 +171,6 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedSecureOrigin) {
   histogram_tester.ExpectUniqueSample(kAccessCheckHistogram,
                                       AccessCheckResult::kPermitted, 1);
   histogram_tester.ExpectTotalCount(kAccessCheckHistogramNotSecure, 0);
-  histogram_tester.ExpectTotalCount(kAccessCheckHistogramError, 0);
 }
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedNotSecureOrigin) {
@@ -188,7 +186,6 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForPermittedNotSecureOrigin) {
                                       AccessCheckResult::kPermitted, 1);
   histogram_tester.ExpectUniqueSample(kAccessCheckHistogramNotSecure,
                                       AccessCheckResult::kPermitted, 1);
-  histogram_tester.ExpectTotalCount(kAccessCheckHistogramError, 0);
 }
 
 TEST_F(CorsTest, CheckAccessAndReportMetricsForNotPermittedSecureOrigin) {
@@ -203,9 +200,6 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForNotPermittedSecureOrigin) {
   histogram_tester.ExpectUniqueSample(kAccessCheckHistogram,
                                       AccessCheckResult::kNotPermitted, 1);
   histogram_tester.ExpectTotalCount(kAccessCheckHistogramNotSecure, 0);
-  histogram_tester.ExpectUniqueSample(
-      kAccessCheckHistogramError, mojom::CorsError::kMissingAllowOriginHeader,
-      1);
 }
 
 TEST_F(CorsTest, SafelistedMethod) {
@@ -292,7 +286,6 @@ TEST_F(CorsTest, SafelistedSecCHUA) {
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Model", "\"Model!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Reduced", "\"?1\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Full", "\"?1\""));
-  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Partitioned-Cookies", "\"?1\""));
 
   // TODO(mkwst): Validate that `Sec-CH-UA-*` is a structured header.
   // https://crbug.com/924969

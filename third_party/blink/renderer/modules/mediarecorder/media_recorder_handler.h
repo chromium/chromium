@@ -67,8 +67,8 @@ class MODULES_EXPORT MediaRecorderHandler final
                   MediaStreamDescriptor* media_stream,
                   const String& type,
                   const String& codecs,
-                  int32_t audio_bits_per_second,
-                  int32_t video_bits_per_second,
+                  uint32_t audio_bits_per_second,
+                  uint32_t video_bits_per_second,
                   AudioTrackRecorder::BitrateMode audio_bitrate_mode);
 
   AudioTrackRecorder::BitrateMode AudioBitrateMode();
@@ -137,8 +137,8 @@ class MODULES_EXPORT MediaRecorderHandler final
   bool passthrough_enabled_;
 
   // Sanitized video and audio bitrate settings passed on initialize().
-  int32_t video_bits_per_second_;
-  int32_t audio_bits_per_second_;
+  uint32_t video_bits_per_second_{0};
+  uint32_t audio_bits_per_second_{0};
 
   // Video Codec and profile, VP8 is used by default.
   VideoTrackRecorder::CodecProfile video_codec_profile_;

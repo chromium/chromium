@@ -20,9 +20,9 @@ const int kQuicCryptoConfigVersion = 2;
 
 namespace net {
 
-QuicServerInfo::State::State() {}
+QuicServerInfo::State::State() = default;
 
-QuicServerInfo::State::~State() {}
+QuicServerInfo::State::~State() = default;
 
 void QuicServerInfo::State::Clear() {
   base::STLClearObject(&server_config);
@@ -36,7 +36,7 @@ void QuicServerInfo::State::Clear() {
 QuicServerInfo::QuicServerInfo(const quic::QuicServerId& server_id)
     : server_id_(server_id) {}
 
-QuicServerInfo::~QuicServerInfo() {}
+QuicServerInfo::~QuicServerInfo() = default;
 
 const QuicServerInfo::State& QuicServerInfo::state() const {
   return state_;
@@ -138,8 +138,8 @@ string QuicServerInfo::SerializeInner() const {
   p.WriteString(state_.server_config_sig);
   p.WriteUInt32(state_.certs.size());
 
-  for (size_t i = 0; i < state_.certs.size(); i++)
-    p.WriteString(state_.certs[i]);
+  for (const auto& cert : state_.certs)
+    p.WriteString(cert);
 
   return string(reinterpret_cast<const char*>(p.data()), p.size());
 }

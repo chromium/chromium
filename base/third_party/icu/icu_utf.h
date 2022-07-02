@@ -118,7 +118,7 @@ typedef int32_t UChar32;
  * @return TRUE or FALSE
  * @stable ICU 2.4
  */
-#define CBU_IS_SURROGATE(c) (((c)&0xfffff800)==0xd800)
+#define CBU_IS_SURROGATE(c) (((uint32_t)(c)&0xfffff800) == 0xd800)
 
 /**
  * Assuming c is a surrogate code point (U_IS_SURROGATE(c)),
@@ -278,25 +278,27 @@ typedef int32_t UChar32;
  * @see U8_APPEND
  * @stable ICU 2.4
  */
-#define CBU8_APPEND_UNSAFE(s, i, c) CBUPRV_BLOCK_MACRO_BEGIN { \
-    uint32_t __uc=(c); \
-    if(__uc<=0x7f) { \
-        (s)[(i)++]=(uint8_t)__uc; \
-    } else { \
-        if(__uc<=0x7ff) { \
-            (s)[(i)++]=(uint8_t)((__uc>>6)|0xc0); \
-        } else { \
-            if(__uc<=0xffff) { \
-                (s)[(i)++]=(uint8_t)((__uc>>12)|0xe0); \
-            } else { \
-                (s)[(i)++]=(uint8_t)((__uc>>18)|0xf0); \
-                (s)[(i)++]=(uint8_t)(((__uc>>12)&0x3f)|0x80); \
-            } \
-            (s)[(i)++]=(uint8_t)(((__uc>>6)&0x3f)|0x80); \
-        } \
-        (s)[(i)++]=(uint8_t)((__uc&0x3f)|0x80); \
-    } \
-} CBUPRV_BLOCK_MACRO_END
+#define CBU8_APPEND_UNSAFE(s, i, c)                             \
+  CBUPRV_BLOCK_MACRO_BEGIN {                                    \
+    uint32_t __uc = (uint32_t)(c);                              \
+    if (__uc <= 0x7f) {                                         \
+      (s)[(i)++] = (uint8_t)__uc;                               \
+    } else {                                                    \
+      if (__uc <= 0x7ff) {                                      \
+        (s)[(i)++] = (uint8_t)((__uc >> 6) | 0xc0);             \
+      } else {                                                  \
+        if (__uc <= 0xffff) {                                   \
+          (s)[(i)++] = (uint8_t)((__uc >> 12) | 0xe0);          \
+        } else {                                                \
+          (s)[(i)++] = (uint8_t)((__uc >> 18) | 0xf0);          \
+          (s)[(i)++] = (uint8_t)(((__uc >> 12) & 0x3f) | 0x80); \
+        }                                                       \
+        (s)[(i)++] = (uint8_t)(((__uc >> 6) & 0x3f) | 0x80);    \
+      }                                                         \
+      (s)[(i)++] = (uint8_t)((__uc & 0x3f) | 0x80);             \
+    }                                                           \
+  }                                                             \
+  CBUPRV_BLOCK_MACRO_END
 
 // source/common/unicode/utf16.h
 
@@ -314,7 +316,7 @@ typedef int32_t UChar32;
  * @return TRUE or FALSE
  * @stable ICU 2.4
  */
-#define CBU16_IS_LEAD(c) (((c)&0xfffffc00)==0xd800)
+#define CBU16_IS_LEAD(c) (((uint32_t)(c)&0xfffffc00) == 0xd800)
 
 /**
  * Is this code unit a trail surrogate (U+dc00..U+dfff)?
@@ -322,7 +324,7 @@ typedef int32_t UChar32;
  * @return TRUE or FALSE
  * @stable ICU 2.4
  */
-#define CBU16_IS_TRAIL(c) (((c)&0xfffffc00)==0xdc00)
+#define CBU16_IS_TRAIL(c) (((uint32_t)(c)&0xfffffc00) == 0xdc00)
 
 /**
  * Is this code unit a surrogate (U+d800..U+dfff)?

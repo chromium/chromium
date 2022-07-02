@@ -63,7 +63,7 @@ void WebTimeLimitEnforcer::OnTimeLimitAllowlistChanged(
 
   url_matcher::URLMatcherConditionSet::Vector condition_set_vector;
   auto* condition_factory = url_matcher_->condition_factory();
-  int id = 0;
+  base::MatcherStringPattern::ID id = 0;
   for (const auto& url : allowlisted_urls) {
     url_matcher::URLMatcherCondition condition =
         condition_factory->CreateURLMatchesCondition(url);

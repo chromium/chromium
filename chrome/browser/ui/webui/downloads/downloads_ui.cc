@@ -94,6 +94,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"dangerSave", IDS_CONFIRM_DOWNLOAD},
       {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
+      {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
       // Deep scanning strings.
       {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},

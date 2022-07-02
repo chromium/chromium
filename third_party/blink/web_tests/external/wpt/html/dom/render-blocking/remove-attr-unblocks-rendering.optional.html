@@ -14,10 +14,6 @@
   immediately/soon.
 -->
 
-<link class="test" data="parser-inserted preload link" rel="preload" as="font"
-      blocking="render" href="/fonts/Ahem.ttf?pipe=trickle(d1)" crossorigin>
-<link class="test" data="parser-inserted modulepreload link" rel="modulepreload"
-      blocking="render" href="support/dummy-1.mjs?pipe=trickle(d1)">
 <script class="test" data="parser-inserted async script" async blocking="render"
         src="support/dummy-1.js?pipe=trickle(d1)&async"></script>
 <script class="test" data="parser-inserted defer script" defer blocking="render"
@@ -45,12 +41,6 @@ function addRenderBlockingElement(tag, title, attributes, optional_text) {
   document.head.appendChild(element);
 }
 
-addRenderBlockingElement(
-    'link', 'script-inserted preload link',
-    {rel: 'preload', as: 'font', crossorigin: 'anonymous', href: '/fonts/Ahem.ttf?pipe=trickle(d1)&dynamic'});
-addRenderBlockingElement(
-    'link', 'script-inserted modulepreload link',
-    {rel: 'modulepreload', href: 'support/dummy-1.mjs?pipe=trickle(d1)&dynamic'});
 addRenderBlockingElement(
     'link', 'script-inserted stylesheet link',
     {rel: 'stylesheet', blocking: 'render', href: 'support/target-red.css?pipe=trickle(d1)&dynamic'});

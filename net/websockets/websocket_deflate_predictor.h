@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE WebSocketDeflatePredictor {
     TRY_DEFLATE,
   };
 
-  virtual ~WebSocketDeflatePredictor() {}
+  virtual ~WebSocketDeflatePredictor() = default;
 
   // Predicts and returns whether the deflater should deflate the message
   // which begins with |frames[frame_index]| or not.

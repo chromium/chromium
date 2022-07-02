@@ -673,6 +673,14 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Picture-in-Picture mode has ended.
   virtual void ExitPictureInPicture() {}
 
+#if BUILDFLAG(IS_ANDROID)
+  // Updates information to determine whether a user gesture should carryover to
+  // future navigations. This is needed so navigations within a certain
+  // timeframe of a request initiated by a gesture will be treated as if they
+  // were initiated by a gesture too, otherwise the navigation may be blocked.
+  virtual void UpdateUserGestureCarryoverInfo(WebContents* web_contents) {}
+#endif
+
   // Returns true if lazy loading of images and frames should be enabled.
   virtual bool ShouldAllowLazyLoad();
 

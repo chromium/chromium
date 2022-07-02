@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -26,6 +27,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -152,18 +154,16 @@ bool BrowserNonClientFrameView::CanDrawStrokes() const {
 
 SkColor BrowserNonClientFrameView::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
-  return GetThemeProvider()->GetColor(
-      ShouldPaintAsActive(active_state)
-          ? ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE
-          : ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE);
+  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+                                          ? kColorFrameCaptionActive
+                                          : kColorFrameCaptionInactive);
 }
 
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
-  return GetThemeProvider()->GetColor(
-      ShouldPaintAsActive(active_state)
-          ? ThemeProperties::COLOR_FRAME_ACTIVE
-          : ThemeProperties::COLOR_FRAME_INACTIVE);
+  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+                                          ? ui::kColorFrameActive
+                                          : ui::kColorFrameInactive);
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {

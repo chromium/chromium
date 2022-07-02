@@ -39,7 +39,7 @@ class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
 
   ServiceWorkerPaymentAppFinder* GetFinder() {
     return ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        GetActiveWebContents()->GetMainFrame());
+        GetActiveWebContents()->GetPrimaryMainFrame());
   }
 
   std::string method_name_;

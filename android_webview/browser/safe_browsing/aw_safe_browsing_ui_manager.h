@@ -54,10 +54,12 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // BaseUIManager methods:
   void DisplayBlockingPage(const UnsafeResource& resource) override;
 
-  // Called on the UI thread by the ThreatDetails with the serialized
-  // protocol buffer, so the service can send it over.
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override;
+  // Called on the UI thread by the ThreatDetails with the report, so the
+  // service can send it over.
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report)
+      override;
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 

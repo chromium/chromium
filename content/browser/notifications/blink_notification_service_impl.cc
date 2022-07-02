@@ -19,6 +19,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
@@ -84,6 +85,7 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
     RenderProcessHost* render_process_host,
     const url::Origin& origin,
     const GURL& document_url,
+    const WeakDocumentPtr& weak_document_ptr,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
     : notification_context_(notification_context),
       browser_context_(browser_context),
@@ -91,6 +93,7 @@ BlinkNotificationServiceImpl::BlinkNotificationServiceImpl(
       render_process_host_id_(render_process_host->GetID()),
       origin_(origin),
       document_url_(document_url),
+      weak_document_ptr_(weak_document_ptr),
       receiver_(this, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(notification_context_);
@@ -179,16 +182,30 @@ blink::mojom::PermissionStatus
 BlinkNotificationServiceImpl::CheckPermissionStatus() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderProcessHost* rph = RenderProcessHost::FromID(render_process_host_id_);
-  if (!rph)
-    return blink::mojom::PermissionStatus::DENIED;
-
   // TODO(crbug.com/987654): It is odd that a service instance can be created
   // for cross-origin subframes, yet the instance is completely oblivious of
   // whether it is serving a top-level browsing context or an embedded one.
-  return browser_context_->GetPermissionController()
-      ->GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS, rph,
-                                     origin_);
+
+  // An empty |document_url_| should mean this is initiated by a worker.
+  // See: `RenderProcessHostImpl::CreateNotificationService` description in
+  // content/browser/renderer_host/render_process_host_impl.h
+  if (!document_url_.is_empty()) {
+    RenderFrameHost* rfh = weak_document_ptr_.AsRenderFrameHostIfValid();
+    if (!rfh) {
+      return blink::mojom::PermissionStatus::DENIED;
+    }
+    return browser_context_->GetPermissionController()
+        ->GetPermissionStatusForCurrentDocument(
+            blink::PermissionType::NOTIFICATIONS, rfh);
+  } else {
+    RenderProcessHost* rph = RenderProcessHost::FromID(render_process_host_id_);
+    if (!rph) {
+      return blink::mojom::PermissionStatus::DENIED;
+    }
+    return browser_context_->GetPermissionController()
+        ->GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
+                                       rph, origin_);
+  }
 }
 
 bool BlinkNotificationServiceImpl::ValidateNotificationDataAndResources(
@@ -225,6 +242,20 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
     const blink::NotificationResources& notification_resources,
     DisplayPersistentNotificationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an error in
+  // blink::ServiceWorkerRegistrationNotifications. Report a bad message if the
+  // renderer if the renderer side check didn't happen for some reason.
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (registration && registration->ancestor_frame_type() ==
+                          blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Notification is not allowed in a fenced frame");
+    return;
+  }
+
   if (!ValidateNotificationDataAndResources(platform_notification_data,
                                             notification_resources))
     return;

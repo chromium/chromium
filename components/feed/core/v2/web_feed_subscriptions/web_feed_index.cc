@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/substring_set_matcher/string_pattern.h"
+#include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -34,7 +34,7 @@ class HostSuffixMatcher {
       return host_suffix < other_host_suffix;
     }
     std::string host_suffix;
-    int condition_id;
+    base::MatcherStringPattern::ID condition_id;
   };
 
   explicit HostSuffixMatcher(std::vector<Entry> entries) {
@@ -44,7 +44,8 @@ class HostSuffixMatcher {
 
   // Find all host suffixes that match `host_string`, and add the match IDs to
   // `match_set`.
-  void FindMatches(const std::string& host_string, std::set<int>& match_set) {
+  void FindMatches(const std::string& host_string,
+                   std::set<base::MatcherStringPattern::ID>& match_set) {
     base::StringPiece host(host_string);
     if (host.empty())
       return;
@@ -62,7 +63,8 @@ class HostSuffixMatcher {
   }
 
  private:
-  void FindExactMatches(base::StringPiece prefix, std::set<int>& match_set) {
+  void FindExactMatches(base::StringPiece prefix,
+                        std::set<base::MatcherStringPattern::ID>& match_set) {
     auto iter = std::lower_bound(entries_.begin(), entries_.end(), prefix);
     while (iter != entries_.end() && iter->host_suffix == prefix) {
       match_set.insert(iter->condition_id);
@@ -73,7 +75,7 @@ class HostSuffixMatcher {
   std::vector<Entry> entries_;
 };
 
-constexpr int kFirstConditionId = 1;
+constexpr base::MatcherStringPattern::ID kFirstConditionId = 1;
 
 // References a set of conditions that all must be true to identify a Web Feed.
 // Conditions in this context are represented by unique integer IDs. Each
@@ -111,7 +113,8 @@ class EntrySet {
     // Search each 'vertical slice' independently: page URL, page host suffix,
     // page suffix, and RSS URL. Collect set of matching IDs.
 
-    std::set<int> matching_ids = page_url_matcher_.MatchURL(page_url);
+    std::set<base::MatcherStringPattern::ID> matching_ids =
+        page_url_matcher_.MatchURL(page_url);
     for (const GURL& rss_url : rss_urls) {
       auto ids = rss_url_matcher_.MatchURL(rss_url);
       matching_ids.insert(ids.begin(), ids.end());
@@ -128,7 +131,7 @@ class EntrySet {
     // scan is easier and likely pretty fast since condition_sets_ is dense and
     // flat.
 
-    int mcs_first_condition_id = kFirstConditionId;
+    base::MatcherStringPattern::ID mcs_first_condition_id = kFirstConditionId;
     int matches_for_mcs = 0;
     auto match_iter = matching_ids.begin();
     for (size_t i = 0;
@@ -168,8 +171,8 @@ class EntrySet {
 
   // Members that just hold on to memory used in matchers.
   url_matcher::URLMatcherConditionFactory condition_factory_;
-  std::vector<base::StringPattern> host_match_patterns_;
-  std::vector<base::StringPattern> path_match_patterns_;
+  std::vector<base::MatcherStringPattern> host_match_patterns_;
+  std::vector<base::MatcherStringPattern> path_match_patterns_;
 
   // List of `MultiConditionSet`. Each one knows how to aggregate match IDs
   // reported from matchers below into a WebFeed match.
@@ -363,9 +366,9 @@ class EntrySetBuilder {
     return true;
   }
 
-  static std::vector<const base::StringPattern*> MakeVectorOfPointers(
-      const std::vector<base::StringPattern>& patterns) {
-    std::vector<const base::StringPattern*> result(patterns.size());
+  static std::vector<const base::MatcherStringPattern*> MakeVectorOfPointers(
+      const std::vector<base::MatcherStringPattern>& patterns) {
+    std::vector<const base::MatcherStringPattern*> result(patterns.size());
     for (size_t i = 0; i < patterns.size(); ++i) {
       result[i] = &patterns[i];
     }
@@ -376,7 +379,7 @@ class EntrySetBuilder {
   std::unique_ptr<EntrySet> entry_set_ = std::make_unique<EntrySet>();
 
   // Temporary state for building `entry_set_`.
-  int next_condition_set_id = kFirstConditionId;
+  base::MatcherStringPattern::ID next_condition_set_id = kFirstConditionId;
   std::vector<scoped_refptr<url_matcher::URLMatcherConditionSet>>
       page_conditions_;
   std::vector<scoped_refptr<url_matcher::URLMatcherConditionSet>>

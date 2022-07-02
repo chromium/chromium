@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -43,9 +44,9 @@ class Autofill_CreditCardFill;
 namespace autofill {
 
 class AutofillField;
+class AutofillOfferData;
 class CreditCard;
 class FormEventLoggerBase;
-struct AutofillOfferData;
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
@@ -1065,6 +1066,18 @@ class AutofillMetrics {
     kMaxValue = SECTION_UNION_IMPORT,
   };
 
+  // When parsing a nationally formatted phone number on profile import, a
+  // region has to be assumed. This enum represents if a phone number could be
+  // parsed by assuming the app locale and/or the variation country code as its
+  // region.
+  enum class PhoneNumberImportParsingResult {
+    CANNOT_PARSE = 0,
+    PARSED_WITH_APP_LOCALE = 1,
+    PARSED_WITH_VARIATION_COUNTRY_CODE = 2,
+    PARSED_WITH_BOTH = 3,
+    kMaxValue = PARSED_WITH_BOTH,
+  };
+
   // To record the source of the autofilled state field.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -1278,6 +1291,12 @@ class AutofillMetrics {
                           const base::TimeTicks& form_parsed_timestamp,
                           FormSignature form_signature,
                           const FormInteractionCounts& form_interaction_counts);
+    void LogKeyMetrics(const DenseSet<FormType>& form_types,
+                       bool data_to_fill_available,
+                       bool suggestions_shown,
+                       bool edited_autofilled_field,
+                       bool suggestion_filled,
+                       autofill_assistant::AutofillAssistantIntent intent);
     void LogFormEvent(FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
@@ -1920,7 +1939,8 @@ class AutofillMetrics {
       const FormStructure& form,
       const AutofillField& field);
 
-  static void LogAddressFormImportStatustMetric(
+  // Logs the overall status of an address import upon form submission.
+  static void LogAddressFormImportStatusMetric(
       AddressProfileImportStatusMetric metric);
 
   // Records if the page was translated upon form submission.
@@ -2033,9 +2053,20 @@ class AutofillMetrics {
   // Logs if at least one setting-inaccessible field was removed on import.
   static void LogRemovedSettingInaccessibleFields(bool did_remove);
 
-  // Logs that |field| was removed from a profile on import, because it is
+  // Logs that `field` was removed from a profile on import, because it is
   // setting-inaccessible in the profile's country.
   static void LogRemovedSettingInaccessibleField(ServerFieldType field);
+
+  // Logs the outcome of parsing a phone number on profile import when assuming
+  // either the variation country code or the app locale as its region.
+  static void LogPhoneNumberImportParsingResult(
+      bool with_variation_country_code,
+      bool with_app_locale);
+
+  // Logs that local heuristics matched phone number fields using `grammar_id`.
+  // `suffix_matched` indicates if the special case handling for phone number
+  // suffixes was triggered.
+  static void LogPhoneNumberGrammarMatched(int grammar_id, bool suffix_matched);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);
@@ -2109,6 +2140,9 @@ int GetFieldTypeUserEditStatusMetric(
     ServerFieldType server_type,
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric);
 #endif
+
+const std::string PaymentsRpcResultToMetricsSuffix(
+    AutofillClient::PaymentsRpcResult result);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_H_

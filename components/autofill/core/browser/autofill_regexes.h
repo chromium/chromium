@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_REGEXES_H_
 
 #include <string>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 
@@ -14,11 +15,11 @@ namespace autofill {
 
 // Case-insensitive regular expression matching.
 // Returns true if |pattern| is found in |input|.
-// The |group_to_be_captured| numbered group is captured into |match|.
+// If |groups| is non-null, it gets resized and the found capture groups
+// are written into it.
 bool MatchesPattern(const base::StringPiece16& input,
                     const base::StringPiece16& pattern,
-                    std::u16string* match = nullptr,
-                    int32_t group_to_be_captured = 0);
+                    std::vector<std::u16string>* groups = nullptr);
 
 }  // namespace autofill
 

@@ -610,15 +610,24 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
         Verify your purchase
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
+        You chose to verify with an authenticator device on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
+    </message>
   </if> <!-- not is_win and not is_macosx -->
   <if expr="is_macosx">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
         Use Touch ID to verify and complete your purchase?
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
+        You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
+    </message>
   </if> <!-- is_macosx -->
   <if expr="is_win">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
         Use Windows Hello to verify and complete your purchase?
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
+        You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
     </message>
   </if>  <!-- is_win -->
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the store name, e.g. merchant.com." formatter_data="android_java">
@@ -629,6 +638,9 @@
   </message>
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
     Verify
+  </message>
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL" desc="Part of a longer text string where the user is being offered the choice to request that previously stored information on them be deleted. The longer text string is 'This provider may have stored information about your payment method, which you can [request to be deleted].'">
+    request to be deleted
   </message>
   <if expr="is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">

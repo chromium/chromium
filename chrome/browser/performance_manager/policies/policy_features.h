@@ -93,15 +93,16 @@ extern const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs;
 // regardless of the user's interactions with ARCVM.
 extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
 
-// If true then we will trim ARCVM's crosvm once on the first moderate (or
-// critical though unlikely) memory pressure after ARCVM boot. The trimming is
-// done regardless of the user's interactions with ARCVM.
+// If true then we will drop ARCVM guest page caches once on the first moderate
+// (or critical though unlikely) memory pressure after ARCVM boot. The regular
+// trimming (i.e. moving pages to zram) is not performed, and the page cache
+// drop is done regardless of the user's interactions with ARCVM.
 extern const base::FeatureParam<bool>
     kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot;
 
-// If true then we will drop ARCVM guest's page caches when the trimmer does
-// kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot. If false (default), it also
-// trims ARCVM's shared memory.
+// Deprecated.
+// TODO(yusukes): Remove this once ChromeOSARCVMReclaimThrottle.gcl Finch
+// experiment is done.
 extern const base::FeatureParam<bool>
     kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot;
 

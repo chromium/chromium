@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
 
   blink::mojom::TextAutosizerPageInfo received_page_info;
   auto interceptor = std::make_unique<TextAutosizerPageInfoInterceptor>(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 #if BUILDFLAG(IS_ANDROID)
   prefs.device_scale_adjustment += 0.05f;
   // Change the device scale adjustment to trigger a RemotePageInfo update.
@@ -2414,10 +2414,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       actions_template.c_str(), scroll_start_location_in_screen.x(),
       scroll_start_location_in_screen.y(), scroll_end_location_in_screen.x(),
       scroll_end_location_in_screen.y());
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(touch_move_sequence_json);
-  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-  ActionsParser actions_parser(std::move(*parsed_json.value));
+  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+  ActionsParser actions_parser(std::move(*parsed_json));
 
   ASSERT_TRUE(actions_parser.Parse());
   auto synthetic_scroll_gesture =

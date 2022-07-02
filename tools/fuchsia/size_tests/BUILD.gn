@@ -8,7 +8,7 @@ import("//build/config/fuchsia/sizes.gni")
 
 compute_fuchsia_package_sizes("fuchsia_sizes") {
   data_deps = [
-    "//fuchsia/engine:web_engine",
-    "//fuchsia/runners:cast_runner_pkg",
+    "//fuchsia_web/runners:cast_runner_pkg",
+    "//fuchsia_web/webengine:web_engine",
   ]
 }

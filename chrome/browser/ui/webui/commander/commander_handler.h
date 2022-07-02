@@ -53,24 +53,24 @@ class CommanderHandler : public content::WebUIMessageHandler {
 
   // Handles text changes in the primary textfield. Expects a single string
   // argument.
-  void HandleTextChanged(const base::ListValue* args);
+  void HandleTextChanged(const base::Value::List& args);
 
   // Handles the user selecting one of the available command options.
   // Expects two numeric argument representing the index of the chosen command,
   // and the result set id of the active view model (see documentation in
   // commander::CommanderViewModel).
-  void HandleOptionSelected(const base::ListValue* args);
+  void HandleOptionSelected(const base::Value::List& args);
 
   // Handles the user cancelling a composite command. No arguments expected.
-  void HandleCompositeCommandCancelled(const base::ListValue* args);
+  void HandleCompositeCommandCancelled(const base::Value::List& args);
 
   // Handles the user pressing "Escape", or otherwise indicating they would
   // like to dismiss the UI. No arguments expected.
-  void HandleDismiss(const base::ListValue* args);
+  void HandleDismiss(const base::Value::List& args);
 
   // Handles the display height of the UI changing. Expects one numeric argument
   // representing the new height.
-  void HandleHeightChanged(const base::ListValue* args);
+  void HandleHeightChanged(const base::Value::List& args);
 
   raw_ptr<Delegate> delegate_ = nullptr;
 };

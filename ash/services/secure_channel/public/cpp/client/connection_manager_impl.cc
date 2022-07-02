@@ -8,6 +8,7 @@
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
@@ -24,77 +25,20 @@ namespace {
 
 constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
 
-void RecordConnectionSuccessMetric(const std::string& metric_name_result,
-                                   bool success) {
-  base::UmaHistogramBoolean(metric_name_result, success);
-}
-
 }  // namespace
-
-ConnectionManagerImpl::MetricsRecorder::MetricsRecorder(
-    ConnectionManager* connection_manager,
-    base::Clock* clock,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration)
-    : connection_manager_(connection_manager),
-      status_(connection_manager->GetStatus()),
-      clock_(clock),
-      status_change_timestamp_(clock_->Now()),
-      metric_name_result_(metric_name_result),
-      metric_name_latency_(metric_name_latency),
-      metric_name_duration_(metric_name_duration) {
-  connection_manager_->AddObserver(this);
-}
-
-ConnectionManagerImpl::MetricsRecorder::~MetricsRecorder() {
-  connection_manager_->RemoveObserver(this);
-}
-
-void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
-  const ConnectionManager::Status prev_status = status_;
-  status_ = connection_manager_->GetStatus();
-
-  const base::TimeDelta delta = clock_->Now() - status_change_timestamp_;
-  status_change_timestamp_ = clock_->Now();
-
-  switch (status_) {
-    case ConnectionManager::Status::kConnecting:
-      break;
-
-    case ConnectionManager::Status::kDisconnected:
-      if (prev_status == ConnectionManager::Status::kConnected) {
-        base::UmaHistogramLongTimes100(metric_name_duration_, delta);
-      } else if (prev_status == ConnectionManager::Status::kConnecting) {
-        RecordConnectionSuccessMetric(metric_name_result_, false);
-      }
-      break;
-
-    case ConnectionManager::Status::kConnected:
-      if (prev_status == ConnectionManager::Status::kConnecting) {
-        base::UmaHistogramTimes(metric_name_latency_, delta);
-        RecordConnectionSuccessMetric(metric_name_result_, true);
-      }
-      break;
-  }
-}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
     SecureChannelClient* secure_channel_client,
     const std::string& feature_name,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration)
+    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder)
     : ConnectionManagerImpl(multidevice_setup_client,
                             device_sync_client,
                             secure_channel_client,
                             std::make_unique<base::OneShotTimer>(),
                             feature_name,
-                            metric_name_result,
-                            metric_name_latency,
-                            metric_name_duration,
+                            std::move(metrics_recorder),
                             base::DefaultClock::GetInstance()) {}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
@@ -103,21 +47,17 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     SecureChannelClient* secure_channel_client,
     std::unique_ptr<base::OneShotTimer> timer,
     const std::string& feature_name,
-    const std::string& metric_name_result,
-    const std::string& metric_name_latency,
-    const std::string& metric_name_duration,
+    std::unique_ptr<NearbyMetricsRecorder> metrics_recorder,
     base::Clock* clock)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       timer_(std::move(timer)),
       feature_name_(feature_name),
-      metrics_recorder_(
-          std::make_unique<MetricsRecorder>(this,
-                                            clock,
-                                            metric_name_result,
-                                            metric_name_latency,
-                                            metric_name_duration)) {
+      metrics_recorder_(std::move(metrics_recorder)),
+      last_status_(Status::kDisconnected),
+      status_change_timestamp_(clock->Now()),
+      clock_(clock) {
   DCHECK(multidevice_setup_client_);
   DCHECK(device_sync_client_);
   DCHECK(secure_channel_client_);
@@ -171,7 +111,7 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
   connection_attempt_->SetDelegate(this);
 
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
-  NotifyStatusChanged();
+  OnStatusChanged();
 
   timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
                 base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
@@ -180,6 +120,10 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
 
 void ConnectionManagerImpl::Disconnect() {
   PA_LOG(INFO) << "ConnectionManager disconnecting connection.";
+  if (last_status_ == Status::kConnecting) {
+    metrics_recorder_->RecordConnectionFailure(
+        mojom::ConnectionAttemptFailureReason::CONNECTION_CANCELLED);
+  }
   TearDownConnection();
 }
 
@@ -209,13 +153,27 @@ void ConnectionManagerImpl::RegisterPayloadFile(
                                 std::move(registration_result_callback));
 }
 
+void ConnectionManagerImpl::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  const absl::optional<multidevice::RemoteDeviceRef> remote_device =
+      multidevice_setup_client_->GetHostStatus().second;
+  if (!remote_device) {
+    std::move(callback).Run(/*timestamp=*/absl::nullopt);
+    return;
+  }
+
+  secure_channel_client_->GetLastSeenTimestamp(remote_device->GetDeviceId(),
+                                               std::move(callback));
+}
+
 void ConnectionManagerImpl::OnConnectionAttemptFailure(
     mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "AttemptConnection() failed to establish connection with "
                   << "error: " << reason << ".";
   timer_->Stop();
   connection_attempt_.reset();
-  NotifyStatusChanged();
+  metrics_recorder_->RecordConnectionFailure(reason);
+  OnStatusChanged();
 }
 
 void ConnectionManagerImpl::OnConnection(
@@ -225,7 +183,12 @@ void ConnectionManagerImpl::OnConnection(
   timer_->Stop();
   channel_ = std::move(channel);
   channel_->AddObserver(this);
-  NotifyStatusChanged();
+  if (last_status_ == Status::kConnecting) {
+    metrics_recorder_->RecordConnectionSuccess(clock_->Now() -
+                                               status_change_timestamp_);
+  }
+
+  OnStatusChanged();
 }
 
 void ConnectionManagerImpl::OnDisconnected() {
@@ -240,8 +203,8 @@ void ConnectionManagerImpl::OnConnectionTimeout() {
   PA_LOG(WARNING) << "AttemptConnection() has timed out. Closing connection "
                   << "attempt.";
 
-  connection_attempt_.reset();
-  NotifyStatusChanged();
+  OnConnectionAttemptFailure(
+      mojom::ConnectionAttemptFailureReason::TIMEOUT_FINDING_DEVICE);
 }
 
 void ConnectionManagerImpl::TearDownConnection() {
@@ -251,7 +214,21 @@ void ConnectionManagerImpl::TearDownConnection() {
   if (channel_)
     channel_->RemoveObserver(this);
   channel_.reset();
+  if (last_status_ == Status::kConnected) {
+    metrics_recorder_->RecordConnectionDuration(clock_->Now() -
+                                                status_change_timestamp_);
+  }
+  OnStatusChanged();
+}
+
+void ConnectionManagerImpl::OnStatusChanged() {
   NotifyStatusChanged();
+
+  Status status = GetStatus();
+  if (last_status_ != status) {
+    status_change_timestamp_ = clock_->Now();
+    last_status_ = status;
+  }
 }
 
 }  // namespace ash::secure_channel

@@ -41,6 +41,10 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif
+
 namespace {
 
 // The WebUSB notification should be displayed for all profiles.
@@ -237,8 +241,14 @@ void WebUsbDetector::OnDeviceAdded(
       ui::ImageModel::FromVectorIcon(vector_icons::kUsbIcon, ui::kColorIcon,
                                      64),
       std::u16string(), GURL(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierWebUsb,
+                                 ash::NotificationCatalogName::kWebUsb),
+#else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       rich_notification_data,
       base::MakeRefCounted<WebUsbNotificationDelegate>(
           weak_factory_.GetWeakPtr(), landing_page, notification_id));

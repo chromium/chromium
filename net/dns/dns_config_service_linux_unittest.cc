@@ -15,6 +15,7 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
@@ -310,8 +311,8 @@ class DnsConfigServiceLinuxTest : public ::testing::Test,
 
  protected:
   internal::DnsConfigServiceLinux service_;
-  TestResolvReader* resolv_reader_;
-  TestNsswitchReader* nsswitch_reader_;
+  raw_ptr<TestResolvReader> resolv_reader_;
+  raw_ptr<TestNsswitchReader> nsswitch_reader_;
 };
 
 // Regression test to verify crash does not occur if DnsConfigServiceLinux

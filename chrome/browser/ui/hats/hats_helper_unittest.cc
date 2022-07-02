@@ -48,7 +48,9 @@ class HatsHelperTest : public testing::Test {
     return content::WebContentsTester::For(web_contents_.get());
   }
 
-  content::RenderFrameHost* main_rfh() { return web_contents_->GetMainFrame(); }
+  content::RenderFrameHost* main_rfh() {
+    return web_contents_->GetPrimaryMainFrame();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -105,8 +107,9 @@ TEST_F(HatsHelperFencedFrameTest,
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   GURL fenced_frame_url = GURL("https://unrelated.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
+  fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
 }

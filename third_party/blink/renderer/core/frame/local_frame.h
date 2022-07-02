@@ -58,7 +58,7 @@
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -357,7 +357,6 @@ class CORE_EXPORT LocalFrame final
   void SetPageAndTextZoomFactors(float page_zoom_factor,
                                  float text_zoom_factor);
 
-  void DeviceScaleFactorChanged();
   double DevicePixelRatio() const;
 
   // Informs the local root's document and its local descendant subtree that a
@@ -383,6 +382,9 @@ class CORE_EXPORT LocalFrame final
   void RemoveSpellingMarkersUnderWords(const Vector<String>& words);
 
   bool ShouldThrottleRendering() const;
+
+  // Called on the main frame of the portal is activated or adopted.
+  void PortalStateChanged();
 
   // Returns frame scheduler for this frame.
   // FrameScheduler is destroyed during frame detach and nullptr will be
@@ -692,12 +694,6 @@ class CORE_EXPORT LocalFrame final
 
   LocalFrameToken GetLocalFrameToken() const;
 
-  TextFragmentHandler* GetTextFragmentHandler() const {
-    // |text_fragment_handler_| is always set on the main frame and created
-    // lazily for child frames.
-    return text_fragment_handler_;
-  }
-
   LoaderFreezeMode GetLoaderFreezeMode();
 
   // Swaps `this` LocalFrame in to replace the current frame  (e.g. in the case
@@ -727,6 +723,10 @@ class CORE_EXPORT LocalFrame final
   // Explainer:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
   bool ShouldMaintainTrivialSessionHistory() const;
+
+  TextFragmentHandler* GetTextFragmentHandler() const {
+    return text_fragment_handler_;
+  }
 
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
@@ -930,8 +930,9 @@ class CORE_EXPORT LocalFrame final
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
 
-  // Always non-null for the main frame and created lazily for child frames;
-  // null otherwise.
+  // Created lazily when needed, either via the browser's SharedHighlighting
+  // binding to it or via a context menu with a selection being opened in a
+  // frame.
   Member<TextFragmentHandler> text_fragment_handler_;
 
   // Manages a transient affordance for this frame to enter fullscreen.

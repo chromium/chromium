@@ -11,12 +11,15 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/gamepad_id_list.h"
+#include "device/gamepad/haptic_gamepad_android.h"
 #include "device/gamepad/jni_headers/GamepadList_jni.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;
@@ -97,6 +100,9 @@ GamepadPlatformDataFetcherAndroid::GamepadPlatformDataFetcherAndroid() =
 
 GamepadPlatformDataFetcherAndroid::~GamepadPlatformDataFetcherAndroid() {
   PauseHint(true);
+  for (const auto& pair : vibration_actuators_) {
+    pair.second->Shutdown();
+  }
 }
 
 GamepadSource GamepadPlatformDataFetcherAndroid::source() {
@@ -105,6 +111,34 @@ GamepadSource GamepadPlatformDataFetcherAndroid::source() {
 
 void GamepadPlatformDataFetcherAndroid::OnAddedToProvider() {
   PauseHint(false);
+}
+
+void GamepadPlatformDataFetcherAndroid::SetDualRumbleVibrationActuator(
+    int source_id) {
+  DCHECK(!base::Contains(vibration_actuators_, source_id));
+  vibration_actuators_.emplace(
+      source_id, std::make_unique<HapticGamepadAndroid>(source_id));
+}
+
+void GamepadPlatformDataFetcherAndroid::TryShutdownDualRumbleVibrationActuator(
+    int source_id) {
+  auto find_it = vibration_actuators_.find(source_id);
+  if (find_it != vibration_actuators_.end()) {
+    find_it->second->Shutdown();
+    vibration_actuators_.erase(find_it);
+  }
+}
+
+void GamepadPlatformDataFetcherAndroid::SetVibration(int device_index,
+                                                     double strong_magnitude,
+                                                     double weak_magnitude) {
+  Java_GamepadList_setVibration(base::android::AttachCurrentThread(),
+                                device_index, strong_magnitude, weak_magnitude);
+}
+
+void GamepadPlatformDataFetcherAndroid::SetZeroVibration(int device_index) {
+  Java_GamepadList_setZeroVibration(base::android::AttachCurrentThread(),
+                                    device_index);
 }
 
 void GamepadPlatformDataFetcherAndroid::GetGamepadData(
@@ -126,6 +160,42 @@ void GamepadPlatformDataFetcherAndroid::PauseHint(bool paused) {
   Java_GamepadList_setGamepadAPIActive(env, !paused);
 }
 
+void GamepadPlatformDataFetcherAndroid::PlayEffect(
+    int source_id,
+    mojom::GamepadHapticEffectType type,
+    mojom::GamepadEffectParametersPtr params,
+    mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner) {
+  auto find_it = vibration_actuators_.find(source_id);
+  if (find_it == vibration_actuators_.end()) {
+    LOG(ERROR) << "Failed to play vibration effect on a gamepad with no "
+                  "vibration actuator";
+    RunVibrationCallback(
+        std::move(callback), std::move(callback_runner),
+        mojom::GamepadHapticsResult::GamepadHapticsResultError);
+    return;
+  }
+  find_it->second->PlayEffect(type, std::move(params), std::move(callback),
+                              std::move(callback_runner));
+}
+
+void GamepadPlatformDataFetcherAndroid::ResetVibration(
+    int source_id,
+    mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner) {
+  auto find_it = vibration_actuators_.find(source_id);
+  if (find_it == vibration_actuators_.end()) {
+    LOG(ERROR) << "Failed to reset vibration effect on a gamepad with no "
+                  "vibration actuator";
+    RunVibrationCallback(
+        std::move(callback), std::move(callback_runner),
+        mojom::GamepadHapticsResult::GamepadHapticsResultError);
+    return;
+  }
+  find_it->second->ResetVibration(std::move(callback),
+                                  std::move(callback_runner));
+}
+
 static void JNI_GamepadList_SetGamepadData(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -139,7 +209,8 @@ static void JNI_GamepadList_SetGamepadData(
     jlong timestamp,
     const JavaParamRef<jfloatArray>& jaxes,
     const JavaParamRef<jfloatArray>& jbuttons,
-    jint buttons_length) {
+    jint buttons_length,
+    jboolean supports_dual_rumble) {
   DCHECK(data_fetcher);
   GamepadPlatformDataFetcherAndroid* fetcher =
       reinterpret_cast<GamepadPlatformDataFetcherAndroid*>(data_fetcher);
@@ -147,8 +218,10 @@ static void JNI_GamepadList_SetGamepadData(
 
   // Do not set gamepad parameters for all the gamepad devices that are not
   // attached.
-  if (!connected)
+  if (!connected) {
+    fetcher->TryShutdownDualRumbleVibrationActuator(index);
     return;
+  }
 
   PadState* state = fetcher->GetPadState(index);
 
@@ -175,6 +248,14 @@ static void JNI_GamepadList_SetGamepadData(
     }
     GamepadDataFetcher::UpdateGamepadStrings(product_name, vendor_id,
                                              product_id, mapping, pad);
+    if (base::FeatureList::IsEnabled(
+            features::kEnableAndroidGamepadVibration)) {
+      pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
+      pad.vibration_actuator.not_null = supports_dual_rumble;
+      if (supports_dual_rumble) {
+        fetcher->SetDualRumbleVibrationActuator(state->source_id);
+      }
+    }
   }
 
   pad.connected = true;

@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -95,12 +96,19 @@ AggregatableReport CreateExampleAggregatableReport() {
                         /*key_id=*/"key_2",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
+  base::Value::Dict additional_fields;
+  additional_fields.Set("source_registration_time", "1234569600");
+  additional_fields.Set(
+      "attribution_destination",
+      url::Origin::Create(GURL("https://example.destination")).Serialize());
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk", DefaultExternalReportID(),
+      base::Time::FromJavaTime(1234567890123), DefaultExternalReportID(),
       /*reporting_origin=*/
       url::Origin::Create(GURL("https://example.reporting")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
+      AggregatableReportSharedInfo::DebugMode::kDisabled,
+      std::move(additional_fields),
+      /*api_version=*/"",
+      /*api_identifier=*/"attribution-reporting");
 
   return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
 }
@@ -319,8 +327,7 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   std::vector<AttributionReport> StoredReports() {
-    return GetAttributionReportsForTesting(
-        attribution_manager_.get(), /*max_report_time=*/base::Time::Max());
+    return GetAttributionReportsForTesting(attribution_manager_.get());
   }
 
   void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }
@@ -550,7 +557,7 @@ TEST_F(AttributionManagerImplTest,
   report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
@@ -617,7 +624,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
@@ -661,7 +668,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -697,7 +704,7 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kSent = 0.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 0, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
@@ -743,11 +750,11 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
        SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
   // kSent = 0.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 0, 2);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 0, 2);
   // kFailed = 1.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 1, 0);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 1, 0);
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
@@ -861,7 +868,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
         start, start + base::Minutes(1),
         base::BindLambdaForTesting(
             [match_url](const url::Origin& _) { return match_url; }),
-        run_loop.QuitClosure());
+        /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
     run_loop.Run();
 
     size_t expected_reports = match_url ? 0u : 1u;
@@ -1047,7 +1054,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus2",
+      "Conversions.CreateReportStatus3",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus2",
@@ -1220,7 +1227,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating([](const url::Origin& _) { return false; }),
-      run_loop.QuitClosure());
+      /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -1349,7 +1356,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1642,8 +1649,9 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                 ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
         << test_case.name;
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
   }
 }
 
@@ -1673,8 +1681,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                           TriggerDebugKeyIs(test_case.expected_debug_key))))
         << test_case.name;
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
   }
 }
 
@@ -1745,8 +1754,9 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
       EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
     }
 
-    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
-                                    base::NullCallback(), base::DoNothing());
+    attribution_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        /*delete_rate_limit_data=*/true, base::DoNothing());
 
     ::testing::Mock::VerifyAndClear(&observer);
   }
@@ -1818,7 +1828,7 @@ TEST_F(AttributionManagerImplTest,
       kFirstReportingWindow.InMinutes(), 1);
   // kSent = 0.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 0, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1863,7 +1873,7 @@ TEST_F(AttributionManagerImplTest,
       kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
@@ -1888,7 +1898,7 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
       kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {

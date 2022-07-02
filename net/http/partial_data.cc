@@ -17,6 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 
 namespace net {
@@ -30,18 +31,7 @@ const int kDataStream = 1;
 
 }  // namespace
 
-PartialData::PartialData()
-    : current_range_start_(0),
-      current_range_end_(0),
-      cached_start_(0),
-      cached_min_len_(0),
-      resource_size_(0),
-      range_requested_(false),
-      range_present_(false),
-      final_range_(false),
-      sparse_entry_(true),
-      truncated_(false),
-      initial_validation_(false) {}
+PartialData::PartialData() = default;
 
 PartialData::~PartialData() = default;
 
@@ -226,7 +216,7 @@ bool PartialData::UpdateFromStoredHeaders(const HttpResponseHeaders* headers,
     return true;
   }
 
-  sparse_entry_ = (headers->response_code() == 206);
+  sparse_entry_ = (headers->response_code() == net::HTTP_PARTIAL_CONTENT);
 
   if (writing_in_progress || sparse_entry_) {
     // |writing_in_progress| means another Transaction is still fetching the
@@ -292,7 +282,7 @@ bool PartialData::IsRequestedRangeOK() {
 }
 
 bool PartialData::ResponseHeadersOK(const HttpResponseHeaders* headers) {
-  if (headers->response_code() == 304) {
+  if (headers->response_code() == net::HTTP_NOT_MODIFIED) {
     if (!byte_range_.IsValid() || truncated_)
       return true;
 

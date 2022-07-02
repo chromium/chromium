@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 
@@ -89,12 +92,20 @@ class StubWebThemeEngine : public WebThemeEngine {
 constexpr int StubWebThemeEngine::kMinimumHorizontalLength;
 constexpr int StubWebThemeEngine::kMinimumVerticalLength;
 
-class ScrollbarTestingPlatformSupport : public TestingPlatformSupport {
+class ScopedStubThemeEngine {
  public:
-  WebThemeEngine* ThemeEngine() override { return &mock_theme_engine_; }
+  ScopedStubThemeEngine() {
+    old_theme_ = WebThemeEngineHelper::SwapNativeThemeEngineForTesting(
+        std::make_unique<StubWebThemeEngine>());
+  }
+
+  ~ScopedStubThemeEngine() {
+    WebThemeEngineHelper::SwapNativeThemeEngineForTesting(
+        std::move(old_theme_));
+  }
 
  private:
-  StubWebThemeEngine mock_theme_engine_;
+  std::unique_ptr<WebThemeEngine> old_theme_;
 };
 
 }  // namespace
@@ -199,7 +210,7 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     GetEventHandler().HandleMouseLeaveEvent(event);
   }
 
-  WebCoalescedInputEvent GenerateWheelGestureEvent(
+  WebGestureEvent GenerateWheelGestureEvent(
       WebInputEvent::Type type,
       const gfx::Point& position,
       ScrollOffset offset = ScrollOffset()) {
@@ -211,8 +222,10 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
       WebInputEvent::Type type,
       const gfx::Point& position,
       ScrollOffset offset = ScrollOffset()) {
-    return GenerateGestureEvent(type, WebGestureDevice::kTouchscreen, position,
-                                offset);
+    return WebCoalescedInputEvent(
+        GenerateGestureEvent(type, WebGestureDevice::kTouchscreen, position,
+                             offset),
+        ui::LatencyInfo());
   }
 
   ui::mojom::blink::CursorType CursorType() {
@@ -232,10 +245,10 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
   }
 
  protected:
-  WebCoalescedInputEvent GenerateGestureEvent(WebInputEvent::Type type,
-                                              WebGestureDevice device,
-                                              const gfx::Point& position,
-                                              ScrollOffset offset) {
+  WebGestureEvent GenerateGestureEvent(WebInputEvent::Type type,
+                                       WebGestureDevice device,
+                                       const gfx::Point& position,
+                                       ScrollOffset offset) {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           base::TimeTicks::Now(), device);
 
@@ -248,11 +261,11 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
       event.data.scroll_begin.delta_x_hint = offset.x();
       event.data.scroll_begin.delta_y_hint = offset.y();
     }
-    return WebCoalescedInputEvent(event, ui::LatencyInfo());
+    return event;
   }
 
  private:
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme_;
   std::unique_ptr<ScopedMockOverlayScrollbars> mock_overlay_scrollbars_;
   bool original_overlay_scrollbars_enabled_;
 };
@@ -627,10 +640,6 @@ TEST_P(ScrollbarsTest, OverlayScrolblarNotCreatedInUnscrollableAxis) {
 }
 
 TEST_P(ScrollbarsTest, scrollbarIsNotHandlingTouchpadScroll) {
-  // TODO(crbug.com/1322078): Enable this test for scroll unification.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-    return;
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -663,7 +672,7 @@ TEST_P(ScrollbarsTest, scrollbarIsNotHandlingTouchpadScroll) {
   scroll_begin.data.scroll_begin.delta_x_hint = 0;
   scroll_begin.data.scroll_begin.delta_y_hint = 10;
   scroll_begin.SetFrameScale(1);
-  GetEventHandler().HandleGestureScrollEvent(scroll_begin);
+  GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_begin);
   DCHECK(!GetEventHandler().IsScrollbarHandlingGestures());
   bool should_update_capture = false;
   DCHECK(!scrollable_area->VerticalScrollbar()->GestureEvent(
@@ -1706,7 +1715,7 @@ TEST_P(ScrollbarAppearanceTest, NativeScrollbarChangeToMobileByEmulator) {
 // WebThemeEngine. Note, Mac scrollbars differ from all other platforms so this
 // test doesn't apply there. https://crbug.com/682209.
 TEST_P(ScrollbarAppearanceTest, ThemeEngineDefinesMinimumThumbLength) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -1732,7 +1741,7 @@ TEST_P(ScrollbarAppearanceTest, ThemeEngineDefinesMinimumThumbLength) {
 // Ensure thumb position is correctly calculated even at ridiculously large
 // scales.
 TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -2386,10 +2395,6 @@ TEST_P(ScrollbarsTest, MiddleDownShouldNotAffectScrollbarPress) {
 }
 
 TEST_P(ScrollbarsTest, UseCounterNegativeWhenThumbIsNotScrolledWithMouse) {
-  // TODO(crbug.com/1322078): Enable this test for scroll unification.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-    return;
-
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -2417,13 +2422,14 @@ TEST_P(ScrollbarsTest, UseCounterNegativeWhenThumbIsNotScrolledWithMouse) {
   EXPECT_EQ(horizontal_scrollbar->PressedPart(), ScrollbarPart::kNoPart);
 
   // Scrolling the page with a mouse wheel won't trigger the UseCounter.
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
                                 gfx::Point(100, 100), ScrollOffset(0, -100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
                                 gfx::Point(100, 100), ScrollOffset(0, -100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(GenerateWheelGestureEvent(
+  widget.DispatchThroughCcInputHandler(GenerateWheelGestureEvent(
       WebInputEvent::Type::kGestureScrollEnd, gfx::Point(100, 100)));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kVerticalScrollbarThumbScrollingWithMouse));
@@ -2443,6 +2449,8 @@ TEST_P(ScrollbarsTest, UseCounterNegativeWhenThumbIsNotScrolledWithMouse) {
   EXPECT_EQ(vertical_scrollbar->PressedPart(),
             ScrollbarPart::kForwardTrackPart);
   HandleMouseReleaseEvent(195, 175);
+  // Let injected scroll gesture run.
+  widget.FlushInputHandlerTasks();
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kVerticalScrollbarThumbScrollingWithMouse));
 
@@ -2451,6 +2459,8 @@ TEST_P(ScrollbarsTest, UseCounterNegativeWhenThumbIsNotScrolledWithMouse) {
   EXPECT_EQ(horizontal_scrollbar->PressedPart(),
             ScrollbarPart::kForwardTrackPart);
   HandleMouseReleaseEvent(175, 195);
+  // Let injected scroll gesture run.
+  widget.FlushInputHandlerTasks();
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kHorizontalScrollbarThumbScrollingWithMouse));
 
@@ -2803,10 +2813,6 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
 TEST_P(ScrollbarsTestWithVirtualTimer,
        PressScrollbarButtonOnInfiniteScrolling) {
 #endif
-  // TODO(crbug.com/1322078): Enable this test for scroll unification.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-    return;
-
   TimeAdvance();
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(false);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
@@ -2875,6 +2881,9 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   // gestures. The button was pressed for 2 seconds and the timer fires
   // every 250ms - we should have at least 7 injected gesture updates.
   EXPECT_GT(GetWebFrameWidget().GetInjectedScrollEvents().size(), 6u);
+
+  // Let injected scroll gestures run.
+  GetWebFrameWidget().FlushInputHandlerTasks();
 }
 
 class ScrollbarTrackMarginsTest : public ScrollbarsTest {
@@ -2980,7 +2989,7 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
 #endif
 
 TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -3010,8 +3019,8 @@ TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
 
   Compositor().BeginFrame();
 
-  auto* theme_engine =
-      static_cast<StubWebThemeEngine*>(Platform::Current()->ThemeEngine());
+  auto* theme_engine = static_cast<StubWebThemeEngine*>(
+      WebThemeEngineHelper::GetNativeThemeEngine());
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             theme_engine->GetPaintedPartColorScheme(
                 WebThemeEngine::kPartScrollbarHorizontalThumb));
@@ -3284,10 +3293,6 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
 // Test events on the additional gutter created by the "both-edges" keyword of
 // scrollbar-gutter.
 TEST_P(ScrollbarsTest, ScrollbarGutterBothEdgesKeywordWithClassicScrollbars) {
-  // TODO(crbug.com/1322201): Enable this test for scroll unification.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
-    return;
-
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -3341,27 +3346,30 @@ TEST_P(ScrollbarsTest, ScrollbarGutterBothEdgesKeywordWithClassicScrollbars) {
   EXPECT_EQ(container->scrollTop(), 0);
 
   // Scroll down.
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
                                 gfx::Point(5, 5), ScrollOffset(0, -100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
                                 gfx::Point(5, 5), ScrollOffset(0, -100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(GenerateWheelGestureEvent(
+  widget.DispatchThroughCcInputHandler(GenerateWheelGestureEvent(
       WebInputEvent::Type::kGestureScrollEnd, gfx::Point(5, 5)));
 
+  Compositor().BeginFrame();
   EXPECT_EQ(container->scrollTop(), 100);
 
   // Scroll up.
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
                                 gfx::Point(5, 5), ScrollOffset(0, 100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(
+  widget.DispatchThroughCcInputHandler(
       GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
                                 gfx::Point(5, 5), ScrollOffset(0, 100)));
-  WebView().MainFrameViewWidget()->HandleInputEvent(GenerateWheelGestureEvent(
+  widget.DispatchThroughCcInputHandler(GenerateWheelGestureEvent(
       WebInputEvent::Type::kGestureScrollEnd, gfx::Point(195, 5)));
 
+  Compositor().BeginFrame();
   EXPECT_EQ(container->scrollTop(), 0);
 }
 

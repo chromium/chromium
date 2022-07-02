@@ -27,7 +27,7 @@ const char kPermissionErrorMessage[] =
     "Be sure to declare in your manifest what permissions you need.";
 
 const char kPrimaryProfileOnlyErrorMessage[] =
-    "You may only access this preference in the primary profile.";
+    "You may only access the preference '*' in the primary profile.";
 
 }  // namespace preference_api_constants
 }  // namespace extensions

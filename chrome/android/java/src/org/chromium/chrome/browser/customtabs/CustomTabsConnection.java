@@ -700,6 +700,8 @@ public class CustomTabsConnection {
         logCall("requestPostMessageChannel() with origin "
                         + (postMessageOrigin != null ? postMessageOrigin.toString() : ""),
                 success);
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.PostMessage.RequestPostMessageChannel", success);
         return success;
     }
 
@@ -1255,12 +1257,15 @@ public class CustomTabsConnection {
      * Wraps calling extraCallback in a try/catch so exceptions thrown by the host app don't crash
      * Chrome. See https://crbug.com/517023.
      */
+    // The string passed is safe since it is a method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     protected boolean safeExtraCallback(
             CustomTabsSessionToken session, String callbackName, @Nullable Bundle args) {
         CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
         if (callback == null) return false;
 
-        try {
+        try (TraceEvent te = TraceEvent.scoped(
+                     "CustomTabsConnection::safeExtraCallback", callbackName)) {
             callback.extraCallback(callbackName, args);
         } catch (Exception e) {
             return false;
@@ -1274,12 +1279,15 @@ public class CustomTabsConnection {
      * host app don't crash Chrome.
      */
     @Nullable
+    // The string passed is safe since it is a method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public Bundle sendExtraCallbackWithResult(
             CustomTabsSessionToken session, String callbackName, @Nullable Bundle args) {
         CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
         if (callback == null) return null;
 
-        try {
+        try (TraceEvent te = TraceEvent.scoped(
+                     "CustomTabsConnection::safeExtraCallbackWithResult", callbackName)) {
             return callback.extraCallbackWithResult(callbackName, args);
         } catch (Exception e) {
             return null;

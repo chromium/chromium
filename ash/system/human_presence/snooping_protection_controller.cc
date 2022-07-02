@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -29,6 +29,19 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
+namespace {
+// Number of buckets to log SnoopingProtection present result.
+constexpr int kSnoopingProtectionDurationNumBucket = 100;
+// Minimum value for the SnoopingProtection.Positive.Duration and
+// SnoopingProtection.Negative.Duration.
+constexpr base::TimeDelta kSnoopingProtectionDurationMin = base::Seconds(1);
+// Maximum value for SnoopingProtection.Positive.Duration; Longer than 1 hour is
+// considered as 1 hour.
+constexpr base::TimeDelta kSnoopingProtectionPositiveMax = base::Hours(1);
+// Maximum value for SnoopingProtection.Negative.Duration; Longer than 1 day is
+// considered as 1 day.
+constexpr base::TimeDelta kSnoopingProtectionNegativeMax = base::Hours(24);
+}  // namespace
 
 SnoopingProtectionController::SnoopingProtectionController()
     : notification_blocker_(
@@ -76,6 +89,10 @@ SnoopingProtectionController::~SnoopingProtectionController() {
 
   for (auto& observer : observers_)
     observer.OnSnoopingProtectionControllerDestroyed();
+
+  // We want to log current presence/absence duration since we'll not get
+  // another event anymore.
+  LogPresenceWindow(!state_.present);
 }
 
 // static
@@ -133,11 +150,14 @@ void SnoopingProtectionController::OnOrientationChanged(
   UpdateSnooperStatus(new_state);
 }
 
-void SnoopingProtectionController::OnHpsSenseChanged(hps::HpsResult) {}
+void SnoopingProtectionController::OnHpsSenseChanged(
+    const hps::HpsResultProto&) {}
 
 void SnoopingProtectionController::OnHpsNotifyChanged(
-    hps::HpsResult detection_state) {
-  const bool present = detection_state == hps::HpsResult::POSITIVE;
+    const hps::HpsResultProto& result) {
+  const bool present = result.value() == hps::HpsResult::POSITIVE;
+
+  LogPresenceWindow(present);
 
   State new_state = state_;
   new_state.present = present;
@@ -165,6 +185,13 @@ void SnoopingProtectionController::OnRestart() {
 }
 
 void SnoopingProtectionController::OnShutdown() {
+  // Log current presence window and reset the report time so that the next
+  // present/absent duration will not be logged, because the duration will be
+  // incorrect.
+  // This has to be done before UpdateSnooperStatus below.
+  LogPresenceWindow(!state_.present);
+  last_presence_report_time_ = base::TimeTicks();
+
   State new_state = state_;
   new_state.service_available = false;
 
@@ -279,13 +306,17 @@ void SnoopingProtectionController::StartServiceObservation(
   UpdateSnooperStatus(state_);
 }
 
+// This callback almost always runs as the service is starting up.
+// LogPresenceWindow is purposefully not called inside ths function, because
+// during startup the service reports an UNKNOWN state, so there's a risk of
+// logging a spurious window of absence.
 void SnoopingProtectionController::UpdateServiceState(
-    absl::optional<hps::HpsResult> response) {
+    absl::optional<hps::HpsResultProto> response) {
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
 
   const bool present =
-      response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE;
+      response.has_value() && response->value() == hps::HpsResult::POSITIVE;
 
   State new_state = state_;
   new_state.present = present;
@@ -321,6 +352,35 @@ void SnoopingProtectionController::OnMinWindowExpired() {
   State new_state = state_;
   new_state.within_pos_window = false;
   UpdateSnooperStatus(new_state);
+}
+
+void SnoopingProtectionController::LogPresenceWindow(bool is_present) {
+  const auto now = base::TimeTicks::Now();
+
+  // Set last_presence_report_time_ and return if it is the first time reported.
+  if (last_presence_report_time_.is_null()) {
+    last_presence_report_time_ = now;
+    return;
+  }
+
+  // No log if present state is not changed.
+  if (state_.present == is_present)
+    return;
+
+  const auto time_since_last_report = now - last_presence_report_time_;
+  last_presence_report_time_ = now;
+
+  if (state_.present) {
+    base::UmaHistogramCustomTimes(
+        "ChromeOS.HPS.SnoopingProtection.Positive.Duration",
+        time_since_last_report, kSnoopingProtectionDurationMin,
+        kSnoopingProtectionPositiveMax, kSnoopingProtectionDurationNumBucket);
+  } else {
+    base::UmaHistogramCustomTimes(
+        "ChromeOS.HPS.SnoopingProtection.Negative.Duration",
+        time_since_last_report, kSnoopingProtectionDurationMin,
+        kSnoopingProtectionNegativeMax, kSnoopingProtectionDurationNumBucket);
+  }
 }
 
 }  // namespace ash

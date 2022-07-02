@@ -14,7 +14,9 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -204,6 +206,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ApplyRunOnOsLoginPolicyAllowed(Site site);
   void ApplyRunOnOsLoginPolicyBlocked(Site site);
   void ApplyRunOnOsLoginPolicyRunWindowed(Site site);
+  void DeletePlatformShortcut(Site site);
   void RemoveRunOnOsLoginPolicy(Site site);
   void LaunchFromChromeApps(Site site);
   void LaunchFromLaunchIcon(Site site);
@@ -211,6 +214,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromPlatformShortcut(Site site);
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);
+  void CreateShortcutFromChromeApps(Site site);
   void NavigateBrowser(Site site);
   void NavigatePwaSiteAFooTo(Site site);
   void NavigatePwaSiteATo(Site site);
@@ -257,6 +261,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckPlatformShortcutNotExists(Site site);
   void CheckRunOnOsLoginEnabled(Site site);
   void CheckRunOnOsLoginDisabled(Site site);
+  void CheckSiteHandlesFile(Site site, std::string file_extension);
+  void CheckSiteNotHandlesFile(Site site, std::string file_extension);
   void CheckUserCannotSetRunOnOsLogin(Site site);
   void CheckUserDisplayModeInternal(UserDisplayMode user_display_mode);
   void CheckWindowClosed();
@@ -296,6 +302,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(Site site);
   GURL GetScopeForSiteMode(Site site);
+  base::FilePath GetShortcutPath(base::FilePath shortcut_dir,
+                                 const std::string& app_name,
+                                 const AppId& app_id);
   GURL GetURLForSiteMode(Site site);
   void InstallCreateShortcut(bool open_in_window);
 
@@ -314,7 +323,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void MaybeNavigateTabbedBrowserInScope(Site site);
 
-  void NavigateTabbedBrowserToSite(const GURL& url);
+  enum class NavigationMode { kNewTab, kCurrentTab };
+  void NavigateTabbedBrowserToSite(const GURL& url, NavigationMode mode);
 
   // Returns an existing app browser if one exists, or launches a new one if
   // not.
@@ -323,6 +333,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   bool IsShortcutAndIconCreated(Profile* profile,
                                 const std::string& name,
                                 const AppId& id);
+
+  bool IsFileHandledBySite(Site site, std::string file_extension);
 
   void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 
@@ -381,6 +393,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 
   std::unique_ptr<net::EmbeddedTestServer> isolated_app_test_server_ = nullptr;
+  std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
+      nullptr;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration

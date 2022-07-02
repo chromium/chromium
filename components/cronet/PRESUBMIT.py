@@ -82,6 +82,7 @@ def _RunToolsUnittests(input_api, output_api):
       '.',
       [ r'^tools_unittest\.py$'],
       run_on_python3=USE_PYTHON3,
+      run_on_python2=False,
       skip_shebang_check = True)
 
 

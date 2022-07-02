@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "net/cert/internal/system_trust_store.h"
 
 #include <cert.h>
@@ -89,7 +90,7 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   crypto::ScopedTestNSSDB test_nssdb_;
   crypto::ScopedTestNSSDB other_test_nssdb_;
 
-  TestRootCerts* test_root_certs_;
+  raw_ptr<TestRootCerts> test_root_certs_;
 
   scoped_refptr<X509Certificate> root_cert_;
   scoped_refptr<ParsedCertificate> parsed_root_cert_;
@@ -131,7 +132,7 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 // certificate stored on user slots.
 TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
   std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreNSSWithNoUserSlots();
+      CreateSslSystemTrustStoreNSSWithUserSlotRestriction(nullptr);
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 

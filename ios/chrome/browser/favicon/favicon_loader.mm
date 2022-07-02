@@ -268,3 +268,7 @@ void FaviconLoader::FaviconForIconUrl(
 void FaviconLoader::CancellAllRequests() {
   cancelable_task_tracker_.TryCancelAll();
 }
+
+base::WeakPtr<FaviconLoader> FaviconLoader::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}

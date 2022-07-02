@@ -392,47 +392,46 @@ bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
 
 }  // namespace
 
-EventDeviceInfo::EventDeviceInfo() {
-  memset(ev_bits_, 0, sizeof(ev_bits_));
-  memset(key_bits_, 0, sizeof(key_bits_));
-  memset(rel_bits_, 0, sizeof(rel_bits_));
-  memset(abs_bits_, 0, sizeof(abs_bits_));
-  memset(msc_bits_, 0, sizeof(msc_bits_));
-  memset(sw_bits_, 0, sizeof(sw_bits_));
-  memset(led_bits_, 0, sizeof(led_bits_));
-  memset(ff_bits_, 0, sizeof(ff_bits_));
-  memset(prop_bits_, 0, sizeof(prop_bits_));
-  memset(abs_info_, 0, sizeof(abs_info_));
-}
+EventDeviceInfo::EventDeviceInfo()
+    : ev_bits_{},
+      key_bits_{},
+      rel_bits_{},
+      abs_bits_{},
+      msc_bits_{},
+      sw_bits_{},
+      led_bits_{},
+      prop_bits_{},
+      ff_bits_{},
+      abs_info_{} {}
 
 EventDeviceInfo::~EventDeviceInfo() {}
 
 bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
-  if (!GetEventBits(fd, path, 0, ev_bits_, sizeof(ev_bits_)))
+  if (!GetEventBits(fd, path, 0, ev_bits_.data(), sizeof(ev_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_KEY, key_bits_, sizeof(key_bits_)))
+  if (!GetEventBits(fd, path, EV_KEY, key_bits_.data(), sizeof(key_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_REL, rel_bits_, sizeof(rel_bits_)))
+  if (!GetEventBits(fd, path, EV_REL, rel_bits_.data(), sizeof(rel_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_ABS, abs_bits_, sizeof(abs_bits_)))
+  if (!GetEventBits(fd, path, EV_ABS, abs_bits_.data(), sizeof(abs_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_MSC, msc_bits_, sizeof(msc_bits_)))
+  if (!GetEventBits(fd, path, EV_MSC, msc_bits_.data(), sizeof(msc_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_SW, sw_bits_, sizeof(sw_bits_)))
+  if (!GetEventBits(fd, path, EV_SW, sw_bits_.data(), sizeof(sw_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_LED, led_bits_, sizeof(led_bits_)))
+  if (!GetEventBits(fd, path, EV_LED, led_bits_.data(), sizeof(led_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_FF, ff_bits_, sizeof(ff_bits_)))
+  if (!GetEventBits(fd, path, EV_FF, ff_bits_.data(), sizeof(ff_bits_)))
     return false;
 
-  if (!GetPropBits(fd, path, prop_bits_, sizeof(prop_bits_)))
+  if (!GetPropBits(fd, path, prop_bits_.data(), sizeof(prop_bits_)))
     return false;
 
   for (unsigned int i = 0; i < ABS_CNT; ++i)
@@ -474,39 +473,39 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
 }
 
 void EventDeviceInfo::SetEventTypes(const unsigned long* ev_bits, size_t len) {
-  AssignBitset(ev_bits, len, ev_bits_, std::size(ev_bits_));
+  AssignBitset(ev_bits, len, ev_bits_.data(), ev_bits_.size());
 }
 
 void EventDeviceInfo::SetKeyEvents(const unsigned long* key_bits, size_t len) {
-  AssignBitset(key_bits, len, key_bits_, std::size(key_bits_));
+  AssignBitset(key_bits, len, key_bits_.data(), key_bits_.size());
 }
 
 void EventDeviceInfo::SetRelEvents(const unsigned long* rel_bits, size_t len) {
-  AssignBitset(rel_bits, len, rel_bits_, std::size(rel_bits_));
+  AssignBitset(rel_bits, len, rel_bits_.data(), rel_bits_.size());
 }
 
 void EventDeviceInfo::SetAbsEvents(const unsigned long* abs_bits, size_t len) {
-  AssignBitset(abs_bits, len, abs_bits_, std::size(abs_bits_));
+  AssignBitset(abs_bits, len, abs_bits_.data(), abs_bits_.size());
 }
 
 void EventDeviceInfo::SetMscEvents(const unsigned long* msc_bits, size_t len) {
-  AssignBitset(msc_bits, len, msc_bits_, std::size(msc_bits_));
+  AssignBitset(msc_bits, len, msc_bits_.data(), msc_bits_.size());
 }
 
 void EventDeviceInfo::SetSwEvents(const unsigned long* sw_bits, size_t len) {
-  AssignBitset(sw_bits, len, sw_bits_, std::size(sw_bits_));
+  AssignBitset(sw_bits, len, sw_bits_.data(), sw_bits_.size());
 }
 
 void EventDeviceInfo::SetLedEvents(const unsigned long* led_bits, size_t len) {
-  AssignBitset(led_bits, len, led_bits_, std::size(led_bits_));
+  AssignBitset(led_bits, len, led_bits_.data(), led_bits_.size());
 }
 
 void EventDeviceInfo::SetFfEvents(const unsigned long* ff_bits, size_t len) {
-  AssignBitset(ff_bits, len, ff_bits_, std::size(ff_bits_));
+  AssignBitset(ff_bits, len, ff_bits_.data(), ff_bits_.size());
 }
 
 void EventDeviceInfo::SetProps(const unsigned long* prop_bits, size_t len) {
-  AssignBitset(prop_bits, len, prop_bits_, std::size(prop_bits_));
+  AssignBitset(prop_bits, len, prop_bits_.data(), prop_bits_.size());
 }
 
 void EventDeviceInfo::SetAbsInfo(unsigned int code,
@@ -549,55 +548,55 @@ void EventDeviceInfo::SetName(const std::string& name) {
 bool EventDeviceInfo::HasEventType(unsigned int type) const {
   if (type > EV_MAX)
     return false;
-  return EvdevBitIsSet(ev_bits_, type);
+  return EvdevBitIsSet(ev_bits_.data(), type);
 }
 
 bool EventDeviceInfo::HasKeyEvent(unsigned int code) const {
   if (code > KEY_MAX)
     return false;
-  return EvdevBitIsSet(key_bits_, code);
+  return EvdevBitIsSet(key_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasRelEvent(unsigned int code) const {
   if (code > REL_MAX)
     return false;
-  return EvdevBitIsSet(rel_bits_, code);
+  return EvdevBitIsSet(rel_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasAbsEvent(unsigned int code) const {
   if (code > ABS_MAX)
     return false;
-  return EvdevBitIsSet(abs_bits_, code);
+  return EvdevBitIsSet(abs_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasMscEvent(unsigned int code) const {
   if (code > MSC_MAX)
     return false;
-  return EvdevBitIsSet(msc_bits_, code);
+  return EvdevBitIsSet(msc_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasSwEvent(unsigned int code) const {
   if (code > SW_MAX)
     return false;
-  return EvdevBitIsSet(sw_bits_, code);
+  return EvdevBitIsSet(sw_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasLedEvent(unsigned int code) const {
   if (code > LED_MAX)
     return false;
-  return EvdevBitIsSet(led_bits_, code);
+  return EvdevBitIsSet(led_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasFfEvent(unsigned int code) const {
   if (code > FF_MAX)
     return false;
-  return EvdevBitIsSet(ff_bits_, code);
+  return EvdevBitIsSet(ff_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasProp(unsigned int code) const {
   if (code > INPUT_PROP_MAX)
     return false;
-  return EvdevBitIsSet(prop_bits_, code);
+  return EvdevBitIsSet(prop_bits_.data(), code);
 }
 
 int32_t EventDeviceInfo::GetAbsMinimum(unsigned int code) const {
@@ -743,20 +742,24 @@ bool IsInKeyboardBlockList(input_id input_id_) {
 }
 
 bool EventDeviceInfo::HasKeyboard() const {
+  return GetKeyboardType() == KeyboardType::VALID_KEYBOARD;
+}
+
+KeyboardType EventDeviceInfo::GetKeyboardType() const {
   if (!HasEventType(EV_KEY))
-    return false;
+    return KeyboardType::NOT_KEYBOARD;
   if (IsInKeyboardBlockList(input_id_))
-    return false;
+    return KeyboardType::IN_BLOCKLIST;
   if (IsStylusButtonDevice())
-    return false;
+    return KeyboardType::STYLUS_BUTTON_DEVICE;
 
   // Check first 31 keys: If we have all of them, consider it a full
   // keyboard. This is exactly what udev does for ID_INPUT_KEYBOARD.
   for (int key = KEY_ESC; key <= KEY_D; ++key)
     if (!HasKeyEvent(key))
-      return false;
+      return KeyboardType::NOT_KEYBOARD;
 
-  return true;
+  return KeyboardType::VALID_KEYBOARD;
 }
 
 bool EventDeviceInfo::HasMouse() const {
@@ -767,6 +770,7 @@ bool EventDeviceInfo::HasMouse() const {
       input_id_.product == kSteelSeriesStratusDuoBluetoothProductId) {
     return false;
   }
+
   return HasRelXY() && !HasProp(INPUT_PROP_POINTING_STICK);
 }
 

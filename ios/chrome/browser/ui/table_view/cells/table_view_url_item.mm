@@ -136,8 +136,8 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
 @interface TableViewURLCell ()
 // If the cell's accessibility label has not been manually set via
-// |-setAccessibilityLabel:|, this property will be YES, and
-// |-accessibilityLabel| will return a lazily created label based on the
+// `-setAccessibilityLabel:`, this property will be YES, and
+// `-accessibilityLabel` will return a lazily created label based on the
 // text values of the UILabel subviews.
 @property(nonatomic, assign) BOOL shouldGenerateAccessibilityLabel;
 // Horizontal StackView that holds url, title, and metadata labels.

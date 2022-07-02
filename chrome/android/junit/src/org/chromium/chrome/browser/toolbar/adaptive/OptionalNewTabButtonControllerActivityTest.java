@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.util.Pair;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
@@ -42,8 +43,10 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.WebContents;
@@ -61,12 +64,18 @@ import java.util.NoSuchElementException;
  * ChromeTabbedActivity}.
  */
 @Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class,
-                OptionalNewTabButtonControllerActivityTest.ShadowChromeFeatureList.class,
                 ShadowGURL.class})
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+                + "<FakeStudyName",
+        "force-fieldtrials=FakeStudyName/Enabled",
+        "force-fieldtrial-params=FakeStudyName.Enabled:min_version_adaptive/0"})
 public class OptionalNewTabButtonControllerActivityTest {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
@@ -108,7 +117,8 @@ public class OptionalNewTabButtonControllerActivityTest {
 
         @Implementation
         public static boolean isEnabled(String featureName) {
-            return featureName.equals(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR);
+            return featureName.equals(
+                    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         }
 
         public static void reset() {
@@ -124,8 +134,12 @@ public class OptionalNewTabButtonControllerActivityTest {
     public void setUp() {
         // Avoid leaking state from the previous test.
         resetStaticState();
-        ShadowChromeFeatureList.sParamValues.put("mode", AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
-
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(
+                AdaptiveToolbarButtonVariant.NEW_TAB);
+        // To bypass a direct call to AdaptiveToolbarStatePredictor#readFromSegmentationPlatform for
+        // UMA.
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
         MockTabModelSelector tabModelSelector = new MockTabModelSelector(
                 /*tabCount=*/1, /*incognitoTabCount=*/0, (id, incognito) -> {
                     Tab tab = spy(MockTab.createAndInitialize(id, incognito));
@@ -159,6 +173,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         // AsyncInitializationActivity#applyOverrides to set incorrect smallestWidth.
         DisplayAndroidManager.resetInstanceForTesting();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(null);
     }
 
     @Test

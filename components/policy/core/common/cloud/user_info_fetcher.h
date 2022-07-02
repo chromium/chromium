@@ -10,13 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/policy/policy_export.h"
 
 class GoogleServiceAuthError;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -34,8 +31,7 @@ class POLICY_EXPORT UserInfoFetcher {
     // Invoked when the UserInfo request has succeeded, passing the parsed
     // response in |response|. Delegate may free the UserInfoFetcher in this
     // callback.
-    virtual void OnGetUserInfoSuccess(
-        const base::DictionaryValue* response) = 0;
+    virtual void OnGetUserInfoSuccess(const base::Value::Dict& response) = 0;
 
     // Invoked when the UserInfo request has failed, passing the associated
     // error in |error|. Delegate may free the UserInfoFetcher in this

@@ -466,5 +466,5 @@ absl_cc_test(
     absl::flags_reflection
     absl::flags_usage
     absl::strings
-    GTest::gtest
+    GTest::gmock
 )

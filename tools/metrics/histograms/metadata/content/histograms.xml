@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultAutoDarkWebContentSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2022-12-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -191,14 +191,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultAutoplaySetting" enum="ContentSetting"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default autoplay setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultCookiesSetting" enum="ContentSetting"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default cookies setting at profile open.</summary>
@@ -221,14 +221,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultJavaScriptSetting"
-    enum="ContentSetting" expires_after="2022-10-23">
+    enum="ContentSetting" expires_after="2022-12-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default JavaScript setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultLocationSetting" enum="ContentSetting"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default location setting at profile open.</summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultNotificationsSetting"
-    enum="ContentSetting" expires_after="2022-10-23">
+    enum="ContentSetting" expires_after="2022-12-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default notification setting at profile open.</summary>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2022-10-23">
+    enum="ContentSetting" expires_after="2022-12-25">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -508,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups" enum="ContentSettingPopupAction"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>charleszhao@chromium.org</owner>
   <owner>lazzzis@google.com</owner>
   <owner>src/components/blocked_content/OWNERS</owner>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.BlockerActions"
-    enum="PopupBlockerAction" expires_after="2022-09-18">
+    enum="PopupBlockerAction" expires_after="2022-11-20">
   <owner>csharrison@chromium.org</owner>
   <owner>lazzzis@google.com</owner>
   <owner>src/components/blocked_content/OWNERS</owner>
@@ -1542,7 +1542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
-    units="FeedInfoCardType" expires_after="2023-05-01">
+    enum="FeedInfoCardType" expires_after="2023-05-01">
   <owner>jianli@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1565,6 +1565,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
     expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1691,6 +1694,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ContentSuggestions.{FeedType}.NoticeAcknowledgementPath.{NoticeType}"
     enum="FeedNoticeAcknowledgementPath" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1709,6 +1715,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.{FeedType}.Notice{Action}.{NoticeType}"
     enum="Boolean" expires_after="2023-03-01">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

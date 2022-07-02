@@ -8,6 +8,9 @@
 USE_PYTHON3 = True
 
 def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
+    # Don't report errors for "git cl presubmit --all/--files"
+    if input_api.no_diffs:
+        return []
 
     download_file_type_names = [
         'download_file_types.asciipb', 'download_file_types_experiment.asciipb'

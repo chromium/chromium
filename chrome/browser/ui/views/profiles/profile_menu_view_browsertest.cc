@@ -88,7 +88,6 @@
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace {
@@ -144,7 +143,7 @@ class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
   explicit FakeAccountManagerUITestObserver(
       FakeAccountManagerUI* account_manager_ui)
       : account_manager_ui_(account_manager_ui) {
-    scoped_observation_.Observe(account_manager_ui_);
+    scoped_observation_.Observe(account_manager_ui_.get());
   }
   ~FakeAccountManagerUITestObserver() override = default;
 
@@ -154,7 +153,7 @@ class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
   void OnReauthAccountDialogShown() override { reauth_run_loop_.Quit(); }
 
  private:
-  FakeAccountManagerUI* account_manager_ui_;
+  raw_ptr<FakeAccountManagerUI> account_manager_ui_;
   base::RunLoop reauth_run_loop_;
   base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
       scoped_observation_{this};
@@ -215,21 +214,14 @@ class ProfileMenuViewTestBase {
 
  private:
   Browser* target_browser_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
-#endif
 };
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                                       public extensions::ExtensionBrowserTest {
  public:
   ProfileMenuViewExtensionsTest() {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The IPH is not implemented on Lacros.
     scoped_feature_list_.InitAndEnableFeature(
         feature_engagement::kIPHProfileSwitchFeature);
-#endif
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -342,16 +334,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       }));
   loop.Run();
   ASSERT_TRUE(tracker->IsInitialized());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The IPH is not implemented on Lacros.
-  bool should_show = false;
-#else
-  bool should_show = true;
-#endif
-  EXPECT_EQ(should_show, promo_controller->MaybeShowPromo(
-                             feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_EQ(should_show, promo_controller->IsPromoActive(
-                             feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(promo_controller->MaybeShowPromo(
+      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
@@ -383,7 +369,9 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
     return IdentityManagerFactory::GetForProfile(GetProfile());
   }
 
-  Profile* GetProfile() { return profile_ ? profile_ : browser()->profile(); }
+  Profile* GetProfile() {
+    return profile_ ? profile_.get() : browser()->profile();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void UseSecondaryProfile() {
@@ -407,7 +395,7 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 
  private:
   CoreAccountId account_id_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -652,8 +640,7 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
    public:
     MOCK_METHOD(void,
                 ShowTurnSyncOnUI,
-                (Browser * browser,
-                 Profile* profile,
+                (Profile * profile,
                  signin_metrics::AccessPoint access_point,
                  signin_metrics::PromoAction promo_action,
                  signin_metrics::Reason signin_reason,
@@ -721,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
   EXPECT_CALL(
       mock_delegate_,
       ShowTurnSyncOnUI(
-          browser(), browser()->profile(),
+          browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
           signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
           signin_metrics::Reason::kReauthentication, account_info().account_id,
@@ -789,7 +776,9 @@ class ProfileMenuClickTest : public SyncTest,
   }
 #endif
 
-  Profile* GetProfile() { return profile_ ? profile_ : browser()->profile(); }
+  Profile* GetProfile() {
+    return profile_ ? profile_.get() : browser()->profile();
+  }
 
   virtual ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
       size_t index) = 0;
@@ -853,7 +842,7 @@ class ProfileMenuClickTest : public SyncTest,
   base::CallbackListSubscription test_signin_client_subscription_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \

@@ -59,8 +59,8 @@ class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
  private:
   // AXPlatformNodeDelegate overrides.
   gfx::NativeViewAccessible GetParent() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   gfx::NativeViewAccessible GetNextSibling() override;
   gfx::NativeViewAccessible GetPreviousSibling() override;
   gfx::NativeViewAccessible HitTestSync(int x, int y) const override;
@@ -74,7 +74,7 @@ class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
   // accessibility tree. Rather, the fragment root's child is a child of the
   // fragment root's parent. This helper computes the child's index in the
   // parent's array of children.
-  int GetIndexInParentOfChild() const;
+  size_t GetIndexInParentOfChild() const;
 
   // If a parent node is available, return its delegate.
   AXPlatformNodeDelegate* GetParentNodeDelegate() const;

@@ -7,13 +7,15 @@
  */
 import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
 import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
+import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
 import {InjectedScriptLoader} from '/chromevox/background/injected_script_loader.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {TtsBackground} from '/chromevox/background/tts_background.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {CompositeTts} from '/chromevox/common/composite_tts.js';
-import {ChromeVoxEditableTextBase, TypingEcho} from '/chromevox/common/editable_text_base.js';
 import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 
 /**
@@ -22,12 +24,6 @@ import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
 export class ChromeVoxBackground {
   constructor() {
     ChromeVoxBackground.readPrefs();
-
-    const consoleTts = ConsoleTts.getInstance();
-    consoleTts.setEnabled(
-        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
-
-    LogStore.getInstance();
 
     /**
      * Chrome's actual TTS which knows and cares about pitch, volume, etc.
@@ -39,7 +35,9 @@ export class ChromeVoxBackground {
     /**
      * @type {TtsInterface}
      */
-    this.tts = new CompositeTts().add(this.backgroundTts_).add(consoleTts);
+    this.tts = new CompositeTts()
+                   .add(this.backgroundTts_)
+                   .add(ConsoleTts.getInstance());
 
     this.addBridgeListener();
 
@@ -59,12 +57,11 @@ export class ChromeVoxBackground {
 
     // Set up a message passing system for goog.provide() calls from
     // within the content scripts.
-    chrome.extension.onMessage.addListener(function(request, sender, callback) {
+    chrome.extension.onMessage.addListener((request, sender, callback) => {
       if (request['srcFile']) {
         const srcFile = request['srcFile'];
-        InjectedScriptLoader.fetchCode([srcFile], function(code) {
-          callback({'code': code[srcFile]});
-        });
+        InjectedScriptLoader.fetchCode(
+            [srcFile], code => callback({'code': code[srcFile]}));
       }
       return true;
     });
@@ -84,9 +81,9 @@ export class ChromeVoxBackground {
     // Inject the content script into all running tabs allowed by the
     // manifest. This block is still necessary because the extension system
     // doesn't re-inject content scripts into already running tabs.
-    chrome.windows.getAll({'populate': true}, (windows) => {
+    chrome.windows.getAll({'populate': true}, windows => {
       for (let i = 0; i < windows.length; i++) {
-        const tabs = windows[i].tabs.filter((tab) => matchesRe.test(tab.url));
+        const tabs = windows[i].tabs.filter(tab => matchesRe.test(tab.url));
         this.injectChromeVoxIntoTabs(tabs);
       }
     });
@@ -173,7 +170,7 @@ export class ChromeVoxBackground {
          * A helper function which executes code.
          * @param {string} code The code to execute.
          */
-        const executeScript = (code) => {
+        const executeScript = code => {
           chrome.tabs.executeScript(tab.id, {code, 'allFrames': true}, () => {
             if (!chrome.extension.lastError) {
               return;
@@ -205,9 +202,7 @@ export class ChromeVoxBackground {
             'window.CLOSURE_NO_DEPS = true\n');
 
         // Now inject the ChromeVox content script code into the tab.
-        listOfFiles.forEach(function(file) {
-          executeScript(code[file]);
-        });
+        listOfFiles.forEach(file => executeScript(code[file]));
       }
     };
 
@@ -304,16 +299,18 @@ export class ChromeVoxBackground {
 
   /**
    * Initializes classic background object.
+   * @param {!ChromeVoxState} chromeVoxState The new background object.
    */
-  static init() {
+  static init(chromeVoxState) {
     // Create the background page object and export a function window['speak']
     // so that other background pages can access it. Also export the prefs
     // object for access by the options page.
     const background = new ChromeVoxBackground();
 
-    ChromeVoxState.backgroundTts = background.backgroundTts_;
+    chromeVoxState.backgroundTts = background.backgroundTts_;
     BridgeHelper.registerHandler(
-        BridgeTargets.CHROMEVOX_BACKGROUND, BridgeActions.GET_CURRENT_VOICE,
+        BridgeConstants.ChromeVoxBackground.TARGET,
+        BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE,
         () => background.getCurrentVoice());
   }
 }

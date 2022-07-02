@@ -100,6 +100,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -151,6 +152,7 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/icon_url.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -175,6 +177,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/events/after_print_event.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
+#include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -244,6 +247,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -587,6 +591,64 @@ class PaintPreviewContext : public PrintContext {
     canvas->drawPicture(builder->EndRecording(property_tree_state.Unalias()));
     return true;
   }
+};
+
+// Android WebView requires hit testing results on every touch event. This
+// pushes the hit test result to the callback that is registered.
+class TouchStartEventListener : public NativeEventListener {
+ public:
+  explicit TouchStartEventListener(
+      base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback)
+      : callback_(std::move(callback)) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    auto* touch_event = DynamicTo<TouchEvent>(event);
+    if (!touch_event)
+      return;
+    const auto* native_event = touch_event->NativeEvent();
+    if (!native_event)
+      return;
+
+    DCHECK_EQ(WebInputEvent::Type::kTouchStart,
+              native_event->Event().GetType());
+    const auto& web_touch_event =
+        static_cast<const WebTouchEvent&>(native_event->Event());
+
+    if (web_touch_event.touches_length != 1u)
+      return;
+
+    LocalDOMWindow* dom_window = event->currentTarget()->ToLocalDOMWindow();
+    CHECK(dom_window);
+
+    WebGestureEvent tap_event(
+        WebInputEvent::Type::kGestureTap, WebInputEvent::kNoModifiers,
+        base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+    // GestureTap is only ever from a touchscreen.
+    tap_event.SetPositionInWidget(
+        web_touch_event.touches[0].PositionInWidget());
+    tap_event.SetPositionInScreen(
+        web_touch_event.touches[0].PositionInScreen());
+    tap_event.SetFrameScale(web_touch_event.FrameScale());
+    tap_event.SetFrameTranslate(web_touch_event.FrameTranslate());
+    tap_event.data.tap.tap_count = 1;
+    tap_event.data.tap.height = tap_event.data.tap.width =
+        std::max(web_touch_event.touches[0].radius_x,
+                 web_touch_event.touches[0].radius_y);
+
+    HitTestResult result =
+        dom_window->GetFrame()
+            ->GetEventHandler()
+            .HitTestResultForGestureEvent(
+                tap_event, HitTestRequest::kReadOnly | HitTestRequest::kActive)
+            .GetHitTestResult();
+
+    result.SetToShadowHostIfInRestrictedShadowRoot();
+
+    callback_.Run(result);
+  }
+
+ private:
+  base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback_;
 };
 
 // WebFrame -------------------------------------------------------------------
@@ -1330,7 +1392,8 @@ void WebLocalFrameImpl::RemoveSpellingMarkers() {
 void WebLocalFrameImpl::RemoveSpellingMarkersUnderWords(
     const WebVector<WebString>& words) {
   Vector<String> converted_words;
-  converted_words.Append(words.Data(), SafeCast<wtf_size_t>(words.size()));
+  converted_words.Append(words.data(),
+                         base::checked_cast<wtf_size_t>(words.size()));
   GetFrame()->RemoveSpellingMarkersUnderWords(converted_words);
 }
 
@@ -1704,6 +1767,11 @@ void WebLocalFrameImpl::DispatchBeforePrintEvent(
 
   GetFrame()->GetDocument()->SetPrinting(Document::kBeforePrinting);
   DispatchPrintEventRecursively(event_type_names::kBeforeprint);
+  // In case the printing or print preview aborts for any reason, it is
+  // important not to leave the document in the kBeforePrinting state.
+  // See: crbug.com/1309595
+  if (GetFrame())
+    GetFrame()->GetDocument()->SetPrinting(Document::kNotPrinting);
 }
 
 void WebLocalFrameImpl::DispatchAfterPrintEvent() {
@@ -1823,6 +1891,11 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             bool skip_accelerated_content) {
   bool success = false;
   {
+    // Ignore paint timing while capturing a paint preview as it can change LCP
+    // see crbug.com/1323073.
+    IgnorePaintTimingScope scope;
+    IgnorePaintTimingScope::IncrementIgnoreDepth();
+
     Document::PaintPreviewScope paint_preview(
         *GetFrame()->GetDocument(),
         skip_accelerated_content
@@ -1963,10 +2036,12 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   network::mojom::blink::WebSandboxFlags sandbox_flags =
       network::mojom::blink::WebSandboxFlags::kNone;
   PermissionsPolicyFeatureState feature_state;
-  if (!previous_frame->Owner()) {
+  if (!previous_frame->Owner() || previous_frame->IsFencedFrameRoot()) {
     // Provisional main frames need to force sandbox flags.  This is necessary
     // to inherit sandbox flags when a sandboxed frame does a window.open()
     // which triggers a cross-process navigation.
+    // Fenced frames also need to force special initial sandbox flags that are
+    // passed via frame_policy.
     sandbox_flags = frame_policy.sandbox_flags;
   }
   // Note: this *always* temporarily sets a frame owner, even for main frames!
@@ -2104,13 +2179,22 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // New documents are either:
   // 1. The initial empty document:
   //   a. In a new iframe.
-  //   b. In a new popup.
+  //   b. In a new fencedframe.
+  //   c. In a new popup.
   // 2. A document replacing the previous, one via a navigation.
   //
-  // This is about 1.b. This is used to define sandbox flags for the initial
-  // empty document in a new popup.
-  if (frame_->IsMainFrame())
+  // 1.b. will get the special sandbox flags. See:
+  // https://docs.google.com/document/d/1RO4NkQk_XaEE7vuysM9LJilZYsoOhydfh93sOvrPQxU/edit
+  // For 1.c., this is used to define sandbox flags for
+  // the initial empty document in a new popup.
+  if (frame_->IsMainFrame()) {
+    DCHECK(!frame_->IsInFencedFrameTree() ||
+           ((sandbox_flags & blink::kFencedFrameForcedSandboxFlags) ==
+            blink::kFencedFrameForcedSandboxFlags))
+        << "An MPArch fencedframe must be configured with its forced sandbox "
+        << "flags:" << sandbox_flags;
     frame_->SetOpenerSandboxFlags(sandbox_flags);
+  }
 
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
 
@@ -2175,6 +2259,12 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   // Inherit policy container from parent.
   mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
       GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies().Clone();
+
+  // The initial empty document's anonymous bit is the union of:
+  // - its parent's anonymous bit.
+  // - its frame's anonymous attribute.
+  policy_container_data->is_anonymous |= owner_element->Anonymous();
+
   std::unique_ptr<PolicyContainer> policy_container =
       std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                         std::move(policy_container_data));
@@ -2646,38 +2736,18 @@ void WebLocalFrameImpl::ShowContextMenu(
   // TODO(jcivelli): http://crbug.com/45160 This prevents us from saving large
   //                 data encoded images.  We should have a way to save them.
   if (params.src_url.spec().size() > url::kMaxURLChars)
-    params.src_url = KURL();
+    params.src_url = GURL();
 
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
 
-#if BUILDFLAG(IS_ANDROID)
-  // The Samsung Email app relies on the context menu being shown after the
-  // javascript onselectionchanged is triggered.
-  // See crbug.com/729488
-  GetFrame()
-      ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&WebLocalFrameImpl::ShowDeferredContextMenu,
-                    WrapWeakPersistent(this), std::move(client), params));
-#else
-  ShowDeferredContextMenu(std::move(client), params);
-#endif
-
-  if (Client())
-    Client()->UpdateContextMenuDataForTesting(data, host_context_menu_location);
-}
-
-void WebLocalFrameImpl::ShowDeferredContextMenu(
-    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
-    const UntrustworthyContextMenuParams& params) {
-  // The local frame may become detached before the object is GC'ed. So, this
-  // method needs to check if GetFrame() returns a nullptr.
   if (!GetFrame())
     return;
   GetFrame()->GetLocalFrameHostRemote().ShowContextMenu(std::move(client),
                                                         params);
+
+  if (Client())
+    Client()->UpdateContextMenuDataForTesting(data, host_context_menu_location);
 }
 
 bool WebLocalFrameImpl::IsAllowedToDownload() const {
@@ -2861,6 +2931,18 @@ void WebLocalFrameImpl::SetSessionStorageArea(
       *GetFrame(), std::move(session_storage_area));
 }
 
+void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
+    base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback) {
+  TouchStartEventListener* touch_start_event_listener =
+      MakeGarbageCollected<TouchStartEventListener>(std::move(callback));
+  AddEventListenerOptionsResolved options;
+  options.setPassive(true);
+  options.SetPassiveSpecified(true);
+  options.setCapture(true);
+  GetFrame()->DomWindow()->addEventListener(
+      event_type_names::kTouchstart, touch_start_event_listener, &options);
+}
+
 void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {
   current_history_item_.SetTarget(target);
 }
@@ -2874,13 +2956,8 @@ PageState WebLocalFrameImpl::CurrentHistoryItemToPageState() {
   return SingleHistoryItemToPageState(current_history_item_);
 }
 
-void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
-    const gfx::Rect& rect) {
-  // TODO(ekaramad): Perhaps we should remove |rect| since all it seems to be
-  // doing is helping verify if scrolling animation for a given focused editable
-  // element has finished.
-  if (has_scrolled_focused_editable_node_into_rect_ &&
-      rect == rect_for_scrolled_focused_editable_node_ && autofill_client_) {
+void WebLocalFrameImpl::ScrollFocusedEditableElementIntoView() {
+  if (has_scrolled_focused_editable_node_into_rect_ && autofill_client_) {
     autofill_client_->DidCompleteFocusChangeInFrame();
     return;
   }
@@ -2890,7 +2967,6 @@ void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
   if (!local_root_frame_widget->ScrollFocusedEditableElementIntoView())
     return;
 
-  rect_for_scrolled_focused_editable_node_ = rect;
   has_scrolled_focused_editable_node_into_rect_ = true;
   if (!local_root_frame_widget->HasPendingPageScaleAnimation() &&
       autofill_client_) {
@@ -2900,6 +2976,10 @@ void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
 
 void WebLocalFrameImpl::ResetHasScrolledFocusedEditableIntoView() {
   has_scrolled_focused_editable_node_into_rect_ = false;
+}
+
+sk_sp<cc::PaintRecord> WebLocalFrameImpl::GetPaintRecord() const {
+  return GetFrame()->View()->GetPaintRecord();
 }
 
 }  // namespace blink

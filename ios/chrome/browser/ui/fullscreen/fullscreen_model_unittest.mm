@@ -21,7 +21,7 @@ const CGFloat kToolbarHeight = 50.0;
 const CGFloat kScrollViewHeight = 400.0;
 // The content height used for tests.
 const CGFloat kContentHeight = 5000.0;
-// Converts |insets| to a string for debugging.
+// Converts `insets` to a string for debugging.
 std::string GetStringFromInsets(UIEdgeInsets insets) {
   return base::SysNSStringToUTF8(NSStringFromUIEdgeInsets(insets));
 }
@@ -227,7 +227,7 @@ TEST_F(FullscreenModelTest, DraggingStarted) {
 
 // Tests that toolbar_insets() returns the correct values.
 TEST_F(FullscreenModelTest, ToolbarInsets) {
-  // Checks whether |insets| are equal to the expected insets at |progress|.
+  // Checks whether `insets` are equal to the expected insets at `progress`.
   void (^check_insets)(UIEdgeInsets insets, CGFloat progress) =
       ^void(UIEdgeInsets insets, CGFloat progress) {
         UIEdgeInsets expected_insets = UIEdgeInsetsMake(

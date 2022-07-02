@@ -1,4 +1,4 @@
-<style include="signin-dialog-shared">
+<style include="signin-shared">
   #customizeDialog {
     display: flex;
     flex-direction: column;
@@ -8,7 +8,13 @@
   #header {
     background-color: var(--header-background-color);
     height: 124px;
-    margin-bottom: 16px
+    margin-bottom: 16px;
+  }
+
+  .in-dialog-design #header {
+    background: center 18px no-repeat
+        url(./images/profile_customization_illustration.svg);
+    height: 170px;
   }
 
   #avatarContainer {
@@ -20,6 +26,11 @@
     position: absolute;
     top: 30px;
     width: var(--avatar-size);
+  }
+
+  .in-dialog-design #avatarContainer {
+    --avatar-image-width: 72px;
+    top: 90px;
   }
 
   #avatar {
@@ -40,9 +51,14 @@
     border-radius: 50%;
     bottom: var(--badge-offset);
     height: var(--badge-width);
+    inset-inline-end: var(--badge-offset);
     position: absolute;
-    right: var(--badge-offset);
     width: var(--badge-width);
+  }
+
+  .in-dialog-design .work-badge {
+    --badge-width: 24px;
+    bottom: 0;
   }
 
   .work-badge > iron-icon {
@@ -77,6 +93,7 @@
   }
 
   #nameInput {
+    --cr-input-error-display: none;
     --cr-input-placeholder-color: var(--google-grey-900);
     --cr-input-padding-bottom: 8px;
     --cr-input-padding-top: 8px;
@@ -91,6 +108,10 @@
     margin: 16px auto;
   }
 
+  .in-dialog-design #pickThemeContainer {
+    margin: 4px auto 26px auto;
+  }
+
   #themeSelector {
     --cr-customize-themes-grid-gap: 7px;
     --cr-customize-themes-icon-size: 36px;
@@ -103,12 +124,30 @@
   cr-button {
     font-size: 12px;
     width: 111px;
+  }
 
+  .in-dialog-design #title {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .in-dialog-design .action-container {
+    padding: 0 24px 24px;
+  }
+
+  .in-dialog-design #doneButton {
+    width: 119px;
+  }
+
+  .in-dialog-design #skipButton {
+    margin-inline-end: 12px;
+    width: 76px;
   }
 </style>
 
 <div role="dialog" id="customizeDialog" aria-labelledby="title"
-    aria-describedby="content">
+    aria-describedby="content"
+    class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
   <div id="header">
     <div id="avatarContainer">
       <img id="avatar" alt="" src="[[pictureUrl_]]">
@@ -119,8 +158,17 @@
   </div>
 
   <div id="body">
-    <div id="title">[[welcomeTitle_]]</div>
-    <div id="content">$i18n{profileCustomizationText}</div>
+    <div id="title">
+      <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
+        [[welcomeTitle_]]
+      </template>
+      <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
+        $i18n{profileCustomizationTitle}
+      </template>
+    </div>
+    <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
+      <div id="content">$i18n{profileCustomizationText}</div>
+    </template>
   </div>
 
   <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
@@ -129,7 +177,7 @@
   </cr-input>
 
   <div id="pickThemeContainer">
-    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+    <cr-customize-themes id="themeSelector">
     </cr-customize-themes>
   </div>
 
@@ -139,5 +187,12 @@
         on-click="onDoneCustomizationClicked_" autofocus>
       $i18n{profileCustomizationDoneLabel}
     </cr-button>
+    <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
+      <cr-button id="skipButton" class="cancel-button"
+          on-click="onSkipCustomizationClicked_">
+        $i18n{profileCustomizationSkipLabel}
+      </cr-button>
+    </template>
   <div>
+
 </div>

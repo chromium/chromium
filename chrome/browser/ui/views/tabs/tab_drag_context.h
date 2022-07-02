@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
 
 class Tab;
 class TabGroupHeader;
@@ -20,18 +21,40 @@ class TabStrip;
 class TabStripModel;
 class TabDragController;
 
-namespace views {
-class View;
+namespace tab_groups {
+class TabGroupId;
 }
+
+// A limited subset of TabDragContext for use by non-TabDragController clients.
+class TabDragContextBase : public views::View {
+ public:
+  ~TabDragContextBase() override = default;
+
+  // Called when the TabStrip is changed during a drag session.
+  virtual void UpdateAnimationTarget(TabSlotView* tab_slot_view,
+                                     const gfx::Rect& target_bounds) = 0;
+
+  // Returns true if a drag session is currently active.
+  virtual bool IsDragSessionActive() const = 0;
+
+  // Returns true if this DragContext is in the process of returning tabs to the
+  // associated TabContainer.
+  virtual bool IsEndingDrag() const = 0;
+
+  // Immediately completes any ongoing end drag animations, returning the tabs
+  // to the associated TabContainer immediately.
+  virtual void FinishEndingDrag() = 0;
+
+  // Returns the width of the region in which dragged tabs are allowed to exist.
+  virtual int GetTabDragAreaWidth() const = 0;
+};
 
 // Provides tabstrip functionality specifically for TabDragController, much of
 // which should not otherwise be in TabStrip's public interface.
-class TabDragContext {
+class TabDragContext : public TabDragContextBase {
  public:
-  virtual ~TabDragContext() = default;
+  ~TabDragContext() override = default;
 
-  virtual views::View* AsView() = 0;
-  virtual const views::View* AsView() const = 0;
   virtual Tab* GetTabAt(int index) const = 0;
   virtual int GetIndexOf(const TabSlotView* view) const = 0;
   virtual int GetTabCount() const = 0;
@@ -62,20 +85,11 @@ class TabDragContext {
   // operation.
   virtual void DestroyDragController() = 0;
 
-  // Returns true if a drag session is currently active.
-  virtual bool IsDragSessionActive() const = 0;
-
   // Returns true if a tab is being dragged into this tab strip.
   virtual bool IsActiveDropTarget() const = 0;
 
-  // Returns the x-coordinates of the tabs.
-  virtual std::vector<int> GetTabXCoordinates() const = 0;
-
   // Returns the width of the active tab.
   virtual int GetActiveTabWidth() const = 0;
-
-  // Returns the width of the region in which dragged tabs are allowed to exist.
-  virtual int GetTabDragAreaWidth() const = 0;
 
   // Returns where the drag region begins and ends; tabs dragged beyond these
   // points should detach.
@@ -120,9 +134,7 @@ class TabDragContext {
   // Used by TabDragController when the user stops dragging. |completed| is
   // true if the drag operation completed successfully, false if it was
   // reverted.
-  virtual void StoppedDragging(const std::vector<TabSlotView*>& views,
-                               const std::vector<int>& initial_positions,
-                               bool completed) = 0;
+  virtual void StoppedDragging(const std::vector<TabSlotView*>& views) = 0;
 
   // Invoked during drag to layout the views being dragged in |views| at
   // |location|. If |initial_drag| is true, this is the initial layout after the

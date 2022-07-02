@@ -4,18 +4,17 @@
 
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
 
 ColorSchemeHelper::ColorSchemeHelper(Document& document)
     : settings_(*document.GetSettings()) {
-  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
-  web_theme_engine_ = Platform::Current()->ThemeEngine();
+  web_theme_engine_ = WebThemeEngineHelper::GetNativeThemeEngine();
   default_preferred_color_scheme_ = settings_.GetPreferredColorScheme();
   default_preferred_contrast_ = settings_.GetPreferredContrast();
   default_forced_colors_ = web_theme_engine_->GetForcedColors();
@@ -23,8 +22,7 @@ ColorSchemeHelper::ColorSchemeHelper(Document& document)
 
 ColorSchemeHelper::ColorSchemeHelper(Page& page)
     : settings_(page.GetSettings()) {
-  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
-  web_theme_engine_ = Platform::Current()->ThemeEngine();
+  web_theme_engine_ = WebThemeEngineHelper::GetNativeThemeEngine();
   default_preferred_color_scheme_ = settings_.GetPreferredColorScheme();
   default_preferred_contrast_ = settings_.GetPreferredContrast();
   default_forced_colors_ = web_theme_engine_->GetForcedColors();

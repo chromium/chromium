@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -41,8 +42,14 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/performance_manager/extension_watcher.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy_helper.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
@@ -143,6 +150,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   // moved to PerformanceManager, this is tracked in https://crbug.com/1156803.
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::PageFreezingPolicy>());
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::HighEfficiencyModePolicy>());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   graph->PassToGraph(
@@ -155,7 +169,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<performance_manager::policies::BFCachePolicy>());
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 content::FeatureObserverClient*
@@ -184,6 +198,25 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       std::make_unique<performance_manager::PageLiveStateDecoratorHelper>();
   page_load_tracker_decorator_helper_ =
       std::make_unique<performance_manager::PageLoadTrackerDecoratorHelper>();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_watcher_ =
+      std::make_unique<performance_manager::ExtensionWatcher>();
+#endif
+}
+
+void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
+#if !BUILDFLAG(IS_ANDROID)
+  // This object requires the host frame sink manager to exist, which is created
+  // after all the extra parts have run their PostCreateThreads.
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    high_efficiency_mode_policy_helper_ = std::make_unique<
+        performance_manager::policies::HighEfficiencyModePolicyHelper>(
+        g_browser_process->local_state());
+  }
+#endif
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
@@ -195,9 +228,16 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   g_browser_process->profile_manager()->RemoveObserver(this);
   profile_observations_.RemoveAllObservations();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_watcher_.reset();
+#endif
   page_load_tracker_decorator_helper_.reset();
   page_live_state_data_helper_.reset();
   page_load_metrics_observer_.reset();
+
+#if !BUILDFLAG(IS_ANDROID)
+  high_efficiency_mode_policy_helper_.reset();
+#endif
 
   // Releasing `performance_manager_lifetime_` will tear down the registry and
   // graph safely.

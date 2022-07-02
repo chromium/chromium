@@ -13,6 +13,10 @@
 
 namespace ash {
 
+// An error bubble shown on the login/lock screen, for example the bubble
+// shown for wrong passwords. Always contains a warning sign at the top.
+// The rest of the bubble is made up of a customizable view  supplied via
+// `SetContent`.
 class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
  public:
   LoginErrorBubble();
@@ -23,9 +27,10 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
 
   ~LoginErrorBubble() override;
 
+  views::View* GetContent();
   // If the content is theme-change sensitive, it should be updated by the
   // class managing this instance via a new call to SetContent.
-  void SetContent(views::View* content);
+  void SetContent(std::unique_ptr<views::View> content);
   // Covers most cases where content is a simple label containing a message.
   // The eventual theme changes will be handled internally.
   void SetTextContent(const std::u16string& message);

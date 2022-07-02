@@ -18,6 +18,7 @@
 #include "chrome/browser/component_updater/autofill_regex_remover.h"
 #include "chrome/browser/component_updater/chrome_client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
+#include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
-#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -37,6 +37,7 @@
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -64,8 +65,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
-#include "chrome/browser/component_updater/desktop_screenshot_editor_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -179,7 +178,7 @@ void RegisterComponentsForUpdate() {
   // on chromium build bots, it is always registered here and
   // RegisterSwReporterComponent() has support for running only in official
   // builds or tests.
-  RegisterSwReporterComponent(cus);
+  RegisterSwReporterComponent(cus, g_browser_process->local_state());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   RegisterThirdPartyModuleListComponent(cus);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -206,10 +205,8 @@ void RegisterComponentsForUpdate() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  RegisterDesktopScreenshotEditorComponent(cus);
   RegisterDesktopSharingHubComponent(cus);
   RegisterZxcvbnDataComponent(cus);
-  RegisterCommerceHeuristicsComponent(cus);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -225,6 +222,7 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   RegisterUrlParamClassificationComponent(cus);
+  RegisterCommerceHeuristicsComponent(cus);
 }
 
 }  // namespace component_updater

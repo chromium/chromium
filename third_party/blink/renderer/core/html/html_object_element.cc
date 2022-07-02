@@ -126,44 +126,41 @@ void HTMLObjectElement::ParseAttribute(
 // serviceType!
 void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   HashSet<StringImpl*, CaseFoldingHash> unique_param_names;
+  if (RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled()) {
+    // Scan the PARAM children and store their name/value pairs.
+    // Get the URL and type from the params if we don't already have them.
+    // Only scan <param> children if this functionality hasn't been disabled.
+    for (HTMLParamElement* p = Traversal<HTMLParamElement>::FirstChild(*this);
+         p; p = Traversal<HTMLParamElement>::NextSibling(*p)) {
+      String name = p->GetName();
+      if (name.IsEmpty())
+        continue;
 
-  if (!RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled()) {
-    // The <param> element functionality has been deprecated/removed.
-    return;
-  }
+      unique_param_names.insert(name.Impl());
+      plugin_params.AppendNameWithValue(p->GetName(), p->Value());
 
-  // Scan the PARAM children and store their name/value pairs.
-  // Get the URL and type from the params if we don't already have them.
-  for (HTMLParamElement* p = Traversal<HTMLParamElement>::FirstChild(*this); p;
-       p = Traversal<HTMLParamElement>::NextSibling(*p)) {
-    String name = p->GetName();
-    if (name.IsEmpty())
-      continue;
-
-    unique_param_names.insert(name.Impl());
-    plugin_params.AppendNameWithValue(p->GetName(), p->Value());
-
-    // TODO(schenney): crbug.com/572908 url adjustment does not belong in this
-    // function.
-    // HTML5 says that an object resource's URL is specified by the object's
-    // data attribute, not by a param element with a name of "data". However,
-    // for compatibility, allow the resource's URL to be given by a param
-    // element with one of the common names if we know that resource points
-    // to a plugin.
-    if (url_.IsEmpty() && !EqualIgnoringASCIICase(name, "data") &&
-        HTMLParamElement::IsURLParameter(name)) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kHTMLParamElementURLParameter);
-      // Use count this <param> usage, if it loads a PDF.
-      should_use_count_param_url_ = true;
-      SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
-    }
-    // TODO(schenney): crbug.com/572908 serviceType calculation does not belong
-    // in this function.
-    if (service_type_.IsEmpty() && EqualIgnoringASCIICase(name, "type")) {
-      wtf_size_t pos = p->Value().Find(";");
-      if (pos != kNotFound)
-        SetServiceType(p->Value().GetString().Left(pos));
+      // TODO(schenney): crbug.com/572908 url adjustment does not belong in this
+      // function.
+      // HTML5 says that an object resource's URL is specified by the object's
+      // data attribute, not by a param element with a name of "data". However,
+      // for compatibility, allow the resource's URL to be given by a param
+      // element with one of the common names if we know that resource points
+      // to a plugin.
+      if (url_.IsEmpty() && !EqualIgnoringASCIICase(name, "data") &&
+          HTMLParamElement::IsURLParameter(name)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kHTMLParamElementURLParameter);
+        // Use count this <param> usage, if it loads a PDF.
+        should_use_count_param_url_ = true;
+        SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
+      }
+      // TODO(schenney): crbug.com/572908 serviceType calculation does not
+      // belong in this function.
+      if (service_type_.IsEmpty() && EqualIgnoringASCIICase(name, "type")) {
+        wtf_size_t pos = p->Value().Find(";");
+        if (pos != kNotFound)
+          SetServiceType(p->Value().GetString().Left(pos));
+      }
     }
   }
 
@@ -172,8 +169,11 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   AttributeCollection attributes = Attributes();
   for (const Attribute& attribute : attributes) {
     const AtomicString& name = attribute.GetName().LocalName();
-    if (!unique_param_names.Contains(name.Impl()))
+    if (unique_param_names.Contains(name.Impl())) {
+      DCHECK(RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled());
+    } else {
       plugin_params.AppendAttribute(attribute);
+    }
   }
 
   // Some plugins don't understand the "data" attribute of the OBJECT tag (i.e.

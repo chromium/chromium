@@ -31,9 +31,15 @@ struct PLATFORM_EXPORT
     return input.GetSecurityOrigin();
   }
 
-  static const blink::BlinkSchemefulSite& top_level_site(
+  // TODO(crbug.com/1159586): Return by reference when internal copy is removed.
+  static const blink::BlinkSchemefulSite top_level_site(
       const blink::BlinkStorageKey& input) {
-    return input.GetTopLevelSite();
+    // We use `CopyWithForceEnabledThirdPartyStoragePartitioning` to ensure the
+    // partitioned values are preserved. The constructor on the other side will
+    // properly restore `top_level_site_` as derived from origin_ if
+    // `kThirdPartyStoragePartitioning` is disabled.
+    return input.CopyWithForceEnabledThirdPartyStoragePartitioning()
+        .GetTopLevelSite();
   }
 
   static const absl::optional<base::UnguessableToken>& nonce(
@@ -43,7 +49,12 @@ struct PLATFORM_EXPORT
 
   static blink::mojom::blink::AncestorChainBit ancestor_chain_bit(
       const blink::BlinkStorageKey& input) {
-    return input.GetAncestorChainBit();
+    // We use `CopyWithForceEnabledThirdPartyStoragePartitioning` to ensure the
+    // partitioned values are preserved. The constructor on the other side will
+    // properly restore `ancestor_chain_bit_`  to be `kSameSite` if
+    // `kThirdPartyStoragePartitioning` is disabled.
+    return input.CopyWithForceEnabledThirdPartyStoragePartitioning()
+        .GetAncestorChainBit();
   }
 
   static bool Read(blink::mojom::StorageKeyDataView data,

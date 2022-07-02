@@ -11,7 +11,7 @@
 namespace blink {
 namespace scheduler {
 
-class FakePageScheduler final : public PageScheduler {
+class FakePageScheduler : public PageScheduler {
  public:
   FakePageScheduler(bool is_audio_playing, bool is_throttling_exempt)
       : is_audio_playing_(is_audio_playing),
@@ -63,6 +63,7 @@ class FakePageScheduler final : public PageScheduler {
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
       BlameContext* blame_context,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType frame_type) override {
     return nullptr;
   }
@@ -78,6 +79,10 @@ class FakePageScheduler final : public PageScheduler {
   }
   VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
   bool IsInBackForwardCache() const override { return false; }
+
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler() override {
+    return nullptr;
+  }
 
  private:
   bool is_audio_playing_;

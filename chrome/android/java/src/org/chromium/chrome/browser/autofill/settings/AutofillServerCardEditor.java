@@ -49,6 +49,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
+    private boolean mAwaitingUpdateVirtualCardEnrollmentResponse;
+    private boolean mServerCardEditorClosed;
+    private Callback<Boolean> mVirtualCardEnrollmentUpdateResponseCallback;
 
     // Enum to represent the types of cards that show info in a server card editor page.
     @IntDef({CardType.SERVER_CARD, CardType.VIRTUAL_CARD})
@@ -112,6 +115,24 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT)) {
             mDelegate = new AutofillPaymentMethodsDelegate(Profile.getLastUsedRegularProfile());
+            mVirtualCardEnrollmentUpdateResponseCallback = isUpdateSuccessful -> {
+                // If the server card editor page was closed when the server call was in progress,
+                // cleanup the delegate. Else, update the enrollment button.
+                if (mServerCardEditorClosed) {
+                    mDelegate.cleanup();
+                } else {
+                    // Mark completion of the server call.
+                    mAwaitingUpdateVirtualCardEnrollmentResponse = false;
+                    if (isUpdateSuccessful) {
+                        // Update the button label.
+                        setVirtualCardEnrollmentButtonLabel(
+                                !mVirtualCardEnrollmentButtonShowsUnenroll);
+                    } else {
+                        // If update was not successful, enable the button so users can try again.
+                        mVirtualCardEnrollmentButton.setEnabled(true);
+                    }
+                }
+            };
         }
     }
 
@@ -152,23 +173,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 logServerCardEditorButtonClicks(CardType.VIRTUAL_CARD,
                         mVirtualCardEnrollmentButtonShowsUnenroll ? ButtonType.VIRTUAL_CARD_UNENROLL
                                                                   : ButtonType.VIRTUAL_CARD_ENROLL);
+                // TODO(@vishwasuppoor): Show a blocking progress dialog (crbug.com/1327467).
+                // Disable the button until we receive a response from the server.
+                mVirtualCardEnrollmentButton.setEnabled(false);
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
-                    mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId(),
+                    mDelegate.initVirtualCardEnrollment(mCard.getInstrumentId(),
                             result -> showVirtualCardEnrollmentDialog(result, modalDialogManager));
-                    // Disable the button until we receive a response from the server.
-                    mVirtualCardEnrollmentButton.setEnabled(false);
                 } else {
-                    AutofillVirtualCardUnenrollmentDialog dialog =
-                            new AutofillVirtualCardUnenrollmentDialog(
-                                    getActivity(), modalDialogManager, unenrollRequested -> {
-                                        if (unenrollRequested) {
-                                            mDelegate.unenrollVirtualCard(mCard.getInstrumentId());
-
-                                            // Change button label and behavior to Enroll.
-                                            setVirtualCardEnrollmentButtonLabel(false);
-                                        }
-                                    });
-                    dialog.show();
+                    showVirtualCardUnenrollmentDialog(modalDialogManager);
                 }
             });
         } else {
@@ -200,6 +212,13 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         // Ensure that the native AutofillPaymentMethodsDelegateMobile instance is cleaned up.
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT)) {
+            // If a server call is in progress, do not cleanup the delegate yet.
+            if (mAwaitingUpdateVirtualCardEnrollmentResponse) {
+                // Mark that the server card editor page was closed, so when the server call is
+                // completed, the delegate can be cleaned up.
+                mServerCardEditorClosed = true;
+                return;
+            }
             mDelegate.cleanup();
         }
     }
@@ -217,15 +236,11 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                 logSettingsPageEnrollmentDialogUserSelection(true);
                 // Silently enroll the virtual card.
-                mDelegate.enrollOfferedVirtualCard();
-                // Update the button label to allow un-enroll.
-                setVirtualCardEnrollmentButtonLabel(true);
+                mDelegate.enrollOfferedVirtualCard(mVirtualCardEnrollmentUpdateResponseCallback);
+                // Turn the flag on indicating that a server call is in progress.
+                mAwaitingUpdateVirtualCardEnrollmentResponse = true;
             } else {
-                // There can be cases where the user did not explicitly cancel the
-                // enrollment, but the dialog was closed.
-                if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
-                    logSettingsPageEnrollmentDialogUserSelection(false);
-                }
+                logSettingsPageEnrollmentDialogUserSelection(false);
                 // Since the user canceled the enrollment dialog, enable the button
                 // again to allow for enrollment.
                 mVirtualCardEnrollmentButton.setEnabled(true);
@@ -237,6 +252,22 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         R.string.autofill_virtual_card_enrollment_accept_button_label),
                 getActivity().getString(R.string.no_thanks), onEducationTextLinkClicked,
                 onGoogleLegalMessageLinkClicked, onIssuerLegalMessageLinkClicked, resultHandler);
+        dialog.show();
+    }
+
+    private void showVirtualCardUnenrollmentDialog(ModalDialogManager modalDialogManager) {
+        AutofillVirtualCardUnenrollmentDialog dialog = new AutofillVirtualCardUnenrollmentDialog(
+                getActivity(), modalDialogManager, unenrollRequested -> {
+                    if (unenrollRequested) {
+                        mDelegate.unenrollVirtualCard(mCard.getInstrumentId(),
+                                mVirtualCardEnrollmentUpdateResponseCallback);
+                        // Turn the flag on indicating that a server call is in
+                        // progress.
+                        mAwaitingUpdateVirtualCardEnrollmentResponse = true;
+                    } else {
+                        mVirtualCardEnrollmentButton.setEnabled(true);
+                    }
+                });
         dialog.show();
     }
 

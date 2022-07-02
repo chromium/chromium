@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -298,6 +299,68 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCancelPairing) {
 
   EXPECT_FALSE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
+}
+
+TEST_P(BluetoothTestWinrtOnly, DevicePairRequestConfirmOnlyAccept) {
+  if (!PlatformSupportsLowEnergy()) {
+    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
+    return;
+  }
+  InitWithFakeAdapter();
+  StartLowEnergyDiscoverySession();
+
+  BluetoothDevice* device = SimulateLowEnergyDevice(1);
+
+  ASSERT_TRUE(ConnectGatt(device));
+  EXPECT_FALSE(device->IsPaired());
+
+  SimulatePairingKind(
+      device,
+      ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmOnly);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, AuthorizePairing)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->ConfirmPairing();
+      });
+
+  base::test::TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>>
+      error_code_future;
+  device->Pair(&pairing_delegate, error_code_future.GetCallback());
+
+  EXPECT_FALSE(error_code_future.Get().has_value());
+  EXPECT_TRUE(device->IsPaired());
+}
+
+TEST_P(BluetoothTestWinrtOnly, DevicePairRequestConfirmOnlyCancel) {
+  if (!PlatformSupportsLowEnergy()) {
+    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
+    return;
+  }
+  InitWithFakeAdapter();
+  StartLowEnergyDiscoverySession();
+
+  BluetoothDevice* device = SimulateLowEnergyDevice(1);
+
+  ASSERT_TRUE(ConnectGatt(device));
+  EXPECT_FALSE(device->IsPaired());
+
+  SimulatePairingKind(
+      device,
+      ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmOnly);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, AuthorizePairing)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousCancelPairing(device);
+      });
+
+  base::test::TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>>
+      error_code_future;
+  device->Pair(&pairing_delegate, error_code_future.GetCallback());
+
+  EXPECT_EQ(error_code_future.Get(), BluetoothDevice::ERROR_AUTH_CANCELED);
+  EXPECT_FALSE(device->IsPaired());
 }
 #endif  // BUILDFLAG(IS_WIN)
 

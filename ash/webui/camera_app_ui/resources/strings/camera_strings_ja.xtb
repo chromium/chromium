@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">バーコード スキャン</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">ドキュメント スキャンの機能をダウンロードしています</translation>
 <translation id="4118525110028899586">録画を一時停止</translation>
 <translation id="4121305183798804752">ドキュメントを検出しました</translation>
 <translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">写真の撮影をキャンセル</translation>
 <translation id="4497569853498380347">（<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />）<ph name="MEGAPIXEL" /> メガピクセル</translation>
 <translation id="4570032796877367747">前面カメラ</translation>
+<translation id="4620818268515773682">マイクのミュートを切り替えます。ミュートはオフです</translation>
 <translation id="4628948037717959914">写真</translation>
 <translation id="4649291346448517080">ファイルを保存できません</translation>
 <translation id="4695379108709712600">上に移動しています</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ドキュメントの右下の角</translation>
+<translation id="7692090236657809299">パン ティルト ズームをオンにする</translation>
 <translation id="7726641833034062494">通常の動画を録画する</translation>
 <translation id="7748344063862150053">ドキュメントの右上の角</translation>
 <translation id="7933675232020478311">右下に移動しています</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">下にティルト</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p（<ph name="WIDTH" />:<ph name="HEIGHT" />）</translation>
+<translation id="8711011893539266636">マイクのミュートを切り替えます。ミュートはオンです</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>

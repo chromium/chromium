@@ -236,15 +236,15 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
                               base::CompareCase::SENSITIVE)) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
-    const auto* update_check = root->FindKey("request")
-                                   ->FindKey("app")
-                                   ->GetListDeprecated()[0]
-                                   .FindKey("updatecheck");
+    const auto* update_check =
+        (*root->GetDict().FindDict("request")->FindList("app"))[0]
+            .GetDict()
+            .FindDict("updatecheck");
     ASSERT_TRUE(update_check);
     if (update_disabled) {
-      EXPECT_EQ(true, update_check->FindKey("updatedisabled")->GetBool());
+      EXPECT_EQ(true, update_check->Find("updatedisabled")->GetBool());
     } else {
-      EXPECT_FALSE(update_check->FindKey("updatedisabled"));
+      EXPECT_FALSE(update_check->Find("updatedisabled"));
     }
   } else {
     NOTREACHED();

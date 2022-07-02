@@ -47,7 +47,7 @@ class FontPlatformData;
 // to `FontPlatformData`.
 class FontPlatformDataCache final {
  public:
-  static std::unique_ptr<FontPlatformDataCache> Create();
+  static FontPlatformDataCache* Create();
 
   FontPlatformDataCache();
   ~FontPlatformDataCache();

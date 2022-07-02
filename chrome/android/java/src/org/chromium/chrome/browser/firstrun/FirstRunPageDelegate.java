@@ -79,6 +79,9 @@ public interface FirstRunPageDelegate {
     /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. **/
     void recordNativePolicyAndChildStatusLoadedHistogram();
 
+    /** Records MobileFre.FromLaunch.NativeInitialized histogram. **/
+    void recordNativeInitializedHistogram();
+
     /**
      * The supplier that supplies whether reading policy value is necessary.
      * See {@link PolicyLoadListener} for details.

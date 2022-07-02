@@ -95,7 +95,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     [badge_mediator_ disconnect];
   }
 
-  // Inserts a new WebState to the WebStateList at |index| and activates it.
+  // Inserts a new WebState to the WebStateList at `index` and activates it.
   void InsertActivatedWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
@@ -108,8 +108,8 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
                                      WebStateOpener());
   }
 
-  // Adds an Infobar of |type| to the InfoBarManager and returns the infobar.
-  // Pass in different |message_text| to avoid replacing existing infobar.
+  // Adds an Infobar of `type` to the InfoBarManager and returns the infobar.
+  // Pass in different `message_text` to avoid replacing existing infobar.
   InfoBarIOS* AddInfobar(InfobarType type, std::u16string message_text) {
     std::unique_ptr<InfoBarIOS> added_infobar =
         std::make_unique<FakeInfobarIOS>(type, message_text);
@@ -118,7 +118,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     return infobar;
   }
 
-  // Removes |infobar| from its manager.
+  // Removes `infobar` from its manager.
   void RemoveInfobar(InfoBarIOS* infobar) {
     infobar_manager()->RemoveInfoBar(infobar);
   }
@@ -289,7 +289,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestCloseLastTab) {
 // Tests that the badge mediator successfully updates the InfobarBadgeTabHelper
 // for the active WebState for infobar banner presentation and dismissal.
 TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
-  // Add an active WebState at index 0 and add an InfoBar with |type| to the
+  // Add an active WebState at index 0 and add an InfoBar with `type` to the
   // WebState's InfoBarManager, checking that the badge item has been created
   // with the default BadgeState.
   InsertActivatedWebState(/*index=*/0);

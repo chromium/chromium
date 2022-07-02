@@ -13,6 +13,7 @@
 #import "base/mac/scoped_nsobject.h"
 #import "base/strings/sys_string_conversions.h"
 #include "testing/platform_test.h"
+#include "ui/display/screen.h"
 
 // CocoaTestHelperWindow behaves differently from a regular NSWindow in the
 // following ways:
@@ -74,6 +75,8 @@ class CocoaTestHelper {
   CocoaTestHelperWindow* test_window();
 
  private:
+  display::ScopedNativeScreen screen_;
+
   // Return a set of currently open windows. Avoiding NSArray so
   // contents aren't retained, the pointer values can only be used for
   // comparison purposes.  Using std::set to make progress-checking

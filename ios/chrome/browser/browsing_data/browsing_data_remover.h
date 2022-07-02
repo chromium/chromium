@@ -29,23 +29,23 @@ class BrowsingDataRemover : public KeyedService {
   // Is the service currently in the process of removing data?
   virtual bool IsRemoving() const = 0;
 
-  // Removes browsing data for the given |time_period| with data types specified
-  // by |remove_mask|. The |callback| is invoked asynchronously when the data
+  // Removes browsing data for the given `time_period` with data types specified
+  // by `remove_mask`. The `callback` is invoked asynchronously when the data
   // has been removed.
   virtual void Remove(browsing_data::TimePeriod time_period,
                       BrowsingDataRemoveMask remove_mask,
                       base::OnceClosure callback) = 0;
 
-  // Removes all persisted data for sessions with |session_ids|.
+  // Removes all persisted data for sessions with `session_ids`.
   virtual void RemoveSessionsData(NSArray<NSString*>* session_ids) = 0;
 
-  // Adds/removes |observer| from the list of observers notified when data is
+  // Adds/removes `observer` from the list of observers notified when data is
   // removed by BrowsingDataRemover.
   void AddObserver(BrowsingDataRemoverObserver* observer);
   void RemoveObserver(BrowsingDataRemoverObserver* observer);
 
  protected:
-  // Invokes |OnBrowsingDataRemoved| on all registered observers.
+  // Invokes `OnBrowsingDataRemoved` on all registered observers.
   void NotifyBrowsingDataRemoved(BrowsingDataRemoveMask mask);
 
  private:

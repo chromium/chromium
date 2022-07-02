@@ -12,7 +12,6 @@ android_apk("audio_focus_grabber_apk") {
   deps = [
     ":audio_focus_grabber_apk_resources",
     "//base:base_java",
-    "//build/android:build_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
 

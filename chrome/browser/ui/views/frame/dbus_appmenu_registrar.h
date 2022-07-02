@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -71,7 +72,7 @@ class DbusAppmenuRegistrar {
   void OnNameOwnerChanged(const std::string& service_owner);
 
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ObjectProxy* registrar_proxy_;
+  raw_ptr<dbus::ObjectProxy> registrar_proxy_;
   bool service_has_owner_ = false;
 
   // Maps menus to flags that indicate if the menu has been successfully

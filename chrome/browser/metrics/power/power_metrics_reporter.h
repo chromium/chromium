@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
@@ -46,13 +47,6 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   using CoalitionResourceUsageRate = power_metrics::CoalitionResourceUsageRate;
 #endif  // BUILDFLAG(IS_MAC)
 
-  static constexpr base::TimeDelta kShortIntervalDuration = base::Seconds(10);
-
-  // Used to calculate the duration of a short interval. Set from at the
-  // beginning of a short interval (OnShortIntervalBegin()) and reset at the end
-  // (ReportShortIntervalHistograms()).
-  base::TimeTicks short_interval_begin_time_;
-
   // Use the default arguments in production. In tests, use arguments to provide
   // mocks. |(short|long)_usage_scenario_data_store| are queried to determine
   // the scenario for short and long reporting intervals. They must outlive the
@@ -79,50 +73,49 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   ~PowerMetricsReporter() override;
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
-  BatteryLevelProvider::BatteryState& battery_state_for_testing() {
+  absl::optional<BatteryLevelProvider::BatteryState>&
+  battery_state_for_testing() {
     return battery_state_;
   }
-
-  // Ensures |callback| is called once the next battery state is available.
-  void OnNextSampleForTesting(base::OnceClosure callback) {
-    on_battery_sampled_for_testing_ = std::move(callback);
-  }
-  // Ensures |callback| is called once the first battery state is available.
-  // |callback| is called synchronously if the first battery state is already
-  // available.
-  void OnFirstSampleForTesting(base::OnceClosure callback);
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
 
- protected:
-#if BUILDFLAG(IS_MAC)
-  // Emit trace event when CPU usage is high for 10 secondes or more.
-  void MaybeEmitHighCPUTraceEvent(
-      const ScenarioParams& short_interval_scenario_params,
-      const CoalitionResourceUsageRate& coalition_resource_usage_rate);
-#endif  // BUILDFLAG(IS_MAC)
-
  private:
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+  // Called when the initial battery state is obtained.
+  void OnFirstBatteryStateSampled(
+      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+
+  // Starts the timer for the long interval. On Mac, this will fire for the
+  // beginning of the short interval instead, which upon completion will mark
+  // the end of both the short and the long interval.
+  void StartNextLongInterval();
+
+#if BUILDFLAG(IS_MAC)
+  // Invoked at the beginning of a "short" interval (~10 seconds before
+  // `OnLongIntervalEnd`).
+  void OnShortIntervalBegin();
+#endif
+
+  // Called when the long interval ended. On Mac, this also marks the end of the
+  // short interval.
+  void OnLongIntervalEnd();
+
   // ProcessMonitor::Observer:
+  void OnMetricsSampled(MonitoredProcessType type,
+                        const ProcessMonitor::Metrics& metrics) override;
   void OnAggregatedMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics) override;
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
-  void OnFirstBatteryStateSampled(
-      const BatteryLevelProvider::BatteryState& battery_state);
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       base::TimeTicks battery_sample_begin_time,
-      const BatteryLevelProvider::BatteryState& new_battery_state);
-
-  // Report the UKMs for the past interval.
-  static void ReportUKMs(
-      const UsageScenarioDataStore::IntervalData& interval_data,
-      const ProcessMonitor::Metrics& aggregated_process_metrics,
-      base::TimeDelta interval_duration,
-      BatteryDischarge battery_discharge);
+      const absl::optional<BatteryLevelProvider::BatteryState>&
+          new_battery_state);
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   // Called when the long interval (and the short one on Mac) ends.
@@ -134,10 +127,20 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
 #endif
   );
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+  // Report the UKMs for the past interval.
+  static void ReportUKMs(
+      const UsageScenarioDataStore::IntervalData& interval_data,
+      const ProcessMonitor::Metrics& aggregated_process_metrics,
+      base::TimeDelta interval_duration,
+      BatteryDischarge battery_discharge);
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+
 #if BUILDFLAG(IS_MAC)
-  // Invoked at the beginning of a "short" interval (~10 seconds before
-  // OnAggregatedMetricsSampled).
-  void OnShortIntervalBegin();
+  // Emit trace event when CPU usage is high for 10 secondes or more.
+  void MaybeEmitHighCPUTraceEvent(
+      const ScenarioParams& short_interval_scenario_params,
+      const CoalitionResourceUsageRate& coalition_resource_usage_rate);
 
   void OnIOPMPowerSourceSamplingEvent();
 #endif  // BUILDFLAG(IS_MAC)
@@ -155,18 +158,19 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
-  BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
-                                                    base::TimeTicks::Now()};
+  absl::optional<BatteryLevelProvider::BatteryState> battery_state_;
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   base::TimeTicks interval_begin_;
 
-  base::OnceClosure on_battery_sampled_for_testing_;
+  base::OneShotTimer interval_timer_;
 
 #if BUILDFLAG(IS_MAC)
-  // Timer that fires at the beginning of a "short" interval. This is 10 seconds
-  // before a call to OnAggregatedMetricsSampled() is expected.
-  base::RetainingOneShotTimer short_interval_timer_;
+  // Used to calculate the duration of a short interval for the purpose of
+  // emitting a trace event when the measured CPU usage is high. Set from at the
+  // beginning of a short interval (OnShortIntervalBegin()) and reset at the end
+  // (MaybeEmitHighCPUTraceEvent()).
+  base::TimeTicks short_interval_begin_time_;
 
   power_metrics::IOPMPowerSourceSamplingEventSource
       iopm_power_source_sampling_event_source_;

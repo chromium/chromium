@@ -202,10 +202,7 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
     return model_->IsItemEnabledAt(index);
   }
 
-  void ActivatedAt(int index) override {
-    owner_->SetSelectedIndex(index);
-    owner_->OnPerformAction();
-  }
+  void ActivatedAt(int index) override { owner_->MenuSelectionAt(index); }
 
   void ActivatedAt(int index, int event_flags) override { ActivatedAt(index); }
 
@@ -578,6 +575,10 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   OnContentSizeMaybeChanged();
 }
 
+void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
+  SetModel(nullptr);
+}
+
 const base::RepeatingClosure& Combobox::GetCallback() const {
   return callback_;
 }
@@ -696,6 +697,13 @@ void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
   arrow_button_->SetState(original_button_state);
   closed_time_ = base::TimeTicks::Now();
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+}
+
+void Combobox::MenuSelectionAt(int index) {
+  if (!menu_selection_at_callback_ || !menu_selection_at_callback_.Run(index)) {
+    SetSelectedIndex(index);
+    OnPerformAction();
+  }
 }
 
 void Combobox::OnPerformAction() {

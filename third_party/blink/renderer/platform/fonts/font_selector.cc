@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -33,10 +33,13 @@ AtomicString FontSelector::FamilyNameFromSettings(
     return g_empty_atom;
 
   if (IsWebkitBodyFamily(font_description)) {
-    // TODO(crbug.com/1065468): Remove this counter when it's no longer
-    // necessary.
-    UseCounter::Count(use_counter,
-                      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody);
+    // TODO(yosin): We should make |use_counter| available for font threads.
+    if (use_counter) {
+      // TODO(crbug.com/1065468): Remove this counter when it's no longer
+      // necessary.
+      UseCounter::Count(use_counter,
+                        WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody);
+    }
   } else if (generic_family_name == font_family_names::kWebkitStandard &&
              !generic_family.FamilyIsGeneric()) {
     // -webkit-standard is set internally only with a kGenericFamily type in

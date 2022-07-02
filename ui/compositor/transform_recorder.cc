@@ -7,6 +7,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "ui/compositor/paint_context.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 

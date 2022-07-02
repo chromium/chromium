@@ -54,6 +54,15 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
        */
       selectedTheme: {
         type: String,
+      },
+
+      /**
+       * Indicates if the device is used in tablet mode
+       * @private
+       */
+      isInTabletMode_: {
+        type: Boolean,
+        value: false,
       }
     };
   }
@@ -64,6 +73,15 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
 
   get EXTERNAL_API() {
     return [];
+  }
+
+  /**
+   * Updates "device in tablet mode" state when tablet mode is changed.
+   * Overridden from LoginScreenBehavior.
+   * @param {boolean} isInTabletMode True when in tablet mode.
+   */
+  setTabletModeState(isInTabletMode) {
+    this.isInTabletMode_ = isInTabletMode;
   }
 
   ready() {

@@ -1,9 +1,9 @@
 use crate::syntax::instantiate::NamedImplKey;
 use crate::syntax::resolve::Resolution;
-use crate::syntax::Impl;
+use crate::syntax::{Impl, Lifetimes};
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use syn::Token;
+use syn::{Lifetime, Token};
 
 pub struct ImplGenerics<'a> {
     explicit_impl: Option<&'a Impl>,
@@ -59,5 +59,33 @@ impl<'a> ToTokens for TyGenerics<'a> {
                 .unwrap_or_else(|| Token![>](span))
                 .to_tokens(tokens);
         }
+    }
+}
+
+pub struct UnderscoreLifetimes<'a> {
+    generics: &'a Lifetimes,
+}
+
+impl Lifetimes {
+    pub fn to_underscore_lifetimes(&self) -> UnderscoreLifetimes {
+        UnderscoreLifetimes { generics: self }
+    }
+}
+
+impl<'a> ToTokens for UnderscoreLifetimes<'a> {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let Lifetimes {
+            lt_token,
+            lifetimes,
+            gt_token,
+        } = self.generics;
+        lt_token.to_tokens(tokens);
+        for pair in lifetimes.pairs() {
+            let (lifetime, punct) = pair.into_tuple();
+            let lifetime = Lifetime::new("'_", lifetime.span());
+            lifetime.to_tokens(tokens);
+            punct.to_tokens(tokens);
+        }
+        gt_token.to_tokens(tokens);
     }
 }

@@ -144,8 +144,8 @@ using l10n_util::GetNSString;
   [self.syncSettingsCoordinator start];
 }
 
-// Dismisses the current view controller with |animated|, triggers the
-// coordinator cleanup and then calls |completion|.
+// Dismisses the current view controller with `animated`, triggers the
+// coordinator cleanup and then calls `completion`.
 - (void)dismissViewControllerAndFinishWithResult:(SigninCoordinatorResult)result
                                         animated:(BOOL)animated
                                       completion:(ProceduralBlock)completion {
@@ -163,7 +163,7 @@ using l10n_util::GetNSString;
 }
 
 // Does the cleanup once the view has been dismissed, calls the metrics and
-// calls |runCompletionCallbackWithSigninResult:completionInfo:| to finish the
+// calls `runCompletionCallbackWithSigninResult:completionInfo:` to finish the
 // sign-in.
 - (void)finishedWithSigninResult:(SigninCoordinatorResult)signinResult {
   DCHECK_NE(SigninCoordinatorResultCanceledByUser, signinResult);
@@ -237,6 +237,16 @@ using l10n_util::GetNSString;
       // Nothing to do.
       break;
   }
+}
+
+#pragma mark - NSObject
+
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:
+          @"<%@: %p, syncSettingsCoordinator: %p, signinStateForCancel: %lu>",
+          self.class.description, self, self.syncSettingsCoordinator,
+          self.signinStateForCancel];
 }
 
 @end

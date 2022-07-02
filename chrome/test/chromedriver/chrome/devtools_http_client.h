@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
-#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 namespace base {
 class TimeDelta;
@@ -28,8 +27,6 @@ class URLLoaderFactory;
 }
 }  // namespace network
 
-struct DeviceMetrics;
-class DevToolsClient;
 class Status;
 
 struct WebViewInfo {
@@ -81,10 +78,7 @@ class DevToolsHttpClient {
  public:
   DevToolsHttpClient(const DevToolsEndpoint& endpoint,
                      network::mojom::URLLoaderFactory* factory,
-                     const SyncWebSocketFactory& socket_factory,
-                     std::unique_ptr<DeviceMetrics> device_metrics,
-                     std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
-                     std::string page_load_strategy);
+                     std::unique_ptr<std::set<WebViewInfo::Type>> window_types);
 
   DevToolsHttpClient(const DevToolsHttpClient&) = delete;
   DevToolsHttpClient& operator=(const DevToolsHttpClient&) = delete;
@@ -95,27 +89,17 @@ class DevToolsHttpClient {
 
   Status GetWebViewsInfo(WebViewsInfo* views_info);
 
-  std::unique_ptr<DevToolsClient> CreateClient(const std::string& id);
-
-  Status CloseWebView(const std::string& id);
-
-  Status ActivateWebView(const std::string& id);
-
   const BrowserInfo* browser_info();
-  const DeviceMetrics* device_metrics();
   bool IsBrowserWindow(const WebViewInfo& view) const;
+  const DevToolsEndpoint& endpoint() const;
 
  private:
-  Status CloseFrontends(const std::string& for_client_id);
   virtual bool FetchUrlAndLog(const std::string& url, std::string* response);
 
   raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
-  SyncWebSocketFactory socket_factory_;
   DevToolsEndpoint endpoint_;
   BrowserInfo browser_info_;
-  std::unique_ptr<DeviceMetrics> device_metrics_;
   std::unique_ptr<std::set<WebViewInfo::Type>> window_types_;
-  std::string page_load_strategy_;
 };
 
 Status ParseType(const std::string& data, WebViewInfo::Type* type);

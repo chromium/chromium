@@ -191,12 +191,13 @@ class SCTAuditingReporterTest : public testing::Test {
 };
 
 TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataFromValue) {
-  base::DictionaryValue valid_value;
-  valid_value.SetStringKey("leaf_hash", kLeafHashBase64);
-  valid_value.SetStringKey("issued", kIssuedSerialized);
-  valid_value.SetStringKey("log_id", kLogIdBase64);
-  valid_value.SetStringKey("log_mmd", kLogMMDSerialized);
-  valid_value.SetStringKey("cert_expiry", kCertExpirySerialized);
+  base::Value::Dict valid_value_dict;
+  valid_value_dict.Set("leaf_hash", kLeafHashBase64);
+  valid_value_dict.Set("issued", kIssuedSerialized);
+  valid_value_dict.Set("log_id", kLogIdBase64);
+  valid_value_dict.Set("log_mmd", kLogMMDSerialized);
+  valid_value_dict.Set("cert_expiry", kCertExpirySerialized);
+  base::Value valid_value(std::move(valid_value_dict));
 
   auto metadata =
       SCTAuditingReporter::SCTHashdanceMetadata::FromValue(valid_value);
@@ -209,43 +210,43 @@ TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataFromValue) {
             base::Time::UnixEpoch() + base::Seconds(10));
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.RemoveKey("leaf_hash");
+    invalid_value.GetDict().Remove("leaf_hash");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.RemoveKey("issued");
+    invalid_value.GetDict().Remove("issued");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.RemoveKey("log_id");
+    invalid_value.GetDict().Remove("log_id");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.RemoveKey("log_mmd");
+    invalid_value.GetDict().Remove("log_mmd");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.SetStringKey("leaf_hash", "invalid base64");
+    invalid_value.GetDict().Set("leaf_hash", "invalid base64");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.SetStringKey("log_id", "invalid base64");
+    invalid_value.GetDict().Set("log_id", "invalid base64");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
   {
     base::Value invalid_value = valid_value.Clone();
-    invalid_value.RemoveKey("cert_expiry");
+    invalid_value.GetDict().Remove("cert_expiry");
     EXPECT_FALSE(
         SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
   }
@@ -263,12 +264,13 @@ TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataToValue) {
   metadata.log_mmd = base::Seconds(42);
   metadata.certificate_expiry = base::Time::UnixEpoch() + base::Seconds(10);
   base::Value value = metadata.ToValue();
-  ASSERT_TRUE(value.is_dict());
-  EXPECT_EQ(*value.FindStringKey("leaf_hash"), kLeafHashBase64);
-  EXPECT_EQ(*value.FindStringKey("issued"), kIssuedSerialized);
-  EXPECT_EQ(*value.FindStringKey("log_id"), kLogIdBase64);
-  EXPECT_EQ(*value.FindStringKey("log_mmd"), kLogMMDSerialized);
-  EXPECT_EQ(*value.FindStringKey("cert_expiry"), kCertExpirySerialized);
+  const base::Value::Dict* dict = value.GetIfDict();
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(*dict->FindString("leaf_hash"), kLeafHashBase64);
+  EXPECT_EQ(*dict->FindString("issued"), kIssuedSerialized);
+  EXPECT_EQ(*dict->FindString("log_id"), kLogIdBase64);
+  EXPECT_EQ(*dict->FindString("log_mmd"), kLogMMDSerialized);
+  EXPECT_EQ(*dict->FindString("cert_expiry"), kCertExpirySerialized);
 }
 
 // Tests that a hashdance lookup that does not find the SCT reports it.

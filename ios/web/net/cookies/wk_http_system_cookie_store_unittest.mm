@@ -25,7 +25,7 @@ namespace net {
 
 // Test class that conforms to net::SystemCookieStoreTestDelegate to exercise
 // WKHTTPSystemCookieStore.
-class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStoreTestDelegate {
+class WKHTTPSystemCookieStoreTestDelegate {
  public:
   WKHTTPSystemCookieStoreTestDelegate() {
     // Using off the record browser state so it will use non-persistent
@@ -104,10 +104,8 @@ class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStoreTestDelegate {
   std::unique_ptr<web::WKHTTPSystemCookieStore> store_;
 };
 
-#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
 INSTANTIATE_TYPED_TEST_SUITE_P(WKHTTPSystemCookieStore,
                                SystemCookieStoreTest,
                                WKHTTPSystemCookieStoreTestDelegate);
-#endif
 
 }  // namespace net

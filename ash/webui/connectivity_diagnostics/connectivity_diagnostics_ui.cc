@@ -51,13 +51,13 @@ class ConnectivityDiagnosticsMessageHandler
   ~ConnectivityDiagnosticsMessageHandler() override = default;
 
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "sendFeedbackReport",
         base::BindRepeating(
             &ConnectivityDiagnosticsMessageHandler::SendFeedbackReportRequest,
             base::Unretained(this)));
 
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "getShowFeedbackButton",
         base::BindRepeating(
             &ConnectivityDiagnosticsMessageHandler::GetShowFeedbackButton,
@@ -65,23 +65,23 @@ class ConnectivityDiagnosticsMessageHandler
   }
 
  private:
-  void SendFeedbackReportRequest(const base::ListValue* value) {
+  void SendFeedbackReportRequest(const base::Value::List& value) {
     send_feedback_report_callback_.Run(/*extra_diagnostics*/ "");
   }
 
   // TODO(crbug/1220965): Remove conditional feedback button when WebUI feedback
   // is launched.
-  void GetShowFeedbackButton(const base::ListValue* value) {
-    auto args = value->GetListDeprecated();
+  void GetShowFeedbackButton(const base::Value::List& args) {
     if (args.size() < 1 || !args[0].is_string())
       return;
 
     auto callback_id = args[0].GetString();
-    base::Value response(base::Value::Type::LIST);
+    base::Value::List response;
     response.Append(base::Value(show_feedback_button_));
 
     AllowJavascript();
-    ResolveJavascriptCallback(base::Value(callback_id), response);
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(std::move(response)));
   }
 
   ConnectivityDiagnosticsUI::SendFeedbackReportCallback

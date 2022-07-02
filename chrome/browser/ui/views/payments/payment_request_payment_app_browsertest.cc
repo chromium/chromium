@@ -138,7 +138,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     downloader->AddTestServerURL("https://kylepay.com/",
                                  kylepay_.GetURL("kylepay.com", "/"));
     ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        web_contents->GetMainFrame())
+        web_contents->GetPrimaryMainFrame())
         ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
             std::move(downloader));
   }

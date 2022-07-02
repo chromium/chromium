@@ -13,6 +13,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,14 +26,9 @@ using ::testing::Property;
 class InstalledVersionUpdaterTest : public ::testing::Test {
  protected:
   InstalledVersionUpdaterTest() {
-    // Create the fake update engine client, hold a pointer to it, and hand
-    // ownership of it off to the DBus thread manager.
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
 
     build_state_.AddObserver(&mock_observer_);
   }
@@ -41,6 +37,7 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
     build_state_.RemoveObserver(&mock_observer_);
 
     // Be kind; rewind.
+    chromeos::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

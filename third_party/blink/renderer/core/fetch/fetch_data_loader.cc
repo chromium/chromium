@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -159,7 +159,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (available > 0) {
-          bool ok = Append(buffer, SafeCast<wtf_size_t>(available));
+          bool ok = Append(buffer, base::checked_cast<wtf_size_t>(available));
           if (!ok) {
             [[maybe_unused]] auto unused = consumer_->EndRead(0);
             consumer_->Cancel();
@@ -215,7 +215,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
   // Builds a DOMArrayBuffer from the received bytes.
   DOMArrayBuffer* BuildArrayBuffer() {
     DOMArrayBuffer* result = DOMArrayBuffer::CreateUninitializedOrNull(
-        SafeCast<unsigned>(buffer_->size()), 1);
+        base::checked_cast<unsigned>(buffer_->size()), 1);
     // Handle a failed allocation.
     if (!result) {
       return result;
@@ -623,7 +623,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         if (available == 0) {
           result = consumer_->EndRead(0);
         } else {
-          uint32_t num_bytes = SafeCast<uint32_t>(available);
+          uint32_t num_bytes = base::checked_cast<uint32_t>(available);
           MojoResult mojo_result = out_data_pipe_->WriteData(
               buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
           if (mojo_result == MOJO_RESULT_OK) {

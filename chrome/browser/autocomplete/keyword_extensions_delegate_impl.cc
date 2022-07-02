@@ -209,5 +209,5 @@ void KeywordExtensionsDelegateImpl::OnOmniboxDefaultSuggestionChanged() {
 }
 
 void KeywordExtensionsDelegateImpl::OnProviderUpdate(bool updated_matches) {
-  provider_->listener_->OnProviderUpdate(updated_matches);
+  provider_->NotifyListeners(updated_matches);
 }

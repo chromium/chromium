@@ -32,20 +32,20 @@ promise_test(async (t) => {
     [io_entry_on_registration, io_entry_on_transform, io_entry_on_clip]));
 
   let result = await nextValueFromServer(io_entry_on_registration);
-  assert_equals(result, "0,0,100,100",
+  assert_equals(result, "0,0,100,100,true",
     "Subscribing to IO dispatches a notification");
 
   // Apply a transform to the fencedframe and ensure it gets applied to the
   // intersectionRect.
   frame.style.transform = 'translate(-10px, -20px)';
   result = await nextValueFromServer(io_entry_on_transform);
-  assert_equals(result, "10,20,90,80",
+  assert_equals(result, "10,20,90,80,true",
     "Transform applies to intersection rect");
 
   // Now add a clip to the fencedframe which should clip the intersectionRect.
   frame.style.clipPath = 'inset(10px)';
   result = await nextValueFromServer(io_entry_on_clip);
-  assert_equals(result, "10,20,80,70", "Clip applies to intersection rect");
+  assert_equals(result, "10,20,80,70,false", "Clip applies to intersection rect");
 }, 'Intersection Observer Test');
 
 </script>

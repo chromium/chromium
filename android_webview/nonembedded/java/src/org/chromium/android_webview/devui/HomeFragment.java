@@ -17,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;

@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/sessions/session_restoration_observer.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -47,10 +47,11 @@ class WebStateListMetricsBrowserAgent
                            ActiveWebStateChangeReason reason) override;
 
  private:
-  WebStateListMetricsBrowserAgent(Browser* browser,
-                                  SessionMetrics* session_metrics);
   friend class BrowserUserData<WebStateListMetricsBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  WebStateListMetricsBrowserAgent(Browser* browser,
+                                  SessionMetrics* session_metrics);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;

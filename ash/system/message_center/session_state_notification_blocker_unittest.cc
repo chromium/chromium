@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/test/ash_test_base.h"
@@ -152,7 +153,8 @@ TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
 TEST_P(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   // NOTIFIER_DISPLAY is allowed to shown in the login screen.
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
 
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
@@ -227,7 +229,8 @@ TEST_P(SessionStateNotificationBlockerTest, BlockOnPrefService) {
 
 TEST_P(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 
@@ -250,7 +253,8 @@ TEST_P(SessionStateNotificationBlockerTest, DelayAfterLogin) {
 
   // System notification should still be shown.
   message_center::NotifierId system_notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, "system-notifier");
+      message_center::NotifierType::SYSTEM_COMPONENT, "system-notifier",
+      NotificationCatalogName::kTestCatalogName);
   EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
 
   // The notification delay should not be enabled for all other tests.

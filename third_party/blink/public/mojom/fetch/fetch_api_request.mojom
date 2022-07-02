@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
@@ -202,4 +203,7 @@ struct FetchAPIRequest {
   // a process that later intercepts the request, e.g., in a service worker
   // fetch event handler.
   string? devtools_stack_id;
+
+  // Specifies a Trust Token protocol operation if the request has one.
+  network.mojom.TrustTokenParams? trust_token_params;
 };

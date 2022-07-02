@@ -39,8 +39,15 @@ enum class TouchAction {
   // and it doesn't have a horizontal scrollable ancestor (including
   // itself), we don't set this bit.
   kInternalPanXScrolls = 0x40,
-  kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls,
-  kMax = (1 << 7) - 1
+
+  // This is used internally by stylus handwriting feature. Stylus writing would
+  // not be started when this bit is set. When the element is non-password edit
+  // field and has kPan, we don't set this bit.
+  kInternalNotWritable = 0x80,
+
+  kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls |
+          kInternalNotWritable,
+  kMax = (1 << 8) - 1
 };
 
 inline TouchAction operator|(TouchAction a, TouchAction b) {
@@ -67,6 +74,11 @@ inline const char* TouchActionToString(TouchAction touch_action) {
   //  we skip printing internal panx scrolls since it's not a web exposed touch
   //  action field.
   touch_action &= ~TouchAction::kInternalPanXScrolls;
+
+  // we skip printing kInternalNotWritable since it's not a web exposed
+  // touch action field.
+  touch_action &= ~TouchAction::kInternalNotWritable;
+
   switch (static_cast<int>(touch_action)) {
     case 0:
       return "NONE";

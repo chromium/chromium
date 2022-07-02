@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/web/public/navigation/https_upgrade_type.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -92,10 +93,12 @@ class NavigationContext {
   //  * using window.history.pushState
   virtual bool IsRendererInitiated() const = 0;
 
-  // Returns true if the current navigation is a failed HTTPS upgrade. This
-  // can happen when an HTTP navigation is upgraded to an HTTPS navigation
-  // by the HTTPS-Only mode feature and the HTTPS URL returns an SSL error.
-  virtual bool IsFailedHTTPSUpgrade() const = 0;
+  // Gets the type of the HTTPS upgrade if the current navigation was upgraded
+  // to HTTPS and failed to load. Otherwise, returns kNone. For example, if
+  // the navigation was upgraded to HTTPS by HTTPS-Ony Mode and failed with an
+  // SSL error, this will return kHttpsOnlyMode. If the HTTPS upgrade succeeded,
+  // will return kNone.
+  virtual HttpsUpgradeType GetFailedHttpsUpgradeType() const = 0;
 
   virtual ~NavigationContext() {}
 };

@@ -57,7 +57,7 @@ class WebViewImpl : public WebView {
   std::string GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
-  Status SetUpDevTools() override;
+  Status AttachTo(DevToolsClient* parent);
   Status HandleReceivedEvents() override;
   Status GetUrl(std::string* url) override;
   Status Load(const std::string& url, const Timeout* timeout) override;
@@ -174,7 +174,6 @@ class WebViewImpl : public WebView {
                                    const base::Value& element,
                                    int* backend_node_id) override;
   bool IsNonBlocking() const override;
-  bool IsOOPIF(const std::string& frame_id) override;
   FrameTracker* GetFrameTracker() const override;
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
@@ -256,21 +255,21 @@ enum EvaluateScriptReturnType {
   ReturnByObject
 };
 Status EvaluateScript(DevToolsClient* client,
-                      int context_id,
+                      const std::string& context_id,
                       const std::string& expression,
                       EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
                       const bool awaitPromise,
                       std::unique_ptr<base::DictionaryValue>* result);
 Status EvaluateScriptAndGetObject(DevToolsClient* client,
-                                  int context_id,
+                                  const std::string& context_id,
                                   const std::string& expression,
                                   const base::TimeDelta& timeout,
                                   const bool awaitPromise,
                                   bool* got_object,
                                   std::string* object_id);
 Status EvaluateScriptAndGetValue(DevToolsClient* client,
-                                 int context_id,
+                                 const std::string& context_id,
                                  const std::string& expression,
                                  const base::TimeDelta& timeout,
                                  const bool awaitPromise,
@@ -278,14 +277,14 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
 Status ParseCallFunctionResult(const base::Value& temp_result,
                                std::unique_ptr<base::Value>* result);
 Status GetBackendNodeIdFromFunction(DevToolsClient* client,
-                                    int context_id,
+                                    const std::string& context_id,
                                     const std::string& function,
                                     const base::ListValue& args,
                                     bool* found_node,
                                     int* backend_node_id,
                                     bool w3c_compliant);
 Status GetFrameIdFromFunction(DevToolsClient* client,
-                              int context_id,
+                              const std::string& context_id,
                               const std::string& function,
                               const base::ListValue& args,
                               bool* found_node,

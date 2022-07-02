@@ -146,6 +146,7 @@ public class SigninFirstRunFragmentRenderTest {
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
+        mFragment.setPageDelegate(mFirstRunPageDelegateMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFragment.onNativeInitialized();
             OneshotSupplierImpl<Boolean> childAccountStatusListener = new OneshotSupplierImpl<>();
@@ -153,7 +154,6 @@ public class SigninFirstRunFragmentRenderTest {
             when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
                     .thenReturn(childAccountStatusListener);
         });
-        mFragment.setPageDelegate(mFirstRunPageDelegateMock);
     }
 
     @AfterClass

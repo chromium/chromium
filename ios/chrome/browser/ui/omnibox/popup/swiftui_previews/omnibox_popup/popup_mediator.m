@@ -25,6 +25,7 @@
   PopupModel* model =
       [[PopupModel alloc] initWithMatches:@[ PopupMatch.previews ]
                                   headers:@[ @"" ]
+                               dataSource:nil
                                  delegate:nil];
   return model;
 }

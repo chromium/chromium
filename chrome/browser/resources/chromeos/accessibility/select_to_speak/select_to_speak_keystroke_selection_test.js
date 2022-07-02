@@ -99,33 +99,33 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokeFullText',
     async function() {
       await this.testSimpleTextAtKeystroke(
           'This is some text', 0, 17, 'This is some text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokePartialText',
     async function() {
       await this.testSimpleTextAtKeystroke(
           'This is some text', 0, 12, 'This is some');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokeSingleWord',
     async function() {
       await this.testSimpleTextAtKeystroke('This is some text', 8, 12, 'some');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokePartialWord',
     async function() {
       await this.testSimpleTextAtKeystroke('This is some text', 8, 10, 'so');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeaksAcrossNodesAtKeystroke',
     async function() {
       await this.testReadTextAtKeystroke(
@@ -143,7 +143,7 @@ TEST_F(
           'This is some bold text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'SpeaksAcrossNodesSelectedBackwardsAtKeystroke', async function() {
       await this.testReadTextAtKeystroke(
@@ -162,7 +162,7 @@ TEST_F(
           'This is some bold text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'SpeakTextSurroundedByBrs',
     async function() {
       // If you load this html and double-click on "Selected text", this is the
@@ -200,7 +200,7 @@ TEST_F(
       setFocusCallback(root);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'StartsReadingAtFirstNodeWithText',
     async function() {
       await this.testReadTextAtKeystroke(
@@ -219,7 +219,7 @@ TEST_F(
           'This is some bold text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'IgnoresTextMarkedNotUserSelectable',
     async function() {
       await this.testReadTextAtKeystroke(
@@ -238,7 +238,7 @@ TEST_F(
           'This is some text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesSingleImageCorrectlyWithAutomation', async function() {
       await this.testReadTextAtKeystroke(
@@ -253,7 +253,7 @@ TEST_F(
           }, 'one');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithAutomation', async function() {
       await this.testReadTextAtKeystroke(
@@ -271,7 +271,7 @@ TEST_F(
           'two');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithJS1', async function() {
       // Using JS to do the selection instead of Automation, so that we can
@@ -292,7 +292,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'two');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithJS2', async function() {
       const selectionCode =
@@ -311,7 +311,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'two three');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'TextFieldFullySelected',
     async function() {
       const selectionCode = 'let p = document.getElementsByTagName("p")[0];' +
@@ -334,7 +334,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'text field');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'TwoTextFieldsFullySelected',
     async function() {
       const selectionCode =
@@ -357,7 +357,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'two three');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'TextInputPartiallySelected',
     async function() {
       const html = '<script type="text/javascript">' +
@@ -378,7 +378,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'field');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'TextAreaPartiallySelected',
     async function() {
       const html = '<script type="text/javascript">' +
@@ -399,7 +399,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'line second');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBr',
     async function() {
       const selectionCode =
@@ -415,7 +415,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'Test');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrComplex',
     async function() {
       const selectionCode = 'let p = document.getElementsByTagName("p")[0];' +
@@ -431,7 +431,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'Some text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText1',
     async function() {
       // A bug was that if the selection was on the rootWebArea, paragraphs were
@@ -450,7 +450,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'Some text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText2',
     async function() {
       // A bug was that if the selection was on the rootWebArea, paragraphs were
@@ -475,7 +475,7 @@ TEST_F(
       }
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextAreaAndBrs',
     async function() {
       const selectionCode =
@@ -492,7 +492,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'Some text');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'textFieldWithComboBoxSimple',
     async function() {
       const selectionCode =
@@ -512,7 +512,7 @@ TEST_F(
 // TODO(katie): It doesn't seem possible to programatically specify a range that
 // selects only part of the text in a combo box.
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'contentEditableInternallySelected',
     async function() {
       const html = '<script type="text/javascript">' +
@@ -545,7 +545,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'd e');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'contentEditableExternallySelected',
     async function() {
       const selectionCode =
@@ -566,7 +566,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'd e f');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgSingleLine',
     async function() {
       const selectionCode =
@@ -587,7 +587,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'My cat is Grumpy!');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgWithGroups',
     async function() {
       const selectionCode =
@@ -623,7 +623,7 @@ TEST_F(
       this.assertEqualsCollapseWhitespace(
           this.mockTts.pendingUtterances()[0], 'Column 2, Text 2');
     });
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'NonReorderedSvgPreservesSelectionStartEnd', async function() {
       const selectionCode = 'const t1 = document.getElementById("t1");' +
@@ -642,7 +642,7 @@ TEST_F(
           this.mockTts.pendingUtterances()[0], 'cat is');
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'ReorderedSvgIgnoresSelectionStartEnd', async function() {
       const selectionCode = 'const t1 = document.getElementById("t1");' +

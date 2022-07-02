@@ -71,11 +71,12 @@ int main(int argc, char* argv[]) {
 
       if (i == 0) {
         if (average) {
-          error_message = std::move(v.error_message);
+          error_message =
+              !v.has_value() ? std::move(v.error().message) : std::string();
         } else {
           std::cout << "# " << filename;
-          if (!v.error_message.empty()) {
-            std::cout << ": " << v.error_message;
+          if (!v.has_value() && !v.error().message.empty()) {
+            std::cout << ": " << v.error().message;
           }
           std::cout << std::endl;
         }

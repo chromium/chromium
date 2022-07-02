@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iosfwd>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/trees/property_tree.h"

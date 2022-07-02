@@ -23,23 +23,18 @@ namespace autofill {
 namespace {
 
 std::vector<ServerFieldType> GetFieldTypes() {
-  return {NO_SERVER_DATA,
-          NAME_BILLING_FULL,
-          EMAIL_ADDRESS,
-          ADDRESS_BILLING_LINE1,
-          ADDRESS_BILLING_LINE2,
-          ADDRESS_BILLING_DEPENDENT_LOCALITY,
-          ADDRESS_BILLING_CITY,
-          ADDRESS_BILLING_STATE,
-          ADDRESS_BILLING_ZIP,
-          ADDRESS_BILLING_COUNTRY,
-          PHONE_BILLING_WHOLE_NUMBER};
+  return {NO_SERVER_DATA,         NAME_FULL,
+          EMAIL_ADDRESS,          ADDRESS_HOME_LINE1,
+          ADDRESS_HOME_LINE2,     ADDRESS_HOME_DEPENDENT_LOCALITY,
+          ADDRESS_HOME_CITY,      ADDRESS_HOME_STATE,
+          ADDRESS_HOME_ZIP,       ADDRESS_HOME_COUNTRY,
+          PHONE_HOME_WHOLE_NUMBER};
 }
 
 TEST(AddressContactFormLabelFormatterTest, GetLabelsWithMissingProfiles) {
   const std::vector<AutofillProfile*> profiles{};
-  const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", NAME_BILLING_FULL, GetFieldTypes());
+  const std::unique_ptr<LabelFormatter> formatter =
+      LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
   EXPECT_TRUE(formatter->GetLabels().empty());
 }
 
@@ -80,8 +75,8 @@ TEST(AddressContactFormLabelFormatterTest,
 
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
                                                &profile4, &profile5, &profile6};
-  const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", NAME_BILLING_FULL, GetFieldTypes());
+  const std::unique_ptr<LabelFormatter> formatter =
+      LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -131,7 +126,7 @@ TEST(AddressContactFormLabelFormatterTest,
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
                                                &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", ADDRESS_BILLING_LINE1, GetFieldTypes());
+      profiles, "en-US", ADDRESS_HOME_LINE1, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -182,7 +177,7 @@ TEST(AddressContactFormLabelFormatterTest,
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
                                                &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", ADDRESS_BILLING_CITY, GetFieldTypes());
+      profiles, "en-US", ADDRESS_HOME_CITY, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -283,7 +278,7 @@ TEST(AddressContactFormLabelFormatterTest,
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
                                                &profile4, &profile5, &profile6};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", PHONE_BILLING_WHOLE_NUMBER, GetFieldTypes());
+      profiles, "en-US", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -313,8 +308,8 @@ TEST(AddressContactFormLabelFormatterTest,
                        "21987650000");
 
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
-  const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "pt-BR", NAME_BILLING_FULL, GetFieldTypes());
+  const std::unique_ptr<LabelFormatter> formatter =
+      LabelFormatter::Create(profiles, "pt-BR", NAME_FULL, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -343,7 +338,7 @@ TEST(AddressContactFormLabelFormatterTest,
 
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "pt-BR", ADDRESS_BILLING_LINE1, GetFieldTypes());
+      profiles, "pt-BR", ADDRESS_HOME_LINE1, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -371,7 +366,7 @@ TEST(AddressContactFormLabelFormatterTest,
 
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "pt-BR", ADDRESS_BILLING_ZIP, GetFieldTypes());
+      profiles, "pt-BR", ADDRESS_HOME_ZIP, GetFieldTypes());
 
   EXPECT_THAT(
       formatter->GetLabels(),
@@ -429,7 +424,7 @@ TEST(AddressContactFormLabelFormatterTest,
 
   const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "pt-BR", PHONE_BILLING_WHOLE_NUMBER, GetFieldTypes());
+      profiles, "pt-BR", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
   EXPECT_THAT(formatter->GetLabels(),
               ElementsAre(ConstructLabelLine({u"Tarsila do Amaral",
@@ -449,10 +444,9 @@ TEST(AddressContactFormLabelFormatterTest,
                        "16175232338");
 
   const std::vector<AutofillProfile*> profiles{&profile};
-  const std::unique_ptr<LabelFormatter> formatter =
-      LabelFormatter::Create(profiles, "en-US", EMAIL_ADDRESS,
-                             {NAME_BILLING_FULL, EMAIL_ADDRESS,
-                              ADDRESS_BILLING_ZIP, PHONE_BILLING_WHOLE_NUMBER});
+  const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
+      profiles, "en-US", EMAIL_ADDRESS,
+      {NAME_FULL, EMAIL_ADDRESS, ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER});
 
   // Checks that only address fields in the form are shown in the label.
   EXPECT_THAT(formatter->GetLabels(),
@@ -469,18 +463,17 @@ TEST(AddressContactFormLabelFormatterTest,
 
   std::vector<AutofillProfile*> profiles{&profile1};
   std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
-      profiles, "en-US", ADDRESS_BILLING_LINE1,
-      {ADDRESS_BILLING_ZIP, EMAIL_ADDRESS, PHONE_BILLING_WHOLE_NUMBER});
+      profiles, "en-US", ADDRESS_HOME_LINE1,
+      {ADDRESS_HOME_ZIP, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});
 
   // Checks that the name is not in the label and that the phone number is for
   // a unique profile.
   EXPECT_THAT(formatter->GetLabels(), ElementsAre(u"(617) 523-2338"));
 
   profiles = {&profile1, &profile1};
-  formatter =
-      LabelFormatter::Create(profiles, "en-US", ADDRESS_BILLING_LINE1,
-                             {ADDRESS_BILLING_LINE1, ADDRESS_BILLING_ZIP,
-                              EMAIL_ADDRESS, PHONE_BILLING_WHOLE_NUMBER});
+  formatter = LabelFormatter::Create(profiles, "en-US", ADDRESS_HOME_LINE1,
+                                     {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP,
+                                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});
 
   // Checks that the name is not in the label and that the phone number is for
   // multiple profiles with the same phone number and email address.
@@ -494,10 +487,9 @@ TEST(AddressContactFormLabelFormatterTest,
                        "16175232338");
 
   profiles = {&profile1, &profile2};
-  formatter =
-      LabelFormatter::Create(profiles, "en-US", ADDRESS_BILLING_LINE1,
-                             {ADDRESS_BILLING_LINE1, ADDRESS_BILLING_ZIP,
-                              EMAIL_ADDRESS, PHONE_BILLING_WHOLE_NUMBER});
+  formatter = LabelFormatter::Create(profiles, "en-US", ADDRESS_HOME_LINE1,
+                                     {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP,
+                                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER});
   // Checks that the name is not in the label and that the email address is
   // shown because the profiles' email addresses are different.
   EXPECT_THAT(formatter->GetLabels(),

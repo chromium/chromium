@@ -364,18 +364,11 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
                              NetLog* net_log,
                              bool first_party_sets_enabled)
-    : num_keys_(0u),
-      num_partitioned_cookies_(0u),
-      change_dispatcher_(this, first_party_sets_enabled),
-      initialized_(false),
-      started_fetching_all_cookies_(false),
-      finished_fetching_all_cookies_(false),
-      seen_global_task_(false),
+    : change_dispatcher_(this, first_party_sets_enabled),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::COOKIE_STORE)),
       store_(std::move(store)),
       last_access_threshold_(last_access_threshold),
       last_statistic_record_time_(base::Time::Now()),
-      persist_session_cookies_(false),
       first_party_sets_enabled_(first_party_sets_enabled) {
   cookieable_schemes_.insert(
       cookieable_schemes_.begin(), kDefaultCookieableSchemes,
@@ -2412,9 +2405,18 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
   // We only want cookies whose domain is a match for the entire URL host.
   // This should exclude cookies set on subdomains.
   std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  bool delegate_treats_url_as_trustworthy =
+      cookie_access_delegate() &&
+      cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
+  CookieAccessParams accesss_params{
+      net::CookieAccessSemantics::UNKNOWN, delegate_treats_url_as_trustworthy,
+      CookieSamePartyStatus::kNoSamePartyEnforcement};
   for (auto* cookie : cookie_ptrs_for_site) {
-    if (cookie->Domain() == url.host())
+    if (cookie->IncludeForRequestURL(url, options, accesss_params)
+            .status.IsInclude()) {
       cookie_ptrs.push_back(cookie);
+    }
   }
 
   std::map<std::tuple<std::string, std::string, std::string>,
@@ -2445,9 +2447,19 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
       cookie_to_convert = *kv_pair.second[0];
     } else {
       for (const auto* cookie : kv_pair.second) {
-        // If the site only has partitioned cookies, we convert the most
-        // recently accessed cookie to unpartitioned and delete the rest.
+        // If the site only has partitioned cookies, we first check if there is
+        // a cookie whose partition key is same-site with the cookie's domain.
+        //
+        // If there are no partitioned cookies whose partition key is same-site
+        // with the cookie's domain, we convert the most recently accessed
+        // cookie to unpartitioned and delete the rest.
         if (cookie->IsPartitioned() && !cookie->PartitionKey()->nonce()) {
+          if (cookie->PartitionKey()->site() ==
+              SchemefulSite(GURL("https://" + cookie->DomainWithoutDot()))) {
+            should_convert_cookie = true;
+            cookie_to_convert = *cookie;
+            break;
+          }
           if (!should_convert_cookie ||
               cookie->LastAccessDate() > cookie_to_convert.LastAccessDate()) {
             should_convert_cookie = true;
@@ -2480,13 +2492,14 @@ void CookieMonster::OnConvertPartitionedCookiesToUnpartitioned(
       CanonicalCookie* cc = cur_cookie_it->second.get();
       ++cookie_it;
 
-      if (cc->Domain() != url.host())
+      if (!cc->IncludeForRequestURL(url, options, accesss_params)
+               .status.IsInclude() ||
+          cc->PartitionKey()->nonce()) {
         continue;
-
-      if (!cc->PartitionKey()->nonce()) {
-        InternalDeletePartitionedCookie(cur_partition_it, cur_cookie_it, true,
-                                        DELETE_COOKIE_EXPLICIT);
       }
+
+      InternalDeletePartitionedCookie(cur_partition_it, cur_cookie_it, true,
+                                      DELETE_COOKIE_EXPLICIT);
     }
   }
 }

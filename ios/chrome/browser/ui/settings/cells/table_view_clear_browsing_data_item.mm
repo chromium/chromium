@@ -38,11 +38,7 @@ const CGFloat kImageHeight = 30;
   [super configureCell:tableCell withStyler:styler];
   TableViewClearBrowsingDataCell* cell =
       base::mac::ObjCCastStrict<TableViewClearBrowsingDataCell>(tableCell);
-  UIImage* image = nil;
-  if ([self.imageName length]) {
-    image = [UIImage imageNamed:self.imageName];
-  }
-  [cell setImage:image];
+  [cell setImage:self.image];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   cell.optionalTextLabel.text = self.optionalText;
@@ -80,7 +76,7 @@ const CGFloat kImageHeight = 30;
 @property(nonatomic, copy)
     NSArray<NSLayoutConstraint*>* accessibilityConstraints;
 
-// Virtual label container contains |textLabel| and |detailTextLabel|.
+// Virtual label container contains `textLabel` and `detailTextLabel`.
 @property(nonatomic, strong) UILayoutGuide* labelContainerGuide;
 
 @end
@@ -145,7 +141,7 @@ const CGFloat kImageHeight = 30;
     ];
 
     [NSLayoutConstraint activateConstraints:@[
-      // |imageView| constraints.
+      // `imageView` constraints.
       _imageHiddenConstraint,
       [_imageView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor

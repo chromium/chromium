@@ -88,8 +88,9 @@ public class ClearDataDialogActivity extends AppCompatActivity {
 
     private void recordDecision(boolean accepted) {
         boolean appUninstalled = getIsAppUninstalledFromIntent(getIntent());
-        ChromeApplicationImpl.getComponent().resolveTwaClearDataDialogRecorder().handleDialogResult(
-                accepted, appUninstalled);
+        ChromeApplicationImpl.getComponent()
+                .resolveClearDataDialogResultRecorder()
+                .handleDialogResult(accepted, appUninstalled);
     }
 
     @VisibleForTesting

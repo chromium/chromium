@@ -8,9 +8,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchInteractionRecorder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
-import org.chromium.chrome.browser.contextualsearch.EngagementSuppression;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,8 +57,6 @@ public class ContextualSearchPanelMetrics {
     private long mPanelOpenedBeyondPeekDurationMs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
     private ContextualSearchHeuristics mResultsSeenExperiments;
-    // The interaction recorder to use to record results seen when the panel closes.
-    private ContextualSearchInteractionRecorder mInteractionRecorder;
     // Whether interaction Outcomes are valid, because we showed the panel.
     private boolean mAreOutcomesValid;
     /** Whether the Search was prefetched or not. */
@@ -96,14 +92,6 @@ public class ContextualSearchPanelMetrics {
                 toState == PanelState.MAXIMIZED || toState == PanelState.EXPANDED;
         boolean isExitingPanelOpenedBeyondPeeked = mWasPanelOpenedBeyondPeek && !isContentVisible;
 
-        if (toState == PanelState.CLOSED && mPanelTriggerTimeFromTapNs != 0
-                && reason == StateChangeReason.BASE_PAGE_SCROLL) {
-            long durationMs = (System.nanoTime() - mPanelTriggerTimeFromTapNs)
-                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            ContextualSearchUma.logDurationBetweenTriggerAndScroll(
-                    durationMs, mWasSearchContentViewSeen);
-        }
-
         if (isExitingPanelOpenedBeyondPeeked) {
             assert mPanelOpenedBeyondPeekTimeNs != 0;
             mPanelOpenedBeyondPeekDurationMs = (System.nanoTime() - mPanelOpenedBeyondPeekTimeNs)
@@ -117,11 +105,6 @@ public class ContextualSearchPanelMetrics {
             long panelViewDurationMs =
                     (System.nanoTime() - mFirstPeekTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logPanelViewDurationAction(panelViewDurationMs);
-            if (!mDidSearchInvolvePromo) {
-                // Measure duration only when the promo is not involved.
-                ContextualSearchUma.logDuration(
-                        mWasSearchContentViewSeen, isChained, panelViewDurationMs);
-            }
             if (mIsPromoActive) {
                 // The user is exiting still in the promo, without choosing an option.
                 ContextualSearchUma.logPromoSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
@@ -129,17 +112,12 @@ public class ContextualSearchPanelMetrics {
                 ContextualSearchUma.logResultsSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
             }
 
-            if (mWasContextualCardsDataShown) {
-                EngagementSuppression.registerContextualCardsImpression(mWasSearchContentViewSeen);
-            }
             ContextualSearchUma.logCardTagSeen(mWasSearchContentViewSeen, mCardTag);
             if (mWasQuickActionShown) {
                 ContextualSearchUma.logQuickActionResultsSeen(mWasSearchContentViewSeen,
                         mQuickActionCategory);
-                ContextualSearchUma.logQuickActionClicked(mWasQuickActionClicked,
-                        mQuickActionCategory);
-                EngagementSuppression.registerQuickActionImpression(
-                        mWasSearchContentViewSeen, mWasQuickActionClicked);
+                ContextualSearchUma.logQuickActionClicked(
+                        mWasQuickActionClicked, mQuickActionCategory);
             }
 
             if (mResultsSeenExperiments != null) {
@@ -150,11 +128,6 @@ public class ContextualSearchPanelMetrics {
             mPanelOpenedBeyondPeekDurationMs = 0;
 
             if (mWasActivatedByTap) {
-                boolean wasAnySuppressionHeuristicSatisfied = mWasAnyHeuristicSatisfiedOnPanelShow;
-                ContextualSearchUma.logAnyTapSuppressionHeuristicSatisfied(
-                        mWasSearchContentViewSeen, wasAnySuppressionHeuristicSatisfied);
-                ContextualSearchUma.logSelectionLengthResultsSeen(
-                        mWasSearchContentViewSeen, mSelectionLength);
                 ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen);
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
@@ -163,8 +136,6 @@ public class ContextualSearchPanelMetrics {
             }
             ContextualSearchUma.logCountedSearches(
                     mWasSearchContentViewSeen, mDidFirstNonEmptyPaint, mWasPrefetch);
-
-            writeInteractionOutcomesAndReset();
         }
 
         if (isStartingSearch) {
@@ -176,7 +147,6 @@ public class ContextualSearchPanelMetrics {
             } else {
                 mWasAnyHeuristicSatisfiedOnPanelShow = false;
             }
-            mAreOutcomesValid = true;
         }
 
         @StateChangeReason
@@ -295,25 +265,6 @@ public class ContextualSearchPanelMetrics {
     }
 
     /**
-     * Called when a Search Term has been resolved.
-     */
-    public void onSearchTermResolved() {
-        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
-                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        ContextualSearchUma.logSearchTermResolutionDuration(durationMs);
-    }
-
-    /**
-     * Called after the panel has navigated to prefetched Search Results.
-     * This is the point where the search result starts to render in the panel.
-     */
-    public void onPanelNavigatedToPrefetchedSearch(boolean didResolve) {
-        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
-                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        ContextualSearchUma.logPrefetchedSearchNavigatedDuration(durationMs, didResolve);
-    }
-
-    /**
      * Notifies that we were able to start painting the document in the Content View so the user can
      * actually see the SRP.
      * @param didPrefetch Whether this was a prefetched SRP.
@@ -329,43 +280,6 @@ public class ContextualSearchPanelMetrics {
      */
     public void setResultsSeenExperiments(ContextualSearchHeuristics resultsSeenExperiments) {
         mResultsSeenExperiments = resultsSeenExperiments;
-    }
-
-    /**
-     * Sets up logging through Ranker for outcomes.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} currently being
-     * used to measure to recorder user interaction outcomes.
-     */
-    public void setInteractionRecorder(ContextualSearchInteractionRecorder interactionRecorder) {
-        mInteractionRecorder = interactionRecorder;
-        mAreOutcomesValid = false;
-    }
-
-    /**
-     * Writes all the outcome features to the Interaction Recorder and resets it.
-     */
-    public void writeInteractionOutcomesAndReset() {
-        if (mInteractionRecorder != null && mWasActivatedByTap && mAreOutcomesValid) {
-            // Tell Ranker about the primary outcome.
-            mInteractionRecorder.logOutcome(
-                    ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_PANEL_OPENED,
-                    mWasSearchContentViewSeen);
-            ContextualSearchUma.logRankerInference(mWasSearchContentViewSeen,
-                    mInteractionRecorder.getPredictionForTapSuppression());
-            mInteractionRecorder.logOutcome(
-                    ContextualSearchInteractionRecorder.Feature.OUTCOME_WAS_CARDS_DATA_SHOWN,
-                    mWasContextualCardsDataShown);
-            if (mWasQuickActionShown) {
-                mInteractionRecorder.logOutcome(ContextualSearchInteractionRecorder.Feature
-                                                        .OUTCOME_WAS_QUICK_ACTION_CLICKED,
-                        mWasQuickActionClicked);
-            }
-            if (mResultsSeenExperiments != null) {
-                mResultsSeenExperiments.logRankerTapSuppressionOutcome(mInteractionRecorder);
-            }
-            mInteractionRecorder.writeLogAndReset();
-            mInteractionRecorder = null;
-        }
     }
 
     /**

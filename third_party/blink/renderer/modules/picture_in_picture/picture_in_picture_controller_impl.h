@@ -7,10 +7,13 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -58,6 +61,9 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // Returns whether the document associated with the controller is allowed to
   // request Picture-in-Picture.
   Status IsDocumentAllowed(bool report_failure) const;
+
+  // Returns the Picture-in-Picture window if there is any.
+  PictureInPictureWindow* pictureInPictureWindow() const;
 
   // Returns element currently in Picture-in-Picture if any. Null otherwise.
   Element* PictureInPictureElement() const;

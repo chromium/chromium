@@ -17,13 +17,6 @@ class Profile;
 namespace ash {
 namespace eche_app {
 
-extern const char kEcheAppScreenLockNotifierId[];
-extern const char kEcheAppRetryConnectionNotifierId[];
-extern const char kEcheAppInactivityNotifierId[];
-extern const char kEcheAppFromWebWithoudButtonNotifierId[];
-extern const char kEcheAppLearnMoreUrl[];
-extern const char kEcheAppHelpUrl[];
-
 // Controller class to show notifications.
 class EcheAppNotificationController {
  public:
@@ -56,9 +49,7 @@ class EcheAppNotificationController {
  protected:
   // Exposed for testing.
   virtual void LaunchSettings();
-  virtual void LaunchLearnMore();
   virtual void LaunchTryAgain();
-  virtual void LaunchHelp();
 
  private:
   // NotificationDelegate implementation for handling click events.

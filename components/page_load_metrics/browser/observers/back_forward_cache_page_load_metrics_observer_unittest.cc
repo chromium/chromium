@@ -133,7 +133,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
   observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(false);
@@ -145,7 +145,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(true);
 
   tester()->SimulateMetadataUpdate(AmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
   observer_->OnRestoreFromBackForwardCache(timing_, &navigation_handle_);
 
   AssertHistoryNavigationRecordedAmpNavigation(true);
@@ -157,7 +157,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   navigation_handle_.set_is_served_from_bfcache(false);
 
   tester()->SimulateMetadataUpdate(NonAmpMetadata(),
-                                   web_contents()->GetMainFrame());
+                                   web_contents()->GetPrimaryMainFrame());
 
   // Since there was no call to observer_->OnRestoreFromBackForwardCache, there
   // should be no HistoryNavigation UKM entry.

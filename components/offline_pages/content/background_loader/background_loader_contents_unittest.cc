@@ -37,9 +37,10 @@ class BackgroundLoaderContentsTest : public testing::Test,
   bool download() { return download_; }
   bool can_download_delegate_called() { return delegate_called_; }
 
-  void MediaAccessCallback(const blink::mojom::StreamDevices& devices,
-                           blink::mojom::MediaStreamRequestResult result,
-                           std::unique_ptr<content::MediaStreamUI> ui);
+  void MediaAccessCallback(
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui);
   blink::mojom::StreamDevices& devices() { return devices_; }
   blink::mojom::MediaStreamRequestResult request_result() {
     return request_result_;
@@ -91,10 +92,15 @@ void BackgroundLoaderContentsTest::SetDelegate() {
 }
 
 void BackgroundLoaderContentsTest::MediaAccessCallback(
-    const blink::mojom::StreamDevices& devices,
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<content::MediaStreamUI> ui) {
-  devices_ = devices;
+  if (result == blink::mojom::MediaStreamRequestResult::OK) {
+    ASSERT_FALSE(stream_devices_set.stream_devices.empty());
+    devices_ = *stream_devices_set.stream_devices[0];
+  } else {
+    ASSERT_TRUE(stream_devices_set.stream_devices.empty());
+  }
   request_result_ = result;
   media_stream_ui_.reset(ui.get());
   waiter_.Signal();

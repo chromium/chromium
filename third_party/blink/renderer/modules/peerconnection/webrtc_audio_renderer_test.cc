@@ -115,14 +115,7 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
 
 }  // namespace
 
-// Flaky on TSAN. See https://crbug.com/1127211
-// Flaky with CFI. See https://crbug.com/1294176
-#if defined(THREAD_SANITIZER) || BUILDFLAG(CFI_CAST_CHECK)
-#define MAYBE_WebRtcAudioRendererTest DISABLED_WebRtcAudioRendererTest
-#else
-#define MAYBE_WebRtcAudioRendererTest WebRtcAudioRendererTest
-#endif
-class MAYBE_WebRtcAudioRendererTest : public testing::Test {
+class WebRtcAudioRendererTest : public testing::Test {
  public:
   MOCK_METHOD1(MockSwitchDeviceCallback, void(media::OutputDeviceStatus));
   void SwitchDeviceCallback(base::RunLoop* loop,
@@ -132,7 +125,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
   }
 
  protected:
-  MAYBE_WebRtcAudioRendererTest()
+  WebRtcAudioRendererTest()
       : source_(new MockAudioRendererSource())
 // Tests crash on Android if these are defined. https://crbug.com/1119689
 #if !BUILDFLAG(IS_ANDROID)
@@ -220,6 +213,9 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
     stream_descriptor_ = nullptr;
     source_.reset();
     agent_group_scheduler_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+    web_view_->Close();
+#endif
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -237,7 +233,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
 };
 
 // Verify that the renderer will be stopped if the only proxy is stopped.
-TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_StopRenderer) {
+TEST_F(WebRtcAudioRendererTest, DISABLED_StopRenderer) {
   SetupRenderer(kDefaultOutputDeviceId);
   renderer_proxy_->Start();
 
@@ -250,7 +246,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_StopRenderer) {
 
 // Verify that the renderer will not be stopped unless the last proxy is
 // stopped.
-TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_MultipleRenderers) {
+TEST_F(WebRtcAudioRendererTest, DISABLED_MultipleRenderers) {
   SetupRenderer(kDefaultOutputDeviceId);
   renderer_proxy_->Start();
 
@@ -284,7 +280,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_MultipleRenderers) {
 
 // Verify that the sink of the renderer is using the expected sample rate and
 // buffer size.
-TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_VerifySinkParameters) {
+TEST_F(WebRtcAudioRendererTest, DISABLED_VerifySinkParameters) {
   SetupRenderer(kDefaultOutputDeviceId);
   renderer_proxy_->Start();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -306,7 +302,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, DISABLED_VerifySinkParameters) {
   renderer_proxy_->Stop();
 }
 
-TEST_F(MAYBE_WebRtcAudioRendererTest, NonDefaultDevice) {
+TEST_F(WebRtcAudioRendererTest, NonDefaultDevice) {
   SetupRenderer(kDefaultOutputDeviceId);
   EXPECT_EQ(kDefaultOutputDeviceId,
             mock_sink()->GetOutputDeviceInfo().device_id());
@@ -326,7 +322,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, NonDefaultDevice) {
   renderer_proxy_->Stop();
 }
 
-TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDevice) {
+TEST_F(WebRtcAudioRendererTest, SwitchOutputDevice) {
   SetupRenderer(kDefaultOutputDeviceId);
   EXPECT_EQ(kDefaultOutputDeviceId,
             mock_sink()->GetOutputDeviceInfo().device_id());
@@ -346,7 +342,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDevice) {
   base::RunLoop loop;
   renderer_proxy_->SwitchOutputDevice(
       kOtherOutputDeviceId,
-      base::BindOnce(&MAYBE_WebRtcAudioRendererTest::SwitchDeviceCallback,
+      base::BindOnce(&WebRtcAudioRendererTest::SwitchDeviceCallback,
                      base::Unretained(this), &loop));
   loop.Run();
   EXPECT_EQ(kOtherOutputDeviceId,
@@ -359,7 +355,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDevice) {
   renderer_proxy_->Stop();
 }
 
-TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
+TEST_F(WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
   SetupRenderer(kDefaultOutputDeviceId);
   EXPECT_EQ(kDefaultOutputDeviceId,
             mock_sink()->GetOutputDeviceInfo().device_id());
@@ -376,7 +372,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
   base::RunLoop loop;
   renderer_proxy_->SwitchOutputDevice(
       kInvalidOutputDeviceId,
-      base::BindOnce(&MAYBE_WebRtcAudioRendererTest::SwitchDeviceCallback,
+      base::BindOnce(&WebRtcAudioRendererTest::SwitchDeviceCallback,
                      base::Unretained(this), &loop));
   loop.Run();
   EXPECT_EQ(kDefaultOutputDeviceId,
@@ -389,7 +385,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
   renderer_proxy_->Stop();
 }
 
-TEST_F(MAYBE_WebRtcAudioRendererTest, InitializeWithInvalidDevice) {
+TEST_F(WebRtcAudioRendererTest, InitializeWithInvalidDevice) {
   renderer_ = new blink::WebRtcAudioRenderer(
       scheduler::GetSingleThreadTaskRunnerForTesting(), stream_descriptor_,
       nullptr /*blink::WebLocalFrame*/, base::UnguessableToken::Create(),
@@ -413,7 +409,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, InitializeWithInvalidDevice) {
             mock_sink()->GetOutputDeviceInfo().device_id());
 }
 
-TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceStoppedSource) {
+TEST_F(WebRtcAudioRendererTest, SwitchOutputDeviceStoppedSource) {
   SetupRenderer(kDefaultOutputDeviceId);
   auto* original_sink = mock_sink();
   renderer_proxy_->Start();
@@ -426,7 +422,7 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceStoppedSource) {
   renderer_proxy_->Stop();
   renderer_proxy_->SwitchOutputDevice(
       kInvalidOutputDeviceId,
-      base::BindOnce(&MAYBE_WebRtcAudioRendererTest::SwitchDeviceCallback,
+      base::BindOnce(&WebRtcAudioRendererTest::SwitchDeviceCallback,
                      base::Unretained(this), &loop));
   loop.Run();
 }

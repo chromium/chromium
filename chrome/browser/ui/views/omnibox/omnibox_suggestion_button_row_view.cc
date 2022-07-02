@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -60,20 +61,25 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    views::InkDrop::Get(this)->SetHighlightOpacity(
-        GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
-    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+    auto* const ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
+    ink_drop->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
-          return GetOmniboxColor(host->GetThemeProvider(),
-                                 OmniboxPart::RESULTS_BUTTON_INK_DROP,
-                                 host->theme_state_);
+          return host->GetColorProvider()->GetColor(
+              (host->theme_state_ == OmniboxPartState::SELECTED)
+                  ? kColorOmniboxResultsButtonInkDropSelected
+                  : kColorOmniboxResultsButtonInkDrop);
         },
         this));
+    SetAnimationDuration(base::TimeDelta());
+    ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
-    views::FocusRing::Get(this)->SetHasFocusPredicate([=](View* view) {
+    auto* const focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
              popup_contents_view_->GetSelection() == selection_;
     });
+    focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
   }
 
   OmniboxSuggestionRowButton(const OmniboxSuggestionRowButton&) = delete;
@@ -83,7 +89,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   ~OmniboxSuggestionRowButton() override = default;
 
   void SetThemeState(OmniboxPartState theme_state) {
-    views::FocusRing::Get(this)->SchedulePaint();
     if (theme_state_ == theme_state)
       return;
     theme_state_ = theme_state;
@@ -96,23 +101,25 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     MdTextButton::OnThemeChanged();
     // We can't use colors from NativeTheme as the omnibox theme might be
     // different (for example, if the NTP colors are customized).
-    const auto* const theme_provider = GetThemeProvider();
-    SkColor icon_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_ICON, theme_state_);
+    const auto* const color_provider = GetColorProvider();
+    const bool selected = theme_state_ == OmniboxPartState::SELECTED;
+    SkColor icon_color = color_provider->GetColor(
+        selected ? kColorOmniboxResultsIconSelected : kColorOmniboxResultsIcon);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
                               icon_color));
-    SetEnabledTextColors(GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
+    SetEnabledTextColors(color_provider->GetColor(
+        selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
+    views::FocusRing::Get(this)->SchedulePaint();
   }
 
   void UpdateBackgroundColor() override {
-    const auto* const theme_provider = GetThemeProvider();
-    SkColor stroke_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_BUTTON_BORDER, theme_state_);
-    SkColor fill_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_BACKGROUND, theme_state_);
+    const auto* const color_provider = GetColorProvider();
+    const SkColor stroke_color =
+        color_provider->GetColor(kColorOmniboxResultsButtonBorder);
+    const SkColor fill_color =
+        color_provider->GetColor(GetOmniboxBackgroundColorId(theme_state_));
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             fill_color, stroke_color, GetCornerRadius())));
@@ -229,6 +236,17 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
                                pedal_button_->GetVisible() ||
                                tab_switch_button_->GetVisible();
   SetVisible(is_any_button_visible);
+}
+
+void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
+  auto* const active_button = GetActiveButton();
+  if (active_button == previous_active_button_)
+    return;
+  if (previous_active_button_)
+    views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+  if (active_button)
+    views::FocusRing::Get(active_button)->SchedulePaint();
+  previous_active_button_ = active_button;
 }
 
 void OmniboxSuggestionButtonRowView::SetThemeState(

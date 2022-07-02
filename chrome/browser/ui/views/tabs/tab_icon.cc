@@ -12,6 +12,7 @@
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -423,12 +425,11 @@ void TabIcon::RefreshLayer() {
 }
 
 gfx::ImageSkia TabIcon::ThemeFavicon(const gfx::ImageSkia& source) {
-  const ui::ThemeProvider* tp = GetThemeProvider();
+  const auto* cp = GetColorProvider();
   return favicon::ThemeFavicon(
-      source, tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
-      tp->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
-      tp->GetColor(
-          ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
+      source, cp->GetColor(kColorToolbarButtonIcon),
+      cp->GetColor(kColorTabBackgroundActiveFrameActive),
+      cp->GetColor(kColorTabBackgroundInactiveFrameActive));
 }
 
 BEGIN_METADATA(TabIcon, views::View)

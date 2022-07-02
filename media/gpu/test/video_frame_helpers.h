@@ -13,10 +13,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
-
 namespace media {
 namespace test {
 
@@ -63,14 +59,11 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 // If |dst_storage_type| is STORAGE_DMABUFS, this function creates DMABUF-backed
 // VideoFrame with |dst_layout|. If |dst_storage_type| is STORAGE_OWNED_MEMORY,
 // this function creates memory-backed VideoFrame with |dst_layout|.
-// |dst_buffer_usage| and |gpu_memory_buffer_factory| must be specified if
-// |dst_storage_type| is STORAGE_DMABUFS or STORAGE_GPU_MEMORY_BUFFER, and in
-// that case the |gpu_memory_buffer_factory| will be used for the allocation to
-// create a graphic buffer with the requested usage.
+// |dst_buffer_usage| must be specified if |dst_storage_type| is STORAGE_DMABUFS
+// or STORAGE_GPU_MEMORY_BUFFER.
 // The created VideoFrame's content is the same as |src_frame|. The created
 // VideoFrame owns the buffer. Returns nullptr on failure.
 scoped_refptr<VideoFrame> CloneVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
@@ -89,7 +82,6 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 // |buffer_usage|.
 // This function works on ChromeOS only.
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage);
 

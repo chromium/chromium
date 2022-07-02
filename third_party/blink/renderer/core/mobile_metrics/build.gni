@@ -6,3 +6,5 @@ blink_core_sources_mobile_metrics = [
   "mobile_friendliness_checker.cc",
   "mobile_friendliness_checker.h",
 ]
+
+blink_core_tests_mobile_metrics = [ "mobile_friendliness_checker_test.cc" ]

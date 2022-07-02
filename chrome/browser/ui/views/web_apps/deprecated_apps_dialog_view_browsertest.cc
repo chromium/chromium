@@ -6,9 +6,11 @@
 
 #include <set>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -150,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
 
   InstallExtensionForTesting(mock_app_manifest1, mock_url1);
   test_dialog_view_ = DeprecatedAppsDialogView::CreateAndShowDialog(
-                          deprecated_app_ids_for_testing_, web_contents)
+                          std::string(), deprecated_app_ids_for_testing_,
+                          web_contents, base::DoNothing())
                           ->AsWeakPtr();
 
   EXPECT_TRUE(IsDialogShown());
@@ -165,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
   InstallExtensionForTesting(mock_app_manifest1, mock_url1);
   InstallExtensionForTesting(mock_app_manifest2, mock_url2);
   test_dialog_view_ = DeprecatedAppsDialogView::CreateAndShowDialog(
-                          deprecated_app_ids_for_testing_, web_contents)
+                          std::string(), deprecated_app_ids_for_testing_,
+                          web_contents, base::DoNothing())
                           ->AsWeakPtr();
 
   EXPECT_TRUE(IsDialogShown());
@@ -177,11 +181,14 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        AcceptDialogAndVerify) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
+  base::MockCallback<base::OnceClosure> mock_callback;
   extensions::ExtensionId test_id(
       InstallExtensionForTesting(mock_app_manifest1, mock_url1));
   test_dialog_view_ = DeprecatedAppsDialogView::CreateAndShowDialog(
-                          deprecated_app_ids_for_testing_, web_contents)
+                          std::string(), deprecated_app_ids_for_testing_,
+                          web_contents, mock_callback.Get())
                           ->AsWeakPtr();
+  EXPECT_CALL(mock_callback, Run()).Times(0);
 
   // Verify dialog is shown.
   ASSERT_TRUE(IsDialogShown());
@@ -203,15 +210,19 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        CloseDialogAndVerify) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
+  base::MockCallback<base::OnceClosure> mock_callback;
   InstallExtensionForTesting(mock_app_manifest1, mock_url1);
   test_dialog_view_ = DeprecatedAppsDialogView::CreateAndShowDialog(
-                          deprecated_app_ids_for_testing_, web_contents)
+                          std::string(), deprecated_app_ids_for_testing_,
+                          web_contents, mock_callback.Get())
                           ->AsWeakPtr();
 
   // Verify dialog is shown.
   ASSERT_TRUE(IsDialogShown());
   EXPECT_EQ(static_cast<int>(deprecated_app_ids_for_testing_.size()),
             GetRowCountForDialog());
+
+  EXPECT_CALL(mock_callback, Run()).Times(1);
 
   // Verify dialog is closed on cancellation
   ASSERT_TRUE(test_dialog_view_->Cancel());
@@ -234,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   auto waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"document.getElementById('deprecated-apps-link').click()",
       base::NullCallback());
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/ash/net/network_portal_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -192,7 +194,7 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
     const NetworkPortalWebDialog* dialog) {
   if (dialog == dialog_) {
     dialog_ = nullptr;
-    ProfileHelper::Get()->ClearSigninProfile(base::NullCallback());
+    ash::SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
   }
 }
 
@@ -204,7 +206,8 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
           network->guid(), weak_factory_.GetWeakPtr());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kNotifierNetworkPortalDetector);
+      kNotifierNetworkPortalDetector,
+      ash::NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(

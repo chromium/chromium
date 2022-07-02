@@ -41,8 +41,8 @@ bool SkiaPaintImageGenerator::onQueryYUVAInfo(
 }
 
 bool SkiaPaintImageGenerator::onGetYUVAPlanes(const SkYUVAPixmaps& planes) {
-  return paint_image_generator_->GetYUVAPlanes(planes, frame_index_,
-                                               uniqueID());
+  return paint_image_generator_->GetYUVAPlanes(planes, frame_index_, uniqueID(),
+                                               client_id_);
 }
 
 }  // namespace cc

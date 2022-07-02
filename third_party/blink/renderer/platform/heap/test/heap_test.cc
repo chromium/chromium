@@ -35,7 +35,6 @@
 #include "gin/public/v8_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -335,7 +334,7 @@ class ThreadedTesterBase {
     HeapTestingPlatformAdapter platform_for_threads(gin::V8Platform::Get());
     std::unique_ptr<Thread> threads[kNumberOfThreads];
     for (auto& thread : threads) {
-      thread = Platform::Current()->CreateThread(
+      thread = Thread::CreateThread(
           ThreadCreationParams(ThreadType::kTestThread)
               .SetThreadNameForTest("blink gc testing thread"));
       PostCrossThreadTask(

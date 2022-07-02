@@ -456,8 +456,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     if (ash::features::IsDarkLightModeEnabled()) {
       background_view_->SetBorder(std::make_unique<HighlightBorder>(
           corner_radius_, HighlightBorder::Type::kHighlightBorder1,
-          /*use_light_colors=*/false,
-          views::HighlightBorder::InsetsType::kHalfInsets));
+          /*use_light_colors=*/false));
     }
 #endif
   } else {

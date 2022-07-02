@@ -63,10 +63,6 @@ struct VisualProperties;
 class WebCoalescedInputEvent;
 class WebHitTestResult;
 
-namespace scheduler {
-class WebRenderWidgetSchedulingState;
-}
-
 class WebWidget {
  public:
   // Initialize compositing. This will create a LayerTreeHost but will not
@@ -131,10 +127,6 @@ class WebWidget {
 
   // Returns the state of focus for the WebWidget.
   virtual bool HasFocus() { return false; }
-
-  // Accessor to the WebWidget scheduing state.
-  virtual scheduler::WebRenderWidgetSchedulingState*
-  RendererWidgetSchedulingState() = 0;
 
   virtual void SetCursor(const ui::Cursor& cursor) = 0;
 

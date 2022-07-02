@@ -14,8 +14,7 @@
 #include "net/log/net_log_with_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace android {
+namespace net::android {
 
 TEST(HttpAuthNegotiateAndroidTest, GenerateAuthToken) {
   base::test::TaskEnvironment task_environment;
@@ -112,5 +111,4 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_MissingTokenSecondRound) {
             auth.ParseChallenge(&second_challenge));
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

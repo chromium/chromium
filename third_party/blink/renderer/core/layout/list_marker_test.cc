@@ -321,4 +321,61 @@ TEST_F(ListMarkerTest, WidthOfSymbolForFontSizeZero) {
             ListMarker::WidthOfSymbol(target_layout_object.StyleRef()));
 }
 
+// crbug.com/1310599
+TEST_F(ListMarkerTest, InlineMarginsForOutside) {
+  GetDocument().body()->setInnerHTML(
+      R"HTML(<details open><summary id="target" style="
+  font-size: 536870912px;
+  zoom: 65536;
+  list-style-position: outside;
+  ">foo</summary></details>)HTML",
+      ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  auto [start, end] = ListMarker::InlineMarginsForOutside(
+      GetDocument(), marker_object->StyleRef(), item_object->StyleRef(),
+      LayoutUnit::Max());
+  EXPECT_EQ(LayoutUnit::Min(), start);
+  EXPECT_EQ(LayoutUnit(), end);
+}
+
+class ListMarkerLegacyTest : public RenderingTest {
+ private:
+  ScopedLayoutNGForTest layout_ng{false};
+};
+
+// crbug.com/1336864
+TEST_F(ListMarkerLegacyTest, NegativeLetterSpacingByStatic) {
+  SetBodyContent(
+      R"HTML(<ul><li id="target" style="
+  font-size: 100px;
+  letter-spacing: -4400000000px;
+  list-style-type: 'foo';
+  list-style-position: outside;
+  ">foo</li></ul>)HTML");
+
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  // Negative letter-spacing should not make the marker width negative.
+  EXPECT_GE(To<LayoutBox>(marker_object)->LogicalWidth(), LayoutUnit());
+}
+
+// crbug.com/1336864
+TEST_F(ListMarkerLegacyTest, NegativeLetterSpacingBySuffix) {
+  // The following marker is a decimal counter, and it has a suffix like ".".
+  SetBodyContent(
+      R"HTML(<ol><li id="target">foo</li></ol>
+      <style>
+      #target::marker {
+        font-size: 100px;
+        letter-spacing: -4400000000px;
+      }</style>)HTML");
+
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  // Negative letter-spacing should not make the marker width negative.
+  EXPECT_GE(To<LayoutBox>(marker_object)->LogicalWidth(), LayoutUnit());
+}
+
 }  // namespace blink

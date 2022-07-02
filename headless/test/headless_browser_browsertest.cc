@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -11,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -27,6 +30,7 @@
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_select_file_dialog_factory.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/devtools/domains/inspector.h"
 #include "headless/public/devtools/domains/network.h"
@@ -41,16 +45,19 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
@@ -811,6 +818,110 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, LocalizedResources) {
   EXPECT_THAT(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
                   IDR_UASTYLE_HTML_CSS),
               testing::Ne(""));
+}
+
+class SelectFileDialogHeadlessBrowserTest
+    : public HeadlessBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<const char*, ui::SelectFileDialog::Type>> {
+ public:
+  static constexpr char kTestMountPoint[] = "testfs";
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    // Register an external mount point to test support for virtual paths.
+    // This maps the virtual path a native local path to make these tests work
+    // on all platforms.
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        kTestMountPoint, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), temp_dir_.GetPath());
+
+    HeadlessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Enable experimental web platform features to enable write access.
+    command_line->AppendSwitch(
+        ::switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+  void TearDown() override {
+    HeadlessBrowserTest::TearDown();
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        kTestMountPoint);
+    ASSERT_TRUE(temp_dir_.Delete());
+  }
+
+  void WaitForSelectFileDialogCallback() {
+    if (select_file_dialog_type_ != ui::SelectFileDialog::SELECT_NONE)
+      return;
+
+    ASSERT_FALSE(run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    run_loop_->Run();
+    run_loop_ = nullptr;
+  }
+
+  void OnSelectFileDialogCallback(ui::SelectFileDialog::Type type) {
+    select_file_dialog_type_ = type;
+
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  const char* file_dialog_script() { return std::get<0>(GetParam()); }
+  ui::SelectFileDialog::Type expected_type() { return std::get<1>(GetParam()); }
+
+ protected:
+  std::unique_ptr<base::RunLoop> run_loop_;
+  base::ScopedTempDir temp_dir_;
+  ui::SelectFileDialog::Type select_file_dialog_type_ =
+      ui::SelectFileDialog::SELECT_NONE;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SelectFileDialogHeadlessBrowserTest,
+    SelectFileDialogHeadlessBrowserTest,
+    testing::Values(std::make_tuple("window.showOpenFilePicker()",
+                                    ui::SelectFileDialog::SELECT_OPEN_FILE),
+                    std::make_tuple("window.showSaveFilePicker()",
+                                    ui::SelectFileDialog::SELECT_SAVEAS_FILE),
+                    std::make_tuple("window.showDirectoryPicker()",
+                                    ui::SelectFileDialog::SELECT_FOLDER)));
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogHeadlessBrowserTest, SelectFileDialog) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
+          .Build();
+  ASSERT_TRUE(WaitForLoad(web_contents));
+
+  // Select file dialog will not be shown if the owning frame does not
+  // have user activation, see VerifyIsAllowedToShowFilePicker in
+  // third_party/blink/renderer/.../global_file_system_access.cc
+  content::WebContents* content =
+      HeadlessWebContentsImpl::From(web_contents)->web_contents();
+  content::RenderFrameHost* main_frame = content->GetPrimaryMainFrame();
+  main_frame->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+
+  HeadlessSelectFileDialogFactory::SetSelectFileDialogOnceCallbackForTests(
+      base::BindOnce(
+          &SelectFileDialogHeadlessBrowserTest::OnSelectFileDialogCallback,
+          base::Unretained(this)));
+
+  EvaluateScript(web_contents, file_dialog_script());
+  WaitForSelectFileDialogCallback();
+
+  EXPECT_EQ(select_file_dialog_type_, expected_type());
 }
 
 }  // namespace headless

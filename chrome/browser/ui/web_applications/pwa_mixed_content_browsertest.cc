@@ -227,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(
   CheckMixedContentFailedToLoad(app_browser);
 
   // Change the mixed content to be acceptable.
-  content::RenderFrameHost* main_frame =
-      app_browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = app_browser->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
   EXPECT_TRUE(TryToLoadImage(
       iframe, embedded_test_server()->GetURL("foo.com", kImagePath)));
@@ -257,8 +258,10 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   chrome::OpenInChrome(app_browser);
 
-  content::RenderFrameHost* main_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
 
   EXPECT_TRUE(TryToLoadImage(

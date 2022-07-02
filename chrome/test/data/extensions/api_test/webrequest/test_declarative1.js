@@ -144,7 +144,7 @@ function cancelThirdPartyExpectedOrder() {
     ];
 }
 
-runTests([
+let allTests = [
 
   function testCancelRequest() {
     ignoreUnexpected = true;
@@ -544,4 +544,36 @@ runTests([
       function() {navigateAndWait(getURLHttpSimple());}
     );
   },
-  ]);
+];
+
+// All tests that are currently working.
+let workingTests = [
+  'testCancelRequest',
+  'testPostponeCancelRequest',
+  'testSiteForCookiesUrl',
+  'testRedirectRequest',
+  'testRedirectRequestByContentType',
+  'testRedirectByRegEx',
+  'testRegexFilter',
+];
+
+// All tests that are broken or flaky.
+let brokenTests = [
+  'testThirdParty',  // Generates unexpected events.
+  'testFirstParty',  // Generates unexpected events,
+  'testRedirectRequest2',  // Hangs.
+];
+
+chrome.test.getConfig(function(config) {
+  let args = JSON.parse(config.customArg);
+  if (args.testSuite == 'normal') {
+    runTests(allTests.filter(function(op) {
+      return workingTests.includes(op.name);
+    }));
+  } else {
+    chrome.test.assertEq('broken', args.testSuite);
+    runTests(allTests.filter(function(op) {
+      return brokenTests.includes(op.name);
+    }));
+  }
+});

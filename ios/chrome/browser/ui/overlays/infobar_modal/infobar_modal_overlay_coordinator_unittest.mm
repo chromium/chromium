@@ -117,7 +117,7 @@ TEST_F(InfobarModalOverlayCoordinatorTest, ModalPresentation) {
 
   // Verify that the view hierarchy is set up as expected.  The coordinator
   // should have added the configured modal view as the root view controller for
-  // a UINavigationController, then presented it on |root_view_controller_|.
+  // a UINavigationController, then presented it on `root_view_controller_`.
   UIViewController* presented_view_controller =
       root_view_controller_.presentedViewController;
   EXPECT_TRUE(presented_view_controller);

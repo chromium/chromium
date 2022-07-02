@@ -1,0 +1,8 @@
+Test logging of navigator plugins.
+{
+    className : MimeTypeArray
+    description : MimeTypeArray
+    objectId : <string>
+    type : object
+}
+

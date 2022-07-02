@@ -12,7 +12,6 @@ import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
@@ -211,10 +210,6 @@ struct URLResponseHead {
   // it wasn't implemented or not allowed from its process.
   ParsedHeaders? parsed_headers;
 
-  // Origin Policy associated with this response or nullptr if not applicable.
-  // Spec: https://wicg.github.io/origin-policy/
-  OriginPolicy? origin_policy;
-
   // Set by the browser process on cross-origin prefetch responses. This token
   // is propagated to the renderer and set on recursive prefetch requests
   // (see corresponding documentation in url_loader.mojom).
@@ -239,4 +234,8 @@ struct URLResponseHead {
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials = true;
+
+  // This boolean is set to true if the response has a Set-Cookie header with the Partitioned attribute.
+  // TODO(https://crbug.com/1296161): Delete this field.
+  bool has_partitioned_cookie = false;
 };

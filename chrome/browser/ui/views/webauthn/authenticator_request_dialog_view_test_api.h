@@ -23,7 +23,7 @@ class AuthenticatorRequestDialogViewTestApi {
   // testing.
   static AuthenticatorRequestDialogView* CreateDialogView(
       content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model);
+      AuthenticatorRequestDialogModel* dialog_model);
 
   // Replaces the current sheet on |dialog| with |new_sheet|.
   static void ShowWithSheet(

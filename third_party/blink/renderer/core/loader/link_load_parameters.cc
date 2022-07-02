@@ -6,6 +6,7 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
@@ -55,6 +56,12 @@ LinkLoadParameters::LinkLoadParameters(const LinkHeader& header,
       href(KURL(base_url, header.Url())),
       image_srcset(header.ImageSrcset()),
       image_sizes(header.ImageSizes()),
-      blocking(header.Blocking()) {}
+      blocking(header.Blocking()) {
+  if (!header.ReferrerPolicy().IsEmpty()) {
+    SecurityPolicy::ReferrerPolicyFromString(
+        header.ReferrerPolicy(), kDoNotSupportReferrerPolicyLegacyKeywords,
+        &referrer_policy);
+  }
+}
 
 }  // namespace blink

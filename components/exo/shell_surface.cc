@@ -282,6 +282,16 @@ void ShellSurface::RemoveObserver(ShellSurfaceObserver* observer) {
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
+void ShellSurface::OnSetFrame(SurfaceFrameType type) {
+  ShellSurfaceBase::OnSetFrame(type);
+
+  if (!widget_)
+    return;
+  widget_->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow,
+      frame_type_ != SurfaceFrameType::SHADOW);
+}
+
 void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
   views::Widget* parent_widget =
       parent ? views::Widget::GetTopLevelWidgetForNativeView(parent->window())
@@ -402,11 +412,6 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
       return;
     }
 
-    if (needs_layout_on_show_) {
-      needs_layout_on_show_ = false;
-      return;
-    }
-
     // If size changed then give the client a chance to produce new contents
     // before origin on screen is changed. Retain the old origin by reverting
     // the origin delta until the next configure is acknowledged.
@@ -421,7 +426,10 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     // being notified of the change before |this|.
     UpdateShadow();
 
-    Configure();
+    // A window state change will send a configuration event. Avoid sending
+    // two configuration events for the same change.
+    if (!window_state_is_changing_)
+      Configure();
   }
 }
 
@@ -431,6 +439,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
 void ShellSurface::OnPreWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
+  window_state_is_changing_ = true;
   chromeos::WindowStateType new_type = window_state->GetStateType();
   if (chromeos::IsMinimizedWindowStateType(old_type) ||
       chromeos::IsMinimizedWindowStateType(new_type)) {
@@ -464,14 +473,16 @@ void ShellSurface::OnPreWindowStateTypeChange(
 void ShellSurface::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  chromeos::WindowStateType new_type = window_state->GetStateType();
-  // For exo-client using client-side decoration, window-state information is
-  // needed to toggle the maximize and restore buttons. When the window is
-  // restored, we show a maximized button; otherwise we show a restore button.
-  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(old_type) ||
-      chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
-    Configure();
-  }
+  // Send the new state to the exo-client when the state changes. This is
+  // important for client presentation. For example exo-client using client-side
+  // decoration, window-state information is needed to toggle the maximize and
+  // restore buttons. When the window is restored, we show a maximized button;
+  // otherwise we show a restore button.
+  //
+  // Note that configuration events on bounds change is suppressed during state
+  // change, because it is assumed that a configuration event will always be
+  // sent at the end of a state change.
+  Configure();
 
   if (widget_) {
     UpdateWidgetBounds();
@@ -480,6 +491,7 @@ void ShellSurface::OnPostWindowStateTypeChange(
 
   // Re-enable animations if they were disabled in pre state change handler.
   animations_disabler_.reset();
+  window_state_is_changing_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -607,9 +619,12 @@ void ShellSurface::Configure(bool ends_drag) {
           GetClientBoundsInScreen(widget_), window_state->GetStateType(),
           IsResizing(), widget_->IsActive(), origin_offset);
     } else {
-      serial = configure_callback_.Run(gfx::Rect(),
-                                       chromeos::WindowStateType::kNormal,
-                                       false, false, origin_offset);
+      gfx::Rect bounds;
+      if (initial_bounds_)
+        bounds.set_origin(initial_bounds_->origin());
+      serial =
+          configure_callback_.Run(bounds, chromeos::WindowStateType::kNormal,
+                                  false, false, origin_offset);
     }
   }
 

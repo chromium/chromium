@@ -19,16 +19,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,12 +33,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
-
-import java.util.Arrays;
 
 /**
  * Tests system and application interaction with Contextual Search using instrumentation tests.
@@ -51,37 +46,11 @@ import java.util.Arrays;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
-                + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+@EnableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchSystemTest extends ContextualSearchInstrumentationBase {
-    /**
-     * Parameter provider for enabling/disabling Features under development.
-     */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet()
-                            .value(EnabledFeature.TRANSLATIONS)
-                            .name("enableTranslations"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
-                            .name("enableContextualTriggers"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS_MENU)
-                            .name("enableContextualTriggersMenu"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL)
-                            .name("enablePrivacyNeutralEngagement"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES)
-                            .name("enablePrivacyNeutralWithRelatedSearches"));
-        }
-    }
-
     @Override
     @Before
     public void setUp() throws Exception {
@@ -133,19 +102,6 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         });
     }
 
-    /**
-     * Sets the online status and reloads the current Tab with our test URL.
-     * @param isOnline Whether to go online.
-     */
-    private void setOnlineStatusAndReload(boolean isOnline) {
-        mFakeServer.setIsOnline(isOnline);
-        final String testUrl = mTestServer.getURL(mTestPage);
-        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.reload());
-        // Make sure the page is fully loaded.
-        ChromeTabUtils.waitForTabPageLoaded(tab, testUrl);
-    }
-
     //============================================================================================
     // Tab Crash
     //============================================================================================
@@ -184,7 +140,8 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285, /https://crbug.com/1192561")
+    // Revived 6/2022 based on reviver: https://crbug.com/1333277
+    // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
     public void testContextualSearchNotDismissedOnBackgroundTabCrash(
             @EnabledFeature int enabledFeature) throws Exception {
         ChromeTabUtils.newTabFromMenu(
@@ -218,11 +175,10 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/596533")
     public void testAppMenuSuppressedWhenExpanded(@EnabledFeature int enabledFeature)
             throws Exception {
         triggerPanelPeek();
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
 
         pressAppMenuKey();
         assertAppMenuVisibility(false);
@@ -258,33 +214,5 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         assertAppMenuVisibility(true);
 
         closeAppMenu();
-    }
-
-    /**
-     * Tests that Contextual Search is fully disabled when offline.
-     */
-    @Test
-    @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled in 2017.  https://crbug.com/761946")
-    // @SmallTest
-    // @Feature({"ContextualSearch"})
-    // // NOTE: Remove the flag so we will run just this test with onLine detection enabled.
-    // @CommandLineFlags.Remove(ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED)
-    public void testNetworkDisconnectedDeactivatesSearch(@EnabledFeature int enabledFeature)
-            throws Exception {
-        setOnlineStatusAndReload(false);
-        // We use the longpress gesture here because unlike Tap it's never suppressed.
-        longPressNodeWithoutWaiting(SEARCH_NODE);
-        waitForSelectActionBarVisible();
-        // Verify the panel didn't open.  It should open by now if CS has not been disabled.
-        // TODO(donnd): Consider waiting for some condition to be sure we'll catch all failures,
-        // e.g. in case the Bar is about to show but has not yet appeared.  Currently catches ~90%.
-        assertPanelClosedOrUndefined();
-
-        // Similar sequence with network connected should peek for Longpress.
-        setOnlineStatusAndReload(true);
-        longPressNodeWithoutWaiting(SEARCH_NODE);
-        waitForSelectActionBarVisible();
-        waitForPanelToPeek();
     }
 }

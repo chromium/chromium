@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_info.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -44,18 +45,21 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
           Client* client,
           const gpu::GpuPreferences& gpu_preferences,
           const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+          const gpu::GPUInfo::GPUDevice& gpu_device,
           std::unique_ptr<MediaLog> media_log)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device);
 
   MojoVideoEncodeAcceleratorService(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo::GPUDevice& gpu_device);
 
   MojoVideoEncodeAcceleratorService(const MojoVideoEncodeAcceleratorService&) =
       delete;
@@ -101,6 +105,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences& gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
+  const gpu::GPUInfo::GPUDevice& gpu_device_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;

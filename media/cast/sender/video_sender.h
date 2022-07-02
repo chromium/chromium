@@ -16,14 +16,13 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_sender.h"
 #include "media/cast/common/rtp_time.h"
-#include "media/cast/sender/congestion_control.h"
 #include "media/cast/sender/frame_sender.h"
 
 namespace media {
-
 class VideoFrame;
+}
 
-namespace cast {
+namespace media::cast {
 
 class CastTransport;
 class VideoEncoder;
@@ -37,7 +36,7 @@ using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 // RTCP packets.
 // Additionally it posts a bunch of delayed tasks to the main thread for various
 // timeouts.
-class VideoSender : public FrameSender {
+class VideoSender : public FrameSender::Client {
  public:
   VideoSender(scoped_refptr<CastEnvironment> cast_environment,
               const FrameSenderConfig& video_config,
@@ -63,25 +62,36 @@ class VideoSender : public FrameSender {
   // the encoder does not have any such capability, returns null.
   std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory();
 
+  void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
+
   base::WeakPtr<VideoSender> AsWeakPtr();
 
  protected:
+  // FrameSender::Client overrides.
   int GetNumberOfFramesInEncoder() const final;
-  base::TimeDelta GetInFlightMediaDuration() const final;
+  base::TimeDelta GetEncoderBacklogDuration() const final;
+
+  // Exposed as protected for testing.
+  FrameSender* frame_sender_for_testing() { return frame_sender_.get(); }
 
  private:
   // Called by the |video_encoder_| with the next EncodedFrame to send.
   void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                           int encoder_bitrate,
                            std::unique_ptr<SenderEncodedFrame> encoded_frame);
+
+  // The backing frame sender implementation.
+  std::unique_ptr<FrameSender> frame_sender_;
 
   // Encodes media::VideoFrame images into EncodedFrames.  Per configuration,
   // this will point to either the internal software-based encoder or a proxy to
   // a hardware-based encoder.
   std::unique_ptr<VideoEncoder> video_encoder_;
 
+  scoped_refptr<CastEnvironment> cast_environment_;
+
   // The number of frames queued for encoding, but not yet sent.
-  int frames_in_encoder_;
+  int frames_in_encoder_ = 0;
 
   // The duration of video queued for encoding, but not yet sent.
   base::TimeDelta duration_in_encoder_;
@@ -92,7 +102,15 @@ class VideoSender : public FrameSender {
 
   // Remember what we set the bitrate to before, no need to set it again if
   // we get the same value.
-  int last_bitrate_;
+  int last_bitrate_ = 0;
+
+  // The total amount of time between a frame's capture/recording on the sender
+  // and its playback on the receiver (i.e., shown to a user).
+  base::TimeDelta min_playout_delay_;
+  base::TimeDelta max_playout_delay_;
+
+  // Starting playout delay when streaming animated content.
+  base::TimeDelta animated_playout_delay_;
 
   PlayoutDelayChangeCB playout_delay_change_cb_;
 
@@ -101,13 +119,13 @@ class VideoSender : public FrameSender {
   // Indicates we are operating in a mode where the target playout latency is
   // low for best user experience. When operating in low latency mode, we
   // prefer dropping frames over increasing target playout time.
-  bool low_latency_mode_;
+  bool low_latency_mode_ = false;
 
   // The video encoder's performance metrics as of the last call to
   // OnEncodedVideoFrame().  See header file comments for SenderEncodedFrame for
   // an explanation of these values.
-  double last_reported_encoder_utilization_;
-  double last_reported_lossy_utilization_;
+  double last_reported_encoder_utilization_ = -1.0;
+  double last_reported_lossiness_ = -1.0;
 
   // This tracks the time when the request was sent to encoder to encode a key
   // frame on receiving a Pli message. It is used to limit the sender not
@@ -118,7 +136,6 @@ class VideoSender : public FrameSender {
   base::WeakPtrFactory<VideoSender> weak_factory_{this};
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_SENDER_VIDEO_SENDER_H_

@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "components/user_manager/user_manager.h"
 
 class IndependentOTRProfileManagerTest;
@@ -38,6 +37,28 @@ namespace ash {
 class ProfileHelper
     : public user_manager::UserManager::UserSessionStateObserver {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns a profile object corresponding to the given path if fully
+    // initialized. Otherwise returns nullptr. If the system is not
+    // initialized, also returns nullptr (for unittests).
+    virtual Profile* GetProfileByPath(const base::FilePath& path) = 0;
+
+    // DEPRECATED. Please do not use this in the new code, and instead use
+    // GetProfileByPath().
+    // Similar to GetProfileByPath, but synchronously create a Profile instance
+    // if it is not initialized.
+    // If the system is not initialized, still returns nullptr (for unittests).
+    // TODO(crbug.com/1325210): Remove this later.
+    virtual Profile* DeprecatedGetProfile(const base::FilePath& path) = 0;
+
+    // Returns the path to the user data directory.
+    // If the system is not initialized, returns nullptr (for unittests).
+    virtual const base::FilePath* GetUserDataDir() = 0;
+  };
+
   ProfileHelper();
 
   ProfileHelper(const ProfileHelper&) = delete;
@@ -53,14 +74,6 @@ class ProfileHelper
   // by BrowserProcess/BrowserProcessPlatformPart. This method keeps that
   // knowledge in one place.
   static ProfileHelper* Get();
-
-  // Loads and returns Profile instance that corresponds to |user_id_hash| for
-  // test. It should not be used in production code because it could load a
-  // not-yet-loaded user profile and skip the user profile initialization code
-  // in UserSessionManager.
-  // See http://crbug.com/728683 and http://crbug.com/718734.
-  static Profile* GetProfileByUserIdHashForTest(
-      const std::string& user_id_hash);
 
   // Returns profile path that corresponds to a given |user_id_hash|.
   static base::FilePath GetProfilePathByUserIdHash(
@@ -103,9 +116,6 @@ class ProfileHelper
   // Returns the path that corresponds to the lockscreen profile.
   static base::FilePath GetLockScreenProfileDir();
 
-  // Returns lockscreen profile.
-  static Profile* GetLockScreenIncognitoProfile();
-
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);
 
@@ -124,19 +134,11 @@ class ProfileHelper
   static bool IsRegularProfile(const Profile* profile);
   static bool IsRegularProfilePath(const base::FilePath& profile_path);
 
-  // Initialize a bunch of services that are tied to a browser profile.
-  // TODO(dzhioev): Investigate whether or not this method is needed.
-  virtual void ProfileStartup(Profile* profile) = 0;
-
   // Returns active user profile dir in a format [u-$hash].
   virtual base::FilePath GetActiveUserProfileDir() = 0;
 
   // Should called once after UserManager instance has been created.
   virtual void Initialize() = 0;
-
-  // Clears site data (cookies, history, etc) for signin profile.
-  // Callback can be empty. Not thread-safe.
-  virtual void ClearSigninProfile(base::OnceClosure on_clear_callback) = 0;
 
   // Returns profile of the user associated with |account_id| if it is created
   // and fully initialized. Otherwise, returns NULL.
@@ -145,16 +147,6 @@ class ProfileHelper
   // Returns profile of the |user| if it is created and fully initialized.
   // Otherwise, returns NULL.
   virtual Profile* GetProfileByUser(const user_manager::User* user) = 0;
-
-  // DEPRECATED
-  // Returns profile of the |user| if user's profile is created and fully
-  // initialized. Otherwise, if some user is active, returns their profile.
-  // Otherwise, returns signin profile.
-  // Behaviour of this function does not correspond to its name and can be
-  // very surprising, that's why it should not be used anymore.
-  // Use |GetProfileByUser| instead.
-  // TODO(dzhioev): remove this method. http://crbug.com/361528
-  virtual Profile* GetProfileByUserUnsafe(const user_manager::User* user) = 0;
 
   // Returns NULL if User is not created.
   virtual const user_manager::User* GetUserByProfile(

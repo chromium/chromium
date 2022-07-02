@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_util.h"
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "components/exo/test/exo_test_base.h"
@@ -74,10 +76,6 @@ class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
     return arc_test_input_overlay_manager_->display_overlay_controller_.get();
   }
 
-  void WindowFocus(aura::Window* gain_focus, aura::Window* lost_focus) {
-    arc_test_input_overlay_manager_->OnWindowFocused(gain_focus, lost_focus);
-  }
-
   // TODO(djacobo): Maybe move all tests inside input_overlay namespace.
   void DismissEducationalDialog(input_overlay::TouchInjector* injector) {
     injector->GetControllerForTesting()->DismissEducationalViewForTesting();
@@ -103,6 +101,8 @@ class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
 };
 
 TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   // Test app with input overlay data.
   auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
       exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
@@ -113,7 +113,7 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   // Input overlay registers the window after reading the data when the window
   // is still focused. In the test, the arc_window is considered as focused now.
   EXPECT_TRUE(GetRegisteredWindow());
-  WindowFocus(arc_window->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window->GetWindow());
   EXPECT_TRUE(GetRegisteredWindow());
 
   // Test app with input overlay data when window is destroyed.
@@ -132,12 +132,14 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
 TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
   ASSERT_FALSE(GetInputMethod());
   ASSERT_FALSE(IsTextInputActive());
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
       exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
       kEnabledPackageName);
   // I/O takes time here.
   task_environment()->FastForwardBy(kIORead);
-  WindowFocus(arc_window->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window->GetWindow());
   ui::InputMethod* input_method = GetInputMethod();
   EXPECT_TRUE(GetInputMethod());
   input_method->SetFocusedTextInputClient(nullptr);
@@ -153,6 +155,8 @@ TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
       exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
       kEnabledPackageName);
@@ -171,14 +175,43 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
   EXPECT_EQ(3, (int)injector->actions().size());
 
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
-  WindowFocus(arc_window->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window->GetWindow());
   EXPECT_EQ(arc_window->GetWindow(), GetRegisteredWindow());
   EXPECT_TRUE(GetDisplayOverlayController());
-  WindowFocus(arc_window_no_data->GetWindow(), arc_window->GetWindow());
+  focus_client->FocusWindow(arc_window_no_data->GetWindow());
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
 }
 
+TEST_F(ArcInputOverlayManagerTest, TestTabletMode) {
+  // Launch app in tablet mode and switch to desktop mode.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
+  EXPECT_FALSE(GetRegisteredWindow());
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_TRUE(GetRegisteredWindow());
+  arc_window.reset();
+
+  // Launch app in desktop mode and switch to tablet mode.
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      kEnabledPackageName);
+  // I/O takes time here.
+  task_environment()->FastForwardBy(kIORead);
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
+  EXPECT_TRUE(GetRegisteredWindow());
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_FALSE(GetRegisteredWindow());
+}
+
 TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   UpdateDisplay("1000x900,1000x900");
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
   display::Display display0 = display::Screen::GetScreen()->GetDisplayMatching(
@@ -198,7 +231,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // Make sure to dismiss the educational dialog in beforehand.
   auto* injector = GetTouchInjector(arc_window->GetWindow());
   EXPECT_TRUE(injector);
-  WindowFocus(arc_window->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window->GetWindow());
   DismissEducationalDialog(injector);
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   // Simulate the fact that key events are only sent to primary root window
@@ -236,7 +269,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   arc_window->SetBounds(display1, gfx::Rect(10, 10, 100, 100));
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   // When losing focus, |key_event_source_rewriter_| should be destroyed too.
-  WindowFocus(nullptr, arc_window->GetWindow());
+  focus_client->FocusWindow(nullptr);
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window.reset();
 
@@ -245,7 +278,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   auto arc_window_no_data =
       std::make_unique<input_overlay::test::ArcTestWindow>(
           exo_test_helper(), root_windows[1], kRandomPackageName);
-  WindowFocus(arc_window_no_data->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window_no_data->GetWindow());
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window_no_data.reset();
 
@@ -261,13 +294,13 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   arc_window_no_data = std::make_unique<input_overlay::test::ArcTestWindow>(
       exo_test_helper(), root_windows[0], kRandomPackageName);
   // Focus on window without input overlay.
-  WindowFocus(arc_window_no_data->GetWindow(), nullptr);
+  focus_client->FocusWindow(arc_window_no_data->GetWindow());
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   EXPECT_EQ(2u, event_capturer.key_events().size());
   event_capturer.Clear();
   // Focus input overlay window.
-  WindowFocus(arc_window->GetWindow(), arc_window_no_data->GetWindow());
+  focus_client->FocusWindow(arc_window->GetWindow());
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);

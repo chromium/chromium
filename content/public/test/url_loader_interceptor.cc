@@ -30,6 +30,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
@@ -206,11 +207,6 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     original_client_->OnTransferSizeUpdated(transfer_size_diff);
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    original_client_->OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -590,10 +586,39 @@ void URLLoaderInterceptor::WriteResponse(
         network::PopulateParsedHeaders(response->headers.get(), *url);
   }
   response->ssl_info = std::move(ssl_info);
-  client->OnReceiveResponse(std::move(response),
-                            mojo::ScopedDataPipeConsumerHandle());
+  size_t iter = 0;
+  std::string cookie_line;
+  while (info.headers->EnumerateHeader(&iter, "Set-Cookie", &cookie_line)) {
+    if (net::ParsedCookie(cookie_line).IsPartitioned()) {
+      response->has_partitioned_cookie = true;
+      break;
+    }
+  }
 
-  CHECK_EQ(WriteResponseBody(body, client), MOJO_RESULT_OK);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = body.size();
+
+  MojoResult result =
+      CreateDataPipe(&options, producer_handle, consumer_handle);
+  CHECK_EQ(result, MOJO_RESULT_OK);
+
+  uint32_t bytes_written = body.size();
+  result = producer_handle->WriteData(body.data(), &bytes_written,
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  CHECK_EQ(result, MOJO_RESULT_OK);
+
+  client->OnReceiveResponse(std::move(response), std::move(consumer_handle));
+
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = body.size();
+  status.error_code = net::OK;
+  client->OnComplete(status);
 }
 
 void URLLoaderInterceptor::WriteResponse(
@@ -628,41 +653,6 @@ void URLLoaderInterceptor::WriteResponse(
   }
   WriteResponse(headers_str, ReadFile(file_path), client, std::move(ssl_info),
                 std::move(url));
-}
-
-MojoResult URLLoaderInterceptor::WriteResponseBody(
-    base::StringPiece body,
-    network::mojom::URLLoaderClient* client) {
-  mojo::ScopedDataPipeProducerHandle producer_handle;
-  mojo::ScopedDataPipeConsumerHandle consumer_handle;
-
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes = body.size();
-
-  MojoResult result =
-      CreateDataPipe(&options, producer_handle, consumer_handle);
-  if (result != MOJO_RESULT_OK) {
-    return result;
-  }
-
-  uint32_t bytes_written = body.size();
-  result = producer_handle->WriteData(body.data(), &bytes_written,
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  if (result != MOJO_RESULT_OK) {
-    return result;
-  }
-
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
-
-  network::URLLoaderCompletionStatus status;
-  status.decoded_body_length = body.size();
-  status.error_code = net::OK;
-  client->OnComplete(status);
-
-  return MOJO_RESULT_OK;
 }
 
 void URLLoaderInterceptor::CreateURLLoaderFactoryForRenderProcessHost(

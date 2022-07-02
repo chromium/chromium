@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- A layout to show search suggestions. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_resumption_module_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/search_resumption_module_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/search_resumption_module_header_padding_top"
+        android:paddingBottom="@dimen/search_resumption_module_header_padding_top"
+        android:paddingStart="@dimen/search_resumption_module_header_padding_start"
+        android:gravity="center_vertical|start"
+        android:singleLine="true"
+        android:text="@string/search_resumption_module_title"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Secondary"/>
+
+      <org.chromium.chrome.browser.search_resumption.SearchResumptionContainerView
+        android:id="@+id/search_resumption_module_tiles_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/search_resumption_module_margin_bottom"
+        android:baselineAligned="false"
+        android:orientation="vertical">
+      </org.chromium.chrome.browser.search_resumption.SearchResumptionContainerView>
+</LinearLayout>

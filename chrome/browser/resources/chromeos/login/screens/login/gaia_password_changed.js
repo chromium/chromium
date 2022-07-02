@@ -32,10 +32,17 @@ const GaiaPasswordChangedBase = Polymer.mixinBehaviors(
 /**
  * @typedef {{
  *   oldPasswordInput:  CrInputElement,
+ *   oldPasswordInput2:  CrInputElement,
+ *   cancel:  OobeTextButton,
+ *   tryAgain:  OobeTextButton,
+ *   proceedAnyway:  OobeTextButton,
  * }}
  */
 GaiaPasswordChangedBase.$;
 
+/**
+ * @polymer
+ */
 class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   static get is() {
     return 'gaia-password-changed-element';
@@ -52,6 +59,13 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
       passwordInvalid_: Boolean,
 
       disabled: Boolean,
+
+      passwordInput_: Object,
+
+      isCryptohomeRecoveryUIFlowEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
+      },
     };
   }
 
@@ -78,8 +92,11 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     super.ready();
     this.initializeLoginScreen('GaiaPasswordChangedScreen');
 
+    this.passwordInput_ = this.isCryptohomeRecoveryUIFlowEnabled_ ?
+        this.$.oldPasswordInput2 :
+        this.$.oldPasswordInput;
     cr.ui.LoginUITools.addSubmitListener(
-        this.$.oldPasswordInput, this.submit_.bind(this));
+        this.passwordInput_, this.submit_.bind(this));
   }
 
   /** Initial UI State for screen */
@@ -92,6 +109,11 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.reset();
     this.email = data && 'email' in data && data.email;
     this.passwordInvalid_ = data && 'showError' in data && data.showError;
+    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
+      this.$.cancel.textKey = 'continueWithoutLocalDataButton';
+      this.$.tryAgain.textKey = 'oldPasswordHint';
+      this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';
+    }
   }
 
   reset() {
@@ -107,13 +129,13 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     if (this.disabled) {
       return;
     }
-    if (!this.$.oldPasswordInput.validate()) {
+    if (!this.passwordInput_.validate()) {
       return;
     }
     this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
     this.disabled = true;
 
-    chrome.send('migrateUserData', [this.$.oldPasswordInput.value]);
+    chrome.send('migrateUserData', [this.passwordInput_.value]);
   }
 
   /** @private */

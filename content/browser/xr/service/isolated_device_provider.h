@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_XR_SERVICE_ISOLATED_DEVICE_PROVIDER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,7 +48,7 @@ class IsolatedVRDeviceProvider
   int retry_count_ = 0;
   mojo::Remote<device::mojom::IsolatedXRRuntimeProvider> device_provider_;
 
-  device::VRDeviceProviderClient* client_ = nullptr;
+  raw_ptr<device::VRDeviceProviderClient> client_ = nullptr;
   mojo::Receiver<device::mojom::IsolatedXRRuntimeProviderClient> receiver_{
       this};
 

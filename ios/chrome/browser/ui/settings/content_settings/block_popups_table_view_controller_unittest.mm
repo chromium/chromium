@@ -157,7 +157,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
         return NumberOfSections() == 1 && NumberOfItemsInSection(0) == 1;
       }));
 
-  // Verify that there are no longer any allowed patterns in |profile_|.
+  // Verify that there are no longer any allowed patterns in `profile_`.
   ContentSettingsForOneType final_entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_browser_state_.get())

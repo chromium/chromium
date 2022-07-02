@@ -45,11 +45,7 @@
 
 namespace net {
 
-URLRequestTestJobBackedByFile::FileMetaInfo::FileMetaInfo()
-    : file_size(0),
-      mime_type_result(false),
-      file_exists(false),
-      is_directory(false) {}
+URLRequestTestJobBackedByFile::FileMetaInfo::FileMetaInfo() = default;
 
 URLRequestTestJobBackedByFile::URLRequestTestJobBackedByFile(
     URLRequest* request,
@@ -58,9 +54,7 @@ URLRequestTestJobBackedByFile::URLRequestTestJobBackedByFile(
     : URLRequestJob(request),
       file_path_(file_path),
       stream_(new FileStream(file_task_runner)),
-      file_task_runner_(file_task_runner),
-      remaining_bytes_(0),
-      range_parse_result_(OK) {}
+      file_task_runner_(file_task_runner) {}
 
 void URLRequestTestJobBackedByFile::Start() {
   FileMetaInfo* meta_info = new FileMetaInfo();
@@ -156,7 +150,7 @@ URLRequestTestJobBackedByFile::~URLRequestTestJobBackedByFile() = default;
 std::unique_ptr<SourceStream>
 URLRequestTestJobBackedByFile::SetUpSourceStream() {
   std::unique_ptr<SourceStream> source = URLRequestJob::SetUpSourceStream();
-  if (!base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz"))
+  if (!base::EqualsCaseInsensitiveASCII(file_path_.Extension(), ".svgz"))
     return source;
 
   return GzipSourceStream::Create(std::move(source), SourceStream::TYPE_GZIP);

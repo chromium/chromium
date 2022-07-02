@@ -25,7 +25,7 @@ var ChromeTimeTicksBrowserTest = class extends testing.Test {
 
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=chrome_timeticks_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=chrome_timeticks_test.js';
   }
 };
 

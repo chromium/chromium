@@ -246,6 +246,7 @@ TEST_F(TextFragmentAnchorTest, NonMatchingString) {
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
   BeginEmptyFrame();
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
 
@@ -254,7 +255,6 @@ TEST_F(TextFragmentAnchorTest, NonMatchingString) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
   EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
 }
 
@@ -473,6 +473,7 @@ TEST_F(TextFragmentAnchorTest, MultipleNonMatchingStrings) {
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
   BeginEmptyFrame();
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
 
@@ -481,7 +482,6 @@ TEST_F(TextFragmentAnchorTest, MultipleNonMatchingStrings) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
   EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
 }
 
@@ -1048,50 +1048,6 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
   EXPECT_EQ(14u, markers.at(0)->EndOffset());
 }
 
-// Test that user scrolling keeps the highlight.
-TEST_P(TextFragmentAnchorScrollTest, KeepTextHighlightOnUserScroll) {
-  SimRequest request(
-      "https://example.com/"
-      "test.html#:~:text=test%20page&text=more%20text",
-      "text/html");
-  LoadURL(
-      "https://example.com/"
-      "test.html#:~:text=test%20page&text=more%20text");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <style>
-      body {
-        height: 2200px;
-      }
-      #first {
-        position: absolute;
-        top: 1000px;
-      }
-      #second {
-        position: absolute;
-        top: 2000px;
-      }
-    </style>
-    <p id="first">This is a test page</p>
-    <p id="second">With some more text</p>
-  )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  Compositor().BeginFrame();
-
-  ASSERT_EQ(2u, GetDocument().Markers().Markers().size());
-
-  mojom::blink::ScrollType scroll_type = GetParam();
-  LayoutViewport()->ScrollBy(ScrollOffset(0, -10), scroll_type);
-
-  Compositor().BeginFrame();
-
-  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
-}
-
 // Test that user scrolling doesn't dismiss the highlight.
 TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   SimRequest request(
@@ -1124,6 +1080,7 @@ TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
   Compositor().BeginFrame();
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   ASSERT_EQ(2u, GetDocument().Markers().Markers().size());
 
@@ -1133,7 +1090,6 @@ TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Ensure that the text fragment anchor has no effect in an iframe. This is
@@ -1328,8 +1284,6 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   EXPECT_TRUE(GetDocument().IsLoadCompleted());
   EXPECT_TRUE(GetDocument().HasFinishedParsing());
 
-  RunAsyncMatchingTasks();
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   // Ensure the target text is still in view and stayed centered
@@ -1616,6 +1570,7 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
   Compositor().BeginFrame();
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   KURL url = GetDocument()
                  .GetFrame()
@@ -1632,7 +1587,6 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
   url = GetDocument()
             .GetFrame()
             ->Loader()
@@ -1682,9 +1636,6 @@ TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithClick) {
   SimulateClick(100, 100);
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
-
-  // Ensure the fragment is still installed
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that a tap keeps the text highlight
@@ -1735,7 +1686,6 @@ TEST_F(TextFragmentAnchorTest, KeepsTextHighlightWithTap) {
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
   url = GetDocument()
             .GetFrame()
             ->Loader()
@@ -1785,9 +1735,6 @@ TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithTap) {
   SimulateTap(100, 100);
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
-
-  // Ensure the fragment is installed
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that we don't dismiss a text highlight before and after it's scrolled
@@ -1829,7 +1776,6 @@ TEST_F(TextFragmentAnchorTest, KeepsTextHighlightOutOfView) {
   // Click
   SimulateClick(100, 100);
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that a text highlight that didn't require a scroll into view is kept on
@@ -1865,7 +1811,6 @@ TEST_F(TextFragmentAnchorTest, KeepsTextHighlightInView) {
   SimulateTap(100, 100);
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that the fragment directive delimiter :~: works properly and is stripped

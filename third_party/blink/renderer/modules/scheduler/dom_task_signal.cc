@@ -25,7 +25,8 @@ AtomicString DOMTaskSignal::priority() {
   return priority_;
 }
 
-void DOMTaskSignal::AddPriorityChangeAlgorithm(base::OnceClosure algorithm) {
+void DOMTaskSignal::AddPriorityChangeAlgorithm(
+    base::RepeatingClosure algorithm) {
   priority_change_algorithms_.push_back(std::move(algorithm));
 }
 
@@ -44,10 +45,9 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   priority_ = priority;
   priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
-  for (base::OnceClosure& closure : priority_change_algorithms_) {
-    std::move(closure).Run();
+  for (base::RepeatingClosure& closure : priority_change_algorithms_) {
+    closure.Run();
   }
-  priority_change_algorithms_.clear();
 
   auto* init = TaskPriorityChangeEventInit::Create();
   init->setPreviousPriority(previous_priority);

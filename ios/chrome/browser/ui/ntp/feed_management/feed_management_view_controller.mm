@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
   self.title = l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_TITLE);
   self.navigationController.navigationBar.prefersLargeTitles = YES;
 
@@ -112,20 +114,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
+  __weak FeedManagementViewController* weakSelf = self;
   switch (itemType) {
     case FollowingItemType:
       [self.followDelegate handleFollowingTapped];
       break;
-    case InterestsItemType:
-      [self.navigationDelegate handleNavigateToInterests];
+    case InterestsItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToInterests];
+                               }];
       break;
-    case HiddenItemType:
-      [self.navigationDelegate handleNavigateToHidden];
+    }
+    case HiddenItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToHidden];
+                               }];
       break;
-    case ActivityItemType:
-      [self.navigationDelegate handleNavigateToActivity];
+    }
+    case ActivityItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToActivity];
+                               }];
       break;
+    }
   }
 }
 

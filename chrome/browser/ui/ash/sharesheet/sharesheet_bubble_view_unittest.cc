@@ -102,14 +102,15 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   }
 
   void ShowAndVerifyBubble(apps::mojom::IntentPtr intent,
-                           ::sharesheet::LaunchSource source) {
+                           ::sharesheet::LaunchSource source,
+                           int num_actions_to_add = 0) {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
     sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent),
         /*contains_hosted_document=*/false, source,
         /*delivered_callback=*/base::DoNothing(),
-        /*close_callback=*/base::DoNothing());
+        /*close_callback=*/base::DoNothing(), num_actions_to_add);
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(
         sharesheet_service->GetUiDelegateForTesting(parent_window_));
     EXPECT_NE(bubble_delegate_, nullptr);
@@ -474,6 +475,28 @@ TEST_F(SharesheetBubbleViewTest, HoldEscapeKey) {
                       ::sharesheet::LaunchSource::kUnknown);
   GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   CloseBubbleWithEscKey();
+}
+
+TEST_F(SharesheetBubbleViewTest, ShareActionShowsUpAsExpected) {
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::LaunchSource::kUnknown,
+                      /*num_actions_to_add=*/1);
+  views::View* share_action_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::SHARE_ACTION_VIEW_ID);
+  ASSERT_FALSE(share_action_view->GetVisible());
+
+  // |targets_view| should only contain the copy to clipboard target & our
+  // example action target.
+  views::View* targets_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+  ASSERT_EQ(targets_view->children().size(), 2u);
+
+  // Click on example target.
+  Click(targets_view->children()[1]);
+  ASSERT_TRUE(share_action_view->GetVisible());
+
+  CloseBubble();
+  ASSERT_FALSE(IsSharesheetVisible());
 }
 
 }  // namespace sharesheet

@@ -110,7 +110,8 @@ void APIBindingJSUtil::SendRequest(
 
   request_handler_->StartRequest(
       context, name, std::move(parse_result.arguments_list),
-      parse_result.async_type, parse_result.callback, custom_callback);
+      parse_result.async_type, parse_result.callback, custom_callback,
+      binding::ResultModifierFunction());
 }
 
 void APIBindingJSUtil::RegisterEventArgumentMassager(
@@ -305,7 +306,8 @@ void APIBindingJSUtil::AddCustomSignature(
       custom_signature_name,
       APISignature::CreateFromValues(*base_signature, nullptr /*returns_async*/,
                                      nullptr /*access_checker*/,
-                                     custom_signature_name));
+                                     custom_signature_name,
+                                     false /*is_event_signature*/));
 }
 
 void APIBindingJSUtil::ValidateCustomSignature(

@@ -1239,7 +1239,7 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
       return MFSourceOutcome::kFailed;
     }
     const bool has_dxgi_device_manager =
-        static_cast<bool>(dxgi_device_manager_for_testing());
+        static_cast<bool>(GetDxgiDeviceManager());
     if (use_d3d11_with_media_foundation_for_testing() !=
         has_dxgi_device_manager) {
       return MFSourceOutcome::kFailed;

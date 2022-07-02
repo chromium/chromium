@@ -290,9 +290,13 @@ void LocalFrameClientImpl::DidChangeScrollOffset() {
     web_frame_->Client()->DidChangeScrollOffset();
 }
 
-void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
+void LocalFrameClientImpl::NotifyCurrentHistoryItemChanged() {
   if (web_frame_->Client())
-    web_frame_->Client()->DidUpdateCurrentHistoryItem();
+    web_frame_->Client()->NotifyCurrentHistoryItemChanged();
+}
+
+void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
+  web_frame_->Client()->DidUpdateCurrentHistoryItem();
 }
 
 bool LocalFrameClientImpl::AllowContentInitiatedDataUrlNavigations(
@@ -729,6 +733,13 @@ void LocalFrameClientImpl::DidObserveNewFeatureUsage(
     const UseCounterFeature& feature) {
   if (web_frame_->Client())
     web_frame_->Client()->DidObserveNewFeatureUsage(feature);
+}
+
+// A new soft navigation was observed.
+void LocalFrameClientImpl::DidObserveSoftNavigation(uint32_t count) {
+  if (WebLocalFrameClient* client = web_frame_->Client()) {
+    client->DidObserveSoftNavigation(count);
+  }
 }
 
 void LocalFrameClientImpl::DidObserveLayoutShift(double score,

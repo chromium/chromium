@@ -36,10 +36,8 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
       existing_layer->track_start() == track_start) {
     // These fields have been checked in ScrollbarLayerBase::CreateOrReuse().
     DCHECK_EQ(scrollbar->Orientation(), existing_layer->orientation());
-    // TODO(bokan): This is tripping on bots, re-enable once the root cause is
-    // understood: https://crbug.com/1323876.
-    // DCHECK_EQ(scrollbar->IsLeftSideVerticalScrollbar(),
-    //          existing_layer->is_left_side_vertical_scrollbar());
+    DCHECK_EQ(scrollbar->IsLeftSideVerticalScrollbar(),
+              existing_layer->is_left_side_vertical_scrollbar());
     return existing_layer;
   }
 

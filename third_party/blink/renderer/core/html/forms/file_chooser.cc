@@ -78,8 +78,7 @@ bool FileChooser::OpenFileChooser(ChromeClientImpl& chrome_client_impl) {
     return false;
   chrome_client_impl_ = chrome_client_impl;
   frame->GetBrowserInterfaceBroker().GetInterface(
-      file_chooser_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kInternalDefault)));
+      file_chooser_.BindNewPipeAndPassReceiver());
   file_chooser_.set_disconnect_handler(
       WTF::Bind(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
   file_chooser_->OpenFileChooser(
@@ -99,8 +98,7 @@ void FileChooser::EnumerateChosenDirectory() {
     return;
   DCHECK(!chrome_client_impl_);
   frame->GetBrowserInterfaceBroker().GetInterface(
-      file_chooser_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kInternalDefault)));
+      file_chooser_.BindNewPipeAndPassReceiver());
   file_chooser_.set_disconnect_handler(
       WTF::Bind(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
   file_chooser_->EnumerateChosenDirectory(

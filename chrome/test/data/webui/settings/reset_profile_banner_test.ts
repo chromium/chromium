@@ -39,10 +39,9 @@ suite('BannerTests', function() {
 
   // Tests that the reset profile banner closes itself when the OK button is
   // clicked and that |onHideResetProfileBanner| is called.
-  test('ResetBannerOk', function() {
+  test('ResetBannerOk', async function() {
     resetBanner.$.ok.click();
-    return browserProxy.whenCalled('onHideResetProfileBanner').then(function() {
-      assertFalse(resetBanner.$.dialog.open);
-    });
+    await browserProxy.whenCalled('onHideResetProfileBanner');
+    assertFalse(resetBanner.$.dialog.open);
   });
 });

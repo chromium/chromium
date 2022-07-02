@@ -13,7 +13,6 @@
 #include "base/rand_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/blink_event_util.h"
 
@@ -245,7 +244,6 @@ void RenderWidgetTargeter::ResolveTargetingRequest(TargetingRequest request) {
                                                        request_target_location);
   }
   RenderWidgetHostViewBase* target = result.view;
-  async_depth_ = 0;
   if (!is_autoscroll_in_progress_ && result.should_query_view) {
     TRACE_EVENT_WITH_FLOW2(
         "viz,benchmark", "Event.Pipeline", TRACE_ID_GLOBAL(trace_id_),
@@ -263,8 +261,7 @@ void RenderWidgetTargeter::ResolveTargetingRequest(TargetingRequest request) {
     QueryClient(request_target, request_target_location, nullptr, gfx::PointF(),
                 std::move(request));
   } else {
-    FoundTarget(target, result.target_location, result.latched_target,
-                &request);
+    FoundTarget(target, result.target_location, &request);
   }
 }
 
@@ -300,14 +297,13 @@ void RenderWidgetTargeter::QueryClient(
   // understand why this happens. https://crbug.com/859492.
   // We do not verify hit testing result under this circumstance.
   if (!target_client.is_bound() || !target_client.is_connected()) {
-    FoundTarget(target, target_location, false, &request);
+    FoundTarget(target, target_location, &request);
     return;
   }
 
   const gfx::PointF location = request.GetLocation();
 
   request_in_flight_ = std::move(request);
-  async_depth_++;
 
   TracingUmaTracker tracker("Event.AsyncTargeting.ResponseTime");
   async_hit_test_timeout_.Start(
@@ -406,7 +402,7 @@ void RenderWidgetTargeter::FoundFrameSinkId(
       middle_click_result_ = {view, false, transformed_location, false};
     }
 
-    FoundTarget(view, transformed_location, false, &request);
+    FoundTarget(view, transformed_location, &request);
   } else {
     QueryClient(view, transformed_location, target.get(), target_location,
                 std::move(request));
@@ -416,16 +412,8 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 void RenderWidgetTargeter::FoundTarget(
     RenderWidgetHostViewBase* target,
     const absl::optional<gfx::PointF>& target_location,
-    bool latched_target,
     TargetingRequest* request) {
   DCHECK(request);
-
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
-      !latched_target) {
-    UMA_HISTOGRAM_COUNTS_100("Event.AsyncTargeting.AsyncClientDepth",
-                             async_depth_);
-  }
-
   // RenderWidgetHostViewMac can be deleted asynchronously, in which case the
   // View will be valid but there will no longer be a RenderWidgetHostImpl.
   if (!request->GetRootView() || !request->GetRootView()->GetRenderWidgetHost())
@@ -469,11 +457,10 @@ void RenderWidgetTargeter::AsyncHitTestTimedOut(
     // When a request to the top-level frame times out then the event gets
     // sent there anyway. It will trigger the hung renderer dialog if the
     // renderer fails to process it.
-    FoundTarget(current_request_target.get(), current_target_location, false,
+    FoundTarget(current_request_target.get(), current_target_location,
                 &request);
   } else {
-    FoundTarget(last_request_target.get(), last_target_location, false,
-                &request);
+    FoundTarget(last_request_target.get(), last_target_location, &request);
   }
 }
 
@@ -489,7 +476,7 @@ void RenderWidgetTargeter::OnInputTargetDisconnect(
 
   // Since we couldn't find the target frame among the child-frames
   // we process the event in the current frame.
-  FoundTarget(target.get(), location, false, &request);
+  FoundTarget(target.get(), location, &request);
 }
 
 }  // namespace content

@@ -182,12 +182,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachSecondExtension) {
   ResultCatcher catcher;
 
   // Load the extension and wait for it to attach.
-  ExtensionTestMessageListener attach_listener("attached", true);
+  ExtensionTestMessageListener attach_listener("attached",
+                                               ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(attach_listener.WaitUntilSatisfied());
 
   // Load a second extension and watch it fail to attach.
-  ExtensionTestMessageListener attach_fail_listener("attachFailed", true);
+  ExtensionTestMessageListener attach_fail_listener("attachFailed",
+                                                    ReplyBehavior::kWillReply);
   const Extension* second_extension = LoadExtension(
       test_data_dir_.AppendASCII("web_authentication_proxy/second"));
   ASSERT_TRUE(second_extension) << message_;
@@ -195,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachSecondExtension) {
 
   // Tell the first extension to detach. Then tell the second extension to
   // attach.
-  ExtensionTestMessageListener detach_listener("detached", true);
+  ExtensionTestMessageListener detach_listener("detached",
+                                               ReplyBehavior::kWillReply);
   attach_listener.Reply("");
   ASSERT_TRUE(detach_listener.WaitUntilSatisfied());
   attach_fail_listener.Reply("");
@@ -210,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachSecondExtension) {
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAA) {
   SetJsTestName("isUvpaa");
   // Load the extension and wait for its proxy event handler to be installed.
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -231,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   ResultCatcher result_catcher;
 
   // Load the extension and wait for it to initialize.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -247,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAAResolvesOnDetach) {
   SetJsTestName("isUvpaaResolvesOnDetach");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -262,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredential) {
   SetJsTestName("makeCredential");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -274,8 +279,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
   SetJsTestName("makeCredentialError");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener request_listener("nextRequest", false);
-  ExtensionTestMessageListener error_listener("nextError", true);
+  ExtensionTestMessageListener request_listener("nextRequest");
+  ExtensionTestMessageListener error_listener("nextError",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
 
   // The JS side listens for DOMError names to pass to completeCreateRequest().
@@ -315,7 +321,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   SetJsTestName("makeCredentialResolvesOnDetach");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -330,11 +337,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialCancel) {
   SetJsTestName("makeCredentialCancel");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener request_listener("request", true);
+  ExtensionTestMessageListener request_listener("request",
+                                                ReplyBehavior::kWillReply);
   EXPECT_TRUE(NavigateAndCallMakeCredentialThenCancel());
   ASSERT_TRUE(request_listener.WaitUntilSatisfied());
   request_listener.Reply("");
@@ -346,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertion) {
   SetJsTestName("getAssertion");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -358,8 +366,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionError) {
   SetJsTestName("getAssertionError");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener request_listener("nextRequest", false);
-  ExtensionTestMessageListener error_listener("nextError", true);
+  ExtensionTestMessageListener request_listener("nextRequest");
+  ExtensionTestMessageListener error_listener("nextError",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
 
   // The JS side listens for DOMError names to pass to completeCreateRequest().
@@ -399,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   SetJsTestName("getAssertionResolvesOnDetach");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -414,11 +424,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
   SetJsTestName("getAssertionCancel");
   ResultCatcher result_catcher;
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener request_listener("request", true);
+  ExtensionTestMessageListener request_listener("request",
+                                                ReplyBehavior::kWillReply);
   EXPECT_TRUE(NavigateAndCallGetAssertionThenCancel());
   ASSERT_TRUE(request_listener.WaitUntilSatisfied());
   request_listener.Reply("");

@@ -21,6 +21,7 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -99,7 +100,7 @@ void VerifyReport(
               "histogram");
 
     switch (expected_payload_contents.aggregation_mode) {
-      case AggregationServicePayloadContents::AggregationMode::kTeeBased: {
+      case mojom::AggregationServiceMode::kTeeBased: {
         ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "data",
                                               cbor::Value::Type::ARRAY));
         const cbor::Value::ArrayValue& data_array =
@@ -141,8 +142,7 @@ void VerifyReport(
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
         break;
       }
-      case AggregationServicePayloadContents::AggregationMode::
-          kExperimentalPoplar: {
+      case mojom::AggregationServiceMode::kExperimentalPoplar: {
         EXPECT_TRUE(CborMapContainsKeyAndType(payload_map, "dpf_key",
                                               cbor::Value::Type::BYTE_STRING));
 
@@ -159,11 +159,12 @@ void VerifyReport(
 TEST(AggregatableReportTest,
      ValidExperimentalPoplarRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kExperimentalPoplar);
+      mojom::AggregationServiceMode::kExperimentalPoplar);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
-  AggregatableReportSharedInfo expected_shared_info = request.shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
   std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
       aggregation_service::GenerateKey("id123"),
@@ -181,11 +182,12 @@ TEST(AggregatableReportTest,
 
 TEST(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::AggregationMode::kTeeBased);
+      mojom::AggregationServiceMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
-  AggregatableReportSharedInfo expected_shared_info = request.shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
 
   aggregation_service::TestHpkeKey hpke_key =
@@ -204,22 +206,25 @@ TEST(AggregatableReportTest,
      ValidMultipleContributionsRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::AggregationMode::kTeeBased);
+          mojom::AggregationServiceMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       example_request.payload_contents();
   expected_payload_contents.contributions = {
-      AggregationServicePayloadContents::HistogramContribution{.bucket = 123,
-                                                               .value = 456},
-      AggregationServicePayloadContents::HistogramContribution{.bucket = 7890,
-                                                               .value = 1234}};
+      mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/456),
+      mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/7890,
+          /*value=*/1234)};
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(expected_payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_TRUE(request.has_value());
 
-  AggregatableReportSharedInfo expected_shared_info = request->shared_info();
+  AggregatableReportSharedInfo expected_shared_info =
+      request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
   aggregation_service::TestHpkeKey hpke_key =
@@ -238,12 +243,12 @@ TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
   AggregatableReportSharedInfo expected_shared_info =
-      example_request.shared_info();
+      example_request.shared_info().Clone();
   expected_shared_info.debug_mode =
       AggregatableReportSharedInfo::DebugMode::kEnabled;
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
-                                        expected_shared_info);
+                                        expected_shared_info.Clone());
   ASSERT_TRUE(request.has_value());
 
   AggregationServicePayloadContents expected_payload_contents =
@@ -268,14 +273,15 @@ TEST(AggregatableReportTest,
       aggregation_service::CreateExampleRequest();
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
 
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
   zero_value_payload_contents.contributions[0].value = 0;
   absl::optional<AggregatableReportRequest> zero_value_request =
       AggregatableReportRequest::Create(zero_value_payload_contents,
-                                        shared_info);
+                                        shared_info.Clone());
   EXPECT_TRUE(zero_value_request.has_value());
 
   AggregationServicePayloadContents negative_value_payload_contents =
@@ -283,28 +289,16 @@ TEST(AggregatableReportTest,
   negative_value_payload_contents.contributions[0].value = -1;
   absl::optional<AggregatableReportRequest> negative_value_request =
       AggregatableReportRequest::Create(negative_value_payload_contents,
-                                        shared_info);
+                                        shared_info.Clone());
   EXPECT_FALSE(negative_value_request.has_value());
 }
 
 TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
   shared_info.report_id = base::GUID();
-
-  absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(example_request.payload_contents(),
-                                        std::move(shared_info));
-
-  EXPECT_FALSE(request.has_value());
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithInvalidPrivacyBudgetKey_Failed) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-  shared_info.privacy_budget_key = {static_cast<char>(0xC0)};
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
@@ -323,27 +317,28 @@ TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
   payload_contents.contributions.clear();
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_FALSE(request.has_value());
 }
 
 TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          AggregationServicePayloadContents::AggregationMode::
-              kExperimentalPoplar);
+          mojom::AggregationServiceMode::kExperimentalPoplar);
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      AggregationServicePayloadContents::HistogramContribution{.bucket = 123,
-                                                               .value = 456},
-      AggregationServicePayloadContents::HistogramContribution{.bucket = 7890,
-                                                               .value = 1234}};
+      mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/456),
+      mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/7890,
+          /*value=*/1234)};
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info());
+                                        example_request.shared_info().Clone());
   ASSERT_FALSE(request.has_value());
 }
 
@@ -419,19 +414,20 @@ TEST(AggregatableReportTest,
      SharedInfoDebugModeDisabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
+      AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict(),
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
 
   const char kExpectedString[] =
       R"({)"
-      R"("privacy_budget_key":"example_pbk",)"
+      R"("api":"example-api",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
-      R"("version":"")"
+      R"("version":"1.0")"
       R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
@@ -441,20 +437,52 @@ TEST(AggregatableReportTest,
      SharedInfoDebugModeEnabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk",
       /*report_id=*/
       base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kEnabled);
+      AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict(),
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
 
   const char kExpectedString[] =
       R"({)"
+      R"("api":"example-api",)"
       R"("debug_mode":"enabled",)"
-      R"("privacy_budget_key":"example_pbk",)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
       R"("reporting_origin":"https://reporting.example",)"
       R"("scheduled_report_time":"1234567890",)"
-      R"("version":"")"
+      R"("version":"1.0")"
+      R"(})";
+
+  EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
+}
+
+TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
+  base::Value::Dict additional_fields;
+  additional_fields.Set("foo", "1");
+  additional_fields.Set("bar", "2");
+  additional_fields.Set("baz", "3");
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromJavaTime(1234567890123),
+      /*report_id=*/
+      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+      url::Origin::Create(GURL("https://reporting.example")),
+      AggregatableReportSharedInfo::DebugMode::kEnabled,
+      std::move(additional_fields),
+      /*api_version=*/"1.0",
+      /*api_identifier=*/"example-api");
+
+  const char kExpectedString[] =
+      R"({)"
+      R"("api":"example-api",)"
+      R"("bar":"2",)"
+      R"("baz":"3",)"
+      R"("debug_mode":"enabled",)"
+      R"("foo":"1",)"
+      R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("reporting_origin":"https://reporting.example",)"
+      R"("scheduled_report_time":"1234567890",)"
+      R"("version":"1.0")"
       R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);

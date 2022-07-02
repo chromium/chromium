@@ -229,13 +229,9 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                      "MixingGraphImpl::OnMoreData", "delay", delay,
                      "delay_timestamp", delay_timestamp);
 
-  // The expected playout time is |delay_timestamp| + |delay|.
-  base::TimeDelta total_delay = delay_timestamp + delay - start_time;
-  if (total_delay < base::TimeDelta())
-    total_delay = base::TimeDelta();
-
   uint32_t frames_delayed = media::AudioTimestampHelper::TimeToFrames(
-      total_delay, output_params_.sample_rate());
+      delay, output_params_.sample_rate());
+
   {
     base::AutoLock scoped_lock(lock_);
     main_converter_.ConvertWithDelay(frames_delayed, dest);
@@ -243,11 +239,11 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
 
   SanitizeOutput(dest);
 
-  on_more_data_cb_.Run(*dest, total_delay);
+  on_more_data_cb_.Run(*dest, delay);
 
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                   "MixingGraphImpl::OnMoreData", "total_delay", total_delay,
-                   "frames_delayed", frames_delayed);
+  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"),
+                   "MixingGraphImpl::OnMoreData", "frames_delayed",
+                   frames_delayed);
   overtime_logger_->Log(start_time);
   return dest->frames();
 }

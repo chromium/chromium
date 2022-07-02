@@ -211,6 +211,38 @@ class WallpaperShownWaiter : public WallpaperControllerObserver {
   base::RunLoop run_loop_;
 };
 
+// This class detects the auto hide state change in shelf layout manager within
+// its lifetime.
+class AutoHideStateDetector : public ShelfLayoutManagerObserver {
+ public:
+  AutoHideStateDetector() {
+    Shell::GetPrimaryRootWindowController()
+        ->shelf()
+        ->shelf_layout_manager()
+        ->AddObserver(this);
+  }
+
+  AutoHideStateDetector(const AutoHideStateDetector&) = delete;
+  AutoHideStateDetector& operator=(const AutoHideStateDetector&) = delete;
+
+  ~AutoHideStateDetector() override {
+    Shell::GetPrimaryRootWindowController()
+        ->shelf()
+        ->shelf_layout_manager()
+        ->RemoveObserver(this);
+  }
+
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override {
+    if (new_state == SHELF_AUTO_HIDE_HIDDEN)
+      was_shelf_auto_hidden = true;
+  }
+
+  bool WasShelfAutoHidden() const { return was_shelf_auto_hidden; }
+
+ private:
+  bool was_shelf_auto_hidden = false;
+};
+
 }  // namespace
 
 class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
@@ -3042,10 +3074,10 @@ TEST_F(ShelfLayoutManagerTest, AutoHideShelfWithContextMenu) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Create an app that we can use to pull up a context menu.
-  EXPECT_EQ(0,
+  EXPECT_EQ(0u,
             ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
   AddApp();
-  EXPECT_EQ(1,
+  EXPECT_EQ(1u,
             ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
 
   // Swipe up to show the shelf.
@@ -3307,6 +3339,51 @@ TEST_F(AppListBubbleShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
 
   // Launcher did not show.
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
+
+// Tests that tapping the home button is successful on the autohidden shelf.
+TEST_F(AppListBubbleShelfLayoutManagerTest,
+       NoTemporaryAutoHideStateWhileOpeningLauncher) {
+  // Enable animations and simulate the zero state search called when showing
+  // the launcher.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  const display::Display display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  // Create a window to hide the shelf in auto-hide mode.
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  SwipeUpOnShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  {
+    AutoHideStateDetector detector;
+
+    // Open the launcher by tapping the home button.
+    GestureTapOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+
+    // Wait until the zero state callback is called.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(1, GetTestAppListClient()->zero_state_search_done_count());
+
+    // No `SHELF_AUTO_HIDE_HIDDEN` should be set when launcher is showing.
+    EXPECT_FALSE(detector.WasShelfAutoHidden());
+  }
+
+  // The app list should now be visible.
+  GetAppListTestHelper()->CheckVisibility(true);
 }
 
 class ShelfLayoutManagerWindowDraggingTest : public ShelfLayoutManagerTestBase {
@@ -3650,9 +3727,6 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
   split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -3665,15 +3739,28 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
-  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
   watcher.CheckEqual({HotseatState::kExtended});
 
   histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
                                      InAppShelfGestures::kSwipeUpToShow, 1);
 
-  // The same fling gesture should transition to home if the hotseat is in
-  // extended state.
+  // The same fling gesture should transition to overview since the hotseat is
+  // in extended state.
+  StartScroll(shelf_widget_bounds.bottom_right());
+  UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
+  EndScroll(
+      true /* is_fling */,
+      -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
+
+  watcher.CheckEqual({HotseatState::kExtended});
+
+  // The same fling gesture should transition to home since overview mode
+  // is active.
   StartScroll(shelf_widget_bounds.bottom_right());
   UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
   EndScroll(
@@ -3714,7 +3801,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -4379,16 +4466,18 @@ TEST_F(ShelfLayoutManagerTest, VerifyAutoHideBehaviorOnMultipleDisplays) {
 
 // Tests that pinned app icons are visible on non-primary displays.
 TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
-  // Create three displays.
-  UpdateDisplay("600x400,1000x700,800x900");
+  // Create three displays. Should use 600+ pixel as the horizontal display
+  // size, otherwise there's no enough space to show both the date tray and
+  // unified system tray on the screen.
+  UpdateDisplay("700x400,1000x700,800x900");
   const unsigned int display_count = 3U;
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(display_count, root_windows.size());
 
   // Keep this low so that all apps fit at the center of the screen on all
   // displays.
-  const int max_app_count = 4;
-  for (int app_count = 1; app_count <= max_app_count; ++app_count) {
+  const size_t max_app_count = 4;
+  for (size_t app_count = 1; app_count <= max_app_count; ++app_count) {
     AddApp();
 
     // Wait for everything to settle down.
@@ -4434,6 +4523,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
                                    .GetViewAt(app_count - 1)
                                    ->GetBoundsInScreen()
                                    .right_center();
+
       EXPECT_EQ(left.x() - display.bounds().x(),
                 display.bounds().right() - right.x())
           << "Apps on either end should be at the same distance from the "
@@ -4568,8 +4658,8 @@ TEST_F(NoSessionShelfLayoutManagerTest, UpdateShelfVisibilityAfterLogin) {
   GetSessionControllerClient()->SetUserPrefService(kUserAccount,
                                                    std::move(pref_service));
 
-  // Create a window that covers the full height of the display.
-  constexpr int kExpectedWindowHeight = 800;
+  // Create a window that covers the full height of the in-session work area.
+  const int kExpectedWindowHeight = 800 - ShelfConfig::Get()->shelf_size();
   auto window = CreateTestWindow(gfx::Rect(400, kExpectedWindowHeight));
 
   // Simulate login.

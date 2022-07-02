@@ -98,14 +98,6 @@ UniquePasteboard::UniquePasteboard()
 
 UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
-
-  if (base::mac::IsOS10_12()) {
-    // On 10.12, move ownership to the autorelease pool rather than possibly
-    // triggering -[NSPasteboard dealloc] here. This is a speculative workaround
-    // for https://crbug.com/877979 where a call to __CFPasteboardDeallocate
-    // from here is triggering "Semaphore object deallocated while in use".
-    pasteboard_.autorelease();
-  }
 }
 
 // static
@@ -219,10 +211,10 @@ NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
   NSString* buffer_type = nil;
   switch (buffer) {
     case ClipboardBuffer::kCopyPaste:
-      buffer_type = NSGeneralPboard;
+      buffer_type = NSPasteboardNameGeneral;
       break;
     case ClipboardBuffer::kDrag:
-      buffer_type = NSDragPboard;
+      buffer_type = NSPasteboardNameDrag;
       break;
     case ClipboardBuffer::kSelection:
       NOTREACHED();

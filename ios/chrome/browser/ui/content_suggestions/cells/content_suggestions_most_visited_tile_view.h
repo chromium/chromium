@@ -15,7 +15,7 @@
 @interface ContentSuggestionsMostVisitedTileView
     : ContentSuggestionsTileView <UIContextMenuInteractionDelegate>
 
-// Initializes and configures the view with |config|.
+// Initializes and configures the view with `config`.
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsMostVisitedItem*)config;
 

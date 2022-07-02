@@ -77,11 +77,11 @@ void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
   DCHECK(view);
   if (view->virtual_parent_view_ == this)
     return;  // Already a child of this virtual view.
-  AddChildViewAt(std::move(view), static_cast<int>(children_.size()));
+  AddChildViewAt(std::move(view), children_.size());
 }
 
 void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
-                                   int index) {
+                                   size_t index) {
   DCHECK(view);
   CHECK_NE(view.get(), this)
       << "You cannot add an AXVirtualView as its own child.";
@@ -90,8 +90,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   DCHECK(!view->virtual_parent_view_) << "This |view| already has an "
                                          "AXVirtualView parent. Call "
                                          "RemoveChildView first.";
-  DCHECK_GE(index, 0);
-  DCHECK_LE(index, static_cast<int>(children_.size()));
+  DCHECK_LE(index, children_.size());
 
   view->virtual_parent_view_ = this;
   children_.insert(children_.begin() + index, std::move(view));
@@ -101,23 +100,21 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   }
 }
 
-void AXVirtualView::ReorderChildView(AXVirtualView* view, int index) {
+void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
   DCHECK(view);
-  if (index >= static_cast<int>(children_.size()))
-    return;
-  if (index < 0)
-    index = static_cast<int>(children_.size()) - 1;
+  index = std::min(index, children_.size() - 1);
 
   DCHECK_EQ(view->virtual_parent_view_, this);
   if (children_[index].get() == view)
     return;
 
-  int cur_index = GetIndexOf(view);
-  if (cur_index < 0)
+  auto cur_index = GetIndexOf(view);
+  if (!cur_index.has_value())
     return;
 
-  std::unique_ptr<AXVirtualView> child = std::move(children_[cur_index]);
-  children_.erase(children_.begin() + cur_index);
+  std::unique_ptr<AXVirtualView> child =
+      std::move(children_[cur_index.value()]);
+  children_.erase(children_.begin() + cur_index.value());
   children_.insert(children_.begin() + index, std::move(child));
 
   GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
@@ -139,8 +136,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     AXVirtualView* view) {
   DCHECK(view);
-  int cur_index = GetIndexOf(view);
-  if (cur_index < 0)
+  auto cur_index = GetIndexOf(view);
+  if (!cur_index.has_value())
     return {};
 
   bool focus_changed = false;
@@ -153,8 +150,9 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     }
   }
 
-  std::unique_ptr<AXVirtualView> child = std::move(children_[cur_index]);
-  children_.erase(children_.begin() + cur_index);
+  std::unique_ptr<AXVirtualView> child =
+      std::move(children_[cur_index.value()]);
+  children_.erase(children_.begin() + cur_index.value());
   child->virtual_parent_view_ = nullptr;
   child->populate_data_callback_.Reset();
 
@@ -182,13 +180,15 @@ bool AXVirtualView::Contains(const AXVirtualView* view) const {
   return false;
 }
 
-int AXVirtualView::GetIndexOf(const AXVirtualView* view) const {
+absl::optional<size_t> AXVirtualView::GetIndexOf(
+    const AXVirtualView* view) const {
   DCHECK(view);
   const auto iter =
       std::find_if(children_.begin(), children_.end(),
                    [view](const auto& child) { return child.get() == view; });
-  return iter != children_.end() ? static_cast<int>(iter - children_.begin())
-                                 : -1;
+  return iter != children_.end() ? absl::make_optional(static_cast<size_t>(
+                                       iter - children_.begin()))
+                                 : absl::nullopt;
 }
 
 const char* AXVirtualView::GetViewClassName() const {
@@ -262,8 +262,8 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
   return node_data;
 }
 
-int AXVirtualView::GetChildCount() const {
-  int count = 0;
+size_t AXVirtualView::GetChildCount() const {
+  size_t count = 0;
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
       count += child->GetChildCount();
@@ -274,14 +274,13 @@ int AXVirtualView::GetChildCount() const {
   return count;
 }
 
-gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
-  DCHECK_GE(index, 0) << "|index| should be greater or equal to 0.";
+gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the child count.";
 
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
-      int child_count = child->GetChildCount();
+      size_t child_count = child->GetChildCount();
       if (index < child_count)
         return child->ChildAtIndex(index);
       index -= child_count;
@@ -290,8 +289,6 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
         return child->GetNativeObject();
       --index;
     }
-
-    DCHECK_GE(index, 0) << "|index| should be less than the child count.";
   }
 
   NOTREACHED() << "|index| should be less than the child count.";

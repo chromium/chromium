@@ -111,6 +111,8 @@ public class LocationBarModelTest {
             model.mDisplayUrl = "about:blank";
             model.mFullUrl = "about:blank";
             assertDisplayAndEditText(model, "about:blank", "about:blank");
+
+            model.destroy();
         });
     }
 

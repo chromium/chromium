@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_UTILS_H_
 
+#include <stdint.h>
 #include <memory>
 
-#include "chrome/browser/web_applications/web_app.h"
+#include "base/strings/string_piece_forward.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/service_worker_context.h"
+#include "url/gurl.h"
 
-struct WebAppInstallInfo;
 class Browser;
-class GURL;
+class Profile;
+struct WebAppInstallInfo;
 
 namespace content {
 class StoragePartition;
@@ -22,6 +27,9 @@ class WebContents;
 }  // namespace content
 
 namespace web_app {
+
+class WebApp;
+
 namespace test {
 
 std::unique_ptr<WebApp> CreateWebApp(
@@ -47,6 +55,19 @@ void CheckServiceWorkerStatus(const GURL& url,
                               content::ServiceWorkerCapability status);
 
 void SetWebAppSettingsListPref(Profile* profile, base::StringPiece pref);
+
+void AddInstallUrlData(PrefService* pref_service,
+                       WebAppSyncBridge* sync_bridge,
+                       const AppId& app_id,
+                       const GURL& url,
+                       const ExternalInstallSource& source);
+
+void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
+                                     WebAppSyncBridge* sync_bridge,
+                                     const AppId& app_id,
+                                     const GURL& url,
+                                     const ExternalInstallSource& source,
+                                     bool is_placeholder);
 
 }  // namespace test
 }  // namespace web_app

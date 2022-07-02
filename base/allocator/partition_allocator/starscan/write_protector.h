@@ -28,14 +28,14 @@ class WriteProtector : public AllocatedOnPCScanMetadataPartition {
 
   virtual bool IsEnabled() const = 0;
 
-  virtual ::base::internal::PCScan::ClearType SupportedClearType() const = 0;
+  virtual PCScan::ClearType SupportedClearType() const = 0;
 };
 
 class NoWriteProtector final : public WriteProtector {
  public:
   void ProtectPages(uintptr_t, size_t) final {}
   void UnprotectPages(uintptr_t, size_t) final {}
-  ::base::internal::PCScan::ClearType SupportedClearType() const final;
+  PCScan::ClearType SupportedClearType() const final;
   inline bool IsEnabled() const override;
 };
 
@@ -55,7 +55,7 @@ class UserFaultFDWriteProtector final : public WriteProtector {
   void ProtectPages(uintptr_t, size_t) final;
   void UnprotectPages(uintptr_t, size_t) final;
 
-  ::base::internal::PCScan::ClearType SupportedClearType() const final;
+  PCScan::ClearType SupportedClearType() const final;
 
   inline bool IsEnabled() const override;
 
@@ -72,16 +72,5 @@ bool UserFaultFDWriteProtector::IsEnabled() const {
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
 }  // namespace partition_alloc::internal
-
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-using ::partition_alloc::internal::NoWriteProtector;
-using ::partition_alloc::internal::WriteProtector;
-
-#if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-using ::partition_alloc::internal::UserFaultFDWriteProtector;
-#endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_WRITE_PROTECTOR_H_

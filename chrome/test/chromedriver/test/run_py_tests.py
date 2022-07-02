@@ -123,6 +123,8 @@ _OS_SPECIFIC_FILTER['win'] = [
     'RemoteBrowserTest.testConnectToRemoteBrowser',
     'SessionHandlingTest.testQuitASessionMoreThanOnce',
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
+    # Flaky on Win7 bots: crbug.com/1132559
+    'ChromeDriverTest.testTakeElementScreenshotInIframe',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
@@ -133,6 +135,12 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTestLegacy.testContextMenuEventFired',
     # Flaky: https://crbug.com/1157533.
     'ChromeDriverTest.testShadowDomFindElement',
+    # Flaky: https://crbug.com/1336871.
+    'ChromeDriverTest.testTakeElementScreenshot',
+    'ChromeDriverTest.testTakeElementScreenshotInIframe',
+    'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
+    'ChromeDriverTest.testTakeLargeElementScreenshot',
+    'ChromeDriverSiteIsolation.testCanClickOOPIF',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [

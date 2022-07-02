@@ -253,7 +253,7 @@ void MDnsAPI::WriteToConsole(const std::string& service_type,
         extensions::ProcessManager::Get(browser_context_)
         ->GetBackgroundHostForExtension(extension_id);
     content::RenderFrameHost* rfh =
-        host ? host->host_contents()->GetMainFrame() : nullptr;
+        host ? host->host_contents()->GetPrimaryMainFrame() : nullptr;
     if (rfh)
       rfh->AddMessageToConsole(level, logged_message);
   }

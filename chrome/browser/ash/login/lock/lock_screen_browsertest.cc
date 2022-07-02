@@ -48,7 +48,8 @@ class LockScreenInputsTest : public LockScreenBaseTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
+// The test is flaky: https://crbug.com/1334877
+IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, DISABLED_CheckIMESwitches) {
   const auto& users = login_manager_.users();
   LoginUser(users[0].account_id);
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {

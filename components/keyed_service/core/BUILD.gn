@@ -10,7 +10,6 @@ component("core") {
     "dependency_manager.cc",
     "dependency_manager.h",
     "dependency_node.h",
-    "keyed_service.cc",
     "keyed_service.h",
     "keyed_service_base_factory.cc",
     "keyed_service_base_factory.h",

@@ -196,7 +196,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   for (auto* contents : contents_list) {
     if (!includable_web_contents_filter_.Run(contents))
       continue;
-    content::RenderFrameHost* main_frame = contents->GetMainFrame();
+    content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
     DCHECK(main_frame);
     DesktopMediaID media_id(
         DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,

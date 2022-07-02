@@ -125,7 +125,7 @@ void MaybeStartDistillation(
   // be cancelled and would not be restarted when the page is restored from the
   // cache.
   content::BackForwardCache::DisableForRenderFrameHost(
-      source_page_handle->web_contents()->GetMainFrame(),
+      source_page_handle->web_contents()->GetPrimaryMainFrame(),
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::
               kDomDistiller_SelfDeletingRequestDelegate));

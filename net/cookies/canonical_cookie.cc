@@ -348,8 +348,7 @@ int ValidateAndAdjustSourcePort(int port) {
 }
 
 // Tests that a cookie has the attributes for a valid __Host- prefix without
-// testing that the prefix is in the cookie name. This is used to verify the
-// Partitioned attribute.
+// testing that the prefix is in the cookie name.
 bool HasValidHostPrefixAttributes(const GURL& url,
                                   bool secure,
                                   const std::string& domain,
@@ -359,25 +358,15 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
 }
 
-// Per rfc6265bis the maximum expiry date is no further than 400 days in the
-// future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
-base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
-                                       const base::Time& creation_date) {
-  if (expiry_date.is_null())
-    return expiry_date;
-  base::Time fixed_creation_date = creation_date;
-  if (fixed_creation_date.is_null()) {
-    // TODO(crbug.com/1264458): This shouldn't be necessary, let's examine
-    // where creation_date is null but expiry_date isn't and figure out
-    // what's happening. This blocks the launch until resolved.
-    fixed_creation_date = base::Time::Now();
-  }
-  if (base::FeatureList::IsEnabled(features::kClampCookieExpiryTo400Days)) {
-    base::Time maximum_expiry_date = fixed_creation_date + base::Days(400);
-    if (expiry_date > maximum_expiry_date)
-      return maximum_expiry_date;
-  }
-  return expiry_date;
+// Test that a cookie has the attributes for a valid Parititioned attribute.
+// For M104, we do not require that Partitioned cookies do not have the Domain
+// attribute.
+// TODO(crbug.com/1296161): Determine if we need to delete this function.
+bool HasValidAttributesForPartitioned(const GURL& url,
+                                      bool secure,
+                                      const std::string& path,
+                                      bool is_same_party) {
+  return url.SchemeIsCryptographic() && secure && path == "/" && !is_same_party;
 }
 
 }  // namespace
@@ -525,6 +514,32 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
 
   // Invalid or no expiration, session cookie.
   return Time();
+}
+
+// static
+base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
+    const base::Time& expiry_date,
+    const base::Time& creation_date) {
+  if (expiry_date.is_null())
+    return expiry_date;
+  base::Time fixed_creation_date = creation_date;
+  if (fixed_creation_date.is_null()) {
+    // TODO(crbug.com/1264458): Push this logic into
+    // CanonicalCookie::CreateSanitizedCookie. The four sites that call it
+    // with a null `creation_date` (CanonicalCookie::Create cannot be called
+    // this way) are:
+    // * GaiaCookieManagerService::ForceOnCookieChangeProcessing
+    // * CookiesSetFunction::Run
+    // * cookie_store.cc::ToCanonicalCookie
+    // * network_handler.cc::MakeCookieFromProtocolValues
+    fixed_creation_date = base::Time::Now();
+  }
+  if (base::FeatureList::IsEnabled(features::kClampCookieExpiryTo400Days)) {
+    base::Time maximum_expiry_date = fixed_creation_date + base::Days(400);
+    if (expiry_date > maximum_expiry_date)
+      return maximum_expiry_date;
+  }
+  return expiry_date;
 }
 
 // static
@@ -798,7 +813,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
-  if (!IsCookiePartitionedValid(url, secure, domain_attribute, cookie_path,
+  if (!IsCookiePartitionedValid(url, secure, cookie_path,
                                 /*is_partitioned=*/partition_key.has_value(),
                                 /*is_same_party=*/same_party,
                                 /*partition_has_nonce=*/
@@ -1449,6 +1464,12 @@ bool CanonicalCookie::IsCanonical() const {
   // would fail this check. Note that we still don't want to enforce length
   // checks on domain or path for the reason stated above.
 
+  // TODO(crbug.com/1264458): Eventually we should push this logic into
+  // IsCanonicalForFromStorage, but for now we allow cookies already stored with
+  // high expiration dates to be retrieved.
+  if (ValidateAndAdjustExpiryDate(expiry_date_, creation_date_) != expiry_date_)
+    return false;
+
   return IsCanonicalForFromStorage();
 }
 
@@ -1493,23 +1514,28 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
     return false;
 
   CookiePrefix prefix = GetCookiePrefix(name_);
-  bool partition_key_has_nonce = CookiePartitionKey::HasNonce(partition_key_);
-  if (prefix == COOKIE_PREFIX_HOST ||
-      (IsPartitioned() && !partition_key_has_nonce)) {
-    if (!secure_ || path_ != "/" || domain_.empty() || domain_[0] == '.')
-      return false;
-  } else if (prefix == COOKIE_PREFIX_SECURE && !secure_) {
-    return false;
+  switch (prefix) {
+    case COOKIE_PREFIX_HOST:
+      if (!secure_ || path_ != "/" || domain_.empty() || domain_[0] == '.')
+        return false;
+      break;
+    case COOKIE_PREFIX_SECURE:
+      if (!secure_)
+        return false;
+      break;
+    default:
+      break;
   }
 
   if (!IsCookieSamePartyValid(same_party_, secure_, same_site_))
     return false;
 
   if (IsPartitioned()) {
-    if (partition_key_has_nonce)
+    if (CookiePartitionKey::HasNonce(partition_key_))
       return true;
-    if (same_party_)
+    if (!secure_ || path_ != "/" || same_party_) {
       return false;
+    }
   }
 
   return true;
@@ -1652,7 +1678,6 @@ bool CanonicalCookie::IsCookiePartitionedValid(
     bool partition_has_nonce) {
   return IsCookiePartitionedValid(
       url, /*secure=*/parsed_cookie.IsSecure(),
-      parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
       parsed_cookie.HasPath() ? parsed_cookie.Path() : "",
       /*is_partitioned=*/parsed_cookie.IsPartitioned(),
       /*is_same_party=*/parsed_cookie.IsSameParty(), partition_has_nonce);
@@ -1661,7 +1686,6 @@ bool CanonicalCookie::IsCookiePartitionedValid(
 // static
 bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
                                                bool secure,
-                                               const std::string& domain,
                                                const std::string& path,
                                                bool is_partitioned,
                                                bool is_same_party,
@@ -1671,9 +1695,9 @@ bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
   if (partition_has_nonce)
     return true;
   bool result =
-      HasValidHostPrefixAttributes(url, secure, domain, path) && !is_same_party;
+      HasValidAttributesForPartitioned(url, secure, path, is_same_party);
   DLOG_IF(WARNING, !result)
-      << "CanonicalCookie has invalid Partitioned attribute";
+      << "CanonicalCookie has invalid Partitioned attribute ";
   return result;
 }
 

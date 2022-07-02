@@ -26,12 +26,14 @@ class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
   // Gets a singleton instance of the factory.
   static SmbServiceFactory* GetInstance();
 
+  // Disallow copy and assignment.
+  SmbServiceFactory(const SmbServiceFactory&) = delete;
+  SmbServiceFactory& operator=(const SmbServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SmbServiceFactory>;
 
   SmbServiceFactory();
-  SmbServiceFactory(const SmbServiceFactory&) = delete;
-  SmbServiceFactory& operator=(const SmbServiceFactory&) = delete;
   ~SmbServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:

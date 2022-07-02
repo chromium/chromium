@@ -51,6 +51,8 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
   source->AddResourcePath("viewpdfhost.html", IDR_MEDIA_APP_VIEWPDFHOST_HTML);
   source->AddResourcePath("viewpdfhost.js", IDR_MEDIA_APP_VIEWPDFHOST_JS);
+  source->AddResourcePath("first_message_received.js",
+                          IDR_MEDIA_APP_FIRST_MESSAGE_RECEIVED_JS);
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
@@ -105,14 +107,24 @@ content::WebUIDataSource* CreateHostDataSource() {
   // File-type favicons.
   source->AddResourcePath("system_assets/pdf_icon.svg",
                           IDR_MEDIA_APP_PDF_ICON_SVG);
+  source->AddResourcePath("system_assets/pdf_icon_dark.svg",
+                          IDR_MEDIA_APP_PDF_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/video_icon.svg",
                           IDR_MEDIA_APP_VIDEO_ICON_SVG);
+  source->AddResourcePath("system_assets/video_icon_dark.svg",
+                          IDR_MEDIA_APP_VIDEO_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/image_icon.svg",
                           IDR_MEDIA_APP_IMAGE_ICON_SVG);
+  source->AddResourcePath("system_assets/image_icon_dark.svg",
+                          IDR_MEDIA_APP_IMAGE_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/audio_icon.svg",
                           IDR_MEDIA_APP_AUDIO_ICON_SVG);
+  source->AddResourcePath("system_assets/audio_icon_dark.svg",
+                          IDR_MEDIA_APP_AUDIO_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/file_icon.svg",
                           IDR_MEDIA_APP_FILE_ICON_SVG);
+  source->AddResourcePath("system_assets/file_icon_dark.svg",
+                          IDR_MEDIA_APP_FILE_ICON_DARK_SVG);
   return source;
 }
 

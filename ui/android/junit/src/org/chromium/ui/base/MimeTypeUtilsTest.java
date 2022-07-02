@@ -30,6 +30,7 @@ import org.chromium.url.GURL;
  * Tests for {@link MimeTypeUtils}, verifying behavior across OS versions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class MimeTypeUtilsTest {
     @Mock
     private GURL mMockedUrl;

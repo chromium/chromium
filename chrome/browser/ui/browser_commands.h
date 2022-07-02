@@ -13,8 +13,8 @@
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
@@ -97,23 +97,23 @@ bool CanResetZoom(content::WebContents* contents);
 void RestoreTab(Browser* browser);
 void SelectNextTab(
     Browser* browser,
-    TabStripModel::UserGestureDetails gesture_detail =
-        TabStripModel::UserGestureDetails(TabStripModel::GestureType::kOther));
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void SelectPreviousTab(
     Browser* browser,
-    TabStripModel::UserGestureDetails gesture_detail =
-        TabStripModel::UserGestureDetails(TabStripModel::GestureType::kOther));
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void MoveTabNext(Browser* browser);
 void MoveTabPrevious(Browser* browser);
 void SelectNumberedTab(
     Browser* browser,
     int index,
-    TabStripModel::UserGestureDetails gesture_detail =
-        TabStripModel::UserGestureDetails(TabStripModel::GestureType::kOther));
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void SelectLastTab(
     Browser* browser,
-    TabStripModel::UserGestureDetails gesture_detail =
-        TabStripModel::UserGestureDetails(TabStripModel::GestureType::kOther));
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void DuplicateTab(Browser* browser);
 bool CanDuplicateTab(const Browser* browser);
 bool CanDuplicateKeyboardFocusedTab(const Browser* browser);

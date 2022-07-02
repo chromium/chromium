@@ -107,7 +107,7 @@ public class ViewAndroidDelegate {
         }
     }
 
-    private DragAndDropDelegate getDragAndDropDelegate() {
+    protected DragAndDropDelegate getDragAndDropDelegate() {
         return sDragAndDropTestDelegate != null ? sDragAndDropTestDelegate
                                                 : mDragAndDropDelegateImpl;
     }

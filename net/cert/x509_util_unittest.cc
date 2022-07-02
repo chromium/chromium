@@ -19,9 +19,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 // This test creates a self-signed cert and a private key and then verifies the
 // content of the certificate.
@@ -804,6 +802,4 @@ TEST(X509UtilTest, HasSHA1Signature) {
   EXPECT_FALSE(HasSHA1Signature(ok_cert->cert_buffer()));
 }
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util

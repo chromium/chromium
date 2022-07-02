@@ -179,5 +179,17 @@ def http2_compatible() -> bool:
             'OpenSSL (found: %s)' % ssl.OPENSSL_VERSION)
         return True
 
+    # Note that OpenSSL's versioning scheme differs between 1.1.1 and
+    # earlier and 3.0.0. ssl.OPENSSL_VERSION_INFO returns a
+    #     (major, minor, 0, patch, 0)
+    # tuple with OpenSSL 3.0.0 and later, and a
+    #     (major, minor, fix, patch, status)
+    # tuple for older releases.
+    # Semantically, "patch" in 3.0.0+ is similar to "fix" in previous versions.
+    #
+    # What we do in the check below is allow OpenSSL 3.x.y+, 1.1.x+ and 1.0.2+.
     ssl_v = ssl.OPENSSL_VERSION_INFO
-    return ssl_v[0] == 1 and (ssl_v[1] == 1 or (ssl_v[1] == 0 and ssl_v[2] >= 2))
+    return (ssl_v[0] > 1 or
+            (ssl_v[0] == 1 and
+             (ssl_v[1] == 1 or
+              (ssl_v[1] == 0 and ssl_v[2] >= 2))))

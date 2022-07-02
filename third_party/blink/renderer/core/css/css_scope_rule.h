@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -20,7 +21,10 @@ class CORE_EXPORT CSSScopeRule final : public CSSGroupingRule {
   CSSScopeRule(StyleRuleScope*, CSSStyleSheet*);
   ~CSSScopeRule() override;
 
+  String PreludeText() const;
   String cssText() const override;
+
+  void SetPreludeText(const ExecutionContext*, String);
 
  private:
   CSSRule::Type GetType() const override { return kScopeRule; }

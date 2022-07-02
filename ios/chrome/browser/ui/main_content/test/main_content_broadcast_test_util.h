@@ -8,8 +8,8 @@
 @class ChromeBroadcaster;
 @class TestMainContentUIState;
 
-// Checks whether |ui_state|'s broadcast properties are being broadcast through
-// |broadcaster|. Verifies broadcast setup according to |should_broadcast|.
+// Checks whether `ui_state`'s broadcast properties are being broadcast through
+// `broadcaster`. Verifies broadcast setup according to `should_broadcast`.
 void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
                                   ChromeBroadcaster* broadcaster,
                                   bool should_broadcast);

@@ -17,6 +17,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -239,8 +240,9 @@ views::Builder<views::ImageButton> CreateSecondaryActionBuilder() {
 // TODO(crbug.com/1202796): Create ash colors.
 // Returns the theme color to use for text in multiselect.
 SkColor GetMultiSelectTextColor() {
-  return AshColorProvider::Get()->IsDarkModeEnabled() ? gfx::kGoogleBlue100
-                                                      : gfx::kGoogleBlue800;
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? gfx::kGoogleBlue100
+             : gfx::kGoogleBlue800;
 }
 
 }  // namespace
@@ -508,7 +510,8 @@ void HoldingSpaceItemChipView::UpdateImage() {
   // Image.
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
-      /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));
+      /*dark_background=*/DarkLightModeControllerImpl::Get()
+          ->IsDarkModeEnabled()));
   SchedulePaint();
 
   // Transform.
@@ -611,16 +614,15 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   secondary_label_->SetText(
       item()->secondary_text().value_or(base::EmptyString16()));
   secondary_label_->SetEnabledColor(
-      selected() && multiselect
-          ? GetMultiSelectTextColor()
-          : item()->secondary_text_color()
-                ? cros_styles::ResolveColor(
-                      item()->secondary_text_color().value(),
-                      AshColorProvider::Get()->IsDarkModeEnabled(),
-                      base::FeatureList::IsEnabled(
-                          features::kSemanticColorsDebugOverride))
-                : AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kTextColorSecondary));
+      selected() && multiselect ? GetMultiSelectTextColor()
+      : item()->secondary_text_color()
+          ? cros_styles::ResolveColor(
+                item()->secondary_text_color().value(),
+                DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
+                base::FeatureList::IsEnabled(
+                    features::kSemanticColorsDebugOverride))
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorSecondary));
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 
   // Tooltip.

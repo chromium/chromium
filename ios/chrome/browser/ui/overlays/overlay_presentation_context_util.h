@@ -7,12 +7,12 @@
 
 class OverlayPresentationContext;
 
-// Returns whether |context|'s UIPresentationCapabilities currently support
+// Returns whether `context`'s UIPresentationCapabilities currently support
 // overlay UI implemented with contained UIViewControllers.
 bool OverlayPresentationContextSupportsContainedUI(
     OverlayPresentationContext* context);
 
-// Returns whether |context|'s UIPresentationCapabilities currently support
+// Returns whether `context`'s UIPresentationCapabilities currently support
 // overlay UI implemented with presented UIViewControllers.
 bool OverlayPresentationContextSupportsPresentedUI(
     OverlayPresentationContext* context);

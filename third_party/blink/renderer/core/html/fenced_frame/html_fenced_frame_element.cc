@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -64,8 +65,9 @@ String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
 
 bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
   mojom::blink::FencedFrameMode current_mode = outer_element.GetMode();
+  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
 
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
+  if (ancestor_page->FencedFramesImplementationType() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     // ShadowDOM check.
     if (Frame* ancestor = outer_element.GetDocument().GetFrame()) {
@@ -101,7 +103,6 @@ bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
     return false;
   }
   // MPArch check.
-  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
          ancestor_page->FencedFrameMode() != current_mode;
 }
@@ -148,6 +149,22 @@ double ComputeSizeLossFunction(const PhysicalSize& requested_size,
                        std::max(requested_area, allowed_area));
 
   return wasted_area_fraction + resolution_penalty;
+}
+
+void RecordCreationOutcome(
+    const HTMLFencedFrameElement::CreationOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.FencedFrame.CreationOrNavigationOutcome",
+                            outcome);
+}
+
+void RecordOpaqueSizeCoercion(bool did_coerce) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.FencedFrame.IsOpaqueFrameSizeCoerced",
+                        did_coerce);
+}
+
+void RecordResizedAfterSizeFrozen() {
+  UMA_HISTOGRAM_BOOLEAN("Blink.FencedFrame.IsFrameResizedAfterSizeFrozen",
+                        true);
 }
 
 }  // namespace
@@ -228,6 +245,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
             "allow-same-origin, allow-forms, allow-scripts, allow-popups, "
             "allow-popups-to-escape-sandbox and "
             "allow-top-navigation-by-user-activation."));
+    RecordCreationOutcome(CreationOutcome::kSandboxFlagsNotSet);
     return nullptr;
   }
 
@@ -256,9 +274,11 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
 
+  Page* ancestor_page = outer_element->GetDocument().GetFrame()->GetPage();
+
   if (HasDifferentModeThanParent(*outer_element)) {
     mojom::blink::FencedFrameMode parent_mode =
-        features::kFencedFramesImplementationTypeParam.Get() ==
+        ancestor_page->FencedFramesImplementationType() ==
                 features::FencedFramesImplementationType::kShadowDOM
             ? outer_element->GetDocument()
                   .GetFrame()
@@ -275,10 +295,11 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
                 FencedFrameModeToString(outer_element->GetMode()) +
                 "' nested in a fenced frame with mode '" +
                 FencedFrameModeToString(parent_mode) + "'."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleMode);
     return nullptr;
   }
 
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
+  if (ancestor_page->FencedFramesImplementationType() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     return MakeGarbageCollected<FencedFrameShadowDOMDelegate>(outer_element);
   }
@@ -390,37 +411,43 @@ void HTMLFencedFrameElement::Navigate() {
         mojom::blink::ConsoleMessageLevel::kWarning,
         "A fenced frame was not loaded because the page is not in a secure "
         "context."));
+    RecordCreationOutcome(CreationOutcome::kInsecureContext);
     return;
   }
 
   if (mode_ == mojom::blink::FencedFrameMode::kDefault &&
-      !IsValidFencedFrameURL(url)) {
+      !IsValidFencedFrameURL(GURL(url))) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
             " must be navigated to an \"https\" URL, an \"http\" localhost URL,"
             " or \"about:blank\"."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleURLDefault);
     return;
   }
 
-  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds) {
-    if (!IsValidUrnUuidURL(url) && !IsValidFencedFrameURL(url)) {
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
-              " must be navigated to an opaque \"urn:uuid\" URL,"
-              " an \"https\" URL, an \"http\" localhost URL,"
-              " or \"about:blank\"."));
-      return;
-    }
+  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds &&
+      !IsValidUrnUuidURL(GURL(url)) && !IsValidFencedFrameURL(GURL(url))) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+            " must be navigated to an opaque \"urn:uuid\" URL,"
+            " an \"https\" URL, an \"http\" localhost URL,"
+            " or \"about:blank\"."));
+    RecordCreationOutcome(CreationOutcome::kIncompatibleURLOpaque);
+    return;
   }
 
   frame_delegate_->Navigate(url);
 
-  if (!frozen_frame_size_)
+  if (!frozen_frame_size_) {
     FreezeFrameSize();
+    RecordCreationOutcome(mode_ == mojom::blink::FencedFrameMode::kDefault
+                              ? CreationOutcome::kSuccessDefault
+                              : CreationOutcome::kSuccessOpaque);
+  }
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
@@ -448,11 +475,8 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
   HTMLFrameOwnerElement::AttachLayoutTree(context);
-  if (features::IsFencedFramesMPArchBased()) {
-    if (GetLayoutEmbeddedContent() && ContentFrame()) {
-      SetEmbeddedContentView(ContentFrame()->View());
-    }
-  }
+  if (frame_delegate_)
+    frame_delegate_->AttachLayoutTree();
 }
 
 bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
@@ -464,7 +488,10 @@ bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
-  if (features::IsFencedFramesMPArchBased()) {
+  Page* page = GetDocument().GetFrame()->GetPage();
+
+  if (page->FencedFramesImplementationType() ==
+      features::FencedFramesImplementationType::kMPArch) {
     return MakeGarbageCollected<LayoutIFrame>(this);
   }
 
@@ -472,7 +499,7 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
 }
 
 bool HTMLFencedFrameElement::SupportsFocus() const {
-  return features::IsFencedFramesMPArchBased();
+  return frame_delegate_->SupportsFocus();
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
@@ -503,6 +530,7 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
   static_assert(kAllowedAdSizes.size() > 0UL);
   for (const gfx::Size& allowed_size : kAllowedAdSizes) {
     if (SizeMatchesExactly(requested_size, allowed_size)) {
+      RecordOpaqueSizeCoercion(false);
       return requested_size;
     }
   }
@@ -549,6 +577,7 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
       "A fenced frame in opaque-ads mode attempted to load with an "
       "unsupported size, and was therefore rounded to the nearest supported "
       "size."));
+  RecordOpaqueSizeCoercion(true);
 
   // The best size so far, and its loss. A lower loss represents
   // a better fit, so we will find the size that minimizes it, i.e.
@@ -624,22 +653,7 @@ void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
   // from here to during FLEDGE/SharedStorage.
   frozen_frame_size_ = CoerceFrameSize(size);
 
-  if (features::IsFencedFramesMPArchBased()) {
-    // With MPArch, mark the layout as stale. Do this unconditionally because
-    // we are rounding the size.
-    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-        "Froze MPArch fenced frame");
-
-    // Stop the `ResizeObserver`. It is needed only to compute the
-    // frozen size in MPArch. ShadowDOM stays subscribed in order to
-    // update the CSS on the inner iframe element as the outer container's
-    // size changes.
-    StopResizeObserver();
-  } else {
-    // With Shadow DOM, update the CSS `transform` property whenever
-    // |content_rect_| or |frozen_frame_size_| change.
-    UpdateInnerStyleOnFrozenInternalFrame();
-  }
+  frame_delegate_->FreezeFrameSize();
 }
 
 void HTMLFencedFrameElement::StartResizeObserver() {
@@ -668,6 +682,11 @@ void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
 }
 
 void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
+  if (frozen_frame_size_.has_value() && !size_set_after_freeze_) {
+    // Only log this once per fenced frame.
+    RecordResizedAfterSizeFrozen();
+    size_set_after_freeze_ = true;
+  }
   content_rect_ = content_rect;
   // If the size information at |FreezeFrameSize| is not complete and we
   // needed to postpone freezing until the next resize, do it now. See
@@ -678,8 +697,12 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     FreezeFrameSize(content_rect_->size);
     return;
   }
-  if (frozen_frame_size_ && !features::IsFencedFramesMPArchBased())
+  Page* page = GetDocument().GetFrame()->GetPage();
+  if (frozen_frame_size_ &&
+      page->FencedFramesImplementationType() ==
+          features::FencedFramesImplementationType::kShadowDOM) {
     UpdateInnerStyleOnFrozenInternalFrame();
+  }
 }
 
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {

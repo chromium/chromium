@@ -25,7 +25,7 @@
                   actions: [{ title: "Foo" }]
               }).then(unreached_fulfillment(test)).catch(function(error) {
                   assert_equals(error.name, 'TypeError');
-                  assert_equals(error.message, "Failed to execute 'showNotification' on 'ServiceWorkerRegistration': Failed to read the 'actions' property from 'NotificationOptions': Failed to read the 'action' property from 'NotificationAction': Failed to read the 'action' property from 'NotificationAction': Required member is undefined.");
+                  assert_equals(error.message, "Failed to execute 'showNotification' on 'ServiceWorkerRegistration': Failed to read the 'actions' property from 'NotificationOptions': Failed to read the 'action' property from 'NotificationAction': Required member is undefined.");
                   test.done();
               });
           }).catch(unreached_rejection(test));
@@ -42,7 +42,7 @@
                   actions: [{ action: "foo" }]
               }).then(unreached_fulfillment(test)).catch(function(error) {
                   assert_equals(error.name, 'TypeError');
-                  assert_equals(error.message, "Failed to execute 'showNotification' on 'ServiceWorkerRegistration': Failed to read the 'actions' property from 'NotificationOptions': Failed to read the 'title' property from 'NotificationAction': Failed to read the 'title' property from 'NotificationAction': Required member is undefined.");
+                  assert_equals(error.message, "Failed to execute 'showNotification' on 'ServiceWorkerRegistration': Failed to read the 'actions' property from 'NotificationOptions': Failed to read the 'title' property from 'NotificationAction': Required member is undefined.");
                   test.done();
               });
           }).catch(unreached_rejection(test));

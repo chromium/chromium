@@ -12,12 +12,15 @@
 // Commands related to the new tab page.
 @protocol NewTabPageCommands
 
-// Opens a new tab page scrolled into the feed with a given |feedType| selected.
+// Opens a new tab page scrolled into the feed with a given `feedType` selected.
 - (void)openNTPScrolledIntoFeedType:(FeedType)feedType;
 
 // Notifies the new tab page if there is new unseen content in the Following
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
+
+// Notifies the new tab page that the `feedType`'s model has completed updates.
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end
 

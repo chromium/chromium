@@ -29,10 +29,6 @@ HttpStreamRequest::HttpStreamRequest(
       websocket_handshake_stream_create_helper_(
           websocket_handshake_stream_create_helper),
       net_log_(net_log),
-      completed_(false),
-      was_alpn_negotiated_(false),
-      negotiated_protocol_(kProtoUnknown),
-      using_spdy_(false),
       stream_type_(stream_type) {
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_REQUEST);
 }

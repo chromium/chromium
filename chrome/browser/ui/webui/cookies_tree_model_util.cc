@@ -80,13 +80,8 @@ std::string CookiesTreeModelUtil::GetTreeNodeId(const CookieTreeNode* node) {
 }
 
 absl::optional<base::Value::Dict>
-CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node,
-                                                  bool include_quota_nodes) {
+CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
   base::Value::Dict dict;
-  // Use node's address as an id for WebUI to look it up.
-  dict.Set(kKeyId, GetTreeNodeId(&node));
-  dict.Set(kKeyTitle, node.GetTitle());
-  dict.Set(kKeyHasChildren, !node.children().empty());
 
   switch (node.GetDetailedInfo().node_type) {
     case CookieTreeNode::DetailedInfo::TYPE_HOST: {
@@ -177,9 +172,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node,
       break;
     }
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA: {
-      if (!include_quota_nodes)
-        return absl::nullopt;
-
       dict.Set(kKeyType, "quota");
 
       const BrowsingDataQuotaHelper::QuotaInfo& quota_info =
@@ -259,26 +251,44 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node,
   }
 #endif
 
+  // Only node types with detailed information above result in a dict.
+  if (dict.empty())
+    return absl::nullopt;
+
+  dict.Set(kKeyId, GetTreeNodeId(&node));
+  dict.Set(kKeyTitle, node.GetTitle());
+  dict.Set(kKeyHasChildren, !node.children().empty());
+
   return dict;
 }
 
-base::Value::List CookiesTreeModelUtil::GetChildNodeDetails(
-    const CookieTreeNode* parent,
-    bool include_quota_nodes) {
+base::Value::List CookiesTreeModelUtil::GetChildNodeDetailsDeprecated(
+    const CookieTreeNode* parent) {
   base::Value::List list;
   std::string id_path = GetTreeNodeId(parent);
   for (const auto& child : parent->children()) {
-    std::string cookie_id_path =
-        id_path + "," + GetTreeNodeId(child.get()) + ",";
+    // Node types of interest either live at this level, or the level below.
+    // Whether a node is of interest is determined by
+    // GetCookieTreeNodeDictionary().
+    std::string cookie_id_path = id_path + "," + GetTreeNodeId(child.get());
+    absl::optional<base::Value::Dict> child_dict =
+        GetCookieTreeNodeDictionary(*child);
+    if (child_dict) {
+      child_dict->Set("idPath", cookie_id_path);
+      list.Append(std::move(*child_dict));
+    }
+    cookie_id_path += ",";
+
     for (const auto& details : child->children()) {
-      absl::optional<base::Value::Dict> dict =
-          GetCookieTreeNodeDictionary(*details, include_quota_nodes);
-      if (dict) {
+      absl::optional<base::Value::Dict> details_dict =
+          GetCookieTreeNodeDictionary(*details);
+      if (details_dict) {
         // TODO(dschuyler): This ID path is an artifact from using tree nodes to
         // hold the cookies. Can this be changed to a dictionary with a key
         // lookup (and remove use of id_map_)?
-        dict->Set("idPath", cookie_id_path + GetTreeNodeId(details.get()));
-        list.Append(std::move(*dict));
+        details_dict->Set("idPath",
+                          cookie_id_path + GetTreeNodeId(details.get()));
+        list.Append(std::move(*details_dict));
       }
     }
   }

@@ -9,9 +9,12 @@
 #include <tuple>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -149,7 +152,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   bool InZoomMode() const override { return false; }
 
  private:
-  views::Widget* frame_;
+  raw_ptr<views::Widget> frame_;
 };
 
 }  // namespace
@@ -190,7 +193,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
                           base::Unretained(this)),
       views::CAPTION_BUTTON_ICON_MENU, HTMENU);
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MENU));
-  AddChildView(menu_button_);
+  AddChildView(menu_button_.get());
 
   minimize_button_ = new views::FrameCaptionButton(
       base::BindRepeating(
@@ -199,7 +202,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
-  AddChildView(minimize_button_);
+  AddChildView(minimize_button_.get());
 
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
@@ -207,7 +210,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       this);
   size_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
-  AddChildView(size_button_);
+  AddChildView(size_button_.get());
 
   close_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::CloseButtonPressed,
@@ -215,7 +218,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  AddChildView(close_button_);
+  AddChildView(close_button_.get());
 
   UpdateCaptionButtonState(false /* animate */);
 }
@@ -528,9 +531,22 @@ void FrameCaptionButtonContainerView::FloatButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   aura::Window* window = GetWidget()->GetNativeWindow();
+  WindowStateType old_state = window->GetProperty(kWindowStateTypeKey);
+
   // Float current window.
   ToggleFloating(window);
   UpdateCaptionButtonState(true);
+
+  // Update the tooltip if float/unfloat has been successful.
+  WindowStateType new_state = window->GetProperty(kWindowStateTypeKey);
+  if (new_state != old_state) {
+    float_button_->SetTooltipText(
+        new_state == WindowStateType::kFloated
+            // TODO(sammiequon|shidi): Update this to the correct string once UX
+            // writing has a decision.
+            ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
+            : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  }
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {

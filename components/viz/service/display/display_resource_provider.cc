@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -306,9 +307,9 @@ void DisplayResourceProvider::TryReleaseResource(ResourceId id,
   }
 }
 
-bool DisplayResourceProvider::ReadLockFenceHasPassed(
+bool DisplayResourceProvider::ResourceFenceHasPassed(
     const ChildResource* resource) {
-  return !resource->read_lock_fence || resource->read_lock_fence->HasPassed();
+  return !resource->resource_fence || resource->resource_fence->HasPassed();
 }
 
 DisplayResourceProvider::CanDeleteNowResult
@@ -322,7 +323,7 @@ DisplayResourceProvider::CanDeleteNow(const Child& child_info,
 
     // Defer this resource deletion.
     return CanDeleteNowResult::kNo;
-  } else if (!ReadLockFenceHasPassed(&resource)) {
+  } else if (!ResourceFenceHasPassed(&resource)) {
     // TODO(dcastagna): see if it's possible to use this logic for
     // the branch above too, where the resource is locked or still exported.
     // We can't postpone the deletion, so we'll have to lose it.
@@ -473,7 +474,8 @@ void DisplayResourceProvider::ScopedReadLockSharedImage::SetReleaseFence(
 bool DisplayResourceProvider::ScopedReadLockSharedImage::HasReadLockFence()
     const {
   DCHECK(resource_);
-  return resource_->transferable.read_lock_fences_enabled;
+  return resource_->transferable.synchronization_type ==
+         TransferableResource::SynchronizationType::kGpuCommandsCompleted;
 }
 
 void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {

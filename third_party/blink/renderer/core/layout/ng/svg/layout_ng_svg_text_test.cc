@@ -117,4 +117,30 @@ TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
   EXPECT_EQ(2u, AllLayoutCallCount() - pre_layout_count);
 }
 
+// crbug.com/1320615
+TEST_F(LayoutNGSVGTextTest, WillBeRemovedFromTree) {
+  SetHtmlInnerHTML(R"HTML(
+<body>
+<div id="to_be_skipped">
+<div id="d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" id="svg">
+<text id="t">foo</text>
+</svg>
+</div>
+</div>
+</body>)HTML");
+  // The <text> is registered to #d, #to_be_skipped, body, ...
+  UpdateAllLifecyclePhasesForTest();
+
+  // #d's containing block will be the LayoutView.
+  GetElementById("d")->setAttribute("style", "position:absolute;");
+  UpdateAllLifecyclePhasesForTest();
+
+  // The <text> should be unregistered from all of ancestors.
+  GetElementById("svg")->remove();
+  GetElementById("to_be_skipped")
+      ->setAttribute("style", "transform:rotate(20deg)");
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

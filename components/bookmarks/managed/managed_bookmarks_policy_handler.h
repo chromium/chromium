@@ -28,7 +28,7 @@ class ManagedBookmarksPolicyHandler
 
  private:
   std::string GetFolderName(const base::Value& list);
-  base::Value::ListStorage FilterBookmarks(base::Value::ListStorage bookmarks);
+  base::Value::List FilterBookmarks(base::Value::List bookmarks);
 };
 
 }  // namespace bookmarks

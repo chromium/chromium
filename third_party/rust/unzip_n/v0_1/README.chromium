@@ -1,6 +1,0 @@
-Name: unzip-n
-URL: https://crates.io/crates/unzip-n
-Description: Procedural macro to generate `unzip` for iterators over n-sized tuples
-Version: 0.1.2
-Security Critical: no
-License: Apache 2.0

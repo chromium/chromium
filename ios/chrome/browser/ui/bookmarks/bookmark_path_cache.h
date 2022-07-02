@@ -30,7 +30,7 @@ class PrefService;
                                     topMostRow:(int)topMostRow;
 
 // Gets the bookmark top most row that the user was last viewing. Returns YES if
-// a valid cache exists. |folderId| and |topMostRow| are out variables, only
+// a valid cache exists. `folderId` and `topMostRow` are out variables, only
 // populated if the return is YES.
 + (BOOL)getBookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
                                             model:

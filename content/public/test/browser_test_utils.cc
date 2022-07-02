@@ -191,15 +191,14 @@ namespace {
   if (!result)
     return true;
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
     *result = nullptr;
-    DLOG(ERROR) << parsed_json.error_message;
+    DLOG(ERROR) << parsed_json.error().message;
     return false;
   }
-  *result = base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+  *result = base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
   return true;
 }
@@ -272,7 +271,7 @@ void InjectRawKeyEvent(WebContents* web_contents,
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* main_frame_rwh =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   web_contents_impl->GetFocusedRenderWidgetHost(main_frame_rwh)
       ->ForwardKeyboardEvent(event);
 }
@@ -844,18 +843,19 @@ bool WaitForLoadStop(WebContents* web_contents) {
 
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
-        if (trigger_user_activation) {
-          render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-              std::u16string(), base::NullCallback());
-        }
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
+            if (trigger_user_activation) {
+              render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+                  std::u16string(), base::NullCallback());
+            }
 
-        // Disable the hang monitor, otherwise there will be a race between the
-        // beforeunload dialog and the beforeunload hang timer.
-        render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
-      },
-      trigger_user_activation));
+            // Disable the hang monitor, otherwise there will be a race between
+            // the beforeunload dialog and the beforeunload hang timer.
+            render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
+          },
+          trigger_user_activation));
 }
 
 bool IsLastCommittedEntryOfPageType(WebContents* web_contents,
@@ -872,7 +872,7 @@ void OverrideLastCommittedOrigin(RenderFrameHost* render_frame_host,
 }
 
 void CrashTab(WebContents* web_contents) {
-  RenderProcessHost* rph = web_contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* rph = web_contents->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostWatcher watcher(
       rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   EXPECT_TRUE(rph->Shutdown(RESULT_CODE_KILLED));
@@ -913,7 +913,7 @@ void WaitForResizeComplete(WebContents* web_contents) {
   aura::WindowEventDispatcher* dispatcher = window_host->dispatcher();
   aura::test::WindowEventDispatcherTestApi dispatcher_test(dispatcher);
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(&dispatcher_test, widget_host)) {
     ResizeObserver resize_observer(
         widget_host,
@@ -1041,7 +1041,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
   wheel_event.delta_y = delta.y();
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -1061,7 +1061,7 @@ void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
   wheel_event.wheel_ticks_y = (zoom_in ? 1.0 : -1.0);
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -1094,7 +1094,7 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
                                   float scale,
                                   blink::WebGestureDevice source_device) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent pinch_begin(
       blink::WebInputEvent::Type::kGesturePinchBegin,
@@ -1123,7 +1123,7 @@ void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent scroll_begin(
       blink::WebGestureEvent::Type::kGestureScrollBegin,
@@ -1168,7 +1168,7 @@ void SimulateTouchGestureAt(WebContents* web_contents,
                                  blink::WebGestureDevice::kTouchscreen);
   gesture.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(gesture);
 }
 
@@ -1190,7 +1190,7 @@ void SimulateTapWithModifiersAt(WebContents* web_contents,
                              blink::WebGestureDevice::kTouchpad);
   tap.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(tap);
 }
 
@@ -1364,7 +1364,7 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents) {
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents) {
-  return web_contents->GetMainFrame();
+  return web_contents->GetPrimaryMainFrame();
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_frame_host) {
@@ -1598,7 +1598,7 @@ std::string AnnotateAndAdjustJsStackTraces(const std::string& js_error,
   // |source_frame_pattern| should match any line that looks like a stack frame
   // from a source file named |source_name|.
   const std::string source_frame_pattern =
-      base::StringPrintf("    at * (%s:*:*)", source_name.c_str());
+      base::StringPrintf("    at *%s:*:*", source_name.c_str());
 
   // This is the amount of indentation that is applied to the lines of inserted
   // annotations.
@@ -1668,93 +1668,148 @@ std::string AnnotateAndAdjustJsStackTraces(const std::string& js_error,
   return annotated_error.str();
 }
 
-EvalJsResult EvalRunnerScript(const ToRenderFrameHost& execution_target,
-                              const std::string& script,
-                              int options,
-                              int32_t world_id,
-                              const std::string& token) {
-  const char* kSourceURL = "__const_std::string&_script__";
-  bool use_automatic_reply = !(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY);
-  bool user_gesture =
-      execution_target.render_frame_host()->GetLifecycleState() ==
-              RenderFrameHost::LifecycleState::kPrerendering
-          ? false
-          : !(options & EXECUTE_SCRIPT_NO_USER_GESTURE);
-  std::ostringstream error_stream;
-  std::unique_ptr<base::Value> response;
-  if (!execution_target.render_frame_host()->IsRenderFrameLive()) {
-    error_stream << "Error: EvalJs won't work on an already-crashed frame.";
-  } else if (!ExecuteScriptHelper(execution_target.render_frame_host(), script,
-                                  user_gesture, world_id, &response)) {
-    error_stream << "Internal Error: ExecuteScriptHelper failed";
-  } else if (!response) {
-    error_stream << "Internal Error: no value";
-  } else {
-    bool is_reply_from_script =
-        response->is_list() && response->GetListDeprecated().size() == 2 &&
-        response->GetListDeprecated()[0].is_string() &&
-        response->GetListDeprecated()[0].GetString() == token;
+// Waits for a response from ExecuteJavaScriptForTests, simulating an
+// error if the target renderer is destroyed while executing the script.
+class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
+ public:
+  explicit ExecuteJavaScriptForTestsWaiter(const ToRenderFrameHost& adapter)
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(adapter.render_frame_host())),
+        render_frame_host_(adapter.render_frame_host()) {}
 
-    bool is_error =
-        is_reply_from_script && response->GetListDeprecated()[1].is_string();
-    bool is_automatic_success_reply =
-        is_reply_from_script && response->GetListDeprecated()[1].is_list() &&
-        response->GetListDeprecated()[1].GetListDeprecated().size() == 1;
-
-    if (is_error) {
-      // This is a response generated by the error handler in our runner
-      // script. This occurs when the script throws an exception, or when
-      // eval throws a SyntaxError.
-      //
-      // Parse the stack trace here, and interleave lines of source code from
-      // |script| to aid debugging.
-      std::string error_text = response->GetListDeprecated()[1].GetString();
-
-      if (base::StartsWith(error_text,
-                           "a JavaScript error:\nEvalError: Refused",
-                           base::CompareCase::SENSITIVE)) {
-        error_text =
-            "EvalJs encountered an EvalError, because eval() is blocked by the "
-            "document's CSP on this page. To test content that is protected by "
-            "CSP, consider using EvalJs with an isolated world. Details: " +
-            error_text;
-      }
-
-      CHECK(!error_text.empty());
-      error_stream << AnnotateAndAdjustJsStackTraces(error_text, kSourceURL,
-                                                     script, 0);
-    } else if (!use_automatic_reply) {
-      // When |script| itself calls domAutomationController.send() on success,
-      // |response| could be anything; so there's no more checking we can do:
-      // return |response| as success, with an empty error.
-      return EvalJsResult(std::move(*response), std::string());
-    } else if (is_automatic_success_reply) {
-      // Got a response from the runner script that indicates success (of the
-      // form [token, [completion_value]]. Return the completion value, with an
-      // empty error.
-      return EvalJsResult(
-          std::move(response->GetListDeprecated()[1].GetListDeprecated()[0]),
-          std::string());
-    } else {
-      // The response was not well-formed (it failed the token match), so it's
-      // not from our runner script. Fail with an explanation of the raw
-      // message. This allows us to reject other calls
-      // domAutomationController.send().
-      error_stream
-          << "Internal Error: expected a 2-element list of the form "
-          << "['" << token << "', [result]]; but got instead: " << *response
-          << " ... This is potentially because a script tried to call "
-             "domAutomationController.send itself -- that is only allowed "
-             "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY.  When using "
-             "EvalJs(), result values are just the result of calling eval() on "
-             "the script -- the completion value is the value of the last "
-             "executed statement.  When using ExecJs(), there is no result "
-             "value.";
-    }
+  blink::mojom::LocalFrame::JavaScriptExecuteRequestForTestsCallback
+  GetCallback() {
+    return base::BindOnce(&ExecuteJavaScriptForTestsWaiter::SetValue,
+                          weak_ptr_factory_.GetWeakPtr());
   }
 
-  // Something went wrong. Return an empty value and a non-empty error.
-  return EvalJsResult(base::Value(), error_stream.str());
+  bool Wait() {
+    if (!has_value_)
+      run_loop_.Run();
+    return has_value_;
+  }
+
+  blink::mojom::JavaScriptExecutionResultType GetResultType() {
+    DCHECK(has_value_);
+    return type_;
+  }
+
+  const base::Value& GetResult() {
+    DCHECK(has_value_);
+    return value_;
+  }
+
+  // WebContentsObserver
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
+    if (status == base::TERMINATION_STATUS_NORMAL_TERMINATION ||
+        status == base::TERMINATION_STATUS_STILL_RUNNING) {
+      return;
+    }
+    RendererTerminated();
+  }
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
+    if (render_frame_host_ != render_frame_host)
+      return;
+    RendererTerminated();
+  }
+
+ private:
+  void RendererTerminated() {
+    render_frame_host_ = nullptr;
+    if (has_value_)
+      return;
+    SetValue(blink::mojom::JavaScriptExecutionResultType::kException,
+             base::Value("Renderer terminated"));
+  }
+
+  void SetValue(blink::mojom::JavaScriptExecutionResultType type,
+                base::Value value) {
+    DCHECK(!has_value_);
+    has_value_ = true;
+    type_ = type;
+    value_ = value.Clone();
+    run_loop_.Quit();
+  }
+
+  raw_ptr<RenderFrameHost> render_frame_host_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  bool has_value_ = false;
+  blink::mojom::JavaScriptExecutionResultType type_;
+  base::Value value_;
+
+  base::WeakPtrFactory<ExecuteJavaScriptForTestsWaiter> weak_ptr_factory_{this};
+};
+
+EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
+                          const std::string& script,
+                          const std::string& source_url,
+                          int options,
+                          int32_t world_id) {
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(execution_target.render_frame_host());
+  if (!rfh->IsRenderFrameLive()) {
+    return EvalJsResult(
+        base::Value(), "Error: EvalJs won't work on an already-crashed frame.");
+  }
+
+  bool resolve_promises = !(options & EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
+  bool user_gesture = rfh->GetLifecycleState() !=
+                          RenderFrameHost::LifecycleState::kPrerendering &&
+                      !(options & EXECUTE_SCRIPT_NO_USER_GESTURE) &&
+                      world_id == ISOLATED_WORLD_ID_GLOBAL;
+
+  DOMMessageQueue dom_message_queue(rfh);
+  ExecuteJavaScriptForTestsWaiter waiter(rfh);
+  rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script), user_gesture,
+                                 resolve_promises, world_id,
+                                 waiter.GetCallback());
+
+  bool has_value = waiter.Wait();
+  if (!has_value) {
+    return EvalJsResult(base::Value(),
+                        "Timeout waiting for Javascript to execute.");
+  }
+
+  using blink::mojom::JavaScriptExecutionResultType;
+  JavaScriptExecutionResultType result_type = waiter.GetResultType();
+  const base::Value& result_value = waiter.GetResult();
+
+  if (result_type == JavaScriptExecutionResultType::kException) {
+    // Parse the stack trace here, and interleave lines of source code from
+    // |script| to aid debugging.
+    CHECK(result_value.is_string() && !result_value.GetString().empty());
+    std::string error_text =
+        "a JavaScript error: \"" + result_value.GetString() + "\"";
+    return EvalJsResult(base::Value(), AnnotateAndAdjustJsStackTraces(
+                                           error_text, source_url, script, 0));
+  } else if (options & EXECUTE_SCRIPT_USE_MANUAL_REPLY) {
+    // Callers that set EXECUTE_SCRIPT_USE_MANUAL_REPLY expect this function to
+    // block until their JS calls `window.domAutomationController.send`. To
+    // support this, wait for a message from DOMMessageQueue and parse it as
+    // JSON.
+    std::string json;
+    if (!dom_message_queue.WaitForMessage(&json)) {
+      return EvalJsResult(base::Value(),
+                          "Cannot communicate with DOMMessageQueue.");
+    }
+
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        json, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!parsed_json.has_value())
+      return EvalJsResult(base::Value(), parsed_json.error().message);
+    result_type = JavaScriptExecutionResultType::kSuccess;
+    return EvalJsResult(parsed_json->Clone(), std::string());
+  } else if (dom_message_queue.HasMessages()) {
+    return EvalJsResult(base::Value(),
+                        "Calling domAutomationController.send is only allowed "
+                        "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY. When "
+                        "using EvalJs(), the completion value is the value of "
+                        "the last executed statement. When using ExecJs(), "
+                        "there is no result value.");
+  }
+
+  return EvalJsResult(result_value.Clone(), std::string());
 }
 
 }  // namespace
@@ -1783,64 +1838,20 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
                     int options,
                     int32_t world_id) {
   TRACE_EVENT1("test", "EvalJs", "script", script);
+
   // The sourceURL= parameter provides a string that replaces <anonymous> in
   // stack traces, if an Error is thrown. 'std::string' is meant to communicate
   // that this is a dynamic argument originating from C++ code.
+  //
+  // Wrapping the script in braces makes it run in a block scope so that
+  // let/const don't leak outside the code being run, but vars will float to
+  // the outer scope.
   const char* kSourceURL = "__const_std::string&_script__";
-  std::string modified_script =
-      base::StringPrintf("%s;\n//# sourceURL=%s", script.c_str(), kSourceURL);
+  std::string modified_script = base::StringPrintf("{%s\n}\n//# sourceURL=%s",
+                                                   script.c_str(), kSourceURL);
 
-  // An extra eval() indirection is used here to catch syntax errors and return
-  // them as assertion failures. This eval() operation deliberately occurs in
-  // the global scope, so 'var' declarations in |script| will persist for later
-  // script executions. (As an aside: global/local scope for eval depends on
-  // whether 'eval' is called directly or indirectly; 'window.eval()' is
-  // indirect).
-  //
-  // The call to eval() itself is inside a .then() handler so that syntax errors
-  // result in Promise rejection. Calling eval() either throws (in the event of
-  // a SyntaxError) or returns the script's completion value.
-  //
-  // The result of eval() (i.e., the statement completion value of |script|) is
-  // wrapped in an array and passed to a second .then() handler. If eval()
-  // returned a Promise and the |resolve_promises| option is set, this handler
-  // calls Promise.all to reply after the returned Promise resolves.
-  //
-  // If |script| evaluated successfully, the third.then() handler maps the
-  // resolved |result| of eval() to a |reply| that is a one-element list
-  // containing the value (this element can be any JSON-serializable type). If
-  // the manual reply option is being used, no reply is emitted after successful
-  // execution -- the script is expected to call send() itself. The call to
-  // Promise.reject() squelches this reply, and the final .then() handler is not
-  // called.
-  //
-  // If an uncaught error was thrown, or eval() returns a Promise that is
-  // rejected, the third .then() handler maps the |error| to a |reply| that is
-  // a string value.
-  //
-  // The fourth and final .then() handler passes the |reply| (whether
-  // successful or unsuccessful) to domAutomationController.send(), so that it's
-  // transmitted back here in browser process C++ land. A GUID token is also
-  // included, that protects against |script| directly calling
-  // domAutomationController.send() itself, which is disallowed in EvalJs.
-  bool use_automatic_reply = !(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY);
-  bool resolve_promises = !(options & EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
-
-  std::string token = "EvalJs-" + base::GenerateGUID();
-  std::string runner_script = JsReplace(
-      R"(Promise.resolve($1)
-         .then(script => [window.eval(script)])
-         .then((result) => $2 ? Promise.all(result) : result )
-         .then((result) => $3 ? result : Promise.reject(),
-               (error) => 'a JavaScript error:' +
-                          (error && error.stack ? '\n' + error.stack
-                                                : ' "' + error + '"'))
-         .then((reply) => window.domAutomationController.send([$4, reply]));
-      //# sourceURL=EvalJs-runner.js)",
-      modified_script, resolve_promises, use_automatic_reply, token);
-
-  return EvalRunnerScript(execution_target, runner_script, options, world_id,
-                          token);
+  return EvalJsRunner(execution_target, modified_script, kSourceURL, options,
+                      world_id);
 }
 
 EvalJsResult EvalJsAfterLifecycleUpdate(
@@ -1849,10 +1860,11 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
     const std::string& script,
     int options,
     int32_t world_id) {
-  bool use_automatic_reply = !(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY);
-  bool resolve_promises = !(options & EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
-  std::string token = "EvalJs-" + base::GenerateGUID();
+  TRACE_EVENT2("test", "EvalJsAfterLifecycleUpdate", "raf_script", raf_script,
+               "script", script);
+
   const char* kSourceURL = "__const_std::string&_script__";
+  const char* kWrapperURL = "__const_std::string&_EvalJsAfterLifecycleUpdate__";
   std::string modified_raf_script;
   if (raf_script.length()) {
     modified_raf_script = base::StringPrintf("%s;\n//# sourceURL=%s",
@@ -1861,29 +1873,34 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
   std::string modified_script =
       base::StringPrintf("%s;\n//# sourceURL=%s", script.c_str(), kSourceURL);
 
-  // This runner_script is very similar to that used by EvalJs, except that
-  // this one delays running the argument script until just before
+  // This runner_script delays running the argument scripts until just before
   // (|raf_script|) and after (|script|) a rendering update.
   std::string runner_script = JsReplace(
-      R"(Promise.all([$1, $2])
-         .then(scripts => new Promise((resolve, reject) => {
-               requestAnimationFrame(() => {
-                 window.eval(scripts[0]);
-                 setTimeout(() => {
-                   resolve([window.eval(scripts[1])])
-                 }) }) }) )
-         .then((result) => $3 ? Promise.all(result) : result )
-         .then((result) => $4 ? result : Promise.reject(),
-               (error) => 'a JavaScript error:' +
-                          (error && error.stack ? '\n' + error.stack
-                                                : ' "' + error + '"'))
-         .then((reply) => window.domAutomationController.send([$5, reply]));
-      //# sourceURL=EvalJs-runner.js)",
-      modified_raf_script, modified_script, resolve_promises,
-      use_automatic_reply, token);
+      R"(new Promise((resolve, reject) => {
+           requestAnimationFrame(() => {
+             try { window.eval($1); } catch (e) { reject(e); }
+             setTimeout(() => {
+               try { resolve(window.eval($2)); } catch (e) { reject(e); }
+             });
+           });
+         })
+         //# sourceURL=$3)",
+      modified_raf_script, modified_script, kWrapperURL);
 
-  return EvalRunnerScript(execution_target, runner_script, options, world_id,
-                          token);
+  EvalJsResult result = EvalJsRunner(execution_target, runner_script,
+                                     kWrapperURL, options, world_id);
+
+  if (base::StartsWith(result.error, "a JavaScript error: \"EvalError: Refused",
+                       base::CompareCase::SENSITIVE)) {
+    return EvalJsResult(
+        base::Value(),
+        "EvalJsAfterLifecycleUpdate encountered an EvalError, because eval() "
+        "is blocked by the document's CSP on this page. To test content that "
+        "is protected by CSP, consider using EvalJsAfterLifecycleUpdate in an "
+        "isolated world. Details: " +
+            result.error);
+  }
+  return result;
 }
 
 namespace {
@@ -2219,7 +2236,7 @@ bool AccessibilityTreeContainsNodeWithName(BrowserAccessibility* node,
 void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
   AccessibilityNotificationWaiter accessibility_waiter(
       web_contents, ui::AXMode(), ax::mojom::Event::kNone);
-  accessibility_waiter.WaitForNotification();
+  ASSERT_TRUE(accessibility_waiter.WaitForNotification());
 }
 
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
@@ -2227,7 +2244,7 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
   WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
       web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      web_contents_impl->GetMainFrame());
+      web_contents_impl->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   while (!main_frame_manager || !AccessibilityTreeContainsNodeWithName(
@@ -2364,7 +2381,7 @@ bool RequestKeyboardLock(WebContents* web_contents,
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* render_widget_host_impl =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   return render_widget_host_impl->RequestKeyboardLock(std::move(codes));
 }
 
@@ -2372,7 +2389,7 @@ void CancelKeyboardLock(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* render_widget_host_impl =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   render_widget_host_impl->CancelKeyboardLock();
 }
 
@@ -2391,7 +2408,7 @@ RenderWidgetHost* GetFocusedRenderWidgetHost(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   return web_contents_impl->GetFocusedRenderWidgetHost(
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost());
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost());
 }
 
 bool IsRenderWidgetHostFocused(const RenderWidgetHost* host) {
@@ -2419,12 +2436,14 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromFrameTreeNode(
 RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromWebContents(
     WebContents* web_contents) {
   DCHECK(web_contents);
-  DCHECK(web_contents->GetMainFrame()->GetRenderViewHost());
-  DCHECK(RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
-             ->render_frame_metadata_provider());
-  return RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
+  DCHECK(web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
+  DCHECK(
+      RenderWidgetHostImpl::From(
+          web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget())
+          ->render_frame_metadata_provider());
+  return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
+                                        ->GetRenderViewHost()
+                                        ->GetWidget())
       ->render_frame_metadata_provider();
 }
 
@@ -2481,8 +2500,9 @@ RenderProcessHostWatcher::RenderProcessHostWatcher(
 
 RenderProcessHostWatcher::RenderProcessHostWatcher(WebContents* web_contents,
                                                    WatchType type)
-    : RenderProcessHostWatcher(web_contents->GetMainFrame()->GetProcess(),
-                               type) {}
+    : RenderProcessHostWatcher(
+          web_contents->GetPrimaryMainFrame()->GetProcess(),
+          type) {}
 RenderProcessHostWatcher::~RenderProcessHostWatcher() = default;
 
 void RenderProcessHostWatcher::Wait() {
@@ -2683,6 +2703,10 @@ bool DOMMessageQueue::PopMessage(std::string* message) {
   return true;
 }
 
+bool DOMMessageQueue::HasMessages() {
+  return !message_queue_.empty();
+}
+
 WebContentsAddedObserver::WebContentsAddedObserver()
     : web_contents_created_callback_(
           base::BindRepeating(&WebContentsAddedObserver::WebContentsCreated,
@@ -2717,8 +2741,9 @@ WebContents* WebContentsAddedObserver::GetWebContents() {
 
 bool RequestFrame(WebContents* web_contents) {
   DCHECK(web_contents);
-  return RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
+  return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
+                                        ->GetRenderViewHost()
+                                        ->GetWidget())
       ->RequestRepaintForTesting();
 }
 
@@ -3037,7 +3062,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  raw_ptr<FrameTreeNode> owner_;
+  raw_ptr<FrameTreeNode, DanglingUntriaged> owner_;
   base::RunLoop run_loop_;
 };
 
@@ -4072,7 +4097,7 @@ bool CompareWebContentsOutputToReference(
   // known state.
   {
     base::RunLoop run_loop;
-    web_contents->GetMainFrame()->InsertVisualStateCallback(
+    web_contents->GetPrimaryMainFrame()->InsertVisualStateCallback(
         base::BindLambdaForTesting([&](bool visual_state_updated) {
           ASSERT_TRUE(visual_state_updated);
           run_loop.Quit();
@@ -4081,7 +4106,7 @@ bool CompareWebContentsOutputToReference(
   }
 
   auto* rwh = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   if (!rwh->GetView() || !rwh->GetView()->IsSurfaceAvailableForCopy()) {
     ADD_FAILURE() << "RWHV surface not available for copy.";

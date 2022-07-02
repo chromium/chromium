@@ -93,7 +93,7 @@ void LogTabUnderAttempt(content::NavigationHandle* handle) {
   // previous navigation commit.
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::SourceId opener_source_id =
-      handle->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
+      handle->GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   if (opener_source_id != ukm::kInvalidSourceId && ukm_recorder) {
     ukm::builders::AbusiveExperienceHeuristic_TabUnder(opener_source_id)
         .SetDidTabUnder(true)
@@ -194,7 +194,7 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
     const std::string error =
         base::StringPrintf(kBlockTabUnderFormatMessage,
                            navigation_handle()->GetURL().spec().c_str());
-    contents->GetMainFrame()->AddMessageToConsole(
+    contents->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, error.c_str());
     LogAction(Action::kBlocked);
     ShowUI();

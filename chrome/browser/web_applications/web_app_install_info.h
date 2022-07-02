@@ -294,6 +294,10 @@ struct WebAppInstallInfo {
   // information.
   apps::UrlHandlers url_handlers;
 
+  // URL within scope to launch on the lock screen for a "show on lock screen"
+  // action. Valid iff this is considered a lock-screen-capable app.
+  GURL lock_screen_start_url;
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   GURL note_taking_new_note_url;
@@ -302,10 +306,6 @@ struct WebAppInstallInfo {
   // scope.
   blink::mojom::CaptureLinks capture_links =
       blink::mojom::CaptureLinks::kUndefined;
-
-  // Developer hint for whether app should handle links within its app scope.
-  blink::mojom::HandleLinks handle_links =
-      blink::mojom::HandleLinks::kUndefined;
 
   // Whether the app should be loaded in a dedicated storage partition.
   bool is_storage_isolated = false;
@@ -329,6 +329,10 @@ struct WebAppInstallInfo {
   // populated (especially for user installed or sync installed apps)
   // in which case the URL will not be written to the web_app DB.
   GURL install_url;
+
+  // Customisations to the tab strip. This field is only used when the
+  // display mode is set to 'tabbed'.
+  absl::optional<blink::Manifest::TabStrip> tab_strip;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

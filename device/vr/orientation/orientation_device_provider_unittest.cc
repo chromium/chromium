@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
@@ -157,8 +158,8 @@ class MockOrientationDeviceProviderClient : public VRDeviceProviderClient {
   }
 
  private:
-  base::RunLoop* wait_for_device_ = nullptr;
-  base::RunLoop* wait_for_init_ = nullptr;
+  raw_ptr<base::RunLoop> wait_for_device_ = nullptr;
+  raw_ptr<base::RunLoop> wait_for_init_ = nullptr;
 };
 
 TEST_F(VROrientationDeviceProviderTest, InitializationTest) {

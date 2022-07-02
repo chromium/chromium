@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEVTOOLS_SESSION_H_
 
 #include <memory>
+#include <type_traits>
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -31,6 +32,21 @@ class Document;
 class DocumentLoader;
 class InspectorAgent;
 class LocalFrame;
+class InspectorAuditsAgent;
+class InspectorCSSAgent;
+class InspectorCacheStorageAgent;
+class InspectorDOMAgent;
+class InspectorDOMDebuggerAgent;
+class InspectorDOMSnapshotAgent;
+class InspectorDatabaseAgent;
+class InspectorEmulationAgent;
+class InspectorIOAgent;
+class InspectorLogAgent;
+class InspectorNetworkAgent;
+class InspectorOverlayAgent;
+class InspectorPageAgent;
+class InspectorPerformanceAgent;
+class InspectorWebAudioAgent;
 
 class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
                                     public mojom::blink::DevToolsSession,
@@ -56,7 +72,15 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   void ConnectToV8(v8_inspector::V8Inspector*, int context_group_id);
   v8_inspector::V8InspectorSession* V8Session() { return v8_session_.get(); }
 
-  void Append(InspectorAgent*);
+  template <typename Agent, typename... Args>
+  Agent* CreateAndAppend(Args&&... args) {
+    if (!IsDomainAvailableToUntrustedClient<Agent>() && !client_is_trusted_) {
+      return nullptr;
+    }
+    auto agent = MakeGarbageCollected<Agent>(std::forward<Args>(args)...);
+    Append(agent);
+    return agent;
+  }
   void Detach();
   void Trace(Visitor*) const;
 
@@ -106,6 +130,26 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   blink::mojom::blink::DevToolsMessagePtr FinalizeMessage(
       std::vector<uint8_t> message) const;
 
+  template <typename T>
+  bool IsDomainAvailableToUntrustedClient() {
+    return std::disjunction_v<std::is_same<T, InspectorAuditsAgent>,
+                              std::is_same<T, InspectorCSSAgent>,
+                              std::is_same<T, InspectorCacheStorageAgent>,
+                              std::is_same<T, InspectorDOMAgent>,
+                              std::is_same<T, InspectorDOMDebuggerAgent>,
+                              std::is_same<T, InspectorDOMSnapshotAgent>,
+                              std::is_same<T, InspectorDatabaseAgent>,
+                              std::is_same<T, InspectorEmulationAgent>,
+                              std::is_same<T, InspectorIOAgent>,
+                              std::is_same<T, InspectorLogAgent>,
+                              std::is_same<T, InspectorNetworkAgent>,
+                              std::is_same<T, InspectorOverlayAgent>,
+                              std::is_same<T, InspectorPageAgent>,
+                              std::is_same<T, InspectorPerformanceAgent>,
+                              std::is_same<T, InspectorWebAudioAgent>>;
+  }
+  void Append(InspectorAgent*);
+
   Member<DevToolsAgent> agent_;
   // DevToolsSession is not tied to ExecutionContext
   HeapMojoAssociatedReceiver<mojom::blink::DevToolsSession, DevToolsSession>
@@ -123,6 +167,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   // See https://bugs.chromium.org/p/chromium/issues/detail?id=1044989#c8
   Vector<base::OnceCallback<std::vector<uint8_t>()>> notification_queue_;
   const bool client_expects_binary_responses_;
+  const bool client_is_trusted_;
   InspectorAgentState v8_session_state_;
   InspectorAgentState::Bytes v8_session_state_cbor_;
   const String session_id_;

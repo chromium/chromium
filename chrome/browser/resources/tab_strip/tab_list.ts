@@ -6,17 +6,18 @@ import './strings.m.js';
 import './tab.js';
 import './tab_group.js';
 
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
 import {isTabElement, TabElement} from './tab.js';
 import {isDragHandle, isTabGroupElement, TabGroupElement} from './tab_group.js';
+import {getTemplate} from './tab_list.html.js';
 import {Tab, TabGroupVisualData} from './tab_strip.mojom-webui.js';
 import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
@@ -149,7 +150,7 @@ export class TabListElement extends CustomElement implements
   private scrollListener_: (e: Event) => void;
 
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   constructor() {
@@ -248,8 +249,7 @@ export class TabListElement extends CustomElement implements
         () => this.onReceivedKeyboardFocus_());
 
     callbackRouter.themeChanged.addListener(() => {
-      // Refetch theme colors, group color and tab favicons on theme change.
-      this.fetchAndUpdateColors_();
+      // Refetch theme group color and tab favicons on theme change.
       this.fetchAndUpdateGroupData_();
       this.fetchAndUpdateTabs_();
     });
@@ -273,6 +273,8 @@ export class TabListElement extends CustomElement implements
 
     const dragManager = new DragManager(this);
     dragManager.startObserving();
+
+    startColorChangeUpdater();
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -336,7 +338,6 @@ export class TabListElement extends CustomElement implements
   connectedCallback() {
     this.tabsApi_.getLayout().then(
         ({layout}) => this.applyCSSDictionary_(layout));
-    this.fetchAndUpdateColors_();
 
     const getTabsStartTimestamp = Date.now();
     this.tabsApi_.getTabs().then(({tabs}) => {
@@ -393,11 +394,6 @@ export class TabListElement extends CustomElement implements
   private findTabGroupElement_(groupId: string): TabGroupElement|null {
     return this.$<TabGroupElement>(
         `tabstrip-tab-group[data-group-id="${groupId}"]`);
-  }
-
-  private fetchAndUpdateColors_() {
-    this.tabsApi_.getColors().then(
-        ({colors}) => this.applyCSSDictionary_(colors));
   }
 
   private fetchAndUpdateGroupData_() {
@@ -508,7 +504,12 @@ export class TabListElement extends CustomElement implements
   }
 
   private onTabActivating_(id: number) {
-    assert(this.activatingTabId_ === undefined);
+    // onTabActivating_() is called when the user clicks on a tab in JavaScript.
+    // We then expect a callback asynchronously from the browser after the tab
+    // we clicked on has finally activated. We may incur multiple calls to
+    // onTabActivating_()  before the active tab actually changes so we only
+    // consider the most recent activating action when recording metrics. (See
+    // crbug.com/1333405)
     const activeTab = this.getActiveTab_();
     if (activeTab && activeTab.tab.id === id) {
       return;

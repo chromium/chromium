@@ -26,7 +26,8 @@ Animation::TimerControl::TimerControl(const base::TimeDelta& offset,
                                       const base::TimeDelta& cycle_duration,
                                       const base::TimeDelta& total_duration,
                                       const base::TimeTicks& start_timestamp,
-                                      bool should_reverse)
+                                      bool should_reverse,
+                                      float playback_speed)
     : start_offset_(offset),
       end_offset_((offset + cycle_duration)),
       cycle_duration_(end_offset_ - start_offset_),
@@ -34,10 +35,17 @@ Animation::TimerControl::TimerControl(const base::TimeDelta& offset,
       previous_tick_(start_timestamp),
       progress_(base::Milliseconds(0)),
       current_cycle_progress_(start_offset_),
-      should_reverse_(should_reverse) {}
+      should_reverse_(should_reverse) {
+  SetPlaybackSpeed(playback_speed);
+}
+
+void Animation::TimerControl::SetPlaybackSpeed(float playback_speed) {
+  DCHECK_GT(playback_speed, 0.f);
+  playback_speed_ = playback_speed;
+}
 
 void Animation::TimerControl::Step(const base::TimeTicks& timestamp) {
-  progress_ += timestamp - previous_tick_;
+  progress_ += (timestamp - previous_tick_) * playback_speed_;
   previous_tick_ = timestamp;
 
   base::TimeDelta completed_cycles_duration =
@@ -242,6 +250,7 @@ void Animation::Paint(gfx::Canvas* canvas,
 void Animation::PaintFrame(gfx::Canvas* canvas,
                            float t,
                            const gfx::Size& size) {
+  TRACE_EVENT1("ui", "Animation::PaintFrame", "timestamp", t);
   DCHECK_GE(t, 0.f);
   DCHECK_LE(t, 1.f);
   // Not all of the image assets necessarily appear in the frame at time |t|. To
@@ -257,6 +266,12 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                       color_map_, text_map_);
 }
 
+void Animation::SetPlaybackSpeed(float playback_speed) {
+  playback_speed_ = playback_speed;
+  if (timer_control_)
+    timer_control_->SetPlaybackSpeed(playback_speed_);
+}
+
 cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
     gfx::Canvas* canvas,
     cc::SkottieFrameDataMap& all_frame_data,
@@ -264,6 +279,7 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
     float t,
     sk_sp<SkImage>&,
     SkSamplingOptions&) {
+  TRACE_EVENT0("ui", "Animation::LoadImageForAsset");
   cc::SkottieFrameDataProvider::ImageAsset& image_asset =
       *image_assets_.at(asset_id);
   all_frame_data.emplace(asset_id,
@@ -277,7 +293,7 @@ void Animation::InitTimer(const base::TimeTicks& timestamp) {
   DCHECK(!timer_control_);
   timer_control_ = std::make_unique<TimerControl>(
       scheduled_start_offset_, scheduled_duration_, GetAnimationDuration(),
-      timestamp, style_ == Style::kThrobbing);
+      timestamp, style_ == Style::kThrobbing, playback_speed_);
 }
 
 void Animation::TryNotifyAnimationCycleEnded() const {

@@ -33,7 +33,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_fallback.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -623,6 +624,10 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.hw_pref == new_config.hw_pref;
 }
 
+const AtomicString& VideoEncoder::InterfaceName() const {
+  return event_target_names::kVideoEncoder;
+}
+
 bool VideoEncoder::HasPendingActivity() const {
   return (active_encodes_ > 0) || Base::HasPendingActivity();
 }
@@ -641,10 +646,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0u);
 
+  auto frame = request->input->frame();
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
   active_encodes_++;
-  request->StartTracingVideoEncode(keyframe);
+  request->StartTracingVideoEncode(keyframe, frame->timestamp());
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::EncoderStatus status) {
@@ -662,8 +668,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
     req->EndTracing();
     self->ProcessRequests();
   };
-
-  scoped_refptr<media::VideoFrame> frame = request->input->frame();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
@@ -689,6 +693,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
              base::TimeDelta timestamp, media::VideoFrameMetadata metadata,
              media::VideoEncoder::EncoderStatusCB done_callback,
              scoped_refptr<media::VideoFrame> frame) {
+            TRACE_EVENT_NESTABLE_ASYNC_END0(
+                "media", "CopyRGBATextureToVideoFrame", self);
             if (!self || self->reset_count_ != reset_count || !frame)
               return;
 
@@ -700,6 +706,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
             --self->requested_encodes_;
+            self->ScheduleDequeueEvent();
             self->blocking_request_in_progress_ = false;
             self->media_encoder_->Encode(std::move(frame), keyframe,
                                          std::move(done_callback));
@@ -732,6 +739,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
           gfx::ColorSpace::MatrixID::SMPTE170M,
           gfx::ColorSpace::RangeID::LIMITED);
+
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
+                                        this, "timestamp", frame->timestamp());
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
               format, frame->coded_size(), frame->ColorSpace(), origin,
               frame->mailbox_holder(0), dst_color_space,
@@ -743,6 +753,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
         request->input->close();
         return;
       }
+
+      TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame",
+                                      this);
 
       // Error occurred, fall through to normal readback path below.
       blocking_request_in_progress_ = false;
@@ -785,6 +798,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   }
 
   --requested_encodes_;
+  ScheduleDequeueEvent();
   media_encoder_->Encode(frame, keyframe,
                          ConvertToBaseOnceCallback(CrossThreadBindOnce(
                              done_callback, WrapCrossThreadWeakPersistent(this),

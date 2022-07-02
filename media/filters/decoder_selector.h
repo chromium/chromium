@@ -54,6 +54,7 @@ class MEDIA_EXPORT DecoderSelector {
   typedef DecoderStreamTraits<StreamType> StreamTraits;
   typedef typename StreamTraits::DecoderType Decoder;
   typedef typename StreamTraits::DecoderConfigType DecoderConfig;
+  using DecoderOrError = DecoderStatus::Or<std::unique_ptr<Decoder>>;
 
   // Callback to create a list of decoders to select from.
   // TODO(xhwang): Use a DecoderFactory to create decoders one by one as needed,
@@ -76,7 +77,7 @@ class MEDIA_EXPORT DecoderSelector {
   // The caller should call DecryptingDemuxerStream::Reset() before
   // calling Decoder::Reset() to release any pending decryption or read.
   using SelectDecoderCB =
-      base::OnceCallback<void(std::unique_ptr<Decoder>,
+      base::OnceCallback<void(DecoderOrError,
                               std::unique_ptr<DecryptingDemuxerStream>)>;
 
   DecoderSelector() = delete;
@@ -98,17 +99,27 @@ class MEDIA_EXPORT DecoderSelector {
                   WaitingCB waiting_cb);
 
   // Selects and initializes a decoder, which will be returned via
-  // |select_decoder_cb| posted to |task_runner|. Subsequent calls to
-  // SelectDecoder() will return different decoder instances, until all
-  // potential decoders have been exhausted.
+  // |select_decoder_cb| posted to |task_runner|. In the event that a selected
+  // decoder fails to decode, |ResumeDecoderSelection| may be used to get
+  // another one.
   //
   // When the caller determines that decoder selection has succeeded (eg.
   // because the decoder decoded a frame successfully), it should call
   // FinalizeDecoderSelection().
   //
+  // |SelectDecoderCB| may be called with an error if no decoders are available.
+  //
   // Must not be called while another selection is pending.
-  void SelectDecoder(SelectDecoderCB select_decoder_cb,
-                     typename Decoder::OutputCB output_cb);
+  void BeginDecoderSelection(SelectDecoderCB select_decoder_cb,
+                             typename Decoder::OutputCB output_cb);
+
+  // When a client was provided with a decoder that fails to decode after
+  // being successfully initialized, it should request a new decoder via
+  // this method rather than |SelectDecoder|. This allows the pipeline to
+  // report the root cause of decoder failure.
+  void ResumeDecoderSelection(SelectDecoderCB select_decoder_cb,
+                              typename Decoder::OutputCB output_cb,
+                              DecoderStatus&& reinit_cause);
 
   // Signals that decoder selection has been completed (successfully). Future
   // calls to SelectDecoder() will select from the full list of decoders.
@@ -131,13 +142,16 @@ class MEDIA_EXPORT DecoderSelector {
 
  private:
   void CreateDecoders();
-  void InitializeDecoder();
+  void GetAndInitializeNextDecoder();
   void OnDecoderInitializeDone(DecoderStatus status);
-  void ReturnNullDecoder();
+  void ReturnSelectionError(DecoderStatus error);
   void InitializeDecryptingDemuxerStream();
   void OnDecryptingDemuxerStreamInitializeDone(PipelineStatus status);
-  void RunSelectDecoderCB();
+  void RunSelectDecoderCB(DecoderOrError decoder_or_error);
   void FilterAndSortAvailableDecoders();
+  void SelectDecoderInternal(SelectDecoderCB select_decoder_cb,
+                             typename Decoder::OutputCB output_cb,
+                             bool needs_new_decoders);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -153,10 +167,9 @@ class MEDIA_EXPORT DecoderSelector {
 
   // Overall decoder selection state.
   DecoderConfig config_;
-  bool is_selecting_decoders_ = false;
   std::vector<std::unique_ptr<Decoder>> decoders_;
 
-  // State for a single SelectDecoder() invocation.
+  // State for a single GetAndInitializeNextDecoder() invocation.
   SelectDecoderCB select_decoder_cb_;
   typename Decoder::OutputCB output_cb_;
   std::unique_ptr<Decoder> decoder_;
@@ -168,6 +181,11 @@ class MEDIA_EXPORT DecoderSelector {
   bool is_selecting_for_config_change_ = false;
   base::TimeTicks decoder_selection_start_;
   base::TimeTicks codec_change_start_;
+
+  // Used to keep track of the original failure-to-decode reason so that if
+  // playback fails entirely, we have a root cause to point to, rather than
+  // failing due to running out of more acceptable decoders.
+  absl::optional<DecoderStatus> decode_failure_reinit_cause_ = absl::nullopt;
 
   base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
 };

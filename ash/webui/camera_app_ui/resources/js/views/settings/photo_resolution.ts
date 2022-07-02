@@ -8,9 +8,9 @@ import {
   PhotoResolutionOptionGroup,
 } from '../../device/type.js';
 import * as dom from '../../dom.js';
+import * as expert from '../../expert.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import * as state from '../../state.js';
 import {Facing, Resolution, ViewName} from '../../type.js';
 import {instantiateTemplate, setupI18nElements} from '../../util.js';
 
@@ -101,7 +101,7 @@ export class PhotoResolutionSettings extends BaseSettings {
       input.addEventListener('click', (event) => {
         this.focusedDeviceId = deviceId;
         this.menuScrollTop = this.menu.scrollTop;
-        if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+        if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
           this.cameraManager.setPrefPhotoResolution(deviceId, resolution);
         } else {
           this.cameraManager.setPrefPhotoResolutionLevel(

@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#include "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -45,7 +45,8 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
+    mocked_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
   }
 
   // Creates a RequestDesktopOrMobileSiteActivity instance.
@@ -62,7 +63,7 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebNavigationBrowserAgent* agent_;
-  // Navigation manager for the web state at index 0 in |browser_|'s web state
+  // Navigation manager for the web state at index 0 in `browser_`'s web state
   // list.
   web::FakeNavigationManager* navigation_manager_;
 };

@@ -22,8 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2022-05-18">
-  <owner>jarrydg@chromium.org</owner>
+<histogram name="Quota.AgeOfDataInDays" units="days" expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many kilobytes are how old. Similar to |AgeOfOrigin| except a sample is
@@ -35,7 +35,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Quota.AgeOfOriginInDays" units="days"
     expires_after="2023-03-09">
   <owner>ayui@chromium.org</owner>
-  <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many days it's been since an origin's temporary storage has been
@@ -44,8 +43,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2022-10-23">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2022-12-25">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of free disk space for the storage directory. Logged at irregular
@@ -54,8 +53,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2022-09-11">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2022-11-13">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of free disk space for the storage directory. Logged when collecting
@@ -63,8 +62,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-10-23">
-  <owner>jarrydg@chromium.org</owner>
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-12-25">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Difference between acceptable lower limit of diskspace and actual free
@@ -84,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBucketDaysSinceAccess" units="units"
-    expires_after="2022-06-26">
+    expires_after="2023-05-18">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -94,7 +93,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.EvictedBucketPerHour" units="units"
+<histogram name="Quota.EvictedBucketsPerHour" units="buckets"
     expires_after="2022-12-10">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -106,7 +105,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
     expires_after="2023-02-08">
-  <owner>jarrydg@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of usage used by evicted buckets in an eviction round. Prior to M94,
@@ -115,14 +114,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
-    expires_after="2020-10-18">
-  <owner>jarrydg@chromium.org</owner>
-  <summary>Number of eviction rounds in an hour.</summary>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of eviction rounds in an hour. Histogram expired between 2020/10 and
+    2022/06.
+  </summary>
 </histogram>
 
 <histogram name="Quota.GlobalTemporaryPoolSize" units="MB"
-    expires_after="2022-08-28">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The size of the global temporary storage pool. Logged at irregular
@@ -132,13 +135,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Quota.GlobalUsageOfPersistentStorage" units="MB"
     expires_after="2022-10-23">
-  <owner>jarrydg@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>Global usage of persistent storage.</summary>
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfTemporaryStorage" units="MB"
     expires_after="2022-10-23">
-  <owner>jarrydg@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>Global usage of temporary storage.</summary>
 </histogram>
 
@@ -150,8 +155,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2022-09-25">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2022-11-27">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is free. Logged at irregular
@@ -161,7 +166,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
     expires_after="2022-10-30">
-  <owner>jarrydg@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is free. Logged when collecting usage
@@ -170,8 +175,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentUsedByOrigin" units="%"
-    expires_after="2022-09-25">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2022-11-27">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of an origin's quota that is being used by the origin. Logged at
@@ -180,8 +185,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentUsedForTemporaryStorage2" units="%"
-    expires_after="2022-08-21">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2023-06-23">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is being use for temporary storage.
@@ -197,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -207,8 +212,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2022-08-21">
-  <owner>jarrydg@chromium.org</owner>
+<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The quota value computed for an origin using temporary storage. Logged at
@@ -221,14 +226,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.SkippedEvictionRoundsPerHour" units="units"
-    expires_after="2018-08-30">
-  <owner>jarrydg@chromium.org</owner>
-  <summary>Number of skipped eviction rounds in an hour.</summary>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of skipped eviction rounds in an hour. Histogram expired between
+    2018/08 and 2022/06.
+  </summary>
 </histogram>
 
 <histogram name="Quota.SkippedInvalidOriginUsage" enum="InvalidOriginReason"
-    expires_after="2022-07-07">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     While accumulating usage information, ClientUsageTracker is encountering
@@ -239,7 +248,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
     expires_after="2023-02-08">
-  <owner>jarrydg@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Time between two consecutive eviction rounds. Only recorded if at least one
@@ -248,13 +257,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
-    expires_after="2018-08-30">
-  <owner>jarrydg@chromium.org</owner>
-  <summary>Time spent to an eviction round.</summary>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Time spent to an eviction round. Histogram expired between 2018/08 and
+    2022/06.
+  </summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2022-10-06">
-  <owner>jarrydg@chromium.org</owner>
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2022-12-11">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Total disk space for the storage directory. Logged at irregular intervals.
@@ -262,8 +275,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
-    expires_after="2022-07-24">
-  <owner>jarrydg@chromium.org</owner>
+    expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Whether base::SysInfo::AmountOfTotalDiskSpace() returned zero or a negative
@@ -272,8 +285,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2022-07-07">
-  <owner>jarrydg@chromium.org</owner>
+<histogram name="Quota.UsageByOrigin" units="MB" expires_after="2023-06-24">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Disk space (in MB) currently used by an origin. Logged hourly.

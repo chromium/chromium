@@ -117,6 +117,25 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestInsanceLost) {
       this, device_test::mojom::EventType::kInstanceLost);
 }
 
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionExited) {
+  // Set the device up to reject the session request. This should translate to
+  // immediately translating the device to the "Exited" state.
+  MockXRDeviceHookBase transition_mock;
+  transition_mock.SetCanCreateSession(false);
+
+  this->LoadFileAndAwaitInitialization("generic_webxr_page");
+
+  // Not using "EnterSessionWithUserGestureOrFail" because we actually expect
+  // the session to reject. So instead we check that an error got set.
+  this->EnterSessionWithUserGesture();
+  this->PollJavaScriptBooleanOrFail(
+      "sessionInfos[sessionTypes.IMMERSIVE].error != null", kPollTimeoutLong);
+
+  // Tell JavaScript that it is done with the test.
+  this->RunJavaScriptOrFail("done()");
+  this->EndTest();
+}
+
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {
   MockXRDeviceHookBase transition_mock;
   this->LoadFileAndAwaitInitialization("webxr_test_visibility_changed");

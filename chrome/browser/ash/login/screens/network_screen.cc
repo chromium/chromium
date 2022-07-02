@@ -17,7 +17,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -44,6 +43,8 @@ std::string NetworkScreen::GetResultString(Result result) {
       return "Back";
     case Result::NOT_APPLICABLE:
     case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
+    case Result::NOT_APPLICABLE_CONNECTED_DEMO:
+    case Result::NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -133,16 +134,15 @@ void NetworkScreen::SetNetworkStateHelperForTest(
 void NetworkScreen::SubscribeNetworkNotification() {
   if (!is_network_subscribed_) {
     is_network_subscribed_ = true;
-    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
-                                                                FROM_HERE);
+    network_state_handler_observer_.Observe(
+        NetworkHandler::Get()->network_state_handler());
   }
 }
 
 void NetworkScreen::UnsubscribeNetworkNotification() {
   if (is_network_subscribed_) {
     is_network_subscribed_ = false;
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
+    network_state_handler_observer_.Reset();
   }
 }
 
@@ -263,9 +263,10 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
     // Screen not shown yet: skipping it.
     if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
       if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-        exit_callback_.Run(Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+        exit_callback_.Run(
+            Result::NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT);
       else
-        exit_callback_.Run(Result::CONNECTED_DEMO);
+        exit_callback_.Run(Result::NOT_APPLICABLE_CONNECTED_DEMO);
     } else {
       if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
         exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);

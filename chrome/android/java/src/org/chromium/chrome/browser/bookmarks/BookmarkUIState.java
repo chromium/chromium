@@ -14,10 +14,10 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * A class representing the UI state of the {@link BookmarkManager}. All
  * states can be uniquely identified by a URL.
  */
-class BookmarkUIState {
-    static final int STATE_LOADING = 1;
-    static final int STATE_FOLDER = 2;
-    static final int STATE_SEARCHING = 3;
+public class BookmarkUIState {
+    public static final int STATE_LOADING = 1;
+    public static final int STATE_FOLDER = 2;
+    public static final int STATE_SEARCHING = 3;
     private static final int STATE_INVALID = 0;
     private static final String SHOPPING_FILTER_URL =
             UrlConstants.BOOKMARKS_FOLDER_URL + "/shopping";
@@ -91,7 +91,7 @@ class BookmarkUIState {
         return state;
     }
 
-    static Uri createFolderUrl(BookmarkId folderId) {
+    public static Uri createFolderUrl(BookmarkId folderId) {
         Uri.Builder builder = Uri.parse(UrlConstants.BOOKMARKS_FOLDER_URL).buildUpon();
         // Encodes the path and appends it to the base url. A simple appending
         // does not work because there might be spaces in suffix.

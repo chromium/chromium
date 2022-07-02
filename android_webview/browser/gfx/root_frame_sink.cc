@@ -55,7 +55,10 @@ class RootFrameSink::ChildCompositorFrameSink
                             std::move(resources));
   }
   void OnCompositorFrameTransitionDirectiveProcessed(
-      uint32_t sequence_id) override {}
+      uint32_t sequence_id) override {
+    owner_->OnCompositorFrameTransitionDirectiveProcessed(
+        frame_sink_id_, layer_tree_frame_sink_id_, sequence_id);
+  }
 
   const viz::FrameSinkId frame_sink_id() { return frame_sink_id_; }
 
@@ -208,8 +211,8 @@ void RootFrameSink::RemoveChildFrameSinkId(
 }
 
 void RootFrameSink::SetContainedSurfaces(
-    const std::vector<viz::SurfaceId>& ids) {
-  contained_surfaces_ = base::flat_set<viz::SurfaceId>(ids.begin(), ids.end());
+    const base::flat_set<viz::SurfaceId>& ids) {
+  contained_surfaces_ = ids;
   for (auto it = last_invalidated_frame_id_.begin();
        it != last_invalidated_frame_id_.end();) {
     if (!contained_surfaces_.contains(it->first))
@@ -370,6 +373,16 @@ void RootFrameSink::ReturnResources(
   if (client_)
     client_->ReturnResources(frame_sink_id, layer_tree_frame_sink_id,
                              std::move(resources));
+}
+
+void RootFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
+    viz::FrameSinkId frame_sink_id,
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  if (client_) {
+    client_->OnCompositorFrameTransitionDirectiveProcessed(
+        frame_sink_id, layer_tree_frame_sink_id, sequence_id);
+  }
 }
 
 void RootFrameSink::DettachClient() {

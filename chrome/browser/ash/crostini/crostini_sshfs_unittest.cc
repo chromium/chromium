@@ -12,17 +12,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_timeouts.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +25,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
@@ -71,6 +67,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
  public:
   CrostiniSshfsHelperTest() {
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -110,6 +107,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -150,7 +148,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
             Invoke(this, &CrostiniSshfsHelperTest::NotifyMountEvent));
   }
 
-  void SetContainerRunning(ContainerId container) {
+  void SetContainerRunning(guest_os::GuestId container) {
     auto* manager = CrostiniManager::GetForProfile(profile());
     ContainerInfo info(container.container_name, "username", "homedir",
                        "1.2.3.4");
@@ -172,12 +170,12 @@ class CrostiniSshfsHelperTest : public testing::Test {
 };
 
 TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(1);
   bool result = false;
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([&result](bool res) { result = res; }), true);
   task_environment_.RunUntilIdle();
 
@@ -198,7 +196,7 @@ TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([&result](bool res) { result = res; }), false);
   task_environment_.RunUntilIdle();
 
@@ -211,7 +209,8 @@ TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
-  auto not_default = ContainerId("vm_name", "container_name");
+  auto not_default =
+      guest_os::GuestId(kCrostiniDefaultVmType, "vm_name", "container_name");
   SetContainerRunning(not_default);
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 
@@ -229,7 +228,8 @@ TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
-  auto not_default = ContainerId("vm_name", "container_name");
+  auto not_default =
+      guest_os::GuestId(kCrostiniDefaultVmType, "vm_name", "container_name");
   SetContainerRunning(not_default);
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 
@@ -245,17 +245,17 @@ TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
 
   ExpectMountCalls(1);
   int successes = 0;
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting(
           [&successes](bool result) { successes += result; }),
       false);
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting(
           [&successes](bool result) { successes += result; }),
       false);
@@ -275,7 +275,7 @@ TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(2);
   EXPECT_CALL(*disk_manager_, UnmountPath)
       .WillOnce(testing::Invoke(
@@ -286,15 +286,15 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
           }));
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
   crostini_sshfs_->UnmountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
 
@@ -313,16 +313,16 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, ContainerShutdownClearsMountStatus) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(2);
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
-  crostini_sshfs_->OnContainerShutdown(ContainerId::GetDefault());
+  crostini_sshfs_->OnContainerShutdown(DefaultContainerId());
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), true);
   task_environment_.RunUntilIdle();
 

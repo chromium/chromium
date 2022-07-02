@@ -123,6 +123,8 @@ TEST_F(CrosapiUtilTest, EmptyDeviceSettings) {
             crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
   EXPECT_EQ(settings->device_system_wide_tracing_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
+  EXPECT_EQ(settings->device_restricted_managed_guest_session_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
 }
 
 TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
@@ -134,6 +136,12 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   testing_profile_.ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kAttestationForContentProtectionEnabled, true);
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kAccountsPrefEphemeralUsersEnabled, false);
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
 
   base::Value allowlist(base::Value::Type::LIST);
   base::Value ids(base::Value::Type::DICTIONARY);
@@ -149,6 +157,10 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
       ->RestoreRealDeviceSettingsProvider();
 
   EXPECT_EQ(settings->attestation_for_content_protection_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
+  EXPECT_EQ(settings->device_ephemeral_users_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kFalse);
+  EXPECT_EQ(settings->device_restricted_managed_guest_session_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
   ASSERT_EQ(settings->usb_detachable_allow_list->usb_device_ids.size(), 1u);
   EXPECT_EQ(

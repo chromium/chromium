@@ -129,6 +129,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   using UninstallDialogs =
       base::flat_map<std::string, std::unique_ptr<apps::UninstallDialog>>;
 
+  bool IsValidProfile() override;
   void Initialize() override;
 
   // KeyedService overrides.

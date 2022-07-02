@@ -27,7 +27,10 @@ cargo_crate("lib") {
     "//third_party/rust/ryu/v1:lib",
     "//third_party/rust/serde/v1:lib",
   ]
-  features = [ "std" ]
+  features = [
+    "std",
+    "unbounded_depth",
+  ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
 }

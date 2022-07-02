@@ -9,6 +9,8 @@
 
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,6 +25,7 @@ class FakeSpeechRecognitionService
     : public SpeechRecognitionService,
       public media::mojom::SpeechRecognitionContext,
       public media::mojom::SpeechRecognitionRecognizer,
+      public media::mojom::AudioSourceSpeechRecognitionContext,
       public media::mojom::AudioSourceFetcher {
  public:
   FakeSpeechRecognitionService();
@@ -30,8 +33,14 @@ class FakeSpeechRecognitionService
   FakeSpeechRecognitionService& operator=(const SpeechRecognitionService&) =
       delete;
   ~FakeSpeechRecognitionService() override;
-  void Create(mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-                  receiver) override;
+
+  // SpeechRecognitionService:
+  void BindSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver)
+      override;
+  void BindAudioSourceSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+          receiver) override;
 
   // media::mojom::SpeechRecognitionContext:
   void BindRecognizer(
@@ -40,6 +49,8 @@ class FakeSpeechRecognitionService
           client,
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
+
+  // media::mojom::AudioSourceSpeechRecognitionContext:
   void BindAudioSourceFetcher(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
@@ -104,6 +115,8 @@ class FakeSpeechRecognitionService
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>
       recognizer_client_remote_;
 
+  mojo::ReceiverSet<media::mojom::AudioSourceSpeechRecognitionContext>
+      audio_source_speech_recognition_contexts_;
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>

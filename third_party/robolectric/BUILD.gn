@@ -16,11 +16,13 @@ group("robolectric_runtime_jars") {
     "//third_party/robolectric/lib/android-all-instrumented-9-robolectric-4913185-2-i3.jar",
     "//third_party/robolectric/lib/android-all-instrumented-10-robolectric-5803371-i3.jar",
     "//third_party/robolectric/lib/android-all-instrumented-11-robolectric-6757853-i3.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-12-robolectric-7732740-i3.jar",
   ]
 }
 
-java_prebuilt("android-all-10-robolectric-5803371_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-10-robolectric-5803371.jar"
+# Robolectric tests compile against the robolectric sdk. This should be kept in
+# sync with the latest version in //third_party/android_sdk.
+android_system_java_prebuilt("robolectric_test_sdk_java") {
+  jar_path =
+      "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
 }

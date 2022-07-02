@@ -40,6 +40,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using content_settings::PageSpecificContentSettings;
@@ -53,11 +54,12 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
             blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS) {
   }
 
-  void OnMediaStreamResponse(const blink::mojom::StreamDevices& devices,
-                             blink::mojom::MediaStreamRequestResult result,
-                             std::unique_ptr<content::MediaStreamUI> ui) {
+  void OnMediaStreamResponse(
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui) {
     blink::MediaStreamDevices devices_list =
-        blink::StreamDevicesToMediaStreamDevicesList(devices);
+        blink::ToMediaStreamDevicesList(stream_devices_set);
     EXPECT_EQ(devices_list.empty(), !ui);
     media_stream_devices_ = devices_list;
     media_stream_result_ = result;
@@ -72,7 +74,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
 
   PageSpecificContentSettings* GetContentSettings() {
     return PageSpecificContentSettings::GetForFrame(
-        GetWebContents()->GetMainFrame());
+        GetWebContents()->GetPrimaryMainFrame());
   }
 
   const std::string& example_audio_id() const { return example_audio_id_; }
@@ -159,17 +161,20 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
         video_id.empty() ? blink::mojom::MediaStreamType::NO_SERVICE
                          : blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
     if (!GetWebContents()
-             ->GetMainFrame()
+             ->GetPrimaryMainFrame()
              ->GetLastCommittedOrigin()
              .GetURL()
              .is_empty()) {
-      EXPECT_EQ(
-          example_url().DeprecatedGetOriginAsURL(),
-          GetWebContents()->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+      EXPECT_EQ(example_url().DeprecatedGetOriginAsURL(),
+                GetWebContents()
+                    ->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .GetURL());
     }
     int render_process_id =
-        GetWebContents()->GetMainFrame()->GetProcess()->GetID();
-    int render_frame_id = GetWebContents()->GetMainFrame()->GetRoutingID();
+        GetWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int render_frame_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
         example_url().DeprecatedGetOriginAsURL(), false, request_type, audio_id,
@@ -957,14 +962,16 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   permission_bubble_media_access_handler_->HandleRequest(
       prompt_contents,
       CreateRequest(example_audio_id(), example_video_id(), false),
-      base::BindOnce([](const blink::mojom::StreamDevices& devices,
-                        blink::mojom::MediaStreamRequestResult result,
-                        std::unique_ptr<content::MediaStreamUI> ui) {
-        // The permission may be dismissed before we have a chance to delete the
-        // request.
-        EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
-                  result);
-      }),
+      base::BindOnce(
+          [](const blink::mojom::StreamDevicesSet& stream_devices_set,
+             blink::mojom::MediaStreamRequestResult result,
+             std::unique_ptr<content::MediaStreamUI> ui) {
+            // The permission may be dismissed before we have a chance to delete
+            // the request.
+            EXPECT_EQ(
+                blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
+                result);
+          }),
       nullptr);
   // Since the mock prompt factory holds a reference to the
   // PermissionRequestManager for the WebContents and uses that reference in its
@@ -1020,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =
-      ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
 
   content::MediaStreamRequest request =
       CreateRequest(example_audio_id(), example_video_id(), false);
@@ -1052,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   content::NavigateIframeToURL(GetWebContents(), "test",
                                GURL(cross_origin_url));
   content::RenderFrameHost* child_frame =
-      ChildFrameAt(GetWebContents()->GetMainFrame(), 0);
+      ChildFrameAt(GetWebContents()->GetPrimaryMainFrame(), 0);
 
   content::MediaStreamRequest request =
       CreateRequest(std::string(), example_video_id(), false);

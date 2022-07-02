@@ -90,16 +90,6 @@ int CompareCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
-bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
-}
-
-bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
-}
-
 const std::string& EmptyString() {
   static const base::NoDestructor<std::string> s;
   return *s;
@@ -184,9 +174,9 @@ void TruncateUTF8ToByteSize(const std::string& input,
   while (char_index >= 0) {
     int32_t prev = char_index;
     base_icu::UChar32 code_point = 0;
-    CBU8_NEXT(data, char_index, truncation_length, code_point);
-    if (!IsValidCharacter(code_point) ||
-        !IsValidCodepoint(code_point)) {
+    CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
+              truncation_length, code_point);
+    if (!IsValidCharacter(code_point)) {
       char_index = prev - 1;
     } else {
       break;
@@ -194,7 +184,7 @@ void TruncateUTF8ToByteSize(const std::string& input,
   }
 
   if (char_index >= 0 )
-    *output = input.substr(0, char_index);
+    *output = input.substr(0, static_cast<size_t>(char_index));
   else
     output->clear();
 }
@@ -265,14 +255,6 @@ bool IsStringUTF8AllowingNoncharacters(StringPiece str) {
   return internal::DoIsStringUTF8<IsValidCodepoint>(str);
 }
 
-bool LowerCaseEqualsASCII(StringPiece str, StringPiece lowercase_ascii) {
-  return internal::DoLowerCaseEqualsASCII(str, lowercase_ascii);
-}
-
-bool LowerCaseEqualsASCII(StringPiece16 str, StringPiece lowercase_ascii) {
-  return internal::DoLowerCaseEqualsASCII(str, lowercase_ascii);
-}
-
 bool EqualsASCII(StringPiece16 str, StringPiece ascii) {
   return std::equal(ascii.begin(), ascii.end(), str.begin(), str.end());
 }
@@ -301,24 +283,12 @@ bool EndsWith(StringPiece16 str,
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
 
-char HexDigitToInt(wchar_t c) {
+char HexDigitToInt(char c) {
   DCHECK(IsHexDigit(c));
   if (c >= '0' && c <= '9')
     return static_cast<char>(c - '0');
-  if (c >= 'A' && c <= 'F')
-    return static_cast<char>(c - 'A' + 10);
-  if (c >= 'a' && c <= 'f')
-    return static_cast<char>(c - 'a' + 10);
-  return 0;
-}
-
-bool IsUnicodeWhitespace(wchar_t c) {
-  // kWhitespaceWide is a NULL-terminated string
-  for (const wchar_t* cur = kWhitespaceWide; *cur; ++cur) {
-    if (*cur == c)
-      return true;
-  }
-  return false;
+  return (c >= 'A' && c <= 'F') ? static_cast<char>(c - 'A' + 10)
+                                : static_cast<char>(c - 'a' + 10);
 }
 
 static const char* const kByteStringsUnlocalized[] = {

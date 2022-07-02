@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
@@ -281,9 +282,9 @@ class ReportQueryView : public views::Button {
   }
 
  private:
-  views::ImageView* dogfood_icon_ = nullptr;
-  views::Label* description_label_ = nullptr;
-  views::Label* report_label_ = nullptr;
+  raw_ptr<views::ImageView> dogfood_icon_ = nullptr;
+  raw_ptr<views::Label> description_label_ = nullptr;
+  raw_ptr<views::Label> report_label_ = nullptr;
 };
 
 BEGIN_METADATA(ReportQueryView, views::Button)
@@ -662,7 +663,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   ResetContentView();
 
   if (report_query_view_) {
-    base_view_->RemoveChildViewT(report_query_view_);
+    base_view_->RemoveChildViewT(report_query_view_.get());
     report_query_view_ = nullptr;
   }
 

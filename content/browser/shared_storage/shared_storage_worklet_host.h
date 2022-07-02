@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_H_
 
+#include "base/memory/raw_ptr.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -12,10 +14,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 #include "url/origin.h"
-
-namespace storage {
-class SharedStorageManager;
-}
 
 namespace content {
 
@@ -42,6 +40,8 @@ class PageImpl;
 class CONTENT_EXPORT SharedStorageWorkletHost
     : public shared_storage_worklet::mojom::SharedStorageWorkletServiceClient {
  public:
+  using BudgetResult = storage::SharedStorageManager::BudgetResult;
+
   enum class AddModuleState {
     kNotInitiated,
     kInitiated,
@@ -66,7 +66,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
                              const std::vector<uint8_t>& serialized_data);
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
-      const std::vector<GURL>& urls,
+      std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+          urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
       blink::mojom::SharedStorageDocumentService::
           RunURLSelectionOperationOnWorkletCallback callback);
@@ -103,6 +104,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void ConsoleLog(const std::string& message) override;
 
+  const url::Origin& shared_storage_origin_for_testing() const {
+    return shared_storage_origin_;
+  }
+
  protected:
   // virtual for testing
   virtual void OnAddModuleOnWorkletFinished(
@@ -117,15 +122,22 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   virtual void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
-      bool success,
-      const std::string& error_message,
-      uint32_t index);
+      bool script_execution_succeeded,
+      const std::string& script_execution_error_message,
+      uint32_t index,
+      BudgetResult budget_result);
 
   base::OneShotTimer& GetKeepAliveTimerForTesting() {
     return keep_alive_timer_;
   }
 
  private:
+  void OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
+      const GURL& urn_uuid,
+      bool success,
+      const std::string& error_message,
+      uint32_t index);
+
   // Returns whether the the worklet has entered keep-alive phase. During
   // keep-alive: the attempt to log console messages will be ignored; and the
   // completion of the last pending operation will terminate the worklet.
@@ -172,11 +184,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Both `this` and `shared_storage_manager_` live in the `StoragePartition`.
   // `shared_storage_manager_` almost always outlives `this` (thus is valid)
   // except for inside `~SharedStorageWorkletHost()`.
-  storage::SharedStorageManager* shared_storage_manager_;
+  raw_ptr<storage::SharedStorageManager, DanglingUntriaged>
+      shared_storage_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // The shared storage owner document's origin.
   url::Origin shared_storage_origin_;
@@ -186,12 +199,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
 
-  // A map of unresolved URNs to the candidate URL vector. Inside
+  // A map of unresolved URNs to the candidate URL with metadata vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is
   // inserted into `unresolved_urns_`. When the corresponding
   // `OnRunURLSelectionOperationOnWorkletFinished()` is called, the URN is
   // removed from `unresolved_urns_`.
-  std::map<GURL, std::vector<GURL>> unresolved_urns_;
+  std::map<GURL, std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>>
+      unresolved_urns_;
 
   // The number of unfinished worklet requests, including `addModule()`,
   // `selectURL()`, or `run()`.

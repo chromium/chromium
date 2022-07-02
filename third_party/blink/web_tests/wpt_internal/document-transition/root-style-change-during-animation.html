@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: root element style changes during transition</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="root-style-change-during-animation-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  contain: paint;
+  background: blue;
+  page-transition-tag: target;
+}
+
+#hidden {
+  background: pink;
+  width: 10px;
+  height: 10px;
+  page-transition-tag: hidden;
+  contain: paint;
+}
+
+html::page-transition {
+  background: grey;
+}
+
+html::page-transition-container(hidden) {
+  animation-duration: 500s;
+  visibility: hidden;
+}
+
+html::page-transition-container(root) {
+  visibility: hidden;
+}
+
+.test::page-transition-container(target) {
+  background: green;
+}
+.test::page-transition-image-wrapper(target) {
+  visibility: hidden;
+}
+</style>
+
+<div id=target></div>
+<div id=hidden></div>
+
+<script>
+function flipClass() {
+  document.documentElement.classList.add("test");
+  requestAnimationFrame(takeScreenshot);
+}
+
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    hidden.style.width="20px";
+    requestAnimationFrame(() => requestAnimationFrame(flipClass));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

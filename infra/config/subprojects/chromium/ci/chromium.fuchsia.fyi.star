@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -19,11 +19,25 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    sheriff_rotations = sheriff_rotations.FUCHSIA,
 )
 
 consoles.console_view(
     name = "chromium.fuchsia.fyi",
 )
+
+# The chromium.fuchsia.fyi console includes some entries for builders from the chrome project
+[branches.console_view_entry(
+    builder = "chrome:ci/{}".format(name),
+    console_view = "chromium.fuchsia.fyi",
+    category = category,
+    short_name = short_name,
+) for name, category, short_name in (
+    ("fuchsia-fyi-arm64-size", "release", "a64-size"),
+    ("fuchsia-builder-perf-fyi", "perf", "arm64 builder"),
+    ("fuchsia-builder-perf-x64", "perf", "x64 builder"),
+    ("fuchsia-x64", "release", "chrome-x64"),
+)]
 
 ci.builder(
     name = "fuchsia-fyi-arm64-dbg",

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -133,28 +134,21 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // primary plane informations. It is a "compositor frame" on AcceleratedWidget
   // level. This information gets into browser process and overlays are
   // translated to be attached to WaylandSurfaces of the AcceleratedWidget.
+  // TODO(fangzhoug): This should be changed to support Vulkan.
   struct PendingFrame {
     explicit PendingFrame(uint32_t frame_id);
     ~PendingFrame();
-
-    // Queues overlay configs to |configs|.
-    void ScheduleOverlayPlanes(GbmSurfacelessWayland* surfaceless);
-    void Flush();
 
     // Unique identifier of the frame within this AcceleratedWidget.
     uint32_t frame_id;
 
     bool ready = false;
 
-    // TODO(fangzhoug): This should be changed to support Vulkan.
-    std::vector<gl::GLSurfaceOverlay> overlays;
-    std::vector<gfx::OverlayPlaneData> non_backed_overlays;
     SwapCompletionCallback completion_callback;
     PresentationCallback presentation_callback;
 
-    // Merged release fence fd. This is taken as the union of all release
-    // fences for a particular OnSubmission.
-    bool schedule_planes_succeeded = false;
+    // Says if scheduling succeeded.
+    bool schedule_planes_succeeded = true;
 
     std::vector<BufferId> in_flight_color_buffers;
     // Contains |buffer_id|s to gl::GLSurfaceOverlay, used for committing
@@ -170,7 +164,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // Sets a flag that skips glFlush step in unittests.
   void SetNoGLFlushForTests();
 
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 
   // The native surface. Deleting this is allowed to free the EGLNativeWindow.
   gfx::AcceleratedWidget widget_;
@@ -185,8 +179,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // PendingFrames that have received OnSubmission(), pending OnPresentation()
   // calls.
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
-  const bool has_implicit_external_sync_;
-  const bool has_image_flush_external_;
   bool last_swap_buffers_result_ = true;
   bool use_egl_fence_sync_ = true;
 

@@ -491,7 +491,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
         frame.render_pass_list.back()->quad_list.back());
 
     EXPECT_FALSE(texture_draw_quad->ShouldDrawWithBlending());
-    EXPECT_EQ(SK_ColorBLACK, texture_draw_quad->background_color);
+    EXPECT_EQ(SkColors::kBlack, texture_draw_quad->background_color);
     EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
@@ -508,7 +508,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
     auto* texture_draw_quad = viz::TextureDrawQuad::MaterialCast(
         frame.render_pass_list.back()->quad_list.back());
     EXPECT_TRUE(texture_draw_quad->ShouldDrawWithBlending());
-    EXPECT_EQ(SK_ColorTRANSPARENT, texture_draw_quad->background_color);
+    EXPECT_EQ(SkColors::kTransparent, texture_draw_quad->background_color);
     EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 
@@ -1274,8 +1274,8 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
 
 TEST_P(SurfaceTest, ColorBufferAlpha) {
   gfx::Size buffer_size(1, 1);
-  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 0.5f, 0.f, 1.f},
-                                              {0.f, 0.5f, 1.f, 0.f}};
+  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 128.0f / 255.0f, 0.f, 1.f},
+                                              {0.f, 128.0f / 255.0f, 1.f, 0.f}};
   constexpr bool kExpectedOpaque[] = {true, false};
   for (size_t i = 0; i < std::size(kBuffColorExpected); i++) {
     auto buffer =
@@ -1306,8 +1306,7 @@ TEST_P(SurfaceTest, ColorBufferAlpha) {
       EXPECT_EQ(kExpectedOpaque[i],
                 draw_quad->shared_quad_state->are_contents_opaque);
       auto* solid_color_quad = viz::SolidColorDrawQuad::MaterialCast(draw_quad);
-      EXPECT_EQ(kBuffColorExpected[i].SkColor4f::toSkColor(),
-                solid_color_quad->color);
+      EXPECT_EQ(kBuffColorExpected[i], solid_color_quad->color);
     }
   }
 }

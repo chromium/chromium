@@ -105,7 +105,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool AllowImage(bool images_enabled, const KURL&) const override;
 
   void PopulateResourceRequest(ResourceType,
-                               const ClientHintsPreferences&,
                                const FetchParameters::ResourceWidth&,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
@@ -114,8 +113,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
-  void AddClientHintsIfNecessary(const ClientHintsPreferences&,
-                                 const FetchParameters::ResourceWidth&,
+  void AddClientHintsIfNecessary(const FetchParameters::ResourceWidth&,
                                  ResourceRequest&);
 
   FetchContext* Detach() override;
@@ -127,9 +125,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       const absl::optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
-
-  mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-  TakePendingWorkerTimingReceiver(int request_id) override;
 
   // LoadingBehaviorObserver overrides:
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;

@@ -52,7 +52,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   double SampleRate() const override { return sample_rate_; }
 
   // This is called when rendering of the offline context is started
-  // which will save the rendered audio data in |render_target|.  This
+  // which will save the rendered audio data in `render_target`.  This
   // allows creation of the AudioBuffer when startRendering is called
   // instead of when the OfflineAudioContext is created.
   void InitializeOfflineRenderThread(AudioBuffer* render_target);
@@ -68,7 +68,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
                                  float sample_rate);
 
   // Set up the rendering and start. After setting the context up, it will
-  // eventually call |doOfflineRendering|.
+  // eventually call `DoOfflineRendering()`.
   void StartOfflineRendering();
 
   // Suspend the rendering loop and notify the main thread to resolve the
@@ -106,8 +106,8 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   //    When the main thread starts deleting this object, a task posted with
   //    a WeakPtr from the rendering thread will be cancelled.
   // 2. main thread -> rendering thread: scoped_refptr
-  //    |render_thread_| is owned by this object, so it is safe to target with
-  //    WrapRefCounted() instead of GetWeakPtr().
+  //    `render_thread_` is owned by this object, so it is safe to target with
+  //    `WrapRefCounted()` instead of `GetWeakPtr()`.
   base::WeakPtr<OfflineAudioDestinationHandler> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -119,13 +119,13 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   // These variables are for counting the number of frames for the current
   // progress and the remaining frames to be processed.
-  size_t frames_processed_;
+  size_t frames_processed_ = 0;
   uint32_t frames_to_process_;
 
   // This flag is necessary to distinguish the state of the context between
   // 'created' and 'suspended'. If this flag is false and the current state
   // is 'suspended', it means the context is created and have not started yet.
-  bool is_rendering_started_;
+  bool is_rendering_started_ = false;
 
   unsigned number_of_channels_;
   float sample_rate_;

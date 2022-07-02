@@ -11,6 +11,7 @@ source_set("privacy_ui") {
     "privacy_safe_browsing_consumer.h",
     "privacy_safe_browsing_coordinator.h",
     "privacy_safe_browsing_coordinator.mm",
+    "privacy_safe_browsing_mediator+internal.h",
     "privacy_safe_browsing_mediator.h",
     "privacy_safe_browsing_mediator.mm",
     "privacy_safe_browsing_navigation_commands.h",
@@ -52,6 +53,7 @@ source_set("privacy_ui") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/privacy/safe_browsing",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
@@ -111,11 +113,19 @@ source_set("privacy") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "privacy_table_view_controller_unittest.mm" ]
+  sources = [
+    "privacy_safe_browsing_mediator_unittest.mm",
+    "privacy_safe_browsing_view_controller_unittest.mm",
+    "privacy_table_view_controller_unittest.mm",
+  ]
   deps = [
+    "//base/test:test_support",
     "//components/handoff",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/prefs/ios",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
     "//components/sync/driver:test_support",
     "//components/sync_preferences",
@@ -125,13 +135,43 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/test:test_support",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock:ocmock",
     "//ui/base",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "privacy_safe_browsing_egtest.mm" ]
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

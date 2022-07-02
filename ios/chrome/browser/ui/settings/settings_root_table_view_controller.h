@@ -38,7 +38,7 @@
 @property(nonatomic, assign) BOOL shouldShowAddButtonInToolbar;
 
 // Whether this table view controller should show the "Delete" button in the
-// toolbar(bottom left). Default is YES. Set in |viewDidLoad|.
+// toolbar(bottom left). Default is YES. Set in `viewDidLoad`.
 @property(nonatomic, assign) BOOL shouldShowDeleteButtonInToolbar;
 
 // Updates the edit or done button to reflect editing state.  If the
@@ -49,12 +49,12 @@
 - (void)updateUIForEditState;
 
 // Updates the edit or done button to reflect editing state in the toolbar.
-// Shows Add button in the left end if |shouldShowAddButtonInToolbar| is YES. In
+// Shows Add button in the left end if `shouldShowAddButtonInToolbar` is YES. In
 // edit state, the left end shows the Delete button and the right end shows
 // Done.
 - (void)updatedToolbarForEditState;
 
-// Reloads the table view model with |loadModel| and then reloads the
+// Reloads the table view model with `loadModel` and then reloads the
 // table view data.
 - (void)reloadData;
 
@@ -91,11 +91,11 @@
 - (BOOL)showCancelDuringEditing;
 
 // Called when this ViewController toolbar's delete item has been tapped.
-// |indexPaths| is the index paths of the currently selected item to be deleted.
+// `indexPaths` is the index paths of the currently selected item to be deleted.
 // Default implementation removes the items.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths;
 
-// Prevents user interaction until |-allowUserInteraction| is called by doing
+// Prevents user interaction until `-allowUserInteraction` is called by doing
 // the following:
 // * Disables user interaction with the navigation bar.
 // * Replaces the done button with an activity indicator.

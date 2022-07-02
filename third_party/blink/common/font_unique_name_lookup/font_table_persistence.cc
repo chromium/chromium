@@ -45,10 +45,10 @@ bool LoadFromFile(base::FilePath file_path,
   }
 
   const char* proto_data = nullptr;
-  int proto_length = 0;
+  size_t proto_length = 0;
 
   if (!pickle_iterator.ReadData(&proto_data, &proto_length) || !proto_data ||
-      proto_length <= 0) {
+      proto_length == 0) {
     return false;
   }
 

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.base.Callback;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,12 +21,16 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new HashSet<>();
     private final Set<Topic> mBlockedTopics = new HashSet<>();
+    private final Set<String> mCurrentFledgeSites = new HashSet<>();
+    private final Set<String> mBlockedFledgeSites = new HashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
 
     public FakePrivacySandboxBridge() {
         setCurrentTopTopics("Foo", "Bar");
         setBlockedTopics("BlockedFoo", "BlockedBar");
+        setCurrentFledgeSites("example.com", "example2.com");
+        setBlockedFledgeSites("blocked.com", "blocked2.com");
     }
 
     public void setCurrentTopTopics(String... topics) {
@@ -38,6 +45,16 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         for (String name : topics) {
             mBlockedTopics.add(getOrCreateTopic(name));
         }
+    }
+
+    public void setCurrentFledgeSites(String... sites) {
+        mCurrentFledgeSites.clear();
+        mCurrentFledgeSites.addAll(Arrays.asList(sites));
+    }
+
+    public void setBlockedFledgeSites(String... sites) {
+        mBlockedFledgeSites.clear();
+        mBlockedFledgeSites.addAll(Arrays.asList(sites));
     }
 
     private Topic getOrCreateTopic(String name) {
@@ -142,6 +159,27 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         } else {
             mCurrentTopTopics.remove(topic);
             mBlockedTopics.add(topic);
+        }
+    }
+
+    @Override
+    public void getFledgeJoiningEtldPlusOneForDisplay(Callback<String[]> callback) {
+        callback.onResult(mCurrentFledgeSites.toArray(new String[0]));
+    }
+
+    @Override
+    public String[] getBlockedFledgeJoiningTopFramesForDisplay() {
+        return mBlockedFledgeSites.toArray(new String[0]);
+    }
+
+    @Override
+    public void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed) {
+        if (allowed) {
+            mCurrentFledgeSites.add(topFrameEtldPlus1);
+            mBlockedFledgeSites.remove(topFrameEtldPlus1);
+        } else {
+            mCurrentFledgeSites.remove(topFrameEtldPlus1);
+            mBlockedFledgeSites.add(topFrameEtldPlus1);
         }
     }
 

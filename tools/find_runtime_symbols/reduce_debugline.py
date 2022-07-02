@@ -64,6 +64,7 @@ def main():
       print('%016x %s' % (address, filename))
     else:
       print('%08x %s' % (address, filename))
+  return 0
 
 
 if __name__ == '__main__':

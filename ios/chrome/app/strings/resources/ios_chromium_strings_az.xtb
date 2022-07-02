@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="3472200483164753384">Chromium Canary'də dəstəklənmir</translation>
 <translation id="3567399274263440288">Chromium'dan maksimum yararlanmaq üçün Google Hesabınızla Chromium'a daxil olun.</translation>
+<translation id="3619462831205197427">Bu sayta, Google Hesabınıza və Chromium'a daxil olun.</translation>
 <translation id="3639997914391704523">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> bu cihazda Chromium istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
 <translation id="3805899903892079518">Chromium məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
@@ -77,7 +78,6 @@
 1. Ayarları açın
 2. Defolt Brauzer Tətbiqinə toxunun
 3. Chromium seçin.</translation>
-<translation id="6155422572367400359">Bu sayta, Google Hesabınıza və Chromium'a daxil olun. Sinxronlaşdırmanı daha sonra aktiv edə bilərsiniz.</translation>
 <translation id="6183442264225539303">Bu sayta və Chromium'a daxil olun. Sinxronlaşdırmanı daha sonra aktiv edə bilərsiniz.</translation>
 <translation id="6268381023930128611">Chromium'dan çıxılsın?</translation>
 <translation id="632825460376924298">Chromium girişinə icazə verin</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
 <translation id="8175055321229419309">İp ucu: <ph name="BEGIN_LINK" />Chromium'u masaüstünüzə köçürün<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
+<translation id="8308172444429103994">Chromium ipucu. Klaviaturanın yuxarı hissəsində saxlanmış parolunuzu seçməklə daha sürətli daxil olun.</translation>
 <translation id="858114650497379505">Parol Menecerində saxladığınız parolları iPhone'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="865600487977764604">Daxil olduğunuzda Chromium'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>

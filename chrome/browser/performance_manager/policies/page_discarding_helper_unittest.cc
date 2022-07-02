@@ -80,12 +80,16 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardRecentlyAudiblePage) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PageDiscardingHelperTest, TestCannotDiscardRecentlyVisiblePage) {
+TEST_F(PageDiscardingHelperTest,
+       TestCannotDiscardRecentlyVisiblePageUnlessExplicitlyRequested) {
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node()));
+  EXPECT_TRUE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node(), /* consider_minimum_protection_time */ false));
 }
 #endif
 

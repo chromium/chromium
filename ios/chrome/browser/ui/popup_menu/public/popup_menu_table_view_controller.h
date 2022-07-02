@@ -34,10 +34,10 @@
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Selects the row at |point|. This is the same as tapping the row. Point must
+// Selects the row at `point`. This is the same as tapping the row. Point must
 // be in window base coordinates.
 - (void)selectRowAtPoint:(CGPoint)point;
-// Focuses the row at |point|. This adds an highlight to the row. Point must be
+// Focuses the row at `point`. This adds an highlight to the row. Point must be
 // in window base coordinates.
 - (void)focusRowAtPoint:(CGPoint)point;
 

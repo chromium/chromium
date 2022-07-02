@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 
+from flake_suppressor import common_typing as ct
 from flake_suppressor import results as results_module
 from flake_suppressor import tag_utils
 
@@ -164,7 +165,7 @@ GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
 
 
 class BigQueryQuerier():
-  def __init__(self, sample_period, billing_project):
+  def __init__(self, sample_period: int, billing_project: str):
     """Class for making calls to BigQuery.
 
     Args:
@@ -176,7 +177,7 @@ class BigQueryQuerier():
     self._sample_period = sample_period
     self._billing_project = billing_project
 
-  def GetFlakyOrFailingCiTests(self):
+  def GetFlakyOrFailingCiTests(self) -> ct.QueryJsonType:
     """Gets all flaky or failing GPU tests from CI.
 
     Returns:
@@ -185,7 +186,7 @@ class BigQueryQuerier():
     """
     return self._GetJsonResultsFromBigQuery(CI_FAILED_TEST_QUERY)
 
-  def GetFlakyOrFailingTryTests(self):
+  def GetFlakyOrFailingTryTests(self) -> ct.QueryJsonType:
     """Gets all flaky or failing GPU tests from the trybots.
 
     Limits results to those that came from builds used for CL submission.
@@ -197,7 +198,7 @@ class BigQueryQuerier():
     """
     return self._GetJsonResultsFromBigQuery(TRY_FAILED_TEST_QUERY)
 
-  def GetResultCounts(self):
+  def GetResultCounts(self) -> ct.ResultCountType:
     """Gets the result count for each test/config combination.
 
     Returns:
@@ -215,7 +216,7 @@ class BigQueryQuerier():
     self._GetResultCountWithQuery(TRY_RESULT_COUNT_QUERY, result_counts)
     return result_counts
 
-  def _GetJsonResultsFromBigQuery(self, query):
+  def _GetJsonResultsFromBigQuery(self, query: str) -> ct.QueryJsonType:
     """Gets the JSON results from a BigQuery query.
 
     Automatically passes in the "@sample_period" parameterized argument to
@@ -244,7 +245,8 @@ class BigQueryQuerier():
 
     return json.loads(completed_process.stdout)
 
-  def _GetResultCountWithQuery(self, query, result_counts):
+  def _GetResultCountWithQuery(self, query: str,
+                               result_counts: ct.ResultCountType) -> None:
     """Helper to get result counts using a particular query.
 
     Args:

@@ -87,8 +87,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
           web_contents()));
-  auto* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
   const GURL kTestOrigin("https://www.example.com");
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(

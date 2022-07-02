@@ -327,6 +327,15 @@ directory_test(async (t, root) => {
 }, 'WriteParams: write missing data param');
 
 directory_test(async (t, root) => {
+  const handle = await createEmptyFile(t, 'content.txt', root);
+  const stream = await handle.createWritable();
+
+  await promise_rejects_js(
+      t, TypeError, stream.write({type: 'write', data: null}), 'write with null data');
+
+}, 'WriteParams: write null data param');
+
+directory_test(async (t, root) => {
   const handle = await createFileWithContents(
       t, 'content.txt', 'seekable', root);
   const stream = await handle.createWritable();

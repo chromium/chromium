@@ -24,8 +24,7 @@
 #include "net/socket/socket_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-namespace android {
+namespace net::android {
 
 // |cert_chain| is DER encoded chain of certificates, with the server's own
 // certificate listed first.
@@ -81,6 +80,9 @@ NET_EXPORT bool GetIsCaptivePortal();
 // ACCESS_COARSE_LOCATION or ACCESS_FINE_LOCATION. If there is no WiFi access
 // point or its SSID is unavailable, an empty string is returned.
 NET_EXPORT_PRIVATE std::string GetWifiSSID();
+
+// Call WifiManager.setWifiEnabled.
+NET_EXPORT_PRIVATE void SetWifiEnabledForTesting(bool enabled);
 
 // Returns the signal strength level (between 0 and 4, both inclusive) of the
 // currently registered Wifi connection. If the value is unavailable, an
@@ -147,7 +149,6 @@ NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
     const struct addrinfo* hints,
     struct addrinfo** res);
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android
 
 #endif  // NET_ANDROID_NETWORK_LIBRARY_H_

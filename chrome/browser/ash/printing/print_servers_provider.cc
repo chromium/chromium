@@ -49,18 +49,17 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
     return task_data;
   }
 
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(WARNING) << "Failed to parse print servers policy ("
-                 << value_with_error.error_message << ") on line "
-                 << value_with_error.error_line << " at position "
-                 << value_with_error.error_column;
+                 << value_with_error.error().message << ") on line "
+                 << value_with_error.error().line << " at position "
+                 << value_with_error.error().column;
     return task_data;
   }
 
-  base::Value& json_blob = value_with_error.value.value();
+  base::Value& json_blob = *value_with_error;
   if (!json_blob.is_list()) {
     LOG(WARNING) << "Failed to parse print servers policy "
                  << "(an array was expected)";
@@ -69,8 +68,8 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
 
   std::set<std::string> print_server_ids;
   std::set<GURL> print_server_urls;
-  task_data.servers.reserve(json_blob.GetListDeprecated().size());
-  for (const base::Value& val : json_blob.GetListDeprecated()) {
+  task_data.servers.reserve(json_blob.GetList().size());
+  for (const base::Value& val : json_blob.GetList()) {
     if (!val.is_dict()) {
       LOG(WARNING) << "Entry in print servers policy skipped. "
                    << "Not a dictionary.";
@@ -79,7 +78,7 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
     const std::string* id = val.FindStringKey("id");
     const std::string* url = val.FindStringKey("url");
     const std::string* name = val.FindStringKey("display_name");
-    if (id == nullptr || url == nullptr || name == nullptr) {
+    if (!id || !url || !name) {
       LOG(WARNING) << "Entry in print servers policy skipped. The following "
                    << "fields are required: id, url, display_name.";
       continue;
@@ -237,9 +236,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
     if (last_processed_task_ != last_received_task_)
       return false;
     // The case when prefs are not set.
-    if (prefs_ == nullptr)
-      return false;
-    return true;
+    return !!prefs_;
   }
 
   // Called when a new allowlist is available.
@@ -248,9 +245,9 @@ class PrintServersProviderImpl : public PrintServersProvider {
     // Fetch and parse the allowlist.
     const PrefService::Preference* pref =
         prefs_->FindPreference(allowlist_pref_);
-    if (pref != nullptr && !pref->IsDefaultValue()) {
+    if (pref && !pref->IsDefaultValue()) {
       allowlist_ = std::set<std::string>();
-      for (const base::Value& value : pref->GetValue()->GetListDeprecated()) {
+      for (const base::Value& value : pref->GetValue()->GetList()) {
         if (value.is_string()) {
           allowlist_.value().insert(value.GetString());
         }
@@ -267,11 +264,11 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // Recalculate the value of |result_servers_| field. Returns true if the new
   // list is different than the previous one.
   bool CalculateResultantList() {
-    std::vector<PrintServer> new_servers;
-    if (prefs_ == nullptr) {
+    if (!prefs_) {
       // |result_servers_| remains empty when prefs is not set.
       return false;
     }
+    std::vector<PrintServer> new_servers;
     if (!allowlist_.has_value()) {
       new_servers = servers_;
     } else {

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/android/jni_headers/PrivacySandboxBridge_jni.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "content/public/browser/browser_thread.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
@@ -128,6 +132,37 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                       taxonomy_version),
       allowed);
+}
+
+static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
+      base::BindOnce(
+          [](const base::android::JavaRef<jobject>& j_callback,
+             std::vector<std::string> strings) {
+            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+            JNIEnv* env = base::android::AttachCurrentThread();
+            base::android::RunObjectCallbackAndroid(
+                j_callback, base::android::ToJavaArrayOfStrings(env, strings));
+          },
+          base::android::ScopedJavaGlobalRef(j_callback)));
+}
+
+static base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_PrivacySandboxBridge_GetBlockedFledgeJoiningTopFramesForDisplay(
+    JNIEnv* env) {
+  return base::android::ToJavaArrayOfStrings(
+      env,
+      GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay());
+}
+
+static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& top_frame_etld_plus1,
+    jboolean allowed) {
+  GetPrivacySandboxService()->SetFledgeJoiningAllowed(
+      base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
 }
 
 static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(JNIEnv* env) {

@@ -154,7 +154,7 @@ class MediaSessionImplVisibilityBrowserTest
   }
 
   void RunScript(const std::string& script) {
-    ASSERT_TRUE(ExecJs(web_contents_->GetMainFrame(), script));
+    ASSERT_TRUE(ExecJs(web_contents_->GetPrimaryMainFrame(), script));
   }
 
   // TODO(zqzhang): This method is shared with

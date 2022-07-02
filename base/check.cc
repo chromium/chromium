@@ -14,45 +14,121 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/debug/alias.h"
+#if !BUILDFLAG(IS_NACL)
+#include "base/debug/crash_logging.h"
+#endif  // !BUILDFLAG(IS_NACL)
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
+#include <atomic>
+
 namespace logging {
+
+namespace {
+
+#if defined(DCHECK_IS_CONFIGURABLE)
+void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
+  // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
+  // race if multiple threads DCHECK at the same time, but we'll eventually stop
+  // reporting and at most report once per thread.
+  static std::atomic<bool> has_dumped = false;
+  if (!has_dumped.load(std::memory_order_relaxed)) {
+    const std::string str = log_message->str();
+    // Copy the LogMessage string to stack memory to make sure it can be
+    // recovered in crash dumps.
+    // TODO(pbos): Surface DCHECK_MESSAGE well in crash reporting to make this
+    // redundant, then remove it.
+    DEBUG_ALIAS_FOR_CSTR(log_message_str, str.c_str(), 1024);
+
+#if !BUILDFLAG(IS_NACL)
+    // Report the log message as DCHECK_MESSAGE in the dump we're about to do.
+    SCOPED_CRASH_KEY_STRING256("Logging", "DCHECK_MESSAGE", str);
+#endif  // !BUILDFLAG(IS_NACL)
+
+    // Note that dumping may fail if the crash handler hasn't been set yet. In
+    // that case we want to try again on the next failing DCHECK.
+    if (base::debug::DumpWithoutCrashingUnthrottled())
+      has_dumped.store(true, std::memory_order_relaxed);
+  }
+}
+
+class DCheckLogMessage : public LogMessage {
+ public:
+  using LogMessage::LogMessage;
+  ~DCheckLogMessage() override {
+    if (severity() != logging::LOGGING_FATAL)
+      DCheckDumpOnceWithoutCrashing(this);
+  }
+};
+
+#if BUILDFLAG(IS_WIN)
+class DCheckWin32ErrorLogMessage : public Win32ErrorLogMessage {
+ public:
+  using Win32ErrorLogMessage::Win32ErrorLogMessage;
+  ~DCheckWin32ErrorLogMessage() override {
+    if (severity() != logging::LOGGING_FATAL)
+      DCheckDumpOnceWithoutCrashing(this);
+  }
+};
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+class DCheckErrnoLogMessage : public ErrnoLogMessage {
+ public:
+  using ErrnoLogMessage::ErrnoLogMessage;
+  ~DCheckErrnoLogMessage() override {
+    if (severity() != logging::LOGGING_FATAL)
+      DCheckDumpOnceWithoutCrashing(this);
+  }
+};
+#endif  // BUILDFLAG(IS_WIN)
+#else
+static_assert(logging::LOGGING_DCHECK == logging::LOGGING_FATAL);
+typedef LogMessage DCheckLogMessage;
+#if BUILDFLAG(IS_WIN)
+typedef Win32ErrorLogMessage DCheckWin32ErrorLogMessage;
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+typedef ErrnoLogMessage DCheckErrnoLogMessage;
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // defined(DCHECK_IS_CONFIGURABLE)
+
+}  // namespace
 
 CheckError CheckError::Check(const char* file,
                              int line,
                              const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::CheckOp(const char* file,
                                int line,
                                CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
-  check_error.stream() << "Check failed: " << check_op_result->message_;
+  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+  log_message->stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
-  return check_error;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DCheck(const char* file,
                               int line,
                               const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  auto* const log_message = new DCheckLogMessage(file, line, LOGGING_DCHECK);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DCheckOp(const char* file,
                                 int line,
                                 CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
-  check_error.stream() << "Check failed: " << check_op_result->message_;
+  auto* const log_message = new DCheckLogMessage(file, line, LOGGING_DCHECK);
+  log_message->stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
-  return check_error;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::PCheck(const char* file,
@@ -60,14 +136,14 @@ CheckError CheckError::PCheck(const char* file,
                               const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code));
+  auto* const log_message =
+      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code));
+  auto* const log_message =
+      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code);
 #endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::PCheck(const char* file, int line) {
@@ -79,22 +155,22 @@ CheckError CheckError::DPCheck(const char* file,
                                const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code));
+  auto* const log_message =
+      new DCheckWin32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code));
+  auto* const log_message =
+      new DCheckErrnoLogMessage(file, line, LOGGING_DCHECK, err_code);
 #endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::NotImplemented(const char* file,
                                       int line,
                                       const char* function) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_ERROR));
-  check_error.stream() << "Not implemented reached in " << function;
-  return check_error;
+  auto* const log_message = new LogMessage(file, line, LOGGING_ERROR);
+  log_message->stream() << "Not implemented reached in " << function;
+  return CheckError(log_message);
 }
 
 std::ostream& CheckError::stream() {

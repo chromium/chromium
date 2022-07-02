@@ -40,7 +40,7 @@ void FileSystemAccessIconView::UpdateImpl() {
     has_write_access_ = false;
   } else {
     url::Origin origin =
-        GetWebContents()->GetMainFrame()->GetLastCommittedOrigin();
+        GetWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     auto* context =
         FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
             GetWebContents()->GetBrowserContext());
@@ -70,7 +70,8 @@ std::u16string FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
 
 void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
   auto* web_contents = GetWebContents();
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(

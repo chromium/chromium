@@ -13,7 +13,7 @@ preprocess_src_manifest = "preprocessed_src_manifest.json"
 generate_grd("build_grdp") {
   grd_prefix = "webui_css"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess_src" ]
+  public_deps = [ ":preprocess_src" ]
   manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
   resource_path_prefix = "css"
 }
@@ -26,18 +26,15 @@ preprocess_if_expr("preprocess_src") {
     "action_link.css",
     "butter_bar.css",
     "chrome_shared.css",
-    "dialogs.css",
     "i18n_process.css",
     "list.css",
     "menu_button.css",
     "menu.css",
     "roboto.css",
     "spinner.css",
-    "tabs.css",
     "text_defaults.css",
     "text_defaults_md.css",
     "throbber.css",
-    "tree.css",
     "widgets.css",
   ]
 

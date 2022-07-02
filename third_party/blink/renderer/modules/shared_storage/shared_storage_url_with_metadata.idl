@@ -1,0 +1,4 @@
+dictionary SharedStorageUrlWithMetadata {
+  required USVString url;
+  object reportingMetadata;
+};

@@ -23,12 +23,32 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>rohitrao@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
     Whether or not the allocator shim was installed successfully. False
     indicates an unexpected error at the OS level which merits investigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every cold start app open. The value represents
+    how long the app was away from the foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundTimeBeforeWarmStart" units="minutes"
+    expires_after="2023-04-27">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on every warm start app open. The value represents
+    how long the app was away from the foreground.
   </summary>
 </histogram>
 
@@ -42,13 +62,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ColdStartBackgroundTime" units="minutes"
+<histogram name="IOS.ColdStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every cold start app open. The value represents
-    how long the app was away from the foreground.
+    how long the app was away from the foreground. NOTE: this metric is
+    obsolete, IOS.BackgroundTimeBeforeColdStart is the new metric.
   </summary>
 </histogram>
 
@@ -358,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
@@ -368,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-10-16">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -378,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMeSecondPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-08-21">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -388,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-08-07">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -398,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-08-07">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -408,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-08-07">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -418,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
-    expires_after="2022-11-06">
+    expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -427,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -441,7 +462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{PromoType}"
-    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
+    enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -456,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
-    enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-04-20">
+    enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -480,8 +501,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExperienceKitCalendar.Present"
+    enum="ExperienceKitCalendarTypes" expires_after="2022-09-08">
+  <owner>djean@chromium.org</owner>
+  <owner>erahmaoui@google.com</owner>
+  <summary>
+    The type of calendar chosen by the user on the ExperienceKit context menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ExperienceKitCalendar.Success"
+    enum="ExperienceKitCalendarTypes" expires_after="2022-09-08">
+  <owner>djean@chromium.org</owner>
+  <owner>erahmaoui@google.com</owner>
+  <summary>
+    The type of calendar the event was created in using the ExperienceKit
+    context menu.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
-    expires_after="2019-05-01">
+    expires_after="2023-05-01">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -495,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasItem" enum="Boolean"
-    expires_after="2019-05-01">
+    expires_after="2023-05-01">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -518,6 +558,59 @@ chromium-metrics-reviews@google.com.
     the time when a new navigation is finished. True means the URL matches the
     current back-forward item.
   </summary>
+</histogram>
+
+<histogram name="IOS.FirstRun.ScrollButtonVisible.{FirstRunScreen}"
+    enum="Boolean" expires_after="2022-11-09">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Depending on the text size of the system, the first run screens would either
+    show buttons intended for the purpose of the view, or a &quot;More&quot;
+    button. In the latter scenario, tapping on the button would trigger a scroll
+    down, and would transform into the intended action buttons when the user has
+    scrolled down to the bottom of the view. This histogram counts the frequency
+    for each type of screen of the &quot;More&quot; button showing on the view
+    first appears, instead of the intended action buttons.
+  </summary>
+  <token key="FirstRunScreen">
+    <variant name="DefaultBrowserPromoScreen"
+        summary="The new FRE screen that instructs the user to set default
+                 browser to Chrome."/>
+    <variant name="SignInScreenWithFooter"
+        summary="The screen that asks the user to sign in when no stored
+                 account is detected, with a footer shown at the bottom.
+                 Displayed when MICe is enabled without the welcome screen
+                 (2-steps MICe FRE), or when forced sign-in is enabled."/>
+    <variant name="SignInScreenWithFooterAndIdentityPicker"
+        summary="The screen that asks the user to sign in a stored account,
+                 with a footer shown at the bottom. Displayed when MICe is
+                 enabled without the welcome screen (2-steps MICe FRE), or
+                 when forced sign-in is enabled."/>
+    <variant name="SignInScreenWithIdentityPicker"
+        summary="The screen that asks the user to sign in a stored account,
+                 but with no footer shown at the bottom. Displayed when MICe
+                 is enabled with the welcome screen (3-steps MICe FRE)."/>
+    <variant name="SignInScreenWithoutFooterOrIdentityPicker"
+        summary="The screen that asks the user to sign in when no stored
+                 account is detected, but with no footer shown at the bottom.
+                 Displayed when MICe is enabled with the welcome screen
+                 (3-steps MICe FRE)."/>
+    <variant name="SyncScreenWithIdentityPicker"
+        summary="The screen that asks the user to turn on sync while showing
+                 an account picker. Displayed when MICe is disabled and an
+                 account is detected."/>
+    <variant name="SyncScreenWithoutIdentityPicker"
+        summary="The screen that asks the user to turn on sync while no
+                 account picker is present. Displayed when MICe is enabled or
+                 when no account is detected."/>
+    <variant name="WelcomeScreenWithoutUMACheckbox"
+        summary="Welcome screen without UMA checkbox. Displayed when MICe is
+                 enabled."/>
+    <variant name="WelcomeScreenWithUMACheckbox"
+        summary="Welcome screen with UMA checkbox. Displayed when MICe is
+                 disabled."/>
+  </token>
 </histogram>
 
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
@@ -675,7 +768,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.IPH.DefaultSite.Presented" units="BooleanHit"
+<histogram name="IOS.IPH.DefaultSite.Presented" enum="BooleanHit"
     expires_after="2023-02-28">
   <owner>gambard@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
@@ -721,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
-    expires_after="2022-10-21">
+    expires_after="2022-12-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -744,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.LinkToText.ShouldOfferResult"
-    enum="LinkToTextShouldOfferResult" expires_after="2022-10-16">
+    enum="LinkToTextShouldOfferResult" expires_after="2022-12-18">
   <owner>tmartino@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
   <summary>
@@ -776,6 +869,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MainThreadFreezeDetection.RecordGenerationTime" units="ms"
+    expires_after="2022-09-12">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The time taken to record a freeze report. Logged immediately after
+    generating a hang report.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MainThreadFreezeDetection.RecoveredAfter" units="ms"
     expires_after="2022-09-12">
   <owner>justincohen@chromium.org</owner>
@@ -789,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.ApplicationHangTime" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-11-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -813,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.ApplicationResumeTime" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-11-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -826,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.AverageSuspendedMemory" units="MB"
-    expires_after="2022-09-12">
+    expires_after="2022-11-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -866,7 +969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.BackgroundTimePerDay" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-11-20">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -909,7 +1012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
-    expires_after="2022-09-12">
+    expires_after="2022-11-20">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -927,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
-    expires_after="2022-09-12">
+    expires_after="2022-11-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -946,7 +1049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-11-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -993,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.Impression" enum="IOSNTPImpression"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>gambard@chromium.org</owner>
   <summary>
     The type of NTP impressions on iOS, split by type of suggestions shown
@@ -1048,14 +1151,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.Counts"
-    enum="IOSPageLoadCountNavigationType" expires_after="2022-10-16">
+    enum="IOSPageLoadCountNavigationType" expires_after="2022-12-18">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>The number of navigation started events by navigation type.</summary>
 </histogram>
 
 <histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
-    expires_after="2022-07-30">
+    expires_after="2023-06-30">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1160,7 +1263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
-    expires_after="2022-09-12">
+    expires_after="2022-11-27">
   <owner>justincohen@google.com</owner>
   <owner>olivierrobin@google.com</owner>
   <summary>
@@ -1171,6 +1274,19 @@ chromium-metrics-reviews@google.com.
     that Chromium has a reduced 'Duet' score in the system, which merits
     investigation. See the UIKit documentation &quot;Prepare Your App for
     Prewarming&quot; for more details.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PushNotification.ChimeDeviceRegistration"
+    enum="BooleanSuccess" expires_after="2023-07-01">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs whether the user's device was or was not able to successfully register
+    with Chime. The device is registered with Chime on the application's
+    start-up if the difference between the previous time the device was
+    registered with Chime and the current application start-up is greater than
+    the predefined time interval threshold (currently set at one day).
   </summary>
 </histogram>
 
@@ -1185,7 +1301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.PageTooLargeFailure" units="KB"
-    expires_after="2022-06-11">
+    expires_after="2023-06-07">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -1251,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.RestoreNavigationTime" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-12-18">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -1390,7 +1506,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Snapshots.ImageSize" units="KB" expires_after="2022-07-03">
+<histogram name="IOS.Snapshots.ImageSize" units="KB" expires_after="2023-07-03">
   <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
@@ -1416,7 +1532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.Availability" enum="IOSSpotlightAvailability"
-    expires_after="2022-09-12">
+    expires_after="2022-11-20">
   <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -1427,7 +1543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksIndexingDuration" units="ms"
-    expires_after="2022-09-12">
+    expires_after="2022-11-20">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of bookmarks.</summary>
@@ -1569,18 +1685,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.WarmStartBackgroundTime" units="minutes"
+<histogram name="IOS.WarmStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     This event is recorded on every warm start app open. The value represents
-    how long the app was away from the foreground.
+    how long the app was away from the foreground. NOTE: this metric is
+    obsolete, IOS.BackgroundTimeBeforeWarmStart is the new metric.
   </summary>
 </histogram>
 
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
-    expires_after="2022-07-03">
+    expires_after="2023-07-03">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>

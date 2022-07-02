@@ -52,6 +52,12 @@ int TableColumnAlignmentToCanvasAlignment(ui::TableColumn::Alignment alignment);
 // in terms of table->visible_columns().
 int GetClosestVisibleColumnIndex(const TableView* table, int x);
 
+// Returns the mirror of the table column alignment if the layout is
+// right-to-left. If the layout is left-to-right, the same alignment is
+// returned.
+ui::TableColumn::Alignment GetMirroredTableColumnAlignment(
+    ui::TableColumn::Alignment alignment);
+
 }  // namespace views
 
 #endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_UTILS_H_

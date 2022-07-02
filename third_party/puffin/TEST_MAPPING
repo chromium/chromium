@@ -1,0 +1,12 @@
+{
+  "presubmit": [
+    {
+      "name": "puffin_unittest"
+    }
+  ],
+  "hwasan-presubmit": [
+    {
+      "name": "puffin_unittest"
+    }
+  ]
+}

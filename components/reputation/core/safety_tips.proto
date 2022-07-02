@@ -25,6 +25,11 @@ message UrlPattern {
   // example.test/test-path-for-safety-tips/test.html. Also see the comment for
   // |allowed_pattern| field.
   optional string pattern = 1;
+
+  // The index of any cohort[s] that this entry is allowed to spoof. If this
+  // field is unset and the pattern is allowlisted, the pattern may spoof any
+  // domain. Has no meaning when used in canonical_pattern.
+  repeated uint32 cohort_index = 2 [packed = true];
 }
 
 message HostPattern {
@@ -61,6 +66,17 @@ message HeuristicLaunchConfig {
   // 90% of sites on Canary/Dev and 50% on Beta, regardless of the value of this
   // field.
   optional uint32 launch_percentage = 2;
+}
+
+// A set of domains allowed to be spoofed by a given allowlist entry.
+// allowed_pattern or canonical_pattern indices may appear in multiple
+// Cohorts, and multiple allowed_patterns may point to the same Cohort.
+message Cohort {
+  // Indexes in `allowed_pattern` in this cohort.
+  repeated uint32 allowed_index = 1 [packed = true];
+
+  // Indexes in `canonical_pattern` in this cohort.
+  repeated uint32 canonical_index = 2 [packed = true];
 }
 
 // Configuration for the safety tips component. A binary version of this proto
@@ -103,4 +119,12 @@ message SafetyTipsConfig {
   // Launch configurations for new heuristics. Each new heuristic being launched
   // gets its own config. Multiple heuristics can be enabled at the same time.
   repeated HeuristicLaunchConfig launch_config = 6;
+
+  // canonical_pattern is a list of hostnames that are only ever spoofed, and do
+  // no spoofing of their own. Entries are pointed to by one or more Cohort.
+  repeated UrlPattern canonical_pattern = 7;
+
+  // A Cohort is a set of domains that may be spoofed by the allowed_pattern
+  // that points to it.
+  repeated Cohort cohort = 8;
 }

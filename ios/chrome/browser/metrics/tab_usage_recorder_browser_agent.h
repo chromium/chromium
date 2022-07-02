@@ -5,19 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_TAB_USAGE_RECORDER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_METRICS_TAB_USAGE_RECORDER_BROWSER_AGENT_H_
 
-#include <map>
-#include <memory>
-#include <vector>
+#import <map>
+#import <memory>
+#import <vector>
 
-#include "base/containers/circular_deque.h"
-#include "base/time/time.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
-#include "ios/chrome/browser/sessions/session_restoration_observer.h"
+#import "base/containers/circular_deque.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/common/user_agent.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/common/user_agent.h"
+#import "ios/web/public/web_state_observer.h"
 
 class PrerenderService;
 class WebStateList;
@@ -98,10 +98,11 @@ class TabUsageRecorderBrowserAgent
   // TODO(crbug.com/731724): remove this once the code has been refactored not
   // to depends on injecting values in |termination_timestamps_|.
   friend class TabUsageRecorderBrowserAgentTest;
-  explicit TabUsageRecorderBrowserAgent(Browser* browser);
 
   friend class BrowserUserData<TabUsageRecorderBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit TabUsageRecorderBrowserAgent(Browser* browser);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;

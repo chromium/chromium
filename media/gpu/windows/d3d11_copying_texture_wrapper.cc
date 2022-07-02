@@ -80,8 +80,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
     // The VideoProcessor doesn't support tone mapping of HLG content, so treat
     // treat it as gamma 2.2 since HLG is designed to look okay that way.
     auto adjusted_color_space = input_color_space;
-    if (!video_processor_->supports_tone_mapping() &&
-        input_color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG &&
+    if (input_color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG &&
         !copy_color_space.IsHDR()) {
       adjusted_color_space = gfx::ColorSpace(
           input_color_space.GetPrimaryID(),

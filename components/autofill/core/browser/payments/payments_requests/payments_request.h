@@ -8,13 +8,15 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace base {
 class Value;
 }
 
-namespace autofill {
-namespace payments {
+namespace autofill::payments {
 
 // Shared class for the various Payments request types.
 class PaymentsRequest {
@@ -47,9 +49,42 @@ class PaymentsRequest {
 
   // Shared helper function to build the customer context sent in the request.
   base::Value BuildCustomerContextDictionary(int64_t external_customer_id);
+
+  // Shared helper function that populates the list of active experiments that
+  // affect either the data sent in payments RPCs or whether the RPCs are sent
+  // or not.
+  void SetActiveExperiments(const std::vector<const char*>& active_experiments,
+                            base::Value& request_dict);
+
+  // Shared helper functoin that returns a dictionary with the structure
+  // expected by Payments RPCs, containing each of the fields in |profile|,
+  // formatted according to |app_locale|. If |include_non_location_data| is
+  // false, the name and phone number in |profile| are not included.
+  base::Value BuildAddressDictionary(const AutofillProfile& profile,
+                                     const std::string& app_locale,
+                                     bool include_non_location_data);
+
+  // Shared helper function that returns a dictionary of the credit card with
+  // the structure expected by Payments RPCs, containing expiration month,
+  // expiration year and cardholder name (if any) fields in |credit_card|,
+  // formatted according to |app_locale|. |pan_field_name| is the field name for
+  // the encrypted pan. We use each credit card's guid as the unique id.
+  base::Value BuildCreditCardDictionary(const CreditCard& credit_card,
+                                        const std::string& app_locale,
+                                        const std::string& pan_field_name);
+
+  // Shared helper functions for string operations.
+  void AppendStringIfNotEmpty(const AutofillProfile& profile,
+                              const ServerFieldType& type,
+                              const std::string& app_locale,
+                              base::Value& list);
+  void SetStringIfNotEmpty(const AutofillDataModel& profile,
+                           const ServerFieldType& type,
+                           const std::string& app_locale,
+                           const std::string& path,
+                           base::Value& dictionary);
 };
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_

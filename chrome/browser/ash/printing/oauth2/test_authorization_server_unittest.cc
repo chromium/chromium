@@ -59,14 +59,14 @@ TEST(PrintingOAuth2TestAuthorizationServerTest, ParseURLParameters) {
 
 TEST(PrintingOAuth2TestAuthorizationServerTest, BuildMetadata) {
   auto data = BuildMetadata("server_uri", "auth", "token", "reg", "rev");
-  EXPECT_EQ(data["issuer"].GetString(), "server_uri");
-  EXPECT_EQ(data["authorization_endpoint"].GetString(), "auth");
-  EXPECT_EQ(data["token_endpoint"].GetString(), "token");
-  EXPECT_EQ(data["registration_endpoint"].GetString(), "reg");
-  EXPECT_EQ(data["revocation_endpoint"].GetString(), "rev");
-  ASSERT_TRUE(data["response_types_supported"].is_list());
-  ASSERT_EQ(data["response_types_supported"].GetList().size(), 1);
-  EXPECT_EQ(data["response_types_supported"].GetList().front().GetString(),
+  EXPECT_EQ(*data.FindString("issuer"), "server_uri");
+  EXPECT_EQ(*data.FindString("authorization_endpoint"), "auth");
+  EXPECT_EQ(*data.FindString("token_endpoint"), "token");
+  EXPECT_EQ(*data.FindString("registration_endpoint"), "reg");
+  EXPECT_EQ(*data.FindString("revocation_endpoint"), "rev");
+  ASSERT_TRUE(data.FindList("response_types_supported"));
+  ASSERT_EQ(data.FindList("response_types_supported")->size(), 1u);
+  EXPECT_EQ(data.FindList("response_types_supported")->front().GetString(),
             "code");
 }
 
@@ -86,7 +86,7 @@ TEST(PrintingOAuth2TestAuthorizationServerTest, ReceiveGETAndResponse) {
 
   // Process and check the request and send the response.
   ASSERT_EQ(server.ReceiveGET("https://abc/def"), "");
-  base::flat_map<std::string, base::Value> content;
+  base::Value::Dict content;
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, content);
 
   // Check the response.
@@ -113,12 +113,12 @@ TEST(PrintingOAuth2TestAuthorizationServerTest,
                                1024);
 
   // Process and check the request and send the response.
-  base::flat_map<std::string, base::Value> content;
+  base::Value::Dict content;
   ASSERT_EQ(server.ReceivePOSTWithJSON("https://abc/def", content), "");
   EXPECT_EQ(content.size(), 2);
-  EXPECT_EQ(content["field1"].GetString(), "val1");
-  EXPECT_EQ(content["field2"].GetString(), "val2");
-  content["field3"] = base::Value("val3");
+  EXPECT_EQ(*content.FindString("field1"), "val1");
+  EXPECT_EQ(*content.FindString("field2"), "val2");
+  content.Set("field3", "val3");
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, content);
 
   // Check the response.

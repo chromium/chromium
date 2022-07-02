@@ -24,6 +24,7 @@ class SecurePaymentConfirmationNoCredsDialogView
    public:
     virtual void OnDialogOpened() = 0;
     virtual void OnDialogClosed() = 0;
+    virtual void OnOptOutClicked() = 0;
   };
 
   // IDs that identify a view within the secure payment confirmation no creds
@@ -46,9 +47,11 @@ class SecurePaymentConfirmationNoCredsDialogView
 
   // SecurePaymentConfirmationNoCredsView:
   void ShowDialog(content::WebContents* web_contents,
-                  const std::u16string& no_creds_text,
-                  ResponseCallback response_callback) override;
+                  base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model,
+                  ResponseCallback response_callback,
+                  OptOutCallback opt_out_callback) override;
   void HideDialog() override;
+  bool ClickOptOutForTesting() override;
 
   // views::DialogDelegate:
   bool ShouldShowCloseButton() const override;
@@ -57,15 +60,18 @@ class SecurePaymentConfirmationNoCredsDialogView
 
  private:
   void OnDialogClosed();
+  void OnOptOutClicked();
 
-  void InitChildViews(const std::u16string& no_creds_text);
-  std::unique_ptr<views::View> CreateBodyView(
-      const std::u16string& no_creds_text);
+  void InitChildViews();
+  std::unique_ptr<views::View> CreateBodyView();
+
+  base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model_;
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
 
   ResponseCallback response_callback_;
+  OptOutCallback opt_out_callback_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationNoCredsDialogView>
       weak_ptr_factory_{this};

@@ -109,7 +109,7 @@ const PersonalizationStoreClientImpl: PersonalizationStoreClient&
 export const WithPersonalizationStore: {
   new (): PolymerElement&I18nMixinInterface&IronResizableBehavior&
   ListPropertyUpdateMixinInterface&PersonalizationStoreClient&
-  StoreClientInterface,
+  StoreClientInterface<PersonalizationState>,
 } =
     mixinBehaviors(
         [

@@ -152,8 +152,8 @@ ExtensionFunction::ResponseAction SocketApiFunction::Run() {
 ExtensionFunction::ResponseValue SocketApiFunction::ErrorWithCode(
     int error_code,
     const std::string& error) {
-  std::vector<base::Value> args;
-  args.emplace_back(error_code);
+  base::Value::List args;
+  args.Append(error_code);
   return ErrorWithArguments(std::move(args), error);
 }
 
@@ -346,8 +346,8 @@ ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
     socket->Disconnect(false /* socket_destroying */);
     return RespondNow(OneArgument(base::Value()));
   } else {
-    std::vector<base::Value> args;
-    args.emplace_back();
+    base::Value::List args;
+    args.Append(base::Value());
     return RespondNow(
         ErrorWithArguments(std::move(args), kSocketNotFoundError));
   }

@@ -74,6 +74,7 @@ class CONTENT_EXPORT TtsControllerImpl
   void RemoveUtteranceEventDelegate(UtteranceEventDelegate* delegate) override;
   void SetTtsEngineDelegate(TtsEngineDelegate* delegate) override;
   TtsEngineDelegate* GetTtsEngineDelegate() override;
+  void RefreshVoices() override;
 
   void Shutdown();
 

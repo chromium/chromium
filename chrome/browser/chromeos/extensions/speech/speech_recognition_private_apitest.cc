@@ -56,11 +56,10 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, OnStart) {
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartResultStop) {
   // This test requires some back and forth communication between C++ and JS.
   // Use message listeners to force the synchronicity of this test.
-  ExtensionTestMessageListener start_listener("Started", false);
-  ExtensionTestMessageListener first_result_listener("Received first result",
-                                                     false);
-  ExtensionTestMessageListener second_result_listener("Received second result",
-                                                      true);
+  ExtensionTestMessageListener start_listener("Started");
+  ExtensionTestMessageListener first_result_listener("Received first result");
+  ExtensionTestMessageListener second_result_listener(
+      "Received second result", ReplyBehavior::kWillReply);
 
   // Load the extension and wait for speech recognition to start.
   ResultCatcher result_catcher;
@@ -84,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartResultStop) {
 // An end-to-end test that starts speech recognition, fires a fake error, then
 // waits for the extension to handle both an onError and an onStop event.
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, StartErrorStop) {
-  ExtensionTestMessageListener start_listener("Started", false);
+  ExtensionTestMessageListener start_listener("Started");
 
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtensionAsComponent("start_error_stop");

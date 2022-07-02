@@ -6,9 +6,13 @@
 #define ASH_COMPONENTS_PHONEHUB_RECENT_APPS_INTERACTION_HANDLER_IMPL_H_
 
 #include <stdint.h>
+#include <memory>
 
+#include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -34,7 +38,8 @@ class RecentAppsInteractionHandlerImpl
   explicit RecentAppsInteractionHandlerImpl(
       PrefService* pref_service,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      MultideviceFeatureAccessManager* multidevice_feature_access_manager);
+      MultideviceFeatureAccessManager* multidevice_feature_access_manager,
+      std::unique_ptr<IconDecoder> icon_decoder);
   ~RecentAppsInteractionHandlerImpl() override;
 
   // RecentAppsInteractionHandler:
@@ -59,8 +64,17 @@ class RecentAppsInteractionHandlerImpl
   void OnNotificationAccessChanged() override;
   void OnAppsAccessChanged() override;
 
+  void SetStreamableApps(const proto::StreamableApps& streamable_apps) override;
+  void IconsDecoded(std::unique_ptr<std::vector<IconDecoder::DecodingData>>
+                        decoding_data_list);
+
+  std::vector<std::pair<Notification::AppMetadata, base::Time>>*
+  recent_app_metadata_list_for_testing() {
+    return &recent_app_metadata_list_;
+  }
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);
+  friend class RecentAppsInteractionHandlerTest;
 
   void LoadRecentAppMetadataListFromPrefIfNeed();
   void SaveRecentAppMetadataListToPref();
@@ -78,6 +92,10 @@ class RecentAppsInteractionHandlerImpl
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
+  std::unique_ptr<IconDecoder> icon_decoder_;
+
+  base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace phonehub

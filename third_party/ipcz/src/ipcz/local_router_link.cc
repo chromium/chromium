@@ -4,6 +4,7 @@
 
 #include "ipcz/local_router_link.h"
 
+#include <sstream>
 #include <utility>
 
 #include "ipcz/link_side.h"
@@ -81,6 +82,11 @@ bool LocalRouterLink::HasLocalPeer(const Router& router) {
   return state_->GetRouter(side_.opposite()).get() == &router;
 }
 
+bool LocalRouterLink::IsRemoteLinkTo(const NodeLink& node_link,
+                                     SublinkId sublink) {
+  return false;
+}
+
 void LocalRouterLink::AcceptParcel(Parcel& parcel) {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
     receiver->AcceptInboundParcel(parcel);
@@ -95,6 +101,14 @@ void LocalRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
 
 void LocalRouterLink::Deactivate() {
   state_->Deactivate(side_);
+}
+
+std::string LocalRouterLink::Describe() const {
+  std::stringstream ss;
+  ss << side_.ToString() << "-side link to local peer "
+     << state_->GetRouter(side_.opposite()).get() << " on "
+     << side_.opposite().ToString() << " side";
+  return ss.str();
 }
 
 }  // namespace ipcz

@@ -63,12 +63,14 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#prepare-script-url-and-text
   virtual String ScriptTextInternalSlot() const = 0;
   virtual bool HasSourceAttribute() const = 0;
+  virtual bool HasAttributionsrcAttribute() const = 0;
   virtual bool IsConnected() const = 0;
   virtual bool HasChildren() const = 0;
   virtual const AtomicString& GetNonceForElement() const = 0;
   virtual bool ElementHasDuplicateAttributes() const = 0;
-  // https://html.spec.whatwg.org/C/#explicitly-render-blocking
-  virtual bool IsExplicitlyRenderBlocking() const = 0;
+
+  // https://html.spec.whatwg.org/C/#potentially-render-blocking
+  virtual bool IsPotentiallyRenderBlocking() const = 0;
 
   // Whether the inline script is allowed by the CSP. Must be called
   // synchronously to ensure the correct Javascript world is used for CSP

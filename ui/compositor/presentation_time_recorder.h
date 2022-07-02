@@ -6,6 +6,7 @@
 #define UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -40,7 +41,7 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
     int GetFailureRatio() const;
 
    private:
-    PresentationTimeRecorder* recorder_;
+    raw_ptr<PresentationTimeRecorder> recorder_;
   };
 
   explicit PresentationTimeRecorder(

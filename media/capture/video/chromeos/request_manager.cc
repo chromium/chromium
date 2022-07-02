@@ -457,10 +457,10 @@ bool RequestManager::TryPrepareReprocessRequest(
 
   // Consume reprocess task.
   ReprocessJobInfo* reprocess_job_info;
-  for (auto& it : buffer_id_reprocess_job_info_map_) {
-    if (processing_buffer_ids_.count(it.first) == 0) {
-      *input_buffer_id = it.first;
-      reprocess_job_info = &it.second;
+  for (auto& [buffer_id, job_info] : buffer_id_reprocess_job_info_map_) {
+    if (processing_buffer_ids_.count(buffer_id) == 0) {
+      *input_buffer_id = buffer_id;
+      reprocess_job_info = &job_info;
       break;
     }
   }

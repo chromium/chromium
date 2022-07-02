@@ -239,8 +239,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void GetUsageAndQuota(int64_t* usage, int64_t* quota) {
     blink::mojom::QuotaStatusCode status =
         AsyncFileTestHelper::GetUsageAndQuota(
-            quota_manager_->proxy(),
-            sandbox_file_system_.storage_key().origin(),
+            quota_manager_->proxy(), sandbox_file_system_.storage_key(),
             sandbox_file_system_.type(), usage, quota);
     task_environment_.RunUntilIdle();
     ASSERT_EQ(blink::mojom::QuotaStatusCode::kOk, status);

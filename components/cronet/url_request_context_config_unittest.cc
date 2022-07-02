@@ -59,22 +59,20 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       base::test::TaskEnvironment::MainThreadType::IO);
 
   // Create JSON for experimental options.
-  base::DictionaryValue options;
-  options.SetPath({"QUIC", "max_server_configs_stored_in_properties"},
-                  base::Value(2));
-  options.SetPath({"QUIC", "user_agent_id"}, base::Value("Custom QUIC UAID"));
-  options.SetPath({"QUIC", "idle_connection_timeout_seconds"},
-                  base::Value(300));
-  options.SetPath({"QUIC", "close_sessions_on_ip_change"}, base::Value(true));
-  options.SetPath({"QUIC", "connection_options"}, base::Value("TIME,TBBR,REJ"));
-  options.SetPath(
-      {"QUIC", "set_quic_flags"},
-      base::Value("FLAGS_quic_reloadable_flag_quic_testonly_default_false=true,"
-                  "FLAGS_quic_restart_flag_quic_testonly_default_true=false"));
-  options.SetPath({"AsyncDNS", "enable"}, base::Value(true));
-  options.SetPath({"NetworkErrorLogging", "enable"}, base::Value(true));
-  options.SetPath({"NetworkErrorLogging", "preloaded_report_to_headers"},
-                  base::test::ParseJson(R"json(
+  base::Value::Dict options;
+  options.SetByDottedPath("QUIC.max_server_configs_stored_in_properties", 2);
+  options.SetByDottedPath("QUIC.user_agent_id", "Custom QUIC UAID");
+  options.SetByDottedPath("QUIC.idle_connection_timeout_seconds", 300);
+  options.SetByDottedPath("QUIC.close_sessions_on_ip_change", true);
+  options.SetByDottedPath("QUIC.connection_options", "TIME,TBBR,REJ");
+  options.SetByDottedPath(
+      "QUIC.set_quic_flags",
+      "FLAGS_quic_reloadable_flag_quic_testonly_default_false=true,"
+      "FLAGS_quic_restart_flag_quic_testonly_default_true=false");
+  options.SetByDottedPath("AsyncDNS.enable", true);
+  options.SetByDottedPath("NetworkErrorLogging.enable", true);
+  options.SetByDottedPath("NetworkErrorLogging.preloaded_report_to_headers",
+                          base::test::ParseJson(R"json(
                   [
                     {
                       "origin": "https://test-origin/",
@@ -121,8 +119,8 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
                     },
                   ]
                   )json"));
-  options.SetPath({"NetworkErrorLogging", "preloaded_nel_headers"},
-                  base::test::ParseJson(R"json(
+  options.SetByDottedPath("NetworkErrorLogging.preloaded_nel_headers",
+                          base::test::ParseJson(R"json(
                   [
                     {
                       "origin": "https://test-origin/",
@@ -133,13 +131,13 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
                     },
                   ]
                   )json"));
-  options.SetPath({"UnknownOption", "foo"}, base::Value(true));
-  options.SetPath({"HostResolverRules", "host_resolver_rules"},
-                  base::Value("MAP * 127.0.0.1"));
+  options.SetByDottedPath("UnknownOption.foo", true);
+  options.SetByDottedPath("HostResolverRules.host_resolver_rules",
+                          "MAP * 127.0.0.1");
   // See http://crbug.com/696569.
-  options.SetKey("disable_ipv6_on_wifi", base::Value(true));
-  options.SetKey("spdy_go_away_on_ip_change", base::Value(true));
-  options.SetPath({"QUIC", "ios_network_service_type"}, base::Value(2));
+  options.Set("disable_ipv6_on_wifi", true);
+  options.Set("spdy_go_away_on_ip_change", true);
+  options.SetByDottedPath({"QUIC.ios_network_service_type"}, 2);
   std::string options_json;
   EXPECT_TRUE(base::JSONWriter::Write(options, &options_json));
 
@@ -322,7 +320,8 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
       quic::AllSupportedVersionsWithQuicCrypto().front();
   std::string experimental_options =
       "{\"QUIC\":{\"quic_version\":\"" +
-      quic::QuicVersionToString(version.transport_version) + "\"}}";
+      quic::QuicVersionToString(version.transport_version) +
+      "\",\"obsolete_versions_allowed\":true}}";
 
   std::unique_ptr<URLRequestContextConfig> config =
       URLRequestContextConfig::CreateURLRequestContextConfig(

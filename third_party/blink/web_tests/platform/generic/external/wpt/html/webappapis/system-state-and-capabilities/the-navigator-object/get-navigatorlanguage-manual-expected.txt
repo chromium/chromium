@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL NavigatorLanguage: navigator.language returns the user's preferred language assert_equals: expected "en" but got "en-US"
-Harness: the test ran to completion.
-

@@ -46,13 +46,23 @@ class ProcessNode : public Node {
 
   // The type of content a renderer can host.
   enum class ContentType : uint32_t {
+    // Hosted an extension.
     kExtension = 1 << 0,
+    // Hosted a frame with no parent.
     kMainFrame = 1 << 1,
-    kAd = 1 << 2,
+    // Hosted a frame with a parent.
+    kSubframe = 1 << 2,
+    // Hosted a frame (main frame or subframe) with a committed navigation. A
+    // "speculative" frame will not have a committed navigation.
+    kNavigatedFrame = 1 << 3,
+    // Hosted a frame that was tagged as an ad.
+    kAd = 1 << 4,
+    // Hosted a worker (service worker, dedicated worker, shared worker).
+    kWorker = 1 << 5,
   };
 
   using ContentTypes =
-      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kAd>;
+      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kWorker>;
 
   ProcessNode();
 
@@ -70,20 +80,23 @@ class ProcessNode : public Node {
   // process ID for a process that has exited (at least until the underlying
   // RenderProcessHost gets reused in the case of a crash). Refrain from using
   // this as a unique identifier as on some platforms PIDs are reused
-  // aggressively. See GetLaunchTime for more information.
+  // aggressively.
   virtual base::ProcessId GetProcessId() const = 0;
 
   // Returns the base::Process backing this process. This will be an invalid
   // process if it has not yet started, or if it has exited.
   virtual const base::Process& GetProcess() const = 0;
 
-  // Returns the launch time associated with the process. Combined with the
-  // process ID this can be used as a unique identifier for the process.
-  virtual base::Time GetLaunchTime() const = 0;
+  // Returns a time captured as early as possible after the process is launched.
+  virtual base::TimeTicks GetLaunchTime() const = 0;
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.
   virtual absl::optional<int32_t> GetExitStatus() const = 0;
+
+  // Returns the non-localized name of the process used for metrics reporting
+  // metrics as specified in content::ChildProcessData during process creation.
+  virtual const std::string& GetMetricsName() const = 0;
 
   // Visits the frame nodes that are hosted in this process. The iteration is
   // halted if the visitor returns false. Returns true if every call to the

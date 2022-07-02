@@ -32,7 +32,7 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
 
  private:
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void HideDialogIfPresent();
 

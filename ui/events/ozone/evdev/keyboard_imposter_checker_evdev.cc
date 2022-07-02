@@ -35,6 +35,11 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
     EventConverterEvdev* converter) {
   if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic))
     return false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (converter->GetKeyboardType() == KeyboardType::IN_BLOCKLIST) {
+    fake_keyboard_heuristic_metrics_.RecordUsage(false);
+  }
+#endif
 
   if (!converter->HasKeyboard() ||
       (!converter->HasMouse() &&
@@ -44,6 +49,9 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
   }
 
   converter->SetSuspectedImposter(true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  fake_keyboard_heuristic_metrics_.RecordUsage(true);
+#endif
   return true;
 }
 

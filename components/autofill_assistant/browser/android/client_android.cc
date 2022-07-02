@@ -98,6 +98,9 @@ ClientAndroid::ClientAndroid(content::WebContents* web_contents,
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)),
+      annotate_dom_model_service_(dependencies_->GetCommonDependencies()
+                                      ->GetOrCreateAnnotateDomModelService(
+                                          web_contents->GetBrowserContext())),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -129,7 +132,7 @@ bool ClientAndroid::IsVisible() const {
          ui_controller_android_->IsAttached();
 }
 
-bool ClientAndroid::Start(
+void ClientAndroid::Start(
     const GURL& url,
     std::unique_ptr<TriggerContext> trigger_context,
     std::unique_ptr<Service> test_service_to_inject,
@@ -176,40 +179,13 @@ bool ClientAndroid::Start(
       DVLOG(2) << "\t\t" << param.name() << ": " << param.value();
     }
   }
-  return controller_->Start(url, std::move(trigger_context));
+  controller_->Start(url, std::move(trigger_context));
 }
 
 void ClientAndroid::OnJavaDestroyUI(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   DestroyUI();
-}
-
-void ClientAndroid::TransferUITo(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jother_web_contents) {
-  if (!ui_controller_android_)
-    return;
-
-  auto ui_ptr = std::move(ui_controller_android_);
-  // From this point on, the UIController, in ui_ptr, is either transferred or
-  // deleted.
-
-  if (!jother_web_contents)
-    return;
-
-  auto* other_web_contents =
-      content::WebContents::FromJavaWebContents(jother_web_contents);
-  DCHECK_NE(other_web_contents, GetWebContents());
-
-  ClientAndroid* other_client =
-      ClientAndroid::FromWebContents(other_web_contents);
-  if (!other_client || !other_client->NeedsUI())
-    return;
-
-  other_client->ui_controller_android_ = std::move(ui_ptr);
-  other_client->AttachUI();
 }
 
 base::android::ScopedJavaLocalRef<jstring> ClientAndroid::GetPrimaryAccountName(
@@ -393,6 +369,13 @@ void ClientAndroid::ShowFatalError(
       Metrics::DropOutReason::NO_SCRIPTS);
 }
 
+bool ClientAndroid::IsSupervisedUser(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return dependencies_->GetCommonDependencies()->IsSupervisedUser(
+      GetWebContents()->GetBrowserContext());
+}
+
 void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
@@ -492,7 +475,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 
 std::string ClientAndroid::GetSignedInEmail() const {
   return dependencies_->GetCommonDependencies()->GetSignedInEmail(
-      GetWebContents());
+      GetWebContents()->GetBrowserContext());
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
@@ -537,7 +520,8 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return dependencies_->GetCommonDependencies()->GetPersonalDataManager();
+  return dependencies_->GetCommonDependencies()->GetPersonalDataManager(
+      GetWebContents()->GetBrowserContext());
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
@@ -626,6 +610,31 @@ bool ClientAndroid::MustUseBackendData() const {
   return dependencies_->GetCommonDependencies()->IsWebLayer();
 }
 
+void ClientAndroid::GetAnnotateDomModelVersion(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
+  if (!annotate_dom_model_service_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  auto model_version = annotate_dom_model_service_->GetModelVersion();
+  if (model_version.has_value()) {
+    std::move(callback).Run(model_version);
+    return;
+  }
+
+  annotate_dom_model_service_->NotifyOnModelFileAvailable(
+      base::BindOnce(&ClientAndroid::OnAnnotateDomModelFileAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientAndroid::OnAnnotateDomModelFileAvailable(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback,
+    bool available) {
+  DCHECK(annotate_dom_model_service_);
+  std::move(callback).Run(annotate_dom_model_service_->GetModelVersion());
+}
+
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;
@@ -699,10 +708,7 @@ void ClientAndroid::CreateController(
       GetWebContents(), /* client= */ this,
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
-      std::move(service), ukm::UkmRecorder::Get(),
-      dependencies_->GetCommonDependencies()
-          ->GetOrCreateAnnotateDomModelService(
-              GetWebContents()->GetBrowserContext()));
+      std::move(service), ukm::UkmRecorder::Get(), annotate_dom_model_service_);
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));
   ui_controller_->StartListening();

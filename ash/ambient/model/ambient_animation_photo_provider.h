@@ -99,6 +99,7 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   GetTopicsToChooseFrom() const;
 
   void NotifyObserverOfNewTopics();
+  void RecordDynamicAssetMetrics();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
   const AmbientAnimationStaticResources* const static_resources_;

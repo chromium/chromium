@@ -1,0 +1,93 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+import("//testing/test.gni")
+
+rust_static_library("gnrt_lib") {
+  # Mark this tool testonly so we can use more third-party crates. This tool
+  # is neither built into Chromium nor used directly in the build process. It
+  # is only run by developers and the output is checked in.
+  testonly = true
+
+  crate_name = "gnrt_lib"
+  crate_root = "lib.rs"
+  sources = [
+    "crates.rs",
+    "deps.rs",
+    "lib.rs",
+    "manifest.rs",
+    "paths.rs",
+    "platforms.rs",
+  ]
+
+  deps = [
+    "//third_party/rust/cargo_metadata/v0_14:test_support",
+
+    # TODO(crbug.com/1338658): Depend on test_support target once issue is
+    # resolved. We don't want to export this library for production use, but due
+    # to a linking issue we must depend on the lib target which shouldn't exist
+    # in the first place, but does due to a crates.py bug.
+    "//third_party/rust/cargo_platform/v0_1:lib",
+    "//third_party/rust/once_cell/v1:lib",
+    "//third_party/rust/semver/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/toml/v0_5:test_support",
+  ]
+}
+
+test("gnrt_unittests") {
+  rs_sources = [
+    "crates_unittest.rs",
+    "deps_unittest.rs",
+    "manifest_unittest.rs",
+    "platforms_unittest.rs",
+  ]
+
+  rs_deps = [
+    ":gnrt_lib",
+    "//third_party/rust/cargo_metadata/v0_14:test_support",
+
+    # TODO(crbug.com/1338658): Depend on test_support target once issue is
+    # resolved. We don't want to export this library for production use, but due
+    # to a linking issue we must depend on the lib target which shouldn't exist
+    # in the first place, but does due to a crates.py bug.
+    "//third_party/rust/cargo_platform/v0_1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/toml/v0_5:test_support",
+  ]
+
+  deps = [
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+  ]
+}
+
+if (rustc_can_link) {
+  rust_executable("gnrt") {
+    # Mark this tool testonly so we can use more third-party crates. This tool
+    # is neither built into Chromium nor used directly in the build process. It
+    # is only run by developers and the output is checked in.
+    testonly = true
+
+    crate_root = "main.rs"
+    sources = [ "main.rs" ]
+
+    deps = [
+      ":gnrt_lib",
+      "//third_party/rust/cargo_metadata/v0_14:test_support",
+      "//third_party/rust/clap/v3:test_support",
+      "//third_party/rust/serde/v1:lib",
+      "//third_party/rust/serde_json/v1:lib",
+      "//third_party/rust/toml/v0_5:test_support",
+    ]
+
+    test_inputs = [ "test_metadata.json" ]
+  }
+}

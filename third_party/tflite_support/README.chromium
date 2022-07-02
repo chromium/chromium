@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: cd6760941473a976a78aa33fa199c2058f1441fd
-Date: 2022/04/13
+Version: be6820a9a617b57defecbd4c766eb0bab707cac0
+Date: 2022/05/25
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
@@ -27,16 +27,20 @@ isn't worth adding this functionality, esp since no feature team needs it.
 is a no-op in chromium builds and upsets clang.
 04) Do not use absl::any since it is not supported in chromium
 05) Remove an unneeded static initializer.
-06) Run clang-format.
+06) Check (instead of resetting) the cancel_flag_ before Invoking the model.
+07) Remove support for creating a model handler from a file.
+08) Run clang-format.
   * This patch might not apply cleanly, so run `git cl format` and commit the
   changes.
-07) Check (instead of resetting) the cancel_flag_ before Invoking the model.
-08) Remove unbuilt files that cause presubmit errors.
-09) Remove support for creating a model handler from a file.
+09) Remove unbuilt files that cause `git cl presubmit` errors.
+  * This patch intentionally does not apply because it was made with
+  `--irreversible-delete` because it is deleting a large .tflite file causing
+  the chromium-presubmit bot to fail.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:
 ```
+
 pushd third_party/tflite_support/
 rm -rf src/
 git clone https://github.com/tensorflow/tflite-support/
@@ -47,5 +51,4 @@ popd
 2) Apply each patch listed above residing in patches/ using `git apply
 third_party/tflite_support/patches/$PATCHFILE`.
 3) Get the build working.
-4) Record the patches made with `git format-patches HEAD -<number of changes>`
-
+4) Record the patches made with `git format-patch HEAD -<number of changes>`

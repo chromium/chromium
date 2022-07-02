@@ -57,12 +57,17 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // is not found.
   bool GetUpdateState(const std::string& id, CrxUpdateItem* update_state);
 
-  void Update(bool is_foreground,
-              bool is_install,
-              const std::vector<std::string>& ids,
-              UpdateClient::CrxDataCallback crx_data_callback,
-              UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-              Callback update_callback);
+  // Update the given app ids. Returns a closure that can be called to trigger
+  // cancellation of the operation. `update_callback` will be called when the
+  // operation is complete (even if cancelled). The cancellation callback
+  // should be called only on the main thread.
+  base::RepeatingClosure Update(
+      bool is_foreground,
+      bool is_install,
+      const std::vector<std::string>& ids,
+      UpdateClient::CrxDataCallback crx_data_callback,
+      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+      Callback update_callback);
 
   void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
@@ -132,6 +137,9 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   // True if the component is updating in an installation flow.
   bool is_install = false;
+
+  // True if and only if this operation has been canceled.
+  bool is_cancelled = false;
 
   // Contains the ids of all CRXs in this context in the order specified
   // by the caller of |UpdateClient::Update| or |UpdateClient:Install|.

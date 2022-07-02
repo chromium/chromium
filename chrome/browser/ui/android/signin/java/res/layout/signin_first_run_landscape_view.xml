@@ -93,14 +93,30 @@
             app:leading="@dimen/text_size_small_leading" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/fre_signin_progress_spinner"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="170dp"
-        android:layout_marginStart="200dp"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="120dp"
+        android:layout_marginEnd="60dp"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@id/fre_logo"
-        android:visibility="gone" />
+        android:layout_toEndOf="@id/fre_logo">
+
+        <ProgressBar
+            android:id="@+id/fre_signin_progress_spinner"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/fre_signin_progress_text"
+            style="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/fre_signing_in"
+            android:visibility="gone" />
+    </FrameLayout>
 </org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>

@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/utf_string_conversions.h"
@@ -447,9 +446,6 @@ File::Error File::OSErrorToFileError(int saved_errno) {
     case ENOTDIR:
       return FILE_ERROR_NOT_A_DIRECTORY;
     default:
-#if !BUILDFLAG(IS_NACL)  // NaCl build has no metrics code.
-      UmaHistogramSparse("PlatformFile.UnknownErrors.Posix", saved_errno);
-#endif
       // This function should only be called for errors.
       DCHECK_NE(0, saved_errno);
       return FILE_ERROR_FAILED;

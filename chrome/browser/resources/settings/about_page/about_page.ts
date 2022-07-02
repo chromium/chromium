@@ -7,13 +7,13 @@
  * information.
  */
 
-import '../icons.js';
+import '../icons.html.js';
 import '../prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>
 import '../settings_page/settings_section.js';
-import '../settings_page_css.js';
+import '../settings_page_styles.css.js';
 import '../settings_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';

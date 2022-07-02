@@ -54,6 +54,9 @@ class CORE_EXPORT MathMLElement : public Element {
 
   // https://w3c.github.io/mathml-core/#dfn-boolean
   absl::optional<bool> BooleanAttribute(const QualifiedName& name) const;
+
+  LayoutObject* CreateLayoutObject(const ComputedStyle&,
+                                   LegacyLayout legacy) override;
 };
 
 template <typename T>

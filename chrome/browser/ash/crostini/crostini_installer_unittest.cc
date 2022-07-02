@@ -8,9 +8,7 @@
 #include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
@@ -29,6 +27,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -68,11 +67,11 @@ class CrostiniInstallerTest : public testing::Test {
     explicit WaitingFakeConciergeClient(ash::FakeCiceroneClient* client)
         : ash::FakeConciergeClient(client) {}
 
-    void StartTerminaVm(
+    void StartVm(
         const vm_tools::concierge::StartVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
             callback) override {
-      ash::FakeConciergeClient::StartTerminaVm(request, std::move(callback));
+      ash::FakeConciergeClient::StartVm(request, std::move(callback));
       if (quit_closure_) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(quit_closure_));
@@ -83,7 +82,7 @@ class CrostiniInstallerTest : public testing::Test {
       base::RunLoop loop;
       quit_closure_ = loop.QuitClosure();
       loop.Run();
-      EXPECT_GE(start_termina_vm_call_count(), 1);
+      EXPECT_GE(start_vm_call_count(), 1);
     }
 
    private:
@@ -118,6 +117,7 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::DlcserviceClient::InitializeFake();
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     SetOSRelease();
     waiting_fake_concierge_client_ =
@@ -155,6 +155,7 @@ class CrostiniInstallerTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
 

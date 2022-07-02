@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1060368002126861100">Para abrir ficheiros com a app <ph name="APP_NAME" />, mova-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="1062407476771304334">Substituir</translation>
-<translation id="1119069657431255176">Arquivo tar comprimido Bzip2</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inglês (EUA) com teclado Dvorak de programador</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalão</translation>
 <translation id="1168100932582989117">Servidores de nome Google</translation>
-<translation id="1171082344678443012">Arquivo comprimido XZ</translation>
 <translation id="1172970565351728681">Falta(m) cerca de <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1173916544412572294">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, detalhes</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nome automático</translation>
 <translation id="1210831758834677569">Laosiano</translation>
-<translation id="1223825810409523901">Extensão do Chrome</translation>
 <translation id="1243314992276662751">Carregar</translation>
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Não é permitido alterar as configurações de rede partilhadas.</translation>
 <translation id="1665611772925418501">Não foi possível modificar o ficheiro.</translation>
 <translation id="1673103856845176271">Não foi possível aceder ao ficheiro por razões de segurança.</translation>
-<translation id="16762847117768727">Imagem ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Ciclista</translation>
 <translation id="1722487484194605434">A comprimir <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Gerir no Drive</translation>
 <translation id="2009067268969781306">Ao formatar uma unidade, todos os dados aí armazenados são eliminados. Não é possível anular esta ação.</translation>
 <translation id="2025955442973426285">Tigrínia</translation>
-<translation id="2028997212275086731">Arquivo RAR</translation>
-<translation id="2036414735548252477">Arquivo tar comprimido LZMA</translation>
 <translation id="2037845485764049925">Russo</translation>
 <translation id="2044023416777079300">Modem não registado</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
 <translation id="2142680004883808240">Russo com teclado YaZHert fonético</translation>
 <translation id="2143778271340628265">Configuração manual do proxy</translation>
+<translation id="2148716181193084225">Hoje</translation>
 <translation id="2163152940313951844">Caráter inválido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Português com teclado de PC americano internacional</translation>
 <translation id="2198315389084035571">Chinês Simplificado</translation>
-<translation id="2208158072373999562">Ficheiro zip</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar com o Linux</translation>
 <translation id="2225536596944493418">Tem a certeza de que pretende eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Mudar para a vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ficheiros selecionados</translation>
+<translation id="2387120140441437063">Não é possível abrir ficheiros movidos para o lixo. Restaure os ficheiros antes de os abrir.</translation>
 <translation id="2387458720915042159">Tipo de ligação proxy</translation>
 <translation id="2389832672041313158">Birmanês/Mianmar</translation>
 <translation id="2392369802118427583">Ativar</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">O conteúdo desta pasta é só de leitura. Algumas atividades não são suportadas.</translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
-<translation id="2547921442987553570">Adicionar a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">EUA internacional</translation>
 <translation id="2563185590376525700">Sapo</translation>
 <translation id="2578394532502990878">Fonética de tâmil</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">Dayi chinês</translation>
 <translation id="3057861065630527966">Fazer uma cópia de segurança de fotos e vídeos</translation>
 <translation id="3067790092342515856">Ficheiros do Windows</translation>
-<translation id="3078461028045006476">Partilhar com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Anfitrião SOCKS</translation>
 <translation id="3104793765551262433">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3855472144336161447">Alemão Neo 2</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="386548886866354912">Comprimir com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="3899991606604168269">Francês (Canadá) com teclado multilingue</translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">Transferir perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglês (RU)</translation>
 <translation id="3975895378829046965">Fonética de bengali</translation>
+<translation id="3991446849494482687">Esta ação também desativa a definição de bloqueio do SIM no dispositivo.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglês (EUA) com teclado Workman</translation>
 <translation id="4040753847560036377">PUK incorreto</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Controlo de deslize do volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
-<translation id="4886199584824489598">Arquivo comprimido Bzip2</translation>
 <translation id="4900532980794411603">Partilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4905417359854579806">Pronto para fazer uma cópia de segurança de <ph name="FILE_COUNT" />.</translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013">Rede <ph name="NETWORK_TYPE" />, não ligada</translation>
 <translation id="6074825444536523002">Formulário do Google</translation>
 <translation id="6079871810119356840">Húngaro com teclado Qwerty</translation>
-<translation id="6082256976217156453">Arquivo comprimido LZMA</translation>
 <translation id="6096979789310008754">Texto da pesquisa limpo, a mostrar todos os ficheiros e pastas.</translation>
 <translation id="610101264611565198">A mover <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" />…</translation>
 <translation id="61118516107968648">Texto CSV</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6187719147498869044">Húngaro</translation>
-<translation id="6189412234224385711">Abrir com <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199801702437275229">A aguardar informações de espaço...</translation>
 <translation id="6205710420833115353">Algumas operações estão a demorar mais tempo do que o previsto. Pretende interrompê-las?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">PUK inválido</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423">Arquivo <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Acenar</translation>
 <translation id="6327785803543103246">Deteção automática de proxy da Web</translation>
 <translation id="6339145975392024142">Americano internacional (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6485131920355264772">Falha ao obter informações de espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Gerida pelo administrador, Detalhes</translation>
+<translation id="649877868557234318">A extrair <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Não permitir proxies para redes partilhadas</translation>
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros utilizadores deste dispositivo utilizem esta rede</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Gerir partilha do Linux</translation>
 <translation id="6806796368146926706">Teclado alfanumérico com teclado japonês</translation>
 <translation id="6808193438228982088">Raposa</translation>
-<translation id="6820687829547641339">Arquivo tar comprimido Gzip</translation>
 <translation id="6823166707458800069">Será feita automaticamente uma cópia de segurança online de todos os ficheiros guardados nesta pasta.</translation>
 <translation id="6825883775269213504">Russo</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> foi removido da seleção.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">Tailandês com teclado TIS 820-2531</translation>
 <translation id="708278670402572152">Desligar para ativar a verificação</translation>
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
+<translation id="7088615885725309056">Mais antigo</translation>
 <translation id="7103992300314999525">Macedónio</translation>
 <translation id="7106346894903675391">Comprar mais armazenamento...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">A formatação de uma unidade elimina todos os dados armazenados na mesma e remove todas as partições existentes, incluindo as partições que podem não estar visíveis. Não é possível anular esta ação.</translation>
 <translation id="7695430100978772476">Não foi possível formatar <ph name="DRIVE_NAME" />.</translation>
+<translation id="76959938259365003">Falha ao esvaziar o lixo.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
 <translation id="7711920809702896782">Informações da imagem</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">Wubi chinês</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7774365994322694683">Pássaro</translation>
+<translation id="7781829728241885113">Ontem</translation>
 <translation id="7788080748068240085">Para guardar "<ph name="FILE_NAME" />" offline, tem de libertar mais <ph name="TOTAL_FILE_SIZE" /> de espaço:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />solte os ficheiros aos quais já não precisa de aceder offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />elimine ficheiros da pasta Transferências<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">Não utilizar dados móveis para sincronização</translation>
 <translation id="7928710562641958568">Ejetar aparelho</translation>
 <translation id="7943385054491506837">EUA Colemak</translation>
-<translation id="7948417415021769876">Arquivo 7z</translation>
 <translation id="7953739707111622108">Não é possível abrir este aparelho porque o sistema de ficheiros não foi reconhecido.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francês (Suíça)</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">Hangul 3 Set (sem Shift)</translation>
 <translation id="8299269255470343364">Japonês</translation>
 <translation id="8300849813060516376">O OTASP falhou</translation>
-<translation id="8308481408797647857">Arquivo tar comprimido XZ</translation>
 <translation id="8312871300878166382">Colar numa pasta</translation>
 <translation id="8329978297633540474">Texto simples</translation>
 <translation id="8335587457941836791">Soltar da prateleira</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">Clique com o botão direito do rato num ficheiro e selecione "Fixar na prateleira" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">VIQR vietnamita</translation>
-<translation id="8466234950814670489">Arquivo tar</translation>
 <translation id="8475647382427415476">O Google Drive não conseguiu sincronizar "<ph name="FILENAME" />" de momento e vai tentar novamente mais tarde.</translation>
 <translation id="8477649328507734757">Círculo</translation>
 <translation id="8484284835977497781">Escolha a partir das suas fotos recentes.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="947144732524271678">Selecionou um intervalo de <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Arquivo comprimido Gzip</translation>
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>

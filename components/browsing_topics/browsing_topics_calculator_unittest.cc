@@ -85,7 +85,8 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     page_content_annotations_service_ =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
             "en-US", optimization_guide_model_provider_.get(),
-            history_service_.get(), nullptr, base::FilePath(), nullptr);
+            history_service_.get(), nullptr, base::FilePath(), nullptr,
+            nullptr);
 
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(
         &test_page_content_annotator_);
@@ -97,8 +98,8 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     host_content_settings_map_->ShutdownOnUIThread();
   }
 
-  EpochTopics CalculateTopics() {
-    EpochTopics result;
+  EpochTopics CalculateTopics(base::circular_deque<EpochTopics> epochs = {}) {
+    EpochTopics result = EpochTopics(base::Time());
 
     base::RunLoop run_loop;
 
@@ -106,7 +107,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         TesterBrowsingTopicsCalculator(
             privacy_sandbox_settings_.get(), history_service_.get(),
             topics_site_data_manager_.get(),
-            page_content_annotations_service_.get(),
+            page_content_annotations_service_.get(), epochs,
             base::BindLambdaForTesting([&](EpochTopics epoch_topics) {
               result = std::move(epoch_topics);
               run_loop.Quit();
@@ -699,6 +700,102 @@ TEST_F(BrowsingTopicsCalculatorTest,
   task_environment_.AdvanceClock(base::Seconds(1));
 
   EpochTopics result = CalculateTopics();
+  ExpectResultTopicsEqual(
+      result.top_topics_and_observing_domains(),
+      {{Topic(6), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {Topic(5), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+       {Topic(4), {HashedDomain(2), HashedDomain(3)}},
+       {Topic(3), {HashedDomain(2)}},
+       {Topic(101), {}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 4u);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest,
+       HistoryDataBoundedByLastEpochCalculationTime) {
+  base::Time begin_time = base::Time::Now();
+  AddHistoryEntries({kHost1, kHost2, kHost3}, begin_time);
+  AddApiUsageContextEntries({{kHost3, {HashedDomain(5)}}});
+
+  task_environment_.AdvanceClock(base::Days(4));
+  AddHistoryEntries({kHost2, kHost3}, begin_time + base::Days(4));
+  AddApiUsageContextEntries({{kHost3, {HashedDomain(2)}}});
+
+  task_environment_.AdvanceClock(base::Days(2));
+  AddHistoryEntries({kHost3, kHost4, kHost5, kHost6},
+                    begin_time + base::Days(6));
+  AddApiUsageContextEntries(
+      {{kHost4, {HashedDomain(3)}},
+       {kHost5, {HashedDomain(1), HashedDomain(2), HashedDomain(3)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  base::circular_deque<EpochTopics> epochs;
+  epochs.push_back(EpochTopics(begin_time + base::Days(6)));
+
+  EpochTopics result = CalculateTopics(std::move(epochs));
+
+  // The topics are only from hosts since `begin_time + base::Days(6)`. The
+  // observing domains are from data since `begin_time`.
+  ExpectResultTopicsEqual(
+      result.top_topics_and_observing_domains(),
+      {{Topic(6),
+        {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(5)}},
+       {Topic(5),
+        {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(5)}},
+       {Topic(4), {HashedDomain(2), HashedDomain(3), HashedDomain(5)}},
+       {Topic(3), {HashedDomain(2), HashedDomain(5)}},
+       {Topic(101), {}}});
+
+  EXPECT_EQ(result.padded_top_topics_start_index(), 4u);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest,
+       HistoryDataAndApiUsageContextDataBoundedByPriorEpochsCalculationTime) {
+  base::Time begin_time = base::Time::Now();
+  AddHistoryEntries({kHost1, kHost2, kHost3}, begin_time);
+  AddApiUsageContextEntries({{kHost3, {HashedDomain(5)}}});
+
+  task_environment_.AdvanceClock(base::Days(4));
+  AddHistoryEntries({kHost2, kHost3}, begin_time + base::Days(4));
+  AddApiUsageContextEntries({{kHost3, {HashedDomain(2)}}});
+
+  task_environment_.AdvanceClock(base::Days(2));
+  AddHistoryEntries({kHost3, kHost4, kHost5, kHost6},
+                    begin_time + base::Days(6));
+  AddApiUsageContextEntries(
+      {{kHost4, {HashedDomain(3)}},
+       {kHost5, {HashedDomain(1), HashedDomain(2), HashedDomain(3)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  base::circular_deque<EpochTopics> epochs;
+  epochs.push_back(EpochTopics(begin_time + base::Days(4)));
+  epochs.push_back(EpochTopics(begin_time + base::Days(5)));
+  epochs.push_back(EpochTopics(begin_time + base::Days(6)));
+
+  EpochTopics result = CalculateTopics(std::move(epochs));
+
+  // The topics are only from hosts since `begin_time + base::Days(6)`. The
+  // observing domains are from data since `begin_time + base::Days(4)`.
   ExpectResultTopicsEqual(
       result.top_topics_and_observing_domains(),
       {{Topic(6), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},

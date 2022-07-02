@@ -245,6 +245,11 @@ void FencedFrameCreated(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
     FencedFrame* fenced_frame);
 
+// Tells tracing that process `pid` is being used for an auction worklet
+// associated to `owner`.
+void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
+                                       base::ProcessId pid);
+
 void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
     const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
@@ -285,7 +290,12 @@ void OnWebTransportHandshakeFailed(
 
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const std::string& error);
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
+    const std::string& error,
+    const network::URLLoaderCompletionStatus& status,
+    const network::mojom::URLResponseHead* response_head,
+    const GURL& url);
 void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const ServiceWorkerContextWrapper* context_wrapper,

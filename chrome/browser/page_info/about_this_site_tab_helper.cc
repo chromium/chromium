@@ -149,7 +149,7 @@ AboutThisSiteTabHelper::HandleOptimizationGuideDecision(
 void AboutThisSiteTabHelper::ShowBanner(
     page_info::proto::BannerInfo banner_info) {
   ukm::SourceId source_id =
-      web_contents()->GetMainFrame()->GetPageUkmSourceId();
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   GURL url = web_contents()->GetLastCommittedURL();
   base::OnceClosure on_dimiss =
       base::BindOnce(&page_info::AboutThisSiteService::OnBannerDismissed,

@@ -29,6 +29,8 @@ class CAPTURE_EXPORT VideoCaptureSystem {
   // something goes wrong.
   virtual VideoCaptureErrorOrDevice CreateDevice(
       const std::string& device_id) = 0;
+
+  virtual VideoCaptureDeviceFactory* GetFactory() = 0;
 };
 
 }  // namespace media

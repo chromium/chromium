@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 // TODO(battre): move all static functions into an anonymous namespace at the
@@ -818,10 +818,9 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, name))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(name);
       bool header_found = false;
       for (const auto& i : *new_response_headers) {
-        if (base::LowerCaseEqualsASCII(i.first, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(i.first, name) &&
             value == i.second) {
           header_found = true;
           break;
@@ -839,13 +838,12 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, i.first))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(i.first);
       size_t iter = 0;
       std::string name;
       std::string value;
       bool header_found = false;
       while (old_response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
-        if (base::LowerCaseEqualsASCII(name, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(name, i.first) &&
             value == i.second) {
           header_found = true;
           break;
@@ -1741,7 +1739,7 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
-         base::LowerCaseEqualsASCII(name, "set-cookie");
+         base::EqualsCaseInsensitiveASCII(name, "set-cookie");
 }
 
 bool ArePublicSessionRestrictionsEnabled() {
@@ -1749,8 +1747,7 @@ bool ArePublicSessionRestrictionsEnabled() {
   return chromeos::LoginState::IsInitialized() &&
          chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  return chromeos::LacrosService::Get()->init_params()->session_type ==
+  return chromeos::BrowserInitParams::Get()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
 #else
   return false;

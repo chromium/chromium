@@ -14,7 +14,7 @@ class Browser;
 // Mediator which mediates between openIn views and openIn tab helpers.
 @interface OpenInMediator : NSObject <OpenInTabHelperDelegate>
 
-// Creates a mediator that uses a |viewController| and a |browser|.
+// Creates a mediator that uses a `viewController` and a `browser`.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;

@@ -152,7 +152,7 @@ class NET_EXPORT FixedSetIncrementalLookup {
   // Contains the current decoder state. If true, |pos_| points to a label
   // character or a return code. If false, |pos_| points to a sequence of
   // offsets that indicate the child nodes of the current state.
-  bool pos_is_label_character_;
+  bool pos_is_label_character_ = false;
 };
 
 }  // namespace net

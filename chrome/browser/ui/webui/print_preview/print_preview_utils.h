@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 
-#include <memory>
 #include <string>
-#include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -28,7 +26,7 @@ extern const char kSelectString[];
 extern const char kTypeKey[];
 extern const char kVendorCapabilityKey[];
 
-// Converts |printer_list| to a base::ListValue form, runs |callback| with the
+// Converts |printer_list| to a base::Value::List form, runs |callback| with the
 // converted list as the argument if it is not empty, and runs |done_callback|.
 void ConvertPrinterListForCallback(
     PrinterHandler::AddedPrintersCallback callback,
@@ -38,7 +36,10 @@ void ConvertPrinterListForCallback(
 // Returns a sanitized version of |cdd| to prevent possible JS
 // errors in Print Preview. Will remove null items from lists or options lists
 // and remove any lists/options that are empty or only contain null values.
-base::Value ValidateCddForPrintPreview(base::Value cdd);
+// Will also check some CDD entries to make sure the input conforms to the
+// requirements for those entries, although not comprehensively.
+// On failure, returns an empty dict.
+base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 
 // Starts a local print of |print_data| with print settings dictionary
 // |job_settings|. Runs |callback| on failure or success.

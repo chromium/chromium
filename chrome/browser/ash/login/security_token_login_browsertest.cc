@@ -23,10 +23,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
-#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/saml/security_token_saml_test.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -37,16 +33,20 @@
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
+#include "chrome/browser/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -105,11 +105,13 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
     challenge_response_account_id_ = account_id;
   }
 
+  // TODO(crbug.com/1311355): This method can be cleaned up after full migration
+  // to AuthSession.
   void Mount(
       const ::user_data_auth::MountRequest& request,
       DBusMethodCallback<::user_data_auth::MountReply> callback) override {
-    CertificateProviderService* certificate_provider_service =
-        CertificateProviderServiceFactory::GetForBrowserContext(
+    chromeos::CertificateProviderService* certificate_provider_service =
+        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
     // Note: The real cryptohome would call the "ChallengeKey" D-Bus method
     // exposed by Chrome via org.chromium.CryptohomeKeyDelegateInterface, but
@@ -126,7 +128,39 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
                        std::move(callback)));
   }
 
+  void AuthenticateAuthSession(
+      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+      AuthenticateAuthSessionCallback callback) override {
+    chromeos::CertificateProviderService* certificate_provider_service =
+        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+            GetOriginalSigninProfile());
+    // Note: The real cryptohome would call the "ChallengeKey" D-Bus method
+    // exposed by Chrome via org.chromium.CryptohomeKeyDelegateInterface, but
+    // we're directly requesting the extension in order to avoid extra
+    // complexity in this UI-oriented browser test.
+    certificate_provider_service->RequestSignatureBySpki(
+        TestCertificateProviderExtension::GetCertificateSpki(),
+        SSL_SIGN_RSA_PKCS1_SHA256,
+        base::as_bytes(base::make_span(kChallengeData)),
+        challenge_response_account_id_,
+        base::BindOnce(&ChallengeResponseFakeUserDataAuthClient::
+                           ContinueAuthenticateSessionWithSignature,
+                       base::Unretained(this), request, std::move(callback)));
+  }
+
+  void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
+                      AddCredentialsCallback callback) override {
+    FAIL() << "Should not be called";
+  }
+
+  void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
+                     AddAuthFactorCallback callback) override {
+    FAIL() << "Should not be called";
+  }
+
  private:
+  // TODO(crbug.com/1311355): This method can be cleaned up after full migration
+  // to AuthSession.
   void ContinueMountExWithSignature(
       const cryptohome::AccountIdentifier& cryptohome_id,
       DBusMethodCallback<::user_data_auth::MountReply> callback,
@@ -139,6 +173,23 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
           ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), reply));
+  }
+
+  void ContinueAuthenticateSessionWithSignature(
+      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+      AuthenticateAuthSessionCallback callback,
+      net::Error error,
+      const std::vector<uint8_t>& signature) {
+    if (error != net::OK || signature.empty()) {
+      ::user_data_auth::AuthenticateAuthSessionReply reply;
+      reply.set_error(
+          ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), reply));
+      return;
+    }
+    FakeUserDataAuthClient::AuthenticateAuthSession(request,
+                                                    std::move(callback));
   }
 
   AccountId challenge_response_account_id_;
@@ -210,14 +261,19 @@ class ChromeSessionObserver : public SessionObserver {
 // Tests the challenge-response based login (e.g., using a smart card) for an
 // existing user.
 class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
-                               public LocalStateMixin::Delegate {
+                               public LocalStateMixin::Delegate,
+                               public testing::WithParamInterface<bool> {
  protected:
   SecurityTokenLoginTest()
       : cryptohome_client_(new ChallengeResponseFakeUserDataAuthClient) {
-    // TODO(crbug.com/1274116) remove after AuthSession support for
-    // challenge-response
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kUseAuthsessionAuthentication);
+    // TODO(crbug.com/1311355): Clean up after full migration to AuthSession.
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    }
     // Don't shut down when no browser is open, since it breaks the test and
     // since it's not the real Chrome OS behavior.
     set_exit_when_last_browser_closes(false);
@@ -365,7 +421,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
 
 // Tests the successful challenge-response login flow, including entering the
 // correct PIN.
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, Basic) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, Basic) {
   PrepareCertificateProviderExtension();
 
   // The user pod is displayed with the challenge-response "start" button
@@ -396,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, Basic) {
 
 // Test the login failure scenario when the certificate provider extension is
 // missing.
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, MissingExtension) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, MissingExtension) {
   EXPECT_EQ(LoginScreenTestApi::GetChallengeResponseLabel(
                 GetChallengeResponseAccountId()),
             kChallengeResponseLoginLabel);
@@ -410,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, MissingExtension) {
 }
 
 // Test the login failure scenario when the PIN dialog gets canceled.
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, PinCancel) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, PinCancel) {
   PrepareCertificateProviderExtension();
   StartLoginAndWaitForPinDialog();
 
@@ -430,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, PinCancel) {
 
 // Test the successful login scenario when the correct PIN was entered only on
 // the second attempt.
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, WrongPinThenCorrect) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, WrongPinThenCorrect) {
   PrepareCertificateProviderExtension();
   StartLoginAndWaitForPinDialog();
 
@@ -445,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, WrongPinThenCorrect) {
 
 // Test the login failure scenario when the wrong PIN is entered several times
 // until there's no more attempt left (simulating, e.g., a smart card lockout).
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, WrongPinUntilLockout) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, WrongPinUntilLockout) {
   PrepareCertificateProviderExtension();
   certificate_provider_extension()->set_remaining_pin_attempts(3);
 
@@ -469,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, WrongPinUntilLockout) {
 
 // Test the login failure scenario when the extension fails to sign the
 // challenge.
-IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, SigningFailure) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenLoginTest, SigningFailure) {
   PrepareCertificateProviderExtension();
   certificate_provider_extension()->set_should_fail_sign_digest_requests(true);
 
@@ -486,6 +542,8 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenLoginTest, SigningFailure) {
                 GetChallengeResponseAccountId()),
             kChallengeResponseErrorLabel);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SecurityTokenLoginTest, testing::Bool());
 
 // Tests for the SecurityTokenSessionBehavior and
 // SecurityTokenSessionNotificationSeconds policies.
@@ -562,7 +620,7 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
 };
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOCK".
-IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Lock) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, Lock) {
   Login();
   profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
                                    "LOCK");
@@ -579,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Lock) {
 }
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOGOUT".
-IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, PRE_Logout) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, PRE_Logout) {
   Login();
   ChromeSessionObserver chrome_session_observer;
   profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
@@ -595,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, PRE_Logout) {
       prefs::kSecurityTokenSessionNotificationDisplayed));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Logout) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, Logout) {
   // Check login screen notification is displayed.
   EXPECT_TRUE(
       ProfileHasNotification(GetOriginalSigninProfile(),
@@ -603,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, Logout) {
 }
 
 // Tests the SecurityTokenSessionNotificationSeconds policy.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
   Login();
   profile()->GetPrefs()->SetString(prefs::kSecurityTokenSessionBehavior,
                                    "LOCK");
@@ -626,6 +684,10 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorTest, NotificationSeconds) {
   // After the notification expires, the device gets locked.
   chrome_session_observer.WaitForSessionLocked();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SecurityTokenSessionBehaviorTest,
+                         testing::Bool());
 
 // Tests the SecurityTokenSessionBehavior policy in the initial user session
 // after that user has been created.
@@ -668,7 +730,7 @@ class SecurityTokenSessionBehaviorSamlTest : public SecurityTokenSamlTest {
 };
 
 // Tests the SecurityTokenSessionBehavior policy with value "LOGOUT".
-IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
+IN_PROC_BROWSER_TEST_P(SecurityTokenSessionBehaviorSamlTest, Logout) {
   // Login
   StartSignIn();
   WaitForPinDialog();
@@ -688,5 +750,9 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
   SimulateSecurityTokenRemoval();
   chrome_session_observer.WaitForChromeTerminating();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SecurityTokenSessionBehaviorSamlTest,
+                         testing::Bool());
 
 }  // namespace ash

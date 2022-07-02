@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_REQUEST_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -130,6 +131,10 @@ class WebURLRequest {
 
   BLINK_PLATFORM_EXPORT WebString HttpMethod() const;
   BLINK_PLATFORM_EXPORT void SetHttpMethod(const WebString&);
+
+  BLINK_PLATFORM_EXPORT WebString HttpContentType() const;
+
+  BLINK_PLATFORM_EXPORT bool IsFormSubmission() const;
 
   BLINK_PLATFORM_EXPORT WebString HttpHeaderField(const WebString& name) const;
   // It's not possible to set the referrer header using this method. Use
@@ -328,7 +333,7 @@ class WebURLRequest {
   std::unique_ptr<ResourceRequest> owned_resource_request_;
 
   // Should never be null.
-  ResourceRequest* resource_request_;
+  raw_ptr<ResourceRequest> resource_request_;
 };
 
 }  // namespace blink

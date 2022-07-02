@@ -5,11 +5,13 @@
 <script src="resources/grid-definitions-parsing-utils.js"></script>
 
 <div style="display: grid;">
-    <div id="item" style="grid-column-start: 5000000000; grid-column-end: -5000000000; grid-row-start: 5000000000; grid-row-end: -5000000000;"></div>
+    <div id="item1" style="grid-column-start: 5000000000; grid-column-end: -5000000000; grid-row-start: 5000000000; grid-row-end: -5000000000;"></div>
+    <div id="item2" style="grid-column: 10000000000000000000 / span 5; grid-row: span 5 / 10000000000000000000"></div>
 </div>
 
 <script>
  test(function() {
-     testGridPositionDefinitionsValues(document.getElementById("item"), "100000", "-100000", "100000", "-100000");
+     testGridPositionDefinitionsValues(document.getElementById("item1"), "2.14748e+09", "-2.14748e+09", "2.14748e+09", "-2.14748e+09");
+     testGridPositionDefinitionsValues(document.getElementById("item2"), "span 5", "2.14748e+09", "2.14748e+09", "span 5");
  }, "Test that setting and getting grid-column|row-start|end to huge values is properly clamped and does not make the renderer crash.");
 </script>

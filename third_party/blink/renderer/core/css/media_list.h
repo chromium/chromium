@@ -26,11 +26,11 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -40,47 +40,44 @@ class ExceptionState;
 class ExecutionContext;
 class MediaList;
 class MediaQuery;
+class MediaQuerySetOwner;
 
-class CORE_EXPORT MediaQuerySet : public RefCounted<MediaQuerySet> {
+class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
  public:
-  static scoped_refptr<MediaQuerySet> Create() {
-    return base::AdoptRef(new MediaQuerySet());
+  static MediaQuerySet* Create() {
+    return MakeGarbageCollected<MediaQuerySet>();
   }
-  static scoped_refptr<MediaQuerySet> Create(const String& media_string,
-                                             const ExecutionContext*);
+  static MediaQuerySet* Create(const String& media_string,
+                               const ExecutionContext*);
 
-  bool Set(const String&, const ExecutionContext*);
-  bool Add(const String&, const ExecutionContext*);
-  bool Remove(const String&, const ExecutionContext*);
+  MediaQuerySet();
+  MediaQuerySet(const MediaQuerySet&);
+  explicit MediaQuerySet(HeapVector<Member<const MediaQuery>>);
+  void Trace(Visitor*) const;
 
-  void AddMediaQuery(std::unique_ptr<MediaQuery>);
+  const MediaQuerySet* CopyAndAdd(const String&, const ExecutionContext*) const;
+  const MediaQuerySet* CopyAndRemove(const String&,
+                                     const ExecutionContext*) const;
 
-  const Vector<std::unique_ptr<MediaQuery>>& QueryVector() const {
+  const HeapVector<Member<const MediaQuery>>& QueryVector() const {
     return queries_;
   }
 
   String MediaText() const;
   bool HasUnknown() const;
 
-  scoped_refptr<MediaQuerySet> Copy() const {
-    return base::AdoptRef(new MediaQuerySet(*this));
-  }
-
  private:
-  MediaQuerySet();
-  MediaQuerySet(const MediaQuerySet&);
-
-  Vector<std::unique_ptr<MediaQuery>> queries_;
+  HeapVector<Member<const MediaQuery>> queries_;
 };
 
-class MediaList final : public ScriptWrappable {
+class CORE_EXPORT MediaList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaList(scoped_refptr<MediaQuerySet>, CSSStyleSheet* parent_sheet);
-  MediaList(scoped_refptr<MediaQuerySet>, CSSRule* parent_rule);
+  explicit MediaList(CSSStyleSheet* parent_sheet);
+  explicit MediaList(CSSRule* parent_rule);
 
-  unsigned length() const { return media_queries_->QueryVector().size(); }
+  unsigned length() const { return Queries()->QueryVector().size(); }
   String item(unsigned index) const;
   void deleteMedium(const ExecutionContext*,
                     const String& old_medium,
@@ -93,22 +90,21 @@ class MediaList final : public ScriptWrappable {
   // ExecutionContext.
   //
   // Prefer MediaTextInternal for internal use. (Avoids use-counter).
-  CORE_EXPORT String mediaText(ExecutionContext*) const;
+  String mediaText(ExecutionContext*) const;
   void setMediaText(const ExecutionContext*, const String&);
-  String MediaTextInternal() const { return media_queries_->MediaText(); }
+  String MediaTextInternal() const { return Queries()->MediaText(); }
 
   // Not part of CSSOM.
   CSSRule* ParentRule() const { return parent_rule_; }
   CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
 
-  const MediaQuerySet* Queries() const { return media_queries_.get(); }
-
-  void Reattach(scoped_refptr<MediaQuerySet>);
+  const MediaQuerySet* Queries() const;
 
   void Trace(Visitor*) const override;
 
  private:
-  scoped_refptr<MediaQuerySet> media_queries_;
+  MediaQuerySetOwner* Owner() const;
+
   Member<CSSStyleSheet> parent_style_sheet_;
   Member<CSSRule> parent_rule_;
 };

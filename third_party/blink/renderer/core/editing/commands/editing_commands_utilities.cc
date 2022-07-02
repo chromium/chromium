@@ -141,7 +141,7 @@ bool AreIdenticalElements(const Node& first, const Node& second) {
   if (!first_element->HasEquivalentAttributes(*second_element))
     return false;
 
-  return HasEditableStyle(*first_element) && HasEditableStyle(*second_element);
+  return IsEditable(*first_element) && IsEditable(*second_element);
 }
 
 // FIXME: need to dump this
@@ -426,8 +426,8 @@ bool CanMergeLists(const Element& first_list, const Element& second_list) {
   return first_list.HasTagName(
              second_list
                  .TagQName())  // make sure the list types match (ol vs. ul)
-         && HasEditableStyle(first_list) &&
-         HasEditableStyle(second_list)  // both lists are editable
+         && IsEditable(first_list) &&
+         IsEditable(second_list)  // both lists are editable
          &&
          RootEditableElement(first_list) ==
              RootEditableElement(second_list)  // don't cross editing boundaries
@@ -507,12 +507,11 @@ const String& NonBreakingSpaceString() {
 // which assumes a document has a valid HTML structure. We should make the
 // editing code more robust, and should remove this hack. crbug.com/580941.
 void TidyUpHTMLStructure(Document& document) {
-  // hasEditableStyle() needs up-to-date ComputedStyle.
+  // IsEditable() needs up-to-date ComputedStyle.
   document.UpdateStyleAndLayoutTree();
   const bool needs_valid_structure =
-      HasEditableStyle(document) ||
-      (document.documentElement() &&
-       HasEditableStyle(*document.documentElement()));
+      IsEditable(document) ||
+      (document.documentElement() && IsEditable(*document.documentElement()));
   if (!needs_valid_structure)
     return;
 

@@ -11,6 +11,7 @@
 namespace blink {
 
 class ScriptValue;
+class ExecutionContext;
 class ExceptionState;
 
 class SecurePaymentConfirmationHelper {
@@ -20,7 +21,9 @@ class SecurePaymentConfirmationHelper {
   // Parse 'secure-payment-confirmation' data in |input| and return the result
   // or throw an exception.
   static ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr
-  ParseSecurePaymentConfirmationData(const ScriptValue& input, ExceptionState&);
+  ParseSecurePaymentConfirmationData(const ScriptValue& input,
+                                     ExecutionContext&,
+                                     ExceptionState&);
 };
 
 }  // namespace blink

@@ -23,7 +23,6 @@ class Combobox;
 class ImageButton;
 class RadioButton;
 class LabelButton;
-class Widget;
 }  // namespace views
 
 // ContentSettingBubbleContents is used when the user turns on different kinds
@@ -73,7 +72,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  void OnWidgetDestroying(views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;

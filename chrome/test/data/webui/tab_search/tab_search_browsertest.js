@@ -20,7 +20,7 @@ class TabSearchBrowserTest extends PolymerTest {
 var TabSearchAppTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_app_test.js&host=webui-test';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_app_test.js';
   }
 
   get featureList() {
@@ -41,7 +41,7 @@ TEST_F('TabSearchAppTest', 'MAYBE_All', function() {
 var BiMapTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/bimap_test.js&host=webui-test';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/bimap_test.js';
   }
 };
 
@@ -52,7 +52,7 @@ TEST_F('BiMapTest', 'All', function() {
 var FuzzySearchTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/fuzzy_search_test.js&host=webui-test';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/fuzzy_search_test.js';
   }
 };
 
@@ -63,7 +63,7 @@ TEST_F('FuzzySearchTest', 'All', function() {
 var InfiniteListTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/infinite_list_test.js&host=webui-test';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/infinite_list_test.js';
   }
 };
 
@@ -74,7 +74,7 @@ TEST_F('InfiniteListTest', 'All', function() {
 var TabSearchItemTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_item_test.js&host=webui-test';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_item_test.js';
   }
 };
 

@@ -20,7 +20,7 @@ config("bluetooth_config") {
       "/DELAYLOAD:setupapi.dll",
     ]
   }
-  if ((is_linux || is_chromeos) && is_castos) {
+  if (is_castos) {
     defines = [ "USE_CAST_BLUETOOTH_ADAPTER" ]
   }
 }
@@ -458,7 +458,10 @@ component("bluetooth") {
         ]
         deps += [ "//services/data_decoder/public/mojom" ]
         if (is_chromeos_lacros) {
-          deps += [ "//chromeos/lacros" ]
+          deps += [
+            "//chromeos/lacros",
+            "//chromeos/startup",
+          ]
         }
       } else {
         use_real_dbus_clients = false
@@ -532,7 +535,7 @@ component("bluetooth") {
     # force_cast_bluetooth is used to compile with both cast & BlueZ, by
     # omitting the stubs that would otherwise be added in.
     if (!use_bluez || force_cast_bluetooth) {
-      if (is_castos && (is_linux || is_chromeos)) {
+      if (is_castos) {
         sources += [
           "cast/bluetooth_adapter_cast.cc",
           "cast/bluetooth_adapter_cast.h",

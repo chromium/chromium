@@ -10,6 +10,7 @@
 #include <bitset>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
@@ -98,10 +99,10 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
   const EventDispatchCallback callback_;
 
   // Shared modifier state.
-  EventModifiers* const modifiers_;
+  const raw_ptr<EventModifiers> modifiers_;
 
   // Shared layout engine.
-  KeyboardLayoutEngine* const keyboard_layout_engine_;
+  const raw_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
 
   // Key repeat handler.
   EventAutoRepeatHandler auto_repeat_handler_;

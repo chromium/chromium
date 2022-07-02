@@ -83,6 +83,7 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
 
   // RendererClient implementation.
   void OnError(PipelineStatus status) final;
+  void OnFallback(PipelineStatus status) final;
   void OnEnded() final;
   void OnStatisticsUpdate(const PipelineStatistics& stats) final;
   void OnBufferingStateChange(BufferingState state,

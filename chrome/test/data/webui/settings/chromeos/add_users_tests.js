@@ -32,10 +32,10 @@ suite('AddPersonDialog', function() {
    * Test that the dialog reacts to valid and invalid input correctly.
    */
   test('Add user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
     assertTrue(!!userInputBox);
 
-    const addButton = dialog.$$('.action-button');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!addButton);
     assertTrue(addButton.disabled);
     assertTrue(!userInputBox.invalid);
@@ -57,8 +57,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add duplicate user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const duplicateUserEmail = 'duplicateUser@google.com';
 
     // Add user for the first time.
@@ -78,8 +78,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add new user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const newUserEmail = 'newUser@google.com';
 
     userInputBox.value = newUserEmail;
@@ -90,8 +90,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add two new users', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const firstUserEmail = 'firstUser@google.com';
     const secondUserEmail = 'secondUser@google.com';
 

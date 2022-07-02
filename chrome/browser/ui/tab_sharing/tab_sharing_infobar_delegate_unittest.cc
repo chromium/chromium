@@ -88,7 +88,7 @@ class TabSharingInfoBarDelegateTest
   }
 
   content::GlobalRenderFrameHostId GetGlobalId(int tab) {
-    auto* const main_frame = GetWebContents(tab)->GetMainFrame();
+    auto* const main_frame = GetWebContents(tab)->GetPrimaryMainFrame();
     return main_frame ? main_frame->GetGlobalId()
                       : content::GlobalRenderFrameHostId();
   }
@@ -97,7 +97,9 @@ class TabSharingInfoBarDelegateTest
     return l10n_util::GetStringFUTF16(
         IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
         url_formatter::FormatOriginForSecurityDisplay(
-            GetWebContents(tab)->GetMainFrame()->GetLastCommittedOrigin(),
+            GetWebContents(tab)
+                ->GetPrimaryMainFrame()
+                ->GetLastCommittedOrigin(),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 

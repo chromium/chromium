@@ -52,7 +52,7 @@ constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(500);
 // out by the OS scheduler. The task on windows is simiulated by reading
 // TimeTicks instead of Sleep().
 void SimpleTask(base::TimeDelta duration, base::TimeDelta extra_time) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto start_timetick = base::TimeTicks::Now();
   do {
   } while ((base::TimeTicks::Now() - start_timetick) < duration);
@@ -146,7 +146,7 @@ void GpuWatchdogTest::SetUp() {
       // model_ver_str = "MacBookProXX,X", model_ver_str = "XX,X"
       std::string model_ver_str = model_str.substr(model_version_pos);
       int major_model_ver = std::atoi(model_ver_str.c_str());
-      // For version < 14,1
+      // For model version < 14,1
       if (major_model_ver < 14) {
         timeout_type = kSlow;
       }

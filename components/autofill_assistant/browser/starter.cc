@@ -179,7 +179,7 @@ Starter::Starter(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<Starter>(*web_contents),
       current_ukm_source_id_(
-          web_contents->GetMainFrame()->GetPageUkmSourceId()),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       cached_failed_trigger_script_fetches_(
           GetOrCreateFailedTriggerScriptFetchesCache()),
       user_denylisted_domains_(kMaxUserDenylistedCacheSize),
@@ -317,12 +317,15 @@ void Starter::OnHeuristicMatch(const GURL& url,
 
   Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
-      TriggerContext::Options{/* experiment_ids = */ std::string(),
-                              /* is_cct = */ is_custom_tab_,
-                              /* onboarding_shown = */ false,
-                              /* is_direct_action = */ false,
-                              /* initial_url = */ std::string(),
-                              /* is_in_chrome_triggered = */ true}));
+      TriggerContext::Options{
+          /* experiment_ids = */ std::string(),
+          /* is_cct = */ is_custom_tab_,
+          /* onboarding_shown = */ false,
+          /* is_direct_action = */ false,
+          /* initial_url = */ std::string(),
+          /* is_in_chrome_triggered = */ true,
+          /* is_externally_triggered = */ false,
+      }));
 }
 
 bool Starter::IsStartupPending() const {
@@ -425,7 +428,7 @@ void Starter::Init() {
              fetch_trigger_scripts_on_navigation_) {
     MaybeStartImplicitlyForUrl(
         web_contents()->GetLastCommittedURL(),
-        web_contents()->GetMainFrame()->GetPageUkmSourceId());
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 }
 
@@ -470,7 +473,13 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
   if (!platform_delegate_->IsAttached()) {
-    OnStartDone(/* start_regular_script = */ false);
+    OnStartDone(/* start_script= */ false);
+    return;
+  }
+
+  if (platform_delegate_->GetIsSupervisedUser()) {
+    OnStartDone(/* start_script= */ false);
+    return;
   }
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -507,7 +516,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 
   if (IsTriggerScriptContext(*pending_trigger_context_) &&
       !url_utils::IsSamePublicSuffixDomain(
-          web_contents()->GetMainFrame()->GetLastCommittedURL(),
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
           startup_url.value_or(GURL()))) {
     waiting_for_deeplink_navigation_ = true;
     return;
@@ -727,6 +736,16 @@ void Starter::OnTriggerScriptFinished(
 
 void Starter::MaybeShowOnboarding(
     absl::optional<TriggerScriptProto> trigger_script) {
+  // The onboarding is handled externally for external runs.
+  if (pending_trigger_context_ &&
+      pending_trigger_context_->GetIsExternallyTriggered()) {
+    Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                           current_ukm_source_id_,
+                                           Metrics::Onboarding::OB_EXTERNAL);
+    OnStartDone(/* start_script = */ true, trigger_script);
+    return;
+  }
+
   if (platform_delegate_->GetOnboardingAccepted()) {
     OnOnboardingFinished(trigger_script, /* shown = */ false,
                          OnboardingResult::ACCEPTED);

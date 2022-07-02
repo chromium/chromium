@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 
 namespace content {
 
@@ -15,7 +16,7 @@ bool PrefetchContentRefactorIsEnabled() {
   return base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor);
 }
 
-GURL PrefetchProxyHost() {
+GURL PrefetchProxyHost(const GURL& default_proxy_url) {
   // Command line overrides take priority.
   std::string cmd_line_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -34,9 +35,7 @@ GURL PrefetchProxyHost() {
     return url;
   }
 
-  // TODO(https://crbug.com/1299059): Get default URL of the prefetch proxy
-  // server via a delegate.
-  return GURL("");
+  return default_proxy_url;
 }
 
 std::string PrefetchProxyHeaderKey() {
@@ -53,12 +52,27 @@ std::string PrefetchProxyServerExperimentGroup() {
       features::kPrefetchUseContentRefactor, "server_experiment_group");
 }
 
+bool PrefetchAllowAllDomains() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kPrefetchUseContentRefactor, "allow_all_domains",
+             false) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             "isolated-prerender-allow-all-domains");
+}
+
+bool PrefetchAllowAllDomainsForExtendedPreloading() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor,
+      "allow_all_domains_for_extended_preloading", false);
+}
+
 int PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "max_concurrent_prefetches", 1);
 }
 
-bool PrefetchServiceSendDecoyRequestForIneligblePrefetch() {
+bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+    bool disabled_based_on_user_settings) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "prefetch-proxy-never-send-decoy-requests-for-testing")) {
     return false;
@@ -68,9 +82,12 @@ bool PrefetchServiceSendDecoyRequestForIneligblePrefetch() {
     return true;
   }
 
-  // TODO(https://crbug.com/1299059): Check if the user has opted-in to Make
-  // Search and Browsing Better. If so, then we don't need to send decoys. Doing
-  // this will require a delegate.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kPrefetchUseContentRefactor,
+          "disable_decoys_based_on_user_settings", true) &&
+      disabled_based_on_user_settings) {
+    return false;
+  }
 
   double probability = base::GetFieldTrialParamByFeatureAsDouble(
       features::kPrefetchUseContentRefactor,
@@ -113,6 +130,11 @@ base::TimeDelta PrefetchContainerLifetimeInPrefetchService() {
 bool PrefetchServiceHTMLOnly() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor, "html_only", false);
+}
+
+base::TimeDelta PrefetchCacheableDuration() {
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchUseContentRefactor, "cacheable_duration", 300));
 }
 
 }  // namespace content

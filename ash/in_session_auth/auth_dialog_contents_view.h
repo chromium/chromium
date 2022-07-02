@@ -112,8 +112,11 @@ class AuthDialogContentsView : public views::View {
 
   // Called when password or PIN authentication of the user completes. If
   // authenticated_by_pin is false, the user authenticated by password.
+  // |can_use_pin| specifies whether PIN is available after the authentication,
+  // as it might be locked out.
   void OnPasswordOrPinAuthComplete(bool authenticated_by_pin,
-                                   absl::optional<bool> success);
+                                   bool success,
+                                   bool can_use_pin);
 
   // Called when fingerprint authentication completes.
   void OnFingerprintAuthComplete(bool success,
@@ -143,8 +146,8 @@ class AuthDialogContentsView : public views::View {
   // Whether PIN can be auto submitted.
   bool pin_autosubmit_on_ = false;
 
-  // Number of PIN attempts so far.
-  int pin_attempts_ = 0;
+  // Whether PIN is locked out.
+  bool pin_locked_out_ = false;
 
   // Text input field for PIN if PIN cannot be auto submitted.
   LoginPasswordView* pin_text_input_view_ = nullptr;

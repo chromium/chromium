@@ -14,7 +14,7 @@
 @protocol OverlayPresentationContextImplDelegate <NSObject>
 
 // Instructs the delegate to set up the base UIViewController for overlay UI
-// that requires |capababilities| and provide it to |context|.
+// that requires `capababilities` and provide it to `context`.
 - (void)updatePresentationContext:(OverlayPresentationContextImpl*)context
       forPresentationCapabilities:
           (OverlayPresentationContext::UIPresentationCapabilities)capabilities;

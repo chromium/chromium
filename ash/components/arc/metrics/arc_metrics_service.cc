@@ -24,8 +24,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/exo/wm_helper.h"
 #include "components/metrics/psi_memory_parser.h"
 #include "components/user_prefs/user_prefs.h"
@@ -228,13 +229,13 @@ void ArcMetricsService::OnProcessConnectionReady() {
                                     &ArcMetricsService::RequestProcessList);
 
   if (IsArcVmEnabled()) {
-    // Initialize prev_logged_memory_kills_ by immediately requesting new
-    // values.
     prev_logged_memory_kills_.reset();
-    RequestLowMemoryKillCounts();
+    // Initialize prev_logged_memory_kills_ by immediately requesting new
+    // values. We don't need the VM list to exist to update it, so pass nullopt.
+    OnListVmsResponse(absl::nullopt);
     request_kill_count_timer_.Start(
         FROM_HERE, kRequestKillCountPeriod, this,
-        &ArcMetricsService::RequestLowMemoryKillCounts);
+        &ArcMetricsService::OnRequestKillCountTimer);
   }
 }
 
@@ -280,63 +281,126 @@ void ArcMetricsService::ParseProcessList(
   UMA_HISTOGRAM_COUNTS_100("Arc.AppCount", running_app_count);
 }
 
-void ArcMetricsService::RequestLowMemoryKillCountsForTesting() {
-  RequestLowMemoryKillCounts();
-}
-
-void ArcMetricsService::RequestLowMemoryKillCounts() {
-  mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->process(), RequestLowMemoryKillCounts);
-  if (!process_instance) {
-    LOG(WARNING)
-        << "Cannot get ProcessInstance for method RequestLowMemoryKillCounts";
-    return;
-  }
-  process_instance->RequestLowMemoryKillCounts(
-      base::BindOnce(&ArcMetricsService::LogLowMemoryKillCounts,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 // Helper that logs a single kill count type to a histogram, or logs a warning
 // if the counter decreased.
-static void LogLowMemoryKillCount(const char* suffix,
+static void LogLowMemoryKillCount(const char* vm_desc,
+                                  const char* name,
                                   uint32_t prev_kills,
                                   uint32_t curr_kills) {
   if (prev_kills <= curr_kills) {
-    std::string name = std::string("Arc.App.LowMemoryKills.") + suffix;
-    base::UmaHistogramExactLinear(name, curr_kills - prev_kills, 50);
+    std::string histogram =
+        base::StringPrintf("Arc.App.LowMemoryKills%s%s", vm_desc, name);
+    base::UmaHistogramExactLinear(histogram, curr_kills - prev_kills, 50);
   } else {
-    LOG(WARNING) << "LowMemoryKillCounts reported a decrease for " << suffix
-                 << ", previous: " << prev_kills << ", current: " << curr_kills;
+    LOG(WARNING) << "LowMemoryKillCounts reported a decrease for " << vm_desc
+                 << name << ", previous: " << prev_kills
+                 << ", current: " << curr_kills;
   }
 }
 
-void ArcMetricsService::LogLowMemoryKillCounts(
+// Helper that logs kill counts for a specific background VM.
+static void LogLowMemoryKillCounts(const char* vm_desc,
+                                   const mojom::LowMemoryKillCountsPtr& prev,
+                                   const mojom::LowMemoryKillCountsPtr& curr) {
+  LogLowMemoryKillCount(vm_desc, ".LinuxOOMCount10Minutes", prev->guest_oom,
+                        curr->guest_oom);
+  LogLowMemoryKillCount(vm_desc, ".LMKD.ForegroundCount10Minutes",
+                        prev->lmkd_foreground, curr->lmkd_foreground);
+  LogLowMemoryKillCount(vm_desc, ".LMKD.PerceptibleCount10Minutes",
+                        prev->lmkd_perceptible, curr->lmkd_perceptible);
+  LogLowMemoryKillCount(vm_desc, ".LMKD.CachedCount10Minutes",
+                        prev->lmkd_cached, curr->lmkd_cached);
+  LogLowMemoryKillCount(vm_desc, ".Pressure.ForegroundCount10Minutes",
+                        prev->pressure_foreground, curr->pressure_foreground);
+  LogLowMemoryKillCount(vm_desc, ".Pressure.PerceptibleCount10Minutes",
+                        prev->pressure_perceptible, curr->pressure_perceptible);
+  LogLowMemoryKillCount(vm_desc, ".Pressure.CachedCount10Minutes",
+                        prev->pressure_cached, curr->pressure_cached);
+}
+
+void ArcMetricsService::RequestKillCountsForTesting() {
+  OnRequestKillCountTimer();
+}
+
+void ArcMetricsService::OnRequestKillCountTimer() {
+  auto* client = ash::ConciergeClient::Get();
+  if (!client) {
+    LOG(WARNING)
+        << "Cannot get ConciergeClient for method OnRequestKillCountTimer";
+    return;
+  }
+  vm_tools::concierge::ListVmsRequest request;
+  request.set_owner_id(user_id_hash_);
+  client->ListVms(request, base::BindOnce(&ArcMetricsService::OnListVmsResponse,
+                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcMetricsService::OnListVmsResponse(
+    absl::optional<vm_tools::concierge::ListVmsResponse> response) {
+  mojom::ProcessInstance* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->process(), RequestLowMemoryKillCounts);
+  if (!process_instance) {
+    LOG(WARNING) << "Cannot get ProcessInstance for method OnListVmsResponse";
+    return;
+  }
+  process_instance->RequestLowMemoryKillCounts(
+      base::BindOnce(&ArcMetricsService::OnLowMemoryKillCounts,
+                     weak_ptr_factory_.GetWeakPtr(), response));
+}
+
+void ArcMetricsService::OnLowMemoryKillCounts(
+    absl::optional<vm_tools::concierge::ListVmsResponse> vms_list,
     mojom::LowMemoryKillCountsPtr counts) {
   if (prev_logged_memory_kills_) {
     // Only log to the histograms if we have a previous sample to compute deltas
     // from.
-    LogLowMemoryKillCount("LinuxOOMCount10Minutes",
-                          prev_logged_memory_kills_->guest_oom,
-                          counts->guest_oom);
-    LogLowMemoryKillCount("LMKD.ForegroundCount10Minutes",
-                          prev_logged_memory_kills_->lmkd_foreground,
-                          counts->lmkd_foreground);
-    LogLowMemoryKillCount("LMKD.PerceptibleCount10Minutes",
-                          prev_logged_memory_kills_->lmkd_perceptible,
-                          counts->lmkd_perceptible);
-    LogLowMemoryKillCount("LMKD.CachedCount10Minutes",
-                          prev_logged_memory_kills_->lmkd_cached,
-                          counts->lmkd_cached);
-    LogLowMemoryKillCount("Pressure.ForegroundCount10Minutes",
-                          prev_logged_memory_kills_->pressure_foreground,
-                          counts->pressure_foreground);
-    LogLowMemoryKillCount("Pressure.PerceptibleCount10Minutes",
-                          prev_logged_memory_kills_->pressure_perceptible,
-                          counts->pressure_perceptible);
-    LogLowMemoryKillCount("Pressure.CachedCount10Minutes",
-                          prev_logged_memory_kills_->pressure_cached,
-                          counts->pressure_cached);
+    LogLowMemoryKillCounts("", prev_logged_memory_kills_, counts);
+
+    // Log background VMs counters.
+    if (vms_list && vms_list->success()) {
+      // Use a set to de-duplicate VM types.
+      std::unordered_set<vm_tools::concierge::VmInfo_VmType> vm_types;
+      for (int i = 0; i < vms_list->vms_size(); i++) {
+        const auto& vm = vms_list->vms(i);
+        if (vm.has_vm_info()) {
+          const auto& info = vm.vm_info();
+          vm_types.emplace(info.vm_type());
+        } else {
+          LOG(WARNING) << "OnLowMemoryKillCounts got VM " << vm.name()
+                       << " with no vm_info.";
+        }
+      }
+      for (auto vm_type : vm_types) {
+        switch (vm_type) {
+          case vm_tools::concierge::VmInfo_VmType_ARC_VM:
+            if (vm_types.size() == 1) {
+              // Only ARCVM, log to a special set of counters.
+              LogLowMemoryKillCounts(".OnlyArc", prev_logged_memory_kills_,
+                                     counts);
+            }
+            break;
+
+          case vm_tools::concierge::VmInfo_VmType_BOREALIS:
+            LogLowMemoryKillCounts(".Steam", prev_logged_memory_kills_, counts);
+            break;
+
+          case vm_tools::concierge::VmInfo_VmType_TERMINA:
+            LogLowMemoryKillCounts(".Crostini", prev_logged_memory_kills_,
+                                   counts);
+            break;
+
+          case vm_tools::concierge::VmInfo_VmType_PLUGIN_VM:
+            LogLowMemoryKillCounts(".PluginVm", prev_logged_memory_kills_,
+                                   counts);
+            break;
+
+          default:
+            LogLowMemoryKillCounts(".UnknownVm", prev_logged_memory_kills_,
+                                   counts);
+            break;
+        }
+      }
+    }
   }
   prev_logged_memory_kills_ = std::move(counts);
 }
@@ -392,7 +456,7 @@ void ArcMetricsService::ReportBootProgress(
   }
 
   // Retrieve ARC full container's start time from session manager.
-  chromeos::SessionManagerClient::Get()->GetArcStartTime(base::BindOnce(
+  ash::SessionManagerClient::Get()->GetArcStartTime(base::BindOnce(
       &ArcMetricsService::OnArcStartTimeRetrieved,
       weak_ptr_factory_.GetWeakPtr(), std::move(events), boot_type));
 
@@ -524,7 +588,7 @@ void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
   // time, which is fetched from session manager.
   const base::TimeTicks durationTicks = duration + base::TimeTicks();
   // Retrieve ARC full container's start time from session manager.
-  chromeos::SessionManagerClient::Get()->GetArcStartTime(
+  ash::SessionManagerClient::Get()->GetArcStartTime(
       base::BindOnce(&ArcMetricsService::OnArcStartTimeForPriAbiMigration,
                      weak_ptr_factory_.GetWeakPtr(), durationTicks));
 }

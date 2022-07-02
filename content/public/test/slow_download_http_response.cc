@@ -61,7 +61,7 @@ base::StringPairs SlowDownloadHttpResponse::ResponseHeaders() {
   response.emplace_back("Content-type", "application/octet-stream");
   response.emplace_back("Cache-Control", "max-age=0");
 
-  if (base::LowerCaseEqualsASCII(kKnownSizeUrl, url_)) {
+  if (base::EqualsCaseInsensitiveASCII(kKnownSizeUrl, url_)) {
     response.emplace_back(
         "Content-Length",
         base::NumberToString(kFirstResponsePartSize + kSecondResponsePartSize));

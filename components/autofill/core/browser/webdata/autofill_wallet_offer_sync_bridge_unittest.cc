@@ -239,7 +239,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetClientTag) {
   AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
-            base::NumberToString(data.offer_id));
+            base::NumberToString(data.GetOfferId()));
 }
 
 TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
@@ -247,7 +247,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, VerifyGetStorageKey) {
   AutofillOfferData data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(data, &specifics);
   EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
-            base::NumberToString(data.offer_id));
+            base::NumberToString(data.GetOfferId()));
 }
 
 // Tests that when a new offer data is sent by the server, the client only keeps

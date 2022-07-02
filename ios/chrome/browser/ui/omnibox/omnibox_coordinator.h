@@ -17,7 +17,7 @@ class WebOmniboxEditController;
 // The coordinator for the omnibox.
 @interface OmniboxCoordinator : ChromeCoordinator
 
-// The edit controller interfacing the |textField| and the omnibox components
+// The edit controller interfacing the `textField` and the omnibox components
 // code. Needs to be set before the coordinator is started.
 @property(nonatomic, assign) WebOmniboxEditController* editController;
 // Returns the animatee for the omnibox focus orchestrator.
@@ -30,8 +30,8 @@ class WebOmniboxEditController;
 // Offset provider for location bar animations.
 - (id<LocationBarOffsetProvider>)offsetProvider;
 
-// Start this coordinator. When it starts, it expects to have |textField| and
-// |editController|.
+// Start this coordinator. When it starts, it expects to have `textField` and
+// `editController`.
 - (void)start;
 // Stop this coordinator.
 - (void)stop;
@@ -52,10 +52,10 @@ class WebOmniboxEditController;
 // Target input for scribble targeting the omnibox.
 - (UIResponder<UITextInput>*)scribbleInput;
 
-// Use this method to resign |textField| as the first responder.
+// Use this method to resign `textField` as the first responder.
 - (void)endEditing;
 // Creates a child popup coordinator. The popup coordinator is linked to the
-// |textField| through components code.
+// `textField` through components code.
 - (OmniboxPopupCoordinator*)createPopupCoordinator:
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate;
 

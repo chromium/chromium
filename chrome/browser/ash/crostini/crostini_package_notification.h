@@ -37,7 +37,7 @@ class CrostiniPackageNotification
   CrostiniPackageNotification(Profile* profile,
                               NotificationType notification_type,
                               PackageOperationStatus status,
-                              const ContainerId& container_id,
+                              const guest_os::GuestId& container_id,
                               const std::u16string& app_name,
                               const std::string& notification_id,
                               CrostiniPackageService* installer_service);
@@ -65,7 +65,7 @@ class CrostiniPackageNotification
   // GuestOsRegistryService::Observer:
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
-      guest_os::GuestOsRegistryService::VmType vm_type,
+      guest_os::VmType vm_type,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
@@ -126,7 +126,7 @@ class CrostiniPackageNotification
   // launched.
   std::string app_id_;
 
-  ContainerId container_id_;
+  guest_os::GuestId container_id_;
 
   std::set<std::string> inserted_apps_;
   int app_count_ = 0;

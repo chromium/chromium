@@ -24,13 +24,23 @@ class GLOzoneEGL : public GLOzone {
   ~GLOzoneEGL() override {}
 
   // GLOzone:
-  bool InitializeGLOneOffPlatform() override;
+  gl::GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) override;
   bool InitializeStaticGLBindings(
       const gl::GLImplementationParts& implementation) override;
   void SetDisabledExtensionsPlatform(
       const std::string& disabled_extensions) override;
-  bool InitializeExtensionSettingsOneOffPlatform() override;
-  void ShutdownGL() override;
+  bool InitializeExtensionSettingsOneOffPlatform(
+      gl::GLDisplay* display) override;
+  void ShutdownGL(gl::GLDisplay* display) override;
+  bool CanImportNativePixmap() override;
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) override;
   bool GetGLWindowSystemBindingInfo(
       const gl::GLVersionInfo& gl_info,
       gl::GLWindowSystemBindingInfo* info) override;

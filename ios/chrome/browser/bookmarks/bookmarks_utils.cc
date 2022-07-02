@@ -69,7 +69,7 @@ bool IsPrimaryPermanentNode(const BookmarkNode* node, BookmarkModel* model) {
 const BookmarkNode* RootLevelFolderForNode(const BookmarkNode* node,
                                            BookmarkModel* model) {
   // This helper function doesn't work for managed bookmarks. This checks that
-  // |node| is editable by the user, which currently covers all the other
+  // `node` is editable by the user, which currently covers all the other
   // bookmarks except the managed bookmarks.
   DCHECK(model->client()->CanBeEditedByUser(node));
 

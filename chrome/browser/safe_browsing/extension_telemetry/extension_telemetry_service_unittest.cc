@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -99,6 +100,7 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(20);
 };
 
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
@@ -214,6 +216,8 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {
     // Check that extension store still has extension info stored before
     // reporting interval elapses.
     base::TimeDelta interval = telemetry_service_->current_reporting_interval();
+    profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                                 base::Time::NowFromSystemTime());
     task_environment_.FastForwardBy(interval - base::Seconds(1));
     {
       const ExtensionInfo* info =
@@ -425,6 +429,7 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
 }
 
 TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
+  // Setting up the persister and signals.
   telemetry_service_->SetEnabled(false);
   scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
   telemetry_service_->SetEnabled(true);
@@ -433,16 +438,80 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
   // After a shutdown, the persister should create a file of persisted data.
   telemetry_service_->Shutdown();
-  base::FilePath persisted_file;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &persisted_file))
-    persisted_file = persisted_file.AppendASCII("CRXTelemetry");
-  persisted_file = persisted_file.AppendASCII("CRXTelemetry_0");
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  base::FilePath persisted_file = persisted_dir.AppendASCII("CRXTelemetry_0");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(base::PathExists(persisted_file));
   // After the telemetry service is disabled, the persisted data folder should
   // be deleted.
   telemetry_service_->SetEnabled(false);
   task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(persisted_dir));
+}
+
+TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
+  // Setting up the persister, signals, upload/write intervals, and the
+  // uploader itself.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  base::TimeDelta interval = telemetry_service_->current_reporting_interval();
+  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                               base::Time::NowFromSystemTime());
+  test_url_loader_factory_.AddResponse(
+      ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
+  // Fast forward a (reporting interval - 1) seconds which is three write
+  // intervals. There should be three files on disk now.
+  task_environment_.FastForwardBy(interval - base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  base::FilePath persisted_file;
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_1")));
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_2")));
+  // After a full reporting interval, files should be uploaded.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(base::PathExists(persisted_file));
+}
+
+TEST_F(ExtensionTelemetryServiceTest, StartupUploadCheck) {
+  // Setting up the persister, signals, upload/write intervals, and the
+  // uploader itself.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  task_environment_.RunUntilIdle();
+  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                               base::Time::NowFromSystemTime());
+  test_url_loader_factory_.AddResponse(
+      ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
+  // Take the telemetry service offline and fast forward the environment
+  // by a whole upload interval.
+  telemetry_service_->SetEnabled(false);
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+  telemetry_service_->SetEnabled(true);
+  task_environment_.RunUntilIdle();
+  PrimeTelemetryServiceWithSignal();
+  task_environment_.FastForwardBy(kStartupUploadCheckDelaySeconds);
+  task_environment_.RunUntilIdle();
+  // The startup check should empty the extension store data.
+  {
+    const ExtensionInfo* info =
+        GetExtensionInfoFromExtensionStore(kExtensionId[0]);
+    EXPECT_EQ(info, nullptr);
+  }
+}
+TEST_F(ExtensionTelemetryServiceTest, PersisterThreadSafetyCheck) {
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  std::unique_ptr<ExtensionTelemetryService> telemetry_service_2 =
+      std::make_unique<ExtensionTelemetryService>(
+          &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+          extension_registry_, extension_prefs_);
+  telemetry_service_2->SetEnabled(true);
+  telemetry_service_2.reset();
 }
 }  // namespace safe_browsing

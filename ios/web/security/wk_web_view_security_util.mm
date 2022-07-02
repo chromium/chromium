@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util_ios.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/ssl/ssl_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

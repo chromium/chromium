@@ -176,8 +176,10 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
 
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-    content::RenderFrameHost* main_frame =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* main_frame = browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame();
     EXPECT_TRUE(
         content_settings::PageSpecificContentSettings::GetForFrame(main_frame)
             ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
@@ -524,7 +526,7 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
     browser()
         ->tab_strip_model()
         ->GetActiveWebContents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->ExecuteJavaScriptForTests(
             base::ASCIIToUTF16(js),
             base::BindOnce(

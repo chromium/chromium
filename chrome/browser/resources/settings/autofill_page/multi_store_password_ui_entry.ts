@@ -74,7 +74,7 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
   /**
    * Extract all the information except for the id and fromPasswordStore.
    */
-  static getContents_(entry: chrome.passwordsPrivate.PasswordUiEntry):
+  private static getContents_(entry: chrome.passwordsPrivate.PasswordUiEntry):
       MultiStorePasswordUiEntryContents {
     return {
       urls: entry.urls,

@@ -9,7 +9,7 @@
 
 // A protocol to update information reported to the ScreenTime system.
 @protocol ScreenTimeConsumer
-// Sets |URL| as the active URL reported to the ScreenTime system when the
+// Sets `URL` as the active URL reported to the ScreenTime system when the
 // underlying web view is visible.
 - (void)setURL:(NSURL*)URL;
 

@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
@@ -104,7 +105,6 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
                                            gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  base::AutoLock scoped_lock(lock_);
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
   auto it = commit_thread_runners_.find(widget);
@@ -123,7 +123,6 @@ void WaylandBufferManagerGpu::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  base::AutoLock scoped_lock(lock_);
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
   auto it = commit_thread_runners_.find(widget);
@@ -297,10 +296,9 @@ void WaylandBufferManagerGpu::DestroyBuffer(uint32_t buffer_id) {
 #if defined(WAYLAND_GBM)
 GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
   // Wayland won't support wl_drm or zwp_linux_dmabuf without this extension.
-  if (!supports_dmabuf_ ||
-      (!gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-           "EGL_EXT_image_dma_buf_import") &&
-       !use_fake_gbm_device_for_test_)) {
+  if (!supports_dmabuf_ || (!gl::GLSurfaceEGL::GetGLDisplayEGL()
+                                 ->ext->b_EGL_EXT_image_dma_buf_import &&
+                            !use_fake_gbm_device_for_test_)) {
     supports_dmabuf_ = false;
     return nullptr;
   }

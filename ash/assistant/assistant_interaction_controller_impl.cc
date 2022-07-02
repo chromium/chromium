@@ -33,7 +33,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
@@ -139,8 +139,6 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
     AssistantQuerySource query_source) {
   DCHECK(assistant_);
 
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(
       std::make_unique<AssistantTextQuery>(text, query_source));
 
@@ -184,7 +182,6 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
         const absl::optional<std::string>& client_id =
             GetDeepLinkParam(params, DeepLinkParam::kClientId);
         if (client_id && !client_id.value().empty()) {
-          StopActiveInteraction(false);
           model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
               l10n_util::GetStringUTF8(IDS_ASSISTANT_EDIT_REMINDER_QUERY),
               /*query_source=*/AssistantQuerySource::kDeepLink));
@@ -492,9 +489,11 @@ void AssistantInteractionControllerImpl::OnHtmlResponse(
     return;
   }
 
+  DCHECK(AssistantUiController::Get());
   AssistantResponse* response = GetResponseForActiveInteraction();
-  response->AddUiElement(
-      std::make_unique<AssistantCardElement>(html, fallback));
+  response->AddUiElement(std::make_unique<AssistantCardElement>(
+      html, fallback,
+      AssistantUiController::Get()->GetModel()->AppListBubbleWidth()));
 
   // If |response| is pending, commit it to cause the response for the
   // previous interaction, if one exists, to be animated off stage and the new
@@ -812,8 +811,6 @@ void AssistantInteractionControllerImpl::StartScreenContextInteraction(
 }
 
 void AssistantInteractionControllerImpl::StartVoiceInteraction() {
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(std::make_unique<AssistantVoiceQuery>());
 
   assistant_->StartVoiceInteraction();

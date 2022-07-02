@@ -22,6 +22,13 @@ RENDERING_BENCHMARK_UMA = [
     'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4',
+    'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency',
+    'Graphics.Smoothness.Checkerboarding.AllAnimations',
+    'Graphics.Smoothness.Checkerboarding.AllInteractions',
+    'Graphics.Smoothness.Checkerboarding.AllSequences',
     'Graphics.Smoothness.Checkerboarding.TouchScroll',
     'Graphics.Smoothness.Checkerboarding.WheelScroll',
     'Graphics.Smoothness.Jank.AllAnimations',
@@ -129,6 +136,27 @@ class RenderingDesktop(_RenderingBenchmark):
           '--use-gpu-high-thread-priority-for-perf-tests')
 
 
+@benchmark.Info(emails=[
+    'behdadb@chromium.org', 'jonross@chromium.org', 'sadrul@chromium.org'
+],
+                documentation_url='https://bit.ly/rendering-benchmarks',
+                component='Internals>GPU>Metrics')
+class RenderingDesktopNoTracing(RenderingDesktop):
+  @classmethod
+  def Name(cls):
+    return 'rendering.desktop.notracing'
+
+  def CreateStorySet(self, options):
+    return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
+                                       disable_tracing=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = timeline_based_measurement.Options()
+    options.config.enable_chrome_trace = False
+    options.config.enable_platform_display_trace = False
+    return options
+
+
 @benchmark.Info(emails=['behdadb@chromium.org', 'jonross@chromium.org',
                         'sadrul@chromium.org'],
                 documentation_url='https://bit.ly/rendering-benchmarks',
@@ -167,4 +195,25 @@ class RenderingMobile(_RenderingBenchmark):
     options = super(
         RenderingMobile, self).CreateCoreTimelineBasedMeasurementOptions()
     options.config.enable_platform_display_trace = True
+    return options
+
+
+@benchmark.Info(emails=[
+    'behdadb@chromium.org', 'jonross@chromium.org', 'sadrul@chromium.org'
+],
+                documentation_url='https://bit.ly/rendering-benchmarks',
+                component='Internals>GPU>Metrics')
+class RenderingMobileNoTracing(RenderingMobile):
+  @classmethod
+  def Name(cls):
+    return 'rendering.mobile.notracing'
+
+  def CreateStorySet(self, options):
+    return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
+                                       disable_tracing=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = timeline_based_measurement.Options()
+    options.config.enable_chrome_trace = False
+    options.config.enable_platform_display_trace = False
     return options

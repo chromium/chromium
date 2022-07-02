@@ -14,6 +14,7 @@
 #include "net/base/io_buffer.h"
 
 namespace chromecast {
+class CastEventBuilder;
 class IOBufferPool;
 
 namespace media {
@@ -62,6 +63,10 @@ class OutputStreamConnection : public MixerConnection,
 
     // Called when an underrun happens on mixer input/output.
     virtual void OnMixerUnderrun(MixerUnderrunType type) {}
+
+    // Called when OutputStreamConnection records a cast event. It allows
+    // the Delegate to provide some extra data to the event.
+    virtual void ProcessCastEvent(CastEventBuilder* event) {}
 
    protected:
     virtual ~Delegate() = default;

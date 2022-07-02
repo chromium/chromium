@@ -10,26 +10,12 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
 namespace {
-
-class TestResult : public ChromeSearchResult {
- public:
-  explicit TestResult(const std::string& id,
-                      double score,
-                      ResultType result_type) {
-    set_id(id);
-    SetDisplayScore(score);
-    SetResultType(result_type);
-  }
-  ~TestResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-};
 
 Results MakeResults(const std::vector<std::string>& ids,
                     const std::vector<double> scores,
@@ -37,7 +23,9 @@ Results MakeResults(const std::vector<std::string>& ids,
   Results res;
   CHECK_EQ(ids.size(), scores.size());
   for (size_t i = 0; i < ids.size(); ++i) {
-    res.push_back(std::make_unique<TestResult>(ids[i], scores[i], result_type));
+    res.push_back(std::make_unique<TestResult>(ids[i], result_type,
+                                               Category::kUnknown,
+                                               /*display_score=*/scores[i]));
   }
   return res;
 }

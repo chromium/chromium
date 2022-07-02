@@ -28,7 +28,7 @@ TestExtensionEventObserver::TestExtensionEventObserver(
 }
 
 base::Value TestExtensionEventObserver::PassEventArgs() {
-  return std::move(latest_event_args_);
+  return base::Value(std::move(latest_event_args_));
 }
 
 void TestExtensionEventObserver::OnBroadcastEvent(
@@ -38,7 +38,7 @@ void TestExtensionEventObserver::OnBroadcastEvent(
       event.event_name == OnPolicySpecifiedPasswordReuseDetected::kEventName ||
       event.event_name == OnPolicySpecifiedPasswordChanged::kEventName ||
       event.event_name == OnDangerousDownloadOpened::kEventName) {
-    latest_event_args_ = event.event_args->Clone();
+    latest_event_args_ = event.event_args.Clone();
     latest_event_name_ = event.event_name;
   }
 }

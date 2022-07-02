@@ -29,7 +29,7 @@
 - (void)setIcon:(nullable UIImage*)icon;
 // Sets the text displayed.
 - (void)setText:(nullable NSString*)text;
-// Returns the height needed by a cell contained in |width| containing |text|.
+// Returns the height needed by a cell contained in `width` containing `text`.
 + (CGFloat)heightForWidth:(CGFloat)width withText:(nullable NSString*)text;
 
 @end

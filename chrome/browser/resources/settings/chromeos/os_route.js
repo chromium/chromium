@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import '../constants/routes.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import * as mojom from '../constants/routes.mojom-webui.js';
 import {Route, Router} from '../router.js';
 
 import {OsSettingsRoutes} from './os_settings_routes.js';
 
+const {Section, Subpage} = mojom;
+
 /**
  * @param {!Route} parent
  * @param {string} path
- * @param {!chromeos.settings.mojom.Section} section
+ * @param {!Section} section
  * @return {!Route}
  */
 function createSection(parent, path, section) {
@@ -25,7 +27,7 @@ function createSection(parent, path, section) {
 /**
  * @param {!Route} parent
  * @param {string} path
- * @param {!chromeos.settings.mojom.Subpage} subpage
+ * @param {!Subpage} subpage
  * @return {!Route}
  */
 function createSubpage(parent, path, subpage) {
@@ -38,10 +40,6 @@ function createSubpage(parent, path, subpage) {
  * @return {!OsSettingsRoutes}
  */
 function createOSSettingsRoutes() {
-  const mojom = chromeos.settings.mojom;
-  const Section = mojom.Section;
-  const Subpage = mojom.Subpage;
-
   const r = /** @type {!OsSettingsRoutes} */ ({});
 
   // Special routes: BASIC is the main page which loads if no path is
@@ -75,6 +73,11 @@ function createOSSettingsRoutes() {
     r.BLUETOOTH_DEVICE_DETAIL = createSubpage(
         r.BLUETOOTH, mojom.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
         Subpage.kBluetoothDeviceDetail);
+  }
+  if (loadTimeData.getBoolean('enableSavedDevicesFlag')) {
+    r.BLUETOOTH_SAVED_DEVICES = createSubpage(
+        r.BLUETOOTH, mojom.BLUETOOTH_SAVED_DEVICES_SUBPAGE_PATH,
+        Subpage.kBluetoothSavedDevices);
   }
 
   // MultiDevice section.
@@ -207,8 +210,11 @@ function createOSSettingsRoutes() {
     r.MANAGE_ACCESSIBILITY = createSubpage(
         r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
         Subpage.kManageAccessibility);
+    r.TEXT_TO_SPEECH = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_PAGE_PATH,
+        Subpage.kTextToSpeechPage);
     r.MANAGE_TTS_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
+        r.TEXT_TO_SPEECH, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
         Subpage.kTextToSpeech);
     r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
         r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
@@ -218,10 +224,10 @@ function createOSSettingsRoutes() {
   }
 
   // Crostini section.
+  r.CROSTINI =
+      createSection(r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
   if (loadTimeData.valueExists('showCrostini') &&
       loadTimeData.getBoolean('showCrostini')) {
-    r.CROSTINI = createSection(
-        r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
     r.CROSTINI_DETAILS = createSubpage(
         r.CROSTINI, mojom.CROSTINI_DETAILS_SUBPAGE_PATH,
         Subpage.kCrostiniDetails);
@@ -250,6 +256,13 @@ function createOSSettingsRoutes() {
     r.CROSTINI_PORT_FORWARDING = createSubpage(
         r.CROSTINI_DETAILS, mojom.CROSTINI_PORT_FORWARDING_SUBPAGE_PATH,
         Subpage.kCrostiniPortForwarding);
+
+    r.BRUSCHETTA_DETAILS = createSubpage(
+        r.CROSTINI, mojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
+        Subpage.kBruschettaDetails);
+    r.BRUSCHETTA_SHARED_USB_DEVICES = createSubpage(
+        r.BRUSCHETTA_DETAILS, mojom.BRUSCHETTA_USB_PREFERENCES_SUBPAGE_PATH,
+        Subpage.kBruschettaUsbPreferences);
   }
 
   // Date and Time section.
@@ -272,6 +285,8 @@ function createOSSettingsRoutes() {
       Subpage.kManageOtherPeopleV2);
   r.SMART_PRIVACY = createSubpage(
       r.OS_PRIVACY, mojom.SMART_PRIVACY_SUBPAGE_PATH, Subpage.kSmartPrivacy);
+  r.PRIVACY_HUB = createSubpage(
+      r.OS_PRIVACY, mojom.PRIVACY_HUB_SUBPAGE_PATH, Subpage.kPrivacyHub);
 
   // Languages and Input section.
   r.OS_LANGUAGES = createSection(

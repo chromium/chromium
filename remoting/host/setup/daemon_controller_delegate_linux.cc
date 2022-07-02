@@ -5,6 +5,7 @@
 #include "remoting/host/setup/daemon_controller_delegate_linux.h"
 
 #include <unistd.h>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -145,22 +146,21 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
   }
 }
 
-std::unique_ptr<base::DictionaryValue>
-DaemonControllerDelegateLinux::GetConfig() {
+absl::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
   absl::optional<base::Value> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!host_config.has_value())
-    return nullptr;
+    return absl::nullopt;
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
+  base::Value::Dict result;
   std::string* value = host_config->FindStringKey(kHostIdConfigPath);
   if (value) {
-    result->SetString(kHostIdConfigPath, *value);
+    result.Set(kHostIdConfigPath, *value);
   }
 
   value = host_config->FindStringKey(kXmppLoginConfigPath);
   if (value) {
-    result->SetString(kXmppLoginConfigPath, *value);
+    result.Set(kXmppLoginConfigPath, *value);
   }
 
   return result;
@@ -173,7 +173,7 @@ void DaemonControllerDelegateLinux::CheckPermission(
 }
 
 void DaemonControllerDelegateLinux::SetConfigAndStart(
-    std::unique_ptr<base::DictionaryValue> config,
+    base::Value::Dict config,
     bool consent,
     DaemonController::CompletionCallback done) {
   // Ensure the configuration directory exists.
@@ -189,7 +189,7 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
   }
 
   // Write config.
-  if (!HostConfigToJsonFile(*config, GetConfigPath())) {
+  if (!HostConfigToJsonFile(base::Value(std::move(config)), GetConfigPath())) {
     LOG(ERROR) << "Failed to update config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
@@ -215,19 +215,20 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
 }
 
 void DaemonControllerDelegateLinux::UpdateConfig(
-    std::unique_ptr<base::DictionaryValue> config,
+    base::Value::Dict config,
     DaemonController::CompletionCallback done) {
   absl::optional<base::Value> new_config(
       HostConfigFromJsonFile(GetConfigPath()));
-  if (!new_config.has_value()) {
+  if (!new_config.has_value() || !new_config->is_dict()) {
     LOG(ERROR) << "Failed to read existing config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
-  new_config->MergeDictionary(config.get());
+  new_config->GetDict().Merge(std::move(config));
 
-  if (!HostConfigToJsonFile(new_config.value(), GetConfigPath())) {
+  if (!HostConfigToJsonFile(base::Value(std::move(*new_config)),
+                            GetConfigPath())) {
     LOG(ERROR) << "Failed to update config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;

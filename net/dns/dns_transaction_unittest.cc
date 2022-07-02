@@ -120,14 +120,12 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       std::unique_ptr<uint16_t> length(new uint16_t);
       *length = base::HostToNet16(query_->io_buffer()->size());
-      writes_.push_back(MockWrite(mode,
-                                  reinterpret_cast<const char*>(length.get()),
-                                  sizeof(uint16_t), num_reads_and_writes()));
+      writes_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
+                           sizeof(uint16_t), num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    writes_.push_back(MockWrite(mode, query_->io_buffer()->data(),
-                                query_->io_buffer()->size(),
-                                num_reads_and_writes()));
+    writes_.emplace_back(mode, query_->io_buffer()->data(),
+                         query_->io_buffer()->size(), num_reads_and_writes());
   }
 
   DnsSocketData(const DnsSocketData&) = delete;
@@ -145,14 +143,12 @@ class DnsSocketData {
     if (Transport::TCP == transport_) {
       std::unique_ptr<uint16_t> length(new uint16_t);
       *length = base::HostToNet16(tcp_length);
-      reads_.push_back(MockRead(mode,
-                                reinterpret_cast<const char*>(length.get()),
-                                sizeof(uint16_t), num_reads_and_writes()));
+      reads_.emplace_back(mode, reinterpret_cast<const char*>(length.get()),
+                          sizeof(uint16_t), num_reads_and_writes());
       lengths_.push_back(std::move(length));
     }
-    reads_.push_back(MockRead(mode, response->io_buffer()->data(),
-                              response->io_buffer_size(),
-                              num_reads_and_writes()));
+    reads_.emplace_back(mode, response->io_buffer()->data(),
+                        response->io_buffer_size(), num_reads_and_writes());
     responses_.push_back(std::move(response));
   }
 
@@ -194,7 +190,7 @@ class DnsSocketData {
 
   // Add error response.
   void AddReadError(int error, IoMode mode) {
-    reads_.push_back(MockRead(mode, error, num_reads_and_writes()));
+    reads_.emplace_back(mode, error, num_reads_and_writes());
   }
 
   // Build, if needed, and return the SocketDataProvider. No new responses
@@ -205,8 +201,8 @@ class DnsSocketData {
     // Terminate the reads with ERR_IO_PENDING to prevent overrun and default to
     // timeout.
     if (transport_ != Transport::HTTPS) {
-      reads_.push_back(MockRead(SYNCHRONOUS, ERR_IO_PENDING,
-                                writes_.size() + reads_.size()));
+      reads_.emplace_back(SYNCHRONOUS, ERR_IO_PENDING,
+                          writes_.size() + reads_.size());
     }
     provider_ = std::make_unique<SequencedSocketData>(reads_, writes_);
     if (Transport::TCP == transport_ || Transport::HTTPS == transport_) {
@@ -362,9 +358,7 @@ class TransactionHelper {
     transaction_.reset(nullptr);
   }
 
-  void OnTransactionComplete(int rv,
-                             const DnsResponse* response,
-                             absl::optional<std::string> doh_provider_id) {
+  void OnTransactionComplete(int rv, const DnsResponse* response) {
     EXPECT_FALSE(completed_);
 
     completed_ = true;
@@ -443,8 +437,6 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
       ResponseModifierCallback response_modifier = ResponseModifierCallback(),
       UrlRequestStartedCallback on_start = UrlRequestStartedCallback())
       : URLRequestJob(request),
-        content_length_(0),
-        leftover_data_len_(0),
         data_provider_(data_provider),
         response_modifier_(response_modifier),
         on_start_(on_start) {
@@ -585,9 +577,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     return data_len;
   }
 
-  const int content_length_;
+  const int content_length_ = 0;
   const char* leftover_data_;
-  int leftover_data_len_;
+  int leftover_data_len_ = 0;
   raw_ptr<SocketDataProvider> data_provider_;
   const ResponseModifierCallback response_modifier_;
   const UrlRequestStartedCallback on_start_;
@@ -612,8 +604,8 @@ class DnsTransactionTestBase : public testing::Test {
     CHECK_LE(num_servers, 255u);
     config_.nameservers.clear();
     for (size_t i = 0; i < num_servers; ++i) {
-      config_.nameservers.push_back(
-          IPEndPoint(IPAddress(192, 168, 1, i), dns_protocol::kDefaultPort));
+      config_.nameservers.emplace_back(IPAddress(192, 168, 1, i),
+                                       dns_protocol::kDefaultPort);
     }
   }
 
@@ -871,7 +863,7 @@ class DnsTransactionTestBase : public testing::Test {
     DohJobInterceptor(const DohJobInterceptor&) = delete;
     DohJobInterceptor& operator=(const DohJobInterceptor&) = delete;
 
-    ~DohJobInterceptor() override {}
+    ~DohJobInterceptor() override = default;
 
     // URLRequestInterceptor implementation:
     std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
@@ -2354,8 +2346,7 @@ void MakeResponseWithCookie(URLRequest* request, HttpResponseInfo* info) {
 
 class CookieCallback {
  public:
-  CookieCallback()
-      : result_(false), loop_to_quit_(std::make_unique<base::RunLoop>()) {}
+  CookieCallback() : loop_to_quit_(std::make_unique<base::RunLoop>()) {}
 
   void SetCookieCallback(CookieAccessResult result) {
     result_ = result.status.IsInclude();
@@ -2380,7 +2371,7 @@ class CookieCallback {
 
  private:
   net::CookieList list_;
-  bool result_;
+  bool result_ = false;
   std::unique_ptr<base::RunLoop> loop_to_quit_;
 };
 
@@ -2548,7 +2539,7 @@ TEST_F(DnsTransactionTest, CanLookupDohServerName) {
 
 class CountingObserver : public net::NetLog::ThreadSafeObserver {
  public:
-  CountingObserver() : count_(0), dict_count_(0) {}
+  CountingObserver() = default;
 
   ~CountingObserver() override {
     if (net_log())
@@ -2566,8 +2557,8 @@ class CountingObserver : public net::NetLog::ThreadSafeObserver {
   int dict_count() const { return dict_count_; }
 
  private:
-  int count_;
-  int dict_count_;
+  int count_ = 0;
+  int dict_count_ = 0;
 };
 
 // Flaky on MSAN. https://crbug.com/1245953
@@ -3999,6 +3990,115 @@ TEST_F(DnsTransactionTestWithMockTime, RejectsQueryingLongNames) {
                            dns_protocol::kTypeA, false /* secure */,
                            resolve_context_.get());
   helper0.RunUntilComplete();
+}
+
+// Test that ERR_CONNECTION_REFUSED error after fallback of DnsTCPAttempt
+// should not cause DCHECK failure (https://crbug.com/1334250).
+TEST_F(DnsTransactionTestWithMockTime, TcpConnectionRefusedAfterFallback) {
+  ConfigureNumServers(2);
+  ConfigureFactory();
+  socket_factory_->diverse_source_ports_ = false;
+
+  // Data for UDP attempts to set `low_entropy` flag.
+  for (int i = 0; i <= DnsUdpTracker::kPortReuseThreshold; ++i) {
+    AddQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                        std::size(kT0ResponseDatagram), ASYNC, Transport::UDP);
+  }
+
+  // Data for TCP attempt.
+  std::unique_ptr<DnsSocketData> data1(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::TCP));
+  data1->AddReadError(ERR_IO_PENDING, ASYNC);
+  data1->AddReadError(ERR_CONNECTION_REFUSED, ASYNC);
+  SequencedSocketData* sequenced_socket_data1 = data1->GetProvider();
+  AddSocketData(std::move(data1));
+
+  std::unique_ptr<DnsSocketData> data2(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::TCP));
+  data2->AddReadError(ERR_IO_PENDING, ASYNC);
+  data2->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  SequencedSocketData* sequenced_socket_data2 = data2->GetProvider();
+  AddSocketData(std::move(data2));
+
+  // DNS transactions for UDP attempts to set `low_entropy` flag.
+  for (int i = 0; i <= DnsUdpTracker::kPortReuseThreshold; ++i) {
+    TransactionHelper udp_helper(kT0RecordCount);
+    udp_helper.StartTransaction(transaction_factory_.get(), kT0HostName,
+                                kT0Qtype, false /* secure */,
+                                resolve_context_.get());
+    udp_helper.RunUntilComplete();
+  }
+
+  ASSERT_TRUE(session_->udp_tracker()->low_entropy());
+
+  // DNS transactions for TCP attempt.
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           false /* secure */, resolve_context_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  base::TimeDelta timeout = resolve_context_->NextClassicFallbackPeriod(
+      0 /* classic_server_index */, 0 /* attempt */, session_.get());
+  FastForwardBy(timeout);
+
+  // Resume the first query.
+  sequenced_socket_data1->Resume();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  // Resume the second query.
+  sequenced_socket_data2->Resume();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(helper0.has_completed());
+}
+
+// Test that ERR_CONNECTION_REFUSED error after fallback of DnsHTTPAttempt
+// should not cause DCHECK failure (https://crbug.com/1334250).
+TEST_F(DnsTransactionTestWithMockTime, HttpsConnectionRefusedAfterFallback) {
+  ConfigureDohServers(false /* use_post */, 2 /* num_doh_servers */,
+                      true /* make_available */);
+
+  std::unique_ptr<DnsSocketData> data1(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128));
+  data1->AddReadError(ERR_IO_PENDING, ASYNC);
+  data1->AddReadError(ERR_CONNECTION_REFUSED, ASYNC);
+  SequencedSocketData* sequenced_socket_data1 = data1->GetProvider();
+  AddSocketData(std::move(data1), false /* enqueue_transaction_id */);
+
+  std::unique_ptr<DnsSocketData> data2(new DnsSocketData(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128));
+  data2->AddReadError(ERR_IO_PENDING, ASYNC);
+  data2->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  SequencedSocketData* sequenced_socket_data2 = data2->GetProvider();
+  AddSocketData(std::move(data2), false /* enqueue_transaction_id */);
+
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           true /* secure */, resolve_context_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  base::TimeDelta timeout = resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get());
+  FastForwardBy(timeout);
+
+  // Resume the first query.
+  sequenced_socket_data1->Resume();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper0.has_completed());
+
+  // Resume the second query.
+  sequenced_socket_data2->Resume();
+
+  EXPECT_TRUE(helper0.has_completed());
 }
 
 }  // namespace

@@ -53,6 +53,7 @@ class RuleBasedEngine : public mojom::InputMethod {
   void OnCandidateSelected(uint32_t selected_candidate_index) override;
   void OnQuickSettingsUpdated(
       mojom::InputMethodQuickSettingsPtr quick_settings) override;
+  void IsReadyForTesting(IsReadyForTestingCallback callback) override;
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 

@@ -61,7 +61,7 @@ class TestReportingCache : public ReportingCache {
                  const std::string& user_agent,
                  const std::string& group_name,
                  const std::string& type,
-                 std::unique_ptr<const base::Value> body,
+                 base::Value::Dict body,
                  int depth,
                  base::TimeTicks queued,
                  int attempts) override {

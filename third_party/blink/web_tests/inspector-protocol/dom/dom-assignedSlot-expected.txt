@@ -1,0 +1,20 @@
+Tests DOM.desctibeNode method.
+{
+    assignedSlot : {
+        backendNodeId : <number>
+        nodeName : SLOT
+        nodeType : 1
+    }
+    attributes : [
+        [0] : id
+        [1] : heading
+    ]
+    backendNodeId : <number>
+    childNodeCount : 1
+    localName : h1
+    nodeId : <number>
+    nodeName : H1
+    nodeType : 1
+    nodeValue : 
+}
+

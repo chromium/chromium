@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PROVIDER_IMPL_H_
 
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -19,7 +22,8 @@ class WebUI;
 namespace ash::personalization_app {
 
 class PersonalizationAppKeyboardBacklightProviderImpl
-    : public PersonalizationAppKeyboardBacklightProvider {
+    : public PersonalizationAppKeyboardBacklightProvider,
+      public WallpaperControllerObserver {
  public:
   explicit PersonalizationAppKeyboardBacklightProviderImpl(
       content::WebUI* web_ui);
@@ -32,18 +36,21 @@ class PersonalizationAppKeyboardBacklightProviderImpl
   ~PersonalizationAppKeyboardBacklightProviderImpl() override;
 
   // PersonalizationAppKeyboardBacklightProvider:
-  void BindInterface(mojo::PendingReceiver<
-                     ash::personalization_app::mojom::KeyboardBacklightProvider>
+  void BindInterface(mojo::PendingReceiver<mojom::KeyboardBacklightProvider>
                          receiver) override;
 
   // mojom::PersonalizationAppKeyboardBacklightProvider:
   void SetKeyboardBacklightObserver(
-      mojo::PendingRemote<
-          ash::personalization_app::mojom::KeyboardBacklightObserver> observer)
-      override;
+      mojo::PendingRemote<mojom::KeyboardBacklightObserver> observer) override;
 
-  void SetBacklightColor(
-      ash::personalization_app::mojom::BacklightColor backlight_color) override;
+  void SetBacklightColor(mojom::BacklightColor backlight_color) override;
+
+  void ShouldShowNudge(ShouldShowNudgeCallback callback) override;
+
+  void HandleNudgeShown() override;
+
+  // WallpaperControllerObserver:
+  void OnWallpaperColorsChanged() override;
 
  private:
   // Notify webUI the current state of backlight color.
@@ -52,11 +59,14 @@ class PersonalizationAppKeyboardBacklightProviderImpl
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
 
-  mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightProvider>
-      keyboard_backlight_receiver_{this};
+  mojo::Receiver<mojom::KeyboardBacklightProvider> keyboard_backlight_receiver_{
+      this};
 
-  mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightObserver>
+  mojo::Remote<mojom::KeyboardBacklightObserver>
       keyboard_backlight_observer_remote_;
+
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      wallpaper_controller_observation_{this};
 };
 
 }  // namespace ash::personalization_app

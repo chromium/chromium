@@ -19,8 +19,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -30,11 +30,6 @@
 
 namespace ash {
 namespace {
-
-using ::chromeos::AudioNode;
-using ::chromeos::AudioNodeList;
-using ::chromeos::CrasAudioClient;
-using ::chromeos::FakeCrasAudioClient;
 
 class FakeMediaControllerManager
     : public media_session::mojom::MediaControllerManagerInterceptorForTesting {

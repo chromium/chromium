@@ -16,7 +16,6 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/shared_storage/shared_storage_originated_document_data.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -145,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
 
   // Ensure the view and frame are live.
   RenderFrameHostImpl* rfh1 = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderViewHostImpl* rvh = rfh1->render_view_host();
   EXPECT_TRUE(rvh->IsRenderViewLive());
   EXPECT_TRUE(rfh1->IsRenderFrameLive());
@@ -155,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   ASSERT_TRUE(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->Shutdown(0));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+          0));
   crash_observer.Wait();
 
   // The frame tree should be cleared.
@@ -297,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   // Navigating to a data URL should set a unique origin.  This is represented
   // as "null" per RFC 6454.
   EXPECT_EQ("null", root->current_origin().Serialize());
-  EXPECT_TRUE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ("null", GetOriginFromRenderer(root));
 
   // Re-navigating to a normal URL should update the origin.
@@ -306,8 +307,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
       main_url.DeprecatedGetOriginAsURL().spec(),
-      contents->GetMainFrame()->GetLastCommittedOrigin().Serialize() + '/');
-  EXPECT_FALSE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize() +
+          '/');
+  EXPECT_FALSE(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ(root->current_origin().Serialize(), GetOriginFromRenderer(root));
 }
 
@@ -1028,7 +1031,7 @@ class FencedFrameTreeBrowserTest
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
  private:
@@ -1071,7 +1074,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   {
     TestFrameNavigationObserver observer(fenced_frame_root_node);
@@ -1137,8 +1140,7 @@ IN_PROC_BROWSER_TEST_P(
   {
     TestFrameNavigationObserver observer(
         fenced_frame_root_node1->current_frame_host());
-    std::string navigate_urn_script =
-        JsReplace("f1.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f1.src = $1;", urn_uuid);
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
     observer.Wait();
   }
@@ -1146,26 +1148,15 @@ IN_PROC_BROWSER_TEST_P(
   {
     TestFrameNavigationObserver observer(
         fenced_frame_root_node2->current_frame_host());
-    std::string navigate_urn_script =
-        JsReplace("f2.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f2.src = $1;", urn_uuid);
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
     observer.Wait();
   }
 
-  SharedStorageOriginatedDocumentData*
-      shared_storage_originated_document_data1 =
-          SharedStorageOriginatedDocumentData::GetForCurrentDocument(
-              fenced_frame_root_node1->current_frame_host());
-  SharedStorageOriginatedDocumentData*
-      shared_storage_originated_document_data2 =
-          SharedStorageOriginatedDocumentData::GetForCurrentDocument(
-              fenced_frame_root_node2->current_frame_host());
+  EXPECT_TRUE(fenced_frame_root_node1->FindSharedStorageBudgetMetadata());
 
-  DCHECK_NE(shared_storage_originated_document_data1,
-            shared_storage_originated_document_data2);
-
-  DCHECK_EQ(&shared_storage_originated_document_data1->budget_metadata(),
-            &shared_storage_originated_document_data2->budget_metadata());
+  EXPECT_EQ(fenced_frame_root_node1->FindSharedStorageBudgetMetadata(),
+            fenced_frame_root_node2->FindSharedStorageBudgetMetadata());
 }
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
@@ -1199,7 +1190,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1221,10 +1212,9 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
-  SharedStorageOriginatedDocumentData* shared_storage_originated_document_data =
-      SharedStorageOriginatedDocumentData::GetForCurrentDocument(
-          fenced_frame_root_node->current_frame_host());
-  EXPECT_FALSE(shared_storage_originated_document_data);
+  auto* budget_metadata =
+      fenced_frame_root_node->FindSharedStorageBudgetMetadata();
+  EXPECT_FALSE(budget_metadata);
 
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
@@ -1240,15 +1230,11 @@ IN_PROC_BROWSER_TEST_P(
       mapped_url,
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 
-  shared_storage_originated_document_data =
-      SharedStorageOriginatedDocumentData::GetForCurrentDocument(
-          fenced_frame_root_node->current_frame_host());
-  EXPECT_TRUE(shared_storage_originated_document_data);
-  EXPECT_EQ(shared_storage_originated_document_data->budget_metadata().origin,
+  budget_metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
+  EXPECT_TRUE(budget_metadata);
+  EXPECT_EQ(budget_metadata->origin,
             url::Origin::Create(GURL("https://bar.com")));
-  EXPECT_DOUBLE_EQ(shared_storage_originated_document_data->budget_metadata()
-                       .budget_to_charge,
-                   2.0);
+  EXPECT_DOUBLE_EQ(budget_metadata->budget_to_charge, 2.0);
 }
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
@@ -1282,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/nonexistent-url.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1317,10 +1303,8 @@ IN_PROC_BROWSER_TEST_P(
   observer.Wait();
   EXPECT_EQ(observer.last_net_error_code(), net::ERR_BLOCKED_BY_RESPONSE);
 
-  SharedStorageOriginatedDocumentData* shared_storage_originated_document_data =
-      SharedStorageOriginatedDocumentData::GetForCurrentDocument(
-          fenced_frame_root_node->current_frame_host());
-  EXPECT_FALSE(shared_storage_originated_document_data);
+  auto* metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
+  EXPECT_FALSE(metadata);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1352,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1430,7 +1414,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
   EXPECT_EQ(
@@ -1512,7 +1496,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
   EXPECT_EQ(
@@ -1851,7 +1835,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script,
       net::ERR_BLOCKED_BY_RESPONSE);
@@ -2252,9 +2236,9 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, ShouldIgnoreJsDialog) {
   // Setup test dialog manager and create dialog.
   TestJavaScriptDialogManager dialog_manager;
   web_contents()->SetDelegate(&dialog_manager);
-  web_contents()->RunJavaScriptDialog(web_contents()->GetMainFrame(), u"", u"",
-                                      JAVASCRIPT_DIALOG_TYPE_ALERT, false,
-                                      base::NullCallback());
+  web_contents()->RunJavaScriptDialog(web_contents()->GetPrimaryMainFrame(),
+                                      u"", u"", JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                      false, base::NullCallback());
 
   {
     // Navigate fenced frame.
@@ -2817,7 +2801,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckInvalidUrnError) {
   GURL urn_uuid = GURL("urn:uuid:12345678-9abc-def0-1234-56789abcdef0");
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script, InvalidUrnError());
 }
@@ -2878,7 +2862,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
     EXPECT_TRUE(urn_uuid.is_valid());
 
-    std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
     net::Error expected_net_error_code =
         test_case.expect_allowed ? net::OK : net::ERR_BLOCKED_BY_CSP;
@@ -3124,7 +3108,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, FenceUserActivation) {
                     true /*G*/});
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, FencedAdSizes) {
+// TODO(https://crbug.com/1335512): Flaky.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FencedAdSizes DISABLED_FencedAdSizes
+#else
+#define MAYBE_FencedAdSizes FencedAdSizes
+#endif
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, MAYBE_FencedAdSizes) {
   // This test exercises restrictions on fenced frame sizes in opaque-ads mode.
   // See the design document for more details on intended semantics:
   // https://docs.google.com/document/d/1MVqxc2nzde3cJYIRC8vnXH-a4A6J4GQE-1vBuXhQsPE/edit#
@@ -3349,6 +3339,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
  public:
+  // TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+  // Remove this constructor and `scoped_feature_list_` once FLEDGE stops
+  // supporting iframes.
+  FencedFrameReportEventBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kAllowURNsInIframes, {}}},
+        {/* disabled_features */});
+  }
   void SetUpOnMainThread() override {
     // Set up the host resolver to allow serving separate sites, so we can
     // perform cross-process navigation.
@@ -3362,6 +3360,9 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the fenced frame with a urn:uuid commits the navigation with the
@@ -3408,12 +3409,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
-
   TestFencedFrameURLMappingResultObserver mapping_observer;
   url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
   TestFrameNavigationObserver observer(fenced_frame_root_node);
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
+
   observer.WaitForCommit();
   EXPECT_TRUE(mapping_observer.mapping_complete_observed());
   EXPECT_EQ(reporting_url,
@@ -3435,6 +3437,77 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
                                "  eventData: $1,"
                                "  destination: ['buyer']});",
                                event_data)));
+
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, event_data);
+}
+
+// (Temporary test for FLEDGE iframe OT.)
+// Tests that an iframe with a urn:uuid commits the navigation with the
+// associated reporting metadata and `fence.reportEvent` sends the beacon to
+// the registered reporting url.
+// TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+// Remove this test once the FLEDGE origin trial stops supporting iframes.
+IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+                       IframeReportingMetadata) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* iframe_node = root->child_at(0);
+
+  // Add reporting metadata.
+  ReportingMetadata fenced_frame_reporting;
+  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
+  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
+                                 ["mouse interaction"] = reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::mojom::ReportingDestination::kBuyer]["click"] =
+      https_server()->GetURL("c.test", "/title1.html");
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid =
+      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(iframe_node);
+
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(reporting_url,
+            mapping_observer.reporting_metadata()
+                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                         ["mouse interaction"]);
+
+  EXPECT_EQ(https_url,
+            iframe_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(https_url),
+            iframe_node->current_frame_host()->GetLastCommittedOrigin());
+
+  std::string event_data = "this is a click";
+  EXPECT_TRUE(ExecJs(iframe_node, JsReplace("window.fence.reportEvent({"
+                                            "  eventType: 'mouse interaction',"
+                                            "  eventData: $1,"
+                                            "  destination: ['buyer']});",
+                                            event_data)));
 
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
@@ -3479,7 +3552,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(urn_uuid.is_valid());
 
   // Navigate the fenced frame.
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
 
@@ -3724,9 +3797,10 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
 
-  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetRenderViewHost(), rvh);
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost(),
+            rvh);
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(), child_instance);
-  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(), rph);
 
   // Ensure that the root node has a proxy for the child node's SiteInstance.
   EXPECT_TRUE(root->current_frame_host()
@@ -4228,10 +4302,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
                      "document.body.appendChild(d);"));
   EXPECT_EQ(2U, root->child_count());
   EXPECT_TRUE(root->child_at(1)->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false, EvalJs(root->child_at(1)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(1)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   // Setting the attribute via javascript works.
   EXPECT_TRUE(ExecJs(root,
@@ -4240,20 +4312,18 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
                      "document.body.appendChild(g);"));
   EXPECT_EQ(3U, root->child_count());
   EXPECT_TRUE(root->child_at(2)->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = false;"));
   EXPECT_FALSE(root->child_at(2)->anonymous());
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = true;"));
   EXPECT_TRUE(root->child_at(2)->anonymous());
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 }
 
 // This is fenced frames test class differs on from FencedFrameTreeBrowserTest,
@@ -4274,7 +4344,7 @@ class MPArchFencedFramesFrameTreeBrowserTest : public FrameTreeBrowserTest {
 
   RenderFrameHostImpl* current_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
  private:

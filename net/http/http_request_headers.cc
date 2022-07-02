@@ -64,9 +64,7 @@ HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(
     : key(key.data(), key.size()), value(value.data(), value.size()) {}
 
 HttpRequestHeaders::Iterator::Iterator(const HttpRequestHeaders& headers)
-    : started_(false),
-      curr_(headers.headers_.begin()),
-      end_(headers.headers_.end()) {}
+    : curr_(headers.headers_.begin()), end_(headers.headers_.end()) {}
 
 HttpRequestHeaders::Iterator::~Iterator() = default;
 
@@ -182,16 +180,16 @@ void HttpRequestHeaders::AddHeadersFromString(
 }
 
 void HttpRequestHeaders::MergeFrom(const HttpRequestHeaders& other) {
-  for (auto it = other.headers_.begin(); it != other.headers_.end(); ++it) {
-    SetHeader(it->key, it->value);
+  for (const auto& header : other.headers_) {
+    SetHeader(header.key, header.value);
   }
 }
 
 std::string HttpRequestHeaders::ToString() const {
   std::string output;
-  for (auto it = headers_.begin(); it != headers_.end(); ++it) {
-    base::StringAppendF(&output, "%s: %s\r\n", it->key.c_str(),
-                        it->value.c_str());
+  for (const auto& header : headers_) {
+    base::StringAppendF(&output, "%s: %s\r\n", header.key.c_str(),
+                        header.value.c_str());
   }
   output.append("\r\n");
   return output;
@@ -200,17 +198,17 @@ std::string HttpRequestHeaders::ToString() const {
 base::Value HttpRequestHeaders::NetLogParams(
     const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("line", NetLogStringValue(request_line));
-  base::Value headers(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("line", NetLogStringValue(request_line));
+  base::Value::List headers;
   for (const auto& header : headers_) {
     std::string log_value =
         ElideHeaderValueForNetLog(capture_mode, header.key, header.value);
     headers.Append(
         NetLogStringValue(base::StrCat({header.key, ": ", log_value})));
   }
-  dict.SetKey("headers", std::move(headers));
-  return dict;
+  dict.Set("headers", std::move(headers));
+  return base::Value(std::move(dict));
 }
 
 HttpRequestHeaders::HeaderVector::iterator HttpRequestHeaders::FindHeader(

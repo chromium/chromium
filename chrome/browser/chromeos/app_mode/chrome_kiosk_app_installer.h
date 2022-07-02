@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/install_observer.h"
@@ -66,7 +67,7 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   bool DidPrimaryOrSecondaryAppFailedToInstall(bool success,
                                                const std::string& id) const;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   AppInstallParams primary_app_install_data_;
 
   InstallCallback on_ready_callback_;

@@ -77,7 +77,6 @@ class CORE_EXPORT HTMLVideoElement final
   void webkitExitFullscreen();
   bool webkitSupportsFullscreen();
   bool webkitDisplayingFullscreen();
-  bool UsesOverlayFullscreenVideo() const override;
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
@@ -152,6 +151,8 @@ class CORE_EXPORT HTMLVideoElement final
 
   void SetIsEffectivelyFullscreen(blink::WebFullscreenVideoStatus);
   void SetIsDominantVisibleContent(bool is_dominant);
+
+  bool IsRichlyEditableForAccessibility() const override { return false; }
 
   VideoWakeLock* wake_lock_for_tests() const { return wake_lock_; }
 

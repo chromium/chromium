@@ -58,8 +58,10 @@ class ExtensionUntrustedWebUITest : public ExtensionApiTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL("chrome-untrusted://api-test/title1.html")));
 
-    content::RenderFrameHost* rfh =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* rfh = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame();
     ASSERT_TRUE(rfh);
     content::ExecuteScriptAsync(rfh, script);
 

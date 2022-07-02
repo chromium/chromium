@@ -9,15 +9,15 @@ import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiSelector;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -713,6 +713,7 @@ public class PortalsTest {
     @Test
     @LargeTest
     @Feature({"Portals"})
+    @DisabledTest(message = "https://crbug.com/1340918")
     public void testPermissionDeniedInPortalAfterBeingGrantedInPortalHost() throws Exception {
         String mainUrl = mTestServer.getURL("/chrome/test/data/android/portals/geolocation.html");
         mActivityTestRule.startMainActivityWithURL(mainUrl);

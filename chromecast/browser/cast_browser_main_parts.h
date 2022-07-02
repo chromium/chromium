@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/browser/display_configurator_observer.h"
@@ -44,7 +45,6 @@ class CastWebService;
 class DisplaySettingsManager;
 class ServiceConnector;
 class ServiceManagerContext;
-class WaylandServerController;
 
 #if defined(USE_AURA)
 class CastWindowManagerAura;
@@ -153,6 +153,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 #if BUILDFLAG(IS_ANDROID)
   void StartPeriodicCrashReportUpload();
   void OnStartPeriodicCrashReportUpload();
+  void UploadCrashReport(bool opt_in_stats);
   scoped_refptr<base::SequencedTaskRunner> crash_reporter_runner_;
   std::unique_ptr<base::RepeatingTimer> crash_reporter_timer_;
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
@@ -170,16 +171,14 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<PrefService> user_pref_service_;
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  std::unique_ptr<WaylandServerController> wayland_server_controller_;
-#endif
-
   std::unique_ptr<CastFeatureUpdateObserver> feature_update_observer_;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_FUCHSIA)
   // Only used when running with --enable-ui-devtools.
   std::unique_ptr<CastUIDevTools> ui_devtools_;
 #endif  // defined(USE_AURA) && !BUILDFLAG(IS_FUCHSIA)
+
+  base::WeakPtrFactory<CastBrowserMainParts> weak_factory_{this};
 };
 
 }  // namespace shell

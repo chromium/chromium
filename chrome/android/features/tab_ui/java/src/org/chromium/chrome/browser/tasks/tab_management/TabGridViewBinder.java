@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -26,6 +27,8 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -210,32 +213,45 @@ class TabGridViewBinder {
                 pageInfoButton.getPrimaryTextView().setText(query);
             }
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
-            PriceCardView priceCardView =
-                    (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
-            if (model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) != null) {
-                model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
-                        .fetch((shoppingPersistedTabData) -> {
-                            if (shoppingPersistedTabData == null
-                                    || shoppingPersistedTabData.getPriceDrop() == null) {
-                                priceCardView.setVisibility(View.GONE);
+            fetchPriceDrop(model, (priceDrop) -> {
+                PriceCardView priceCardView =
+                        (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
+                if (priceDrop == null) {
+                    priceCardView.setVisibility(View.GONE);
+                    return;
+                }
+                priceCardView.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+                priceCardView.setVisibility(View.VISIBLE);
+                priceCardView.setContentDescription(
+                        view.getResources().getString(R.string.accessibility_tab_price_card,
+                                priceDrop.previousPrice, priceDrop.price));
+            }, true);
+        } else if (TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
+            CouponCardView couponCardView =
+                    (CouponCardView) view.fastFindViewById(R.id.coupon_info_box_outer);
+            if (model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER) == null) {
+                couponCardView.setVisibility(View.GONE);
+                return;
+            }
+            fetchPriceDrop(model, (priceDrop) -> {
+                if (priceDrop != null) {
+                    couponCardView.setVisibility(View.GONE);
+                    return;
+                }
+                model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER)
+                        .fetch((couponPersistedTabData) -> {
+                            // TODO(crbug.com/1337117): add logging for when
+                            // couponPersistedTabData is not null
+                            if (couponPersistedTabData == null
+                                    || couponPersistedTabData.getCoupon() == null) {
+                                couponCardView.setVisibility(View.GONE);
                             } else {
-                                priceCardView.setPriceStrings(
-                                        shoppingPersistedTabData.getPriceDrop().price,
-                                        shoppingPersistedTabData.getPriceDrop().previousPrice);
-                                priceCardView.setVisibility(View.VISIBLE);
-                                priceCardView.setContentDescription(view.getResources().getString(
-                                        R.string.accessibility_tab_price_card,
-                                        shoppingPersistedTabData.getPriceDrop().previousPrice,
-                                        shoppingPersistedTabData.getPriceDrop().price));
-                            }
-                            if (shoppingPersistedTabData != null) {
-                                shoppingPersistedTabData.logPriceDropMetrics(
-                                        SHOPPING_METRICS_IDENTIFIER);
+                                couponCardView.setCouponString(
+                                        couponPersistedTabData.getCoupon().couponName);
+                                couponCardView.setVisibility(View.VISIBLE);
                             }
                         });
-            } else {
-                priceCardView.setVisibility(View.GONE);
-            }
+            }, false);
         } else if (TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
             StoreHoursCardView storeHoursCardView =
                     (StoreHoursCardView) view.fastFindViewById(R.id.store_hours_box_outer);
@@ -322,6 +338,25 @@ class TabGridViewBinder {
         }
     }
 
+    private static void fetchPriceDrop(PropertyModel model,
+            Callback<ShoppingPersistedTabData.PriceDrop> callback, boolean shouldLog) {
+        if (model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER) == null) {
+            callback.onResult(null);
+            return;
+        }
+        model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
+                .fetch((shoppingPersistedTabData) -> {
+                    if (shoppingPersistedTabData == null) {
+                        callback.onResult(null);
+                        return;
+                    }
+                    if (shouldLog) {
+                        shoppingPersistedTabData.logPriceDropMetrics(SHOPPING_METRICS_IDENTIFIER);
+                    }
+                    callback.onResult(shoppingPersistedTabData.getPriceDrop());
+                });
+    }
+
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         TabGridThumbnailView thumbnail =
@@ -334,11 +369,15 @@ class TabGridViewBinder {
         // Use placeholder drawable before the real thumbnail is available.
         thumbnail.setColorThumbnailPlaceHolder(
                 model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
+
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())) {
                     // Adjust bitmap to thumbnail.
-                    updateThumbnailMatrix(thumbnail, result, model);
+                    final Size thumbnailSize =
+                            TabUtils.deriveThumbnailSize(model.get(TabProperties.GRID_CARD_WIDTH),
+                                    model.get(TabProperties.GRID_CARD_HEIGHT), view.getContext());
+                    updateThumbnailMatrix(thumbnail, result, thumbnailSize);
                 } else {
                     thumbnail.setScaleType(ScaleType.FIT_CENTER);
                     thumbnail.setAdjustViewBounds(true);
@@ -354,15 +393,16 @@ class TabGridViewBinder {
     }
 
     /**
-     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then top-center
-     * aligned.
+     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then
+     * top-center aligned.
      * @param thumbnail Destination image view @{@link TabGridThumbnailView}.
      * @param source Image bitmap to resize.
-     * @param model PropertyModel containing the destination properties.
+     * @param destinationSize Desired width and height for source.
      */
-    private static void updateThumbnailMatrix(TabGridThumbnailView thumbnail, Bitmap source,  PropertyModel model) {
-        int newWidth = model.get(TabProperties.GRID_CARD_WIDTH);
-        int newHeight = model.get(TabProperties.GRID_CARD_HEIGHT);
+    private static void updateThumbnailMatrix(
+            TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
+        int newWidth = destinationSize.getWidth();
+        int newHeight = destinationSize.getHeight();
         if (newWidth <= 0 || newHeight <= 0
                 || (newWidth == source.getWidth() && newHeight == source.getHeight())) {
             thumbnail.setScaleType(ScaleType.FIT_CENTER);

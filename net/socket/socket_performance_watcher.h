@@ -18,7 +18,7 @@ namespace net {
 // thread.
 class NET_EXPORT_PRIVATE SocketPerformanceWatcher {
  public:
-  virtual ~SocketPerformanceWatcher() {}
+  virtual ~SocketPerformanceWatcher() = default;
 
   // Returns true if |this| SocketPerformanceWatcher is interested in receiving
   // an updated RTT estimate (via OnUpdatedRTTAvailable).

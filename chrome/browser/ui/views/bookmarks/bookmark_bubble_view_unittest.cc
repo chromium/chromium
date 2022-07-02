@@ -105,8 +105,6 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoSignedIn) {
       BookmarkBubbleView::bookmark_bubble()->GetFootnoteViewForTesting());
 }
 
-// TODO(https://crbug.com/1260291): Add support for Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Verifies that the sync promo is displayed for a user that is not signed in.
 TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
   CreateBubbleView();
@@ -118,4 +116,3 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
   EXPECT_TRUE(footnote);
 #endif
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "dbus/bus.h"
@@ -87,7 +88,7 @@ class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
       const std::string& property_name);
 
   scoped_refptr<dbus::Bus> system_bus_;
-  dbus::ObjectProxy* network_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_ = nullptr;
 };
 
 // Convert a wifi frequency to the corresponding channel. Adapted from

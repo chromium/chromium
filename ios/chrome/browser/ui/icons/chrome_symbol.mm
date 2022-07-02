@@ -13,7 +13,7 @@
 
 namespace {
 
-// Returns the default configuration with the given |pointSize|.
+// Returns the default configuration with the given `pointSize`.
 UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
     NSInteger pointSize) {
   return [UIImageSymbolConfiguration
@@ -22,8 +22,8 @@ UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
                            scale:UIImageSymbolScaleMedium];
 }
 
-// Returns a symbol named |symbolName| configured with the given
-// |configuration|. |systemSymbol| is used to specify if it is a SFSymbol or a
+// Returns a symbol named `symbolName` configured with the given
+// `configuration`. `systemSymbol` is used to specify if it is a SFSymbol or a
 // custom symbol.
 
 UIImage* SymbolWithConfiguration(NSString* symbolName,
@@ -63,6 +63,7 @@ NSString* const kMicrophoneFillSymbol = @"mic.fill";
 NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kPinSymbol = @"pin";
+NSString* const kPinFillSymbol = @"pin.fill";
 NSString* const kGearShapeSymbol = @"gearshape.fill";
 NSString* const kShareSymbol = @"square.and.arrow.up";
 NSString* const kXMarkSymbol = @"xmark";
@@ -70,11 +71,14 @@ NSString* const kPlusSymbol = @"plus";
 NSString* const kSearchSymbol = @"magnifyingglass";
 NSString* const kCheckmarkSymbol = @"checkmark";
 NSString* const kArrowDownCircleFillSymbol = @"arrow.down.circle.fill";
+NSString* const kWarningSymbol = @"exclamationmark.triangle";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpFillSymbol = @"questionmark.circle";
+NSString* const kCheckMarkCircleSymbol = @"checkmark.circle";
 NSString* const kCheckMarkCircleFillSymbol = @"checkmark.circle.fill";
 NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
 NSString* const kTrashSymbol = @"trash";
+NSString* const kInfoCircleSymbol = @"info.circle";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {
@@ -109,5 +113,5 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
 }
 
 bool UseSymbols() {
-  return base::FeatureList::IsEnabled(kUseSFSymbolsSamples);
+  return base::FeatureList::IsEnabled(kUseSFSymbols);
 }

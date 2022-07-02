@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/rand_util.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,8 +43,8 @@ void AggregationServiceKeyFetcher::GetPublicKey(const GURL& url,
 
   // First we check if we already have keys stored.
   // TODO(crbug.com/1223488): Pass url by value and move after C++17.
-  storage_context_->GetKeyStorage()
-      .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
+  storage_context_->GetStorage()
+      .AsyncCall(&AggregationServiceStorage::GetPublicKeys)
       .WithArgs(url)
       .Then(base::BindOnce(
           &AggregationServiceKeyFetcher::OnPublicKeysReceivedFromStorage,
@@ -85,14 +85,14 @@ void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork(
     // `keyset` will be absl::nullopt if an error occurred and `expiry_time`
     // will be null if the freshness lifetime was zero. In these cases, we will
     // still update the keys for `url`, i,e. clear them.
-    storage_context_->GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeys)
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::ClearPublicKeys)
         .WithArgs(url);
   } else {
     // Store public keys fetched from network to storage, the old keys will be
     // deleted from storage.
-    storage_context_->GetKeyStorage()
-        .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::SetPublicKeys)
         .WithArgs(url, keyset.value());
   }
 

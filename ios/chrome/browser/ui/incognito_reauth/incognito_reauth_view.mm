@@ -124,7 +124,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
   DCHECK(!_authenticateButton);
 
   // Use a IncognitoReauthViewLabel for the button label, because the built-in
-  // UIButton's |titleLabel| does not correctly resize for multiline labels and
+  // UIButton's `titleLabel` does not correctly resize for multiline labels and
   // using a UILabel doesn't provide feedback to adjust the corner radius.
   IncognitoReauthViewLabel* titleLabel =
       [[IncognitoReauthViewLabel alloc] init];

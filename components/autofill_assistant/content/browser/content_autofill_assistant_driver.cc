@@ -50,7 +50,7 @@ ContentAutofillAssistantDriver::GetOrCreateForRenderFrameHost(
   ContentAutofillAssistantDriver* driver =
       ContentAutofillAssistantDriver::GetOrCreateForCurrentDocument(
           render_frame_host);
-  if (driver) {
+  if (driver && annotate_dom_model_service) {
     driver->SetAnnotateDomModelService(annotate_dom_model_service);
   }
   return driver;

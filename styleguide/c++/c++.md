@@ -228,18 +228,24 @@ code when you find it, or at least not make such usage any more widespread.
 
 ## Non-owning pointers in class fields
 
-Use `raw_ptr<T>` for class and struct fields in place of a raw C++ pointer `T*`
-whenever possible, except in paths that include `/renderer/` or
-`blink/public/web/`.  `raw_ptr<T>` is a non-owning smart pointer that has
-improved memory-safety over raw pointers, and can prevent exploitation of a
-significant percentage of Use-after-Free bugs.
+Use `const raw_ref<T>` or `raw_ptr<T>` for class and struct fields in place of a
+raw C++ reference `T&` or pointer `T*` whenever possible, except in paths that include
+`/renderer/` or `blink/public/web/`.  These a non-owning smart pointers that
+have improved memory-safety over raw pointers and references, and can prevent
+exploitation of a significant percentage of Use-after-Free bugs.
 
-Using `raw_ptr<T>` may not be possible in rare cases for
-[performance reasons](../../base/memory/raw_ptr.md#Performance).
-Additionally, `raw_ptr<T>` doesn’t support some C++ scenarios (e.g. `constexpr`,
-ObjC pointers).  Tooling will help to encourage use of `raw_ptr<T>`.  See
-[raw_ptr.md](../../base/memory/raw_ptr.md#When-to-use-raw_ptr_T)
-for how to add exclusions.
+Prefer `const raw_ref<T>` whenever the held pointer will never be null, and it's
+ok to drop the `const` if the internal reference can be reassigned to point to a
+different `T`. Use `raw_ptr<T>` in order to express that the pointer _can_ be
+null. Only `raw_ptr<T>` can be default-constructed, since `raw_ref<T>` disallows
+nullness.
+
+Using `raw_ref<T>` or `raw_ptr<T>` may not be possible in rare cases for
+[performance reasons](../../base/memory/raw_ptr.md#Performance). Additionally,
+`raw_ptr<T>` doesn’t support some C++ scenarios (e.g. `constexpr`, ObjC
+pointers).  Tooling will help to encourage use of these types in the future. See
+[raw_ptr.md](../../base/memory/raw_ptr.md#When-to-use-raw_ptr_T) for how to add
+exclusions.
 
 ## Forward declarations vs. #includes
 

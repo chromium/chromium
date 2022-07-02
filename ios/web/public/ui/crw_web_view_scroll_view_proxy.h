@@ -65,10 +65,8 @@
 @property(nonatomic, assign) BOOL scrollsToTop;
 @property(nonatomic, assign) BOOL clipsToBounds;
 @property(nonatomic, assign)
-    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior
-        API_AVAILABLE(ios(11.0));
-@property(nonatomic, readonly)
-    UIEdgeInsets adjustedContentInset API_AVAILABLE(ios(11.0));
+    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior;
+@property(nonatomic, readonly) UIEdgeInsets adjustedContentInset;
 @property(weak, nonatomic, readonly)
     UIPanGestureRecognizer* panGestureRecognizer;
 // Returns the scrollview's gesture recognizers.

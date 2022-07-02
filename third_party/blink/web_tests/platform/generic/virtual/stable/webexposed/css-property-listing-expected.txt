@@ -153,6 +153,8 @@ All changes to this list should go through Blink's feature review process: http:
     contain-intrinsic-height
     contain-intrinsic-inline-size
     contain-intrinsic-width
+    container-name
+    container-type
     content
     content-visibility
     counter-increment
@@ -251,6 +253,7 @@ All changes to this list should go through Blink's feature review process: http:
     mix-blend-mode
     object-fit
     object-position
+    object-view-box
     offset-distance
     offset-path
     offset-rotate
@@ -289,10 +292,12 @@ All changes to this list should go through Blink's feature review process: http:
     r
     resize
     right
+    rotate
     row-gap
     ruby-position
     rx
     ry
+    scale
     scroll-behavior
     scroll-margin-block-end
     scroll-margin-block-start
@@ -363,6 +368,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-duration
     transition-property
     transition-timing-function
+    translate
     unicode-bidi
     user-select
     vector-effect
@@ -558,6 +564,9 @@ All changes to this list should go through Blink's feature review process: http:
     contain-intrinsic-size
         contain-intrinsic-height
         contain-intrinsic-width
+    container
+        container-name
+        container-type
     flex
         flex-basis
         flex-grow

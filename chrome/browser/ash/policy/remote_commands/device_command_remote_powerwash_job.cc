@@ -10,7 +10,7 @@
 #include "base/syslog_logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -29,7 +29,7 @@ constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
 constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(10);
 
 void StartPowerwash(enterprise_management::SignedData signed_command) {
-  chromeos::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
+  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
 }
 
 }  // namespace

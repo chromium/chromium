@@ -260,11 +260,6 @@ void PassThroughImageTransportSurface::FinishSwapBuffers(
             kTimingMetricsHistogramBuckets);
       }
     }
-
-    SwapBuffersCompleteParams params;
-    params.swap_response = response;
-    delegate_->DidSwapBuffersComplete(std::move(params),
-                                      std::move(release_fence));
   }
 }
 
@@ -295,8 +290,6 @@ void PassThroughImageTransportSurface::BufferPresented(
 #endif
 
   std::move(callback).Run(feedback);
-  if (delegate_)
-    delegate_->BufferPresented(feedback);
 }
 
 }  // namespace gpu

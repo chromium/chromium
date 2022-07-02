@@ -124,7 +124,7 @@ class NetExportFileWriter {
   //
   // |polled_data| is a JSON dictionary that will be appended to the end of the
   // log; it's for adding additional info to the log that aren't events.
-  void StopNetLog(std::unique_ptr<base::DictionaryValue> polled_data);
+  void StopNetLog(base::Value::Dict polled_data = base::Value::Dict());
 
   // Creates a DictionaryValue summary of the state of the NetExportFileWriter
   std::unique_ptr<base::DictionaryValue> GetState() const;
@@ -183,7 +183,7 @@ class NetExportFileWriter {
   // logging after the output file has been created.
   void StartNetLogAfterCreateFile(net::NetLogCaptureMode capture_mode,
                                   uint64_t max_file_size,
-                                  base::Value custom_constants,
+                                  base::Value::Dict custom_constants,
                                   base::File log_file);
 
   void OnStartResult(net::NetLogCaptureMode capture_mode, int result);

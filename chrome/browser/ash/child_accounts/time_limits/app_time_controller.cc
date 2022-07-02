@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -636,7 +637,7 @@ void AppTimeController::ShowNotificationForApp(
           message, notification_source, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kFamilyLinkSourceId),
+              kFamilyLinkSourceId, NotificationCatalogName::kAppTime),
           option_fields,
           notification == AppNotification::kTimeLimitChanged
               ? base::MakeRefCounted<

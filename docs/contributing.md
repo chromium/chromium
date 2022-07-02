@@ -327,18 +327,20 @@ general rules of thumb can be helpful in navigating how to structure changes:
   Chromium project.** This is important so developers can understand the
   constraints informing a design decision. Those constraints should be apparent
   from the scope of code within the boundary of the project and its various
-  repositories. In other words, for each line of code, you should be able to
-  find a product in the Chromium repositories that depends on that line of code
-  or else the line of code should be removed.
+  repositories. In general, for each line of code, you should be able to find a
+  product in the Chromium repositories that depends on that line of code or else
+  the line of code should be removed.
 
   Completely new additions to the project (e.g., support for a new OS or
   architecture, or a new top-level directory for a new sub-project) must be
   approved by chrome-eng-review@google.com. For long-term maintenance reasons,
   we will accept only things that are used by the Chromium project and things
-  that do not increase the cost of maintaining Chromium's supported
-  architectures / platforms (e.g., adding one ifdef branch for an unsupported
-  architecture / platform is fine but introducing new abstractions in the
-  codebase is problematic).
+  whose benefit to Chromium outweighs any cost increase in maintaining
+  Chromium's supported architectures / platforms (e.g. adding one ifdef branch
+  for an unsupported architecture / platform has negligible cost and is likely
+  fine, but introducing new abstractions in the code has a high cost and would
+  need to provide Chromium with corresponding benefit). See the
+  [new port policy](new_port_policy.md) for further guidance.
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
@@ -369,6 +371,16 @@ general rules of thumb can be helpful in navigating how to structure changes:
   requirements, and minimizes the learning hurdles for developers to be
   successful contributing across the codebase. Additions of new languages must
   be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+
+- **When your team is making API changes or migrating between services, the
+  team mandating the change needs to do at least 80% of the work.** The
+  rationale is to reduce externalities by having the team that requires a
+  change spend the vast majority of the time required to make it happen.
+  This naturally encourages designing to minimize the cost of change, be it
+  through automation, tooling, or pooled centralized expertise. You can find
+  more detailed rationale in [this doc](https://docs.google.com/document/d/1elJisUpOb3h4-7WA4Wn754nzfgeCJ4v2kAFvMOzNfek/edit#)
+  (Google internal). If you need an exception or help, please contact
+  chromium-code-health-rotation@google.com.
 
 ## Tips
 

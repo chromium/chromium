@@ -51,9 +51,20 @@ class AuthStatusConsumer;
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
     : public Authenticator {
  public:
-  AuthSessionAuthenticator(AuthStatusConsumer* consumer,
-                           std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
-                           bool is_ephemeral_mount_enforced);
+  // `consumer` would receive notifications upon authentication success/failure/
+  // triggering edge case.
+  // `safe_mode_delegate` is an interface for detecting safe mode / checking if
+  // user is indeed an owner.
+  // `user_recorder` is used during user creation of the user when
+  // challenge-response authentication is used, so that
+  // CryptohomeKeyDelegateServiceProvider would work correctly.
+  // `is_ephemeral_mount_enforced` forces usage of ephemeral mounts for all
+  // user types (including regular users and kiosks).
+  AuthSessionAuthenticator(
+      AuthStatusConsumer* consumer,
+      std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
+      base::RepeatingCallback<void(const AccountId&)> user_recorder,
+      bool is_ephemeral_mount_enforced);
 
   // Authenticator overrides.
   void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
@@ -141,7 +152,13 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   void OnUnmountForNonOwner(std::unique_ptr<UserContext> context,
                             absl::optional<CryptohomeError> error);
 
+  // Save information about user so that it can be used by
+  // `CryptohomeKeyDelegateServiceProvider`.
+  void SaveKnownUser(std::unique_ptr<UserContext> context,
+                     AuthOperationCallback callback);
+
   const bool is_ephemeral_mount_enforced_;
+  base::RepeatingCallback<void(const AccountId&)> user_recorder_;
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;

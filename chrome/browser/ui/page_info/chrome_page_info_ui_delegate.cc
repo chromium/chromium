@@ -102,7 +102,7 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
-        site_url_, web_contents_->GetMainFrame()->GetPageUkmSourceId());
+        site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
   return absl::nullopt;
 }
@@ -202,8 +202,8 @@ permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
       ->GetPermissionStatusForDisplayOnSettingsUI(type, site_url_);
 }
 
-permissions::PermissionResult ChromePageInfoUiDelegate::GetEmbargoResult(
-    ContentSettingsType type) {
+absl::optional<permissions::PermissionResult>
+ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())
       ->GetEmbargoResult(site_url_, type);

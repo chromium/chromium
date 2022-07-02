@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "base/callback.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 namespace ash {
 
@@ -24,6 +27,13 @@ class MediaAppUIDelegate {
 
   // Toggles fullscreen mode on the Browser* hosting this MediaApp instance.
   virtual void ToggleBrowserFullscreenMode() = 0;
+
+  // Launches the file represented by the provided transfer token in the Photos
+  // Android app with an intent to edit.
+  virtual void EditInPhotos(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
+      const std::string& mime_type,
+      base::OnceCallback<void()> edit_in_photos_callback) = 0;
 };
 
 }  // namespace ash

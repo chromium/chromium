@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -27,9 +28,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.mv_tiles.MostVisitedTileNavigationDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -63,7 +63,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final TasksView mView;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final TasksSurfaceMediator mMediator;
-    private QueryTileSection mQueryTileSection;
     private final PropertyModel mPropertyModel;
     private final @TabSwitcherType int mTabSwitcherType;
     private final SnackbarManager mSnackbarManager;
@@ -76,9 +75,11 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
+    private OneshotSupplier<Profile> mQueryTileProfileSupplier;
+    private QueryTileSection mQueryTileSection;
 
     /**
-     * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMVTiles} is called.
+     * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMvtiles} is called.
      */
     private boolean mIsMVTilesInitialized;
 
@@ -117,13 +118,15 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getCarouselTabSwitcherContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView);
+                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
+                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.GRID) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getBodyViewContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView);
+                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
+                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(
                     activity, mView.getCarouselTabSwitcherContainer(), tabModelSelector);
@@ -158,14 +161,18 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         if (hasQueryTiles) {
-            QueryTileSection queryTileSection =
-                    new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
-                            Profile.getLastUsedRegularProfile(), this::performSearchQuery);
+            mQueryTileProfileSupplier = new OriginalProfileSupplier();
+            mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
         }
     }
 
-    private void performSearchQuery(QueryInfo queryInfo) {
-        mMediator.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
+    private void initializeQueryTileSection(Profile profile) {
+        assert profile != null;
+
+        mQueryTileSection =
+                new QueryTileSection(mView.findViewById(R.id.query_tiles_layout), profile,
+                        query -> mMediator.performSearchQuery(query.queryText, query.searchParams));
+        mQueryTileProfileSupplier = null;
     }
 
     /**
@@ -237,10 +244,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub,
             @Nullable FeedReliabilityLogger feedReliabilityLogger) {
-        if (mTabSwitcher != null) {
-            mTabSwitcher.initWithNative(context, mTabContentManager,
-                    mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
-        }
+        if (mTabSwitcher != null) mTabSwitcher.initWithNative();
 
         mMediator.initWithNative(omniboxStub, feedReliabilityLogger);
     }
@@ -258,10 +262,10 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
-            float translationX, int buttonSize, int lensButtonLeftMargin) {
-        mView.updateFakeSearchBox(height, topMargin, endPadding, textSize, translationX, buttonSize,
-                lensButtonLeftMargin);
+    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
+            int buttonSize, int lensButtonLeftMargin) {
+        mView.updateFakeSearchBox(
+                height, topMargin, endPadding, translationX, buttonSize, lensButtonLeftMargin);
     }
 
     @Override
@@ -276,7 +280,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         if (mMostVisitedCoordinator != null) {
-            mMostVisitedCoordinator.destroyMVTiles();
+            mMostVisitedCoordinator.destroyMvtiles();
             mIsMVTilesInitialized = false;
         }
 

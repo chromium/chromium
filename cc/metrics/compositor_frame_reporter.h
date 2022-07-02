@@ -31,14 +31,16 @@ struct FrameTimingDetails;
 }
 
 namespace cc {
-class FrameSequenceTrackerCollection;
 class DroppedFrameCounter;
+class EventLatencyTracker;
+class FrameSequenceTrackerCollection;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
   raw_ptr<DroppedFrameCounter> dropped_frame_counter = nullptr;
   raw_ptr<LatencyUkmReporter> latency_ukm_reporter = nullptr;
   raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers = nullptr;
+  raw_ptr<EventLatencyTracker> event_latency_tracker = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
@@ -160,7 +162,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetLatency() const;
 
      private:
-      const ProcessedBlinkBreakdown* owner_;
+      raw_ptr<const ProcessedBlinkBreakdown> owner_;
 
       size_t index_ = 0;
     };
@@ -198,7 +200,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetDuration() const;
 
      private:
-      const ProcessedVizBreakdown* owner_;
+      raw_ptr<const ProcessedVizBreakdown> owner_;
       const bool skip_swap_start_to_swap_end_;
 
       size_t index_ = 0;
@@ -270,6 +272,8 @@ class CC_EXPORT CompositorFrameReporter {
   void SetVizBreakdown(const viz::FrameTimingDetails& viz_breakdown);
 
   void AddEventsMetrics(EventMetrics::List events_metrics);
+
+  // Erase and return all EventMetrics objects from our list.
   EventMetrics::List TakeEventsMetrics();
 
   size_t stage_history_size_for_testing() const {
@@ -324,6 +328,13 @@ class CC_EXPORT CompositorFrameReporter {
       bool is_accompanied_by_main_thread_update) {
     is_accompanied_by_main_thread_update_ =
         is_accompanied_by_main_thread_update;
+  }
+
+  void set_is_forked(bool is_forked) {
+    is_forked_ = is_forked;
+  }
+  void set_is_backfill(bool is_backfill) {
+    is_backfill_ = is_backfill;
   }
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
@@ -390,6 +401,10 @@ class CC_EXPORT CompositorFrameReporter {
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
+  // Erase and return only the EventMetrics objects which depend on main thread
+  // updates (see comments on EventMetrics::requires_main_thread_update_).
+  EventMetrics::List TakeMainBlockedEventsMetrics();
+
   // Whether UMA histograms should be reported or not.
   const bool should_report_histograms_;
 
@@ -449,6 +464,14 @@ class CC_EXPORT CompositorFrameReporter {
   // Indicates whether the submitted frame had any missing content (i.e. content
   // with checkerboarding).
   bool has_missing_content_ = false;
+
+  // Indicates whether the frame is forked (i.e. a PipelineReporter event starts
+  // at the same frame sequence as another PipelineReporter).
+  bool is_forked_ = false;
+
+  // Indicates whether the frame is backfill (i.e. dropped frames when there are
+  // no partial compositor updates).
+  bool is_backfill_ = false;
 
   // For a reporter A, if the main-thread takes a long time to respond
   // to a begin-main-frame, then all reporters created (and terminated) until

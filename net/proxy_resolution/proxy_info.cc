@@ -8,7 +8,7 @@
 
 namespace net {
 
-ProxyInfo::ProxyInfo() : did_bypass_proxy_(false) {}
+ProxyInfo::ProxyInfo() = default;
 
 ProxyInfo::ProxyInfo(const ProxyInfo& other) = default;
 

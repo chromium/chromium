@@ -18,7 +18,7 @@
 // Updates the toolbar with the current progress of the loading WebState.
 - (void)setLoadingProgressFraction:(double)progress;
 // Updates the toolbar with the current number of total tabs. If the tab is
-// added, |addedInBackground| is set to YES if the tab is added in background.
+// added, `addedInBackground` is set to YES if the tab is added in background.
 // NO otherwise.
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)addedInBackground;
 // Sets whether the voice search is enabled or not.

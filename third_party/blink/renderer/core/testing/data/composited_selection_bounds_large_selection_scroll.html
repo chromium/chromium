@@ -1,0 +1,33 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.ttf);
+    }
+    * {
+        font-family: ahem;
+        margin: 0;
+        padding: 0;
+    }
+    div.top {
+
+    }
+    div.bottom {
+      position:absolute;
+      top: 10000px;
+
+    }
+</style>
+<div class="top">top text</div>
+<div class="bottom">bottom text</div>
+
+<script>
+    document.getSelection().selectAllChildren(document.documentElement);
+    document.scrollingElement.scrollTop = 10000;
+
+    var expectEditable = false;
+    var expectEmptyTextFormControl = false;
+    var yBottomEpsilon = 2;
+    var startHidden = true;
+    var endHidden = false;
+    window.expectedResult = [null, 0, 0, 0, 0, document, 132, 10000, 132, 10012, expectEditable, expectEmptyTextFormControl, yBottomEpsilon, startHidden, endHidden, 50, 10];
+</script>

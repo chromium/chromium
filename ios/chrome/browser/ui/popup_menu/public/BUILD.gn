@@ -59,3 +59,15 @@ source_set("ui_constants") {
     "popup_menu_ui_constants.mm",
   ]
 }
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+  ]
+}

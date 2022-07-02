@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -104,9 +105,10 @@ bool IsRenderedIconSufficientlyVisible(const SkBitmap& icon,
   // Draw the icon onto a canvas, then draw the background color onto the
   // resulting bitmap, using SkBlendMode::kDifference. Then, check the RGB
   // values against the threshold. Any pixel with a value greater than the
-  // threshold is considered visible.
+  // threshold is considered visible. If analysis fails, don't render the icon.
   SkBitmap bitmap;
-  RenderIconForVisibilityAnalysis(icon, background_color, &bitmap);
+  if (!RenderIconForVisibilityAnalysis(icon, background_color, &bitmap))
+    return false;
 
   int visible_pixels = 0;
   for (int x = 0; x < icon.width(); ++x) {
@@ -123,16 +125,25 @@ bool IsRenderedIconSufficientlyVisible(const SkBitmap& icon,
   return false;
 }
 
-void RenderIconForVisibilityAnalysis(const SkBitmap& icon,
+bool RenderIconForVisibilityAnalysis(const SkBitmap& icon,
                                      SkColor background_color,
                                      SkBitmap* rendered_icon) {
   DCHECK(rendered_icon);
   DCHECK(rendered_icon->empty());
-  rendered_icon->allocN32Pixels(icon.width(), icon.height());
+  if (icon.width() * icon.height() > kMaxAllowedPixels) {
+    return false;
+  }
+  if (!rendered_icon->tryAllocN32Pixels(icon.width(), icon.height())) {
+    LOG(ERROR) << "Unable to allocate pixels for a " << icon.width() << "x"
+               << icon.height() << "icon.";
+    return false;
+  }
   rendered_icon->eraseColor(background_color);
   SkCanvas offscreen(*rendered_icon, SkSurfaceProps{});
   offscreen.drawImage(SkImage::MakeFromBitmap(icon), 0, 0);
   offscreen.drawColor(background_color, SkBlendMode::kDifference);
+
+  return true;
 }
 
 bool IsRenderedIconAtPathSufficientlyVisible(const base::FilePath& path,

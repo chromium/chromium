@@ -103,11 +103,13 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
     base::trace_event::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : FrameSchedulerImpl(parent_page_scheduler->GetMainThreadScheduler(),
                          parent_page_scheduler,
                          delegate,
                          blame_context,
+                         is_in_embedded_frame_tree,
                          frame_type) {}
 
 FrameSchedulerImpl::FrameSchedulerImpl(
@@ -115,9 +117,10 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
     base::trace_event::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : frame_type_(frame_type),
-      is_ad_frame_(false),
+      is_in_embedded_frame_tree_(is_in_embedded_frame_tree),
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
@@ -202,6 +205,7 @@ FrameSchedulerImpl::FrameSchedulerImpl()
                          /*parent_page_scheduler=*/nullptr,
                          /*delegate=*/nullptr,
                          /*blame_context=*/nullptr,
+                         /*is_in_embedded_frame_tree=*/false,
                          FrameType::kSubframe) {}
 
 namespace {
@@ -316,7 +320,7 @@ bool FrameSchedulerImpl::IsFrameVisible() const {
   return frame_visible_;
 }
 
-void FrameSchedulerImpl::SetCrossOriginToMainFrame(bool cross_origin) {
+void FrameSchedulerImpl::SetCrossOriginToNearestMainFrame(bool cross_origin) {
   DCHECK(parent_page_scheduler_);
   if (frame_origin_type_ == FrameOriginType::kMainFrame) {
     DCHECK(!cross_origin);
@@ -342,7 +346,11 @@ bool FrameSchedulerImpl::IsAdFrame() const {
   return is_ad_frame_;
 }
 
-bool FrameSchedulerImpl::IsCrossOriginToMainFrame() const {
+bool FrameSchedulerImpl::IsInEmbeddedFrameTree() const {
+  return is_in_embedded_frame_tree_;
+}
+
+bool FrameSchedulerImpl::IsCrossOriginToNearestMainFrame() const {
   return frame_origin_type_ == FrameOriginType::kCrossOriginToMainFrame;
 }
 
@@ -584,7 +592,6 @@ void FrameSchedulerImpl::DidChangeResourceLoadingPriority(
   auto queue_priority_pair =
       resource_loading_task_queue_priorities_.find(task_queue);
   if (queue_priority_pair != resource_loading_task_queue_priorities_.end()) {
-    task_queue->SetNetRequestPriority(priority);
     queue_priority_pair->value = main_thread_scheduler_->scheduling_settings()
                                      .net_to_blink_priority[priority];
     auto* voter =
@@ -624,14 +631,17 @@ blink::PageScheduler* FrameSchedulerImpl::GetPageScheduler() const {
   return parent_page_scheduler_;
 }
 
-void FrameSchedulerImpl::DidStartProvisionalLoad(bool is_main_frame) {
-  main_thread_scheduler_->DidStartProvisionalLoad(is_main_frame);
+void FrameSchedulerImpl::DidStartProvisionalLoad() {
+  main_thread_scheduler_->DidStartProvisionalLoad(
+      frame_type_ == FrameScheduler::FrameType::kMainFrame &&
+      !is_in_embedded_frame_tree_);
 }
 
 void FrameSchedulerImpl::DidCommitProvisionalLoad(
     bool is_web_history_inert_commit,
     NavigationType navigation_type) {
-  bool is_main_frame = GetFrameType() == FrameType::kMainFrame;
+  bool is_outermost_main_frame =
+      GetFrameType() == FrameType::kMainFrame && !is_in_embedded_frame_tree_;
   bool is_same_document = navigation_type == NavigationType::kSameDocument;
 
   if (!is_same_document) {
@@ -655,13 +665,13 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
     }
   }
 
-  if (is_main_frame && !is_same_document) {
+  if (is_outermost_main_frame && !is_same_document) {
     task_time_ = base::TimeDelta();
   }
 
   main_thread_scheduler_->DidCommitProvisionalLoad(
       is_web_history_inert_commit, navigation_type == NavigationType::kReload,
-      is_main_frame);
+      is_outermost_main_frame);
   if (!is_same_document)
     ResetForNavigation();
 }
@@ -735,7 +745,7 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame_visible", frame_visible_);
   dict.Add("page_visible", parent_page_scheduler_->IsPageVisible());
-  dict.Add("cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+  dict.Add("cross_origin_to_main_frame", IsCrossOriginToNearestMainFrame());
   dict.Add("frame_type", frame_type_ == FrameScheduler::FrameType::kMainFrame
                              ? "MainFrame"
                              : "Subframe");
@@ -757,10 +767,9 @@ void FrameSchedulerImpl::WriteIntoTrace(
   proto->set_frame_type(
       frame_type_ == FrameScheduler::FrameType::kMainFrame
           ? RendererMainThreadTaskExecution::FRAME_TYPE_MAIN_FRAME
-          : IsCrossOriginToMainFrame() ? RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
-                                       : RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
+      : IsCrossOriginToNearestMainFrame()
+          ? RendererMainThreadTaskExecution::FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
+          : RendererMainThreadTaskExecution::FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
   proto->set_is_ad_frame(is_ad_frame_);
 }
 
@@ -895,8 +904,10 @@ void FrameSchedulerImpl::OnDomContentLoaded() {
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
 
-  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame)
+  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
+      is_in_embedded_frame_tree_) {
     return;
+  }
 
   main_thread_scheduler_->OnMainFramePaint();
 }
@@ -944,7 +955,7 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;
-  return !frame_visible_ && IsCrossOriginToMainFrame();
+  return !frame_visible_ && IsCrossOriginToNearestMainFrame();
 }
 
 bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
@@ -1066,7 +1077,7 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   }
 
   // Frame origin type experiment.
-  if (IsCrossOriginToMainFrame()) {
+  if (IsCrossOriginToNearestMainFrame()) {
     if (main_thread_scheduler_->scheduling_settings()
             .low_priority_cross_origin ||
         (main_thread_scheduler_->scheduling_settings()

@@ -6,6 +6,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("cpp") {
   sources = [
+    "cros_network_config_observer.cc",
+    "cros_network_config_observer.h",
     "cros_network_config_util.cc",
     "cros_network_config_util.h",
   ]
@@ -28,7 +30,7 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
-    "//chromeos/network:test_support",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]

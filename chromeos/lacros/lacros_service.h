@@ -29,7 +29,6 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -206,6 +205,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
       mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver);
 
   // This may be called on any thread.
+  void BindRemoteAppsLacrosBridge(
+      mojo::PendingReceiver<
+          chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver);
+
+  // This may be called on any thread.
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
 
@@ -225,11 +229,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // BindVideoCaptureDeviceFactory() can only be used if this method returns
   // true.
   bool IsVideoCaptureDeviceFactoryAvailable() const;
-
-  // Returns BrowserInitParams which is passed from ash-chrome.
-  // TODO(crbug.com/1315921): Change init_params() to BrowserInitParams::Get()
-  // and remove this API.
-  const crosapi::mojom::BrowserInitParams* init_params() const;
 
   // Returns SystemIdleCache, which uses IdleInfoObserver to observe idle info
   // changes and caches the results. Requires IsIdleServiceAvailable() for full

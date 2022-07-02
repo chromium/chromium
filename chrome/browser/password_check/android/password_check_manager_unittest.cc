@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -22,9 +23,11 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/mock_password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -43,17 +46,21 @@ using password_manager::BulkLeakCheckService;
 using password_manager::InsecureCredential;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
+using password_manager::MockPasswordScriptsFetcher;
 using password_manager::PasswordCheckUIStatus;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using testing::_;
 using testing::AtLeast;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
 using testing::Invoke;
 using testing::IsEmpty;
+using testing::Key;
 using testing::NiceMock;
+using testing::Property;
 using testing::Return;
 
 using CompromisedCredentialForUI =
@@ -73,6 +80,28 @@ constexpr char16_t kPassword1[] = u"s3cre3t";
 
 constexpr char kTestEmail[] = "user@gmail.com";
 
+InsecureCredentialTypeFlags InsecureTypeFlagFromInsecureType(
+    InsecureType type) {
+  switch (type) {
+    case InsecureType::kLeaked:
+      return InsecureCredentialTypeFlags::kCredentialLeaked;
+    case InsecureType::kPhished:
+      return InsecureCredentialTypeFlags::kCredentialPhished;
+    case InsecureType::kWeak:
+      return InsecureCredentialTypeFlags::kWeakCredential;
+    case InsecureType::kReused:
+      return InsecureCredentialTypeFlags::kReusedCredential;
+  }
+  NOTREACHED() << "Unexpected InsecureType value";
+}
+
+MATCHER_P(MatchInsecureTypeFlag,
+          insecure_type_flag,
+          base::StrCat({negation ? "does not " : "", "match the type flag"})) {
+  return ((insecure_type_flag & InsecureTypeFlagFromInsecureType(arg)) !=
+          InsecureCredentialTypeFlags::kSecure);
+}
+
 class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
  public:
   MOCK_METHOD(void, OnSavedPasswordsFetched, (int), (override));
@@ -85,28 +114,6 @@ class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
               (override));
 
   MOCK_METHOD(void, OnPasswordCheckProgressChanged, (int, int), (override));
-};
-
-class MockPasswordScriptsFetcher
-    : public password_manager::PasswordScriptsFetcher {
- public:
-  MOCK_METHOD(void, PrewarmCache, (), (override));
-
-  MOCK_METHOD(void, RefreshScriptsIfNecessary, (base::OnceClosure), (override));
-
-  MOCK_METHOD(void,
-              FetchScriptAvailability,
-              (const url::Origin&, base::OnceCallback<void(bool)>),
-              (override));
-
-  MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
-
-  MOCK_METHOD(base::Value::Dict,
-              GetDebugInformationForInternals,
-              (),
-              (const override));
-
-  MOCK_METHOD(base::Value::List, GetCacheEntries, (), (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
@@ -200,7 +207,13 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
       Field(&CompromisedCredentialForUI::url, url), package_name_field_matcher,
       change_password_url_field_matcher,
-      Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
+      Field(&CompromisedCredentialForUI::password_issues,
+            Each(Key(MatchInsecureTypeFlag(insecure_type)))),
+      Property(&CompromisedCredentialForUI::IsLeaked,
+               insecure_type == InsecureCredentialTypeFlags::kCredentialLeaked),
+      Property(
+          &CompromisedCredentialForUI::IsPhished,
+          insecure_type == InsecureCredentialTypeFlags::kCredentialPhished),
       Field(&CompromisedCredentialForUI::has_startable_script,
             has_startable_script),
       Field(&CompromisedCredentialForUI::has_auto_change_button,

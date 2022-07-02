@@ -230,14 +230,14 @@ using signin_metrics::PromoAction;
 #pragma mark - SigninCoordinator
 
 - (void)start {
-  // |signinCompletion| needs to be set by the owner to know when the sign-in
+  // `signinCompletion` needs to be set by the owner to know when the sign-in
   // is finished.
   DCHECK(self.signinCompletion);
 }
 
 - (void)stop {
   // If you are an user of a SigninCoordinator subclass:
-  // The sign-in view is still presented. You should not call |stop|, if you
+  // The sign-in view is still presented. You should not call `stop`, if you
   // need to close the view. You need to call -[SigninCoordinator
   // interruptWithAction:completion:].
   // If you work on a SigninCoordinator subclass:
@@ -253,17 +253,17 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                completionInfo:
                                    (SigninCompletionInfo*)completionInfo {
-  // |identity| is set, only and only if the sign-in is successful.
+  // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
           completionInfo.identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) &&
           !completionInfo.identity));
-  // If |self.signinCompletion| is nil, this method has been probably called
+  // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   DCHECK(self.signinCompletion);
   SigninCoordinatorCompletionCallback signinCompletion = self.signinCompletion;
   // The owner should call the stop method, during the callback.
-  // |self.signinCompletion| needs to be set to nil before calling it.
+  // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
   signinCompletion(signinResult, completionInfo);
 }

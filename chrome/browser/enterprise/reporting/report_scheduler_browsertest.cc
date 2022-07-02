@@ -59,6 +59,7 @@ class ReportSchedulerTest
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<ChromeBrowserExtraSetUp>(this));
   }
@@ -99,7 +100,7 @@ class ReportSchedulerTest
   base::test::ScopedFeatureList scoped_feature_list_;
   policy::FakeBrowserDMTokenStorage storage_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  ReportScheduler* report_scheduler_;
+  raw_ptr<ReportScheduler> report_scheduler_;
   bool has_cloud_reporting_launched = false;
 };
 

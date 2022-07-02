@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
@@ -56,7 +58,7 @@ public class SigninCheckerTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -78,20 +80,18 @@ public class SigninCheckerTest {
     @FlakyTest(message = "https://crbug.com/1205346")
     public void signinWhenPrimaryAccountIsRenamedToAKnownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
+        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final String newAccountEmail = "test.new.account@gmail.com";
         when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
                 .thenReturn(newAccountEmail);
-        final CoreAccountInfo expectedPrimaryAccount =
-                mAccountManagerTestRule.addAccount(newAccountEmail);
+        final CoreAccountInfo expectedPrimaryAccount = mSigninTestRule.addAccount(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
-                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
     }
 
@@ -100,21 +100,20 @@ public class SigninCheckerTest {
     @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountIsRenamedToAnUnknownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
+        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final String newAccountEmail = "test.new.account@gmail.com";
         when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
                 .thenReturn(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
     @Test
@@ -122,18 +121,17 @@ public class SigninCheckerTest {
     @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountIsRemoved() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount =
-                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
+        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
     @Test
@@ -141,10 +139,10 @@ public class SigninCheckerTest {
     @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountWithoutSyncConsentIsRemoved() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount = mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
+        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSignin();
 
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
@@ -155,16 +153,17 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
         final CoreAccountInfo expectedPrimaryAccount =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+                mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
-                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
         Assert.assertEquals(
                 3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
@@ -181,13 +180,13 @@ public class SigninCheckerTest {
         UserActionTester actionTester = new UserActionTester();
 
         final CoreAccountInfo expectedPrimaryAccount =
-                mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+                mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
-                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertEquals(
                 3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
@@ -203,14 +202,14 @@ public class SigninCheckerTest {
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
 
         // The check should be done twice, once at activity start-up, the other when account
         // is added.
         CriteriaHelper.pollUiThread(() -> {
             return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -222,8 +221,8 @@ public class SigninCheckerTest {
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
         // test case therefore is not currently hittable on a real device; however it is included
         // here for completeness.
-        mAccountManagerTestRule.addAccount("the.default.account@gmail.com");
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccount("the.default.account@gmail.com");
+        mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -232,7 +231,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -241,15 +240,14 @@ public class SigninCheckerTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1293942")
     public void signinWhenChildAccountIsFirstAccount() {
-        final CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
-        mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
+        final CoreAccountInfo childAccount = mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccount("the.second.account@gmail.com");
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
         CriteriaHelper.pollUiThread(() -> {
-            return childAccount.equals(
-                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+            return childAccount.equals(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
 
         // The check should be done once at account addition and once at activity start-up.

@@ -30,6 +30,11 @@ const char kHistogramPrerenderCumulativeShiftScore[] =
 const char kHistogramPrerenderCumulativeShiftScoreMainFrame[] =
     "PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore."
     "MainFrame";
+const char
+    kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
+        [] = "PageLoad.Clients.Prerender.LayoutInstability."
+             "MaxCumulativeShiftScore.SessionWindow."
+             "Gap1000ms.Max5000ms2";
 
 }  // namespace internal
 
@@ -122,10 +127,15 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
   }
+
+  base::TimeDelta first_input_delay =
+      timing.interactive_timing->first_input_delay.value();
   base::UmaHistogramCustomTimes(
       AppendSuffix(internal::kHistogramPrerenderFirstInputDelay4),
-      timing.interactive_timing->first_input_delay.value(),
-      base::Milliseconds(1), base::Seconds(60), 50);
+      first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetInteractiveTiming_FirstInputDelay4(first_input_delay.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void PrerenderPageLoadMetricsObserver::OnComplete(
@@ -149,6 +159,7 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
     return;
   }
 
+  // Records Largest Contentful Paint (LCP) to UMA and UKM.
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
       GetDelegate()
           .GetLargestContentfulPaintHandler()
@@ -169,6 +180,7 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
         .Record(ukm::UkmRecorder::Get());
   }
 
+  // Records Cumulative Layout Shift Score (CLS) to UMA and UKM.
   base::UmaHistogramCounts100(
       AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScore),
       page_load_metrics::LayoutShiftUmaValue(
@@ -177,6 +189,24 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
       AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScoreMainFrame),
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (!normalized_cls_data.data_tainted) {
+    page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+        AppendSuffix(
+            internal::
+                kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
+        normalized_cls_data);
+    const float max_cls =
+        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+    ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(max_cls))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 std::string PrerenderPageLoadMetricsObserver::AppendSuffix(

@@ -6,6 +6,7 @@ module chromeos.remote_apps.mojom;
 
 import "url/mojom/url.mojom";
 
+[Stable]
 union AddFolderResult {
   // The ID of the added folder. Implies success.
   string folder_id;
@@ -14,6 +15,7 @@ union AddFolderResult {
   string error;
 };
 
+[Stable]
 union AddAppResult {
   // The ID of the added app. Implies success.
   string app_id;
@@ -23,7 +25,8 @@ union AddAppResult {
 };
 
 // Interface for communication between an extension and the Remote Apps
-// Manager.
+// Manager or |RemoteAppsProxyLacros|.
+[Stable]
 interface RemoteApps {
   // Adds a Remote Apps folder to the launcher. Empty folders are not shown in
   // the launcher.
@@ -37,7 +40,7 @@ interface RemoteApps {
   // - |result|: A union with |folder_id| representing the ID of the added
   //             folder on success, and |error| representing the error message
   //             on failure.
-  AddFolder(string name,
+  AddFolder@0(string name,
             bool add_to_front) => (AddFolderResult result);
 
   // Adds a Remote Apps app to the launcher.
@@ -56,7 +59,7 @@ interface RemoteApps {
   // - |result|: A union with |app_id| representing the ID of the added app on
   //             success, and |error| representing the error message on
   //             failure.
-  AddApp(string source_id,
+  AddApp@1(string source_id,
          string name,
          string folder_id,
          url.mojom.Url icon_url,
@@ -69,22 +72,35 @@ interface RemoteApps {
   //
   // Output parameters:
   // - |error|: A string describing the error if any.
-  DeleteApp(string app_id) => (string? error);
+  DeleteApp@2(string app_id) => (string? error);
 };
 
-// Factory for creating an instance of RemoteApps.
+// Factory for creating an instance of |RemoteApps|.
+[Stable]
 interface RemoteAppsFactory {
-  // Binds to the Profile's RemoteApps implementation. The JS bindings manages
-  // |source_id| and passes the extension ID.
-  Get(string source_id,
+  // Binds to the Profile's |RemoteApps| implementation. The
+  // |OnRemoteAppLaunched| event is only dispatched to the observer associated
+  // with the source which added the app.
+  BindRemoteAppsAndAppLaunchObserver@0(string source_id,
+         pending_receiver<RemoteApps> remote_apps,
+         pending_remote<RemoteAppLaunchObserver> observer);
+};
+
+// Bridge for binding the |RemoteApps| interfaces from Lacros to Ash. Used by
+// |RemoteAppsProxyLacros|.
+[Stable, Uuid="80d5b638-317b-4e9c-b8fc-5ecfa7ec5f30"]
+interface RemoteAppsLacrosBridge {
+  // Binds to the |RemoteApps| implementation in Ash. All |OnRemoteAppLaunched|
+  // events will be dispatched to the observer.
+  BindRemoteAppsAndAppLaunchObserverForLacros@0(
          pending_receiver<RemoteApps> remote_apps,
          pending_remote<RemoteAppLaunchObserver> observer);
 };
 
 // A RemoteAppLaunchObserver gets notifications when a remote app is launched.
+[Stable]
 interface RemoteAppLaunchObserver {
-  // Invoked when a remote app is launched. |app_id| is the ID of the app
-  // which was launched. The event is only dispatched to the extension which
-  // added the app.
-  OnRemoteAppLaunched(string app_id);
+  // Invoked when a remote app is launched. |app_id| is the ID of the app which
+  // was launched. |source_id| is the same ID passed to the |AddApp()| method.
+  OnRemoteAppLaunched@0(string app_id, string source_id);
 };

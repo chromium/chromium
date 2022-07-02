@@ -12,7 +12,7 @@
 // test code.
 @interface FirstRunAppInterface : NSObject
 
-// Resets the UMA collection enabled pref to |enabled|.
+// Resets the UMA collection enabled pref to `enabled`.
 + (void)setUMACollectionEnabled:(BOOL)enabled;
 
 // Returns whether UMA collection is enabled.

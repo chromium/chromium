@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.webkit.JavascriptInterface;
 
@@ -27,12 +26,12 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -387,7 +386,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiated() throws Throwable {
         runPopupUserGestureTest(true);
     }
@@ -395,7 +393,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiatedNoOpener() throws Throwable {
         runPopupUserGestureTest(false);
     }
@@ -424,7 +421,7 @@ public class PopupWindowTest {
         TestAwContentsClient.OnCreateWindowHelper onCreateWindowHelper =
                 mParentContentsClient.getOnCreateWindowHelper();
         int currentCallCount = onCreateWindowHelper.getCallCount();
-        DOMUtils.clickNode(mParentContents.getWebContents(), "link");
+        JSUtils.clickNodeWithUserGesture(mParentContents.getWebContents(), "link");
         onCreateWindowHelper.waitForCallback(
                 currentCallCount, 1, AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
@@ -579,6 +576,13 @@ public class PopupWindowTest {
         Assert.assertNotNull("rect should not be null", rect);
         Assert.assertNotNull("mainFrameReplyProxy should not be null.", mainFrameReplyProxy);
         Assert.assertNotNull("iframeReplyProxy should not be null.", iframeReplyProxy);
+
+        // Wait for the page to finish rendering entirely before
+        // attempting to click the iframe_link
+        // We need this because we're using the DOMUtils
+        // Long term we plan to switch to JSUtils to avoid this
+        // https://crbug.com/1334843
+        mParentContentsClient.getOnPageCommitVisibleHelper().waitForFirst();
 
         // Step 4. Click iframe_link to give user gesture.
         DOMUtils.clickRect(mParentContents.getWebContents(), rect);

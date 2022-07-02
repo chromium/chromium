@@ -25,12 +25,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -46,7 +46,7 @@ public class SigninHeaderTest {
             ContextUtils.getApplicationContext().getPackageName();
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -76,7 +76,7 @@ public class SigninHeaderTest {
         CommandLine.getInstance().appendSwitchWithValue(
                 "gaia-url", mEmbeddedTestServerRule.getServer().getURL("/"));
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
 
         mGAIAUrl = mEmbeddedTestServerRule.getServer().getURL("/echoheader?X-Chrome-Connected");
     }
@@ -97,7 +97,7 @@ public class SigninHeaderTest {
     @MediumTest
     public void testXChromeConnectedHeader_In_CCT_ReturnsModeValueWithIncognitoOff()
             throws TimeoutException {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 ContextUtils.getApplicationContext(), mGAIAUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();

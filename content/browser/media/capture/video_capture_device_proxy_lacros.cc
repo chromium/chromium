@@ -78,7 +78,8 @@ VideoCaptureDeviceProxyLacros::VideoCaptureDeviceProxyLacros(
 
 VideoCaptureDeviceProxyLacros::~VideoCaptureDeviceProxyLacros() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!receiver_) << "StopAndDeAllocate() was never called after start.";
+  DCHECK(!receiver_adapter_)
+      << "StopAndDeAllocate() was never called after start.";
 }
 
 void VideoCaptureDeviceProxyLacros::AllocateAndStartWithReceiver(
@@ -121,22 +122,15 @@ void VideoCaptureDeviceProxyLacros::AllocateAndStartWithReceiver(
   // outstanding query and respond accordingly.
   device_.QueryVersion(base::DoNothing());
 
-  // TODO(https://crbug.com/1295955): Create a class to do a direct adaption
-  // from media::VideoFrameReceiver to crosapi::mojom::VideoFrameHandler, rather
-  // than gluing a ReceiverMediaToMojoAdapter and a VideoFrameHandlerProxyLacros
-  // together.
-  mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
-      pending_handler_remote_proxy;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(
-          std::move(receiver)),
-      pending_handler_remote_proxy.InitWithNewPipeAndPassReceiver());
-
+  // Adapt the media::VideoFrameReceiver we've received to a
+  // crosapi::mojom::VideoFrameHandler remote that we can pass over crosapi to
+  // let ash-chrome pass us captured frames.
   mojo::PendingRemote<crosapi::mojom::VideoFrameHandler>
       pending_crosapi_remote_proxy;
-  receiver_ = std::make_unique<video_capture::VideoFrameHandlerProxyLacros>(
-      pending_crosapi_remote_proxy.InitWithNewPipeAndPassReceiver(),
-      std::move(pending_handler_remote_proxy));
+  receiver_adapter_ =
+      std::make_unique<video_capture::ReceiverMediaToCrosapiAdapter>(
+          pending_crosapi_remote_proxy.InitWithNewPipeAndPassReceiver(),
+          std::move(receiver));
 
   device_->Start(params, std::move(pending_crosapi_remote_proxy));
 
@@ -185,7 +179,7 @@ void VideoCaptureDeviceProxyLacros::StopAndDeAllocate() {
   }
 
   device_.reset();
-  receiver_.reset();
+  receiver_adapter_.reset();
 }
 
 void VideoCaptureDeviceProxyLacros::GetPhotoState(
@@ -224,10 +218,11 @@ void VideoCaptureDeviceProxyLacros::OnFatalError(std::string message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   fatal_error_message_ = std::move(message);
-  if (receiver_) {
-    receiver_->OnLog(*fatal_error_message_);
-    receiver_->OnError(media::VideoCaptureError::
-                           kLacrosVideoCaptureDeviceProxyEncounteredFatalError);
+  if (receiver_adapter_) {
+    receiver_adapter_->OnLog(*fatal_error_message_);
+    receiver_adapter_->OnError(
+        media::VideoCaptureError::
+            kLacrosVideoCaptureDeviceProxyEncounteredFatalError);
   }
 
   StopAndDeAllocate();

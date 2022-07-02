@@ -16,8 +16,7 @@
 #include "net/ntlm/ntlm_buffer_writer.h"
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 // Parses the challenge message and returns the |challenge_flags| and
@@ -395,5 +394,4 @@ size_t NtlmClient::GetNtlmResponseLength(size_t updated_target_info_len) const {
   return kResponseLenV1;
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

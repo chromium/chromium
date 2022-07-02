@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
 
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIconTest', function() {
   /** @type {!NetworkList|undefined} */
@@ -17,7 +15,7 @@ suite('NetworkIconTest', function() {
   let mojom;
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -27,7 +25,7 @@ suite('NetworkIconTest', function() {
     networkIcon = document.createElement('network-icon');
     document.body.appendChild(networkIcon);
     assertTrue(!!networkIcon);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Display locked cellular icon', async function() {

@@ -46,6 +46,14 @@ void BluetoothDelegateImpl::ShowDeviceCredentialsPrompt(
                                                 std::move(callback));
 }
 
+void BluetoothDelegateImpl::ShowDevicePairConfirmPrompt(
+    RenderFrameHost* frame,
+    const std::u16string& device_identifier,
+    PairConfirmCallback callback) {
+  client_->ShowBluetoothDevicePairConfirmDialog(frame, device_identifier,
+                                                std::move(callback));
+}
+
 WebBluetoothDeviceId BluetoothDelegateImpl::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,
     const std::string& device_address) {

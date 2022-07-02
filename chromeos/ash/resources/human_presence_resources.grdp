@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_HUMAN_PRESENCE_INTERNALS_HTML" file="../components/human_presence/resources/human_presence_internals.html" type="BINDATA" />
+  <include name="IDR_HUMAN_PRESENCE_INTERNALS_CSS" file="../components/human_presence/resources/human_presence_internals.css" type="BINDATA" />
+  <include name="IDR_HUMAN_PRESENCE_INTERNALS_ICON" file="../components/human_presence/resources/human_presence_internals_icon.svg" type="BINDATA" />
+  <include name="IDR_HUMAN_PRESENCE_INTERNALS_JS"
+      file="${root_gen_dir}/chromeos/ash/components/human_presence/resources/human_presence_internals.js"
+      resource_path="chromeos/ash/components/human_presence/resources/human_presence_internals.js"
+      use_base_dir="false"
+      type="BINDATA" />
+</grit-part>

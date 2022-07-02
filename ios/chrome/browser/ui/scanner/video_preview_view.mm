@@ -56,7 +56,7 @@
       CGRectMakeCenteredRectInFrame(self.frame.size, _viewportSize);
   AVCaptureVideoPreviewLayer* layer = [self previewLayer];
   // If the layer does not have a connection,
-  // |metadataOutputRectOfInterestForRect:| does not return the right value.
+  // `metadataOutputRectOfInterestForRect:` does not return the right value.
   DCHECK(layer.connection);
   return [layer metadataOutputRectOfInterestForRect:viewportRect];
 }

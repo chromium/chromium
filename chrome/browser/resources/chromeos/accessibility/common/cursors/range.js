@@ -204,6 +204,7 @@ cursors.Range = class {
         newEnd = newStart.move(unit, cursors.Movement.BOUND, Dir.FORWARD);
         break;
       case cursors.Unit.NODE:
+      case cursors.Unit.GESTURE_NODE:
         newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
         newEnd = newStart;
         break;
@@ -318,8 +319,8 @@ cursors.Range = class {
         return cursors.Range.fromNode(newNode);
       case cursors.Unit.TEXT:
       case cursors.Unit.NODE:
-        const pred = unit === cursors.Unit.TEXT ? AutomationPredicate.leaf :
-                                                  AutomationPredicate.object;
+      case cursors.Unit.GESTURE_NODE:
+        const pred = cursors.Cursor.getLeafPredForUnit(unit);
         let node;
         if (dir === Dir.FORWARD) {
           node = AutomationUtil.findNextNode(

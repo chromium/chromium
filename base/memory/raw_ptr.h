@@ -36,10 +36,11 @@
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/check_op.h"
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
+#include "base/win/win_handle_types.h"
 #endif
 
 namespace cc {
@@ -60,6 +61,14 @@ namespace base {
 namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
+
+// This type trait verifies a type can be used as a pointer offset.
+//
+// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
+// Smaller types are also allowed.
+template <typename Z>
+static constexpr bool offset_type =
+    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
 
 struct RawPtrNoOpImpl {
   // Wraps a pointer.
@@ -103,9 +112,11 @@ struct RawPtrNoOpImpl {
     return wrapped_ptr;
   }
 
-  // Advance the wrapped pointer by |delta| bytes.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  // Advance the wrapped pointer by `delta_elems`.
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
@@ -150,8 +161,8 @@ struct MTECheckedPtrImplPartitionAllocSupport {
     // allocated by PartitionAlloc, from normal buckets pool.
     //
     // TODO(crbug.com/1307514): Allow direct-map buckets.
-    return IsManagedByPartitionAlloc(as_uintptr) &&
-           IsManagedByNormalBuckets(as_uintptr);
+    return partition_alloc::IsManagedByPartitionAlloc(as_uintptr) &&
+           partition_alloc::internal::IsManagedByNormalBuckets(as_uintptr);
   }
 
   // Returns pointer to the tag that protects are pointed by |ptr|.
@@ -244,10 +255,12 @@ struct MTECheckedPtrImpl {
     return static_cast<To*>(wrapped_ptr);
   }
 
-  // Advance the wrapped pointer by |delta| bytes.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elem) {
-    return wrapped_ptr + delta_elem;
+  // Advance the wrapped pointer by `delta_elems`.
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr + delta_elems;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion
@@ -294,7 +307,8 @@ struct BackupRefPtrImpl {
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
     // This covers the nullptr case, as address 0 is never in GigaCage.
-    bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
+    bool is_in_brp_pool =
+        partition_alloc::IsManagedByPartitionAllocBRPPool(address);
 
     // There are many situations where the compiler can prove that
     // ReleaseWrappedPtr is called on a value that is always nullptr, but the
@@ -355,7 +369,8 @@ struct BackupRefPtrImpl {
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
     else {
-      AddressPoolManagerBitmap::BanSuperPageFromBRPPool(address);
+      partition_alloc::internal::AddressPoolManagerBitmap::
+          BanSuperPageFromBRPPool(address);
     }
 #endif
 
@@ -419,15 +434,17 @@ struct BackupRefPtrImpl {
     return wrapped_ptr;
   }
 
-  // Advance the wrapped pointer by |delta| bytes.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elem) {
+  // Advance the wrapped pointer by `delta_elems`.
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
-      CHECK(IsValidDelta(address, delta_elem * sizeof(T)));
+      CHECK(IsValidDelta(address, delta_elems * sizeof(T)));
 #endif
-    T* new_wrapped_ptr = WrapRawPtr(wrapped_ptr + delta_elem);
+    T* new_wrapped_ptr = WrapRawPtr(wrapped_ptr + delta_elems);
     ReleaseWrappedPtr(wrapped_ptr);
     return new_wrapped_ptr;
   }
@@ -454,8 +471,17 @@ struct BackupRefPtrImpl {
   static BASE_EXPORT NOINLINE void AcquireInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE void ReleaseInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE bool IsPointeeAlive(uintptr_t address);
-  static BASE_EXPORT NOINLINE bool IsValidDelta(uintptr_t address,
-                                                ptrdiff_t delta_in_bytes);
+  template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE bool IsValidDelta(uintptr_t address, Z delta_in_bytes) {
+    if constexpr (std::is_signed_v<Z>)
+      return IsValidSignedDelta(address, ptrdiff_t{delta_in_bytes});
+    else
+      return IsValidUnsignedDelta(address, size_t{delta_in_bytes});
+  }
+  static BASE_EXPORT NOINLINE bool IsValidSignedDelta(uintptr_t address,
+                                                      ptrdiff_t delta_in_bytes);
+  static BASE_EXPORT NOINLINE bool IsValidUnsignedDelta(uintptr_t address,
+                                                        size_t delta_in_bytes);
 };
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -506,9 +532,11 @@ struct AsanBackupRefPtrImpl {
     return wrapped_ptr;
   }
 
-  // Advance the wrapped pointer by |delta| bytes.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  // Advance the wrapped pointer by `delta_elems`.
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
@@ -654,7 +682,9 @@ using RawPtrMayDangle = internal::RawPtrNoOpImpl;
 using RawPtrBanDanglingIfSupported = internal::RawPtrNoOpImpl;
 #endif
 
-template <typename T, typename Impl = RawPtrBanDanglingIfSupported>
+using DefaultRawPtrImpl = RawPtrBanDanglingIfSupported;
+
+template <typename T, typename Impl = DefaultRawPtrImpl>
 class TRIVIAL_ABI GSL_POINTER raw_ptr {
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
@@ -844,11 +874,15 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     --(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr& operator+=(ptrdiff_t delta_elems) {
+  template <typename Z,
+            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator-=(ptrdiff_t delta_elems) {
+  template <typename Z,
+            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
     return *this += -delta_elems;
   }
 
@@ -1047,6 +1081,37 @@ ALWAYS_INLINE bool operator>=(const raw_ptr<U, I>& lhs,
   return lhs.GetForComparison() >= rhs.GetForComparison();
 }
 
+// Template helpers for working with T* or raw_ptr<T>.
+template <typename T>
+struct IsPointer : std::false_type {};
+
+template <typename T>
+struct IsPointer<T*> : std::true_type {};
+
+template <typename T, typename I>
+struct IsPointer<raw_ptr<T, I>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool IsPointerV = IsPointer<T>::value;
+
+template <typename T>
+struct RemovePointer {
+  using type = T;
+};
+
+template <typename T>
+struct RemovePointer<T*> {
+  using type = T;
+};
+
+template <typename T, typename I>
+struct RemovePointer<raw_ptr<T, I>> {
+  using type = T;
+};
+
+template <typename T>
+using RemovePointerT = typename RemovePointer<T>::type;
+
 }  // namespace base
 
 using base::raw_ptr;
@@ -1061,6 +1126,47 @@ using base::raw_ptr;
 // When using it, please provide a justification about what guarantees it will
 // never be dereferenced after becoming dangling.
 using DisableDanglingPtrDetection = base::RawPtrMayDangle;
+
+// See https://cbug.com/1291138.
+// Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
+// occurrences are meant to be removed.
+using DanglingUntriaged = DisableDanglingPtrDetection;
+
+// The following template parameters are only meaningful when `raw_ptr`
+// is `MTECheckedPtr` (never the case unless a particular GN arg is set
+// true.) `raw_ptr` users need not worry about this and can refer solely
+// to `DisableDanglingPtrDetection` and `DanglingUntriaged` above.
+//
+// The `raw_ptr` definition allows users to specify an implementation.
+// When `MTECheckedPtr` is in play, we need to augment this
+// implementation setting with another layer that allows the `raw_ptr`
+// to degrade into the no-op version.
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
+// Direct pass-through to no-op implementation.
+using DegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+
+// As above, but with the "untriaged dangling" annotation.
+using DanglingUntriagedDegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+
+// As above, but with the "explicitly disable protection" annotation.
+using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
+    base::internal::RawPtrNoOpImpl;
+
+#else
+
+// Direct pass-through to default implementation specified by `raw_ptr`
+// template.
+using DegradeToNoOpWhenMTE = base::RawPtrBanDanglingIfSupported;
+
+// Direct pass-through to `DanglingUntriaged`.
+using DanglingUntriagedDegradeToNoOpWhenMTE = DanglingUntriaged;
+
+// Direct pass-through to `DisableDanglingPtrDetection`.
+using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
+    DisableDanglingPtrDetection;
+
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 namespace std {
 

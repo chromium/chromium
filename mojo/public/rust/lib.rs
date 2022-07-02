@@ -4,6 +4,8 @@
 
 #![feature(maybe_uninit_slice)]
 #![feature(new_uninit)]
+// Require unsafe blocks for unsafe operations even in an unsafe fn.
+#![deny(unsafe_op_in_unsafe_fn)]
 
 #[macro_use]
 mod macros {
@@ -34,88 +36,6 @@ mod macros {
                 }
             }
         };
-    }
-
-    /// This macro assists in generating flags for
-    /// functions and methods found in mojo::system::message_pipe.
-    ///
-    /// See mojo::system::message_pipe for the available flags
-    /// that may be passed.
-    ///
-    /// # Examples
-    ///
-    /// # mpflags!(Create::None);
-    /// # mpflags!(Read::MayDiscard);
-    #[macro_export]
-    macro_rules! mpflags {
-        ( $( $flag:path ),* ) => {{
-            use $crate::system::message_pipe::*;
-            $(
-                ($flag as u32)
-            )|*
-        }}
-    }
-
-    /// This macro assists in generating flags for
-    /// functions and methods found in mojo::system::data_pipe.
-    ///
-    /// See mojo::system::data_pipe for the available flags
-    /// that may be passed.
-    ///
-    /// # Examples
-    ///
-    /// # dpflags!(Create::None);
-    /// # dpflags!(Read::AllOrNone, Read::Discard);
-    #[macro_export]
-    macro_rules! dpflags {
-        ( $( $flag:path ),* ) => {{
-            use $crate::system::data_pipe::*;
-            $(
-                ($flag as u32)
-            )|*
-        }}
-    }
-
-    /// This macro assists in generating flags for
-    /// functions and methods found in mojo::system::shared_buffer.
-    ///
-    /// See mojo::system::shared_buffer for the available flags
-    /// that may be passed.
-    ///
-    /// # Examples
-    ///
-    /// # sbflags!(Create::None);
-    /// # sbflags!(Map::None);
-    #[macro_export]
-    macro_rules! sbflags {
-        ( $( $flag:path ),* ) => {{
-            use $crate::system::shared_buffer::*;
-            $(
-                ($flag as u32)
-            )|*
-        }}
-    }
-
-    /// This macro assists in generating MojoSignals to be
-    /// used in wait() and wait_many(), part of mojo::system::core.
-    ///
-    /// See mojo::system::handle for the available signals
-    /// that may be checked for by wait() and wait_many().
-    ///
-    /// # Examples
-    ///
-    /// # signals!(Signals::Readable, Signals::Writable);
-    /// # signals!(Signals::PeerClosed);
-    #[macro_export]
-    macro_rules! signals {
-        ( $( $flag:path ),* ) => {{
-            use $crate::system::Signals;
-            $crate::system::HandleSignals::new(
-            $(
-                ($flag as u32)
-            )|*
-            )
-        }}
     }
 }
 

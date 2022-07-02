@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
+#include "components/autofill_assistant/browser/js_flow_devtools_wrapper.h"
 #include "components/autofill_assistant/browser/js_flow_executor.h"
 
 namespace autofill_assistant {
@@ -20,8 +22,9 @@ namespace autofill_assistant {
 // native actions to be performed by its delegate.
 class JsFlowExecutorImpl : public JsFlowExecutor {
  public:
-  // |delegate| must outlive the JsFlowExecutorImpl.
-  JsFlowExecutorImpl(content::WebContents* web_contents, Delegate* delegate);
+  // |delegate| and |devtools_wrapper| must outlive the JsFlowExecutorImpl.
+  JsFlowExecutorImpl(Delegate* delegate,
+                     JsFlowDevtoolsWrapper* js_flow_devtools_wrapper);
   ~JsFlowExecutorImpl() override;
   JsFlowExecutorImpl(const JsFlowExecutorImpl&) = delete;
   JsFlowExecutorImpl& operator=(const JsFlowExecutorImpl&) = delete;
@@ -74,12 +77,10 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
                  result_callback) override;
 
  private:
-  void InternalStart();
-  void OnGetFrameTree(const DevtoolsClient::ReplyStatus& reply_status,
-                      std::unique_ptr<page::GetFrameTreeResult> result);
-  void IsolatedWorldCreated(
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<page::CreateIsolatedWorldResult> result);
+  void InternalStart(const ClientStatus& status,
+                     DevtoolsClient* devtools_client,
+                     const int isolated_world_context_id);
+
   void RefreshNativeActionPromise();
   void OnNativeActionRequested(const DevtoolsClient::ReplyStatus& reply_status,
                                std::unique_ptr<runtime::EvaluateResult> result);
@@ -118,11 +119,12 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
     return true;
   }
 
-  Delegate* const delegate_;
-  std::unique_ptr<DevtoolsClient> devtools_client_;
-  int isolated_world_context_id_ = -1;
+  const raw_ptr<Delegate> delegate_;
+  raw_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
 
   // Only set during a flow.
+  raw_ptr<DevtoolsClient> devtools_client_;
+  int isolated_world_context_id_ = -1;
   std::unique_ptr<std::string> js_flow_;
   base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>
       callback_;

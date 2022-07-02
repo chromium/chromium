@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -37,7 +38,9 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -51,6 +54,20 @@ constexpr size_t kMaxBufferLength = 16 * 1024 * 1024;
 constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 }  // namespace
+
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest() {
+  return base::ScopedClosureRunner(WTF::Bind([]() {
+    // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
+    //
+    // Multiple GCs may be required to ensure everything is collected (due to
+    // a chain of persistent handles), so some objects may not be collected
+    // until a subsequent iteration. This is slow enough as is, so we compromise
+    // on one major GC, as opposed to the 5 used in V8GCController for unit
+    // tests.
+    V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+        v8::Isolate::kFullGarbageCollection);
+  }));
+}
 
 FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}
 

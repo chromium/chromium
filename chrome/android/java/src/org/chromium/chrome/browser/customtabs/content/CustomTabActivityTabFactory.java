@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -56,9 +55,6 @@ public class CustomTabActivityTabFactory {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
 
-    @Nullable
-    private final StartupTabPreloader mStartupTabPreloader;
-
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
     @Nullable
@@ -71,7 +67,6 @@ public class CustomTabActivityTabFactory {
             Lazy<ActivityWindowAndroid> activityWindowAndroid,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             BrowserServicesIntentDataProvider intentDataProvider,
-            @Nullable StartupTabPreloader startupTabPreloader,
             Lazy<AsyncTabParamsManager> asyncTabParamsManager, TabCreatorManager tabCreatorManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
@@ -81,7 +76,6 @@ public class CustomTabActivityTabFactory {
         mActivityWindowAndroid = activityWindowAndroid;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mIntentDataProvider = intentDataProvider;
-        mStartupTabPreloader = startupTabPreloader;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabCreatorManager = tabCreatorManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -131,7 +125,7 @@ public class CustomTabActivityTabFactory {
     }
 
     private ChromeTabCreator createTabCreator(boolean incognito) {
-        return new ChromeTabCreator(mActivity, mActivityWindowAndroid.get(), mStartupTabPreloader,
+        return new ChromeTabCreator(mActivity, mActivityWindowAndroid.get(),
                 mCustomTabDelegateFactory::get, incognito, null,
                 AsyncTabParamsManagerSingleton.getInstance(), mTabModelSelectorSupplier,
                 mCompositorViewHolderSupplier);

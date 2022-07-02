@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   // Install version 1 of the extension.
-  ExtensionTestMessageListener listener1("v1 installed", false);
+  ExtensionTestMessageListener listener1("v1 installed");
   ExtensionService* service = extension_service();
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ASSERT_EQ("1.0", extension->VersionString());
 
   // Run autoupdate and make sure version 2 of the extension was installed.
-  ExtensionTestMessageListener listener2("v2 installed", false);
+  ExtensionTestMessageListener listener2("v2 installed");
 
   extensions::TestExtensionRegistryObserver install_observer(registry);
   NotificationListener notification_listener;
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
   // Install version 1 of the extension.
-  ExtensionTestMessageListener listener1("v1 installed", false);
+  ExtensionTestMessageListener listener1("v1 installed");
   ExtensionService* service = extension_service();
   ExtensionRegistry* registry = extension_registry();
   const size_t enabled_size_before = registry->enabled_extensions().size();
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_EQ("ogjcoiohnmldgjemafoockdghcjciccf", extension->id());
   ASSERT_EQ("1.0", extension->VersionString());
 
-  ExtensionTestMessageListener listener2("v2 installed", false);
+  ExtensionTestMessageListener listener2("v2 installed");
   extensions::TestExtensionRegistryObserver install_observer(registry);
   // Run autoupdate and make sure version 2 of the extension was installed but
   // is still disabled.
@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   EXPECT_EQ(0u, registry->disabled_extensions().size());
 
   // Now try to disable it through the management api, again failing.
-  ExtensionTestMessageListener listener1("ready", false);
+  ExtensionTestMessageListener listener1("ready");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/uninstall_extension")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());

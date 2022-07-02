@@ -48,10 +48,7 @@ static_assert((HttpResponseBodyDrainer::kDrainBodyBufferSize %
 
 class CloseResultWaiter {
  public:
-  CloseResultWaiter()
-      : result_(false),
-        have_result_(false),
-        waiting_for_result_(false) {}
+  CloseResultWaiter() = default;
 
   CloseResultWaiter(const CloseResultWaiter&) = delete;
   CloseResultWaiter& operator=(const CloseResultWaiter&) = delete;
@@ -74,23 +71,15 @@ class CloseResultWaiter {
   }
 
  private:
-  int result_;
-  bool have_result_;
-  bool waiting_for_result_;
+  int result_ = false;
+  bool have_result_ = false;
+  bool waiting_for_result_ = false;
 };
 
 class MockHttpStream : public HttpStream {
  public:
-  MockHttpStream(CloseResultWaiter* result_waiter)
-      : result_waiter_(result_waiter),
-        buf_len_(0),
-        closed_(false),
-        stall_reads_forever_(false),
-        num_chunks_(0),
-        is_sync_(false),
-        is_last_chunk_zero_size_(false),
-        is_complete_(false),
-        can_reuse_connection_(true) {}
+  explicit MockHttpStream(CloseResultWaiter* result_waiter)
+      : result_waiter_(result_waiter) {}
 
   MockHttpStream(const MockHttpStream&) = delete;
   MockHttpStream& operator=(const MockHttpStream&) = delete;
@@ -125,7 +114,9 @@ class MockHttpStream : public HttpStream {
   }
   void GetSSLInfo(SSLInfo* ssl_info) override {}
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override {}
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override { return false; }
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override {
+    return ERR_UNEXPECTED;
+  }
 
   // Mocked API
   int ReadResponseBody(IOBuffer* buf,
@@ -183,14 +174,14 @@ class MockHttpStream : public HttpStream {
   const raw_ptr<CloseResultWaiter> result_waiter_;
   scoped_refptr<IOBuffer> user_buf_;
   CompletionOnceCallback callback_;
-  int buf_len_;
-  bool closed_;
-  bool stall_reads_forever_;
-  int num_chunks_;
-  bool is_sync_;
-  bool is_last_chunk_zero_size_;
-  bool is_complete_;
-  bool can_reuse_connection_;
+  int buf_len_ = 0;
+  bool closed_ = false;
+  bool stall_reads_forever_ = false;
+  int num_chunks_ = 0;
+  bool is_sync_ = false;
+  bool is_last_chunk_zero_size_ = false;
+  bool is_complete_ = false;
+  bool can_reuse_connection_ = true;
 
   base::WeakPtrFactory<MockHttpStream> weak_factory_{this};
 };

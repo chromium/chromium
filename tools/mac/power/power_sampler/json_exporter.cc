@@ -28,9 +28,9 @@ JsonExporter::~JsonExporter() = default;
 
 void JsonExporter::OnStartSession(
     const DataColumnKeyUnits& data_columns_units) {
-  base::flat_map<std::string, base::Value> column_labels;
+  base::Value::Dict column_labels;
   for (const auto& column : data_columns_units) {
-    column_labels.emplace(
+    column_labels.Set(
         column.first.sampler_name + "_" + column.first.column_name,
         column.second);
   }
@@ -39,23 +39,22 @@ void JsonExporter::OnStartSession(
 
 bool JsonExporter::OnSample(base::TimeTicks sample_time,
                             const DataRow& data_row) {
-  base::flat_map<std::string, base::Value> sample_value;
+  base::Value::Dict sample_value;
 
-  sample_value.emplace("sample_time",
-                       (sample_time - time_base_).InMicrosecondsF());
+  sample_value.Set("sample_time", (sample_time - time_base_).InMicrosecondsF());
   for (const auto& datum : data_row) {
-    sample_value.emplace(
-        datum.first.sampler_name + "_" + datum.first.column_name, datum.second);
+    sample_value.Set(datum.first.sampler_name + "_" + datum.first.column_name,
+                     datum.second);
   }
 
-  data_rows_.push_back(base::Value(std::move(sample_value)));
+  data_rows_.Append(std::move(sample_value));
   return false;
 }
 
 void JsonExporter::OnEndSession() {
-  base::flat_map<std::string, base::Value> output;
-  output.emplace("column_labels", column_labels_.Clone());
-  output.emplace("data_rows", base::Value(data_rows_));
+  base::Value::Dict output;
+  output.Set("column_labels", column_labels_.Clone());
+  output.Set("data_rows", data_rows_.Clone());
 
   std::string json_string;
   bool success = base::JSONWriter::WriteWithOptions(

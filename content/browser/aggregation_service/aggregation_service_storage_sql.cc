@@ -25,6 +25,7 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "url/gurl.h"
@@ -437,19 +438,14 @@ bool AggregationServiceStorageSql::InitializeSchema(bool db_empty) {
   if (current_version == kCurrentVersionNumber)
     return true;
 
-  if (current_version <= kDeprecatedVersionNumber) {
-    // Note that this also razes the meta table, so it will need to be
-    // initialized again.
+  if (current_version <= kDeprecatedVersionNumber ||
+      meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
+    // The database version is either deprecated or is too new to be used. For
+    // the second case, the DB will never work until Chrome is re-upgraded.
+    // Assume the user will continue using this Chrome version and raze the DB
+    // to get aggregation service storage working.
     db_.Raze();
-    return CreateSchema();
-  }
-
-  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    // In this case the database version is too new to be used. The DB will
-    // never work until Chrome is re-upgraded. Assume the user will continue
-    // using this Chrome version and raze the DB to get aggregation service
-    // storage working.
-    db_.Raze();
+    meta_table_.Reset();
     return CreateSchema();
   }
 

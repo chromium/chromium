@@ -57,6 +57,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())
           : absl::nullopt;
   frame_info->site_instance->is_guest = site_instance->IsGuest();
+  frame_info->site_instance->is_sandbox_for_iframes =
+      site_instance->GetSiteInfo().is_sandboxed();
 
   // If the SiteInstance has a non-default StoragePartition, include a basic
   // string representation of it.  Skip cases where the StoragePartition is
@@ -271,9 +273,9 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
 
     auto info = ::mojom::WebContentsInfo::New();
     info->title = base::UTF16ToUTF8(web_contents->GetTitle());
-    info->root_frame =
-        RenderFrameHostToFrameInfo(web_contents, web_contents->GetMainFrame(),
-                                   ::mojom::FrameInfo::Type::kActive);
+    info->root_frame = RenderFrameHostToFrameInfo(
+        web_contents, web_contents->GetPrimaryMainFrame(),
+        ::mojom::FrameInfo::Type::kActive);
 
     // Retrieve all root frames from bfcache as well.
     NavigationControllerImpl& controller = web_contents->GetController();

@@ -72,7 +72,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -117,7 +116,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
@@ -135,6 +133,10 @@
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -179,11 +181,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
 #endif  // BUILDFLAG(USE_NSS_CERTS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddSettingsPageUIHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::
           CreateForProfile(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   AddSettingsPageUIHandler(std::make_unique<AccessibilityMainHandler>());
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());
@@ -235,9 +237,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("isSecondaryUser", !profile->IsMainProfile());
-  html_source->AddBoolean(
-      "nonSyncingProfilesEnabled",
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
 #endif
 
 #endif
@@ -272,6 +271,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           password_manager::features::kMuteCompromisedPasswords));
 
   html_source->AddBoolean(
+      "enablePasswordViewPage",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordViewPageInSettings) ||
+          base::FeatureList::IsEnabled(
+              password_manager::features::kPasswordNotes));
+
+  html_source->AddBoolean(
       "enablePasswordNotes",
       base::FeatureList::IsEnabled(password_manager::features::kPasswordNotes));
 
@@ -279,10 +285,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  // Autofill Assistant on Desktop is currently used only by password change.
+  // As soon as it becomes more widely used, this condition needs to be
+  // adjusted.
+  html_source->AddBoolean(
+      "enableAutofillAssistant",
+      password_manager::features::IsAutomatedPasswordChangeEnabled());
+
 #if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
-                          base::FeatureList::IsEnabled(
-                              language::kDesktopRestructuredLanguageSettings));
   html_source->AddBoolean(
       "enableDesktopDetailedLanguageSettings",
       base::FeatureList::IsEnabled(language::kDesktopDetailedLanguageSettings));
@@ -312,18 +322,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("userCannotManuallyEnterPassword", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  bool privacy_guide_enabled =
-      !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild() &&
-      !PrivacySandboxServiceFactory::GetForProfile(profile)
-           ->IsPrivacySandboxRestricted() &&
-      base::FeatureList::IsEnabled(features::kPrivacyGuide);
-  html_source->AddBoolean("privacyGuideEnabled", privacy_guide_enabled);
-
   html_source->AddBoolean(
       "privacyGuide2Enabled",
-      // #privacy-guide-2 only has effect if #privacy-guide is enabled too.
-      privacy_guide_enabled &&
-          base::FeatureList::IsEnabled(features::kPrivacyGuide2));
+      base::FeatureList::IsEnabled(features::kPrivacyGuide2));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

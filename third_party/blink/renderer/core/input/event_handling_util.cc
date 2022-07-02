@@ -148,7 +148,12 @@ bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
   // during lifecycle updates, in FrameView::UpdateViewportIntersection, and
   // propagated via FrameView::RectInParentIsStable.
   bool should_discard = false;
-  if (frame.NeedsOcclusionTracking() && frame.IsCrossOriginToMainFrame()) {
+  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames so
+  // we should use IsCrossOriginToOutermostMainFrame when we intend to check if
+  // any embedded frame (eg, iframe or fenced frame) is cross-origin with
+  // respect to the outermost main frame. Follow up to confirm correctness.
+  if (frame.NeedsOcclusionTracking() &&
+      frame.IsCrossOriginToOutermostMainFrame()) {
     should_discard =
         (event.GetModifiers() & WebInputEvent::kTargetFrameMovedRecently) ||
         !frame.View()->RectInParentIsStable(event.TimeStamp());

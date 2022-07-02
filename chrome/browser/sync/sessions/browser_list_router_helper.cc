@@ -48,8 +48,9 @@ void BrowserListRouterHelper::OnTabStripModelChanged(
   std::vector<content::WebContents*> web_contents;
   if (change.type() == TabStripModelChange::kInserted) {
     for (const TabStripModelChange::ContentsWithIndex& contents :
-         change.GetInsert()->contents)
+         change.GetInsert()->contents) {
       web_contents.push_back(contents.contents);
+    }
   } else if (change.type() == TabStripModelChange::kReplaced) {
     web_contents.push_back(change.GetReplace()->new_contents);
   } else {

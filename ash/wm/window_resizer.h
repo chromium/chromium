@@ -84,8 +84,6 @@ class ASH_EXPORT WindowResizer {
  protected:
   gfx::Rect CalculateBoundsForDrag(const gfx::PointF& location);
 
-  static bool IsBottomEdge(int component);
-
   // Call during an active resize to change the bounds of the window. This
   // should not be called as the result of a revert.
   void SetBoundsDuringResize(const gfx::Rect& bounds);

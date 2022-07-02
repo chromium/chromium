@@ -79,14 +79,14 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   }
 
  private:
-  // Puts |obtained_| in a known state not corresponding to any PasswordStore
+  // Puts `obtained_` in a known state not corresponding to any PasswordStore
   // state.
   void ResetObtained() {
     obtained_.clear();
     obtained_.emplace_back(nullptr);
   }
 
-  // Returns true if |obtained_| are in the reset state.
+  // Returns true if `obtained_` are in the reset state.
   bool AreObtainedReset() { return obtained_.size() == 1 && !obtained_[0]; }
 
   void AppendObtainedToResults() {
@@ -105,11 +105,11 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   base::WeakPtrFactory<TestStoreConsumer> weak_ptr_factory_{this};
 };
 
-// Saves |form| to the password store and waits until the async processing is
+// Saves `form` to the password store and waits until the async processing is
 // done.
 void SaveToPasswordStore(const password_manager::PasswordForm& form) {
   GetPasswordStore()->AddLogin(form);
-  // When we retrieve the form from the store, |in_store| should be set.
+  // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   // Check the result and ensure PasswordStore processed this.
@@ -231,7 +231,7 @@ class SaveCardInfobarEGTestHelper
                                           max);
   }
 
-  // Reset the IOSTestEventWaiter and make it watch |events|.
+  // Reset the IOSTestEventWaiter and make it watch `events`.
   void ResetEventWaiterForEvents(NSArray* events, NSTimeInterval timeout) {
     std::list<CreditCardSaveManagerObserverEvent> events_list;
     for (NSNumber* e : events) {
@@ -274,7 +274,7 @@ class SaveCardInfobarEGTestHelper
     OnEvent(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled);
   }
 
-  // Triggers |event| on the IOSTestEventWaiter.
+  // Triggers `event` on the IOSTestEventWaiter.
   bool OnEvent(CreditCardSaveManagerObserverEvent event) {
     return event_waiter_->OnEvent(event);
   }

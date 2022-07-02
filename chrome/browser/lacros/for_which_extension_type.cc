@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "extensions/common/extension.h"
 
 /******** ForWhichExtensionType ********/
@@ -20,8 +21,18 @@ ForWhichExtensionType::~ForWhichExtensionType() = default;
 
 bool ForWhichExtensionType::Matches(
     const extensions::Extension* extension) const {
-  return for_chrome_apps_ ? lacros_extensions_util::IsExtensionApp(extension)
-                          : extension->is_extension();
+  if (for_chrome_apps_)
+    return lacros_extensions_util::IsExtensionApp(extension);
+
+  if (extension->is_extension()) {
+    // This is for non-chrome-app extensions. We should only publish them if
+    // they have file handlers.
+    FileBrowserHandler::List* handler_list =
+        FileBrowserHandler::GetHandlers(extension);
+    return handler_list;
+  }
+
+  return false;
 }
 
 /******** Utilities ********/

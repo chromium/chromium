@@ -230,7 +230,18 @@ bool PrerenderHostObserver::was_activated() const {
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : get_web_contents_fn_(fn) {
-  feature_list_.InitWithFeatures({blink::features::kPrerender2},
+  std::vector<base::Feature> enabled_features;
+#if !BUILDFLAG(IS_ANDROID)
+  // Prerender2 for Speculation Rules should be enabled by default on Android.
+  // To test the default behavior on Android, explicitly enable the feature only
+  // on non-Android.
+  //
+  // This is useful for preventing breakages by future changes on the complex
+  // flag structure. See review comments on https://crrev.com/c/3670822 for
+  // details.
+  enabled_features.push_back(blink::features::kPrerender2);
+#endif
+  feature_list_.InitWithFeatures(enabled_features,
                                  // Disable the memory requirement of Prerender2
                                  // so the test can run on any bot.
                                  {blink::features::kPrerender2MemoryControls});
@@ -307,7 +318,7 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
   // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
   // because some test pages have ContentSecurityPolicy and EvalJs cannot work
   // with it. See the quick migration guide for EvalJs for more information.
-  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
@@ -383,8 +394,8 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  std::ignore =
-      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl));
+  std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
+                       JsReplace("location = $1", gurl));
   observer.Wait();
 }
 

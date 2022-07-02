@@ -14,7 +14,6 @@
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/stability_metrics_helper.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -22,11 +21,9 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
-#include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace chromecast {
 namespace metrics {
-
 namespace {
 
 enum RendererType {
@@ -46,11 +43,6 @@ int MapCrashExitCodeForHistogram(int exit_code) {
 
 }  // namespace
 
-// static
-void CastStabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
-}
-
 CastStabilityMetricsProvider::CastStabilityMetricsProvider(
     ::metrics::MetricsService* metrics_service,
     PrefService* pref_service)
@@ -69,18 +61,6 @@ void CastStabilityMetricsProvider::OnRecordingEnabled() {
 
 void CastStabilityMetricsProvider::OnRecordingDisabled() {
   registrar_.RemoveAll();
-}
-
-void CastStabilityMetricsProvider::ProvideStabilityMetrics(
-    ::metrics::SystemProfileProto* system_profile_proto) {
-  ::metrics::SystemProfileProto_Stability* stability_proto =
-      system_profile_proto->mutable_stability();
-
-  int count = pref_service_->GetInteger(prefs::kStabilityRendererCrashCount);
-  if (count) {
-    stability_proto->set_renderer_crash_count(count);
-    pref_service_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
-  }
 }
 
 void CastStabilityMetricsProvider::LogExternalCrash(
@@ -129,7 +109,6 @@ void CastStabilityMetricsProvider::LogRendererCrash(
     int exit_code) {
   if (status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
       status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION) {
-    IncrementPrefValue(prefs::kStabilityRendererCrashCount);
     ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
         ::metrics::StabilityEventType::kRendererCrash);
 

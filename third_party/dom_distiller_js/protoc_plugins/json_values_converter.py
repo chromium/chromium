@@ -117,10 +117,10 @@ class CppConverterWriter(writer.CodeWriter):
     if field.IsClassType():
       self.Output(
           'const auto& repeated_field = message.{field_name}();\n'
-          'base::Value::ListStorage field_list;\n'
+          'base::Value::List field_list;\n'
           'field_list.reserve(repeated_field.size());\n'
           'for (const auto& element : repeated_field) {{\n'
-          '  field_list.push_back(\n'
+          '  field_list.Append(\n'
           '      {inner_class_converter}::WriteToValue(element));\n'
           '}}\n'
           'dict.SetKey("{field_number}",\n'
@@ -132,8 +132,11 @@ class CppConverterWriter(writer.CodeWriter):
     else:
       self.Output(
           'const auto& repeated_field = message.{field_name}();\n'
-          'base::Value::ListStorage field_list(\n'
-          '    repeated_field.begin(), repeated_field.end());\n'
+          'base::Value::List field_list;\n'
+          'field_list.reserve(repeated_field.size());\n'
+          'for (const auto& element : repeated_field) {{\n'
+          '  field_list.Append(element);\n'
+          '}}\n'
           'dict.SetKey("{field_number}",\n'
           '            base::Value(std::move(field_list)));\n',
           field_number=field.JavascriptIndex(),

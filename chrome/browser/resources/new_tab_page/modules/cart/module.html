@@ -46,6 +46,11 @@
     z-index: 0;
   }
 
+  .scroll-button {
+    align-items: center;
+    display: flex;
+  }
+
   :host([header-description-text]) #cartCarousel {
     padding-top: 16px;
   }
@@ -82,7 +87,7 @@
     width: 0;
   }
 
-  :host([discount-consent-visible_]) #consentContainer {
+  :host([discount-consent-visible]) #consentContainer {
     opacity: 1;
     width: 254px;
   }
@@ -218,11 +223,6 @@
     width: 102px;
   }
 
-  :host-context([dir=rtl]) cr-icon-button {
-    left: 0;
-    right: unset;
-  }
-
   .cart-container cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
@@ -230,6 +230,25 @@
     position: absolute;
     right: 0;
     top: 2px;
+  }
+
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  :host-context([dir=rtl]) #rightScrollShadow {
+    left: 0;
+    right: unset;
+  }
+
+  #scrollButtons {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    position: absolute;
+    width: 100%;
   }
 
   .side-scroll-shadow {
@@ -243,14 +262,6 @@
     z-index: 1;
   }
 
-  #leftScrollShadow {
-    left: 0;
-  }
-
-  #rightScrollShadow {
-    right: 0;
-  }
-
   .side-scroll-button {
     --cr-icon-button-fill-color: var(--ntp-icon-button-color);
     --cr-icon-button-icon-size: 16px;
@@ -259,9 +270,7 @@
     --cr-icon-image: url(icons/chevron.svg);
     background-color: var(--ntp-module-scroll-button-color);
     border-radius: 50%;
-    position: absolute;
     top: 50%;
-    transform: translateY(-50%);
     visibility: hidden;
     z-index: 2;
   }
@@ -273,13 +282,15 @@
 
   #leftScrollButton {
     --cr-icon-image-transform: rotate(90deg);
-    left: 0;
     margin-inline-start: 4px;
   }
 
   #rightScrollButton {
     --cr-icon-image-transform: rotate(270deg);
     margin-inline-end: 4px;
+  }
+
+  #rightScrollShadow {
     right: 0;
   }
 
@@ -304,12 +315,24 @@
     $i18n{modulesCartSentence}
   </ntp-module-header>
   <div id="moduleContent">
-    <template is="dom-if" if="[[showLeftScrollButton_]]">
-      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
-      <cr-icon-button id="leftScrollButton"
-          class="side-scroll-button" on-click="onLeftScrollClick_">
-      </cr-icon-button>
-    </template>
+    <div id="scrollButtons">
+      <div class="scroll-button">
+        <template is="dom-if" if="[[showLeftScrollButton_]]">
+          <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+          <cr-icon-button id="leftScrollButton"
+              class="side-scroll-button" on-click="onLeftScrollClick_">
+          </cr-icon-button>
+        </template>
+      </div>
+      <div class="scroll-button">
+        <template is="dom-if" if="[[showRightScrollButton_]]">
+          <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+          <cr-icon-button id="rightScrollButton"
+              class="side-scroll-button" on-click="onRightScrollClick_">
+          </cr-icon-button>
+        </template>
+      </div>
+    </div>
     <div id="cartCarousel">
       <div id="leftProbe" class="probe"></div>
       <div id="consentContainer">
@@ -401,12 +424,6 @@
         [[cartMenuRemoveItem_]]
       </button>
     </cr-action-menu>
-    <template is="dom-if" if="[[showRightScrollButton_]]">
-      <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
-      <cr-icon-button id="rightScrollButton"
-          class="side-scroll-button" on-click="onRightScrollClick_">
-      </cr-icon-button>
-    </template>
   </div>
 </div>
 <cr-lazy-render id="infoDialogRender">

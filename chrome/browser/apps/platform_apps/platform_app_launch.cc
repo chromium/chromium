@@ -138,7 +138,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
     url = GURL(chrome::kChromeUIAppsWithForceInstalledDeprecationDialogURL +
                app_id);
   } else {
-    url = GURL(chrome::kChromeUIAppsWithDeprecationDialogURL);
+    url = GURL(chrome::kChromeUIAppsWithDeprecationDialogURL + app_id);
   }
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

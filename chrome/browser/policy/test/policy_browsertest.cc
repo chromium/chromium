@@ -84,7 +84,13 @@ bool IsWebGLEnabled(content::WebContents* contents) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, Disable3DAPIs) {
+// TODO(crbug.com/1069558): Deflake this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_Disable3DAPIs DISABLED_Disable3DAPIs
+#else
+#define MAYBE_Disable3DAPIs Disable3DAPIs
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   // This test assumes Gpu access.
   if (!content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled())
     return;

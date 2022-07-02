@@ -19,9 +19,7 @@
 #include "net/cert/signed_tree_head.h"
 #include "net/cert/x509_certificate.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -407,6 +405,4 @@ bool CheckForSCTOrigin(const SignedCertificateTimestampAndStatusList& scts,
   return false;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

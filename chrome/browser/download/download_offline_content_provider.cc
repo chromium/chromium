@@ -38,7 +38,6 @@ using OfflineItemFilter = offline_items_collection::OfflineItemFilter;
 using OfflineItemState = offline_items_collection::OfflineItemState;
 using OfflineItemProgressUnit =
     offline_items_collection::OfflineItemProgressUnit;
-using offline_items_collection::OfflineItemSchedule;
 using offline_items_collection::OfflineItemShareInfo;
 using OfflineItemVisuals = offline_items_collection::OfflineItemVisuals;
 using UpdateDelta = offline_items_collection::UpdateDelta;
@@ -390,25 +389,6 @@ void DownloadOfflineContentProvider::RenameItem(const ContentId& id,
   filename = name;
 #endif
   item->Rename(base::FilePath(filename), std::move(download_callback));
-}
-
-void DownloadOfflineContentProvider::ChangeSchedule(
-    const ContentId& id,
-    absl::optional<OfflineItemSchedule> schedule) {
-  EnsureDownloadCoreServiceStarted();
-  if (state_ != State::HISTORY_LOADED) {
-    pending_actions_for_full_browser_.push_back(base::BindOnce(
-        &DownloadOfflineContentProvider::ChangeSchedule,
-        weak_ptr_factory_.GetWeakPtr(), id, std::move(schedule)));
-    return;
-  }
-
-  DownloadItem* item = GetDownload(id.id);
-  if (!item)
-    return;
-
-  item->OnDownloadScheduleChanged(
-      OfflineItemUtils::ToDownloadSchedule(schedule));
 }
 
 void DownloadOfflineContentProvider::OnRenameDownloadCallbackDone(

@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
@@ -47,6 +45,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ import java.util.List;
 /**
  * BaseAdapter for {@link RecyclerView}. It manages bookmarks to list there.
  */
-class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
+public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         implements BookmarkUIObserver, SyncService.SyncStateChangedListener {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
@@ -433,7 +433,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     /**
      * Refresh the list of bookmarks within the currently visible folder.
      */
-    void refresh() {
+    public void refresh() {
         // Tell the RecyclerView to update its elements.
         if (mElements != null) notifyDataSetChanged();
     }
@@ -443,7 +443,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      *
      * @param query The query text to search for.
      */
-    void search(String query) {
+    public void search(String query) {
         mSearchText = query.trim();
         List<BookmarkId> result =
                 mDelegate.getModel().searchBookmarks(mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
@@ -615,8 +615,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return isReorderable(getItemByHolder(viewHolder));
     }
 
-    @VisibleForTesting
-    BookmarkId getIdByPosition(int position) {
+    public BookmarkId getIdByPosition(int position) {
         BookmarkListEntry entry = getItemByPosition(position);
         if (entry == null || entry.getBookmarkItem() == null) return null;
         return entry.getBookmarkItem().getId();
@@ -647,7 +646,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     }
 
     @VisibleForTesting
-    void simulateSignInForTests() {
+    public void simulateSignInForTests() {
         syncStateChanged();
         onFolderStateSet(mCurrentFolder);
     }

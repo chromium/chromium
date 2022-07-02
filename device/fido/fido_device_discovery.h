@@ -85,11 +85,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
   bool MaybeStop() override;
 
  protected:
-  FidoDeviceDiscovery(FidoTransportProtocol transport);
+  explicit FidoDeviceDiscovery(FidoTransportProtocol transport);
 
   void NotifyDiscoveryStarted(bool success);
 
+  // Convenience method that adds a FidoDeviceAuthenticator with the given
+  // |device|.
   bool AddDevice(std::unique_ptr<FidoDevice> device);
+  bool AddAuthenticator(std::unique_ptr<FidoDeviceAuthenticator> authenticator);
   bool RemoveDevice(base::StringPiece device_id);
 
   FidoDeviceAuthenticator* GetAuthenticator(base::StringPiece authenticator_id);

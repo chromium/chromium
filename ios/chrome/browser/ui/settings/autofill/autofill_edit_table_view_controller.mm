@@ -135,7 +135,7 @@
 
 #pragma mark - Helper methods
 
-// Returns the cell containing |textField|.
+// Returns the cell containing `textField`.
 - (TableViewTextEditCell*)autofillEditCellForTextField:(UITextField*)textField {
   TableViewTextEditCell* settingsCell = nil;
   for (UIView* view = textField; view; view = [view superview]) {

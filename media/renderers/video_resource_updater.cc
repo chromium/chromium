@@ -681,7 +681,7 @@ void VideoResourceUpdater::AppendQuads(
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
                            needs_blending, frame_resources_[0].id,
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
-                           SK_ColorTRANSPARENT, opacity, flipped,
+                           SkColors::kTransparent, opacity, flipped,
                            nearest_neighbor, false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
       texture_quad->is_video_frame = true;
@@ -870,10 +870,11 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   VideoFrameExternalResources external_resources;
   gfx::ColorSpace resource_color_space = video_frame->ColorSpace();
 
-  const auto& copy_mode = video_frame->metadata().copy_mode;
+  const bool copy_required = video_frame->metadata().copy_required;
+
   GLuint target = video_frame->mailbox_holder(0).texture_target;
-  // If texture copy is required, then we will copy into a GL_TEXTURE_2D target.
-  if (copy_mode == VideoFrameMetadata::CopyMode::kCopyToNewTexture)
+  // If |copy_required| then we will copy into a GL_TEXTURE_2D target.
+  if (copy_required)
     target = GL_TEXTURE_2D;
 
   gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
@@ -897,35 +898,24 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
     const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(i);
     if (mailbox_holder.mailbox.IsZero())
       break;
-    if (copy_mode == VideoFrameMetadata::CopyMode::kCopyToNewTexture) {
+
+    if (copy_required) {
       CopyHardwarePlane(video_frame.get(), resource_color_space, mailbox_holder,
                         &external_resources);
     } else {
-      gpu::SyncToken sync_token = mailbox_holder.sync_token;
-      gpu::Mailbox mailbox = mailbox_holder.mailbox;
-      if (copy_mode == VideoFrameMetadata::CopyMode::kCopyMailboxesOnly) {
-        auto* sii = SharedImageInterface();
-        uint32_t usage =
-            gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_GLES2;
-        mailbox = sii->CreateSharedImageWithAHB(mailbox_holder.mailbox, usage,
-                                                mailbox_holder.sync_token);
-        // Insert a sync token at this point and update video frame release sync
-        // token with it.
-        SyncTokenClientImpl client(nullptr /* GLES2Interface */, sii,
-                                   gpu::SyncToken());
-        sync_token = video_frame->UpdateReleaseSyncToken(&client);
-      }
-
       const size_t width = video_frame->columns(i);
       const size_t height = video_frame->rows(i);
       const gfx::Size plane_size(width, height);
       auto transfer_resource = viz::TransferableResource::MakeGL(
-          mailbox, GL_LINEAR, mailbox_holder.texture_target, sync_token,
-          plane_size, video_frame->metadata().allow_overlay);
+          mailbox_holder.mailbox, GL_LINEAR, mailbox_holder.texture_target,
+          mailbox_holder.sync_token, plane_size,
+          video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
       transfer_resource.hdr_metadata = video_frame->hdr_metadata();
-      transfer_resource.read_lock_fences_enabled =
-          video_frame->metadata().read_lock_fences_enabled;
+      if (video_frame->metadata().read_lock_fences_enabled) {
+        transfer_resource.synchronization_type = viz::TransferableResource::
+            SynchronizationType::kGpuCommandsCompleted;
+      }
       transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
@@ -940,21 +930,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
 #endif
 
       external_resources.resources.push_back(std::move(transfer_resource));
-      if (copy_mode == VideoFrameMetadata::CopyMode::kCopyMailboxesOnly) {
-        // Adding a ref on |video_frame| to make sure lifetime of |video frame|
-        // is same as lifetime of this |mailbox|. Releasing |video_frame| before
-        // |mailbox| causes renderer to prepare more video frame which in turn
-        // causes holding onto multiple AHardwareBuffers by both |mailbox| and
-        // |video_frame| which in turn causes higher gpu memory usage and
-        // potential memory crashes.
-        external_resources.release_callbacks.push_back(base::BindOnce(
-            &VideoResourceUpdater::DestroyMailbox,
-            weak_ptr_factory_.GetWeakPtr(), mailbox, video_frame));
-      } else {
-        external_resources.release_callbacks.push_back(
-            base::BindOnce(&VideoResourceUpdater::ReturnTexture,
-                           weak_ptr_factory_.GetWeakPtr(), video_frame));
-      }
+      external_resources.release_callbacks.push_back(
+          base::BindOnce(&VideoResourceUpdater::ReturnTexture,
+                         weak_ptr_factory_.GetWeakPtr(), video_frame));
     }
   }
   return external_resources;
@@ -1352,19 +1330,6 @@ void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
   video_frame->UpdateReleaseSyncToken(&client);
 }
 
-void VideoResourceUpdater::DestroyMailbox(gpu::Mailbox mailbox,
-                                          scoped_refptr<VideoFrame> video_frame,
-                                          const gpu::SyncToken& sync_token,
-                                          bool lost_resource) {
-  if (lost_resource)
-    return;
-
-  auto* sii = SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
-  SyncTokenClientImpl client(nullptr, sii, sync_token);
-  video_frame->UpdateReleaseSyncToken(&client);
-}
-
 void VideoResourceUpdater::RecycleResource(uint32_t plane_resource_id,
                                            const gpu::SyncToken& sync_token,
                                            bool lost_resource) {
@@ -1425,14 +1390,6 @@ bool VideoResourceUpdater::OnMemoryDump(
   }
 
   return true;
-}
-
-gpu::SharedImageInterface* VideoResourceUpdater::SharedImageInterface() const {
-  auto* sii = raster_context_provider_
-                  ? raster_context_provider_->SharedImageInterface()
-                  : context_provider_->SharedImageInterface();
-  DCHECK(sii);
-  return sii;
 }
 
 VideoResourceUpdater::FrameResource::FrameResource() = default;

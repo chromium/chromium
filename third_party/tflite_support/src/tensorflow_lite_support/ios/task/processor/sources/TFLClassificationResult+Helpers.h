@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TFLClassificationResult (Helpers)
 
 /**
- * Creates and retrurns a TFLClassificationResult from a
+ * Creates and returns a TFLClassificationResult from a
  * TfLiteClassificationResult returned by TFLite Task C Library Classification
  * tasks.
  *

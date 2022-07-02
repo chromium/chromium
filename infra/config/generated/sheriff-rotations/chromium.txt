@@ -30,8 +30,6 @@ ci/Mac ASan 64 Builder
 ci/Mac ASan 64 Tests (1)
 ci/Mac Builder
 ci/Mac Builder (dbg)
-ci/Mac10.11 Tests
-ci/Mac10.12 Tests
 ci/Mac10.13 Tests
 ci/Mac10.14 Tests
 ci/Mac10.15 Tests
@@ -71,6 +69,7 @@ ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
 ci/lacros-amd64-generic-binary-size-rel
 ci/lacros-amd64-generic-rel
+ci/lacros-arm-archive-rel
 ci/lacros-arm-generic-rel
 ci/lacros64-archive-rel
 ci/linux-archive-dbg

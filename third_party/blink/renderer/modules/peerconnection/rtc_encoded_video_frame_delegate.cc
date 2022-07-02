@@ -18,7 +18,7 @@ RTCEncodedVideoFrameDelegate::RTCEncodedVideoFrameDelegate(
     : webrtc_frame_(std::move(webrtc_frame)) {}
 
 String RTCEncodedVideoFrameDelegate::Type() const {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   if (!webrtc_frame_)
     return "empty";
 
@@ -26,14 +26,14 @@ String RTCEncodedVideoFrameDelegate::Type() const {
 }
 
 uint32_t RTCEncodedVideoFrameDelegate::Timestamp() const {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer() const {
   ArrayBufferContents contents;
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock lock(lock_);
     if (!webrtc_frame_)
       return nullptr;
 
@@ -49,7 +49,7 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer() const {
 }
 
 void RTCEncodedVideoFrameDelegate::SetData(const DOMArrayBuffer* data) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   if (webrtc_frame_ && data) {
     webrtc_frame_->SetData(rtc::ArrayView<const uint8_t>(
         static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
@@ -60,7 +60,7 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateAdditionalDataBuffer()
     const {
   ArrayBufferContents contents;
   {
-    MutexLocker lock(mutex_);
+    base::AutoLock lock(lock_);
     if (!webrtc_frame_)
       return nullptr;
 
@@ -76,26 +76,26 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateAdditionalDataBuffer()
 }
 
 absl::optional<uint32_t> RTCEncodedVideoFrameDelegate::Ssrc() const {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetSsrc())
                        : absl::nullopt;
 }
 
 absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetPayloadType())
                        : absl::nullopt;
 }
 
 const webrtc::VideoFrameMetadata* RTCEncodedVideoFrameDelegate::GetMetadata()
     const {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return webrtc_frame_ ? &webrtc_frame_->GetMetadata() : nullptr;
 }
 
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
 RTCEncodedVideoFrameDelegate::PassWebRtcFrame() {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   return std::move(webrtc_frame_);
 }
 

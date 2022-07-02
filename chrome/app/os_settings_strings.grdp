@@ -723,10 +723,10 @@
     Disabled
   </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
-    Personalize your device
+    Set your wallpaper &amp; style
   </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
-    Customize wallpaper, avatar, screensaver and more
+    Personalize wallpaper, screen saver, accent colors, and more
   </message>
 
   <!-- Ambient Mode Page -->
@@ -1523,6 +1523,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
     Manage accessibility features
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+    Text-to-Speech
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+    ChromeVox screen reader and select-to-speak
+  </message>
 
   <!-- Account Manager (OS settings) -->
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
@@ -1839,6 +1845,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS" desc="Heading for the input field for entering the image alias string e.g. debian/buster when creating a new Linux container.">
     Image Alias
   </message>
+  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ADD_PLAYBOOK" desc="Heading for the input field for uploading an Ansible playbook to preconfigure a Linux container.">
+    Add playbook
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ATTACH_PLAYBOOK_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook to preconfigure a Linux container.">
+    Select playbook
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_ANSIBLE_PLAYBOOK_SELECT_DIALOG_TITLE" desc="The text used as the title for Ansible Playbook selection">
+    Select an Ansible Playbook to add
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialogue." meaning="The label of the button/link the user clicks to open the disk resizing dialogue.">
     Change
   </message>
@@ -1917,6 +1932,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_SUBTEXT" desc="Description for the section for enabling and managing Crostini.">
     Run Linux tools, editors, and IDEs on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_CROSTINI_SUBTEXT_NOT_SUPPORTED" desc="Description for the Developers section when crostini is not supported due to hardware limitation or account restrictions.">
+    Linux is not supported on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_REMOVE" desc="Label for the row to open a dialog confirming removal of Crostini.">
     Remove Linux development environment
   </message>
@@ -1931,6 +1949,15 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_MIC_DIALOG_SHUTDOWN_BUTTON" desc="Label for the shutdown button in the Crostini mic sharing dialog.">
     Shut down
+  </message>
+
+  <!-- Bruschetta sub-page -->
+  <!-- TODO(b/233129383): Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_BRUSCHETTA_LABEL" translateable="false" desc="Label for the Bruschetta sub-page.">
+    Bruschetta
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" translateable="false" desc="Description for managing shared USB devices.">
+    Give Bruschetta permission to access USB devices. Bruschetta won't remember a USB device after it's removed.
   </message>
 
   <!-- Android apps page (OS settings) -->
@@ -2151,6 +2178,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
     Bluetooth device details
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES" desc="Name of the settings page which displays Bluetooth saved devices.">
+   Devices saved to your account
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device
   </message>
@@ -2172,6 +2202,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is disabled.">
     Bluetooth disabled
   </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_LABEL" desc="Label for the link row that directs to Saved Devices settings sub-page.">
+    Devices saved to your account
+  </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE" desc="Subtitle for the link row that directs to Saved Devices settings sub-page.">
+    Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph>
+  </message>
 
 
   <!-- Parental Controls -->
@@ -2192,6 +2228,11 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PARENTAL_CONTROLS_SET_UP_BUTTON_ROLE" desc="Role description of the button which launches page which enables ChromeOS's parental controls. Spoken aloud by screen readers when the Set Up button is focused">
     Set up button
+  </message>
+
+  <!-- Device audio page (OS settings) -->
+  <message name="IDS_SETTINGS_AUDIO_TITLE" desc="In Device Settings, the title of the audio settings subpage.">
+    Audio
   </message>
 
   <!-- Device pointer page (OS settings) -->
@@ -3134,10 +3175,13 @@ Press an assigned switch or key to remove assignment.
     Set a PIN or password
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any content you stream from your phone.
+    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any information you access from your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog.">
     Choose either one each time you sign in
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION" desc="The icon instruction message of the screen lock dialog.">
+    If Smart Lock is turned on, you won't need to enter a PIN or password
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on
@@ -3169,11 +3213,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing feature. The tooltip describes how users with work profiles cannot opt into this feature.">
     Notification syncing is not supported for phones in a work profile
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing feature. The tooltip describes how users with notification access disabled by their phones' administrator cannot opt into this feature.">
-    Notification syncing is disabled by your phone's administrator
-  </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_APPS_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub apps streaming feature. The tooltip describes how users with apps access disabled by their phones' administrator cannot opt into this feature.">
-    Apps streaming is disabled by your phone's administrator.
+  <message name="IDS_SETTINGS_MULTIDEVICE_ITEM_DISABLED_BY_PHONE_ADMIN_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing or apps streaming feature. The tooltip describes how users with feature disabled by their phones' administrator cannot opt into this feature.">
+    This setting is managed by your phone's administrator
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_GET_STARTED_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the dialog first opens. Clicking the button will allow the user to try enabling the feature.">
     Get started
@@ -3235,11 +3276,35 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
     You can't view your phone's notifications on this managed account. Try again with a different account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when the feature is successfully turned on.">
-    Your phone and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> are connected
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ALL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when all features are successfully turned on.">
+    You can now view your phone's recent photos, media, notifications, and apps 
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
-    Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Notifications' are successfully turned on.">
+    You can now view your phone's recent photos, media, and notifications
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' and 'Apps' are successfully turned on.">
+    You can now view your phone's notifications and apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Apps' are successfully turned on.">
+    You can now view your phone's recent photos, media, and apps 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' is successfully turned on.">
+    You can now view your phone's recent photos and media
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' is successfully turned on.">
+    You can now view your phone's notifications 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Apps' is successfully turned on.">
+    You can now view your phone's apps 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_MORE_FEATURES_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Reminds users that some features have not been successfully turned on, and users can set it in the Phone Hub settings.">
+    You can set up more features in Phone Hub settings
+  </message> 
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when permission was not successfully turned on.">
+    Permission still needed to complete setup 
+  </message>
+  <message name="IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL" desc="The aria label (used by screen readers, not shown in UI) for the phone permissions opt-in flow.">
+    Learn more about Phone Hub
   </message>
 
   <!-- Lock Screen Page (OS settings) -->
@@ -4225,6 +4290,18 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS" desc="Text for the name of the toggle in the smart privacy section requesting notification hiding when a snooper is detected.">
     Hide notification content when someone else is detected
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_TITLE" desc="Text on the privacy page that opens up the privacy hub section.">
+    Privacy Hub
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT" desc="Sub-label on the privacy page that indicates that the hardware camera toggle is active.">
+    Internal camera deactivated by hardware switch
+  </message>
+  <message name="IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE" desc="The title of the toggle to enable/disable camera from the privacy hub.">
+    Camera
+  </message>
+  <message name="IDS_OS_SETTINGS_MICROPHONE_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
+    Microphone
   </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability

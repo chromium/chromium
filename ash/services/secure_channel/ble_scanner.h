@@ -12,9 +12,11 @@
 #include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothDevice;
@@ -55,6 +57,12 @@ class BleScanner {
 
   bool HasScanRequest(const ConnectionAttemptDetails& scan_request);
 
+  // Retrieves the timestamp of the last successful discovery for the given
+  // |remote_device_id|, or nullopt if we haven't seen this remote device during
+  // the current Chrome session.
+  absl::optional<base::Time> GetLastSeenTimestamp(
+      const std::string& remote_device_id);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -80,6 +88,8 @@ class BleScanner {
   base::ObserverList<Observer> observer_list_;
 
   base::flat_set<ConnectionAttemptDetails> scan_requests_;
+  base::flat_map<std::string, base::Time>
+      remote_device_id_to_last_seen_timestamp_;
 };
 
 }  // namespace ash::secure_channel

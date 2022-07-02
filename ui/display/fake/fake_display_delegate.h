@@ -31,14 +31,14 @@ namespace display {
 //   native_mode[#other_modes][^dpi][/options]
 //
 // native_mode: the native display mode, with format:
-//   HxW[%R]
-//     H: display height in pixels [int]
+//   WxH[%R]
 //     W: display width in pixels [int]
+//     H: display height in pixels [int]
 //     R: display refresh rate [float]
 //
 // other_modes: list of other of display modes, with format:
-//   #HxW[%R][:HxW[%R]]
-//     H,W,R: same meaning as in native_mode.
+//   #WxH[%R][:WxH[%R]]
+//     W,H,R: same meaning as in native_mode.
 //   Note: The first mode is delimited with '#' and any subsequent modes are
 //         delimited with ':'.
 //

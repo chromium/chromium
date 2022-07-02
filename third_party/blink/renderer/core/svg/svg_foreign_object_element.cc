@@ -22,7 +22,8 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -124,8 +125,9 @@ void SVGForeignObjectElement::SvgAttributeChanged(
   SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
-LayoutObject* SVGForeignObjectElement::CreateLayoutObject(const ComputedStyle&,
-                                                          LegacyLayout) {
+LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
   // Suppress foreignObject LayoutObjects in SVG hidden containers.
   // LayoutSVGHiddenContainers does not allow the subtree to be rendered, but
   // allow LayoutObject descendants to be created. That will causes crashes in
@@ -141,7 +143,15 @@ LayoutObject* SVGForeignObjectElement::CreateLayoutObject(const ComputedStyle&,
         ancestor->GetLayoutObject()->IsSVGHiddenContainer())
       return nullptr;
   }
-  return MakeGarbageCollected<LayoutSVGForeignObject>(this);
+  return LayoutObjectFactory::CreateSVGForeignObject(*this, style, legacy);
+}
+
+bool SVGForeignObjectElement::TypeShouldForceLegacyLayout() const {
+  // As long as the foreignObject element itself creates a legacy layout object,
+  // we need to use legacy layout for the entire block formatting context
+  // established by the foreignObject. For simplicity, just force legacy for the
+  // entire subtree.
+  return !RuntimeEnabledFeatures::LayoutNGForeignObjectEnabled();
 }
 
 bool SVGForeignObjectElement::SelfHasRelativeLengths() const {

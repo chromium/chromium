@@ -70,14 +70,14 @@ class FakeNetLogExporter : public network::mojom::NetLogExporter {
   ~FakeNetLogExporter() override {}
 
   void Start(base::File destination,
-             base::Value extra_constants,
+             base::Value::Dict extra_constants,
              net::NetLogCaptureMode capture_mode,
              uint64_t max_file_size,
              StartCallback callback) override {
     std::move(callback).Run(net::OK);
   }
 
-  void Stop(base::Value polled_values, StopCallback callback) override {
+  void Stop(base::Value::Dict polled_values, StopCallback callback) override {
     std::move(callback).Run(net::OK);
   }
 };
@@ -412,7 +412,7 @@ class NetExportFileWriterTest : public ::testing::Test {
   // |default_log_path_|.
   [[nodiscard]] ::testing::AssertionResult StopThenVerifyNewStateAndFile(
       const base::FilePath& custom_log_path,
-      std::unique_ptr<base::DictionaryValue> polled_data,
+      base::Value::Dict polled_data,
       const std::string& expected_capture_mode_string) {
     file_writer_.StopNetLog(std::move(polled_data));
     std::unique_ptr<base::DictionaryValue> state =
@@ -570,11 +570,11 @@ TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
     // StopNetLog(), should result in state change. The capture mode should
     // match that of the first StartNetLog() call (called by
     // StartThenVerifyNewState()).
-    ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                              capture_mode_strings[i]));
+    ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+        base::FilePath(), base::Value::Dict(), capture_mode_strings[i]));
 
     // Stopping a second time should be a no-op.
-    file_writer()->StopNetLog(nullptr);
+    file_writer()->StopNetLog();
   }
 
   // Start and stop one more time just to make sure the last StopNetLog() call
@@ -583,8 +583,8 @@ TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
                                       capture_mode_strings[0],
                                       network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            capture_mode_strings[0]));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), capture_mode_strings[0]));
 }
 
 // Verify the file sizes after two consecutive starts/stops are the same (even
@@ -596,8 +596,8 @@ TEST_F(NetExportFileWriterTest, StartClearsFile) {
       base::FilePath(), net::NetLogCaptureMode::kDefault,
       kCaptureModeDefaultString, network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
 
   int64_t stop_file_size;
   EXPECT_TRUE(base::GetFileSize(default_log_path(), &stop_file_size));
@@ -616,8 +616,8 @@ TEST_F(NetExportFileWriterTest, StartClearsFile) {
       base::FilePath(), net::NetLogCaptureMode::kDefault,
       kCaptureModeDefaultString, network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
 
   int64_t new_stop_file_size;
   EXPECT_TRUE(base::GetFileSize(default_log_path(), &new_stop_file_size));
@@ -634,8 +634,8 @@ TEST_F(NetExportFileWriterTest, AddEvent) {
       base::FilePath(), net::NetLogCaptureMode::kDefault,
       kCaptureModeDefaultString, network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
 
   // Get file size without the event.
   int64_t stop_file_size;
@@ -647,8 +647,8 @@ TEST_F(NetExportFileWriterTest, AddEvent) {
 
   net_log()->AddGlobalEntry(net::NetLogEventType::CANCELLED);
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
 
   // Get file size after adding the event and make sure it's larger than before.
   int64_t new_stop_file_size;
@@ -672,8 +672,8 @@ TEST_F(NetExportFileWriterTest, AddEventCustomPath) {
       StartThenVerifyNewState(custom_log_path, net::NetLogCaptureMode::kDefault,
                               kCaptureModeDefaultString, network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(custom_log_path, nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      custom_log_path, base::Value::Dict(), kCaptureModeDefaultString));
 
   // Get file size without the event.
   int64_t stop_file_size;
@@ -685,8 +685,8 @@ TEST_F(NetExportFileWriterTest, AddEventCustomPath) {
 
   net_log()->AddGlobalEntry(net::NetLogEventType::CANCELLED);
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(custom_log_path, nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      custom_log_path, base::Value::Dict(), kCaptureModeDefaultString));
 
   // Get file size after adding the event and make sure it's larger than before.
   int64_t new_stop_file_size;
@@ -700,9 +700,8 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
   // Create dummy polled data
   const char kDummyPolledDataPath[] = "dummy_path";
   const char kDummyPolledDataString[] = "dummy_info";
-  std::unique_ptr<base::DictionaryValue> dummy_polled_data =
-      std::make_unique<base::DictionaryValue>();
-  dummy_polled_data->SetStringKey(kDummyPolledDataPath, kDummyPolledDataString);
+  base::Value::Dict dummy_polled_data;
+  dummy_polled_data.Set(kDummyPolledDataPath, kDummyPolledDataString);
 
   ASSERT_TRUE(StartThenVerifyNewState(
       base::FilePath(), net::NetLogCaptureMode::kDefault,
@@ -793,8 +792,8 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
       base::FilePath(), net::NetLogCaptureMode::kDefault,
       kCaptureModeDefaultString, network_context()));
 
-  ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), nullptr,
-                                            kCaptureModeDefaultString));
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(
+      base::FilePath(), base::Value::Dict(), kCaptureModeDefaultString));
   // Read events from log file.
   std::unique_ptr<base::DictionaryValue> root;
   ASSERT_TRUE(ReadCompleteLogFile(default_log_path(), &root));
@@ -850,7 +849,7 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileStoppingLog) {
       kCaptureModeIncludeEverythingString, network_context()));
 
   // Tell |file_writer_| to stop logging.
-  file_writer()->StopNetLog(nullptr);
+  file_writer()->StopNetLog();
 
   // Before running the main message loop, tell |file_writer_| to start
   // logging. Not running the main message loop prevents the stopping process

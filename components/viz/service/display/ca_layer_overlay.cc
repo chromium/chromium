@@ -136,6 +136,10 @@ gfx::CALayerResult FromRenderPassQuad(
   ca_layer_overlay->rpdq = quad;
   ca_layer_overlay->contents_rect = gfx::RectF(0, 0, 1, 1);
 
+  // For RenderPassDrawQuad, the opacity is applied when its ddl is recorded, so
+  // the content already is with opacity applied.
+  ca_layer_overlay->opacity = 1.0;
+
   return gfx::kCALayerSuccess;
 }
 
@@ -156,7 +160,7 @@ gfx::CALayerResult FromSolidColorDrawQuad(const SolidColorDrawQuad* quad,
                                           CALayerOverlay* ca_layer_overlay,
                                           bool* skip) {
   // Do not generate quads that are completely transparent.
-  if (SkColorGetA(quad->color) == 0) {
+  if (quad->color.fA == 0.0f) {
     *skip = true;
     return gfx::kCALayerSuccess;
   }
@@ -187,7 +191,7 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
     if (quad->vertex_opacity[i] != quad->vertex_opacity[0])
       return gfx::kCALayerFailedDifferentVertexOpacities;
   }
-  ca_layer_overlay->shared_state->opacity *= quad->vertex_opacity[0];
+  ca_layer_overlay->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->filter = quad->nearest_neighbor ? GL_NEAREST : GL_LINEAR;
   if (quad->is_video_frame)
     ca_layer_overlay->protected_video_type = quad->protected_video_type;
@@ -310,13 +314,13 @@ class CALayerOverlayProcessorInternal {
     // Enable edge anti-aliasing only on layer boundaries.
     ca_layer_overlay->edge_aa_mask = 0;
     if (quad->IsLeftEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_LEFT_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeLeft;
     if (quad->IsRightEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_RIGHT_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeRight;
     if (quad->IsBottomEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeBottom;
     if (quad->IsTopEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_TOP_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeTop;
 
     if (most_recent_shared_quad_state_ != quad->shared_quad_state) {
       most_recent_shared_quad_state_ = quad->shared_quad_state;
@@ -331,14 +335,13 @@ class CALayerOverlayProcessorInternal {
       most_recent_overlay_shared_state_->rounded_corner_bounds =
           quad->shared_quad_state->mask_filter_info.rounded_corner_bounds();
 
-      most_recent_overlay_shared_state_->opacity =
-          quad->shared_quad_state->opacity;
       most_recent_overlay_shared_state_->transform =
           quad->shared_quad_state->quad_to_target_transform;
     }
     ca_layer_overlay->shared_state = most_recent_overlay_shared_state_;
 
     ca_layer_overlay->bounds_rect = gfx::RectF(quad->rect);
+    ca_layer_overlay->opacity = quad->shared_quad_state->opacity;
 
     *render_pass_draw_quad =
         quad->material == DrawQuad::Material::kAggregatedRenderPass;
@@ -636,7 +639,7 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
     return true;
 
   ca_layer.protected_video_type = protected_video_type;
-  render_pass->ReplaceExistingQuadWithSolidColor(at, SK_ColorTRANSPARENT,
+  render_pass->ReplaceExistingQuadWithSolidColor(at, SkColors::kTransparent,
                                                  SkBlendMode::kSrcOver);
   ca_layer_overlays->push_back(ca_layer);
   return true;

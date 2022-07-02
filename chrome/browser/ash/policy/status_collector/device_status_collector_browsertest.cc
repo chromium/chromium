@@ -68,6 +68,11 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -78,16 +83,12 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -847,8 +848,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         fake_web_kiosk_device_local_account_(fake_web_kiosk_app_basic_info_,
                                              kWebKioskAccountId),
         user_data_dir_override_(chrome::DIR_USER_DATA),
-        crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS),
-        update_engine_client_(new chromeos::FakeUpdateEngineClient) {
+        crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
     EXPECT_CALL(*user_manager_, Shutdown()).Times(1);
@@ -904,14 +904,14 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     // Use FakeUpdateEngineClient.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        base::WrapUnique<chromeos::UpdateEngineClient>(update_engine_client_));
+    update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
     // Async tasks posted when calling `chromeos::DBusThreadManager::Initialize`
     // need to be flushed.
     base::RunLoop().RunUntilIdle();
 
     chromeos::CrasAudioHandler::InitializeForTesting();
-    chromeos::UserDataAuthClient::InitializeFake();
+    ash::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
@@ -937,8 +937,9 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::Shutdown();
     chromeos::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::UserDataAuthClient::Shutdown();
+    ash::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
+    chromeos::UpdateEngineClient::Shutdown();
     ash::KioskAppManager::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
@@ -1226,7 +1227,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
-  chromeos::FakeUpdateEngineClient* const update_engine_client_;
+  chromeos::FakeUpdateEngineClient* update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;
@@ -2247,9 +2248,7 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            true);
   scoped_feature_list_.InitWithFeatures(
-      {features::kCrostiniAdditionalEnterpriseReporting,
-       ash::features::kTerminalSSH},
-      {});
+      {features::kCrostiniAdditionalEnterpriseReporting}, {});
 
   const std::string desktop_file_id = "vim";
   const std::string package_id =
@@ -4076,8 +4075,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported by default, i.e if the policy is
   // not set.
   GetStatus();
@@ -4097,8 +4094,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported for unaffiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4110,8 +4105,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported for affiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4123,8 +4116,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported if in public session.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4138,8 +4129,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfKioskMode) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported if in kiosk mode.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);

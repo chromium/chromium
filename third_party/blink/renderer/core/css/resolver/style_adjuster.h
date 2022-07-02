@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_ADJUSTER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -46,6 +47,7 @@ class StyleAdjuster {
 
  private:
   static bool IsEditableElement(Element*, const ComputedStyle&);
+  static bool IsPasswordFieldWithUnrevealedPassword(Element*);
   static void AdjustEffectiveTouchAction(ComputedStyle& style,
                                          const ComputedStyle& parent_style,
                                          Element* element,

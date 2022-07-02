@@ -1,24 +1,42 @@
-# Changes to IPC messages require a security review to avoid introducing sandbox
-# escapes. The shared memory implementation code needs review from a security
-# owner. (Shared memory call sites should be reviewed as part of normal IPC
-# security review.)
+# Reviewers for security-sensitive CLs that cross process boundaries, e.g.:
 #
-# Security team: If you are uncomfortable reviewing a particular bit of code
-# yourself, don't hesitate to seek help from another security team member!
-# Nobody knows everything, and the only way to learn is from experience.
-ajgo@chromium.org
-danakj@chromium.org
-dcheng@chromium.org
-dominickn@chromium.org
-estark@chromium.org
-joenotcharles@chromium.org
-kenrb@chromium.org
-kinuko@chromium.org
-meacer@chromium.org
-mkwst@chromium.org
-mpdenton@chromium.org
-nasko@chromium.org
-rsesek@chromium.org
-sammc@chromium.org
-tsepez@chromium.org
-wfh@chromium.org
+# - CLs using Mojo IPC  [1]
+# - CLs using legacy IPC [2]
+# - CLs using Android IDL
+#
+# [1] reference: https://docs.google.com/document/d/1Kw4aTuISF7csHnjOpDJGc7JYIjlvOAKRprCTBVWw_E4/edit
+# [2] reference: https://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc/
+#
+# Things like the shared memory implementation in //base also fall under the
+# purview of //ipc/SECURITY_OWNERS (changes that *use* shared memory should
+# already be covered by the standard IPC review process, since the shared
+# memory regions themselves need to be sent over IPC).
+
+# Consider assigning IPC reviews to chrome-ipc-reviews@google.com rather than a
+# specific reviewer. This helps distribute review load and knowledge more evenly
+# amongst the team. Automation will select a random reviewer and reassign the
+# review within ~5 minutes. Googlers can read more about this at go/gwsq-gerrit.
+chrome-ipc-reviews@google.com
+
+# The find-owners plugin does not support groups, so the actual IPC reviewers
+# are listed below but tagged with {LAST_RESORT_SUGGESTION} so that Gerrit will
+# preferentially suggest the review alias above.
+#
+# Please keep this list alphabetized and in sync with the gwsq config (see
+# go/chrome-ipc-review).
+ajgo@chromium.org         #{{LAST_RESORT_SUGGESTION}}
+danakj@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+dcheng@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+dominickn@chromium.org    #{{LAST_RESORT_SUGGESTION}}
+estark@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+joenotcharles@google.com  #{{LAST_RESORT_SUGGESTION}}
+kenrb@chromium.org        #{{LAST_RESORT_SUGGESTION}}
+kinuko@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+meacer@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+mkwst@chromium.org        #{{LAST_RESORT_SUGGESTION}}
+mpdenton@chromium.org     #{{LAST_RESORT_SUGGESTION}}
+nasko@chromium.org        #{{LAST_RESORT_SUGGESTION}}
+rsesek@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+sammc@chromium.org        #{{LAST_RESORT_SUGGESTION}}
+tsepez@chromium.org       #{{LAST_RESORT_SUGGESTION}}
+wfh@chromium.org          #{{LAST_RESORT_SUGGESTION}}

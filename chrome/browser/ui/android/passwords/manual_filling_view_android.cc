@@ -261,7 +261,8 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
-  url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   std::vector<std::string> usernames;
   std::vector<std::string> passwords;
   base::android::AppendJavaStringArrayToStringVector(env, j_usernames,

@@ -12,6 +12,29 @@
 
 namespace base {
 
+namespace {
+
+scoped_refptr<internal::JobTaskSource> CreateJobTaskSource(
+    const Location& from_here,
+    const TaskTraits& traits,
+    RepeatingCallback<void(JobDelegate*)> worker_task,
+    MaxConcurrencyCallback max_concurrency_callback) {
+  DCHECK(ThreadPoolInstance::Get())
+      << "Hint: if this is in a unit test, you're likely merely missing a "
+         "base::test::TaskEnvironment member in your fixture.\n";
+  // ThreadPool is implicitly the destination for PostJob(). Extension traits
+  // cannot be used.
+  DCHECK_EQ(traits.extension_id(),
+            TaskTraitsExtensionStorage::kInvalidExtensionId);
+
+  return base::MakeRefCounted<internal::JobTaskSource>(
+      from_here, traits, std::move(worker_task),
+      std::move(max_concurrency_callback),
+      static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()));
+}
+
+}  // namespace
+
 JobDelegate::JobDelegate(
     internal::JobTaskSource* task_source,
     internal::PooledTaskRunnerDelegate* pooled_task_runner_delegate)
@@ -139,24 +162,25 @@ JobHandle PostJob(const Location& from_here,
                   const TaskTraits& traits,
                   RepeatingCallback<void(JobDelegate*)> worker_task,
                   MaxConcurrencyCallback max_concurrency_callback) {
-  DCHECK(ThreadPoolInstance::Get())
-      << "Hint: if this is in a unit test, you're likely merely missing a "
-         "base::test::TaskEnvironment member in your fixture.\n";
-  // ThreadPool is implicitly the destination for PostJob(). Extension traits
-  // cannot be used.
-  DCHECK_EQ(traits.extension_id(),
-            TaskTraitsExtensionStorage::kInvalidExtensionId);
-
-  auto task_source = base::MakeRefCounted<internal::JobTaskSource>(
-      from_here, traits, std::move(worker_task),
-      std::move(max_concurrency_callback),
-      static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()));
+  auto task_source =
+      CreateJobTaskSource(from_here, traits, std::move(worker_task),
+                          std::move(max_concurrency_callback));
   const bool queued =
       static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get())
           ->EnqueueJobTaskSource(task_source);
   if (queued)
     return internal::JobTaskSource::CreateJobHandle(std::move(task_source));
   return JobHandle();
+}
+
+JobHandle CreateJob(const Location& from_here,
+                    const TaskTraits& traits,
+                    RepeatingCallback<void(JobDelegate*)> worker_task,
+                    MaxConcurrencyCallback max_concurrency_callback) {
+  auto task_source =
+      CreateJobTaskSource(from_here, traits, std::move(worker_task),
+                          std::move(max_concurrency_callback));
+  return internal::JobTaskSource::CreateJobHandle(std::move(task_source));
 }
 
 }  // namespace base

@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -439,6 +440,7 @@ WebContentsViewAura::AsyncDropNavigationObserver::AsyncDropNavigationObserver(
 
 void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
   // This method is called every time any navigation completes in the observed
   // web contents, including subframe navigations. In the case of a subframe
   // navigation, we can't readily determine on the browser process side if the
@@ -448,10 +450,10 @@ void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
   // prerendering starts and the document is created and starts loading and one
   // when the prerendered document has been activated and shown to the user.
   // We should not disallow the drop for the former prerendering state.
-  if (navigation_handle->HasCommitted() &&
-      (navigation_handle->GetURL() !=
-       navigation_handle->GetPreviousMainFrameURL()) &&
-      navigation_handle->GetRenderFrameHost()->GetLifecycleState() !=
+  if (navigation_request->HasCommitted() &&
+      (navigation_request->GetURL() !=
+       navigation_request->GetPreviousMainFrameURL()) &&
+      navigation_request->GetRenderFrameHost()->GetLifecycleState() !=
           RenderFrameHost::LifecycleState::kPrerendering) {
     drop_allowed_ = false;
   }
@@ -1169,7 +1171,7 @@ void WebContentsViewAura::StartDragging(
       web_contents_->GetBrowserContext()->IsOffTheRecord()
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
-                web_contents_->GetMainFrame()->GetLastCommittedURL()));
+                web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL()));
   WebContentsDelegate* delegate = web_contents_->GetDelegate();
   if (delegate && delegate->IsPrivileged())
     data->MarkAsFromPrivileged();
@@ -1514,7 +1516,7 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   auto* focused_frame = web_contents_->GetFocusedFrame();
   if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
-        web_contents_->GetMainFrame()->GetLastCommittedURL());
+        web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL());
   }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();

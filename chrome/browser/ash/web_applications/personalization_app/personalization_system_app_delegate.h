@@ -6,19 +6,22 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+class Browser;
 struct WebAppInstallInfo;
 
-class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class PersonalizationSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit PersonalizationSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Size GetMinimumWindowSize() const override;
+  gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;

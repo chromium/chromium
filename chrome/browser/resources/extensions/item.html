@@ -279,14 +279,14 @@
                 $i18n{itemInspectViews}
               </span>
               <a class="clippable-flex-text" is="action-link"
-                  title="[[computeFirstInspectTitle_(data.views)]]"
+                  title="[[computeFirstInspectTitle_(firstInspectView_)]]"
                   on-click="onInspectTap_">
-                [[computeFirstInspectLabel_(data.views)]]
+                [[computeFirstInspectLabel_(firstInspectView_)]]
               </a>
               <a is="action-link"
                   hidden$="[[computeExtraViewsHidden_(data.views)]]"
                   on-click="onExtraInspectTap_">
-                [[computeExtraInspectLabel_(data.views)]]
+                &nbsp;[[computeExtraInspectLabel_(data.views)]]
               </a>
             </div>
           </div>

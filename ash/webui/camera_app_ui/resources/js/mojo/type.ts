@@ -13,6 +13,7 @@ export {
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,
   DocumentOutputFormat,
+  DocumentScannerReadyState,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   ScreenState,

@@ -2,69 +2,102 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/arm.gni")
+
+# TODO(richard.townsend@arm.com): Optimizations temporarily disabled for
+# Windows on Arm MSVC builds, see http://crbug.com/v8/10012.
+use_arm_neon_optimizations = (target_cpu == "arm" || target_cpu == "arm64") &&
+                             arm_use_neon && !(is_win && !is_clang)
+
 config("lzma_sdk_config") {
-  include_dirs = [ "." ]
+  include_dirs = [
+    ".",
+    "./C",
+  ]
 }
 
-# Must be in a config because of how GN orders flags (otherwise -Wall will
-# appear after this, and turn it back on).
-config("clang_warnings") {
-  if (is_clang) {
-    # Upstream uses self-assignment to avoid warnings.
-    cflags = [ "-Wno-self-assign" ]
-  }
-}
-
-config("lzma_defines") {
+# Must be in a config for -Wno-self-assign because of how GN orders flags
+# (otherwise -Wall will appear after this, and turn it back on).
+config("lzma_build_config") {
   defines = [
     "_7ZIP_ST",
     "_7Z_NO_METHODS_FILTERS",
     "_LZMA_PROB32",
   ]
+
+  cflags = []
+  if (is_clang) {
+    # Upstream uses self-assignment to avoid warnings.
+    cflags += [ "-Wno-self-assign" ]
+  }
+
+  if (use_arm_neon_optimizations) {
+    if (is_fuchsia) {
+      defines += [ "ARMV8_OS_FUCHSIA" ]
+    }
+
+    if (target_cpu == "arm" && arm_version >= 8) {
+      if (is_clang) {
+        cflags += [
+          "-march=armv8-a",
+          "-Xclang",
+          "-target-feature",
+          "-Xclang",
+          "+crc",
+          "-Xclang",
+          "-target-feature",
+          "-Xclang",
+          "+crypto",
+        ]
+      } else {
+        cflags += [ "-march=armv8-a+crc+crypto" ]
+      }
+    }
+  }
 }
 
 static_library("lzma_sdk") {
   sources = [
-    "7z.h",
-    "7zAlloc.c",
-    "7zAlloc.h",
-    "7zArcIn.c",
-    "7zBuf.c",
-    "7zBuf.h",
-    "7zCrc.c",
-    "7zCrc.h",
-    "7zCrcOpt.c",
-    "7zDec.c",
-    "7zFile.c",
-    "7zFile.h",
-    "7zStream.c",
-    "7zTypes.h",
-    "Alloc.c",
-    "Alloc.h",
-    "Bcj2.c",
-    "Bcj2.h",
-    "Bra.c",
-    "Bra.h",
-    "Bra86.c",
-    "Compiler.h",
-    "CpuArch.c",
-    "CpuArch.h",
-    "Delta.c",
-    "Delta.h",
-    "DllSecur.c",
-    "DllSecur.h",
-    "LzFind.c",
-    "LzFind.h",
-    "LzHash.h",
-    "Lzma2Dec.c",
-    "Lzma2Dec.h",
-    "LzmaDec.c",
-    "LzmaDec.h",
-    "LzmaEnc.c",
-    "LzmaEnc.h",
-    "LzmaLib.c",
-    "LzmaLib.h",
-    "Precomp.h",
+    "C/7z.h",
+    "C/7zAlloc.c",
+    "C/7zAlloc.h",
+    "C/7zArcIn.c",
+    "C/7zBuf.c",
+    "C/7zBuf.h",
+    "C/7zCrc.c",
+    "C/7zCrc.h",
+    "C/7zCrcOpt.c",
+    "C/7zDec.c",
+    "C/7zFile.c",
+    "C/7zFile.h",
+    "C/7zStream.c",
+    "C/7zTypes.h",
+    "C/Alloc.c",
+    "C/Alloc.h",
+    "C/Bcj2.c",
+    "C/Bcj2.h",
+    "C/Bra.c",
+    "C/Bra.h",
+    "C/Bra86.c",
+    "C/Compiler.h",
+    "C/CpuArch.c",
+    "C/CpuArch.h",
+    "C/Delta.c",
+    "C/Delta.h",
+    "C/DllSecur.c",
+    "C/DllSecur.h",
+    "C/LzFind.c",
+    "C/LzFind.h",
+    "C/LzHash.h",
+    "C/Lzma2Dec.c",
+    "C/Lzma2Dec.h",
+    "C/LzmaDec.c",
+    "C/LzmaDec.h",
+    "C/LzmaEnc.c",
+    "C/LzmaEnc.h",
+    "C/LzmaLib.c",
+    "C/LzmaLib.h",
+    "C/Precomp.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -72,25 +105,29 @@ static_library("lzma_sdk") {
     "//build/config/compiler:no_chromium_code",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
-    ":clang_warnings",
-    ":lzma_defines",
+    ":lzma_build_config",
   ]
   public_configs = [ ":lzma_sdk_config" ]
 }
 
 static_library("lzma_sdk_xz") {
   sources = [
-    "BraIA64.c",
-    "RotateDefs.h",
-    "Sha256.c",
-    "Sha256.h",
-    "Xz.c",
-    "Xz.h",
-    "XzCrc64.c",
-    "XzCrc64.h",
-    "XzCrc64Opt.c",
-    "XzDec.c",
+    "C/BraIA64.c",
+    "C/RotateDefs.h",
+    "C/Sha256.c",
+    "C/Sha256.h",
+    "C/Xz.c",
+    "C/Xz.h",
+    "C/XzCrc64.c",
+    "C/XzCrc64.h",
+    "C/XzCrc64Opt.c",
+    "C/XzDec.c",
   ]
+
+  # TODO(crbug.com/1338627): Enable ARM optimizations
+  if (target_cpu == "x86" || target_cpu == "x64") {
+    sources += [ "C/Sha256Opt.c" ]
+  }
 
   deps = [ ":lzma_sdk" ]
 
@@ -99,8 +136,7 @@ static_library("lzma_sdk_xz") {
     "//build/config/compiler:no_chromium_code",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
-    ":clang_warnings",
-    ":lzma_defines",
+    ":lzma_build_config",
   ]
   public_configs = [ ":lzma_sdk_config" ]
 }

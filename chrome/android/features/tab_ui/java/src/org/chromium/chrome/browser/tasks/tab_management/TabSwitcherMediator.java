@@ -18,8 +18,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.init.FirstDrawDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -60,6 +63,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -73,7 +77,8 @@ import java.util.List;
  */
 class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
                                      TabListMediator.GridCardOnClickListenerProvider,
-                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider {
+                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider,
+                                     TabSwitcherCustomViewManager.Delegate {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
@@ -156,6 +161,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private boolean mRegisteredFirstMeaningfulPaintRecorder;
     private @TabListCoordinator.TabListMode int mMode;
     private Context mContext;
+    private SnackbarManager mSnackbarManager;
 
     /**
      * Interface to delegate resetting the tab grid.
@@ -451,11 +457,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param tabSelectionEditorController The controller that can control the visibility of the
      *                                     TabSelectionEditor.
      */
-    public void initWithNative(TabSelectionEditorCoordinator
-                                       .TabSelectionEditorController tabSelectionEditorController) {
+    public void initWithNative(
+            TabSelectionEditorCoordinator.TabSelectionEditorController tabSelectionEditorController,
+            @Nullable SnackbarManager snackbarManager) {
         mTabSelectionEditorController = tabSelectionEditorController;
         mTabSelectionEditorController.getHandleBackPressChangedSupplier().addObserver(
                 this::notifyBackPressStateChanged);
+        mSnackbarManager = snackbarManager;
     }
 
     /**
@@ -507,6 +515,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         mContainerViewModel.set(IS_VISIBLE, isVisible);
+        notifyBackPressStateChangedInternal();
     }
 
     private void updateTopControlsProperties() {
@@ -611,6 +620,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     @Override
     public boolean overviewVisible() {
         return mContainerViewModel.get(IS_VISIBLE);
+    }
+
+    @Override
+    public ViewGroup getTabSwitcherContainer() {
+        return mContainerView;
     }
 
     @Override
@@ -841,6 +855,37 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         notifyBackPressStateChangedInternal();
     }
 
+    @Override
+    public void setSnackbarParentView(ViewGroup parentView) {
+        if (mSnackbarManager == null) return;
+        mSnackbarManager.setParentView(parentView);
+    }
+
+    /**
+     * A method to handle signal from outside world that a client is requesting to show a custom
+     * view inside the tab switcher.
+     *
+     * @param customView A {@link View} view that needs to be shown.
+     */
+    @Override
+    public void addCustomView(@NonNull View customView) {
+        mContainerView.addView(customView);
+    }
+
+    /**
+     * A method to handle signal from outside world that a client is requesting to remove the custom
+     * view from the tab switcher.
+     *
+     * TODO(crbug.com/1227656): Transitions needs to be handled correctly to not leak the Incognito
+     * content.
+     *
+     * @param customView A {@link View} view that needs to be removed.
+     */
+    @Override
+    public void removeCustomView(@NonNull View customView) {
+        mContainerView.removeView(customView);
+    }
+
     /**
      * Do clean-up work after the overview hiding animation is finished.
      * @see TabSwitcher.TabListDelegate#postHiding
@@ -975,7 +1020,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
-    private boolean shouldInterceptBackPress() {
+    @VisibleForTesting
+    boolean shouldInterceptBackPress() {
         if (isDialogVisible()) return true;
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;

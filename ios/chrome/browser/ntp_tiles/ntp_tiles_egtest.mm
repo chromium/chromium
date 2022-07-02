@@ -138,14 +138,7 @@ using web::test::HttpServer;
       assertWithMatcher:grey_nil()];
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
-  [ChromeEarlGreyUI tapPrivacyMenuButton:ClearBrowsingDataCell()];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey clearBrowsingHistory];
 
   // Wait for clear browsing data to completed before checking for title2 to
   // disappear.

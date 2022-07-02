@@ -4,9 +4,7 @@
 
 #include "net/cert/internal/common_cert_errors.h"
 
-namespace net {
-
-namespace cert_errors {
+namespace net::cert_errors {
 
 DEFINE_CERT_ERROR_ID(kInternalError, "Internal error");
 DEFINE_CERT_ERROR_ID(kValidityFailedNotAfter, "Time is after notAfter");
@@ -65,6 +63,4 @@ DEFINE_CERT_ERROR_ID(kDeadlineExceeded, "Deadline exceeded");
 DEFINE_CERT_ERROR_ID(kIterationLimitExceeded, "Iteration limit exceeded");
 DEFINE_CERT_ERROR_ID(kDepthLimitExceeded, "Depth limit exceeded");
 
-}  // namespace cert_errors
-
-}  // namespace net
+}  // namespace net::cert_errors

@@ -59,7 +59,11 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
          request.video_type ==
              blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 
-  blink::mojom::StreamDevices devices;
+  // TOOD(crbug.com/1300883): Generalize to multiple streams.
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices[0];
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
@@ -84,8 +88,8 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
   // TODO(jamescook): Should we show a recording icon somewhere? If so, where?
   std::unique_ptr<MediaStreamUI> ui;
   std::move(callback).Run(
-      devices,
-      devices.audio_device.has_value() || devices.video_device.has_value()
+      stream_devices_set,
+      (devices.audio_device.has_value() || devices.video_device.has_value())
           ? blink::mojom::MediaStreamRequestResult::OK
           : blink::mojom::MediaStreamRequestResult::INVALID_STATE,
       std::move(ui));

@@ -33,10 +33,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
-import org.chromium.chrome.browser.ui.autofill.FakeModalDialogManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
 import java.util.ArrayList;

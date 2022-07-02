@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +46,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
         std::make_unique<StorageService>(nullptr, std::move(moved_signal_db),
                                          nullptr, nullptr, &ukm_data_manager_);
     clock_.SetNow(base::Time::Now());
-    segment_id_ = OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    segment_id_ = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   }
 
   void TearDown() override {
@@ -60,7 +61,9 @@ class FeatureListQueryProcessorTest : public testing::Test {
     auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
     feature_aggregator_ = feature_aggregator.get();
     feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-        storage_service_.get(), std::move(feature_aggregator));
+        storage_service_.get(),
+        std::make_unique<processing::InputDelegateHolder>(),
+        std::move(feature_aggregator));
   }
 
   void SetBucketDuration(uint64_t bucket_duration, proto::TimeUnit time_unit) {
@@ -167,7 +170,8 @@ class FeatureListQueryProcessorTest : public testing::Test {
           FeatureListQueryProcessor::ProcessOption::kInputsOnly) {
     base::RunLoop loop;
     feature_list_query_processor_->ProcessFeatureList(
-        model_metadata, segment_id_, prediction_time, process_option,
+        model_metadata, /*input_context=*/nullptr, segment_id_, prediction_time,
+        process_option,
         base::BindOnce(
             &FeatureListQueryProcessorTest::OnProcessingFinishedCallback,
             base::Unretained(this), loop.QuitClosure(), expected_error,
@@ -198,7 +202,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
 
   base::SimpleTestClock clock_;
   base::test::TaskEnvironment task_environment_;
-  OptimizationTarget segment_id_;
+  SegmentId segment_id_;
   proto::SegmentationModelMetadata model_metadata;
   MockUkmDataManager ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;

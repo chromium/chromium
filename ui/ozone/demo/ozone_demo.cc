@@ -35,11 +35,6 @@ int main(int argc, char** argv) {
   // Initialize logging so we can enable VLOG messages.
   logging::LoggingSettings settings;
 
-// Logs to system debug by default on POSIX.
-#if BUILDFLAG(IS_WIN)
-  settings.log_file_path = FILE_PATH_LITERAL("ozone_demo.log");
-#endif
-
   logging::InitLogging(settings);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kHelp)) {

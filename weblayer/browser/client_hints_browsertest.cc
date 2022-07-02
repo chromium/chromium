@@ -65,7 +65,7 @@ class ClientHintsBrowserTest : public WebLayerBrowserTest {
     content::RenderProcessHost* child_process =
         static_cast<TabImpl*>(shell()->tab())
             ->web_contents()
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->GetProcess();
     content::RenderProcessHostWatcher crash_observer(
         child_process,

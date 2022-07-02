@@ -52,6 +52,11 @@ class CORE_EXPORT DisplayLockDocumentState final
   void RegisterDisplayLockActivationObservation(Element*);
   void UnregisterDisplayLockActivationObservation(Element*);
 
+  // Returns true if we have activatable locks.
+  // This compares LockedDisplayLockCount() and
+  // DisplayLockBlockingAllActivationCount().
+  bool HasActivatableLocks() const;
+
   // Returns true if all activatable locks have been forced.
   bool ActivatableDisplayLocksForced() const;
 
@@ -172,10 +177,25 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   void NotifyPrintingOrPreviewChanged();
   void UnlockShapingDeferredElements();
+  // Unlock shaping-deferred elements so that |target| can return the precise
+  // value of |property_id|.
+  // If |property_id| is kInvalid, this function unlocks elements necessary for
+  // any geometry of the target node.
+  void UnlockShapingDeferredElements(
+      const Node& target,
+      CSSPropertyID property_id = CSSPropertyID::kInvalid);
+  // Unlock shaping-deferred elements so that |object| can return the precise
+  // width.
+  void UnlockToDetermineWidth(const LayoutObject& object);
+  // Unlock shaping-deferred elements so that |object| can return the precise
+  // height.
+  void UnlockToDetermineHeight(const LayoutObject& object);
 
   base::TimeTicks GetLockUpdateTimestamp();
 
   static constexpr float kViewportMarginPercentage = 150.f;
+
+  void IssueForcedRenderWarning(Element*);
 
  private:
   IntersectionObserver& EnsureIntersectionObserver();
@@ -189,6 +209,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   // one of the contexts skips its descendants, this return true. Otherwise, it
   // returns false.
   bool MarkAncestorContextsHaveTopLayerElement(Element*);
+
+  void UnlockShapingDeferredInclusiveDescendants(const LayoutObject& ancestor);
 
   Member<Document> document_;
 
@@ -209,6 +231,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   bool printing_ = false;
 
   base::TimeTicks last_lock_update_timestamp_ = base::TimeTicks();
+
+  unsigned forced_render_warnings_ = 0;
 };
 
 }  // namespace blink

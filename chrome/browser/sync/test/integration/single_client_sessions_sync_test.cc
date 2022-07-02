@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -38,6 +39,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -70,7 +72,6 @@ using sessions_helper::NavigateTabBack;
 using sessions_helper::NavigateTabForward;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
-using sessions_helper::OpenTabFromSourceIndex;
 using sessions_helper::ScopedWindowMap;
 using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
@@ -238,7 +239,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
   SingleClientSessionsSyncTest& operator=(const SingleClientSessionsSyncTest&) =
       delete;
 
-  ~SingleClientSessionsSyncTest() override {}
+  ~SingleClientSessionsSyncTest() override = default;
 
   void ExpectNavigationChain(const std::vector<GURL>& urls) {
     ScopedWindowMap windows;
@@ -434,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
   // issue another navigation to make sure association logic kicks in.
   NavigateTab(0, GURL(kURL3));
   ASSERT_TRUE(WaitForTabsToLoad(0, {GURL(kURL1), GURL(kURL3)}));
-  CloseTab(/*index=*/0, /*tab_index=*/1);
+  CloseTab(/*browser_index=*/0, /*tab_index=*/1);
   NavigateTab(0, GURL(kURL4));
 
   ASSERT_TRUE(
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   // addition, a new tab is opened.
   NavigateTab(0, GURL(kURL3));
   ASSERT_TRUE(WaitForTabsToLoad(0, {GURL(kURL1), GURL(kURL3)}));
-  CloseTab(/*index=*/0, /*tab_index=*/1);
+  CloseTab(/*browser_index=*/0, /*tab_index=*/1);
   ASSERT_TRUE(OpenTab(0, GURL(kURL4)));
 
   ASSERT_TRUE(
@@ -682,9 +683,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
     EXPECT_NE(kForeignSessionTag, entity.specifics().session().session_tag());
   }
 
-  EXPECT_EQ(
-      3, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.SESSION",
-                                         /*LOCAL_DELETION=*/0));
+  EXPECT_EQ(3, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.SESSION",
+                   syncer::ModelTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
@@ -729,9 +730,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
     EXPECT_NE(kForeignSessionTag, entity.specifics().session().session_tag());
   }
 
-  EXPECT_EQ(
-      2, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.SESSION",
-                                         /*LOCAL_DELETION=*/0));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.SESSION",
+                   syncer::ModelTypeEntityChange::kLocalDeletion));
 }
 
 // Regression test for crbug.com/915133 that verifies the browser doesn't crash
@@ -874,8 +875,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 class SingleClientSessionsSyncTestWithFaviconTestServer
     : public SingleClientSessionsSyncTest {
  public:
-  SingleClientSessionsSyncTestWithFaviconTestServer()
-      : SingleClientSessionsSyncTest() {}
+  SingleClientSessionsSyncTestWithFaviconTestServer() = default;
 
   SingleClientSessionsSyncTestWithFaviconTestServer(
       const SingleClientSessionsSyncTestWithFaviconTestServer&) = delete;
@@ -1008,17 +1008,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
   CloseTab(/*browser_index=*/0, /*tab_index=*/0);
   WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
 
-  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
-
-  // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled, the
-  // last CloseTab() triggers Profile deletion (and SyncService deletion).
-  // This means the last tab close never gets synced. We should fix this
-  // regression eventually. Once that's done, merge this test with the
-  // WithoutDestroyProfile version.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
-  run_loop.Run();
+  {
+    // Closing the last tab results in profile destruction and hence may require
+    // running blocking tasks which are normally disallowed during tests.
+    // TODO(crbug.com/1334091): remove once it's clear why it results in
+    // blocking tasks.
+    base::ScopedAllowUnresponsiveTasksForTesting scoped_allow_sync_primitives;
+    CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+    // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled,
+    // the last CloseTab() triggers Profile deletion (and SyncService deletion).
+    // This means the last tab close never gets synced. We should fix this
+    // regression eventually. Once that's done, merge this test with the
+    // WithoutDestroyProfile version.
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+    run_loop.Run();
+  }
 
   // Even after several seconds, state didn't change on the server.
   fake_server::FakeServerVerifier verifier(GetFakeServer());

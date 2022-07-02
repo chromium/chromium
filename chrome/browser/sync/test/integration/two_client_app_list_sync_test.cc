@@ -28,7 +28,6 @@
 
 using apps_helper::DisableApp;
 using apps_helper::EnableApp;
-using apps_helper::HasSameApps;
 using apps_helper::IncognitoDisableApp;
 using apps_helper::IncognitoEnableApp;
 using apps_helper::InstallAppsPendingForSync;
@@ -68,8 +67,9 @@ class TwoClientAppListSyncTest : public SyncTest {
 
   // SyncTest
   bool SetupClients() override {
-    if (!SyncTest::SetupClients())
+    if (!SyncTest::SetupClients()) {
       return false;
+    }
 
     // Init SyncAppListHelper to ensure that the extension system is initialized
     // for each Profile.
@@ -78,8 +78,9 @@ class TwoClientAppListSyncTest : public SyncTest {
   }
 
   bool SetupSync() override {
-    if (!SyncTest::SetupSync())
+    if (!SyncTest::SetupSync()) {
       return false;
+    }
     WaitForExtensionServicesToLoad();
     return true;
   }
@@ -92,8 +93,9 @@ class TwoClientAppListSyncTest : public SyncTest {
 
  private:
   void WaitForExtensionServicesToLoad() {
-    for (int i = 0; i < num_clients(); ++i)
+    for (int i = 0; i < num_clients(); ++i) {
       WaitForExtensionsServiceToLoadForProfile(GetProfile(i));
+    }
   }
 
   void WaitForExtensionsServiceToLoadForProfile(Profile* profile) {
@@ -386,8 +388,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, Move) {
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 
   const int kNumApps = 5;
-  for (int i = 0; i < kNumApps; ++i)
+  for (int i = 0; i < kNumApps; ++i) {
     InstallHostedApp(GetProfile(1), i);
+  }
 
   AwaitQuiescenceAndInstallAppsPendingForSync();
 

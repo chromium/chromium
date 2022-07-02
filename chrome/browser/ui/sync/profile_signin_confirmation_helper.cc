@@ -36,8 +36,9 @@ bool HasBookmarks(Profile* profile) {
   BookmarkModel* bookmarks =
       BookmarkModelFactory::GetForBrowserContext(profile);
   bool has_bookmarks = bookmarks && bookmarks->HasBookmarks();
-  if (has_bookmarks)
+  if (has_bookmarks) {
     VLOG(1) << "SigninConfirmationHelper: profile contains bookmarks";
+  }
   return has_bookmarks;
 }
 
@@ -47,8 +48,9 @@ namespace ui {
 
 bool HasBeenShutdown(Profile* profile) {
   bool has_been_shutdown = !profile->IsNewProfile();
-  if (has_been_shutdown)
+  if (has_been_shutdown) {
     VLOG(1) << "ProfileSigninConfirmationHelper: profile is not new";
+  }
   return has_been_shutdown;
 }
 
@@ -95,6 +97,7 @@ void CheckShouldPromptForNewProfile(
   helper->CheckHasTypedURLs();
 }
 
-ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() {}
+ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() =
+    default;
 
 }  // namespace ui

@@ -24,6 +24,9 @@ extern const char kCryptohomePublicMountLabel[];
 COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 extern const char kCryptohomeWildcardLabel[];
 
+COMPONENT_EXPORT(ASH_LOGIN_AUTH)
+extern const char kCryptohomeRecoveryKeyLabel[];
+
 }  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.

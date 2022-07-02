@@ -27,7 +27,9 @@
 
 #include <algorithm>
 #include <memory>
+
 #include "base/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
@@ -86,6 +88,11 @@ void StringImpl::DestroyIfNeeded() const {
       // killing it.
     }
   } else {
+    // This is not necessary but TSAN bots don't like the load in the
+    // caller to have relaxed memory order. Adding this check here instead
+    // of changing the load memory order to minimize perf impact.
+    int ref_count = ref_count_.load(std::memory_order_acquire);
+    DCHECK_EQ(ref_count, 1);
     delete this;
   }
 }
@@ -294,7 +301,7 @@ scoped_refptr<StringImpl> StringImpl::Create(const LChar* string) {
   if (!string)
     return empty_;
   size_t length = strlen(reinterpret_cast<const char*>(string));
-  return Create(string, SafeCast<wtf_size_t>(length));
+  return Create(string, base::checked_cast<wtf_size_t>(length));
 }
 
 bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {

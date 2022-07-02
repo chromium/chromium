@@ -98,14 +98,13 @@ class ImmersiveModeController {
   // mode is enabled. The lock's lifetime can span immersive mode being
   // enabled / disabled.
   // If acquiring the lock causes a reveal, the top-of-window views will animate
-  // according to |animate_reveal|.
-  // The caller takes ownership of the returned lock.
+  // according to `animate_reveal`.
   // This is currently only supported on Ash.
-  [[nodiscard]] virtual ImmersiveRevealedLock* GetRevealedLock(
+  virtual std::unique_ptr<ImmersiveRevealedLock> GetRevealedLock(
       AnimateReveal animate_reveal) = 0;
 
   // Called by the find bar to indicate that its visible bounds have changed.
-  // |new_visible_bounds_in_screen| should be empty if the find bar is not
+  // `new_visible_bounds_in_screen` should be empty if the find bar is not
   // visible.
   virtual void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) = 0;

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
-import {assertTrue} from '../../chai_assert.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 /**
@@ -75,4 +76,65 @@ export function changeSelect(select, value, selectedIndex) {
 
   select.dispatchEvent(new CustomEvent('change'));
   return flushTasks();
+}
+
+/** @typedef {function(string, {media: string, matches: boolean})} */
+let MediaQueryListEventListener;
+
+/**
+ * Fake MediaQueryList for mocking behavior of |window.matchMedia|.
+ * @extends {EventTarget}
+ * @implements {MediaQueryList}
+ * @suppress {checkTypes} Type checker incorrectly states class cannot be
+ * extended.
+ */
+export class FakeMediaQueryList extends EventTarget {
+  constructor(media) {
+    super();
+    /** @type {string} */
+    this.media_ = media;
+    /** @type {boolean} */
+    this.matches_ = false;
+    /** @type {?MediaQueryListEventListener} */
+    this.listener_ = null;
+  }
+
+  /** @param {!Function} listener */
+  addListener(listener) {
+    this.listener_ = listener;
+  }
+
+  /** @param {!Function} listener */
+  removeListener(listener) {
+    this.listener_ = null;
+  }
+
+  onchange() {
+    if (!this.listener_) {
+      return;
+    }
+
+    this.listener_(new window.MediaQueryListEvent(
+        'change', {media: this.media_, matches: this.matches_}));
+  }
+
+  /** @return {string} */
+  get media() {
+    return this.media_;
+  }
+
+  /** @return {boolean} */
+  get matches() {
+    return this.matches_;
+  }
+
+  /** @param {boolean} matches */
+  set matches(matches) {
+    if (this.matches_ === matches) {
+      return;
+    }
+
+    this.matches_ = matches;
+    this.onchange();
+  }
 }

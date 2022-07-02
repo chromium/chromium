@@ -58,7 +58,7 @@ class NET_EXPORT SSLConfigService {
     virtual void OnSSLContextConfigChanged() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   SSLConfigService();

@@ -8,21 +8,21 @@
    !== See "v8/include/cppgc/member.h"
    !-->
   <Type Name="cppgc::internal::BasicMember&lt;*&gt;">
-    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
-    <DisplayString Condition="raw_ == 0">null</DisplayString>
-    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <SmartPointer Usage="Minimal">($T1*)raw_.ptr_</SmartPointer>
+    <DisplayString Condition="raw_.ptr_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_.ptr_}</DisplayString>
     <Expand>
-      <Item Name="Raw">($T1*)raw_</Item>
-      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+      <Item Name="Raw">($T1*)raw_.ptr_</Item>
+      <ExpandedItem Condition="raw_.ptr_ != 0">($T1*)raw_.ptr_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="cppgc::internal::BasicPersistent&lt;*&gt;">
-    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
-    <DisplayString Condition="raw_ == 0">null</DisplayString>
-    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <SmartPointer Usage="Minimal">($T1*)raw_.ptr_</SmartPointer>
+    <DisplayString Condition="raw_.ptr_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_.ptr_}</DisplayString>
     <Expand>
-      <Item Name="Raw">($T1*)raw_</Item>
-      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+      <Item Name="Raw">($T1*)raw_.ptr_</Item>
+      <ExpandedItem Condition="raw_.ptr_ != 0">($T1*)raw_.ptr_</ExpandedItem>
     </Expand>
   </Type>
   <!--
@@ -193,14 +193,14 @@
   <Type Name="blink::ContainerNode">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>(blink::Node*)first_child_.raw_</HeadPointer>
-        <NextPointer>(blink::Node*)next_.raw_</NextPointer>
+        <HeadPointer>(blink::Node*)first_child_.raw_.ptr_</HeadPointer>
+        <NextPointer>(blink::Node*)next_.raw_.ptr_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
   </Type>
   <Type Name="blink::Element">
-    <DisplayString Condition="first_child_.raw_ != 0">&lt;{tag_name_}>{first_child_}</DisplayString>
+    <DisplayString Condition="first_child_.raw_.ptr_ != 0">&lt;{tag_name_}>{first_child_}</DisplayString>
     <DisplayString>&lt;{tag_name_}></DisplayString>
   </Type>
   <!-- Layout: LayoutObject -->
@@ -211,8 +211,8 @@
   <Type Name="blink::LayoutObjectChildList">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>(blink::LayoutObject*)first_child_.raw_</HeadPointer>
-        <NextPointer>(blink::LayoutObject*)next_.raw_</NextPointer>
+        <HeadPointer>(blink::LayoutObject*)first_child_.raw_.ptr_</HeadPointer>
+        <NextPointer>(blink::LayoutObject*)next_.raw_.ptr_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -224,8 +224,8 @@
   <Type Name="blink::InlineFlowBox">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_</HeadPointer>
-        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_.ptr_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_.ptr_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>
@@ -233,8 +233,8 @@
   <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>(blink::InlineFlowBox*)first_.raw_</HeadPointer>
-        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
+        <HeadPointer>(blink::InlineFlowBox*)first_.raw_.ptr_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_.ptr_</NextPointer>
         <ValueNode>this</ValueNode>
       </LinkedListItems>
     </Expand>

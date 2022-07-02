@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import("//build/config/dcheck_always_on.gni")
 import("//third_party/blink/renderer/core/core.gni")
+import("//third_party/blink/renderer/core/exported/build.gni")
 
 static_library("test_support") {
   testonly = true
@@ -19,74 +20,7 @@ static_library("test_support") {
 }
 
 blink_core_sources("exported") {
-  sources = [
-    "web_array_buffer.cc",
-    "web_array_buffer_converter.cc",
-    "web_blob.cc",
-    "web_console_message.cc",
-    "web_content_holder.cc",
-    "web_custom_element.cc",
-    "web_dev_tools_agent_impl.cc",
-    "web_dev_tools_agent_impl.h",
-    "web_document.cc",
-    "web_dom_activity_logger.cc",
-    "web_dom_event.cc",
-    "web_dom_message_event.cc",
-    "web_element.cc",
-    "web_element_collection.cc",
-    "web_form_control_element.cc",
-    "web_form_element.cc",
-    "web_form_element_observer_impl.cc",
-    "web_form_element_observer_impl.h",
-    "web_frame_content_dumper.cc",
-    "web_frame_serializer.cc",
-    "web_heap.cc",
-    "web_history_entry.cc",
-    "web_history_item.cc",
-    "web_hit_test_result.cc",
-    "web_image.cc",
-    "web_image_cache.cc",
-    "web_input_element.cc",
-    "web_input_method_controller_impl.cc",
-    "web_input_method_controller_impl.h",
-    "web_isolated_world_info.cc",
-    "web_label_element.cc",
-    "web_language_detection_details.cc",
-    "web_memory_statistics.cc",
-    "web_message_port_converter.cc",
-    "web_meta_element.cc",
-    "web_navigation_params.cc",
-    "web_node.cc",
-    "web_option_element.cc",
-    "web_page_popup_impl.cc",
-    "web_page_popup_impl.h",
-    "web_performance.cc",
-    "web_plugin_container_impl.cc",
-    "web_plugin_container_impl.h",
-    "web_plugin_document.cc",
-    "web_plugin_script_forbidden_scope.cc",
-    "web_range.cc",
-    "web_render_theme.cc",
-    "web_savable_resources_test_support.cc",
-    "web_scoped_page_pauser.cc",
-    "web_scoped_window_focus_allowed_indicator.cc",
-    "web_script_controller.cc",
-    "web_searchable_form_data.cc",
-    "web_security_policy.cc",
-    "web_select_element.cc",
-    "web_selector.cc",
-    "web_serialized_script_value.cc",
-    "web_settings_impl.cc",
-    "web_settings_impl.h",
-    "web_shared_worker_impl.cc",
-    "web_shared_worker_impl.h",
-    "web_text_checking_result.cc",
-    "web_v8_context_snapshot.cc",
-    "web_v8_features.cc",
-    "web_view_impl.cc",
-    "web_view_impl.h",
-    "web_view_observer.cc",
-  ]
+  sources = blink_core_sources_exported
 
   if (is_debug || dcheck_always_on) {
     sources += [ "web_disallow_transition_scope.cc" ]

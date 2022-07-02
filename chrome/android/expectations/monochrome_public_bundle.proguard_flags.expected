@@ -225,7 +225,7 @@
 
 # Never merge classes horizontally or vertically with this annotation.
 # Relevant to classes being used as a key in maps or sets.
--keep,allowaccessmodification,allowobfuscation,allowshrinking @DoNotClassMerge class *
+-keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.base.annotations.DoNotClassMerge class *
 
 # Keep all CREATOR fields within Parcelable that are kept.
 -keepclassmembers class org.chromium.** implements android.os.Parcelable {

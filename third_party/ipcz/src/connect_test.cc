@@ -9,173 +9,121 @@
 #include "test/multinode_test.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/synchronization/notification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ipcz {
 namespace {
 
-using ConnectTest = test::MultinodeTestWithDriver;
+using ConnectTestNode = test::TestNode;
+using ConnectTest = test::MultinodeTest<ConnectTestNode>;
+
+MULTINODE_TEST_NODE(ConnectTestNode, BrokerToNonBrokerClient) {
+  IpczHandle b = ConnectToBroker();
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(b, IPCZ_TRAP_PEER_CLOSED));
+  Close(b);
+}
 
 TEST_P(ConnectTest, BrokerToNonBroker) {
-  IpczHandle broker = CreateBrokerNode();
-  IpczHandle non_broker = CreateNonBrokerNode();
+  IpczHandle c = SpawnTestNode<BrokerToNonBrokerClient>();
+  Close(c);
+}
 
-  IpczDriverHandle broker_transport;
-  IpczDriverHandle non_broker_transport;
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
+constexpr size_t kNumBrokerPortals = 2;
+constexpr size_t kNumNonBrokerPortals = 5;
+static_assert(kNumBrokerPortals < kNumNonBrokerPortals,
+              "Test requires fewer broker portals than non-broker portals");
 
-  IpczHandle non_broker_portal;
-  ASSERT_EQ(IPCZ_RESULT_OK, ipcz().ConnectNode(non_broker, non_broker_transport,
-                                               1, IPCZ_CONNECT_NODE_TO_BROKER,
-                                               nullptr, &non_broker_portal));
+MULTINODE_TEST_NODE(ConnectTestNode, SurplusPortalsClient) {
+  IpczHandle portals[kNumNonBrokerPortals];
+  ConnectToBroker(portals);
 
-  IpczHandle broker_portal;
-  ASSERT_EQ(IPCZ_RESULT_OK,
-            ipcz().ConnectNode(broker, broker_transport, 1, IPCZ_NO_FLAGS,
-                               nullptr, &broker_portal));
-
-  Close(broker_portal);
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            WaitForConditionFlags(non_broker_portal, IPCZ_TRAP_PEER_CLOSED));
-
-  CloseAll({non_broker_portal, non_broker, broker});
+  // All of the surplus portals should observe peer closure.
+  for (size_t i = kNumBrokerPortals; i < kNumNonBrokerPortals; ++i) {
+    EXPECT_EQ(IPCZ_RESULT_OK,
+              WaitForConditionFlags(portals[i], IPCZ_TRAP_PEER_CLOSED));
+  }
+  CloseAll(portals);
 }
 
 TEST_P(ConnectTest, SurplusPortals) {
-  IpczHandle broker = CreateBrokerNode();
-  IpczHandle non_broker = CreateNonBrokerNode();
-
-  IpczDriverHandle broker_transport;
-  IpczDriverHandle non_broker_transport;
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
-
-  constexpr size_t kNumBrokerPortals = 2;
-  constexpr size_t kNumNonBrokerPortals = 5;
-  static_assert(kNumBrokerPortals < kNumNonBrokerPortals,
-                "Test requires fewer broker portals than non-broker portals");
-
-  IpczHandle broker_portals[kNumBrokerPortals];
-  ASSERT_EQ(
-      IPCZ_RESULT_OK,
-      ipcz().ConnectNode(broker, broker_transport, std::size(broker_portals),
-                         IPCZ_NO_FLAGS, nullptr, broker_portals));
-
-  IpczHandle non_broker_portals[kNumNonBrokerPortals];
-  ASSERT_EQ(IPCZ_RESULT_OK, ipcz().ConnectNode(non_broker, non_broker_transport,
-                                               std::size(non_broker_portals),
-                                               IPCZ_CONNECT_NODE_TO_BROKER,
-                                               nullptr, non_broker_portals));
-
-  // All of the surplus broker portals should observe peer closure.
-  for (size_t i = kNumBrokerPortals; i < kNumNonBrokerPortals; ++i) {
-    EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(non_broker_portals[i],
-                                                    IPCZ_TRAP_PEER_CLOSED));
-  }
-
-  for (IpczHandle portal : non_broker_portals) {
-    Close(portal);
-  }
-  for (IpczHandle portal : broker_portals) {
-    Close(portal);
-  }
-  CloseAll({non_broker, broker});
+  IpczHandle portals[kNumBrokerPortals];
+  SpawnTestNode<SurplusPortalsClient>(portals);
+  CloseAll(portals);
 }
 
-TEST_P(ConnectTest, DisconnectWithoutHandshake) {
-  IpczHandle broker = CreateBrokerNode();
-  IpczHandle non_broker = CreateNonBrokerNode();
-
-  // First fail to connect a broker.
-  IpczDriverHandle broker_transport, non_broker_transport;
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
-
-  IpczHandle portal;
-  {
-    // This listener is scoped such that it closes the non-broker's transport
-    // after the broker issues its ConnectNode(). This should trigger a
-    // rejection and ultimately portal closure by the broker.
-    test::TestTransportListener non_broker_listener(non_broker,
-                                                    non_broker_transport);
-    non_broker_listener.DiscardMessages<msg::ConnectFromBrokerToNonBroker>();
-
-    ASSERT_EQ(IPCZ_RESULT_OK,
-              ipcz().ConnectNode(broker, broker_transport, 1, IPCZ_NO_FLAGS,
-                                 nullptr, &portal));
-  }
-
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            WaitForConditionFlags(portal, IPCZ_TRAP_PEER_CLOSED));
-  Close(portal);
-
-  // Next fail to connect a non-broker.
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
-
-  {
-    // This listener is scoped such that it closes the broker transport after
-    // the non-broker issues its ConnectNode(). This should trigger a rejection
-    // and ultimately portal closure by the non-broker.
-    test::TestTransportListener broker_listener(broker, broker_transport);
-    broker_listener.DiscardMessages<msg::ConnectFromNonBrokerToBroker>();
-
-    ASSERT_EQ(
-        IPCZ_RESULT_OK,
-        ipcz().ConnectNode(non_broker, non_broker_transport, 1,
-                           IPCZ_CONNECT_NODE_TO_BROKER, nullptr, &portal));
-  }
-
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            WaitForConditionFlags(portal, IPCZ_TRAP_PEER_CLOSED));
-
-  CloseAll({portal, non_broker, broker});
+MULTINODE_TEST_NODE(ConnectTestNode, ExpectDisconnectFromBroker) {
+  IpczHandle b = ConnectToBroker();
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(b, IPCZ_TRAP_PEER_CLOSED));
+  Close(b);
 }
 
-TEST_P(ConnectTest, DisconnectOnBadMessage) {
-  IpczHandle broker = CreateBrokerNode();
-  IpczHandle non_broker = CreateNonBrokerNode();
+TEST_P(ConnectTest, DisconnectWithoutBrokerHandshake) {
+  TransportPair transports = CreateTransports();
+  auto controller =
+      SpawnTestNode<ExpectDisconnectFromBroker>(transports.theirs);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            GetDriver().Close(transports.ours, IPCZ_NO_FLAGS, nullptr));
+  controller->WaitForShutdown();
+}
 
-  IpczDriverHandle broker_transport, non_broker_transport;
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
+MULTINODE_TEST_NODE(ConnectTestNode,
+                    DisconnectWithoutNonBrokerHandshakeClient) {
+  // Our transport is automatically closed on exit. No handshake is sent because
+  // we never call ConnectToBroker(). No action required.
+}
 
-  // First fail to connect a broker.
-  IpczHandle portal;
-  ASSERT_EQ(IPCZ_RESULT_OK,
-            ipcz().ConnectNode(broker, broker_transport, 1, IPCZ_NO_FLAGS,
-                               nullptr, &portal));
+TEST_P(ConnectTest, DisconnectWithoutNonBrokerHandshake) {
+  IpczHandle c = SpawnTestNode<DisconnectWithoutNonBrokerHandshakeClient>();
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
+  Close(c);
+}
 
-  test::TestTransportListener non_broker_listener(non_broker,
-                                                  non_broker_transport);
-  non_broker_listener.DiscardMessages<msg::ConnectFromBrokerToNonBroker>();
+TEST_P(ConnectTest, DisconnectOnBadBrokerMessage) {
+  TransportPair transports = CreateTransports();
+  auto controller =
+      SpawnTestNode<ExpectDisconnectFromBroker>(transports.theirs);
 
+  // Send some garbage to the other node.
   const char kBadMessage[] = "this will never be a valid handshake message!";
+  EXPECT_EQ(
+      IPCZ_RESULT_OK,
+      GetDriver().Transmit(transports.ours, kBadMessage, std::size(kBadMessage),
+                           nullptr, 0, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Transmit(non_broker_transport, kBadMessage,
-                                 std::size(kBadMessage), nullptr, 0,
-                                 IPCZ_NO_FLAGS, nullptr));
+            GetDriver().Close(transports.ours, IPCZ_NO_FLAGS, nullptr));
 
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            WaitForConditionFlags(portal, IPCZ_TRAP_PEER_CLOSED));
+  // The other node will only shut down once it's observed peer closure on its
+  // portal to us; which it should, because we just sent it some garbage.
+  controller->WaitForShutdown();
+}
 
-  non_broker_listener.StopListening();
-  Close(portal);
+MULTINODE_TEST_NODE(ConnectTestNode, TransmitSomeGarbage) {
+  // Instead of doing the usual connection dance, send some garbage back to the
+  // broker. It should disconnect ASAP.
+  const char kBadMessage[] = "this will never be a valid handshake message!";
+  EXPECT_EQ(
+      IPCZ_RESULT_OK,
+      GetDriver().Transmit(transport(), kBadMessage, std::size(kBadMessage),
+                           nullptr, 0, IPCZ_NO_FLAGS, nullptr));
 
-  // Next fail to connect a non-broker.
-  CreateBrokerToNonBrokerTransports(&broker_transport, &non_broker_transport);
+  test::TestTransportListener listener(node(), ReleaseTransport());
+  absl::Notification done;
+  listener.OnError([&done] { done.Notify(); });
+  done.WaitForNotification();
+  listener.StopListening();
+}
 
-  test::TestTransportListener broker_listener(broker, broker_transport);
-  broker_listener.DiscardMessages<msg::ConnectFromNonBrokerToBroker>();
+TEST_P(ConnectTest, DisconnectOnBadNonBrokerMessage) {
+  IpczHandle c;
+  auto controller = SpawnTestNode<TransmitSomeGarbage>({&c, 1});
 
-  ASSERT_EQ(IPCZ_RESULT_OK,
-            ipcz().ConnectNode(non_broker, non_broker_transport, 1,
-                               IPCZ_CONNECT_NODE_TO_BROKER, nullptr, &portal));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Transmit(broker_transport, kBadMessage,
-                                 std::size(kBadMessage), nullptr, 0,
-                                 IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            WaitForConditionFlags(portal, IPCZ_TRAP_PEER_CLOSED));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
+  Close(c);
 
-  broker_listener.StopListening();
-  CloseAll({portal, non_broker, broker});
+  // Make sure the client also observes disconnection of its transport. It won't
+  // terminate until that happens.
+  controller->WaitForShutdown();
 }
 
 INSTANTIATE_MULTINODE_TEST_SUITE_P(ConnectTest);

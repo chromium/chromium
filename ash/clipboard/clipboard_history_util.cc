@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,7 +201,7 @@ gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
   if (copied_files_count == 1) {
     return chromeos::GetIconForPath(
         base::FilePath(file_name),
-        ash::AshColorProvider::Get()->IsDarkModeEnabled());
+        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,

@@ -1246,6 +1246,74 @@ TEST_F(SSLConnectJobTest, NoAdditionalDnsAliases) {
               testing::ElementsAre("host"));
 }
 
+// Test that `SSLConnectJob` passes the ECHConfigList from DNS to
+// `SSLClientSocket`.
+TEST_F(SSLConnectJobTest, EncryptedClientHello) {
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list1));
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list2));
+
+  // Configure two HTTPS RR routes, to test we pass the correct one.
+  HostResolverEndpointResult endpoint1, endpoint2;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = ech_config_list1;
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = ech_config_list2;
+  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+
+  for (bool feature_enabled : {true, false}) {
+    SCOPED_TRACE(feature_enabled);
+    base::test::ScopedFeatureList feature_list;
+    if (feature_enabled) {
+      feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+    } else {
+      feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
+    }
+
+    // The first connection attempt will be to `endpoint1`, which will fail.
+    StaticSocketDataProvider data1;
+    data1.set_expected_addresses(AddressList(endpoint1.ip_endpoints));
+    data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED));
+    socket_factory_.AddSocketDataProvider(&data1);
+    // The second connection attempt will be to `endpoint2`, which will succeed.
+    StaticSocketDataProvider data2;
+    data2.set_expected_addresses(AddressList(endpoint2.ip_endpoints));
+    data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+    socket_factory_.AddSocketDataProvider(&data2);
+    // The handshake then succeeds.
+    SSLSocketDataProvider ssl2(ASYNC, OK);
+    // The ECH configuration should be passed if and only if the feature is
+    // enabled.
+    ssl2.expected_ech_config_list =
+        feature_enabled ? ech_config_list2 : std::vector<uint8_t>{};
+    socket_factory_.AddSSLSocketDataProvider(&ssl2);
+
+    // The connection should ultimately succeed.
+    base::HistogramTester histogram_tester;
+    TestConnectJobDelegate test_delegate;
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+    // Whether or not the feature is enabled, we should record data for the
+    // ECH-capable server.
+    histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_ECH", OK, 1);
+    histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ECH", 1);
+    // The ECH result should only be recorded if ECH was actually enabled.
+    if (feature_enabled) {
+      histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                          0 /* kSuccessInitial */, 1);
+    } else {
+      histogram_tester.ExpectTotalCount("Net.SSL.ECHResult", 0);
+    }
+  }
+}
+
 // Test that `SSLConnectJob` retries the connection if there was a stale ECH
 // configuration.
 TEST_F(SSLConnectJobTest, ECHStaleConfig) {
@@ -1297,11 +1365,15 @@ TEST_F(SSLConnectJobTest, ECHStaleConfig) {
   socket_factory_.AddSSLSocketDataProvider(&ssl3);
 
   // The connection should ultimately succeed.
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      2 /* kSuccessRetry */, 1);
 }
 
 // Test that `SSLConnectJob` retries the connection given a secure rollback
@@ -1353,11 +1425,15 @@ TEST_F(SSLConnectJobTest, ECHRollback) {
   socket_factory_.AddSSLSocketDataProvider(&ssl3);
 
   // The connection should ultimately succeed.
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      4 /* kSuccessRollback */, 1);
 }
 
 // Test that `SSLConnectJob` will not retry more than once.
@@ -1399,12 +1475,16 @@ TEST_F(SSLConnectJobTest, ECHTooManyRetries) {
   socket_factory_.AddSSLSocketDataProvider(&ssl2);
   // There will be no third connection attempt.
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(),
               test::IsError(ERR_ECH_NOT_NEGOTIATED));
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult", 3 /* kErrorRetry */,
+                                      1);
 }
 
 // Test that `SSLConnectJob` will not retry for ECH given the wrong error.
@@ -1435,11 +1515,15 @@ TEST_F(SSLConnectJobTest, ECHWrongRetryError) {
   socket_factory_.AddSSLSocketDataProvider(&ssl1);
   // There will be no second connection attempt.
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_FAILED));
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      1 /* kErrorInitial */, 1);
 }
 
 // Test the legacy crypto callback can trigger after the ECH recovery flow.
@@ -1507,11 +1591,15 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   socket_factory_.AddSSLSocketDataProvider(&ssl4);
 
   // The connection should ultimately succeed.
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      2 /* kSuccessRetry */, 1);
 }
 
 // Test the ECH recovery flow can trigger after the legacy crypto fallback.
@@ -1582,11 +1670,15 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   socket_factory_.AddSSLSocketDataProvider(&ssl5);
 
   // The connection should ultimately succeed.
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
+                                      2 /* kSuccessRetry */, 1);
 }
 
 }  // namespace

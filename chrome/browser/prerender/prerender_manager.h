@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_PRERENDER_PRERENDER_MANAGER_H_
 #define CHROME_BROWSER_PRERENDER_PRERENDER_MANAGER_H_
 
+#include <string>
+
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
@@ -51,10 +54,22 @@ class PrerenderManager : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // The entry of prerender.
-  // Calling this method will lead to the cancellation of the previous prerender
-  // if the given `match`'s search terms differ from the ongoing one's.
+  // The entry of Default Search Engine prerender. Calling this method will lead
+  // to the cancellation of the previous prerender if the given `match`'s search
+  // terms differs from the ongoing one's.
+  // TODO(https://crbug.com/1295170): Remove this method after Search prerender
+  // work properly with Search prefetch.
   void StartPrerenderSearchSuggestion(const AutocompleteMatch& match);
+
+  // Calling this method will lead to the cancellation of the previous prerender
+  // if the given `search_terms` differs from the ongoing one's.
+  void StartPrerenderSearchResult(const std::u16string& search_terms,
+                                  const GURL& prerendering_url);
+
+  // Cancels the prerender that is prerendering the given `search_terms`.
+  // TODO(https://crbug.com/1295170): Use the creator's address to identify the
+  // owner that can cancels the corresponding prerendering?
+  void StopPrerenderSearchResult(const std::u16string& search_terms);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
@@ -69,6 +84,8 @@ class PrerenderManager : public content::WebContentsObserver,
   // Returns true if the current tab prerendered a search result for omnibox
   // inputs.
   bool HasSearchResultPagePrerendered() const;
+
+  base::WeakPtr<PrerenderManager> GetWeakPtr();
 
   // Returns the prerendered search terms if search_prerender_task_ exists.
   // Returns empty string otherwise.
@@ -87,6 +104,19 @@ class PrerenderManager : public content::WebContentsObserver,
   void ResetPrerenderHandlesOnPrimaryPageChanged(
       content::NavigationHandle* navigation_handle);
 
+  // Maybe cancel the ongoing search prerender to restart a new one if this
+  // finds the callers' intentions changed. The number of concurrence search
+  // prerender is limited to 1, so it is needed to cancel the old one in order
+  // to start a new one. Returns true if this finds the caller wants to
+  // prerender another search result.
+  bool ResetSearchPrerenderTaskIfNecessary(const std::u16string& search_terms);
+
+  void StartPrerenderSearchResultInternal(const std::u16string& search_terms,
+                                          const GURL& prerendering_url);
+
+  // Stops search prefetch from being upgraded to prerender.
+  void UnregisterSearchPrerender();
+
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and it keeps alive even if the
   // prerender has been destroyed by the timer. With its help, PrerenderManager
@@ -96,6 +126,8 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 
   bool skip_template_url_service_for_testing_ = false;
+
+  base::WeakPtrFactory<PrerenderManager> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

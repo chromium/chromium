@@ -76,7 +76,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
     InitCommonConnectJobParams();
   }
 
-  virtual ~HttpProxyConnectJobTest() {
+  ~HttpProxyConnectJobTest() override {
     // Reset global field trial parameters to defaults values.
     base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
     HttpProxyConnectJob::UpdateFieldTrialParametersForTesting();

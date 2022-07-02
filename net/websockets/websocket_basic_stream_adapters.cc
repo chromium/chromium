@@ -23,7 +23,8 @@ WebSocketClientSocketHandleAdapter::WebSocketClientSocketHandleAdapter(
     std::unique_ptr<ClientSocketHandle> connection)
     : connection_(std::move(connection)) {}
 
-WebSocketClientSocketHandleAdapter::~WebSocketClientSocketHandleAdapter() {}
+WebSocketClientSocketHandleAdapter::~WebSocketClientSocketHandleAdapter() =
+    default;
 
 int WebSocketClientSocketHandleAdapter::Read(IOBuffer* buf,
                                              int buf_len,
@@ -52,12 +53,7 @@ WebSocketSpdyStreamAdapter::WebSocketSpdyStreamAdapter(
     base::WeakPtr<SpdyStream> stream,
     Delegate* delegate,
     NetLogWithSource net_log)
-    : headers_sent_(false),
-      stream_(stream),
-      stream_error_(ERR_CONNECTION_CLOSED),
-      delegate_(delegate),
-      write_length_(0),
-      net_log_(net_log) {
+    : stream_(stream), delegate_(delegate), net_log_(net_log) {
   stream_->SetDelegate(this);
 }
 

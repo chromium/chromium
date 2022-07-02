@@ -40,6 +40,8 @@ enum class FrameSequenceTrackerType {
                 // and instead are dispatched back to the LayerTreeHostClient.
   kCanvasAnimation = 10,
   kJSAnimation = 11,
+  kSETMainThreadAnimation = 12,
+  kSETCompositorAnimation = 13,
   kMaxType
 };
 
@@ -103,6 +105,11 @@ class CC_EXPORT FrameSequenceMetrics {
         FrameInfo::SmoothEffectDrivingThread thread_type,
         int metric_index,
         const ThroughputData& data);
+
+    static void ReportCheckerboardingHistogram(
+        FrameSequenceMetrics* metrics,
+        FrameInfo::SmoothEffectDrivingThread thread_type,
+        int percent);
 
     void Merge(const ThroughputData& data) {
       frames_expected += data.frames_expected;

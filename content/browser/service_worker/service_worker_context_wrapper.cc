@@ -843,6 +843,39 @@ ServiceWorkerContextWrapper::GetRunningServiceWorkerInfos() {
   return running_service_workers_;
 }
 
+bool ServiceWorkerContextWrapper::IsLiveRunningServiceWorker(
+    int64_t service_worker_version_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // We might be shutting down.
+  if (!context())
+    return false;
+
+  auto* version = context()->GetLiveVersion(service_worker_version_id);
+  if (!version)
+    return false;
+
+  auto running_status = version->running_status();
+  if (running_status != EmbeddedWorkerStatus::STARTING &&
+      running_status != EmbeddedWorkerStatus::RUNNING) {
+    return false;
+  }
+
+  return true;
+}
+
+service_manager::InterfaceProvider&
+ServiceWorkerContextWrapper::GetRemoteInterfaces(
+    int64_t service_worker_version_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(IsLiveRunningServiceWorker(service_worker_version_id));
+
+  // This function should only be called on live running service workers
+  // so it should be safe to dereference the returned pointer without
+  // checking it first.
+  auto& version = *context()->GetLiveVersion(service_worker_version_id);
+  return version.worker_host()->remote_interfaces();
+}
+
 scoped_refptr<ServiceWorkerRegistration>
 ServiceWorkerContextWrapper::GetLiveRegistration(int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

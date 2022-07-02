@@ -91,14 +91,11 @@ AudioShifter::AudioShifter(base::TimeDelta max_buffer_size,
       input_clock_smoother_(new ClockSmoother(clock_accuracy)),
       output_clock_smoother_(new ClockSmoother(clock_accuracy)),
       running_(false),
-      position_(0),
-      previous_requested_samples_(0),
       resampler_(channels,
                  1.0,
                  96,
                  base::BindRepeating(&AudioShifter::ResamplerCallback,
-                                     base::Unretained(this))),
-      current_ratio_(1.0) {}
+                                     base::Unretained(this))) {}
 
 AudioShifter::~AudioShifter() = default;
 
@@ -106,6 +103,8 @@ void AudioShifter::Push(std::unique_ptr<AudioBus> input,
                         base::TimeTicks playout_time) {
   TRACE_EVENT1("audio", "AudioShifter::Push", "time (ms)",
                (playout_time - base::TimeTicks()).InMillisecondsF());
+  DCHECK_EQ(input->channels(), channels_);
+  frames_pushed_for_testing_ += input->frames();
   if (!queue_.empty()) {
     playout_time = input_clock_smoother_->Smooth(
         playout_time, base::Seconds(queue_.back().audio->frames() / rate_));

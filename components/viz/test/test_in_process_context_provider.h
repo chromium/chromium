@@ -35,7 +35,6 @@ class GrContextForGLES2Interface;
 }
 
 namespace viz {
-class DisplayCompositorMemoryAndTaskController;
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
 
@@ -83,12 +82,10 @@ class TestInProcessContextProvider
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
   raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
 
-  TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   TestImageFactory image_factory_;
   gpu::Capabilities caps_;
 
   // Used for GLES2 contexts only.
-  std::unique_ptr<DisplayCompositorMemoryAndTaskController> display_controller_;
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 

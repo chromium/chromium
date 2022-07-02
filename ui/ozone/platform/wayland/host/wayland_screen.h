@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,9 +41,14 @@ class WaylandScreen : public PlatformScreen {
   ~WaylandScreen() override;
 
   void OnOutputAddedOrUpdated(uint32_t output_id,
-                              const gfx::Rect& bounds,
-                              float output_scale,
-                              int32_t output_transform);
+                              const gfx::Point& origin,
+                              const gfx::Size& logical_size,
+                              const gfx::Size& physical_size,
+                              const gfx::Insets& insets,
+                              float scale,
+                              int32_t panel_transform,
+                              int32_t logical_transform,
+                              const std::string& label);
   void OnOutputRemoved(uint32_t output_id);
 
   void OnTabletStateChanged(display::TabletState tablet_state);
@@ -73,12 +79,19 @@ class WaylandScreen : public PlatformScreen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
 
  private:
+  // All parameters are in DIP screen coordinates/units except |physical_size|,
+  // which is in physical pixels.
   void AddOrUpdateDisplay(uint32_t output_id,
-                          const gfx::Rect& bounds,
+                          const gfx::Point& origin,
+                          const gfx::Size& logical_size,
+                          const gfx::Size& physical_size,
+                          const gfx::Insets& insets,
                           float scale,
-                          int32_t transform);
+                          int32_t panel_transform,
+                          int32_t logical_transform,
+                          const std::string& label);
 
-  WaylandConnection* connection_ = nullptr;
+  raw_ptr<WaylandConnection> connection_ = nullptr;
 
   display::DisplayList display_list_;
 

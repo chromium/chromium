@@ -14,13 +14,6 @@ import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
 
 visibility = [ ":*" ]
 
-# gn binary location.
-if (host_os == "mac") {
-  _gn_path = "//buildtools/mac/gn"
-} else if (host_os == "linux") {
-  _gn_path = "//buildtools/linux64/gn"
-}
-
 if (is_chrome_branded) {
   package_base_path = "chrome_internal/fuchsia"
 } else {
@@ -92,6 +85,14 @@ template("cipd_archive") {
     _license_path = "${target_gen_dir}/${target_name}/LICENSE"
     _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
     _license_target = "${_invoker_dir}:${invoker.target_name}${_archive_suffix}"
+
+    # GN is used by the script and is thus an input.
+    if (host_os == "mac") {
+      _gn_path = "//buildtools/mac/gn"
+    } else if (host_os == "linux") {
+      _gn_path = "//buildtools/linux64/gn"
+    }
+
     script = "//tools/licenses.py"
     inputs = [ "$_gn_path" ]
     outputs = [ _license_path ]
@@ -206,24 +207,26 @@ cipd_archive("web_runner") {
   package_subdirectory = _web_engine_directory
   description = "Prebuilt WebRunner binaries for Fuchsia."
 
-  deps = [ "//fuchsia/runners:web_runner_pkg" ]
-  sources = [ "${root_gen_dir}/fuchsia/runners/web_runner/web_runner.far" ]
+  deps = [ "//fuchsia_web/runners:web_runner_pkg" ]
+  sources = [ "${root_gen_dir}/fuchsia_web/runners/web_runner/web_runner.far" ]
 }
 
 cipd_archive("web_engine") {
   package_subdirectory = _web_engine_directory
   description = "Prebuilt WebEngine binaries for Fuchsia."
 
-  deps = [ "//fuchsia/engine:web_engine" ]
-  sources = [ "${root_gen_dir}/fuchsia/engine/web_engine/web_engine.far" ]
+  deps = [ "//fuchsia_web/webengine:web_engine" ]
+  sources =
+      [ "${root_gen_dir}/fuchsia_web/webengine/web_engine/web_engine.far" ]
 }
 
 cipd_archive("cast_runner") {
   package_subdirectory = _web_engine_directory
   description = "Prebuilt Cast application Runner binaries for Fuchsia."
 
-  deps = [ "//fuchsia/runners:cast_runner_pkg" ]
-  sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner/cast_runner.far" ]
+  deps = [ "//fuchsia_web/runners:cast_runner_pkg" ]
+  sources =
+      [ "${root_gen_dir}/fuchsia_web/runners/cast_runner/cast_runner.far" ]
 }
 
 cipd_archive("web_engine_shell") {
@@ -231,9 +234,10 @@ cipd_archive("web_engine_shell") {
   description = "Simple command-line embedder for WebEngine."
   testonly = true
 
-  deps = [ "//fuchsia/engine:web_engine_shell_pkg" ]
-  sources =
-      [ "${root_gen_dir}/fuchsia/engine/web_engine_shell/web_engine_shell.far" ]
+  deps = [ "//fuchsia_web/shell:web_engine_shell_pkg" ]
+  sources = [
+    "${root_gen_dir}/fuchsia_web/shell/web_engine_shell/web_engine_shell.far",
+  ]
 }
 
 _stripped_chromedriver_file = "${root_out_dir}/clang_x64/stripped/chromedriver"
@@ -276,9 +280,9 @@ cipd_test_archive("tests") {
 
   deps = [
     "//base:base_unittests_pkg",
-    "//fuchsia/engine:web_engine_integration_tests_pkg",
-    "//fuchsia/runners:cast_runner_integration_tests_pkg",
-    "//fuchsia/runners:web_runner_integration_tests_pkg",
+    "//fuchsia_web/runners:cast_runner_integration_tests_cfv1_pkg",
+    "//fuchsia_web/runners:web_runner_integration_tests_pkg",
+    "//fuchsia_web/webengine:web_engine_integration_tests_pkg",
     "//ipc:ipc_tests_pkg",
     "//media:media_unittests_pkg",
     "//mojo:mojo_unittests_pkg",
@@ -296,9 +300,9 @@ cipd_test_archive("tests") {
         "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
       ]
       cfv1_far_sources = [
-        "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
-        "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests_cfv1/cast_runner_integration_tests_cfv1.far",
+        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/media/media_unittests/media_unittests.far",
         "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
       ]
@@ -319,13 +323,13 @@ cipd_test_archive("tests") {
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
       cfv1_far_sources = [
-        "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
-        "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
       ]
     },
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
-      cfv1_far_sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
+      cfv1_far_sources = [ "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests_cfv1/cast_runner_integration_tests_cfv1.far" ]
     },
   ]
 }

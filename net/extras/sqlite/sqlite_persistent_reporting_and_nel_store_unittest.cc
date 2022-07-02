@@ -668,7 +668,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 // can be used by a NetworkErrorLoggingService to persist NEL policies.
 class SQLitePersistNelTest : public SQLitePersistentReportingAndNelStoreTest {
  public:
-  SQLitePersistNelTest() {}
+  SQLitePersistNelTest() = default;
 
   void SetUp() override {
     SQLitePersistentReportingAndNelStoreTest::SetUp();

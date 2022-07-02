@@ -102,10 +102,6 @@ class CORE_EXPORT StyleRecalcChange {
   StyleRecalcChange SuppressRecalc() const {
     return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
   }
-  StyleRecalcChange WithRecalcContainerFlags(StyleRecalcChange& from) const {
-    return {propagate_,
-            static_cast<Flags>(flags_ | (from.flags_ & kRecalcContainerFlags))};
-  }
   StyleRecalcChange Combine(const StyleRecalcChange& other) const {
     return {std::max(propagate_, other.propagate_),
             static_cast<Flags>(flags_ | other.flags_)};
@@ -113,7 +109,8 @@ class CORE_EXPORT StyleRecalcChange {
 
   bool ReattachLayoutTree() const { return flags_ & kReattach; }
   bool MarkReattachLayoutTree() const {
-    return (flags_ & (kMarkReattach | kReattach)) ==
+    // Never mark the query container (kSuppressRecalc) for reattachment.
+    return (flags_ & (kMarkReattach | kReattach | kSuppressRecalc)) ==
            (kMarkReattach | kReattach);
   }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
@@ -130,6 +127,26 @@ class CORE_EXPORT StyleRecalcChange {
   bool ShouldRecalcStyleFor(const Node&) const;
   bool ShouldUpdatePseudoElement(const PseudoElement&) const;
   bool IsSuppressed() const { return flags_ & kSuppressRecalc; }
+
+  // If true, the value of the 'rem' unit may have changed.
+  //
+  // We currently can't distinguish between kRecalcDescendants caused by
+  // root-font-size changes and kRecalcDescendants that happens for other
+  // reasons.
+  //
+  // See call to `UpdateRemUnits` in `Element::RecalcOwnStyle`.
+  bool RemUnitsMaybeChanged() const { return RecalcDescendants(); }
+
+  // If true, the values of container-relative units may have changed.
+  //
+  // Any ContainerQueryEvaluator that has been referenced by a unit will
+  // always cause kRecalcDescendantContainers (see
+  // ContainerQueryEvaluator::ComputeChange). Currently we can not distinguish
+  // between that and kRecalcDescendantContainers caused by other reasons
+  // (e.g. named lookups).
+  bool ContainerRelativeUnitsMaybeChanged() const {
+    return flags_ & kRecalcDescendantContainers;
+  }
 
   String ToString() const;
 

@@ -97,6 +97,10 @@ class CONTENT_EXPORT TtsPlatform {
   // Given engine delegate and platform voices, returns the finalized voice
   // ordering used by the controller when exposing voices to clients.
   virtual void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) = 0;
+
+  // Triggers the TtsPlatform to update its list of voices and relay that update
+  // through VoicesChanged.
+  virtual void RefreshVoices() = 0;
 };
 
 }  // namespace content

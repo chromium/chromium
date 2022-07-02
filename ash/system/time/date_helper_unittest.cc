@@ -9,6 +9,48 @@
 
 namespace ash {
 
+namespace {
+
+// These are from "third_party/fontconfig/include/fc-lang/fclang.h" data.
+const char* kLocales[] = {
+    "aa",       "ab",     "af",     "ak",    "am",    "an",    "ar",
+    "as",       "ast",    "av",     "ay",    "az-az", "az-ir", "ba",
+    "be",       "ber-dz", "ber-ma", "bg",    "bh",    "bho",   "bi",
+    "bin",      "bm",     "bn",     "bo",    "br",    "brx",   "bs",
+    "bua",      "byn",    "ca",     "ce",    "ch",    "chm",   "chr",
+    "co",       "crh",    "cs",     "csb",   "cu",    "cv",    "cy",
+    "da",       "de",     "doi",    "dv",    "dz",    "ee",    "el",
+    "en",       "eo",     "es",     "et",    "eu",    "fa",    "fat",
+    "ff",       "fi",     "fil",    "fj",    "fo",    "fr",    "fur",
+    "fy",       "ga",     "gd",     "gez",   "gl",    "gn",    "gu",
+    "gv",       "ha",     "haw",    "he",    "hi",    "hne",   "ho",
+    "hr",       "hsb",    "ht",     "hu",    "hy",    "hz",    "ia",
+    "id",       "ie",     "ig",     "ii",    "ik",    "io",    "is",
+    "it",       "iu",     "ja",     "jv",    "ka",    "kaa",   "kab",
+    "ki",       "kj",     "kk",     "kl",    "km",    "kn",    "ko",
+    "kok",      "kr",     "ks",     "ku-am", "ku-iq", "ku-ir", "ku-tr",
+    "kum",      "kv",     "kw",     "kwm",   "ky",    "la",    "lah",
+    "lb",       "lez",    "lg",     "li",    "ln",    "lo",    "lt",
+    "lv",       "mai",    "mg",     "mh",    "mi",    "mk",    "ml",
+    "mn-cn",    "mn-mn",  "mni",    "mo",    "mr",    "ms",    "mt",
+    "my",       "na",     "nb",     "nds",   "ne",    "ng",    "nl",
+    "nn",       "no",     "nqo",    "nr",    "nso",   "nv",    "ny",
+    "oc",       "om",     "or",     "os",    "ota",   "pa",    "pa-pk",
+    "pap-an",   "pap-aw", "pl",     "ps-af", "ps-pk", "pt",    "qu",
+    "quz",      "rm",     "rn",     "ro",    "ru",    "rw",    "sa",
+    "sah",      "sat",    "sc",     "sco",   "sd",    "se",    "sel",
+    "sg",       "sh",     "shs",    "si",    "sid",   "sk",    "sl",
+    "sm",       "sma",    "smj",    "smn",   "sms",   "sn",    "so",
+    "sq",       "sr",     "ss",     "st",    "su",    "sv",    "sw",
+    "syr",      "ta",     "te",     "tg",    "th",    "ti-er", "ti-et",
+    "tig",      "tk",     "tl",     "tn",    "to",    "tr",    "ts",
+    "tt",       "tw",     "ty",     "tyv",   "ug",    "uk",    "und-zmth",
+    "und-zsye", "ur",     "uz",     "ve",    "vi",    "vo",    "vot",
+    "wa",       "wal",    "wen",    "wo",    "xh",    "yap",   "yi",
+    "yo",       "za",     "zh-cn",  "zh-hk", "zh-mo", "zh-sg", "zh-tw",
+    "zu"};
+}  // namespace
+
 class DateHelperUnittest : public AshTestBase {
  public:
   DateHelperUnittest() = default;
@@ -20,6 +62,20 @@ class DateHelperUnittest : public AshTestBase {
     base::i18n::SetICUDefaultLocale(lang);
     DateHelper::GetInstance()->ResetFormatters();
     DateHelper::GetInstance()->CalculateLocalWeekTitles();
+  }
+
+  std::u16string Format12HrClockInterval(const base::Time& start_time,
+                                         const base::Time& end_time) {
+    return DateHelper::GetInstance()->GetFormattedInterval(
+        DateHelper::GetInstance()->twelve_hour_clock_interval_formatter(),
+        start_time, end_time);
+  }
+
+  std::u16string Format24HrClockInterval(const base::Time& start_time,
+                                         const base::Time& end_time) {
+    return DateHelper::GetInstance()->GetFormattedInterval(
+        DateHelper::GetInstance()->twenty_four_hour_clock_interval_formatter(),
+        start_time, end_time);
   }
 };
 
@@ -66,4 +122,43 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   EXPECT_EQ(u"F", week_titles[5]);
   EXPECT_EQ(u"S", week_titles[6]);
 }
+
+// Tests getting the calendar week titles in all languages.
+TEST_F(DateHelperUnittest, GetWeekTitleForAllLocales) {
+  for (auto* local : kLocales) {
+    SetDefaultLocale(local);
+    EXPECT_EQ(7U, DateHelper::GetInstance()->week_titles().size());
+  }
+}
+
+// Formats the interval between two dates in different languages.
+TEST_F(DateHelperUnittest, GetFormattedInterval) {
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  base::Time date1;  // Start date
+  base::Time date2;  // End date, same meridiem
+  base::Time date3;  // End date, different meridiem
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:00 GMT", &date1));
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 11:45 GMT", &date2));
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 22:30 GMT", &date3));
+
+  SetDefaultLocale("en_US");
+  EXPECT_EQ(u"10:00 – 11:45 AM", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 AM – 10:30 PM", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
+
+  SetDefaultLocale("zh_Hant");
+  EXPECT_EQ(u"上午10:00至11:45", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"上午10:00至晚上10:30", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
+
+  SetDefaultLocale("ar");
+  EXPECT_EQ(u"10:00–11:45 ص", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 ص – 10:30 م", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00–11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00–22:30", Format24HrClockInterval(date1, date3));
+}
+
 }  // namespace ash

@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './history_item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -23,7 +23,7 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
+import {BROWSING_GAP_TIME} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
@@ -479,16 +479,6 @@ export class HistoryListElement extends HistoryListElementBase {
             item.focusOnMenuButton();
           }
         }, 1);
-      }
-
-      const browserService = BrowserServiceImpl.getInstance();
-      browserService.recordHistogram(
-          'HistoryPage.RemoveEntryPosition',
-          Math.min(index, UMA_MAX_BUCKET_VALUE), UMA_MAX_BUCKET_VALUE);
-      if (index <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-        browserService.recordHistogram(
-            'HistoryPage.RemoveEntryPositionSubset', index,
-            UMA_MAX_SUBSET_BUCKET_VALUE);
       }
     });
     this.closeMenu_();

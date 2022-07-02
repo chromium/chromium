@@ -2,67 +2,85 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/localized_link/localized_link.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import './multidevice_feature_item.js';
-
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
-import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
-
 /**
  * @fileoverview 'settings-multidevice-combined-setup-item' encapsulates
  * special logic for setting up multiple features from one click.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-multidevice-combined-setup-item',
 
-  behaviors: [MultiDeviceFeatureBehavior],
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import './multidevice_feature_item.js';
 
-  properties: {
-    /** Whether this item should show Camera Roll info */
-    cameraRoll: {
-      type: Boolean,
-      value: false,
-    },
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /** Whether this item should show Notifications info */
-    notifications: {
-      type: Boolean,
-      value: false,
-    },
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
 
-    /** Whether this item should show App Streaming info */
-    appStreaming: {
-      type: Boolean,
-      value: false,
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsMultideviceCombinedSetupItemElementBase =
+    mixinBehaviors([MultiDeviceFeatureBehavior, I18nBehavior], PolymerElement);
 
-    /** @private */
-    setupName_: {
-      type: String,
-      computed: 'getSetupName_(cameraRoll, notifications, appStreaming)',
-      reflectToAttribute: true,
-    },
+/** @polymer */
+class SettingsMultideviceCombinedSetupItemElement extends
+    SettingsMultideviceCombinedSetupItemElementBase {
+  static get is() {
+    return 'settings-multidevice-combined-setup-item';
+  }
 
-    /** @private */
-    setupSummary_: {
-      type: String,
-      computed: 'getSetupSummary_(cameraRoll, notifications, appStreaming)',
-      reflectToAttribute: true,
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?MultiDeviceBrowserProxy} */
-  browserProxy_: null,
+  static get properties() {
+    return {
+      /** Whether this item should show Camera Roll info */
+      cameraRoll: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** Whether this item should show Notifications info */
+      notifications: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** Whether this item should show App Streaming info */
+      appStreaming: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      setupName_: {
+        type: String,
+        computed: 'getSetupName_(cameraRoll, notifications, appStreaming)',
+        reflectToAttribute: true,
+      },
+
+      /** @private */
+      setupSummary_: {
+        type: String,
+        computed: 'getSetupSummary_(cameraRoll, notifications, appStreaming)',
+        reflectToAttribute: true,
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!MultiDeviceBrowserProxy} */
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * @return {string}
@@ -84,7 +102,7 @@ Polymer({
       return this.i18n('multidevicePhoneHubAppsAndNotificationsItemTitle');
     }
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -106,11 +124,14 @@ Polymer({
       return this.i18n('multidevicePhoneHubAppsAndNotificationsItemSummary');
     }
     return '';
-  },
+  }
 
   /** @private */
   handlePhoneHubSetupClick_() {
-    this.fire('permission-setup-requested');
+    const permissionSetupRequiredEvent = new CustomEvent(
+        'permission-setup-requested', {bubbles: true, composed: true});
+    this.dispatchEvent(permissionSetupRequiredEvent);
+
     let setupMode = PhoneHubPermissionsSetupFeatureCombination.NONE;
     if (this.cameraRoll && this.notifications && this.appStreaming) {
       setupMode = PhoneHubPermissionsSetupFeatureCombination.ALL_PERMISSONS;
@@ -128,7 +149,7 @@ Polymer({
                       .NOTIFICATION_AND_MESSAGING_APP;
     }
     this.browserProxy_.logPhoneHubPermissionSetUpButtonClicked(setupMode);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -136,5 +157,9 @@ Polymer({
    */
   getButtonDisabledState_() {
     return !this.isSuiteOn() || !this.isPhoneHubOn();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsMultideviceCombinedSetupItemElement.is,
+    SettingsMultideviceCombinedSetupItemElement);

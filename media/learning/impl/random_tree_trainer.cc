@@ -78,7 +78,7 @@ struct InteriorNode : public Model {
 
   // Add |child| has the node for feature value |v|.
   void AddChild(FeatureValue v, std::unique_ptr<Model> child) {
-    DCHECK_EQ(children_.count(v), 0u);
+    DCHECK(!children_.contains(v));
     children_.emplace(v, std::move(child));
   }
 

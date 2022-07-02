@@ -505,9 +505,9 @@ TEST(SimpleColorSpace, SampleShaderSource) {
       "               3.29283088e-01, 9.19540644e-01, 8.80132765e-02,\n"
       "               4.33131158e-02, 1.13623142e-02, 8.95595193e-01) "
       "* color;\n"
-      "  color.r = TransferFn3(color.r);\n"
-      "  color.g = TransferFn3(color.g);\n"
-      "  color.b = TransferFn3(color.b);\n"
+      "  color.r = sign(color.r) * TransferFn3(abs(color.r));\n"
+      "  color.g = sign(color.g) * TransferFn3(abs(color.g));\n"
+      "  color.b = sign(color.b) * TransferFn3(abs(color.b));\n"
       "  return color;\n"
       "}\n";
   EXPECT_EQ(source, expected);
@@ -899,62 +899,6 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
       }
     }
   }
-}
-
-TEST(ColorSpaceTest, HLGHDRToSDR) {
-  ColorSpace hlg_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::HLG);
-  ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
-                         ColorSpace::TransferID::LINEAR);
-  gfx::ColorTransform::Options sdr_options;
-  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
-  auto sdr_transform =
-      ColorTransform::NewColorTransform(hlg_cs, dest_sdr_cs, sdr_options);
-
-  // HLG conversion will produce values above 1 w/o intervention.
-  ColorTransform::TriStim sdr_val = {1, 1, 1};
-  sdr_transform->Transform(&sdr_val, 1);
-  EXPECT_FLOAT_EQ(sdr_val.x(), 1);
-  EXPECT_FLOAT_EQ(sdr_val.y(), 1);
-  EXPECT_FLOAT_EQ(sdr_val.z(), 1);
-
-  ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
-                         ColorSpace::TransferID::LINEAR_HDR);
-  gfx::ColorTransform::Options hdr_options;
-  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
-  auto hdr_transform =
-      ColorTransform::NewColorTransform(hlg_cs, dest_hdr_cs, hdr_options);
-
-  ColorTransform::TriStim hdr_val = {1, 1, 1};
-  hdr_transform->Transform(&hdr_val, 1);
-  EXPECT_NE(sdr_val, hdr_val);
-}
-
-TEST(ColorSpaceTest, PQHDRToSDR) {
-  ColorSpace pq_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::PQ);
-  ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
-                         ColorSpace::TransferID::LINEAR);
-  gfx::ColorTransform::Options sdr_options;
-  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
-  auto sdr_transform =
-      ColorTransform::NewColorTransform(pq_cs, dest_sdr_cs, sdr_options);
-
-  // PQ conversion will produce values above 1 w/o intervention.
-  ColorTransform::TriStim sdr_val = {1, 1, 1};
-  sdr_transform->Transform(&sdr_val, 1);
-  EXPECT_FLOAT_EQ(sdr_val.x(), 1);
-  EXPECT_FLOAT_EQ(sdr_val.y(), 1);
-  EXPECT_FLOAT_EQ(sdr_val.z(), 1);
-
-  ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
-                         ColorSpace::TransferID::LINEAR_HDR);
-  gfx::ColorTransform::Options hdr_options;
-  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
-  auto hdr_transform =
-      ColorTransform::NewColorTransform(pq_cs, dest_hdr_cs, hdr_options);
-
-  ColorTransform::TriStim hdr_val = {1, 1, 1};
-  hdr_transform->Transform(&hdr_val, 1);
-  EXPECT_NE(sdr_val, hdr_val);
 }
 
 }  // namespace gfx

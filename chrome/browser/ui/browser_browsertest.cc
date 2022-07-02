@@ -293,7 +293,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& details) override {
     content::RenderViewHost* rvh =
-        web_contents()->GetMainFrame()->GetRenderViewHost();
+        web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     render_view_sizes_[rvh].rwhv_commit_size =
         web_contents()->GetRenderWidgetHostView()->GetViewBounds().size();
     render_view_sizes_[rvh].wcv_commit_size =
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
   {
     content::WebContentsConsoleObserver confirm_observer(second_tab);
     confirm_observer.SetPattern("*confirm*suppressed*");
-    second_tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('Activate!');", base::NullCallback());
     confirm_observer.Wait();
   }
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
   {
     content::WebContentsConsoleObserver prompt_observer(second_tab);
     prompt_observer.SetPattern("*prompt*suppressed*");
-    second_tab->GetMainFrame()->ExecuteJavaScriptForTests(
+    second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"prompt('Activate!');", base::NullCallback());
     prompt_observer.Wait();
   }
@@ -508,8 +508,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
       javascript_dialogs::TabModalDialogManager::FromWebContents(second_tab);
   base::RunLoop alert_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(alert_wait.QuitClosure());
-  second_tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert('Activate!');",
-                                                        base::NullCallback());
+  second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert('Activate!');", base::NullCallback());
   alert_wait.Run();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
   // request is started.
   {
     auto script = content::JsReplace("window.location = $1;", kSecondUrl);
-    ASSERT_TRUE(content::ExecJs(contents->GetMainFrame(), script,
+    ASSERT_TRUE(content::ExecJs(contents->GetPrimaryMainFrame(), script,
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     ASSERT_TRUE(manager.WaitForRequestStart());
   }
@@ -624,8 +624,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
     base::RunLoop run_loop;
 
     js_dialog_manager->SetDialogShownCallbackForTesting(run_loop.QuitClosure());
-    contents->GetMainFrame()->ExecuteJavaScriptForTests(u"alert('one'); ",
-                                                        base::NullCallback());
+    contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"alert('one'); ", base::NullCallback());
     run_loop.Run();
 
     ASSERT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CrossProcessNavCancelsDialogs) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"alert('one'); alert('two');", base::NullCallback());
   dialog_wait.Run();
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CrossProcessNavCancelsDialogs) {
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Make sure input events still work in the renderer process.
-  EXPECT_FALSE(contents->GetMainFrame()->GetProcess()->IsBlocked());
+  EXPECT_FALSE(contents->GetPrimaryMainFrame()->GetProcess()->IsBlocked());
 }
 
 // Similar to CrossProcessNavCancelsDialogs, with a renderer-initiated main
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RendererCrossProcessNavCancelsDialogs) {
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Make sure input events still work in the renderer process.
-  EXPECT_FALSE(contents->GetMainFrame()->GetProcess()->IsBlocked());
+  EXPECT_FALSE(contents->GetPrimaryMainFrame()->GetProcess()->IsBlocked());
 }
 
 // Ensures that a download can complete while a dialog is showing, because it
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DownloadDoesntDismissDialog) {
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Make sure input events still work in the renderer process.
-  EXPECT_FALSE(contents->GetMainFrame()->GetProcess()->IsBlocked());
+  EXPECT_FALSE(contents->GetPrimaryMainFrame()->GetProcess()->IsBlocked());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_SadTabCancelsDialogs) {
   content::PrepContentsForBeforeUnloadTest(contents);
 
   // Start a navigation to trigger the beforeunload dialog.
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"window.location.href = 'about:blank'", base::NullCallback());
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(alert->IsValid());
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_SadTabCancelsDialogs) {
 
   // Crash the renderer process and ensure the dialog is gone.
   content::RenderProcessHost* child_process =
-      contents->GetMainFrame()->GetProcess();
+      contents->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       child_process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   child_process->Shutdown(0);
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, SadTabCancelsSubframeDialogs) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"f = document.createElement('iframe');"
       u"f.srcdoc = '<script>alert(1)</script>';"
       u"document.body.appendChild(f);",
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, SadTabCancelsSubframeDialogs) {
 
   // Crash the renderer process and ensure the dialog is gone.
   content::RenderProcessHost* child_process =
-      contents->GetMainFrame()->GetProcess();
+      contents->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
       child_process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   child_process->Shutdown(0);
@@ -858,8 +858,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ReloadThenCancelBeforeUnload) {
   EXPECT_FALSE(contents->IsLoading());
 
   // Clear the beforeunload handler so the test can easily exit.
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(u"onbeforeunload=null;",
-                                                      base::NullCallback());
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"onbeforeunload=null;", base::NullCallback());
 }
 
 // Test for crbug.com/11647.  A page closed with window.close() should not have
@@ -870,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptWithUserGestureForTests(kOpenNewBeforeUnloadPage,
                                                  base::NullCallback());
 
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   browser()
       ->tab_strip_model()
       ->GetWebContentsAt(0)
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptWithUserGestureForTests(u"w.close(); alert('bar');",
                                                  base::NullCallback());
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
@@ -1064,7 +1064,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   // Start with an http URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
   WebContents* oldtab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderProcessHost* process = oldtab->GetMainFrame()->GetProcess();
+  content::RenderProcessHost* process =
+      oldtab->GetPrimaryMainFrame()->GetProcess();
 
   // Now open a tab to a blank page and redirect it cross-site.
   std::string dont_fork_popup = "w=window.open();";
@@ -1073,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   dont_fork_popup += "\";";
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), dont_fork_popup));
+  EXPECT_TRUE(content::ExecJs(oldtab->GetPrimaryMainFrame(), dont_fork_popup));
 
   // The tab should be created by the time the script finished running.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
@@ -1092,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   // Process of the (cross-site) popup window depends on whether
   // site-per-process mode is enabled or not.
   content::RenderProcessHost* popup_process =
-      newtab->GetMainFrame()->GetProcess();
+      newtab->GetPrimaryMainFrame()->GetProcess();
   if (content::AreAllSitesIsolatedForTesting())
     EXPECT_NE(process, popup_process);
   else
@@ -1102,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   std::string navigate_str = "document.location=\"";
   navigate_str += https_url.spec();
   navigate_str += "\";";
-  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), navigate_str));
+  EXPECT_TRUE(content::ExecJs(oldtab->GetPrimaryMainFrame(), navigate_str));
 
   // The old tab should be in the middle of document.location navigation.
   EXPECT_TRUE(oldtab->IsLoading());
@@ -1115,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   // Whether original stays in the original process (when navigating to a
   // cross-site url) depends on whether site-per-process mode is enabled or not.
   content::RenderProcessHost* new_process =
-      newtab->GetMainFrame()->GetProcess();
+      newtab->GetPrimaryMainFrame()->GetProcess();
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(process, new_process);
 
@@ -1141,38 +1142,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
                                ->GetActiveWebContents()
                                ->GetController()
                                .GetLastCommittedEntry();
-  EXPECT_EQ(expected_favicon_url.spec(), entry->GetFavicon().url.spec());
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_WIN)
-// http://crbug.com/83828. On Mac 10.6, the failure rate is 14%
-#define MAYBE_FaviconChange DISABLED_FaviconChange
-#else
-#define MAYBE_FaviconChange FaviconChange
-#endif
-// Test that an icon can be changed from JS.
-// This test doesn't seem to be correct now. The Favicon never seems to be set
-// as a NavigationEntry. The related events on the TestWebContentsObserver do
-// seem to be called, however.
-IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_FaviconChange) {
-  static const base::FilePath::CharType* kFile =
-      FILE_PATH_LITERAL("onload_change_favicon.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kFile)));
-  ASSERT_TRUE(file_url.SchemeIs(url::kFileScheme));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url));
-
-  NavigationEntry* entry = browser()
-                               ->tab_strip_model()
-                               ->GetActiveWebContents()
-                               ->GetController()
-                               .GetLastCommittedEntry();
-  static const base::FilePath::CharType* kIcon = FILE_PATH_LITERAL("test1.png");
-  GURL expected_favicon_url(ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kIcon)));
   EXPECT_EQ(expected_favicon_url.spec(), entry->GetFavicon().url.spec());
 }
 
@@ -2442,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderViewHost* prev_rvh =
-      web_contents->GetMainFrame()->GetRenderViewHost();
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
   const gfx::Size initial_wcv_size = web_contents->GetContainerBounds().size();
   RenderViewSizeObserver observer(web_contents, browser()->window());
 
@@ -2451,12 +2420,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
       browser(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // A new RenderViewHost should be created.
-  EXPECT_NE(prev_rvh, web_contents->GetMainFrame()->GetRenderViewHost());
-  prev_rvh = web_contents->GetMainFrame()->GetRenderViewHost();
+  EXPECT_NE(prev_rvh, web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
+  prev_rvh = web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
   gfx::Size rwhv_create_size0, rwhv_commit_size0, wcv_commit_size0;
   observer.GetSizeForRenderViewHost(
-      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size0,
-      &rwhv_commit_size0, &wcv_commit_size0);
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost(),
+      &rwhv_create_size0, &rwhv_commit_size0, &wcv_commit_size0);
   EXPECT_EQ(gfx::Size(initial_wcv_size.width(), initial_wcv_size.height()),
             rwhv_create_size0);
   // When a navigation entry is committed, the size of RenderWidgetHostView
@@ -2486,11 +2455,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
       browser(), https_test_server.GetURL("/title2.html")));
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // A new RenderVieHost should be created.
-  EXPECT_NE(prev_rvh, web_contents->GetMainFrame()->GetRenderViewHost());
+  EXPECT_NE(prev_rvh, web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
   gfx::Size rwhv_create_size1, rwhv_commit_size1, wcv_commit_size1;
   observer.GetSizeForRenderViewHost(
-      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size1,
-      &rwhv_commit_size1, &wcv_commit_size1);
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost(),
+      &rwhv_create_size1, &rwhv_commit_size1, &wcv_commit_size1);
   EXPECT_EQ(rwhv_create_size1, rwhv_commit_size1);
   EXPECT_EQ(rwhv_commit_size1,
             web_contents->GetRenderWidgetHostView()->GetViewBounds().size());
@@ -2506,8 +2475,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   gfx::Size rwhv_create_size2, rwhv_commit_size2, wcv_commit_size2;
   observer.GetSizeForRenderViewHost(
-      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size2,
-      &rwhv_commit_size2, &wcv_commit_size2);
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost(),
+      &rwhv_create_size2, &rwhv_commit_size2, &wcv_commit_size2);
 
   // The behavior on OSX and Views is incorrect in this edge case, but they are
   // differently incorrect.
@@ -2600,7 +2569,7 @@ void CheckDisplayModeMQ(const std::u16string& display_mode,
       u")').matches;})();";
   bool js_result = false;
   base::RunLoop run_loop;
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       function, base::BindLambdaForTesting([&](base::Value value) {
         DCHECK(value.is_bool());
         js_result = value.GetBool();
@@ -2741,7 +2710,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogsDropFullscreen) {
       static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser());
 
   // Simulate the tab requesting fullscreen.
-  browser_as_wc_delegate->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  browser_as_wc_delegate->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
+                                                    {});
   EXPECT_TRUE(browser_as_wc_delegate->IsFullscreenForTabOrPending(tab));
 
   // The tab gets a modal dialog.
@@ -2769,7 +2739,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogsAllowedInFullscreenWithinTabMode) {
   auto capture_handle =
       tab->IncrementCapturerCount(gfx::Size(1280, 720), /*stay_hidden=*/false,
                                   /*stay_awake=*/true);
-  browser_as_wc_delegate->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
+  browser_as_wc_delegate->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(),
+                                                    {});
   EXPECT_TRUE(browser_as_wc_delegate->IsFullscreenForTabOrPending(tab));
 
   // The tab gets a modal dialog.
@@ -2843,8 +2814,9 @@ IN_PROC_BROWSER_TEST_F(
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
-    content::RenderFrameDeletedObserver crash_observer(wc->GetMainFrame());
-    wc->GetMainFrame()->GetProcess()->Shutdown(1);
+    content::RenderFrameDeletedObserver crash_observer(
+        wc->GetPrimaryMainFrame());
+    wc->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
 
@@ -2867,8 +2839,8 @@ IN_PROC_BROWSER_TEST_F(
     loop.Run();
   }
   // The navigation has not completed, but the renderer has come alive.
-  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+  EXPECT_TRUE(wc->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetPrimaryMainFrame()->GetLastCommittedURL().spec(), "");
 
   // Now try to navigate to `url2`. We're currently trying to load `url1` since
   // the above navigation will be delayed. Going to `url2` should be a
@@ -2922,8 +2894,9 @@ IN_PROC_BROWSER_TEST_F(
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
-    content::RenderFrameDeletedObserver crash_observer(wc->GetMainFrame());
-    wc->GetMainFrame()->GetProcess()->Shutdown(1);
+    content::RenderFrameDeletedObserver crash_observer(
+        wc->GetPrimaryMainFrame());
+    wc->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
 
@@ -2946,8 +2919,8 @@ IN_PROC_BROWSER_TEST_F(
     loop.Run();
   }
   // The navigation has not completed, but the renderer has come alive.
-  EXPECT_TRUE(wc->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(wc->GetMainFrame()->GetLastCommittedURL().spec(), "");
+  EXPECT_TRUE(wc->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(wc->GetPrimaryMainFrame()->GetLastCommittedURL().spec(), "");
 
   content::NavigationHandleCommitObserver back_observer(wc, url1);
   // Now try to go back. We're currently at `url2` since the above navigation

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 
 #include <sstream>
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
@@ -150,7 +151,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
 
   NGInlineChildLayoutContext context;
   NGBoxFragmentBuilder container_builder(
-      block_flow, block_flow->Style(),
+      block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
   NGFragmentItemsBuilder items_builder(inline_node,
                                        container_builder.GetWritingDirection());
@@ -265,6 +266,65 @@ TEST_F(NGInlineLayoutAlgorithmTest, BoxForEndMargin) {
   ASSERT_FALSE(line_box) << "block_flow has two lines.";
 }
 
+TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      font-size: 10px;
+      line-height: 10px;
+    }
+    span {
+      border-left: 1px solid blue;
+      border-top: 2px solid blue;
+      border-right: 3px solid blue;
+      border-bottom: 4px solid blue;
+      padding-left: 5px;
+      padding-top: 6px;
+      padding-right: 7px;
+      padding-bottom: 8px;
+    }
+    </style>
+    <div id="container">
+      <span id="span">test<br>test</span>
+    </div>
+  )HTML");
+  auto* block_flow =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  NGInlineCursor cursor(*block_flow);
+  const LayoutObject* span = GetLayoutObjectByElementId("span");
+  cursor.MoveTo(*span);
+  const NGFragmentItem& item1 = *cursor.Current();
+  const NGPhysicalBoxFragment* box1 = item1.BoxFragment();
+  ASSERT_TRUE(box1);
+  const NGPhysicalBoxStrut borders1 = box1->Borders();
+  const NGPhysicalBoxStrut padding1 = box1->Padding();
+  int borders_and_padding1[] = {
+      borders1.left.ToInt(),   borders1.top.ToInt(),   borders1.right.ToInt(),
+      borders1.bottom.ToInt(), padding1.left.ToInt(),  padding1.top.ToInt(),
+      padding1.right.ToInt(),  padding1.bottom.ToInt()};
+  EXPECT_THAT(borders_and_padding1,
+              testing::ElementsAre(1, 2, 0, 4, 5, 6, 0, 8));
+  EXPECT_EQ(box1->ContentOffset(), PhysicalOffset(6, 8));
+  EXPECT_EQ(item1.ContentOffsetInContainerFragment(),
+            item1.OffsetInContainerFragment() + box1->ContentOffset());
+
+  cursor.MoveToNextForSameLayoutObject();
+  const NGFragmentItem& item2 = *cursor.Current();
+  const NGPhysicalBoxFragment* box2 = item2.BoxFragment();
+  ASSERT_TRUE(box2);
+  const NGPhysicalBoxStrut borders2 = box2->Borders();
+  const NGPhysicalBoxStrut padding2 = box2->Padding();
+  int borders_and_padding2[] = {
+      borders2.left.ToInt(),   borders2.top.ToInt(),   borders2.right.ToInt(),
+      borders2.bottom.ToInt(), padding2.left.ToInt(),  padding2.top.ToInt(),
+      padding2.right.ToInt(),  padding2.bottom.ToInt()};
+  EXPECT_THAT(borders_and_padding2,
+              testing::ElementsAre(0, 2, 3, 4, 0, 6, 7, 8));
+  EXPECT_EQ(box2->ContentOffset(), PhysicalOffset(0, 8));
+  EXPECT_EQ(item2.ContentOffsetInContainerFragment(),
+            item2.OffsetInContainerFragment() + box2->ContentOffset());
+}
+
 // A block with inline children generates fragment tree as follows:
 // - A box fragment created by NGBlockNode
 //   - A wrapper box fragment created by NGInlineNode
@@ -294,10 +354,11 @@ TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
   EXPECT_EQ(0, *layout_result->BfcBlockOffset());
   EXPECT_EQ(0, layout_result->BfcLineOffset());
 
-  PhysicalOffset line_offset =
-      layout_result->PhysicalFragment().Children()[0].Offset();
-  EXPECT_EQ(5, line_offset.left);
-  EXPECT_EQ(10, line_offset.top);
+  const auto& fragment =
+      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+  EXPECT_EQ(fragment.ContentOffset(), PhysicalOffset(5, 10));
+  PhysicalOffset line_offset = fragment.Children()[0].Offset();
+  EXPECT_EQ(line_offset, PhysicalOffset(5, 10));
 }
 
 // The test leaks memory. crbug.com/721932

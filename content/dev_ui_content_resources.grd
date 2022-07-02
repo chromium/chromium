@@ -19,12 +19,15 @@ files that belong there instead.
       <include name="IDR_ATTRIBUTION_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/table_model.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals_table.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_HTML_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals_table.html.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_CSS" file="browser/resources/attribution_reporting/attribution_internals.css" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_GPU_BROWSER_BRIDGE_JS" file="browser/resources/gpu/browser_bridge.js" type="BINDATA" />
-      <include name="IDR_GPU_INFO_VIEW_JS" file="browser/resources/gpu/info_view.js" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_HTML" file="browser/resources/gpu/gpu_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_GPU_INTERNALS_HTML" file="browser/resources/gpu/gpu_internals.html" type="BINDATA" />
       <include name="IDR_GPU_INTERNALS_JS" file="browser/resources/gpu/gpu_internals.js" type="BINDATA" />
+      <include name="IDR_GPU_INTERNALS_INFO_VIEW_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view_table.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view_table_row.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_GPU_VULKAN_INFO_JS" file="browser/resources/gpu/vulkan_info.js" type="BINDATA" />
       <include name="IDR_INDEXED_DB_INTERNALS_HTML" file="browser/resources/indexed_db/indexeddb_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_INDEXED_DB_INTERNALS_JS" file="browser/resources/indexed_db/indexeddb_internals.js" type="BINDATA" />
@@ -35,10 +38,10 @@ files that belong there instead.
       <include name="IDR_PRERENDER_INTERNALS_HTML" file="browser/resources/prerender/prerender_internals.html" type="BINDATA" />
       <include name="IDR_PRERENDER_INTERNALS_MOJO_JS" file="${root_gen_dir}/mojom-webui/content/browser/prerender/prerender_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PRERENDER_INTERNALS_JS" file="browser/resources/prerender/prerender_internals.js" type="BINDATA" />
-      <include name="IDR_PROCESS_INTERNALS_HTML" file="browser/resources/process/process_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/mojom-webui/content/browser/process_internals/process_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_PROCESS_INTERNALS_HTML" file="browser/resources/process/process_internals.html" type="BINDATA" />
+      <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/content/browser/resources/process/tsc/process_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_CSS" file="browser/resources/process/process_internals.css" type="BINDATA" />
-      <include name="IDR_PROCESS_INTERNALS_JS" file="browser/resources/process/process_internals.js" type="BINDATA" />
+      <include name="IDR_PROCESS_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/process/tsc/process_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" type="BINDATA" />

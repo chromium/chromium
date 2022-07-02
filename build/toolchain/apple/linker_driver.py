@@ -9,9 +9,13 @@ import os.path
 import shutil
 import subprocess
 import sys
+import tempfile
 
 # Prefix for all custom linker driver arguments.
 LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
+# Linker action to create a directory and pass it to the linker as
+# `-object_path_lto`. Special-cased since it has to run before the link.
+OBJECT_PATH_LTO = 'object_path_lto'
 
 # The linker_driver.py is responsible for forwarding a linker invocation to
 # the compiler driver, while processing special arguments itself.
@@ -59,6 +63,8 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # -Wcrl,strippath,<strip_path>
 #    Sets the path to the strip to run with -Wcrl,strip, in which case
 #    `xcrun` is not used to invoke it.
+# -Wcrl,object_path_lto
+#    Creates temporary directory for LTO object files.
 
 
 class LinkerDriver(object):
@@ -93,6 +99,9 @@ class LinkerDriver(object):
 
         # The linker output file, lazily computed in self._get_linker_output().
         self._linker_output = None
+        # The temporary directory for intermediate LTO object files. If it
+        # exists, it will clean itself up on script exit.
+        self._object_path_lto = None
 
     def run(self):
         """Runs the linker driver, separating out the main compiler driver's
@@ -113,6 +122,9 @@ class LinkerDriver(object):
             else:
                 compiler_driver_args.append(arg)
 
+        if self._object_path_lto is not None:
+            compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
+                self._object_path_lto.name))
         if self._get_linker_output() is None:
             raise ValueError(
                 'Could not find path to linker output (-o or --output)')
@@ -167,6 +179,13 @@ class LinkerDriver(object):
             raise ValueError('%s is not a linker driver argument' % (arg, ))
 
         sub_arg = arg[len(LINKER_DRIVER_ARG_PREFIX):]
+        # Special-cased, since it needs to run before the link.
+        # TODO(lgrey): Remove if/when we start running `dsymutil`
+        # through the clang driver. See https://crbug.com/1324104
+        if sub_arg == OBJECT_PATH_LTO:
+            self._object_path_lto = tempfile.TemporaryDirectory(
+                dir=os.getcwd())
+            return (OBJECT_PATH_LTO, lambda: [])
 
         for driver_action in self._actions:
             (name, action) = driver_action

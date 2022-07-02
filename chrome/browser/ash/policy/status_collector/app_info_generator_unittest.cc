@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
@@ -210,24 +209,11 @@ class AppInfoGeneratorTest : public ::testing::Test {
     profile_ = CreateProfile(account_id_);
     test_clock().SetNow(MakeLocalTime("25-MAR-2020 1:30am"));
 
-    web_app::WebAppProviderFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile_.get(),
-        base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                       -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto provider =
-              std::make_unique<web_app::FakeWebAppProvider>(profile);
-          auto app_registrar =
-              std::make_unique<web_app::WebAppRegistrarMutable>(profile);
-          auto system_web_app_manager =
-              std::make_unique<web_app::TestSystemWebAppManager>(profile);
+    auto* provider = web_app::FakeWebAppProvider::Get(profile_.get());
+    provider->SetRunSubsystemStartupTasks(true);
+    provider->Start();
 
-          app_registrar_ = app_registrar.get();
-          provider->SetRegistrar(std::move(app_registrar));
-          provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-          provider->Start();
-          return provider;
-        }));
+    app_registrar_ = &provider->GetRegistrarMutable();
   }
 
   apps::AppRegistryCache& GetCache() {

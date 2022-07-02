@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -166,48 +164,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
                       base::Value(false), nullptr);
   }
 
-  bool device_restricted_managed_guest_session_enabled = false;
-  ash::CrosSettings::Get()->GetBoolean(
-      ash::kDeviceRestrictedManagedGuestSessionEnabled,
-      &device_restricted_managed_guest_session_enabled);
-  if (device_restricted_managed_guest_session_enabled) {
-    ApplyRestrictedManagedGuestSessionOverride(&chrome_policy);
-  }
-
   UpdatePolicy(std::move(bundle));
-}
-
-// Details about the restricted managed guest session and the overridden
-// policies can be found here: go/restricted-managed-guest-session.
-void DeviceLocalAccountPolicyProvider::
-    ApplyRestrictedManagedGuestSessionOverride(PolicyMap* chrome_policy) {
-  std::pair<std::string, base::Value> policy_overrides[] = {
-      {key::kPasswordManagerEnabled, base::Value(false)},
-      {key::kAllowDeletingBrowserHistory, base::Value(true)},
-      {key::kArcEnabled, base::Value(false)},
-      {key::kCrostiniAllowed, base::Value(false)},
-      {key::kUserPluginVmAllowed, base::Value(false)},
-      {key::kNetworkFileSharesAllowed, base::Value(false)},
-      {key::kCACertificateManagementAllowed,
-       base::Value(static_cast<int>(CACertificateManagementPermission::kNone))},
-      {key::kClientCertificateManagementAllowed,
-       base::Value(
-           static_cast<int>(ClientCertificateManagementPermission::kNone))},
-      {key::kEnableMediaRouter, base::Value(false)},
-      {key::kScreenCaptureAllowed, base::Value(false)},
-      {key::kKerberosEnabled, base::Value(false)},
-      {key::kUserBorealisAllowed, base::Value(false)},
-      {key::kDeletePrintJobHistoryAllowed, base::Value(true)},
-      {key::kLacrosSecondaryProfilesAllowed, base::Value(false)},
-      {key::kLacrosAvailability, base::Value("lacros_disallowed")},
-  };
-
-  for (auto& policy_override : policy_overrides) {
-    chrome_policy->Set(policy_override.first, POLICY_LEVEL_MANDATORY,
-                       POLICY_SCOPE_USER,
-                       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                       std::move(policy_override.second), nullptr);
-  }
 }
 
 }  // namespace policy

@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
@@ -77,9 +78,17 @@ void LogVideoFrameDrop(media::VideoCaptureFrameDropReason reason,
           "Media.VideoCapture.FrameDrop.DisplayCaptureCurrentTab", reason,
           kEnumCount);
       break;
-    default:
-      // Do nothing
-      return;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.FrameDrop.DisplayCaptureSet", reason, kEnumCount);
+      break;
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      break;
   }
 }
 
@@ -116,9 +125,18 @@ void LogMaxConsecutiveVideoFrameDropCountExceeded(
           "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureCurrentTab",
           reason, kEnumCount);
       break;
-    default:
-      // Do nothing
-      return;
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureSet", reason,
+          kEnumCount);
+      break;
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      break;
   }
 }
 
@@ -304,7 +322,8 @@ void VideoCaptureController::AddClient(
       !(params.requested_format.pixel_format == media::PIXEL_FORMAT_I420 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_Y16 ||
         params.requested_format.pixel_format == media::PIXEL_FORMAT_ARGB ||
-        params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12)) {
+        params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12 ||
+        params.requested_format.pixel_format == media::PIXEL_FORMAT_UNKNOWN)) {
     // Crash in debug builds since the renderer should not have asked for
     // invalid or unsupported parameters.
     LOG(DFATAL) << "Invalid or unsupported video capture parameters requested: "
@@ -653,6 +672,18 @@ void VideoCaptureController::OnFrameDropped(
   LogVideoFrameDrop(reason, stream_type_);
 }
 
+void VideoCaptureController::OnNewCropVersion(uint32_t crop_version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  EmitLogMessage(base::StringPrintf("%s(%u)", __func__, crop_version), 3);
+  for (const auto& client : controller_clients_) {
+    if (client->session_closed) {
+      continue;
+    }
+    client->event_handler->OnNewCropVersion(client->controller_id,
+                                            crop_version);
+  }
+}
+
 void VideoCaptureController::OnFrameWithEmptyRegionCapture() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(__func__, 3);
@@ -823,7 +854,16 @@ void VideoCaptureController::Crop(
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(launched_device_);
+
   EmitLogMessage(__func__, 3);
+
+  was_crop_ever_called_ = true;
+
+  if (controller_clients_.size() != 1) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+    return;
+  }
+
   launched_device_->Crop(crop_id, crop_version, std::move(callback));
 }
 

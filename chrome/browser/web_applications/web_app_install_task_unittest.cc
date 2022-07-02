@@ -117,7 +117,8 @@ class WebAppInstallTaskTest : public WebAppTest {
         &fake_registry_controller_->sync_bridge(),
         &fake_os_integration_manager(), icon_manager_.get(),
         policy_manager_.get(),
-        &fake_registry_controller_->translation_manager());
+        &fake_registry_controller_->translation_manager(),
+        &fake_registry_controller_->command_manager());
 
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
     controller().Init();
@@ -272,23 +273,6 @@ class WebAppInstallTaskTest : public WebAppTest {
     install_task_->InstallWebAppFromManifestWithFallback(
         web_contents(), WebAppInstallFlow::kInstallSite,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       webapps::InstallResultCode code) {
-          result.app_id = installed_app_id;
-          result.code = code;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
-  InstallResult LoadAndInstallWebAppFromManifestWithFallback(const GURL& url) {
-    InstallResult result;
-    base::RunLoop run_loop;
-    if (!install_task_)
-      InitializeInstallTaskAndRetriever(webapps::WebappInstallSource::SYNC);
-    install_task_->LoadAndInstallWebAppFromManifestWithFallback(
-        url, web_contents(), &url_loader(),
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        webapps::InstallResultCode code) {
           result.app_id = installed_app_id;
@@ -1298,59 +1282,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
     EXPECT_EQ(webapps::InstallResultCode::kExpectedAppIdCheckFailed,
               result.code);
-    EXPECT_EQ(app_id2, result.app_id);
+    EXPECT_EQ(app_id1, result.app_id);
     EXPECT_FALSE(registrar().GetAppById(app_id2));
-  }
-}
-
-TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
-  const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(
-        url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kInstallURLRedirected, result.code);
-    EXPECT_TRUE(result.app_id.empty());
-    EXPECT_FALSE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(
-        url, WebAppUrlLoader::Result::kFailedPageTookTooLong);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kInstallURLLoadTimeOut, result.code);
-    EXPECT_TRUE(result.app_id.empty());
-    EXPECT_FALSE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-    EXPECT_EQ(app_id, result.app_id);
-    EXPECT_TRUE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-    EXPECT_EQ(app_id, result.app_id);
-    EXPECT_TRUE(registrar().GetAppById(app_id));
   }
 }
 

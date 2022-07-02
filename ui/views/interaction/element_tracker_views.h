@@ -15,6 +15,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -81,6 +82,12 @@ class VIEWS_EXPORT ElementTrackerViews {
   // and that (if present) the element is a View; will DCHECK/crash otherwise.
   View* GetUniqueView(ui::ElementIdentifier id, ui::ElementContext context);
 
+  // Convenience method that calls GetUniqueView() and then safely converts the
+  // result to `T`, which must be a View subclass with metadata. Fails if a View
+  // is found but is not of the expected subtype.
+  template <class T>
+  T* GetUniqueViewAs(ui::ElementIdentifier id, ui::ElementContext context);
+
   // Returns the first View with the given `id` in the given `context`; null if
   // none is found. Ignores all other Views and any matching elements that are
   // not Views.
@@ -89,6 +96,13 @@ class VIEWS_EXPORT ElementTrackerViews {
   // there's more than one.
   View* GetFirstMatchingView(ui::ElementIdentifier id,
                              ui::ElementContext context);
+
+  // Convenience method that calls GetFirstMatchingView() and then safely
+  // converts the result to `T`, which must be a view subclass with metadata.
+  // Fails if a View is found but is not of the expected subtype.
+  template <class T>
+  T* GetFirstMatchingViewAs(ui::ElementIdentifier id,
+                            ui::ElementContext context);
 
   // Returns a list of all visible Views with identifier `id` in `context`.
   // The list may be empty. Ignores any non-Views elements which might match.
@@ -153,6 +167,30 @@ class VIEWS_EXPORT ElementTrackerViews {
   std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
   std::map<const Widget*, WidgetTracker> widget_trackers_;
 };
+
+// Template implementations.
+
+template <class T>
+T* ElementTrackerViews::GetUniqueViewAs(ui::ElementIdentifier id,
+                                        ui::ElementContext context) {
+  views::View* const view = GetUniqueView(id, context);
+  if (!view)
+    return nullptr;
+  T* const result = views::AsViewClass<T>(view);
+  DCHECK(result);
+  return result;
+}
+
+template <class T>
+T* ElementTrackerViews::GetFirstMatchingViewAs(ui::ElementIdentifier id,
+                                               ui::ElementContext context) {
+  views::View* const view = GetFirstMatchingView(id, context);
+  if (!view)
+    return nullptr;
+  T* const result = views::AsViewClass<T>(view);
+  DCHECK(result);
+  return result;
+}
 
 }  // namespace views
 

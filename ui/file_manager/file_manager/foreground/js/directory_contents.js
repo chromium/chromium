@@ -37,8 +37,13 @@ export class ContentScanner {
    * @param {function()} successCallback Called when the scan is completed
    *     successfully.
    * @param {function(DOMError)} errorCallback Called an error occurs.
+   * @param {boolean=} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  async scan(entriesCallback, successCallback, errorCallback) {}
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {}
 
   /**
    * Request cancelling of the running scan. When the cancelling is done,
@@ -65,7 +70,9 @@ export class DirectoryContentScanner extends ContentScanner {
    * Starts to read the entries in the directory.
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     if (!this.entry_ || !this.entry_.createReader) {
       // If entry is not specified or if entry doesn't implement createReader,
       // we cannot read it.
@@ -113,7 +120,9 @@ export class DriveSearchContentScanner extends ContentScanner {
    * Starts to search on Drive File System.
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     // Let's give another search a chance to cancel us before we begin.
     setTimeout(() => {
       // Check cancelled state before read the entries.
@@ -193,7 +202,9 @@ export class LocalSearchContentScanner extends ContentScanner {
    * Starts the file name search.
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     util.readEntriesRecursively(assert(this.entry_), (entries) => {
       const matchEntries = entries.filter(
           entry => entry.name.toLowerCase().indexOf(this.query_) >= 0);
@@ -222,7 +233,9 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
    * Starts to metadata-search on Drive File System.
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     chrome.fileManagerPrivate.searchDriveMetadata(
         {query: '', types: this.searchType_, maxResults: 100}, results => {
           if (chrome.runtime.lastError) {
@@ -282,9 +295,12 @@ export class RecentContentScanner extends ContentScanner {
   /**
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     chrome.fileManagerPrivate.getRecentFiles(
-        this.sourceRestriction_, this.recentFileType_, entries => {
+        this.sourceRestriction_, this.recentFileType_, invalidateCache,
+        entries => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
             errorCallback(
@@ -320,11 +336,13 @@ export class MediaViewContentScanner extends ContentScanner {
    * hierarchy. We need to list files under the root directory to provide
    * flatten view. A file will not be shown in multiple directories in
    * media-view hierarchy since no folders will be added in media documents
-   * provider. We can list all files without duplication by just retrieveing
+   * provider. We can list all files without duplication by just retrieving
    * files in directories recursively.
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     // To provide flatten view of files, this media-view scanner retrieves files
     // in directories inside the media's root entry recursively.
     util.readEntriesRecursively(
@@ -351,7 +369,9 @@ export class CrostiniMounter extends ContentScanner {
   /**
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     chrome.fileManagerPrivate.mountCrostini(() => {
       if (chrome.runtime.lastError) {
         console.error(
@@ -390,7 +410,9 @@ export class GuestOsMounter extends ContentScanner {
   /**
    * @override
    */
-  async scan(entriesCallback, successCallback, errorCallback) {
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
     try {
       await mountGuest(this.guest_id_);
       successCallback();
@@ -417,8 +439,6 @@ export class FileFilter extends EventTarget {
      * @private
      */
     this.filters_ = {};
-    this.setHiddenFilesVisible(false);
-    this.setAllAndroidFoldersVisible(false);
 
     /**
      * @type {!VolumeManager}
@@ -427,6 +447,22 @@ export class FileFilter extends EventTarget {
      */
     this.volumeManager_ = volumeManager;
 
+    /**
+     * Setup initial filters.
+     */
+    this.setupInitialFilters_();
+  }
+
+  /**
+   * @private
+   */
+  setupInitialFilters_() {
+    if (this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled()) {
+      this.setMediaStoreRecentsFilter();
+    }
+
+    this.setHiddenFilesVisible(false);
+    this.setAllAndroidFoldersVisible(false);
     this.hideAndroidDownload();
   }
 
@@ -446,6 +482,16 @@ export class FileFilter extends EventTarget {
   removeFilter(name) {
     delete this.filters_[name];
     dispatchSimpleEvent(this, 'changed');
+  }
+
+  /**
+   * When Android MediaStore volume manager filter is enabled, filter RECENTS
+   * volume entries by allowed volume type: crbug.com/1333385/#c17
+   */
+  setMediaStoreRecentsFilter() {
+    this.addFilter('media-store-recents', entry => {
+      return entry && this.volumeManager_.getLocationInfo(entry) !== null;
+    });
   }
 
   /**
@@ -790,8 +836,11 @@ export class DirectoryContents extends EventTarget {
    *
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  scan(refresh) {
+  scan(refresh, invalidateCache) {
     /**
      * Invoked when the scanning is completed successfully.
      * @this {DirectoryContents}
@@ -818,7 +867,7 @@ export class DirectoryContents extends EventTarget {
     this.scanner_ = this.scannerFactory_();
     this.scanner_.scan(
         this.onNewEntries_.bind(this, refresh), completionCallback.bind(this),
-        errorCallback.bind(this));
+        errorCallback.bind(this), invalidateCache);
   }
 
   /**

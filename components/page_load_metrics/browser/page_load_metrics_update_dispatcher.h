@@ -114,6 +114,7 @@ class PageLoadMetricsUpdateDispatcher {
 
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
+    virtual void OnPageInputTimingChanged(uint64_t num_input_events) = 0;
     virtual void OnSubFrameTimingChanged(
         content::RenderFrameHost* rfh,
         const mojom::PageLoadTiming& timing) = 0;
@@ -129,6 +130,8 @@ class PageLoadMetricsUpdateDispatcher {
         const mojom::FrameRenderDataUpdate& render_data) = 0;
     virtual void OnSubFrameMobileFriendlinessChanged(
         const blink::MobileFriendliness& mobile_friendliness) = 0;
+    virtual void OnSoftNavigationCountChanged(
+        uint32_t soft_navigation_count) = 0;
     virtual void UpdateFeaturesUsage(
         content::RenderFrameHost* rfh,
         const std::vector<blink::UseCounterFeature>& new_features) = 0;
@@ -168,7 +171,8 @@ class PageLoadMetricsUpdateDispatcher {
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr new_cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+      uint32_t soft_navigation_count);
 
   void SetUpSharedMemoryForSmoothness(
       content::RenderFrameHost* render_frame_host,
@@ -252,7 +256,10 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateSubFrameMobileFriendliness(
       const blink::MobileFriendliness& mobile_friendliness);
 
+  void UpdateSoftNavigationCount(uint32_t soft_navigation_count);
+
   void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
+
   void MaybeUpdateMainFrameIntersectionRect(
       content::RenderFrameHost* render_frame_host,
       const mojom::FrameMetadataPtr& frame_metadata);

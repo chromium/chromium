@@ -152,6 +152,111 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
 };
 
+TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate_EcheDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kEcheSWA,
+                             features::kPhoneHubCameraRoll});
+
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
+  expected_phone_properties->set_notification_mode(
+      proto::NotificationMode::DO_NOT_DISTURB_ON);
+  expected_phone_properties->set_profile_type(
+      proto::ProfileType::DEFAULT_PROFILE);
+  expected_phone_properties->set_notification_access_state(
+      proto::NotificationAccessState::ACCESS_NOT_GRANTED);
+  expected_phone_properties->set_ring_status(
+      proto::FindMyDeviceRingStatus::RINGING);
+  expected_phone_properties->set_battery_percentage(24u);
+  expected_phone_properties->set_charging_state(
+      proto::ChargingState::CHARGING_AC);
+  expected_phone_properties->set_signal_strength(
+      proto::SignalStrength::FOUR_BARS);
+  expected_phone_properties->set_mobile_provider("google");
+  expected_phone_properties->set_connection_state(
+      proto::MobileConnectionState::SIM_WITH_RECEPTION);
+  expected_phone_properties->set_screen_lock_state(
+      proto::ScreenLockState::SCREEN_LOCK_UNKNOWN);
+  proto::CameraRollAccessState* access_state =
+      expected_phone_properties->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  proto::FeatureSetupConfig* feature_setup_config =
+      expected_phone_properties->mutable_feature_setup_config();
+  feature_setup_config->set_feature_setup_request_supported(true);
+
+  expected_phone_properties->add_user_states();
+  proto::UserState* mutable_user_state =
+      expected_phone_properties->mutable_user_states(0);
+  mutable_user_state->set_user_id(1u);
+  mutable_user_state->set_is_quiet_mode_enabled(false);
+
+  proto::PhoneStatusSnapshot expected_snapshot;
+  expected_snapshot.set_allocated_properties(
+      expected_phone_properties.release());
+  expected_snapshot.add_notifications();
+  InitializeNotificationProto(expected_snapshot.mutable_notifications(0),
+                              /*id=*/0u);
+  auto* app = expected_snapshot.mutable_streamable_apps()->add_apps();
+  app->set_package_name("pkg1");
+  app->set_visible_name("vis");
+
+  // Simulate feature set to enabled and connected.
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+
+  // Simulate receiving a proto message.
+  fake_message_receiver_->NotifyPhoneStatusSnapshotReceived(expected_snapshot);
+
+  EXPECT_EQ(1u, fake_notification_manager_->num_notifications());
+  EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
+            *mutable_phone_model_->phone_name());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->IsDndEnabled());
+  EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
+  EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
+            fake_find_my_device_controller_->GetPhoneRingingStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetCameraRollAccessStatus());
+  EXPECT_TRUE(fake_multidevice_feature_access_manager_
+                  ->GetFeatureSetupRequestSupported());
+  EXPECT_EQ(ScreenLockManager::LockStatus::kUnknown,
+            fake_screen_lock_manager_->GetLockStatus());
+
+  absl::optional<PhoneStatusModel> phone_status_model =
+      mutable_phone_model_->phone_status_model();
+  EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
+            phone_status_model->charging_state());
+  EXPECT_EQ(24u, phone_status_model->battery_percentage());
+  EXPECT_EQ(u"google",
+            phone_status_model->mobile_connection_metadata()->mobile_provider);
+  EXPECT_EQ(PhoneStatusModel::SignalStrength::kFourBars,
+            phone_status_model->mobile_connection_metadata()->signal_strength);
+  EXPECT_EQ(PhoneStatusModel::MobileStatus::kSimWithReception,
+            phone_status_model->mobile_status());
+
+  // Change feature status to disconnected.
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kEnabledButDisconnected);
+
+  EXPECT_EQ(0u, fake_notification_manager_->num_notifications());
+  EXPECT_EQ(base::UTF8ToUTF16(test_remote_device_.name()),
+            *mutable_phone_model_->phone_name());
+  EXPECT_FALSE(mutable_phone_model_->phone_status_model().has_value());
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      fake_recent_apps_interaction_handler_->user_states();
+  EXPECT_TRUE(user_states.empty());
+}
+
 TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified, test_remote_device_));
@@ -195,6 +300,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   expected_snapshot.add_notifications();
   InitializeNotificationProto(expected_snapshot.mutable_notifications(0),
                               /*id=*/0u);
+  auto* app = expected_snapshot.mutable_streamable_apps()->add_apps();
+  app->set_package_name("pkg1");
+  app->set_visible_name("vis");
 
   // Simulate feature set to enabled and connected.
   fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);

@@ -5,12 +5,12 @@
         "entries": [
           {
             "builder_id": {
-              "bucket": "try",
+              "bucket": "ci",
               "builder": "linux-blink-web-tests-force-accessibility-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "tryserver.chromium.linux",
+              "builder_group": "chromium.accessibility",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -22,9 +22,6 @@
               },
               "legacy_gclient_config": {
                 "config": "chromium"
-              },
-              "legacy_test_results_config": {
-                "config": "staging_server"
               }
             }
           }
@@ -32,7 +29,7 @@
       },
       "builder_ids": [
         {
-          "bucket": "try",
+          "bucket": "ci",
           "builder": "linux-blink-web-tests-force-accessibility-rel",
           "project": "chromium"
         }
@@ -52,6 +49,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.linux",
+  "builder_group": "tryserver.chromium.accessibility",
   "recipe": "chromium_trybot"
 }

@@ -280,5 +280,17 @@ export class MetadataItem {
      * @public {boolean|undefined}
      */
     this.isExternalMedia;
+
+    /**
+     * Whether the entry is under any DataLeakPrevention policy.
+     * @public {boolean|undefined}
+     */
+    this.isDlpRestricted;
+
+    /**
+     * Source URL that can be used to check DataLeakPrevention policy.
+     * @public {string|undefined}
+     */
+    this.sourceUrl;
   }
 }

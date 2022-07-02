@@ -102,7 +102,6 @@ class EncryptionMigration extends EncryptionMigrationBase {
     this.isSkipped = false;
     this.availableSpaceInString = '';
     this.necessarySpaceInString = '';
-    this.ignoreAccelerators = true;
   }
 
   get UI_STEPS() {

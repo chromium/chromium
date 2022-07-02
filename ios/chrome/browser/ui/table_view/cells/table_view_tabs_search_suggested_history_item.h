@@ -19,7 +19,7 @@
 // The current search term associated with this cell.
 @property(nonatomic, copy) NSString* searchTerm;
 
-// Updates the cell title with |resultsCount| to display the number of matches.
+// Updates the cell title with `resultsCount` to display the number of matches.
 - (void)updateHistoryResultsCount:(size_t)resultsCount;
 
 @end

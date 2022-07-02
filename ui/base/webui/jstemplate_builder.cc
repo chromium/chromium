@@ -72,12 +72,12 @@ void AppendJsTemplateSourceHtml(std::string* output) {
 
 // Appends the code that processes the JsTemplate with the JSON. You should
 // call AppendJsTemplateSourceHtml and AppendLoadTimeData before calling this.
-void AppendJsTemplateProcessHtml(const base::Value* json,
+void AppendJsTemplateProcessHtml(const base::Value::Dict& json,
                                  const base::StringPiece& template_id,
                                  std::string* output) {
   std::string jstext;
   JSONStringValueSerializer serializer(&jstext);
-  serializer.Serialize(*json);
+  serializer.Serialize(json);
 
   output->append("<script>");
   output->append("const pageData = ");
@@ -107,10 +107,10 @@ std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
 }
 
 std::string GetTemplatesHtml(const base::StringPiece& html_template,
-                             const base::Value* json,
+                             const base::Value::Dict& json,
                              const base::StringPiece& template_id) {
   ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(json->GetDict(), &replacements);
+  ui::TemplateReplacementsFromDictionaryValue(json, &replacements);
   std::string output =
       ui::ReplaceTemplateExpressions(html_template, replacements);
 

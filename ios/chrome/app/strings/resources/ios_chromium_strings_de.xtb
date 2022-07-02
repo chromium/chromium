@@ -44,6 +44,7 @@
 <translation id="3344973607274501920">Chromium konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="3472200483164753384">Wird von Chromium Canary nicht unterstützt</translation>
 <translation id="3567399274263440288">Wenn du Chromium optimal nutzen möchtest, melde dich mit deinem Google-Konto in Chromium an.</translation>
+<translation id="3619462831205197427">Melde dich bei dieser Website, in deinem Google-Konto und in Chromium an.</translation>
 <translation id="3639997914391704523">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> hat Chromium genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
 <translation id="3805899903892079518">Chromium hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
@@ -76,7 +77,6 @@
 1. Öffne die Einstellungen
 2. Tippe auf „Standard-Browser-App“
 3. Wähle Chromium aus.</translation>
-<translation id="6155422572367400359">Melde dich bei dieser Website, in deinem Google-Konto und in Chromium an. Du kannst die Synchronisierung später aktivieren.</translation>
 <translation id="6183442264225539303">Melde dich bei dieser Website und in Chromium an. Du kannst die Synchronisierung später aktivieren.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
@@ -114,6 +114,7 @@
 <translation id="8073677936375100957">Deine Chromium-Daten von diesem Gerät löschen?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Ziehe Chromium in dein Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
+<translation id="8308172444429103994">Chromium-Tipp. Du kannst dich schneller anmelden, wenn du oberhalb der Tastatur dein gespeichertes Passwort auswählst.</translation>
 <translation id="858114650497379505">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>

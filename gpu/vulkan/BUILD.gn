@@ -6,12 +6,9 @@ import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build_overrides/wayland.gni")
 import("//testing/test.gni")
 import("features.gni")
-
-if (ozone_platform_wayland) {
-  import("//third_party/wayland/features.gni")
-}
 
 # Generate a buildflag header for compile-time checking of Vulkan support.
 buildflag_header("buildflags") {
@@ -109,6 +106,10 @@ if (enable_vulkan) {
 
     defines = [ "IS_VULKAN_IMPL" ]
 
+    if (ozone_platform == "x11") {
+      defines += [ "OZONE_PLATFORM_IS_X11" ]
+    }
+
     deps = [
       ":buildflags",
       "//base",
@@ -137,6 +138,10 @@ if (enable_vulkan) {
 
     if (is_android) {
       sources += [ "vulkan_image_android.cc" ]
+    }
+
+    if (is_fuchsia) {
+      sources += [ "vulkan_util_fuchsia.cc" ]
     }
 
     if (is_win) {

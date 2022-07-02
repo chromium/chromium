@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -36,8 +35,7 @@ TEST_F(WebCryptoShaTest, DigestSampleSets) {
     std::vector<uint8_t> test_output = GetBytesFromHexString(test, "output");
 
     std::vector<uint8_t> output;
-    ASSERT_EQ(Status::Success(),
-              Digest(test_algorithm, CryptoData(test_input), &output));
+    ASSERT_EQ(Status::Success(), Digest(test_algorithm, test_input, &output));
     EXPECT_BYTES_EQ(test_output, output);
   }
 }

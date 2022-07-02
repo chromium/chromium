@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -189,6 +190,13 @@ void LayoutSVGInline::WillBeDestroyed() {
 void LayoutSVGInline::StyleDidChange(StyleDifference diff,
                                      const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  if (diff.HasDifference()) {
+    if (auto* svg_text = DynamicTo<LayoutNGSVGText>(
+            LayoutSVGText::LocateLayoutSVGTextAncestor(this))) {
+      if (svg_text->NeedsTextMetricsUpdate())
+        diff.SetNeedsFullLayout();
+    }
+  }
   LayoutInline::StyleDidChange(diff, old_style);
 
   if (diff.NeedsFullLayout())

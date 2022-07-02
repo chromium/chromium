@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/time/time.h"
 #include "base/values.h"
-#include "content/public/browser/attribution_reporting.h"
-#include "content/public/test/attribution_simulator.h"
-#include "content/public/test/attribution_simulator_environment.h"
+#include "content/test/attribution_simulator_input_parser.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -20,8 +22,20 @@
 
 namespace content {
 
+namespace {
+
+struct Environment {
+  Environment() {
+    base::CommandLine::Init(0, nullptr);
+    base::i18n::InitializeICU();
+    logging::SetMinLogLevel(logging::LOG_FATAL);
+  }
+};
+
+}  // namespace
+
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
-  static AttributionSimulatorEnvironment env(/*argc=*/0, /*argv=*/nullptr);
+  static Environment env;
 
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
@@ -34,15 +48,9 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (!input)
     return;
 
-  // TODO(apaseltiner): Fuzz options as well.
-  const AttributionSimulationOptions options{
-      // Disable noise to make it more likely for fuzz failures to be
-      // reproducible.
-      .noise_mode = AttributionNoiseMode::kNone,
-  };
-
-  std::stringstream error_stream;
-  RunAttributionSimulation(std::move(*input), options, error_stream);
+  std::ostringstream error_stream;
+  ParseAttributionSimulationInput(std::move(*input),
+                                  /*offset_time=*/base::Time(), error_stream);
 }
 
 }  // namespace content

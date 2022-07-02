@@ -7,11 +7,14 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_descriptor_watcher_posix.h"
+#include "base/files/scoped_file.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace chromeos {
@@ -40,6 +43,17 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
                        int lifeline_fd,
                        OpenPathCallback callback,
                        ErrorCallback error_callback) override;
+  void OpenPathAndRegisterClient(const std::string& path,
+                                 uint32_t allowed_interfaces_mask,
+                                 int lifeline_fd,
+                                 OpenPathAndRegisterClientCallback callback,
+                                 ErrorCallback error_callback) override;
+  void DetachInterface(const std::string& client_id,
+                       uint8_t iface_num,
+                       ResultCallback callback) override;
+  void ReattachInterface(const std::string& client_id,
+                         uint8_t iface_num,
+                         ResultCallback callback) override;
   void RequestTcpPortAccess(uint16_t port,
                             const std::string& interface,
                             int lifeline_fd,
@@ -95,10 +109,31 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
   using RuleSet =
       std::set<std::pair<uint16_t /* port */, std::string /* interface */>>;
 
+  struct UsbInterfaces {
+    UsbInterfaces(
+        const std::string& path,
+        std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
+        base::ScopedFD lifeline_fd);
+    ~UsbInterfaces();
+    UsbInterfaces(UsbInterfaces&&);
+    UsbInterfaces& operator=(UsbInterfaces&&);
+
+    UsbInterfaces(const UsbInterfaces&) = delete;
+    UsbInterfaces& operator=(const UsbInterfaces&) = delete;
+
+    std::string path;
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
+    base::ScopedFD lifeline_fd;
+  };
+
   bool RequestPortImpl(uint16_t port,
                        const std::string& interface,
                        const RuleSet& deny_rule_set,
                        RuleSet* hole_set);
+
+  void HandleClosedClient(const std::string& client_id) {
+    clients.erase(client_id);
+  }
 
   RuleSet tcp_hole_set_;
   RuleSet udp_hole_set_;
@@ -108,6 +143,10 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   RuleSet tcp_deny_rule_set_;
   RuleSet udp_deny_rule_set_;
+
+  std::map<std::string, UsbInterfaces> clients;
+
+  base::WeakPtrFactory<FakePermissionBrokerClient> weak_factory_{this};
 };
 
 }  // namespace chromeos

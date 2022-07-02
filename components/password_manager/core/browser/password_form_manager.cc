@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -743,6 +744,7 @@ bool PasswordFormManager::ProvisionallySave(
   submitted_form_ = submitted_form;
   is_submitted_ = true;
   CalculateFillingAssistanceMetric(submitted_form);
+  CalculateSubmittedFormFrameMetric();
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
@@ -1043,6 +1045,35 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
       form_fetcher_->GetInteractionsStats(),
       client_->GetPasswordFeatureManager()
           ->ComputePasswordAccountStorageUsageLevel());
+}
+
+void PasswordFormManager::CalculateSubmittedFormFrameMetric() {
+  if (!driver_)
+    return;
+
+  const PasswordForm& form = *GetSubmittedForm();
+  metrics_util::SubmittedFormFrame frame;
+  if (driver_->IsInPrimaryMainFrame()) {
+    frame = metrics_util::SubmittedFormFrame::MAIN_FRAME;
+  } else if (form.url == client_->GetLastCommittedURL()) {
+    frame =
+        metrics_util::SubmittedFormFrame::IFRAME_WITH_SAME_URL_AS_MAIN_FRAME;
+  } else {
+    std::string main_frame_signon_realm =
+        GetSignonRealm(client_->GetLastCommittedURL());
+    if (main_frame_signon_realm == form.signon_realm) {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_URL_SAME_SIGNON_REALM_AS_MAIN_FRAME;
+    } else if (IsPublicSuffixDomainMatch(form.signon_realm,
+                                         main_frame_signon_realm)) {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_PSL_MATCHED_SIGNON_REALM;
+    } else {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_AND_NOT_PSL_MATCHED_SIGNON_REALM;
+    }
+  }
+  metrics_recorder_->set_submitted_form_frame(frame);
 }
 
 bool PasswordFormManager::IsPossibleSingleUsernameAvailable(

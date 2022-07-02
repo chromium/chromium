@@ -44,7 +44,7 @@ void StarScanLoadObserver::ReadyToCommitNavigation(
 
   if (!g_loading_webcontents_) {
     VLOG(3) << "Disabling *Scan due to loading";
-    base::internal::PCScan::Disable();
+    partition_alloc::internal::PCScan::Disable();
   }
   ++g_loading_webcontents_;
 
@@ -67,7 +67,7 @@ void StarScanLoadObserver::DecrementCounterAndReenableStarScanIfNeeded() {
   --g_loading_webcontents_;
   if (!g_loading_webcontents_) {
     VLOG(3) << "Reenabling *Scan after finishing loading";
-    base::internal::PCScan::Reenable();
+    partition_alloc::internal::PCScan::Reenable();
   }
 }
 

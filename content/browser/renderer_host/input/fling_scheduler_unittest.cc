@@ -140,6 +140,7 @@ class FlingSchedulerTest : public testing::Test,
   std::unique_ptr<TestRenderWidgetHostView> view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
 #if BUILDFLAG(IS_WIN)
+  // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 };

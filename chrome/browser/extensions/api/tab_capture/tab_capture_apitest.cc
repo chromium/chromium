@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndThroughWebRTC) {
 
 // Tests that getUserMedia() is NOT a way to start tab capture.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(RunExtensionTest("tab_capture/get_user_media_test",
                                {.page_url = "get_user_media_test.html"}))
@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
                                 ui::PAGE_TRANSITION_LINK, false);
   content::WebContents* web_contents = browser()->OpenURL(params);
 
-  content::RenderFrameHost* const main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* const main_frame =
+      web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
   listener.Reply(base::StringPrintf("web-contents-media-stream://%i:%i",
                                     main_frame->GetProcess()->GetID(),
@@ -170,10 +171,14 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 // permission via an extension icon click or the extension is allowlisted.
 // TODO(crbug.com/1306351): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
-  ExtensionTestMessageListener before_open_tab("ready1", true);
-  ExtensionTestMessageListener before_grant_permission("ready2", true);
-  ExtensionTestMessageListener before_open_new_tab("ready3", true);
-  ExtensionTestMessageListener before_allowlist_extension("ready4", true);
+  ExtensionTestMessageListener before_open_tab("ready1",
+                                               ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener before_grant_permission(
+      "ready2", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener before_open_new_tab("ready3",
+                                                   ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener before_allowlist_extension(
+      "ready4", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(RunExtensionTest("tab_capture/active_tab_permission_test",
                                {.page_url = "active_tab_permission_test.html"}))
@@ -219,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   AddExtensionToCommandLineAllowlist();
 
-  ExtensionTestMessageListener capture_started("tab_capture_started", false);
-  ExtensionTestMessageListener entered_fullscreen("entered_fullscreen", false);
+  ExtensionTestMessageListener capture_started("tab_capture_started");
+  ExtensionTestMessageListener entered_fullscreen("entered_fullscreen");
 
   ASSERT_TRUE(RunExtensionTest("tab_capture/fullscreen_test",
                                {.page_url = "fullscreen_test.html"}))
@@ -242,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
-  ExtensionTestMessageListener before_open_tab("ready1", true);
+  ExtensionTestMessageListener before_open_tab("ready1",
+                                               ReplyBehavior::kWillReply);
   ASSERT_TRUE(RunExtensionTest("tab_capture/active_tab_chrome_pages",
                                {.page_url = "active_tab_chrome_pages.html"}))
       << message_;

@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace arc {
@@ -61,7 +61,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
       delete;
 
   ~ArcMemoryPressureBridgeTest() override {
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     StabilityMetricsManager::Shutdown();
   }
 
@@ -80,8 +80,8 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
       AppKillObserver& kill_observer) {
     prefs::RegisterLocalStatePrefs(local_state.registry());
     StabilityMetricsManager::Initialize(&local_state);
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
     prefs::RegisterProfilePrefs(context.pref_registry());
     ArcMetricsService* const arc_metrics_service =
         ArcMetricsService::GetForBrowserContextForTesting(&context);
@@ -116,15 +116,19 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureNone) {
 // priority.
 TEST_F(ArcMemoryPressureBridgeTest, PressureCached) {
   ASSERT_NE(nullptr, bridge());
+  // Check for overflow for large reclaim values by passing 5 GiB to the
+  // callback, and then check that we report 5 MiB * KiB estimated_freed_kib.
+  process_instance().set_apply_host_memory_pressure_response(
+      1 /* killed */, UINT64_C(5368709120) /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
       chromeos::ResourcedClient::PressureLevelArcVm::CACHED,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kCached, 1024 /* reclaim_target */));
-  // Check for overflow for large reclaim values by passing 5 GiB to the
-  // callback, and then check that we report 5 MiB * KiB estimated_freed_kib.
-  process_instance().RunHostMemoryPressureCallback(
-      1 /* killed */, UINT64_C(5368709120) /* reclaimed */);
+
+  // Run the ApplyHostMemoryPressure callback.
+  base::RunLoop().RunUntilIdle();
+
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
       1 /* count */, 5242880 /* estimated_freed_kb */));
 }
@@ -132,13 +136,17 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureCached) {
 // Tests that PERCEPTIBLE memory pressure triggers kills of R_TOP priority.
 TEST_F(ArcMemoryPressureBridgeTest, PressurePerceptible) {
   ASSERT_NE(nullptr, bridge());
+  process_instance().set_apply_host_memory_pressure_response(
+      1 /* killed */, 2048 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
       chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kPerceptible, 1024 /* reclaim_target */));
-  process_instance().RunHostMemoryPressureCallback(1 /* killed */,
-                                                   2048 /* reclaimed */);
+
+  // Run the ApplyHostMemoryPressure callback.
+  base::RunLoop().RunUntilIdle();
+
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
       1 /* count */, 2 /* estimated_freed_kb */));
 }
@@ -146,13 +154,17 @@ TEST_F(ArcMemoryPressureBridgeTest, PressurePerceptible) {
 // Tests that FOREGROUND memory pressure triggers kills of R_TOP priority.
 TEST_F(ArcMemoryPressureBridgeTest, PressureForeground) {
   ASSERT_NE(nullptr, bridge());
+  process_instance().set_apply_host_memory_pressure_response(
+      1 /* killed */, 2048 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
       chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND,
       1 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kForeground, 1024 /* reclaim_target */));
-  process_instance().RunHostMemoryPressureCallback(1 /* killed */,
-                                                   2048 /* reclaimed */);
+
+  // Run the ApplyHostMemoryPressure callback.
+  base::RunLoop().RunUntilIdle();
+
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
       1 /* count */, 2 /* estimated_freed_kb */));
 }
@@ -161,6 +173,8 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureForeground) {
 // only cause one call into ARCVM.
 TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
   ASSERT_NE(nullptr, bridge());
+  process_instance().set_apply_host_memory_pressure_response(
+      1 /* killed */, 2048 /* reclaimed */);
 
   // FakeProcessInstance::HostMemoryPressure will DCHECK if
   // FakeProcessInstance::CheckLastHostMemoryPressure is not called first. So
@@ -176,19 +190,25 @@ TEST_F(ArcMemoryPressureBridgeTest, DebouncePressure) {
   // did not get forwarded to Mojo.
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kPerceptible, 1024 /* reclaim_target */));
-  process_instance().RunHostMemoryPressureCallback(1 /* killed */,
-                                                   2048 /* reclaimed */);
+
+  // Run the ApplyHostMemoryPressure callback.
+  base::RunLoop().RunUntilIdle();
+
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
       1 /* count */, 2 /* estimated_freed_kb */));
 
   // Check that we do forward the next call after the callback is executed.
+  process_instance().set_apply_host_memory_pressure_response(
+      3 /* killed */, 4096 /* reclaimed */);
   resourced().FakeArcVmMemoryPressure(
       chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE,
       3 /* reclaim_target_kb */);
   ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
       mojom::PressureLevel::kPerceptible, 3072 /* reclaim_target */));
-  process_instance().RunHostMemoryPressureCallback(3 /* killed */,
-                                                   4096 /* reclaimed */);
+
+  // Run the ApplyHostMemoryPressure callback.
+  base::RunLoop().RunUntilIdle();
+
   ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
       3 /* count */, 4 /* estimated_freed_kb */));
 }

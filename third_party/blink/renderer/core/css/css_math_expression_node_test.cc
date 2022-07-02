@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -325,8 +326,10 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     CSSTokenizer tokenizer(String(ss.str().c_str()));
     const auto tokens = tokenizer.TokenizeToEOF();
     const CSSParserTokenRange range(tokens);
-    const CSSMathExpressionNode* res =
-        CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
+    const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+        kHTMLStandardMode, SecureContextMode::kInsecureContext);
+    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
 
     if (test_case.expected) {
       EXPECT_TRUE(res);

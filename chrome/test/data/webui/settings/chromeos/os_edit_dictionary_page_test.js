@@ -71,7 +71,7 @@ suite('edit dictionary page', () => {
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new TestLanguagesBrowserProxy();
-    LanguagesBrowserProxyImpl.setInstance(browserProxy);
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.setLanguageSettingsPrivate(languageSettingsPrivate);
 
     editDictPage = document.createElement('os-settings-edit-dictionary-page');
@@ -162,7 +162,7 @@ suite('edit dictionary page', () => {
   });
 
   test('adds words', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     editDictPage.$.newWord.value = 'valid word2';
@@ -170,8 +170,8 @@ suite('edit dictionary page', () => {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    const listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    const listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(2, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('valid word2', listItems[0]);
@@ -179,21 +179,24 @@ suite('edit dictionary page', () => {
   });
 
   test('removes word', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
 
-    const removeWordButton = editDictPage.$$('cr-icon-button');
+    const removeWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     removeWordButton.click();
     flush();
 
     assertFalse(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(0, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        0, editDictPage.shadowRoot.querySelector('#list').items.length);
   });
 
   test('syncs removed and added words', () => {
@@ -201,8 +204,8 @@ suite('edit dictionary page', () => {
         /*added=*/['word1', 'word2', 'word3'], /*removed=*/[]);
     flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    let listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    let listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(3, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('word3', listItems[0]);
@@ -213,8 +216,8 @@ suite('edit dictionary page', () => {
         /*added=*/['word4'], /*removed=*/['word2', 'word3']);
     flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(2, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('word4', listItems[0]);
@@ -222,16 +225,18 @@ suite('edit dictionary page', () => {
   });
 
   test('removes is in tab order', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
 
-    const removeWordButton = editDictPage.$$('cr-icon-button');
+    const removeWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', removeWordButton.getAttribute('tabindex'));
     removeWordButton.click();
@@ -244,9 +249,11 @@ suite('edit dictionary page', () => {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
-    const newRemoveWordButton = editDictPage.$$('cr-icon-button');
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
+    const newRemoveWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', newRemoveWordButton.getAttribute('tabindex'));
   });

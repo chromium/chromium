@@ -162,7 +162,7 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
 
   // Set the background to be transparent for custom keyboard window shape.
   content::RenderWidgetHostView* view =
-      web_contents_->GetMainFrame()->GetView();
+      web_contents_->GetPrimaryMainFrame()->GetView();
   view->SetBackgroundColor(SK_ColorTRANSPARENT);
   view->GetNativeView()->SetTransparent(true);
 
@@ -216,7 +216,7 @@ void ChromeKeyboardWebContents::SetInitialContentsSize(const gfx::Size& size) {
 
 void ChromeKeyboardWebContents::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  if (frame_host->GetParent())
+  if (!frame_host->IsInPrimaryMainFrame())
     return;
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(

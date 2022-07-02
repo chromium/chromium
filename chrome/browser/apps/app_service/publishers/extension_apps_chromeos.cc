@@ -68,6 +68,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -201,12 +202,12 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
-    auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+    auto event_flags = apps::GetEventFlags(params.disposition,
                                            /*prefer_container=*/false);
     auto window_info = apps::MakeWindowInfo(params.display_id);
-    LaunchExtension(params.app_id, event_flags, std::move(params.intent),
-                    params.launch_source, std::move(window_info),
-                    base::DoNothing());
+    LaunchExtension(
+        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
+        params.launch_source, std::move(window_info), base::DoNothing());
   }
 }
 
@@ -672,7 +673,6 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
 
 void ExtensionAppsChromeOs::OnHideWebStoreIconPrefChanged() {
   UpdateShowInFields(extensions::kWebStoreAppId);
-  UpdateShowInFields(extension_misc::kEnterpriseWebStoreAppId);
 }
 
 void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
@@ -708,7 +708,9 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     }
     // QuickOffice has file_handlers which we need to register.
     if (extension_misc::IsQuickOfficeExtension(extension->id())) {
-      return true;
+      // Don't publish quickoffice in ash if 1st party ash extension keep list
+      // is enforced, since quickoffice extension is published in Lacros.
+      return !crosapi::browser_util::ShouldEnforceAshExtensionKeepList();
     }
     // Only accept extensions with file_browser_handlers.
     FileBrowserHandler::List* handler_list =
@@ -731,20 +733,25 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
+  // Do not publish platform apps in Ash if it should run in Lacros instead.
+  if (extension->is_platform_app() &&
+      crosapi::browser_util::IsLacrosChromeAppsEnabled()) {
+    return extensions::ExtensionAppRunsInAsh(extension->id());
+  }
+
   return true;
 }
 
 void ExtensionAppsChromeOs::SetShowInFields(
     const extensions::Extension* extension,
     App& app) {
+  // TODO(b:193788853) delete wallpaper manager and remove special case.
   if (extension->id() == extension_misc::kWallpaperManagerId) {
     // Explicitly show the Wallpaper Picker app in search only.
     app.show_in_launcher = false;
 
-    // Hide from shelf and search if new Personalization SWA is enabled.
-    auto should_show = !ash::features::IsWallpaperWebUIEnabled();
-    app.show_in_shelf = should_show;
-    app.show_in_search = should_show;
+    app.show_in_shelf = false;
+    app.show_in_search = false;
     app.show_in_management = false;
     app.handles_intents = true;
     return;
@@ -765,18 +772,15 @@ void ExtensionAppsChromeOs::SetShowInFields(
 void ExtensionAppsChromeOs::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
+  // TODO(b:193788853) delete wallpaper manager and remove special case.
   if (extension->id() == extension_misc::kWallpaperManagerId) {
     // Explicitly show the Wallpaper Picker app in search only. But permit it to
     // handle intents.
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
 
-    // Hide from shelf and search if new Personalization SWA is enabled.
-    auto should_show = ash::features::IsWallpaperWebUIEnabled()
-                           ? apps::mojom::OptionalBool::kFalse
-                           : apps::mojom::OptionalBool::kTrue;
-    app->show_in_shelf = should_show;
-    app->show_in_search = should_show;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
 
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
     return;
@@ -804,14 +808,12 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
 
 AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
                                         Readiness readiness) {
-  // If Lacros is publishing chrome apps, then by default ash chrome apps should
-  // be disabled. There is a keep-list that serves as the exception.
-  const bool disable_for_lacros =
-      extension->is_platform_app() &&
-      crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-      !extensions::ExtensionAppRunsInAsh(extension->id());
-  const bool is_app_disabled =
-      base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
+  // When Lacros is enabled, extensions not on the ash keep list should not be
+  // published to the app service at all. Thus this method should not be called.
+  DCHECK(!(extension->is_platform_app() &&
+           crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
+           !extensions::ExtensionAppRunsInAsh(extension->id())));
+  const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
 
   auto app = CreateAppImpl(
       extension, is_app_disabled ? Readiness::kDisabledByPolicy : readiness);
@@ -819,15 +821,12 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   app->icon_key = std::move(
       *icon_key_factory().CreateIconKey(GetIconEffects(extension, paused)));
 
-  if (is_app_disabled &&
-      (is_disabled_apps_mode_hidden_ || disable_for_lacros)) {
+  if (is_app_disabled && is_disabled_apps_mode_hidden_) {
     app->show_in_launcher = false;
     app->show_in_search = false;
     app->show_in_shelf = false;
     app->handles_intents = false;
   }
-  if (disable_for_lacros)
-    app->show_in_management = false;
 
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
@@ -846,14 +845,12 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
 apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
     const extensions::Extension* extension,
     apps::mojom::Readiness readiness) {
-  // If Lacros is publishing chrome apps, then by default ash chrome apps should
-  // be disabled. There is a keep-list that serves as the exception.
-  const bool disable_for_lacros =
-      extension->is_platform_app() &&
-      crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
-      !extensions::ExtensionAppRunsInAsh(extension->id());
-  const bool is_app_disabled =
-      base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
+  // When Lacros is enabled, extensions not on the ash keep list should not be
+  // published to the app service at all. Thus this method should not be called.
+  DCHECK(!(extension->is_platform_app() &&
+           crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
+           !extensions::ExtensionAppRunsInAsh(extension->id())));
+  const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
 
   apps::mojom::AppPtr app = ConvertImpl(
       extension,
@@ -868,15 +865,12 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
   app->paused = paused ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
 
-  if (is_app_disabled &&
-      (is_disabled_apps_mode_hidden_ || disable_for_lacros)) {
+  if (is_app_disabled && is_disabled_apps_mode_hidden_) {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->show_in_search = apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
     app->handles_intents = apps::mojom::OptionalBool::kFalse;
   }
-  if (disable_for_lacros)
-    app->show_in_management = apps::mojom::OptionalBool::kFalse;
 
   bool is_quickoffice = extension->is_extension() &&
                         extension_misc::IsQuickOfficeExtension(extension->id());

@@ -167,11 +167,10 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
                     const ui::LatencyInfo& latency_info,
                     mojom::blink::DidOverscrollParamsPtr overscroll,
                     absl::optional<cc::TouchAction> touch_action) {
+    // callback_ can be null in tests.
     if (callback_) {
       std::move(callback_).Run(ack_result, latency_info, std::move(overscroll),
                                touch_action);
-    } else {
-      DCHECK(!overscroll) << "Unexpected overscroll for un-acked event";
     }
 
     if (!blocking_coalesced_callbacks_.empty()) {
@@ -184,16 +183,14 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       }
     }
 
-    if (queue->main_thread_scheduler_) {
-      // TODO(dtapuska): Change the scheduler API to take into account number of
-      // events processed.
-      for (size_t i = 0; i < known_by_scheduler_count_; ++i) {
-        queue->main_thread_scheduler_->DidHandleInputEventOnMainThread(
-            event_->Event(),
-            ack_result == blink::mojom::InputEventResultState::kConsumed
-                ? WebInputEventResult::kHandledApplication
-                : WebInputEventResult::kNotHandled);
-      }
+    // TODO(dtapuska): Change the scheduler API to take into account number of
+    // events processed.
+    for (size_t i = 0; i < known_by_scheduler_count_; ++i) {
+      queue->widget_scheduler_->DidHandleInputEventOnMainThread(
+          event_->Event(),
+          ack_result == mojom::blink::InputEventResultState::kConsumed
+              ? WebInputEventResult::kHandledApplication
+              : WebInputEventResult::kNotHandled);
     }
   }
 
@@ -259,7 +256,7 @@ MainThreadEventQueue::SharedState::~SharedState() {}
 MainThreadEventQueue::MainThreadEventQueue(
     MainThreadEventQueueClient* client,
     const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
     bool allow_raf_aligned_input)
     : client_(client),
       last_touch_start_forced_nonblocking_due_to_fling_(false),
@@ -267,7 +264,8 @@ MainThreadEventQueue::MainThreadEventQueue(
       needs_unbuffered_input_for_debugger_(false),
       allow_raf_aligned_input_(allow_raf_aligned_input),
       main_task_runner_(main_task_runner),
-      main_thread_scheduler_(main_thread_scheduler) {
+      widget_scheduler_(std::move(widget_scheduler)) {
+  DCHECK(widget_scheduler_);
   raf_fallback_timer_ = std::make_unique<base::OneShotTimer>();
   raf_fallback_timer_->SetTaskRunner(main_task_runner);
 
@@ -613,9 +611,9 @@ void MainThreadEventQueue::QueueEvent(
       }
 
       // Notify the scheduler that we'll enqueue a task to the main thread.
-      if (is_input_event && main_thread_scheduler_) {
-        main_thread_scheduler_->WillPostInputEventToMainThread(input_event_type,
-                                                               attribution);
+      if (is_input_event) {
+        widget_scheduler_->WillPostInputEventToMainThread(input_event_type,
+                                                          attribution);
       }
     }
   }
@@ -675,10 +673,8 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
     std::unique_ptr<cc::EventMetrics> metrics,
     HandledEventCallback handled_callback) {
   // Notify the scheduler that the main thread is about to execute handlers.
-  if (main_thread_scheduler_) {
-    main_thread_scheduler_->WillHandleInputEventOnMainThread(
-        event.Event().GetType(), attribution);
-  }
+  widget_scheduler_->WillHandleInputEventOnMainThread(event.Event().GetType(),
+                                                      attribution);
 
   bool handled = false;
   if (client_) {

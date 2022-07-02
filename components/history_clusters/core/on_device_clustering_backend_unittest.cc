@@ -219,7 +219,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_THAT(result_clusters.at(0).keywords,
+  EXPECT_THAT(result_clusters.at(0).GetKeywords(),
               UnorderedElementsAre(std::u16string(u"google-category"),
                                    std::u16string(u"com"),
                                    std::u16string(u"google-entity")));
@@ -660,7 +660,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
               FloatEq(0.5));
   // Cluster should have 3 keywords.
   EXPECT_THAT(
-      cluster.keywords,
+      cluster.GetKeywords(),
       UnorderedElementsAre(u"rewritten-foo", u"category-foo", u"alias-foo"));
 
   history::Cluster cluster2 = result_clusters.at(1);
@@ -674,7 +674,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .model_annotations.entities.empty());
   EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
                   .model_annotations.categories.empty());
-  EXPECT_TRUE(cluster2.keywords.empty());
+  EXPECT_TRUE(cluster2.keyword_to_data_map.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
@@ -690,35 +690,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       "History.Clusters.Backend.BatchEntityLookupSize", 2, 1);
 }
 
-class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
-    : public OnDeviceClusteringWithoutContentBackendTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
-    config_.content_clustering_enabled = false;
-    config_.keyword_filter_on_categories = true;
-    config_.keyword_filter_on_noisy_visits = true;
-    config_.keyword_filter_on_entity_aliases = false;
-    SetConfigForTesting(config_);
-
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseEngagementScoreCache);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseEngagementScoreCache);
-    }
-  }
-
-  bool IsCacheStoreFeatureEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  Config config_;
-};
-
-TEST_P(EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
-       EngagementScoreCache) {
+TEST_F(OnDeviceClusteringWithoutContentBackendTest, EngagementScoreCache) {
   base::HistogramTester histogram_tester;
   std::vector<history::AnnotatedVisit> visits;
 
@@ -745,20 +717,13 @@ TEST_P(EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
 
   std::vector<history::Cluster> result_clusters_1 =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
-  EXPECT_EQ(IsCacheStoreFeatureEnabled() ? 2u : 5u,
-            GetSiteEngagementGetScoreInvocationCount());
+  EXPECT_EQ(2u, GetSiteEngagementGetScoreInvocationCount());
 
   // No new queries should be issued when cache store is enabled.
   std::vector<history::Cluster> result_clusters_2 =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
-  EXPECT_EQ(IsCacheStoreFeatureEnabled() ? 2u : 10u,
-            GetSiteEngagementGetScoreInvocationCount());
+  EXPECT_EQ(2u, GetSiteEngagementGetScoreInvocationCount());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
-    ::testing::Bool());
 
 }  // namespace
 }  // namespace history_clusters

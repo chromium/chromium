@@ -787,6 +787,9 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   SiteInstanceImpl* orig_instance = contents()->GetSiteInstance();
 
   // Navigate to an URL that will not assign a new SiteInstance.
+  // The url also needs to be defined with an empty scheme.
+  url::ScopedSchemeRegistryForTests scheme_registry;
+  url::AddEmptyDocumentScheme("non-site-url");
   const GURL native_url("non-site-url://stuffandthings");
   browser_client.set_assign_site_for_url(false, native_url);
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), native_url);
@@ -1017,7 +1020,7 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   // Ensure that committing the navigation removes the proxy.
   navigation->Commit();
   EXPECT_FALSE(contents()
-                   ->GetMainFrame()
+                   ->GetPrimaryMainFrame()
                    ->browsing_context_state()
                    ->GetRenderFrameProxyHost(instance->group()));
 }
@@ -1415,7 +1418,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(entry1, controller().GetLastCommittedEntry());
 
   // The newly created process for url1 should be locked to chrome://gpu.
-  RenderProcessHost* new_process = contents()->GetMainFrame()->GetProcess();
+  RenderProcessHost* new_process =
+      contents()->GetPrimaryMainFrame()->GetProcess();
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
                                              url::Origin::Create(url1)));
@@ -1764,7 +1768,7 @@ TEST_F(WebContentsImplTest, FilterURLs) {
   other_contents->NavigateAndCommit(url_normalized);
 
   // Check that an IPC with about:whatever is correctly normalized.
-  other_contents->GetMainFrame()->DidFailLoadWithError(url_from_ipc, 1);
+  other_contents->GetPrimaryMainFrame()->DidFailLoadWithError(url_from_ipc, 1);
   EXPECT_EQ(url_blocked, other_observer.last_url());
 }
 
@@ -1776,7 +1780,7 @@ TEST_F(WebContentsImplTest, PendingContentsDestroyed) {
   content::TestWebContents* test_web_contents = other_contents.get();
   contents()->AddPendingContents(std::move(other_contents), GURL());
   RenderWidgetHost* widget =
-      test_web_contents->GetMainFrame()->GetRenderWidgetHost();
+      test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
   int process_id = widget->GetProcess()->GetID();
   int widget_id = widget->GetRoutingID();
 
@@ -1794,7 +1798,7 @@ TEST_F(WebContentsImplTest, PendingContentsShown) {
   contents()->AddPendingContents(std::move(other_contents), url);
 
   RenderWidgetHost* widget =
-      test_web_contents->GetMainFrame()->GetRenderWidgetHost();
+      test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
   int process_id = widget->GetProcess()->GetID();
   int widget_id = widget->GetRoutingID();
 
@@ -2287,7 +2291,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
   // Navigate to a URL in a different site in the same BrowsingInstance.
   const GURL kUrl2("http://b.com");
   auto navigation3 = NavigationSimulator::CreateRendererInitiated(
-      kUrl2, contents->GetMainFrame());
+      kUrl2, contents->GetPrimaryMainFrame());
   navigation3->ReadyToCommit();
   EXPECT_EQ(1u, instance->GetRelatedActiveContentsCount());
   if (AreAllSitesIsolatedForTesting() ||
@@ -2350,7 +2354,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountChangeBrowsingInstance) {
     EXPECT_EQ(0u, instance->GetRelatedActiveContentsCount());
     // The rest of the test expects |instance| to match the one in the main
     // frame.
-    instance = contents->GetMainFrame()->GetSiteInstance();
+    instance = contents->GetPrimaryMainFrame()->GetSiteInstance();
   }
   EXPECT_EQ(1u, instance->GetRelatedActiveContentsCount());
 
@@ -2886,12 +2890,44 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerDataURL) {
   contents()->NavigateAndCommit(data);
 
   // Data URLs should fail.
-  EXPECT_CALL(delegate, RegisterProtocolHandler(contents()->GetMainFrame(),
-                                                "mailto", data_handler, true))
+  EXPECT_CALL(delegate,
+              RegisterProtocolHandler(contents()->GetPrimaryMainFrame(),
+                                      "mailto", data_handler, true))
       .Times(0);
 
   {
     contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", data_handler,
+                                        /*user_gesture=*/true);
+  }
+
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsImplTest, RegisterProtocolHandlerInvalidURLSyntax) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  GURL url("https://www.google.com");
+  GURL handler_url1("https://www.google.com/handler/%s");
+  GURL handler_url2("https://www.google.com/handler/");
+
+  contents()->NavigateAndCommit(url);
+
+  // Only the first call to RegisterProtocolHandler should register because the
+  // other call has a handler from a different origin.
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                handler_url1, true))
+      .Times(1);
+
+  EXPECT_CALL(delegate, RegisterProtocolHandler(main_test_rfh(), "mailto",
+                                                handler_url2, true))
+      .Times(0);
+  {
+    contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url1,
+                                        /*user_gesture=*/true);
+  }
+  {
+    contents()->RegisterProtocolHandler(main_test_rfh(), "mailto", handler_url2,
                                         /*user_gesture=*/true);
   }
 
@@ -2926,11 +2962,13 @@ TEST_F(WebContentsImplTest, BadDownloadImageResponseFromRenderer) {
       CreateParams::kInitializeAndWarmupRendererProcess;
   std::unique_ptr<WebContentsImpl> contents(
       WebContentsImpl::CreateWithOpener(create_params, /*opener_rfh=*/nullptr));
-  ASSERT_FALSE(contents->GetMainFrame()->GetProcess()->ShutdownRequested());
+  ASSERT_FALSE(
+      contents->GetPrimaryMainFrame()->GetProcess()->ShutdownRequested());
 
   // Set up the fake image downloader.
   FakeImageDownloader fake_image_downloader;
-  fake_image_downloader.Init(contents->GetMainFrame()->GetRemoteInterfaces());
+  fake_image_downloader.Init(
+      contents->GetPrimaryMainFrame()->GetRemoteInterfaces());
 
   // For the purpose of this test, set up a malformed response with different
   // vector sizes.
@@ -2959,7 +2997,8 @@ TEST_F(WebContentsImplTest, BadDownloadImageResponseFromRenderer) {
 
   // The renderer process should have been killed due to
   // WCI_INVALID_DOWNLOAD_IMAGE_RESULT.
-  EXPECT_TRUE(contents->GetMainFrame()->GetProcess()->ShutdownRequested());
+  EXPECT_TRUE(
+      contents->GetPrimaryMainFrame()->GetProcess()->ShutdownRequested());
 }
 
 TEST_F(WebContentsImplTest,
@@ -3170,7 +3209,7 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeHttpsIsAllowed) {
     canonical_url = result;
     quit.Run();
   };
-  contents()->GetMainFrame()->GetCanonicalUrl(
+  contents()->GetPrimaryMainFrame()->GetCanonicalUrl(
       base::BindLambdaForTesting(on_done));
   run_loop.Run();
 
@@ -3190,7 +3229,7 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
     canonical_url = result;
     quit.Run();
   };
-  contents()->GetMainFrame()->GetCanonicalUrl(
+  contents()->GetPrimaryMainFrame()->GetCanonicalUrl(
       base::BindLambdaForTesting(on_done));
   run_loop.Run();
 
@@ -3211,11 +3250,11 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   contents()->RequestMediaAccessPermission(
       dummy_request,
       base::BindLambdaForTesting(
-          [&callback_run](const blink::mojom::StreamDevices& stream_devices,
-                          blink::mojom::MediaStreamRequestResult result,
-                          std::unique_ptr<MediaStreamUI> ui) {
-            EXPECT_FALSE(stream_devices.audio_device.has_value());
-            EXPECT_FALSE(stream_devices.video_device.has_value());
+          [&callback_run](
+              const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result,
+              std::unique_ptr<MediaStreamUI> ui) {
+            EXPECT_TRUE(stream_devices_set.stream_devices.empty());
             EXPECT_EQ(
                 result,
                 blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN);

@@ -59,7 +59,7 @@ const char* kSwitchesToCopy[] = {
 // Case where Chrome is already running.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        MAYBE_LoadAndLaunchAppChromeRunning) {
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        MAYBE_LoadAndLaunchAppWithFile) {
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
 
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
@@ -149,7 +149,7 @@ class LoadAndLaunchPlatformAppBrowserTest : public PlatformAppBrowserTest {
   }
 
   void LoadAndLaunchApp() {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 
     // Start an actual browser because we can't shut down with just an app

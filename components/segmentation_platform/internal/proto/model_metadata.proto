@@ -102,6 +102,10 @@ message CustomInput {
     // Additional arg:
     //   `bucket_count`: Required. Number of buckets to include in the result.
     TIME_RANGE_BEFORE_PREDICTION = 2;
+
+    // Used to determine whether a given page is a product details page and can
+    // be price tracked..
+    PRICE_TRACKING_HINTS = 3;
   }
 
   // The fill type of the custom input.

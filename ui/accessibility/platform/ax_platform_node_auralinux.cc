@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "base/memory/raw_ptr.h"
 
 #include <dlfcn.h>
 #include <stdint.h>
@@ -125,7 +126,7 @@ typedef struct _AXPlatformNodeAuraLinuxClass AXPlatformNodeAuraLinuxClass;
 
 struct _AXPlatformNodeAuraLinuxObject {
   AtkObject parent;
-  AXPlatformNodeAuraLinux* m_object;
+  raw_ptr<AXPlatformNodeAuraLinux> m_object;
 };
 
 struct _AXPlatformNodeAuraLinuxClass {
@@ -1013,12 +1014,13 @@ gunichar GetCharacterAtOffset(AtkText* atk_text, int offset) {
     return 0;
 
   std::u16string text = obj->GetHypertext();
-  int32_t text_length = text.length();
+  size_t text_length = text.length();
 
   offset = obj->UnicodeToUTF16OffsetInText(offset);
-  int32_t limited_offset = base::clamp(offset, 0, text_length);
+  offset = std::max(offset, 0);
+  size_t limited_offset = std::min(static_cast<size_t>(offset), text_length);
 
-  uint32_t code_point;
+  base_icu::UChar32 code_point;
   base::ReadUnicodeCharacter(text.c_str(), text_length + 1, &limited_offset,
                              &code_point);
   return code_point;
@@ -1508,7 +1510,7 @@ gboolean AddSelection(AtkSelection* selection, gint index) {
       AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(selection));
   if (!obj)
     return FALSE;
-  if (index < 0 || index >= obj->GetChildCount())
+  if (index < 0 || static_cast<size_t>(index) >= obj->GetChildCount())
     return FALSE;
 
   AXPlatformNodeAuraLinux* child =
@@ -1596,7 +1598,7 @@ gboolean IsChildSelected(AtkSelection* selection, gint index) {
       AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(selection));
   if (!obj)
     return FALSE;
-  if (index < 0 || index >= obj->GetChildCount())
+  if (index < 0 || static_cast<size_t>(index) >= obj->GetChildCount())
     return FALSE;
 
   AXPlatformNodeAuraLinux* child =
@@ -2117,7 +2119,7 @@ AtkObject* RefChild(AtkObject* atk_object, gint index) {
   if (!obj)
     return nullptr;
 
-  if (index < 0 || index >= obj->GetChildCount())
+  if (index < 0 || static_cast<size_t>(index) >= obj->GetChildCount())
     return nullptr;
 
   AtkObject* result = obj->ChildAtIndex(index);
@@ -2139,7 +2141,10 @@ gint GetIndexInParent(AtkObject* atk_object) {
   if (!obj)
     return -1;
 
-  return obj->GetIndexInParent().value_or(-1);
+  auto index_in_parent = obj->GetIndexInParent();
+  return index_in_parent.has_value()
+             ? static_cast<gint>(index_in_parent.value())
+             : -1;
 }
 
 gint AtkGetIndexInParent(AtkObject* atk_object) {
@@ -3171,7 +3176,8 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   }
 
   if (GetData().GetRestriction() != ax::mojom::Restriction::kDisabled) {
-    if (IsReadOnlySupported(GetRole()) && GetData().IsReadOnlyOrDisabled()) {
+    if (GetDelegate()->IsReadOnlySupported() &&
+        GetDelegate()->IsReadOnlyOrDisabled()) {
 #if defined(ATK_216)
       // Runtime check in case we were compiled with a newer version of ATK.
       if (PlatformSupportsState(ATK_STATE_READ_ONLY))
@@ -3364,7 +3370,7 @@ bool AXPlatformNodeAuraLinux::IsPlatformCheckable() const {
   return AXPlatformNodeBase::IsPlatformCheckable();
 }
 
-absl::optional<int> AXPlatformNodeAuraLinux::GetIndexInParent() {
+absl::optional<size_t> AXPlatformNodeAuraLinux::GetIndexInParent() {
   AXPlatformNode* parent =
       AXPlatformNode::FromNativeViewAccessible(GetParent());
   // Even though the node doesn't have its parent, GetParent() could return the
@@ -4056,8 +4062,12 @@ void AXPlatformNodeAuraLinux::OnSubtreeCreated() {
   if (!atk_object)
     return;
 
-  g_signal_emit_by_name(GetParent(), "children-changed::add",
-                        GetIndexInParent().value_or(-1), atk_object);
+  auto index_in_parent = GetIndexInParent();
+  gint index_gint = index_in_parent.has_value()
+                        ? static_cast<gint>(index_in_parent.value())
+                        : -1;
+  g_signal_emit_by_name(GetParent(), "children-changed::add", index_gint,
+                        atk_object);
 }
 
 void AXPlatformNodeAuraLinux::OnSubtreeWillBeDeleted() {
@@ -4070,8 +4080,12 @@ void AXPlatformNodeAuraLinux::OnSubtreeWillBeDeleted() {
   if (!atk_object)
     return;
 
-  g_signal_emit_by_name(GetParent(), "children-changed::remove",
-                        GetIndexInParent().value_or(-1), atk_object);
+  auto index_in_parent = GetIndexInParent();
+  gint index_gint = index_in_parent.has_value()
+                        ? static_cast<gint>(index_in_parent.value())
+                        : -1;
+  g_signal_emit_by_name(GetParent(), "children-changed::remove", index_gint,
+                        atk_object);
 }
 
 void AXPlatformNodeAuraLinux::OnParentChanged() {
@@ -4331,9 +4345,9 @@ AXPlatformNodeAuraLinux::GetHypertextAdjustments() {
   text_unicode_adjustments_.emplace();
 
   std::u16string text = GetHypertext();
-  int32_t text_length = text.size();
-  for (int32_t i = 0; i < text_length; i++) {
-    uint32_t code_point;
+  size_t text_length = text.size();
+  for (size_t i = 0; i < text_length; i++) {
+    base_icu::UChar32 code_point;
     size_t original_i = i;
     base::ReadUnicodeCharacter(text.c_str(), text_length + 1, &i, &code_point);
 
@@ -5218,12 +5232,21 @@ std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
     const {
   static const base::NoDestructor<std::vector<ax::mojom::Action>>
       kActionsThatCanBeExposedViaAtkAction{
-          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement}};
+          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement,
+           ax::mojom::Action::kScrollUp, ax::mojom::Action::kScrollDown,
+           ax::mojom::Action::kScrollLeft, ax::mojom::Action::kScrollRight,
+           ax::mojom::Action::kScrollForward,
+           ax::mojom::Action::kScrollBackward}};
   std::vector<ax::mojom::Action> supported_actions;
 
   // The default action, if it exists, must be listed at index 0.
   if (HasDefaultActionVerb())
     supported_actions.push_back(ax::mojom::Action::kDoDefault);
+
+  // Users expect to be able to bring a context menu on any object via e.g.
+  // right click, so we make the context menu action available to any object
+  // unconditionally.
+  supported_actions.push_back(ax::mojom::Action::kShowContextMenu);
 
   for (const auto& item : *kActionsThatCanBeExposedViaAtkAction) {
     if (HasAction(item))

@@ -29,9 +29,7 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
   void SetUp() override {
     CompatModeTestBase::SetUp();
     parent_widget_ = CreateWidget();
-
-    anchor_ = parent_widget_->GetRootView()->AddChildView(
-        std::make_unique<views::View>());
+    EnsureAnchor();
   }
 
   void TearDown() override {
@@ -49,13 +47,24 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
     return widget;
   }
 
+  void EnsureAnchor() {
+    if (anchor_)
+      return;
+    anchor_ = parent_widget_->GetRootView()->AddChildView(
+        std::make_unique<views::View>());
+  }
+  void RemoveAnchor() {
+    parent_widget_->GetRootView()->RemoveChildViewT(anchor_);
+    anchor_ = nullptr;
+  }
+
   views::View* anchor() { return anchor_; }
   aura::Window* parent_window() { return parent_widget_->GetNativeView(); }
   views::Widget* parent_widget() { return parent_widget_.get(); }
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  views::View* anchor_;
+  views::View* anchor_{nullptr};
 };
 
 TEST_F(ArcSplashScreenDialogViewTest, TestCloseButton) {
@@ -82,6 +91,23 @@ TEST_F(ArcSplashScreenDialogViewTest, TestAnchorHighlight) {
     EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
     LeftClickOnView(parent_widget(), dialog_view_test.close_button());
     EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+  }
+}
+
+TEST_F(ArcSplashScreenDialogViewTest, TestAnchorDestroy) {
+  for (const bool is_for_unresizable : {true, false}) {
+    EnsureAnchor();
+    auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
+        base::DoNothing(), parent_window(), anchor(), is_for_unresizable);
+    ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
+    ShowAsBubble(std::move(dialog_view));
+
+    // Removing the anchor from view hierarchy makes the anchor destroyed.
+    RemoveAnchor();
+
+    // Verify that clicking the button won't cause any crash even after
+    // destroying the anchor.
+    LeftClickOnView(parent_widget(), dialog_view_test.close_button());
   }
 }
 

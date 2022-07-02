@@ -36,6 +36,9 @@ import {Route} from '../router.js';
  *   BLUETOOTH: !Route,
  *   BLUETOOTH_DEVICES: !Route,
  *   BLUETOOTH_DEVICE_DETAIL: !Route,
+ *   BLUETOOTH_SAVED_DEVICES: !Route,
+ *   BRUSCHETTA_DETAILS: !Route,
+ *   BRUSCHETTA_SHARED_USB_DEVICES: !Route,
  *   CHANGE_PICTURE: !Route,
  *   CUPS_PRINTERS: !Route,
  *   DARK_MODE: !Route,
@@ -82,6 +85,7 @@ import {Route} from '../router.js';
  *   POINTERS: !Route,
  *   POWER: !Route,
  *   PRIVACY: !Route,
+ *   PRIVACY_HUB: !Route,
  *   SEARCH: !Route,
  *   SEARCH_SUBPAGE: !Route,
  *   SMART_LOCK: !Route,
@@ -91,6 +95,7 @@ import {Route} from '../router.js';
  *   STYLUS: !Route,
  *   SYNC: !Route,
  *   SYNC_ADVANCED: !Route,
+ *   TEXT_TO_SPEECH: !Route,
  * }}
  */
 export let OsSettingsRoutes;

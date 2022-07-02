@@ -40,7 +40,7 @@ class ThreadPoolTestHelpers;
 // The thread pool doesn't create threads until Start() is called. Tasks can
 // be posted at any time but will not run until after Start() is called.
 //
-// The instance methods of this class are thread-safe.
+// The instance methods of this class are thread-safe unless otherwise noted.
 //
 // Note: All thread pool users should go through base/task/thread_pool.h instead
 // of this interface except for the one callsite per process which manages the
@@ -57,12 +57,12 @@ class BASE_EXPORT ThreadPoolInstance {
 #endif  // BUILDFLAG(IS_WIN)
     };
 
-    InitParams(int max_num_foreground_threads_in);
+    InitParams(size_t max_num_foreground_threads_in);
     ~InitParams();
 
     // Maximum number of unblocked tasks that can run concurrently in the
     // foreground thread group.
-    int max_num_foreground_threads;
+    size_t max_num_foreground_threads;
 
     // Whether COM is initialized when running sequenced and parallel tasks.
     CommonThreadPoolEnvironment common_thread_pool_environment =
@@ -134,6 +134,15 @@ class BASE_EXPORT ThreadPoolInstance {
       const InitParams& init_params,
       WorkerThreadObserver* worker_thread_observer = nullptr) = 0;
 
+  // Returns true if Start() was called. This will continue returning true even
+  // after Shutdown() is called. Must be called on the same sequence as Start().
+  virtual bool WasStarted() const = 0;
+
+  // Same as WasStarted(), but can be called from any sequence. The caller must
+  // make sure this call is properly synchronized with Start(), to avoid
+  // undefined behavior.
+  virtual bool WasStartedUnsafe() const = 0;
+
   // Synchronously shuts down the thread pool. Once this is called, only tasks
   // posted with the BLOCK_SHUTDOWN behavior will be run. When this returns:
   // - All SKIP_ON_SHUTDOWN tasks that were already running have completed their
@@ -142,7 +151,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // - CONTINUE_ON_SHUTDOWN tasks might still be running.
   // Note that an implementation can keep threads and other resources alive to
   // support running CONTINUE_ON_SHUTDOWN after this returns. This can only be
-  // called once.
+  // called once. Must be called on the same sequence as Start().
   virtual void Shutdown() = 0;
 
   // Waits until there are no pending undelayed tasks. May be called in tests
@@ -190,7 +199,8 @@ class BASE_EXPORT ThreadPoolInstance {
   static void CreateAndStartWithDefaultParams(StringPiece name);
 
   // Same as CreateAndStartWithDefaultParams() but allows callers to split the
-  // Create() and StartWithDefaultParams() calls.
+  // Create() and StartWithDefaultParams() calls. Start() is called by this
+  // method; it is invalid to call it again afterwards.
   void StartWithDefaultParams();
 #endif  // !BUILDFLAG(IS_NACL)
 
@@ -234,7 +244,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // n/GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() items.
   //
   // TODO(fdoray): Remove this method. https://crbug.com/687264
-  virtual int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+  virtual size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const = 0;
 
   // Starts/stops a fence that prevents scheduling of tasks of any / BEST_EFFORT
@@ -247,7 +257,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // manager was already running prior to launching full chrome. BeginFence
   // does not wait for ongoing tasks as those pertain to the previous phase and
   // cannot interfere with the upcoming "single-threaded" initialization
-  // phase.
+  // phase. These methods must be called from the same sequence as Start().
   virtual void BeginFence() = 0;
   virtual void EndFence() = 0;
   virtual void BeginBestEffortFence() = 0;

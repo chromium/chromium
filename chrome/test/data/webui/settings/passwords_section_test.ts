@@ -10,7 +10,7 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDialogElement, PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
+import {PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,7 +18,6 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
-import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_test.js';
 import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from './sync_test_util.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -274,7 +273,7 @@ suite('PasswordsSection', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
     loadTimeData.overrideValues({
-      enablePasswordNotes: false,
+      enablePasswordViewPage: false,
       unifiedPasswordManagerEnabled: false,
     });
   });
@@ -1068,8 +1067,8 @@ suite('PasswordsSection', function() {
                 '#showPasswordButton')!.classList.contains('icon-visibility'));
   });
 
-  test('clickingTheRowOpensSubpageWhenNotesEnabled', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+  test('clickingTheRowOpensSubpageWhenViewPageEnabled', async function() {
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
@@ -1222,77 +1221,54 @@ suite('PasswordsSection', function() {
     assertTrue(passwordsSection.$.menuExportPassword.hidden);
   });
 
+  test(
+      'importPasswordsButtonShownOnlyWhenPasswordsImportFeatureEnabled',
+      function() {
+        loadTimeData.overrideValues({showImportPasswords: false});
+        const passwordsSectionImportPasswordsDisabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertTrue(
+            passwordsSectionImportPasswordsDisabled.shadowRoot!
+                .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
+        loadTimeData.overrideValues({showImportPasswords: true});
+        const passwordsSectionImportPasswordsEnabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertFalse(
+            passwordsSectionImportPasswordsEnabled.shadowRoot!
+                .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
+      });
+
+  test('importButtonOpensPasswordsImportDialog', function() {
+    loadTimeData.overrideValues({showImportPasswords: true});
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertFalse(!!passwordsSection.shadowRoot!.querySelector<HTMLElement>(
+        '#importPasswordsDialog'));
+
+    passwordsSection.shadowRoot!
+        .querySelector<HTMLElement>('#menuImportPassword')!.click();
+    flush();
+    const importDialog =
+        passwordsSection.shadowRoot!.querySelector<HTMLElement>(
+            '#importPasswordsDialog');
+    assertTrue(!!importDialog);
+  });
+
   // Test that clicking the Export Passwords menu item opens the export
   // dialog.
-  test('exportOpen', function(done) {
+  test('exportOpen', async function() {
     const passwordList = [
       createPasswordEntry({url: 'googoo.com', username: 'Larry'}),
     ];
     const passwordsSection = elementFactory.createPasswordsSection(
         passwordManager, passwordList, []);
 
-    // The export dialog calls requestExportProgressStatus() when opening.
-    passwordManager.requestExportProgressStatus = (callback) => {
-      callback(chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
-      done();
-    };
-    passwordManager.addPasswordsFileExportProgressListener = () => {};
     passwordsSection.$.menuExportPassword.click();
+    // The export dialog calls requestExportProgressStatus() when opening.
+    await passwordManager.whenCalled('requestExportProgressStatus');
   });
 
   if (!(isChromeOS || isLacros)) {
-    // Test that tapping "Export passwords..." notifies the browser.
-    test('startExport', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runStartExportTest(exportDialog, passwordManager, done);
-    });
-
-    // Test the export flow. If exporting is fast, we should skip the
-    // in-progress view altogether.
-    test('exportFlowFast', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runExportFlowFastTest(exportDialog, passwordManager, done);
-    });
-
-    // The error view is shown when an error occurs.
-    test('exportFlowError', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runExportFlowErrorTest(exportDialog, passwordManager, done);
-    });
-
-    // The error view allows to retry.
-    test('exportFlowErrorRetry', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runExportFlowErrorRetryTest(exportDialog, passwordManager, done);
-    });
-
-    // Test the export flow. If exporting is slow, Chrome should show the
-    // in-progress dialog for at least 1000ms.
-    test('exportFlowSlow', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runExportFlowSlowTest(exportDialog, passwordManager, done);
-    });
-
-    // Test that canceling the dialog while exporting will also cancel the
-    // export on the browser.
-    test('cancelExport', function(done) {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      runCancelExportTest(exportDialog, passwordManager, done);
-    });
-
-    test('fires close event after export complete', () => {
-      const exportDialog =
-          elementFactory.createExportPasswordsDialog(passwordManager);
-      return runFireCloseEventAfterExportCompleteTest(
-          exportDialog, passwordManager);
-    });
-
     // Test verifies that the overflow menu does not offer an option to move a
     // password to the account.
     test('noMoveToAccountOption', function() {
@@ -1532,28 +1508,6 @@ suite('PasswordsSection', function() {
       assertTrue(removedIds.includes(deviceCopy.id));
     });
   }
-
-  // The export dialog is dismissable.
-  test('exportDismissable', function() {
-    const exportDialog =
-        elementFactory.createExportPasswordsDialog(passwordManager);
-
-    assertTrue(exportDialog.shadowRoot!
-                   .querySelector<CrDialogElement>('#dialog_start')!.open);
-    exportDialog.shadowRoot!.querySelector<HTMLElement>(
-                                '#cancelButton')!.click();
-    flush();
-    assertFalse(!!exportDialog.shadowRoot!.querySelector('#dialog_start'));
-  });
-
-  test('fires close event when canceled', () => {
-    const exportDialog =
-        elementFactory.createExportPasswordsDialog(passwordManager);
-    const wait = eventToPromise('passwords-export-dialog-close', exportDialog);
-    exportDialog.shadowRoot!.querySelector<HTMLElement>(
-                                '#cancelButton')!.click();
-    return wait;
-  });
 
   test('hideLinkToPasswordManagerWhenEncrypted', function() {
     const passwordsSection =
@@ -1847,27 +1801,8 @@ suite('PasswordsSection', function() {
   });
 
   test(
-      'addPasswordButtonShownOnlyWhenAddingPasswordsFeatureEnabled',
-      function() {
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: false});
-        const passwordsSectionAddPasswordsDisabled =
-            elementFactory.createPasswordsSection(passwordManager, [], []);
-        assertFalse(
-            !!passwordsSectionAddPasswordsDisabled.shadowRoot!.querySelector(
-                '#addPasswordButton'));
-
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
-        const passwordsSectionAddPasswordsEnabled =
-            elementFactory.createPasswordsSection(passwordManager, [], []);
-        assertTrue(
-            !!passwordsSectionAddPasswordsEnabled.shadowRoot!.querySelector(
-                '#addPasswordButton'));
-      });
-
-  test(
       'addPasswordButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
       function() {
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
         const passwordsSection =
             elementFactory.createPasswordsSection(passwordManager, [], []);
         const addButton =
@@ -1887,7 +1822,6 @@ suite('PasswordsSection', function() {
       });
 
   test('addPasswordButtonOpensAddPasswordDialog', function() {
-    loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
     const passwordsSection =
         elementFactory.createPasswordsSection(passwordManager, [], []);
     assertFalse(!!passwordsSection.shadowRoot!.querySelector<HTMLElement>(

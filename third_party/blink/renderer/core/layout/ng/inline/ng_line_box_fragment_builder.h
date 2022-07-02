@@ -30,7 +30,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
  public:
   NGLineBoxFragmentBuilder(NGInlineNode node,
                            scoped_refptr<const ComputedStyle> style,
-                           const NGConstraintSpace* space,
+                           const NGConstraintSpace& space,
                            WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(
             node,

@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 #endif
 
@@ -112,7 +112,7 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
          *release_channel == version_info::Channel::DEV;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 // The configuration to use for the Android platform. Applies to ARM32 which is
 // the only Android architecture currently supported by StackSamplingProfiler.
 // Defined in terms of DefaultPlatformConfiguration where Android does not
@@ -136,10 +136,6 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
   bool IsEnabledForThread(
       metrics::CallStackProfileParams::Process process,
       metrics::CallStackProfileParams::Thread thread) const override;
-
- protected:
-  bool IsSupportedForChannel(
-      absl::optional<version_info::Channel> release_channel) const override;
 };
 
 AndroidPlatformConfiguration::AndroidPlatformConfiguration(
@@ -179,14 +175,15 @@ AndroidPlatformConfiguration::GetRuntimeModuleState(
 ThreadProfilerPlatformConfiguration::RelativePopulations
 AndroidPlatformConfiguration::GetEnableRates(
     absl::optional<version_info::Channel> release_channel) const {
-  if (release_channel) {
-    CHECK(*release_channel == version_info::Channel::CANARY ||
-          *release_channel == version_info::Channel::DEV);
-    // Use a 50/50 experiment to maximize signal in the relevant metrics.
-    return RelativePopulations{0, 50};
+  // Always enable profiling in local/CQ builds or browser test mode.
+  if (!release_channel.has_value() || browser_test_mode_enabled()) {
+    return RelativePopulations{100, 0};
   }
 
-  return DefaultPlatformConfiguration::GetEnableRates(release_channel);
+  DCHECK(*release_channel == version_info::Channel::CANARY ||
+         *release_channel == version_info::Channel::DEV);
+  // Use a 50/50 experiment to maximize signal in the relevant metrics.
+  return RelativePopulations{0, 50};
 }
 
 void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
@@ -201,49 +198,47 @@ void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  // Profile all processes in browser test mode since they're disabled
-  // otherwise.
-  if (browser_test_mode_enabled())
-    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
+  DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
-  if (process == metrics::CallStackProfileParams::Process::kRenderer)
-    return 0.4;
+  // Profile all supported processes in browser test mode.
+  if (browser_test_mode_enabled()) {
+    return 1.0;
+  }
 
-  // TODO(https://crbug.com/1004855): Enable for all the default processes.
-  return 0.0;
+  // TODO(https://crbug.com/1326430): Enable for all the default processes.
+  switch (process) {
+    case metrics::CallStackProfileParams::Process::kRenderer:
+      // There are empirically, on average, 1.3 renderer processes per browser
+      // process. This samples the renderer process at roughly the same
+      // frequency overall as the browser process.
+      // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
+      return 0.75;
+
+    default:
+      return 0.0;
+  }
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
-  // Enable on renderer process main thread in production, for now.
-  if (process == metrics::CallStackProfileParams::Process::kRenderer &&
-      thread == metrics::CallStackProfileParams::Thread::kMain) {
-    return true;
+  // TODO(https://crbug.com/1326430): Enable for all the default processes.
+  switch (process) {
+    case metrics::CallStackProfileParams::Process::kRenderer:
+      return true;
+
+    default:
+      return false;
   }
-
-  // Otherwise enable in dedicated ThreadProfiler browser tests.
-  return browser_test_mode_enabled();
 }
-
-bool AndroidPlatformConfiguration::IsSupportedForChannel(
-    absl::optional<version_info::Channel> release_channel) const {
-  // Enable on canary, for now.
-  if (release_channel && *release_channel == version_info::Channel::CANARY)
-    return true;
-
-  // Otherwise enable in dedicated ThreadProfiler browser tests.
-  // TODO(https://crbug.com/1004855): Enable across all browser tests.
-  return browser_test_mode_enabled();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 
 }  // namespace
 
 // static
 std::unique_ptr<ThreadProfilerPlatformConfiguration>
 ThreadProfilerPlatformConfiguration::Create(bool browser_test_mode_enabled) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   using PlatformConfiguration = AndroidPlatformConfiguration;
 #else
   using PlatformConfiguration = DefaultPlatformConfiguration;

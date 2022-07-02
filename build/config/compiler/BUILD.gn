@@ -267,9 +267,6 @@ config("compiler") {
     configs += [ "//build/config/android:compiler" ]
   } else if (is_linux || is_chromeos) {
     configs += [ "//build/config/linux:compiler" ]
-    if (is_chromeos) {
-      configs += [ "//build/config/chromeos:compiler" ]
-    }
   } else if (is_nacl) {
     configs += [ "//build/config/nacl:compiler" ]
   } else if (is_mac) {
@@ -655,9 +652,11 @@ config("compiler") {
     # available disk space, 40GB and 100000 files.
     cache_policy = "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
 
+    # An import limit of 30 has better performance (per speedometer) and lower
+    # binary size than the default setting of 100.
     # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
     # should be able to better manage binary size increases on its own.
-    import_instr_limit = 5
+    import_instr_limit = 30
 
     if (is_win) {
       ldflags += [
@@ -680,9 +679,11 @@ config("compiler") {
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
       if (is_apple) {
-        ldflags +=
-            [ "-Wl,-cache_path_lto," +
-              rebase_path("$root_out_dir/thinlto-cache", root_build_dir) ]
+        ldflags += [
+          "-Wl,-cache_path_lto," +
+              rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
+          "-Wcrl,object_path_lto",
+        ]
       } else {
         ldflags +=
             [ "-Wl,--thinlto-cache-dir=" +
@@ -692,21 +693,23 @@ config("compiler") {
       ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
 
       if (is_chromeos) {
-        # Not much performance difference was noted between the default (100)
-        # and these. ARM was originally set lower than x86 to keep the size
+        # ARM was originally set lower than x86 to keep the size
         # bloat of ThinLTO to <10%, but that's potentially no longer true.
         # FIXME(inglorion): maybe tune these?
         if (target_cpu == "arm" || target_cpu == "arm64") {
           import_instr_limit = 20
-        } else {
-          import_instr_limit = 30
         }
+      } else if (is_android) {
+        # TODO(crbug.com/1308318): Investigate if we can get the > 6% perf win
+        # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
+        import_instr_limit = 5
       }
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
     }
 
-    # TODO(https://crbug.com/1211155): investigate why this isn't effective on arm32.
+    # TODO(https://crbug.com/1211155): investigate why this isn't effective on
+    # arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
       if (!is_win) {
@@ -884,6 +887,11 @@ config("compiler_cpu_abi") {
   ldflags = []
   defines = []
 
+  configs = []
+  if (is_chromeos) {
+    configs += [ "//build/config/chromeos:compiler_cpu_abi" ]
+  }
+
   if ((is_posix && !is_apple) || is_fuchsia) {
     # CPU architecture. We may or may not be doing a cross compile now, so for
     # simplicity we always explicitly set the architecture.
@@ -903,7 +911,8 @@ config("compiler_cpu_abi") {
         ]
       }
     } else if (current_cpu == "arm") {
-      if (is_clang && !is_android && !is_nacl) {
+      if (is_clang && !is_android && !is_nacl &&
+          !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=arm-linux-gnueabihf" ]
         ldflags += [ "--target=arm-linux-gnueabihf" ]
       }
@@ -917,7 +926,8 @@ config("compiler_cpu_abi") {
         cflags += [ "-mtune=$arm_tune" ]
       }
     } else if (current_cpu == "arm64") {
-      if (is_clang && !is_android && !is_nacl && !is_fuchsia) {
+      if (is_clang && !is_android && !is_nacl && !is_fuchsia &&
+          !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
@@ -1165,6 +1175,12 @@ config("compiler_cpu_abi") {
         cflags += [ "-m64" ]
         ldflags += [ "-m64" ]
       }
+    } else if (current_cpu == "riscv64") {
+      if (is_clang) {
+        cflags += [ "--target=riscv64-linux-gnu" ]
+        ldflags += [ "--target=riscv64-linux-gnu" ]
+      }
+      cflags += [ "-mabi=lp64d" ]
     } else if (current_cpu == "s390x") {
       cflags += [ "-m64" ]
       ldflags += [ "-m64" ]
@@ -1570,22 +1586,21 @@ config("default_warnings") {
 #   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
 config("prevent_unsafe_narrowing") {
-  # TODO(crbug.com/1292951): Enable this config
-  # if (is_clang) {
-  #   cflags = [
-  #     "-Wshorten-64-to-32",
-  #     "-Wimplicit-int-conversion",
-  #     "-Wsign-compare",
-  #     "-Wsign-conversion",
-  #   ]
-  #   if (!is_nacl) {
-  #     cflags += [
-  #       # Avoid bugs of the form `if (size_t i = size; i >= 0; --i)` while
-  #       # fixing types to be sign-correct.
-  #       "-Wtautological-unsigned-zero-compare",
-  #     ]
-  #   }
-  # }
+  if (is_clang) {
+    cflags = [
+      "-Wshorten-64-to-32",
+      "-Wimplicit-int-conversion",
+      "-Wsign-compare",
+      "-Wsign-conversion",
+    ]
+    if (!is_nacl) {
+      cflags += [
+        # Avoid bugs of the form `if (size_t i = size; i >= 0; --i)` while
+        # fixing types to be sign-correct.
+        "-Wtautological-unsigned-zero-compare",
+      ]
+    }
+  }
 }
 
 # chromium_code ---------------------------------------------------------------
@@ -1625,7 +1640,8 @@ config("chromium_code") {
 
     if (!is_debug && !using_sanitizer && current_cpu != "s390x" &&
         current_cpu != "s390" && current_cpu != "ppc64" &&
-        current_cpu != "mips" && current_cpu != "mips64") {
+        current_cpu != "mips" && current_cpu != "mips64" &&
+        current_cpu != "riscv64") {
       # Non-chromium code is not guaranteed to compile cleanly with
       # _FORTIFY_SOURCE. Also, fortified build may fail when optimizations are
       # disabled, so only do that for Release build.
@@ -2196,9 +2212,9 @@ if (is_clang && is_a_target_toolchain) {
   } else if (clang_use_default_sample_profile) {
     assert(build_with_chromium,
            "Our default profiles currently only apply to Chromium")
-    assert(is_android || is_chromeos || is_chromecast,
+    assert(is_android || is_chromeos || is_castos,
            "The current platform has no default profile")
-    if (is_android || is_chromecast) {
+    if (is_android || is_castos) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
       assert(chromeos_afdo_platform == "atom" ||

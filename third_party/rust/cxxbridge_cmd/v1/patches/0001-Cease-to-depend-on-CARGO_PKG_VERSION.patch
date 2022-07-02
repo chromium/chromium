@@ -1,39 +1,49 @@
-From 39f51864c9edd00c352f51e72cf7399165e4a4b5 Mon Sep 17 00:00:00 2001
+From 126880776ea81b33467f2b1597a03240a16be14e Mon Sep 17 00:00:00 2001
 From: Adrian Taylor <adetaylor@chromium.org>
 Date: Thu, 28 Oct 2021 14:28:22 -0700
-Subject: [PATCH] Cease to depend on CARGO_PKG_VERSION.
+Subject: [PATCH 1/1] Cease to depend on CARGO_PKG_VERSION.
 
 This was correctly recognized by rustc and ninja as an environmental
 dependency which might change at any time, thus resulting in this
 code rebuilding each time.
 
 Change-Id: I55f55c1ff926494e3837d5428a75cf23415ab22c
+Signed-off-by: Collin Baker <collinbaker@chromium.org>
 ---
- third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs b/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
-index c233ad77a968..bd8fbb935d13 100644
+index 97288c1050427..f75347df002e3 100644
 --- a/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
 +++ b/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
-@@ -33,7 +33,7 @@ OPTIONS:
+@@ -34,7 +34,7 @@ OPTIONS:
  ";
-
- fn app() -> App {
--    let mut app = App::new("cxxbridge")
-+    let app = App::new("cxxbridge")
-         .usage(USAGE)
-         .template(TEMPLATE)
-         .setting(AppSettings::NextLineHelp)
-@@ -44,9 +44,6 @@ fn app() -> App {
+ 
+ fn app() -> Command<'static> {
+-    let mut app = Command::new("cxxbridge")
++    let app = Command::new("cxxbridge")
+         .override_usage(USAGE)
+         .help_template(TEMPLATE)
+         .next_line_help(true)
+@@ -45,11 +45,12 @@ fn app() -> Command<'static> {
          .arg(arg_output())
-         .help_message("Print help information.")
-         .version_message("Print version information.");
+         .arg(arg_cfg())
+         .mut_arg("help", |a| a.help("Print help information."));
 -    if let Some(version) = option_env!("CARGO_PKG_VERSION") {
--        app = app.version(version);
+-        app = app
+-            .version(version)
+-            .mut_arg("version", |a| a.help("Print version information."));
 -    }
++    // Remove for Chromium.
++    // if let Some(version) = option_env!("CARGO_PKG_VERSION") {
++    //     app = app
++    //         .version(version)
++    //         .mut_arg("version", |a| a.help("Print version information."));
++    // }
      app
  }
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
 
---
-2.33.0.1079.g6e70778dc9-goog

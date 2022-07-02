@@ -6,7 +6,7 @@
 
 #include <utility>
 #include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -111,7 +111,8 @@ String HTMLPortalElement::PreActivateChecksCommon() {
   if (!portal_)
     return "The HTMLPortalElement is not associated with a portal context.";
 
-  if (DocumentPortals::From(GetDocument()).IsPortalInDocumentActivating())
+  if (DocumentPortals::GetOrCreate(GetDocument())
+          .IsPortalInDocumentActivating())
     return "Another portal in this document is activating.";
 
   if (GetDocument().GetPage()->InsidePortal())

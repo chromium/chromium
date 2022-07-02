@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -2858,10 +2859,6 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
   if (ChildrenInline()) {
     if (child_is_block_level) {
-      if (GetDisplayLockContext() && IsShapingDeferred()) {
-        GetDisplayLockContext()->SetRequestedState(
-            EContentVisibility::kVisible);
-      }
       // Wrap the inline content in anonymous blocks, to allow for the new block
       // child to be inserted.
       MakeChildrenNonInline(before_child);
@@ -3319,6 +3316,10 @@ static void GetInlineRun(LayoutObject* start,
 
 void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   NOT_DESTROYED();
+
+  if (GetDisplayLockContext() && IsShapingDeferred())
+    GetDisplayLockContext()->SetRequestedState(EContentVisibility::kVisible);
+
   // makeChildrenNonInline takes a block whose children are *all* inline and it
   // makes sure that inline children are coalesced under anonymous blocks.
   // If |insertionPoint| is defined, then it represents the insertion point for
@@ -4439,7 +4440,8 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
     for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
       if (const NGFragmentItems* items = fragment.Items()) {
         NGInlineCursor cursor(fragment, *items);
-        NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
+        NGInlinePaintContext inline_context;
+        NGFragmentItem::RecalcInkOverflowForCursor(&cursor, &inline_context);
       }
       // Even if this turned out to be an inline formatting context with
       // fragment items (handled above), we need to handle floating descendants.

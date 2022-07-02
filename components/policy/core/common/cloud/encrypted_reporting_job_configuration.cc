@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
@@ -140,7 +142,7 @@ UploadState* AccessState(::reporting::Priority priority,
 EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     CloudPolicyClient* client,
     const std::string& server_url,
-    const base::Value::Dict& merging_payload,
+    base::Value::Dict merging_payload,
     UploadCompleteCallback complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,
                                     client->GetURLLoaderFactory(),
@@ -149,7 +151,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
                                     /*include_device_info*/ true,
                                     std::move(complete_cb)) {
   // Merge it into the base class payload.
-  payload_.Merge(merging_payload);
+  payload_.Merge(std::move(merging_payload));
   // Retrieve priorities and figure out maximum sequence id for each.
   // Payload is expected to be correctly formed, any malformed piece is ignored.
   // TODO(b/214040103): if batching is enabled, multiple priorities may be
@@ -281,7 +283,8 @@ void EncryptedReportingJobConfiguration::OnURLLoadComplete(
   auto* const state = AccessState(priority_, generation_id_, sequence_id_);
   if (net_error != ::net::OK) {
     // Network error
-  } else if (response_code >= 400 && response_code <= 499) {
+  } else if (response_code >= 400 && response_code <= 499 &&
+             response_code != 409 /* Overlapping seq_id ranges detected */) {
     // Permanent error code returned by server, impose artificial 24h backoff.
     state->backoff_entry->SetCustomReleaseTime(
         state->backoff_entry->GetTimeTicksNow() + base::Days(1));

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

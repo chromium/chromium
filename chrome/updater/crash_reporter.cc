@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -31,8 +32,8 @@ namespace updater {
 namespace {
 
 crashpad::CrashpadClient& GetCrashpadClient() {
-  static crashpad::CrashpadClient crashpad_client;
-  return crashpad_client;
+  static base::NoDestructor<crashpad::CrashpadClient> crashpad_client;
+  return *crashpad_client;
 }
 
 // Returns the command line arguments to start the crash handler process with.
@@ -72,9 +73,9 @@ void StartCrashReporter(UpdaterScope updater_scope,
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
   const absl::optional<base::FilePath> database_path =
-      GetVersionedDirectory(updater_scope);
+      GetVersionedDataDirectory(updater_scope);
   if (!database_path) {
-    LOG(DFATAL) << "Failed to get the database path.";
+    LOG(ERROR) << "Failed to get the database path.";
     return;
   }
 

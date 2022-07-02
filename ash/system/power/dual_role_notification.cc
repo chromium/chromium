@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -137,7 +138,8 @@ std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE),
       std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierDualRole),
+                                 kNotifierDualRole,
+                                 NotificationCatalogName::kDualRole),
       message_center::RichNotificationData(), std::move(delegate),
       kNotificationChargingUsbCIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

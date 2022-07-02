@@ -70,7 +70,9 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_manager_.CreateGuestProfile();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateSystemProfile();
+#endif
 #if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -276,7 +278,7 @@ TEST_F(ReportRequestQueueGeneratorTest, ChromePoliciesCollection) {
 
   policy_map.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(std::vector<base::Value>()), nullptr);
+                 base::Value(base::Value::List()), nullptr);
   policy_map.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                  base::Value(true), nullptr);

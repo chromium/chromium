@@ -53,11 +53,7 @@ void SwapCertLists(ScopedCERTCertificateList* destination,
 class NSSCertDatabaseChromeOSTest : public TestWithTaskEnvironment,
                                     public CertDatabase::Observer {
  public:
-  NSSCertDatabaseChromeOSTest()
-      : observer_added_(false),
-        db_changed_count_(0),
-        user_1_("user1"),
-        user_2_("user2") {}
+  NSSCertDatabaseChromeOSTest() : user_1_("user1"), user_2_("user2") {}
 
   void SetUp() override {
     // Initialize nss_util slots.
@@ -95,8 +91,8 @@ class NSSCertDatabaseChromeOSTest : public TestWithTaskEnvironment,
   void OnCertDBChanged() override { db_changed_count_++; }
 
  protected:
-  bool observer_added_;
-  int db_changed_count_;
+  bool observer_added_ = false;
+  int db_changed_count_ = 0;
 
   crypto::ScopedTestNSSChromeOSUser user_1_;
   crypto::ScopedTestNSSChromeOSUser user_2_;

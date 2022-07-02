@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.res.Resources.NotFoundException;
 import android.os.Looper;
 import android.os.MessageQueue;
-import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
 import android.view.View;
@@ -519,7 +518,7 @@ public class TraceEvent implements AutoCloseable {
         private final void syncIdleMonitoring() {
             if (sEnabled && !mIdleMonitorAttached) {
                 // approximate start time for computational purposes
-                mLastIdleStartedAt = SystemClock.elapsedRealtime();
+                mLastIdleStartedAt = TimeUtils.elapsedRealtimeMillis();
                 Looper.myQueue().addIdleHandler(this);
                 mIdleMonitorAttached = true;
                 Log.v(TAG, "attached idle handler");
@@ -536,15 +535,14 @@ public class TraceEvent implements AutoCloseable {
             if (mNumTasksSinceLastIdle == 0) {
                 TraceEvent.end(IDLE_EVENT_NAME);
             }
-            mLastWorkStartedAt = SystemClock.elapsedRealtime();
+            mLastWorkStartedAt = TimeUtils.elapsedRealtimeMillis();
             syncIdleMonitoring();
             super.beginHandling(line);
         }
 
         @Override
         final void endHandling(final String line) {
-            final long elapsed = SystemClock.elapsedRealtime()
-                    - mLastWorkStartedAt;
+            final long elapsed = TimeUtils.elapsedRealtimeMillis() - mLastWorkStartedAt;
             if (elapsed > MIN_INTERESTING_DURATION_MILLIS) {
                 traceAndLog(Log.WARN, "observed a task that took "
                         + elapsed + "ms: " + line);
@@ -562,7 +560,7 @@ public class TraceEvent implements AutoCloseable {
 
         @Override
         public final boolean queueIdle() {
-            final long now =  SystemClock.elapsedRealtime();
+            final long now = TimeUtils.elapsedRealtimeMillis();
             if (mLastIdleStartedAt == 0) mLastIdleStartedAt = now;
             final long elapsed = now - mLastIdleStartedAt;
             mNumIdlesSeen++;
@@ -731,6 +729,15 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Triggers a 'instant' native "AndroidIPC" event.
+     * @param name The name of the IPC.
+     * @param durMs The duration the IPC took in milliseconds.
+     */
+    public static void instantAndroidIPC(String name, long durMs) {
+        if (sEnabled) TraceEventJni.get().instantAndroidIPC(name, durMs);
+    }
+
+    /**
      * Triggers the 'start' native trace event with no arguments.
      * @param name The name of the event.
      * @param id   The id of the asynchronous event.
@@ -820,6 +827,7 @@ public class TraceEvent implements AutoCloseable {
         long startActivityDump(String name, long dumpProtoPtr);
         void addViewDump(int id, int parentId, boolean isShown, boolean isDirty, String className,
                 String resourceName, long activityProtoPtr);
+        void instantAndroidIPC(String name, long durMs);
     }
 
     /**
@@ -867,7 +875,7 @@ public class TraceEvent implements AutoCloseable {
 
         @Override
         public final boolean queueIdle() {
-            final long now = SystemClock.elapsedRealtime();
+            final long now = TimeUtils.elapsedRealtimeMillis();
             if (mLastDumpTs == 0 || (now - mLastDumpTs) > MIN_VIEW_DUMP_INTERVAL_MILLIS) {
                 mLastDumpTs = now;
                 TraceEventJni.get().initViewHierarchyDump();

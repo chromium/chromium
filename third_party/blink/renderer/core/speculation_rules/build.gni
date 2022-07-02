@@ -10,3 +10,10 @@ blink_core_sources_speculation_rules = [
   "speculation_rule_set.cc",
   "speculation_rule_set.h",
 ]
+
+blink_core_tests_speculation_rules = [
+  "speculation_rule_set_test.cc",
+  "speculation_rules_origin_trial_test.cc",
+  "stub_speculation_host.cc",
+  "stub_speculation_host.h",
+]

@@ -16,7 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"

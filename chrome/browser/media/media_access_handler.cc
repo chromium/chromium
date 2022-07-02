@@ -30,7 +30,12 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   bool get_default_audio_device = audio_allowed;
   bool get_default_video_device = video_allowed;
 
-  blink::mojom::StreamDevices stream_devices;
+  // TOOD(crbug.com/1300883): Generalize to multiple streams.
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& stream_devices =
+      *stream_devices_set.stream_devices[0];
 
   // Set an initial error result. If neither audio or video is allowed, we'll
   // never try to get any device below but will just create |ui| and return an
@@ -85,5 +90,10 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
              ->RegisterMediaStream(web_contents, stream_devices);
   }
 
-  std::move(callback).Run(stream_devices, result, std::move(ui));
+  if (!stream_devices.audio_device.has_value() &&
+      !stream_devices.video_device.has_value()) {
+    stream_devices_set.stream_devices.clear();
+  }
+
+  std::move(callback).Run(stream_devices_set, result, std::move(ui));
 }

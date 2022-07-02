@@ -14,7 +14,6 @@
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "content/renderer/web_ui_extension_data.h"
 #include "gin/arguments.h"
@@ -138,19 +137,20 @@ void WebUIExtension::Send(gin::Arguments* args) {
 
   // If they've provided an optional message parameter, convert that into a
   // Value to send to the browser process.
-  std::unique_ptr<base::ListValue> content;
-  if (args->PeekNext().IsEmpty() || args->PeekNext()->IsUndefined()) {
-    content = std::make_unique<base::ListValue>();
-  } else {
+  base::Value::List content;
+  if (!args->PeekNext().IsEmpty() && !args->PeekNext()->IsUndefined()) {
     v8::Local<v8::Object> obj;
     if (!args->GetNext(&obj)) {
       args->ThrowError();
       return;
     }
 
-    content = base::ListValue::From(V8ValueConverter::Create()->FromV8Value(
-        obj, frame->MainWorldScriptContext()));
-    DCHECK(content);
+    std::unique_ptr<base::Value> value =
+        V8ValueConverter::Create()->FromV8Value(
+            obj, frame->MainWorldScriptContext());
+    DCHECK(value->is_list());
+    content = std::move(value->GetList());
+
     // The conversion of |obj| could have triggered arbitrary JavaScript code,
     // so check that the frame is still valid to avoid dereferencing a stale
     // pointer.

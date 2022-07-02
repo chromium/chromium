@@ -59,7 +59,9 @@ class MojoMediaClientImpl : public MojoMediaClient {
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) final {
+      const gfx::ColorSpace& target_color_space,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+      final {
     // TODO(b/195769334): some platforms do not support the
     // VideoDecoderPipeline so we need to handle those (and the rest of the
     // methods of MojoMediaClientImpl are affected as well).
@@ -67,14 +69,17 @@ class MojoMediaClientImpl : public MojoMediaClient {
     // For out-of-process video decoding, |command_buffer_id| is not used and
     // should not be supplied.
     DCHECK(!command_buffer_id);
+
+    DCHECK(!oop_video_decoder);
+
     std::unique_ptr<MediaLog> log =
         media_log ? media_log->Clone()
                   : std::make_unique<media::NullMediaLog>();
     return VideoDecoderPipeline::Create(
         /*client_task_runner=*/std::move(task_runner),
-        std::make_unique<PlatformVideoFramePool>(
-            /*gpu_memory_buffer_factory=*/nullptr),
-        std::make_unique<media::VideoFrameConverter>(), std::move(log));
+        std::make_unique<PlatformVideoFramePool>(),
+        std::make_unique<media::VideoFrameConverter>(), std::move(log),
+        /*oop_video_decoder=*/{});
   }
 };
 
@@ -110,7 +115,8 @@ void StableVideoDecoderFactoryService::CreateStableVideoDecoder(
         mojo_media_client_.get(), &cdm_service_context_);
   } else {
     dst_video_decoder = std::make_unique<MojoVideoDecoderService>(
-        mojo_media_client_.get(), &cdm_service_context_);
+        mojo_media_client_.get(), &cdm_service_context_,
+        mojo::PendingRemote<stable::mojom::StableVideoDecoder>());
   }
   video_decoders_.Add(
       std::make_unique<StableVideoDecoderService>(std::move(dst_video_decoder)),

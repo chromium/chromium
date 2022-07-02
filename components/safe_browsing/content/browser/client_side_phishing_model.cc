@@ -232,6 +232,13 @@ void* ClientSidePhishingModel::GetFlatBufferMemoryAddressForTesting() {
   return mapped_region_.mapping.memory();
 }
 
+void ClientSidePhishingModel::NotifyCallbacksOfUpdateForTesting() {
+  // base::Unretained is safe because this is a singleton.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                                base::Unretained(this)));
+}
+
 void ClientSidePhishingModel::MaybeOverrideModel() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kOverrideCsdModelFlag)) {

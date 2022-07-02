@@ -42,12 +42,14 @@ Custom property | Description | Default
 `--paper-tooltip-background` | The background color of the tooltip | `#616161`
 `--paper-tooltip-opacity` | The opacity of the tooltip | `0.9`
 `--paper-tooltip-text-color` | The text color of the tooltip | `white`
-`--paper-tooltip` | Mixin applied to the tooltip | `{}`
 `--paper-tooltip-delay-in` | Delay before tooltip starts to fade in | `500`
 `--paper-tooltip-delay-out` | Delay before tooltip starts to fade out | `0`
 `--paper-tooltip-duration-in` | Timing for animation when showing tooltip | `500`
 `--paper-tooltip-duration-out` | Timing for animation when hiding tooltip | `0`
-`--paper-tooltip-animation` | Mixin applied to the tooltip animation | `{}`
+
+Also prefer using the exposed CSS part as follows where possible
+paper-tooltip::part(tooltip) {...}
+
 @group Paper Elements
 @element paper-tooltip
 @demo demo/index.html
@@ -67,7 +69,6 @@ Polymer({
       #tooltip {
         display: block;
         outline: none;
-        @apply --paper-font-common-base;
         font-size: 10px;
         line-height: 1;
         background-color: var(--paper-tooltip-background, #616161);
@@ -148,7 +149,6 @@ Polymer({
         animation-timing-function: ease-in;
         animation-duration: var(--paper-tooltip-duration-in, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .fade-out-animation {
@@ -159,7 +159,6 @@ Polymer({
         animation-timing-function: ease-in;
         animation-duration: var(--paper-tooltip-duration-out, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .scale-up-animation {
@@ -171,7 +170,6 @@ Polymer({
         animation-timing-function: ease-in;
         animation-duration: var(--paper-tooltip-duration-in, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .scale-down-animation {
@@ -183,7 +181,6 @@ Polymer({
         animation-timing-function: ease-in;
         animation-duration: var(--paper-tooltip-duration-out, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .slide-down-animation {
@@ -195,7 +192,6 @@ Polymer({
         animation-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
         animation-duration: var(--paper-tooltip-duration-out, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .slide-down-animation-out {
@@ -207,7 +203,6 @@ Polymer({
         animation-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
         animation-duration: var(--paper-tooltip-duration-out, 500ms);
         animation-fill-mode: forwards;
-        @apply --paper-tooltip-animation;
       }
 
       .cancel-animation {
@@ -281,8 +276,8 @@ Polymer({
      */
     animationExit: {type: String, value: ''},
     /**
-     * This property is deprecated.  Use --paper-tooltip-animation to change the
-     * animation. The entry and exit animations that will be played when showing
+     * This property is deprecated.
+     * The entry and exit animations that will be played when showing
      * and hiding the tooltip. If you want to override this, you must ensure
      * that your animationConfig has the exact format below.
      * @deprecated since version

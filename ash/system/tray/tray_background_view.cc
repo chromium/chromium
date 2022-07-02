@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
@@ -243,6 +244,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<HighlightPathGenerator>(this,
                                                kTrayBackgroundFocusPadding));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   SetFocusPainter(nullptr);
 
   views::HighlightPathGenerator::Install(
@@ -492,9 +494,6 @@ void TrayBackgroundView::OnThemeChanged() {
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
                                                   StyleUtil::kInkDropOpacity |
                                                   StyleUtil::kHighlightOpacity);
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {
@@ -531,6 +530,10 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 }
 
 void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
+
+void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
+    views::Widget* bubble_widget,
+    bool visible) {}
 
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
@@ -804,8 +807,12 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
 bool TrayBackgroundView::GetEffectiveVisibility() {
   // When the virtual keyboard is visible, the effective visibility of the view
   // is solely determined by |show_with_virtual_keyboard_|.
-  if (Shell::Get()->system_tray_model()->virtual_keyboard()->visible())
+  if (Shell::Get()
+          ->system_tray_model()
+          ->virtual_keyboard()
+          ->arc_keyboard_visible()) {
     return show_with_virtual_keyboard_;
+  }
 
   if (!visible_preferred_)
     return false;

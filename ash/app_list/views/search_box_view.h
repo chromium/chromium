@@ -42,6 +42,13 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                  public AppListModelProvider::Observer,
                                  public SearchBoxModelObserver {
  public:
+  enum class PlaceholderTextType {
+    kShortcuts = 0,
+    kTabs = 1,
+    kSettings = 2,
+    kGames = 3
+  };
+
   SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,
                 AppListView* app_list_view = nullptr);
@@ -163,13 +170,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
  private:
   class FocusRingLayer;
 
-  enum class PlaceholderTextType {
-    kShortcuts = 0,
-    kTabs = 1,
-    kSettings = 2,
-    kMaxValue = kSettings
-  };
-
   // Updates the text field text color.
   void UpdateTextColor();
 
@@ -203,9 +203,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
 
-  // Updates search_box() text to match |selected_result|. Should be called
-  // when the selected search result changes.
-  void UpdateSearchBoxTextForSelectedResult(SearchResult* selected_result);
+  // Updates search_box() for the |selected_result|. Should be called when the
+  // selected search result changes.
+  void UpdateSearchBoxForSelectedResult(SearchResult* selected_result);
 
   // Returns true if the event to trigger autocomplete should be handled.
   bool ShouldProcessAutocomplete();

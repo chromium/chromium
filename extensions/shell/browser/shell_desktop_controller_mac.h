@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/shell/browser/desktop_controller.h"
+#include "ui/display/screen.h"
 
 namespace extensions {
 
@@ -35,7 +37,9 @@ class ShellDesktopControllerMac : public DesktopController {
 
   // The desktop only supports a single app window.
   // TODO(yoz): Support multiple app windows, as we do in Aura.
-  AppWindow* app_window_;  // NativeAppWindow::Close() deletes this.
+  raw_ptr<AppWindow> app_window_;  // NativeAppWindow::Close() deletes this.
+
+  display::ScopedNativeScreen screen_;
 };
 
 }  // namespace extensions

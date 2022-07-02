@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/help/version_updater_mac.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 #import <ServiceManagement/ServiceManagement.h>
 
@@ -11,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -44,7 +47,7 @@
 // updates. It will be created and managed by VersionUpdaterMac.
 @interface KeystoneObserver : NSObject {
  @private
-  VersionUpdaterMac* _versionUpdater;  // Weak.
+  raw_ptr<VersionUpdaterMac> _versionUpdater;  // Weak.
 }
 
 // Initialize an observer with an updater. The updater owns this object.
@@ -107,14 +110,19 @@ VersionUpdaterMac::~VersionUpdaterMac() {}
 void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
                                        PromoteCallback promote_callback) {
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
-  if (!update_client_)
-    update_client_ = BrowserUpdaterClient::Create();
-
-  update_client_->CheckForUpdate(base::BindRepeating(
-      &VersionUpdaterMac::UpdateStatusFromChromiumUpdater,
-      weak_factory_.GetWeakPtr(), std::move(status_callback),
-      std::move(promote_callback)));
-  return;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
+      base::BindOnce(
+          [](base::RepeatingCallback<void(updater::UpdaterScope,
+                                          updater::UpdateService::UpdateState)>
+                 status_callback,
+             updater::UpdaterScope scope) {
+            BrowserUpdaterClient::Create(scope)->CheckForUpdate(
+                base::BindRepeating(status_callback, scope));
+          },
+          base::BindRepeating(
+              &VersionUpdaterMac::UpdateStatusFromChromiumUpdater,
+              weak_factory_.GetWeakPtr(), status_callback, promote_callback)));
 #else
   status_callback_ = std::move(status_callback);
   promote_callback_ = std::move(promote_callback);
@@ -302,11 +310,11 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
     }
   }
 
-  if (!status_callback_.is_null())
+  if (status_callback_)
     status_callback_.Run(status, 0, false, false, std::string(), 0, message);
 
   PromotionState promotion_state;
-  if (!promote_callback_.is_null()) {
+  if (promote_callback_) {
     KeystoneGlue* keystone_glue = [KeystoneGlue defaultKeystoneGlue];
     if (keystone_glue && [keystone_glue isAutoupdateEnabledForAllUsers]) {
       promotion_state = PROMOTED;
@@ -352,6 +360,7 @@ void VersionUpdaterMac::UpdateShowPromoteButton() {
 void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
     VersionUpdater::StatusCallback status_callback,
     VersionUpdater::PromoteCallback promote_callback,
+    updater::UpdaterScope scope,
     updater::UpdateService::UpdateState update_state) {
   VersionUpdater::Status status = VersionUpdater::Status::CHECKING;
   int progress = 0;
@@ -405,39 +414,35 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
   // update_clent with system scope and attempt to get version. If the version
   // is empty, then the updater can be assumed to not be installed. If the
   // version returns a value, then the updater is installed.
-  if (!promote_callback.is_null() && ShouldPromoteUpdater()) {
-    update_client_->ResetConnection(updater::UpdaterScope::kSystem);
-    update_client_->GetUpdaterVersion(base::BindOnce(
-        &VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater,
-        weak_factory_.GetWeakPtr(), std::move(promote_callback),
-        enable_promote_button));
+  if (promote_callback) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&ShouldPromoteUpdater),
+        base::BindOnce(
+            [](base::OnceCallback<void(const std::string&)> promotion,
+               bool should_promote) {
+              if (should_promote) {
+                BrowserUpdaterClient::Create(updater::UpdaterScope::kSystem)
+                    ->GetUpdaterVersion(std::move(promotion));
+              }
+            },
+            base::BindOnce(
+                &VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater,
+                weak_factory_.GetWeakPtr(), promote_callback, scope,
+                enable_promote_button)));
   }
 }
 
 void VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater(
     VersionUpdater::PromoteCallback promote_callback,
+    updater::UpdaterScope scope,
     bool enable_promote_button,
     const std::string& version) {
-  if (promote_callback.is_null())
-    return;
-
-  VersionUpdater::PromotionState promotion_state =
-      VersionUpdater::PROMOTE_HIDDEN;
-  // If the version is not empty and the current path is owned by root (which
-  // is reflected in ShouldUseSystemLevelUpdater()), then the updater had
-  // already been promoted.
-  if (!version.empty() && ShouldUseSystemLevelUpdater()) {
-    promotion_state = VersionUpdater::PROMOTED;
-    update_client_->ResetConnection(updater::UpdaterScope::kSystem);
-  } else {
-    promotion_state = enable_promote_button ? VersionUpdater::PROMOTE_ENABLED
-                                            : VersionUpdater::PROMOTE_DISABLED;
-    if (!enable_promote_button) {
-      update_client_->ResetConnection(updater::UpdaterScope::kUser);
-    }
-  }
-
-  promote_callback.Run(promotion_state);
+  promote_callback.Run(
+      !version.empty() && scope == updater::UpdaterScope::kSystem
+          ? VersionUpdater::PROMOTED  // Successfully communicated with the
+                                      // system updater.
+          : (enable_promote_button ? VersionUpdater::PROMOTE_ENABLED
+                                   : VersionUpdater::PROMOTE_DISABLED));
 }
 
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)

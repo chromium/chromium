@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class QuickStartScreen;
-}
+#include "chromeos/ash/components/oobe_quick_start/verification_shapes.h"
 
 namespace login {
 class LocalizedValuesBuilder;
@@ -19,15 +16,14 @@ class LocalizedValuesBuilder;
 
 namespace chromeos {
 
-class QuickStartView {
+class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"quick-start"};
+  inline constexpr static StaticOobeScreenId kScreenId{"quick-start",
+                                                       "QuickStartScreen"};
 
   virtual ~QuickStartView() = default;
 
   virtual void Show() = 0;
-  virtual void Bind(ash::QuickStartScreen* screen) = 0;
-  virtual void Unbind() = 0;
   virtual void SetShapes(const ash::quick_start::ShapeList& shape_list) = 0;
 };
 
@@ -46,20 +42,11 @@ class QuickStartScreenHandler : public QuickStartView,
 
   // QuickStartView:
   void Show() override;
-  void Bind(ash::QuickStartScreen* screen) override;
-  void Unbind() override;
   void SetShapes(const ash::quick_start::ShapeList& shape_list) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
- private:
-  ash::QuickStartScreen* screen_ = nullptr;
-
-  // If true, InitializeDeprecated() will call Show().
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

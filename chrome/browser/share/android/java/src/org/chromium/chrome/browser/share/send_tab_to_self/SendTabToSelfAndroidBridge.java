@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import androidx.annotation.Nullable;
+
+import com.google.common.base.Optional;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -21,25 +25,6 @@ import java.util.List;
 public class SendTabToSelfAndroidBridge {
     // TODO(https://crbug.com/942549): Add logic back in to track whether model is loaded.
     private boolean mIsNativeSendTabToSelfModelLoaded;
-
-    /**
-     * @param profile Profile of the user to retrieve the GUIDs for.
-     * @return All GUIDs for all SendTabToSelf entries, or an empty list if the model isn't ready.
-     */
-    public static List<String> getAllGuids(Profile profile) {
-        // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
-        // place. assert mIsNativeSendTabToSelfModelLoaded;
-        return Arrays.asList(SendTabToSelfAndroidBridgeJni.get().getAllGuids(profile));
-    }
-
-    /**
-     * Deletes all SendTabToSelf entries. This is called when the user disables sync.
-     */
-    public static void deleteAllEntries(Profile profile) {
-        // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
-        // place. assert mIsNativeSendTabToSelfModelLoaded;
-        SendTabToSelfAndroidBridgeJni.get().deleteAllEntries(profile);
-    }
 
     /**
      * Creates a new entry to be persisted to the sync backend.
@@ -76,15 +61,6 @@ public class SendTabToSelfAndroidBridge {
     public static void dismissEntry(Profile profile, String guid) {
         SendTabToSelfAndroidBridgeJni.get().dismissEntry(profile, guid);
     }
-    /**
-     * Mark the entry associated with the GUID as opened.
-     *
-     * @param profile Profile of the user to mark entry as opened.
-     * @param guid The GUID of the entry to mark as opened.
-     */
-    public static void markEntryOpened(Profile profile, String guid) {
-        SendTabToSelfAndroidBridgeJni.get().markEntryOpened(profile, guid);
-    }
 
     /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
@@ -104,23 +80,28 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
     }
 
+    public static Optional</*@EntryPointDisplayReason*/ Integer> getEntryPointDisplayReason(
+            Profile profile, String url) {
+        @Nullable
+        Integer reason =
+                SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
+        return reason == null ? Optional.absent() : Optional.of(reason.intValue());
+    }
+
     @NativeMethods
     public interface Natives {
         boolean addEntry(
                 Profile profile, String url, String title, String targetDeviceSyncCacheGuid);
 
-        String[] getAllGuids(Profile profile);
-
-        void deleteAllEntries(Profile profile);
-
         void deleteEntry(Profile profile, String guid);
 
         void dismissEntry(Profile profile, String guid);
 
-        void markEntryOpened(Profile profile, String guid);
-
         TargetDeviceInfo[] getAllTargetDeviceInfos(Profile profile);
 
         void updateActiveWebContents(WebContents webContents);
+
+        @Nullable
+        Integer getEntryPointDisplayReason(Profile profile, String url);
     }
 }

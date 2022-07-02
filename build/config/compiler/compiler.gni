@@ -36,10 +36,9 @@ declare_args() {
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS, except in cronet builds (cronet still supports
-  # 32-bit builds, which lld doesn't support).
+  # Tentatively used on iOS.
   # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos" && !(is_ios && is_cronet_build)
+  use_lld = is_clang && current_os != "zos"
 }
 
 declare_args() {
@@ -85,9 +84,13 @@ declare_args() {
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
+  # Disabled in iOS cronet builds since build step cronet_static_complete
+  # wants to build a .a file consumable by external clients, and they won't
+  # have the same LLVM revisions as us, making bitcode useless to them.
   use_thin_lto =
       is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-                 (is_linux || is_win || is_mac || (is_ios && use_lld) ||
+                 (is_linux || is_win || is_mac ||
+                  (is_ios && use_lld && !is_cronet_build) ||
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
 
@@ -129,15 +132,13 @@ declare_args() {
   # performed as mitigation against Return-oriented programming (ROP).
   # https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md#cet-shadow-stack
   enable_cet_shadow_stack = target_cpu == "x64"
+
+  # If true, optimize for size.
+  # Default to favoring speed over size for platforms not listed below.
+  optimize_for_size = is_android || is_ios || is_fuchsia || is_castos
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
-
-# If true, optimize for size. Does not affect windows builds.
-# Linux & Mac favor speed over size.
-# TODO(brettw) it's weird that Mac and desktop Linux are different. We should
-# explore favoring size over speed in this case as well.
-optimize_for_size = is_android || is_chromecast || is_fuchsia || is_ios
 
 declare_args() {
   # Whether we should consider the profile we're using to be accurate. Accurate
@@ -218,7 +219,7 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
   # Whether to use the gold linker from binutils instead of lld or bfd.
-  use_gold = !use_lld && !(is_chromecast && is_linux &&
+  use_gold = !use_lld && !(is_castos &&
                            (current_cpu == "arm" || current_cpu == "mipsel")) &&
              (((is_linux || is_chromeos_lacros) &&
                (current_cpu == "x64" || current_cpu == "x86" ||
@@ -285,7 +286,7 @@ if (symbol_level == -1) {
     symbol_level = 1
   } else if ((!is_nacl && !is_linux && !is_chromeos && !is_fuchsia &&
               current_os != "aix") || is_debug || is_official_build ||
-             is_chromecast) {
+             is_castos || is_cast_android) {
     # Linux builds slower by having symbols as part of the target binary,
     # whereas Mac and Windows have them separate, so in Release Linux, default
     # them off, but keep them on for Official builds and Chromecast builds.

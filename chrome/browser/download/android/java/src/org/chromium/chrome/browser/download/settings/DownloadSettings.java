@@ -12,11 +12,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
-import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -31,12 +28,10 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class DownloadSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     public static final String PREF_LOCATION_CHANGE = "location_change";
-    public static final String PREF_DOWNLOAD_LATER_PROMPT_ENABLED = "download_later_prompt_enabled";
     public static final String PREF_LOCATION_PROMPT_ENABLED = "location_prompt_enabled";
 
     private PrefService mPrefService;
     private DownloadLocationPreference mLocationChangePref;
-    private ChromeSwitchPreference mDownloadLaterPromptEnabledPref;
     private ChromeSwitchPreference mLocationPromptEnabledPref;
     private ManagedPreferenceDelegate mLocationPromptEnabledPrefDelegate;
 
@@ -46,15 +41,7 @@ public class DownloadSettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.download_preferences);
         mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
-        mDownloadLaterPromptEnabledPref =
-                (ChromeSwitchPreference) findPreference(PREF_DOWNLOAD_LATER_PROMPT_ENABLED);
-        mDownloadLaterPromptEnabledPref.setOnPreferenceChangeListener(this);
-
         boolean locationManaged = DownloadDialogBridge.isLocationDialogManaged();
-        if (locationManaged || !ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_LATER)) {
-            getPreferenceScreen().removePreference(
-                    findPreference(PREF_DOWNLOAD_LATER_PROMPT_ENABLED));
-        }
 
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
@@ -91,14 +78,6 @@ public class DownloadSettings
     private void updateDownloadSettings() {
         mLocationChangePref.updateSummary();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_LATER)) {
-            @DownloadLaterPromptStatus
-            int downloadLaterPromptStatus =
-                    mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS);
-            mDownloadLaterPromptEnabledPref.setChecked(
-                    !(downloadLaterPromptStatus == DownloadLaterPromptStatus.DONT_SHOW));
-        }
-
         if (DownloadDialogBridge.isLocationDialogManaged()) {
             // Location prompt can be controlled by the enterprise policy.
             mLocationPromptEnabledPref.setChecked(
@@ -115,23 +94,7 @@ public class DownloadSettings
     // Preference.OnPreferenceChangeListener implementation.
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (PREF_DOWNLOAD_LATER_PROMPT_ENABLED.equals(preference.getKey())) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_LATER)) return false;
-            @DownloadLaterPromptStatus
-            int downloadLaterPromptStatus =
-                    mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS);
-            if (!(boolean) newValue) {
-                mPrefService.setInteger(
-                        Pref.DOWNLOAD_LATER_PROMPT_STATUS, DownloadLaterPromptStatus.DONT_SHOW);
-                return true;
-            }
-
-            // Only update if the download later dialog has been shown before.
-            if (downloadLaterPromptStatus != DownloadLaterPromptStatus.SHOW_INITIAL) {
-                mPrefService.setInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS,
-                        DownloadLaterPromptStatus.SHOW_PREFERENCE);
-            }
-        } else if (PREF_LOCATION_PROMPT_ENABLED.equals(preference.getKey())) {
+        if (PREF_LOCATION_PROMPT_ENABLED.equals(preference.getKey())) {
             if ((boolean) newValue) {
                 // Only update if the download location dialog has been shown before.
                 if (DownloadDialogBridge.getPromptForDownloadAndroid()

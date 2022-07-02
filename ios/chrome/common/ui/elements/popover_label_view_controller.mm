@@ -6,6 +6,7 @@
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,7 +123,7 @@ constexpr CGFloat kIconSize = 16;
   [_scrollView addSubview:textContainerView];
   AddSameConstraints(textContainerView, _scrollView);
 
-  UITextView* textView = [[UITextView alloc] init];
+  UITextView* textView = CreateUITextViewWithTextKit1();
   textView.scrollEnabled = NO;
   textView.editable = NO;
   textView.delegate = self;
@@ -144,7 +145,7 @@ constexpr CGFloat kIconSize = 16;
   // Only create secondary TextView when |secondaryAttributedString| is not nil
   // or empty. Set the constraint accordingly.
   if (self.secondaryAttributedString.length) {
-    UITextView* secondaryTextView = [[UITextView alloc] init];
+    UITextView* secondaryTextView = CreateUITextViewWithTextKit1();
     secondaryTextView.scrollEnabled = NO;
     secondaryTextView.editable = NO;
     secondaryTextView.delegate = self;

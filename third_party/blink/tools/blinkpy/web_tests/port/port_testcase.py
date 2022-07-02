@@ -59,6 +59,7 @@ class PortTestCase(LoggingTestCase):
     # Subclasses override this to point to their Port subclass.
     os_name = None
     os_version = None
+    machine = None
     port_maker = Port
     port_name = None
     full_port_name = None
@@ -69,10 +70,12 @@ class PortTestCase(LoggingTestCase):
                   options=None,
                   os_name=None,
                   os_version=None,
+                  machine=None,
                   **kwargs):
-        host = host or MockSystemHost(
-            os_name=(os_name or self.os_name),
-            os_version=(os_version or self.os_version))
+        host = host or MockSystemHost(os_name=(os_name or self.os_name),
+                                      os_version=(os_version
+                                                  or self.os_version),
+                                      machine=(machine or self.machine))
         options = options or optparse.Values({
             'configuration': 'Release',
             'use_xvfb': True

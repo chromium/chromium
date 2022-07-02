@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
 
@@ -81,7 +82,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   bool CanEmitChildrenChanged(BrowserAccessibility* node) const;
   void FireEvent(BrowserAccessibility* node, ax::mojom::Event event);
 
-  AtkObject* parent_object_;
+  raw_ptr<AtkObject> parent_object_;
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;

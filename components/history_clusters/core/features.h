@@ -26,6 +26,12 @@ extern const base::Feature kJourneysLabels;
 // for this to take effect.
 extern const base::Feature kOmniboxAction;
 
+// Enables the `HistoryClusterProvider` to surface Journeys as a suggestion row
+// instead of an action chip. Enabling this won't actually disable
+// `kOmniboxAction` but for user experiments, the intent is to only have 1
+// enabled. `kJourneys` must also be enabled for this to take effect.
+extern const base::Feature kOmniboxHistoryClusterProvider;
+
 // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
 // Does nothing if `kJourneys` is disabled.
 extern const base::Feature kNonUserVisibleDebug;
@@ -39,7 +45,7 @@ extern const base::Feature kUserVisibleDebug;
 // enabled for all users shortly. This just provides a killswitch.
 
 // This flag is to enable us to turn on persisting context annotations WITHOUT
-// exposing the Memories UI in general. If EITHER this flag or `kJourneys` is
+// exposing the Journeys UI in general. If EITHER this flag or `kJourneys` is
 // enabled, users will have context annotations persisted into their History DB.
 extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Editor for credit cards in Chrome using Autofill as a base.
@@ -117,6 +119,12 @@ public class AssistantPaymentInstrumentEditorAutofill implements AssistantPaymen
         Callback<AutofillPaymentInstrument> editorDoneCallback = editedPaymentInstrument -> {
             assert (editedPaymentInstrument != null && editedPaymentInstrument.isComplete()
                     && editedPaymentInstrument.getCard() != null);
+            if (TextUtils.isEmpty(editedPaymentInstrument.getCard().getGUID())) {
+                // b/231645674: In the case where the card is not stored, it will come without GUID.
+                // Combined with the missing "update" signal from the PersonalDataManager this
+                // causes our UI to show the card twice.
+                editedPaymentInstrument.getCard().setGUID(UUID.randomUUID().toString());
+            }
             doneCallback.onResult(new PaymentInstrumentModel(
                     AssistantAutofillUtilChrome
                             .autofillPaymentInstrumentToAssistantPaymentInstrument(

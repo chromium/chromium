@@ -146,11 +146,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
 
   if (AreAllPagesFrozen())
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
-
-  if (backgrounded_purge_pending_) {
-    Platform::Current()->RecordMetricsForBackgroundedRendererPurge();
-    backgrounded_purge_pending_ = false;
-  }
+  backgrounded_purge_pending_ = false;
 }
 
 bool MemoryPurgeManager::CanPurge() const {

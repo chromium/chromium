@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 struct FirefoxRawPasswordInfo;
 
 namespace importer {
@@ -59,7 +61,7 @@ class NSSDecryptor {
       PK11SlotInfo* slot, SECItem* data, SECItem* result, void* cx) const;
 
   bool is_nss_initialized_;
-  PK11SlotInfo* db_slot_;
+  raw_ptr<PK11SlotInfo> db_slot_;
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_NSS_DECRYPTOR_SYSTEM_NSS_H_

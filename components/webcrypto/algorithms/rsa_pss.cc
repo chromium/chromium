@@ -39,7 +39,7 @@ class RsaPssImplementation : public RsaHashedAlgorithm {
 
   Status Sign(const blink::WebCryptoAlgorithm& algorithm,
               const blink::WebCryptoKey& key,
-              const CryptoData& data,
+              base::span<const uint8_t> data,
               std::vector<uint8_t>* buffer) const override {
     return RsaSign(key, algorithm.RsaPssParams()->SaltLengthBytes(), data,
                    buffer);
@@ -47,8 +47,8 @@ class RsaPssImplementation : public RsaHashedAlgorithm {
 
   Status Verify(const blink::WebCryptoAlgorithm& algorithm,
                 const blink::WebCryptoKey& key,
-                const CryptoData& signature,
-                const CryptoData& data,
+                base::span<const uint8_t> signature,
+                base::span<const uint8_t> data,
                 bool* signature_match) const override {
     return RsaVerify(key, algorithm.RsaPssParams()->SaltLengthBytes(),
                      signature, data, signature_match);

@@ -47,6 +47,29 @@ std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
   return sources;
 }
 
+std::vector<RecentFile> GetRecentFiles(RecentModel* model,
+                                       RecentModel::FileType file_type,
+                                       bool invalidate_cache) {
+  std::vector<RecentFile> files;
+
+  base::RunLoop run_loop;
+
+  model->GetRecentFiles(
+      nullptr /* file_system_context */, GURL() /* origin */, file_type,
+      invalidate_cache,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
+             const std::vector<RecentFile>& files) {
+            *files_out = files;
+            run_loop->Quit();
+          },
+          &run_loop, &files));
+
+  run_loop.Run();
+
+  return files;
+}
+
 }  // namespace
 
 class RecentModelTest : public testing::Test {
@@ -61,7 +84,8 @@ class RecentModelTest : public testing::Test {
       RecentSourceListFactory source_list_factory,
       size_t max_files,
       const base::Time& cutoff_time,
-      RecentModel::FileType file_type) {
+      RecentModel::FileType file_type,
+      bool invalidate_cache) {
     RecentModel* model = static_cast<RecentModel*>(
         RecentModelFactory::GetInstance()->SetTestingFactoryAndUse(
             &profile_,
@@ -76,23 +100,7 @@ class RecentModelTest : public testing::Test {
     model->SetMaxFilesForTest(max_files);
     model->SetForcedCutoffTimeForTest(cutoff_time);
 
-    std::vector<RecentFile> files;
-
-    base::RunLoop run_loop;
-
-    model->GetRecentFiles(
-        nullptr /* file_system_context */, GURL() /* origin */, file_type,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
-               const std::vector<RecentFile>& files) {
-              *files_out = files;
-              run_loop->Quit();
-            },
-            &run_loop, &files));
-
-    run_loop.Run();
-
-    return files;
+    return GetRecentFiles(model, file_type, invalidate_cache);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -100,9 +108,9 @@ class RecentModelTest : public testing::Test {
 };
 
 TEST_F(RecentModelTest, GetRecentFiles) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
-                                  base::Time(), RecentModel::FileType::kAll);
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
@@ -116,9 +124,9 @@ TEST_F(RecentModelTest, GetRecentFiles) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 3,
-                                  base::Time(), RecentModel::FileType::kAll);
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 3, base::Time(),
+      RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
@@ -132,7 +140,7 @@ TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
 TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
       base::BindRepeating(&BuildDefaultSources), 10,
-      base::Time::FromJavaTime(2500), RecentModel::FileType::kAll);
+      base::Time::FromJavaTime(2500), RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
@@ -146,15 +154,15 @@ TEST_F(RecentModelTest, GetRecentFiles_UmaStats) {
 
   BuildModelAndGetRecentFiles(
       base::BindRepeating([]() { return RecentSourceList(); }), 10,
-      base::Time(), RecentModel::FileType::kAll);
+      base::Time(), RecentModel::FileType::kAll, false);
 
   histogram_tester.ExpectTotalCount(RecentModel::kLoadHistogramName, 1);
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Audio) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
-                                  base::Time(), RecentModel::FileType::kAudio);
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      RecentModel::FileType::kAudio, false);
 
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
@@ -162,9 +170,9 @@ TEST_F(RecentModelTest, GetRecentFiles_Audio) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Image) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
-                                  base::Time(), RecentModel::FileType::kImage);
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      RecentModel::FileType::kImage, false);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("bbb.png", files[0].url().path().value());
@@ -174,13 +182,40 @@ TEST_F(RecentModelTest, GetRecentFiles_Image) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Video) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
-                                  base::Time(), RecentModel::FileType::kVideo);
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      RecentModel::FileType::kVideo, false);
 
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("ccc.mp4", files[0].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(3000), files[0].last_modified());
+}
+
+// Do not use RecentModelTest fixture, because we need to get a reference of
+// RecentModel and call GetRecentFiles() multiple times.
+TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<RecentModel> model =
+      RecentModel::CreateForTest(BuildDefaultSources());
+  model->SetForcedCutoffTimeForTest(base::Time());
+
+  std::vector<RecentFile> files1 =
+      GetRecentFiles(model.get(), RecentModel::FileType::kAll, false);
+  ASSERT_EQ(4u, files1.size());
+
+  // Shutdown() will clear all sources.
+  model->Shutdown();
+
+  // The returned file list should still has 4 files even though all sources has
+  // been cleared in Shutdown(), because it hits cache.
+  std::vector<RecentFile> files2 =
+      GetRecentFiles(model.get(), RecentModel::FileType::kAll, false);
+  ASSERT_EQ(4u, files2.size());
+
+  // Inalidate cache and query again.
+  std::vector<RecentFile> files3 =
+      GetRecentFiles(model.get(), RecentModel::FileType::kAll, true);
+  ASSERT_EQ(0u, files3.size());
 }
 
 }  // namespace chromeos

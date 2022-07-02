@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +28,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #endif
 
@@ -100,15 +101,14 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   ~PrintPreviewHandlerChromeOSTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    profile_ = testing_profile_manager_.CreateSystemProfile();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     preview_web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
+        content::WebContents::CreateParams(&profile_));
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(preview_web_contents_.get());
 
@@ -124,12 +124,12 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     web_ui()->SetController(std::move(preview_ui));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     manager_.reset();
     chromeos::LoginState::Shutdown();
-  }
 #endif
+  }
 
   void DisableAshChrome() {
     local_printer_ = nullptr;
@@ -158,28 +158,27 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
+  TestingProfile profile_;
   std::unique_ptr<TestLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
-  PrintPreviewHandlerChromeOS* handler_;
+  raw_ptr<PrintPreviewHandlerChromeOS> handler_;
 };
 
 TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServersNoAsh) {
   DisableAshChrome();
 
-  base::Value selected_args(base::Value::Type::LIST);
-  base::Value selected_ids_js(base::Value::Type::LIST);
+  base::Value::List selected_args;
+  base::Value::List selected_ids_js;
   selected_ids_js.Append(kSelectedPrintServerId);
   selected_args.Append(std::move(selected_ids_js));
 
-  web_ui()->HandleReceivedMessage("choosePrintServers",
-                                  &base::Value::AsListValue(selected_args));
+  web_ui()->HandleReceivedMessage("choosePrintServers", selected_args);
   AssertWebUIEventFired(*web_ui()->call_data().back(),
                         "server-printers-loading");
   EXPECT_EQ(web_ui()->call_data().back()->arg2()->GetBool(), true);
@@ -187,10 +186,9 @@ TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServersNoAsh) {
 
 TEST_F(PrintPreviewHandlerChromeOSTest, GetPrintServersConfigNoAsh) {
   DisableAshChrome();
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getPrintServersConfig",
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage("getPrintServersConfig", args);
   EXPECT_EQ("cr.webUIResponse", web_ui()->call_data().back()->function_name());
   EXPECT_EQ(base::Value("callback_id"), *web_ui()->call_data().back()->arg1());
   EXPECT_EQ(base::Value(true), *web_ui()->call_data().back()->arg2());
@@ -198,21 +196,19 @@ TEST_F(PrintPreviewHandlerChromeOSTest, GetPrintServersConfigNoAsh) {
 }
 
 TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServers) {
-  base::Value selected_args(base::Value::Type::LIST);
-  base::Value selected_ids_js(base::Value::Type::LIST);
+  base::Value::List selected_args;
+  base::Value::List selected_ids_js;
   selected_ids_js.Append(kSelectedPrintServerId);
   selected_args.Append(std::move(selected_ids_js));
 
-  base::Value none_selected_args(base::Value::Type::LIST);
-  base::Value none_selected_js(base::Value::Type::LIST);
+  base::Value::List none_selected_args;
+  base::Value::List none_selected_js;
   none_selected_args.Append(std::move(none_selected_js));
 
-  web_ui()->HandleReceivedMessage("choosePrintServers",
-                                  &base::Value::AsListValue(selected_args));
+  web_ui()->HandleReceivedMessage("choosePrintServers", selected_args);
   EXPECT_THAT(TakePrintServerIds(),
               testing::ElementsAre(std::string(kSelectedPrintServerId)));
-  web_ui()->HandleReceivedMessage(
-      "choosePrintServers", &base::Value::AsListValue(none_selected_args));
+  web_ui()->HandleReceivedMessage("choosePrintServers", none_selected_args);
   EXPECT_THAT(TakePrintServerIds(), testing::IsEmpty());
   AssertWebUIEventFired(*web_ui()->call_data().back(),
                         "server-printers-loading");
@@ -232,8 +228,8 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   ChangePrintServersConfig(std::move(config));
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");
-  base::Value::ConstListView printer_list =
-      call_data->arg2()->FindListKey("printServers")->GetListDeprecated();
+  const base::Value::List& printer_list =
+      call_data->arg2()->FindListKey("printServers")->GetList();
   bool is_single_server_fetching_mode =
       call_data->arg2()->FindBoolKey("isSingleServerFetchingMode").value();
 
@@ -243,10 +239,9 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   EXPECT_EQ(*first_printer.FindStringKey("name"), kSelectedPrintServerName);
   EXPECT_EQ(is_single_server_fetching_mode, false);
 
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getPrintServersConfig",
-                                  &base::Value::AsListValue(args));
+  web_ui()->HandleReceivedMessage("getPrintServersConfig", args);
   const base::Value kExpectedConfig = base::test::ParseJson(R"({
     "isSingleServerFetchingMode": false,
     "printServers": [ {

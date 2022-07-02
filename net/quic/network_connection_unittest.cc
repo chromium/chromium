@@ -10,8 +10,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 constexpr auto CONNECTION_3G = NetworkChangeNotifier::CONNECTION_3G;
 constexpr auto CONNECTION_2G = NetworkChangeNotifier::CONNECTION_2G;
@@ -103,5 +102,4 @@ TEST_F(NetworkConnectionTest, ConnectionChange) {
             description_ethernet);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -18,7 +18,7 @@ import './sync_account_control.js';
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 // <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
@@ -55,6 +55,7 @@ type SyncRoutes = {
   SYNC: Route,
   SYNC_ADVANCED: Route,
   OS_SYNC: Route,
+  OS_PEOPLE: Route,
 };
 
 function getSyncRoutes(): SyncRoutes {
@@ -372,6 +373,17 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     return getSyncRoutes().SYNC_ADVANCED;
   }
 
+  private getPeoplePageRoute_(): Route {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      // In OS settings on ChromeOS a different page is used as a people page.
+      return getSyncRoutes().OS_PEOPLE;
+    }
+    // </if>
+
+    return getSyncRoutes().PEOPLE;
+  }
+
   private onFocusConfigChange_() {
     this.focusConfig.set(this.getSyncAdvancedPageRoute_().path, () => {
       const toFocus = this.shadowRoot!.querySelector('#sync-advanced-row');
@@ -401,16 +413,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.showSetupCancelDialog_ = false;
   }
 
-  private isNonSyncingProfilesSupported_(): boolean {
-    // <if expr="chromeos_lacros">
-    return loadTimeData.getBoolean('nonSyncingProfilesEnabled');
-    // </if>
-
-    // <if expr="not chromeos_lacros">
-    return true;
-    // </if>
-  }
-
   override currentRouteChanged() {
     const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
@@ -432,8 +434,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
 
     const userActionCancelsSetup = this.syncStatus &&
-        this.syncStatus.firstSetupInProgress && this.didAbort_ &&
-        this.isNonSyncingProfilesSupported_();
+        this.syncStatus.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
       chrome.metricsPrivate.recordUserAction(
           'Signin_Signin_BackOnAdvancedSyncSettings');
@@ -637,7 +638,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         return;
       case PageStatus.DONE:
         if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
-          router.navigateTo(getSyncRoutes().PEOPLE);
+          router.navigateTo(this.getPeoplePageRoute_());
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:

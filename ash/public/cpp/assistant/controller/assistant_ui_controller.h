@@ -36,6 +36,9 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   // session.
   virtual bool HasShownOnboarding() const = 0;
 
+  // Sets keyboard traversal mode for the underlying model.
+  virtual void SetKeyboardTraversalMode(bool) = 0;
+
   // Invoke to show/toggle Assistant UI.
   virtual void ShowUi(chromeos::assistant::AssistantEntryPoint) = 0;
   virtual void ToggleUi(
@@ -47,6 +50,11 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   // state until the closure is run.
   virtual absl::optional<base::ScopedClosureRunner> CloseUi(
       chromeos::assistant::AssistantExitPoint) = 0;
+
+  // Sets current AppListBubbleWidth. AssistantCardElement needs to know the
+  // width of AppListBubbleWidth to render its html content.
+  // AssistantCardElement will take the value via AssistantUiModel.
+  virtual void SetAppListBubbleWidth(int width) = 0;
 
  protected:
   AssistantUiController();

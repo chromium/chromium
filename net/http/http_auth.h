@@ -128,8 +128,8 @@ class NET_EXPORT_PRIVATE HttpAuth {
   struct Identity {
     Identity();
 
-    IdentitySource source;
-    bool invalid;
+    IdentitySource source = IDENT_SRC_NONE;
+    bool invalid = true;
     AuthCredentials credentials;
   };
 

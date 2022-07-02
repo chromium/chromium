@@ -350,10 +350,9 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
         effect_target_->GetComputedStyle()->HasOffset())
       reasons |= CompositorAnimations::kTargetHasCSSOffset;
 
-    // Do not put transforms on compositor if more than one of them are defined
-    // in computed style because they need to be explicitly ordered
-    if (HasMultipleTransformProperties())
-      reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
+    // Do not animate a property on the compositor that is marked important.
+    if (AffectsImportantProperty())
+      reasons |= CompositorAnimations::kAffectsImportantProperty;
 
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
@@ -753,26 +752,27 @@ bool KeyframeEffect::HasIncompatibleStyle() const {
           return true;
       }
     }
-    return HasMultipleTransformProperties();
   }
 
   return false;
 }
 
-bool KeyframeEffect::HasMultipleTransformProperties() const {
+bool KeyframeEffect::AffectsImportantProperty() const {
   if (!effect_target_->GetComputedStyle())
     return false;
 
-  unsigned transform_property_count = 0;
-  if (effect_target_->GetComputedStyle()->HasTransformOperations())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Rotate())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Scale())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Translate())
-    transform_property_count++;
-  return transform_property_count > 1;
+  const CSSBitset* important_properties =
+      effect_target_->GetComputedStyle()->GetBaseImportantSet();
+
+  if (!important_properties)
+    return false;
+
+  for (CSSPropertyID property_id : *important_properties) {
+    if (Affects(PropertyHandle(CSSProperty::Get(property_id))))
+      return true;
+  }
+
+  return false;
 }
 
 ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {

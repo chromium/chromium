@@ -81,7 +81,7 @@ RootCompositorFrameSinkImpl::Create(
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
   auto display_controller = output_surface_provider->CreateGpuDependency(
-      params->gpu_compositing, params->widget, params->renderer_settings);
+      params->gpu_compositing, params->widget);
   auto output_surface = output_surface_provider->CreateOutputSurface(
       params->widget, params->gpu_compositing, display_client.get(),
       display_controller.get(), params->renderer_settings, debug_settings);
@@ -175,9 +175,7 @@ RootCompositorFrameSinkImpl::Create(
   auto* output_surface_ptr = output_surface.get();
 #endif
   gpu::SharedImageInterface* sii = nullptr;
-  if (output_surface->context_provider())
-    sii = output_surface->context_provider()->SharedImageInterface();
-  else if (display_controller)
+  if (display_controller)
     sii = display_controller->shared_image_interface();
 
   auto overlay_processor = OverlayProcessorInterface::CreateOverlayProcessor(

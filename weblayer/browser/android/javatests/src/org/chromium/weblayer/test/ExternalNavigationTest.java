@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Callback;
@@ -1413,6 +1414,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1329813")
     public void
     testNonHandledExternalIntentWithFallbackUrlThatLaunchesIntentAfterRedirectBlocksFallbackIntent()
             throws Throwable {

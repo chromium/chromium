@@ -417,8 +417,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       InProgressExternalVideoFrameEncode& request =
           in_progress_frame_encodes_.front();
 
-      std::unique_ptr<SenderEncodedFrame> encoded_frame(
-          new SenderEncodedFrame());
+      auto encoded_frame = std::make_unique<SenderEncodedFrame>();
       encoded_frame->dependency =
           metadata.key_frame ? EncodedFrame::KEY : EncodedFrame::DEPENDENT;
       encoded_frame->frame_id = next_frame_id_++;
@@ -462,11 +461,12 @@ class ExternalVideoEncoder::VEAClientImpl final
             static_cast<double>(in_progress_frame_encodes_.size()) /
             kBacklogRedlineThreshold;
 
-        const double actual_bit_rate =
+        const double actual_bitrate =
             encoded_frame->data.size() * 8.0 / frame_duration.InSecondsF();
+        encoded_frame->encoder_bitrate = actual_bitrate;
         DCHECK_GT(request.target_bit_rate, 0);
         const double bitrate_utilization =
-            actual_bit_rate / request.target_bit_rate;
+            actual_bitrate / request.target_bit_rate;
         double quantizer = QuantizerEstimator::NO_RESULT;
         // If the quantizer can be parsed from the key frame, try to parse
         // the following delta frames as well.
@@ -507,7 +507,7 @@ class ExternalVideoEncoder::VEAClientImpl final
               codec_profile_ == media::VP8PROFILE_ANY
                   ? static_cast<int>(QuantizerEstimator::MAX_VP8_QUANTIZER)
                   : static_cast<int>(kMaxH264Quantizer);
-          encoded_frame->lossy_utilization =
+          encoded_frame->lossiness =
               bitrate_utilization * (quantizer / max_quantizer);
         }
       } else {
@@ -903,7 +903,8 @@ double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
   const int rows_in_subset =
       std::max(1, size.height() * kFrameSamplingPercentage / 100);
   if (last_frame_size_ != size || !last_frame_pixel_buffer_) {
-    last_frame_pixel_buffer_.reset(new uint8_t[size.width() * rows_in_subset]);
+    last_frame_pixel_buffer_ =
+        std::make_unique<uint8_t[]>(size.width() * rows_in_subset);
     last_frame_size_ = size;
   }
 

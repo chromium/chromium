@@ -69,7 +69,7 @@ class AX_EXPORT AXNode final {
     };
 
     // See AXTree::GetAXTreeID.
-    virtual AXTreeID GetAXTreeID() const = 0;
+    virtual const AXTreeID& GetAXTreeID() const = 0;
     // See `AXTree::GetTableInfo`.
     virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
     // See AXTree::GetFromId.
@@ -111,7 +111,7 @@ class AX_EXPORT AXNode final {
 
    protected:
     raw_ptr<const NodeType> parent_;
-    raw_ptr<NodeType> child_;
+    raw_ptr<NodeType, DanglingUntriaged> child_;
   };
 
   // The constructor requires a parent, id, and index in parent, but
@@ -659,6 +659,10 @@ class AX_EXPORT AXNode final {
   // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;
 
+  // Returns true if this node is a popup button that is a parent to a menu list
+  // popup.
+  bool IsMenuListPopUpButton() const;
+
   // Returns true if this node is a collapsed popup button that is parent to a
   // menu list popup.
   bool IsCollapsedMenuListPopUpButton() const;
@@ -701,6 +705,13 @@ class AX_EXPORT AXNode final {
   // Returns false if the |data_| is uninitialized or has been taken. Returns
   // true otherwise.
   bool IsDataValid() const;
+
+  // Returns true if the node supports the read-only attribute.
+  bool IsReadOnlySupported() const;
+
+  // Returns true if the node is marked read-only or is disabled. By default,
+  // all nodes that can't be edited are read-only.
+  bool IsReadOnlyOrDisabled() const;
 
  private:
   AXTableInfo* GetAncestorTableInfo() const;

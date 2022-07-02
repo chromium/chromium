@@ -12,7 +12,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     notifies = ["chromesec-lkgr-failures"],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
@@ -60,9 +61,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -74,9 +73,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -88,9 +84,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -102,9 +96,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -116,9 +107,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -131,9 +120,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -145,9 +131,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -158,9 +141,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 6,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -172,9 +153,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -186,9 +165,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -203,6 +180,8 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 2,
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -217,6 +196,8 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 2,
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -228,9 +209,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -242,9 +221,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -256,9 +233,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -270,9 +245,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
     ),
-    goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -286,9 +259,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 7,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -302,9 +273,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 6,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -317,6 +286,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -328,8 +298,10 @@ ci.builder(
     cores = 4,
     executable = "recipe:chromium_libfuzzer",
     execution_timeout = 4 * time.hour,
-    os = os.MAC_11,
+    os = os.MAC_12,
     xcode = xcode.x13main,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -342,9 +314,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -357,9 +327,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
     execution_timeout = 4 * time.hour,
 )
 
@@ -373,9 +341,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -391,9 +357,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -406,9 +370,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -421,9 +382,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -436,9 +394,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -451,9 +407,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -466,9 +420,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -481,9 +433,6 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -496,6 +445,8 @@ ci.builder(
     executable = "recipe:chromium_libfuzzer",
     execution_timeout = 4 * time.hour,
     os = os.MAC_DEFAULT,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -511,7 +462,5 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )

@@ -306,11 +306,15 @@ void DevicePairingHandlerImpl::HandlePairingFailed(
   using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
   switch (error_code) {
     case ErrorCode::ERROR_AUTH_CANCELED:
-      [[fallthrough]];
+      FinishCurrentPairingRequest(
+          device::ConnectionFailureReason::kAuthCanceled);
+      return;
     case ErrorCode::ERROR_AUTH_FAILED:
-      [[fallthrough]];
-    case ErrorCode::ERROR_AUTH_REJECTED:
       FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
+      return;
+    case ErrorCode::ERROR_AUTH_REJECTED:
+      FinishCurrentPairingRequest(
+          device::ConnectionFailureReason::kAuthRejected);
       return;
     case ErrorCode::ERROR_AUTH_TIMEOUT:
       FinishCurrentPairingRequest(
@@ -318,9 +322,10 @@ void DevicePairingHandlerImpl::HandlePairingFailed(
       return;
 
     case ErrorCode::ERROR_FAILED:
-      [[fallthrough]];
-    case ErrorCode::ERROR_INPROGRESS:
       FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+      return;
+    case ErrorCode::ERROR_INPROGRESS:
+      FinishCurrentPairingRequest(device::ConnectionFailureReason::kInprogress);
       return;
     case ErrorCode::ERROR_UNKNOWN:
       FinishCurrentPairingRequest(

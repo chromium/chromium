@@ -66,11 +66,12 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
       const NetLogWithSource& net_log) override;
-  void RequestSockets(
+  int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
                    ClientSocketHandle* handle,
@@ -202,8 +203,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   StalledRequestQueue stalled_request_queue_;
   StalledRequestMap stalled_request_map_;
   const int max_sockets_;
-  int handed_out_socket_count_;
-  bool flushing_;
+  int handed_out_socket_count_ = 0;
+  bool flushing_ = false;
 
   base::WeakPtrFactory<WebSocketTransportClientSocketPool> weak_factory_{this};
 };

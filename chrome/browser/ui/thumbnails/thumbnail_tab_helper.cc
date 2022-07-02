@@ -94,7 +94,7 @@ class ThumbnailTabHelper::TabStateTracker
   // none.
   content::RenderWidgetHostView* GetView() {
     auto* const contents = web_contents();
-    return contents ? contents->GetMainFrame()
+    return contents ? contents->GetPrimaryMainFrame()
                           ->GetRenderViewHost()
                           ->GetWidget()
                           ->GetView()

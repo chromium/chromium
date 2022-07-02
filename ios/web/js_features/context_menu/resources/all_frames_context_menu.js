@@ -28,7 +28,6 @@ var MAX_SEARCH_DEPTH = 8;
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
  *                     {@code innerText} The inner text of the link.
- *                     {@code boundingBox} The bounding box of the element.
  *                   }.
  */
 var getResponseForLinkElement = function(element) {
@@ -37,7 +36,6 @@ var getResponseForLinkElement = function(element) {
     href: getElementHref_(element),
     referrerPolicy: getReferrerPolicy_(element),
     innerText: element.innerText,
-    boundingBox: getElementBoundingBox_(element)
   };
 };
 
@@ -50,15 +48,10 @@ var getResponseForLinkElement = function(element) {
  *                     {@code src} The src of the image.
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
- *                     {@code boundingBox} The bounding box of the element.
  *                     {@code title} (optional) The title of the image, if one
  *                         exists.
  *                     {@code href} (optional) The URL of the link, if one
  *                         exists.
- *                     {@code naturalWidth} (optional) The natural width of
- *                         the image, if one exists.
- *                     {@code naturalHeight} (optional) The natural height of
- *                         the image, if one exists.
  *                   }.
  */
 var getResponseForImageElement = function(element, src) {
@@ -66,7 +59,6 @@ var getResponseForImageElement = function(element, src) {
     tagName: 'img',
     src: src,
     referrerPolicy: getReferrerPolicy_(),
-    boundingBox: getElementBoundingBox_(element)
   };
   var parent = element.parentNode;
   // Copy the title, if any.
@@ -95,14 +87,6 @@ var getResponseForImageElement = function(element, src) {
     }
     parent = parent.parentNode;
   }
-  // Copy the image natural width, if any.
-  if (element.naturalWidth) {
-    result.naturalWidth = element.naturalWidth;
-  }
-  // Copy the image natural height, if any.
-  if (element.naturalHeight) {
-    result.naturalHeight = element.naturalHeight;
-  }
   return result;
 };
 
@@ -123,7 +107,6 @@ var getResponseForImageElement = function(element, src) {
 var getResponseForTextElement = function(element, x, y) {
   var result = {
     tagName: element.tagName,
-    boundingBox: getElementBoundingBox_(element),
   };
   // caretRangeFromPoint is custom WebKit method.
   if (document.caretRangeFromPoint) {
@@ -476,30 +459,6 @@ var getElementHref_ = function(element) {
   return href;
 };
 
-/**
- * Returns the client bounding box of the given element.
- * @param {HTMLElement} element to retrieve the bounding box
- * @return {!Object} An object of the form {
- *                     {@code x} The x coordinate of the bounding box origin.
- *                     {@code y} The y coordinate of the bounding box origin.
- *                     {@code width} The width of the bounding box size.
- *                     {@code height} The height of the bounding box size.
- *                   }.
- */
-var getElementBoundingBox_ = function(element) {
-  var boundingBox = element.getBoundingClientRect();
-  if (boundingBox) {
-    return {
-      x: boundingBox.x,
-      y: boundingBox.y,
-      width: boundingBox.width,
-      height: boundingBox.height
-    };
-  }
-  else {
-    return null;
-  }
-};
 
 /**
  * Checks if the element is effectively transparent and should be skipped when

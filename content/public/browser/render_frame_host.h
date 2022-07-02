@@ -152,6 +152,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame that is currently rendered in a different process than |process_id|.
   static int GetFrameTreeNodeIdForRoutingId(int process_id, int routing_id);
 
+  // Returns the FrameTreeNode ID corresponding to the specified |process_id|
+  // and |frame_token|. This routing ID pair may represent a placeholder for
+  // frame that is currently rendered in a different process than |process_id|.
+  static int GetFrameTreeNodeIdForFrameToken(
+      int process_id,
+      const ::blink::FrameToken& frame_token);
+
   // Returns the RenderFrameHost corresponding to the
   // |placeholder_frame_token| in the given |render_process_id|. The returned
   // RenderFrameHost will always be in a different process.  It may be null if
@@ -242,7 +249,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // can be checked with IsRenderFrameLive().
   // NOTE: Due to historical relationships between RenderViewHost and
   // RenderWidgetHost, the main frame RenderWidgetHostView may initially exist
-  // before IsRenderFrameCreated() is true, but they would afterward change
+  // before IsRenderFrameLive() is true, but they would afterward change
   // values together. It is better to not rely on this behaviour as it is
   // intended to change. See https://crbug.com/419087.
   virtual RenderWidgetHostView* GetView() = 0;
@@ -638,13 +645,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns whether the IP address of the last commit was publicly routable.
   virtual bool IsLastCommitIPAddressPubliclyRoutable() const = 0;
 
-  // Returns true if WebContentsObserver::RenderFrameCreated notification has
-  // been dispatched for this frame, and so a RenderFrameDeleted notification
-  // will later be dispatched for this frame.
-  virtual bool IsRenderFrameCreated() = 0;
-
   // Returns whether the RenderFrame in the renderer process has been created
   // and still has a connection.  This is valid for all frames.
+  // RenderFrameDeleted notification will later be dispatched for this frame.
   virtual bool IsRenderFrameLive() = 0;
 
   // Defines different states the RenderFrameHost can be in during its lifetime,
@@ -1049,6 +1052,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // enables a set of additional features that can be used with MojoJs. For
   // example, helper methods for MojoJs to better work with Web API objects.
   virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
+
+  // Whether the current document is loaded inside an anonymous iframe. Updated
+  // on every cross-document navigation.
+  virtual bool IsAnonymous() const = 0;
 
  private:
   // This interface should only be implemented inside content.

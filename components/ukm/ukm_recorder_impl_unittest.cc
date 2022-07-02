@@ -265,6 +265,25 @@ TEST(UkmRecorderImplTest, PaymentAppScopeUrl) {
   EXPECT_EQ(SourceIdType::PAYMENT_APP_ID, GetSourceIdType(id));
 }
 
+TEST(UkmRecorderImplTest, WebIdentityScopeUrl) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  GURL url("https://idp.com");
+  SourceId id = UkmRecorderImpl::GetSourceIdFromScopeImpl(
+      url, SourceIdType::WEB_IDENTITY_ID);
+
+  ASSERT_NE(kInvalidSourceId, id);
+
+  const auto& sources = test_ukm_recorder.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+  EXPECT_EQ(SourceIdType::WEB_IDENTITY_ID, GetSourceIdType(id));
+}
+
 // Tests that UkmRecorderObserver is notified on a new UKM entry.
 TEST(UkmRecorderImplTest, ObserverNotifiedOnNewEntry) {
   base::test::TaskEnvironment env;

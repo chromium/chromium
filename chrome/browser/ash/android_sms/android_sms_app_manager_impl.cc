@@ -47,8 +47,7 @@ void AndroidSmsAppManagerImpl::PwaDelegate::OpenApp(Profile* profile,
                                                     const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
       app_id,
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
+      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
       apps::mojom::LaunchSource::kFromChromeInternal);
 }

@@ -38,6 +38,7 @@ const char kStrictBasicCardShowReject[] = "User does not have valid information 
 const char kTotalRequired[] = "Total required.";
 const char kUserCancelled[] = "User closed the Payment Request UI.";
 const char kWebAuthnOperationTimedOutOrNotAllowed[] = "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
+const char kSpcUserOptedOut[] = "User opted out of the process.";
 const char kInvalidPaymentDetails[] = "Invalid payment details.";
 const char kInvalidPaymentOptions[] = "Invalid payment options.";
 // clang-format on

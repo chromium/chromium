@@ -527,9 +527,14 @@ PooledSingleThreadTaskRunnerManager::~PooledSingleThreadTaskRunnerManager() {
 }
 
 void PooledSingleThreadTaskRunnerManager::Start(
+    scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer) {
   DCHECK(!worker_thread_observer_);
   worker_thread_observer_ = worker_thread_observer;
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+  DCHECK(io_thread_task_runner);
+  io_thread_task_runner_ = std::move(io_thread_task_runner);
+#endif
 
   decltype(workers_) workers_to_start;
   {
@@ -544,7 +549,7 @@ void PooledSingleThreadTaskRunnerManager::Start(
   // unnecessary to call WakeUp() for each worker (in fact, an extraneous
   // WakeUp() would be racy and wrong - see https://crbug.com/862582).
   for (scoped_refptr<WorkerThread> worker : workers_to_start) {
-    worker->Start(worker_thread_observer_);
+    worker->Start(io_thread_task_runner_, worker_thread_observer_);
   }
 }
 
@@ -634,7 +639,7 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
   }
 
   if (new_worker && started)
-    worker->Start(worker_thread_observer_);
+    worker->Start(io_thread_task_runner_, worker_thread_observer_);
 
   return MakeRefCounted<PooledSingleThreadTaskRunner>(this, traits, worker,
                                                       thread_mode);

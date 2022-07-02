@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -29,8 +30,8 @@ class SequencedTaskRunner;
 namespace device {
 
 struct EndpointMapValue {
-  const mojom::UsbInterfaceInfo* interface;
-  const mojom::UsbEndpointInfo* endpoint;
+  raw_ptr<const mojom::UsbInterfaceInfo> interface;
+  raw_ptr<const mojom::UsbEndpointInfo> endpoint;
 };
 
 class UsbDeviceImpl;

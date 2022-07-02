@@ -32,10 +32,10 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
 @property(nonatomic, assign) NSUInteger visibleWindowCount;
 
-// If an update is pending, |lastUpdateTime| is the last time that an event
+// If an update is pending, `lastUpdateTime` is the last time that an event
 // occurred that might cause the window count to change. If no update is pending
-// |lastUpdateTime| is nil.
-@property(nonatomic) NSDate* lastUpdateTime;
+// `lastUpdateTime` is nil.
+@property(nonatomic, strong) NSDate* lastUpdateTime;
 
 @end
 
@@ -97,7 +97,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   NSDate* now = [NSDate date];
   NSTimeInterval delta = [now timeIntervalSinceDate:self.lastUpdateTime];
   if (delta < kWindowNotifcationDelay) {
-    // Repost with a delay sufficient to be |kWindowNotifcationDelay| after
+    // Repost with a delay sufficient to be `kWindowNotifcationDelay` after
     // the last update time.
     NSTimeInterval newDelta = kWindowNotifcationDelay - delta;
     [self scheduleWindowCountWithDelay:newDelta];
@@ -136,7 +136,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   }
 }
 
-// Update |self.viisbleWindowCount| with the total number of foregrounded
+// Update `self.visibleWindowCount` with the total number of foregrounded
 // connected scenes.
 - (void)updateWindowCount {
   NSUInteger windowCount = 0;

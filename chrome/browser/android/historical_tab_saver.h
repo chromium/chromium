@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 class TabAndroid;
 namespace content {
 class WebContents;
@@ -34,7 +36,7 @@ class ScopedWebContents {
  private:
   ScopedWebContents(content::WebContents* web_contents, bool was_frozen);
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   bool was_frozen_;
 };
 

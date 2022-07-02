@@ -173,7 +173,7 @@ class FileNetLogObserver::WriteQueue
   // runner's local queue is swapped with the shared write queue.
   //
   // |lock_| must be acquired to read or write to this.
-  uint64_t memory_;
+  uint64_t memory_ = 0;
 
   // Indicates the maximum amount of memory that the |queue_| is allowed to
   // use.
@@ -317,7 +317,7 @@ class FileNetLogObserver::FileWriter {
 
   // Counter for the events file currently being written into. See
   // FileNumberToIndex() for an explanation of what "number" vs "index" mean.
-  size_t current_event_file_number_;
+  size_t current_event_file_number_ = 0;
 
   // Indicates the maximum size of each individual events file. May be kNoLimit
   // to indicate that it can grow arbitrarily large.
@@ -325,7 +325,7 @@ class FileNetLogObserver::FileWriter {
 
   // Whether any bytes were written for events. This is used to properly format
   // JSON (events list shouldn't end with a comma).
-  bool wrote_event_bytes_;
+  bool wrote_event_bytes_ = false;
 
   // Task runner for doing file operations.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -491,10 +491,11 @@ FileNetLogObserver::FileNetLogObserver(
       file_writer_(std::move(file_writer)),
       capture_mode_(capture_mode) {
   if (!constants)
-    constants = base::Value::ToUniquePtrValue(GetNetConstants());
+    constants = std::make_unique<base::Value>(GetNetConstants());
 
-  DCHECK(!constants->FindKey("logCaptureMode"));
-  constants->SetStringKey("logCaptureMode", CaptureModeToString(capture_mode));
+  DCHECK(constants->is_dict());
+  DCHECK(!constants->GetDict().Find("logCaptureMode"));
+  constants->GetDict().Set("logCaptureMode", CaptureModeToString(capture_mode));
   file_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileNetLogObserver::FileWriter::Initialize,
                                 base::Unretained(file_writer_.get()),
@@ -515,7 +516,7 @@ std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
 }
 
 FileNetLogObserver::WriteQueue::WriteQueue(uint64_t memory_max)
-    : memory_(0), memory_max_(memory_max) {}
+    : memory_max_(memory_max) {}
 
 size_t FileNetLogObserver::WriteQueue::AddEntryToQueue(
     std::unique_ptr<std::string> event) {
@@ -553,9 +554,7 @@ FileNetLogObserver::FileWriter::FileWriter(
     : final_log_path_(log_path),
       inprogress_dir_path_(inprogress_dir_path),
       total_num_event_files_(total_num_event_files),
-      current_event_file_number_(0),
       max_event_file_size_(max_event_file_size),
-      wrote_event_bytes_(false),
       task_runner_(std::move(task_runner)) {
   DCHECK_EQ(pre_existing_log_file.has_value(), log_path.empty());
   DCHECK_EQ(IsBounded(), !inprogress_dir_path.empty());

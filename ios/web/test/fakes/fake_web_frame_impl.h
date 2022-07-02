@@ -41,20 +41,23 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
-  bool ExecuteJavaScript(const std::string& script) override;
+  bool ExecuteJavaScript(const std::u16string& script) override;
   bool ExecuteJavaScript(
-      const std::string& script,
+      const std::u16string& script,
       base::OnceCallback<void(const base::Value*)> callback) override;
   bool ExecuteJavaScript(
-      const std::string& script,
+      const std::u16string& script,
       base::OnceCallback<void(const base::Value*, bool)> callback) override;
 
   // FakeWebFrame:
-  std::string GetLastJavaScriptCall() const override;
-  const std::vector<std::string>& GetJavaScriptCallHistory() override;
+  std::u16string GetLastJavaScriptCall() const override;
+  const std::vector<std::u16string>& GetJavaScriptCallHistory() override;
+  void ClearJavaScriptCallHistory() override;
   void set_browser_state(BrowserState* browser_state) override;
   void AddJsResultForFunctionCall(base::Value* js_result,
                                   const std::string& function_name) override;
+  void AddResultForExecutedJs(base::Value* js_result,
+                              const std::u16string& executed_js) override;
   void set_force_timeout(bool force_timeout) override;
   void set_can_call_function(bool can_call_function) override;
   void set_call_java_script_function_callback(
@@ -89,6 +92,9 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // by JavaScript function |name| expected to be passed into
   // CallJavaScriptFunction().
   std::map<std::string, base::Value*> result_map_;
+  // Map holding values to be passed in ExecuteJavaScript() callback. Keyed by
+  // by JavaScript expected to be passed to ExecuteJavaScript().
+  std::map<std::u16string, base::Value*> executed_js_result_map_;
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
   std::string frame_id_;
@@ -98,7 +104,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   GURL security_origin_;
   // Vector holding history of all javascript handler calls made in this frame.
   // The calls are sorted with the most recent appended at the end.
-  std::vector<std::string> java_script_calls_;
+  std::vector<std::u16string> java_script_calls_;
   // The return value of CanCallJavaScriptFunction().
   bool can_call_function_ = true;
   // When set to true, will force calls to CallJavaScriptFunction to fail with

@@ -29,6 +29,7 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
@@ -198,7 +199,8 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, controller_->tab_strip_->GetWidget()->GetNativeWindow(),
         {ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED, ui::ET_MOUSE_PRESSED,
-         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END});
+         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END,
+         ui::ET_MOUSEWHEEL});
   }
 
   ~EventSniffer() override = default;
@@ -214,6 +216,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
                          event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE ||
                          !controller_->tab_strip_->IsFocusInTabs();
     }
+
     if (close_hover_card) {
       controller_->UpdateHoverCard(
           nullptr, TabSlotController::HoverCardUpdateType::kEvent);

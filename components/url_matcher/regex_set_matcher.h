@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/substring_set_matcher/string_pattern.h"
+#include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "components/url_matcher/url_matcher_export.h"
 
@@ -34,7 +34,8 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // the FilteredRE2 matcher; thus, for efficiency, prefer adding multiple
   // patterns at once.
   // Ownership of the patterns remains with the caller.
-  void AddPatterns(const std::vector<const base::StringPattern*>& regex_list);
+  void AddPatterns(
+      const std::vector<const base::MatcherStringPattern*>& regex_list);
 
   // Removes all regex patterns.
   void ClearPatterns();
@@ -42,15 +43,16 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // Appends the IDs of regular expressions in our set that match the |text|
   // to |matches|.
   bool Match(const std::string& text,
-             std::set<base::StringPattern::ID>* matches) const;
+             std::set<base::MatcherStringPattern::ID>* matches) const;
 
   bool IsEmpty() const;
 
  private:
   typedef int RE2ID;
-  typedef std::map<base::StringPattern::ID, const base::StringPattern*>
+  typedef std::map<base::MatcherStringPattern::ID,
+                   const base::MatcherStringPattern*>
       RegexMap;
-  typedef std::vector<base::StringPattern::ID> RE2IDMap;
+  typedef std::vector<base::MatcherStringPattern::ID> RE2IDMap;
 
   // Use Aho-Corasick SubstringSetMatcher to find which literal patterns
   // match the |text|.
@@ -62,10 +64,10 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // apparently not supported by FilteredRE2.
   void RebuildMatcher();
 
-  // Mapping of regex StringPattern::IDs to regexes.
+  // Mapping of regex MatcherStringPattern::IDs to regexes.
   RegexMap regexes_;
   // Mapping of RE2IDs from FilteredRE2 (which are assigned in order)
-  // to regex StringPattern::IDs.
+  // to regex MatcherStringPattern::IDs.
   RE2IDMap re2_id_map_;
 
   std::unique_ptr<re2::FilteredRE2> filtered_re2_;

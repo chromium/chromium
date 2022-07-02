@@ -730,7 +730,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   // The number of distinct keys (eTLD+1's) currently present in the |cookies_|
   // multimap. This is histogrammed periodically.
-  size_t num_keys_;
+  size_t num_keys_ = 0u;
 
   CookieMap cookies_;
 
@@ -738,17 +738,17 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   // Number of distinct partitioned cookies globally. This is used to enforce a
   // global maximum on the number of partitioned cookies.
-  size_t num_partitioned_cookies_;
+  size_t num_partitioned_cookies_ = 0u;
 
   CookieMonsterChangeDispatcher change_dispatcher_;
 
   // Indicates whether the cookie store has been initialized.
-  bool initialized_;
+  bool initialized_ = false;
 
   // Indicates whether the cookie store has started fetching all cookies.
-  bool started_fetching_all_cookies_;
+  bool started_fetching_all_cookies_ = false;
   // Indicates whether the cookie store has finished fetching all cookies.
-  bool finished_fetching_all_cookies_;
+  bool finished_fetching_all_cookies_ = false;
 
   // List of domain keys that have been loaded from the DB.
   std::set<std::string> keys_loaded_;
@@ -768,7 +768,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // view of the cookie store. This is more to ensure fancy cookie export/import
   // code has a consistent view of the CookieStore, rather than out of concern
   // for typical use.
-  bool seen_global_task_;
+  bool seen_global_task_ = false;
 
   NetLogWithSource net_log_;
 
@@ -793,7 +793,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   base::Time last_statistic_record_time_;
 
-  bool persist_session_cookies_;
+  bool persist_session_cookies_ = false;
 
   bool first_party_sets_enabled_;
 

@@ -260,7 +260,9 @@ public class AndroidPaymentApp
         Intent isReadyToPayIntent = WebPaymentIntentHelper.createIsReadyToPayIntent(
                 /*packageName=*/mPackageName, /*serviceName=*/mIsReadyToPayServiceName,
                 removeUrlScheme(origin), removeUrlScheme(iframeOrigin), certificateChain,
-                WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodDataMap(methodDataMap));
+                WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodDataMap(methodDataMap),
+                PaymentFeatureList.isEnabled(
+                        PaymentFeatureList.IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT_FEATURE));
         if (mBypassIsReadyToPayServiceInTest) {
             respondToIsReadyToPayQuery(true);
             return;

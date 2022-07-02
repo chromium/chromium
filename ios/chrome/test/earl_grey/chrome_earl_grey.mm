@@ -480,7 +480,7 @@ UIWindow* GetAnyKeyWindow() {
   auto result = [self evaluateJavaScript:kGetCookiesScript];
 
   EG_TEST_HELPER_ASSERT_TRUE(result.is_list(),
-                             @"The script response is not iteratble.");
+                             @"The script response is not iterable.");
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
   for (const auto& option : result.GetListDeprecated()) {
@@ -1200,10 +1200,6 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isTriggerVariationEnabled:variationID];
 }
 
-- (BOOL)isAddCredentialsInSettingsEnabled {
-  return [ChromeEarlGreyAppInterface isAddCredentialsInSettingsEnabled];
-}
-
 - (BOOL)isUKMEnabled {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }
@@ -1239,10 +1235,6 @@ UIWindow* GetAnyKeyWindow() {
 
 - (BOOL)areMultipleWindowsSupported {
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
-}
-
-- (BOOL)isContextMenuInWebViewEnabled {
-  return [ChromeEarlGreyAppInterface isContextMenuInWebViewEnabled];
 }
 
 - (BOOL)isNewOverflowMenuEnabled {
@@ -1373,6 +1365,11 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)resetBrowsingDataPrefs {
   return [ChromeEarlGreyAppInterface resetBrowsingDataPrefs];
+}
+
+- (void)resetDataForLocalStatePref:(const std::string&)prefName {
+  return [ChromeEarlGreyAppInterface
+      resetDataForLocalStatePref:base::SysUTF8ToNSString(prefName)];
 }
 
 #pragma mark - Pasteboard Utilities (EG2)

@@ -144,44 +144,44 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
 
 CheckPseudoHasArgumentTraversalIterator::
     CheckPseudoHasArgumentTraversalIterator(
-        Element& has_scope_element,
+        Element& has_anchor_element,
         CheckPseudoHasArgumentContext& context)
-    : has_scope_element_(&has_scope_element),
+    : has_anchor_element_(&has_anchor_element),
       depth_limit_(context.DepthLimit()) {
   if (!context.AdjacentDistanceFixed()) {
-    // Set the last_element_ as the next sibling of the :has scope element,
-    // and move to the last sibling of the :has scope element, and move again
+    // Set the last_element_ as the next sibling of the :has() anchor element,
+    // and move to the last sibling of the :has() anchor element, and move again
     // to the last descendant of the last sibling.
-    last_element_ = ElementTraversal::NextSibling(*has_scope_element_);
+    last_element_ = ElementTraversal::NextSibling(*has_anchor_element_);
     if (!last_element_) {
       DCHECK_EQ(current_element_, nullptr);
       return;
     }
     Element* last_sibling =
-        ElementTraversal::LastChild(*has_scope_element_->parentNode());
+        ElementTraversal::LastChild(*has_anchor_element_->parentNode());
     current_element_ = LastWithin(last_sibling);
     if (!current_element_)
       current_element_ = last_sibling;
   } else if (context.AdjacentDistanceLimit() == 0) {
     DCHECK_GT(context.DepthLimit(), 0);
-    // Set the last_element_ as the first child of the :has scope element,
-    // and move to the last descendant of the :has scope element without
+    // Set the last_element_ as the first child of the :has() anchor element,
+    // and move to the last descendant of the :has() anchor element without
     // exceeding the depth limit.
-    last_element_ = ElementTraversal::FirstChild(*has_scope_element_);
+    last_element_ = ElementTraversal::FirstChild(*has_anchor_element_);
     if (!last_element_) {
       DCHECK_EQ(current_element_, nullptr);
       return;
     }
-    current_element_ = LastWithin(has_scope_element_);
+    current_element_ = LastWithin(has_anchor_element_);
     DCHECK(current_element_);
   } else {
-    // Set last_element_ as the next sibling of the :has() scope element, set
+    // Set last_element_ as the next sibling of the :has() anchor element, set
     // the sibling_at_fixed_distance_ as the element at the adjacent distance
-    // of the :has scope element, and move to the last descendant of the sibling
-    // at fixed distance without exceeding the depth limit.
+    // of the :has() anchor element, and move to the last descendant of the
+    // sibling at fixed distance without exceeding the depth limit.
     int distance = 1;
     Element* old_sibling = nullptr;
-    Element* sibling = ElementTraversal::NextSibling(*has_scope_element_);
+    Element* sibling = ElementTraversal::NextSibling(*has_anchor_element_);
     for (; distance < context.AdjacentDistanceLimit() && sibling;
          distance++, sibling = ElementTraversal::NextSibling(*sibling)) {
       old_sibling = sibling;
@@ -196,10 +196,10 @@ CheckPseudoHasArgumentTraversalIterator::
       if (!current_element_)
         return;
       // set the depth_limit_ to 0 so that the iterator only traverse to the
-      // siblings of the :has() scope element.
+      // siblings of the :has() anchor element.
       depth_limit_ = 0;
     }
-    last_element_ = ElementTraversal::NextSibling(*has_scope_element_);
+    last_element_ = ElementTraversal::NextSibling(*has_anchor_element_);
   }
 }
 
@@ -222,15 +222,15 @@ Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
 
 void CheckPseudoHasArgumentTraversalIterator::operator++() {
   DCHECK(current_element_);
-  DCHECK_NE(current_element_, has_scope_element_);
+  DCHECK_NE(current_element_, has_anchor_element_);
   if (current_element_ == last_element_) {
     current_element_ = nullptr;
     return;
   }
 
   // If current element is the sibling at fixed distance, set the depth_limit_
-  // to 0 so that the iterator only traverse to the siblings of the :has() scope
-  // element.
+  // to 0 so that the iterator only traverse to the siblings of the :has()
+  // anchor element.
   if (current_depth_ == 0 && sibling_at_fixed_distance_ == current_element_) {
     sibling_at_fixed_distance_ = nullptr;
     depth_limit_ = 0;

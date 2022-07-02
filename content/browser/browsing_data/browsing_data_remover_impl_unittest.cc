@@ -159,7 +159,7 @@ class StoragePartitionRemovalTestStoragePartition
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 const GURL& storage_origin,
+                 const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override {
@@ -1300,22 +1300,33 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCodeCache) {
   EXPECT_TRUE(removal_data[1].remove_code_cache);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveShaderCache) {
+TEST_F(BrowsingDataRemoverImplTest,
+       RemoveShaderCacheAndInterstGroupPermissionsCache) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 BrowsingDataRemover::DATA_TYPE_CACHE, false);
   auto removal_data = GetStoragePartitionRemovalDataListAndReset();
   EXPECT_EQ(removal_data.size(), 2u);
-  EXPECT_EQ(removal_data[0].remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE);
+  EXPECT_EQ(
+      removal_data[0].remove_mask,
+      StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE |
+          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveConversions) {
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                BrowsingDataRemover::DATA_TYPE_CONVERSIONS,
-                                false);
+TEST_F(BrowsingDataRemoverImplTest, RemoveAttributionReporting) {
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED, false);
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(
+      removal_data.remove_mask,
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL, false);
+  removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_CONVERSIONS);
+            StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL);
 }
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {

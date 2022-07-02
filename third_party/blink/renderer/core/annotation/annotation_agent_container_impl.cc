@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
@@ -71,6 +72,17 @@ AnnotationAgentImpl* AnnotationAgentContainerImpl::CreateUnboundAgent(
   auto* agent_impl = MakeGarbageCollected<AnnotationAgentImpl>(
       *this, type, selector, PassKey());
   agents_.insert(agent_impl);
+
+  // TODO(bokan): This is a stepping stone in refactoring the
+  // TextFragmentHandler. When we replace it with a browser-side manager it may
+  // make for a better API to have components register a handler for an
+  // annotation type with AnnotationAgentContainer.
+  // https://crbug.com/1303887.
+  if (type == mojom::blink::AnnotationType::kSharedHighlight) {
+    TextFragmentHandler::DidCreateTextFragment(*agent_impl,
+                                               *GetSupplementable());
+  }
+
   return agent_impl;
 }
 
@@ -80,6 +92,18 @@ void AnnotationAgentContainerImpl::RemoveAgent(AnnotationAgentImpl& agent,
   auto itr = agents_.find(&agent);
   DCHECK_NE(itr, agents_.end());
   agents_.erase(itr);
+}
+
+HeapHashSet<Member<AnnotationAgentImpl>>
+AnnotationAgentContainerImpl::GetAgentsOfType(
+    mojom::blink::AnnotationType type) {
+  HeapHashSet<Member<AnnotationAgentImpl>> agents_of_type;
+  for (auto& agent : agents_) {
+    if (agent->GetType() == type)
+      agents_of_type.insert(agent);
+  }
+
+  return agents_of_type;
 }
 
 void AnnotationAgentContainerImpl::CreateAgent(
@@ -99,9 +123,11 @@ void AnnotationAgentContainerImpl::CreateAgent(
   if (!selector)
     return;
 
-  AnnotationAgentImpl* agent_impl = CreateUnboundAgent(type, *selector);
+  auto* agent_impl = MakeGarbageCollected<AnnotationAgentImpl>(
+      *this, type, *selector, PassKey());
+  agents_.insert(agent_impl);
   agent_impl->Bind(std::move(host_remote), std::move(agent_receiver));
-  agent_impl->Attach(*GetSupplementable());
+  agent_impl->Attach();
 }
 
 }  // namespace blink

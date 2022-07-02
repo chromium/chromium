@@ -112,7 +112,7 @@ TEST_F(TextToSpeechPlayerTest, ReadyForPlayback) {
 }
 
 // Tests that kTTSAudioReadyForPlaybackNotification is received and that
-// TTSPlayer's |-readyForPlayback| is NO for empty data.
+// TTSPlayer's `-readyForPlayback` is NO for empty data.
 TEST_F(TextToSpeechPlayerTest, ReadyForPlaybackEmtpyData) {
   NSData* audio_data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
   [tts_player_ prepareToPlayAudioData:audio_data];

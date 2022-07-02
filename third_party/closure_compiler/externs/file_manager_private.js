@@ -311,6 +311,7 @@ chrome.fileManagerPrivate.IOTaskState = {
   IN_PROGRESS: 'in_progress',
   SUCCESS: 'success',
   ERROR: 'error',
+  NEED_PASSWORD: 'need_password',
   CANCELLED: 'cancelled',
 };
 
@@ -318,10 +319,31 @@ chrome.fileManagerPrivate.IOTaskState = {
 chrome.fileManagerPrivate.IOTaskType = {
   COPY: 'copy',
   DELETE: 'delete',
+  EMPTY_TRASH: 'empty_trash',
   EXTRACT: 'extract',
   MOVE: 'move',
+  RESTORE: 'restore',
   TRASH: 'trash',
   ZIP: 'zip',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.RecentDateBucket = {
+  TODAY: 'today',
+  YESTERDAY: 'yesterday',
+  EARLIER_THIS_WEEK: 'earlier_this_week',
+  EARLIER_THIS_MONTH: 'earlier_this_month',
+  EARLIER_THIS_YEAR: 'earlier_this_year',
+  OLDER: 'older',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.VmType = {
+  TERMINA: 'termina',
+  PLUGIN_VM: 'plugin_vm',
+  BOREALIS: 'borealis',
+  BRUSCHETTA: 'bruschetta',
+  ARCVM: 'arcvm',
 };
 
 /**
@@ -597,6 +619,7 @@ chrome.fileManagerPrivate.LinuxPackageInfo;
  * @typedef {{
  * id: number,
  * displayName: string,
+ * vmType: !chrome.fileManagerPrivate.VmType,
  * }}
  */
 chrome.fileManagerPrivate.MountableGuest;
@@ -684,6 +707,8 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
 /**
  * @typedef {{
  *   destinationFolder: (DirectoryEntry|undefined),
+ *   password: (string|undefined),
+ *   restorePaths: (Array<string>|undefined),
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;
@@ -701,9 +726,18 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   taskId: number,
  *   remainingSeconds: number,
  *   errorName: string,
+ *   outputs: (Array<Entry>|undefined),
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;
+
+/**
+ * @typedef {{
+ *   sourceUrl: string,
+ *   isDlpRestricted: boolean,
+ * }}
+ */
+chrome.fileManagerPrivate.DlpMetadata;
 
 /**
  * Logout the current user for navigating to the re-authentication screen for
@@ -918,6 +952,16 @@ chrome.fileManagerPrivate.getVolumeMetadataList = function(callback) {};
  */
 chrome.fileManagerPrivate.getDisallowedTransfers = function(
     entries, destinationEntry, callback) {};
+
+/**
+ * Returns a list of files that are restricted by any Data Leak Prevention
+ * (DLP) rule. |entries| list of source entries to be checked.
+ * @param {!Array<!Entry>} entries
+ * @param {function((!Array<!chrome.fileManagerPrivate.DlpMetadata>|undefined))}
+ * callback Callback with the list of chrome.fileManagerPrivate.DlpMetadata
+ * containing DLP information about the entries.
+ */
+chrome.fileManagerPrivate.getDlpMetadata = function(entries, callback) {};
 
 /**
  * Starts to copy an entry. If the source is a directory, the copy is done
@@ -1185,9 +1229,10 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * Gets recently modified files across file systems.
  * @param {string} restriction
  * @param {string} fileType
+ * @param {boolean} invalidateCache
  * @param {function((!Array<!FileEntry>))} callback
  */
-chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, callback) {};
+chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, invalidateCache, callback) {};
 
 /**
  * Requests the root directory of a volume. The ID of the volume must be
@@ -1405,8 +1450,10 @@ chrome.fileManagerPrivate.sendFeedback = function() {};
  * @param {!chrome.fileManagerPrivate.IOTaskType} type
  * @param {!Array<!Entry>} entries
  * @param {!chrome.fileManagerPrivate.IOTaskParams} params
+ * @param {(function(number): void)=} callback Returns the task ID.
  */
-chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
+chrome.fileManagerPrivate.startIOTask = function(
+    type, entries, params, callback) {};
 
 /**
  * Cancels an I/O task by id. Task ids are communicated to the Files App in

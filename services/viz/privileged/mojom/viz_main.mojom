@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
@@ -51,7 +52,7 @@ interface VizMain {
       pending_remote<GpuHost> gpu_host,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      handle<shared_buffer>? activity_flags,
+      mojo_base.mojom.UnsafeSharedMemoryRegion? activity_flags,
       gfx.mojom.SubpixelRendering subpixel_rendering);
 
   // Create a GPU info collection service provided by the info-collection GPU

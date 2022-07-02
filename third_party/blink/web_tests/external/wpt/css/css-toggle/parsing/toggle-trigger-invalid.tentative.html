@@ -12,16 +12,20 @@
 <script>
 
 test_invalid_value('toggle-trigger', 'none, none');
-test_invalid_value('toggle-trigger', 'none 1');
-test_invalid_value('toggle-trigger', 'None 1');
-test_invalid_value('toggle-trigger', 'NONE 1');
-test_invalid_value('toggle-trigger', 'mytoggle 1 1');
-test_invalid_value('toggle-trigger', 'mytoggle -1');
+test_invalid_value('toggle-trigger', 'none set 1');
+test_invalid_value('toggle-trigger', 'None set 1');
+test_invalid_value('toggle-trigger', 'NONE set 1');
+test_invalid_value('toggle-trigger', 'mytoggle set 1 1');
+test_invalid_value('toggle-trigger', 'mytoggle set -1');
 test_invalid_value('toggle-trigger', 'none, mytoggle');
 test_invalid_value('toggle-trigger', 'mytoggle, none');
 test_invalid_value('toggle-trigger', 'mytoggle self 1');
 test_invalid_value('toggle-trigger', 'mytoggle 1 self');
 test_invalid_value('toggle-trigger', 'mytoggle sticky 1');
 test_invalid_value('toggle-trigger', 'mytoggle 1 sticky');
+test_invalid_value('toggle-trigger', 'mytoggle self set 1');
+test_invalid_value('toggle-trigger', 'mytoggle set 1 self');
+test_invalid_value('toggle-trigger', 'mytoggle sticky set 1');
+test_invalid_value('toggle-trigger', 'mytoggle set 1 sticky');
 
 </script>

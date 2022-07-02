@@ -78,6 +78,17 @@ bool CheckCacheIntegrity(const base::FilePath& path,
 }
 
 // -----------------------------------------------------------------------
+TestBackendResultCompletionCallback::TestBackendResultCompletionCallback() =
+    default;
+
+TestBackendResultCompletionCallback::~TestBackendResultCompletionCallback() =
+    default;
+
+disk_cache::BackendResultCallback
+TestBackendResultCompletionCallback::callback() {
+  return base::BindOnce(&TestBackendResultCompletionCallback::SetResult,
+                        base::Unretained(this));
+}
 
 TestEntryResultCompletionCallback::TestEntryResultCompletionCallback() =
     default;
@@ -109,13 +120,7 @@ void TestRangeResultCompletionCallback::HelpSetResult(
 
 // -----------------------------------------------------------------------
 
-MessageLoopHelper::MessageLoopHelper()
-    : num_callbacks_(0),
-      num_iterations_(0),
-      last_(0),
-      completed_(false),
-      callback_reused_error_(false),
-      callbacks_called_(0) {}
+MessageLoopHelper::MessageLoopHelper() = default;
 
 MessageLoopHelper::~MessageLoopHelper() = default;
 

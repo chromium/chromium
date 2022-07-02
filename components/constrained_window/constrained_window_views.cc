@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -174,7 +175,14 @@ void UpdateWidgetModalDialogPosition(views::Widget* widget,
 
 content::WebContents* GetTopLevelWebContents(
     content::WebContents* initiator_web_contents) {
-  return initiator_web_contents->GetResponsibleWebContents();
+  // TODO(mcnee): While calling both `GetResponsibleWebContents` and
+  // `GetTopLevelWebContents` appears redundant, there appears to still be cases
+  // where users of guest view are not initializing the guest WebContents
+  // properly, causing GetResponsibleWebContents to break. See
+  // https://crbug.com/1325850
+  // The order of composing these methods is arbitrary.
+  return guest_view::GuestViewBase::GetTopLevelWebContents(
+      initiator_web_contents->GetResponsibleWebContents());
 }
 
 views::Widget* ShowWebModalDialogViews(
@@ -257,6 +265,15 @@ void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
   dialog->SetOwnedByWidget(true);
   constrained_window::CreateBrowserModalDialogViews(std::move(dialog), parent)
       ->Show();
+}
+
+void ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents) {
+  constrained_window::ShowWebModalDialogViews(
+      views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
+                                                ui::MODAL_TYPE_CHILD)
+          .release(),
+      web_contents);
 }
 
 }  // namespace constrained_window

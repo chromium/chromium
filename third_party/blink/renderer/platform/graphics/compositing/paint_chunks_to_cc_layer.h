@@ -68,7 +68,8 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
 
-  static void UpdateLayerSelection(cc::Layer& layer,
+  // Returns true if any selection was painted in the provided PaintChunkSubset.
+  static bool UpdateLayerSelection(cc::Layer& layer,
                                    const PropertyTreeState& layer_state,
                                    const PaintChunkSubset&,
                                    cc::LayerSelection& layer_selection);

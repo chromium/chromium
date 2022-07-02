@@ -134,16 +134,12 @@ ci.builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/25.0.2.yaml",
             },
             {
-                "sdk_package_name": "build-tools;29.0.2",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/29.0.2.yaml",
-            },
-            {
-                "sdk_package_name": "build-tools;30.0.1",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/30.0.1.yaml",
-            },
-            {
                 "sdk_package_name": "build-tools;31.0.0",
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/31.0.0.yaml",
+            },
+            {
+                "sdk_package_name": "build-tools;33.0.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/33.0.0.yaml",
             },
             {
                 "sdk_package_name": "cmdline-tools;latest",
@@ -158,28 +154,16 @@ ci.builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
             },
             {
-                "sdk_package_name": "platforms;android-29",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-29.yaml",
-            },
-            {
-                "sdk_package_name": "platforms;android-30",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-30.yaml",
-            },
-            {
                 "sdk_package_name": "platforms;android-31",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-31.yaml",
             },
             {
+                "sdk_package_name": "platforms;android-33",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-33.yaml",
+            },
+            {
                 "sdk_package_name": "platform-tools",
                 "cipd_yaml": "third_party/android_sdk/cipd/platform-tools.yaml",
-            },
-            {
-                "sdk_package_name": "sources;android-29",
-                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-29.yaml",
-            },
-            {
-                "sdk_package_name": "sources;android-30",
-                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-30.yaml",
             },
             {
                 "sdk_package_name": "sources;android-31",
@@ -261,6 +245,14 @@ ci.builder(
             {
                 "sdk_package_name": "system-images;android-32;google_apis_playstore;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-32/google_apis_playstore/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-33;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-33;google_apis_playstore;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_apis_playstore/x86_64.yaml",
             },
         ],
     },

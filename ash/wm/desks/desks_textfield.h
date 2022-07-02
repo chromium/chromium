@@ -38,11 +38,12 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   gfx::Size CalculatePreferredSize() const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
   void OnDragEntered(const ui::DropTargetEvent& event) override;

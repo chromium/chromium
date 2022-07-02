@@ -65,6 +65,14 @@
         [[model.timeSinceLastUpdate]]
       </div>
     </div>
+    <div class="two-line" hidden$="[[shouldHideLastFailedStatus_(model.lastUnsuccessfulMessage)]]">
+      <div class="label" aria-describedby="lastFailedStatus">
+        [[i18n('certificateProvisioningLastUnsuccessfulStatus')]]
+      </div>
+      <div class="value" id="lastFailedStatus" aria-hidden="true">
+        [[model.lastUnsuccessfulMessage]]
+      </div>
+    </div>
     <hr></hr>
     <cr-expand-button expanded="{{advancedExpanded_}}"
         aria-expanded$="[[boolToString_(advancedOpened)]]">

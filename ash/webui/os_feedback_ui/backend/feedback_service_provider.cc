@@ -46,6 +46,14 @@ void FeedbackServiceProvider::SendReport(ReportPtr report,
   feedback_delegate_->SendReport(std::move(report), std::move(callback));
 }
 
+void FeedbackServiceProvider::OpenDiagnosticsApp() {
+  feedback_delegate_->OpenDiagnosticsApp();
+}
+
+void FeedbackServiceProvider::OpenExploreApp() {
+  feedback_delegate_->OpenExploreApp();
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

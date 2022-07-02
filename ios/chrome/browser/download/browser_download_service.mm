@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #include "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/download_mimetype_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/safari_download_tab_helper.h"
@@ -23,76 +24,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Returns DownloadMimeTypeResult for the given MIME type.
-DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
-  if (mime_type == kPkPassMimeType)
-    return DownloadMimeTypeResult::PkPass;
-
-  if (mime_type == kZipArchiveMimeType)
-    return DownloadMimeTypeResult::ZipArchive;
-
-  if (mime_type == kMobileConfigurationType)
-    return DownloadMimeTypeResult::iOSMobileConfig;
-
-  if (mime_type == kMicrosoftApplicationMimeType)
-    return DownloadMimeTypeResult::MicrosoftApplication;
-
-  if (mime_type == kAndroidPackageArchiveMimeType)
-    return DownloadMimeTypeResult::AndroidPackageArchive;
-
-  if (mime_type == kVcardMimeType)
-    return DownloadMimeTypeResult::VirtualContactFile;
-
-  if (mime_type == kCalendarMimeType)
-    return DownloadMimeTypeResult::Calendar;
-
-  if (mime_type == kLegacyUsdzMimeType)
-    return DownloadMimeTypeResult::LegacyUniversalSceneDescription;
-
-  if (mime_type == kAppleDiskImageMimeType)
-    return DownloadMimeTypeResult::AppleDiskImage;
-
-  if (mime_type == kAppleInstallerPackageMimeType)
-    return DownloadMimeTypeResult::AppleInstallerPackage;
-
-  if (mime_type == kSevenZipArchiveMimeType)
-    return DownloadMimeTypeResult::SevenZipArchive;
-
-  if (mime_type == kRARArchiveMimeType)
-    return DownloadMimeTypeResult::RARArchive;
-
-  if (mime_type == kTarArchiveMimeType)
-    return DownloadMimeTypeResult::TarArchive;
-
-  if (mime_type == kAdobeFlashMimeType)
-    return DownloadMimeTypeResult::AdobeFlash;
-
-  if (mime_type == kAmazonKindleBookMimeType)
-    return DownloadMimeTypeResult::AmazonKindleBook;
-
-  if (mime_type == kBinaryDataMimeType)
-    return DownloadMimeTypeResult::BinaryData;
-
-  if (mime_type == kBitTorrentMimeType)
-    return DownloadMimeTypeResult::BitTorrent;
-
-  if (mime_type == kJavaArchiveMimeType)
-    return DownloadMimeTypeResult::JavaArchive;
-
-  if (mime_type == kVcardMimeType)
-    return DownloadMimeTypeResult::Vcard;
-
-  if (mime_type == kLegacyPixarUsdzMimeType)
-    return DownloadMimeTypeResult::LegacyPixarUniversalSceneDescription;
-
-  if (mime_type == kUsdzMimeType)
-    return DownloadMimeTypeResult::UniversalSceneDescription;
-
-  return DownloadMimeTypeResult::Other;
-}
-}  // namespace
 
 BrowserDownloadService::BrowserDownloadService(
     web::DownloadController* download_controller)
@@ -121,8 +52,9 @@ void BrowserDownloadService::OnDownloadCreated(
     return;
   }
 
-  base::UmaHistogramEnumeration("Download.IOSDownloadMimeType",
-                                GetUmaResult(task->GetMimeType()));
+  base::UmaHistogramEnumeration(
+      "Download.IOSDownloadMimeType",
+      GetDownloadMimeTypeResultFromMimeType(task->GetMimeType()));
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
                                 DownloadFileUI::DownloadFilePresented,
                                 DownloadFileUI::Count);

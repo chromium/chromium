@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

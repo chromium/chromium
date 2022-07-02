@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -15,10 +16,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-
-namespace base {
-class RepeatingTimer;
-}  // namespace base
 
 namespace crostini {
 
@@ -98,7 +95,7 @@ class CrostiniInstaller : public KeyedService,
   void OnStageStarted(crostini::mojom::InstallerState stage) override;
   void OnComponentLoaded(crostini::CrostiniResult result) override;
   void OnDiskImageCreated(bool success,
-                          vm_tools::concierge::DiskImageStatus status,
+                          CrostiniResult result,
                           int64_t disk_size_available) override;
   void OnVmStarted(bool success) override;
   void OnLxdStarted(CrostiniResult result) override;
@@ -109,9 +106,10 @@ class CrostiniInstaller : public KeyedService,
 
   // AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted(
-      const ContainerId& container_id) override;
-  void OnAnsibleSoftwareConfigurationFinished(const ContainerId& container_id,
-                                              bool success) override;
+      const guest_os::GuestId& container_id) override;
+  void OnAnsibleSoftwareConfigurationFinished(
+      const guest_os::GuestId& container_id,
+      bool success) override;
 
   // Return true if internal state allows starting installation.
   bool CanInstall();

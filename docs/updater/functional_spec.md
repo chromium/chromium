@@ -8,48 +8,92 @@ and UI.
 
 [TOC]
 
-## Metainstaller
-The metainstaller (UpdaterSetup) is a thin executable that contains a compressed
-copy of the updater as a resource, extracts it, and triggers installation of the
-updater / an app. The metainstaller is downloaded by the user and can be run
-from any directory.
+## Installation
+
+### Metainstaller
+The metainstaller (UpdaterSetup) is a small executable that contains a
+compressed copy of the updater as a resource, extracts it, and triggers
+installation of the updater / an app. The metainstaller is downloaded by the
+user and can be run from any directory.
 
 The metainstaller may have a tag attached to it. The tag is a piece of unsigned
 data from which the metainstaller extracts the ID of the application to be
 installed, along with the application's brand code, usage-stats opt-in status,
 and any additional parameters to be associated with the application.
 
-On Windows, the tag is embedded in one of the certificates in the metainstaller
-PE.
+After the metainstaller installs the updater, the updater installs an
+application by connecting to update servers and [downloading and executing an
+application installer](#Updates).
 
-### Elevation (Windows)
+On Windows, the tag is embedded in one of the certificates in the metainstaller
+PE. The tag is supported for both EXE and MSI formats.
+
+#### Tag Format
+TODO(crbug.com/1328903) - document the rest of the tag format.
+
+##### Brand code
+The brand code is a string of up to 4 characters long. The brand code is
+persisted during the install, over-installs, and updates.
+
+#### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
 installing an application with `needsadmin=true` or `needsadmin=prefers`.
 
-### Localization
+#### Localization
 Metainstaller localization presents the metainstaller UI with the user's
 preferred language on the current system. Every string shown in the UI is
 translated.
 
-## Standalone Installer
-TODO(crbug.com/1035895): Document the standalone installer.
+### Bundle Installer
+The bundle installer allows installation of more than one application. The
+bundle installer is typically used in software distribution scenarios.
 
 TODO(crbug.com/1035895): Document bundled installers.
 
-Applications on macOS frequently install via "drag-install", and then install 
+### Standalone Installer
+TODO(crbug.com/1035895): Document the standalone installer, including building
+a standalone installer for a given application.
+
+Standalone installers embed all data required to install the application,
+including the payload and various configuration data needed by the application
+setup. Such an install completes even if a network connection is not available.
+
+Standalone installers are used:
+
+1. when an interactive user experience is not needed, such as automated
+deployments in an enterprise.
+2. when downloading the application payload is not desirable for any reason.
+3. during OEM installation.
+
+TODO(crbug.com/1139014): Document OEM.
+
+Applications on macOS frequently install via "drag-install", and then install
 the updater using a standalone installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
 
-## Updater
-The updater is installed at:
-*   (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
-*   (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
-*   (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
-*   (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+### MSI Wrapper
+TODO(crbug.com/1327497) - document.
+
+### Scope
+The updater is installed in one of the following modes (or scopes):
+1. per-system (or per-machine). This mode requires administrator privileges.
+2. per-user
+
+Per-machine and per-user instances of the updater can run side by side.
+
+Depending on the scope, the updater is installed at:
+
+* (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+* (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+* (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+* (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+
+### Command Line
 
 The updater's functionality is split between several processes. The mode of a
 process is determined by command-line arguments:
+
 *   --install [--app-id=...]
     *   Install and activate this version of the updater if there is no active
         updater.
@@ -62,9 +106,6 @@ process is determined by command-line arguments:
         *   If --tag is specified, --install is assumed.
     *   --handoff=...
         *   As --tag.
-    *   --install-from-out-dir
-        *   If specified, the program searches for an updater.runtime_deps file
-        *   and copies all such files to the install directory.
     *  --offlinedir=...
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.
@@ -92,12 +133,12 @@ process is determined by command-line arguments:
 *   --crash-handler
     *   Starts a crash handler for the parent process.
 *   --server
-    *   Launch the updater RPC server. The server will answer RPC messages on
+    *   Launch the updater RPC server. The server answers RPC messages on
         the UpdateService interface only.
     *   --service=update|update-internal
-        *   If `update`, the server will answer RPC messages on the
+        *   If `update`, the server answers RPC messages on the
             UpdateService interface only.
-        *   If `update-internal`, the server will answer RPC messages on the
+        *   If `update-internal`, the server answers RPC messages on the
             UpdateServiceInternal interface only.
 *   --windows-service
     *   This switch starts the Windows service. This switch is invoked by the
@@ -130,32 +171,20 @@ process is determined by command-line arguments:
 *   --healthcheck
     *   Exit immediately with no error.
 
-If none of the above arguments are set, the updater will exit with an error.
+If none of the above arguments are set, the updater exits with an error.
 
 Additionally, the mode may be modified by combining it with:
 *   --system
     *   The updater operates in system scope if and only if this switch is
         present.
 
-### Installation
-TODO(crbug.com/1035895): Document UI/UX
-
-#### Installer APIs
-As part of installing or updating an application, the updater will execute the
-application's installer. The API for the application installer is platform-
-specific.
-
-The macOS API is [defined here](installer_api_mac.md).
-
-TODO(crbug.com/1035895): Document Windows installer APIs
-
-#### Backward-Compatible Updater Shims
+### Backward-Compatible Updater Shims
 To maintain backwards compatibility with
 [Omaha](https://github.com/google/omaha) and
 [Keystone](https://code.google.com/archive/p/update-engine/), the updater
 installs small versions of those programs that implement a subset of their APIs.
 
-##### Keystone Shims
+#### Keystone Shims
 The updater installs a Keystone-like application that contains these shims:
 
 1.  The Keystone app executable.
@@ -223,14 +252,102 @@ Some of these actions accept parameters:
 *   --xcpath, -x PATH
     *   Set a path to use as an existence checker.
 
-##### Omaha Shims
+#### Omaha Shims
 On Windows, the updater replaces Omaha's files with a copy of the updater, and
 keeps the Omaha registry entry
 (`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the latest
 `pv` value. Additionally, the updater replaces the Omaha uninstall command line
 with its own.
 
-#### Enterprise Policies
+### Installer User Interface
+TODO(crbug.com/1035895): Document UI/UX.
+
+The user interface is localized in the following languages: TBD.
+
+TODO(crbug.com/1014591): Implement install cancellation, including cancellation
+ping.
+
+The install flow can be stopped before the payload finishes downloading. In this
+case, the event ping associated with the install attempt will be sent with an
+`eventresult` of 4 (cancelled).
+
+TODO(crbug.com/1286580): Implement silent mode.
+
+Has a silent mode where the UI is not displayed at all.
+
+#### Help Button
+If the installation fails, the updater shows an error message with a "Help"
+button. Clicking the help button opens a web page in the user's default browser.
+The page is opened with a query string:
+`?product={AppId}&errorcode={ErrorCode}`.
+
+### Install Source
+
+TODO(crbug.com/1327491) - Implement the following algorithm.
+
+The `installsource` identifies the originator of an install. It is provided on
+the command line of the metainstaller.
+
+TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
+
+## Updates
+There is no limit for the number of retries to update an application if the
+update fails repeatedly.
+
+### Protocol
+The updater communicates with update servers using the
+[Omaha Protocol](protocol_3_1.md).
+
+The updater uses platform-native network stacks (WinHTTP on Windows and
+NSURLSession on macOS).
+
+#### Security
+It is not possible to MITM the updater even if the network (including TLS) is
+compromised. The integrity of the client-server communication is guaranteed
+by the [Client Update Protocol (CUP)](cup.md).
+
+#### Retries
+The updater does not retry an update check that transacted with the backend,
+even if the response was erroneous (misformatted or unparsable), until the
+next normally scheduled update check.
+
+#### DOS Mitigation
+The updater sends [DoS mitigation headers](protocol_3_1.md) in requests to the
+server.
+
+When the server responds with an `X-Retry-After header`, the client does not
+issue another update check until the specified period has passed (maximum 24
+hours).
+
+* The updater distinguishes between foreground and background priority: if an
+  `X-Retry-After` was received in the background case, a foreground update is
+  still permitted (but not if it was received in response to a foreground
+  update).
+
+#### Usage Counts
+TODO(crbug.com/1329328) - document the client responsibilities.
+
+#### Cohort Tracking
+The client records the `cohort`, `cohortname`, and `cohorthint` values from the
+server in each update response (even if there is no-update) and reports them on
+subsequent update checks.
+
+### Installer APIs
+As part of installing or updating an application, the updater executes the
+application's installer. The API for the application installer is platform-
+specific.
+
+The macOS API is [defined here](installer_api_mac.md).
+
+TODO(crbug.com/1035895): Document Windows installer APIs
+
+TODO(crbug.com/1339454): Run installers at BELOW_NORMAL_PRIORITY_CLASS if the
+update flow is a background flow.
+
+### Enterprise Enrollment
+TODO(crbug.com/1339451): Document enterprise enrollment and the token.
+
+### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
 *   A per-application setting may specify whether an application is installable.
 *   If no per-application setting specifies otherwise, the default install
@@ -239,18 +356,9 @@ Enterprise policies can prevent the installation of applications:
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
-#### UI
-TODO(crbug.com/1035895): Document UI.
+### Dynamic Install Parameters
 
-##### Help Button
-If the installation fails, the updater shows an error message with a "Help"
-button. Clicking the help button opens a web page in the user's default browser.
-The page is opened with a query string:
-`?product={AppId}&errorcode={ErrorCode}`.
-
-#### Dynamic Install Parameters
-
-##### `needsadmin`
+#### `needsadmin`
 
 `needsadmin` is one of the install parameters that can be specified for
 first installs via the
@@ -277,7 +385,7 @@ however, the application is then only installed for the current user. The
 application installer needs to be able to support the installation as system, or
 per-user, or both modes.
 
-##### `installdataindex`
+#### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for
 first installs on the command line or via the
@@ -396,7 +504,7 @@ file contents:
 {"logging":{"verbose":true}}
 ```
 
-The updater client will now create a temporary file, say `c:\my
+The updater client creates a temporary file, say `c:\my
 path\temporaryfile.dat` (assuming the application installer is running from
 `c:\my path\YesExe.exe`), with the following file contents:
 ```
@@ -410,33 +518,60 @@ and then provide the file as a parameter to the application installer:
 
 * Notice above that the temp file contents are prefixed with an UTF-8 Byte Order
 Mark of `EF BB BF`.
-* For MSI installers, a property will passed to the installer:
+* For MSI installers, a property is passed to the installer:
 `INSTALLERDATA="pathtofile"`.
-* For exe-based installers, as shown above, a command line parameter will be
+* For exe-based installers, as shown above, a command line parameter is
 passed to the installer: `--installerdata="pathtofile"`.
-* For Mac installers, an environment variable will be set:
+* For Mac installers, an environment variable is set:
 `INSTALLERDATA="pathtofile"`.
 * Ownership of the temp file is the responsibility of the application installer.
-The updater will not delete this file.
+The updater does not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
 
-## Updates
-The updater communicates with update servers using the
-[Omaha Protocol](protocol_3_1.md).
-
 ### Update Formats
-The updater accepts updates packaged as CRX₃ files. All files must be signed
-with a publisher key. The corresponding public key is hardcoded into the
-updater.
+The updater accepts updates packaged as CRX₃ files. All files are signed with a
+publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Differential Updates
 TODO(crbug.com/1035895): Document differential updates.
 
+TODO(crbug.com/1331030): Implement differential update support.
+
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting
-application uninstalls, and potential checking for updates (if it has been at
-least 5 hours since the last update check).
+application uninstalls, and potentially checking for updates.
+
+The updater has a base update check period of 4.5 hours (though this can be
+overridden by policy). Each time the updater runs routine tasks, the update
+check is only run if the period has elapsed since the last check.
+
+Since the updater's periodic tasks are run every hour, in practice the update
+check period is always rounded up to the nearest hour.
+
+To prevent multiple updaters from synchronizing their update checks (for
+example, if a large cohort of machines is powered on at the the same time),
+the updater will randomly use a longer update check period (120% of the normal
+period) with 10% probability.
+
+The updater will always check for updates if the time since the last check is
+negative (e.g. due to clock wander).
+
+Once the updater commits to checking for updates, it will delay the actual
+check by a random number of milliseconds up to one minute. This avoids
+sychronizing traffic to the first second of each minute (or the first
+millisecond of each second).
+
+Background updates can be disabled entirely through policy.
+
+#### Windows Scheduling of Updates
+The update tasks are scheduled using the OS task scheduler.
+
+The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
+they've been created.
+
+TODO(crbug.com/1328935): implement built in task scheduler as a failover
+mechanism
 
 TODO(crbug.com/1035895): Does the updater run at user login on Windows?
 
@@ -448,7 +583,9 @@ The caller provides the ID of the item to update, the install data index to
 request, the priority, whether a same-version update (repair) is permitted, and
 callbacks to monitor the progress and completion of the operation.
 
-Regardless of the normal update check timing, the update check will be attempted
+The interface provides the version of the update, if an update is available.
+
+Regardless of the normal update check timing, the update check is attempted
 immediately.
 
 ### App Registration
@@ -456,34 +593,37 @@ The updater exposes an RPC interface for users to register an application with
 the updater. Unlike on-demand updates, cross-user application registration is
 not permitted.
 
-If the application is already installed, it should be registered with the
-version present on disk. If it has not yet been installed, a version of 0
-should be used.
+If the application is already installed, it is registered with the version
+present on disk. If it has not yet been installed, a version of `0` is used.
 
 ### App Activity Reporting
 Applications can report whether they are actively used or not through the
 updater. Update servers can then aggregate this information to produce user
 counts.
 
-Windows:
+#### Windows:
 *   When active, the application sets
     HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID} → dr (REG_SZ): 1.
     *   Note: both user-scoped and system-scoped updaters use HKCU.
-*   When reporting active use, the updater will reset the value to 0.
+*   When reporting active use, the updater resets the value to 0.
 
-macOS:
+#### macOS:
 *   The application touches
     ~/Library/{Company}/{Company}SoftwareUpdate/Actives/{APPID}.
 *   The updater deletes the file when reporting active use.
 
 ### EULA/ToS Acceptance
+Software can be installed or updated only if the user has agreed to the `Terms
+of Service`. The updater only runs if the user has accepted the ToS for at
+least one application.
+
 TODO(crbug.com/1035895): Document EULA signals.
 
 ### Usage Stats Acceptance
 The updater may upload its crash reports and send usage stats if and only if
 any piece of software it manages is permitted to send usage stats.
 
-Windows:
+#### Windows:
 *   Applications enable usage stats by writing:
     `HKCU\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats (DWORD): 1
     or
@@ -491,43 +631,81 @@ Windows:
     (DWORD): 1
 *   Applications rescind this permission by writing a value of 0.
 
-macOS:
+#### macOS:
 *   Application enable usage stats by setting `IsUploadEnabled` to true for a
     crashpad database maintained in a "Crashpad" subdirectory of their
     application data directory.
-*   The updater will search the file system for Crashpad directories belonging
+*   The updater searches the file system for Crashpad directories belonging
     to {Company}.
 
 ### Enterprise Policies
 TODO(crbug.com/1035895): Document relevant enterprise policies.
 
+#### Windows
+TODO(crbug.com/1035895): Implement this section. (ADMX file export.)
+
+ADMX templates are provided.
+
 ### Telemetry
-When the updater installs an application (an installer is run) it will send an
+When the updater installs an application (an installer is run) it sends an
 event with `"eventtype": 2` indicating the outcome of installation. The updater
 does not send such a ping for its own installation.
 
-When the updater updates an application (including itself) it will send an
+When the updater updates an application (including itself) it sends an
 event with `"eventtype": 3` indicating the outcome of update operation.
 
-When the updater detects the uninstallation of an application, it will send an
+When the updater detects the uninstallation of an application, it sends an
 event with `"eventtype": 4` to notify the server of the uninstallation.
 
-When the updater attempts to download a file, it will send an event with
+When the updater attempts to download a file, it sends an event with
 `"eventtype": 14` describing the parameters and outcome of the download.
 
 Multiple events associated with an update session are bundled together into a
 single request.
+
+### Downloading
+There could be multiple URLs for a given application payload. The URLs are tried
+in the order they are returned in the update response.
+
+The integrity of the payload is verified.
+
+There is no download cache. Payloads are re-downloaded for applications which
+fail to install.
+
+### Logging
+All updater logs are written to `{UPDATER_DATA_DIR}\updater.log`.
+
+On macOS for system-scope updaters, `{UPDATER_DATA_DIR}` is
+`/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
+
+On macOS for user-scope updaters, `{UPDATER_DATA_DIR}` is
+`~/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
+
+On Windows for system-scope updaters, `{UPDATER_DATA_DIR}` is
+`%PROGRAMFILES%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`. (A 32-bit updater uses
+use `%PROGRAMFILESX86%` if appropriate instead.)
+
+On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
+`%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
 
 ## Services
 
 ### Crash Reporting
 TODO(crbug.com/1035895): Document updater crash reporting.
 
-### Application Commands
-The Application Command feature allows installed Updater-managed products to
-pre-register and later run command lines in the format
-`c:\path-to-exe\exe.exe {params}` (elevated for system applications). `{params}`
-is optional and can also include replaceable parameters substituted at runtime.
+### Application Commands (applicable to the Windows version of the Updater)
+The feature allows installed products to pre-register and later run command
+lines in the format `c:\path-to-exe\exe.exe {params}` (elevated for system
+applications). `{params}` is optional and can also include replaceable
+parameters substituted at runtime. Multiple app commands can be registered per
+`app_id`.
+
+The program path is always an absolute path. Additionally, for system
+applications,  the program path is also a child of %ProgramFiles% or
+%ProgramFiles(x86)%. For instance:
+* `c:\path-to-exe\exe.exe` is an invalid path.
+* `"c:\Program Files\subdir\exe.exe"` is a valid path.
+* `"c:\Program Files (x86)\subdir\exe.exe"` is also a valid path.
 
 #### Registration
 App commands are registered in the registry with the following formats:
@@ -536,6 +714,7 @@ App commands are registered in the registry with the following formats:
 ```
     Update\Clients\{`app_id`}\Commands\`command_id`
         REG_SZ "CommandLine" == {command format}
+        {optional} REG_DWORD "AutoRunOnOSUpgrade" == {1}
 ```
 * Older command layout format, which may be deprecated in the future:
 ```
@@ -548,6 +727,12 @@ Example `{command format}`: `c:\path-to\echo.exe %1 %2 %3 StaticParam4`
 As shown above, `{command format}` needs to be the complete path to an
 executable followed by optional parameters.
 
+If "AutoRunOnOSUpgrade" is non-zero, the command is invoked when the updater
+detects an OS upgrade. In this case, `command format` can optionally contain a
+single substitutible parameter, which is filled in with the OS versions in the
+format `{Previous OS Version}-{Current OS Version}`. It is ok to have a static
+command line as well if the OS versions information is not required.
+
 #### Usage
 Once registered, commands may be invoked using the `execute` method in the
 `IAppCommandWeb` interface.
@@ -558,15 +743,15 @@ interface IAppCommandWeb : IDispatch {
   [propget] HRESULT status([out, retval] UINT*);
   [propget] HRESULT exitCode([out, retval] DWORD*);
   [propget] HRESULT output([out, retval] BSTR*);
-  HRESULT execute([in, optional] VARIANT parameter1,
-                  [in, optional] VARIANT parameter2,
-                  [in, optional] VARIANT parameter3,
-                  [in, optional] VARIANT parameter4,
-                  [in, optional] VARIANT parameter5,
-                  [in, optional] VARIANT parameter6,
-                  [in, optional] VARIANT parameter7,
-                  [in, optional] VARIANT parameter8,
-                  [in, optional] VARIANT parameter9);
+  HRESULT execute([in, optional] VARIANT substitution1,
+                  [in, optional] VARIANT substitution2,
+                  [in, optional] VARIANT substitution3,
+                  [in, optional] VARIANT substitution4,
+                  [in, optional] VARIANT substitution5,
+                  [in, optional] VARIANT substitution6,
+                  [in, optional] VARIANT substitution7,
+                  [in, optional] VARIANT substitution8,
+                  [in, optional] VARIANT substitution9);
 };
 ```
 
@@ -581,9 +766,9 @@ cmd = app.command(command);
 cmd.execute();
 ```
 
-Parameters placeholders (`%1-%9`) are filled by the numbered parameters in
-`IAppCommandWeb::execute`. Placeholders without corresponding parameters will
-cause execution to fail.
+Parameters placeholders (`%1-%9`) are filled by the numbered substitutions in
+`IAppCommandWeb::execute`. Placeholders without corresponding substitutions
+cause the execution to fail.
 
 Clients may poll for the execution status of commands that they have invoked by
 using the `status` method of `IAppCommandWeb`. When the status is
@@ -591,13 +776,13 @@ using the `status` method of `IAppCommandWeb`. When the status is
 exit code.
 
 #### Command-Line Format
-* for system applications, the executable path must be in a secure location such
-as `%ProgramFiles%` for security, since it will be run elevated.
+* for system applications, the executable path is in a secure location such
+as `%ProgramFiles%` for security, since it runs elevated.
 * placeholders are not permitted in the executable path.
 * placeholders take the form of a percent character `%` followed by a digit.
-Literal `%` characters must be escaped by doubling them.
+Literal `%` characters are escaped by doubling them.
 
-For example, if parameters to `IAppCommandWeb::execute` are `AA` and `BB`
+For example, if substitutions to `IAppCommandWeb::execute` are `AA` and `BB`
 respectively, a command format of:
   `echo.exe %1 %%2 %%%2`
 becomes the command line
@@ -606,21 +791,20 @@ becomes the command line
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path
 checker and no file at that path exists (or if the file at that path is owned
-by another user), the updater will consider the application uninstalled, send
-the ping, and cease trying to keep it up to date.
+by another user), the updater considers the application uninstalled, sends
+the ping, and stops trying to keep it up to date.
 
 On Windows, if the ClientState entry for for the application is deleted, the
 app is considered uninstalled.
 
-On Windows, the updater registers a "UninstallCmdLine" under the
-`Software\{Company}\Updater` key. This command line can be invoked by
-application uninstallers to cause the updater to immediately update its
-registrations. The updater will also check for uninstallations in every periodic
-task execution.
+On Windows, the updater registers a "UninstallCmdLine" under the `Software\
+{Company}\Updater` key. This command line can be invoked by application
+uninstallers to cause the updater to  update its registrations. The updater
+also checks for uninstallations in every periodic task execution.
 
-When the last registered application is uninstalled, the updater will uninstall
-itself. The updater will also uninstall itself if it has started 24 times but
-never had a product (besides itself) registered for updates.
+When the last registered application is uninstalled, the updater uninstalls
+itself immediately. The updater also uninstalls itself if it has started
+24 times but never had a product (besides itself) registered for updates.
 
 The updater uninstaller removes all updater files, registry keys, RPC hooks,
 scheduled tasks, and so forth from the file system, except that it leaves a
@@ -638,12 +822,11 @@ overridden by the execution environment:
 *   `use_cup`: Whether CUP is used at all.
 *   `cup_public_key`: An unarmored PEM-encoded ASN.1 SubjectPublicKeyInfo with
     the ecPublicKey algorithm and containing a named elliptic curve.
+*   `group_policies`: Allows setting group policies, such as install and update
+    policies.
 
-Windows: these overrides exist in registry, under
-`HKLM\Software\{Company}\Update\Clients\ClientState\UpdateDev`.
-
-macOS: these overrides exist in user defaults, in the `{MAC_BUNDLE_IDENTIFIER}`
-suite. For system installs, the defaults are those of the root user.
+Overrides are specified in an overrides.json file placed in the updater data
+directory.
 
 ### Tagging Tools
 TODO(crbug.com/1035895): Document tagging tools.

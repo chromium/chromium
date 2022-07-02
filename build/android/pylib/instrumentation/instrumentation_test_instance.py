@@ -39,7 +39,7 @@ _COMMAND_LINE_PARAMETER = 'cmdlinearg-parameter'
 _DEFAULT_ANNOTATIONS = [
     'SmallTest', 'MediumTest', 'LargeTest', 'EnormousTest', 'IntegrationTest']
 # This annotation is for disabled tests that should not be run in Test Reviver.
-_DO_NOT_REVIVE_ANNOTATIONS = ['DoNotRevive']
+_DO_NOT_REVIVE_ANNOTATIONS = ['DoNotRevive', 'Manual']
 _EXCLUDE_UNLESS_REQUESTED_ANNOTATIONS = [
     'DisabledTest', 'FlakyTest', 'Manual']
 _VALID_ANNOTATIONS = set(_DEFAULT_ANNOTATIONS + _DO_NOT_REVIVE_ANNOTATIONS +
@@ -629,6 +629,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     super().__init__()
 
     self._additional_apks = []
+    self._forced_queryable_additional_apks = []
+    self._instant_additional_apks = []
     self._apk_under_test = None
     self._apk_under_test_incremental_install_json = None
     self._modules = None
@@ -684,6 +686,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._system_packages_to_remove = None
     self._initializeSystemPackagesToRemoveAttributes(args)
+
+    self._use_voice_interaction_service = None
+    self._initializeUseVoiceInteractionService(args)
 
     self._use_webview_provider = None
     self._initializeUseWebviewProviderAttributes(args)
@@ -804,11 +809,19 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           '(This may just mean that the test package is '
           'currently being installed.)', self._test_package)
 
-    for apk in args.additional_apks:
-      if not os.path.exists(apk):
-        error_func('Unable to find additional APK: %s' % apk)
-    self._additional_apks = (
-        [apk_helper.ToHelper(x) for x in args.additional_apks])
+    for x in set(args.additional_apks + args.forced_queryable_additional_apks +
+                 args.instant_additional_apks):
+      if not os.path.exists(x):
+        error_func('Unable to find additional APK: %s' % x)
+
+      apk = apk_helper.ToHelper(x)
+      self._additional_apks.append(apk)
+
+      if x in args.forced_queryable_additional_apks:
+        self._forced_queryable_additional_apks.append(apk)
+
+      if x in args.instant_additional_apks:
+        self._instant_additional_apks.append(apk)
 
   def _initializeDataDependencyAttributes(self, args, data_deps_delegate):
     self._data_deps = []
@@ -901,6 +914,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       return
     self._system_packages_to_remove = args.system_packages_to_remove
 
+  def _initializeUseVoiceInteractionService(self, args):
+    if (not hasattr(args, 'use_voice_interaction_service')
+        or not args.use_voice_interaction_service):
+      return
+    self._use_voice_interaction_service = args.use_voice_interaction_service
+
   def _initializeUseWebviewProviderAttributes(self, args):
     if (not hasattr(args, 'use_webview_provider')
         or not args.use_webview_provider):
@@ -977,6 +996,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def replace_system_package(self):
     return self._replace_system_package
+
+  @property
+  def use_voice_interaction_service(self):
+    return self._use_voice_interaction_service
 
   @property
   def use_webview_provider(self):
@@ -1115,6 +1138,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         logging.debug('  %s', GetUniqueTestName(t))
       logging.warning('Unmatched Filter: %s', self._test_filter)
     return filtered_tests
+
+  def IsApkForceQueryable(self, apk):
+    return apk in self._forced_queryable_additional_apks
+
+  def IsApkInstant(self, apk):
+    return apk in self._instant_additional_apks
 
   # pylint: disable=no-self-use
   def _InflateTests(self, tests):

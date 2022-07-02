@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,11 +18,6 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      ash::prefs::kDarkModeScheduleType,
-      base::BindRepeating(&PersonalizationAppThemeProviderImpl::
-                              NotifyColorModeAutoScheduleChanged,
-                          base::Unretained(this)));
 }
 
 PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
@@ -43,20 +37,30 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   theme_observer_remote_.reset();
   theme_observer_remote_.Bind(std::move(observer));
   if (!color_mode_observer_.IsObserving())
-    color_mode_observer_.Observe(ash::AshColorProvider::Get());
+    color_mode_observer_.Observe(ash::DarkLightModeControllerImpl::Get());
   // Call it once to get the current color mode.
-  OnColorModeChanged(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  OnColorModeChanged(
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+
+  // Listen to |ash::prefs::kDarkModeScheduleType| changes.
+  if (!pref_change_registrar_.IsObserved(ash::prefs::kDarkModeScheduleType)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDarkModeScheduleType,
+        base::BindRepeating(&PersonalizationAppThemeProviderImpl::
+                                NotifyColorModeAutoScheduleChanged,
+                            base::Unretained(this)));
+  }
   // Call it once to get the status of auto mode.
   NotifyColorModeAutoScheduleChanged();
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorModePref(
     bool dark_mode_enabled) {
-  auto* color_provider = ash::AshColorProvider::Get();
-  if (color_provider->IsDarkModeEnabled() != dark_mode_enabled) {
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  if (dark_light_mode_controller->IsDarkModeEnabled() != dark_mode_enabled) {
     LogPersonalizationTheme(dark_mode_enabled ? ColorMode::kDark
                                               : ColorMode::kLight);
-    color_provider->ToggleColorMode();
+    dark_light_mode_controller->ToggleColorMode();
   }
 }
 
@@ -74,8 +78,8 @@ void PersonalizationAppThemeProviderImpl::SetColorModeAutoScheduleEnabled(
 
 void PersonalizationAppThemeProviderImpl::IsDarkModeEnabled(
     IsDarkModeEnabledCallback callback) {
-  auto* color_provider = ash::AshColorProvider::Get();
-  std::move(callback).Run(color_provider->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  std::move(callback).Run(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 void PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled(

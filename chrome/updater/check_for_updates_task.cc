@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -28,9 +29,12 @@ namespace {
 
 bool ShouldSkipCheck(scoped_refptr<Configurator> config,
                      scoped_refptr<updater::PersistedData> persisted_data) {
+  // To spread out synchronized load, sometimes use a higher delay.
+  const base::TimeDelta check_delay = base::Seconds(
+      config->NextCheckDelay() * (base::RandDouble() < 0.1 ? 1.2 : 1));
+
   // Skip if periodic updates are disabled altogether.
-  const int check_delay_seconds = config->NextCheckDelay();
-  if (check_delay_seconds == 0) {
+  if (check_delay.is_zero()) {
     VLOG(0) << "Skipping checking for updates: NextCheckDelay is 0.";
     return true;
   }
@@ -38,8 +42,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
   // Skip if the most recent check was too recent (and not in the future).
   const base::TimeDelta time_since_update =
       base::Time::NowFromSystemTime() - persisted_data->GetLastChecked();
-  if (base::TimeDelta() < time_since_update &&
-      time_since_update < base::Seconds(check_delay_seconds)) {
+  if (time_since_update.is_positive() && time_since_update < check_delay) {
     VLOG(0) << "Skipping checking for updates: last update was "
             << time_since_update.InMinutes() << " minutes ago.";
     return true;

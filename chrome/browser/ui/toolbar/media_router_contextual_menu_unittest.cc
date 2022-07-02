@@ -164,7 +164,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, Basic) {
 TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
   MediaRouterContextualMenu menu(browser(), kShownByPolicy, &observer_);
   EXPECT_NE(-1, menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_ROUTER_REPORT_ISSUE));
+                    IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE));
 
   std::unique_ptr<BrowserWindow> window(CreateBrowserWindow());
   std::unique_ptr<Browser> incognito_browser(
@@ -174,7 +174,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
   MediaRouterContextualMenu incognito_menu(incognito_browser.get(),
                                            kShownByPolicy, &observer_);
   EXPECT_EQ(-1, incognito_menu.CreateMenuModel()->GetIndexOfCommandId(
-                    IDC_MEDIA_ROUTER_REPORT_ISSUE));
+                    IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE));
 }
 #endif
 

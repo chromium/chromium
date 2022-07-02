@@ -13,8 +13,7 @@
 
 namespace content {
 
-void GetFontListAsync(
-    base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {
+void GetFontListAsync(base::OnceCallback<void(base::Value::List)> callback) {
   base::PostTaskAndReplyWithResult(GetFontListTaskRunner().get(), FROM_HERE,
                                    base::BindOnce(&GetFontList_SlowBlocking),
                                    std::move(callback));

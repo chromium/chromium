@@ -103,13 +103,14 @@ class BackgroundFetchServiceTest
    public:
     ScopedCustomBackgroundFetchService(BackgroundFetchServiceTest* test,
                                        const blink::StorageKey& storage_key)
-        : scoped_service_(&test->service_,
-                          std::make_unique<BackgroundFetchServiceImpl>(
-                              test->context_,
-                              storage_key,
-                              net::IsolationInfo(),
-                              test->web_contents_->GetMainFrame()->GetProcess(),
-                              /*rfhi=*/nullptr)) {}
+        : scoped_service_(
+              &test->service_,
+              std::make_unique<BackgroundFetchServiceImpl>(
+                  test->context_,
+                  storage_key,
+                  net::IsolationInfo(),
+                  test->web_contents_->GetPrimaryMainFrame()->GetProcess(),
+                  /*rfhi=*/nullptr)) {}
 
     ScopedCustomBackgroundFetchService(
         const ScopedCustomBackgroundFetchService&) = delete;
@@ -315,10 +316,10 @@ class BackgroundFetchServiceTest
 
     context_->Initialize();
     RenderFrameHostImpl* rfhi =
-        static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame());
+        static_cast<RenderFrameHostImpl*>(web_contents_->GetPrimaryMainFrame());
     service_ = std::make_unique<BackgroundFetchServiceImpl>(
         context_, storage_key(), net::IsolationInfo(),
-        web_contents_->GetMainFrame()->GetProcess(), rfhi);
+        web_contents_->GetPrimaryMainFrame()->GetProcess(), rfhi);
     rfhi->SetLastCommittedOriginForTesting(storage_key().origin());
   }
 

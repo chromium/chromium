@@ -29,7 +29,8 @@ void MediaRouterMojoMetrics::RecordMediaRouteControllerCreationResult(
 // static
 void MediaRouterMojoMetrics::RecordTabMirroringMetrics(
     content::WebContents* web_contents) {
-  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   WebContentsAudioState audio_state = WebContentsAudioState::kWasNeverAudible;
   if (web_contents->IsCurrentlyAudible()) {
     audio_state = WebContentsAudioState::kIsCurrentlyAudible;
@@ -46,7 +47,8 @@ void MediaRouterMojoMetrics::RecordTabMirroringMetrics(
 void MediaRouterMojoMetrics::RecordSiteInitiatedMirroringStarted(
     content::WebContents* web_contents,
     const MediaSource& media_source) {
-  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto cast_source = CastMediaSource::FromMediaSource(media_source);
   if (cast_source) {
     ukm::builders::MediaRouter_SiteInitiatedMirroringStarted(source_id)

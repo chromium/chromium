@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -95,7 +96,7 @@ class Watch {
     CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to allocate memory";
   }
 
-  DBusWatch* raw_watch_;
+  raw_ptr<DBusWatch> raw_watch_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> read_watcher_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> write_watcher_;
 };
@@ -141,7 +142,7 @@ class Timeout {
   // Calls DBus to handle the timeout.
   void HandleTimeout() { CHECK(dbus_timeout_handle(raw_timeout_)); }
 
-  DBusTimeout* raw_timeout_;
+  raw_ptr<DBusTimeout> raw_timeout_;
 
   base::WeakPtrFactory<Timeout> weak_ptr_factory_{this};
 };

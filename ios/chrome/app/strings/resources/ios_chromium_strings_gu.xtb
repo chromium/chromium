@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="3472200483164753384">Chromium Canary પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="3567399274263440288">Chromiumનો વધુમાં વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે Chromiumમાં સાઇન ઇન કરો.</translation>
+<translation id="3619462831205197427">આ સાઇટમાં, તમારા Google એકાઉન્ટમાં અને Chromiumમાં સાઇન ઇન કરો.</translation>
 <translation id="3639997914391704523">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Chromium તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromiumનો ઉપયોગ કરી રહ્યાં હતા અને તેઓ આ ડિવાઇસ પર બુકમાર્ક, પાસવર્ડ અને અન્ય સેટિંગ છોડી ગયા છે.</translation>
 <translation id="3805899903892079518">Chromiumને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
@@ -77,7 +78,6 @@
 1. સેટિંગ ખોલો
 2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
 3. Chromium પસંદ કરો.</translation>
-<translation id="6155422572367400359">આ સાઇટમાં, તમારા Google એકાઉન્ટમાં અને Chromiumમાં સાઇન ઇન કરો. તમે પછીથી તમારી સિંક કરવાની સુવિધા ચાલુ કરી શકો છો.</translation>
 <translation id="6183442264225539303">આ સાઇટ અને Chromiumમાં સાઇન ઇન કરો. તમે પછીથી તમારી સિંક કરવાની સુવિધા ચાલુ કરી શકો છો.</translation>
 <translation id="6268381023930128611">Chromiumમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="632825460376924298">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરીએ?</translation>
 <translation id="8175055321229419309">ટિપ: <ph name="BEGIN_LINK" />Chromium ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="8308172444429103994">Chromium વિશેની ટિપ. કીબોર્ડની સૌથી ઉપર સાચવેલો તમારો પાસવર્ડ પસંદ કરીને વધુ ઝડપથી સાઇન ઇન કરો.</translation>
 <translation id="858114650497379505">તમે પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPhone પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="865600487977764604">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષાને બહેતર બનાવવા માટે કદાચ તેનો ઉપયોગ થઈ શકે છે.</translation>

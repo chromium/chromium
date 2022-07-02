@@ -36,7 +36,7 @@ class CC_EXPORT RecordingSource {
   gfx::Size GetSize() const;
   void SetEmptyBounds();
   void SetSlowdownRasterScaleFactor(int factor);
-  void SetBackgroundColor(SkColor background_color);
+  void SetBackgroundColor(SkColor4f background_color);
   void SetRequiresClear(bool requires_clear);
 
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect);

@@ -65,7 +65,7 @@ export class ReimagingCalibrationRunPage extends
         this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.calibrationComplete_) {
       return this.shimlessRmaService_.calibrationComplete();

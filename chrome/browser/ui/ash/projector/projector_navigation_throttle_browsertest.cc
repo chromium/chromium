@@ -13,14 +13,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -58,9 +58,8 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::WebAppProvider::GetForTest(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
 
     base::Time start_time;
     ASSERT_TRUE(base::Time::FromUTCString(kStartTime, &start_time));
@@ -126,8 +125,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   // the previous one closed.
   EXPECT_NE(old_browser, new_browser);
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
   EXPECT_EQ(app_browser, new_browser);
@@ -192,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   // we should have closed the previous one.
   EXPECT_NE(old_browser, new_browser);
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
   EXPECT_EQ(app_browser, new_browser);
@@ -216,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), untrusted_url));
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is not open. We don't capture navigations to
   // chrome-untrusted://projector.
   EXPECT_FALSE(app_browser);
@@ -242,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
@@ -280,9 +279,8 @@ class ProjectorNavigationThrottleDisabledTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::WebAppProvider::GetForTest(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
   }
 
  protected:
@@ -302,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pwa_url));
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is not open because it is disabled.
   EXPECT_FALSE(app_browser);
 
@@ -341,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleDisabledTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), trusted_url));
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::PROJECTOR);
   // Projector SWA is not open because it is disabled.
   EXPECT_FALSE(app_browser);
 

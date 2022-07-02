@@ -35,48 +35,59 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultPositionXValue = 0.0;
+constexpr double kDefaultPositionYValue = 0.0;
+constexpr double kDefaultPositionZValue = 0.0;
+constexpr double kDefaultOrientationXValue = 1.0;
+constexpr double kDefaultOrientationYValue = 0.0;
+constexpr double kDefaultOrientationZValue = 0.0;
+
+}  // namespace
+
 PannerNode::PannerNode(BaseAudioContext& context)
     : AudioNode(context),
       position_x_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerPositionX,
-                             0.0,
+                             kDefaultPositionXValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       position_y_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerPositionY,
-                             0.0,
+                             kDefaultPositionYValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       position_z_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerPositionZ,
-                             0.0,
+                             kDefaultPositionZValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_x_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerOrientationX,
-                             1.0,
+                             kDefaultOrientationXValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_y_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerOrientationY,
-                             0.0,
+                             kDefaultOrientationYValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_z_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypePannerOrientationZ,
-                             0.0,
+                             kDefaultOrientationZValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       listener_(context.listener()) {

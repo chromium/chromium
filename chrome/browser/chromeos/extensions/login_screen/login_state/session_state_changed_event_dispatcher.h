@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
@@ -57,8 +58,8 @@ class SessionStateChangedEventDispatcher
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* browser_context_;
-  EventRouter* event_router_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<EventRouter> event_router_;
 
   // Receives mojo messages from ash.
   mojo::Receiver<crosapi::mojom::SessionStateChangedEventObserver> receiver_{

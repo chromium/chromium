@@ -39,7 +39,7 @@ class BackgroundFetchPermissionContextTest
 
     if (with_frame) {
       content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
-      render_frame_host = web_contents()->GetMainFrame();
+      render_frame_host = web_contents()->GetPrimaryMainFrame();
     }
 
     auto permission_result = permission_context->GetPermissionStatus(

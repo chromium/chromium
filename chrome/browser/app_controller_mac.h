@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 #define CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #if defined(__OBJC__)
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -20,6 +22,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
+class AppControllerNativeThemeObserver;
 @class AppShimMenuController;
 class BookmarkMenuBridge;
 class CommandUpdater;
@@ -35,7 +38,7 @@ class ScopedKeepAlive;
 class TabMenuBridge;
 
 namespace ui {
-class ThemeProvider;
+class ColorProvider;
 }  // namespace ui
 
 // The application controller object, created by loading the MainMenu nib.
@@ -52,19 +55,23 @@ class ThemeProvider;
 
   // The profile last used by a Browser. It is this profile that was used to
   // build the user-data specific main menu items.
-  Profile* _lastProfile;
+  raw_ptr<Profile> _lastProfile;
 
   // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
   // when a profile has been deleted.
   std::unique_ptr<AppControllerProfileObserver>
       _profileAttributesStorageObserver;
 
+  // The NativeThemeObserver observes system-wide theme related settings
+  // change.
+  std::unique_ptr<AppControllerNativeThemeObserver> _nativeThemeObserver;
+
   // Management of the bookmark menu which spans across all windows
   // (and Browser*s). |profileBookmarkMenuBridgeMap_| is a cache that owns one
   // pointer to a BookmarkMenuBridge for each profile. |bookmarkMenuBridge_| is
   // a weak pointer that is updated to match the corresponding cache entry
   // during a profile switch.
-  BookmarkMenuBridge* _bookmarkMenuBridge;
+  raw_ptr<BookmarkMenuBridge> _bookmarkMenuBridge;
   std::map<base::FilePath, std::unique_ptr<BookmarkMenuBridge>>
       _profileBookmarkMenuBridgeMap;
 
@@ -82,7 +89,7 @@ class ThemeProvider;
 
   std::unique_ptr<TabMenuBridge> _tabMenuBridge;
 
-  // If we're told to open URLs (in particular, via |-application:openFiles:| by
+  // If we're told to open URLs (in particular, via |-application:openURLs:| by
   // Launch Services) before we've launched the browser, we queue them up in
   // |startupUrls_| so that they can go in the first browser window/tab.
   std::vector<GURL> _startupUrls;
@@ -115,6 +122,16 @@ class ThemeProvider;
 
   // Request to keep the browser alive during that object's lifetime.
   std::unique_ptr<ScopedKeepAlive> _keep_alive;
+
+  // Remembers whether _lastProfile had TabRestoreService entries. This is saved
+  // when _lastProfile is destroyed and Chromium enters the zero-profile state.
+  //
+  // By remembering this bit, Chromium knows whether to enable or disable
+  // Cmd+Shift+T and the related "File > Reopen Closed Tab" entry.
+  BOOL _tabRestoreWasEnabled;
+
+  // The color provider associated with the last active browser view.
+  raw_ptr<const ui::ColorProvider> _lastActiveColorProvider;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;
@@ -196,9 +213,11 @@ class ThemeProvider;
 // the original or the incognito profile.
 - (void)setLastProfile:(Profile*)profile;
 
-// Returns the last active ThemeProvider. It is only valid to call this with a
-// last available profile.
-- (const ui::ThemeProvider&)lastActiveThemeProvider;
+// Returns the last active ColorProvider.
+- (const ui::ColorProvider&)lastActiveColorProvider;
+
+// This is called when the system wide light or dark mode changes.
+- (void)nativeThemeDidChange;
 
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:

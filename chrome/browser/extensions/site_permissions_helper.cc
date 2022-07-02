@@ -65,18 +65,27 @@ SitePermissionsHelper::GetSiteInteraction(
 
   if (page_access == PermissionsData::PageAccess::kAllowed ||
       script_access == PermissionsData::PageAccess::kAllowed) {
-    return SiteInteraction::kActive;
+    return SiteInteraction::kGranted;
   }
 
+  // An extension can request both host permissions and activeTab permission.
+  // Withholding a host permission takes priority over activeTab permission,
+  // because withheld hosts are hosts that the extension explicitly marked as
+  // 'required' permissions, so it is a stronger signal that the extension
+  // should run on the site. ActiveTab extensions, by contrast, are designed to
+  // run when the user explicitly invokes them.
   // TODO(tjudkins): Investigate if we need to check HasBeenBlocked() for this
   // case. We do know that extensions that have been blocked should always be
   // marked pending, but those cases should be covered by the withheld page
   // access checks.
   if (page_access == PermissionsData::PageAccess::kWithheld ||
       script_access == PermissionsData::PageAccess::kWithheld ||
-      HasBeenBlocked(extension, web_contents) ||
-      HasActiveTabAndCanAccess(extension, url)) {
-    return SiteInteraction::kPending;
+      HasBeenBlocked(extension, web_contents)) {
+    return SiteInteraction::kWithheld;
+  }
+
+  if (HasActiveTabAndCanAccess(extension, url)) {
+    return SiteInteraction::kActiveTab;
   }
 
   return SiteInteraction::kNone;

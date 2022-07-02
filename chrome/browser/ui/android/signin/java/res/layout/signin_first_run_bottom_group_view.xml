@@ -6,11 +6,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="8dp"
-        android:visibility="invisible" />
-
     <LinearLayout
         android:id="@+id/signin_fre_selected_account"
         android:layout_width="match_parent"
@@ -20,7 +15,6 @@
         android:orientation="horizontal"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
         <include layout="@layout/account_row" />

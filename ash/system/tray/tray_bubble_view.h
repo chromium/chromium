@@ -31,6 +31,8 @@ class Widget;
 
 namespace ash {
 
+class ViewShadow;
+
 // Specialized bubble view for bubbles associated with a tray icon (e.g. the
 // Ash status area). Mostly this handles custom anchor location and arrow and
 // border rendering. This also has its own delegate for handling mouse events
@@ -105,6 +107,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;
     bool has_shadow = true;
+    int shadow_elevation = kBubbleShadowElevation;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;
     // Whether the view is fully transparent (only serves as a container).
@@ -176,8 +179,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::u16string GetAccessibleWindowTitle() const override;
 
   // views::BubbleDialogDelegateView:
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* bubble_widget) const override;
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   ui::LayerType GetLayerType() const override;
@@ -243,6 +244,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Used to activate tray bubble view if user tries to interact the tray with
   // keyboard.
   std::unique_ptr<EventHandler> reroute_event_handler_;
+
+  std::unique_ptr<ViewShadow> shadow_;
 
   absl::optional<StatusAreaWidget::ScopedTrayBubbleCounter>
       tray_bubble_counter_;

@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/cart/cart_db.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_link_fetcher.h"
 #include "chrome/browser/cart/cart_metrics_tracker.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -21,12 +20,15 @@
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/commerce/core/discount_consent_handler.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "chrome/browser/ui/browser.h"
 
 class DiscountURLLoader;
 class FetchDiscountWorker;
@@ -137,6 +139,7 @@ class CartService : public history::HistoryServiceObserver,
   // This is used when the NativeDialog variation is active. It gets called
   // when user has clicked the 'Continue' button in the discount consent.
   void ShowNativeConsentDialog(
+      Browser* browser,
       base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>
           consent_status_callback);
   // Appends UTM tags to the end of |base_url|. It will always append

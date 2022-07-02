@@ -10,20 +10,22 @@
 class PrefRegistrySimple;
 class PrefService;
 
-enum class SigninSyncScreenUIIdentitySwitcherPosition : int {
-  kTop,
-  kBottom,
-};
-
-enum class SigninSyncScreenUIStringSet : int {
-  kOld,
-  kNew,
+// Version of the new Default Browser Promo FRE to show.
+enum class NewDefaultBrowserPromoFRE {
+  // FRE default browser promo only.
+  kFirstRunOnly = 0,
+  // Wait 3 days after FRE default browser promo.
+  kShortDelay,
+  // Wait 14 days after FRE default browser promo.
+  kDefaultDelay,
+  // FRE default browser promo not enabled.
+  kDisabled,
 };
 
 // Version of the new MICE FRE to show.
-enum class NewMobileIdentityConsistencyFRE : int {
+enum class NewMobileIdentityConsistencyFRE {
   // Old FRE with UMA dialog.
-  kUMADialog,
+  kUMADialog = 0,
   // New MICE FRE with 3 steps (welcome + sign-in + sync screens).
   kThreeSteps,
   // New MICE FRE with 2 steps (welcome with sign-in + sync screens).
@@ -36,17 +38,23 @@ namespace base {
 class FeatureList;
 }  // namespace base
 
+// Name of current experiment.
+extern const char kIOSMICeAndDefaultBrowserTrialName[];
+
+// Indicates which FRE default browser promo variant to use.
+extern const char kFREDefaultBrowserPromoParam[];
+
 // Indicates if the FRE default browser promo variant "Wait 14 days after FRE
 // default browser promo" is enabled.
-extern const char kFREDefaultPromoTestingDefaultDelayParam[];
+extern const char kFREDefaultBrowserPromoDefaultDelayParam[];
 
 // Indicates if the FRE default browser promo variant "FRE default browser
 // promo only" is enabled.
-extern const char kFREDefaultPromoTestingOnlyParam[];
+extern const char kFREDefaultBrowserPromoFirstRunOnlyParam[];
 
 // Indicates if the FRE default browser promo variant "Wait 3 days after FRE
 // default promo" is enabled.
-extern const char kFREDefaultPromoTestingShortDelayParam[];
+extern const char kFREDefaultBrowserPromoShortDelayParam[];
 
 // Indicates which variant of the new MICE FRE to use.
 extern const char kNewMobileIdentityConsistencyFREParam[];
@@ -54,38 +62,11 @@ extern const char kNewMobileIdentityConsistencyFREParamUMADialog[];
 extern const char kNewMobileIdentityConsistencyFREParamThreeSteps[];
 extern const char kNewMobileIdentityConsistencyFREParamTwoSteps[];
 
-// Group names for the new Mobile Identity Consistency FRE.
-extern const char kNewMICEFREWithUMADialogSetGroup[];
-extern const char kNewMICEFREWithThreeStepsSetGroup[];
-extern const char kNewMICEFREWithTwoStepsSetGroup[];
-
 namespace fre_field_trial {
 
-// Returns true if the user is in the group that will show the default browser
-// screen in first run (FRE) with activate a short cooldown of other default
-// browser promos.
-bool IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup();
-
-// Returns true if the user is in the group that will show the default browser
-// screen in first run (FRE) and activate cooldown of other default browser
-// promos.
-bool IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup();
-
-// Returns true if the user is in the group that will show the default browser
-// screen in first run (FRE) only.
-bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
-
-// Returns true if the default browser screen in FRE is enabled.
-bool IsFREDefaultBrowserScreenEnabled();
-
-// TODO(crbug.com/1322292): Remove.
-// Returns the UI option for the sign-in & sync screen identity position.
-SigninSyncScreenUIIdentitySwitcherPosition
-GetSigninSyncScreenUIIdentitySwitcherPosition();
-
-// TODO(crbug.com/1322292): Remove.
-// Returns the UI option for the sign-in & sync screen strings set.
-SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet();
+// Returns the FRE default browser promo setup according to the feature flag and
+// experiment. See NewDefaultBrowserPromoFRE.
+NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE();
 
 // Returns the FRE to display according to the feature flag and experiment.
 // See NewMobileIdentityConsistencyFRE.

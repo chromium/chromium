@@ -5,6 +5,7 @@
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_SHELL_PLATFORM_DELEGATE_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_SHELL_PLATFORM_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell_platform_delegate.h"
 
@@ -69,7 +70,7 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
 
 #if BUILDFLAG(IS_MAC)
   // The last headless shell that called ActivateContents().
-  Shell* activated_headless_shell_ = nullptr;
+  raw_ptr<Shell> activated_headless_shell_ = nullptr;
 #endif
 };
 

@@ -9,6 +9,7 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "ui/aura/window.h"
@@ -56,6 +57,20 @@ gfx::Rect CalculateWorkAreaBounds(const gfx::Insets accessibility_insets,
 // static
 WorkAreaInsets* WorkAreaInsets::ForWindow(const aura::Window* window) {
   return RootWindowController::ForWindow(window)->work_area_insets();
+}
+
+// static
+void WorkAreaInsets::UpdateWorkAreaInsetsForTest(
+    aura::Window* window,
+    const gfx::Rect& shelf_bounds_for_workarea_calculation,
+    const gfx::Insets& shelf_insets,
+    const gfx::Insets& in_session_shelf_insets) {
+  DCHECK(window);
+  Shelf::ForWindow(window)
+      ->shelf_layout_manager()
+      ->UpdateWorkAreaInsetsAndNotifyObservers(
+          shelf_bounds_for_workarea_calculation, shelf_insets,
+          in_session_shelf_insets);
 }
 
 WorkAreaInsets::WorkAreaInsets(RootWindowController* root_window_controller)
@@ -124,10 +139,15 @@ bool WorkAreaInsets::PersistentDeskBarHeightInChange() {
   return persistent_desk_bar_height_in_change_;
 }
 
-void WorkAreaInsets::SetShelfBoundsAndInsets(const gfx::Rect& bounds,
-                                             const gfx::Insets& insets) {
-  shelf_bounds_ = bounds;
+void WorkAreaInsets::SetShelfBoundsAndInsets(
+    const gfx::Rect& shelf_bounds,
+    const gfx::Insets& insets,
+    const gfx::Insets& in_session_insets) {
+  shelf_bounds_ = shelf_bounds;
   shelf_insets_ = insets;
+
+  in_session_shelf_insets_ = in_session_insets;
+
   UpdateWorkArea();
 }
 
@@ -161,6 +181,10 @@ void WorkAreaInsets::UpdateWorkArea() {
   user_work_area_bounds_ = CalculateWorkAreaBounds(
       GetAccessibilityInsets(), GetPersistentDeskBarInsets(), shelf_bounds_,
       keyboard_occluded_bounds_, root_window_controller_->GetRootWindow());
+
+  in_session_user_work_area_insets_ = CalculateWorkAreaInsets(
+      GetAccessibilityInsets(), GetPersistentDeskBarInsets(),
+      in_session_shelf_insets_, keyboard_displaced_bounds_);
 }
 
 }  // namespace ash

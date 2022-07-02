@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
@@ -34,12 +35,12 @@
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -72,6 +73,66 @@ namespace {
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 const int64_t kMaxModuleFreImpressions = 8;
 
+// Returns true if the scrim (dark gradient overlay) should be hidden for the
+// NTP's background image. This is done to fix specific GWS themes where the
+// visual impact of the scrim does not align with the artistic intent of
+// partnered artists (see crbug.com/1329556).
+// TODO(crbug.com/1320107): Remove the scrim for all GWS and custom background
+// image configurations on the NTP.
+bool ShouldHideScrim(const ThemeService* theme_service) {
+  DCHECK(theme_service);
+  const auto* theme_supplier = theme_service->GetThemeSupplier();
+  if (!theme_supplier ||
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
+    return false;
+  }
+
+  static constexpr auto kPrideThemeExtensionIdsNoScrim = base::MakeFixedFlatSet<
+      base::StringPiece>({
+      "kkdpcclippggiadgghfmkggpemadbfcj", "jogkmkalhlbppkpmjdpncmpdcinbkekh",
+      "gfkcjfbbpmldkajnebkophpelmcimglf", "mchijkgkaabamaokgcnbmjpfoagkpjfc",
+      "cdabkdaechplopdfoahhjgkbjgillcme", "depfhkphmnoonikdokgpejilanmcdonk",
+      "efiamifmcbajfehbkjemggiafognbljk", "iclkbhippclhfamkdoigedgnnfbhefpl",
+      "ckfehdejjppobbllbkjgcpaockgdigen", "figmdifbokklifinmmjcjdkkopjflhnj",
+      "nkgiaofmleojhehacfognclpmoolihko", "npkdokffjmnleabnfihminmikibdhmfa",
+      "klnkeldihpjnjoopojllmnpepbpljico", "iffdmpenldeofnlfjmbjcdmafhoekmka",
+      "mckialangcdpcdcflekinnpamfkmkobo", "gpgkmnadnanefkpfkmdeijfiobhjagfk",
+      "hhdddgombcggoeedkgelollagijjgnmo", "inneonpkbfaipkmpldnhnpefjkacjlcl",
+      "inmnnmkfonobaklbnnfgekapnhnhlnnk",
+  });
+
+  const std::string& extension_id = theme_supplier->extension_id();
+  return base::Contains(kPrideThemeExtensionIdsNoScrim, extension_id);
+}
+
+// Returns true if we should force dark foreground colors for the Google logo
+// and the One Google Bar. This is done to fix specific GWS themes where the
+// always-light logo and OGB colors do not sufficiently contrast with lighter
+// image backgrounds (see crbug.com/1329552).
+// TODO(crbug.com/1328918): Address this in a general way and extend support to
+// custom background images, not just CWS themes.
+bool ShouldForceDarkForegroundColorsForLogoAndOGB(
+    const ThemeService* theme_service) {
+  const auto* theme_supplier = theme_service->GetThemeSupplier();
+  if (!theme_supplier ||
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
+    return false;
+  }
+  static constexpr auto kPrideThemeExtensionIdsDarkForeground =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "klnkeldihpjnjoopojllmnpepbpljico",
+          "iffdmpenldeofnlfjmbjcdmafhoekmka",
+          "mckialangcdpcdcflekinnpamfkmkobo",
+      });
+
+  const std::string& extension_id = theme_supplier->extension_id();
+  return base::Contains(kPrideThemeExtensionIdsDarkForeground, extension_id);
+}
+
 new_tab_page::mojom::ThemePtr MakeTheme(
     const ui::ColorProvider& color_provider,
     const ui::ThemeProvider* theme_provider,
@@ -94,7 +155,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
     most_visited->background_color = color_provider.GetColor(
         kColorNewTabPageMostVisitedTileBackgroundUnthemed);
-    theme->logo_color = color_provider.GetColor(kColorNewTabPageLogoUnthemed);
+    theme->logo_color =
+        color_provider.GetColor(kColorNewTabPageLogoUnthemedLight);
   } else {
     text_color = color_provider.GetColor(kColorNewTabPageText);
     most_visited->background_color =
@@ -165,6 +227,25 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   } else {
     background_image = nullptr;
   }
+
+  // The special case handling that removes the scrim and forces dark foreground
+  // colors should only be applied when the user does not have a custom
+  // background selected and has installed a GWS theme with a bundled background
+  // image. The first condition is necessary as a custom background image can be
+  // set while a GWS theme with a bundled image is concurrently enabled (see
+  // crbug.com/1329556 and crbug.com/1329552).
+  if (base::FeatureList::IsEnabled(ntp_features::kCwsScrimRemoval) &&
+      !custom_background.has_value() &&
+      theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
+    if (ShouldForceDarkForegroundColorsForLogoAndOGB(theme_service)) {
+      theme->is_dark = false;
+      theme->logo_color =
+          color_provider.GetColor(kColorNewTabPageLogoUnthemedDark);
+    }
+    if (ShouldHideScrim(theme_service))
+      background_image->scrim_display = "none";
+  }
+
   theme->background_image = std::move(background_image);
   if (custom_background.has_value()) {
     theme->background_image_attribution_1 =
@@ -179,47 +260,36 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->bg = color_provider.GetColor(kColorOmniboxBackground);
   search_box->bg_hovered =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
-                      OmniboxPartState::HOVERED);
+      color_provider.GetColor(kColorOmniboxBackgroundHovered);
   search_box->border_color =
       webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
-          ? theme_provider->GetColor(ThemeProperties::COLOR_LOCATION_BAR_BORDER)
+          ? color_provider.GetColor(kColorLocationBarBorder)
           : SkColorSetRGB(218, 220, 224);  // google-grey-300
-  search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
-  search_box->icon_selected = GetOmniboxColor(
-      theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+  search_box->icon = color_provider.GetColor(kColorOmniboxResultsIcon);
+  search_box->icon_selected =
+      color_provider.GetColor(kColorOmniboxResultsIconSelected);
   search_box->is_dark = !color_utils::IsDark(text_color);
   search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
-  search_box->placeholder =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  search_box->placeholder = color_provider.GetColor(kColorOmniboxTextDimmed);
   search_box->results_bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
+      color_provider.GetColor(kColorOmniboxResultsBackground);
   search_box->results_bg_hovered =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::HOVERED);
+      color_provider.GetColor(kColorOmniboxResultsBackgroundHovered);
   search_box->results_bg_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::SELECTED);
+      color_provider.GetColor(kColorOmniboxResultsBackgroundSelected);
   search_box->results_dim =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
+      color_provider.GetColor(kColorOmniboxResultsTextDimmed);
   search_box->results_dim_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
-                      OmniboxPartState::SELECTED);
-  search_box->results_text =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
+      color_provider.GetColor(kColorOmniboxResultsTextDimmedSelected);
+  search_box->results_text = color_provider.GetColor(kColorOmniboxText);
   search_box->results_text_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
-                      OmniboxPartState::SELECTED);
-  search_box->results_url =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL);
+      color_provider.GetColor(kColorOmniboxResultsTextSelected);
+  search_box->results_url = color_provider.GetColor(kColorOmniboxResultsUrl);
   search_box->results_url_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL,
-                      OmniboxPartState::SELECTED);
-  search_box->text =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
+      color_provider.GetColor(kColorOmniboxResultsUrlSelected);
+  search_box->text = color_provider.GetColor(kColorOmniboxText);
   theme->search_box = std::move(search_box);
 
   return theme;

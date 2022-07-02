@@ -20,12 +20,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Delay between the time the view is shown, and the time the suggestion label
-// is highlighted.
-const NSTimeInterval kAnimateSuggestionLabelDelay = 1.0f;
-}
-
 @interface FormInputAccessoryViewController () <
     FormSuggestionViewDelegate,
     ManualFillAccessoryViewControllerDelegate>
@@ -117,13 +111,7 @@ const NSTimeInterval kAnimateSuggestionLabelDelay = 1.0f;
 }
 
 - (void)animateSuggestionLabel {
-  __weak FormSuggestionView* weakSuggestionView = self.formSuggestionView;
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    (int64_t)(kAnimateSuggestionLabelDelay * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        [weakSuggestionView animateSuggestionLabel];
-      });
+  [self.formSuggestionView animateSuggestionLabel];
 }
 
 #pragma mark - Setters
@@ -176,6 +164,7 @@ const NSTimeInterval kAnimateSuggestionLabelDelay = 1.0f;
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
     self.formSuggestionView.formSuggestionViewDelegate = self;
+    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
   }
 }
 

@@ -22,7 +22,11 @@ RenderAccessibilityManager::~RenderAccessibilityManager() = default;
 
 void RenderAccessibilityManager::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::RenderAccessibility> receiver) {
-  DCHECK(!receiver_.is_bound());
+  // TODO(https://crbug.com/1329532): re-add   DCHECK(!receiver_.is_bound()),
+  // once underlying issue is resolved.
+  if (receiver_.is_bound())
+    receiver_.reset();
+
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       [](RenderAccessibilityManager* impl) {

@@ -108,10 +108,12 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
   Status CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records) {
+      std::vector<EncryptedRecord> records,
+      absl::optional<ScopedReservation> scoped_reservation) {
     test::TestEvent<Status> result;
     service_provider_->RequestUploadEncryptedRecords(
-        need_encryption_key, std::move(records), result.cb());
+        need_encryption_key, std::move(records), std::move(scoped_reservation),
+        result.cb());
     return result.result();
   }
 
@@ -134,10 +136,11 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
               UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction());
 
-  auto records = std::make_unique<std::vector<EncryptedRecord>>();
-  records->push_back(record_);
+  std::vector<EncryptedRecord> records;
+  records.emplace_back(record_);
   const auto status = CallRequestUploadEncryptedRecord(
-      /*need_encryption_key=*/false, std::move(records));
+      /*need_encryption_key=*/false, std::move(records),
+      /*scoped_reservation=*/absl::nullopt);
   EXPECT_OK(status) << status;
   auto uploaded_result = uploaded_event.result();
   EXPECT_THAT(std::get<0>(uploaded_result),

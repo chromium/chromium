@@ -24,6 +24,7 @@ class ExampleAction : public ShareAction {
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
   void OnClosing(SharesheetController* controller) override;
+  bool HasActionView() override;
 
  private:
   raw_ptr<SharesheetController> controller_ = nullptr;

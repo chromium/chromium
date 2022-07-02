@@ -40,6 +40,9 @@ class KioskAppId {
   KioskAppId(KioskAppType type, const AccountId& account_id);
 };
 
+// Overload << operator to allow logging of KioskAppId.
+std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id);
+
 }  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos

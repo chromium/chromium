@@ -17,7 +17,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

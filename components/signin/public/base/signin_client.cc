@@ -10,7 +10,3 @@ void SigninClient::PreSignOut(
   // Allow sign out to continue.
   std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW_SIGNOUT);
 }
-
-bool SigninClient::IsNonEnterpriseUser(const std::string& username) {
-  return false;
-}

@@ -75,8 +75,7 @@ TEST(BrowserFileSystemHelperTest,
       /*quota_manager_proxy=*/nullptr,
       std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
       std::vector<storage::URLRequestAutoMountHandler>(),
-      /*partition_path=*/base::FilePath(),
-      /*bucket_base_path=*/base::FilePath(), file_system_options);
+      /*partition_path=*/base::FilePath(), file_system_options);
 
   // Prepare content::DropData containing |file_system_url|.
   DropData::FileSystemFileInfo filesystem_file_info;

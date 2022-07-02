@@ -9,6 +9,8 @@
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -39,9 +41,7 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
       this, TrayPopupInkDropStyle::HOST_CENTERED);
   TrayPopupUtils::InstallHighlightPathGenerator(
       this, TrayPopupInkDropStyle::HOST_CENTERED);
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 
 SystemMenuButton::SystemMenuButton(PressedCallback callback,
@@ -66,8 +66,7 @@ void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
 
 SystemMenuButton::~SystemMenuButton() = default;
 
-const char* SystemMenuButton::GetClassName() const {
-  return "SystemMenuButton";
-}
+BEGIN_METADATA(SystemMenuButton, views::ImageButton)
+END_METADATA
 
 }  // namespace ash

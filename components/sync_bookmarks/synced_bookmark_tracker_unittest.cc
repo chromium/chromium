@@ -634,7 +634,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotInvalidateMetadata) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::NO_CORRUPTION, /*expected_count=*/1);
+      /*sample=*/ExpectedCorruptionReason::NO_CORRUPTION,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldNotRequireClientTagsForPermanentNodes) {
@@ -684,7 +685,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingMobileFolder) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::UNTRACKED_BOOKMARK, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::UNTRACKED_BOOKMARK,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingServerId) {
@@ -707,7 +709,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingServerId) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::MISSING_SERVER_ID, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::MISSING_SERVER_ID,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -734,7 +737,8 @@ TEST(SyncedBookmarkTrackerTest,
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::MISSING_BOOKMARK_ID, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::MISSING_BOOKMARK_ID,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -761,7 +765,7 @@ TEST(SyncedBookmarkTrackerTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
       /*sample=*/ExpectedCorruptionReason::BOOKMARK_ID_IN_TOMBSTONE,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -789,7 +793,7 @@ TEST(SyncedBookmarkTrackerTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
       /*sample=*/ExpectedCorruptionReason::UNKNOWN_BOOKMARK_ID,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfGuidMismatch) {
@@ -817,7 +821,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfGuidMismatch) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::BOOKMARK_GUID_MISMATCH, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::BOOKMARK_GUID_MISMATCH,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -859,7 +864,7 @@ TEST(SyncedBookmarkTrackerTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
       /*sample=*/ExpectedCorruptionReason::DUPLICATED_CLIENT_TAG_HASH,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -887,7 +892,7 @@ TEST(SyncedBookmarkTrackerTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
       /*sample=*/ExpectedCorruptionReason::MISSING_CLIENT_TAG_HASH,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -918,7 +923,8 @@ TEST(SyncedBookmarkTrackerTest,
               IsNull());
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::TRACKED_MANAGED_NODE, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::TRACKED_MANAGED_NODE,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -944,7 +950,8 @@ TEST(SyncedBookmarkTrackerTest,
               NotNull());
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
-      /*sample=*/ExpectedCorruptionReason::NO_CORRUPTION, /*count=*/1);
+      /*sample=*/ExpectedCorruptionReason::NO_CORRUPTION,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(SyncedBookmarkTrackerTest,

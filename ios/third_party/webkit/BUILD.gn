@@ -18,71 +18,112 @@ _build_mac_webkit = checkout_ios_webkit && build_mac_webkit
 
 group("webkit") {
   if (_build_ios_webkit) {
-    deps = [ ":bundle_webkit_ios_frameworks" ]
+    public_deps = [ ":bundle_webkit_ios_frameworks" ]
   }
 
   public_configs = [ ":_webkit_ios_config" ]
 }
 
-# WebKit is built from source using xcodebuild (invoked via the
-# build_webkit.py wrapper script).  The WebKit build places its output in a
-# sub-directory named "Release-iphonesimulator" for iOS builds and
-# "Release" for macOS builds.
-_webkit_ios_out_base_dir = "$target_out_dir/iOS"
-_webkit_mac_out_base_dir = "$target_out_dir/macOS"
+if (_build_ios_webkit || _build_mac_webkit) {
+  # WebKit is built from source using xcodebuild (invoked via the
+  # build_webkit.py wrapper script).  The WebKit build places its output in a
+  # sub-directory named "Release-iphonesimulator" for iOS builds and
+  # "Release" for macOS builds.
+  _webkit_ios_out_base_dir = "$target_out_dir/iOS"
+  _webkit_mac_out_base_dir = "$target_out_dir/macOS"
 
-_webkit_ios_xcodebuild_out_dir_name = "Release-iphonesimulator"
-_webkit_mac_xcodebuild_out_dir_name = "Release"
+  _webkit_ios_xcodebuild_out_dir_name = "Release-iphonesimulator"
+  _webkit_mac_xcodebuild_out_dir_name = "Release"
 
-_webkit_ios_out_product_dir =
-    "$_webkit_ios_out_base_dir/$_webkit_ios_xcodebuild_out_dir_name"
-_webkit_mac_out_product_dir =
-    "$_webkit_mac_out_base_dir/$_webkit_mac_xcodebuild_out_dir_name"
+  _webkit_ios_out_product_dir =
+      "$_webkit_ios_out_base_dir/$_webkit_ios_xcodebuild_out_dir_name"
+  _webkit_mac_out_product_dir =
+      "$_webkit_mac_out_base_dir/$_webkit_mac_xcodebuild_out_dir_name"
 
-template("compile_webkit") {
-  action(target_name) {
-    visibility = [
-      ":bundle_webkit_ios_frameworks",
-      ":copy_webkit_mac_minibrowser",
-      ":webkit",
-    ]
+  template("compile_webkit") {
+    action(target_name) {
+      visibility = [
+        ":bundle_webkit_ios_frameworks",
+        ":copy_webkit_mac_minibrowser",
+        ":webkit",
+      ]
 
-    script = "build_webkit.py"
+      script = "build_webkit.py"
 
-    inputs = [
-      # Because it's difficult to list every webkit source file as an input
-      # here, use the ChangeLog files as a proxy to determine whether or not
-      # source files have changed.
-      # TODO(crbug.com/934252): This will not pick up local edits to source
-      # files, so find a way to properly rebuild when those change.
-      "src/Tools/ChangeLog",
-      "src/ChangeLog",
-      "src/Source/WebKit/ChangeLog",
-      "src/Source/JavaScriptCore/ChangeLog",
-      "src/Source/WebKitLegacy/ChangeLog",
-      "src/Source/WebKitLegacy/ios/ChangeLog",
-      "src/Source/WebKitLegacy/mac/ChangeLog",
-      "src/Source/bmalloc/ChangeLog",
-      "src/Source/WebCore/ChangeLog",
-      "src/Source/WTF/ChangeLog",
-      "src/Source/ThirdParty/ChangeLog",
-      "src/WebKitLibraries/ChangeLog",
-    ]
+      inputs = [
+        # Because it's difficult to list every webkit source file as an input
+        # here, use the top-50 most frequently-changed files (excluding
+        # ChangeLogs, which are now deprecated) as a proxy to determine whether or
+        # not source files have changed.
+        # TODO(crbug.com/934252): This will not pick up local edits to source
+        # files, so find a way to properly rebuild when those change.
+        "src/LayoutTests/TestExpectations",
+        "src/Source/WebCore/WebCore.xcodeproj/project.pbxproj",
+        "src/LayoutTests/platform/ios-wk2/TestExpectations",
+        "src/LayoutTests/platform/mac-wk2/TestExpectations",
+        "src/Source/WebKit/WebKit.xcodeproj/project.pbxproj",
+        "src/LayoutTests/platform/mac-wk1/TestExpectations",
+        "src/LayoutTests/platform/mac/TestExpectations",
+        "src/Source/WebKit/UIProcess/WebPageProxy.cpp",
+        "src/Source/WebCore/Sources.txt",
+        "src/LayoutTests/platform/ios/TestExpectations",
+        "src/LayoutTests/platform/glib/TestExpectations",
+        "src/Source/WebKit/WebProcess/WebPage/WebPage.cpp",
+        "src/Source/WebCore/Headers.cmake",
+        "src/Source/WebKit/UIProcess/WebPageProxy.h",
+        "src/LayoutTests/platform/win/TestExpectations",
+        "src/Source/WebCore/dom/Document.cpp",
+        "src/Source/WTF/Scripts/Preferences/WebPreferencesExperimental.yaml",
+        "src/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm",
+        "src/Source/WebCore/testing/Internals.cpp",
+        "src/LayoutTests/platform/gtk/TestExpectations",
+        "src/Source/WebKit/WebProcess/WebPage/WebPage.h",
+        "src/Tools/CISupport/ews-build/steps.py",
+        "src/Source/WTF/wtf/PlatformHave.h",
+        "src/metadata/contributors.json",
+        "src/Tools/Scripts/libraries/webkitscmpy/webkitscmpy/__init__.py",
+        "src/Tools/Scripts/libraries/webkitscmpy/setup.py",
+        "src/Tools/TestWebKitAPI/TestWebKitAPI.xcodeproj/project.pbxproj",
+        "src/Source/WebCore/html/HTMLMediaElement.cpp",
+        "src/Source/WebCore/css/CSSComputedStyleDeclaration.cpp",
+        "src/Source/WebCore/CMakeLists.txt",
+        "src/Source/WebCore/dom/Element.cpp",
+        "src/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp",
+        "src/Source/WebKit/NetworkProcess/NetworkProcess.cpp",
+        "src/Tools/CISupport/ews-build/steps_unittest.py",
+        "src/Source/WebCore/DerivedSources.make",
+        "src/Source/WebCore/animation/CSSPropertyAnimation.cpp",
+        "src/Source/WebKit/WebProcess/com.apple.WebProcess.sb.in",
+        "src/Source/WebKit/WebProcess/WebPage/ios/WebPageIOS.mm",
+        "src/Source/JavaScriptCore/JavaScriptCore.xcodeproj/project.pbxproj",
+        "src/Source/JavaScriptCore/dfg/DFGSpeculativeJIT.cpp",
+        "src/Source/WebCore/rendering/RenderLayer.cpp",
+        "src/Source/WebKit/Resources/SandboxProfiles/ios/com.apple.WebKit.WebContent.sb.in",
+        "src/Source/WebCore/rendering/style/RenderStyle.h",
+        "src/Source/WebKit/UIProcess/Network/NetworkProcessProxy.cpp",
+        "src/Source/WebCore/dom/Document.h",
+        "src/Source/WebKit/UIProcess/API/Cocoa/WKWebView.mm",
+        "src/Source/WebCore/css/parser/CSSPropertyParser.cpp",
+        "src/Source/WebKit/SourcesCocoa.txt",
+        "src/Source/WebCore/testing/Internals.h",
+        "src/Source/WebCore/rendering/RenderBlockFlow.cpp",
+      ]
 
-    outputs = invoker.outputs
+      outputs = invoker.outputs
 
-    args = invoker.args
+      args = invoker.args
 
-    # TODO(crbug.com/934252): "-j 4" restricts xcodebuild to four simultaneous
-    # jobs. This is intended to prevent overloading the machine, because ninja
-    # will already be spawning a large number of jobs in parallel with
-    # xcodebuild, but it causes the webkit build to run very slowly. Find a way
-    # to increase the parallelism here.
-    args += [
-      "-j",
-      "4",
-      "-quiet",
-    ]
+      # TODO(crbug.com/1329824): "-j 8" restricts xcodebuild to eight simultaneous
+      # jobs. This is intended to prevent overloading the machine, because ninja
+      # will already be spawning a large number of jobs in parallel with
+      # xcodebuild, but it causes the webkit build to run very slowly. Find a way
+      # to increase the parallelism here.
+      args += [
+        "-j",
+        "8",
+        "-quiet",
+      ]
+    }
   }
 }
 

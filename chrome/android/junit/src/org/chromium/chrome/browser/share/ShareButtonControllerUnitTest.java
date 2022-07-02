@@ -50,10 +50,12 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link ShareButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
@@ -80,7 +82,7 @@ public final class ShareButtonControllerUnitTest {
     @Mock
     private ShareDelegate mShareDelegate;
     @Mock
-    private ShareUtils mShareUtils;
+    private GURL mMockGurl;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
@@ -90,6 +92,7 @@ public final class ShareButtonControllerUnitTest {
 
     private Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
+    private ShareUtils mShareUtils = new ShareUtils();
 
     @Before
     public void setUp() {
@@ -99,11 +102,11 @@ public final class ShareButtonControllerUnitTest {
 
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();
-        mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP + WIDTH_DELTA;
+        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
         doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mock(WebContents.class)).when(mTab).getWebContents();
-        doReturn(true).when(mShareUtils).shouldEnableShare(mTab);
+        doReturn(mMockGurl).when(mTab).getUrl();
 
         doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
 
@@ -150,7 +153,7 @@ public final class ShareButtonControllerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDoNotShowWhenTooNarrow() {
-        mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP - 1;
+        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP - 1;
         mShareButtonController.onConfigurationChanged(mConfiguration);
 
         ButtonData buttonData = mShareButtonController.get(mTab);
@@ -161,11 +164,22 @@ public final class ShareButtonControllerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDoShowWhenWideEnough() {
-        mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP;
+        doReturn("https").when(mMockGurl).getScheme();
+        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
         mShareButtonController.onConfigurationChanged(mConfiguration);
 
         ButtonData buttonData = mShareButtonController.get(mTab);
 
         assertTrue(buttonData.canShow());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    public void testDoNotShowOnDataUrl() {
+        doReturn("data").when(mMockGurl).getScheme();
+        doReturn(mMockGurl).when(mTab).getUrl();
+        ButtonData buttonData = mShareButtonController.get(mTab);
+
+        assertFalse(buttonData.canShow());
     }
 }

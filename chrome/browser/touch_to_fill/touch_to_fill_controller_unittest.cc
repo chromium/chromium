@@ -40,7 +40,6 @@ using ShowVirtualKeyboard =
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
 using device_reauth::BiometricAuthRequester;
-using device_reauth::BiometricsAvailability;
 using device_reauth::MockBiometricAuthenticator;
 using password_manager::UiCredential;
 using ::testing::_;
@@ -128,7 +127,7 @@ class TouchToFillControllerTest : public testing::Test {
     // By default, disable biometric authentication.
     ON_CALL(*authenticator(),
             CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-        .WillByDefault(Return(BiometricsAvailability::kNoHardware));
+        .WillByDefault(Return(false));
 
     // By default, don't trigger a form submission.
     EXPECT_CALL(driver_, TriggerFormSubmission()).Times(0);
@@ -381,7 +380,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth_Available) {
 
   EXPECT_CALL(*authenticator(),
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-      .WillOnce(Return(BiometricsAvailability::kNoHardware));
+      .WillOnce(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -419,7 +418,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
 
   EXPECT_CALL(*authenticator(),
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(true));
@@ -450,7 +449,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
 
   EXPECT_CALL(*authenticator(),
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(false));
@@ -521,7 +520,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(*authenticator(),
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-      .WillOnce(Return(BiometricsAvailability::kNoHardware));
+      .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 2, 1);
@@ -655,7 +654,7 @@ TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
 
   EXPECT_CALL(*authenticator(),
               CanAuthenticate(BiometricAuthRequester::kTouchToFill))
-      .WillOnce(Return(BiometricsAvailability::kAvailable));
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(BiometricAuthRequester::kTouchToFill, _));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -672,7 +671,10 @@ TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
   ON_CALL(*webauthn_credentials_delegate(), IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
 
-  TouchToFillWebAuthnCredential credential(u"alice", "12345");
+  TouchToFillWebAuthnCredential credential(
+      TouchToFillWebAuthnCredential::Username(u"alice@example.com"),
+      TouchToFillWebAuthnCredential::DisplayName(u"alice"),
+      TouchToFillWebAuthnCredential::BackendId("12345"));
   std::vector<TouchToFillWebAuthnCredential> credentials({credential});
 
   EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
@@ -684,7 +686,7 @@ TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
       autofill::mojom::SubmissionReadinessState::kNoInformation);
 
   EXPECT_CALL(*webauthn_credentials_delegate(),
-              SelectWebAuthnCredential(credential.id()));
+              SelectWebAuthnCredential(credential.id().value()));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   touch_to_fill_controller().OnWebAuthnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(

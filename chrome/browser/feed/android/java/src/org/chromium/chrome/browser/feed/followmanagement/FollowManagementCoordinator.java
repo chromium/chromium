@@ -44,19 +44,19 @@ public class FollowManagementCoordinator {
                 new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_empty_state),
                 (unusedModel, unusedView, unusedKey) -> {});
         adapter.registerType(FollowManagementItemProperties.LOADING_ITEM_TYPE,
-                new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_loading_state),
+                new LayoutViewBuilder<LinearLayout>(R.layout.feed_spinner),
                 (unusedModel, unusedView, unusedKey) -> {});
 
         // Inflate the XML for the activity.
         mView = LayoutInflater.from(activity).inflate(R.layout.follow_management_activity, null);
-        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.follow_management_list);
+        RecyclerView recyclerView = mView.findViewById(R.id.follow_management_list);
         // With the recycler view, we need to explicitly set a layout manager.
         LinearLayoutManager manager = new LinearLayoutManager(activity);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
         // Set up the toolbar and back button.
-        Toolbar toolbar = (Toolbar) mView.findViewById(R.id.action_bar);
+        Toolbar toolbar = mView.findViewById(R.id.action_bar);
         toolbar.setNavigationIcon(R.drawable.back_arrow);
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 

@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_menus_provider.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/force_touch_long_press_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -52,7 +52,6 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 
 @dynamic view;
 @synthesize buttonFactory = _buttonFactory;
-@synthesize dispatcher = _dispatcher;
 @synthesize longPressDelegate = _longPressDelegate;
 @synthesize loading = _loading;
 @synthesize isNTP = _isNTP;
@@ -94,7 +93,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   self.view.backButton.guideName = kBackButtonGuide;
 
   // Add navigation popup menu triggers.
-  if (ShouldUseUIKitPopupMenu()) {
+  if (UseSymbols()) {
     [self configureMenuProviderForButton:self.view.backButton
                               buttonType:AdaptiveToolbarButtonTypeBack];
     [self configureMenuProviderForButton:self.view.forwardButton
@@ -350,7 +349,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   for (ToolbarButton* button in self.view.allButtons) {
     if (button != self.view.toolsMenuButton &&
         button != self.view.openNewTabButton) {
-      [button addTarget:self.dispatcher
+      [button addTarget:self.omniboxCommandsHandler
                     action:@selector(cancelOmniboxEdit)
           forControlEvents:UIControlEventTouchUpInside];
     }
@@ -386,7 +385,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   }
 }
 
-// Adds a LongPressGesture to the |view|, with target on -|handleLongPress:|.
+// Adds a LongPressGesture to the `view`, with target on -`handleLongPress:`.
 - (void)addLongPressGestureToView:(UIView*)view {
   ForceTouchLongPressGestureRecognizer* gestureRecognizer =
       [[ForceTouchLongPressGestureRecognizer alloc]
@@ -399,19 +398,17 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 // Handles the gseture recognizer on the views.
 - (void)handleGestureRecognizer:(UILongPressGestureRecognizer*)gesture {
   if (gesture.state == UIGestureRecognizerStateBegan) {
-    // TODO(crbug.com/1323764): All of these calls on |self.dispatcher| need to
-    // go to a dedicated PopupMenyCommands handler.
     if (gesture.view == self.view.backButton) {
-      [self.dispatcher showNavigationHistoryBackPopupMenu];
+      [self.popupMenuCommandsHandler showNavigationHistoryBackPopupMenu];
     } else if (gesture.view == self.view.forwardButton) {
-      [self.dispatcher showNavigationHistoryForwardPopupMenu];
+      [self.popupMenuCommandsHandler showNavigationHistoryForwardPopupMenu];
     } else if (gesture.view == self.view.openNewTabButton) {
-      [self.dispatcher showNewTabButtonPopup];
+      [self.popupMenuCommandsHandler showNewTabButtonPopup];
     } else if (gesture.view == self.view.tabGridButton) {
-      [self.dispatcher showTabGridButtonPopup];
+      [self.popupMenuCommandsHandler showTabGridButtonPopup];
     } else if (gesture.view == self.view.toolsMenuButton) {
       base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
-      [self.dispatcher showToolsMenuPopup];
+      [self.popupMenuCommandsHandler showToolsMenuPopup];
     }
     TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
   } else if (gesture.state == UIGestureRecognizerStateEnded) {
@@ -432,8 +429,8 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
   }
 }
 
-// Configures |button| with the menu provider, making sure that the items are
-// updated when the menu is presented. The |buttonType| is passed to the menu
+// Configures `button` with the menu provider, making sure that the items are
+// updated when the menu is presented. The `buttonType` is passed to the menu
 // provider.
 - (void)configureMenuProviderForButton:(UIButton*)button
                             buttonType:(AdaptiveToolbarButtonType)buttonType {

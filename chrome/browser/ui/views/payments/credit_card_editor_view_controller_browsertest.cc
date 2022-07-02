@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 
   // Proper error shown.
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAYMENTS_BILLING_ADDRESS_REQUIRED),
-            GetErrorLabelForType(autofill::ADDRESS_BILLING_LINE1));
+            GetErrorLabelForType(autofill::ADDRESS_HOME_LINE1));
 
   // Fixing the billing address.
   SelectBillingAddress(billing_profile.guid());
@@ -655,9 +655,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Billing address combobox must be disabled since there are no saved address.
-  views::View* billing_address_combobox =
-      dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
-          autofill::ADDRESS_BILLING_LINE1));
+  views::View* billing_address_combobox = dialog_view()->GetViewByID(
+      EditorViewController::GetInputFieldViewId(autofill::ADDRESS_HOME_LINE1));
   ASSERT_NE(nullptr, billing_address_combobox);
   EXPECT_FALSE(billing_address_combobox->GetEnabled());
 
@@ -690,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   // The billing address must be properly selected and valid.
   views::Combobox* billing_combobox = static_cast<views::Combobox*>(
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
-          autofill::ADDRESS_BILLING_LINE1)));
+          autofill::ADDRESS_HOME_LINE1)));
   ASSERT_NE(nullptr, billing_combobox);
   EXPECT_FALSE(billing_combobox->GetInvalid());
   EXPECT_TRUE(billing_combobox->GetEnabled());

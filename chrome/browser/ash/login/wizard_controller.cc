@@ -29,6 +29,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -186,13 +187,13 @@
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
@@ -295,8 +296,7 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
     {chromeos::WelcomeView::kScreenId, "network"},
-    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"},
-    {chromeos::RecommendAppsScreenView::kScreenId, "recommend-apps"}};
+    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
 
 void RecordUMAHistogramForOOBEStepShownStatus(
     OobeScreenId screen,
@@ -356,6 +356,15 @@ OobeScreenId PrefToScreenId(const std::string& pref_value) {
   return OobeScreenId(pref_value);
 }
 
+bool IsGaiaPageDefaultsToSAML() {
+  if (!features::IsRedirectToDefaultIdPEnabled())
+    return false;
+  int authentication_behavior = 0;
+  bool authentication_behavior_set = CrosSettings::Get()->GetInteger(
+      kLoginAuthenticationBehavior, &authentication_behavior);
+  return authentication_behavior_set && authentication_behavior;
+}
+
 }  // namespace
 
 // static
@@ -403,6 +412,8 @@ WizardController::WizardController(WizardContext* wizard_context)
 WizardController::~WizardController() {
   for (ScreenObserver& obs : screen_observers_)
     obs.OnShutdown();
+
+  previous_screens_.clear();
   screen_manager_.reset();
 }
 
@@ -466,7 +477,10 @@ void WizardController::Init(OobeScreenId first_screen) {
 }
 
 void WizardController::OnDestroyingOobeUI() {
+  previous_screens_.clear();
   // Reset screens, they should not access handlers anymore.
+  // TODO(https://crbug.com/1309022): This should probably be removed when all
+  // the screen/handlers migrated to the new patterns.
   screen_manager_->Shutdown();
   oobe_ui_observation_.Reset();
 }
@@ -519,6 +533,13 @@ BaseScreen* WizardController::GetScreen(OobeScreenId screen_id) {
   return screen_manager_->GetScreen(screen_id);
 }
 
+OobeScreenId WizardController::GetScreenByName(const std::string& screen_name) {
+  if (screen_name == ErrorScreenView::kScreenId.name) {
+    return ErrorScreenView::kScreenId;
+  }
+  return screen_manager_->GetScreenByName(screen_name);
+}
+
 void WizardController::SetCurrentScreenForTesting(BaseScreen* screen) {
   current_screen_ = screen;
 }
@@ -552,7 +573,7 @@ WizardController::CreateScreens() {
 
     if (ash::features::IsOobeQuickStartEnabled()) {
       append(std::make_unique<QuickStartScreen>(
-          oobe_ui->GetView<QuickStartScreenHandler>(),
+          oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
           base::BindRepeating(&WizardController::OnQuickStartScreenExit,
                               weak_factory_.GetWeakPtr())));
     }
@@ -616,7 +637,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnArcTermsOfServiceScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<RecommendAppsScreen>(
-      oobe_ui->GetView<RecommendAppsScreenHandler>(),
+      oobe_ui->GetView<RecommendAppsScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnRecommendAppsScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<AppDownloadingScreen>(
@@ -638,7 +659,7 @@ WizardController::CreateScreens() {
   }
 
   append(std::make_unique<AutoEnrollmentCheckScreen>(
-      oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>(),
+      oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -693,12 +714,12 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSamlConfirmPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<OfflineLoginScreen>(
-      oobe_ui->GetView<OfflineLoginScreenHandler>(),
+      oobe_ui->GetView<OfflineLoginScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<TpmErrorScreen>(
-      oobe_ui->GetView<TpmErrorScreenHandler>()));
+      oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
   auto gaia_password_change_screen =
       std::make_unique<GaiaPasswordChangedScreen>(
@@ -758,7 +779,7 @@ WizardController::CreateScreens() {
 
   if (switches::IsOsInstallAllowed()) {
     append(std::make_unique<OsInstallScreen>(
-        oobe_ui->GetView<OsInstallScreenHandler>(),
+        oobe_ui->GetView<OsInstallScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnOsInstallScreenExit,
                             weak_factory_.GetWeakPtr())));
     append(std::make_unique<OsTrialScreen>(
@@ -816,12 +837,22 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
+  if (base::Contains(previous_screens_, current_screen_) &&
+      previous_screens_[current_screen_]->screen_id() ==
+          SamlConfirmPasswordView::kScreenId) {
+    // If the last screen user have visited before reaching SignInFatalError
+    // screen was SamlConfirmPassword screen we should not go back there because
+    // the context is lost at this point. We should go to the Gaia screen
+    // instead.
+    previous_screens_[current_screen_] = GetScreen(GaiaView::kScreenId);
+    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+  }
+
   // It's possible to get on the SignInFatalError screen both from the user pods
   // and from the Gaia sign-in screen. The screen exits when user presses
   // "try again". Go to the previous screen if it is set. Otherwise go to the
   // login screen with pods.
-  if (previous_screen_) {
-    SetCurrentScreen(previous_screen_);
+  if (MaybeSetToPreviousScreen()) {
     return;
   }
   ShowLoginScreen();
@@ -1057,7 +1088,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
     case GaiaScreen::Result::BACK:
-    case GaiaScreen::Result::CANCEL:
+    case GaiaScreen::Result::CANCEL: {
       if (result == GaiaScreen::Result::BACK &&
           wizard_context_->is_user_creation_enabled) {
         // `Result::BACK` is only triggered when pressing back button. It goes
@@ -1067,22 +1098,26 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
         AdvanceToScreen(UserCreationView::kScreenId);
         break;
       }
-      if (LoginDisplayHost::default_host()->HasUserPods() &&
-          !wizard_context_->is_user_creation_enabled) {
-        LoginDisplayHost::default_host()->HideOobeDialog();
+      // If a default redirection to third party IdP is set we can hide the
+      // dialog.
+      const bool gaia_page_defaults_to_saml = IsGaiaPageDefaultsToSAML();
+      if ((LoginDisplayHost::default_host()->HasUserPods() &&
+           !wizard_context_->is_user_creation_enabled) ||
+          (!LoginDisplayHost::default_host()->HasUserPods() &&
+           gaia_page_defaults_to_saml)) {
+        GetScreen<GaiaScreen>()->Reset();
+        LoginDisplayHost::default_host()->HideOobeDialog(
+            gaia_page_defaults_to_saml);
       } else {
         GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
       }
       break;
+    }
     case GaiaScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
       break;
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
-      break;
-    case GaiaScreen::Result::SAML_VIDEO_TIMEOUT:
-      LoginDisplayHost::default_host()->HideOobeDialog(
-          /*saml_video_timeout=*/true);
       break;
   }
 }
@@ -1183,6 +1218,7 @@ void WizardController::OnOfflineLoginScreenExit(
       AdvanceToScreen(UserCreationView::kScreenId);
       break;
     case OfflineLoginScreen::Result::RELOAD_ONLINE_LOGIN:
+      GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
       AdvanceToScreen(GaiaView::kScreenId);
       break;
   }
@@ -1197,10 +1233,8 @@ void WizardController::OnOsInstallScreenExit() {
     LoginDisplayHost::default_host()->HideOobeDialog();
     return;
   }
-  if (previous_screen_) {
-    SetCurrentScreen(previous_screen_);
-    return;
-  }
+  const bool did_advance = MaybeSetToPreviousScreen();
+  DCHECK(did_advance);
 }
 
 void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
@@ -1251,9 +1285,9 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
           chromeos::SigninSpecifics());
       break;
     case GuestTosScreen::Result::BACK:
-      if (previous_screen_)
-        SetCurrentScreen(previous_screen_);
-      else if (LoginDisplayHost::default_host()->HasUserPods())
+      if (MaybeSetToPreviousScreen())
+        break;
+      if (LoginDisplayHost::default_host()->HasUserPods())
         LoginDisplayHost::default_host()->HideOobeDialog();
       break;
     case GuestTosScreen::Result::CANCEL:
@@ -1363,6 +1397,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowEulaScreen();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO:
+    case NetworkScreen::Result::NOT_APPLICABLE_CONNECTED_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
@@ -1376,6 +1411,8 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       InitiateOOBEUpdate();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
+    case NetworkScreen::Result::
+        NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
@@ -1477,8 +1514,10 @@ void WizardController::OnUpdateCompleted() {
   ShowAutoEnrollmentCheckScreen();
 }
 
-void WizardController::OnAutoEnrollmentCheckScreenExit() {
-  OnScreenExit(AutoEnrollmentCheckScreenView::kScreenId, kDefaultExitReason);
+void WizardController::OnAutoEnrollmentCheckScreenExit(
+    AutoEnrollmentCheckScreen::Result result) {
+  OnScreenExit(AutoEnrollmentCheckScreenView::kScreenId,
+               AutoEnrollmentCheckScreen::GetResultString(result));
   VLOG(1) << "WizardController::OnAutoEnrollmentCheckScreenExit()";
   // Check whether the device is disabled. OnDeviceDisabledChecked() will be
   // invoked when the result of this check is known. Until then, the current
@@ -1791,16 +1830,22 @@ void WizardController::OnChangedMetricsReportingState(bool enabled) {
 }
 
 void WizardController::OnDeviceModificationCanceled() {
+  BaseScreen* previous_screen = nullptr;
+  if (base::Contains(previous_screens_, current_screen_))
+    previous_screen = previous_screens_[current_screen_];
+
   current_screen_->Hide();
   current_screen_ = nullptr;
-  if (previous_screen_) {
-    if (IsSigninScreen(previous_screen_->screen_id())) {
+
+  if (previous_screen) {
+    if (IsSigninScreen(previous_screen->screen_id())) {
       ShowLoginScreen();
     } else {
-      SetCurrentScreen(previous_screen_);
+      SetCurrentScreen(previous_screen);
     }
     return;
   }
+
   ShowPackagedLicenseScreen();
 }
 
@@ -1899,11 +1944,9 @@ void WizardController::InitiateOOBEUpdate() {
   // If this is a Cellular First device, instruct UpdateEngine to allow
   // updates over cellular data connections.
   if (switches::IsCellularFirstDevice()) {
-    DBusThreadManager::Get()
-        ->GetUpdateEngineClient()
-        ->SetUpdateOverCellularPermission(
-            true, base::BindOnce(&WizardController::StartOOBEUpdate,
-                                 weak_factory_.GetWeakPtr()));
+    UpdateEngineClient::Get()->SetUpdateOverCellularPermission(
+        true, base::BindOnce(&WizardController::StartOOBEUpdate,
+                             weak_factory_.GetWeakPtr()));
   } else {
     StartOOBEUpdate();
   }
@@ -1993,20 +2036,22 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   if (current_screen_ == new_current || GetOobeUI() == nullptr)
     return;
 
-  if (current_screen_) {
-    current_screen_->Hide();
+  if (new_current) {
+    // Check if we didn't come here via the previous screen logic.
+    if (current_screen_ &&
+        (!base::Contains(previous_screens_, current_screen_) ||
+         previous_screens_[current_screen_] != new_current)) {
+      previous_screens_[new_current] = current_screen_;
+    } else {
+      previous_screens_.erase(new_current);
+    }
   }
 
-  // If the last screen user have visited before reaching SignInFatalError
-  // screen was SamlConfirmPassword screen. Then 'previous_screen_' shouldn't be
-  // saved to send the user back to the Login Screen not to SamlConfirmPassword
-  // screen.
-  if (current_screen_ &&
-      current_screen_->screen_id() != SamlConfirmPasswordView::kScreenId) {
-    previous_screen_ = current_screen_;
-  } else {
-    previous_screen_ = nullptr;
+  if (current_screen_) {
+    current_screen_->Hide();
+    previous_screens_.erase(current_screen_);
   }
+
   current_screen_ = new_current;
 
   if (!current_screen_) {
@@ -2507,6 +2552,15 @@ void WizardController::ShowEnrollmentScreenIfEligible() {
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);
   }
+}
+
+bool WizardController::MaybeSetToPreviousScreen() {
+  DCHECK(current_screen_);
+  if (!base::Contains(previous_screens_, current_screen_))
+    return false;
+  auto* old_current_screen = current_screen_;
+  SetCurrentScreen(previous_screens_[current_screen_]);
+  return old_current_screen != current_screen_;
 }
 
 void WizardController::NotifyScreenChanged() {

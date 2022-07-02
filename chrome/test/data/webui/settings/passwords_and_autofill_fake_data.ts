@@ -5,8 +5,8 @@
 // clang-format off
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerProxy, PasswordDialogMode, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
-import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerProxy} from 'chrome://settings/settings.js';
+import {AutofillManagerProxy, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsImportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
+import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -273,6 +273,7 @@ export function makeInsecureCredential(
     id: id || 0,
     formattedOrigin: url,
     changePasswordUrl: `http://${url}/`,
+    hasStartableScript: false,
     username: username,
     detailedOrigin: '',
     isAndroidCredential: false,
@@ -391,12 +392,9 @@ export class PasswordSectionElementFactory {
   createPasswordEditDialog(
       passwordEntry: MultiStorePasswordUiEntry|null = null,
       passwords?: MultiStorePasswordUiEntry[],
-      isAccountStoreUser: boolean = false,
-      requestedDialogMode: PasswordDialogMode|
-      null = null): PasswordEditDialogElement {
+      isAccountStoreUser: boolean = false): PasswordEditDialogElement {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.existingEntry = passwordEntry;
-    passwordDialog.requestedDialogMode = requestedDialogMode;
     if (passwordEntry && !passwordEntry.federationText) {
       // Edit dialog is always opened with plaintext password for non-federated
       // credentials since user authentication is required before opening the
@@ -414,19 +412,20 @@ export class PasswordSectionElementFactory {
   /**
    * Helper method used to create an export passwords dialog.
    */
-  createExportPasswordsDialog(passwordManager: PasswordManagerProxy):
-      PasswordsExportDialogElement {
-    passwordManager.requestExportProgressStatus = callback => {
-      callback(chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
-    };
-    passwordManager.exportPasswords = (callback) => {
-      callback();
-    };
-
+  createExportPasswordsDialog(): PasswordsExportDialogElement {
     const dialog = this.document.createElement('passwords-export-dialog');
     this.document.body.appendChild(dialog);
     flush();
+    return dialog;
+  }
 
+  /**
+   * Helper method used to create a passwords import dialog.
+   */
+  createPasswordsImportDialog(): PasswordsImportDialogElement {
+    const dialog = this.document.createElement('passwords-import-dialog');
+    this.document.body.appendChild(dialog);
+    flush();
     return dialog;
   }
 }

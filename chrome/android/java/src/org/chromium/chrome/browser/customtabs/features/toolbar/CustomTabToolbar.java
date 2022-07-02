@@ -45,6 +45,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
@@ -102,7 +103,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ImageButton mCloseButton;
     private MenuButton mMenuButton;
     // This View will be non-null only for bottom sheet custom tabs.
-    private View mHandleView;
+    private Drawable mHandleDrawable;
 
     // Color scheme and tint that will be applied to icons and text.
     private @BrandedColorScheme int mBrandedColorScheme;
@@ -568,15 +569,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mLocationBar;
     }
 
-    public void setHandleView(View view) {
-        mHandleView = view;
+    public void setHandleBackground(Drawable handleDrawable) {
+        mHandleDrawable = handleDrawable;
         setHandleViewBackgroundColor(getBackground().getColor());
     }
 
     private void setHandleViewBackgroundColor(int color) {
-        if (mHandleView == null) return;
-        GradientDrawable drawable = (GradientDrawable) mHandleView.getBackground();
-        ((GradientDrawable) drawable.mutate()).setColor(color);
+        if (mHandleDrawable == null) return;
+        ((GradientDrawable) mHandleDrawable.mutate()).setColor(color);
     }
 
     @Override
@@ -646,6 +646,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private boolean mCurrentlyShowingBranding;
         private List<Runnable> mAfterBrandingRunnables;
+        private CallbackController mCallbackController = new CallbackController();
 
         public View getLayout() {
             return mLocationBarFrameLayout;
@@ -673,7 +674,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             setUrlBarHidden(true);
             showBrandingIconAndText();
 
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+            Runnable hideBranding = mCallbackController.makeCancelable(() -> {
                 mCurrentlyShowingBranding = false;
                 setUrlBarHidden(!showUrlBar);
                 setShowTitle(showTitle);
@@ -681,7 +682,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     runnable.run();
                 }
                 mAfterBrandingRunnables.clear();
-            }, BRANDING_DELAY_MS);
+            });
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
 
         public void onFinishInflate(View container) {
@@ -839,7 +841,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             final int backgroundColor = getBackground().getColor();
             if (ThemeUtils.isUsingDefaultToolbarColor(
                         context, /*isIncognito=*/false, backgroundColor)) {
-                progressBar.setBackgroundColor(context.getColor(R.color.progress_bar_bg_color));
+                progressBar.setBackgroundColor(
+                        context.getColor(R.color.progress_bar_bg_color_list));
                 progressBar.setForegroundColor(
                         SemanticColorUtils.getProgressBarForeground(context));
             } else {
@@ -1004,6 +1007,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void destroy() {
+            if (mCallbackController != null) {
+                mCallbackController.destroy();
+                mCallbackController = null;
+            }
             if (mLocationBarDataProvider != null) {
                 mLocationBarDataProvider.removeObserver(this);
                 mLocationBarDataProvider = null;

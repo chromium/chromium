@@ -140,10 +140,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // on UI thread. If shutdown is true, the manager is disabled permanently.
   void Stop(bool shutdown);
 
-  // Called on the IO thread by the ThreatDetails with the serialized
-  // protocol buffer, so the service can send it over.
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override;
+  // Called on the IO thread by the ThreatDetails with the report, so the
+  // service can send it over.
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
 
   // Calls |BaseUIManager::OnBlockingPageDone()| and triggers
   // |OnSecurityInterstitialProceeded| event if |proceed| is true.

@@ -89,16 +89,16 @@ class EnterprisePrintersProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetPolicyPrinters(const std::vector<std::string>& printer_json_blobs) {
-    auto value = std::make_unique<base::ListValue>();
-    for (const std::string& blob : printer_json_blobs) {
-      value->Append(blob);
-    }
+  void SetPolicyPrinters(std::vector<std::string> printer_json_blobs) {
+    base::Value::List value;
+    for (std::string& blob : printer_json_blobs)
+      value.Append(std::move(blob));
 
     sync_preferences::TestingPrefServiceSyncable* prefs =
         profile_.GetTestingPrefService();
     // TestingPrefSyncableService assumes ownership of |value|.
-    prefs->SetManagedPref(prefs::kRecommendedPrinters, std::move(value));
+    prefs->SetManagedPref(prefs::kRecommendedPrinters,
+                          base::Value(std::move(value)));
   }
 
   // Must outlive |profile_|.

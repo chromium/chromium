@@ -54,7 +54,12 @@ enum class MessagePriority { kUrgent, kNormal };
 // The constants of message scope type.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
-enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
+enum class MessageScopeType {
+  WINDOW = 0,
+  WEB_CONTENTS = 1,
+  NAVIGATION = 2,
+  ORIGIN = 3
+};
 
 // Enumerates unique identifiers for various messages. Used for recording
 // messages related histograms.

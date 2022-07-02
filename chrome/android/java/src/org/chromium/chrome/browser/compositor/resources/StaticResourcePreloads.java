@@ -18,7 +18,7 @@ public class StaticResourcePreloads {
     private static int[] sSynchronousResources = new int[] {
             R.drawable.bg_tabstrip_tab,
             R.drawable.btn_tab_close_normal,
-            R.drawable.btn_tabstrip_new_tab,
+            R.drawable.ic_new_tab_button,
             R.drawable.spinner,
             R.drawable.spinner_white,
     };

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @interface SigninSyncViewController
@@ -21,13 +20,6 @@
 
 @property(nonatomic, assign)
     EnterpriseSignInRestrictions enterpriseSignInRestrictions;
-
-// Position of the identity switcher.
-@property(nonatomic, assign)
-    SigninSyncScreenUIIdentitySwitcherPosition identitySwitcherPosition;
-
-// Set of strings used in the UI.
-@property(nonatomic, assign) SigninSyncScreenUIStringSet stringsSet;
 
 // The ID of the main button activating sync.
 @property(nonatomic, readonly) int activateSyncButtonID;

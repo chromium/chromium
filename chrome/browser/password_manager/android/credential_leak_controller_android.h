@@ -29,7 +29,10 @@ class CredentialLeakControllerAndroid {
       const std::u16string& username,
       password_manager::PasswordChangeSuccessTracker*
           password_change_success_tracker,
-      ui::WindowAndroid* window_android);
+      ui::WindowAndroid* window_android,
+      // Metrics recorder for leak dialog related UMA and UKM logging.
+      std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>
+          metrics_recorder);
 
   CredentialLeakControllerAndroid(const CredentialLeakControllerAndroid&) =
       delete;
@@ -89,6 +92,10 @@ class CredentialLeakControllerAndroid {
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
 
   std::unique_ptr<password_manager::LeakDialogTraits> leak_dialog_traits_;
+
+  // Metrics recorder for leak dialog related UMA and UKM logging.
+  std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>
+      metrics_recorder_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_

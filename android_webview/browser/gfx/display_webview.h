@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_WEBVIEW_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/viz/service/display/display.h"
@@ -33,7 +34,7 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
     return overlay_processor_webview_;
   }
 
-  std::vector<viz::SurfaceId> GetContainedSurfaceIds();
+  const base::flat_set<viz::SurfaceId>& GetContainedSurfaceIds();
 
   // viz::FrameSinkObserver implenentation:
   void OnRegisteredFrameSinkId(const viz::FrameSinkId& frame_sink_id) override {

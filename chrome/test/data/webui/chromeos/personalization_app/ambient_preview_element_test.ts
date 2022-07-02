@@ -52,11 +52,12 @@ suite('AmbientPreviewTest', function() {
             ambientPreviewElement.shadowRoot!.getElementById(
                 'messageContainer');
         assertTrue(!!messageContainer);
-        const textSpan = messageContainer.querySelector('span');
+        const textSpan = messageContainer.querySelector<HTMLSpanElement>(
+            '#turnOnDescription');
         assertTrue(!!textSpan);
         assertEquals(
             ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
-            textSpan.textContent);
+            textSpan.innerText);
       });
 
   test(

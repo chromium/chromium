@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -26,8 +27,6 @@ namespace {
 
 const char kAuthorizationHeader[] = "Authorization";
 const char kProtobufContentType[] = "application/x-protobuf";
-const char kQueryParameterAlternateOutputKey[] = "alt";
-const char kQueryParameterAlternateOutputProto[] = "proto";
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("trusted_vault_request",
@@ -77,11 +76,13 @@ TrustedVaultRequest::TrustedVaultRequest(
     HttpMethod http_method,
     const GURL& request_url,
     const absl::optional<std::string>& serialized_request_proto,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TrustedVaultURLFetchReasonForUMA reason_for_uma)
     : http_method_(http_method),
       request_url_(request_url),
       serialized_request_proto_(serialized_request_proto),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      reason_for_uma_(reason_for_uma) {
   DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
          !serialized_request_proto.has_value());
@@ -130,7 +131,8 @@ void TrustedVaultRequest::OnURLLoadComplete(
   }
 
   RecordTrustedVaultURLFetchResponse(/*http_response_code=*/http_response_code,
-                                     /*net_error=*/url_loader_->NetError());
+                                     /*net_error=*/url_loader_->NetError(),
+                                     reason_for_uma_);
 
   std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == net::HTTP_BAD_REQUEST) {

@@ -9,13 +9,6 @@
 
 namespace syncer {
 
-namespace {
-
-const char kQueryParameterAlternateOutputKey[] = "alt";
-const char kQueryParameterAlternateOutputProto[] = "proto";
-
-}  // namespace
-
 std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
 }

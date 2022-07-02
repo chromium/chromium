@@ -32,7 +32,7 @@ class UnifiedConsentService;
 // Delegate that handles interactions with unified consent screen.
 @protocol UserSigninMediatorDelegate
 
-// Returns the state of the |settingsLinkWasTapped| parameter in
+// Returns the state of the `settingsLinkWasTapped` parameter in
 // UnifiedConsentCoordinator.
 - (BOOL)userSigninMediatorGetSettingsLinkWasTapped;
 
@@ -89,7 +89,7 @@ class UnifiedConsentService;
 // Reverts the sign-in operation.
 - (void)cancelSignin;
 
-// Cancels and dismisses with animation if |animated| the authentication flow
+// Cancels and dismisses with animation if `animated` the authentication flow
 // when sign-in is in progress.
 - (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
                                         completion:(ProceduralBlock)completion;

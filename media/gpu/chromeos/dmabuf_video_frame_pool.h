@@ -18,10 +18,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace media {
 
 // Forward declare for use in AsPlatformVideoFramePool.
@@ -38,7 +34,6 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
 
   using CreateFrameCB =
       base::RepeatingCallback<CroStatus::Or<scoped_refptr<VideoFrame>>(
-          gpu::GpuMemoryBufferFactory*,
           VideoPixelFormat,
           const gfx::Size&,
           const gfx::Rect&,

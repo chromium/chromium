@@ -34,8 +34,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -197,13 +197,13 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
 
   const AudioNodeInfo kInternalMic[] = {
       {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
-  const chromeos::AudioNode audio_node = chromeos::AudioNode(
+  const AudioNode audio_node = AudioNode(
       kInternalMic->is_input, kInternalMic->id,
       /*has_v2_stable_device_id=*/false, kInternalMic->id,
       /*stable_device_id_v2=*/0, kInternalMic->device_name, kInternalMic->type,
       kInternalMic->name, /*active=*/false,
       /*plugged_time=*/0, /*max_supported_channels=*/1, /*audio_effect=*/1);
-  chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
+  FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
 
   CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
   EXPECT_CALL(mock_client_,
@@ -245,9 +245,9 @@ TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
-  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
+  // Verify that |ShowAnnotationTray| in |ProjectorUiController| is called.
   auto* root = Shell::GetPrimaryRootWindow();
-  EXPECT_CALL(*mock_ui_controller_, ShowToolbar(root)).Times(1);
+  EXPECT_CALL(*mock_ui_controller_, ShowAnnotationTray(root)).Times(1);
 
   controller_->OnRecordingStarted(root, /*is_in_projector_mode=*/true);
   histogram_tester_.ExpectUniqueSample(
@@ -262,8 +262,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
-  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
+  // Verify that |HideAnnotationTray| in |ProjectorUiController| is
+  // called.
+  EXPECT_CALL(*mock_ui_controller_, HideAnnotationTray()).Times(1);
   EXPECT_CALL(mock_client_, OpenProjectorApp()).Times(0);
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(

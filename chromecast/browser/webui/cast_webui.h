@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -45,7 +46,8 @@ class CastWebUI : public mojom::WebUi, public content::WebUIController {
  private:
   void AddWebviewSupport();
   void OnWebUIReady(const base::ListValue* args);
-  void InvokeCallback(const std::string& message, const base::ListValue* args);
+  void InvokeCallback(const std::string& message,
+                      const base::Value::List& args);
 
   // mojom::WebUI implementation:
   void RegisterMessageCallback(

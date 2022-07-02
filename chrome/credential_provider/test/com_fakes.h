@@ -5,6 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_TEST_COM_FAKES_H_
 #define CHROME_CREDENTIAL_PROVIDER_TEST_COM_FAKES_H_
 
+#include "base/win/atl.h"
+
 #include <atlcomcli.h>
 #include <credentialprovider.h>
 #include <propkey.h>

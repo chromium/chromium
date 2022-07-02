@@ -53,12 +53,11 @@ unsigned int GetFormatForProfile(VAProfile profile) {
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        const VaapiDevice& va_device,
                        SharedVASurface::FetchPolicy fetch_policy)
-    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
-                                 va_device,
-                                 fetch_policy),
+    : VideoDecoder::VideoDecoder(va_device, fetch_policy),
       vp9_parser_(
           std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)),
-      ref_frames_(kVp9NumRefFrames) {}
+      ref_frames_(kVp9NumRefFrames),
+      ivf_parser_(std::move(ivf_parser)) {}
 
 Vp9Decoder::~Vp9Decoder() {
   // We destroy the VA handles explicitly to ensure the correct order.

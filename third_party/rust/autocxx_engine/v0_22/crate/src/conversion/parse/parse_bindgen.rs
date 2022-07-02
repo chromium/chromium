@@ -207,7 +207,7 @@ impl<'a> ParseBindgen<'a> {
                 // cxx::bridge can't cope with type aliases to generic
                 // types at the moment.
                 let name = api_name_qualified(ns, s.ident.clone(), &annotations)?;
-                let err = annotations.check_for_fatal_attrs(&s.ident).err();
+                let mut err = annotations.check_for_fatal_attrs(&s.ident).err();
                 let api = if ns.is_empty() && self.config.is_rust_type(&s.ident) {
                     None
                 } else if Self::spot_forward_declaration(&s.fields)
@@ -219,6 +219,15 @@ impl<'a> ParseBindgen<'a> {
                     // we spot in the previous clause) but instead with an _address field.
                     // So, solely in the case where we're storing up an error about such
                     // a templated type, we'll also treat such cases as forward declarations.
+                    //
+                    // We'll also at this point check for one specific problem with
+                    // forward declarations.
+                    if err.is_none() && name.cpp_name().contains("::") {
+                        err = Some(ConvertErrorWithContext(
+                            ConvertError::ForwardDeclaredNestedType,
+                            Some(ErrorContext::new_for_item(s.ident)),
+                        ));
+                    }
                     Some(UnanalyzedApi::ForwardDeclaration { name, err })
                 } else {
                     let has_rvalue_reference_fields = s.fields.iter().any(|f| {
@@ -227,7 +236,6 @@ impl<'a> ParseBindgen<'a> {
                     Some(UnanalyzedApi::Struct {
                         name,
                         details: Box::new(StructDetails {
-                            vis: annotations.get_cpp_visibility(),
                             layout: annotations.get_layout(),
                             item: s,
                             has_rvalue_reference_fields,

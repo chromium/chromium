@@ -23,6 +23,10 @@
 // Determines whether the feed should be shown based on the user prefs.
 - (BOOL)shouldFeedBeVisible;
 
+// YES if the Following Feed is currently available. e.g. It might be disabled
+// for certain circumstances like restricted accounts.
+- (BOOL)isFollowingFeedAvailable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_

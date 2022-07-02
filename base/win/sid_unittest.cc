@@ -6,11 +6,11 @@
 
 #include "base/win/sid.h"
 
-#include <algorithm>
-
 #include <windows.h>
 
 #include <sddl.h>
+
+#include <algorithm>
 
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"

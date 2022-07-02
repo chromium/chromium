@@ -7,66 +7,83 @@
  * Settings page for managing Parental Controls features.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
 
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {routes} from '../os_route.js';
 
 import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-parental-controls-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsParentalControlsPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+export class SettingsParentalControlsPageElement extends
+    SettingsParentalControlsPageElementBase {
+  static get is() {
+    return 'settings-parental-controls-page';
+  }
 
-  properties: {
-    /** @private */
-    isChild_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isChild');
-      }
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    online_: {
-      type: Boolean,
-      value() {
-        return navigator.onLine;
-      }
-    },
-  },
+  static get properties() {
+    return {
+      /** @private */
+      isChild_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isChild');
+        }
+      },
+
+      /** @private */
+      online_: {
+        type: Boolean,
+        value() {
+          return navigator.onLine;
+        }
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!ParentalControlsBrowserProxy} */
     this.browserProxy_ = ParentalControlsBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     // Set up online/offline listeners.
     window.addEventListener('offline', this.onOffline_.bind(this));
     window.addEventListener('online', this.onOnline_.bind(this));
-  },
+  }
 
   /**
    * Returns the setup parental controls CrButtonElement.
    * @return {?CrButtonElement}
    */
   getSetupButton() {
-    return /** @type {?CrButtonElement} */ (this.$$('#setupButton'));
-  },
+    return /** @type {?CrButtonElement} */ (
+        this.shadowRoot.querySelector('#setupButton'));
+  }
 
   /**
    * Updates the UI when the device goes offline.
@@ -74,7 +91,7 @@ Polymer({
    */
   onOffline_() {
     this.online_ = false;
-  },
+  }
 
   /**
    * Updates the UI when the device comes online.
@@ -82,7 +99,7 @@ Polymer({
    */
   onOnline_() {
     this.online_ = true;
-  },
+  }
 
   /**
    * @return {string} Returns the string to display in the main
@@ -95,17 +112,21 @@ Polymer({
     } else {
       return this.i18n('parentalControlsPageConnectToInternetLabel');
     }
-  },
+  }
 
   /** @private */
   handleSetupButtonClick_(event) {
     event.stopPropagation();
     this.browserProxy_.showAddSupervisionDialog();
-  },
+  }
 
   /** @private */
   handleFamilyLinkButtonClick_(event) {
     event.stopPropagation();
     this.browserProxy_.launchFamilyLinkSettings();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsParentalControlsPageElement.is,
+    SettingsParentalControlsPageElement);

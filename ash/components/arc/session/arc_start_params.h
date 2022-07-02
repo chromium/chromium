@@ -69,9 +69,6 @@ struct StartParams {
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;
 
-  // Flag to disable system default apps.
-  bool arc_disable_system_default_app = false;
-
   // Flag to disable scheduling of media store periodic maintenance tasks.
   bool disable_media_store_maintenance = false;
 
@@ -97,6 +94,9 @@ struct StartParams {
 
   // Flag to enable TTS caching.
   bool enable_tts_caching = false;
+
+  // Flag to enable disable consumer auto update toggle as part of EU new deal.
+  bool enable_consumer_auto_update_toggle = false;
 };
 
 }  // namespace arc

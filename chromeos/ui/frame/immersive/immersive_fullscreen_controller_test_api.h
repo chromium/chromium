@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace chromeos {
 
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
   bool IsTopEdgeHoverTimerRunning() const;
 
  private:
-  ImmersiveFullscreenController* immersive_fullscreen_controller_;
+  raw_ptr<ImmersiveFullscreenController> immersive_fullscreen_controller_;
 };
 
 }  // namespace chromeos

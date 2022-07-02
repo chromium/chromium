@@ -78,7 +78,7 @@ class StorageAccessGrantPermissionContextTest
 
       ContentSetting result = CONTENT_SETTING_DEFAULT;
       permission_context.DecidePermission(
-          web_contents(), fake_id, requesting_origin, embedding_origin,
+          fake_id, requesting_origin, embedding_origin,
           /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
       base::RunLoop().RunUntilIdle();
 
@@ -88,7 +88,8 @@ class StorageAccessGrantPermissionContextTest
 
   permissions::PermissionRequestID CreateFakeID() {
     return permissions::PermissionRequestID(
-        web_contents()->GetMainFrame(), request_id_generator_.GenerateNextId());
+        web_contents()->GetPrimaryMainFrame(),
+        request_id_generator_.GenerateNextId());
   }
 
  private:
@@ -116,7 +117,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
 }
@@ -139,7 +140,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   base::RunLoop().RunUntilIdle();
 
@@ -168,7 +169,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/false, base::BindOnce(&SaveResult, &result));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
 }
@@ -212,7 +213,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   base::RunLoop().RunUntilIdle();
 
@@ -240,7 +241,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   // it gets auto-granted as the limit has not been reached for it yet.
   result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, alternate_requester_url, GetTopLevelURL(),
+      fake_id, alternate_requester_url, GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   base::RunLoop().RunUntilIdle();
 
@@ -270,7 +271,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   base::RunLoop().RunUntilIdle();
 
@@ -308,7 +309,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermission(
-      web_contents(), fake_id, GetRequesterURL(), GetTopLevelURL(),
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, base::BindOnce(&SaveResult, &result));
   base::RunLoop().RunUntilIdle();
 

@@ -157,11 +157,17 @@ GCMProfileService::GCMProfileService(
     scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   signin::IdentityManager::AccountIdMigrationState id_migration =
       identity_manager_->GetAccountIdMigrationState();
   bool remove_account_mappings_with_email_key =
       (id_migration == signin::IdentityManager::MIGRATION_IN_PROGRESS) ||
       (id_migration == signin::IdentityManager::MIGRATION_DONE);
+#else
+  // Migration is done on non-ChromeOS platforms.
+  bool remove_account_mappings_with_email_key = false;
+#endif
+
   driver_ = CreateGCMDriverDesktop(
       std::move(gcm_client_factory), prefs,
       path.Append(gcm_driver::kGCMStoreDirname),

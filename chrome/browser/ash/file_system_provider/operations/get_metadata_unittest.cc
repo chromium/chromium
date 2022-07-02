@@ -45,13 +45,11 @@ void CreateRequestValueFromJSON(const std::string& json,
   using extensions::api::file_system_provider_internal::
       GetMetadataRequestedSuccess::Params;
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
-  ASSERT_TRUE(parsed_json.value->is_list());
-  std::unique_ptr<Params> params(
-      Params::Create(parsed_json.value->GetListDeprecated()));
+  ASSERT_TRUE(parsed_json->is_list());
+  std::unique_ptr<Params> params(Params::Create(parsed_json->GetList()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForGetMetadataSuccess(std::move(params));
   ASSERT_TRUE(result->get());
@@ -245,10 +243,10 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnGetMetadataRequested::kEventName,
       event->event_name);
-  base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetListDeprecated().size());
+  const base::Value::List& event_args = event->event_args;
+  ASSERT_EQ(1u, event_args.size());
 
-  const base::Value* options_as_value = &event_args->GetListDeprecated()[0];
+  const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   GetMetadataRequestedOptions options;

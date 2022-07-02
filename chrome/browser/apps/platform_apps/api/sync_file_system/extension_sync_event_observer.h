@@ -76,7 +76,7 @@ class ExtensionSyncEventObserver : public sync_file_system::SyncEventObserver,
       const GURL& app_origin,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::vector<base::Value> value);
+      base::Value::List value);
 };
 
 }  // namespace api

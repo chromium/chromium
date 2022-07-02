@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -70,9 +71,8 @@ class FakeDownloadDisplay : public DownloadDisplay {
   }
 
   void ShowDetails() override { detail_shown_ = true; }
-
-  bool IsDetailsShown() { return detail_shown_; }
-  void SetDetailsShown(bool detail_shown) { detail_shown_ = detail_shown; }
+  void HideDetails() override { detail_shown_ = false; }
+  bool IsShowingDetails() override { return detail_shown_; }
 
   DownloadIconState GetDownloadIconState() { return icon_state_; }
   bool IsActive() { return is_active_; }
@@ -123,7 +123,7 @@ class DownloadDisplayControllerTest : public testing::Test {
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
     EXPECT_CALL(*manager_.get(), GetBrowserContext())
-        .WillRepeatedly(Return(profile_));
+        .WillRepeatedly(Return(profile_.get()));
 
     // Set test delegate to get the corresponding download prefs.
     auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(profile_);
@@ -276,11 +276,11 @@ class DownloadDisplayControllerTest : public testing::Test {
       ADD_FAILURE() << "Display should have shown state " << shown
                     << ", but found " << display().IsShowing();
     }
-    if (detail_shown != display().IsDetailsShown()) {
+    if (detail_shown != display().IsShowingDetails()) {
       success = false;
       ADD_FAILURE() << "Display should have detailed shown state "
                     << detail_shown << ", but found "
-                    << display().IsDetailsShown();
+                    << display().IsShowingDetails();
     }
     if (icon_state != display().GetDownloadIconState()) {
       success = false;
@@ -309,7 +309,7 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   std::unique_ptr<FakeDownloadBubbleUIController> bubble_controller_;
   TestingProfileManager testing_profile_manager_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 };
@@ -413,7 +413,7 @@ TEST_F(DownloadDisplayControllerTest,
 
   // Reset details_shown before the second download starts. This can happen if
   // the user clicks somewhere else to dismiss the download bubble.
-  display().SetDetailsShown(false);
+  display().HideDetails();
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::IN_PROGRESS);
@@ -423,7 +423,7 @@ TEST_F(DownloadDisplayControllerTest,
 
   // Reset details_shown while the downloads are in progress. This can happen if
   // the user clicks somewhere else to dismiss the download bubble.
-  display().SetDetailsShown(false);
+  display().HideDetails();
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
   // The download icon state is still kProgress because not all downloads are
@@ -442,7 +442,7 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
-  display().SetDetailsShown(false);
+  display().HideDetails();
 
   UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
@@ -451,7 +451,7 @@ TEST_F(DownloadDisplayControllerTest,
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar3.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  display().SetDetailsShown(false);
+  display().HideDetails();
   // Pop open partial view on completed download.
   UpdateDownloadItem(/*item_index=*/2, DownloadState::COMPLETE,
                      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,

@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -204,7 +204,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   if (ash::features::IsPersonalizationHubEnabled() &&
-      !profile->IsGuestSession()) {
+      profile->IsRegularProfile()) {
     size_t personalization_app_group_id =
         controller->AddGroup(kGenericMaxResults);
 

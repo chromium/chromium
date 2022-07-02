@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL("/accessibility/lines/lines.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/lines/lines-inline-nested.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
                                           ui::kAXModeComplete,
                                           ax::mojom::Event::kTreeChanged);
   manager->LoadInlineTextBoxes(*manager->GetRoot());
-  waiter2.WaitForNotification();
+  ASSERT_TRUE(waiter2.WaitForNotification());
 
   // There are three pieces of text, and they should be cross-linked:
   //   before <-> inside <-> after

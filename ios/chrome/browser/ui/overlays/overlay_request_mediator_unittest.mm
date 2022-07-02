@@ -56,7 +56,7 @@ class OverlayRequestMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(delegate_);
   }
 
-  // Destroys |request_|, expecting that the completion callback is executed.
+  // Destroys `request_`, expecting that the completion callback is executed.
   void ResetRequest() {
     if (!request_)
       return;
@@ -79,7 +79,7 @@ TEST_F(OverlayRequestMediatorTest, ResetRequestAfterDestruction) {
   EXPECT_EQ(nullptr, mediator_.request);
 }
 
-// Tests that |-dispatchResponse:| correctly dispatches the response.
+// Tests that `-dispatchResponse:` correctly dispatches the response.
 TEST_F(OverlayRequestMediatorTest, DispatchResponse) {
   EXPECT_CALL(
       callback_receiver_,
@@ -87,7 +87,7 @@ TEST_F(OverlayRequestMediatorTest, DispatchResponse) {
   [mediator_ dispatchResponse:OverlayResponse::CreateWithInfo<DispatchInfo>()];
 }
 
-// Tests that |-dismissOverlay| stops the overlay.
+// Tests that `-dismissOverlay` stops the overlay.
 TEST_F(OverlayRequestMediatorTest, DismissOverlay) {
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissOverlay];

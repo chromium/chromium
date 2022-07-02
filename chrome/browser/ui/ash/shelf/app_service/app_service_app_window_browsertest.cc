@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -418,7 +418,7 @@ class AppServiceAppWindowBorealisBrowserTest
     vm_tools::apps::ApplicationList list;
     list.set_vm_name(vm);
     list.set_container_name(container);
-    list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    list.set_vm_type(vm_tools::apps::BOREALIS);
     vm_tools::apps::App* app = list.add_apps();
     app->set_desktop_file_id(name);
     app->mutable_name()->add_values()->set_value(name);
@@ -936,10 +936,8 @@ class AppServiceAppWindowSystemWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
                        SystemWebAppWindow) {
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
-          ->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   const std::string app_id = web_app::kOsSettingsAppId;
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
@@ -972,11 +970,6 @@ IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppServiceAppWindowSystemWebAppBrowserTest,
-                         // TODO(crbug.com/1203992): Tests are not run with the
-                         // flag enabled for now, because WebAppsCrosapi
-                         // automatically enables new browser app tracking, but
-                         // it doesn't implement app service instance registry
-                         // updates yet, so the test will fail with the flag
-                         // enabled.
-                         ::testing::Values(CrosapiParam::kDisabled),
+                         ::testing::Values(CrosapiParam::kEnabled,
+                                           CrosapiParam::kDisabled),
                          WithCrosapiParam::ParamToString);

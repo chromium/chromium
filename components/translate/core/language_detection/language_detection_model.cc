@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/language/core/common/language_util.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_resolver.h"
@@ -61,7 +62,11 @@ class ScopedLanguageDetectionModelStateRecorder {
 
 namespace translate {
 
-LanguageDetectionModel::LanguageDetectionModel() = default;
+LanguageDetectionModel::LanguageDetectionModel()
+    : num_threads_(
+          optimization_guide::features::OverrideNumThreadsForOptTarget(
+              optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION)
+              .value_or(-1)) {}
 
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
@@ -79,6 +84,12 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   options.set_input_tensor_index(0);
   options.set_output_score_tensor_index(0);
   options.set_output_label_tensor_index(2);
+
+  options.mutable_base_options()
+      ->mutable_compute_settings()
+      ->mutable_tflite_settings()
+      ->mutable_cpu_settings()
+      ->set_num_threads(num_threads_);
 
   std::string file_content(model_file.GetLength(), '\0');
   int bytes_read =

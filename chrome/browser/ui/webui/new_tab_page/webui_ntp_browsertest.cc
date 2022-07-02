@@ -56,8 +56,9 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, VerifySiteInstance) {
   ASSERT_EQ(ntp_url, web_contents->GetLastCommittedURL());
 
   GURL webui_ntp_url(chrome::kChromeUINewTabPageURL);
-  ASSERT_EQ(webui_ntp_url,
-            web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+  ASSERT_EQ(
+      webui_ntp_url,
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
 }
 
 // Verify that the WebUI NTP uses process-per-site.
@@ -82,8 +83,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 
   // Verify that all NTPs share a process.
   for (size_t i = 1; i < tabs.size(); i++) {
-    EXPECT_EQ(tabs[0]->GetMainFrame()->GetProcess(),
-              tabs[i]->GetMainFrame()->GetProcess());
+    EXPECT_EQ(tabs[0]->GetPrimaryMainFrame()->GetProcess(),
+              tabs[i]->GetPrimaryMainFrame()->GetProcess());
   }
 }
 
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   ExpectIsWebUiNtp(ntp);
 
   // Check spare was taken.
-  EXPECT_EQ(ntp->GetMainFrame()->GetProcess(), spare);
+  EXPECT_EQ(ntp->GetPrimaryMainFrame()->GetProcess(), spare);
 
   // No processes should be unnecessarily terminated.
   EXPECT_EQ(0u, process_termination_tracker.size());

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -27,6 +28,7 @@ constexpr uint32_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
 ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr
 SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     const ScriptValue& input,
+    ExecutionContext& execution_context,
     ExceptionState& exception_state) {
   DCHECK(!input.IsEmpty());
   SecurePaymentConfirmationRequest* request =
@@ -89,6 +91,13 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"rpId\" field.");
     return nullptr;
+  }
+
+  // Opt Out should only be carried through if the flag is enabled.
+  if (request->hasShowOptOut() &&
+      !blink::RuntimeEnabledFeatures::SecurePaymentConfirmationOptOutEnabled(
+          &execution_context)) {
+    request->setShowOptOut(false);
   }
 
   return mojo::ConvertTo<

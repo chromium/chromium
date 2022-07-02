@@ -131,7 +131,6 @@ OfflineAudioContext::OfflineAudioContext(Document* document,
                                          float sample_rate,
                                          ExceptionState& exception_state)
     : BaseAudioContext(document, kOfflineContext),
-      is_rendering_started_(false),
       total_render_frames_(number_of_frames) {
   destination_node_ = OfflineAudioDestinationNode::Create(
       this, number_of_channels, number_of_frames, sample_rate);
@@ -303,7 +302,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
   }
 
   {
-    MutexLocker suspend_frames_locker(suspend_frames_lock_);
+    base::AutoLock suspend_frames_locker(suspend_frames_lock_);
     scheduled_suspend_frames_.insert(frame);
   }
 
@@ -389,7 +388,7 @@ void OfflineAudioContext::FireCompletionEvent() {
 bool OfflineAudioContext::HandlePreRenderTasks(
     const AudioIOPosition* output_position,
     const AudioCallbackMetric* metric) {
-  // TODO(hongchan, rtoy): passing |nullptr| as an argument is not a good
+  // TODO(hongchan): passing `nullptr` as an argument is not a good
   // pattern. Consider rewriting this method/interface.
   DCHECK_EQ(output_position, nullptr);
   DCHECK_EQ(metric, nullptr);
@@ -411,7 +410,7 @@ void OfflineAudioContext::HandlePostRenderTasks() {
   DCHECK(IsAudioThread());
 
   // OfflineGraphAutoLocker here locks the audio graph for the same reason
-  // above in |handlePreOfflineRenderTasks|.
+  // above in `HandlePreRenderTasks()`.
   {
     OfflineGraphAutoLocker locker(this);
 
@@ -433,7 +432,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
   SetContextState(kSuspended);
 
   {
-    MutexLocker locker(suspend_frames_lock_);
+    base::AutoLock locker(suspend_frames_lock_);
     DCHECK(scheduled_suspend_frames_.Contains(frame));
     scheduled_suspend_frames_.erase(frame);
   }
@@ -445,7 +444,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
     // If the context is going away, m_scheduledSuspends could have had all its
     // entries removed.  Check for that here.
     if (scheduled_suspends_.size()) {
-      // |frame| must exist in the map.
+      // `frame` must exist in the map.
       DCHECK(scheduled_suspends_.Contains(frame));
 
       SuspendMap::iterator it = scheduled_suspends_.find(frame);
@@ -460,7 +459,7 @@ void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
 
   {
-    MutexLocker locker(suspend_frames_lock_);
+    base::AutoLock locker(suspend_frames_lock_);
     scheduled_suspend_frames_.clear();
   }
 
@@ -495,7 +494,7 @@ bool OfflineAudioContext::IsPullingAudioGraph() const {
 bool OfflineAudioContext::ShouldSuspend() {
   DCHECK(IsAudioThread());
 
-  MutexLocker locker(suspend_frames_lock_);
+  base::AutoLock locker(suspend_frames_lock_);
   return scheduled_suspend_frames_.Contains(CurrentSampleFrame());
 }
 

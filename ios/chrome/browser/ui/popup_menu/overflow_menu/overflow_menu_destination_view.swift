@@ -5,6 +5,14 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
+/// PreferenceKey to listen to visibility changes for a given destination.
+struct DestinationVisibilityPreferenceKey: PreferenceKey {
+  static var defaultValue: Int = 0
+  static func reduce(value: inout Int, nextValue: () -> Int) {
+    value += nextValue()
+  }
+}
+
 /// Style based on state for an OverflowMenuDestinationView.
 @available(iOS 15, *)
 struct OverflowMenuDestinationButton: ButtonStyle {
@@ -46,6 +54,12 @@ struct OverflowMenuDestinationButton: ButtonStyle {
   /// The layout parameters for this view.
   var layoutParameters: OverflowMenuDestinationView.LayoutParameters
 
+  /// Tracks if the destination icon is visible in the carousel.
+  @State var isIconVisible = false
+
+  /// Tracks if the destination name is visible in the carousel.
+  @State var isTextVisible = false
+
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   func makeBody(configuration: Configuration) -> some View {
@@ -70,6 +84,10 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       }
     }
     .contentShape(Rectangle())
+    .preference(
+      key: DestinationVisibilityPreferenceKey.self,
+      value: (isIconVisible || isTextVisible) ? 1 : 0
+    )
   }
 
   /// Background color for the icon.
@@ -116,6 +134,12 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       // VoiceOver will occasionally read out icons it thinks it can
       // recognize.
       .accessibilityHidden(true)
+      .onAppear {
+        isIconVisible = true
+      }
+      .onDisappear {
+        isIconVisible = false
+      }
   }
 
   /// Text view for the destination.
@@ -136,6 +160,12 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .padding([.leading, .trailing], textSpacing)
       .multilineTextAlignment(.center)
       .lineLimit(maximumLines)
+      .onAppear {
+        isTextVisible = true
+      }
+      .onDisappear {
+        isTextVisible = false
+      }
   }
 }
 

@@ -109,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   // Sanity-check test setup: 2 frames share a renderer process, but are not in
   // a related browsing instance.
   content::RenderFrameHost* tab1 =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   content::RenderFrameHost* tab2 =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
   EXPECT_EQ(tab1->GetProcess(), tab2->GetProcess());
   EXPECT_FALSE(
       tab1->GetSiteInstance()->IsRelatedSiteInstance(tab2->GetSiteInstance()));
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
     ASSERT_TRUE(did_create_popup);
     content::WebContents* popup_window = new_window_observer.GetWebContents();
     EXPECT_TRUE(WaitForLoadStop(popup_window));
-    tab1_popup = popup_window->GetMainFrame();
+    tab1_popup = popup_window->GetPrimaryMainFrame();
   }
   EXPECT_EQ(GURL(url::kAboutBlankURL), tab1_popup->GetLastCommittedURL());
 

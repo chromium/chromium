@@ -31,6 +31,7 @@ class DesktopDisplayInfoMonitor;
 class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
+class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
 class UrlForwarderConfigurator;
 
@@ -50,22 +51,13 @@ class DesktopEnvironment {
   virtual std::unique_ptr<AudioCapturer> CreateAudioCapturer() = 0;
   virtual std::unique_ptr<InputInjector> CreateInputInjector() = 0;
   virtual std::unique_ptr<ScreenControls> CreateScreenControls() = 0;
+  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer() = 0;
 
-  // |monitor| is an optional parameter. If provided, it will be notified on
-  // every captured frame so it can refresh the display-info. Used (by
-  // DesktopCapturerProxy) only for the single-video-stream case, where there is
-  // only one capturer which owns the monitor. For multi-stream, the monitor is
-  // owned and managed independently from DesktopCapturerProxy.
-  // TODO(lambroslambrou): Remove this parameter when the single-stream
-  // implementation is removed. Alternatively, if the Win/Mac implementations
-  // of DesktopDisplayInfoLoader are updated to be event-driven (instead of
-  // polling per captured frame), this parameter could be removed even in
-  // the single-video-stream case.
-  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
-      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) = 0;
+  // Returns a DisplayInfoMonitor that is owned by this object. Returns
+  // nullptr if the implementation does not support monitoring of displays
+  // (for example, in the Network process if multi-process is enabled).
+  virtual DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() = 0;
 
-  virtual std::unique_ptr<DesktopDisplayInfoMonitor>
-  CreateDisplayInfoMonitor() = 0;
   virtual std::unique_ptr<webrtc::MouseCursorMonitor>
   CreateMouseCursorMonitor() = 0;
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
@@ -74,14 +66,15 @@ class DesktopEnvironment {
   virtual std::unique_ptr<FileOperations> CreateFileOperations() = 0;
   virtual std::unique_ptr<UrlForwarderConfigurator>
   CreateUrlForwarderConfigurator() = 0;
+  virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() = 0;
 
   // For platforms that require the mouse cursor to be composited into the video
   // stream when it is not rendered by the client, returns a composing capturer.
   // If the platform already does this, this method return null, and the caller
   // should use CreateVideoCapturer() instead.
   virtual std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer(
-      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) = 0;
+  CreateComposingVideoCapturer() = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;

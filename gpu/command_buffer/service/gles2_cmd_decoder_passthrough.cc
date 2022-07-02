@@ -1049,11 +1049,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   InitializeFeatureInfo(attrib_helper.context_type, DisallowedFeatures(),
                         false);
 
-  // Support for CHROMIUM_texture_storage_image depends on the underlying
+  // Support for texture_storage_image depends on the underlying
   // ImageFactory's ability to create anonymous images.
   gpu::ImageFactory* image_factory = group_->image_factory();
   if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableCHROMIUMTextureStorageImage();
+    feature_info_->EnableTextureStorageImage();
   }
 
   // Check for required extensions
@@ -1662,10 +1662,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =
       feature_info_->feature_flags().chromium_image_ycbcr_p010;
-  if (feature_info_->workarounds().client_max_texture_size) {
+  if (feature_info_->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
-                 feature_info_->workarounds().client_max_texture_size);
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
   caps.max_copy_texture_chromium_size =
       feature_info_->workarounds().max_copy_texture_chromium_size;
@@ -1703,7 +1703,7 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
 #endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.texture_storage_image =
-      feature_info_->feature_flags().chromium_texture_storage_image;
+      feature_info_->feature_flags().texture_storage_image;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
   caps.num_surface_buffers = surface_->GetBufferCount();
@@ -2044,8 +2044,12 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
   // It's possible that this texture was processed by some other decoder
   // while it was also bound here, or that it has been destroyed.  In
   // either case, do nothing.
-  if (!texture || !texture->is_bind_pending())
+  if (!texture || !texture->is_bind_pending()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary",
+        false);
     return;
+  }
 
   // TODO(liberato): make this work for non-0 levels.
   gl::GLImage* image = texture->GetLevelImage(target, 0);
@@ -2057,11 +2061,19 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
   // Similarly, we might not even get here if an image was bound to a
   // texture that requries bind/copy, but that texture was already bound
   // to a sampler in this decoder.
-  if (!image)
+  if (!image) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary",
+        false);
     return;
+  }
 
   // Because the binding is deferred, this texture may not be currently bound
   // any more. Bind it again.
+
+  UMA_HISTOGRAM_BOOLEAN(
+      "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary", true);
+
   GLenum texture_type = TextureTargetToTextureType(target);
   api()->glBindTextureFn(texture_type, texture->service_id());
 
@@ -2142,7 +2154,7 @@ void GLES2DecoderPassthroughImpl::InitializeFeatureInfo(
 
   gpu::ImageFactory* image_factory = group_->image_factory();
   if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableCHROMIUMTextureStorageImage();
+    feature_info_->EnableTextureStorageImage();
   }
 }
 
@@ -2245,16 +2257,6 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetNumericResults(GLenum pname,
         return error::kInvalidArguments;
       }
       std::copy(std::begin(scissor_), std::end(scissor_), params);
-      break;
-
-    case GL_MAX_TEXTURE_SIZE:
-    case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-    case GL_MAX_3D_TEXTURE_SIZE:
-      if (feature_info_->workarounds().client_max_texture_size) {
-        *params = std::min(
-            *params, static_cast<T>(
-                         feature_info_->workarounds().client_max_texture_size));
-      }
       break;
 
     default:
@@ -2418,6 +2420,16 @@ bool GLES2DecoderPassthroughImpl::FlushErrors() {
     error = glGetError();
   }
   return had_error;
+}
+
+bool GLES2DecoderPassthroughImpl::IsIgnoredCap(GLenum cap) const {
+  switch (cap) {
+    case GL_DEBUG_OUTPUT:
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
@@ -3017,8 +3029,7 @@ error::Error GLES2DecoderPassthroughImpl::CheckSwapBuffersResult(
     gfx::SwapResult result,
     const char* function_name) {
   if (result == gfx::SwapResult::SWAP_FAILED) {
-    // If SwapBuffers/SwapBuffersWithBounds/PostSubBuffer failed, we may not
-    // have a current context any more.
+    // If SwapBuffers failed, we may not have a current context any more.
     LOG(ERROR) << "Context lost because " << function_name << " failed.";
     if (!context_->IsCurrent(surface_.get()) || !CheckResetStatus()) {
       MarkContextLost(error::kUnknown);

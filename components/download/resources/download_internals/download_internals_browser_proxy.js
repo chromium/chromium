@@ -72,6 +72,7 @@ export let ServiceStatus;
  *   state: !ServiceEntryState,
  *   url: string,
  *   bytes_downloaded: number,
+ *   time_downloaded: string,
  *   result: (!ServiceEntryResult|undefined),
  *   driver: {
  *     state: !DriverEntryState,

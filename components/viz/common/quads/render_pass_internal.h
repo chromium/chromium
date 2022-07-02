@@ -36,7 +36,7 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
 
   // Replaces a quad in |quad_list| with a |SolidColorDrawQuad|.
   void ReplaceExistingQuadWithSolidColor(QuadList::Iterator at,
-                                         SkColor color,
+                                         SkColor4f color,
                                          SkBlendMode blend_mode);
 
   // These are in the space of the render pass' physical pixels.
@@ -74,6 +74,15 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // this list.
   std::vector<std::unique_ptr<CopyOutputRequest>> copy_requests;
 
+  // `quad_list` + `shared_quad_state_list` store quad data in front-to-back
+  // order. Each DrawQuad must have a corresponding SharedQuadState but there be
+  // multiple DrawQuads for a single SharedQuadState.
+  //
+  // Note that `shared_quad_state_list` should be in the same front-to-back
+  // order as `quad_list`. This is a strict requirement if the CompositorFrame
+  // will be serialized as the mojom traits depends on it. Ideally the order is
+  // maintained in viz after deserialization, for cache efficiency while
+  // iterating through quads, but it's not a strict requirement.
   QuadList quad_list;
   SharedQuadStateList shared_quad_state_list;
 

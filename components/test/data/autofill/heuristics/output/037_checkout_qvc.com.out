@@ -26,4 +26,4 @@ ADDRESS_HOME_STATE | ShiptoState | State/Province: | AL | ShiptoAddress1_2-defau
 ADDRESS_HOME_ZIP | ShiptoZipCode | * Postal Code: |  | ShiptoAddress1_2-default
 ADDRESS_HOME_COUNTRY | ShiptoCountry | * Country: | US | ShiptoAddress1_2-default
 UNKNOWN_TYPE | ShiptoRadiobutton | This order only | ThisOrderOnly | ShiptoAddress1_2-default
-UNKNOWN_TYPE | ShiptoRadiobutton | (Permanent Ship-To)**All future orders | PermanentShipto | ShiptoAddress1_2-default
+UNKNOWN_TYPE | ShiptoRadiobutton | All future orders (Permanent Ship-To)** | PermanentShipto | ShiptoAddress1_2-default

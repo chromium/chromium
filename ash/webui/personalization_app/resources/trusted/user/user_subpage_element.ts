@@ -34,7 +34,7 @@ export class UserSubpage extends WithPersonalizationStore {
   }
 
   path: string;
-  isUserImageEnterpriseManaged_: boolean|null;
+  private isUserImageEnterpriseManaged_: boolean|null;
 
   override connectedCallback() {
     super.connectedCallback();

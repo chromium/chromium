@@ -143,6 +143,44 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
+    public void testServiceBoundWhenActivityIsHidden() {
+        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
+
+        CastWebContentsComponent component =
+                new CastWebContentsComponent(SESSION_ID, null, null, false, false, true);
+        component.start(mStartParams, false);
+
+        LocalBroadcastManager.getInstance(ContextUtils.getApplicationContext())
+                .sendBroadcastSync(CastWebContentsIntentUtils.onVisibilityChange(
+                        SESSION_ID, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN));
+
+        ArgumentCaptor<Intent> intent = ArgumentCaptor.forClass(Intent.class);
+        verify(mActivity).bindService(
+                intent.capture(), any(ServiceConnection.class), eq(Context.BIND_AUTO_CREATE));
+        Assert.assertEquals(intent.getValue().getComponent().getClassName(),
+                CastWebContentsService.class.getName());
+    }
+
+    @Test
+    public void testServiceUnboundWhenActivityIsShown() {
+        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
+
+        CastWebContentsComponent component =
+                new CastWebContentsComponent(SESSION_ID, null, null, false, false, true);
+        component.start(mStartParams, false);
+
+        LocalBroadcastManager.getInstance(ContextUtils.getApplicationContext())
+                .sendBroadcastSync(CastWebContentsIntentUtils.onVisibilityChange(
+                        SESSION_ID, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN));
+
+        LocalBroadcastManager.getInstance(ContextUtils.getApplicationContext())
+                .sendBroadcastSync(CastWebContentsIntentUtils.onVisibilityChange(
+                        SESSION_ID, CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN));
+
+        verify(mActivity).unbindService(any(ServiceConnection.class));
+    }
+
+    @Test
     public void testEnableTouchInputSendsEnableTouchToActivity() {
         Assume.assumeTrue(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
 

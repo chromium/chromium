@@ -755,7 +755,7 @@ def main(argv):
         options.java_version,
     ])
   if options.java_version == '1.8':
-    # Android's boot jar doesn't contain all java 8 classes.
+    # Android's boot jar doesn't contain all java classes.
     options.bootclasspath.append(build_utils.RT_JAR_PATH)
 
   # This effectively disables all annotation processors, even including
@@ -765,7 +765,12 @@ def main(argv):
   javac_args.extend(['-proc:none'])
 
   if options.bootclasspath:
-    javac_args.extend(['-bootclasspath', ':'.join(options.bootclasspath)])
+    # if we are targeting source code higher than java 8, we cannot use
+    # -bootclasspath anymore (deprecated). Instead just prepend the classpath.
+    if options.java_version != '1.8':
+      options.classpath = options.bootclasspath + options.classpath
+    else:
+      javac_args.extend(['-bootclasspath', ':'.join(options.bootclasspath)])
 
   if options.processorpath:
     javac_args.extend(['-processorpath', ':'.join(options.processorpath)])

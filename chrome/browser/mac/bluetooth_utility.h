@@ -18,7 +18,7 @@ enum BluetoothAvailability {
   // there is no further indication of whether Low Energy is supported.
   BLUETOOTH_AVAILABLE_LE_UNKNOWN = 4,
   BLUETOOTH_NOT_SUPPORTED = 5,
-  BLUETOOTH_AVAILABILITY_COUNT,
+  kMaxValue = BLUETOOTH_NOT_SUPPORTED
 };
 
 // Returns the bluetooth availability of the system's hardware.

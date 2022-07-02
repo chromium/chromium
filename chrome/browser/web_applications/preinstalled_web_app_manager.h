@@ -20,10 +20,6 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "url/gurl.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -79,7 +75,10 @@ class PreinstalledWebAppManager {
 
   static void SkipStartupForTesting();
   static void BypassOfflineManifestRequirementForTesting();
+
+  static void OverridePreviousUserUninstallConfigForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
+
   static void SetConfigsForTesting(const std::vector<base::Value>* configs);
   static void SetFileUtilsForTesting(FileUtilsWrapper* file_utils);
 
@@ -145,10 +144,6 @@ class PreinstalledWebAppManager {
       std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
           install_results,
       std::map<InstallUrl, bool> uninstall_results);
-
-  // The directory where default web app configs are stored.
-  // Empty if not applicable.
-  base::FilePath GetConfigDir();
 
   // Returns whether this is the first time we've deployed default apps on this
   // profile.

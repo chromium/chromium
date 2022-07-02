@@ -13,13 +13,17 @@ struct UnzipOptions {
   // Explicit encoding or set to "auto" to auto-detect from the ZIP file.
   // Default unpack encoding uses UTF-8.
   string encoding;
+  // Password used to unpack encrypted ZIP file.
+  string password;
 };
 
-struct Size {
+struct Info {
   // Boolean set to false if broken sizes are stored in the ZIP archive.
-  bool is_valid;
+  bool size_is_valid;
   // Predicted size as read from the ZIP archive (not trustable).
-  uint64 value;
+  uint64 size;
+  // Boolean set to true if the ZIP contains encrypted content.
+  bool is_encrypted;
 };
 
 // UnzipFilter is used to call back into the caller to check if
@@ -27,6 +31,13 @@ struct Size {
 interface UnzipFilter {
   [Sync]
   ShouldUnzipFile(mojo_base.mojom.FilePath path) => (bool result);
+};
+
+// Listener for a ZIP extraction operation.
+interface UnzipListener {
+  // Regularly called during ZIP extraction operation to report progress,
+  // with the total number of |bytes| processed since the last call.
+  OnProgress(uint64 bytes);
 };
 
 // Interface to the out-of-process unzipper. The unzipper unzips a ZIP
@@ -39,11 +50,13 @@ interface Unzipper {
   // If provided, |filter| is called for each entry of the archive (which incurs
   // one IPC for each entry) and only the entries for which it returns true are
   // extracted.
+  // If provided, |listener| is called repeatedly with the bytes extracted.
   Unzip(
       mojo_base.mojom.ReadOnlyFile zip_file,
       pending_remote<filesystem.mojom.Directory> output_dir,
       UnzipOptions options,
-      pending_remote<UnzipFilter>? filter) => (bool result);
+      pending_remote<UnzipFilter>? filter,
+      pending_remote<UnzipListener>? listener) => (bool result);
 
   // Detects the encoding of filenames stored in the ZIP archive.
   // Returns an Encoding as defined in
@@ -51,6 +64,6 @@ interface Unzipper {
   // or UNKNOWN_ENCODING in case of error.
   DetectEncoding(mojo_base.mojom.ReadOnlyFile zip_file) => (int32 encoding);
 
-  // Returns the size of the extracted archive in bytes.
-  GetExtractedSize(mojo_base.mojom.ReadOnlyFile zip_file) => (Size size);
+  // Returns the size in bytes and metadata for the extracted archive.
+  GetExtractedInfo(mojo_base.mojom.ReadOnlyFile zip_file) => (Info info);
 };

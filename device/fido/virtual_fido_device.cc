@@ -497,6 +497,10 @@ VirtualFidoDevice::VirtualFidoDevice(scoped_refptr<State> state)
 
 VirtualFidoDevice::~VirtualFidoDevice() = default;
 
+std::string VirtualFidoDevice::GetId() const {
+  return id_;
+}
+
 // static
 std::vector<uint8_t> VirtualFidoDevice::GetAttestationKey() {
   return fido_parsing_utils::Materialize(kAttestationKey);
@@ -631,10 +635,6 @@ bool VirtualFidoDevice::SimulatePress() {
 
 void VirtualFidoDevice::TryWink(base::OnceClosure cb) {
   std::move(cb).Run();
-}
-
-std::string VirtualFidoDevice::GetId() const {
-  return id_;
 }
 
 FidoTransportProtocol VirtualFidoDevice::DeviceTransport() const {

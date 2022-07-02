@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
@@ -183,8 +184,7 @@ struct SameSizeAsNode : EventTarget {
   Member<NodeData> member_;
   // Increasing size of Member increases size of Node.
   static_assert(kBlinkMemberGCHasDebugChecks ||
-                    ::WTF::internal::SizesEqual<sizeof(Member<NodeData>),
-                                                sizeof(void*)>::value,
+                    sizeof(Member<NodeData>) <= sizeof(void*),
                 "Member<NodeData> should stay small");
 };
 
@@ -1369,8 +1369,25 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
 
   // NOTE: If we are being called from SetNeedsAnimationStyleRecalc(), the
   // AnimationStyleChange bit may be reset to 'true'.
-  if (auto* this_element = DynamicTo<Element>(this))
+  if (auto* this_element = DynamicTo<Element>(this)) {
     this_element->SetAnimationStyleChange(false);
+
+    // The style walk for the pseudo tree created for a DocumentTransition is
+    // done after resolving style for the author DOM. See
+    // StyleEngine::RecalcTransitionPseudoStyle.
+    // Since the dirty bits from the originating element (root element) are not
+    // propagated to these pseudo elements during the default walk, we need to
+    // invalidate style for these elements here.
+    if (this_element->IsDocumentElement()) {
+      auto update_style_change = [](PseudoElement* pseudo_element) {
+        pseudo_element->SetNeedsStyleRecalc(
+            kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kDocumentTransition));
+      };
+      DocumentTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+                                                       update_style_change);
+    }
+  }
 
   if (auto* svg_element = DynamicTo<SVGElement>(this))
     svg_element->SetNeedsStyleRecalcForInstances(change_type, reason);
@@ -1668,7 +1685,7 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 bool Node::CanStartSelection() const {
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this))
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
-  if (HasEditableStyle(*this))
+  if (IsEditable(*this))
     return true;
 
   if (GetLayoutObject()) {
@@ -1684,6 +1701,17 @@ bool Node::CanStartSelection() const {
   }
   ContainerNode* parent = FlatTreeTraversal::Parent(*this);
   return parent ? parent->CanStartSelection() : true;
+}
+
+bool Node::IsRichlyEditableForAccessibility() const {
+#if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kStyleClean)
+      << "Unclean document style at lifecycle state "
+      << GetDocument().Lifecycle().ToString();
+#endif  // DCHECK_IS_ON()
+
+  return IsRichlyEditable(*this);
 }
 
 void Node::NotifyPriorityScrollAnchorStatusChanged() {
@@ -2316,7 +2344,7 @@ String Node::ToString() const {
   DumpAttributeDesc(*this, html_names::kIdAttr, builder);
   DumpAttributeDesc(*this, html_names::kClassAttr, builder);
   DumpAttributeDesc(*this, html_names::kStyleAttr, builder);
-  if (HasEditableStyle(*this))
+  if (IsEditable(*this))
     builder.Append(" (editable)");
   if (GetDocument().FocusedElement() == this)
     builder.Append(" (focused)");
@@ -3040,7 +3068,7 @@ bool Node::WillRespondToMouseClickEvents() {
   if (IsDisabledFormControl(this))
     return false;
   GetDocument().UpdateStyleAndLayoutTree();
-  return HasEditableStyle(*this) ||
+  return IsEditable(*this) ||
          HasAnyEventListeners(event_util::MouseButtonEventTypes());
 }
 

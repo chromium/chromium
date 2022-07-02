@@ -33,8 +33,7 @@
     self.hasRecordedSigninStarted = YES;
     signin_metrics::LogSigninAccessPointStarted(self.accessPoint,
                                                 self.promoAction);
-    signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint,
-                                                         self.promoAction);
+    signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   }
 }
 

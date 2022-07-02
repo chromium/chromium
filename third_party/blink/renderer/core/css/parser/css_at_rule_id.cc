@@ -34,6 +34,11 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return kCSSAtRuleNamespace;
   if (EqualIgnoringASCIICase(name, "page"))
     return kCSSAtRulePage;
+  if (EqualIgnoringASCIICase(name, "position-fallback")) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled())
+      return kCSSAtRulePositionFallback;
+    return kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "property"))
     return kCSSAtRuleProperty;
   if (EqualIgnoringASCIICase(name, "container")) {
@@ -55,6 +60,11 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   }
   if (EqualIgnoringASCIICase(name, "supports"))
     return kCSSAtRuleSupports;
+  if (EqualIgnoringASCIICase(name, "try")) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled())
+      return kCSSAtRuleTry;
+    return kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "viewport"))
     return kCSSAtRuleViewport;
   if (EqualIgnoringASCIICase(name, "-webkit-keyframes"))
@@ -114,6 +124,10 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
     case kCSSAtRuleViewport:
       feature = WebFeature::kCSSAtRuleViewport;
       break;
+    case kCSSAtRulePositionFallback:
+    case kCSSAtRuleTry:
+      // TODO(crbug.com/1309178): Add use counter.
+      return;
 
     case kCSSAtRuleWebkitKeyframes:
       feature = WebFeature::kCSSAtRuleWebkitKeyframes;

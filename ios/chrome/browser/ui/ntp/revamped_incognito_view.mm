@@ -20,6 +20,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
@@ -226,7 +227,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 
     [self addTextSections];
 
-    // |topGuide| and |bottomGuide| exist to vertically position the stackview
+    // `topGuide` and `bottomGuide` exist to vertically position the stackview
     // inside the container scrollview.
     UILayoutGuide* topGuide = [[UILayoutGuide alloc] init];
     UILayoutGuide* bottomGuide = [[UILayoutGuide alloc] init];
@@ -315,10 +316,10 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable. Another solution is
-  // to subclass |UITextView| and override |canBecomeFirstResponder| to return
+  // to subclass `UITextView` and override `canBecomeFirstResponder` to return
   // NO, but that workaround only works on iOS 13.5+. This is the simplest
   // approach that works well on iOS 12, 13 & 14.
   textView.selectedTextRange = nil;
@@ -326,7 +327,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 
 #pragma mark - Private
 
-// Adds views containing the text of the incognito page to |self.stackView|.
+// Adds views containing the text of the incognito page to `self.stackView`.
 - (void)addTextSections {
   UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
 
@@ -355,7 +356,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   [self.stackView addArrangedSubview:doesNotSection];
 
   // Learn more.
-  UITextView* learnMore = [[UITextView alloc] initWithFrame:CGRectZero];
+  UITextView* learnMore = CreateUITextViewWithTextKit1();
   learnMore.scrollEnabled = NO;
   learnMore.editable = NO;
   learnMore.delegate = self;

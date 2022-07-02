@@ -41,8 +41,10 @@ enum StartTrigger {
 //
 // NOTE: Never re-number or re-use numbers for different triggers. These are
 // used in UMA histograms, and must remain backwards-compatible for all time.
-// However, *do* change STOP_TRIGGER_MAX to one after the greatest value when
-// adding new ones. Also, don't forget to update histograms.xml!
+//
+// ADDITIONAL NOTE: The values are intentionally out-of-order to maintain a
+// logical grouping. When adding a new value, add one to STOP_TRIGGER_MAX, then
+// update STOP_TRIGGER_MAX. Also, don't forget to update enums.xml!
 enum StopTrigger {
   UNKNOWN_STOP_TRIGGER = 0,
 
@@ -70,7 +72,9 @@ enum StopTrigger {
   PEERS_OUT_OF_SYNC = 15,  // The local state disagrees with the remote.
   RPC_INVALID = 16,        // An RPC field value is missing or has bad data.
   DATA_PIPE_CREATE_ERROR = 17,  // Mojo data pipe creation failed (OOM?).
-  MOJO_PIPE_ERROR = 18,         // Mojo message/data pipe operation failed.
+  MOJO_DISCONNECTED = 18,       // Mojo message pipe was disconnected; e.g, the
+                                // browser shut down.
+  DATA_PIPE_WRITE_ERROR = 24,   // Failure to write the mojo data pipe.
 
   // Message/Data sending errors forcing shutdown.
   MESSAGE_SEND_FAILED = 19,  // Failed to send a RPC message to the sink.
@@ -82,7 +86,7 @@ enum StopTrigger {
   USER_DISABLED = 23,  // Media Remoting was disabled by user.
 
   // Change this to the highest value.
-  STOP_TRIGGER_MAX = 23,
+  STOP_TRIGGER_MAX = 24,
 };
 
 }  // namespace remoting

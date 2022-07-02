@@ -43,6 +43,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldView;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
@@ -638,13 +639,18 @@ public class EditorDialog
 
     private void initFocus() {
         mHandler.post(() -> {
-            List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
-            if (!invalidViews.isEmpty()) {
-                // Immediately focus the first invalid field to make it faster to edit.
-                invalidViews.get(0).scrollToAndFocus();
-            } else {
-                // Trigger default focus as it is not triggered automatically on Android P+.
-                mLayout.requestFocus();
+            // If TalkBack is enabled, we want to keep the focus at the top
+            // because the user would not learn about the elements that are
+            // above the focused field.
+            if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                List<EditorFieldView> invalidViews = getViewsWithInvalidInformation(false);
+                if (!invalidViews.isEmpty()) {
+                    // Immediately focus the first invalid field to make it faster to edit.
+                    invalidViews.get(0).scrollToAndFocus();
+                } else {
+                    // Trigger default focus as it is not triggered automatically on Android P+.
+                    mLayout.requestFocus();
+                }
             }
             // Note that keyboard will not be shown for dropdown field since it's not necessary.
             if (getCurrentFocus() != null) {

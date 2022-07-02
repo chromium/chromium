@@ -15,6 +15,7 @@ ccameron@chromium.org
 
 # scheduling / begin frames
 sunnyps@chromium.org
+szager@chromium.org
 
 # tiles, tile management, and raster work
 vmpstr@chromium.org
@@ -49,7 +50,6 @@ skobes@chromium.org
 
 # metrics
 sadrul@chromium.org
-behdadb@chromium.org
 
 # paint
 sunnyps@chromium.org

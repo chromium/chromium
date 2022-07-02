@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_script_wrappable_task_id.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -53,12 +54,23 @@ TaskAttributionTrackerImpl::GetTaskIdPairFromTaskContainer(TaskId id) {
   return (task_container_[slot]);
 }
 
-TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
-    ScriptState* script_state,
-    TaskId ancestor_id) {
+template <typename F>
+TaskAttributionTracker::AncestorStatus
+TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
+                                               F is_ancestor) {
+  DCHECK(script_state);
+  if (!script_state->World().IsMainWorld()) {
+    // As RunningTaskId will not return a TaskId for non-main-world tasks,
+    // there's no point in testing their ancestry.
+    return AncestorStatus::kNotAncestor;
+  }
+
   absl::optional<TaskId> current_task_id = RunningTaskId(script_state);
-  DCHECK(current_task_id);
-  if (current_task_id.value() == ancestor_id) {
+  if (!current_task_id) {
+    // TODO(yoav): This should not happen, but does. See crbug.com/1326872.
+    return AncestorStatus::kNotAncestor;
+  }
+  if (is_ancestor(current_task_id.value())) {
     return AncestorStatus::kAncestor;
   }
 
@@ -81,7 +93,7 @@ TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
       // longer know the ancestry.
       return AncestorStatus::kUnknown;
     }
-    if (parent_id.value() == ancestor_id) {
+    if (is_ancestor(parent_id.value())) {
       return AncestorStatus::kAncestor;
     }
     DCHECK(parent_pair.current.value() != current_task_id.value());
@@ -89,6 +101,23 @@ TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
     parent_id = parent_pair.parent;
   }
   return AncestorStatus::kNotAncestor;
+}
+
+TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
+    ScriptState* script_state,
+    TaskId ancestor_id) {
+  return IsAncestorInternal(script_state, [&](const TaskId& task_id) {
+    return task_id == ancestor_id;
+  });
+}
+
+TaskAttributionTracker::AncestorStatus
+TaskAttributionTrackerImpl::HasAncestorInSet(
+    ScriptState* script_state,
+    const WTF::HashSet<scheduler::TaskIdType>& set) {
+  return IsAncestorInternal(script_state, [&](const TaskId& task_id) {
+    return set.Contains(task_id.value());
+  });
 }
 
 std::unique_ptr<TaskAttributionTracker::TaskScope>
@@ -104,6 +133,9 @@ TaskAttributionTrackerImpl::CreateTaskScope(
   running_task_id_ = next_task_id_;
 
   InsertTaskIdPair(next_task_id_, parent_task_id);
+  if (observer_) {
+    observer_->OnCreateTaskScope(next_task_id_);
+  }
 
   SaveTaskIdStateInV8(script_state, next_task_id_);
   return std::make_unique<TaskScopeImpl>(script_state, this, next_task_id_,
@@ -162,6 +194,9 @@ absl::optional<TaskId> TaskAttributionTrackerImpl::V8Adapter::GetValue(
   }
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
+  if (isolate->IsExecutionTerminating()) {
+    return absl::nullopt;
+  }
   // If not empty, the value must be a ScriptWrappableTaskId.
   NonThrowableExceptionState exception_state;
   ScriptWrappableTaskId* script_wrappable_task_id =
@@ -178,9 +213,13 @@ void TaskAttributionTrackerImpl::V8Adapter::SetValue(
   if (!script_state->ContextIsValid()) {
     return;
   }
+  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
+  if (isolate->IsExecutionTerminating()) {
+    return;
+  }
   v8::Local<v8::Context> context = script_state->GetContext();
   DCHECK(!context.IsEmpty());
 

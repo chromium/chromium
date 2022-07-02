@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">taula <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">S'ignorarà la propera tecla que premeu.</translation>
 <translation id="4623097797855662355">Colofó</translation>
+<translation id="4624970070706497034">TalkBack ja no ofereix la personalització per als Chromebooks. Podràs continuar fent-la servir, però utilitza les tecles de drecera predeterminades de TalkBack. Prem Cerca+A i després K per veure les dreceres disponibles. Si vols continuar fent servir TalkBack, torna a prémer l'ordre.</translation>
 <translation id="463135993322337640">Prem les tecles O i N de ChromeVox per descobrir-ne les novetats</translation>
 <translation id="4649220074413114917">Pots tocar la pantalla amb dos dits per aturar qualsevol entrada de veu en curs. Aquesta acció serveix si no vols que ChromeVox llegeixi contingut. Per continuar, toca la pantalla amb dos dits.</translation>
 <translation id="4660783501463101648">La versió clàssica s'ha suprimit. S'ha tret la combinació de tecles que permetia tornar a la versió clàssica de ChromeVox.</translation>
@@ -853,7 +854,6 @@
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6910969481785184048">Activar, desactivar i aturar ChromeVox</translation>
 <translation id="6919104639734799681">Mostra la llista de taules</translation>
-<translation id="692135145298539227">suprimeix</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6949846980769640811">Aiguamarina mitjà</translation>
 <translation id="6951482098621102657">No hi ha cap encapçalament més de nivell 5</translation>

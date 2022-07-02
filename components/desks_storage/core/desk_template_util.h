@@ -7,27 +7,16 @@
 
 #include <string>
 
-#include "components/account_id/account_id.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "ash/public/cpp/desk_template.h"
 
 namespace desks_storage {
 
 namespace desk_template_util {
 
-// Returns a copy of a duplicated name to be stored.  This function works by
-// taking the name to be duplicated and adding a "(1)" to it. If the name
-// already has "(1)" then the number inside of the parenthesis will be
-// incremented.
-std::u16string AppendDuplicateNumberToDuplicateName(
-    const std::u16string& duplicate_name_u16);
-
-// Populates the given cache with test app information.
-void PopulateAppRegistryCache(AccountId account_id,
-                              apps::AppRegistryCache* cache);
-
-void AddAppIdToAppRegistryCache(AccountId account_id,
-                                apps::AppRegistryCache* cache,
-                                const char* app_id);
+ash::DeskTemplate* FindOtherEntryWithName(
+    const std::u16string& name,
+    const base::GUID& uuid,
+    const std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>& entries);
 
 }  // namespace desk_template_util
 

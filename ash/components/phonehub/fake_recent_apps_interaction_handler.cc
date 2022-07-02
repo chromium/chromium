@@ -55,6 +55,11 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
   return app_metadata_list;
 }
 
+void FakeRecentAppsInteractionHandler::SetStreamableApps(
+    const proto::StreamableApps& streamable_apps) {
+  // TODO(nayebi): Do we need to implement this?
+}
+
 void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
   if (feature_state_ != FeatureState::kEnabledByUser) {
     ui_state_ = RecentAppsUiState::HIDDEN;

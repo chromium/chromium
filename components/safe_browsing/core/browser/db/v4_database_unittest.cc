@@ -32,7 +32,7 @@ class FakeV4Store : public V4Store {
     return hash_prefix_should_match_ ? full_hash : HashPrefix();
   }
 
-  bool HasValidData() const override { return true; }
+  bool HasValidData() override { return true; }
 
   void set_hash_prefix_matches(bool hash_prefix_matches) {
     hash_prefix_should_match_ = hash_prefix_matches;

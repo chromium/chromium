@@ -64,13 +64,13 @@ class MaskContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
     flags.setStyle(PaintFlags::kStroke_Style);
     flags.setStrokeWidth(SkIntToScalar(2));
-    flags.setColor(SK_ColorWHITE);
+    flags.setColor(SkColors::kWhite);
 
     gfx::Rect inset_rect(bounds_);
     while (!inset_rect.IsEmpty()) {
@@ -254,7 +254,7 @@ class LayerTreeHostMaskPixelTest_MaskWithEffectNoContentToMask
     LayerList layers = layer_tree_host()->root_layer()->children();
     DCHECK_EQ(3u, layers.size());
     // Set background to red.
-    layers[0]->SetBackgroundColor(SK_ColorRED);
+    layers[0]->SetBackgroundColor(SkColors::kRed);
     // Remove the green layer.
     layers.erase(layers.begin() + 1);
     layer_tree_host()->root_layer()->SetChildLayerList(layers);
@@ -444,7 +444,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
@@ -491,7 +491,7 @@ class CircleContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
@@ -783,8 +783,10 @@ class LayerTreeHostMaskAsBlendingPixelTest
 
   static scoped_refptr<Layer> CreateCheckerboardLayer(const gfx::Size& bounds) {
     constexpr int kGridSize = 8;
-    static const SkColor color_even = SkColorSetRGB(153, 153, 153);
-    static const SkColor color_odd = SkColorSetRGB(102, 102, 102);
+    static const SkColor4f color_even =
+        SkColor4f::FromColor(SkColorSetRGB(153, 153, 153));
+    static const SkColor4f color_odd =
+        SkColor4f::FromColor(SkColorSetRGB(102, 102, 102));
 
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();

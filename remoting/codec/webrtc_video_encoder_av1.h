@@ -6,8 +6,10 @@
 #define REMOTING_CODEC_WEBRTC_VIDEO_ENCODER_AV1_H_
 
 #include "base/callback.h"
+#include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
+#include "third_party/libaom/source/libaom/aom/aom_image.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
 
 namespace remoting {
@@ -29,10 +31,26 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
               EncodeCallback done) override;
 
  private:
-  using aom_codec_unique_ptr =
-      std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;
+  void ConfigureCodecParams();
+  bool InitializeCodec(const webrtc::DesktopSize& size);
+  void UpdateConfig(const FrameParams& params);
+  void PrepareImage(const webrtc::DesktopFrame* frame);
 
-  aom_codec_unique_ptr codec_;
+  using scoped_aom_codec =
+      std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;
+  scoped_aom_codec codec_;
+
+  aom_codec_enc_cfg_t config_ = {};
+
+  using scoped_aom_image = std::unique_ptr<aom_image_t, void (*)(aom_image_t*)>;
+  scoped_aom_image image_;
+
+  // This timestamp is monotonically increased using the current frame duration.
+  // It's only used for rate control and is not related to the timestamps on the
+  // incoming frames to encode.
+  aom_codec_pts_t artificial_timestamp_us_ = 0;
+
+  EncoderBitrateFilter bitrate_filter_;
 };
 
 }  // namespace remoting

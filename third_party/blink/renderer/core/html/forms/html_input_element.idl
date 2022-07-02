@@ -32,7 +32,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
     [CEReactions, Reflect=checked] attribute boolean defaultChecked;
-    attribute boolean checked;
+    [ImplementedAs=checkedForBinding] attribute boolean checked;
     [CEReactions, Reflect] attribute DOMString dirName;
     [CEReactions, Reflect] attribute boolean disabled;
     [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
@@ -62,7 +62,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions, Reflect] attribute DOMString step;
     [CEReactions] attribute DOMString type;
     [CEReactions, Reflect=value] attribute DOMString defaultValue;
-    [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString] DOMString value;
+    [CEReactions, ImplementedAs=valueForBinding, RaisesException=Setter] attribute [TreatNullAs=EmptyString] DOMString value;
     [CEReactions, RaisesException=Setter, CallWith=ScriptState] attribute object? valueAsDate;
     [RaisesException=Setter] attribute unrestricted double valueAsNumber;
     // Note: The spec has valueLow and valueHigh for two-valued range controls.

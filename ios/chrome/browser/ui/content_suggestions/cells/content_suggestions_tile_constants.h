@@ -33,8 +33,8 @@ UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType action);
 UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type);
 
 // Returns a localized string that can be used as an accessibility label for
-// the reading list tile when it's displaying the |count| badge, or, if
-// |count| = 0, for a reading list tile with no badge.
+// the reading list tile when it's displaying the `count` badge, or, if
+// `count` = 0, for a reading list tile with no badge.
 NSString* AccessibilityLabelForReadingListCellWithCount(int count);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_TILE_CONSTANTS_H_

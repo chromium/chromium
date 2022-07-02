@@ -29,7 +29,8 @@ ExtensionSettingModelTypeController::ExtensionSettingModelTypeController(
   DCHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS);
 }
 
-ExtensionSettingModelTypeController::~ExtensionSettingModelTypeController() {}
+ExtensionSettingModelTypeController::~ExtensionSettingModelTypeController() =
+    default;
 
 void ExtensionSettingModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,

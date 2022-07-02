@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>
+<translation id="3619462831205197427">Inicia la sessió en aquest lloc web, al teu Compte de Google i a Chromium.</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha utilitzat Chromium en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
@@ -77,7 +78,6 @@
 1. Obre Configuració.
 2. Toca Aplicació de navegador predeterminada.
 3. Selecciona Chromium.</translation>
-<translation id="6155422572367400359">Inicia la sessió en aquest lloc web, al teu Compte de Google i a Chromium. Pots activar la sincronització més tard.</translation>
 <translation id="6183442264225539303">Inicia la sessió en aquest lloc web i a Chromium. Pots activar la sincronització més endavant.</translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="632825460376924298">Permet l'inici de sessió a Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Vols esborrar les dades de Chromium del dispositiu?</translation>
 <translation id="8175055321229419309">Consell: <ph name="BEGIN_LINK" />mou Chromium al Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
+<translation id="8308172444429103994">Consell de Chromium. Inicia la sessió més ràpidament seleccionant la contrasenya desada a la part superior del teclat.</translation>
 <translation id="858114650497379505">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>

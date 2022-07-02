@@ -158,12 +158,18 @@ void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {
 void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
     VirtualCardEnrollmentLinkType link_type,
     const GURL& url) {
+  reprompt_required_ = true;
+
   LogVirtualCardEnrollmentLinkClickedMetric(
       link_type, GetVirtualCardEnrollmentBubbleSource());
 
   web_contents()->OpenURL(content::OpenURLParams(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false));
+
+#if !BUILDFLAG(IS_ANDROID)
+  bubble_state_ = BubbleState::kShowingIconAndBubble;
+#endif
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
@@ -199,9 +205,13 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
   }
 
-  LogVirtualCardEnrollmentBubbleResultMetric(
-      result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
-      virtual_card_enrollment_fields_.previously_declined);
+  // If the dialog is to be shown again because user clicked on links, do not
+  // log metrics.
+  if (!reprompt_required_) {
+    LogVirtualCardEnrollmentBubbleResultMetric(
+        result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
+        virtual_card_enrollment_fields_.previously_declined);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -238,7 +248,12 @@ bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
 void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
 #if BUILDFLAG(IS_ANDROID)
-  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
+  if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
+      reprompt_required_ && messages::IsSaveCardMessagesUiEnabled()) {
+    Show();
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubble();
+  }
 #else
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
@@ -287,10 +302,12 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     return;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  // For reprompts after link clicks, |is_user_gesture| is set to false.
+  bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
                       ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                                    is_user_gesture_));
+                                                    user_gesture_reprompt));
   DCHECK(bubble_view());
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
   // we display the bubble if the the state is kShowingIconAndBubble. Once we
@@ -298,11 +315,17 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   // sure further OnVisibilityChanged() don't trigger opening the bubble because
   // we don't want to re-show it every time the web contents become visible.
   bubble_state_ = BubbleState::kShowingIcon;
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  LogVirtualCardEnrollmentBubbleShownMetric(
-      GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
+  // If the dialog is to be shown again because user clicked on links, do not
+  // log metrics.
+  if (!reprompt_required_) {
+    LogVirtualCardEnrollmentBubbleShownMetric(
+        GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_);
+  }
+
+  // Reset value for the next time tab is switched.
+  reprompt_required_ = false;
 
   if (bubble_shown_closure_for_testing_)
     bubble_shown_closure_for_testing_.Run();

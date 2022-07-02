@@ -68,6 +68,12 @@ class PLATFORM_EXPORT LayoutRectOutsets {
         bottom_(LayoutUnit(outsets.bottom())),
         left_(LayoutUnit(outsets.left())) {}
 
+  explicit LayoutRectOutsets(const gfx::OutsetsF& outsets)
+      : top_(LayoutUnit(outsets.top())),
+        right_(LayoutUnit(outsets.right())),
+        bottom_(LayoutUnit(outsets.bottom())),
+        left_(LayoutUnit(outsets.left())) {}
+
   constexpr LayoutUnit Top() const { return top_; }
   constexpr LayoutUnit Right() const { return right_; }
   constexpr LayoutUnit Bottom() const { return bottom_; }

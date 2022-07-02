@@ -82,7 +82,15 @@ void VmoBufferWriterQueue::PumpPackets() {
     PendingBuffer* current_buffer = &pending_buffers_[input_queue_position_];
 
     if (current_buffer->buffer->end_of_stream()) {
-      pending_buffers_.pop_front();
+      // Pop the EndOfStream buffer if it's the only buffer. Otherwise, mark it
+      // as complete so that ReleaseBuffer will pop it.
+      if (input_queue_position_ == 0) {
+        pending_buffers_.pop_front();
+        DCHECK(pending_buffers_.empty());
+      } else {
+        current_buffer->is_complete = true;
+        input_queue_position_ += 1;
+      }
       end_of_stream_cb_.Run();
       if (!weak_this)
         return;

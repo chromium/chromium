@@ -96,12 +96,12 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 // are not allowed to call the install function.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        InstallEvent) {
-  ExtensionTestMessageListener listener1("ready", false);
+  ExtensionTestMessageListener listener1("ready");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/install_event")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener listener2("got_event", false);
+  ExtensionTestMessageListener listener2("got_event");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("api_test/management/enabled_extension"),
       {.context_type = ContextType::kFromManifest}));
@@ -113,8 +113,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 // Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchApp) {
-  ExtensionTestMessageListener listener1("app_launched", false);
-  ExtensionTestMessageListener listener2("got_expected_error", false);
+  ExtensionTestMessageListener listener1("app_launched");
+  ExtensionTestMessageListener listener2("got_expected_error");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/simple_extension"),
                     {.context_type = ContextType::kFromManifest}));
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // Should see 0 apps launched from the API in the histogram at first.
   histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
 
-  ExtensionTestMessageListener app_launched_listener("app_launched", false);
+  ExtensionTestMessageListener app_launched_listener("app_launched");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
                     {.context_type = ContextType::kFromManifest}));
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // Should see 0 apps launched from the Launcher in the histogram at first.
   histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
 
-  ExtensionTestMessageListener app_launched_listener("app_launched", false);
+  ExtensionTestMessageListener app_launched_listener("app_launched");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
                     {.context_type = ContextType::kFromManifest}));
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 // Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        LaunchAppFromBackground) {
-  ExtensionTestMessageListener listener1("success", false);
+  ExtensionTestMessageListener listener1("success");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
                     {.context_type = ContextType::kFromManifest}));
@@ -196,11 +196,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
   // added before we proceed to the uninstall step.
-  ExtensionTestMessageListener listener1("ready", false);
+  ExtensionTestMessageListener listener1("ready");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
-  ExtensionTestMessageListener listener2("success", false);
+  ExtensionTestMessageListener listener2("success");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/self_uninstall")));
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
@@ -211,18 +211,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
   // added before we proceed to the uninstall step.
-  ExtensionTestMessageListener listener1("ready", false);
+  ExtensionTestMessageListener listener1("ready");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
-  ExtensionTestMessageListener listener2("success", false);
+  ExtensionTestMessageListener listener2("success");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_noperm")));
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType, Get) {
-  ExtensionTestMessageListener listener("success", false);
+  ExtensionTestMessageListener listener("success");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("management/simple_extension"),
                     {.context_type = ContextType::kFromManifest}));
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType, Get) {
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        GetSelfNoPermissions) {
-  ExtensionTestMessageListener listener1("success", false);
+  ExtensionTestMessageListener listener1("success");
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("management/get_self")));
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
                        GetAllIncludesTerminated) {
   // Load an extension with a background page, so that we know it has a process
   // running.
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("management/install_event"));
   ASSERT_TRUE(extension);
@@ -334,8 +334,10 @@ class ExtensionManagementApiEscalationTest :
     const char* const enabled_string = enabled ? "true" : "false";
     if (user_gesture)
       function->set_user_gesture(true);
-    function->SetRenderFrameHost(browser()->tab_strip_model()->
-        GetActiveWebContents()->GetMainFrame());
+    function->SetRenderFrameHost(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame());
     bool response = test_utils::RunFunction(
         function.get(), base::StringPrintf("[\"%s\", %s]", kId, enabled_string),
         browser(), api_test_utils::NONE);
@@ -359,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
                        DisabledReason) {
   scoped_refptr<ManagementGetFunction> function =
       new ManagementGetFunction();
-  base::Value::DictStorage dict =
+  base::Value::Dict dict =
       test_utils::ToDictionary(test_utils::RunFunctionAndReturnSingleResult(
           function.get(), base::StringPrintf("[\"%s\"]", kId), browser()));
   std::string reason =

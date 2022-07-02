@@ -21,17 +21,6 @@ namespace {
 // arguments. Thus we have this typedef as a work-around.
 typedef HashMap<String, String> StringMap;
 
-StringMap MixedCaseNames(const char* const* names) {
-  HashMap<String, String> map;
-  for (const char* const* iter = names; *iter; ++iter) {
-    String name(*iter);
-    if (!name.IsLowerASCII()) {
-      map.insert(name.LowerASCII(), name);
-    }
-  }
-  return map;
-}
-
 SanitizerConfigImpl::ElementList ElementsFromAPI(const char* const* elements) {
   SanitizerConfigImpl::ElementList element_list;
   for (const char* const* elem = elements; *elem; ++elem) {
@@ -91,18 +80,6 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   return attributes_;
 }
 
-const HashMap<String, String>& GetMixedCaseElementNames() {
-  DEFINE_STATIC_LOCAL(StringMap, element_names_,
-                      (MixedCaseNames(kBaselineElements)));
-  return element_names_;
-}
-
-const HashMap<String, String>& GetMixedCaseAttributeNames() {
-  DEFINE_STATIC_LOCAL(StringMap, attribute_names_,
-                      (MixedCaseNames(kBaselineAttributes)));
-  return attribute_names_;
-}
-
 }  // namespace default_config_names
 
 namespace with_namespace_names {
@@ -124,18 +101,6 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
                       (AttributesFromAPI(kBaselineAttributes)));
   return attributes_;
-}
-
-const HashMap<String, String>& GetMixedCaseElementNames() {
-  DEFINE_STATIC_LOCAL(StringMap, element_names_,
-                      (MixedCaseNames(kBaselineElements)));
-  return element_names_;
-}
-
-const HashMap<String, String>& GetMixedCaseAttributeNames() {
-  DEFINE_STATIC_LOCAL(StringMap, attribute_names_,
-                      (MixedCaseNames(kBaselineAttributes)));
-  return attribute_names_;
 }
 
 }  // namespace with_namespace_names
@@ -161,15 +126,4 @@ const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
   return WithNamespaces() ? with_namespace_names::GetBaselineAllowAttributes()
                           : default_config_names::GetBaselineAllowAttributes();
 }
-
-const HashMap<String, String>& GetMixedCaseElementNames() {
-  return WithNamespaces() ? with_namespace_names::GetMixedCaseElementNames()
-                          : default_config_names::GetMixedCaseElementNames();
-}
-
-const HashMap<String, String>& GetMixedCaseAttributeNames() {
-  return WithNamespaces() ? with_namespace_names::GetMixedCaseAttributeNames()
-                          : default_config_names::GetMixedCaseAttributeNames();
-}
-
 }  // namespace blink

@@ -25,6 +25,15 @@ namespace performance_manager {
 class FrameNode;
 class PageNodeObserver;
 
+enum class PageType {
+  // A browser tab.
+  kTab,
+  // An extension background page.
+  kExtension,
+  // Anything else.
+  kUnknown,
+};
+
 // A PageNode represents the root of a FrameTree, or equivalently a WebContents.
 // These may correspond to normal tabs, WebViews, Portals, Chrome Apps or
 // Extensions.
@@ -70,7 +79,8 @@ class PageNode : public Node {
     kLoadedIdle,
   };
 
-  // Returns a string for a PageNode::LoadingState enumeration.
+  // Returns a string for an enumeration value.
+  static const char* ToString(PageType type);
   static const char* ToString(PageNode::LoadingState loading_state);
 
   // State of a page. Pages can be born in "kActive" or "kPrerendering" state.
@@ -113,6 +123,9 @@ class PageNode : public Node {
   // Returns the type of relationship this node has with its embedder, if it has
   // an embedder.
   virtual EmbeddingType GetEmbeddingType() const = 0;
+
+  // Returns the type of the page.
+  virtual PageType GetType() const = 0;
 
   // Returns true if this page is currently visible, false otherwise.
   // See PageNodeObserver::OnIsVisibleChanged.
@@ -249,6 +262,9 @@ class PageNodeObserver {
       const FrameNode* previous_embedder,
       EmbeddingType previous_embedder_type) = 0;
 
+  // Invoked when the GetType property changes.
+  virtual void OnTypeChanged(const PageNode* page_node) = 0;
+
   // Invoked when the IsVisible property changes.
   virtual void OnIsVisibleChanged(const PageNode* page_node) = 0;
 
@@ -327,6 +343,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
       const PageNode* page_node,
       const FrameNode* previous_embedder,
       EmbeddingType previous_embedding_type) override {}
+  void OnTypeChanged(const PageNode* page_node) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,

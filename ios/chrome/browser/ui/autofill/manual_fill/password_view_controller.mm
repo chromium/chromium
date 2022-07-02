@@ -177,7 +177,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 
 #pragma mark - Private
 
-// Retrieves favicon from FaviconLoader and sets image in |cell|.
+// Retrieves favicon from FaviconLoader and sets image in `cell`.
 - (void)loadFaviconForCell:(UITableViewCell*)cell
                  indexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];

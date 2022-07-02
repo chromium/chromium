@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -21,7 +23,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/dcheck_is_on.h"
 
 namespace partition_alloc::internal {
 
@@ -32,7 +33,7 @@ void UnmapNow(uintptr_t reservation_start,
               pool_handle pool);
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionDirectUnmap(
+PA_ALWAYS_INLINE void PartitionDirectUnmap(
     SlotSpanMetadata<thread_safe>* slot_span) {
   using ::partition_alloc::internal::ScopedUnlockGuard;
 
@@ -84,7 +85,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
 }  // namespace
 
 template <bool thread_safe>
-ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
+PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
   PA_DCHECK(is_empty());
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -138,11 +139,6 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
 
 // static
 template <bool thread_safe>
-SlotSpanMetadata<thread_safe>
-    SlotSpanMetadata<thread_safe>::sentinel_slot_span_;
-
-// static
-template <bool thread_safe>
 SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
   return &sentinel_slot_span_;
@@ -155,7 +151,7 @@ SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
 
 template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 #endif
@@ -180,25 +176,25 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
     // chances of it being filled up again. The old current slot span will be
     // the next slot span.
     PA_DCHECK(!next_slot_span);
-    if (LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
+    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
       next_slot_span = bucket->active_slot_spans_head;
     bucket->active_slot_spans_head = this;
     PA_CHECK(bucket->num_full_slot_spans);  // Underflow.
     --bucket->num_full_slot_spans;
   }
 
-  if (LIKELY(num_allocated_slots == 0)) {
+  if (PA_LIKELY(num_allocated_slots == 0)) {
     // Slot span became fully unused.
-    if (UNLIKELY(bucket->is_direct_mapped())) {
+    if (PA_UNLIKELY(bucket->is_direct_mapped())) {
       PartitionDirectUnmap(this);
       return;
     }
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     freelist_head->CheckFreeList(bucket->slot_size);
 #endif
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
-    if (LIKELY(this == bucket->active_slot_spans_head))
+    if (PA_LIKELY(this == bucket->active_slot_spans_head))
       bucket->SetNewActiveSlotSpan();
     PA_DCHECK(bucket->active_slot_spans_head != this);
 
@@ -274,6 +270,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     PA_DCHECK(slot_number < num_provisioned_slots);
     free_slots[slot_number] = true;
   }
+  PA_DCHECK(num_free_slots == GetFreelistLength());
 
   // Empty or single-element list is always sorted.
   if (num_free_slots > 1) {
@@ -307,7 +304,7 @@ void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
               pool_handle pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pool == GetBRPPool()) {
@@ -331,7 +328,7 @@ void UnmapNow(uintptr_t reservation_start,
     PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
   }
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   PA_DCHECK((reservation_start & kSuperPageOffsetMask) == 0);
   uintptr_t reservation_end = reservation_start + reservation_size;
@@ -350,12 +347,12 @@ void UnmapNow(uintptr_t reservation_start,
   }
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
-  AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
-                                                reservation_size);
+  AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
+                                               reservation_size);
 #endif
 
   // After resetting the table entries, unreserve and decommit the memory.
-  AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+  AddressPoolManager::GetInstance().UnreserveAndDecommit(
       pool, reservation_start, reservation_size);
 }
 

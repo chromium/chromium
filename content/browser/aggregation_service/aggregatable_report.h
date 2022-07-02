@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,30 +38,10 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
-  // Corresponds to the 'alternative aggregation mode' optional setting, but
-  // also includes the default option (if no alternative is set).
-  enum class AggregationMode {
-    // Uses a server-side Trusted Execution Environment (TEE) to process the
-    // encrypted payloads, see
-    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATION_SERVICE_TEE.md.
-    kTeeBased,
-
-    // Implements a protocol similar to poplar VDAF in the PPM Framework, see
-    // https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
-    kExperimentalPoplar,
-
-    kDefault = kTeeBased,
-  };
-
-  struct HistogramContribution {
-    absl::uint128 bucket;
-    int value;
-  };
-
   AggregationServicePayloadContents(
       Operation operation,
-      std::vector<HistogramContribution> contributions,
-      AggregationMode aggregation_mode);
+      std::vector<mojom::AggregatableReportHistogramContribution> contributions,
+      mojom::AggregationServiceMode aggregation_mode);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -71,8 +53,8 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   ~AggregationServicePayloadContents();
 
   Operation operation;
-  std::vector<HistogramContribution> contributions;
-  AggregationMode aggregation_mode;
+  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
+  mojom::AggregationServiceMode aggregation_mode;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -85,25 +67,36 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   };
 
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
-                               std::string privacy_budget_key,
                                base::GUID report_id,
                                url::Origin reporting_origin,
-                               DebugMode debug_mode);
-  AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other);
+                               DebugMode debug_mode,
+                               base::Value::Dict additional_fields,
+                               std::string api_version,
+                               std::string api_identifier);
+
+  AggregatableReportSharedInfo(const AggregatableReportSharedInfo& other) =
+      delete;
   AggregatableReportSharedInfo& operator=(
-      const AggregatableReportSharedInfo& other);
+      const AggregatableReportSharedInfo& other) = delete;
   AggregatableReportSharedInfo(AggregatableReportSharedInfo&& other);
   AggregatableReportSharedInfo& operator=(AggregatableReportSharedInfo&& other);
   ~AggregatableReportSharedInfo();
+
+  // Creates a deep copy of this object.
+  AggregatableReportSharedInfo Clone() const;
 
   // Serializes to a JSON dictionary, represented as a string.
   std::string SerializeAsJson() const;
 
   base::Time scheduled_report_time;
-  std::string privacy_budget_key;
   base::GUID report_id;  // Used to prevent double counting.
   url::Origin reporting_origin;
   DebugMode debug_mode;
+  base::Value::Dict additional_fields;
+  std::string api_version;
+
+  // Enum string that indicates which API created the report.
+  std::string api_identifier;
 };
 
 // An AggregatableReport contains all the information needed for sending the
@@ -182,7 +175,8 @@ class CONTENT_EXPORT AggregatableReport {
   // protocol unless the ciphertexts are intended to be compatible. This ensures
   // that, even if public keys are reused, the same ciphertext cannot be (i.e.
   // no cross-protocol attacks).
-  static constexpr char kDomainSeparationPrefix[] = "aggregation_service";
+  static constexpr base::StringPiece kDomainSeparationPrefix =
+      "aggregation_service";
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
                      std::string shared_info);
@@ -199,9 +193,7 @@ class CONTENT_EXPORT AggregatableReport {
 
   // Returns the JSON representation of this report of the form
   // {
-  //   "shared_info": "{\"scheduled_report_time\":\"[timestamp in
-  //   seconds]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
-  //   version]\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"[string]\"}",
+  //   "shared_info": "<shared_info>",
   //   "aggregation_service_payloads": [
   //     {
   //       "payload": "<base64 encoded encrypted data>",
@@ -213,6 +205,18 @@ class CONTENT_EXPORT AggregatableReport {
   //     }
   //   ]
   // }
+  //
+  // Where <shared_info> is the serialization of the JSON (with all whitespace
+  // removed):
+  // {
+  //   "report_id":"[UUID]",
+  //   "reporting_origin":"https://reporter.example"
+  //   "scheduled_report_time":"[timestamp in seconds]",
+  //   "version":"[api version]",
+  // }
+  // Callers may insert API-specific fields into the shared_info dictionary.
+  // In those cases, the keys are inserted in lexicographic order.
+  //
   // If requested, each "aggregation_service_payloads" element has an extra
   // field: `"debug_cleartext_payload": "<base64 encoded payload cleartext>"`.
   // Note that APIs may wish to add additional key-value pairs to this returned
@@ -226,13 +230,13 @@ class CONTENT_EXPORT AggregatableReport {
   // `aggregation_mode`.
   static bool IsNumberOfProcessingUrlsValid(
       size_t number,
-      AggregationServicePayloadContents::AggregationMode aggregation_mode);
+      mojom::AggregationServiceMode aggregation_mode);
 
   // Returns whether `number` is a valid number of histogram contributions for
   // the `aggregation_mode`.
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
-      AggregationServicePayloadContents::AggregationMode aggregation_mode);
+      mojom::AggregationServiceMode aggregation_mode);
 
  private:
   // This vector should have an entry for each processing URL specified in
@@ -251,9 +255,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // valid for the `payload_contents.aggregation_mode` (see
   // `IsNumberOfHistogramContributionsValid()` above). Also returns
   // `absl::nullopt` if any contribution has a negative value or if
-  // `shared_info.report_id` is not valid. Also returns `absl::nullopt` if
-  // `shared_info.privacy_budget_key` contains any character that isn't
-  // printable ASCII.
+  // `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
@@ -264,9 +266,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `IsNumberOfHistogramContributionsValid()` and
   // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
   // `absl::nullopt` if any contribution has a negative value or if
-  // `shared_info.report_id` is not valid. Also returns `absl::nullopt` if
-  // `shared_info.privacy_budget_key` contains any character that isn't
-  // printable ASCII.
+  // `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -169,9 +170,9 @@ class SelectorObserver : public WebControllerWorker {
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   base::flat_map<SelectorId, ObservableSelector> selectors_;
-  DevtoolsClient* devtools_client_;
-  content::WebContents* web_contents_;
-  const UserData* user_data_;
+  raw_ptr<DevtoolsClient> devtools_client_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<const UserData> user_data_;
   Callback update_callback_;
   base::OnceClosure finished_callback_;
 

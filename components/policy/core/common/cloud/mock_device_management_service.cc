@@ -302,7 +302,7 @@ void FakeJobConfiguration::OnURLLoadComplete(DeviceManagementService::Job* job,
                                              int response_code,
                                              const std::string& response_body) {
   DeviceManagementStatus status =
-      MapNetErrorAndResponseCodeToDMStatus(net_error, response_code);
+      MapNetErrorAndResponseToDMStatus(net_error, response_code, response_body);
   std::move(callback_).Run(job, status, net_error, response_body);
 }
 

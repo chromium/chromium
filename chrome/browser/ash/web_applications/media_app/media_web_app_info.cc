@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -115,23 +116,22 @@ std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
 const apps::AppLaunchParams PickFileFromParams(
     const apps::AppLaunchParams& params,
     size_t index) {
-  return apps::AppLaunchParams(params.app_id, params.container,
-                               params.disposition, params.launch_source,
-                               params.display_id, {params.launch_files[index]},
-                               params.intent ? params.intent.Clone() : nullptr);
+  return apps::AppLaunchParams(
+      params.app_id, params.container, params.disposition, params.launch_source,
+      params.display_id, {params.launch_files[index]},
+      params.intent ? params.intent->Clone() : nullptr);
 }
 
 }  // namespace
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::MEDIA,
+    : ash::SystemWebAppDelegate(
+          ash::SystemWebAppType::MEDIA,
           "Media",
           GURL("chrome://media-app/pwa.html"),
           profile,
-          web_app::OriginTrialsMap(
-              {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
-}
+          ash::OriginTrialsMap(
+              {{ash::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {}
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebAppInstallInfo> info =
@@ -282,7 +282,7 @@ Browser* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
 
   // For PDFs, launch all but the last file from scratch. Windows will cascade.
   for (size_t i = 0; i < params.launch_files.size() - 1; ++i) {
-    web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::MEDIA, url,
+    web_app::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::MEDIA, url,
                                     PickFileFromParams(params, i));
   }
   return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(

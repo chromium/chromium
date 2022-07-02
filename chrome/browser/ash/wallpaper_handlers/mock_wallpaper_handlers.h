@@ -89,6 +89,7 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
               (const absl::optional<std::string>& item_id,
                const absl::optional<std::string>& album_id,
                const absl::optional<std::string>& resume_token,
+               bool shuffle,
                base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback),
               (override));
 

@@ -27,7 +27,7 @@ class FileIOCallback {
   virtual void OnFileIOComplete(int bytes_copied) = 0;
 
  protected:
-  virtual ~FileIOCallback() {}
+  virtual ~FileIOCallback() = default;
 };
 
 // Simple wrapper around a file that allows asynchronous operations.

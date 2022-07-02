@@ -1,0 +1,19 @@
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Enable assistant implementation based on libassistant.
+  enable_cros_libassistant = is_chromeos_ash && is_chrome_branded
+
+  # Enable a fake microphone, which can replay audio files as microphone input.
+  # See chromeos/ash/components/assistant/tools/send-audio.sh
+  enable_fake_assistant_microphone = false
+}
+
+declare_args() {
+  # Enable Assistant integration tests using LibAssistant and a fake S3 server.
+  # This requires libassistant.so to support grpc communication with the S3
+  # server, which increases the library size, which is why we introduced this
+  # flag to disable them in the release builds.
+  enable_assistant_integration_tests = enable_cros_libassistant
+}

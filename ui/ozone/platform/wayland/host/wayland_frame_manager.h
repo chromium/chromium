@@ -12,6 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -56,7 +57,7 @@ struct WaylandFrame {
   friend class WaylandFrameManager;
 
   uint32_t frame_id;
-  WaylandSurface* root_surface;
+  raw_ptr<WaylandSurface> root_surface;
   wl::WaylandOverlayConfig root_config;
   base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
@@ -168,7 +169,14 @@ class WaylandFrameManager {
   // feedbacks if the number is too big.
   void VerifyNumberOfSubmittedFrames();
 
-  WaylandWindow* const window_;
+  // Verifies wl_buffers for the given |frame| exist. If they do not yet exist,
+  // a callback to |MaybeProcessPendingFrame| is set and false is returned.
+  // If the frame contains a buffer id for an invalid WaylandBufferHandle, the
+  // |frame::buffer_lost| is set and false is returned. That means that the
+  // frame must not be used for the further submission.
+  bool EnsureWlBuffersExist(WaylandFrame& frame);
+
+  const raw_ptr<WaylandWindow> window_;
 
   // When RecordFrame() is called, a Frame is pushed to |pending_frames_|. See
   // RecordFrame().
@@ -179,7 +187,7 @@ class WaylandFrameManager {
   base::circular_deque<std::unique_ptr<WaylandFrame>> submitted_frames_;
 
   // Non-owned pointer to the main connection.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;
 };

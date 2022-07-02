@@ -207,7 +207,7 @@ export class AbstractTts {
     // Since dollar and sterling pound signs will be replaced with text, move
     // them to after the number if they stay between a negative sign and a
     // number.
-    text = text.replace(AbstractTts.negativeCurrencyAmountRegexp_, (match) => {
+    text = text.replace(AbstractTts.negativeCurrencyAmountRegexp_, match => {
       const minus = match[0];
       const number = match.substring(2);
       const currency = match[1];

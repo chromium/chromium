@@ -9,6 +9,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -51,6 +52,7 @@ void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                     bool key_frame,
                                     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "OffloadingVideoEncoder::Encode");
   work_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncoder::Encode,

@@ -123,7 +123,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case kBadgeTypeSaveAddressProfile:
       badgeImage = UseSymbols() ? DefaultSymbolWithPointSize(
-                                      kPinSymbol, kSymbolImagePointSize)
+                                      kPinFillSymbol, kSymbolImagePointSize)
                                 : [UIImage imageNamed:@"ic_place"];
       badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

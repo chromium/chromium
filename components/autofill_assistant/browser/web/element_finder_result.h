@@ -34,14 +34,15 @@ class ElementFinderResult {
   const DomObjectFrameStack& dom_object() const { return dom_object_; }
 
   content::RenderFrameHost* render_frame_host() const {
-    if (!render_frame_id_) {
-      return nullptr;
-    }
-    return content::RenderFrameHost::FromID(*render_frame_id_);
+    return content::RenderFrameHost::FromID(dom_object_.render_frame_id);
   }
 
   const std::string& object_id() const {
     return dom_object_.object_data.object_id;
+  }
+
+  absl::optional<int> backend_node_id() const {
+    return dom_object_.object_data.backend_node_id;
   }
 
   const std::string& node_frame_id() const {
@@ -56,15 +57,26 @@ class ElementFinderResult {
     return object_id().empty() && node_frame_id().empty();
   }
 
-  void SetRenderFrameHost(content::RenderFrameHost* render_frame_host) {
+#if defined(UNIT_TEST)
+  void SetRenderFrameHostForTest(content::RenderFrameHost* render_frame_host) {
     if (!render_frame_host) {
       return;
     }
-    render_frame_id_ = render_frame_host->GetGlobalId();
+    SetRenderFrameHostGlobalId(render_frame_host->GetGlobalId());
+  }
+#endif  // defined(UNIT_TEST)
+
+  void SetRenderFrameHostGlobalId(
+      content::GlobalRenderFrameHostId render_frame_id) {
+    dom_object_.render_frame_id = render_frame_id;
   }
 
   void SetObjectId(const std::string& object_id) {
     dom_object_.object_data.object_id = object_id;
+  }
+
+  void SetBackendNodeId(absl::optional<int> backend_node_id) {
+    dom_object_.object_data.backend_node_id = backend_node_id;
   }
 
   void SetNodeFrameId(const std::string& node_frame_id) {
@@ -77,9 +89,6 @@ class ElementFinderResult {
 
  private:
   DomObjectFrameStack dom_object_;
-
-  // The id of the render frame host that contains the element.
-  absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
 };
 
 }  // namespace autofill_assistant

@@ -49,7 +49,8 @@ class PacmanFramePainter {
                   int bytes_per_row);
 
   const Format pixel_format_;
-  raw_ptr<const FakeDeviceState> fake_device_state_ = nullptr;
+  raw_ptr<const FakeDeviceState, DanglingUntriaged> fake_device_state_ =
+      nullptr;
 };
 
 // Implementation of VideoCaptureDevice that generates test frames. This is
@@ -159,7 +160,7 @@ class FrameDelivererFactory {
 
  private:
   const FakeVideoCaptureDevice::DeliveryMode delivery_mode_;
-  raw_ptr<const FakeDeviceState> device_state_ = nullptr;
+  raw_ptr<const FakeDeviceState, DanglingUntriaged> device_state_ = nullptr;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
@@ -187,7 +188,7 @@ class FakePhotoDevice {
 
  private:
   const std::unique_ptr<PacmanFramePainter> sk_n32_painter_;
-  const raw_ptr<const FakeDeviceState> fake_device_state_;
+  const raw_ptr<const FakeDeviceState, DanglingUntriaged> fake_device_state_;
   const FakePhotoDeviceConfig config_;
 };
 

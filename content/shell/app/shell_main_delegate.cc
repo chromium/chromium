@@ -35,6 +35,7 @@
 #include "content/shell/utility/shell_content_utility_client.h"
 #include "ipc/ipc_buildflags.h"
 #include "net/cookies/cookie_monster.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -186,8 +187,8 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
-bool ShellMainDelegate::ShouldCreateFeatureList() {
-  return false;
+bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
 void ShellMainDelegate::PreSandboxStartup() {
@@ -335,9 +336,11 @@ void ShellMainDelegate::PreBrowserMain() {
 #endif
 }
 
-void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  // Apply field trial testing configuration.
-  browser_client_->CreateFeatureListAndFieldTrials();
+void ShellMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  if (!ShouldCreateFeatureList(invoked_in)) {
+    // Apply field trial testing configuration since content did not.
+    browser_client_->CreateFeatureListAndFieldTrials();
+  }
 }
 
 ContentClient* ShellMainDelegate::CreateContentClient() {

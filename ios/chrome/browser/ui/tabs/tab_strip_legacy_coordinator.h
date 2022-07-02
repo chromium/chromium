@@ -19,6 +19,13 @@
 // strip feature.
 @interface TabStripLegacyCoordinator : ChromeCoordinator<TabStripHighlighting>
 
+// Initializes this Coordinator with its `browser` and a nil base view
+// controller.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 
@@ -30,7 +37,7 @@
 // synchronize animations.
 @property(nonatomic, assign) NSTimeInterval animationWaitDuration;
 
-// Animatee for this tab strip. It is not added to the |panGestureHandler| as
+// Animatee for this tab strip. It is not added to the `panGestureHandler` as
 // it needs to be run in sync with BVC.
 @property(nonatomic, readonly, strong) id<ViewRevealingAnimatee> animatee;
 

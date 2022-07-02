@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -82,9 +82,10 @@ AffineTransform TransformHelper::ComputeTransform(
   // https://svgwg.org/svg2-draft/coords.html#ObjectBoundingBoxUnits
   TransformationMatrix transform;
   gfx::RectF reference_box = ComputeReferenceBox(layout_object);
-  style.ApplyTransform(transform, reference_box, apply_transform_origin,
-                       ComputedStyle::kIncludeMotionPath,
-                       ComputedStyle::kIncludeIndependentTransformProperties);
+  style.ApplyTransform(
+      transform, reference_box, ComputedStyle::kIncludeTransformOperations,
+      apply_transform_origin, ComputedStyle::kIncludeMotionPath,
+      ComputedStyle::kIncludeIndependentTransformProperties);
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
     transform.Zoom(1 / zoom);

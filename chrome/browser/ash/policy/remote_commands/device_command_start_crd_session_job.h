@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
@@ -63,6 +63,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
       std::string user_name = "";
       bool terminate_upon_input = false;
       bool show_confirmation_dialog = false;
+      bool curtain_local_user_session = false;
     };
 
     virtual ~Delegate() = default;
@@ -124,6 +125,14 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   const char* UserTypeToString(UserType value) const;
 
+  void FetchOAuthTokenASync(OAuthTokenCallback on_success,
+                            ErrorCallback on_error);
+  void StartCrdHostAndGetCode(const std::string& token);
+  void FinishWithSuccess(const std::string& access_code);
+  // Finishes command with error code and optional message.
+  void FinishWithError(ResultCode result_code, const std::string& message);
+  void FinishWithNotIdleError();
+
   // Check if all required system services (singletons) are ready.
   bool AreServicesReady() const;
   bool UserTypeSupportsCrd() const;
@@ -133,22 +142,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool IsDeviceIdle() const;
   base::TimeDelta GetDeviceIdlenessPeriod() const;
 
-  void FetchOAuthTokenASync(OAuthTokenCallback on_success,
-                            ErrorCallback on_error);
-
-  // Finishes command with error code and optional message.
-  void FinishWithError(ResultCode result_code, const std::string& message);
-  void FinishWithNotIdleError();
-  void FinishWithSuccess(const std::string& access_code);
-
-  void OnOAuthTokenReceived(const std::string& token);
-  void OnAccessCodeReceived(const std::string& access_code);
-
   std::string GetRobotAccountUserName() const;
-
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;
-  bool ShouldUseEnterpriseUserDialog() const;
 
   DeviceOAuth2TokenService* oauth_service() const;
 
@@ -169,6 +165,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // True if the admin has confirmed that they want to start the CRD session,
   // while a user is currently using the device.
   bool acked_user_presence_ = false;
+
+  // True if the admin requested a curtained remote access session.
+  bool curtain_local_user_session_ = false;
 
   // Fake OAuth token that will be used once the next time we need to fetch an
   // oauth token.

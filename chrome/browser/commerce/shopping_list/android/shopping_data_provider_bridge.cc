@@ -8,7 +8,7 @@
 #include "base/android/jni_array.h"
 #include "chrome/browser/commerce/shopping_list/jni_headers/ShoppingDataProviderBridge_jni.h"
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
-#include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "content/public/browser/web_contents.h"
 
 using base::android::JavaParamRef;

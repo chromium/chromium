@@ -115,7 +115,7 @@ MediaValuesCached* CreateMediaValues(
 bool MediaMatches(const String& media,
                   MediaValues* media_values,
                   const ExecutionContext* execution_context) {
-  scoped_refptr<MediaQuerySet> media_queries =
+  MediaQuerySet* media_queries =
       MediaQuerySet::Create(media, execution_context);
   MediaQueryEvaluator evaluator(media_values);
   return evaluator.Eval(*media_queries);
@@ -383,20 +383,12 @@ Resource* PreloadHelper::PreloadIfNeeded(
         String("Preload triggered for " + url.Host() + url.GetPath())));
   }
   link_fetch_params.SetLinkPreload(true);
-
-  bool render_blocking =
-      BlockingAttribute::IsExplicitlyRenderBlocking(params.blocking);
   link_fetch_params.SetRenderBlockingBehavior(
-      render_blocking ? RenderBlockingBehavior::kBlocking
-                      : RenderBlockingBehavior::kNonBlocking);
+      RenderBlockingBehavior::kNonBlocking);
   if (pending_preload) {
     if (RenderBlockingResourceManager* manager =
             document.GetRenderBlockingResourceManager()) {
-      if (render_blocking) {
-        manager->AddPendingPreload(
-            *pending_preload,
-            RenderBlockingResourceManager::PreloadType::kRegular);
-      } else if (EqualIgnoringASCIICase(params.as, "font")) {
+      if (EqualIgnoringASCIICase(params.as, "font")) {
         manager->AddPendingPreload(
             *pending_preload,
             RenderBlockingResourceManager::PreloadType::kShortBlockingFont);
@@ -522,27 +514,16 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // is cryptographic nonce, integrity metadata is integrity metadata, parser
   // metadata is "not-parser-inserted", credentials mode is credentials mode,
   // and referrer policy is referrer policy." [spec text]
-  bool render_blocking =
-      BlockingAttribute::IsExplicitlyRenderBlocking(params.blocking);
   ModuleScriptFetchRequest request(
       params.href, ModuleType::kJavaScript, context_type, destination,
-      ScriptFetchOptions(
-          params.nonce, integrity_metadata, params.integrity,
-          kNotParserInserted, credentials_mode, params.referrer_policy,
-          mojom::blink::FetchPriorityHint::kAuto,
-          render_blocking ? RenderBlockingBehavior::kBlocking
-                          : RenderBlockingBehavior::kNonBlocking),
+      ScriptFetchOptions(params.nonce, integrity_metadata, params.integrity,
+                         kNotParserInserted, credentials_mode,
+                         params.referrer_policy,
+                         mojom::blink::FetchPriorityHint::kAuto,
+                         RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
-  // Step 11. "If element is render-blocking, then block rendering on element."
-  if (client && render_blocking) {
-    if (document.GetRenderBlockingResourceManager()) {
-      document.GetRenderBlockingResourceManager()->AddPendingPreload(
-          *client, RenderBlockingResourceManager::PreloadType::kRegular);
-    }
-  }
-
-  // Step 12. "Fetch a modulepreload module script graph given url, destination,
+  // Step 11. "Fetch a modulepreload module script graph given url, destination,
   // settings object, and options. Wait until the algorithm asynchronously
   // completes with result." [spec text]
   //

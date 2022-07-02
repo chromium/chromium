@@ -22,7 +22,7 @@ class NET_EXPORT_PRIVATE DatagramSocket {
     DEFAULT_BIND,
   };
 
-  virtual ~DatagramSocket() {}
+  virtual ~DatagramSocket() = default;
 
   // Close the socket.
   virtual void Close() = 0;

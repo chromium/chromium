@@ -1,7 +1,7 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-goog.provide('JaPhoneticMap');
+export const JaPhoneticMap = {};
 
 /**
  * A map containing phonetic disambiguation data for Japanese.

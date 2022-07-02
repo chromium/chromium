@@ -19,6 +19,13 @@
       "use_goma": true
     }
   },
+  "linux-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
   "linux-password-manager-captured-sites-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -36,6 +43,15 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "mac-arm64-finch-smoke-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
       "use_goma": true
     }
   },
@@ -63,6 +79,13 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
       "use_goma": true
     }
   },

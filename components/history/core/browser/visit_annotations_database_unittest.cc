@@ -9,10 +9,10 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/visit_database.h"
+#include "components/history/core/test/visit_annotations_test_utils.h"
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "visit_annotations_test_utils.h"
 
 namespace history {
 
@@ -215,6 +215,15 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
+TEST_F(VisitAnnotationsDatabaseTest, GetRecentClusterIds) {
+  AddCluster(
+      {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
+
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(13)), std::vector<int64_t>({}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(12)), std::vector<int64_t>({1}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(10)), std::vector<int64_t>({1}));
+}
+
 TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
@@ -237,7 +246,7 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
             std::vector<int64_t>({3}));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster) {
+TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster_IsVisitClustered) {
   // Add unclustered visits.
   AddVisitWithTime(IntToTime(0));
   AddVisitWithTime(IntToTime(2));
@@ -247,8 +256,18 @@ TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster) {
   AddCluster({AddVisitWithTime(IntToTime(3))});
   AddCluster({AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7))});
 
+  // GetVisitIdsInCluster
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 6));
+
+  // IsVisitClustered
+  EXPECT_FALSE(IsVisitClustered(1));
+  EXPECT_FALSE(IsVisitClustered(2));
+  EXPECT_FALSE(IsVisitClustered(3));
+  EXPECT_TRUE(IsVisitClustered(4));
+  EXPECT_TRUE(IsVisitClustered(5));
+  EXPECT_TRUE(IsVisitClustered(6));
+  EXPECT_TRUE(IsVisitClustered(7));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {

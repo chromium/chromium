@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
+<translation id="3428998300753080128">登录此网站、您的 Google 帐号和 Chrome。</translation>
 <translation id="3522659714780527202">要查看您在其他设备上用 Chrome 打开的标签页，请开启同步功能</translation>
 <translation id="3533694711092285624">尚未保存任何密码。您需要先保存密码才能使用 Chrome 的密码检查功能。</translation>
 <translation id="3641179212828090796">使用您保存在 Chrome 中的密码更快地完成登录</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4698415050768537821">Chrome 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
+<translation id="4802922164792993118">Chrome 小窍门。在键盘顶部选择已保存的密码，即可更快完成登录。</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="5030102366287574140">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理帐号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
-<translation id="8263079278049777200">登录此网站、您的 Google 帐号和 Chrome。您可等到需要时再开启同步功能。</translation>
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>

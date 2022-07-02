@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -23,7 +24,7 @@ PushableMediaStreamVideoSource::Broker::Broker(
 }
 
 void PushableMediaStreamVideoSource::Broker::OnClientStarted() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK_GE(num_clients_, 0);
   ++num_clients_;
 }
@@ -31,7 +32,7 @@ void PushableMediaStreamVideoSource::Broker::OnClientStarted() {
 void PushableMediaStreamVideoSource::Broker::OnClientStopped() {
   bool should_stop = false;
   {
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     should_stop = --num_clients_ == 0;
     DCHECK_GE(num_clients_, 0);
   }
@@ -40,24 +41,24 @@ void PushableMediaStreamVideoSource::Broker::OnClientStopped() {
 }
 
 bool PushableMediaStreamVideoSource::Broker::IsRunning() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return !frame_callback_.is_null();
 }
 
 bool PushableMediaStreamVideoSource::Broker::CanDiscardAlpha() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return can_discard_alpha_;
 }
 
 bool PushableMediaStreamVideoSource::Broker::RequireMappedFrame() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return feedback_.require_mapped_frame;
 }
 
 void PushableMediaStreamVideoSource::Broker::PushFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (!source_ || frame_callback_.is_null())
     return;
   // If the source is muted, we don't forward frames.
@@ -95,12 +96,12 @@ void PushableMediaStreamVideoSource::Broker::StopSource() {
 }
 
 bool PushableMediaStreamVideoSource::Broker::IsMuted() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return muted_;
 }
 
 void PushableMediaStreamVideoSource::Broker::SetMuted(bool muted) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   muted_ = muted;
 }
 
@@ -111,13 +112,13 @@ void PushableMediaStreamVideoSource::Broker::OnSourceStarted(
   if (!source_)
     return;
 
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   frame_callback_ = std::move(frame_callback);
 }
 
 void PushableMediaStreamVideoSource::Broker::OnSourceDestroyedOrStopped() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   source_ = nullptr;
   frame_callback_.Reset();
 }
@@ -132,13 +133,13 @@ void PushableMediaStreamVideoSource::Broker::StopSourceOnMain() {
 
 void PushableMediaStreamVideoSource::Broker::SetCanDiscardAlpha(
     bool can_discard_alpha) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   can_discard_alpha_ = can_discard_alpha;
 }
 
 void PushableMediaStreamVideoSource::Broker::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   feedback_ = feedback;
 }
 
@@ -159,7 +160,8 @@ void PushableMediaStreamVideoSource::PushFrame(
 
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback) {
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoCaptureCropVersionCB crop_version_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(frame_callback);
   broker_->OnSourceStarted(std::move(frame_callback));

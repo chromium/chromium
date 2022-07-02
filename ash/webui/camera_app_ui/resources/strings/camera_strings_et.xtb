@@ -72,6 +72,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="3838931309141338733">Skannige ribakood</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Dokumentide skannimise funktsiooni allalaadimine</translation>
 <translation id="4118525110028899586">Peata salvestamine</translation>
 <translation id="4121305183798804752">Tuvastati dokument</translation>
 <translation id="414641094616694804">See kaamera ei saa eraldusvõimet muuta</translation>
@@ -82,6 +83,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="4445542136948522167">Peata foto jäädvustamine</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikslit</translation>
 <translation id="4570032796877367747">Esikaamera</translation>
+<translation id="4620818268515773682">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on välja lülitatud</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Faili salvestamine ebaõnnestus</translation>
 <translation id="4695379108709712600">Liigub üles</translation>
@@ -145,6 +147,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Dokumendi parem alanurk</translation>
+<translation id="7692090236657809299">Luba panoraamimine, kallutamine ja suum</translation>
 <translation id="7726641833034062494">Tavalise video salvestamine</translation>
 <translation id="7748344063862150053">Dokumendi parem ülanurk</translation>
 <translation id="7933675232020478311">Liigub paremale alla</translation>
@@ -158,6 +161,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>

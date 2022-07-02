@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/certificates_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -41,7 +42,7 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   content::TestWebUI web_ui_;
   certificate_manager::CertificatesHandler cert_handler_;
-  sync_preferences::TestingPrefServiceSyncable* pref_service_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

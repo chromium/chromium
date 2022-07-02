@@ -202,10 +202,9 @@ LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
   }
 
   if (num_fragments > 1) {
-    total_block_size +=
-        To<NGBlockBreakToken>(
-            box.GetPhysicalFragment(num_fragments - 2)->BreakToken())
-            ->ConsumedBlockSize();
+    total_block_size += box.GetPhysicalFragment(num_fragments - 2)
+                            ->BreakToken()
+                            ->ConsumedBlockSize();
   }
   return total_block_size;
 }

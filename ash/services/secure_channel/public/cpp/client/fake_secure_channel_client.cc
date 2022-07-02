@@ -58,4 +58,10 @@ FakeSecureChannelClient::ListenForConnectionFromDevice(
   return connection_attempt;
 }
 
+void FakeSecureChannelClient::GetLastSeenTimestamp(
+    const std::string& remote_device_id,
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
 }  // namespace ash::secure_channel

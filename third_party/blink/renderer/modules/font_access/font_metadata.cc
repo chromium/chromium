@@ -6,6 +6,7 @@
 
 #include "base/big_endian.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -112,7 +113,8 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,
   }
 
   base::UmaHistogramBoolean("Blink.Fonts.DataAccess.StreamCreation", true);
-  wtf_size_t font_byte_size = SafeCast<wtf_size_t>(stream->getLength());
+  wtf_size_t font_byte_size =
+      base::checked_cast<wtf_size_t>(stream->getLength());
 
   // TODO(https://crbug.com/1069900): This copies the font bytes. Lazy load and
   // stream the data instead.

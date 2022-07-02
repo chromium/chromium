@@ -4,15 +4,14 @@
 
 css_files = [
   "button.css",
+  "custom_toast.css",
   "document_mode_dialog.css",
   "flash.css",
-  "focus_ring.css",
   "inkdrop.css",
   "main.css",
   "mode/mode.css",
   "mode/scan.css",
   "mode/video.css",
-  "new_feature_toast.css",
   "ptz_panel.css",
   "review.css",
   "views/settings.css",

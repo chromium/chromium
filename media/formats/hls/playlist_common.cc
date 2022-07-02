@@ -122,7 +122,8 @@ ParseStatus::Or<GURL> ParseUri(
   }
 
   // URIs may be relative to the playlist URI, resolve it against that.
-  auto resolved_uri = playlist_uri.Resolve(std::move(uri_str_result).value());
+  auto resolved_uri =
+      playlist_uri.Resolve(std::move(uri_str_result).value().Str());
   if (!resolved_uri.is_valid()) {
     return ParseStatusCode::kInvalidUri;
   }

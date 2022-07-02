@@ -10,7 +10,7 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('InternetPage', function() {
@@ -133,7 +133,7 @@ suite('InternetPage', function() {
     assertTrue(!!internetPage);
     mojoApi_.resetForTest();
     document.body.appendChild(internetPage);
-    networkSummary_ = internetPage.$$('network-summary');
+    networkSummary_ = internetPage.shadowRoot.querySelector('network-summary');
     assertTrue(!!networkSummary_);
     return flushAsync().then(() => {
       return Promise.all([
@@ -165,11 +165,13 @@ suite('InternetPage', function() {
   });
 
   teardown(function() {
-    const subPage = internetPage.$$('settings-internet-subpage');
+    const subPage =
+        internetPage.shadowRoot.querySelector('settings-internet-subpage');
     if (subPage) {
       subPage.remove();
     }
-    const detailPage = internetPage.$$('settings-internet-detail-page');
+    const detailPage =
+        internetPage.shadowRoot.querySelector('settings-internet-detail-page');
     if (detailPage) {
       detailPage.remove();
     }
@@ -182,12 +184,12 @@ suite('InternetPage', function() {
     test('Ethernet', async function() {
       await init();
       // Default fake device state is Ethernet enabled only.
-      const ethernet = networkSummary_.$$('#Ethernet');
+      const ethernet = networkSummary_.shadowRoot.querySelector('#Ethernet');
       assertTrue(!!ethernet);
       assertEquals(1, ethernet.networkStateList.length);
-      assertEquals(null, networkSummary_.$$('#Cellular'));
-      assertEquals(null, networkSummary_.$$('#VPN'));
-      assertEquals(null, networkSummary_.$$('#WiFi'));
+      assertEquals(null, networkSummary_.shadowRoot.querySelector('#Cellular'));
+      assertEquals(null, networkSummary_.shadowRoot.querySelector('#VPN'));
+      assertEquals(null, networkSummary_.shadowRoot.querySelector('#WiFi'));
     });
 
     test('WiFi', async function() {
@@ -199,7 +201,7 @@ suite('InternetPage', function() {
       ]);
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
       return flushAsync().then(() => {
-        const wifi = networkSummary_.$$('#WiFi');
+        const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
         assertTrue(!!wifi);
         assertEquals(2, wifi.networkStateList.length);
       });
@@ -211,7 +213,7 @@ suite('InternetPage', function() {
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
       return flushAsync().then(() => {
-        const wifi = networkSummary_.$$('#WiFi');
+        const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
         assertTrue(!!wifi);
 
         // Ensure that the initial state is disabled and the toggle is
@@ -220,7 +222,7 @@ suite('InternetPage', function() {
             mojoApi_.getDeviceStateForTest(mojom.NetworkType.kWiFi);
         assertTrue(!!wifiDevice);
         assertEquals(mojom.DeviceStateType.kDisabled, wifiDevice.deviceState);
-        const toggle = wifi.$$('#deviceEnabledButton');
+        const toggle = wifi.shadowRoot.querySelector('#deviceEnabledButton');
         assertTrue(!!toggle);
         assertFalse(toggle.disabled);
         assertFalse(toggle.checked);
@@ -250,7 +252,8 @@ suite('InternetPage', function() {
       await flushAsync();
 
       const deepLinkElement =
-          networkSummary_.$$('#WiFi').$$('#deviceEnabledButton');
+          networkSummary_.shadowRoot.querySelector('#WiFi')
+              .shadowRoot.querySelector('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
@@ -298,7 +301,8 @@ suite('InternetPage', function() {
       });
 
       function clickAddConnectionsButton() {
-        const button = internetPage.$$('#expandAddConnections');
+        const button =
+            internetPage.shadowRoot.querySelector('#expandAddConnections');
         assertTrue(!!button);
         button.expanded = true;
       }
@@ -323,7 +327,8 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
-              assertTrue(isVisible(internetPage.$$('#add-vpn-label')));
+              assertTrue(isVisible(
+                  internetPage.shadowRoot.querySelector('#add-vpn-label')));
             });
           });
 
@@ -343,9 +348,11 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
-              assertTrue(isVisible(internetPage.$$('#vpnPolicyIndicator')));
+              assertTrue(isVisible(internetPage.shadowRoot.querySelector(
+                  '#vpnPolicyIndicator')));
               assertTrue(
-                  isVisible(networkSummary_.$$('#VPN').$$('#policyIndicator')));
+                  isVisible(networkSummary_.shadowRoot.querySelector('#VPN')
+                                .shadowRoot.querySelector('#policyIndicator')));
             });
           });
 
@@ -365,9 +372,11 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
-              assertFalse(isVisible(internetPage.$$('#vpnPolicyIndicator')));
+              assertFalse(isVisible(internetPage.shadowRoot.querySelector(
+                  '#vpnPolicyIndicator')));
               assertFalse(
-                  isVisible(networkSummary_.$$('#VPN').$$('#policyIndicator')));
+                  isVisible(networkSummary_.shadowRoot.querySelector('#VPN')
+                                .shadowRoot.querySelector('#policyIndicator')));
             });
           });
     });
@@ -385,7 +394,8 @@ suite('InternetPage', function() {
       await flushAsync();
 
       const deepLinkElement =
-          networkSummary_.$$('#Cellular').$$('#deviceEnabledButton');
+          networkSummary_.shadowRoot.querySelector('#Cellular')
+              .shadowRoot.querySelector('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
@@ -398,7 +408,8 @@ suite('InternetPage', function() {
       eSimManagerRemote.addEuiccForTest(1);
       await flushAsync();
 
-      let renameDialog = internetPage.$$('#esimRenameDialog');
+      let renameDialog =
+          internetPage.shadowRoot.querySelector('#esimRenameDialog');
       assertFalse(!!renameDialog);
 
       const event = new CustomEvent(
@@ -406,7 +417,7 @@ suite('InternetPage', function() {
       internetPage.dispatchEvent(event);
 
       await flushAsync();
-      renameDialog = internetPage.$$('#esimRenameDialog');
+      renameDialog = internetPage.shadowRoot.querySelector('#esimRenameDialog');
       assertTrue(!!renameDialog);
 
       await assertWarningMessageVisibility(renameDialog.$.warningMessage);
@@ -417,7 +428,8 @@ suite('InternetPage', function() {
       eSimManagerRemote.addEuiccForTest(1);
       await flushAsync();
 
-      let removeDialog = internetPage.$$('#esimRemoveProfileDialog');
+      let removeDialog =
+          internetPage.shadowRoot.querySelector('#esimRemoveProfileDialog');
       assertFalse(!!removeDialog);
 
       const event = new CustomEvent(
@@ -425,7 +437,8 @@ suite('InternetPage', function() {
       internetPage.dispatchEvent(event);
 
       await flushAsync();
-      removeDialog = internetPage.$$('#esimRemoveProfileDialog');
+      removeDialog =
+          internetPage.shadowRoot.querySelector('#esimRemoveProfileDialog');
       assertTrue(!!removeDialog);
 
       await assertWarningMessageVisibility(removeDialog.$.warningMessage);
@@ -438,13 +451,15 @@ suite('InternetPage', function() {
       async function() {
         await init();
 
-        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        let cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ true, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
         const psimFlow =
             cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
@@ -467,13 +482,15 @@ suite('InternetPage', function() {
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
-        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        let cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
         const esimFlow =
             cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
@@ -489,7 +506,8 @@ suite('InternetPage', function() {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
@@ -498,7 +516,8 @@ suite('InternetPage', function() {
         assertEquals(
             internetPage.$.errorToastMessage.innerHTML,
             internetPage.i18n('eSimNoConnectionErrorToast'));
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
       });
 
   test(
@@ -513,13 +532,15 @@ suite('InternetPage', function() {
         });
         eSimManagerRemote.addEuiccForTest(1);
 
-        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        let cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
         const esimFlow =
             cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
@@ -542,7 +563,8 @@ suite('InternetPage', function() {
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
 
         await navigateToCellularSetupDialog(
             /*showPSimFlow=*/ false, /*isCellularEnabled=*/ false);
@@ -551,7 +573,8 @@ suite('InternetPage', function() {
         assertEquals(
             internetPage.$.errorToastMessage.innerHTML,
             internetPage.i18n('eSimMobileDataNotEnabledErrorToast'));
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
       });
 
   test(
@@ -570,7 +593,8 @@ suite('InternetPage', function() {
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
-        const cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        const cellularSetupDialog =
+            internetPage.shadowRoot.querySelector('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
         await navigateToCellularSetupDialog(
@@ -580,7 +604,8 @@ suite('InternetPage', function() {
         assertEquals(
             internetPage.$.errorToastMessage.innerHTML,
             internetPage.i18n('eSimProfileLimitReachedErrorToast', 5));
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
       });
 
   test('Show sim lock dialog through URL parameters', async () => {
@@ -608,7 +633,8 @@ suite('InternetPage', function() {
     });
     await flushAsync();
 
-    const simLockDialogs = internetPage.$$('sim-lock-dialogs');
+    const simLockDialogs =
+        internetPage.shadowRoot.querySelector('sim-lock-dialogs');
     assertTrue(!!simLockDialogs);
     assertTrue(simLockDialogs.isDialogOpen);
   });
@@ -635,7 +661,8 @@ suite('InternetPage', function() {
         assertEquals(
             internetPage.$.errorToastMessage.innerHTML,
             internetPage.i18n('eSimNoConnectionErrorToast'));
-        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+        assertFalse(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
 
         // Hide the toast
         internetPage.$.errorToast.hide();
@@ -653,7 +680,8 @@ suite('InternetPage', function() {
         internetPage.dispatchEvent(event);
         await flushAsync();
         assertFalse(internetPage.$.errorToast.open);
-        assertTrue(!!internetPage.$$('#cellularSetupDialog'));
+        assertTrue(
+            !!internetPage.shadowRoot.querySelector('#cellularSetupDialog'));
       });
 
   test('Show toast on show-error-toast event', async function() {
@@ -671,7 +699,8 @@ suite('InternetPage', function() {
   test('Internet detail menu renders', async () => {
     await navigateToCellularDetailPage();
 
-    const internetDetailMenu = internetPage.$$('settings-internet-detail-menu');
+    const internetDetailMenu =
+        internetPage.shadowRoot.querySelector('settings-internet-detail-menu');
     assertTrue(!!internetDetailMenu);
   });
 
@@ -680,7 +709,8 @@ suite('InternetPage', function() {
       async function() {
         await navigateToCellularDetailPage();
 
-        const detailPage = internetPage.$$('settings-internet-detail-page');
+        const detailPage = internetPage.shadowRoot.querySelector(
+            'settings-internet-detail-page');
         assertTrue(!!detailPage);
         assertTrue(!!detailPage.globalPolicy);
         assertFalse(
@@ -713,8 +743,8 @@ suite('InternetPage', function() {
         Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
         internetPage.currentRouteChanged(routes.KNOWN_NETWORKS, undefined);
 
-        const knownNetworksPage =
-            internetPage.$$('settings-internet-known-networks-page');
+        const knownNetworksPage = internetPage.shadowRoot.querySelector(
+            'settings-internet-known-networks-page');
 
         // Confirm that the knownNetworkType_ was set to kWiFi.
         assertTrue(!!knownNetworksPage);

@@ -56,7 +56,7 @@ class NET_EXPORT HttpRequestHeaders {
     const std::string& value() const { return curr_->value; }
 
    private:
-    bool started_;
+    bool started_ = false;
     HttpRequestHeaders::HeaderVector::const_iterator curr_;
     const HttpRequestHeaders::HeaderVector::const_iterator end_;
   };

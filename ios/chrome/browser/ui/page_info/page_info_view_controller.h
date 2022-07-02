@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@protocol BrowserCommands;
+@protocol PageInfoCommands;
 @protocol PermissionsDelegate;
 
 // View Controller for displaying the page info.
@@ -26,9 +26,7 @@
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Handler used to navigate outside the page info.
-// TODO(crbug.com/1323758): This should just be id<PageInfoCommands>.
-@property(nonatomic, weak) id<BrowserCommands> handler;
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 
 // Delegate used to handle permission actions.
 @property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate

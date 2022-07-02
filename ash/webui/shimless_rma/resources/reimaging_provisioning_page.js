@@ -13,7 +13,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ProvisioningError, ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
@@ -56,7 +56,7 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       /** @protected {boolean} */
       shouldShowSpinner_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
     };
   }
@@ -78,12 +78,16 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
 
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
-   * TODO(joonbug): Add error handling and display failure using cr-dialog.
    * @param {!ProvisioningStatus} status
    * @param {number} progress
+   * @param {!ProvisioningError} error
    * @protected
    */
-  onProvisioningUpdated(status, progress) {
+  onProvisioningUpdated(status, progress, error) {
+    const isErrorStatus = status === ProvisioningStatus.kFailedBlocking ||
+        status === ProvisioningStatus.kFailedNonBlocking;
+    const isWpError = isErrorStatus && error === ProvisioningError.kWpEnabled;
+
     this.status_ = status;
 
     // Transition to next state when provisioning is complete.
@@ -94,7 +98,24 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       return;
     }
 
-    this.shouldShowSpinner_ = this.status_ === ProvisioningStatus.kInProgress;
+    this.shouldShowSpinner_ =
+        isWpError || this.status_ === ProvisioningStatus.kInProgress;
+
+    if (isWpError) {
+      const dialog = /** @type {!CrDialogElement} */ (
+          this.shadowRoot.querySelector('#wpEnabledDialog'));
+      dialog.showModal();
+    }
+  }
+
+  /** @protected */
+  onTryAgainButtonClick_() {
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#wpEnabledDialog'));
+    dialog.close();
+
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.retryProvisioning());
   }
 }
 

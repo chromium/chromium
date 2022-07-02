@@ -14,10 +14,10 @@
 -->
 
 <button id=b1 onclick='p1.show()'>Popup 1</button>
-<div popup=popup id=p1 anchor=b1>Inside popup 1
+<div popup id=p1 anchor=b1>Inside popup 1
   <button id=b2 onclick='p2.show()'>Popup 2</button>
 </div>
-<div popup=popup id=p2 anchor=b2>Inside popup 2</div>
+<div popup id=p2 anchor=b2>Inside popup 2</div>
 
 <style>
   #p1 { top:50px; }
@@ -33,13 +33,13 @@
 
     const popup1 = document.querySelector('#p1');
     const popup2 = document.querySelector('#p2');
-    popup1.showPopup();
-    popup2.showPopup();
+    popup1.showPopUp();
+    popup2.showPopUp();
     eventSender.keyDown("Escape");
-    assert_true(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'));
+    assert_false(popup2.matches(':top-layer'));
     eventSender.keyDown("Escape");
-    assert_false(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
+    assert_false(popup1.matches(':top-layer'));
+    assert_false(popup2.matches(':top-layer'));
   },'Escape key should close top level popup');
 </script>

@@ -47,6 +47,12 @@ interface MediaMetricsProvider {
   // the provider is destructed.
   OnError(PipelineStatus status);
 
+  // Called when some portion of the pipeline wants to report a non-fatal error,
+  // such as hardware decode failure that falls back to a successful software
+  // decoded playback session, or a failed hardware renderer path which falls
+  // back to a successful software one.
+  OnFallback(PipelineStatus status);
+
   // Setters for various one-time lazily generated metrics or properties.
   SetHasPlayed();
   SetHaveEnough();

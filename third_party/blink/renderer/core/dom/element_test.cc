@@ -8,9 +8,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -668,7 +671,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
 
 TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
   Document& document = GetDocument();
-  SetBodyContent(R"HTML(
+  document.body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id=fg1 focusgroup>
       <div id=fg2 focusgroup=extend>
         <div>
@@ -676,10 +679,15 @@ TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
             <div id=fg3 focusgroup=extend></div>
           </div>
         </div>
+        <div id=fg4-container>
+          <template shadowroot=open>
+            <div id=fg4 focusgroup=extend></div>
+          </template>
+        </div>
       </div>
-      <div id=fg4 focusgroup></div>
+      <div id=fg5 focusgroup></div>
     </div>
-    <div id=fg5 focusgroup=extend>
+    <div id=fg6 focusgroup=extend>
   )HTML");
 
   // 1. Root focusgroup shouldn't extend any other.
@@ -707,22 +715,34 @@ TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
   ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
 
-  // 4. A focusgroup child of another focusgroup should only extend if the
-  // extend keyword is specified - in this case, it's not.
-  auto* fg4 = document.getElementById("fg4");
+  // 4. A focusgroup within a ShadowDOM should be able to extend its focusgroup
+  // ancestor that exists outside the ShadowDOM.
+  auto* fg4_container = document.getElementById("fg4-container");
+  ASSERT_TRUE(fg4_container);
+  ASSERT_NE(nullptr, fg4_container->GetShadowRoot());
+  auto* fg4 = fg4_container->GetShadowRoot()->getElementById("fg4");
   ASSERT_TRUE(fg4);
 
   FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
   ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kExtend);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kExtend);
 
-  // 5. A focusgroup that doesn't have an ancestor focusgroup can't extend.
+  // 5. A focusgroup child of another focusgroup should only extend if the
+  // extend keyword is specified - in this case, it's not.
   auto* fg5 = document.getElementById("fg5");
   ASSERT_TRUE(fg5);
 
   FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
   ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
   ASSERT_FALSE(fg5_flags & FocusgroupFlags::kExtend);
+
+  // 6. A focusgroup that doesn't have an ancestor focusgroup can't extend.
+  auto* fg6 = document.getElementById("fg6");
+  ASSERT_TRUE(fg6);
+
+  FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
+  ASSERT_NE(fg6_flags, FocusgroupFlags::kNone);
+  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kExtend);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
@@ -1090,6 +1110,25 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
 
   fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_EQ(fg2_flags, FocusgroupFlags::kNone);
+}
+
+TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id="elmt" style="color: green;"></div>
+  )HTML");
+
+  Element* elmt = document.getElementById("elmt");
+  elmt->style()->setProperty(GetDocument().GetExecutionContext(), "color",
+                             "red", String(), ASSERT_NO_EXCEPTION);
+
+  // Verify that setting the style attribute back to its initial value is not
+  // mistakenly considered as a no-op attribute change and ignored. It would be
+  // without proper synchronization of attributes.
+  elmt->setAttribute(html_names::kStyleAttr, "color: green;");
+
+  EXPECT_EQ(elmt->getAttribute(html_names::kStyleAttr), "color: green;");
+  EXPECT_EQ(elmt->style()->getPropertyValue("color"), "green");
 }
 
 }  // namespace blink

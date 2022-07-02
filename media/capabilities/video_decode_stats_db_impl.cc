@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "media/base/media_switches.h"
@@ -30,21 +29,11 @@ using ProtoDecodeStatsEntry = leveldb_proto::ProtoDatabase<DecodeStatsProto>;
 
 namespace {
 
-// Timeout threshold for DB operations. See OnOperationTimeout().
-// NOTE: Used by UmaHistogramOpTime. Change the name if you change the time.
-static constexpr base::TimeDelta kPendingOpTimeout = base::Seconds(30);
-
 const int kMaxFramesPerBufferDefault = 2500;
 
 const int kMaxDaysToKeepStatsDefault = 30;
 
 const bool kEnableUnweightedEntriesDefault = false;
-
-void UmaHistogramOpTime(const std::string& op_name, base::TimeDelta duration) {
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "Media.VideoDecodeStatsDB.OpTiming." + op_name, duration,
-      base::Milliseconds(1), kPendingOpTimeout, 50);
-}
 
 }  // namespace
 
@@ -56,41 +45,6 @@ const char VideoDecodeStatsDBImpl::kMaxDaysToKeepStatsParamName[] =
 
 const char VideoDecodeStatsDBImpl::kEnableUnweightedEntriesParamName[] =
     "db_enable_unweighted_entries";
-
-VideoDecodeStatsDBImpl::PendingOperation::PendingOperation(
-    std::string uma_str,
-    std::unique_ptr<base::CancelableOnceClosure> timeout_closure)
-    : uma_str_(uma_str),
-      timeout_closure_(std::move(timeout_closure)),
-      start_ticks_(base::TimeTicks::Now()) {
-  DVLOG(3) << __func__ << " Started " << uma_str_;
-}
-
-VideoDecodeStatsDBImpl::PendingOperation::~PendingOperation() {
-  // Destroying a pending operation that hasn't timed out yet implies the
-  // operation has completed.
-  if (timeout_closure_ && !timeout_closure_->IsCancelled()) {
-    base::TimeDelta op_duration = base::TimeTicks::Now() - start_ticks_;
-    UmaHistogramOpTime(uma_str_, op_duration);
-    DVLOG(3) << __func__ << " Completed " << uma_str_ << " ("
-             << op_duration.InMilliseconds() << ")";
-
-    // Ensure the timeout doesn't fire. Destruction should cancel the callback
-    // implicitly, but that's not a documented contract, so just taking the safe
-    // route.
-    timeout_closure_->Cancel();
-  }
-}
-
-void VideoDecodeStatsDBImpl::PendingOperation::OnTimeout() {
-  UmaHistogramOpTime(uma_str_, kPendingOpTimeout);
-  LOG(WARNING) << " Timeout performing " << uma_str_
-               << " operation on VideoDecodeStatsDB";
-
-  // Cancel the closure to ensure we don't double report the task as completed
-  // in ~PendingOperation().
-  timeout_closure_->Cancel();
-}
 
 // static
 int VideoDecodeStatsDBImpl::GetMaxFramesPerBuffer() {
@@ -143,7 +97,9 @@ constexpr char VideoDecodeStatsDBImpl::kDefaultWriteTime[];
 
 VideoDecodeStatsDBImpl::VideoDecodeStatsDBImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<DecodeStatsProto>> db)
-    : db_(std::move(db)), wall_clock_(base::DefaultClock::GetInstance()) {
+    : pending_operations_(/*uma_prefix=*/"Media.VideoDecodeStatsDB.OpTiming."),
+      db_(std::move(db)),
+      wall_clock_(base::DefaultClock::GetInstance()) {
   bool time_parsed =
       base::Time::FromString(kDefaultWriteTime, &default_write_time_);
   DCHECK(time_parsed);
@@ -155,43 +111,6 @@ VideoDecodeStatsDBImpl::~VideoDecodeStatsDBImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-VideoDecodeStatsDBImpl::PendingOpId VideoDecodeStatsDBImpl::StartPendingOp(
-    std::string uma_str) {
-  PendingOpId op_id = next_op_id_++;
-
-  auto timeout_closure = std::make_unique<base::CancelableOnceClosure>(
-      base::BindOnce(&VideoDecodeStatsDBImpl::OnPendingOpTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), op_id));
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, timeout_closure->callback(), kPendingOpTimeout);
-
-  pending_ops_.emplace(op_id, std::make_unique<PendingOperation>(
-                                  uma_str, std::move(timeout_closure)));
-
-  return op_id;
-}
-
-void VideoDecodeStatsDBImpl::CompletePendingOp(PendingOpId op_id) {
-  // Destructing the PendingOperation will trigger UMA for completion timing.
-  int count = pending_ops_.erase(op_id);
-
-  // No big deal, but very unusual. Timeout is very generous, so tasks that
-  // timeout are generally assumed to be permanently hung.
-  if (!count)
-    DVLOG(2) << __func__ << " DB operation completed after timeout.";
-}
-
-void VideoDecodeStatsDBImpl::OnPendingOpTimeout(PendingOpId op_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto it = pending_ops_.find(op_id);
-  DCHECK(it != pending_ops_.end());
-
-  it->second->OnTimeout();
-  pending_ops_.erase(it);
-}
-
 void VideoDecodeStatsDBImpl::Initialize(InitializeCB init_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(init_cb);
@@ -201,19 +120,19 @@ void VideoDecodeStatsDBImpl::Initialize(InitializeCB init_cb) {
   // case our whole DB will be less than 35K, so we aren't worried about
   // spamming the cache.
   // TODO(chcunningham): Keep an eye on the size as the table evolves.
-  db_->Init(base::BindOnce(&VideoDecodeStatsDBImpl::OnInit,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           StartPendingOp("Initialize"), std::move(init_cb)));
+  db_->Init(base::BindOnce(
+      &VideoDecodeStatsDBImpl::OnInit, weak_ptr_factory_.GetWeakPtr(),
+      pending_operations_.Start("Initialize"), std::move(init_cb)));
 }
 
-void VideoDecodeStatsDBImpl::OnInit(PendingOpId op_id,
+void VideoDecodeStatsDBImpl::OnInit(PendingOperations::Id op_id,
                                     InitializeCB init_cb,
                                     leveldb_proto::Enums::InitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(status, leveldb_proto::Enums::InitStatus::kInvalidOperation);
   bool success = status == leveldb_proto::Enums::InitStatus::kOK;
   DVLOG(2) << __func__ << (success ? " succeeded" : " FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Initialize",
                         success);
 
@@ -241,11 +160,11 @@ void VideoDecodeStatsDBImpl::AppendDecodeStats(
   DVLOG(3) << __func__ << " Reading key " << key.ToLogString()
            << " from DB with intent to update with " << entry.ToLogString();
 
-  db_->GetEntry(
-      key.Serialize(),
-      base::BindOnce(&VideoDecodeStatsDBImpl::WriteUpdatedEntry,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
-                     key, entry, std::move(append_done_cb)));
+  db_->GetEntry(key.Serialize(),
+                base::BindOnce(&VideoDecodeStatsDBImpl::WriteUpdatedEntry,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               pending_operations_.Start("Read"), key, entry,
+                               std::move(append_done_cb)));
 }
 
 void VideoDecodeStatsDBImpl::GetDecodeStats(const VideoDescKey& key,
@@ -255,11 +174,11 @@ void VideoDecodeStatsDBImpl::GetDecodeStats(const VideoDescKey& key,
 
   DVLOG(3) << __func__ << " " << key.ToLogString();
 
-  db_->GetEntry(
-      key.Serialize(),
-      base::BindOnce(&VideoDecodeStatsDBImpl::OnGotDecodeStats,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
-                     std::move(get_stats_cb)));
+  db_->GetEntry(key.Serialize(),
+                base::BindOnce(&VideoDecodeStatsDBImpl::OnGotDecodeStats,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               pending_operations_.Start("Read"),
+                               std::move(get_stats_cb)));
 }
 
 bool VideoDecodeStatsDBImpl::AreStatsUsable(
@@ -311,7 +230,7 @@ bool VideoDecodeStatsDBImpl::AreStatsUsable(
 }
 
 void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
-    PendingOpId op_id,
+    PendingOperations::Id op_id,
     const VideoDescKey& key,
     const DecodeStatsEntry& new_entry,
     AppendDecodeStatsCB append_done_cb,
@@ -319,7 +238,7 @@ void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
     std::unique_ptr<DecodeStatsProto> stats_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized());
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
 
   // Note: outcome of "Write" operation logged in OnEntryUpdated().
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Read",
@@ -457,31 +376,32 @@ void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
   std::unique_ptr<DBType::KeyEntryVector> entries =
       std::make_unique<DBType::KeyEntryVector>();
   entries->emplace_back(key.Serialize(), *stats_proto);
-  db_->UpdateEntries(
-      std::move(entries), std::make_unique<leveldb_proto::KeyVector>(),
-      base::BindOnce(&VideoDecodeStatsDBImpl::OnEntryUpdated,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Write"),
-                     std::move(append_done_cb)));
+  db_->UpdateEntries(std::move(entries),
+                     std::make_unique<leveldb_proto::KeyVector>(),
+                     base::BindOnce(&VideoDecodeStatsDBImpl::OnEntryUpdated,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    pending_operations_.Start("Write"),
+                                    std::move(append_done_cb)));
 }
 
-void VideoDecodeStatsDBImpl::OnEntryUpdated(PendingOpId op_id,
+void VideoDecodeStatsDBImpl::OnEntryUpdated(PendingOperations::Id op_id,
                                             AppendDecodeStatsCB append_done_cb,
                                             bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " update " << (success ? "succeeded" : "FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Write", success);
   std::move(append_done_cb).Run(success);
 }
 
 void VideoDecodeStatsDBImpl::OnGotDecodeStats(
-    PendingOpId op_id,
+    PendingOperations::Id op_id,
     GetDecodeStatsCB get_stats_cb,
     bool success,
     std::unique_ptr<DecodeStatsProto> stats_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << " get " << (success ? "succeeded" : "FAILED!");
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Read", success);
 
   std::unique_ptr<DecodeStatsEntry> entry;
@@ -546,17 +466,18 @@ void VideoDecodeStatsDBImpl::ClearStats(base::OnceClosure clear_done_cb) {
       std::make_unique<ProtoDecodeStatsEntry::KeyEntryVector>(),
       base::BindRepeating([](const std::string& key) { return true; }),
       base::BindOnce(&VideoDecodeStatsDBImpl::OnStatsCleared,
-                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Clear"),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     pending_operations_.Start("Clear"),
                      std::move(clear_done_cb)));
 }
 
-void VideoDecodeStatsDBImpl::OnStatsCleared(PendingOpId op_id,
+void VideoDecodeStatsDBImpl::OnStatsCleared(PendingOperations::Id op_id,
                                             base::OnceClosure clear_done_cb,
                                             bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__ << (success ? " succeeded" : " FAILED!");
 
-  CompletePendingOp(op_id);
+  pending_operations_.Complete(op_id);
 
   UMA_HISTOGRAM_BOOLEAN("Media.VideoDecodeStatsDB.OpSuccess.Clear", success);
 

@@ -46,13 +46,13 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalState() override;
+  std::string GetApplicationLocale() const override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
   scoped_refptr<history::TopSites> GetTopSites() override;
-  ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   history::URLDatabase* GetInMemoryDatabase() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
@@ -128,15 +128,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
 #else
   TabMatcherDesktop tab_matcher_;
 #endif
-
-  // The |most_visited_sites_| is created upon request. It is created at
-  // most once by requesting in MostVisitedSitesProvider when the page
-  // classification of the input is
-  // metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE or
-  // metrics::OmniboxEventProto::START_SURFACE_NEW_TAB. It remains empty for any
-  // ChromeAutocompleteProviderClient which doesn't have a
-  // MostVisitedSitesProvider.
-  std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
 
   // Injectable storage partitiion, used for testing.
   raw_ptr<content::StoragePartition> storage_partition_;

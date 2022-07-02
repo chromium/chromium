@@ -12,7 +12,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -98,45 +97,6 @@ class NotificationPermissionBrowserTest : public InProcessBrowserTest {
         CONTENT_SETTING_ALLOW);
   }
 
-  std::string GetNotificationPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "getNotificationPermission()");
-  }
-
-  std::string GetServiceWorkerNotificationPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "getServiceWorkerNotificationPermission()");
-  }
-
-  std::string QueryNotificationPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "queryNotificationPermission()");
-  }
-
-  std::string QueryServiceWorkerNotificationPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "queryServiceWorkerNotificationPermission()");
-  }
-
-  std::string RequestNotificationPermission(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "requestNotificationPermission()");
-  }
-
-  std::string GetPushPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "getPushPermission()");
-  }
-
-  std::string GetServiceWorkerPushPermissionState(
-      const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "getServiceWorkerPushPermission()");
-  }
-
-  std::string RequestPushPermission(const content::ToRenderFrameHost& adapter) {
-    return RunJs(adapter, "requestPushPermission()");
-  }
-
   GURL TesterUrl() const {
     return https_server_->GetURL(kTesterHost, kTestFilePath);
   }
@@ -159,33 +119,25 @@ class NotificationPermissionBrowserTest : public InProcessBrowserTest {
     // For now assume this is the only child iframe.
     EXPECT_FALSE(ChildFrameAt(parent_rfh, 0));
 
-    content::TestNavigationObserver navigation_observer(GetActiveWebContents());
-    EXPECT_TRUE(ExecJs(
-        parent_rfh,
-        content::JsReplace("const iframe = document.createElement('iframe');"
-                           "iframe.id = 'child_iframe';"
-                           "iframe.src = $1;"
-                           "document.body.appendChild(iframe);",
-                           iframe_src)));
-    navigation_observer.Wait();
-    EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-    EXPECT_EQ(net::OK, navigation_observer.last_net_error_code());
-    EXPECT_EQ(iframe_src, navigation_observer.last_navigation_url());
+    EXPECT_EQ("iframe loaded",
+              EvalJs(parent_rfh, content::JsReplace(R"(
+                new Promise((resolve, reject) => {
+                  const iframe = document.createElement('iframe');
+                  iframe.id = 'child_iframe';
+                  iframe.src = $1;
+                  iframe.onload = _ => { resolve('iframe loaded') };
+                  iframe.onerror = e => { reject(e) };
+                  document.body.appendChild(iframe);
+                }))",
+                                                    iframe_src)));
 
     content::RenderFrameHost* iframe = ChildFrameAt(parent_rfh, 0);
     EXPECT_TRUE(iframe);
+    EXPECT_EQ(iframe_src, iframe->GetLastCommittedURL());
     return iframe;
   }
 
  private:
-  std::string RunJs(const content::ToRenderFrameHost& adapter,
-                    const std::string& js) {
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        adapter.render_frame_host(), js, &result));
-    return result;
-  }
-
   const base::FilePath server_root_{FILE_PATH_LITERAL("chrome/test/data")};
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
@@ -204,20 +156,22 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   GrantNotificationPermissionForTest(TesterUrl());
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
-  EXPECT_EQ("granted", GetNotificationPermissionState(GetActiveWebContents()));
-  EXPECT_EQ("granted", GetServiceWorkerNotificationPermissionState(
-                           GetActiveWebContents()));
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("granted", EvalJs(main_frame, "getNotificationPermission()"));
+  EXPECT_EQ("granted",
+            EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), EmbedderUrl()));
-  EXPECT_EQ("default", GetNotificationPermissionState(GetActiveWebContents()));
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
 
-  content::RenderFrameHost* iframe =
-      CreateChildIframe(GetActiveWebContents()->GetMainFrame(), TesterUrl());
-  EXPECT_EQ(TesterUrl(), iframe->GetLastCommittedURL());
-  EXPECT_EQ("granted", GetNotificationPermissionState(iframe));
-  EXPECT_EQ("granted", GetServiceWorkerNotificationPermissionState(iframe));
-  EXPECT_EQ("granted", GetPushPermissionState(iframe));
-  EXPECT_EQ("granted", GetServiceWorkerPushPermissionState(iframe));
+  content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
+  EXPECT_EQ("granted", EvalJs(iframe, "getNotificationPermission()"));
+  EXPECT_EQ("granted",
+            EvalJs(iframe, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("granted", EvalJs(iframe, "getPushPermission()"));
+  EXPECT_EQ("granted", EvalJs(iframe, "getServiceWorkerPushPermission()"));
 }
 
 // Tests that iframes not using their normal StoragePartition don't have
@@ -229,40 +183,45 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
 
   // Verify that TesterUrl() has notification/push permission.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
-  content::RenderFrameHost* main_frame = GetActiveWebContents()->GetMainFrame();
-  EXPECT_EQ("granted", GetNotificationPermissionState(main_frame));
-  EXPECT_EQ("granted", GetServiceWorkerNotificationPermissionState(main_frame));
-  EXPECT_EQ("granted", QueryNotificationPermissionState(main_frame));
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("granted", EvalJs(main_frame, "getNotificationPermission()"));
   EXPECT_EQ("granted",
-            QueryServiceWorkerNotificationPermissionState(main_frame));
-  EXPECT_EQ("granted", GetPushPermissionState(main_frame));
-  EXPECT_EQ("granted", GetServiceWorkerPushPermissionState(main_frame));
+            EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("granted", EvalJs(main_frame, "queryNotificationPermission()"));
+  EXPECT_EQ("granted",
+            EvalJs(main_frame, "queryServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("granted", EvalJs(main_frame, "getPushPermission()"));
+  EXPECT_EQ("granted", EvalJs(main_frame, "getServiceWorkerPushPermission()"));
 
   // Load a site that uses a dedicated StoragePartition and verify that it has
   // default notification/push permissions.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), IsolatedEmbedderUrl()));
-  main_frame = GetActiveWebContents()->GetMainFrame();
-  EXPECT_EQ("default", GetNotificationPermissionState(main_frame));
-  EXPECT_EQ("denied", GetServiceWorkerNotificationPermissionState(main_frame));
-  EXPECT_EQ("prompt", QueryNotificationPermissionState(main_frame));
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ("default", EvalJs(main_frame, "getNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("prompt", EvalJs(main_frame, "queryNotificationPermission()"));
   EXPECT_EQ("prompt",
-            QueryServiceWorkerNotificationPermissionState(main_frame));
-  EXPECT_EQ("prompt", GetPushPermissionState(main_frame));
-  EXPECT_EQ("prompt", GetServiceWorkerPushPermissionState(main_frame));
+            EvalJs(main_frame, "queryServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("prompt", EvalJs(main_frame, "getPushPermission()"));
+  EXPECT_EQ("prompt", EvalJs(main_frame, "getServiceWorkerPushPermission()"));
 
   // Load TesterUrl() in an iframe inside the dedicated StoragePartition page.
   // Even though TesterUrl() has notification/push permission when in a main
   // frame, it shouldn't when it's embedded in a different StoragePartition.
-  content::RenderFrameHost* iframe =
-      CreateChildIframe(GetActiveWebContents()->GetMainFrame(), TesterUrl());
-  EXPECT_EQ(TesterUrl(), iframe->GetLastCommittedURL());
-  EXPECT_EQ("denied", GetNotificationPermissionState(iframe));
-  EXPECT_EQ("denied", GetServiceWorkerNotificationPermissionState(iframe));
-  EXPECT_EQ("denied", QueryNotificationPermissionState(iframe));
-  EXPECT_EQ("denied", QueryServiceWorkerNotificationPermissionState(iframe));
-  EXPECT_EQ("denied", RequestNotificationPermission(iframe));
-  EXPECT_EQ("denied", GetPushPermissionState(iframe));
-  EXPECT_EQ("denied", GetServiceWorkerPushPermissionState(iframe));
-  EXPECT_EQ("NotAllowedError: Registration failed - permission denied",
-            RequestPushPermission(iframe));
+  content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
+  EXPECT_EQ("denied", EvalJs(iframe, "getNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(iframe, "getServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("denied", EvalJs(iframe, "queryNotificationPermission()"));
+  EXPECT_EQ("denied",
+            EvalJs(iframe, "queryServiceWorkerNotificationPermission()"));
+  EXPECT_EQ("denied", EvalJs(iframe, "requestNotificationPermission()"));
+  EXPECT_EQ("denied", EvalJs(iframe, "getPushPermission()"));
+  EXPECT_EQ("denied", EvalJs(iframe, "getServiceWorkerPushPermission()"));
+  EXPECT_EQ(
+      "a JavaScript error: \"NotAllowedError: "
+      "Registration failed - permission denied\"\n",
+      EvalJs(iframe, "requestPushPermission()").error);
 }

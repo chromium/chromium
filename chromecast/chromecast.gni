@@ -61,10 +61,6 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true if the platform works as a single volume device, mapping all
-  # volume streams to a single one.
-  is_single_volume = false
-
   if (is_android) {
     # Set to true to get logcat from a remote service
     # If false, will only get the logs of the app.
@@ -110,7 +106,7 @@ declare_args() {
 
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
-  enable_external_mojo_services = is_linux || is_chromeos
+  enable_external_mojo_services = is_linux || is_chromeos || is_android
 
   # Support using system perfetto tracing
   enable_perfetto_tracing = false

@@ -142,7 +142,7 @@ public class ShareIntentTest {
                     mockActivity, BrowserControlsManager.ControlsPosition.TOP);
             RootUiCoordinator rootUiCoordinator = new RootUiCoordinator(mockActivity, null,
                     mockActivity.getShareDelegateSupplier(), mockActivity.getActivityTabProvider(),
-                    null, null, null, null, new OneshotSupplierImpl<>(),
+                    null, null, null, null, null, new OneshotSupplierImpl<>(),
                     new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                     ()
                             -> null,
@@ -162,7 +162,8 @@ public class ShareIntentTest {
                     /* appMenuDelegate= */ mockActivity,
                     /* statusBarColorProvider= */ mockActivity,
                     mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(),
-                    new ObservableSupplierImpl<>(), false);
+                    new ObservableSupplierImpl<>(), false, null,
+                    /* unblockDrawForOverviewPageRunnable= */ null);
 
             ShareHelper.setLastShareComponentName(
                     null, new ComponentName("test.package", "test.activity"));

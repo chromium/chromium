@@ -91,7 +91,7 @@ const CGFloat kCardBorderRadius = 11;
 
 #pragma mark - Public
 
-// Removes the |section|.
+// Removes the `section`.
 - (void)dismissSection:(NSInteger)section {
   if (section >= [self numberOfSectionsInCollectionView:self.collectionView]) {
     return;
@@ -510,7 +510,7 @@ const CGFloat kCardBorderRadius = 11;
 
 #pragma mark - Private
 
-// Checks if the |section| is empty and add an empty element if it is the case.
+// Checks if the `section` is empty and add an empty element if it is the case.
 // Must be called from inside a performBatchUpdates: block.
 - (void)addEmptySectionPlaceholderIfNeeded:(NSInteger)section {
   if ([self.collectionViewModel numberOfItemsInSection:section] > 0)
@@ -521,7 +521,7 @@ const CGFloat kCardBorderRadius = 11;
     [self.collectionView insertItemsAtIndexPaths:@[ emptyItem ]];
 }
 
-// Returns the ContentSuggestionType associated with an ItemType |type|.
+// Returns the ContentSuggestionType associated with an ItemType `type`.
 - (ContentSuggestionType)contentSuggestionTypeForItemType:(NSInteger)type {
   switch (type) {
     case ItemTypeEmpty:
@@ -537,7 +537,7 @@ const CGFloat kCardBorderRadius = 11;
   }
 }
 
-// Returns the item type corresponding to the section |info|.
+// Returns the item type corresponding to the section `info`.
 - (ItemType)itemTypeForInfo:(ContentSuggestionsSectionInformation*)info {
   switch (info.sectionID) {
     case ContentSuggestionsSectionReturnToRecentTab:
@@ -554,7 +554,7 @@ const CGFloat kCardBorderRadius = 11;
   }
 }
 
-// Returns the section identifier corresponding to the section |info|.
+// Returns the section identifier corresponding to the section `info`.
 - (SectionIdentifier)sectionIdentifierForInfo:
     (ContentSuggestionsSectionInformation*)info {
   switch (info.sectionID) {
@@ -740,7 +740,7 @@ const CGFloat kCardBorderRadius = 11;
   self.sectionInfoBySectionIdentifier = [[NSMutableDictionary alloc] init];
 }
 
-// Returns a item to be displayed when the section identified by |sectionInfo|
+// Returns a item to be displayed when the section identified by `sectionInfo`
 // is empty.
 // Returns nil if there is no empty item for this section info.
 - (CSCollectionViewItem*)emptyItemForSectionInfo:
@@ -755,7 +755,7 @@ const CGFloat kCardBorderRadius = 11;
   return item;
 }
 
-// Adds |item| to |sectionIdentifier| section of the model of the
+// Adds `item` to `sectionIdentifier` section of the model of the
 // CollectionView. Returns the IndexPath of the newly added item.
 - (NSIndexPath*)addItem:(CSCollectionViewItem*)item
     toSectionWithIdentifier:(NSInteger)sectionIdentifier {

@@ -189,6 +189,9 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
 class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
+  using AccountPreselectedCallback =
+      base::RepeatingCallback<void(std::vector<uint8_t> credential_id)>;
+
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.
   enum class InterestingFailureReason {
@@ -239,12 +242,13 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual bool DoesBlockRequestOnFailure(InterestingFailureReason reason);
 
   // Supplies callbacks that the embedder can invoke to initiate certain
-  // actions, namely: cancel the request, start the request over, initiate BLE
-  // pairing process, cancel WebAuthN request, and dispatch request to connected
-  // authenticators.
+  // actions, namely: cancel the request, start the request over, preselect an
+  // account, dispatch request to connected authenticators, and power on the
+  // bluetooth adapter.
   virtual void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 

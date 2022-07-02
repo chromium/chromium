@@ -223,8 +223,8 @@ class AdTrackerTest : public testing::Test {
     return ad_tracker_->IsAdScriptInStack(stack_type);
   }
 
-  absl::optional<AdTracker::AdScriptIdentifier> BottommostAdScript() {
-    absl::optional<AdTracker::AdScriptIdentifier> bottom_most_ad_script;
+  absl::optional<AdScriptIdentifier> BottommostAdScript() {
+    absl::optional<AdScriptIdentifier> bottom_most_ad_script;
     ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
                                    /*out_ad_script=*/&bottom_most_ad_script);
     return bottom_most_ad_script;
@@ -429,6 +429,96 @@ TEST_F(AdTrackerTest, BottommostAdScript) {
   WillExecuteScript("", /*script_id=*/5);
   ASSERT_TRUE(BottommostAdScript().has_value());
   EXPECT_EQ(BottommostAdScript()->id, 5);
+}
+
+TEST_F(AdTrackerTest, BottommostAsyncAdScript) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncStackAdTagging);
+  CreateAdTracker();
+
+  // Put an ad script on the stack.
+  AppendToKnownAdScripts("https://example.com/ad.js");
+  AppendToKnownAdScripts("https://example.com/ad2.js");
+
+  EXPECT_FALSE(BottommostAdScript().has_value());
+
+  // Create a couple of async tasks while ad script is running.
+  WillExecuteScript("https://example.com/ad.js", 1);
+  probe::AsyncTaskContext async_task_context1;
+  ad_tracker_->DidCreateAsyncTask(&async_task_context1);
+  DidExecuteScript();
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+
+  WillExecuteScript("https://example.com/ad2.js", 2);
+  probe::AsyncTaskContext async_task_context2;
+  ad_tracker_->DidCreateAsyncTask(&async_task_context2);
+  DidExecuteScript();
+
+  // Start and stop the async task created by the ad script.
+  {
+    ad_tracker_->DidStartAsyncTask(&async_task_context1);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 1);
+
+    ad_tracker_->DidFinishAsyncTask(&async_task_context1);
+    EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_FALSE(BottommostAdScript().has_value());
+  }
+
+  // Run two async tasks
+  {
+    ad_tracker_->DidStartAsyncTask(&async_task_context1);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 1);
+
+    ad_tracker_->DidStartAsyncTask(&async_task_context2);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 1);
+
+    ad_tracker_->DidFinishAsyncTask(&async_task_context2);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 1);
+
+    ad_tracker_->DidFinishAsyncTask(&async_task_context1);
+    EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_FALSE(BottommostAdScript().has_value());
+  }
+
+  // Run an async task followed by sync.
+  {
+    ad_tracker_->DidStartAsyncTask(&async_task_context2);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 2);
+
+    WillExecuteScript("https://example.com/ad.js");
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 2);
+
+    ad_tracker_->DidStartAsyncTask(&async_task_context1);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 2);
+
+    ad_tracker_->DidFinishAsyncTask(&async_task_context1);
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 2);
+
+    DidExecuteScript();
+    EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_TRUE(BottommostAdScript().has_value());
+    EXPECT_EQ(BottommostAdScript()->id, 2);
+
+    ad_tracker_->DidFinishAsyncTask(&async_task_context2);
+    EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+    EXPECT_FALSE(BottommostAdScript().has_value());
+  }
 }
 
 class AdTrackerSimTest : public SimTest {

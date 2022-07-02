@@ -25,12 +25,12 @@
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -183,7 +183,7 @@ ResetScreen::ResetScreen(ResetView* view,
 ResetScreen::~ResetScreen() {
   if (view_)
     view_->Unbind();
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -227,10 +227,8 @@ void ResetScreen::ShowImpl() {
       view_->SetIsRollbackAvailable(false);
     dialog_type = reset::DialogViewType::kShortcutOfferingRollbackUnavailable;
   } else {
-    chromeos::DBusThreadManager::Get()
-        ->GetUpdateEngineClient()
-        ->CanRollbackCheck(base::BindOnce(&ResetScreen::OnRollbackCheck,
-                                          weak_ptr_factory_.GetWeakPtr()));
+    UpdateEngineClient::Get()->CanRollbackCheck(base::BindOnce(
+        &ResetScreen::OnRollbackCheck, weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (dialog_type < reset::DialogViewType::kCount) {
@@ -326,7 +324,7 @@ void ResetScreen::OnCancel() {
       view_->GetIsRollbackRequested()) {
     OnToggleRollback();
   }
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   exit_callback_.Run();
 }
 
@@ -348,9 +346,9 @@ void ResetScreen::OnPowerwash() {
   if (view_ && view_->GetIsRollbackAvailable() &&
       view_->GetIsRollbackRequested()) {
     view_->SetScreenState(ResetView::State::kRevertPromise);
-    DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+    UpdateEngineClient::Get()->AddObserver(this);
     VLOG(1) << "Starting Rollback";
-    DBusThreadManager::Get()->GetUpdateEngineClient()->Rollback();
+    UpdateEngineClient::Get()->Rollback();
   } else if (view_ && view_->GetIsTpmFirmwareUpdateChecked()) {
     VLOG(1) << "Starting TPM firmware update";
     // Re-check availability with a couple seconds timeout. This addresses the

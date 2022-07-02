@@ -2,7 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+
+# While some of these tests are still run on Desktop platforms, they cover long-
+# deprecated code that is exclusively used by 2 UIs
+# (chrome://bluetooth-internals and chrome://apps). These UIs have decided to
+# remove typechecking, so tests for code exclusive to these UIs do not need to
+# be typechecked. No new uses of this deprecated code should be added, so there
+# should also be no additions of references to these targets on Desktop.
+assert(is_chromeos_ash)
 
 js_library("array_data_model_test") {
   deps = [
@@ -95,15 +104,6 @@ js_library("position_util_test") {
   ]
 }
 
-js_library("splitter_test") {
-  deps = [
-    "../../..:chai_assert",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:splitter",
-  ]
-}
-
 js_type_check("closure_compile") {
   deps = [
     ":array_data_model_test",
@@ -117,6 +117,5 @@ js_type_check("closure_compile") {
     ":menu_button_test",
     ":menu_test",
     ":position_util_test",
-    ":splitter_test",
   ]
 }

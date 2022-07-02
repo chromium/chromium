@@ -45,7 +45,6 @@ void TestWallpaperControllerClient::AddCollection(
 
 void TestWallpaperControllerClient::ResetCounts() {
   open_count_ = 0;
-  close_preview_count_ = 0;
   set_default_wallpaper_count_ = 0;
   migrate_collection_id_from_chrome_app_count_ = 0;
   fetch_daily_refresh_wallpaper_param_ = std::string();
@@ -59,10 +58,6 @@ void TestWallpaperControllerClient::ResetCounts() {
 // WallpaperControllerClient:
 void TestWallpaperControllerClient::OpenWallpaperPicker() {
   open_count_++;
-}
-
-void TestWallpaperControllerClient::MaybeClosePreviewWallpaper() {
-  close_preview_count_++;
 }
 
 void TestWallpaperControllerClient::SetDefaultWallpaper(
@@ -114,14 +109,15 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
     FetchGooglePhotosPhotoCallback callback) {
   base::Time time;
   base::Time::Exploded exploded_time{2011, 6, 3, 15, 12, 0, 0, 0};
-  DCHECK(base::Time::FromUTCExploded(exploded_time, &time));
+  if (!base::Time::FromUTCExploded(exploded_time, &time))
+    NOTREACHED();
   if (fetch_google_photos_photo_fails_ || google_photo_has_been_deleted_) {
     std::move(callback).Run(nullptr,
                             /*success=*/google_photo_has_been_deleted_);
   } else {
     std::move(callback).Run(
         personalization_app::mojom::GooglePhotosPhoto::New(
-            id, "test_name", base::TimeFormatFriendlyDate(time),
+            id, "dedup_key", "test_name", base::TimeFormatFriendlyDate(time),
             GURL("https://google.com/picture.png"), "home"),
         /*success=*/true);
   }
@@ -130,7 +126,6 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
 void TestWallpaperControllerClient::FetchDailyGooglePhotosPhoto(
     const AccountId& account_id,
     const std::string& album_id,
-    const absl::optional<std::string>& current_photo_id,
     FetchGooglePhotosPhotoCallback callback) {
   std::string photo_id = album_id;
   std::reverse(photo_id.begin(), photo_id.end());

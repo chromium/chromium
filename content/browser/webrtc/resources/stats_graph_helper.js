@@ -147,6 +147,12 @@ function isStandardStatBlocklisted(report, statName) {
   if (report.type === 'candidate-pair' && statName === 'priority') {
     return true;
   }
+  // The mid/rid associated with a sender/receiver does not change over time;
+  // plotting uninteresting.
+  if (['inbound-rtp', 'outbound-rtp'].includes(report.type) &&
+      ['mid', 'rid'].includes(statName)) {
+    return true;
+  }
   return false;
 }
 

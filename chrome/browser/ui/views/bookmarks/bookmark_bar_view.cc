@@ -96,6 +96,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -429,19 +430,14 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
     constexpr int kPaddingWidth = kSeparatorWidth - kThickness;
     constexpr int kLeadingPadding = (kPaddingWidth + 1) / 2;
 
+    SetColorId(kColorBookmarkBarSeparator);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kLeadingPadding, 0, kPaddingWidth - kLeadingPadding)));
-    SetPreferredHeight(gfx::kFaviconSize);
+    SetPreferredLength(gfx::kFaviconSize);
   }
   ButtonSeparatorView(const ButtonSeparatorView&) = delete;
   ButtonSeparatorView& operator=(const ButtonSeparatorView&) = delete;
   ~ButtonSeparatorView() override = default;
-
-  void OnThemeChanged() override {
-    views::Separator::OnThemeChanged();
-    SetColor(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_BOOKMARK_SEPARATOR));
-  }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
@@ -460,7 +456,6 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
       browser_(browser),
       browser_view_(browser_view) {
   SetID(VIEW_ID_BOOKMARK_BAR);
-  Init();
 
   // TODO(lgrey): This layer was introduced to support clipping the bookmark
   // bar to bounds to prevent it from drawing over the toolbar while animating.
@@ -478,9 +473,10 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   if (browser_view)
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
 
-  views::SetCascadingThemeProviderColor(
-      this, views::kCascadingBackgroundColor,
-      ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND);
+  views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
+                                        kColorBookmarkBarBackground);
+
+  Init();
 }
 
 BookmarkBarView::~BookmarkBarView() {
@@ -705,8 +701,9 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
     gfx::Size size = bookmarks_separator_view_->GetPreferredSize();
     width += size.width();
   }
-  if (tab_groups_separator_view_ && tab_groups_separator_view_->GetVisible()) {
-    gfx::Size size = tab_groups_separator_view_->GetPreferredSize();
+  if (saved_tab_groups_separator_view_ &&
+      saved_tab_groups_separator_view_->GetVisible()) {
+    gfx::Size size = saved_tab_groups_separator_view_->GetPreferredSize();
     width += size.width();
   }
   if (apps_page_shortcut_->GetVisible()) {
@@ -802,15 +799,15 @@ void BookmarkBarView::Layout() {
       x += bookmark_bar_button_padding;
 
       // Update the bounds for the separator.
-      gfx::Size tab_groups_separator_view_pref =
-          tab_groups_separator_view_->GetPreferredSize();
-      tab_groups_separator_view_->SetBounds(
-          x, center_y(tab_groups_separator_view_pref.height()),
-          tab_groups_separator_view_pref.width(),
-          tab_groups_separator_view_pref.height());
+      gfx::Size saved_tab_groups_separator_view_pref =
+          saved_tab_groups_separator_view_->GetPreferredSize();
+      saved_tab_groups_separator_view_->SetBounds(
+          x, center_y(saved_tab_groups_separator_view_pref.height()),
+          saved_tab_groups_separator_view_pref.width(),
+          saved_tab_groups_separator_view_pref.height());
 
       // The right padding of the separator is included in the width.
-      x += tab_groups_separator_view_pref.width();
+      x += saved_tab_groups_separator_view_pref.width();
     }
   }
 
@@ -849,10 +846,11 @@ void BookmarkBarView::Layout() {
 
   // Set the visibility of the tab group separator if there are groups and
   // bookmarks.
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave))
-    tab_groups_separator_view_->SetVisible(saved_tab_group_bar_width > 0 &&
-                                           !bookmark_buttons_.empty() &&
-                                           bookmark_buttons_[0]->GetVisible());
+  if (saved_tab_groups_separator_view_ &&
+      base::FeatureList::IsEnabled(features::kTabGroupsSave))
+    saved_tab_groups_separator_view_->SetVisible(
+        saved_tab_group_bar_width > 0 && !bookmark_buttons_.empty() &&
+        bookmark_buttons_[0]->GetVisible());
 
   // Layout the right side buttons.
   x = max_x + bookmark_bar_button_padding;
@@ -941,7 +939,7 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
     // TODO(sky/glen): make me pretty!
     recorder.canvas()->FillRect(
         indicator_bounds,
-        GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
+        GetColorProvider()->GetColor(kColorBookmarkBarForeground));
   }
 }
 
@@ -1077,6 +1075,14 @@ void BookmarkBarView::VisibilityChanged(View* starting_from, bool is_visible) {
     for (BookmarkBarViewObserver& observer : observers_)
       observer.OnBookmarkBarVisibilityChanged();
   }
+}
+
+void BookmarkBarView::ChildPreferredSizeChanged(views::View* child) {
+  // only rerender
+  if (child != saved_tab_group_bar_)
+    return;
+
+  InvalidateDrop();
 }
 
 void BookmarkBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -1409,7 +1415,7 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
 }
 
 void BookmarkBarView::Init() {
-  // Note that at this point we're not in a hierarchy so GetThemeProvider() will
+  // Note that at this point we're not in a hierarchy so GetColorProvider() will
   // return nullptr.  When we're inserted into a hierarchy, we'll call
   // UpdateAppearanceForTheme(), which will set the appropriate colors for all
   // the objects added in this function.
@@ -1440,9 +1446,9 @@ void BookmarkBarView::Init() {
           &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
           base::Unretained(this)));
 
-  tab_groups_separator_view_ =
+  saved_tab_groups_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
-  tab_groups_separator_view_->SetVisible(
+  saved_tab_groups_separator_view_->SetVisible(
       base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
       browser_->profile()->IsRegularProfile());
 
@@ -1575,11 +1581,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   button->SetText(node->GetTitle());
   button->SetAccessibleName(node->GetTitle());
   button->SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
-  // We don't always have a theme provider (ui tests, for example).
+  // We don't always have a color provider (ui tests, for example).
   SkColor text_color = gfx::kPlaceholderColor;
-  const ui::ThemeProvider* const tp = GetThemeProvider();
-  if (tp) {
-    text_color = tp->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+  const ui::ColorProvider* const cp = GetColorProvider();
+  if (cp) {
+    text_color = cp->GetColor(kColorBookmarkBarForeground);
     button->SetEnabledTextColors(text_color);
     if (node->is_folder()) {
       button->SetImageModel(
@@ -1597,7 +1603,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
     gfx::ImageSkia favicon = bookmark_model_->GetFavicon(node).AsImageSkia();
     if (favicon.isNull()) {
-      if (ui::TouchUiController::Get()->touch_ui() && tp) {
+      if (ui::TouchUiController::Get()->touch_ui() && cp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
         // See https://crbug/814447
@@ -1614,9 +1620,8 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       themify_icon = true;
     }
 
-    if (themify_icon && tp) {
-      SkColor favicon_color =
-          tp->GetColor(ThemeProperties::COLOR_BOOKMARK_FAVICON);
+    if (themify_icon && cp) {
+      SkColor favicon_color = cp->GetColor(kColorBookmarkFavicon);
       if (favicon_color != SK_ColorTRANSPARENT) {
         favicon =
             gfx::ImageSkiaOperations::CreateColorMask(favicon, favicon_color);
@@ -1944,17 +1949,16 @@ views::Button* BookmarkBarView::DetermineViewToThrobFromRemove(
 }
 
 void BookmarkBarView::UpdateAppearanceForTheme() {
-  // We don't always have a theme provider (ui tests, for example).
-  const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  if (!theme_provider)
+  // We don't always have a color provider (ui tests, for example).
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  if (!color_provider)
     return;
   for (size_t i = 0; i < bookmark_buttons_.size(); ++i) {
     ConfigureButton(bookmark_model_->bookmark_bar_node()->children()[i].get(),
                     bookmark_buttons_[i]);
   }
 
-  const SkColor color =
-      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+  const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
   other_bookmarks_button_->SetEnabledTextColors(color);
   managed_bookmarks_button_->SetEnabledTextColors(color);
   other_bookmarks_button_->SetImageModel(
@@ -1970,7 +1974,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
     apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
-      GetColorProvider()->GetColor(kColorBookmarkButtonIcon);
+      color_provider->GetColor(kColorBookmarkButtonIcon);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   overflow_button_->SetImageModel(
       views::Button::STATE_NORMAL,

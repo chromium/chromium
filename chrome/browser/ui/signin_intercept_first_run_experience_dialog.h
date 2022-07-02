@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class Browser;
@@ -49,8 +50,10 @@ class SigninInterceptFirstRunExperienceDialog
     kShowProfileCustomization = 5,
     // The user completed profile customization.
     kProfileCustomizationClickDone = 6,
+    // The user skipped profile customization.
+    kProfileCustomizationClickSkip = 7,
 
-    kMaxValue = kProfileCustomizationClickDone
+    kMaxValue = kProfileCustomizationClickSkip
   };
 
   explicit SigninInterceptFirstRunExperienceDialog(
@@ -103,7 +106,8 @@ class SigninInterceptFirstRunExperienceDialog
   void PreloadProfileCustomizationUI();
   void OnSyncedThemeReady(
       ProfileCustomizationSyncedThemeWaiter::Outcome outcome);
-  void OnProfileCustomizationDoneButtonClicked();
+  void ProfileCustomizationCloseOnCompletion(
+      ProfileCustomizationHandler::CustomizationResult customization_result);
 
   const raw_ptr<Browser> browser_;
   const CoreAccountId account_id_;

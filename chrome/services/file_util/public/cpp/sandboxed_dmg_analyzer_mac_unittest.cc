@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -77,7 +78,7 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
     }
 
     base::OnceClosure next_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    raw_ptr<safe_browsing::ArchiveAnalyzerResults> results_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

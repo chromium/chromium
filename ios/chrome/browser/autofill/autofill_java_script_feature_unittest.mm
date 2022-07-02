@@ -105,7 +105,7 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
     autofill::FormUtilJavaScriptFeature::GetInstance()
         ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-    // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+    // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
                                            web_state()) intValue] ==
@@ -147,7 +147,7 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests that |hasBeenInjected| returns YES after |inject| call.
+// Tests that `hasBeenInjected` returns YES after `inject` call.
 TEST_F(AutofillJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
   EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(

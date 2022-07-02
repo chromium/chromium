@@ -97,6 +97,8 @@ shared_library("chrome_elf") {
 
 source_set("constants") {
   sources = [
+    "blocklist_constants.cc",
+    "blocklist_constants.h",
     "chrome_elf_constants.cc",
     "chrome_elf_constants.h",
   ]

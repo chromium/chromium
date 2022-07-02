@@ -26,6 +26,31 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
          [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
 }
 
+NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
+  NSUInteger eventModifierMask =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+
+  // If `event` isn't a function key press or it's not a character key press
+  // (e.g. it's a flags change), we can simply return the mask.
+  if (([event modifierFlags] & NSEventModifierFlagFunction) == 0 ||
+      [event type] != NSEventTypeKeyDown)
+    return eventModifierMask;
+
+  // "Up arrow", home, and other "function" key events include
+  // NSEventModifierFlagFunction in their flags even though the user isn't
+  // holding down the keyboard's function / world key. Add
+  // NSEventModifierFlagFunction to the returned modifier mask only if the
+  // event isn't for a function key.
+  unichar firstCharacter =
+      [[event charactersIgnoringModifiers] characterAtIndex:0];
+  if (firstCharacter < NSUpArrowFunctionKey ||
+      firstCharacter > NSModeSwitchFunctionKey)
+    eventModifierMask |= NSEventModifierFlagFunction;
+
+  return eventModifierMask;
+}
+
 }  // namespace cocoa
 }  // namespace ui
 
@@ -68,7 +93,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 
 @implementation NSMenuItem (ChromeAdditions)
 
-- (BOOL)cr_firesForKeyEvent:(NSEvent*)event {
+- (BOOL)cr_firesForKeyEquivalentEvent:(NSEvent*)event {
   if (![self isEnabled])
     return NO;
 
@@ -189,8 +214,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   }
 
   // Clear all non-interesting modifiers
-  eventModifiers &= NSEventModifierFlagCommand | NSEventModifierFlagControl |
-                    NSEventModifierFlagOption | NSEventModifierFlagShift;
+  eventModifiers &= ui::cocoa::ModifierMaskForKeyEvent(event);
 
   return [eventString isEqualToString:[self keyEquivalent]] &&
          eventModifiers == [self keyEquivalentModifierMask];

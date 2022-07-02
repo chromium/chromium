@@ -137,7 +137,7 @@ bool V4L2StatelessVideoDecoderBackend::Initialize() {
     return false;
   }
 
-  if (!CreateAvd())
+  if (!CreateDecoder())
     return false;
 
   if (input_queue_->SupportsRequests()) {
@@ -282,8 +282,15 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
         std::move(*input_buf), std::move(*output_buf), std::move(frame),
         std::move(*request_ref));
   } else {
+    // ConfigStore is ChromeOS-specific legacy stuff
+    // TODO(b/222774780): Remove when all legacy implementations are gone.
+#if BUILDFLAG(IS_CHROMEOS)
     dec_surface = new V4L2ConfigStoreDecodeSurface(
         std::move(*input_buf), std::move(*output_buf), std::move(frame));
+#else
+    NOTREACHED() << "ConfigStore not supported.";
+    return nullptr;
+#endif
   }
 
   return dec_surface;
@@ -392,26 +399,26 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
 
   pause_reason_ = PauseReason::kNone;
   while (true) {
-    switch (avd_->Decode()) {
+    switch (decoder_->Decode()) {
       case AcceleratedVideoDecoder::kConfigChange:
-        if (avd_->GetBitDepth() != 8u) {
+        if (decoder_->GetBitDepth() != 8u) {
           VLOGF(2) << "Unsupported bit depth: "
-                   << base::strict_cast<int>(avd_->GetBitDepth());
+                   << base::strict_cast<int>(decoder_->GetBitDepth());
           return false;
         }
 
-        if (profile_ != avd_->GetProfile()) {
+        if (profile_ != decoder_->GetProfile()) {
           DVLOGF(3) << "Profile is changed: " << profile_ << " -> "
-                    << avd_->GetProfile();
-          if (!IsSupportedProfile(avd_->GetProfile())) {
-            VLOGF(2) << "Unsupported profile: " << avd_->GetProfile();
+                    << decoder_->GetProfile();
+          if (!IsSupportedProfile(decoder_->GetProfile())) {
+            VLOGF(2) << "Unsupported profile: " << decoder_->GetProfile();
             return false;
           }
 
-          profile_ = avd_->GetProfile();
+          profile_ = decoder_->GetProfile();
         }
 
-        if (pic_size_ == avd_->GetPicSize()) {
+        if (pic_size_ == decoder_->GetPicSize()) {
           // There is no need to do anything in V4L2 API when only a profile is
           // changed.
           DVLOGF(3) << "Only profile is changed. No need to do anything.";
@@ -440,12 +447,12 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         decode_request_queue_.pop();
 
         if (current_decode_request_->buffer->end_of_stream()) {
-          if (!avd_->Flush()) {
+          if (!decoder_->Flush()) {
             VLOGF(1) << "Failed flushing the decoder.";
             return false;
           }
           // Put the decoder in an idle state, ready to resume.
-          avd_->Reset();
+          decoder_->Reset();
 
           client_->InitiateFlush();
           DCHECK(!flush_cb_);
@@ -457,8 +464,8 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
           return true;
         }
 
-        avd_->SetStream(current_decode_request_->bitstream_id,
-                        *current_decode_request_->buffer);
+        decoder_->SetStream(current_decode_request_->bitstream_id,
+                            *current_decode_request_->buffer);
         break;
 
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
@@ -493,8 +500,8 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
     if (!output_request_queue_.front().IsReady()) {
       DVLOGF(3) << "The first surface is not ready yet.";
       // It is possible that that V4L2 buffers for this output surface are not
-      // even queued yet. Make sure that avd_->Decode() is called to continue
-      // that work and prevent the decoding thread from starving.
+      // even queued yet. Make sure that decoder_->Decode() is called to
+      // continue that work and prevent the decoding thread from starving.
       resume_decode = true;
       break;
     }
@@ -561,9 +568,9 @@ void V4L2StatelessVideoDecoderBackend::ChangeResolution() {
   DCHECK(surfaces_at_device_.empty());
   DCHECK(output_request_queue_.empty());
 
-  size_t num_output_frames = avd_->GetRequiredNumOfPictures();
-  gfx::Rect visible_rect = avd_->GetVisibleRect();
-  gfx::Size pic_size = avd_->GetPicSize();
+  size_t num_output_frames = decoder_->GetRequiredNumOfPictures();
+  gfx::Rect visible_rect = decoder_->GetVisibleRect();
+  gfx::Size pic_size = decoder_->GetPicSize();
   // Set output format with the new resolution.
   DCHECK(!pic_size.IsEmpty());
   DVLOGF(3) << "Change resolution to " << pic_size.ToString();
@@ -604,7 +611,7 @@ void V4L2StatelessVideoDecoderBackend::OnChangeResolutionDone(
     return;
   }
 
-  pic_size_ = avd_->GetPicSize();
+  pic_size_ = decoder_->GetPicSize();
   client_->CompleteFlush();
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2StatelessVideoDecoderBackend::DoDecodeWork,
@@ -625,13 +632,13 @@ void V4L2StatelessVideoDecoderBackend::ClearPendingRequests(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  if (avd_) {
+  if (decoder_) {
     // If we reset during resolution change, re-create AVD. Then the new AVD
     // will trigger resolution change again after reset.
-    if (pic_size_ != avd_->GetPicSize()) {
-      CreateAvd();
+    if (pic_size_ != decoder_->GetPicSize()) {
+      CreateDecoder();
     } else {
-      avd_->Reset();
+      decoder_->Reset();
     }
   }
 
@@ -676,11 +683,10 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }
-  return std::find(supported_profiles_.begin(), supported_profiles_.end(),
-                   profile) != supported_profiles_.end();
+  return base::Contains(supported_profiles_, profile);
 }
 
-bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
+bool V4L2StatelessVideoDecoderBackend::CreateDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
@@ -688,25 +694,35 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
 
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
-      avd_ = std::make_unique<H264Decoder>(
+      decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
           profile_, color_space_);
     } else {
-      avd_ = std::make_unique<H264Decoder>(
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
                                                                device_.get()),
           profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else if (profile_ >= VP8PROFILE_MIN && profile_ <= VP8PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
-      avd_ = std::make_unique<VP8Decoder>(
+      decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
           color_space_);
     } else {
-      avd_ = std::make_unique<VP8Decoder>(
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
                                                               device_.get()),
           color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
@@ -718,14 +734,19 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
       const bool supports_stable_api =
           device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
       CHECK(supports_stable_api);
-      avd_ = std::make_unique<VP9Decoder>(
+      decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
           profile_, color_space_);
     } else {
-      avd_ = std::make_unique<VP9Decoder>(
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
                                                               device_.get()),
           profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else {
     VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);

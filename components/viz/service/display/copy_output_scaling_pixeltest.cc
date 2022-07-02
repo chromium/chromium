@@ -92,9 +92,9 @@ class CopyOutputScalingPixelTest
     constexpr gfx::Size viewport_size = gfx::Size(48, 20);
     constexpr int x_block = 8;
     constexpr int y_block = 4;
-    constexpr SkColor smaller_pass_colors[4] = {SK_ColorRED, SK_ColorGREEN,
-                                                SK_ColorBLUE, SK_ColorYELLOW};
-    constexpr SkColor root_pass_color = SK_ColorWHITE;
+    constexpr SkColor4f smaller_pass_colors[4] = {
+        SkColors::kRed, SkColors::kGreen, SkColors::kBlue, SkColors::kYellow};
+    constexpr SkColor4f root_pass_color = SkColors::kWhite;
 
     AggregatedRenderPassList list;
 
@@ -214,8 +214,9 @@ class CopyOutputScalingPixelTest
     for (int i = 0; i < 4; ++i) {
       gfx::Rect rect = smaller_pass_rects[i] - copy_rect.OffsetFromOrigin();
       rect = copy_output::ComputeResultRect(rect, scale_from_, scale_to_);
+      // TODO(crbug.com/1308932): Make this function use SkColor4f
       expected_bitmap.erase(
-          smaller_pass_colors[i],
+          smaller_pass_colors[i].toSkColor(),
           SkIRect{rect.x(), rect.y(), rect.right(), rect.bottom()});
     }
 

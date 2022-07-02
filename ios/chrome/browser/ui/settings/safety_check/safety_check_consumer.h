@@ -14,13 +14,13 @@
 // Consumer protocol for safety check.
 @protocol SafetyCheckConsumer <ChromeTableViewConsumer>
 
-// Initializes the check types section with |items|.
+// Initializes the check types section with `items`.
 - (void)setCheckItems:(NSArray<TableViewItem*>*)items;
 
-// Initializes the safety check header with |item|.
+// Initializes the safety check header with `item`.
 - (void)setSafetyCheckHeaderItem:(TableViewLinkHeaderFooterItem*)item;
 
-// Initializes the check start section with |item|.
+// Initializes the check start section with `item`.
 - (void)setCheckStartItem:(TableViewItem*)item;
 
 // Initializes the footer with timestamp of last completed run.

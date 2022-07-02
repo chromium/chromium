@@ -11,6 +11,7 @@
 #include "base/time/clock.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_name_manager.h"
+#include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -54,7 +55,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
 
     device_operation_handler_ = std::make_unique<DeviceOperationHandlerImpl>(
         &fake_adapter_state_controller_, mock_adapter_,
-        &fake_device_name_manager_);
+        &fake_device_name_manager_, &fake_fast_pair_delegate_);
   }
 
   void SetBluetoothSystemState(mojom::BluetoothSystemState system_state) {
@@ -219,6 +220,10 @@ class DeviceOperationHandlerImplTest : public testing::Test {
                                                 kTestBluetoothNickname);
   }
 
+  std::vector<std::string> GetFastPairDeletedDevices() {
+    return fake_fast_pair_delegate_.forgotten_device_addresses();
+  }
+
   absl::optional<std::string> GetDeviceNickname(const std::string& device_id) {
     return fake_device_name_manager_.GetDeviceNickname(device_id);
   }
@@ -253,6 +258,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
   FakeAdapterStateController fake_adapter_state_controller_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   FakeDeviceNameManager fake_device_name_manager_;
+  FakeFastPairDelegate fake_fast_pair_delegate_;
 
   std::unique_ptr<DeviceOperationHandlerImpl> device_operation_handler_;
 };
@@ -349,6 +355,22 @@ TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundThenSucceed) {
   // for pending callbacks.
   EXPECT_EQ(results()[1], std::make_tuple(device_id, Operation::kForget,
                                           /*success=*/true));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, ForgettingDeviceCallsFastPairDelegate) {
+  std::string device_id;
+  AddDevice(&device_id);
+  EXPECT_EQ(GetFastPairDeletedDevices().size(), 0u);
+
+  ForgetDevice(device_id);
+
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id, Operation::kForget, /*success=*/true));
+  EXPECT_EQ(GetFastPairDeletedDevices().size(), 1u);
+
+  // Derive the address from the device ID.
+  std::string address = device_id.substr(0, device_id.find("-Identifier"));
+  EXPECT_EQ(GetFastPairDeletedDevices()[0], address);
 }
 
 TEST_F(DeviceOperationHandlerImplTest, ForgettingDeviceRemovesNickname) {

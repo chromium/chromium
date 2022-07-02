@@ -28,7 +28,9 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
                                 : gfx::GpuFenceHandle()),
       priority_hint(data.priority_hint),
       rounded_clip_bounds(data.rounded_corners),
-      background_color(data.color) {}
+      // Solid color quads are created as wl_buffers. Though, some overlays may
+      // have background data passed.
+      background_color(data.is_solid_color ? absl::nullopt : data.color) {}
 
 WaylandOverlayConfig& WaylandOverlayConfig::operator=(
     WaylandOverlayConfig&& other) = default;

@@ -31,6 +31,7 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                         font,
                         text_origin,
                         text_frame_rect,
+                        /* inline_context */ nullptr,
                         horizontal),
         run_(run) {}
   ~TextPainter() = default;

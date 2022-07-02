@@ -125,7 +125,7 @@ OSInfo::WindowsArchitecture OSInfo::GetArchitecture() {
 
 OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                const _SYSTEM_INFO& system_info,
-               int os_type)
+               DWORD os_type)
     : version_(Version::PRE_XP),
       wow_process_machine_(WowProcessMachine::kUnknown),
       wow_native_machine_(WowNativeMachine::kUnknown) {
@@ -140,7 +140,7 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
   service_pack_.minor = version_info.wServicePackMinor;
   service_pack_str_ = WideToUTF8(version_info.szCSDVersion);
 
-  processors_ = system_info.dwNumberOfProcessors;
+  processors_ = static_cast<int>(system_info.dwNumberOfProcessors);
   allocation_granularity_ = system_info.dwAllocationGranularity;
 
   if (version_info.dwMajorVersion == 6 || version_info.dwMajorVersion == 10) {
@@ -224,7 +224,7 @@ Version OSInfo::Kernel32Version() const {
 }
 
 OSInfo::VersionNumber OSInfo::Kernel32VersionNumber() const {
-  DCHECK(Kernel32BaseVersion().components().size() == 4);
+  DCHECK_EQ(Kernel32BaseVersion().components().size(), 4u);
   static const VersionNumber version = {
       .major = Kernel32BaseVersion().components()[0],
       .minor = Kernel32BaseVersion().components()[1],

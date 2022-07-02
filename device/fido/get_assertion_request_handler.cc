@@ -306,6 +306,18 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
 
 GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
+void GetAssertionRequestHandler::PreselectAccount(
+    std::vector<uint8_t> credential_id) {
+  request_.allow_list = {device::PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, credential_id,
+      {FidoTransportProtocol::kInternal})};
+}
+
+base::WeakPtr<GetAssertionRequestHandler>
+GetAssertionRequestHandler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
     bool is_present,
     bool is_powered_on,
@@ -418,34 +430,10 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
 void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-  // The platform authenticator may be a virtual device.
-  if (platform_authenticator->GetType() == FidoAuthenticator::Type::kOther) {
-    // TODO(nsatragno): query the virtual authenticator for credential status.
-    OnHavePlatformCredentialStatus(/*user_entities=*/{},
-                                   /*have_credential=*/false);
-    return;
-  }
-
-#if BUILDFLAG(IS_MAC)
-  fido::mac::TouchIdAuthenticator* touch_id_authenticator =
-      static_cast<fido::mac::TouchIdAuthenticator*>(platform_authenticator);
-  bool has_credential =
-      touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
-  std::vector<DiscoverableCredentialMetadata> creds;
-  if (has_credential && request_.allow_list.empty()) {
-    creds = touch_id_authenticator->GetResidentCredentialsForRequest(request_);
-  }
-  OnHavePlatformCredentialStatus(std::move(creds), has_credential);
-#elif BUILDFLAG(IS_CHROMEOS)
-  ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
+  platform_authenticator->GetCredentialInformationForRequest(
       request_, base::BindOnce(
                     &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
-                    weak_factory_.GetWeakPtr(),
-                    std::vector<DiscoverableCredentialMetadata>()));
-#else
-  FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
-#endif
+                    weak_factory_.GetWeakPtr()));
 }
 
 bool GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(

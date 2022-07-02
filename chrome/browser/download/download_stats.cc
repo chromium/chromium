@@ -77,9 +77,14 @@ void RecordDownloadCancelReason(DownloadCancelReason reason) {
   base::UmaHistogramEnumeration("Download.CancelReason", reason);
 }
 
-void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event) {
-  base::UmaHistogramEnumeration("Download.Shelf.DragEvent", drag_event,
-                                DownloadShelfDragEvent::COUNT);
+void RecordDownloadShelfDragInfo(DownloadDragInfo drag_info) {
+  base::UmaHistogramEnumeration("Download.Shelf.DragInfo", drag_info,
+                                DownloadDragInfo::COUNT);
+}
+
+void RecordDownloadBubbleDragInfo(DownloadDragInfo drag_info) {
+  base::UmaHistogramEnumeration("Download.Bubble.DragInfo", drag_info,
+                                DownloadDragInfo::COUNT);
 }
 
 void RecordDownloadStartPerProfileType(Profile* profile) {
@@ -94,12 +99,6 @@ void RecordDownloadPromptStatus(DownloadPromptStatus status) {
   base::UmaHistogramEnumeration("MobileDownload.DownloadPromptStatus", status,
                                 DownloadPromptStatus::MAX_VALUE);
 }
-
-void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status) {
-  base::UmaHistogramEnumeration("MobileDownload.DownloadLaterPromptStatus",
-                                status);
-}
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -165,5 +164,12 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
       return clicked
                  ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
                  : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
+
+    // The following are not actually visible in the context menu so should
+    // never be logged.
+    case DownloadCommands::Command::REVIEW:
+    case DownloadCommands::Command::RETRY:
+      NOTREACHED();
+      return DownloadShelfContextMenuAction::kNotReached;
   }
 }

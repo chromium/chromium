@@ -119,7 +119,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
         browser(), embedded_test_server()->GetURL("a.com", relative_url)));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     rwhv_ = web_contents_->GetRenderWidgetHostView();
-    content::WaitForHitTestData(web_contents_->GetMainFrame());
+    content::WaitForHitTestData(web_contents_->GetPrimaryMainFrame());
   }
 
   void LoadCrossSitePageIntoFrame(const std::string& relative_url,
@@ -137,7 +137,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
   }
 
   RenderFrameHost* GetChildRenderFrameHost(size_t index) {
-    return ChildFrameAt(web_contents_->GetMainFrame(), index);
+    return ChildFrameAt(web_contents_->GetPrimaryMainFrame(), index);
   }
 
   bool SkipTestForOldWinVersion() const {

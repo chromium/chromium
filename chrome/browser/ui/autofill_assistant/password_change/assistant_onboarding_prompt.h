@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_PROMPT_H_
 #define CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_PROMPT_H_
 
+#include "base/memory/weak_ptr.h"
+
 class AssistantOnboardingController;
-class AssistantDisplayDelegate;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Abstract interface to describe the methods of an onboarding prompt view
 // necessary for the controller to control it.
@@ -14,18 +19,17 @@ class AssistantOnboardingPrompt {
  public:
   // Factory function to create onboarding prompts on desktop platforms. The
   // actual implementation is in the `assistant_onboarding_view.cc` file.
-  static AssistantOnboardingPrompt* Create(
-      AssistantOnboardingController* controller,
-      AssistantDisplayDelegate* display_delegate);
+  static base::WeakPtr<AssistantOnboardingPrompt> Create(
+      base::WeakPtr<AssistantOnboardingController> controller);
 
   AssistantOnboardingPrompt() = default;
   virtual ~AssistantOnboardingPrompt() = default;
 
   // Shows the view of the prompt.
-  virtual void Show() = 0;
+  virtual void Show(content::WebContents* web_contents) = 0;
 
-  // Notifies that view that the controller was destroyed so that the view
-  // can invalidate its pointer to the controller.
+  // Notifies that view that the controller was destroyed so that the view can
+  // close.
   virtual void OnControllerGone() = 0;
 };
 

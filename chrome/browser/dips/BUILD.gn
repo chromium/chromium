@@ -18,27 +18,29 @@ source_set("unit_tests") {
   ]
 }
 
-# //chrome/test:test_support_ui doesn't support is_android
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    sources = [
-      "dips_bounce_detector_browsertest.cc",
-      "dips_helper_browsertest.cc",
-    ]
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "dips_bounce_detector_browsertest.cc" ]
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support_ui",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//testing/gtest",
-      "//third_party/blink/public/common",
-    ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    # TODO(rtarpine): make DIPSTabHelperBrowserTest run on Android.
+    sources += [ "dips_helper_browsertest.cc" ]
+    deps += [ "//chrome/test:test_support_ui" ]
   }
 }

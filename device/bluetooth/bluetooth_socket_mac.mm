@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <IOBluetooth/IOBluetooth.h>
 #include <stdint.h>
 
@@ -98,7 +100,7 @@ using device::BluetoothSocket;
 @interface BluetoothRfcommConnectionListener : NSObject {
  @private
   // The socket that owns |self|.
-  device::BluetoothSocketMac* _socket;  // weak
+  raw_ptr<device::BluetoothSocketMac> _socket;  // weak
 
   // The OS mechanism used to subscribe to and unsubscribe from RFCOMM channel
   // creation notifications.
@@ -160,7 +162,7 @@ using device::BluetoothSocket;
 @interface BluetoothL2capConnectionListener : NSObject {
  @private
   // The socket that owns |self|.
-  device::BluetoothSocketMac* _socket;  // weak
+  raw_ptr<device::BluetoothSocketMac> _socket;  // weak
 
   // The OS mechanism used to subscribe to and unsubscribe from L2CAP channel
   // creation notifications.

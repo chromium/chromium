@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import android.view.View;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -22,17 +23,20 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
     private final View mToolbarView;
     private final View mContentView;
     private final Supplier<Integer> mVerticalScrollOffset;
-    private final Supplier<Boolean> mBackPressHandler;
+    private final Runnable mBackPressCallback;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Creates a new instance.
      */
     public MerchantTrustBottomSheetContent(View toolbarView, View contentView,
-            Supplier<Integer> verticalScrollOffset, Supplier<Boolean> backPressHandler) {
+            Supplier<Integer> verticalScrollOffset, Runnable backPressHandler) {
         mToolbarView = toolbarView;
         mContentView = contentView;
         mVerticalScrollOffset = verticalScrollOffset;
-        mBackPressHandler = backPressHandler;
+        mBackPressCallback = backPressHandler;
+        mBackPressStateChangedSupplier.set(true);
     }
 
     @Override
@@ -80,7 +84,18 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean handleBackPress() {
-        return mBackPressHandler.get();
+        mBackPressCallback.run();
+        return true;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        mBackPressCallback.run();
     }
 
     @Override

@@ -103,8 +103,7 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
  public:
   explicit TestURLRequestHttpJob(URLRequest* request)
       : URLRequestHttpJob(request,
-                          request->context()->http_user_agent_settings()),
-        use_null_source_stream_(false) {}
+                          request->context()->http_user_agent_settings()) {}
 
   TestURLRequestHttpJob(const TestURLRequestHttpJob&) = delete;
   TestURLRequestHttpJob& operator=(const TestURLRequestHttpJob&) = delete;
@@ -128,7 +127,7 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
   using URLRequestHttpJob::priority;
 
  private:
-  bool use_null_source_stream_;
+  bool use_null_source_stream_ = false;
 };
 
 class URLRequestHttpJobSetUpSourceTest : public TestWithTaskEnvironment {
@@ -2149,6 +2148,8 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
   req->Start();
   ASSERT_TRUE(req->is_pending());
   delegate.RunUntilComplete();
+
+  ASSERT_TRUE(req->HasPartitionedCookie());
 
   {  // Test request from the same top-level site.
     TestDelegate delegate;

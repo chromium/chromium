@@ -16,12 +16,12 @@
 // The sections are arranged in leading-to-trailing order:
 //   incognito tabs, regular tabs, remote tabs.
 //
-// Dragging the slider will change the value of the control's |sliderPosition|
+// Dragging the slider will change the value of the control's `sliderPosition`
 // property, and will trigger any UIControlEventValueChanged actions. Once a
 // drag is completed, the UIControlEventTouchUpInside actions are triggered.
 //
 // Tapping on sections of the slider will change the value of the control's
-// |selectedPage| property and will trigger any UIControlEventTouchUpInside
+// `selectedPage` property and will trigger any UIControlEventTouchUpInside
 // actions.
 @interface TabGridPageControl : UIControl
 
@@ -36,7 +36,7 @@
 // trailing side of the control. Setting this property will update the position
 // of the slider without animation. Setting a value below 0.0 or above 1.0 will
 // set 0.0 or 1.0 instead.
-// Setting this property may change the |selectedPage| property of the reciever,
+// Setting this property may change the `selectedPage` property of the reciever,
 // but will not cause any UIControl actions to be sent.
 @property(nonatomic, assign) CGFloat sliderPosition;
 
@@ -55,7 +55,7 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Set |selectedPage| as the selected page. If |animated| is YES, the
+// Set `selectedPage` as the selected page. If `animated` is YES, the
 // position change of the slider will be animated.
 - (void)setSelectedPage:(TabGridPage)selectedPage animated:(BOOL)animated;
 

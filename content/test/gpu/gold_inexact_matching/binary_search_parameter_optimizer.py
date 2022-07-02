@@ -4,8 +4,10 @@
 
 
 import logging
+import typing
 
 import gold_inexact_matching.base_parameter_optimizer as base_optimizer
+from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
 
 
@@ -20,11 +22,11 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
   UNLOCKED_PARAM_DELTA_THRESHOLD = 2
   UNLOCKED_PARAM_EDGE_THRESHOLD = 3
 
-  def __init__(self, args, test_name):
+  def __init__(self, args: ct.ParsedCmdArgs, test_name: str):
     self._unlocked_parameter = None
     super().__init__(args, test_name)
 
-  def _VerifyArgs(self):
+  def _VerifyArgs(self) -> None:
     super()._VerifyArgs()
 
     max_diff_locked = self._args.max_max_diff == self._args.min_max_diff
@@ -46,10 +48,10 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     else:
       self._unlocked_parameter = self.UNLOCKED_PARAM_EDGE_THRESHOLD
 
-  def _RunOptimizationImpl(self):
+  def _RunOptimizationImpl(self) -> None:
     known_good, known_bad = self._GetStartingValues()
     while (abs(known_good - known_bad)) > 1:
-      midpoint = (known_good + known_bad) / 2
+      midpoint = (known_good + known_bad) // 2
       parameters = self._CreateParameterSet(midpoint)
       success, _, _ = self._RunComparisonForParameters(parameters)
       if success:
@@ -60,7 +62,7 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
         known_bad = midpoint
     print('Found optimal parameters: %s' % parameters)
 
-  def _GetStartingValues(self):
+  def _GetStartingValues(self) -> typing.Tuple[int, int]:
     """Gets the initial good/bad values for the binary search.
 
     Returns:
@@ -75,7 +77,7 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
       return self._args.max_delta_threshold, self._args.min_delta_threshold
     return self._args.min_edge_threshold, self._args.max_edge_threshold
 
-  def _CreateParameterSet(self, value):
+  def _CreateParameterSet(self, value: int) -> parameter_set.ParameterSet:
     """Creates a parameter_set.ParameterSet to test.
 
     Args:

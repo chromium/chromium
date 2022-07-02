@@ -47,7 +47,7 @@ namespace gfx {
 class ColorSpace;
 class GpuFence;
 struct PresentationFeedback;
-}
+}  // namespace gfx
 
 namespace viz {
 class CompositorFrame;
@@ -55,6 +55,7 @@ class CompositorFrame;
 
 namespace exo {
 class Buffer;
+class Capabilities;
 class FrameSinkResourceManager;
 class SurfaceObserver;
 
@@ -420,6 +421,10 @@ class Surface final : public ui::PropertyHandler {
   bool is_keyboard_shortcuts_inhibited() const {
     return keyboard_shortcuts_inhibited_;
   }
+
+  // Returns the capability set associated with this surface, or nullptr if one
+  // can not be determined. See go/secure-exo-ids for more details.
+  Capabilities* GetCapabilities();
 
  private:
   struct State {

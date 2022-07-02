@@ -1421,11 +1421,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       buffer_transform_.TransformRectReverse(&uv_crop);
     }
 
-    SkColor background_color = SK_ColorTRANSPARENT;
+    SkColor4f background_color = SkColors::kTransparent;
     if (state_.basic_state.background_color.has_value())
-      background_color = state_.basic_state.background_color.value();
+      background_color =
+          SkColor4f::FromColor(state_.basic_state.background_color.value());
     else if (current_resource_has_alpha_ && are_contents_opaque)
-      background_color = SK_ColorBLACK;  // Avoid writing alpha < 1
+      background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
     // If this surface is being replaced by a SurfaceId emit a SurfaceDrawQuad.
     if (get_current_surface_id_) {
@@ -1509,6 +1510,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       } else {
         viz::TileDrawQuad* tile_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+        // TODO(crbug.com/1339335): Support AA quads coming from exo.
+        constexpr bool kForceAntiAliasingOff = true;
         tile_quad->SetNew(
             quad_state, quad_rect, quad_rect,
             /* needs_blending=*/!are_contents_opaque, current_resource_.id,
@@ -1516,8 +1519,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                            current_resource_.size.height()),
             current_resource_.size,
             /* is_premultiplied=*/true,
-            /* nearest_neighbor */ false,
-            /* force_anti_aliasing_off */ false);
+            /* nearest_neighbor */ false, kForceAntiAliasingOff);
       }
       frame->resource_list.push_back(current_resource_);
     }
@@ -1527,7 +1529,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                         : SK_ColorBLACK;
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
+    solid_quad->SetNew(quad_state, quad_rect, quad_rect,
+                       SkColor4f::FromColor(color),
                        false /* force_anti_aliasing_off */);
   }
 
@@ -1638,6 +1641,12 @@ void Surface::SetKeyboardShortcutsInhibited(bool inhibited) {
   // TODO(hidehiko): Support capability on migrating ARC/Crostini.
   window_->SetProperty(ash::kCanConsumeSystemKeysKey, inhibited);
 #endif
+}
+
+Capabilities* Surface::GetCapabilities() {
+  if (delegate_)
+    return delegate_->GetCapabilities();
+  return nullptr;
 }
 
 }  // namespace exo

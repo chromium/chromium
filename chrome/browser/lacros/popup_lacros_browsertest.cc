@@ -7,6 +7,7 @@
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -71,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   // Wait for the window to be created.
   aura::Window* window = browser()->window()->GetNativeWindow();
   std::string window_id =
-      browser_test_util::GetWindowId(window->GetRootWindow());
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(window_id);
 
   // Wait for the window to be globally positioned at 0,0. It will eventually

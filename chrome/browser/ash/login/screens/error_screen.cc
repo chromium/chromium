@@ -31,13 +31,14 @@
 #include "chrome/browser/ui/webui/chromeos/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -83,21 +84,20 @@ constexpr const char kUserActionNetworkConnected[] = "network-connected";
 constexpr const char kUserActionReloadGaia[] = "reload-gaia";
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionCancel[] = "cancel";
+constexpr const char kUserActionContinueAppLaunch[] = "continue-app-launch";
+constexpr const char kUserActionLaunchHelpApp[] = "launch-help-app";
+constexpr const char kUserActionOfflineLogin[] = "offline-login";
 
-ErrorScreen::ErrorScreen(ErrorScreenView* view)
+ErrorScreen::ErrorScreen(base::WeakPtr<ErrorScreenView> view)
     : BaseScreen(ErrorScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view) {
+      view_(std::move(view)) {
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
   NetworkHandler::Get()->network_connection_handler()->AddObserver(this);
-  if (view_)
-    view_->Bind(this);
 }
 
 ErrorScreen::~ErrorScreen() {
   NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
-  if (view_)
-    view_->Unbind();
 }
 
 void ErrorScreen::AllowGuestSignin(bool allowed) {
@@ -108,6 +108,15 @@ void ErrorScreen::AllowGuestSignin(bool allowed) {
 void ErrorScreen::ShowOfflineLoginOption(bool show) {
   if (view_)
     view_->SetOfflineSigninAllowed(show);
+}
+
+void ErrorScreen::OnOfflineLoginClicked() {
+  // Reset hide callback as we advance to OfflineLoginScreen. Exit from this
+  // screen is handled by WizardController.
+  // TODO(https://crbug.com/1199816, dkuzmin): Use exit_callback_ once available
+  on_hide_callback_ = base::OnceClosure();
+  Hide();
+  LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
 }
 
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
@@ -139,11 +148,6 @@ OobeScreenId ErrorScreen::GetParentScreen() const {
 void ErrorScreen::HideCaptivePortal() {
   if (captive_portal_window_proxy_.get())
     captive_portal_window_proxy_->Close();
-}
-
-void ErrorScreen::OnViewDestroyed(ErrorScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void ErrorScreen::SetUIState(NetworkError::UIState ui_state) {
@@ -200,23 +204,6 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
   }
 }
 
-void ErrorScreen::DoShow() {
-  LOG(WARNING) << "Network error screen message is shown";
-  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
-}
-
-void ErrorScreen::DoHide() {
-  LOG(WARNING) << "Network error screen message is hidden";
-  if (on_hide_callback_) {
-    std::move(on_hide_callback_).Run();
-    on_hide_callback_ = base::OnceClosure();
-  }
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
-}
-
 void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
                                           NetworkError::ErrorReason reason) {
   const std::string network_path = network_state_informer_->network_path();
@@ -264,16 +251,31 @@ void ErrorScreen::ShowImpl() {
     SetHideCallback(base::BindOnce(&ErrorScreen::DefaultHideCallback,
                                    weak_factory_.GetWeakPtr()));
   }
-  if (view_)
-    view_->Show();
+  if (!view_)
+    return;
+
+  view_->Show();
+  LOG(WARNING) << "Network error screen message is shown";
+  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
 }
 
 void ErrorScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
+  if (!view_ || is_hidden())
+    return;
+
+  LOG(WARNING) << "Network error screen message is hidden";
+  if (on_hide_callback_) {
+    std::move(on_hide_callback_).Run();
+    on_hide_callback_ = base::OnceClosure();
+  }
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
-void ErrorScreen::OnUserActionDeprecated(const std::string& action_id) {
+void ErrorScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();
   } else if (action_id == kUserActionOpenInternetDialog) {
@@ -296,8 +298,16 @@ void ErrorScreen::OnUserActionDeprecated(const std::string& action_id) {
   } else if (action_id == kUserActionNetworkConnected ||
              action_id == kUserActionCancelReset) {
     Hide();
+  } else if (action_id == kUserActionOfflineLogin) {
+    OnOfflineLoginClicked();
+  } else if (action_id == kUserActionContinueAppLaunch) {
+    OnContinueAppLaunchButtonClicked();
+  } else if (action_id == kUserActionLaunchHelpApp) {
+    CHECK_EQ(args.size(), 2);
+    const int help_topic_id = args[1].GetInt();
+    LaunchHelpApp(help_topic_id);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -346,7 +356,7 @@ void ErrorScreen::OnConfigureCerts() {
   gfx::NativeWindow native_window =
       LoginDisplayHost::default_host()->GetNativeWindow();
   CertificateManagerDialog* dialog =
-      new CertificateManagerDialog(GetAppProfile(), NULL, native_window);
+      new CertificateManagerDialog(GetAppProfile(), native_window);
   dialog->Show();
 }
 
@@ -376,8 +386,27 @@ void ErrorScreen::OnCancelButtonClicked() {
 }
 
 void ErrorScreen::OnReloadGaiaClicked() {
-  if (view_)
-    view_->OnReloadGaiaClicked();
+  DCHECK_EQ(parent_screen_, GaiaView::kScreenId.AsId());
+  WizardController::default_controller()
+      ->GetScreen<GaiaScreen>()
+      ->ReloadGaiaAuthenticator();
+}
+
+void ErrorScreen::OnContinueAppLaunchButtonClicked() {
+  DCHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId());
+  // TODO(https://crbug.com/1199816, dkuzmin): Use exit_callback_ once
+  // available
+  auto* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
+  oobe_ui->GetView<AppLaunchSplashScreenHandler>()->ContinueAppLaunch();
+}
+
+void ErrorScreen::LaunchHelpApp(int help_topic_id) {
+  if (!help_app_.get()) {
+    help_app_ = new HelpAppLauncher(
+        LoginDisplayHost::default_host()->GetNativeWindow());
+  }
+  help_app_->ShowHelpTopic(
+      static_cast<HelpAppLauncher::HelpTopic>(help_topic_id));
 }
 
 void ErrorScreen::ConnectToNetworkRequested(const std::string& service_path) {

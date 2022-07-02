@@ -7,30 +7,30 @@
  * information.
  */
 
-import '../../icons.js';
+import '../../icons.html.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_page_css.js';
+import '../../settings_page_styles.css.js';
 import '../../settings_shared_css.js';
 import '../os_icons.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {parseHtmlSubset} from '//resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement, TemplateInstanceBase, Templatizer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
@@ -155,6 +155,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       hasInternetConnection_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @private */
+      firmwareUpdateCount_: {
+        type: Number,
+        value: 0,
       },
 
       /** @private */
@@ -301,6 +307,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
       this.hasInternetConnection_ = result;
     });
+
+    if (this.showFirmwareUpdatesApp_) {
+      this.aboutBrowserProxy_.getFirmwareUpdateCount().then(result => {
+        this.firmwareUpdateCount_ = result;
+      });
+    }
 
     if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
         'true') {
@@ -467,6 +479,13 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowFirmwareUpdatesBadge_() {
+    return this.showFirmwareUpdatesApp_ && this.firmwareUpdateCount_ > 0;
+  }
 
   /**
    * @return {string}
@@ -567,6 +586,22 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       default:
         return null;
     }
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFirmwareUpdatesIcon_() {
+    if (this.firmwareUpdateCount_ === 0) {
+      return '';
+    }
+
+    const maxBadgeId = 9;
+    // If the number of firmware updates is > 9, then we want to show
+    // the 9 badge.
+    const updateBadgeId = Math.min(this.firmwareUpdateCount_, maxBadgeId);
+    return `os-settings:counter-${updateBadgeId}`;
   }
 
   /**

@@ -19,8 +19,18 @@
 ++++++[panel]
 ++++++++[tree item] name='Tree item at level 2' selectable level:2
 ++++++++++[static] name='Tree item at level 2'
+++++++++[tree item] name='Tree item at level 2, aria-level is 0' selectable level:2
+++++++++++[static] name='Tree item at level 2, aria-level is 0'
 ++++[tree item] name='Tree item at level 3' selectable level:3
 ++++++[static] name='Tree item at level 3'
+++++[tree item] name='Tree item at level 20' selectable level:20
+++++++[static] name='Tree item at level 20'
+++++[tree item] name='Tree item at level 1' selectable level:1
+++++++[static] name='Tree item at level 1'
+++++[tree item] name='Tree item at level 1' selectable level:1
+++++++[static] name='Tree item at level 1'
+++++[tree item] name='Tree item at level 1' selectable level:1
+++++++[static] name='Tree item at level 1'
 ++[tree table] cols=1 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
 ++++[table row] level:1
 ++++++[table cell] name='Cell at level 1' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)

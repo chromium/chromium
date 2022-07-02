@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -58,6 +59,7 @@ class URLLoaderThrottle;
 namespace content {
 class BrowserContext;
 class QuotaPermissionContext;
+class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
@@ -268,6 +270,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool DoesSchemeAllowCrossOriginSharedWorker(
       const std::string& scheme) override;
   bool AllowSignedExchange(content::BrowserContext* browser_context) override;
+  void RequestFilesAccess(
+      const std::vector<base::FilePath>& files,
+      const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>
+          continuation_callback) override;
   void AllowWorkerFileSystem(
       const GURL& url,
       content::BrowserContext* browser_context,
@@ -431,7 +438,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                      sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
   std::wstring GetAppContainerSidForSandboxType(
-      sandbox::mojom::Sandbox sandbox_type) override;
+      sandbox::mojom::Sandbox sandbox_type,
+      AppContainerFlags flags) override;
+  bool IsRendererAppContainerDisabled() override;
   std::wstring GetLPACCapabilityNameForNetworkService() override;
   bool IsUtilityCetCompatible(const std::string& utility_sub_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
@@ -572,7 +581,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
   std::vector<base::FilePath> GetNetworkContextsParentDirectory() override;
-  base::DictionaryValue GetNetLogConstants() override;
+  base::Value::Dict GetNetLogConstants() override;
   bool AllowRenderingMhtmlOverHttp(
       content::NavigationUIData* navigation_ui_data) override;
   bool ShouldForceDownloadResource(const GURL& url,
@@ -635,9 +644,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher)
       override;
-  absl::optional<std::string> GetOriginPolicyErrorPage(
-      network::OriginPolicyState error_reason,
-      content::NavigationHandle* handle) override;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
   void OnNetworkServiceDataUseUpdate(
       content::GlobalRenderFrameHostId render_frame_host_id,
@@ -771,37 +777,37 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
+
   std::unique_ptr<content::SpeculationHostDelegate>
   CreateSpeculationHostDelegate(
       content::RenderFrameHost& render_frame_host) override;
+
+  std::unique_ptr<content::PrefetchServiceDelegate>
+  CreatePrefetchServiceDelegate(
+      content::BrowserContext* browser_context) override;
+
   void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
-  bool IsFirstPartySetsEnabled() override;
   bool WillProvidePublicFirstPartySets() override;
   base::Value::Dict GetFirstPartySetsOverrides() override;
 
   bool ShouldPreconnectNavigation(
       content::BrowserContext* browser_context) override;
 
-  enum UserAgentReductionEnterprisePolicyState {
-    kDefault = 0,
-    kForceDisabled = 1,
-    kForceEnabled = 2,
-  };
-
   bool ShouldDisableOriginAgentClusterDefault(
       content::BrowserContext* browser_context) override;
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr
-  GetAlternativeErrorPageOverrideInfo(const GURL& url,
-                                      content::BrowserContext* browser_context,
-                                      int32_t error_code) override;
+  GetAlternativeErrorPageOverrideInfo(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host,
+      content::BrowserContext* browser_context,
+      int32_t error_code) override;
 
-#if BUILDFLAG(IS_ANDROID)
-  content::ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
-      content::RenderFrameHost* host) override;
-#endif
+  bool OpenExternally(content::RenderFrameHost* opener,
+                      const GURL& url,
+                      WindowOpenDisposition disposition) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
@@ -888,12 +894,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnKeepaliveTimerFired(
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
-
-  UserAgentReductionEnterprisePolicyState
-  GetUserAgentReductionEnterprisePolicyState(content::BrowserContext* context);
-
-  embedder_support::ForceMajorVersionToMinorPosition
-  GetForceMajorVersionToMinorPosition(content::BrowserContext* context);
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.

@@ -301,7 +301,7 @@ bool AsyncFileTestHelper::DirectoryExists(FileSystemContext* context,
 
 blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
     QuotaManagerProxy* quota_manager_proxy,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
     int64_t* usage,
     int64_t* quota) {
@@ -309,7 +309,7 @@ blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
       blink::mojom::QuotaStatusCode::kUnknown;
   base::RunLoop run_loop;
   quota_manager_proxy->GetUsageAndQuota(
-      blink::StorageKey(origin), FileSystemTypeToQuotaStorageType(type),
+      storage_key, FileSystemTypeToQuotaStorageType(type),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&DidGetUsageAndQuota, &status, usage, quota,
                      run_loop.QuitWhenIdleClosure()));

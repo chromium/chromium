@@ -100,6 +100,7 @@ class CanvasRenderingContext2DState final
   }
 
   void SetFont(const FontDescription&, FontSelector*);
+  bool IsFontDirtyForFilter() const;
   const Font& GetFont() const;
   const FontDescription& GetFontDescription() const;
   inline bool HasRealizedFont() const { return realized_font_; }

@@ -17,7 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -138,8 +138,7 @@ void TPMAutoUpdateModePolicyHandler::OnUpdateAvailableCheckResult(
   if (!update_available)
     return;
 
-  chromeos::SessionManagerClient::Get()->StartTPMFirmwareUpdate(
-      "preserve_stateful");
+  ash::SessionManagerClient::Get()->StartTPMFirmwareUpdate("preserve_stateful");
 }
 
 void TPMAutoUpdateModePolicyHandler::SetUpdateCheckerCallbackForTesting(

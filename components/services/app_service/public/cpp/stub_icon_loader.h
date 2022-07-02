@@ -34,16 +34,6 @@ class StubIconLoader : public IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
 
-  // TODO(crbug.com/1253250): Will be removed soon.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
-
   int NumLoadIconFromIconKeyCalls();
 
   std::map<std::string, uint64_t> timelines_by_app_id_;

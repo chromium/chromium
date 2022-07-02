@@ -21,10 +21,20 @@ if (is_win) {
 
 mojom("ax_constants_mojo") {
   sources = [ "ax_constants.mojom" ]
+
+  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
+  if (!is_android) {
+    webui_module_path = "/"
+  }
 }
 
 mojom_component("ax_enums_mojo") {
   sources = [ "ax_enums.mojom" ]
+
+  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
+  if (!is_android) {
+    webui_module_path = "/"
+  }
 
   macro_prefix = "UI_ACCESSIBILITY_AX_MOJOM"
   output_prefix = "ui_accessibility_ax_mojom"
@@ -142,6 +152,8 @@ component("accessibility") {
     "ax_tree_combiner.cc",
     "ax_tree_combiner.h",
     "ax_tree_manager.h",
+    "ax_tree_manager_base.cc",
+    "ax_tree_manager_base.h",
     "ax_tree_manager_map.cc",
     "ax_tree_manager_map.h",
     "ax_tree_observer.cc",
@@ -216,8 +228,12 @@ source_set("ax_assistant") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "platform/test_ax_tree_update.cc",
+    "platform/test_ax_tree_update.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
+    "test_ax_tree_update_json_reader.cc",
+    "test_ax_tree_update_json_reader.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
@@ -249,6 +265,7 @@ test("accessibility_unittests") {
     "ax_text_utils_unittest.cc",
     "ax_tree_combiner_unittest.cc",
     "ax_tree_id_unittest.cc",
+    "ax_tree_manager_base_unittest.cc",
     "ax_tree_serializer_unittest.cc",
     "ax_tree_source_checker_unittest.cc",
     "ax_tree_unittest.cc",
@@ -286,8 +303,6 @@ test("accessibility_unittests") {
     "//ui/accessibility/mojom",
     "//ui/gfx:test_support",
   ]
-
-  data_deps = [ "//testing/buildbot/filters:accessibility_unittests_filters" ]
 
   if (is_fuchsia) {
     sources += [
@@ -353,6 +368,16 @@ fuzzer_test("ax_table_fuzzer") {
   deps = [ ":accessibility" ]
 
   seed_corpus = "fuzz_corpus"
+}
+
+fuzzer_test("ax_node_position_fuzzer") {
+  sources = [
+    "ax_node_position_fuzzer.cc",
+    "ax_tree_fuzzer_util.cc",
+    "ax_tree_fuzzer_util.h",
+  ]
+
+  deps = [ ":accessibility" ]
 }
 
 test("accessibility_perftests") {

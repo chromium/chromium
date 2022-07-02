@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -33,9 +34,9 @@ class CrostiniAnsibleSoftwareConfigView
 
   // crostini::AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted(
-      const crostini::ContainerId& container_id) override;
+      const guest_os::GuestId& container_id) override;
   void OnAnsibleSoftwareConfigurationFinished(
-      const crostini::ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       bool success) override;
 
   std::u16string GetSubtextLabelStringForTesting();

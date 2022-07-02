@@ -33,7 +33,7 @@ class OmniboxViewIOS : public OmniboxView,
                        public OmniboxTextChangeDelegate,
                        public OmniboxTextAcceptDelegate {
  public:
-  // Retains |field|.
+  // Retains `field`.
   OmniboxViewIOS(OmniboxTextFieldIOS* field,
                  WebOmniboxEditController* controller,
                  id<OmniboxLeftImageConsumer> left_image_consumer,
@@ -176,7 +176,7 @@ class OmniboxViewIOS : public OmniboxView,
   // already focused.
   void FocusOmnibox();
 
-  // Returns |true| if AutocompletePopupView is currently open.
+  // Returns `true` if AutocompletePopupView is currently open.
   BOOL IsPopupOpen();
 
  protected:

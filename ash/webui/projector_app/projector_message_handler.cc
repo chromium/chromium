@@ -7,11 +7,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/projector_screencast.h"
+#include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -77,10 +78,10 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 }
 
 base::Value ScreencastListToValue(const PendingScreencastSet& screencasts) {
-  std::vector<base::Value> value;
+  base::Value::List value;
   value.reserve(screencasts.size());
   for (const auto& item : screencasts)
-    value.push_back(item.ToValue());
+    value.Append(item.ToValue());
 
   return base::Value(std::move(value));
 }
@@ -222,6 +223,10 @@ void ProjectorMessageHandler::RegisterMessages() {
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getScreencast",
+      base::BindRepeating(&ProjectorMessageHandler::GetScreencast,
+                          base::Unretained(this)));
 }
 
 void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
@@ -266,16 +271,15 @@ void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   const CoreAccountInfo primary_account =
       oauth_token_fetcher_.GetPrimaryAccountInfo();
 
-  std::vector<base::Value> response;
+  base::Value::List response;
   response.reserve(accounts.size());
   for (const auto& info : accounts) {
-    base::Value account_info(base::Value::Type::DICTIONARY);
-    account_info.SetKey(kUserName, base::Value(info.full_name));
-    account_info.SetKey(kUserEmail, base::Value(info.email));
-    account_info.SetKey(kUserPictureURL, base::Value(info.picture_url));
-    account_info.SetKey(kIsPrimaryUser,
-                        base::Value(info.gaia == primary_account.gaia));
-    response.push_back(std::move(account_info));
+    base::Value::Dict account_info;
+    account_info.Set(kUserName, info.full_name);
+    account_info.Set(kUserEmail, info.email);
+    account_info.Set(kUserPictureURL, info.picture_url);
+    account_info.Set(kIsPrimaryUser, info.gaia == primary_account.gaia);
+    response.Append(std::move(account_info));
   }
 
   ResolveJavascriptCallback(args[0], base::Value(std::move(response)));
@@ -362,19 +366,26 @@ void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
   // 3. The request body data.
   // 4. A bool to indicate whether or not to use end user credential to
   // authorize the request.
-  DCHECK_EQ(func_args.size(), 4u);
+  // 5. Additional headers objects.
+  DCHECK_EQ(func_args.size(), 5u);
 
   const auto& url = func_args[0].GetString();
   const auto& method = func_args[1].GetString();
-  std::string request_body = func_args[2].GetString();
-  bool use_credentials = func_args[3].GetBool();
+
+  std::string request_body =
+      func_args[2].is_string() ? func_args[2].GetString() : std::string();
+  bool use_credentials =
+      func_args[3].is_bool() ? func_args[3].GetBool() : false;
+
   DCHECK(!url.empty());
   DCHECK(!method.empty());
 
   xhr_sender_->Send(
       GURL(url), method, request_body, use_credentials,
       base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
-                     GetWeakPtr(), callback_id));
+                     GetWeakPtr(), callback_id),
+      func_args[4].is_dict() ? func_args[4].GetDict().Clone()
+                             : base::Value::Dict());
 }
 
 void ProjectorMessageHandler::ShouldDownloadSoda(
@@ -476,6 +487,33 @@ void ProjectorMessageHandler::GetPendingScreencasts(
       ProjectorAppClient::Get()->GetPendingScreencasts();
   ResolveJavascriptCallback(args[0],
                             ScreencastListToValue(pending_screencasts));
+}
+
+void ProjectorMessageHandler::GetScreencast(const base::Value::List& args) {
+  AllowJavascript();
+  DCHECK_EQ(args.size(), 2u);
+  const auto& func_args = args[1].GetList();
+  DCHECK_EQ(func_args.size(), 1u);
+
+  // 1. TODO(b/236857019):Locates the local path of container folder local path
+  // by server side file id.
+  //  2. TODO(b/236857019): Locates the local path of media file for given
+  //  container folder path.
+  //  3. TODO(b/237089852) With the media file path, issues an open file request
+  //  to retrieve video url.
+  //  4. TODO(b/236857019): Populate the screencast info and return the promise
+  //  with it.
+  ProjectorScreencast screencast;
+  // 5. TODO(b/236857019): Investigate load screencast outside DriveFS. Finds a
+  // way(maybe by checking the pattern) to distinguish whether args[1] is a
+  // container folder id or path/blob uuid. Or add a separate API like
+  // GetScreencastByPath?
+  screencast.container_folder_id = func_args[0].GetString();
+  // Sets the "name" with a random string for now.
+  // TODO(b/236857019) Gets screencast name by using DriveFS service.
+  screencast.name = "name";
+
+  ResolveJavascriptCallback(args[0], screencast.ToValue());
 }
 
 }  // namespace ash

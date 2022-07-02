@@ -117,7 +117,7 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
   // Stores the underlying socket.
   std::unique_ptr<StreamSocket> transport_socket_;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   // Stores the callbacks to the layer above, called on completing Connect().
   CompletionOnceCallback user_callback_;
@@ -133,14 +133,14 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
 
   // This becomes true when the SOCKS handshake has completed and the
   // overlying connection is free to communicate.
-  bool completed_handshake_;
+  bool completed_handshake_ = false;
 
   // These contain the bytes sent / received by the SOCKS handshake.
-  size_t bytes_sent_;
-  size_t bytes_received_;
+  size_t bytes_sent_ = 0;
+  size_t bytes_received_ = 0;
 
   // This becomes true when the socket is used to send or receive data.
-  bool was_ever_used_;
+  bool was_ever_used_ = false;
 
   // Used to resolve the hostname to which the SOCKS proxy will connect.
   raw_ptr<HostResolver> host_resolver_;

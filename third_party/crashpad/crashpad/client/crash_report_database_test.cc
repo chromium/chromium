@@ -185,6 +185,41 @@ TEST_F(CrashReportDatabaseTest, Initialize) {
   EXPECT_FALSE(db);
 }
 
+TEST_F(CrashReportDatabaseTest, Settings) {
+  // Initialize three databases and ensure settings.dat isn't created yet.
+  ASSERT_TRUE(db());
+
+  base::FilePath settings_path =
+      path().Append(FILE_PATH_LITERAL("settings.dat"));
+  EXPECT_FALSE(FileExists(settings_path));
+
+  std::unique_ptr<CrashReportDatabase> db2 =
+      CrashReportDatabase::Initialize(path());
+  ASSERT_TRUE(db2);
+  EXPECT_FALSE(FileExists(settings_path));
+
+  std::unique_ptr<CrashReportDatabase> db3 =
+      CrashReportDatabase::Initialize(path());
+  ASSERT_TRUE(db3);
+  EXPECT_FALSE(FileExists(settings_path));
+
+  // Ensure settings.dat exists after getter.
+  Settings* settings = db3->GetSettings();
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(FileExists(settings_path));
+
+  time_t last_upload_attempt_time = 42;
+  ASSERT_TRUE(settings->SetLastUploadAttemptTime(last_upload_attempt_time));
+
+  // Ensure the first two databases read the same value.
+  ASSERT_TRUE(
+      db2->GetSettings()->GetLastUploadAttemptTime(&last_upload_attempt_time));
+  EXPECT_EQ(last_upload_attempt_time, 42);
+  ASSERT_TRUE(
+      db()->GetSettings()->GetLastUploadAttemptTime(&last_upload_attempt_time));
+  EXPECT_EQ(last_upload_attempt_time, 42);
+}
+
 TEST_F(CrashReportDatabaseTest, NewCrashReport) {
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
   EXPECT_EQ(db()->PrepareNewCrashReport(&new_report),

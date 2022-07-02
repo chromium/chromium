@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -42,7 +43,9 @@ void CreateAndStartUserSession(const AccountId& account_id) {
   const std::string user_id_hash =
       ProfileHelper::GetUserIdHashByUserIdForTesting(account_id.GetUserEmail());
   SessionManager::Get()->CreateSession(account_id, user_id_hash, false);
-  ProfileHelper::GetProfileByUserIdHashForTest(user_id_hash);
+  profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
   SessionManager::Get()->SessionStarted();
 }
 

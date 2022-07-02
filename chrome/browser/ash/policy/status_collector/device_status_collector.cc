@@ -67,9 +67,10 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -78,11 +79,9 @@
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -501,11 +500,6 @@ bool AddCrostiniAppInfo(
         crostini::GetThreeDayWindowStart(last_launch_time).ToJavaTime());
   }
 
-  if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
-    app->set_app_type(em::CROSTINI_APP_TYPE_TERMINAL);
-    // We do not log package information if the App is the terminal:
-    return true;
-  }
   app->set_app_type(em::CROSTINI_APP_TYPE_INTERACTIVE);
 
   const std::string& package_id = registration.PackageId();
@@ -534,8 +528,7 @@ void AddCrostiniAppListForProfile(Profile* const profile,
   const std::map<std::string, guest_os::GuestOsRegistryService::Registration>&
       registered_apps =
           guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-              ->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                      ApplicationList_VmType_TERMINA);
+              ->GetRegisteredApps(guest_os::VmType::TERMINA);
   for (const auto& pair : registered_apps) {
     const std::string& registered_app_id = pair.first;
     const guest_os::GuestOsRegistryService::Registration& registration =
@@ -2346,8 +2339,7 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
       interface->set_device_path((*device)->path());
 
     // Report EIDs for cellular connections.
-    if ((*device)->type() == shill::kTypeCellular &&
-        ash::features::IsESimPolicyEnabled()) {
+    if ((*device)->type() == shill::kTypeCellular) {
       std::vector<std::string> eids;
       for (const auto& euicc_path :
            chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
@@ -2375,7 +2367,6 @@ bool DeviceStatusCollector::GetNetworkStatus(
       {shill::kStateAssociation, em::NetworkState::ASSOCIATION},
       {shill::kStateConfiguration, em::NetworkState::CONFIGURATION},
       {shill::kStateReady, em::NetworkState::READY},
-      {shill::kStatePortal, em::NetworkState::PORTAL},
       {shill::kStateNoConnectivity, em::NetworkState::PORTAL},
       {shill::kStateRedirectFound, em::NetworkState::PORTAL},
       {shill::kStatePortalSuspected, em::NetworkState::PORTAL},
@@ -2520,9 +2511,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
-      chromeos::DBusThreadManager::Get()
-          ->GetUpdateEngineClient()
-          ->GetLastStatus();
+      chromeos::UpdateEngineClient::Get()->GetLastStatus();
 
   absl::optional<base::Version> required_platform_version;
 

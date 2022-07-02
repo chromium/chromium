@@ -43,11 +43,11 @@ class SingleClientAutofillProfileSyncTest : public SyncTest {
   SingleClientAutofillProfileSyncTest& operator=(
       const SingleClientAutofillProfileSyncTest&) = delete;
 
-  ~SingleClientAutofillProfileSyncTest() override {}
+  ~SingleClientAutofillProfileSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
-                       DisablingAutofillAlsoDisablesSyncing) {
+                       DisablingAutofillDoesNotDisableSyncing) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_PROFILE));
@@ -62,16 +62,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
   // Disable autofill (e.g. via chrome://settings).
   autofill::prefs::SetAutofillProfileEnabled(GetProfile(0)->GetPrefs(), false);
 
-  // Wait for Sync to get reconfigured.
-  AutofillProfileDisabledChecker(GetClient(0)->service()).Wait();
-
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetClient(0)->service()->GetTransportState());
 
-  // This should also disable syncing of autofill profiles.
-  EXPECT_FALSE(GetClient(0)->service()->GetActiveDataTypes().Has(
+  // This should not disable syncing of autofill profiles. Otherwise, if the
+  // user deletes profiles while Autofill is disabled and then re-enables
+  // Autofill, sync retrieves the seemingly deleted profiles
+  // (crbug.com/1320097).
+  EXPECT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_PROFILE));
-  // The autofill profile itself should still be there though.
+  // The autofill profile itself should still be there.
   EXPECT_EQ(1uL, pdm->GetProfiles().size());
 }
 

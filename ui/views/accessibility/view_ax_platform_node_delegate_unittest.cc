@@ -350,13 +350,13 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   // ignored, i.e. not visible in the accessibility tree that is available to
   // platform APIs.
   EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
-  EXPECT_EQ(0, button_accessibility()->GetChildCount());
+  EXPECT_EQ(0u, button_accessibility()->GetChildCount());
   EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
 
   // Modify the focus behavior to make the button unfocusable, and verify that
   // the label is now a child of the button.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  EXPECT_EQ(1, button_accessibility()->GetChildCount());
+  EXPECT_EQ(1u, button_accessibility()->GetChildCount());
   EXPECT_EQ(label_->GetNativeViewAccessible(),
             button_accessibility()->ChildAtIndex(0));
   EXPECT_EQ(button_->GetNativeViewAccessible(),
@@ -528,10 +528,10 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
 
   EXPECT_EQ(view_accessibility(widget_->GetRootView())->GetNativeObject(),
             parent_view->GetParent());
-  EXPECT_EQ(4, parent_view->GetChildCount());
+  EXPECT_EQ(4u, parent_view->GetChildCount());
 
-  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(1, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
   EXPECT_EQ(child_view_2->GetNativeObject(), parent_view->ChildAtIndex(1));
@@ -543,28 +543,28 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
             parent_view->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(0, child_view_1->GetChildCount());
-  EXPECT_EQ(0, child_view_1->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_1->GetChildCount());
+  EXPECT_EQ(0u, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_2->GetNativeObject(), child_view_1->GetNextSibling());
   EXPECT_EQ(nullptr, child_view_1->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(0, child_view_2->GetChildCount());
-  EXPECT_EQ(1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_2->GetChildCount());
+  EXPECT_EQ(1u, child_view_2->GetIndexInParent());
   EXPECT_EQ(child_view_3->GetNativeObject(), child_view_2->GetNextSibling());
   EXPECT_EQ(child_view_1->GetNativeObject(),
             child_view_2->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(0, child_view_3->GetChildCount());
-  EXPECT_EQ(2, child_view_3->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_3->GetChildCount());
+  EXPECT_EQ(2u, child_view_3->GetIndexInParent());
   EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
   EXPECT_EQ(child_view_2->GetNativeObject(),
             child_view_3->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
-  EXPECT_EQ(0, child_view_4->GetChildCount());
-  EXPECT_EQ(3, child_view_4->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_4->GetChildCount());
+  EXPECT_EQ(3u, child_view_4->GetIndexInParent());
   EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
@@ -598,12 +598,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   parent_view->OverrideIsLeaf(true);
   child_view_2->OverrideIsLeaf(true);
 
-  EXPECT_EQ(2, contents_view->GetChildCount());
+  EXPECT_EQ(2u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(0, parent_view->GetChildCount());
+  EXPECT_EQ(0u, parent_view->GetChildCount());
 
-  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(1, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -635,12 +635,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // have no effect.
   parent_view->OverrideIsLeaf(false);
 
-  EXPECT_EQ(2, contents_view->GetChildCount());
+  EXPECT_EQ(2u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(4, parent_view->GetChildCount());
+  EXPECT_EQ(4u, parent_view->GetChildCount());
 
-  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(1, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -700,10 +700,10 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   child_view_2->OverrideIsIgnored(true);
 
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(3, parent_view->GetChildCount());
+  EXPECT_EQ(3u, parent_view->GetChildCount());
 
-  EXPECT_EQ(0, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(-1, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_FALSE(parent_view->GetIndexInParent().has_value());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
   EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(1));
@@ -719,28 +719,28 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   EXPECT_EQ(nullptr, parent_view->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(0, child_view_1->GetChildCount());
-  EXPECT_EQ(1, child_view_1->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_1->GetChildCount());
+  EXPECT_EQ(1u, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_3->GetNativeObject(), child_view_1->GetNextSibling());
   EXPECT_EQ(button_accessibility()->GetNativeObject(),
             child_view_1->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(0, child_view_2->GetChildCount());
-  EXPECT_EQ(-1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_2->GetChildCount());
+  EXPECT_FALSE(child_view_2->GetIndexInParent().has_value());
   EXPECT_EQ(nullptr, child_view_2->GetNextSibling());
   EXPECT_EQ(nullptr, child_view_2->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(0, child_view_3->GetChildCount());
-  EXPECT_EQ(2, child_view_3->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_3->GetChildCount());
+  EXPECT_EQ(2u, child_view_3->GetIndexInParent());
   EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
   EXPECT_EQ(child_view_1->GetNativeObject(),
             child_view_3->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_4->GetParent());
-  EXPECT_EQ(0, child_view_4->GetChildCount());
-  EXPECT_EQ(3, child_view_4->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_4->GetChildCount());
+  EXPECT_EQ(3u, child_view_4->GetIndexInParent());
   EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
@@ -852,7 +852,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   ViewAXPlatformNodeDelegate* submenu = submenu_accessibility();
   EXPECT_FALSE(submenu->HasState(ax::mojom::State::kFocusable));
-  EXPECT_EQ(submenu->GetChildCount(), 8);
+  EXPECT_EQ(submenu->GetChildCount(), 8u);
   EXPECT_EQ(submenu->GetRole(), ax::mojom::Role::kMenu);
   EXPECT_EQ(submenu->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
 
@@ -870,8 +870,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(normal_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(normal_item->GetPosInSet(), 1);
   EXPECT_EQ(normal_item->GetSetSize(), 7);
-  EXPECT_EQ(normal_item->GetChildCount(), 0);
-  EXPECT_EQ(normal_item->GetIndexInParent(), 0);
+  EXPECT_EQ(normal_item->GetChildCount(), 0u);
+  EXPECT_EQ(normal_item->GetIndexInParent(), 0u);
 
   // MenuItemView::Type::kSubMenu
   ViewAXPlatformNodeDelegate* submenu_item = view_accessibility(items[1]);
@@ -888,11 +888,11 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 #if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kSubMenu as a submenu rather than an item.
-  EXPECT_EQ(submenu_item->GetChildCount(), 1);
+  EXPECT_EQ(submenu_item->GetChildCount(), 1u);
 #else
-  EXPECT_EQ(submenu_item->GetChildCount(), 0);
+  EXPECT_EQ(submenu_item->GetChildCount(), 0u);
 #endif  // BUILDFLAG(IS_MAC)
-  EXPECT_EQ(submenu_item->GetIndexInParent(), 1);
+  EXPECT_EQ(submenu_item->GetIndexInParent(), 1u);
 
   // MenuItemView::Type::kActionableSubMenu
   ViewAXPlatformNodeDelegate* actionable_submenu_item =
@@ -911,11 +911,11 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 #if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kActionableSubMenu as a submenu rather than an item.
-  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1);
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1u);
 #else
-  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0);
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0u);
 #endif  // BUILDFLAG(IS_MAC)
-  EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2);
+  EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2u);
 
   // MenuItemView::Type::kCheckbox
   ViewAXPlatformNodeDelegate* checkbox_item = view_accessibility(items[3]);
@@ -930,8 +930,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(checkbox_item->GetPosInSet(), 4);
   EXPECT_EQ(checkbox_item->GetSetSize(), 7);
-  EXPECT_EQ(checkbox_item->GetChildCount(), 0);
-  EXPECT_EQ(checkbox_item->GetIndexInParent(), 3);
+  EXPECT_EQ(checkbox_item->GetChildCount(), 0u);
+  EXPECT_EQ(checkbox_item->GetIndexInParent(), 3u);
 
   // MenuItemView::Type::kRadio
   ViewAXPlatformNodeDelegate* radio_item = view_accessibility(items[4]);
@@ -945,8 +945,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(radio_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(radio_item->GetPosInSet(), 5);
   EXPECT_EQ(radio_item->GetSetSize(), 7);
-  EXPECT_EQ(radio_item->GetChildCount(), 0);
-  EXPECT_EQ(radio_item->GetIndexInParent(), 4);
+  EXPECT_EQ(radio_item->GetChildCount(), 0u);
+  EXPECT_EQ(radio_item->GetIndexInParent(), 4u);
 
   // MenuItemView::Type::kSeparator
   ViewAXPlatformNodeDelegate* separator_item = view_accessibility(items[5]);
@@ -963,8 +963,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
       separator_item->HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_FALSE(
       separator_item->HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
-  EXPECT_EQ(separator_item->GetChildCount(), 0);
-  EXPECT_EQ(separator_item->GetIndexInParent(), 5);
+  EXPECT_EQ(separator_item->GetChildCount(), 0u);
+  EXPECT_EQ(separator_item->GetIndexInParent(), 5u);
 
   // MenuItemView::Type::kHighlighted
   ViewAXPlatformNodeDelegate* highlighted_item = view_accessibility(items[6]);
@@ -979,8 +979,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(highlighted_item->GetPosInSet(), 6);
   EXPECT_EQ(highlighted_item->GetSetSize(), 7);
-  EXPECT_EQ(highlighted_item->GetChildCount(), 0);
-  EXPECT_EQ(highlighted_item->GetIndexInParent(), 6);
+  EXPECT_EQ(highlighted_item->GetChildCount(), 0u);
+  EXPECT_EQ(highlighted_item->GetIndexInParent(), 6u);
 
   // MenuItemView::Type::kTitle
   ViewAXPlatformNodeDelegate* title_item = view_accessibility(items[7]);
@@ -994,8 +994,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(title_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(title_item->GetPosInSet(), 7);
   EXPECT_EQ(title_item->GetSetSize(), 7);
-  EXPECT_EQ(title_item->GetChildCount(), 0);
-  EXPECT_EQ(title_item->GetIndexInParent(), 7);
+  EXPECT_EQ(title_item->GetChildCount(), 0u);
+  EXPECT_EQ(title_item->GetIndexInParent(), 7u);
 }
 
 #if defined(USE_AURA)

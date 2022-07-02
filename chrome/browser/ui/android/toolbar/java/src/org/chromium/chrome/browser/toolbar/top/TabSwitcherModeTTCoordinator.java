@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.BooleanSupplier;
@@ -50,6 +51,7 @@ class TabSwitcherModeTTCoordinator {
     private final boolean mIsTabletGtsPolishEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
+    private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
             ViewStub tabSwitcherFullscreenToolbarStub, MenuButtonCoordinator menuButtonCoordinator,
@@ -62,6 +64,8 @@ class TabSwitcherModeTTCoordinator {
         mIsTabletGtsPolishEnabled = isTabletGtsPolishEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
+        mTopToolbarInteractabilityManager =
+                new TopToolbarInteractabilityManager(enabled -> setNewTabEnabled(enabled));
     }
 
     /**
@@ -261,6 +265,11 @@ class TabSwitcherModeTTCoordinator {
         mActiveTabSwitcherToolbar.setNewTabButtonHighlight(highlight);
     }
 
+    @NonNull
+    TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
+        return mTopToolbarInteractabilityManager;
+    }
+
     /**
      * Initialize {@link IncognitoTabModelObserver}, if the new tab variation is enabled. This
      * function will initialize observer, if it is not initialized before.
@@ -300,5 +309,11 @@ class TabSwitcherModeTTCoordinator {
 
         boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
         mActiveTabSwitcherToolbar.onIncognitoTabsExistenceChanged(doesExist);
+    }
+
+    private void setNewTabEnabled(boolean enabled) {
+        if (mActiveTabSwitcherToolbar != null) {
+            mActiveTabSwitcherToolbar.setNewTabButtonEnabled(enabled);
+        }
     }
 }

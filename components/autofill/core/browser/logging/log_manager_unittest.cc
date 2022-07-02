@@ -72,7 +72,7 @@ TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
   // After attaching the logger, text should be passed.
   base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
@@ -85,7 +85,7 @@ TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
 
 TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
   router_.UnregisterReceiver(&receiver_);
@@ -98,13 +98,13 @@ TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
 
 TEST_F(LogManagerTest, NullCallbackWillNotCrash) {
   manager_ = LogManager::Create(&router_, base::NullCallback());
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   router_.UnregisterReceiver(&receiver_);
 }
 
 TEST_F(LogManagerTest, SetSuspended_WithActiveLogging) {
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
@@ -134,7 +134,7 @@ TEST_F(LogManagerTest, InterleaveSuspendAndLoggingActivation_SuspendFirst) {
   manager_->SetSuspended(true);
   EXPECT_FALSE(manager_->IsLoggingActive());
 
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   EXPECT_FALSE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
@@ -150,7 +150,7 @@ TEST_F(LogManagerTest, InterleaveSuspendAndLoggingActivation_ActiveFirst) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
-  EXPECT_EQ(std::vector<base::Value>(), router_.RegisterReceiver(&receiver_));
+  router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
 
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());

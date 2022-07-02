@@ -11,10 +11,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "cc/base/switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/paint_preview/buildflags/buildflags.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
@@ -22,6 +25,12 @@
 #include "ui/aura/window.h"
 #endif
 #include "ui/events/test/event_generator.h"
+
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
+// `gn check` doesn't recognize that this is included conditionally, with the
+// same condition as the dependencies.
+#include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
+#endif
 
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -74,8 +83,9 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-// TODO(crbug.com/1223602): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
   Start();
   StartTracing({"loading"});
   Load("/largest_contentful_paint.html");
@@ -91,24 +101,33 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
       base::StrCat({window_origin, "/images/blue96x96.png"});
   const std::string image_3_url_expected =
       base::StrCat({window_origin, "/images/green-256x256.png"});
-
-  content::EvalJsResult result = EvalJs(web_contents(), "run_test()");
-  EXPECT_EQ("", result.error);
+  const std::string expected_url[3] = {
+      image_1_url_expected, image_2_url_expected, image_3_url_expected};
 
   // Verify that the JS API yielded three LCP reports. Note that, as we resolve
   // https://github.com/WICG/largest-contentful-paint/issues/41, this test may
   // need to be updated to reflect new semantics.
-  const auto& list = result.value.GetListDeprecated();
-  const std::string expected_url[3] = {
-      image_1_url_expected, image_2_url_expected, image_3_url_expected};
+  const std::string test_name[3] = {"test_first_image()", "test_larger_image()",
+                                    "test_largest_image()"};
   absl::optional<double> lcp_timestamps[3];
   for (size_t i = 0; i < 3; i++) {
-    const std::string* url = list[i].FindStringPath("url");
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+
+    // std::string function_name = base::StringPrintf("run_test%zu()", i);
+    content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
+    EXPECT_EQ("", result.error);
+    const auto& list = result.value.GetListDeprecated();
+    EXPECT_EQ(1u, list.size());
+    const std::string* url = list[0].FindStringPath("url");
     EXPECT_TRUE(url);
     EXPECT_EQ(*url, expected_url[i]);
-    lcp_timestamps[i] = list[i].FindDoublePath("time");
+    lcp_timestamps[i] = list[0].FindDoublePath("time");
     EXPECT_TRUE(lcp_timestamps[i].has_value());
+
+    waiter->Wait();
   }
+
   EXPECT_LT(lcp_timestamps[0], lcp_timestamps[1])
       << "The first LCP report should be before the second";
   EXPECT_LT(lcp_timestamps[1], lcp_timestamps[2])
@@ -148,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
                        LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
-  auto* sub = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(EvalJs(sub, "test_step_1()").value.GetString(), "green-16x16.png");
 
   content::SimulateMouseClickAt(web_contents(), 0,
@@ -157,6 +176,57 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "green-16x16.png");
 }
+
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LargestContentfulPaintPaintPreview) {
+  Start();
+  StartTracing({"loading"});
+  Load("/largest_contentful_paint_paint_preview.html");
+
+  content::EvalJsResult lcp_before_paint_preview =
+      EvalJs(web_contents(), "block_for_next_lcp()");
+  EXPECT_EQ("", lcp_before_paint_preview.error);
+
+  paint_preview::PaintPreviewClient::CreateForWebContents(
+      web_contents());  // Is a singleton.
+  auto* client =
+      paint_preview::PaintPreviewClient::FromWebContents(web_contents());
+
+  paint_preview::PaintPreviewClient::PaintPreviewParams params(
+      paint_preview::RecordingPersistence::kMemoryBuffer);
+  params.inner.clip_rect = gfx::Rect(0, 0, 1, 1);
+  params.inner.is_main_frame = true;
+  params.inner.capture_links = false;
+  params.inner.max_capture_size = 50 * 1024 * 1024;
+  params.inner.max_decoded_image_size_bytes = 50 * 1024 * 1024;
+  params.inner.skip_accelerated_content = true;
+
+  base::RunLoop run_loop;
+  client->CapturePaintPreview(
+      params, web_contents()->GetPrimaryMainFrame(),
+      base::BindOnce(
+          [](base::OnceClosure callback, base::UnguessableToken,
+             paint_preview::mojom::PaintPreviewStatus,
+             std::unique_ptr<paint_preview::CaptureResult>) {
+            std::move(callback).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  content::EvalJsResult lcp_after_paint_preview =
+      EvalJs(web_contents(), "trigger_repaint_and_block_for_next_lcp()");
+  EXPECT_EQ("", lcp_after_paint_preview.error);
+
+  // When PaintPreview creates new LCP candidates, we compare the short text and
+  // the long text here, which will fail. But in order to consistently get the
+  // new LCP candidate in that case, we always add a medium text in
+  // `trigger_repaint_and_block_for_next_lcp`. So use a soft comparison here
+  // that would permit the medium text, but not the long text.
+  EXPECT_LT(lcp_after_paint_preview.value.GetDouble(),
+            2 * lcp_before_paint_preview.value.GetDouble());
+}
+#endif
 
 class PageViewportInLCPTest : public MetricIntegrationTest {
  public:
@@ -194,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
 class IsAnimatedLCPTest : public MetricIntegrationTest {
  public:
   void test_is_animated(const char* html_name,
-                        uint32_t flag_set,
+                        blink::LargestContentfulPaintType flag_set,
                         bool expected,
                         unsigned entries = 1) {
     auto waiter =
@@ -205,28 +275,29 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
     waiter->AddMinimumCompleteResourcesExpectation(entries);
     Start();
     Load(html_name);
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test()").error, "");
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").error,
+              "");
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     waiter->Wait();
     ExpectUKMPageLoadMetricFlagSet(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
-        expected);
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest, LargestContentfulPaint_IsAnimated) {
   test_is_animated("/is_animated.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                        LargestContentfulPaint_IsNotAnimated) {
   test_is_animated("/non_animated.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/false);
 }
 
@@ -234,20 +305,14 @@ IN_PROC_BROWSER_TEST_F(
     IsAnimatedLCPTest,
     LargestContentfulPaint_AnimatedImageWithLargerTextFirst) {
   test_is_animated("/animated_image_with_larger_text_first.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/false);
 }
 
-// On MacOS, the functionality required for testing mouse moves is not
-// implemented:
-// https://chromium-review.googlesource.com/c/chromium/src/+/2971065
-// Hence, we're only testing this in Aura capable platforms.
-// FWIW, the test is passing on MacOS when the mouse is manually moved.
-#if defined(USE_AURA)
 class MouseoverLCPTest : public MetricIntegrationTest {
  public:
   void test_mouseover(const char* html_name,
-                      uint32_t flag_set,
+                      blink::LargestContentfulPaintType flag_set,
                       std::string entries,
                       std::string entries2,
                       int x1,
@@ -263,18 +328,26 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     waiter->AddMinimumCompleteResourcesExpectation(2);
     Start();
     Load(html_name);
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test(1)").error, "");
+    EXPECT_EQ(
+        EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test(1)").error, "");
 
-    gfx::NativeView view = web_contents()->GetNativeView();
-    ui::test::EventGenerator event_generator(view->GetRootWindow());
-    gfx::Rect offset = web_contents()->GetContainerBounds();
-    gfx::Point point(x1 + offset.x(), y1 + offset.y());
-    event_generator.MoveMouseTo(point);
-    RunUntilInputProcessed(
-        web_contents()->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    // We should wait for the main frame's hit-test data to be ready before
+    // sending the mouse events below to avoid flakiness.
+    content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+    // Ensure the compositor thread is aware of the mouse events.
+    content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+    frame_observer.Wait();
+
+    // Simulate a mouse move event which will generate a mouse over event.
+    EXPECT_TRUE(
+        ExecJs(web_contents(),
+               "chrome.gpuBenchmarking.pointerActionSequence( "
+               "[{ source: 'mouse', actions: [ { name: 'pointerMove', x: " +
+                   base::NumberToString(x1) +
+                   ", y: " + base::NumberToString(y1) + " }, ] }], ()=>{});"));
 
     // Wait for a second image to load and for LCP entry to be there.
-    EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                      "run_test(/*entries_expected= */" + entries + ")")
                   .error,
               "");
@@ -288,31 +361,40 @@ class MouseoverLCPTest : public MetricIntegrationTest {
       // currently a second mouse move call is not dispatching the event as it
       // should. So instead, we dispatch the event directly.
       EXPECT_EQ(
-          EvalJs(web_contents()->GetMainFrame(), "dispatch_mouseover()").error,
+          EvalJs(web_contents()->GetPrimaryMainFrame(), "dispatch_mouseover()")
+              .error,
           "");
 
       // Wait for a third image (potentially) to load and for LCP entry to be
       // there.
-      EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
+      EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                        "run_test(/*entries_expected= */" + entries2 + ")")
                     .error,
                 "");
     }
+    waiter->Wait();
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-    waiter->Wait();
     ExpectUKMPageLoadMetricFlagSet(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
-        expected);
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MetricIntegrationTest::SetUpCommandLine(command_line);
+
+    // chrome.gpuBenchmarking.pointerActionSequence can be used on all
+    // platforms.
+    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
-                       DISABLED_LargestContentfulPaint_MouseoverOverLCPImage) {
+                       LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/10, /*y1=*/10,
@@ -320,11 +402,10 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MouseoverLCPTest,
-    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/10, /*y1=*/10,
@@ -335,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverBody) {
   test_mouseover("/mouseover.html",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/30, /*y1=*/10,
@@ -343,15 +424,13 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MouseoverLCPTest,
-    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"3",
                  /*x1=*/10, /*y1=*/10,
                  /*x2=*/30, /*y2=*/10,
                  /*expected=*/false);
 }
-#endif

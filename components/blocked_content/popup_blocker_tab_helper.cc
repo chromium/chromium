@@ -76,7 +76,7 @@ void PopupBlockerTabHelper::DidFinishNavigation(
 
 void PopupBlockerTabHelper::HidePopupNotification() {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
   if (pscs)
     pscs->ClearPopupsBlocked();
 }
@@ -96,7 +96,7 @@ void PopupBlockerTabHelper::AddBlockedPopup(
 
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   if (content_settings) {
     content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
   }

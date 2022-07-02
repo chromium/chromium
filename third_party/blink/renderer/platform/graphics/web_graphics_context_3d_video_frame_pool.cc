@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
@@ -118,11 +120,6 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     const gpu::MailboxHolder& src_mailbox_holder,
     const gfx::ColorSpace& dst_color_space,
     FrameReadyCallback callback) {
-  // Issue `callback` with a nullptr VideoFrame if we return early.
-  base::ScopedClosureRunner failure_runner(WTF::Bind(
-      [](FrameReadyCallback* callback) { std::move(*callback).Run(nullptr); },
-      base::Unretained(&callback)));
-
   if (!weak_context_provider_)
     return false;
   auto* context_provider = weak_context_provider_->ContextProvider();
@@ -139,22 +136,50 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
 #endif  // BUILDFLAG(IS_WIN)
 
-  scoped_refptr<media::VideoFrame> dst_frame =
-      pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
+  auto dst_frame = pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
   if (!dst_frame)
     return false;
 
-  gpu::SyncToken copy_done_sync_token;
+  auto* ri = raster_context_provider->RasterInterface();
+  DCHECK(ri);
+  unsigned query_id = 0;
+  ri->GenQueriesEXT(1, &query_id);
+  ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+
   const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
       raster_context_provider, src_format, src_size, src_color_space,
-      src_surface_origin, src_mailbox_holder, dst_frame.get(),
-      copy_done_sync_token);
-  if (!copy_succeeded)
+      src_surface_origin, src_mailbox_holder, dst_frame.get());
+  if (!copy_succeeded) {
+    ri->DeleteQueriesEXT(1, &query_id);
     return false;
+  }
 
-  IgnoreResult(failure_runner.Release());
-  raster_context_provider->ContextSupport()->SignalSyncToken(
-      copy_done_sync_token, base::BindOnce(std::move(callback), dst_frame));
+  // QueryEXT functions are used to make sure that CopyRGBATextureToVideoFrame()
+  // texture copy before we access GMB data.
+  ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+
+  auto on_query_done_cb =
+      [](scoped_refptr<media::VideoFrame> frame,
+         base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
+         unsigned query_id, FrameReadyCallback callback) {
+        if (ctx_wrapper) {
+          if (auto* ctx_provider = ctx_wrapper->ContextProvider()) {
+            if (auto* ri_provider = ctx_provider->RasterContextProvider()) {
+              auto* ri = ri_provider->RasterInterface();
+              ri->DeleteQueriesEXT(1, &query_id);
+            }
+          }
+        }
+        std::move(callback).Run(std::move(frame));
+      };
+
+  auto* context_support = raster_context_provider->ContextSupport();
+  DCHECK(context_support);
+  context_support->SignalQuery(
+      query_id,
+      base::BindOnce(on_query_done_cb, dst_frame, weak_context_provider_,
+                     query_id, std::move(callback)));
+
   return true;
 }
 

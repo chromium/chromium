@@ -30,6 +30,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/devicetype.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/debug.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_move_window_util.h"
@@ -45,7 +46,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
@@ -181,48 +181,6 @@ void RecordWindowSnapAcceleratorAction(WindowSnapAcceleratorAction action) {
 
 void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
   UMA_HISTOGRAM_ENUMERATION(kTabletCountOfVolumeAdjustType, type);
-}
-
-// Returns the number of times the startup notification has been shown
-// from prefs.
-int GetStartupNotificationPrefCount(PrefService* pref_service) {
-  DCHECK(pref_service);
-  return pref_service->GetInteger(
-      prefs::kImprovedShortcutsNotificationShownCount);
-}
-
-bool ShouldShowStartupNotificationForCurrentUser() {
-  const absl::optional<user_manager::UserType> user_type =
-      Shell::Get()->session_controller()->GetUserType();
-  return user_type &&
-         (*user_type == user_manager::USER_TYPE_REGULAR ||
-          *user_type == user_manager::USER_TYPE_CHILD) &&
-         !Shell::Get()->session_controller()->IsUserFirstLogin();
-}
-
-// Increments the number of times the startup notification has been shown
-// in prefs.
-void IncrementStartupNotificationCount(PrefService* pref_service) {
-  DCHECK(pref_service);
-  int count = GetStartupNotificationPrefCount(pref_service);
-
-  // Increment the pref count.
-  pref_service->SetInteger(prefs::kImprovedShortcutsNotificationShownCount,
-                           count + 1);
-}
-
-// Shows a notification that accelerators/shortcuts have changed in this
-// release.
-// TODO(crbug.com/1179893): Remove this function in M97/M98.
-void NotifyShortcutChangesInRelease(PrefService* pref_service) {
-  DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
-  DCHECK(pref_service);
-
-  if (GetStartupNotificationPrefCount(pref_service) > 0)
-    return;
-
-  ShowShortcutsChangedNotification();
-  IncrementStartupNotificationCount(pref_service);
 }
 
 void ShowToast(std::string id,
@@ -716,8 +674,10 @@ bool CanHandleToggleResizeLockMenu() {
 }
 
 bool CanHandleToggleFloatingWindow() {
-  return chromeos::wm::features::IsFloatWindowEnabled() &&
-         !Shell::Get()->tablet_mode_controller()->InTabletMode();
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  return window_util::GetActiveWindow() != nullptr;
 }
 
 // Enters capture mode image type with |source|.
@@ -729,13 +689,21 @@ void EnterImageCaptureMode(CaptureModeSource source,
   capture_mode_controller->Start(entry_type);
 }
 
-void HandleTakeWindowScreenshot() {
+void MaybeHandleTakeWindowScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
   base::RecordAction(UserMetricsAction("Accel_Take_Window_Screenshot"));
   EnterImageCaptureMode(CaptureModeSource::kWindow,
                         CaptureModeEntryType::kAccelTakeWindowScreenshot);
 }
 
-void HandleTakePartialScreenshot() {
+void MaybeHandleTakePartialScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
   base::RecordAction(UserMetricsAction("Accel_Take_Partial_Screenshot"));
   EnterImageCaptureMode(CaptureModeSource::kRegion,
                         CaptureModeEntryType::kAccelTakePartialScreenshot);
@@ -816,7 +784,7 @@ bool CanHandleToggleAppList(
     // toggle the AppList in that case. Check for VKEY_SHIFT because this is
     // used to show fullscreen app list.
     if (key != ui::VKEY_LWIN && key != ui::VKEY_SHIFT &&
-        key != ui::VKEY_BROWSER_SEARCH) {
+        key != ui::VKEY_BROWSER_SEARCH && key != ui::VKEY_ALL_APPLICATIONS) {
       return false;
     }
   }
@@ -854,12 +822,11 @@ void HandleToggleAppList(const ui::Accelerator& accelerator,
 
 void HandleToggleFloating() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-  // Floating is currently not supported for tablet mode, see timeline here:
-  // https://crbug.com/1240411
-  DCHECK(!Shell::Get()->tablet_mode_controller()->InTabletMode());
-  aura::Window* window = ash::window_util::GetActiveWindow();
-  if (window)
-    chromeos::ToggleFloating(window);
+  aura::Window* window = window_util::GetActiveWindow();
+  DCHECK(window);
+  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
+  // floated.
+  chromeos::ToggleFloating(window);
   base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));
 }
 
@@ -1164,10 +1131,6 @@ void HandleToggleCapsLock() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_Caps_Lock"));
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
-}
-
-bool CanHandleToggleClipboardHistory() {
-  return chromeos::features::IsClipboardHistoryEnabled();
 }
 
 void HandleToggleClipboardHistory() {
@@ -1518,8 +1481,6 @@ constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideBottom;
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, public:
 
-bool AcceleratorControllerImpl::should_show_shortcut_notification_ = true;
-
 AcceleratorControllerImpl::TestApi::TestApi(
     AcceleratorControllerImpl* controller)
     : controller_(controller) {
@@ -1583,16 +1544,6 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    // Observe input method changes to determine when to use positional
-    // shortcuts. Calling AddObserver will cause InputMethodChanged to be
-    // called once even when the method does not change.
-    InputMethodManager::Get()->AddObserver(this);
-
-    // Observe session changes.
-    Shell::Get()->session_controller()->AddObserver(this);
-  }
-
   Init();
 
   ParseSideVolumeButtonLocationInfo();
@@ -1607,24 +1558,6 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
-}
-
-// static
-void AcceleratorControllerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kImprovedShortcutsNotificationShownCount,
-                                0);
-}
-
-void AcceleratorControllerImpl::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  DCHECK(pref_service);
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    if (should_show_shortcut_notification_ &&
-        ShouldShowStartupNotificationForCurrentUser()) {
-      NotifyShortcutChangesInRelease(pref_service);
-    }
-  }
 }
 
 void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
@@ -1963,7 +1896,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
     case TOGGLE_CLIPBOARD_HISTORY:
-      return CanHandleToggleClipboardHistory();
+      return true;
     case TOGGLE_DICTATION:
       return CanHandleToggleDictation();
     case TOGGLE_DOCKED_MAGNIFIER:
@@ -2417,13 +2350,13 @@ void AcceleratorControllerImpl::PerformAction(
       HandleCycleUser(CycleUserDirection::PREVIOUS);
       break;
     case TAKE_PARTIAL_SCREENSHOT:
-      HandleTakePartialScreenshot();
+      MaybeHandleTakePartialScreenshot();
       break;
     case TAKE_SCREENSHOT:
       HandleTakeScreenshot(accelerator.key_code());
       break;
     case TAKE_WINDOW_SCREENSHOT:
-      HandleTakeWindowScreenshot();
+      MaybeHandleTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST:
       HandleToggleAppList(accelerator, kSearchKey);
@@ -2628,13 +2561,6 @@ void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
   confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
-void AcceleratorControllerImpl::Shutdown() {
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    InputMethodManager::Get()->RemoveObserver(this);
-    Shell::Get()->session_controller()->RemoveObserver(this);
-  }
-}
-
 bool AcceleratorControllerImpl::IsInternalKeyboardOrUncategorizedDevice(
     int source_device_id) const {
   if (source_device_id == ui::ED_UNKNOWN_DEVICE)
@@ -2713,20 +2639,20 @@ void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> info_in_dict =
-      base::DictionaryValue::From(
-          base::JSONReader::ReadDeprecated(location_info));
-  if (!info_in_dict) {
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(location_info);
+  if (!parsed_json || !parsed_json->is_dict()) {
     LOG(ERROR) << "JSONReader failed reading side volume button location info: "
                << location_info;
     return;
   }
 
-  const std::string* region = info_in_dict->FindStringKey(kVolumeButtonRegion);
+  const base::Value::Dict& info_in_dict = parsed_json->GetDict();
+  const std::string* region = info_in_dict.FindString(kVolumeButtonRegion);
   if (region)
     side_volume_button_location_.region = *region;
 
-  const std::string* side = info_in_dict->FindStringKey(kVolumeButtonSide);
+  const std::string* side = info_in_dict.FindString(kVolumeButtonSide);
   if (side)
     side_volume_button_location_.side = *side;
 }

@@ -79,8 +79,6 @@ extern const char kHasStoredData[];
 extern const char kWebFeedContentOrder[];
 // The last feed type that the user was viewing.
 extern const char kLastSeenFeedType[];
-// The pref name for the keys of the notices.
-extern const char kNoticeStates[];
 // The pref name for storing user actions. Used for personalizing feed for
 // unsigned users. The list is sorted by ascenting time stamp.
 extern const char kFeedOnDeviceUserActionsCollector[];

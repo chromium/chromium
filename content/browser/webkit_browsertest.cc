@@ -34,8 +34,6 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
   auto response = network::mojom::URLResponseHead::New();
   response->headers = info.headers;
   response->headers->GetMimeType(&response->mime_type);
-  params->client->OnReceiveResponse(std::move(response),
-                                    mojo::ScopedDataPipeConsumerHandle());
 
   std::string body = "some data\r\n";
   uint32_t bytes_written = body.size();
@@ -46,7 +44,8 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
   CHECK_EQ(MOJO_RESULT_OK,
            producer_handle->WriteData(body.data(), &bytes_written,
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-  params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
+  params->client->OnReceiveResponse(std::move(response),
+                                    std::move(consumer_handle));
 
   params->client->OnComplete(
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_ABORTED));

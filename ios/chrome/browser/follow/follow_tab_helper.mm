@@ -7,11 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
@@ -108,13 +105,7 @@ void FollowTabHelper::PageLoaded(
                 ios::GetChromeBrowserProvider()
                     .GetFollowProvider()
                     ->GetRecommendedStatus(web_page_urls);
-            feature_engagement::Tracker* tracker =
-                feature_engagement::TrackerFactory::GetForBrowserState(
-                    ChromeBrowserState::FromBrowserState(
-                        web_state->GetBrowserState()));
-            if (channel_recommended &&
-                tracker->ShouldTriggerHelpUI(
-                    feature_engagement::kIPHFollowWhileBrowsingFeature)) {
+            if (channel_recommended) {
               DCHECK(follow_iph_presenter_);
               [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
             }
@@ -130,25 +121,32 @@ void FollowTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
-  BOOL status =
-      ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
-          web_page_urls);
+  DCHECK(web_state_);
 
-  std::string domainName =
-      web::GetMainFrame(web_state_)->GetSecurityOrigin().host();
-  if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
-    domainName =
-        domainName.substr(kRemovablePrefix.length(), domainName.length());
+  web::WebFrame* web_frame = web::GetMainFrame(web_state_);
+  // Only update the follow menu item when web_page_urls is not null and when
+  // webFrame can be retrieved. Otherwise, leave the option disabled.
+  if (web_page_urls && web_frame) {
+    BOOL status =
+        ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
+            web_page_urls);
+
+    std::string domainName = web_frame->GetSecurityOrigin().host();
+    if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
+      domainName =
+          domainName.substr(kRemovablePrefix.length(), domainName.length());
+    }
+
+    bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
+
+    [follow_menu_updater_
+        updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
+                                           status:status
+                                       domainName:base::SysUTF8ToNSString(
+                                                      domainName)
+                                          enabled:enabled];
   }
 
-  bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
-
-  [follow_menu_updater_
-      updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
-                                         status:status
-                                     domainName:base::SysUTF8ToNSString(
-                                                    domainName)
-                                        enabled:enabled];
   should_update_follow_item_ = false;
 }
 

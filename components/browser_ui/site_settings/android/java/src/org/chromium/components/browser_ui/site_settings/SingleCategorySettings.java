@@ -589,6 +589,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             assert WebsitePreferenceBridge.isCategoryEnabled(
                     browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
             resource = R.string.website_settings_add_site_description_auto_dark_block;
+        } else if (mCategory.showSites(SiteSettingsCategory.Type.FEDERATED_IDENTITY_API)) {
+            resource = WebsitePreferenceBridge.isCategoryEnabled(
+                               browserContextHandle, ContentSettingsType.FEDERATED_IDENTITY_API)
+                    ? R.string.website_settings_add_site_description_federated_identity_block
+                    : R.string.website_settings_add_site_description_federated_identity_allow;
         }
         assert resource > 0;
         return getString(resource);
@@ -684,6 +689,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)
                 && !WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.AUTOMATIC_DOWNLOADS)) {
+            allowSpecifyingExceptions = true;
+        } else if (mCategory.showSites(SiteSettingsCategory.Type.FEDERATED_IDENTITY_API)) {
             allowSpecifyingExceptions = true;
         }
         if (allowSpecifyingExceptions) {

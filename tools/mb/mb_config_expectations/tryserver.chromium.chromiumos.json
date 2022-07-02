@@ -194,6 +194,7 @@
   },
   "linux-chromeos-annotator-rel": {
     "gn_args": {
+      "also_build_lacros_chrome": true,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
@@ -203,18 +204,6 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
-  "linux-chromeos-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_os": "chromeos",
       "use_goma": true
     }
   },
@@ -271,6 +260,7 @@
   },
   "linux-chromeos-rel": {
     "gn_args": {
+      "also_build_lacros_chrome": true,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
@@ -285,6 +275,7 @@
   },
   "linux-chromeos-rel-rts": {
     "gn_args": {
+      "also_build_lacros_chrome": true,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "ChromeOS",
@@ -294,18 +285,6 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
-  "linux-lacros-clang-tidy-rel": {
-    "gn_args": {
-      "also_build_ash_chrome": true,
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "chromeos",
       "use_goma": true
     }
   },

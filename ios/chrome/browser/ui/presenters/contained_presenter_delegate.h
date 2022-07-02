@@ -15,10 +15,10 @@
 
 @optional
 
-// Tells the delegate that |presenter| has finished presenting.
+// Tells the delegate that `presenter` has finished presenting.
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter;
 
-// Tells the delegate that |presenter| has finished dismissing.
+// Tells the delegate that `presenter` has finished dismissing.
 - (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter;
 
 @end

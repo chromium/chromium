@@ -9,7 +9,7 @@ namespace chromecast {
 ActivityUrlFilter::ActivityUrlFilter(
     const std::vector<std::string>& url_filters)
     : url_matcher_(std::make_unique<url_matcher::URLMatcher>()) {
-  url_matcher::URLMatcherConditionSet::ID id = 0;
+  base::MatcherStringPattern::ID id = 0;
   url_matcher::URLMatcherConditionSet::Vector condition_sets;
   for (const auto& url : url_filters) {
     url_matcher::URLMatcherConditionSet::Conditions conditions;

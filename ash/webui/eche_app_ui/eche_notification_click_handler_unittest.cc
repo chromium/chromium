@@ -44,10 +44,10 @@ class EcheNotificationClickHandlerTest : public testing::Test {
             &EcheNotificationClickHandlerTest::FakeLaunchEcheAppFunction,
             base::Unretained(this)),
         base::BindRepeating(
-            &EcheNotificationClickHandlerTest::FakeCloseEcheAppFunction,
+            &EcheNotificationClickHandlerTest::FakeLaunchNotificationFunction,
             base::Unretained(this)),
         base::BindRepeating(
-            &EcheNotificationClickHandlerTest::FakeLaunchNotificationFunction,
+            &EcheNotificationClickHandlerTest::FakeCloseNotificationFunction,
             base::Unretained(this)));
     handler_ = std::make_unique<EcheNotificationClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
@@ -74,7 +74,9 @@ class EcheNotificationClickHandlerTest : public testing::Test {
     num_notifications_shown_++;
   }
 
-  void FakeCloseEcheAppFunction() { close_eche_is_called_ = true; }
+  void FakeCloseNotificationFunction(const std::string& notification_id) {
+    // Do nothing.
+  }
 
   void SetStatus(FeatureStatus status) {
     fake_feature_status_provider_.SetStatus(status);
@@ -96,14 +98,11 @@ class EcheNotificationClickHandlerTest : public testing::Test {
         ->notification_click_handler_count();
   }
 
-  bool close_eche_is_called() { return close_eche_is_called_; }
-
   size_t num_notifications_shown() { return num_notifications_shown_; }
 
   size_t num_app_launch() { return num_app_launch_; }
 
   void reset() {
-    close_eche_is_called_ = false;
     num_notifications_shown_ = 0;
     num_app_launch_ = 0;
   }
@@ -115,7 +114,6 @@ class EcheNotificationClickHandlerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
   std::unique_ptr<FakeLaunchAppHelper> launch_app_helper_;
-  bool close_eche_is_called_;
   size_t num_notifications_shown_ = 0;
   size_t num_app_launch_ = 0;
 };
@@ -144,28 +142,6 @@ TEST_F(EcheNotificationClickHandlerTest, StatusChangeTransitions) {
   EXPECT_EQ(1u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kDependentFeaturePending);
   EXPECT_EQ(0u, GetNumberOfClickHandlers());
-}
-
-TEST_F(EcheNotificationClickHandlerTest,
-       StatusChangeTransitionsAndCloseEcheWindow) {
-  SetStatus(FeatureStatus::kDisconnected);
-  SetStatus(FeatureStatus::kIneligible);
-  EXPECT_EQ(true, close_eche_is_called());
-
-  reset();
-  SetStatus(FeatureStatus::kDisconnected);
-  SetStatus(FeatureStatus::kDisabled);
-  EXPECT_EQ(true, close_eche_is_called());
-
-  reset();
-  SetStatus(FeatureStatus::kDisconnected);
-  SetStatus(FeatureStatus::kDependentFeature);
-  EXPECT_EQ(true, close_eche_is_called());
-
-  reset();
-  SetStatus(FeatureStatus::kDisconnected);
-  SetStatus(FeatureStatus::kDependentFeaturePending);
-  EXPECT_EQ(false, close_eche_is_called());
 }
 
 TEST_F(EcheNotificationClickHandlerTest, HandleNotificationClick) {

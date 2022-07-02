@@ -83,7 +83,7 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  ::TerminateProcess(GetCurrentProcess(), exit_code);
+  ::TerminateProcess(GetCurrentProcess(), static_cast<UINT>(exit_code));
   // There is some ambiguity over whether the call above can return. Rather than
   // hitting confusing crashes later on we should crash right here.
   IMMEDIATE_CRASH();
@@ -153,7 +153,8 @@ bool Process::Terminate(int exit_code, bool wait) const {
   constexpr DWORD kWaitMs = 60 * 1000;
 
   DCHECK(IsValid());
-  bool result = (::TerminateProcess(Handle(), exit_code) != FALSE);
+  bool result =
+      ::TerminateProcess(Handle(), static_cast<UINT>(exit_code)) != FALSE;
   if (result) {
     // The process may not end immediately due to pending I/O
     if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0)
@@ -170,8 +171,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
     // A non-zero timeout is necessary here for the same reasons as above.
     if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
-      Exited(::GetExitCodeProcess(Handle(), &actual_exit) ? actual_exit
-                                                          : exit_code);
+      Exited(::GetExitCodeProcess(Handle(), &actual_exit)
+                 ? static_cast<int>(actual_exit)
+                 : exit_code);
       result = true;
     }
   }
@@ -194,9 +196,9 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
       return Process::WaitExitStatus::FAILED;
 
     if (exit_code)
-      *exit_code = temp_code;
+      *exit_code = static_cast<int>(temp_code);
 
-    Exited(temp_code);
+    Exited(static_cast<int>(temp_code));
     return Process::WaitExitStatus::PROCESS_EXITED;
   }
 
@@ -235,9 +237,9 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
     return false;
 
   if (exit_code)
-    *exit_code = temp_code;
+    *exit_code = static_cast<int>(temp_code);
 
-  Exited(temp_code);
+  Exited(static_cast<int>(temp_code));
   return true;
 }
 
@@ -248,7 +250,7 @@ void Process::Exited(int exit_code) const {
 
 bool Process::IsProcessBackgrounded() const {
   DCHECK(IsValid());
-  DWORD priority = GetPriority();
+  int priority = GetPriority();
   if (priority == 0)
     return false;  // Failure case.
   return ((priority == BELOW_NORMAL_PRIORITY_CLASS) ||
@@ -273,7 +275,7 @@ bool Process::SetProcessBackgrounded(bool value) {
 
 int Process::GetPriority() const {
   DCHECK(IsValid());
-  return ::GetPriorityClass(Handle());
+  return static_cast<int>(::GetPriorityClass(Handle()));
 }
 
 }  // namespace base

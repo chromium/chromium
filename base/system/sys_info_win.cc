@@ -162,8 +162,8 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
   win::OSInfo* os_info = win::OSInfo::GetInstance();
-  *major_version = os_info->version_number().major;
-  *minor_version = os_info->version_number().minor;
+  *major_version = static_cast<int32_t>(os_info->version_number().major);
+  *minor_version = static_cast<int32_t>(os_info->version_number().minor);
   *bugfix_version = 0;
 }
 

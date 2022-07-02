@@ -11,9 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace dns_alias_utility {
+namespace net::dns_alias_utility {
 
 // Validates that `alias` represents a valid DNS alias name, e.g. CNAME, and
 // then URL-canonicalizes the name. Returns empty string if not valid or unable
@@ -31,8 +29,6 @@ NET_EXPORT_PRIVATE std::string ValidateAndCanonicalizeAlias(
 NET_EXPORT_PRIVATE std::set<std::string> FixUpDnsAliases(
     const std::set<std::string>& aliases);
 
-}  // namespace dns_alias_utility
-
-}  // namespace net
+}  // namespace net::dns_alias_utility
 
 #endif  // NET_DNS_DNS_ALIAS_UTILITY_H_

@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -26,6 +27,7 @@ class SavedDeskGridView;
 class SavedDeskItemView;
 class SavedDeskLibraryEventHandler;
 class SavedDeskLibraryWindowTargeter;
+class ScrollViewGradientHelper;
 
 // This view is the content of the saved desk library widget. Depending on which
 // saved desk features are enabled, it can show one or more `SavedDeskGridView`s
@@ -84,6 +86,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // views::View:
   void AddedToWidget() override;
   void Layout() override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnThemeChanged() override;
 
   // aura::WindowObserver:
@@ -98,6 +101,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // hierarchy.
   views::ScrollView* scroll_view_ = nullptr;
 
+  // Adds a fade in/out gradient to the top/bottom of `scroll_view_`.
+  std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
+
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;
 
@@ -108,6 +114,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // Owned by views hierarchy. Temporary button to help users give feedback.
   // TODO(crbug.com/1289880): Remove this button when it is no longer needed.
   PillButton* feedback_button_ = nullptr;
+
+  // Label that shows up when the library has no items.
+  views::Label* no_items_label_ = nullptr;
 
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;

@@ -552,7 +552,7 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
 void ExtensionFunction::SetArgs(base::Value args) {
   DCHECK(args.is_list());
   DCHECK(!args_.has_value());
-  args_ = std::move(args).TakeListDeprecated();
+  args_ = std::move(args.GetList());
 }
 
 const base::Value::List* ExtensionFunction::GetResultList() const {
@@ -680,21 +680,8 @@ ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
-    std::vector<base::Value> results) {
-  base::Value::List list;
-  for (auto&& value : results) {
-    list.Append(std::move(value));
-  }
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(list)));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
-    std::unique_ptr<base::ListValue> args) {
-  base::Value::List new_args;
-  if (args)
-    new_args = std::move(args->GetList());
-  return ResponseValue(
-      new ArgumentListResponseValue(this, std::move(new_args)));
+    base::Value::List results) {
+  return ResponseValue(new ArgumentListResponseValue(this, std::move(results)));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
@@ -726,24 +713,10 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
-    std::vector<base::Value> args,
+    base::Value::List args,
     const std::string& error) {
-  base::Value::List list;
-  for (auto&& value : args) {
-    list.Append(std::move(value));
-  }
   return ResponseValue(
-      new ErrorWithArgumentsResponseValue(this, std::move(list), error));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
-    std::unique_ptr<base::ListValue> args,
-    const std::string& error) {
-  base::Value::List new_args;
-  if (args)
-    new_args = std::move(args->GetList());
-  return ResponseValue(
-      new ErrorWithArgumentsResponseValue(this, std::move(new_args), error));
+      new ErrorWithArgumentsResponseValue(this, std::move(args), error));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::BadMessage() {

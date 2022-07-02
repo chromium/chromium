@@ -351,9 +351,9 @@ def parse_args(args):
             optparse.make_option(
                 '--enable-tracing',
                 type='string',
-                help='Capture and write a trace file with the specied '
+                help='Capture and write a trace file with the specified '
                 'categories for each test. Passes appropriate --trace-startup '
-                'flags to the driver.'),
+                'flags to the driver. If in doubt, use "*".'),
             optparse.make_option(
                 '--exit-after-n-crashes-or-timeouts',
                 type='int',
@@ -633,6 +633,12 @@ def parse_args(args):
                 help=(
                     'The Buildbucket ID of the bot running the test. This is '
                     'only used for an experimental Skia Gold dryrun.')),
+            optparse.make_option(
+                '--ignore-testharness-expected-txt',
+                action='store_true',
+                help=('Ignore *-expected.txt for all testharness tests. All '
+                      'testharness test failures will be shown, even if the '
+                      'failures are expected in *-expected.txt.')),
         ]))
 
     # FIXME: Move these into json_results_generator.py.

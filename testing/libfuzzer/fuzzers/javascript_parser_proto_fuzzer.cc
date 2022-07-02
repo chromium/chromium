@@ -42,7 +42,7 @@ LLVMFuzzerInitialize(int* argc, char*** argv) {
   // Intentionally leaked during fuzzing.
   v8::Platform* platform = v8::platform::NewDefaultPlatform().release();
   v8::V8::InitializePlatform(platform);
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
   v8::V8::InitializeSandbox();
 #endif
   v8::V8::Initialize();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 // TODO(crbug.com/1123712): Add a message handler for this class instead of
 // implicitly relying on the People Page.
@@ -31,14 +31,25 @@ export class NearbyAccountManagerBrowserProxy {
   getAccounts() {}
 }
 
+/** @type {?NearbyAccountManagerBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {NearbyAccountManagerBrowserProxy}
  */
 export class NearbyAccountManagerBrowserProxyImpl {
+  /** @return {!NearbyAccountManagerBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new NearbyAccountManagerBrowserProxyImpl());
+  }
+
+  /** @param {!NearbyAccountManagerBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
   }
 }
-
-addSingletonGetter(NearbyAccountManagerBrowserProxyImpl);

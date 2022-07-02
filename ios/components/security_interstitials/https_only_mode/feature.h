@@ -10,7 +10,8 @@
 namespace security_interstitials {
 namespace features {
 
-// Enables HTTPS-Only mode upgrades on iOS.
+// Enables the HTTPS-Only mode UI setting on iOS. The user has to enable
+// the UI setting under "Privacy and Security" to use HTTPS-Only Mode.
 extern const base::Feature kHttpsOnlyMode;
 
 }  // namespace features

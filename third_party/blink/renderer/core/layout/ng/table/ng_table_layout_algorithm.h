@@ -57,6 +57,8 @@ class CORE_EXPORT NGTableLayoutAlgorithm
   };
 
  private:
+  const NGLayoutResult* RelayoutAsLastTableBox();
+
   void ComputeRows(const LayoutUnit table_grid_inline_size,
                    const NGTableGroupedChildren& grouped_children,
                    const Vector<NGTableColumnLocation>& column_locations,
@@ -74,7 +76,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableBorders& table_borders,
-      const PhysicalRect& table_grid_rect,
+      const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
   const NGLayoutResult* GenerateFragment(
@@ -88,6 +90,10 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const HeapVector<CaptionResult>& captions,
       const NGTableBorders& table_borders,
       const LogicalSize& border_spacing);
+
+  // Set to true when we're re-laying out without repeating table headers and
+  // footers.
+  bool is_known_to_be_last_table_box_ = false;
 };
 
 }  // namespace blink

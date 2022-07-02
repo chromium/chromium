@@ -462,8 +462,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     IPC::Channel::SetGlobalPid(real_pid);
     // Force the real PID so chrome event data have a PID that corresponds
     // to system trace event data.
-    base::trace_event::TraceLog::GetInstance()->SetProcessID(
-        static_cast<int>(real_pid));
+    base::trace_event::TraceLog::GetInstance()->SetProcessID(real_pid);
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     // Tell Perfetto SDK about the real PID too.
     perfetto::Platform::SetCurrentProcessId(real_pid);

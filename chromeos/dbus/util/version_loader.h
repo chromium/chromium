@@ -29,6 +29,10 @@ std::string GetVersion(VersionFormat format);
 // May block.
 COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL) std::string GetARCVersion();
 
+// Gets the ARC Android SDK version.
+// May block.
+COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL) std::string GetARCAndroidSDKVersion();
+
 // Gets the firmware info.
 // May block.
 COMPONENT_EXPORT(CHROMEOS_DBUS_UTIL) std::string GetFirmware();

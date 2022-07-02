@@ -10,6 +10,7 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
@@ -27,18 +28,17 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
     });
   }
 
+   /** @override */
+   get featureList() {
+    return {disabled: ['ash::features::kEnableOobePolymer3']};
+  }
+
   get extraLibraries() {
     return super.extraLibraries.concat(['components/oobe_types.js']);
   }
 };
 
-// This times out regularly on debug builds, see https://crbug.com/1304295
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-TEST_F('PolymerSecurityTokenPinTest', 'MAYBE_All', function() {
+TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   const DEFAULT_PARAMETERS = {
     enableUserInput: true,
     hasError: false,

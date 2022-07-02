@@ -6,16 +6,18 @@
 
 import filecmp
 import os
-import os.path
 import sys
 from optparse import OptionParser
 
 import build_cmd_buffer_lib
 
+# Additional space required after "type" here and elsewhere because otherwise
+# pylint detects "# type:" as invalid syntax on Python 3.8, see
+# https://github.com/PyCQA/pylint/issues/3556.
 # Named type info object represents a named type that is used in OpenGL call
 # arguments.  Each named type defines a set of valid OpenGL call arguments.  The
 # named types are used in 'gles2_cmd_buffer_functions.txt'.
-# type: The actual GL type of the named type.
+# type : The actual GL type of the named type.
 # valid: The list of values that are valid for both the client and the service.
 # valid_es3: The list of values that are valid in OpenGL ES 3, but not ES 2.
 # invalid: Examples of invalid values for the type. At least these values
@@ -1579,16 +1581,6 @@ _NAMED_TYPE_INFO = {
       'GL_SYNC_FENCE',
     ],
   },
-  'ClientBufferUsage': {
-    'type': 'GLenum',
-    'is_complete': True,
-    'valid': [
-      'GL_SCANOUT_CHROMIUM',
-    ],
-    'invalid': [
-      'GL_NONE',
-    ],
-  },
   'WindowRectanglesMode': {
     'type': 'GLenum',
     'is_complete': True,
@@ -1625,7 +1617,7 @@ _NAMED_TYPE_INFO = {
 # Must match function names specified in "gles2_cmd_buffer_functions.txt".
 #
 # cmd_comment:  A comment added to the cmd format.
-# type:         defines which handler will be used to generate code.
+# type :        defines which handler will be used to generate code.
 # decoder_func: defines which function to call in the decoder to execute the
 #               corresponding GL command. If not specified the GL command will
 #               be called directly.
@@ -3091,12 +3083,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'impl_func': False,
   },
-  'PostSubBufferCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'extension': True,
-  },
   'ProduceTextureDirectCHROMIUM': {
     'decoder_func': 'DoProduceTextureDirectCHROMIUM',
     'impl_func': False,
@@ -3249,15 +3235,6 @@ _FUNCTION_INFO = {
     'extension': True,
     'trace_level': 1,
     'trace_queueing_flow': True,
-  },
-  'SwapBuffersWithBoundsCHROMIUM': {
-    'type': 'PUTn',
-    'count': 4,
-    'decoder_func': 'DoSwapBuffersWithBoundsCHROMIUM',
-    'impl_func': False,
-    'client_test': False,
-    'unit_test': False,
-    'extension': True,
   },
   'TexImage2D': {
     'type': 'Custom',
@@ -3940,69 +3917,6 @@ _FUNCTION_INFO = {
     'extension': True,
     'trace_level': 2,
   },
-  'ScheduleOverlayPlaneCHROMIUM': {
-    'type': 'Custom',
-    'client_test': False,
-    'extension': 'CHROMIUM_schedule_overlay_plane',
-  },
-  'ScheduleCALayerSharedStateCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLfloat opacity, GLboolean is_clipped, '
-                'GLint sorting_context_id, '
-                'GLuint shm_id, GLuint shm_offset',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-  },
-  'ScheduleCALayerCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLuint contents_texture_id, GLuint background_color, '
-                'GLuint edge_aa_mask, GLuint filter, GLuint shm_id, '
-                'GLuint shm_offset',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-  },
-  'ScheduleCALayerInUseQueryCHROMIUM': {
-    'type': 'PUTn',
-    'count': 1,
-    'decoder_func': 'DoScheduleCALayerInUseQueryCHROMIUM',
-    'cmd_args': 'GLsizei count, const GLuint* textures',
-    'extension': 'CHROMIUM_schedule_ca_layer',
-    'unit_test': False,
-  },
-  'ScheduleDCLayerCHROMIUM': {
-    'cmd_args': 'GLuint texture_0, GLuint texture_1, GLint z_order, '
-                'GLint content_x, GLint content_y, GLint content_width, '
-                'GLint content_height, GLint quad_x, GLint quad_y, '
-                'GLint quad_width, GLint quad_height, '
-                'GLfloat transform_c1r1, GLfloat transform_c2r1, '
-                'GLfloat transform_c1r2, GLfloat transform_c2r2, '
-                'GLfloat transform_tx, GLfloat transform_ty, '
-                'GLboolean is_clipped, GLint clip_x, GLint clip_y, '
-                'GLint clip_width, GLint clip_height, '
-                'GLuint protected_video_type',
-    'decoder_func': 'DoScheduleDCLayerCHROMIUM',
-    'extension': 'CHROMIUM_schedule_dc_layer',
-    'unit_test': False,
-  },
-  'CommitOverlayPlanesCHROMIUM': {
-    'impl_func': False,
-    'decoder_func': 'DoCommitOverlayPlanes',
-    'unit_test': False,
-    'client_test': False,
-    'extension': 'CHROMIUM_commit_overlay_planes',
-  },
-  'SetDrawRectangleCHROMIUM': {
-    'decoder_func': 'DoSetDrawRectangleCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_set_draw_rectangle',
-  },
-  'SetEnableDCLayersCHROMIUM': {
-    'decoder_func': 'DoSetEnableDCLayersCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_dc_layers',
-  },
   'InitializeDiscardableTextureCHROMIUM': {
     'type': 'Custom',
     'cmd_args': 'GLuint texture_id, uint32_t shm_id, '
@@ -4024,12 +3938,6 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'client_test': False,
     'extension': True,
-  },
-  'TexStorage2DImageCHROMIUM': {
-    'decoder_func': 'DoTexStorage2DImageCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_texture_storage_image',
-    'extension_flag': 'chromium_texture_storage_image',
   },
   'SetColorSpaceMetadataCHROMIUM': {
     'type': 'Custom',

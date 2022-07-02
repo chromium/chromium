@@ -30,8 +30,8 @@ int ImmersiveModeControllerStub::GetTopContainerVerticalOffset(
   return 0;
 }
 
-ImmersiveRevealedLock* ImmersiveModeControllerStub::GetRevealedLock(
-    AnimateReveal animate_reveal) {
+std::unique_ptr<ImmersiveRevealedLock>
+ImmersiveModeControllerStub::GetRevealedLock(AnimateReveal animate_reveal) {
   return nullptr;
 }
 

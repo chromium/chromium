@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -72,8 +72,7 @@ void NetworkInfoSampler::MaybeCollect(OptionalMetricCallback callback) {
     }
 
     // Report EIDs for cellular connections.
-    if (type.Equals(::ash::NetworkTypePattern::Cellular()) &&
-        ::ash::features::IsESimPolicyEnabled()) {
+    if (type.Equals(::ash::NetworkTypePattern::Cellular())) {
       for (const auto& euicc_path :
            ::chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
         ::chromeos::HermesEuiccClient::Properties* properties =

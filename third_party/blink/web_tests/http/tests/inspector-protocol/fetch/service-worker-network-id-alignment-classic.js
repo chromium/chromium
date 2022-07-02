@@ -23,7 +23,7 @@
     workerNetworkObserver.then(o => Promise.all([
       o.waitForCompletion(/sw-classic\.js/),
       o.waitForCompletion(/imported-classic\.js/),
-      o.waitForCompletion(/404-me/),
+      o.waitForCompletion(/404-me/, 404),
     ]))
   ];
 

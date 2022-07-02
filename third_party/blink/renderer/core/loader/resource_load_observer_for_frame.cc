@@ -144,7 +144,8 @@ void ResourceLoadObserverForFrame::WillSendRequest(
     const ResourceResponse& redirect_response,
     ResourceType resource_type,
     const ResourceLoaderOptions& options,
-    RenderBlockingBehavior render_blocking_behavior) {
+    RenderBlockingBehavior render_blocking_behavior,
+    const Resource* resource) {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   if (redirect_response.IsNull()) {
@@ -154,8 +155,8 @@ void ResourceLoadObserverForFrame::WillSendRequest(
                                                 request.Priority());
   }
 
-  frame->GetAttributionSrcLoader()->MaybeRegisterTrigger(request,
-                                                         redirect_response);
+  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
+      request, redirect_response, resource);
 
   probe::WillSendRequest(
       GetProbe(), document_loader_,
@@ -307,7 +308,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
         resource->GetResourceRequest().IsAdResource());
   }
 
-  frame->GetAttributionSrcLoader()->MaybeRegisterTrigger(request, response);
+  frame->GetAttributionSrcLoader()->MaybeRegisterAttributionHeaders(
+      request, response, resource);
 
   frame->Loader().Progress().IncrementProgress(identifier, response);
   probe::DidReceiveResourceResponse(GetProbe(), identifier, document_loader_,
@@ -315,6 +317,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
   // It is essential that inspector gets resource response BEFORE console.
   frame->Console().ReportResourceResponseReceived(document_loader_, identifier,
                                                   response);
+
+  document_->CheckPartitionedCookiesOriginTrial(response);
 }
 
 void ResourceLoadObserverForFrame::DidReceiveData(

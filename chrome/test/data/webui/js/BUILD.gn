@@ -5,15 +5,6 @@
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_js"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "js"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -32,11 +23,7 @@ ts_library("build_ts") {
     "parse_html_subset_test.ts",
     "parse_html_subset_trusted_types_test.ts",
     "promise_resolver_test.ts",
-
-    # TODO(1189595): Need to add TypeScript definitions for TrustedHTML before
-    # passing this file to the TS Compiler.
-    #"static_types_test.js",
-
+    "static_types_test.ts",
     "util_test.ts",
     "web_ui_listener_mixin_test.ts",
 
@@ -50,4 +37,14 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_js"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "js"
 }

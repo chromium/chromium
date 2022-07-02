@@ -426,7 +426,6 @@ void PermissionManager::RequestPermissionsFromCurrentDocument(
     DCHECK(context);
 
     context->RequestPermission(
-        content::WebContents::FromRenderFrameHost(render_frame_host),
         request_id, canonical_requesting_origin, user_gesture,
         base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,

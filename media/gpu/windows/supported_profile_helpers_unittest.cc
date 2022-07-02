@@ -329,7 +329,7 @@ TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   DONT_RUN_ON_WIN_7();
 
@@ -353,6 +353,6 @@ TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   ASSERT_EQ(it->second.max_landscape_resolution, kSquare8k);
   ASSERT_EQ(it->second.max_portrait_resolution, kSquare8k);
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 }  // namespace media

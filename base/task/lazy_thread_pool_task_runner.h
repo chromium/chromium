@@ -5,9 +5,9 @@
 #ifndef BASE_TASK_LAZY_THREAD_POOL_TASK_RUNNER_H_
 #define BASE_TASK_LAZY_THREAD_POOL_TASK_RUNNER_H_
 
+#include <atomic>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/task/common/checked_lock.h"
@@ -178,7 +178,7 @@ class BASE_EXPORT LazyThreadPoolTaskRunner {
   // - This instance is creating a TaskRunner: kLazyInstanceStateCreating
   // - This instance holds a TaskRunner: Pointer to the TaskRunner.
   // LazyInstance's internals are reused to handle transition between states.
-  subtle::AtomicWord state_ = 0;
+  std::atomic<uintptr_t> state_ = 0;
 
   // No DISALLOW_COPY_AND_ASSIGN since that prevents static initialization with
   // Visual Studio (warning C4592: 'symbol will be dynamically initialized

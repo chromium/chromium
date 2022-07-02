@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <mutex>
 #include <tuple>
 #include <utility>
 
@@ -257,8 +258,16 @@ class CrashReportDatabaseGeneric : public CrashReportDatabase {
   // Writes the metadata for report to the filesystem at path.
   static bool WriteMetadata(const base::FilePath& path, const Report& report);
 
+  Settings& SettingsInternal() {
+    std::call_once(settings_init_, [this]() {
+      settings_.Initialize(base_dir_.Append(kSettings));
+    });
+    return settings_;
+  }
+
   base::FilePath base_dir_;
   Settings settings_;
+  std::once_flag settings_init_;
   InitializationStateDcheck initialized_;
 };
 
@@ -289,10 +298,6 @@ bool CrashReportDatabaseGeneric::Initialize(const base::FilePath& path,
     return false;
   }
 
-  if (!settings_.Initialize(base_dir_.Append(kSettings))) {
-    return false;
-  }
-
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -317,7 +322,7 @@ base::FilePath CrashReportDatabaseGeneric::DatabasePath() {
 
 Settings* CrashReportDatabaseGeneric::GetSettings() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return &settings_;
+  return &SettingsInternal();
 }
 
 OperationStatus CrashReportDatabaseGeneric::PrepareNewCrashReport(
@@ -588,7 +593,7 @@ OperationStatus CrashReportDatabaseGeneric::RecordUploadAttempt(
     return kDatabaseError;
   }
 
-  if (!settings_.SetLastUploadAttemptTime(now)) {
+  if (!SettingsInternal().SetLastUploadAttemptTime(now)) {
     return kDatabaseError;
   }
 

@@ -23,10 +23,15 @@ UkmUrlTable::UkmUrlTable(sql::Database* db) : db_(db) {
 UkmUrlTable::~UkmUrlTable() = default;
 
 // static
+std::string UkmUrlTable::GetDatabaseUrlString(const GURL& url) {
+  return database_utils::GurlToDatabaseUrl(url);
+}
+
+// static
 UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
   // Converts the 8-byte prefix of an MD5 hash into a int64_t value. This
   // hashing scheme is architecture dependent.
-  std::string db_url = database_utils::GurlToDatabaseUrl(url);
+  std::string db_url = GetDatabaseUrlString(url);
   base::MD5Digest digest;
   base::MD5Sum(db_url.data(), db_url.size(), &digest);
   int64_t hash;

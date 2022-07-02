@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,6 +17,7 @@
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_display.h"
 
 namespace base {
 namespace trace_event {
@@ -67,6 +69,7 @@ class GpuChannelTestCommon : public testing::Test {
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TestGpuChannelManagerDelegate> channel_manager_delegate_;
   std::unique_ptr<GpuChannelManager> channel_manager_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace gpu

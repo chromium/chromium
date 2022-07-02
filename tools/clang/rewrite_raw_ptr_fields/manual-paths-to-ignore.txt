@@ -23,6 +23,7 @@ base/allocator/
 # TODO(bartekn): Update the list of dependencies.
 base/logging.h
 base/synchronization/lock_impl.h
+base/check.h
 
 # Exclude - deprecated and contains legacy C++ and pre-C++11 code.
 ppapi/

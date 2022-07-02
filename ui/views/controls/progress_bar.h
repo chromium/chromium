@@ -44,6 +44,9 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // be displayed with an infinite loading animation.
   void SetValue(double value);
 
+  // Sets whether the progress bar is paused.
+  void SetPaused(bool is_paused);
+
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
   void SetForegroundColor(SkColor color);
@@ -61,6 +64,7 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   void AnimationEnded(const gfx::Animation* animation) override;
 
   bool IsIndeterminate();
+  bool GetPaused() const { return is_paused_; }
   void OnPaintIndeterminate(gfx::Canvas* canvas);
 
   // Fire an accessibility event if visible and the progress has changed.
@@ -68,6 +72,9 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 
   // Current progress to display, should be in the range 0.0 to 1.0.
   double current_value_ = 0.0;
+
+  // Is the progress bar paused.
+  bool is_paused_ = false;
 
   // In DP, the preferred height of this progress bar.
   const int preferred_height_;

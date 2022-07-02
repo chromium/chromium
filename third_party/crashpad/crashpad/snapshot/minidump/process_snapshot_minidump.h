@@ -112,6 +112,10 @@ class ProcessSnapshotMinidump final : public ProcessSnapshot {
   // Initialize().
   bool InitializeThreads();
 
+  // Initializes data carried in a MINIDUMP_THREAD_NAME_LIST stream on behalf of
+  // Initialize().
+  bool InitializeThreadNames();
+
   // Initializes data carried in a MINIDUMP_MEMORY_INFO_LIST stream on behalf of
   // Initialize().
   bool InitializeMemoryInfo();
@@ -147,6 +151,7 @@ class ProcessSnapshotMinidump final : public ProcessSnapshot {
   std::map<MinidumpStreamType, const MINIDUMP_LOCATION_DESCRIPTOR*> stream_map_;
   std::vector<std::unique_ptr<internal::ModuleSnapshotMinidump>> modules_;
   std::vector<std::unique_ptr<internal::ThreadSnapshotMinidump>> threads_;
+  std::map<uint32_t, std::string> thread_names_;
   std::vector<UnloadedModuleSnapshot> unloaded_modules_;
   std::vector<std::unique_ptr<internal::MemoryMapRegionSnapshotMinidump>>
       mem_regions_;

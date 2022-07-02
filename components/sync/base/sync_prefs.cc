@@ -84,6 +84,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // The pref for Wi-Fi configurations is registered in the loop above.
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  registry->RegisterBooleanPref(prefs::kSyncAppsEnabledByOs, false);
+#endif
+
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::kSyncEncryptionBootstrapToken,
                                std::string());
@@ -244,6 +248,21 @@ const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool SyncPrefs::IsAppsSyncEnabledByOs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::kSyncAppsEnabledByOs);
+}
+
+void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::kSyncAppsEnabledByOs, apps_sync_enabled);
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 bool SyncPrefs::IsManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(prefs::kSyncManaged);
@@ -386,5 +405,40 @@ void MigrateSyncSuppressedPref(PrefService* pref_service) {
   // Otherwise, nothing to be done: Sync was likely never enabled in this
   // profile.
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
+  // Before MICe, there was a toggle in Sync settings that corresponded to the
+  // SyncRequested bit. After MICe, there's no such toggle anymore, but some
+  // users may still be in the legacy state where SyncRequested is false, for
+  // various reasons:
+  // * The original MICE implementation set SyncRequested to false if all data
+  //   types were disabled, for migration / backwards compatibility reasons.
+  //   This is no longer the case as of M104 (see crbug.com/1311270,
+  //   crbug.com/1291946).
+  // * On Android, users might have had the OS-level "auto sync" toggle
+  //   disabled since before M90 or so (see crbug.com/1105795). Since then,
+  //   Chrome does not integrate with the Android "auto sync" toggle anymore,
+  //   but not all users were migrated.
+  // Migrate all these users into a supported and equivalent state, where
+  // SyncRequested is true but all data types are off.
+
+  if (pref_service->GetBoolean(prefs::kSyncRequested) ||
+      !pref_service->GetBoolean(prefs::kSyncFirstSetupComplete)) {
+    // Either SyncRequested is already true, or FirstSetupComplete is false
+    // meaning Sync isn't enabled. Either way, there's nothing to be done here.
+    return;
+  }
+
+  // Disable all data types.
+  pref_service->SetBoolean(prefs::kSyncKeepEverythingSynced, false);
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    pref_service->ClearPref(SyncPrefs::GetPrefNameForType(type));
+  }
+
+  // ...but turn on SyncRequested.
+  pref_service->SetBoolean(prefs::kSyncRequested, true);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer

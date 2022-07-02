@@ -27,9 +27,9 @@
 #include "chrome/grit/assistant_optin_resources_map.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/oobe_conditional_resources.h"
-#include "chromeos/assistant/buildflags.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -90,8 +90,6 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
   source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
   source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);
-  source->AddResourcePath("voice_match_animation.json",
-                          IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
   source->DisableTrustedTypesCSP();

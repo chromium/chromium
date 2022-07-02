@@ -57,7 +57,7 @@ static inline HTMLInputElement* ToRadioButtonInputElement(Element& element) {
   if (!input_element)
     return nullptr;
   if (input_element->type() != input_type_names::kRadio ||
-      input_element->value().IsEmpty())
+      input_element->Value().IsEmpty())
     return nullptr;
   return input_element;
 }
@@ -68,9 +68,9 @@ String RadioNodeList::value() const {
   unsigned length = this->length();
   for (unsigned i = 0; i < length; ++i) {
     const HTMLInputElement* input_element = ToRadioButtonInputElement(*item(i));
-    if (!input_element || !input_element->checked())
+    if (!input_element || !input_element->Checked())
       continue;
-    return input_element->value();
+    return input_element->Value();
   }
   return String();
 }
@@ -81,9 +81,9 @@ void RadioNodeList::setValue(const String& value) {
   unsigned length = this->length();
   for (unsigned i = 0; i < length; ++i) {
     HTMLInputElement* input_element = ToRadioButtonInputElement(*item(i));
-    if (!input_element || input_element->value() != value)
+    if (!input_element || input_element->Value() != value)
       continue;
-    input_element->setChecked(true);
+    input_element->SetChecked(true);
     return;
   }
 }

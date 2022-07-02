@@ -35,7 +35,7 @@ class AddressProfileSaveManager;
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
 // Owned by BrowserAutofillManager.
-class FormDataImporter {
+class FormDataImporter : public PersonalDataManagerObserver {
  public:
   // Record type of the credit card imported from the form, if one exists.
   enum ImportedCreditCardRecordType {
@@ -59,7 +59,7 @@ class FormDataImporter {
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
 
-  virtual ~FormDataImporter();
+  ~FormDataImporter() override;
 
   // Imports the form data, submitted by the user, into
   // |personal_data_manager_|. If a new credit card was detected and
@@ -102,7 +102,7 @@ class FormDataImporter {
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager() {
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() {
     return virtual_card_enrollment_manager_.get();
   }
 
@@ -110,6 +110,10 @@ class FormDataImporter {
     multistep_candidates_.clear();
     multistep_candidates_origin_.reset();
   }
+
+  // PersonalDataManagerObserver
+  void OnBrowsingHistoryCleared(
+      const history::DeletionInfo& deletion_info) override;
 
  protected:
   // Exposed for testing.

@@ -45,9 +45,9 @@
 #include "util/linux/socket.h"
 #include "util/misc/address_sanitizer.h"
 #include "util/misc/from_pointer_cast.h"
-#include "util/posix/double_fork_and_exec.h"
 #include "util/posix/scoped_mmap.h"
 #include "util/posix/signals.h"
+#include "util/posix/spawn_subprocess.h"
 
 namespace crashpad {
 
@@ -253,7 +253,12 @@ class SignalHandler {
   ExceptionInformation exception_information_ = {};
   CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
   int32_t dump_done_futex_ = kDumpNotDone;
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    __cpp_lib_atomic_value_initialization < 201911L
   std::atomic_flag disabled_ = ATOMIC_FLAG_INIT;
+#else
+  std::atomic_flag disabled_;
+#endif
 
   static SignalHandler* handler_;
 };
@@ -454,7 +459,7 @@ bool CrashpadClient::StartHandler(
 
   argv.push_back(FormatArgumentInt("initial-client-fd", handler_sock.get()));
   argv.push_back("--shared-client-connection");
-  if (!DoubleForkAndExec(argv, nullptr, handler_sock.get(), false, nullptr)) {
+  if (!SpawnSubprocess(argv, nullptr, handler_sock.get(), false, nullptr)) {
     return false;
   }
 
@@ -609,7 +614,7 @@ bool CrashpadClient::StartJavaHandlerForClient(
     int socket) {
   std::vector<std::string> argv = BuildAppProcessArgs(
       class_name, database, metrics_dir, url, annotations, arguments, socket);
-  return DoubleForkAndExec(argv, env, socket, false, nullptr);
+  return SpawnSubprocess(argv, env, socket, false, nullptr);
 }
 
 bool CrashpadClient::StartHandlerWithLinkerAtCrash(
@@ -658,7 +663,7 @@ bool CrashpadClient::StartHandlerWithLinkerForClient(
                                   annotations,
                                   arguments,
                                   socket);
-  return DoubleForkAndExec(argv, env, socket, false, nullptr);
+  return SpawnSubprocess(argv, env, socket, false, nullptr);
 }
 
 #endif
@@ -692,7 +697,7 @@ bool CrashpadClient::StartHandlerForClient(
 
   argv.push_back(FormatArgumentInt("initial-client-fd", socket));
 
-  return DoubleForkAndExec(argv, nullptr, socket, true, nullptr);
+  return SpawnSubprocess(argv, nullptr, socket, true, nullptr);
 }
 
 // static

@@ -3,13 +3,14 @@
 # found in the LICENSE file.
 """Common argument parsing-related code for unexpected pass finders."""
 
+import argparse
 import logging
 import os
 
 from unexpected_passes_common import constants
 
 
-def AddCommonArguments(parser):
+def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
   """Adds arguments that are common to all unexpected pass finders.
 
   Args:
@@ -88,7 +89,7 @@ def AddCommonArguments(parser):
                                     'presence of src-internal.'))
 
 
-def PerformCommonPostParseSetup(args):
+def PerformCommonPostParseSetup(args: argparse.Namespace) -> None:
   """Helper function to perform all common post-parse setup.
 
   Args:
@@ -98,7 +99,7 @@ def PerformCommonPostParseSetup(args):
   SetInternalBuilderInclusion(args)
 
 
-def SetLoggingVerbosity(args):
+def SetLoggingVerbosity(args: argparse.Namespace) -> None:
   """Sets logging verbosity based on parsed arguments.
 
   Args:
@@ -118,7 +119,7 @@ def SetLoggingVerbosity(args):
   logging.getLogger().setLevel(level)
 
 
-def SetInternalBuilderInclusion(args):
+def SetInternalBuilderInclusion(args: argparse.Namespace) -> None:
   """Sets internal builder inclusion based on parsed arguments.
 
   Args:

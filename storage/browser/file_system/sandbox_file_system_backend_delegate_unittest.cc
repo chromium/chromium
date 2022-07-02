@@ -40,9 +40,8 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
         nullptr, base::ThreadTaskRunnerHandle::Get());
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
         quota_manager_proxy_.get(), base::ThreadTaskRunnerHandle::Get().get(),
-        data_dir_.GetPath(), data_dir_.GetPath(),
-        /*special_storage_policy=*/nullptr, CreateAllowFileAccessOptions(),
-        /*env_override=*/nullptr);
+        data_dir_.GetPath(), /*special_storage_policy=*/nullptr,
+        CreateAllowFileAccessOptions(), /*env_override=*/nullptr);
   }
 
   bool IsAccessValid(const FileSystemURL& url) const {
@@ -50,10 +49,11 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
   }
 
   void OpenFileSystem(const blink::StorageKey& storage_key,
+                      const absl::optional<BucketLocator>& bucket_locator,
                       FileSystemType type,
                       OpenFileSystemMode mode) {
     delegate_->OpenFileSystem(
-        storage_key, type, mode,
+        storage_key, bucket_locator, type, mode,
         base::BindOnce(
             &SandboxFileSystemBackendDelegateTest::OpenFileSystemCallback,
             base::Unretained(this)),
@@ -127,7 +127,10 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   const blink::StorageKey& storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  OpenFileSystem(storage_key, kFileSystemTypeTemporary,
+  // TODO(https://crbug.com/1330608): ensure that this test suite properly
+  // integrates non-default BucketLocators into OpenFileSystem.
+  OpenFileSystem(storage_key, /*bucket_locator=*/absl::nullopt,
+                 kFileSystemTypeTemporary,
                  OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
 
   EXPECT_EQ(callback_count(), 1);

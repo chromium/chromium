@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">A Chromium nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3567399274263440288">Annak érdekében, hogy a legtöbbet hozhassa ki a Chromiumból, jelentkezzen be Google-fiókjával a Chromiumba.</translation>
+<translation id="3619462831205197427">Jelentkezzen be erre a webhelyre, a Google-fiókjába és a Chromiumba.</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> felhasználó használta Chromiumot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
@@ -77,7 +78,6 @@
 1. Nyissa meg a Beállításokat.
 2. Koppintson az Alapértelmezett böngésző lehetőségre.
 3. Válassza ki a Chromium böngészőt.</translation>
-<translation id="6155422572367400359">Jelentkezzen be erre a webhelyre, a Google-fiókjába és a Chromiumba. A szinkronizálást később is bekapcsolhatja.</translation>
 <translation id="6183442264225539303">Jelentkezzen be erre a webhelyre és a Chromiumba. A szinkronizálást később is bekapcsolhatja.</translation>
 <translation id="6268381023930128611">Kijelentkezik a Chromiumból?</translation>
 <translation id="632825460376924298">Chromium-bejelentkezés engedélyezése</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Helyezze át a Chromiumot a Dockra<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>
+<translation id="8308172444429103994">Chromium-tipp. A billentyűzet tetején megjelenő mentett jelszó kiválasztásával gyorsabban bejelentkezhet.</translation>
 <translation id="858114650497379505">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="865600487977764604">Gondoskodik a biztonságáról a Chromiumban, és használható a biztonság növelésére más Google-alkalmazásokban, amikor Ön be van jelentkezve.</translation>

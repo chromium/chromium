@@ -1676,6 +1676,48 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, ShouldntSignUnsignableHeader) {
               Optional(ReflectsSigningFailure()));
 }
 
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const char* const hostname = "a.test";
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({hostname});
+  const std::string origin = IssuanceOriginFromHost(hostname);
+  const GURL create_sw_url =
+      server_.GetURL(hostname, "/service_worker/create_service_worker.html");
+  EXPECT_TRUE(NavigateToURL(shell(), create_sw_url));
+  // call register function defined in create_sw_url with the service worker js
+  // file path
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_respond_with_fetch.js');"));
+  // Following navigate to empty html page makes fetch requests go through
+  // service worker. Requests do not go through service workers when commented
+  // out.
+  const GURL empty_page_url =
+      server_.GetURL(hostname, "/service_worker/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url));
+  const std::string trust_token_fetch_snippet = R"(
+  (async () => {
+    if (navigator.serviceWorker.controller === null) return "NotServiceWorker";
+    await fetch("/issue", {trustToken: {type: 'token-request'}});
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {type: 'send-redemption-record',
+                                  signRequestData: 'include',
+                                  issuers: [$1]}});
+    return "TTSuccess"; })(); )";
+
+  EXPECT_EQ("TTSuccess",
+            EvalJs(shell(), JsReplace(trust_token_fetch_snippet, origin)));
+
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader),
+          SignaturesAreWellFormedAndVerify(),
+          SecSignatureHeaderKeyHashes(IsSubsetOf(
+              request_handler_.hashes_of_redemption_bound_public_keys())))));
+}
+
 class TrustTokenBrowsertestWithPlatformIssuance : public TrustTokenBrowsertest {
  public:
   TrustTokenBrowsertestWithPlatformIssuance() {

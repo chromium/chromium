@@ -11,16 +11,17 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -253,11 +254,12 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
 // flag is off. SettingsController won't set options if dark mode bit is not
 // set.
 TEST_F(AssistantControllerImplTest, ColorModeIsSetWhenAssistantIsReadyFlagOff) {
-  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
-
   // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
+          features::kProductivityLauncher});
 
   controller()->SetAssistant(test_assistant_service());
 
@@ -271,21 +273,22 @@ TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
 
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
-  auto* color_provider = AshColorProvider::Get();
-  // AshColorProvider::IsDarkModeEnabled reports it's in dark mode if active
-  // pref service is not set.
-  ASSERT_TRUE(color_provider->IsDarkModeEnabled());
+  auto* active_user_pref_service =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(active_user_pref_service);
 
-  color_provider->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
+      active_user_pref_service);
   controller()->SetAssistant(test_assistant_service());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
   EXPECT_EQ(initial_dark_mode_status,
             test_assistant_service()->dark_mode_enabled().value());
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
   EXPECT_NE(initial_dark_mode_status,
             test_assistant_service()->dark_mode_enabled().value());

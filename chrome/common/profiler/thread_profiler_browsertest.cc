@@ -154,31 +154,53 @@ bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
 
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+// These threads are not currently profiled on Android.
+#define MAYBE_BrowserProcessMainThread DISABLED_BrowserProcessMainThread
+#define MAYBE_BrowserProcessIOThread DISABLED_BrowserProcessIOThread
+#define MAYBE_GpuProcessMainThread DISABLED_GpuProcessMainThread
+#define MAYBE_GpuProcessIOThread DISABLED_GpuProcessIOThread
+#define MAYBE_GpuProcessCompositorThread DISABLED_GpuProcessCompositorThread
+// Android doesn't have a network service process.
+#define MAYBE_NetworkServiceProcessIOThread \
+  DISABLED_NetworkServiceProcessIOThread
+#else
+#define MAYBE_BrowserProcessMainThread BrowserProcessMainThread
+#define MAYBE_BrowserProcessIOThread BrowserProcessIOThread
+#define MAYBE_GpuProcessMainThread GpuProcessMainThread
+#define MAYBE_GpuProcessIOThread GpuProcessIOThread
+#define MAYBE_GpuProcessCompositorThread GpuProcessCompositorThread
+#define MAYBE_NetworkServiceProcessIOThread NetworkServiceProcessIOThread
+#endif
+
 // Check that we receive startup profiles in the browser process for profiled
 // processes/threads. We've seen multiple breakages previously where profiles
 // were dropped as a result of bugs introduced by mojo refactorings.
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessMainThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
+                       MAYBE_BrowserProcessMainThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::BROWSER_PROCESS, metrics::MAIN_THREAD));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, BrowserProcessIOThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
+                       MAYBE_BrowserProcessIOThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::BROWSER_PROCESS, metrics::IO_THREAD));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, GpuProcessMainThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, MAYBE_GpuProcessMainThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::GPU_PROCESS, metrics::MAIN_THREAD));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, GpuProcessIOThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, MAYBE_GpuProcessIOThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::GPU_PROCESS, metrics::IO_THREAD));
 }
 
-IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest, GpuProcessCompositorThread) {
+IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
+                       MAYBE_GpuProcessCompositorThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,
                              metrics::GPU_PROCESS, metrics::COMPOSITOR_THREAD));
 }
@@ -200,13 +222,6 @@ IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
                              metrics::COMPOSITOR_THREAD));
 }
 
-// Android doesn't have a network service process.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NetworkServiceProcessIOThread \
-  DISABLED_NetworkServiceProcessIOThread
-#else
-#define MAYBE_NetworkServiceProcessIOThread NetworkServiceProcessIOThread
-#endif
 IN_PROC_BROWSER_TEST_F(ThreadProfilerBrowserTest,
                        MAYBE_NetworkServiceProcessIOThread) {
   EXPECT_TRUE(WaitForProfile(metrics::SampledProfile::PROCESS_STARTUP,

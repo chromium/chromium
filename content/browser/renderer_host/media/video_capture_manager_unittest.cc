@@ -187,6 +187,8 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
   void OnBufferReady(const VideoCaptureControllerID& id,
                      const ReadyBuffer& buffer,
                      const std::vector<ReadyBuffer>& scaled_buffers) override {}
+  void OnNewCropVersion(const VideoCaptureControllerID& id,
+                        uint32_t crop_version) override {}
   void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
   }
   void OnEnded(const VideoCaptureControllerID& id) override {}
@@ -274,7 +276,7 @@ class VideoCaptureManagerTest : public testing::Test {
         std::unique_ptr<ScreenlockMonitorSource>(screenlock_monitor_source_));
 
     vcm_ = new VideoCaptureManager(std::move(video_capture_provider),
-                                   base::DoNothing(), ScreenlockMonitor::Get());
+                                   base::DoNothing());
     const int32_t kNumberOfFakeDevices = 2;
     video_capture_device_factory_->SetToDefaultDevicesConfig(
         kNumberOfFakeDevices);

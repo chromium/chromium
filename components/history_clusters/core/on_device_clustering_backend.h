@@ -61,10 +61,11 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       const base::flat_map<std::string, optimization_guide::EntityMetadata>&
           entity_metadata_map);
 
-  // ProcessVisits is called process the visits.
+  // ProcessVisits adds additional metadata that might be used for clustering or
+  // Journeys to each visit in |annotated_visits|, such as human-readable
+  // entities and categories, site engagement, etc.
   void ProcessVisits(
       ClusteringRequestSource clustering_request_source,
-      std::vector<history::ClusterVisit> cluster_visits,
       optimization_guide::BatchEntityMetadataTask* completed_task,
       std::vector<history::AnnotatedVisit> annotated_visits,
       absl::optional<base::TimeTicks> entity_metadata_start,

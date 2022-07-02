@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.components.autofill_assistant.user_data;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.text.TextUtils;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -30,8 +30,6 @@ public class AssistantDataOriginNotice {
     private final TextView mLinkToDataOriginDialog;
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
-    @Nullable
-    private AlertDialog mDialog;
     private String mDialogTitle = "";
     private String mDialogText = "";
     private String mDialogButtonText = "";
@@ -44,30 +42,34 @@ public class AssistantDataOriginNotice {
         parent.addView(mView);
         mLinkToDataOriginDialog = mView.findViewById(R.id.link_to_data_origin_dialog);
         mWindowAndroid = windowAndroid;
+
+        // Hide the section initially until required to be shown.
+        mView.setVisibility(View.GONE);
     }
 
-    void setDataOriginLinkText(String text) {
+    void setLinkText(String text) {
         if (TextUtils.isEmpty(text)) {
             mView.setVisibility(View.GONE);
-        } else {
-            mView.setVisibility(View.VISIBLE);
-
-            mLinkToDataOriginDialog.setText(text);
-            ApiCompatibilityUtils.setTextAppearance(
-                    mLinkToDataOriginDialog, R.style.TextAppearance_TextSmall_Link);
-            mLinkToDataOriginDialog.setOnClickListener(this::showDataOriginDialog);
+            return;
         }
+
+        mView.setVisibility(View.VISIBLE);
+
+        mLinkToDataOriginDialog.setText(text);
+        ApiCompatibilityUtils.setTextAppearance(
+                mLinkToDataOriginDialog, R.style.TextAppearance_TextSmall_Link);
+        mLinkToDataOriginDialog.setOnClickListener(this::showDataOriginDialog);
     }
 
-    void setDataOriginDialogTitle(String title) {
+    void setDialogTitle(String title) {
         mDialogTitle = title;
     }
 
-    void setDataOriginDialogText(String text) {
+    void setDialogText(String text) {
         mDialogText = text;
     }
 
-    void setDataOriginDialogButtonText(String text) {
+    void setDialogButtonText(String text) {
         mDialogButtonText = text;
     }
 
@@ -85,23 +87,21 @@ public class AssistantDataOriginNotice {
     }
 
     private void showDataOriginDialog(View unusedView) {
-        mDialog = createAlertDialog();
-        mDialog.show();
+        AlertDialog dialog = createAlertDialog();
+        dialog.show();
 
         // Make links in the dialog clickable.
-        ((TextView) mDialog.findViewById(android.R.id.message))
+        ((TextView) dialog.findViewById(android.R.id.message))
                 .setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private AlertDialog createAlertDialog() {
-        AlertDialog dialog =
-                new AlertDialog.Builder(mActivity, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                        .setTitle(mDialogTitle)
-                        .setMessage(AssistantTextUtils.applyVisualAppearanceTags(
-                                mDialogText, mActivity, this::onDataOriginLinkClicked))
-                        .setPositiveButton(mDialogButtonText,
-                                (DialogInterface dialogInterface, int unused) -> {})
-                        .create();
-        return dialog;
+        return new AlertDialog.Builder(mActivity, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                .setTitle(mDialogTitle)
+                .setMessage(AssistantTextUtils.applyVisualAppearanceTags(
+                        mDialogText, mActivity, this::onDataOriginLinkClicked))
+                .setPositiveButton(
+                        mDialogButtonText, (DialogInterface dialogInterface, int unused) -> {})
+                .create();
     }
 }

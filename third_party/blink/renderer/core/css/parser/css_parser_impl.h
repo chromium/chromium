@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -36,8 +37,10 @@ class StyleRuleKeyframes;
 class StyleRuleMedia;
 class StyleRuleNamespace;
 class StyleRulePage;
+class StyleRulePositionFallback;
 class StyleRuleProperty;
 class StyleRuleSupports;
+class StyleRuleTry;
 class StyleRuleViewport;
 class StyleSheetContents;
 class Element;
@@ -68,6 +71,7 @@ class CORE_EXPORT CSSParserImpl {
     kRegularRules,
     kKeyframeRules,
     kFontFeatureRules,
+    kTryRules,
     kNoRules,  // For parsing at-rules inside declaration lists
   };
 
@@ -150,6 +154,7 @@ class CORE_EXPORT CSSParserImpl {
     kRegularRuleList,
     kKeyframesRuleList,
     kFontFeatureRuleList,
+    kPositionFallbackRuleList,
   };
 
   // Returns whether the first encountered rule was valid
@@ -179,6 +184,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
+  StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
+  StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,
@@ -199,9 +206,14 @@ class CORE_EXPORT CSSParserImpl {
   static std::unique_ptr<Vector<double>> ConsumeKeyframeKeyList(
       CSSParserTokenRange);
 
+  // Finds a previously parsed MediaQuerySet for the given `prelude_string`
+  // and returns it. If no MediaQuerySet is found, parses one using `prelude`,
+  // and returns the result after caching it.
+  const MediaQuerySet* CachedMediaQuerySet(String prelude_string,
+                                           CSSParserTokenRange prelude);
+
   // FIXME: Can we build CSSPropertyValueSets directly?
-  // FIXME: Investigate using a smaller inline buffer
-  HeapVector<CSSPropertyValue, 256> parsed_properties_;
+  HeapVector<CSSPropertyValue, 64> parsed_properties_;
 
   const CSSParserContext* context_;
   StyleSheetContents* style_sheet_;
@@ -210,6 +222,8 @@ class CORE_EXPORT CSSParserImpl {
   CSSParserObserver* observer_;
 
   CSSLazyParsingState* lazy_state_;
+
+  HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };
 
 }  // namespace blink

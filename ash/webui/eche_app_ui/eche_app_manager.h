@@ -39,7 +39,7 @@ namespace eche_app {
 
 class EcheConnector;
 class EcheMessageReceiver;
-class EcheNotificationGenerator;
+class EcheAlertGenerator;
 class EchePresenceManager;
 class EcheSignaler;
 class EcheUidProvider;
@@ -48,6 +48,7 @@ class SystemInfoProvider;
 class AppsAccessManager;
 class EcheStreamStatusChangeHandler;
 class EcheTrayStreamStatusObserver;
+class EcheConnectionScheduler;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -63,8 +64,8 @@ class EcheAppManager : public KeyedService {
                  std::unique_ptr<secure_channel::PresenceMonitorClient>
                      presence_monitor_client,
                  LaunchAppHelper::LaunchEcheAppFunction,
-                 LaunchAppHelper::CloseEcheAppFunction,
-                 LaunchAppHelper::LaunchNotificationFunction);
+                 LaunchAppHelper::LaunchNotificationFunction,
+                 LaunchAppHelper::CloseNotificationFunction);
   ~EcheAppManager() override;
 
   EcheAppManager(const EcheAppManager&) = delete;
@@ -103,13 +104,14 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;
   std::unique_ptr<EcheNotificationClickHandler>
       eche_notification_click_handler_;
+  std::unique_ptr<EcheConnectionScheduler> connection_scheduler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
   std::unique_ptr<EcheMessageReceiver> message_receiver_;
   std::unique_ptr<EchePresenceManager> eche_presence_manager_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
-  std::unique_ptr<EcheNotificationGenerator> notification_generator_;
+  std::unique_ptr<EcheAlertGenerator> alert_generator_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;

@@ -118,6 +118,7 @@ enum PermissionType {
   kContacts        = 5,
   kStorage         = 6,
   kPrinting        = 7,
+  kFileHandling    = 8,
 };
 
 // The types of apps available in the registry.
@@ -247,13 +248,6 @@ enum IconType {
   // Icon as an uncompressed gfx::ImageSkia with the standard Chrome OS mask
   // applied. This is the default suggested icon type.
   kStandard,
-};
-
-struct IconValue {
-  IconType icon_type;
-  gfx.mojom.ImageSkia? uncompressed;
-  array<uint8>? compressed;
-  bool is_placeholder_icon;
 };
 
 // Enumeration of possible app launch sources.

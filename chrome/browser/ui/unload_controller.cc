@@ -327,7 +327,7 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
         *(tabs_needing_before_unload_fired_.begin());
     // Null check render_view_host here as this gets called on a PostTask and
     // the tab's render_view_host may have been nulled out.
-    if (web_contents->GetMainFrame()->GetRenderViewHost()) {
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost()) {
       // If there's a devtools window attached to |web_contents|,
       // we would like devtools to call its own beforeunload handlers first,
       // and then call beforeunload handlers for |web_contents|.
@@ -359,7 +359,7 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     content::WebContents* web_contents = *(tabs_needing_unload_fired_.begin());
     // Null check render_view_host here as this gets called on a PostTask and
     // the tab's render_view_host may have been nulled out.
-    if (web_contents->GetMainFrame()->GetRenderViewHost()) {
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost()) {
       web_contents->ClosePage();
     } else {
       ClearUnloadState(web_contents, true);

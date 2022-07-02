@@ -229,8 +229,8 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->ReadyToCommitOnThread(this);
   }
 
-  void BeginCommit(int source_frame_number) override {
-    LayerTreeHostImpl::BeginCommit(source_frame_number);
+  void BeginCommit(int source_frame_number, uint64_t trace_id) override {
+    LayerTreeHostImpl::BeginCommit(source_frame_number, trace_id);
     test_hooks_->BeginCommitOnThread(this);
   }
 
@@ -486,6 +486,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
+
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 
  private:
   explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)
@@ -1129,6 +1132,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
       base::BindOnce(&LayerTreeTest::DoBeginTest, base::Unretained(this)));
 
   base::RunLoop().Run();
+  CleanupBeforeDestroy();
   DestroyLayerTreeHost();
 
   timeout_.Cancel();
@@ -1157,7 +1161,6 @@ void LayerTreeTest::RequestNewLayerTreeFrameSink() {
   // Spend less time waiting for BeginFrame because the output is
   // mocked out.
   constexpr double refresh_rate = 200.0;
-  renderer_settings.use_skia_renderer = use_skia_renderer();
   auto layer_tree_frame_sink = CreateLayerTreeFrameSink(
       renderer_settings, refresh_rate, std::move(shared_context_provider),
       std::move(worker_context_provider));

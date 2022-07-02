@@ -80,7 +80,7 @@ NSInteger kSymbolSearchImagePointSize = 22;
   [self setItemsForTraitCollection:self.traitCollection];
   if (mode == TabGridModeSearch) {
     // Focus the search bar, and make it a first responder once the user enter
-    // to search mode. Doing that here instead in |setItemsForTraitCollection|
+    // to search mode. Doing that here instead in `setItemsForTraitCollection`
     // makes sure it's only called once and allows the voicOver to transition
     // smoothly and to say that there is a search field opened.
     [_searchBar becomeFirstResponder];
@@ -153,7 +153,7 @@ NSInteger kSymbolSearchImagePointSize = 22;
   if (useUndo) {
     _closeAllOrUndoButton.title =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
-    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // Setting the `accessibilityIdentifier` seems to trigger layout, which
     // causes an infinite loop.
     if (_closeAllOrUndoButton.accessibilityIdentifier !=
         kTabGridUndoCloseAllButtonIdentifier) {
@@ -163,7 +163,7 @@ NSInteger kSymbolSearchImagePointSize = 22;
   } else {
     _closeAllOrUndoButton.title =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
-    // Setting the |accessibilityIdentifier| seems to trigger layout, which
+    // Setting the `accessibilityIdentifier` seems to trigger layout, which
     // causes an infinite loop.
     if (_closeAllOrUndoButton.accessibilityIdentifier !=
         kTabGridCloseAllButtonIdentifier) {

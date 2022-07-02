@@ -82,16 +82,14 @@ ViewAccessibility::~ViewAccessibility() = default;
 
 void ViewAccessibility::AddVirtualChildView(
     std::unique_ptr<AXVirtualView> virtual_view) {
-  AddVirtualChildViewAt(std::move(virtual_view),
-                        static_cast<int>(virtual_children_.size()));
+  AddVirtualChildViewAt(std::move(virtual_view), virtual_children_.size());
 }
 
 void ViewAccessibility::AddVirtualChildViewAt(
     std::unique_ptr<AXVirtualView> virtual_view,
-    int index) {
+    size_t index) {
   DCHECK(virtual_view);
-  DCHECK_GE(index, 0);
-  DCHECK_LE(static_cast<size_t>(index), virtual_children_.size());
+  DCHECK_LE(index, virtual_children_.size());
 
   if (virtual_view->parent_view() == this)
     return;
@@ -109,13 +107,13 @@ void ViewAccessibility::AddVirtualChildViewAt(
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
     AXVirtualView* virtual_view) {
   DCHECK(virtual_view);
-  int cur_index = GetIndexOf(virtual_view);
-  if (cur_index < 0)
+  auto cur_index = GetIndexOf(virtual_view);
+  if (!cur_index.has_value())
     return {};
 
   std::unique_ptr<AXVirtualView> child =
-      std::move(virtual_children_[cur_index]);
-  virtual_children_.erase(virtual_children_.begin() + cur_index);
+      std::move(virtual_children_[cur_index.value()]);
+  virtual_children_.erase(virtual_children_.begin() + cur_index.value());
   child->set_parent_view(nullptr);
   child->UnsetPopulateDataCallback();
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_))
@@ -139,7 +137,8 @@ bool ViewAccessibility::Contains(const AXVirtualView* virtual_view) const {
   return false;
 }
 
-int ViewAccessibility::GetIndexOf(const AXVirtualView* virtual_view) const {
+absl::optional<size_t> ViewAccessibility::GetIndexOf(
+    const AXVirtualView* virtual_view) const {
   DCHECK(virtual_view);
   const auto iter =
       std::find_if(virtual_children_.begin(), virtual_children_.end(),
@@ -147,8 +146,9 @@ int ViewAccessibility::GetIndexOf(const AXVirtualView* virtual_view) const {
                      return child.get() == virtual_view;
                    });
   return iter != virtual_children_.end()
-             ? static_cast<int>(iter - virtual_children_.begin())
-             : -1;
+             ? absl::make_optional(
+                   static_cast<size_t>(iter - virtual_children_.begin()))
+             : absl::nullopt;
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
@@ -360,6 +360,14 @@ void ViewAccessibility::OverrideDescription(const std::string& description) {
 
 void ViewAccessibility::OverrideDescription(const std::u16string& description) {
   custom_data_.SetDescription(description);
+}
+
+void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
+  NOTIMPLEMENTED() << "Only implemented on Mac for now.";
+}
+
+void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
+  OverrideNativeWindowTitle(base::UTF16ToUTF8(title));
 }
 
 void ViewAccessibility::OverrideIsLeaf(bool value) {

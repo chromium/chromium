@@ -118,17 +118,22 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    content::WebContents* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
-        /*relying_party_id=*/"example.com");
+    dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+        /*web_contents=*/nullptr);
+    dialog_model_->set_relying_party_id("example.com");
 
     if (name == "default") {
-      dialog_model->SetCurrentStepForTesting(
+      dialog_model_->StartFlow(
+          device::FidoRequestHandlerBase::TransportAvailabilityInfo(),
+          /*use_location_bar_bubble=*/false,
+          /*prefer_native_api=*/false);
+      dialog_model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kTimedOut);
+      content::WebContents* const web_contents =
+          browser()->tab_strip_model()->GetActiveWebContents();
       AuthenticatorRequestDialogView* dialog =
           test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
-              web_contents, std::move(dialog_model));
+              web_contents, dialog_model_.get());
       test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
           dialog,
           std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
@@ -145,20 +150,20 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       std::array<uint8_t, device::kP256X962Length> public_key = {0};
       AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
                                                          public_key);
-      dialog_model->set_cable_transport_info(
+      dialog_model_->set_cable_transport_info(
           /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{phone},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      dialog_model->StartFlow(std::move(transport_availability),
-                              /*use_location_bar_bubble=*/false,
-                              /*prefer_native_api=*/false);
+      dialog_model_->StartFlow(std::move(transport_availability),
+                               /*use_location_bar_bubble=*/false,
+                               /*prefer_native_api=*/false);
 
       // The dialog is owned by the Views hierarchy so this is a non-owning
       // pointer.
       AuthenticatorRequestDialogView* dialog =
           test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
               browser()->tab_strip_model()->GetActiveWebContents(),
-              std::move(dialog_model));
+              dialog_model_.get());
 
       // The "manage devices" button should have been shown on this sheet.
       EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
@@ -168,6 +173,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
 };
 
 // Test the dialog with a custom delegate.

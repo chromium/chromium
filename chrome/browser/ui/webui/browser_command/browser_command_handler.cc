@@ -72,8 +72,7 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenPrivacyGuide:
-      can_execute = base::FeatureList::IsEnabled(features::kPrivacyGuide) &&
-                    !chrome::enterprise_util::IsBrowserManaged(profile_) &&
+      can_execute = !chrome::enterprise_util::IsBrowserManaged(profile_) &&
                     !profile_->IsChild();
       break;
     default:

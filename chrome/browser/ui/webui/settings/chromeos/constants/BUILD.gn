@@ -12,4 +12,5 @@ mojom("mojom") {
     "routes.mojom",
     "setting.mojom",
   ]
+  webui_module_path = "/"
 }

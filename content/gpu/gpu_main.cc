@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/process/process_metrics.h"
@@ -23,7 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
@@ -31,14 +31,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/service/main/viz_main_impl.h"
+#include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
-#include "content/gpu/gpu_process.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -76,7 +75,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
-#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -291,8 +289,9 @@ int GpuMain(MainFunctionParams parameters) {
   base::PlatformThread::SetName("CrGpuMain");
 
 #if !BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)) {
-    // Set thread priority before sandbox initialization.
+  // Set thread priority before sandbox initialization.
+  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority) &&
+      !features::IsGpuMainThreadForcedToNormalPriorityDrDc()) {
     base::PlatformThread::SetCurrentThreadPriority(
         base::ThreadPriority::DISPLAY);
   }
@@ -310,10 +309,11 @@ int GpuMain(MainFunctionParams parameters) {
   // before it.
   InitializeSkia();
 
-  // Create the ThreadPool before invoking |gpu_init| as it needs the ThreadPool
-  // (in angle::InitializePlatform()). Do not start it until after the sandbox
-  // is initialized however to avoid creating threads outside the sandbox.
-  base::ThreadPoolInstance::Create("GPU");
+  // The ThreadPool must have been created before invoking |gpu_init| as it
+  // needs the ThreadPool (in angle::InitializePlatform()). Do not start it
+  // until after the sandbox is initialized however to avoid creating threads
+  // outside the sandbox.
+  DCHECK(base::ThreadPoolInstance::Get());
 
   // Gpu initialization may fail for various reasons, in which case we will need
   // to tear down this process. However, we can not do so safely until the IPC
@@ -329,23 +329,20 @@ int GpuMain(MainFunctionParams parameters) {
 
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
-  // Start the ThreadPoolInstance now that the sandbox is initialized.
-  base::ThreadPoolInstance::Get()->StartWithDefaultParams();
-
-  const base::ThreadPriority io_thread_priority =
+  base::ThreadPriority io_thread_priority =
       base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)
           ? base::ThreadPriority::DISPLAY
           : base::ThreadPriority::NORMAL;
 #if BUILDFLAG(IS_MAC)
   // Increase the thread priority to get more reliable values in performance
   // test of mac_os.
-  GpuProcess gpu_process(
-      (command_line.HasSwitch(switches::kUseHighGPUThreadPriorityForPerfTests)
-           ? base::ThreadPriority::REALTIME_AUDIO
-           : io_thread_priority));
-#else
-  GpuProcess gpu_process(io_thread_priority);
+  if (command_line.HasSwitch(switches::kUseHighGPUThreadPriorityForPerfTests))
+    io_thread_priority = base::ThreadPriority::REALTIME_AUDIO;
 #endif
+  // ChildProcess will start the ThreadPoolInstance now that the sandbox is
+  // initialized.
+  ChildProcess gpu_process(io_thread_priority);
+  DCHECK(base::ThreadPoolInstance::Get()->WasStarted());
 
   auto* client = GetContentClient()->gpu();
   if (client)
@@ -389,11 +386,6 @@ int GpuMain(MainFunctionParams parameters) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingGpuMainBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
 #endif
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(

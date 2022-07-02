@@ -156,8 +156,8 @@ Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_answerNative(
   jmethodID qa_answer_ctor =
       env->GetMethodID(qa_answer_class, "<init>", "(Ljava/lang/String;IIF)V");
 
-  return ConvertVectorToArrayList<QaAnswer>(
-      env, results,
+  return ConvertVectorToArrayList(
+      env, results.begin(), results.end(),
       [env, qa_answer_class, qa_answer_ctor](const QaAnswer& ans) {
         jstring text = env->NewStringUTF(ans.text.data());
         jobject qa_answer =

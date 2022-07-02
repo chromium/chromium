@@ -8,9 +8,11 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,6 +24,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -32,16 +35,107 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #endif
 
-// TODO(crbug.com/1253250):  Remove mojom related test cases.
-
 namespace apps {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakePublisherForProxyTest : public AppPublisher {
+ public:
+  FakePublisherForProxyTest(AppServiceProxy* proxy,
+                            AppType app_type,
+                            std::vector<std::string> initial_app_ids)
+      : AppPublisher(proxy),
+        app_type_(app_type),
+        known_app_ids_(std::move(initial_app_ids)) {
+    RegisterPublisher(app_type_);
+    CallOnApps(known_app_ids_, /*uninstall=*/false);
+  }
+
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override {}
+
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                apps::IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                LoadIconCallback callback) override {}
+
+  void UninstallApps(std::vector<std::string> app_ids) {
+    CallOnApps(app_ids, /*uninstall=*/true);
+
+    for (const auto& app_id : app_ids) {
+      known_app_ids_.push_back(app_id);
+    }
+  }
+
+  bool AppHasSupportedLinksPreference(const std::string& app_id) {
+    return supported_link_apps_.find(app_id) != supported_link_apps_.end();
+  }
+
+ private:
+  void CallOnApps(std::vector<std::string>& app_ids, bool uninstall) {
+    std::vector<AppPtr> apps;
+    for (const auto& app_id : app_ids) {
+      auto app = std::make_unique<App>(app_type_, app_id);
+      if (uninstall) {
+        app->readiness = Readiness::kUninstalledByUser;
+      }
+      apps.push_back(std::move(app));
+    }
+    AppPublisher::Publish(std::move(apps), app_type_,
+                          /*should_notify_initialized=*/true);
+  }
+
+  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                         bool open_in_app) override {
+    if (open_in_app) {
+      supported_link_apps_.insert(app_id);
+    } else {
+      supported_link_apps_.erase(app_id);
+    }
+  }
+
+  AppType app_type_;
+  std::vector<std::string> known_app_ids_;
+  std::set<std::string> supported_link_apps_;
+};
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeSubscriberForProxyTest : public SubscriberCrosapi {
+ public:
+  explicit FakeSubscriberForProxyTest(Profile* profile)
+      : SubscriberCrosapi(profile) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->RegisterCrosApiSubScriber(this);
+  }
+
+  PreferredAppsList& preferred_apps_list() { return preferred_apps_list_; }
+
+  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override {
+    preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
+  }
+
+  void InitializePreferredApps(apps::PreferredApps preferred_apps) override {
+    preferred_apps_list_.Init(std::move(preferred_apps));
+  }
+
+ private:
+  apps::PreferredAppsList preferred_apps_list_;
+};
+#endif
 
 class AppServiceProxyTest : public testing::Test {
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
+
+  AppServiceProxyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kAppServicePreferredAppsWithoutMojom);
+  }
 
   class FakeIconLoader : public apps::IconLoader {
    public:
@@ -77,21 +171,6 @@ class AppServiceProxyTest : public testing::Test {
       return nullptr;
     }
 
-    std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
-        const std::string& app_id,
-        apps::mojom::IconKeyPtr icon_key,
-        apps::mojom::IconType icon_type,
-        int32_t size_hint_in_dip,
-        bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override {
-      if (icon_type == apps::mojom::IconType::kUncompressed) {
-        pending_callbacks_.push_back(
-            IconValueToMojomIconValueCallback(std::move(callback)));
-      }
-      return nullptr;
-    }
-
     int num_inner_finished_callbacks_ = 0;
     std::vector<apps::LoadIconCallback> pending_callbacks_;
   };
@@ -106,40 +185,22 @@ class AppServiceProxyTest : public testing::Test {
   int num_outer_finished_callbacks_ = 0;
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class AppServiceProxyIconTest : public AppServiceProxyTest,
-                                public ::testing::WithParamInterface<bool> {
+class AppServiceProxyIconTest : public AppServiceProxyTest {
  protected:
-  bool IsLoadIconWithoutMojomEnabled() const { return GetParam(); }
-
   UniqueReleaser LoadIcon(apps::IconLoader* loader, const std::string& app_id) {
-    static constexpr int32_t size_hint_in_dip = 1;
-    static bool allow_placeholder_icon = false;
-
-    if (IsLoadIconWithoutMojomEnabled()) {
-      static constexpr auto app_type = AppType::kWeb;
-      static constexpr auto icon_type = IconType::kUncompressed;
-      return loader->LoadIcon(
-          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
-          base::BindOnce([](int* num_callbacks,
-                            apps::IconValuePtr icon) { ++(*num_callbacks); },
-                         &num_outer_finished_callbacks_));
-    } else {
-      static constexpr auto app_type = apps::mojom::AppType::kWeb;
-      static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
-      return loader->LoadIcon(
-          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
-          base::BindOnce(
-              [](int* num_callbacks, apps::mojom::IconValuePtr icon) {
-                ++(*num_callbacks);
-              },
-              &num_outer_finished_callbacks_));
-    }
+    return loader->LoadIcon(
+        AppType::kWeb, app_id, IconType::kUncompressed, /*size_hint_in_dip=*/1,
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce([](int* num_callbacks,
+                          apps::IconValuePtr icon) { ++(*num_callbacks); },
+                       &num_outer_finished_callbacks_));
   }
 };
 
-TEST_P(AppServiceProxyIconTest, IconCache) {
+TEST_F(AppServiceProxyIconTest, IconCache) {
   // This is mostly a sanity check. For an isolated, comprehensive unit test of
   // the IconCache code, see icon_cache_unittest.cc.
   //
@@ -185,7 +246,7 @@ TEST_P(AppServiceProxyIconTest, IconCache) {
   EXPECT_EQ(3, NumOuterFinishedCallbacks());
 }
 
-TEST_P(AppServiceProxyIconTest, IconCoalescer) {
+TEST_F(AppServiceProxyIconTest, IconCoalescer) {
   // This is mostly a sanity check. For an isolated, comprehensive unit test of
   // the IconCoalescer code, see icon_coalescer_unittest.cc.
   //
@@ -267,19 +328,29 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   TestingProfile::Builder guest_builder;
   guest_builder.SetGuestSession();
   auto guest_profile = guest_builder.Build();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // App service is not available for original profile.
+  EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      guest_profile.get()));
+
+  // App service is available for OTR profile in Guest mode.
+  auto* guest_otr_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_TRUE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      guest_otr_profile));
+  auto* guest_otr_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(guest_otr_profile);
+  EXPECT_TRUE(guest_otr_proxy);
+  EXPECT_NE(guest_otr_proxy, proxy);
+#else
   EXPECT_TRUE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       guest_profile.get()));
   auto* guest_proxy =
       apps::AppServiceProxyFactory::GetForProfile(guest_profile.get());
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
+#endif
 }
-
-// The parameter indicates whether the kAppServiceLoadIconWithoutMojom feature
-// is enabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppServiceProxyIconTest,
-                         ::testing::Values(true, false));
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
@@ -306,6 +377,10 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
       proxy_->OnApps(std::move(mojom_apps), ConvertAppTypeToMojomAppType(type),
                      /*should_notify_initialized=*/false);
     }
+  }
+
+  PreferredAppsList& GetPreferredAppsList() {
+    return proxy()->preferred_apps_impl_->preferred_apps_list_;
   }
 
  private:
@@ -504,67 +579,588 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl3));
 }
 
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredApps) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "aaaaaaa";
+  GURL filter_url = GURL("https://www.google.com/abc");
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+
+  GetPreferredAppsList().AddPreferredApp(kAppId1, intent_filter);
+
+  FakePublisherForProxyTest pub(proxy(), AppType::kArc,
+                                std::vector<std::string>{kAppId1, kAppId2});
+
+  // Test sync preferred app to all subscribers.
+  filter_url = GURL("https://www.abc.com/");
+  GURL another_filter_url = GURL("https://www.test.com/");
+  intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+  auto another_intent_filter =
+      apps_util::MakeIntentFilterForUrlScope(another_filter_url);
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(another_filter_url));
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kUnknown, kAppId2, intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+      /*from_publisher=*/true);
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kUnknown, kAppId2, another_intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView,
+                               another_filter_url),
+      /*from_publisher=*/true);
+  EXPECT_EQ(kAppId2, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(another_filter_url));
+
+  // Test that uninstall removes all the settings for the app.
+  pub.UninstallApps(std::vector<std::string>{kAppId2});
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(another_filter_url));
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kUnknown, kAppId2, intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+      /*from_publisher=*/true);
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kUnknown, kAppId2, another_intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView,
+                               another_filter_url),
+      /*from_publisher=*/true);
+
+  EXPECT_EQ(kAppId2, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(another_filter_url));
+}
+
+// Tests that writing a preferred app value before the PreferredAppsList is
+// initialized queues the write for after initialization.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsWriteBeforeInit) {
+  base::RunLoop run_loop_read;
+  proxy()->ReInitializeForTesting(proxy()->profile(),
+                                  run_loop_read.QuitClosure());
+  GURL filter_url("https://www.abc.com/");
+
+  std::string kAppId1 = "aaa";
+  std::string kAppId2 = "bbb";
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId1,
+      apps_util::MakeIntentFilterForMimeType("image/png"), nullptr,
+      /*from_publisher=*/false);
+
+  IntentFilters filters;
+  filters.push_back(apps_util::MakeIntentFilterForUrlScope(filter_url));
+  proxy()->SetSupportedLinksPreference(kAppId2, std::move(filters));
+
+  // Wait for the preferred apps list initialization to read from disk.
+  run_loop_read.Run();
+
+  // Both changes to the PreferredAppsList should have been applied.
+  std::vector<GURL> filesystem_urls(
+      {GURL("filesystem:chrome://foo/image.png")});
+  std::vector<std::string> mime_types({"image/png"});
+  ASSERT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForIntent(
+                apps_util::MakeShareIntent(filesystem_urls, mime_types)));
+  ASSERT_EQ(kAppId2, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+}
+
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsPersistency) {
+  const char kAppId1[] = "abcdefg";
+  GURL filter_url = GURL("https://www.google.com/abc");
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+  {
+    base::RunLoop run_loop_read;
+    base::RunLoop run_loop_write;
+    proxy()->ReInitializeForTesting(proxy()->profile(),
+                                    run_loop_read.QuitClosure(),
+                                    run_loop_write.QuitClosure());
+    run_loop_read.Run();
+    proxy()->PreferredAppsImpl()->AddPreferredApp(
+        AppType::kUnknown, kAppId1, intent_filter->Clone(),
+        std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+        /*from_publisher=*/false);
+    run_loop_write.Run();
+  }
+  // Create a new impl to initialize preferred apps from the disk.
+  {
+    base::RunLoop run_loop_read;
+    proxy()->ReInitializeForTesting(proxy()->profile(),
+                                    run_loop_read.QuitClosure());
+    run_loop_read.Run();
+    EXPECT_EQ(kAppId1,
+              GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  }
+}
+
+TEST_F(AppServiceProxyPreferredAppsTest,
+       PreferredAppsSetSupportedLinksPublisher) {
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+  const char kAppId3[] = "opqrstu";
+
+  auto intent_filter_a =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.a.com/"));
+  auto intent_filter_b =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.b.com/"));
+  auto intent_filter_c =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.c.com/"));
+
+  FakePublisherForProxyTest pub(
+      proxy(), AppType::kArc,
+      std::vector<std::string>{kAppId1, kAppId2, kAppId3});
+
+  IntentFilters app_1_filters;
+  app_1_filters.push_back(intent_filter_a->Clone());
+  app_1_filters.push_back(intent_filter_b->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId1, std::move(app_1_filters));
+
+  IntentFilters app_2_filters;
+  app_2_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId2, std::move(app_2_filters));
+
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
+
+  EXPECT_EQ(kAppId1, GetPreferredAppsList().FindPreferredAppForUrl(
+                         GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId1, GetPreferredAppsList().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId2, GetPreferredAppsList().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
+
+  // App 3 overlaps with both App 1 and 2. Both previous apps should have all
+  // their supported link filters removed.
+  IntentFilters app_3_filters;
+  app_3_filters.push_back(intent_filter_b->Clone());
+  app_3_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
+
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
+
+  EXPECT_EQ(absl::nullopt, GetPreferredAppsList().FindPreferredAppForUrl(
+                               GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId3, GetPreferredAppsList().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId3, GetPreferredAppsList().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
+
+  // Setting App 3 as preferred again should not change anything.
+  app_3_filters = std::vector<IntentFilterPtr>();
+  app_3_filters.push_back(intent_filter_b->Clone());
+  app_3_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
+
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
+
+  proxy()->RemoveSupportedLinksPreference(kAppId3);
+
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
+}
+
+// Test that app with overlapped works properly.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlap) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_1);
+
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_2);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_2);
+
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId1, intent_filter_1->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url_1),
+      /*from_publisher=*/true);
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+
+  // Add preferred app with intent filter overlap with existing entry for
+  // another app will reset the preferred app setting for the other app.
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId2, intent_filter_2->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url_1),
+      /*from_publisher=*/true);
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+}
+
+// Test that app with overlapped supported links works properly.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_1);
+
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_2);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_2);
+
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+
+  IntentFilters app_1_filters;
+  app_1_filters.push_back(std::move(intent_filter_1));
+  app_1_filters.push_back(std::move(intent_filter_2));
+  IntentFilters app_2_filters;
+  app_2_filters.push_back(std::move(intent_filter_3));
+
+  FakePublisherForProxyTest pub(proxy(), AppType::kArc,
+                                std::vector<std::string>{kAppId1, kAppId2});
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that add preferred app with overlapped filters for same app will
+  // add all entries.
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(2U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that add preferred app with another app that has overlapped filter
+  // will clear all entries from the original app.
+  proxy()->SetSupportedLinksPreference(kAppId2,
+                                       CloneIntentFilters(app_2_filters));
+
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that setting back to app 1 works.
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(2U, GetPreferredAppsList().GetEntrySize());
+}
+
+// Test that duplicated entry will not be added.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsDuplicated) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+
+  GURL filter_url = GURL("https://www.google.com/abc");
+
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId1, intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+      /*from_publisher=*/true);
+  EXPECT_EQ(kAppId1, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId1, intent_filter->Clone(),
+      std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+      /*from_publisher=*/true);
+  EXPECT_EQ(kAppId1, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+}
+
+// Test that duplicated entry will not be added for supported links.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsDuplicatedSupportedLink) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_2);
+
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
+
+  IntentFilters app_1_filters;
+  app_1_filters.push_back(std::move(intent_filter_1));
+  app_1_filters.push_back(std::move(intent_filter_2));
+  app_1_filters.push_back(std::move(intent_filter_3));
+
+  FakePublisherForProxyTest pub(proxy(), AppType::kArc,
+                                std::vector<std::string>{kAppId1});
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+
+  EXPECT_EQ(3U, GetPreferredAppsList().GetEntrySize());
+
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+
+  EXPECT_EQ(3U, GetPreferredAppsList().GetEntrySize());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+  const char kAppId3[] = "opqrstu";
+
+  auto intent_filter_a =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.a.com/"));
+  auto intent_filter_b =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.b.com/"));
+  auto intent_filter_c =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.c.com/"));
+
+  FakeSubscriberForProxyTest sub(proxy()->profile());
+
+  FakePublisherForProxyTest pub(
+      proxy(), AppType::kArc,
+      std::vector<std::string>{kAppId1, kAppId2, kAppId3});
+
+  IntentFilters app_1_filters;
+  app_1_filters.push_back(intent_filter_a->Clone());
+  app_1_filters.push_back(intent_filter_b->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId1, std::move(app_1_filters));
+
+  IntentFilters app_2_filters;
+  app_2_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId2, std::move(app_2_filters));
+
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
+
+  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId2, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
+
+  // App 3 overlaps with both App 1 and 2. Both previous apps should have all
+  // their supported link filters removed.
+  IntentFilters app_3_filters;
+  app_3_filters.push_back(intent_filter_b->Clone());
+  app_3_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
+
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
+
+  EXPECT_EQ(absl::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
+                               GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
+
+  // Setting App 3 as preferred again should not change anything.
+  app_3_filters = std::vector<IntentFilterPtr>();
+  app_3_filters.push_back(intent_filter_b->Clone());
+  app_3_filters.push_back(intent_filter_c->Clone());
+  proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
+
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
+  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
+
+  proxy()->RemoveSupportedLinksPreference(kAppId3);
+
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
+  EXPECT_EQ(absl::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
+                               GURL("https://www.c.com/")));
+}
+
 TEST_F(AppServiceProxyTest, LaunchCallback) {
   AppServiceProxy proxy(nullptr);
   bool called_1 = false;
   bool called_2 = false;
   auto instance_id_1 = base::UnguessableToken::Create();
-  LaunchResult result_1;
-  result_1.instance_ids.push_back(instance_id_1);
   auto instance_id_2 = base::UnguessableToken::Create();
-  LaunchResult result_2;
-  result_2.instance_ids.push_back(instance_id_2);
 
   // If the instance is not created yet, the callback will be stored.
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_1),
-      std::move(result_1));
+  {
+    LaunchResult result_1;
+    result_1.instance_ids.push_back(instance_id_1);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_1),
+                     std::move(result_1));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_FALSE(called_1);
 
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_2),
-      std::move(result_2));
+  {
+    LaunchResult result_2;
+    result_2.instance_ids.push_back(instance_id_2);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_2),
+                     std::move(result_2));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 2U);
   EXPECT_FALSE(called_2);
 
   // Once the instance is created, the callback will be called.
-  auto delta = std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
-  proxy.InstanceRegistry().OnInstance(std::move(delta));
+  {
+    auto delta =
+        std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
+    proxy.InstanceRegistry().OnInstance(std::move(delta));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
   // New callback with existing instance will be called immediately.
   called_1 = false;
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_1),
-      std::move(result_1));
+  {
+    LaunchResult result_3;
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_1),
+                     std::move(result_3));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
   // A launch that results in multiple instances.
-  LaunchResult result_multi;
   auto instance_id_3 = base::UnguessableToken::Create();
   auto instance_id_4 = base::UnguessableToken::Create();
-  result_multi.instance_ids.push_back(instance_id_3);
-  result_multi.instance_ids.push_back(instance_id_4);
   bool called_multi = false;
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_multi),
-      std::move(result_multi));
+  {
+    LaunchResult result_multi;
+    result_multi.instance_ids.push_back(instance_id_3);
+    result_multi.instance_ids.push_back(instance_id_4);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_multi),
+                     std::move(result_multi));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 2U);
   EXPECT_FALSE(called_multi);
   proxy.InstanceRegistry().OnInstance(

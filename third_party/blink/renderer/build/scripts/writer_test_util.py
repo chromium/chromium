@@ -40,17 +40,17 @@ def is_identical_file(reference_filename, output_filename):
     reference_basename = os.path.basename(reference_filename)
 
     if not os.path.isfile(reference_filename):
-        print 'Missing reference file!'
-        print '(if adding new test, update reference files)'
-        print reference_basename
-        print
+        print('Missing reference file!')
+        print('(if adding new test, update reference files)')
+        print(reference_basename)
+        print()
         return False
 
     if not filecmp.cmp(reference_filename, output_filename):
         # cmp is much faster than diff, and usual case is "no difference",
         # so only run diff if cmp detects a difference
-        print 'FAIL: %s' % reference_basename
-        print diff(reference_filename, output_filename)
+        print('FAIL: %s' % reference_basename)
+        print(diff(reference_filename, output_filename))
         return False
 
     return True
@@ -75,11 +75,11 @@ def compare_output_dir(reference_dir, output_dir):
     output_content = set(os.listdir(output_dir))
 
     if ref_content != output_content:
-        print 'Output files does not match.'
-        print 'Following files are extra: {}'.format(output_content -
-                                                     ref_content)
-        print 'Following files are missing: {}'.format(ref_content -
-                                                       output_content)
+        print('Output files does not match.')
+        print('Following files are extra: {}'.format(output_content -
+                                                     ref_content))
+        print('Following files are missing: {}'.format(ref_content -
+                                                       output_content))
         return False
 
     for file_name in ref_content:

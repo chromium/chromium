@@ -20,13 +20,14 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader/fake_image_loader_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -210,16 +211,15 @@ class CrOSComponentInstallerTest : public testing::Test {
 
     tmp_unpack_dir_ = base_component_paths_.GetPath().AppendASCII("tmp_unpack");
 
-    auto fake_image_loader_client =
-        std::make_unique<chromeos::FakeImageLoaderClient>();
-    image_loader_client_ = fake_image_loader_client.get();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetImageLoaderClient(
-        std::move(fake_image_loader_client));
+    chromeos::ImageLoaderClient::InitializeFake();
+    image_loader_client_ = static_cast<chromeos::FakeImageLoaderClient*>(
+        chromeos::ImageLoaderClient::Get());
   }
 
   void TearDown() override {
     image_loader_client_ = nullptr;
+    chromeos::ImageLoaderClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     preinstalled_components_path_override_.reset();
     user_components_path_override_.reset();
@@ -351,8 +351,7 @@ class CrOSComponentInstallerTest : public testing::Test {
 
   user_manager::ScopedUserManager user_manager_;
 
-  // Image loader client that is active during the test. Owned by
-  // chromeos::DBusThreadManager.
+  // Image loader client that is active during the test.
   chromeos::FakeImageLoaderClient* image_loader_client_ = nullptr;
 
   base::ScopedTempDir base_component_paths_;

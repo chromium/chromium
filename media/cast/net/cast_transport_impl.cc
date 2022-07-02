@@ -418,7 +418,7 @@ void CastTransportImpl::AddValidRtpReceiver(uint32_t rtp_sender_ssrc,
   valid_rtp_receiver_ssrcs_.insert(rtp_receiver_ssrc);
 }
 
-void CastTransportImpl::SetOptions(const base::DictionaryValue& options) {
+void CastTransportImpl::SetOptions(const base::Value::Dict& options) {
   // Set PacedSender options.
   int burst_size = LookupOptionWithDefault(options, kOptionPacerTargetBurstSize,
                                            media::cast::kTargetBurstSize);
@@ -431,10 +431,10 @@ void CastTransportImpl::SetOptions(const base::DictionaryValue& options) {
 
   // Set Wifi options.
   int wifi_options = 0;
-  if (options.FindKey(kOptionWifiDisableScan)) {
+  if (options.contains(kOptionWifiDisableScan)) {
     wifi_options |= net::WIFI_OPTIONS_DISABLE_SCAN;
   }
-  if (options.FindKey(kOptionWifiMediaStreamingMode)) {
+  if (options.contains(kOptionWifiMediaStreamingMode)) {
     wifi_options |= net::WIFI_OPTIONS_MEDIA_STREAMING_MODE;
   }
   if (wifi_options)

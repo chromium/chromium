@@ -216,6 +216,9 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+  if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
+    command_line->AppendSwitch(switches::kDisablePDFTagging);
+
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
       command_line->GetSwitchValueASCII(::switches::kProcessType);
@@ -262,14 +265,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
                                             headless_browser_context_impl,
                                             process_type, child_process_id);
   }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Processes may only query perf_event_open with the BPF sandbox disabled.
-  if (old_command_line.HasSwitch(::switches::kEnableThreadInstructionCount) &&
-      old_command_line.HasSwitch(sandbox::policy::switches::kNoSandbox)) {
-    command_line->AppendSwitch(::switches::kEnableThreadInstructionCount);
-  }
-#endif
 }
 
 std::string HeadlessContentBrowserClient::GetApplicationLocale() {

@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -39,7 +39,7 @@ size_t GetNumberOfSettingsWindows() {
   return std::count_if(browser_list->begin(), browser_list->end(),
                        [](Browser* browser) {
                          return web_app::IsBrowserForSystemWebApp(
-                             browser, web_app::SystemAppType::SETTINGS);
+                             browser, ash::SystemWebAppType::SETTINGS);
                        });
 }
 
@@ -52,9 +52,8 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     // Install the Settings App.
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   }
 
   SettingsWindowManagerTest(const SettingsWindowManagerTest&) = delete;
@@ -103,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Launching via LaunchService should also de-dupe to the same browser.
   web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
-      browser()->profile(), web_app::SystemAppType::SETTINGS);
+      browser()->profile(), ash::SystemWebAppType::SETTINGS);
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()

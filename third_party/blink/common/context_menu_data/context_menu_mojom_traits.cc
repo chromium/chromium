@@ -10,6 +10,14 @@
 namespace mojo {
 
 // static
+bool StructTraits<blink::mojom::FieldRendererIdDataView, uint64_t>::Read(
+    blink::mojom::FieldRendererIdDataView data,
+    uint64_t* out) {
+  *out = data.id();
+  return true;
+}
+
+// static
 bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
                   blink::UntrustworthyContextMenuParams>::
     Read(blink::mojom::UntrustworthyContextMenuParamsDataView data,
@@ -32,7 +40,8 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
       !data.ReadCustomItems(&out->custom_items) ||
       !data.ReadSourceType(&out->source_type) ||
       !data.ReadInputFieldType(&out->input_field_type) ||
-      !data.ReadSelectionRect(&out->selection_rect))
+      !data.ReadSelectionRect(&out->selection_rect) ||
+      !data.ReadFieldRendererId(&out->field_renderer_id))
     return false;
 
   out->x = data.x();

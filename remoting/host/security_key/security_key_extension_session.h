@@ -53,10 +53,9 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
 
  private:
   // These methods process specific security key extension message types.
-  void ProcessControlMessage(
-      const base::Value::DictStorage& message_data) const;
-  void ProcessDataMessage(const base::Value::DictStorage& message_data) const;
-  void ProcessErrorMessage(const base::Value::DictStorage& message_data) const;
+  void ProcessControlMessage(const base::Value::Dict& message_data) const;
+  void ProcessDataMessage(const base::Value::Dict& message_data) const;
+  void ProcessErrorMessage(const base::Value::Dict& message_data) const;
 
   void SendMessageToClient(int connection_id, const std::string& data) const;
 

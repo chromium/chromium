@@ -40,6 +40,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_stream.h"
@@ -152,8 +153,12 @@ void ClientSession::NotifyClientResolution(
 
   // Try to match the client's resolution.
   // TODO(sergeyu): Pass clients DPI to the resizer.
-  screen_controls_->SetScreenResolution(ScreenResolution(
-      client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi)));
+  ScreenResolution screen_resolution(
+      client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi));
+  absl::optional<webrtc::ScreenId> screen_id;
+  if (resolution.has_screen_id())
+    screen_id = resolution.screen_id();
+  screen_controls_->SetScreenResolution(screen_resolution, screen_id);
 }
 
 void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
@@ -272,10 +277,22 @@ void ClientSession::SetCapabilities(
       CreatePerMonitorVideoStreams();
     }
 
-    // Create a new DisplayInfoMonitor that is owned by this class (instead of
-    // being owned by the DesktopCapturerProxy for the single-stream case).
-    display_info_monitor_ = desktop_environment_->CreateDisplayInfoMonitor();
-    display_info_monitor_->Start();
+    // Query the OS for the display-info on a timer, instead of doing it after
+    // every captured frame from multiple capturers.
+    auto* monitor = desktop_environment_->GetDisplayInfoMonitor();
+    if (monitor) {
+      // In the multi-process case, |monitor| will be null and this will be
+      // handled instead by DesktopSessionAgent.
+      monitor->Start();
+    }
+
+    // Re-send the extended layout information so the client has information
+    // needed to identify each stream.
+    // TODO(crbug.com/1326339): Remove this code when legacy VideoLayout
+    // messages are fully deprecated and no longer sent.
+    if (desktop_display_info_.NumDisplays() != 0) {
+      OnDesktopDisplayChanged(desktop_display_info_.GetVideoLayoutProto());
+    }
   }
 
   VLOG(1) << "Client capabilities: " << *client_capabilities_;
@@ -510,16 +527,9 @@ void ClientSession::ExtractAndSetInputInjectorMetadata(
 void ClientSession::CreateMediaStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create monitor to be used by the capturer. This is used only by
-  // DesktopCapturerProxy. With multi-process, the IpcDesktopEnvironment
-  // version of this method returns nullptr, and the monitor is created
-  // in the Desktop process instead (where DesktopCapturerProxy is used).
-  auto monitor = desktop_environment_->CreateDisplayInfoMonitor();
-
   // Create a VideoStream to pump frames from the capturer to the client.
   DCHECK(video_streams_.empty());
-  auto composer =
-      desktop_environment_->CreateComposingVideoCapturer(std::move(monitor));
+  auto composer = desktop_environment_->CreateComposingVideoCapturer();
   VideoStreamWithComposer video_stream;
   if (composer) {
     video_stream.composer = composer->GetWeakPtr();
@@ -537,8 +547,7 @@ void ClientSession::CreateMediaStreams() {
 #endif  // defined(WEBRTC_USE_GIO)
   } else {
     video_stream.stream = connection_->StartVideoStream(
-        kStreamName,
-        desktop_environment_->CreateVideoCapturer(std::move(monitor)));
+        kStreamName, desktop_environment_->CreateVideoCapturer());
   }
 
   // Create an AudioStream to pump audio from the capturer to the client.
@@ -583,8 +592,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     HOST_LOG << "Creating video stream: " << stream_name;
 
-    auto composer = desktop_environment_->CreateComposingVideoCapturer(
-        /* DesktopDisplayInfoMonitor */ nullptr);
+    auto composer = desktop_environment_->CreateComposingVideoCapturer();
     VideoStreamWithComposer video_stream;
     if (composer) {
       video_stream.composer = composer->GetWeakPtr();
@@ -592,8 +600,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
           connection_->StartVideoStream(stream_name, std::move(composer));
     } else {
       video_stream.stream = connection_->StartVideoStream(
-          stream_name, desktop_environment_->CreateVideoCapturer(
-                           /* DesktopDisplayInfoMonitor */ nullptr));
+          stream_name, desktop_environment_->CreateVideoCapturer());
     }
 
     video_stream.stream->SelectSource(id);
@@ -1084,8 +1091,9 @@ void ClientSession::OnDesktopDisplayChanged(
               << display.y_dpi() << "], screen_id=" << display.screen_id();
   }
 
-  // Set the display index, if this is the first message being processed.
-  if (selected_display_index_ == webrtc::kInvalidScreenId) {
+  // Set the display index, if this is the first message being processed or if
+  // the selected display no longer exists.
+  if (!IsValidDisplayIndex(selected_display_index_)) {
     if (can_capture_full_desktop_) {
       selected_display_index_ = webrtc::kFullDesktopScreenId;
     } else {
@@ -1197,9 +1205,15 @@ void ClientSession::CreateRemoteWebAuthnMessageHandler(
   // RemoteWebAuthnMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
-  auto* unowned_handler =
-      new RemoteWebAuthnMessageHandler(channel_name, std::move(pipe));
+  auto* unowned_handler = new RemoteWebAuthnMessageHandler(
+      channel_name, std::move(pipe),
+      desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier());
   remote_webauthn_message_handler_ = unowned_handler->GetWeakPtr();
+}
+
+bool ClientSession::IsValidDisplayIndex(webrtc::ScreenId index) const {
+  return index == webrtc::kFullDesktopScreenId ||
+         desktop_display_info_.GetDisplayInfo(index) != nullptr;
 }
 
 }  // namespace remoting

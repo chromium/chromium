@@ -151,22 +151,20 @@ void OfflineInternalsUIMessageHandler::HandleDeletedRequestsCallback(
 void OfflineInternalsUIMessageHandler::HandleStoredPagesCallback(
     std::string callback_id,
     const offline_pages::MultipleOfflinePageItemResult& pages) {
-  std::vector<base::Value> results;
+  base::Value::List results;
   for (const auto& page : pages) {
-    base::Value offline_page(base::Value::Type::DICTIONARY);
-    offline_page.SetStringKey("onlineUrl", page.url.spec());
-    offline_page.SetStringKey("namespace", page.client_id.name_space);
-    offline_page.SetDoubleKey("size", page.file_size);
-    offline_page.SetStringKey("id", std::to_string(page.offline_id));
-    offline_page.SetStringKey("filePath", page.file_path.MaybeAsASCII());
-    offline_page.SetDoubleKey("creationTime", page.creation_time.ToJsTime());
-    offline_page.SetDoubleKey("lastAccessTime",
-                              page.last_access_time.ToJsTime());
-    offline_page.SetIntKey("accessCount", page.access_count);
-    offline_page.SetStringKey("originalUrl",
-                              page.original_url_if_different.spec());
-    offline_page.SetStringKey("requestOrigin", page.request_origin);
-    results.push_back(std::move(offline_page));
+    base::Value::Dict offline_page;
+    offline_page.Set("onlineUrl", page.url.spec());
+    offline_page.Set("namespace", page.client_id.name_space);
+    offline_page.Set("size", static_cast<int>(page.file_size));
+    offline_page.Set("id", std::to_string(page.offline_id));
+    offline_page.Set("filePath", page.file_path.MaybeAsASCII());
+    offline_page.Set("creationTime", page.creation_time.ToJsTime());
+    offline_page.Set("lastAccessTime", page.last_access_time.ToJsTime());
+    offline_page.Set("accessCount", page.access_count);
+    offline_page.Set("originalUrl", page.original_url_if_different.spec());
+    offline_page.Set("requestOrigin", page.request_origin);
+    results.Append(std::move(offline_page));
   }
   // Sort by creation order.
   std::sort(results.begin(), results.end(), [](const auto& a, const auto& b) {

@@ -24,6 +24,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -36,6 +38,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -97,8 +100,7 @@ class LockScreenEventObserver
         extensions::api::app_runtime::OnLaunched::kEventName) {
       return;
     }
-    ASSERT_TRUE(event.event_args);
-    const base::Value& arg_value = event.event_args->GetListDeprecated()[0];
+    const base::Value& arg_value = event.event_args[0];
     if (event.restrict_to_browser_context)
       EXPECT_EQ(context_, event.restrict_to_browser_context);
 
@@ -163,7 +165,7 @@ class LockScreenAppManagerImplTest
 
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    profile_ = profile_manager_.CreateTestingProfile("primary_profile");
+    profile_ = CreatePrimaryProfile();
 
     InitExtensionSystem(profile());
 
@@ -173,8 +175,6 @@ class LockScreenAppManagerImplTest
             base::BindRepeating(&ArcSessionFactory)));
 
     ash::NoteTakingHelper::Initialize();
-    ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
-        profile());
 
     lock_screen_profile_creator_ =
         std::make_unique<lock_screen_apps::FakeLockScreenProfileCreator>(
@@ -458,11 +458,23 @@ class LockScreenAppManagerImplTest
  private:
   void OnNoteTakingChanged() { ++note_taking_changed_count_; }
 
+  TestingProfile* CreatePrimaryProfile() {
+    DCHECK(!scoped_user_manager_) << "there can be only one primary profile";
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    const AccountId account_id(AccountId::FromUserEmail("primary_profile"));
+    user_manager->AddPublicAccountUser(account_id);
+    user_manager->LoginUser(account_id);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+    return profile_manager_.CreateTestingProfile("primary_profile");
+  }
+
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager user_manager_;
+
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   TestingProfileManager profile_manager_;
   TestingProfile* profile_ = nullptr;

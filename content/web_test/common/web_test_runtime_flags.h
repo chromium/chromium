@@ -28,23 +28,24 @@ class WebTestRuntimeFlags {
 
   TrackedDictionary& tracked_dictionary() { return dict_; }
 
-#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                               \
-  bool name() const {                                                         \
-    absl::optional<bool> result = dict_.current_values().FindBoolPath(#name); \
-    DCHECK(result);                                                           \
-    return *result;                                                           \
-  }                                                                           \
+#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)             \
+  bool name() const {                                       \
+    absl::optional<bool> result =                           \
+        dict_.current_values().FindBoolByDottedPath(#name); \
+    DCHECK(result);                                         \
+    return *result;                                         \
+  }                                                         \
   void set_##name(bool new_value) { dict_.SetBoolean(#name, new_value); }
 
-#define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)                  \
-  std::string name() const {                                       \
-    std::string result;                                            \
-    bool found = dict_.current_values().GetString(#name, &result); \
-    DCHECK(found);                                                 \
-    return result;                                                 \
-  }                                                                \
-  void set_##name(const std::string& new_value) {                  \
-    dict_.SetString(#name, new_value);                             \
+#define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)             \
+  std::string name() const {                                  \
+    const std::string* result =                               \
+        dict_.current_values().FindStringByDottedPath(#name); \
+    DCHECK(result);                                           \
+    return *result;                                           \
+  }                                                           \
+  void set_##name(const std::string& new_value) {             \
+    dict_.SetString(#name, new_value);                        \
   }
 
   // If true, the test runner will generate pixel results.
@@ -98,9 +99,6 @@ class WebTestRuntimeFlags {
 
   // If true, the test runner will dump the drag image as pixel results.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_drag_image)
-
-  // Contents of Accept-Language HTTP header requested by the test.
-  DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(accept_languages)
 
   // Flags influencing behavior of WebTestContentSettingsClient.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(images_allowed)

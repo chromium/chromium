@@ -563,8 +563,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               0);
   histograms.ExpectTotalCount(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
@@ -625,8 +623,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               1);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 2);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -689,8 +685,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               4);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 3);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -761,10 +755,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               7);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 4);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 1, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               24);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,

@@ -1249,7 +1249,7 @@ bool LayoutTableCell::BackgroundIsKnownToBeOpaqueInRect(
 
 bool LayoutTableCell::HasLineIfEmpty() const {
   NOT_DESTROYED();
-  if (GetNode() && HasEditableStyle(*GetNode()))
+  if (GetNode() && IsEditable(*GetNode()))
     return true;
 
   return LayoutBlock::HasLineIfEmpty();

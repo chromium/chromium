@@ -60,16 +60,17 @@ TEST_F(SigningKeyPairTest, Create_NoKey) {
 }
 
 // Tests that the SigningKeyPair::Create factory function returns a properly
-// initialized TPM-backed SigningKeyPair if a TPM-backed key was available.
-TEST_F(SigningKeyPairTest, Create_WithTpmKey) {
-  auto mocked_delegate = factory_.CreateMockedTpmDelegate();
+// initialized hardware-backed SigningKeyPair if a hardware-backed key was
+// available.
+TEST_F(SigningKeyPairTest, Create_WithHwKey) {
+  auto mocked_delegate = factory_.CreateMockedHardwareDelegate();
 
   EXPECT_CALL(*mocked_delegate, LoadKeyPair());
-  EXPECT_CALL(*mocked_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mocked_delegate, GetUnexportableKeyProvider());
 
   auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
 
-  ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_TPM_KEY);
+  ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_HW_KEY);
 }
 
 // Tests that the SigningKeyPair::Create factory function returns a properly

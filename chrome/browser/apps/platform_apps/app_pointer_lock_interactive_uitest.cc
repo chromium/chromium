@@ -12,7 +12,8 @@
 class ExtensionPointerLockTest : public extensions::PlatformAppBrowserTest {
  public:
   bool RunExtensionPointerLockTest(const char* app_path) {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp(app_path, &launched_listener);
 
     extensions::ResultCatcher catcher;

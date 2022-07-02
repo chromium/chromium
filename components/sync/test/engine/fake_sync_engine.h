@@ -39,6 +39,10 @@ class FakeSyncEngine : public SyncEngine,
     return authenticated_account_id_;
   }
 
+  bool started_handling_invalidations() {
+    return started_handling_invalidations_;
+  }
+
   // Manual completion of Initialize(), required if auto-completion was disabled
   // in the constructor.
   void TriggerInitializationCompletion(bool success);
@@ -61,6 +65,8 @@ class FakeSyncEngine : public SyncEngine,
   base::Time GetLastSyncedTimeForDebugging() const override;
 
   void StartConfiguration() override;
+
+  void StartHandlingInvalidations() override;
 
   void StartSyncingWithServer() override;
 
@@ -109,6 +115,7 @@ class FakeSyncEngine : public SyncEngine,
   bool initialized_ = false;
   const SyncStatus default_sync_status_;
   CoreAccountId authenticated_account_id_;
+  bool started_handling_invalidations_ = false;
 };
 
 }  // namespace syncer

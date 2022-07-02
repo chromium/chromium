@@ -84,8 +84,8 @@ class AttributionStorage {
           AttributionReport::ReportType::kEventLevel,
           AttributionReport::ReportType::kAggregatableAttribution}) = 0;
 
-  // Returns the first report time strictly after `time`.
-  virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
+  // Returns the first report time strictly after current time.
+  virtual absl::optional<base::Time> GetNextReportTime() = 0;
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
@@ -130,7 +130,8 @@ class AttributionStorage {
   virtual void ClearData(
       base::Time delete_begin,
       base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin& origin)> filter) = 0;
+      base::RepeatingCallback<bool(const url::Origin& origin)> filter,
+      bool delete_rate_limit_data = true) = 0;
 };
 
 }  // namespace content

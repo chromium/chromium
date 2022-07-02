@@ -13,7 +13,7 @@ class ChromeBrowserState;
 // Handoff.
 @interface HandoffTableViewController : SettingsRootTableViewController
 
-// The designated initializer. |browserState| must not be nil.
+// The designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

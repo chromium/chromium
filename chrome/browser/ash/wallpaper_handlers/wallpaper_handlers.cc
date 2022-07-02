@@ -79,6 +79,11 @@ constexpr char kGooglePhotosAlbumUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
     "collectionById:read";
 
+// The collectionById endpoint accepts a "return_order" parameter that
+// determines what order the photos are returned in, using these values.
+constexpr char kGooglePhotosAlbumCollectionOrder[] = "1";
+constexpr char kGooglePhotosAlbumShuffledOrder[] = "2";
+
 // The URL to download the albums in a user's Google Photos library.
 constexpr char kGooglePhotosAlbumsUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
@@ -220,6 +225,7 @@ void AddGooglePhotosPhotoIfValid(
     return;
 
   const auto* id = photo->FindStringByDottedPath("itemId.mediaKey");
+  const auto* dedup_key = photo->FindString("dedupKey");
   const auto* filename = photo->FindString("filename");
   const auto* timestamp_string = photo->FindString("creationTimestamp");
   const auto* url = photo->FindStringByDottedPath("photo.servingUrl");
@@ -245,7 +251,8 @@ void AddGooglePhotosPhotoIfValid(
   // A photo from Google Photos may or may not have a location set.
   parsed_response->photos->push_back(
       ash::personalization_app::mojom::GooglePhotosPhoto::New(
-          *id, name, date, GURL(*url),
+          *id, dedup_key ? absl::make_optional(*dedup_key) : absl::nullopt,
+          name, date, GURL(*url),
           location ? absl::make_optional(*location) : absl::nullopt));
 }
 
@@ -595,7 +602,7 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
 
   auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "wallpaper_google_photos_fetcher", identity_manager_, scopes,
-      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
       signin::ConsentLevel::kSignin);
   auto* fetcher_ptr = fetcher.get();
   fetcher_ptr->Start(base::BindOnce(
@@ -625,7 +632,16 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = service_url;
+
+  // By default, the server will not serialize repeated proto fields if they are
+  // empty. This makes it impossible for us to tell if the server has broken
+  // compatibility with the client or just has nothing to return. Append a
+  // special parameter to request that the server always serializes repeated
+  // proto fields and any other fields which might otherwise be omitted by
+  // default (https://cloud.google.com/apis/docs/system-parameters#definitions).
+  resource_request->url = net::AppendOrReplaceQueryParameter(
+      service_url, "$outputDefaults", "true");
+
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
@@ -829,16 +845,22 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& item_id,
     const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
+    bool shuffle,
     base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
   GURL service_url;
   if (item_id.has_value()) {
-    DCHECK(!album_id.has_value() && !resume_token.has_value());
+    DCHECK(!album_id.has_value() && !resume_token.has_value() && !shuffle);
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosPhotoUrl),
                                             "item_id", item_id.value());
   } else if (album_id.has_value()) {
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosAlbumUrl),
                                             "collection_id", album_id.value());
+    service_url =
+        net::AppendQueryParameter(service_url, "return_order",
+                                  shuffle ? kGooglePhotosAlbumShuffledOrder
+                                          : kGooglePhotosAlbumCollectionOrder);
   } else {
+    DCHECK(!shuffle);
     service_url = GURL(kGooglePhotosPhotosUrl);
   }
 

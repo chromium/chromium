@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -198,7 +199,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // back, while cross-BrowsingInstances result in creating a new unrelated
   // RenderViewHost. This is not true in the legacy BCS mode, so there the
   // |main_browsing_context_state_| is null.
-  const scoped_refptr<BrowsingContextState>& main_browsing_context_state() {
+  const absl::optional<base::SafeRef<BrowsingContextState>>&
+  main_browsing_context_state() const {
     return main_browsing_context_state_;
   }
 
@@ -449,7 +451,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   raw_ptr<FrameTree> frame_tree_;
 
   // See main_browsing_context_state() for more details.
-  const scoped_refptr<BrowsingContextState> main_browsing_context_state_;
+  absl::optional<base::SafeRef<BrowsingContextState>>
+      main_browsing_context_state_;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 };

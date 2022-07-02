@@ -14,6 +14,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
+#include "components/component_updater/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
@@ -30,7 +33,10 @@ namespace {
 class ChromeCleanerFetcherTest : public ::testing::Test {
  public:
   ChromeCleanerFetcherTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    test_prefs_.registry()->RegisterStringPref(prefs::kSwReporterCohort,
+                                               "stable");
+  }
 
   void TearDown() override {
     if (!downloaded_path_.empty()) {
@@ -44,7 +50,7 @@ class ChromeCleanerFetcherTest : public ::testing::Test {
     FetchChromeCleaner(
         base::BindOnce(&ChromeCleanerFetcherTest::FetchedCallback,
                        base::Unretained(this)),
-        &test_url_loader_factory_);
+        &test_url_loader_factory_, &test_prefs_);
   }
 
   void FetchedCallback(base::FilePath downloaded_path,
@@ -58,7 +64,7 @@ class ChromeCleanerFetcherTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
+  TestingPrefServiceSimple test_prefs_;
   base::RunLoop run_loop_;
 
   // Variables set by FetchedCallback().
@@ -70,7 +76,7 @@ class ChromeCleanerFetcherTest : public ::testing::Test {
 
 TEST_F(ChromeCleanerFetcherTest, FetchSuccess) {
   const std::string kFileContents("FileContents");
-  test_url_loader_factory_.AddResponse(GetSRTDownloadURL().spec(),
+  test_url_loader_factory_.AddResponse(GetSRTDownloadURL(&test_prefs_).spec(),
                                        kFileContents);
 
   StartFetch();
@@ -86,8 +92,8 @@ TEST_F(ChromeCleanerFetcherTest, FetchSuccess) {
 }
 
 TEST_F(ChromeCleanerFetcherTest, NotFoundOnServer) {
-  test_url_loader_factory_.AddResponse(GetSRTDownloadURL().spec(), "",
-                                       net::HTTP_NOT_FOUND);
+  test_url_loader_factory_.AddResponse(GetSRTDownloadURL(&test_prefs_).spec(),
+                                       "", net::HTTP_NOT_FOUND);
 
   StartFetch();
   run_loop_.Run();
@@ -101,8 +107,8 @@ TEST_F(ChromeCleanerFetcherTest, NetworkError) {
   // For this test, just use any http response code other than net::HTTP_OK
   // and net::HTTP_NOT_FOUND.
   test_url_loader_factory_.AddResponse(
-      GetSRTDownloadURL(), network::mojom::URLResponseHead::New(), "contents",
-      network::URLLoaderCompletionStatus(net::ERR_ADDRESS_INVALID));
+      GetSRTDownloadURL(&test_prefs_), network::mojom::URLResponseHead::New(),
+      "contents", network::URLLoaderCompletionStatus(net::ERR_ADDRESS_INVALID));
 
   StartFetch();
   run_loop_.Run();

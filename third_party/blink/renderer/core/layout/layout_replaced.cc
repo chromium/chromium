@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_document_transition_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
@@ -46,11 +47,13 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -171,7 +174,8 @@ static inline bool LayoutObjectHasIntrinsicAspectRatio(
     const LayoutObject* layout_object) {
   DCHECK(layout_object);
   return layout_object->IsImage() || layout_object->IsCanvas() ||
-         IsA<LayoutVideo>(layout_object);
+         IsA<LayoutVideo>(layout_object) ||
+         IsA<LayoutDocumentTransitionContent>(layout_object);
 }
 
 void LayoutReplaced::RecalcVisualOverflow() {
@@ -179,6 +183,19 @@ void LayoutReplaced::RecalcVisualOverflow() {
   ClearVisualOverflow();
   LayoutObject::RecalcVisualOverflow();
   AddVisualEffectOverflow();
+
+  // Replaced elements clip the content to the element's content-box by default.
+  // But if the CSS overflow property is respected, the content may paint
+  // outside the element's bounds as ink overflow (with overflow:visible for
+  // example). So we add |ReplacedContentRect()|, which provides the element's
+  // painting rectangle relative to it's bounding box in its visual overflow if
+  // the overflow property is respected.
+  // Note that |overflow_| is meant to track the maximum potential ink overflow.
+  // The actual painted overflow (based on the values for overflow,
+  // overflow-clip-margin and paint containment) is computed in
+  // LayoutBox::VisualOverflowRect.
+  if (RespectsCSSOverflow())
+    AddContentsVisualOverflow(ReplacedContentRect());
 }
 
 void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
@@ -634,20 +651,21 @@ void LayoutReplaced::ComputePositionedLogicalHeight(
   computed_values.position_ = logical_top_pos;
 }
 
+absl::optional<gfx::SizeF>
+LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
+  if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
+    return absl::nullopt;
+
+  if (auto view_box = ComputeObjectViewBoxRect())
+    return static_cast<gfx::SizeF>(view_box->size);
+
+  return absl::nullopt;
+}
+
 absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const LayoutSize* overridden_intrinsic_size) const {
   scoped_refptr<BasicShape> object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
-    return absl::nullopt;
-
-  // We ignore applying the object-view-box property if the element has size
-  // containment, including when contain-intrinsic-size is specified to provide
-  // an explicit intrinsic size for the element's content.
-  // See https://github.com/w3c/csswg-drafts/issues/7187 for a detailed
-  // discussion.
-  // TODO(khushalsagar) : Its unclear whether the view-box should still apply
-  // for paint operations. Update once the github issue is resolved.
-  if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
     return absl::nullopt;
 
   const auto& intrinsic_size =
@@ -658,24 +676,20 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   if (!CanApplyObjectViewBox())
     return absl::nullopt;
 
-  // TODO(khushalsagar) : Also allow rect() and xywh().
-  const auto* inset_shape = To<BasicShapeInset>(object_view_box.get());
-  LayoutUnit left =
-      MinimumValueForLength(inset_shape->Left(), intrinsic_size.Width());
-  LayoutUnit top =
-      MinimumValueForLength(inset_shape->Top(), intrinsic_size.Height());
-  LayoutUnit right =
-      intrinsic_size.Width() -
-      MinimumValueForLength(inset_shape->Right(), intrinsic_size.Width());
-  LayoutUnit bottom =
-      intrinsic_size.Height() -
-      MinimumValueForLength(inset_shape->Bottom(), intrinsic_size.Height());
+  DCHECK(object_view_box->GetType() == BasicShape::kBasicShapeRectType ||
+         object_view_box->GetType() == BasicShape::kBasicShapeInsetType ||
+         object_view_box->GetType() == BasicShape::kBasicShapeXYWHType);
 
-  if (left >= right || top >= bottom)
+  Path path;
+  gfx::RectF bounding_box(0, 0, intrinsic_size.Width().ToFloat(),
+                          intrinsic_size.Height().ToFloat());
+  object_view_box->GetPath(path, bounding_box, 1.f);
+
+  const PhysicalRect view_box_rect =
+      PhysicalRect::EnclosingRect(path.BoundingRect());
+  if (view_box_rect.IsEmpty())
     return absl::nullopt;
 
-  const PhysicalRect view_box_rect(PhysicalOffset(left, top),
-                                   PhysicalSize(right - left, bottom - top));
   const PhysicalRect intrinsic_rect(PhysicalOffset(), intrinsic_size);
   if (view_box_rect == intrinsic_rect)
     return absl::nullopt;
@@ -827,9 +841,9 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
 
-  auto view_box = ComputeObjectViewBoxRect();
-  if (view_box) {
-    intrinsic_sizing_info.size = static_cast<gfx::SizeF>(view_box->size);
+  auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing();
+  if (view_box_size) {
+    intrinsic_sizing_info.size = *view_box_size;
     if (!IsHorizontalWritingMode())
       intrinsic_sizing_info.size.Transpose();
   } else {
@@ -1214,6 +1228,26 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   }
   return PhysicalRect(new_logical_top, LayoutUnit(), root.SelectionHeight(),
                       Size().Height());
+}
+
+bool LayoutReplaced::RespectsCSSOverflow() const {
+  const Element* element = DynamicTo<Element>(GetNode());
+  return element && element->IsReplacedElementRespectingCSSOverflow();
+}
+
+bool LayoutReplaced::ClipsToContentBox() const {
+  if (!RespectsCSSOverflow())
+    return true;
+
+  // TODO(khushalsagar): There can be more cases where the content clips to
+  // content box. For instance, when padding is 0 and the reference box is the
+  // padding box.
+  const auto& overflow_clip_margin = StyleRef().OverflowClipMargin();
+  return GetOverflowClipAxes() == kOverflowClipBothAxis &&
+         overflow_clip_margin &&
+         overflow_clip_margin->GetReferenceBox() ==
+             StyleOverflowClipMargin::ReferenceBox::kContentBox &&
+         !overflow_clip_margin->GetMargin();
 }
 
 }  // namespace blink

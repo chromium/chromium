@@ -37,7 +37,6 @@
 #include "components/version_info/channel.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
-#include "net/base/features.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/cocoa/permissions_utils.h"
@@ -56,8 +55,7 @@ ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
                                                      StartupData* startup_data)
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
-}
+ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
 
 int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
   if (base::mac::WasLaunchedAsLoginItemRestoreState()) {
@@ -69,7 +67,6 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
         base::CommandLine::ForCurrentProcess();
     singleton_command_line->AppendSwitch(switches::kNoStartupWindow);
   }
-
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
 }
 
@@ -141,10 +138,7 @@ void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature)) {
-    net::InitializeTrustStoreMacCache();
-  }
+  net::InitializeTrustStoreMacCache();
 }
 
 void ChromeBrowserMainPartsMac::PreProfileInit() {

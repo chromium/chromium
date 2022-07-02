@@ -35,13 +35,15 @@
 #ifndef GOOGLE_PROTOBUF_COMPILER_CPP_MESSAGE_LAYOUT_HELPER_H__
 #define GOOGLE_PROTOBUF_COMPILER_CPP_MESSAGE_LAYOUT_HELPER_H__
 
-#include <google/protobuf/compiler/cpp/cpp_options.h>
 #include <google/protobuf/descriptor.h>
+#include <google/protobuf/compiler/cpp/cpp_options.h>
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 namespace cpp {
+
+class MessageSCCAnalyzer;
 
 // Provides an abstract interface to optimize message layout
 // by rearranging the fields of a message.
@@ -50,7 +52,8 @@ class MessageLayoutHelper {
   virtual ~MessageLayoutHelper() {}
 
   virtual void OptimizeLayout(std::vector<const FieldDescriptor*>* fields,
-                              const Options& options) = 0;
+                              const Options& options,
+                              MessageSCCAnalyzer* scc_analyzer) = 0;
 };
 
 }  // namespace cpp

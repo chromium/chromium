@@ -189,14 +189,15 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   return app_id;
 }
 
-Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
+Browser* LaunchWebAppBrowser(Profile* profile,
+                             const AppId& app_id,
+                             WindowOpenDisposition disposition) {
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
-              apps::mojom::LaunchSource::kFromTest));
+              disposition, apps::mojom::LaunchSource::kFromTest));
   EXPECT_TRUE(web_contents);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(browser, app_id));
@@ -204,11 +205,14 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
 }
 
 // Launches the app, waits for the app url to load.
-Browser* LaunchWebAppBrowserAndWait(Profile* profile, const AppId& app_id) {
+Browser* LaunchWebAppBrowserAndWait(Profile* profile,
+                                    const AppId& app_id,
+                                    WindowOpenDisposition disposition) {
   ui_test_utils::UrlLoadObserver url_observer(
       WebAppProvider::GetForTest(profile)->registrar().GetAppLaunchUrl(app_id),
       content::NotificationService::AllSources());
-  Browser* const app_browser = LaunchWebAppBrowser(profile, app_id);
+  Browser* const app_browser =
+      LaunchWebAppBrowser(profile, app_id, disposition);
   url_observer.Wait();
   return app_browser;
 }
@@ -223,9 +227,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
               apps::mojom::LaunchSource::kFromTest));
   DCHECK(web_contents);
 
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
-  EXPECT_EQ(app_id, tab_helper->GetAppId());
+  EXPECT_EQ(app_id, *WebAppTabHelper::GetAppId(web_contents));
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   EXPECT_EQ(browser, chrome::FindLastActive());
@@ -233,10 +235,11 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
   return browser;
 }
 
-ExternalInstallOptions CreateInstallOptions(const GURL& url) {
-  ExternalInstallOptions install_options(
-      url, UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+ExternalInstallOptions CreateInstallOptions(
+    const GURL& url,
+    const ExternalInstallSource& source) {
+  ExternalInstallOptions install_options(url, UserDisplayMode::kStandalone,
+                                         source);
   // Avoid creating real shortcuts in tests.
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;

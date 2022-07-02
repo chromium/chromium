@@ -167,4 +167,11 @@ void ExtensionsBrowserClient::GetFavicon(
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> bitmap_data)>
         callback) const {}
 
+std::vector<content::BrowserContext*>
+ExtensionsBrowserClient::GetRelatedContextsForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) const {
+  return {browser_context};
+}
+
 }  // namespace extensions

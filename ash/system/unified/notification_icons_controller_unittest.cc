@@ -5,6 +5,7 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/system/tray/tray_item_view.h"
@@ -71,7 +72,8 @@ class NotificationIconsControllerTest
             u"test message", std::u16string() /*display_source */,
             GURL() /* origin_url */,
             message_center::NotifierId(
-                message_center::NotifierType::SYSTEM_COMPONENT, app_id),
+                message_center::NotifierType::SYSTEM_COMPONENT, app_id,
+                NotificationCatalogName::kTestCatalogName),
             rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),
             warning_level));
     notification_id_++;

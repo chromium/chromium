@@ -16,34 +16,34 @@
 
 namespace net_log {
 
-std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
+base::Value::Dict GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string) {
-  auto constants_dict = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict constants_dict;
 
   // Add a dictionary with the version of the client and its command line
   // arguments.
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
 
   // We have everything we need to send the right values.
-  dict.SetStringKey("name", version_info::GetProductName());
-  dict.SetStringKey("version", version_info::GetVersionNumber());
-  dict.SetStringKey("cl", version_info::GetLastChange());
-  dict.SetStringKey("version_mod", channel_string);
-  dict.SetStringKey(
-      "official", version_info::IsOfficialBuild() ? "official" : "unofficial");
+  dict.Set("name", version_info::GetProductName());
+  dict.Set("version", version_info::GetVersionNumber());
+  dict.Set("cl", version_info::GetLastChange());
+  dict.Set("version_mod", channel_string);
+  dict.Set("official",
+           version_info::IsOfficialBuild() ? "official" : "unofficial");
   std::string os_type = base::StringPrintf(
       "%s: %s (%s)", base::SysInfo::OperatingSystemName().c_str(),
       base::SysInfo::OperatingSystemVersion().c_str(),
       base::SysInfo::OperatingSystemArchitecture().c_str());
-  dict.SetStringKey("os_type", os_type);
+  dict.Set("os_type", os_type);
 #if BUILDFLAG(IS_WIN)
-  dict.SetStringKey("command_line", base::WideToUTF8(command_line_string));
+  dict.Set("command_line", base::WideToUTF8(command_line_string));
 #else
-  dict.SetStringKey("command_line", command_line_string);
+  dict.Set("command_line", command_line_string);
 #endif
 
-  constants_dict->SetKey("clientInfo", std::move(dict));
+  constants_dict.Set("clientInfo", std::move(dict));
 
   return constants_dict;
 }

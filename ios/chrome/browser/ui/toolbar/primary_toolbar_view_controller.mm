@@ -136,12 +136,12 @@
   self.view.locationBarContainer.alpha = progress;
   self.view.separator.alpha = progress;
 
-  // When the locationBarContainer is hidden, show the |fakeOmniboxTarget|.
+  // When the locationBarContainer is hidden, show the `fakeOmniboxTarget`.
   if (progress == 0 && !self.view.fakeOmniboxTarget) {
     [self.view addFakeOmniboxTarget];
-    UITapGestureRecognizer* tapRecognizer =
-        [[UITapGestureRecognizer alloc] initWithTarget:self.dispatcher
-                                                action:@selector(focusOmnibox)];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self.omniboxCommandsHandler
+                action:@selector(focusOmnibox)];
     [self.view.fakeOmniboxTarget addGestureRecognizer:tapRecognizer];
   } else if (progress > 0 && self.view.fakeOmniboxTarget) {
     [self.view removeFakeOmniboxTarget];
@@ -364,7 +364,7 @@
 }
 
 // Returns the desired height of the location bar, based on the fullscreen
-// |progress|.
+// `progress`.
 - (CGFloat)locationBarHeightForFullscreenProgress:(CGFloat)progress {
   CGFloat expandedHeight =
       LocationBarHeight(self.traitCollection.preferredContentSizeCategory);
@@ -376,7 +376,7 @@
 }
 
 // Returns the vertical margin to the location bar based on fullscreen
-// |progress|, aligned to the nearest pixel.
+// `progress`, aligned to the nearest pixel.
 - (CGFloat)verticalMarginForLocationBarForFullscreenProgress:(CGFloat)progress {
   // The vertical bottom margin for the location bar is such that the location
   // bar looks visually centered. However, the constraints are not geometrically

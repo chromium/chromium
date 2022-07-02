@@ -35,7 +35,7 @@ content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name) {
   content::WebContents* auth_web_contents =
       GetAuthFrameWebContents(web_contents, parent_frame_name);
-  return auth_web_contents ? auth_web_contents->GetMainFrame() : nullptr;
+  return auth_web_contents ? auth_web_contents->GetPrimaryMainFrame() : nullptr;
 }
 
 content::WebContents* GetAuthFrameWebContents(

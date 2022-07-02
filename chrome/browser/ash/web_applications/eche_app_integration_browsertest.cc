@@ -6,13 +6,13 @@
 #include "ash/shell.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -20,7 +20,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
+class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   EcheAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -37,7 +37,7 @@ class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, EcheApp) {
   const GURL url(ash::eche_app::kChromeUIEcheAppURL);
   EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(web_app::SystemAppType::ECHE, url, "Eche App"));
+      ExpectSystemWebAppValid(ash::SystemWebAppType::ECHE, url, "Eche App"));
 }
 
 // Test that the Eche App has a default bounds is always 16:9 portrait aspect
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   WaitForTestSystemAppInstall();
 
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
 
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
 
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
   EXPECT_GE(browser->window()->GetBounds().width(), min_size.width());
   EXPECT_GE(browser->window()->GetBounds().height(), min_size.height());
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
   WaitForTestSystemAppInstall();
 
   // Check system_web_app_manager has the correct attributes for Eche App.
-  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::ECHE);
+  auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::ECHE);
   EXPECT_FALSE(system_app->ShouldShowInLauncher());
   EXPECT_FALSE(system_app->ShouldShowInSearch());
 }
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
                        WindowNonResizeableAndNonMaximizable) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_FALSE(browser_view->CanResize());
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUiWithoutReloadButton) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   ToolbarButtonProvider* provider = browser_view->toolbar_button_provider();
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUiWithoutReloadButton) {
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  LaunchApp(ash::SystemWebAppType::ECHE, &browser);
   EXPECT_TRUE(browser->app_controller()
                   ->system_app()
                   ->ShouldAllowScriptsToCloseWindows());

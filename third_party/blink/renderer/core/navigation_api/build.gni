@@ -17,3 +17,5 @@ blink_core_sources_navigation_api = [
   "navigation_transition.cc",
   "navigation_transition.h",
 ]
+
+blink_core_tests_navigation_api = [ "navigation_api_test.cc" ]

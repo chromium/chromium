@@ -152,7 +152,7 @@ std::string GetLinkPageContents(const GURL& on_load_url) {
                             on_load_url.spec().c_str(), kLinkPageLinkText);
 }
 
-// Helper function that returns a text/html HttpResponse using |content|.
+// Helper function that returns a text/html HttpResponse using `content`.
 std::unique_ptr<net::test_server::HttpResponse> GetHttpResponseWithContent(
     const std::string& content) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
@@ -181,7 +181,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadPageWithLinkToOnLoadPage(
   return GetHttpResponseWithContent(GetLinkPageContents(on_load_page_url));
 }
 
-// Waits for a JavaScript dialog from |url| with |message| to be shown or
+// Waits for a JavaScript dialog from `url` with `message` to be shown or
 // hidden.
 void WaitForJavaScriptDialog(const GURL& url,
                              const char* message,
@@ -222,7 +222,7 @@ void WaitForJavaScriptDialog(const GURL& url,
       assertWithMatcher:visibility_matcher];
 }
 
-// Types |input| in the prompt.
+// Types `input` in the prompt.
 void TypeInPrompt(NSString* input) {
   id<GREYMatcher> text_field_matcher = grey_allOf(
       grey_kindOfClass([UITextField class]),

@@ -11,7 +11,7 @@
 @protocol LocationBarSteadyViewConsumer <NSObject>
 
 // Notifies the consumer to update the location text.
-// |clipTail| indicates whether the tail or the head should be clipped when the
+// `clipTail` indicates whether the tail or the head should be clipped when the
 // location text is too long.
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail;
 

@@ -113,7 +113,11 @@ class FullChecker : public TokenHardwareChecker {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
         return AllowStatus::kAllowed;
       }
-      return AllowStatus::kIncorrectToken;
+      return CpuRegexMatches("Ryzen [57]") && HasMemory(7 * kGibi)
+                 ? AllowStatus::kAllowed
+                 : AllowStatus::kHardwareChecksFailed;
+    } else if (IsBoard("draco")) {
+      return AllowStatus::kAllowed;
     }
     return AllowStatus::kIncorrectToken;
   }

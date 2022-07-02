@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "autocxx-bindgen"
-version = "0.59.16"
+version = "0.59.17"
 authors = [
     "Jyun-Yan You <jyyou.tw@gmail.com>",
     "Emilio Cobos Álvarez <emilio@crisal.io>",

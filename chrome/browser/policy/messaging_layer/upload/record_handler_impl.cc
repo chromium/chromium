@@ -20,6 +20,7 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -72,7 +73,7 @@ class RecordHandlerImpl::ReportUploader
  public:
   ReportUploader(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      std::vector<EncryptedRecord> records,
       policy::CloudPolicyClient* client,
       DmServerUploadService::CompletionCallback upload_complete_cb,
       DmServerUploadService::EncryptionKeyAttachedCallback
@@ -107,7 +108,7 @@ class RecordHandlerImpl::ReportUploader
       const base::Value::Dict& value);
 
   bool need_encryption_key_;
-  std::unique_ptr<std::vector<EncryptedRecord>> records_;
+  std::vector<EncryptedRecord> records_;
   raw_ptr<policy::CloudPolicyClient> client_;
 
   // Encryption key delivery callback.
@@ -133,7 +134,7 @@ class RecordHandlerImpl::ReportUploader
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     policy::CloudPolicyClient* client,
     DmServerUploadService::CompletionCallback client_cb,
     DmServerUploadService::EncryptionKeyAttachedCallback
@@ -157,14 +158,7 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
     return;
   }
 
-  if (records_ == nullptr) {
-    Status null_records = Status(error::INVALID_ARGUMENT, "records_ was null");
-    LOG(ERROR) << null_records;
-    Complete(null_records);
-    return;
-  }
-
-  if (records_->empty() && !need_encryption_key_) {
+  if (records_.empty() && !need_encryption_key_) {
     Status empty_records =
         Status(error::INVALID_ARGUMENT, "records_ was empty");
     LOG(ERROR) << empty_records;
@@ -181,8 +175,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
                      base::Unretained(this));
 
   UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
-  for (auto record : *records_) {
-    request_builder.AddRecord((std::move(record)));
+  for (auto record : records_) {
+    request_builder.AddRecord(std::move(record));
   }
 
   // Assign random UUID as the request id for server side log correlation
@@ -196,7 +190,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   }
 
   // Records have been captured in the request, safe to clear the vector.
-  records_->clear();
+  records_.clear();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -237,15 +231,20 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
+  // {{{Note}}} ERP Response Payload Overview
+  //
   //  {
   //    "lastSucceedUploadedRecord": ... // SequenceInformation proto
   //    "firstFailedUploadedRecord": {
   //      "failedUploadedRecord": ... // SequenceInformation proto
   //      "failureStatus": ... // Status proto
-  //    }
-  //    "forceConfirm": true  // if present, flag that lastSucceedUploadedRecord
-  //                          // is to be accepted unconditionally by client
+  //    },
   //    "encryptionSettings": ... // EncryptionSettings proto
+  //    "forceConfirm": true, // if present, flag that lastSucceedUploadedRecord
+  //                          // is to be accepted unconditionally by client
+  //    // Internal control
+  //    "enableUploadSizeAdjustment": true,  // If present, upload size
+  //                                         // adjustment is enabled.
   //  }
   const base::Value::Dict* last_succeed_uploaded_record =
       last_response_.FindDict("lastSucceedUploadedRecord");
@@ -265,6 +264,14 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   const auto force_confirm_flag = last_response_.FindBool("forceConfirm");
   if (force_confirm_flag.has_value() && force_confirm_flag.value()) {
     force_confirm_ = true;
+  }
+
+  // Handle enableUploadSizeAdjustment flag, if present.
+  const auto enable_upload_size_adjustment =
+      last_response_.FindBool("enableUploadSizeAdjustment");
+  if (enable_upload_size_adjustment.has_value()) {
+    EventUploadSizeController::Enabler::Set(
+        enable_upload_size_adjustment.value());
   }
 
   // Handle the encryption settings.
@@ -313,11 +320,11 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
     if (gap_record_result.has_value()) {
       LOG(ERROR) << "Data Loss. Record was unprocessable by the server: "
                  << *failed_uploaded_record;
-      records_->push_back(std::move(gap_record_result.value()));
+      records_.push_back(std::move(gap_record_result.value()));
     }
   }
 
-  if (!records_->empty()) {
+  if (!records_.empty()) {
     // Upload the next record but do not request encryption key again.
     StartUpload();
     return;
@@ -431,7 +438,7 @@ RecordHandlerImpl::~RecordHandlerImpl() = default;
 
 void RecordHandlerImpl::HandleRecords(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     DmServerUploadService::CompletionCallback upload_complete_cb,
     DmServerUploadService::EncryptionKeyAttachedCallback
         encryption_key_attached_cb) {

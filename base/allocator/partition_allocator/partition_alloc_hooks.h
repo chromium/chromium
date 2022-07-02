@@ -8,13 +8,13 @@
 #include <atomic>
 #include <cstddef>
 
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace partition_alloc {
 
 // PartitionAlloc supports setting hooks to observe allocations/frees as they
 // occur as well as 'override' hooks that allow overriding those operations.
-class BASE_EXPORT PartitionAllocHooks {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
  public:
   // Log allocation and free events.
   typedef void AllocationObserverHook(void* address,
@@ -25,7 +25,7 @@ class BASE_EXPORT PartitionAllocHooks {
   // If it returns true, the allocation has been overridden with the pointer in
   // *out.
   typedef bool AllocationOverrideHook(void** out,
-                                      int flags,
+                                      unsigned int flags,
                                       size_t size,
                                       const char* type_name);
   // If it returns true, then the allocation was overridden and has been freed.
@@ -52,7 +52,7 @@ class BASE_EXPORT PartitionAllocHooks {
                                               size_t size,
                                               const char* type_name);
   static bool AllocationOverrideHookIfEnabled(void** out,
-                                              int flags,
+                                              unsigned int flags,
                                               size_t size,
                                               const char* type_name);
 
@@ -81,13 +81,5 @@ class BASE_EXPORT PartitionAllocHooks {
 };
 
 }  // namespace partition_alloc
-
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionAllocHooks;
-
-}  // namespace base
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_HOOKS_H_

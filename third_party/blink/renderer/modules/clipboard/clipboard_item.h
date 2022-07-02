@@ -12,7 +12,6 @@
 namespace blink {
 
 class ScriptState;
-class ClipboardItemOptions;
 
 class ClipboardItem final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -20,12 +19,10 @@ class ClipboardItem final : public ScriptWrappable {
  public:
   static ClipboardItem* Create(
       const HeapVector<std::pair<String, ScriptPromise>>& items,
-      const ClipboardItemOptions* options,
       ExceptionState& exception_state);
 
   explicit ClipboardItem(
-      const HeapVector<std::pair<String, ScriptPromise>>& items,
-      const ClipboardItemOptions* options);
+      const HeapVector<std::pair<String, ScriptPromise>>& items);
   Vector<String> types() const;
   ScriptPromise getType(ScriptState* script_state,
                         const String& type,
@@ -35,7 +32,7 @@ class ClipboardItem final : public ScriptWrappable {
     return items_;
   }
 
-  // Returns the custom formats passed to direct option.
+  // Returns the custom formats that have a "web " prefix.
   const Vector<String>& CustomFormats() const { return custom_format_items_; }
 
   void Trace(Visitor*) const override;

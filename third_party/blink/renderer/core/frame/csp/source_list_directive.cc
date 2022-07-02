@@ -36,6 +36,20 @@ bool HasSourceMatchInList(
   return false;
 }
 
+bool IsScriptDirective(CSPDirectiveName directive_type) {
+  return (directive_type == CSPDirectiveName::ScriptSrc ||
+          directive_type == CSPDirectiveName::ScriptSrcAttr ||
+          directive_type == CSPDirectiveName::ScriptSrcElem ||
+          directive_type == CSPDirectiveName::DefaultSrc);
+}
+
+bool IsStyleDirective(CSPDirectiveName directive_type) {
+  return (directive_type == CSPDirectiveName::StyleSrc ||
+          directive_type == CSPDirectiveName::StyleSrcAttr ||
+          directive_type == CSPDirectiveName::StyleSrcElem ||
+          directive_type == CSPDirectiveName::DefaultSrc);
+}
+
 }  // namespace
 
 bool CSPSourceListAllows(
@@ -120,15 +134,14 @@ bool CSPSourceListAllowsURLBasedMatching(
 bool CSPSourceListAllowAllInline(
     CSPDirectiveName directive_type,
     const network::mojom::blink::CSPSourceList& source_list) {
-  if (directive_type != CSPDirectiveName::DefaultSrc &&
-      !ContentSecurityPolicy::IsScriptDirective(directive_type) &&
-      !ContentSecurityPolicy::IsStyleDirective(directive_type)) {
+  if (!IsScriptDirective(directive_type) &&
+      !IsStyleDirective(directive_type)) {
     return false;
   }
 
   return source_list.allow_inline &&
          !CSPSourceListIsHashOrNoncePresent(source_list) &&
-         (!ContentSecurityPolicy::IsScriptDirective(directive_type) ||
+         (!IsScriptDirective(directive_type) ||
           !source_list.allow_dynamic);
 }
 

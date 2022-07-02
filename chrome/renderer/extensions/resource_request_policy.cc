@@ -42,13 +42,25 @@ void ResourceRequestPolicy::OnExtensionLoaded(const Extension& extension) {
       // TODO(devlin): Should we incorporate this into
       // WebAccessibleResourcesInfo?
       (extension.is_hosted_app() && !IconsInfo::GetIcons(&extension).empty())) {
-    web_accessible_ids_.insert(extension.id());
+    web_accessible_resources_map_[extension.id()] = extension.guid();
   }
+}
+
+bool ResourceRequestPolicy::IsWebAccessibleHost(const std::string& host) {
+  if (web_accessible_resources_map_.find(host) !=
+      web_accessible_resources_map_.end()) {
+    return true;
+  }
+  for (const auto& [id, guid] : web_accessible_resources_map_) {
+    if (host == guid)
+      return true;
+  }
+  return false;
 }
 
 void ResourceRequestPolicy::OnExtensionUnloaded(
     const ExtensionId& extension_id) {
-  web_accessible_ids_.erase(extension_id);
+  web_accessible_resources_map_.erase(extension_id);
 }
 
 // This method does a security check whether chrome-extension:// URLs can be
@@ -118,7 +130,7 @@ bool ResourceRequestPolicy::CanRequestResource(
   // extension with no web accessible resources. We aren't worried about any
   // extensions with web accessible resources, since those are inherently
   // identifiable.
-  if (!is_dev_tools && !web_accessible_ids_.count(extension_origin.host())) {
+  if (!is_dev_tools && !IsWebAccessibleHost(extension_origin.host())) {
     // Failures are recorded here, successes will be in the browser.
     RecordExtensionResourceAccessResult(
         ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
@@ -128,7 +140,8 @@ bool ResourceRequestPolicy::CanRequestResource(
   }
 
   const Extension* extension =
-      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(resource_url);
+      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
+          resource_url, true /*include_guid*/);
   if (is_dev_tools) {
     // Allow the load in the case of a non-existent extension. We'll just get a
     // 404 from the browser process.

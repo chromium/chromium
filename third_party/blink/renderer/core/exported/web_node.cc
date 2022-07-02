@@ -38,6 +38,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -145,7 +146,7 @@ bool WebNode::IsFocusable() const {
 
 bool WebNode::IsContentEditable() const {
   private_->GetDocument().UpdateStyleAndLayoutTree();
-  return HasEditableStyle(*private_);
+  return blink::IsEditable(*private_);
 }
 
 bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
@@ -244,6 +245,10 @@ WebNode& WebNode::operator=(Node* node) {
 
 WebNode::operator Node*() const {
   return private_.Get();
+}
+
+int WebNode::GetDevToolsNodeIdForTest() const {
+  return DOMNodeIds::IdForNode(private_.Get());
 }
 
 }  // namespace blink

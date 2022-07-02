@@ -69,15 +69,18 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   }
 }
 
-# This version of the WebView APK doesn't include WebLayer java and resources.
+# This version of the WebView APK doesn't include WebLayer.
 # It's used to define the allowlist of resources to be pulled out of language
 # splits. See |shared_resources_allowlist_target|.
 standalone_system_webview_apk_tmpl("system_webview_no_weblayer_apk") {
   exclude_weblayer_java = true
   apk_name = "SystemWebViewNoWebLayer"
 
+  # Don't include any code to speed up compilation. This is used only for the
+  # resources allowlist.
   include_32_bit_webview = false
   include_64_bit_webview = false
+  omit_dex = true
 
   # Adding deps on recycler view in the base WebView APK will end up keeping the
   # Java in the base APK instead of the WebLayer DFM, even though it is not
@@ -787,6 +790,7 @@ android_library("common_java") {
     "java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java",
     "java/src/org/chromium/android_webview/common/SafeModeAction.java",
     "java/src/org/chromium/android_webview/common/SafeModeController.java",
+    "java/src/org/chromium/android_webview/common/services/ServiceHelper.java",
     "java/src/org/chromium/android_webview/common/services/ServiceNames.java",
   ]
   deps = [
@@ -800,14 +804,13 @@ android_library("common_java") {
     "//components/network_session_configurator/android:network_session_configurator_java",
     "//components/variations:variations_java",
     "//components/viz:viz_java",
-    "//components/webrtc:components_webrtc_java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//gpu/config:config_java",
+    "//net/base:features_java",
     "//services/network/public:features_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
-    "//third_party/webrtc_overrides:webrtc_overrides_java",
   ]
   srcjar_deps = [
     ":common_java_features_srcjar",
@@ -816,6 +819,8 @@ android_library("common_java") {
 }
 
 android_aidl("common_aidl") {
+  # External code should depend on "common_aidl_java" instead.
+  visibility = [ ":*" ]
   import_include = [ "java/src" ]
   sources = [
     "java/src/org/chromium/android_webview/common/services/ICrashReceiverService.aidl",
@@ -922,12 +927,10 @@ repack("repack_pack") {
 
 repack("repack_100_percent") {
   sources = [
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
   ]
   deps = [
-    "//content/app/resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//ui/resources",
   ]
@@ -1130,6 +1133,7 @@ grit("generate_components_resources") {
 
   deps = [
     ":concatenate_resources_allowlists",
+    "//components/flags_ui/resources:build_ts",
     "//components/resources:about_credits",
     "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",
   ]

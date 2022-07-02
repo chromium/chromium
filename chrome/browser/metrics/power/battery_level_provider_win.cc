@@ -59,11 +59,10 @@ base::win::ScopedHandle GetBatteryHandle(
   return battery;
 }
 
-// Returns the current tag for |battery| handle, or nullopt if there is no
-// battery at this slot or the request failed. Each battery in a particular slot
-// is assigned a tag, which must be used for all queries for information. For
-// more details, see
-// https://docs.microsoft.com/en-us/windows/win32/power/battery-information
+// Returns the current tag for `battery` handle, BATTERY_TAG_INVALID if there is
+// no battery present in this interface or nullopt on retrieval error.
+// See
+// https://docs.microsoft.com/en-us/windows/win32/power/ioctl-battery-query-tag
 absl::optional<uint64_t> GetBatteryTag(HANDLE battery) {
   ULONG battery_tag = 0;
   ULONG wait = 0;
@@ -71,8 +70,18 @@ absl::optional<uint64_t> GetBatteryTag(HANDLE battery) {
   BOOL success = ::DeviceIoControl(
       battery, IOCTL_BATTERY_QUERY_TAG, &wait, sizeof(wait), &battery_tag,
       sizeof(battery_tag), &bytes_returned, nullptr);
-  if (!success)
+  if (!success) {
+    if (::GetLastError() == ERROR_FILE_NOT_FOUND) {
+      // No battery present in this interface.
+      //
+      // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
+      // verifying that there are no crash reports.
+      CHECK_EQ(battery_tag, static_cast<ULONG>(BATTERY_TAG_INVALID));
+      return battery_tag;
+    }
+    // Retrieval error.
     return absl::nullopt;
+  }
   return battery_tag;
 }
 
@@ -121,33 +130,27 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   ~BatteryLevelProviderWin() override = default;
 
   void GetBatteryState(
-      base::OnceCallback<void(const BatteryState&)> callback) override {
-    // This is run on |blocking_task_runner_| since GetBatteryInterfaceList()
-    // has blocking calls and can take up to several seconds to complete.
+      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      override {
+    // This is run on |blocking_task_runner_| since `GetBatteryStateImpl()` has
+    // blocking calls and can take several seconds to complete.
     blocking_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce([]() {
-          std::vector<BatteryInterface> battery_interfaces =
-              GetBatteryInterfaceList();
-          return BatteryLevelProvider::MakeBatteryState(battery_interfaces);
-        }),
+        FROM_HERE,
+        base::BindOnce(&BatteryLevelProviderWin::GetBatteryStateImpl),
         base::BindOnce(&BatteryLevelProviderWin::OnBatteryStateObtained,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
  private:
-  static std::vector<BatteryInterface> GetBatteryInterfaceList();
-
-  static BatteryInterface GetInterface(
-      HDEVINFO devices,
-      SP_DEVICE_INTERFACE_DATA* interface_data);
+  static absl::optional<BatteryState> GetBatteryStateImpl();
 
   void OnBatteryStateObtained(
-      base::OnceCallback<void(const BatteryState&)> callback,
-      const BatteryState& battery_state) {
+      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback,
+      const absl::optional<BatteryState>& battery_state) {
     std::move(callback).Run(battery_state);
   }
 
-  // TaskRunner used to run blocking GetBatteryInterfaceList queries, sequenced
+  // TaskRunner used to run blocking `GetBatteryStateImpl()` queries, sequenced
   // to avoid the performance cost of concurrent calls.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
     base::ThreadPool::CreateSequencedTaskRunner(
@@ -160,29 +163,9 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderWin>();
 }
 
-BatteryLevelProvider::BatteryInterface BatteryLevelProviderWin::GetInterface(
-    HDEVINFO devices,
-    SP_DEVICE_INTERFACE_DATA* interface_data) {
-  base::win::ScopedHandle battery = GetBatteryHandle(devices, interface_data);
-  if (!battery.IsValid())
-    return BatteryInterface(false);
-
-  absl::optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
-  if (!battery_tag)
-    return BatteryInterface(false);
-  auto battery_information = GetBatteryInformation(battery.Get(), *battery_tag);
-  auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
-  // If any of the values were not available.
-  if (!battery_information.has_value() || !battery_status.has_value())
-    return BatteryInterface(true);
-
-  return BatteryInterface(
-      {!!(battery_status->PowerState & BATTERY_POWER_ON_LINE),
-       battery_status->Capacity, battery_information->FullChargedCapacity});
-}
-
-std::vector<BatteryLevelProvider::BatteryInterface>
-BatteryLevelProviderWin::GetBatteryInterfaceList() {
+// static
+absl::optional<BatteryLevelProvider::BatteryState>
+BatteryLevelProviderWin::GetBatteryStateImpl() {
   // Proactively mark as blocking to fail early, since calls below may also
   // trigger ScopedBlockingCall.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -193,10 +176,11 @@ BatteryLevelProviderWin::GetBatteryInterfaceList() {
   // disconnected.
   base::win::ScopedDevInfo devices(::SetupDiGetClassDevs(
       &GUID_DEVICE_BATTERY, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
-  if (!devices.is_valid())
-    return {};
+  if (!devices.is_valid()) {
+    return absl::nullopt;
+  }
 
-  std::vector<BatteryInterface> interfaces;
+  std::vector<BatteryDetails> battery_details_list;
 
   // The algorithm to enumerate battery devices is taken from
   // https://docs.microsoft.com/en-us/windows/win32/power/enumerating-battery-devices
@@ -210,13 +194,43 @@ BatteryLevelProviderWin::GetBatteryInterfaceList() {
         ::SetupDiEnumDeviceInterfaces(devices.get(), 0, &GUID_DEVCLASS_BATTERY,
                                       device_index, &interface_data);
     if (!success) {
-      // Exit condition.
-      if (ERROR_NO_MORE_ITEMS == ::GetLastError())
+      // Enumeration ended normally.
+      if (::GetLastError() == ERROR_NO_MORE_ITEMS)
         break;
+      // Error.
+      return absl::nullopt;
+    }
+
+    base::win::ScopedHandle battery =
+        GetBatteryHandle(devices.get(), &interface_data);
+    if (!battery.IsValid())
+      return absl::nullopt;
+
+    absl::optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
+    if (!battery_tag.has_value()) {
+      return absl::nullopt;
+    } else if (battery_tag.value() == BATTERY_TAG_INVALID) {
+      // No battery present in this interface.
       continue;
     }
 
-    interfaces.push_back(GetInterface(devices.get(), &interface_data));
+    auto battery_information =
+        GetBatteryInformation(battery.Get(), *battery_tag);
+    if (!battery_information.has_value()) {
+      return absl::nullopt;
+    }
+
+    auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
+    if (!battery_status.has_value()) {
+      return absl::nullopt;
+    }
+
+    battery_details_list.push_back(BatteryDetails(
+        {.is_external_power_connected =
+             !!(battery_status->PowerState & BATTERY_POWER_ON_LINE),
+         .current_capacity = battery_status->Capacity,
+         .full_charged_capacity = battery_information->FullChargedCapacity}));
   }
-  return interfaces;
+
+  return MakeBatteryState(battery_details_list);
 }

@@ -60,7 +60,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -82,7 +84,16 @@ using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 
 constexpr char kArcTosID[] = "arc-tos";
-enum class ArcState { kNotAvailable, kAcceptTerms };
+enum class ArcState {
+  kNotAvailable,
+  kAcceptTerms,
+  kAcceptTermsRecommendAppsNewLayout
+};
+
+bool IsNewRecommendedAppsEnabled() {
+  return features::IsOobeNewRecommendAppsEnabled() &&
+         base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe);
+}
 
 std::string ArcStateToString(ArcState arc_state) {
   switch (arc_state) {
@@ -90,6 +101,8 @@ std::string ArcStateToString(ArcState arc_state) {
       return "not-available";
     case ArcState::kAcceptTerms:
       return "accept-terms";
+    case ArcState::kAcceptTermsRecommendAppsNewLayout:
+      return "accept-terms-recommend-apps-new-layout";
   }
   NOTREACHED();
   return "unknown";
@@ -154,7 +167,7 @@ void RunEulaScreenChecks() {
 void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
-      .CreateFocusWaiter({"gaia-signin", "signin-frame-dialog", "signin-frame"})
+      .CreateVisibilityWaiter(true, {"gaia-signin", "signin-frame-dialog"})
       ->Wait();
 
   // Arc terms of service content gets preloaded when GAIA screen is shown,
@@ -264,63 +277,68 @@ void HandleArcTermsOfServiceScreen() {
 // HandleArcTermsOfServiceScreen.
 void HandleRecommendAppsScreen() {
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
-  LOG(INFO)
-      << "OobeInteractiveUITest: Switched to 'recommend-apps-old' screen.";
+  LOG(INFO) << "OobeInteractiveUITest: Switched to 'recommend-apps' screen.";
 
   EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
-      .CreateVisibilityWaiter(true, {"recommend-apps-old", "appsDialog"})
+      .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
       ->Wait();
 
-  test::OobeJS().ExpectPathDisplayed(true, {"recommend-apps-old", "appView"});
+  if (IsNewRecommendedAppsEnabled()) {
+    test::OobeJS().ClickOnPath(
+        {"recommend-apps", "appsList", R"(test\\.package)"});
+  } else {
+    test::OobeJS().ExpectPathDisplayed(true, {"recommend-apps", "appView"});
 
-  std::string toggle_apps_script = base::StringPrintf(
-      "(function() {"
-      "  if (!document.getElementById('recommend-apps-container'))"
-      "    return false;"
-      "  var items ="
-      "      Array.from(document.getElementById('recommend-apps-container')"
-      "         .querySelectorAll('.item') || [])"
-      "         .filter(i => '%s' == i.getAttribute('data-packagename'));"
-      "  if (items.length == 0)"
-      "    return false;"
-      "  items.forEach(i => i.querySelector('.image-picker').click());"
-      "  return true;"
-      "})();",
-      "test.package");
+    std::string toggle_apps_script = base::StringPrintf(
+        R"((function() {
+          if (!document.getElementById('recommend-apps-container'))
+            return false;
+          var items =
+              Array.from(document.getElementById('recommend-apps-container')
+                 .querySelectorAll('.item') || [])
+                 .filter(i => '%s' == i.getAttribute('data-packagename'));
+          if (items.length == 0)
+            return false;
+          items.forEach(i => i.querySelector('.image-picker').click());
+          return true;
+        })();)",
+        "test.package");
 
-  const std::string webview_path =
-      test::GetOobeElementPath({"recommend-apps-old", "appView"});
-  const std::string script = base::StringPrintf(
-      "(function() {"
-      "  var toggleApp = function() {"
-      "    %s.executeScript({code: \"%s\"}, r => {"
-      "      if (!r || !r[0]) {"
-      "        setTimeout(toggleApp, 50);"
-      "        return;"
-      "      }"
-      "      window.domAutomationController.send(true);"
-      "    });"
-      "  };"
-      "  toggleApp();"
-      "})();",
-      webview_path.c_str(), toggle_apps_script.c_str());
+    const std::string webview_path =
+        test::GetOobeElementPath({"recommend-apps", "appView"});
+    const std::string script = base::StringPrintf(
+        R"((function() {
+          var toggleApp = function() {
+            %s.executeScript({code: `%s`}, r => {
+              if (!r || !r[0]) {
+                setTimeout(toggleApp, 50);
+                return;
+              }
+              window.domAutomationController.send(true);
+            });
+          };
+          toggleApp();
+        })();)",
+        webview_path.c_str(), toggle_apps_script.c_str());
 
-  bool result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      LoginDisplayHost::default_host()->GetOobeWebContents(), script, &result));
-  EXPECT_TRUE(result);
+    bool result;
+    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+        LoginDisplayHost::default_host()->GetOobeWebContents(), script,
+        &result));
+    EXPECT_TRUE(result);
+  }
 
   const std::initializer_list<base::StringPiece> install_button = {
-      "recommend-apps-old", "installButton"};
+      "recommend-apps", "installButton"};
   test::OobeJS().CreateEnabledWaiter(true, install_button)->Wait();
   test::OobeJS().TapOnPath(install_button);
 
   OobeScreenExitWaiter(RecommendAppsScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'recommend-apps-old' screen done.";
+  LOG(INFO) << "OobeInteractiveUITest: 'recommend-apps' screen done.";
 }
 
 // Waits for AppDownloadingScreen to be shown, clicks 'Continue' button, and
@@ -397,6 +415,25 @@ void HandleGestureNavigationScreen() {
   OobeScreenExitWaiter(GestureNavigationScreenView::kScreenId).Wait();
 }
 
+// Waits for theme selection to get shown, then taps through the screen
+// and waits for the screen to exit.
+void HandleThemeSelectionScreen() {
+  OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+
+  // Enable the tablet mode shelf navigation buttons so that the next button
+  // is shown on the marketing opt in screen in tablet mode.
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+
+  test::OobeJS().CreateVisibilityWaiter(true, {"theme-selection"})->Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"theme-selection", "nextButton"})
+      ->Wait();
+  test::OobeJS().TapOnPath({"theme-selection", "nextButton"});
+
+  OobeScreenExitWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+}
+
 // Waits for marketing opt in screen to get shown, then taps through the screen
 // and waits for the screen to exit.
 void HandleMarketingOptInScreen() {
@@ -429,12 +466,26 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
 
   // RecommendAppsFetcher:
   void Start() override {
+    if (IsNewRecommendedAppsEnabled()) {
+      base::Value::Dict app;
+      app.Set("packageName", "test.package");
+      app.Set("title", "TestName");
+      base::Value::Dict big_app;
+      big_app.Set("androidApp", std::move(app));
+      base::Value::List app_list;
+      app_list.Append(std::move(big_app));
+      base::Value::Dict response_dict;
+      response_dict.Set("recommendedApp", std::move(app_list));
+      delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
+      return;
+    }
     base::Value app(base::Value::Type::DICTIONARY);
     app.SetKey("package_name", base::Value("test.package"));
     base::Value app_list(base::Value::Type::LIST);
     app_list.Append(std::move(app));
     delegate_->OnLoadSuccess(std::move(app_list));
   }
+
   void Retry() override { NOTREACHED(); }
 
  private:
@@ -554,6 +605,13 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
       enabled_features.push_back(features::kOobeRemoveShutdownButton);
     } else {
       disabled_features.push_back(features::kOobeRemoveShutdownButton);
+    }
+    if (params_.arc_state == ArcState::kAcceptTermsRecommendAppsNewLayout) {
+      enabled_features.push_back(::features::kAppDiscoveryForOobe);
+      enabled_features.push_back(features::kOobeNewRecommendApps);
+    } else {
+      disabled_features.push_back(::features::kAppDiscoveryForOobe);
+      disabled_features.push_back(features::kOobeNewRecommendApps);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -788,7 +846,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
     HandleArcTermsOfServiceScreen();
   }
 
-  if (test_setup()->arc_state() == ArcState::kAcceptTerms) {
+  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
     HandleRecommendAppsScreen();
     HandleAppDownloadingScreen();
   }
@@ -798,6 +856,11 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
     HandleGestureNavigationScreen();
+  }
+
+  if (features::IsDarkLightModeEnabled() &&
+      features::IsOobeThemeSelectionEnabled()) {
+    HandleThemeSelectionScreen();
   }
 
   HandleMarketingOptInScreen();
@@ -832,12 +895,14 @@ IN_PROC_BROWSER_TEST_P(OobeInteractiveUITest, MAYBE_SimpleEndToEnd) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OobeInteractiveUITest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(ArcState::kNotAvailable,
-                                     ArcState::kAcceptTerms)));
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(ArcState::kNotAvailable,
+                        ArcState::kAcceptTerms,
+                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
 
 class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
  public:
@@ -922,12 +987,14 @@ IN_PROC_BROWSER_TEST_P(OobeZeroTouchInteractiveUITest, MAYBE_EndToEnd) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OobeZeroTouchInteractiveUITest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(ArcState::kNotAvailable,
-                                     ArcState::kAcceptTerms)));
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(ArcState::kNotAvailable,
+                        ArcState::kAcceptTerms,
+                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
 
 class PublicSessionOobeTest
     : public MixinBasedInProcessBrowserTest,
@@ -1135,7 +1202,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
     HandleArcTermsOfServiceScreen();
   }
 
-  if (test_setup()->arc_state() == ArcState::kAcceptTerms) {
+  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
     HandleRecommendAppsScreen();
     HandleAppDownloadingScreen();
   }
@@ -1145,6 +1212,12 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
     HandleGestureNavigationScreen();
+
+    if (features::IsDarkLightModeEnabled() &&
+        features::IsOobeThemeSelectionEnabled()) {
+      HandleThemeSelectionScreen();
+    }
+
     HandleMarketingOptInScreen();
   }
 
@@ -1154,10 +1227,12 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     EphemeralUserOobeTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(ArcState::kNotAvailable,
-                                     ArcState::kAcceptTerms)));
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(ArcState::kNotAvailable,
+                        ArcState::kAcceptTerms,
+                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
 }  //  namespace ash

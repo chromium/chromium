@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -33,6 +34,9 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/lens/lens_features.h"
@@ -118,7 +122,7 @@ std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents->GetMainFrame(), params);
+      *web_contents->GetPrimaryMainFrame(), params);
   menu->set_protocol_handler_registry(registry);
   menu->Init();
   return menu;
@@ -484,7 +488,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     params.unfiltered_link_url = params.link_url =
         GURL(chrome::kChromeUISettingsURL);
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        *web_contents()->GetMainFrame(), params);
+        *web_contents()->GetPrimaryMainFrame(), params);
     menu->set_protocol_handler_registry(registry_.get());
     menu->Init();
     return menu;
@@ -543,7 +547,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
   params.page_url = GURL("http://www.foo.com/");
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->set_dlp_rules_manager(nullptr);
   menu->set_selection_navigation_url(GURL("http://www.bar.com/"));
 
@@ -599,7 +603,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
   params.unfiltered_link_url = params.link_url;
   params.has_image_contents = false;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   AppendImageItems(menu.get());
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LOAD_IMAGE));
@@ -612,7 +616,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Video item should have suggested file name.
@@ -623,7 +627,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   params = CreateParams(MenuItem::AUDIO);
   params.suggested_filename = kTestSuggestedFileName;
   menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Audio item should have suggested file name.
@@ -637,7 +641,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
 TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   TestNavigationDelegate delegate;
   web_contents()->SetDelegate(&delegate);
-  content::RenderFrameHost& main_frame = *web_contents()->GetMainFrame();
+  content::RenderFrameHost& main_frame = *web_contents()->GetPrimaryMainFrame();
 
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
@@ -662,7 +666,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
 TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
   TestNavigationDelegate delegate;
   web_contents()->SetDelegate(&delegate);
-  content::RenderFrameHost& main_frame = *web_contents()->GetMainFrame();
+  content::RenderFrameHost& main_frame = *web_contents()->GetPrimaryMainFrame();
 
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
@@ -689,7 +693,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
@@ -712,7 +716,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *incognito_web_contents->GetMainFrame(), params);
+      *incognito_web_contents->GetPrimaryMainFrame(), params);
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
@@ -748,7 +752,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
       CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
   params.page_url = chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage);
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->set_selection_navigation_url(GURL("https://www.foo.com/"));
   menu->Init();
 
@@ -762,7 +766,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
       CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
   params.page_url = chrome::GetSettingsUrl(chrome::kPasswordCheckSubPage);
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetMainFrame(), params);
+      *web_contents()->GetPrimaryMainFrame(), params);
   menu->set_selection_navigation_url(GURL("https://www.foo.com/"));
   menu->Init();
 
@@ -783,7 +787,8 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
         web_contents()->GetLastCommittedURL(),
         TabWebFeedFollowState::kNotFollowed, std::string());
     content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
     menu.Init();
     EXPECT_TRUE(menu.IsItemPresent(IDC_FOLLOW));
     EXPECT_FALSE(menu.IsItemPresent(IDC_UNFOLLOW));
@@ -795,7 +800,8 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
         web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
         std::string());
     content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
     menu.Init();
     EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
     EXPECT_TRUE(menu.IsItemPresent(IDC_UNFOLLOW));
@@ -808,11 +814,67 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
         web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kUnknown,
         std::string());
     content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
     menu.Init();
     EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
     EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
   }
+}
+
+class RenderViewContestMenuAutofillTest
+    : public RenderViewContextMenuPrefsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderViewContestMenuAutofillTest() {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillShowManualFallbackInContextMenu);
+  }
+
+ protected:
+  // Returns true if the test needs to run in incognito mode.
+  bool IsIncognito() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
+                         RenderViewContestMenuAutofillTest,
+                         testing::Bool());
+
+// Verify that Autofill context menu items are displayed on a plain text field.
+TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
+  autofill::PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile()->GetOriginalProfile());
+  DCHECK(pdm);
+  pdm->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));
+
+  if (IsIncognito()) {
+    // Verify that Autofill context menu items are displayed on a number field
+    // in Incognito.
+    std::unique_ptr<content::WebContents> incognito_web_contents(
+        content::WebContentsTester::CreateTestWebContents(
+            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+            nullptr));
+
+    content::WebContentsTester::For(incognito_web_contents.get())
+        ->NavigateAndCommit(GURL("http://www.foo.com/"));
+  } else {
+    NavigateAndCommit(GURL("http://www.foo.com/"));
+  }
+  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+  params.input_field_type =
+      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(
+      menu->IsItemInRangePresent(IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST,
+                                 IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -824,7 +886,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -841,7 +904,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
   // Set enterprise policy to false.
   profile()->GetPrefs()->SetBoolean(prefs::kLensRegionSearchEnabled, false);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -856,7 +920,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabledOnImage) {
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
   params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   AppendImageItems(&menu);
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -872,7 +937,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
   SetUserSelectedDefaultSearchProvider("https://www.search.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
@@ -888,7 +954,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
   SetUserSelectedDefaultSearchProvider("https://www.search.com",
                                        /*supports_image_search=*/false);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH));
@@ -903,7 +970,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchExperimentDisabled) {
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
@@ -918,7 +986,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   params.page_url = GURL(chrome::kChromeUISettingsURL);
-  TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));

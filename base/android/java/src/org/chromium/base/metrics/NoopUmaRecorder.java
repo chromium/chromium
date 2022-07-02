@@ -21,4 +21,14 @@ package org.chromium.base.metrics;
 
     @Override
     public void recordUserAction(String name, long elapsedRealtimeMillis) {}
+
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        return 0;
+    }
+
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        return 0;
+    }
 }

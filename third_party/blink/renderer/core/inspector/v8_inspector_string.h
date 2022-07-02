@@ -98,14 +98,6 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 }  // namespace blink
 
 // TODO(dgozman): migrate core/inspector/protocol to wtf::HashMap.
-namespace std {
-template <>
-struct hash<WTF::String> {
-  std::size_t operator()(const WTF::String& string) const {
-    return StringHash::GetHash(string);
-  }
-};
-}  // namespace std
 
 // See third_party/inspector_protocol/crdtp/serializer_traits.h.
 namespace crdtp {

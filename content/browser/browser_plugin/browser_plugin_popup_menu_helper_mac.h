@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_POPUP_MENU_HELPER_MAC_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_POPUP_MENU_HELPER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -38,7 +39,7 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
   // PopupMenuHelper:Delegate:
   void OnMenuClosed() override;
 
-  RenderFrameHostImpl* embedder_rfh_;
+  raw_ptr<RenderFrameHostImpl> embedder_rfh_;
 };
 
 }  // namespace content

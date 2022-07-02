@@ -29,6 +29,7 @@
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/screen.h"
 
 #define EXPECT_HOST_LIST_STATE(expected) \
   EXPECT_EQ(expected, host_list_service_.state())
@@ -83,6 +84,7 @@ class HostListServiceTest : public PlatformTest {
  private:
   base::CallbackListSubscription host_list_state_subscription_;
   base::CallbackListSubscription fetch_failure_subscription_;
+  display::ScopedNativeScreen screen_;
 };
 
 HostListServiceTest::HostListServiceTest()

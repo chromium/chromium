@@ -50,6 +50,9 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         offset.block_offset, FragmentainerSpaceAtBfcStart(ConstraintSpace()));
   };
 
+  Vector<LayoutUnit> row_offsets = {LayoutUnit()};
+  wtf_size_t actual_start_row_index = 0u;
+
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
                                       /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
@@ -71,9 +74,11 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     if (!is_first_non_collapsed_row && !is_row_collapsed)
       offset.block_offset += table_data.table_border_spacing.block_size;
 
+    DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
+              ConstraintSpace().GetWritingMode());
+
     NGConstraintSpaceBuilder row_space_builder(
-        table_data.table_writing_direction.GetWritingMode(),
-        table_data.table_writing_direction,
+        ConstraintSpace(), table_data.table_writing_direction,
         /* is_new_fc */ true);
     row_space_builder.SetAvailableSize(available_size);
     row_space_builder.SetPercentageResolutionSize(available_size);
@@ -119,6 +124,13 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     offset.block_offset += fragment.BlockSize();
     is_first_non_collapsed_row &= is_row_collapsed;
 
+    if (table_data.has_collapsed_borders) {
+      // Determine the start row-index for this section.
+      if (row_offsets.size() == 1u)
+        actual_start_row_index = row_index;
+      row_offsets.emplace_back(offset.block_offset);
+    }
+
     if (container_builder_.HasInflowChildBreakInside())
       break;
   }
@@ -141,6 +153,12 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   if (section_baseline)
     container_builder_.SetBaseline(*section_baseline);
   container_builder_.SetIsTableNGPart();
+
+  // Store the collapsed-borders row geometry on this section fragment.
+  if (table_data.has_collapsed_borders && row_offsets.size() > 1u) {
+    container_builder_.SetTableSectionCollapsedBordersGeometry(
+        actual_start_row_index, std::move(row_offsets));
+  }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(

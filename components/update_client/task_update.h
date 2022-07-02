@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
@@ -66,6 +67,8 @@ class TaskUpdate : public Task {
   UpdateClient::CrxDataCallback crx_data_callback_;
   UpdateClient::CrxStateChangeCallback crx_state_change_callback_;
   Callback callback_;
+  bool cancelled_ = false;
+  base::RepeatingClosure cancel_callback_ = base::DoNothing();
 };
 
 }  // namespace update_client

@@ -103,7 +103,6 @@ HTMLSelectElement::HTMLSelectElement(Document& document)
       last_on_change_option_(nullptr),
       is_multiple_(false),
       should_recalc_list_items_(false),
-      is_autofilled_by_preview_(false),
       index_to_select_on_cancel_(-1) {
   // Make sure SelectType is created after initializing |uses_menu_list_|.
   select_type_ = SelectType::Create(*this);
@@ -277,13 +276,30 @@ void HTMLSelectElement::remove(int option_index) {
     option->remove(IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-String HTMLSelectElement::value() const {
+String HTMLSelectElement::Value() const {
   if (HTMLOptionElement* option = SelectedOption())
     return option->value();
   return "";
 }
 
-void HTMLSelectElement::setValue(const String& value, bool send_events) {
+void HTMLSelectElement::setValueForBinding(const String& value) {
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    SetValue(value);
+  } else {
+    String old_value = this->Value();
+    SetValue(value, false,
+             value != old_value ? WebAutofillState::kNotFilled
+                                : WebAutofillState::kAutofilled);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
+                                                               old_value);
+    }
+  }
+}
+
+void HTMLSelectElement::SetValue(const String& value,
+                                 bool send_events,
+                                 WebAutofillState autofill_state) {
   HTMLOptionElement* option = nullptr;
   // Find the option with value() matching the given parameter and make it the
   // current selection.
@@ -296,15 +312,18 @@ void HTMLSelectElement::setValue(const String& value, bool send_events) {
 
   HTMLOptionElement* previous_selected_option = SelectedOption();
   SetSuggestedOption(nullptr);
-  if (is_autofilled_by_preview_)
-    SetAutofillState(WebAutofillState::kNotFilled);
   SelectOptionFlags flags = kDeselectOtherOptionsFlag | kMakeOptionDirtyFlag;
   if (send_events)
     flags |= kDispatchInputAndChangeEventFlag;
-  SelectOption(option, flags);
+  SelectOption(option, flags, autofill_state);
 
   if (send_events && previous_selected_option != option)
     select_type_->ListBoxOnChange();
+}
+
+void HTMLSelectElement::SetAutofillValue(const String& value,
+                                         WebAutofillState autofill_state) {
+  SetValue(value, true, autofill_state);
 }
 
 String HTMLSelectElement::SuggestedValue() const {
@@ -320,7 +339,6 @@ void HTMLSelectElement::SetSuggestedValue(const String& value) {
   for (auto* const option : GetOptionList()) {
     if (option->value() == value) {
       SetSuggestedOption(option);
-      is_autofilled_by_preview_ = true;
       return;
     }
   }
@@ -691,6 +709,8 @@ int HTMLSelectElement::SelectedListIndex() const {
 void HTMLSelectElement::SetSuggestedOption(HTMLOptionElement* option) {
   if (suggested_option_ == option)
     return;
+  SetAutofillState(option ? WebAutofillState::kPreviewed
+                          : WebAutofillState::kNotFilled);
   suggested_option_ = option;
 
   select_type_->DidSetSuggestedOption(option);
@@ -811,14 +831,13 @@ void HTMLSelectElement::HrInsertedOrRemoved(HTMLHRElement& hr) {
 // TODO(tkent): This function is not efficient.  It contains multiple O(N)
 // operations. crbug.com/577989.
 void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
-                                     SelectOptionFlags flags) {
+                                     SelectOptionFlags flags,
+                                     WebAutofillState autofill_state) {
   TRACE_EVENT0("blink", "HTMLSelectElement::selectOption");
 
   bool should_update_popup = false;
 
-  // SelectedOption() is O(N).
-  if (IsAutofilled() && SelectedOption() != element)
-    SetAutofillState(WebAutofillState::kNotFilled);
+  SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
 
   if (element) {
     if (!element->Selected())
@@ -842,6 +861,13 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
         ->GetChromeClient()
         .DidChangeSelectionInSelectControl(*this);
   }
+
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled value,
+  // which resets the autofill state. Even if the website modifies the from
+  // control element's content during the autofill operation, we want the state
+  // to show as as autofilled.
+  SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
 }
 
 void HTMLSelectElement::DispatchFocusEvent(

@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
-#include "chrome/browser/ash/guest_os/public/types.h"
 
-#ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_
-#define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 namespace guest_os {
 
 MockMountProvider::MockMountProvider()
-    : profile_(nullptr), container_id_(crostini::ContainerId::GetDefault()) {}
+    : profile_(nullptr), container_id_(crostini::DefaultContainerId()) {}
 
 MockMountProvider::MockMountProvider(Profile* profile,
-                                     crostini::ContainerId container_id)
+                                     guest_os::GuestId container_id)
     : profile_(profile), container_id_(container_id) {}
 
 std::string MockMountProvider::DisplayName() {
@@ -25,14 +24,25 @@ Profile* MockMountProvider::profile() {
   return profile_;
 }
 
-crostini::ContainerId MockMountProvider::ContainerId() {
+guest_os::GuestId MockMountProvider::GuestId() {
   return container_id_;
 }
 
 VmType MockMountProvider::vm_type() {
-  return VmType::ApplicationList_VmType_PLUGIN_VM;
+  return VmType::PLUGIN_VM;
+}
+
+void MockMountProvider::Prepare(
+    base::OnceCallback<
+        void(bool success, int cid, int port, base::FilePath homedir)>
+        callback) {
+  std::move(callback).Run(true, 41, 1234, base::FilePath());
+}
+
+std::unique_ptr<GuestOsFileWatcher> MockMountProvider::CreateFileWatcher(
+    base::FilePath mount_path,
+    base::FilePath relative_path) {
+  return nullptr;
 }
 
 }  // namespace guest_os
-
-#endif  // CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_

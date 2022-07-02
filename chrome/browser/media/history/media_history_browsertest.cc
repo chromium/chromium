@@ -733,16 +733,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DISABLED_GetPlaybackSessions) {
               GetPlaybackSessionsSync(GetOTRMediaHistoryService(browser), 2));
   }
 }
-
-// TODO(crbug.com/1176025): Flaking on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SaveImagesWithDifferentSessions \
-  DISABLED_SaveImagesWithDifferentSessions
-#else
-#define MAYBE_SaveImagesWithDifferentSessions SaveImagesWithDifferentSessions
-#endif
 IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       MAYBE_SaveImagesWithDifferentSessions) {
+                       DISABLED_SaveImagesWithDifferentSessions) {
   auto* browser = CreateBrowserFromParam();
   auto expected_metadata = GetExpectedMetadata();
   auto expected_artwork = GetExpectedArtwork();

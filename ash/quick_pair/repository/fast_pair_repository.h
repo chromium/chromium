@@ -36,6 +36,7 @@ using ValidModelIdCallback = base::OnceCallback<void(bool)>;
 using CheckOptInStatusCallback =
     base::OnceCallback<void(nearby::fastpair::OptInStatus)>;
 using UpdateOptInStatusCallback = base::OnceCallback<void(bool)>;
+using DeleteAssociatedDeviceCallback = base::OnceCallback<void(bool)>;
 using DeleteAssociatedDeviceByAccountKeyCallback =
     base::OnceCallback<void(bool)>;
 using GetSavedDevicesCallback =
@@ -71,11 +72,18 @@ class FastPairRepository {
   virtual void AssociateAccountKey(scoped_refptr<Device> device,
                                    const std::vector<uint8_t>& account_key) = 0;
 
-  // Deletes the associated data for a given |device|.
+  // Stores the account_key for a |device| locally in the SavedDeviceRegistry,
+  // skipping the step where we send a request to the server. The account key
+  // should be stored in the additional data field of the device, fails
+  // otherwise.
+  virtual bool AssociateAccountKeyLocally(scoped_refptr<Device> device) = 0;
+
+  // Deletes the associated data for device with a given |mac_address|.
   // Returns true if a delete will be processed for this device, false
   // otherwise.
-  virtual bool DeleteAssociatedDevice(
-      const device::BluetoothDevice* device) = 0;
+  virtual void DeleteAssociatedDevice(
+      const std::string& mac_address,
+      DeleteAssociatedDeviceCallback callback) = 0;
 
   // Deletes the associated data for a given |account_key|.
   // Runs true if a delete is successful for this account key, false

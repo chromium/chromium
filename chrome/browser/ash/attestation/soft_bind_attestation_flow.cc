@@ -139,13 +139,13 @@ void SoftBindAttestationFlow::Session::ReportFailure(
     LOG(ERROR) << "Attestation session failure callback in null.";
     return;
   }
-  std::move(callback_).Run(
-      std::vector<std::string>{"INVALID:" + error_message});
+  std::move(callback_).Run(std::vector<std::string>{"INVALID:" + error_message},
+                           /*valid=*/false);
 }
 
 void SoftBindAttestationFlow::Session::ReportSuccess(
     const std::vector<std::string>& certificate_chain) {
-  std::move(callback_).Run(certificate_chain);
+  std::move(callback_).Run(certificate_chain, /*valid=*/true);
 }
 
 SoftBindAttestationFlow::SoftBindAttestationFlow()
@@ -169,7 +169,8 @@ void SoftBindAttestationFlow::GetCertificate(Callback callback,
   if (!IsAttestationAllowedByPolicy()) {
     LOG(ERROR) << "Attestation not allowed by device policy";
     std::move(callback).Run(
-        std::vector<std::string>{"INVALID:attestationNotAllowed"});
+        std::vector<std::string>{"INVALID:attestationNotAllowed"},
+        /*valid=*/false);
     return;
   }
   GetCertificateInternal(

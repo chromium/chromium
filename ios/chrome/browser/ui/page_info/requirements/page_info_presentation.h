@@ -13,15 +13,15 @@
 // Info UI.
 @protocol PageInfoPresentation
 
-// Presents the |pageInfoView| for the Page Info UI. Implementors must ensure
-// that |pageInfoView| is the appropriate size for presentation.
+// Presents the `pageInfoView` for the Page Info UI. Implementors must ensure
+// that `pageInfoView` is the appropriate size for presentation.
 - (void)presentPageInfoView:(UIView*)pageInfoView;
 
 // Called before the Page Info UI is presented.
 - (void)prepareForPageInfoPresentation;
 
-// Converts |origin| to the coordinate system used for presenting the Page Info
-// UI. |origin| should be in window coordinates.
+// Converts `origin` to the coordinate system used for presenting the Page Info
+// UI. `origin` should be in window coordinates.
 - (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin;
 
 @end

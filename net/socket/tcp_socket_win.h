@@ -123,6 +123,11 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
+  // Opens the socket and returns the underlying SocketDescriptor as well as the
+  // result of Open(). This method is used by the socket broker.
+  static int OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                            SocketDescriptor* out);
+
   // Return the underlying SocketDescriptor and clean up this object, which may
   // no longer be used. This method should be used only for testing. No read,
   // write, or accept operations should be pending.
@@ -171,14 +176,14 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
   HANDLE accept_event_;
   base::win::ObjectWatcher accept_watcher_;
 
-  raw_ptr<std::unique_ptr<TCPSocketWin>> accept_socket_;
-  raw_ptr<IPEndPoint> accept_address_;
+  raw_ptr<std::unique_ptr<TCPSocketWin>> accept_socket_ = nullptr;
+  raw_ptr<IPEndPoint> accept_address_ = nullptr;
   CompletionOnceCallback accept_callback_;
 
   // The various states that the socket could be in.
-  bool waiting_connect_;
-  bool waiting_read_;
-  bool waiting_write_;
+  bool waiting_connect_ = false;
+  bool waiting_read_ = false;
+  bool waiting_write_ = false;
 
   // The core of the socket that can live longer than the socket itself. We pass
   // resources to the Windows async IO functions and we have to make sure that
@@ -198,9 +203,9 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   std::unique_ptr<IPEndPoint> peer_address_;
   // The OS error that a connect attempt last completed with.
-  int connect_os_error_;
+  int connect_os_error_ = 0;
 
-  bool logging_multiple_connect_attempts_;
+  bool logging_multiple_connect_attempts_ = false;
 
   NetLogWithSource net_log_;
 

@@ -17,8 +17,6 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -63,6 +61,7 @@ FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
   CHECK(profile->AsTestingProfile());
   auto* test_provider = static_cast<FakeWebAppProvider*>(
       WebAppProvider::GetForLocalAppsUnchecked(profile));
+  CHECK(test_provider);
   CHECK(!test_provider->started_);
 
   // Disconnect so that clients are forced to call Start() before accessing any
@@ -143,12 +142,6 @@ void FakeWebAppProvider::SetWebAppUiManager(
   ui_manager_ = std::move(ui_manager);
 }
 
-void FakeWebAppProvider::SetSystemWebAppManager(
-    std::unique_ptr<SystemWebAppManager> system_web_app_manager) {
-  CheckNotStarted();
-  system_web_app_manager_ = std::move(system_web_app_manager);
-}
-
 void FakeWebAppProvider::SetWebAppPolicyManager(
     std::unique_ptr<WebAppPolicyManager> web_app_policy_manager) {
   CheckNotStarted();
@@ -173,6 +166,11 @@ WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
   return *icon_manager_;
 }
 
+WebAppCommandManager& FakeWebAppProvider::GetCommandManager() const {
+  DCHECK(command_manager_);
+  return *command_manager_;
+}
+
 AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
   DCHECK(database_factory_);
   return *database_factory_;
@@ -181,12 +179,6 @@ AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
 void FakeWebAppProvider::StartWithSubsystems() {
   CheckNotStarted();
   SetRunSubsystemStartupTasks(true);
-  // Use a TestSystemWebAppManager to skip system web apps being
-  // auto-installed on |Start|.
-  // TODO(crbug.com/973324): This is set in `SetDefaultFakeSubsystems`. Remove
-  // it from here.
-  SetSystemWebAppManager(
-      std::make_unique<web_app::TestSystemWebAppManager>(profile_));
   Start();
 }
 
@@ -220,11 +212,6 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
       std::make_unique<FakeExternallyManagedAppManager>(profile_));
 
   SetWebAppPolicyManager(std::make_unique<WebAppPolicyManager>(profile_));
-
-  // Use a TestSystemWebAppManager to skip system web apps being
-  // auto-installed on |Start|.
-  SetSystemWebAppManager(
-      std::make_unique<web_app::TestSystemWebAppManager>(profile_));
 
   SetCommandManager(std::make_unique<WebAppCommandManager>(profile_));
 
@@ -267,6 +254,7 @@ void FakeWebAppProviderCreator::OnWillCreateBrowserContextServices(
 std::unique_ptr<KeyedService> FakeWebAppProviderCreator::CreateWebAppProvider(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
+  DCHECK(!WebAppProviderFactory::IsServiceCreatedForProfile(profile));
   if (!AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
   return callback_.Run(profile);

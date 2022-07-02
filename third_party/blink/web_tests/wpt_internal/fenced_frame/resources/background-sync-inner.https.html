@@ -5,24 +5,28 @@
 <title>Fenced frame content to report the result of background sync's register</title>
 
 <body>
-<script>
-(async function() {
+<script type="module">
+  import {getOneShotSyncPromise, getPeriodicSyncPromise} from './background-sync-helper.js';
+
   const [background_sync_register_key] = parseKeylist();
+  const searchParams = new URL(location.href).searchParams;
+  const method = searchParams.get('method');
+  const periodic = searchParams.get('periodic');
 
   navigator.serviceWorker.register("empty-worker.js", { scope: location.href });
   const registration = await navigator.serviceWorker.ready;
 
-  // This test verifies that one-shot syncs can not be registered from a
-  // fenced frame.
-  registration.sync.register('fencedframe-oneshot').then(() => {
+  try {
+    if (periodic) {
+      await getPeriodicSyncPromise(registration, method);
+    } else {
+      await getOneShotSyncPromise(registration, method);
+    }
     writeValueToServer(background_sync_register_key, "unexpectedly registered");
-  })
-  .catch((e) => {
-    writeValueToServer(background_sync_register_key, "failed");
-  })
-  .finally(() => {
+  } catch (e) {
+    writeValueToServer(background_sync_register_key, e.message);
+  } finally {
     registration.unregister();
-  });
-})();
+  }
 </script>
 </body>

@@ -26,7 +26,7 @@ NSString* const kTestHost = @"chromium.org";
 NSString* const kTestHttpOrigin = @"http://chromium.org";
 NSString* const kTestHttpsOrigin = @"https://chromium.org:80";
 
-// Returns protection space for the given |host|, |protocol| and |port|.
+// Returns protection space for the given `host`, `protocol` and `port`.
 NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                                 NSString* protocol,
                                                 NSInteger port) {
@@ -37,13 +37,13 @@ NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                authenticationMethod:nil];
 }
 
-// Returns protection space for the given |host| and |protocol| and port 80.
+// Returns protection space for the given `host` and `protocol` and port 80.
 NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                                 NSString* protocol) {
   return GetProtectionSpaceForHost(host, protocol, 80);
 }
 
-// Returns protection space for the given proxy |host| and |protocol|.
+// Returns protection space for the given proxy `host` and `protocol`.
 NSURLProtectionSpace* GetProtectionSpaceForProxyHost(NSString* host,
                                                      NSString* type) {
   return [[NSURLProtectionSpace alloc] initWithProxyHost:host

@@ -356,13 +356,6 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();
 
-// Returns true if the first batch of Pedals on Android is enabled.
-bool IsPedalsAndroidBatch1Enabled();
-
-// Returns true if the third batch of Pedals is enabled for non-English
-// locales.
-bool IsPedalsBatch3NonEnglishEnabled();
-
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();
@@ -486,26 +479,17 @@ bool RichAutocompletionShowAdditionalText();
 extern const base::FeatureParam<bool> kRichAutocompletionAutocompleteTitles;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteTitlesShortcutProvider;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesNoInputsWithSpaces;
 extern const base::FeatureParam<int>
     kRichAutocompletionAutocompleteTitlesMinChar;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteNonPrefixAll;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteNonPrefixShortcutProvider;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces;
 extern const base::FeatureParam<int>
     kRichAutocompletionAutocompleteNonPrefixMinChar;
 extern const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText;
-extern const base::FeatureParam<bool> kRichAutocompletionSplitTitleCompletion;
-extern const base::FeatureParam<bool> kRichAutocompletionSplitUrlCompletion;
-extern const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteShortcutText;
-extern const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces;
 extern const base::FeatureParam<int>
     kRichAutocompletionAutocompleteShortcutTextMinChar;
 extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
@@ -534,6 +518,9 @@ extern const base::FeatureParam<bool>
     kShortBookmarkSuggestionsByTotalInputLengthCounterfactual;
 extern const base::FeatureParam<int>
     kShortBookmarkSuggestionsByTotalInputLengthThreshold;
+
+// Shortcut Expanding.
+bool IsShortcutExpandingEnabled();
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 // Indicates whether the user is in the counterfactual group in the experiment
@@ -564,6 +551,10 @@ extern const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits;
 // prefix-suggest. A duplicative visit is a visit to the same search term in an
 // interval smaller than kAutocompleteDuplicateVisitIntervalThreshold.
 extern const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits;
+
+// Specifies the relevance scores for the Site Search Starter Pack ACMatches
+// (e.g. @bookmarks, @history) provided by the Builtin Provider.
+extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
 
 // New params should be inserted above this comment and formatted as:
 // - Short comment categorizing the relevant features & params.

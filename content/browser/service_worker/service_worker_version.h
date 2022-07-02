@@ -60,7 +60,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -103,6 +103,8 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StallInStopping_DetachThenStart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StartRequestWithNullContext);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
                      WorkerLifetimeWithExternalRequest);
+FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
+                     DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest);
 }  // namespace service_worker_version_unittest
 
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, ScriptResponseTime);
@@ -729,6 +731,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       WorkerLifetimeWithExternalRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      service_worker_version_unittest::ServiceWorkerVersionTest,
+      DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, ScriptResponseTime);
 
   // Contains timeout info for InflightRequest.
@@ -950,6 +955,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // exist whenever there is a live version, but `registation_status_` is needed
   // to check if the registration is already deleted or not.
   ServiceWorkerRegistration::Status registration_status_;
+
+  // A copy of ServiceWorkerRegistration::ancestor_frame_type(). Cached for the
+  // same reason as `navigation_preload_state_`: A live registration doesn't
+  // necessarily exist whenever there is a live version, but
+  // `ancestor_frame_type_` is needed to check if it was registered in fenced
+  // frame or not.
+  const blink::mojom::AncestorFrameType ancestor_frame_type_;
 
   // The client security state passed to the network URL loader factory used to
   // fetch service worker subresources.

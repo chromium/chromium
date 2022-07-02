@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wayland-server-protocol.h>
 #include <wayland-server.h>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +22,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
+#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -73,33 +77,6 @@ class TestDisplayObserver : public display::DisplayObserver {
   display::Display removed_display_;
 };
 
-class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
- public:
-  MockWaylandPlatformWindowDelegate() = default;
-  MockWaylandPlatformWindowDelegate(const MockWaylandPlatformWindowDelegate&) =
-      delete;
-  MockWaylandPlatformWindowDelegate operator=(
-      const MockWaylandPlatformWindowDelegate&) = delete;
-  ~MockWaylandPlatformWindowDelegate() override = default;
-
-  gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const override {
-    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
-    return gfx::ScaleToEnclosingRect(rect_in_dp, scale);
-  }
-
-  gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override {
-    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
-    return gfx::ScaleToEnclosedRect(rect_in_pixels, 1.0f / scale);
-  }
-
-  void set_wayland_window(WaylandWindow* wayland_window) {
-    wayland_window_ = wayland_window;
-  }
-
- private:
-  WaylandWindow* wayland_window_ = nullptr;
-};
-
 }  // namespace
 
 class WaylandScreenTest : public WaylandTest {
@@ -115,6 +92,11 @@ class WaylandScreenTest : public WaylandTest {
     output_ = server_.output();
 
     WaylandTest::SetUp();
+
+    // Initializing the MockZAuraShell gives ownership to the wl_display.
+    // TODO(fangzhoug): Investigate resulting memory leak.
+    mock_zaura_shell_ = new wl::MockZAuraShell();
+    mock_zaura_shell_->Initialize(server_.display());
 
     output_->SetRect({kOutputWidth, kOutputHeight});
     output_->SetScale(1);
@@ -134,13 +116,13 @@ class WaylandScreenTest : public WaylandTest {
       const gfx::Rect& bounds,
       PlatformWindowType window_type,
       gfx::AcceleratedWidget parent_widget,
-      MockPlatformWindowDelegate* delegate) {
+      MockWaylandPlatformWindowDelegate* delegate) {
     PlatformWindowInitProperties properties;
     properties.bounds = bounds;
     properties.type = window_type;
     properties.parent_widget = parent_widget;
-    return WaylandWindow::Create(delegate, connection_.get(),
-                                 std::move(properties));
+    return delegate->CreateWaylandWindow(connection_.get(),
+                                         std::move(properties));
   }
 
   void ValidateTheDisplayForWidget(gfx::AcceleratedWidget widget,
@@ -150,8 +132,9 @@ class WaylandScreenTest : public WaylandTest {
     EXPECT_EQ(display_for_widget.id(), expected_display_id);
   }
 
-  wl::TestOutput* output_ = nullptr;
-  WaylandOutputManager* output_manager_ = nullptr;
+  raw_ptr<wl::MockZAuraShell> mock_zaura_shell_ = nullptr;
+  raw_ptr<wl::TestOutput> output_ = nullptr;
+  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
 
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
@@ -321,8 +304,8 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
-  gfx::Rect new_rect{100, 100};
-  output_->SetRect(new_rect);
+  const gfx::Rect physical_bounds{800, 600};
+  output_->SetRect(physical_bounds);
   output_->Flush();
 
   Sync();
@@ -330,8 +313,30 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
   uint32_t changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                             display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
-  EXPECT_EQ(observer.GetDisplay().bounds(), new_rect);
+  const gfx::Rect expected_bounds{800, 600};
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  const gfx::Size expected_size_in_pixels{800, 600};
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
+  EXPECT_EQ(observer.GetDisplay().work_area(), expected_bounds);
 
+  // Test work area.
+  const gfx::Rect new_work_area{10, 20, 700, 500};
+  const gfx::Insets expected_inset = expected_bounds.InsetsFrom(new_work_area);
+  ASSERT_TRUE(output_->GetAuraOutput());
+  output_->GetAuraOutput()->SetInsets(expected_inset);
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+  // Bounds should be unchanged.
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
+  // Work area should have new value.
+  EXPECT_EQ(observer.GetDisplay().work_area(), new_work_area);
+
+  // Test scaling.
   const int32_t new_scale_value = 2;
   output_->SetScale(new_scale_value);
   output_->Flush();
@@ -344,7 +349,200 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   EXPECT_EQ(observer.GetDisplay().device_scale_factor(), new_scale_value);
-  EXPECT_EQ(observer.GetDisplay().bounds(), gfx::Rect(50, 50));
+  // Logical bounds should shrink due to scaling.
+  const gfx::Rect scaled_bounds{400, 300};
+  EXPECT_EQ(observer.GetDisplay().bounds(), scaled_bounds);
+  // Size in pixel should stay unscaled.
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
+  gfx::Rect scaled_work_area(scaled_bounds);
+  scaled_work_area.Inset(expected_inset);
+  EXPECT_EQ(observer.GetDisplay().work_area(), scaled_work_area);
+
+  // Test rotation.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_90);
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                   display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                   display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+  // Logical bounds should now be rotated to portrait.
+  const gfx::Rect rotated_bounds{300, 400};
+  EXPECT_EQ(observer.GetDisplay().bounds(), rotated_bounds);
+  // Size in pixel gets rotated too, but stays unscaled.
+  const gfx::Size rotated_size_in_pixels{600, 800};
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), rotated_size_in_pixels);
+  gfx::Rect rotated_work_area(rotated_bounds);
+  rotated_work_area.Inset(expected_inset);
+  EXPECT_EQ(observer.GetDisplay().work_area(), rotated_work_area);
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_270);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_270);
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
+// Regression test for crbug.com/1310981.
+// Some devices use display panels built in portrait orientation, but are used
+// in landscape orientation. Thus their physical bounds are in portrait
+// orientation along with an offset transform, which differs from the usual
+// landscape oriented bounds.
+TEST_P(WaylandScreenTest, OutputPropertyChangesWithPortraitPanelRotation) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  // wl_output.geometry origin is set in DIP screen coordinates.
+  const gfx::Point origin(50, 70);
+  // wl_output.mode size is sent in physical coordinates, so it has portrait
+  // dimensions for a display panel with portrait natural orientation.
+  const gfx::Size physical_size(1200, 1600);
+  output_->SetRect({origin, physical_size});
+
+  // Inset is sent in logical coordinates.
+  const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
+  ASSERT_TRUE(output_->GetAuraOutput());
+  output_->GetAuraOutput()->SetInsets(insets);
+
+  // Display panel's natural orientation is in portrait, so it needs a transform
+  // of 90 degrees to be in landscape.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_90);
+  // Begin with the logical transform at 0 degrees.
+  output_->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
+
+  output_->SetScale(2);
+  output_->Flush();
+
+  Sync();
+
+  uint32_t changed_values =
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
+      display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+
+  // Logical bounds should be in landscape.
+  const gfx::Rect expected_bounds(origin, gfx::Size(800, 600));
+  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  const gfx::Size expected_size_in_pixels(1600, 1200);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
+
+  gfx::Rect expected_work_area(expected_bounds);
+  expected_work_area.Inset(insets);
+  EXPECT_EQ(observer.GetDisplay().work_area(), expected_work_area);
+
+  // Panel rotation and display rotation should have an offset.
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_270);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_0);
+
+  // Further rotate the display to logical portrait orientation, which is 180
+  // with the natural orientation offset.
+  output_->SetTransform(WL_OUTPUT_TRANSFORM_180);
+  output_->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
+  output_->Flush();
+
+  Sync();
+
+  changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                   display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                   display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
+
+  // Logical bounds should now be portrait.
+  const gfx::Rect portrait_bounds(origin, gfx::Size(600, 800));
+  EXPECT_EQ(observer.GetDisplay().bounds(), portrait_bounds);
+  const gfx::Size portrait_size_in_pixels(1200, 1600);
+  EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), portrait_size_in_pixels);
+
+  gfx::Rect portrait_work_area(portrait_bounds);
+  portrait_work_area.Inset(insets);
+  EXPECT_EQ(observer.GetDisplay().work_area(), portrait_work_area);
+
+  // Panel rotation and display rotation should still have an offset.
+  EXPECT_EQ(observer.GetDisplay().panel_rotation(),
+            display::Display::Rotation::ROTATE_180);
+  EXPECT_EQ(observer.GetDisplay().rotation(),
+            display::Display::Rotation::ROTATE_270);
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
+TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  const uint32_t display_id = 7;
+  const gfx::Point origin(50, 70);
+  const gfx::Size physical_size(1200, 1600);
+  const wl_output_transform panel_transform = WL_OUTPUT_TRANSFORM_90;
+  const wl_output_transform logical_transform = WL_OUTPUT_TRANSFORM_NORMAL;
+  const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
+  const float scale = 2;
+
+  // Test with missing logical size. Should fall back to calculating from
+  // physical size.
+  platform_screen_->OnOutputAddedOrUpdated(
+      display_id, origin, gfx::Size(), physical_size, insets, scale,
+      panel_transform, logical_transform, "display");
+
+  const display::Display new_display(observer.GetDisplay());
+  EXPECT_EQ(new_display.id(), display_id);
+  EXPECT_EQ(new_display.bounds(), gfx::Rect(origin, gfx::Size(800, 600)));
+  EXPECT_EQ(new_display.GetSizeInPixel(), gfx::Size(1600, 1200));
+  gfx::Rect expected_work_area(new_display.bounds());
+  expected_work_area.Inset(insets);
+  EXPECT_EQ(new_display.work_area(), expected_work_area);
+  EXPECT_EQ(new_display.panel_rotation(), display::Display::ROTATE_270);
+  EXPECT_EQ(new_display.rotation(), display::Display::ROTATE_0);
+  EXPECT_EQ(new_display.device_scale_factor(), scale);
+  EXPECT_EQ(new_display.label(), "display");
+
+  platform_screen_->RemoveObserver(&observer);
+}
+
+TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
+  TestDisplayObserver observer;
+  platform_screen_->AddObserver(&observer);
+
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 700, 500));
+
+  platform_screen_->OnOutputAddedOrUpdated(
+      display1.id(), display1.bounds().origin(), display1.size(),
+      display1.GetSizeInPixel(), display1.GetWorkAreaInsets(),
+      display1.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL, std::string());
+  platform_screen_->OnOutputAddedOrUpdated(
+      display2.id(), display2.bounds().origin(), display2.size(),
+      display2.GetSizeInPixel(), display2.GetWorkAreaInsets(),
+      display2.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL, std::string());
+
+  EXPECT_EQ(platform_screen_->GetPrimaryDisplay(), display1);
+
+  // Simulate setting display2 as primary by moving its origin to (0,0) and
+  // shifting display1 to its left.
+  display1.set_bounds(gfx::Rect(-800, 0, 800, 600));
+  display2.set_bounds(gfx::Rect(0, 0, 700, 500));
+
+  // Purposely send the output metrics out of order.
+  platform_screen_->OnOutputAddedOrUpdated(
+      display2.id(), display2.bounds().origin(), display2.size(),
+      display2.GetSizeInPixel(), display2.GetWorkAreaInsets(),
+      display2.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL, std::string());
+  platform_screen_->OnOutputAddedOrUpdated(
+      display1.id(), display1.bounds().origin(), display1.size(),
+      display1.GetSizeInPixel(), display1.GetWorkAreaInsets(),
+      display1.device_scale_factor(), WL_OUTPUT_TRANSFORM_NORMAL,
+      WL_OUTPUT_TRANSFORM_NORMAL, std::string());
+
+  EXPECT_EQ(platform_screen_->GetPrimaryDisplay(), display2);
 
   platform_screen_->RemoveObserver(&observer);
 }
@@ -374,20 +572,19 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   // Getting a widget at a screen point outside its bounds, must result in a
   // null widget.
-  const gfx::Rect window_bounds = window_->GetBounds();
+  const gfx::Rect window_bounds = window_->GetBoundsInPixels();
   widget_at_screen_point = platform_screen_->GetAcceleratedWidgetAtScreenPoint(
       gfx::Point(window_bounds.width() + 1, window_bounds.height() + 1));
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
   MockWaylandPlatformWindowDelegate delegate;
   auto menu_window_bounds =
-      gfx::Rect(window_->GetBounds().width() - 10,
-                window_->GetBounds().height() - 10, 100, 100);
+      gfx::Rect(window_->GetBoundsInPixels().width() - 10,
+                window_->GetBoundsInPixels().height() - 10, 100, 100);
   std::unique_ptr<WaylandWindow> menu_window =
       CreateWaylandWindowWithProperties(menu_window_bounds,
                                         PlatformWindowType::kMenu,
                                         window_->GetWidget(), &delegate);
-  delegate.set_wayland_window(menu_window.get());
 
   Sync();
 
@@ -395,9 +592,9 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // window, and gathers focus.
   window_->SetPointerFocus(false);
   menu_window->SetPointerFocus(true);
-  widget_at_screen_point =
-      platform_screen_->GetAcceleratedWidgetAtScreenPoint(gfx::Point(
-          menu_window->GetBounds().x() + 1, menu_window->GetBounds().y() + 1));
+  widget_at_screen_point = platform_screen_->GetAcceleratedWidgetAtScreenPoint(
+      gfx::Point(menu_window->GetBoundsInPixels().x() + 1,
+                 menu_window->GetBoundsInPixels().y() + 1));
   EXPECT_EQ(widget_at_screen_point, menu_window->GetWidget());
 
   // Whenever a mouse pointer leaves the menu window, the accelerated widget
@@ -419,7 +616,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   Sync();
 
-  auto menu_bounds_px = menu_window->GetBounds();
+  auto menu_bounds_px = menu_window->GetBoundsInPixels();
   // Translate the point to dip.
   auto point_in_screen =
       gfx::ScaleToRoundedPoint(menu_bounds_px.origin(), 1.f / 2);
@@ -602,7 +799,7 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
 }
 
 TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
   std::unique_ptr<WaylandWindow> second_window =
       CreateWaylandWindowWithProperties(gfx::Rect(0, 0, 1920, 1080),
                                         PlatformWindowType::kWindow,
@@ -658,10 +855,10 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // WaylandScreen must return a point, which is located outside of bounds of
   // any window. Basically, it means that it takes the largest window and adds
   // 10 pixels to its width and height, and returns the value.
-  const gfx::Rect second_window_bounds = second_window->GetBounds();
+  const gfx::Rect second_window_bounds = second_window->GetBoundsInPixels();
   // A second window has largest bounds. Thus, these bounds must be taken as a
   // ground for the point outside any of the surfaces.
-  ASSERT_TRUE(window_->GetBounds() < second_window_bounds);
+  ASSERT_TRUE(window_->GetBoundsInPixels() < second_window_bounds);
   EXPECT_EQ(gfx::Point(second_window_bounds.width() + 10,
                        second_window_bounds.height() + 10),
             platform_screen_->GetCursorScreenPoint());
@@ -714,7 +911,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // Now, create a nested menu window and make sure that the cursor screen point
   // still has been correct. The location of the window is on the right side of
   // the main menu window.
-  const gfx::Rect menu_window_bounds = menu_window->GetBounds();
+  const gfx::Rect menu_window_bounds = menu_window->GetBoundsInPixels();
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithProperties(
           gfx::Rect(menu_window_bounds.x() + menu_window_bounds.width(),
@@ -863,9 +1060,9 @@ class LazilyConfiguredScreenTest
     aux_output_->SetRect({0, 0, 800, 600});
   }
 
-  wl::TestOutput* primary_output_ = nullptr;
-  wl::TestOutput* aux_output_ = nullptr;
-  WaylandOutputManager* output_manager_ = nullptr;
+  raw_ptr<wl::TestOutput> primary_output_ = nullptr;
+  raw_ptr<wl::TestOutput> aux_output_ = nullptr;
+  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
   bool auto_configure;
 };
 

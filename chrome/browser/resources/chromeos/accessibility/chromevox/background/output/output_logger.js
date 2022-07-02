@@ -6,9 +6,7 @@
  * @fileoverview Provides output logger.
  */
 
-goog.provide('OutputRulesStr');
-
-OutputRulesStr = class {
+export class OutputRulesStr {
   /**
    * @param {string} enableKey The key to enable logging in localStorage
    */
@@ -88,7 +86,7 @@ OutputRulesStr = class {
     this.str += errorMsg;
     this.str += '\n';
   }
-};
+}
 
 /**
  * @typedef {

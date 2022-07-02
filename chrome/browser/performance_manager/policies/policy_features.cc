@@ -72,12 +72,12 @@ const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure = {
 
 const base::FeatureParam<bool> kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot = {
     &kTrimArcVmOnMemoryPressure, "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot",
-    false};
+    true};
 
 const base::FeatureParam<bool>
     kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot = {
         &kTrimArcVmOnMemoryPressure,
-        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot", false};
+        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot", true};
 
 const base::FeatureParam<int> kTrimArcVmMaxPagesPerIteration = {
     &kTrimArcVmOnMemoryPressure, "MaxPageLimit", arc::ArcSession::kNoPageLimit};

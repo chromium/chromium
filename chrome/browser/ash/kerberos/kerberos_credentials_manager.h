@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -274,6 +275,11 @@ class KerberosCredentialsManager : public KeyedService,
 
   // Observer for Kerberos-related prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Subscriptions whose destruction will cancel the corresponding callbacks.
+  // The callbacks are used to listen to signals from KerberosClient.
+  base::CallbackListSubscription kerberos_file_changed_signal_subscription_;
+  base::CallbackListSubscription kerberos_ticket_expiring_signal_subscription_;
 
   // Keeps track of accounts currently being added.
   std::vector<std::unique_ptr<KerberosAddAccountRunner>> add_account_runners_;

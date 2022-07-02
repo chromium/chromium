@@ -11,7 +11,7 @@
 
 namespace chrome_test_util {
 
-// Returns a matcher for a TableViewIdentityCell based on the |email|.
+// Returns a matcher for a TableViewIdentityCell based on the `email`.
 id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email);
 
 // Returns a matcher for the done button in advanced settings.

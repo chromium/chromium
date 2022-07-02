@@ -58,7 +58,7 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
   }
 
   RenderFrameHostImpl* GetRenderFrameHost() {
-    return web_contents_->GetMainFrame();
+    return web_contents_->GetPrimaryMainFrame();
   }
 
   GURL GetSameOriginUrl(const std::string& path) {

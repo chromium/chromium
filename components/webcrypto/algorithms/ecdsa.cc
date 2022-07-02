@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/ec.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
@@ -109,7 +109,7 @@ Status ConvertDerSignatureToWebCryptoSignature(
 // ECDSA-Sig-Value.
 Status ConvertWebCryptoSignatureToDerSignature(
     EVP_PKEY* key,
-    const CryptoData& signature,
+    base::span<const uint8_t> signature,
     std::vector<uint8_t>* der_signature,
     bool* incorrect_length) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
@@ -124,10 +124,12 @@ Status ConvertWebCryptoSignatureToDerSignature(
   // is returned here rather than an error, so that the caller can fail
   // verification with a boolean, rather than reject the promise with an
   // exception.
-  if (signature.byte_length() != 2 * order_size_bytes) {
+  if (signature.size() != 2 * order_size_bytes) {
     *incorrect_length = true;
     return Status::Success();
   }
+  base::span<const uint8_t> r_bytes = signature.first(order_size_bytes);
+  base::span<const uint8_t> s_bytes = signature.subspan(order_size_bytes);
 
   *incorrect_length = false;
 
@@ -136,9 +138,8 @@ Status ConvertWebCryptoSignatureToDerSignature(
   if (!ecdsa_sig)
     return Status::OperationError();
 
-  if (!BN_bin2bn(signature.bytes(), order_size_bytes, ecdsa_sig->r) ||
-      !BN_bin2bn(signature.bytes() + order_size_bytes, order_size_bytes,
-                 ecdsa_sig->s)) {
+  if (!BN_bin2bn(r_bytes.data(), r_bytes.size(), ecdsa_sig->r) ||
+      !BN_bin2bn(s_bytes.data(), s_bytes.size(), ecdsa_sig->s)) {
     return Status::ErrorUnexpected();
   }
 
@@ -176,7 +177,7 @@ class EcdsaImplementation : public EcAlgorithm {
 
   Status Sign(const blink::WebCryptoAlgorithm& algorithm,
               const blink::WebCryptoKey& key,
-              const CryptoData& data,
+              base::span<const uint8_t> data,
               std::vector<uint8_t>* buffer) const override {
     if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
       return Status::ErrorUnexpectedKeyType();
@@ -195,7 +196,7 @@ class EcdsaImplementation : public EcAlgorithm {
     bssl::ScopedEVP_MD_CTX ctx;
     size_t sig_len = 0;
     if (!EVP_DigestSignInit(ctx.get(), nullptr, digest, nullptr, private_key) ||
-        !EVP_DigestSignUpdate(ctx.get(), data.bytes(), data.byte_length()) ||
+        !EVP_DigestSignUpdate(ctx.get(), data.data(), data.size()) ||
         !EVP_DigestSignFinal(ctx.get(), nullptr, &sig_len)) {
       return Status::OperationError();
     }
@@ -213,8 +214,8 @@ class EcdsaImplementation : public EcAlgorithm {
 
   Status Verify(const blink::WebCryptoAlgorithm& algorithm,
                 const blink::WebCryptoKey& key,
-                const CryptoData& signature,
-                const CryptoData& data,
+                base::span<const uint8_t> signature,
+                base::span<const uint8_t> data,
                 bool* signature_match) const override {
     if (key.GetType() != blink::kWebCryptoKeyTypePublic)
       return Status::ErrorUnexpectedKeyType();
@@ -242,7 +243,7 @@ class EcdsaImplementation : public EcAlgorithm {
     bssl::ScopedEVP_MD_CTX ctx;
     if (!EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
                               public_key) ||
-        !EVP_DigestVerifyUpdate(ctx.get(), data.bytes(), data.byte_length())) {
+        !EVP_DigestVerifyUpdate(ctx.get(), data.data(), data.size())) {
       return Status::OperationError();
     }
 

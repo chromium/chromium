@@ -296,6 +296,14 @@ public class PlatformNetworksManagerTest {
     }
 
     @Test
+    public void testGetAllVisibleCells_telephonyManagerUnavailable() {
+        PlatformNetworksManager.getAllVisibleCells(mContext, null, mVisibleCellCallback);
+        verify(mVisibleCellCallback).onResult(mVisibleCellsArgument.capture());
+        // Empty set expected
+        assertEquals(0, mVisibleCellsArgument.getValue().size());
+    }
+
+    @Test
     public void testGetConnectedWifi_BeforeS() {
         VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(CONNECTED_WIFI, visibleWifi);

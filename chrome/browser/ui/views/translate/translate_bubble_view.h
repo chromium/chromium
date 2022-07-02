@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -70,28 +72,18 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
+  TranslateBubbleView(views::View* anchor_view,
+                      std::unique_ptr<TranslateBubbleModel> model,
+                      translate::TranslateErrors::Type error_type,
+                      content::WebContents* web_contents,
+                      base::OnceClosure on_closing);
+
   TranslateBubbleView(const TranslateBubbleView&) = delete;
   TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
 
   ~TranslateBubbleView() override;
 
-  // Shows the Translate bubble. Returns the newly created bubble's Widget or
-  // nullptr in cases when the bubble already exists or when the bubble is not
-  // created.
-  static views::Widget* ShowBubble(views::View* anchor_view,
-                                   views::Button* highlighted_button,
-                                   content::WebContents* web_contents,
-                                   translate::TranslateStep step,
-                                   const std::string& source_language,
-                                   const std::string& target_language,
-                                   translate::TranslateErrors::Type error_type,
-                                   DisplayReason reason);
-
-  // Closes the current bubble if it exists.
-  static void CloseCurrentBubble();
-
-  // Returns the bubble view currently shown. This may return nullptr.
-  static TranslateBubbleView* GetCurrentBubble();
+  void CloseTranslateBubble();
 
   TranslateBubbleModel* model() { return model_.get(); }
 
@@ -113,11 +105,15 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // Returns the current view state.
   TranslateBubbleModel::ViewState GetViewState() const;
 
- protected:
+  // Initialize the bubble in the correct view state when it is shown.
+  void SetViewState(translate::TranslateStep step,
+                    translate::TranslateErrors::Type error_type);
+
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
 
  private:
+  // IDs used by TranslateBubbleViewTest to simulate button presses.
   enum ButtonID {
     BUTTON_ID_DONE = 1,
     BUTTON_ID_TRY_AGAIN,
@@ -134,7 +130,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
       ::Browser*,
       const ::std::u16string&);
-  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TranslateButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
+                           TargetLanguageTabTriggersTranslate);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxShortcut);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
@@ -164,12 +161,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateWithNeverTranslateSite);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
-                           ShowOriginalUpdatesViewState);
-
-  TranslateBubbleView(views::View* anchor_view,
-                      std::unique_ptr<TranslateBubbleModel> model,
-                      translate::TranslateErrors::Type error_type,
-                      content::WebContents* web_contents);
+                           SourceLanguageTabUpdatesViewState);
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -278,8 +270,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // translation. Then close the bubble view.
   void RevertOrDeclineTranslation();
 
-  static TranslateBubbleView* translate_bubble_view_;
-
   raw_ptr<views::View> translate_view_ = nullptr;
   raw_ptr<views::View> error_view_ = nullptr;
   raw_ptr<views::View> advanced_view_source_ = nullptr;
@@ -316,6 +306,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool should_never_translate_site_ = false;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
+
+  base::OnceClosure on_closing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_

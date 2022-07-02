@@ -434,7 +434,7 @@ html_to_js("web_components") {
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_card_frame.js",
-    "diagnostics_fonts_css.js",
+
     "diagnostics_network_icon.js",
     "diagnostics_sticky_banner.js",
     "diagnostics_shared_css.js",

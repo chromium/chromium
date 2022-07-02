@@ -694,23 +694,19 @@ DevToolsUIBindings::~DevToolsUIBindings() {
 
 // content::DevToolsFrontendHost::Delegate implementation ---------------------
 void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
-    base::Value message) {
+    base::Value::Dict message) {
   if (!frontend_host_)
     return;
-  const std::string* method = nullptr;
-  base::Value* params = nullptr;
-  if (message.is_dict()) {
-    method = message.FindStringKey(kFrontendHostMethod);
-    params = message.FindKey(kFrontendHostParams);
-  }
+  const std::string* method = message.FindString(kFrontendHostMethod);
+  base::Value* params = message.Find(kFrontendHostParams);
   if (!method || (params && !params->is_list())) {
     LOG(ERROR) << "Invalid message was sent to embedder: " << message;
     return;
   }
-  int id = message.FindIntKey(kFrontendHostId).value_or(0);
-  std::vector<base::Value> params_list;
+  int id = message.FindInt(kFrontendHostId).value_or(0);
+  base::Value::List params_list;
   if (params)
-    params_list = std::move(*params).TakeListDeprecated();
+    params_list = std::move(params->GetList());
   embedder_message_dispatcher_->Dispatch(
       base::BindOnce(&DevToolsUIBindings::SendMessageAck,
                      weak_factory_.GetWeakPtr(), id),
@@ -899,7 +895,8 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
     if (allow_web_ui_scheme && target_tab &&
         target_tab->GetLastCommittedURL().scheme() == gurl.scheme()) {
       std::vector<std::string> allowed_webui_hosts;
-      content::RenderFrameHost* frame_host = web_contents()->GetMainFrame();
+      content::RenderFrameHost* frame_host =
+          web_contents()->GetPrimaryMainFrame();
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
           content::CreateWebUIURLLoaderFactory(
@@ -920,7 +917,8 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
         DevToolsWindow::AsDevToolsWindow(web_contents_)
             ->GetInspectedWebContents();
     if (target_tab) {
-      auto* partition = target_tab->GetMainFrame()->GetStoragePartition();
+      auto* partition =
+          target_tab->GetPrimaryMainFrame()->GetStoragePartition();
       url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
     } else {
       base::DictionaryValue response;
@@ -1537,7 +1535,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     // process. Grant the devtools process the ability to request URLs from the
     // extension.
     content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestOrigin(
-        web_contents_->GetMainFrame()->GetProcess()->GetID(),
+        web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
         url::Origin::Create(extension->url()));
 
     base::Value::Dict extension_info;
@@ -1657,7 +1655,7 @@ void DevToolsUIBindings::CallClientMethod(
     return;
   // If the client renderer is gone (e.g., the window was closed with both the
   // inspector and client being destroyed), the message can not be sent.
-  if (!web_contents_->GetMainFrame()->IsRenderFrameCreated())
+  if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive())
     return;
   base::Value::List arguments;
   if (!arg1.is_none()) {
@@ -1669,7 +1667,7 @@ void DevToolsUIBindings::CallClientMethod(
       }
     }
   }
-  web_contents_->GetMainFrame()->ExecuteJavaScriptMethod(
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptMethod(
       base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
       std::move(arguments), std::move(completion_callback));
 }

@@ -199,6 +199,7 @@ SET TIMEOUT: navigation-api/navigation-history-entry/entries-after-bfcache-in-if
 SET TIMEOUT: navigation-timing/*
 SET TIMEOUT: old-tests/submission/Microsoft/history/history_000.htm
 SET TIMEOUT: paint-timing/resources/subframe-painting.html
+SET TIMEOUT: performance-timeline/resources/navigation-id-detached-frame-page.html
 SET TIMEOUT: portals/resources/portals-adopt-predecessor-portal.html
 SET TIMEOUT: preload/single-download-preload.html
 SET TIMEOUT: preload/resources/slow-exec.js
@@ -341,6 +342,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/prerender-response-code.html
 SET TIMEOUT: speculation-rules/prerender/resources/deferred-promise-utils.js
 SET TIMEOUT: speculation-rules/prerender/resources/utils.js
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
+SET TIMEOUT: dom/abort/crashtests/timeout-close.html
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -726,6 +728,9 @@ WEB-PLATFORM.TEST:web-bundle/resources/nested/*.wbn
 WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/*.html
 WEB-PLATFORM.TEST:web-bundle/subresource-loading/resources/*.js
+
+# well-known file has hardcoded URLs
+WEB-PLATFORM.TEST: .well-known/fedcm.json
 
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455

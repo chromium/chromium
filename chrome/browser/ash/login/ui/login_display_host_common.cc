@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -439,18 +440,14 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
-  // There are currently no global accelerators for the lock screen that
-  // require WebUI. So we do not need to specifically load it when user is
-  // logged in.
-  if (GetOobeUI() || (!MapToWebUIAccelerator(action).empty() &&
-                      !user_manager::UserManager::Get()->IsUserLoggedIn())) {
-    // Ensure WebUI is loaded.
-    GetWizardController();
-    // TODO(crbug.com/1102393): Remove once all accelerators handling is
-    // migrated to browser side.
-    GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
+  if (action == LoginAcceleratorAction::kCancelScreenAction) {
+    if (!GetOobeUI())
+      return false;
+    GetOobeUI()->GetCoreOobeView()->ForwardCancel();
+    return true;
   }
-  return true;
+
+  return false;
 }
 
 void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {
@@ -542,6 +539,12 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
     if (!IsOobeUIDialogVisible())
       // Handled by Views UI.
       return;
+    OfflineLoginScreen* offline_login_screen =
+        GetWizardController()->GetScreen<OfflineLoginScreen>();
+    if (GetWizardController()->current_screen() == offline_login_screen) {
+      offline_login_screen->ShowPasswordMismatchMessage();
+      return;
+    }
   }
 
   std::string error_text;
@@ -671,7 +674,7 @@ void LoginDisplayHostCommon::NotifyWizardCreated() {
 }
 
 void LoginDisplayHostCommon::Cleanup() {
-  ProfileHelper::Get()->ClearSigninProfile(base::DoNothing());
+  SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   registrar_.RemoveAll();
   BrowserList::RemoveObserver(this);
 }

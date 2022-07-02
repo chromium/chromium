@@ -4,6 +4,7 @@
 
 #include "components/reporting/util/file.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 

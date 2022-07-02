@@ -48,11 +48,11 @@
     </div>
     <div id="clearAllContainer">
       <div id="clearLabel">
-        $i18n{siteSettingsClearAllStorageDescription} [[totalUsage_]]
+        [[getClearStorageDescription_(totalUsage_, filter)]]
       </div>
       <div id="clearAllButton">
         <cr-button type="button" on-click="onConfirmClearAllData_">
-          $i18n{siteSettingsClearAllStorageLabel}
+          [[getClearDataButtonString_(filter)]]
         </cr-button>
       </div>
     </div>
@@ -192,16 +192,17 @@
     <cr-lazy-render id="confirmClearAllData">
       <template>
         <cr-dialog close-text="$i18n{close}">
-          <div slot="title">
-            $i18n{siteSettingsClearAllStorageDialogTitle}
-          </div>
+          <div slot="title">[[getClearAllStorageDialogTitle_(filter)]]</div>
           <div slot="body">
-            <div>[[getClearAllDataLabel_(totalUsage_)]]</div>
+            <div id="clearAllStorageDialogDescription">
+              [[getClearAllStorageDialogDescription_(totalUsage_,
+                  filteredList_)]]
+            </div>
             <div class="detail-list">
-              <div class="detail">
+              <div id="clearAllStorageDialogSignOutLabel" class="detail">
                 <iron-icon icon="all-sites:logout" aria-hidden="true"
                   role="presentation"></iron-icon>
-                $i18n{siteSettingsClearAllStorageSignOut}
+                [[getClearAllStorageDialogSignOutLabel_(filter)]]
               </div>
               <div class="detail">
                 <iron-icon icon="all-sites:offline" aria-hidden="true"

@@ -25,6 +25,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/favicon_size.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
@@ -194,6 +195,14 @@ bool IntentPickerPwaPersistenceEnabled() {
 #else
   return false;
 #endif
+}
+
+int GetIntentPickerBubbleIconSize() {
+  constexpr int kIntentPickerUiUpdateIconSize = 40;
+
+  return features::LinkCapturingUiUpdateEnabled()
+             ? kIntentPickerUiUpdateIconSize
+             : gfx::kFaviconSize;
 }
 
 }  // namespace apps

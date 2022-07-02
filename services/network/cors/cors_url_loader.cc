@@ -636,14 +636,6 @@ void CorsURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void CorsURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(network_loader_);
-  DCHECK(forwarding_client_);
-  DCHECK(!deferred_redirect_url_);
-  forwarding_client_->OnStartLoadingResponseBody(std::move(body));
-}
-
 void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
@@ -741,9 +733,8 @@ void CorsURLLoader::StartRequest() {
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       non_wildcard_request_headers_support_,
-      PreflightController::EnforcePrivateNetworkAccessHeader(
-          !ShouldIgnorePrivateNetworkAccessErrors()),
-      tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
+      GetPrivateNetworkAccessPreflightBehavior(), tainted_,
+      net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
       std::move(devtools_observer), net_log_);
 }
@@ -782,7 +773,7 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     status->target_address_space = request_.target_ip_address_space;
   }
 
-  if (should_ignore_preflight_errors_) {
+  if (sending_pna_only_warning_preflight_) {
     // Even if we ignore the error, record the warning in metrics and DevTools.
     base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
                                   histogram_error);
@@ -896,7 +887,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
       // preflight. Otherwise, if we had sent a preflight before we noticed the
       // private network access, then we rely on `PreflightController` to ignore
       // PNA-specific preflight errors during this second preflight request.
-      should_ignore_preflight_errors_ =
+      sending_pna_only_warning_preflight_ =
           ShouldIgnorePrivateNetworkAccessErrors() &&
           !(NeedsPreflight(request_).has_value() && fetch_cors_flag_);
 
@@ -1034,6 +1025,17 @@ bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors() const {
   const mojom::ClientSecurityState* state = GetClientSecurityState();
   return state && state->private_network_request_policy ==
                       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+}
+
+PrivateNetworkAccessPreflightBehavior
+CorsURLLoader::GetPrivateNetworkAccessPreflightBehavior() const {
+  if (!ShouldIgnorePrivateNetworkAccessErrors()) {
+    return PrivateNetworkAccessPreflightBehavior::kEnforce;
+  }
+  if (sending_pna_only_warning_preflight_) {
+    return PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout;
+  }
+  return PrivateNetworkAccessPreflightBehavior::kWarn;
 }
 
 // static

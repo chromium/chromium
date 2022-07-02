@@ -36,13 +36,13 @@
 // A handler with methods that take no arguments.
 @interface CommandDispatcherTestSimpleTarget : NSObject<ShowProtocol>
 
-// Will be set to YES when the |-show| method is called.
+// Will be set to YES when the `-show` method is called.
 @property(nonatomic, assign) BOOL showCalled;
 
-// Will be set to YES when the |-showMore| method is called.
+// Will be set to YES when the `-showMore` method is called.
 @property(nonatomic, assign) BOOL showMoreCalled;
 
-// Will be set to YES when the |-hide| method is called.
+// Will be set to YES when the `-hide` method is called.
 @property(nonatomic, assign) BOOL hideCalled;
 
 // Resets the above properties to NO.
@@ -82,16 +82,16 @@
 // A handler with methods that take various types of arguments.
 @interface CommandDispatcherTestTargetWithArguments : NSObject
 
-// Set to YES when |-methodWithInt:| is called.
+// Set to YES when `-methodWithInt:` is called.
 @property(nonatomic, assign) BOOL intMethodCalled;
 
-// The argument passed to the most recent call of |-methodWithInt:|.
+// The argument passed to the most recent call of `-methodWithInt:`.
 @property(nonatomic, assign) int intArgument;
 
-// Set to YES when |-methodWithObject:| is called.
+// Set to YES when `-methodWithObject:` is called.
 @property(nonatomic, assign) BOOL objectMethodCalled;
 
-// The argument passed to the most recent call of |-methodWithObject:|.
+// The argument passed to the most recent call of `-methodWithObject:`.
 @property(nonatomic, strong) NSObject* objectArgument;
 
 // Resets the above properties to NO or nil.

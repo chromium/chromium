@@ -155,7 +155,7 @@ class CONTENT_EXPORT SyntheticGestureController {
   // truly robust. https://crbug.com/985374.
   bool renderer_known_to_be_initialized_ = false;
 
-  base::RepeatingTimer dispatch_timer_;
+  base::MetronomeTimer dispatch_timer_;
   base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_{this};
 };
 

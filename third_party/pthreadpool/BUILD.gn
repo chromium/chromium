@@ -12,8 +12,13 @@ source_set("pthreadpool") {
   sources = [
     "src/src/memory.c",
     "src/src/portable-api.c",
-    "src/src/pthreads.c",
   ]
+
+  if (is_win) {
+    sources += [ "src/src/windows.c" ]
+  } else {
+    sources += [ "src/src/pthreads.c" ]
+  }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

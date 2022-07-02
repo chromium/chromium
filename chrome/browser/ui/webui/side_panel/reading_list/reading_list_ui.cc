@@ -69,9 +69,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
-
-      base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
-          prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
+      prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
   ReadingListModel* const reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile);

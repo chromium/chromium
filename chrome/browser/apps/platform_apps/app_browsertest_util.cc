@@ -119,7 +119,7 @@ const Extension* PlatformAppBrowserTest::LoadAndLaunchPlatformApp(
 const Extension* PlatformAppBrowserTest::LoadAndLaunchPlatformApp(
     const char* name,
     const std::string& message) {
-  ExtensionTestMessageListener launched_listener(message, false);
+  ExtensionTestMessageListener launched_listener(message);
   const Extension* extension =
       LoadAndLaunchPlatformApp(name, &launched_listener);
 
@@ -250,7 +250,7 @@ AppWindow* PlatformAppBrowserTest::CreateAppWindowFromParams(
   ExtensionHost* background_host =
       process_manager->GetBackgroundHostForExtension(extension->id());
   window->Init(GURL(std::string()), new AppWindowContentsImpl(window),
-               background_host->host_contents()->GetMainFrame(), params);
+               background_host->host_contents()->GetPrimaryMainFrame(), params);
   return window;
 }
 
@@ -275,8 +275,9 @@ void PlatformAppBrowserTest::CallAdjustBoundsToBeVisibleOnScreenForAppWindow(
 
 AppWindow* PlatformAppBrowserTest::CreateTestAppWindow(
     const std::string& window_create_options) {
-  ExtensionTestMessageListener launched_listener("launched", true);
-  ExtensionTestMessageListener loaded_listener("window_loaded", false);
+  ExtensionTestMessageListener launched_listener("launched",
+                                                 ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener loaded_listener("window_loaded");
 
   // Load and launch the test app.
   const Extension* extension =

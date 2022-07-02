@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -40,8 +41,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -212,7 +211,7 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
   }
   // This is *not* redundant to the checks below, as
   // web_contents.GetLastCommittedURL() may be different from
-  // web_contents.GetMainFrame()->GetLastCommittedURL(), with the
+  // web_contents.GetPrimaryMainFrame()->GetLastCommittedURL(), with the
   // former being a 'virtual' URL as obtained from NavigationEntry.
   if (!ExtensionMayAttachToURL(extension, extension_profile,
                                web_contents.GetLastCommittedURL(), error)) {
@@ -220,7 +219,7 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
   }
 
   return ExtensionMayAttachToRenderFrameHost(
-      extension, extension_profile, web_contents.GetMainFrame(), error);
+      extension, extension_profile, web_contents.GetPrimaryMainFrame(), error);
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,
@@ -251,7 +250,6 @@ base::LazyInstance<AttachedClientHosts>::Leaky g_attached_client_hosts =
     LAZY_INSTANCE_INITIALIZER;
 
 class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
-                                    public content::NotificationObserver,
                                     public ExtensionRegistryObserver {
  public:
   ExtensionDevToolsClientHost(Profile* profile,
@@ -297,10 +295,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
 
   void SendDetachedEvent();
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -311,7 +306,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   scoped_refptr<DevToolsAgentHost> agent_host_;
   scoped_refptr<const Extension> extension_;
   Debuggee debuggee_;
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
   int last_request_id_ = 0;
   PendingRequests pending_requests_;
   base::CallbackListSubscription subscription_;
@@ -342,8 +337,10 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
   // RVH-based agents disconnect from their clients when the app is terminating
   // but shared worker-based agents do not.
   // Disconnect explicitly to make sure that |this| observer is not leaked.
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(
+          base::BindOnce(&ExtensionDevToolsClientHost::OnAppTerminating,
+                         base::Unretained(this)));
 }
 
 bool ExtensionDevToolsClientHost::Attach() {
@@ -441,11 +438,7 @@ void ExtensionDevToolsClientHost::OnExtensionUnloaded(
     Close();
 }
 
-void ExtensionDevToolsClientHost::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void ExtensionDevToolsClientHost::OnAppTerminating() {
   Close();
 }
 

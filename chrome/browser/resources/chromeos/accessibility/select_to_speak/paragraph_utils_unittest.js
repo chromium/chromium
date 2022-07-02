@@ -15,7 +15,7 @@ SelectToSpeakParagraphUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'GetFirstBlockAncestor', function() {
       const root = {role: 'rootWebArea'};
       const paragraph = {role: 'paragraph', parent: root, root};
@@ -32,7 +32,7 @@ SYNC_TEST_F(
       assertEquals(div, ParagraphUtils.getFirstBlockAncestor(text4));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
       const root = {role: 'rootWebArea'};
       const svgRoot = {role: 'svgRoot', parent: root, root};
@@ -46,7 +46,7 @@ SYNC_TEST_F(
       assertTrue(ParagraphUtils.inSameParagraph(inline1, inline2));
     });
 
-SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
+AX_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
   const root = {role: 'rootWebArea'};
   const paragraph1 =
       {role: 'paragraph', display: 'block', parent: 'rootWebArea', root};
@@ -59,7 +59,7 @@ SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
   assertFalse(ParagraphUtils.inSameParagraph(text1, text3));
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BlockDivBreaksSameParagraph',
     function() {
       const root = {role: 'rootWebArea'};
@@ -75,7 +75,7 @@ SYNC_TEST_F(
       assertTrue(ParagraphUtils.inSameParagraph(text3, text4));
     });
 
-SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
+AX_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
   assertTrue(ParagraphUtils.isWhitespace(''));
   assertTrue(ParagraphUtils.isWhitespace(' '));
   assertTrue(ParagraphUtils.isWhitespace(' \n \t '));
@@ -84,7 +84,7 @@ SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
   assertFalse(ParagraphUtils.isWhitespace(' cats '));
 });
 
-SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
+AX_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
   assertEquals(
       ParagraphUtils.getNodeName({role: 'staticText', name: 'cat'}), 'cat');
   assertEquals(
@@ -120,7 +120,7 @@ SYNC_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
       'partially selected');
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'GetStartCharIndexInParent', function() {
       const staticText = {
         role: 'staticText',
@@ -150,7 +150,7 @@ SYNC_TEST_F(
       assertEquals(ParagraphUtils.getStartCharIndexInParent(inline3), 17);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeByCharIndex',
     function() {
       const staticText = {
@@ -185,7 +185,7 @@ SYNC_TEST_F(
           null);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeIndexByCharIndex',
     function() {
       const staticText = {
@@ -226,7 +226,7 @@ SYNC_TEST_F(
           -1);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
     function() {
       const root = {role: 'rootWebArea'};
@@ -252,7 +252,7 @@ SYNC_TEST_F(
       assertEquals(paragraph1, result.blockParent);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupAcrossParagraphs',
     function() {
       const root = {role: 'rootWebArea'};
@@ -279,7 +279,7 @@ SYNC_TEST_F(
       assertEquals(text3, result.nodes[2].node);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtLanguageBoundary',
     function() {
       const splitOnLanguage = true;
@@ -330,7 +330,7 @@ SYNC_TEST_F(
       assertEquals('fr-FR', result2.detectedLanguage);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryAllUndefined', function() {
       const splitOnLanguage = true;
@@ -354,7 +354,7 @@ SYNC_TEST_F(
       assertEquals(undefined, result.detectedLanguage);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryLastNode', function() {
       const splitOnLanguage = true;
@@ -384,7 +384,7 @@ SYNC_TEST_F(
       assertEquals('fr-FR', result.detectedLanguage);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupSplitOnLanguageDisabled',
     function() {
       // Test behaviour with splitOnLanguage disabled. This is to show that we
@@ -418,7 +418,7 @@ SYNC_TEST_F(
       assertEquals(undefined, result.detectedLanguage);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundarySomeUndefined', function() {
       const splitOnLanguage = true;
@@ -458,7 +458,7 @@ SYNC_TEST_F(
       assertEquals('en-US', result.detectedLanguage);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
     function() {
       const root = {role: 'rootWebArea'};
@@ -483,7 +483,7 @@ SYNC_TEST_F(
       assertEquals(paragraph1, result.blockParent);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
     function() {
       const root = {role: 'desktop'};
@@ -504,7 +504,7 @@ SYNC_TEST_F(
       assertEquals('Address and search bar ', result.text);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
       const root = {role: 'rootWebArea'};
       const svgRoot = {role: 'svgRoot', parent: root, root};
@@ -520,7 +520,7 @@ SYNC_TEST_F(
       assertEquals('Hello, world! ', result.text);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'findNodeFromNodeGroupByCharIndex',
     function() {
       // The array has four inline text nodes and one static text node.
@@ -583,7 +583,7 @@ SYNC_TEST_F(
       assertEquals(result.node, null);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphUnitTest', 'BuildSingleNodeGroupWithOffset',
     function() {
       // The array has four inline text nodes and one static text node.

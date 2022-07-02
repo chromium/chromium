@@ -20,7 +20,6 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
@@ -194,7 +193,7 @@ FeatureInfo::FeatureInfo(
           .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
       gpu::kGpuFeatureStatusEnabled;
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CAST_ANDROID)
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
@@ -312,10 +311,9 @@ bool IsGL_REDSupportedOnFBOs() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void FeatureInfo::EnableCHROMIUMTextureStorageImage() {
-  if (!feature_flags_.chromium_texture_storage_image) {
-    feature_flags_.chromium_texture_storage_image = true;
-    AddExtensionString("GL_CHROMIUM_texture_storage_image");
+void FeatureInfo::EnableTextureStorageImage() {
+  if (!feature_flags_.texture_storage_image) {
+    feature_flags_.texture_storage_image = true;
   }
 }
 
@@ -1246,8 +1244,9 @@ void FeatureInfo::InitializeFeatures() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Mac can create GLImages out of AR30 IOSurfaces only after High Sierra.
-  feature_flags_.chromium_image_ar30 = base::mac::IsAtLeastOS10_13();
+  // Mac can create GLImages out of AR30 IOSurfaces only after 10.13 which is
+  // required for Chromium.
+  feature_flags_.chromium_image_ar30 = true;
 #elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451
   // XB30 support was introduced in GLES 3.0/ OpenGL 3.3, before that it was

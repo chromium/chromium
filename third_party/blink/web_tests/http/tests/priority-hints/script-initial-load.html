@@ -14,8 +14,8 @@ const priority_tests = [
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?2', location), document),
-    expected_priority: kLow,
-    description: 'low fetchpriority on <script> lowers priority to kLow'
+    expected_priority: kHigh,
+    description: 'low fetchpriority on <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?3', location), document),

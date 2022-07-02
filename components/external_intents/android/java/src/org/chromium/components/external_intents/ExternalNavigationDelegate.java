@@ -6,12 +6,14 @@ package org.chromium.components.external_intents;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,6 +22,7 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * A delegate for {@link ExternalNavigationHandler}.
@@ -55,10 +58,8 @@ public interface ExternalNavigationDelegate {
 
     /**
      * Dispatches the intent through a proxy activity, so that startActivityForResult can be used
-     * and the intent recipient can verify the caller. Will be invoked only in flows where
-     * ExternalNavigationDelegate#isIntentForInstantApp() returns true for |intent|. In particular,
-     * if that method always returns false in the given embedder, then the embedder's implementation
-     * of this method will never be invoked and can just assert false.
+     * and the intent recipient can verify the caller. Will be invoked only in delegates where
+     * ExternalNavigationDelegate#handlesInstantAppLaunchingInternally() returns true.
      * @param intent The bare intent we were going to send.
      */
     void dispatchAuthenticatedIntent(Intent intent);
@@ -109,8 +110,8 @@ public interface ExternalNavigationDelegate {
      * @param isSerpReferrer whether the referrer is the SERP.
      * @return Whether we launched an instant app.
      */
-    boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer);
+    boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
+            boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
     /**
      * @return The WindowAndroid instance associated with this delegate instance.
@@ -164,13 +165,8 @@ public interface ExternalNavigationDelegate {
      * @param intent The intent to launch.
      * @return Whether the Intent points to an app that we trust and that launched this app.
      */
-    boolean isIntentForTrustedCallingApp(Intent intent);
-
-    /**
-     * @param intent The intent to launch.
-     * @return Whether the Intent points to an instant app.
-     */
-    boolean isIntentToInstantApp(Intent intent);
+    boolean isIntentForTrustedCallingApp(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
     /**
      * @param intent The intent to launch
@@ -219,7 +215,7 @@ public interface ExternalNavigationDelegate {
     /**
      * Potentially adds a target package to the Intent. Returns whether the package was set.
      */
-    boolean maybeSetTargetPackage(Intent intent);
+    boolean maybeSetTargetPackage(Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
     /**
      * Whether the Activity launch should be aborted if the disambiguation prompt is going to be

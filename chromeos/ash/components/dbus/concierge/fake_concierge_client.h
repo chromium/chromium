@@ -74,14 +74,13 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void ListVmDisks(const vm_tools::concierge::ListVmDisksRequest& request,
                    DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
                        callback) override;
-  void StartTerminaVm(const vm_tools::concierge::StartVmRequest& request,
-                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                          callback) override;
-  void StartTerminaVmWithFd(
-      base::ScopedFD fd,
-      const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback)
-      override;
+  void StartVm(const vm_tools::concierge::StartVmRequest& request,
+               DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                   callback) override;
+  void StartVmWithFd(base::ScopedFD fd,
+                     const vm_tools::concierge::StartVmRequest& request,
+                     DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                         callback) override;
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
               DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback)
       override;
@@ -130,10 +129,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback)
       override;
 
-  void SetVmId(const vm_tools::concierge::SetVmIdRequest& request,
-               DBusMethodCallback<vm_tools::concierge::SetVmIdResponse>
-                   callback) override;
-
   void ReclaimVmMemory(
       const vm_tools::concierge::ReclaimVmMemoryRequest& request,
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
@@ -171,9 +166,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     return import_disk_image_call_count_;
   }
   int list_vm_disks_call_count() const { return list_vm_disks_call_count_; }
-  int start_termina_vm_call_count() const {
-    return start_termina_vm_call_count_;
-  }
+  int start_vm_call_count() const { return start_vm_call_count_; }
   int stop_vm_call_count() const { return stop_vm_call_count_; }
   int get_vm_info_call_count() const { return get_vm_info_call_count_; }
   int get_vm_enterprise_reporting_info_call_count() const {
@@ -301,10 +294,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           resize_disk_image_response) {
     resize_disk_image_response_ = resize_disk_image_response;
   }
-  void set_set_vm_id_response(
-      absl::optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response) {
-    set_vm_id_response_ = set_vm_id_response;
-  }
   void set_reclaim_vm_memory_response(
       absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
           reclaim_vm_memory_response) {
@@ -364,7 +353,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int import_disk_image_call_count_ = 0;
   int disk_image_status_call_count_ = 0;
   int list_vm_disks_call_count_ = 0;
-  int start_termina_vm_call_count_ = 0;
+  int start_vm_call_count_ = 0;
   int stop_vm_call_count_ = 0;
   int get_vm_info_call_count_ = 0;
   int get_vm_enterprise_reporting_info_call_count_ = 0;
@@ -416,7 +405,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       detach_usb_device_response_;
   absl::optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
-  absl::optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
   absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
   absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;

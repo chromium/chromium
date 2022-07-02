@@ -16,6 +16,9 @@ per-file fake_speech_recognition_manager*=file://ui/accessibility/OWNERS
 # For Attribution Reporting API simulator.
 per-file attribution_simulator*=file://content/browser/attribution_reporting/OWNERS
 
+# For Aggregation Service testing tool.
+per-file test_aggregation_service*=file://content/browser/aggregation_service/OWNERS
+
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 

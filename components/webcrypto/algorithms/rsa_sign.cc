@@ -8,7 +8,6 @@
 #include "components/webcrypto/algorithms/rsa_sign.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -71,7 +70,7 @@ Status ApplyRsaPssOptions(const blink::WebCryptoKey& key,
 
 Status RsaSign(const blink::WebCryptoKey& key,
                unsigned int pss_salt_length_bytes,
-               const CryptoData& data,
+               base::span<const uint8_t> data,
                std::vector<uint8_t>* buffer) {
   if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
     return Status::ErrorUnexpectedKeyType();
@@ -99,7 +98,7 @@ Status RsaSign(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
-  if (!EVP_DigestSignUpdate(ctx.get(), data.bytes(), data.byte_length()) ||
+  if (!EVP_DigestSignUpdate(ctx.get(), data.data(), data.size()) ||
       !EVP_DigestSignFinal(ctx.get(), nullptr, &sig_len)) {
     return Status::OperationError();
   }
@@ -114,8 +113,8 @@ Status RsaSign(const blink::WebCryptoKey& key,
 
 Status RsaVerify(const blink::WebCryptoKey& key,
                  unsigned int pss_salt_length_bytes,
-                 const CryptoData& signature,
-                 const CryptoData& data,
+                 base::span<const uint8_t> signature,
+                 base::span<const uint8_t> data,
                  bool* signature_match) {
   if (key.GetType() != blink::kWebCryptoKeyTypePublic)
     return Status::ErrorUnexpectedKeyType();
@@ -138,11 +137,11 @@ Status RsaVerify(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
-  if (!EVP_DigestVerifyUpdate(ctx.get(), data.bytes(), data.byte_length()))
+  if (!EVP_DigestVerifyUpdate(ctx.get(), data.data(), data.size()))
     return Status::OperationError();
 
-  *signature_match = 1 == EVP_DigestVerifyFinal(ctx.get(), signature.bytes(),
-                                                signature.byte_length());
+  *signature_match =
+      1 == EVP_DigestVerifyFinal(ctx.get(), signature.data(), signature.size());
   return Status::Success();
 }
 

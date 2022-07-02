@@ -24,6 +24,7 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
   ~AppListTestBase() override;
 
   void SetUp() override;
+  void SetUp(bool guest_mode);
 
   web_app::TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 

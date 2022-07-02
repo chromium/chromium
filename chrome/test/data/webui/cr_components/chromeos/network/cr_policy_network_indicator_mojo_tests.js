@@ -4,19 +4,17 @@
 
 /** @fileoverview Suite of tests for cr_policy-network-indicator-mojo. */
 
-// clang-format off
-// #import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
-// #import 'chrome://test/cr_components/chromeos/network/cr_policy_strings.js';
+import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
+import 'chrome://test/cr_components/chromeos/network/cr_policy_strings.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('cr-policy-network-indicator-mojo', function() {
   /** @type {!CrPolicyNetworkIndicatorMojoElement|undefined} */
   let indicator;
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -26,7 +24,7 @@ suite('cr-policy-network-indicator-mojo', function() {
 
     indicator = document.createElement('cr-policy-network-indicator-mojo');
     document.body.appendChild(indicator);
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => setTimeout(resolve));
   });
 

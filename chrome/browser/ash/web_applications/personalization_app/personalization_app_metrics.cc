@@ -24,5 +24,10 @@ void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point) {
                                 entry_point);
 }
 
+void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color) {
+  base::UmaHistogramEnumeration(
+      kPersonalizationKeyboardBacklightColorHistogramName, backlight_color);
+}
+
 }  // namespace personalization_app
 }  // namespace ash

@@ -163,6 +163,10 @@ function create_framework_archive {
 
   # Copy source files with the intermediate directories preserved.
   xargs -n1 -I{} rsync -R {} "${TFLS_TMPDIR}" <<< "${SRC_FILES}"
+  
+  # Copy the license file to TFLS_TMPDIR
+  cp "${TFLS_ROOT_DIR}/LICENSE" ${TFLS_TMPDIR}
+
   popd
 
   pushd "${TFLS_ROOT_DIR}"

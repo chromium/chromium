@@ -10,6 +10,7 @@ import {DirectoryModel} from './directory_model.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 
+
 /**
  * GuestOsController handles the foreground UI relating to Guest OSs.
  */
@@ -51,7 +52,7 @@ export class GuestOsController {
     this.directoryTree_.dataModel.guestOsPlaceholders = guests.map(guest => {
       return new NavigationModelFakeItem(
           guest.displayName, NavigationModelItemType.GUEST_OS,
-          new GuestOsPlaceholder(guest.displayName, guest.id));
+          new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType));
     });
 
     // Redraw the tree to ensure any newly added/removed roots are updated.

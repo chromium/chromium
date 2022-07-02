@@ -152,7 +152,7 @@ size_t CancelableFileOperation(Function operation,
     if (!operation_ok) {
       if (::GetLastError() == ERROR_IO_PENDING) {
         HANDLE events[] = { io_event->handle(), cancel_event->handle() };
-        const int wait_result = WaitForMultipleObjects(
+        const DWORD wait_result = WaitForMultipleObjects(
             std::size(events), events, FALSE,
             timeout_in_ms == INFINITE
                 ? timeout_in_ms

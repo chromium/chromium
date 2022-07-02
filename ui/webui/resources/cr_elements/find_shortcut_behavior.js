@@ -39,7 +39,8 @@ export const FindShortcutManager = (() => {
     }
 
     if (!shortcutCtrlF.matchesEvent(e) &&
-        (isTextInputElement(e.path[0]) || !shortcutSlash.matchesEvent(e))) {
+        (isTextInputElement(/** @type {!Element} */ (e.composedPath()[0])) ||
+         !shortcutSlash.matchesEvent(e))) {
       return;
     }
 

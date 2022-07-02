@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -164,14 +163,6 @@ public class AwBrowserContext {
         }
 
         return new AwBrowserContext(sharedPreferences, nativeAwBrowserContext, isDefault);
-    }
-
-    @CalledByNative
-    public static boolean shouldSendVariationsHeaders() {
-        String packageId = PlatformServiceBridge.getInstance()
-                                   .getFirstPartyVariationsHeadersEnabledPackageId();
-        return !TextUtils.isEmpty(packageId)
-                && packageId.equals(ContextUtils.getApplicationContext().getPackageName());
     }
 
     @NativeMethods

@@ -23,6 +23,9 @@ export interface ProfileCustomizationBrowserProxy {
 
   // Called when the user clicks the done button.
   done(profileName: string): void;
+
+  // Called when the user clicks the skip button.
+  skip(): void;
 }
 
 export class ProfileCustomizationBrowserProxyImpl implements
@@ -33,6 +36,10 @@ export class ProfileCustomizationBrowserProxyImpl implements
 
   done(profileName: string) {
     chrome.send('done', [profileName]);
+  }
+
+  skip() {
+    chrome.send('skip');
   }
 
   static getInstance(): ProfileCustomizationBrowserProxy {

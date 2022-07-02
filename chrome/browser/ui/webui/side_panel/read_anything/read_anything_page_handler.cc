@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<Page> page,
@@ -24,11 +25,15 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
     return;
 
   coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
-  coordinator_->AddObserver(this);
+  if (coordinator_)
+    coordinator_->AddObserver(this);
   model_ = coordinator_->GetModel();
-  model_->AddObserver(this);
+  if (model_)
+    model_->AddObserver(this);
   delegate_ = static_cast<ReadAnythingPageHandler::Delegate*>(
       coordinator_->GetController());
+  if (delegate_)
+    delegate_->OnUIReady();
 }
 
 ReadAnythingPageHandler::~ReadAnythingPageHandler() {
@@ -42,28 +47,19 @@ ReadAnythingPageHandler::~ReadAnythingPageHandler() {
     coordinator_->RemoveObserver(this);
 }
 
-void ReadAnythingPageHandler::OnUIReady() {
-  if (delegate_)
-    delegate_->OnUIReady();
-}
-
 void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
   model_ = nullptr;
   delegate_ = nullptr;
 }
 
-void ReadAnythingPageHandler::OnContentUpdated(
-    const std::vector<ContentNodePtr>& content_nodes) {
-  // Make a copy of |content_nodes|, which is stored in the model, before moving
-  // across IPC to the WebUI.
-  std::vector<ContentNodePtr> content_nodes_copy;
-  for (auto it = content_nodes.begin(); it != content_nodes.end(); ++it)
-    content_nodes_copy.push_back(it->Clone());
-  page_->ShowContent(std::move(content_nodes_copy));
+void ReadAnythingPageHandler::OnAXTreeDistilled(
+    const ui::AXTreeUpdate& snapshot,
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  page_->OnAXTreeDistilled(snapshot, content_node_ids);
 }
 
 void ReadAnythingPageHandler::OnFontNameUpdated(
     const std::string& new_font_name) {
-  page_->OnFontNameChange(new_font_name);
+  page_->OnFontNameChange(std::move(new_font_name));
 }

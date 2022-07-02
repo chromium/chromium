@@ -106,8 +106,8 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
-      revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+      revealed_lock_ = controller_->GetRevealedLock(
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
     }
   }
 
@@ -343,25 +343,15 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_TRUE(test_api->manager());
 
   // Add a permission bubble using the test api.
-  test_api->AddSimpleRequest(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      permissions::RequestType::kGeolocation);
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kGeolocation);
 
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.
   base::RunLoop().RunUntilIdle();
-
-  // If the permission request is displayed using the chip UI, simulate a click
-  // on the chip to trigger showing the prompt.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  PermissionChip* chip = browser_view->toolbar()->location_bar()->chip();
-  if (chip) {
-    views::test::ButtonTestApi(chip->button())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
-  }
 
   views::Widget* prompt_widget = test_api->GetPromptWindow();
   views::BubbleDialogDelegate* bubble_dialog =
@@ -382,9 +372,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Reveal the header. The anchor should exist since the app menu button is now
   // visible.
   {
-    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock(
+    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock =
         immersive_mode_controller->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
     EXPECT_TRUE(immersive_mode_controller->IsRevealed());
     EXPECT_TRUE(bubble_dialog->GetAnchorView());
   }

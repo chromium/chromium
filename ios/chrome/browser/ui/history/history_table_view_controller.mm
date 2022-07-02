@@ -193,7 +193,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.title = l10n_util::GetNSString(IDS_HISTORY_TITLE);
   // Configures NavigationController Toolbar buttons.
   [self configureViewsForNonEditModeWithAnimation:NO];
-  // Adds the "Done" button and hooks it up to |dismissHistory|.
+  // Adds the "Done" button and hooks it up to `dismissHistory`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
@@ -248,7 +248,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)loadModel {
   [super loadModel];
   // Add Status section, this section will always exist during the lifetime of
-  // HistoryTableVC. Its content will be driven by |updateEntriesStatusMessage|.
+  // HistoryTableVC. Its content will be driven by `updateEntriesStatusMessage`.
   [self.tableViewModel
       addSectionWithIdentifier:kEntriesStatusSectionIdentifier];
   _entryInserter =
@@ -515,7 +515,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark - History Data Updates
 
-// Search history for text |query| and display the results. |query| may be nil.
+// Search history for text `query` and display the results. `query` may be nil.
 // If query is empty, show all history items.
 - (void)showHistoryMatchingQuery:(NSString*)query {
   self.finishedLoading = NO;
@@ -544,7 +544,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
   self.historyService->RemoveVisits(entries);
 
-  // Delete items from |self.tableView| using performBatchUpdates.
+  // Delete items from `self.tableView` using performBatchUpdates.
   __weak __typeof(self) weakSelf = self;
   [self.tableView
       performBatchUpdates:^{
@@ -739,7 +739,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark - Private methods
 
-// Fetches history for search text |query|. If |query| is nil or the empty
+// Fetches history for search text `query`. If `query` is nil or the empty
 // string, all history is fetched. If continuation is false, then the most
 // recent results are fetched, otherwise the results more recent than the
 // previous query will be returned.
@@ -846,7 +846,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 }
 
 // Deletes all items in the tableView which indexes are included in indexArray,
-// if |deleteItemsFromTableView| is YES this method needs to be run inside a
+// if `deleteItemsFromTableView` is YES this method needs to be run inside a
 // performBatchUpdates block.
 - (void)deleteItemsFromTableViewModelWithIndex:(NSArray*)indexArray
                       deleteItemsFromTableView:(BOOL)deleteItemsFromTableView {
@@ -952,8 +952,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark Navigation Toolbar Configuration
 
-// Animates the view configuration after flipping the current status of |[self
-// setEditing]|.
+// Animates the view configuration after flipping the current status of `[self
+// setEditing]`.
 - (void)animateViewsConfigurationForEditingChange {
   if (self.isEditing) {
     [self configureViewsForNonEditModeWithAnimation:YES];
@@ -1123,7 +1123,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark Helper Methods
 
-// Loads and opens a tab using |params|. If |incognito| is YES the tab will be
+// Loads and opens a tab using `params`. If `incognito` is YES the tab will be
 // opened in incognito mode.
 - (void)loadAndActivateTabFromHistoryWithParams:(const UrlLoadParams&)params
                                       incognito:(BOOL)incognito {

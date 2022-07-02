@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 
 // Generate param traits write methods.
@@ -73,32 +72,6 @@ void ParamTraits<gpu::SyncToken>::Log(const param_type& p, std::string* l) {
   *l += base::StringPrintf(
       "[%" PRId8 ":%" PRIX64 "] %" PRIu64, p.namespace_id(),
       p.command_buffer_id().GetUnsafeValue(), p.release_count());
-}
-
-void ParamTraits<gpu::TextureInUseResponse>::Write(base::Pickle* m,
-                                                   const param_type& p) {
-  WriteParam(m, p.texture);
-  WriteParam(m, p.in_use);
-}
-
-bool ParamTraits<gpu::TextureInUseResponse>::Read(const base::Pickle* m,
-                                                  base::PickleIterator* iter,
-                                                  param_type* p) {
-  uint32_t texture = 0;
-  bool in_use = false;
-
-  if (!ReadParam(m, iter, &texture) || !ReadParam(m, iter, &in_use)) {
-    return false;
-  }
-
-  p->texture = texture;
-  p->in_use = in_use;
-  return true;
-}
-
-void ParamTraits<gpu::TextureInUseResponse>::Log(const param_type& p,
-                                                 std::string* l) {
-  *l += base::StringPrintf("[%u: %d]", p.texture, static_cast<int>(p.in_use));
 }
 
 void ParamTraits<gpu::Mailbox>::Write(base::Pickle* m, const param_type& p) {

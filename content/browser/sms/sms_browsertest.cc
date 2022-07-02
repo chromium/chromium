@@ -716,7 +716,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
   mojo::Remote<blink::mojom::WebOTPService> service;
   mojo::Remote<blink::mojom::WebOTPService> service2;
 
-  RenderFrameHost* render_frame_host = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* render_frame_host =
+      shell()->web_contents()->GetPrimaryMainFrame();
   EXPECT_TRUE(WebOTPService::Create(fetcher, render_frame_host,
                                     service.BindNewPipeAndPassReceiver()));
   EXPECT_TRUE(WebOTPService::Create(fetcher2, render_frame_host,
@@ -752,36 +753,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
   navigate.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ReportWebOTPInUseCounter) {
-  GURL url = GetTestUrl(nullptr, "simple_page.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  shell()->web_contents()->SetDelegate(&delegate_);
-
-  ExpectSmsPrompt();
-  auto provider = std::make_unique<MockSmsProvider>();
-  MockSmsProvider* mock_provider_ptr = provider.get();
-  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
-
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(_, _)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url)},
-                                     "hello", UserConsent::kNotObtained);
-    ConfirmPrompt();
-  }));
-  base::HistogramTester histogram_tester;
-  std::string script = R"(
-    (async () => {
-      let cred = await navigator.credentials.get({otp: {transport: ["sms"]}});
-      return cred.code;
-    }) ();
-  )";
-  EXPECT_EQ("hello", EvalJs(shell(), script));
-
-  content::FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
-                                     blink::mojom::WebFeature::kWebOTP, 1);
-}
-
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
   base::HistogramTester histogram_tester;
   GURL url = GetTestUrl(nullptr, "simple_page.html");
@@ -800,7 +771,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
     ConfirmPrompt();
   }));
 
-  RenderFrameHost* render_frame_host = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* render_frame_host =
+      shell()->web_contents()->GetPrimaryMainFrame();
   EXPECT_FALSE(render_frame_host->DocumentUsedWebOTP());
   // navigator.credentials.get() creates an WebOTPService which will notify the
   // RenderFrameHost that WebOTP has been used.
@@ -1398,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(SmsFencedFrameBrowserTest,
       https_server_.GetURL("a.test", "/fenced_frames/page_with_webotp.html"));
   RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), fenced_frame_url);
+          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   // Check that a WebOTPService object is not created and do not record any

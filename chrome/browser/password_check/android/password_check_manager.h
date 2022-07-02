@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,9 +40,9 @@ class PasswordCheckManager
                                                 int remaining_in_queue) = 0;
   };
 
-  struct CompromisedCredentialForUI : password_manager::CredentialWithPassword {
+  struct CompromisedCredentialForUI : password_manager::CredentialUIEntry {
     explicit CompromisedCredentialForUI(
-        const password_manager::CredentialWithPassword& credential);
+        const password_manager::CredentialUIEntry& credential_entry);
 
     CompromisedCredentialForUI(const CompromisedCredentialForUI& other);
     CompromisedCredentialForUI(CompromisedCredentialForUI&& other);
@@ -176,11 +177,11 @@ class PasswordCheckManager
                         password_manager::IsLeaked is_leaked) override;
   void OnBulkCheckServiceShutDown() override;
 
-  // Turns a `CredentialWithPassword` into a `CompromisedCredentialForUI`,
+  // Turns a `CredentialUIEntry` into a `CompromisedCredentialForUI`,
   // getting suitable strings for all display elements (e.g. url, app name,
   // app package, username, etc.).
   CompromisedCredentialForUI MakeUICredential(
-      const password_manager::CredentialWithPassword& credential) const;
+      const password_manager::CredentialUIEntry& credential) const;
 
   // Converts the state retrieved from the check service into a state that
   // can be used by the UI to display appropriate messages.

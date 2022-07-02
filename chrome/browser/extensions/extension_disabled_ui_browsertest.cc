@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, AcceptPermissions) {
   ASSERT_TRUE(GetExtensionDisabledGlobalError());
   const size_t size_before = extension_registry()->enabled_extensions().size();
 
-  ExtensionTestMessageListener listener("v2.onInstalled", false);
+  ExtensionTestMessageListener listener("v2.onInstalled");
   listener.set_failure_message("FAILED");
   extension_service()->GrantPermissionsAndEnableExtension(extension);
   EXPECT_EQ(size_before + 1, extension_registry()->enabled_extensions().size());

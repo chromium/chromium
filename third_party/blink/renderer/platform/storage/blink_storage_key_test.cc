@@ -97,18 +97,28 @@ TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
       SecurityOrigin::CreateFromString("file:///path/to/file");
   base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  Vector<BlinkStorageKey> keys = {
-      BlinkStorageKey(),
-      BlinkStorageKey(origin1),
-      BlinkStorageKey(origin2),
-      BlinkStorageKey(origin3),
-      BlinkStorageKey(origin4),
-      BlinkStorageKey::CreateWithNonce(origin1, nonce),
-      BlinkStorageKey::CreateWithNonce(origin2, nonce),
-  };
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
+    Vector<BlinkStorageKey> keys = {
+        BlinkStorageKey(),
+        BlinkStorageKey(origin1),
+        BlinkStorageKey(origin2),
+        BlinkStorageKey(origin3),
+        BlinkStorageKey(origin4),
+        BlinkStorageKey::CreateWithNonce(origin1, nonce),
+        BlinkStorageKey::CreateWithNonce(origin2, nonce),
+        BlinkStorageKey(origin1, BlinkSchemefulSite(origin2), nullptr,
+                        mojom::blink::AncestorChainBit::kCrossSite),
+    };
 
-  for (BlinkStorageKey& key : keys) {
-    EXPECT_EQ(key, BlinkStorageKey(StorageKey(key)));
+    for (BlinkStorageKey& key : keys) {
+      EXPECT_EQ(key, BlinkStorageKey(StorageKey(key)));
+      EXPECT_EQ(key.CopyWithForceEnabledThirdPartyStoragePartitioning(),
+                BlinkStorageKey(StorageKey(key))
+                    .CopyWithForceEnabledThirdPartyStoragePartitioning());
+    }
   }
 }
 
@@ -121,17 +131,27 @@ TEST(BlinkStorageKey, StorageKeyRoundTripConversion) {
   url::Origin url_origin4 = url::Origin::Create(GURL("file:///path/to/file"));
   base::UnguessableToken nonce = base::UnguessableToken::Create();
 
-  Vector<StorageKey> storage_keys = {
-      StorageKey(url_origin1),
-      StorageKey(url_origin2),
-      StorageKey(url_origin3),
-      StorageKey(url_origin4),
-      StorageKey::CreateWithNonce(url_origin1, nonce),
-      StorageKey::CreateWithNonce(url_origin2, nonce),
-  };
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
+    Vector<StorageKey> storage_keys = {
+        StorageKey(url_origin1),
+        StorageKey(url_origin2),
+        StorageKey(url_origin3),
+        StorageKey(url_origin4),
+        StorageKey::CreateWithNonce(url_origin1, nonce),
+        StorageKey::CreateWithNonce(url_origin2, nonce),
+        StorageKey::CreateWithOptionalNonce(
+            url_origin1, net::SchemefulSite(url_origin2), nullptr,
+            blink::mojom::AncestorChainBit::kCrossSite)};
 
-  for (const auto& key : storage_keys) {
-    EXPECT_EQ(key, StorageKey(BlinkStorageKey(key)));
+    for (const auto& key : storage_keys) {
+      EXPECT_EQ(key, StorageKey(BlinkStorageKey(key)));
+      EXPECT_EQ(key.CopyWithForceEnabledThirdPartyStoragePartitioning(),
+                StorageKey(BlinkStorageKey(key))
+                    .CopyWithForceEnabledThirdPartyStoragePartitioning());
+    }
   }
 }
 
@@ -187,6 +207,34 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1.GetTopLevelSite());
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1_site1.GetTopLevelSite());
   EXPECT_EQ(BlinkSchemefulSite(origin2), key_origin1_site2.GetTopLevelSite());
+}
+
+TEST(BlinkStorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
+  scoped_refptr<const SecurityOrigin> origin1 =
+      SecurityOrigin::CreateFromString("https://foo.com");
+  scoped_refptr<const SecurityOrigin> origin2 =
+      SecurityOrigin::CreateFromString("https://bar.com");
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
+
+    BlinkStorageKey storage_key(origin1, BlinkSchemefulSite(origin2), nullptr,
+                                mojom::blink::AncestorChainBit::kCrossSite);
+    EXPECT_EQ(storage_key.GetTopLevelSite(),
+              BlinkSchemefulSite(toggle ? origin2 : origin1));
+    EXPECT_EQ(storage_key.GetAncestorChainBit(),
+              toggle ? mojom::blink::AncestorChainBit::kCrossSite
+                     : mojom::blink::AncestorChainBit::kSameSite);
+
+    BlinkStorageKey storage_key_with_3psp =
+        storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
+    EXPECT_EQ(storage_key_with_3psp.GetTopLevelSite(),
+              BlinkSchemefulSite(origin2));
+    EXPECT_EQ(storage_key_with_3psp.GetAncestorChainBit(),
+              mojom::blink::AncestorChainBit::kCrossSite);
+  }
 }
 
 }  // namespace blink

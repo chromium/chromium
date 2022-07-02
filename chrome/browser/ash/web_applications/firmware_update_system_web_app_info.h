@@ -7,19 +7,19 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
 struct WebAppInstallInfo;
 
-class FirmwareUpdateSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit FirmwareUpdateSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool IsAppEnabled() const override;
   bool ShouldAllowMaximize() const override;

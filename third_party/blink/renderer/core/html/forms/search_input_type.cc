@@ -62,6 +62,10 @@ const AtomicString& SearchInputType::FormControlType() const {
   return input_type_names::kSearch;
 }
 
+ControlPart SearchInputType::AutoAppearance() const {
+  return kSearchFieldPart;
+}
+
 bool SearchInputType::NeedsContainer() const {
   return true;
 }
@@ -147,7 +151,7 @@ void SearchInputType::UpdateCancelButtonVisibility() {
       shadow_element_names::kIdSearchClearButton);
   if (!button)
     return;
-  if (GetElement().value().IsEmpty()) {
+  if (GetElement().Value().IsEmpty()) {
     button->SetInlineStyleProperty(CSSPropertyID::kOpacity, 0.0,
                                    CSSPrimitiveValue::UnitType::kNumber);
     button->SetInlineStyleProperty(CSSPropertyID::kPointerEvents,

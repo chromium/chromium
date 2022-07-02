@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
@@ -57,6 +58,28 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kNotBonded = 0,
     kBondingInProgress = 1,
     kBonded = 2,
+  };
+
+  enum class BtPropertyType {
+    kBdName = 0x1,
+    kBdAddr,
+    kUuids,
+    kClassOfDevice,
+    kTypeOfDevice,
+    kServiceRecord,
+    kAdapterScanMode,
+    kAdapterBondedDevices,
+    kAdapterDiscoverableTimeout,
+    kRemoteFriendlyName,
+    kRemoteRssi,
+    kRemoteVersionInfo,
+    kLocalLeFeatures,
+    kLocalIoCaps,
+    kLocalIoCapsBle,
+    kDynamicAudioBuffer,
+
+    kUnknown = 0xFE,
+    kRemoteDeviceTimestamp = 0xFF,
   };
 
   // Adopted from bt_status_t in system/include/hardware/bluetooth.h
@@ -239,8 +262,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           const std::vector<uint8_t>& passkey);
 
   // Returns bonded devices.
-  virtual void GetBondedDevices(
-      ResponseCallback<std::vector<FlossDeviceId>> callback);
+  virtual void GetBondedDevices();
 
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
@@ -256,6 +278,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle response to |GetAddress| DBus method call.
   void HandleGetAddress(dbus::Response* response,
                         dbus::ErrorResponse* error_response);
+
+  // Handle callback |OnAdapterPropertyChanged| on exported object path.
+  void OnAdapterPropertyChanged(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnAddressChanged| on exported object path.
   void OnAddressChanged(dbus::MethodCall* method_call,
@@ -308,11 +335,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
+  // Handle GetBondedDevices
+  void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
+                          const absl::optional<Error>& error);
+
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  dbus::Bus* bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Adapter managed by this client.
   dbus::ObjectPath adapter_path_;

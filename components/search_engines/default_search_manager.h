@@ -9,11 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -78,6 +75,9 @@ class DefaultSearchManager {
     // Search engine controlled externally through enterprise configuration
     // management (e.g. windows group policy).
     FROM_POLICY,
+    // Search engine recommended externally through enterprise configuration
+    // management but allows for user modification.
+    FROM_POLICY_RECOMMENDED,
   };
 
   using ObserverCallback =
@@ -95,7 +95,7 @@ class DefaultSearchManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Save default search provider pref values into the map provided.
-  static void AddPrefValueToMap(std::unique_ptr<base::DictionaryValue> value,
+  static void AddPrefValueToMap(base::Value::Dict value,
                                 PrefValueMap* pref_value_map);
 
   // Testing code can call this with |disabled| set to true to cause
@@ -143,7 +143,8 @@ class DefaultSearchManager {
   void MergePrefsDataWithPrepopulated();
 
   // Reads default search provider data from |pref_service_|, updating
-  // |prefs_default_search_| and |default_search_controlled_by_policy_|.
+  // |prefs_default_search_|, |default_search_mandatory_by_policy_|, and
+  // |default_search_recommended_by_policy_|.
   // Invokes MergePrefsDataWithPrepopulated().
   void LoadDefaultSearchEngineFromPrefs();
 
@@ -174,7 +175,10 @@ class DefaultSearchManager {
   std::unique_ptr<TemplateURLData> prefs_default_search_;
 
   // True if the default search is currently enforced by policy.
-  bool default_search_controlled_by_policy_;
+  bool default_search_mandatory_by_policy_ = false;
+
+  // True if the default search is currently recommended by policy.
+  bool default_search_recommended_by_policy_ = false;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_MANAGER_H_

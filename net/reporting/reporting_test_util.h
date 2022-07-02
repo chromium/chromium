@@ -66,7 +66,7 @@ class TestReportingUploader : public ReportingUploader {
     virtual const url::Origin& report_origin() const = 0;
     virtual const GURL& url() const = 0;
     virtual const std::string& json() const = 0;
-    virtual std::unique_ptr<base::Value> GetValue() const = 0;
+    virtual absl::optional<base::Value> GetValue() const = 0;
 
     virtual void Complete(Outcome outcome) = 0;
 
@@ -290,7 +290,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
-  raw_ptr<ReportingCache::PersistentReportingStore> store_;
+  raw_ptr<ReportingCache::PersistentReportingStore> store_ = nullptr;
 };
 
 class TestReportingService : public ReportingService {
@@ -348,7 +348,7 @@ class TestReportingService : public ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      std::unique_ptr<const base::Value> body,
+      base::Value::Dict body,
       int depth) override;
 
   void ProcessReportToHeader(const url::Origin& url,

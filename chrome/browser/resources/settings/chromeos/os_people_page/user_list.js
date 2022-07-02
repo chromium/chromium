@@ -12,62 +12,82 @@
  *    <settings-user-list prefs="{{prefs}}">
  *    </settings-user-list>
  */
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
-import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-user-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrScrollableBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsUserListElementBase = mixinBehaviors(
+    [CrScrollableBehavior, I18nBehavior, RouteObserverBehavior],
+    PolymerElement);
 
-  behaviors: [
-    CrScrollableBehavior,
-    I18nBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsUserListElement extends SettingsUserListElementBase {
+  static get is() {
+    return 'settings-user-list';
+  }
 
-  properties: {
-    /**
-     * Current list of allowed users.
-     * @private {!Array<!chrome.usersPrivate.User>}
-     */
-    users_: {
-      type: Array,
-      value() {
-        return [];
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Current list of allowed users.
+       * @private {!Array<!chrome.usersPrivate.User>}
+       */
+      users_: {
+        type: Array,
+        value() {
+          return [];
+        },
+        notify: true
       },
-      notify: true
-    },
 
-    /**
-     * Whether the user list is disabled, i.e. that no modifications can be
-     * made.
-     * @type {boolean}
-     */
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    }
-  },
+      /**
+       * Whether the user list is disabled, i.e. that no modifications can be
+       * made.
+       * @type {boolean}
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      }
+    };
+  }
 
-  /** chrome.usersPrivate */
-  usersPrivate_: chrome.usersPrivate,
+  constructor() {
+    super();
+
+    /** @private */
+    this.usersPrivate_ = chrome.usersPrivate;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
       prefs.forEach(function(pref) {
         if (pref.key === 'cros.accounts.users') {
@@ -78,7 +98,7 @@ Polymer({
         }
       }, this);
     });
-  },
+  }
 
   /** @protected */
   currentRouteChanged() {
@@ -88,7 +108,7 @@ Polymer({
             this.setUsers_(users);
           });
     }
-  },
+  }
 
   /**
    * @param {!chrome.usersPrivate.User} user
@@ -97,7 +117,7 @@ Polymer({
    */
   getUserName_(user) {
     return user.isOwner ? this.i18n('deviceOwnerLabel', user.name) : user.name;
-  },
+  }
 
   /**
    * Helper function that sorts and sets the given list of allowed users.
@@ -113,7 +133,7 @@ Polymer({
       }
     });
     this.requestUpdateScroll();
-  },
+  }
 
   /**
    * @private
@@ -126,17 +146,19 @@ Polymer({
     // Focus the add user button since, after this removal, the only user left
     // will be the account owner.
     if (this.users_.length === 2) {
-      this.fire('all-managed-users-removed');
+      const event = new CustomEvent(
+          'all-managed-users-removed', {bubbles: true, composed: true});
+      this.dispatchEvent(event);
     }
 
     this.usersPrivate_.removeUser(
         e.model.item.email, /* callback */ function() {});
-  },
+  }
 
   /** @private */
   shouldHideCloseButton_(disabled, isUserOwner) {
     return disabled || isUserOwner;
-  },
+  }
 
   /**
    * @param {chrome.usersPrivate.User} user
@@ -145,7 +167,7 @@ Polymer({
   getProfilePictureUrl_(user) {
     return 'chrome://userimage/' + user.email + '?id=' + Date.now() +
         '&frame=0';
-  },
+  }
 
   /**
    * @param {chrome.usersPrivate.User} user
@@ -153,7 +175,7 @@ Polymer({
    */
   shouldShowEmail_(user) {
     return !user.isChild && user.name !== user.displayEmail;
-  },
+  }
 
   /**
    * Use this function to prevent tooltips from displaying for user names. We
@@ -163,7 +185,7 @@ Polymer({
    */
   getTooltip_(user) {
     return !this.shouldShowEmail_(user) ? user.displayEmail : '';
-  },
+  }
 
   /**
    * @param {!chrome.usersPrivate.User} user
@@ -172,5 +194,7 @@ Polymer({
    */
   getRemoveUserTooltip_(user) {
     return this.i18n('removeUserTooltip', user.name);
-  },
-});
+  }
+}
+
+customElements.define(SettingsUserListElement.is, SettingsUserListElement);

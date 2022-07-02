@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_URL_HANDLER_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_URL_HANDLER_SYSTEM_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
 class Profile;
 
@@ -13,7 +13,7 @@ class Profile;
 // chrome:// URLs as web applications.
 // To allow users to call Ash's pages directly, they can use os://<url> which
 // will then be handled by this app.
-class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
+class OsUrlHandlerSystemWebAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit OsUrlHandlerSystemWebAppDelegate(Profile* profile);
   OsUrlHandlerSystemWebAppDelegate(const OsUrlHandlerSystemWebAppDelegate&) =
@@ -22,7 +22,7 @@ class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
       const OsUrlHandlerSystemWebAppDelegate&) = delete;
   ~OsUrlHandlerSystemWebAppDelegate() override;
 
-  // web_app::SystemWebAppDelegate:
+  // ash::SystemWebAppDelegate:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
   // TODO(crbug/1260386) - Add override for GetAdditionalSearchTerms() to allow

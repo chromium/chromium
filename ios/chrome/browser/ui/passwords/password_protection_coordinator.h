@@ -24,8 +24,8 @@ enum class WarningAction;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Presents the password protection UI. |completion| should be called when the
-// UI is dismissed with the user's |action|.
+// Presents the password protection UI. `completion` should be called when the
+// UI is dismissed with the user's `action`.
 - (void)startWithCompletion:(void (^)(safe_browsing::WarningAction))completion;
 
 @end

@@ -16,6 +16,7 @@
 
 namespace disk_cache {
 class Backend;
+struct BackendResult;
 }
 
 namespace nacl {
@@ -93,7 +94,7 @@ class PnaclTranslationCache
            int cache_size,
            CompletionOnceCallback callback);
 
-  void OnCreateBackendComplete(int rv);
+  void OnCreateBackendComplete(disk_cache::BackendResult result);
 
   std::unique_ptr<disk_cache::Backend> disk_cache_;
   CompletionOnceCallback init_callback_;

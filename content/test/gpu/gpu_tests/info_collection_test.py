@@ -4,28 +4,35 @@
 
 import os
 import sys
+import typing
+import unittest
 
 import six
 
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+
+from telemetry.internal.platform import gpu_info as gi
 
 
 class InfoCollectionTestArgs():
   """Struct-like class for passing args to an InfoCollection test."""
 
-  def __init__(self, expected_vendor_id_str=None, expected_device_id_strs=None):
-    self.gpu = None
+  def __init__(self,
+               expected_vendor_id_str: typing.Optional[str] = None,
+               expected_device_id_strs: typing.Optional[str] = None):
+    self.gpu: typing.Optional[gi.GPUInfo] = None
     self.expected_vendor_id_str = expected_vendor_id_str
     self.expected_device_id_strs = expected_device_id_strs
 
 
 class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'info_collection'
 
   @classmethod
-  def AddCommandlineArgs(cls, parser):
+  def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(InfoCollectionTest, cls).AddCommandlineArgs(parser)
     parser.add_option(
         '--expected-device-id',
@@ -36,26 +43,29 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     parser.add_option('--expected-vendor-id', help='The expected vendor id')
 
   @classmethod
-  def GenerateGpuTests(cls, options):
-    yield ('InfoCollection_basic', '_',
-           ('_RunBasicTest',
-            InfoCollectionTestArgs(
-                expected_vendor_id_str=options.expected_vendor_id,
-                expected_device_id_strs=options.expected_device_ids)))
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
+    yield ('InfoCollection_basic', '_', [
+        '_RunBasicTest',
+        InfoCollectionTestArgs(
+            expected_vendor_id_str=options.expected_vendor_id,
+            expected_device_id_strs=options.expected_device_ids)
+    ])
     yield ('InfoCollection_direct_composition', '_',
-           ('_RunDirectCompositionTest', InfoCollectionTestArgs()))
-    yield ('InfoCollection_dx12_vulkan', '_', ('_RunDX12VulkanTest',
-                                               InfoCollectionTestArgs()))
-    yield ('InfoCollection_asan_info_surfaced', '_', ('_RunAsanInfoTest',
-                                                      InfoCollectionTestArgs()))
+           ['_RunDirectCompositionTest',
+            InfoCollectionTestArgs()])
+    yield ('InfoCollection_dx12_vulkan', '_',
+           ['_RunDX12VulkanTest',
+            InfoCollectionTestArgs()])
+    yield ('InfoCollection_asan_info_surfaced', '_',
+           ['_RunAsanInfoTest', InfoCollectionTestArgs()])
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(cls, InfoCollectionTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     del test_path  # Unused in this particular GPU test.
     # Make sure the GPU process is started
     self.tab.action_runner.Navigate('chrome:gpu')
@@ -75,7 +85,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   ######################################
   # Helper functions for the tests below
 
-  def _RunBasicTest(self, test_args):
+  def _RunBasicTest(self, test_args: InfoCollectionTestArgs) -> None:
     device = test_args.gpu.devices[0]
     if not device:
       self.fail("System Info doesn't have a gpu")
@@ -102,7 +112,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Device ID mismatch, expected %s but got %s.' %
                 (expected_device_ids, detected_device_id))
 
-  def _RunDirectCompositionTest(self, test_args):
+  def _RunDirectCompositionTest(self,
+                                test_args: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
       overlay_bot_config = self.GetOverlayBotConfig()
@@ -116,7 +127,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
               '%s mismatch, expected %s but got %s.' %
               (field, self._ValueToStr(expected), self._ValueToStr(detected)))
 
-  def _RunDX12VulkanTest(self, _):
+  def _RunDX12VulkanTest(self, _: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
       self.RestartBrowserIfNecessaryWithArgs(
@@ -140,12 +151,12 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
               '%s mismatch, expected %s but got %s.' %
               (field, self._ValueToStr(expected), self._ValueToStr(detected)))
 
-  def _RunAsanInfoTest(self, _):
+  def _RunAsanInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
     self.assertIn('is_asan', gpu_info.aux_attributes)
 
   @staticmethod
-  def _ValueToStr(value):
+  def _ValueToStr(value: typing.Union[str, bool]) -> str:
     if isinstance(value, six.string_types):
       return value
     if isinstance(value, bool):
@@ -154,13 +165,14 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     return False
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'info_collection_expectations.txt')
     ]
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

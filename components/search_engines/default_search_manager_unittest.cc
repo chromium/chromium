@@ -64,7 +64,7 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
 void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
                bool enabled,
                TemplateURLData* data,
-               bool is_enforced) {
+               bool is_mandatory) {
   if (enabled) {
     EXPECT_FALSE(data->keyword().empty());
     EXPECT_FALSE(data->url().empty());
@@ -72,12 +72,12 @@ void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
   std::unique_ptr<base::Value> entry = TemplateURLDataToDictionary(*data);
   entry->SetBoolKey(DefaultSearchManager::kDisabledByPolicy, !enabled);
 
-  is_enforced ? prefs->SetManagedPref(
-                    DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-                    std::move(entry))
-              : prefs->SetRecommendedPref(
-                    DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-                    std::move(entry));
+  is_mandatory ? prefs->SetManagedPref(
+                     DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                     std::move(entry))
+               : prefs->SetRecommendedPref(
+                     DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                     std::move(entry));
 }
 
 }  // namespace
@@ -213,13 +213,13 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByEnforcedPolicy) {
 
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/true);
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
   TemplateURLData null_policy_data;
-  SetPolicy(pref_service(), false, &null_policy_data, /*is_enforced=*/true);
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_mandatory=*/true);
   EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
@@ -238,15 +238,15 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByRecommendedPolicy) {
   // Set recommended policy DSE with valid data.
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/false);
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/false);
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
-  EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED, source);
 
   // Set recommended policy DSE with null data.
   TemplateURLData null_policy_data;
-  SetPolicy(pref_service(), false, &null_policy_data, /*is_enforced=*/false);
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_mandatory=*/false);
   EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
-  EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED, source);
 
   // Set user-configured DSE.
   std::unique_ptr<TemplateURLData> user_data =
@@ -278,7 +278,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
   // Set recommended policy DSE.
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/false);
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/false);
   // The recommended policy DSE does not override the existing user DSE.
   ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
@@ -312,7 +312,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
   // Policy trumps extension:
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/true);
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);

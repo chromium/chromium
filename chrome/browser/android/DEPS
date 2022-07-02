@@ -10,6 +10,7 @@ include_rules = [
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",
   "+components/query_tiles",
+  "+components/url_param_filter/content",
   "+components/webapk",
   "+device/vr/buildflags/buildflags.h",
   "+media/gpu",

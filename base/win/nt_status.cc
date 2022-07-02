@@ -4,10 +4,10 @@
 
 #include "base/win/nt_status.h"
 
-#include "base/check.h"
-
 #include <windows.h>
 #include <winternl.h>
+
+#include "base/check.h"
 
 using GetLastNtStatusFn = NTSTATUS NTAPI (*)();
 

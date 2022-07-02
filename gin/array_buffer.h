@@ -30,6 +30,8 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  private:
   friend class V8Initializer;
 
+  void* AllocateInternal(size_t length, unsigned int flags);
+
   // Initialize the PartitionAlloc partition from which instances of this class
   // allocate memory. This is called after initializing V8 since, when enabled,
   // the V8 sandbox must be initialized first.
@@ -40,7 +42,7 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   // inside of it. For that, PA's ConfigurablePool is created inside the V8
   // sandbox during initialization of V8, and this partition is then placed
   // inside the configurable pool during InitializePartition().
-  static base::ThreadSafePartitionRoot* partition_;
+  static partition_alloc::ThreadSafePartitionRoot* partition_;
 };
 
 class GIN_EXPORT ArrayBuffer {

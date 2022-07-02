@@ -53,25 +53,31 @@ enum class DialogActivationLocationAndCastMode {
   kAppMenuAndTabMirror,
   kAppMenuAndDesktopMirror,
   kAppMenuAndLocalFile,  // Obsolete.
+  kSharingHubAndPresentation,
+  kSharingHubAndTabMirror,
+  kSharingHubAndDesktopMirror,
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
-  // above this line.
-  kMaxValue = kAppMenuAndLocalFile
+  // above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
+  kMaxValue = kSharingHubAndDesktopMirror
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Where the user clicked to open the Media Router dialog.
-// TODO(takumif): Rename this to DialogActivationLocation to avoid confusing
-// "origin" with URL origins.
-enum class MediaRouterDialogOpenOrigin {
+enum class MediaRouterDialogActivationLocation {
   TOOLBAR = 0,
   OVERFLOW_MENU = 1,
   CONTEXTUAL_MENU = 2,
   PAGE = 3,
   APP_MENU = 4,
   SYSTEM_TRAY = 5,
+  SHARING_HUB = 6,
 
-  // NOTE: Add entries only immediately above this line.
-  TOTAL_COUNT = 6
+  // NOTE: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
+  TOTAL_COUNT = 7
 };
 
 // The possible outcomes from a route creation response.
@@ -80,7 +86,8 @@ enum class MediaRouterRouteCreationOutcome {
   FAILURE_NO_ROUTE = 1,
   FAILURE_INVALID_SINK = 2,
 
-  // Note: Add entries only immediately above this line.
+  // Note: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
   TOTAL_COUNT = 3,
 };
 
@@ -95,7 +102,8 @@ enum class MediaRouterUserAction {
   REPLACE_LOCAL_ROUTE = 5,
   STOP_REMOTE = 6,
 
-  // Note: Add entries only immediately above this line.
+  // Note: Add entries only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
   TOTAL_COUNT = 7
 };
 
@@ -162,7 +170,8 @@ class MediaRouterMetrics {
   static const base::TimeDelta kDeviceCountMetricDelay;
 
   // Records where the user clicked to open the Media Router dialog.
-  static void RecordMediaRouterDialogOrigin(MediaRouterDialogOpenOrigin origin);
+  static void RecordMediaRouterDialogActivationLocation(
+      MediaRouterDialogActivationLocation activation_location);
 
   // Records the duration it takes for the Media Router dialog to open and
   // finish painting after a user clicks to open the dialog.
@@ -209,16 +218,18 @@ class MediaRouterMetrics {
   static void RecordDeviceCount(int device_count);
 
   // Records the number of sinks in |is_available| state, provided by |provider|
-  // that was opened via |origin|. Recorded for the global media controls and
-  // the Cast dialog, respectively.
-  static void RecordGmcDeviceCount(MediaRouterDialogOpenOrigin origin,
-                                   mojom::MediaRouteProviderId provider,
-                                   bool is_available,
-                                   int count);
-  static void RecordCastDialogDeviceCount(MediaRouterDialogOpenOrigin origin,
-                                          mojom::MediaRouteProviderId provider,
-                                          bool is_available,
-                                          int count);
+  // that was opened via |activation_location|. Recorded for the global media
+  // controls and the Cast dialog, respectively.
+  static void RecordGmcDeviceCount(
+      MediaRouterDialogActivationLocation activation_location,
+      mojom::MediaRouteProviderId provider,
+      bool is_available,
+      int count);
+  static void RecordCastDialogDeviceCount(
+      MediaRouterDialogActivationLocation activation_location,
+      mojom::MediaRouteProviderId provider,
+      bool is_available,
+      int count);
 
   // Records the index of the device the user has started casting to on the
   // devices list. The index starts at 0.
@@ -248,18 +259,18 @@ class MediaRouterMetrics {
   // This and the following methods that record ResultCode use per-provider
   // histograms.
   static void RecordCreateRouteResultCode(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a join route request to a Media Route Provider.
   static void RecordJoinRouteResultCode(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a call to terminateRoute() on a Media Route
   // Provider.
   static void RecordMediaRouteProviderTerminateRoute(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the type of the MediaRouter dialog opened. Android only.

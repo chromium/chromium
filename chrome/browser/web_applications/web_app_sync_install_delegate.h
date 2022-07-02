@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
 
@@ -27,7 +28,8 @@ class SyncInstallDelegate {
       base::RepeatingCallback<void(const AppId& app_id,
                                    webapps::InstallResultCode code)>;
   using RepeatingUninstallCallback =
-      base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   webapps::UninstallResultCode code)>;
 
   // |web_apps| are already registered and owned by the registrar.
   virtual void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,

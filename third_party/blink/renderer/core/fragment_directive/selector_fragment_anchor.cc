@@ -33,16 +33,7 @@ bool SelectorFragmentAnchor::Invoke() {
   }
   page_has_been_visible_ = true;
 
-  if (dismissed_)
-    return false;
   return InvokeSelector();
-}
-
-bool SelectorFragmentAnchor::Dismiss() {
-  if (dismissed_)
-    return true;
-
-  return dismissed_ = true;
 }
 
 }  // namespace blink

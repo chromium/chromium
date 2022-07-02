@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 include_polymer = !is_android && !is_ios
@@ -11,43 +12,51 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "html"
   input_files = [
-    "action_link.html",
     "assert.html",
-    "cr/event_target.html",
-    "cr.html",
-    "cr/ui/array_data_model.html",
-    "cr/ui/command.html",
-    "cr/ui/context_menu_handler.html",
-    "cr/ui/focus_manager.html",
-    "cr/ui/focus_outline_manager.html",
-    "cr/ui/focus_row.html",
-    "cr/ui.html",
-    "cr/ui/keyboard_shortcut_list.html",
-    "cr/ui/list.html",
-    "cr/ui/list_item.html",
-    "cr/ui/list_selection_controller.html",
-    "cr/ui/list_selection_model.html",
-    "cr/ui/menu_button.html",
-    "cr/ui/menu.html",
-    "cr/ui/menu_item.html",
-    "cr/ui/position_util.html",
-    "event_tracker.html",
     "load_time_data.html",
     "parse_html_subset.html",
-    "promise_resolver.html",
     "test_loader.html",
-    "util.html",
   ]
 
-  if (include_polymer) {
+  if (is_chromeos_ash) {
     input_files += [
-      "cr/ui/focus_row_behavior.html",
-      "cr/ui/focus_without_ink.html",
-      "i18n_behavior.html",
-      "list_property_update_behavior.html",
-      "polymer.html",
-      "web_ui_listener_behavior.html",
+      "action_link.html",
+      "cr.html",
+      "cr/event_target.html",
+      "cr/ui.html",
+      "cr/ui/array_data_model.html",
+      "cr/ui/command.html",
+      "cr/ui/context_menu_handler.html",
+      "cr/ui/focus_manager.html",
+      "cr/ui/focus_outline_manager.html",
+      "cr/ui/focus_row.html",
+      "cr/ui/keyboard_shortcut_list.html",
+      "cr/ui/list.html",
+      "cr/ui/list_item.html",
+      "cr/ui/list_selection_controller.html",
+      "cr/ui/list_selection_model.html",
+      "cr/ui/menu_button.html",
+      "cr/ui/menu.html",
+      "cr/ui/menu_item.html",
+      "cr/ui/position_util.html",
+      "event_tracker.html",
+      "promise_resolver.html",
+      "util.html",
     ]
+  }
+
+  if (include_polymer) {
+    input_files += [ "polymer.html" ]
+
+    if (is_chromeos_ash) {
+      input_files += [
+        "cr/ui/focus_without_ink.html",
+        "cr/ui/focus_row_behavior.html",
+        "i18n_behavior.html",
+        "list_property_update_behavior.html",
+        "web_ui_listener_behavior.html",
+      ]
+    }
   }
   input_files_base_dir = rebase_path(".", "//")
 }

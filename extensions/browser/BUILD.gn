@@ -454,9 +454,13 @@ source_set("browser_sources") {
     "media_capture_util.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
+    "network_permissions_updater.cc",
+    "network_permissions_updater.h",
     "notification_types.h",
     "null_app_sorting.cc",
     "null_app_sorting.h",
+    "offscreen_document_host.cc",
+    "offscreen_document_host.h",
     "path_util.cc",
     "path_util.h",
     "permissions_manager.cc",
@@ -645,7 +649,7 @@ source_set("browser_sources") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
+      "//chromeos/startup",
     ]
   }
 
@@ -737,11 +741,11 @@ source_set("browser_tests") {
 
     deps += [
       "//ash/components/audio",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/audio",
       "//chromeos/dbus/cec_service",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
@@ -798,7 +802,6 @@ source_set("test_support") {
     "//extensions/common",
     "//extensions/common:test_support",
     "//extensions/common/api:api",
-    "//services/data_decoder:lib",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -950,7 +953,6 @@ source_set("unit_tests") {
     "//extensions/strings",
     "//ipc:test_support",
     "//net:test_support",
-    "//services/data_decoder:lib",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/mojom",
     "//services/network:test_support",
@@ -965,6 +967,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
+      "api/audio/audio_service_utils_unittest.cc",
       "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
@@ -985,15 +988,15 @@ source_set("unit_tests") {
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/common:constants",
       "//chromeos:test_support",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/upstart",
+      "//chromeos/ash/components/network:test_support",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/audio",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//chromeos/login/login_state",
-      "//chromeos/network:test_support",
       "//components/feedback",
       "//components/prefs:prefs",
       "//extensions/shell:app_shell_lib",

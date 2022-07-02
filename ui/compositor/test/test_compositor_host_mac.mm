@@ -4,6 +4,8 @@
 
 #include "ui/compositor/test/test_compositor_host.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSOpenGL.h>
 #import <AppKit/NSView.h>
@@ -24,7 +26,7 @@
 // AcceleratedTestView provides an NSView class that delegates drawing to a
 // ui::Compositor delegate, setting up the NSOpenGLContext as required.
 @interface AcceleratedTestView : NSView {
-  ui::Compositor* _compositor;
+  raw_ptr<ui::Compositor> _compositor;
 }
 // Designated initializer.
 - (instancetype)init;

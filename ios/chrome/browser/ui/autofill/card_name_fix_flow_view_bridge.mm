@@ -98,7 +98,7 @@ void CardNameFixFlowViewBridge::DeleteSelf() {
   NSString* _confirmedName;
   TableViewTextHeaderFooterView* _footerView;
 
-  // Owns |self|.
+  // Owns `self`.
   autofill::CardNameFixFlowViewBridge* _bridge;  // weak
 }
 

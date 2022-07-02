@@ -76,11 +76,10 @@ syncer::StringOrdinal GetFirstPinnedAppPosition(
   for (const auto& sync_peer : syncable_service->sync_items()) {
     if (!sync_peer.second->item_pin_ordinal.IsValid())
       continue;
-    // We use kChromeAppId here because even when Lacros is the only web
-    // browser, the shelf id kLacrosAppId is transformed to the sync id
-    // kChromeAppId.
-    if (exclude_chrome && sync_peer.first == app_constants::kChromeAppId)
+    if (exclude_chrome && (sync_peer.first == app_constants::kChromeAppId ||
+                           sync_peer.first == app_constants::kLacrosAppId)) {
       continue;
+    }
     if (!position.IsValid() ||
         sync_peer.second->item_pin_ordinal.LessThan(position)) {
       position = sync_peer.second->item_pin_ordinal;
@@ -394,6 +393,17 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     after = chrome_position;
   } else {
     after = before.CreateBefore();
+  }
+
+  // When chrome and lacros are enabled side-by-side, try positioning default
+  // apps after lacros icon.
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    syncer::StringOrdinal lacros_position =
+        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
+    if (lacros_position.IsValid() && lacros_position.LessThan(before) &&
+        lacros_position.GreaterThan(after)) {
+      after = lacros_position;
+    }
   }
 
   for (const auto& app_id : app_ids) {

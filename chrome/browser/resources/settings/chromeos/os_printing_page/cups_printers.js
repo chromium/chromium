@@ -8,193 +8,206 @@
  * set up legacy & non-CloudPrint printers on ChromeOS by leveraging CUPS (the
  * unix printing system) and the many open source drivers built for CUPS.
  */
+
 // TODO(xdai): Rename it to 'settings-cups-printers-page'.
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_toast/cr_toast.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import '//resources/js/action_link.js';
-import '//resources/cr_elements/action_link_css.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/cr_elements/action_link_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './cups_settings_add_printer_dialog.js';
 import './cups_edit_printer_dialog.js';
 import './cups_enterprise_printers.js';
 import './cups_printer_shared_css.js';
 import './cups_saved_printers.js';
 import './cups_nearby_printers.js';
-import '//resources/cr_components/localized_link/localized_link.js';
-import '../../icons.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import '../../icons.html.js';
 
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, ManufacturersInfo, ModelsInfo, PrinterMakeModel, PrinterPpdMakeModel, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-cups-printers',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {NetworkListenerBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCupsPrintersElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, NetworkListenerBehavior, RouteObserverBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    NetworkListenerBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
+  static get is() {
+    return 'settings-cups-printers';
+  }
 
-  properties: {
-    /** @type {!Array<!CupsPrinterInfo>} */
-    printers: {
-      type: Array,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    prefs: Object,
+  static get properties() {
+    return {
+      /** @type {!Array<!CupsPrinterInfo>} */
+      printers: {
+        type: Array,
+        notify: true,
+      },
 
-    /** @type {?CupsPrinterInfo} */
-    activePrinter: {
-      type: Object,
-      notify: true,
-    },
+      prefs: Object,
 
-    /** @private {?WebUIListener} */
-    onPrintersChangedListener_: {
-      type: Object,
-      value: null,
-    },
+      /** @type {?CupsPrinterInfo} */
+      activePrinter: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @private {?WebUIListener} */
-    onEnterprisePrintersChangedListener_: {
-      type: Object,
-      value: null,
-    },
+      /** @private {?WebUIListener} */
+      onPrintersChangedListener_: {
+        type: Object,
+        value: null,
+      },
 
-    searchTerm: {
-      type: String,
-    },
+      /** @private {?WebUIListener} */
+      onEnterprisePrintersChangedListener_: {
+        type: Object,
+        value: null,
+      },
 
-    /** This is also used as an attribute for css styling. */
-    canAddPrinter: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      searchTerm: {
+        type: String,
+      },
 
-    /**
-     * @type {!Array<!PrinterListEntry>}
-     * @private
-     */
-    savedPrinters_: {
-      type: Array,
-      value: () => [],
-    },
+      /** This is also used as an attribute for css styling. */
+      canAddPrinter: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * @type {!Array<!PrinterListEntry>}
-     * @private
-     */
-    enterprisePrinters_: {
-      type: Array,
-      value: () => [],
-    },
+      /**
+       * @type {!Array<!PrinterListEntry>}
+       * @private
+       */
+      savedPrinters_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private */
-    attemptedLoadingPrinters_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * @type {!Array<!PrinterListEntry>}
+       * @private
+       */
+      enterprisePrinters_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private */
-    showCupsEditPrinterDialog_: Boolean,
+      /** @private */
+      attemptedLoadingPrinters_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**@private */
-    addPrinterResultText_: String,
+      /** @private */
+      showCupsEditPrinterDialog_: Boolean,
 
-    /**@private */
-    nearbyPrintersAriaLabel_: {
-      type: String,
-      computed: 'getNearbyPrintersAriaLabel_(nearbyPrinterCount_)',
-    },
+      /**@private */
+      addPrinterResultText_: String,
 
-    /**@private */
-    savedPrintersAriaLabel_: {
-      type: String,
-      computed: 'getSavedPrintersAriaLabel_(savedPrinterCount_)',
-    },
+      /**@private */
+      nearbyPrintersAriaLabel_: {
+        type: String,
+        computed: 'getNearbyPrintersAriaLabel_(nearbyPrinterCount_)',
+      },
 
-    /**@private */
-    enterprisePrintersAriaLabel_: {
-      type: String,
-      computed: 'getEnterprisePrintersAriaLabel_(enterprisePrinterCount_)',
-    },
+      /**@private */
+      savedPrintersAriaLabel_: {
+        type: String,
+        computed: 'getSavedPrintersAriaLabel_(savedPrinterCount_)',
+      },
 
-    /**@private */
-    nearbyPrinterCount_: {
-      type: Number,
-      value: 0,
-    },
+      /**@private */
+      enterprisePrintersAriaLabel_: {
+        type: String,
+        computed: 'getEnterprisePrintersAriaLabel_(enterprisePrinterCount_)',
+      },
 
-    /**@private */
-    savedPrinterCount_: {
-      type: Number,
-      value: 0,
-    },
+      /**@private */
+      nearbyPrinterCount_: {
+        type: Number,
+        value: 0,
+      },
 
-    /** @private */
-    enterprisePrinterCount_: {
-      type: Number,
-      value: 0,
-    },
+      /**@private */
+      savedPrinterCount_: {
+        type: Number,
+        value: 0,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kAddPrinter,
-        chromeos.settings.mojom.Setting.kSavedPrinters,
-      ]),
-    },
-  },
+      /** @private */
+      enterprisePrinterCount_: {
+        type: Number,
+        value: 0,
+      },
 
-  listeners: {
-    'edit-cups-printer-details': 'onShowCupsEditPrinterDialog_',
-    'show-cups-printer-toast': 'openResultToast_',
-    'add-print-server-and-show-toast': 'addPrintServerAndShowResultToast_',
-    'open-manufacturer-model-dialog-for-specified-printer':
-        'openManufacturerModelDialogForSpecifiedPrinter_',
-  },
-
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
-
-  /** @private {CupsPrintersEntryManager} */
-  entryManager_: null,
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kAddPrinter,
+          chromeos.settings.mojom.Setting.kSavedPrinters,
+        ]),
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+
+
+    /** @private {!CupsPrintersEntryManager} */
     this.entryManager_ = CupsPrintersEntryManager.getInstance();
-  },
+
+    /** @private */
+    this.addPrintServerResultText_ = '';
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.networkConfig_
         .getNetworkStateList({
           filter: chromeos.networkConfig.mojom.FilterType.kActive,
@@ -204,12 +217,36 @@ Polymer({
         .then((responseParams) => {
           this.onActiveNetworksChanged(responseParams.result);
         });
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.updateCupsPrintersList_();
-  },
+
+    this.addEventListener(
+        'edit-cups-printer-details', this.onShowCupsEditPrinterDialog_);
+    this.addEventListener('show-cups-printer-toast', (event) => {
+      this.openResultToast_(
+          /**
+           * @type {!CustomEvent<!{
+           *      resultCode: PrinterSetupResult,
+           *      printerName: string
+           * }>}
+           */
+          (event));
+    });
+    this.addEventListener('add-print-server-and-show-toast', (event) => {
+      this.addPrintServerAndShowResultToast_(
+          /** @type {!CustomEvent<!{printers: !CupsPrintersList}>} */ (event));
+    });
+    this.addEventListener(
+        'open-manufacturer-model-dialog-for-specified-printer', (event) => {
+          this.openManufacturerModelDialogForSpecifiedPrinter_(
+              /** @type {!CustomEvent<{item: !CupsPrinterInfo}>} */ (event));
+        });
+  }
 
   /**
    * Overridden from DeepLinkingBehavior.
@@ -224,7 +261,7 @@ Polymer({
     }
 
     afterNextRender(this, () => {
-      const savedPrinters = this.$$('#savedPrinters');
+      const savedPrinters = this.shadowRoot.querySelector('#savedPrinters');
       const printerEntry =
           savedPrinters && savedPrinters.$$('settings-cups-printers-entry');
       const deepLinkElement = printerEntry && printerEntry.$$('#moreActions');
@@ -236,7 +273,7 @@ Polymer({
     });
     // Stop deep link attempt since we completed it manually.
     return false;
-  },
+  }
 
   /**
    * RouteObserverBehavior
@@ -262,7 +299,7 @@ Polymer({
         this.onEnterprisePrintersChanged_.bind(this));
     this.updateCupsPrintersList_();
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * CrosNetworkConfigObserver impl
@@ -271,14 +308,14 @@ Polymer({
    * @private
    */
   onActiveNetworksChanged(networks) {
-    this.canAddPrinter = networks.some(function(network) {
+    this.canAddPrinter = networks.some((network) => {
       // Note: Check for kOnline rather than using
       // OncMojo.connectionStateIsConnected() since the latter could return true
       // for networks without connectivity (e.g., captive portals).
       return network.connectionState ===
           chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
     });
-  },
+  }
 
   /**
    * @param {!CustomEvent<!{
@@ -307,7 +344,7 @@ Polymer({
     }
 
     this.$.errorToast.show();
-  },
+  }
 
   /**
    * @param {!CustomEvent<!{
@@ -315,7 +352,7 @@ Polymer({
    * }>} event
    * @private
    */
-  addPrintServerAndShowResultToast_: function(event) {
+  addPrintServerAndShowResultToast_(event) {
     this.entryManager_.addPrintServerPrinters(event.detail.printers);
     const length = event.detail.printers.printerList.length;
     if (length === 0) {
@@ -329,7 +366,7 @@ Polymer({
           loadTimeData.getStringF('printServerFoundManyPrinters', length);
     }
     this.$.printServerErrorToast.show();
-  },
+  }
 
   /**
    * @param {!CustomEvent<{item: !CupsPrinterInfo}>} e
@@ -339,7 +376,7 @@ Polymer({
     const item = e.detail.item;
     this.$.addPrinterDialog.openManufacturerModelDialogForSpecifiedPrinter(
         item);
-  },
+  }
 
   /** @private */
   updateCupsPrintersList_() {
@@ -349,7 +386,7 @@ Polymer({
     CupsPrintersBrowserProxyImpl.getInstance()
         .getCupsEnterprisePrintersList()
         .then(this.onEnterprisePrintersChanged_.bind(this));
-  },
+  }
 
   /**
    * @param {!CupsPrintersList} cupsPrintersList
@@ -363,7 +400,7 @@ Polymer({
     // Used to delay rendering nearby and add printer sections to prevent
     // "Add Printer" flicker when clicking "Printers" in settings page.
     this.attemptedLoadingPrinters_ = true;
-  },
+  }
 
   /**
    * @param {!CupsPrintersList} cupsPrintersList
@@ -374,27 +411,28 @@ Polymer({
         printer => /** @type {!PrinterListEntry} */ (
             {printerInfo: printer, printerType: PrinterType.ENTERPRISE}));
     this.entryManager_.setEnterprisePrintersList(this.enterprisePrinters_);
-  },
+  }
 
   /** @private */
   onAddPrinterTap_() {
     this.$.addPrinterDialog.open();
-  },
+  }
 
   /** @private */
   onAddPrinterDialogClose_() {
-    focusWithoutInk(assert(this.$$('#addManualPrinterIcon')));
-  },
+    focusWithoutInk(
+        assert(this.shadowRoot.querySelector('#addManualPrinterIcon')));
+  }
 
   /** @private */
   onShowCupsEditPrinterDialog_() {
     this.showCupsEditPrinterDialog_ = true;
-  },
+  }
 
   /** @private */
   onEditPrinterDialogClose_() {
     this.showCupsEditPrinterDialog_ = false;
-  },
+  }
 
   /**
    * @param {string} searchTerm
@@ -409,7 +447,7 @@ Polymer({
     return !this.printers.some(printer => {
       return printer.printerName.toLowerCase().includes(searchTerm);
     });
-  },
+  }
 
   /**
    * @param {boolean} connectedToNetwork Whether the device is connected to
@@ -421,7 +459,7 @@ Polymer({
    */
   addPrinterButtonActive_(connectedToNetwork, userPrintersAllowed) {
     return connectedToNetwork && userPrintersAllowed;
-  },
+  }
 
   /**
    * @return {boolean} Whether |savedPrinters_| is empty.
@@ -429,7 +467,7 @@ Polymer({
    */
   doesAccountHaveSavedPrinters_() {
     return !!this.savedPrinters_.length;
-  },
+  }
 
   /**
    * @return {boolean} Whether |enterprisePrinters_| is empty.
@@ -437,7 +475,7 @@ Polymer({
    */
   doesAccountHaveEnterprisePrinters_() {
     return !!this.enterprisePrinters_.length;
-  },
+  }
 
   /** @private */
   getSavedPrintersAriaLabel_() {
@@ -450,7 +488,7 @@ Polymer({
       printerLabel = 'savedPrintersCountMany';
     }
     return loadTimeData.getStringF(printerLabel, this.savedPrinterCount_);
-  },
+  }
 
   /** @private */
   getNearbyPrintersAriaLabel_() {
@@ -463,7 +501,7 @@ Polymer({
       printerLabel = 'nearbyPrintersCountMany';
     }
     return loadTimeData.getStringF(printerLabel, this.nearbyPrinterCount_);
-  },
+  }
 
   /** @private */
   getEnterprisePrintersAriaLabel_() {
@@ -476,5 +514,8 @@ Polymer({
       printerLabel = 'enterprisePrintersCountMany';
     }
     return loadTimeData.getStringF(printerLabel, this.enterprisePrinterCount_);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCupsPrintersElement.is, SettingsCupsPrintersElement);

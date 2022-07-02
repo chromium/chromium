@@ -390,7 +390,7 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div>
       <span id=item1 tabindex=0></span>
     </div>
@@ -415,11 +415,21 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
               </td>
             </tr>
           </table>
+          <div id=fg6-container>
+            <template shadowroot=open>
+              <div id=fg6 focusgroup=extend>
+                <span id=item8 tabindex=-1></span>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
+
+  auto* fg6_container = GetElementById("fg6-container");
+  ASSERT_TRUE(fg6_container);
 
   auto* item1 = GetElementById("item1");
   auto* item2 = GetElementById("item2");
@@ -428,11 +438,13 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
   auto* item5 = GetElementById("item5");
   auto* item6 = GetElementById("item6");
   auto* item7 = GetElementById("item7");
+  auto* item8 = fg6_container->GetShadowRoot()->getElementById("item8");
   auto* fg1 = GetElementById("fg1");
   auto* fg2 = GetElementById("fg2");
   auto* fg3 = GetElementById("fg3");
   auto* fg4 = GetElementById("fg4");
   auto* fg5 = GetElementById("fg5");
+  auto* fg6 = fg6_container->GetShadowRoot()->getElementById("fg6");
   ASSERT_TRUE(item1);
   ASSERT_TRUE(item2);
   ASSERT_TRUE(item3);
@@ -440,11 +452,13 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
   ASSERT_TRUE(item5);
   ASSERT_TRUE(item6);
   ASSERT_TRUE(item7);
+  ASSERT_TRUE(item8);
   ASSERT_TRUE(fg1);
   ASSERT_TRUE(fg2);
   ASSERT_TRUE(fg3);
   ASSERT_TRUE(fg4);
   ASSERT_TRUE(fg5);
+  ASSERT_TRUE(fg6);
 
   EXPECT_EQ(
       utils::FindNearestFocusgroupAncestor(item1, FocusgroupType::kLinear),
@@ -480,6 +494,15 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
       utils::FindNearestFocusgroupAncestor(item7, FocusgroupType::kLinear),
       fg5);
   EXPECT_EQ(utils::FindNearestFocusgroupAncestor(item7, FocusgroupType::kGrid),
+            nullptr);
+  EXPECT_EQ(
+      utils::FindNearestFocusgroupAncestor(item8, FocusgroupType::kLinear),
+      fg6);
+  EXPECT_EQ(utils::FindNearestFocusgroupAncestor(item8, FocusgroupType::kGrid),
+            nullptr);
+  EXPECT_EQ(utils::FindNearestFocusgroupAncestor(fg6, FocusgroupType::kLinear),
+            fg2);
+  EXPECT_EQ(utils::FindNearestFocusgroupAncestor(fg6, FocusgroupType::kGrid),
             nullptr);
 }
 

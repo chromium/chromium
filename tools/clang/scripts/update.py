@@ -35,7 +35,7 @@ import zlib
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-15-init-10168-gc2a7904a'
+CLANG_REVISION = 'llvmorg-15-init-14188-g4dcb42fa'
 CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
@@ -163,7 +163,7 @@ def DownloadAndUnpack(url, output_dir, path_prefixes=None):
       assert path_prefixes is None
       zipfile.ZipFile(f).extractall(path=output_dir)
     else:
-      t = tarfile.open(mode='r:gz', fileobj=f)
+      t = tarfile.open(mode='r:*', fileobj=f)
       members = None
       if path_prefixes is not None:
         members = [m for m in t.getmembers()

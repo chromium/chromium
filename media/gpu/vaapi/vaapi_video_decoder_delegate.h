@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -132,7 +133,7 @@ class VaapiVideoDecoderDelegate {
   std::string GetDecryptKeyId() const;
 
   // Both owned by caller.
-  DecodeSurfaceHandler<VASurface>* const vaapi_dec_;
+  const raw_ptr<DecodeSurfaceHandler<VASurface>> vaapi_dec_;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -142,13 +143,15 @@ class VaapiVideoDecoderDelegate {
   void OnGetHwKeyData(const std::string& key_id,
                       Decryptor::Status status,
                       const std::vector<uint8_t>& key_data);
+  void RecoverProtectedSession();
 
   // All members below pertain to protected content playback.
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
+  EncryptionScheme encryption_scheme_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
+  EncryptionScheme last_used_encryption_scheme_{EncryptionScheme::kUnencrypted};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;

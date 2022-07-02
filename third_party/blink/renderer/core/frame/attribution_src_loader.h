@@ -22,6 +22,7 @@ namespace blink {
 class HTMLElement;
 class KURL;
 class LocalFrame;
+class Resource;
 class ResourceRequest;
 class ResourceResponse;
 
@@ -30,14 +31,15 @@ struct Impression;
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
-  enum class RegisterResult {
-    kSuccess,
-    kInvalidProtocol,
-    kNotAllowed,
-    kInsecureContext,
-    kUntrustworthyOrigin,
-    kFailedToRegister,
+  enum class RegisterContext {
+    kAttributionSrc,
+    kResource,
   };
+
+  static constexpr const char* kAttributionEligibleEventSource = "event-source";
+  static constexpr const char* kAttributionEligibleNavigationSource =
+      "navigation-source";
+  static constexpr const char* kAttributionEligibleTrigger = "trigger";
 
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
@@ -51,11 +53,13 @@ class CORE_EXPORT AttributionSrcLoader
   // if the frame is not attached.
   void Register(const KURL& attribution_src, HTMLElement* element);
 
-  // Like `Register()`, but only allows sources to be registered.
-  RegisterResult RegisterSources(const KURL& attribution_src);
-
-  void MaybeRegisterTrigger(const ResourceRequest& request,
-                            const ResourceResponse& response);
+  // Registers an attribution resource client for the given resource if
+  // the request is eligible for attribution registration. Safe to call multiple
+  // times for the same `resource`. Returns whether a registration was
+  // successful.
+  bool MaybeRegisterAttributionHeaders(const ResourceRequest& request,
+                                       const ResourceResponse& response,
+                                       const Resource* resource);
 
   // Registers an attributionsrc which is associated with a top-level
   // navigation, for example a click on an anchor tag. Returns an Impression
@@ -69,29 +73,21 @@ class CORE_EXPORT AttributionSrcLoader
   static constexpr size_t kMaxConcurrentRequests = 30;
 
  private:
-  // Represents what events are able to be registered from an attributionsrc.
-  enum class SrcType { kUndetermined, kSource, kTrigger };
-
   class ResourceClient;
 
-  enum class RegisterContext {
-    kAttributionSrc,
-    kResourceTrigger,
-  };
+  // Represents what events are able to be registered from an attributionsrc.
+  enum class SrcType { kUndetermined, kSource, kTrigger };
 
   ResourceClient* DoRegistration(const KURL& src_url,
                                  SrcType src_type,
                                  bool associated_with_navigation);
-  void DoPrerenderingRegistration(const KURL& src_url,
-                                  SrcType src_type,
-                                  bool associated_with_navigation);
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
   // might be reported if it's not allowed.
-  RegisterResult CanRegisterAttribution(RegisterContext context,
-                                        const KURL& url,
-                                        HTMLElement* element,
-                                        absl::optional<uint64_t> request_id);
+  bool UrlCanRegisterAttribution(RegisterContext context,
+                                 const KURL& url,
+                                 HTMLElement* element,
+                                 absl::optional<uint64_t> request_id);
 
   void RegisterTrigger(
       mojom::blink::AttributionTriggerDataPtr trigger_data) const;
@@ -99,8 +95,7 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,
                                        SrcType src_type,
-                                       bool associated_with_navigation,
-                                       RegisterResult& out_register_result);
+                                       bool associated_with_navigation);
 
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const absl::optional<String>& string,
@@ -110,6 +105,16 @@ class CORE_EXPORT AttributionSrcLoader
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;
 };
+
+// Returns whether attribution is allowed, and logs devtools issues if
+// registration was attempted in a context is not allowed and `log_issues` is
+// set. `element` may be null.
+CORE_EXPORT bool CanRegisterAttributionInContext(
+    LocalFrame* frame,
+    HTMLElement* element,
+    absl::optional<uint64_t> request_id,
+    AttributionSrcLoader::RegisterContext context,
+    bool log_issues);
 
 }  // namespace blink
 

@@ -6,9 +6,15 @@
  * @fileoverview Handles automation from a desktop automation node.
  */
 import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
+import {AutomationObjectConstructorInstaller} from '/chromevox/background/automation_object_constructor_installer.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {TextEditHandler} from '/chromevox/background/editing/editing.js';
+import {EventSourceState} from '/chromevox/background/event_source.js';
+import {Output} from '/chromevox/background/output/output.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -97,7 +103,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, (event) => {
+    this.addListener_(EventType.MENU_START, event => {
       Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
       this.onEventDefault(event);
     });
@@ -512,7 +518,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
               .deepEquivalent);
 
       // Sync ChromeVox range with selection.
-      if (!ChromeVoxState.isReadingContinuously) {
+      if (!ChromeVoxState.instance.isReadingContinuously) {
         ChromeVoxState.instance.setCurrentRange(
             selectedRange, true /* from editing */);
       }
@@ -634,7 +640,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // editable leading to braille output routing to the editable.
     this.textEditHandler_ = null;
 
-    chrome.automation.getFocus((focus) => {
+    chrome.automation.getFocus(focus => {
       const target = evt.target;
 
       // Desktop tabs get "selection" when there's a focused webview during
@@ -686,7 +692,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           walker = walker.parent;
         }
 
-        override = !!walker || override;
+        override = Boolean(walker) || override;
       }
 
       // Autofill popup menu items are always announced on selection events,
@@ -797,7 +803,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
          voxTarget.root.role !== RoleType.DESKTOP &&
          !AutomationUtil.isDescendantOf(target, voxTarget) &&
          !AutomationUtil.getAncestors(voxTarget.root)
-              .find((n) => n.role === RoleType.KEYBOARD))) {
+              .find(n => n.role === RoleType.KEYBOARD))) {
       return false;
     }
 
@@ -805,7 +811,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       this.textEditHandler_ = TextEditHandler.createForNode(target);
     }
 
-    return !!this.textEditHandler_;
+    return Boolean(this.textEditHandler_);
   }
 
   /**

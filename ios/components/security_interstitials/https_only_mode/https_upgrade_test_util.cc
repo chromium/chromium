@@ -17,6 +17,7 @@ void FakeHttpsUpgradeService::AllowHttpForHost(const std::string& host) {
   allowed_http_hosts_.insert(host);
 };
 
-void FakeHttpsUpgradeService::ClearAllowlistForTesting() {
+void FakeHttpsUpgradeService::ClearAllowlist(base::Time delete_begin,
+                                             base::Time delete_end) {
   allowed_http_hosts_.clear();
 }

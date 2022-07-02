@@ -69,6 +69,10 @@ void ReceiverMojoToMediaAdapter::OnFrameWithEmptyRegionCapture() {
   video_frame_handler_->OnFrameWithEmptyRegionCapture();
 }
 
+void ReceiverMojoToMediaAdapter::OnNewCropVersion(uint32_t crop_version) {
+  video_frame_handler_->OnNewCropVersion(crop_version);
+}
+
 void ReceiverMojoToMediaAdapter::OnLog(const std::string& message) {
   video_frame_handler_->OnLog(message);
 }

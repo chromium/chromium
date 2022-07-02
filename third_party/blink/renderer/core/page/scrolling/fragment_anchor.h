@@ -52,12 +52,7 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   virtual void Installed() = 0;
 
   virtual void DidScroll(mojom::blink::ScrollType type) = 0;
-  virtual void PerformPreRafActions() = 0;
-
-  // Dismissing the fragment anchor removes indicators of the anchor, such as
-  // text highlighting on a text fragment anchor. If true, the anchor has been
-  // dismissed and can be disposed.
-  virtual bool Dismiss() = 0;
+  virtual void PerformScriptableActions() = 0;
 
   virtual void Trace(Visitor*) const;
 

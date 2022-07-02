@@ -12,6 +12,7 @@
   width: 100px;
   height: 100px;
   transform: scale(2.0, 3.0);
+  page-transition-tag: target;
 }
 
 .embedded {
@@ -24,6 +25,7 @@
   width: 10px;
   height: 10px;
   background: grey;
+  page-transition-tag: hidden;
 }
 
 html::page-transition-container(hidden) { animation-duration: 300s; }
@@ -46,12 +48,7 @@ html::page-transition-outgoing-image(target) { animation: unset; opacity: 0; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-  t.setElement(target, "target");
   t.start(() => {
-    t.setElement(hidden, "hidden");
-    t.setElement(target, "target");
-
     requestAnimationFrame(() =>  requestAnimationFrame(takeScreenshot));
   });
 }

@@ -43,7 +43,7 @@ class ExternalProviderInterface {
     // location.
     virtual bool OnExternalExtensionUpdateUrlFound(
         const ExternalInstallInfoUpdateUrl& info,
-        bool is_initial_load) = 0;
+        bool force_update) = 0;
 
     // Called after all the external extensions have been reported
     // through the above two methods. |provider| is a pointer to the

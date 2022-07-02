@@ -8,7 +8,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +16,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma.ContextualSearchPreference;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -46,6 +43,7 @@ class ContextualSearchPolicy {
     private static final String PATH_AMP = "/amp/";
     private static final int REMAINING_NOT_APPLICABLE = -1;
     private static final int TAP_TRIGGERED_PROMO_LIMIT = 50;
+    private static final int PROMO_DEFAULT_LIMIT = 3;
 
     // Constants related to the Contextual Search preference.
     private static final String CONTEXTUAL_SEARCH_DISABLED = "false";
@@ -120,12 +118,7 @@ class ContextualSearchPolicy {
      * @return Whether a Tap gesture is currently supported as a trigger for the feature.
      */
     boolean isTapSupported() {
-        return (isContextualSearchFullyEnabled()
-                       || ContextualSearchFieldTrial.getSwitch(
-                               ContextualSearchSwitch
-                                       .IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED))
-                ? true
-                : (getPromoTapsRemaining() != 0);
+        return isContextualSearchFullyEnabled() ? true : (getPromoTapsRemaining() != 0);
     }
 
     /**
@@ -157,19 +150,8 @@ class ContextualSearchPolicy {
      * @return Whether the previous gesture should resolve.
      */
     boolean shouldPreviousGestureResolve() {
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED)) {
-            return false;
-        }
-
         // The user must have decided on privacy to resolve page content on HTTPS.
         return isContextualSearchFullyEnabled();
-    }
-
-    /** @return Whether a long-press gesture can resolve. */
-    boolean canResolveLongpress() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS);
     }
 
     /** Returns whether the Delayed Intelligence Feature is currently enabled or not. */
@@ -199,13 +181,8 @@ class ContextualSearchPolicy {
      * @return Whether the Opt-out promo is available to be shown in any panel.
      */
     boolean isPromoAvailable() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            // Only show promo card a limited number of times.
-            return isUserUndecided()
-                    && getContextualSearchPromoCardShownCount()
-                    < ContextualSearchFieldTrial.getDefaultPromoCardShownTimes();
-        }
-        return isUserUndecided();
+        // Only show promo card a limited number of times.
+        return isUserUndecided() && getContextualSearchPromoCardShownCount() < PROMO_DEFAULT_LIMIT;
     }
 
     /**
@@ -227,52 +204,16 @@ class ContextualSearchPolicy {
             // Bump the counter only when it is still enabled.
             if (promoTapCounter.isEnabled()) promoTapCounter.increment();
         }
-        int tapsSinceOpen = mPreferencesManager.incrementInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT);
-        if (isUserUndecided()) {
-            ContextualSearchUma.logTapsSinceOpenForUndecided(tapsSinceOpen);
-        } else {
-            ContextualSearchUma.logTapsSinceOpenForDecided(tapsSinceOpen);
-        }
-        mPreferencesManager.incrementInt(ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_COUNT);
     }
 
     /**
      * Updates all the counters to account for an open-action on the panel.
      */
     void updateCountersForOpen() {
-        // Always completely reset the tap counters that accumulate only since the last open.
-        mPreferencesManager.writeInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT, 0);
-        mPreferencesManager.writeInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_QUICK_ANSWER_COUNT, 0);
-
         // Disable the "promo tap" counter, but only if we're using the Opt-out onboarding.
         // For Opt-in, we never disable the promo tap counter.
         if (isPromoAvailable()) {
             getPromoTapCounter().disable();
-
-            // Bump the total-promo-opens counter.
-            int count = mPreferencesManager.incrementInt(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_PROMO_OPEN_COUNT);
-            ContextualSearchUma.logPromoOpenCount(count);
-        }
-        mPreferencesManager.incrementInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_OPEN_COUNT);
-    }
-
-    /**
-     * Updates Tap counters to account for a quick-answer caption shown on the panel.
-     * @param wasActivatedByTap Whether the triggering gesture was a Tap or not.
-     * @param doesAnswer Whether the caption is considered an answer rather than just
-     *                          informative.
-     */
-    void updateCountersForQuickAnswer(boolean wasActivatedByTap, boolean doesAnswer) {
-        if (wasActivatedByTap && doesAnswer) {
-            mPreferencesManager.incrementInt(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_QUICK_ANSWER_COUNT);
-            mPreferencesManager.incrementInt(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_QUICK_ANSWER_COUNT);
         }
     }
 
@@ -303,22 +244,6 @@ class ContextualSearchPolicy {
         ContextualSearchUma.logPreferenceState();
         RelatedSearchesUma.logRelatedSearchesPermissionsForAllUsers(
                 hasSendUrlPermissions(), canSendSurroundings());
-
-        // Log the number of promo taps remaining.
-        int promoTapsRemaining = getPromoTapsRemaining();
-        if (promoTapsRemaining >= 0) ContextualSearchUma.logPromoTapsRemaining(promoTapsRemaining);
-
-        // Also log the total number of taps before opening the promo, even for those
-        // that are no longer tap limited. That way we'll know the distribution of the
-        // number of taps needed before opening the promo.
-        DisableablePromoTapCounter promoTapCounter = getPromoTapCounter();
-        boolean wasOpened = !promoTapCounter.isEnabled();
-        int count = promoTapCounter.getCount();
-        if (wasOpened) {
-            ContextualSearchUma.logPromoTapsBeforeFirstOpen(count);
-        } else {
-            ContextualSearchUma.logPromoTapsForNeverOpened(count);
-        }
     }
 
     /**
@@ -342,12 +267,6 @@ class ContextualSearchPolicy {
      */
     boolean doSendBasePageUrl() {
         if (!isContextualSearchFullyEnabled() && !isDelayedIntelligenceActive()) return false;
-
-        // Check whether there is a Field Trial setting preventing us from sending the page URL.
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED)) {
-            return false;
-        }
 
         // Ensure that the default search provider is Google.
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return false;
@@ -376,39 +295,6 @@ class ContextualSearchPolicy {
         // service.
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile());
-    }
-
-    /**
-     * The search provider icon is animated every time on long press if the user has never opened
-     * the panel before and once a day on tap.
-     *
-     * @return Whether the search provider icon should be animated.
-     */
-    boolean shouldAnimateSearchProviderIcon() {
-        if (mSearchPanel.isShowing()) return false;
-
-        @SelectionType
-        int selectionType = mSelectionController.getSelectionType();
-        if (selectionType == SelectionType.TAP) {
-            long currentTimeMillis = System.currentTimeMillis();
-            long lastAnimatedTimeMillis = mPreferencesManager.readLong(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_LAST_ANIMATION_TIME);
-            if (Math.abs(currentTimeMillis - lastAnimatedTimeMillis) > DateUtils.DAY_IN_MILLIS) {
-                mPreferencesManager.writeLong(
-                        ChromePreferenceKeys.CONTEXTUAL_SEARCH_LAST_ANIMATION_TIME,
-                        currentTimeMillis);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (selectionType == SelectionType.LONG_PRESS) {
-            // If the panel has never been opened before, getPromoOpenCount() will be 0.
-            // Once the panel has been opened, regardless of whether or not the user has opted-in or
-            // opted-out, the promo open count will be greater than zero.
-            return isUserUndecided() && getPromoOpenCount() == 0;
-        }
-
-        return false;
     }
 
     /**
@@ -512,34 +398,15 @@ class ContextualSearchPolicy {
     }
 
     /**
-     * Sets the contextual search states based on the user's selection in the promo card.
-     * If the the feature CONTEXTUAL_SEARCH_NEW_SETTINGS enabled,
-     * @See {@link #setContextualSearchFullyOptedIn(boolean)}.
-     * If the the feature CONTEXTUAL_SEARCH_NEW_SETTINGS is not enabled,
-     * @See {@link #setContextualSearchState(boolean)}.
-     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
-     */
-    static void setContextualSearchPromoCardSelection(boolean enabled) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            setContextualSearchFullyOptedIn(enabled);
-        } else {
-            setContextualSearchState(enabled);
-        }
-    }
-
-    /**
-     * Explicitly sets whether Contextual Search states.
-     * 'enabled' is true - fully opt in.
-     * 'enabled' is false - the feature is disabled.
+     * Explicitly set whether Contextual Search is enabled or not, with the enabled state being
+     * either fully or default-enabled based on previous state. 'enabled' is true - fully opt in or
+     * default-enabled based on previous state. 'enabled' is false - the feature is disabled.
      * @param enabled Whether Contextual Search should be enabled.
      */
     static void setContextualSearchState(boolean enabled) {
         @ContextualSearchPreference
-        int onState = ContextualSearchPreference.ENABLED;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            onState = isContextualSearchOptInEnabled() ? ContextualSearchPreference.ENABLED
+        int onState = isContextualSearchOptInEnabled() ? ContextualSearchPreference.ENABLED
                                                        : ContextualSearchPreference.UNINITIALIZED;
-        }
         setContextualSearchStateInternal(enabled ? onState : ContextualSearchPreference.DISABLED);
     }
 
@@ -548,11 +415,8 @@ class ContextualSearchPolicy {
      *         itself.
      */
     static boolean isContextualSearchPrefFullyOptedIn() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
-                && !isContextualSearchOptInUninitialized()) {
-            return isContextualSearchOptInEnabled();
-        }
-        return isContextualSearchEnabled();
+        return isContextualSearchOptInUninitialized() ? isContextualSearchEnabled()
+                                                      : isContextualSearchOptInEnabled();
     }
 
     /**
@@ -569,19 +433,10 @@ class ContextualSearchPolicy {
 
     /** Notifies that a promo card has been shown. */
     static void onPromoShown() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            int count = getContextualSearchPromoCardShownCount();
-            count++;
-            setContextualSearchPromoCardShownCount(count);
-            ContextualSearchUma.logRevisedPromoOpenCount(count);
-        }
-    }
-
-    /**
-     * @return Whether the Contextual Search Multilevel settings UI should be shown.
-     */
-    static boolean shouldShowMultilevelSettingsUI() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS);
+        int count = getContextualSearchPromoCardShownCount();
+        count++;
+        setContextualSearchPromoCardShownCount(count);
+        ContextualSearchUma.logRevisedPromoOpenCount(count);
     }
 
     /**
@@ -640,23 +495,6 @@ class ContextualSearchPolicy {
         mAllowSendingPageUrlForTesting = doAllowSendingPageUrl;
     }
 
-    /**
-     * @return count of times the panel with the promo has been opened.
-     */
-    @VisibleForTesting
-    int getPromoOpenCount() {
-        return mPreferencesManager.readInt(ChromePreferenceKeys.CONTEXTUAL_SEARCH_PROMO_OPEN_COUNT);
-    }
-
-    /**
-     * @return The number of times the user has tapped since the last panel open.
-     */
-    @VisibleForTesting
-    int getTapCount() {
-        return mPreferencesManager.readInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT);
-    }
-
     // --------------------------------------------------------------------------------------------
     // Additional considerations.
     // --------------------------------------------------------------------------------------------
@@ -667,11 +505,6 @@ class ContextualSearchPolicy {
      */
     @NonNull
     String getHomeCountry(Context context) {
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEND_HOME_COUNTRY_DISABLED)) {
-            return "";
-        }
-
         TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager == null) return "";
@@ -687,11 +520,7 @@ class ContextualSearchPolicy {
     boolean isUserUndecided() {
         if (mDidOverrideFullyEnabledForTesting) return !mFullyEnabledForTesting;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            return isContextualSearchUninitialized() && isContextualSearchOptInUninitialized();
-        }
-
-        return isContextualSearchUninitialized();
+        return isContextualSearchUninitialized() && isContextualSearchOptInUninitialized();
     }
 
     /**

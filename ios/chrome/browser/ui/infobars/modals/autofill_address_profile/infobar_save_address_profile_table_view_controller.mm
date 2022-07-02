@@ -443,7 +443,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [self iconForAutofillUIType:(AutofillUIType)[val intValue]];
 }
 
-// Determines the itemType for the row based on |autofillUIType|, whether the
+// Determines the itemType for the row based on `autofillUIType`, whether the
 // modal is for save/update address or belongs to the old/new section in case of
 // update modal.
 - (NSInteger)modalItemTypeForAutofillUIType:(AutofillUIType)autofillUIType
@@ -494,7 +494,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Item Constructors
 
-// Returns a |SettingsImageDetailTextItem| for the fields to be shown in the
+// Returns a `SettingsImageDetailTextItem` for the fields to be shown in the
 // save address modal.
 - (SettingsImageDetailTextItem*)
     detailItemForSaveModalWithText:(NSString*)text

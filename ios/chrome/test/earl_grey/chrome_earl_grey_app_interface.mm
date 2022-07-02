@@ -5,8 +5,10 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -708,6 +710,14 @@ NSString* SerializedValue(const base::Value* value) {
     return testing::NSErrorWithLocalizedDescription(
         @"Fail to purge cached web view pages.");
   }
+
+  // Attempt to deflake WebKit sometimes still holding on to the browser cache
+  // with a larger hammer.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath library_dir = base::mac::GetUserLibraryPath();
+  base::FilePath webkit_cache_dir = library_dir.Append("WebKit");
+  DeletePathRecursively(webkit_cache_dir);
+
   web_state->SetWebUsageEnabled(true);
   web_state->GetNavigationManager()->LoadIfNecessary();
 
@@ -986,7 +996,7 @@ NSString* SerializedValue(const base::Value* value) {
       web::GetMainFrame(chrome_test_util::GetCurrentWebState());
 
   if (web_frame) {
-    std::string script = base::SysNSStringToUTF8(javaScript);
+    std::u16string script = base::SysNSStringToUTF16(javaScript);
     web_frame->ExecuteJavaScript(
         script, base::BindOnce(^(const base::Value* value, bool error) {
           handlerCalled = true;
@@ -1061,11 +1071,6 @@ NSString* SerializedValue(const base::Value* value) {
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
 }
 
-+ (BOOL)isAddCredentialsInSettingsEnabled {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
-}
-
 + (BOOL)isUKMEnabled {
   return base::FeatureList::IsEnabled(ukm::kUkmFeature);
 }
@@ -1107,11 +1112,6 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)areMultipleWindowsSupported {
   return base::ios::IsMultipleScenesSupported();
-}
-
-+ (BOOL)isContextMenuInWebViewEnabled {
-  return base::FeatureList::IsEnabled(
-      web::features::kWebViewNativeContextMenuPhase2);
 }
 
 + (BOOL)isNewOverflowMenuEnabled {
@@ -1194,6 +1194,12 @@ NSString* SerializedValue(const base::Value* value) {
   prefs->ClearPref(browsing_data::prefs::kDeleteCache);
   prefs->ClearPref(browsing_data::prefs::kDeletePasswords);
   prefs->ClearPref(browsing_data::prefs::kDeleteFormData);
+}
+
++ (void)resetDataForLocalStatePref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  prefService->ClearPref(path);
 }
 
 #pragma mark - Unified Consent utilities

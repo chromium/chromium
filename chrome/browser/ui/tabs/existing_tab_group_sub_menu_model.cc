@@ -4,79 +4,144 @@
 
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+namespace {
+constexpr int kIconSize = 14;
+}  // anonymous namespace
+
 ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
     int context_index)
     : ExistingBaseSubMenuModel(parent_delegate,
                                model,
                                context_index,
                                kMinExistingTabGroupCommandId,
-                               TabStripModel::CommandAddToNewGroup) {
+                               TabStripModel::CommandAddToNewGroup),
+      tab_menu_model_delegate_(tab_menu_model_delegate) {
   DCHECK(model->SupportsTabGroups());
-  const ui::ColorProvider& color_provider =
-      model->GetWebContentsAt(context_index)->GetColorProvider();
-  constexpr int kIconSize = 14;
   std::vector<MenuItemInfo> menu_item_infos;
 
-  std::vector<tab_groups::TabGroupId> ordered_tab_groups =
-      GetOrderedTabGroupsInSubMenu();
-  for (size_t i = 0; i < ordered_tab_groups.size(); ++i) {
-    tab_groups::TabGroupId group = ordered_tab_groups[i];
-    const TabGroup* tab_group = model->group_model()->GetTabGroup(group);
-    const std::u16string group_title = tab_group->visual_data()->title();
-    const std::u16string displayed_title =
-        group_title.empty() ? tab_group->GetContentString() : group_title;
-    const int color_id =
-        GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
-    ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-        kTabGroupIcon, color_provider.GetColor(color_id), kIconSize);
-    menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
-    menu_item_infos.back().may_have_mnemonics = false;
-
-    menu_item_infos.back().target_index = static_cast<int>(i);
-    target_index_to_group_mapping_.emplace(i, group);
+  menu_item_infos = GetMenuItemsFromModel(model);
+  std::vector<tab_groups::TabGroupId> groups = GetGroupsFromModel(model);
+  // TODO(dljames): Consider moving CHECK + loop into a separate private
+  // function that updates both `menu_item_infos` and
+  // `target_index_to_group_mapping_`.
+  CHECK_EQ(menu_item_infos.size(), groups.size());
+  for (const auto& group : groups) {
+    int index = target_index_to_group_mapping_.size();
+    menu_item_infos[index].target_index = index;
+    target_index_to_group_mapping_.emplace(index, group);
   }
+
+  // For each window, append the tab groups to the end of the menu items.
+  if (tab_menu_model_delegate_) {
+    // TODO(dljames): Rename GetExistingWindowsForMoveMenu to something generic
+    // since this function is now used for 'Move tab to window' and 'Add tab to
+    // group'
+    for (Browser* browser :
+         tab_menu_model_delegate_->GetExistingWindowsForMoveMenu()) {
+      if (browser->tab_strip_model() == model)
+        continue;
+      const std::vector<MenuItemInfo> retrieved_menu_item_infos =
+          GetMenuItemsFromModel(browser->tab_strip_model());
+      menu_item_infos.insert(menu_item_infos.end(),
+                             retrieved_menu_item_infos.begin(),
+                             retrieved_menu_item_infos.end());
+      groups = GetGroupsFromModel(browser->tab_strip_model());
+      CHECK_EQ(menu_item_infos.size(),
+               groups.size() + target_index_to_group_mapping_.size());
+      for (const auto& group : groups) {
+        int index = target_index_to_group_mapping_.size();
+        menu_item_infos[index].target_index = index;
+        target_index_to_group_mapping_.emplace(index, group);
+      }
+    }
+  }
+
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
 
 ExistingTabGroupSubMenuModel::~ExistingTabGroupSubMenuModel() = default;
 
-std::vector<tab_groups::TabGroupId>
-ExistingTabGroupSubMenuModel::GetOrderedTabGroupsInSubMenu() {
-  std::vector<tab_groups::TabGroupId> ordered_groups;
-  absl::optional<tab_groups::TabGroupId> current_group = absl::nullopt;
-  for (int i = 0; i < model()->count(); ++i) {
-    absl::optional<tab_groups::TabGroupId> new_group =
-        model()->GetTabGroupForTab(i);
-    if (new_group.has_value() && new_group != current_group &&
-        ShouldShowGroup(model(), GetContextIndex(), new_group.value())) {
-      ordered_groups.push_back(new_group.value());
+const std::vector<tab_groups::TabGroupId>
+ExistingTabGroupSubMenuModel::GetGroupsFromModel(TabStripModel* current_model) {
+  // No model, no group model, no service.
+  if (!current_model || !current_model->group_model())
+    return {};
+
+  // Add tab groups to `groups` if they differ from our indexes current group.
+  std::vector<tab_groups::TabGroupId> groups;
+  for (auto& group : current_model->group_model()->ListTabGroups()) {
+    if (model() == current_model &&
+        model()->GetTabGroupForTab(GetContextIndex()).has_value() &&
+        model()->GetTabGroupForTab(GetContextIndex()).value() == group) {
+      continue;
     }
-    current_group = new_group;
+
+    groups.push_back(group);
   }
-  return ordered_groups;
+
+  return groups;
+}
+
+const std::vector<ExistingTabGroupSubMenuModel::MenuItemInfo>
+ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
+    TabStripModel* current_model) {
+  const std::vector<tab_groups::TabGroupId> groups =
+      GetGroupsFromModel(current_model);
+  std::vector<MenuItemInfo> menu_item_infos;
+
+  for (const auto& group : groups) {
+    const TabGroup* tab_group =
+        current_model->group_model()->GetTabGroup(group);
+    const std::u16string group_title = tab_group->visual_data()->title();
+    // TODO(dljames): Add method to tab_group.cc to return displayed_title.
+    // TODO(dljames): Add unit tests for all of tab_group.h
+    const std::u16string displayed_title =
+        group_title.empty() ? tab_group->GetContentString() : group_title;
+    const int color_id =
+        GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
+    const ui::ColorProvider& color_provider =
+        model()->GetWebContentsAt(GetContextIndex())->GetColorProvider();
+    ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+        kTabGroupIcon, color_provider.GetColor(color_id), kIconSize);
+
+    menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
+    menu_item_infos.back().may_have_mnemonics = false;
+  }
+
+  return menu_item_infos;
 }
 
 // static
@@ -94,26 +159,81 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
   return false;
 }
 
+std::u16string ExistingTabGroupSubMenuModel::GetLabelAt(int index) const {
+  return ui::EscapeMenuLabelAmpersands(
+      ExistingBaseSubMenuModel::GetLabelAt(index));
+}
+
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
+  DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
   TabGroupModel* group_model = model()->group_model();
   if (!group_model)
     return;
 
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
-  if (static_cast<size_t>(target_index) >= group_model->ListTabGroups().size())
+  tab_groups::TabGroupId group =
+      target_index_to_group_mapping_.at(target_index);
+
+  if (group_model->ContainsTabGroup(group)) {
+    model()->ExecuteAddToExistingGroupCommand(GetContextIndex(), group);
+    return;
+  }
+
+  int browser_index = -1;
+  std::vector<Browser*> browsers =
+      tab_menu_model_delegate_->GetExistingWindowsForMoveMenu();
+  for (size_t i = 0; i < browsers.size(); ++i) {
+    TabStripModel* potential_model = browsers[i]->tab_strip_model();
+    if (potential_model && potential_model != model() &&
+        potential_model->group_model()->ContainsTabGroup(group)) {
+      browser_index = i;
+      break;
+    }
+  }
+
+  if (browser_index < 0)
     return;
 
-  if (!model()->ContainsIndex(GetContextIndex()))
-    return;
+  std::vector<int> selected_indices;
+  if (!model()->IsTabSelected(GetContextIndex())) {
+    selected_indices = {GetContextIndex()};
+  } else {
+    const ui::ListSelectionModel::SelectedIndices selection_indices =
+        model()->selection_model().selected_indices();
+    selected_indices =
+        std::vector<int>(selection_indices.begin(), selection_indices.end());
+  }
+  TabStripModel* found_model = browsers[browser_index]->tab_strip_model();
+  std::vector<int> selected_indices_in_found_model;
+  const ui::ListSelectionModel::SelectedIndices selection_indices =
+      found_model->selection_model().selected_indices();
+  selected_indices_in_found_model =
+      std::vector<int>(selection_indices.begin(), selection_indices.end());
 
-  if (!base::Contains(target_index_to_group_mapping_, target_index) ||
-      !model()->group_model()->ContainsTabGroup(
-          target_index_to_group_mapping_.at(target_index)))
-    return;
+  // At the time this was written, all tabs moved to a new window via
+  // MoveToExistingWindow() are placed at the end of the tabstrip, and any
+  // previously selected tabs in the new window are unselected.
+  model()->delegate()->MoveToExistingWindow(selected_indices, browser_index);
 
-  model()->ExecuteAddToExistingGroupCommand(
-      GetContextIndex(), target_index_to_group_mapping_.at(target_index));
+  // DCHECK that previously selected indices in the new model are now
+  // unselected.
+  for (int index : selected_indices_in_found_model)
+    DCHECK(!found_model->IsTabSelected(index));
+
+  // Ensure that the selected_indices maintain selection in the new window.
+  // Our indices to consider are guaranteed to be at the end of the tabstrip.
+  for (size_t count = 0; count < selected_indices.size(); ++count) {
+    int tab = found_model->count() - 1 - count;
+    if (!found_model->IsTabSelected(tab))
+      found_model->ToggleSelectionAt(tab);
+  }
+
+  // Move all selected tabs into `group`. Note, we can choose any tab that is
+  // currently selected. For consistency we choose the last tab since we know
+  // where it is.
+  found_model->ExecuteAddToExistingGroupCommand(found_model->count() - 1,
+                                                group);
 }
 
 // static
@@ -132,4 +252,9 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
     }
   }
   return false;
+}
+
+void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
+    int target_index) {
+  ExecuteExistingCommand(target_index);
 }

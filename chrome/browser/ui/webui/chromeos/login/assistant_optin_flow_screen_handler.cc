@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -20,10 +21,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "components/login/localized_values_builder.h"
@@ -515,6 +516,11 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       "shouldSkipVoiceMatch",
       base::Value(!ash::AssistantState::Get()->HasAudioInputDevice()));
   dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
+  dictionary.SetKey(
+      "isTabletMode",
+      base::Value(ash::TabletMode::Get()->InTabletMode() ||
+                  (is_oobe_in_progress &&
+                   ash::switches::ShouldOobeUseTabletModeFirstRun())));
   ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.

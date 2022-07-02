@@ -60,10 +60,11 @@ void SessionSyncTestHelper::VerifySyncedSession(
   for (const std::vector<SessionID>& window : windows) {
     sessions::SessionWindow* win_ptr;
     auto map_iter = session.windows.find(SessionID::FromSerializedValue(i));
-    if (map_iter != session.windows.end())
+    if (map_iter != session.windows.end()) {
       win_ptr = &map_iter->second->wrapped_window;
-    else
+    } else {
       FAIL();
+    }
     ASSERT_EQ(window.size(), win_ptr->tabs.size());
     ASSERT_EQ(0, win_ptr->selected_tab_index);
     ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
@@ -104,6 +105,7 @@ sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
   specifics.set_session_tag(tag);
   specifics.set_tab_node_id(tab_node_id);
   sync_pb::SessionTab* tab = specifics.mutable_tab();
+  tab->set_window_id(window_id.id());
   tab->set_tab_id(tab_id.id());
   tab->set_tab_visual_index(1);
   tab->set_current_navigation_index(0);

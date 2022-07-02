@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -87,15 +88,29 @@ class UnretainedWrapper {
   // Trick to only instantiate this constructor if it is used. Otherwise,
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ptr would trigger raw_ptr<T>'s static_assert.
-  template <typename U = T>
+  template <typename U = T, typename Option>
   // Avoids having a raw_ptr<T> -> T* -> raw_ptr<T> round trip, which
   // would trigger the raw_ptr error detector if T* was dangling.
-  explicit UnretainedWrapper(const raw_ptr<U>& o) : ptr_(o) {}
+  explicit UnretainedWrapper(const raw_ptr<U, Option>& o) : ptr_(o) {}
   T* get() const { return ptr_; }
 
  private:
-  using ImplType = std::
-      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // When `MTECheckedPtr` is enabled as the backing implementation of
+  // `raw_ptr`, there are too many different types that immediately
+  // cause Chrome to crash. Some of these are inutterable as forward
+  // declarations in `raw_ptr.h` (necessary to mark it as not
+  // `IsSupportedType`) - in particular, nested classes
+  // (`Foo::UnsupportedFoo`) cannot be marked as unsupported.
+  //
+  // As a compromise, we decay the wrapper to use `T*` only (rather
+  // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
+  using ImplType = T*;
+#else
+  using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
+                                      raw_ptr<T, DanglingUntriaged>,
+                                      T*>;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   ImplType ptr_;
 };
 
@@ -114,8 +129,14 @@ class UnretainedRefWrapper {
   T& get() const { return *ptr_; }
 
  private:
-  using ImplType = std::
-      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // As above.
+  using ImplType = T*;
+#else
+  using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
+                                      raw_ptr<T, DanglingUntriaged>,
+                                      T*>;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   ImplType const ptr_;
 };
 
@@ -858,8 +879,8 @@ bool QueryCancellationTraits(const BindStateBase* base,
 template <typename Functor, typename Receiver, typename... Unused>
 std::enable_if_t<
     !(MakeFunctorTraits<Functor>::is_method &&
-      std::is_pointer_v<std::decay_t<Receiver>> &&
-      IsRefCountedType<std::remove_pointer_t<std::decay_t<Receiver>>>::value)>
+      IsPointerV<std::decay_t<Receiver>> &&
+      IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>::value)>
 BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {}
 
 template <typename Functor>
@@ -869,8 +890,8 @@ void BanUnconstructedRefCountedReceiver() {}
 template <typename Functor, typename Receiver, typename... Unused>
 std::enable_if_t<
     MakeFunctorTraits<Functor>::is_method &&
-    std::is_pointer_v<std::decay_t<Receiver>> &&
-    IsRefCountedType<std::remove_pointer_t<std::decay_t<Receiver>>>::value>
+    IsPointerV<std::decay_t<Receiver>> &&
+    IsRefCountedType<RemovePointerT<std::decay_t<Receiver>>>::value>
 BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   DCHECK(receiver);
 
@@ -1005,19 +1026,20 @@ struct MakeBindStateTypeImpl<true, Functor, Receiver, BoundArgs...> {
   static_assert(!std::is_array_v<std::remove_reference_t<Receiver>>,
                 "First bound argument to a method cannot be an array.");
   static_assert(
-      !std::is_pointer_v<DecayedReceiver> ||
-          IsRefCountedType<std::remove_pointer_t<DecayedReceiver>>::value,
+      !IsPointerV<DecayedReceiver> ||
+          IsRefCountedType<RemovePointerT<DecayedReceiver>>::value,
       "Receivers may not be raw pointers. If using a raw pointer here is safe"
       " and has no lifetime concerns, use base::Unretained() and document why"
       " it's safe.");
+
   static_assert(!HasRefCountedTypeAsRawPtr<std::decay_t<BoundArgs>...>::value,
                 "A parameter is a refcounted type and needs scoped_refptr.");
 
  public:
   using Type = BindState<
       std::decay_t<Functor>,
-      std::conditional_t<std::is_pointer_v<DecayedReceiver>,
-                         scoped_refptr<std::remove_pointer_t<DecayedReceiver>>,
+      std::conditional_t<IsPointerV<DecayedReceiver>,
+                         scoped_refptr<RemovePointerT<DecayedReceiver>>,
                          DecayedReceiver>,
       MakeStorageType<BoundArgs>...>;
 };

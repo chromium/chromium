@@ -5,7 +5,7 @@
 #include "chromeos/services/libassistant/platform_api.h"
 
 #include "base/check.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
 #include "chromeos/services/libassistant/fake_auth_provider.h"
 #include "chromeos/services/libassistant/file_provider_impl.h"

@@ -418,7 +418,8 @@ class PrefetchProxyTabHelperTest : public PrefetchProxyTabHelperTestBase {
   PrefetchProxyTabHelperTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "0"}});
+        {{"use_speculation_rules", "false"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -938,7 +939,8 @@ class PrefetchProxyTabHelperWithHTMLOnly
  public:
   PrefetchProxyTabHelperWithHTMLOnly() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerenders, {{"html_only", "true"}});
+        features::kIsolatePrerenders,
+        {{"use_speculation_rules", "false"}, {"html_only", "true"}});
   }
 };
 
@@ -1354,7 +1356,8 @@ class PrefetchProxyTabHelperWithDecoyTest
   PrefetchProxyTabHelperWithDecoyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "1"},
+        {{"use_speculation_rules", "false"},
+         {"ineligible_decoy_request_probability", "1"},
          {"max_srp_prefetches", "2"}});
   }
 };
@@ -1497,7 +1500,8 @@ class PrefetchProxyTabHelperBodyLimitTest
   PrefetchProxyTabHelperBodyLimitTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_mainframe_body_length_kb", "0"},
+        {{"use_speculation_rules", "false"},
+         {"max_mainframe_body_length_kb", "0"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };
@@ -1548,7 +1552,8 @@ class PrefetchProxyTabHelperPredictionPositionsTest
   PrefetchProxyTabHelperPredictionPositionsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"prefetch_positions", "0"},
+        {{"use_speculation_rules", "false"},
+         {"prefetch_positions", "0"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };
@@ -1584,7 +1589,8 @@ class PrefetchProxyTabHelperNoPrefetchesTest
   PrefetchProxyTabHelperNoPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_srp_prefetches", "0"},
+        {{"use_speculation_rules", "false"},
+         {"max_srp_prefetches", "0"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };
@@ -1630,7 +1636,8 @@ class PrefetchProxyTabHelperUnlimitedPrefetchesTest
   PrefetchProxyTabHelperUnlimitedPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_srp_prefetches", "-1"},
+        {{"use_speculation_rules", "false"},
+         {"max_srp_prefetches", "-1"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };
@@ -1699,7 +1706,8 @@ class PrefetchProxyTabHelperConcurrentPrefetchesTest
   PrefetchProxyTabHelperConcurrentPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_concurrent_prefetches", "2"},
+        {{"use_speculation_rules", "false"},
+         {"max_concurrent_prefetches", "2"},
          {"max_srp_prefetches", "-1"},
          {"ineligible_decoy_request_probability", "0"}});
   }
@@ -1759,7 +1767,8 @@ class PrefetchProxyTabHelperLimitedPrefetchesTest
   PrefetchProxyTabHelperLimitedPrefetchesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_srp_prefetches", "2"},
+        {{"use_speculation_rules", "false"},
+         {"max_srp_prefetches", "2"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };
@@ -1908,7 +1917,8 @@ class PrefetchProxyTabHelperRedirectWithDecoyTest
   PrefetchProxyTabHelperRedirectWithDecoyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "1"},
+        {{"use_speculation_rules", "false"},
+         {"ineligible_decoy_request_probability", "1"},
          {"max_srp_prefetches", "2"}});
   }
 };
@@ -2006,7 +2016,8 @@ class PrefetchProxyTabHelperRedirectTest
   PrefetchProxyTabHelperRedirectTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "0"}});
+        {{"use_speculation_rules", "false"},
+         {"ineligible_decoy_request_probability", "0"}});
   }
 };
 
@@ -2109,7 +2120,8 @@ class PrefetchProxyTabHelperRedirectUnlimitedPrefetchesTest
     // way.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"max_srp_prefetches", "-1"},
+        {{"use_speculation_rules", "false"},
+         {"max_srp_prefetches", "-1"},
          {"ineligible_decoy_request_probability", "0"}});
   }
 };

@@ -80,13 +80,6 @@ void EnrollmentCertificateUploaderImpl::ObtainAndUploadCertificate(
 }
 
 void EnrollmentCertificateUploaderImpl::Start() {
-  // We expect a registered CloudPolicyClient.
-  if (!policy_client_->is_registered()) {
-    LOG(ERROR) << "CloudPolicyClient not registered.";
-    RunCallbacks(Status::kFailedToFetch);
-    return;
-  }
-
   if (!attestation_flow_) {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
@@ -99,6 +92,12 @@ void EnrollmentCertificateUploaderImpl::Start() {
 }
 
 void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
+  if (!policy_client_->is_registered()) {
+    LOG(ERROR) << "CloudPolicyClient not registered.";
+    RunCallbacks(Status::kInvalidClient);
+    return;
+  }
+
   VLOG_IF(1, force_new_key) << "Fetching certificate with new key";
   attestation_flow_->GetCertificate(
       PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
@@ -177,6 +176,12 @@ void EnrollmentCertificateUploaderImpl::UploadCertificateIfNeeded(
     const std::string& pem_certificate_chain) {
   if (has_already_uploaded_) {
     RunCallbacks(Status::kSuccess);
+    return;
+  }
+
+  if (!policy_client_->is_registered()) {
+    LOG(ERROR) << "CloudPolicyClient not registered.";
+    RunCallbacks(Status::kInvalidClient);
     return;
   }
 

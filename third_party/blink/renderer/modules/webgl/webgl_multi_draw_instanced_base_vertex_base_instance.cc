@@ -67,30 +67,34 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
         GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() ||
-      !ValidateDrawcount(&scoped, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+      !ValidateDrawcount(&scoped, "multiDrawArraysInstancedBaseInstanceWEBGL",
                          drawcount) ||
-      !ValidateArray(&scoped, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+      !ValidateArray(&scoped, "multiDrawArraysInstancedBaseInstanceWEBGL",
                      "firstsOffset out of bounds", firsts.size(), firsts_offset,
                      drawcount) ||
-      !ValidateArray(&scoped, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+      !ValidateArray(&scoped, "multiDrawArraysInstancedBaseInstanceWEBGL",
                      "countsOffset out of bounds", counts.size(), counts_offset,
                      drawcount) ||
-      !ValidateArray(&scoped, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+      !ValidateArray(&scoped, "multiDrawArraysInstancedBaseInstanceWEBGL",
                      "instanceCountsOffset out of bounds",
                      instance_counts.size(), instance_counts_offset,
                      drawcount) ||
-      !ValidateArray(&scoped, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+      !ValidateArray(&scoped, "multiDrawArraysInstancedBaseInstanceWEBGL",
                      "baseinstancesOffset out of bounds", baseinstances.size(),
                      baseinstances_offset, drawcount)) {
     return;
   }
 
-  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
-
-  scoped.Context()->ContextGL()->MultiDrawArraysInstancedBaseInstanceWEBGL(
-      mode, &firsts[firsts_offset], &counts[counts_offset],
-      &instance_counts[instance_counts_offset],
-      &baseinstances[baseinstances_offset], drawcount);
+  scoped.Context()->DrawWrapper(
+      "multiDrawArraysInstancedBaseInstanceWEBGL",
+      CanvasPerformanceMonitor::DrawType::kDrawArrays, [&]() {
+        scoped.Context()
+            ->ContextGL()
+            ->MultiDrawArraysInstancedBaseInstanceWEBGL(
+                mode, &firsts[firsts_offset], &counts[counts_offset],
+                &instance_counts[instance_counts_offset],
+                &baseinstances[baseinstances_offset], drawcount);
+      });
 }
 
 void WebGLMultiDrawInstancedBaseVertexBaseInstance::
@@ -111,40 +115,42 @@ void WebGLMultiDrawInstancedBaseVertexBaseInstance::
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() ||
       !ValidateDrawcount(
-          &scoped, "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+          &scoped, "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
           drawcount) ||
       !ValidateArray(&scoped,
-                     "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+                     "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
                      "countsOffset out of bounds", counts.size(), counts_offset,
                      drawcount) ||
       !ValidateArray(&scoped,
-                     "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+                     "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
                      "offsetsOffset out of bounds", offsets.size(),
                      offsets_offset, drawcount) ||
       !ValidateArray(
-          &scoped, "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+          &scoped, "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
           "instanceCountsOffset out of bounds", instance_counts.size(),
           instance_counts_offset, drawcount) ||
       !ValidateArray(&scoped,
-                     "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+                     "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
                      "baseverticesOffset out of bounds", basevertices.size(),
                      basevertices_offset, drawcount) ||
       !ValidateArray(&scoped,
-                     "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+                     "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
                      "baseinstancesOffset out of bounds", baseinstances.size(),
                      baseinstances_offset, drawcount)) {
     return;
   }
 
-  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
-
-  scoped.Context()
-      ->ContextGL()
-      ->MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
-          mode, &counts[counts_offset], type, &offsets[offsets_offset],
-          &instance_counts[instance_counts_offset],
-          &basevertices[basevertices_offset],
-          &baseinstances[baseinstances_offset], drawcount);
+  scoped.Context()->DrawWrapper(
+      "multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+      CanvasPerformanceMonitor::DrawType::kDrawElements, [&]() {
+        scoped.Context()
+            ->ContextGL()
+            ->MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+                mode, &counts[counts_offset], type, &offsets[offsets_offset],
+                &instance_counts[instance_counts_offset],
+                &basevertices[basevertices_offset],
+                &baseinstances[baseinstances_offset], drawcount);
+      });
 }
 
 }  // namespace blink

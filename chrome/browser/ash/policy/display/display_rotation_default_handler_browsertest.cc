@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/display/device_display_cros_browser_test.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_layout.h"
@@ -190,7 +190,7 @@ class DisplayRotationBootTest
   ~DisplayRotationBootTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -222,9 +222,9 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
           ash::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
-  chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+  ash::FakeSessionManagerClient::Get()->set_device_policy(
       device_policy->GetBlob());
-  chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+  ash::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();

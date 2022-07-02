@@ -19,12 +19,12 @@ UserActionSignalHandler::UserActionSignalHandler(
 }
 
 UserActionSignalHandler::~UserActionSignalHandler() {
-  if (metrics_enabled_)
+  if (metrics_enabled_ && base::GetRecordActionTaskRunner())
     base::RemoveActionCallback(action_callback_);
 }
 
 void UserActionSignalHandler::EnableMetrics(bool enable_metrics) {
-  if (metrics_enabled_ == enable_metrics)
+  if (metrics_enabled_ == enable_metrics || !base::GetRecordActionTaskRunner())
     return;
 
   metrics_enabled_ = enable_metrics;

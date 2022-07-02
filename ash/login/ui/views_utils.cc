@@ -103,13 +103,14 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
-views::Label* CreateBubbleLabel(const std::u16string& message,
-                                views::View* view_defining_max_width,
-                                SkColor color,
-                                const gfx::FontList& font_list,
-                                int line_height) {
-  views::Label* label =
-      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT);
+std::unique_ptr<views::Label> CreateBubbleLabel(
+    const std::u16string& message,
+    views::View* view_defining_max_width,
+    SkColor color,
+    const gfx::FontList& font_list,
+    int line_height) {
+  auto label = std::make_unique<views::Label>(
+      message, views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(color);

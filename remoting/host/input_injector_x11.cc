@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -168,7 +169,7 @@ class InputInjectorX11 : public InputInjector {
     ScrollDirection latest_tick_y_direction_ = ScrollDirection::NONE;
 
     // X11 graphics context. Must only be accessed on the input thread.
-    x11::Connection* connection_;
+    raw_ptr<x11::Connection> connection_;
 
     // Number of buttons we support.
     // Left, Right, Middle, VScroll Up/Down, HScroll Left/Right, back, forward.
@@ -352,8 +353,8 @@ void InputInjectorX11::Core::InjectTextEvent(const TextEvent& event) {
   pressed_keys_.clear();
 
   const std::string text = event.text();
-  for (int32_t index = 0; index < static_cast<int32_t>(text.size()); ++index) {
-    uint32_t code_point;
+  for (size_t index = 0; index < text.size(); ++index) {
+    base_icu::UChar32 code_point;
     if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
                                     &code_point)) {
       continue;

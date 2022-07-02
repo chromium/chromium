@@ -138,6 +138,8 @@
       <div class="mdc-button__ripple"></div>
       <span class="mdc-button__label">Disconnect</span>
     </button>
+    <input type="checkbox" id="autoconnect" name="autoconnect" checked="true">
+    <label for="autoconnect" style="font-size:small; font:Roboto" > Autoconnect</label><br>
   </div>
 </div>
 
@@ -194,7 +196,6 @@
   <div class='section' id='controls'>
     <div id='buttons'>
       <button class="mdc-button mdc-button--outline" id='prev'>
-        <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label"><i class="material-icons-outlined">skip_previous</i> Previous frame</span>
       </button>
       <button class="mdc-button mdc-button--outline" id='play'>
@@ -206,8 +207,11 @@
         <span class="mdc-button__label"><i class="material-icons-outlined">pause_circle_outline</i> Pause</span>
       </button>
       <button class="mdc-button mdc-button--outline" id='next'>
-        <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Next frame <i class="material-icons-outlined">skip_next</i></span>
+      </button>
+      <button class="mdc-button mdc-button--raised" style="visibility:hidden" id='live'>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Live <i class="material-icons-outlined">fast_forward</i></span>
       </button>
 
     </div>
@@ -232,8 +236,22 @@
       <option>100%</option>
       <option>50%</option>
       <option>200%</option>
+      <option>Free Camera</option>
     </select>
   </div>
+
+  <div style='float: right' class='sectionTitle'>
+  Orientation
+    <select id="viewerorientation">
+      <option class="default-orientation">0 deg clockwise</option>
+      <option class="default-orientation">90 deg clockwise</option>
+      <option class="default-orientation">180 deg clockwise</option>
+      <option class="default-orientation">270 deg clockwise</option>
+      <option class="default-orientation">Horizontal Flip</option>
+      <option class="default-orientation">Vertical Flip</option>
+    </select>
+  </div>
+
   <div class='section'>
     <canvas id='canvas'></canvas>
   </div>
@@ -270,7 +288,7 @@
   }
 
   async function saveDemoDataToDisk() {
-    const text = JSON.stringify(DrawFrame.instances.map(d => d.toJSON()));
+    const text = JSON.stringify(DrawFrame.frameBuffer.instances.map(d => d.toJSON()));
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.download = 'cvd-stream.json';
@@ -358,7 +376,7 @@
     });
 
     setUpPlayer();
-    FilterUIDefault.initialize();
+    restoreFilters();
   }
 
   function setUpPlayer() {
@@ -370,7 +388,6 @@
     const player = new Player(viewer, (frame) => {
       // TODO: This feels like a hack. Find a cleaner way to update the scrubbers?
       const scrubberFrame = document.querySelector('#scrubberframe');
-      scrubberFrame.max = DrawFrame.count();
       scrubberFrame.value = player.currentFrameIndex;
 
       const scrubberDraw = document.querySelector('#scrubberdraw');
@@ -380,10 +397,13 @@
 
     document.querySelector('#pause').addEventListener('click', () => {
       player.pause();
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
     });
 
     document.querySelector('#play').addEventListener('click', () => {
       player.play();
+      pause.removeAttribute('style');
     });
 
     document.querySelector('#prev').addEventListener('click', () => {
@@ -394,18 +414,65 @@
       player.forward();
     });
 
+    document.querySelector('#live').addEventListener('click', () => {
+      player.freezeFrame(DrawFrame.count());
+      player.play();
+      has_disconnected = false;
+      live.setAttribute('style', 'visibility:hidden');
+      pause.removeAttribute('style');
+    });
+
     const scrubberFrame = document.querySelector('#scrubberframe');
     scrubberFrame.addEventListener('input', () => {
       player.freezeFrame(scrubberFrame.value);
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
     });
 
     const scrubberDraw = document.querySelector('#scrubberdraw');
     scrubberDraw.addEventListener('input', () => {
       player.freezeFrame(scrubberFrame.value, scrubberDraw.value);
     });
+
+    let currentMouseX = 0;
+    let currentMouseY = 0;
+    let zoom = 100;
     const viewerScale = document.querySelector("#viewerscale");
     viewerScale.addEventListener('input', () => {
-      player.setViewerScale(viewerScale.value);
+      if (viewerScale.value != "Free Camera") {
+        player.setViewerScale(viewerScale.value);
+        zoom = parseInt(viewerScale.value);
+      }
+      else {
+        player.setViewerScale(zoom);
+        canvas.addEventListener('mouseenter', () => {
+          canvas.addEventListener('mousemove', function (event) {
+            currentMouseX = Math.round(event.offsetX);
+            currentMouseY = Math.round(event.offsetY);
+          });
+        });
+        canvas.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          var delta = e.deltaY;
+          
+          viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
+
+        }, {passive:false});
+      }
+    });
+
+    const viewerOrientation = document.querySelector("#viewerorientation");
+    viewerOrientation.addEventListener('input', () => {
+      player.setViewerOrientation(viewerOrientation.value);
+    });
+    viewerOrientation.addEventListener('change', () => {
+      // change dropdown style when rotation occurs
+      if (viewerOrientation.value !== "0 deg clockwise") {
+        document.getElementById("viewerorientation").className = "selected-orientation";
+      }
+      else {
+        document.getElementById("viewerorientation").className = "default-orientation";
+      }
     });
   }
 

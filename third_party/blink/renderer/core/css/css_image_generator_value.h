@@ -107,6 +107,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
   bool IsUsingCurrentColor() const;
+  bool IsUsingContainerRelativeUnits() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

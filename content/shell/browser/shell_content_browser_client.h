@@ -105,7 +105,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
       LoginAuthRequiredCallback auth_required_callback) override;
-  base::DictionaryValue GetNetLogConstants() override;
+  base::Value::Dict GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::string GetUserAgent() override;
@@ -139,6 +139,12 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   bool HasErrorPage(int http_status_code) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
+
+  // Turns on features via permissions policy for Isolated App
+  // Web Platform Tests.
+  blink::ParsedPermissionsPolicy GetPermissionsPolicyForIsolatedApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override;
 
   void CreateFeatureListAndFieldTrials();
 
@@ -232,7 +238,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 #endif
 
   // Owned by content::BrowserMainLoop.
-  raw_ptr<ShellBrowserMainParts> shell_browser_main_parts_ = nullptr;
+  raw_ptr<ShellBrowserMainParts, DanglingUntriaged> shell_browser_main_parts_ =
+      nullptr;
 
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<ShellFieldTrials> field_trials_;

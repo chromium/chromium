@@ -47,7 +47,7 @@ class ShelfTooltipManagerTest : public AshTestBase {
   views::Widget* GetTooltip() { return tooltip_manager_->bubble_->GetWidget(); }
 
   void ShowTooltipForFirstAppIcon() {
-    EXPECT_GE(shelf_view_->number_of_visible_apps(), 1);
+    EXPECT_GE(shelf_view_->number_of_visible_apps(), 1u);
     tooltip_manager_->ShowTooltip(
         shelf_view_->first_visible_button_for_testing());
   }

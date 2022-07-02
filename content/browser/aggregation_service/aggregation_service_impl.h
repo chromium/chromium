@@ -14,7 +14,6 @@
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +28,7 @@ class FilePath;
 namespace content {
 
 struct PublicKeyset;
+class AggregationServiceStorage;
 class StoragePartitionImpl;
 
 // UI thread class that manages the lifetime of the underlying storage. Owned by
@@ -69,8 +69,7 @@ class CONTENT_EXPORT AggregationServiceImpl
                  base::OnceClosure done) override;
 
   // AggregationServiceStorageContext:
-  const base::SequenceBound<AggregationServiceKeyStorage>& GetKeyStorage()
-      override;
+  const base::SequenceBound<AggregationServiceStorage>& GetStorage() override;
 
   // Sets the public keys for `url` in storage to allow testing without network.
   void SetPublicKeysForTesting(const GURL& url, const PublicKeyset& keyset);
@@ -82,7 +81,7 @@ class CONTENT_EXPORT AggregationServiceImpl
                          std::unique_ptr<AggregatableReportAssembler> assembler,
                          std::unique_ptr<AggregatableReportSender> sender);
 
-  base::SequenceBound<AggregationServiceKeyStorage> key_storage_;
+  base::SequenceBound<AggregationServiceStorage> storage_;
   std::unique_ptr<AggregatableReportAssembler> assembler_;
   std::unique_ptr<AggregatableReportSender> sender_;
 };

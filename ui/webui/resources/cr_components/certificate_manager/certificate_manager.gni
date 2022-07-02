@@ -17,7 +17,7 @@ _web_component_files = [
   "certificates_error_dialog.ts",
 ]
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   _web_component_files += [
     "certificate_provisioning_details_dialog.ts",
     "certificate_provisioning_entry.ts",
@@ -42,7 +42,7 @@ _non_web_component_files = [
   "certificates_browser_proxy.ts",
 ]
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   _non_web_component_files += [ "certificate_provisioning_browser_proxy.ts" ]
 }
 

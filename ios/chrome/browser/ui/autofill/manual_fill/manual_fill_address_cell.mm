@@ -326,10 +326,10 @@
 
 #pragma mark - Private
 
-// Dynamically lay givens |views| on |guide|, adding first view of every
-// generated line to |addFirstLineViewTo|. If |largeTypes| is true, fields are
+// Dynamically lay givens `views` on `guide`, adding first view of every
+// generated line to `addFirstLineViewTo`. If `largeTypes` is true, fields are
 // laid out vertically one per line, otherwise horizontally on one line.
-// Constraints are added to |self.dynamicConstraints| property.
+// Constraints are added to `self.dynamicConstraints` property.
 - (void)layMultipleViews:(NSArray<UIView*>*)views
           withLargeTypes:(BOOL)largeTypes
                  onGuide:(UIView*)guide

@@ -94,44 +94,68 @@
   #addAccountButton > .account-name > .primary {
     margin-bottom: 0;
   }
+
+  .use-two-column-layout.main-container {
+    /* Add top margin to account for the button bar and match next pages */
+    --margin-top: 96px;
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - var(--margin-top));
+    margin-top: var(--margin-top);
+  }
+
+  .use-two-column-layout .column-1 {
+    flex: 1 1 0;
+    margin-inline-end: 80px;
+  }
+
+  .use-two-column-layout .column-2 {
+    flex: 1.5 1 0;
+    /* Size of the icon + margin */
+    margin-top: calc(24px + 28px);
+  }
 </style>
 
-<div class="main-container">
-  <if expr="_google_chrome">
-    <img class="google-full-logo"
-            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
-  </if>
+<div class$="[[getMainContainerClass_(useTwoColumnLayout)]]">
+  <div class="column-1">
+    <if expr="_google_chrome">
+      <img class="google-full-logo"
+              src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+    </if>
 
-  <h1>$i18n{accountManagerDialogArcAccountPickerTitle}</h1>
-  <p class="secondary text-body"
+    <h1>$i18n{accountManagerDialogArcAccountPickerTitle}</h1>
+    <p class="secondary text-body"
       >$i18nRaw{accountManagerDialogArcAccountPickerBody}</p>
+  </div>
 
-  <template is="dom-repeat" id="accountsContainer" items="[[accounts_]]">
-    <div class="account-item" on-click="makeAvailableInArc_"
-        on-keypress="onAccountKeyPress_"
-        tabindex="0" role="button"
-        aria-labelledby$="fullName-[[index]] email-[[index]]"
-        aria-description="$i18n{accountUseInArcButtonLabel}">
-      <div class="account-icon" aria-hidden="true"
-          style="background-image: [[getIconImageSet_(item.image)]]">
+  <div class="column-2">
+    <template is="dom-repeat" id="accountsContainer" items="[[accounts_]]">
+      <div class="account-item" on-click="makeAvailableInArc_"
+          on-keypress="onAccountKeyPress_"
+          tabindex="0" role="button"
+          aria-labelledby$="fullName-[[index]] email-[[index]]"
+          aria-description="$i18n{accountUseInArcButtonLabel}">
+        <div class="account-icon" aria-hidden="true"
+            style="background-image: [[getIconImageSet_(item.image)]]">
+        </div>
+        <div class="account-name">
+          <span class="primary" id="fullName-[[index]]"
+              aria-hidden="true">[[item.fullName]]</span>
+          <span class="secondary" id="email-[[index]]"
+              aria-hidden="true">[[item.email]]</span>
+        </div>
       </div>
-      <div class="account-name">
-        <span class="primary" id="fullName-[[index]]"
-            aria-hidden="true">[[item.fullName]]</span>
-        <span class="secondary" id="email-[[index]]"
-            aria-hidden="true">[[item.email]]</span>
-      </div>
-    </div>
-  </template>
+    </template>
 
-  <div class="account-item" id="addAccountButton" on-click="addAccount_"
-      on-keypress="onAddAccountKeyPress_" tabindex="0" role="button"
-      aria-label="$i18n{addAccountLabel}">
-    <div class="account-icon" aria-hidden="true">
-      <div class="add-icon"></div>
-    </div>
-    <div class="account-name" aria-hidden="true">
-      <span class="primary">$i18n{addAccountLabel}</span>
+    <div class="account-item" id="addAccountButton" on-click="addAccount_"
+        on-keypress="onAddAccountKeyPress_" tabindex="0" role="button"
+        aria-label="[[getAddAccountButtonLabel_(isChildUser_)]]">
+      <div class="account-icon" aria-hidden="true">
+        <div class="add-icon"></div>
+      </div>
+      <div class="account-name" aria-hidden="true">
+        <span class="primary">[[getAddAccountButtonLabel_(isChildUser_)]]</span>
+      </div>
     </div>
   </div>
 

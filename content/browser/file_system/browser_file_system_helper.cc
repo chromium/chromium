@@ -112,7 +112,6 @@ void GetPlatformPathOnFileThread(
 scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
     BrowserContext* browser_context,
     const base::FilePath& profile_path,
-    const base::FilePath& bucket_base_path,
     bool is_incognito,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
   // Setting up additional filesystem backends.
@@ -136,7 +135,7 @@ scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
       browser_context->GetMountPoints(),
       browser_context->GetSpecialStoragePolicy(),
       std::move(quota_manager_proxy), std::move(additional_backends),
-      url_request_auto_mount_handlers, profile_path, bucket_base_path, options);
+      url_request_auto_mount_handlers, profile_path, options);
 
   for (const storage::FileSystemType& type :
        file_system_context->GetFileSystemTypes()) {

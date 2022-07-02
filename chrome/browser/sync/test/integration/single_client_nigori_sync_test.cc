@@ -26,6 +26,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
+#include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,6 +46,7 @@
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
 #include "components/sync/trusted_vault/securebox.h"
+#include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -429,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(
   // The client should decrypt the update and re-commit an unencrypted version.
   EXPECT_TRUE(bookmarks_helper::BookmarksTitleChecker(0, kTitle, 1).Wait());
   EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(0), GetFakeServer(), {{kTitle, kUrl}},
+                  {{kTitle, kUrl}},
                   /*cryptographer=*/nullptr)
                   .Wait());
 }
@@ -473,9 +475,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest, ShouldRotateKeystoreKey) {
       KeystoreKeyParamsForTesting(keystore_keys[1]);
   const std::string expected_key_bag_key_name =
       ComputeKeyName(new_keystore_key_params);
-  EXPECT_TRUE(ServerNigoriKeyNameChecker(expected_key_bag_key_name,
-                                         GetSyncService(0), GetFakeServer())
-                  .Wait());
+  EXPECT_TRUE(ServerNigoriKeyNameChecker(expected_key_bag_key_name).Wait());
 }
 
 // Performs initial sync with backward compatible keystore Nigori.
@@ -508,9 +508,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
   const std::string expected_key_bag_key_name =
       ComputeKeyName(KeystoreKeyParamsForTesting(
           /*raw_key=*/GetFakeServer()->GetKeystoreKeys().back()));
-  EXPECT_TRUE(ServerNigoriKeyNameChecker(expected_key_bag_key_name,
-                                         GetSyncService(0), GetFakeServer())
-                  .Wait());
+  EXPECT_TRUE(ServerNigoriKeyNameChecker(expected_key_bag_key_name).Wait());
 }
 
 // Tests that client can decrypt |pending_keys| with implicit passphrase in
@@ -554,6 +552,150 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriSyncTest,
+    ShouldFollowRewritingKeystoreMigrationWhenDataNonDecryptable) {
+  // Setup with implicit passphrase.
+  const KeyParamsForTesting kPassphraseKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kPassphraseKeyParams.password,
+          kPassphraseKeyParams.derivation_params);
+  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
+                                     specifics.mutable_encryption_keybag()));
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  // Mimic passwords encrypted with implicit passphrase stored by the server.
+  const password_manager::PasswordForm password_form1 =
+      passwords_helper::CreateTestPasswordForm(1);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form1, kPassphraseKeyParams.password,
+      kPassphraseKeyParams.derivation_params, GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
+          .Wait());
+
+  // Add local passwords.
+  const password_manager::PasswordForm password_form2 =
+      passwords_helper::CreateTestPasswordForm(2);
+  passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(
+      password_form2);
+
+  // Mimic server-side keystore migration:
+  // 1. Issue CLIENT_DATA_OBSOLETE.
+  // 2. Delete server-side passwords (without creating tombstones).
+  // 3. Rewrite server-side nigori with keystore one (this also triggers an
+  // invalidation, so client should see CLIENT_DATA_OBSOLETE).
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
+  GetFakeServer()->DeleteAllEntitiesForModelType(syncer::PASSWORDS);
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  SetNigoriInFakeServer(BuildKeystoreNigoriSpecifics(
+                            /*keybag_keys_params=*/{kKeystoreKeyParams},
+                            /*keystore_decryptor_params*/ {kKeystoreKeyParams},
+                            /*keystore_key_params=*/kKeystoreKeyParams),
+                        GetFakeServer());
+  // Nigori change triggers invalidation, so client should observe
+  // CLIENT_DATA_OBSOLETE and stop the engine.
+  ASSERT_TRUE(syncer::SyncEngineStoppedChecker(GetSyncService(0)).Wait());
+
+  // Make server return SUCCESS so that sync can initialize.
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  // Verify client and server side state (|password_form1| is lost, while
+  // |password_form2| is retained and committed to the server).
+  EXPECT_TRUE(WaitForPasswordForms({password_form2}));
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {password_form2}, kKeystoreKeyParams.password,
+                  kKeystoreKeyParams.derivation_params)
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriSyncTest,
+    ShouldFollowRewritingKeystoreMigrationWhenDataDecryptable) {
+  // Setup with implicit passphrase.
+  const KeyParamsForTesting kPassphraseKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kPassphraseKeyParams.password,
+          kPassphraseKeyParams.derivation_params);
+  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
+                                     specifics.mutable_encryption_keybag()));
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  // Mimic passwords encrypted with implicit passphrase stored by the server.
+  const password_manager::PasswordForm password_form1 =
+      passwords_helper::CreateTestPasswordForm(1);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form1, kPassphraseKeyParams.password,
+      kPassphraseKeyParams.derivation_params, GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
+          .Wait());
+
+  // Mimic that passphrase is provided by the user.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kPassphraseKeyParams.password));
+  ASSERT_TRUE(PassphraseRequiredStateChecker(GetSyncService(0),
+                                             /*desired_stater=*/false)
+                  .Wait());
+  ASSERT_TRUE(WaitForPasswordForms({password_form1}));
+
+  // Add local passwords.
+  const password_manager::PasswordForm password_form2 =
+      passwords_helper::CreateTestPasswordForm(2);
+  passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(
+      password_form2);
+
+  // Mimic server-side keystore migration:
+  // 1. Issue CLIENT_DATA_OBSOLETE.
+  // 2. Delete server-side passwords (without creating tombstones).
+  // 3. Rewrite server-side nigori with keystore one (this also triggers an
+  // invalidation, so client should see CLIENT_DATA_OBSOLETE).
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
+  GetFakeServer()->DeleteAllEntitiesForModelType(syncer::PASSWORDS);
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  SetNigoriInFakeServer(BuildKeystoreNigoriSpecifics(
+                            /*keybag_keys_params=*/{kKeystoreKeyParams},
+                            /*keystore_decryptor_params*/ {kKeystoreKeyParams},
+                            /*keystore_key_params=*/kKeystoreKeyParams),
+                        GetFakeServer());
+  // Nigori change triggers invalidation, so client should observe
+  // CLIENT_DATA_OBSOLETE and stop the engine.
+  ASSERT_TRUE(syncer::SyncEngineStoppedChecker(GetSyncService(0)).Wait());
+
+  // Make server return SUCCESS so that sync can initialize.
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  // Verify client and server side state. Both passwords should be stored and
+  // encrypted with keystore passphrase.
+  EXPECT_TRUE(WaitForPasswordForms({password_form1, password_form2}));
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {password_form1, password_form2}, kKeystoreKeyParams.password,
+                  kKeystoreKeyParams.derivation_params)
+                  .Wait());
+}
+
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be
 // committed.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
@@ -576,9 +718,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
               Eq(sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE));
 
   ASSERT_TRUE(SetupClients());
-  EXPECT_TRUE(ServerNigoriChecker(GetSyncService(0), GetFakeServer(),
-                                  syncer::PassphraseType::kKeystorePassphrase)
-                  .Wait());
+  EXPECT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kKeystorePassphrase)
+          .Wait());
 }
 
 class SingleClientNigoriWithWebApiTest : public SyncTest {
@@ -1109,7 +1251,8 @@ IN_PROC_BROWSER_TEST_F(
                                              GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/1, /*expected_count=*/1);
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1154,7 +1297,8 @@ IN_PROC_BROWSER_TEST_F(
                                               GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/0, /*expected_count=*/1);
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
@@ -1353,6 +1497,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Rotate trusted vault key and mimic transition to trusted vault passphrase
   // type.
+  base::HistogramTester histogram_tester;
   std::vector<uint8_t> new_trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
@@ -1371,6 +1516,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       trusted_vault_key_params.derivation_params, GetFakeServer());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/syncer::TrustedVaultDownloadKeysStatus::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 // Regression test for crbug.com/1267391: after following key rotation the

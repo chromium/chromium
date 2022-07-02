@@ -11,9 +11,11 @@
 #include "base/values.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
+#include "components/autofill_assistant/browser/web/web_controller_util.h"
 
-namespace autofill_assistant {
-namespace js_flow_util {
+namespace autofill_assistant::js_flow_util {
+
+constexpr char kMainFrame[] = "";
 
 // Returns true if |value| contains only allowed value types, which are INT,
 // BOOL, DOUBLE, and NONE. Dictionaries and lists are allowed, so long as they
@@ -38,7 +40,7 @@ ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result,
-    int js_line_offset,
+    const JsLineOffsets& js_line_offsets,
     int num_stack_entries_to_drop);
 
 // Extracts client status and optionally return value from |value|. Expects
@@ -67,7 +69,26 @@ ClientStatus ExtractJsFlowActionReturnValue(
 std::unique_ptr<base::Value> NativeActionResultToResultValue(
     const ProcessedActionProto& processed_action);
 
-}  // namespace js_flow_util
-}  // namespace autofill_assistant
+// Serializes the proto as base64.
+std::string SerializeToBase64(const google::protobuf::MessageLite* proto);
+
+// Returns the devtools source url comment to append to js code before
+// evaluating by devtools.
+//
+// For example by appending //# sourceUrl=some_name.js to a js snippet the
+// snippet can be identified in devtools by url = some_name.js (for example in
+// exceptions).
+std::string GetDevtoolsSourceUrlCommentToAppend(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location);
+
+// Returns the devtools source url for the js exception location.
+std::string GetDevtoolsSourceUrl(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location);
+
+// Returns the js exception location for the devtools source url.
+UnexpectedErrorInfoProto::JsExceptionLocation GetExceptionLocation(
+    const std::string& devtools_source_url);
+
+}  // namespace autofill_assistant::js_flow_util
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JS_FLOW_UTIL_H_

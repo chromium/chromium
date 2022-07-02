@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
@@ -68,12 +69,12 @@ class UserConsentView : public views::View {
   QuickAnswersFocusSearch focus_search_;
 
   // Owned by view hierarchy.
-  views::View* main_view_ = nullptr;
-  views::View* content_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::Label* desc_ = nullptr;
-  views::LabelButton* no_thanks_button_ = nullptr;
-  views::LabelButton* allow_button_ = nullptr;
+  raw_ptr<views::View> main_view_ = nullptr;
+  raw_ptr<views::View> content_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> desc_ = nullptr;
+  raw_ptr<views::LabelButton> no_thanks_button_ = nullptr;
+  raw_ptr<views::LabelButton> allow_button_ = nullptr;
 };
 
 }  // namespace quick_answers

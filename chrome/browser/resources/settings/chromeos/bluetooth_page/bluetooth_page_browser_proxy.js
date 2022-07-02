@@ -10,25 +10,25 @@ export class BluetoothPageBrowserProxy {
   isDeviceBlockedByPolicy(address) {}
 }
 
+/** @type {?BluetoothPageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {BluetoothPageBrowserProxy}
  */
 export class BluetoothPageBrowserProxyImpl {
-  /** @override */
-  isDeviceBlockedByPolicy(address) {
-    return sendWithPromise('isDeviceBlockedByPolicy', address);
-  }
-
   /** @return {!BluetoothPageBrowserProxy} */
   static getInstance() {
     return instance || (instance = new BluetoothPageBrowserProxyImpl());
   }
 
   /** @param {!BluetoothPageBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstanceForTesting(obj) {
     instance = obj;
   }
-}
 
-/** @type {?BluetoothPageBrowserProxy} */
-let instance = null;
+  /** @override */
+  isDeviceBlockedByPolicy(address) {
+    return sendWithPromise('isDeviceBlockedByPolicy', address);
+  }
+}

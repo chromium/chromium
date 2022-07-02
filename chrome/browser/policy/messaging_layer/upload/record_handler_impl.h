@@ -33,7 +33,7 @@ class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
 
   // Base class RecordHandler method implementation.
   void HandleRecords(bool need_encryption_key,
-                     std::unique_ptr<std::vector<EncryptedRecord>> record,
+                     std::vector<EncryptedRecord> record,
                      DmServerUploadService::CompletionCallback upload_complete,
                      DmServerUploadService::EncryptionKeyAttachedCallback
                          encryption_key_attached_cb) override;

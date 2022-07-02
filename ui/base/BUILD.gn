@@ -283,10 +283,8 @@ component("base") {
       "cocoa/command_dispatcher.mm",
       "cocoa/constrained_window/constrained_window_animation.h",
       "cocoa/constrained_window/constrained_window_animation.mm",
-      "cocoa/controls/button_utils.h",
-      "cocoa/controls/button_utils.mm",
-      "cocoa/controls/textfield_utils.h",
-      "cocoa/controls/textfield_utils.mm",
+      "cocoa/cursor_utils.h",
+      "cocoa/cursor_utils.mm",
       "cocoa/defaults_utils.h",
       "cocoa/defaults_utils.mm",
       "cocoa/find_pasteboard.h",
@@ -295,6 +293,8 @@ component("base") {
       "cocoa/flipped_view.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
+      "cocoa/nsmenu_additions.h",
+      "cocoa/nsmenu_additions.mm",
       "cocoa/nsmenuitem_additions.h",
       "cocoa/nsmenuitem_additions.mm",
       "cocoa/permissions_utils.h",
@@ -307,8 +307,8 @@ component("base") {
       "cocoa/remote_layer_api.mm",
       "cocoa/secure_password_input.h",
       "cocoa/secure_password_input.mm",
-      "cocoa/text_services_context_menu.cc",
       "cocoa/text_services_context_menu.h",
+      "cocoa/text_services_context_menu.mm",
       "cocoa/tool_tip_base_view.h",
       "cocoa/tool_tip_base_view.mm",
       "cocoa/touch_bar_util.h",
@@ -526,6 +526,11 @@ component("base") {
     deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
   }
 
+  if (is_mac) {
+    public_deps += [ "//ui/base/cursor" ]
+    deps += [ "//ui/resources:ui_resources_grd" ]
+  }
+
   if (toolkit_views) {
     deps += [ "//ui/events" ]
   }
@@ -536,6 +541,13 @@ component("base") {
 
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/fontconfig" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/cpp:crosapi_constants",
+      "//chromeos/lacros:lacros_paths",
+    ]
   }
 
   if (use_glib) {
@@ -660,8 +672,7 @@ component("features") {
   ]
 }
 
-# TODO(crbug.com/1091985): Support CrOS.
-if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+if (is_win || is_mac || is_linux || is_chromeos) {
   static_library("pixel_diff_test_support") {
     testonly = true
     sources = [
@@ -953,6 +964,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "cocoa/defaults_utils_unittest.mm",
+      "cocoa/nsmenu_additions_unittest.mm",
       "cocoa/nsmenuitem_additions_unittest.mm",
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
@@ -1114,7 +1126,7 @@ test("ui_base_unittests") {
         "//ui/base/ime/linux",
       ]
     }
-    if (is_linux && !is_chromecast && !is_chromeos_lacros) {
+    if (is_linux && !is_castos) {
       sources += [ "ime/linux/composition_text_util_pango_unittest.cc" ]
     }
     if (is_chromeos_ash || use_ozone) {

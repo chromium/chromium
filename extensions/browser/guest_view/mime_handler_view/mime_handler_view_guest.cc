@@ -144,7 +144,8 @@ void MimeHandlerViewGuest::SetEmbedderFrame(
       owner_type == blink::FrameOwnerElementType::kObject;
   DCHECK_NE(MSG_ROUTING_NONE, embedder_widget_routing_id_);
   delegate_->RecordLoadMetric(
-      /* in_main_frame */ !GetEmbedderFrame()->GetParent(), mime_type_);
+      /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
+      mime_type_);
 }
 
 void MimeHandlerViewGuest::SetBeforeUnloadController(
@@ -338,8 +339,8 @@ bool MimeHandlerViewGuest::PluginDoSave() {
   if (!attached() || !plugin_can_save_)
     return false;
 
-  base::ListValue::ListStorage args;
-  args.emplace_back(stream_->stream_url().spec());
+  base::ListValue::List args;
+  args.Append(stream_->stream_url().spec());
 
   auto event =
       std::make_unique<Event>(events::MIME_HANDLER_PRIVATE_SAVE,
@@ -381,7 +382,7 @@ void MimeHandlerViewGuest::EnterFullscreenModeForTab(
   if (SetFullscreenState(true)) {
     if (auto* delegate = embedder_web_contents()->GetDelegate()) {
       delegate->EnterFullscreenModeForTab(
-          embedder_web_contents()->GetMainFrame(), options);
+          embedder_web_contents()->GetPrimaryMainFrame(), options);
     }
   }
 }

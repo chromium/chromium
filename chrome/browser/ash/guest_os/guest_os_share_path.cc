@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
@@ -398,8 +399,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       // kCrostiniDefaultContainerName is not used in the following function
       // since we are only starting the VM.
       crostini_manager->RestartCrostiniWithOptions(
-          crostini::ContainerId(vm_name,
-                                crostini::kCrostiniDefaultContainerName),
+          GuestId(crostini::kCrostiniDefaultVmType, vm_name,
+                  crostini::kCrostiniDefaultContainerName),
           std::move(options),
           base::BindOnce(&OnVmRestartedForSeneschal, profile_, vm_name,
                          std::move(callback), std::move(request)));

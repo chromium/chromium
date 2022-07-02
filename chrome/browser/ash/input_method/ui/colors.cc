@@ -5,17 +5,17 @@
 #include "chrome/browser/ash/input_method/ui/colors.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 
 namespace ui {
 namespace ime {
 
 bool IsDarkModeEnabled() {
-  auto* provider = ash::ColorProvider::Get();
-  if (!provider)
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  if (!dark_light_mode_controller)
     return false;
   return (ash::features::IsDarkLightModeEnabled() &&
-          provider->IsDarkModeEnabled());
+          dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 SkColor ResolveSemanticColor(const cros_styles::ColorName& color_name) {

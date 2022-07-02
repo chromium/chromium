@@ -3,6 +3,7 @@ include_rules = [
   "+components/google/core",
   "+components/history/core/browser",
   "+components/metrics",
+  "+components/policy",
   "+components/prefs",
   "+components/safe_browsing/core/common",
   "+components/safe_browsing/core/browser/db",

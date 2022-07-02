@@ -126,6 +126,7 @@ static_library("metrics") {
     "//base:base_static",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/flags_ui:switches",
     "//components/prefs",
     "//components/variations",
     "//components/variations/field_trial_config",
@@ -486,6 +487,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/component_updater:test_support",
     "//components/encrypted_messages:encrypted_message_proto",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/network_time:network_time_test_support",
     "//components/prefs:test_support",
     "//components/sync/base",
@@ -529,8 +531,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/components/network:test_support",
       "//chromeos/dbus:test_support",
-      "//chromeos/network:test_support",
     ]
   }
 

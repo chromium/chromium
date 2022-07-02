@@ -19,7 +19,7 @@ class GURL;
 // handles its actions.
 @interface LinkPreviewCoordinator : ChromeCoordinator
 
-// Inits the coordinator with |browser| and the |URL| of the link.
+// Inits the coordinator with `browser` and the `URL` of the link.
 - (instancetype)initWithBrowser:(Browser*)browser
                             URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 

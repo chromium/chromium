@@ -26,7 +26,8 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
+import "services/service_manager/public/mojom/interface_provider.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters to launch a service worker. This is passed from the browser to the
@@ -88,6 +89,9 @@ struct EmbeddedWorkerStartParams {
 
   // Used to talk to the service worker from the browser process.
   pending_receiver<ServiceWorker> service_worker_receiver;
+
+  // Used by the browser to request interfaces exposed by the renderer.
+  pending_receiver<service_manager.mojom.InterfaceProvider> interface_provider;
 
   // Cloned and passed to each controllee to directly dispatch events from the
   // controllees.

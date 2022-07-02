@@ -99,7 +99,7 @@ void AndroidCdmFactory::OnCdmCreated(
     const std::string& error_message) {
   DVLOG(1) << __func__ << ": creation_id = " << creation_id;
 
-  DCHECK(pending_creations_.count(creation_id));
+  DCHECK(pending_creations_.contains(creation_id));
   CdmCreatedCB cdm_created_cb =
       std::move(pending_creations_[creation_id].second);
   pending_creations_.erase(creation_id);

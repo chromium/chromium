@@ -120,19 +120,22 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   ResetConfiguration(std::move(config));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_FALSE(console_observer.messages().empty());
 
   // The main frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
@@ -151,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   ResetConfiguration(std::move(config));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   ASSERT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ(kActivationWarningConsoleMessage,
             console_observer.GetMessageAt(0u));
@@ -159,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   ASSERT_EQ(2u, console_observer.messages().size());
   EXPECT_EQ(kActivationWarningConsoleMessage,
@@ -207,19 +212,22 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, MainFrameActivation) {
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_FALSE(console_observer.messages().empty());
 
   // The main frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 // There should be no document-level de-/reactivation happening on the renderer
@@ -240,7 +248,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));
   NavigateFromRendererSide(GetURLWithFragment(url, "ref"));
-  EXPECT_FALSE(IsDynamicScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      IsDynamicScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
@@ -543,7 +552,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // Verify that the ruleset persisted in the previous session is used for this
   // page load right after start-up.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -1092,14 +1102,16 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   base::HistogramTester tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::MessageLoopRunner::QuitMode::DEFERRED);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   tester.ExpectTotalCount(kActivationDecision, 2);
   tester.ExpectBucketCount(kActivationDecision,
@@ -1288,13 +1300,18 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
       ukm::builders::Blink_AutomaticLazyLoadFrame::kEntryName,
       ukm_loop.QuitClosure());
 
+  const std::string kMainFrameOrigin = "a_main_frame.com";
   const GURL kMainFrameUrl(embedded_test_server()->GetURL(
-      "a_main_frame.com", "/ads_observer/blank_with_adiframe_writer.html"));
+      kMainFrameOrigin, "/ads_observer/blank_with_adiframe_writer.html"));
   const GURL kAdUrl(embedded_test_server()->GetURL("ad.com", "/title1.html"));
   const GURL kEmbedUrl(
       embedded_test_server()->GetURL("embed.com", "/title1.html"));
   const GURL kNonAdNonEmbed(
       embedded_test_server()->GetURL("non_ad_non_embed.com", "/title1.html"));
+  const GURL kSameOriginAdUrl(
+      embedded_test_server()->GetURL(kMainFrameOrigin, "/title1.html"));
+  const GURL kSameOriginEmbedUrl(
+      embedded_test_server()->GetURL(kMainFrameOrigin, "/title1.html"));
 
   content::RenderFrameHost* render_frame_host =
       ui_test_utils::NavigateToURL(browser(), kMainFrameUrl);
@@ -1316,6 +1333,11 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
 
   // Add iframe that is not detected as an ad-frame nor an embed.
   AddIframe(render_frame_host, kNonAdNonEmbed);
+
+  // Add same-origin iframe that is specified to lazy-load or ad-frame should
+  // not be counted as LazyAdsFrameCount and LazyEmbedFrameCount.
+  AddAdIframe(render_frame_host, kSameOriginAdUrl);
+  AddIframe(render_frame_host, kSameOriginEmbedUrl);
 
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 

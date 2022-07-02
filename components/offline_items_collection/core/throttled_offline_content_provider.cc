@@ -111,12 +111,6 @@ void ThrottledOfflineContentProvider::RenameItem(const ContentId& id,
   wrapped_provider_->RenameItem(id, name, std::move(callback));
 }
 
-void ThrottledOfflineContentProvider::ChangeSchedule(
-    const ContentId& id,
-    absl::optional<OfflineItemSchedule> schedule) {
-  wrapped_provider_->ChangeSchedule(id, std::move(schedule));
-}
-
 void ThrottledOfflineContentProvider::OnItemsAdded(
     const OfflineItemList& items) {
   NotifyItemsAdded(items);

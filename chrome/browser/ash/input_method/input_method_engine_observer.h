@@ -72,6 +72,9 @@ class InputMethodEngineObserver {
   virtual void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) = 0;
 
+  // Called when the caret bounds change.
+  virtual void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) = 0;
+
   // Called when a surrounding text is changed.
   virtual void OnSurroundingTextChanged(const std::string& engine_id,
                                         const std::u16string& text,

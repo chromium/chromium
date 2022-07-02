@@ -64,8 +64,8 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // ui::AXPlatformNodeDelegate.
   const ui::AXNodeData& GetData() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   bool HasModalDialog() const override;
   // Also in |ViewAccessibility|.
   bool IsChildOfLeaf() const override;
@@ -98,6 +98,9 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsOffscreen() const override;
   std::u16string GetAuthorUniqueId() const override;
   bool IsMinimized() const override;
+  bool IsReadOnlySupported() const override;
+  bool IsReadOnlyOrDisabled() const override;
+
   // Also in |ViewAccessibility|.
   const ui::AXUniqueId& GetUniqueId() const override;
   absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
@@ -163,7 +166,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  raw_ptr<ui::AXPlatformNode> ax_platform_node_ = nullptr;
+  raw_ptr<ui::AXPlatformNode, DanglingUntriaged> ax_platform_node_ = nullptr;
 
   mutable ui::AXNodeData data_;
 };

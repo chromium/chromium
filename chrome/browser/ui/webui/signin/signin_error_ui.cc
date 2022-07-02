@@ -78,9 +78,11 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   source->SetDefaultResource(IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_HTML);
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_error_app.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_JS},
+      {"signin_error_app.html.js",
+       IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_HTML_JS},
       {"signin_error.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
   source->AddBoolean("isSystemProfile", is_system_profile);

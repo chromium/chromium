@@ -95,7 +95,7 @@ class CreateOrOpenHelper : public FileHelper {
   CreateOrOpenHelper(const CreateOrOpenHelper&) = delete;
   CreateOrOpenHelper& operator=(const CreateOrOpenHelper&) = delete;
 
-  void RunWork(const FilePath& file_path, int file_flags) {
+  void RunWork(const FilePath& file_path, uint32_t file_flags) {
     file_.Initialize(file_path, file_flags);
     error_ = file_.IsValid() ? File::FILE_OK : file_.error_details();
   }
@@ -175,7 +175,7 @@ class ReadHelper : public FileHelper {
  public:
   ReadHelper(FileProxy* proxy, File file, int bytes_to_read)
       : FileHelper(proxy, std::move(file)),
-        buffer_(new char[bytes_to_read]),
+        buffer_(new char[static_cast<size_t>(bytes_to_read)]),
         bytes_to_read_(bytes_to_read) {}
   ReadHelper(const ReadHelper&) = delete;
   ReadHelper& operator=(const ReadHelper&) = delete;
@@ -204,9 +204,9 @@ class WriteHelper : public FileHelper {
               const char* buffer,
               int bytes_to_write)
       : FileHelper(proxy, std::move(file)),
-        buffer_(new char[bytes_to_write]),
+        buffer_(new char[static_cast<size_t>(bytes_to_write)]),
         bytes_to_write_(bytes_to_write) {
-    memcpy(buffer_.get(), buffer, bytes_to_write);
+    memcpy(buffer_.get(), buffer, static_cast<size_t>(bytes_to_write));
   }
   WriteHelper(const WriteHelper&) = delete;
   WriteHelper& operator=(const WriteHelper&) = delete;

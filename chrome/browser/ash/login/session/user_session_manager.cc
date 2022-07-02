@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -103,7 +104,7 @@
 #include "chrome/browser/ash/u2f_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -126,13 +127,13 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -502,6 +503,11 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   return false;
 }
 
+void RecordKnownUser(const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SaveKnownUser(account_id);
+}
+
 }  // namespace
 
 UserSessionManagerDelegate::~UserSessionManagerDelegate() {}
@@ -681,7 +687,7 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
                    ash::features::kUseAuthsessionAuthentication)) {
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
-          IsEphemeralMountForced());
+          base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced());
     } else {
       authenticator_ =
           base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);
@@ -774,15 +780,14 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   DCHECK(user);
   if (network_connection_tracker_ &&
       !network_connection_tracker_->IsOffline()) {
-    pending_signin_restore_sessions_.erase(user->GetAccountId().GetUserEmail());
+    pending_signin_restore_sessions_.erase(user->GetAccountId());
     RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
   } else {
     // Even if we're online we should wait till initial
     // OnConnectionTypeChanged() call. Otherwise starting fetchers too early may
     // end up canceling all request when initial network connection type is
     // processed. See http://crbug.com/121643.
-    pending_signin_restore_sessions_.insert(
-        user->GetAccountId().GetUserEmail());
+    pending_signin_restore_sessions_.insert(user->GetAccountId());
   }
 }
 
@@ -1132,25 +1137,21 @@ void UserSessionManager::OnConnectionChanged(
   }
 
   // Need to iterate over all users and their OAuth2 session state.
-  const user_manager::UserList& users = user_manager->GetLoggedInUsers();
-  for (user_manager::UserList::const_iterator it = users.begin();
-       it != users.end(); ++it) {
-    if (!(*it)->is_profile_created())
+  for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
+    if (!user->is_profile_created())
       continue;
 
-    Profile* user_profile = ProfileHelper::Get()->GetProfileByUserUnsafe(*it);
-    bool should_restore_session = pending_signin_restore_sessions_.find(
-                                      (*it)->GetAccountId().GetUserEmail()) !=
-                                  pending_signin_restore_sessions_.end();
+    Profile* user_profile = ProfileHelper::Get()->GetProfileByUser(user);
+    DCHECK(user_profile);
     OAuth2LoginManager* login_manager =
         OAuth2LoginManagerFactory::GetInstance()->GetForProfile(user_profile);
     if (login_manager->SessionRestoreIsRunning()) {
       // If we come online for the first time after successful offline login,
       // we need to kick off OAuth token verification process again.
       login_manager->ContinueSessionRestore();
-    } else if (should_restore_session) {
-      pending_signin_restore_sessions_.erase(
-          (*it)->GetAccountId().GetUserEmail());
+    } else if (pending_signin_restore_sessions_.erase(user->GetAccountId()) >
+               0) {
+      // Restore it, if the account is contained in the pending set.
       RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
     }
   }
@@ -1769,12 +1770,6 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   }
 }
 
-void UserSessionManager::ActivateWizard(OobeScreenId screen) {
-  LoginDisplayHost* host = LoginDisplayHost::default_host();
-  CHECK(host);
-  host->StartWizard(screen);
-}
-
 void UserSessionManager::MaybeLaunchHelpApp(Profile* profile) const {
   if (first_run::ShouldLaunchHelpApp(profile)) {
     // Don't open default Chrome window if we're going to launch the first-run
@@ -1807,7 +1802,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
     return false;
   }
 
-  ProfileHelper::Get()->ProfileStartup(profile);
+  SigninProfileHandler::Get()->ProfileStartUp(profile);
 
   PrefService* prefs = profile->GetPrefs();
   arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);

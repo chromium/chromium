@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -244,7 +245,7 @@ class BluetoothGattDescriptorClientImpl
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothGattDescriptorClient::Observer>::Unchecked

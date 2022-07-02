@@ -494,19 +494,18 @@ class MockEventRouter : public EventRouter {
   MOCK_METHOD6(DispatchEventToExtensionMock,
                void(const std::string& extension_id,
                     const std::string& event_name,
-                    base::ListValue* event_args,
+                    base::Value::List* event_args,
                     content::BrowserContext* source_context,
                     const GURL& event_url,
                     EventRouter::UserGestureState state));
 
   void DispatchEventToExtension(const std::string& extension_id,
                                 std::unique_ptr<Event> event) override {
-    DispatchEventToExtensionMock(extension_id,
-                                 event->event_name,
-                                 event->event_args.release(),
-                                 event->restrict_to_browser_context,
-                                 event->event_url,
-                                 event->user_gesture);
+    DispatchEventToExtensionMock(
+        extension_id, event->event_name,
+        new base::Value::List(std::move(event->event_args)),
+        event->restrict_to_browser_context, event->event_url,
+        event->user_gesture);
   }
 };
 
@@ -600,7 +599,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
 
   // Use the magic of googlemock to save a parameter to our mock's
   // DispatchEventToExtension method into event_args.
-  base::ListValue* list = NULL;
+  base::Value::List* list = nullptr;
   {
     InSequence s;
     EXPECT_CALL(*mock_event_router,
@@ -620,9 +619,9 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetListDeprecated().size());
+  ASSERT_EQ(2u, list->size());
 
-  const base::Value& info = list->GetListDeprecated()[0];
+  const base::Value& info = (*list)[0];
   ASSERT_TRUE(info.is_dict());
 
   ASSERT_EQ(id.uid, info.FindIntKey("menuItemId"));

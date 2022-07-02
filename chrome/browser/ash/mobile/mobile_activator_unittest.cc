@@ -9,8 +9,8 @@
 
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/browser_thread.h"

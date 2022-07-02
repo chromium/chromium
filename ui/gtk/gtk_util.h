@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/color/color_id.h"
 #include "ui/gtk/gtk_compat.h"
@@ -70,8 +71,8 @@ class CairoSurface {
   SkColor GetAveragePixelValue(bool frame);
 
  private:
-  cairo_surface_t* surface_;
-  cairo_t* cairo_;
+  raw_ptr<cairo_surface_t, DanglingUntriaged> surface_;
+  raw_ptr<cairo_t> cairo_;
 };
 
 class GtkCssContext {
@@ -107,7 +108,7 @@ class GtkCssContext {
   // GTK4 state.
   // GTK widgets own their children, so instead of keeping a reference to the
   // widget directly, keep a reference to the root widget.
-  GtkWidget* widget_ = nullptr;
+  raw_ptr<GtkWidget> widget_ = nullptr;
   ScopedGObject<GtkWidget> root_;
 };
 

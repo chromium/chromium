@@ -375,8 +375,8 @@ class OmniboxEditModel {
   //     |is_temporary_test| is false.
   //   |is_temporary_text| is true if invoked because of a temporary text change
   //     or false if |temporary_text| should be ignored.
-  //   |inline_autocompletion|, |prefix_autocompletion|, and
-  //     |split_autocompletion| are the autocompletion.
+  //   |inline_autocompletion| and |prefix_autocompletion| are the
+  //     autocompletions.
   //   |destination_for_temporary_text_change| is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
@@ -386,15 +386,13 @@ class OmniboxEditModel {
   //   |additional_text| is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
   // Virtual to allow testing.
-  virtual void OnPopupDataChanged(
-      const std::u16string& temporary_text,
-      bool is_temporary_text,
-      const std::u16string& inline_autocompletion,
-      const std::u16string& prefix_autocompletion,
-      const SplitAutocompletion& split_autocompletion,
-      const std::u16string& keyword,
-      bool is_keyword_hint,
-      const std::u16string& additional_text);
+  virtual void OnPopupDataChanged(const std::u16string& temporary_text,
+                                  bool is_temporary_text,
+                                  const std::u16string& inline_autocompletion,
+                                  const std::u16string& prefix_autocompletion,
+                                  const std::u16string& keyword,
+                                  bool is_keyword_hint,
+                                  const std::u16string& additional_text);
 
   // Called by the OmniboxView after something changes, with details about what
   // state changes occurred.  Updates internal state, updates the popup if
@@ -413,6 +411,9 @@ class OmniboxEditModel {
 
   // Used for testing purposes only.
   std::u16string GetUserTextForTesting() const { return user_text_; }
+
+  // Name of the histogram tracking cut or copy omnibox commands.
+  static const char kCutOrCopyAllTextHistogram[];
 
   // Just forwards the call to the OmniboxView referred within.
   void SetAccessibilityLabel(const AutocompleteMatch& match);
@@ -496,6 +497,8 @@ class OmniboxEditModel {
       int* label_prefix_length = nullptr);
 
   // Invoked any time the result set of the controller changes.
+  // TODO(orinj): This method seems like a good candidate for removal; it is
+  // preserved here only to prevent possible behavior change while refactoring.
   void OnPopupResultChanged();
 
   // Lookup the bitmap for |result_index|. Returns nullptr if not found.
@@ -693,7 +696,6 @@ class OmniboxEditModel {
   bool just_deleted_text_;
   std::u16string inline_autocompletion_;
   std::u16string prefix_autocompletion_;
-  SplitAutocompletion split_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
   // temporary text.

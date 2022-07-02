@@ -72,7 +72,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, GetOrCreatePreviewDialog) {
 
   // Get the preview dialog for initiator.
   PrintViewManager::FromWebContents(initiator)->PrintPreviewNow(
-      initiator->GetMainFrame(), false);
+      initiator->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog =
       dialog_controller->GetOrCreatePreviewDialog(initiator);
 
@@ -124,18 +124,18 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MAYBE_MultiplePreviewDialogs) {
       PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(dialog_controller);
 
-  // Create preview dialog for |web_contents_1|
+  // Create preview dialog for `web_contents_1`
   PrintViewManager::FromWebContents(web_contents_1)
-      ->PrintPreviewNow(web_contents_1->GetMainFrame(), false);
+      ->PrintPreviewNow(web_contents_1->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog_1 =
       dialog_controller->GetOrCreatePreviewDialog(web_contents_1);
 
   EXPECT_NE(web_contents_1, preview_dialog_1);
   EXPECT_EQ(2, tab_strip_model->count());
 
-  // Create preview dialog for |web_contents_2|
+  // Create preview dialog for `web_contents_2`
   PrintViewManager::FromWebContents(web_contents_2)
-      ->PrintPreviewNow(web_contents_2->GetMainFrame(), false);
+      ->PrintPreviewNow(web_contents_2->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog_2 =
       dialog_controller->GetOrCreatePreviewDialog(web_contents_2);
 
@@ -156,12 +156,12 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MAYBE_MultiplePreviewDialogs) {
   EXPECT_EQ(-1, preview_dialog_1_index);
   EXPECT_EQ(-1, preview_dialog_2_index);
 
-  // Since |preview_dialog_2_index| was the most recently created dialog, its
+  // Since `preview_dialog_2_index` was the most recently created dialog, its
   // initiator should have focus.
   EXPECT_EQ(tab_2_index, tab_strip_model->active_index());
 
-  // When we get the preview dialog for |web_contents_1|,
-  // |preview_dialog_1| is activated and focused.
+  // When we get the preview dialog for `web_contents_1`,
+  // `preview_dialog_1` is activated and focused.
   dialog_controller->GetOrCreatePreviewDialog(web_contents_1);
   EXPECT_EQ(tab_1_index, tab_strip_model->active_index());
 }
@@ -184,7 +184,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, ClearInitiatorDetails) {
 
   // Get the preview dialog for the initiator.
   PrintViewManager::FromWebContents(initiator)->PrintPreviewNow(
-      initiator->GetMainFrame(), false);
+      initiator->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog =
       dialog_controller->GetOrCreatePreviewDialog(initiator);
 
@@ -238,7 +238,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   WebContents* tiger_preview_dialog =
       dialog_controller->GetOrCreatePreviewDialog(web_contents);
   PrintViewManager* manager = PrintViewManager::FromWebContents(web_contents);
-  manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
+  manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false);
 
   // New print preview dialog is a constrained window, so the number of tabs is
   // still 1.
@@ -254,8 +254,9 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   EXPECT_EQ(tiger_barb, web_contents->GetLastCommittedURL());
 
   // Print preview now should return true as the navigation should have closed
-  // |tiger_preview_dialog| and the previous dialog should have closed.
-  EXPECT_TRUE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  // `tiger_preview_dialog` and the previous dialog should have closed.
+  EXPECT_TRUE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
   WebContents* tiger_barb_preview_dialog =
       dialog_controller->GetOrCreatePreviewDialog(web_contents);
   ASSERT_TRUE(tiger_barb_preview_dialog);
@@ -268,13 +269,15 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   content::WebContentsDestroyedWatcher tiger_barb_destroyed(
       tiger_barb_preview_dialog);
 
-  // Now this returns false as |tiger_barb_preview_dialog| is open.
-  EXPECT_FALSE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  // Now this returns false as `tiger_barb_preview_dialog` is open.
+  EXPECT_FALSE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
 
   // Navigate with back button or ALT+LEFT ARROW to a similar page.
   content::NavigationSimulator::GoBack(web_contents);
   EXPECT_EQ(tiger, web_contents->GetLastCommittedURL());
-  EXPECT_TRUE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  EXPECT_TRUE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
 
   // Get new dialog
   WebContents* tiger_preview_dialog_2 =
@@ -306,7 +309,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // preview now should return false, dialog is still alive, and the dialog
   // returned by GetOrCreatePreviewDialog should be the same as the earlier
   // dialog.
-  EXPECT_FALSE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  EXPECT_FALSE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
   EXPECT_FALSE(tiger_2_destroyed.IsDestroyed());
   WebContents* tiger_preview_dialog_2b =
       dialog_controller->GetOrCreatePreviewDialog(web_contents);
@@ -317,7 +321,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // Navigate with back button or ALT+LEFT ARROW to a similar page.
   content::NavigationSimulator::GoBack(web_contents);
   EXPECT_EQ(tiger, web_contents->GetLastCommittedURL());
-  EXPECT_TRUE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  EXPECT_TRUE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
 
   // Get new dialog
   WebContents* tiger_preview_dialog_3 =
@@ -347,7 +352,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // preview now should return false, dialog is still alive, and the dialog
   // returned by GetOrCreatePreviewDialog should be the same as the earlier
   // dialog.
-  EXPECT_FALSE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  EXPECT_FALSE(
+      manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(), false));
   EXPECT_FALSE(tiger_3_destroyed.IsDestroyed());
   WebContents* tiger_preview_dialog_3b =
       dialog_controller->GetOrCreatePreviewDialog(web_contents);
@@ -367,7 +373,7 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MultiplePreviewDialogsClose) {
   ASSERT_TRUE(tab_strip_model);
   EXPECT_EQ(0, tab_strip_model->count());
 
-  // Create a new tab with contents |web_contents_1|
+  // Create a new tab with contents `web_contents_1`
   chrome::NewTab(browser());
   WebContents* web_contents_1 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_1);
@@ -376,23 +382,23 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MultiplePreviewDialogsClose) {
       PrintPreviewDialogController::GetInstance();
   ASSERT_TRUE(dialog_controller);
 
-  // Create preview dialog for |web_contents_1|. Should not create a new tab.
+  // Create preview dialog for `web_contents_1`. Should not create a new tab.
   PrintViewManager::FromWebContents(web_contents_1)
-      ->PrintPreviewNow(web_contents_1->GetMainFrame(), false);
+      ->PrintPreviewNow(web_contents_1->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog_1 =
       dialog_controller->GetOrCreatePreviewDialog(web_contents_1);
   EXPECT_NE(web_contents_1, preview_dialog_1);
   EXPECT_EQ(1, tab_strip_model->count());
 
-  // Create a new tab with contents |web_contents_2|
+  // Create a new tab with contents `web_contents_2`
   chrome::NewTab(browser());
   WebContents* web_contents_2 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_2);
   EXPECT_EQ(2, tab_strip_model->count());
 
-  // Create preview dialog for |web_contents_2|
+  // Create preview dialog for `web_contents_2`
   PrintViewManager::FromWebContents(web_contents_2)
-      ->PrintPreviewNow(web_contents_2->GetMainFrame(), false);
+      ->PrintPreviewNow(web_contents_2->GetPrimaryMainFrame(), false);
   WebContents* preview_dialog_2 =
       dialog_controller->GetOrCreatePreviewDialog(web_contents_2);
   EXPECT_NE(web_contents_2, preview_dialog_2);
@@ -402,16 +408,16 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MultiplePreviewDialogsClose) {
   // dialogs are constrained in their respective initiators.
   EXPECT_EQ(2, tab_strip_model->count());
 
-  // Close |web_contents_1|'s tab
+  // Close `web_contents_1`'s tab
   int tab_1_index = tab_strip_model->GetIndexOfWebContents(web_contents_1);
   tab_strip_model->CloseWebContentsAt(tab_1_index, 0);
   EXPECT_EQ(1, tab_strip_model->count());
 
-  // Simulate a crash of the render process host for |web_contents_2|. Print
+  // Simulate a crash of the render process host for `web_contents_2`. Print
   // preview controller should exit cleanly and not crash.
   content::MockRenderProcessHost* rph =
       static_cast<content::MockRenderProcessHost*>(
-          web_contents_2->GetMainFrame()->GetProcess());
+          web_contents_2->GetPrimaryMainFrame()->GetProcess());
   rph->SimulateCrash();
 }
 

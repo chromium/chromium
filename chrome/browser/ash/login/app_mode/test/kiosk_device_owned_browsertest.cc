@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -139,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
 
 // This test case is to cover crbug.com/1235334.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
 
   // Start app launch with network portal state.
   StartAppLaunchFromLoginScreen(
@@ -191,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
@@ -225,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, ZoomSupport) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());

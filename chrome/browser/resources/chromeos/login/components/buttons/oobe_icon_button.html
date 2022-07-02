@@ -3,6 +3,8 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
@@ -11,6 +13,7 @@
 <link rel="import" href="../hd_iron_icon.html">
 <link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
 <link rel="import" href="../behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="./oobe_base_button.html">
 
 <!--
   Material design button that shows an icon and displays text.
@@ -62,14 +65,17 @@
         font-size: var(--oobe-button-font-size);
       }
     </style>
-    <cr-button id="button" aria-label$="[[labelForAriaText_]]">
+    <cr-button id="button" disabled="[[disabled]]"
+        aria-label$="[[labelForAriaText_]]">
       <div id="container" class="flex vertical layout center self-stretch">
         <div class="flex layout horizontal center self-stretch center-justified">
           <hd-iron-icon id="icon" icon1x="[[icon1x]]" icon2x="[[icon2x]]"
               class="oobe-icon" hidden>
           </hd-iron-icon>
           <slot name="text">
-            <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+            <template is="dom-if" if="[[textKey]]">
+              <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+            </template>
           </slot>
         </div>
       </div>

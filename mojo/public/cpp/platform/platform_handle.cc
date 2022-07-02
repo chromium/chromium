@@ -19,8 +19,8 @@
 #include <zircon/status.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
-#elif BUILDFLAG(IS_MAC)
-#include <mach/mach_vm.h>
+#elif BUILDFLAG(IS_APPLE)
+#include <mach/vm_map.h>
 
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
@@ -71,7 +71,7 @@ zx::handle CloneHandle(const zx::handle& handle) {
     ZX_DLOG(ERROR, result) << "zx_duplicate_handle";
   return std::move(dupe);
 }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 base::mac::ScopedMachSendRight CloneMachPort(
     const base::mac::ScopedMachSendRight& mach_port) {
   DCHECK(mach_port.is_valid());
@@ -107,7 +107,7 @@ PlatformHandle::PlatformHandle(base::win::ScopedHandle handle)
 #elif BUILDFLAG(IS_FUCHSIA)
 PlatformHandle::PlatformHandle(zx::handle handle)
     : type_(Type::kHandle), handle_(std::move(handle)) {}
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 PlatformHandle::PlatformHandle(base::mac::ScopedMachSendRight mach_port)
     : type_(Type::kMachSend), mach_send_(std::move(mach_port)) {}
 PlatformHandle::PlatformHandle(base::mac::ScopedMachReceiveRight mach_port)
@@ -133,7 +133,7 @@ PlatformHandle& PlatformHandle::operator=(PlatformHandle&& other) {
   handle_ = std::move(other.handle_);
 #elif BUILDFLAG(IS_FUCHSIA)
   handle_ = std::move(other.handle_);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   mach_send_ = std::move(other.mach_send_);
   mach_receive_ = std::move(other.mach_receive_);
 #endif
@@ -168,7 +168,7 @@ void PlatformHandle::ToMojoPlatformHandle(PlatformHandle handle,
       out_handle->value = handle.TakeHandle().release();
       break;
     }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     if (handle.is_mach_send()) {
       out_handle->type = MOJO_PLATFORM_HANDLE_TYPE_MACH_SEND_RIGHT;
       out_handle->value = static_cast<uint64_t>(handle.ReleaseMachSendRight());
@@ -208,7 +208,7 @@ PlatformHandle PlatformHandle::FromMojoPlatformHandle(
 #elif BUILDFLAG(IS_FUCHSIA)
   if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
     return PlatformHandle(zx::handle(handle->value));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_MACH_SEND_RIGHT) {
     return PlatformHandle(base::mac::ScopedMachSendRight(
         static_cast<mach_port_t>(handle->value)));
@@ -232,7 +232,7 @@ void PlatformHandle::reset() {
   handle_.Close();
 #elif BUILDFLAG(IS_FUCHSIA)
   handle_.reset();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   mach_send_.reset();
   mach_receive_.reset();
 #endif
@@ -249,7 +249,7 @@ void PlatformHandle::release() {
   std::ignore = handle_.Take();
 #elif BUILDFLAG(IS_FUCHSIA)
   std::ignore = handle_.release();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   std::ignore = mach_send_.release();
   std::ignore = mach_receive_.release();
 #endif
@@ -266,7 +266,7 @@ PlatformHandle PlatformHandle::Clone() const {
   if (is_valid_handle())
     return PlatformHandle(CloneHandle(handle_));
   return PlatformHandle(CloneFD(fd_));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   if (is_valid_mach_send())
     return PlatformHandle(CloneMachPort(mach_send_));
   CHECK(!is_valid_mach_receive()) << "Cannot clone Mach receive rights";

@@ -7,6 +7,7 @@
 #include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -41,6 +42,7 @@ const char kSmartLockSignInRemovedNotifierId[] =
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
+    const ash::NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const ui::ImageModel& icon,
@@ -51,7 +53,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
       message, icon, std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 id),
+                                 id, catalog_name),
       rich_notification_data, delegate);
 }
 
@@ -87,6 +89,7 @@ void EasyUnlockNotificationController::ShowSignInRemovedNotification() {
 
   ShowNotification(CreateNotification(
       kSmartLockSignInRemovedNotifierId,
+      ash::NotificationCatalogName::kEasyUnlockSmartLockSignInRemoved,
       l10n_util::GetStringUTF16(
           IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
@@ -104,6 +107,7 @@ void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
 
   ShowNotification(CreateNotification(
       kEasyUnlockChromebookAddedNotifierId,
+      ash::NotificationCatalogName::kEasyUnlockChromebookAdded,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(
@@ -128,6 +132,7 @@ void EasyUnlockNotificationController::ShowPairingChangeNotification() {
 
   ShowNotification(CreateNotification(
       kEasyUnlockPairingChangeNotifierId,
+      ash::NotificationCatalogName::kEasyUnlockPairingChange,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(
@@ -154,6 +159,7 @@ void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
 
   ShowNotification(CreateNotification(
       kEasyUnlockPairingChangeAppliedNotifierId,
+      ash::NotificationCatalogName::kEasyUnlockPairingChangeApplied,
       l10n_util::GetStringUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGE_APPLIED_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(

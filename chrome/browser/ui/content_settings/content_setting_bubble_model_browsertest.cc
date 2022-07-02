@@ -59,7 +59,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     content::WebContents* web_contents = GetActiveTab();
 
     // Create a bubble with the given camera and microphone access state.
-    PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+    PageSpecificContentSettings::GetForFrame(
+        web_contents->GetPrimaryMainFrame())
         ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(), state,
                                      std::string(), std::string(),
                                      std::string(), std::string());

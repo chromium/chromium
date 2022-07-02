@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns an animation that reverses |animation| when added to |layer|.
+// Returns an animation that reverses `animation` when added to `layer`.
 CAAnimation* CAAnimationMakeReverse(CAAnimation* animation, CALayer* layer);
 
-// Removes the animation for |key| from each CALayer in |layers|, creates
-// reversed versions using |CAAnimationMakeReverse|, then adds the reversed
+// Removes the animation for `key` from each CALayer in `layers`, creates
+// reversed versions using `CAAnimationMakeReverse`, then adds the reversed
 // animation back to the layers under the same key.
 void ReverseAnimationsForKeyForLayers(NSString* key, NSArray* layers);
 

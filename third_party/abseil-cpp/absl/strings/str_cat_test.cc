@@ -210,6 +210,11 @@ TEST(StrCat, CornerCases) {
   EXPECT_EQ(result, "");
 }
 
+TEST(StrCat, NullConstCharPtr) {
+  const char* null = nullptr;
+  EXPECT_EQ(absl::StrCat("mon", null, "key"), "monkey");
+}
+
 // A minimal allocator that uses malloc().
 template <typename T>
 struct Mallocator {

@@ -16,10 +16,12 @@
 #include "base/debug/alias.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -31,7 +33,9 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
 namespace {
@@ -389,33 +393,65 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(
 void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   DCHECK(pending_overlay_mailboxes_.empty());
-  std::vector<OutputPresenter::ScopedOverlayAccess*> accesses(overlays.size());
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    auto& overlay = overlays[i];
 
+  // The fence that will be created for current ScheduleOverlays. This fence is
+  // required and passed with overlay data iff DelegatedCompositing is enabled
+  // and the overlay's shared image backing is created for raster op. Given
+  // rasterization tasks create fences when gpu operations are issued, we end up
+  // having multiple number of fences, which creation is costly. Instead, a
+  // single fence is created during overlays' scheduling, which is dupped and
+  // inserted into each OverlayPlaneData if the underlying shared image was
+  // created for rasterization.
+  //
+  // TODO(msisov): find a better place for this fence.
+  std::unique_ptr<gfx::GpuFence> current_frame_fence;
+
+  for (const auto& overlay : overlays) {
+    auto mailbox = overlay.mailbox;
 #if defined(USE_OZONE)
     if (overlay.is_solid_color) {
       DCHECK(overlay.color.has_value());
       // TODO(msisov): reconsider this once Linux Wayland compositors also
       // support that. See https://bit.ly/2ZqUO0w.
       if (!supports_non_backed_solid_color_images_) {
-        overlay.mailbox = GetImageMailboxForColor(overlay.color.value());
+        mailbox = GetImageMailboxForColor(overlay.color.value());
       } else {
-        accesses[i] = nullptr;
+        presenter_->ScheduleOverlayPlane(overlay, nullptr, nullptr);
         continue;
       }
     }
 #endif
 
-    auto* overlay_data = GetOrCreateOverlayData(overlay.mailbox);
-    if (!overlay_data)
-      continue;
+    OutputPresenter::ScopedOverlayAccess* access = nullptr;
+    auto* overlay_data = GetOrCreateOverlayData(mailbox);
+    if (overlay_data) {
+      access = overlay_data->scoped_read_access();
+      pending_overlay_mailboxes_.emplace_back(mailbox);
+    }
 
-    accesses[i] = overlay_data->scoped_read_access();
-    pending_overlay_mailboxes_.emplace_back(overlay.mailbox);
+    gfx::GpuFenceHandle acquire_fence;
+    if (context_state_->GrContextIsGL() && access &&
+        (access->representation()->usage() &
+         gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
+        gl::GLFence::IsGpuFenceSupported()) {
+      DCHECK(features::IsDelegatedCompositingEnabled());
+      // Create a single fence that will be duplicated and inserted into each
+      // overlay plane data. This avoids unnecessary cost as creating multiple
+      // number of fences at the end of each raster task at the ShareImage
+      // level is costly. Thus, at this point, the gpu tasks have been
+      // dispatched and it's safe to create just a single fence.
+      if (!current_frame_fence)
+        current_frame_fence = gl::GLFence::CreateForGpuFence()->GetGpuFence();
+
+      // Dup the fence - it must be inserted into each shared image before
+      // ScopedReadAccess is created.
+      acquire_fence = current_frame_fence->GetGpuFenceHandle().Clone();
+    }
+
+    presenter_->ScheduleOverlayPlane(
+        overlay, access,
+        std::make_unique<gfx::GpuFence>(std::move(acquire_fence)));
   }
-
-  presenter_->ScheduleOverlays(std::move(overlays), std::move(accesses));
 }
 
 void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
@@ -702,14 +738,13 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
     return;
 
   gpu::SharedImageRepresentationOverlay::ScopedReadAccess* access = nullptr;
-  OverlayCandidate candidate;
+  OutputPresenter::OverlayPlaneCandidate candidate;
+#if defined(USE_OZONE)
   candidate.color_space = color_space_;
   candidate.display_rect = gfx::RectF(gfx::SizeF(viewport_size_));
   candidate.color = SK_ColorTRANSPARENT;
   candidate.plane_z_order = INT32_MIN;
   candidate.is_solid_color = supports_non_backed_solid_color_images_;
-
-#if defined(USE_OZONE)
   if (!supports_non_backed_solid_color_images_) {
     auto mailbox = GetImageMailboxForColor(candidate.color.value());
     DCHECK(mailbox.IsSharedImage());
@@ -724,7 +759,8 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
   NOTREACHED();
 #endif  //  !defined(USE_OZONE)
 
-  presenter_->ScheduleOneOverlay(candidate, access);
+  presenter_->ScheduleOverlayPlane(candidate, access,
+                                   /*acquire_fence=*/nullptr);
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

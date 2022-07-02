@@ -78,32 +78,39 @@ class AutofillOfferManagerTest : public testing::Test {
       std::string offer_reward_amount,
       bool expired = false,
       std::vector<GURL> merchant_origins = {GURL(kTestUrl)}) {
-    AutofillOfferData offer_data;
-    offer_data.offer_id = 4444;
-    offer_data.offer_reward_amount = offer_reward_amount;
-    if (expired) {
-      offer_data.expiry = AutofillClock::Now() - base::Days(2);
-    } else {
-      offer_data.expiry = AutofillClock::Now() + base::Days(2);
-    }
-    offer_data.merchant_origins = std::move(merchant_origins);
-    offer_data.eligible_instrument_id = {card.instrument_id()};
-    offer_data.offer_details_url = GURL(kOfferDetailsUrl);
+    int64_t offer_id = 4444;
+    base::Time expiry = expired ? AutofillClock::Now() - base::Days(2)
+                                : AutofillClock::Now() + base::Days(2);
+    std::vector<int64_t> eligible_instrument_id = {card.instrument_id()};
+    GURL offer_details_url = GURL(kOfferDetailsUrl);
+    DisplayStrings display_strings;
+    display_strings.value_prop_text = "5% cash back when you use this card.";
+    display_strings.see_details_text = "Terms apply.";
+    display_strings.usage_instructions_text =
+        "Check out with this card to activate.";
+
+    AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
+        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+        eligible_instrument_id, offer_reward_amount);
     return offer_data;
   }
 
   AutofillOfferData CreatePromoCodeOffer(std::vector<GURL> merchant_origins = {
                                              GURL(kTestUrl)}) {
-    AutofillOfferData offer_data;
-    offer_data.offer_id = 5555;
-    offer_data.expiry = AutofillClock::Now() + base::Days(2);
-    offer_data.merchant_origins = std::move(merchant_origins);
-    offer_data.offer_details_url = GURL(kOfferDetailsUrl);
-    offer_data.promo_code = "5PCTOFFSHOES";
-    offer_data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";
-    offer_data.display_strings.see_details_text = "See details";
-    offer_data.display_strings.usage_instructions_text =
+    int64_t offer_id = 5555;
+    base::Time expiry = AutofillClock::Now() + base::Days(2);
+    GURL offer_details_url = GURL(kOfferDetailsUrl);
+    std::string promo_code = "5PCTOFFSHOES";
+    DisplayStrings display_strings;
+    display_strings.value_prop_text = "5% off on shoes. Up to $50.";
+    display_strings.see_details_text = "See details";
+    display_strings.usage_instructions_text =
         "Click the promo code field at checkout to autofill it.";
+    std::string offer_reward_amount = "5%";
+
+    AutofillOfferData offer_data = AutofillOfferData::GPayPromoCodeOffer(
+        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+        offer_reward_amount);
     return offer_data;
   }
 
@@ -131,7 +138,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
       CreateCreditCardOfferForCard(card, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
+  suggestions[0].payload = kTestGuid;
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
@@ -145,7 +152,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {
       CreateCreditCardOfferForCard(card, "5%", /*expired=*/true));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
+  suggestions[0].payload = kTestGuid;
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
@@ -158,7 +165,7 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_WrongUrl) {
       CreateCreditCardOfferForCard(card, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
+  suggestions[0].payload = kTestGuid;
   autofill_offer_manager_->UpdateSuggestionsWithOffers(
       GURL("http://wrongurl.com/"), suggestions);
 
@@ -174,8 +181,8 @@ TEST_F(AutofillOfferManagerTest,
       CreateCreditCardOfferForCard(cardWithOffer, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
-  suggestions[1].backend_id = kTestGuid2;
+  suggestions[0].payload = kTestGuid;
+  suggestions[1].payload = kTestGuid2;
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
@@ -183,33 +190,8 @@ TEST_F(AutofillOfferManagerTest,
   // suggestion[0]
   EXPECT_TRUE(!suggestions[0].offer_label.empty());
   EXPECT_TRUE(suggestions[1].offer_label.empty());
-  EXPECT_EQ(suggestions[0].backend_id, kTestGuid2);
-  EXPECT_EQ(suggestions[1].backend_id, kTestGuid);
-}
-
-TEST_F(AutofillOfferManagerTest,
-       UpdateSuggestionsWithOffer_SuggestionsNotSortedByOfferPresence_ExpOff) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillSortSuggestionsBasedOnOfferPresence);
-  CreditCard cardWithoutOffer = CreateCreditCard(kTestGuid);
-  CreditCard cardWithOffer =
-      CreateCreditCard(kTestGuid2, "4111111111111111", 100);
-  personal_data_manager_.AddAutofillOfferData(
-      CreateCreditCardOfferForCard(cardWithOffer, "5%"));
-
-  std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
-  suggestions[1].backend_id = kTestGuid2;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
-                                                       suggestions);
-
-  // offer_label was set on suggestions[1] and wasn't sorted because experiment
-  // is turned off.
-  EXPECT_TRUE(suggestions[0].offer_label.empty());
-  EXPECT_TRUE(!suggestions[1].offer_label.empty());
-  EXPECT_EQ(suggestions[0].backend_id, kTestGuid);
-  EXPECT_EQ(suggestions[1].backend_id, kTestGuid2);
+  EXPECT_EQ(absl::get<std::string>(suggestions[0].payload), kTestGuid2);
+  EXPECT_EQ(absl::get<std::string>(suggestions[1].payload), kTestGuid);
 }
 
 TEST_F(AutofillOfferManagerTest,
@@ -222,13 +204,13 @@ TEST_F(AutofillOfferManagerTest,
       CreateCreditCardOfferForCard(card2, "5%"));
 
   std::vector<Suggestion> suggestions = {Suggestion(), Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
-  suggestions[1].backend_id = kTestGuid2;
+  suggestions[0].payload = kTestGuid;
+  suggestions[1].payload = kTestGuid2;
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
-  EXPECT_EQ(suggestions[0].backend_id, kTestGuid);
-  EXPECT_EQ(suggestions[1].backend_id, kTestGuid2);
+  EXPECT_EQ(absl::get<std::string>(suggestions[0].payload), kTestGuid);
+  EXPECT_EQ(absl::get<std::string>(suggestions[1].payload), kTestGuid2);
 }
 
 TEST_F(AutofillOfferManagerTest, IsUrlEligible) {

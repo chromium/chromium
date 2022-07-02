@@ -30,7 +30,6 @@
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
@@ -218,11 +217,6 @@ TypePtr unsafe_reinterpret_cast_ptr(const void* ptr) {
 
 namespace WTF {
 
-template <typename To, typename From>
-inline To SafeCast(From value) {
-  return base::checked_cast<To>(value);
-}
-
 // Use the following macros to prevent errors caused by accidental
 // implicit casting of function arguments.  For example, this can
 // be used to prevent overflows from non-promoting conversions.
@@ -261,7 +255,5 @@ inline To SafeCast(From value) {
                 "identical size (could overflow).");
 
 }  // namespace WTF
-
-using WTF::SafeCast;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_

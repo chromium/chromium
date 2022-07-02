@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="3567399274263440288">Para tirar o máximo partido do Chromium, inicie sessão no mesmo com a sua Conta Google.</translation>
+<translation id="3619462831205197427">Inicie sessão neste site, na sua Conta Google e no Chromium.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava a utilizar o Chromium e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -77,7 +78,6 @@
 1. Abra as Definições
 2. Toque em App de navegador predefinida
 3. Selecione o Chromium.</translation>
-<translation id="6155422572367400359">Inicie sessão neste site, na sua Conta Google e no Chromium. Pode ativar a sincronização mais tarde.</translation>
 <translation id="6183442264225539303">Inicie sessão neste site e no Chromium. Pode ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Pretende terminar sessão no Chromium?</translation>
 <translation id="632825460376924298">Permitir o início de sessão no Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Pretende limpar os dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Sugestão: <ph name="BEGIN_LINK" />mova o Chromium para a Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente novamente mais tarde.</translation>
+<translation id="8308172444429103994">Sugestão do Chromium. Inicie sessão mais rapidamente ao selecionar a palavra-passe guardada na parte superior do teclado.</translation>
 <translation id="858114650497379505">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="865600487977764604">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>

@@ -252,7 +252,7 @@ void KioskBaseTest::WaitForAppLaunchWithOptions(bool check_launch_data,
                                                 bool terminate_app,
                                                 bool keep_app_open) {
   ExtensionTestMessageListener launch_data_check_listener(
-      "launchData.isKioskSession = true", false);
+      "launchData.isKioskSession = true");
 
   // Wait for the Kiosk App to launch.
   KioskSessionInitializedWaiter().Wait();

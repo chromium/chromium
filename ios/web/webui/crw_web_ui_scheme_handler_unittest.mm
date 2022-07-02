@@ -108,7 +108,7 @@ class CRWWebUISchemeManagerTest : public WebTest {
   }
 
  protected:
-  CRWWebUISchemeHandler* CreateSchemeHandler() API_AVAILABLE(ios(11.0)) {
+  CRWWebUISchemeHandler* CreateSchemeHandler() {
     return [[CRWWebUISchemeHandler alloc]
         initWithURLLoaderFactory:GetSharedURLLoaderFactory()];
   }

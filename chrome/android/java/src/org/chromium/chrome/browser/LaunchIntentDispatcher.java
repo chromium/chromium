@@ -26,6 +26,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -179,12 +179,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             return Action.FINISH_ACTIVITY;
         }
 
-        // Check if we should launch an Instant App to handle the intent.
-        if (InstantAppsHandler.getInstance().handleIncomingIntent(
-                    mActivity, mIntent, isCustomTabIntent, false)) {
-            return Action.FINISH_ACTIVITY;
-        }
-
         // Check if we should push the user through First Run.
         if (FirstRunFlowSequencer.launch(mActivity, mIntent, false /* requiresBroadcast */,
                     false /* preferLightweightFre */)) {
@@ -318,8 +312,12 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // achieved by simply adding the FLAG_GRANT_READ_URI_PERMISSION to the Intent, since the
         // data URI on the Intent isn't |uri|, it just has |uri| as a query parameter.
         if (uri != null && UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
-            context.grantUriPermission(
-                    context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try {
+                context.grantUriPermission(
+                        context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.w(TAG, "Unable to grant Uri permission. ", e);
+            }
         }
 
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.OPEN_CUSTOM_TABS_IN_NEW_TASK)) {
@@ -368,6 +366,10 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, mIntent);
+        Uri extraReferrer = mActivity.getReferrer();
+        if (extraReferrer != null) {
+            launchIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
+        }
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
         // Samsung devices, see https://crbug.com/796548.
@@ -433,6 +435,16 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                 mActivity.getApplicationContext().getPackageName(), targetActivityClassName);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+
+        if ((mIntent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0) {
+            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Startup.Android.NewInstance.LaunchedFromDraggedLinkViewIntent",
+                        mIntent.getBooleanExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, false));
+            }
+        }
+
         Uri uri = newIntent.getData();
         boolean isContentScheme = false;
         if (uri != null && UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {

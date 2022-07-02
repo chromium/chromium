@@ -221,4 +221,8 @@ message NigoriSpecifics {
 
   // Boolean corresponding to whether workspace desk should be encrypted.
   optional bool encrypt_workspace_desk = 51;
+
+  // Boolean corresponding to whether printers authorization server items should
+  // be encrypted.
+  optional bool encrypt_printers_authorization_servers = 52;
 }

@@ -17,6 +17,7 @@
   height: 10px;
   background: red;
   contain: paint;
+  page-transition-tag: hide;
 }
 #first {
   width: 10px;
@@ -36,10 +37,12 @@ html::page-transition-container(hide) {
 html::page-transition-incoming-image(*) {
   animation: unset;
   filter: invert(1);
+  height: 100%;
 }
 html::page-transition-outgoing-image(*) {
   animation: unset;
   opacity: 0;
+  height: 100%;
 }
 </style>
 
@@ -52,9 +55,7 @@ async function runTest() {
 
   document.documentElement.scrollTop = 500;
   let t = document.createDocumentTransition();
-  t.setElement(hide, "hide");
   t.start(() => {
-    t.setElement(hide, "hide");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

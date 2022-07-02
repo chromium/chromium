@@ -8,139 +8,161 @@
  * list, add and delete Secondary Google Accounts.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {getImage} from '//resources/js/icon.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {getImage} from 'chrome://resources/js/icon.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-account-manager',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsAccountManagerElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, I18nBehavior, WebUIListenerBehavior,
+      RouteObserverBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    WebUIListenerBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
+  static get is() {
+    return 'settings-account-manager';
+  }
 
-  properties: {
-    /**
-     * List of Accounts.
-     * @type {!Array<Account>}
-     */
-    accounts_: {
-      type: Array,
-      value() {
-        return [];
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * List of Accounts.
+       * @type {!Array<Account>}
+       */
+      accounts_: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /**
-     * Primary / Device account.
-     * @private {?Account}
-     */
-    deviceAccount_: Object,
+      /**
+       * Primary / Device account.
+       * @private {?Account}
+       */
+      deviceAccount_: Object,
 
-    /**
-     * The targeted account for menu operations.
-     * @private {?Account}
-     */
-    actionMenuAccount_: Object,
+      /**
+       * The targeted account for menu operations.
+       * @private {?Account}
+       */
+      actionMenuAccount_: Object,
 
-    /** @private {boolean} */
-    isChildUser_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isChild');
+      /** @private {boolean} */
+      isChildUser_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isChild');
+        },
       },
-    },
 
-    /**
-     * True if device account is managed.
-     * @private {boolean}
-     */
-    isDeviceAccountManaged_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isDeviceAccountManaged');
+      /**
+       * True if device account is managed.
+       * @private {boolean}
+       */
+      isDeviceAccountManaged_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isDeviceAccountManaged');
+        },
+        readOnly: true,
       },
-      readOnly: true,
-    },
 
-    /**
-     * @return {boolean} True if secondary account sign-ins are allowed, false
-     *    otherwise.
-     * @private
-     */
-    isSecondaryGoogleAccountSigninAllowed_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+      /**
+       * @return {boolean} True if secondary account sign-ins are allowed, false
+       *    otherwise.
+       * @private
+       */
+      isSecondaryGoogleAccountSigninAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+        },
       },
-    },
 
-    /**
-     * @return {boolean} True if `kArcAccountRestrictionsEnabled` feature is
-     *     enabled, false otherwise.
-     * @private
-     */
-    isArcAccountRestrictionsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('arcAccountRestrictionsEnabled');
+      /**
+       * @return {boolean} True if `kArcAccountRestrictionsEnabled` feature is
+       *     enabled, false otherwise.
+       * @private
+       */
+      isArcAccountRestrictionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('arcAccountRestrictionsEnabled');
+        },
       },
-    },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kAddAccount,
-        chromeos.settings.mojom.Setting.kRemoveAccount,
-      ]),
-    },
-  },
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kAddAccount,
+          chromeos.settings.mojom.Setting.kRemoveAccount,
+        ]),
+      },
+    };
+  }
 
-  /** @private {?AccountManagerBrowserProxy} */
-  browserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {!AccountManagerBrowserProxy} */
+    this.browserProxy_ = AccountManagerBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener('accounts-changed', this.refreshAccounts_.bind(this));
-  },
+  }
 
   /** @override */
   ready() {
-    this.browserProxy_ = AccountManagerBrowserProxyImpl.getInstance();
+    super.ready();
     this.refreshAccounts_();
-  },
+  }
 
   /**
    * @param {!Route} newRoute
-   * @param {Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
     if (newRoute !== routes.ACCOUNT_MANAGER) {
@@ -148,7 +170,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @return {string} account manager description text.
@@ -159,7 +181,7 @@ Polymer({
       return loadTimeData.getString('accountManagerChildDescription');
     }
     return loadTimeData.getString('accountManagerDescription');
-  },
+  }
 
   /**
    * @return {string} account manager 'add account' label.
@@ -170,7 +192,7 @@ Polymer({
       return loadTimeData.getString('addSchoolAccountLabel');
     }
     return loadTimeData.getString('addAccountLabel');
-  },
+  }
 
   /**
    * @return {string} accounts list header (e.g. 'Secondary accounts' for
@@ -181,7 +203,7 @@ Polymer({
     return this.isChildUser_ ?
         loadTimeData.getString('accountListHeaderChild') :
         loadTimeData.getString('accountListHeader');
-  },
+  }
 
   /**
    * @return {string} accounts list description.
@@ -191,7 +213,7 @@ Polymer({
     return this.isChildUser_ ?
         loadTimeData.getString('accountListChildDescription') :
         loadTimeData.getString('accountListDescription');
-  },
+  }
 
   /**
    * @return {string} 'Secondary Accounts disabled' message depending on
@@ -202,7 +224,7 @@ Polymer({
     return this.isChildUser_
       ? this.i18n('accountManagerSecondaryAccountsDisabledChildText')
       : this.i18n('accountManagerSecondaryAccountsDisabledText');
-  },
+  }
 
   /**
    * @return {string} class name for account list header class.
@@ -212,7 +234,7 @@ Polymer({
     return this.isArcAccountRestrictionsEnabled_ ?
         'account-list-header-description with-padding' :
         'account-list-header-description';
-  },
+  }
 
   /**
    * @param {string} iconUrl
@@ -221,7 +243,7 @@ Polymer({
    */
   getIconImageSet_(iconUrl) {
     return getImage(iconUrl);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -232,7 +254,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kAddAccount,
         {intValue: this.accounts_.length + 1});
     this.browserProxy_.addAccount();
-  },
+  }
 
   /**
    * @param {!Account} account
@@ -246,7 +268,7 @@ Polymer({
     // invalidation) and we do not have a mechanism to change the cryptohome
     // password in-session.
     return !account.isDeviceAccount && !account.isSignedIn;
-  },
+  }
 
   /**
    * @return {boolean} True if managed badge should be shown next to the device
@@ -255,7 +277,7 @@ Polymer({
    */
   shouldShowManagedBadge_() {
     return this.isDeviceAccountManaged_ && !this.isChildUser_;
-  },
+  }
 
   /**
    * @return {string} icon
@@ -269,7 +291,7 @@ Polymer({
       return 'cr20:domain';
     }
     return '';
-  },
+  }
 
   /**
    * @return {string} description text
@@ -295,7 +317,7 @@ Polymer({
     return loadTimeData.getStringF(
         'accountManagerManagementDescription',
         this.deviceAccount_.organization);
-  },
+  }
 
   /**
    * @param {boolean} unmigrated
@@ -304,7 +326,7 @@ Polymer({
   getAccountManagerSignedOutName_(unmigrated) {
     return this.i18n(unmigrated ? 'accountManagerUnmigratedAccountName'
                                 : 'accountManagerSignedOutAccountName');
-  },
+  }
 
   /**
    * @param {boolean} unmigrated
@@ -313,7 +335,7 @@ Polymer({
   getAccountManagerSignedOutLabel_(unmigrated) {
     return this.i18n(unmigrated ? 'accountManagerMigrationLabel'
                                 : 'accountManagerReauthenticationLabel');
-  },
+  }
 
 
   /**
@@ -324,7 +346,7 @@ Polymer({
     const label = account.unmigrated ? 'accountManagerMigrationTooltip'
                                      : 'accountManagerReauthenticationTooltip';
     return loadTimeData.getStringF(label, account.email);
-  },
+  }
 
   /**
    * @param {!Account} account
@@ -333,7 +355,7 @@ Polymer({
   getMoreActionsTitle_(account) {
     return loadTimeData.getStringF('accountManagerMoreActionsTooltip',
                                     account.email);
-  },
+  }
 
   /**
    * @return {!Array<Account>} list of accounts.
@@ -341,7 +363,7 @@ Polymer({
    */
   getSecondaryAccounts_() {
     return this.accounts_.filter(account => !account.isDeviceAccount);
-  },
+  }
 
   /**
    * @param {!CustomEvent<!{model: !{item: !Account}}>} event
@@ -353,14 +375,14 @@ Polymer({
     } else {
       this.browserProxy_.reauthenticateAccount(event.model.item.email);
     }
-  },
+  }
 
   /** @private */
   onManagedIconClick_() {
     if (this.isChildUser_) {
       ParentalControlsBrowserProxyImpl.getInstance().launchFamilyLinkSettings();
     }
-  },
+  }
 
   /**
    * @private
@@ -375,7 +397,7 @@ Polymer({
       }
       this.deviceAccount_ = deviceAccount;
     });
-  },
+  }
 
   /**
    * Opens the Account actions menu.
@@ -384,9 +406,10 @@ Polymer({
    */
   onAccountActionsMenuButtonTap_(event) {
     this.actionMenuAccount_ = event.model.item;
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
         .showAt(event.target);
-  },
+  }
 
   /**
    * If Lacros is not enabled, removes the account pointed to by
@@ -396,7 +419,7 @@ Polymer({
    * @private
    */
   onRemoveAccountTap_() {
-    this.$$('cr-action-menu').close();
+    this.shadowRoot.querySelector('cr-action-menu').close();
     if (loadTimeData.getBoolean('lacrosEnabled') &&
         this.actionMenuAccount_.isManaged) {
       this.$.removeConfirmationDialog.showModal();
@@ -404,9 +427,9 @@ Polymer({
       this.browserProxy_.removeAccount(
           /** @type {?Account} */ (this.actionMenuAccount_));
       this.actionMenuAccount_ = null;
-      this.$$('#add-account-button').focus();
+      this.shadowRoot.querySelector('#add-account-button').focus();
     }
-  },
+  }
 
   /**
    * The user chooses not to remove the account after seeing the warning
@@ -416,8 +439,8 @@ Polymer({
   onRemoveAccountDialogCancelTap_() {
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.cancel();
-    this.$$('#add-account-button').focus();
-  },
+    this.shadowRoot.querySelector('#add-account-button').focus();
+  }
 
   /**
    * After seeing the warning dialog, the user chooses to removes the account
@@ -429,8 +452,8 @@ Polymer({
         /** @type {?Account} */ (this.actionMenuAccount_));
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.close();
-    this.$$('#add-account-button').focus();
-  },
+    this.shadowRoot.querySelector('#add-account-button').focus();
+  }
 
   /**
    * Get the test for button that changes ARC availability.
@@ -443,7 +466,7 @@ Polymer({
     return this.actionMenuAccount_.isAvailableInArc ?
         this.i18n('accountStopUsingInArcButtonLabel') :
         this.i18n('accountUseInArcButtonLabel');
-  },
+  }
 
   /**
    * Change ARC availability for |this.actionMenuAccount_|.
@@ -452,13 +475,14 @@ Polymer({
    * @private
    */
   onChangeArcAvailability_() {
-    this.$$('cr-action-menu').close();
+    this.shadowRoot.querySelector('cr-action-menu').close();
     const newArcAvailability = !this.actionMenuAccount_.isAvailableInArc;
     this.browserProxy_.changeArcAvailability(
         this.actionMenuAccount_, newArcAvailability);
 
     const actionMenuAccountIndex =
-        this.$$('#account-list').items.indexOf(this.actionMenuAccount_);
+        this.shadowRoot.querySelector('#account-list')
+            .items.indexOf(this.actionMenuAccount_);
     if (actionMenuAccountIndex >= 0) {
       // Focus 'More actions' button for the current account.
       this.shadowRoot
@@ -468,8 +492,11 @@ Polymer({
       console.error(
           'Couldn\'t find active account in the list: ',
           this.actionMenuAccount_);
-      this.$$('#add-account-button').focus();
+      this.shadowRoot.querySelector('#add-account-button').focus();
     }
     this.actionMenuAccount_ = null;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsAccountManagerElement.is, SettingsAccountManagerElement);

@@ -484,24 +484,38 @@ bool EditContext::SetComposition(
   if (text.IsEmpty() && !has_composition_)
     return true;
 
-  if (composition_range_start_ == 0 && composition_range_end_ == 0) {
-    composition_range_start_ = selection_start_;
-    composition_range_end_ = selection_end_;
+  WebRange actual_replacement_range = replacement_range;
+  if (actual_replacement_range.IsEmpty()) {
+    // If no composition range, the current selection will be replaced.
+    if (composition_range_start_ == 0 && composition_range_end_ == 0) {
+      actual_replacement_range =
+          WebRange(selection_start_, selection_end_ - selection_start_);
+    }
+    // Otherwise, the current composition range will be replaced.
+    else {
+      actual_replacement_range =
+          WebRange(composition_range_start_,
+                   composition_range_end_ - composition_range_start_);
+    }
   }
+
   // Update the selection and buffer if the composition range has changed.
   String update_text(text);
-  text_ = text_.Substring(0, composition_range_start_) + update_text +
-          text_.Substring(composition_range_end_);
+  text_ = text_.Substring(0, actual_replacement_range.StartOffset()) +
+          update_text + text_.Substring(actual_replacement_range.EndOffset());
 
   // Fire textupdate and textformatupdate events to JS.
-  const uint32_t update_range_start = composition_range_start_;
-  const uint32_t update_range_end = composition_range_end_;
-  // Update the new selection.
-  selection_start_ = composition_range_start_ + selection_end;
-  selection_end_ = composition_range_start_ + selection_end;
-  DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
+  // Note selection_start_ is a global offset while selection_start is a local
+  // offset computed from the begninning of the inserted string.
+  selection_start_ = actual_replacement_range.StartOffset() + selection_start;
+  selection_end_ = actual_replacement_range.StartOffset() + selection_end;
+  DispatchTextUpdateEvent(update_text, actual_replacement_range.StartOffset(),
+                          actual_replacement_range.EndOffset(),
                           selection_start_, selection_end_);
-  composition_range_end_ = composition_range_start_ + update_text.length();
+
+  composition_range_start_ = actual_replacement_range.StartOffset();
+  composition_range_end_ =
+      actual_replacement_range.StartOffset() + update_text.length();
   DispatchTextFormatEvent(ime_text_spans);
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);

@@ -25,17 +25,26 @@ public class WebXrArTestFramework extends WebXrTestFramework {
      * Causes a test failure if it is unable to do so, or if the permission prompt is missing.
      *
      * @param webContents The Webcontents to start the AR session in.
+     * @param needsCameraPermission True if the session requires Camera permission.
      */
     @Override
-    public void enterSessionWithUserGestureOrFail(WebContents webContents) {
+    public void enterSessionWithUserGestureOrFail(
+            WebContents webContents, boolean needsCameraPermission) {
         runJavaScriptOrFail(
                 "sessionTypeToRequest = sessionTypes.AR", POLL_TIMEOUT_LONG_MS, webContents);
 
+        boolean willPromptForCamera =
+                needsCameraPermission && permissionRequestWouldTriggerPrompt("camera");
+
         enterSessionWithUserGesture(webContents);
 
-        // We expect a session permissiom prompt (in this case the AR-specific one), but should not
-        // get prompted for page camera permission.
+        // We expect a session permissiom prompt (in this case the AR-specific one):
         if (shouldExpectPermissionPrompt()) {
+            PermissionUtils.waitForPermissionPrompt();
+            PermissionUtils.acceptPermissionPrompt();
+        }
+
+        if (willPromptForCamera) {
             PermissionUtils.waitForPermissionPrompt();
             PermissionUtils.acceptPermissionPrompt();
         }

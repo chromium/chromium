@@ -22,6 +22,8 @@ enum class TransportType {
   kProxied,
   // The transport was "established" to a cache entry.
   kCached,
+  // Same as `kCached`, but the resource was initially loaded through a proxy.
+  kCachedFromProxy,
 };
 
 // Returns a string representation of the given transport type.
@@ -49,13 +51,16 @@ struct NET_EXPORT TransportInfo {
 
   // If `type` is `kDirect`, then this identifies the peer endpoint.
   // If `type` is `kProxied`, then this identifies the proxy endpoint.
-  // If `type` is `kCached`, then this identifies the endpoint (peer or proxy)
-  // from which the resource was initially loaded.
+  // If `type` is `kCached`, then this identifies the peer endpoint from which
+  // the resource was originally loaded.
+  // If `type` is `kCachedFromProxy`, then this identifies the proxy endpoint
+  // from which the resource was originally loaded.
   IPEndPoint endpoint;
 
   // The value of the ACCEPT_CH HTTP2/3 frame, as pulled in through ALPS.
   //
-  // Invariant: if `type` is `kCached`, then this is empty.
+  // Invariant: if `type` is `kCached` or `kCachedFromProxy`, then this is
+  // empty.
   std::string accept_ch_frame;
 };
 

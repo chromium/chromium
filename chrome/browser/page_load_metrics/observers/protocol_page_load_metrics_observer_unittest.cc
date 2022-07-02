@@ -80,9 +80,6 @@ class ProtocolPageLoadMetricsObserverTest
     tester()->histogram_tester().ExpectTotalCount(
         prefix + ".PaintTiming.NavigationToFirstContentfulPaint", 1);
     tester()->histogram_tester().ExpectTotalCount(
-        prefix + ".Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint",
-        1);
-    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".Experimental.PaintTiming.NavigationToFirstMeaningfulPaint",
         1);
     tester()->histogram_tester().ExpectTotalCount(
@@ -96,7 +93,7 @@ class ProtocolPageLoadMetricsObserverTest
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H11Navigation) {
   SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
-  CheckHistograms(7, "H11");
+  CheckHistograms(6, "H11");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H10Navigation) {
@@ -111,12 +108,12 @@ TEST_F(ProtocolPageLoadMetricsObserverTest, H09Navigation) {
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H2Navigation) {
   SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
-  CheckHistograms(7, "H2");
+  CheckHistograms(6, "H2");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, QuicNavigation) {
   SimulateNavigation(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
-  CheckHistograms(7, "QUIC");
+  CheckHistograms(6, "QUIC");
 }
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, UnknownNavigation) {

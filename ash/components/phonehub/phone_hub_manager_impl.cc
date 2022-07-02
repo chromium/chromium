@@ -14,6 +14,8 @@
 #include "ash/components/phonehub/do_not_disturb_controller_impl.h"
 #include "ash/components/phonehub/feature_status_provider_impl.h"
 #include "ash/components/phonehub/find_my_device_controller_impl.h"
+#include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/invalid_connection_disconnector.h"
 #include "ash/components/phonehub/message_receiver_impl.h"
 #include "ash/components/phonehub/message_sender_impl.h"
@@ -24,6 +26,7 @@
 #include "ash/components/phonehub/notification_manager_impl.h"
 #include "ash/components/phonehub/notification_processor.h"
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
+#include "ash/components/phonehub/phone_hub_metrics_recorder.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/phone_status_processor.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
@@ -38,9 +41,6 @@
 namespace ash {
 namespace {
 const char kSecureChannelFeatureName[] = "phone_hub";
-const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
-const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
-const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 }  // namespace
 namespace phonehub {
 
@@ -58,9 +58,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               device_sync_client,
               secure_channel_client,
               kSecureChannelFeatureName,
-              kConnectionResultMetricName,
-              kConnectionLatencyMetricName,
-              kConnectionDurationMetricName)),
+              std::make_unique<PhoneHubMetricsRecorder>())),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,
@@ -119,7 +117,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               ? std::make_unique<RecentAppsInteractionHandlerImpl>(
                     pref_service,
                     multidevice_setup_client,
-                    multidevice_feature_access_manager_.get())
+                    multidevice_feature_access_manager_.get(),
+                    std::make_unique<IconDecoderImpl>())
               : nullptr),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),
@@ -223,6 +222,11 @@ TetherController* PhoneHubManagerImpl::GetTetherController() {
 
 UserActionRecorder* PhoneHubManagerImpl::GetUserActionRecorder() {
   return user_action_recorder_.get();
+}
+
+void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  connection_manager_->GetHostLastSeenTimestamp(std::move(callback));
 }
 
 // NOTE: These should be destroyed in the opposite order of how these objects

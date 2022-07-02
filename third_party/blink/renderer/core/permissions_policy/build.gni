@@ -16,3 +16,11 @@ blink_core_sources_permissions_policy = [
   "layout_animations_policy.h",
   "policy_helper.h",
 ]
+
+blink_core_tests_permissions_policy = [
+  "document_policy_parser_test.cc",
+  "document_policy_sim_test.cc",
+  "permissions_policy_devtools_support_test.cc",
+  "permissions_policy_test.cc",
+  "policy_test.cc",
+]

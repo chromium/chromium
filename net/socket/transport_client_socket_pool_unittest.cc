@@ -862,8 +862,7 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
       : group_id_(group_id),
         socket_params_(socket_params),
         handle_(handle),
-        pool_(pool),
-        within_callback_(false) {}
+        pool_(pool) {}
 
   RequestSocketCallback(const RequestSocketCallback&) = delete;
   RequestSocketCallback& operator=(const RequestSocketCallback&) = delete;
@@ -900,7 +899,7 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
   scoped_refptr<ClientSocketPool::SocketParams> socket_params_;
   const raw_ptr<ClientSocketHandle> handle_;
   const raw_ptr<TransportClientSocketPool> pool_;
-  bool within_callback_;
+  bool within_callback_ = false;
 };
 
 TEST_F(TransportClientSocketPoolTest, RequestTwice) {

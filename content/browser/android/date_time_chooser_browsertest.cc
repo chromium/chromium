@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   auto* date_time_chooser = DateTimeChooserAndroid::FromWebContents(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(date_time_chooser);
 
   mojo::Remote<blink::mojom::DateTimeChooser> date_time_chooser_remote;

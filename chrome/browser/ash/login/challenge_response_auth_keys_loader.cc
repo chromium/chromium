@@ -19,11 +19,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -107,8 +107,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
 // The sign-in profile is used since it's where the needed extensions are
 // installed (e.g., for the smart card based login they are force-installed via
 // the DeviceLoginScreenExtensions admin policy).
-CertificateProviderService* GetCertificateProviderService() {
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+chromeos::CertificateProviderService* GetCertificateProviderService() {
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       ProfileHelper::GetSigninProfile());
 }
 
@@ -422,7 +422,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<CertificateProvider> cert_provider =
+  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
       GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
@@ -440,7 +440,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
     std::move(callback).Run(/*challenge_response_keys=*/{});
     return;
   }
-  CertificateProviderService* const cert_provider_service =
+  chromeos::CertificateProviderService* const cert_provider_service =
       GetCertificateProviderService();
   std::vector<ChallengeResponseKey> filtered_keys;
   // Filter those of the currently available cryptographic keys that can be used

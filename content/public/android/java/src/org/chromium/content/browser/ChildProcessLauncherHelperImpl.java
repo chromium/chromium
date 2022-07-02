@@ -185,6 +185,9 @@ public final class ChildProcessLauncherHelperImpl {
                                     ChildProcessImportance.MODERATE);
                             if (mBindingManager != null) mBindingManager.rankingChanged();
                         }
+                        if (mSandboxed) {
+                            ChildProcessConnectionMetrics.getInstance().addConnection(connection);
+                        }
                     }
 
                     // Tell native launch result (whether getPid is 0).
@@ -217,6 +220,9 @@ public final class ChildProcessLauncherHelperImpl {
                         setReverseRankWhenConnectionLost(mRanking.getReverseRank(connection));
                         mRanking.removeConnection(connection);
                         if (mBindingManager != null) mBindingManager.rankingChanged();
+                    }
+                    if (mSandboxed) {
+                        ChildProcessConnectionMetrics.getInstance().removeConnection(connection);
                     }
                 }
             };
@@ -379,10 +385,9 @@ public final class ChildProcessLauncherHelperImpl {
                 // We only support sandboxed utility processes now.
                 assert ContentSwitches.SWITCH_UTILITY_PROCESS.equals(processType);
 
-                // Network Service:
-                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
+                if (ContentSwitches.NONE_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
                             commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE))) {
-                    sandboxed = ChildProcessLauncherHelperImplJni.get().isNetworkSandboxEnabled();
+                    sandboxed = false;
                 }
             }
         }
@@ -451,6 +456,7 @@ public final class ChildProcessLauncherHelperImpl {
                     sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
                             sSandboxedChildConnectionRanking);
                 }
+                ChildProcessConnectionMetrics.getInstance().setBindingManager(sBindingManager);
             }
         });
 
@@ -867,6 +873,5 @@ public final class ChildProcessLauncherHelperImpl {
                 int reverseRank);
 
         boolean serviceGroupImportanceEnabled();
-        boolean isNetworkSandboxEnabled();
     }
 }

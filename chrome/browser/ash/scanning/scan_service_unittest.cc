@@ -33,7 +33,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1145,4 +1145,17 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
       scanning::ScanMultiPageToolbarAction::kRescanPage, 1);
 }
 
+TEST_F(ScanServiceTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
+  mojo::Remote<scanning::mojom::ScanService> remote;
+  scan_service_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  remote.reset();
+
+  scan_service_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+}
 }  // namespace ash

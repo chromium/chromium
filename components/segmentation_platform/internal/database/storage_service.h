@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -65,8 +65,7 @@ class StorageService {
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::Clock* clock,
                  UkmDataManager* ukm_data_manager,
-                 base::flat_set<optimization_guide::proto::OptimizationTarget>
-                     all_segment_ids,
+                 base::flat_set<proto::SegmentId> all_segment_ids,
                  ModelProviderFactory* model_provider_factory);
 
   // For tests:
@@ -79,8 +78,7 @@ class StorageService {
           signal_storage_config_db,
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
-      base::flat_set<optimization_guide::proto::OptimizationTarget>
-          all_segment_ids,
+      base::flat_set<proto::SegmentId> all_segment_ids,
       ModelProviderFactory* model_provider_factory);
 
   // For tests:

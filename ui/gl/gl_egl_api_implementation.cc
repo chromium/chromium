@@ -24,6 +24,7 @@ void InitializeStaticGLBindingsEGL() {
   }
 
   g_current_egl_context = g_egl_wrapper->api();
+  g_driver_egl.client_ext.InitializeClientExtensionSettings();
 }
 
 void ClearBindingsEGL() {
@@ -134,8 +135,8 @@ void SetDisabledExtensionsEGL(const std::string& disabled_extensions) {
   g_current_egl_context->SetDisabledExtensions(disabled_extensions);
 }
 
-bool InitializeExtensionSettingsOneOffEGL() {
-  return GLSurfaceEGL::InitializeExtensionSettingsOneOff();
+bool InitializeExtensionSettingsOneOffEGL(GLDisplayEGL* display) {
+  return display->InitializeExtensionSettings();
 }
 
 }  // namespace gl

@@ -17,9 +17,9 @@ window.addEventListener('message', async function handler(evt) {
   }
   // Assume that our parent has already created a virtual authenticator device.
   await createCredential().then(credential => {
-    parent.postMessage({id: credential.id, rawId: credential.rawId, error: null}, '*');
+    parent.postMessage({type: 'spc_result', id: credential.id, rawId: credential.rawId, error: null}, '*');
   }).catch(e => {
-    parent.postMessage({error: e}, '*');
+    parent.postMessage({type: 'spc_result', error: e}, '*');
   });
 });
 

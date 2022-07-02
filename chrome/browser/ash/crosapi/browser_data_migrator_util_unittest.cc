@@ -421,7 +421,7 @@ TEST(BrowserDataMigratorUtilTest, MigrateLevelDB) {
   EXPECT_EQ(expected_keys, keys);
 }
 
-TEST(BrowserDataMigratorUtilTest, MigrateSyncData) {
+TEST(BrowserDataMigratorUtilTest, MigrateSyncDataLevelDB) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
@@ -435,7 +435,7 @@ TEST(BrowserDataMigratorUtilTest, MigrateSyncData) {
   // Migrate Sync Data.
   const base::FilePath ash_db_path = db_path.AddExtension(".ash");
   const base::FilePath lacros_db_path = db_path.AddExtension(".lacros");
-  EXPECT_TRUE(MigrateSyncData(db_path, ash_db_path, lacros_db_path));
+  EXPECT_TRUE(MigrateSyncDataLevelDB(db_path, ash_db_path, lacros_db_path));
 
   // Check resulting Ash database.
   auto ash_db_map = ReadLevelDB(ash_db_path);

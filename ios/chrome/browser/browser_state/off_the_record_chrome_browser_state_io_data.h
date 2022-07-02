@@ -59,7 +59,7 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
     void LazyInitialize() const;
 
     // Collect references to context getters in reverse order, i.e. last item
-    // will be main request getter. This list is passed to |io_data_|
+    // will be main request getter. This list is passed to `io_data_`
     // for invalidation on IO thread.
     std::unique_ptr<IOSChromeURLRequestContextGetterVector>
     GetAllContextGetters();

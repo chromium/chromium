@@ -17,9 +17,9 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Starts an Open In New Tab animation in |parentView|, from |originPoint| with
-// a |completion| block. The named layout guide for the TabGrid button should be
-// accessible from |parentView|. |originPoint| should be in window coordinates.
+// Starts an Open In New Tab animation in `parentView`, from `originPoint` with
+// a `completion` block. The named layout guide for the TabGrid button should be
+// accessible from `parentView`. `originPoint` should be in window coordinates.
 - (void)animateFrom:(CGPoint)originPoint
     toTabGridButtonWithCompletion:(void (^)())completion;
 

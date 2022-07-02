@@ -51,8 +51,8 @@ class RealtimeAudioDestinationHandler final
   double SampleRate() const override;
 
   // For AudioIOCallback. This is invoked by the platform audio destination to
-  // get the next render quantum into |destination_bus| and update
-  // |output_position|.
+  // get the next render quantum into `destination_bus` and update
+  // `output_position`.
   void Render(AudioBus* destination_bus,
               uint32_t number_of_frames,
               const AudioIOPosition& output_position,

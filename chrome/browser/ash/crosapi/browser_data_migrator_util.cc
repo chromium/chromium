@@ -724,9 +724,9 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   return true;
 }
 
-bool MigrateSyncData(const base::FilePath& original_path,
-                     const base::FilePath& ash_target_path,
-                     const base::FilePath& lacros_target_path) {
+bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
+                            const base::FilePath& ash_target_path,
+                            const base::FilePath& lacros_target_path) {
   // Open the original LevelDB database.
   std::unique_ptr<leveldb::DB> original_db;
   leveldb_env::Options options;

@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_device_name.h"
@@ -66,8 +67,8 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   // Utility method used by GetVolume() and IsMuted().
   bool GetSourceInformation(pa_source_info_cb_t callback);
 
-  AudioManagerPulse* audio_manager_;
-  AudioInputCallback* callback_;
+  raw_ptr<AudioManagerPulse> audio_manager_;
+  raw_ptr<AudioInputCallback> callback_;
   std::string device_name_;
   AudioParameters params_;
   int channels_;
@@ -82,9 +83,9 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   AudioBlockFifo fifo_;
 
   // PulseAudio API structs.
-  pa_threaded_mainloop* pa_mainloop_; // Weak.
+  raw_ptr<pa_threaded_mainloop> pa_mainloop_;  // Weak.
 
-  pa_context* pa_context_;  // Weak.
+  raw_ptr<pa_context> pa_context_;  // Weak.
 
   // Callback to send log messages to registered clients.
   AudioManager::LogCallback log_callback_;

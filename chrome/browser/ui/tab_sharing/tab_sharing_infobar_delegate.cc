@@ -19,12 +19,14 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 class TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
@@ -107,6 +109,11 @@ class SwitchToTabButton
     if (!rfh) {
       return;
     }
+
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        rfh, focus_target_is_capturer_
+                 ? blink::mojom::WebFeature::kTabSharingBarSwitchToCapturer
+                 : blink::mojom::WebFeature::kTabSharingBarSwitchToCapturee);
 
     content::WebContents* const web_contents =
         content::WebContents::FromRenderFrameHost(rfh);

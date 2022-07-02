@@ -409,7 +409,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
   }
 
   auto platform_layout = GetPlatformVideoFrameLayout(
-      /*gpu_memory_buffer_factory=*/nullptr, output_format, output_size,
+      output_format, output_size,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!platform_layout) {
     VLOGF(1) << "Failed to get Platform VideoFrameLayout";
@@ -479,7 +479,6 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
     switch (output_config.storage_type()) {
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
         image_processor_output_buffers_[i] = CreateGpuMemoryBufferVideoFrame(
-            /*gpu_memory_buffer_factory=*/nullptr,
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
@@ -741,16 +740,29 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame && !ReconfigureFormatIfNeeded(*frame)) {
-    NOTIFY_ERROR(kPlatformFailureError);
-    encoder_state_ = kError;
-    return;
-  }
+  if (frame) {
+    // |frame| can be nullptr to indicate a flush.
+    const bool is_expected_storage_type =
+        native_input_mode_
+            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            : frame->IsMappable();
+    if (!is_expected_storage_type) {
+      VLOGF(1) << "Unexpected storage: "
+               << VideoFrame::StorageTypeToString(frame->storage_type());
+      NOTIFY_ERROR(kInvalidArgumentError);
+      return;
+    }
 
-  // If a video frame to be encoded is fed, then call VIDIOC_REQBUFS if it has
-  // not been called yet.
-  if (frame && input_buffer_map_.empty() && !CreateInputBuffers())
-    return;
+    if (!ReconfigureFormatIfNeeded(*frame)) {
+      NOTIFY_ERROR(kPlatformFailureError);
+      return;
+    }
+
+    // If a video frame to be encoded is fed, then call VIDIOC_REQBUFS if it has
+    // not been called yet.
+    if (input_buffer_map_.empty() && !CreateInputBuffers())
+      return;
+  }
 
   if (image_processor_) {
     image_processor_input_queue_.emplace(std::move(frame), force_keyframe);
@@ -1413,8 +1425,8 @@ bool V4L2VideoEncodeAccelerator::StopDevicePoll() {
   // Reset all our accounting info.
   while (!encoder_input_queue_.empty())
     encoder_input_queue_.pop();
-  for (auto& input_record : input_buffer_map_) {
-    input_record.frame = nullptr;
+  for (auto& [frame, ip_output_buffer_index] : input_buffer_map_) {
+    frame = nullptr;
   }
 
   bitstream_buffer_pool_.clear();
@@ -1669,8 +1681,7 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
   gfx::Size input_size = encoder_input_visible_rect_.size();
   if (native_input_mode_) {
     auto input_layout = GetPlatformVideoFrameLayout(
-        /*gpu_memory_buffer_factory=*/nullptr, input_format,
-        encoder_input_visible_rect_.size(),
+        input_format, encoder_input_visible_rect_.size(),
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
       return false;

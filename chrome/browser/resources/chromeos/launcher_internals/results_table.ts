@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Result} from './launcher_internals.mojom-webui.js';
+import {getTemplate} from './results_table.html.js';
 
 export interface LauncherResultsTableElement {
   $: {
@@ -20,7 +21,7 @@ export class LauncherResultsTableElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   // Current results keyed by result id.

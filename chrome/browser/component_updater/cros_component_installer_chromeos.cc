@@ -19,10 +19,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,7 +41,7 @@ namespace {
 const ComponentConfig kConfigs[] = {
     {"cros-termina", ComponentConfig::PolicyType::kEnvVersion, "980.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
-    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "100.0",
+    {"rtanalytics-full", ComponentConfig::PolicyType::kEnvVersion, "103.0",
      "c93c3e1013c52100a20038b405ac854d69fa889f6dc4fa6f188267051e05e444"},
     {"demo-mode-resources", ComponentConfig::PolicyType::kEnvVersion, "1.0",
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
@@ -83,7 +85,7 @@ void LogCustomUninstall(absl::optional<bool> result) {}
 void FinishCustomUninstallOnUIThread(const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  chromeos::DBusThreadManager::Get()->GetImageLoaderClient()->UnmountComponent(
+  chromeos::ImageLoaderClient::Get()->UnmountComponent(
       name, base::BindOnce(&LogCustomUninstall));
 }
 
@@ -265,7 +267,13 @@ void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
 
 update_client::InstallerAttributes
 DemoAppInstallerPolicy::GetInstallerAttributes() const {
-  return {};
+  PrefService* prefs = g_browser_process->local_state();
+  update_client::InstallerAttributes demo_app_installer_attributes;
+  demo_app_installer_attributes["retailer_id"] =
+      prefs->GetString(prefs::kDemoModeRetailerId);
+  demo_app_installer_attributes["store_id"] =
+      prefs->GetString(prefs::kDemoModeStoreId);
+  return demo_app_installer_attributes;
 }
 
 CrOSComponentInstaller::CrOSComponentInstaller(
@@ -473,13 +481,11 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
 
   const base::FilePath path = GetCompatiblePath(name);
   DCHECK(!path.empty());
-  chromeos::DBusThreadManager::Get()
-      ->GetImageLoaderClient()
-      ->LoadComponentAtPath(
-          name, path,
-          base::BindOnce(&CrOSComponentInstaller::FinishLoad,
-                         base::Unretained(this), std::move(load_callback),
-                         base::TimeTicks::Now(), name));
+  chromeos::ImageLoaderClient::Get()->LoadComponentAtPath(
+      name, path,
+      base::BindOnce(&CrOSComponentInstaller::FinishLoad,
+                     base::Unretained(this), std::move(load_callback),
+                     base::TimeTicks::Now(), name));
 }
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,

@@ -8,6 +8,7 @@ import {
   assertString,
 } from '../assert.js';
 import * as error from '../error.js';
+import * as expert from '../expert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {
@@ -135,7 +136,7 @@ class Reconfigurer {
   private async *
       getConfigurationCandidates(cameraInfo: CameraInfo):
           AsyncIterable<ConfigureCandidate> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
 
     for (const deviceId of this.getDeviceIdCandidates(cameraInfo)) {
       for (const mode of await this.getModeCandidates(deviceId)) {
@@ -156,7 +157,8 @@ class Reconfigurer {
                 r !== null && (maxR === null || r.area > maxR.area) ? r : maxR);
         for (const c of candidates) {
           const videoSnapshotResolution =
-              state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
+              expert.isEnabled(
+                  expert.ExpertOption.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
               maxResolution :
               c.resolution;
           for (const constraints of c.getStreamConstraintsCandidates()) {
@@ -210,7 +212,7 @@ class Reconfigurer {
       return false;
     }
 
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
 
     for await (const c of this.getConfigurationCandidates(cameraInfo)) {
@@ -363,7 +365,7 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.infoUpdater.addDeviceChangeListener(async (updater) => {
+    this.infoUpdater.addDeviceChangeListener((updater) => {
       const info = new CameraInfo(updater);
       if (this.ongoingOperationType !== null) {
         this.pendingUpdateInfo = info;

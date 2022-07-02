@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,7 +23,12 @@
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser) {
   // Create the model.
-  model_ = std::make_unique<ReadAnythingModel>();
+  std::string prefs_font_name;
+  if (browser->profile() && browser->profile()->GetPrefs()) {
+    prefs_font_name = browser->profile()->GetPrefs()->GetString(
+        prefs::kAccessibilityReadAnythingFontName);
+  }
+  model_ = std::make_unique<ReadAnythingModel>(prefs_font_name);
 
   // Create the controller.
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
@@ -37,12 +43,14 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
 
 void ReadAnythingCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+  auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
       l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
       ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
-                          base::Unretained(this))));
+                          base::Unretained(this)));
+  side_panel_entry_observation_.Observe(side_panel_entry.get());
+  global_registry->Register(std::move(side_panel_entry));
 }
 
 ReadAnythingController* ReadAnythingCoordinator::GetController() {
@@ -60,6 +68,16 @@ void ReadAnythingCoordinator::AddObserver(
 void ReadAnythingCoordinator::RemoveObserver(
     ReadAnythingCoordinator::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  DCHECK(entry->id() == SidePanelEntry::Id::kReadAnything);
+  controller_->Activate(true);
+}
+
+void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  DCHECK(entry->id() == SidePanelEntry::Id::kReadAnything);
+  controller_->Activate(false);
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {

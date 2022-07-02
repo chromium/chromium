@@ -20,7 +20,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace content {
@@ -39,9 +39,8 @@ bool IsCrOSLibHandwritingRootfsEnabled() {
          command_line->GetSwitchValueASCII(
              ash::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* service = chromeos::LacrosService::Get();
-  return service && service->init_params()->ondevice_handwriting_support ==
-                        crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
+  return chromeos::BrowserInitParams::Get()->ondevice_handwriting_support ==
+         crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
 #else
   return false;
 #endif

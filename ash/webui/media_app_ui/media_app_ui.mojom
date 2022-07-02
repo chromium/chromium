@@ -26,4 +26,9 @@ interface PageHandler {
   IsFileBrowserWritable(
       pending_remote<blink.mojom.FileSystemAccessTransferToken> token)
       => (bool writable);
+  // Requests the file represented by the provided transfer token to be launched
+  // in Photos with the edit intent.
+  EditInPhotos(
+      pending_remote<blink.mojom.FileSystemAccessTransferToken> token,
+      string mime_type) => ();
 };

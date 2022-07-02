@@ -41,7 +41,7 @@ std::vector<std::string> ConvertToVector(const base::Value* list) {
     return string_list;
   }
 
-  for (const base::Value& value : list->GetListDeprecated()) {
+  for (const base::Value& value : list->GetList()) {
     if (value.is_string()) {
       string_list.push_back(value.GetString());
     }
@@ -107,11 +107,7 @@ class SettingsBinder : public CalculatorsPoliciesBinder {
   }
 
   std::vector<std::string> GetStringList(const char* name) const override {
-    const base::ListValue* list;
-    if (!settings_->GetList(name, &list)) {
-      list = nullptr;
-    }
-    return ConvertToVector(list);
+    return ConvertToVector(settings_->GetPref(name));
   }
 
  private:

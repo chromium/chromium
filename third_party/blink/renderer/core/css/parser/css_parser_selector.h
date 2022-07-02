@@ -31,6 +31,10 @@
 namespace blink {
 
 class CSSParserContext;
+class CSSParserSelector;
+
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
 
 class CORE_EXPORT CSSParserSelector {
   USING_FAST_MALLOC(CSSParserSelector);
@@ -42,9 +46,13 @@ class CORE_EXPORT CSSParserSelector {
   CSSParserSelector& operator=(const CSSParserSelector&) = delete;
   ~CSSParserSelector();
 
+  // Note that on ReleaseSelector() or GetSelector(), you get that single
+  // selector only, not its entire tag history (so TagHistory() will not
+  // make sense until it's put into a CSSSelectorVector).
   std::unique_ptr<CSSSelector> ReleaseSelector() {
     return std::move(selector_);
   }
+  const CSSSelector* GetSelector() const { return selector_.get(); }
 
   CSSSelector::RelationType Relation() const { return selector_->Relation(); }
   void SetValue(const AtomicString& value, bool match_lower_case = false) {
@@ -75,11 +83,11 @@ class CORE_EXPORT CSSParserSelector {
     selector_->UpdatePseudoPage(value);
   }
 
-  void AdoptSelectorVector(
-      Vector<std::unique_ptr<CSSParserSelector>>& selector_vector);
+  void AdoptSelectorVector(CSSSelectorVector& selector_vector);
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetAtomics(std::unique_ptr<CSSSelectorList>);
   void SetContainsPseudoInsideHasPseudoClass();
+  void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
   bool IsHostPseudoSelector() const;
 

@@ -5,7 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -14,7 +14,7 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
@@ -121,7 +121,7 @@ js_library("educational_banner") {
   ]
 }
 
-js_unittest("educational_banner_unittest.m") {
+js_unittest("educational_banner_unittest") {
   deps = [
     ":educational_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -156,7 +156,7 @@ js_library("state_banner") {
   ]
 }
 
-js_unittest("state_banner_unittest.m") {
+js_unittest("state_banner_unittest") {
   deps = [
     ":state_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -180,7 +180,7 @@ js_library("warning_banner") {
   ]
 }
 
-js_unittest("warning_banner_unittest.m") {
+js_unittest("warning_banner_unittest") {
   deps = [
     ":warning_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -189,11 +189,11 @@ js_unittest("warning_banner_unittest.m") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
-    ":educational_banner_unittest.m",
-    ":state_banner_unittest.m",
-    ":warning_banner_unittest.m",
+    ":educational_banner_unittest",
+    ":state_banner_unittest",
+    ":warning_banner_unittest",
   ]
   is_polymer3 = true
 
@@ -203,7 +203,7 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=./gen/ui/file_manager/",
                     "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",

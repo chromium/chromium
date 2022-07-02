@@ -16,7 +16,8 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
+
+import androidx.test.uiautomator.UiDevice;
 
 import org.json.JSONArray;
 import org.json.JSONException;

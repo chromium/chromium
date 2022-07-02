@@ -13,6 +13,7 @@
  limitations under the License.
  ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/vision/sources/TFLImageSegmenter.h"
+#import "tensorflow_lite_support/ios/sources/TFLCommon.h"
 #import "tensorflow_lite_support/ios/sources/TFLCommonUtils.h"
 #import "tensorflow_lite_support/ios/task/core/sources/TFLBaseOptions+Helpers.h"
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult+Helpers.h"
@@ -29,11 +30,12 @@
   self = [super init];
   if (self) {
     self.baseOptions = [[TFLBaseOptions alloc] init];
+    self.outputType = TFLOutputTypeCategoryMask;
   }
   return self;
 }
 
-- (nullable instancetype)initWithModelPath:(nonnull NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString*)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -66,32 +68,62 @@
   TfLiteImageSegmenterOptions cOptions = TfLiteImageSegmenterOptionsCreate();
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
+  cOptions.output_type = (TfLiteImageSegmenterOutputType)options.outputType;
 
-  TfLiteSupportError* createImageSegmenterError = nil;
-  TfLiteImageSegmenter* imageSegmenter =
-      TfLiteImageSegmenterFromOptions(&cOptions, &createImageSegmenterError);
-
-  if (!imageSegmenter || ![TFLCommonUtils checkCError:createImageSegmenterError
-                                              toError:error]) {
-    TfLiteSupportErrorDelete(createImageSegmenterError);
-    return nil;
+  if (options.displayNamesLocale) {
+    if (options.displayNamesLocale.UTF8String) {
+      cOptions.display_names_locale =
+          strdup(options.displayNamesLocale.UTF8String);
+      if (!cOptions.display_names_locale) {
+        exit(-1);  // Memory Allocation Failed.
+      }
+    } else {
+      [TFLCommonUtils
+          createCustomError:error
+                   withCode:TFLSupportErrorCodeInvalidArgumentError
+                description:@"Could not convert (NSString *) to (char *)."];
+      return nil;
+    }
   }
 
-  return [[TFLImageSegmenter alloc] initWithImageSegmenter:imageSegmenter];
+  TfLiteSupportError* cCreateImageSegmenterError = nil;
+  TfLiteImageSegmenter* cImageSegmenter =
+      TfLiteImageSegmenterFromOptions(&cOptions, &cCreateImageSegmenterError);
+
+  // Freeing memory of allocated string.
+  free(cOptions.display_names_locale);
+
+  if (![TFLCommonUtils checkCError:cCreateImageSegmenterError toError:error]) {
+    TfLiteSupportErrorDelete(cCreateImageSegmenterError);
+  }
+
+  // Return nil if C object detector evaluates to nil. If an error was generted
+  // by the C layer, it has already been populated to an NSError and deleted
+  // before returning from the method.
+  if (!cImageSegmenter) {
+    return nil;
+  }
+  return [[TFLImageSegmenter alloc] initWithImageSegmenter:cImageSegmenter];
 }
 
 - (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
-                                                 error:(NSError* _Nullable*)
-                                                           error {
+                                                 error:(NSError**)error {
+  if (!image) {
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"GMLImage argument cannot be nil."];
+    return nil;
+  }
+
   TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
   }
 
-  TfLiteSupportError* segmentError = nil;
-  TfLiteSegmentationResult* cSegmentationResult =
-      TfLiteImageSegmenterSegment(_imageSegmenter, cFrameBuffer, &segmentError);
+  TfLiteSupportError* cSegmentError = nil;
+  TfLiteSegmentationResult* cSegmentationResult = TfLiteImageSegmenterSegment(
+      _imageSegmenter, cFrameBuffer, &cSegmentError);
 
   free(cFrameBuffer->buffer);
   cFrameBuffer->buffer = nil;
@@ -99,9 +131,15 @@
   free(cFrameBuffer);
   cFrameBuffer = nil;
 
-  if (!cSegmentationResult || ![TFLCommonUtils checkCError:segmentError
-                                                   toError:error]) {
-    TfLiteSupportErrorDelete(segmentError);
+  // Populate iOS error if C Error is not null and afterwards delete it.
+  if (![TFLCommonUtils checkCError:cSegmentError toError:error]) {
+    TfLiteSupportErrorDelete(cSegmentError);
+  }
+
+  // Return nil if C result evaluates to nil. If an error was generted by the C
+  // layer, it has already been populated to an NSError and deleted before
+  // returning from the method.
+  if (!cSegmentationResult) {
     return nil;
   }
 

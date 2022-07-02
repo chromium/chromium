@@ -21,7 +21,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
   content::TestActivationManager activation_manager(GetActiveWebContents(),
                                                     prerender_url);
   ASSERT_TRUE(
-      content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+      content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                       content::JsReplace("location = $1", prerender_url)));
   activation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(activation_manager.was_activated());
@@ -167,9 +167,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, UseCounter) {
   prerender_helper().AddPrerender(prerender_url);
 
   // Accessing related attributes should also be recorded.
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                               "const value = document.prerendering;"));
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                               "document.onprerenderingchange = e => {};"));
 
   // Make sure the counts are stored by navigating away.

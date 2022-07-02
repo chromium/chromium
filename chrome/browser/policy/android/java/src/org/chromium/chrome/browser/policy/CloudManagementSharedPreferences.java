@@ -24,6 +24,14 @@ public class CloudManagementSharedPreferences {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, dmToken);
     }
+    /**
+     * Deletes the "Cloud management DM token" preference.
+     */
+    @CalledByNative
+    public static void deleteDmToken() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN);
+    }
 
     /**
      * Returns the value of the "Cloud management DM token" preference, which is non-empty

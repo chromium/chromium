@@ -3,43 +3,25 @@
     <!-- The test scans for which source to share according to the title. -->
     <title>Region Capture Test - Page 2 (Main)</title>
     <link rel="icon" href="data:," />
+    <script src="region_capture_helpers.js"></script>
     <script>
       "use strict";
 
-      function startEmbeddingFrame(url) {
-        document.getElementById("embedded_frame").src = url;
-        // window.domAutomationController.send() called by embedded page.
-      }
-
-      async function produceCropId(targetFrame, elementId) {
-        if (targetFrame == "top") {
-          const element = document.getElementById(elementId);
-          let cropId;
-          try {
-            cropId = await navigator.mediaDevices.produceCropId(element);
-          } catch (e) {
-            window.domAutomationController.send("top-level-produce-crop-id-error");
-            return;
-          }
-          // Explicitly note emptiness so as to make it clear that this is
-          // genuine emptiness and not a test error on the C++/JS boundary.
-          window.domAutomationController.send(
-              cropId == "" ? "empty-crop-id" : cropId);
-        } else {
-          document
-            .getElementById("embedded_frame")
-            .contentWindow.postMessage("produce-crop-id:" + elementId, "*");
-          // window.domAutomationController.send() called by embedded page.
-        }
-      }
+      setRole("top-level");
     </script>
   </head>
-  <body>
+  <body onload="onLoad();">
     <div id="div">
-      <!-- This DIV is just a convenient target for produceCropId. -->
-      <h1>Region Capture Test - Page 2 (Main)</h1>
-      <br/>
+      <!-- This DIV is just a convenient target for cropTargetFromElement. -->
+      <p id="p_id">0</p>
+      <br />
       <iframe id="embedded_frame" allow="display-capture *"></iframe>
     </div>
+    <iframe id="mailman_frame" hidden></iframe>
+    <script>
+      function onLoad() {
+        animate(document.getElementById('p_id'));
+      }
+    </script>
   </body>
 </html>

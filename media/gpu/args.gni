@@ -8,9 +8,8 @@ import("//build/config/ozone.gni")
 declare_args() {
   # Indicates if X11 VA-API-based hardware acceleration is to be used.
   # See also the comment near the |use_vaapi| arg.
-  use_vaapi_x11 =
-      is_linux && ozone_platform_x11 && !is_chromecast && !is_chromeos_lacros &&
-      (target_cpu == "x86" || target_cpu == "x64")
+  use_vaapi_x11 = is_linux && ozone_platform_x11 &&
+                  (target_cpu == "x86" || target_cpu == "x64") && !is_castos
 }
 
 declare_args() {

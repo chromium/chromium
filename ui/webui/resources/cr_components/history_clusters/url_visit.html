@@ -10,15 +10,14 @@
     background-color: var(--cr-hover-background-color);
   }
 
-  :host(:not([is-top-visit])) .timestamp-and-menu {
+  #actionMenuButton {
     opacity: 0; /* Hides the element while keeping it in tab order. */
     position: absolute; /* Surrender its layout space to other elements. */
+    --cr-icon-button-margin-end: 8px;
   }
 
-  :host(:hover) .timestamp-and-menu,
-  /* This selector seems overly verbose, but we need it to be more specific than
-     the 0 opacity rule. */
-  :host(:not([is-top-visit])) .timestamp-and-menu:focus-within {
+  :host(:hover) #actionMenuButton,
+  #actionMenuButton:focus-within {
     opacity: 1;
     position: static;
   }
@@ -31,15 +30,6 @@
     min-width: 0;
     padding-inline-start: var(--cluster-padding-horizontal);
     user-select: none;
-  }
-
-  /* TODO(crbug.com/1324343): This formula is subtly wrong after the latest UI
-     revisions. But we want to delete this code anyways. Delete the separate
-     top-visit and indented styling after M103 branch cut. */
-  :host([indented]:not([is-top-visit])) #header {
-    padding-inline-start: calc(var(--cluster-padding-horizontal) +
-                               var(--top-visit-favicon-size) +
-                               var(--favicon-margin));
   }
 
   a {
@@ -71,10 +61,6 @@
     line-height: 2;  /* 32px */
   }
 
-  :host([is-top-visit]) #title-and-annotations {
-    line-height: 1.75; /* 28px */
-  }
-
   .annotation {
     align-items: center;
     background-color: var(--annotation-background-color);
@@ -96,19 +82,9 @@
     font-size: .875rem;  /* 14px */
   }
 
-  :host([is-top-visit]) #title,
-  :host([is-top-visit]) #url {
-    font-size: 1.125rem;  /* 18px */
-    font-weight: 500;
-  }
-
   #url {
     color: var(--url-color);
     line-height: 1.5;  /* 24px */
-  }
-
-  :host([is-top-visit]) #url {
-    line-height: 1.25;  /* 20px */
   }
 
   #debug-info {
@@ -118,9 +94,7 @@
 <div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
     on-keydown="onKeydown_">
   <a id="link-container" href="[[visit.normalizedUrl.url]]">
-    <page-favicon is-top-visit-favicon="[[isTopVisit]]"
-        url="[[visit.normalizedUrl]]">
-    </page-favicon>
+    <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
     <div id="page-info">
       <div id="title-and-annotations">
         <span id="title" class="truncate"></span>
@@ -134,10 +108,20 @@
       </span>
     </div>
   </a>
-  <div class="timestamp-and-menu">
-    <div class="timestamp" hidden="[[!isTopVisit]]">[[visit.relativeDate]]</div>
-    <menu-container is-top-menu$="[[isTopVisit]]"
-        cluster-index="[[clusterIndex]]" visit="[[visit]]">
-    </menu-container>
-  </div>
+  <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+      title$="[[i18n('actionMenuDescription')]]" aria-haspopup="menu"
+      on-click="onActionMenuButtonClick_"
+      hidden="[[!allowDeletingHistory_]]">
+  </cr-icon-button>
 </div>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="[[i18n('actionMenuDescription]]">
+      <button id="removeSelfButton" class="dropdown-item"
+          on-click="onRemoveSelfButtonClick_">
+        [[i18n('removeFromHistory')]]
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

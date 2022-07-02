@@ -20,13 +20,10 @@ export function onboardingLandingPageTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -175,18 +172,18 @@ export function onboardingLandingPageTest() {
         component.shadowRoot.querySelector('#dialogBody').textContent.trim());
   });
 
-  test('OnBoardingPageCancelButtonDispatchesCancelEvent', async () => {
+  test('OnBoardingPageExitButtonDispatchesExitEvent', async () => {
     await initializeLandingPage();
 
-    let cancelButtonEventFired = false;
-    component.addEventListener('click-cancel-button', (e) => {
-      cancelButtonEventFired = true;
+    let exitButtonEventFired = false;
+    component.addEventListener('click-exit-button', (e) => {
+      exitButtonEventFired = true;
     });
 
-    await clickButton('#landingCancel');
+    await clickButton('#landingExit');
     await flushTasks();
 
-    assertTrue(cancelButtonEventFired);
+    assertTrue(exitButtonEventFired);
   });
 
   test(

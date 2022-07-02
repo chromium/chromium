@@ -30,9 +30,7 @@
 #include "ash/constants/ash_features.h"
 #endif
 
-namespace syncer {
-
-namespace sync_ui_util {
+namespace syncer::sync_ui_util {
 
 namespace {
 
@@ -622,6 +620,4 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   return about_info;
 }
 
-}  // namespace sync_ui_util
-
-}  // namespace syncer
+}  // namespace syncer::sync_ui_util

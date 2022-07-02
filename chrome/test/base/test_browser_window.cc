@@ -121,7 +121,7 @@ const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
       {ui::ColorProviderManager::ColorMode::kLight,
        ui::ColorProviderManager::ContrastMode::kNormal,
        ui::ColorProviderManager::SystemTheme::kDefault,
-       ui::ColorProviderManager::FrameType::kChromium, nullptr});
+       ui::ColorProviderManager::FrameType::kChromium});
 }
 
 ui::ElementContext TestBrowserWindow::GetElementContext() {
@@ -246,6 +246,13 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::SUCCESS;
 }
 
+void TestBrowserWindow::ShowPartialTranslateBubble(
+    PartialTranslateBubbleModel::ViewState view_state,
+    const std::string& source_language,
+    const std::string& target_language,
+    const std::u16string& text_selection,
+    translate::TranslateErrors::Type error_type) {}
+
 qrcode_generator::QRCodeGeneratorBubbleView*
 TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
                                              const GURL& url,
@@ -285,7 +292,7 @@ views::Button* TestBrowserWindow::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
-    content::WebContents* contents) {
+    share::ShareAttempt attempt) {
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -336,13 +343,6 @@ void TestBrowserWindow::SetNativeWindow(gfx::NativeWindow window) {
 void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
-
-bool TestBrowserWindow::IsSideSearchPanelVisible() const {
-  return false;
-}
-
-void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, std::string>& extra_data) {}
 
 user_education::FeaturePromoController*
 TestBrowserWindow::GetFeaturePromoController() {

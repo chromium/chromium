@@ -257,8 +257,8 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   result_out = false;
   auto cookie2 = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie2", "10", "gmail.google.com", "/", base::Time(),
-      base::Time::Max(), base::Time(), base::Time(), false, true,
-      net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_HIGH, false);
+      base::Time::Now() + base::Days(100), base::Time(), base::Time(), false,
+      true, net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_HIGH, false);
   cookie_manager->SetCanonicalCookie(
       *cookie2, net::cookie_util::SimulatedCookieSource(*cookie2, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {

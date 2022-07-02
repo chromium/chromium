@@ -25,7 +25,7 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
               (override));
   MOCK_METHOD(KeyPersistenceDelegate::KeyInfo, LoadKeyPair, (), (override));
   MOCK_METHOD(std::unique_ptr<crypto::UnexportableKeyProvider>,
-              GetTpmBackedKeyProvider,
+              GetUnexportableKeyProvider,
               (),
               (override));
 };

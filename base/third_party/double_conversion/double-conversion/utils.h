@@ -279,7 +279,7 @@ class StringBuilder {
   void AddSubstring(const char* s, int n) {
     DOUBLE_CONVERSION_ASSERT(!is_finalized() && position_ + n < buffer_.length());
     DOUBLE_CONVERSION_ASSERT(static_cast<size_t>(n) <= strlen(s));
-    memmove(&buffer_[position_], s, n);
+    memmove(&buffer_[position_], s, static_cast<size_t>(n));
     position_ += n;
   }
 

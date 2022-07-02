@@ -5,7 +5,7 @@
 package org.chromium.weblayer_private.settings;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -47,7 +47,7 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
-    public void getFaviconImageForURL(GURL faviconUrl, Callback<Bitmap> callback) {
+    public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
         // We don't currently support favicons on WebLayer.
         callback.onResult(null);
     }
@@ -137,4 +137,7 @@ public class WebLayerSiteSettingsDelegate
 
     @Override
     public void dismissPrivacySandboxSnackbar() {}
+
+    @Override
+    public void onDestroyView() {}
 }

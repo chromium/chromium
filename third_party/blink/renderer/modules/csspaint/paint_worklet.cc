@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 
 namespace blink {
@@ -125,6 +126,10 @@ scoped_refptr<Image> PaintWorklet::Paint(const String& name,
           layout_object.GetDocument(), layout_object.StyleRef(),
           paint_definition->NativeInvalidationProperties(),
           paint_definition->CustomInvalidationProperties());
+  // The PaintWorkletGlobalScope is sufficiently isolated that it is safe to
+  // run during the lifecycle update without concern for it causing
+  // invalidations to the lifecycle.
+  ScriptForbiddenScope::AllowUserAgentScript allow_script;
   sk_sp<PaintRecord> paint_record =
       paint_definition->Paint(container_size, zoom, style_map, data);
   if (!paint_record)

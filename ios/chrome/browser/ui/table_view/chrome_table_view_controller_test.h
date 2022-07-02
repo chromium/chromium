@@ -27,7 +27,7 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
   // Tests should call this function to create their controller for testing.
   void CreateController();
 
-  // Will call CreateController() if |controller_| is nil.
+  // Will call CreateController() if `controller_` is nil.
   ChromeTableViewController* controller();
 
   // Deletes the controller.
@@ -40,104 +40,120 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
   // Returns the number of sections in the tableView.
   int NumberOfSections();
 
-  // Returns the number of items in |section|.
+  // Returns the number of items in `section`.
   int NumberOfItemsInSection(int section);
 
-  // Returns the collection view item at |item| in |section|.
+  // Returns the collection view item at `item` in `section`.
   id GetTableViewItem(int section, int item);
 
-  // Verifies that the title matches |expected_title|.
+  // Verifies that the title matches `expected_title`.
   void CheckTitle(NSString* expected_title);
 
-  // Verifies that the title matches the l10n string for |expected_title_id|.
+  // Verifies that the title matches the l10n string for `expected_title_id`.
   void CheckTitleWithId(int expected_title_id);
 
-  // Verifies that the section header at |section| matches the |expected_text|.
+  // Verifies that the section header at `section` matches the `expected_text`.
   void CheckSectionHeader(NSString* expected_text, int section);
 
-  // Verifies that the section header at |section| matches the l10n string for
-  // |expected_text_id|.
+  // Verifies that the section header at `section` matches the l10n string for
+  // `expected_text_id`.
   void CheckSectionHeaderWithId(int expected_text_id, int section);
 
-  // Verifies that the section footer at |section| matches the |expected_text|.
+  // Verifies that the section footer at `section` matches the `expected_text`.
   void CheckSectionFooter(NSString* expected_text, int section);
 
-  // Verifies that the section footer at |section| matches the l10n string for
-  // |expected_text_id|.
+  // Verifies that the section footer at `section` matches the l10n string for
+  // `expected_text_id`.
   void CheckSectionFooterWithId(int expected_text_id, int section);
 
-  // Verifies that the text cell at |item| in |section| has a text property
-  // which matches |expected_text|.
+  // Verifies that the text cell at `item` in `section` has a text property
+  // which matches `expected_text`.
   void CheckTextCellText(NSString* expected_text, int section, int item);
 
-  // Verifies that the text cell at |item| in |section| has a text property
-  // which matches the l10n string for |expected_text_id|.
+  // Verifies that the text cell at `item` in `section` has a text property
+  // which matches the l10n string for `expected_text_id`.
   void CheckTextCellTextWithId(int expected_text_id, int section, int item);
 
-  // Verifies that the text cell at |item| in |section| has a text and
-  // detailText properties which match strings for |expected_text| and
-  // |expected_detail_text|, respectively.
+  // Verifies that the text cell at `item` in `section` has a text and
+  // detailText properties which match strings for `expected_text` and
+  // `expected_detail_text`, respectively.
   void CheckTextCellTextAndDetailText(NSString* expected_text,
                                       NSString* expected_detail_text,
                                       int section,
                                       int item);
 
-  // Verifies that the URL cell at |item| in |section| has the URL as the title
-  // which matches |expected_title| when the title property is not set.
+  // Verifies that the URL cell at `item` in `section` has the URL as the title
+  // which matches `expected_title` when the title property is not set.
   void CheckURLCellEmptyTitle(NSString* expected_title, int section, int item);
 
-  // Verifies that the URL cell at |item| in |section| has a title and
-  // detailText properties which match strings for |expected_title| and
-  // |expected_detail_text|, respectively.
+  // Verifies that the URL cell at `item` in `section` has a title and
+  // detailText properties which match strings for `expected_title` and
+  // `expected_detail_text`, respectively.
   void CheckURLCellTitleAndDetailText(NSString* expected_title,
                                       NSString* expected_detail_text,
                                       int section,
                                       int item);
 
-  // Verifies that the text cell at |item| in |section| has a text and
-  // detailText properties which match strings for |expected_text| and
-  // |expected_detail_text|, respectively.
+  // Verifies that the text cell at `item` in `section` has a text and
+  // detailText properties which match strings for `expected_text` and
+  // `expected_detail_text`, respectively.
   void CheckDetailItemTextWithIds(int expected_text_id,
                                   int expected_detail_text_id,
                                   int section_id,
                                   int item_id);
 
-  // Verifies that the switch cell at |item| in |section| has a text property
-  // which matches |expected_title| and a isOn method which matches
-  // |expected_state|.
+  // Verifies that the switch cell at `item` in `section` has a text property
+  // which matches `expected_title` and a isOn method which matches
+  // `expected_state`.
   void CheckSwitchCellStateAndText(BOOL expected_state,
                                    NSString* expected_title,
                                    int section,
                                    int item);
 
-  // Verifies that the switch cell at |item| in |section| has a text property
-  // which matches the l10n string for |expected_title_id| and a isOn method
-  // which matches  |expected_state|.
+  // Verifies that the switch cell at `item` in `section` has a text property
+  // which matches the l10n string for `expected_title_id` and a isOn method
+  // which matches  `expected_state`.
   void CheckSwitchCellStateAndTextWithId(BOOL expected_state,
                                          int expected_title_id,
                                          int section,
                                          int item);
 
-  // Verifies that the cell at |item| in |section| has the given
-  // |accessory_type|.
+  // Verifies that the info button cell at `item` in `section` has a text
+  // property which matches `expected_title` and a status text which matches
+  // `expected_status text`.
+  void CheckInfoButtonCellStatusAndText(NSString* expected_status_text,
+                                        NSString* expected_title,
+                                        int section,
+                                        int item);
+
+  // Verifies that the info button cell at `item` in `section` has a text
+  // property which matches the l10n string for `expected_title_id` and a status
+  // text which matches `expected_status text`.
+  void CheckInfoButtonCellStatusWithIdAndTextWithId(int expected_status_text_id,
+                                                    int expected_title_id,
+                                                    int section,
+                                                    int item);
+
+  // Verifies that the cell at `item` in `section` has the given
+  // `accessory_type`.
   void CheckAccessoryType(UITableViewCellAccessoryType accessory_type,
                           int section,
                           int item);
 
-  // Verifies that the text button cell at |item| in |section| has the given
-  // |buttonText|.
+  // Verifies that the text button cell at `item` in `section` has the given
+  // `buttonText`.
   void CheckTextButtonCellButtonText(NSString* expected_button_text,
                                      int section,
                                      int item);
 
-  // Verifies that the text button cell at |item| in |section| has a
-  // |buttonText| property which matches the l10n string for
-  // |expected_button_text_id|.
+  // Verifies that the text button cell at `item` in `section` has a
+  // `buttonText` property which matches the l10n string for
+  // `expected_button_text_id`.
   void CheckTextButtonCellButtonTextWithId(int expected_button_text_id,
                                            int section,
                                            int item);
 
-  // For |section|, deletes the item at |item|. |completion_block| is called at
+  // For `section`, deletes the item at `item`. `completion_block` is called at
   // the end of the call to -performBatchUpdates:completion:.
   void DeleteItem(int section, int item, ProceduralBlock completion_block);
 

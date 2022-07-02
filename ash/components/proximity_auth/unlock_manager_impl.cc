@@ -12,6 +12,7 @@
 #include "ash/components/proximity_auth/metrics.h"
 #include "ash/components/proximity_auth/proximity_auth_client.h"
 #include "ash/components/proximity_auth/proximity_monitor_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -44,6 +45,11 @@ enum class FindAndConnectToHostResult {
 // up' state after resuming from sleep.
 constexpr base::TimeDelta kWakingUpDuration = base::Seconds(15);
 
+// The amount of time to wait before resuming scan and connection attempt after
+// pausing following an error or timeout.
+constexpr base::TimeDelta kRetryAfterPausingScanAndConnectionAttempt =
+    base::Seconds(1);
+
 // The maximum amount of time that we wait for the BluetoothAdapter to be
 // fully initialized after resuming from sleep.
 // TODO(crbug.com/986896): This is necessary because the BluetoothAdapter
@@ -63,6 +69,48 @@ const int kNumDurationMetricBuckets = 100;
 
 const char kGetRemoteStatusNone[] = "none";
 const char kGetRemoteStatusSuccess[] = "success";
+
+// The subset of SmartLockStates that represent the first non-trival status
+// shown to the user. Entries persisted to UMA histograms; do not reorder or
+// delete enum values.
+enum class FirstSmartLockStatus {
+  kBluetoothDisabled = 0,
+  kPhoneNotLockable = 1,
+  kPhoneNotFound = 2,
+  kPhoneNotAuthenticated = 3,
+  kPhoneFoundLockedAndDistant = 4,
+  kPhoneFoundLockedAndProximate = 5,
+  kPhoneFoundUnlockedAndDistant = 6,
+  kPhoneAuthenticated = 7,
+  kPrimaryUserAbsent = 8,
+  kMaxValue = kPrimaryUserAbsent
+};
+
+absl::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
+    SmartLockState state) {
+  switch (state) {
+    case SmartLockState::kBluetoothDisabled:
+      return FirstSmartLockStatus::kBluetoothDisabled;
+    case SmartLockState::kPhoneNotLockable:
+      return FirstSmartLockStatus::kPhoneNotLockable;
+    case SmartLockState::kPhoneNotFound:
+      return FirstSmartLockStatus::kPhoneNotFound;
+    case SmartLockState::kPhoneNotAuthenticated:
+      return FirstSmartLockStatus::kPhoneNotAuthenticated;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      return FirstSmartLockStatus::kPhoneFoundLockedAndDistant;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      return FirstSmartLockStatus::kPhoneFoundLockedAndProximate;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return FirstSmartLockStatus::kPhoneFoundUnlockedAndDistant;
+    case SmartLockState::kPhoneAuthenticated:
+      return FirstSmartLockStatus::kPhoneAuthenticated;
+    case SmartLockState::kPrimaryUserAbsent:
+      return FirstSmartLockStatus::kPrimaryUserAbsent;
+    default:
+      return absl::nullopt;
+  }
+}
 
 // Returns the remote device's security settings state, for metrics,
 // corresponding to a remote status update.
@@ -139,6 +187,37 @@ void RecordExtendedDurationTimerMetric(const std::string& histogram_name,
   base::UmaHistogramCustomTimes(
       histogram_name, duration, kMinExtendedDuration /* min */,
       kMaxExtendedDuration /* max */, kNumDurationMetricBuckets /* buckets */);
+}
+
+bool HasCommunicatedWithPhone(SmartLockState state) {
+  switch (state) {
+    case SmartLockState::kDisabled:
+      [[fallthrough]];
+    case SmartLockState::kInactive:
+      [[fallthrough]];
+    case SmartLockState::kBluetoothDisabled:
+      [[fallthrough]];
+    case SmartLockState::kPhoneNotFound:
+      [[fallthrough]];
+    case SmartLockState::kConnectingToPhone:
+      [[fallthrough]];
+    case SmartLockState::kPasswordReentryRequired:
+      return false;
+    case SmartLockState::kPhoneNotLockable:
+      [[fallthrough]];
+    case SmartLockState::kPhoneNotAuthenticated:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      [[fallthrough]];
+    case SmartLockState::kPhoneAuthenticated:
+      [[fallthrough]];
+    case SmartLockState::kPrimaryUserAbsent:
+      return true;
+  }
 }
 
 }  // namespace
@@ -266,6 +345,10 @@ void UnlockManagerImpl::OnLifeCycleStateChanged(
           FindAndConnectToHostResult::kSecureChannelConnectionAttemptFailure);
       SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
     }
+    if (base::FeatureList::IsEnabled(
+            ash::features::kSmartLockBluetoothScanningBackoff)) {
+      SetShouldAttemptScanAndConnection(false);
+    }
   }
 
   if (new_state == RemoteDeviceLifeCycle::State::FINDING_CONNECTION &&
@@ -276,6 +359,11 @@ void UnlockManagerImpl::OnLifeCycleStateChanged(
     if (is_performing_initial_scan_) {
       OnDisconnected();
       SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            ash::features::kSmartLockBluetoothScanningBackoff)) {
+      SetShouldAttemptScanAndConnection(false);
     }
   }
 
@@ -440,9 +528,10 @@ void UnlockManagerImpl::OnBluetoothAdapterPresentAndPoweredChanged() {
   DCHECK(!IsBluetoothAdapterRecoveringFromSuspend());
 
   if (IsBluetoothPresentAndPowered()) {
-    if (!is_performing_initial_scan_)
+    if (!is_performing_initial_scan_ &&
+        !is_bluetooth_connection_to_phone_active_) {
       SetIsPerformingInitialScan(true /* is_performing_initial_scan */);
-
+    }
     return;
   }
 
@@ -473,7 +562,8 @@ bool UnlockManagerImpl::IsBluetoothAdapterRecoveringFromSuspend() const {
 
 void UnlockManagerImpl::AttemptToStartRemoteDeviceLifecycle() {
   if (IsBluetoothPresentAndPowered() && life_cycle_ &&
-      life_cycle_->GetState() == RemoteDeviceLifeCycle::State::STOPPED) {
+      life_cycle_->GetState() == RemoteDeviceLifeCycle::State::STOPPED &&
+      should_attempt_scan_and_connection_) {
     // If Bluetooth is disabled after this, |life_cycle_| will be notified by
     // SecureChannel that the connection attempt failed. From that point on,
     // |life_cycle_| will wait to be started again by UnlockManager.
@@ -664,11 +754,7 @@ void UnlockManagerImpl::UpdateLockScreen() {
   PA_LOG(INFO) << "Updating Smart Lock state from " << smartlock_state_
                << " to " << new_state;
 
-  if (new_state != SmartLockState::kInactive &&
-      new_state != SmartLockState::kConnectingToPhone) {
-    RecordFirstStatusShownToUser(
-        new_state == SmartLockState::kPhoneAuthenticated /* unlockable */);
-  }
+  RecordFirstStatusShownToUser(new_state);
 
   proximity_auth_client_->UpdateSmartLockState(new_state);
   smartlock_state_ = new_state;
@@ -717,9 +803,45 @@ void UnlockManagerImpl::OnInitialScanTimeout() {
     PA_LOG(INFO) << "Initial scan for host returned no result.";
     RecordFindAndConnectToHostResult(screenlock_type_,
                                      FindAndConnectToHostResult::kTimedOut);
+
+    if (base::FeatureList::IsEnabled(
+            ash::features::kSmartLockBluetoothScanningBackoff)) {
+      // Back off connection attempt and stop scanning to increase stability
+      // after a timeout occurs. Ideally this would only happen on failures to
+      // scan or connect, not if we timeout simply because the phone cannot be
+      // found. But for now we do not have a way to distinguish the difference.
+      // See b/208932863.
+      SetShouldAttemptScanAndConnection(false);
+    }
   }
 
   SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
+}
+
+void UnlockManagerImpl::SetShouldAttemptScanAndConnection(
+    bool should_attempt_scan_and_connection) {
+  if (should_attempt_scan_and_connection == should_attempt_scan_and_connection_)
+    return;
+
+  should_attempt_scan_and_connection_ = should_attempt_scan_and_connection;
+
+  if (should_attempt_scan_and_connection_) {
+    AttemptToStartRemoteDeviceLifecycle();
+    return;
+  }
+
+  if (life_cycle_ &&
+      life_cycle_->GetState() != RemoteDeviceLifeCycle::State::STOPPED) {
+    life_cycle_->Stop();
+    // After stopping lifecycle, we always want to resume scan and connection
+    // attempt after backing off a short period of time.
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&UnlockManagerImpl::SetShouldAttemptScanAndConnection,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*should_attempt_scan_and_connection=*/true),
+        kRetryAfterPausingScanAndConnectionAttempt);
+  }
 }
 
 void UnlockManagerImpl::FinalizeAuthAttempt(
@@ -830,13 +952,18 @@ void UnlockManagerImpl::RecordFirstRemoteStatusReceived(bool unlockable) {
             histogram_status_suffix,
         authentication_to_receive_first_remote_status_duration);
   }
-
-  // TODO(crbug.com/905438): Implement similar SignIn metrics.
 }
 
-void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
-  if (has_user_been_shown_first_status_)
+void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
+  absl::optional<FirstSmartLockStatus> first_status =
+      GetFirstSmartLockStatus(new_state);
+  if (!first_status.has_value()) {
     return;
+  }
+
+  if (has_user_been_shown_first_status_) {
+    return;
+  }
   has_user_been_shown_first_status_ = true;
 
   if (show_lock_screen_time_.is_null()) {
@@ -846,8 +973,8 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
     return;
   }
 
-  const std::string histogram_status_suffix =
-      GetHistogramStatusSuffix(unlockable);
+  base::UmaHistogramEnumeration("SmartLock.FirstStatusToUser",
+                                first_status.value());
 
   base::Time now = base::DefaultClock::GetInstance()->Now();
   base::TimeDelta show_lock_screen_to_show_first_status_to_user_duration =
@@ -858,14 +985,24 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
         "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
         "Unlock",
         show_lock_screen_to_show_first_status_to_user_duration);
-    RecordExtendedDurationTimerMetric(
-        "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
-        "Unlock." +
-            histogram_status_suffix,
-        show_lock_screen_to_show_first_status_to_user_duration);
-  }
 
-  // TODO(crbug.com/905438): Implement similar SignIn metrics.
+    if (new_state == SmartLockState::kPhoneAuthenticated) {
+      RecordExtendedDurationTimerMetric(
+          "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
+          "Unlock.Unlockable",
+          show_lock_screen_to_show_first_status_to_user_duration);
+    } else if (HasCommunicatedWithPhone(new_state)) {
+      // Only log to Unlock.Other if we aren't in an unlockable state since
+      // that's covered by the other metric, and only if we are in a state that
+      // indicates we were able to communicate with the phone over Bluetooth
+      // since in all other cases the time to show the first status is highly
+      // deterministic.
+      RecordExtendedDurationTimerMetric(
+          "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
+          "Unlock.Other",
+          show_lock_screen_to_show_first_status_to_user_duration);
+    }
+  }
 }
 
 void UnlockManagerImpl::ResetPerformanceMetricsTimestamps() {

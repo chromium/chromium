@@ -76,14 +76,6 @@ interface ContextualSearchSelectionHandler {
     public void handleMetricsForWouldSuppressTap(ContextualSearchHeuristics tapHeuristics);
 
     /**
-     * Logs all the features that we can obtain without accessing heuristics, i.e. from global
-     * state.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} to log the
-     * features to.
-     */
-    public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder interactionRecorder);
-
-    /**
      * Handles a long-press gesture that may make a server Resolve request to determine the search.
      */
     void handleValidResolvingLongpress();

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
@@ -79,7 +80,8 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<crosapi::mojom::DownloadControllerClient>
       download_controller_client_;
-  testing::NiceMock<content::MockDownloadManager>* download_manager_ = nullptr;
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>> download_manager_ =
+      nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

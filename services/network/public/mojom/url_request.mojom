@@ -373,11 +373,6 @@ struct URLRequest {
   // True for favicon.
   bool is_favicon;
 
-  // If set, the network service will attempt to retrieve the appropriate origin
-  // policy, if necessary, and attach it to the ResourceResponseHead.
-  // Spec: https://wicg.github.io/origin-policy/
-  bool obey_origin_policy;
-
   // The original destination of a request that was passed through by a service
   // worker.
   RequestDestination original_destination;

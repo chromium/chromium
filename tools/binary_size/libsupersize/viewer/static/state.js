@@ -26,18 +26,21 @@ const dom = {
    */
   createFragment(nodes) {
     const fragment = document.createDocumentFragment();
-    for (const node of nodes) fragment.appendChild(node);
+    for (const node of nodes)
+      fragment.appendChild(node);
     return fragment;
   },
   /**
-   * Removes all the existing children of `parent` and inserts
-   * `newChild` in their place.
+   * Removes all the existing children of `parent` and inserts `newChild` in
+   * their place.
    * @param {Node} parent
    * @param {Node | null} newChild
    */
   replace(parent, newChild) {
-    while (parent.firstChild) parent.removeChild(parent.firstChild);
-    if (newChild != null) parent.appendChild(newChild);
+    while (parent.firstChild)
+      parent.removeChild(parent.firstChild);
+    if (newChild != null)
+      parent.appendChild(newChild);
   },
   /**
    * Builds a text element in a single statement.
@@ -48,7 +51,8 @@ const dom = {
   textElement(tagName, text, className) {
     const element = document.createElement(tagName);
     element.textContent = text;
-    if (className) element.className = className;
+    if (className)
+      element.className = className;
     return element;
   },
 };
@@ -58,9 +62,8 @@ function _initState() {
   const _DEFAULT_FORM = new FormData(form);
 
   /**
-   * State is represented in the query string and
-   * can be manipulated by this object. Keys in the query match with
-   * input names.
+   * State is represented in the query string and can be manipulated by this
+   * object. Keys in the query match with input names.
    */
 
   /** @type {URLSearchParams} */
@@ -113,7 +116,8 @@ function _initState() {
       } else {
         _filterParams.set(key, value);
       }
-      history.replaceState(null, null, state.toString());
+      // Passing empty `state` leads to no change, so use `location.pathname`.
+      history.replaceState(null, null, state.toString() || location.pathname);
     },
   });
 
@@ -141,8 +145,7 @@ function _initState() {
   }
 
   /**
-   * Yields only entries that have been modified in
-   * comparison to `_DEFAULT_FORM`.
+   * Yields only entries that have been modified relative to `_DEFAULT_FORM`.
    * @generator
    * @param {FormData} modifiedForm
    * @yields {{key: string, value: FormDataEntryValue}}
@@ -171,7 +174,8 @@ function _initState() {
     for (const {key, value} of onlyChangedEntries(modifiedForm)) {
       _filterParams.append(key, value.toString());
     }
-    history.replaceState(null, null, state.toString());
+    // Passing empty `state` leads to no change, so use `location.pathname`.
+    history.replaceState(null, null, state.toString() || location.pathname);
   }
 
   form.addEventListener('change', _updateStateFromForm);
@@ -274,7 +278,7 @@ function _makeIconTemplateGetter() {
    */
   const symbolIcons = {
     D: _icons.querySelector('.foldericon'),
-    C: _icons.querySelector('.componenticon'),
+    G: _icons.querySelector('.groupicon'),
     J: _icons.querySelector('.javaclassicon'),
     F: _icons.querySelector('.fileicon'),
     b: _icons.querySelector('.bssicon'),
@@ -287,7 +291,7 @@ function _makeIconTemplateGetter() {
     m: _icons.querySelector('.dexmethodicon'),
     p: _icons.querySelector('.localpakicon'),
     P: _icons.querySelector('.nonlocalpakicon'),
-    o: _icons.querySelector('.othericon'), // used as default icon
+    o: _icons.querySelector('.othericon'),  // used as default icon
   };
 
   const _statuses = document.getElementById('symbol-diff-status-icons');

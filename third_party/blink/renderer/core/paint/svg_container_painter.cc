@@ -88,8 +88,8 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
 
     for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
          child = child->NextSibling()) {
-      if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
-        SVGForeignObjectPainter(*foreign_object)
+      if (child->IsSVGForeignObjectIncludingNG()) {
+        SVGForeignObjectPainter(To<LayoutBlockFlow>(*child))
             .PaintLayer(paint_info_before_filtering);
       } else {
         child->Paint(paint_info_before_filtering);

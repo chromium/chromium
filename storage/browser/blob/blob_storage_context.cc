@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -110,10 +109,7 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::AddFinishedBlob(
   TRACE_EVENT0("Blob", "Context::AddFinishedBlobFromItems");
   BlobEntry* entry =
       registry_.CreateEntry(uuid, content_type, content_disposition);
-  uint64_t total_memory_size = 0;
   for (const auto& item : items) {
-    if (item->item()->type() == BlobDataItem::Type::kBytes)
-      total_memory_size += item->item()->length();
     DCHECK_EQ(item->state(), ShareableBlobDataItem::POPULATED_WITH_QUOTA);
     DCHECK_NE(BlobDataItem::Type::kBytesDescription, item->item()->type());
     DCHECK(!item->item()->IsFutureFileItem());
@@ -121,7 +117,6 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::AddFinishedBlob(
 
   entry->SetSharedBlobItems(std::move(items));
   std::unique_ptr<BlobDataHandle> handle = CreateHandle(uuid, entry);
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.TotalSize", total_memory_size / 1024);
   entry->set_status(BlobStatus::DONE);
   memory_controller_.NotifyMemoryItemsUsed(entry->items());
   return handle;
@@ -215,9 +210,6 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::BuildBlobInternal(
   }
 
   std::unique_ptr<BlobDataHandle> handle = CreateHandle(content->uuid_, entry);
-
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.TotalSize",
-                          content->total_memory_size() / 1024);
 
   TransportQuotaType transport_quota_type = content->found_memory_transport()
                                                 ? TransportQuotaType::MEMORY
@@ -510,14 +502,6 @@ void BlobStorageContext::FinishBuilding(BlobEntry* entry) {
   DCHECK(entry);
   BlobStatus status = entry->status_;
   DCHECK_NE(BlobStatus::DONE, status);
-
-  bool error = BlobStatusIsError(status);
-  UMA_HISTOGRAM_BOOLEAN("Storage.Blob.Broken", error);
-  if (error) {
-    UMA_HISTOGRAM_ENUMERATION("Storage.Blob.BrokenReason",
-                              static_cast<int>(status),
-                              (static_cast<int>(BlobStatus::LAST_ERROR) + 1));
-  }
 
   if (BlobStatusIsPending(entry->status_)) {
     for (const ItemCopyEntry& copy : entry->building_state_->copies) {

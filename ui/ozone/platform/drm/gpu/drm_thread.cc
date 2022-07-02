@@ -357,9 +357,7 @@ void DrmThread::GetHardwareCapabilities(
       device_manager_->GetDrmDevice(widget)->plane_manager();
 
   if (!hdc || !plane_manager) {
-    // Assume only the primary plane exists.
-    ui::HardwareCapabilities hardware_capabilities;
-    hardware_capabilities.num_overlay_capable_planes = 1;
+    ui::HardwareCapabilities hardware_capabilities{.is_valid = false};
     std::move(receive_callback).Run(hardware_capabilities);
     return;
   }
@@ -372,10 +370,9 @@ void DrmThread::GetHardwareCapabilities(
         .Run(plane_manager->GetHardwareCapabilities(
             crtc_controllers[0]->crtc()));
   } else {
-    // If there are multiple CRTCs for this widget, we shouldn't rely on
-    // overlays working, so we'll say only the primary plane exists.
-    ui::HardwareCapabilities hardware_capabilities;
-    hardware_capabilities.num_overlay_capable_planes = 1;
+    // If there are multiple CRTCs for this widget we shouldn't rely on overlays
+    // working.
+    ui::HardwareCapabilities hardware_capabilities{.is_valid = false};
     std::move(receive_callback).Run(hardware_capabilities);
   }
 }
@@ -410,6 +407,16 @@ void DrmThread::RelinquishDisplayControl(
   TRACE_EVENT0("drm", "DrmThread::RelinquishDisplayControl");
   display_manager_->RelinquishDisplayControl();
   std::move(callback).Run(true);
+}
+
+void DrmThread::ShouldDisplayEventTriggerConfiguration(
+    const EventPropertyMap& event_props,
+    base::OnceCallback<void(bool)> callback) {
+  TRACE_EVENT0("drm", "DrmThread::ShouldDisplayEventTriggerConfiguration");
+  const bool should_trigger =
+      display_manager_->ShouldDisplayEventTriggerConfiguration(event_props);
+
+  std::move(callback).Run(should_trigger);
 }
 
 void DrmThread::AddGraphicsDevice(const base::FilePath& path, base::File file) {

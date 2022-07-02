@@ -89,3 +89,12 @@ blink_core_sources_events = [
   "wheel_event.cc",
   "wheel_event.h",
 ]
+
+blink_core_tests_events = [
+  "message_event_test.cc",
+  "mouse_event_test.cc",
+  "pointer_event_factory_test.cc",
+  "pointer_event_util_test.cc",
+  "touch_event_test.cc",
+  "web_input_event_conversion_test.cc",
+]

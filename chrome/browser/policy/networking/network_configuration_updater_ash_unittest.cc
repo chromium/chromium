@@ -20,14 +20,14 @@
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/network/fake_network_device_handler.h"
+#include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/network/fake_network_device_handler.h"
-#include "chromeos/network/mock_managed_network_configuration_handler.h"
-#include "chromeos/network/onc/onc_certificate_importer.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
@@ -54,6 +54,7 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
+using testing::Eq;
 using testing::Mock;
 using testing::Ne;
 using testing::Return;
@@ -275,11 +276,10 @@ void SelectSingleClientCertificateFromOnc(
       toplevel_onc->FindKey(onc::toplevel_config::kCertificates);
   ASSERT_TRUE(certs);
   ASSERT_TRUE(certs->is_list());
-  ASSERT_TRUE(certs->GetListDeprecated().size() > client_certificate_index);
+  ASSERT_TRUE(certs->GetList().size() > client_certificate_index);
 
   base::ListValue selected_certs;
-  selected_certs.Append(
-      certs->GetListDeprecated()[client_certificate_index].Clone());
+  selected_certs.Append(certs->GetList()[client_certificate_index].Clone());
 
   chromeos::onc::OncParsedCertificates parsed_selected_certs(selected_certs);
   ASSERT_FALSE(parsed_selected_certs.has_error());
@@ -297,7 +297,7 @@ MATCHER_P(IsEqualTo,
 }
 
 MATCHER(IsListEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
-  return arg.GetListDeprecated().empty();
+  return arg.GetList().empty();
 }
 
 MATCHER(IsDictEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
@@ -348,6 +348,9 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
 
     certificate_importer_ = new FakeCertificateImporter;
     client_certificate_importer_owned_.reset(certificate_importer_);
+
+    EXPECT_CALL(network_config_handler_, SetProfileWideVariableExpansions(_, _))
+        .Times(AnyNumber());
   }
 
   base::Value* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
@@ -356,13 +359,6 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     fake_network_configs_ =
         fake_toplevel_onc.FindKey(onc::toplevel_config::kNetworkConfigurations)
             ->Clone();
-    if (source == ::onc::ONC_SOURCE_DEVICE_POLICY) {
-      std::string expected_identity =
-          std::string(kFakeSerialNumber) + "-" + std::string(kFakeAssetId);
-      SetExpectedValueInNetworkConfig(
-          &fake_network_configs_, "{guid-for-wifi-with-device-exp}",
-          {"WiFi", "EAP", "Identity"}, base::Value(expected_identity));
-    }
     return &fake_network_configs_;
   }
 
@@ -449,24 +445,9 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   std::unique_ptr<NetworkConfigurationUpdater> network_configuration_updater_;
 
  private:
-  void SetExpectedValueInNetworkConfig(
-      base::Value* network_configs,
-      base::StringPiece guid,
-      std::initializer_list<base::StringPiece> path,
-      base::Value value) {
-    for (base::Value& network_config : network_configs->GetListDeprecated()) {
-      const base::Value* guid_value =
-          network_config.FindKey(::onc::network_config::kGUID);
-      if (!guid_value || guid_value->GetString() != guid)
-        continue;
-      network_config.SetPath(path, std::move(value));
-      break;
-    }
-  }
-
   base::Value fake_network_configs_;
   base::Value fake_global_network_config_{base::Value::Type::DICTIONARY};
-  chromeos::ScopedFakeSessionManagerClient scoped_session_manager_client_;
+  ash::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
 TEST_F(NetworkConfigurationUpdaterAshTest, CellularRoamingDefaults) {
@@ -577,6 +558,8 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
   MarkPolicyProviderInitialized();
 
   Mock::VerifyAndClearExpectations(&network_config_handler_);
+  EXPECT_CALL(network_config_handler_, SetProfileWideVariableExpansions(_, _))
+      .Times(AnyNumber());
   EXPECT_EQ(0u, certificate_importer_->GetAndResetImportCount());
 
   certificate_importer_->SetExpectedONCClientCertificates(
@@ -588,7 +571,11 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
   EXPECT_EQ(1u, certificate_importer_->GetAndResetImportCount());
 }
 
-TEST_F(NetworkConfigurationUpdaterAshTest, ReplaceDeviceOncPlaceholders) {
+TEST_F(NetworkConfigurationUpdaterAshTest, SetDeviceVariableExpansions) {
+  Mock::VerifyAndClearExpectations(&network_config_handler_);
+  const base::flat_map<std::string, std::string> kExpectedExpansions = {
+      {"DEVICE_ASSET_ID", kFakeAssetId},
+      {"DEVICE_SERIAL_NUMBER", kFakeSerialNumber}};
   PolicyMap policy;
   policy.Set(key::kDeviceOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
@@ -597,11 +584,38 @@ TEST_F(NetworkConfigurationUpdaterAshTest, ReplaceDeviceOncPlaceholders) {
 
   ::onc::ONCSource source = onc::ONC_SOURCE_DEVICE_POLICY;
   EXPECT_CALL(network_config_handler_,
-              SetPolicy(source, std::string(),
+              SetPolicy(source, /*userhash=*/std::string(),
                         IsEqualTo(GetExpectedFakeNetworkConfigs(source)),
                         IsEqualTo(GetExpectedFakeGlobalNetworkConfig())));
+  EXPECT_CALL(network_config_handler_,
+              SetProfileWideVariableExpansions(/*userhash=*/std::string(),
+                                               Eq(kExpectedExpansions)));
 
   CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
+}
+
+TEST_F(NetworkConfigurationUpdaterAshTest, SetUserVariableExpansions) {
+  Mock::VerifyAndClearExpectations(&network_config_handler_);
+  const base::flat_map<std::string, std::string> kExpectedExpansions = {
+      {"LOGIN_EMAIL", kFakeUserEmail}, {"LOGIN_ID", kFakeUserEmail}};
+  PolicyMap policy;
+  policy.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kFakeONC),
+             nullptr);
+  UpdateProviderPolicy(policy);
+
+  ::onc::ONCSource source = onc::ONC_SOURCE_USER_POLICY;
+  EXPECT_CALL(network_config_handler_,
+              SetPolicy(source, kFakeUsernameHash,
+                        IsEqualTo(GetExpectedFakeNetworkConfigs(source)),
+                        IsEqualTo(GetExpectedFakeGlobalNetworkConfig())));
+  EXPECT_CALL(network_config_handler_,
+              SetProfileWideVariableExpansions(/*userhash=*/kFakeUsernameHash,
+                                               Eq(kExpectedExpansions)));
+
+  CreateNetworkConfigurationUpdaterForUserPolicy(
+      /*set_client_cert_importer=*/false);
   MarkPolicyProviderInitialized();
 }
 
@@ -758,6 +772,8 @@ TEST_P(NetworkConfigurationUpdaterAshTestWithParam,
   CreateNetworkConfigurationUpdater();
 
   Mock::VerifyAndClearExpectations(&network_config_handler_);
+  EXPECT_CALL(network_config_handler_, SetProfileWideVariableExpansions(_, _))
+      .Times(AnyNumber());
   EXPECT_EQ(0u, certificate_importer_->GetAndResetImportCount());
 
   EXPECT_CALL(
@@ -804,6 +820,8 @@ TEST_P(NetworkConfigurationUpdaterAshTestWithParam, PolicyChange) {
   MarkPolicyProviderInitialized();
 
   Mock::VerifyAndClearExpectations(&network_config_handler_);
+  EXPECT_CALL(network_config_handler_, SetProfileWideVariableExpansions(_, _))
+      .Times(AnyNumber());
   // The certificate importer is only called if the certificates changes. An
   // empty policy does not count.
   EXPECT_EQ(0u, certificate_importer_->GetAndResetImportCount());
@@ -822,6 +840,8 @@ TEST_P(NetworkConfigurationUpdaterAshTestWithParam, PolicyChange) {
              POLICY_SOURCE_CLOUD, base::Value(kFakeONC), nullptr);
   UpdateProviderPolicy(policy);
   Mock::VerifyAndClearExpectations(&network_config_handler_);
+  EXPECT_CALL(network_config_handler_, SetProfileWideVariableExpansions(_, _))
+      .Times(AnyNumber());
   EXPECT_EQ(ExpectedImportCertificatesCallCount(),
             certificate_importer_->GetAndResetImportCount());
 

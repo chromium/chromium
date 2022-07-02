@@ -21,8 +21,8 @@ class NET_EXPORT_PRIVATE PeerToPeerConnectionsCountObserver {
   virtual void OnPeerToPeerConnectionsCountChange(uint32_t count) = 0;
 
  protected:
-  PeerToPeerConnectionsCountObserver() {}
-  virtual ~PeerToPeerConnectionsCountObserver() {}
+  PeerToPeerConnectionsCountObserver() = default;
+  virtual ~PeerToPeerConnectionsCountObserver() = default;
 };
 
 }  // namespace net

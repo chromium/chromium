@@ -37,7 +37,7 @@ public class WebappInfo {
         return (provider == null) ? null : new WebappInfo(provider);
     }
 
-    private WebappInfo(@NonNull BrowserServicesIntentDataProvider provider) {
+    protected WebappInfo(@NonNull BrowserServicesIntentDataProvider provider) {
         mProvider = provider;
     }
 
@@ -233,13 +233,13 @@ public class WebappInfo {
                 && source != ShortcutSource.WEBAPK_SHARE_TARGET_FILE;
     }
 
-    private WebappExtras getWebappExtras() {
+    protected WebappExtras getWebappExtras() {
         WebappExtras extras = mProvider.getWebappExtras();
         assert extras != null;
         return extras;
     }
 
-    private @NonNull WebApkExtras getWebApkExtras() {
+    protected @NonNull WebApkExtras getWebApkExtras() {
         if (mWebApkExtras != null) return mWebApkExtras;
 
         mWebApkExtras = mProvider.getWebApkExtras();

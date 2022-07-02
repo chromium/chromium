@@ -574,10 +574,6 @@ bool ArcImeService::SetEditableSelectionRange(const gfx::Range& range) {
   return true;
 }
 
-bool ArcImeService::DeleteRange(const gfx::Range& range) {
-  return false;
-}
-
 bool ArcImeService::ChangeTextDirectionAndLayoutAlignment(
     base::i18n::TextDirection direction) {
   return false;
@@ -646,8 +642,8 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
   return false;
 }
 
-absl::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
+    const {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return absl::nullopt;

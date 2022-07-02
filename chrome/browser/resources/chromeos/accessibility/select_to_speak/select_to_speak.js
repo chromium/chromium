@@ -70,7 +70,7 @@ export class SelectToSpeak {
     /** @private {number|undefined} */
     this.intervalRef_;
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
       // After the user selects a region of the screen, we do a hit test at
@@ -179,7 +179,7 @@ export class SelectToSpeak {
 
     // TODO(chrishall): do we want to (also?) expose this in preferences?
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection', (result) => {
+        'enable-experimental-accessibility-language-detection', result => {
           this.enableLanguageDetectionIntegration_ = result;
         });
 
@@ -189,13 +189,13 @@ export class SelectToSpeak {
      */
     this.enhancedVoicesFlag_ = false;
     chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.ENHANCED_NETWORK_VOICES, (result) => {
+        AccessibilityFeature.ENHANCED_NETWORK_VOICES, result => {
           this.enhancedVoicesFlag_ = result;
         });
 
     /** @private {number} Default speech rate set in system settings. */
     this.systemSpeechRate_ = 1.0;
-    chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, (pref) => {
+    chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, pref => {
       if (!pref) {
         return;
       }
@@ -263,7 +263,7 @@ export class SelectToSpeak {
 
     var rect = this.inputHandler_.getMouseRect();
     var nodes = [];
-    chrome.automation.getFocus((focusedNode) => {
+    chrome.automation.getFocus(focusedNode => {
       // In some cases, e.g. ARC++, the window received in the hit test request,
       // which is computed based on which window is the event handler for the
       // hit point, isn't the part of the tree that contains the actual
@@ -453,7 +453,7 @@ export class SelectToSpeak {
       if (!gsuiteAppRootNode) {
         return;
       }
-      chrome.tabs.query({active: true}, (tabs) => {
+      chrome.tabs.query({active: true}, tabs => {
         // Closure doesn't realize that we did a !gsuiteAppRootNode earlier
         // so we check again here.
         if (tabs.length === 0 || !gsuiteAppRootNode) {
@@ -488,7 +488,7 @@ export class SelectToSpeak {
       return;
     }
     this.scrollToSpokenNode_ = true;
-    const listener = (event) => {
+    const listener = event => {
       if (event.eventFrom !== 'action') {
         // User initiated event. Cancel all future scrolling to spoken nodes.
         // If the user wants a certain scroll position we will respect that.
@@ -693,8 +693,8 @@ export class SelectToSpeak {
             'https://docs.sandbox.google.com/*'
           ]
         },
-        (tabs) => {
-          tabs.forEach((tab) => {
+        tabs => {
+          tabs.forEach(tab => {
             chrome.tabs.executeScript(tab.id, {file: script});
           });
         });
@@ -850,7 +850,7 @@ export class SelectToSpeak {
    * @private
    */
   onPrefsChanged_(prefs) {
-    const ratePref = prefs.find((pref) => pref.key === SPEECH_RATE_KEY);
+    const ratePref = prefs.find(pref => pref.key === SPEECH_RATE_KEY);
     if (ratePref) {
       this.systemSpeechRate_ = ratePref.value;
     }
@@ -870,7 +870,7 @@ export class SelectToSpeak {
     }
     const {nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
         this.getCurrentNodeGroup_(), this.currentCharIndex_, direction,
-        (nodes) => this.skipPanel_(nodes));
+        nodes => this.skipPanel_(nodes));
     if (nodes.length === 0) {
       return;
     }
@@ -893,7 +893,7 @@ export class SelectToSpeak {
 
     const nodes = NodeNavigationUtils.getNodesForNextParagraph(
         this.getCurrentNodeGroup_(), direction,
-        (nodes) => this.skipPanel_(nodes));
+        nodes => this.skipPanel_(nodes));
     // Return early if the nodes are empty.
     if (nodes.length === 0) {
       return;
@@ -914,7 +914,7 @@ export class SelectToSpeak {
    */
   skipPanel_(nodes) {
     return !AutomationUtil.getAncestors(nodes[0]).find(
-        (n) => UiManager.isPanel(n));
+        n => UiManager.isPanel(n));
   }
 
   /**
@@ -933,7 +933,7 @@ export class SelectToSpeak {
 
       // Without nodes to anchor on, navigate is not supported.
       this.supportsNavigationPanel_ = false;
-      options.onEvent = (event) => {
+      options.onEvent = event => {
         if (event.type === 'start') {
           this.onStateChanged_(SelectToSpeakState.SPEAKING);
           this.updateUi_();
@@ -1127,7 +1127,7 @@ export class SelectToSpeak {
 
     const nodeGroupText = nodeGroup.text || '';
 
-    options.onEvent = (event) => {
+    options.onEvent = event => {
       switch (event.type) {
         case chrome.tts.EventType.START:
           if (nodeGroup.nodes.length <= 0) {
@@ -1443,10 +1443,10 @@ export class SelectToSpeak {
    * @private
    */
   isNodeInForeground_(node) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.desktop_.hitTestWithReply(
-          node.location.left, node.location.top, (nodeAtLocation) => {
-            chrome.automation.getFocus((focusedNode) => {
+          node.location.left, node.location.top, nodeAtLocation => {
+            chrome.automation.getFocus(focusedNode => {
               const window =
                   NodeUtils.getNearestContainingWindow(nodeAtLocation);
               const currentWindow = NodeUtils.getNearestContainingWindow(node);
@@ -1580,7 +1580,7 @@ export class SelectToSpeak {
       const description = chrome.i18n.getMessage(
           'select_to_speak_natural_voice_dialog_description');
       chrome.accessibilityPrivate.showConfirmationDialog(
-          title, description, (confirm) => {
+          title, description, confirm => {
             this.prefsManager_.setEnhancedNetworkVoicesFromDialog(confirm);
             if (callback !== undefined) {
               callback();
@@ -1672,7 +1672,7 @@ export class SelectToSpeak {
     // auto-dismissing behavior (see http://crbug.com/1157148), but also
     // navigation controls do not work well for control-rich interfaces that are
     // light on text (and therefore no sentence and paragraph structures).
-    return !nodes.some((n) => n.root && n.root.role === RoleType.DESKTOP);
+    return !nodes.some(n => n.root && n.root.role === RoleType.DESKTOP);
   }
 
   /**

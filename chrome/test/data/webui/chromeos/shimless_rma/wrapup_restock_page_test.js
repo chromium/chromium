@@ -25,13 +25,10 @@ export function wrapupRestockPageTest() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
-  suiteSetup(() => {
-    service = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(service);
-  });
-
   setup(() => {
     document.body.innerHTML = '';
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
@@ -42,9 +39,7 @@ export function wrapupRestockPageTest() {
     service.reset();
   });
 
-  /**
-   * @return {!Promise}
-   */
+  /** @return {!Promise} */
   function initializeRestockPage() {
     assertFalse(!!component);
 
@@ -60,15 +55,12 @@ export function wrapupRestockPageTest() {
 
     return flushTasks();
   }
-  /**
-   * @param {string} buttonNameSelector
-   * @return {!Promise}
-   */
-  function clickButton(buttonNameSelector) {
-    assertTrue(!!component);
 
-    const button = component.shadowRoot.querySelector(buttonNameSelector);
-    button.click();
+  /** @return {!Promise} */
+  function clickShutdownButton() {
+    const shutdownComponent = component.shadowRoot.querySelector('#shutdown');
+    assertTrue(!!shutdownComponent);
+    shutdownComponent.click();
     return flushTasks();
   }
 
@@ -95,7 +87,7 @@ export function wrapupRestockPageTest() {
     assertEquals(1, callCounter);
   });
 
-  test('RestockPagePowerwashButtonCallsShutdownForRestock', async () => {
+  test('RestockPageOnShutdownCallsShutdownForRestock', async () => {
     const resolver = new PromiseResolver();
     await initializeRestockPage();
     let restockCallCounter = 0;
@@ -104,59 +96,9 @@ export function wrapupRestockPageTest() {
       return resolver.promise;
     };
 
-    await clickButton('#powerwashButton');
+    await clickShutdownButton();
 
     assertEquals(1, restockCallCounter);
-  });
-
-  test('ShutDownButtonOpensPowerwashDialog', async () => {
-    const resolver = new PromiseResolver();
-    await initializeRestockPage();
-
-    let callCount = 0;
-    service.shutdownForRestock = () => {
-      callCount++;
-      return resolver.promise;
-    };
-    await flushTasks();
-
-    await clickButton('#shutdown');
-
-    // Don't shut down immediately.
-    assertEquals(0, callCount);
-    // Show the dialog instead.
-    const powerwashDialog =
-        component.shadowRoot.querySelector('#powerwashDialog');
-    assertTrue(!!powerwashDialog);
-    assertTrue(powerwashDialog.open);
-  });
-
-  test('CancelButtonClosesPowerwashDialog', async () => {
-    await initializeRestockPage();
-    await flushTasks();
-    const powerwashDialog =
-        component.shadowRoot.querySelector('#powerwashDialog');
-    assertTrue(!!powerwashDialog);
-
-    await clickButton('#shutdown');
-    assertTrue(powerwashDialog.open);
-
-    await clickButton('#closePowerwashDialogButton');
-    assertFalse(powerwashDialog.open);
-  });
-
-  test('PowerwashDialogClosesWhenCompleted', async () => {
-    await initializeRestockPage();
-
-    const powerwashDialog =
-        component.shadowRoot.querySelector('#powerwashDialog');
-    assertTrue(!!powerwashDialog);
-
-    await clickButton('#shutdown');
-    assertTrue(powerwashDialog.open);
-
-    await clickButton('#powerwashButton');
-    assertFalse(powerwashDialog.open);
   });
 
   test('RestockPageButtonsDisabled', async () => {

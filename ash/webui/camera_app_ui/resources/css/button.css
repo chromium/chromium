@@ -14,8 +14,7 @@
 }
 
 button.text-button.pill:focus {
-  --focus-ring-size: 2px;
-  --focus-ring-style: pill;
+  outline-offset: 2px;
 }
 
 .text-button.pill {
@@ -48,8 +47,7 @@ button.text-button.pill:focus {
 }
 
 button.icon-button:focus {
-  --focus-ring-size: 2px;
-  --focus-ring-style: circle;
+  outline-offset: 2px;
 }
 
 button.icon-button.dark:hover {

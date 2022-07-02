@@ -20,7 +20,7 @@ class WebState;
 // Notifies the receiver that the most recent tab was removed.
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state;
 // Notifies the receiver that the favicon for the current page of the most
-// recent tab was updated with |image|.
+// recent tab was updated with `image`.
 - (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image;
 @end
 

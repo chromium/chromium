@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-#include <string>
-
 #include "services/network/brokered_client_socket_factory.h"
 
 #include "build/build_config.h"
@@ -27,7 +24,9 @@ class NetworkQualityEstimator;
 
 namespace network {
 
-BrokeredClientSocketFactory::BrokeredClientSocketFactory() = default;
+BrokeredClientSocketFactory::BrokeredClientSocketFactory(
+    mojo::PendingRemote<mojom::SocketBroker> pending_remote)
+    : socket_broker_(std::move(pending_remote)) {}
 BrokeredClientSocketFactory::~BrokeredClientSocketFactory() = default;
 
 std::unique_ptr<net::DatagramClientSocket>
@@ -48,7 +47,7 @@ BrokeredClientSocketFactory::CreateTransportClientSocket(
     const net::NetLogSource& source) {
   return std::make_unique<TCPClientSocketBrokered>(
       addresses, std::move(socket_performance_watcher),
-      network_quality_estimator, net_log, source);
+      network_quality_estimator, net_log, source, this);
 }
 
 std::unique_ptr<net::SSLClientSocket>
@@ -59,6 +58,12 @@ BrokeredClientSocketFactory::CreateSSLClientSocket(
     const net::SSLConfig& ssl_config) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void BrokeredClientSocketFactory::BrokerCreateTcpSocket(
+    net::AddressFamily address_family,
+    mojom::SocketBroker::CreateTcpSocketCallback callback) {
+  socket_broker_->CreateTcpSocket(address_family, std::move(callback));
 }
 
 }  // namespace network

@@ -30,6 +30,16 @@ const QuickViewUmaWayToOpenHistogramValues = {
 };
 
 /**
+ * Checks if dark mode has been turned on or not.
+ *
+ * @return {!Promise<boolean>} enabled or not.
+ */
+async function isDarkModeEnabled() {
+  const isDarkModeEnabled = await sendTestMessage({name: 'isDarkModeEnabled'});
+  return isDarkModeEnabled === 'true';
+}
+
+/**
  * Returns the $i18n{} label for the Quick View item |text| if devtools code
  * coverage is enabled. Otherwise, returns |text|.
  *
@@ -1303,7 +1313,7 @@ testcase.openQuickViewBackgroundColorHtml = async () => {
       haveElements = elements[0].styles.display.includes('block');
     }
     if (!haveElements || !elements[0].styles.backgroundColor) {
-      return pending(caller, 'Waiting for <file-safe-media> element.');
+      return pending(caller, 'Waiting for <files-safe-media> element.');
     }
     return elements[0].styles.backgroundColor;
   }
@@ -1313,8 +1323,12 @@ testcase.openQuickViewBackgroundColorHtml = async () => {
         'deepQueryAllElements', appId, [fileSafeMedia, styles]));
   });
 
-  // Check: the <files-safe-media> backgroundColor should be solid white.
-  chrome.test.assertEq('rgb(255, 255, 255)', backgroundColor);
+  // Check: the <files-safe-media> backgroundColor: var(--cros-bg-color).
+  if (await isDarkModeEnabled()) {
+    chrome.test.assertEq('rgb(32, 33, 36)', backgroundColor);
+  } else {
+    chrome.test.assertEq('rgb(255, 255, 255)', backgroundColor);
+  }
 };
 
 /**

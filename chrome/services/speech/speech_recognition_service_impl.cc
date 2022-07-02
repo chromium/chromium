@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +22,13 @@ SpeechRecognitionServiceImpl::SpeechRecognitionServiceImpl(
 
 SpeechRecognitionServiceImpl::~SpeechRecognitionServiceImpl() = default;
 
-void SpeechRecognitionServiceImpl::BindContext(
+void SpeechRecognitionServiceImpl::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        context) {
+  audio_source_speech_recognition_contexts_.Add(this, std::move(context));
+}
+
+void SpeechRecognitionServiceImpl::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> context) {
   speech_recognition_contexts_.Add(this, std::move(context));
 }

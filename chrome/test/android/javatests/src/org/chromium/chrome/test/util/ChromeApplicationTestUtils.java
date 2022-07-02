@@ -141,7 +141,24 @@ public class ChromeApplicationTestUtils {
             Coordinates coord = Coordinates.createFor(tab.getWebContents());
             float scale = coord.getPageScaleFactor();
             Criteria.checkThat(
-                    (double) expectedScale, Matchers.is(Matchers.closeTo(scale, FLOAT_EPSILON)));
+                    (double) scale, Matchers.is(Matchers.closeTo(expectedScale, FLOAT_EPSILON)));
+        });
+    }
+
+    /**
+     * Waits till the WebContents receives a page scale factor different
+     * from the specified value and asserts that this happens.
+     */
+    public static void assertWaitForPageScaleFactorChange(
+            final ChromeActivity activity, final float initialScale) {
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = activity.getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+
+            Coordinates coord = Coordinates.createFor(tab.getWebContents());
+            float scale = coord.getPageScaleFactor();
+            Criteria.checkThat(
+                    (double) scale, Matchers.not(Matchers.closeTo(initialScale, FLOAT_EPSILON)));
         });
     }
 }

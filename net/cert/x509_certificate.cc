@@ -205,17 +205,17 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromPickle(
 scoped_refptr<X509Certificate> X509Certificate::CreateFromPickleUnsafeOptions(
     base::PickleIterator* pickle_iter,
     UnsafeCreateOptions options) {
-  int chain_length = 0;
+  size_t chain_length = 0;
   if (!pickle_iter->ReadLength(&chain_length))
     return nullptr;
 
   std::vector<base::StringPiece> cert_chain;
   const char* data = nullptr;
-  int data_length = 0;
-  for (int i = 0; i < chain_length; ++i) {
+  size_t data_length = 0;
+  for (size_t i = 0; i < chain_length; ++i) {
     if (!pickle_iter->ReadData(&data, &data_length))
       return nullptr;
-    cert_chain.push_back(base::StringPiece(data, data_length));
+    cert_chain.emplace_back(data, data_length);
   }
   return CreateFromDERCertChainUnsafeOptions(cert_chain, options);
 }
@@ -588,8 +588,8 @@ bool X509Certificate::GetPEMEncodedChain(
   if (!GetPEMEncoded(cert_buffer(), &pem_data))
     return false;
   encoded_chain.push_back(pem_data);
-  for (size_t i = 0; i < intermediate_ca_certs_.size(); ++i) {
-    if (!GetPEMEncoded(intermediate_ca_certs_[i].get(), &pem_data))
+  for (const auto& intermediate_ca_cert : intermediate_ca_certs_) {
+    if (!GetPEMEncoded(intermediate_ca_cert.get(), &pem_data))
       return false;
     encoded_chain.push_back(pem_data);
   }

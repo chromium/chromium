@@ -12,9 +12,9 @@
 // Coordinator to present sign-in screen with FRE consent (optional).
 @interface SigninScreenCoordinator : InterruptibleChromeCoordinator
 
-// Initiates a SigninScreenCoordinator with |navigationController|,
-// |browser| and |delegate|.
-// The |delegate| parameter is for handling the transfer between screens.
+// Initiates a SigninScreenCoordinator with `navigationController`,
+// `browser` and `delegate`.
+// The `delegate` parameter is for handling the transfer between screens.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

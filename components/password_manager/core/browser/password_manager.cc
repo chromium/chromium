@@ -263,6 +263,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
                                 false);
   registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
+  registry->RegisterBooleanPref(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);
@@ -727,8 +729,6 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   // Cache the committed URL. Once the post-submit navigation concludes, we
   // compare the landing URL against the cached and report the difference.
   submitted_form_url_ = submitted_url;
-
-  ReportSubmittedFormFrameMetric(driver, *matched_manager->GetSubmittedForm());
 
   return matched_manager;
 }
@@ -1283,30 +1283,6 @@ PasswordFormManager* PasswordManager::GetMatchedManager(
       return form_manager.get();
   }
   return nullptr;
-}
-
-void PasswordManager::ReportSubmittedFormFrameMetric(
-    const PasswordManagerDriver* driver,
-    const PasswordForm& form) {
-  if (!driver)
-    return;
-
-  metrics_util::SubmittedFormFrame frame;
-  if (driver->IsInPrimaryMainFrame()) {
-    frame = metrics_util::SubmittedFormFrame::MAIN_FRAME;
-  } else if (form.url == client()->GetLastCommittedURL()) {
-    frame =
-        metrics_util::SubmittedFormFrame::IFRAME_WITH_SAME_URL_AS_MAIN_FRAME;
-  } else {
-    std::string main_frame_signon_realm =
-        GetSignonRealm(client()->GetLastCommittedURL());
-    frame = (main_frame_signon_realm == form.signon_realm)
-                ? metrics_util::SubmittedFormFrame::
-                      IFRAME_WITH_DIFFERENT_URL_SAME_SIGNON_REALM_AS_MAIN_FRAME
-                : metrics_util::SubmittedFormFrame::
-                      IFRAME_WITH_DIFFERENT_SIGNON_REALM;
-  }
-  metrics_util::LogSubmittedFormFrame(frame);
 }
 
 void PasswordManager::TryToFindPredictionsToPossibleUsernameData() {

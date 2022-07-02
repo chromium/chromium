@@ -14,6 +14,10 @@ js_type_check("closure_compile") {
     ":oobe_dialog_host_behavior.m",
     ":oobe_focus_behavior.m",
     ":oobe_i18n_behavior.m",
+    # TODO(crbug.com/1319543) - Mixin closure compilation currently does not
+    # exist anywhere in the codebase. Uncomment once added to OOBE screens.
+    #":oobe_i18n_mixin.m",
+    ":i18n_mixin.m",
     ":oobe_scrollable_behavior.m",
   ]
 }
@@ -59,6 +63,26 @@ js_library("oobe_i18n_behavior.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("i18n_mixin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/i18n_mixin.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:parse_html_subset.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("oobe_i18n_mixin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_mixin.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    ".:i18n_mixin.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+
 js_library("oobe_scrollable_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_scrollable_behavior.m.js" ]
   deps = [
@@ -74,6 +98,8 @@ js_modulizer("modulize") {
     "oobe_dialog_host_behavior.js",
     "oobe_focus_behavior.js",
     "oobe_i18n_behavior.js",
+    "oobe_i18n_mixin.js",
+    "i18n_mixin.js",
     "oobe_scrollable_behavior.js",
   ]
   namespace_rewrites = oobe_namespace_rewrites

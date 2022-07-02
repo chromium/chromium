@@ -55,6 +55,17 @@ void NGContainerFragmentBuilder::PropagateChildData(
                                *adjustment_for_oof_propagation);
   }
 
+  if (child.IsBox()) {
+    if (const AtomicString& anchor_name = child.Style().AnchorName();
+        !anchor_name.IsNull()) {
+      DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+      anchor_query_.anchor_references.Set(
+          anchor_name,
+          LogicalRect{child_offset + relative_offset,
+                      child.Size().ConvertToLogical(GetWritingMode())});
+    }
+  }
+
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
   // percentages against the "final" size of their parent.
@@ -426,6 +437,15 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         }));
     oof_positioned_candidates_.emplace_back(node, static_position,
                                             new_inline_container);
+  }
+
+  // Collect any anchor references.
+  if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
+    for (const auto& it : anchor_query->anchor_references) {
+      LogicalRect rect = converter.ToLogical(it.value);
+      rect.offset += adjusted_offset;
+      anchor_query_.anchor_references.Set(it.key, rect);
+    }
   }
 
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();

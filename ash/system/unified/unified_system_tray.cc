@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_ui_controller.h"
@@ -33,6 +34,7 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
@@ -41,6 +43,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "base/debug/stack_trace.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -95,9 +98,13 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
     return message_popup_collection_.get();
   }
 
+  NotificationGroupingController* grouping_controller() {
+    return grouping_controller_.get();
+  }
+
  private:
   std::unique_ptr<MessageCenterUiController> const ui_controller_;
-  std::unique_ptr<AshMessagePopupCollection> const message_popup_collection_;
+  std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
 
   UnifiedSystemTray* const owner_;
 
@@ -125,7 +132,12 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
                   owner->shelf()->GetStatusAreaWidget()->GetNativeWindow()));
 }
 
-UnifiedSystemTray::UiDelegate::~UiDelegate() = default;
+UnifiedSystemTray::UiDelegate::~UiDelegate() {
+  // We need to destruct `message_popup_collection_` before
+  // `grouping_controller_` to prevent a msan failure, so explicitly delete
+  // it here.
+  message_popup_collection_.reset();
+}
 
 void UnifiedSystemTray::UiDelegate::OnMessageCenterContentsChanged() {
   owner_->UpdateNotificationInternal();
@@ -174,7 +186,10 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)) {
+      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)),
+      channel_indicator_view_(features::IsReleaseTrackUiEnabled()
+                                  ? new ChannelIndicatorView(shelf)
+                                  : nullptr) {
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -219,6 +234,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(network_tray_view_);
   AddTrayItemToContainer(new PowerTrayView(shelf));
 
+  if (features::IsReleaseTrackUiEnabled())
+    AddTrayItemToContainer(channel_indicator_view_);
+
   auto vertical_clock_padding = std::make_unique<views::View>();
   vertical_clock_padding->SetPreferredSize(gfx::Size(
       0, features::IsCalendarViewEnabled() ? 0 : kTrayTimeIconTopPadding));
@@ -241,6 +259,10 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   Shell::Get()->RemoveShellObserver(this);
 
   DestroyBubbles();
+
+  // We need to destruct `ui_delegate_` before `timer_` to prevent a msan
+  // failure, so explicitly delete it here.
+  ui_delegate_.reset();
 }
 
 void UnifiedSystemTray::AddObserver(Observer* observer) {
@@ -370,12 +392,6 @@ bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
 
   Shell::Get()->focus_cycler()->FocusWidget(message_center_widget);
 
-  ExpandMessageCenter();
-
-  // TODO(1225479): Only collapse if space is an issue.
-  if (collapse_quick_settings)
-    EnsureQuickSettingsCollapsed(/*animate*/ false);
-
   // Focus an individual element in the message center if chrome vox is
   // disabled.
   if (!ShouldEnableExtraKeyboardAccessibility())
@@ -399,6 +415,11 @@ bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
     bubble_->FocusEntered(reverse);
 
   return true;
+}
+
+void UnifiedSystemTray::NotifyLeavingCalendarView() {
+  for (auto& observer : observers_)
+    observer.OnLeavingCalendarView();
 }
 
 bool UnifiedSystemTray::IsQuickSettingsExplicitlyExpanded() const {
@@ -623,15 +644,16 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 
   first_interaction_recorded_ = false;
 
+  // Do not set the tray as active if the date tray is already active, this
+  // happens if `ShowBubble()` is called through `OnDateTrayActionPerformed()`.
+  if (shelf()->status_area_widget()->date_tray() &&
+      shelf()->status_area_widget()->date_tray()->is_active()) {
+    return;
+  }
   SetIsActive(true);
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
-  if (IsShowingCalendarView()) {
-    for (auto& observer : observers_)
-      observer.OnLeavingCalendarView();
-  }
-
   DestroyBubbles();
   SetIsActive(false);
 }
@@ -657,7 +679,22 @@ UnifiedSystemTray::GetPopupViewForNotificationID(
 }
 
 AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
+  // We need a check here since this function might be called when UiDelegate's
+  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
+  // though the UiDelegate object is still in the middle of dtor process.
+  if (!ui_delegate_)
+    return nullptr;
   return ui_delegate_->message_popup_collection();
+}
+
+NotificationGroupingController*
+UnifiedSystemTray::GetNotificationGroupingController() {
+  // We need a check here since this function might be called when UiDelegate's
+  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
+  // though the UiDelegate object is still in the middle of dtor process.
+  if (!ui_delegate_)
+    return nullptr;
+  return ui_delegate_->grouping_controller();
 }
 
 void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {

@@ -61,9 +61,10 @@ class VIEWS_EXPORT Link : public Label {
   SkColor GetColor() const;
 
   void SetForceUnderline(bool force_underline);
+  bool GetForceUnderline() const;
 
   // Label:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -84,11 +85,11 @@ class VIEWS_EXPORT Link : public Label {
   bool IsSelectionSupported() const override;
 
  private:
+  virtual void RecalculateFont();
+
   void SetPressed(bool pressed);
 
   void OnClick(const ui::Event& event);
-
-  void RecalculateFont();
 
   void ConfigureFocus();
 

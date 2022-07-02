@@ -193,3 +193,7 @@ void DependencyManager::DumpDependenciesAsGraphviz(
   base::WriteFile(dot_file, contents.c_str(), contents.size());
 }
 #endif  // NDEBUG
+
+DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {
+  return dependency_graph_;
+}

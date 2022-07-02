@@ -19,6 +19,9 @@ NSString* const kFirstRunWelcomeScreenAccessibilityIdentifier =
 NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
     @"firstRunSignInScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunLegacySignInScreenAccessibilityIdentifier =
+    @"firstRunLegacySignInScreenAccessibilityIdentifier";
+
 NSString* const kFirstRunSyncScreenAccessibilityIdentifier =
     @"firstRunSyncScreenAccessibilityIdentifier";
 

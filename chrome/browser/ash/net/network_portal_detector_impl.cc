@@ -17,12 +17,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/notification_service.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -97,7 +95,8 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
                  content::NotificationService::AllSources());
 
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
   StartPortalDetection();
 }
 
@@ -111,10 +110,6 @@ NetworkPortalDetectorImpl::~NetworkPortalDetectorImpl() {
   captive_portal_detector_->Cancel();
   captive_portal_detector_.reset();
   observers_.Clear();
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
-  }
   for (auto& observer : observers_)
     observer.OnShutdown();
 }
@@ -253,6 +248,10 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
   }
 }
 
+void NetworkPortalDetectorImpl::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
+}
+
 int NetworkPortalDetectorImpl::NoResponseResultCount() {
   return no_response_result_count_;
 }
@@ -352,8 +351,8 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   // If using a fake profile client, also fake being behind a captive portal
   // if the default network is in portal state.
   if (result != captive_portal::RESULT_NO_RESPONSE &&
-      DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface() &&
-      network && network->IsShillCaptivePortal()) {
+      ShillProfileClient::Get()->GetTestInterface() && network &&
+      network->IsShillCaptivePortal()) {
     result = captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL;
     response_code = 200;
   }

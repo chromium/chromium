@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
 #include "content/browser/renderer_host/input/touch_action_filter.h"
 #include "content/browser/renderer_host/input/touchpad_pinch_event_queue.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
 #include "content/common/input/input_event_stream_validator.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -47,6 +48,8 @@ class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
   virtual void OnImeCompositionRangeChanged(
       const gfx::Range& range,
       const std::vector<gfx::Rect>& bounds) = 0;
+  virtual RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() = 0;
+  virtual void OnStartStylusWriting() = 0;
 };
 
 // A default implementation for browser input event routing.
@@ -182,6 +185,8 @@ class CONTENT_EXPORT InputRouterImpl
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override;
 
+  bool HandleGestureScrollForStylusWriting(const blink::WebGestureEvent& event);
+
   void FilterAndSendWebInputEvent(
       const blink::WebInputEvent& input_event,
       const ui::LatencyInfo& latency_info,
@@ -241,6 +246,9 @@ class CONTENT_EXPORT InputRouterImpl
   // Whether the TouchScrollStarted event has been sent for the current
   // gesture scroll yet.
   bool touch_scroll_started_sent_;
+
+  // Whether stylus writing has started.
+  bool stylus_writing_started_ = false;
 
   MouseWheelEventQueue wheel_event_queue_;
   PassthroughTouchEventQueue touch_event_queue_;

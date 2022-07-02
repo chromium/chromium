@@ -32,6 +32,11 @@ const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Create(
   return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), builder);
 }
 
+const NGPhysicalLineBoxFragment* NGPhysicalLineBoxFragment::Clone(
+    const NGPhysicalLineBoxFragment& other) {
+  return MakeGarbageCollected<NGPhysicalLineBoxFragment>(PassKey(), other);
+}
+
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
     PassKey key,
     NGLineBoxFragmentBuilder* builder)
@@ -47,6 +52,15 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
   has_propagated_descendants_ = has_floating_descendants_for_paint_ ||
                                 HasOutOfFlowPositionedDescendants() ||
                                 builder->unpositioned_list_marker_;
+}
+
+NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
+    PassKey key,
+    const NGPhysicalLineBoxFragment& other)
+    : NGPhysicalFragment(other), metrics_(other.metrics_) {
+  base_direction_ = other.base_direction_;
+  has_hanging_ = other.has_hanging_;
+  has_propagated_descendants_ = other.has_propagated_descendants_;
 }
 
 NGPhysicalLineBoxFragment::~NGPhysicalLineBoxFragment() = default;

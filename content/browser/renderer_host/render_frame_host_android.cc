@@ -21,8 +21,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
-#include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/public_key_credential_user_entity.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -51,54 +49,6 @@ void OnGetCanonicalUrlForSharing(
 
   base::android::RunObjectCallbackAndroid(
       jcallback, url::GURLAndroid::FromNativeGURL(env, url.value()));
-}
-
-device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> j_credential) {
-  device::DiscoverableCredentialMetadata credential;
-  base::android::JavaByteArrayToByteVector(
-      env,
-      Java_RenderFrameHostImpl_getWebAuthnCredentialDetailsCredentialId(
-          env, j_credential),
-      &credential.cred_id);
-  base::android::JavaByteArrayToByteVector(
-      env,
-      Java_RenderFrameHostImpl_getWebAuthnCredentialDetailsUserId(env,
-                                                                  j_credential),
-      &credential.user.id);
-  credential.user.name = ConvertJavaStringToUTF8(
-      env, Java_RenderFrameHostImpl_getWebAuthnCredentialDetailsUserName(
-               env, j_credential));
-  credential.user.display_name = ConvertJavaStringToUTF8(
-      env, Java_RenderFrameHostImpl_getWebAuthnCredentialDetailsUserDisplayName(
-               env, j_credential));
-  return credential;
-}
-
-void ConvertJavaCredentialArrayToMetadataVector(
-    JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& array,
-    std::vector<device::DiscoverableCredentialMetadata>* out) {
-  jsize jlength = env->GetArrayLength(array.obj());
-  // GetArrayLength() returns -1 if |array| is not a valid Java array.
-  DCHECK_GE(jlength, 0) << "Invalid array length: " << jlength;
-  size_t length = static_cast<size_t>(std::max(0, jlength));
-  for (size_t i = 0; i < length; ++i) {
-    ScopedJavaLocalRef<jobject> j_credential(
-        env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
-    out->emplace_back(
-        ConvertJavaCredentialDetailsToMetadata(env, j_credential));
-  }
-}
-
-void OnWebAuthnCredentialSelected(
-    const base::android::JavaRef<jobject>& jcallback,
-    const std::vector<uint8_t>& credential_id) {
-  base::android::RunObjectCallbackAndroid(
-      jcallback, base::android::ToJavaByteArray(
-                     base::android::AttachCurrentThread(), credential_id.data(),
-                     credential_id.size()));
 }
 
 }  // namespace
@@ -225,10 +175,10 @@ jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(
   return close_listener_host->SignalIfActive();
 }
 
-jboolean RenderFrameHostAndroid::IsRenderFrameCreated(
+jboolean RenderFrameHostAndroid::IsRenderFrameLive(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) const {
-  return render_frame_host_->IsRenderFrameCreated();
+  return render_frame_host_->IsRenderFrameLive();
 }
 
 void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
@@ -236,7 +186,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& interface_name,
     jlong message_pipe_raw_handle) const {
-  DCHECK(render_frame_host_->IsRenderFrameCreated());
+  DCHECK(render_frame_host_->IsRenderFrameLive());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),
       mojo::ScopedMessagePipeHandle(
@@ -285,21 +235,6 @@ jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
       render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin,
           is_payment_credential_creation, nullptr));
-}
-
-void RenderFrameHostAndroid::OnCredentialsDetailsListReceived(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>&,
-    const base::android::JavaParamRef<jobjectArray>& credentials,
-    const base::android::JavaParamRef<jobject>& jcallback) const {
-  std::vector<device::DiscoverableCredentialMetadata> credentials_metadata;
-  ConvertJavaCredentialArrayToMetadataVector(env, credentials,
-                                             &credentials_metadata);
-  render_frame_host_->WebAuthnConditionalUiRequestPending(
-      credentials_metadata,
-      base::BindOnce(
-          &OnWebAuthnCredentialSelected,
-          base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
 jint RenderFrameHostAndroid::GetLifecycleState(

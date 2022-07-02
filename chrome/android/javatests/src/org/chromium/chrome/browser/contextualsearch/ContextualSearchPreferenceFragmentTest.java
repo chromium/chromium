@@ -14,13 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -84,23 +81,6 @@ public class ContextualSearchPreferenceFragmentTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
-    public void testSeeBetterResultsSwitch_NoShowWhenDisabled() {
-        // "See Better Results" Switch is not shown since the feature is disabled.
-        Assert.assertFalse(
-                "See Better Results Switch should not be shown when the feature is disabled",
-                mSeeBetterResultsSwitchPreference.isVisible());
-
-        mContextualSearchSwitchPreference.performClick();
-        Assert.assertFalse(
-                "See Better Results Switch should not be shown when the feature is disabled",
-                mSeeBetterResultsSwitchPreference.isVisible());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
     public void testSeeBetterResultsSwitch() {
         // "See Better Results" Switch is visible when Contextual Search Switch is on.
         Assert.assertTrue("The Contextual Search default value for the switch should be on.",
@@ -128,7 +108,6 @@ public class ContextualSearchPreferenceFragmentTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
     public void testSeeBetterResultsSwitch_SavePreviousOptInStatus() {
         // "See Better Results" Switch is visible when Contextual Search Switch is on.
         Assert.assertTrue("The Contextual Search default value for the switch should be on.",

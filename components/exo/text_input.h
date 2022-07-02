@@ -83,6 +83,19 @@ class TextInput : public ui::TextInputClient,
         const gfx::Range& cursor,
         const gfx::Range& range,
         const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) = 0;
+
+    // Clears all the grammar fragments in |range|.
+    // |surrounding_text| is the current surrounding text, used for utf16 to
+    // utf8 conversion.
+    virtual void ClearGrammarFragments(base::StringPiece16 surrounding_text,
+                                       const gfx::Range& range) = 0;
+
+    // Adds a new grammar marker according to |fragments|. Clients should show
+    // some visual indications such as underlining.
+    // |surrounding_text| is the current surrounding text, used for utf16 to
+    // utf8 conversion.
+    virtual void AddGrammarFragment(base::StringPiece16 surrounding_text,
+                                    const ui::GrammarFragment& fragment) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);
@@ -125,6 +138,10 @@ class TextInput : public ui::TextInputClient,
   // Sets the bounds of the text caret, relative to the window origin.
   void SetCaretBounds(const gfx::Rect& bounds);
 
+  // Sets grammar fragment at the cursor position.
+  void SetGrammarFragmentAtCursor(
+      const absl::optional<ui::GrammarFragment>& fragment);
+
   Delegate* delegate() { return delegate_.get(); }
 
   // ui::TextInputClient:
@@ -149,7 +166,6 @@ class TextInput : public ui::TextInputClient,
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool GetEditableSelectionRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
-  bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
                         std::u16string* text) const override;
   void OnInputMethodChanged() override;
@@ -167,8 +183,8 @@ class TextInput : public ui::TextInputClient,
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+      const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
@@ -223,6 +239,19 @@ class TextInput : public ui::TextInputClient,
 
   // Cache of the current text input direction, update from the Chrome OS IME.
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
+
+  // Cache of the grammar fragment at cursor position, send from Lacros side.
+  // Wayland API sends the fragment range in utf8 and what IME needs is utf16.
+  // To correctly convert the utf8 range to utf16, we need the updated
+  // surrounding text, which is not available when we receive the grammar
+  // fragment. It is guaranteed that on Lacros side, it always updates grammar
+  // fragment before updating surrounding text. So we store the utf8 fragment in
+  // |grammar_fragment_at_cursor_utf8_| when we receive it and when we receive
+  // the surrounding text update next time, we convert the utf8 fragment to
+  // utf16 fragment and store it in |grammar_fragment_at_cursor_utf16_|. When
+  // IME requests current grammar fragment, we always return the utf16 version.
+  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf8_;
+  absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf16_;
 };
 
 }  // namespace exo

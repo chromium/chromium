@@ -130,7 +130,8 @@ class EVENTS_EXPORT EventTarget {
 
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
-  raw_ptr<EventHandler> target_handler_ = nullptr;
+  // TODO(crbug.com/1298696): Breaks content_unittests.
+  raw_ptr<EventHandler, DegradeToNoOpWhenMTE> target_handler_ = nullptr;
 };
 
 }  // namespace ui

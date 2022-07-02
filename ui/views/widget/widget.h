@@ -250,7 +250,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // If null, a default implementation will be constructed. The default
     // implementation deletes itself when the Widget closes.
-    WidgetDelegate* delegate = nullptr;
+    raw_ptr<WidgetDelegate> delegate = nullptr;
 
     // Internal name. Propagated to the NativeWidget. Useful for debugging.
     std::string name;
@@ -349,13 +349,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // If set, this value is used as the Widget's NativeWidget implementation.
     // The Widget will not construct a default one.
-    NativeWidget* native_widget = nullptr;
+    raw_ptr<NativeWidget> native_widget = nullptr;
 
     // Aura-only. Provides a DesktopWindowTreeHost implementation to use instead
     // of the default one.
     // TODO(beng): Figure out if there's a better way to expose this, e.g. get
     // rid of NW subclasses and do this all via message handling.
-    DesktopWindowTreeHost* desktop_window_tree_host = nullptr;
+    raw_ptr<DesktopWindowTreeHost> desktop_window_tree_host = nullptr;
 
     // Only used by NativeWidgetAura. Specifies the type of layer for the
     // aura::Window.
@@ -395,8 +395,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     bool headless_mode = false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug.com/1327490): Rename restore info variables.
+    // Only used by Wayland. Specifies the session id window key, the restore
+    // window id, and the app id, respectively, respectively, used by the
+    // compositor to restore window state upon creation. Only one of
+    // `restore_window_id` and `restore_window_id_source` should be set, as
+    // `restore_window_id_source` is used for widgets without inherent restore
+    // window ids, e.g. Chrome apps.
     int32_t restore_session_id = 0;
-    int32_t restore_window_id = 0;
+    absl::optional<int32_t> restore_window_id;
+    absl::optional<std::string> restore_window_id_source;
 #endif
 
     // Contains any properties with which the native widget should be
@@ -816,9 +824,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // not need to call this.
   void ScheduleLayout();
 
-  // Sets the currently visible cursor. If |cursor| is NULL, the cursor used
-  // before the current is restored.
-  void SetCursor(gfx::NativeCursor cursor);
+  // Sets the currently visible cursor.
+  void SetCursor(const ui::Cursor& cursor);
 
   // Returns true if and only if mouse events are enabled.
   bool IsMouseEventsEnabled() const;
@@ -1195,7 +1202,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Non-owned pointer to the Widget's delegate. If a NULL delegate is supplied
   // to Init() a default WidgetDelegate is created.
-  raw_ptr<WidgetDelegate> widget_delegate_ = nullptr;
+  raw_ptr<WidgetDelegate, DanglingUntriaged> widget_delegate_ = nullptr;
 
   // The parent of this widget. This is the widget that associates with
   // the |params.parent| supplied to Init(). If no parent is given or the native

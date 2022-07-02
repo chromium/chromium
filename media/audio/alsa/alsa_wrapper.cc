@@ -350,6 +350,10 @@ int AlsaWrapper::MixerSelemHasPlaybackSwitch(snd_mixer_elem_t* elem) {
   return snd_mixer_selem_has_playback_switch(elem);
 }
 
+int AlsaWrapper::MixerSelemHasPlaybackVolume(snd_mixer_elem_t* elem) {
+  return snd_mixer_selem_has_playback_volume(elem);
+}
+
 void AlsaWrapper::MixerSelemIdSetIndex(snd_mixer_selem_id_t* obj,
                                        unsigned int val) {
   snd_mixer_selem_id_set_index(obj, val);
@@ -365,6 +369,12 @@ int AlsaWrapper::MixerSelemSetPlaybackSwitch(
     snd_mixer_selem_channel_id_t channel,
     int value) {
   return snd_mixer_selem_set_playback_switch(elem, channel, value);
+}
+
+int AlsaWrapper::MixerSelemSetPlaybackSwitchAll(
+    snd_mixer_elem_t* elem,
+    int value) {
+  return snd_mixer_selem_set_playback_switch_all(elem, value);
 }
 
 int AlsaWrapper::MixerSelemSetPlaybackVolumeAll(snd_mixer_elem_t* elem,

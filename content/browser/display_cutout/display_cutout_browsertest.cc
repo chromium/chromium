@@ -206,7 +206,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* MainFrame() {
-    return web_contents_impl()->GetMainFrame();
+    return web_contents_impl()->GetPrimaryMainFrame();
   }
 
   RenderFrameHostImpl* ChildFrame() {

@@ -11,9 +11,7 @@
 #include <memory>
 #include <vector>
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 namespace {
 class HuffmanNode;
@@ -78,8 +76,6 @@ class HuffmanBuilder {
   std::map<uint8_t, uint32_t> counts_;
 };
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie
 
 #endif  // NET_TOOLS_HUFFMAN_TRIE_HUFFMAN_HUFFMAN_BUILDER_H_

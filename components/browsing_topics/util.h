@@ -67,18 +67,6 @@ HashedDomain HashContextDomainForStorage(ReadOnlyHmacKey hmac_key,
 // memory.
 HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host);
 
-// Returns the maximum of |`calculation_time` - history data time range|, and
-// |data_accessible_since|.
-base::Time DeriveHistoryDataStartTime(
-    base::Time calculation_time,
-    base::Time data_accessible_since = base::Time());
-
-// Returns the maximum of |`calculation_time` - api usage data time range|,
-// and |data_accessible_since|.
-base::Time DeriveApiUsageContextDataStartTime(
-    base::Time calculation_time,
-    base::Time data_accessible_since = base::Time());
-
 // Override the key to be returned for subsequent invocations of
 // `GenerateRandomHmacKey()`.
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key);

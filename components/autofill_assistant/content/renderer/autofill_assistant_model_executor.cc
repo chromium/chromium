@@ -194,7 +194,7 @@ bool AutofillAssistantModelExecutor::Preprocess(
 
 bool AutofillAssistantModelExecutor::GetIndexOfBestRole(
     const std::vector<float>& output_role,
-    size_t* index_of_best_role) {
+    size_t* index_of_best_role) const {
   if (output_role.size() <
       static_cast<size_t>(
           model_metadata_.output().semantic_role().classes_size())) {
@@ -213,7 +213,7 @@ bool AutofillAssistantModelExecutor::GetIndexOfBestRole(
 bool AutofillAssistantModelExecutor::GetBlockIndex(
     const std::vector<float>& output_role,
     size_t index_of_best_role,
-    int* block_index) {
+    int* block_index) const {
   if (index_of_best_role >=
       static_cast<size_t>(model_metadata_.output()
                               .semantic_role()
@@ -229,7 +229,7 @@ bool AutofillAssistantModelExecutor::GetBlockIndex(
 bool AutofillAssistantModelExecutor::GetObjective(
     const std::vector<float>& output_objective,
     int block_index,
-    int* objective) {
+    int* objective) const {
   if (block_index + 1 >= model_metadata_.output().objective().blocks_size()) {
     NOTREACHED();
     return false;
@@ -238,8 +238,8 @@ bool AutofillAssistantModelExecutor::GetObjective(
                      model_metadata_.output().objective().blocks(block_index);
   auto block_end = output_objective.begin() +
                    model_metadata_.output().objective().blocks(block_index + 1);
-  size_t index_of_best_objective =
-      std::distance(block_start, std::max_element(block_start, block_end));
+  size_t index_of_best_objective = std::distance(
+      output_objective.begin(), std::max_element(block_start, block_end));
   if (index_of_best_objective >=
       static_cast<size_t>(
           model_metadata_.output().objective().classes_size())) {
@@ -285,6 +285,12 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
 
   size_t index_of_best_role;
   if (!GetIndexOfBestRole(output_role, &index_of_best_role)) {
+    return absl::nullopt;
+  }
+  if (index_of_best_role >=
+      static_cast<size_t>(
+          model_metadata_.output().semantic_role().classes_size())) {
+    NOTREACHED();
     return absl::nullopt;
   }
   int semantic_role =

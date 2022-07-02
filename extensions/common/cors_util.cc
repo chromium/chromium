@@ -80,13 +80,27 @@ CreateCorsOriginAccessAllowList(const Extension& extension) {
       origin_permissions, &allow_list,
       network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
 
-  // Hosts exempted from the enterprise policy blocklist.
-  // This set intersection is necessary to prevent an enterprise policy from
+  // Hosts exempted from the enterprise policy blocklist. This allows
+  // enterprises to add "carve outs" for hosts extensions may be allowed to run
+  // on. For instance, an enterprise may block "https://*.restricted.example/*",
+  // but allow "https://not-sensitive.restricted.example". In order for this to
+  // work, the enterprise allowlist has higher priority than the enterprise
+  // blocklist.
+  // The set intersection is necessary to prevent an enterprise policy from
   // granting a host permission the extension didn't ask for.
   URLPatternSet policy_allowed_host_patterns =
       URLPatternSet::CreateIntersection(
           extension.permissions_data()->policy_allowed_hosts(),
           origin_permissions, URLPatternSet::IntersectionBehavior::kDetailed);
+
+  // TODO(https://crbug.com/1268198): For now, there is (theoretically) no
+  // overlap between user-blocked sites and user-allowed sites. This means that,
+  // unlike enterprise policy above, we don't need to add in user-allowed sites
+  // here (they should already be granted to the extension, and won't be blocked
+  // by user-blocked sites). We should either guarantee this is the case (with
+  // DCHECKs) or change this to allow "carve outs" in user host permissions.
+  // The latter would likely require adding more knobs to the network layer
+  // since we'd need a more complex hierarchy.
   AddURLPatternSetToList(
       policy_allowed_host_patterns, &allow_list,
       network::mojom::CorsOriginAccessMatchPriority::kMediumPriority);
@@ -102,6 +116,29 @@ CreateCorsOriginAccessBlockList(const Extension& extension) {
   AddURLPatternSetToList(
       extension.permissions_data()->policy_blocked_hosts(), &block_list,
       network::mojom::CorsOriginAccessMatchPriority::kLowPriority);
+
+  // Add hosts blocked by the user. Unintuitively, these are granted *higher*
+  // precedence than enterprise blocked sites. This isn't because they are
+  // conceptually more important, but rather because we need them to take
+  // priority over enterprise allowed sites. Consider the following scenario:
+  // - An enterprise blocks https://*.restricted.example.
+  // - The enterprise allows https://non-sensitive.restricted.example
+  // - The user blocks https://non-sensitive.restricted.example
+  // Here, the extension should *not* be allowed to run on
+  // https://non-sensitive.restricted.example; the enterprise said it *may*, but
+  // the user then denies it access.
+  // Note also that enterprise extensions are exempt from user host
+  // restrictions, so there's no risk of users blocking enterprise extensions
+  // from running on sites.
+  // We add user host restrictions with the same priority level as enterprise
+  // host allowances; when a block rule and an allow rule have the same
+  // priority, the blocking rule wins. We don't add these with "High" priority
+  // in order to keep that reserved for browser-defined restrictions.
+  // TODO(https://crbug.com/1268198): This is a pretty tenuous setup. We may
+  // just need to plumb more information to the network service.
+  AddURLPatternSetToList(
+      extension.permissions_data()->GetUserBlockedHosts(), &block_list,
+      network::mojom::CorsOriginAccessMatchPriority::kMediumPriority);
 
   GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
   block_list.push_back(network::mojom::CorsOriginPattern::New(

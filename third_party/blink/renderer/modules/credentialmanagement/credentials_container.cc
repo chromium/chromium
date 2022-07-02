@@ -85,6 +85,8 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::AttestationConveyancePreference;
+using mojom::blink::AuthenticatorAttachment;
 using mojom::blink::AuthenticatorStatus;
 using mojom::blink::CredentialInfo;
 using mojom::blink::CredentialInfoPtr;
@@ -104,6 +106,10 @@ using payments::mojom::blink::PaymentCredentialStorageStatus;
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 
+// Maximum number of unique origins in ancestor chain (including the source
+// frame origin) for which FedCM API is enabled.
+const int kMaxUniqueOriginInAncestorChainForFedCM = 2;
+
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
 enum class RequiredOriginType {
@@ -122,6 +128,9 @@ enum class RequiredOriginType {
   kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
+  // Similar to the enum above, checks the "federated-credentials" permissions
+  // policy.
+  kSecureAndPermittedByFederatedPermissionsPolicy,
   // Must be a secure origin with allowed payment permission policy.
   kSecureWithPaymentPermissionPolicy,
 };
@@ -140,35 +149,42 @@ bool IsSameOriginWithAncestors(const Frame* frame) {
   return true;
 }
 
-// An ancestor chain is valid iff there are at most 2 unique origins on the
-// chain (current origin included), the unique origins must be consecutive.
-// e.g. the following are valid:
-// A.com (calls WebOTP API)
-// A.com -> A.com (calls WebOTP API)
-// A.com -> A.com -> B.com (calls WebOTP API)
-// A.com -> B.com -> B.com (calls WebOTP API)
-// while the following are invalid:
-// A.com -> B.com -> A.com (calls WebOTP API)
-// A.com -> B.com -> C.com (calls WebOTP API)
-// Note that there is additional requirement on feature permission being granted
-// upon crossing origins but that is not verified by this function.
-bool IsAncestorChainValidForWebOTP(const Frame* frame) {
+// Returns whether the number of unique origins in the ancestor chain, including
+// the current origin are less or equal to |max_unique_origins|.
+//
+// Examples:
+// A.com = 1 unique origin
+// A.com -> A.com = 1 unique origin
+// A.com -> A.com -> B.com = 2 unique origins
+// A.com -> B.com -> B.com = 2 unique origins
+// A.com -> B.com -> A.com = 3 unique origins
+bool AreUniqueOriginsLessOrEqualTo(const Frame* frame, int max_unique_origins) {
   const SecurityOrigin* current_origin =
       frame->GetSecurityContext()->GetSecurityOrigin();
-  int number_of_unique_origin = 1;
+  int num_unique_origins = 1;
 
   const Frame* parent = frame->Tree().Parent();
   while (parent) {
     auto* parent_origin = parent->GetSecurityContext()->GetSecurityOrigin();
     if (!parent_origin->IsSameOriginWith(current_origin)) {
-      ++number_of_unique_origin;
+      ++num_unique_origins;
       current_origin = parent_origin;
     }
-    if (number_of_unique_origin > kMaxUniqueOriginInAncestorChainForWebOTP)
+    if (num_unique_origins > max_unique_origins)
       return false;
     parent = parent->Tree().Parent();
   }
   return true;
+}
+
+bool IsAncestorChainValidForWebOTP(const Frame* frame) {
+  return AreUniqueOriginsLessOrEqualTo(
+      frame, kMaxUniqueOriginInAncestorChainForWebOTP);
+}
+
+bool IsAncestorChainValidForFedCM(const Frame* frame) {
+  return AreUniqueOriginsLessOrEqualTo(frame,
+                                       kMaxUniqueOriginInAncestorChainForFedCM);
 }
 
 bool CheckSecurityRequirementsBeforeRequest(
@@ -251,6 +267,22 @@ bool CheckSecurityRequirementsBeforeRequest(
         return false;
       }
       break;
+    case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kFederatedCredentials)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "The 'federated-credentials` feature is not enabled in this "
+            "document."));
+        return false;
+      }
+      if (!IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "More than two unique origins are detected in the origin chain."));
+        return false;
+      }
+      break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
@@ -304,6 +336,13 @@ void AssertSecurityRequirementsBeforeResponse(
           IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
       break;
 
+    case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
+      SECURITY_CHECK(
+          resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kFederatedCredentials) &&
+          IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame()));
+      break;
+
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kPayment));
@@ -320,7 +359,7 @@ bool IsIconURLNullOrSecure(const KURL& url) {
   if (!url.IsValid())
     return false;
 
-  return network::IsUrlPotentiallyTrustworthy(url);
+  return network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 // Checks if the size of the supplied ArrayBuffer or ArrayBufferView is at most
@@ -513,6 +552,52 @@ void AbortOtpRequest(ScriptState* script_state) {
   auto* webotp_service =
       CredentialManagerProxy::From(script_state)->WebOTPService();
   webotp_service->Abort();
+}
+
+// Abort an ongoing FederatedCredential login() operation.
+void AbortFederatedCredentialRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return;
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->CancelTokenRequest();
+}
+
+void OnRequestIdToken(ScriptPromiseResolver* resolver,
+                      const KURL& provider_url,
+                      const String& client_id,
+                      const CredentialRequestOptions* options,
+                      RequestIdTokenStatus status,
+                      const WTF::String& id_token) {
+  switch (status) {
+    case RequestIdTokenStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one navigator.credentials.get request may be outstanding at "
+          "one time."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorCanceled: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "The request has been aborted."));
+      return;
+    }
+    case RequestIdTokenStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+      return;
+    }
+    case RequestIdTokenStatus::kSuccess: {
+      FederatedCredential* credential = FederatedCredential::Create(
+          provider_url, client_id, options, id_token);
+      resolver->Resolve(credential);
+      return;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
 }
 
 void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
@@ -895,6 +980,14 @@ ScriptPromise CredentialsContainer::get(
              RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
+  } else if (options->hasFederated() && options->federated()->hasProviders() &&
+             options->federated()->providers().size() == 1 &&
+             options->federated()
+                 ->providers()[0]
+                 ->IsFederatedIdentityProvider() &&
+             RuntimeEnabledFeatures::FedCmIframeSupportEnabled(context)) {
+    required_origin_type =
+        RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy;
   }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;
@@ -1016,6 +1109,17 @@ ScriptPromise CredentialsContainer::get(
               "browser/webauth/uv_preferred.md for details."));
     }
 
+    if (options->publicKey()->hasUserVerification() &&
+        !mojo::ConvertTo<
+            absl::optional<mojom::blink::UserVerificationRequirement>>(
+            options->publicKey()->userVerification())) {
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown publicKey.userVerification value"));
+    }
+
     if (options->hasSignal()) {
       if (options->signal()->aborted()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1080,7 +1184,8 @@ ScriptPromise CredentialsContainer::get(
         CredentialManagerProxy::From(script_state)->WebOTPService();
     webotp_service->Receive(WTF::Bind(&OnSmsReceive, WrapPersistent(resolver),
                                       base::TimeTicks::Now()));
-    UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Features", WebFeature::kWebOTP);
+
+    UseCounter::Count(context, WebFeature::kWebOTP);
     return promise;
   }
 
@@ -1114,6 +1219,7 @@ ScriptPromise CredentialsContainer::get(
             provider->GetAsFederatedIdentityProvider();
         KURL provider_url(federated_identity_provider->url());
         String client_id = federated_identity_provider->clientId();
+        String nonce = federated_identity_provider->getNonceOr("");
 
         if (!provider_url.IsValid() || client_id == "") {
           resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1128,10 +1234,25 @@ ScriptPromise CredentialsContainer::get(
           return promise;
         }
 
-        FederatedCredential* credential = FederatedCredential::Create(
-            provider_url, client_id, federated_identity_provider->getHintOr(""),
-            options);
-        resolver->Resolve(credential);
+        DCHECK(options->federated()->hasPreferAutoSignIn());
+        if (options->hasSignal()) {
+          if (options->signal()->aborted()) {
+            resolver->Reject(MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kAbortError, "Request has been aborted."));
+            return promise;
+          }
+          options->signal()->AddAlgorithm(WTF::Bind(
+              &AbortFederatedCredentialRequest, WrapPersistent(script_state)));
+        }
+        bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
+        auto* auth_request =
+            CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+        auth_request->RequestIdToken(
+            provider_url, client_id, nonce, prefer_auto_sign_in,
+            WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver), provider_url,
+                      client_id, WrapPersistent(options)));
+
         return promise;
       }
     }
@@ -1389,6 +1510,33 @@ ScriptPromise CredentialsContainer::create(
         WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
   }
 
+  if (options->publicKey()->hasAttestation() &&
+      !mojo::ConvertTo<absl::optional<AttestationConveyancePreference>>(
+          options->publicKey()->attestation())) {
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Ignoring unknown publicKey.attestation value"));
+  }
+
+  if (options->publicKey()->hasAuthenticatorSelection() &&
+      options->publicKey()
+          ->authenticatorSelection()
+          ->hasAuthenticatorAttachment()) {
+    absl::optional<String> attachment = options->publicKey()
+                                            ->authenticatorSelection()
+                                            ->authenticatorAttachment();
+    if (!mojo::ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment)) {
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown "
+              "publicKey.authenticatorSelection.authnticatorAttachment value"));
+    }
+  }
+
   if (options->publicKey()->hasAuthenticatorSelection() &&
       !options->publicKey()->authenticatorSelection()->hasUserVerification()) {
     resolver->DomWindow()->AddConsoleMessage(
@@ -1404,6 +1552,20 @@ ScriptPromise CredentialsContainer::create(
             "https://chromium.googlesource.com/chromium/src/+/master/content/"
             "browser/webauth/uv_preferred.md for details"));
   }
+
+  if (options->publicKey()->hasAuthenticatorSelection() &&
+      options->publicKey()->authenticatorSelection()->hasUserVerification() &&
+      !mojo::ConvertTo<
+          absl::optional<mojom::blink::UserVerificationRequirement>>(
+          options->publicKey()->authenticatorSelection()->userVerification())) {
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Ignoring unknown "
+            "publicKey.authenticatorSelection.userVerification value"));
+  }
+
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasResidentKey() &&
       !mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(

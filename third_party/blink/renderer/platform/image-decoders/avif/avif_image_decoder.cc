@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 
@@ -366,6 +367,8 @@ void AVIFImageDecoder::DecodeToYUV() {
   // frame in image_planes_ because the callers of DecodeToYUV() assume that a
   // complete scan will not be updated.
   const int frame_index = progressive_ ? (decoder_->imageCount - 1) : 0;
+  // TODO(crbug.com/943519): Implement YUV incremental decoding as in Decode().
+  decoder_->allowIncremental = AVIF_FALSE;
 
   // libavif cannot decode to an external buffer. So we need to copy from
   // libavif's internal buffer to |image_planes_|.
@@ -581,14 +584,27 @@ void AVIFImageDecoder::Decode(wtf_size_t index) {
     }
   }
 
+  // Allow AVIF frames to be partially decoded before all data is received.
+  // Only enabled for non-progressive still images because animations look
+  // better without incremental decoding and because progressive decoding makes
+  // incremental decoding unnecessary.
+  decoder_->allowIncremental = (decoder_->imageCount == 1);
+
   auto ret = DecodeImage(frame_index);
-  if (ret != AVIF_RESULT_OK) {
-    if (ret != AVIF_RESULT_WAITING_ON_IO)
-      SetFailed();
+  if (ret != AVIF_RESULT_OK && ret != AVIF_RESULT_WAITING_ON_IO) {
+    SetFailed();
     return;
   }
 
   const auto* image = decoder_->image;
+  // ImageDecoder::SizeCalculationMayOverflow(), called by UpdateDemuxer()
+  // before being here, made sure the image height fits in an int.
+  int displayable_height =
+      static_cast<int>(avifDecoderDecodedRowCount(decoder_.get()));
+
+  if (displayable_height == 0) {
+    return;  // There is nothing to display.
+  }
 
   ImageFrame& buffer = frame_buffer_cache_[index];
   DCHECK_NE(buffer.GetStatus(), ImageFrame::kFrameComplete);
@@ -600,16 +616,41 @@ void AVIFImageDecoder::Decode(wtf_size_t index) {
       return;
     }
     DCHECK_EQ(buffer.GetStatus(), ImageFrame::kFramePartial);
+    // The buffer is transparent outside the decoded area while the image is
+    // loading. The correct alpha value for the frame will be set when it is
+    // fully decoded.
+    buffer.SetHasAlpha(true);
+    if (decoder_->allowIncremental) {
+      // In case of buffer disposal after decoding.
+      incrementally_displayed_height_ = 0;
+    }
   }
 
-  if (!RenderImage(image, &buffer)) {
+  const int last_displayed_height =
+      decoder_->allowIncremental ? incrementally_displayed_height_ : 0;
+  if (displayable_height == last_displayed_height) {
+    return;  // There is no new row to display.
+  }
+  DCHECK_GT(displayable_height, last_displayed_height);
+
+  // Only render the newly decoded rows.
+  if (!RenderImage(image, last_displayed_height, &displayable_height,
+                   &buffer)) {
     SetFailed();
     return;
   }
-  ColorCorrectImage(&buffer);
+  if (displayable_height == last_displayed_height) {
+    return;  // There is no new row to display.
+  }
+  DCHECK_GT(displayable_height, last_displayed_height);
+  ColorCorrectImage(last_displayed_height, displayable_height, &buffer);
   buffer.SetPixelsChanged(true);
+  if (decoder_->allowIncremental) {
+    incrementally_displayed_height_ = displayable_height;
+  }
 
-  if (!progressive_ || frame_index + 1 == decoder_->imageCount) {
+  if (static_cast<uint32_t>(displayable_height) == image->height &&
+      (!progressive_ || frame_index + 1 == decoder_->imageCount)) {
     buffer.SetHasAlpha(!!image->alphaPlane);
     buffer.SetStatus(ImageFrame::kFrameComplete);
     PostDecodeProcessing(index);
@@ -816,8 +857,14 @@ bool AVIFImageDecoder::UpdateDemuxer() {
                container->transferCharacteristics !=
                    AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED) {
       gfx::ColorSpace frame_cs = GetColorSpace(container);
+
       sk_sp<SkColorSpace> sk_color_space =
           frame_cs.GetAsFullRangeRGB().ToSkColorSpace();
+      if (!sk_color_space) {
+        DVLOG(1) << "Image contains an unsupported color space";
+        return false;
+      }
+
       skcms_ICCProfile profile;
       sk_color_space->toProfile(&profile);
       SetEmbeddedColorProfile(std::make_unique<ColorProfile>(profile));
@@ -928,15 +975,85 @@ void AVIFImageDecoder::UpdateColorTransform(const gfx::ColorSpace& frame_cs,
       frame_cs, gfx::ColorSpace(), options);
 }
 
-bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
+bool AVIFImageDecoder::RenderImage(const avifImage* image,
+                                   int from_row,
+                                   int* to_row,
+                                   ImageFrame* buffer) {
   const gfx::ColorSpace frame_cs = GetColorSpace(image);
   const bool is_mono = image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400;
   const bool premultiply_alpha = buffer->PremultiplyAlpha();
 
+  DCHECK_LT(from_row, *to_row);
+
+  // media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels() uses
+  // libyuv for the YUV 4:2:0 to RGB upsampling and conversion as follows:
+  //  - convert the top RGB row 0,
+  //  - convert the RGB rows 1 and 2, then RGB rows 3 and 4 etc.,
+  //  - convert the bottom (odd) RGB row if there is an even number of RGB rows.
+  //
+  // Unfortunately this cannot be applied incrementally as is. The RGB values
+  // would differ because the first and last RGB rows have a formula using only
+  // one UV row, while the other RGB rows use two UV rows as input each.
+  // See https://crbug.com/libyuv/934.
+  //
+  // The workaround is a backup of the last converted even RGB row, called top
+  // row, located right before |from_row|. The conversion is then called
+  // starting at this top row, overwriting it with invalid values. The remaining
+  // pairs of rows are correctly aligned and their freshly converted values are
+  // valid. Then the backed up row is put back, fixing the issue.
+  // The bottom row is postponed if the other half of the pair it belongs to is
+  // not yet decoded.
+  //
+  //  UV rows |                 Y/RGB rows
+  //          |  all  |  first decoding  |  second decoding
+  //           ____ 0  ____ 0 (from_row)
+  //    0 ---- ____ 1  ____ 1
+  //           ____ 2  ____ 2             ____ 2 (backed up)
+  //    1 ---- ____ 3  ____ 3 (postponed) ____ 3 (from_row)
+  //           ____ 4       4 (*to_row)   ____ 4
+  //    2 ---- ____ 5                     ____ 5
+  //                                           6 (*to_row)
+
+  const bool use_libyuv_bilinear_upsampling =
+      !decode_to_half_float_ && IsColorSpaceSupportedByPCVR(image) &&
+      image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420;
+  const bool save_top_row = use_libyuv_bilinear_upsampling && from_row > 0;
+  const bool postpone_bottom_row =
+      use_libyuv_bilinear_upsampling &&
+      static_cast<uint32_t>(*to_row) < image->height;
+  if (postpone_bottom_row) {
+    // libavif outputs an even number of rows because 4:2:0 samples are decoded
+    // in pairs.
+    DCHECK(!(*to_row & 1));
+    --*to_row;
+    if (from_row == *to_row) {
+      return true;  // Nothing to do.
+    }
+  }
+  if (save_top_row) {
+    // |from_row| is odd because it is equal to the output value of |*to_row|
+    // from the previous RenderImage() call, and |*to_row| was even and then
+    // decremented at that time.
+    DCHECK(from_row & 1);
+    --from_row;
+  }
+
+  // Focus |image| on rows [from_row, *to_row).
+  std::unique_ptr<avifImage, decltype(&avifImageDestroy)> view(
+      nullptr, avifImageDestroy);
+  if (from_row > 0 || static_cast<uint32_t>(*to_row) < image->height) {
+    const avifCropRect rect = {0, static_cast<uint32_t>(from_row), image->width,
+                               static_cast<uint32_t>(*to_row - from_row)};
+    view.reset(avifImageCreateEmpty());
+    const avifResult result = avifImageSetViewRect(view.get(), image, &rect);
+    DCHECK_EQ(result, AVIF_RESULT_OK);
+    image = view.get();
+  }
+
   if (decode_to_half_float_) {
     UpdateColorTransform(frame_cs, image->depth);
 
-    uint64_t* rgba_hhhh = buffer->GetAddrF16(0, 0);
+    uint64_t* rgba_hhhh = buffer->GetAddrF16(0, from_row);
 
     // Color and format convert from YUV HBD -> RGBA half float.
     if (is_mono) {
@@ -950,7 +1067,7 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
     return true;
   }
 
-  uint32_t* rgba_8888 = buffer->GetAddr(0, 0);
+  uint32_t* rgba_8888 = buffer->GetAddr(0, from_row);
   // Call media::PaintCanvasVideoRenderer (PCVR) if the color space is
   // supported.
   if (IsColorSpaceSupportedByPCVR(image)) {
@@ -978,6 +1095,12 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
       return false;
     frame->set_color_space(frame_cs);
 
+    if (save_top_row) {
+      previous_last_decoded_row_.resize(image->width);
+      std::copy(rgba_8888, rgba_8888 + image->width,
+                previous_last_decoded_row_.begin());
+    }
+
     // Really only handles 709, 601, 2020, JPEG 8-bit conversions and uses
     // libyuv under the hood, so is much faster than our manual path.
     //
@@ -989,6 +1112,11 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
     media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
         frame.get(), rgba_8888, frame->visible_rect().width() * 4,
         premultiply_alpha, media::PaintCanvasVideoRenderer::kFilterBilinear);
+
+    if (save_top_row) {
+      std::copy(previous_last_decoded_row_.begin(),
+                previous_last_decoded_row_.end(), rgba_8888);
+    }
     return true;
   }
 
@@ -1013,7 +1141,9 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
   return true;
 }
 
-void AVIFImageDecoder::ColorCorrectImage(ImageFrame* buffer) {
+void AVIFImageDecoder::ColorCorrectImage(int from_row,
+                                         int to_row,
+                                         ImageFrame* buffer) {
   // Postprocess the image data according to the profile.
   const ColorProfileTransform* const transform = ColorTransform();
   if (!transform)
@@ -1023,7 +1153,7 @@ void AVIFImageDecoder::ColorCorrectImage(ImageFrame* buffer) {
                                 : skcms_AlphaFormat_Unpremul;
   if (decode_to_half_float_) {
     const skcms_PixelFormat color_format = skcms_PixelFormat_RGBA_hhhh;
-    for (int y = 0; y < Size().height(); ++y) {
+    for (int y = from_row; y < to_row; ++y) {
       ImageFrame::PixelDataF16* const row = buffer->GetAddrF16(0, y);
       const bool success = skcms_Transform(
           row, color_format, alpha_format, transform->SrcProfile(), row,
@@ -1032,7 +1162,7 @@ void AVIFImageDecoder::ColorCorrectImage(ImageFrame* buffer) {
     }
   } else {
     const skcms_PixelFormat color_format = XformColorFormat();
-    for (int y = 0; y < Size().height(); ++y) {
+    for (int y = from_row; y < to_row; ++y) {
       ImageFrame::PixelData* const row = buffer->GetAddr(0, y);
       const bool success = skcms_Transform(
           row, color_format, alpha_format, transform->SrcProfile(), row,

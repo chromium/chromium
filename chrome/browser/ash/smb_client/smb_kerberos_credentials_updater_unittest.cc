@@ -105,7 +105,7 @@ TEST_F(SmbKerberosCredentialsUpdaterTest, TestActiveAccountChanged) {
 
   callback_called = false;
 
-  // Try to notify the change now without changing/adding user.
+  // Try to notify the change now without changing/adding a user.
   credentials_manager_->SetActiveAccount(kPrincipal);
 
   EXPECT_FALSE(callback_called);

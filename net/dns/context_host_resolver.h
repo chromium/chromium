@@ -88,7 +88,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   }
 
  private:
-  const raw_ptr<HostResolverManager> manager_;
+  const raw_ptr<HostResolverManager, DanglingUntriaged> manager_;
   std::unique_ptr<HostResolverManager> owned_manager_;
   std::unique_ptr<ResolveContext> resolve_context_;
 

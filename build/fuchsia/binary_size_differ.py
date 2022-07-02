@@ -23,44 +23,43 @@ import uuid
 
 from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
 from common import SDK_ROOT, DIR_SOURCE_ROOT
-from binary_sizes import GetPackageSizes, ReadPackageBlobsJson
-from binary_sizes import PACKAGES_SIZE_FILE
+from binary_sizes import ReadPackageSizesJson
+from binary_sizes import PACKAGES_SIZES_FILE
 
 _MAX_DELTA_BYTES = 12 * 1024  # 12 KiB
+_TRYBOT_DOC = 'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/fuchsia_binary_size_trybot.md'
 
 
-def GetPackageBlobsFromFile(blob_file_path):
-  return GetPackageSizes(ReadPackageBlobsJson(blob_file_path))
-
-
-def ComputePackageDiffs(before_blobs_file, after_blobs_file):
+def ComputePackageDiffs(before_sizes_file, after_sizes_file):
   '''Computes difference between after and before diff, for each package.'''
-  before_blobs = GetPackageBlobsFromFile(before_blobs_file)
-  after_blobs = GetPackageBlobsFromFile(after_blobs_file)
+  before_sizes = ReadPackageSizesJson(before_sizes_file)
+  after_sizes = ReadPackageSizesJson(after_sizes_file)
 
-  assert before_blobs.keys() == after_blobs.keys(), (
+  assert before_sizes.keys() == after_sizes.keys(), (
       'Package files cannot'
       ' be compared with different packages: '
-      '%s vs %s' % (before_blobs.keys(), after_blobs.keys()))
+      '%s vs %s' % (before_sizes.keys(), after_sizes.keys()))
 
   growth = {'compressed': {}, 'uncompressed': {}}
   status_code = 0
   summary = ''
-  for package_name in before_blobs:
-    growth['compressed'][package_name] = (after_blobs[package_name].compressed -
-                                          before_blobs[package_name].compressed)
+  for package_name in before_sizes:
+    growth['compressed'][package_name] = (after_sizes[package_name].compressed -
+                                          before_sizes[package_name].compressed)
     growth['uncompressed'][package_name] = (
-        after_blobs[package_name].uncompressed -
-        before_blobs[package_name].uncompressed)
+        after_sizes[package_name].uncompressed -
+        before_sizes[package_name].uncompressed)
     if growth['compressed'][package_name] >= _MAX_DELTA_BYTES:
-      if status_code == 1:
-        summary = 'Failed! '
+      if status_code == 1 and not summary:
+        summary = 'Size check failed! The following package(s) are affected:\n'
       status_code = 1
-      summary += ('%s grew by %d bytes' %
+      summary += ('- %s grew by %d bytes\n' %
                   (package_name, growth['compressed'][package_name]))
 
   growth['status_code'] = status_code
-  growth['summary'] = summary
+  summary += ('\nSee the following document for more information about'
+              ' this trybot:\n%s' % _TRYBOT_DOC)
+  growth['summary'] = summary.replace('\n', '<br>')
 
   # TODO(crbug.com/1266085): Investigate using these fields.
   growth['archive_filenames'] = []
@@ -106,20 +105,21 @@ def main():
                     (args.before_dir, args.after_dir))
 
   test_name = 'sizes'
-  before_blobs_file = os.path.join(args.before_dir, test_name,
-                                   PACKAGES_SIZE_FILE)
-  after_blobs_file = os.path.join(args.after_dir, test_name, PACKAGES_SIZE_FILE)
-  if not os.path.isfile(before_blobs_file):
-    raise Exception('Could not find before blobs file: "%s"' %
-                    (before_blobs_file))
+  before_sizes_file = os.path.join(args.before_dir, test_name,
+                                   PACKAGES_SIZES_FILE)
+  after_sizes_file = os.path.join(args.after_dir, test_name,
+                                  PACKAGES_SIZES_FILE)
+  if not os.path.isfile(before_sizes_file):
+    raise Exception('Could not find before sizes file: "%s"' %
+                    (before_sizes_file))
 
-  if not os.path.isfile(after_blobs_file):
-    raise Exception('Could not find after blobs file: "%s"' %
-                    (after_blobs_file))
+  if not os.path.isfile(after_sizes_file):
+    raise Exception('Could not find after sizes file: "%s"' %
+                    (after_sizes_file))
 
   test_completed = False
   try:
-    growth = ComputePackageDiffs(before_blobs_file, after_blobs_file)
+    growth = ComputePackageDiffs(before_sizes_file, after_sizes_file)
     test_completed = True
     with open(args.results_path, 'wt') as results_file:
       json.dump(growth, results_file)

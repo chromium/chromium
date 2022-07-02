@@ -63,7 +63,7 @@ perf_test::PerfResultReporter SetUpCookieMonsterReporter(
 
 class CookieMonsterTest : public testing::Test {
  public:
-  CookieMonsterTest() {}
+  CookieMonsterTest() = default;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -72,7 +72,7 @@ class CookieMonsterTest : public testing::Test {
 
 class CookieTestCallback {
  public:
-  CookieTestCallback() : has_run_(false) {}
+  CookieTestCallback() = default;
 
  protected:
   void WaitForCallback() {
@@ -88,7 +88,7 @@ class CookieTestCallback {
 
   void Run() { has_run_ = true; }
 
-  bool has_run_;
+  bool has_run_ = false;
 };
 
 class SetCookieCallback : public CookieTestCallback {
@@ -220,7 +220,7 @@ TEST_F(CookieMonsterTest, TestAddCookieOnManyHosts) {
   std::string cookie(kCookieLine);
   std::vector<GURL> gurls;  // just wanna have ffffuunnn
   for (int i = 0; i < kNumCookies; ++i) {
-    gurls.push_back(GURL(base::StringPrintf("https://a%04d.izzle", i)));
+    gurls.emplace_back(base::StringPrintf("https://a%04d.izzle", i));
   }
 
   SetCookieCallback setCookieCallback;

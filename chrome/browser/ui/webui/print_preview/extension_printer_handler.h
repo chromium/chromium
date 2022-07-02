@@ -11,12 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class RefCountedMemory;
 }
 
@@ -87,10 +86,10 @@ class ExtensionPrinterHandler : public PrinterHandler {
   // methods, primarily so the callbacks can be bound to this class' weak ptr.
   // They just propagate results to callbacks passed to them.
   void WrapGetPrintersCallback(AddedPrintersCallback callback,
-                               const base::ListValue& printers,
+                               base::Value::List printers,
                                bool done);
   void WrapGetCapabilityCallback(GetCapabilityCallback callback,
-                                 const base::DictionaryValue& capability);
+                                 base::Value::Dict capability);
   void WrapPrintCallback(PrintCallback callback, const base::Value& status);
   void WrapGetPrinterInfoCallback(GetPrinterInfoCallback callback,
                                   const base::DictionaryValue& printer_info);

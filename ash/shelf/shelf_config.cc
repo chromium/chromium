@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -100,12 +101,44 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
       observation_{this};
 };
 
+class ShelfConfig::ShelfSplitViewObserver : public SplitViewObserver {
+ public:
+  explicit ShelfSplitViewObserver(
+      SplitViewController* controller,
+      const base::RepeatingCallback<void(SplitViewController::State,
+                                         SplitViewController::State)>&
+          split_view_state_changed_callback)
+      : split_view_state_changed_callback_(split_view_state_changed_callback) {
+    observation_.Observe(controller);
+  }
+
+  ShelfSplitViewObserver(const ShelfSplitViewObserver& other) = delete;
+  ShelfSplitViewObserver& operator=(const ShelfSplitViewObserver& other) =
+      delete;
+
+  ~ShelfSplitViewObserver() override = default;
+  // SplitViewObserver:
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state) override {
+    split_view_state_changed_callback_.Run(previous_state, state);
+  }
+
+ private:
+  base::RepeatingCallback<void(SplitViewController::State,
+                               SplitViewController::State)>
+      split_view_state_changed_callback_;
+
+  base::ScopedObservation<SplitViewController, SplitViewObserver> observation_{
+      this};
+};
+
 ShelfConfig::ShelfConfig()
     : use_in_app_shelf_in_overview_(false),
       overview_mode_(false),
       in_tablet_mode_(false),
       is_dense_(false),
       is_in_app_(true),
+      in_split_view_with_overview_(false),
       shelf_controls_shown_(true),
       is_virtual_keyboard_shown_(false),
       is_app_list_visible_(false),
@@ -182,11 +215,28 @@ void ShelfConfig::OnOverviewModeWillStart() {
   DCHECK(!overview_mode_);
   use_in_app_shelf_in_overview_ = is_in_app();
   overview_mode_ = true;
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  in_split_view_with_overview_ = split_view_controller->InSplitViewMode();
+
+  split_view_observer_ = std::make_unique<ShelfSplitViewObserver>(
+      split_view_controller,
+      base::BindRepeating(&ShelfConfig::OnSplitViewStateChanged,
+                          base::Unretained(this)));
 }
 
 void ShelfConfig::OnOverviewModeEnding(OverviewSession* overview_session) {
+  split_view_observer_.reset();
   overview_mode_ = false;
+  in_split_view_with_overview_ = false;
   use_in_app_shelf_in_overview_ = false;
+  UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
+}
+
+void ShelfConfig::OnSplitViewStateChanged(
+    SplitViewController::State previous_state,
+    SplitViewController::State state) {
+  in_split_view_with_overview_ = (state != SplitViewController::State::kNoSnap);
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
@@ -371,10 +421,12 @@ void ShelfConfig::UpdateConfig(bool new_is_app_list_visible,
   // If the virtual keyboard is shown, the back button and in-app shelf should
   // be shown so users can exit the keyboard. SystemTrayModel may be null in
   // tests.
-  const bool new_is_virtual_keyboard_shown =
-      Shell::Get()->system_tray_model()
-          ? Shell::Get()->system_tray_model()->virtual_keyboard()->visible()
-          : false;
+  const bool new_is_virtual_keyboard_shown = Shell::Get()->system_tray_model()
+                                                 ? Shell::Get()
+                                                       ->system_tray_model()
+                                                       ->virtual_keyboard()
+                                                       ->arc_keyboard_visible()
+                                                 : false;
 
   const bool new_is_in_app =
       CalculateIsInApp(new_is_app_list_visible, new_is_virtual_keyboard_shown);
@@ -403,7 +455,8 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   if (!in_tablet_mode_)
     return 48;
 
-  if (!ignore_in_app_state && is_in_app())
+  // Use in app shelf when split view is enabled.
+  if (!ignore_in_app_state && (is_in_app() || in_split_view_with_overview_))
     return in_app_shelf_size();
 
   return is_dense_ ? 48 : 56;
@@ -440,7 +493,7 @@ AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
   if (!is_in_app())
     return AshColorProvider::BaseLayerType::kTransparent60;
 
-  return AshColorProvider::Get()->IsDarkModeEnabled()
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
              ? AshColorProvider::BaseLayerType::kTransparent90
              : AshColorProvider::BaseLayerType::kOpaque;
 }
@@ -503,6 +556,8 @@ bool ShelfConfig::CalculateIsInApp(bool app_list_visible,
     return true;
   if (app_list_visible)
     return false;
+  if (in_split_view_with_overview_)
+    return true;
   if (overview_mode_)
     return use_in_app_shelf_in_overview_;
   return true;

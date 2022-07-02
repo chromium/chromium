@@ -4,32 +4,70 @@
 
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <ostream>
 #include <random>
+#include <set>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
+#include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -428,6 +466,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
   if (random.next_bool()) {
+    app->SetLockScreenStartUrl(scope.Resolve(
+        "lock_screen_start_url" + base::NumberToString(random.next_uint())));
+  }
+  if (random.next_bool()) {
     app->SetNoteTakingNewNoteUrl(
         scope.Resolve("new_note" + base::NumberToString(random.next_uint())));
   }
@@ -488,8 +530,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (random.next_bool())
     app->SetParentAppId(base::NumberToString(random.next_uint()));
 
-  app->SetHandleLinks(random.next_enum<blink::mojom::HandleLinks>());
-
   if (random.next_bool())
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
 
@@ -508,11 +548,13 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     chromeos_data->show_in_management = cros_random.next_bool();
     chromeos_data->is_disabled = cros_random.next_bool();
     chromeos_data->oem_installed = cros_random.next_bool();
+    // Comply with DCHECK that system apps cannot be OEM installed.
+    if (app->IsSystemApp())
+      chromeos_data->oem_installed = false;
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
-      management_to_external_config;
+  WebApp::ExternalConfigMap management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
     if (type == WebAppManagement::kSync)
       continue;
@@ -583,11 +625,52 @@ void CheckServiceWorkerStatus(const GURL& url,
 }
 
 void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  DCHECK(result.value && result.value->is_list()) << result.error_message;
-  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result.value));
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  DCHECK(result.has_value()) << result.error().message;
+  DCHECK(result->is_list());
+  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result));
+}
+
+void AddInstallUrlData(PrefService* pref_service,
+                       WebAppSyncBridge* sync_bridge,
+                       const AppId& app_id,
+                       const GURL& url,
+                       const ExternalInstallSource& source) {
+  ScopedRegistryUpdate update(sync_bridge);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  DCHECK(app_to_update);
+
+  // Adding external app data (source and URL) to web_app DB.
+  app_to_update->AddInstallURLToManagementExternalConfigMap(
+      ConvertExternalInstallSourceToSource(source), url);
+
+  // Add to legacy external pref storage.
+  // TODO(crbug.com/1339965): Clean up after external pref migration is
+  // complete.
+  ExternallyInstalledWebAppPrefs(pref_service).Insert(url, app_id, source);
+}
+
+void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
+                                     WebAppSyncBridge* sync_bridge,
+                                     const AppId& app_id,
+                                     const GURL& url,
+                                     const ExternalInstallSource& source,
+                                     bool is_placeholder) {
+  ScopedRegistryUpdate update(sync_bridge);
+  ExternallyInstalledWebAppPrefs prefs(pref_service);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  DCHECK(app_to_update);
+
+  // Adding install_url, source and placeholder information to the web_app DB.
+  app_to_update->AddExternalSourceInformation(
+      ConvertExternalInstallSourceToSource(source), url, is_placeholder);
+
+  // Add to legacy external pref storage.
+  // TODO(crbug.com/1339965): Clean up after external pref migration is
+  // complete.
+  prefs.Insert(url, app_id, source);
+  prefs.SetIsPlaceholder(url, is_placeholder);
 }
 
 }  // namespace test

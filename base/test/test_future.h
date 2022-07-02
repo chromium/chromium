@@ -150,9 +150,13 @@ class TestFuture {
   template <typename... CallbackArgumentsTypes>
   base::OnceCallback<void(CallbackArgumentsTypes...)> GetCallback() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::BindOnce(&TestFuture<Types...>::SetValueFromCallbackArguments<
-                              CallbackArgumentsTypes...>,
-                          weak_ptr_factory_.GetWeakPtr());
+    return base::BindOnce(
+        [](WeakPtr<TestFuture<Types...>> future,
+           CallbackArgumentsTypes... values) {
+          if (future)
+            future->SetValue(std::forward<CallbackArgumentsTypes>(values)...);
+        },
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   base::OnceCallback<void(Types...)> GetCallback() {
@@ -215,14 +219,6 @@ class TestFuture {
   }
 
  private:
-  // Used by GetCallback() to adapt between the form in which the callback
-  // provides arguments, and the argument types specified to this template.
-  // e.g. callbacks often carry arguments as |const Foo&| rather than |Foo|.
-  template <typename... CallbackArgumentsTypes>
-  void SetValueFromCallbackArguments(CallbackArgumentsTypes... values) {
-    SetValue(std::forward<CallbackArgumentsTypes>(values)...);
-  }
-
   [[nodiscard]] const TupleType& GetTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();

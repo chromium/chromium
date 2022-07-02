@@ -116,7 +116,7 @@ constexpr gfx::Size OverflowViewTest::kMinimumSize2;
 TEST_F(OverflowViewTest, SizesNoFlexRules) {
   Init(kMinimumSize, kPreferredSize, kMinimumSize2, kPreferredSize2);
   const gfx::Size expected_min(
-      kMinimumSize2.width(),
+      std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
@@ -125,10 +125,10 @@ TEST_F(OverflowViewTest, SizesNoFlexRules) {
 TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
   Init(kMinimumSize2, kPreferredSize2, kMinimumSize, kPreferredSize);
   const gfx::Size expected_min(
-      kMinimumSize.width(),
+      std::min(kMinimumSize2.width(), kMinimumSize.width()),
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
-  EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
+  EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
   EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
@@ -137,7 +137,7 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
-      kMinimumSize2.height());
+      std::min(kMinimumSize2.height(), kMinimumSize.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
 }
@@ -147,9 +147,9 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLargerVertical) {
   overflow_view_->SetOrientation(views::LayoutOrientation::kVertical);
   const gfx::Size expected_min(
       std::max(kMinimumSize.width(), kMinimumSize2.width()),
-      kMinimumSize.height());
+      std::min(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
-  EXPECT_EQ(kPreferredSize, overflow_view_->GetPreferredSize());
+  EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
   EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
@@ -223,7 +223,6 @@ TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorSmallerThanPrimary) {
 TEST_F(OverflowViewLayoutTest, SizeToPreferredSizeIndicatorLargerThanPrimary) {
   SizeToPreferredSize();
   gfx::Size expected = kPrimaryPreferredSize;
-  expected.SetToMax(kIndicatorPreferredSize);
   EXPECT_EQ(gfx::Rect(expected), primary_bounds());
   EXPECT_FALSE(indicator_visible());
 }

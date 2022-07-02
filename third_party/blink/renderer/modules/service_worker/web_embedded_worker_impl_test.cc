@@ -20,7 +20,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
+#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
@@ -136,10 +136,6 @@ class FakeWebServiceWorkerFetchContext final
     return absl::optional<WebSecurityOrigin>();
   }
   WebString GetAcceptLanguages() const override { return WebString(); }
-  CrossVariantMojoReceiver<mojom::blink::WorkerTimingContainerInterfaceBase>
-  TakePendingWorkerTimingReceiver(int request_id) override {
-    return {};
-  }
   void SetIsOfflineMode(bool is_offline_mode) override {}
 
  private:
@@ -213,7 +209,8 @@ class MockServiceWorkerContextClient final
             KURL("https://example.com"), std::move(service_worker_object_host),
             service_worker_object.InitWithNewEndpointAndPassReceiver()),
         mojom::blink::FetchHandlerExistence::EXISTS,
-        /*reporting_observer_receiver=*/mojo::NullReceiver());
+        /*reporting_observer_receiver=*/mojo::NullReceiver(),
+        /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame);
 
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();
@@ -319,6 +316,7 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
       /*content_settings_proxy=*/mojo::NullRemote(),
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
+      InterfaceRegistry::GetEmptyInterfaceRegistry(),
       Thread::Current()->GetTaskRunner());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
@@ -338,6 +336,7 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
       /*content_settings_proxy=*/mojo::NullRemote(),
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
+      InterfaceRegistry::GetEmptyInterfaceRegistry(),
       Thread::Current()->GetTaskRunner());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
@@ -360,6 +359,7 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
       /*content_settings_proxy=*/mojo::NullRemote(),
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
+      InterfaceRegistry::GetEmptyInterfaceRegistry(),
       Thread::Current()->GetTaskRunner());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 

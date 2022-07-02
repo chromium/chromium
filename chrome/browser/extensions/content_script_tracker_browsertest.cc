@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
 
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("content script has run",
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("This page has a title.",
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
 }
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("content script has run",
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 // Tests tracking of content scripts injected/declared via `content_scripts`
@@ -309,14 +309,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Navigate to a test page that *is* covered by `content_scripts.matches`
   // manifest entry above.
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 
     // Verify that ContentScriptTracker detected the injection.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *second_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 
   // Verify that the initial tab still is still correctly absent from
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 // Ensure ContentScriptTracker correctly tracks script injections in frames
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(
   // initial empty document commits synchronously, without going through
   // ReadyToCommit step and 2) when this test was being written, the initial
   // 'about:blank' did not send a DidCommit IPC to the Browser process.
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   content::WebContentsAddedObserver popup_observer;
   ExecuteScriptAsync(first_tab, "window.open('about:blank', '_blank')");
 
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(
   // been run in the `popup`.  This verifies product code - this is the main
   // verification in this test.
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *popup->GetMainFrame()->GetProcess(), extension_id));
+      *popup->GetPrimaryMainFrame()->GetProcess(), extension_id));
 }
 
 class ContentScriptTrackerMatchOriginAsFallbackBrowserTest
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -470,14 +470,14 @@ IN_PROC_BROWSER_TEST_F(
 
     // Verify that ContentScriptTracker detected the injection.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 
   // Add a new subframe with a `data:...` URL.  This will verify that the
   // browser-side ContentScriptTracker correctly accounts for the renderer-side
   // support for injecting contents scripts into data: URLs (see r793302).
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kScript[] = R"(
         let iframe = document.createElement('iframe');
         iframe.src = 'data:text/html,contents';
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(
 
     // Verify that content script has been injected.
     ASSERT_TRUE(listener.WaitUntilSatisfied());
-    content::RenderFrameHost* main_frame = first_tab->GetMainFrame();
+    content::RenderFrameHost* main_frame = first_tab->GetPrimaryMainFrame();
     content::RenderFrameHost* child_frame =
         content::ChildFrameAt(main_frame, 0);
     ASSERT_TRUE(child_frame);
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -554,13 +554,13 @@ IN_PROC_BROWSER_TEST_F(
 
     // Verify that ContentScriptTracker properly covered the initial frame.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 
   // Open a new tab with 'about:blank'.  This may be tricky, because the initial
   // 'about:blank' navigation will not go through ReadyToCommit state.
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     content::WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(ExecJs(first_tab, "window.open('about:blank', '_blank')"));
     content::WebContents* popup = popup_observer.GetWebContents();
@@ -579,9 +579,9 @@ IN_PROC_BROWSER_TEST_F(
     // same process, but this kind of verification is important if we ever
     // consider going back to per-frame tracking.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *popup->GetMainFrame()->GetProcess(), extension->id()));
+        *popup->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 }
 
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(
 
     // Verify that ContentScriptTracker properly covered the initial frame.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 
   // Add a new subframe with `src=javascript:...` attribute.  This will leave
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(
   // (This is "Step 1" from the doc linked in the comment right above
   // IN_PROC_BROWSER_TEST_F.)
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kScript[] = R"(
         let iframe = document.createElement('iframe');
         iframe.name = 'test-child-frame';
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify expected properties of the test scenario - the `child_frame` should
   // have stayed at the initial empty document.
-  content::RenderFrameHost* main_frame = first_tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = first_tab->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(child_frame);
   EXPECT_EQ(main_frame->GetLastCommittedOrigin().Serialize(),
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(
     //
     // (This is "Step 3" from the doc linked in the comment right above
     // IN_PROC_BROWSER_TEST_F.)
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kDocumentWritingScript[] = R"(
         var win = window.open('', 'test-child-frame');
         win.document.open();
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(
         // Race step UI.3b (see below).
         did_commit_has_happened = true;
       }));
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   ASSERT_TRUE(
       content::BeginNavigateToURLFromRenderer(web_contents, injected_url));
 
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // MAIN VERIFICATION: Verify that ContentScriptTracker detected the injection.
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *web_contents->GetMainFrame()->GetProcess(), extension->id()));
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 // Tests tracking of content scripts injected/declared via
@@ -970,13 +970,13 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Navigate to a test page that *is* covered by the PageStateMatcher above.
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -991,14 +991,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 
     // Verify that ContentScriptTracker detected the injection.
     EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-        *second_tab->GetMainFrame()->GetProcess(), extension->id()));
+        *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   }
 
   // Verify that still no content script has been run in the `first_tab`.
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -1030,13 +1030,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest, HistoryPushState) {
   // to one that *is* covered by the URL patterns above.
   GURL url =
       embedded_test_server()->GetURL("bar.com", "/History/push_state.html");
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Verify that content script has been injected.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
-  content::RenderFrameHost* main_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   EXPECT_EQ("content script has run",
             content::EvalJs(main_frame, "document.body.innerText"));
 
@@ -1093,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
 
-  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED", false);
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
@@ -1110,13 +1112,13 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Navigate to a test page that *is* covered by the dynamic content script
   // above.
   {
     GURL injected_url = embedded_test_server()->GetURL("a.com", "/title1.html");
-    ExtensionTestMessageListener listener("SCRIPT_INJECTED", false);
+    ExtensionTestMessageListener listener("SCRIPT_INJECTED");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -1125,8 +1127,8 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   content::WebContents* second_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(first_tab, second_tab);
-  EXPECT_NE(first_tab->GetMainFrame()->GetProcess(),
-            second_tab->GetMainFrame()->GetProcess());
+  EXPECT_NE(first_tab->GetPrimaryMainFrame()->GetProcess(),
+            second_tab->GetPrimaryMainFrame()->GetProcess());
 
   // Verify that the new tab shows up as having been injected with content
   // scripts.
@@ -1135,9 +1137,9 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   EXPECT_EQ("This page has no title.",
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *second_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-      *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+      *first_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 class ContentScriptTrackerAppBrowserTest : public PlatformAppBrowserTest {
@@ -1233,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   // Verify that ContentScriptTracker correctly shows that no content scripts
   // got injected just yet.
   content::RenderProcessHost* guest_process =
-      guest_contents->GetMainFrame()->GetProcess();
+      guest_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
@@ -1261,9 +1263,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url2(embedded_test_server()->GetURL("bar.com", "/title2.html"));
 
     ExtensionTestMessageListener app_script_listener(
-        "Hello from webView content script!", false);
+        "Hello from webView content script!");
     ExtensionTestMessageListener unrelated_extension_script_listener(
-        "Hello from extension content script!", false);
+        "Hello from extension content script!");
     content::TestNavigationObserver nav_observer(guest_contents);
     content::ExecuteScriptAsync(
         app_contents,
@@ -1278,7 +1280,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   }
 
   // Verify that ContentScriptTracker detected the content script injection
-  // from `app` (but not from `unrelated_extension`).
+  // from `app` in the bar.com guest process (but not from
+  // `unrelated_extension`).
+  guest_process = guest_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
@@ -1351,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   // Verify that ContentScriptTracker correctly shows that no content scripts
   // got injected just yet.
   content::RenderProcessHost* guest_process =
-      guest_contents->GetMainFrame()->GetProcess();
+      guest_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));
 
@@ -1388,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   // Create an about:blank subframe where content script should get injected
   // into.
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     content::TestNavigationObserver nav_observer(guest_contents);
     const char kAboutBlankScript[] = R"(
         var f = document.createElement('iframe');

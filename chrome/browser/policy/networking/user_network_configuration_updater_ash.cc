@@ -17,12 +17,12 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_certificate_importer_impl.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -112,6 +112,7 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
     : UserNetworkConfigurationUpdater(policy_service),
       user_(&user),
       network_config_handler_(network_config_handler) {
+  DCHECK(user_);
   // The updater is created with |client_certificate_importer_| unset and is
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
@@ -127,6 +128,13 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
   // initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized())
     chromeos::NetworkCertLoader::Get()->SetUserPolicyCertificateProvider(this);
+
+  // Set profile-wide expansions for policy networks (i.e. those that apply to
+  // all networks in this profile). Note that this does currently not apply
+  // user-imported networks (through chrome://network) because those currently
+  // don't use the ManagedNetworkConfigurationHandler (b/235297258).
+  network_config_handler_->SetProfileWideVariableExpansions(
+      user.username_hash(), chromeos::onc::GetVariableExpansionsForUser(&user));
 }
 
 void UserNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
@@ -145,8 +153,6 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
     base::DictionaryValue* global_network_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(user_);
-  chromeos::onc::ExpandStringPlaceholdersInNetworksForUser(user_,
-                                                           network_configs_onc);
 
   // Call on UserSessionManager to send the user's password to session manager
   // if the password substitution variable exists in the ONC.

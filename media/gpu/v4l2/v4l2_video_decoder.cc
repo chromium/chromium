@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/chromeos_status.h"
@@ -264,7 +265,9 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(state_ == State::kInitialized);
 
-  can_use_decoder_ = num_instances_.Increment() < kMaxNumOfInstances;
+  can_use_decoder_ =
+      num_instances_.Increment() < kMaxNumOfInstances ||
+      !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
   if (!can_use_decoder_) {
     VLOGF(1) << "Reached maximum number of decoder instances ("
              << kMaxNumOfInstances << ")";

@@ -113,9 +113,6 @@
 
       <!-- Kerberos. -->
       <structure type="chrome_scaled_image" name="IDR_KERBEROS_ICON_KEY" file="kerberos/vpn_key_grey600_24dp.png" />
-
-      <!-- Assistant images. -->
-      <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ANIMATION" file="vector/voice_laptop.json" compress="gzip" />
     </structures>
   </release>
 </grit>

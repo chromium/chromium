@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,6 +23,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
+namespace ash {
+class PillButton;
+}  // namespace ash
+
 namespace arc {
 class ArcInputOverlayManagerTest;
 namespace input_overlay {
@@ -29,14 +34,15 @@ class TouchInjector;
 class InputMappingView;
 class InputMenuView;
 class ActionEditMenu;
-class EditModeExitView;
-class ErrorView;
+class EditFinishView;
+class MessageView;
 class EducationalView;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
-// |ActionEditMenu| and |ErrorView| by listening to the |LocatedEvent|.
-class DisplayOverlayController : public ui::EventHandler {
+// |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
+class DisplayOverlayController : public ui::EventHandler,
+                                 public ash::ColorModeObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
@@ -45,14 +51,15 @@ class DisplayOverlayController : public ui::EventHandler {
 
   void OnWindowBoundsChanged();
   void SetDisplayMode(DisplayMode mode);
-  // Get the bounds of |overlay_menu_entry_| in contents view.
+  // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
   void AddActionEditMenu(ActionView* anchor, ActionType action_type);
   void RemoveActionEditMenu();
 
-  void AddEditErrorMsg(ActionView* action_view, base::StringPiece error_msg);
-  void RemoveEditErrorMsg();
+  void AddEditMessage(const base::StringPiece& message,
+                      MessageType message_type);
+  void RemoveEditMessage();
 
   void OnBindingChange(Action* action,
                        std::unique_ptr<InputElement> input_element);
@@ -74,6 +81,9 @@ class DisplayOverlayController : public ui::EventHandler {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
  private:
   friend class ::arc::ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
@@ -85,16 +95,24 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddOverlay(DisplayMode display_mode);
   void RemoveOverlayIfAny();
 
+  // On charge of Add/Remove nudge view.
+  void AddNudgeView(views::Widget* overlay_widget);
+  void RemoveNudgeView();
+  void OnNudgeDismissed();
+  gfx::Point CalculateNudgePosition(int nudge_width);
+
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
+  void FocusOnMenuEntry();
+  void ClearFocusOnMenuEntry();
   void RemoveInputMenuView();
 
   void AddInputMappingView(views::Widget* overlay_widget);
   void RemoveInputMappingView();
 
-  void AddEditModeExitView(views::Widget* overlay_widget);
-  void RemoveEditModeExitView();
+  void AddEditFinishView(views::Widget* overlay_widget);
+  void RemoveEditFinishView();
 
   // Add |EducationalView|.
   void AddEducationalView();
@@ -104,7 +122,6 @@ class DisplayOverlayController : public ui::EventHandler {
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
-  gfx::Point CalculateEditModeExitPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);
@@ -113,8 +130,8 @@ class DisplayOverlayController : public ui::EventHandler {
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
 
-  // Close |ActionEditMenu| Or |ErrorView| if |LocatedEvent| happens outside of
-  // their view bounds.
+  // Close |ActionEditMenu| Or |MessageView| if |LocatedEvent| happens outside
+  // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   // For test:
@@ -130,9 +147,10 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
   raw_ptr<views::ImageButton> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
-  raw_ptr<EditModeExitView> edit_mode_view_ = nullptr;
-  raw_ptr<ErrorView> error_ = nullptr;
+  raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
+  raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
+  raw_ptr<ash::PillButton> nudge_view_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

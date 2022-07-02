@@ -4,6 +4,8 @@
 
 import("//chromecast/chromecast.gni")
 
+assert(!is_fuchsia)
+
 source_set("external_service") {
   public = [
     "external_connector.h",

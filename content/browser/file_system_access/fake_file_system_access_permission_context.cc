@@ -95,4 +95,9 @@ base::FilePath FakeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
              : base::FilePath();
 }
 
+std::u16string FakeFileSystemAccessPermissionContext::GetPickerTitle(
+    const blink::mojom::FilePickerOptionsPtr& options) {
+  return kPickerTitle;
+}
+
 }  // namespace content

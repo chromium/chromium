@@ -19,6 +19,8 @@ namespace ui {
 class Accelerator;
 }
 
+constexpr int NO_COMMAND = -1;
+
 struct KeyboardShortcutData {
   bool command_key;
   bool shift_key;
@@ -30,13 +32,13 @@ struct KeyboardShortcutData {
 };
 
 struct CommandForKeyEventResult {
-  bool found() { return chrome_command != -1; }
+  bool found() { return chrome_command != NO_COMMAND; }
 
-  // The command to execute. -1 if none was found.
+  // The command to execute. NO_COMMAND if none was found.
   int chrome_command;
 
   // Whether the command was from a mapping in the main menu. Only relevant if
-  // command != -1.
+  // command != NO_COMMAND.
   bool from_main_menu;
 };
 

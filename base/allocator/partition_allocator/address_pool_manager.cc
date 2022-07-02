@@ -9,15 +9,15 @@
 #include <cstdint>
 #include <limits>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_space_stats.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/lazy_instance.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -26,16 +26,11 @@
 
 namespace partition_alloc::internal {
 
-namespace {
-
-base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
+AddressPoolManager AddressPoolManager::singleton_;
 
 // static
-AddressPoolManager* AddressPoolManager::GetInstance() {
-  return g_address_pool_manager.Pointer();
+AddressPoolManager& AddressPoolManager::GetInstance() {
+  return singleton_;
 }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -122,7 +117,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   PA_CHECK(!(ptr & kSuperPageOffsetMask));
   PA_CHECK(!(length & kSuperPageOffsetMask));
   address_begin_ = ptr;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   address_end_ = ptr + length;
   PA_DCHECK(address_begin_ < address_end_);
 #endif
@@ -199,7 +194,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
         bit_hint_ = end_bit;
       }
       uintptr_t address = address_begin_ + beg_bit * kSuperPageSize;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
       PA_DCHECK(address + requested_size <= address_end_);
 #endif
       return address;
@@ -240,7 +235,7 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
   PA_DCHECK(!(free_size & kSuperPageOffsetMask));
 
   PA_DCHECK(address_begin_ <= address);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(address + free_size <= address_end_);
 #endif
 
@@ -282,9 +277,6 @@ void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
   }
   stats->largest_available_reservation = largest_run;
 }
-
-AddressPoolManager::Pool::Pool() = default;
-AddressPoolManager::Pool::~Pool() = default;
 
 void AddressPoolManager::GetPoolStats(const pool_handle handle,
                                       PoolStats* stats) {
@@ -545,8 +537,5 @@ void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
     dumper->DumpStats(&stats);
   }
 }
-
-AddressPoolManager::AddressPoolManager() = default;
-AddressPoolManager::~AddressPoolManager() = default;
 
 }  // namespace partition_alloc::internal

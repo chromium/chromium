@@ -4,15 +4,20 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-enum GPUCanvasCompositingAlphaMode {
+enum GPUCanvasAlphaMode {
     "opaque",
     "premultiplied",
 };
 
-dictionary GPUCanvasConfiguration : GPUObjectDescriptorBase {
+dictionary GPUCanvasConfiguration {
     required GPUDevice device;
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = 16;  // GPUTextureUsage.RENDER_ATTACHMENT
-    GPUCanvasCompositingAlphaMode compositingAlphaMode;
+    sequence<GPUTextureFormat> viewFormats = [];
+    PredefinedColorSpace colorSpace = "srgb";
+    GPUCanvasAlphaMode alphaMode;
+
+    // TODO(crbug.com/1069302): Remove the following after a deprecation period.
     GPUExtent3D size;
+    GPUCanvasAlphaMode compositingAlphaMode;
 };

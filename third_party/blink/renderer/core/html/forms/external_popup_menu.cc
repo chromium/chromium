@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/external_popup_menu.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -245,7 +246,7 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
         ToPopupMenuItemIndex(indices[indices.size() - 1], *owner_element));
   } else {
     Vector<int> list_indices;
-    wtf_size_t list_count = SafeCast<wtf_size_t>(indices.size());
+    wtf_size_t list_count = base::checked_cast<wtf_size_t>(indices.size());
     list_indices.ReserveCapacity(list_count);
     for (wtf_size_t i = 0; i < list_count; ++i)
       list_indices.push_back(ToPopupMenuItemIndex(indices[i], *owner_element));

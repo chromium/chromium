@@ -32,26 +32,20 @@ using bookmarks_helper::ServerBookmarksEqualityChecker;
 using fake_server::FakeServer;
 using fake_server::GetServerNigori;
 using fake_server::SetNigoriInFakeServer;
-using sync_pb::EncryptedData;
 using sync_pb::NigoriSpecifics;
-using sync_pb::SyncEntity;
 using syncer::BuildCustomPassphraseNigoriSpecifics;
 using syncer::Cryptographer;
 using syncer::GetEncryptedBookmarkEntitySpecifics;
 using syncer::InitCustomPassphraseCryptographerFromNigori;
-using syncer::InitCustomPassphraseKeyDerivationParamsFromNigori;
 using syncer::KeyParamsForTesting;
 using syncer::LoopbackServerEntity;
-using syncer::ModelType;
 using syncer::ModelTypeSet;
 using syncer::PassphraseType;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::ProtoPassphraseInt32ToEnum;
 using syncer::ScryptPassphraseKeyParamsForTesting;
 using syncer::SyncEngineStoppedChecker;
-using syncer::SyncService;
 using testing::ElementsAre;
-using testing::SizeIs;
 
 // Intercepts all bookmark entity names as committed to the FakeServer.
 class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
@@ -102,7 +96,7 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
   SingleClientCustomPassphraseSyncTest& operator=(
       const SingleClientCustomPassphraseSyncTest&) = delete;
 
-  ~SingleClientCustomPassphraseSyncTest() override {}
+  ~SingleClientCustomPassphraseSyncTest() override = default;
 
   // Waits until the given set of bookmarks appears on the server, encrypted
   // according to the server-side Nigori and with the given passphrase.
@@ -112,8 +106,7 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
       const std::string& passphrase) {
     std::unique_ptr<Cryptographer> cryptographer =
         CreateCryptographerFromServerNigori(passphrase);
-    return ServerBookmarksEqualityChecker(GetSyncService(), GetFakeServer(),
-                                          expected_bookmarks,
+    return ServerBookmarksEqualityChecker(expected_bookmarks,
                                           cryptographer.get())
         .Wait();
   }
@@ -121,16 +114,13 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
   bool WaitForUnencryptedServerBookmarks(
       const std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>&
           expected_bookmarks) {
-    return ServerBookmarksEqualityChecker(GetSyncService(), GetFakeServer(),
-                                          expected_bookmarks,
+    return ServerBookmarksEqualityChecker(expected_bookmarks,
                                           /*cryptographer=*/nullptr)
         .Wait();
   }
 
   bool WaitForNigori(PassphraseType expected_passphrase_type) {
-    return ServerNigoriChecker(GetSyncService(), GetFakeServer(),
-                               expected_passphrase_type)
-        .Wait();
+    return ServerPassphraseTypeChecker(expected_passphrase_type).Wait();
   }
 
   bool WaitForPassphraseRequiredState(bool desired_state) {

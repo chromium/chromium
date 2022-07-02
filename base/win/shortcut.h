@@ -5,8 +5,7 @@
 #ifndef BASE_WIN_SHORTCUT_H_
 #define BASE_WIN_SHORTCUT_H_
 
-#include "guiddef.h"
-
+#include <guiddef.h>
 #include <stdint.h>
 
 #include "base/base_export.h"
@@ -32,21 +31,21 @@ enum class ShortcutOperation {
 // Callers are encouraged to use the setters provided which take care of
 // setting |options| as desired.
 struct BASE_EXPORT ShortcutProperties {
-  enum IndividualProperties {
-    PROPERTIES_TARGET = 1U << 0,
-    PROPERTIES_WORKING_DIR = 1U << 1,
-    PROPERTIES_ARGUMENTS = 1U << 2,
-    PROPERTIES_DESCRIPTION = 1U << 3,
-    PROPERTIES_ICON = 1U << 4,
-    PROPERTIES_APP_ID = 1U << 5,
-    PROPERTIES_DUAL_MODE = 1U << 6,
-    PROPERTIES_TOAST_ACTIVATOR_CLSID = 1U << 7,
-    // Be sure to update the values below when adding a new property.
-    PROPERTIES_ALL = PROPERTIES_TARGET | PROPERTIES_WORKING_DIR |
-                     PROPERTIES_ARGUMENTS | PROPERTIES_DESCRIPTION |
-                     PROPERTIES_ICON | PROPERTIES_APP_ID |
-                     PROPERTIES_DUAL_MODE | PROPERTIES_TOAST_ACTIVATOR_CLSID
-  };
+  using IndividualProperties = uint32_t;
+  static constexpr IndividualProperties PROPERTIES_TARGET = 1U << 0;
+  static constexpr IndividualProperties PROPERTIES_WORKING_DIR = 1U << 1;
+  static constexpr IndividualProperties PROPERTIES_ARGUMENTS = 1U << 2;
+  static constexpr IndividualProperties PROPERTIES_DESCRIPTION = 1U << 3;
+  static constexpr IndividualProperties PROPERTIES_ICON = 1U << 4;
+  static constexpr IndividualProperties PROPERTIES_APP_ID = 1U << 5;
+  static constexpr IndividualProperties PROPERTIES_DUAL_MODE = 1U << 6;
+  static constexpr IndividualProperties PROPERTIES_TOAST_ACTIVATOR_CLSID = 1U
+                                                                           << 7;
+  // Be sure to update the values below when adding a new property.
+  static constexpr IndividualProperties PROPERTIES_ALL =
+      PROPERTIES_TARGET | PROPERTIES_WORKING_DIR | PROPERTIES_ARGUMENTS |
+      PROPERTIES_DESCRIPTION | PROPERTIES_ICON | PROPERTIES_APP_ID |
+      PROPERTIES_DUAL_MODE | PROPERTIES_TOAST_ACTIVATOR_CLSID;
 
   ShortcutProperties();
   ShortcutProperties(const ShortcutProperties& other);

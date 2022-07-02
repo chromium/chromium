@@ -73,8 +73,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     for (const key in modifiers) {
       keyEvent[key] = modifiers[key];
     }
-    keyEvent.preventDefault = _ => {};
-    keyEvent.stopPropagation = _ => {};
+    keyEvent.preventDefault = () => {};
+    keyEvent.stopPropagation = () => {};
     return keyEvent;
   }
 
@@ -119,6 +119,9 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
           '/chromevox/background/base_automation_handler.js');
       await importModule(
           'CommandHandler', '/chromevox/background/command_handler.js');
+      await importModule(
+          'CommandHandlerInterface',
+          '/chromevox/background/command_handler_interface.js');
       await importModule(
           'GestureCommandHandler',
           '/chromevox/background/gesture_command_handler.js');

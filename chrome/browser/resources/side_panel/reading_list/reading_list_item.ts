@@ -8,15 +8,16 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './icons.js';
+import './icons.html.js';
 
 import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadLaterEntry} from './reading_list.mojom-webui.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list_api_proxy.js';
+import {getTemplate} from './reading_list_item.html.js';
 
 const navigationKeys: Set<string> =
     new Set([' ', 'Enter', 'ArrowRight', 'ArrowLeft']);
@@ -36,7 +37,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

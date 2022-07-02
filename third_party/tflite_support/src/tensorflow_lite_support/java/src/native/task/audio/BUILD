@@ -14,11 +14,18 @@ cc_library_with_tflite(
 
 jni_binary_with_tflite(
     name = "libtask_audio_jni.so",
+    linkscript = "//tensorflow_lite_support/java:default_version_script.lds",
+    tflite_deps = [
+        ":task_audio_jni_lib",
+    ],
+)
+
+cc_library_with_tflite(
+    name = "task_audio_jni_lib",
     srcs = [
         "//tensorflow_lite_support/java/src/native/task/audio/classifier:audio_classifier_jni.cc",
         "//tensorflow_lite_support/java/src/native/task/core:task_jni_utils.cc",
     ],
-    linkscript = "//tensorflow_lite_support/java:default_version_script.lds",
     tflite_deps = [
         "//tensorflow_lite_support/java/src/native/task/core:builtin_op_resolver",
         "//tensorflow_lite_support/cc/task/audio:audio_classifier",

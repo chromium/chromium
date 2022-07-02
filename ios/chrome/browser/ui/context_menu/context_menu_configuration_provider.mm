@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 
 #include "base/ios/ios_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -21,11 +24,10 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
-#import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
-#import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
@@ -156,9 +158,41 @@ NSString* const kContextMenuEllipsis = @"…";
 
       if (!isOffTheRecord) {
         // Open in Incognito Tab.
-        UIAction* openIncognitoTab =
-            [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
-                                                     completion:nil];
+        UIAction* openIncognitoTab;
+        if (base::FeatureList::IsEnabled(
+                url_param_filter::features::kIncognitoParamFilterEnabled)) {
+          // Experimental filter guarded by the kIncognitoParamFilterEnabled
+          // flag.
+          url_param_filter::FilterResult result =
+              url_param_filter::FilterUrl(lastCommittedURL, linkURL);
+          if (result.experimental_status ==
+              url_param_filter::ClassificationExperimentStatus::EXPERIMENTAL) {
+            base::UmaHistogramCounts100(
+                "Navigation.UrlParamFilter.FilteredParamCountExperimental",
+                result.filtered_param_count);
+          } else {
+            base::UmaHistogramCounts100(
+                "Navigation.UrlParamFilter.FilteredParamCount",
+                result.filtered_param_count);
+          }
+          GURL targetURL =
+              result.filtered_param_count > 0 ? result.filtered_url : linkURL;
+          loadParams = UrlLoadParams::InNewTab(targetURL);
+          loadParams.in_incognito = YES;
+          loadParams.filtered_param_count = result.filtered_param_count;
+          openIncognitoTab =
+              [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+                ContextMenuConfigurationProvider* strongSelf = weakSelf;
+                if (!strongSelf)
+                  return;
+                UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+                    ->Load(loadParams);
+              }];
+        } else {
+          openIncognitoTab =
+              [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
+                                                       completion:nil];
+        }
         [menuElements addObject:openIncognitoTab];
       }
 
@@ -287,30 +321,32 @@ NSString* const kContextMenuEllipsis = @"…";
     }
   }
 
+  NSString* menuTitle;
+
   // Insert any provided menu items. Do after Link and/or Image to allow
   // inserting at beginning or adding to end.
-  ios::provider::AddContextMenuElements(
-      menuElements, self.browser->GetBrowserState(), webState, params);
+  ElementsToAddToContextMenu* result =
+      ios::provider::GetContextMenuElementsToAdd(
+          self.browser->GetBrowserState(), webState, params,
+          self.baseViewController);
+  if (result && result.elements) {
+    [menuElements addObjectsFromArray:result.elements];
+    menuTitle = result.title;
+  }
 
   if (menuElements.count == 0) {
     return nil;
   }
 
-  NSString* menuTitle = nil;
   if (isLink || isImage) {
-    if (!base::FeatureList::IsEnabled(
-            web::features::kWebViewNativeContextMenuPhase2)) {
-      menuTitle = GetContextMenuTitle(params);
+    menuTitle = GetContextMenuTitle(params);
 
-      // Truncate context meny titles that originate from URLs, leaving text
-      // titles untruncated.
-      if (!IsImageTitle(params) &&
-          menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-            stringByAppendingString:kContextMenuEllipsis];
-      }
-    } else if (!isLink) {
-      menuTitle = GetContextMenuTitle(params);
+    // Truncate context meny titles that originate from URLs, leaving text
+    // titles untruncated.
+    if (!IsImageTitle(params) &&
+        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+          stringByAppendingString:kContextMenuEllipsis];
     }
   }
 
@@ -322,55 +358,9 @@ NSString* const kContextMenuEllipsis = @"…";
         return menu;
       };
 
-  UIContextMenuContentPreviewProvider previewProvider = nil;
-  if (isLink || isImage) {
-    previewProvider = ^UIViewController* {
-      if (!weakSelf || !base::FeatureList::IsEnabled(
-                           web::features::kWebViewNativeContextMenuPhase2)) {
-        return nil;
-      }
-      if (isLink) {
-        NSString* title = GetContextMenuTitle(params);
-        NSString* subtitle = GetContextMenuSubtitle(params);
-        LinkNoPreviewViewController* previewViewController =
-            [[LinkNoPreviewViewController alloc] initWithTitle:title
-                                                      subtitle:subtitle];
-
-        __weak LinkNoPreviewViewController* weakPreview = previewViewController;
-        FaviconLoader* faviconLoader =
-            IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                weakSelf.browser->GetBrowserState());
-        faviconLoader->FaviconForPageUrl(
-            linkURL, kDesiredSmallFaviconSizePt, kDesiredSmallFaviconSizePt,
-            /*fallback_to_google_server=*/false,
-            ^(FaviconAttributes* attributes) {
-              [weakPreview configureFaviconWithAttributes:attributes];
-            });
-        return previewViewController;
-      }
-      DCHECK(isImage);
-      ImagePreviewViewController* preview = [[ImagePreviewViewController alloc]
-          initWithPreferredContentSize:CGSizeMake(params.natural_width,
-                                                  params.natural_height)];
-      if (params.screenshot) {
-        [preview updateImage:params.screenshot];
-      }
-      __weak ImagePreviewViewController* weakPreview = preview;
-
-      ImageFetchTabHelper* imageFetcher =
-          ImageFetchTabHelper::FromWebState(weakSelf.currentWebState);
-      DCHECK(imageFetcher);
-      imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
-        [weakPreview updateImageData:data];
-      });
-
-      return preview;
-    };
-  }
-
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:previewProvider
+                                              previewProvider:nil
                                                actionProvider:actionProvider];
 }
 
@@ -383,7 +373,7 @@ NSString* const kContextMenuEllipsis = @"…";
 
 #pragma mark - Private
 
-// Searches an image with the given |imageURL| and |referrer|, optionally using
+// Searches an image with the given `imageURL` and `referrer`, optionally using
 // Lens.
 - (void)searchImageWithURL:(GURL)imageURL
                  usingLens:(BOOL)usingLens
@@ -401,7 +391,7 @@ NSString* const kContextMenuEllipsis = @"…";
   });
 }
 
-// Starts a reverse image search based on |imageData| and |imageURL| in a new
+// Starts a reverse image search based on `imageData` and `imageURL` in a new
 // tab.
 - (void)searchByImageData:(NSData*)imageData imageURL:(const GURL&)URL {
   web::NavigationManager::WebLoadParams webParams =
@@ -415,12 +405,10 @@ NSString* const kContextMenuEllipsis = @"…";
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
-// Searches an image with Lens using the given |imageData|.
+// Searches an image with Lens using the given `imageData`.
 - (void)searchImageUsingLensWithData:(NSData*)imageData {
-  // TODO(crbug.com/1323783): This should be an id<LensCommands> and use
-  // HandlerForProtocol().
-  id<BrowserCommands> handler =
-      static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
+  id<LensCommands> handler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), LensCommands);
   UIImage* image = [UIImage imageWithData:imageData];
   SearchImageWithLensCommand* command =
       [[SearchImageWithLensCommand alloc] initWithImage:image];

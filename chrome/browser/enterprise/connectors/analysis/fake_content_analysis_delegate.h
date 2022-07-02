@@ -33,14 +33,8 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       base::RepeatingCallback<enterprise_connectors::ContentAnalysisResponse(
           const base::FilePath&)>;
 
-  // Callback that determines the encryption of the file specified.  Returns
-  // true if the file is considered encrypted for tests.
-  using EncryptionStatusCallback =
-      base::RepeatingCallback<bool(const base::FilePath&)>;
-
   FakeContentAnalysisDelegate(base::RepeatingClosure delete_closure,
                               StatusCallback status_callback,
-                              EncryptionStatusCallback encryption_callback,
                               std::string dm_token,
                               content::WebContents* web_contents,
                               Data data,
@@ -53,7 +47,6 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
-      EncryptionStatusCallback encryption_callback,
       std::string dm_token,
       content::WebContents* web_contents,
       Data data,
@@ -101,19 +94,20 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   void UploadTextForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
-  void UploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
-      const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
   void UploadPageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
 
+  // Fake upload callback for deep scanning. Virtual to be overridden by other
+  // fakes.
+  virtual void FakeUploadFileForDeepScanning(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+
   static safe_browsing::BinaryUploadService::Result result_;
   base::RepeatingClosure delete_closure_;
   StatusCallback status_callback_;
-  EncryptionStatusCallback encryption_callback_;
   std::string dm_token_;
 
   base::WeakPtrFactory<FakeContentAnalysisDelegate> weakptr_factory_{this};

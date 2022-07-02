@@ -138,6 +138,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsNGTable() const { return IsTable() && box_->IsLayoutNGObject(); }
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
+  bool IsTableSection() const { return IsBlock() && box_->IsTableSection(); }
 
   // Section with empty rows is considered empty.
   bool IsEmptyTableSection() const;
@@ -243,11 +244,11 @@ class CORE_EXPORT NGLayoutInputNode {
   }
 
   LogicalAxes ContainedAxes() const {
-    LogicalAxes axes(kLogicalAxisNone);
+    LogicalAxes axes = kLogicalAxisNone;
     if (ShouldApplyInlineSizeContainment())
-      axes |= LogicalAxes(kLogicalAxisInline);
+      axes |= kLogicalAxisInline;
     if (ShouldApplyBlockSizeContainment())
-      axes |= LogicalAxes(kLogicalAxisBlock);
+      axes |= kLogicalAxisBlock;
     return axes;
   }
 

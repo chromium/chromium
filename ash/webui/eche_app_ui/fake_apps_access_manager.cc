@@ -26,6 +26,8 @@ void FakeAppsAccessManager::SetAccessStatusInternal(
   NotifyAppsAccessChanged();
 }
 
+void FakeAppsAccessManager::NotifyAppsAccessCanceled() {}
+
 void FakeAppsAccessManager::OnSetupRequested() {}
 
 void FakeAppsAccessManager::SetAppsSetupOperationStatus(

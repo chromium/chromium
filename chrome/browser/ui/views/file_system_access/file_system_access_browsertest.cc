@@ -563,7 +563,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
       ChildFrameAt(third_party_web_contents, 0);
   ASSERT_TRUE(third_party_iframe);
   ASSERT_EQ(third_party_iframe->GetLastCommittedOrigin(),
-            first_party_web_contents->GetMainFrame()->GetLastCommittedOrigin());
+            first_party_web_contents->GetPrimaryMainFrame()
+                ->GetLastCommittedOrigin());
 
   // 3. Also showing https://b.com/title1.html
   Browser* third_window = CreateBrowser(profile);
@@ -706,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
       ChildFrameAt(third_party_web_contents, 0);
   ASSERT_TRUE(third_party_iframe);
   ASSERT_EQ(third_party_iframe->GetLastCommittedOrigin(),
-            first_party_web_contents->GetMainFrame()->GetLastCommittedOrigin());
+            first_party_web_contents->GetPrimaryMainFrame()
+                ->GetLastCommittedOrigin());
 
   // The b.com iframe inside a.com should wait to receive a handle from a
   // top-level b.com page.
@@ -1011,7 +1013,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
   // Load a fenced frame.
   GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
-      CreateFencedFrame(web_contents->GetMainFrame(), fenced_frame_url);
+      CreateFencedFrame(web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
   // File system access is disabled for fenced frames.

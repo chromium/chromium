@@ -14,8 +14,7 @@ namespace blink {
 
 bool OpenTypeCapsSupport::SupportsOpenTypeFeature(hb_script_t script,
                                                   uint32_t tag) const {
-  hb_face_t* face = hb_font_get_face(
-      harfbuzz_face_->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout));
+  hb_face_t* const face = hb_font_get_face(harfbuzz_face_->GetScaledFont());
   DCHECK(face);
 
   DCHECK(

@@ -4,6 +4,7 @@
 
 #include "ash/system/power/battery_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -63,43 +64,56 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
 
 std::unique_ptr<Notification> CreateNotification(
     PowerNotificationController::NotificationState notification_state) {
+  notification_state = PowerNotificationController::NOTIFICATION_LOW_POWER;
   const PowerStatus& status = *PowerStatus::Get();
 
+  const double battery_percentage = status.GetRoundedBatteryPercent();
+
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_TITLE);
   std::u16string message = base::i18n::MessageFormatter::FormatWithNumberedArgs(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT),
-      static_cast<double>(status.GetRoundedBatteryPercent()) / 100.0);
+      battery_percentage / 100.0);
 
   const absl::optional<base::TimeDelta> time =
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
-  std::u16string time_message;
+
   if (status.IsUsbChargerConnected()) {
-    time_message = l10n_util::GetStringUTF16(
+    title =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE);
+    message = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
   } else if (time && power_utils::ShouldDisplayBatteryTime(*time) &&
              !status.IsBatteryDischargingOnLinePower()) {
+    std::u16string duration = ui::TimeFormat::Simple(
+        ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG, *time);
     if (status.IsBatteryCharging()) {
-      std::u16string duration;
-      if (!TimeDurationFormat(*time, base::DURATION_WIDTH_NARROW, &duration))
-        LOG(ERROR) << "Failed to format duration " << *time;
-      time_message = l10n_util::GetStringFUTF16(
+      title =
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_TITLE);
+      message = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL, duration);
     } else {
       // This is a low battery warning prompting the user in minutes.
-      time_message = ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                                            ui::TimeFormat::LENGTH_LONG, *time);
+      title = notification_state ==
+                      PowerNotificationController::NOTIFICATION_CRITICAL
+                  ? l10n_util::GetStringUTF16(
+                        IDS_ASH_STATUS_TRAY_CRITICAL_BATTERY_TITLE)
+                  : l10n_util::GetStringUTF16(
+                        IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE);
+      message = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE, duration,
+          base::NumberToString16(battery_percentage));
     }
   }
 
-  if (!time_message.empty())
-    message = message + u"\n" + time_message;
-
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      BatteryNotification::kNotificationId, std::u16string(), message,
-      std::u16string(), GURL(),
+      BatteryNotification::kNotificationId, title, message, std::u16string(),
+      GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierBattery),
+                                 kNotifierBattery,
+                                 NotificationCatalogName::kBatteryNotifier),
       message_center::RichNotificationData(), nullptr,
       GetBatteryImageMD(notification_state),
       GetWarningLevelMD(notification_state));

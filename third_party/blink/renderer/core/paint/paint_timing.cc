@@ -251,13 +251,12 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
   first_contentful_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstContentfulPaint);
 
-  // Restart commits that may have been deferred.
   LocalFrame* frame = GetFrame();
-  if (!frame || !frame->IsMainFrame())
+  if (!frame)
     return;
   frame->View()->OnFirstContentfulPaint();
 
-  if (frame->GetFrameScheduler())
+  if (frame->IsMainFrame() && frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();
 
   NotifyPaintTimingChanged();
@@ -353,7 +352,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
         first_contentful_paint_presentation_);
   }
   auto* coordinator = GetSupplementable()->GetResourceCoordinator();
-  if (coordinator && GetFrame() && GetFrame()->IsMainFrame()) {
+  if (coordinator && GetFrame() && GetFrame()->IsOutermostMainFrame()) {
     PerformanceTiming* timing = performance->timing();
     base::TimeDelta fcp = stamp - timing->NavigationStartAsMonotonicTime();
     coordinator->OnFirstContentfulPaint(fcp);
@@ -412,7 +411,7 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
       RequestAnimationFrameTimesAfterBackForwardCacheRestore{});
 
   LocalFrame* frame = GetFrame();
-  if (!frame->IsMainFrame()) {
+  if (!frame->IsOutermostMainFrame()) {
     return;
   }
 

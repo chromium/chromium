@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
@@ -23,9 +23,14 @@ namespace metrics {
 
 namespace {
 
-// Only used by child processes.
-base::LazyInstance<ChildCallStackProfileCollector>::Leaky
-    g_child_call_stack_profile_collector = LAZY_INSTANCE_INITIALIZER;
+// Only used by child processes. This returns a unique_ptr so that it can be
+// reset during tests.
+std::unique_ptr<ChildCallStackProfileCollector>&
+GetChildCallStackProfileCollector() {
+  static base::NoDestructor<std::unique_ptr<ChildCallStackProfileCollector>>
+      instance(std::make_unique<ChildCallStackProfileCollector>());
+  return *instance;
+}
 
 base::RepeatingCallback<void(base::TimeTicks, SampledProfile)>&
 GetBrowserProcessReceiverCallbackInstance() {
@@ -251,8 +256,14 @@ void CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
 void CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
         browser_interface) {
-  g_child_call_stack_profile_collector.Get().SetParentProfileCollector(
+  GetChildCallStackProfileCollector()->SetParentProfileCollector(
       std::move(browser_interface));
+}
+
+// static
+void CallStackProfileBuilder::ResetChildCallStackProfileCollectorForTesting() {
+  GetChildCallStackProfileCollector() =
+      std::make_unique<ChildCallStackProfileCollector>();
 }
 
 void CallStackProfileBuilder::PassProfilesToMetricsProvider(
@@ -262,8 +273,7 @@ void CallStackProfileBuilder::PassProfilesToMetricsProvider(
     GetBrowserProcessReceiverCallbackInstance().Run(profile_start_time,
                                                     std::move(sampled_profile));
   } else {
-    g_child_call_stack_profile_collector.Get()
-        .ChildCallStackProfileCollector::Collect(profile_start_time,
+    GetChildCallStackProfileCollector()->Collect(profile_start_time,
                                                  std::move(sampled_profile));
   }
 }

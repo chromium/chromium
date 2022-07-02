@@ -130,7 +130,7 @@ struct ComplexMessage : public Channel::Message {
   raw_ptr<HandleEntry> handles_ = nullptr;
 #elif BUILDFLAG(IS_MAC)
   // On OSX, handles are serialised into the extra header section.
-  MachPortsExtraHeader* mach_ports_header_ = nullptr;
+  raw_ptr<MachPortsExtraHeader> mach_ports_header_ = nullptr;
 #endif
 };
 

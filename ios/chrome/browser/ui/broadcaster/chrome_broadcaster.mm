@@ -19,7 +19,7 @@
 namespace {
 
 // Constructs an NSInvocation that will be used for repeated execution of
-// |selector|. |selector| must return void and take exactly one argument; it is
+// `selector`. `selector` must return void and take exactly one argument; it is
 // an error otherwise.
 NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   struct objc_method_description methodDesc = protocol_getMethodDescription(
@@ -66,7 +66,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 @property(nonatomic, readonly, copy) NSString* key;
 // The name associated with this observation.
 @property(nonatomic, readonly, copy) NSString* name;
-// The current value of |key| on |object|.
+// The current value of `key` on `object`.
 @property(nonatomic, readonly) NSValue* currentValue;
 
 // Designated initializer.
@@ -76,9 +76,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Add |observer| as a KVO of the object and key represented by the receiver.
+// Add `observer` as a KVO of the object and key represented by the receiver.
 - (void)addObserver:(NSObject*)observer;
-// Remove |observer| from the KVO represented by the receiver.
+// Remove `observer` from the KVO represented by the receiver.
 - (void)removeObserver:(NSObject*)observer;
 @end
 
@@ -188,13 +188,13 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
               ofObject:(NSObject*)object
               selector:(SEL)selector {
   NSString* name = NSStringFromSelector(selector);
-  // Sanity check: |selector| must be one of the selectors that are mapped.
+  // Sanity check: `selector` must be one of the selectors that are mapped.
   DCHECK(self.observerInvocations[name]);
-  // Sanity check: |selector| must not already be broadcast.
+  // Sanity check: `selector` must not already be broadcast.
   DCHECK(!self.items[name]);
 
   // TODO(crbug.com/719911) -- Another sanity check is needed here -- verify
-  // that the value to be observed is of the type that |selector| expects.
+  // that the value to be observed is of the type that `selector` expects.
 
   self.items[name] =
       [[BroadcastItem alloc] initWithObject:object key:valueKey name:name];
@@ -215,9 +215,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 - (void)addObserver:(id<ChromeBroadcastObserver>)observer
         forSelector:(SEL)selector {
   NSString* name = NSStringFromSelector(selector);
-  // Sanity check: |selector| must be one of the keys that are mapped.
+  // Sanity check: `selector` must be one of the keys that are mapped.
   DCHECK(self.observerInvocations[name]);
-  // Sanity check: |observer| must implement the selector for |selector|.
+  // Sanity check: `observer` must implement the selector for `selector`.
   DCHECK([observer respondsToSelector:selector]);
 
   if (!self.observers[name])
@@ -236,7 +236,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 - (void)removeObserver:(id<ChromeBroadcastObserver>)observer
            forSelector:(SEL)selector {
   NSString* name = NSStringFromSelector(selector);
-  // Sanity check: |selector| must be one of the selectors that are mapped.
+  // Sanity check: `selector` must be one of the selectors that are mapped.
   DCHECK(self.observerInvocations[name]);
 
   [self.observers[name] removeObserver:observer];
@@ -252,10 +252,10 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
                        context:(void*)context {
   // Bridge cast the context back to a selector name.
   NSString* name = (__bridge NSString*)context;
-  // Sanity check: |name| must be one of the selectors that are mapped.
+  // Sanity check: `name` must be one of the selectors that are mapped.
   DCHECK(self.observerInvocations[name]);
-  // Sanity check: |object| should be the object currently being observed for
-  // |name|.
+  // Sanity check: `object` should be the object currently being observed for
+  // `name`.
   DCHECK(self.items[name].object == object);
 
   BroadcastObservers* observers = self.observers[name];
@@ -290,14 +290,14 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
 
 #pragma mark - internal
 
-// Returns the invocation for the selector named |name|, populated with
-// |value| as the argument.
-// This method mutates the invocations stored in |self.observerInvocations|, so
+// Returns the invocation for the selector named `name`, populated with
+// `value` as the argument.
+// This method mutates the invocations stored in `self.observerInvocations`, so
 // any code that gets an invocation from that dictionary to be invoked should
 // do so through this method.
 - (NSInvocation*)invocationForName:(NSString*)name value:(NSValue*)value {
   NSInvocation* invocation = self.observerInvocations[name];
-  // Attempt to cast |value| into an NSNumber; ObjCCast will instead return
+  // Attempt to cast `value` into an NSNumber; ObjCCast will instead return
   // nil if this isn't possible.
   NSNumber* valueAsNumber = base::mac::ObjCCast<NSNumber>(value);
   std::string type([invocation.methodSignature getArgumentTypeAtIndex:2]);

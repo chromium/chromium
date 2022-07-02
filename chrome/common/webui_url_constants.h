@@ -14,8 +14,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -74,7 +74,6 @@ extern const char kChromeUIDeviceLogUrl[];
 extern const char kChromeUIDevUiLoaderURL[];
 extern const char kChromeUIDiceWebSigninInterceptHost[];
 extern const char kChromeUIDiceWebSigninInterceptURL[];
-extern const char kChromeUIDomainReliabilityInternalsHost[];
 extern const char kChromeUIDownloadInternalsHost[];
 extern const char kChromeUIDownloadsHost[];
 extern const char kChromeUIDownloadsURL[];
@@ -248,6 +247,8 @@ extern const char kChromeUIWebUITestHost[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIGpuURL[];
 extern const char kChromeUIHistogramsURL[];
+extern const char kChromeUINotifGeneratorURL[];
+extern const char kChromeUINotifGeneratorHost[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -300,6 +301,8 @@ extern const char kChromeUILockScreenNetworkHost[];
 extern const char kChromeUILockScreenNetworkURL[];
 extern const char kChromeUILockScreenStartReauthHost[];
 extern const char kChromeUILockScreenStartReauthURL[];
+extern const char kChromeUIManageMirrorSyncHost[];
+extern const char kChromeUIManageMirrorSyncURL[];
 extern const char kChromeUIMobileSetupHost[];
 extern const char kChromeUIMobileSetupURL[];
 extern const char kChromeUIMultiDeviceInternalsHost[];
@@ -307,6 +310,8 @@ extern const char kChromeUIMultiDeviceSetupHost[];
 extern const char kChromeUIMultiDeviceSetupUrl[];
 extern const char kChromeUINetworkHost[];
 extern const char kChromeUINetworkUrl[];
+extern const char kChromeUINotificationTesterURL[];
+extern const char kChromeUINotificationTesterHost[];
 extern const char kChromeUIOSCreditsHost[];
 extern const char kChromeUIOSCreditsURL[];
 extern const char kChromeUIOobeHost[];
@@ -474,7 +479,6 @@ extern const char kAutofillSubPage[];
 extern const char kClearBrowserDataSubPage[];
 extern const char kContentSettingsSubPage[];
 extern const char kCookieSettingsSubPage[];
-extern const char kCreateProfileSubPage[];
 extern const char kDownloadsSubPage[];
 extern const char kHandlerSettingsSubPage[];
 extern const char kImportDataSubPage[];

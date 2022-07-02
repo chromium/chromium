@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/user_manager/user.h"
@@ -56,14 +56,14 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
   }
 
   auto email = user->GetAccountId().GetUserEmail();
-  UserAddedRemovedRecord record;
-  record.mutable_user_added_event();
+  auto record = std::make_unique<UserAddedRemovedRecord>();
+  record->mutable_user_added_event();
   if (helper_->ShouldReportUser(email)) {
-    record.mutable_affiliated_user()->set_user_email(email);
+    record->mutable_affiliated_user()->set_user_email(email);
   }
-  record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
+  record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
-  helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+  helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
 }
 
 void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
@@ -97,14 +97,15 @@ void UserAddedRemovedReporter::OnUserRemoved(
   bool is_affiliated_user = it->second;
   users_to_be_deleted_.erase(it);
 
-  UserAddedRemovedRecord record;
-  record.mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
+  auto record = std::make_unique<UserAddedRemovedRecord>();
+  record->mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
   if (is_affiliated_user) {
-    record.mutable_affiliated_user()->set_user_email(account_id.GetUserEmail());
+    record->mutable_affiliated_user()->set_user_email(
+        account_id.GetUserEmail());
   }
-  record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
+  record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
-  helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+  helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
 }
 
 void UserAddedRemovedReporter::ProcessRemoveUserCache() {
@@ -112,15 +113,15 @@ void UserAddedRemovedReporter::ProcessRemoveUserCache() {
   auto users = user_manager->GetRemovedUserCache();
 
   for (const auto& user : users) {
-    UserAddedRemovedRecord record;
-    record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
-    record.mutable_user_removed_event()->set_reason(
+    auto record = std::make_unique<UserAddedRemovedRecord>();
+    record->set_event_timestamp_sec(base::Time::Now().ToTimeT());
+    record->mutable_user_removed_event()->set_reason(
         UserRemovalReason(user.second));
     if (user.first != "") {
-      record.mutable_affiliated_user()->set_user_email(user.first);
+      record->mutable_affiliated_user()->set_user_email(user.first);
     }
 
-    helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+    helper_->ReportEvent(std::move(record), ::reporting::Priority::IMMEDIATE);
   }
 
   user_manager->MarkReporterInitialized();

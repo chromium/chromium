@@ -33,8 +33,8 @@ const size_t kAvatarSize = 60;
 }
 
 ProfileCustomizationHandler::ProfileCustomizationHandler(
-    base::OnceClosure done_closure)
-    : done_closure_(std::move(done_closure)) {}
+    base::OnceCallback<void(CustomizationResult)> completion_callback)
+    : completion_callback_(std::move(completion_callback)) {}
 
 ProfileCustomizationHandler::~ProfileCustomizationHandler() = default;
 
@@ -46,6 +46,9 @@ void ProfileCustomizationHandler::RegisterMessages() {
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "done", base::BindRepeating(&ProfileCustomizationHandler::HandleDone,
+                                  base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "skip", base::BindRepeating(&ProfileCustomizationHandler::HandleSkip,
                                   base::Unretained(this)));
 }
 
@@ -101,8 +104,15 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
   GetProfileEntry()->SetLocalProfileName(profile_name,
                                          /*is_default_name=*/false);
 
-  if (done_closure_)
-    std::move(done_closure_).Run();
+  if (completion_callback_)
+    std::move(completion_callback_).Run(CustomizationResult::kDone);
+}
+
+void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
+  CHECK_EQ(0u, args.size());
+
+  if (completion_callback_)
+    std::move(completion_callback_).Run(CustomizationResult::kSkip);
 }
 
 void ProfileCustomizationHandler::UpdateProfileInfo(

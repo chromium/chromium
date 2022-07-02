@@ -572,6 +572,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
+  std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
+  SetIsTrusted(false);
+  Attach();
+  EXPECT_FALSE(
+      SendCommand("HeapProfiler.enable", nullptr, true));  // Implemented in V8
+  EXPECT_FALSE(
+      SendCommand("LayerTree.enable", nullptr, true));  // Implemented in blink
+  EXPECT_FALSE(SendCommand("Memory.prepareForLeakDetection", nullptr,
+                           true));  // Implemented in content
+  EXPECT_FALSE(
+      SendCommand("Cast.enable", nullptr, true));  // Implemented in content
+}
+
 class NetworkResponseProtocolTest : public DevToolsProtocolTest {
  protected:
   base::Value::Dict FetchAndWaitForResponse(const GURL& url) {
@@ -820,7 +834,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
 
   const extensions::Extension* LoadExtension(base::FilePath extension_path) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
-    ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED", false);
+    ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
     extensions::UnpackedInstaller::Create(extension_service_)
         ->Load(extension_path);
     observer.WaitForExtensionLoaded();

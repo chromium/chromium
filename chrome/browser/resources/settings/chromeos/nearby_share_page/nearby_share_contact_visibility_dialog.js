@@ -8,28 +8,36 @@
  * visibility settings.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '../../shared/nearby_contact_visibility.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NearbyContactVisibilityElement} from '../../shared/nearby_contact_visibility.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-share-contact-visibility-dialog',
+/** @polymer */
+class NearbyShareContactVisibilityDialogElement extends PolymerElement {
+  static get is() {
+    return 'nearby-share-contact-visibility-dialog';
+  }
 
-  properties: {
-    /** @type {NearbySettings} */
-    settings: {
-      type: Object,
-      value: {},
-    },
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {NearbySettings} */
+      settings: {
+        type: Object,
+        value: {},
+      },
+    };
+  }
 
   /** @private */
   onSaveClick_() {
@@ -40,10 +48,14 @@ Polymer({
     if (dialog.open) {
       dialog.close();
     }
-  },
+  }
 
   /** @private */
   onManageContactsClick_() {
     window.open(loadTimeData.getString('nearbyShareManageContactsUrl'));
   }
-});
+}
+
+customElements.define(
+    NearbyShareContactVisibilityDialogElement.is,
+    NearbyShareContactVisibilityDialogElement);

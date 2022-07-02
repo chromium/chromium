@@ -40,10 +40,12 @@ class AccountSelectionView {
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);
 
-  // Returns the brand icon minimum size in dip.
+  // Returns the brand icon minimum size. This includes the size of the
+  // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
   static int GetBrandIconMinimumSize();
 
-  // Returns the brand icon ideal size in dip.
+  // Returns the brand icon ideal size. This includes the size of the
+  // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
   static int GetBrandIconIdealSize();
 
   explicit AccountSelectionView(Delegate* delegate) : delegate_(delegate) {}
@@ -52,13 +54,12 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided |accounts| to the user.
-  // |rp_etld_plus_one| is the relying party's ETLD+1 which is normally the
-  // current page's domain, and |idp_etld_plus_one| is the identity provider's
-  // ETLD+1 that is providing the accounts. |sign_in_mode| represents whether
-  // this is an auto sign in flow. After user interaction either
-  // OnAccountSelected() or OnDismiss() gets invoked.
-  virtual void Show(const std::string& rp_etld_plus_one,
-                    const std::string& idp_etld_plus_one,
+  // |rp_for_display| and |idp_for_display| are the relying party URL and
+  // identity provider URL to display in the prompt respectively. |sign_in_mode|
+  // represents whether this is an auto sign in flow. After user interaction
+  // either OnAccountSelected() or OnDismiss() gets invoked.
+  virtual void Show(const std::string& rp_for_display,
+                    const std::string& idp_for_display,
                     base::span<const Account> accounts,
                     const content::IdentityProviderMetadata& idp_metadata,
                     const content::ClientIdData& client_data,

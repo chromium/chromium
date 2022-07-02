@@ -59,23 +59,34 @@
   },
   "file_handlers": {
     "mount-archive": {
+      // NOTE: when adding new formats to the extension list below, don't
+      // forget to also update web_applications/file_manager_web_app_info.cc.
       "extensions": [
-        "zip",
-        "rar",
         "7z",
+        "bz",
+        "bz2",
         "crx",
+        "gz",
         "iso",
+        "lz",
+        "lzma",
+        "rar",
         "tar",
+        "taz",
+        "tb2",
         "tbz",
         "tbz2",
         "tgz",
+        "tlz",
         "tlzma",
         "txz",
-        "bz",
-        "bz2",
-        "gz",
-        "lzma",
-        "xz"
+        "tz",
+        "tz2",
+        "tzst",
+        "xz",
+        "z",
+        "zip",
+        "zst"
       ]
     },
     "view-pdf": {
@@ -178,8 +189,9 @@
     "common/js/files_app_state.js",
     "common/js/filtered_volume_manager.js",
     "common/js/lru_cache.js",
-    "common/js/metrics.js",
+    "common/js/icon_util.js",
     "common/js/importer_common.js",
+    "common/js/metrics.js",
     "common/js/metrics_base.js",
     "common/js/mock_chrome.js",
     "common/js/notifications_browser_proxy.js",

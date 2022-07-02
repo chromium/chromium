@@ -40,6 +40,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
@@ -99,7 +100,7 @@ void OpenUmaLink(Browser* browser, const ui::Event& event) {
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);
 }
 
-constexpr int kUmaConsentCheckboxId = 1;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUmaConsentCheckboxId);
 
 class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
  public:

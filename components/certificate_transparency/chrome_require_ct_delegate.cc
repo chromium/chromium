@@ -229,7 +229,7 @@ bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname,
   // Scheme and port are ignored by the policy, so it's OK to construct a
   // new GURL here. However, |hostname| is in network form, not URL form,
   // so it's necessary to wrap IPv6 addresses in brackets.
-  std::set<url_matcher::URLMatcherConditionSet::ID> matching_ids =
+  std::set<base::MatcherStringPattern::ID> matching_ids =
       url_matcher_->MatchURL(
           GURL("https://" + net::HostPortPair(hostname, 443).HostForURL()));
   if (matching_ids.empty())

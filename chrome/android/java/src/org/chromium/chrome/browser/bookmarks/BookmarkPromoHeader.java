@@ -38,8 +38,9 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * Class that manages all the logic and UI behind the signin promo header in the bookmark
  * content UI. The header is shown only on certain situations, (e.g., not signed in).
  */
-class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignInStateObserver,
-                                     ProfileDataCache.Observer, AccountsChangeObserver {
+public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener,
+                                            SignInStateObserver, ProfileDataCache.Observer,
+                                            AccountsChangeObserver {
     // TODO(kkimlabs): Figure out the optimal number based on UMA data.
     private static final int MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT = 10;
 
@@ -94,7 +95,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
         if (mSigninPromoController != null) {
             mAccountManagerFacade.removeObserver(this);
             mProfileDataCache.removeObserver(this);
-            mSigninPromoController.onPromoDestroyed();
         }
 
         mSignInManager.removeSignInStateObserver(this);
@@ -255,7 +255,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
      * @param promoState The promo state to which the header will be set to.
      */
     @VisibleForTesting
-    static void forcePromoStateForTests(@Nullable @SyncPromoState Integer promoState) {
+    public static void forcePromoStateForTests(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
     }
 }

@@ -25,9 +25,7 @@ const size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
 
 }  // namespace
 
-namespace disk_cache {
-
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 std::string ConvertEntryHashKeyToHexString(uint64_t hash_key) {
   const std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
@@ -115,6 +113,4 @@ uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length) {
   return crc32(previous_crc, reinterpret_cast<const Bytef*>(data), length);
 }
 
-}  // namespace simple_util
-
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util

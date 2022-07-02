@@ -58,6 +58,8 @@
 namespace chromeos {
 
 CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
+  is_oobe_display_ = display_type == OobeUI::kOobeDisplay;
+
   ash::TabletMode::Get()->AddObserver(this);
 
   OobeConfiguration::Get()->AddAndFireObserver(this);
@@ -74,12 +76,6 @@ CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
 #endif
   UpdateClientAreaSize(
       display::Screen::GetScreen()->GetPrimaryDisplay().size());
-
-  bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
-                                 google_apis::HasOAuthClientConfigured();
-  CallJS("cr.ui.Oobe.showAPIKeysNotice",
-         !has_api_keys_configured && (display_type == OobeUI::kOobeDisplay ||
-                                      display_type == OobeUI::kLoginDisplay));
 
   // Don't show version label on the stable and beta channels by default.
   version_info::Channel channel = chrome::GetChannel();
@@ -113,8 +109,12 @@ void CoreOobeHandler::DeclareLocalizedValues(
   // Strings for Asset Identifier shown in version string.
   builder->Add("assetIdLabel", IDS_OOBE_ASSET_ID_LABEL);
 
-  builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
-                base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+  const bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
+                                       google_apis::HasOAuthClientConfigured();
+  if (!has_api_keys_configured && is_oobe_display_) {
+    builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
+                  base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+  }
 
   builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
   builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
@@ -139,8 +139,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("screenStateInitialize", &CoreOobeHandler::HandleInitialized);
   AddCallback("updateCurrentScreen",
               &CoreOobeHandler::HandleUpdateCurrentScreen);
-  AddCallback("skipToLoginForTesting",
-              &CoreOobeHandler::HandleSkipToLoginForTesting);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
   AddCallback("startDemoModeSetupForTesting",
@@ -148,10 +146,6 @@ void CoreOobeHandler::RegisterMessages() {
 
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
-}
-
-void CoreOobeHandler::FocusReturned(bool reverse) {
-  CallJS("cr.ui.Oobe.focusReturned", reverse);
 }
 
 void CoreOobeHandler::ShowScreenWithData(
@@ -187,22 +181,12 @@ void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
     LoginDisplayHost::default_host()->SetShelfButtonsEnabled(enable);
 }
 
-void CoreOobeHandler::HandleSkipToLoginForTesting() {
-  WizardController* controller = WizardController::default_controller();
-  if (controller && controller->is_initialized())
-    WizardController::default_controller()->SkipToLoginForTesting();
-}
-
 void CoreOobeHandler::ShowOobeUI(bool show) {
   CallJS("cr.ui.Oobe.showOobeUI", show);
 }
 
-void CoreOobeHandler::SetLoginUserCount(int user_count) {
-  CallJS("cr.ui.Oobe.setLoginUserCount", user_count);
-}
-
-void CoreOobeHandler::ForwardAccelerator(std::string accelerator_name) {
-  CallJS("cr.ui.Oobe.handleAccelerator", accelerator_name);
+void CoreOobeHandler::ForwardCancel() {
+  CallJS("cr.ui.Oobe.handleCancel");
 }
 
 void CoreOobeHandler::OnOSVersionLabelTextUpdated(
@@ -253,6 +237,10 @@ void CoreOobeHandler::ToggleSystemInfo() {
   CallJS("cr.ui.Oobe.toggleSystemInfo");
 }
 
+void CoreOobeHandler::LaunchHelpApp(int help_topic_id) {
+  HandleLaunchHelpApp(help_topic_id);
+}
+
 void CoreOobeHandler::OnOobeConfigurationChanged() {
   base::Value configuration(base::Value::Type::DICTIONARY);
   configuration::FilterConfiguration(
@@ -282,6 +270,10 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 
 void CoreOobeHandler::HandleStartDemoModeSetupForTesting(
     const std::string& demo_config) {
+  CHECK(base::FeatureList::IsEnabled(features::kOobeStartDemoModeForTesting))
+      << "If you see this crash please report in https://crbug.com/1100910. To "
+         "disable the crash run chrome with "
+         "--enable-features=OobeStartDemoModeForTesting";
   DemoSession::DemoModeConfig config;
   if (demo_config == "online") {
     config = DemoSession::DemoModeConfig::kOnline;

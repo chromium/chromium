@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -170,6 +169,10 @@ void RendererStartupHelper::InitializeProcess(
   renderer->UpdateDefaultPolicyHostRestrictions(
       PermissionsData::GetDefaultPolicyBlockedHosts(context_id),
       PermissionsData::GetDefaultPolicyAllowedHosts(context_id));
+
+  renderer->UpdateUserHostRestrictions(
+      PermissionsData::GetUserBlockedHosts(context_id),
+      PermissionsData::GetUserAllowedHosts(context_id));
 
   // Loaded extensions.
   std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions;

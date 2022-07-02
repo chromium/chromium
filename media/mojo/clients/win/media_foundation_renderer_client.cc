@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/media_log.h"
-#include "media/base/media_switches.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -87,9 +86,9 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
   // protected content then start in Direct Composition mode, else start in
   // Frame Server mode. This behavior must match the logic in
   // MediaFoundationRenderer::Initialize.
-  auto rendering_strategy = kMediaFoundationClearRenderingStrategyParam.Get();
+  rendering_strategy_ = kMediaFoundationClearRenderingStrategyParam.Get();
   rendering_mode_ =
-      rendering_strategy ==
+      rendering_strategy_ ==
               MediaFoundationClearRenderingStrategy::kDirectComposition
           ? MediaFoundationRenderingMode::DirectComposition
           : MediaFoundationRenderingMode::FrameServer;
@@ -257,6 +256,16 @@ void MediaFoundationRendererClient::OnSelectedVideoTracksChanged(
   std::move(change_completed_cb).Run();
 }
 
+void MediaFoundationRendererClient::OnExternalVideoFrameRequest() {
+  // A frame read back signal is currently treated as a permanent signal for
+  // the session so we only need to handle it the first time it is encountered.
+  if (!has_frame_read_back_signal_) {
+    has_frame_read_back_signal_ = true;
+    MEDIA_LOG(INFO, media_log_) << "Frame read back signal";
+    UpdateRenderMode();
+  }
+}
+
 // RendererClient implementation.
 
 void MediaFoundationRendererClient::OnError(PipelineStatus status) {
@@ -266,6 +275,11 @@ void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   // Do not call MediaFoundationRenderer::ReportErrorReason() since it should've
   // already been reported in MediaFoundationRenderer.
   client_->OnError(status);
+}
+
+void MediaFoundationRendererClient::OnFallback(PipelineStatus fallback) {
+  SignalMediaPlayingStateChange(false);
+  client_->OnFallback(std::move(fallback).AddHere());
 }
 
 void MediaFoundationRendererClient::OnEnded() {
@@ -569,10 +583,28 @@ void MediaFoundationRendererClient::OnOverlayStateChanged(
     const gpu::Mailbox& mailbox,
     bool promoted) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  MEDIA_LOG(INFO, media_log_) << "Overlay State promoted = " << promoted;
+  promoted_to_overlay_signal_ = promoted;
+  MEDIA_LOG(INFO, media_log_)
+      << "Overlay state signal, promoted = " << promoted;
+  UpdateRenderMode();
+}
 
-  if (promoted &&
-      rendering_mode_ != MediaFoundationRenderingMode::DirectComposition) {
+void MediaFoundationRendererClient::UpdateRenderMode() {
+  // We only change modes if we're using the dynamic rendering strategy and
+  // presenting clear content, so return early otherwise.
+  if (rendering_strategy_ != MediaFoundationClearRenderingStrategy::kDynamic ||
+      cdm_context_) {
+    return;
+  }
+
+  // Frame Server mode is required if we are not promoted to an overlay or if
+  // frame readback is required.
+  bool needs_frame_server =
+      has_frame_read_back_signal_ || !promoted_to_overlay_signal_;
+
+  if (!needs_frame_server && IsFrameServerMode()) {
+    MEDIA_LOG(INFO, media_log_) << "Switching to Direct Composition.";
+    // Switch to Frame Server Mode
     // Switch to Direct Composition mode.
     rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
     renderer_extension_->SetMediaFoundationRenderingMode(rendering_mode_);
@@ -586,17 +618,14 @@ void MediaFoundationRendererClient::OnOverlayStateChanged(
     } else {
       sink_->PaintSingleFrame(dcomp_video_frame_, true);
     }
-  } else if (!promoted &&
-             rendering_mode_ != MediaFoundationRenderingMode::FrameServer) {
+  } else if (needs_frame_server && !IsFrameServerMode()) {
     // Switch to Frame Server mode.
+    MEDIA_LOG(INFO, media_log_) << "Switching to Frame Server.";
     rendering_mode_ = MediaFoundationRenderingMode::FrameServer;
     renderer_extension_->SetMediaFoundationRenderingMode(rendering_mode_);
     if (is_playing_) {
       sink_->Start(this);
     }
-  } else {
-    MEDIA_LOG(INFO, media_log_)
-        << "Overlay State Changed but there was no mode change.";
   }
 }
 
@@ -606,8 +635,7 @@ void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
   // respond to promotion changes. If the rendering strategy is Direct
   // Composition or Frame Server then we do not need to listen & respond to
   // overlay state changes.
-  auto rendering_strategy = kMediaFoundationClearRenderingStrategyParam.Get();
-  if (rendering_strategy == MediaFoundationClearRenderingStrategy::kDynamic) {
+  if (rendering_strategy_ == MediaFoundationClearRenderingStrategy::kDynamic) {
     mailbox_ = mailbox;
     // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
     // subscribe to overlay state information for the given 'mailbox' from the

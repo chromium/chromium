@@ -1,0 +1,3 @@
+Tests that side-effect free Runtime.evaluate does not trigger window.onerror.
+Side-effect free Runtime.evaluate error didn't trigger window.onerror
+

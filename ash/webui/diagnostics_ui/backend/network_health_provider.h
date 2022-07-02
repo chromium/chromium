@@ -12,7 +12,7 @@
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,7 +35,7 @@ struct NetworkObserverInfo {
 };
 
 class NetworkHealthProvider
-    : public chromeos::network_config::mojom::CrosNetworkConfigObserver,
+    : public chromeos::network_config::CrosNetworkConfigObserver,
       public mojom::NetworkHealthProvider {
  public:
   NetworkHealthProvider();
@@ -55,12 +55,8 @@ class NetworkHealthProvider
 
   void BindInterface(
       mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver);
-  // Handler for when remote attached to |receiver_| disconnects.
-  void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
 
   // CrosNetworkConfigObserver
-  void OnNetworkStateListChanged() override {}
   void OnDeviceStateListChanged() override;
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
@@ -68,9 +64,6 @@ class NetworkHealthProvider
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
       override;
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Returns the list of observer guids. Each guid corresponds to one network
   // interface. Additionally, updates the currently |active_guid_| to the first

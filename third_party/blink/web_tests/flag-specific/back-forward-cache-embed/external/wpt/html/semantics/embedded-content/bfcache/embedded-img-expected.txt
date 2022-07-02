@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Page with <embed type=image/png src=/images/blue.png>
+PASS Page with <object type=image/png data=/images/blue.png>
+Harness: the test ran to completion.
+

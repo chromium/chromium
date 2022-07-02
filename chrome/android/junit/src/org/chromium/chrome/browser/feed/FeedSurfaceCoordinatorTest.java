@@ -246,6 +246,9 @@ public class FeedSurfaceCoordinatorTest {
         // Preferences to enable feed.
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
+        // We want to make the feed service bridge ignore the ablation flag.
+        when(mFeedServiceBridgeJniMock.isEnabled())
+                .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);
@@ -432,24 +435,6 @@ public class FeedSurfaceCoordinatorTest {
 
         verify(mLaunchReliabilityLogger, times(1))
                 .logUiStarting(SURFACE_TYPE, SURFACE_CREATION_TIME_NS);
-    }
-
-    @Test
-    public void testLogSwitchTabs() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
-        mTabModel.selectTab();
-        verify(mLaunchReliabilityLogger, times(1))
-                .logLaunchFinished(
-                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
-    }
-
-    @Test
-    public void testLogSwitchTabsIncognito() {
-        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
-        mTabModelIncognito.selectTab();
-        verify(mLaunchReliabilityLogger, times(1))
-                .logLaunchFinished(
-                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
     }
 
     private boolean hasStreamBound() {

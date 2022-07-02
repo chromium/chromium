@@ -45,6 +45,7 @@ import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
@@ -60,9 +61,6 @@ import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
-
-[Native]
-struct PageState;
 
 // A View (i.e. a "main frame") can be created for a few different cases, these
 // values are used to specify which it is.
@@ -245,25 +243,25 @@ struct CreateFrameParams {
   // Specifies the routing ID of the new RenderFrame object.
   int32 routing_id;
 
-  // If a valid |previous_routing_id| is provided, the new frame will be
+  // If a valid |previous_frame_token| is provided, the new frame will be
   // configured to replace either the previous frame or the previous proxy on
   // commit.
-  int32 previous_routing_id;
+  blink.mojom.FrameToken? previous_frame_token;
 
   // Specifies the new frame's opener.  The opener will be null if this is
   // absl::nullopt.
   blink.mojom.FrameToken? opener_frame_token;
 
-  // The new frame should be created as a child of the object
-  // identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  int32 parent_routing_id;
+  // The new frame should be created as a child of the object identified by
+  // `parent_frame_token`. If this is not specified it will be a a top level
+  // frame.
+  blink.mojom.FrameToken? parent_frame_token;
 
   // Identifies the previous sibling of the new frame, so that the new frame is
   // inserted into the correct place in the frame tree.  If this is
-  // MSG_ROUTING_NONE, the frame will be created as the leftmost child of its
+  // not specified the frame will be created as the leftmost child of its
   // parent frame, in front of any other children.
-  int32 previous_sibling_routing_id;
+  blink.mojom.FrameToken? previous_sibling_frame_token;
 
   pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
 
@@ -549,6 +547,15 @@ struct CreateNewWindowParams {
   // scripting the new window is not allowed.
   bool opener_suppressed;
 
+  // Whether new window is created for a form submission.
+  bool is_form_submission;
+
+  // Body of HTTP POST request for form submission.
+  network.mojom.URLRequestBody? form_submission_post_data;
+
+  // The content type from the request headers for POST requests.
+  string form_submission_post_content_type;
+
   // Whether the window should be opened in the foreground, background, etc.
   ui.mojom.WindowOpenDisposition disposition;
 
@@ -569,6 +576,9 @@ struct CreateNewWindowParams {
 
   // Governs how downloads are handled if `target_url` results in a download.
   blink.mojom.NavigationDownloadPolicy download_policy;
+
+  // Additional parameters for creating picture-in-picture windows.
+  blink.mojom.PictureInPictureWindowOptions? pip_options;
 };
 
 // Operation result when the renderer asks the browser to create a new window.
@@ -806,6 +816,13 @@ interface FrameHost {
   // Change the encoding name of the page in UI when the page has detected
   // proper encoding name. Sent for top-level frames.
   UpdateEncoding(string encoding_name);
+
+  // Updates information to determine whether a user gesture should carryover to
+  // future navigations. This is needed so navigations within a certain
+  // timeframe of a request initiated by a gesture will be treated as if they
+  // were initiated by a gesture too, otherwise the navigation may be blocked.
+  [EnableIf=is_android]
+  UpdateUserGestureCarryoverInfo();
 
   // Notifies the browser that this frame has new session history information.
   //

@@ -28,7 +28,6 @@
 #include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
-#include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -135,7 +134,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
-      const base::FilePath& bucket_base_path,
       const FileSystemOptions& options);
 
   // Exposed for base::MakeRefCounted(). Instances should be obtained from the
@@ -149,7 +147,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
       const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
       const base::FilePath& partition_path,
-      const base::FilePath& bucket_base_path,
       const FileSystemOptions& options,
       base::PassKey<FileSystemContext>);
 
@@ -232,7 +229,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
                               const base::FilePath& file_path,
                               ResolvedEntryType type)>;
 
-  // Used for DeleteFileSystem and OpenPluginPrivateFileSystem.
+  // Used for DeleteFileSystem.
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
   // Opens the filesystem for the given `storage_key` and `type`, and dispatches
@@ -310,8 +307,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   const base::FilePath& partition_path() const { return partition_path_; }
 
-  const base::FilePath& bucket_base_path() const { return bucket_base_path_; }
-
   // Same as `CrackFileSystemURL`, but cracks FileSystemURL created from `url`
   // and `storage_key`.
   FileSystemURL CrackURL(const GURL& url,
@@ -338,26 +333,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // (E.g. this returns false if the context is created for incognito mode)
   bool CanServeURLRequest(const FileSystemURL& url) const;
 
-  // This must be used to open 'plugin private' filesystem.
-  // See "plugin_private_file_system_backend.h" for more details.
-  //
-  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
-  // file system will be partitioned; if so, replace the url::Origin parameter
-  // with blink::StorageKey
-  void OpenPluginPrivateFileSystem(const url::Origin& origin,
-                                   FileSystemType type,
-                                   const std::string& filesystem_id,
-                                   const std::string& plugin_id,
-                                   OpenFileSystemMode mode,
-                                   StatusCallback callback);
-
   bool is_incognito() { return is_incognito_; }
-
-  // TODO(com/1231162): Remove this. Used only by test code and to migrate media
-  // license data to the new backend.
-  PluginPrivateFileSystemBackend* plugin_private_backend() const {
-    return plugin_private_backend_.get();
-  }
 
   void ResolveURLOnOpenFileSystemForTesting(
       const blink::StorageKey& storage_key,
@@ -375,9 +351,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // For sandbox_backend().
   friend class SandboxFileSystemTestHelper;
-
-  // For plugin_private_backend().
-  friend class PluginPrivateFileSystemBackendTest;
 
   // Deleters.
   friend class base::DeleteHelper<FileSystemContext>;
@@ -468,7 +441,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   std::unique_ptr<IsolatedFileSystemBackend> isolated_backend_;
 
   // Additional file system backends.
-  const std::unique_ptr<PluginPrivateFileSystemBackend> plugin_private_backend_;
   const std::vector<std::unique_ptr<FileSystemBackend>> additional_backends_;
 
   std::vector<URLRequestAutoMountHandler> auto_mount_handlers_;
@@ -491,10 +463,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // The base path of the storage partition for this context.
   const base::FilePath partition_path_;
-
-  // The base path of the file directory where StorageBucket data is stored for
-  // this context.
-  const base::FilePath bucket_base_path_;
 
   const bool is_incognito_;
 

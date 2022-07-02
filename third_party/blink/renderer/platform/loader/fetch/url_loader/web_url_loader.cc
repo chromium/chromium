@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -39,6 +40,7 @@
 #include "net/cert/ct_sct_to_string.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -144,6 +146,7 @@ net::RequestPriority ConvertWebKitPriorityToNetPriority(
   }
 }
 
+// TODO(crbug.com/862940): Use KURL here.
 void SetSecurityStyleAndDetails(const GURL& url,
                                 const network::mojom::URLResponseHead& head,
                                 WebURLResponse* response,
@@ -619,7 +622,8 @@ void WebURLLoader::Context::OnCompletedRequest(
     } else {
       client_->DidFinishLoading(status.completion_time, total_transfer_size,
                                 encoded_body_size, status.decoded_body_length,
-                                status.should_report_corb_blocking);
+                                status.should_report_corb_blocking,
+                                status.pervasive_payload_requested);
     }
   }
 }
@@ -748,7 +752,8 @@ void WebURLLoader::PopulateURLResponse(
   response->SetRecursivePrefetchToken(head.recursive_prefetch_token);
   response->SetWebBundleURL(KURL(head.web_bundle_url));
 
-  SetSecurityStyleAndDetails(KURL(url), head, response, report_security_info);
+  SetSecurityStyleAndDetails(GURL(KURL(url)), head, response,
+                             report_security_info);
 
   // If there's no received headers end time, don't set load timing.  This is
   // the case for non-HTTP requests, requests that don't go over the wire, and
@@ -787,6 +792,8 @@ void WebURLLoader::PopulateURLResponse(
     response->AddHttpHeaderField(WebString::FromLatin1(name),
                                  WebString::FromLatin1(value));
   }
+
+  response->SetHasPartitionedCookie(head.has_partitioned_cookie);
 }
 
 // static

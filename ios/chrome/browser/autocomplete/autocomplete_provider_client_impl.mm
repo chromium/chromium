@@ -74,6 +74,10 @@ PrefService* AutocompleteProviderClientImpl::GetLocalState() {
   return GetApplicationContext()->GetLocalState();
 }
 
+std::string AutocompleteProviderClientImpl::GetApplicationLocale() const {
+  return GetApplicationContext()->GetApplicationLocale();
+}
+
 const AutocompleteSchemeClassifier&
 AutocompleteProviderClientImpl::GetSchemeClassifier() const {
   return scheme_classifier_;

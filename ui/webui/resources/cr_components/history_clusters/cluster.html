@@ -99,29 +99,25 @@
     on-open-all-visits="onOpenAllVisits_"
     on-remove-all-visits="onRemoveAllVisits_"
     on-remove-visit="onRemoveVisit_">
-  <div id="label-row" hidden="[[!cluster.label]]">
+  <div id="label-row">
     <div id="label"></div>
     <div class="timestamp-and-menu">
       <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
-      <menu-container is-top-menu is-cluster-menu></menu-container>
+      <menu-container></menu-container>
     </div>
   </div>
   <template is="dom-repeat" items="[[visibleVisits_]]">
-    <url-visit visit="[[item]]" query="[[query]]" indented$="[[!cluster.label]]"
-        is-top-visit$="[[isTopVisit_(index, cluster.label)]]">
-    </url-visit>
+    <url-visit visit="[[item]]" query="[[query]]"></url-visit>
   </template>
   <!-- Disable animation on iron-collapse, as the parent iron-list can't
        easily handle it. -->
   <iron-collapse opened="[[expanded_]]" no-animation>
     <template is="dom-repeat" items="[[hiddenVisits_]]">
-      <url-visit visit="[[item]]" query="[[query]]"
-          indented$="[[!cluster.label]]">
-      </url-visit>
+      <url-visit visit="[[item]]" query="[[query]]"></url-visit>
     </template>
   </iron-collapse>
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
-      role="list" aria-label="$i18n{relatedSearchesHeader}"
+      role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
       on-related-search-clicked="onRelatedSearchClicked_">
     <template is="dom-repeat" items="[[cluster.relatedSearches]]">
       <search-query search-query="[[item]]" index="[[index]]" role="listitem">

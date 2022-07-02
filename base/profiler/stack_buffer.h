@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/memory/aligned_memory.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -25,7 +27,7 @@ class BASE_EXPORT StackBuffer {
   // encounter this exceptional case for leaf frames.
   static constexpr size_t kPlatformStackAlignment = 2 * sizeof(uintptr_t);
 
-  StackBuffer(size_t buffer_size);
+  explicit StackBuffer(size_t buffer_size);
 
   StackBuffer(const StackBuffer&) = delete;
   StackBuffer& operator=(const StackBuffer&) = delete;
@@ -34,25 +36,34 @@ class BASE_EXPORT StackBuffer {
 
   // Returns a kPlatformStackAlignment-aligned pointer to the stack buffer.
   uintptr_t* buffer() const {
-    // Return the first address in the buffer aligned to
-    // kPlatformStackAlignment. The buffer is guaranteed to have enough space
-    // for size() bytes beyond this value.
-    return reinterpret_cast<uintptr_t*>(
-        (reinterpret_cast<uintptr_t>(buffer_.get()) + kPlatformStackAlignment -
-         1) &
-        ~(kPlatformStackAlignment - 1));
+    // Aligned during allocation.
+    return buffer_.get();
   }
 
   // Size in bytes.
   size_t size() const { return size_; }
 
- private:
-  // The buffer to store the stack.
-  const std::unique_ptr<uint8_t[]> buffer_;
+#if BUILDFLAG(IS_CHROMEOS)
+  // Tell the kernel that we no longer need the data currently in the upper
+  // parts of the buffer and that the kernel may discard it to free up space.
+  // Specifically, the bytes from |(uint8_t*)buffer + retained_bytes| to the
+  // end of the buffer may be discarded, while the bytes from |buffer| to
+  // |(uint8_t*)buffer + retained_bytes - 1| will not be affected.
+  // The program can still write to that part of the buffer, but should not read
+  // from that part of buffer until after the next write. (The contents of that
+  // part of the buffer are undefined.)
+  // After calling this function, there may be a page fault on the next write to
+  // that area, so it should only be called when parts of the buffer were
+  // written to and will probably not be written to again soon.
+  void MarkUpperBufferContentsAsUnneeded(size_t retained_bytes);
+#endif
 
-  // The size in bytes of the requested buffer allocation. The actual allocation
-  // is larger to accommodate alignment requirements.
+ private:
+  // The size in bytes of the requested buffer allocation.
   const size_t size_;
+
+  // The buffer to store the stack. Already aligned.
+  const std::unique_ptr<uintptr_t, AlignedFreeDeleter> buffer_;
 };
 
 }  // namespace base

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/views/frame/browser_frame_mac.h"
 
 #import "base/mac/foundation_util.h"
@@ -67,10 +69,9 @@ bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
 
 // Bridge Obj-C class for WindowTouchBarDelegate and
 // BrowserWindowTouchBarController.
-API_AVAILABLE(macos(10.12.2))
 @interface BrowserWindowTouchBarViewsDelegate
     : NSObject<WindowTouchBarDelegate> {
-  Browser* _browser;  // Weak.
+  raw_ptr<Browser> _browser;  // Weak.
   NSWindow* _window;  // Weak.
   base::scoped_nsobject<BrowserWindowTouchBarController> _touchBarController;
 }
@@ -94,7 +95,7 @@ API_AVAILABLE(macos(10.12.2))
   return _touchBarController.get();
 }
 
-- (NSTouchBar*)makeTouchBar API_AVAILABLE(macos(10.12.2)) {
+- (NSTouchBar*)makeTouchBar {
   if (!_touchBarController) {
     _touchBarController.reset([[BrowserWindowTouchBarController alloc]
         initWithBrowser:_browser
@@ -337,12 +338,10 @@ void BrowserFrameMac::PopulateCreateWindowParams(
 NativeWidgetMacNSWindow* BrowserFrameMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
   NativeWidgetMacNSWindow* ns_window = NativeWidgetMac::CreateNSWindow(params);
-  if (@available(macOS 10.12.2, *)) {
-    touch_bar_delegate_.reset([[BrowserWindowTouchBarViewsDelegate alloc]
-        initWithBrowser:browser_view_->browser()
-                 window:ns_window]);
-    [ns_window setWindowTouchBarDelegate:touch_bar_delegate_.get()];
-  }
+  touch_bar_delegate_.reset([[BrowserWindowTouchBarViewsDelegate alloc]
+      initWithBrowser:browser_view_->browser()
+               window:ns_window]);
+  [ns_window setWindowTouchBarDelegate:touch_bar_delegate_.get()];
 
   return ns_window;
 }
@@ -436,6 +435,10 @@ bool BrowserFrameMac::HandleKeyboardEvent(
 }
 
 bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
+  return true;
+}
+
+bool BrowserFrameMac::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return true;
 }
 

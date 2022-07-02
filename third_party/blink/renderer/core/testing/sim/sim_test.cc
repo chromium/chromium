@@ -62,7 +62,7 @@ void SimTest::SetUp() {
   compositor_->SetLayerTreeHost(
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 200));
+  ResizeView(gfx::Size(300, 200));
 }
 
 void SimTest::TearDown() {
@@ -95,6 +95,21 @@ void SimTest::InitializeRemote() {
   local_frame_root_ = web_view_helper_->CreateLocalChild(
       *WebView().MainFrame()->ToWebRemoteFrame(), "local_frame_root",
       WebFrameOwnerProperties(), nullptr, web_frame_client_.get());
+  compositor_->SetLayerTreeHost(
+      local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
+}
+
+void SimTest::InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
+  web_view_helper_->InitializeWithOpener(/*opener=*/nullptr,
+                                         /*frame_client=*/nullptr,
+                                         /*view_client=*/nullptr,
+                                         /*update_settings_func=*/nullptr,
+                                         mode);
+  compositor_->SetWebView(WebView(), *web_view_client_);
+  page_->SetPage(WebView().GetPage());
+  web_frame_client_ =
+      std::make_unique<frame_test_helpers::TestWebFrameClient>();
+  local_frame_root_ = WebView().MainFrameImpl();
   compositor_->SetLayerTreeHost(
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 }
@@ -152,6 +167,10 @@ SimCompositor& SimTest::Compositor() {
 
 Vector<String>& SimTest::ConsoleMessages() {
   return web_frame_client_->ConsoleMessages();
+}
+
+void SimTest::ResizeView(const gfx::Size& size) {
+  web_view_helper_->Resize(size);
 }
 
 SimWebFrameWidget* SimTest::CreateSimWebFrameWidget(

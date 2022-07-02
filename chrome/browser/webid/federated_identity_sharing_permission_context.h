@@ -7,12 +7,8 @@
 
 #include <string>
 
-#include "components/permissions/object_permission_context_base.h"
+#include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
-
-namespace base {
-class Value;
-}
 
 namespace content {
 class BrowserContext;
@@ -23,7 +19,7 @@ class BrowserContext;
 // Javascript API.
 class FederatedIdentitySharingPermissionContext
     : public content::FederatedIdentitySharingPermissionContextDelegate,
-      public permissions::ObjectPermissionContextBase {
+      public FederatedIdentityAccountKeyedPermissionContext {
  public:
   explicit FederatedIdentitySharingPermissionContext(
       content::BrowserContext* browser_context);
@@ -36,24 +32,12 @@ class FederatedIdentitySharingPermissionContext
       const FederatedIdentitySharingPermissionContext&) = delete;
 
   // content::FederatedIdentitySharingPermissionContextDelegate:
-  bool HasSharingPermissionForAnyAccount(
-      const url::Origin& relying_party,
-      const url::Origin& identity_provider) override;
   bool HasSharingPermission(const url::Origin& relying_party,
                             const url::Origin& identity_provider,
                             const std::string& account_id) override;
   void GrantSharingPermission(const url::Origin& relying_party,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
-  void RevokeSharingPermission(const url::Origin& relying_party,
-                               const url::Origin& identity_provider,
-                               const std::string& account_id) override;
-
- private:
-  // permissions::ObjectPermissionContextBase:
-  bool IsValidObject(const base::Value& object) override;
-  std::u16string GetObjectDisplayName(const base::Value& object) override;
-  std::string GetKeyForObject(const base::Value& object) override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_H_

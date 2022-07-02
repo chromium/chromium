@@ -23,9 +23,9 @@ const char kUserTypeUnmanaged[] = "unmanaged";
 
 std::string DetermineUserType(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!profile->IsOffTheRecord());
   if (profile->IsGuestSession())
     return kUserTypeGuest;
+  DCHECK(!profile->IsOffTheRecord());
   if (profile->IsChild())
     return kUserTypeChild;
   if (profile->GetProfilePolicyConnector()->IsManaged()) {

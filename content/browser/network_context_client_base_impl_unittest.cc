@@ -89,6 +89,7 @@ class NetworkContextClientBaseTest : public testing::Test {
 TEST_F(NetworkContextClientBaseTest, UploadNoFiles) {
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, true, {},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
@@ -102,6 +103,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidAsyncFile) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, true, {path},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
@@ -116,6 +118,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {path},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
@@ -142,6 +145,7 @@ TEST_F(NetworkContextClientBaseTest,
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {content_path},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
@@ -163,6 +167,7 @@ TEST_F(NetworkContextClientBaseTest, UploadTwoValidFiles) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
@@ -177,6 +182,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneUnauthorizedFile) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {path},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_ACCESS_DENIED, response.error_code);
@@ -192,6 +198,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFileAndOneUnauthorized) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_ACCESS_DENIED, response.error_code);
@@ -207,6 +214,7 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFileAndOneNotFound) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_FILE_NOT_FOUND, response.error_code);
@@ -220,6 +228,7 @@ TEST_F(NetworkContextClientBaseTest, UploadFromBrowserProcess) {
 
   UploadResponse response;
   client_.OnFileUploadRequested(kBrowserProcessId, false, {path},
+                                /*destination_url=*/GURL(),
                                 std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);

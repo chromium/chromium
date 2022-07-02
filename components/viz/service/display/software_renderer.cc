@@ -134,7 +134,6 @@ void SoftwareRenderer::EnsureScissorTestDisabled() {
 }
 
 void SoftwareRenderer::BindFramebufferToOutputSurface() {
-  DCHECK(!output_surface_->HasExternalStencilTest());
   DCHECK(!root_canvas_);
 
   current_framebuffer_canvas_.reset();
@@ -367,21 +366,20 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
 }
 
 void SoftwareRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad) {
-  // We need to apply the matrix manually to have pixel-sized stroke width.
-  SkPoint vertices[4];
-  gfx::RectFToSkRect(QuadVertexRect()).toQuad(vertices);
-  SkPoint transformed_vertices[4];
-  current_canvas_->getTotalMatrix().mapPoints(transformed_vertices, vertices,
-                                              4);
+  SkMatrix m = current_canvas_->getTotalMatrix();
   current_canvas_->resetMatrix();
 
+  SkPath path;
+  path.addRect(gfx::RectFToSkRect(QuadVertexRect()));
+  path.transform(m);
+
   current_paint_.setColor(quad->color);
-  current_paint_.setAlpha(quad->shared_quad_state->opacity *
-                          SkColorGetA(quad->color));
+  current_paint_.setAlphaf(quad->shared_quad_state->opacity * quad->color.fA);
   current_paint_.setStyle(SkPaint::kStroke_Style);
+  current_paint_.setStrokeJoin(SkPaint::kMiter_Join);
   current_paint_.setStrokeWidth(quad->width);
-  current_canvas_->drawPoints(SkCanvas::kPolygon_PointMode, 4,
-                              transformed_vertices, current_paint_);
+
+  current_canvas_->drawPath(path, current_paint_);
 }
 
 void SoftwareRenderer::DrawPictureQuad(const PictureDrawQuad* quad) {
@@ -429,8 +427,7 @@ void SoftwareRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad) {
   gfx::RectF visible_quad_vertex_rect = cc::MathUtil::ScaleRectProportional(
       QuadVertexRect(), gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect));
   current_paint_.setColor(quad->color);
-  current_paint_.setAlpha(quad->shared_quad_state->opacity *
-                          SkColorGetA(quad->color));
+  current_paint_.setAlphaf(quad->shared_quad_state->opacity * quad->color.fA);
   current_canvas_->drawRect(gfx::RectFToSkRect(visible_quad_vertex_rect),
                             current_paint_);
 }
@@ -462,7 +459,7 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
     current_canvas_->scale(1, -1);
 
   bool blend_background =
-      quad->background_color != SK_ColorTRANSPARENT && !image->isOpaque();
+      quad->background_color != SkColors::kTransparent && !image->isOpaque();
   bool needs_layer = blend_background && (current_paint_.getAlpha() != 0xFF);
   if (needs_layer) {
     current_canvas_->saveLayerAlpha(&quad_rect, current_paint_.getAlpha());
@@ -592,9 +589,9 @@ void SoftwareRenderer::DrawRenderPassQuad(
 
 void SoftwareRenderer::DrawUnsupportedQuad(const DrawQuad* quad) {
 #ifdef NDEBUG
-  current_paint_.setColor(SK_ColorWHITE);
+  current_paint_.setColor(SkColors::kWhite);
 #else
-  current_paint_.setColor(SK_ColorMAGENTA);
+  current_paint_.setColor(SkColors::kMagenta);
 #endif
   current_paint_.setAlpha(quad->shared_quad_state->opacity * 255);
   current_canvas_->drawRect(gfx::RectFToSkRect(QuadVertexRect()),

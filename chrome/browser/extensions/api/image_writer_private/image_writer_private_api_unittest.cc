@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
-#include "chrome/common/pref_names.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/api_unittest.h"
@@ -45,7 +45,7 @@ class ImageWriterPrivateApiUnittest : public ExtensionApiUnittest {
 TEST_F(ImageWriterPrivateApiUnittest,
        TestStorageDisabledPolicyReturnsEmptyList) {
   PrefService* prefs = profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kExternalStorageDisabled, true);
+  prefs->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
   auto function = base::MakeRefCounted<
       ImageWriterPrivateListRemovableStorageDevicesFunction>();
   std::unique_ptr<base::Value> devices =
@@ -57,8 +57,8 @@ TEST_F(ImageWriterPrivateApiUnittest,
 TEST_F(ImageWriterPrivateApiUnittest,
        TestExternalStorageReadOnlyPolicyFailsWrite) {
   PrefService* prefs = profile()->GetPrefs();
-  prefs->SetBoolean(prefs::kExternalStorageDisabled, false);
-  prefs->SetBoolean(prefs::kExternalStorageReadOnly, true);
+  prefs->SetBoolean(disks::prefs::kExternalStorageDisabled, false);
+  prefs->SetBoolean(disks::prefs::kExternalStorageReadOnly, true);
   auto function =
       base::MakeRefCounted<ImageWriterPrivateWriteFromFileFunction>();
   ASSERT_TRUE(

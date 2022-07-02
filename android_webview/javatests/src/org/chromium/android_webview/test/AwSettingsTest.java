@@ -50,7 +50,6 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -2595,7 +2594,7 @@ public class AwSettingsTest {
             int count = callback.getCallCount();
             mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
                     pageHtml, "text/html", false);
-            DOMUtils.clickNode(testContainer.getWebContents(), "play");
+            JSUtils.clickNodeWithUserGesture(testContainer.getWebContents(), "play");
             callback.waitForCallback(count, 1);
             Assert.assertEquals(0, webServer.getRequestCount(httpPath));
 

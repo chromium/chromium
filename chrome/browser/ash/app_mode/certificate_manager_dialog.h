@@ -15,9 +15,7 @@ namespace ash {
 // This dialog is used to manage user certificates from the kiosk launch screen.
 class CertificateManagerDialog : public LoginWebDialog {
  public:
-  CertificateManagerDialog(Profile* profile,
-                           LoginWebDialog::Delegate* delegate,
-                           gfx::NativeWindow window);
+  CertificateManagerDialog(Profile* profile, gfx::NativeWindow window);
   CertificateManagerDialog(const CertificateManagerDialog&) = delete;
   CertificateManagerDialog& operator=(const CertificateManagerDialog&) = delete;
   ~CertificateManagerDialog() override;

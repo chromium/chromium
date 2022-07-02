@@ -150,7 +150,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
       !base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing)) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
@@ -166,7 +166,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
       return;
     }
   }
-  std::move(callback).Run(blink::mojom::StreamDevices(),
+  std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 }

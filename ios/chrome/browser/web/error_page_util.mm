@@ -71,5 +71,5 @@ NSString* GetErrorPage(const GURL& url,
   if (template_html.empty())
     NOTREACHED() << "unable to load template. ID: " << IDR_NET_ERROR_HTML;
   return base::SysUTF8ToNSString(webui::GetTemplatesHtml(
-      template_html, &page_state.strings, /*template_id=*/"t"));
+      template_html, page_state.strings, /*template_id=*/"t"));
 }

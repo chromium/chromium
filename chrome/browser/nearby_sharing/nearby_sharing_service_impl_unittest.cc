@@ -5301,9 +5301,11 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }
 
-TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerAfterSixMonth) {
+TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerIsTriggered) {
+  constexpr base::TimeDelta kTestDelay = base::Minutes(3);
+  service_->set_visibility_reminder_timer_delay_for_testing(kTestDelay);
   SetVisibility(Visibility::kAllContacts);
-  task_environment_.FastForwardBy(base::Days(180));
+  task_environment_.FastForwardBy(kTestDelay);
   std::vector<message_center::Notification> notifications =
       notification_tester_->GetDisplayedNotificationsForType(
           NotificationHandler::Type::NEARBY_SHARE);

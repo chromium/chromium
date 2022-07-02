@@ -94,11 +94,8 @@ class AutocompleteResult {
                           AutocompleteResult* old_matches,
                           TemplateURLService* template_url_service);
 
-  // Adds a new set of matches to the result set.  Does not re-sort.  Calls
-  // PossiblySwapContentsAndDescriptionForURLSuggestion(input) on all added
-  // matches; see comments there for more information.
-  void AppendMatches(const AutocompleteInput& input,
-                     const ACMatches& matches);
+  // Adds a new set of matches to the result set.  Does not re-sort.
+  void AppendMatches(const ACMatches& matches);
 
   // Removes duplicates, puts the list in sorted order and culls to leave only
   // the best GetMaxMatches() matches. Sets the default match to the best match
@@ -171,8 +168,8 @@ class AutocompleteResult {
 
   // If the top match is a Search Entity, and it was deduplicated with a
   // non-entity match, split off the non-entity match from the list of
-  // duplicates and promote it to the top.
-  static void DiscourageTopMatchFromBeingSearchEntity(ACMatches* matches);
+  // duplicates, promote it to the top, and return true.
+  static bool DiscourageTopMatchFromBeingSearchEntity(ACMatches* matches);
 
   // Just a helper function to encapsulate the logic of deciding how many
   // matches to keep, with respect to configured maximums, URL limits,
@@ -255,6 +252,12 @@ class AutocompleteResult {
       const AutocompleteResult& new_result,
       bool in_start);
 
+  // This method implements a stateful stable partition. Matches which are
+  // search types, and their submatches regardless of type, are shifted
+  // earlier in the range, while non-search types and their submatches
+  // are shifted later.
+  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
+
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
   static constexpr size_t kMaxAutocompletePositionValue = 30;
@@ -320,12 +323,6 @@ class AutocompleteResult {
       size_t max_matches,
       size_t max_url_count,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
-
-  // This method implements a stateful stable partition. Matches which are
-  // search types, and their submatches regardless of type, are shifted
-  // earlier in the range, while non-search types and their submatches
-  // are shifted later.
-  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
 
   // If we have SearchProvider search suggestions, demote OnDeviceProvider
   // search suggestions, since, which in general have lower quality than

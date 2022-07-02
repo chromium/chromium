@@ -52,6 +52,11 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (),
               (const override));
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  MOCK_METHOD(void, SetAppsSyncEnabledByOs, (bool), (override));
+#endif
+
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
   MOCK_METHOD(ModelTypeSet, GetEncryptedDataTypes, (), (const override));

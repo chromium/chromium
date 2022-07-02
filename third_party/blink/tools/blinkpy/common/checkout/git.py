@@ -87,7 +87,7 @@ class Git(object):
         if not platform or not platform.is_win():
             return 'git'
         try:
-            executive.run_command(['git', 'help'])
+            executive.run_command(['git', 'help'], debug_logging=False)
             return 'git'
         except OSError:
             _log.debug('Using "git.bat" as git executable.')
@@ -106,7 +106,8 @@ class Git(object):
                                            cwd=cwd,
                                            input=stdin,
                                            return_exit_code=return_exit_code,
-                                           decode_output=decode_output)
+                                           decode_output=decode_output,
+                                           debug_logging=False)
 
     def absolute_path(self, repository_relative_path):
         """Converts repository-relative paths to absolute paths."""
@@ -117,7 +118,8 @@ class Git(object):
         return self._executive.run_command(
             [self._executable_name, 'rev-parse', '--is-inside-work-tree'],
             cwd=path,
-            error_handler=Executive.ignore_error).rstrip() == 'true'
+            error_handler=Executive.ignore_error,
+            debug_logging=False).rstrip() == 'true'
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""

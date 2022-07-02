@@ -9,12 +9,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuoutofmemoryerror_gpuvalidationerror.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
@@ -105,6 +107,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 }
 
 GPUDevice::~GPUDevice() {
+  DestroyAllExternalTextures();
   // Clear the callbacks since we can't handle callbacks after finalization.
   // error_callback_, logging_callback_, and lost_callback_ will be deleted.
   GetProcs().deviceSetUncapturedErrorCallback(GetHandle(), nullptr, nullptr);
@@ -121,7 +124,8 @@ void GPUDevice::AddConsoleWarning(const char* message) {
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
 
     allowed_console_warnings_remaining_--;
@@ -134,6 +138,99 @@ void GPUDevice::AddConsoleWarning(const char* message) {
       execution_context->AddConsoleMessage(final_message);
     }
   }
+}
+
+// Validates that any features required for the given texture format are enabled
+// for this device. If not, throw a TypeError to ensure consistency with
+// browsers that haven't yet implemented the feature.
+bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
+                                           ExceptionState& exception_state) {
+  const char* requiredFeature = nullptr;
+
+  switch (format.AsEnum()) {
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc1RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc2RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc3RgbaUnormSrgb:
+    case V8GPUTextureFormat::Enum::kBc4RUnorm:
+    case V8GPUTextureFormat::Enum::kBc4RSnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgUnorm:
+    case V8GPUTextureFormat::Enum::kBc5RgSnorm:
+    case V8GPUTextureFormat::Enum::kBc6HRgbUfloat:
+    case V8GPUTextureFormat::Enum::kBc6HRgbFloat:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnorm:
+    case V8GPUTextureFormat::Enum::kBc7RgbaUnormSrgb:
+      requiredFeature = "texture-compression-bc";
+      break;
+
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgb8A1UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8Unorm:
+    case V8GPUTextureFormat::Enum::kEtc2Rgba8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kEacR11Unorm:
+    case V8GPUTextureFormat::Enum::kEacR11Snorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Unorm:
+    case V8GPUTextureFormat::Enum::kEacRg11Snorm:
+      requiredFeature = "texture-compression-etc2";
+      break;
+
+    case V8GPUTextureFormat::Enum::kAstc4X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc4X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X4Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X4UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc5X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc5X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc6X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc6X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc8X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc8X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X5Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X5UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X6Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X6UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X8Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X8UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc10X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc10X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X10Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X10UnormSrgb:
+    case V8GPUTextureFormat::Enum::kAstc12X12Unorm:
+    case V8GPUTextureFormat::Enum::kAstc12X12UnormSrgb:
+      requiredFeature = "texture-compression-astc";
+      break;
+
+    case V8GPUTextureFormat::Enum::kDepth32FloatStencil8:
+      requiredFeature = "depth32float-stencil8";
+      break;
+
+    default:
+      return true;
+  }
+
+  DCHECK(requiredFeature != nullptr);
+
+  if (features_->has(requiredFeature)) {
+    return true;
+  }
+
+  std::string deviceLabel =
+      label().IsEmpty() ? "" : " \"" + label().Utf8() + "\"";
+
+  exception_state.ThrowTypeError(
+      String::Format("Use of the '%s' texture format requires the '%s' feature "
+                     "to be enabled on [Device%s].",
+                     format.AsCStr(), requiredFeature, deviceLabel.c_str()));
+  return false;
 }
 
 void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
@@ -150,13 +247,11 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == WGPUErrorType_Validation) {
-    init->setError(
-        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
-            MakeGarbageCollected<GPUValidationError>(message)));
+    init->setError(MakeGarbageCollected<GPUValidationError>(
+        StringFromASCIIAndUTF8(message)));
   } else if (errorType == WGPUErrorType_OutOfMemory) {
-    init->setError(
-        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
-            GPUOutOfMemoryError::Create()));
+    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(
+        StringFromASCIIAndUTF8(message)));
   } else {
     return;
   }
@@ -192,7 +287,8 @@ void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering, level, message);
+        mojom::blink::ConsoleMessageSource::kRendering, level,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
   }
 }
@@ -204,8 +300,8 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {
-    auto* device_lost_info =
-        MakeGarbageCollected<GPUDeviceLostInfo>(reason, message);
+    auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
+        reason, StringFromASCIIAndUTF8(message));
     lost_property_->Resolve(device_lost_info);
   }
 }
@@ -227,7 +323,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, message));
+          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
       break;
     }
 
@@ -254,7 +350,7 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, message));
+          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
       break;
     }
 
@@ -281,6 +377,8 @@ GPUQueue* GPUDevice::queue() {
 }
 
 void GPUDevice::destroy() {
+  destroyed_ = true;
+  DestroyAllExternalTextures();
   GetProcs().deviceDestroy(GetHandle());
   FlushNow();
 }
@@ -310,11 +408,12 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  GPUExternalTexture* externalTexture =
-      GPUExternalTexture::Create(this, descriptor, exception_state);
-  if (externalTexture)
-    EnsureExternalTextureDestroyed(externalTexture);
-  return externalTexture;
+  // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
+  // expired immediately.
+  if (destroyed_)
+    return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
+
+  return GPUExternalTexture::Create(this, descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(
@@ -410,8 +509,9 @@ GPUCommandEncoder* GPUDevice::createCommandEncoder(
 }
 
 GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
-    const GPURenderBundleEncoderDescriptor* descriptor) {
-  return GPURenderBundleEncoder::Create(this, descriptor);
+    const GPURenderBundleEncoderDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  return GPURenderBundleEncoder::Create(this, descriptor, exception_state);
 }
 
 GPUQuerySet* GPUDevice::createQuerySet(
@@ -419,9 +519,8 @@ GPUQuerySet* GPUDevice::createQuerySet(
   return GPUQuerySet::Create(this, descriptor);
 }
 
-void GPUDevice::pushErrorScope(const WTF::String& filter) {
-  GetProcs().devicePushErrorScope(GetHandle(),
-                                  AsDawnEnum<WGPUErrorFilter>(filter));
+void GPUDevice::pushErrorScope(const V8GPUErrorFilter& filter) {
+  GetProcs().devicePushErrorScope(GetHandle(), AsDawnEnum(filter));
 }
 
 ScriptPromise GPUDevice::popErrorScope(ScriptState* script_state) {
@@ -451,10 +550,12 @@ void GPUDevice::OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
       resolver->Resolve(v8::Null(isolate));
       break;
     case WGPUErrorType_OutOfMemory:
-      resolver->Resolve(GPUOutOfMemoryError::Create());
+      resolver->Resolve(MakeGarbageCollected<GPUOutOfMemoryError>(
+          StringFromASCIIAndUTF8(message)));
       break;
     case WGPUErrorType_Validation:
-      resolver->Resolve(MakeGarbageCollected<GPUValidationError>(message));
+      resolver->Resolve(MakeGarbageCollected<GPUValidationError>(
+          StringFromASCIIAndUTF8(message)));
       break;
     case WGPUErrorType_Unknown:
     case WGPUErrorType_DeviceLost:
@@ -480,31 +581,27 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(limits_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
-  visitor->Trace(external_textures_pending_destroy_);
+  visitor->Trace(active_external_textures_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }
 
-void GPUDevice::EnsureExternalTextureDestroyed(
-    GPUExternalTexture* externalTexture) {
-  DCHECK(externalTexture);
-  external_textures_pending_destroy_.push_back(externalTexture);
-
-  if (has_pending_microtask_)
-    return;
-
-  Microtask::EnqueueMicrotask(WTF::Bind(
-      &GPUDevice::DestroyExternalTexturesMicrotask, WrapWeakPersistent(this)));
-  has_pending_microtask_ = true;
+void GPUDevice::DestroyAllExternalTextures() {
+  for (auto& external_texture : active_external_textures_) {
+    external_texture->Destroy();
+  }
+  active_external_textures_.clear();
 }
 
-void GPUDevice::DestroyExternalTexturesMicrotask() {
-  has_pending_microtask_ = false;
+void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.insert(external_texture);
+}
 
-  auto externalTextures = std::move(external_textures_pending_destroy_);
-  for (Member<GPUExternalTexture> externalTexture : externalTextures) {
-    externalTexture->Destroy();
-  }
+void GPUDevice::RemoveActiveExternalTexture(
+    GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.erase(external_texture);
 }
 
 }  // namespace blink

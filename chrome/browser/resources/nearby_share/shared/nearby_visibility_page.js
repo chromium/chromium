@@ -3,16 +3,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
-import './nearby_contact_visibility.js';
-
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingCompleteMetrics, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
-import {NearbySettings} from './nearby_share_settings_behavior.js';
-
 /**
  * @fileoverview The 'nearby-visibility-page' component is part of the Nearby
  * Share onboarding flow. It allows users to setup their visibility preference
@@ -21,32 +11,59 @@ import {NearbySettings} from './nearby_share_settings_behavior.js';
  * It is embedded in chrome://os-settings, chrome://settings and as a standalone
  * dialog via chrome://nearby.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-visibility-page',
 
-  behaviors: [I18nBehavior],
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
-  properties: {
-    /** @type {?NearbySettings} */
-    settings: {
-      type: Object,
-      notify: true,
-    },
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /** @private */
-    isVisibilitySelected_: {
-      type: Boolean,
-      notify: true,
-    },
-  },
+import {NearbyContactVisibilityElement} from './nearby_contact_visibility.js';
+import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingCompleteMetrics, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
-  listeners: {
-    'next': 'onNext_',
-    'manage-contacts': 'onManageContacts_',
-    'close': 'onClose_',
-    'view-enter-start': 'onVisibilityViewEnterStart_',
-  },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyVisibilityPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class NearbyVisibilityPageElement extends
+    NearbyVisibilityPageElementBase {
+  static get is() {
+    return 'nearby-visibility-page';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {?NearbySettings} */
+      settings: {
+        type: Object,
+        notify: true,
+      },
+
+      /** @private */
+      isVisibilitySelected_: {
+        type: Boolean,
+        notify: true,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('next', this.onNext_);
+    this.addEventListener('manage-contacts', this.onManageContacts_);
+    this.addEventListener('close', this.onClose_);
+    this.addEventListener('view-enter-start', this.onVisibilityViewEnterStart_);
+  }
 
   /**
    * Determines if the feature flag for One-page onboarding workflow is enabled.
@@ -55,7 +72,7 @@ Polymer({
    */
   isOnePageOnboardingEnabled_() {
     return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
-  },
+  }
 
   /** @private */
   onNext_() {
@@ -72,8 +89,12 @@ Polymer({
       processOnboardingCompleteMetrics();
     }
 
-    this.fire('onboarding-complete');
-  },
+    const onboardingCompleteEvent = new CustomEvent('onboarding-complete', {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(onboardingCompleteEvent);
+  }
 
   /** @private */
   onClose_() {
@@ -84,15 +105,20 @@ Polymer({
       processOnboardingCancelledMetrics(
           NearbyShareOnboardingFinalState.VISIBILITY_PAGE);
     }
-    this.fire('onboarding-cancelled');
-  },
+
+    const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(onboardingCancelledEvent);
+  }
 
   /** @private */
   onVisibilityViewEnterStart_() {
     if (this.isOnePageOnboardingEnabled_()) {
       processOnePageOnboardingVisibilityPageShownMetrics();
     }
-  },
+  }
 
   /** @private */
   onManageContacts_() {
@@ -100,6 +126,8 @@ Polymer({
       processOnePageOnboardingManageContactsMetrics();
     }
     window.open(this.i18n('nearbyShareManageContactsUrl'), '_blank');
-  },
+  }
+}
 
-});
+customElements.define(
+    NearbyVisibilityPageElement.is, NearbyVisibilityPageElement);

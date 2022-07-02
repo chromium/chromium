@@ -4,23 +4,30 @@
 
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
+#include <atomic>
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
@@ -72,13 +79,102 @@ absl::optional<Fourcc> PickRenderableFourcc(
   return absl::nullopt;
 }
 
+class DecoderThreadPool {
+ public:
+  DecoderThreadPool(const DecoderThreadPool&) = delete;
+  DecoderThreadPool& operator=(const DecoderThreadPool&) = delete;
+
+  static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
+    static base::NoDestructor<DecoderThreadPool> decoder_thread_pool;
+    return decoder_thread_pool->GetTaskRunner();
+  }
+
+ private:
+  friend class base::NoDestructor<DecoderThreadPool>;
+
+  DecoderThreadPool() {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (!command_line->HasSwitch(switches::kMaxChromeOSDecoderThreads))
+      return;
+
+    const std::string& num_threads_switch =
+        command_line->GetSwitchValueASCII(switches::kMaxChromeOSDecoderThreads);
+    if (num_threads_switch.empty()) {
+      LOG(ERROR) << "Failed to read the value of "
+                 << switches::kMaxChromeOSDecoderThreads;
+      return;
+    }
+    size_t num_threads = 0;
+    if (!base::StringToSizeT(num_threads_switch, &num_threads)) {
+      LOG(ERROR) << "Failed to convert the value of "
+                 << switches::kMaxChromeOSDecoderThreads << ", "
+                 << num_threads_switch << ", to integer";
+      return;
+    }
+
+    for (size_t i = 0; i < num_threads; i++) {
+      const std::string thread_name =
+          "VDecThread" +
+          base::NumberToString(base::checked_cast<unsigned int>(i));
+      decoder_threads_.emplace_back(
+          std::make_unique<base::Thread>(thread_name));
+      auto& thread = decoder_threads_.back();
+      if (!thread->Start()) {
+        LOG(ERROR) << "Failed to start thread: " << thread->thread_name();
+        decoder_threads_.clear();
+        task_runners_.clear();
+        return;
+      }
+
+      CHECK(thread->task_runner());
+      task_runners_.emplace_back(thread->task_runner());
+    }
+    VLOGF(2) << decoder_threads_.size() << " VideoDecoder Threads are created";
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
+    if (task_runners_.empty()) {
+      // Note that the decoder thread is created with base::MayBlock(). This is
+      // because the underlying |decoder_| may need to allocate a dummy buffer
+      // to discover the most native modifier accepted by the hardware video
+      // decoder; this in turn may need to open the render node, and this is the
+      // operation that may block.
+      return base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
+           base::MayBlock()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    }
+
+    // atomic unsigned integer may have undefined behavior on overflow.
+    // Use atomic signed integer, which is stated in the C++ specification;
+    // "Signed integer arithmetic is defined to use two's complement; there are
+    // no undefined results."
+    int atomic_index = counter_.fetch_add(1, std::memory_order_relaxed);
+    size_t index = 0;
+    if (atomic_index == INT_MIN) {
+      // Negating INT_MIN would cause an overflow, so just wrap around to
+      // INT_MAX.
+      atomic_index = INT_MAX;
+    }
+    index = base::checked_cast<size_t>(atomic_index >= 0 ? atomic_index
+                                                         : -atomic_index);
+    index %= task_runners_.size();
+    return task_runners_[index];
+  }
+
+  std::vector<std::unique_ptr<base::Thread>> decoder_threads_;
+  std::vector<scoped_refptr<base::SingleThreadTaskRunner>> task_runners_;
+  std::atomic_int counter_{0};
+};
+
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client)
-    : decoder_task_runner_(std::move(decoder_task_runner)),
+    : media_log_(std::move(media_log)),
+      decoder_task_runner_(std::move(decoder_task_runner)),
       client_(std::move(client)) {}
 
 VideoDecoderMixin::~VideoDecoderMixin() = default;
@@ -92,17 +188,24 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
-    std::unique_ptr<MediaLog> media_log) {
+    std::unique_ptr<MediaLog> media_log,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(frame_converter);
 
-  CreateDecoderFunctionCB create_decoder_function_cb =
+  CreateDecoderFunctionCB create_decoder_function_cb;
+  if (oop_video_decoder) {
+    create_decoder_function_cb =
+        base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
+  } else {
+    create_decoder_function_cb =
 #if BUILDFLAG(USE_VAAPI)
-      base::BindOnce(&VaapiVideoDecoder::Create);
+        base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-      base::BindOnce(&V4L2VideoDecoder::Create);
+        base::BindOnce(&V4L2VideoDecoder::Create);
 #endif
+  }
 
   auto* pipeline = new VideoDecoderPipeline(
       std::move(client_task_runner), std::move(frame_pool),
@@ -159,15 +262,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
     : client_task_runner_(std::move(client_task_runner)),
-      // Note that the decoder thread is created with base::MayBlock(). This is
-      // because the underlying |decoder_| may need to allocate a dummy buffer
-      // to discover the most native modifier accepted by the hardware video
-      // decoder; this in turn may need to open the render node, and this is the
-      // operation that may block.
-      decoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
-           base::MayBlock()},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
+      decoder_task_runner_(DecoderThreadPool::CreateTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
       media_log_(std::move(media_log)),
@@ -669,9 +764,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #error "Unsupported platform"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // viable_candidate should always be set unless using L1 protected content,
-  // which isn't an option on linux or lacros.
+  // which isn't an option on linux.
   CHECK(viable_candidate);
 #endif
 
@@ -732,13 +827,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 
   if (need_aux_frame_pool) {
     // Initialize the auxiliary frame pool with the input format of the image
-    // processor. Note that we pass nullptr as the GpuMemoryBufferFactory. That
-    // way, the pool will allocate buffers using minigbm directly instead of
-    // going through Ozone which means it won't create DRM/KMS framebuffers for
-    // those buffers. This is good because these buffers don't end up as
-    // overlays anyway.
-    auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>(
-        /*gpu_memory_buffer_factory=*/nullptr);
+    // processor.
+    auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>();
 
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
     CroStatus::Or<GpuBufferLayout> status_or_layout =

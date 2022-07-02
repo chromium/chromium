@@ -7,9 +7,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"

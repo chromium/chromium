@@ -22,8 +22,42 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="StandbyBucket">
+  <variant name="Active"/>
+  <variant name="Frequent"/>
+  <variant name="Rare"/>
+  <variant name="Restricted"/>
+  <variant name="Unknown"/>
+  <variant name="Unsupported"/>
+  <variant name="WorkingSet"/>
+</variants>
+
+<histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
+    expires_after="2022-11-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete. Recorded when the task finished callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.MinidumpUploadingTime.{StandbyBucket}"
+    units="ms" expires_after="2022-11-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete grouped by {StandbyBucket} state. Recorded when the task finished
+    callback is invoked. The {StandbyBucket} corresponds to the standby bucket
+    (UsageStatsManager.getAppStandbyBucket) chrome was placed into when metrics
+    was uploaded.
+  </summary>
+  <token key="StandbyBucket" variants="StandbyBucket"/>
+</histogram>
+
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -65,26 +99,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2022-10-16">
-  <owner>mheikal@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
+    enum="AndroidProcessedMinidumps" expires_after="2023-05-24">
   <owner>wnwen@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
     Records the number of non-simulated minidumps processed by Crashpad, split
     by process type. This metric is similar to one that could be computed
-    server-side based on received crash uploads; but the client-side metric also
-    includes any minidumps that were not successfully uploaded.
-  </summary>
-</histogram>
-
-<histogram name="Stability.Android.ProcessedSimulatedMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2022-07-03">
-  <owner>mheikal@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    Records the number of simulated minidumps processed by Crashpad, split by
-    process type. This metric is similar to one that could be computed
     server-side based on received crash uploads; but the client-side metric also
     includes any minidumps that were not successfully uploaded.
   </summary>
@@ -100,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Stability.Android.SystemExitReason"
-    enum="AndroidProcessExitReason" expires_after="2022-09-11">
+    enum="AndroidProcessExitReason" expires_after="2022-11-13">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -220,7 +240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
-    enum="ShownAfterCrashingReason" expires_after="2022-10-23">
+    enum="ShownAfterCrashingReason" expires_after="2022-12-25">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -242,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.TabMarkedForReload.Visibility"
-    enum="FrameVisibility" expires_after="2022-08-18">
+    enum="FrameVisibility" expires_after="2022-11-20">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -253,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.Visibility" enum="CrashVisibility"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lfg@chromium.org</owner>
@@ -308,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -344,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Internals.SystemCrashCount" units="crashes"
-    expires_after="2022-10-20">
+    expires_after="2022-12-25">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -404,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
-    enum="Boolean" expires_after="2022-08-07">
+    enum="Boolean" expires_after="2022-12-18">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -521,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.TimeBetweenUTEAndNextLaunch" units="ms"
-    expires_after="2022-07-03">
+    expires_after="2023-04-27">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -532,7 +552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType"
-    enum="MobileSessionShutdownType" expires_after="2022-10-16">
+    enum="MobileSessionShutdownType" expires_after="2022-12-18">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

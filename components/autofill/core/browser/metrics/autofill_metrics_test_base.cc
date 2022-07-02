@@ -234,6 +234,49 @@ void AutofillMetricsBaseTest::RecreateCreditCards(
   personal_data().Refresh();
 }
 
+std::string AutofillMetricsBaseTest::CreateLocalMasterCard(
+    bool clear_existing_cards) {
+  if (clear_existing_cards) {
+    personal_data().ClearCreditCards();
+  }
+  std::string guid("10000000-0000-0000-0000-000000000003");
+  CreditCard local_credit_card;
+  test::SetCreditCardInfo(&local_credit_card, "Test User",
+                          "5454545454545454" /* Mastercard */, "08", "2022",
+                          "1");
+  local_credit_card.set_guid(guid);
+  personal_data().AddCreditCard(local_credit_card);
+  return guid;
+}
+
+std::vector<std::string>
+AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
+  personal_data().ClearCreditCards();
+
+  // Local credit card creation.
+  CreditCard local_credit_card;
+  test::SetCreditCardInfo(&local_credit_card, "Test User",
+                          "4111111111111111" /* Visa */, "11", "2022", "1");
+  std::string local_card_guid("10000000-0000-0000-0000-000000000001");
+  local_credit_card.set_guid(local_card_guid);
+  personal_data().AddCreditCard(local_credit_card);
+
+  // Duplicate masked server card with same card information as local card.
+  CreditCard masked_server_credit_card(CreditCard::MASKED_SERVER_CARD,
+                                       "server_id_2");
+  std::string server_card_guid("10000000-0000-0000-0000-000000000002");
+  masked_server_credit_card.set_guid(server_card_guid);
+  test::SetCreditCardInfo(&masked_server_credit_card, "Test User",
+                          "4111111111111111" /* Visa */, "11", "2022", "1");
+  masked_server_credit_card.set_instrument_id(1);
+  masked_server_credit_card.SetNetworkForMaskedCard(kVisaCard);
+  masked_server_credit_card.SetNumber(u"1111");
+  personal_data().AddServerCreditCard(masked_server_credit_card);
+
+  personal_data().Refresh();
+  return {local_card_guid, server_card_guid};
+}
+
 void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
     std::string guid,
     std::string offer_reward_amount,
@@ -248,17 +291,22 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
   masked_server_credit_card.SetNumber(u"9424");
   personal_data().AddServerCreditCard(masked_server_credit_card);
 
-  AutofillOfferData offer_data;
-  offer_data.offer_id = id;
-  offer_data.offer_reward_amount = offer_reward_amount;
-  if (offer_expired) {
-    offer_data.expiry = AutofillClock::Now() - base::Days(2);
-  } else {
-    offer_data.expiry = AutofillClock::Now() + base::Days(2);
-  }
-  offer_data.merchant_origins = {url};
-  offer_data.eligible_instrument_id = {
+  int64_t offer_id = id;
+  base::Time expiry = offer_expired ? AutofillClock::Now() - base::Days(2)
+                                    : AutofillClock::Now() + base::Days(2);
+  std::vector<GURL> merchant_origins = {GURL{url}};
+  GURL offer_details_url = GURL(url);
+  DisplayStrings display_strings;
+  display_strings.value_prop_text = "Get 5% off your purchase";
+  display_strings.see_details_text = "See details";
+  display_strings.usage_instructions_text =
+      "Check out with this card to activate";
+  std::vector<int64_t> eligible_instrument_id = {
       masked_server_credit_card.instrument_id()};
+
+  AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
+      offer_id, expiry, merchant_origins, offer_details_url, display_strings,
+      eligible_instrument_id, offer_reward_amount);
   personal_data().AddAutofillOfferData(offer_data);
   personal_data().Refresh();
 }

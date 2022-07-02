@@ -17,10 +17,10 @@
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Designated initializer.
-// |viewController| presents the sign-in.
-// |accessPoint| is the view where the sign-in button was displayed.
-// |promoAction| is promo button used to trigger the sign-in.
-// |signinIntent| is the sign-in flow that will be triggered.
+// `viewController` presents the sign-in.
+// `accessPoint` is the view where the sign-in button was displayed.
+// `promoAction` is promo button used to trigger the sign-in.
+// `signinIntent` is the sign-in flow that will be triggered.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser

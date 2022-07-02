@@ -89,7 +89,7 @@ void AnalyzeZipFile(base::File zip_file,
   } else if (reader.ok()) {
     results->analysis_result = ArchiveAnalysisResult::kValid;
   } else {
-    results->analysis_result = ArchiveAnalysisResult::kUnknown;
+    results->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
 
   results->success = reader.ok() && !timeout;

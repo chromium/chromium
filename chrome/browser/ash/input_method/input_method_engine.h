@@ -235,6 +235,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
   void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;
+  void SetCaretBounds(const gfx::Rect& caret_bounds) override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
   void AssistiveWindowButtonClicked(
@@ -242,6 +243,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
+  bool IsReadyForTesting() override;
 
   // SuggestionHandlerInterface overrides.
   bool DismissSuggestion(int context_id, std::string* error) override;
@@ -258,6 +260,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   void ClickButton(const ui::ime::AssistiveWindowButton& button) override;
   bool AcceptSuggestionCandidate(int context_id,
                                  const std::u16string& candidate,
+                                 size_t delete_previous_utf16_len,
                                  std::string* error) override;
   bool SetAssistiveWindowProperties(
       int context_id,

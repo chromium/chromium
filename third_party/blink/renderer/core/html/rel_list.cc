@@ -40,10 +40,12 @@ static HashSet<AtomicString>& SupportedTokensLink() {
   return tokens;
 }
 
-static HashSet<AtomicString>& SupportedTokensAnchorAndArea() {
+static HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
-                          "noreferrer", "noopener",
+                          "noreferrer",
+                          "noopener",
+                          "opener",
                       }));
 
   return tokens;
@@ -63,8 +65,9 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
       return true;
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||
-              GetElement().HasTagName(html_names::kAreaTag)) &&
-             SupportedTokensAnchorAndArea().Contains(token_value)) {
+              GetElement().HasTagName(html_names::kAreaTag) ||
+              GetElement().HasTagName(html_names::kFormTag)) &&
+             SupportedTokensAnchorAndAreaAndForm().Contains(token_value)) {
     return true;
   }
   return false;

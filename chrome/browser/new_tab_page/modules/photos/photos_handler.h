@@ -37,7 +37,7 @@ class PhotosHandler : public photos::mojom::PhotosHandler {
  private:
   mojo::Receiver<photos::mojom::PhotosHandler> handler_;
   raw_ptr<Profile> profile_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_HANDLER_H_

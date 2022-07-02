@@ -400,5 +400,42 @@ TEST_F(InputMethodEngineTest, KeyEventHandledRecordsLatencyHistogram) {
   histogram_tester.ExpectTotalCount("InputMethod.KeyEventLatency", 1);
 }
 
+TEST_F(InputMethodEngineTest, AcceptSuggestionCandidateCommitsCandidate) {
+  CreateEngine(true);
+  FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
+  engine_->Enable(kTestImeComponentId);
+
+  const int context = engine_->GetContextIdForTesting();
+
+  std::string error;
+  engine_->AcceptSuggestionCandidate(context, u"suggestion", 0, &error);
+
+  EXPECT_EQ("", error);
+  EXPECT_EQ(
+      0, mock_ime_input_context_handler_->delete_surrounding_text_call_count());
+  EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
+}
+
+TEST_F(InputMethodEngineTest,
+       AcceptSuggestionCandidateDeletesSurroundingAndCommitsCandidate) {
+  CreateEngine(true);
+  FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
+  engine_->Enable(kTestImeComponentId);
+
+  const int context = engine_->GetContextIdForTesting();
+
+  std::string error;
+  engine_->CommitText(context, u"text", &error);
+  engine_->AcceptSuggestionCandidate(context, u"suggestion", 1, &error);
+
+  EXPECT_EQ("", error);
+  EXPECT_EQ(
+      1, mock_ime_input_context_handler_->delete_surrounding_text_call_count());
+  auto deleteSurroundingTextArg =
+      mock_ime_input_context_handler_->last_delete_surrounding_text_arg();
+  EXPECT_EQ(deleteSurroundingTextArg.offset, -1);
+  EXPECT_EQ(deleteSurroundingTextArg.length, 1u);
+  EXPECT_EQ(u"suggestion", mock_ime_input_context_handler_->last_commit_text());
+}
 }  // namespace input_method
 }  // namespace ash

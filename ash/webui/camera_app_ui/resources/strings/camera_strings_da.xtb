@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Downloader funktionen til dokumentscanning</translation>
 <translation id="4118525110028899586">Sæt optagelsen på pause</translation>
 <translation id="4121305183798804752">Et dokument blev registreret</translation>
 <translation id="414641094616694804">Dette kamera kan ikke ændre opløsning</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Stop med at tage billedet</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
+<translation id="4620818268515773682">Slå mikrofonen til eller fra. Lyden er slået til</translation>
 <translation id="4628948037717959914">Billede</translation>
 <translation id="4649291346448517080">Filen kan ikke gemmes</translation>
 <translation id="4695379108709712600">Flyttes opad</translation>
@@ -146,6 +148,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Dokumentets nederste højre hjørne</translation>
+<translation id="7692090236657809299">Aktivér panorer drej zoom</translation>
 <translation id="7726641833034062494">Optag normal video</translation>
 <translation id="7748344063862150053">Dokumentets øverste højre hjørne</translation>
 <translation id="7933675232020478311">Flyttes nedad og mod højre</translation>
@@ -159,6 +162,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>

@@ -53,9 +53,7 @@ class RealFetchTester {
  public:
   RealFetchTester()
       : context_(CreateTestURLRequestContextBuilder()->Build()),
-        fetcher_(new DhcpPacFileFetcherWin(context_.get())),
-        finished_(false),
-        on_completion_is_error_(false) {
+        fetcher_(new DhcpPacFileFetcherWin(context_.get())) {
     // Make sure the test ends.
     timeout_.Start(FROM_HERE, base::Seconds(5), this,
                    &RealFetchTester::OnTimeout);
@@ -119,11 +117,11 @@ class RealFetchTester {
 
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DhcpPacFileFetcherWin> fetcher_;
-  bool finished_;
+  bool finished_ = false;
   std::u16string pac_text_;
   base::OneShotTimer timeout_;
   base::OneShotTimer cancel_timer_;
-  bool on_completion_is_error_;
+  bool on_completion_is_error_ = false;
 };
 
 TEST(DhcpPacFileFetcherWin, RealFetch) {
@@ -218,11 +216,7 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
  public:
   DummyDhcpPacFileAdapterFetcher(URLRequestContext* context,
                                  scoped_refptr<base::TaskRunner> runner)
-      : DhcpPacFileAdapterFetcher(context, runner),
-        did_finish_(false),
-        result_(OK),
-        pac_script_(u"bingo"),
-        fetch_delay_ms_(1) {}
+      : DhcpPacFileAdapterFetcher(context, runner), pac_script_(u"bingo") {}
 
   void Fetch(const std::string& adapter_name,
              CompletionOnceCallback callback,
@@ -259,10 +253,10 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   }
 
  private:
-  bool did_finish_;
-  int result_;
+  bool did_finish_ = false;
+  int result_ = OK;
   std::u16string pac_script_;
-  int fetch_delay_ms_;
+  int fetch_delay_ms_ = 1;
   CompletionOnceCallback callback_;
   base::OneShotTimer timer_;
 };
@@ -290,7 +284,6 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
 
   MockDhcpPacFileFetcherWin(URLRequestContext* context)
       : DhcpPacFileFetcherWin(context),
-        num_fetchers_created_(0),
         worker_finished_event_(
             base::WaitableEvent::ResetPolicy::MANUAL,
             base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -372,7 +365,7 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   scoped_refptr<MockAdapterQuery> adapter_query_;
 
   base::TimeDelta max_wait_;
-  int num_fetchers_created_;
+  int num_fetchers_created_ = 0;
   base::WaitableEvent worker_finished_event_;
 };
 
@@ -380,9 +373,7 @@ class FetcherClient {
  public:
   FetcherClient()
       : context_(CreateTestURLRequestContextBuilder()->Build()),
-        fetcher_(context_.get()),
-        finished_(false),
-        result_(ERR_UNEXPECTED) {}
+        fetcher_(context_.get()) {}
 
   void RunTest() {
     int result = fetcher_.Fetch(
@@ -434,8 +425,8 @@ class FetcherClient {
 
   std::unique_ptr<URLRequestContext> context_;
   MockDhcpPacFileFetcherWin fetcher_;
-  bool finished_;
-  int result_;
+  bool finished_ = false;
+  int result_ = ERR_UNEXPECTED;
   std::u16string pac_text_;
 };
 

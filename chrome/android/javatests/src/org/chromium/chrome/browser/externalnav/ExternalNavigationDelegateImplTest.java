@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.externalnav;
 
+import static org.mockito.Mockito.doReturn;
+
 import android.content.Intent;
 import android.net.Uri;
 
@@ -11,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Function;
 import org.chromium.base.test.util.Batch;
@@ -24,14 +28,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -65,6 +68,9 @@ public class ExternalNavigationDelegateImplTest {
             "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
             "com.google.android.instantapps.nmr1.VIEW"};
     private static final boolean IS_GOOGLE_REFERRER = true;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     class ExternalNavigationDelegateImplForTesting extends ExternalNavigationDelegateImpl {
         private boolean mWasAutofillAssistantStarted;
@@ -127,26 +133,23 @@ public class ExternalNavigationDelegateImplTest {
         Assert.assertEquals(initiatorOrigin, metadata.getInitiatorOrigin());
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
     private ExternalNavigationDelegateImpl mExternalNavigationDelegateImpl;
     private ExternalNavigationDelegateImplForTesting mExternalNavigationDelegateImplForTesting;
 
+    @Mock
+    Tab mMockTab;
+    @Mock
+    WindowAndroid mMockWindowAndroid;
+
     @Before
     public void setUp() throws InterruptedException {
-        Tab tab = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> sActivityTestRule.getActivity().getActivityTab());
+        MockitoAnnotations.initMocks(this);
+        doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
         mExternalNavigationDelegateImpl = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new ExternalNavigationDelegateImpl(tab));
+                () -> new ExternalNavigationDelegateImpl(mMockTab));
         mExternalNavigationDelegateImplForTesting =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new ExternalNavigationDelegateImplForTesting(tab));
+                        () -> new ExternalNavigationDelegateImplForTesting(mMockTab));
     }
 
     @Test
@@ -161,52 +164,6 @@ public class ExternalNavigationDelegateImplTest {
         Assert.assertTrue(
                 intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
         Assert.assertEquals(url, IntentHandler.getPendingIncognitoUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsIntentToInstantApp() {
-        // Check that the delegate correctly distinguishes instant app intents from others.
-        String vanillaUrl = "http://www.example.com";
-        Intent vanillaIntent = new Intent(Intent.ACTION_VIEW);
-        vanillaIntent.setData(Uri.parse(vanillaUrl));
-
-        String instantAppIntentUrl = "intent://buzzfeed.com/tasty#Intent;scheme=http;"
-                + "package=com.google.android.instantapps.supervisor;"
-                + "action=com.google.android.instantapps.START;"
-                + "S.com.google.android.instantapps.FALLBACK_PACKAGE="
-                + "com.android.chrome;S.com.google.android.instantapps.INSTANT_APP_PACKAGE="
-                + "com.yelp.android;S.android.intent.extra.REFERRER_NAME="
-                + "https%3A%2F%2Fwww.google.com;end";
-        Intent instantAppIntent;
-        try {
-            instantAppIntent = Intent.parseUri(instantAppIntentUrl, Intent.URI_INTENT_SCHEME);
-        } catch (Exception ex) {
-            Assert.assertTrue(false);
-            return;
-        }
-
-        Assert.assertFalse(mExternalNavigationDelegateImpl.isIntentToInstantApp(vanillaIntent));
-        Assert.assertTrue(mExternalNavigationDelegateImpl.isIntentToInstantApp(instantAppIntent));
-
-        // Check that Supervisor is detected by action even without package.
-        for (String action : SUPERVISOR_START_ACTIONS) {
-            String intentWithoutPackageUrl = "intent://buzzfeed.com/tasty#Intent;scheme=http;"
-                    + "action=" + action + ";"
-                    + "S.com.google.android.instantapps.FALLBACK_PACKAGE="
-                    + "com.android.chrome;S.com.google.android.instantapps.INSTANT_APP_PACKAGE="
-                    + "com.yelp.android;S.android.intent.extra.REFERRER_NAME="
-                    + "https%3A%2F%2Fwww.google.com;end";
-            try {
-                instantAppIntent =
-                        Intent.parseUri(intentWithoutPackageUrl, Intent.URI_INTENT_SCHEME);
-            } catch (Exception ex) {
-                Assert.assertTrue(false);
-                return;
-            }
-            Assert.assertTrue(
-                    mExternalNavigationDelegateImpl.isIntentToInstantApp(instantAppIntent));
-        }
     }
 
     @Test

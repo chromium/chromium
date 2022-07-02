@@ -35,5 +35,9 @@ absl::optional<DeviceImageInfo> FakeFastPairDelegate::GetDeviceImageInfo(
   return it->second;
 }
 
+void FakeFastPairDelegate::ForgetDevice(const std::string& mac_address) {
+  forgotten_device_addresses_.push_back(mac_address);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

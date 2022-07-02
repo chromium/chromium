@@ -10,7 +10,7 @@ SingleClientStatusChangeChecker::SingleClientStatusChangeChecker(
     syncer::SyncServiceImpl* service)
     : MultiClientStatusChangeChecker({service}) {}
 
-SingleClientStatusChangeChecker::~SingleClientStatusChangeChecker() {}
+SingleClientStatusChangeChecker::~SingleClientStatusChangeChecker() = default;
 
 syncer::SyncServiceImpl* SingleClientStatusChangeChecker::service() {
   return services()[0];

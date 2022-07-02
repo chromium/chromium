@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +27,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -89,7 +91,7 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
                     const gfx::PresentationFeedback& feedback));
 
  private:
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   const gfx::AcceleratedWidget widget_;
 };
 
@@ -118,8 +120,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                                     false,
                                     kAugmentedSurfaceNotSupportedVersion);
 
-    window_->set_update_visual_size_immediately(false);
-    window_->set_apply_pending_state_on_update_visual_size(false);
+    window_->set_update_visual_size_immediately_for_testing(false);
+    window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
   }
 
  protected:
@@ -147,22 +149,23 @@ class WaylandBufferManagerTest : public WaylandTest {
     } else {
       EXPECT_CALL(*callback, Run(_))
           .Times(1)
-          .WillRepeatedly(::testing::Invoke([this, callback](
-                                                std::string error_string) {
-            channel_destroyed_error_message_ = error_string;
+          .WillRepeatedly(
+              ::testing::Invoke([this, callback](std::string error_string) {
+                channel_destroyed_error_message_ = error_string;
 
-            manager_host_->OnChannelDestroyed();
+                manager_host_->OnChannelDestroyed();
 
-            manager_host_->SetTerminateGpuCallback(callback->Get());
+                manager_host_->SetTerminateGpuCallback(callback->Get());
 
-            auto interface_ptr = manager_host_->BindInterface();
-            // Recreate the gpu side manager (the production code does the
-            // same).
-            buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
-            buffer_manager_gpu_->Initialize(
-                std::move(interface_ptr), {}, false, true, false,
-                kAugmentedSurfaceNotSupportedVersion);
-          }));
+                auto interface_ptr = manager_host_->BindInterface();
+                // Recreate the gpu side manager (the production code does the
+                // same).
+                buffer_manager_gpu_ =
+                    std::make_unique<WaylandBufferManagerGpu>();
+                buffer_manager_gpu_->Initialize(
+                    std::move(interface_ptr), {}, false, true, false,
+                    kAugmentedSurfaceNotSupportedVersion);
+              }));
     }
   }
 
@@ -265,7 +268,7 @@ class WaylandBufferManagerTest : public WaylandTest {
   }
 
   MockTerminateGpuCallback callback_;
-  WaylandBufferManagerHost* manager_host_;
+  raw_ptr<WaylandBufferManagerHost> manager_host_;
   // Error message that is received when the manager_host destroys the channel.
   std::string channel_destroyed_error_message_;
 };
@@ -299,7 +302,8 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
 
     Sync();
 
-    auto buffer_formats = connection_->zwp_dmabuf()->supported_buffer_formats();
+    auto buffer_formats =
+        connection_->wayland_buffer_factory()->GetSupportedBufferFormats();
     DCHECK_EQ(buffer_formats.size(), 1u);
     DCHECK_EQ(buffer_formats.begin()->first,
               GetBufferFormatFromFourCCFormat(kFourccFormatR8));
@@ -396,9 +400,9 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId1);
 
-    buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, kBufferId1,
-                                      window_->GetBounds(), kDefaultScale,
-                                      window_->GetBounds());
+    buffer_manager_gpu_->CommitBuffer(
+        widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
+        kDefaultScale, window_->GetBoundsInPixels());
 
     CreateDmabufBasedBufferAndSetTerminateExpectation(true /*fail*/,
                                                       kBufferId1);
@@ -419,9 +423,9 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId1);
 
-    buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, kBufferId1,
-                                      window_->GetBounds(), kDefaultScale,
-                                      window_->GetBounds());
+    buffer_manager_gpu_->CommitBuffer(
+        widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
+        kDefaultScale, window_->GetBoundsInPixels());
 
     DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
   }
@@ -441,9 +445,9 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId1);
     // Attach to a surface.
-    buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, kBufferId1,
-                                      window_->GetBounds(), kDefaultScale,
-                                      window_->GetBounds());
+    buffer_manager_gpu_->CommitBuffer(
+        widget, kBufferId1, kBufferId1, window_->GetBoundsInPixels(),
+        kDefaultScale, window_->GetBoundsInPixels());
 
     // Created non-attached buffer as well.
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
@@ -473,8 +477,8 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
   // Can't commit for non-existing buffer id.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u, 5u,
-                                    window_->GetBounds(), kDefaultScale,
-                                    window_->GetBounds());
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
 
   Sync();
 }
@@ -487,11 +491,11 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
 
   std::vector<wl::WaylandOverlayConfig> overlay_configs;
-  overlay_configs.emplace_back(
-      CreateBasicWaylandOverlayConfig(INT32_MIN, 1u, window_->GetBounds()));
+  overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+      INT32_MIN, 1u, window_->GetBoundsInPixels()));
   // Non-existing buffer id
   overlay_configs.emplace_back(
-      CreateBasicWaylandOverlayConfig(0, 2u, window_->GetBounds()));
+      CreateBasicWaylandOverlayConfig(0, 2u, window_->GetBoundsInPixels()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
 
@@ -511,9 +515,9 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
 
   std::vector<wl::WaylandOverlayConfig> overlay_configs;
   overlay_configs.emplace_back(
-      CreateBasicWaylandOverlayConfig(0, 1u, window_->GetBounds()));
+      CreateBasicWaylandOverlayConfig(0, 1u, window_->GetBoundsInPixels()));
   overlay_configs.emplace_back(
-      CreateBasicWaylandOverlayConfig(1, 1u, window_->GetBounds()));
+      CreateBasicWaylandOverlayConfig(1, 1u, window_->GetBoundsInPixels()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
@@ -526,8 +530,8 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
   DestroyBufferAndSetTerminateExpectation(1u, false /*fail*/);
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u, 1u,
-                                    window_->GetBounds(), kDefaultScale,
-                                    window_->GetBounds());
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
   Sync();
 }
 
@@ -539,8 +543,8 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
   // Can't commit for non-existing widget.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(gfx::kNullAcceleratedWidget, 1u, kBufferId,
-                                    window_->GetBounds(), kDefaultScale,
-                                    window_->GetBounds());
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
 
   Sync();
 }
@@ -549,11 +553,11 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
 // values is illegal - the host terminates the gpu process.
 TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
   const std::vector<gfx::RectF> bounds_rect_test_data = {
-      gfx::RectF(std::nanf(""), window_->GetBounds().y(), std::nanf(""),
-                 window_->GetBounds().height()),
-      gfx::RectF(window_->GetBounds().x(),
+      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+                 window_->GetBoundsInPixels().height()),
+      gfx::RectF(window_->GetBoundsInPixels().x(),
                  std::numeric_limits<float>::infinity(),
-                 window_->GetBounds().width(),
+                 window_->GetBoundsInPixels().width(),
                  std::numeric_limits<float>::infinity())};
 
   for (const auto& bounds_rect : bounds_rect_test_data) {
@@ -583,7 +587,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -695,7 +699,7 @@ TEST_P(WaylandBufferManagerTest,
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -819,7 +823,7 @@ TEST_P(WaylandBufferManagerTest,
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -976,8 +980,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
-                                    window_->GetBounds(), kDefaultScale,
-                                    window_->GetBounds());
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
   Sync();
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
@@ -1010,8 +1014,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
   buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId2, kDmabufBufferId2,
-                                    window_->GetBounds(), kDefaultScale,
-                                    window_->GetBounds());
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
 
   Sync();
 
@@ -1063,26 +1067,34 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
     Sync();
 
+    auto* xdg_surface = mock_surface->xdg_surface();
+    ASSERT_TRUE(xdg_surface);
+    ASSERT_FALSE(temp_window->IsSurfaceConfigured());
+
     ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
                                                  false /* fail */);
 
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(_, _, _, _)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
-    buffer_manager_gpu_->CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
-                                      window_->GetBounds(), kDefaultScale,
-                                      window_->GetBounds());
+    buffer_manager_gpu_->CommitBuffer(
+        widget, kDmabufBufferId, kDmabufBufferId, window_->GetBoundsInPixels(),
+        kDefaultScale, window_->GetBoundsInPixels());
     Sync();
+    testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-    DCHECK(mock_surface->xdg_surface());
-    ActivateSurface(mock_surface->xdg_surface());
-
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(0, 0, 800, 600)).Times(1);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(1);
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
     EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
+    ActivateSurface(mock_surface->xdg_surface());
     Sync();
+    testing::Mock::VerifyAndClearExpectations(mock_surface);
 
     window_->SetPointerFocus(false);
     temp_window.reset();
@@ -1103,7 +1115,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -1219,9 +1231,9 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferForDestroyedWindow) {
 
   Sync();
 
-  buffer_manager_gpu_->CommitBuffer(widget, kBufferId, kBufferId,
-                                    temp_window->GetBounds(), kDefaultScale,
-                                    temp_window->GetBounds());
+  buffer_manager_gpu_->CommitBuffer(
+      widget, kBufferId, kBufferId, temp_window->GetBoundsInPixels(),
+      kDefaultScale, temp_window->GetBoundsInPixels());
 
   Sync();
 
@@ -1234,7 +1246,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionSingleBuffer) {
 
   auto temp_window = CreateWindow();
   auto widget = temp_window->GetWidget();
-  auto bounds = temp_window->GetBounds();
+  auto bounds = temp_window->GetBoundsInPixels();
 
   EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId);
@@ -1271,7 +1283,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
   Sync();
 
   auto widget = temp_window->GetWidget();
-  auto bounds = temp_window->GetBounds();
+  auto bounds = temp_window->GetBoundsInPixels();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       temp_window->root_surface()->GetSurfaceId());
@@ -1345,7 +1357,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
   constexpr uint32_t kBufferId2 = 2;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -1412,7 +1424,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
   constexpr uint32_t kBufferId2 = 2;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -1478,7 +1490,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
   constexpr uint32_t kBufferId3 = 3;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -1562,7 +1574,7 @@ TEST_P(WaylandBufferManagerTest,
   constexpr uint32_t kBufferId2 = 2;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1722,7 +1734,7 @@ TEST_P(WaylandBufferManagerTest, OnSubmissionCalledForSingleBuffer) {
   constexpr uint32_t kBufferId1 = 1;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1755,7 +1767,7 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   constexpr uint32_t kBufferId3 = 3;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1819,7 +1831,7 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -1909,7 +1921,7 @@ TEST_P(WaylandBufferManagerTest,
   constexpr uint32_t kBufferId1 = 1;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
@@ -2003,7 +2015,7 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   constexpr uint32_t kBufferId2 = 2;
   constexpr uint32_t kBufferId3 = 3;
 
-  const gfx::Rect bounds = window_->GetBounds();
+  const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
   EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
@@ -2161,7 +2173,7 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
     std::vector<wl::WaylandOverlayConfig> overlay_configs;
     for (auto id : kBufferIds) {
       overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-          id == 1 ? INT32_MIN : id, id, window_->GetBounds()));
+          id == 1 ? INT32_MIN : id, id, window_->GetBoundsInPixels()));
       overlay_configs.back().priority_hint = priority.first;
     }
 
@@ -2239,7 +2251,7 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
         std::vector<wl::WaylandOverlayConfig> overlay_configs;
         for (auto id : kBufferIds) {
           overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-              id == 1 ? INT32_MIN : id, id, window_->GetBounds()));
+              id == 1 ? INT32_MIN : id, id, window_->GetBoundsInPixels()));
           overlay_configs.back().surface_scale_factor = scale_factor;
           overlay_configs.back().rounded_clip_bounds = rounded_corners;
         }
@@ -2291,7 +2303,7 @@ TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBounds(bounds);
+  window_->SetBoundsInPixels(bounds);
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
@@ -2386,8 +2398,9 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                     kDmabufBufferId);
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), kDmabufBufferId,
-                                    kDmabufBufferId, window_->GetBounds(),
-                                    kDefaultScale, window_->GetBounds());
+                                    kDmabufBufferId,
+                                    window_->GetBoundsInPixels(), kDefaultScale,
+                                    window_->GetBoundsInPixels());
   DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 
   base::RunLoop().RunUntilIdle();
@@ -2443,7 +2456,7 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
     Sync();
 
     std::vector<wl::WaylandOverlayConfig> overlay_configs;
-    auto bounds = temp_window->GetBounds();
+    auto bounds = temp_window->GetBoundsInPixels();
     overlay_configs.emplace_back(
         CreateBasicWaylandOverlayConfig(INT32_MIN, kBufferId1, bounds));
     overlay_configs.emplace_back(

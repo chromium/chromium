@@ -142,18 +142,18 @@ class MockPersistentReportingStore
   std::vector<CachedReportingEndpointGroup> prestored_endpoint_groups_;
 
   // Set when LoadReportingClients() is called.
-  bool load_started_;
+  bool load_started_ = false;
 
   // Simulates the total number of endpoints/groups that would be stored in the
   // store. Updated when pre-stored policies are added, and when Flush() is
   // called.
-  int endpoint_count_;
-  int endpoint_group_count_;
+  int endpoint_count_ = 0;
+  int endpoint_group_count_ = 0;
 
   // Simulates the delta to be added to to the counts the next time Flush() is
   // called. Reset to 0 when Flush() is called.
-  int queued_endpoint_count_delta_;
-  int queued_endpoint_group_count_delta_;
+  int queued_endpoint_count_delta_ = 0;
+  int queued_endpoint_group_count_delta_ = 0;
 };
 
 bool operator==(const MockPersistentReportingStore::Command& lhs,

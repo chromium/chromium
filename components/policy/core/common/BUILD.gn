@@ -126,8 +126,6 @@ source_set("internal") {
     "features.h",
     "json_schema_constants.cc",
     "json_schema_constants.h",
-    "legacy_chrome_policy_migrator.cc",
-    "legacy_chrome_policy_migrator.h",
     "management/management_service.cc",
     "management/management_service.h",
     "management/platform_management_service.cc",
@@ -239,8 +237,6 @@ source_set("internal") {
       "management/platform_management_status_provider_win.h",
       "policy_loader_win.cc",
       "policy_loader_win.h",
-      "registry_watcher_win.cc",
-      "registry_watcher_win.h",
     ]
     libs = [
       "netapi32.lib",
@@ -335,8 +331,8 @@ source_set("internal") {
       sources += [
         "policy_loader_mac.h",
         "policy_loader_mac.mm",
-        "preferences_mac.cc",
         "preferences_mac.h",
+        "preferences_mac.mm",
       ]
       frameworks += [ "SystemConfiguration.framework" ]
     }
@@ -468,7 +464,6 @@ source_set("unit_tests") {
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
     "generate_policy_source_unittest.cc",
-    "legacy_chrome_policy_migrator_unittest.cc",
     "management/management_service_unittest.cc",
     "policy_bundle_unittest.cc",
     "policy_loader_command_line_unittest.cc",
@@ -565,10 +560,7 @@ source_set("unit_tests") {
     data = [ "//chrome/test/data/policy/" ]
   }
   if (is_win) {
-    sources += [
-      "policy_loader_win_unittest.cc",
-      "registry_watcher_win_unittest.cc",
-    ]
+    sources += [ "policy_loader_win_unittest.cc" ]
   }
   if (is_chromeos_lacros) {
     sources += [ "policy_loader_lacros_unittest.cc" ]

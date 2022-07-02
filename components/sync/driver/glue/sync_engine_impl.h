@@ -75,6 +75,7 @@ class SyncEngineImpl : public SyncEngine,
   base::Time GetLastSyncedTimeForDebugging() const override;
   void StartConfiguration() override;
   void StartSyncingWithServer() override;
+  void StartHandlingInvalidations() override;
   void SetEncryptionPassphrase(
       const std::string& passphrase,
       const KeyDerivationParams& key_derivation_params) override;

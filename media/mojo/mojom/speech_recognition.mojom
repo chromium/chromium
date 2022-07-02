@@ -1,0 +1,197 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/audio_data.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Corresponds to the LangIdEvent.ConfidenceInterval defined in
+// http://google3/speech/soda/public/soda_event.proto.
+[Stable, Extensible]
+enum ConfidenceLevel {
+  [Default] kUnknown,
+  kNotConfident,
+  kConfident,
+  kHighlyConfident,
+};
+
+// The main interface a renderer client uses to interact with a speech
+// recognition service process. In Live Caption, every renderer can own one or
+// more Remote<SpeechRecognitionContext>, with the receiver bound through the
+// BrowserInterfaceBroker. This is a stable interface that is used across the
+// LaCrOS/Ash boundary.
+[Stable]
+interface SpeechRecognitionContext {
+  // Bind the recognizers to the speech recognition service. Returns a flag
+  // indicating whether multichannel audio is supported by the speech
+  // recognition service.
+  BindRecognizer@0(pending_receiver<SpeechRecognitionRecognizer> receiver,
+                   pending_remote<SpeechRecognitionRecognizerClient> client,
+                   SpeechRecognitionOptions options)
+                   => (bool is_multichannel_supported);
+};
+
+// The interface used to pass raw audio from the renderer to the speech
+// recognition service. The remote lives in the renderer process and the
+// receiver lives in the speech recognition process.
+[Stable]
+interface SpeechRecognitionRecognizer {
+  // Initialize the speech recognition instance. The speech recognition client
+  // will return the recognition events containing the transcribed audio back
+  // to the originating media.
+  SendAudioToSpeechRecognitionService@0(AudioDataS16 buffer);
+
+  // Mark audio stream done. This informs the speech recognition client to stop
+  // speech recognition after it finishes processing the audio it has received
+  // already. This will eventually trigger the
+  // SpeechRecognitionRecognizerClient::OnSpeechRecognitionStopped callback.
+  MarkDone@1();
+
+  // Notify the speech recognition recognizer that the language changed. Takes
+  // in the locale string (e.g. "en-US").
+  OnLanguageChanged@2(string language);
+};
+
+// The interface used to return speech recognition events from the speech
+// recognition service to the client that will display the results to the user.
+// The remote lives in the speech recognition process and the receiver lives in
+// the browser process.
+[Stable]
+interface SpeechRecognitionRecognizerClient {
+  // Triggered by speech recognition process on a speech recognition event.
+  // Returns whether the result was received successfully. Speech recognition
+  // will halt if this returns false.
+  OnSpeechRecognitionRecognitionEvent@0(SpeechRecognitionResult result)
+      => (bool success);
+
+  // Called when speech recognition stops.
+  OnSpeechRecognitionStopped@1();
+
+  // Triggered by an error within the speech recognition service.
+  OnSpeechRecognitionError@2();
+
+  // Triggered by speech recognition process on a language identification event.
+  OnLanguageIdentificationEvent@3(LanguageIdentificationEvent event);
+};
+
+// The hypothesis parts that provides timing information for each word in
+// recognized speech.
+[Stable]
+struct HypothesisParts {
+  // A section of the final transcription text. Either an entire word or single
+  // character (depending on the language) with adjacent punctuation. There will
+  // usually only be one value here. If formatting is enabled in the speech
+  // recognition, then the raw text will be included as the second element.
+  array<string> text;
+
+  // Time offset from this event's |audio_start_time| defined below. We enforce
+  // the following invariant: 0 <= hypothesis_part_offset < |audio_end_time -
+  // audio_start_time|.
+  mojo_base.mojom.TimeDelta hypothesis_part_offset;
+};
+
+// The timing information for the transcript.
+[Stable]
+struct TimingInformation {
+  // Start time in audio time from the start of the SODA session.
+  // This time measures the amount of audio input into SODA.
+  mojo_base.mojom.TimeDelta audio_start_time;
+
+  // Elapsed processed audio from first frame after preamble.
+  mojo_base.mojom.TimeDelta audio_end_time;
+
+  // The timing information for each word/letter in the transription.
+  // HypothesisPartsInResult was introduced in min version 1 in
+  // chromeos/services/machine_learning/public/mojom/soda.mojom. Therefore, it
+  // must be optional. Hypothesis parts maybe non-empty optional containing a
+  // zero length vector if no words were spoken during the event's time span.
+  array<HypothesisParts> ? hypothesis_parts;
+};
+
+// A speech recognition result created by the speech service and passed to the
+// browser.
+[Stable]
+struct SpeechRecognitionResult {
+  string transcription;
+
+  // A flag indicating whether the result is final. If true, the result is
+  // locked in and the next result returned will not overlap with the previous
+  // final result.
+  bool is_final;
+
+  // Timing information for the current transcription. |timing_information| is
+  // expected to be valid if:
+  //   1. speech recognition is provided by |CrosSodaClient| and
+  //   2. |is_final| is true.
+  TimingInformation? timing_information;
+};
+
+// A language identification event created by the speech recognition service
+// and passed to the browser and renderer.
+[Stable]
+struct LanguageIdentificationEvent {
+  // The locale of the language with the highest confidence.
+  string language;
+
+  // The confidence interval.
+  ConfidenceLevel confidence_level;
+};
+
+// The interface used to notify the speech recognition client of events
+// triggered by the browser. The remote lives in the browser process and the
+// receiver lives in the renderer process.
+[Stable]
+interface SpeechRecognitionBrowserObserver {
+  // Notify the speech recognition client when speech recognition availability
+  // changes.
+  SpeechRecognitionAvailabilityChanged@0(bool is_speech_recognition_available);
+
+  // Notify the speech recognition client when the speech recognition language
+  // changes.
+  SpeechRecognitionLanguageChanged@1(string language);
+};
+
+// This interface between the speech recognition client and the browser.
+// The remote lives in the renderer process and the receiver lives in the
+// browser process.
+[Stable]
+interface SpeechRecognitionClientBrowserInterface {
+  // Bind the speech recognition availability observer.
+  BindSpeechRecognitionBrowserObserver@0(
+    pending_remote<SpeechRecognitionBrowserObserver> observer);
+};
+
+// Corresponds to ExtendedSodaConfigMsg.RecognitionMode in
+// chrome/services/speech/soda/proto/soda_api.proto and
+// SodaRecognitionMode in
+// chromeos/services/machine_learning/public/mojom/soda.mojom.
+[Stable, Extensible]
+enum SpeechRecognitionMode {
+  [Default] kUnknown,
+  // Intended for voice input for keyboard usage.
+  kIme,
+  // Intended to caption a stream of audio.
+  kCaption,
+};
+
+// Options for speech recognition.
+// TODO(crbug.com/1165437): Add option to include timing metrics in the result.
+[Stable]
+struct SpeechRecognitionOptions {
+  // What kind of recognition to use.
+  // In the case of web fallback (not for launch, used for development only),
+  // this option will be ignored.
+  SpeechRecognitionMode recognition_mode;
+
+  // Whether to enable formatting and punctuation in the recognition results.
+  bool enable_formatting;
+
+  // The BCP-47 localized language code to use (e.g. "en-US").
+  // TODO(crbug.com/1161569): Language needs to be required when multiple
+  // languages are supported by SODA, so that each SpeechRecognitionRecognizer
+  // can use its own language. Right now Language is only used by Projector
+  // and Dictation via OnDeviceSpeechRecognizer in Chrome OS.
+  string? language;
+};

@@ -39,7 +39,6 @@ group("polymer3_elements") {
     ":parental_handoff_module",
     ":pin_setup_module",
     ":recommend_apps_module",
-    ":recommend_apps_old_module",
     ":saml_confirm_password_module",
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
@@ -89,7 +88,6 @@ js_type_check("closure_compile_local") {
     ":parental_handoff.m",
     ":pin_setup.m",
     ":recommend_apps.m",
-    ":recommend_apps_old.m",
     ":saml_confirm_password.m",
     ":signin_fatal_error.m",
     ":smart_privacy_protection.m",
@@ -518,25 +516,10 @@ js_library("pin_setup.m") {
   extra_deps = [ ":pin_setup_module" ]
 }
 
-js_library("recommend_apps_old.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps_old.m.js" ]
-  deps = [
-    "../../components:oobe_types.m",
-    "../../components/behaviors:login_screen_behavior.m",
-    "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
-    "../../components/buttons:oobe_text_button.m",
-    "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components/dialogs:oobe_loading_dialog.m",
-  ]
-  externs_list = [ "$externs_path/webview_tag.js" ]
-  extra_deps = [ ":recommend_apps_old_module" ]
-}
-
 js_library("recommend_apps.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.m.js" ]
   deps = [
+    "../../components:oobe_apps_list.m",
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -545,6 +528,7 @@ js_library("recommend_apps.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
   extra_deps = [ ":recommend_apps_module" ]
@@ -871,14 +855,6 @@ polymer_modulizer("parental_handoff") {
 polymer_modulizer("pin_setup") {
   js_file = "pin_setup.js"
   html_file = "pin_setup.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
-polymer_modulizer("recommend_apps_old") {
-  js_file = "recommend_apps_old.js"
-  html_file = "recommend_apps_old.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

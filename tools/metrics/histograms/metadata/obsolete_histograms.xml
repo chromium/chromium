@@ -841,7 +841,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AnchorElementMetrics.IsAdFrameElement" units="Boolean"
+<histogram name="AnchorElementMetrics.IsAdFrameElement" enum="Boolean"
     expires_after="2020-05-21">
   <obsolete>
     Removed 05/2020.
@@ -10280,7 +10280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SurfaceDependencyDeadline.DeadlineHit"
-    units="Boolean" expires_after="2018-10-17">
+    enum="Boolean" expires_after="2018-10-17">
   <obsolete>
     Removed as of 10/2018. This metric didn't end up being useful.
   </obsolete>
@@ -12742,7 +12742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataReductionProxy.NetworkProperties.CacheHit"
-    units="BooleanCacheHit" expires_after="M81">
+    enum="BooleanCacheHit" expires_after="M81">
   <obsolete>
     Obsoleted in April 2020
   </obsolete>
@@ -16473,7 +16473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DatabaseDownloadExistsForDownloadSlice"
-    units="Boolean" expires_after="M77">
+    enum="Boolean" expires_after="M77">
   <obsolete>
     Removed in 07/2019.
   </obsolete>
@@ -22711,7 +22711,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExtensionFrameMapCacheHit" units="Boolean"
+<histogram name="Extensions.ExtensionFrameMapCacheHit" enum="Boolean"
     expires_after="M85">
   <obsolete>
     Removed in M77.
@@ -22724,7 +22724,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExtensionFrameMapLookupSuccessful" units="Boolean"
+<histogram name="Extensions.ExtensionFrameMapLookupSuccessful" enum="Boolean"
     expires_after="M85">
   <obsolete>
     Removed in M77.
@@ -22800,7 +22800,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExtensionRendererStateCacheHit" units="Boolean"
+<histogram name="Extensions.ExtensionRendererStateCacheHit" enum="Boolean"
     expires_after="2016-04-05">
   <obsolete>
     Removed 4/2016. ExtensionRendererState was replaced with ExtensionFrameMap.
@@ -26273,7 +26273,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ProgramCache.CompressDataSuccess" units="BooleanSuccess"
+<histogram name="GPU.ProgramCache.CompressDataSuccess" enum="BooleanSuccess"
     expires_after="M77">
   <obsolete>
     Not used after M77. ProgramCache not actively being tuned.
@@ -26314,7 +26314,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ProgramCache.DecompressDataSuccess" units="BooleanSuccess"
+<histogram name="GPU.ProgramCache.DecompressDataSuccess" enum="BooleanSuccess"
     expires_after="M77">
   <obsolete>
     Not used after M77. ProgramCache not actively being tuned.
@@ -50608,7 +50608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.HasHint.AtCommit"
-    units="BooleanAvailable" expires_after="2020-04-30">
+    enum="BooleanAvailable" expires_after="2020-04-30">
   <obsolete>
     Obsolete as of 04/2020 since this histogram no longer makes sense with the
     current request flow.
@@ -50622,7 +50622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.HasHint.BeforeCommit"
-    units="BooleanAvailable" expires_after="2020-04-30">
+    enum="BooleanAvailable" expires_after="2020-04-30">
   <obsolete>
     Obsolete as of 04/2020 since this histogram no longer makes sense with the
     current request flow.
@@ -50637,7 +50637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.HostMatch.AtCommit"
-    units="BooleanMatched" expires_after="2020-04-30">
+    enum="BooleanMatched" expires_after="2020-04-30">
   <obsolete>
     Obsolete as of 04/2020 since this histogram no longer makes sense with the
     current request flow.
@@ -50654,7 +50654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.PageMatch.AtCommit"
-    units="BooleanMatched" expires_after="2020-04-30">
+    enum="BooleanMatched" expires_after="2020-04-30">
   <obsolete>
     Obsolete as of 04/2020 since this histogram no longer makes sense with the
     current request flow.
@@ -65102,7 +65102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.UserModel.GesturePredictedCorrectly"
-    units="GesturePredictionResult" expires_after="2017-08-30">
+    enum="GesturePredictionResult" expires_after="2017-08-30">
   <obsolete>
     Removed from code 2017-08.
   </obsolete>
@@ -67225,7 +67225,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.ModuleBaseRelocation" units="BaseRelocationType"
+<histogram name="SafeBrowsing.ModuleBaseRelocation" enum="BaseRelocationType"
     expires_after="M85">
   <obsolete>
     No longer used. Removed 2020-06.
@@ -79368,7 +79368,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Storage.Blob.MaxDiskSpace" units="MB"
     expires_after="2018-12-13">
   <obsolete>
-    Removed as of 12/18. Use Storage.Blob.MaxDiskSpace2 instead.
+    Removed as of 12/18.
   </obsolete>
   <owner>dmurph@chromium.org</owner>
   <summary>
@@ -81923,7 +81923,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Preferences.RemotePrefTypeMismatch" units="BooleanHit"
+<histogram name="Sync.Preferences.RemotePrefTypeMismatch" enum="BooleanHit"
     expires_after="M85">
   <obsolete>
     Removed 2020-06.
@@ -84700,7 +84700,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UI.CompositorResizeLock.TimedOut" units="Boolean"
+<histogram name="UI.CompositorResizeLock.TimedOut" enum="Boolean"
     expires_after="2019-02-07">
   <obsolete>
     Removed in M65.

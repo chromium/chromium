@@ -10,127 +10,127 @@ import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepai
 export const fakeStates = [
   {
     state: State.kWelcomeScreen,
-    canCancel: true,
+    canExit: true,
     canGoBack: false,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kConfigureNetwork,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kUpdateOs,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kSelectComponents,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kChooseDestination,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kChooseWipeDevice,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kChooseWriteProtectDisableMethod,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kEnterRSUWPDisableCode,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kWaitForManualWPDisable,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kWPDisableComplete,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kUpdateRoFirmware,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kUpdateDeviceInformation,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kRestock,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kCheckCalibration,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kSetupCalibration,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kRunCalibration,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kProvisionDevice,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kWaitForManualWPEnable,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kFinalize,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kRepairComplete,
-    canCancel: true,
+    canExit: true,
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
   {
     state: State.kUnknown,
-    canCancel: false,
+    canExit: false,
     canGoBack: false,
     error: RmadErrorCode.kOk
   },
@@ -445,3 +445,6 @@ export const fakeLog =
     'tristique risus nec. Scelerisque eu ultrices vitae auctor eu augue ut ' +
     'lectus. Tellus pellentesque eu tincidunt tortor aliquam. Fermentum leo ' +
     'vel orci porta non pulvinar neque laoreet suspendisse.\n';
+
+/** @type {string} */
+export const fakeLogSavePath = 'fake/save/path';

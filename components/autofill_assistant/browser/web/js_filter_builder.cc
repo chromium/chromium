@@ -165,6 +165,7 @@ bool JsFilterBuilder::AddFilter(const SelectorProto::Filter& filter) {
 
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
+    case SelectorProto::Filter::kSemantic:
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }

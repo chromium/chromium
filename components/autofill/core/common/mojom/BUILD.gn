@@ -72,6 +72,11 @@ mojom("mojo_types") {
           mojom = "autofill.mojom.PasswordGenerationUIData"
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
         },
+        {
+          mojom = "autofill.mojom.TouchToFillEligible"
+          cpp = "::autofill::TouchToFillEligible"
+          copyable_pass_by_value = true
+        },
       ]
       traits_headers = [ "autofill_types_mojom_traits.h" ]
       traits_sources = [ "autofill_types_mojom_traits.cc" ]

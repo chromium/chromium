@@ -49,8 +49,8 @@ class MockOverlayPresentationContextImplObserver
 };
 
 // Returns the presentation capabilities for a context whose contained and
-// presented overlay UI support is described by |supports_contained| and
-// |supports_presented|.
+// presented overlay UI support is described by `supports_contained` and
+// `supports_presented`.
 OverlayPresentationContext::UIPresentationCapabilities GetCapabilities(
     bool supports_contained,
     bool supports_presented) {
@@ -100,7 +100,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   }
   ~OverlayPresentationContextImplTest() override {
     context_->RemoveObserver(&observer_);
-    // The browser needs to be destroyed before |context_| so that observers
+    // The browser needs to be destroyed before `context_` so that observers
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.
@@ -150,7 +150,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
     supports_presented_ui_ = true;
 
-    // Present a UIViewController over |root_view_controller_|'s context, then
+    // Present a UIViewController over `root_view_controller_`'s context, then
     // supply the view controller to the presentation context.
     UIViewController* presentation_context_view_controller =
         [[UIViewController alloc] init];
@@ -176,7 +176,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
               OverlayPresentationContextSupportsPresentedUI(context_.get()));
   }
 
-  // Shows the overlay UI for |request| in the context.
+  // Shows the overlay UI for `request` in the context.
   void ShowOverlayUI(OverlayRequest* request) {
     overlay_presentation_finished_ = false;
     overlay_dismissal_finished_ = false;
@@ -300,15 +300,15 @@ TEST_F(OverlayPresentationContextImplTest, ContainedOverlayUI) {
   ASSERT_EQ(0U, root_view_controller_.view.subviews.count);
   ASSERT_EQ(0U, root_view_controller_.childViewControllers.count);
 
-  // Show the UI for |request| and verify that the overlay UI is added to the
-  // |root_view_controller_|'s view.
+  // Show the UI for `request` and verify that the overlay UI is added to the
+  // `root_view_controller_`'s view.
   ShowOverlayUI(request.get());
   EXPECT_EQ(1U, root_view_controller_.view.subviews.count);
   EXPECT_EQ(1U, root_view_controller_.childViewControllers.count);
   EXPECT_TRUE(overlay_presentation_finished_);
 
   // Hide the overlay UI and verify that it was removed from
-  // |root_view_controller_|'s view.
+  // `root_view_controller_`'s view.
   context_->HideOverlayUI(request.get());
   EXPECT_EQ(0U, root_view_controller_.view.subviews.count);
   EXPECT_EQ(0U, root_view_controller_.childViewControllers.count);
@@ -347,8 +347,8 @@ TEST_F(OverlayPresentationContextImplTest, PresentedOverlayUI) {
            overlay_dismissal_finished_;
   };
 
-  // Show the UI for |request| and verify that the overlay UI is presented over
-  // |presentation_base_view_controller|.
+  // Show the UI for `request` and verify that the overlay UI is presented over
+  // `presentation_base_view_controller`.
   ShowOverlayUI(request.get());
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                           presentation_completion_condition));

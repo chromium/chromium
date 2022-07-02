@@ -347,7 +347,7 @@ class FileSystemOperation {
   //
   // This function is used only by Pepper as of writing.
   virtual void OpenFile(const FileSystemURL& path,
-                        int file_flags,
+                        uint32_t file_flags,
                         OpenFileCallback callback) = 0;
 
   // Creates a local snapshot file for a given |path| and returns the

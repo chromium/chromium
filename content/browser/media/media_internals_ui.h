@@ -6,8 +6,18 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
+
+class MediaInternalsUI;
+
+class MediaInternalsUIConfig : public DefaultWebUIConfig<MediaInternalsUI> {
+ public:
+  MediaInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIMediaInternalsHost) {}
+};
 
 // The implementation for the chrome://media-internals page.
 class MediaInternalsUI : public WebUIController {

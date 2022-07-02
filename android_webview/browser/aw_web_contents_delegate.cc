@@ -257,7 +257,7 @@ void AwWebContentsDelegate::RequestMediaAccessPermission(
   AwContents* aw_contents = AwContents::FromWebContents(web_contents);
   if (!aw_contents) {
     std::move(callback).Run(
-        blink::mojom::StreamDevices(),
+        blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
         nullptr);
     return;
@@ -288,6 +288,14 @@ void AwWebContentsDelegate::ExitFullscreenModeForTab(
 bool AwWebContentsDelegate::IsFullscreenForTabOrPending(
     const content::WebContents* web_contents) {
   return is_fullscreen_;
+}
+
+void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
+    content::WebContents* web_contents) {
+  auto* intercept_navigation_delegate =
+      navigation_interception::InterceptNavigationDelegate::Get(web_contents);
+  if (intercept_navigation_delegate)
+    intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
 }
 
 scoped_refptr<content::FileSelectListener>

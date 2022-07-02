@@ -24,11 +24,7 @@ enum ContentSecurityPolicySource {
   kHTTP,
 
   // From the <meta> HTML tag with the "http-equiv" attribute.
-  kMeta,
-
-  // From an origin-policy file.
-  // Origin Policy spec: https://wicg.github.io/origin-policy/
-  kOriginPolicy
+  kMeta
 };
 
 // Represents a single Content Security Policy header (i.e. coming from a single

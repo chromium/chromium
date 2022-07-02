@@ -475,6 +475,11 @@ class FormStructure {
   // unlikely to be correct, the function will override that prediction.
   void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
 
+  // A function to rewrite sequences of (street address, address_line2) into
+  // (address_line1, address_line2) as server predictions sometimes introduce
+  // wrong street address predictions.
+  void RationalizeStreetAddressAndAddressLine(LogManager* log_manager);
+
   // The rationalization is based on the visible fields, but should be applied
   // to the hidden select fields. This is because hidden 'select' fields are
   // also autofilled to take care of the synthetic fields.

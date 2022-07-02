@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="./resources/pending_beacon-helper.js"></script>
+</head>
+<body>
+<script>
+    promise_test(async t => {
+      const uuid = token();
+      // Random string to test url encoding in beacon.
+      const data = "s1=#&s2=AB ab 12 áəb&s3=\uD800\uDFFF&s4=\0\\\r\n";
+
+      const base_url = `${location.protocol}//${location.host}`;
+      const beacon_endpoint = `${base_url}/wpt_internal/pending_beacon/resources/set_beacon_data.py?uuid=${uuid}`;
+      let beacon = new PendingBeacon(beacon_endpoint, {method: "GET"});
+
+      beacon.setData(data);
+      beacon.sendNow();
+      // Wait for the beacon to have sent.
+      await wait(1000);
+
+      let beacon_data = await getBeaconData(uuid);
+      // PendingBeacon uses application/x-www-form-urlencoded serializer, which encodes space as '+'
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+      let expected_data = encodeURIComponent(data).replace(/%20/g, "+");
+      assert_equals(beacon_data, expected_data);
+    }, "Verify that beacon data is encoded and sent in GET request.");
+</script>
+</body>
+</html>

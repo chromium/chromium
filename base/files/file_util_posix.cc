@@ -1141,9 +1141,9 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 
-PrefetchResult PreReadFile(const FilePath& file_path,
-                           bool is_executable,
-                           int64_t max_bytes) {
+bool PreReadFile(const FilePath& file_path,
+                 bool is_executable,
+                 int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
   // posix_fadvise() is only available in the Android NDK in API 21+. Older
@@ -1153,38 +1153,32 @@ PrefetchResult PreReadFile(const FilePath& file_path,
     (BUILDFLAG(IS_ANDROID) && __ANDROID_API__ >= 21)
   File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
   if (!file.IsValid())
-    return PrefetchResult{PrefetchResultCode::kInvalidFile};
+    return false;
 
   if (max_bytes == 0) {
     // fadvise() pre-fetches the entire file when given a zero length.
-    return PrefetchResult{PrefetchResultCode::kSuccess};
+    return true;
   }
 
   const PlatformFile fd = file.GetPlatformFile();
   const ::off_t len = base::saturated_cast<::off_t>(max_bytes);
-  return posix_fadvise(fd, /*offset=*/0, len, POSIX_FADV_WILLNEED) == 0
-             ? PrefetchResult{PrefetchResultCode::kSuccess}
-             : PrefetchResult{PrefetchResultCode::kFastFailed};
+  return posix_fadvise(fd, /*offset=*/0, len, POSIX_FADV_WILLNEED) == 0;
 #elif BUILDFLAG(IS_APPLE)
   File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
   if (!file.IsValid())
-    return PrefetchResult{PrefetchResultCode::kInvalidFile};
+    return false;
 
   if (max_bytes == 0) {
     // fcntl(F_RDADVISE) fails when given a zero length.
-    return PrefetchResult{PrefetchResultCode::kSuccess};
+    return true;
   }
 
   const PlatformFile fd = file.GetPlatformFile();
   ::radvisory read_advise_data = {
       .ra_offset = 0, .ra_count = base::saturated_cast<int>(max_bytes)};
-  return fcntl(fd, F_RDADVISE, &read_advise_data) != -1
-             ? PrefetchResult{PrefetchResultCode::kSuccess}
-             : PrefetchResult{PrefetchResultCode::kFastFailed};
+  return fcntl(fd, F_RDADVISE, &read_advise_data) != -1;
 #else
-  return internal::PreReadFileSlow(file_path, max_bytes)
-             ? PrefetchResult{PrefetchResultCode::kSlowSuccess}
-             : PrefetchResult{PrefetchResultCode::kSlowFailed};
+  return internal::PreReadFileSlow(file_path, max_bytes);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // (BUILDFLAG(IS_ANDROID) &&
         // __ANDROID_API__ >= 21)

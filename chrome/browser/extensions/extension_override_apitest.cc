@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
   {
     // Navigate to the new tab page.  The overridden new tab page
     // will call chrome.test.sendMessage('controlled by first').
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   {
     // Navigate to the new tab page. Last extension installed wins, so
     // the new tab page should be controlled by the second extension.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
 
   {
     // The page should still be controlled by the second extension.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
 
   {
     // The page should still be controlled by the second extension.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   UnloadExtension(extension2_id);
 
   {
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
   {
     // Navigate to the new tab page. Last extension installed wins, so
     // the new tab page should be controlled by the second extension.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionControlsPage(
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
   {
     // Unload the controlling extension. The page should be automatically
     // reloaded with the new controlling extension.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     UnloadExtension(extension2_id);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by first", listener.message());
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to the new tab page.  The overridden new tab page
   // will call chrome.test.sendMessage('controlled by first').
-  ExtensionTestMessageListener listener("controlled by first", false);
+  ExtensionTestMessageListener listener("controlled by first");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();

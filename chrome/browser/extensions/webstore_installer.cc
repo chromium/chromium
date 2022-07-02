@@ -596,11 +596,13 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
-  if (!web_contents_->GetMainFrame()->GetRenderViewHost()) {
+  if (!web_contents_->GetPrimaryMainFrame()->GetRenderViewHost()) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
-  if (!web_contents_->GetMainFrame()->GetRenderViewHost()->GetProcess()) {
+  if (!web_contents_->GetPrimaryMainFrame()
+           ->GetRenderViewHost()
+           ->GetProcess()) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
@@ -618,10 +620,13 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
   // The download url for the given extension is contained in |download_url_|.
   // We will navigate the current tab to this url to start the download. The
   // download system will then pass the crx to the CrxInstaller.
-  int render_process_host_id =
-      web_contents_->GetMainFrame()->GetRenderViewHost()->GetProcess()->GetID();
+  int render_process_host_id = web_contents_->GetPrimaryMainFrame()
+                                   ->GetRenderViewHost()
+                                   ->GetProcess()
+                                   ->GetID();
 
-  content::RenderFrameHost* render_frame_host = web_contents_->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents_->GetPrimaryMainFrame();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("webstore_installer", R"(
         semantics {

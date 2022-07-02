@@ -7,13 +7,13 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/security_token_pin/error_generator.h"
 #include "ash/login/ui/pin_request_widget.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
+#include "chromeos/components/security_token_pin/error_generator.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -101,16 +101,16 @@ bool SecurityTokenRequestController::SetPinUiState(
   PinRequestWidget::Get()->ClearInput();
   PinRequestWidget::Get()->SetPinInputEnabled(request.enable_user_input);
 
-  if (request.error_label == security_token_pin::ErrorLabel::kNone) {
+  if (request.error_label == chromeos::security_token_pin::ErrorLabel::kNone) {
     PinRequestWidget::Get()->UpdateState(PinRequestViewState::kNormal,
                                          GetTitle(), GetDescription());
   } else {
     PinRequestWidget::Get()->UpdateState(
         PinRequestViewState::kError,
         /*title=*/
-        security_token_pin::GenerateErrorMessage(request.error_label,
-                                                 request.attempts_left,
-                                                 request.enable_user_input),
+        chromeos::security_token_pin::GenerateErrorMessage(
+            request.error_label, request.attempts_left,
+            request.enable_user_input),
         /*description=*/std::u16string());
   }
   return true;

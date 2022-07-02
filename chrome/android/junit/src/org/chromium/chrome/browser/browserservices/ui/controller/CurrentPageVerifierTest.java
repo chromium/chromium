@@ -45,6 +45,7 @@ import java.util.Collections;
  * Tests for {@link CurrentPageVerifier}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocking GURL
 public class CurrentPageVerifierTest {
     private static final Origin TRUSTED_ORIGIN = Origin.create("https://www.origin1.com/");
     private static final Origin OTHER_TRUSTED_ORIGIN = Origin.create("https://www.origin2.com/");
@@ -189,7 +190,8 @@ public class CurrentPageVerifierTest {
                 true /* isInPrimaryMainFrame */, false /* isSameDocument */,
                 false /* isRendererInitiated */, null /* initiatorOrigin */, 0 /* pageTransition */,
                 false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
-                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
+                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
+                false /* isReload */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigation(mTab, navigation);
         }

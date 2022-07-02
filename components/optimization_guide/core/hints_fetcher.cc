@@ -227,9 +227,6 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   get_hints_request.set_context(request_context_);
 
-  *get_hints_request.mutable_active_field_trials() =
-      GetActiveFieldTrialsAllowedForFetch();
-
   get_hints_request.set_locale(locale);
 
   for (const auto& url : valid_urls)
@@ -249,20 +246,28 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
           sender: "HintsFetcher"
           description:
             "Requests Hints from the Optimization Guide Service for use in "
-            "providing data saving and pageload optimizations for Chrome."
+            "providing metadata about page loads for Chrome for features such "
+            "as price tracking and trust information about the websites users "
+            "visit."
           trigger:
-            "Requested periodically if Data Saver is enabled and the browser "
-            "has Hints that are older than a threshold set by "
-            "the server."
-          data: "A list of the user's most engaged websites."
+            "Requested once per page load if user has consented to sending "
+            "URLs to Google to make browsing better and the browser does not "
+            "have a valid hint for the current page load."
+          data: "The URL and host of the current page load."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
           cookies_allowed: NO
           setting:
-            "Users can control Data Saver on Android via 'Data Saver' setting. "
-            "Data Saver is not available on iOS."
-          policy_exception_justification: "Not implemented."
+            "Users can control this via the Make searches and browsing better' "
+            "under Settings > Sync and Google services > Make searches and "
+            "browsing better."
+          chrome_policy {
+            UrlKeyedAnonymizedDataCollectionEnabled {
+              policy_options {mode: MANDATORY}
+              UrlKeyedAnonymizedDataCollectionEnabled: false
+            }
+          }
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();

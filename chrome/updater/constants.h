@@ -89,14 +89,6 @@ extern const char kTagSwitch[];
 // UTF8 encoding as well as a UTF8 BOM.
 extern const char kInstallerDataSwitch[];
 
-#if BUILDFLAG(IS_WIN)
-// A debug switch to indicate that --install is running from the `out` directory
-// of the build. When this switch is present, the setup picks up the run time
-// dependencies of the updater from the `out` directory instead of using the
-// metainstaller uncompressed archive.
-extern const char kInstallFromOutDir[];
-#endif  // BUILDFLAG(IS_WIN)
-
 // Uninstalls the updater.
 extern const char kUninstallSwitch[];
 
@@ -193,6 +185,8 @@ extern const char kDevOverrideKeyUseCUP[];
 extern const char kDevOverrideKeyInitialDelay[];
 extern const char kDevOverrideKeyServerKeepAliveSeconds[];
 extern const char kDevOverrideKeyCrxVerifierFormat[];
+extern const char kDevOverrideKeyGroupPolicies[];
+extern const char kDevOverrideKeyOverinstallTimeout[];
 
 // File name of developer overrides file.
 extern const char kDevOverrideFileName[];
@@ -272,7 +266,7 @@ constexpr int kErrorFailedToDeleteFolder = 16;
 constexpr int kErrorFailedToDeleteDataFolder = 17;
 
 // Failed to get versioned updater folder path.
-constexpr int kErrorFailedToGetVersionedUpdaterFolderPath = 18;
+constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
 
 // Failed to get the installed app bundle path.
 constexpr int kErrorFailedToGetAppBundlePath = 19;

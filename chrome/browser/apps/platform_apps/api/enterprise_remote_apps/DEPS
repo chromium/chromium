@@ -1,0 +1,7 @@
+specific_include_rules = {
+  ".*apitest.cc$": [
+    # The apitest checks side effects in Ash.
+    "+ash/app_list",
+    "+ash/shell.h",
+  ],
+}

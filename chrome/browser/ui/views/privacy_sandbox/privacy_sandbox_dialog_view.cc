@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -54,7 +55,7 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 }  // namespace

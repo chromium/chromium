@@ -20,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -87,7 +86,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
 
   void SetUpOnMainThread() override {
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   // DomSerializerDelegate.
@@ -97,7 +96,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     ASSERT_FALSE(serialization_reported_end_of_data_);
 
     // Add data to corresponding frame's content.
-    serialized_contents_.append(data.Data(), data.size());
+    serialized_contents_.append(data.data(), data.size());
 
     // Current frame is completed saving, change the finish status.
     if (status == WebFrameSerializerClient::kCurrentFrameIsFinished)
@@ -125,13 +124,13 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   void LoadContents(const std::string& contents, const GURL& base_url) {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     shell()->LoadDataWithBaseURL(
-        shell()->web_contents()->GetMainFrame()->GetLastCommittedURL(),
+        shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
         contents, base_url);
     navigation_observer.Wait();
     // After navigations, the RenderView for the new document might be a new
     // one.
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   class SingleLinkRewritingDelegate

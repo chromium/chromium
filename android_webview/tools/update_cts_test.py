@@ -87,8 +87,10 @@ class FakeDownload:
     for p in config:
       for a in config[p]['arch']:
         o = config[p]['arch'][a]['_origin']
-        for apk in [e['apk'] for e in config[p]['test_runs']]:
-          self.append_to_zip_file(o, apk)
+        for test_run in config[p]['test_runs']:
+          self.append_to_zip_file(o, test_run['apk'])
+          for additional_apk in test_run.get('additional_apks', []):
+            self.append_to_zip_file(o, additional_apk['apk'])
 
   def append_to_zip_file(self, url, file_name):
     """Append files to any zip files associated with the url.
@@ -242,6 +244,42 @@ class UpdateCTSTest(unittest.TestCase):
         self.assertEqual('o4', cts_utils_test.readfile(CONFIG_DATA['file22']))
         self.assertEqual(CIPD_DATA['yaml'],
                          cts_utils_test.readfile('cipd.yaml'))
+
+  @patch('devil.utils.cmd_helper.GetCmdOutput')
+  def testUpdateCtsConfigFileOrigins(self, cmd_mock):
+    with tempfile_ext.NamedTemporaryDirectory() as workDir,\
+         tempfile_ext.NamedTemporaryDirectory() as repoRoot,\
+         cts_utils.chdir(workDir):
+
+      cmd_mock.return_value = """
+      hash        refs/tags/platform-1.0_r6
+      hash        refs/tags/platform-1.0_r7
+      hash        refs/tags/platform-1.0_r9
+      hash        refs/tags/platform-2.0_r2
+      hash        refs/tags/platform-2.0_r3
+      """
+
+      expected_config_file = json.loads(CONFIG_DATA['json'])
+      expected_config_file['platform1']['arch']['arch1'][
+          'unzip_dir'] = 'arch1/path/platform1_r9'
+      expected_config_file['platform1']['arch']['arch2'][
+          'unzip_dir'] = 'arch1/path/platform1_r9'
+      expected_config_file['platform2']['arch']['arch1'][
+          'unzip_dir'] = 'arch1/path/platform2_r3'
+      expected_config_file['platform2']['arch']['arch2'][
+          'unzip_dir'] = 'arch1/path/platform2_r3'
+
+      cts_utils_test.setup_fake_repo(repoRoot)
+
+      cts_updater = update_cts.UpdateCTS('.', repoRoot)
+      cts_updater.update_cts_download_origins_cmd()
+
+      with cts_utils.chdir(repoRoot):
+        actual_config_file = json.loads(
+            cts_utils_test.readfile(
+                os.path.join(cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE)))
+
+        self.assertEqual(expected_config_file, actual_config_file)
 
   @patch('cts_utils.update_cipd_package')
   def testCommitStagedCIPD(self, update_mock):

@@ -66,6 +66,26 @@ class NGCaretPositionTest : public NGLayoutTest {
     EXPECT_EQ(caret.text_offset, offset_) << caret.text_offset.value_or(-1); \
   }
 
+TEST_F(NGCaretPositionTest, AfterSpan) {
+  InsertStyleElement("b { background-color: yellow; }");
+  SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
+  const auto& target = *GetElementById("target");
+
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(Position::AfterNode(target))),
+             FragmentOf(&target), kAfterBox, absl::nullopt);
+}
+
+TEST_F(NGCaretPositionTest, AfterSpanCulled) {
+  SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
+  const auto& target = *GetElementById("target");
+
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(Position::AfterNode(target))),
+             FragmentOf(target.firstChild()), kAtTextOffset,
+             absl::optional<unsigned>(3));
+}
+
 TEST_F(NGCaretPositionTest, CaretPositionInOneLineOfText) {
   SetInlineFormattingContext("t", "foo", 3);
   const Node* text = container_->firstChild();
@@ -553,6 +573,20 @@ TEST_F(NGCaretPositionTest, InlineBoxesRTL) {
   TEST_CARET(
       blink::ComputeNGCaretPosition(PositionWithAffinity(Position(box2, 0))),
       FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
+}
+
+// https://crbug.com/1340236
+TEST_F(NGCaretPositionTest, BeforeOrAfterInlineAreaElement) {
+  SetBodyInnerHTML("<area id=area>");
+
+  const Node& area = *GetElementById("area");
+  const PositionWithAffinity position1(Position::AfterNode(area));
+  // DCHECK failure or crash happens here.
+  blink::ComputeNGCaretPosition(position1);
+
+  const PositionWithAffinity position2(Position::BeforeNode(area));
+  // DCHECK failure or crash happens here.
+  blink::ComputeNGCaretPosition(position2);
 }
 
 }  // namespace blink

@@ -8,37 +8,67 @@
 #include <string>
 
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
-#include "ui/views/controls/label.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace arc {
 namespace input_overlay {
+
+constexpr char kUnknownBind[] = "?";
+
 // TODO(cuicuiruan): Currently, it shows the dom_code.
 // Will replace it with showing the result of dom_key / keyboard key depending
 // on different keyboard layout.
 std::string GetDisplayText(const ui::DomCode code);
 
 // ActionLabel shows text mapping hint for each action.
-class ActionLabel : public views::Label {
+class ActionLabel : public views::LabelButton {
  public:
   ActionLabel();
-  explicit ActionLabel(const std::u16string& text);
-
   ActionLabel(const ActionLabel&) = delete;
   ActionLabel& operator=(const ActionLabel&) = delete;
   ~ActionLabel() override;
 
-  void SetToViewMode();
-  void SetToEditMode();
-  void SetToEditedUnBind();
+  static std::unique_ptr<ActionLabel> CreateTextActionLabel(
+      const std::string& text);
+  static std::unique_ptr<ActionLabel> CreateImageActionLabel(
+      MouseAction mouse_action);
+
+  void SetTextActionLabel(const std::string& text);
+  void SetImageActionLabel(MouseAction mouse_action);
+  void SetDisplayMode(DisplayMode mode);
+  // Return true if it has focus before clear focus.
+  bool ClearFocus();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void OnKeyEvent(ui::KeyEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
 
+  void set_mouse_action(MouseAction mouse_action) {
+    mouse_action_ = mouse_action;
+  }
+
  private:
+  void SetToViewMode();
+  void SetToEditMode();
+  // In edit mode without mouse hover or focus.
+  void SetToEditDefault();
+  // In edit mode when mouse hovers.
+  void SetToEditHover();
+  // In edit mode when this view is focused.
   void SetToEditFocus();
+  // In edit mode when there is edit error.
+  void SetToEditError();
+  // In edit mode when the input is unbound.
+  void SetToEditUnBind();
+
+  bool IsUnbound();
+
+  MouseAction mouse_action_ = MouseAction::NONE;
 };
 }  // namespace input_overlay
 }  // namespace arc

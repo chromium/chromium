@@ -37,10 +37,10 @@ const void* const kFullscreenDisablerKey = &kFullscreenDisablerKey;
 @property(nonatomic, readonly) FullscreenController* controller;
 
 // Factory method that returns the disabler wrapper associated with
-// |coordinator|, lazily instantiating it if necessary.
+// `coordinator`, lazily instantiating it if necessary.
 + (instancetype)wrapperForCoordinator:(ChromeCoordinator*)coordinator;
 
-// Initializer for a wrapper that disables |controller|.
+// Initializer for a wrapper that disables `controller`.
 - (instancetype)initWithFullscreenController:(FullscreenController*)controller
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

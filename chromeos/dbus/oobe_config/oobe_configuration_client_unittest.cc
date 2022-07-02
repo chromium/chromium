@@ -75,13 +75,16 @@ class OobeConfigurationClientTest : public testing::Test {
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
 
     // Create a client with the mock bus.
-    client_ = OobeConfigurationClient::Create();
-    client_->Init(mock_bus_.get());
+    OobeConfigurationClient::Initialize(mock_bus_.get());
+    client_ = OobeConfigurationClient::Get();
     // Run the message loop to run the signal connection result callback.
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { mock_bus_->ShutdownAndBlock(); }
+  void TearDown() override {
+    OobeConfigurationClient::Shutdown();
+    mock_bus_->ShutdownAndBlock();
+  }
 
  protected:
   // A callback to intercept and check the method call arguments.
@@ -100,7 +103,7 @@ class OobeConfigurationClientTest : public testing::Test {
   // The interface name.
   const std::string interface_name_;
   // The client to be tested.
-  std::unique_ptr<OobeConfigurationClient> client_;
+  OobeConfigurationClient* client_ = nullptr;
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
   // The mock bus.

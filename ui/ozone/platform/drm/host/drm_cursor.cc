@@ -124,7 +124,7 @@ void DrmCursor::OnWindowRemoved(gfx::AcceleratedWidget window) {
 
     if (dest_window) {
       window_ = dest_window->GetAcceleratedWidget();
-      display_bounds_in_screen_ = dest_window->GetBounds();
+      display_bounds_in_screen_ = dest_window->GetBoundsInPixels();
       confined_bounds_ = dest_window->GetCursorConfinedBounds();
       SetCursorLocationLocked(gfx::PointF(confined_bounds_.CenterPoint()));
       SendCursorShowLocked();
@@ -168,7 +168,7 @@ void DrmCursor::MoveCursorTo(gfx::AcceleratedWidget window,
 
     // TODO(rjk): pass this in?
     DrmWindowHost* drm_window_host = window_manager_->GetWindow(window);
-    display_bounds_in_screen_ = drm_window_host->GetBounds();
+    display_bounds_in_screen_ = drm_window_host->GetBoundsInPixels();
     confined_bounds_ = drm_window_host->GetCursorConfinedBounds();
     window_ = window;
   }
@@ -200,7 +200,7 @@ void DrmCursor::MoveCursorToOnUiThread(const gfx::PointF& screen_location) {
   }
 
   auto location_in_window =
-      screen_location - window->GetBounds().OffsetFromOrigin();
+      screen_location - window->GetBoundsInPixels().OffsetFromOrigin();
   MoveCursorTo(window->GetAcceleratedWidget(), location_in_window);
 }
 

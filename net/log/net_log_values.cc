@@ -81,28 +81,28 @@ base::Value NetLogNumberValue(uint32_t num) {
 }
 
 base::Value NetLogParamsWithInt(base::StringPiece name, int value) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey(name, value);
-  return params;
+  base::Value::Dict params;
+  params.Set(name, value);
+  return base::Value(std::move(params));
 }
 
 base::Value NetLogParamsWithInt64(base::StringPiece name, int64_t value) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetKey(name, NetLogNumberValue(value));
-  return params;
+  base::Value::Dict params;
+  params.Set(name, NetLogNumberValue(value));
+  return base::Value(std::move(params));
 }
 
 base::Value NetLogParamsWithBool(base::StringPiece name, bool value) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolKey(name, value);
-  return params;
+  base::Value::Dict params;
+  params.Set(name, value);
+  return base::Value(std::move(params));
 }
 
 base::Value NetLogParamsWithString(base::StringPiece name,
                                    base::StringPiece value) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey(name, value);
-  return params;
+  base::Value::Dict params;
+  params.Set(name, value);
+  return base::Value(std::move(params));
 }
 
 }  // namespace net

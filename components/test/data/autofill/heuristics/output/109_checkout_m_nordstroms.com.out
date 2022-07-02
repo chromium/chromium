@@ -38,4 +38,4 @@ ADDRESS_HOME_ZIP |  | ZIP/Postal Code |  | _1-default
 ADDRESS_HOME_COUNTRY |  | Country | 0 | _1-default
 EMAIL_ADDRESS |  | E-mail Information Information |  | _1-default
 PHONE_HOME_WHOLE_NUMBER |  | Phone Information Information |  | _1-default
-UNKNOWN_TYPE |  | Send me e-mail updates about the latest trends, products and promotions online and in store. Yes! | on | _1-default
+UNKNOWN_TYPE |  | Yes! Send me e-mail updates about the latest trends, products and promotions online and in store. | on | _1-default

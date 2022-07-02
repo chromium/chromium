@@ -610,9 +610,7 @@ class BuildConfigGenerator extends DefaultTask {
         addPreconditionsOverrideTreatment(sb, dependencyId)
 
         if (dependencyId.startsWith('org_robolectric')) {
-            // Skip platform checks since it depends on
-            // accessibility_test_framework_java which requires_android.
-            sb.append('  bypass_platform_checks = true\n')
+            sb.append('  is_robolectric = true\n')
         }
         if (dependencyExtension == 'aar' &&
                 (dependencyId.startsWith('androidx') || dependencyId.startsWith('com_android_support'))) {
@@ -659,7 +657,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_aidl = true\n')
                 break
             case 'androidx_test_uiautomator_uiautomator':
-                sb.append('  deps = [":androidx_test_runner_java"]\n')
+                sb.append('  deps += [":androidx_test_runner_java"]\n')
                 break
             case 'androidx_mediarouter_mediarouter':
                 sb.append('  # https://crbug.com/1000382\n')

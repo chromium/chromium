@@ -222,10 +222,10 @@ bool IsUrlPotentiallyTrustworthy(const KURL& url) {
   // network::IsUrlPotentiallyTrustworthy() doesn't copy the URL.
   if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
       url.ProtocolIsData()) {
-    DCHECK(network::IsUrlPotentiallyTrustworthy(url));
+    DCHECK(network::IsUrlPotentiallyTrustworthy(GURL(url)));
     return true;
   }
-  return network::IsUrlPotentiallyTrustworthy(url);
+  return network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 }  // namespace

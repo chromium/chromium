@@ -22,16 +22,9 @@ namespace blink {
 AudioHandler::AudioHandler(NodeType node_type,
                            AudioNode& node,
                            float sample_rate)
-    : last_processing_time_(-1),
-      last_non_silent_time_(0),
-      is_initialized_(false),
-      node_type_(kNodeTypeUnknown),
-      node_(&node),
+    : node_(&node),
       context_(node.context()),
-      deferred_task_handler_(&context_->GetDeferredTaskHandler()),
-      connection_ref_count_(0),
-      is_disabled_(false),
-      channel_count_(2) {
+      deferred_task_handler_(&context_->GetDeferredTaskHandler()) {
   SetNodeType(node_type);
   SetInternalChannelCountMode(kMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
@@ -354,8 +347,8 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     }
 
     if (!silent_inputs) {
-      // Update |last_non_silent_time| AFTER processing this block.
-      // Doing it before causes |PropagateSilence()| to be one render
+      // Update `last_non_silent_time_` AFTER processing this block.
+      // Doing it before causes `PropagateSilence()` to be one render
       // quantum longer than necessary.
       last_non_silent_time_ =
           (Context()->CurrentSampleFrame() + frames_to_process) /

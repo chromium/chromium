@@ -231,7 +231,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool GetCompositionTextRange(gfx::Range* range) const override;
   bool GetEditableSelectionRange(gfx::Range* range) const override;
   bool SetEditableSelectionRange(const gfx::Range& range) override;
-  bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
                         std::u16string* text) const override;
   void OnInputMethodChanged() override;
@@ -250,12 +249,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+      const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
@@ -391,7 +390,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
     return event_handler_.get();
   }
 
-  void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
+  void ScrollFocusedEditableNodeIntoView();
 
   ui::EventPointerType GetLastPointerType() const { return last_pointer_type_; }
 

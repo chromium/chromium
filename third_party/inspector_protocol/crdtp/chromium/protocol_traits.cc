@@ -119,8 +119,7 @@ void SerializeDict(const Iterable& iterable, std::vector<uint8_t>* bytes) {
   serializer.EncodeStop();
 }
 
-bool DeserializeDict(DeserializerState* state,
-                     base::flat_map<std::string, base::Value>* value) {
+bool DeserializeDict(DeserializerState* state, base::Value::Dict* dict) {
   cbor::CBORTokenizer* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::ENVELOPE)
     tokenizer->EnterEnvelope();
@@ -137,10 +136,10 @@ bool DeserializeDict(DeserializerState* state,
     auto key = tokenizer->GetString8();
     std::string name(reinterpret_cast<const char*>(key.begin()), key.size());
     tokenizer->Next();
-    base::Value dict_value;
-    if (!ProtocolTypeTraits<base::Value>::Deserialize(state, &dict_value))
+    base::Value value;
+    if (!ProtocolTypeTraits<base::Value>::Deserialize(state, &value))
       return false;
-    value->insert(std::make_pair(std::move(name), std::move(dict_value)));
+    dict->Set(name, std::move(value));
   }
   return true;
 }
@@ -197,7 +196,7 @@ bool ProtocolTypeTraits<base::Value>::Deserialize(DeserializerState* state,
       return ProtocolTypeTraits<base::Value>::Deserialize(state, value);
 
     case cbor::CBORTokenTag::MAP_START: {
-      base::flat_map<std::string, base::Value> dict;
+      base::Value::Dict dict;
       if (!DeserializeDict(state, &dict))
         return false;
       *value = base::Value(std::move(dict));
@@ -205,9 +204,8 @@ bool ProtocolTypeTraits<base::Value>::Deserialize(DeserializerState* state,
     }
 
     case cbor::CBORTokenTag::ARRAY_START: {
-      std::vector<base::Value> values;
-      if (!ProtocolTypeTraits<std::vector<base::Value>>::Deserialize(state,
-                                                                     &values)) {
+      base::Value::List values;
+      if (!ProtocolTypeTraits<base::Value::List>::Deserialize(state, &values)) {
         return false;
       }
       *value = base::Value(std::move(values));
@@ -266,7 +264,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
     case base::Value::Type::LIST: {
       ContainerSerializer serializer(bytes,
                                      cbor::EncodeIndefiniteLengthArrayStart());
-      for (const auto& item : value.GetListDeprecated())
+      for (const auto& item : value.GetList())
         ProtocolTypeTraits<base::Value>::Serialize(item, bytes);
       serializer.EncodeStop();
       return;
@@ -286,6 +284,38 @@ void ProtocolTypeTraits<traits::DictionaryValue>::Serialize(
     const traits::DictionaryValue& value,
     std::vector<uint8_t>* bytes) {
   SerializeDict(value, bytes);
+}
+
+// static
+bool ProtocolTypeTraits<traits::ListValue>::Deserialize(
+    DeserializerState* state,
+    traits::ListValue* value) {
+  auto* tokenizer = state->tokenizer();
+  if (tokenizer->TokenTag() == cbor::CBORTokenTag::ENVELOPE)
+    tokenizer->EnterEnvelope();
+  if (tokenizer->TokenTag() != cbor::CBORTokenTag::ARRAY_START) {
+    state->RegisterError(Error::CBOR_ARRAY_START_EXPECTED);
+    return false;
+  }
+  assert(value->empty());
+  tokenizer->Next();
+  for (; tokenizer->TokenTag() != cbor::CBORTokenTag::STOP; tokenizer->Next()) {
+    base::Value next_value;
+    if (!ProtocolTypeTraits<base::Value>::Deserialize(state, &next_value))
+      return false;
+    value->Append(std::move(next_value));
+  }
+  return true;
+}
+
+void ProtocolTypeTraits<traits::ListValue>::Serialize(
+    const traits::ListValue& value,
+    std::vector<uint8_t>* bytes) {
+  ContainerSerializer container_serializer(
+      bytes, cbor::EncodeIndefiniteLengthArrayStart());
+  for (const auto& item : value)
+    ProtocolTypeTraits<base::Value>::Serialize(item, bytes);
+  container_serializer.EncodeStop();
 }
 
 }  // namespace crdtp

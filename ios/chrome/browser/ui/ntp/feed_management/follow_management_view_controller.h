@@ -8,10 +8,11 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_ui_updater.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol FeedManagementNavigationDelegate;
 @class FeedMetricsRecorder;
 @protocol FollowedWebChannelsDataSource;
-@protocol TableViewFaviconDataSource;
 @protocol FollowManagementViewDelegate;
+@protocol TableViewFaviconDataSource;
 
 // The UI that displays the web channels that the user is following.
 @interface FollowManagementViewController
@@ -29,6 +30,10 @@
 
 // Feed metrics recorder.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
+
+// Delegate to execute user actions related to navigation.
+@property(nonatomic, weak) id<FeedManagementNavigationDelegate>
+    navigationDelegate;
 
 @end
 

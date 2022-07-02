@@ -24,7 +24,7 @@
     incognitoDelegate;
 
 // Creates an array of custom a11y actions for a reading list cell configured
-// for |item| with |status|.
+// for `item` with `status`.
 - (NSArray<UIAccessibilityCustomAction*>*)customActionsForItem:
     (id<ReadingListListItem>)item;
 

@@ -1183,6 +1183,11 @@ error::Error GLES2DecoderPassthroughImpl::DoDetachShader(GLuint program,
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoDisable(GLenum cap) {
+  if (IsIgnoredCap(cap)) {
+    InsertError(GL_INVALID_ENUM, "Invalid cap.");
+    return error::kNoError;
+  }
+
   api()->glDisableFn(cap);
   return error::kNoError;
 }
@@ -1250,6 +1255,11 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsIndirect(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoEnable(GLenum cap) {
+  if (IsIgnoredCap(cap)) {
+    InsertError(GL_INVALID_ENUM, "Invalid cap.");
+    return error::kNoError;
+  }
+
   api()->glEnableFn(cap);
   return error::kNoError;
 }
@@ -1393,14 +1403,6 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
     InsertError(GL_INVALID_OPERATION,
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
-  }
-  if (feature_info_->workarounds().client_max_texture_size && texture) {
-    GLint max_level = base::bits::Log2Floor(
-        feature_info_->workarounds().client_max_texture_size);
-    if (level > max_level) {
-      InsertError(GL_INVALID_VALUE, "Level too large");
-      return error::kNoError;
-    }
   }
   BindPendingImageForClientIDIfNeeded(texture);
   api()->glFramebufferTexture2DEXTFn(
@@ -3442,61 +3444,6 @@ error::Error GLES2DecoderPassthroughImpl::DoTexStorage2DEXT(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoTexStorage2DImageCHROMIUM(
-    GLenum target,
-    GLenum internalFormat,
-    GLenum bufferUsage,
-    GLsizei width,
-    GLsizei height) {
-  TextureTarget target_enum = GLenumToTextureTarget(target);
-  if (target_enum == TextureTarget::kCubeMap ||
-      target_enum == TextureTarget::kUnkown) {
-    InsertError(GL_INVALID_ENUM, "Invalid target");
-    return error::kNoError;
-  }
-
-  const BoundTexture& bound_texture =
-      bound_textures_[static_cast<size_t>(target_enum)][active_texture_unit_];
-  if (bound_texture.texture == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "No texture bound");
-    return error::kNoError;
-  }
-
-  gfx::BufferFormat buffer_format;
-  if (!GetGFXBufferFormat(internalFormat, &buffer_format)) {
-    InsertError(GL_INVALID_ENUM, "Invalid buffer format");
-    return error::kNoError;
-  }
-
-  gfx::BufferUsage buffer_usage;
-  if (!GetGFXBufferUsage(bufferUsage, &buffer_usage)) {
-    InsertError(GL_INVALID_ENUM, "Invalid buffer usage");
-    return error::kNoError;
-  }
-
-  if (!GetContextGroup()->image_factory()) {
-    InsertError(GL_INVALID_OPERATION, "Cannot create GL image");
-    return error::kNoError;
-  }
-
-  bool is_cleared;
-  scoped_refptr<gl::GLImage> image =
-      GetContextGroup()->image_factory()->CreateAnonymousImage(
-          gfx::Size(width, height), buffer_format, buffer_usage,
-          gpu::kNullSurfaceHandle, &is_cleared);
-  if (!image || !image->BindTexImage(target)) {
-    InsertError(GL_INVALID_OPERATION, "Failed to create or bind GL Image");
-    return error::kNoError;
-  }
-
-  bound_texture.texture->SetLevelImage(target, 0, image.get());
-
-  // Target is already validated
-  UpdateTextureSizeFromTarget(target);
-
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoGenQueriesEXT(
     GLsizei n,
     volatile GLuint* queries) {
@@ -3840,8 +3787,6 @@ error::Error GLES2DecoderPassthroughImpl::DoBindVertexArrayOES(GLuint array) {
 
 error::Error GLES2DecoderPassthroughImpl::DoSwapBuffers(uint64_t swap_id,
                                                         GLbitfield flags) {
-  ca_layer_shared_state_ = nullptr;
-
   if (offscreen_) {
     if (offscreen_single_buffer_) {
       return error::kNoError;
@@ -4087,11 +4032,11 @@ error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
   InitializeFeatureInfo(feature_info_->context_type(),
                         feature_info_->disallowed_features(), true);
 
-  // Support for CHROMIUM_texture_storage_image depends on the underlying
+  // Support for texture_storage_image depends on the underlying
   // ImageFactory's ability to create anonymous images.
   gpu::ImageFactory* image_factory = group_->image_factory();
   if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableCHROMIUMTextureStorageImage();
+    feature_info_->EnableTextureStorageImage();
   }
 
   return error::kNoError;
@@ -4465,64 +4410,6 @@ error::Error GLES2DecoderPassthroughImpl::DoGetTranslatedShaderSourceANGLE(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoSwapBuffersWithBoundsCHROMIUM(
-    uint64_t swap_id,
-    GLsizei count,
-    const volatile GLint* rects,
-    GLbitfield flags) {
-  if (count < 0) {
-    InsertError(GL_INVALID_VALUE, "count cannot be negative.");
-    return error::kNoError;
-  }
-
-  ca_layer_shared_state_ = nullptr;
-
-  std::vector<gfx::Rect> bounds(count);
-  for (GLsizei i = 0; i < count; ++i) {
-    bounds[i] = gfx::Rect(rects[i * 4 + 0], rects[i * 4 + 1], rects[i * 4 + 2],
-                          rects[i * 4 + 3]);
-  }
-
-  client()->OnSwapBuffers(swap_id, flags);
-  return CheckSwapBuffersResult(
-      surface_->SwapBuffersWithBounds(bounds, base::DoNothing()),
-      "SwapBuffersWithBounds");
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoPostSubBufferCHROMIUM(
-    uint64_t swap_id,
-    GLint x,
-    GLint y,
-    GLint width,
-    GLint height,
-    GLbitfield flags) {
-  if (!surface_->SupportsPostSubBuffer()) {
-    InsertError(GL_INVALID_OPERATION,
-                "glPostSubBufferCHROMIUM is not supported for this surface.");
-    return error::kNoError;
-  }
-
-  ca_layer_shared_state_ = nullptr;
-
-  client()->OnSwapBuffers(swap_id, flags);
-  if (surface_->SupportsAsyncSwap()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "gpu", "AsyncSwapBuffers",
-        TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-    surface_->PostSubBufferAsync(
-        x, y, width, height,
-        base::BindOnce(
-            &GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult,
-            weak_ptr_factory_.GetWeakPtr(), "PostSubBuffer", swap_id),
-        base::DoNothing());
-    return error::kNoError;
-  } else {
-    return CheckSwapBuffersResult(
-        surface_->PostSubBuffer(x, y, width, height, base::DoNothing()),
-        "PostSubBuffer");
-  }
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoCopyTextureCHROMIUM(
     GLuint source_id,
     GLint source_level,
@@ -4795,289 +4682,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDiscardBackbufferCHROMIUM() {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
-    GLint plane_z_order,
-    GLenum plane_transform,
-    GLuint overlay_texture_id,
-    GLint bounds_x,
-    GLint bounds_y,
-    GLint bounds_width,
-    GLint bounds_height,
-    GLfloat uv_x,
-    GLfloat uv_y,
-    GLfloat uv_width,
-    GLfloat uv_height,
-    bool enable_blend,
-    GLuint gpu_fence_id) {
-  scoped_refptr<TexturePassthrough> passthrough_texture;
-  if (!resources_->texture_object_map.GetServiceID(overlay_texture_id,
-                                                   &passthrough_texture) ||
-      passthrough_texture == nullptr) {
-    InsertError(GL_INVALID_VALUE, "invalid texture id");
-    return error::kNoError;
-  }
-
-  gl::GLImage* image =
-      passthrough_texture->GetLevelImage(passthrough_texture->target(), 0);
-  if (!image) {
-    InsertError(GL_INVALID_VALUE, "texture has no image");
-    return error::kNoError;
-  }
-
-  gfx::OverlayTransform transform = GetGFXOverlayTransform(plane_transform);
-  if (transform == gfx::OVERLAY_TRANSFORM_INVALID) {
-    InsertError(GL_INVALID_ENUM, "invalid transform enum");
-    return error::kNoError;
-  }
-
-  std::unique_ptr<gfx::GpuFence> gpu_fence;
-  if (gpu_fence_id != 0) {
-    gpu_fence = GetGpuFenceManager()->GetGpuFence(gpu_fence_id);
-    if (!gpu_fence) {
-      InsertError(GL_INVALID_ENUM, "unknown fence");
-      return error::kNoError;
-    }
-  }
-
-  if (!surface_->ScheduleOverlayPlane(
-          image, std::move(gpu_fence),
-          gfx::OverlayPlaneData(
-              plane_z_order, transform,
-              gfx::RectF(bounds_x, bounds_y, bounds_width, bounds_height),
-              gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
-              /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f,
-              gfx::OverlayPriorityHint::kNone,
-              /*rounded_corners*/ gfx::RRectF(), image->color_space(),
-              /*hdr_metadata=*/absl::nullopt))) {
-    InsertError(GL_INVALID_OPERATION, "failed to schedule overlay");
-    return error::kNoError;
-  }
-
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerSharedStateCHROMIUM(
-    GLfloat opacity,
-    GLboolean is_clipped,
-    const GLfloat* clip_rect,
-    const GLfloat* rounded_corner_bounds,
-    GLint sorting_context_id,
-    const GLfloat* transform) {
-  if (!ca_layer_shared_state_) {
-    ca_layer_shared_state_ = std::make_unique<CALayerSharedState>();
-  }
-
-  ca_layer_shared_state_->opacity = opacity;
-  ca_layer_shared_state_->is_clipped = is_clipped;
-  ca_layer_shared_state_->clip_rect = gfx::ToEnclosingRect(
-      gfx::RectF(clip_rect[0], clip_rect[1], clip_rect[2], clip_rect[3]));
-
-  ca_layer_shared_state_->rounded_corner_bounds =
-      gfx::RRectF(rounded_corner_bounds[0], rounded_corner_bounds[1],
-                  rounded_corner_bounds[2], rounded_corner_bounds[3],
-                  rounded_corner_bounds[4]);
-  ca_layer_shared_state_->sorting_context_id = sorting_context_id;
-  ca_layer_shared_state_->transform =
-      gfx::Transform(transform[0], transform[4], transform[8], transform[12],
-                     transform[1], transform[5], transform[9], transform[13],
-                     transform[2], transform[6], transform[10], transform[14],
-                     transform[3], transform[7], transform[11], transform[15]);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerCHROMIUM(
-    GLuint contents_texture_id,
-    const GLfloat* contents_rect,
-    GLuint background_color,
-    GLuint edge_aa_mask,
-    GLenum filter,
-    const GLfloat* bounds_rect) {
-  if (!ca_layer_shared_state_) {
-    InsertError(GL_INVALID_OPERATION,
-                "glScheduleCALayerSharedStateCHROMIUM has not been called");
-    return error::kNoError;
-  }
-
-  gl::GLImage* image = nullptr;
-  if (contents_texture_id) {
-    scoped_refptr<TexturePassthrough> passthrough_texture;
-    if (!resources_->texture_object_map.GetServiceID(contents_texture_id,
-                                                     &passthrough_texture) ||
-        passthrough_texture == nullptr) {
-      InsertError(GL_INVALID_VALUE, "unknown texture");
-      return error::kNoError;
-    }
-    DCHECK(passthrough_texture);
-    image =
-        passthrough_texture->GetLevelImage(passthrough_texture->target(), 0);
-    if (!image) {
-      InsertError(GL_INVALID_VALUE, "unsupported texture format");
-      return error::kNoError;
-    }
-  }
-
-  ui::CARendererLayerParams params = ui::CARendererLayerParams(
-      ca_layer_shared_state_->is_clipped, ca_layer_shared_state_->clip_rect,
-      ca_layer_shared_state_->rounded_corner_bounds,
-      ca_layer_shared_state_->sorting_context_id,
-      ca_layer_shared_state_->transform, image,
-      gfx::RectF(contents_rect[0], contents_rect[1], contents_rect[2],
-                 contents_rect[3]),
-      gfx::ToEnclosingRect(gfx::RectF(bounds_rect[0], bounds_rect[1],
-                                      bounds_rect[2], bounds_rect[3])),
-      background_color, edge_aa_mask, ca_layer_shared_state_->opacity, filter,
-      gfx::ProtectedVideoType::kClear);
-  if (!surface_->ScheduleCALayer(params)) {
-    InsertError(GL_INVALID_OPERATION, "failed to schedule CALayer");
-    return error::kNoError;
-  }
-
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerInUseQueryCHROMIUM(
-    GLsizei n,
-    const volatile GLuint* textures) {
-  // Validate that count is non-negative before allocating a vector
-  if (n < 0) {
-    InsertError(GL_INVALID_VALUE, "count cannot be negative.");
-    return error::kNoError;
-  }
-
-  std::vector<gl::GLSurface::CALayerInUseQuery> queries;
-  queries.reserve(n);
-  for (GLsizei i = 0; i < n; ++i) {
-    gl::GLImage* image = nullptr;
-    GLuint texture_id = textures[i];
-    if (texture_id) {
-      // If a |texture_id| is invalid (due to a client error), report that it
-      // is not in use. Failing the GL call can result in compositor hangs.
-      // https://crbug.com/1120795
-      scoped_refptr<TexturePassthrough> passthrough_texture;
-      if (resources_->texture_object_map.GetServiceID(texture_id,
-                                                      &passthrough_texture)) {
-        if (passthrough_texture) {
-          image = passthrough_texture->GetLevelImage(
-              passthrough_texture->target(), 0);
-        }
-      }
-    }
-    gl::GLSurface::CALayerInUseQuery query;
-    query.image = image;
-    query.texture = texture_id;
-    queries.push_back(query);
-  }
-
-  surface_->ScheduleCALayerInUseQuery(std::move(queries));
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoScheduleDCLayerCHROMIUM(
-    GLuint texture_0,
-    GLuint texture_1,
-    GLint z_order,
-    GLint content_x,
-    GLint content_y,
-    GLint content_width,
-    GLint content_height,
-    GLint quad_x,
-    GLint quad_y,
-    GLint quad_width,
-    GLint quad_height,
-    GLfloat transform_c1r1,
-    GLfloat transform_c2r1,
-    GLfloat transform_c1r2,
-    GLfloat transform_c2r2,
-    GLfloat transform_tx,
-    GLfloat transform_ty,
-    GLboolean is_clipped,
-    GLint clip_x,
-    GLint clip_y,
-    GLint clip_width,
-    GLint clip_height,
-    GLuint protected_video_type) {
-  if (protected_video_type >
-      static_cast<GLuint>(gfx::ProtectedVideoType::kMaxValue)) {
-    InsertError(GL_INVALID_VALUE, "invalid protected video type");
-    return error::kNoError;
-  }
-
-  if (!texture_0) {
-    InsertError(GL_INVALID_VALUE, "invalid texture");
-    return error::kNoError;
-  }
-
-  std::unique_ptr<ui::DCRendererLayerParams> params =
-      std::make_unique<ui::DCRendererLayerParams>();
-  GLuint texture_ids[] = {texture_0, texture_1};
-  size_t i = 0;
-  for (GLuint texture_id : texture_ids) {
-    if (!texture_id)
-      break;
-    scoped_refptr<TexturePassthrough> passthrough_texture;
-    if (!resources_->texture_object_map.GetServiceID(texture_id,
-                                                     &passthrough_texture) ||
-        passthrough_texture == nullptr) {
-      InsertError(GL_INVALID_VALUE, "unknown texture");
-      return error::kNoError;
-    }
-    DCHECK(passthrough_texture);
-    gl::GLImage* image =
-        passthrough_texture->GetLevelImage(passthrough_texture->target(), 0);
-    if (!image) {
-      InsertError(GL_INVALID_VALUE, "unsupported texture format");
-      return error::kNoError;
-    }
-    params->images[i++] = scoped_refptr<gl::GLImage>(image);
-  }
-  params->z_order = z_order;
-  params->content_rect =
-      gfx::Rect(content_x, content_y, content_width, content_height);
-  params->quad_rect = gfx::Rect(quad_x, quad_y, quad_width, quad_height);
-  params->transform =
-      gfx::Transform(transform_c1r1, transform_c2r1, transform_c1r2,
-                     transform_c2r2, transform_tx, transform_ty);
-  if (is_clipped) {
-    params->clip_rect = gfx::Rect(clip_x, clip_y, clip_width, clip_height);
-  }
-  params->protected_video_type =
-      static_cast<gfx::ProtectedVideoType>(protected_video_type);
-
-  if (!surface_->ScheduleDCLayer(std::move(params)))
-    InsertError(GL_INVALID_OPERATION, "failed to schedule DCLayer");
-
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoCommitOverlayPlanesCHROMIUM(
-    uint64_t swap_id,
-    GLbitfield flags) {
-  if (!surface_->SupportsCommitOverlayPlanes()) {
-    InsertError(GL_INVALID_OPERATION,
-                "glCommitOverlayPlanes not supported by surface.");
-    return error::kNoError;
-  }
-
-  ca_layer_shared_state_ = nullptr;
-
-  client()->OnSwapBuffers(swap_id, flags);
-  if (surface_->SupportsAsyncSwap()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "gpu", "AsyncSwapBuffers",
-        TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-    surface_->CommitOverlayPlanesAsync(
-        base::BindOnce(
-            &GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult,
-            weak_ptr_factory_.GetWeakPtr(), "CommitOverlayPlanes", swap_id),
-        base::DoNothing());
-    return error::kNoError;
-  } else {
-    return CheckSwapBuffersResult(
-        surface_->CommitOverlayPlanes(base::DoNothing()),
-        "CommitOverlayPlanes");
-  }
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoSetColorSpaceMetadataCHROMIUM(
     GLuint texture_id,
     gfx::ColorSpace color_space) {
@@ -5146,66 +4750,6 @@ error::Error GLES2DecoderPassthroughImpl::DoGetFragDataIndexEXT(
     GLint* index) {
   *index = api()->glGetFragDataIndexFn(GetProgramServiceID(program, resources_),
                                        name);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoSetDrawRectangleCHROMIUM(
-    GLint x,
-    GLint y,
-    GLint width,
-    GLint height) {
-  GLint current_framebuffer = 0;
-  api()->glGetIntegervFn(GL_FRAMEBUFFER_BINDING, &current_framebuffer);
-  if (current_framebuffer != 0) {
-    InsertError(GL_INVALID_OPERATION, "framebuffer must not be bound.");
-    return error::kNoError;
-  }
-
-  if (!surface_->SupportsDCLayers()) {
-    InsertError(GL_INVALID_OPERATION,
-                "surface doesn't support SetDrawRectangle.");
-    return error::kNoError;
-  }
-
-  gfx::Rect rect(x, y, width, height);
-  if (!surface_->SetDrawRectangle(rect)) {
-    InsertError(GL_INVALID_OPERATION, "SetDrawRectangle failed on surface");
-    // If SetDrawRectangle failed, we may not have a current context any
-    // more, make sure to report lost context.
-    MarkContextLost(error::kUnknown);
-    group_->LoseContexts(error::kUnknown);
-    return error::kLostContext;
-  }
-
-  ApplySurfaceDrawOffset();
-
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoSetEnableDCLayersCHROMIUM(
-    GLboolean enable) {
-  GLint current_framebuffer = 0;
-  api()->glGetIntegervFn(GL_FRAMEBUFFER_BINDING, &current_framebuffer);
-  if (current_framebuffer != 0) {
-    InsertError(GL_INVALID_OPERATION, "framebuffer must not be bound.");
-    return error::kNoError;
-  }
-
-  if (!surface_->SupportsDCLayers()) {
-    InsertError(GL_INVALID_OPERATION,
-                "surface doesn't support SetDrawRectangle.");
-    return error::kNoError;
-  }
-
-  if (!surface_->SetEnableDCLayers(!!enable)) {
-    InsertError(GL_INVALID_OPERATION, "SetEnableDCLayers failed on surface.");
-    // If SetEnableDCLayers failed, we may not have a current context any
-    // more, make sure to report lost context.
-    MarkContextLost(error::kUnknown);
-    group_->LoseContexts(error::kUnknown);
-    return error::kLostContext;
-  }
-
   return error::kNoError;
 }
 

@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -29,6 +29,10 @@
 #endif
 
 using offline_items_collection::ContentId;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // This class is an abstraction for common UI tasks and properties associated
 // with a download.
@@ -102,7 +106,7 @@ class DownloadUIModel {
     ui::ColorId secondary_color = ui::kColorSecondaryForeground;
 
     // Override icon
-    const gfx::VectorIcon* icon_model_override = nullptr;
+    raw_ptr<const gfx::VectorIcon> icon_model_override = nullptr;
 
     // Subpage summary of the download warning
     bool has_subpage = false;
@@ -137,8 +141,7 @@ class DownloadUIModel {
   };
 #endif
 
-  using DownloadUIModelPtr =
-      std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
+  using DownloadUIModelPtr = std::unique_ptr<DownloadUIModel>;
 
   DownloadUIModel();
 
@@ -150,18 +153,17 @@ class DownloadUIModel {
 
   virtual ~DownloadUIModel();
 
-  // Observer for a single DownloadUIModel.
-  class Observer {
+  // Delegate for a single DownloadUIModel.
+  class Delegate {
    public:
     virtual void OnDownloadUpdated() {}
     virtual void OnDownloadOpened() {}
-    virtual void OnDownloadDestroyed() {}
+    virtual void OnDownloadDestroyed(const ContentId& id) {}
 
-    virtual ~Observer() {}
+    virtual ~Delegate() = default;
   };
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void SetDelegate(Delegate* delegate);
 
   base::WeakPtr<DownloadUIModel> GetWeakPtr();
 
@@ -287,6 +289,14 @@ class DownloadUIModel {
 
   // Change what's returned by WasUINotified().
   virtual void SetWasUINotified(bool should_notify);
+
+  // Returns |true| if the Download Bubble UI has shown this download warning.
+  // By default, this value is |false| and should be changed explicitly using
+  // SetWasUIWarningShown().
+  virtual bool WasUIWarningShown() const;
+
+  // Change what's returned by WasUIWarningShown().
+  virtual void SetWasUIWarningShown(bool was_ui_warning_shown);
 
   // Returns |true| if opening in the browser is preferred for this download. If
   // |false|, the download should be opened with the system default application.
@@ -448,12 +458,15 @@ class DownloadUIModel {
   BubbleUIInfo GetBubbleUIInfo() const;
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
-  BubbleUIInfo GetBubbleUIInfoForWarning() const;
+  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Complete the Safe Browsing scan early.
   virtual void CompleteSafeBrowsingScan();
+
+  // Open a dialog to review a scan verdict.
+  virtual void ReviewScanningVerdict(content::WebContents* web_contents);
 #endif
 
   // Whether the dropdown menu button should be shown or not.
@@ -469,7 +482,7 @@ class DownloadUIModel {
   // Returns the message, if any, to be displayed for file rerouted.
   virtual std::u16string GetWebDriveMessage(bool verbose) const;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
  private:
   friend class DownloadItemModelTest;
@@ -478,8 +491,21 @@ class DownloadUIModel {
 
   void set_status_text_builder_for_testing(bool for_bubble);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // The following two methods exist for simpler unit testing.
+  // Setting an override for whether the DownloadBubbleV2 functionality is
+  // enabled.
+  void set_is_bubble_v2_enabled_for_testing(bool is_enabled);
+  // Returns whether the DownloadBubbleV2 functionality is enabled.
+  bool IsBubbleV2Enabled() const;
+#endif
+
   // Unowned Clock to override the time of "Now".
-  base::Clock* clock_ = base::DefaultClock::GetInstance();
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+
+#if !BUILDFLAG(IS_ANDROID)
+  absl::optional<bool> is_bubble_V2_enabled_for_testing_;
+#endif
 
   std::unique_ptr<StatusTextBuilderBase> status_text_builder_;
 

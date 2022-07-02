@@ -639,10 +639,6 @@ bool V4LocalDatabaseManager::IsDownloadProtectionEnabled() const {
   return true;
 }
 
-bool V4LocalDatabaseManager::IsSupported() const {
-  return true;
-}
-
 void V4LocalDatabaseManager::StartOnIOThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
@@ -990,15 +986,18 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
     std::unique_ptr<PendingCheck> check) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
-  DCHECK(enabled_);
   DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
 
-  FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
-      check->full_hash_to_store_and_hash_prefixes;
-  v4_get_hash_protocol_manager_->GetFullHashes(
-      full_hash_to_store_and_hash_prefixes, list_client_states_,
-      base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
-                     weak_factory_.GetWeakPtr(), std::move(check)));
+  // If we're not enabled, we're in the middle of shutdown, so silently drop the
+  // check.
+  if (enabled_) {
+    FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
+        check->full_hash_to_store_and_hash_prefixes;
+    v4_get_hash_protocol_manager_->GetFullHashes(
+        full_hash_to_store_and_hash_prefixes, list_client_states_,
+        base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
+                       weak_factory_.GetWeakPtr(), std::move(check)));
+  }
 }
 
 void V4LocalDatabaseManager::ProcessQueuedChecks() {

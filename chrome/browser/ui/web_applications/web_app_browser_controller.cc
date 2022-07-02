@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -42,7 +42,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
 }
@@ -54,7 +62,7 @@ namespace {
 class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
  public:
   explicit SystemAppTabMenuModelFactory(
-      const web_app::SystemWebAppDelegate* system_app)
+      const ash::SystemWebAppDelegate* system_app)
       : system_app_(system_app) {}
   SystemAppTabMenuModelFactory(const SystemAppTabMenuModelFactory&) = delete;
   SystemAppTabMenuModelFactory& operator=(const SystemAppTabMenuModelFactory&) =
@@ -70,7 +78,7 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
   }
 
  private:
-  raw_ptr<const web_app::SystemWebAppDelegate> system_app_;
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 };
 
 }  // namespace
@@ -81,7 +89,7 @@ WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
     Browser* browser,
     AppId app_id,
-    const SystemWebAppDelegate* system_app,
+    const ash::SystemWebAppDelegate* system_app,
     bool has_tab_strip)
     : AppBrowserController(browser, std::move(app_id), has_tab_strip),
       provider_(provider),
@@ -145,16 +153,28 @@ bool WebAppBrowserController::HasReloadButton() const {
   return system_app_->ShouldHaveReloadButtonInMinimalUi();
 }
 
-const SystemWebAppDelegate* WebAppBrowserController::system_app() const {
+const ash::SystemWebAppDelegate* WebAppBrowserController::system_app() const {
   return system_app_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::ShouldShowCustomTabBar() const {
   if (AppBrowserController::ShouldShowCustomTabBar())
     return true;
 
   return is_verified_.value_or(false);
+}
+
+void WebAppBrowserController::CheckDigitalAssetLinkRelationshipForAndroidApp(
+    const std::string& package_name,
+    const std::string& fingerprint) {
+  // base::Unretained is safe as |asset_link_handler_| is owned by this object
+  // and will be destroyed if this object is destroyed.
+  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
+  asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
+      origin, kRelationship, fingerprint, package_name,
+      base::BindOnce(&WebAppBrowserController::OnRelationshipCheckComplete,
+                     base::Unretained(this)));
 }
 
 void WebAppBrowserController::OnRelationshipCheckComplete(
@@ -173,7 +193,19 @@ void WebAppBrowserController::OnRelationshipCheckComplete(
   browser()->window()->UpdateCustomTabBarVisibility(should_show_cct,
                                                     false /* animate */);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void WebAppBrowserController::OnGetAssociatedAndroidPackage(
+    crosapi::mojom::WebAppAndroidPackagePtr package) {
+  if (!package) {
+    // Web app was not installed from an Android package, nothing to check.
+    return;
+  }
+  CheckDigitalAssetLinkRelationshipForAndroidApp(package->package_name,
+                                                 package->sha256_fingerprint);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WebAppBrowserController::OnWebAppUninstalled(
     const AppId& uninstalled_app_id) {
@@ -366,20 +398,11 @@ const WebAppInstallManager& WebAppBrowserController::install_manager() const {
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id());
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    proxy->LoadIcon(app_type, app_id(), apps::IconType::kStandard,
-                    kWebAppIconSmall, allow_placeholder_icon,
-                    base::BindOnce(&WebAppBrowserController::OnLoadIcon,
-                                   weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    proxy->LoadIcon(apps::ConvertAppTypeToMojomAppType(app_type), app_id(),
-                    apps::mojom::IconType::kStandard, kWebAppIconSmall,
-                    allow_placeholder_icon,
-                    apps::MojomIconValueToIconValueCallback(
-                        base::BindOnce(&WebAppBrowserController::OnLoadIcon,
-                                       weak_ptr_factory_.GetWeakPtr())));
-  }
+  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
+                  apps::IconType::kStandard, kWebAppIconSmall,
+                  allow_placeholder_icon,
+                  base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
@@ -413,18 +436,19 @@ void WebAppBrowserController::OnReadIcon(SkBitmap bitmap) {
 
 void WebAppBrowserController::PerformDigitalAssetLinkVerification(
     Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   asset_link_handler_ =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
           browser->profile()->GetURLLoaderFactory());
   is_verified_ = absl::nullopt;
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ApkWebAppService* apk_web_app_service =
       ash::ApkWebAppService::Get(browser->profile());
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
     return;
 
-  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
   const absl::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id());
   const absl::optional<std::string> fingerprint =
@@ -434,12 +458,24 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   DCHECK(package_name.has_value());
   DCHECK(fingerprint.has_value());
 
-  // base::Unretained is safe as |asset_link_handler_| is owned by this object
-  // and will be destroyed if this object is destroyed.
-  asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, kRelationship, fingerprint.value(), package_name.value(),
-      base::BindOnce(&WebAppBrowserController::OnRelationshipCheckComplete,
-                     base::Unretained(this)));
+  CheckDigitalAssetLinkRelationshipForAndroidApp(*package_name, *fingerprint);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (chromeos::BrowserInitParams::Get()->web_apps_enabled && lacros_service &&
+      lacros_service->IsAvailable<crosapi::mojom::WebAppService>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::WebAppService::Uuid_) >=
+          int{crosapi::mojom::WebAppService::MethodMinVersions::
+                  kGetAssociatedAndroidPackageMinVersion}) {
+    lacros_service->GetRemote<crosapi::mojom::WebAppService>()
+        ->GetAssociatedAndroidPackage(
+            app_id(),
+            base::BindOnce(
+                &WebAppBrowserController::OnGetAssociatedAndroidPackage,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 }
 

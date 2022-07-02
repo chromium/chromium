@@ -15,10 +15,11 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/privacy_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -281,6 +282,9 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
           profile(), g_browser_process->metrics_service(),
           user_manager::UserManager::Get()));
 
+  if (base::FeatureList::IsEnabled(::features::kCrosPrivacyHub))
+    web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
+
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
 }
@@ -320,6 +324,11 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
       {"smartPrivacySnoopingNotifications",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS},
+      {"privacyHubTitle", IDS_OS_SETTINGS_PRIVACY_HUB_TITLE},
+      {"cameraToggleTitle", IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE},
+      {"cameraToggleSublabelActive",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
+      {"microphoneToggleTitle", IDS_OS_SETTINGS_MICROPHONE_TOGGLE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -328,12 +337,15 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isQuickDimEnabled",
                           ash::features::IsQuickDimEnabled());
 
+  html_source->AddBoolean("showPrivacyHub", base::FeatureList::IsEnabled(
+                                                ::features::kCrosPrivacyHub));
+
   html_source->AddString(
       "smartPrivacyDesc",
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));
 
-  // TODO(1294649): update this to the real link.
-  html_source->AddString("smartPrivacyLearnMoreLink", "about:blank");
+  html_source->AddString("smartPrivacyLearnMoreURL",
+                         chrome::kSmartPrivacySettingsLearnMoreURL);
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
@@ -452,6 +464,16 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(
       mojom::Subpage::kSmartPrivacy,
       {{mojom::Setting::kSnoopingProtection, mojom::Setting::kQuickDim}},
+      generator);
+
+  // Privacy hub.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_PRIVACY_HUB_TITLE, mojom::Subpage::kPrivacyHub,
+      mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPrivacyHubSubpagePath);
+  RegisterNestedSettingBulk(
+      mojom::Subpage::kPrivacyHub,
+      {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff}},
       generator);
 }
 

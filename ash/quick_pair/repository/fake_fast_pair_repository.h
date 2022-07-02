@@ -55,6 +55,9 @@ class FakeFastPairRepository : public FastPairRepository {
 
   void SetOptInStatus(nearby::fastpair::OptInStatus status);
 
+  void SetSavedDevices(nearby::fastpair::OptInStatus status,
+                       std::vector<nearby::fastpair::FastPairDevice> devices);
+
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
@@ -62,7 +65,9 @@ class FakeFastPairRepository : public FastPairRepository {
                         CheckAccountKeysCallback callback) override;
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
-  bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  bool AssociateAccountKeyLocally(scoped_refptr<Device> device) override;
+  void DeleteAssociatedDevice(const std::string& mac_address,
+                              DeleteAssociatedDeviceCallback callback) override;
   void FetchDeviceImages(scoped_refptr<Device> device) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const device::BluetoothDevice* device) override;
@@ -83,6 +88,7 @@ class FakeFastPairRepository : public FastPairRepository {
 
   nearby::fastpair::OptInStatus status_ =
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
+  std::vector<nearby::fastpair::FastPairDevice> devices_;
   bool is_network_connected_ = true;
   bool is_account_key_paired_locally_ = true;
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;

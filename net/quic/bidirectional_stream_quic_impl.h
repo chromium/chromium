@@ -86,15 +86,15 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   const std::unique_ptr<QuicChromiumClientSession::Handle> session_;
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
 
-  raw_ptr<const BidirectionalStreamRequestInfo> request_info_;
-  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_;
+  raw_ptr<const BidirectionalStreamRequestInfo> request_info_ = nullptr;
+  raw_ptr<BidirectionalStreamImpl::Delegate> delegate_ = nullptr;
   // Saves the response status if the stream is explicitly closed via OnError
   // or OnClose with an error. Once all buffered data has been returned, this
   // will be used as the final response.
-  int response_status_;
+  int response_status_ = OK;
 
   // The protocol that is negotiated.
-  NextProto negotiated_protocol_;
+  NextProto negotiated_protocol_ = kProtoUnknown;
   // Connect timing information for this stream. Populated when headers are
   // received.
   LoadTimingInfo::ConnectTiming connect_timing_;
@@ -104,33 +104,33 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
 
   // User provided read buffer for ReadData() response.
   scoped_refptr<IOBuffer> read_buffer_;
-  int read_buffer_len_;
+  int read_buffer_len_ = 0;
 
   // Number of bytes received by the headers stream on behalf of this stream.
-  int64_t headers_bytes_received_;
+  int64_t headers_bytes_received_ = 0;
   // Number of bytes sent by the headers stream on behalf of this stream.
-  int64_t headers_bytes_sent_;
+  int64_t headers_bytes_sent_ = 0;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes received over the network for |stream_| while it was open.
-  int64_t closed_stream_received_bytes_;
+  int64_t closed_stream_received_bytes_ = 0;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes sent over the network for |stream_| while it was open.
-  int64_t closed_stream_sent_bytes_;
+  int64_t closed_stream_sent_bytes_ = 0;
   // True if the stream is the first stream negotiated on the session. Set when
   // the stream was closed. If |stream_| is failed to be created, this takes on
   // the default value of false.
-  bool closed_is_first_stream_;
+  bool closed_is_first_stream_ = false;
   // Indicates whether initial headers have been sent.
-  bool has_sent_headers_;
+  bool has_sent_headers_ = false;
 
   // Whether to automatically send request headers when stream is negotiated.
   // If false, headers will not be sent until SendRequestHeaders() is called or
   // until next SendData/SendvData, during which QUIC will try to combine header
   // frame with data frame in the same packet if possible.
-  bool send_request_headers_automatically_;
+  bool send_request_headers_automatically_ = true;
 
   // True when callbacks to the delegate may be invoked synchronously.
-  bool may_invoke_callbacks_;
+  bool may_invoke_callbacks_ = true;
 
   base::WeakPtrFactory<BidirectionalStreamQuicImpl> weak_factory_{this};
 };

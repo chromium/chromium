@@ -18,7 +18,8 @@ FrameUserNoteChanges::FrameUserNoteChanges(
     const ChangeList& notes_added,
     const ChangeList& notes_modified,
     const ChangeList& notes_removed)
-    : service_(service),
+    : id_(base::UnguessableToken::Create()),
+      service_(service),
       rfh_(rfh),
       notes_added_(notes_added),
       notes_modified_(notes_modified),
@@ -34,7 +35,8 @@ FrameUserNoteChanges::FrameUserNoteChanges(
     ChangeList&& notes_added,
     ChangeList&& notes_modified,
     ChangeList&& notes_removed)
-    : service_(service),
+    : id_(base::UnguessableToken::Create()),
+      service_(service),
       rfh_(rfh),
       notes_added_(std::move(notes_added)),
       notes_modified_(std::move(notes_modified)),
@@ -70,18 +72,16 @@ void FrameUserNoteChanges::Apply(base::OnceClosure callback) {
     const UserNote* note = service_->GetNoteModel(note_id);
     DCHECK(note);
 
-    // TODO(gujen): Support the note authoring workflow, in which case a
-    // temporary note instance will already exist in the service's temporary
-    // map, which we can synchronously move to the note manager here.
-
-    std::unique_ptr<UserNoteInstance> instance_unique = MakeNoteInstance(note);
+    std::unique_ptr<UserNoteInstance> instance_unique =
+        MakeNoteInstance(note, manager);
     manager->AddNoteInstance(std::move(instance_unique), barrier);
   }
 }
 
 std::unique_ptr<UserNoteInstance> FrameUserNoteChanges::MakeNoteInstance(
-    const UserNote* note_model) const {
-  return std::make_unique<UserNoteInstance>(note_model->GetSafeRef());
+    const UserNote* note_model,
+    UserNoteManager* manager) const {
+  return std::make_unique<UserNoteInstance>(note_model->GetSafeRef(), manager);
 }
 
 }  // namespace user_notes

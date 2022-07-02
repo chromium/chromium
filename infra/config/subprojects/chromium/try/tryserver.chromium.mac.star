@@ -76,17 +76,13 @@ try_.builder(
 try_.builder(
     name = "mac-builder-next-rel",
     os = os.MAC_12,
-)
-
-try_.builder(
-    name = "mac-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
+    builderless = False,
 )
 
 try_.orchestrator_builder(
     name = "mac-rel",
     compilator = "mac-rel-compilator",
+    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Mac Builder",
@@ -110,17 +106,29 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac-rel-compilator",
+    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "mac11-arm64-rel",
-    compilator = "mac11-arm64-rel-compilator",
+    builderless = True,
+    check_for_flakiness = True,
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac11-arm64-rel-tests",
+    ],
+)
+
+try_.orchestrator_builder(
+    name = "mac12-arm64-rel",
+    check_for_flakiness = True,
+    compilator = "mac12-arm64-rel-compilator",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac12-arm64-rel-tests",
     ],
     main_list_view = "try",
     tryjob = try_.job(
@@ -129,9 +137,10 @@ try_.orchestrator_builder(
 )
 
 try_.compilator_builder(
-    name = "mac11-arm64-rel-compilator",
+    name = "mac12-arm64-rel-compilator",
+    check_for_flakiness = True,
     main_list_view = "try",
-    os = os.MAC_DEFAULT,
+    os = os.MAC_12,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
 )
@@ -139,22 +148,6 @@ try_.compilator_builder(
 # NOTE: the following trybots aren't sensitive to Mac version on which
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
-try_.builder(
-    name = "mac_chromium_10.11_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.11 Tests",
-    ],
-)
-
-try_.builder(
-    name = "mac_chromium_10.12_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.12 Tests",
-    ],
-)
-
 try_.builder(
     name = "mac_chromium_10.13_rel_ng",
     mirrors = [
@@ -189,6 +182,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac12-tests",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac12 Tests",
+    ],
+)
+
+try_.builder(
     name = "mac_chromium_archive_rel_ng",
     mirrors = [
         "ci/mac-archive-rel",
@@ -197,6 +198,10 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_asan_rel_ng",
+    mirrors = [
+        "ci/Mac ASan 64 Builder",
+        "ci/Mac ASan 64 Tests (1)",
+    ],
     goma_jobs = goma.jobs.J150,
 )
 
@@ -231,7 +236,7 @@ try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
         "ci/Mac Builder (dbg)",
-        "ci/Mac11 Tests (dbg)",
+        "ci/Mac12 Tests (dbg)",
     ],
 )
 
@@ -253,6 +258,9 @@ try_.builder(
 
 ios_builder(
     name = "ios-asan",
+    mirrors = [
+        "ci/ios-asan",
+    ],
 )
 
 ios_builder(
@@ -267,12 +275,6 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
-)
-
-ios_builder(
-    name = "ios-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
 )
 
 ios_builder(
@@ -370,16 +372,6 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios14-beta-simulator",
-    os = os.MAC_11,
-)
-
-ios_builder(
-    name = "ios14-sdk-simulator",
-    os = os.MAC_11,
-)
-
-ios_builder(
     name = "ios15-beta-simulator",
 )
 
@@ -387,6 +379,23 @@ ios_builder(
     name = "ios15-sdk-simulator",
     xcode = xcode.x13betabots,
     os = os.MAC_12,
+)
+
+ios_builder(
+    name = "ios16-beta-simulator",
+    os = os.MAC_DEFAULT,
+    mirrors = [
+        "ci/ios16-beta-simulator",
+    ],
+)
+
+ios_builder(
+    name = "ios16-sdk-simulator",
+    os = os.MAC_DEFAULT,
+    mirrors = [
+        "ci/ios16-sdk-simulator",
+    ],
+    xcode = xcode.x14betabots,
 )
 
 try_.gpu.optional_tests_builder(
@@ -426,13 +435,14 @@ try_.gpu.optional_tests_builder(
             ".+/[+]/media/renderers/.+",
             ".+/[+]/media/video/.+",
             ".+/[+]/services/shape_detection/.+",
-            ".+/[+]/testing/buildbot/chromium.gpu.fyi.json",
+            ".+/[+]/testing/buildbot/tryserver.chromium.mac.json",
             ".+/[+]/testing/trigger_scripts/.+",
             ".+/[+]/third_party/blink/renderer/modules/mediastream/.+",
             ".+/[+]/third_party/blink/renderer/modules/webcodecs/.+",
             ".+/[+]/third_party/blink/renderer/modules/webgl/.+",
             ".+/[+]/third_party/blink/renderer/platform/graphics/gpu/.+",
             ".+/[+]/tools/clang/scripts/update.py",
+            ".+/[+]/tools/mb/mb_config_expectations/tryserver.chromium.mac.json",
             ".+/[+]/ui/gl/.+",
         ],
     ),

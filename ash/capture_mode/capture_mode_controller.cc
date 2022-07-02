@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
@@ -236,7 +237,8 @@ void ShowNotification(
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kScreenCaptureNotifierId),
+              kScreenCaptureNotifierId,
+              NotificationCatalogName::kScreenCapture),
           optional_fields, delegate, notification_icon, warning_level);
   if (type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(for_video_thumbnail
@@ -787,6 +789,9 @@ void CaptureModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   EndSessionOrRecording(EndRecordingReason::kActiveUserChange);
 
+  if (camera_controller_)
+    camera_controller_->OnActiveUserSessionChanged();
+
   // Remove the previous notification when switching to another user.
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(kScreenCaptureNotificationId,
@@ -800,12 +805,12 @@ void CaptureModeController::OnSessionStateChanged(
 }
 
 void CaptureModeController::OnChromeTerminating() {
-  // Order here matters. We end the recording first before we inform the camera
-  // controller, so that ending the recording will destroy any camera previews
-  // first.
-  EndSessionOrRecording(EndRecordingReason::kShuttingDown);
+  // Order here matters. We may shutdown while a session with a camera is active
+  // before recording starts, we need to inform the camera controller first to
+  // destroy the camera preview first.
   if (camera_controller_)
     camera_controller_->OnShuttingDown();
+  EndSessionOrRecording(EndRecordingReason::kShuttingDown);
 }
 
 void CaptureModeController::SuspendImminent(
@@ -1394,7 +1399,12 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 void CaptureModeController::OnProjectorContainerFolderCreated(
     const CaptureParams& capture_params,
     const base::FilePath& file_path_no_extension) {
-  DCHECK(IsActive());
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due e.g. locking the screen, suspending, or switching
+    // users.
+    return;
+  }
 
   // An empty path is sent to indicate an error.
   if (file_path_no_extension.empty()) {
@@ -1410,11 +1420,16 @@ void CaptureModeController::BeginVideoRecording(
     const CaptureParams& capture_params,
     bool for_projector,
     const base::FilePath& video_file_path) {
-  DCHECK(IsActive());
   DCHECK_EQ(capture_mode_session_->is_in_projector_mode(), for_projector);
-  DCHECK(GetCaptureParams());
   DCHECK(!video_file_path.empty());
   DCHECK(video_file_path.MatchesExtension(".webm"));
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   base::AutoReset<bool> initializing_resetter(&is_initializing_recording_,
                                               true);
@@ -1471,9 +1486,14 @@ void CaptureModeController::InterruptVideoRecording() {
 
 void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
     bool proceed) {
-  DCHECK(IsActive());
-
   pending_dlp_check_ = false;
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // `type_` is `CaptureModeType::kImage`, since the session is about to
@@ -1513,9 +1533,14 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
 
 void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
     bool proceed) {
-  DCHECK(IsActive());
-
   pending_dlp_check_ = false;
+
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
 
   // We don't need to bring back capture mode UIs on 3-second count down
   // finished, since the session is about to shutdown anyways for starting the
@@ -1630,6 +1655,9 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   capture_mode_session_ =
       std::make_unique<CaptureModeSession>(this, for_projector);
   capture_mode_session_->Initialize();
+
+  if (camera_controller_)
+    camera_controller_->OnCaptureSessionStarted();
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(

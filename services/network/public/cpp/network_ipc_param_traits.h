@@ -24,7 +24,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
-#include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "url/ipc/url_param_traits.h"
@@ -50,21 +49,5 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::FetchResponseType,
 
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::TrustTokenOperationStatus,
                           network::mojom::TrustTokenOperationStatus::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(network::OriginPolicyState,
-                          network::OriginPolicyState::kMaxValue)
-
-IPC_STRUCT_TRAITS_BEGIN(network::OriginPolicyContents)
-  IPC_STRUCT_TRAITS_MEMBER(ids)
-  IPC_STRUCT_TRAITS_MEMBER(permissions_policy)
-  IPC_STRUCT_TRAITS_MEMBER(content_security_policies)
-  IPC_STRUCT_TRAITS_MEMBER(content_security_policies_report_only)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(network::OriginPolicy)
-  IPC_STRUCT_TRAITS_MEMBER(state)
-  IPC_STRUCT_TRAITS_MEMBER(policy_url)
-  IPC_STRUCT_TRAITS_MEMBER(contents)
-IPC_STRUCT_TRAITS_END()
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_NETWORK_IPC_PARAM_TRAITS_H_

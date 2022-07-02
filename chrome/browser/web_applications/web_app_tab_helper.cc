@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -31,6 +30,14 @@ void WebAppTabHelper::CreateForWebContents(content::WebContents* contents) {
   }
 }
 
+const AppId* WebAppTabHelper::GetAppId(content::WebContents* web_contents) {
+  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return nullptr;
+  return tab_helper->app_id_.has_value() ? &tab_helper->app_id_.value()
+                                         : nullptr;
+}
+
 WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
       content::WebContentsObserver(web_contents),
@@ -39,14 +46,10 @@ WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
   DCHECK(provider_);
   observation_.Observe(&provider_->install_manager());
   SetAppId(
-      FindAppIdWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
+      FindAppWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
 }
 
 WebAppTabHelper::~WebAppTabHelper() = default;
-
-const AppId& WebAppTabHelper::GetAppId() const {
-  return app_id_;
-}
 
 const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
     const {
@@ -61,13 +64,16 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   return *launch_queue_;
 }
 
-void WebAppTabHelper::SetAppId(const AppId& app_id) {
-  DCHECK(app_id.empty() || provider_->registrar().IsInstalled(app_id));
+void WebAppTabHelper::SetAppId(absl::optional<AppId> app_id) {
+  // Empty string should not be used to indicate "no app ID".
+  DCHECK(!app_id || !app_id->empty());
+  DCHECK(!app_id || provider_->registrar().IsInstalled(*app_id) ||
+         provider_->registrar().IsUninstalling(*app_id));
   if (app_id_ == app_id)
     return;
 
-  AppId previous_app_id = app_id_;
-  app_id_ = app_id;
+  absl::optional<AppId> previous_app_id = std::move(app_id_);
+  app_id_ = std::move(app_id);
 
   OnAssociatedAppChanged(previous_app_id, app_id_);
 }
@@ -76,16 +82,15 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     const GURL& url = navigation_handle->GetURL();
-    const AppId app_id = FindAppIdWithUrlInScope(url);
-    SetAppId(app_id);
+    SetAppId(FindAppWithUrlInScope(url));
   }
 
-  // If navigating to a System Web App (including navigation in sub frames), let
-  // SystemWebAppManager perform tab-secific setup for navigations in System Web
-  // Apps.
-  if (provider_->system_web_app_manager().IsSystemWebApp(GetAppId())) {
-    provider_->system_web_app_manager().OnReadyToCommitNavigation(
-        GetAppId(), navigation_handle);
+  // If navigating to a Web App (including navigation in sub frames), let
+  // `WebAppUiManager` observers perform tab-secific setup for navigations in
+  // Web Apps.
+  if (app_id_.has_value()) {
+    provider_->ui_manager().NotifyReadyToCommitNavigation(app_id_.value(),
+                                                          navigation_handle);
   }
 }
 
@@ -111,7 +116,7 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
   // See the declaration of WebContentsObserver::PrimaryPageChanged for more
   // information.
   provider_->manifest_update_manager().MaybeUpdate(
-      page.GetMainDocument().GetLastCommittedURL(), GetAppId(), web_contents());
+      page.GetMainDocument().GetLastCommittedURL(), app_id_, web_contents());
 
   ReinstallPlaceholderAppIfNecessary(
       page.GetMainDocument().GetLastCommittedURL());
@@ -126,7 +131,7 @@ void WebAppTabHelper::DidCloneToNewWebContents(
   auto* new_tab_helper = FromWebContents(new_web_contents);
 
   // Clone common state:
-  new_tab_helper->SetAppId(GetAppId());
+  new_tab_helper->SetAppId(app_id_);
 }
 
 bool WebAppTabHelper::IsInAppWindow() const {
@@ -135,45 +140,35 @@ bool WebAppTabHelper::IsInAppWindow() const {
 
 void WebAppTabHelper::OnWebAppInstalled(const AppId& installed_app_id) {
   // Check if current web_contents url is in scope for the newly installed app.
-  AppId app_id = FindAppIdWithUrlInScope(web_contents()->GetURL());
-  if (app_id != installed_app_id)
-    return;
-
-  SetAppId(app_id);
+  absl::optional<AppId> app_id =
+      FindAppWithUrlInScope(web_contents()->GetURL());
+  if (app_id == installed_app_id)
+    SetAppId(app_id);
 }
 
 void WebAppTabHelper::OnWebAppWillBeUninstalled(
     const AppId& uninstalled_app_id) {
-  if (GetAppId() == uninstalled_app_id)
-    ResetAppId();
+  if (app_id_ == uninstalled_app_id)
+    SetAppId(absl::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
-  ResetAppId();
+  SetAppId(absl::nullopt);
 }
 
-void WebAppTabHelper::ResetAppId() {
-  if (app_id_.empty())
-    return;
-
-  AppId previous_app_id = app_id_;
-  app_id_.clear();
-
-  OnAssociatedAppChanged(previous_app_id, app_id_);
-}
-
-void WebAppTabHelper::OnAssociatedAppChanged(const AppId& previous_app_id,
-                                             const AppId& new_app_id) {
+void WebAppTabHelper::OnAssociatedAppChanged(
+    const absl::optional<AppId>& previous_app_id,
+    const absl::optional<AppId>& new_app_id) {
   provider_->ui_manager().NotifyOnAssociatedAppChanged(
       web_contents(), previous_app_id, new_app_id);
   UpdateAudioFocusGroupId();
 }
 
 void WebAppTabHelper::UpdateAudioFocusGroupId() {
-  if (!app_id_.empty() && IsInAppWindow()) {
+  if (app_id_.has_value() && IsInAppWindow()) {
     audio_focus_group_id_ =
-        provider_->audio_focus_id_map().CreateOrGetIdForApp(app_id_);
+        provider_->audio_focus_id_map().CreateOrGetIdForApp(app_id_.value());
   } else {
     audio_focus_group_id_ = base::UnguessableToken::Null();
   }
@@ -186,8 +181,9 @@ void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   provider_->policy_manager().ReinstallPlaceholderAppIfNecessary(url);
 }
 
-AppId WebAppTabHelper::FindAppIdWithUrlInScope(const GURL& url) const {
-  return provider_->registrar().FindAppWithUrlInScope(url).value_or(AppId());
+absl::optional<AppId> WebAppTabHelper::FindAppWithUrlInScope(
+    const GURL& url) const {
+  return provider_->registrar().FindAppWithUrlInScope(url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

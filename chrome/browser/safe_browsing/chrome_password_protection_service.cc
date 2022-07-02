@@ -103,6 +103,7 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
+#include "components/password_manager/core/browser/password_check_referrer_android.h"
 #include "ui/android/window_android.h"
 #else
 #include "chrome/browser/ui/browser_list.h"
@@ -378,7 +379,7 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
       prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   return unhandled_sync_password_reuses
              ? (unhandled_sync_password_reuses->FindKey(
-                    web_contents->GetMainFrame()
+                    web_contents->GetPrimaryMainFrame()
                         ->GetLastCommittedOrigin()
                         .Serialize()) != nullptr)
              : false;
@@ -479,7 +480,9 @@ void ChromePasswordProtectionService::OnModalWarningShownForGaiaPassword(
     // Since base::Value doesn't support int64_t type, we convert the navigation
     // ID to string format and store it in the preference dictionary.
     update->SetStringKey(
-        web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+        web_contents->GetPrimaryMainFrame()
+            ->GetLastCommittedOrigin()
+            .Serialize(),
         base::NumberToString(GetLastCommittedNavigationID(web_contents)));
   }
   SBThreatType threat_type;
@@ -585,7 +588,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
     return;
 
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetMainFrame()->GetGlobalId();
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
@@ -611,8 +614,6 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   trigger_manager_->StartCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents, resource,
       url_loader_factory, /*history_service=*/nullptr,
-      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
-                          profile_),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile_),
       TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
@@ -941,7 +942,8 @@ void ChromePasswordProtectionService::HandleUserActionOnModalWarning(
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     WarningAction action) {
-  const Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  const Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   int64_t navigation_id =
       GetNavigationIDFromPrefsByOrigin(profile_->GetPrefs(), origin);
 
@@ -1026,9 +1028,9 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
   } else {
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
-    PasswordCheckupLauncherHelper::
-        LaunchLocalCheckupFromPhishGuardWarningDialog(
-            env, web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+    PasswordCheckupLauncherHelper::LaunchLocalCheckup(
+        env, web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+        password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog);
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.

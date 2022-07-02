@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(enable_cros_libassistant)
 
@@ -33,6 +33,7 @@ component("libassistant") {
 
   deps = [
     ":internal",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/services/libassistant/public/mojom",
   ]
@@ -40,7 +41,7 @@ component("libassistant") {
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
 
   # The default output name of this service, `libassistant_service.so`, already
-  # exists (as build target of //chromeos/services/assistant), so we have to
+  # exists (as build target of //chromeos/ash/services/assistant), so we have to
   # use `lib_libassistant_service.so`.
   output_name = "lib_libassistant_service"
 }
@@ -125,9 +126,10 @@ source_set("internal") {
     "./grpc/external_services:grpc_services_initializer",
     "./grpc/external_services:grpc_services_observer",
     "//build/util:chromium_git_revision",
-    "//chromeos/assistant:buildflags",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/resources",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal",
-    "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
@@ -135,10 +137,9 @@ source_set("internal") {
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/util:util",
-    "//chromeos/resources:resources_grit",
-    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -175,8 +176,8 @@ source_set("audio") {
     ":fake_input_device",
     "//ash/public/mojom",
     "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",
     "//media",
@@ -256,13 +257,13 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/assistant/test_support:test_support",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
-    "//chromeos/assistant/test_support:test_support",
     "//chromeos/dbus/power",
-    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",
     "//services/audio/public/cpp:test_support",

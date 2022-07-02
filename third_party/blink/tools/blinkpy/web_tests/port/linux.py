@@ -75,7 +75,8 @@ class LinuxPort(base.Port):
 
         # See //testing/xvfb.py for an explanation of parsing -help output.
         try:
-            output = self.host.executive.run_command(['Xvfb', '-help'])
+            output = self.host.executive.run_command(['Xvfb', '-help'],
+                                                     debug_logging=False)
             self._xvfb_supports_maxclients = (type(output) is str
                                               and '-maxclients' in output)
         except Exception:

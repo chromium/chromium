@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/sharing/shared_clipboard/shared_clipboard_ui_controller.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
@@ -39,7 +38,6 @@
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
-#include "chrome/browser/ui/views/webauthn/webauthn_icon_view.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
 #include "ui/views/animation/ink_drop.h"
@@ -176,19 +174,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kSharedClipboard:
-        add_page_action_icon(
-            type,
-            std::make_unique<SharingIconView>(
-                params.icon_label_bubble_delegate,
-                params.page_action_icon_delegate,
-                base::BindRepeating([](content::WebContents* contents) {
-                  return static_cast<SharingUiController*>(
-                      SharedClipboardUiController::GetOrCreateFromWebContents(
-                          contents));
-                }),
-                base::BindRepeating(SharingDialogView::GetAsBubble)));
-        break;
       case PageActionIconType::kSharingHub:
         add_page_action_icon(
             type, std::make_unique<sharing_hub::SharingHubIconView>(
@@ -219,13 +204,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         DCHECK(params.command_updater);
         add_page_action_icon(
             type, std::make_unique<TranslateIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kWebAuthn:
-        DCHECK(base::FeatureList::IsEnabled(features::kWebAuthConditionalUI));
-        add_page_action_icon(
-            type, std::make_unique<WebAuthnIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;

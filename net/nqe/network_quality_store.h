@@ -15,11 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_id.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // NetworkQualityStore holds the network qualities of different networks in
 // memory. Entries are stored in LRU order, and older entries may be evicted.
@@ -42,8 +38,8 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
         const nqe::internal::CachedNetworkQuality& cached_network_quality) = 0;
 
    protected:
-    NetworkQualitiesCacheObserver() {}
-    virtual ~NetworkQualitiesCacheObserver() {}
+    NetworkQualitiesCacheObserver() = default;
+    virtual ~NetworkQualitiesCacheObserver() = default;
   };
 
   NetworkQualityStore();
@@ -107,10 +103,6 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_{this};
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_QUALITY_STORE_H_

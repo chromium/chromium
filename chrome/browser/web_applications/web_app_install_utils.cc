@@ -30,12 +30,15 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
@@ -45,6 +48,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -542,7 +546,19 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
 
-  if (manifest.note_taking && manifest.note_taking->new_note_url.is_valid()) {
+  GURL inferred_scope = web_app_info->scope.is_valid() ? web_app_info->scope
+                        : web_app_info->start_url.is_valid()
+                            ? web_app_info->start_url.GetWithoutFilename()
+                            : GURL();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLockScreen) &&
+      manifest.lock_screen && manifest.lock_screen->start_url.is_valid() &&
+      IsInScope(manifest.lock_screen->start_url, inferred_scope)) {
+    web_app_info->lock_screen_start_url = manifest.lock_screen->start_url;
+  }
+
+  if (manifest.note_taking && manifest.note_taking->new_note_url.is_valid() &&
+      IsInScope(manifest.note_taking->new_note_url, inferred_scope)) {
     web_app_info->note_taking_new_note_url = manifest.note_taking->new_note_url;
   }
 
@@ -551,8 +567,6 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
       ToWebAppShortcutsMenuItemInfos(manifest.shortcuts);
 
   web_app_info->capture_links = manifest.capture_links;
-
-  web_app_info->handle_links = manifest.handle_links;
 
   if (manifest_url.is_valid())
     web_app_info->manifest_url = manifest_url;
@@ -576,6 +590,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
     copy.matches_opaque_src = decl.matches_opaque_src;
     web_app_info->permissions_policy.push_back(std::move(copy));
   }
+
+  web_app_info->tab_strip = manifest.tab_strip;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(
@@ -952,11 +968,13 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
   web_app.SetUrlHandlers(web_app_info.url_handlers);
+
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi))
+    web_app.SetLockScreenStartUrl(web_app_info.lock_screen_start_url);
+
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
   web_app.SetCaptureLinks(web_app_info.capture_links);
-
-  web_app.SetHandleLinks(web_app_info.handle_links);
 
   web_app.SetManifestUrl(web_app_info.manifest_url);
 

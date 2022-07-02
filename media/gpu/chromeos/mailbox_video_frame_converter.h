@@ -106,6 +106,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   // method runs on |gpu_task_runner_|. Returns true if the SharedImage could be
   // created successfully; false otherwise (and OnError() is called).
   bool GenerateSharedImageOnGPUThread(VideoFrame* video_frame,
+                                      const gfx::ColorSpace& src_color_space,
                                       const gfx::Rect& destination_visible_rect,
                                       ScopedSharedImage* shared_image);
 

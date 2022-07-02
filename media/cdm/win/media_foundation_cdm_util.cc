@@ -8,10 +8,10 @@
 #include <initguid.h>  // Needed for DEFINE_PROPERTYKEY to work properly.
 #include <mferror.h>
 #include <propkeydef.h>  // Needed for DEFINE_PROPERTYKEY.
-#include <propvarutil.h>
 
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/propvarutil.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/cdm_paths.h"

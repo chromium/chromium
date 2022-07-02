@@ -87,6 +87,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void SetDisplayColorSpace(const gfx::ColorSpace& output_color_space);
 
   viz::Display* display() const { return display_.get(); }
+  void UnregisterBeginFrameSource();
 
   // LayerTreeFrameSink implementation.
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
@@ -106,7 +107,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override;
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
-  void OnBeginFramePausedChanged(bool paused) override {}
+  void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
 
@@ -168,7 +169,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
   gfx::Size enlarge_pass_texture_amount_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   // The set of SharedBitmapIds that have been reported as allocated to this
   // interface. On closing this interface, the display compositor should drop

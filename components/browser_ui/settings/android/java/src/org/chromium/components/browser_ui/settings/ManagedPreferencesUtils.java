@@ -26,6 +26,12 @@ import java.util.Locale;
  * Utilities and common methods to handle settings managed by policies.
  */
 public class ManagedPreferencesUtils {
+    private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
+        Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
+        toast.show();
+        return toast;
+    }
+
     /**
      * Shows a toast indicating that the previous action is managed by the system administrator.
      *
@@ -33,10 +39,8 @@ public class ManagedPreferencesUtils {
      *
      * @param context The context where the Toast will be shown.
      */
-    public static void showManagedByAdministratorToast(Context context) {
-        Toast.makeText(context, context.getString(R.string.managed_by_your_organization),
-                     Toast.LENGTH_LONG)
-                .show();
+    public static Toast showManagedByAdministratorToast(Context context) {
+        return showToastWithResourceId(context, R.string.managed_by_your_organization);
     }
 
     /**
@@ -46,11 +50,9 @@ public class ManagedPreferencesUtils {
      *
      * @param context The context where the Toast will be shown.
      */
-    public static void showManagedByParentToast(
+    public static Toast showManagedByParentToast(
             Context context, @Nullable ManagedPreferenceDelegate delegate) {
-        Toast.makeText(context, context.getString(getManagedByParentStringRes(delegate)),
-                     Toast.LENGTH_LONG)
-                .show();
+        return showToastWithResourceId(context, getManagedByParentStringRes(delegate));
     }
 
     /**
@@ -59,10 +61,8 @@ public class ManagedPreferencesUtils {
      *
      * @param context The context where the Toast will be shown.
      */
-    public static void showManagedSettingsCannotBeResetToast(Context context) {
-        Toast.makeText(context, context.getString(R.string.managed_settings_cannot_be_reset),
-                     Toast.LENGTH_LONG)
-                .show();
+    public static Toast showManagedSettingsCannotBeResetToast(Context context) {
+        return showToastWithResourceId(context, R.string.managed_settings_cannot_be_reset);
     }
 
     /**

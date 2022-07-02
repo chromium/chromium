@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -104,7 +105,8 @@ CreateDeviceAccountErrorNotification(
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
+      kProfileSigninNotificationId,
+      NotificationCatalogName::kDeviceAccountSigninError);
 
   // Set `profile_id` for multi-user notification blocker.
   notifier_id.profile_id = email;
@@ -303,7 +305,8 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
         account_dummy_token_list) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
+      kProfileSigninNotificationId,
+      NotificationCatalogName::kSecondaryAccountSigninError);
   // Set `profile_id` for multi-user notification blocker. Note the primary user
   // account id is used to identify the profile for the blocker so it is used
   // instead of the secondary user account id.

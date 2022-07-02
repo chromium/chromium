@@ -1169,7 +1169,7 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
-TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
+TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -1199,8 +1199,18 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
 
   // Find button in auth_error_bubble children.
-  views::View* button = FindTopButton(test_api.auth_error_bubble());
-  ASSERT_TRUE(button);
+  views::View* learn_more_button = nullptr;
+  for (views::View* child :
+       test_api.auth_error_bubble()->GetContent()->children()) {
+    if (views::Button::AsButton(child)) {
+      // The bubble should only have one button ("learn more") on the lock
+      // screen.
+      EXPECT_FALSE(learn_more_button);
+      learn_more_button = child;
+    }
+  }
+
+  EXPECT_TRUE(learn_more_button);
 
   // Expect ShowAccountAccessHelp() to be called due to button click.
   EXPECT_CALL(*client, ShowAccountAccessHelpApp(widget()->GetNativeWindow()))
@@ -1209,10 +1219,68 @@ TEST_F(LockContentsViewUnitTest, AuthErrorButtonClickable) {
   // Move mouse to AuthError's ShowAccountAccessHelp button and click it.
   // Should result in ShowAccountAccessHelpApp().
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  generator->MoveMouseTo(learn_more_button->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
 
-  // AuthErrorButton should go away after button press.
+  // The error bubble should go away after button press.
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
+  // Enable the "forgot password" button.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCryptohomeRecoveryFlowUI);
+
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+
+  SetWidget(CreateWidgetWithContent(contents));
+
+  LockContentsView::TestApi test_api(contents);
+
+  // Password submit runs mojo.
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           users()[0].basic_user_info.account_id, _, false, _));
+
+  // AuthErrorButton should not be visible yet.
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+
+  // Submit password.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  base::RunLoop().RunUntilIdle();
+
+  // Auth Error button should be visible as an incorrect password was given.
+  EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
+
+  // There should be two buttons in the error bubble: The "learn more" button
+  // and the "forgot password" button, in that order.
+  std::vector<views::Button*> buttons;
+  for (views::View* child :
+       test_api.auth_error_bubble()->GetContent()->children()) {
+    if (views::Button* button = views::Button::AsButton(child)) {
+      buttons.push_back(button);
+    }
+  }
+  EXPECT_EQ(2u, buttons.size());
+  views::Button* forgot_password_button = buttons[1];
+
+  // Expect the ShowGaiaSignin to be called due to button click.
+  EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
+      .Times(1);
+
+  // Move mouse to the "Forgot password" button and click it.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      forgot_password_button->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+
+  // The error bubble should be hidden because of the button press.
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
@@ -3239,7 +3307,10 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
 
 class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
  protected:
-  LockContentsViewWithKioskLicenseTest() = default;
+  LockContentsViewWithKioskLicenseTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kCryptohomeRecoveryFlowUI);
+  }
   LockContentsViewWithKioskLicenseTest(LockContentsViewWithKioskLicenseTest&) =
       delete;
   LockContentsViewWithKioskLicenseTest& operator=(
@@ -3265,6 +3336,9 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
   }
 
   LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks default message hides if device is with kiosk license but with apps.
@@ -3286,7 +3360,8 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(1);
 
-  EXPECT_FALSE(test_api.kiosk_default_message());
+  EXPECT_TRUE(test_api.kiosk_default_message());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message hidden if device is not with kiosk license and has
@@ -3332,7 +3407,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license, no
@@ -3356,7 +3431,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 }
 
 // Checks default message appeared if device is with kiosk license and no
@@ -3381,12 +3456,12 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   SetNumberOfKioskApps(0);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_TRUE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_TRUE(test_api.kiosk_default_message()->GetVisible());
 
   SetNumberOfKioskApps(1);
 
   EXPECT_TRUE(test_api.kiosk_default_message());
-  EXPECT_FALSE(test_api.kiosk_default_message()->GetWidget()->IsVisible());
+  EXPECT_FALSE(test_api.kiosk_default_message()->GetVisible());
 }
 
 }  // namespace ash

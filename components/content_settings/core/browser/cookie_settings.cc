@@ -120,17 +120,14 @@ bool CookieSettings::IsStorageDurable(const GURL& origin) const {
   return setting == CONTENT_SETTING_ALLOW;
 }
 
-void CookieSettings::GetSettingForLegacyCookieAccess(
-    const std::string& cookie_domain,
-    ContentSetting* setting) const {
-  DCHECK(setting);
-
+ContentSetting CookieSettings::GetSettingForLegacyCookieAccess(
+    const std::string& cookie_domain) const {
   // The content setting patterns are treated as domains, not URLs, so the
   // scheme is irrelevant (so we can just arbitrarily pass false).
   GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
       cookie_domain, false /* secure scheme */);
 
-  *setting = host_content_settings_map_->GetContentSetting(
+  return host_content_settings_map_->GetContentSetting(
       cookie_domain_url, GURL(), ContentSettingsType::LEGACY_COOKIE_ACCESS);
 }
 

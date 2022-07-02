@@ -98,12 +98,12 @@ class DiscreteTimeSimulation {
     TimeTicks start_time = TimeTicks();
     TimeTicks now = start_time;
     while ((now - start_time) <= maximum_simulated_duration) {
-      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
-        (*it)->AdvanceTime(now);
+      for (auto* actor : actors_) {
+        actor->AdvanceTime(now);
       }
 
-      for (auto it = actors_.begin(); it != actors_.end(); ++it) {
-        (*it)->PerformAction();
+      for (auto* actor : actors_) {
+        actor->PerformAction();
       }
 
       now += time_between_ticks;
@@ -122,10 +122,6 @@ class Server : public DiscreteTimeSimulation::Actor {
   Server(int max_queries_per_tick, double request_drop_ratio)
       : max_queries_per_tick_(max_queries_per_tick),
         request_drop_ratio_(request_drop_ratio),
-        num_overloaded_ticks_remaining_(0),
-        num_current_tick_queries_(0),
-        num_overloaded_ticks_(0),
-        max_experienced_queries_per_tick_(0),
         context_(CreateTestURLRequestContextBuilder()->Build()),
         mock_request_(context_->CreateRequest(GURL(),
                                               DEFAULT_PRIORITY,
@@ -293,10 +289,10 @@ class Server : public DiscreteTimeSimulation::Actor {
   TimeTicks end_downtime_;
   const int max_queries_per_tick_;
   const double request_drop_ratio_;  // Ratio of requests to 503 when failing.
-  int num_overloaded_ticks_remaining_;
-  int num_current_tick_queries_;
-  int num_overloaded_ticks_;
-  int max_experienced_queries_per_tick_;
+  int num_overloaded_ticks_remaining_ = 0;
+  int num_current_tick_queries_ = 0;
+  int num_overloaded_ticks_ = 0;
+  int max_experienced_queries_per_tick_ = 0;
   std::vector<int> requests_per_tick_;
 
   std::unique_ptr<URLRequestContext> context_;
@@ -334,9 +330,7 @@ class MockURLRequestThrottlerEntry : public URLRequestThrottlerEntry {
 // regular clients).
 class RequesterResults {
  public:
-  RequesterResults()
-      : num_attempts_(0), num_successful_(0), num_failed_(0), num_blocked_(0) {
-  }
+  RequesterResults() = default;
 
   void AddSuccess() {
     ++num_attempts_;
@@ -387,10 +381,10 @@ class RequesterResults {
   }
 
  private:
-  int num_attempts_;
-  int num_successful_;
-  int num_failed_;
-  int num_blocked_;
+  int num_attempts_ = 0;
+  int num_successful_ = 0;
+  int num_failed_ = 0;
+  int num_blocked_ = 0;
 };
 
 // Represents an Requester in a simulated DDoS situation, that periodically
@@ -403,7 +397,6 @@ class Requester : public DiscreteTimeSimulation::Actor {
             RequesterResults* results)
       : throttler_entry_(throttler_entry),
         time_between_requests_(time_between_requests),
-        last_attempt_was_failure_(false),
         server_(server),
         results_(results) {
     DCHECK(server_);
@@ -477,7 +470,7 @@ class Requester : public DiscreteTimeSimulation::Actor {
   base::TimeDelta request_jitter_;
   TimeTicks time_of_last_attempt_;
   TimeTicks time_of_last_success_;
-  bool last_attempt_was_failure_;
+  bool last_attempt_was_failure_ = false;
   base::TimeDelta last_downtime_duration_;
   const raw_ptr<Server> server_;
   const raw_ptr<RequesterResults> results_;  // May be NULL.
@@ -706,17 +699,17 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
   // If things don't converge by the time we've done 100K trials, then
   // clearly one or more of the expected intervals are wrong.
   while (global_stats.num_runs < 100000) {
-    for (size_t i = 0; i < std::size(trials); ++i) {
+    for (auto& trial : trials) {
       ++global_stats.num_runs;
-      ++trials[i].stats.num_runs;
+      ++trial.stats.num_runs;
       double ratio_unprotected = SimulateDowntime(
-          trials[i].duration, trials[i].average_client_interval, false);
-      double ratio_protected = SimulateDowntime(
-          trials[i].duration, trials[i].average_client_interval, true);
+          trial.duration, trial.average_client_interval, false);
+      double ratio_protected =
+          SimulateDowntime(trial.duration, trial.average_client_interval, true);
       global_stats.total_ratio_unprotected += ratio_unprotected;
       global_stats.total_ratio_protected += ratio_protected;
-      trials[i].stats.total_ratio_unprotected += ratio_unprotected;
-      trials[i].stats.total_ratio_protected += ratio_protected;
+      trial.stats.total_ratio_unprotected += ratio_unprotected;
+      trial.stats.total_ratio_protected += ratio_protected;
     }
 
     double increase_ratio;
@@ -734,12 +727,12 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
 
   // Print individual trial results for optional manual evaluation.
   double max_increase_ratio = 0.0;
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (auto& trial : trials) {
     double increase_ratio;
-    trials[i].stats.DidConverge(&increase_ratio);
+    trial.stats.DidConverge(&increase_ratio);
     max_increase_ratio = std::max(max_increase_ratio, increase_ratio);
-    trials[i].PrintTrialDescription();
-    trials[i].stats.ReportTrialResult(increase_ratio);
+    trial.PrintTrialDescription();
+    trial.stats.ReportTrialResult(increase_ratio);
   }
 
   VerboseOut("Average increase ratio was %.4f\n", average_increase_ratio);

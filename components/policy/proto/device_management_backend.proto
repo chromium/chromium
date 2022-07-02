@@ -149,6 +149,14 @@ message DeviceRegisterRequest {
     // is mandatory, but it failed and we are doing a fallback to manual
     // enrollment.
     FLAVOR_ENROLLMENT_ATTESTATION_INITIAL_MANUAL_FALLBACK = 15;
+    // An enterprise rollback just took place and the device was wiped.
+    // Attempt to re-enroll with attestation. This is forced from the
+    // client side.
+    FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_FORCED = 16;
+    // An enterprise rollback just took place and the device was wiped.
+    // Attestation re-enrollment just failed, attempt manual enrollment as
+    // fallback.
+    FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 17;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
@@ -3988,8 +3996,8 @@ message BrowserPublicKeyUploadRequest {
   enum KeyTrustLevel {
     // UNSPECIFIED.
     KEY_TRUST_LEVEL_UNSPECIFIED = 0;
-    // Chrome Browser with the key stored in TPM.
-    CHROME_BROWSER_TPM_KEY = 1;
+    // Chrome Browser with the key stored in the device hardware.
+    CHROME_BROWSER_HW_KEY = 1;
     // Chrome Browser with the key stored at OS level.
     CHROME_BROWSER_OS_KEY = 2;
   }

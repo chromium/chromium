@@ -27,7 +27,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   // Toggle native cursor enabled/disabled.
   // The native cursor is enabled by default. When disabled, we hide the native
-  // cursor regardless of visibility state, and let CursorWindowManager draw
+  // cursor regardless of visibility state, and let CursorWindowController draw
   // the cursor.
   void SetNativeCursorEnabled(bool enabled);
 

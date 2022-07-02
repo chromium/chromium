@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_PREDICTION_WAITER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,7 +52,7 @@ class PasswordFormPredictionWaiter {
 
   // The client owns the waiter so this pointer will survive this object's
   // lifetime.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   base::OneShotTimer timer_;
 

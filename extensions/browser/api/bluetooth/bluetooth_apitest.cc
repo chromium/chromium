@@ -170,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceEvents) {
   ASSERT_TRUE(LoadExtension(
         test_data_dir_.AppendASCII("bluetooth/device_events")));
 
-  ExtensionTestMessageListener events_received("ready", true);
+  ExtensionTestMessageListener events_received("ready",
+                                               ReplyBehavior::kWillReply);
   event_router()->DeviceAdded(mock_adapter_, device1_.get());
   event_router()->DeviceAdded(mock_adapter_, device2_.get());
 
@@ -227,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryCallback) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
-  ExtensionTestMessageListener discovery_started("ready", true);
+  ExtensionTestMessageListener discovery_started("ready",
+                                                 ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(
         test_data_dir_.AppendASCII("bluetooth/discovery_callback")));
   EXPECT_TRUE(discovery_started.WaitUntilSatisfied());
@@ -235,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryCallback) {
   event_router()->DeviceAdded(mock_adapter_, device1_.get());
 
   discovery_started.Reply("go");
-  ExtensionTestMessageListener discovery_stopped("ready", true);
+  ExtensionTestMessageListener discovery_stopped("ready",
+                                                 ReplyBehavior::kWillReply);
   EXPECT_CALL(*mock_adapter_, RemoveObserver(_));
   EXPECT_TRUE(discovery_stopped.WaitUntilSatisfied());
 
@@ -272,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryInProgress) {
   EXPECT_CALL(*mock_adapter_, StopScan(_))
       .WillOnce(Invoke(this, &BluetoothApiTest::StopScanOverride));
 
-  ExtensionTestMessageListener discovery_started("ready", true);
+  ExtensionTestMessageListener discovery_started("ready",
+                                                 ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(
         test_data_dir_.AppendASCII("bluetooth/discovery_in_progress")));
   EXPECT_TRUE(discovery_started.WaitUntilSatisfied());
@@ -282,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DiscoveryInProgress) {
   event_router()->DeviceAdded(mock_adapter_, device2_.get());
 
   discovery_started.Reply("go");
-  ExtensionTestMessageListener discovery_stopped("ready", true);
+  ExtensionTestMessageListener discovery_stopped("ready",
+                                                 ReplyBehavior::kWillReply);
   EXPECT_CALL(*mock_adapter_, RemoveObserver(_));
   EXPECT_TRUE(discovery_stopped.WaitUntilSatisfied());
 
@@ -299,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, OnAdapterStateChanged) {
   catcher.RestrictToBrowserContext(browser()->profile());
 
   // Load and wait for setup
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(
           test_data_dir_.AppendASCII("bluetooth/on_adapter_state_changed")));
@@ -359,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevices) {
       .WillRepeatedly(testing::Return(devices));
 
   // Load and wait for setup
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("bluetooth/get_devices")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -380,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevice) {
       .WillRepeatedly(testing::Return(static_cast<BluetoothDevice*>(NULL)));
 
   // Load and wait for setup
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("bluetooth/get_device")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -432,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceInfo) {
       .WillRepeatedly(testing::Return(devices));
 
   // Load and wait for setup
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("bluetooth/device_info")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());

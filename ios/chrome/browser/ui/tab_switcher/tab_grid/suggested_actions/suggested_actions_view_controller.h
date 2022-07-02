@@ -21,7 +21,7 @@
 // Tells the delegate that the user tapped on search in web item.
 - (void)didSelectSearchWebInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController;
-// Asks the delegate to fetch the history results count and execute |completion|
+// Asks the delegate to fetch the history results count and execute `completion`
 // with it.
 - (void)suggestedActionsViewController:
             (SuggestedActionsViewController*)viewController

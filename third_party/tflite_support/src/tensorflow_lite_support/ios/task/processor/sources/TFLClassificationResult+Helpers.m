@@ -19,7 +19,8 @@
 
 + (TFLClassificationResult *)classificationResultWithCResult:
     (TfLiteClassificationResult *)cClassificationResult {
-  if (cClassificationResult == nil) return nil;
+  if (!cClassificationResult)
+    return nil;
 
   NSMutableArray *classificationHeads = [[NSMutableArray alloc] init];
   for (int i = 0; i < cClassificationResult->size; i++) {
@@ -29,8 +30,18 @@
       TfLiteCategory cCategory = cClassifications.categories[j];
       [categories addObject:[TFLCategory categoryWithCCategory:&cCategory]];
     }
-    TFLClassifications* classifications =
-        [[TFLClassifications alloc] initWithHeadIndex:i categories:categories];
+
+    NSString* headName = nil;
+
+    if (cClassifications.head_name) {
+      headName = [NSString stringWithCString:cClassifications.head_name
+                                    encoding:NSUTF8StringEncoding];
+    }
+
+    TFLClassifications* classifications = [[TFLClassifications alloc]
+        initWithHeadIndex:cClassifications.head_index
+                 headName:headName
+               categories:categories];
 
     [classificationHeads addObject:classifications];
   }

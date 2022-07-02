@@ -16,7 +16,8 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-large_variation_key_size_enabled = is_chromecast || is_chromeos_lacros
+large_variation_key_size_enabled =
+    is_castos || is_cast_android || is_chromeos_lacros
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -159,15 +160,18 @@ if (is_android) {
   android_library("variations_java") {
     srcjar_deps = [
       ":java_switches_srcjar",
-      ":load_seed_result_enum_srcjar",
+      ":variations_enum_srcjar",
     ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
-  java_cpp_enum("load_seed_result_enum_srcjar") {
+  java_cpp_enum("variations_enum_srcjar") {
     # External code should depend on ":variations_java" instead.
     visibility = [ ":*" ]
-    sources = [ "metrics.h" ]
+    sources = [
+      "metrics.h",
+      "synthetic_trials.h",
+    ]
   }
 }
 

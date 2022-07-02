@@ -336,6 +336,11 @@ interface DesktopSessionControl {
   // will be reported via the
   // DesktopSessionEventHandler::OnUrlForwarderStateChange() method.
   SetUpUrlForwarder();
+
+  // Used to notify the WebAuthn proxy browser extension of a remote state
+  // change, so the extension can determine whether it should attach to or
+  // detach to the WebAuthn proxy API.
+  SignalWebAuthnExtension();
 };
 
 // |frame| is set and contains valid frame data when a frame is captured

@@ -13,15 +13,15 @@ namespace gpu {
 
 // static
 void ContextUrl::SetActiveUrl(const gpu::ContextUrl& active_url) {
-  bool is_skia_renderer = active_url.url() == "chrome://gpu/SkiaRenderer";
+  bool is_chrome = active_url.url().scheme() == "chrome";
 
   {
-    static crash_reporter::CrashKeyString<8> crash_key(
-        "gpu-context-is-skia-renderer");
-    crash_key.Set(is_skia_renderer ? "true" : "false");
+    static crash_reporter::CrashKeyString<128> crash_key(
+        "gpu-url-chunk-chrome");
+    crash_key.Set(is_chrome ? active_url.url().possibly_invalid_spec() : "");
   }
 
-  if (is_skia_renderer)
+  if (is_chrome)
     return;
 
   // Skip setting crash key when URL hash hasn't changed.

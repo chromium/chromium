@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -495,8 +496,8 @@ void ScrollManager::RecordScrollRelatedMetrics(WebGestureDevice device) const {
 WebInputEventResult ScrollManager::HandleGestureScrollBegin(
     const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollBegin");
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -584,17 +585,11 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollUpdate");
   DCHECK_EQ(gesture_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
 
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 
-  Node* node = scroll_gesture_handling_node_.Get();
-  if (!node || !node->GetLayoutObject()) {
-    TRACE_EVENT_INSTANT0("input", "Lost scroll_gesture_handling_node",
-                         TRACE_EVENT_SCOPE_THREAD);
-    return WebInputEventResult::kNotHandled;
-  }
   if (snap_fling_controller_) {
     if (snap_fling_controller_->HandleGestureScrollUpdate(
             GetGestureScrollUpdateInfo(gesture_event))) {
@@ -615,7 +610,10 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (delta.IsZero())
     return WebInputEventResult::kNotHandled;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
+  LayoutObject* layout_object =
+      scroll_gesture_handling_node_
+          ? scroll_gesture_handling_node_->GetLayoutObject()
+          : nullptr;
 
   // Try to send the event to the correct view.
   WebInputEventResult result =
@@ -754,8 +752,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "ScrollManager::handleGestureScrollEnd");
 
-  DCHECK(!RuntimeEnabledFeatures::ScrollUnificationEnabled());
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -1080,19 +1078,6 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
   if (event_target) {
     if (HandleScrollGestureOnResizer(event_target, gesture_event))
       return WebInputEventResult::kHandledSuppressed;
-
-    GestureEvent* gesture_dom_event = GestureEvent::Create(
-        event_target->GetDocument().domWindow(), gesture_event);
-    if (gesture_dom_event) {
-      DispatchEventResult gesture_dom_event_result =
-          event_target->DispatchEvent(*gesture_dom_event);
-      if (gesture_dom_event_result != DispatchEventResult::kNotCanceled) {
-        DCHECK(gesture_dom_event_result !=
-               DispatchEventResult::kCanceledByEventHandler);
-        return event_handling_util::ToWebInputEventResult(
-            gesture_dom_event_result);
-      }
-    }
   }
 
   if (snap_fling_controller_) {

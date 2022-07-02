@@ -19,7 +19,7 @@
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
 
-// Asks the provider for the layout of the grid for the |activePage|, used in
+// Asks the provider for the layout of the grid for the `activePage`, used in
 // transition animations.
 - (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage;
 
@@ -29,7 +29,7 @@
 // Asks the provider for the view (if any) that animation views should be added
 // in front of when building an animated transition. It's an error if this
 // view is not nil and isn't an immediate subview of the view returned by
-// |-animationViewsContainer|
+// `-animationViewsContainer`
 - (UIView*)animationViewsContainerBottomView;
 
 @end

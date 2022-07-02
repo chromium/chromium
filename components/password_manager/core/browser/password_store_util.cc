@@ -3,16 +3,22 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_change.h"
 
 namespace password_manager {
 
-absl::optional<PasswordStoreChangeList> JoinPasswordStoreChanges(
-    std::vector<absl::optional<PasswordStoreChangeList>> changes) {
+PasswordChanges JoinPasswordStoreChanges(
+    const std::vector<PasswordChangesOrError>& changes_to_join) {
   PasswordStoreChangeList joined_changes;
-  for (auto changes_list : changes) {
-    if (!changes_list.has_value())
+  for (const auto& changes_or_error : changes_to_join) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error))
       return absl::nullopt;
-    std::move(changes_list->begin(), changes_list->end(),
+    const PasswordChanges& changes =
+        absl::get<PasswordChanges>(changes_or_error);
+    if (!changes.has_value())
+      return absl::nullopt;
+    std::copy(changes->begin(), changes->end(),
               std::back_inserter(joined_changes));
   }
   return joined_changes;
@@ -25,13 +31,12 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
   return std::move(absl::get<LoginsResult>(result));
 }
 
-PasswordStoreChangeListReply IgnoreChangeListAndRunCallback(
-    base::OnceClosure callback) {
-  return base::BindOnce(
-      [](base::OnceClosure callback, absl::optional<PasswordStoreChangeList>) {
-        std::move(callback).Run();
-      },
-      std::move(callback));
+PasswordChanges GetPasswordChangesOrEmptyListOnFailure(
+    PasswordChangesOrError result) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    return PasswordStoreChangeList();
+  }
+  return std::move(absl::get<PasswordChanges>(result));
 }
 
 }  // namespace password_manager

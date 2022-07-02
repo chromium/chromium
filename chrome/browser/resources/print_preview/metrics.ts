@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {PrinterType} from './data/destination.js';
 import {NativeLayer, NativeLayerImpl} from './native_layer.js';
 
 /**
@@ -24,20 +22,6 @@ export enum DestinationSearchBucket {
   MANAGE_BUTTON_CLICKED = 14,
   // Max value.
   DESTINATION_SEARCH_MAX_BUCKET = 15
-}
-
-/**
- * Print Preview initialization events metrics buckets.
- */
-export enum PrintPreviewInitializationEvents {
-  // Function initiated.
-  FUNCTION_INITIATED = 0,
-  // Function completed succesfully.
-  FUNCTION_SUCCESSFUL = 1,
-  // Function failed.
-  FUNCTION_FAILED = 2,
-  // Max value.
-  PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET = 3
 }
 
 /**
@@ -87,74 +71,11 @@ export class MetricsContext {
   }
 
   /**
-   * Destination Search specific usage statistics context.
-   */
-  static destinationSearch(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.DestinationAction',
-        DestinationSearchBucket.DESTINATION_SEARCH_MAX_BUCKET);
-  }
-
-  /**
    * Print settings UI specific usage statistics context
    */
   static printSettingsUi(): MetricsContext {
     return new MetricsContext(
         'PrintPreview.PrintSettingsUi',
         PrintSettingsUiBucket.PRINT_SETTINGS_UI_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getInitialSettings() specific usage statistics context
-   */
-  static getInitialSettings(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetInitialSettings',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPrinterCapabilities() specific usage statistics context
-   */
-  static getPrinterCapabilities(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetPrinterCapabilities',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPreview() specific usage statistics context
-   */
-  static getPreview(): MetricsContext {
-    return new MetricsContext(
-        'PrintPreview.Initialization.GetPreview',
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
-  }
-
-  /**
-   * NativeLayer.getPrinters() specific usage statistics context
-   */
-  static getPrinters(type: PrinterType): MetricsContext {
-    let histogram = '';
-    switch (type) {
-      case (PrinterType.EXTENSION_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Extension';
-        break;
-      case (PrinterType.PDF_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.PDF';
-        break;
-      case (PrinterType.LOCAL_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Local';
-        break;
-      default:
-        assertNotReached('unknown type = ' + type);
-    }
-    return new MetricsContext(
-        histogram,
-        PrintPreviewInitializationEvents
-            .PRINT_PREVIEW_INITIALIZATION_EVENTS_MAX_BUCKET);
   }
 }

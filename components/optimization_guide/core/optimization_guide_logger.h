@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -73,7 +74,7 @@ class OptimizationGuideLogger {
     std::string source_file_;
     int source_line_;
     std::vector<std::string> messages_;
-    OptimizationGuideLogger* optimization_guide_logger_;
+    raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
   };
 
  private:

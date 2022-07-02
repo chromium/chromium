@@ -55,11 +55,10 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
       return PermissionStatus::BLOCKED_SETTINGS;
   }
 
-  permissions::PermissionResult embargo_result =
-      permission_autoblocker_->GetEmbargoResult(
-          rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
-  if (embargo_result.content_setting == ContentSetting::CONTENT_SETTING_BLOCK)
+  if (permission_autoblocker_->IsEmbargoed(
+          rp_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
     return PermissionStatus::BLOCKED_EMBARGO;
+  }
   return PermissionStatus::GRANTED;
 }
 

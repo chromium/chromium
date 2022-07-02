@@ -102,7 +102,6 @@ source_set("common_sources") {
     "swap_buffers_complete_params.cc",
     "swap_buffers_complete_params.h",
     "swap_buffers_flags.h",
-    "texture_in_use_response.h",
     "thread_local.h",
     "time.h",
   ]
@@ -204,12 +203,12 @@ source_set("webgpu_sources") {
   ]
 
   if (use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn_wire" ]
+    deps += [ "//third_party/dawn/src/dawn/wire" ]
   }
 
   public_deps = [
     ":common",
-    "//third_party/dawn/src/dawn_wire:dawn_wire_headers",
+    "//third_party/dawn/src/dawn/wire:headers",
     "//ui/gl:buildflags",
   ]
 }

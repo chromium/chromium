@@ -118,7 +118,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
   ~CompositorEventAckBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    auto* main_frame = shell()->web_contents()->GetMainFrame();
+    auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
     return RenderWidgetHostImpl::From(
         main_frame->GetRenderViewHost()->GetWidget());
   }

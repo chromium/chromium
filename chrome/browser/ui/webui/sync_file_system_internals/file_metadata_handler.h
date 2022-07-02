@@ -34,10 +34,10 @@ class FileMetadataHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleGetExtensions(const base::ListValue* args);
-  void DidGetExtensions(std::string callback_id, const base::ListValue& list);
+  void HandleGetExtensions(const base::Value::List& args);
+  void DidGetExtensions(std::string callback_id, base::Value::List list);
 
-  void HandleGetFileMetadata(const base::ListValue* args);
+  void HandleGetFileMetadata(const base::Value::List& args);
   void DidGetFileMetadata(std::string callback_id,
                           const base::ListValue& files);
 

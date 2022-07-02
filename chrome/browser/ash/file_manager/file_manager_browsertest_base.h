@@ -90,6 +90,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs the files-swa feature.
     bool files_swa = false;
 
+    // Whether test needs the files-app-experimental feature.
+    bool files_experimental = false;
+
     // Whether test needs the media-swa apps.
     bool media_swa = false;
 
@@ -132,6 +135,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test needs the files-filters-in-recents-v2 flag.
     bool enable_filters_in_recents_v2 = false;
+
+    // Whether test should run with the DriveFsMirroring flag.
+    bool enable_mirrorsync = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

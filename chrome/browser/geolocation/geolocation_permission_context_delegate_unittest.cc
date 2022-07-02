@@ -116,14 +116,15 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
   run_loop.Run();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents()->GetPrimaryMainFrame());
   EXPECT_TRUE(
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1318240): Flaky.
 TEST_F(GeolocationPermissionContextDelegateTests,
-       SearchGeolocationInIncognito) {
+       DISABLED_SearchGeolocationInIncognito) {
   GURL requesting_frame_url(kDSETestUrl);
 
   SearchPermissionsService* service =

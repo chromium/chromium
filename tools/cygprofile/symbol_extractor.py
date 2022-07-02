@@ -150,7 +150,7 @@ def _SymbolInfosFromStream(objdump_lines):
   name_to_offsets = collections.defaultdict(list)
   symbol_infos = []
   for line in objdump_lines:
-    symbol_info = _FromObjdumpLine(line.decode('utf-8').rstrip('\n'))
+    symbol_info = _FromObjdumpLine(line.rstrip('\n'))
     if symbol_info is not None:
       # On ARM the LLD linker inserts pseudo-functions (thunks) that allow
       # jumping distances farther than 16 MiB. Such thunks are known to often
@@ -218,7 +218,6 @@ def _SymbolInfosFromLlvmNm(lines):
   """
   symbol_names = []
   for line in lines:
-    line = line.decode('utf-8')
     m = _LLVM_NM_LINE_RE.match(line)
     assert m is not None, line
     if m.group('symbol_type') not in ['t', 'T', 'w', 'W']:

@@ -79,7 +79,7 @@ export class CrosImageCapture {
    */
   async takePhoto(photoSettings: PhotoSettings, photoEffects: Effect[] = []):
       Promise<TakePhotoResult[]> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator === null) {
       if (photoEffects.length > 0) {
         throw new Error('Applying effects is not supported on this device');
@@ -148,7 +148,7 @@ export class CrosImageCapture {
    * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator === null) {
       return;
     }
@@ -185,16 +185,9 @@ export class CrosImageCapture {
 
   /**
    * Removes the observer that saves metadata.
-   *
-   * @return Promise for the operation.
    */
-  async removeMetadataObserver(): Promise<void> {
+  removeMetadataObserver(): void {
     if (this.metadataObserver === null) {
-      return;
-    }
-
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator === null) {
       return;
     }
 

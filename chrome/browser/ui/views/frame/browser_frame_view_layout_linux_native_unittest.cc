@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -54,6 +55,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   }
   bool ShouldShowCaptionButtons() const override { return true; }
   bool IsRegularOrGuestSession() const override { return true; }
+  bool CanMaximize() const override { return true; }
+  bool CanMinimize() const override { return true; }
   bool IsMaximized() const override { return false; }
   bool IsMinimized() const override { return false; }
   bool IsFullscreen() const override { return false; }
@@ -207,17 +210,17 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  views::View* root_view_ = nullptr;
-  BrowserFrameViewLayoutLinuxNative* layout_manager_ = nullptr;
+  raw_ptr<views::View> root_view_ = nullptr;
+  raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
   std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
   std::unique_ptr<views::WindowFrameProvider> frame_provider_;
 
   // Widgets:
-  views::ImageButton* minimize_button_ = nullptr;
-  views::ImageButton* maximize_button_ = nullptr;
-  views::ImageButton* restore_button_ = nullptr;
-  views::ImageButton* close_button_ = nullptr;
+  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 };
 
 // Tests layout of native navigation buttons.

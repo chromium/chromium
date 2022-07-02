@@ -254,20 +254,13 @@ Frame* FrameTree::FindFrameForNavigationInternal(
 
   // The target _unfencedTop should only be treated as a special name in
   // opaque-ads mode fenced frames.
-  // TODO(crbug.com/1262022): Simplify check when ShadowDOM fenced frames are
-  // eventually removed.
   if (EqualIgnoringASCIICase(name, "_unfencedTop")) {
-    // In ShadowDOM, we can just return the unfenced top frame, because it
-    // exists in the renderer process.
-    if (this_frame_.Get()->IsInShadowDOMOpaqueAdsFencedFrameTree()) {
-      return &Top();
-    }
-    // In MPArch, because the fenced frame tree is isolated in the renderer
-    // process, we instead set a flag that will later indicate to the browser
+    // In fenced frames, we set a flag that will later indicate to the browser
     // that this is an _unfencedTop navigation, and return the current frame
     // so that the renderer-side checks will succeed.
     // TODO(crbug.com/1315802): Refactor MPArch _unfencedTop handling.
-    if (this_frame_.Get()->IsInMPArchOpaqueAdsFencedFrameTree() &&
+    if (this_frame_.Get()->GetFencedFrameMode() ==
+            mojom::blink::FencedFrameMode::kOpaqueAds &&
         request != nullptr) {
       request->SetIsUnfencedTopNavigation(true);
       return this_frame_;

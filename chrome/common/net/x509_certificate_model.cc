@@ -17,15 +17,21 @@
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
+#include "net/cert/internal/certificate_policies.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_name.h"
+#include "net/cert/internal/signature_algorithm.h"
+#include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
+#include "net/der/parser.h"
 #include "net/der/tag.h"
+#include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace x509_certificate_model {
@@ -74,6 +80,76 @@ constexpr uint8_t kIssuerAltNameOid[] = {0x55, 0x1d, 0x12};
 // In dotted notation: 2.5.29.9
 constexpr uint8_t kSubjectDirectoryAttributesOid[] = {0x55, 0x1d, 0x09};
 
+// From RFC 3447:
+// pkcs-1    OBJECT IDENTIFIER ::= {
+//     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 1
+// }
+// rsaEncryption    OBJECT IDENTIFIER ::= { pkcs-1 1 }
+constexpr uint8_t kPkcs1RsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                           0x0d, 0x01, 0x01, 0x01};
+// md2WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 2 }
+constexpr uint8_t kPkcs1Md2WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x02};
+// From RFC 2314: md4WithRSAEncryption OBJECT IDENTIFIER ::= { pkcs-1 3 }
+constexpr uint8_t kPkcs1Md4WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x03};
+// md5WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 4 }
+constexpr uint8_t kPkcs1Md5WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                  0x0d, 0x01, 0x01, 0x04};
+// sha1WithRSAEncryption      OBJECT IDENTIFIER ::= { pkcs-1 5 }
+constexpr uint8_t kPkcs1Sha1WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
+                                                   0x0d, 0x01, 0x01, 0x05};
+// sha256WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 11 }
+constexpr uint8_t kPkcs1Sha256WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b};
+// sha384WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 12 }
+constexpr uint8_t kPkcs1Sha384WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0c};
+// sha512WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 13 }
+constexpr uint8_t kPkcs1Sha512WithRsaEncryption[] = {
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0d};
+// From RFC 3279:
+//   ansi-X9-62  OBJECT IDENTIFIER ::= {
+//            iso(1) member-body(2) us(840) 10045 }
+//   id-ecSigType OBJECT IDENTIFIER  ::=  {
+//        ansi-X9-62 signatures(4) }
+//   ecdsa-with-SHA1  OBJECT IDENTIFIER ::= {
+//        id-ecSigType 1 }
+constexpr uint8_t kAnsiX962EcdsaWithSha1[] = {0x2a, 0x86, 0x48, 0xce,
+                                              0x3d, 0x04, 0x01};
+// From RFC 5758:
+//    ecdsa-with-SHA256 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 2 }
+constexpr uint8_t kAnsiX962EcdsaWithSha256[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x02};
+//    ecdsa-with-SHA384 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 3 }
+constexpr uint8_t kAnsiX962EcdsaWithSha384[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x03};
+//    ecdsa-with-SHA512 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 4 }
+constexpr uint8_t kAnsiX962EcdsaWithSha512[] = {0x2a, 0x86, 0x48, 0xce,
+                                                0x3d, 0x04, 0x03, 0x04};
+// From RFC 3279:
+//    ansi-X9-62 OBJECT IDENTIFIER ::=
+//                            { iso(1) member-body(2) us(840) 10045 }
+//    id-public-key-type OBJECT IDENTIFIER  ::= { ansi-X9.62 2 }
+//    id-ecPublicKey OBJECT IDENTIFIER ::= { id-publicKeyType 1 }
+constexpr uint8_t kAnsiX962EcPublicKey[] = {0x2a, 0x86, 0x48, 0xce,
+                                            0x3d, 0x02, 0x01};
+// From RFC 5480:
+//     secp256r1 OBJECT IDENTIFIER ::= {
+//       iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3)
+//       prime(1) 7 }
+constexpr uint8_t kSecgEcSecp256r1[] = {0x2a, 0x86, 0x48, 0xce,
+                                        0x3d, 0x03, 0x01, 0x07};
+//     secp384r1 OBJECT IDENTIFIER ::= {
+//       iso(1) identified-organization(3) certicom(132) curve(0) 34 }
+constexpr uint8_t kSecgEcSecp384r1[] = {0x2b, 0x81, 0x04, 0x00, 0x22};
+//     secp521r1 OBJECT IDENTIFIER ::= {
+//       iso(1) identified-organization(3) certicom(132) curve(0) 35 }
+constexpr uint8_t kSecgEcSecp512r1[] = {0x2b, 0x81, 0x04, 0x00, 0x23};
+
 // Old Netscape OIDs. Do we still need all these?
 // #define NETSCAPE_OID 0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42
 // #define NETSCAPE_CERT_EXT NETSCAPE_OID, 0x01
@@ -82,14 +158,161 @@ constexpr uint8_t kSubjectDirectoryAttributesOid[] = {0x55, 0x1d, 0x09};
 constexpr uint8_t kNetscapeCertificateTypeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
                                                    0xf8, 0x42, 0x01, 0x01};
 
+// CONST_OID nsExtBaseURL[] = { NETSCAPE_CERT_EXT, 0x02 };
+constexpr uint8_t kNetscapeBaseURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                           0xf8, 0x42, 0x01, 0x02};
+
+// CONST_OID nsExtRevocationURL[] = { NETSCAPE_CERT_EXT, 0x03 };
+constexpr uint8_t kNetscapeRevocationURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                 0xf8, 0x42, 0x01, 0x03};
+
+// CONST_OID nsExtCARevocationURL[] = { NETSCAPE_CERT_EXT, 0x04 };
+constexpr uint8_t kNetscapeCARevocationURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                   0xf8, 0x42, 0x01, 0x04};
+
+// CONST_OID nsExtCACertURL[] = { NETSCAPE_CERT_EXT, 0x06 };
+constexpr uint8_t kNetscapeCACertURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                             0xf8, 0x42, 0x01, 0x06};
+
+// CONST_OID nsExtCertRenewalURL[] = { NETSCAPE_CERT_EXT, 0x07 };
+constexpr uint8_t kNetscapeRenewalURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                              0xf8, 0x42, 0x01, 0x07};
+
+// CONST_OID nsExtCAPolicyURL[] = { NETSCAPE_CERT_EXT, 0x08 };
+constexpr uint8_t kNetscapeCAPolicyURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                               0xf8, 0x42, 0x01, 0x08};
+
+// CONST_OID nsExtSSLServerName[] = { NETSCAPE_CERT_EXT, 0x0c };
+constexpr uint8_t kNetscapeSSLServerNameOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                 0xf8, 0x42, 0x01, 0x0c};
+
+// CONST_OID nsExtComment[] = { NETSCAPE_CERT_EXT, 0x0d };
+constexpr uint8_t kNetscapeCommentOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                           0xf8, 0x42, 0x01, 0x0d};
+
+// CONST_OID nsExtLostPasswordURL[] = { NETSCAPE_CERT_EXT, 0x0e };
+constexpr uint8_t kNetscapeLostPasswordURLOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                   0xf8, 0x42, 0x01, 0x0e};
+
+// CONST_OID nsExtCertRenewalTime[] = { NETSCAPE_CERT_EXT, 0x0f };
+constexpr uint8_t kNetscapeRenewalTimeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                               0xf8, 0x42, 0x01, 0x0f};
+
+// Microsoft OIDs. Do we still need all these?
+//
+// 1.3.6.1.4.1.311.20.2
+constexpr uint8_t kMsCertExtCerttype[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x14, 0x02};
+
+// 1.3.6.1.4.1.311.21.1
+constexpr uint8_t kMsCertsrvCaVersion[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                           0x82, 0x37, 0x15, 0x01};
+
+// 1.3.6.1.4.1.311.20.2.3
+constexpr uint8_t kMsNtPrincipalName[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x14, 0x02, 0x03};
+
+// 1.3.6.1.4.1.311.25.1
+constexpr uint8_t kMsNtdsReplication[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x19, 0x01};
+
+// 1.3.6.1.4.1.311.2.1.21
+constexpr uint8_t kEkuMsIndividualCodeSigning[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x01, 0x15};
+
+// 1.3.6.1.4.1.311.2.1.22
+constexpr uint8_t kEkuMsCommercialCodeSigning[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x01, 0x16};
+
+// 1.3.6.1.4.1.311.10.3.1
+constexpr uint8_t kEkuMsTrustListSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                              0x82, 0x37, 0x0a, 0x03, 0x01};
+
+// 1.3.6.1.4.1.311.10.3.2
+constexpr uint8_t kEkuMsTimeStamping[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                          0x82, 0x37, 0x0a, 0x03, 0x02};
+
+// 1.3.6.1.4.1.311.10.3.3
+constexpr uint8_t kEkuMsServerGatedCrypto[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                               0x82, 0x37, 0x0a, 0x03, 0x03};
+
+// 1.3.6.1.4.1.311.10.3.4
+constexpr uint8_t kEkuMsEncryptingFileSystem[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                                  0x82, 0x37, 0x0a, 0x03, 0x04};
+
+// 1.3.6.1.4.1.311.10.3.4.1
+constexpr uint8_t kEkuMsFileRecovery[] = {0x2b, 0x06, 0x01, 0x04, 0x01, 0x82,
+                                          0x37, 0x0a, 0x03, 0x04, 0x01};
+
+// 1.3.6.1.4.1.311.10.3.5
+constexpr uint8_t kEkuMsWindowsHardwareDriverVerification[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x0a, 0x03, 0x05};
+
+// 1.3.6.1.4.1.311.10.3.10
+constexpr uint8_t kEkuMsQualifiedSubordination[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x0a, 0x03, 0x0a};
+
+// 1.3.6.1.4.1.311.10.3.11
+constexpr uint8_t kEkuMsKeyRecovery[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                         0x82, 0x37, 0x0a, 0x03, 0x0b};
+
+// 1.3.6.1.4.1.311.10.3.12
+constexpr uint8_t kEkuMsDocumentSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                             0x82, 0x37, 0x0a, 0x03, 0x0c};
+
+// 1.3.6.1.4.1.311.10.3.13
+constexpr uint8_t kEkuMsLifetimeSigning[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                             0x82, 0x37, 0x0a, 0x03, 0x0d};
+
+// 1.3.6.1.4.1.311.20.2.2
+constexpr uint8_t kEkuMsSmartCardLogon[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                            0x82, 0x37, 0x14, 0x02, 0x02};
+
+// 1.3.6.1.4.1.311.21.6
+constexpr uint8_t kEkuMsKeyRecoveryAgent[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                              0x82, 0x37, 0x15, 0x06};
+
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
 constexpr auto kNameStringHandling =
     net::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
 
+std::string ProcessRawBytesWithSeparators(const unsigned char* data,
+                                          size_t data_length,
+                                          char hex_separator,
+                                          char line_separator) {
+  static const char kHexChars[] = "0123456789ABCDEF";
+
+  // Each input byte creates two output hex characters + a space or newline,
+  // except for the last byte.
+  std::string ret;
+  size_t kMin = 0U;
+
+  if (!data_length)
+    return std::string();
+
+  ret.reserve(std::max(kMin, data_length * 3 - 1));
+
+  for (size_t i = 0; i < data_length; ++i) {
+    unsigned char b = data[i];
+    ret.push_back(kHexChars[(b >> 4) & 0xf]);
+    ret.push_back(kHexChars[b & 0xf]);
+    if (i + 1 < data_length) {
+      if ((i + 1) % 16 == 0)
+        ret.push_back(line_separator);
+      else
+        ret.push_back(hex_separator);
+    }
+  }
+  return ret;
+}
+
+std::string ProcessRawBytes(base::span<const uint8_t> data) {
+  return ProcessRawBytesWithSeparators(data.data(), data.size(), ' ', '\n');
+}
+
 std::string ProcessRawBytes(net::der::Input data) {
-  return x509_certificate_model::ProcessRawBytes(data.UnsafeData(),
-                                                 data.Length());
+  return ProcessRawBytes(data.AsSpan());
 }
 
 OptionalStringOrError FindAttributeOfType(
@@ -104,6 +327,7 @@ OptionalStringOrError FindAttributeOfType(
                                                          &rv)) {
         return Error();
       }
+      // TODO(mattm): do something about newlines (or other control chars)?
       return rv;
     }
   }
@@ -177,8 +401,52 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
      IDS_CERT_OID_AVA_STREET_ADDRESS},
     {net::der::Input(kTypePostalCode), IDS_CERT_OID_AVA_POSTAL_CODE},
 
+    // Algorithm fields:
+    {net::der::Input(kPkcs1RsaEncryption), IDS_CERT_OID_PKCS1_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md2WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md4WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Md5WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha1WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha256WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha384WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kPkcs1Sha512WithRsaEncryption),
+     IDS_CERT_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION},
+    {net::der::Input(kAnsiX962EcdsaWithSha1),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA1_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha256),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA256_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha384),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA384_SIGNATURE},
+    {net::der::Input(kAnsiX962EcdsaWithSha512),
+     IDS_CERT_OID_ANSIX962_ECDSA_SHA512_SIGNATURE},
+    {net::der::Input(kAnsiX962EcPublicKey),
+     IDS_CERT_OID_ANSIX962_EC_PUBLIC_KEY},
+    {net::der::Input(kSecgEcSecp256r1), IDS_CERT_OID_SECG_EC_SECP256R1},
+    {net::der::Input(kSecgEcSecp384r1), IDS_CERT_OID_SECG_EC_SECP384R1},
+    {net::der::Input(kSecgEcSecp512r1), IDS_CERT_OID_SECG_EC_SECP521R1},
+
     // Extension fields (including details of extensions):
     {net::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},
+    {net::der::Input(kNetscapeBaseURLOid), IDS_CERT_EXT_NS_CERT_BASE_URL},
+    {net::der::Input(kNetscapeRevocationURLOid),
+     IDS_CERT_EXT_NS_CERT_REVOCATION_URL},
+    {net::der::Input(kNetscapeCARevocationURLOid),
+     IDS_CERT_EXT_NS_CA_REVOCATION_URL},
+    {net::der::Input(kNetscapeRenewalURLOid), IDS_CERT_EXT_NS_CERT_RENEWAL_URL},
+    {net::der::Input(kNetscapeCAPolicyURLOid), IDS_CERT_EXT_NS_CA_POLICY_URL},
+    {net::der::Input(kNetscapeSSLServerNameOid),
+     IDS_CERT_EXT_NS_SSL_SERVER_NAME},
+    {net::der::Input(kNetscapeCommentOid), IDS_CERT_EXT_NS_COMMENT},
+    {net::der::Input(kNetscapeLostPasswordURLOid),
+     IDS_CERT_EXT_NS_LOST_PASSWORD_URL},
+    {net::der::Input(kNetscapeRenewalTimeOid),
+     IDS_CERT_EXT_NS_CERT_RENEWAL_TIME},
     {net::der::Input(kSubjectDirectoryAttributesOid),
      IDS_CERT_X509_SUBJECT_DIRECTORY_ATTR},
     {net::der::Input(net::kSubjectKeyIdentifierOid),
@@ -216,6 +484,34 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
     {net::der::Input(net::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
     {net::der::Input(net::kNetscapeServerGatedCrypto),
      IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
+
+    // Microsoft oids:
+    {net::der::Input(kMsCertExtCerttype), IDS_CERT_EXT_MS_CERT_TYPE},
+    {net::der::Input(kMsCertsrvCaVersion), IDS_CERT_EXT_MS_CA_VERSION},
+    {net::der::Input(kMsNtPrincipalName), IDS_CERT_EXT_MS_NT_PRINCIPAL_NAME},
+    {net::der::Input(kMsNtdsReplication), IDS_CERT_EXT_MS_NTDS_REPLICATION},
+    {net::der::Input(kEkuMsIndividualCodeSigning),
+     IDS_CERT_EKU_MS_INDIVIDUAL_CODE_SIGNING},
+    {net::der::Input(kEkuMsCommercialCodeSigning),
+     IDS_CERT_EKU_MS_COMMERCIAL_CODE_SIGNING},
+    {net::der::Input(kEkuMsTrustListSigning),
+     IDS_CERT_EKU_MS_TRUST_LIST_SIGNING},
+    {net::der::Input(kEkuMsTimeStamping), IDS_CERT_EKU_MS_TIME_STAMPING},
+    {net::der::Input(kEkuMsServerGatedCrypto),
+     IDS_CERT_EKU_MS_SERVER_GATED_CRYPTO},
+    {net::der::Input(kEkuMsEncryptingFileSystem),
+     IDS_CERT_EKU_MS_ENCRYPTING_FILE_SYSTEM},
+    {net::der::Input(kEkuMsFileRecovery), IDS_CERT_EKU_MS_FILE_RECOVERY},
+    {net::der::Input(kEkuMsWindowsHardwareDriverVerification),
+     IDS_CERT_EKU_MS_WINDOWS_HARDWARE_DRIVER_VERIFICATION},
+    {net::der::Input(kEkuMsQualifiedSubordination),
+     IDS_CERT_EKU_MS_QUALIFIED_SUBORDINATION},
+    {net::der::Input(kEkuMsKeyRecovery), IDS_CERT_EKU_MS_KEY_RECOVERY},
+    {net::der::Input(kEkuMsDocumentSigning), IDS_CERT_EKU_MS_DOCUMENT_SIGNING},
+    {net::der::Input(kEkuMsLifetimeSigning), IDS_CERT_EKU_MS_LIFETIME_SIGNING},
+    {net::der::Input(kEkuMsSmartCardLogon), IDS_CERT_EKU_MS_SMART_CARD_LOGON},
+    {net::der::Input(kEkuMsKeyRecoveryAgent),
+     IDS_CERT_EKU_MS_KEY_RECOVERY_AGENT},
 });
 
 absl::optional<std::string> GetOidText(net::der::Input oid) {
@@ -251,6 +547,7 @@ std::string ProcessRDN(const net::RelativeDistinguishedName& rdn) {
     rv += " = ";
     if (name_attribute.type == net::der::Input(net::kTypeCommonNameOid))
       value = ProcessIDN(value);
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += value;
     rv += "\n";
   }
@@ -274,6 +571,18 @@ OptionalStringOrError RDNSequenceToStringMultiLine(
       return Error();
     rv += rdn_value;
   }
+  return rv;
+}
+
+absl::optional<std::string> ProcessIA5String(net::der::Input extension_data) {
+  net::der::Input value;
+  net::der::Parser parser(extension_data);
+  std::string rv;
+  if (!parser.ReadTag(net::der::kIA5String, &value) || parser.HasMore() ||
+      !net::der::ParseIA5String(value, &rv)) {
+    return absl::nullopt;
+  }
+  // TODO(mattm): do something about newlines (or other control chars)?
   return rv;
 }
 
@@ -302,6 +611,17 @@ absl::optional<std::string> ProcessBitField(net::der::BitString bitfield,
 }
 
 // Returns nullopt on error, or empty string if no bits were set.
+absl::optional<std::string> ProcessBitStringValue(
+    net::der::Input value,
+    base::span<const int> string_map,
+    char separator) {
+  absl::optional<net::der::BitString> decoded = net::der::ParseBitString(value);
+  if (!decoded) {
+    return absl::nullopt;
+  }
+  return ProcessBitField(decoded.value(), string_map, separator);
+}
+
 absl::optional<std::string> ProcessBitStringExtension(
     net::der::Input extension_data,
     base::span<const int> string_map,
@@ -311,12 +631,8 @@ absl::optional<std::string> ProcessBitStringExtension(
   if (!parser.ReadTag(net::der::kBitString, &value) || parser.HasMore()) {
     return absl::nullopt;
   }
-  absl::optional<net::der::BitString> decoded = net::der::ParseBitString(value);
-  if (!decoded) {
-    return absl::nullopt;
-  }
 
-  return ProcessBitField(decoded.value(), string_map, separator);
+  return ProcessBitStringValue(value, string_map, separator);
 }
 
 absl::optional<std::string> ProcessNSCertTypeExtension(
@@ -458,11 +774,13 @@ absl::optional<std::string> ProcessGeneralNames(
                             ProcessRawBytes(value));
   }
   for (const auto& rfc822_name : names.rfc822_names) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_RFC822_NAME, rfc822_name);
   }
   for (const auto& dns_name : names.dns_names) {
     // TODO(mattm): Should probably do ProcessIDN on dnsNames from
     // subjectAltName like we do on subject commonName?
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DNS_NAME, dns_name);
   }
   for (const auto& x400_address : names.x400_addresses) {
@@ -482,6 +800,7 @@ absl::optional<std::string> ProcessGeneralNames(
   }
   for (const auto& uniform_resource_identifier :
        names.uniform_resource_identifiers) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_URI,
                             uniform_resource_identifier);
   }
@@ -565,6 +884,322 @@ absl::optional<std::string> ProcessAuthorityKeyId(
   return rv;
 }
 
+absl::optional<std::string> ProcessUserNoticeDisplayText(
+    net::der::Tag tag,
+    net::der::Input value) {
+  std::string display_text;
+  switch (tag) {
+    case net::der::kIA5String:
+      if (!net::der::ParseIA5String(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kVisibleString:
+      if (!net::der::ParseVisibleString(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kBmpString:
+      if (!net::der::ParseBmpString(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kUtf8String:
+      if (!base::IsStringUTF8AllowingNoncharacters(value.AsStringPiece()))
+        return absl::nullopt;
+      display_text = value.AsString();
+      break;
+    default:
+      return absl::nullopt;
+  }
+  // TODO(mattm): do something about newlines (or other control chars)?
+  return display_text;
+}
+
+absl::optional<std::string> ProcessUserNotice(net::der::Input qualifier) {
+  // RFC 5280 section 4.2.1.4:
+  //
+  //    UserNotice ::= SEQUENCE {
+  //         noticeRef        NoticeReference OPTIONAL,
+  //         explicitText     DisplayText OPTIONAL }
+  //
+  //    NoticeReference ::= SEQUENCE {
+  //         organization     DisplayText,
+  //         noticeNumbers    SEQUENCE OF INTEGER }
+  //
+  //    DisplayText ::= CHOICE {
+  //         ia5String        IA5String      (SIZE (1..200)),
+  //         visibleString    VisibleString  (SIZE (1..200)),
+  //         bmpString        BMPString      (SIZE (1..200)),
+  //         utf8String       UTF8String     (SIZE (1..200)) }
+
+  net::der::Parser outer_parser(qualifier);
+  net::der::Parser parser;
+  if (!outer_parser.ReadSequence(&parser) || outer_parser.HasMore())
+    return absl::nullopt;
+
+  absl::optional<net::der::Input> notice_ref_value;
+  if (!parser.ReadOptionalTag(net::der::kSequence, &notice_ref_value))
+    return absl::nullopt;
+
+  std::string rv;
+  if (notice_ref_value) {
+    net::der::Parser notice_ref_parser(*notice_ref_value);
+    net::der::Tag organization_tag;
+    net::der::Input organization_value;
+    if (!notice_ref_parser.ReadTagAndValue(&organization_tag,
+                                           &organization_value)) {
+      return absl::nullopt;
+    }
+    absl::optional<std::string> s =
+        ProcessUserNoticeDisplayText(organization_tag, organization_value);
+    if (!s)
+      return absl::nullopt;
+    rv += *s;
+    rv += " - ";
+
+    net::der::Parser notice_numbers_parser;
+    if (!notice_ref_parser.ReadSequence(&notice_numbers_parser))
+      return absl::nullopt;
+    bool first = true;
+    while (notice_numbers_parser.HasMore()) {
+      net::der::Input notice_number;
+      if (!notice_numbers_parser.ReadTag(net::der::kInteger, &notice_number))
+        return absl::nullopt;
+      if (!first)
+        rv += ", ";
+      rv += '#';
+      uint64_t number;
+      if (net::der::ParseUint64(notice_number, &number))
+        rv += base::NumberToString(number);
+      else
+        rv += ProcessRawBytes(notice_number);
+      first = false;
+    }
+  }
+
+  if (parser.HasMore()) {
+    net::der::Tag explicit_text_tag;
+    net::der::Input explicit_text_value;
+    if (!parser.ReadTagAndValue(&explicit_text_tag, &explicit_text_value))
+      return absl::nullopt;
+    rv += "\n    ";
+    absl::optional<std::string> s =
+        ProcessUserNoticeDisplayText(explicit_text_tag, explicit_text_value);
+    if (!s)
+      return absl::nullopt;
+    rv += *s;
+  }
+
+  if (parser.HasMore())
+    return absl::nullopt;
+
+  return rv;
+}
+
+absl::optional<std::string> ProcessCertificatePolicies(
+    net::der::Input extension_data) {
+  std::vector<net::PolicyInformation> policies;
+  net::CertErrors errors;
+  if (!net::ParseCertificatePoliciesExtension(extension_data, &policies,
+                                              &errors)) {
+    return absl::nullopt;
+  }
+  std::string rv;
+  for (const auto& policy_info : policies) {
+    std::string key = GetOidTextOrNumeric(policy_info.policy_oid);
+    // If there are policy qualifiers, display the oid text
+    // with a ':', otherwise just put the oid text and a newline.
+    if (policy_info.policy_qualifiers.empty()) {
+      rv += key;
+    } else {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_MULTILINE_INFO_START_FORMAT,
+                                      base::UTF8ToUTF16(key));
+    }
+    rv += '\n';
+
+    if (!policy_info.policy_qualifiers.empty()) {
+      for (const auto& qualifier_info : policy_info.policy_qualifiers) {
+        rv += "  ";
+        rv += l10n_util::GetStringFUTF8(IDS_CERT_MULTILINE_INFO_START_FORMAT,
+                                        base::UTF8ToUTF16(GetOidTextOrNumeric(
+                                            qualifier_info.qualifier_oid)));
+        if (qualifier_info.qualifier_oid ==
+            net::der::Input(net::kCpsPointerId)) {
+          absl::optional<std::string> s =
+              ProcessIA5String(qualifier_info.qualifier);
+          if (!s)
+            return absl::nullopt;
+          rv += "    ";
+          rv += *s;
+        } else if (qualifier_info.qualifier_oid ==
+                   net::der::Input(net::kUserNoticeId)) {
+          absl::optional<std::string> s =
+              ProcessUserNotice(qualifier_info.qualifier);
+          if (!s)
+            return absl::nullopt;
+          rv += *s;
+        } else {
+          rv += ProcessRawBytes(qualifier_info.qualifier);
+        }
+        rv += '\n';
+      }
+    }
+  }
+  return rv;
+}
+
+absl::optional<std::string> ProcessCrlDistributionPoints(
+    net::der::Input extension_data) {
+  std::vector<net::ParsedDistributionPoint> distribution_points;
+  if (!ParseCrlDistributionPoints(extension_data, &distribution_points))
+    return absl::nullopt;
+
+  //    ReasonFlags ::= BIT STRING {
+  static const int kReasonStrings[] = {
+      //         unused                  (0),
+      IDS_CERT_REVOCATION_REASON_UNUSED,
+      //         keyCompromise           (1),
+      IDS_CERT_REVOCATION_REASON_KEY_COMPROMISE,
+      //         cACompromise            (2),
+      IDS_CERT_REVOCATION_REASON_CA_COMPROMISE,
+      //         affiliationChanged      (3),
+      IDS_CERT_REVOCATION_REASON_AFFILIATION_CHANGED,
+      //         superseded              (4),
+      IDS_CERT_REVOCATION_REASON_SUPERSEDED,
+      //         cessationOfOperation    (5),
+      IDS_CERT_REVOCATION_REASON_CESSATION_OF_OPERATION,
+      //         certificateHold         (6),
+      IDS_CERT_REVOCATION_REASON_CERTIFICATE_HOLD,
+      // These aren't included as they would be challenging to translate and
+      // are irrelevant for a web browser. (Actually all of these are
+      // kinda irrelevant as we don't support CRL reasons.)
+      //         privilegeWithdrawn      (7),
+      //         aACompromise            (8) }
+  };
+
+  std::string rv;
+  for (const auto& dp : distribution_points) {
+    if (dp.distribution_point_fullname) {
+      absl::optional<std::string> s =
+          ProcessGeneralNames(*dp.distribution_point_fullname);
+      if (!s)
+        return absl::nullopt;
+      rv += *s;
+    }
+
+    if (dp.distribution_point_name_relative_to_crl_issuer) {
+      net::RelativeDistinguishedName name_relative_to_crl_issuer;
+      net::der::Parser rdnParser(
+          *dp.distribution_point_name_relative_to_crl_issuer);
+      if (!net::ReadRdn(&rdnParser, &name_relative_to_crl_issuer))
+        return absl::nullopt;
+      std::string s = ProcessRDN(name_relative_to_crl_issuer);
+      if (s.empty())
+        return absl::nullopt;
+      rv += s;
+    }
+
+    if (dp.reasons) {
+      absl::optional<std::string> s =
+          ProcessBitStringValue(*dp.reasons, kReasonStrings, ',');
+      if (!s)
+        return absl::nullopt;
+      rv += *s + '\n';
+    }
+
+    if (dp.crl_issuer) {
+      net::CertErrors unused_errors;
+      auto crl_issuer =
+          net::GeneralNames::CreateFromValue(*dp.crl_issuer, &unused_errors);
+      if (!crl_issuer)
+        return absl::nullopt;
+      absl::optional<std::string> s = ProcessGeneralNames(*crl_issuer);
+      if (!s)
+        return absl::nullopt;
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_ISSUER_FORMAT,
+                                      base::UTF8ToUTF16(*s));
+    }
+  }
+
+  return rv;
+}
+
+absl::optional<std::string> ProcessAuthorityInfoAccess(
+    net::der::Input extension_data) {
+  std::vector<net::AuthorityInfoAccessDescription> access_descriptions;
+  if (!net::ParseAuthorityInfoAccess(extension_data, &access_descriptions))
+    return absl::nullopt;
+
+  std::string rv;
+  for (const auto& access_description : access_descriptions) {
+    net::GeneralNames name;
+    net::CertErrors unused_errors;
+    if (!net::ParseGeneralName(access_description.access_location,
+                               net::GeneralNames::IP_ADDRESS_ONLY, &name,
+                               &unused_errors)) {
+      return absl::nullopt;
+    }
+
+    absl::optional<std::string> s = ProcessGeneralNames(name);
+    if (!s)
+      return absl::nullopt;
+    std::u16string location_str = base::UTF8ToUTF16(*s);
+    if (access_description.access_method_oid ==
+        net::der::Input(net::kAdOcspOid)) {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_OCSP_RESPONDER_FORMAT,
+                                      location_str);
+    } else if (access_description.access_method_oid ==
+               net::der::Input(net::kAdCaIssuersOid)) {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_CA_ISSUERS_FORMAT, location_str);
+    } else {
+      rv += l10n_util::GetStringFUTF8(
+          IDS_CERT_UNKNOWN_OID_INFO_FORMAT,
+          base::UTF8ToUTF16(
+              GetOidTextOrNumeric(access_description.access_method_oid)),
+          location_str);
+    }
+  }
+
+  return rv;
+}
+
+std::string ProcessAlgorithmIdentifier(net::der::Input algorithm_tlv) {
+  net::der::Input oid;
+  net::der::Input params;
+  if (!net::ParseAlgorithmIdentifier(algorithm_tlv, &oid, &params)) {
+    return std::string();
+  }
+  return GetOidTextOrNumeric(oid);
+}
+
+bool ParseSubjectPublicKeyInfo(net::der::Input spki_tlv,
+                               net::der::Input* algorithm_tlv,
+                               net::der::Input* subject_public_key_value) {
+  net::der::Parser spki_parser(spki_tlv);
+
+  //    SubjectPublicKeyInfo  ::=  SEQUENCE  {
+  //         algorithm            AlgorithmIdentifier,
+  //         subjectPublicKey     BIT STRING  }
+  net::der::Parser sequence_parser;
+  if (!spki_parser.ReadSequence(&sequence_parser))
+    return false;
+
+  if (!sequence_parser.ReadRawTLV(algorithm_tlv))
+    return false;
+
+  if (!sequence_parser.ReadTag(net::der::kBitString, subject_public_key_value))
+    return false;
+
+  if (sequence_parser.HasMore())
+    return false;
+
+  return true;
+}
+
+std::vector<uint8_t> BIGNUMBytes(const BIGNUM* bn) {
+  std::vector<uint8_t> ret(BN_num_bytes(bn));
+  BN_bn2bin(bn, ret.data());
+  return ret;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -593,6 +1228,9 @@ X509CertificateModel::X509CertificateModel(
   parsed_successfully_ = true;
 }
 
+X509CertificateModel::X509CertificateModel(X509CertificateModel&& other) =
+    default;
+
 X509CertificateModel::~X509CertificateModel() = default;
 
 std::string X509CertificateModel::HashCertSHA256() const {
@@ -604,13 +1242,13 @@ std::string X509CertificateModel::HashCertSHA256() const {
 std::string X509CertificateModel::HashCertSHA256WithSeparators() const {
   auto hash =
       crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return ProcessRawBytes(hash.data(), hash.size());
+  return ProcessRawBytes(hash);
 }
 
 std::string X509CertificateModel::HashCertSHA1WithSeparators() const {
   auto hash =
       base::SHA1HashSpan(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return ProcessRawBytes(hash.data(), hash.size());
+  return ProcessRawBytes(hash);
 }
 
 std::string X509CertificateModel::GetTitle() const {
@@ -635,6 +1273,7 @@ std::string X509CertificateModel::GetTitle() const {
   }
 
   if (subject_alt_names_) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     if (!subject_alt_names_->dns_names.empty())
       return std::string(subject_alt_names_->dns_names[0]);
     if (!subject_alt_names_->rfc822_names.empty())
@@ -821,7 +1460,64 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessSubjectKeyId(extension.value);
   if (extension.oid == net::der::Input(net::kAuthorityKeyIdentifierOid))
     return ProcessAuthorityKeyId(extension.value);
+  if (extension.oid == net::der::Input(net::kCertificatePoliciesOid))
+    return ProcessCertificatePolicies(extension.value);
+  if (extension.oid == net::der::Input(net::kCrlDistributionPointsOid))
+    return ProcessCrlDistributionPoints(extension.value);
+  if (extension.oid == net::der::Input(net::kAuthorityInfoAccessOid))
+    return ProcessAuthorityInfoAccess(extension.value);
+  if (extension.oid == net::der::Input(kNetscapeBaseURLOid) ||
+      extension.oid == net::der::Input(kNetscapeRevocationURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCARevocationURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCACertURLOid) ||
+      extension.oid == net::der::Input(kNetscapeRenewalURLOid) ||
+      extension.oid == net::der::Input(kNetscapeCAPolicyURLOid) ||
+      extension.oid == net::der::Input(kNetscapeSSLServerNameOid) ||
+      extension.oid == net::der::Input(kNetscapeCommentOid) ||
+      extension.oid == net::der::Input(kNetscapeLostPasswordURLOid)) {
+    return ProcessIA5String(extension.value);
+  }
+  // TODO(https://crbug.com/853550): SCT
+  // TODO(mattm): name constraints
+  // TODO(mattm): policy mappings
+  // TODO(mattm): policy constraints
   return ProcessRawBytes(extension.value);
+}
+
+std::string X509CertificateModel::ProcessSecAlgorithmSignature() const {
+  DCHECK(parsed_successfully_);
+  return ProcessAlgorithmIdentifier(signature_algorithm_tlv_);
+}
+
+std::string X509CertificateModel::ProcessSecAlgorithmSubjectPublicKey() const {
+  DCHECK(parsed_successfully_);
+
+  net::der::Input algorithm_tlv;
+  net::der::Input unused_spk_value;
+  if (!ParseSubjectPublicKeyInfo(tbs_.spki_tlv, &algorithm_tlv,
+                                 &unused_spk_value)) {
+    return std::string();
+  }
+
+  return ProcessAlgorithmIdentifier(algorithm_tlv);
+}
+
+std::string X509CertificateModel::ProcessSecAlgorithmSignatureWrap() const {
+  DCHECK(parsed_successfully_);
+  return ProcessAlgorithmIdentifier(tbs_.signature_algorithm_tlv);
+}
+
+std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
+  DCHECK(parsed_successfully_);
+  std::string rv = ProcessRawSubjectPublicKeyInfo(tbs_.spki_tlv.AsSpan());
+  if (rv.empty())
+    return std::string();
+  return rv;
+}
+
+std::string X509CertificateModel::ProcessRawBitsSignatureWrap() const {
+  DCHECK(parsed_successfully_);
+  return ProcessRawBytes(signature_value_.bytes());
 }
 
 // TODO(https://crbug.com/953425): move to anonymous namespace once
@@ -845,48 +1541,41 @@ std::string ProcessIDN(const std::string& input) {
                                    output16);
 }
 
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
-  // Each input byte creates two output hex characters + a space or newline,
-  // except for the last byte.
-  std::string ret;
-  size_t kMin = 0U;
-
-  if (!data_length)
+std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
+  bssl::UniquePtr<EVP_PKEY> public_key;
+  if (!net::ParsePublicKey(net::der::Input(spki_der.data(), spki_der.size()),
+                           &public_key)) {
     return std::string();
-
-  ret.reserve(std::max(kMin, data_length * 3 - 1));
-
-  for (size_t i = 0; i < data_length; ++i) {
-    unsigned char b = data[i];
-    ret.push_back(kHexChars[(b >> 4) & 0xf]);
-    ret.push_back(kHexChars[b & 0xf]);
-    if (i + 1 < data_length) {
-      if ((i + 1) % 16 == 0)
-        ret.push_back(line_separator);
-      else
-        ret.push_back(hex_separator);
-    }
   }
-  return ret;
-}
+  switch (EVP_PKEY_id(public_key.get())) {
+    case EVP_PKEY_RSA: {
+      RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
+      // EVP_PKEY_get0_RSA can only fail if the type was wrong, which was just
+      // checked in the switch.
+      DCHECK(rsa);
+      const BIGNUM* modulus = RSA_get0_n(rsa);
+      const BIGNUM* public_exponent = RSA_get0_e(rsa);
+      DCHECK(modulus);
+      DCHECK(public_exponent);
 
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytesWithSeparators(data, data_length, ' ', '\n');
-}
+      return l10n_util::GetStringFUTF8(
+          IDS_CERT_RSA_PUBLIC_KEY_DUMP_FORMAT,
+          base::NumberToString16(BN_num_bits(modulus)),
+          base::UTF8ToUTF16(ProcessRawBytes(BIGNUMBytes(modulus))),
+          base::NumberToString16(BN_num_bits(public_exponent)),
+          base::UTF8ToUTF16(ProcessRawBytes(BIGNUMBytes(public_exponent))));
+    }
+      // TODO(mattm): handle other key types? (eg EVP_PKEY_EC)
+  }
 
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBits(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytes(data, (data_length + 7) / 8);
+  net::der::Input unused_algorithm_tlv;
+  net::der::Input subject_public_key_value;
+  if (!ParseSubjectPublicKeyInfo(
+          net::der::Input(spki_der.data(), spki_der.size()),
+          &unused_algorithm_tlv, &subject_public_key_value)) {
+    return std::string();
+  }
+  return ProcessRawBytes(subject_public_key_value);
 }
 
 }  // namespace x509_certificate_model

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.AutoDarkFeedbackSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -38,9 +39,9 @@ public class ChromeFeedbackCollector
 
     public ChromeFeedbackCollector(Activity activity, @Nullable String categoryTag,
             @Nullable String description, @Nullable ScreenshotSource screenshotSource,
-            InitParams initParams, Callback<FeedbackCollector> callback) {
+            InitParams initParams, Callback<FeedbackCollector> callback, Profile profile) {
         super(categoryTag, description, callback);
-        init(activity, screenshotSource, initParams);
+        init(activity, screenshotSource, initParams, profile);
     }
 
     @VisibleForTesting
@@ -75,6 +76,13 @@ public class ChromeFeedbackCollector
         sources.add(new ConnectivityFeedbackSource(initParams.profile));
         sources.add(new SystemInfoFeedbackSource());
         sources.add(new ProcessIdFeedbackSource());
+
+        // FamilyInfoFeedbackSource relies on IdentityManager which is not available for the
+        // incognito profile.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_FAMILY_INFO_FEEDBACK)
+                && !initParams.profile.isOffTheRecord()) {
+            sources.add(new FamilyInfoFeedbackSource(initParams.profile));
+        }
 
         return sources;
     }

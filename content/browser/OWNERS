@@ -62,6 +62,7 @@ per-file network_service_*=file://services/network/OWNERS
 per-file network_context_*=file://services/network/OWNERS
 per-file network_sandbox*=file://services/network/OWNERS
 
-# For threading (BrowserThread, BrowserMainLoop, etc.)
-per-file *browser_main_loop*=gab@chromium.org
-per-file *browser_thread*=gab@chromium.org
+# For threading and startup/shutdown sequences
+# (BrowserThread, BrowserMainLoop, BrowserMainRunner, etc.)
+per-file browser_main*=gab@chromium.org
+per-file browser_thread*=gab@chromium.org

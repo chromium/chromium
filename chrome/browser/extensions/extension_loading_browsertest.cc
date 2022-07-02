@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
   const std::string inspect_ext_id = inspect_ext->id();
 
   // Open the devtools and wait until the devtools_page is ready.
-  ExtensionTestMessageListener devtools_ready("devtools_page_ready", false);
+  ExtensionTestMessageListener devtools_ready("devtools_page_ready");
   devtools_util::InspectBackgroundPage(inspect_ext, profile());
   ASSERT_TRUE(devtools_ready.WaitUntilSatisfied());
 
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, RuntimeValidWhileDevToolsOpen) {
 // browser wouldn't route the event incorrectly to ServiceWorkerTaskQueue (which
 // used to cause a crash).
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest, PRE_ChangeBackgroundScriptType) {
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("manifest_changed_before_restart"),
       {.context_type = ContextType::kServiceWorker});

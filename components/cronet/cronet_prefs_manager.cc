@@ -156,10 +156,10 @@ class NetworkQualitiesPrefDelegateImpl
   ~NetworkQualitiesPrefDelegateImpl() override {}
 
   // net::NetworkQualitiesPrefsManager::PrefDelegate implementation.
-  void SetDictionaryValue(const base::DictionaryValue& value) override {
+  void SetDictionaryValue(const base::Value::Dict& dict) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-    pref_service_->Set(kNetworkQualitiesPref, value);
+    pref_service_->SetDict(kNetworkQualitiesPref, dict.Clone());
     if (lossy_prefs_writing_task_posted_)
       return;
 
@@ -179,12 +179,13 @@ class NetworkQualitiesPrefDelegateImpl
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(kUpdatePrefsDelaySeconds));
   }
-  // TODO(crbug.com/1187061): Refactor this to remove DictionaryValue.
-  std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
+
+  base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-        pref_service_->GetDictionary(kNetworkQualitiesPref)->Clone()));
+    return pref_service_->GetDictionary(kNetworkQualitiesPref)
+        ->GetDict()
+        .Clone();
   }
 
  private:

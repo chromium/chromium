@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
@@ -91,6 +92,56 @@ class TestSearchResultsObserver : public mojom::SearchResultsObserver {
   mojo::Receiver<mojom::SearchResultsObserver> receiver_{this};
 };
 
+class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
+ public:
+  TestEnterprisePolicyDelegate() = default;
+
+  TestEnterprisePolicyDelegate(const TestEnterprisePolicyDelegate&) = delete;
+  TestEnterprisePolicyDelegate& operator=(const TestEnterprisePolicyDelegate&) =
+      delete;
+
+  ~TestEnterprisePolicyDelegate() override = default;
+
+  // EnterprisePolicyDelegate:
+  bool IsUserImageEnterpriseManaged() const override {
+    return is_user_image_enterprise_managed_;
+  }
+
+  bool IsWallpaperEnterpriseManaged() const override {
+    return is_wallpaper_enterprise_managed_;
+  }
+
+  void AddObserver(EnterprisePolicyDelegate::Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(EnterprisePolicyDelegate::Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
+  void SetIsUserImageEnterpriseManaged(bool is_user_image_enterprise_managed) {
+    is_user_image_enterprise_managed_ = is_user_image_enterprise_managed;
+    for (auto& observer : observer_list_) {
+      observer.OnUserImageIsEnterpriseManagedChanged(
+          is_user_image_enterprise_managed_);
+    }
+  }
+
+  void SetIsWallpaperImageEnterpriseManaged(
+      bool is_wallpaper_enterprise_managed) {
+    is_wallpaper_enterprise_managed_ = is_wallpaper_enterprise_managed;
+    for (auto& observer : observer_list_) {
+      observer.OnWallpaperIsEnterpriseManagedChanged(
+          is_wallpaper_enterprise_managed_);
+    }
+  }
+
+ private:
+  bool is_user_image_enterprise_managed_ = false;
+  bool is_wallpaper_enterprise_managed_ = false;
+  base::ObserverList<TestEnterprisePolicyDelegate::Observer> observer_list_;
+};
+
 }  // namespace
 
 class PersonalizationAppSearchHandlerTest : public testing::Test {
@@ -116,7 +167,8 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
         ::ash::prefs::kDarkModeEnabled, false);
 
     search_handler_ = std::make_unique<SearchHandler>(
-        *local_search_service_proxy_, test_pref_service_.get());
+        *local_search_service_proxy_, test_pref_service_.get(),
+        std::make_unique<TestEnterprisePolicyDelegate>());
     search_handler_->BindInterface(
         search_handler_remote_.BindNewPipeAndPassReceiver());
   }
@@ -144,6 +196,11 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
 
   SearchTagRegistry* search_tag_registry() {
     return search_handler_->search_tag_registry_.get();
+  }
+
+  TestEnterprisePolicyDelegate* test_search_delegate() {
+    return static_cast<TestEnterprisePolicyDelegate*>(
+        search_tag_registry()->enterprise_policy_delegate_.get());
   }
 
   mojo::Remote<mojom::SearchHandler>* search_handler_remote() {
@@ -201,22 +258,23 @@ TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
   ClearSearchTagRegistry();
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
-  SearchConcept concept = {
+  SearchConcept search_concept = {
       .id = mojom::SearchConceptId::kChangeWallpaper,
       .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
       .relative_url = "testing",
   };
 
   // Add a search concept.
-  search_tag_registry()->UpdateSearchConcepts({{&concept, /*add=*/true}});
+  search_tag_registry()->UpdateSearchConcepts(
+      {{&search_concept, /*add=*/true}});
   test_observer.WaitForSearchResultsChanged();
 
-  EXPECT_EQ(&concept, search_tag_registry()->GetSearchConceptById(
-                          SearchConceptIdToString(concept.id)))
+  EXPECT_EQ(&search_concept, search_tag_registry()->GetSearchConceptById(
+                                 SearchConceptIdToString(search_concept.id)))
       << "Search concept was added";
 
   // Remove the search concept.
-  search_tag_registry()->UpdateSearchConcepts({{&concept, false}});
+  search_tag_registry()->UpdateSearchConcepts({{&search_concept, false}});
   test_observer.WaitForSearchResultsChanged();
 
   EXPECT_EQ(nullptr,
@@ -254,6 +312,38 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasBasicPersonalizationConcepts) {
     EXPECT_EQ(1u, search_results.size());
     EXPECT_EQ(expected_url, search_results.front()->relative_url);
   }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, RemovesAvatarForEnterprise) {
+  EXPECT_TRUE(
+      search_tag_registry()->GetSearchConceptById(SearchConceptIdToString(
+          mojom::SearchConceptId::kChangeDeviceAccountImage)));
+
+  TestSearchResultsObserver test_observer;
+  search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
+
+  test_search_delegate()->SetIsUserImageEnterpriseManaged(true);
+
+  test_observer.WaitForSearchResultsChanged();
+
+  EXPECT_FALSE(
+      search_tag_registry()->GetSearchConceptById(SearchConceptIdToString(
+          mojom::SearchConceptId::kChangeDeviceAccountImage)));
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, RemovesWallpaperForEnterprise) {
+  EXPECT_TRUE(search_tag_registry()->GetSearchConceptById(
+      SearchConceptIdToString(mojom::SearchConceptId::kChangeWallpaper)));
+
+  TestSearchResultsObserver test_observer;
+  search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
+
+  test_search_delegate()->SetIsWallpaperImageEnterpriseManaged(true);
+
+  test_observer.WaitForSearchResultsChanged();
+
+  EXPECT_FALSE(search_tag_registry()->GetSearchConceptById(
+      SearchConceptIdToString(mojom::SearchConceptId::kChangeWallpaper)));
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
@@ -340,8 +430,8 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
       },
   };
   SearchTagRegistry::SearchConceptUpdates updates;
-  for (const auto& concept : test_search_concepts) {
-    updates.insert(std::make_pair(&concept, true));
+  for (const auto& search_concept : test_search_concepts) {
+    updates.insert(std::make_pair(&search_concept, true));
   }
   search_tag_registry()->UpdateSearchConcepts(updates);
 

@@ -25,6 +25,7 @@
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
+#include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
@@ -665,7 +666,7 @@ void ApplyNetworkRequestOverrides(
     DCHECK(!agent_host);
     agent_host = RenderFrameDevToolsAgentHost::GetFor(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->frame_tree_node());
   }
   if (!agent_host)
@@ -711,7 +712,7 @@ bool ApplyUserAgentMetadataOverrides(
     DCHECK(!agent_host);
     agent_host = RenderFrameDevToolsAgentHost::GetFor(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->frame_tree_node());
   }
   if (!agent_host)
@@ -1033,6 +1034,17 @@ void FencedFrameCreated(
   agent_host->DidCreateFencedFrame(fenced_frame);
 }
 
+void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
+                                       base::ProcessId pid) {
+  // TracingHandler lives on the very root, not local root.
+  // TODO(morlovich): This may not be right for fenced frames, though
+  // that should not currently matter.
+  FrameTreeNode* node = owner->GetMainFrame()->frame_tree_node();
+  if (!node)
+    return;
+  DispatchToAgents(node, &protocol::TracingHandler::AddProcess, pid);
+}
+
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
@@ -1285,7 +1297,15 @@ void OnWebTransportHandshakeFailed(
 
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const std::string& error) {
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
+    const std::string& error,
+    const network::URLLoaderCompletionStatus& status,
+    const network::mojom::URLResponseHead* response_head,
+    const GURL& url) {
+  DCHECK(!error.empty());
+  DCHECK_NE(net::OK, status.error_code);
+
   // If we have a requesting_frame_id, we should have a frame and a frame tree
   // node. However since the lifetime of these objects can be complex, we check
   // at each step that we indeed can go reach all the way to the FrameTreeNode.
@@ -1308,6 +1328,37 @@ void OnServiceWorkerMainScriptFetchingFailed(
                    .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
                    .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
+
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
+                                                       version_id);
+
+  if (response_head) {
+    DCHECK(agent_host);
+    network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+        network::ExtractDevToolsInfo(*response_head);
+    auto worker_token = agent_host->devtools_worker_token().ToString();
+    for (auto* network_handler :
+         protocol::NetworkHandler::ForAgentHost(agent_host)) {
+      network_handler->ResponseReceived(
+          worker_token, worker_token, url,
+          protocol::Network::ResourceTypeEnum::Other, *head_info,
+          ftn->devtools_frame_token().ToString());
+      network_handler->frontend()->LoadingFinished(
+          worker_token,
+          status.completion_time.ToInternalValue() /
+              static_cast<double>(base::Time::kMicrosecondsPerSecond),
+          status.encoded_data_length);
+    }
+  } else if (agent_host) {
+    for (auto* network_handler :
+         protocol::NetworkHandler::ForAgentHost(agent_host)) {
+      network_handler->LoadingComplete(
+          agent_host->devtools_worker_token().ToString(),
+          protocol::Network::ResourceTypeEnum::Other, status);
+    }
+  }
 }
 
 void OnServiceWorkerMainScriptRequestWillBeSent(

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
 namespace history_clusters {
@@ -55,11 +56,19 @@ std::string GetDebugJSONForClusters(
     base::DictionaryValue debug_cluster;
 
     debug_cluster.SetStringKey("label", cluster.label.value_or(u""));
-    base::ListValue debug_keywords;
-    for (const auto& keyword : cluster.keywords) {
-      debug_keywords.Append(keyword);
+    base::DictionaryValue debug_keyword_to_data_map;
+    for (const auto& keyword_data_p : cluster.keyword_to_data_map) {
+      base::ListValue debug_collection;
+      for (const auto& collection : keyword_data_p.second.entity_collections) {
+        debug_collection.Append(collection);
+      }
+      base::DictionaryValue debug_keyword_data;
+      debug_keyword_data.SetKey("collections", std::move(debug_collection));
+      debug_keyword_to_data_map.SetKey(base::UTF16ToUTF8(keyword_data_p.first),
+                                       std::move(debug_keyword_data));
     }
-    debug_cluster.SetKey("keywords", std::move(debug_keywords));
+    debug_cluster.SetKey("keyword_to_data_map",
+                         std::move(debug_keyword_to_data_map));
     debug_cluster.SetBoolKey("should_show_on_prominent_ui_surfaces",
                              cluster.should_show_on_prominent_ui_surfaces);
 
@@ -118,7 +127,7 @@ std::string GetDebugJSONForClusters(
 }
 
 template <typename T>
-std::string GetDebugJSONForKeywordSet(
+std::string GetDebugJSONForUrlKeywordSet(
     const std::unordered_set<T>& keyword_set) {
   std::vector<base::Value> keyword_list;
   for (const auto& keyword : keyword_set) {
@@ -134,9 +143,32 @@ std::string GetDebugJSONForKeywordSet(
   return debug_string;
 }
 
-template std::string GetDebugJSONForKeywordSet<std::u16string>(
+template std::string GetDebugJSONForUrlKeywordSet<std::u16string>(
     const std::unordered_set<std::u16string>&);
-template std::string GetDebugJSONForKeywordSet<std::string>(
+template std::string GetDebugJSONForUrlKeywordSet<std::string>(
     const std::unordered_set<std::string>&);
+
+std::string GetDebugJSONForKeywordMap(
+    const std::unordered_map<std::u16string, history::ClusterKeywordData>&
+        keyword_to_data_map) {
+  base::DictionaryValue debug_keyword_to_data_map;
+  for (const auto& keyword_data_p : keyword_to_data_map) {
+    base::ListValue debug_collection;
+    for (const auto& collection : keyword_data_p.second.entity_collections) {
+      debug_collection.Append(collection);
+    }
+    base::DictionaryValue debug_keyword_data;
+    debug_keyword_data.SetKey("collections", std::move(debug_collection));
+    debug_keyword_to_data_map.SetKey(base::UTF16ToUTF8(keyword_data_p.first),
+                                     std::move(debug_keyword_data));
+  }
+  std::string debug_string;
+  if (!base::JSONWriter::WriteWithOptions(
+          debug_keyword_to_data_map, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+          &debug_string)) {
+    debug_string = "Error: Could not write keywords list to JSON.";
+  }
+  return debug_string;
+}
 
 }  // namespace history_clusters

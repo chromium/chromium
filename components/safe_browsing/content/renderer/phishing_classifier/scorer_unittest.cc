@@ -84,6 +84,7 @@ std::string GetFlatBufferString() {
   csd_model_builder.add_max_shingles_per_page(10);
   csd_model_builder.add_shingle_size(3);
   csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  csd_model_builder.add_dom_model_version(123);
 
   builder.Finish(csd_model_builder.Finish());
   return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
@@ -139,6 +140,7 @@ class PhishingScorerTest : public ::testing::Test {
     model_.set_murmur_hash_seed(12345U);
     model_.set_max_shingles_per_page(10);
     model_.set_shingle_size(3);
+    model_.set_dom_model_version(123);
   }
 
   void TearDown() override {
@@ -346,6 +348,25 @@ TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   //   => p = 0.99999627336071584
   EXPECT_TRUE(features.AddBooleanFeature("feature2"));
   EXPECT_DOUBLE_EQ(0.77729986117469119, scorer->ComputeScore(features));
+}
+
+TEST_F(PhishingScorerTest, DomModelVersionProtobuffer) {
+  std::unique_ptr<Scorer> scorer;
+  scorer =
+      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
+  ASSERT_TRUE(scorer.get() != nullptr);
+  EXPECT_EQ(scorer->dom_model_version(), 123);
+}
+
+TEST_F(PhishingScorerTest, DomModelVersionFlatbuffer) {
+  std::unique_ptr<Scorer> scorer;
+  std::string flatbuffer = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      GetMappedReadOnlyRegionWithData(flatbuffer);
+  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
+                                         base::File());
+  ASSERT_TRUE(scorer.get() != nullptr);
+  EXPECT_EQ(scorer->dom_model_version(), 123);
 }
 
 }  // namespace safe_browsing

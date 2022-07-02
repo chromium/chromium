@@ -4,6 +4,39 @@
 
 // TODO(danakj): Reuse code for comparison macros with an expect_op!() macro?
 
+/// Internal helper to log an expectation failure. Other expect_* macros invoke
+/// it with their standard expectation message, plus optionally a user-provided
+/// custom string.
+///
+/// Both the the expectation message and the user-provided message are format
+/// strings with arguments. To disambiguate between them, the expectation
+/// message is wrapped in extra parentheses.
+#[macro_export]
+macro_rules! internal_add_expectation_failure {
+    // Rule that both the below are forwarded to.
+    (@imp $fmt:literal, $($arg:tt)+) => {
+        $crate::__private::add_failure_at(
+            file!(),
+            line!(),
+            &format!($fmt, $($arg)+),
+        )
+    };
+
+    // Add a failure with the standard message.
+    (($expectation:literal, $($e:tt)+)) => {
+        $crate::internal_add_expectation_failure!(@imp $expectation, $($e)+)
+    };
+
+    // Add a failure with the standard message plus an additional message.
+    (($expectation:literal, $($e:tt)+), $($arg:tt)+) => {
+        $crate::internal_add_expectation_failure!(@imp
+            "{}\n\n{}",
+            format_args!($expectation, $($e)+),
+            format_args!($($arg)+),
+        )
+    };
+}
+
 /// Evaluates the given expression. If false, a failure is reported to Gtest.
 ///
 /// # Examples
@@ -12,19 +45,18 @@
 /// ```
 #[macro_export]
 macro_rules! expect_true {
-    ($e:expr) => {
+    ($e:expr $(, $($arg:tt)*)?) => {
         match &$e {
             val => {
                 if !(*val) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} is true\nActual: {} is {:?}",
                             stringify!($e),
                             stringify!($e),
-                            *val,
-                        ),
+                            *val
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -40,19 +72,18 @@ macro_rules! expect_true {
 /// ```
 #[macro_export]
 macro_rules! expect_false {
-    ($e:expr) => {
+    ($e:expr $(, $($arg:tt)*)?) => {
         match &$e {
             val => {
                 if *val {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} is false\nActual: {} is {:?}",
                             stringify!($e),
                             stringify!($e),
-                            *val,
-                        ),
+                            *val
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -69,20 +100,19 @@ macro_rules! expect_false {
 /// ```
 #[macro_export]
 macro_rules! expect_eq {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 == *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} == {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -99,20 +129,19 @@ macro_rules! expect_eq {
 /// ```
 #[macro_export]
 macro_rules! expect_ne {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 != *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} != {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -130,20 +159,19 @@ macro_rules! expect_ne {
 /// ```
 #[macro_export]
 macro_rules! expect_gt {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 > *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} > {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -161,20 +189,19 @@ macro_rules! expect_gt {
 /// ```
 #[macro_export]
 macro_rules! expect_lt {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 < *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} < {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        )
+                        $(, $($arg)*)?
                     )
                 }
             }
@@ -192,20 +219,18 @@ macro_rules! expect_lt {
 /// ```
 #[macro_export]
 macro_rules! expect_ge {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 >= *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} >= {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        ) $(, $($arg)*)?
                     )
                 }
             }
@@ -223,20 +248,18 @@ macro_rules! expect_ge {
 /// ```
 #[macro_export]
 macro_rules! expect_le {
-    ($e1:expr, $e2:expr) => {
+    ($e1:expr, $e2:expr $(, $($arg:tt)*)?) => {
         match (&$e1, &$e2) {
             (val1, val2) => {
                 if !(*val1 <= *val2) {
-                    $crate::__private::add_failure_at(
-                        file!(),
-                        line!(),
-                        &format!(
+                    $crate::internal_add_expectation_failure!(
+                        (
                             "Expected: {} <= {}\nActual: {:?} vs {:?}",
                             stringify!($e1),
                             stringify!($e2),
                             *val1,
-                            *val2,
-                        ),
+                            *val2
+                        ) $(, $($arg)*)?
                     )
                 }
             }
@@ -257,7 +280,3 @@ macro_rules! expect_le {
 //   process.)
 // - EXPECT_FLOAT_EQ (Comparison for equality within a small range.)
 // - EXPECT_NEAR (Comparison for equality within a user-specified range.)
-
-// TODO(danakj): Also consider adding an optional parameter that takes a message string to append to
-// the expect macro's built-in message. We could also consider a format string + varargs like
-// format!(), to save folks from writing format!() in that spot, if it would be common.

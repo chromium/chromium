@@ -4,31 +4,55 @@
 
 #include "cc/tiles/image_controller.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/task/task_traits.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/completion_event.h"
 #include "cc/tiles/tile_task_manager.h"
 
 namespace cc {
 
+namespace {
+
+// When this feature is enabled, StopWorkerTasks() skips waiting synchronously
+// if no task is running.
+const base::Feature kImageControllerWaitOnlyForRunningTask{
+    "ImageControllerWaitOnlyForRunningTask", base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
+
 ImageController::ImageDecodeRequestId
     ImageController::s_next_image_decode_queue_id_ = 1;
 
 ImageController::ImageController(
-    base::SequencedTaskRunner* origin_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner)
-    : worker_task_runner_(std::move(worker_task_runner)),
-      origin_task_runner_(origin_task_runner) {
-  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+    : worker_task_runner_(std::move(worker_task_runner)) {
+  worker_state_ = std::make_unique<WorkerState>(std::move(origin_task_runner),
+                                                weak_ptr_factory_.GetWeakPtr());
 }
 
 ImageController::~ImageController() {
   StopWorkerTasks();
   for (auto& request : orphaned_decode_requests_)
     std::move(request.callback).Run(request.id, ImageDecodeResult::FAILURE);
+  if (worker_task_runner_) {
+    // Delete `worker_state_` on `worker_task_runner_` (or elsewhere via the
+    // callback's destructor if `worker_task_runner_` stopped accepting tasks).
+    worker_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce([](std::unique_ptr<WorkerState>) {},
+                                  std::move(worker_state_)));
+  }
 }
+
+ImageController::WorkerState::WorkerState(
+    scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
+    base::WeakPtr<ImageController> weak_ptr)
+    : origin_task_runner(std::move(origin_task_runner)), weak_ptr(weak_ptr) {}
+ImageController::WorkerState::~WorkerState() = default;
 
 void ImageController::StopWorkerTasks() {
   // We can't have worker threads without a cache_ or a worker_task_runner_, so
@@ -36,34 +60,25 @@ void ImageController::StopWorkerTasks() {
   if (!cache_ || !worker_task_runner_)
     return;
 
-  // Abort all tasks that are currently scheduled to run (we'll wait for them to
-  // finish next).
-  {
-    base::AutoLock hold(lock_);
-    abort_tasks_ = true;
+  base::AutoLock hold(worker_state_->lock);
+  worker_state_->abort_task = true;
+
+  // If a worker task is running (or if the "wait only for running task" feature
+  // is disabled), post a task and wait for its completion to "flush" the queue.
+  if (!base::FeatureList::IsEnabled(kImageControllerWaitOnlyForRunningTask) ||
+      worker_state_->task_state == WorkerTaskState::kRunningTask) {
+    base::AutoUnlock release(worker_state_->lock);
+    CompletionEvent completion_event;
+    worker_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CompletionEvent::Signal,
+                                  base::Unretained(&completion_event)));
+    completion_event.Wait();
   }
 
-  // Post a task that will simply signal a completion event to ensure that we
-  // "flush" any scheduled tasks (they will abort).
-  CompletionEvent completion_event;
-  worker_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce([](CompletionEvent* event) { event->Signal(); },
-                                base::Unretained(&completion_event)));
-  completion_event.Wait();
+  DCHECK_EQ(worker_state_->task_state, WorkerTaskState::kNoTask);
 
   // Reset the abort flag so that new tasks can be scheduled.
-  {
-    base::AutoLock hold(lock_);
-    abort_tasks_ = false;
-  }
-
-  // Now that we flushed everything, if there was a task running and it
-  // finished, it would have posted a completion callback back to the compositor
-  // thread. We don't want that, so invalidate the weak ptrs again. Note that
-  // nothing can start running between wait and this invalidate, since it would
-  // only run on the current (compositor) thread.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+  worker_state_->abort_task = false;
 
   // Now, begin cleanup.
 
@@ -76,7 +91,7 @@ void ImageController::StopWorkerTasks() {
   // Now, complete the tasks that already ran but haven't completed. These would
   // be posted in the run loop, but since we invalidated the weak ptrs, we need
   // to run everything manually.
-  for (auto& request_to_complete : requests_needing_completion_) {
+  for (auto& request_to_complete : worker_state_->requests_needing_completion) {
     ImageDecodeRequest& request = request_to_complete.second;
 
     // The task (if one exists) would have run already, we just need to make
@@ -95,12 +110,12 @@ void ImageController::StopWorkerTasks() {
     request.need_unref = false;
     orphaned_decode_requests_.push_back(std::move(request));
   }
-  requests_needing_completion_.clear();
+  worker_state_->requests_needing_completion.clear();
 
   // Finally, complete all of the tasks that never started running. This is
   // similar to the |requests_needing_completion_|, but happens at a different
   // stage in the pipeline.
-  for (auto& request_pair : image_decode_queue_) {
+  for (auto& request_pair : worker_state_->image_decode_queue) {
     ImageDecodeRequest& request = request_pair.second;
 
     if (request.task) {
@@ -124,7 +139,7 @@ void ImageController::StopWorkerTasks() {
     request.need_unref = false;
     orphaned_decode_requests_.push_back(std::move(request));
   }
-  image_decode_queue_.clear();
+  worker_state_->image_decode_queue.clear();
 }
 
 void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
@@ -238,20 +253,11 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
   DCHECK(result.need_unref || !result.task);
 
   // Schedule the task and signal that there is more work.
-  base::AutoLock hold(lock_);
-  image_decode_queue_[id] =
+  base::AutoLock hold(worker_state_->lock);
+  worker_state_->image_decode_queue[id] =
       ImageDecodeRequest(id, draw_image, std::move(callback),
                          std::move(result.task), result.need_unref);
-
-  // If this is the only image decode request, schedule a task to run.
-  // Otherwise, the task will be scheduled in the previou task's completion.
-  if (image_decode_queue_.size() == 1) {
-    // Post a worker task.
-    worker_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ImageController::ProcessNextImageDecodeOnWorkerThread,
-                       base::Unretained(this)));
-  }
+  ScheduleImageDecodeOnWorkerIfNeeded();
 
   return id;
 }
@@ -266,60 +272,71 @@ void ImageController::UnlockImageDecode(ImageDecodeRequestId id) {
   requested_locked_images_.erase(it);
 }
 
-void ImageController::ProcessNextImageDecodeOnWorkerThread() {
+// static
+void ImageController::ProcessNextImageDecodeOnWorkerThread(
+    WorkerState* worker_state) {
   TRACE_EVENT0("cc", "ImageController::ProcessNextImageDecodeOnWorkerThread");
-  scoped_refptr<TileTask> decode_task;
-  ImageDecodeRequestId decode_id;
-  {
-    base::AutoLock hold(lock_);
 
-    // If we don't have any work, abort.
-    if (image_decode_queue_.empty() || abort_tasks_)
-      return;
+  base::AutoLock hold(worker_state->lock);
+  DCHECK_EQ(worker_state->task_state, WorkerTaskState::kQueuedTask);
+  worker_state->task_state = WorkerTaskState::kRunningTask;
 
-    // Take the next request from the queue.
-    auto decode_it = image_decode_queue_.begin();
-    DCHECK(decode_it != image_decode_queue_.end());
-    decode_task = decode_it->second.task;
-    decode_id = decode_it->second.id;
-
-    // Notify that the task will need completion. Note that there are two cases
-    // where we process this. First, we might complete this task as a response
-    // to the posted task below. Second, we might complete it in
-    // StopWorkerTasks(). In either case, the task would have already run
-    // (either post task happens after running, or the thread was already joined
-    // which means the task ran). This means that we can put the decode into
-    // |requests_needing_completion_| here before actually running the task.
-    requests_needing_completion_[decode_id] = std::move(decode_it->second);
-
-    image_decode_queue_.erase(decode_it);
+  // If we don't have any work, abort.
+  if (worker_state->image_decode_queue.empty() || worker_state->abort_task) {
+    worker_state->task_state = WorkerTaskState::kNoTask;
+    return;
   }
 
-  // Run the task if we need to run it. If the task state isn't new, then
-  // there is another task that is responsible for finishing it and cleaning
-  // up (and it already ran); we just need to post a completion callback.
-  // Note that the other tasks's completion will also run first, since the
-  // requests are ordered. So, when we process this task's completion, we
-  // won't actually do anything with the task and simply issue the callback.
+  // Take the next request from the queue.
+  auto decode_it = worker_state->image_decode_queue.begin();
+  DCHECK(decode_it != worker_state->image_decode_queue.end());
+  scoped_refptr<TileTask> decode_task = decode_it->second.task;
+  ImageDecodeRequestId decode_id = decode_it->second.id;
+
+  // Notify that the task will need completion. Note that there are two cases
+  // where we process this. First, we might complete this task as a response to
+  // the posted task below. Second, we might complete it in StopWorkerTasks().
+  // In either case, the task would have already run (either post task happens
+  // after running, or the thread was already joined which means the task ran).
+  // This means that we can put the decode into |requests_needing_completion_|
+  // here before actually running the task.
+  worker_state->requests_needing_completion[decode_id] =
+      std::move(decode_it->second);
+
+  worker_state->image_decode_queue.erase(decode_it);
+
+  // Run the task if we need to run it. If the task state isn't new, then there
+  // is another task that is responsible for finishing it and cleaning up (and
+  // it already ran); we just need to post a completion callback. Note that the
+  // other tasks's completion will also run first, since the requests are
+  // ordered. So, when we process this task's completion, we won't actually do
+  // anything with the task and simply issue the callback.
   if (decode_task && decode_task->state().IsNew()) {
+    base::AutoUnlock release(worker_state->lock);
     decode_task->state().DidSchedule();
     decode_task->state().DidStart();
     decode_task->RunOnWorkerThread();
     decode_task->state().DidFinish();
   }
-  origin_task_runner_->PostTask(
+
+  worker_state->origin_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ImageController::ImageDecodeCompleted,
-                                weak_ptr_, decode_id));
+                                worker_state->weak_ptr, decode_id));
+
+  DCHECK_EQ(worker_state->task_state, WorkerTaskState::kRunningTask);
+  worker_state->task_state = WorkerTaskState::kNoTask;
 }
 
 void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
   ImageDecodedCallback callback;
   ImageDecodeResult result = ImageDecodeResult::SUCCESS;
   {
-    base::AutoLock hold(lock_);
+    base::AutoLock hold(worker_state_->lock);
 
-    auto request_it = requests_needing_completion_.find(id);
-    DCHECK(request_it != requests_needing_completion_.end());
+    auto request_it = worker_state_->requests_needing_completion.find(id);
+    // The request may have been completed by StopWorkerTasks().
+    if (request_it == worker_state_->requests_needing_completion.end())
+      return;
     id = request_it->first;
     ImageDecodeRequest& request = request_it->second;
 
@@ -350,23 +367,19 @@ void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
     // Finally, save the callback so we can run it without the lock, and erase
     // the request from |requests_needing_completion_|.
     callback = std::move(request.callback);
-    requests_needing_completion_.erase(request_it);
-  }
+    worker_state_->requests_needing_completion.erase(request_it);
 
-  // Post another task to run.
-  worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ImageController::ProcessNextImageDecodeOnWorkerThread,
-                     base::Unretained(this)));
+    ScheduleImageDecodeOnWorkerIfNeeded();
+  }
 
   // Finally run the requested callback.
   std::move(callback).Run(id, result);
 }
 
 void ImageController::GenerateTasksForOrphanedRequests() {
-  base::AutoLock hold(lock_);
-  DCHECK_EQ(0u, image_decode_queue_.size());
-  DCHECK_EQ(0u, requests_needing_completion_.size());
+  base::AutoLock hold(worker_state_->lock);
+  DCHECK_EQ(0u, worker_state_->image_decode_queue.size());
+  DCHECK_EQ(0u, worker_state_->requests_needing_completion.size());
   DCHECK(cache_);
 
   for (auto& request : orphaned_decode_requests_) {
@@ -379,16 +392,24 @@ void ImageController::GenerateTasksForOrphanedRequests() {
       request.need_unref = result.need_unref;
       request.task = result.task;
     }
-    image_decode_queue_[request.id] = std::move(request);
+    worker_state_->image_decode_queue[request.id] = std::move(request);
   }
 
   orphaned_decode_requests_.clear();
-  if (!image_decode_queue_.empty()) {
-    // Post a worker task.
+  ScheduleImageDecodeOnWorkerIfNeeded();
+}
+
+void ImageController::ScheduleImageDecodeOnWorkerIfNeeded() {
+  if (worker_state_->task_state == WorkerTaskState::kNoTask &&
+      !worker_state_->image_decode_queue.empty()) {
+    worker_state_->task_state = WorkerTaskState::kQueuedTask;
+    // base::Unretained is safe because `worker_state_` is guaranteed to be
+    // deleted from a task posted to `worker_task_runner_` after this (see
+    // ~ImageController).
     worker_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ImageController::ProcessNextImageDecodeOnWorkerThread,
-                       base::Unretained(this)));
+                       base::Unretained(worker_state_.get())));
   }
 }
 

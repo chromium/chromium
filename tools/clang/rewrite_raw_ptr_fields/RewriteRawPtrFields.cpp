@@ -852,6 +852,14 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
 
     const clang::TypeSourceInfo* type_source_info =
         field_decl->getTypeSourceInfo();
+    if (auto* ivar_decl = clang::dyn_cast<clang::ObjCIvarDecl>(field_decl)) {
+      // Objective-C @synthesize statements should not be rewritten. They return
+      // null for getTypeSourceInfo().
+      if (ivar_decl->getSynthesize()) {
+        assert(!type_source_info);
+        return;
+      }
+    }
     assert(type_source_info && "assuming |type_source_info| is always present");
 
     clang::QualType pointer_type = type_source_info->getType();

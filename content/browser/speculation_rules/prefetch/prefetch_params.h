@@ -15,7 +15,7 @@ namespace content {
 bool PrefetchContentRefactorIsEnabled();
 
 // The url of the tunnel proxy.
-CONTENT_EXPORT GURL PrefetchProxyHost();
+CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
 
 // The header name used to connect to the tunnel proxy.
 std::string PrefetchProxyHeaderKey();
@@ -26,6 +26,14 @@ std::string PrefetchProxyHeaderKey();
 // group, this will return an empty string.
 std::string PrefetchProxyServerExperimentGroup();
 
+// Returns true if any domain can issue private prefetches using the prefetch
+// proxy.
+bool PrefetchAllowAllDomains();
+
+// Returns true if any domain can issue private prefetches using the prefetch
+// proxy, so long as the user opted-in to extended preloading.
+bool PrefetchAllowAllDomainsForExtendedPreloading();
+
 // The maximum number of mainframes allowed to be prefetched at the same time.
 int PrefetchServiceMaximumNumberOfConcurrentPrefetches();
 
@@ -33,7 +41,8 @@ int PrefetchServiceMaximumNumberOfConcurrentPrefetches();
 // but not cached, to disguise the presence of cookies (or other criteria). The
 // return value is randomly decided based on variation params since always
 // sending the decoy request is expensive from a data use perspective.
-CONTENT_EXPORT bool PrefetchServiceSendDecoyRequestForIneligblePrefetch();
+CONTENT_EXPORT bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+    bool disabled_based_on_user_settings);
 
 // The amount of time to allow a prefetch to take before considering it a
 // timeout error.
@@ -58,6 +67,9 @@ base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
 // Whether only prefetched resources with a text/html MIME type should be used.
 // If this is false, there is no MIME type restriction.
 bool PrefetchServiceHTMLOnly();
+
+// The maximum time a prefetched response is servable.
+CONTENT_EXPORT base::TimeDelta PrefetchCacheableDuration();
 
 }  // namespace content
 

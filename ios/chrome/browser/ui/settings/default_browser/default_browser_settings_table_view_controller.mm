@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -128,6 +129,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeOpenSettingsButton) {
     base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
+    base::UmaHistogramEnumeration("Settings.DefaultBrowserFromSource",
+                                  self.source);
     [[UIApplication sharedApplication]
                   openURL:[NSURL
                               URLWithString:UIApplicationOpenSettingsURLString]

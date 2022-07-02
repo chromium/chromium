@@ -32,9 +32,10 @@ async function runTest() {
   await waitForAtLeastOneFrame();
   // Prepare with a shared element
   let t = document.createDocumentTransition();
-  t.setElement(first, "shared");
+  first.style.pageTransitionTag = "shared";
   let promise = t.start(() => {
-    t.setElement(second, "shared");
+    first.style.pageTransitionTag = "";
+    second.style.pageTransitionTag = "shared";
   });
 
   // The start() call above starts the capture. Force a hit test, which will

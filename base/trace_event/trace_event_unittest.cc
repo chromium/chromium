@@ -217,14 +217,13 @@ void TraceEventTestFixture::OnTraceDataCollected(
   }
 
   ASSERT_TRUE(root->is_list());
-  Value::ListStorage root_storage = std::move(*root).TakeListDeprecated();
+  Value::List& root_list = root->GetList();
 
   // Move items into our aggregate collection
-  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
-  storage.reserve(storage.size() + root_storage.size());
-  std::move(root_storage.begin(), root_storage.end(),
-            std::back_inserter(storage));
-  trace_parsed_ = Value(std::move(storage));
+  Value::List& trace_parsed_list = trace_parsed_.GetList();
+  trace_parsed_list.reserve(trace_parsed_list.size() + root_list.size());
+  for (auto& value : root_list)
+    trace_parsed_list.Append(std::move(value));
 
   if (!has_more_events)
     flush_complete_event->Signal();
@@ -283,14 +282,12 @@ const Value* TraceEventTestFixture::FindMatchingTraceEntry(
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
-  Value::ListStorage storage = std::move(trace_parsed_).TakeListDeprecated();
-  base::EraseIf(storage, [](const Value& value) {
+  trace_parsed_.GetList().EraseIf([](const Value& value) {
     if (!value.is_dict())
       return false;
-    const std::string* ph = value.FindStringKey("ph");
+    const std::string* ph = value.GetDict().FindString("ph");
     return ph && *ph == "M";
   });
-  trace_parsed_ = Value(std::move(storage));
 }
 
 const Value* TraceEventTestFixture::FindNamePhase(const char* name,
@@ -1401,26 +1398,13 @@ TEST_F(TraceEventTestFixture, StaticStringVsString) {
             TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
             trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
             trace_event_internal::kNoId, "arg1", "argval", "arg2", "argval");
-    // Test that static TRACE_STR_COPY NULL string arguments are not copied.
-    const char* str1 = nullptr;
-    const char* str2 = nullptr;
-    [[maybe_unused]] TraceEventHandle handle2 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", TRACE_STR_COPY(str1), "arg2",
-            TRACE_STR_COPY(str2));
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_GT(tracer->GetStatus().event_count, 1u);
     const TraceEvent* event1 = tracer->GetEventByHandle(handle1);
-    const TraceEvent* event2 = tracer->GetEventByHandle(handle2);
     ASSERT_TRUE(event1);
-    ASSERT_TRUE(event2);
     EXPECT_STREQ("name1", event1->name());
-    EXPECT_STREQ("name2", event2->name());
     EXPECT_TRUE(event1->parameter_copy_storage().empty());
-    EXPECT_TRUE(event2->parameter_copy_storage().empty());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#endif
     EndTraceAndFlush();
   }
 }

@@ -52,6 +52,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void CheckForOsUpdates(CheckForOsUpdatesCallback callback) override;
   void UpdateOs(UpdateOsCallback callback) override;
   void UpdateOsSkipped(UpdateOsSkippedCallback callback) override;
+  VersionUpdater* GetVersionUpdaterForTesting();
 
   void SetSameOwner(SetSameOwnerCallback callback) override;
   void SetDifferentOwner(SetDifferentOwnerCallback callback) override;
@@ -134,6 +135,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       WriteProtectManuallyEnabledCallback callback) override;
 
   void GetLog(GetLogCallback callback) override;
+  void SaveLog(SaveLogCallback callback) override;
   void GetPowerwashRequired(GetPowerwashRequiredCallback callback) override;
   void LaunchDiagnostics() override;
   void EndRma(rmad::RepairCompleteState::ShutdownMethod shutdown_method,
@@ -185,14 +187,33 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                         double progress,
                         update_engine::ErrorCode error_code);
 
+  // Sends a metric to the platform side when the Diagnostics app is launched.
+  void SendMetricOnLaunchDiagnostics();
+
+  // Sends a metric to the platform side when an OS update is requested.
+  void SendMetricOnUpdateOs();
+
  private:
   using TransitionStateCallback =
-      base::OnceCallback<void(mojom::State, bool, bool, rmad::RmadErrorCode)>;
+      base::OnceCallback<void(mojom::StateResultPtr)>;
+
+  mojom::StateResultPtr CreateStateResult(mojom::State,
+                                          bool can_exit,
+                                          bool can_go_back,
+                                          rmad::RmadErrorCode);
+  mojom::StateResultPtr CreateStateResultForInvalidRequest();
+
+  enum StateResponseCalledFrom {
+    kTransitPreviousState = 0,
+    kGetCurrentState,
+    kTransitNextState,
+  };
 
   template <class Callback>
   void TransitionNextStateGeneric(Callback callback);
   template <class Callback>
   void OnGetStateResponse(Callback callback,
+                          StateResponseCalledFrom called_from,
                           absl::optional<rmad::GetStateReply> response);
   void OnAbortRmaResponse(AbortRmaCallback callback,
                           bool reboot,
@@ -206,6 +227,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       EndRmaCallback callback);
   void OnGetLog(GetLogCallback callback,
                 absl::optional<rmad::GetLogReply> response);
+  void OnSaveLog(SaveLogCallback callback,
+                 absl::optional<rmad::SaveLogReply> response);
 
   void OnOsUpdateStatusCallback(update_engine::Operation operation,
                                 double progress,
@@ -217,6 +240,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void OsUpdateOrNextRmadStateCallback(TransitionStateCallback callback,
                                        const std::string& version);
+
+  // Indicate if user has seen the NetworkPage. It helps to check if user
+  // will skip the NetworkPage when clicking back button.
+  bool user_has_seen_network_page_ = false;
 
   // Saves existing configured networks to `existing_saved_network_guids_`.
   void OnTrackConfiguredNetworks(
@@ -235,6 +262,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Confirms if the network was dropped. Invokes `end_rma_callback_` once all
   // the expected networks are dropped.
   void OnForgetNetwork(const std::string& guid, bool success);
+
+  // Handles responses from the platform to diagnostics requests.
+  void OnMetricsReply(
+      absl::optional<rmad::RecordBrowserActionMetricReply> response);
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

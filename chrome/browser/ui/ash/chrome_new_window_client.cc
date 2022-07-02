@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/calculator_app/calculator_app_utils.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
@@ -57,7 +58,6 @@
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -161,8 +161,8 @@ bool OpenFilesSwa(Profile* const profile,
 
   web_app::SystemAppLaunchParams params;
   params.url = files_swa_url;
-  web_app::LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::FILE_MANAGER, params);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   params);
   return true;
 }
 
@@ -386,12 +386,10 @@ void ChromeNewWindowClient::OpenFileManager() {
       return;
     }
 
-    proxy->Launch(
-        update.AppId(),
-        apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            /*preferred_containner=*/true),
-        apps::mojom::LaunchSource::kFromKeyboard);
+    proxy->Launch(update.AppId(),
+                  apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      /*prefer_container=*/true),
+                  apps::mojom::LaunchSource::kFromKeyboard);
   };
 
   bool result = proxy->AppRegistryCache().ForOneApp(
@@ -427,9 +425,8 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
     proxy->LaunchAppWithFiles(
         update.AppId(),
-        apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
-                            WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            /*preferred_containner=*/true),
+        apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                            /*prefer_container=*/true),
         apps::mojom::LaunchSource::kFromKeyboard, std::move(launch_files));
   };
 
@@ -441,7 +438,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
-    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::CROSH);
+    web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     Browser* browser = displayer.browser();
@@ -508,7 +505,7 @@ void ChromeNewWindowClient::OpenFeedbackPage(
 void ChromeNewWindowClient::OpenPersonalizationHub() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   web_app::LaunchSystemWebAppAsync(profile,
-                                   web_app::SystemAppType::PERSONALIZATION);
+                                   ash::SystemWebAppType::PERSONALIZATION);
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
@@ -536,7 +533,7 @@ void ChromeNewWindowClient::CloseCameraApp() {
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
-  return provider && provider->system_web_app_manager().IsAppEnabled(
-                         web_app::SystemAppType::CAMERA);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
+  return swa_manager &&
+         swa_manager->IsAppEnabled(ash::SystemWebAppType::CAMERA);
 }

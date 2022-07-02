@@ -12,10 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace proximity_auth {
 
@@ -49,7 +46,7 @@ class MessengerImpl : public Messenger,
   // been sent yet or is waiting for a response from the remote device.
   struct PendingMessage {
     PendingMessage();
-    explicit PendingMessage(const base::DictionaryValue& message);
+    explicit PendingMessage(const base::Value::Dict& message);
     explicit PendingMessage(const std::string& message);
     ~PendingMessage();
 
@@ -69,15 +66,15 @@ class MessengerImpl : public Messenger,
 
   // Handles an incoming "status_update" |message|, parsing and notifying
   // observers of the content.
-  void HandleRemoteStatusUpdateMessage(const base::DictionaryValue& message);
+  void HandleRemoteStatusUpdateMessage(const base::Value::Dict& message);
 
   // Handles an incoming "decrypt_response" message, parsing and notifying
   // observers of the decrypted content.
-  void HandleDecryptResponseMessage(const base::DictionaryValue& message);
+  void HandleDecryptResponseMessage(const base::Value::Dict& message);
 
   // Handles an incoming "unlock_response" message, notifying observers of the
   // response.
-  void HandleUnlockResponseMessage(const base::DictionaryValue& message);
+  void HandleUnlockResponseMessage(const base::Value::Dict& message);
 
   // ash::secure_channel::ClientChannel::Observer:
   void OnDisconnected() override;

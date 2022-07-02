@@ -118,6 +118,9 @@ FromMojomResponseToAutomationResponse(
           SET_NATIVE_CHROME_VOX_RESPONSE_WINDOWNOTFOUND;
     case arc::mojom::SetNativeChromeVoxResponse::FAILURE:
       return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
+    case arc::mojom::SetNativeChromeVoxResponse::NEED_DEPRECATION_CONFIRMATION:
+      return SetNativeChromeVoxResponse::
+          SET_NATIVE_CHROME_VOX_RESPONSE_NEEDDEPRECATIONCONFIRMATION;
   }
 }
 

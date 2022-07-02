@@ -40,6 +40,7 @@ FakeVideoEncodeAccelerator::GetSupportedProfiles() {
   profile.max_resolution.SetSize(1920, 1088);
   profile.max_framerate_numerator = 30;
   profile.max_framerate_denominator = 1;
+  profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
 
   profile.profile = media::H264PROFILE_MAIN;
   profiles.push_back(profile);

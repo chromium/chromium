@@ -79,8 +79,6 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     run_loop_ = std::make_unique<base::RunLoop>();
 
     using FakeDelegate = enterprise_connectors::FakeContentAnalysisDelegate;
-    auto is_encrypted_callback =
-        base::BindRepeating([](const base::FilePath&) { return false; });
 
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
@@ -101,8 +99,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
             &enterprise_connectors::FakeContentAnalysisDelegate::Create,
-            run_loop_->QuitClosure(), callback, is_encrypted_callback,
-            "dm_token"));
+            run_loop_->QuitClosure(), callback, "dm_token"));
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
   }
 

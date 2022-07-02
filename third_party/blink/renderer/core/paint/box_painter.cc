@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
@@ -47,8 +46,9 @@ void BoxPainter::PaintChildren(const PaintInfo& paint_info) {
   PaintInfo child_info(paint_info);
   for (LayoutObject* child = layout_box_.SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
-      SVGForeignObjectPainter(*foreign_object).PaintLayer(paint_info);
+    if (child->IsSVGForeignObjectIncludingNG()) {
+      SVGForeignObjectPainter(To<LayoutBlockFlow>(*child))
+          .PaintLayer(paint_info);
     } else {
       child->Paint(child_info);
     }

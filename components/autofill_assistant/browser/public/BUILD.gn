@@ -14,7 +14,7 @@ static_library("public") {
     "autofill_assistant.h",
     "autofill_assistant_factory.h",
     "external_action_delegate.h",
-    "external_script_controller.h",
+    "headless_script_controller.h",
     "runtime_manager.cc",
     "runtime_manager.h",
     "runtime_manager_impl.cc",
@@ -49,6 +49,8 @@ static_library("unit_test_support") {
   sources = [
     "mock_autofill_assistant.cc",
     "mock_autofill_assistant.h",
+    "mock_headless_script_controller.cc",
+    "mock_headless_script_controller.h",
     "mock_runtime_manager.cc",
     "mock_runtime_manager.h",
   ]

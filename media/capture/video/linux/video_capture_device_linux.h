@@ -13,11 +13,7 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
-#include "base/threading/thread.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
@@ -66,10 +62,7 @@ class VideoCaptureDeviceLinux : public VideoCaptureDevice {
   // |v4l2_thread_|.
   std::unique_ptr<V4L2CaptureDelegate> capture_impl_;
 
-  // Photo-related requests waiting for |v4l2_thread_| to be active.
-  std::vector<base::OnceClosure> photo_requests_queue_;
-
-  base::Thread v4l2_thread_;  // Thread used for reading data from the device.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // SetRotation() may get called even when the device is not started. When that
   // is the case we remember the value here and use it as soon as the device

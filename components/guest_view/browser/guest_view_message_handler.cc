@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -114,6 +115,13 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
   manager->AttachGuest(render_process_id(), element_instance_id,
                        guest_instance_id,
                        base::Value::AsDictionaryValue(params));
+
+  const bool changed_owner_web_contents =
+      owner_web_contents !=
+      content::WebContents::FromRenderFrameHost(embedder_frame);
+  base::UmaHistogramBoolean(
+      "Extensions.GuestView.ChangeOwnerWebContentsOnAttach",
+      changed_owner_web_contents);
 
   guest->AttachToOuterWebContentsFrame(embedder_frame, element_instance_id,
                                        false /* is_full_page_plugin */,

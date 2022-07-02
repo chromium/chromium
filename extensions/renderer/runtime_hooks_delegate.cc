@@ -13,7 +13,9 @@
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -50,6 +52,23 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
   if (script_context && script_context->extension()) {
     info.GetReturnValue().Set(
         gin::StringToSymbol(isolate, script_context->extension()->id()));
+  }
+}
+
+// Handler for the dynamicId property on chrome.runtime.
+void GetDynamicId(v8::Local<v8::Name> property_name,
+                  const v8::PropertyCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  // This could potentially be invoked after the script context is removed
+  // (unlike the handler calls, which should only be invoked for valid
+  // contexts).
+  if (script_context && script_context->extension()) {
+    info.GetReturnValue().Set(
+        gin::StringToSymbol(isolate, script_context->extension()->guid()));
   }
 }
 
@@ -107,10 +126,18 @@ RequestResult RuntimeHooksDelegate::GetURL(
 
   v8::Isolate* isolate = script_context->isolate();
   std::string path = gin::V8ToString(isolate, arguments[0]);
+  const auto* extension = script_context->extension();
+  bool use_dynamic_url = false;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDynamicURLRedirection)) {
+    use_dynamic_url =
+        WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, path);
+  }
+  std::string id = use_dynamic_url ? extension->guid() : extension->id();
 
   RequestResult result(RequestResult::HANDLED);
   std::string url = base::StringPrintf(
-      "chrome-extension://%s%s%s", script_context->extension()->id().c_str(),
+      "chrome-extension://%s%s%s", id.c_str(),
       !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
   // GURL considers any possible path valid. Since the argument is only appended
   // as part of the path, there should be no way this could conceivably fail.
@@ -186,6 +213,11 @@ void RuntimeHooksDelegate::InitializeTemplate(
     const APITypeReferenceMap& type_refs) {
   object_template->SetAccessor(gin::StringToSymbol(isolate, "id"),
                                &GetExtensionId);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDynamicURLRedirection)) {
+    object_template->SetAccessor(gin::StringToSymbol(isolate, "dynamicId"),
+                                 &GetDynamicId);
+  }
 }
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(

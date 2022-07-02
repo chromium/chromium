@@ -41,7 +41,7 @@ PortalContents::PortalContents(
       portal_client_receiver_(this, std::move(portal_client_receiver)) {
   remote_portal_.set_disconnect_handler(
       WTF::Bind(&PortalContents::DisconnectHandler, WrapWeakPersistent(this)));
-  DocumentPortals::From(GetDocument()).RegisterPortalContents(this);
+  DocumentPortals::GetOrCreate(GetDocument()).RegisterPortalContents(this);
 }
 
 PortalContents::~PortalContents() = default;
@@ -58,8 +58,9 @@ void PortalContents::Activate(BlinkTransferableMessage data,
   DCHECK(portal_element_);
 
   // Mark this contents as having activation in progress.
-  DocumentPortals& document_portals = DocumentPortals::From(GetDocument());
-  document_portals.SetActivatingPortalContents(this);
+  auto* document_portals = DocumentPortals::Get(GetDocument());
+  DCHECK(document_portals);
+  document_portals->SetActivatingPortalContents(this);
   activation_delegate_ = delegate;
 
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
@@ -120,9 +121,10 @@ void PortalContents::OnActivateResponse(
       return;
   }
 
-  DocumentPortals& document_portals = DocumentPortals::From(GetDocument());
-  DCHECK_EQ(document_portals.GetActivatingPortalContents(), this);
-  document_portals.ClearActivatingPortalContents();
+  auto* document_portals = DocumentPortals::Get(GetDocument());
+  DCHECK(document_portals);
+  DCHECK_EQ(document_portals->GetActivatingPortalContents(), this);
+  document_portals->ClearActivatingPortalContents();
 
   activation_delegate_ = nullptr;
 
@@ -181,7 +183,7 @@ void PortalContents::Destroy() {
   portal_token_ = absl::nullopt;
   remote_portal_.reset();
   portal_client_receiver_.reset();
-  DocumentPortals::From(GetDocument()).DeregisterPortalContents(this);
+  DocumentPortals::GetOrCreate(GetDocument()).DeregisterPortalContents(this);
 }
 
 void PortalContents::DisconnectHandler() {

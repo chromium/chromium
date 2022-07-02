@@ -78,7 +78,8 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {}
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     callback_.Run(devices);
   }
   void DispatchTouchscreenDevicesUpdated(
@@ -96,7 +97,8 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchGamepadEvent(const GamepadEvent& event) override {}
 
   void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) override {}
+      const std::vector<GamepadDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
 
  private:
   base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>

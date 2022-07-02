@@ -64,6 +64,13 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
 
 class PageEntitiesModelExecutorImplTest : public testing::Test {
  public:
+  PageEntitiesModelExecutorImplTest() {
+    PageEntitiesModelExecutorConfig config;
+    // The false variation is tested in a src-internal test.
+    config.should_provide_filter_path = true;
+    SetPageEntitiesModelExecutorConfigForTesting(config);
+  }
+
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
 

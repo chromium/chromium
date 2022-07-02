@@ -32,8 +32,8 @@ TEST(JsonSchemaCompilerEnumsTest, EnumTypePopulate) {
 
 TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
   {
-    std::vector<base::Value> args;
-    args.emplace_back("one");
+    base::Value::List args;
+    args.Append("one");
 
     std::unique_ptr<enums::TakesEnumAsType::Params> params(
         enums::TakesEnumAsType::Params::Create(args));
@@ -74,8 +74,8 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
 
 TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
   {
-    std::vector<base::Value> params_value;
-    params_value.push_back(base::Value::FromUniquePtrValue(
+    base::Value::List params_value;
+    params_value.Append(base::Value::FromUniquePtrValue(
         List(std::make_unique<base::Value>("one"),
              std::make_unique<base::Value>("two"))));
     std::unique_ptr<enums::TakesEnumArrayAsType::Params> params(
@@ -86,8 +86,8 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
     EXPECT_EQ(enums::ENUMERATION_TWO, params->values[1]);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.push_back(base::Value::FromUniquePtrValue(
+    base::Value::List params_value;
+    params_value.Append(base::Value::FromUniquePtrValue(
         List(std::make_unique<base::Value>("invalid"))));
     std::unique_ptr<enums::TakesEnumArrayAsType::Params> params(
         enums::TakesEnumArrayAsType::Params::Create(params_value));
@@ -148,16 +148,16 @@ TEST(JsonSchemaCompilerEnumsTest, OptionalEnumTypePopulate) {
 
 TEST(JsonSchemaCompilerEnumsTest, TakesEnumParamsCreate) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("two");
+    base::Value::List params_value;
+    params_value.Append("two");
     std::unique_ptr<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_EQ(enums::ENUMERATION_TWO, params->state);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("invalid");
+    base::Value::List params_value;
+    params_value.Append("invalid");
     std::unique_ptr<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -166,8 +166,8 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumParamsCreate) {
 
 TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
   {
-    std::vector<base::Value> params_value;
-    params_value.push_back(base::Value::FromUniquePtrValue(
+    base::Value::List params_value;
+    params_value.Append(base::Value::FromUniquePtrValue(
         List(std::make_unique<base::Value>("one"),
              std::make_unique<base::Value>("two"))));
     std::unique_ptr<enums::TakesEnumArray::Params> params(
@@ -178,8 +178,8 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
     EXPECT_EQ(enums::ENUMERATION_TWO, params->values[1]);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.push_back(base::Value::FromUniquePtrValue(
+    base::Value::List params_value;
+    params_value.Append(base::Value::FromUniquePtrValue(
         List(std::make_unique<base::Value>("invalid"))));
     std::unique_ptr<enums::TakesEnumArray::Params> params(
         enums::TakesEnumArray::Params::Create(params_value));
@@ -189,23 +189,23 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
 
 TEST(JsonSchemaCompilerEnumsTest, TakesOptionalEnumParamsCreate) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("three");
+    base::Value::List params_value;
+    params_value.Append("three");
     std::unique_ptr<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_EQ(enums::ENUMERATION_THREE, params->state);
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_EQ(enums::ENUMERATION_NONE, params->state);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("invalid");
+    base::Value::List params_value;
+    params_value.Append("invalid");
     std::unique_ptr<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -214,9 +214,9 @@ TEST(JsonSchemaCompilerEnumsTest, TakesOptionalEnumParamsCreate) {
 
 TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("one");
-    params_value.emplace_back("ham");
+    base::Value::List params_value;
+    params_value.Append("one");
+    params_value.Append("ham");
     std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -224,8 +224,8 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     EXPECT_EQ(enums::OTHER_ENUMERATION_HAM, params->type);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("one");
+    base::Value::List params_value;
+    params_value.Append("one");
     std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -233,7 +233,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     EXPECT_EQ(enums::OTHER_ENUMERATION_NONE, params->type);
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -241,9 +241,9 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     EXPECT_EQ(enums::OTHER_ENUMERATION_NONE, params->type);
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("three");
-    params_value.emplace_back("invalid");
+    base::Value::List params_value;
+    params_value.Append("three");
+    params_value.Append("invalid");
     std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_FALSE(params.get());

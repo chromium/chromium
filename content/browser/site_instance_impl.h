@@ -48,6 +48,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);
+  static scoped_refptr<SiteInstanceImpl> CreateForFencedFrame(
+      SiteInstanceImpl* embedder_site_instance);
 
   // Similar to above, but creates an appropriate SiteInstance in a new
   // BrowsingInstance for a particular `url_info`. This is a more generic

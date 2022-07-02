@@ -296,6 +296,44 @@ TEST_F(UnsentLogStoreTest, LongAndLargeLogList) {
   result_unsent_log_store.ExpectNextLog(target_log);
 }
 
+// Store a set of logs over the length limit, and over the minimum number of
+// bytes. The first log will be a staged log that should be trimmed away. This
+// should make the log store not have a staged log anymore.
+TEST_F(UnsentLogStoreTest, TrimStagedLog) {
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  // Make each log byte count the limit.
+  size_t log_size = kLogByteLimit;
+
+  // Create a target log that will be the staged log that we want to trim away.
+  std::string target_log = "First that should be trimmed";
+  target_log += GenerateLogWithMinCompressedSize(log_size);
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog(target_log, log_metadata);
+  unsent_log_store.StageNextLog();
+  EXPECT_TRUE(unsent_log_store.has_staged_log());
+
+  // Add |kLogCountLimit| additional logs.
+  std::string log_data = GenerateLogWithMinCompressedSize(log_size);
+  for (size_t i = 0; i < kLogCountLimit; ++i) {
+    unsent_log_store.StoreLog(log_data, log_metadata);
+  }
+
+  EXPECT_EQ(kLogCountLimit + 1, unsent_log_store.size());
+  unsent_log_store.TrimAndPersistUnsentLogs();
+
+  // Verify that the first log (the staged one) was trimmed away, and that the
+  // log store does not consider to have any staged log anymore. The other logs
+  // are not trimmed because the most recent logs are prioritized and we trim
+  // until we have |kLogCountLimit| logs.
+  EXPECT_EQ(kLogCountLimit, unsent_log_store.size());
+  EXPECT_FALSE(unsent_log_store.has_staged_log());
+  // Verify that all of the logs in the log store are not the |target_log|.
+  while (unsent_log_store.size() > 0) {
+    unsent_log_store.ExpectNextLog(log_data);
+  }
+}
+
 // Check that the store/stage/discard functions work as expected.
 TEST_F(UnsentLogStoreTest, Staging) {
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);

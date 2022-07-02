@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
@@ -105,7 +106,7 @@ class TriggerScriptCoordinatorTest : public testing::Test {
         std::move(mock_web_controller), std::move(mock_request_sender),
         GURL(kFakeServerUrl), std::move(mock_static_trigger_conditions),
         std::move(mock_dynamic_trigger_conditions), &ukm_recorder_,
-        web_contents()->GetMainFrame()->GetPageUkmSourceId());
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
   void TearDown() override { coordinator_.reset(); }
@@ -127,10 +128,10 @@ class TriggerScriptCoordinatorTest : public testing::Test {
   void SimulateNavigateToUrl(const GURL& url) {
     content::WebContentsTester::For(web_contents())->SetLastCommittedURL(url);
     content::NavigationSimulator::NavigateAndCommitFromDocument(
-        url, web_contents()->GetMainFrame());
+        url, web_contents()->GetPrimaryMainFrame());
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
     navigation_ids_.emplace_back(
-        web_contents()->GetMainFrame()->GetPageUkmSourceId());
+        web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 
  protected:
@@ -196,9 +197,13 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
         expected_client_context.mutable_chrome()->set_chrome_version(
             version_info::GetProductNameAndVersionForUserAgent());
         expected_client_context.set_is_in_chrome_triggered(true);
+        expected_client_context.set_locale("fr-CH");
+        expected_client_context.set_country("CH");
         EXPECT_THAT(request.client_context(), Eq(expected_client_context));
       });
 
+  fake_platform_delegate_.fake_common_dependencies_.locale_.assign("fr-CH");
+  fake_platform_delegate_.fake_common_dependencies_.country_code_.assign("CH");
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContext>(
                           /* params = */ std::make_unique<ScriptParameters>(
@@ -208,7 +213,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                           /* onboarding_shown = */ true,
                           /* is_direct_action = */ true,
                           /* initial_url = */ "https://www.example.com",
-                          /* is_in_chrome_triggered = */ true),
+                          /* is_in_chrome_triggered = */ true,
+                          /* is_externally_triggered = */ false),
                       mock_callback_.Get());
 }
 
@@ -1360,7 +1366,7 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutWhileShown) {
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
   content::NavigationSimulator::Reload(web_contents());
   navigation_ids_.emplace_back(
-      web_contents()->GetMainFrame()->GetPageUkmSourceId());
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
   task_environment()->FastForwardBy(base::Seconds(1));

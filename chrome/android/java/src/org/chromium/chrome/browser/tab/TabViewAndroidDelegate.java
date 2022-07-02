@@ -4,18 +4,31 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.view.DragAndDropPermissions;
+import android.view.DragEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.dragdrop.DropDataContentProvider;
 
@@ -24,6 +37,7 @@ import org.chromium.ui.dragdrop.DropDataContentProvider;
  */
 public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
+    private static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final TabImpl mTab;
 
     /**
@@ -39,11 +53,20 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         super(containerView);
         mTab = (TabImpl) tab;
         containerView.addOnDragListener(getDragStateTracker());
+
         if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
             int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
                     DropDataContentProvider.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
             DropDataContentProvider.setClearCachedDataIntervalMs(delay);
+
+            boolean supportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                DragAndDropBrowserDelegate browserDelegate =
+                        new DragAndDropBrowserDelegateImpl(mTab, supportDropInChrome);
+                getDragAndDropDelegate().setDragAndDropBrowserDelegate(browserDelegate);
+            }
         }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
@@ -147,6 +170,48 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         super.destroy();
         if (getContentView() != null) {
             getContentView().removeOnDragListener(getDragStateTracker());
+        }
+    }
+
+    /**
+     * Delegate for browser related functions used by Drag and Drop.
+     */
+    static class DragAndDropBrowserDelegateImpl implements DragAndDropBrowserDelegate {
+        private final TabImpl mTab;
+        private final boolean mSupportDropInChrome;
+
+        public DragAndDropBrowserDelegateImpl(TabImpl tab, boolean supportDropInChrome) {
+            mTab = tab;
+            mSupportDropInChrome = supportDropInChrome;
+        }
+
+        @Override
+        public boolean getSupportDropInChrome() {
+            return mSupportDropInChrome;
+        }
+
+        @Override
+        @RequiresApi(Build.VERSION_CODES.N)
+        public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
+            Activity activity = ContextUtils.activityFromContext(mTab.getContext());
+            if (activity == null) {
+                return null;
+            }
+            return activity.requestDragAndDropPermissions(dropEvent);
+        }
+
+        @Override
+        public Intent createLinkIntent(String urlString) {
+            Intent intent = null;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK)
+                    && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                intent = MultiWindowUtils.createNewWindowIntent(
+                        mTab.getContext().getApplicationContext(),
+                        MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
+                intent.setData(Uri.parse(urlString));
+                intent.putExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, true);
+            }
+            return intent;
         }
     }
 }

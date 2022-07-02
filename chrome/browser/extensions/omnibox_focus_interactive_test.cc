@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   GURL replaced_url = embedded_test_server()->GetURL("/replacement");
   {
     content::TestFrameNavigationObserver nav_observer(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
     ASSERT_TRUE(content::ExecJs(
         web_contents, "history.replaceState({}, '', '/replacement');"));
     nav_observer.Wait();
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
       });
   )";
   content::TestFrameNavigationObserver nav_observer(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   content::ExecuteScriptAsync(
       web_contents, content::JsReplace(kTabsUpdateTemplate, final_ntp_url));
   nav_observer.Wait();
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
   // pushState
   content::TestFrameNavigationObserver nav_observer(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   content::ExecuteScriptAsync(web_contents,
                               "history.pushState({}, '', '/push-state')");
   nav_observer.Wait();
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
   // Execute `location.reload()`.
   content::TestFrameNavigationObserver nav_observer(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   content::ExecuteScriptAsync(web_contents, "window.location.reload()");
   nav_observer.Wait();
   EXPECT_EQ(1, web_contents->GetController().GetEntryCount());
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestFrameNavigationObserver nav_observer(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   ASSERT_TRUE(content::ExecuteScript(
       web_contents, content::JsReplace("window.location = $1", web_url)));
   nav_observer.Wait();
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   // from the main frame.  This ensures that in the next step the navigation
   // will not be triggered by the regular BeginNavigation path, but instead
   // will go through content::RenderFrameProxyHost::OpenURL.
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_NE(subframe->GetLastCommittedURL().scheme(),
             main_frame->GetLastCommittedURL().scheme());
   EXPECT_NE(subframe->GetProcess()->GetID(), main_frame->GetProcess()->GetID());
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   GURL target_url = embedded_test_server()->GetURL("/title2.html");
   {
     content::TestFrameNavigationObserver nav_observer(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
     ASSERT_TRUE(content::ExecuteScript(
         subframe, content::JsReplace(kLinkClickingScriptTemplate, target_url)));
     nav_observer.Wait();
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   // Home button.
   {
     content::TestFrameNavigationObserver nav_observer(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
     chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
     nav_observer.Wait();
   }
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   GURL target_url = embedded_test_server()->GetURL("/title2.html");
   {
     content::TestFrameNavigationObserver nav_observer(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
     ASSERT_TRUE(content::ExecuteScript(
         web_contents,
         content::JsReplace(kLinkClickingScriptTemplate, target_url)));
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   // Home button.
   {
     content::TestFrameNavigationObserver nav_observer(
-        web_contents->GetMainFrame());
+        web_contents->GetPrimaryMainFrame());
     chrome::Home(browser(), WindowOpenDisposition::CURRENT_TAB);
     nav_observer.Wait();
   }
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
   GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
   content::TestNavigationManager navigation(web_contents, fenced_frame_url);
   EXPECT_TRUE(content::ExecuteScript(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       content::JsReplace(kAddFencedFrameScript, fenced_frame_url)));
   navigation.WaitForNavigationFinished();
 

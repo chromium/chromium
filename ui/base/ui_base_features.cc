@@ -95,6 +95,10 @@ const base::Feature kLacrosResourcesFileSharing = {
     "LacrosResourcesFileSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Enable or disable multitouch for virtual keyboard on ChromeOS.
+const base::Feature kVirtualKeyboardMultitouch{
+    "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 const base::Feature kInputMethodSettingsUiUpdate = {
@@ -119,9 +123,16 @@ const base::Feature kSystemCaptionStyle{"SystemCaptionStyle",
 
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
-// blink.
+// blink. Currently enabled by default on Windows only.
+// TODO(crbug.com/1333523) - Implement for other platforms.
 const base::Feature kSystemCursorSizeSupported{
-    "SystemCursorSizeSupported", base::FEATURE_DISABLED_BY_DEFAULT};
+  "SystemCursorSizeSupported",
+#if BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsSystemCursorSizeSupported() {
   return base::FeatureList::IsEnabled(kSystemCursorSizeSupported);
@@ -377,7 +388,13 @@ bool IsVariableRefreshRateEnabled() {
 }
 
 const base::Feature kWaylandScreenCoordinatesEnabled{
-    "WaylandScreenCoordinatesEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+  "WaylandScreenCoordinatesEnabled",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsWaylandScreenCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);

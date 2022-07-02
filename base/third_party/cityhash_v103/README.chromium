@@ -20,3 +20,4 @@ Local Modifications:
 - 004-google-style.patch: Use nullptr, remove 'using namespace std;'.
 - 005-bswap-clang.patch: Use the builtins for bswap when compiling with clang.
 - clang-format
+- 006-warnings.patch: Fix various compiler warnings.

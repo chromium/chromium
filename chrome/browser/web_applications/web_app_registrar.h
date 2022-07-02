@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -67,11 +69,17 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const WebApp* GetAppByStartUrl(const GURL& start_url) const;
   std::vector<AppId> GetAppsFromSyncAndPendingInstallation() const;
 
+  bool AppsExistWithExternalConfigData() const;
+
   void Start();
   void Shutdown();
 
   void SetSubsystems(WebAppPolicyManager* policy_manager,
                      WebAppTranslationManager* translation_manager);
+
+  // Returns an AppId if there exists an app inside the registry that
+  // has a specific install_url.
+  absl::optional<AppId> LookUpAppIdByInstallUrl(const GURL& install_url) const;
 
   // Returns whether the app with |app_id| is currently listed in the registry.
   // ie. we have data for web app manifest and icons, and this |app_id| can be
@@ -81,8 +89,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.
-  // Note that the underlying field this checks is not yet persisted to the
-  // database; see https://crbug.com/1162477
   bool IsUninstalling(const AppId& app_id) const;
 
   // Returns whether the app with |app_id| is currently fully locally installed.
@@ -123,7 +129,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.
-  std::map<AppId, GURL> GetExternallyInstalledApps(
+  base::flat_map<AppId, base::flat_set<GURL>> GetExternallyInstalledApps(
       ExternalInstallSource install_source) const;
 
   // Returns the app id for |install_url| if the WebAppRegistrar is aware of an
@@ -179,7 +185,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<std::string> GetAppManifestId(const AppId& app_id) const;
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
-  blink::mojom::HandleLinks GetAppHandleLinks(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
   bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
   bool IsIsolated(const AppId& app_id) const;
@@ -288,7 +293,15 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns whether the app is pending successful navigation in order to
   // complete installation via the ExternallyManagedAppManager.
-  bool IsPlaceholderApp(const AppId& app_id) const;
+  bool IsPlaceholderApp(const AppId& app_id,
+                        const WebAppManagement::Type source_type) const;
+
+  // Returns an |app_id| if there is a placeholder app for |install_url|.
+  // Returning a nullopt does not mean that there is no app for |install_url|,
+  // just that there is no *placeholder app*.
+  absl::optional<AppId> LookupPlaceholderAppId(
+      const GURL& install_url,
+      const WebAppManagement::Type source_type) const;
 
   bool IsSystemApp(const AppId& app_id) const;
 
@@ -372,9 +385,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
      private:
       void FilterAndSkipApps() {
-        if (!filter_)
-          return;
-
         while (internal_iter_ != internal_end_ && !filter_(**this))
           ++internal_iter_;
       }
@@ -422,8 +432,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);
 
-  AppSet FilterApps(Filter filter) const;
-
   void CountMutation();
 
   // Gets the IDs for all apps in `app_set`.
@@ -455,7 +463,7 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 
   WebApp* GetAppByIdMutable(const AppId& app_id);
 
-  AppSet FilterAppsMutable(Filter filter);
+  AppSet FilterAppsMutableForTesting(Filter filter);
 
   AppSet GetAppsIncludingStubsMutable();
   AppSet GetAppsMutable();

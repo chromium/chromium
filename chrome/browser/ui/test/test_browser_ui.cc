@@ -17,9 +17,9 @@
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "chrome/test/pixel/browser_skia_gold_pixel_diff.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/widget/widget.h"
 #endif
 
@@ -99,10 +99,10 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
   auto* compositor = view->GetWidget()->GetCompositor();
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
-  BrowserSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(view->GetWidget(), screenshot_prefix);
-  return pixel_diff.CompareScreenshot(screenshot_name, view,
-                                      GetPixelMatchAlgorithm());
+  views::ViewSkiaGoldPixelDiff pixel_diff;
+  pixel_diff.Init(screenshot_prefix);
+  return pixel_diff.CompareViewScreenshot(screenshot_name, view,
+                                          GetPixelMatchAlgorithm());
 }
 
 void TestBrowserUi::SetPixelMatchAlgorithm(

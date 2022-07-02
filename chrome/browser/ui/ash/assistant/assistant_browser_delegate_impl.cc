@@ -16,22 +16,20 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,8 +45,8 @@ AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   DCHECK(session_manager->sessions().empty());
   session_manager->AddObserver(this);
 
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &AssistantBrowserDelegateImpl::OnAppTerminating, base::Unretained(this)));
 }
 
 AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
@@ -94,11 +92,7 @@ void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
   assistant_setup_->MaybeStartAssistantOptInFlow();
 }
 
-void AssistantBrowserDelegateImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void AssistantBrowserDelegateImpl::OnAppTerminating() {
   if (!initialized_)
     return;
 

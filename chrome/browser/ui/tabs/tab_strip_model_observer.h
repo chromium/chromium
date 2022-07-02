@@ -82,7 +82,7 @@ class TabStripModelChange {
   };
 
   struct ContentsWithIndex {
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
     int index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -164,7 +164,7 @@ class TabStripModelChange {
   // changes the existing selection model by calling
   // Move(from_index, to_index, 1).
   struct Move : public Delta {
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
     int from_index;
     int to_index;
 
@@ -174,8 +174,8 @@ class TabStripModelChange {
   // The WebContents was replaced at the specified index. This is invoked when
   // prerendering swaps in a prerendered WebContents.
   struct Replace : public Delta {
-    content::WebContents* old_contents;
-    content::WebContents* new_contents;
+    raw_ptr<content::WebContents> old_contents;
+    raw_ptr<content::WebContents> new_contents;
     int index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
@@ -265,8 +265,8 @@ struct TabGroupChange {
   struct VisualsChange : public Delta {
     VisualsChange();
     ~VisualsChange() override;
-    const tab_groups::TabGroupVisualData* old_visuals;
-    const tab_groups::TabGroupVisualData* new_visuals;
+    raw_ptr<const tab_groups::TabGroupVisualData> old_visuals;
+    raw_ptr<const tab_groups::TabGroupVisualData> new_visuals;
   };
 
   TabGroupChange(TabStripModel* model,
@@ -281,7 +281,7 @@ struct TabGroupChange {
   const VisualsChange* GetVisualsChange() const;
 
   tab_groups::TabGroupId group;
-  TabStripModel* model;
+  raw_ptr<TabStripModel> model;
   Type type;
 
  private:
@@ -340,6 +340,14 @@ class TabStripModelObserver {
   // use case of this signal that is currently supported is the drag controller
   // cancelling/completing a the drag before a tab is added during header drag.
   virtual void OnTabWillBeAdded();
+
+  // Notification that the tab at |index| will be removed from the
+  // TabStripModel, which allows an observer to react to an impending change to
+  // the TabStripModel. The only use case of this signal that is currently
+  // supported is the drag controller completing a drag before a tab is removed.
+  // TODO(1322943): Unify and generalize this and OnTabWillBeAdded, e.g. via
+  // OnTabStripModelWillChange().
+  virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are

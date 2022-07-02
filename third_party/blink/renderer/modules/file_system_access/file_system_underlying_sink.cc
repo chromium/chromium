@@ -123,6 +123,11 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
           "Invalid params passed. write requires a data argument");
       return ScriptPromise();
     }
+    if (!params.data()) {
+      exception_state.ThrowTypeError(
+          "Invalid params passed. write requires a non-null data");
+      return ScriptPromise();
+    }
     return WriteData(script_state, position, params.data(), exception_state);
   }
 

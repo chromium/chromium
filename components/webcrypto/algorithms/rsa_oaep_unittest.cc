@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +38,15 @@ std::string Base64EncodeUrlSafe(const std::vector<uint8_t>& input) {
   return base64url_encoded;
 }
 
-std::unique_ptr<base::DictionaryValue> CreatePublicKeyJwkDict() {
-  std::unique_ptr<base::DictionaryValue> jwk(new base::DictionaryValue());
-  jwk->SetString("kty", "RSA");
-  jwk->SetString("n",
-                 Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyModulusHex)));
-  jwk->SetString("e",
-                 Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyExponentHex)));
+base::Value::Dict CreatePublicKeyJwkDict(
+    base::flat_map<std::string, std::string> extra_properties) {
+  base::Value::Dict jwk;
+  jwk.Set("kty", "RSA");
+  jwk.Set("n", Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyModulusHex)));
+  jwk.Set("e", Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyExponentHex)));
+  for (const auto& prop : extra_properties) {
+    jwk.Set(prop.first, prop.second);
+  }
   return jwk;
 }
 
@@ -56,7 +58,7 @@ TEST_F(WebCryptoRsaOaepTest, ImportPkcs8WithRsaEncryption) {
   blink::WebCryptoKey private_key;
   ASSERT_EQ(Status::Success(),
             ImportKey(blink::kWebCryptoKeyFormatPkcs8,
-                      CryptoData(HexStringToBytes(kPrivateKeyPkcs8DerHex)),
+                      HexStringToBytes(kPrivateKeyPkcs8DerHex),
                       CreateRsaHashedImportAlgorithm(
                           blink::kWebCryptoAlgorithmIdRsaOaep,
                           blink::kWebCryptoAlgorithmIdSha1),
@@ -64,56 +66,44 @@ TEST_F(WebCryptoRsaOaepTest, ImportPkcs8WithRsaEncryption) {
 }
 
 TEST_F(WebCryptoRsaOaepTest, ImportPublicJwkWithNoAlg) {
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::Success(),
       ImportKeyJwkFromDict(
-          *jwk,
+          CreatePublicKeyJwkDict({}),
           CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaOaep,
                                          blink::kWebCryptoAlgorithmIdSha1),
           true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
 }
 
 TEST_F(WebCryptoRsaOaepTest, ImportPublicJwkWithMatchingAlg) {
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-  jwk->SetString("alg", "RSA-OAEP");
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::Success(),
       ImportKeyJwkFromDict(
-          *jwk,
+          CreatePublicKeyJwkDict({{"alg", "RSA-OAEP"}}),
           CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaOaep,
                                          blink::kWebCryptoAlgorithmIdSha1),
           true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
 }
 
 TEST_F(WebCryptoRsaOaepTest, ImportPublicJwkWithMismatchedAlgFails) {
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-  jwk->SetString("alg", "RSA-OAEP-512");
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::ErrorJwkAlgorithmInconsistent(),
       ImportKeyJwkFromDict(
-          *jwk,
+          CreatePublicKeyJwkDict({{"alg", "RSA-OAEP-512"}}),
           CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaOaep,
                                          blink::kWebCryptoAlgorithmIdSha1),
           true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
 }
 
 TEST_F(WebCryptoRsaOaepTest, ImportPublicJwkWithMismatchedTypeFails) {
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-  jwk->SetString("kty", "oct");
-  jwk->SetString("alg", "RSA-OAEP");
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::ErrorJwkUnexpectedKty("RSA"),
       ImportKeyJwkFromDict(
-          *jwk,
+          CreatePublicKeyJwkDict({{"kty", "oct"}, {"alg", "RSA-OAEP"}}),
           CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaOaep,
                                          blink::kWebCryptoAlgorithmIdSha1),
           true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
@@ -131,14 +121,11 @@ TEST_F(WebCryptoRsaOaepTest, ExportPublicJwk) {
     const TestData& test_data = kTestData[i];
     SCOPED_TRACE(test_data.expected_jwk_alg);
 
-    std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-    jwk->SetString("alg", test_data.expected_jwk_alg);
-
     // Import the key in a known-good format
     blink::WebCryptoKey public_key;
     ASSERT_EQ(Status::Success(),
               ImportKeyJwkFromDict(
-                  *jwk,
+                  CreatePublicKeyJwkDict({{"alg", test_data.expected_jwk_alg}}),
                   CreateRsaHashedImportAlgorithm(
                       blink::kWebCryptoAlgorithmIdRsaOaep, test_data.hash_alg),
                   true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
@@ -153,28 +140,236 @@ TEST_F(WebCryptoRsaOaepTest, ExportPublicJwk) {
   }
 }
 
+struct RsaOaepKnownAnswer {
+  const char* pubkey;
+  const char* privkey;
+  blink::WebCryptoAlgorithmId hash;
+  const char* label;
+  const char* ciphertext;
+  const char* plaintext;
+};
+
+const RsaOaepKnownAnswer kRsaOaepKnownAnswers[] = {
+    // Tests for RSA-OAEP Encrypt/Decrypt without a label (the empty string).
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha1, "",
+     "443FA1354F1DBC5C007A019CACCF18A3E6F986D7513D787F13DED463239F1833D6E33BFA8"
+     "AF034C198B0D903F202F543FEF38FAF54018EB7794B4FE638CA4D87C564B845C0695D7E70"
+     "C5D4464BEFF05225E747A6CA096A5E5E634002836D3CCE35713F082B20DCE7BB51324E4C8"
+     "9E202E3568E9F403ED864DE751BBE63E09680",
+     "666F6F64"},
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha256, "",
+     "4EBEBCA7297864FDEA44B3BF0E4D5AC26A8478E63642CED06182597DF247EC9883E72DFDC"
+     "4507EE5058C52F6B929FBC34CE1FCF7C4A914D5B0C5C94638BDB0C70618E3F4FE79D29158"
+     "5DFD3197C4C16B57213337D12E59FC7A38617A1BE3DD2B09DA518E568712D2E6523F079C1"
+     "6EFCE540CAA829C5E39D62D64902A4E9D0BB3",
+     "666F6F64"},
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha384, "",
+     "67B83119BA513947000F3D7F144408FCBD6B22F93C01671C1E40607972BB991716EAA79B9"
+     "6FF8DEF95D8E673697E279096D035BA9ED79B9FCAC933A26FB003941CC8E8749511CEDFFA"
+     "CA653769AB5209E414B80D30A0DC44BE72E49A7FE732819C0DA4142FA0810FFF19E56EFB1"
+     "4EAA5649398E4C7D920B254CAE54F8019B25A",
+     "666F6F64"},
+    // Tests for RSA-OAEP with an optional label specified.
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha1, "66656564206D65207365796D6F7572",
+     "A27427C7CB3CD5B7D3C432B3F4BE98577B1FFBF302EDEFF0B219CABAB3E42DF7E8E24F9A8"
+     "9B387D314B199219F91B7F2CDE8E8D6F461A9495C3B5A398E0F670919EF62CCFF96CCF0FC"
+     "AF178E5D898C332AAD342F4C42B3209B10CE04B0D004A3ED2514A707D617A321206C22508"
+     "4C1446BF17208C6D278B0EA3F5968D1D44590",
+     "666F6F64"},
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha256, "66656564206D65207365796D6F7572",
+     "333777A27C14C6186D2E90024507D7BD01D2A23FD462E9DBA6E9E96759A7025F29ABAA40D"
+     "F6B3355648AE8FD90CD08D9D92529CAD337A6BED806D19B998E472EC0704205A6B83BDB4D"
+     "4F5DB03FFE8BC68B44CA7F723A032161BD5B6D4517D58FAD8F1859676BC15A3BE9D20D78B"
+     "11D73F79B23372CF4793F6301F612E820D67A",
+     "666F6F64"},
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha384, "66656564206D65207365796D6F7572",
+     "686D4B27EBD14F4745FB947459DE0D349E53C115F466245268E5C6B8C48FFFDAFB9C77373"
+     "60D850A6865883ADD516E4AFE71AACE2A73083A4D991293D59199639CF27F6DC0799F7856"
+     "53C3B1E4213EC277A6FA121F6CD2F81E29F1A35A4604B473983CFEDACB00AA9786E92999D"
+     "C9FA9AFDBDBB3F0EB3F49B301C5BFE14974BE",
+     "666F6F64"},
+    // With RSA-OAEP, an empty message is valid.
+    {"30819f300d06092a864886f70d010101050003818d0030818902818100a56e4a0e7010175"
+     "89a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056ffedb162b4c0f283"
+     "a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8b6df5d671ef6377c"
+     "0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b6f64c4ef22e1e1f2"
+     "0d0ce8cffb2249bd9a21370203010001",
+     "30820275020100300d06092a864886f70d01010105000482025f3082025b0201000281810"
+     "0a56e4a0e701017589a5187dc7ea841d156f2ec0e36ad52a44dfeb1e61f7ad991d8c51056"
+     "ffedb162b4c0f283a12a88a394dff526ab7291cbb307ceabfce0b1dfd5cd9508096d5b2b8"
+     "b6df5d671ef6377c0921cb23c270a70e2598e6ff89d19f105acc2d3f0cb35f29280e1386b"
+     "6f64c4ef22e1e1f20d0ce8cffb2249bd9a2137020301000102818033a5042a90b27d4f545"
+     "1ca9bbbd0b44771a101af884340aef9885f2a4bbe92e894a724ac3c568c8f97853ad07c02"
+     "66c8c6a3ca0929f1e8f11231884429fc4d9ae55fee896a10ce707c3ed7e734e44727a3957"
+     "4501a532683109c2abacaba283c31b4bd2f53c3ee37e352cee34f9e503bd80c0622ad79c6"
+     "dcee883547c6a3b325024100e7e8942720a877517273a356053ea2a1bc0c94aa72d55c6e8"
+     "6296b2dfc967948c0a72cbccca7eacb35706e09a1df55a1535bd9b3cc34160b3b6dcd3eda"
+     "8e6443024100b69dca1cf7d4d7ec81e75b90fcca874abcde123fd2700180aa90479b6e48d"
+     "e8d67ed24f9f19d85ba275874f542cd20dc723e6963364a1f9425452b269a6799fd024028"
+     "fa13938655be1f8a159cbaca5a72ea190c30089e19cd274a556f36c4f6e19f554b34c0777"
+     "90427bbdd8dd3ede2448328f385d81b30e8e43b2fffa02786197902401a8b38f398fa7120"
+     "49898d7fb79ee0a77668791299cdfa09efc0e507acb21ed74301ef5bfd48be455eaeb6e16"
+     "78255827580a8e4e8e14151d1510a82a3f2e729024027156aba4126d24a81f3a528cbfb27"
+     "f56886f840a9f6e86e17a44b94fe9319584b8e22fdde1e5a2e3bd8aa5ba8d8584194eb219"
+     "0acf832b847f13a3d24a79f4d",
+     blink::kWebCryptoAlgorithmIdSha1, "",
+     "5E35C080E4A0EBBB5AC8EE44888A6DB6B8C4D05A6427BE0ECBF245A23BCFC4A4A7D9E5466"
+     "123511399F5D01A3CF910DD6FEBCA969B23C753A0574163D847E70E7EFBFBBF6CC0154556"
+     "0D620F00CFA33AE318AF6090B76E4ADC5FE1686165786F8B7E559156E8AF690D6EF050133"
+     "AB5620FAF91B17CF52FED0B57FAC0924F2CC4",
+     ""},
+};
+
 TEST_F(WebCryptoRsaOaepTest, EncryptDecryptKnownAnswerTest) {
-  base::Value::List tests = ReadJsonTestFileAsList("rsa_oaep.json");
-  for (const auto& test_value : tests) {
-    SCOPED_TRACE(&test_value - &tests[0]);
+  for (const auto& test : kRsaOaepKnownAnswers) {
+    SCOPED_TRACE(&test - &kRsaOaepKnownAnswers[0]);
 
-    ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
-
-    blink::WebCryptoAlgorithm digest_algorithm =
-        GetDigestAlgorithm(test, "hash");
-    ASSERT_FALSE(digest_algorithm.IsNull());
-    std::vector<uint8_t> public_key_der =
-        GetBytesFromHexString(test, "public_key");
-    std::vector<uint8_t> private_key_der =
-        GetBytesFromHexString(test, "private_key");
-    std::vector<uint8_t> ciphertext = GetBytesFromHexString(test, "ciphertext");
-    std::vector<uint8_t> plaintext = GetBytesFromHexString(test, "plaintext");
-    std::vector<uint8_t> label = GetBytesFromHexString(test, "label");
+    std::vector<uint8_t> public_key_der = HexStringToBytes(test.pubkey);
+    std::vector<uint8_t> private_key_der = HexStringToBytes(test.privkey);
+    std::vector<uint8_t> ciphertext = HexStringToBytes(test.ciphertext);
+    std::vector<uint8_t> plaintext = HexStringToBytes(test.plaintext);
+    std::vector<uint8_t> label = HexStringToBytes(test.label);
 
     blink::WebCryptoAlgorithm import_algorithm = CreateRsaHashedImportAlgorithm(
-        blink::kWebCryptoAlgorithmIdRsaOaep, digest_algorithm.Id());
+        blink::kWebCryptoAlgorithmIdRsaOaep, test.hash);
     blink::WebCryptoKey public_key;
     blink::WebCryptoKey private_key;
 
@@ -186,17 +381,14 @@ TEST_F(WebCryptoRsaOaepTest, EncryptDecryptKnownAnswerTest) {
     blink::WebCryptoAlgorithm op_algorithm = CreateRsaOaepAlgorithm(label);
     std::vector<uint8_t> decrypted_data;
     ASSERT_EQ(Status::Success(),
-              Decrypt(op_algorithm, private_key, CryptoData(ciphertext),
-                      &decrypted_data));
+              Decrypt(op_algorithm, private_key, ciphertext, &decrypted_data));
     EXPECT_BYTES_EQ(plaintext, decrypted_data);
     std::vector<uint8_t> encrypted_data;
     ASSERT_EQ(Status::Success(),
-              Encrypt(op_algorithm, public_key, CryptoData(plaintext),
-                      &encrypted_data));
+              Encrypt(op_algorithm, public_key, plaintext, &encrypted_data));
     std::vector<uint8_t> redecrypted_data;
-    ASSERT_EQ(Status::Success(),
-              Decrypt(op_algorithm, private_key, CryptoData(encrypted_data),
-                      &redecrypted_data));
+    ASSERT_EQ(Status::Success(), Decrypt(op_algorithm, private_key,
+                                         encrypted_data, &redecrypted_data));
     EXPECT_BYTES_EQ(plaintext, redecrypted_data);
   }
 }
@@ -205,12 +397,10 @@ TEST_F(WebCryptoRsaOaepTest, EncryptWithLargeMessageFails) {
   const blink::WebCryptoAlgorithmId kHash = blink::kWebCryptoAlgorithmIdSha1;
   const size_t kHashSize = 20;
 
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(Status::Success(),
             ImportKeyJwkFromDict(
-                *jwk,
+                CreatePublicKeyJwkDict({}),
                 CreateRsaHashedImportAlgorithm(
                     blink::kWebCryptoAlgorithmIdRsaOaep, kHash),
                 true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
@@ -229,27 +419,26 @@ TEST_F(WebCryptoRsaOaepTest, EncryptWithLargeMessageFails) {
   blink::WebCryptoAlgorithm op_algorithm = CreateRsaOaepAlgorithm(label);
 
   // Test that a message just before the boundary succeeds.
-  std::string large_message;
+  std::vector<uint8_t> large_message;
   large_message.resize(kMaxMessageSize - 1, 'A');
 
   std::vector<uint8_t> ciphertext;
-  ASSERT_EQ(Status::Success(), Encrypt(op_algorithm, public_key,
-                                       CryptoData(large_message), &ciphertext));
+  ASSERT_EQ(Status::Success(),
+            Encrypt(op_algorithm, public_key, large_message, &ciphertext));
 
   // Test that a message at the boundary succeeds.
   large_message.resize(kMaxMessageSize, 'A');
   ciphertext.clear();
 
-  ASSERT_EQ(Status::Success(), Encrypt(op_algorithm, public_key,
-                                       CryptoData(large_message), &ciphertext));
+  ASSERT_EQ(Status::Success(),
+            Encrypt(op_algorithm, public_key, large_message, &ciphertext));
 
   // Test that a message greater than the largest size fails.
   large_message.resize(kMaxMessageSize + 1, 'A');
   ciphertext.clear();
 
   ASSERT_EQ(Status::OperationError(),
-            Encrypt(op_algorithm, public_key, CryptoData(large_message),
-                    &ciphertext));
+            Encrypt(op_algorithm, public_key, large_message, &ciphertext));
 }
 
 // Ensures that if the selected hash algorithm for the RSA-OAEP message is too
@@ -261,12 +450,10 @@ TEST_F(WebCryptoRsaOaepTest, EncryptWithLargeMessageFails) {
 TEST_F(WebCryptoRsaOaepTest, EncryptWithLargeDigestFails) {
   const blink::WebCryptoAlgorithmId kHash = blink::kWebCryptoAlgorithmIdSha512;
 
-  std::unique_ptr<base::DictionaryValue> jwk(CreatePublicKeyJwkDict());
-
   blink::WebCryptoKey public_key;
   ASSERT_EQ(Status::Success(),
             ImportKeyJwkFromDict(
-                *jwk,
+                CreatePublicKeyJwkDict({}),
                 CreateRsaHashedImportAlgorithm(
                     blink::kWebCryptoAlgorithmIdRsaOaep, kHash),
                 true, blink::kWebCryptoKeyUsageEncrypt, &public_key));
@@ -276,20 +463,19 @@ TEST_F(WebCryptoRsaOaepTest, EncryptWithLargeDigestFails) {
   std::vector<uint8_t> label;
   blink::WebCryptoAlgorithm op_algorithm = CreateRsaOaepAlgorithm(label);
 
-  std::string small_message("A");
+  std::vector<uint8_t> small_message = {'A'};
   std::vector<uint8_t> ciphertext;
   // This is an operation error, as the internal consistency checking of the
   // algorithm parameters is up to the implementation.
   ASSERT_EQ(Status::OperationError(),
-            Encrypt(op_algorithm, public_key, CryptoData(small_message),
-                    &ciphertext));
+            Encrypt(op_algorithm, public_key, small_message, &ciphertext));
 }
 
 TEST_F(WebCryptoRsaOaepTest, DecryptWithLargeMessageFails) {
   blink::WebCryptoKey private_key;
   ASSERT_EQ(Status::Success(),
             ImportKey(blink::kWebCryptoKeyFormatPkcs8,
-                      CryptoData(HexStringToBytes(kPrivateKeyPkcs8DerHex)),
+                      HexStringToBytes(kPrivateKeyPkcs8DerHex),
                       CreateRsaHashedImportAlgorithm(
                           blink::kWebCryptoAlgorithmIdRsaOaep,
                           blink::kWebCryptoAlgorithmIdSha1),
@@ -300,12 +486,11 @@ TEST_F(WebCryptoRsaOaepTest, DecryptWithLargeMessageFails) {
   std::vector<uint8_t> label;
   blink::WebCryptoAlgorithm op_algorithm = CreateRsaOaepAlgorithm(label);
 
-  std::string large_dummy_message(kModulusLengthBits / 8, 'A');
+  std::vector<uint8_t> large_dummy_message(kModulusLengthBits / 8, 'A');
   std::vector<uint8_t> plaintext;
 
-  ASSERT_EQ(Status::OperationError(),
-            Decrypt(op_algorithm, private_key, CryptoData(large_dummy_message),
-                    &plaintext));
+  ASSERT_EQ(Status::OperationError(), Decrypt(op_algorithm, private_key,
+                                              large_dummy_message, &plaintext));
 }
 
 TEST_F(WebCryptoRsaOaepTest, WrapUnwrapRawKey) {
@@ -341,16 +526,15 @@ TEST_F(WebCryptoRsaOaepTest, WrapUnwrapRawKey) {
   // Verify that |wrapped_key| can be decrypted and yields the key data.
   // Because |private_key| supports both decrypt and unwrap, this is valid.
   std::vector<uint8_t> decrypted_key;
-  ASSERT_EQ(Status::Success(),
-            Decrypt(wrapping_algorithm, private_key, CryptoData(wrapped_key),
-                    &decrypted_key));
+  ASSERT_EQ(Status::Success(), Decrypt(wrapping_algorithm, private_key,
+                                       wrapped_key, &decrypted_key));
   EXPECT_BYTES_EQ_HEX(key_hex, decrypted_key);
 
   // Now attempt to unwrap the key, which should also decrypt the data.
   blink::WebCryptoKey unwrapped_key;
   ASSERT_EQ(Status::Success(),
-            UnwrapKey(blink::kWebCryptoKeyFormatRaw, CryptoData(wrapped_key),
-                      private_key, wrapping_algorithm, key_algorithm, true,
+            UnwrapKey(blink::kWebCryptoKeyFormatRaw, wrapped_key, private_key,
+                      wrapping_algorithm, key_algorithm, true,
                       blink::kWebCryptoKeyUsageEncrypt, &unwrapped_key));
   ASSERT_FALSE(unwrapped_key.IsNull());
 
@@ -440,17 +624,16 @@ TEST_F(WebCryptoRsaOaepTest, WrapUnwrapJwkSymKey) {
   // Verify that |wrapped_key| can be decrypted and yields a valid JWK object.
   // Because |private_key| supports both decrypt and unwrap, this is valid.
   std::vector<uint8_t> decrypted_jwk;
-  ASSERT_EQ(Status::Success(),
-            Decrypt(wrapping_algorithm, private_key, CryptoData(wrapped_key),
-                    &decrypted_jwk));
+  ASSERT_EQ(Status::Success(), Decrypt(wrapping_algorithm, private_key,
+                                       wrapped_key, &decrypted_jwk));
   EXPECT_TRUE(VerifySecretJwk(decrypted_jwk, "A128CBC", key_hex,
                               blink::kWebCryptoKeyUsageEncrypt));
 
   // Now attempt to unwrap the key, which should also decrypt the data.
   blink::WebCryptoKey unwrapped_key;
   ASSERT_EQ(Status::Success(),
-            UnwrapKey(blink::kWebCryptoKeyFormatJwk, CryptoData(wrapped_key),
-                      private_key, wrapping_algorithm, key_algorithm, true,
+            UnwrapKey(blink::kWebCryptoKeyFormatJwk, wrapped_key, private_key,
+                      wrapping_algorithm, key_algorithm, true,
                       blink::kWebCryptoKeyUsageEncrypt, &unwrapped_key));
   ASSERT_FALSE(unwrapped_key.IsNull());
 
@@ -488,7 +671,7 @@ TEST_F(WebCryptoRsaOaepTest, ImportExportJwkRsaPublicKey) {
     blink::WebCryptoKey public_key;
     ASSERT_EQ(Status::Success(),
               ImportKey(blink::kWebCryptoKeyFormatSpki,
-                        CryptoData(HexStringToBytes(kPublicKeySpkiDerHex)),
+                        HexStringToBytes(kPublicKeySpkiDerHex),
                         import_algorithm, true, test.usage, &public_key));
 
     // Export the public key as JWK and verify its contents
@@ -501,8 +684,8 @@ TEST_F(WebCryptoRsaOaepTest, ImportExportJwkRsaPublicKey) {
     // Import the JWK back in to create a new key
     blink::WebCryptoKey public_key2;
     ASSERT_EQ(Status::Success(),
-              ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(jwk),
-                        import_algorithm, true, test.usage, &public_key2));
+              ImportKey(blink::kWebCryptoKeyFormatJwk, jwk, import_algorithm,
+                        true, test.usage, &public_key2));
     ASSERT_TRUE(public_key2.Handle());
     EXPECT_EQ(blink::kWebCryptoKeyTypePublic, public_key2.GetType());
     EXPECT_TRUE(public_key2.Extractable());

@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -47,7 +48,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace profiles {
@@ -276,8 +277,7 @@ bool IsPublicSession() {
   return chromeos::LoginState::IsInitialized() &&
          chromeos::LoginState::Get()->IsPublicSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  return chromeos::LacrosService::Get()->init_params()->session_type ==
+  return chromeos::BrowserInitParams::Get()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
 #else
   return false;
@@ -298,9 +298,8 @@ bool IsKioskSession() {
   return chromeos::LoginState::IsInitialized() &&
          chromeos::LoginState::Get()->IsKioskSession();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
   crosapi::mojom::SessionType session_type =
-      chromeos::LacrosService::Get()->init_params()->session_type;
+      chromeos::BrowserInitParams::Get()->session_type;
   return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
          session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
@@ -308,13 +307,31 @@ bool IsKioskSession() {
 #endif
 }
 
+bool IsChromeAppKioskSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::SessionType session_type =
+      chromeos::BrowserInitParams::Get()->session_type;
+  return session_type == crosapi::mojom::SessionType::kAppKioskSession;
+#else
+  return false;
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsWebKioskSession() {
+  crosapi::mojom::SessionType session_type =
+      chromeos::BrowserInitParams::Get()->session_type;
+  return session_type == crosapi::mojom::SessionType::kWebKioskSession;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Implemented to have the same logic as user_manager::User::HasGaiaAccount()
 bool SessionHasGaiaAccount() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
   crosapi::mojom::SessionType session_type =
-      lacros_service->init_params()->session_type;
+      chromeos::BrowserInitParams::Get()->session_type;
   return session_type == crosapi::mojom::SessionType::kRegularSession ||
          session_type == crosapi::mojom::SessionType::kChildSession;
 }

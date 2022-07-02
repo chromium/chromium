@@ -19,7 +19,6 @@
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -72,7 +71,6 @@ class CONTENT_EXPORT MediaLicenseManager {
   };
 
   MediaLicenseManager(
-      scoped_refptr<storage::FileSystemContext> file_system_context,
       bool in_memory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
@@ -98,10 +96,6 @@ class CONTENT_EXPORT MediaLicenseManager {
       MediaLicenseStorageHost* host,
       base::PassKey<MediaLicenseStorageHost> pass_key);
 
-  void MigrateMediaLicensesForTesting(base::OnceClosure done_closure) {
-    MigrateMediaLicenses(std::move(done_closure));
-  }
-
   const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return quota_manager_proxy_;
@@ -117,11 +111,6 @@ class CONTENT_EXPORT MediaLicenseManager {
     return in_memory_;
   }
 
-  const scoped_refptr<storage::FileSystemContext>& context() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return file_system_context_;
-  }
-
  private:
   void DidGetBucket(const blink::StorageKey& storage_key,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
@@ -130,36 +119,7 @@ class CONTENT_EXPORT MediaLicenseManager {
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
       bool success);
 
-  // TODO(crbug.com/1231162): The following methods are used to migrate from the
-  // old backend to the new backend. Remove once the migration is complete.
-  void MigrateMediaLicenses(base::OnceClosure done_closure);
-  void DidGetMediaLicenses(
-      base::flat_map<blink::StorageKey, std::vector<CdmFileId>> files);
-  void OpenPluginFileSystemsForStorageKey(
-      const blink::StorageKey& storage_key,
-      std::vector<CdmFileId> files,
-      base::OnceClosure done_migrating_storage_key_closure,
-      storage::QuotaErrorOr<storage::BucketInfo> result);
-  void DidOpenPluginFileSystem(
-      const blink::StorageKey& storage_key,
-      std::vector<CdmFileId> files,
-      std::string file_system_root_uri,
-      base::OnceCallback<void(std::vector<CdmFileIdAndContents>)> callback,
-      base::File::Error result);
-  void DidReadFilesForStorageKey(
-      const blink::StorageKey& storage_key,
-      const storage::BucketLocator& bucket_locator,
-      base::OnceClosure done_migrating_storage_key_closure,
-      std::vector<std::vector<CdmFileIdAndContents>> collected_files);
-  void DidMigrateMediaLicenses();
-  void DidClearPluginPrivateData();
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // TODO(crbug.com/1231162): These members are only used to help migrate from
-  // the old backend to the new backend. Remove once the migration is complete.
-  const scoped_refptr<storage::FileSystemContext> file_system_context_;
-  base::OnceClosure plugin_private_data_migration_closure_;
 
   // Task runner which all database operations are routed through.
   const scoped_refptr<base::SequencedTaskRunner> db_runner_;

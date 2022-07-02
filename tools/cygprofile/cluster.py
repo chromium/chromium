@@ -18,7 +18,7 @@ CalleeInfo = collections.namedtuple('CalleeInfo',
 CallerInfo = collections.namedtuple('CallerInfo', ('caller_symbol', 'count'))
 
 
-class Clustering(object):
+class Clustering:
   """Cluster symbols.
 
   We are given a list of the first function calls, ordered by
@@ -69,7 +69,7 @@ class Clustering(object):
   FAR_DISTANCE = 1000
   MAX_CLUSTER_SIZE = 4096  # 4k pages on android.
 
-  class _Cluster(object):
+  class _Cluster:
     def __init__(self, syms, size):
       assert len(set(syms)) == len(syms), 'Duplicated symbols in cluster'
       self._syms = syms
@@ -345,7 +345,7 @@ def _ClusterOffsetsFromCallGraph(profiles, processor):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = [s for s in renderer_clustering]
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
@@ -390,7 +390,7 @@ def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = [s for s in renderer_clustering]
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
@@ -412,5 +412,4 @@ def ClusterOffsets(profiles, processor, limit_cluster_size=False,
 """
   if not call_graph:
     return _ClusterOffsetsLists(profiles, processor, limit_cluster_size)
-  else:
-    return _ClusterOffsetsFromCallGraph(profiles, processor)
+  return _ClusterOffsetsFromCallGraph(profiles, processor)

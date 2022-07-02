@@ -19,9 +19,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.browser.vr.util.VrTransitionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.List;
@@ -168,9 +169,27 @@ public class WebXrVrTransitionTest {
 
     private void presentationPromiseUnresolvedDuringDonImpl(
             String url, WebXrVrTestFramework framework) {
-        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
-        framework.enterSessionWithUserGestureAndWait();
-        framework.endTest();
+        try {
+            framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+            framework.enterSessionWithUserGestureAndWait();
+            framework.endTest();
+        } finally {
+            // The DON flow still being open at test end can cause issues with Chrome activity
+            // shutdown, which in turn causes the test to fail. So, back out of the flow if
+            // necessary.
+            final UiDevice uiDevice =
+                    UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            String currentPackageName = TestThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> { return uiDevice.getCurrentPackageName(); });
+            if (currentPackageName == null || !currentPackageName.equals("com.google.vr.vrcore")) {
+                return;
+            }
+            uiDevice.pressBack();
+            CriteriaHelper.pollUiThread(() -> {
+                String packageName = uiDevice.getCurrentPackageName();
+                return packageName == null || !packageName.equals("com.google.vr.vrcore");
+            });
+        }
     }
 
     /**

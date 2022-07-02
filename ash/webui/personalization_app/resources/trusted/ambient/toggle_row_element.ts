@@ -6,7 +6,7 @@
  * @fileoverview This component displays a description text and a toggle button.
  */
 
-import '../../common/styles.js';
+import '../../css/common.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
@@ -37,6 +37,10 @@ export class ToggleRow extends WithPersonalizationStore {
 
   checked: boolean;
   override ariaLabel: string;
+
+  override focus() {
+    this.$.toggle.focus();
+  }
 
   private getAriaLabel_(): string {
     return this.i18n(this.checked ? 'ambientModeOn' : 'ambientModeOff');

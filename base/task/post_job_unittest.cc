@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +28,28 @@ TEST(PostJobTest, PostJobSimple) {
       BindLambdaForTesting(
           [&](size_t /*worker_count*/) -> size_t { return num_tasks_to_run; }));
   handle.Join();
-  DCHECK_EQ(num_tasks_to_run, 0U);
+  EXPECT_EQ(num_tasks_to_run, 0U);
+}
+
+TEST(PostJobTest, CreateJobSimple) {
+  test::TaskEnvironment task_environment;
+  std::atomic_size_t num_tasks_to_run(4);
+  bool job_started = false;
+  auto handle =
+      CreateJob(FROM_HERE, {}, BindLambdaForTesting([&](JobDelegate* delegate) {
+                  EXPECT_TRUE(job_started);
+                  --num_tasks_to_run;
+                }),
+                BindLambdaForTesting([&](size_t /*worker_count*/) -> size_t {
+                  EXPECT_TRUE(job_started);
+                  return num_tasks_to_run;
+                }));
+
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  EXPECT_EQ(num_tasks_to_run, 4U);
+  job_started = true;
+  handle.Join();
+  EXPECT_EQ(num_tasks_to_run, 0U);
 }
 
 TEST(PostJobTest, PostJobExtension) {

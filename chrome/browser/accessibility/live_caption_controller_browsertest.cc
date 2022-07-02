@@ -109,7 +109,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 
   void OnErrorOnProfile(Profile* profile) {
     GetControllerForProfile(profile)->OnError(
-        GetCaptionBubbleContextBrowser(), CaptionBubbleErrorType::GENERIC,
+        GetCaptionBubbleContextBrowser(), CaptionBubbleErrorType::kGeneric,
         base::RepeatingClosure(),
         base::BindRepeating(
             [](CaptionBubbleErrorType error_type, bool checked) {}));

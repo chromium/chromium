@@ -1,2 +1,7 @@
-/bin
-/build
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.png
+*.svg

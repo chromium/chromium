@@ -39,6 +39,12 @@ chromeos::api::os_telemetry::PhysicalCpuInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::BatteryInfo UncheckedConvertPtr(
     ash::health::mojom::BatteryInfoPtr input);
 
+chromeos::api::os_telemetry::OsVersionInfo UncheckedConvertPtr(
+    ash::health::mojom::OsVersionPtr input);
+
+chromeos::api::os_telemetry::StatefulPartitionInfo UncheckedConvertPtr(
+    ash::health::mojom::StatefulPartitionInfoPtr input);
+
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(

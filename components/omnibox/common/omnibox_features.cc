@@ -47,10 +47,6 @@ const base::Feature kExperimentalKeywordMode{"OmniboxExperimentalKeywordMode",
 const base::Feature kImageSearchSuggestionThumbnail{
     "ImageSearchSuggestionThumbnail", enabled_by_default_android_only};
 
-// Feature used to display the title of the current URL match.
-const base::Feature kDisplayTitleForCurrentUrl{
-    "OmniboxDisplayTitleForCurrentUrl", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to allow users to remove suggestions from clipboard.
 const base::Feature kOmniboxRemoveSuggestionsFromClipboard{
     "OmniboxRemoveSuggestionsFromClipboard", enabled_by_default_android_only};
@@ -93,18 +89,29 @@ const base::Feature kOmniboxMaxURLMatches{"OmniboxMaxURLMatches",
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
                                             enabled_by_default_desktop_android};
 
-// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
-// Chrome will request remote ZeroSuggest suggestions for the OTHER page
-// classification (contextual web), which does NOT include the SRP.
+// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// zero-prefix suggestions on the Open Web, that are contextual to the current
+// URL. Will only work if user is signed-in and syncing, or is otherwise
+// eligible to send the current page URL to the suggest server.
 const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
     enabled_by_default_desktop_only};
 
-// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
-// Chrome will request remote ZeroSuggest suggestions for the SRP (search
-// results page).
+// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// zero-prefix suggestions on the SRP.
 const base::Feature kClobberTriggersSRPZeroSuggest{
     "OmniboxClobberTriggersSRPZeroSuggest", enabled_by_default_desktop_only};
+
+// Enable on-focus zero-prefix suggestions on the Open Web, that are contextual
+// to the current URL. Will only work if user is signed-in and syncing, or is
+// otherwise eligible to send the current page URL to the suggest server.
+const base::Feature kFocusTriggersContextualWebZeroSuggest{
+    "OmniboxFocusTriggersContextualWebZeroSuggest",
+    enabled_by_default_android_only};
+
+// Enables on-focus zero-prefix suggestions on the SRP.
+const base::Feature kFocusTriggersSRPZeroSuggest{
+    "OmniboxFocusTriggersSRPZeroSuggest", enabled_by_default_android_only};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
@@ -122,37 +129,10 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     enabled_by_default_desktop_android};
 
-// Enables on-focus suggestions on the Open Web, that are contextual to the
-// current URL. Will only work if user is signed-in and syncing, or is
-// otherwise eligible to send the current page URL to the suggest server.
-//
-// There's multiple flags here for multiple backend configurations:
-//  - Default (search queries)
-//  - SRP specific toggle (enables SRP on top of Web Pages for features below)
-//  - On-Content Suggestions
-//
-// TODO(tommycli): It's confusing whether Contextual Web includes SRP or not.
-// `kOnFocusSuggestionsContextualWebAllowSRP` suggests it's included, but
-// `kClobberTriggersContextualWebZeroSuggest` suggests it's not. Make this
-// consistent, probably by renaming flags to distinguish between OTHER and SRP.
-const base::Feature kOnFocusSuggestionsContextualWeb{
-    "OmniboxOnFocusSuggestionsContextualWeb",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
-    "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
-    enabled_by_default_android_only};
-const base::Feature kOnFocusSuggestionsContextualWebOnContent{
-    "OmniboxOnFocusSuggestionsContextualWebOnContent",
-    enabled_by_default_android_only};
-
 // Revamps how local search history is extracted and processed for generating
 // zero-prefix and prefix suggestions.
 extern const base::Feature kLocalHistorySuggestRevamp{
     "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Allows the LocalHistoryZeroSuggestProvider to use local search history.
-const base::Feature kLocalHistoryZeroSuggest{
-    "LocalHistoryZeroSuggest", enabled_by_default_desktop_android};
 
 // Enables prefetching of the zero prefix suggestions for signed-in users.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
@@ -181,7 +161,7 @@ const base::Feature kOmniboxExperimentalSuggestScoring{
 // over 10% of all shutdown hangs.
 const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
     "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
-    enabled_by_default_desktop_only};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, suggestions from a cgi param name match are scored to 0.
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
@@ -209,12 +189,24 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kAggregateShortcuts{"OmniboxAggregateShortcuts",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, when updating or creating a shortcut, the last word of the input
+// is expanded, if possible, to a complete word in the suggestion description.
+const base::Feature kShortcutExpanding{"OmniboxShortcutExpanding",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
 // containing 'planet.'
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, the relevant AutocompleteProviders will store "title" data in
+// AutocompleteMatch::contents and "URL" data in AutocompleteMatch::description
+// for URL-based omnibox suggestions (see crbug.com/1202964 for more details).
+const base::Feature kStoreTitleInContentsAndUrlInDescription{
+    "OmniboxStoreTitleInContentsAndUrlInDescription",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
@@ -231,12 +223,19 @@ const base::Feature kDocumentProviderAso{"OmniboxDocumentProviderAso",
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).
 const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+                                              enabled_by_default_android_only};
 
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
+
+// If enabled, finance ticker answer from omnibox will reverse the color for
+// stock ticker. only colors being swapped are those that represent "growth" and
+// "loss" to represent colors red and green in a way that is appropriate for a
+// given country/culture
+const base::Feature kSuggestionAnswersColorReverse = {
+    "SuggestionAnswersColorReverse", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
@@ -256,25 +255,15 @@ const base::Feature kNtpRealboxPedals{"NtpRealboxPedals",
 
 // Feature used to enable Suggestion Answers in the NTP Realbox.
 const base::Feature kNtpRealboxSuggestionAnswers{
-    "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NtpRealboxSuggestionAnswers", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to enable Tail Suggest Formatting in the NTP Realbox.
 const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to enable URL suggestions for inputs that may contain typos.
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature used to enable the first batch of Pedals on Android. The Pedals,
-// which will be enabled on Android, should be already enabled on desktop.
-const base::Feature kOmniboxPedalsAndroidBatch1{
-    "OmniboxPedalsAndroidBatch1", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Feature used to enable the third batch of Pedals (Find your phone, etc.)
-// for non-English locales (English locales are 'en' and 'en-GB').
-const base::Feature kOmniboxPedalsBatch3NonEnglish{
-    "OmniboxPedalsBatch3NonEnglish", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
@@ -310,7 +299,8 @@ const base::Feature kUpdatedConnectionSecurityIndicators{
 // https://example.com instead, with fallback to http://example.com if
 // necessary.
 const base::Feature kDefaultTypedNavigationsToHttps{
-    "OmniboxDefaultTypedNavigationsToHttps", base::FEATURE_ENABLED_BY_DEFAULT};
+    "OmniboxDefaultTypedNavigationsToHttps",
+    enabled_by_default_desktop_android};
 // Parameter name used to look up the delay before falling back to the HTTP URL
 // while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
 // unit must be included in the value as well (e.g. 3s for 3 seconds).

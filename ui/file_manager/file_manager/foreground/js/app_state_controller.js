@@ -196,10 +196,12 @@ export class AppStateController {
         event.previousDirEntry && util.isRecentRoot(event.previousDirEntry);
     if (isOnRecent != isOnRecentBefore) {
       if (isOnRecent) {
+        this.directoryModel_.getFileList().toggleGroupHeading(true);
         this.directoryModel_.getFileList().sort(
             AppStateController.DEFAULT_SORT_FIELD,
             AppStateController.DEFAULT_SORT_DIRECTION);
       } else {
+        this.directoryModel_.getFileList().toggleGroupHeading(false);
         this.directoryModel_.getFileList().sort(
             this.fileListSortField_, this.fileListSortDirection_);
       }

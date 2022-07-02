@@ -22,9 +22,9 @@ declare_args() {
 }
 
 if (generate_linker_map) {
-  assert(is_official_build || is_chromecast,
+  assert(is_official_build || is_castos || is_cast_android,
          "Linker map files should only be generated when is_official_build = " +
-             "true or is_chromecast = true")
+             "true or is_castos = true or is_cast_android = true")
   assert(current_os == "android" || current_os == "linux" ||
              target_os == "android" || target_os == "linux" ||
              target_os == "chromeos",

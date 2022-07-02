@@ -7,12 +7,12 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -24,6 +24,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -66,7 +67,7 @@ class AdditionalBrowser {
 
  private:
   std::unique_ptr<Browser> browser_;
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 };
 
 std::vector<std::string> GetNamesFromMenuItems(
@@ -152,6 +153,9 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   // Returns whether the requests access section is displayed on the site access
   // tab.
   bool IsRequestsAccessSectionDisplayed();
+  // Returns whether the site settings button is displayed on the site access
+  // tab.
+  bool IsSiteSettingsButtonDisplayed();
 
   // Opens the tabbed menu in the installed tab.
   void ShowInstalledTabInMenu();
@@ -178,12 +182,12 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::WebContentsTester* web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsTabbedMenuViewUnitTest::ExtensionsTabbedMenuViewUnitTest() {
   scoped_feature_list_.InitAndEnableFeature(
-      features::kExtensionsMenuAccessControl);
+      extensions_features::kExtensionsMenuAccessControl);
 }
 
 void ExtensionsTabbedMenuViewUnitTest::SetUp() {
@@ -229,6 +233,12 @@ bool ExtensionsTabbedMenuViewUnitTest::IsHasAccessSectionDisplayed() {
 
 bool ExtensionsTabbedMenuViewUnitTest::IsRequestsAccessSectionDisplayed() {
   return requests_access_items().size() != 0;
+}
+
+bool ExtensionsTabbedMenuViewUnitTest::IsSiteSettingsButtonDisplayed() {
+  return extensions_tabbed_menu()
+      ->GetSiteSettingsButtonForTesting()
+      ->GetVisible();
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ShowInstalledTabInMenu() {
@@ -697,7 +707,8 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       SiteAccessTab_NoExtensionsRequestOrHaveAccess) {
   InstallExtension("Test Extension A");
   InstallExtension("Test Extension B");
 
@@ -709,12 +720,34 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
       IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
       url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host())));
 
-  // Verify only the correct message is displayed when no extensions have access
-  // to the current site.
+  // Verify the correct message and site settings button are displayed when no
+  // extensions request or have access to the current site.
   EXPECT_TRUE(site_access_message()->GetVisible());
   EXPECT_EQ(site_access_message()->GetText(), no_extensions_have_access_text);
   EXPECT_FALSE(IsHasAccessSectionDisplayed());
   EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(IsSiteSettingsButtonDisplayed());
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_RestrictedSite) {
+  InstallExtension("Test Extension A");
+  InstallExtension("Test Extension B");
+
+  std::u16string restricted_url_text(u"chrome://extensions");
+  web_contents_tester()->NavigateAndCommit(GURL(restricted_url_text));
+  ShowSiteAccessTabInMenu();
+
+  auto restricted_site_text = l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT,
+      restricted_url_text);
+
+  // Verify only the correct message is displayed on a restricted site,
+  // regardless of extensions and site settings access,
+  EXPECT_TRUE(site_access_message()->GetVisible());
+  EXPECT_EQ(site_access_message()->GetText(), restricted_site_text);
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(IsSiteSettingsButtonDisplayed());
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -743,6 +776,10 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Extension with no host permissions does not have site access, and it should
   // not be in any site access section.
   EXPECT_EQ(requests_access_items().size(), 0u);
+
+  // Site settings button should always be displayed, except for restricted
+  // sites.
+  EXPECT_TRUE(IsSiteSettingsButtonDisplayed());
 }
 
 // TODO(crbug.com/1304951): Test is flaky.
@@ -1131,6 +1168,40 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
                   ->site_access_combobox_for_testing()
                   ->GetVisible());
   EXPECT_FALSE(site_access_message()->GetVisible());
+}
+
+// Test extensions with activeTab are placed in the correct site access section.
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_ActiveTabExtension) {
+  InstallExtensionWithPermissions("Extension", {"activeTab"});
+
+  const GURL url("http://www.url.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowSiteAccessTabInMenu();
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // activeTab extensions are labeled as requesting access since they still need
+  // a click to run.
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_TRUE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(site_access_message()->GetVisible());
+
+  SelectSiteSetting(kGrantAllExtensionsIndex);
+
+  // activeTab extensions are labeled as having access but  will only run when
+  // clicked.
+  EXPECT_TRUE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(site_access_message()->GetVisible());
+
+  SelectSiteSetting(kBlockAllExtensionsIndex);
+
+  // activeTab extensions are labeled as blocked as the rest of extensions.
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(site_access_message()->GetVisible());
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest, WindowTitle) {

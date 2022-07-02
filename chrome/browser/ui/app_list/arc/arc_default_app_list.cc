@@ -332,17 +332,6 @@ void ArcDefaultAppList::SetAppHidden(const std::string& app_id, bool hidden) {
       .Set(kHidden, hidden);
 }
 
-void ArcDefaultAppList::SetAppsHiddenForPackage(
-    const std::string& package_name) {
-  std::unordered_set<std::string> apps_to_hide;
-  for (const auto& app : visible_apps_) {
-    if (app.second->package_name == package_name)
-      apps_to_hide.insert(app.first);
-  }
-  for (const auto& app : apps_to_hide)
-    SetAppHidden(app, true);
-}
-
 std::map<std::string, const ArcDefaultAppList::AppInfo*>
 ArcDefaultAppList::GetActiveApps() const {
   std::map<std::string, const AppInfo*> result;

@@ -34,6 +34,8 @@ class AssistantClientImpl : public AssistantClientV1 {
   // chromeos::libassistant::AssistantClientV1 overrides:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
   bool StartGrpcServices() override;
+  void StartGrpcHttpConnectionClient(
+      assistant_client::HttpConnectionFactory*) override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
   void AddSpeakerIdEnrollmentEventObserver(
       GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)

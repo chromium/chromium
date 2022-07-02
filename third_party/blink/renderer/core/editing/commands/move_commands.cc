@@ -65,7 +65,7 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
     return 0;
   if (!(style->OverflowY() == EOverflow::kScroll ||
         style->OverflowY() == EOverflow::kAuto ||
-        HasEditableStyle(*focused_element) || frame.IsCaretBrowsingEnabled()))
+        IsEditable(*focused_element) || frame.IsCaretBrowsingEnabled()))
     return 0;
   const ScrollableArea& scrollable_area = *frame.View()->LayoutViewport();
   const int height = std::min<int>(layout_box.ClientHeight().ToInt(),

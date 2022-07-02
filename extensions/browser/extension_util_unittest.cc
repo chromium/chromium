@@ -4,11 +4,19 @@
 
 #include "extensions/browser/extension_util.h"
 
+#include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_client_initializer.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extension_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_constants.h"
 
 namespace extensions {
 namespace {
@@ -56,4 +64,35 @@ TEST(ExtensionUtilTest, MapUrlToLocalFilePath) {
                                           &does_not_exist_path));
   EXPECT_FALSE(does_not_exist_path.empty());
 }
+
+TEST(ExtensionUtilTest, ExtensionIdForSiteInstance) {
+  content::BrowserTaskEnvironment test_environment;
+  content::TestBrowserContext test_context;
+
+  // Extension.
+  const ExtensionId kExtensionId1(32, 'a');
+  scoped_refptr<content::SiteInstance> extension_site_instance =
+      content::SiteInstance::CreateForURL(
+          &test_context, Extension::GetBaseURLFromExtensionId(kExtensionId1));
+  EXPECT_EQ(kExtensionId1,
+            util::GetExtensionIdForSiteInstance(*extension_site_instance));
+
+  // GuestView.
+  const ExtensionId kExtensionId2(32, 'b');
+  scoped_refptr<content::SiteInstance> guest_site_instance =
+      content::SiteInstance::CreateForGuest(
+          &test_context,
+          content::StoragePartitionConfig::Create(&test_context, kExtensionId2,
+                                                  "fake_storage_partition_id",
+                                                  true /* in_memory */));
+  EXPECT_EQ(kExtensionId2,
+            util::GetExtensionIdForSiteInstance(*guest_site_instance));
+
+  // Http.
+  scoped_refptr<content::SiteInstance> https_site_instance =
+      content::SiteInstance::CreateForURL(&test_context,
+                                          GURL("https://example.com"));
+  EXPECT_EQ("", util::GetExtensionIdForSiteInstance(*https_site_instance));
+}
+
 }  // namespace extensions

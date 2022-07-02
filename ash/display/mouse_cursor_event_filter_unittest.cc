@@ -150,11 +150,10 @@ TEST_F(MouseCursorEventFilterTest, CursorDeviceScaleFactor) {
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::RIGHT, 0));
   auto* cursor_manager = Shell::Get()->cursor_manager();
-
   EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
-  TestIfMouseWarpsAt(gfx::Point(399, 200));
+  GetEventGenerator()->MoveMouseTo(401, 200);
   EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
-  TestIfMouseWarpsAt(gfx::Point(400, 200));
+  GetEventGenerator()->MoveMouseTo(399, 200);
   EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
 }
 

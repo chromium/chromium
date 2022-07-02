@@ -81,7 +81,7 @@
   [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
   if (item->has_text_direction_override) {
-    [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
+    [attrs setObject:@[ @(long{writingDirection} | NSWritingDirectionOverride) ]
               forKey:NSWritingDirectionAttributeName];
   }
 
@@ -131,20 +131,8 @@
   if (_rightAligned) {
     [cell setUserInterfaceLayoutDirection:
               NSUserInterfaceLayoutDirectionRightToLeft];
-    // setUserInterfaceLayoutDirection for NSMenu is supported on macOS 10.11+.
-    SEL sel = @selector(setUserInterfaceLayoutDirection:);
-    if ([_menu respondsToSelector:sel]) {
-      NSUserInterfaceLayoutDirection direction =
-          NSUserInterfaceLayoutDirectionRightToLeft;
-      NSMethodSignature* signature =
-          [NSMenu instanceMethodSignatureForSelector:sel];
-      NSInvocation* invocation =
-          [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setTarget:_menu.get()];
-      [invocation setSelector:sel];
-      [invocation setArgument:&direction atIndex:2];
-      [invocation invoke];
-    }
+    [_menu setUserInterfaceLayoutDirection:
+               NSUserInterfaceLayoutDirectionRightToLeft];
   }
 
   // When popping up a menu near the Dock, Cocoa restricts the menu

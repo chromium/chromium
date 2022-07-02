@@ -11,9 +11,9 @@
 
 class GURL;
 
-// Represents a message with optional links. Each linkRange in |linkRanges|
-// represents the range (in |messageText|) for the corresponding (same index)
-// linkURL in |linkURLS|.
+// Represents a message with optional links. Each linkRange in `linkRanges`
+// represents the range (in `messageText`) for the corresponding (same index)
+// linkURL in `linkURLS`.
 @interface SaveCardMessageWithLinks : NSObject
 
 @property(nonatomic, copy) NSString* messageText;

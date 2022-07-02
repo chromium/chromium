@@ -61,7 +61,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -297,10 +297,6 @@ void ChromeSigninClient::VerifySyncToken() {
 #endif
 }
 
-bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
-  return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in
 // Lacros.
@@ -321,7 +317,7 @@ ChromeSigninClient::GetInitialPrimaryAccount() {
     return absl::nullopt;
 
   const crosapi::mojom::AccountPtr& device_account =
-      chromeos::LacrosService::Get()->init_params()->device_account;
+      chromeos::BrowserInitParams::Get()->device_account;
   if (!device_account)
     return absl::nullopt;
 
@@ -337,9 +333,8 @@ absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
   if (!profile_->IsMainProfile())
     return absl::nullopt;
 
-  DCHECK(chromeos::LacrosService::Get());
   const bool is_child_session =
-      chromeos::LacrosService::Get()->init_params()->session_type ==
+      chromeos::BrowserInitParams::Get()->session_type ==
       crosapi::mojom::SessionType::kChildSession;
   return is_child_session;
 }

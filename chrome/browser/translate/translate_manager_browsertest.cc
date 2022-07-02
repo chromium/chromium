@@ -10,18 +10,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/translate/translate_accept_languages_factory.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_error_details.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -534,9 +533,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSuccess) {
             GetChromeTranslateClient()->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(TranslateAcceptLanguagesFactory::GetForBrowserContext(
-                   browser()->profile())
-                   ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(
+      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
+          ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -952,9 +951,9 @@ IN_PROC_BROWSER_TEST_F(OverrideLanguagePrefsForAutoHrefTranslateBrowserTest,
             GetChromeTranslateClient()->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(TranslateAcceptLanguagesFactory::GetForBrowserContext(
-                   browser()->profile())
-                   ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(
+      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
+          ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -1047,9 +1046,9 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForAutoHrefTranslateBrowserTest,
             GetChromeTranslateClient()->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(TranslateAcceptLanguagesFactory::GetForBrowserContext(
-                   browser()->profile())
-                   ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(
+      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
+          ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -1294,7 +1293,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, TranslateSessionRestore) {
   // Make restored tab active to (on some platforms) initiate language
   // detection.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   content::WebContents* restored_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -1542,9 +1542,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
             chrome_translate_client->GetLanguageState().current_language());
 
   // The target shouldn't be added to accept languages.
-  EXPECT_FALSE(TranslateAcceptLanguagesFactory::GetForBrowserContext(
-                   browser()->profile())
-                   ->IsAcceptLanguage("ja"));
+  EXPECT_FALSE(
+      AcceptLanguagesServiceFactory::GetForBrowserContext(browser()->profile())
+          ->IsAcceptLanguage("ja"));
 
   histograms.ExpectUniqueSample(
       kTranslateHrefHintStatusHistogram,
@@ -2067,7 +2067,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   // Make restored tab active to (on some platforms) initiate language
   // detection.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   content::WebContents* restored_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);

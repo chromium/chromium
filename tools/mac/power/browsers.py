@@ -163,8 +163,11 @@ PROCESS_NAMES = [
 ]
 
 
-def MakeBrowserDriver(browser_name: str, variation: str,
-                      chrome_user_dir=None) -> BrowserDriver:
+def MakeBrowserDriver(browser_name: str,
+                      variation: str,
+                      chrome_user_dir=None,
+                      output_dir=None,
+                      tracing_mode=False) -> BrowserDriver:
   """Creates browser driver by name.
 
   Args:
@@ -182,6 +185,16 @@ def MakeBrowserDriver(browser_name: str, variation: str,
       chrome_extra_arg = ["--guest"]
     if variation == 'AlignWakeUps':
       chrome_extra_arg += ['--enable-features=AlignWakeUps']
+
+    if tracing_mode:
+      chrome_extra_arg += [
+          '--enable-tracing=toplevel,toplevel.flow,mojom,navigation'
+      ]
+      trace_path = os.path.join(output_dir, "chrometrace.log")
+      chrome_extra_arg += [
+          f'--trace-startup-file={os.path.abspath(trace_path)}'
+      ]
+
     if browser_name == "chrome":
       return Chrome(variation, extra_args=chrome_extra_arg)
     if browser_name == "canary":

@@ -181,23 +181,6 @@ class SynchronousResizeModeVisitor : public RenderViewVisitor {
   }
 };
 
-class SetAcceptLanguagesVisitor : public RenderViewVisitor {
- public:
-  explicit SetAcceptLanguagesVisitor(const std::string& accept_languages)
-      : accept_languages_(accept_languages) {}
-
-  bool Visit(RenderView* render_view) override {
-    blink::WebView* view = render_view->GetWebView();
-    blink::RendererPreferences prefs = view->GetRendererPreferences();
-    prefs.accept_languages = accept_languages_;
-    view->SetRendererPreferences(prefs);
-    return true;
-  }
-
- private:
-  const std::string& accept_languages_;
-};
-
 }  // namespace
 
 class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
@@ -2319,15 +2302,14 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
   return false;
 }
 
-void TestRunner::WorkQueue::ReplicateStates(
-    const base::DictionaryValue& values) {
+void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values) {
   states_.ApplyUntrackedChanges(values);
   if (!has_items())
     controller_->FinishTestIfReady();
 }
 
 void TestRunner::WorkQueue::OnStatesChanged() {
-  if (states_.changed_values().DictEmpty())
+  if (states_.changed_values().empty())
     return;
 
   controller_->GetWebTestControlHostRemote()->WorkQueueStatesChanged(
@@ -2529,7 +2511,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 }
 
 void TestRunner::ReplicateWebTestRuntimeFlagsChanges(
-    const base::DictionaryValue& changed_values) {
+    const base::Value::Dict& changed_values) {
   if (!test_is_running_)
     return;
 
@@ -2830,7 +2812,7 @@ void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item) {
   work_queue_.ProcessWorkItem(std::move(work_item));
 }
 
-void TestRunner::ReplicateWorkQueueStates(const base::DictionaryValue& values) {
+void TestRunner::ReplicateWorkQueueStates(const base::Value::Dict& values) {
   if (!test_is_running_)
     return;
   work_queue_.ReplicateStates(values);
@@ -3012,23 +2994,8 @@ void TestRunner::DisableMockScreenOrientation(blink::WebView* view) {
   fake_screen_orientation_impl_.SetDisabled(view, true);
 }
 
-std::string TestRunner::GetAcceptLanguages() const {
-  return web_test_runtime_flags_.accept_languages();
-}
-
 void TestRunner::SetAcceptLanguages(const std::string& accept_languages) {
-  if (accept_languages == GetAcceptLanguages())
-    return;
-
-  // TODO(danakj): IPC to WebTestControlHost, and have it change the
-  // WebContentsImpl::GetMutableRendererPrefs(). Then have the browser sync that
-  // to the window's RenderViews, instead of using WebTestRuntimeFlags for this.
-  web_test_runtime_flags_.set_accept_languages(accept_languages);
-  OnWebTestRuntimeFlagsChanged();
-
-  // Sets the accept language on the view of each open window.
-  SetAcceptLanguagesVisitor visitor(accept_languages);
-  RenderView::ForEach(&visitor);
+  GetWebTestControlHostRemote()->SetAcceptLanguages(accept_languages);
 }
 
 void TestRunner::DumpEditingCallbacks() {
@@ -3295,7 +3262,7 @@ void TestRunner::OnWebTestRuntimeFlagsChanged() {
   // web flag changes in SetTestConfiguration().
   if (!test_is_running_)
     return;
-  if (web_test_runtime_flags_.tracked_dictionary().changed_values().DictEmpty())
+  if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
     return;
 
   GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(

@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -19,8 +20,13 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
@@ -214,6 +220,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void ConvertToFileChooserFileInfoList(
       const std::vector<ui::SelectedFileInfo>& files);
 
+  // Checks to see if any file is restricted to be transferred according to the
+  // rules of the DataLeakPrevention policy.
+  void CheckIfPolicyAllowed(
+      std::vector<blink::mojom::FileChooserFileInfoPtr> list);
+
   // Checks to see if scans are required for the specified files.
   void PerformContentAnalysisIfNeeded(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
@@ -319,6 +330,14 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
 
   // Set to false in unit tests since there is no WebContents.
   bool abort_on_missing_web_contents_in_tests_ = true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // DlpFilesController is responsible for checking whether any of the selected
+  // files is restricted according to the DataLeakPrevention policy.
+  absl::optional<policy::DlpFilesController> dlp_files_controller_;
+
+  base::WeakPtrFactory<FileSelectHelper> weak_ptr_factory_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_

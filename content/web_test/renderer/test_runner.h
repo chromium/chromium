@@ -17,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
 #include "content/web_test/common/web_test_constants.h"
@@ -32,10 +33,6 @@
 #include "v8/include/v8.h"
 
 class SkBitmap;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace blink {
 class WebContentSettingsClient;
@@ -139,7 +136,7 @@ class TestRunner {
   // Replicates changes to web test runtime flags (i.e. changes that happened in
   // another renderer). See also `OnWebTestRuntimeFlagsChanged()`.
   void ReplicateWebTestRuntimeFlagsChanges(
-      const base::DictionaryValue& changed_values);
+      const base::Value::Dict& changed_values);
 
   // If custom text dump is present (i.e. if testRunner.setCustomTextOutput has
   // been called from javascript), then returns |true| and populates the
@@ -160,7 +157,6 @@ class TestRunner {
   void FocusWindow(RenderFrame* main_frame, bool focus);
 
   // Methods used by WebViewTestClient and WebFrameTestClient.
-  std::string GetAcceptLanguages() const;
   bool ShouldStayOnPageAfterHandlingBeforeUnload() const;
   bool ShouldDumpAsCustomText() const;
   std::string CustomDumpText() const;
@@ -234,7 +230,7 @@ class TestRunner {
       const std::vector<base::FilePath>& file_paths);
 
   void ProcessWorkItem(mojom::WorkItemPtr work_item);
-  void ReplicateWorkQueueStates(const base::DictionaryValue& changed_values);
+  void ReplicateWorkQueueStates(const base::Value::Dict& changed_values);
 
   blink::WebEffectiveConnectionType effective_connection_type() const {
     return effective_connection_type_;
@@ -274,7 +270,7 @@ class TestRunner {
     void AddWork(mojom::WorkItemPtr work_item);
     void RequestWork();
     void ProcessWorkItem(mojom::WorkItemPtr work_item);
-    void ReplicateStates(const base::DictionaryValue& values);
+    void ReplicateStates(const base::Value::Dict& values);
 
     // Takes care of notifying the browser after a change to the state.
     void OnStatesChanged();
@@ -293,7 +289,8 @@ class TestRunner {
     bool is_frozen() const { return GetStateValue(kKeyFrozen); }
 
     bool GetStateValue(const char* key) const {
-      absl::optional<bool> value = states_.current_values().FindBoolPath(key);
+      absl::optional<bool> value =
+          states_.current_values().FindBoolByDottedPath(key);
       DCHECK(value.has_value());
       return value.value();
     }

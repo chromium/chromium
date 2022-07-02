@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_WINDOW_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_WINDOW_APPLESCRIPT_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
@@ -16,7 +18,7 @@ class Profile;
 // Represents a window class.
 @interface WindowAppleScript : ElementAppleScript {
  @private
-  Browser* _browser;  // weak.
+  raw_ptr<Browser> _browser;  // weak.
 }
 
 // Creates a new window, returns nil if there is an error.

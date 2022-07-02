@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
 #import <Cocoa/Cocoa.h>
@@ -69,7 +71,7 @@ class TestModel : public ui::SimpleMenuModel {
     }
 
    private:
-    TestModel* model_;
+    raw_ptr<TestModel> model_;
   };
 
  private:
@@ -130,7 +132,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     if (runner_) {
       runner_->Release();
-      runner_ = NULL;
+      runner_ = nullptr;
     }
 
     parent_->CloseNow();
@@ -247,8 +249,8 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
  protected:
   std::unique_ptr<TestModel> menu_;
-  internal::MenuRunnerImplInterface* runner_ = nullptr;
-  views::Widget* parent_ = nullptr;
+  raw_ptr<internal::MenuRunnerImplInterface> runner_ = nullptr;
+  raw_ptr<views::Widget> parent_ = nullptr;
   NSRect last_anchor_frame_ = NSZeroRect;
   NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;
@@ -384,7 +386,7 @@ TEST_P(MenuRunnerCocoaTest, CancelWithoutRunning) {
 
 TEST_P(MenuRunnerCocoaTest, DeleteWithoutRunning) {
   runner_->Release();
-  runner_ = NULL;
+  runner_ = nullptr;
   EXPECT_EQ(0, menu_close_count_);
 }
 

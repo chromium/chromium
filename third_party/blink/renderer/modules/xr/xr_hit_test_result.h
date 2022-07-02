@@ -25,7 +25,7 @@ class XRHitTestResult : public ScriptWrappable {
   explicit XRHitTestResult(XRSession* session,
                            const device::mojom::blink::XRHitResult& hit_result);
 
-  XRPose* getPose(XRSpace* relative_to);
+  XRPose* getPose(XRSpace* relative_to, ExceptionState& exception_state);
 
   ScriptPromise createAnchor(ScriptState* script_state,
                              ExceptionState& exception_state);

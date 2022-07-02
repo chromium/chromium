@@ -19,6 +19,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 // Callback from changing whether reporting is enabled.
@@ -78,6 +82,20 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
     PlatformBrowserTest::SetUp();
   }
 
+// TODO(crbug/1334765): Remove this Windows-only hook once other tests that
+// modify the Windows Registry are fixed to not leak into other tests.
+#if BUILDFLAG(IS_WIN)
+  // InProcessBrowserTest overrides:
+  bool SetUpUserDataDirectory() override {
+    // Manually set the metrics reporting pref to false so that we do not use
+    // the default value, which may be true due to the registry being modified
+    // by other tests.
+    base::FilePath local_state_path =
+        metrics::SetUpUserDataDirectoryForTesting(false);
+    return !local_state_path.empty();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   metrics::MetricsService* metrics_service() {
     return g_browser_process->GetMetricsServicesManager()->GetMetricsService();
   }
@@ -95,9 +113,7 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
 // 1) On start up, we determined that they had not consented to metrics
 //    reporting (including first run users), or,
 // 2) They disabled metrics reporting.
-// TODO(crbug.com/1324877): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest,
-                       DISABLED_ClientIdSaved) {
+IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   // Verify that the client ID is initially empty.
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(

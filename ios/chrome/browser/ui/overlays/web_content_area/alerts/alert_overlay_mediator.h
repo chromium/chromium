@@ -27,8 +27,8 @@
 // JavaScriptDialogOverlayMediator.
 @protocol AlertOverlayMediatorDataSource <NSObject>
 
-// Called by |mediator| to fetch the text field input at |index| for the alert
-// set up by |mediator|.
+// Called by `mediator` to fetch the text field input at `index` for the alert
+// set up by `mediator`.
 - (NSString*)textFieldInputForMediator:(AlertOverlayMediator*)mediator
                         textFieldIndex:(NSUInteger)index;
 

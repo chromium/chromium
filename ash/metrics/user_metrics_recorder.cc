@@ -32,8 +32,8 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// Time in seconds between calls to "RecordPeriodicMetrics".
-const int kAshPeriodicMetricsTimeInSeconds = 30 * 60;
+// Time between calls to "RecordPeriodicMetrics".
+constexpr base::TimeDelta kRecordPeriodicMetricsInterval = base::Minutes(30);
 
 enum ActiveWindowStateType {
   ACTIVE_WINDOW_STATE_TYPE_NO_ACTIVE_WINDOW,
@@ -44,6 +44,7 @@ enum ActiveWindowStateType {
   ACTIVE_WINDOW_STATE_TYPE_PINNED,
   ACTIVE_WINDOW_STATE_TYPE_TRUSTED_PINNED,
   ACTIVE_WINDOW_STATE_TYPE_PIP,
+  ACTIVE_WINDOW_STATE_TYPE_FLOATED,
   ACTIVE_WINDOW_STATE_TYPE_COUNT,
 };
 
@@ -71,6 +72,9 @@ ActiveWindowStateType GetActiveWindowState() {
         break;
       case WindowStateType::kPip:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_PIP;
+        break;
+      case WindowStateType::kFloated:
+        active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_FLOATED;
         break;
       case WindowStateType::kDefault:
       case WindowStateType::kNormal:
@@ -219,7 +223,7 @@ bool UserMetricsRecorder::IsUserInActiveDesktopEnvironment() const {
 }
 
 void UserMetricsRecorder::StartTimer() {
-  timer_.Start(FROM_HERE, base::Seconds(kAshPeriodicMetricsTimeInSeconds), this,
+  timer_.Start(FROM_HERE, kRecordPeriodicMetricsInterval, this,
                &UserMetricsRecorder::RecordPeriodicMetrics);
 }
 

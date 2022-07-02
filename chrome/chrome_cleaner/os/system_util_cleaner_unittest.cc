@@ -8,7 +8,6 @@
 
 #include <aclapi.h>
 #include <shlobj.h>
-#include <shlwapi.h>
 #include <stdint.h>
 #include <wincrypt.h>
 
@@ -28,6 +27,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/shlwapi.h"
 #include "base/win/shortcut.h"
 #include "base/win/sid.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"

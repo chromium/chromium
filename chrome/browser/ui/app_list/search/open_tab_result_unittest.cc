@@ -49,14 +49,14 @@ TEST_F(OpenTabResultTest, Basic) {
       MakeResult(u"query", u"queryabc", u"http://www.website.com");
 
   EXPECT_EQ(result->title(), u"queryabc");
-  EXPECT_EQ(
-      StringFromTextVector(result->details_text_vector()),
-      base::StrCat({u"http://www.website.com/ - ",
-                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
-  EXPECT_EQ(
-      result->accessible_name(),
-      base::StrCat({u"queryabc, http://www.website.com/, ",
-                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
+  EXPECT_EQ(StringFromTextVector(result->details_text_vector()),
+            base::StrCat({u"http://www.website.com/",
+                          l10n_util::GetStringFUTF16(IDS_APP_LIST_OPEN_TAB_HINT,
+                                                     u" - ")}));
+  EXPECT_EQ(result->accessible_name(),
+            base::StrCat({u"queryabc, http://www.website.com/",
+                          l10n_util::GetStringFUTF16(IDS_APP_LIST_OPEN_TAB_HINT,
+                                                     u", ")}));
 }
 
 TEST_F(OpenTabResultTest, ManuallyCalculateRelevance) {

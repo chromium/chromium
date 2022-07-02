@@ -20,7 +20,7 @@ namespace {
 constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode";
+    "Power.BatteryDischargeMode2";
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 #if BUILDFLAG(IS_MAC)
@@ -65,22 +65,50 @@ void ReportAggregatedProcessMetricsHistograms(
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 BatteryDischarge GetBatteryDischargeDuringInterval(
-    const BatteryLevelProvider::BatteryState& previous_battery_state,
-    const BatteryLevelProvider::BatteryState& new_battery_state,
+    const absl::optional<BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<BatteryLevelProvider::BatteryState>& new_battery_state,
     base::TimeDelta interval_duration) {
-  if (previous_battery_state.battery_count == 0 ||
-      new_battery_state.battery_count == 0) {
-    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
+  if (!previous_battery_state.has_value() || !new_battery_state.has_value()) {
+    return {BatteryDischargeMode::kRetrievalError, absl::nullopt};
   }
-  if (!previous_battery_state.on_battery && !new_battery_state.on_battery) {
-    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
-  }
-  if (previous_battery_state.on_battery != new_battery_state.on_battery) {
+  if (previous_battery_state->is_external_power_connected !=
+          new_battery_state->is_external_power_connected ||
+      previous_battery_state->battery_count !=
+          new_battery_state->battery_count) {
     return {BatteryDischargeMode::kStateChanged, absl::nullopt};
   }
-  if (!previous_battery_state.charge_level.has_value() ||
-      !new_battery_state.charge_level.has_value()) {
-    return {BatteryDischargeMode::kChargeLevelUnavailable, absl::nullopt};
+  if (new_battery_state->battery_count == 0) {
+    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
+  }
+  if (new_battery_state->is_external_power_connected) {
+    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
+  }
+  if (new_battery_state->battery_count > 1) {
+    return {BatteryDischargeMode::kMultipleBatteries, absl::nullopt};
+  }
+
+  // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
+  // verifying that there are no crash reports.
+  CHECK(previous_battery_state->current_capacity.has_value());
+  CHECK(previous_battery_state->full_charged_capacity.has_value());
+  CHECK(new_battery_state->current_capacity.has_value());
+  CHECK(new_battery_state->full_charged_capacity.has_value());
+
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, empirical evidence has shown that right after a full charge, the
+  // current capacity stays equal to the maximum capacity for several minutes,
+  // despite the fact that power was definitely consumed. Reporting a zero
+  // discharge rate for this duration would be misleading.
+  if (previous_battery_state->current_capacity ==
+      previous_battery_state->full_charged_capacity) {
+    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
+  }
+#endif
+
+  if (previous_battery_state->full_charged_capacity.value() == 0 ||
+      new_battery_state->full_charged_capacity.value() == 0) {
+    return {BatteryDischargeMode::kFullChargedCapacityIsZero, absl::nullopt};
   }
 
   // The battery discharge rate is reported per minute with 1/10000 of full
@@ -88,18 +116,15 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
   static constexpr int64_t kDischargeRateFactor =
       10000 * base::Minutes(1).InSecondsF();
 
-#if BUILDFLAG(IS_MAC)
-  // On MacOS, empirical evidence has shown that right after a full charge, the
-  // current capacity stays equal to the maximum capacity for several minutes,
-  // despite the fact that power was definitely consumed. Reporting a zero
-  // discharge rate for this duration would be misleading.
-  if (previous_battery_state.charge_level.value() == 1.0)
-    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
-#endif
-
-  auto discharge_rate = (previous_battery_state.charge_level.value() -
-                         new_battery_state.charge_level.value()) *
-                        kDischargeRateFactor / interval_duration.InSeconds();
+  const double previous_level =
+      static_cast<double>(previous_battery_state->current_capacity.value()) /
+      previous_battery_state->full_charged_capacity.value();
+  const double new_level =
+      static_cast<double>(new_battery_state->current_capacity.value()) /
+      new_battery_state->full_charged_capacity.value();
+  const double discharge_rate = (previous_level - new_level) *
+                                kDischargeRateFactor /
+                                interval_duration.InSeconds();
   if (discharge_rate < 0)
     return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
   return {BatteryDischargeMode::kDischarging, discharge_rate};

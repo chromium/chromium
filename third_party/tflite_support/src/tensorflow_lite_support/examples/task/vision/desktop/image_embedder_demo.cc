@@ -37,7 +37,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/proto/embeddings_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/image_embedder_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
-#include "tensorflow_lite_support/examples/task/vision/desktop/utils/image_utils.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
 ABSL_FLAG(std::string,
           model_path,

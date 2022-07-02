@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 
@@ -71,7 +72,7 @@ class DeviceMonitorMacImpl {
       const std::vector<DeviceInfo>& snapshot_devices);
 
  protected:
-  media::DeviceMonitorMac* monitor_;
+  raw_ptr<media::DeviceMonitorMac> monitor_;
   std::vector<DeviceInfo> cached_devices_;
 
   // Handles to NSNotificationCenter block observers.
@@ -182,7 +183,7 @@ class SuspendObserverDelegate
   void DoOnDeviceChanged(NSArray* devices);
 
   base::scoped_nsobject<CrAVFoundationDeviceObserver> suspend_observer_;
-  DeviceMonitorMacImpl* avfoundation_monitor_impl_;
+  raw_ptr<DeviceMonitorMacImpl> avfoundation_monitor_impl_;
 
   // Pegged to the "main" thread -- usually content::BrowserThread::UI.
   base::ThreadChecker main_thread_checker_;
@@ -227,7 +228,7 @@ void SuspendObserverDelegate::OnDeviceChanged(
 
 void SuspendObserverDelegate::ResetDeviceMonitor() {
   DCHECK(main_thread_checker_.CalledOnValidThread());
-  avfoundation_monitor_impl_ = NULL;
+  avfoundation_monitor_impl_ = nullptr;
   [suspend_observer_ clearOnDeviceChangedCallback];
 }
 

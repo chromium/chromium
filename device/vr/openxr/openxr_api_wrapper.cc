@@ -187,6 +187,13 @@ void OpenXrApiWrapper::Uninitialize() {
     on_session_ended_callback_.Run();
   }
 
+  // If we haven't reported that the session started yet, we need to report
+  // that it failed, so that the browser doesn't think there's still a pending
+  // session request, and can try again (though it may not recover).
+  if (on_session_started_callback_) {
+    std::move(on_session_started_callback_).Run(XR_ERROR_INITIALIZATION_FAILED);
+  }
+
   Reset();
   session_running_ = false;
   pending_frame_ = false;
@@ -1261,6 +1268,9 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           visibility_changed_callback_.Run(
               device::mojom::XRVisibilityState::VISIBLE);
           break;
+        case XR_SESSION_STATE_EXITING:
+          Uninitialize();
+          return xr_result;
         default:
           break;
       }

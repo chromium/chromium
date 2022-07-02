@@ -456,6 +456,38 @@ TEST_F(NGFragmentItemTest, LineFragmentId) {
   EXPECT_EQ(line_index, 6u);
 }
 
+TEST_F(NGFragmentItemTest, Outline) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      width: 200px;
+    }
+    .inline-box {
+      border: 5px solid blue;
+    }
+    .inline-block {
+      display: inline-block;
+    }
+    </style>
+    <div id="target">
+      <span class="inline-box">
+        <span class="inline-block">X<span>
+      </span>
+    </div>
+  )HTML");
+  auto* target = To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"));
+  Vector<PhysicalRect> rects = target->OutlineRects(
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  EXPECT_THAT(rects,
+              testing::ElementsAre(
+                  PhysicalRect(0, 0, 200, 10),   // <div id="target">
+                  PhysicalRect(5, 0, 10, 10),    // <span class="inline-box">
+                  PhysicalRect(5, 0, 10, 10)));  // <span class="inline-block">
+}
+
 // Various nodes/elements to test insertions.
 using CreateNode = Node* (*)(Document&);
 static CreateNode node_creators[] = {

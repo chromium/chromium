@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests trust token issuance and redemption</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script>
+    'use strict';
+
+    promise_test(function () {
+        return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
+            trustToken: { type: 'token-request' }
+        }).then(function (response) {
+            assert_equals(response.status, 200);
+            assert_equals(response.headers.get('Sec-Trust-Token'), null);
+        })
+    }, 'Token issuance succeeds.');
+
+    promise_test(function () {
+        return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
+            trustToken: { type: 'token-redemption' }
+        }).then(function (response) {
+            assert_equals(response.status, 200);
+            assert_equals(response.headers.get('Sec-Trust-Token'), null);
+        })
+    }, 'Token redemption succeeds.');
+
+    promise_test(function () {
+        const host_info = get_host_info();
+        return fetch('/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py', {
+            trustToken: {
+                type: 'send-redemption-record',
+                issuers: [host_info.ORIGIN]
+            }
+        }).then(function (response) {
+            assert_equals(response.status, 200);
+        })
+    }, 'Send redemption record succeeds.');
+</script>

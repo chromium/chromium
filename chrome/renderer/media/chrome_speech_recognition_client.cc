@@ -14,6 +14,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 

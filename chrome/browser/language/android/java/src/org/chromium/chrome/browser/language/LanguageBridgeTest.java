@@ -13,18 +13,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-// import org.chromium.browser.language.FakeLanguageBridgeJni;
-// import org.chromium.browser.language.LanguageBridge;
-// import org.chromium.browser.language.LanguageBridgeJni;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /**
  * Tests for {@link LanguageBridge} which gets language lists from native
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LanguageBridgeTest {
     @Rule

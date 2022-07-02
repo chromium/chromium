@@ -241,7 +241,8 @@ NavigationPolicyContainerBuilder::ComputeInheritedPolicies(const GURL& url) {
 PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     const GURL& url,
     bool is_inside_mhtml,
-    network::mojom::WebSandboxFlags frame_sandbox_flags) {
+    network::mojom::WebSandboxFlags frame_sandbox_flags,
+    bool is_anonymous) {
   PolicyContainerPolicies policies;
 
   // Policies are either inherited from another document for local scheme, or
@@ -262,17 +263,19 @@ PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
   }
 
   ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies);
+  policies.is_anonymous = is_anonymous;
   return policies;
 }
 
 void NavigationPolicyContainerBuilder::ComputePolicies(
     const GURL& url,
     bool is_inside_mhtml,
-    network::mojom::WebSandboxFlags frame_sandbox_flags) {
+    network::mojom::WebSandboxFlags frame_sandbox_flags,
+    bool is_anonymous) {
   DCHECK(!HasComputedPolicies());
   ComputeIsWebSecureContext();
-  SetFinalPolicies(
-      ComputeFinalPolicies(url, is_inside_mhtml, frame_sandbox_flags));
+  SetFinalPolicies(ComputeFinalPolicies(url, is_inside_mhtml,
+                                        frame_sandbox_flags, is_anonymous));
 }
 
 bool NavigationPolicyContainerBuilder::HasComputedPolicies() const {

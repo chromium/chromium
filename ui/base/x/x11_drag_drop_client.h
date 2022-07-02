@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/x/selection_utils.h"
@@ -203,7 +204,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
 
   void EndMoveLoop();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   const x11::Window xwindow_;
 
@@ -213,7 +214,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
 
   // Source side information.
   SourceState source_state_ = SourceState::kOther;
-  const XOSExchangeDataProvider* source_provider_ = nullptr;
+  raw_ptr<const XOSExchangeDataProvider> source_provider_ = nullptr;
 
   // The operation bitfield as requested by StartDragAndDrop.
   int allowed_operations_ = 0;

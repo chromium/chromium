@@ -15,7 +15,10 @@ struct WebMessage;
 // Used to send messages to the page.
 class WebMessageReplyProxy {
  public:
-  virtual void PostMessage(std::unique_ptr<WebMessage>) = 0;
+  // To match the JavaScript call, this function would ideally be named
+  // PostMessage(), but that conflicts with a Windows macro, so PostWebMessage()
+  // is used.
+  virtual void PostWebMessage(std::unique_ptr<WebMessage>) = 0;
 
   // Returns true if the page is in the back/forward cache.
   virtual bool IsInBackForwardCache() = 0;

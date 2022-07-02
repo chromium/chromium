@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// For devices running on a version >= iOS 15.4, WKFullScreenState is converted
-// into CrFullscreenState. Once min version supported is iOS 15.4,
+// For devices running on a version >= iOS 16.0+, WKFullScreenState is converted
+// into CrFullscreenState. Once min version supported is iOS 16.0,
 // uses of this enum should be be replaced with WKFullScreenState and this enum
 // declaration should be removed.
 enum class CrFullscreenState {

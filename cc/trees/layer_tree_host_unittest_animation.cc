@@ -60,6 +60,14 @@ class LayerTreeHostAnimationTest : public LayerTreeTest {
     timeline_->AttachAnimation(animation_child_.get());
   }
 
+  void DetachAnimationsFromTimeline() {
+    if (animation_)
+      timeline_->DetachAnimation(animation_.get());
+    if (animation_child_)
+      timeline_->DetachAnimation(animation_child_.get());
+    animation_host()->RemoveAnimationTimeline(timeline_.get());
+  }
+
   void GetImplTimelineAndAnimationByID(const LayerTreeHostImpl& host_impl) {
     AnimationHost* animation_host_impl = GetImplAnimationHost(&host_impl);
     timeline_impl_ = animation_host_impl->GetTimelineById(timeline_id_);
@@ -69,6 +77,14 @@ class LayerTreeHostAnimationTest : public LayerTreeTest {
     animation_child_impl_ =
         timeline_impl_->GetAnimationById(animation_child_id_);
     EXPECT_TRUE(animation_child_impl_);
+  }
+
+  void CleanupBeforeDestroy() override {
+    // This needs to happen on the main thread (so can't happen in
+    // EndTest()), and needs to happen before DestroyLayerTreeHost()
+    // (which will trigger assertions if we don't do this), so it can't
+    // happen in AfterTest().
+    DetachAnimationsFromTimeline();
   }
 
   AnimationHost* GetImplAnimationHost(

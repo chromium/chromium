@@ -11,8 +11,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -26,14 +25,14 @@ base::TimeTicks NowInTicks(const quic::MockClock& clock) {
 
 TestTaskRunner::TestTaskRunner(quic::MockClock* clock) : clock_(clock) {}
 
-TestTaskRunner::~TestTaskRunner() {}
+TestTaskRunner::~TestTaskRunner() = default;
 
 bool TestTaskRunner::PostDelayedTask(const base::Location& from_here,
                                      base::OnceClosure task,
                                      base::TimeDelta delay) {
   EXPECT_GE(delay, base::TimeDelta());
-  tasks_.push_back(PostedTask(from_here, std::move(task), NowInTicks(*clock_),
-                              delay, base::TestPendingTask::NESTABLE));
+  tasks_.emplace_back(from_here, std::move(task), NowInTicks(*clock_), delay,
+                      base::TestPendingTask::NESTABLE);
   return true;
 }
 
@@ -107,5 +106,4 @@ std::vector<PostedTask>::iterator TestTaskRunner::FindNextTask() {
                           ShouldRunBeforeLessThan());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -264,7 +264,8 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
     }
     if (layout_object_->IsSVGShape())
       return ax::mojom::blink::Role::kGraphicsSymbol;
-    if (layout_object_->IsSVGForeignObject() || IsA<SVGGElement>(node))
+    if (layout_object_->IsSVGForeignObjectIncludingNG() ||
+        IsA<SVGGElement>(node))
       return ax::mojom::blink::Role::kGroup;
     if (IsA<SVGUseElement>(node))
       return ax::mojom::blink::Role::kGraphicsObject;
@@ -514,7 +515,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // The SVG-AAM says the foreignObject element is normally presentational.
-  if (layout_object_->IsSVGForeignObject()) {
+  if (layout_object_->IsSVGForeignObjectIncludingNG()) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXPresentational));
     return true;
@@ -587,8 +588,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (alt_text)
     return alt_text->IsEmpty();
 
-  if (IsWebArea())
-    return false;
   if (layout_object_->IsListMarkerIncludingAll()) {
     // Ignore TextAlternative of the list marker for SUMMARY because:
     //  - TextAlternatives for disclosure-* are triangle symbol characters used
@@ -1270,7 +1269,7 @@ bool AXLayoutObject::IsDataTable() const {
   // When a section of the document is contentEditable, all tables should be
   // treated as data tables, otherwise users may not be able to work with rich
   // text editors that allow creating and editing tables.
-  if (GetNode() && HasEditableStyle(*GetNode()))
+  if (GetNode() && blink::IsEditable(*GetNode()))
     return true;
 
   // This employs a heuristic to determine if this table should appear.

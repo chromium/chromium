@@ -106,8 +106,8 @@ void SolidColorScrollbarLayerImpl::AppendQuads(
     return;
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(
-      shared_quad_state, thumb_quad_rect, visible_quad_rect, color_, false);
+  quad->SetNew(shared_quad_state, thumb_quad_rect, visible_quad_rect, color_,
+               false);
 }
 
 const char* SolidColorScrollbarLayerImpl::LayerTypeAsString() const {

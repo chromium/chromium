@@ -128,10 +128,7 @@ static_library("feature_flags") {
   deps = [ "//base" ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources =
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
@@ -140,7 +137,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

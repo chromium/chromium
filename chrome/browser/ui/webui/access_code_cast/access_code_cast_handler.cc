@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
@@ -61,43 +62,6 @@ const char* AddSinkResultCodeToStringHelper(AddSinkResultCode value) {
       return "PROFILE_SYNC_ERROR";
     default:
       return nullptr;
-  }
-}
-
-AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
-    AddSinkResultCode value) {
-  switch (value) {
-    case AddSinkResultCode::UNKNOWN_ERROR:
-      return AccessCodeCastAddSinkResult::kUnknownError;
-    case AddSinkResultCode::OK:
-      return AccessCodeCastAddSinkResult::kOk;
-    case AddSinkResultCode::AUTH_ERROR:
-      return AccessCodeCastAddSinkResult::kAuthError;
-    case AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR:
-      return AccessCodeCastAddSinkResult::kHttpResponseCodeError;
-    case AddSinkResultCode::RESPONSE_MALFORMED:
-      return AccessCodeCastAddSinkResult::kResponseMalformed;
-    case AddSinkResultCode::EMPTY_RESPONSE:
-      return AccessCodeCastAddSinkResult::kEmptyResponse;
-    case AddSinkResultCode::INVALID_ACCESS_CODE:
-      return AccessCodeCastAddSinkResult::kInvalidAccessCode;
-    case AddSinkResultCode::ACCESS_CODE_NOT_FOUND:
-      return AccessCodeCastAddSinkResult::kAccessCodeNotFound;
-    case AddSinkResultCode::TOO_MANY_REQUESTS:
-      return AccessCodeCastAddSinkResult::kTooManyRequests;
-    case AddSinkResultCode::SERVICE_NOT_PRESENT:
-      return AccessCodeCastAddSinkResult::kServiceNotPresent;
-    case AddSinkResultCode::SERVER_ERROR:
-      return AccessCodeCastAddSinkResult::kServerError;
-    case AddSinkResultCode::SINK_CREATION_ERROR:
-      return AccessCodeCastAddSinkResult::kSinkCreationError;
-    case AddSinkResultCode::CHANNEL_OPEN_ERROR:
-      return AccessCodeCastAddSinkResult::kChannelOpenError;
-    case AddSinkResultCode::PROFILE_SYNC_ERROR:
-      return AccessCodeCastAddSinkResult::kProfileSyncError;
-    default:
-      NOTREACHED();
-      return AccessCodeCastAddSinkResult::kUnknownError;
   }
 }
 
@@ -156,9 +120,13 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       cast_mode_set_(cast_mode_set),
       media_route_starter_(std::move(media_route_starter)) {
   if (media_route_starter_) {
-    access_code_sink_service_ =
-        AccessCodeCastSinkServiceFactory::GetForProfile(
-            media_route_starter_->GetProfile());
+    DCHECK(media_route_starter_->GetProfile())
+        << "The MediaRouteStarter does not have a valid profile!";
+    // Ensure we don't use an off-the-record profile.
+    access_code_sink_service_ = AccessCodeCastSinkServiceFactory::GetForProfile(
+        media_route_starter_->GetProfile()->GetOriginalProfile());
+    DCHECK(access_code_sink_service_)
+        << "AccessCodeSinkService was not properly created!";
     Init();
   }
 }
@@ -183,8 +151,6 @@ AccessCodeCastHandler::~AccessCodeCastHandler() {
 }
 
 void AccessCodeCastHandler::Init() {
-  DCHECK(access_code_sink_service_)
-      << "AccessCodeSinkService was not properly created!";
   DCHECK(media_route_starter_) << "Must have MediaRouterService!";
   media_route_starter_->SetLoggerComponent(kLoggerComponent);
   media_route_starter_->AddMediaSinkWithCastModesObserver(this);
@@ -200,11 +166,11 @@ void AccessCodeCastHandler::AddSink(
     std::move(callback).Run(AddSinkResultCode::UNKNOWN_ERROR);
     return;
   }
-  AddSinkCallback callback_with_metrics =
-      std::move(base::BindOnce(&AddSinkMetricsCallback))
-          .Then(std::move(callback));
-  add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback_with_metrics), AddSinkResultCode::UNKNOWN_ERROR);
+  AddSinkCallback callback_with_default_invoker =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+          AddSinkResultCode::UNKNOWN_ERROR);
+  add_sink_callback_ = std::move(base::BindOnce(&AddSinkMetricsCallback))
+          .Then(std::move(callback_with_default_invoker));
   access_code_sink_service_->DiscoverSink(
       access_code, base::BindOnce(&AccessCodeCastHandler::OnSinkAddedResult,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -351,17 +317,14 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
 
   const MediaRoute* route = result.route();
   if (!route) {
-    DCHECK(result.result_code() != RouteRequestResult::OK)
+    DCHECK(result.result_code() != mojom::RouteRequestResultCode::OK)
         << "No route but OK response";
     // The provider will handle sending an issue for a failed route request.
     GetMediaRouter()->GetLogger()->LogError(
         mojom::LogCategory::kUi, kLoggerComponent,
         "MediaRouteResponse returned error: " + result.error(), sink_id, "",
         "");
-    std::move(dialog_callback)
-        .Run(mojo::EnumTraits<
-             RouteRequestResultCode,
-             RouteRequestResult::ResultCode>::ToMojom(result.result_code()));
+    std::move(dialog_callback).Run(result.result_code());
     return;
   }
 

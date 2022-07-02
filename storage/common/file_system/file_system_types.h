@@ -98,11 +98,6 @@ enum FileSystemType {
   // file which must go away when the blob's last reference is dropped.
   kFileSystemTypeForTransientFile,
 
-  // Sandboxed private filesystem. This filesystem cannot be opened
-  // via regular OpenFileSystem, and provides private filesystem space for
-  // given identifier in each origin.
-  kFileSystemTypePluginPrivate,
-
   // A filesystem that is mounted via the FileSystemProvider API.
   kFileSystemTypeProvided,
 

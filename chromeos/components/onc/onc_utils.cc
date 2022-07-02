@@ -348,15 +348,18 @@ base::Value ReadDictionaryFromJson(const std::string& json) {
     NET_LOG(DEBUG) << "Empty json string";
     return base::Value();
   }
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
-                    base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value || !parsed_json.value->is_dict()) {
-    NET_LOG(ERROR) << "Invalid JSON Dictionary: " << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
+    NET_LOG(ERROR) << "Invalid JSON Dictionary: "
+                   << parsed_json.error().message;
+    return base::Value();
+  } else if (!parsed_json->is_dict()) {
+    NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
     return base::Value();
   }
-  return std::move(*parsed_json.value);
+  return std::move(*parsed_json);
 }
 
 base::Value Decrypt(const std::string& passphrase, const base::Value& root) {
@@ -720,8 +723,8 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
                                      base::Value* network_configs) {
   bool success = true;
-  base::Value::ListStorage filtered_configs;
-  for (base::Value& network : network_configs->GetListDeprecated()) {
+  base::Value::List filtered_configs;
+  for (base::Value& network : network_configs->GetList()) {
     DCHECK(network.is_dict());
     if (!ResolveServerCertRefsInNetwork(certs_by_guid, &network)) {
       std::string* guid = network.FindStringKey(::onc::network_config::kGUID);
@@ -733,7 +736,7 @@ bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
       continue;
     }
 
-    filtered_configs.push_back(std::move(network));
+    filtered_configs.Append(std::move(network));
   }
   *network_configs = base::Value(std::move(filtered_configs));
   return success;

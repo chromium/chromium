@@ -31,6 +31,8 @@ js_library("edu_coexistence_app") {
     ":edu_coexistence_error",
     ":edu_coexistence_offline",
     ":edu_coexistence_ui",
+    "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_app",
+    "//chrome/browser/resources/chromeos/arc_account_picker:arc_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

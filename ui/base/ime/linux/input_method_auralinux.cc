@@ -7,6 +7,8 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/environment.h"
+#include "base/strings/utf_offset_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
@@ -52,17 +54,13 @@ InputMethodAuraLinux::InputMethodAuraLinux(
          "LinuxInputMethodContextFactory is not initialized yet.";
   context_ =
       LinuxInputMethodContextFactory::instance()->CreateInputMethodContext(
-          this, false);
-  context_simple_ =
-      LinuxInputMethodContextFactory::instance()->CreateInputMethodContext(
-          this, true);
+          this);
 }
 
 InputMethodAuraLinux::~InputMethodAuraLinux() = default;
 
-LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting(
-    bool is_simple) {
-  return is_simple ? context_simple_.get() : context_.get();
+LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting() {
+  return context_.get();
 }
 
 // Overriden from InputMethod.
@@ -109,18 +107,12 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   }
   ime_filtered_key_event_.reset();
 
-  LinuxInputMethodContext* context =
-      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-          ? context_.get()
-          : context_simple_.get();
-
   // If no text input client, dispatch immediately.
   if (!GetTextInputClient()) {
     // For Wayland, wl_keyboard::key will be sent following the peek key event
     // if the event is not consumed by IME, so peek key events should not be
     // dispatched. crbug.com/1225747
-    if (context->IsPeekKeyEvent(*event)) {
+    if (context_->IsPeekKeyEvent(*event)) {
       ime_filtered_key_event_ = std::move(*event);
       return ui::EventDispatchDetails();
     }
@@ -149,7 +141,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     last_commit_result_.reset();
     result_text_.clear();
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
-    filtered = context->DispatchKeyEvent(*event);
+    filtered = context_->DispatchKeyEvent(*event);
   }
 
   // There are four cases here. They are a pair of two conditions:
@@ -227,7 +219,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     if (event->stopped_propagation() || details.target_destroyed) {
       ResetContext();
     } else if (event->type() == ui::ET_KEY_PRESSED) {
-      // If a key event was not filtered by |context_| or |context_simple_|,
+      // If a key event was not filtered by |context_|,
       // then it means the key event didn't generate any result text. For some
       // cases, the key event may still generate a valid character, eg. a
       // control-key event (ctrl-a, return, tab, etc.). We need to send the
@@ -344,32 +336,13 @@ bool InputMethodAuraLinux::MaybeUpdateComposition(bool text_committed) {
 }
 
 void InputMethodAuraLinux::UpdateContextFocusState() {
-  bool old_text_input_type = text_input_type_;
+  auto old_text_input_type = text_input_type_;
   text_input_type_ = GetTextInputType();
 
-  // We only focus in |context_| when the focus is in a textfield.
-  if (old_text_input_type != TEXT_INPUT_TYPE_NONE &&
-      text_input_type_ == TEXT_INPUT_TYPE_NONE) {
-    context_->Blur();
-  } else if (old_text_input_type == TEXT_INPUT_TYPE_NONE &&
-             text_input_type_ != TEXT_INPUT_TYPE_NONE) {
-    context_->Focus();
-  }
-
-  // |context_simple_| can be used in any textfield, including password box, and
-  // even if the focused text input client's text input type is
-  // ui::TEXT_INPUT_TYPE_NONE.
   auto* client = GetTextInputClient();
-  if (client)
-    context_simple_->Focus();
-  else
-    context_simple_->Blur();
+  bool has_client = client != nullptr;
+  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_);
 
-  LinuxInputMethodContext* context =
-      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-          ? context_.get()
-          : context_simple_.get();
   TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
   int flags = TEXT_INPUT_FLAG_NONE;
   bool should_do_learning = false;
@@ -378,7 +351,7 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
     flags = client->GetTextInputFlags();
     should_do_learning = client->ShouldDoLearning();
   }
-  context->SetContentType(text_input_type_, mode, flags, should_do_learning);
+  context_->SetContentType(text_input_type_, mode, flags, should_do_learning);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
@@ -398,6 +371,25 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   if (client->GetTextRange(&text_range) &&
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // SetGrammarFragmentAtCursor must happen before SetSurroundingText to make
+    // sure it is properly updated before IME needs it.
+    auto grammar_fragment_opt = client->GetGrammarFragmentAtCursor();
+    if (grammar_fragment_opt) {
+      auto fragment = grammar_fragment_opt.value();
+      // Convert utf16 offsets to utf8.
+      std::vector<size_t> offsets = {fragment.range.start(),
+                                     fragment.range.end()};
+      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
+      context_->SetGrammarFragmentAtCursor(
+          ui::GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
+                                         static_cast<uint32_t>(offsets[1])),
+                              fragment.suggestion));
+    } else {
+      context_->SetGrammarFragmentAtCursor(
+          ui::GrammarFragment(gfx::Range(), ""));
+    }
+#endif
     context_->SetSurroundingText(text, selection_range);
   }
 }
@@ -423,7 +415,6 @@ void InputMethodAuraLinux::ResetContext() {
   }
 
   context_->Reset();
-  context_simple_->Reset();
 
   composition_ = CompositionText();
   result_text_.clear();
@@ -504,6 +495,34 @@ void InputMethodAuraLinux::OnSetPreeditRegion(
   if (!text_input_client)
     return;
   text_input_client->SetCompositionFromExistingText(range, spans);
+
+  std::u16string text;
+  if (text_input_client->GetTextFromRange(range, &text)) {
+    composition_changed_ |= composition_.text != text;
+    composition_.text = text;
+  }
+  last_commit_result_.reset();
+}
+
+void InputMethodAuraLinux::OnClearGrammarFragments(const gfx::Range& range) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* text_input_client = GetTextInputClient();
+  if (!text_input_client)
+    return;
+
+  text_input_client->ClearGrammarFragments(range);
+#endif
+}
+
+void InputMethodAuraLinux::OnAddGrammarFragment(
+    const ui::GrammarFragment& fragment) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* text_input_client = GetTextInputClient();
+  if (!text_input_client)
+    return;
+
+  text_input_client->AddGrammarFragments({fragment});
+#endif
 }
 
 // Overridden from InputMethodBase.

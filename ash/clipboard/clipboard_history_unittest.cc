@@ -11,13 +11,12 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -41,8 +40,6 @@ class ClipboardHistoryTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kClipboardHistory}, {});
     AshTestBase::SetUp();
     clipboard_history_ = const_cast<ClipboardHistory*>(
         Shell::Get()->clipboard_history_controller()->history());
@@ -150,7 +147,6 @@ class ClipboardHistoryTest : public AshTestBase {
   ClipboardHistory* clipboard_history() { return clipboard_history_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
   ClipboardHistory* clipboard_history_ = nullptr;

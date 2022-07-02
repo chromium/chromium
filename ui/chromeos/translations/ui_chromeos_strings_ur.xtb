@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1060368002126861100"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں منتقل کریں۔</translation>
 <translation id="1062407476771304334">بدلیں</translation>
-<translation id="1119069657431255176">‏Bzip2 کمپریسڈ tar آرکائیو</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1120073797882051782">ہنگول روماجا</translation>
 <translation id="112387589102719461">پروگرامر ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">ہنگول اہنمیٹی</translation>
 <translation id="1155759005174418845">کاٹالانين</translation>
 <translation id="1168100932582989117">‏Google نام سرورز</translation>
-<translation id="1171082344678443012">‏XZ کمپریسڈ آرکائیو</translation>
 <translation id="1172970565351728681">تقریباً <ph name="REMAINING_TIME" /> باقی</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، تفصیلات</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1209796539517632982">خود کار نام سرورز</translation>
 <translation id="1210831758834677569">لاؤ</translation>
-<translation id="1223825810409523901">‏Chrome ایکسٹینشن</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
 <translation id="1249250836236328755">نوع</translation>
 <translation id="1254593899333212300">براہ راست انٹرنیٹ کنکشن</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">اشتراک کردہ نیٹ ورک کنفیگریشنز تبدیل کرنے کی اجازت نہیں ہے</translation>
 <translation id="1665611772925418501">فائل میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="1673103856845176271">سیکیورٹی اسباب کی بنا پر فائل تک رسائی حاصل نہیں کی جا سکی۔</translation>
-<translation id="16762847117768727">‏ISO تصویر</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">بائيکنگ</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو زِپ کیا جا رہا ہے...</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
-<translation id="2028997212275086731">‏RAR آرکائیو</translation>
-<translation id="2036414735548252477">‏LZMA کمپریسڈ tar آرکائیو</translation>
 <translation id="2037845485764049925">روسی</translation>
 <translation id="2044023416777079300">موڈیم رجسٹرڈ نہیں ہے</translation>
 <translation id="2046702855113914483">رامین</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
 <translation id="2142680004883808240">‏YaZHert فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="2143778271340628265">دستی پراکسی کنفیگریشن</translation>
+<translation id="2148716181193084225">آج</translation>
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">‏امریکی بین الاقوامی PC کی بورڈ کے ساتھ پرتگالی</translation>
 <translation id="2198315389084035571">آسان کردہ چینی</translation>
-<translation id="2208158072373999562">‏Zip آرکائیو</translation>
 <translation id="22085916256174561">کوریائی</translation>
 <translation id="2208919847696382164">‏Linux کے ساتھ انسٹال کریں</translation>
 <translation id="2225536596944493418">‏کیا آپ واقعی ‎<ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف کرنا چاہتے ہیں؟</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">فہرست والے منظر پر سوئچ کریں</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> فولڈرز کا Linux کے ساتھ اشتراک کیا گیا</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> فائلیں منتخب کی گئیں</translation>
+<translation id="2387120140441437063">کوڑے دان میں ڈالی ہوئیں فائلز نہیں کھول سکتے۔ براہ کرم کھولنے سے پہلے فائلز بحال کریں۔</translation>
 <translation id="2387458720915042159">پراکسی کنکشن کی قسم</translation>
 <translation id="2389832672041313158">برمی/میانمار</translation>
 <translation id="2392369802118427583">فعال کریں</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">اس فولڈر کے مواد صرف پڑھنے کے لیے ہیں۔ کچھ سرگرمیاں تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="2542049655219295786">‏Google ٹیبل</translation>
 <translation id="2544853746127077729">نیٹ ورک نے توثیق کا سرٹیفکیٹ مسترد کر دیا گیا</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> میں شامل کریں</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
 <translation id="2563185590376525700">مینڈک</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">‏چینی Dayi</translation>
 <translation id="3057861065630527966">اپنی تصاویر اور ویڈیوز کا بیک اپ لیں</translation>
 <translation id="3067790092342515856">ونڈوز کی فائلز</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> کے ساتھ اشتراک کریں</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">‏SOCKS میزبان</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3855472144336161447">جرمن نیو 2</translation>
 <translation id="3858860766373142691">نام</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> کے ساتھ پیک کریں</translation>
 <translation id="3866249974567520381">تفصیل</translation>
 <translation id="3899991606604168269">کثیر لسانی کی بورڈ کے ساتھ فرانسیسی (کینیڈا)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">انگریزی (برطانیہ)</translation>
 <translation id="3975895378829046965">بنگالی فونیٹک</translation>
+<translation id="3991446849494482687">‏یہ آلہ پر SIM لاک کی ترتیب کو بھی غیر فعال کر دے گا۔</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4017788180641807848">‏Workman کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="4040753847560036377">‏غلط PUK</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بائٹس</translation>
 <translation id="4880214202172289027">والیوم سلائیڈر</translation>
 <translation id="4881695831933465202">کھولیں</translation>
-<translation id="4886199584824489598">‏Bzip2 کمپریسڈ آرکائیو</translation>
 <translation id="4900532980794411603">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کریں</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> بیک اپ لینے کیلئے تیار</translation>
@@ -597,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> نیٹ ورک، منسلک نہیں ہے</translation>
 <translation id="6074825444536523002">‏Google فارم</translation>
 <translation id="6079871810119356840">‏Qwerty کی بورڈ کے ساتھ ہنگریائی</translation>
-<translation id="6082256976217156453">‏LZMA کمپریسڈ آرکائیو</translation>
 <translation id="6096979789310008754">تلاش کا متن صاف کر دیا گیا، سبھی فائلیں اور فولڈرز دکھائی دے رہے ہیں۔</translation>
 <translation id="610101264611565198">‫<ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں منتقل کیا جا رہا ہے</translation>
 <translation id="61118516107968648">‏CSV ٹیکسٹ</translation>
@@ -611,7 +602,6 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
 <translation id="6187719147498869044">ہنگریائی</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> کے ساتھ کھولیں</translation>
 <translation id="6198252989419008588">‏PIN تبدیل کریں</translation>
 <translation id="6199801702437275229">جگہ کی معلومات کا منتظر…</translation>
 <translation id="6205710420833115353">کچھ آپریشنز میں توقع سے زیادہ وقت لگ رہا ہے۔ کیا آپ انہیں ساقط کرنا چاہتے ہیں؟</translation>
@@ -626,6 +616,7 @@
 <translation id="6296410173147755564">‏غلط PUK</translation>
 <translation id="6312403991423642364">نیٹ ورک کی نامعلوم خرابی</translation>
 <translation id="6317608858038767920">حسب ضرورت نام سرور <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> آرکائيو</translation>
 <translation id="6321303798550928047">ہاتھ ہلانا</translation>
 <translation id="6327785803543103246">ویب پراکسی کی خودکار دریافت</translation>
 <translation id="6339145975392024142">‏امریکی بین الاقوامی (PC)</translation>
@@ -641,6 +632,7 @@
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں اخذ کیا جا رہا ہے</translation>
 <translation id="6499681088828539489">مشترکہ نیٹ ورکس کیلئے پراکسیز کی اجازت نہ دیں</translation>
 <translation id="6509122719576673235">نارويجين</translation>
 <translation id="6528513914570774834">اس آلہ کے دیگر صارفین کو یہ نیٹ ورک استعمال کرنے کی اجازت دیں</translation>
@@ -669,7 +661,6 @@
 <translation id="6806699711453372963">‏Linux کے اشتراک کا نظم کریں</translation>
 <translation id="6806796368146926706">جاپانی کی بورڈ کے ساتھ الفانیومیرک</translation>
 <translation id="6808193438228982088">لومڑی</translation>
-<translation id="6820687829547641339">‏Gzip کمپریس کردہ tar آرکائیو</translation>
 <translation id="6823166707458800069">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خودکار طور پر آن لائن بیک اپ لیا جاتا ہے۔</translation>
 <translation id="6825883775269213504">روسی</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> کو انتخاب سے ہٹا دیا گیا۔</translation>
@@ -714,6 +705,7 @@
 <translation id="7075931588889865715">‏TIS 820-2531 کی بورڈ کے ساتھ تھائی</translation>
 <translation id="708278670402572152">اسکین کرنے کو فعال کرنے کے لئے غیر منسلک کریں</translation>
 <translation id="7086590977277044826">‏InScript کی بورڈ کے ساتھ تمل</translation>
+<translation id="7088615885725309056">پرانی</translation>
 <translation id="7103992300314999525">مقدونيائی</translation>
 <translation id="7106346894903675391">مزید اسٹوریج خریدیں…</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt; Drive تلاش کریں&lt;/em&gt;</translation>
@@ -778,6 +770,7 @@
 <translation id="7663224033570512922">ہندی</translation>
 <translation id="7693909743393669729">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا اور سبھی موجودہ پارٹیشنز ہٹ جائيں گے، بشمول وہ پارٹیشنز جو شاید دکھائی نہ دے رہے ہوں۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> کو فارمیٹ نہیں کیا جا سکا</translation>
+<translation id="76959938259365003">کوڑے دان کو خالی کرنے میں ناکام۔</translation>
 <translation id="770015031906360009">يونانی</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> کاپی ہو گیا۔</translation>
 <translation id="7711920809702896782">تصویر کی معلومات</translation>
@@ -788,6 +781,7 @@
 <translation id="7760449188139285140">‏چینی Wubi</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7774365994322694683">پرندہ</translation>
+<translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" کو آف لائن محفوظ کرنے کیلئے آپ کو اضافی <ph name="TOTAL_FILE_SIZE" /> جگہ خالی کرنا ضروری ہے:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ان فائلوں سے پن ہٹائیں جن تک آپ کو آف لائن رسائی کی مزید ضرورت نہیں ہے<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />فائلوں کو اپنے ڈاؤن لوڈز فولڈر سے ہٹائیں<ph name="MARKUP_5" /></translation>
@@ -818,7 +812,6 @@
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
 <translation id="7943385054491506837">‏US کولمیک</translation>
-<translation id="7948417415021769876">‏7z آرکائیو</translation>
 <translation id="7953739707111622108">اس آلہ کو نہیں کھولا جا سکتا ہے کیونکہ اس کے فائل سسٹم کی شناخت نہیں ہوئی۔</translation>
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
@@ -860,7 +853,6 @@
 <translation id="8297012244086013755">‏Hangul 3 سیٹ (کوئی شفٹ نہیں)</translation>
 <translation id="8299269255470343364">جاپانی</translation>
 <translation id="8300849813060516376">‏OTASP ناکام ہوگیا</translation>
-<translation id="8308481408797647857">‏XZ کمپریسڈ آرکائیو</translation>
 <translation id="8312871300878166382">فولڈر میں پیسٹ کریں</translation>
 <translation id="8329978297633540474">سادہ متن</translation>
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
@@ -882,7 +874,6 @@
 <translation id="8461467696380332069">شیلف میں اپنی فائلز تک فوری رسائی کے ليے فائل پر دائیں طرف کلک کریں اور 'شیلف میں پن کریں' کو منتخب کریں۔</translation>
 <translation id="8461914792118322307">پراکسی</translation>
 <translation id="8463494891489624050">‏ویتنامی VIQR</translation>
-<translation id="8466234950814670489">‏Tar آرکائیو</translation>
 <translation id="8475647382427415476">‏Google Drive اس وقت "<ph name="FILENAME" />" کی مطابقت پذیری نہیں کر سکا۔ Google Drive بعد میں دوبارہ کوشش کرے گا۔</translation>
 <translation id="8477649328507734757">گردش</translation>
 <translation id="8484284835977497781">اپنی حالیہ تصاویر سے منتخب کریں۔</translation>
@@ -971,7 +962,6 @@
 <translation id="943972244133411984">ترمیم کنندہ</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>
-<translation id="961973045258256291">‏Gzip کمپریسڈ آرکائیو</translation>
 <translation id="965477715979482472">انگریزی (جنوبی افریقہ)</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے تبدیل کرنا چاہتے ہیں؟</translation>

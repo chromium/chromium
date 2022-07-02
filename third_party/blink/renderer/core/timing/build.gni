@@ -64,6 +64,8 @@ blink_core_sources_timing = [
   "background_tracing_helper.h",
   "responsiveness_metrics.cc",
   "responsiveness_metrics.h",
+  "soft_navigation_heuristics.cc",
+  "soft_navigation_heuristics.h",
   "task_attribution_timing.cc",
   "task_attribution_timing.h",
   "time_clamper.cc",
@@ -76,4 +78,18 @@ blink_core_sources_timing = [
   "worker_global_scope_performance.h",
   "worker_performance.cc",
   "worker_performance.h",
+]
+
+blink_core_tests_timing = [
+  "background_tracing_helper_test.cc",
+  "memory_info_test.cc",
+  "performance_entry_test.cc",
+  "performance_mark_test.cc",
+  "performance_navigation_timing_test.cc",
+  "performance_observer_test.cc",
+  "performance_resource_timing_test.cc",
+  "performance_test.cc",
+  "profiler_group_test.cc",
+  "time_clamper_test.cc",
+  "window_performance_test.cc",
 ]

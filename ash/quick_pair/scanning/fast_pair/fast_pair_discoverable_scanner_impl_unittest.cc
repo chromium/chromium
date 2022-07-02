@@ -30,9 +30,9 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -103,6 +103,8 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
 
     nearby::fastpair::Device metadata;
     metadata.set_trigger_distance(2);
+    metadata.set_device_type(
+        nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
     repository_->SetFakeMetadata(kValidModelId, metadata);
 
     scanner_ = base::MakeRefCounted<FakeFastPairScanner>();
@@ -265,6 +267,18 @@ TEST_F(FastPairDiscoverableScannerImplTest, ValidModelId) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(FastPairDiscoverableScannerImplTest, WrongDeviceType) {
+  nearby::fastpair::Device metadata;
+  metadata.set_trigger_distance(2);
+  metadata.set_device_type(nearby::fastpair::DeviceType::AUTOMOTIVE);
+  repository_->SetFakeMetadata(kValidModelId, metadata);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(FastPairDiscoverableScannerImplTest, DeviceLost) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   device::BluetoothDevice* device = GetDevice(kValidModelId);
@@ -344,6 +358,8 @@ TEST_F(FastPairDiscoverableScannerImplTest,
 TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFound_v2) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
+  metadata.set_device_type(
+      nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
   key_pair->set_public_key("test_public_key");
   metadata.set_allocated_anti_spoofing_key_pair(key_pair);
@@ -382,6 +398,8 @@ TEST_F(FastPairDiscoverableScannerImplTest, AlreadyPaired_v1) {
 TEST_F(FastPairDiscoverableScannerImplTest, AlreadyPaired_v2) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
+  metadata.set_device_type(
+      nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
   key_pair->set_public_key("test_public_key");
   metadata.set_allocated_anti_spoofing_key_pair(key_pair);
@@ -406,6 +424,8 @@ TEST_F(FastPairDiscoverableScannerImplTest, AlreadyPaired_v2) {
 
 TEST_F(FastPairDiscoverableScannerImplTest, HandshakeFailed) {
   nearby::fastpair::Device metadata;
+  metadata.set_device_type(
+      nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES);
   metadata.set_trigger_distance(2);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
   key_pair->set_public_key("test_public_key");

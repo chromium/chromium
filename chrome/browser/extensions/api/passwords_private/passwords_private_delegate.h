@@ -12,8 +12,6 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
-#include "chrome/browser/ui/passwords/settings/password_ui_view.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
@@ -79,6 +77,7 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool AddPassword(const std::string& url,
                            const std::u16string& username,
                            const std::u16string& password,
+                           const std::u16string& note,
                            bool use_account_store,
                            content::WebContents* web_contents) = 0;
 

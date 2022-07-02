@@ -377,6 +377,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return saved_desk_presenter_.get();
   }
 
+  SavedDeskDialogController* saved_desk_dialog_controller() {
+    return saved_desk_dialog_controller_.get();
+  }
+
   void set_auto_add_windows_enabled(bool enabled) {
     auto_add_windows_enabled_ = enabled;
   }
@@ -476,6 +480,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // The object responsible to talking to the desk model.
   std::unique_ptr<SavedDeskPresenter> saved_desk_presenter_;
 
+  // Controls showing and hiding dialogs associated with the saved desks
+  // feature.
   std::unique_ptr<SavedDeskDialogController> saved_desk_dialog_controller_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;

@@ -62,21 +62,32 @@ def main(_):
   # tflite_support and tensorflow_lite_support. The former is the main
   # interface, but it imports from the latter, so we need to include it in the
   # doc scope.
-  tflite_support_dir = pathlib.Path(tflite_support.__file__).parent
+  tflite_support_base_dir = pathlib.Path(tflite_support.__file__).parent
   tensorflow_lite_support_dir = pathlib.Path(
       tensorflow_lite_support.__file__).parent
 
-  # schema_py_generated is a generated API so we can't use annotations to
+  # Additionally, the tflite_support package is composed of smaller packages
+  # that live in separate directories. To ensure "view code" URLs work, list
+  # them explicitly alongside tensorflow_lite_support, which also lives
+  # somewhere else.
+  base_dirs = [
+      tensorflow_lite_support_dir,
+      tflite_support_base_dir / 'metadata_writers',
+      tflite_support_base_dir / 'task']
+  code_prefixes = [
+      _CODE_PREFIX.value,
+      f'{_CODE_PREFIX.value}/metadata/python/metadata_writers',
+      f'{_CODE_PREFIX.value}/python/task']
+
+  # schema_py_generated is a generated API, so we can't use annotations to
   # suppress doc generation.
   del tflite_support.schema_py_generated
 
   doc_generator = generate_lib.DocGenerator(
       root_title='TensorFlow Lite Support',
       py_modules=[('tflite_support', tflite_support)],
-      base_dir=[tflite_support_dir, tensorflow_lite_support_dir],
-      # The two base_dirs have different roots in the GH repo.
-      code_url_prefix=[_CODE_PREFIX.value + '/metadata/python',
-                       _CODE_PREFIX.value],
+      base_dir=base_dirs,
+      code_url_prefix=code_prefixes,
       search_hints=_SEARCH_HINTS.value,
       site_path=_SITE_PATH.value,
       callbacks=[])

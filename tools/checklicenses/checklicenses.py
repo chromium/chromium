@@ -114,9 +114,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'base/third_party/icu': [  # http://crbug.com/98087
         'UNKNOWN',
     ],
-    'base/third_party/libevent': [  # http://crbug.com/98309
-        'UNKNOWN',
-    ],
     'buildtools/third_party/libc++/trunk/test': [
         # http://llvm.org/bugs/show_bug.cgi?id=25980
         'UNKNOWN',
@@ -401,6 +398,9 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     ],
     'third_party/lcov/contrib/galaxy/genflat.pl': [
         'GPL (v2 or later)',
+    ],
+    'third_party/libevent': [  # http://crbug.com/98309
+        'UNKNOWN',
     ],
     'third_party/libjpeg_turbo': [  # http://crbug.com/98314
         'UNKNOWN',

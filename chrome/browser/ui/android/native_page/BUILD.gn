@@ -21,11 +21,7 @@ android_library("java") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePageTest.java",
   ]
@@ -33,7 +29,6 @@ java_library("junit") {
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
   ]
 }

@@ -84,13 +84,6 @@ TEST_F(AnnotatorMessageHandlerTest, SetTool) {
 
   AnnotatorTool requested_tool = AnnotatorTool::FromValue(*call_data.arg2());
   EXPECT_EQ(requested_tool, expected_tool);
-
-  // Now let's check that when the tool has been set, we notify the callback.
-  EXPECT_CALL(controller(), OnToolSet(expected_tool));
-
-  base::ListValue list_args;
-  list_args.Append(expected_tool.ToValue());
-  web_ui().HandleReceivedMessage("onToolSet", &list_args);
 }
 
 TEST_F(AnnotatorMessageHandlerTest, Undo) {

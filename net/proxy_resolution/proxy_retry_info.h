@@ -13,7 +13,7 @@ namespace net {
 
 // Contains the information about when to retry a proxy server.
 struct ProxyRetryInfo {
-  ProxyRetryInfo() : try_while_bad(true), net_error(0) {}
+  ProxyRetryInfo() = default;
 
   // We should not retry until this time.
   base::TimeTicks bad_until;
@@ -23,12 +23,12 @@ struct ProxyRetryInfo {
   base::TimeDelta current_delay;
 
   // True if this proxy should be considered even if still bad.
-  bool try_while_bad;
+  bool try_while_bad = true;
 
   // The network error received when this proxy failed, or |OK| if the proxy
   // was added to the retry list for a non-network related reason. (e.g. local
   // policy).
-  int net_error;
+  int net_error = 0;
 };
 
 // Map of proxy servers with the associated RetryInfo structures.

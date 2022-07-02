@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
@@ -16,11 +15,6 @@ RenderWidgetSignals::RenderWidgetSignals(Observer* observer)
     : observer_(observer),
       num_visible_render_widgets_(0),
       num_visible_render_widgets_with_touch_handlers_(0) {}
-
-std::unique_ptr<WebRenderWidgetSchedulingState>
-RenderWidgetSignals::NewRenderWidgetSchedulingState() {
-  return base::WrapUnique(new WebRenderWidgetSchedulingState(this));
-}
 
 void RenderWidgetSignals::IncNumVisibleRenderWidgets() {
   num_visible_render_widgets_++;

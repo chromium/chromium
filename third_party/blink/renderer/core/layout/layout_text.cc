@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 #include <algorithm>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -2904,8 +2906,10 @@ void LayoutText::SetInlineItems(NGInlineItemsData* data,
                                 size_t size) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
-  for (size_t i = begin; i < begin + size; i++)
-    DCHECK_EQ(data->items[SafeCast<wtf_size_t>(i)].GetLayoutObject(), this);
+  for (size_t i = begin; i < begin + size; i++) {
+    DCHECK_EQ(data->items[base::checked_cast<wtf_size_t>(i)].GetLayoutObject(),
+              this);
+  }
 #endif
   auto* items = GetNGInlineItems();
   if (!items)

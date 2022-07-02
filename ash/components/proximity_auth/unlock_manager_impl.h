@@ -182,6 +182,11 @@ class UnlockManagerImpl : public UnlockManager,
   // |is_performing_initial_scan_| for more.
   void OnInitialScanTimeout();
 
+  // Updates |should_attempt_scan_and_connection_| and starts/stops
+  // |life_cycle_| accordingly.
+  void SetShouldAttemptScanAndConnection(
+      bool should_attempt_scan_and_connection);
+
   // Returns the screen lock state corresponding to the given remote |status|
   // update.
   RemoteScreenlockState GetScreenlockStateFromRemoteUpdate(
@@ -196,9 +201,10 @@ class UnlockManagerImpl : public UnlockManager,
   // whether it's unlockable) being received.
   void RecordFirstRemoteStatusReceived(bool unlockable);
 
-  // Records UMA performance metrics for the first status shown to the user
+  // Records a UMA metric for the first status shown to the user as well
+  // as performance metrics for how long it takes to show that first status
   // (regardless of whether it's unlockable/green).
-  void RecordFirstStatusShownToUser(bool unlockable);
+  void RecordFirstStatusShownToUser(ash::SmartLockState new_state);
 
   // Clears the timers for beginning a scan and fetching remote status.
   void ResetPerformanceMetricsTimestamps();
@@ -277,6 +283,9 @@ class UnlockManagerImpl : public UnlockManager,
   // True only if the user has been shown a Smart Lock status and tooltip,
   // either "unlockable" (green) or otherwise (yellow).
   bool has_user_been_shown_first_status_ = false;
+
+  // True unless we want to backoff a bluetooth connection attempt.
+  bool should_attempt_scan_and_connection_ = true;
 
   // The state of the current screen lock UI.
   ash::SmartLockState smartlock_state_ = ash::SmartLockState::kInactive;

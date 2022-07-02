@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
@@ -23,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -32,6 +32,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -65,6 +66,21 @@ std::string SanitizeUrl(const std::string& url) {
   return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
+void MaybeLogDocumentMetrics(const std::string& request_data,
+                             DownloadCheckResultReason reason) {
+  ClientDownloadRequest request;
+  if (!request.ParseFromString(request_data))
+    return;
+
+  if (request.has_document_summary()) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.DocumentContainsMacros",
+        request.document_summary().metadata().contains_macros());
+    base::UmaHistogramEnumeration("SBClientDownload.DocumentCheckDownloadStats",
+                                  reason, REASON_MAX);
+  }
+}
+
 }  // namespace
 
 CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
@@ -93,7 +109,8 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
         profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    if (!profile->IsOffTheRecord() && identity_manager) {
+    if (!profile->IsOffTheRecord() && identity_manager &&
+        safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager)) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           identity_manager);
     }
@@ -143,6 +160,7 @@ void CheckClientDownloadRequestBase::FinishRequest(
 
   UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckDownloadStats", reason,
                             REASON_MAX);
+  MaybeLogDocumentMetrics(client_download_request_data_, reason);
 
   NotifyRequestFinished(result, reason);
   service()->RequestFinished(this, GetBrowserContext(), result);

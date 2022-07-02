@@ -89,7 +89,8 @@ PositionTemplate<Strategy> DownstreamVisuallyEquivalent(
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostForwardCaretPosition(position, rule);
+    position =
+        MostForwardCaretPosition(position, rule, SnapToClient::kLocalCaretRect);
   }
   return position;
 }
@@ -101,7 +102,8 @@ PositionTemplate<Strategy> UpstreamVisuallyEquivalent(
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostBackwardCaretPosition(position, rule);
+    position = MostBackwardCaretPosition(position, rule,
+                                         SnapToClient::kLocalCaretRect);
   }
   return position;
 }
@@ -158,7 +160,7 @@ InlineBoxPosition ComputeInlineBoxPositionForTextNode(
 
     if (caret_offset < caret_min_offset || caret_offset > caret_max_offset ||
         (caret_offset == caret_max_offset && box->IsLineBreak())) {
-        continue;
+      continue;
     }
 
     if (caret_offset > caret_min_offset && caret_offset < caret_max_offset)
@@ -260,6 +262,21 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
   if (layout_object.IsText())
     return position;
 
+  if (position.GetPosition().IsBeforeAnchor() ||
+      position.GetPosition().IsAfterAnchor()) {
+    if (layout_object.IsInLayoutNGInlineFormattingContext()) {
+      if (!layout_object.IsInline()) {
+        // BeforeNode(<object>) reaches here[1].
+        // [1]  editing/return-with-object-element.html
+        return PositionWithAffinityTemplate<Strategy>();
+      }
+      return position;
+    }
+    // Note: |InlineBoxPosition| supports only LayoutText and atomic inline.
+    if (layout_object.IsInline() && layout_object.IsAtomicInlineLevel())
+      return position;
+  }
+
   // We perform block flow adjustment first, so that we can move into an inline
   // block when needed instead of stopping at its boundary as if it is a
   // replaced element.
@@ -355,8 +372,12 @@ InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPositionAlgorithm(
                                                adjusted.Affinity());
   }
 
-  DCHECK(layout_object.IsAtomicInlineLevel());
-  DCHECK(layout_object.IsInline());
+  if (!layout_object.IsAtomicInlineLevel() || !layout_object.IsInline()) {
+    // AfterNode(<table>) reaches here[1].
+    // [1] editing/selection/modify_move/move_into_inline_block_nested.html
+    return InlineBoxPosition();
+  }
+
   const int round_offset =
       std::min(caret_offset, LineLayoutItem(&layout_object).CaretMaxOffset());
   return ComputeInlineBoxPositionForAtomicInline(&layout_object, round_offset);

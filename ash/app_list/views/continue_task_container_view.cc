@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/continue_task_view.h"
-#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
@@ -129,11 +128,9 @@ ContinueTaskContainerView::ContinueTaskContainerView(
     AppListViewDelegate* view_delegate,
     int columns,
     OnResultsChanged update_callback,
-    SearchResultPageDialogController* dialog_controller,
     bool tablet_mode)
     : view_delegate_(view_delegate),
       update_callback_(update_callback),
-      dialog_controller_(dialog_controller),
       tablet_mode_(tablet_mode) {
   DCHECK(!update_callback_.is_null());
 
@@ -292,8 +289,8 @@ void ContinueTaskContainerView::Update() {
 
   // Create new result views.
   for (size_t i = 0; i < num_results_; ++i) {
-    auto task = std::make_unique<ContinueTaskView>(
-        view_delegate_, dialog_controller_, tablet_mode_);
+    auto task =
+        std::make_unique<ContinueTaskView>(view_delegate_, tablet_mode_);
     if (i == 0)
       task->SetProperty(views::kMarginsKey, gfx::Insets());
     task->set_index_in_container(i);

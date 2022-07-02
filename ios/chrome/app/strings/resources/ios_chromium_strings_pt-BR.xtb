@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
+<translation id="3619462831205197427">Faça login neste site, na sua Conta do Google e no Chromium.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
@@ -77,7 +78,6 @@
 1. Abra as Configurações.
 2. Toque em 'App do navegador padrão".
 3. Selecione o Chromium.</translation>
-<translation id="6155422572367400359">Faça login neste site, na sua Conta do Google e no Chromium. É possível ativar a sincronização mais tarde.</translation>
 <translation id="6183442264225539303">Faça login neste site e no Chromium. É possível ativar a sincronização mais tarde.</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="632825460376924298">Permitir login no Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Dica: <ph name="BEGIN_LINK" />mova o Chromium para a base<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
+<translation id="8308172444429103994">Dica do Chromium: para fazer login mais rapidamente, selecione a senha salva na parte de cima do teclado.</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>

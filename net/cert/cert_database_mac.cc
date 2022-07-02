@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
@@ -31,10 +32,7 @@ class CertDatabase::Notifier {
   // TYPE_UI thread. Events will be dispatched from this message loop.
   Notifier(CertDatabase* cert_db,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : cert_db_(cert_db),
-        task_runner_(std::move(task_runner)),
-        registered_(false),
-        called_shutdown_(false) {
+      : cert_db_(cert_db), task_runner_(std::move(task_runner)) {
     // Ensure an associated CFRunLoop.
     DCHECK(base::CurrentUIThread::IsSet());
     DCHECK(task_runner_->BelongsToCurrentThread());
@@ -77,10 +75,10 @@ class CertDatabase::Notifier {
                                    SecKeychainCallbackInfo* info,
                                    void* context);
 
-  CertDatabase* const cert_db_;
+  const raw_ptr<CertDatabase> cert_db_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  bool registered_;
-  bool called_shutdown_;
+  bool registered_ = false;
+  bool called_shutdown_ = false;
 };
 
 // static

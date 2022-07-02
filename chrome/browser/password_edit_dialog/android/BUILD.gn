@@ -24,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_edit_dialog/NoFilterArrayAdapter.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogMediator.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
@@ -55,6 +56,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/dropdown_arrow_down.xml",
     "java/res/layout/password_edit_dialog.xml",
     "java/res/layout/password_edit_dialog_with_details.xml",
     "java/res/values/dimens.xml",
@@ -66,10 +68,7 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogTest.java" ]
 
   deps = [
@@ -78,8 +77,7 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -87,7 +85,7 @@ java_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
@@ -98,7 +96,7 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",

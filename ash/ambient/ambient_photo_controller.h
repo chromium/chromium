@@ -106,10 +106,11 @@ class AmbientAccessTokenController;
 // received while the controller is still preparing a topic set, the controller
 // will simply reset its internal "counter" to 0 and start preparing a brand new
 // set.
-class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
+class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
  public:
   AmbientPhotoController(AmbientClient& ambient_client,
                          AmbientAccessTokenController& access_token_controller,
+                         AmbientViewDelegate& view_delegate,
                          AmbientPhotoConfig photo_config);
 
   AmbientPhotoController(const AmbientPhotoController&) = delete;
@@ -133,7 +134,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
     return backup_photo_refresh_timer_;
   }
 
-  // AmbientViewEventHandler:
+  // AmbientViewDelegateObserver:
   void OnMarkerHit(AmbientPhotoConfig::Marker marker) override;
 
   // Clear cache when Settings changes.
@@ -149,6 +150,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
   // Initialize variables.
   void Init(std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
 
+  // Requests that the weather controller fetch updated weather info.
   void FetchWeather();
 
   void ScheduleFetchBackupImages();
@@ -189,15 +191,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
 
   void OnAllPhotoDecoded(bool from_downloading,
                          const std::string& hash);
-
-  void StartDownloadingWeatherConditionIcon(
-      const absl::optional<WeatherInfo>& weather_info);
-
-  // Invoked upon completion of the weather icon download, |icon| can be a null
-  // image if the download attempt from the url failed.
-  void OnWeatherConditionIconDownloaded(float temp_f,
-                                        bool show_celsius,
-                                        const gfx::ImageSkia& icon);
 
   void set_photo_cache_for_testing(
       std::unique_ptr<AmbientPhotoCache> photo_cache) {
@@ -277,6 +270,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
   // Tracks the number of topics that have been prepared since the controller
   // last transitioned to the |kPreparingNextTopicSet| state.
   size_t num_topics_prepared_ = 0;
+
+  base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
+      scoped_view_delegate_observation_{this};
 
   base::WeakPtrFactory<AmbientPhotoController> weak_factory_{this};
 };

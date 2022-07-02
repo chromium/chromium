@@ -50,22 +50,38 @@ SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
   use_edit_distance_ = use_edit_distance;
 }
 
+// Compute the longest common substring, with optimisations for:
+//
+// 1) Time: By pre-computing some letter positions (stored in
+// `char_to_positions_`.
+//
+// 2) Memory: Store only the latest row of the DP table (in
+// `dp_common_string_`).
+//
+// 3) Time: Fast-update `dp_common_string_`.
 Match SequenceMatcher::FindLongestMatch(int first_start,
                                         int first_end,
                                         int second_start,
                                         int second_end) {
   Match match(first_start, second_start, 0);
 
-  // These two vectors are used to do "fast update".
-  // |dp_values_to_erase| contains the values should be erased from
-  // |dp_common_string_|.
-  // |dp_values_to_affect| contains the values should be updated from
-  // |dp_common_string_|.
+  // These two vectors are used for fast updating of `dp_common_string_`.
+  // Only erase or update values which are known to have been changed.
+  //
+  //   `dp_values_to_erase` contains the values which should be erased from
+  //     `dp_common_string_`.
+  //   `dp_values_to_affect` contains the values which should be updated in
+  //     `dp_common_string_`.
   std::vector<std::pair<int, int>> dp_values_to_erase;
   std::vector<std::pair<int, int>> dp_values_to_affect;
 
+  // Outer loop: Iterate through the characters of `first_string`.
+  // Keep up-to-date `dp_common_string_` (the latest row of the DP table).
   for (int i = first_start; i < first_end; i++) {
     dp_values_to_affect.clear();
+
+    // Inner loop: Iterate through characters of `second_string`, where those
+    // characters are equal to first_string_[i], and within range.
     for (auto j : char_to_positions_[first_string_[i]]) {
       if (j < second_start) {
         continue;
@@ -73,17 +89,19 @@ Match SequenceMatcher::FindLongestMatch(int first_start,
       if (j >= second_end) {
         break;
       }
-      // dp_commong_string_[j + 1] is length of longest common substring
-      // ends at first_string_[i] and second_string_[j + 1]
+      // dp_common_string_[j + 1] is the length of the longest common substring
+      // ending at first_string_[i] and second_string_[j].
       const int length = dp_common_string_[j] + 1;
       dp_values_to_affect.emplace_back(j + 1, length);
+
+      // Store newly-found longer matches.
       if (length > match.length) {
         match.pos_first_string = i - length + 1;
         match.pos_second_string = j - length + 1;
         match.length = length;
       }
     }
-    // Updates dp_common_string_
+    // Update `dp_common_string_`.
     for (auto const& element : dp_values_to_erase) {
       dp_common_string_[element.first] = 0;
     }
@@ -92,7 +110,7 @@ Match SequenceMatcher::FindLongestMatch(int first_start,
     }
     std::swap(dp_values_to_erase, dp_values_to_affect);
   }
-  // Erases all updated value for the next call.
+  // Erase temporary values in preparation for future calls.
   std::fill(dp_common_string_.begin(), dp_common_string_.end(), 0);
 
   return match;
@@ -109,29 +127,39 @@ Matches SequenceMatcher::GetMatchingBlocks() {
   std::queue<std::tuple<int, int, int, int>> queue_block;
   queue_block.emplace(0, first_string_.size(), 0, second_string_.size());
 
-  // Find all matching blocks recursively.
+  // Find all matching blocks recursively. Prioritize longer blocks: Find the
+  // longest matching block first, then recurse to the left and right into the
+  // remaining as-yet unmatched sections of the two strings.
   while (!queue_block.empty()) {
     int first_start, first_end, second_start, second_end;
     std::tie(first_start, first_end, second_start, second_end) =
         queue_block.front();
     queue_block.pop();
+
     const Match match =
         FindLongestMatch(first_start, first_end, second_start, second_end);
+
     if (match.length > 0) {
+      matching_blocks_.push_back(match);
+
+      // Recurse left.
       if (first_start < match.pos_first_string &&
           second_start < match.pos_second_string) {
         queue_block.emplace(first_start, match.pos_first_string, second_start,
                             match.pos_second_string);
       }
+      // Recurse right.
       if (match.pos_first_string + match.length < first_end &&
           match.pos_second_string + match.length < second_end) {
         queue_block.emplace(match.pos_first_string + match.length, first_end,
                             match.pos_second_string + match.length, second_end);
       }
-      matching_blocks_.push_back(match);
     }
   }
 
+  // Always store a final matching block. In case no matching blocks
+  // were discovered above, this final matching block serves
+  // the purpose of indicating that block matching has taken place.
   matching_blocks_.push_back(
       Match(first_string_.size(), second_string_.size(), 0));
   sort(matching_blocks_.begin(), matching_blocks_.end(), CompareMatches);
@@ -139,7 +167,7 @@ Matches SequenceMatcher::GetMatchingBlocks() {
 }
 
 int SequenceMatcher::EditDistance() {
-  // If edit distance is already calculated
+  // If edit distance is already calculated, don't recompute.
   if (edit_distance_ >= 0) {
     return edit_distance_;
   }
@@ -151,12 +179,12 @@ int SequenceMatcher::EditDistance() {
     return edit_distance_;
   }
 
-  // Memory for the dynamic programming:
-  // dp[i + 1][j + 1] is the edit distane of first |i| characters of
-  // |first_string_| and first |j| characters of |second_string_|
+  // DP table: dp[i + 1][j + 1] is the edit distance between the first `i`
+  // characters of `first_string_` and the first `j` characters of
+  // `second_string_`.
   int dp[len_first + 1][len_second + 1];
 
-  // Initialize memory
+  // Initialize memory.
   for (int i = 0; i < len_first + 1; i++) {
     dp[i][0] = i;
   }
@@ -164,18 +192,19 @@ int SequenceMatcher::EditDistance() {
     dp[0][j] = j;
   }
 
-  // Calculate the edit distance
+  // Calculate the edit distance.
   for (int i = 1; i < len_first + 1; i++) {
     for (int j = 1; j < len_second + 1; j++) {
       const int cost = first_string_[i - 1] == second_string_[j - 1] ? 0 : 1;
-      // Insertion and deletion
+      // Insertion and deletion.
       dp[i][j] = std::min(dp[i - 1][j], dp[i][j - 1]) + 1;
-      // Substitution
+      // When cost == 0: Alignment.
+      // When cost == 1: Substitution.
       dp[i][j] = std::min(dp[i][j], dp[i - 1][j - 1] + cost);
-      // Transposition
+      // Transposition.
       if (i > 1 && j > 1 && first_string_[i - 2] == second_string_[j - 1] &&
           first_string_[i - 1] == second_string_[j - 2]) {
-        dp[i][j] = std::min(dp[i][j], dp[i - 2][j - 2] + cost);
+        dp[i][j] = std::min(dp[i][j], dp[i - 2][j - 2] + 1);
       }
     }
   }
@@ -183,6 +212,9 @@ int SequenceMatcher::EditDistance() {
   return edit_distance_;
 }
 
+// TODO(crbug.com/1336160): This class contains two mutually exclusive
+// pathways (edit distance and block matching), with distinct algorithms
+// and ratio calculations. Consider refactoring.
 double SequenceMatcher::Ratio() {
   if (use_edit_distance_) {
     if (edit_distance_ratio_ < 0) {
@@ -203,8 +235,12 @@ double SequenceMatcher::Ratio() {
     for (const auto& match : GetMatchingBlocks()) {
       sum_match += match.length;
     }
-    // Subtract two because the last one is always an "empty block". Hence
-    // actual number of matching blocks is |num_blocks - 1|.
+    // The last block is always a placeholder "empty" block, so subtract one.
+    // And, allow for one "penalty-free" block, so subtract one again. Hence,
+    // apply a penalty by using |num_blocks - 2|. Example:
+    //
+    // If num_blocks = 5, the actual number of matching blocks is 4. This
+    // means there are 3 blocks in excess of 1.
     block_matching_ratio_ =
         2.0 * sum_match / sum_length *
         exp(-(num_blocks - 2) * num_matching_blocks_penalty_);

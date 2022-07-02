@@ -26,6 +26,10 @@ const char kOnBulkDataEntryPref[] = "enterprise_connectors.on_bulk_data_entry";
 
 const char kOnPrintPref[] = "enterprise_connectors.on_print";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kOnFileTransferPref[] = "enterprise_connectors.on_file_transfer";
+#endif
+
 const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
 const char kContextAwareAccessSignalsAllowlistPref[] =
@@ -42,24 +46,22 @@ const char kOnFileDownloadedScopePref[] =
 const char kOnBulkDataEntryScopePref[] =
     "enterprise_connectors.scope.on_bulk_data_entry";
 const char kOnPrintScopePref[] = "enterprise_connectors.scope.on_print";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kOnFileTransferScopePref[] =
+    "enterprise_connectors.scope.on_file_transfer";
+#endif
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
 namespace {
 
 void RegisterFileSystemPrefs(PrefRegistrySimple* registry) {
-  std::vector<std::string> all_service_providers =
-      GetServiceProviderConfig()->GetServiceProviderNames();
-  std::vector<std::string> fs_service_providers;
-  std::copy_if(all_service_providers.begin(), all_service_providers.end(),
-               std::back_inserter(fs_service_providers), [](const auto& name) {
-                 const ServiceProviderConfig::ServiceProvider* provider =
-                     GetServiceProviderConfig()->GetServiceProvider(name);
-                 return !provider->fs_home_url().empty();
-               });
-
-  for (const auto& name : fs_service_providers) {
-    RegisterFileSystemPrefsForServiceProvider(registry, name);
+  const auto* service_provider_config = GetServiceProviderConfig();
+  for (const auto& name_and_configs : *service_provider_config) {
+    if (name_and_configs.second.file_system) {
+      RegisterFileSystemPrefsForServiceProvider(
+          registry, std::string(name_and_configs.first));
+    }
   }
 }
 
@@ -71,11 +73,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
   registry->RegisterListPref(kOnPrintPref);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterListPref(kOnFileTransferPref);
+#endif
   registry->RegisterListPref(kOnSecurityEventPref);
   registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
+#endif
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
   registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
 

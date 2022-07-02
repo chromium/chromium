@@ -13,25 +13,40 @@ namespace WTF {
 
 namespace {
 
-template <typename CharacterType>
-class HashTranslatorCharBuffer {
+class UCharBuffer {
  public:
-  HashTranslatorCharBuffer(const CharacterType* chars, unsigned len)
+  UCharBuffer(const UChar* chars,
+              unsigned len,
+              AtomicStringUCharEncoding encoding)
       : characters_(chars),
         length_(len),
-        hash_(StringHasher::ComputeHashAndMaskTop8Bits(chars, len)) {}
+        hash_(StringHasher::ComputeHashAndMaskTop8Bits(chars, len)),
+        encoding_(encoding) {}
 
-  const CharacterType* characters() const { return characters_; }
+  const UChar* characters() const { return characters_; }
   unsigned length() const { return length_; }
   unsigned hash() const { return hash_; }
+  AtomicStringUCharEncoding encoding() const { return encoding_; }
+
+  scoped_refptr<StringImpl> CreateStringImpl() const {
+    switch (encoding_) {
+      case AtomicStringUCharEncoding::kUnknown:
+        return StringImpl::Create8BitIfPossible(characters_, length_);
+      case AtomicStringUCharEncoding::kIs8Bit:
+        return String::Make8BitFrom16BitSource(characters_, length_)
+            .ReleaseImpl();
+      case AtomicStringUCharEncoding::kIs16Bit:
+        return StringImpl::Create(characters_, length_);
+    }
+  }
 
  private:
-  const CharacterType* characters_;
-  unsigned length_;
-  unsigned hash_;
+  const UChar* characters_;
+  const unsigned length_;
+  const unsigned hash_;
+  const AtomicStringUCharEncoding encoding_;
 };
 
-typedef HashTranslatorCharBuffer<UChar> UCharBuffer;
 struct UCharBufferTranslator {
   static unsigned GetHash(const UCharBuffer& buf) { return buf.hash(); }
 
@@ -42,9 +57,7 @@ struct UCharBufferTranslator {
   static void Translate(StringImpl*& location,
                         const UCharBuffer& buf,
                         unsigned hash) {
-    auto string =
-        StringImpl::Create8BitIfPossible(buf.characters(), buf.length());
-    location = string.release();
+    location = buf.CreateStringImpl().release();
     location->SetHash(hash);
     location->SetIsAtomic();
   }
@@ -275,19 +288,37 @@ scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
              : base::WrapRefCounted(*add_result.stored_value);
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(const UChar* s,
-                                                 unsigned length) {
+scoped_refptr<StringImpl> AtomicStringTable::Add(
+    const UChar* s,
+    unsigned length,
+    AtomicStringUCharEncoding encoding) {
   if (!s)
     return nullptr;
 
   if (!length)
     return StringImpl::empty_;
 
-  UCharBuffer buffer(s, length);
+  UCharBuffer buffer(s, length, encoding);
   return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
 
-typedef HashTranslatorCharBuffer<LChar> LCharBuffer;
+class LCharBuffer {
+ public:
+  LCharBuffer(const LChar* chars, unsigned len)
+      : characters_(chars),
+        length_(len),
+        hash_(StringHasher::ComputeHashAndMaskTop8Bits(chars, len)) {}
+
+  const LChar* characters() const { return characters_; }
+  unsigned length() const { return length_; }
+  unsigned hash() const { return hash_; }
+
+ private:
+  const LChar* characters_;
+  const unsigned length_;
+  const unsigned hash_;
+};
+
 struct LCharBufferTranslator {
   static unsigned GetHash(const LCharBuffer& buf) { return buf.hash(); }
 

@@ -44,7 +44,7 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
 
  private:
   const raw_ptr<HttpNetworkSession> session_;
-  bool suspended_;
+  bool suspended_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };

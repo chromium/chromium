@@ -4,16 +4,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
-using CameraAppIntegrationTest = SystemWebAppIntegrationTest;
+using CameraAppIntegrationTest = ash::SystemWebAppIntegrationTest;
 
 IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
   WaitForTestSystemAppInstall();

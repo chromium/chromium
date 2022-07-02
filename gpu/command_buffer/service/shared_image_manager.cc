@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -62,16 +61,8 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
  public:
   explicit AutoLock(SharedImageManager* manager)
       EXCLUSIVE_LOCK_FUNCTION(manager->lock_)
-      : start_time_(base::TimeTicks::Now()),
-        auto_lock_(manager->is_thread_safe() ? &manager->lock_.value()
-                                             : nullptr) {
-    if (manager->is_thread_safe()) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "GPU.SharedImageManager.TimeToAcquireLock",
-          base::TimeTicks::Now() - start_time_, base::Microseconds(1),
-          base::Seconds(1), 50);
-    }
-  }
+      : auto_lock_(manager->is_thread_safe() ? &manager->lock_.value()
+                                             : nullptr) {}
 
   AutoLock(const AutoLock&) = delete;
   AutoLock& operator=(const AutoLock&) = delete;
@@ -79,7 +70,6 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
   ~AutoLock() UNLOCK_FUNCTION() = default;
 
  private:
-  base::TimeTicks start_time_;
   base::AutoLockMaybe auto_lock_;
 };
 

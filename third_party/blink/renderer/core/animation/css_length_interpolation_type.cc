@@ -137,8 +137,8 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   ComputedStyle& style = *state.Style();
   float zoom = EffectiveZoom(style);
-  CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
-  conversion_data.SetZoom(zoom);
+  CSSToLengthConversionData conversion_data =
+      state.CssToLengthConversionData().CopyWithAdjustedZoom(zoom);
   Length length = To<InterpolableLength>(interpolable_value)
                       .CreateLength(conversion_data, value_range_);
   if (LengthPropertyFunctions::SetLength(CssProperty(), style, length)) {

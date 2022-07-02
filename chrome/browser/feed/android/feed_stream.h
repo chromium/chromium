@@ -116,20 +116,6 @@ class FeedStream : public ::feed::FeedStreamSurface {
   jlong GetLastFetchTimeMs(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
 
-  void ReportNoticeCreated(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
-                           const base::android::JavaParamRef<jstring>& key);
-  void ReportNoticeViewed(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          const base::android::JavaParamRef<jstring>& key);
-  void ReportNoticeOpenAction(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
-                              const base::android::JavaParamRef<jstring>& key);
-
-  void ReportNoticeDismissed(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
-                             const base::android::JavaParamRef<jstring>& key);
-
   void ReportInfoCardTrackViewStarted(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -152,6 +138,11 @@ class FeedStream : public ::feed::FeedStreamSurface {
   void ResetInfoCardStates(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            int info_card_type);
+
+  void InvalidateContentCacheFor(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint stream_kind);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

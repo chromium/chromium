@@ -117,6 +117,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
+#include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -170,7 +171,7 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
@@ -617,8 +618,8 @@ BindServiceWorkerReceiverForStorageKey(
 template <typename Interface>
 void EmptyBinderForFrame(RenderFrameHost* host,
                          mojo::PendingReceiver<Interface> receiver) {
-  DLOG(ERROR) << "Empty binder for interface " << Interface::Name_
-              << " for the frame/document scope";
+  DVLOG(1) << "Empty binder for interface " << Interface::Name_
+           << " for the frame/document scope";
 }
 
 BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
@@ -902,6 +903,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
           features::kEnableMachineLearningModelLoaderWebPlatformApi)) {
     map->Add<ml::model_loader::mojom::MLService>(
         base::BindRepeating(&CreateMLService));
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI)) {
+    map->Add<blink::mojom::PendingBeaconHost>(base::BindRepeating(
+        &RenderFrameHostImpl::GetPendingBeaconHost, base::Unretained(host)));
   }
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
@@ -1288,7 +1294,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindBucketManagerHost, host));
+      &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
 
   // RenderProcessHost binders taking a frame id and an origin
   map->Add<blink::mojom::NotificationService>(
@@ -1380,7 +1386,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindBucketManagerHost, host));
+      &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
 
   // RenderProcessHost binders taking a frame id and an origin
   map->Add<blink::mojom::NotificationService>(
@@ -1436,6 +1442,10 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
                           base::Unretained(host)));
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForServiceWorker, base::Unretained(host)));
+#if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::HidService>(base::BindRepeating(
+      &ServiceWorkerHost::BindHidService, base::Unretained(host)));
+#endif
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(
@@ -1472,7 +1482,7 @@ void PopulateBinderMapWithContext(
           &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
           host));
   map->Add<blink::mojom::BucketManagerHost>(BindServiceWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindBucketManagerHost, host));
+      &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
   map->Add<blink::mojom::OneShotBackgroundSyncService>(
       BindServiceWorkerReceiverForOrigin(
           &RenderProcessHostImpl::CreateOneShotSyncService, host));

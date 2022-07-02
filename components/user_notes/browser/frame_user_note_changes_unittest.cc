@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/safe_ref.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "components/user_notes/browser/user_note_base_test.h"
 #include "components/user_notes/browser/user_note_instance.h"
@@ -27,8 +28,9 @@ namespace {
 // initializing the text highlight.
 class MockUserNoteInstance : public UserNoteInstance {
  public:
-  explicit MockUserNoteInstance(base::SafeRef<UserNote> model_ref)
-      : UserNoteInstance(model_ref) {}
+  explicit MockUserNoteInstance(base::SafeRef<UserNote> model_ref,
+                                UserNoteManager* manager)
+      : UserNoteInstance(model_ref, manager) {}
 
   MOCK_METHOD(void,
               InitializeHighlightIfNeeded,
@@ -54,7 +56,7 @@ class MockFrameUserNoteChanges : public FrameUserNoteChanges {
 
   MOCK_METHOD(std::unique_ptr<UserNoteInstance>,
               MakeNoteInstance,
-              (const UserNote* note_model),
+              (const UserNote* note_model, UserNoteManager* manager),
               (const override));
 };
 
@@ -63,9 +65,10 @@ void MockInitializeHighlightIfNeeded(base::OnceClosure callback) {
 }
 
 std::unique_ptr<UserNoteInstance> MockMakeNoteInstance(
-    const UserNote* note_model) {
+    const UserNote* note_model,
+    UserNoteManager* manager) {
   auto instance_mock =
-      std::make_unique<MockUserNoteInstance>(note_model->GetSafeRef());
+      std::make_unique<MockUserNoteInstance>(note_model->GetSafeRef(), manager);
 
   EXPECT_CALL(*instance_mock, InitializeHighlightIfNeeded(_))
       .Times(1)
@@ -90,17 +93,20 @@ TEST_F(FrameUserNoteChangesTest, ApplyAddedNotes) {
   std::vector<base::UnguessableToken> removed;
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetMainFrame(), added,
-      modified, removed);
+      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
+      added, modified, removed);
 
-  EXPECT_CALL(*mock_changes, MakeNoteInstance(_))
+  EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _))
       .Times(2)
       .WillRepeatedly(&MockMakeNoteInstance);
 
-  mock_changes->Apply(base::BindOnce([] {}));
+  bool callback_called = false;
+  mock_changes->Apply(
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
 
   // The mocks ensure the callback is invoked synchronously, so verifications
   // can happen immediately.
+  EXPECT_TRUE(callback_called);
   EXPECT_EQ(InstanceMapSize(m), 3u);
   EXPECT_TRUE(m->GetNoteInstance(note_ids_[0]));
   EXPECT_TRUE(m->GetNoteInstance(note_ids_[1]));
@@ -120,15 +126,18 @@ TEST_F(FrameUserNoteChangesTest, ApplyModifiedNotes) {
   std::vector<base::UnguessableToken> removed;
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetMainFrame(), added,
-      modified, removed);
+      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
+      added, modified, removed);
 
-  EXPECT_CALL(*mock_changes, MakeNoteInstance(_)).Times(0);
+  EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _)).Times(0);
 
-  mock_changes->Apply(base::BindOnce([] {}));
+  bool callback_called = false;
+  mock_changes->Apply(
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
 
   // The mocks ensure the callback is invoked synchronously, so verifications
   // can happen immediately.
+  EXPECT_TRUE(callback_called);
   EXPECT_EQ(InstanceMapSize(m), 3u);
   EXPECT_TRUE(m->GetNoteInstance(note_ids_[0]));
   EXPECT_TRUE(m->GetNoteInstance(note_ids_[1]));
@@ -149,15 +158,18 @@ TEST_F(FrameUserNoteChangesTest, ApplyRemovedNotes) {
   std::vector<base::UnguessableToken> removed({note_ids_[0], note_ids_[2]});
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetMainFrame(), added,
-      modified, removed);
+      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
+      added, modified, removed);
 
-  EXPECT_CALL(*mock_changes, MakeNoteInstance(_)).Times(0);
+  EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _)).Times(0);
 
-  mock_changes->Apply(base::BindOnce([] {}));
+  bool callback_called = false;
+  mock_changes->Apply(
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
 
   // The mocks ensure the callback is invoked synchronously, so verifications
   // can happen immediately.
+  EXPECT_TRUE(callback_called);
   EXPECT_EQ(InstanceMapSize(m), 1u);
   EXPECT_TRUE(m->GetNoteInstance(note_ids_[1]));
   EXPECT_FALSE(m->GetNoteInstance(note_ids_[0]));

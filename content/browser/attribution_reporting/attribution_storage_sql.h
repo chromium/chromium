@@ -53,6 +53,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   static void RunInMemoryForTesting();
 
+  [[nodiscard]] static bool DeleteStorageForTesting(
+      const base::FilePath& user_data_directory);
+
   AttributionStorageSql(const base::FilePath& path_to_database,
                         std::unique_ptr<AttributionStorageDelegate> delegate);
   AttributionStorageSql(const AttributionStorageSql& other) = delete;
@@ -108,7 +111,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport::ReportTypes report_types = {
           AttributionReport::ReportType::kEventLevel,
           AttributionReport::ReportType::kAggregatableAttribution}) override;
-  absl::optional<base::Time> GetNextReportTime(base::Time time) override;
+  absl::optional<base::Time> GetNextReportTime() override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
@@ -116,12 +119,13 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
   absl::optional<base::Time> AdjustOfflineReportTimes() override;
-  void ClearData(
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin&)> filter) override;
+  void ClearData(base::Time delete_begin,
+                 base::Time delete_end,
+                 base::RepeatingCallback<bool(const url::Origin&)> filter,
+                 bool delete_rate_limit_data) override;
 
-  void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void ClearAllDataAllTime(bool delete_rate_limit_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deactivates active, converted sources with the given conversion destination
   // and reporting origin. Returns at most `limit` of those, or null on error.

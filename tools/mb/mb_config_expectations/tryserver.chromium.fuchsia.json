@@ -1,4 +1,44 @@
 {
+  "fuchsia-arm64-cast": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_chromecast": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-binary-size": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_debug": false,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-compile-x64-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 0,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-deterministic-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
   "fuchsia-fyi-arm64-dbg": {
     "gn_args": {
       "is_component_build": true,
@@ -15,6 +55,39 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-x64-cast": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_chromecast": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia_arm64": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "fuchsia_x64": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
       "target_os": "fuchsia",
       "use_goma": true
     }

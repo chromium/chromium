@@ -584,7 +584,9 @@ template("test") {
       if (!defined(excluded_dirs)) {
         excluded_dirs = []
       }
-      excluded_dirs += [ devtools_root_location ]
+      if (devtools_root_location != "") {
+        excluded_dirs += [ devtools_root_location ]
+      }
     }
 
     # |target_name| refers to the package-runner rule, so that building
@@ -623,10 +625,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-
-      # TODO(crbug.com/1199334): Because perfetto unit test is defined outside
-      # of chromium, the dependency to the filter file is added here.
-      data_deps += [ "//testing/buildbot/filters:perfetto_unittests_filters" ]
 
       if (use_rts) {
         data_deps += [ ":${target_name}__rts_filters" ]

@@ -50,4 +50,7 @@
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="clear_search_history_non_google_text" />
+
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="sign_out_of_chrome_text" />
 </PreferenceScreen>

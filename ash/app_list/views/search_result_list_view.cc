@@ -417,6 +417,11 @@ void SearchResultListView::ShowViewWithAnimation(views::View* view,
       .SetTransform(view, gfx::Transform(), gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
+void SearchResultListView::OnSelectedResultChanged() {
+  for (SearchResultView* view : search_result_views_)
+    view->OnSelectedResultChanged();
+}
+
 int SearchResultListView::DoUpdate() {
   if (productivity_launcher_index_.has_value()) {
     std::vector<ash::AppListSearchResultCategory>* ordered_categories =

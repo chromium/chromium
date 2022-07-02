@@ -1,9 +1,10 @@
-<style include="common-style">
+<style include="common">
   :host {
     flex-grow: 1;
   }
   #container {
     height: 100%;
+    margin-block-end: 48px;
   }
   #mainSettings {
     display: grid;
@@ -59,6 +60,9 @@
     overflow: hidden;
     width: 100%;
   }
+  .animation-placeholder-list {
+    width: 516px;
+  }
   .animation-placeholder-container {
     box-sizing: border-box;
     overflow: hidden;
@@ -68,21 +72,13 @@
      * parent width. */
     width: calc(100% / 3 - 0.34px);
   }
-  @media(min-width: 720px) {
-    .animation-placeholder-container {
-      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
-       * ensures all grid items in a row add up to at least 1px smaller than the
-       * parent width. */
-      width: calc(100% / 4 - 0.25px) !important;
-    }
-  }
   .animation-item-placeholder {
     align-items: center;
     border-radius: var(--personalization-app-grid-item-border-radius);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 156px;
+    height: 120px;
     justify-content: center;
     overflow: hidden;
     position: relative;
@@ -123,7 +119,8 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[shouldShowMainSettings_(path)]]">
+  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+  <template is="dom-if" if="[[shouldShowMainSettings_(path)]]" restamp>
     <div id="mainSettings">
       <template is="dom-if" if="[[loadingAmbientMode_(ambientModeEnabled_)]]">
         <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
@@ -133,7 +130,7 @@
         </div>
       </template>
       <template is="dom-if" if="[[!loadingAmbientMode_(ambientModeEnabled_)]]">
-        <toggle-row checked="[[ambientModeEnabled_]]"
+        <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
             on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
         </toggle-row>
       </template>
@@ -144,7 +141,7 @@
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(3)]]" grid>
+            <iron-list class="animation-placeholder-list" items="[[getPlaceholders_(3)]]" grid>
               <template>
                 <div class="animation-placeholder-container">
                   <div class="animation-item-placeholder placeholder"></div>
@@ -181,8 +178,11 @@
           </div>
         </template>
         <template is="dom-if" if="[[!loadingSettings_]]">
-          <animation-theme-list selected-animation-theme="[[animationTheme_]]">
-          </animation-theme-list>
+          <template is="dom-if" if="[[isAmbientModeAnimationEnabled_]]">
+            <animation-theme-list
+                selected-animation-theme="[[animationTheme_]]">
+            </animation-theme-list>
+          </template>
           <topic-source-list selected-topic-source="[[topicSource_]]"
               has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
           </topic-source-list>
@@ -196,7 +196,8 @@
       </template>
     </div>
   </template>
-  <template is="dom-if" if="[[shouldShowAlbums_(path)]]">
+  <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
+  <template is="dom-if" if="[[shouldShowAlbums_(path)]]" restamp>
     <div id="albumsSubpage">
       <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
           albums="[[getAlbums_(albums_, queryParams)]]">

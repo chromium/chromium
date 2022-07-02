@@ -9,12 +9,15 @@
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/mac/url_conversions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -149,7 +152,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 - (void)tearDown {
   [FeatureEngagementAppInterface reset];
-
   [super tearDown];
 }
 
@@ -281,7 +283,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 // Verifies that the Badged Manual Translate Trigger feature does not show if
 // the entry has already been used.
-- (void)testBadgedTranslateManualTriggerFeatureAlreadyUsed {
+// TODO(crbug.com/1321264): This is failing flakily on several configurations.
+- (void)DISABLED_testBadgedTranslateManualTriggerFeatureAlreadyUsed {
   // Set up the test server.
   self.testServer->RegisterDefaultHandler(base::BindRepeating(
       net::test_server::HandlePrefixedRequest, kFrenchPageURLPath,

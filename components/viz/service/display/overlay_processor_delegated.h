@@ -76,7 +76,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     kCompositedNotAxisAligned = 2,
     kCompositedCheckOverlayFail = 3,
     kCompositedNotOverlay = 4,
-    kMaxValue = kCompositedNotOverlay
+    kCompositedTooManyQuads = 5,
+    kCompositedBackdropFilter = 6,
+    kMaxValue = kCompositedBackdropFilter
   };
 
   gfx::RectF GetPrimaryPlaneDisplayRect(

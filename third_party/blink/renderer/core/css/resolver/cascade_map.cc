@@ -65,6 +65,10 @@ const CascadePriority* CascadeMap::Find(const CSSPropertyName& name,
   return find_origin(native_properties_.Buffer()[index], origin);
 }
 
+CascadePriority& CascadeMap::Top(CascadePriorityList& list) {
+  return list.Top(backing_vector_);
+}
+
 const CascadePriority* CascadeMap::FindRevertLayer(
     const CSSPropertyName& name,
     CascadePriority revert_from) const {

@@ -20,6 +20,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -30,7 +31,10 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
@@ -55,6 +59,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
@@ -63,6 +68,7 @@
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/actions/history_clusters_action.h"
+#include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -104,29 +110,28 @@ bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
 }
 
-// Returns if rich autocompletion had (or would have had for counterfactual
-// variations) an impact; i.e. whether the top scoring rich autocompleted
-// suggestion outscores the top scoring default suggestion.
-bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
+// Returns which rich autocompletion type, if any, had (or would have had for
+// counterfactual variations) an impact; i.e. whether the top scoring rich
+// autocompleted suggestion outscores the top scoring default suggestion.
+AutocompleteMatch::RichAutocompletionType TopMatchRichAutocompletionType(
+    const AutocompleteResult& result) {
   // Trigger rich autocompletion logging if the highest scoring match has
-  // |rich_autocompletion_triggered| set to true indicating it is, or could have
-  // been, rich autocompleted. It's not sufficient to check the default match
-  // since counterfactual variations will not allow rich autocompleted matches
-  // to be the default match.
+  // |rich_autocompletion_triggered| set indicating it is, or could have been
+  // rich autocompleted. It's not sufficient to check the default match since
+  // counterfactual variations will not allow rich autocompleted matches to be
+  // the default match.
   if (result.empty())
-    return false;
+    return AutocompleteMatch::RichAutocompletionType::kNone;
 
   auto get_sort_key = [](const AutocompleteMatch& match) {
-    return std::make_tuple(match.allowed_to_be_default_match ||
-                               match.rich_autocompletion_triggered,
-                           match.relevance);
+    return std::make_tuple(
+        match.allowed_to_be_default_match ||
+            match.rich_autocompletion_triggered !=
+                AutocompleteMatch::RichAutocompletionType::kNone,
+        match.relevance);
   };
 
-  auto top_match = std::max_element(
-      result.begin(), result.end(),
-      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
-        return get_sort_key(match1) < get_sort_key(match2);
-      });
+  auto top_match = base::ranges::max_element(result, {}, get_sort_key);
   return top_match->rich_autocompletion_triggered;
 }
 
@@ -280,6 +285,7 @@ AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
     int provider_types)
     : provider_client_(std::move(provider_client)),
+      bookmark_provider_(nullptr),
       document_provider_(nullptr),
       history_url_provider_(nullptr),
       keyword_provider_(nullptr),
@@ -292,12 +298,16 @@ AutocompleteController::AutocompleteController(
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
-  if (provider_types & AutocompleteProvider::TYPE_BOOKMARK)
-    providers_.push_back(new BookmarkProvider(provider_client_.get()));
+  if (provider_types & AutocompleteProvider::TYPE_BOOKMARK) {
+    bookmark_provider_ = new BookmarkProvider(provider_client_.get());
+    providers_.push_back(bookmark_provider_.get());
+  }
   if (provider_types & AutocompleteProvider::TYPE_BUILTIN)
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK)
-    providers_.push_back(new HistoryQuickProvider(provider_client_.get()));
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK) {
+    history_quick_provider_ = new HistoryQuickProvider(provider_client_.get());
+    providers_.push_back(history_quick_provider_.get());
+  }
   if (provider_types & AutocompleteProvider::TYPE_KEYWORD) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
     providers_.push_back(keyword_provider_.get());
@@ -318,10 +328,7 @@ AutocompleteController::AutocompleteController(
   // doing its thing by the time the HistoryURLProvider task runs.
   // (And hope that it completes before AutocompleteController::Start() is
   // called the next time.)
-  // ClipboardURLProvider take a reference to HistoryURLProvider. If we're going
-  // to need it, we should initialize history_url_provider_.
-  if (provider_types & (AutocompleteProvider::TYPE_HISTORY_URL |
-                        AutocompleteProvider::TYPE_CLIPBOARD)) {
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
     history_url_provider_ =
         new HistoryURLProvider(provider_client_.get(), this);
     if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
@@ -376,18 +383,14 @@ AutocompleteController::AutocompleteController(
     // create a ClipboardRecentContent as above (for both Chrome and tests).
     if (ClipboardRecentContent::GetInstance()) {
       clipboard_provider_ = new ClipboardProvider(
-          provider_client_.get(), this, history_url_provider_,
-          ClipboardRecentContent::GetInstance());
+          provider_client_.get(), this, ClipboardRecentContent::GetInstance());
       providers_.push_back(clipboard_provider_.get());
     }
   }
-
   if (provider_types & AutocompleteProvider::TYPE_QUERY_TILE)
     providers_.push_back(new QueryTileProvider(provider_client_.get(), this));
-
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
-    voice_suggest_provider_ =
-        new VoiceSuggestProvider(provider_client_.get(), this);
+    voice_suggest_provider_ = new VoiceSuggestProvider(provider_client_.get());
     providers_.push_back(voice_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
@@ -396,6 +399,25 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     providers_.push_back(new OpenTabProvider(provider_client_.get()));
   }
+  // Ideally, we'd check `IsApplicationLocaleSupportedByJourneys()` when
+  // constructing `provider_types`. But that's usually constructed in
+  // `AutocompleteClassifier::DefaultOmniboxProviders` which can't depend on the
+  // browser dir to detect locale. The alternative of piping in the locale from
+  // each call site seems too intrusive for a temporary condition (some call
+  // sites are also in the components dir). All callers of
+  // `DefaultOmniboxProviders` only use it to then construct
+  // `AutocompleteController`, so placing the check here instead has no behavior
+  // change.
+#if !BUILDFLAG(IS_IOS)
+  // HistoryClusters is not enabled on iOS.
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
+      history_clusters::IsApplicationLocaleSupportedByJourneys(
+          provider_client_->GetApplicationLocale()) &&
+      search_provider_ != nullptr) {
+    providers_.push_back(new HistoryClusterProvider(provider_client_.get(),
+                                                    this, search_provider_));
+  }
+#endif
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "AutocompleteController", base::ThreadTaskRunnerHandle::Get());
@@ -454,10 +476,14 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   expire_timer_.Stop();
   stop_timer_.Stop();
 
-  // Start the new query.
+  // Start the new query. Starter Pack engines in keyword mode only run a subset
+  // of the providers, so call `ShouldRunProvider()` to determine which.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
@@ -536,6 +562,9 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   }
 
   for (auto provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     provider->StartPrefetch(input);
   }
 }
@@ -606,6 +635,9 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
     OmniboxLog* logs) const {
   logs->providers_info.clear();
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     // Add per-provider info, if any.
     provider->AddProviderInfo(&logs->providers_info);
 
@@ -630,6 +662,8 @@ void AutocompleteController::ResetSession() {
   search_service_worker_signal_sent_ = false;
 
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
     provider->ResetSession();
   }
 
@@ -763,8 +797,11 @@ void AutocompleteController::UpdateResult(
   AutocompleteResult old_matches_to_reuse;
   old_matches_to_reuse.Swap(&result_);
 
-  for (const auto& provider : providers_)
-    result_.AppendMatches(input_, provider->matches());
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+    result_.AppendMatches(provider->matches());
+  }
 
   bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
@@ -851,8 +888,16 @@ void AutocompleteController::UpdateResult(
   if (notify_default_match)
     last_time_default_match_changed_ = base::TimeTicks::Now();
 
-  if (TopMatchWouldHaveBeenRichAutocompletion(result_)) {
-    provider_client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+  // Mark the rich autocompletion feature triggered if the top match, or
+  // would-be-top-match if rich autocompletion is counterfactual enabled, is
+  // rich autocompleted.
+  const auto top_match_rich_autocompletion_type =
+      TopMatchRichAutocompletionType(result_);
+  provider_client_->GetOmniboxTriggeredFeatureService()
+      ->RichAutocompletionTypeTriggered(top_match_rich_autocompletion_type);
+  if (top_match_rich_autocompletion_type !=
+      AutocompleteMatch::RichAutocompletionType::kNone) {
+    provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
         OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
   }
 
@@ -948,13 +993,21 @@ void AutocompleteController::UpdateKeywordDescriptions(
         const TemplateURL* template_url =
             i->GetTemplateURL(template_url_service_, false);
         if (template_url) {
-          // For extension keywords, just make the description the extension
-          // name -- don't assume that the normal search keyword description is
-          // applicable.
-          i->description = template_url->AdjustedShortNameForLocaleDirection();
-          if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
-            i->description = l10n_util::GetStringFUTF16(
-                IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION, i->description);
+          if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+              template_url->starter_pack_id() > 0) {
+            i->description =
+                TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
+                    template_url->starter_pack_id());
+          } else {
+            // For extension keywords, just make the description the extension
+            // name -- don't assume that the normal search keyword description
+            // is applicable.
+            i->description =
+                template_url->AdjustedShortNameForLocaleDirection();
+            if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
+              i->description = l10n_util::GetStringFUTF16(
+                  IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION, i->description);
+            }
           }
           i->description_class.push_back(
               ACMatchClassification(0, ACMatchClassification::DIM));
@@ -1065,6 +1118,9 @@ void AutocompleteController::NotifyChanged(bool notify_default_match) {
 
 void AutocompleteController::CheckIfDone() {
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     if (!provider->done()) {
       done_ = false;
       return;
@@ -1093,8 +1149,11 @@ void AutocompleteController::StartStopTimer() {
 
 void AutocompleteController::StopHelper(bool clear_result,
                                         bool due_to_user_inactivity) {
-  for (const auto& provider : providers_)
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
     provider->Stop(clear_result, due_to_user_inactivity);
+  }
 
   expire_timer_.Stop();
   stop_timer_.Stop();
@@ -1142,4 +1201,65 @@ bool AutocompleteController::OnMemoryDump(
 void AutocompleteController::SetStartStopTimerDurationForTesting(
     base::TimeDelta duration) {
   stop_timer_duration_ = duration;
+}
+
+bool AutocompleteController::ShouldRunProvider(
+    AutocompleteProvider* provider) const {
+  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      input_.keyword_mode_entry_method() !=
+          metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID) {
+    // We're in keyword mode. Only a subset of providers are run when we're in a
+    // starter pack keyword mode. Try to grab the TemplateURL to determine if
+    // we're in starter pack mode and whether this provider should be run.
+    AutocompleteInput keyword_input = input_;
+    const TemplateURL* keyword_turl =
+        KeywordProvider::GetSubstitutingTemplateURLForInput(
+            template_url_service_, &keyword_input);
+    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
+      switch (provider->type()) {
+        // Search provider and keyword provider are still run because we would
+        // lose the suggestion the keyword chip is attached to otherwise. Search
+        // provider suggestions are curbed for starter pack scopes in
+        // `SearchProvider::ShouldCurbDefaultSuggestions()`.
+        case AutocompleteProvider::TYPE_SEARCH:
+        case AutocompleteProvider::TYPE_KEYWORD:
+          return true;
+
+        // @Bookmarks starter pack scope - run only the bookmarks provider.
+        case AutocompleteProvider::TYPE_BOOKMARK:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kBookmarks);
+
+        // @History starter pack scope - run history quick and history url
+        // providers.
+        case AutocompleteProvider::TYPE_HISTORY_QUICK:
+        case AutocompleteProvider::TYPE_HISTORY_URL:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kHistory);
+
+        // @Tabs starter pack scope - run the open tab provider.
+        case AutocompleteProvider::TYPE_OPEN_TAB:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kTabs);
+
+        // No other providers should run when in a starter pack scope.
+        default:
+          return false;
+      }
+    }
+  }
+
+  // Open Tab Provider should only be run for @tabs starter pack mode and in the
+  // CrOS launcher.  As a temporary condition, we don't run the open tab
+  // provider when IsSiteSearchStarterPackEnabled() is true, even though that
+  // could interfere with the launcher.
+  // TODO(crbug/1287313): This needs to be updated before running live
+  // experiments.
+  if (provider->type() == AutocompleteProvider::TYPE_OPEN_TAB &&
+      OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()) {
+    return false;
+  }
+
+  // Otherwise, run all providers.
+  return true;
 }

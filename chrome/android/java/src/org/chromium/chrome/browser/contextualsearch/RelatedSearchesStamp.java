@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -41,6 +42,7 @@ class RelatedSearchesStamp {
             + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE + RELATED_SEARCHES_NO_EXPERIMENT;
 
     private final ContextualSearchPolicy mPolicy;
+    private boolean mDisableDefaultAllowedLanguagesForTesting;
 
     /**
      * Verbosity param used to control requested results.
@@ -114,9 +116,7 @@ class RelatedSearchesStamp {
     String getRelatedSearchesStamp(String basePageLanguage) {
         if (!isRelatedSearchesQualifiedAndEnabled(basePageLanguage)) return "";
 
-        boolean isLanguageRestricted =
-                !TextUtils.isEmpty(ContextualSearchFieldTrial.getRelatedSearchesParam(
-                        ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME));
+        boolean isLanguageRestricted = !TextUtils.isEmpty(getAllowedLanguages());
         return buildRelatedSearchesStamp(isLanguageRestricted);
     }
 
@@ -168,8 +168,7 @@ class RelatedSearchesStamp {
      * @return whether the supplied parameter satisfies the current language requirement.
      */
     private boolean isLanguageQualified(String basePageLanguage) {
-        String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(
-                ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
+        String allowedLanguages = getAllowedLanguages();
         return TextUtils.isEmpty(allowedLanguages) || allowedLanguages.contains(basePageLanguage);
     }
 
@@ -244,5 +243,21 @@ class RelatedSearchesStamp {
         String resultsToReturnCode = getNumberOfRelatedSearchesToRequestCode();
         if (resultsToReturnCode.length() > 0) stampBuilder.append(resultsToReturnCode);
         return stampBuilder.toString();
+    }
+
+    private String getAllowedLanguages() {
+        String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(
+                ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
+        // If there is no language found, we use default language list.
+        if (TextUtils.isEmpty(allowedLanguages) && !mDisableDefaultAllowedLanguagesForTesting) {
+            allowedLanguages =
+                    ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST;
+        }
+        return allowedLanguages;
+    }
+
+    @VisibleForTesting
+    void disableDefaultAllowedLanguagesForTesting(boolean disableDefaultAllowedLanguages) {
+        mDisableDefaultAllowedLanguagesForTesting = disableDefaultAllowedLanguages;
     }
 }

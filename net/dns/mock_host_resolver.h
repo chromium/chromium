@@ -154,11 +154,9 @@ class MockHostResolverBase
     RuleResolver(RuleResolver&&);
     RuleResolver& operator=(RuleResolver&&);
 
-    const RuleResult& Resolve(
-        const absl::variant<url::SchemeHostPort, HostPortPair>&
-            request_endpoint,
-        DnsQueryTypeSet request_types,
-        HostResolverSource request_source) const;
+    const RuleResult& Resolve(const Host& request_endpoint,
+                              DnsQueryTypeSet request_types,
+                              HostResolverSource request_source) const;
 
     void ClearRules();
 
@@ -286,7 +284,7 @@ class MockHostResolverBase
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
   int LoadIntoCache(
-      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+      const Host& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       const absl::optional<ResolveHostParameters>& optional_parameters);
 
@@ -402,7 +400,7 @@ class MockHostResolverBase
   // Resolve as IP or from |cache_| return cached error or
   // DNS_CACHE_MISS if failed.
   int ResolveFromIPLiteralOrCache(
-      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+      const Host& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       DnsQueryType dns_query_type,
       HostResolverFlags flags,
@@ -415,11 +413,11 @@ class MockHostResolverBase
   void AddListener(MdnsListenerImpl* listener);
   void RemoveCancelledListener(MdnsListenerImpl* listener);
 
-  RequestPriority last_request_priority_;
+  RequestPriority last_request_priority_ = DEFAULT_PRIORITY;
   absl::optional<NetworkIsolationKey> last_request_network_isolation_key_;
-  SecureDnsPolicy last_secure_dns_policy_;
-  bool synchronous_mode_;
-  bool ondemand_mode_;
+  SecureDnsPolicy last_secure_dns_policy_ = SecureDnsPolicy::kAllow;
+  bool synchronous_mode_ = false;
+  bool ondemand_mode_ = false;
   RuleResolver rule_resolver_;
   std::unique_ptr<HostCache> cache_;
 
@@ -628,7 +626,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
   base::Lock rule_lock_;
 
   // Whether changes are allowed.
-  bool modifications_allowed_;
+  bool modifications_allowed_ = true;
 };
 
 // Create rules that map all requests to localhost.

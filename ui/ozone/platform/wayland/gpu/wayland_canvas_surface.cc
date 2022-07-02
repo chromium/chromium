@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
@@ -151,7 +152,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   const gfx::AcceleratedWidget widget_;
 
   // Non-owned pointer to the buffer manager on the gpu process/thread side.
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 
   // Shared memory for the buffer.
   base::WritableSharedMemoryMapping shm_mapping_;

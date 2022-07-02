@@ -11,17 +11,17 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store_base.h"
 
-namespace base {
-class SequencedTaskRunner;
+namespace ash {
+class CryptohomeMiscClient;
 }
 
-namespace chromeos {
-class CryptohomeMiscClient;
+namespace base {
+class SequencedTaskRunner;
 }
 
 namespace policy {
@@ -41,8 +41,8 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   // notably signature validation is disabled.  It is essential that this flag
   // is only set when install attributes are locked into Active Directory mode.
   UserCloudPolicyStoreAsh(
-      chromeos::CryptohomeMiscClient* cryptohome_misc_client,
-      chromeos::SessionManagerClient* session_manager_client,
+      ash::CryptohomeMiscClient* cryptohome_misc_client,
+      ash::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
       const base::FilePath& user_policy_key_dir,
@@ -80,7 +80,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
 
   // Called back from SessionManagerClient for policy load operations.
   void OnPolicyRetrieved(
-      chromeos::SessionManagerClient::RetrievePolicyResponseType response,
+      ash::SessionManagerClient::RetrievePolicyResponseType response,
       const std::string& policy_blob);
 
   // Starts validation of the loaded |policy| before installing it.
@@ -94,7 +94,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
-  chromeos::SessionManagerClient* session_manager_client_;
+  ash::SessionManagerClient* session_manager_client_;
   const AccountId account_id_;
   bool is_active_directory_;
 

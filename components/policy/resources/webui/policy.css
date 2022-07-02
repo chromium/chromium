@@ -25,117 +25,8 @@ body > main {
   padding: 12px;
 }
 
-.row:not([hidden]) {
-  display: flex;
-}
-
-.row > * {
-  box-sizing: border-box;
-  flex: 0 0 10%;
-  overflow: hidden;
-  padding: 12px;
-  text-align: start;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.policy-table {
-  margin-bottom: 5px;
-  margin-top: 17px;
-  position: relative;
-  width: 100%;
-}
-
-.policy-table .main {
-  border: 1px solid rgba(0, 0, 0, .06);
-}
-
-.policy-precedence-data {
-  border: 1px solid rgba(0, 0, 0, .06);
-}
-
-.name {
-  border-inline-end: 1px solid rgba(0, 0, 0, .06);
-  flex: 0 0 15%;
-}
-
-.value {
-  flex: 0 0 35%;
-}
-
-.row.header {
-  background-color: rgb(240, 240, 240);
-  border-bottom: 1px solid rgba(0, 0, 0, .06);
-}
-
-.value.row .value {
-  font-family: monospace;
-}
-
-.policy.row .value {
-  font-family: monospace;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.expanded .policy.row:not(.conflict),
-.policy.row:not(.conflict):hover,
-.precedence.row:hover {
-  background-color: rgb(250, 250, 250);
-}
-
-.policy.conflict.row .value,
-.warnings.row .value,
-.errors.row .value,
-.infos.row .value,
-.value.row .value,
-.precedence.row .value {
-  flex-grow: 1;
-  max-height: 200px;
-  overflow: auto;
-  overflow-wrap: break-word;
-  text-overflow: unset;
-  white-space: pre-wrap;
-}
-
-<if expr="not is_android and not is_ios">
-.errors.row .name,
-.warnings.row .name,
-.infos.row .name,
-.conflict.row .name,
-.value.row .name,
-.precedence.row .name {
-  text-align: end;
-}
-</if>
-
 #status-box-container {
   display: flex;
-}
-
-fieldset {
-  border: 1px solid rgb(217, 217, 217);
-  display: inline;
-  margin: 0;
-  padding: 7px;
-}
-
-fieldset + fieldset {
-  margin-inline-start: 20px;
-}
-
-div.status-entry * {
-  white-space: pre-wrap
-}
-
-div.status-entry:not([hidden]) {
-  display: flex;
-  margin-bottom: .8em;
-}
-
-div.status-entry:last-child {
-  margin-bottom: 0;
 }
 
 body > header {
@@ -165,46 +56,10 @@ body > header {
   margin: 0;
 }
 
-.no-policy:not([hidden]) {
-  display: flex;
-  justify-content: center;
-  padding: 12px;
-}
-
 a {
   color: rgb(26, 115, 232);
   cursor: pointer;
   text-decoration: underline;
-}
-
-.toggle {
-  cursor: pointer;
-}
-
-.name .link {
-  align-items: center;
-  display: flex;
-}
-
-.link span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.link img {
-  height: 12px;
-  width: 12px;
-}
-
-.no-help-link .name .link {
-  color: inherit;
-  pointer-events: none;
-  text-decoration: none;
-}
-
-.no-help-link .link img {
-  display: none;
 }
 
 #screen-reader-message {
@@ -215,40 +70,5 @@ a {
 <if expr="is_android or is_ios">
 body > main {
   padding: 0;
-}
-
-.value,
-.level,
-.messages,
-.scope {
-  display: none;
-}
-
-.name {
-  flex: 0 0 50%;
-}
-
-.toggle {
-  flex: 0 0 25%;
-}
-
-.source {
-  flex: 0 0 25%
-}
-
-.messages.row .name,
-.value.row .name {
-  flex: 0 0 25%;
-}
-
-.reload-show-unset-section {
-  flex-wrap: wrap;
-}
-
-.messages.row .value,
-.value.row .value,
-.precedence.row .value {
-  display: block;
-  flex: 1;
 }
 </if>

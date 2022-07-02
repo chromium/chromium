@@ -326,6 +326,11 @@ void BookmarkModel::Move(const BookmarkNode* node,
     observer.BookmarkNodeMoved(this, old_parent, old_index, new_parent, index);
 }
 
+void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
+                                       base::Time time) {
+  // TODO(crbug.com/1320950): Use this hook to update the relevant field.
+}
+
 void BookmarkModel::Copy(const BookmarkNode* node,
                          const BookmarkNode* new_parent,
                          size_t index) {
@@ -609,6 +614,18 @@ const BookmarkNode* BookmarkModel::AddFolder(
     new_node->SetMetaInfoMap(*meta_info);
 
   return AddNode(AsMutable(parent), index, std::move(new_node));
+}
+
+const BookmarkNode* BookmarkModel::AddNewURL(
+    const BookmarkNode* parent,
+    size_t index,
+    const std::u16string& title,
+    const GURL& url,
+    const BookmarkNode::MetaInfoMap* meta_info) {
+  // TODO(crbug.com/1313299): Record metrics for new bookmarks.
+  // TODO(crbug.com/1332341): Add bookmark_client hook for power bookmarks.
+  return AddURL(parent, index, title, url, meta_info, absl::nullopt,
+                absl::nullopt);
 }
 
 const BookmarkNode* BookmarkModel::AddURL(

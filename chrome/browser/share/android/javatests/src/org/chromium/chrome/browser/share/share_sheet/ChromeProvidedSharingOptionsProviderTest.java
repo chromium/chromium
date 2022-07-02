@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -45,13 +46,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.Tracker;
@@ -59,6 +63,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -68,13 +73,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests {@link ChromeProvidedSharingOptionsProvider}.
+ * Unit tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(
+        {ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, ChromeFeatureList.WEBNOTES_STYLIZE})
+@DisableFeatures(
+        {ChromeFeatureList.LIGHTWEIGHT_REACTIONS, ChromeFeatureList.UPCOMING_SHARING_FEATURES,
+                ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 public class ChromeProvidedSharingOptionsProviderTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -89,6 +96,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Mock
     private UserPrefs.Natives mUserPrefsNatives;
+    @Mock
+    private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock
     private Profile mProfile;
     @Mock
@@ -113,13 +122,20 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private Activity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
+        Looper.prepare();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        mJniMocker.mock(
+                SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mSendTabToSelfAndroidBridgeNatives);
         Mockito.when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        Mockito.when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(
+                             any(), anyString()))
+                .thenReturn(null);
         Mockito.when(mTabProvider.hasValue()).thenReturn(true);
         Mockito.when(mTabProvider.get()).thenReturn(mTab);
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -127,6 +143,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
         Mockito.doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(mTracker);
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier.set(mProfile);
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         mActivity = mActivityTestRule.getActivity();
@@ -470,7 +488,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*shareStartTime=*/0, mShareSheetCoordinator,
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(
-                        LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED));
+                        LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
+                mProfileSupplier);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {

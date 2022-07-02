@@ -36,12 +36,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.sync.protocol.ListPasswordsResult;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
-import org.chromium.components.sync.protocol.PasswordWithLocalData;
 
 /**
  * Tests that bridge calls as invoked by the password store reach the backend and return correctly.
@@ -160,31 +159,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
     }
 
     @Test
-    public void testGetAllLoginsStartsResolutionOnResolvableAPIFailure()
-            throws PendingIntent.CanceledException {
-        final int kTestTaskId = 42069;
-
-        // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock).getAllLogins(eq(sTestAccount), any(), failureCallback.capture());
-        assertNotNull(failureCallback.getValue());
-
-        PendingIntent pendingIntentMock = mock(PendingIntent.class);
-        Exception kExpectedException = new ResolvableApiException(
-                new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
-        failureCallback.getValue().onResult(kExpectedException);
-        verify(pendingIntentMock).send();
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.RESOLUTION_REQUIRED);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testDoesNotStartResolutionOnAPIFailureIfFeatureIsDisabled()
-            throws PendingIntent.CanceledException {
+    public void testDoesNotStartResolutionOnAPIFailure() throws PendingIntent.CanceledException {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.

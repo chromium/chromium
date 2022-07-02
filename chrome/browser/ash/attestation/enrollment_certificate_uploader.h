@@ -20,7 +20,10 @@ class EnrollmentCertificateUploader {
     // Cannot fetch enrollment certificate.
     kFailedToFetch,
     // Cannot upload fetched enrollment certificate.
-    kFailedToUpload
+    kFailedToUpload,
+    // Cannot fetch or upload enrollment certificate due to invalid
+    // `CloudPolicyClient`.
+    kInvalidClient
   };
 
   using UploadCallback = base::OnceCallback<void(Status status)>;

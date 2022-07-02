@@ -73,7 +73,7 @@ void FirstWebContentsProfiler::RecordNavigationFinished(
 void FirstWebContentsProfiler::RecordFirstNonEmptyPaint() {
   startup_metric_utils::RecordFirstWebContentsNonEmptyPaint(
       base::TimeTicks::Now(),
-      web_contents()->GetMainFrame()->GetProcess()->GetLastInitTime());
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetLastInitTime());
 }
 
 bool FirstWebContentsProfiler::WasStartupInterrupted() {

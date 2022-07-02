@@ -551,7 +551,7 @@ TEST_F(AutocompleteActionPredictorTest,
     matches.push_back(match);
   }
   AutocompleteResult result;
-  result.AppendMatches(AutocompleteInput(), matches);
+  result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
   auto it = std::find(transitional_matches()->begin(),
@@ -570,7 +570,7 @@ TEST_F(AutocompleteActionPredictorTest, UpdateDatabaseFromTransitionalMatches) {
   match.destination_url = not_clicked_url;
   matches.push_back(match);
   AutocompleteResult result;
-  result.AppendMatches(AutocompleteInput(), matches);
+  result.AppendMatches(matches);
   std::u16string user_text = u"foo";
   predictor()->RegisterTransitionalMatches(user_text, result);
   ASSERT_EQ(transitional_matches()->size(), 1ul);

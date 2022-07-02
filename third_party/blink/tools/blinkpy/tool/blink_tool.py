@@ -66,12 +66,6 @@ class BlinkTool(Host):
             dest='verbose',
             default=False,
             help='enable all logging'),
-        optparse.make_option(
-            '-d',
-            '--directory',
-            action='append',
-            default=[],
-            help='Directory to look at for changed files'),
     ]
 
     def __init__(self, path):

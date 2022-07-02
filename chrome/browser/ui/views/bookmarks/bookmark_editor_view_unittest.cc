@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,7 +19,9 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -64,12 +67,14 @@ class BookmarkEditorViewTest : public testing::Test {
     return editor_->tree_model_.get();
   }
 
-  void CreateEditor(Profile* profile,
-                    const BookmarkNode* parent,
-                    const BookmarkEditor::EditDetails& details,
-                    BookmarkEditor::Configuration configuration) {
-    editor_ = std::make_unique<BookmarkEditorView>(profile, parent, details,
-                                                   configuration);
+  void CreateEditor(
+      Profile* profile,
+      const BookmarkNode* parent,
+      const BookmarkEditor::EditDetails& details,
+      BookmarkEditor::Configuration configuration,
+      BookmarkEditor::OnSaveCallback on_save_callback = base::DoNothing()) {
+    editor_ = std::make_unique<BookmarkEditorView>(
+        profile, parent, details, configuration, std::move(on_save_callback));
   }
 
   void SetTitleText(const std::u16string& title) {
@@ -604,4 +609,17 @@ TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
   views::View::ConvertPointToTarget(focus_ring, scroll_view, &bottom_right);
   // Confirm the bottom right of the focus ring is also visible.
   EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(bottom_right));
+}
+
+// Test the on_save_callback is called if defined
+TEST_F(BookmarkEditorViewTest, OnSaveCallbackRunsOnSaveIfDefined) {
+  UNCALLED_MOCK_CALLBACK(BookmarkEditor::OnSaveCallback, on_save_callback);
+
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("a")),
+               BookmarkEditorView::SHOW_TREE, on_save_callback.Get());
+
+  EXPECT_CALL_IN_SCOPE(
+      on_save_callback, Run,
+      ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get()));
 }

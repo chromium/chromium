@@ -125,19 +125,18 @@ bool GetIPAndPort(
   // from the URL. If none was returned, try matching the hostname from the URL
   // itself as it might be an IP address if it is a local network request, which
   // is what we care about.
-  if (!ip_exists && !extra_request_info.origin_of_final_url.opaque()) {
+  if (!ip_exists && extra_request_info.final_url.IsValid()) {
     // TODO(csharrison): https://crbug.com/1023042: Avoid the url::Origin->GURL
     // conversion.  Today the conversion is necessary, because net::IsLocalhost
     // and EffectiveIntPort are only available for GURL.
-    GURL origin_of_final_url = extra_request_info.origin_of_final_url.GetURL();
-    if (net::IsLocalhost(origin_of_final_url)) {
+    GURL final_url = extra_request_info.final_url.GetURL();
+    if (net::IsLocalhost(final_url)) {
       *resource_ip = net::IPAddress::IPv4Localhost();
       ip_exists = true;
     } else {
-      ip_exists = net::ParseURLHostnameToAddress(origin_of_final_url.host(),
-                                                 resource_ip);
+      ip_exists = net::ParseURLHostnameToAddress(final_url.host(), resource_ip);
     }
-    *resource_port = origin_of_final_url.EffectiveIntPort();
+    *resource_port = final_url.EffectiveIntPort();
   }
 
   if (net::HostStringIsLocalhost(resource_ip->ToString())) {
@@ -305,12 +304,18 @@ LocalNetworkRequestsPageLoadMetricsObserver::
 LocalNetworkRequestsPageLoadMetricsObserver::
     ~LocalNetworkRequestsPageLoadMetricsObserver() {}
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* LocalNetworkRequestsPageLoadMetricsObserver::GetObserverName()
+    const {
+  static const char kName[] = "LocalNetworkRequestsPageLoadMetricsObserver";
+  return kName;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  // This class needs forwarding for the event OnLoadedResource.
+  return FORWARD_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

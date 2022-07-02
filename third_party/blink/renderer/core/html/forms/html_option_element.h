@@ -116,6 +116,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // Callback for OptionTextObserver.
   void DidChangeTextContent();
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
  private:
   bool SupportsFocus() const override;
   bool MatchesDefaultPseudoClass() const override;

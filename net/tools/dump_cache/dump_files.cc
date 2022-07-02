@@ -160,11 +160,7 @@ void DumpBlockHeader(const base::FilePath& name) {
 class CacheDumper {
  public:
   explicit CacheDumper(const base::FilePath& path)
-      : path_(path),
-        block_files_(path),
-        index_(nullptr),
-        current_hash_(0),
-        next_addr_(0) {}
+      : path_(path), block_files_(path) {}
 
   CacheDumper(const CacheDumper&) = delete;
   CacheDumper& operator=(const CacheDumper&) = delete;
@@ -187,9 +183,9 @@ class CacheDumper {
   base::FilePath path_;
   disk_cache::BlockFiles block_files_;
   scoped_refptr<disk_cache::MappedFile> index_file_;
-  disk_cache::Index* index_;
-  int current_hash_;
-  disk_cache::CacheAddr next_addr_;
+  disk_cache::Index* index_ = nullptr;
+  int current_hash_ = 0;
+  disk_cache::CacheAddr next_addr_ = 0;
   std::set<disk_cache::CacheAddr> dumped_entries_;
 };
 
@@ -578,9 +574,9 @@ int DumpEntryAt(const base::FilePath& input_path, const std::string& at) {
     if (entry.long_key && CanDump(entry.long_key))
       dumper.HexDump(entry.long_key, &hex_dump);
 
-    for (int i = 0; i < 4; i++) {
-      if (entry.data_addr[i] && CanDump(entry.data_addr[i]))
-        dumper.HexDump(entry.data_addr[i], &hex_dump);
+    for (disk_cache::CacheAddr addr : entry.data_addr) {
+      if (addr && CanDump(addr))
+        dumper.HexDump(addr, &hex_dump);
     }
   }
 

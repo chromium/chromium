@@ -135,14 +135,6 @@ void FileSystemQuotaClient::GetBucketUsage(const BucketLocator& bucket,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  // Skip non-default buckets until Storage Buckets are supported for
-  // FileSystem.
-  // TODO(crbug.com/1218100): Integrate with StorageBuckets.
-  if (!bucket.is_default) {
-    std::move(callback).Run(0);
-    return;
-  }
-
   base::span<const FileSystemType> types =
       QuotaStorageTypeToFileSystemTypes(bucket.type);
 
@@ -159,11 +151,10 @@ void FileSystemQuotaClient::GetBucketUsage(const BucketLocator& bucket,
       file_task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
           // It is safe to pass Unretained(quota_util) since context owns it.
-          base::BindOnce(
-              &FileSystemQuotaUtil::GetStorageKeyUsageOnFileTaskRunner,
-              base::Unretained(quota_util),
-              base::RetainedRef(file_system_context_.get()), bucket.storage_key,
-              type),
+          base::BindOnce(&FileSystemQuotaUtil::GetBucketUsageOnFileTaskRunner,
+                         base::Unretained(quota_util),
+                         base::RetainedRef(file_system_context_.get()), bucket,
+                         type),
           barrier);
     } else {
       barrier.Run(0);

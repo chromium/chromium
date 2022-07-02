@@ -131,6 +131,9 @@ void PageLoadMetricsForwardObserver::OnTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const mojom::PageLoadTiming& timing) {}
 
+// Soft navigations only happen in outermost top-level documents.
+void PageLoadMetricsForwardObserver::OnSoftNavigationCountUpdated() {}
+
 void PageLoadMetricsForwardObserver::OnMobileFriendlinessUpdate(
     const blink::MobileFriendliness& mobile_friendliness) {
   if (!parent_observer_)
@@ -141,6 +144,9 @@ void PageLoadMetricsForwardObserver::OnMobileFriendlinessUpdate(
 void PageLoadMetricsForwardObserver::OnInputTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const mojom::InputTiming& input_timing_delta) {}
+
+void PageLoadMetricsForwardObserver::OnPageInputTimingUpdate(
+    uint64_t num_input_events) {}
 
 void PageLoadMetricsForwardObserver::OnSubFrameRenderDataUpdate(
     content::RenderFrameHost* subframe_rfh,
@@ -217,13 +223,11 @@ void PageLoadMetricsForwardObserver::OnFirstMeaningfulPaintInMainFrameDocument(
 void PageLoadMetricsForwardObserver::OnFirstInputInPage(
     const mojom::PageLoadTiming& timing) {}
 
+// OnLoadingBehaviorObserved is called through PageLoadTracker::UpdateMetrics.
+// So, the event is always forwarded at the PageLoadTracker layer.
 void PageLoadMetricsForwardObserver::OnLoadingBehaviorObserved(
     content::RenderFrameHost* rfh,
-    int behavior_flags) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnLoadingBehaviorObserved(rfh, behavior_flags);
-}
+    int behavior_flags) {}
 
 void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
@@ -360,9 +364,8 @@ void PageLoadMetricsForwardObserver::OnStorageAccessed(
 }
 
 void PageLoadMetricsForwardObserver::OnPrefetchLikely() {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnPrefetchLikely();
+  // This event is delivered only for the primary page.
+  NOTREACHED();
 }
 
 void PageLoadMetricsForwardObserver::DidActivatePortal(

@@ -138,7 +138,7 @@ class MockKerberosFilesHandler : public KerberosFilesHandler {
   explicit MockKerberosFilesHandler(base::RepeatingClosure get_kerberos_files)
       : KerberosFilesHandler(get_kerberos_files) {}
 
-  ~MockKerberosFilesHandler() = default;
+  ~MockKerberosFilesHandler() override = default;
 
   MOCK_METHOD(void, DeleteFiles, ());
 };
@@ -154,7 +154,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
       : scoped_user_manager_(
             std::make_unique<testing::NiceMock<MockUserManager>>()),
         local_state_(TestingBrowserProcess::GetGlobal()) {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     KerberosClient::InitializeFake();
     client_test_interface()->SetTaskDelay(base::TimeDelta());
 
@@ -192,7 +192,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
     profile_.reset();
     UserSessionManager::GetInstance()->Shutdown();
     KerberosClient::Shutdown();
-    chromeos::SessionManagerClient::Shutdown();
+    SessionManagerClient::Shutdown();
   }
 
   void SetPref(const char* name, base::Value value) {

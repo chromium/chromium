@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "content/public/renderer/render_thread.h"
+#include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -18,10 +19,11 @@
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
+using media::CdmSessionType;
 using media::EmeConfigRule;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;
-using media::EmeSessionTypeSupport;
+using media::EncryptionScheme;
 using media::KeySystemProperties;
 using media::SupportedCodecs;
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -61,8 +63,8 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
   }
 
   EmeConfigRule GetEncryptionSchemeConfigRule(
-      media::EncryptionScheme encryption_scheme) const override {
-    return encryption_scheme == media::EncryptionScheme::kCenc
+      EncryptionScheme encryption_scheme) const override {
+    return encryption_scheme == EncryptionScheme::kCenc
                ? EmeConfigRule::SUPPORTED
                : EmeConfigRule::NOT_SUPPORTED;
   }
@@ -85,8 +87,8 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
                                         : EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfigRule::NOT_SUPPORTED;
   }
   EmeFeatureSupport GetPersistentStateSupport() const override {
     return EmeFeatureSupport::ALWAYS_ENABLED;
@@ -131,39 +133,40 @@ void AddAndroidWidevine(
   // On Android, ".secure" codecs are all hardware secure codecs.
   auto hw_secure_codecs = response.secure_codecs;
 
+  if (codecs == media::EME_CODEC_NONE) {
+    // It doesn't make sense to support hw secure codecs but not regular codecs.
+    DCHECK(hw_secure_codecs == media::EME_CODEC_NONE);
+    DVLOG(3) << __func__ << " Widevine NOT supported.";
+    return;
+  }
+
+  DVLOG(3) << __func__ << " Widevine supported.";
+
+  base::flat_set<EncryptionScheme> encryption_schemes = {
+      EncryptionScheme::kCenc};
+  if (response.is_cbcs_encryption_supported) {
+    encryption_schemes.insert(EncryptionScheme::kCbcs);
+  }
+
+  base::flat_set<CdmSessionType> session_types = {CdmSessionType::kTemporary};
+  if (response.is_persistent_license_supported) {
+    session_types.insert(CdmSessionType::kPersistentLicense);
+  }
+
   // Since we do not control the implementation of the MediaDrm API on Android,
   // we assume that it can and will make use of persistence no matter whether
   // persistence-based features are supported or not.
-
-  const EmeSessionTypeSupport persistent_license_support =
-      response.is_persistent_license_supported
-          ? EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER
-          : EmeSessionTypeSupport::NOT_SUPPORTED;
-
-  if (codecs != media::EME_CODEC_NONE) {
-    DVLOG(3) << __func__ << " Widevine supported.";
-
-    base::flat_set<media::EncryptionScheme> encryption_schemes = {
-        media::EncryptionScheme::kCenc};
-    if (response.is_cbcs_encryption_supported) {
-      encryption_schemes.insert(media::EncryptionScheme::kCbcs);
-    }
-
-    key_systems->emplace_back(new WidevineKeySystemProperties(
-        codecs,                        // Regular codecs.
-        encryption_schemes,            // Encryption schemes.
-        hw_secure_codecs,              // Hardware secure codecs.
-        encryption_schemes,            // Hardware secure encryption schemes.
-        Robustness::HW_SECURE_CRYPTO,  // Max audio robustness.
-        Robustness::HW_SECURE_ALL,     // Max video robustness.
-        persistent_license_support,    // persistent-license.
-        EmeFeatureSupport::ALWAYS_ENABLED,    // Persistent state.
-        EmeFeatureSupport::ALWAYS_ENABLED));  // Distinctive identifier.
-  } else {
-    // It doesn't make sense to support hw secure codecs but not regular codecs.
-    DVLOG(3) << __func__ << " Widevine NOT supported.";
-    DCHECK(hw_secure_codecs == media::EME_CODEC_NONE);
-  }
+  key_systems->emplace_back(new WidevineKeySystemProperties(
+      codecs,                             // Regular codecs.
+      encryption_schemes,                 // Encryption schemes.
+      session_types,                      // Session types.
+      hw_secure_codecs,                   // Hardware secure codecs.
+      encryption_schemes,                 // Hardware secure encryption schemes.
+      session_types,                      // Hardware secure Session types.
+      Robustness::HW_SECURE_CRYPTO,       // Max audio robustness.
+      Robustness::HW_SECURE_ALL,          // Max video robustness.
+      EmeFeatureSupport::ALWAYS_ENABLED,  // Persistent state.
+      EmeFeatureSupport::ALWAYS_ENABLED));  // Distinctive identifier.
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 

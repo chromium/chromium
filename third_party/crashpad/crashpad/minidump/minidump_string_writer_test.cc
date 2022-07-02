@@ -16,8 +16,10 @@
 
 #include <iterator>
 #include <string>
+#include <type_traits>
 
 #include "base/format_macros.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
@@ -30,7 +32,28 @@ namespace crashpad {
 namespace test {
 namespace {
 
-TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
+class TestTypeNames {
+ public:
+  template <typename T>
+  static std::string GetName(int) {
+    if (std::is_same<T, RVA>()) {
+      return "RVA";
+    }
+    if (std::is_same<T, RVA64>()) {
+      return "RVA64";
+    }
+    NOTREACHED();
+    return "";
+  }
+};
+
+template <typename RVAType>
+class MinidumpStringWriter : public ::testing::Test {};
+
+using RVATypes = ::testing::Types<RVA, RVA64>;
+TYPED_TEST_SUITE(MinidumpStringWriter, RVATypes, TestTypeNames);
+
+TYPED_TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
   StringFile string_file;
 
   {
@@ -41,9 +64,9 @@ TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
     ASSERT_EQ(string_file.string().size(), 6u);
 
     const MINIDUMP_STRING* minidump_string =
-        MinidumpStringAtRVA(string_file.string(), 0);
+        MinidumpStringAtRVA(string_file.string(), TypeParam(0));
     EXPECT_TRUE(minidump_string);
-    EXPECT_EQ(MinidumpStringAtRVAAsString(string_file.string(), 0),
+    EXPECT_EQ(MinidumpStringAtRVAAsString(string_file.string(), TypeParam(0)),
               std::u16string());
   }
 
@@ -90,16 +113,16 @@ TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
     ASSERT_EQ(string_file.string().size(), sizeof(*tmp) + expected_utf16_bytes);
 
     const MINIDUMP_STRING* minidump_string =
-        MinidumpStringAtRVA(string_file.string(), 0);
+        MinidumpStringAtRVA(string_file.string(), TypeParam(0));
     EXPECT_TRUE(minidump_string);
     std::u16string expect_string = std::u16string(
         kTestData[index].output_string, kTestData[index].output_length);
-    EXPECT_EQ(MinidumpStringAtRVAAsString(string_file.string(), 0),
+    EXPECT_EQ(MinidumpStringAtRVAAsString(string_file.string(), TypeParam(0)),
               expect_string);
   }
 }
 
-TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
+TYPED_TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
   StringFile string_file;
 
   static constexpr const char* kTestData[] = {
@@ -125,20 +148,20 @@ TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
     // data written, and make sure that at least one U+FFFD replacement
     // character was written.
     const MINIDUMP_STRING* minidump_string =
-        MinidumpStringAtRVA(string_file.string(), 0);
+        MinidumpStringAtRVA(string_file.string(), TypeParam(0));
     EXPECT_TRUE(minidump_string);
     [[maybe_unused]] MINIDUMP_STRING* tmp;
     EXPECT_EQ(
         minidump_string->Length,
         string_file.string().size() - sizeof(*tmp) - sizeof(tmp->Buffer[0]));
     std::u16string output_string =
-        MinidumpStringAtRVAAsString(string_file.string(), 0);
+        MinidumpStringAtRVAAsString(string_file.string(), TypeParam(0));
     EXPECT_FALSE(output_string.empty());
     EXPECT_NE(output_string.find(0xfffd), std::u16string::npos);
   }
 }
 
-TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
+TYPED_TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
   StringFile string_file;
 
   {
@@ -149,10 +172,11 @@ TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
     ASSERT_EQ(string_file.string().size(), 5u);
 
     const MinidumpUTF8String* minidump_string =
-        MinidumpUTF8StringAtRVA(string_file.string(), 0);
+        MinidumpUTF8StringAtRVA(string_file.string(), TypeParam(0));
     EXPECT_TRUE(minidump_string);
-    EXPECT_EQ(MinidumpUTF8StringAtRVAAsString(string_file.string(), 0),
-              std::string());
+    EXPECT_EQ(
+        MinidumpUTF8StringAtRVAAsString(string_file.string(), TypeParam(0)),
+        std::string());
   }
 
   static constexpr struct {
@@ -188,10 +212,11 @@ TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
               sizeof(MinidumpUTF8String) + expected_utf8_bytes_with_nul);
 
     const MinidumpUTF8String* minidump_string =
-        MinidumpUTF8StringAtRVA(string_file.string(), 0);
+        MinidumpUTF8StringAtRVA(string_file.string(), TypeParam(0));
     EXPECT_TRUE(minidump_string);
-    EXPECT_EQ(MinidumpUTF8StringAtRVAAsString(string_file.string(), 0),
-              test_string);
+    EXPECT_EQ(
+        MinidumpUTF8StringAtRVAAsString(string_file.string(), TypeParam(0)),
+        test_string);
   }
 }
 
@@ -245,11 +270,11 @@ void MinidumpStringListTest() {
   }
 }
 
-TEST(MinidumpStringWriter, MinidumpUTF16StringList) {
+TYPED_TEST(MinidumpStringWriter, MinidumpUTF16StringList) {
   MinidumpStringListTest<MinidumpUTF16StringListWriterTraits>();
 }
 
-TEST(MinidumpStringWriter, MinidumpUTF8StringList) {
+TYPED_TEST(MinidumpStringWriter, MinidumpUTF8StringList) {
   MinidumpStringListTest<MinidumpUTF8StringListWriterTraits>();
 }
 

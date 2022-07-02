@@ -32,6 +32,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -90,8 +91,9 @@ void ApplyBookmarkFavicon(
     const GURL& icon_url,
     const scoped_refptr<base::RefCountedMemory>& bitmap_data) {
   // Some tests use no services.
-  if (favicon_service == nullptr)
+  if (favicon_service == nullptr) {
     return;
+  }
 
   favicon_service->AddPageNoVisitForBookmark(bookmark_node->url(),
                                              bookmark_node->GetTitle());
@@ -162,15 +164,17 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
 
   void BookmarkNodeChanged(BookmarkModel* model,
                            const BookmarkNode* node) override {
-    if (model == model_ && node == node_)
+    if (model == model_ && node == node_) {
       model->GetFavicon(node);
+    }
   }
   void BookmarkNodeChildrenReordered(BookmarkModel* model,
                                      const BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(BookmarkModel* model,
                                   const BookmarkNode* node) override {
-    if (model == model_ && node == node_)
+    if (model == model_ && node == node_) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -190,8 +194,9 @@ size_t CountNodesWithTitlesMatching(BookmarkModel* model,
   size_t count = 0;
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if ((node->type() == node_type) && (node->GetTitle() == title))
+    if ((node->type() == node_type) && (node->GetTitle() == title)) {
       ++count;
+    }
   }
   return count;
 }
@@ -204,8 +209,9 @@ size_t CountNodes(BookmarkModel* model, BookmarkNode::Type node_type) {
   size_t count = 0;
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if (node->type() == node_type)
+    if (node->type() == node_type) {
       ++count;
+    }
   }
   return count;
 }
@@ -214,8 +220,9 @@ size_t CountNodes(BookmarkModel* model, BookmarkNode::Type node_type) {
 // Returns true if they match.
 bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
                             const SkBitmap& bitmap_b) {
-  if (bitmap_a.computeByteSize() == 0U && bitmap_b.computeByteSize() == 0U)
+  if (bitmap_a.computeByteSize() == 0U && bitmap_b.computeByteSize() == 0U) {
     return true;
+  }
   if ((bitmap_a.computeByteSize() != bitmap_b.computeByteSize()) ||
       (bitmap_a.width() != bitmap_b.width()) ||
       (bitmap_a.height() != bitmap_b.height())) {
@@ -240,7 +247,7 @@ bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
 
 // Represents a favicon image and the icon URL associated with it.
 struct FaviconData {
-  FaviconData() {}
+  FaviconData() = default;
 
   FaviconData(const gfx::Image& favicon_image, const GURL& favicon_url)
       : image(favicon_image), icon_url(favicon_url) {}
@@ -363,8 +370,9 @@ bool FaviconsMatch(BookmarkModel* model_a,
   gfx::Image image_a = favicon_data_a->image;
   gfx::Image image_b = favicon_data_b->image;
 
-  if (image_a.IsEmpty() && image_b.IsEmpty())
+  if (image_a.IsEmpty() && image_b.IsEmpty()) {
     return true;  // Two empty images are equivalent.
+  }
 
   if (image_a.IsEmpty() != image_b.IsEmpty()) {
     return false;
@@ -379,8 +387,9 @@ bool FaviconsMatch(BookmarkModel* model_a,
 // Does a deep comparison of BookmarkNode fields in |model_a| and |model_b|.
 // Returns true if they are all equal.
 bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
-  if (node_a == nullptr || node_b == nullptr)
+  if (node_a == nullptr || node_b == nullptr) {
     return node_a == node_b;
+  }
   if (node_a->is_folder() != node_b->is_folder()) {
     LOG(ERROR) << "Cannot compare folder with bookmark";
     return false;
@@ -686,8 +695,9 @@ const BookmarkNode* SetURL(int profile,
                << "Profile " << profile;
     return nullptr;
   }
-  if (node->is_url())
+  if (node->is_url()) {
     model->SetURL(node, new_url);
+  }
   return node;
 }
 
@@ -756,8 +766,9 @@ bool ContainsDuplicateBookmarks(int profile) {
       GetBookmarkModel(profile)->root_node());
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if (node->is_folder())
+    if (node->is_folder()) {
       continue;
+    }
     std::vector<const BookmarkNode*> nodes;
     GetBookmarkModel(profile)->GetNodesByURL(node->url(), &nodes);
     EXPECT_GE(nodes.size(), 1U);
@@ -782,8 +793,9 @@ const BookmarkNode* GetUniqueNodeByURL(int profile, const GURL& url) {
   std::vector<const BookmarkNode*> nodes;
   GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
   EXPECT_EQ(1U, nodes.size());
-  if (nodes.empty())
+  if (nodes.empty()) {
     return nullptr;
+  }
   return nodes[0];
 }
 
@@ -823,8 +835,7 @@ gfx::Image CreateFavicon(SkColor color) {
   const int dip_height = 16;
   std::vector<float> favicon_scales = favicon_base::GetFaviconScales();
   gfx::ImageSkia favicon;
-  for (size_t i = 0; i < favicon_scales.size(); ++i) {
-    float scale = favicon_scales[i];
+  for (float scale : favicon_scales) {
     int pixel_width = dip_width * scale;
     int pixel_height = dip_height * scale;
     SkBitmap bmp;
@@ -839,12 +850,14 @@ gfx::Image Create1xFaviconFromPNGFile(const std::string& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   const char* kPNGExtension = ".png";
   if (!base::EndsWith(path, kPNGExtension,
-                      base::CompareCase::INSENSITIVE_ASCII))
+                      base::CompareCase::INSENSITIVE_ASCII)) {
     return gfx::Image();
+  }
 
   base::FilePath full_path;
-  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &full_path))
+  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &full_path)) {
     return gfx::Image();
+  }
 
   full_path = full_path.AppendASCII("sync").AppendASCII(path);
   std::string contents;
@@ -1085,7 +1098,8 @@ SingleBookmarksModelMatcherChecker::SingleBookmarksModelMatcherChecker(
     : SingleBookmarkModelStatusChangeChecker(profile_index),
       matcher_(matcher) {}
 
-SingleBookmarksModelMatcherChecker::~SingleBookmarksModelMatcherChecker() {}
+SingleBookmarksModelMatcherChecker::~SingleBookmarksModelMatcherChecker() =
+    default;
 
 bool SingleBookmarksModelMatcherChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -1135,13 +1149,9 @@ bool BookmarkFaviconLoadedChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 ServerBookmarksEqualityChecker::ServerBookmarksEqualityChecker(
-    syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server,
     std::vector<ExpectedBookmark> expected_bookmarks,
     syncer::Cryptographer* cryptographer)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      cryptographer_(cryptographer),
+    : cryptographer_(cryptographer),
       expected_bookmarks_(std::move(expected_bookmarks)) {}
 
 bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
@@ -1149,7 +1159,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
   *os << "Waiting for server-side bookmarks to match expected.";
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+      fake_server()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
   if (expected_bookmarks_.size() != entities.size()) {
     return false;
   }
@@ -1197,7 +1207,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
   return true;
 }
 
-ServerBookmarksEqualityChecker::~ServerBookmarksEqualityChecker() {}
+ServerBookmarksEqualityChecker::~ServerBookmarksEqualityChecker() = default;
 
 BookmarksUrlChecker::BookmarksUrlChecker(int profile,
                                          const GURL& url,
@@ -1222,7 +1232,7 @@ BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const base::GUID& guid)
     : SingleBookmarksModelMatcherChecker(profile,
                                          testing::Contains(HasGuid(guid))) {}
 
-BookmarksGUIDChecker::~BookmarksGUIDChecker() {}
+BookmarksGUIDChecker::~BookmarksGUIDChecker() = default;
 
 BookmarkModelMatchesFakeServerChecker::BookmarkModelMatchesFakeServerChecker(
     int profile,

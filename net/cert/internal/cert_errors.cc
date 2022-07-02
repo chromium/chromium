@@ -68,7 +68,7 @@ CertErrors::~CertErrors() = default;
 void CertErrors::Add(CertError::Severity severity,
                      CertErrorId id,
                      std::unique_ptr<CertErrorParams> params) {
-  nodes_.push_back(CertError(severity, id, std::move(params)));
+  nodes_.emplace_back(severity, id, std::move(params));
 }
 
 void CertErrors::AddError(CertErrorId id,

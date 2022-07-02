@@ -21,7 +21,9 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
@@ -83,7 +85,8 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
     content::WebContents* web_contents,
     base::WeakPtr<SecurePaymentConfirmationModel> model,
     VerifyCallback verify_callback,
-    CancelCallback cancel_callback) {
+    CancelCallback cancel_callback,
+    OptOutCallback opt_out_callback) {
   DCHECK(model);
   model_ = model;
 
@@ -96,6 +99,7 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   verify_callback_ = std::move(verify_callback);
   cancel_callback_ = std::move(cancel_callback);
+  opt_out_callback_ = std::move(opt_out_callback);
 
   SetAcceptCallback(
       base::BindOnce(&SecurePaymentConfirmationDialogView::OnDialogAccepted,
@@ -143,13 +147,31 @@ void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogClosed() {
-  std::move(cancel_callback_).Run();
-  RecordAuthenticationDialogResult(
-      SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
+  // We can reach OnDialogClosed either when the user cancels out of the
+  // WebAuthn dialog after clicking 'Verify', or when the user chooses to
+  // opt-out. We should only run the cancellation callback in the former case;
+  // in the latter the opt-out callback will trigger from OnOptOutClicked.
+  if (!opt_out_clicked_) {
+    std::move(cancel_callback_).Run();
+    RecordAuthenticationDialogResult(
+        SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
+  }
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
   }
+}
+
+void SecurePaymentConfirmationDialogView::OnOptOutClicked() {
+  opt_out_clicked_ = true;
+
+  if (observer_for_test_) {
+    observer_for_test_->OnOptOutClicked();
+  }
+
+  std::move(opt_out_callback_).Run();
+  RecordAuthenticationDialogResult(
+      SecurePaymentConfirmationAuthenticationDialogResult::kOptOut);
 }
 
 void SecurePaymentConfirmationDialogView::OnModelUpdated() {
@@ -191,6 +213,8 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
 
   UpdateLabelView(DialogViewID::TOTAL_LABEL, model_->total_label());
   UpdateLabelView(DialogViewID::TOTAL_VALUE, model_->total_value());
+
+  opt_out_view_->SetVisible(model_->opt_out_visible());
 }
 
 void SecurePaymentConfirmationDialogView::UpdateLabelView(
@@ -204,12 +228,30 @@ void SecurePaymentConfirmationDialogView::HideDialog() {
     GetWidget()->Close();
 }
 
+bool SecurePaymentConfirmationDialogView::ClickOptOutForTesting() {
+  if (!model_->opt_out_visible())
+    return false;
+  OnOptOutClicked();
+  return true;
+}
+
 bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {
   return false;
 }
 
 bool SecurePaymentConfirmationDialogView::Accept() {
   views::DialogDelegateView::Accept();
+
+  // Disable the opt-out link to avoid the user clicking on it whilst the
+  // WebAuthn dialog is showing over the SPC one. If opt-out support wasn't
+  // requested by the SPC caller, it won't be visible and doesn't need disabled.
+  //
+  // TODO(crbug.com/1325854): Even disabled this link still looks clickable
+  // (underline disappears, but color doesn't change). Force style the color?
+  if (opt_out_view_->GetVisible()) {
+    opt_out_view_->SetEnabled(false);
+  }
+
   // Returning "false" to keep the dialog open after "Confirm" button is
   // pressed, so the dialog can show a progress bar and wait for the user to use
   // their authenticator device.
@@ -232,6 +274,15 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
       static_cast<int>(DialogViewID::HEADER_ICON)));
 
   AddChildView(CreateBodyView());
+
+  // We always create the view for the Opt Out link, but show or hide it
+  // depending on whether it was requested. The visibility status is set in
+  // OnModelUpdated.
+  opt_out_view_ = SetFootnoteView(CreateSecurePaymentConfirmationOptOutView(
+      model_->relying_party_id(), model_->opt_out_label(),
+      model_->opt_out_link_label(),
+      base::BindRepeating(&SecurePaymentConfirmationDialogView::OnOptOutClicked,
+                          weak_ptr_factory_.GetWeakPtr())));
 
   InvalidateLayout();
 }

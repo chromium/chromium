@@ -39,23 +39,6 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  input_files = [ "print_preview.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ "../pdf:build_print_preview_grdp" ]
-  grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
-  if (optimize_webui) {
-    deps += [ ":build" ]
-    resource_path_rewrites = [ "print_preview.rollup.js|print_preview.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-  grd_prefix = "print_preview"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
-
 css_to_wrapper("css_wrapper_files") {
   in_files = css_files
 }
@@ -65,7 +48,6 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }
@@ -124,4 +106,22 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  input_files = [ "print_preview.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ "../pdf:build_print_preview_grdp" ]
+  grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
+  if (optimize_webui) {
+    deps += [ ":build" ]
+    resource_path_rewrites = [ "print_preview.rollup.js|print_preview.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps += [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
+  grd_prefix = "print_preview"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

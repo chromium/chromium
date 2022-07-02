@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -70,7 +71,8 @@ DmServerUploadService::RecordHandler::RecordHandler(
 
 DmServerUploader::DmServerUploader(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
+    absl::optional<ScopedReservation> scoped_reservation,
     RecordHandler* handler,
     ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -80,6 +82,7 @@ DmServerUploader::DmServerUploader(
                                             sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       encrypted_records_(std::move(records)),
+      scoped_reservation_(std::move(scoped_reservation)),
       report_success_upload_cb_(std::move(report_success_upload_cb)),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
       handler_(handler) {
@@ -95,13 +98,13 @@ void DmServerUploader::OnStart() {
     return;
   }
   // Early exit if we don't have any records and do not need encryption key.
-  if (encrypted_records_->empty() && !need_encryption_key_) {
+  if (encrypted_records_.empty() && !need_encryption_key_) {
     Complete(
         Status(error::INVALID_ARGUMENT, "No records received for upload."));
     return;
   }
 
-  if (!encrypted_records_->empty()) {
+  if (!encrypted_records_.empty()) {
     ProcessRecords();
   }
 
@@ -113,13 +116,13 @@ void DmServerUploader::ProcessRecords() {
   Status process_status;
 
   const int64_t expected_generation_id =
-      encrypted_records_->front().sequence_information().generation_id();
+      encrypted_records_.front().sequence_information().generation_id();
   int64_t expected_sequencing_id =
-      encrypted_records_->front().sequence_information().sequencing_id();
+      encrypted_records_.front().sequence_information().sequencing_id();
 
   // Will stop processing records on the first record that fails to pass.
   size_t records_added = 0;
-  for (const EncryptedRecord& encrypted_record : *encrypted_records_) {
+  for (const auto& encrypted_record : encrypted_records_) {
     process_status = IsRecordValid(encrypted_record, expected_generation_id,
                                    expected_sequencing_id);
     if (!process_status.ok()) {
@@ -136,7 +139,7 @@ void DmServerUploader::ProcessRecords() {
   }
 
   // Discarding the remaining records.
-  encrypted_records_->resize(records_added);
+  encrypted_records_.resize(records_added);
 }
 
 void DmServerUploader::HandleRecords() {
@@ -205,11 +208,13 @@ DmServerUploadService::~DmServerUploadService() = default;
 
 Status DmServerUploadService::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
+    absl::optional<ScopedReservation> scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<DmServerUploader>(need_encryption_key, std::move(records),
-                          handler_.get(), std::move(report_upload_success_cb),
+                          std::move(scoped_reservation), handler_.get(),
+                          std::move(report_upload_success_cb),
                           std::move(encryption_key_attached_cb),
                           base::DoNothing(), sequenced_task_runner_);
   return Status::StatusOK();

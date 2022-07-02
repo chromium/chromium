@@ -8,8 +8,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class QuicChromiumConnectionHelperTest : public ::testing::Test {
@@ -30,5 +29,4 @@ TEST_F(QuicChromiumConnectionHelperTest, GetRandomGenerator) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -89,7 +89,7 @@ bool PrefetchProxySubresourceManager::ShouldProxyForPrerenderNavigation(
   }
 
   int prerender_process_id =
-      web_contents->GetMainFrame()->GetProcess()->GetID();
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   if (prerender_process_id != render_process_id) {
     return false;
   }

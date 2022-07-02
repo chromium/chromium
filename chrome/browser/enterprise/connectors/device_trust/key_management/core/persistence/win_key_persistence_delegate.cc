@@ -57,8 +57,8 @@ KeyPersistenceDelegate::KeyInfo WinKeyPersistenceDelegate::LoadKeyPair() {
     return invalid_key_info();
 
   KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  if (trust_level_dw == BPKUR::CHROME_BROWSER_TPM_KEY) {
-    trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+  if (trust_level_dw == BPKUR::CHROME_BROWSER_HW_KEY) {
+    trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
   } else if (trust_level_dw == BPKUR::CHROME_BROWSER_OS_KEY) {
     trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
   } else {
@@ -80,7 +80,7 @@ KeyPersistenceDelegate::KeyInfo WinKeyPersistenceDelegate::LoadKeyPair() {
 }
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
-WinKeyPersistenceDelegate::GetTpmBackedKeyProvider() {
+WinKeyPersistenceDelegate::GetUnexportableKeyProvider() {
   return crypto::GetUnexportableKeyProvider();
 }
 

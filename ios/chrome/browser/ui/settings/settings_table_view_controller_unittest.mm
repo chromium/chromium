@@ -25,9 +25,9 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
@@ -122,11 +122,37 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return [[SettingsTableViewController alloc]
-        initWithBrowser:browser_.get()
-             dispatcher:static_cast<id<ApplicationCommands, BrowserCommands,
-                                       BrowsingDataCommands>>(
-                            browser_->GetCommandDispatcher())];
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+                             forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
+    SettingsTableViewController* controller =
+        [[SettingsTableViewController alloc]
+            initWithBrowser:browser_.get()
+                 dispatcher:static_cast<id<ApplicationCommands, BrowserCommands,
+                                           BrowsingDataCommands>>(
+                                browser_->GetCommandDispatcher())];
+    controller.applicationCommandsHandler = HandlerForProtocol(
+        browser_->GetCommandDispatcher(), ApplicationCommands);
+    controller.snackbarCommandsHandler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+    return controller;
   }
 
   void SetupSyncServiceEnabledExpectations() {

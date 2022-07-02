@@ -10,6 +10,9 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_camera_app_resources_map.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/files/file_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -35,6 +38,11 @@ namespace ash {
 
 namespace {
 
+const base::Feature kCCALocalOverride{"CCALocalOverride",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FilePath::CharType kCCALocalOverrideDirectoryPath[] =
+    FILE_PATH_LITERAL("/etc/camera/cca");
+
 content::WebUIDataSource* CreateCameraAppUIHTMLSource(
     CameraAppUIDelegate* delegate) {
   content::WebUIDataSource* source =
@@ -53,6 +61,41 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   }
 
   source->UseStringsJs();
+
+  if (base::FeatureList::IsEnabled(kCCALocalOverride)) {
+    source->SetRequestFilter(
+        base::BindRepeating([](const std::string& url) {
+          // Only override files that are copied locally with cca.py deploy.
+          if (!(base::StartsWith(url, "js/") || base::StartsWith(url, "css/") ||
+                base::StartsWith(url, "images/") ||
+                base::StartsWith(url, "views/") ||
+                base::StartsWith(url, "sounds/"))) {
+            return false;
+          }
+          // This file is written by `cca.py deploy` and contains version
+          // information of deployed file.
+          base::FilePath version_path =
+              base::FilePath(kCCALocalOverrideDirectoryPath)
+                  .Append("js/deployed_version.js");
+          if (!base::PathExists(version_path)) {
+            return false;
+          }
+          return true;
+        }),
+        base::BindRepeating(
+            [](const std::string& url,
+               content::WebUIDataSource::GotDataCallback callback) {
+              base::FilePath path =
+                  base::FilePath(kCCALocalOverrideDirectoryPath).Append(url);
+              std::string result;
+              if (base::ReadFileToString(path, &result)) {
+                std::move(callback).Run(
+                    base::RefCountedString::TakeString(&result));
+              } else {
+                std::move(callback).Run(nullptr);
+              }
+            }));
+  }
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,

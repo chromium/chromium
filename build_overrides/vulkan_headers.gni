@@ -3,19 +3,18 @@
 # found in the LICENSE file.
 
 import("//build/config/ozone.gni")
+import("//build_overrides/wayland.gni")
 
 vulkan_use_x11 = ozone_platform_x11
 
 if (ozone_platform_wayland) {
   vulkan_use_wayland = true
 
-  import("//third_party/wayland/features.gni")
   if (!use_system_libwayland) {
-    wayland_dir = "//third_party/wayland"
     vulkan_wayland_include_dirs = [
-      "$wayland_dir/src/src",
-      "$wayland_dir/include/src",
-      "$wayland_dir/include/protocol",
+      "$wayland_gn_dir/src/src",
+      "$wayland_gn_dir/include/src",
+      "$wayland_gn_dir/include/protocol",
     ]
   }
 }

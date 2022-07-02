@@ -495,6 +495,52 @@ void AuthenticatorBlePowerOnAutomaticSheetModel::OnAccept() {
   dialog_model()->PowerOnBleAdapter();
 }
 
+#if BUILDFLAG(IS_MAC)
+
+// AuthenticatorBlePermissionMacSheetModel
+// ------------------------------------
+
+const gfx::VectorIcon&
+AuthenticatorBlePermissionMacSheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return color_scheme == ImageColorScheme::kDark
+             ? kWebauthnErrorBluetoothDarkIcon
+             : kWebauthnErrorBluetoothIcon;
+}
+
+std::u16string AuthenticatorBlePermissionMacSheetModel::GetStepTitle() const {
+  // An empty title causes the title View to be omitted.
+  return u"";
+}
+
+std::u16string AuthenticatorBlePermissionMacSheetModel::GetStepDescription()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_BLUETOOTH_PERMISSION);
+}
+
+bool AuthenticatorBlePermissionMacSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorBlePermissionMacSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorBlePermissionMacSheetModel::IsCancelButtonVisible() const {
+  return false;
+}
+
+std::u16string AuthenticatorBlePermissionMacSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK);
+}
+
+void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
+  dialog_model()->OpenBlePreferences();
+}
+
+#endif  // IS_MAC
+
 // AuthenticatorOffTheRecordInterstitialSheetModel
 // -----------------------------------------
 

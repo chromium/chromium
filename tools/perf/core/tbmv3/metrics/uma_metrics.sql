@@ -21,25 +21,25 @@ SELECT UMAMetrics(
     FROM histogram_samples
     WHERE histogram_name = 'CompositorLatency.TotalLatency'
   ),
-  'event_latency_scroll_begin_touch_time_to_scroll_update_swap_begin4', (
+  'event_latency_first_gesture_scroll_update_touchscreen_total_latency', (
     SELECT RepeatedField(sample / 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4'
+    WHERE histogram_name = 'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency'
   ),
-  'event_latency_scroll_update_touch_time_to_scroll_update_swap_begin4', (
+  'event_latency_gesture_scroll_update_touchscreen_total_latency', (
     SELECT RepeatedField(sample / 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4'
+    WHERE histogram_name = 'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency'
   ),
-  'event_latency_scroll_begin_wheel_time_to_scroll_update_swap_begin4', (
+  'event_latency_first_gesture_scroll_update_wheel_total_latency', (
     SELECT RepeatedField(sample / 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4'
+    WHERE histogram_name = 'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency'
   ),
-  'event_latency_scroll_update_wheel_time_to_scroll_update_swap_begin4', (
+  'event_latency_gesture_scroll_update_wheel_total_latency', (
     SELECT RepeatedField(sample / 1e3)
     FROM histogram_samples
-    WHERE histogram_name = 'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4'
+    WHERE histogram_name = 'EventLatency.GestureScrollUpdate.Wheel.TotalLatency'
   ),
   'graphics_smoothness_checkerboarding_compositor_animation', (
     SELECT RepeatedField(sample / 1e2)

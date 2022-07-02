@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/reading_list/reading_list_infobar_banner_overlay_mediator.h"
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
@@ -14,6 +17,13 @@
 #endif
 
 using reading_list_infobar_overlay::ReadingListBannerRequestConfig;
+
+namespace {
+
+// The name of the reading list icon image.
+NSString* const kReadingListmageName = @"infobar_reading_list";
+
+}  // namespace
 
 @interface AddToReadingListInfobarBannerOverlayMediator ()
 // The add to reading list banner config from the request.
@@ -48,7 +58,12 @@ using reading_list_infobar_overlay::ReadingListBannerRequestConfig;
   [self.consumer setTitleText:config->title_text()];
   [self.consumer setSubtitleText:config->message_text()];
   [self.consumer setButtonText:config->button_text()];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+
+  UIImage* iconImage = UseSymbols()
+                           ? DefaultSymbolTemplateWithPointSize(
+                                 kReadLaterActionSymbol, kSymbolImagePointSize)
+                           : [UIImage imageNamed:kReadingListmageName];
+  [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
 }
 

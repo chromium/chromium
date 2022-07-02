@@ -77,7 +77,7 @@ bool GzipCompress(base::span<const uint8_t> input, std::string* output) {
 bool GzipUncompress(const std::string& input, std::string* output) {
   std::string uncompressed_output;
   uLongf uncompressed_size = static_cast<uLongf>(GetUncompressedSize(input));
-  if (uncompressed_size > uncompressed_output.max_size())
+  if (size_t{uncompressed_size} > uncompressed_output.max_size())
     return false;
 
   uncompressed_output.resize(uncompressed_size);

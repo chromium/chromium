@@ -4,7 +4,8 @@
 
 import {ExtensionsHostPermissionsToggleListElement, ExtensionsToggleRowElement, UserAction} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 
@@ -17,13 +18,20 @@ suite('HostPermissionsToggleList', function() {
   const EXAMPLE_COM = 'https://example.com/*';
   const GOOGLE_COM = 'https://google.com/*';
   const CHROMIUM_ORG = 'https://chromium.org/*';
+  const RESTRICTED_COM = '*://restricted.com/*';
+  const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
+    permittedSites: [],
+    restrictedSites: ['http://restricted.com', 'https://other.com']
+  };
 
   setup(function() {
     document.body.innerHTML = '';
     element = document.createElement('extensions-host-permissions-toggle-list');
     delegate = new TestService();
+    delegate.userSiteSettings = userSiteSettings;
     element.delegate = delegate;
     element.itemId = ITEM_ID;
+    element.enableEnhancedSiteControls = true;
 
     document.body.appendChild(element);
   });
@@ -179,7 +187,10 @@ suite('HostPermissionsToggleList', function() {
 
   // Tests that clicking the "allow on the following sites" toggle when it is in
   // the "off" state calls the delegate as expected.
-  test('clicking all hosts toggle from off to on', function() {
+  test('clicking all hosts toggle from off to on', async function() {
+    // Note: `RESTRICTED_COM` is a user restricted site, but clicking the all
+    // hosts toggle should not cause the matching restricted sites dialog to
+    // show.
     const permissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: false,
@@ -187,6 +198,7 @@ suite('HostPermissionsToggleList', function() {
         {host: EXAMPLE_COM, granted: false},
         {host: GOOGLE_COM, granted: false},
         {host: CHROMIUM_ORG, granted: false},
+        {host: RESTRICTED_COM, granted: false},
       ],
     };
     element.permissions = permissions;
@@ -195,20 +207,20 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
-    return delegate.whenCalled('setItemHostAccess')
-        .then(([id, access]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(HostAccess.ON_ALL_SITES, access);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then(metricName => {
-          assertEquals(UserAction.ALL_TOGGLED_ON, metricName);
-        });
+
+    flush();
+    assertFalse(!!element.getRestrictedSitesDialog());
+
+    const [id, access] = await delegate.whenCalled('setItemHostAccess');
+    assertEquals(ITEM_ID, id);
+    assertEquals(HostAccess.ON_ALL_SITES, access);
+    const metricName = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.ALL_TOGGLED_ON, metricName);
   });
 
   // Tests that clicking the "allow on the following sites" toggle when it is in
   // the "on" state calls the delegate as expected.
-  test('clicking all hosts toggle from on to off', function() {
+  test('clicking all hosts toggle from on to off', async function() {
     const permissions = {
       hostAccess: HostAccess.ON_ALL_SITES,
       hasAllHosts: false,
@@ -224,20 +236,17 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
-    return delegate.whenCalled('setItemHostAccess')
-        .then(([id, access]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(HostAccess.ON_SPECIFIC_SITES, access);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.ALL_TOGGLED_OFF, metricName);
-        });
+    const [id, access] = await delegate.whenCalled('setItemHostAccess');
+    assertEquals(ITEM_ID, id);
+    assertEquals(HostAccess.ON_SPECIFIC_SITES, access);
+    const metricName: UserAction =
+        await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.ALL_TOGGLED_OFF, metricName);
   });
 
   // Tests that toggling a site's enabled state toggles the extension's access
   // to that site properly.
-  test('clicking to toggle a specific site', function() {
+  test('clicking to toggle a specific site', async function() {
     const permissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: false,
@@ -260,26 +269,97 @@ suite('HostPermissionsToggleList', function() {
     assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
 
     hostToggles[0]!.getLabel().click();
-    return delegate.whenCalled('removeRuntimeHostPermission')
-        .then(([id, site]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(CHROMIUM_ORG, site);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
-          delegate.resetResolver('recordUserAction');
+    let [id, site] = await delegate.whenCalled('removeRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(CHROMIUM_ORG, site);
 
-          hostToggles[2]!.getLabel().click();
-          return delegate.whenCalled('addRuntimeHostPermission');
-        })
-        .then(([id, site]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(GOOGLE_COM, site);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
-        });
+    let metricName: UserAction = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
+    delegate.resetResolver('recordUserAction');
+    hostToggles[2]!.getLabel().click();
+
+    [id, site] = await delegate.whenCalled('addRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(GOOGLE_COM, site);
+    metricName = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
   });
+
+  test(
+      'toggling specific site removes matching restricted sites',
+      async function() {
+        await delegate.whenCalled('getUserSiteSettings');
+
+        const permissions = {
+          hostAccess: HostAccess.ON_SPECIFIC_SITES,
+          hasAllHosts: false,
+          hosts: [
+            {host: RESTRICTED_COM, granted: false},
+          ],
+        };
+
+        element.permissions = permissions;
+        flush();
+
+        const hostToggles =
+            element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
+                '.host-toggle');
+        assertEquals(1, hostToggles.length);
+        assertEquals(RESTRICTED_COM, hostToggles[0]!.innerText!.trim());
+        assertFalse(hostToggles[0]!.checked);
+
+        hostToggles[0]!.getLabel().click();
+
+        flush();
+
+        // Check that the matching restricted sites dialog is visible and the
+        // host's toggle is checked, even though the host has not been granted.
+        assertTrue(hostToggles[0]!.checked);
+
+        let dialog = element.getRestrictedSitesDialog()!;
+        assertTrue(!!dialog);
+        assertTrue(dialog.isOpen());
+
+        const cancel =
+            dialog.$.dialog.querySelector<HTMLElement>('.cancel-button');
+        assertTrue(!!cancel);
+
+        const whenClosed = eventToPromise('close', dialog);
+        cancel.click();
+        await whenClosed;
+        assertFalse(dialog.wasConfirmed());
+        flush();
+
+        // Cancelling the dialog should uncheck the host.
+        assertFalse(!!element.getRestrictedSitesDialog());
+        assertFalse(hostToggles[0]!.checked);
+
+        hostToggles[0]!.getLabel().click();
+        flush();
+
+        dialog = element.getRestrictedSitesDialog()!;
+        assertTrue(!!dialog);
+        assertTrue(dialog.isOpen());
+
+        const addHostPermissionPromise =
+            delegate.whenCalled('addRuntimeHostPermission');
+        const allow =
+            dialog.$.dialog.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!allow);
+        allow.click();
+
+        // Accepting the dialog should grant the host and remove any matching
+        // restricted sites.
+        const [id, site] = await addHostPermissionPromise;
+        assertEquals(ITEM_ID, id);
+        assertEquals(RESTRICTED_COM, site);
+
+        const [siteSet, removedSites] =
+            await delegate.whenCalled('removeUserSpecifiedSites');
+        assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
+        assertDeepEquals(['http://restricted.com'], removedSites);
+
+        const metricName = await delegate.whenCalled('recordUserAction');
+        assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
+      });
 });

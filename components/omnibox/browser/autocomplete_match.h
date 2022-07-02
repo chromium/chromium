@@ -56,28 +56,26 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
 
-// |SplitAutocompletion| helps track the autocompleted portions of a match's
-// text displayed when it is the default suggestion. It is used when the
-// autocompletions are between the user text; i.e. the user text is split. E.g.
-// given user text 'a c', |SplitAutocompletion| could represent 'a [b ]c'.
-struct SplitAutocompletion {
-  SplitAutocompletion(std::u16string display_text,
-                      std::vector<gfx::Range> selections);
-  SplitAutocompletion();
-  SplitAutocompletion(const SplitAutocompletion& copy);
-  SplitAutocompletion(SplitAutocompletion&&) noexcept;
-  SplitAutocompletion& operator=(const SplitAutocompletion&);
-  SplitAutocompletion& operator=(SplitAutocompletion&&) noexcept;
-
-  ~SplitAutocompletion();
-
-  bool Empty() const;
-  void Clear();
-
-  // The text including both the user input and autocompleted texts.
-  std::u16string display_text;
-  // The locations of the autocompleted texts.
-  std::vector<gfx::Range> selections;
+// `RichAutocompletionParams` is a cache for the params used by
+// `TryRichAutocompletion()`. `TryRichAutocompletion()` is called about 80 times
+// per keystroke; fetching all 16 params each time causes measurable timing
+// regressions. Using `static const` local variables instead wouldn't be
+// testable.
+struct RichAutocompletionParams {
+  RichAutocompletionParams();
+  static RichAutocompletionParams& GetParams();
+  static void ClearParamsForTesting();
+  bool enabled;
+  bool autocomplete_titles;
+  bool autocomplete_titles_shortcut_provider;
+  int autocomplete_titles_min_char;
+  bool autocomplete_non_prefix_all;
+  bool autocomplete_non_prefix_shortcut_provider;
+  int autocomplete_non_prefix_min_char;
+  bool autocomplete_shortcut_text;
+  int autocomplete_shortcut_text_min_char;
+  bool counterfactual;
+  bool autocomplete_prefer_urls_over_prefixes;
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -140,13 +138,14 @@ struct AutocompleteMatch {
     int style;
   };
 
-  // NavsuggestTiles are used specifically with TILE_NAVSUGGEST matches.
+  // SuggestTiles are used specifically with TILE_NAVSUGGEST matches.
   // This structure should describe only the specific details for individual
   // tiles; all other properties are considered as shared and should be
   // extracted from the encompassing AutocompleteMatch object.
-  struct NavsuggestTile {
-    GURL url;
-    std::u16string title;
+  struct SuggestTile {
+    GURL url{};
+    std::u16string title{};
+    bool is_search{};
   };
 
   typedef std::vector<ACMatchClassification> ACMatchClassifications;
@@ -176,6 +175,17 @@ struct AutocompleteMatch {
     DRIVE_FOLDER,
     DRIVE_OTHER,
     DOCUMENT_TYPE_SIZE
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RichAutocompletionType {
+    kNone = 0,
+    kUrlNonPrefix = 1,
+    kTitlePrefix = 2,
+    kTitleNonPrefix = 3,
+    kShortcutTextPrefix = 4,
+    kMaxValue = kShortcutTextPrefix,
   };
 
   static const char* const kDocumentTypeStrings[];
@@ -543,8 +553,7 @@ struct AutocompleteMatch {
                              const AutocompleteInput& input,
                              const std::u16string& shortcut_text = u"");
 
-  // True if |inline_autocompletion|, |prefix_autocompletion|, and
-  // |split_autocompletion| are all empty.
+  // True if `inline_autocompletion` and `prefix_autocompletion` are both empty.
   bool IsEmptyAutocompletion() const;
 
   // Serialise this object into a trace.
@@ -585,24 +594,19 @@ struct AutocompleteMatch {
   std::u16string inline_autocompletion;
   // Whether rich autocompletion triggered; i.e. this suggestion *is or could
   // have been* rich autocompleted. This is usually redundant and checking
-  // whether either of `prefix_autocompletion` or `split_autocompletion` are
-  // non-empty should be used instead to determine if this suggestion *is* rich
-  // autocompleted. But for counterfactual variations, the latter 2 aren't
-  // copied when deduping matches to avoid showing rich autocompletion and so
-  // can't be used to trigger logging.
+  // whether `prefix_autocompletion` is non-empty should be used instead to
+  // determine if this suggestion *is* rich autocompleted. But for
+  // counterfactual variations, `prefix_autocompletion` isn't copied when
+  // deduping matches to avoid showing rich autocompletion and so can't be used
+  // to trigger logging.
   // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
   //  experiments end.
-  bool rich_autocompletion_triggered = false;
+  RichAutocompletionType rich_autocompletion_triggered =
+      RichAutocompletionType::kNone;
   // The inline autocompletion to display before the user's input in the
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.
   std::u16string prefix_autocompletion;
-  // A representation of inline autocompletion that supports splitting the
-  // user input. See `SplitAutocompletion()` comments. Always empty if split
-  // autocompletion is disabled.
-  // TODO(manukh) If split rich autocompletion launches, all 3 autocompletions
-  //  can be represented by `split_autocompletion`.
-  SplitAutocompletion split_autocompletion;
 
   // If false, the omnibox should prevent this match from being the
   // default match.  Providers should set this to true only if the
@@ -622,7 +626,10 @@ struct AutocompleteMatch {
 
   // The destination URL modified for better dupe finding.  The result may not
   // be navigable or even valid; it's only meant to be used for detecting
-  // duplicates.
+  // duplicates. Providers are not expected to set this field,
+  // `AutocompleteResult` will set it using `ComputeStrippedDestinationURL()`.
+  // Providers may manually set it to avoid the default
+  // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
   // Optional image information. Used for entity suggestions. The dominant color
@@ -667,7 +674,7 @@ struct AutocompleteMatch {
   // A rich-format version of the display for the dropdown.
   absl::optional<SuggestionAnswer> answer;
 
-  // The transition type to use when the user opens this match.  By default
+  // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set
   // it to GENERATED.
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
@@ -676,7 +683,7 @@ struct AutocompleteMatch {
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
   // True if we saw a tab that matched this suggestion.
-  // Unset if has not been computed yet.
+  // Unset if it has not been computed yet.
   absl::optional<bool> has_tab_match;
 
   // Used to identify the specific source / type for suggestions by the
@@ -684,7 +691,7 @@ struct AutocompleteMatch {
   // details.
   // We use flat_set to help us deduplicate repetitive elements.
   // The order of elements reported back via AQS is irrelevant, and in the case
-  // we have repetitive subtypes (eg. as a result of Chrome enriching the set
+  // we have repetitive subtypes (e.g., as a result of Chrome enriching the set
   // with its own metadata) we want to merge these subtypes together.
   // flat_set uses std::vector as a container, allowing us to reduce memory
   // overhead of keeping a handful of integers, while offering similar
@@ -752,7 +759,7 @@ struct AutocompleteMatch {
 
   // A list of navsuggest tiles to be shown as part of this match.
   // This object is only populated for TILE_NAVSUGGEST AutocompleteMatches.
-  std::vector<NavsuggestTile> navsuggest_tiles;
+  std::vector<SuggestTile> suggest_tiles;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

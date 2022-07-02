@@ -4,6 +4,8 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** @implements {GuestOsBrowserProxy} */
@@ -29,7 +31,7 @@ export class TestGuestOsBrowserProxy extends TestBrowserProxy {
   /** @override */
   notifyGuestOsSharedUsbDevicesPageReady() {
     this.methodCalled('notifyGuestOsSharedUsbDevicesPageReady');
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'guest-os-shared-usb-devices-changed', this.sharedUsbDevices);
   }
 

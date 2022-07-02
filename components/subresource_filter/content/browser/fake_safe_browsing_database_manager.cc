@@ -94,9 +94,6 @@ bool FakeSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
-bool FakeSafeBrowsingDatabaseManager::IsSupported() const {
-  return true;
-}
 bool FakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
   return false;
 }

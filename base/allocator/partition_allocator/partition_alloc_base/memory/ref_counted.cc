@@ -8,6 +8,8 @@
 #include <ostream>
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+
 namespace partition_alloc::internal::base::subtle {
 
 bool RefCountedThreadSafeBase::HasOneRef() const {
@@ -18,10 +20,10 @@ bool RefCountedThreadSafeBase::HasAtLeastOneRef() const {
   return !ref_count_.IsZero();
 }
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
-  DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
-                      "calling Release()";
+  PA_DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
+                         "calling Release()";
 }
 #endif
 
@@ -29,7 +31,7 @@ RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
 //
 // In an attempt to avoid binary bloat (from inlining the `CHECK`), we define
 // these functions out-of-line. However, compilers are wily. Further testing may
-// show that `NOINLINE` helps or hurts.
+// show that `PA_NOINLINE` helps or hurts.
 //
 #if !defined(ARCH_CPU_X86_FAMILY)
 bool RefCountedThreadSafeBase::Release() const {

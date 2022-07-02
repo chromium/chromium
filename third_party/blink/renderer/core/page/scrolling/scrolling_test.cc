@@ -514,7 +514,7 @@ TEST_P(ScrollingTest, touchAction) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanX | TouchAction::kPanDown |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
 }
@@ -526,18 +526,18 @@ TEST_P(ScrollingTest, touchActionRegions) {
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanDown | TouchAction::kPanX |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanDown | TouchAction::kPanRight |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 50));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanDown);
+      TouchAction::kPanDown | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 100, 100, 100));
 }
@@ -574,7 +574,8 @@ TEST_P(ScrollingTest, touchActionNesting) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 }
@@ -611,7 +612,8 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 
@@ -619,7 +621,8 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   scrollable->setAttribute("style", "touch-action: none", ASSERT_NO_EXCEPTION);
   ForceFullCompositingUpdate();
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_TRUE(region.IsEmpty());
 }
 
@@ -648,7 +651,8 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
   const auto* cc_layer = MainFrameScrollingContentsLayer();
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -659,13 +663,15 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
   ForceFullCompositingUpdate();
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_TRUE(region.IsEmpty());
+  // kInternalNotWritable is set when any of the pans are allowed.
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kNone);
+      TouchAction::kNone | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
 }
 
@@ -691,7 +697,7 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
   ForceFullCompositingUpdate();
   const auto* cc_layer = MainFrameScrollingContentsLayer();
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kManipulation);
+      TouchAction::kManipulation | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 50));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -705,7 +711,8 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
 
   cc_layer = ScrollingContentsLayerByDOMElementId("touchaction");
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kManipulation | TouchAction::kInternalPanXScrolls);
+      TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 100));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -784,7 +791,7 @@ TEST_P(ScrollingTest, touchActionBlockingHandler) {
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
 }
@@ -816,12 +823,12 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
       ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region =
       scrolling_contents_layer->touch_action_region().GetRegionForTouchAction(
-          TouchAction::kPanY);
+          TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
 
   const auto* container_layer = MainFrameScrollingContentsLayer();
   region = container_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
 }
 
@@ -2060,7 +2067,7 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
 
 class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
  public:
-  UnifiedScrollingSimTest() : scroll_unification_enabled_(true) {}
+  UnifiedScrollingSimTest() = default;
 
   void SetUp() override {
     SimTest::SetUp();
@@ -2098,10 +2105,6 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
                     ->GetLayoutBoxForScrolling();
     return box ? box->GetScrollableArea() : nullptr;
   }
-
- protected:
-  RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
-      scroll_unification_enabled_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
@@ -2112,6 +2115,10 @@ INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
 // noncomposited reasons set. It then removes the box-shadow property and
 // ensures the compositor node updates accordingly.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2175,6 +2182,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
 // IsComposited state updated accordingly.
 TEST_P(UnifiedScrollingSimTest,
        ScrollNodeForCompositedToNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2237,6 +2248,10 @@ TEST_P(UnifiedScrollingSimTest,
 // scroller with an inset box shadow, and ensuring that scroller generates a
 // compositor scroll node with the proper noncomposited reasons set.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2323,6 +2338,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
 // Similar to the above test, but for deeper nesting iframes to ensure we
 // generate scroll nodes that are deeper than the main frame's children.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   SimRequest child_request_1("https://example.com/child1.html", "text/html");
   SimRequest child_request_2("https://example.com/child2.html", "text/html");
@@ -2413,6 +2432,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
 // is no scroll node for a display:none scroller, as there is no scrollable
 // area.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2475,6 +2498,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 // which are unique as they are not a composited scroller but also do not have
 // NonCompositedMainThreadScrollingReasons.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
+
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2505,19 +2532,29 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
 class ScrollingSimTest : public SimTest,
                          public testing::WithParamInterface<bool> {
  public:
-  ScrollingSimTest() : scroll_unification_enabled_(GetParam()) {}
+  ScrollingSimTest() = default;
 
   void SetUp() override {
+    if (GetParam())
+      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
+    else
+      feature_list_.InitAndDisableFeature(::features::kScrollUnification);
+
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
+    ResizeView(gfx::Size(1000, 1000));
     WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
-  WebCoalescedInputEvent GenerateGestureEvent(WebInputEvent::Type type,
-                                              int delta_x = 0,
-                                              int delta_y = 0) {
+  void TearDown() override {
+    SimTest::TearDown();
+    feature_list_.Reset();
+  }
+
+  WebGestureEvent GenerateGestureEvent(WebInputEvent::Type type,
+                                       int delta_x = 0,
+                                       int delta_y = 0) {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           WebInputEvent::GetStaticTimeStampForTests(),
                           WebGestureDevice::kTouchscreen);
@@ -2529,7 +2566,14 @@ class ScrollingSimTest : public SimTest,
       event.data.scroll_begin.delta_x_hint = delta_x;
       event.data.scroll_begin.delta_y_hint = delta_y;
     }
-    return WebCoalescedInputEvent(event, ui::LatencyInfo());
+    return event;
+  }
+
+  WebCoalescedInputEvent GenerateCoalescedGestureEvent(WebInputEvent::Type type,
+                                                       int delta_x = 0,
+                                                       int delta_y = 0) {
+    return WebCoalescedInputEvent(GenerateGestureEvent(type, delta_x, delta_y),
+                                  ui::LatencyInfo());
   }
 
   unsigned NumObjectsNeedingLayout() {
@@ -2542,12 +2586,41 @@ class ScrollingSimTest : public SimTest,
   }
 
  protected:
- protected:
-  RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
-      scroll_unification_enabled_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ScrollingSimTest, testing::Bool());
+
+TEST_P(ScrollingSimTest, BasicScroll) {
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #s { overflow: scroll; width: 300px; height: 300px; }
+      #sp { width: 600px; height: 600px; }
+    </style>
+    <div id=s><div id=sp>hello</div></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -100));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+
+  Compositor().BeginFrame();
+
+  Element* scroller = GetDocument().getElementById("s");
+  LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
+  EXPECT_EQ(100, box->ScrolledContentOffset().top);
+}
 
 // Pre-scroll-unification, ensures that ScrollBegin and ScrollUpdate cause
 // layout and ScrollEnd does not. Post unification, Blink will not handle these
@@ -2571,7 +2644,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   ASSERT_EQ(0u, NumObjectsNeedingLayout());
 
   Element* box = GetDocument().getElementById("box");
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     // Dirty the layout
     box->setAttribute(html_names::kStyleAttr, "height: 10px");
     GetDocument().UpdateStyleAndLayoutTree();
@@ -2590,8 +2663,9 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-      WebView().MainFrameWidget()->HandleInputEvent(GenerateGestureEvent(
-          WebInputEvent::Type::kGestureScrollBegin, 0, 10));
+      WebView().MainFrameWidget()->HandleInputEvent(
+          GenerateCoalescedGestureEvent(
+              WebInputEvent::Type::kGestureScrollBegin, 0, 10));
       EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
     }
 
@@ -2602,8 +2676,9 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-      WebView().MainFrameWidget()->HandleInputEvent(GenerateGestureEvent(
-          WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
+      WebView().MainFrameWidget()->HandleInputEvent(
+          GenerateCoalescedGestureEvent(
+              WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
       EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
     }
 
@@ -2615,7 +2690,8 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
       WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, 0, 0));
+          GenerateCoalescedGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
+                                        0, 0));
       EXPECT_NE(NumObjectsNeedingLayout(), 0u);
     }
   }

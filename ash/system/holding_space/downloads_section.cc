@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -93,6 +94,7 @@ class Header : public views::Button {
               return path;
             },
             base::Unretained(chevron_))));
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   }
 
  private:
@@ -106,11 +108,6 @@ class Header : public views::Button {
         kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize,
         ash_color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
-
-    // Focus ring.
-    views::FocusRing::Get(this)->SetColor(
-        ash_color_provider->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
   void OnPressed() {

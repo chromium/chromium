@@ -17,8 +17,8 @@ package org.tensorflow.lite.task.audio.classifier;
 
 import com.google.auto.value.AutoValue;
 
-import org.tensorflow.lite.annotations.UsedByReflection;
 import org.tensorflow.lite.support.label.Category;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 import java.util.ArrayList;
 import java.util.Collections;

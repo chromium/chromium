@@ -235,8 +235,7 @@ public class InstantStartTest {
         Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            startSurfaceCoordinator.getController().setStartSurfaceState(
-                    StartSurfaceState.SHOWN_TABSWITCHER);
+            startSurfaceCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         });
         CriteriaHelper.pollUiThread(startSurfaceCoordinator::isSecondaryTaskInitPendingForTesting);
 
@@ -546,8 +545,8 @@ public class InstantStartTest {
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(startSurfaceCoordinator.getController().getStartSurfaceState(),
-                    StartSurfaceState.NOT_SHOWN);
+            Assert.assertEquals(
+                    startSurfaceCoordinator.getStartSurfaceState(), StartSurfaceState.NOT_SHOWN);
         });
     }
 

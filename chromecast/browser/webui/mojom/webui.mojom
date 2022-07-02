@@ -18,7 +18,7 @@ import "mojo/public/mojom/base/values.mojom";
 // Wraps a repeating callback which is invoked by the Web UI messenger.
 interface MessageCallback {
   // Receive a message with generic parameters.
-  OnMessage(mojo_base.mojom.DeprecatedListValue list);
+  OnMessage(mojo_base.mojom.ListValue list);
 };
 
 // Use this interface to control the Web UI. This interface is hosted in the

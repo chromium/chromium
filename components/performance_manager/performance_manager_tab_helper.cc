@@ -43,7 +43,7 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
     // will be an "original opener".
     if (content::WebContents* original_opener_wc =
             web_contents->GetFirstWebContentsInLiveOriginalOpenerChain()) {
-      opener_rfh = original_opener_wc->GetMainFrame();
+      opener_rfh = original_opener_wc->GetPrimaryMainFrame();
     }
   }
 
@@ -86,7 +86,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   // We have an early WebContents creation hook so should see it when there is
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()
-  DCHECK(!web_contents->GetMainFrame()->IsRenderFrameCreated());
+  DCHECK(!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   size_t frame_count = 0;
   web_contents->ForEachRenderFrameHost(base::BindRepeating(
       [](size_t* frame_count, content::RenderFrameHost* render_frame_host) {
@@ -106,7 +106,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->IsCurrentlyAudible(), web_contents->GetLastActiveTime(),
       // TODO(crbug.com/1211368): Support MPArch fully!
       PageNode::PageState::kActive);
-  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   DCHECK(main_rfh);
   page->main_frame_tree_node_id = main_rfh->GetFrameTreeNodeId();
   primary_page_ = page.get();
@@ -268,7 +268,7 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
   if (it != frames_.end()) {
     new_frame = it->second.get();
   } else {
-    DCHECK(!new_host->IsRenderFrameCreated())
+    DCHECK(!new_host->IsRenderFrameLive())
         << "There shouldn't be a case where RenderFrameHostChanged is "
            "dispatched before RenderFrameCreated with a live RenderFrame\n";
   }

@@ -13,7 +13,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"

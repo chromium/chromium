@@ -164,6 +164,10 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
   const url::Origin real_origin = url::Origin::Create(origin);
   DCHECK(real_origin.IsSameOriginWith(
       url::Origin::Create(origin.DeprecatedGetOriginAsURL())));
+  // TODO(devlin): Implement this in terms of the `AddOrigin()` call that takes
+  // an url::Origin? It's interesting because this doesn't currently supply an
+  // extra path, so if the GURL has not path ("https://example.com"), it would
+  // fail to add - which is probably a bug.
   URLPattern origin_pattern(valid_schemes);
   // Origin adding could fail if |origin| does not match |valid_schemes|.
   if (origin_pattern.Parse(origin.spec()) !=
@@ -171,6 +175,18 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
     return false;
   }
   origin_pattern.SetPath("/*");
+  return AddPattern(origin_pattern);
+}
+
+bool URLPatternSet::AddOrigin(int valid_schemes, const url::Origin& origin) {
+  DCHECK(!origin.opaque());
+  URLPattern origin_pattern(valid_schemes);
+  // Origin adding could fail if |origin| does not match |valid_schemes|.
+  std::string string_pattern = origin.Serialize() + "/*";
+  if (origin_pattern.Parse(string_pattern) !=
+      URLPattern::ParseResult::kSuccess) {
+    return false;
+  }
   return AddPattern(origin_pattern);
 }
 

@@ -22,7 +22,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/device_form_factor.h"
 
 namespace variations {
 namespace {

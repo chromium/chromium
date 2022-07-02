@@ -104,12 +104,16 @@ bool IsGoogleInternalAccountEmail(const std::string& email) {
   return ExtractDomainName(SanitizeEmail(email)) == kGoogleDomain;
 }
 
-bool HasGaiaSchemeHostPort(const GURL& url) {
-  if (!url.SchemeIsCryptographic())
-    return false;
+bool IsGoogleRobotAccountEmail(const std::string& email) {
+  std::string domain_name = gaia::ExtractDomainName(SanitizeEmail(email));
+  return base::EndsWith(domain_name, "gserviceaccount.com") ||
+         base::EndsWith(domain_name, "googleusercontent.com");
+}
 
+bool HasGaiaSchemeHostPort(const GURL& url) {
   const url::Origin& gaia_origin = GaiaUrls::GetInstance()->gaia_origin();
   CHECK(!gaia_origin.opaque());
+  CHECK(gaia_origin.GetURL().SchemeIsHTTPOrHTTPS());
 
   const url::SchemeHostPort& gaia_scheme_host_port =
       gaia_origin.GetTupleOrPrecursorTupleIfOpaque();

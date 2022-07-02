@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 // Needed by remoting sender.
-#include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
 namespace blink {
@@ -42,9 +42,13 @@ class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 }  // namespace blink
 
+namespace cast_streaming {
+class ResourceProvider;
+}  // namespace cast_streaming
+
 namespace cc {
 class LayerTreeSettings;
-}
+}  // namespace cc
 
 namespace media {
 class CdmFactory;
@@ -108,9 +112,13 @@ class MediaFactory {
   blink::WebEncryptedMediaClient* EncryptedMediaClient();
 
   // Returns `DecoderFactory`, which can be used to created decoders in WebRTC.
+  // Can be dereferenced only on the media thread.
   base::WeakPtr<media::DecoderFactory> GetDecoderFactory();
 
  private:
+  // Initializes `decoder_factory_` if it hasn't been initialized yet.
+  void EnsureDecoderFactory();
+
   std::unique_ptr<media::RendererFactorySelector> CreateRendererFactorySelector(
       media::MediaLog* media_log,
       blink::WebURL url,
@@ -179,6 +187,9 @@ class MediaFactory {
   // process. Always use the GetRemoterFactory() accessor instead of this.
   mojo::Remote<media::mojom::RemoterFactory> remoter_factory_;
 #endif
+
+  std::unique_ptr<cast_streaming::ResourceProvider>
+      cast_streaming_resource_provider_;
 };
 
 }  // namespace content

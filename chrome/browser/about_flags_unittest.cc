@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_enum_reader.h"
@@ -21,6 +22,7 @@
 #include "components/flags_ui/flags_test_helpers.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace about_flags {
 
@@ -64,12 +66,56 @@ std::set<std::string> GetAllPublicSwitchesAndFeaturesForTesting() {
         result.insert(std::string(entry.feature.feature->name) + ":enabled");
         result.insert(std::string(entry.feature.feature->name) + ":disabled");
         break;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      case flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
+      case flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
+        std::string name(entry.platform_feature_name.name);
+        result.insert(name + ":enabled");
+        result.insert(name + ":disabled");
+        break;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   return result;
 }
 
-}  // anonymous namespace
+// Returns all variation ids defined in flags entries.
+std::vector<std::string> GetAllVariationIds() {
+  std::vector<std::string> variation_ids;
+  for (const auto& entry : testing::GetFeatureEntries()) {
+    // Only FEATURE_WITH_PARAMS_VALUE or PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+    // entries can have a variation id.
+    if (entry.type != flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        && entry.type !=
+               flags_ui::FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    ) {
+      continue;
+    }
+
+    for (const auto& variation : entry.GetVariations()) {
+      if (variation.variation_id)
+        variation_ids.push_back(variation.variation_id);
+    }
+  }
+  return variation_ids;
+}
+
+// Returns the parsed |variation_id|. If it is malformed, returns absl::nullopt.
+absl::optional<int> ParseVariationId(const std::string& variation_id) {
+  // Remove the "t" prefix if it is there.
+  std::string trimmed_id =
+      base::StartsWith(variation_id, "t", base::CompareCase::SENSITIVE)
+          ? variation_id.substr(1)
+          : variation_id;
+  int id;
+  if (base::StringToInt(trimmed_id, &id) && id >= 0)
+    return id;
+  return absl::nullopt;
+}
+
+}  // namespace
 
 // Makes sure there are no separators in any of the entry names.
 TEST(AboutFlagsTest, NoSeparators) {
@@ -118,6 +164,24 @@ TEST(AboutFlagsTest, EveryFlagIsValid) {
 TEST(AboutFlagsTest, RecentUnexpireFlagsArePresent) {
   flags_ui::testing::EnsureRecentUnexpireFlagsArePresent(
       testing::GetFeatureEntries(), CHROME_VERSION_MAJOR);
+}
+
+// Ensures that all variation IDs specified are well-formed and unique.
+TEST(AboutFlagsTest, VariationIdsAreValid) {
+  std::set<int> variation_ids;
+
+  for (const std::string& variation_id : GetAllVariationIds()) {
+    absl::optional<int> id = ParseVariationId(variation_id);
+    EXPECT_TRUE(id)
+        << "Variation ID \"" << variation_id
+        << "\" is malformed. It must be a nonnegative integer and can "
+           "optionally start with a \"t\".";
+
+    if (id.has_value()) {
+      EXPECT_TRUE(variation_ids.insert(id.value()).second)
+          << "Variation ID " << variation_id << " is duplicated.";
+    }
+  }
 }
 
 // Test that ScopedFeatureEntries restores existing feature entries on

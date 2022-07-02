@@ -62,6 +62,9 @@ namespace internal {
 InProcessHandler::InProcessHandler() = default;
 
 InProcessHandler::~InProcessHandler() {
+  if (cached_writer_) {
+    cached_writer_->Close();
+  }
   UpdatePruneAndUploadThreads(false);
 }
 

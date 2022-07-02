@@ -6,6 +6,7 @@
 
 #include <lib/sys/inspect/cpp/component.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
@@ -39,8 +40,18 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
     tree_dump_node_ = inspect_node_.CreateLazyNode("tree-data", [this]() {
       inspect::Inspector inspector;
 
-      inspector.GetRoot().CreateString(ax_tree_id().ToString(),
-                                       ax_tree()->ToString(), &inspector);
+      auto str = ax_tree()->ToString();
+      auto str_capacity = str.capacity();
+      inspector.GetRoot().CreateString(ax_tree_id().ToString(), std::move(str),
+                                       &inspector);
+
+      // Test to check if the string fit in memory.
+      if (inspector.GetStats().failed_allocations > 0) {
+        ZX_LOG(WARNING, ZX_OK)
+            << "Inspector had failed allocations. Some semantic tree data may "
+               "be missing. Size of the string we tried to store: "
+            << str_capacity << " bytes";
+      }
 
       return fpromise::make_ok_promise(inspector);
     });

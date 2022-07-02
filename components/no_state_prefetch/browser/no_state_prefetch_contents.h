@@ -124,7 +124,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // it if not.
   void DestroyWhenUsingTooManyResources();
 
-  content::RenderFrameHost* GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame();
 
   NoStatePrefetchManager* no_state_prefetch_manager() {
     return no_state_prefetch_manager_;

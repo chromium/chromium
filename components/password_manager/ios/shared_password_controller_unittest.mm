@@ -510,6 +510,39 @@ TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
   [delegate_ verify];
 }
 
+// Tests that detecting element additions (form_changed events) is not
+// interpreted as form submissions.
+TEST_F(SharedPasswordControllerTest,
+       DoesntInterpretElementAdditionsAsFormSubmission) {
+  id mock_completion_handler =
+      [OCMArg checkWithBlock:^(void (^completionHandler)(
+          const std::vector<autofill::FormData>& forms, uint32_t maxID)) {
+        EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
+        // OnPasswordFormsRendered is responsible for detecting submissions.
+        // Making sure it's not called after element additions.
+        EXPECT_CALL(password_manager_, OnPasswordFormsRendered).Times(0);
+        OCMExpect([suggestion_helper_ updateStateOnPasswordFormExtracted]);
+        autofill::FormData form_data = test_helpers::MakeSimpleFormData();
+        completionHandler({form_data}, 1);
+        return YES;
+      }];
+
+  OCMExpect([form_helper_
+      findPasswordFormsWithCompletionHandler:mock_completion_handler]);
+
+  autofill::FormActivityParams params;
+  params.type = "form_changed";
+
+  auto web_frame =
+      web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true, GURL());
+
+  [controller_ webState:&web_state_
+      didRegisterFormActivity:params
+                      inFrame:web_frame.get()];
+
+  [suggestion_helper_ verify];
+  [form_helper_ verify];
+}
 // TODO(crbug.com/1097353): Finish unit testing the rest of the public API.
 
 }  // namespace password_manager

@@ -498,8 +498,8 @@ String MenuListSelectType::UpdateTextStyleInternal() {
     cloned_style->SetUnicodeBidi(option_style->GetUnicodeBidi());
     cloned_style->SetTextAlign(option_style->GetTextAlign(true));
     if (auto* inner_layout = inner_element.GetLayoutObject()) {
-      inner_layout->SetStyle(std::move(cloned_style),
-                             LayoutObject::ApplyStyleChanges::kYes);
+      inner_layout->SetModifiedStyleOutsideStyleRecalc(
+          std::move(cloned_style), LayoutObject::ApplyStyleChanges::kYes);
     } else {
       inner_element.SetComputedStyle(std::move(cloned_style));
     }

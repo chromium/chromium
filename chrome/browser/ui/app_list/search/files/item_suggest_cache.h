@@ -117,7 +117,7 @@ class ItemSuggestCache {
   // queries are issued if either this param is true or the suggested files
   // experiment is enabled.
   static constexpr base::FeatureParam<bool> kMultipleQueriesPerSession{
-      &kExperiment, "multiple_queries_per_session", false};
+      &kExperiment, "multiple_queries_per_session", true};
 
   // Returns the body for the itemsuggest request. Affected by |kExperiment|.
   std::string GetRequestBody();

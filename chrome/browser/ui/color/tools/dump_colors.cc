@@ -53,7 +53,7 @@ int main(int argc, const char* argv[]) {
     const ui::ColorProviderManager::Key key = {
         color_mode, contrast_mode,
         ui::ColorProviderManager::SystemTheme::kDefault,
-        ui::ColorProviderManager::FrameType::kChromium, nullptr};
+        ui::ColorProviderManager::FrameType::kChromium};
     ui::AddColorMixers(provider, key);
     AddChromeColorMixers(provider, key);
   };

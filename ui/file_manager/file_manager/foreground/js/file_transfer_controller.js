@@ -5,10 +5,9 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {getDirectory, getDisallowedTransfers} from '../../common/js/api.js';
+import {getDirectory, getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -28,6 +27,7 @@ import {MetadataModel} from './metadata/metadata_model.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
 import {ListContainer} from './ui/list_container.js';
+import {TreeItem} from './ui/tree.js';
 
 /**
  * Global (placed in the window object) variable name to hold internal
@@ -612,17 +612,25 @@ export class FileTransferController {
         .then(/**
                * @param {!Array<Entry>} filteredEntries
                */
-              filteredEntries => {
+              async filteredEntries => {
                 entries = filteredEntries;
                 if (entries.length === 0) {
                   return Promise.reject('ABORT');
                 }
-                // Send only the copy operation to IO Queue in the C++.
                 if (window.isSWA) {
-                  chrome.fileManagerPrivate.startIOTask(
-                      toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
-                               chrome.fileManagerPrivate.IOTaskType.COPY,
-                      entries, {destinationFolder: destinationEntry});
+                  const taskType = toMove ?
+                      chrome.fileManagerPrivate.IOTaskType.MOVE :
+                      chrome.fileManagerPrivate.IOTaskType.COPY;
+                  try {
+                    // TODO(crbug/1290197): Start tracking the copy/move
+                    // operation starting here as both the legacy taskId and
+                    // IOTask taskId are available.
+                    await startIOTask(
+                        taskType, entries,
+                        {destinationFolder: destinationEntry});
+                  } catch (e) {
+                    console.error(`Failed to start ${taskType} io task:`, e);
+                  }
                   return;
                 }
 
@@ -1310,6 +1318,12 @@ export class FileTransferController {
       return false;
     }
 
+    // Recent isn't read-only, but it doesn't support paste/drop.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.RECENT) {
+      return false;
+    }
+
     if (destinationLocationInfo.volumeInfo &&
         destinationLocationInfo.volumeInfo.error) {
       return false;
@@ -1487,6 +1501,11 @@ export class FileTransferController {
     }
     if (destinationLocationInfo.volumeInfo &&
         destinationLocationInfo.volumeInfo.error) {
+      return new DropEffectAndLabel(DropEffectType.NONE, null);
+    }
+    // Recent isn't read-only, but it doesn't support drop.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.RECENT) {
       return new DropEffectAndLabel(DropEffectType.NONE, null);
     }
     if (destinationLocationInfo.isReadOnly) {

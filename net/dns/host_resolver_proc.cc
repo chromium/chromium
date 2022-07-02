@@ -251,15 +251,11 @@ int SystemHostResolverProc::Resolve(const std::string& hostname,
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;
 
-const base::TimeDelta ProcTaskParams::kDnsDefaultUnresponsiveDelay =
-    base::Seconds(6);
-
 ProcTaskParams::ProcTaskParams(HostResolverProc* resolver_proc,
                                size_t in_max_retry_attempts)
     : resolver_proc(resolver_proc),
       max_retry_attempts(in_max_retry_attempts),
-      unresponsive_delay(kDnsDefaultUnresponsiveDelay),
-      retry_factor(2) {
+      unresponsive_delay(kDnsDefaultUnresponsiveDelay) {
   // Maximum of 4 retry attempts for host resolution.
   static const size_t kDefaultMaxRetryAttempts = 4u;
   if (max_retry_attempts == HostResolver::ManagerOptions::kDefaultRetryAttempts)

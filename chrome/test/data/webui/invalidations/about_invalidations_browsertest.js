@@ -18,7 +18,7 @@ InvalidationsWebUITest.prototype = {
    * Browse to the Invalidations page.
    */
   browsePreload:
-      'chrome://invalidations/invalidations.html?module=invalidations/invalidations_test.js',
+      'chrome://invalidations/invalidations.html?module=invalidations/invalidations_test.js&host=test',
 
   extraLibraries: [
     '//third_party/mocha/mocha.js',

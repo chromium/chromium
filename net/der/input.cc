@@ -8,9 +8,7 @@
 
 #include "base/check_op.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 Input::Input(const base::StringPiece& in)
     : data_(reinterpret_cast<const uint8_t*>(in.data())), len_(in.length()) {}
@@ -70,6 +68,4 @@ void ByteReader::Advance(size_t len) {
   len_ -= len;
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

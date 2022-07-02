@@ -14,7 +14,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
+#include "third_party/blink/renderer/modules/webgpu/string_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -109,7 +110,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(message));
     execution_context->AddConsoleMessage(console_message);
   }
 }
@@ -218,7 +220,8 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, error_message);
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StringFromASCIIAndUTF8(error_message));
     execution_context->AddConsoleMessage(console_message);
   }
   RecordAdapterForIdentifiability(script_state, options, gpu_adapter);
@@ -286,8 +289,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
-  DCHECK(context_provider);
+  DCHECK_NE(dawn_control_client_, nullptr);
 
   WGPURequestAdapterOptions dawn_options = AsDawnType(options);
   auto* callback =
@@ -303,6 +305,11 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   UseCounter::Count(ExecutionContext::From(script_state), WebFeature::kWebGPU);
 
   return promise;
+}
+
+String GPU::getPreferredCanvasFormat() {
+  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+  return "bgra8unorm";
 }
 
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
@@ -321,6 +328,11 @@ void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll(
     procs.bufferDestroy(static_cast<WGPUBuffer>(p));
   }
   contents_.clear();
+}
+
+void GPU::SetDawnControlClientHolderForTesting(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+  dawn_control_client_ = std::move(dawn_control_client);
 }
 
 }  // namespace blink

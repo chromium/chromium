@@ -33,9 +33,10 @@ class DeviceSharingBrowserAgent
   void UpdateForActiveBrowser();
 
  private:
-  explicit DeviceSharingBrowserAgent(Browser* browser);
   friend class BrowserUserData<DeviceSharingBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit DeviceSharingBrowserAgent(Browser* browser);
 
   // Update the active URL for the current web state of the browser.
   void UpdateForActiveWebState();

@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
-#include "third_party/blink/renderer/core/style/quotes_data.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
@@ -76,6 +75,7 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/quotes_data.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
@@ -177,6 +177,32 @@ void ComputedStyle::ClearVariableNamesCache() const {
     cached_data_->variable_names_.reset();
 }
 
+const ComputedStyle* ComputedStyle::AddCachedPositionFallbackStyle(
+    scoped_refptr<const ComputedStyle> style,
+    unsigned index) const {
+  EnsurePositionFallbackStyleCache(index + 1)[index] = std::move(style);
+  return (*cached_data_->position_fallback_styles_)[index].get();
+}
+
+const ComputedStyle* ComputedStyle::GetCachedPositionFallbackStyle(
+    unsigned index) const {
+  if (!cached_data_ || !cached_data_->position_fallback_styles_ ||
+      index >= cached_data_->position_fallback_styles_->size())
+    return nullptr;
+  return (*cached_data_->position_fallback_styles_)[index].get();
+}
+
+PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
+    unsigned ensure_size) const {
+  if (!cached_data_ || !cached_data_->position_fallback_styles_) {
+    EnsureCachedData().position_fallback_styles_ =
+        std::make_unique<PositionFallbackStyleCache>();
+  }
+  if (cached_data_->position_fallback_styles_->size() < ensure_size)
+    cached_data_->position_fallback_styles_->resize(ensure_size);
+  return *cached_data_->position_fallback_styles_;
+}
+
 scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
   return base::AdoptRef(new ComputedStyle(PassKey(), other));
 }
@@ -205,9 +231,7 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
       continue;
     // Highlight pseudo styles are stored in StyleHighlightData, and compared
     // like any other inherited field, yielding Difference::kInherited.
-    if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-         IsHighlightPseudoElement(pseudo_id)) ||
-        pseudo_id == PseudoId::kPseudoIdHighlight)
+    if (StyleResolver::UsesHighlightPseudoInheritance(pseudo_id))
       continue;
     const ComputedStyle* new_pseudo_style =
         new_style.GetCachedPseudoElementStyle(pseudo_id);
@@ -926,9 +950,18 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
     const ComputedStyle& other,
     StyleDifference& diff) const {
   if (BackgroundColorInternal() != other.BackgroundColorInternal()) {
-    diff.SetNeedsPaintInvalidation();
-    return;
+    // If the background color change is not due to a composited animation, then
+    // paint invalidation is required; but we can defer the decision until we
+    // know whether the color change will be rendered by the compositor.
+    diff.SetBackgroundColorChanged();
   }
+  // The rendered color may differ from the reported color for a link to prevent
+  // leaking the visited status of a link.
+  if (InternalVisitedBackgroundColor() !=
+      other.InternalVisitedBackgroundColor()) {
+    diff.SetBackgroundColorChanged();
+  }
+
   if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
     diff.SetNeedsPaintInvalidation();
     return;
@@ -1067,6 +1100,9 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetBlendModeChanged();
 
   if (HasCurrentTransformAnimation() != other.HasCurrentTransformAnimation() ||
+      HasCurrentScaleAnimation() != other.HasCurrentScaleAnimation() ||
+      HasCurrentRotateAnimation() != other.HasCurrentRotateAnimation() ||
+      HasCurrentTranslateAnimation() != other.HasCurrentTranslateAnimation() ||
       HasCurrentOpacityAnimation() != other.HasCurrentOpacityAnimation() ||
       HasCurrentFilterAnimation() != other.HasCurrentFilterAnimation() ||
       HasCurrentBackdropFilterAnimation() !=
@@ -1192,7 +1228,8 @@ void ComputedStyle::UpdateIsStackingContextWithoutContainment(
   if (is_document_element || is_in_top_layer || is_svg_stacking ||
       StyleType() == kPseudoIdBackdrop || HasTransformRelatedProperty() ||
       HasStackingGroupingProperty(BoxReflect()) ||
-      HasViewportConstrainedPosition() || GetPosition() == EPosition::kSticky ||
+      GetPosition() == EPosition::kFixed ||
+      GetPosition() == EPosition::kSticky ||
       HasPropertyThatCreatesStackingContext(WillChangeProperties()) ||
       /* TODO(882625): This becomes unnecessary when will-change correctly takes
       into account active animations. */
@@ -1214,6 +1251,18 @@ static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
   switch (ResolveCSSPropertyID(property)) {
     case CSSPropertyID::kTransform:
     case CSSPropertyID::kPerspective:
+    case CSSPropertyID::kTransformStyle:
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
+static bool IsWillChangeHintForAnyTransformProperty(CSSPropertyID property) {
+  switch (ResolveCSSPropertyID(property)) {
+    case CSSPropertyID::kTransform:
+    case CSSPropertyID::kPerspective:
     case CSSPropertyID::kTranslate:
     case CSSPropertyID::kScale:
     case CSSPropertyID::kRotate:
@@ -1228,7 +1277,7 @@ static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
 }
 
 static bool IsWillChangeCompositingHintProperty(CSSPropertyID property) {
-  if (IsWillChangeTransformHintProperty(property))
+  if (IsWillChangeHintForAnyTransformProperty(property))
     return true;
   switch (ResolveCSSPropertyID(property)) {
     case CSSPropertyID::kOpacity:
@@ -1255,6 +1304,12 @@ bool ComputedStyle::HasWillChangeTransformHint() const {
   const auto& properties = WillChangeProperties();
   return std::any_of(properties.begin(), properties.end(),
                      IsWillChangeTransformHintProperty);
+}
+
+bool ComputedStyle::HasWillChangeHintForAnyTransformProperty() const {
+  const auto& properties = WillChangeProperties();
+  return std::any_of(properties.begin(), properties.end(),
+                     IsWillChangeHintForAnyTransformProperty);
 }
 
 bool ComputedStyle::RequireTransformOrigin(
@@ -1307,17 +1362,20 @@ void ComputedStyle::LoadDeferredImages(Document& document) const {
 void ComputedStyle::ApplyTransform(
     TransformationMatrix& result,
     const LayoutSize& border_box_size,
+    ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
     const {
-  ApplyTransform(result, gfx::RectF(gfx::SizeF(border_box_size)), apply_origin,
-                 apply_motion_path, apply_independent_transform_properties);
+  ApplyTransform(result, gfx::RectF(gfx::SizeF(border_box_size)),
+                 apply_operations, apply_origin, apply_motion_path,
+                 apply_independent_transform_properties);
 }
 
 void ComputedStyle::ApplyTransform(
     TransformationMatrix& result,
     const gfx::RectF& bounding_box,
+    ApplyTransformOperations apply_operations,
     ApplyTransformOrigin apply_origin,
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
@@ -1360,8 +1418,10 @@ void ComputedStyle::ApplyTransform(
   if (apply_motion_path == kIncludeMotionPath)
     ApplyMotionPathTransform(origin_x, origin_y, bounding_box, result);
 
-  for (const auto& operation : Transform().Operations())
-    operation->Apply(result, box_size);
+  if (apply_operations == kIncludeTransformOperations) {
+    for (const auto& operation : Transform().Operations())
+      operation->Apply(result, box_size);
+  }
 
   if (apply_transform_origin) {
     result.Translate3d(-origin_x, -origin_y, -origin_z);
@@ -1918,6 +1978,29 @@ const Vector<AppliedTextDecoration>& ComputedStyle::AppliedTextDecorations()
   }
 
   return AppliedTextDecorationsInternal()->data;
+}
+
+bool ComputedStyle::IsAppliedTextDecorationsSame(
+    const ComputedStyle& other) const {
+  if (HasSimpleUnderlineInternal() != other.HasSimpleUnderlineInternal())
+    return false;
+  if (AppliedTextDecorationsInternal().get() ==
+      other.AppliedTextDecorationsInternal().get())
+    return true;
+
+  // Rare but sometimes two instances of |AppliedTextDecorations()| may have the
+  // same items. Check if all items are the same.
+  // e.g., tables/mozilla/bugs/bug126742.html
+  const Vector<AppliedTextDecoration>& decorations = AppliedTextDecorations();
+  const Vector<AppliedTextDecoration>& other_decorations =
+      other.AppliedTextDecorations();
+  if (decorations.size() != other_decorations.size())
+    return false;
+  for (wtf_size_t index = 0; index < decorations.size(); ++index) {
+    if (decorations[index] != other_decorations[index])
+      return false;
+  }
+  return true;
 }
 
 static bool HasInitialVariables(const StyleInitialData* initial_data) {
@@ -2638,8 +2721,9 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
 bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
   return RuntimeEnabledFeatures::LayoutNGEnabled() &&
          IsContainerForSizeContainerQueries() &&
-         !InsideFragmentationContextWithNondeterministicEngine() &&
          !element.ShouldForceLegacyLayout() &&
+         (RuntimeEnabledFeatures::LayoutNGPrintingEnabled() ||
+          !element.GetDocument().Printing()) &&
          (!element.IsSVGElement() ||
           To<SVGElement>(element).IsOutermostSVGSVGElement());
 }

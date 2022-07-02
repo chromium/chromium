@@ -240,7 +240,7 @@ TEST_F(PerformanceManagerTabHelperTest, GetFrameNode) {
 
   // GetFrameNode() can return nullptr. In this test, it is achieved by using an
   // empty RenderFrameHost.
-  auto* empty_frame = web_contents()->GetMainFrame();
+  auto* empty_frame = web_contents()->GetPrimaryMainFrame();
   DCHECK(empty_frame);
 
   auto* empty_frame_node = tab_helper->GetFrameNode(empty_frame);
@@ -278,13 +278,13 @@ TEST_F(PerformanceManagerTabHelperTest,
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              GURL(kParentUrl));
-  auto* first_nav_main_rfh = web_contents()->GetMainFrame();
+  auto* first_nav_main_rfh = web_contents()->GetPrimaryMainFrame();
 
   content::LeaveInPendingDeletionState(first_nav_main_rfh);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kCousinFreddyUrl));
-  EXPECT_NE(web_contents()->GetMainFrame(), first_nav_main_rfh);
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame(), first_nav_main_rfh);
 
   // Mock observer, this can only be used from the PM sequence.
   MockPageNodeObserver observer;
@@ -325,8 +325,8 @@ TEST_F(PerformanceManagerTabHelperTest,
   // Sanity check to ensure that notification sent to the active main frame are
   // forwarded. DidUpdateFaviconURL needs to be called twice as the first
   // favicon change is always ignored.
-  tab_helper->DidUpdateFaviconURL(web_contents()->GetMainFrame(), {});
-  tab_helper->DidUpdateFaviconURL(web_contents()->GetMainFrame(), {});
+  tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
+  tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
 
   {
     base::RunLoop run_loop;

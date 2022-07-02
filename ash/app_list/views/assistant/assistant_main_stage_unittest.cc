@@ -8,13 +8,14 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +35,16 @@ SkColor GetCenterColor(views::Separator* separator) {
 
 class AssistantMainStageTest : public AssistantAshTestBase {
  public:
+  // AssistantAshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kDarkLightMode,
+                               features::kNotificationsRefresh});
+
+    AssistantAshTestBase::SetUp();
+  }
+
   void TearDown() override {
     // NativeTheme instance will be re-used across test cases. Make sure that a
     // test case ends with setting ShouldUseDarkColors to false.
@@ -42,15 +53,19 @@ class AssistantMainStageTest : public AssistantAshTestBase {
 
     AssistantAshTestBase::TearDown();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
@@ -58,17 +73,16 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   views::Separator* separator = static_cast<views::Separator*>(
       main_stage->GetViewByID(kHorizontalSeparator));
 
-  EXPECT_EQ(separator->GetColor(),
-            color_provider->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kSeparatorColor));
+  EXPECT_EQ(separator->GetColorId(), ui::kColorAshSystemUIMenuSeparator);
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
-  EXPECT_EQ(separator->GetColor(),
-            color_provider->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kSeparatorColor));
+  EXPECT_EQ(separator->GetColorId(), ui::kColorAshSystemUIMenuSeparator);
+  EXPECT_EQ(GetCenterColor(separator), separator->GetColorProvider()->GetColor(
+                                           ui::kColorAshSystemUIMenuSeparator));
 
   // Turn off dark mode, this will make NativeTheme::ShouldUseDarkColors return
   // false. See a comment in TearDown about details.
@@ -91,10 +105,12 @@ TEST_F(AssistantMainStageTest, DarkAndLightModeFlagOff) {
 
   ASSERT_FALSE(page_view()->GetNativeTheme()->ShouldUseDarkColors());
 
-  // We use default color of views::Separator. Expects that Separator::GetColor
-  // returns 0 as we have not specified a color.
-  EXPECT_EQ(separator->GetColor(), 0u);
-  EXPECT_EQ(GetCenterColor(separator), gfx::kGoogleGrey300);
+  // We use default color of views::Separator. Expects that
+  // Separator::GetColorId returns ui::kColorSeparator as we have not specified
+  // a ColorId.
+  EXPECT_EQ(separator->GetColorId(), ui::kColorSeparator);
+  EXPECT_EQ(GetCenterColor(separator),
+            separator->GetColorProvider()->GetColor(ui::kColorSeparator));
 
   // Avoid test teardown issues by explicitly closing the launcher.
   CloseAssistantUi();

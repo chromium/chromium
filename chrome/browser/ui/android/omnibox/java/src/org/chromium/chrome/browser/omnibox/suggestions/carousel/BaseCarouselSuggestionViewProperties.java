@@ -11,12 +11,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.Collection;
+import java.util.List;
 
 /** The base set of properties for the Carousel suggestions. */
 public class BaseCarouselSuggestionViewProperties {
     /** Action Icons description. */
-    public static final WritableObjectPropertyKey<Collection<ListItem>> TILES =
+    public static final WritableObjectPropertyKey<List<ListItem>> TILES =
             new WritableObjectPropertyKey<>();
 
     /** The header title to be applied to the suggestion. */

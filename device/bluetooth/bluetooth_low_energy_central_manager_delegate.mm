@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
@@ -52,8 +53,8 @@ class BluetoothLowEnergyCentralManagerBridge {
   }
 
  private:
-  BluetoothLowEnergyDiscoveryManagerMac* discovery_manager_;
-  BluetoothAdapterMac* adapter_;
+  raw_ptr<BluetoothLowEnergyDiscoveryManagerMac> discovery_manager_;
+  raw_ptr<BluetoothAdapterMac> adapter_;
 };
 
 }  // namespace device

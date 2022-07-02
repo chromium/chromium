@@ -63,6 +63,20 @@ std::string SubstituteMappedStrings(
 
 }  // namespace
 
+FencedFrameURLMapping::SharedStorageURNMappingResult::
+    SharedStorageURNMappingResult() = default;
+
+FencedFrameURLMapping::SharedStorageURNMappingResult::
+    SharedStorageURNMappingResult(GURL mapped_url,
+                                  SharedStorageBudgetMetadata budget_metadata,
+                                  SharedStorageReportingMap reporting_map)
+    : mapped_url(std::move(mapped_url)),
+      budget_metadata(std::move(budget_metadata)),
+      reporting_map(std::move(reporting_map)) {}
+
+FencedFrameURLMapping::SharedStorageURNMappingResult::
+    ~SharedStorageURNMappingResult() = default;
+
 FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
     PendingAdComponentsMap&&) = default;
 
@@ -119,9 +133,11 @@ FencedFrameURLMapping::MapInfo::MapInfo(const GURL& mapped_url)
 
 FencedFrameURLMapping::MapInfo::MapInfo(
     const GURL& mapped_url,
-    const SharedStorageBudgetMetadata& shared_storage_budget_metadata)
+    const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
+    const ReportingMetadata& reporting_metadata)
     : mapped_url(mapped_url),
-      shared_storage_budget_metadata(shared_storage_budget_metadata) {}
+      shared_storage_budget_metadata(shared_storage_budget_metadata),
+      reporting_metadata(reporting_metadata) {}
 
 FencedFrameURLMapping::MapInfo::MapInfo(const MapInfo&) = default;
 FencedFrameURLMapping::MapInfo::MapInfo(MapInfo&&) = default;
@@ -229,6 +245,7 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   DCHECK(!IsMapped(urn_uuid));
 
   absl::optional<GURL> mapped_url = absl::nullopt;
+  ReportingMetadata reporting_metadata;
 
   // Only if the resolved URL is fenced-frame-compatible do we:
   //   1.) Add it to `urn_uuid_to_url_map_`
@@ -236,19 +253,27 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   // TODO(crbug.com/1318970): Simplify this by making Shared Storage only
   // capable of producing URLs that fenced frames can navigate to.
   if (blink::IsValidFencedFrameURL(mapping_result.mapped_url)) {
+    base::flat_map<blink::mojom::ReportingDestination,
+                   SharedStorageReportingMap>
+        reporting_metadata_map;
+    reporting_metadata_map
+        [blink::mojom::ReportingDestination::kSharedStorageSelectUrl] =
+            std::move(mapping_result.reporting_map);
+    reporting_metadata = ReportingMetadata(std::move(reporting_metadata_map));
+
     urn_uuid_to_url_map_.emplace(
-        urn_uuid, MapInfo(mapping_result.mapped_url, mapping_result.metadata));
+        urn_uuid, MapInfo(mapping_result.mapped_url,
+                          mapping_result.budget_metadata, reporting_metadata));
     mapped_url = mapping_result.mapped_url;
   }
 
   std::set<raw_ptr<MappingResultObserver>>& observers = it->second;
 
-  ReportingMetadata metadata;
   for (raw_ptr<MappingResultObserver> observer : observers) {
     observer->OnFencedFrameURLMappingComplete(
         mapped_url, /*ad_auction_data=*/absl::nullopt,
         /*pending_ad_components_map=*/absl::nullopt,
-        /*reporting_metadata=*/metadata);
+        /*reporting_metadata=*/reporting_metadata);
   }
 
   pending_urn_uuid_to_url_map_.erase(it);
@@ -295,6 +320,24 @@ bool FencedFrameURLMapping::HasObserverForTesting(
     MappingResultObserver* observer) {
   return IsPendingMapped(urn_uuid) &&
          pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer);
+}
+
+void FencedFrameURLMapping::GetSharedStorageReportingMapForTesting(
+    const GURL& urn_uuid,
+    SharedStorageReportingMap* out_reporting_map) {
+  DCHECK(out_reporting_map);
+
+  auto urn_it = urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(urn_it != urn_uuid_to_url_map_.end());
+
+  if (urn_it->second.reporting_metadata.metadata.empty())
+    return;
+
+  auto data_it = urn_it->second.reporting_metadata.metadata.find(
+      blink::mojom::ReportingDestination::kSharedStorageSelectUrl);
+
+  if (data_it != urn_it->second.reporting_metadata.metadata.end())
+    *out_reporting_map = data_it->second;
 }
 
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {

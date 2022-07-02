@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
+#include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/driver/sync_policy_handler.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -35,7 +36,6 @@
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #include "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #include "ios/chrome/browser/pref_names.h"
 
@@ -123,17 +123,11 @@ void PopulatePolicyHandlerParameters(
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
     bool allow_future_policies,
     const policy::Schema& chrome_schema) {
-  DCHECK(IsEnterprisePolicyEnabled());
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers =
       std::make_unique<policy::ConfigurationPolicyHandlerList>(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&policy::GetChromePolicyDetails),
           allow_future_policies);
-
-  // Check the feature flag before adding handlers to the list.
-  if (!ShouldInstallEnterprisePolicyHandlers()) {
-    return handlers;
-  }
 
   for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
@@ -163,11 +157,10 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
-
-  if (ShouldInstallURLBlocklistPolicyHandlers()) {
-    handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
-        policy::key::kURLBlocklist));
-  }
+  handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
+      policy::key::kURLBlocklist));
+  handlers->AddHandler(std::make_unique<policy::HttpsOnlyModePolicyHandler>(
+      prefs::kHttpsOnlyModeEnabled));
 
   return handlers;
 }

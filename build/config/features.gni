@@ -23,14 +23,19 @@ declare_args() {
   #
   # Note: this flag is used by WebRTC which is DEPSed into Chrome. Moving it
   # out of //build will require using the build_overrides directory.
-  proprietary_codecs = is_chrome_branded || is_chromecast
+  #
+  # Do not add any other conditions to the following line.
+  #
+  # TODO(crbug.com/1314528): Remove chromecast-related conditions and force
+  # builds to explicitly specify this.
+  proprietary_codecs = is_chrome_branded || is_castos || is_cast_android
 
   # libudev usage. This currently only affects the content layer.
-  use_udev = (is_linux || is_chromeos) && !is_chromecast
+  use_udev = (is_linux && !is_castos) || is_chromeos
 
   use_dbus = is_linux || is_chromeos
 
-  use_gio = is_linux && !is_chromecast
+  use_gio = is_linux && !is_castos
 }
 #
 # =============================================

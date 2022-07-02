@@ -39,11 +39,10 @@ CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
 
 ConnectivityDiagnosticsSystemAppDelegate::
     ConnectivityDiagnosticsSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
-          "ConnectivityDiagnostics",
-          GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
-          profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS,
+                                "ConnectivityDiagnostics",
+                                GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo>
 ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {

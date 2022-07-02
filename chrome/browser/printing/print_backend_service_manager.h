@@ -156,7 +156,7 @@ class PrintBackendServiceManager {
 
  private:
   friend base::NoDestructor<PrintBackendServiceManager>;
-  friend class PrintBackendPrintBrowserTestBase;
+  friend class SystemAccessProcessPrintBrowserTestBase;
   FRIEND_TEST_ALL_PREFIXES(PrintBackendServiceManagerTest,
                            IsIdleTimeoutUpdateNeededForRegisteredClient);
   FRIEND_TEST_ALL_PREFIXES(PrintBackendServiceManagerTest,

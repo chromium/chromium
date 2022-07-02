@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -158,7 +159,7 @@ class BluetoothAdapterProfileBlueZTest : public testing::Test {
 
   // unowned pointer as expected to be used by clients of
   // BluetoothAdapterBlueZ::UseProfile like BluetoothSocketBlueZ
-  BluetoothAdapterProfileBlueZ* profile_user_ptr_;
+  raw_ptr<BluetoothAdapterProfileBlueZ> profile_user_ptr_;
 };
 
 TEST_F(BluetoothAdapterProfileBlueZTest, DelegateCount) {

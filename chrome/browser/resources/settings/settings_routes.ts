@@ -28,7 +28,6 @@ export type SettingsRoutes = {
   IMPORT_DATA: Route,
   INCOMPATIBLE_APPLICATIONS: Route,
   LANGUAGES: Route,
-  LANGUAGE_SETTINGS: Route,
   MANAGE_PROFILE: Route,
   ON_STARTUP: Route,
   PASSWORDS: Route,

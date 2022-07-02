@@ -67,6 +67,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       std::vector<gfx::Rect>* content_bounds) override;
 
   void set_using_dc_layers_for_testing(bool value) { using_dc_layers_ = value; }
+  void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
+    GetOverlayProcessor()
+        ->set_frames_since_last_qualified_multi_overlays_for_testing(value);
+  }
 
  protected:
   // For testing.

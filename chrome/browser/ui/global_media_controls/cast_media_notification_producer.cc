@@ -59,24 +59,20 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
-    global_media_controls::MediaItemManager* item_manager,
-    base::RepeatingClosure items_changed_callback)
+    global_media_controls::MediaItemManager* item_manager)
     : CastMediaNotificationProducer(
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
-          item_manager,
-          std::move(items_changed_callback)) {}
+          item_manager) {}
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
     media_router::MediaRouter* router,
-    global_media_controls::MediaItemManager* item_manager,
-    base::RepeatingClosure items_changed_callback)
+    global_media_controls::MediaItemManager* item_manager)
     : media_router::MediaRoutesObserver(router),
       profile_(profile),
       router_(router),
       item_manager_(item_manager),
-      items_changed_callback_(std::move(items_changed_callback)),
       item_ui_observer_set_(this) {}
 
 CastMediaNotificationProducer::~CastMediaNotificationProducer() = default;
@@ -149,7 +145,7 @@ void CastMediaNotificationProducer::OnMediaItemUIDismissed(
     item->Dismiss();
   }
   if (!HasActiveItems()) {
-    items_changed_callback_.Run();
+    item_manager_->OnItemsChanged();
   }
 }
 
@@ -191,8 +187,9 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
       item_it->second.OnRouteUpdated(route);
     }
   }
-  if (HasActiveItems() != had_items)
-    items_changed_callback_.Run();
+  if (HasActiveItems() != had_items) {
+    item_manager_->OnItemsChanged();
+  }
 }
 
 size_t CastMediaNotificationProducer::GetActiveItemCount() const {

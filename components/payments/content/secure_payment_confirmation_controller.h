@@ -45,14 +45,15 @@ class SecurePaymentConfirmationController
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) override;
   void ConfirmPaymentForTesting() override;
+  bool ClickOptOutForTesting() override;
 
   // InitializationTask::Observer:
   void OnInitialized(InitializationTask* initialization_task) override;
 
   // Callbacks for user interaction.
-  void OnDismiss();
   void OnCancel();
   void OnConfirm();
+  void OnOptOut();
 
   base::WeakPtr<SecurePaymentConfirmationController> GetWeakPtr();
 

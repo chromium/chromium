@@ -181,6 +181,11 @@ void InputElement::SetKeys(std::vector<ui::DomCode>& keys) {
   std::copy(keys.begin(), keys.end(), std::back_inserter(keys_));
 }
 
+int InputElement::GetIndexOfKey(ui::DomCode key) const {
+  auto it = std::find(keys_.begin(), keys_.end(), key);
+  return it == keys_.end() ? -1 : it - keys_.begin();
+}
+
 std::unique_ptr<InputElementProto> InputElement::ConvertToProto() {
   auto proto = std::make_unique<InputElementProto>();
   proto->set_input_sources(input_sources_);
@@ -199,6 +204,10 @@ bool InputElement::operator==(const InputElement& other) const {
   if (!!(this->input_sources_ & InputSource::IS_MOUSE))
     equal = equal && (this->mouse_action_ == other.mouse_action());
   return equal;
+}
+
+bool InputElement::operator!=(const InputElement& other) const {
+  return !(*this == other);
 }
 
 }  // namespace input_overlay

@@ -386,18 +386,6 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
   // It is assumed that if we proceed past here, that a fetch will at least be
   // attempted.
 
-  std::vector<proto::FieldTrial> active_field_trials;
-  // Active field trials convey some sort of user information, so
-  // ensure that the user has opted into the right permissions before adding
-  // these fields to the request.
-  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(off_the_record_,
-                                                        pref_service_)) {
-    google::protobuf::RepeatedPtrField<proto::FieldTrial> current_field_trials =
-        GetActiveFieldTrialsAllowedForFetch();
-    active_field_trials = std::vector<proto::FieldTrial>(
-        {current_field_trials.begin(), current_field_trials.end()});
-  }
-
   if (!prediction_model_fetcher_) {
     prediction_model_fetcher_ = std::make_unique<PredictionModelFetcherImpl>(
         url_loader_factory_,
@@ -434,8 +422,7 @@ void PredictionManager::FetchModels(bool is_first_model_fetch) {
 
   bool fetch_initiated =
       prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-          models_info, active_field_trials, proto::CONTEXT_BATCH_UPDATE_MODELS,
-          application_locale_,
+          models_info, proto::CONTEXT_BATCH_UPDATE_MODELS, application_locale_,
           base::BindOnce(&PredictionManager::OnModelsFetched,
                          ui_weak_ptr_factory_.GetWeakPtr(), models_info));
 

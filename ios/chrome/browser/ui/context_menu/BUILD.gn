@@ -12,6 +12,7 @@ source_set("context_menu") {
     ":context_menu_ui",
     "//base",
     "//components/search_engines",
+    "//components/url_param_filter/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
@@ -48,12 +49,6 @@ source_set("context_menu_ui") {
   sources = [
     "context_menu_utils.h",
     "context_menu_utils.mm",
-    "image_preview_view_controller.h",
-    "image_preview_view_controller.mm",
-    "link_no_preview_view.h",
-    "link_no_preview_view.mm",
-    "link_no_preview_view_controller.h",
-    "link_no_preview_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -95,6 +90,8 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
+    "//components/url_param_filter/core",
+    "//components/url_param_filter/core:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",

@@ -48,4 +48,7 @@ class HeadlessModeBrowserTestWithStartWindowMode
   StartWindowMode start_window_mode() const { return GetParam(); };
 };
 
+// Toggles browser fullscreen mode synchronously.
+void ToggleFullscreenModeSync(Browser* browser);
+
 #endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_

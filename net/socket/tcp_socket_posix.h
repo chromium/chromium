@@ -150,6 +150,11 @@ class NET_EXPORT TCPSocketPosix {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
+  // Opens the socket and returns the underlying SocketDescriptor as well as the
+  // result of Open(). This method is used by the socket broker.
+  static int OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                            SocketDescriptor* out);
+
   // Return the underlying SocketDescriptor and clean up this object, which may
   // no longer be used. This method should be used only for testing. No read,
   // write, or accept operations should be pending.
@@ -213,7 +218,7 @@ class NET_EXPORT TCPSocketPosix {
   // |socket_performance_watcher_|. May be nullptr.
   std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher_;
 
-  bool logging_multiple_connect_attempts_;
+  bool logging_multiple_connect_attempts_ = false;
 
   NetLogWithSource net_log_;
 

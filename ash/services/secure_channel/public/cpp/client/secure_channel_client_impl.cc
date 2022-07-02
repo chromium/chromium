@@ -7,6 +7,7 @@
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/nearby_connector.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
@@ -124,6 +125,13 @@ void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
 
 void SecureChannelClientImpl::FlushForTesting() {
   secure_channel_remote_.FlushForTesting();
+}
+
+void SecureChannelClientImpl::GetLastSeenTimestamp(
+    const std::string& remote_device_id,
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  secure_channel_remote_->GetLastSeenTimestamp(remote_device_id,
+                                               std::move(callback));
 }
 
 }  // namespace ash::secure_channel

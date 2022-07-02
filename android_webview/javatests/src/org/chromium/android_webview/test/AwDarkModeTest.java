@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Build;
 
@@ -38,7 +37,6 @@ import java.util.concurrent.Callable;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-@SuppressLint("NewApi")
 public class AwDarkModeTest {
     private static final String FILE = "/main.html";
     private static final String DATA =

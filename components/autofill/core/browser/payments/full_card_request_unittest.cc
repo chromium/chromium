@@ -381,8 +381,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
 
 // Verify getting the full PAN, the expiration and the dCVV for a virtual card.
 TEST_F(FullCardRequestTest, GetFullCardPanAndExpirationAndDcvvForVirtualCard) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableMerchantBoundVirtualCards);
   EXPECT_CALL(
       *result_delegate(),
       OnFullCardRequestSucceeded(testing::Ref(*request()),

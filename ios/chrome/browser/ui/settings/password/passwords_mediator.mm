@@ -57,7 +57,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
   // A helper object for passing data about saved passwords from a finished
-  // password store request to the PasswordsTableViewController.
+  // password store request to the PasswordManagerViewController.
   std::unique_ptr<SavedPasswordsPresenterObserverBridge>
       _passwordsPresenterObserver;
 
@@ -73,7 +73,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 }
 
 // Object storing the time of the previous successful re-authentication.
-// This is meant to be used by the |ReauthenticationModule| for keeping
+// This is meant to be used by the `ReauthenticationModule` for keeping
 // re-authentications valid for a certain time interval within the scope
 // of the Passwords Screen.
 @property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
@@ -158,7 +158,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   _syncService = nullptr;
 }
 
-#pragma mark - PasswordsTableViewControllerDelegate
+#pragma mark - PasswordManagerViewControllerDelegate
 
 - (void)deletePasswordForms:
     (const std::vector<password_manager::PasswordForm>&)forms {
@@ -182,7 +182,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
 
   NSString* timestamp;
-  // If check finished in less than |kJustCheckedTimeThresholdInMinutes| show
+  // If check finished in less than `kJustCheckedTimeThresholdInMinutes` show
   // "just now" instead of timestamp.
   if (elapsedTime < kJustCheckedTimeThresholdInMinutes)
     timestamp = l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);

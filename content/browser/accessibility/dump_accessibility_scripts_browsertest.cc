@@ -162,7 +162,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   }
 
   RenderWidgetHost* GetWidgetHost() {
-    return GetWebContents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+    return GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget();
   }
 };
 
@@ -379,6 +382,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRows) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectedRows) {
   RunTypedTest<kMacAttributes>("ax-selected-rows.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSize) {
+  RunTypedTest<kMacAttributes>("ax-size.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTitleUIElement) {

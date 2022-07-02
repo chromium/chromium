@@ -55,7 +55,6 @@ CameraPanTiltZoomPermissionContext::~CameraPanTiltZoomPermissionContext() {
 }
 
 void CameraPanTiltZoomPermissionContext::RequestPermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_frame_origin,
     bool user_gesture,
@@ -63,8 +62,7 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (HasAvailableCameraPtzDevices()) {
-    PermissionContextBase::RequestPermission(web_contents, id,
-                                             requesting_frame_origin,
+    PermissionContextBase::RequestPermission(id, requesting_frame_origin,
                                              user_gesture, std::move(callback));
     return;
   }
@@ -80,7 +78,7 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-  web_contents->GetBrowserContext()
+  render_frame_host->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           blink::PermissionType::VIDEO_CAPTURE, render_frame_host, user_gesture,

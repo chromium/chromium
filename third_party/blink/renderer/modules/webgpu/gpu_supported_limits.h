@@ -49,6 +49,8 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxVertexAttributes() const;
   unsigned maxVertexBufferArrayStride() const;
   unsigned maxInterStageShaderComponents() const;
+  unsigned maxInterStageShaderVariables() const;
+  unsigned maxColorAttachments() const;
   unsigned maxComputeWorkgroupStorageSize() const;
   unsigned maxComputeInvocationsPerWorkgroup() const;
   unsigned maxComputeWorkgroupSizeX() const;

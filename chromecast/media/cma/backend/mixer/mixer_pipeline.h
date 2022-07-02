@@ -78,10 +78,6 @@ class MixerPipeline {
   // and GetOutput(), i.e. the group delay of PostProcessors in "linearize"
   int64_t GetPostLoopbackRenderingDelayMicroseconds() const;
 
-  // Informs FilterGroups and PostProcessors which channel will be played out.
-  // |playout_channel| may be |-1| to signal all channels will be played out.
-  void SetPlayoutChannel(int playout_channel);
-
   // Determines whether the pipeline is still ringing out after all input
   // streams have stopped playing.
   bool IsRinging() const;

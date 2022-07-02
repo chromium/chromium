@@ -3,12 +3,8 @@
 // found in the LICENSE file.
 
 var video;
-var abort = false;
-
-// The time waiting for collecting overlay presentation statistics.
-// 500 ms is supposed to be 15 frames at 30 Hz. However, only ~7 frames or less
-// are recorded in OverlayModeTraceTest_DirectComposition tests.
-// Reducing this delay might cause flakes in some tests.
+var totalVideoSwaps = 8;
+var useTimer = 0;
 var delayMs = 1000;
 
 function logOutput(s) {
@@ -30,14 +26,6 @@ const parsedString = (function (names) {
   return pairs;
 })(window.location.search.substr(1).split('&'));
 
-function getTimeDelay() {
-  let delayString = parsedString['delayMs'];
-  if (delayString != undefined)
-    delayMs = delayString;
-
-  return delayMs;
-}
-
 function setVideoSize() {
   let width = '240';
   let height = '135';
@@ -51,13 +39,26 @@ function setVideoSize() {
 
   video.width = width;
   video.height = height;
+  logOutput(`Video size:${video.width}x${video.height}`);
+}
+
+function getParametersTesting() {
+  let swapsString = parsedString['swaps'];
+  if (swapsString != undefined)
+    totalVideoSwaps = swapsString;
+
+  let useTimerString = parsedString['use_timer'];
+  if (useTimerString != undefined)
+    useTimer = useTimerString;
 }
 
 function main() {
+  let t0Ms = performance.now();
   video = document.getElementById('video');
   video.loop = true;
   video.muted = true;  // No need to exercise audio paths.
   setVideoSize(video);
+  getParametersTesting();
 
   video.onerror = e => {
     logOutput(`Test failed: ${e.message}`);
@@ -68,20 +69,62 @@ function main() {
   logOutput('Playback started.');
   video.play();
 
+  // Used by the swap counter, without using the timer.
+  let testCompletion = false;
+  let videoFrameReady = false;
+  let swapCount = 0;
+
   // These tests expect playback, so we intentionally don't request the frame
   // callback before starting playback. Since these videos loop there should
   // always be frames being generated.
   video.requestVideoFrameCallback((_, f) => {
-    logOutput(`First frame: ${f.width}x${f.height}, ts: ${f.mediaTime}`);
+    let timestamp = performance.now() - t0Ms;
+    logOutput(`First videoFrameCallback: TimeStamp:${timestamp}ms`);
 
-    // Trace tests on Windows need some time to collect statistics from the
-    // overlay system, so allow delay before verifying the stats. A 1000ms is
-    // about ~30 swaps at 30Hz.
-    setTimeout(_ => {
-      if (abort)
-        return;
-      logOutput('Test complete.');
-      domAutomationController.send('SUCCESS');
-    }, getTimeDelay());
+    if (useTimer == 1) {
+      setTimeout(_ => {
+        logOutput('Test complete.');
+        domAutomationController.send('SUCCESS');
+      }, delayMs);
+    } else {
+      video.requestVideoFrameCallback(rVF_function);
+      chrome.gpuBenchmarking.addSwapCompletionEventListener(
+          waitForSwapsToComplete);
+    }
   });
+
+
+  function rVF_function() {
+    videoFrameReady = true;
+    if (!testCompletion) {
+      video.requestVideoFrameCallback(rVF_function);
+    }
+  }
+
+  // Must add "--enable-features=ReportFCPOnlyOnSuccessfulCommit" with
+  // gpu_benchmarking to ensure completion event callback in
+  // addSwapCompletionEventListener is sent only on a succdessful commit.
+  function waitForSwapsToComplete() {
+    if (videoFrameReady) {
+      if (swapCount == 0) {
+        let timestamp = performance.now() - t0Ms;
+        logOutput(`First video overlay swap: TimeStamp:${timestamp}ms`);
+      }
+
+      swapCount++;
+      videoFrameReady = false;
+    }
+
+    if (swapCount < totalVideoSwaps) {
+      chrome.gpuBenchmarking.addSwapCompletionEventListener(
+          waitForSwapsToComplete);
+    } else {
+      testCompletion = true;
+      let timestamp = performance.now() - t0Ms;
+      logOutput(`Total swaps: ~${totalVideoSwaps}. Timestamp:${timestamp}ms`);
+      logOutput('Test complete.');
+
+      domAutomationController.send('SUCCESS');
+    }
+  }
 }

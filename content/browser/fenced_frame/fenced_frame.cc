@@ -10,6 +10,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "url/gurl.h"
 
@@ -54,16 +55,13 @@ FencedFrame::FencedFrame(
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame)),
       mode_(mode) {
-  scoped_refptr<SiteInstance> site_instance;
-  if (owner_render_frame_host->GetSiteInstance()->IsGuest()) {
-    site_instance = SiteInstance::CreateForGuest(
-        owner_render_frame_host->GetBrowserContext(),
-        owner_render_frame_host->GetSiteInstance()
-            ->GetStoragePartitionConfig());
-  } else {
-    site_instance =
-        SiteInstance::Create(owner_render_frame_host->GetBrowserContext());
-  }
+  scoped_refptr<SiteInstance> site_instance =
+      SiteInstanceImpl::CreateForFencedFrame(
+          owner_render_frame_host->GetSiteInstance());
+
+  // Set the mandatory sandbox flags from the beginning.
+  blink::FramePolicy frame_policy;
+  frame_policy.sandbox_flags = blink::kFencedFrameForcedSandboxFlags;
   // Note that even though this is happening in response to an event in the
   // renderer (i.e., the creation of a <fencedframe> element), we are still
   // putting `renderer_initiated_creation` as false. This is because that
@@ -74,8 +72,12 @@ FencedFrame::FencedFrame(
   // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
   // the decision to mark it as false.
   frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
-                    /*main_frame_name=*/"", /*opener=*/nullptr,
-                    /*frame_policy=*/blink::FramePolicy());
+                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
+                    frame_policy);
+  // Note that pending frame policy will be passed as `frame_policy` in
+  // `replication_state` in `mojom::CreateFrameParams`.
+  // See `RenderFrameHostImpl::CreateRenderFrame`.
+  frame_tree_->root()->SetPendingFramePolicy(frame_policy);
 
   // TODO(crbug.com/1199679): This should be moved to FrameTree::Init.
   web_contents_->NotifySwappedFromRenderManager(
@@ -142,6 +144,7 @@ void FencedFrame::Navigate(const GURL& url,
       /*post_body=*/nullptr, /*extra_headers=*/"",
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
+      /*is_form_submission=*/false,
       /*impression=*/absl::nullopt, navigation_start_time,
       blink::IsValidUrnUuidURL(url));
 }
@@ -165,12 +168,7 @@ FrameTree* FencedFrame::LoadingTree() {
   return web_contents_->LoadingTree();
 }
 
-RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
-  DCHECK(proxy_to_inner_main_frame_);
-  return proxy_to_inner_main_frame_;
-}
-
-void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
+RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   DCHECK(outer_delegate_frame_tree_node_);
   // Connect the outer delegate RenderFrameHost with the inner main
   // FrameTreeNode. This allows us to traverse from the outer delegate RFH
@@ -180,7 +178,9 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
           frame_tree_->root()->frame_tree_node_id());
 
   FrameTreeNode* inner_root = frame_tree_->root();
-  proxy_to_inner_main_frame_ =
+  // This is for use by the "outer" FrameTree (i.e., the one that
+  // `owner_render_frame_host_` is associated with).
+  RenderFrameProxyHost* proxy_host =
       inner_root->current_frame_host()
           ->browsing_context_state()
           ->CreateOuterDelegateProxy(
@@ -188,11 +188,11 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 
-  // We need to set the `proxy_to_inner_main_frame_` as created because the
+  // We need to set the `proxy_host` as created because the
   // renderer side of this object is live. It is live because the creation of
   // the FencedFrame object occurs in a sync request from the renderer where the
-  // other end of `proxy_to_inner_main_frame_` lives.
-  proxy_to_inner_main_frame_->SetRenderFrameProxyCreated(true);
+  // other end of `proxy_host` lives.
+  proxy_host->SetRenderFrameProxyCreated(true);
 
   RenderFrameHostManager* inner_render_manager = inner_root->render_manager();
 
@@ -208,7 +208,7 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
               ->GetSiteInstance()
               ->group(),
           static_cast<RenderViewHostImpl*>(rvh), nullptr)) {
-    return;
+    return proxy_host;
   }
 
   RenderWidgetHostViewBase* child_rwhv =
@@ -219,6 +219,8 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
   devtools_instrumentation::FencedFrameCreated(owner_render_frame_host_, this);
+
+  return proxy_host;
 }
 
 const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {

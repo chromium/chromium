@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="3567399274263440288">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser.</translation>
+<translation id="3619462831205197427">Accedi a questo sito, al tuo Account Google e a Chromium.</translation>
 <translation id="3639997914391704523">Chromium può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> stava usando Chromium e ha lasciato preferiti, password e altre impostazioni su questo dispositivo.</translation>
 <translation id="3805899903892079518">Chromium non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
@@ -77,7 +78,6 @@
 1. Apri le Impostazioni.
 2. Tocca App browser predefinita.
 3. Seleziona Chromium.</translation>
-<translation id="6155422572367400359">Accedi a questo sito, al tuo Account Google e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="6183442264225539303">Accedi a questo sito e a Chromium. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="632825460376924298">Consenti l'accesso a Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Eliminare i dati di Chromium dal dispositivo?</translation>
 <translation id="8175055321229419309">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chromium nel dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
+<translation id="8308172444429103994">Suggerimento per Chromium. Accedi più velocemente selezionando la password salvata nella parte superiore della tastiera.</translation>
 <translation id="858114650497379505">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="865600487977764604">Ti protegge su Chromium e potrebbe essere utilizzata per migliorare la tua sicurezza in altre app Google se hai eseguito l'accesso.</translation>

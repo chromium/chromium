@@ -9,8 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 class FakeBluetoothHidDetector : public BluetoothHidDetector {
  public:
@@ -21,33 +20,39 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
   void SetInputDevicesStatus(InputDevicesStatus input_devices_status) override;
   const BluetoothHidDetectionStatus GetBluetoothHidDetectionStatus() override;
 
-  // Updates the HID detection status returned by
-  // GetBluetoothHidDetectionStatus() and notifies the client.
-  void SetBluetoothHidDetectionStatus(
-      absl::optional<BluetoothHidDetector::BluetoothHidMetadata> pairing_device,
-      absl::optional<BluetoothHidPairingState> pairing_state);
+  void SimulatePairingStarted(
+      BluetoothHidDetector::BluetoothHidMetadata pairing_device);
+  void SimulatePairingFinished();
 
   const InputDevicesStatus& input_devices_status() {
     return input_devices_status_;
+  }
+
+  size_t num_set_input_devices_status_calls() {
+    return num_set_input_devices_status_calls_;
   }
 
   bool is_bluetooth_hid_detection_active() {
     return is_bluetooth_hid_detection_active_;
   }
 
+  bool is_using_bluetooth() { return is_using_bluetooth_; }
+
  private:
   // BluetoothHidDetector:
   void PerformStartBluetoothHidDetection(
       InputDevicesStatus input_devices_status) override;
-  void PerformStopBluetoothHidDetection() override;
+  void PerformStopBluetoothHidDetection(bool is_using_bluetooth) override;
 
   InputDevicesStatus input_devices_status_;
+  size_t num_set_input_devices_status_calls_ = 0;
+
   absl::optional<BluetoothHidMetadata> current_pairing_device_;
   absl::optional<BluetoothHidPairingState> current_pairing_state_;
   bool is_bluetooth_hid_detection_active_ = false;
+  bool is_using_bluetooth_ = false;
 };
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_FAKE_BLUETOOTH_HID_DETECTOR_H_

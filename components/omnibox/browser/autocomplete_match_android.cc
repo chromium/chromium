@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -75,13 +76,19 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   ScopedJavaLocalRef<jobject> j_query_tiles =
       query_tiles::TileConversionBridge::CreateJavaTiles(env, query_tiles);
 
-  std::vector<std::u16string> navsuggest_titles;
-  navsuggest_titles.reserve(navsuggest_tiles.size());
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> navsuggest_urls;
-  navsuggest_urls.reserve(navsuggest_tiles.size());
-  for (const auto& tile : navsuggest_tiles) {
-    navsuggest_titles.push_back(tile.title);
-    navsuggest_urls.push_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
+  std::vector<std::u16string> suggest_titles;
+  suggest_titles.reserve(suggest_tiles.size());
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggest_urls;
+  suggest_urls.reserve(suggest_tiles.size());
+  // Note: vector<bool> is a specialized version of vector that behaves
+  // differently, storing values as individual bits. This makes it impossible
+  // for us to use it to represent tile.is_search on the Java side.
+  std::vector<int> suggest_types;
+  suggest_types.reserve(suggest_tiles.size());
+  for (const auto& tile : suggest_tiles) {
+    suggest_titles.push_back(tile.title);
+    suggest_urls.push_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
+    suggest_types.push_back(tile.is_search);
   }
 
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
@@ -110,9 +117,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
               SearchSuggestionParser::kNoSuggestionGroupId),
           j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
           has_tab_match.value_or(false),
-          ToJavaArrayOfStrings(env, navsuggest_titles),
-          url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls),
-          j_action_obj));
+          ToJavaArrayOfStrings(env, suggest_titles),
+          url::GURLAndroid::ToJavaArrayOfGURLs(env, suggest_urls),
+          ToJavaIntArray(env, suggest_types), j_action_obj));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

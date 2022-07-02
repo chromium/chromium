@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
           .Set("version", "1")
           .ToJSON());
 
-  ExtensionTestMessageListener listener(false /* will_reply */);
+  ExtensionTestMessageListener listener;
   scoped_refptr<const Extension> extension =
       InstallExtension(extension_dir.Pack(), 1);
   ASSERT_TRUE(extension.get());

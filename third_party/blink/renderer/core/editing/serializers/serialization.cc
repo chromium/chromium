@@ -29,7 +29,10 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
+#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -81,6 +84,8 @@
 
 namespace blink {
 
+using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
+
 class AttributeChange {
   DISALLOW_NEW();
 
@@ -107,6 +112,117 @@ class AttributeChange {
 WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::AttributeChange)
 
 namespace blink {
+
+namespace {
+
+class FailingLoader final : public WebURLLoader {
+ public:
+  explicit FailingLoader(
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
+        unfreezable_task_runner_handle_(
+            std::move(unfreezable_task_runner_handle)) {}
+  ~FailingLoader() override = default;
+
+  // WebURLLoader implementation:
+  void LoadSynchronously(
+      std::unique_ptr<network::ResourceRequest> request,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      bool pass_response_pipe_to_client,
+      bool no_mime_sniffing,
+      base::TimeDelta timeout_interval,
+      WebURLLoaderClient*,
+      WebURLResponse&,
+      absl::optional<WebURLError>& error,
+      WebData&,
+      int64_t& encoded_data_length,
+      int64_t& encoded_body_length,
+      WebBlobInfo& downloaded_blob,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper) override {
+    error.emplace(ResourceError::Failure(KURL(request->url)));
+  }
+  void LoadAsynchronously(
+      std::unique_ptr<network::ResourceRequest> request,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      bool no_mime_sniffing,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper,
+      WebURLLoaderClient* client) override {
+    url_ = KURL(request->url);
+    client_ = client;
+    freezable_task_runner_handle_->GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+  }
+  void Freeze(LoaderFreezeMode mode) override {
+    mode_ = mode;
+    if (mode_ != LoaderFreezeMode::kNone || !client_) {
+      return;
+    }
+    freezable_task_runner_handle_->GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+  }
+  void DidChangePriority(WebURLRequest::Priority, int) override {}
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
+    return freezable_task_runner_handle_->GetTaskRunner();
+  }
+
+ private:
+  void Fail() {
+    if (mode_ != LoaderFreezeMode::kNone || !client_) {
+      return;
+    }
+
+    auto* client = client_;
+    client_ = nullptr;
+    client->DidFail(static_cast<WebURLError>(ResourceError::Failure(url_)),
+                    /*finish_time=*/base::TimeTicks::Now(),
+                    /*total_encoded_data_length=*/0,
+                    /*total_encoded_body_length=*/0,
+                    /*total_decoded_body_length=*/0);
+  }
+
+  KURL url_;
+  WebURLLoaderClient* client_ = nullptr;
+  LoaderFreezeMode mode_ = LoaderFreezeMode::kNone;
+
+  const std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle_;
+  const std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle_;
+
+  // This must be the last member.
+  base::WeakPtrFactory<FailingLoader> weak_ptr_factory_{this};
+};
+
+class FailingLoaderFactory final : public WebURLLoaderFactory {
+ public:
+  // WebURLLoaderFactory implementation:
+  std::unique_ptr<WebURLLoader> CreateURLLoader(
+      const WebURLRequest&,
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle,
+      CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
+    return std::make_unique<FailingLoader>(
+        std::move(freezable_task_runner_handle),
+        std::move(unfreezable_task_runner_handle));
+  }
+};
+
+class EmptyLocalFrameClientWithFailingLoaderFactory final
+    : public EmptyLocalFrameClient {
+ public:
+  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
+    return std::make_unique<FailingLoaderFactory>();
+  }
+};
+
+}  // namespace
 
 static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
   HeapVector<AttributeChange> changes;
@@ -784,8 +900,10 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   page->GetSettings().SetParserScriptingFlagPolicy(
       ParserScriptingFlagPolicy::kEnabled);
 
+  auto* client =
+      MakeGarbageCollected<EmptyLocalFrameClientWithFailingLoaderFactory>();
   LocalFrame* frame = MakeGarbageCollected<LocalFrame>(
-      MakeGarbageCollected<EmptyLocalFrameClient>(), *page,
+      client, *page,
       nullptr,  // FrameOwner*
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
@@ -842,14 +960,20 @@ constexpr unsigned kMaxSanitizationIterations = 16;
 
 }  // namespace
 
-DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
-    Document& document,
-    const String& raw_markup,
-    unsigned fragment_start,
-    unsigned fragment_end,
-    const String& base_url) {
+String CreateSanitizedMarkupWithContext(Document& document,
+                                        const String& raw_markup,
+                                        unsigned fragment_start,
+                                        unsigned fragment_end,
+                                        const String& base_url,
+                                        ChildrenOnly children_only,
+                                        AbsoluteURLs should_resolve_urls,
+                                        IncludeShadowRoots include_shadow_roots,
+                                        ClosedRootsSet include_closed_roots) {
   if (raw_markup.IsEmpty())
-    return nullptr;
+    return String();
+
+  Document* staging_document = CreateStagingDocumentForMarkupSanitization(
+      *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
 
   // Iterate on parsing, sanitization and serialization until the markup is
   // stable, or if we have exceeded the maximum allowed number of iterations.
@@ -860,16 +984,12 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
        ++iteration) {
     last_markup = markup;
 
-    Document* staging_document = CreateStagingDocumentForMarkupSanitization(
-        *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
-    Element* body = staging_document->body();
-
     DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(
         *staging_document, last_markup, fragment_start, fragment_end, KURL(),
         kDisallowScriptingAndPluginContent);
     if (!fragment) {
       staging_document->GetPage()->WillBeDestroyed();
-      return nullptr;
+      return String();
     }
 
     bool needs_sanitization = false;
@@ -881,7 +1001,8 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
     if (!needs_sanitization) {
       markup = CreateMarkup(fragment);
     } else {
-      body->appendChild(fragment);
+      Element* body = staging_document->body();
+      staging_document->body()->appendChild(fragment);
       staging_document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
       // This sanitizes stylesheets in the markup into element inline styles
@@ -891,18 +1012,39 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
                                 .SetShouldAnnotateForInterchange(true)
                                 .SetIsForMarkupSanitization(true)
                                 .Build());
+
+      body->RemoveChildren();
     }
-    staging_document->GetPage()->WillBeDestroyed();
 
     fragment_start = 0;
     fragment_end = markup.length();
   }
 
-  // Sanitization failed because markup can't stabilize.
-  if (last_markup != markup)
-    return nullptr;
+  String final_markup;
+  // Sanitization succeeds only if the markup can stabilize.
+  if (last_markup == markup) {
+    DocumentFragment* final_fragment =
+        CreateFragmentFromMarkup(*staging_document, markup, base_url,
+                                 kDisallowScriptingAndPluginContent);
+    final_markup =
+        CreateMarkup(final_fragment, children_only, should_resolve_urls,
+                     include_shadow_roots, include_closed_roots);
+  }
+  staging_document->GetPage()->WillBeDestroyed();
+  return final_markup;
+}
 
-  return CreateFragmentFromMarkup(document, markup, base_url,
+DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
+    Document& document,
+    const String& raw_markup,
+    unsigned fragment_start,
+    unsigned fragment_end,
+    const String& base_url) {
+  String sanitized_markup = CreateSanitizedMarkupWithContext(
+      document, raw_markup, fragment_start, fragment_end, KURL());
+  if (sanitized_markup.IsNull())
+    return nullptr;
+  return CreateFragmentFromMarkup(document, sanitized_markup, base_url,
                                   kDisallowScriptingAndPluginContent);
 }
 

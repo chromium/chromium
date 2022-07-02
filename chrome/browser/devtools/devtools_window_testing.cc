@@ -111,7 +111,7 @@ void DevToolsWindowTesting::WaitForDevToolsWindowLoad(DevToolsWindow* window) {
   }
   std::u16string harness = base::UTF8ToUTF16(
       content::DevToolsFrontendHost::GetFrontendResource(kHarnessScript));
-  window->main_web_contents_->GetMainFrame()->ExecuteJavaScript(
+  window->main_web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(
       harness, base::NullCallback());
 }
 

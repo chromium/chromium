@@ -41,8 +41,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -51,8 +50,8 @@ const char kCTAndPKPHost[] = "pkp-expect-ct.preloaded.test";
 // CertVerifier that will fail the test if it is ever called.
 class FailsTestCertVerifier : public CertVerifier {
  public:
-  FailsTestCertVerifier() {}
-  ~FailsTestCertVerifier() override {}
+  FailsTestCertVerifier() = default;
+  ~FailsTestCertVerifier() override = default;
 
   // CertVerifier implementation
   int Verify(const RequestParams& params,
@@ -97,7 +96,7 @@ class MockSCTAuditingDelegate : public SCTAuditingDelegate {
 class SignatureSaver : public quic::ProofSource::Callback {
  public:
   explicit SignatureSaver(std::string* signature) : signature_(signature) {}
-  ~SignatureSaver() override {}
+  ~SignatureSaver() override = default;
 
   void Run(bool /*ok*/,
            const quiche::QuicheReferenceCountedPointer<
@@ -112,8 +111,8 @@ class SignatureSaver : public quic::ProofSource::Callback {
 
 class DummyProofVerifierCallback : public quic::ProofVerifierCallback {
  public:
-  DummyProofVerifierCallback() {}
-  ~DummyProofVerifierCallback() override {}
+  DummyProofVerifierCallback() = default;
+  ~DummyProofVerifierCallback() override = default;
 
   void Run(bool ok,
            const std::string& error_details,
@@ -998,5 +997,4 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

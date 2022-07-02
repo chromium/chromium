@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
 #define COMPONENTS_VIZ_HOST_HIT_TEST_HIT_TEST_QUERY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
@@ -152,8 +153,6 @@ class VIZ_HOST_EXPORT HitTestQuery {
   bool GetTransformToTargetRecursively(const FrameSinkId& target,
                                        size_t region_index,
                                        gfx::Transform* transform) const;
-
-  void RecordSlowPathHitTestReasons(uint32_t) const;
 
   std::vector<AggregatedHitTestRegion> hit_test_data_;
 };

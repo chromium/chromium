@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Chrome vam štedi vrijeme sinkronizacijom vaših računa na webu. Račune možete dodavati i uklanjati u postavkama.</translation>
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3345341804167540816">Upotrebljavajte Chrome svugdje</translation>
+<translation id="3428998300753080128">Prijavite se na ovu web-lokaciju, Google račun i Chrome.</translation>
 <translation id="3522659714780527202">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, uključite sinkronizaciju</translation>
 <translation id="3533694711092285624">Nema nijedne spremljene zaporke. Chrome može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="3641179212828090796">Koristite zaporku koju ste spremili u Chrome da biste se prijavljivali brže</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
 <translation id="4698415050768537821">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovno sutra ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>
+<translation id="4802922164792993118">Savjet za Chrome. Brže se prijavite odabirom spremljene zaporke pri vrhu tipkovnice.</translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u beta verziji Chromea</translation>
 <translation id="5030102366287574140">Chrome vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
-<translation id="8263079278049777200">Prijavite se na ovu web-lokaciju, Google račun i Chrome. Sinkronizaciju možete uključiti kasnije.</translation>
 <translation id="8357607116237445042">Odaberite želite li podatke iz Chromea izbrisati s ovog uređaja ili ih zadržati</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Pokušajte ih deinstalirati.</translation>

@@ -246,9 +246,6 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
         case network::mojom::ContentSecurityPolicySource::kMeta:
           Count(WebFeature::kMainFrameCSPViaMeta);
           break;
-        case network::mojom::ContentSecurityPolicySource::kOriginPolicy:
-          Count(WebFeature::kMainFrameCSPViaOriginPolicy);
-          break;
       }
     }
   }

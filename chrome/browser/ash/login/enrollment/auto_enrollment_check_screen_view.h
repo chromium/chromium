@@ -5,30 +5,21 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CHECK_SCREEN_VIEW_H_
 #define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CHECK_SCREEN_VIEW_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
 namespace ash {
 
 // Interface between auto-enrollment check screen and its representation.
-// Note, do not forget to call OnViewDestroyed in the dtor.
-class AutoEnrollmentCheckScreenView {
+class AutoEnrollmentCheckScreenView
+    : public base::SupportsWeakPtr<AutoEnrollmentCheckScreenView> {
  public:
-  // Allows us to get info from auto-enrollment check screen that we need.
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "auto-enrollment-check", "AutoEnrollmentCheckScreen"};
 
-    // This method is called, when view is being destroyed. Note, if Delegate
-    // is destroyed earlier then it has to call SetDelegate(NULL).
-    virtual void OnViewDestroyed(AutoEnrollmentCheckScreenView* view) = 0;
-  };
-
-  constexpr static StaticOobeScreenId kScreenId{"auto-enrollment-check"};
-
-  virtual ~AutoEnrollmentCheckScreenView() {}
+  virtual ~AutoEnrollmentCheckScreenView() = default;
 
   virtual void Show() = 0;
-  virtual void SetDelegate(Delegate* delegate) = 0;
 };
 
 }  // namespace ash

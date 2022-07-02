@@ -29,24 +29,24 @@ class FakeWiFiService : public WiFiService {
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   void UnInitialize() override;
   void GetProperties(const std::string& network_guid,
-                     base::DictionaryValue* properties,
+                     base::Value::Dict* properties,
                      std::string* error) override;
   void GetManagedProperties(const std::string& network_guid,
-                            base::DictionaryValue* managed_properties,
+                            base::Value::Dict* managed_properties,
                             std::string* error) override;
   void GetState(const std::string& network_guid,
-                base::DictionaryValue* properties,
+                base::Value::Dict* properties,
                 std::string* error) override;
   void SetProperties(const std::string& network_guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* error) override;
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* network_guid,
                      std::string* error) override;
   void GetVisibleNetworks(const std::string& network_type,
-                          base::ListValue* network_list,
-                          bool include_details) override;
+                          bool include_details,
+                          base::Value::List* network_list) override;
   void RequestNetworkScan() override;
   void StartConnect(const std::string& network_guid,
                     std::string* error) override;

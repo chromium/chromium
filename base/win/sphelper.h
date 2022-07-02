@@ -9,11 +9,11 @@
 // Undefine before windows header will make the poisonous defines
 #include "base/win/windows_undefines.inc"
 
-#include <sphelper.h>
+#include <sphelper.h>  // NOLINT(build/include_order)
 
 // Undefine the poisonous defines
-#include "base/win/windows_undefines.inc"
+#include "base/win/windows_undefines.inc"  // NOLINT(build/include)
 // Check no poisonous defines follow this include
-#include "base/win/windows_defines.inc"
+#include "base/win/windows_defines.inc"  // NOLINT(build/include)
 
 #endif  // BASE_WIN_SPHELPER_H_

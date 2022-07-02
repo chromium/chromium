@@ -8,7 +8,7 @@
 GEN('#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "ash/public/cpp/style/color_provider.h"');
+GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
@@ -60,7 +60,30 @@ var MediaAppUIWithDarkLightModeGtestBrowserTest =
   get testGenPreamble() {
     return () => {
       // Switch to light mode.
-      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(false);');
+      GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);');
+    };
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var MediaAppUIWithDarkLightModeDarkGtestBrowserTest =
+    class extends MediaAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        ...super.featureList.enabled,
+        'chromeos::features::kDarkLightMode',
+      ]
+    };
+  }
+
+  /** @override */
+  get testGenPreamble() {
+    return () => {
+      // Switch to dark mode.
+      GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);');
     };
   }
 };
@@ -132,6 +155,9 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
             MediaAppUIWithDarkLightModeGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
+            MediaAppUIWithDarkLightModeDarkGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
             MediaAppUIWithoutDarkLightModeGtestBrowserTest))
         .testCaseBodies,
   };
@@ -182,9 +208,23 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
   runMediaAppTest('MultipleSelectionLaunch');
 });
 
-TEST_F('MediaAppUIGtestBrowserTest', 'NotifyCurrentFile', () => {
-  runMediaAppTest('NotifyCurrentFile');
-});
+TEST_F(
+    'MediaAppUIWithDarkLightModeGtestBrowserTest', 'NotifyCurrentFileLight',
+    () => {
+      runMediaAppTest('NotifyCurrentFileLight');
+    });
+
+TEST_F(
+    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest', 'NotifyCurrentFileDark',
+    () => {
+      runMediaAppTest('NotifyCurrentFileDark');
+    });
+
+TEST_F(
+    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest',
+    'NotifyCurrentFileAppIconDark', () => {
+      runMediaAppTest('NotifyCurrentFileAppIconDark');
+    });
 
 TEST_F('MediaAppUIGtestBrowserTest', 'LaunchUnopenableFile', () => {
   runMediaAppTest('LaunchUnopenableFile');

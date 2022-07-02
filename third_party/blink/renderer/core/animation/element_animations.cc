@@ -36,7 +36,10 @@
 
 namespace blink {
 
-ElementAnimations::ElementAnimations() : animation_style_change_(false) {}
+ElementAnimations::ElementAnimations()
+    : animation_style_change_(false),
+      composited_background_color_status_(static_cast<unsigned>(
+          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)){};
 
 ElementAnimations::~ElementAnimations() = default;
 

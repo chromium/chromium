@@ -409,7 +409,8 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
     // Mark as not enterprise managed to prevent the secure DNS mode from
     // being downgraded to off.
     base::win::ScopedDomainStateForTesting scoped_domain(false);
-    EXPECT_FALSE(base::IsEnterpriseDevice());
+    // TODO(crbug.com/1339062): What is the correct function to use here?
+    EXPECT_FALSE(base::win::IsEnrolledToDomain());
 #endif
 
     // Set the mocked policy provider to act as if no policies are in use by

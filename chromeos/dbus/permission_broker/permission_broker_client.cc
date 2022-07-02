@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "dbus/bus.h"
@@ -18,10 +19,13 @@
 
 using permission_broker::kCheckPathAccess;
 using permission_broker::kClaimDevicePath;
+using permission_broker::kDetachInterface;
 using permission_broker::kOpenPath;
+using permission_broker::kOpenPathAndRegisterClient;
 using permission_broker::kPermissionBrokerInterface;
 using permission_broker::kPermissionBrokerServiceName;
 using permission_broker::kPermissionBrokerServicePath;
+using permission_broker::kReattachInterface;
 using permission_broker::kReleaseTcpPort;
 using permission_broker::kReleaseTcpPortForward;
 using permission_broker::kReleaseUdpPort;
@@ -94,6 +98,54 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
         base::BindOnce(&PermissionBrokerClientImpl::OnError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
+  }
+
+  void OpenPathAndRegisterClient(const std::string& path,
+                                 uint32_t allowed_interfaces_mask,
+                                 int lifeline_fd,
+                                 OpenPathAndRegisterClientCallback callback,
+                                 ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(kPermissionBrokerInterface,
+                                 kOpenPathAndRegisterClient);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(allowed_interfaces_mask);
+    writer.AppendFileDescriptor(lifeline_fd);
+    proxy_->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &PermissionBrokerClientImpl::OpenPathAndRegisterClientResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&PermissionBrokerClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  void DetachInterface(const std::string& client_id,
+                       uint8_t iface_num,
+                       ResultCallback callback) override {
+    dbus::MethodCall method_call(kPermissionBrokerInterface, kDetachInterface);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(client_id);
+    writer.AppendByte(iface_num);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PermissionBrokerClientImpl::OnResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void ReattachInterface(const std::string& client_id,
+                         uint8_t iface_num,
+                         ResultCallback callback) override {
+    dbus::MethodCall method_call(kPermissionBrokerInterface,
+                                 kReattachInterface);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(client_id);
+    writer.AppendByte(iface_num);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PermissionBrokerClientImpl::OnResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void RequestTcpPortAccess(uint16_t port,
@@ -253,6 +305,23 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     std::move(callback).Run(std::move(fd));
   }
 
+  void OpenPathAndRegisterClientResponse(
+      OpenPathAndRegisterClientCallback callback,
+      dbus::Response* response) {
+    base::ScopedFD fd;
+    std::string client_id;
+    dbus::MessageReader reader(response);
+    if (!reader.PopFileDescriptor(&fd)) {
+      LOG(WARNING) << "Could not parse response for fd: "
+                   << response->ToString();
+    }
+    if (!reader.PopString(&client_id)) {
+      LOG(WARNING) << "Could not parse response for client_id: "
+                   << response->ToString();
+    }
+    std::move(callback).Run(client_id, std::move(fd));
+  }
+
   void OnError(ErrorCallback callback, dbus::ErrorResponse* response) {
     std::string error_name;
     std::string error_message;
@@ -266,7 +335,7 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     std::move(callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // Note: This should remain the last member so that it will be destroyed
   // first, invalidating its weak pointers, before the other members are

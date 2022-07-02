@@ -923,7 +923,7 @@ TEST_P(SubresourceFilterSafeBrowsingActivationThrottleParamTest,
   SimulateStartAndExpectProceed(url);
   navigation_simulator()->SetReferrer(blink::mojom::Referrer::New(
       RenderViewHostTestHarness::web_contents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetLastCommittedURL(),
       network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   SimulateCommitAndExpectProceed();

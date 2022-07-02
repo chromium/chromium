@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/tpm/install_attributes.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/bind.h"
@@ -396,6 +397,8 @@ base::Value DemoSession::GetCountryList() {
 void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeDefaultLocale, std::string());
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
+  registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
@@ -427,7 +430,14 @@ bool DemoSession::ShouldShowAndroidOrChromeAppInShelf(
 void DemoSession::SetExtensionsExternalLoader(
     scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
   extensions_external_loader_ = extensions_external_loader;
-  InstallAppFromUpdateUrl(GetScreensaverAppId());
+  if (!ash::features::IsDemoModeSWAEnabled() ||
+      extension_misc::IsDemoModeChromeApp(GetScreensaverAppId())) {
+    // Do app installation when one of the following condition holds:
+    // 1. Demo Mode SWA is NOT enabled, OR
+    // 2. Demo Mode SWA is enabled but the app ID to be installed is NOT
+    // one of the Demo Mode app IDs.
+    InstallAppFromUpdateUrl(GetScreensaverAppId());
+  }
 }
 
 void DemoSession::OverrideIgnorePinPolicyAppsForTesting(
@@ -546,7 +556,24 @@ void DemoSession::OnSessionStateChanged() {
       }
       RestoreDefaultLocaleForNextSession();
 
-      InstallAppFromUpdateUrl(GetHighlightsAppId());
+      if (!ash::features::IsDemoModeSWAEnabled() ||
+          extension_misc::IsDemoModeChromeApp(GetHighlightsAppId())) {
+        // Do app installation when one of the following condition holds:
+        // 1. Demo Mode SWA is NOT enabled, OR
+        // 2. Demo Mode SWA is enabled but the app ID to be installed is NOT
+        // one of the Demo Mode app IDs.
+        InstallAppFromUpdateUrl(GetHighlightsAppId());
+      }
+
+      // Download/update the Demo app component during session startup
+      if (features::IsDemoModeSWAEnabled()) {
+        g_browser_process->platform_part()->cros_component_manager()->Load(
+            "demo-mode-app",
+            component_updater::CrOSComponentManager::MountPolicy::kMount,
+            component_updater::CrOSComponentManager::UpdatePolicy::kForce,
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
 
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -554,6 +581,19 @@ void DemoSession::OnSessionStateChanged() {
     default:
       break;
   }
+}
+
+// TODO(b/231761044): Launch the Demo Mode SWA after the component has
+// been successfully loaded
+void DemoSession::OnDemoAppComponentLoaded(
+    component_updater::CrOSComponentManager::Error error,
+    const base::FilePath& path) {
+  if (error != component_updater::CrOSComponentManager::Error::NONE) {
+    LOG(WARNING) << "Error loading demo mode app component: "
+                 << static_cast<int>(error);
+    return;
+  }
+  demo_app_component_path_ = path;
 }
 
 void DemoSession::ShowSplashScreen() {

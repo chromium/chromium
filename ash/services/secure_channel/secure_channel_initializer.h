@@ -93,6 +93,9 @@ class SecureChannelInitializer : public SecureChannelBase {
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
+  void GetLastSeenTimestamp(
+      const std::string& remote_device_id,
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
   void OnBluetoothAdapterReceived(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);

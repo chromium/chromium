@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -77,9 +79,12 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNearbyNotifier),
+                                 kNearbyNotifier,
+                                 ash::NotificationCatalogName::kNearbyShare),
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
+
+  notification.set_accent_color(ash::kSystemNotificationColorNormal);
   notification.set_vector_small_image(kNearbyShareIcon);
   notification.set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);

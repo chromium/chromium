@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
@@ -24,17 +25,10 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 FileManagerPrivateListMountableGuestsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto* registry =
-      guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
-  auto entries = base::Value(base::Value::Type::LIST);
-  for (const auto& id : registry->List()) {
-    auto entry = base::Value(base::Value::Type::DICTIONARY);
-    auto* provider = registry->Get(id);
-    entry.SetIntKey("id", id);
-    entry.SetStringKey("displayName", provider->DisplayName());
-    entries.Append(std::move(entry));
-  }
-  return RespondNow(OneArgument(std::move(entries)));
+  auto guests = file_manager::util::CreateMountableGuestList(profile);
+  auto response = extensions::api::file_manager_private::ListMountableGuests::
+      Results::Create(guests);
+  return RespondNow(ArgumentList(std::move(response)));
 }
 
 FileManagerPrivateMountGuestFunction::FileManagerPrivateMountGuestFunction() {

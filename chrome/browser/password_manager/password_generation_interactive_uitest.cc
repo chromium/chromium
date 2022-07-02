@@ -124,7 +124,7 @@ class PasswordGenerationInteractiveTest
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.windows_key_code = key;
     WebContents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRenderViewHost()
         ->GetWidget()
         ->ForwardKeyboardEvent(event);

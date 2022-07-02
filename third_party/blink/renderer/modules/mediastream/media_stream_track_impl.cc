@@ -240,12 +240,6 @@ MediaStreamTrack* MediaStreamTrackImpl::Create(ExecutionContext* context,
       (display_surface_type == media::mojom::DisplayCaptureSurfaceType::WINDOW);
 
   if (is_tab_capture && RuntimeEnabledFeatures::RegionCaptureEnabled(context)) {
-    // Note:
-    // * ConditionalFocus is `implied_by` RegionCapture.
-    // * BrowserCaptureMediaStreamTrack a subclass of FocusableMediaStreamTrack.
-    // Therefore, tab-capture with ConditionalFocus/RegionCapture active
-    // instantiates a track on which focus() is exposed - as intended.
-    DCHECK(RuntimeEnabledFeatures::ConditionalFocusEnabled(context));
     return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
         context, component, std::move(callback), descriptor_id);
   } else if ((is_tab_capture || is_window_capture) &&
@@ -716,15 +710,22 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+  applyConstraints(resolver, constraints);
+  return promise;
+}
 
+void MediaStreamTrackImpl::applyConstraints(
+    ScriptPromiseResolver* resolver,
+    const MediaTrackConstraints* constraints) {
   MediaErrorState error_state;
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(resolver->GetScriptState());
   MediaConstraints web_constraints = media_constraints_impl::Create(
       execution_context, constraints, error_state);
   if (error_state.HadException()) {
     resolver->Reject(
         OverconstrainedError::Create(String(), "Cannot parse constraints"));
-    return promise;
+    return;
   }
 
   if (image_capture_) {
@@ -735,7 +736,7 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
           String(),
           "Mixing ImageCapture and non-ImageCapture "
           "constraints is not currently supported"));
-      return promise;
+      return;
     }
 
     if (ConstraintsAreEmpty(constraints)) {
@@ -745,7 +746,7 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
       image_capture_->ClearMediaTrackConstraints();
     } else if (ConstraintsHaveImageCapture(constraints)) {
       applyConstraintsImageCapture(resolver, constraints);
-      return promise;
+      return;
     }
   }
 
@@ -756,7 +757,7 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
   if (ConstraintsAreEmpty(constraints)) {
     SetConstraints(web_constraints);
     resolver->Resolve();
-    return promise;
+    return;
   }
 
   UserMediaController* user_media =
@@ -764,12 +765,12 @@ ScriptPromise MediaStreamTrackImpl::applyConstraints(
   if (!user_media) {
     resolver->Reject(OverconstrainedError::Create(
         String(), "Cannot apply constraints due to unexpected error"));
-    return promise;
+    return;
   }
 
   user_media->ApplyConstraints(MakeGarbageCollected<ApplyConstraintsRequest>(
       Component(), web_constraints, resolver));
-  return promise;
+  return;
 }
 
 void MediaStreamTrackImpl::applyConstraintsImageCapture(

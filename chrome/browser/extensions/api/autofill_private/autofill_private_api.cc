@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,15 +97,15 @@ const char* GetStringFromAddressField(i18n::addressinput::AddressField type) {
 }
 
 // Serializes the AddressUiComponent a map from string to base::Value().
-base::flat_map<std::string, base::Value> AddressUiComponentAsValueMap(
+base::Value::Dict AddressUiComponentAsValueMap(
     const i18n::addressinput::AddressUiComponent& address_ui_component) {
-  base::flat_map<std::string, base::Value> info;
-  info.emplace(kFieldNameKey, address_ui_component.name);
-  info.emplace(kFieldTypeKey,
-               GetStringFromAddressField(address_ui_component.field));
-  info.emplace(kFieldLengthKey,
-               address_ui_component.length_hint ==
-                   i18n::addressinput::AddressUiComponent::HINT_LONG);
+  base::Value::Dict info;
+  info.Set(kFieldNameKey, address_ui_component.name);
+  info.Set(kFieldTypeKey,
+           GetStringFromAddressField(address_ui_component.field));
+  info.Set(kFieldLengthKey,
+           address_ui_component.length_hint ==
+               i18n::addressinput::AddressUiComponent::HINT_LONG);
   return info;
 }
 
@@ -116,9 +115,7 @@ base::flat_map<std::string, base::Value> AddressUiComponentAsValueMap(
 // number values.
 void RemoveDuplicatePhoneNumberAtIndex(size_t index,
                                        const std::string& country_code,
-                                       base::Value* list_value) {
-  DCHECK(list_value->is_list());
-  base::Value::ListView list = list_value->GetListDeprecated();
+                                       base::Value::List& list) {
   if (list.size() <= index) {
     NOTREACHED() << "List should have a value at index " << index;
     return;
@@ -138,7 +135,7 @@ void RemoveDuplicatePhoneNumberAtIndex(size_t index,
   }
 
   if (is_duplicate)
-    list_value->EraseListIter(list.begin() + index);
+    list.erase(list.begin() + index);
 }
 
 autofill::AutofillManager* GetAutofillManager(
@@ -148,7 +145,7 @@ autofill::AutofillManager* GetAutofillManager(
   }
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(web_contents)
-          ->DriverForFrame(web_contents->GetMainFrame());
+          ->DriverForFrame(web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return nullptr;
   return autofill_driver->autofill_manager();
@@ -324,23 +321,23 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
       /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents
-  base::Value address_components(base::Value::Type::DICTIONARY);
-  base::Value rows(base::Value::Type::LIST);
+  base::Value::Dict address_components;
+  base::Value::List rows;
 
   for (auto& line : lines) {
-    std::vector<base::Value> row_values;
+    base::Value::List row_values;
     for (const ::i18n::addressinput::AddressUiComponent& component : line) {
-      row_values.emplace_back(AddressUiComponentAsValueMap(component));
+      row_values.Append(AddressUiComponentAsValueMap(component));
     }
-    base::Value row(base::Value::Type::DICTIONARY);
-    row.SetKey("row", base::Value(std::move(row_values)));
+    base::Value::Dict row;
+    row.Set("row", std::move(row_values));
     rows.Append(std::move(row));
   }
 
-  address_components.SetKey("components", std::move(rows));
-  address_components.SetKey("languageCode", base::Value(language_code));
+  address_components.Set("components", std::move(rows));
+  address_components.Set("languageCode", language_code);
 
-  return RespondNow(OneArgument(std::move(address_components)));
+  return RespondNow(OneArgument(base::Value(std::move(address_components))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -472,15 +469,15 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
   api::autofill_private::ValidatePhoneParams* params = &parameters->params;
 
   // Extract the phone numbers into a ListValue.
-  base::Value phone_numbers(base::Value::Type::LIST);
+  base::Value::List phone_numbers;
   for (auto phone_number : params->phone_numbers) {
     phone_numbers.Append(phone_number);
   }
 
   RemoveDuplicatePhoneNumberAtIndex(params->index_of_new_number,
-                                    params->country_code, &phone_numbers);
+                                    params->country_code, phone_numbers);
 
-  return RespondNow(OneArgument(std::move(phone_numbers)));
+  return RespondNow(OneArgument(base::Value(std::move(phone_numbers))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -651,7 +648,7 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
           ->GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
-  virtual_card_enrollment_manager->OfferVirtualCardEnroll(
+  virtual_card_enrollment_manager->InitVirtualCardEnroll(
       *card, autofill::VirtualCardEnrollmentSource::kSettingsPage);
   return RespondNow(NoArguments());
 }
@@ -692,7 +689,9 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
           ->GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
-  virtual_card_enrollment_manager->Unenroll(card->instrument_id());
+  virtual_card_enrollment_manager->Unenroll(
+      card->instrument_id(),
+      /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
   return RespondNow(NoArguments());
 }
 

@@ -13,7 +13,7 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/driver_object.h"
-#include "ipcz/node.h"
+#include "ipcz/test_messages.h"
 #include "test/mock_driver.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,11 +26,6 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 
-DriverTransport::Message MakeMessage(std::string_view s) {
-  return DriverTransport::Message(
-      absl::MakeSpan(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
-}
-
 class DriverTransportTest : public testing::Test {
  public:
   DriverTransportTest() = default;
@@ -41,15 +36,14 @@ class DriverTransportTest : public testing::Test {
   std::pair<Ref<DriverTransport>, Ref<DriverTransport>> CreateTransportPair(
       IpczDriverHandle transport0,
       IpczDriverHandle transport1) {
-    return {MakeRefCounted<DriverTransport>(DriverObject(node_, transport0)),
-            MakeRefCounted<DriverTransport>(DriverObject(node_, transport1))};
+    return {MakeRefCounted<DriverTransport>(
+                DriverObject(test::kMockDriver, transport0)),
+            MakeRefCounted<DriverTransport>(
+                DriverObject(test::kMockDriver, transport1))};
   }
 
  private:
   ::testing::StrictMock<test::MockDriver> driver_;
-  Ref<Node> node_{MakeRefCounted<Node>(Node::Type::kNormal,
-                                       test::kMockDriver,
-                                       IPCZ_INVALID_DRIVER_HANDLE)};
 };
 
 TEST_F(DriverTransportTest, Activation) {
@@ -78,7 +72,6 @@ TEST_F(DriverTransportTest, Activation) {
   listener.OnStringMessage([&](std::string_view message) {
     EXPECT_EQ(kTestMessage, message);
     received = true;
-    return IPCZ_RESULT_OK;
   });
 
   // Verify that activation of a DriverTransport feeds the driver an activity
@@ -159,13 +152,15 @@ TEST_F(DriverTransportTest, Transmit) {
   constexpr IpczDriverHandle kTransport1 = 42;
   auto [a, b] = CreateTransportPair(kTransport0, kTransport1);
 
-  const std::string kTestMessage = "hihihihi";
-  EXPECT_CALL(driver(),
-              Transmit(kTransport0, kTestMessage.data(), kTestMessage.size(),
-                       nullptr, 0, IPCZ_NO_FLAGS, nullptr))
+  test::msg::BasicTestMessage message;
+  message.params().foo = 5;
+  message.params().bar = 7;
+
+  EXPECT_CALL(driver(), Transmit(kTransport0, message.data_view().data(),
+                                 message.data_view().size(), _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_OK));
 
-  a->TransmitMessage(MakeMessage(kTestMessage));
+  a->Transmit(message);
 
   EXPECT_CALL(driver(), Close(kTransport1, _, _));
   EXPECT_CALL(driver(), Close(kTransport0, _, _));

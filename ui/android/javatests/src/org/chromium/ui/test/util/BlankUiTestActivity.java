@@ -23,10 +23,11 @@ public class BlankUiTestActivity extends AppCompatActivity implements ModalDialo
     private static int sTestTheme;
     private static int sTestLayout;
 
+    private final ModalDialogManager mModalDialogManager =
+            new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
+
     private Callback<MotionEvent> mMotionEventCallback;
     private Callback<KeyEvent> mKeyEventCallback;
-    private ModalDialogManager mModalDialogManager =
-            new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,12 @@ public class BlankUiTestActivity extends AppCompatActivity implements ModalDialo
         if (sTestLayout != 0) {
             setContentView(sTestLayout);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        mModalDialogManager.destroy();
+        super.onDestroy();
     }
 
     /**

@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -47,9 +47,13 @@ constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
   const int dimension = GetAnswerCardIconDimension();
-  const bool dark_mode = ash::features::IsProductivityLauncherEnabled() ||
-                         (ash::features::IsDarkLightModeEnabled() &&
-                          ash::ColorProvider::Get()->IsDarkModeEnabled());
+  // DarkLightModeController might be nullptr in tests.
+  const bool dark_mode =
+      ash::features::IsProductivityLauncherEnabled() ||
+      (ash::features::IsDarkLightModeEnabled() &&
+       ash::DarkLightModeController::Get() &&
+       ash::DarkLightModeController::Get()->IsDarkModeEnabled());
+
   const auto icon =
       dark_mode ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
                       dimension / 2, gfx::kGoogleBlue300,
@@ -195,13 +199,23 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   } else {
     UpdateClassicTitleAndDetails();
   }
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->AddObserver(this);
 }
 
-OmniboxAnswerResult::~OmniboxAnswerResult() = default;
+OmniboxAnswerResult::~OmniboxAnswerResult() {
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->RemoveObserver(this);
+}
 
 void OmniboxAnswerResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, match_.destination_url, match_.transition,
                             ui::DispositionFromEventFlags(event_flags));
+}
+
+void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!IsWeatherResult())
+    UpdateIcon();
 }
 
 void OmniboxAnswerResult::UpdateIcon() {

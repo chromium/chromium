@@ -98,8 +98,8 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fyi",
+              "build_gs_bucket": "chromium-win-archive",
+              "builder_group": "chromium.win",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [

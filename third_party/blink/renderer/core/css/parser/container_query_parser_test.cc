@@ -17,7 +17,7 @@ class ContainerQueryParserTest : public PageTestBase {
  public:
   String ParseQuery(String string) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    std::unique_ptr<MediaQueryExpNode> node =
+    const MediaQueryExpNode* node =
         ContainerQueryParser(*context).ParseQuery(string);
     if (!node)
       return g_null_atom;
@@ -32,9 +32,15 @@ class ContainerQueryParserTest : public PageTestBase {
     STACK_ALLOCATED();
 
    public:
-    bool IsAllowed(const String& name) const override {
-      return name == "width";
+    bool IsAllowed(const String& feature) const override {
+      return feature == "width";
     }
+    bool IsAllowedWithoutValue(const String& feature,
+                               const ExecutionContext*) const override {
+      return true;
+    }
+    bool IsCaseSensitive(const String& feature) const override { return false; }
+    bool SupportsRange() const override { return true; }
   };
 
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
@@ -43,7 +49,7 @@ class ContainerQueryParserTest : public PageTestBase {
     Vector<CSSParserToken, 32> tokens =
         CSSTokenizer(feature_query).TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    std::unique_ptr<MediaQueryExpNode> node =
+    const MediaQueryExpNode* node =
         ContainerQueryParser(*context).ConsumeFeatureQuery(range,
                                                            TestFeatureSet());
     if (!node || !range.AtEnd())

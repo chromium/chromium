@@ -44,12 +44,14 @@
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/mac/audio_manager_mac.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 
@@ -169,7 +171,7 @@ class MEDIA_EXPORT AUAudioInputStream
   base::ThreadChecker thread_checker_;
 
   // Our creator, the audio manager needs to be notified when we close.
-  AudioManagerMac* const manager_;
+  const raw_ptr<AudioManagerMac> manager_;
 
   // The audio parameters requested when creating the stream.
   const AudioParameters input_params_;
@@ -184,7 +186,7 @@ class MEDIA_EXPORT AUAudioInputStream
   size_t io_buffer_frame_size_;
 
   // Pointer to the object that will receive the recorded audio samples.
-  AudioInputCallback* sink_;
+  raw_ptr<AudioInputCallback> sink_;
 
   // Structure that holds the desired output format of the stream.
   // Note that, this format can differ from the device(=input) format.
@@ -268,9 +270,10 @@ class MEDIA_EXPORT AUAudioInputStream
   // NOTE: Float64 and UInt32 types are used for native API compatibility.
   Float64 last_sample_time_;
   UInt32 last_number_of_frames_;
-  UInt32 total_lost_frames_;
-  UInt32 largest_glitch_frames_;
-  int glitches_detected_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;

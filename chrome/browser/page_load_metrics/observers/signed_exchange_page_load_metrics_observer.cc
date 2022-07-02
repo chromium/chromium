@@ -69,9 +69,6 @@ SXG_LOAD_METRIC_VARIABLE(
     FirstMeaningfulPaint,
     "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint")
 SXG_LOAD_METRIC_VARIABLE(
-    ParseStartToFirstMeaningfulPaint,
-    "Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint")
-SXG_LOAD_METRIC_VARIABLE(
     DomContentLoaded,
     "DocumentTiming.NavigationToDOMContentLoadedEventFired")
 SXG_LOAD_METRIC_VARIABLE(Load, "DocumentTiming.NavigationToLoadEventFired")
@@ -104,11 +101,13 @@ SXG_LOAD_METRIC_VARIABLE(Load, "DocumentTiming.NavigationToLoadEventFired")
 SignedExchangePageLoadMetricsObserver::SignedExchangePageLoadMetricsObserver() {
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SignedExchangePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class is interested only in events that are preprocessed and
+  // dispatched also to the outermost page at PageLoadTracker. So, this class
+  // doesn't need to forward events for FencedFrames.
   return STOP_OBSERVING;
 }
 
@@ -165,9 +164,6 @@ void SignedExchangePageLoadMetricsObserver::
 
   SXG_PAGE_LOAD_HISTOGRAM(FirstMeaningfulPaint,
                           timing.paint_timing->first_meaningful_paint.value());
-  SXG_PAGE_LOAD_HISTOGRAM(ParseStartToFirstMeaningfulPaint,
-                          timing.paint_timing->first_meaningful_paint.value() -
-                              timing.parse_timing->parse_start.value());
 }
 
 void SignedExchangePageLoadMetricsObserver::OnDomContentLoadedEventStart(

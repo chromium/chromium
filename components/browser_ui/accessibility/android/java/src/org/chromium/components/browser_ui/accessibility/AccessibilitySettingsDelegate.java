@@ -50,4 +50,9 @@ public interface AccessibilitySettingsDelegate {
      * @param fragment the fragment to add the preferences to.
      */
     void addExtraPreferences(@NonNull PreferenceFragmentCompat fragment);
+
+    /**
+     * Returns whether or not the 'Zoom' feature specific UI should be shown in Settings.
+     */
+    boolean showPageZoomSettingsUI();
 }

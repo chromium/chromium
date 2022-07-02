@@ -11,12 +11,14 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/send_tab_to_self/manage_account_devices_link_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace send_tab_to_self {
 
@@ -36,18 +38,22 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
   auto* provider = ChromeLayoutProvider::Get();
   set_fixed_width(
       provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  gfx::Insets margins = provider->GetInsetsMetric(views::INSETS_DIALOG);
-  margins.set_top(provider->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL));
-  margins.set_bottom(provider->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  set_margins(
+      gfx::Insets::TLBR(provider->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
+                        0, 0, 0));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_PROMO_LABEL),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, provider->GetDistanceMetric(
+                             views::DISTANCE_BUTTON_HORIZONTAL_PADDING)));
 
   if (show_signin_button) {
     SetButtons(ui::DIALOG_BUTTON_OK);
@@ -58,9 +64,17 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
     SetAcceptCallback(base::BindRepeating(
         &SendTabToSelfPromoBubbleView::OnSignInButtonClicked,
         base::Unretained(this)));
-  } else {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    return;
   }
+
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  auto* link_view =
+      AddChildView(BuildManageAccountDevicesLinkView(controller_));
+  link_view->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(provider->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
+                        0, 0, 0));
 }
 
 SendTabToSelfPromoBubbleView::~SendTabToSelfPromoBubbleView() {

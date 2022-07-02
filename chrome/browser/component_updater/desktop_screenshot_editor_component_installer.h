@@ -52,8 +52,8 @@ class DesktopScreenshotEditorComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
-// Call once during startup to make the component update service aware of
-// the Desktop Screenshot Editor component.
+// Call once to make the component update service aware of the
+// Desktop Screenshot Editor component.
 void RegisterDesktopScreenshotEditorComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater

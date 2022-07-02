@@ -244,11 +244,13 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     NOTREACHED();
   }
 
-  void DidFinishLoading(base::TimeTicks finishTime,
-                        int64_t totalEncodedDataLength,
-                        int64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength,
-                        bool should_report_corb_blocking) override {
+  void DidFinishLoading(
+      base::TimeTicks finishTime,
+      int64_t totalEncodedDataLength,
+      int64_t totalEncodedBodyLength,
+      int64_t totalDecodedBodyLength,
+      bool should_report_corb_blocking,
+      absl::optional<bool> pervasive_payload_requested) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);
@@ -571,14 +573,14 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   const KURL url(kTestURL);
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = GURL(url);
   request->destination = network::mojom::RequestDestination::kEmpty;
   request->priority = net::HIGHEST;
 
   // Prepare a mock response
   SyncLoadResponse sync_load_response;
   sync_load_response.error_code = net::OK;
-  sync_load_response.url = url;
+  sync_load_response.url = GURL(url);
   sync_load_response.data.Assign(WebData(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data.size());
   sync_load_response.head->encoded_body_length = kEncodedBodyLength;

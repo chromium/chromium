@@ -13,6 +13,7 @@
 #include "base/one_shot_event.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -37,15 +38,15 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
   if (profile != primary_profile_)
     return;
 
-  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
-      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-          primary_profile_);
+  ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
+  std::string app_id = helper->GetPreferredAppId(primary_profile_);
+  // Lock screen apps service should always exist on the primary profile.
+  DCHECK(ash::LockScreenAppsFactory::IsSupportedProfile(primary_profile_));
+  ash::LockScreenAppSupport support =
+      ash::LockScreenApps::GetSupport(primary_profile_, app_id);
 
-  if (!note_taking_app || !note_taking_app->preferred ||
-      note_taking_app->lock_screen_support !=
-          ash::NoteTakingLockScreenSupport::kEnabled) {
+  if (support != ash::LockScreenAppSupport::kEnabled)
     return;
-  }
 
   // Lock screen profile creation should be attempted only once - stop observing
   // note taking apps status so profile creation is not attempted again if lock

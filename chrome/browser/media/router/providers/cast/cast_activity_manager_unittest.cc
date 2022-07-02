@@ -115,7 +115,7 @@ class MockLaunchSessionCallback {
               (const absl::optional<MediaRoute>& route,
                mojom::RoutePresentationConnectionPtr presentation_connections,
                const absl::optional<std::string>& error_message,
-               media_router::RouteRequestResult::ResultCode result_code));
+               media_router::mojom::RouteRequestResultCode result_code));
 };
 
 class MockMirroringActivity : public MirroringActivity {
@@ -225,7 +225,7 @@ class CastActivityManagerTest : public testing::Test,
       const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
       const absl::optional<std::string>&,
-      media_router::RouteRequestResult::ResultCode) {
+      media_router::mojom::RouteRequestResultCode) {
     ASSERT_TRUE(route);
     route_ = std::make_unique<MediaRoute>(*route);
     presentation_connections_ = std::move(presentation_connections);
@@ -235,7 +235,7 @@ class CastActivityManagerTest : public testing::Test,
       const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
       const absl::optional<std::string>& error_message,
-      media_router::RouteRequestResult::ResultCode result_code) {
+      media_router::mojom::RouteRequestResultCode result_code) {
     ASSERT_FALSE(route);
     LaunchSessionFailed();
   }
@@ -427,13 +427,13 @@ class CastActivityManagerTest : public testing::Test,
       bool expect_success) {
     return base::BindLambdaForTesting(
         [expect_success](const absl::optional<std::string>& error_text,
-                         RouteRequestResult::ResultCode result_code) {
+                         mojom::RouteRequestResultCode result_code) {
           if (expect_success) {
             EXPECT_FALSE(error_text.has_value());
-            EXPECT_EQ(RouteRequestResult::OK, result_code);
+            EXPECT_EQ(mojom::RouteRequestResultCode::OK, result_code);
           } else {
             EXPECT_TRUE(error_text.has_value());
-            EXPECT_NE(RouteRequestResult::OK, result_code);
+            EXPECT_NE(mojom::RouteRequestResultCode::OK, result_code);
           }
         });
   }
@@ -799,8 +799,8 @@ TEST_F(CastActivityManagerTest, SecondPendingRequestCancelsTheFirst) {
   // The first request gets queued, then cancelled when the second request
   // replaces it.
   EXPECT_CALL(callback, Run)
-      .WillOnce(WithArg<3>([](RouteRequestResult::ResultCode code) {
-        EXPECT_EQ(RouteRequestResult::ResultCode::CANCELLED, code);
+      .WillOnce(WithArg<3>([](mojom::RouteRequestResultCode code) {
+        EXPECT_EQ(mojom::RouteRequestResultCode::CANCELLED, code);
       }));
   for (int i = 0; i < 2; i++) {
     manager_->LaunchSession(*source, sink_, kPresentationId, origin_, kTabId,

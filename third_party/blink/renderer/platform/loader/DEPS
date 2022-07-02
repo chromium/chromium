@@ -51,22 +51,6 @@ specific_include_rules = {
   "resource_error\.cc": [
     "+net/base/net_errors.h"
   ],
-  "ftp_directory_listing.cc": [
-    "+base/i18n/encoding_detection.h",
-    "+base/i18n/icu_string_conversions.h",
-    "+base/strings/string_util.h",
-    "+base/strings/sys_string_conversions.h",
-    "+base/strings/utf_string_conversions.h",
-    "+net/base/directory_listing.h",
-    "+base/strings/escape.h",
-    "+net/base/net_errors.h",
-    "+net/ftp/ftp_directory_listing_parser.h",
-    "+net/net_buildflags.h",
-  ],
-  "ftp_directory_listing_test.cc": [
-    "+net/net_buildflags.h",
-    "+third_party/icu/source/i18n/unicode/timezone.h"
-  ],
   "replaying_web_data_consumer_handle.h": [
       "+third_party/blink/renderer/platform/waitable_event.h",
   ],

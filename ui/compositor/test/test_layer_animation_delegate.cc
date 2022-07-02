@@ -175,8 +175,8 @@ gfx::RoundedCornersF TestLayerAnimationDelegate::GetRoundedCornersForAnimation()
   return rounded_corners_;
 }
 
-gfx::LinearGradient TestLayerAnimationDelegate::GetGradientMaskForAnimation()
-    const {
+const gfx::LinearGradient&
+TestLayerAnimationDelegate::GetGradientMaskForAnimation() const {
   return gradient_mask_;
 }
 

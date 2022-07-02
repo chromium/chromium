@@ -1,0 +1,74 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+config("cfv1_config") {
+  defines = [ "USE_CFV1_LAUNCHER" ]
+}
+
+source_set("integration") {
+  testonly = true
+  public = [
+    "cast_runner_features.h",
+    "cast_runner_launcher_v2.h",
+  ]
+  sources = [
+    "cast_runner_launcher_v2.cc",
+    "fake_feedback_service.cc",
+    "fake_feedback_service.h",
+  ]
+  public_deps = [
+    "//media/fuchsia/audio:test_support_components",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+  deps = [
+    "//base",
+    "//fuchsia_web/runners:cast_runner_core",
+    "//fuchsia_web/runners/cast/fidl",
+    "//media/fuchsia/audio:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+  ]
+}
+
+source_set("cfv1_integration") {
+  testonly = true
+  public = [
+    "cast_runner_features.h",
+    "cast_runner_launcher_v1.h",
+  ]
+  sources = [ "cast_runner_launcher_v1.cc" ]
+  public_deps = [
+    "//base/test:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+  public_configs = [ ":cfv1_config" ]
+  deps = [
+    "//base",
+    "//fuchsia_web/runners:cast_runner_core",
+    "//media/fuchsia/audio:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+  ]
+}

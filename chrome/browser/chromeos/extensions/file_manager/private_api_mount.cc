@@ -13,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
@@ -35,6 +37,13 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions {
+namespace {
+
+std::string Redact(const base::StringPiece path) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
+}
+
+}  // namespace
 
 using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
@@ -70,7 +79,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->file_url));
+        file_system_context->CrackURLInFirstPartyContext(
+            GURL(params->file_url));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);
@@ -160,10 +170,11 @@ FileManagerPrivateCancelMountingFunction::Run() {
 void FileManagerPrivateCancelMountingFunction::OnCancelled(
     chromeos::MountError error) {
   if (error == chromeos::MOUNT_ERROR_NONE) {
-    return Respond(NoArguments());
+    Respond(NoArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        file_manager::MountErrorToMountCompletedStatus(error))));
   }
-  return Respond(Error(file_manager_private::ToString(
-      file_manager::MountErrorToMountCompletedStatus(error))));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
@@ -183,14 +194,15 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   VolumeManager* const volume_manager = VolumeManager::Get(profile);
   DCHECK(volume_manager);
 
-  base::WeakPtr<Volume> volume =
+  const base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
-  if (!volume.get())
-    return RespondNow(Error("Volume not available"));
+  if (!volume) {
+    LOG(ERROR) << "Cannot find volume " << Redact(params->volume_id);
+    return RespondNow(Error(file_manager_private::ToString(
+        api::file_manager_private::
+            MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED)));
+  }
 
-  // TODO(tbarzic): Send response when callback is received, it would make more
-  // sense than remembering issued unmount requests in file manager and showing
-  // errors for them when MountCompleted event is received.
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
     case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE: {
@@ -200,32 +212,36 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
               &FileManagerPrivateRemoveMountFunction::OnDiskUnmounted, this));
       return RespondLater();
     }
+
     case file_manager::VOLUME_TYPE_PROVIDED: {
       auto* service =
           ash::file_system_provider::Service::Get(browser_context());
       DCHECK(service);
-      // TODO(mtomasz): Pass a more detailed error than just a bool.
       if (!service->RequestUnmount(volume->provider_id(),
                                    volume->file_system_id())) {
         return RespondNow(Error("Unmount failed"));
       }
       return RespondNow(NoArguments());
     }
+
     case file_manager::VOLUME_TYPE_CROSTINI:
       file_manager::VolumeManager::Get(profile)->RemoveSshfsCrostiniVolume(
           volume->mount_path(),
           base::BindOnce(
               &FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted, this));
       return RespondLater();
+
     case file_manager::VOLUME_TYPE_SMB:
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
       return RespondNow(NoArguments());
+
     case file_manager::VOLUME_TYPE_GUEST_OS:
       // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
       // not actually sure if it's possible to reach here.
       NOTREACHED();
       [[fallthrough]];
+
     default:
       // Requested unmounting a device which is not unmountable.
       return RespondNow(Error("Invalid volume type"));
@@ -234,19 +250,21 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
 void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
   if (ok) {
-    return Respond(NoArguments());
+    Respond(NoArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        api::file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN)));
   }
-  return Respond(Error(file_manager_private::ToString(
-      api::file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN)));
 }
 
 void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
     chromeos::MountError error) {
   if (error == chromeos::MOUNT_ERROR_NONE) {
-    return Respond(NoArguments());
+    Respond(NoArguments());
+  } else {
+    Respond(Error(file_manager_private::ToString(
+        file_manager::MountErrorToMountCompletedStatus(error))));
   }
-  return Respond(Error(file_manager_private::ToString(
-      file_manager::MountErrorToMountCompletedStatus(error))));
 }
 
 ExtensionFunction::ResponseAction

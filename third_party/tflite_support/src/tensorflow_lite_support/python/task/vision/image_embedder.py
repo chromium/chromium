@@ -81,8 +81,8 @@ class ImageEmbedder(object):
         `ImageEmbedderOptions` such as missing the model.
       RuntimeError: If other types of error occurred.
     """
-    embedder = _CppImageEmbedder.create_from_options(options.base_options,
-                                                     options.embedding_options)
+    embedder = _CppImageEmbedder.create_from_options(
+        options.base_options, options.embedding_options.to_pb2())
     return cls(options, embedder)
 
   def embed(
@@ -107,10 +107,13 @@ class ImageEmbedder(object):
       RuntimeError: If failed to calculate the embedding vector.
     """
     image_data = image_utils.ImageData(image.buffer)
-    if bounding_box is None:
-      return self._embedder.embed(image_data)
 
-    return self._embedder.embed(image_data, bounding_box)
+    if bounding_box is None:
+      embedding_result = self._embedder.embed(image_data)
+    else:
+      embedding_result = self._embedder.embed(image_data, bounding_box.to_pb2())
+
+    return embedding_pb2.EmbeddingResult.create_from_pb2(embedding_result)
 
   def get_embedding_by_index(self, result: embedding_pb2.EmbeddingResult,
                              output_index: int) -> embedding_pb2.Embedding:
@@ -130,13 +133,14 @@ class ImageEmbedder(object):
     """
     if output_index < 0 or output_index >= len(result.embeddings):
       raise ValueError("Output index is out of bound.")
-    embedding = self._embedder.get_embedding_by_index(result, output_index)
-    return embedding
+    embedding = self._embedder.get_embedding_by_index(result.to_pb2(),
+                                                      output_index)
+    return embedding_pb2.Embedding.create_from_pb2(embedding)
 
   def cosine_similarity(self, u: embedding_pb2.FeatureVector,
                         v: embedding_pb2.FeatureVector) -> float:
     """Computes cosine similarity [1] between two feature vectors."""
-    return self._embedder.cosine_similarity(u, v)
+    return self._embedder.cosine_similarity(u.to_pb2(), v.to_pb2())
 
   def get_embedding_dimension(self, output_index: int) -> int:
     """Gets the dimensionality of the embedding output.

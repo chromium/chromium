@@ -142,7 +142,8 @@ TEST_F(DownloadDBConversionsTest, DownloadSource) {
       DownloadSource::DRAG_AND_DROP, DownloadSource::FROM_RENDERER,
       DownloadSource::EXTENSION_API, DownloadSource::EXTENSION_INSTALLER,
       DownloadSource::INTERNAL_API,  DownloadSource::WEB_CONTENTS_API,
-      DownloadSource::OFFLINE_PAGE,  DownloadSource::CONTEXT_MENU};
+      DownloadSource::OFFLINE_PAGE,  DownloadSource::CONTEXT_MENU,
+      DownloadSource::RETRY,         DownloadSource::RETRY_FROM_BUBBLE};
 
   for (auto source : sources) {
     EXPECT_EQ(source, DownloadSourceFromProto(DownloadSourceToProto(source)));

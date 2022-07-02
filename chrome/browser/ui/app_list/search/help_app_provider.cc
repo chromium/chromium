@@ -21,13 +21,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -96,7 +95,7 @@ void HelpAppResult::Open(int event_flags) {
   params.url = GURL(ash::kChromeUIHelpAppURL + url_path_);
   params.launch_source = apps::mojom::LaunchSource::kFromAppListQuery;
   web_app::LaunchSystemWebAppAsync(
-      profile_, web_app::SystemAppType::HELP, params,
+      profile_, ash::SystemWebAppType::HELP, params,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
   // This is a google-internal histogram. If changing this, also change the
   // corresponding histograms file.
@@ -233,25 +232,12 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 }
 
 void HelpAppProvider::LoadIcon() {
-  auto app_type =
-      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
-
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        app_type, web_app::kHelpAppId, apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&HelpAppProvider::OnLoadIcon,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), web_app::kHelpAppId,
-        apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId),
+      web_app::kHelpAppId, apps::IconType::kStandard,
+      ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace app_list

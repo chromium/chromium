@@ -18,6 +18,7 @@
 
 namespace base {
 namespace win {
+enum class HandleOperation;
 namespace internal {
 
 struct HandleHash {
@@ -76,7 +77,7 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
   virtual void StopTracking(HANDLE handle, const void* owner, const void* pc1,
                             const void* pc2);
   virtual void Disable();
-  virtual void OnHandleBeingClosed(HANDLE handle);
+  virtual void OnHandleBeingClosed(HANDLE handle, HandleOperation operation);
   virtual HMODULE GetModule() const;
 
  private:
@@ -86,7 +87,7 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
                          const void* pc2);
   void StopTrackingImpl(HANDLE handle, const void* owner, const void* pc1,
                         const void* pc2);
-  void OnHandleBeingClosedImpl(HANDLE handle);
+  void OnHandleBeingClosedImpl(HANDLE handle, HandleOperation operation);
 
   static base::internal::LockImpl* GetLock();
   static void InstallVerifier();

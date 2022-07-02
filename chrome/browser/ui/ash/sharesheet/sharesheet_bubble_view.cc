@@ -622,6 +622,7 @@ void SharesheetBubbleView::CreateBubble() {
   share_action_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   share_action_view_ = AddChildView(std::move(share_action_view));
+  share_action_view_->SetID(SHARE_ACTION_VIEW_ID);
   share_action_view_->SetVisible(false);
 }
 

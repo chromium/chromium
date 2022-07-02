@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
@@ -51,7 +52,8 @@ class AuthenticatorQRViewCentered : public views::View {
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
     request->should_render = true;
-    request->render_dino = true;
+    request->render_dino =
+        !base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI);
 
     request->render_module_style =
         qrcode_generator::mojom::ModuleStyle::CIRCLES;
@@ -108,7 +110,7 @@ class AuthenticatorQRViewCentered : public views::View {
   }
 
   std::string qr_string_;
-  views::ImageView* qr_code_image_;
+  raw_ptr<views::ImageView> qr_code_image_;
 
   // Service instance for QR code image generation.
   mojo::Remote<qrcode_generator::mojom::QRCodeGeneratorService>

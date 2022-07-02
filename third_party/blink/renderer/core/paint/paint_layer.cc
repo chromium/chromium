@@ -282,20 +282,7 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
 
 void PaintLayer::UpdateLayerPositionRecursive(
     const PaintLayer* enclosing_scroller) {
-  auto old_location = location_without_position_offset_;
-  auto old_offset_for_in_flow_rel_position = OffsetForInFlowRelPosition();
   UpdateLayerPosition();
-
-  if (location_without_position_offset_ != old_location) {
-    MarkAncestorChainForFlagsUpdate();
-  } else {
-    // TODO(chrishtr): compute this invalidation in layout instead of here.
-    auto offset_for_in_flow_rel_position =
-        rare_data_ ? rare_data_->offset_for_in_flow_rel_position
-                   : PhysicalOffset();
-    if (offset_for_in_flow_rel_position != old_offset_for_in_flow_rel_position)
-      MarkAncestorChainForFlagsUpdate();
-  }
 
   const PaintLayer* previous_enclosing_scroller =
       AncestorScrollContainerLayer();
@@ -303,31 +290,13 @@ void PaintLayer::UpdateLayerPositionRecursive(
   if (enclosing_scroller &&
       GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
       GetLayoutObject().NeedsPaintPropertyUpdate()) {
-    if (enclosing_scroller != previous_enclosing_scroller) {
-      // Old ancestor scroller should no longer have these constraints.
-      DCHECK(!previous_enclosing_scroller ||
-             !previous_enclosing_scroller->GetScrollableArea() ||
-             !previous_enclosing_scroller->GetScrollableArea()
-                  ->GetStickyConstraintsMap()
-                  .Contains(this));
-
-      // If our ancestor scroller has changed and the previous one was the
-      // root layer, we are no longer viewport constrained.
-      if (previous_enclosing_scroller &&
-          previous_enclosing_scroller->IsRootLayer()) {
-        GetLayoutObject()
-            .View()
-            ->GetFrameView()
-            ->RemoveViewportConstrainedObject(
-                GetLayoutObject(),
-                LocalFrameView::ViewportConstrainedType::kSticky);
-      }
-    }
-
-    if (enclosing_scroller->IsRootLayer()) {
-      GetLayoutObject().View()->GetFrameView()->AddViewportConstrainedObject(
-          GetLayoutObject(), LocalFrameView::ViewportConstrainedType::kSticky);
-    }
+    // Old ancestor scroller should no longer have these constraints.
+    DCHECK(enclosing_scroller == previous_enclosing_scroller ||
+           !previous_enclosing_scroller ||
+           !previous_enclosing_scroller->GetScrollableArea() ||
+           !previous_enclosing_scroller->GetScrollableArea()
+                ->GetStickyConstraintsMap()
+                .Contains(this));
     GetLayoutObject().UpdateStickyPositionConstraints();
 
     // Sticky position constraints and ancestor overflow scroller affect
@@ -360,7 +329,8 @@ void PaintLayer::UpdateTransformationMatrix() {
     DCHECK(box);
     transform->MakeIdentity();
     box->StyleRef().ApplyTransform(
-        *transform, box->Size(), ComputedStyle::kIncludeTransformOrigin,
+        *transform, box->Size(), ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,
         ComputedStyle::kIncludeIndependentTransformProperties);
     if (!box->GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
@@ -802,20 +772,6 @@ PaintLayer* PaintLayer::AncestorStackingContext() const {
   return nullptr;
 }
 
-const PaintLayer* PaintLayer::EnclosingCompositedScrollingLayerUnderPagination(
-    IncludeSelfOrNot include_self_or_not) const {
-  const auto* start_layer =
-      include_self_or_not == kIncludeSelf ? this : CompositingContainer();
-  for (const auto* curr = start_layer; curr && curr->EnclosingPaginationLayer();
-       curr = curr->CompositingContainer()) {
-    if (const auto* scrollable_area = curr->GetScrollableArea()) {
-      if (scrollable_area->NeedsCompositedScrolling())
-        return curr;
-    }
-  }
-  return nullptr;
-}
-
 void PaintLayer::SetNeedsCompositingInputsUpdate() {
   // TODO(chrishtr): These are a bit of a heavy hammer, because not all
   // things which require compositing inputs update require a descendant-
@@ -840,14 +796,6 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   if (GetLayoutObject().IsSVGRoot()) {
     return To<LayoutSVGRoot>(GetLayoutObject())
         .HasNonIsolatedBlendingDescendants();
-  }
-  return false;
-}
-
-bool PaintLayer::HasAncestorWithFilterThatMovesPixels() const {
-  for (const PaintLayer* curr = this; curr; curr = curr->Parent()) {
-    if (curr->HasFilterThatMovesPixels())
-      return true;
   }
   return false;
 }
@@ -1209,16 +1157,6 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
   fragments.push_back(fragment);
 }
 
-bool PaintLayer::ShouldFragmentCompositedBounds(
-    const PaintLayer* compositing_layer) const {
-  if (!EnclosingPaginationLayer())
-    return false;
-  // We should not fragment composited scrolling layers and descendants, which
-  // is not only to render the scroller correctly, but also to prevent multiple
-  // cc::Layers with the same scrolling element id.
-  return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
-}
-
 const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   const LayoutBox* layout_box = GetLayoutBox();
   if (!layout_box)
@@ -1247,21 +1185,6 @@ void PaintLayer::CollectFragments(
   const auto& first_root_fragment_data =
       root_layer->GetLayoutObject().FirstFragment();
 
-  // If both |this| and |root_layer| are fragmented and are inside the same
-  // pagination container, then try to match fragments from |root_layer| to
-  // |this|, so that any fragment clip for |root_layer|'s fragment matches
-  // |this|'s. Note we check both ShouldFragmentCompositedBounds() and next
-  // fragment here because the former may return false even if |this| is
-  // fragmented, e.g. for fixed-position objects in paged media, and the next
-  // fragment can be null even if the first fragment is actually in a fragmented
-  // context when the current layer appears in only one of the multiple
-  // fragments of the pagination container.
-  bool is_fragmented =
-      ShouldFragmentCompositedBounds() || first_fragment_data.NextFragment();
-  bool should_match_fragments =
-      is_fragmented &&
-      root_layer->EnclosingPaginationLayer() == EnclosingPaginationLayer();
-
   const LayoutBox* layout_box_with_fragments = GetLayoutBoxWithBlockFragments();
 
   // The inherited offset_from_root does not include any pagination offsets.
@@ -1281,21 +1204,7 @@ void PaintLayer::CollectFragments(
       root_fragment_data = root_fragment_arg;
     } else if (root_layer == this) {
       root_fragment_data = fragment_data;
-    } else if (should_match_fragments) {
-      for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
-           root_fragment_data = root_fragment_data->NextFragment()) {
-        if (root_fragment_data->FragmentID() == fragment_data->FragmentID())
-          break;
-      }
     } else {
-      root_fragment_data = &first_root_fragment_data;
-    }
-
-    bool cant_find_fragment = !root_fragment_data;
-    if (cant_find_fragment) {
-      DCHECK(should_match_fragments);
-      // Fall back to the first fragment, in order to have
-      // PaintLayerClipper at least compute |fragment.layer_bounds|.
       root_fragment_data = &first_root_fragment_data;
     }
 
@@ -1308,13 +1217,6 @@ void PaintLayer::CollectFragments(
         .CalculateRects(clip_rects_context, fragment_data,
                         fragment.layer_offset, fragment.background_rect,
                         fragment.foreground_rect);
-
-    if (cant_find_fragment) {
-      // If we couldn't find a matching fragment when |should_match_fragments|
-      // was true, then fall back to no clip.
-      fragment.background_rect.Reset();
-      fragment.foreground_rect.Reset();
-    }
 
     fragment.fragment_data = fragment_data;
 
@@ -1473,13 +1375,11 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
     }
   }
 
-  gfx::Vector2dF offset(-transform_container_fragment.PaintOffset());
-  auto offset_translation = GeometryMapper::SourceToDestinationProjection(
-      local_fragment.PreTransform(), *container_transform);
-  DCHECK(offset_translation.IsIdentityOr2DTranslation());
-  offset += offset_translation.Translation2D();
-  offset += gfx::Vector2dF(local_fragment.PaintOffset());
-  transform_state.Translate(offset);
+  transform_state.Translate(
+      gfx::Vector2dF(-transform_container_fragment.PaintOffset()));
+  transform_state.ApplyTransform(GeometryMapper::SourceToDestinationProjection(
+      local_fragment.PreTransform(), *container_transform));
+  transform_state.Translate(gfx::Vector2dF(local_fragment.PaintOffset()));
 
   if (const auto* properties = local_fragment.PaintProperties()) {
     if (const auto* transform = properties->Transform())
@@ -1508,7 +1408,7 @@ static bool IsHitCandidateForDepthOrder(
   // foreignObject; if it weren't for that case we could test z_offset
   // and then DCHECK(transform_state) inside of it.
   DCHECK(!z_offset || transform_state ||
-         hit_layer->GetLayoutObject().IsSVGForeignObject());
+         hit_layer->GetLayoutObject().IsSVGForeignObjectIncludingNG());
   if (z_offset && transform_state) {
     // This is actually computing our z, but that's OK because the hitLayer is
     // coplanar with us.
@@ -1610,7 +1510,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   // IsReplacedNormalFlowStacking() true for LayoutSVGForeignObject),
   // where the hit_test_rect has already been transformed to local coordinates.
   bool use_transform = false;
-  if (!layout_object.IsSVGForeignObject() &&
+  if (!layout_object.IsSVGForeignObjectIncludingNG() &&
       // Only a layer that can contain all descendants can become a transform
       // container. This excludes layout objects having transform nodes created
       // for animating opacity etc. or for backface-visibility:hidden.
@@ -2044,7 +1944,7 @@ bool PaintLayer::HitTestContents(HitTestResult& result,
 }
 
 bool PaintLayer::IsReplacedNormalFlowStacking() const {
-  return GetLayoutObject().IsSVGForeignObject();
+  return GetLayoutObject().IsSVGForeignObjectIncludingNG();
 }
 
 PaintLayer* PaintLayer::HitTestChildren(
@@ -2163,7 +2063,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
         To<ShapeClipPathOperation>(clip_path_operation);
     float zoom = GetLayoutObject().StyleRef().EffectiveZoom();
     DCHECK(!GetLayoutObject().IsSVGChild() ||
-           GetLayoutObject().IsSVGForeignObject());
+           GetLayoutObject().IsSVGForeignObjectIncludingNG());
     return !clip_path->GetPath(reference_box, zoom).Contains(point);
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
@@ -2321,7 +2221,7 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
       return false;
 
     // SVG root and SVG foreign object paint atomically.
-    if (box->IsSVGRoot() || box->IsSVGForeignObject())
+    if (box->IsSVGRoot() || box->IsSVGForeignObjectIncludingNG())
       return true;
 
     // Don't create subsequence for the document element because the subsequence
@@ -2614,18 +2514,6 @@ void PaintLayer::RemoveAncestorScrollContainerLayer(
   }
 
   if (AncestorScrollContainerLayer()) {
-    // If the previous AncestorScrollContainerLayer is the root and this object
-    // is a sticky viewport constrained object, it is no longer known to be
-    // constrained by the root.
-    if (AncestorScrollContainerLayer()->IsRootLayer() &&
-        GetLayoutObject().StyleRef().HasStickyConstrainedPosition()) {
-      if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView()) {
-        frame_view->RemoveViewportConstrainedObject(
-            GetLayoutObject(),
-            LocalFrameView::ViewportConstrainedType::kSticky);
-      }
-    }
-
     if (PaintLayerScrollableArea* ancestor_scrollable_area =
             AncestorScrollContainerLayer()->GetScrollableArea()) {
       // TODO(pdr): We will need to invalidate the scroll paint property subtree

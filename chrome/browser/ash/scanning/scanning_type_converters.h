@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

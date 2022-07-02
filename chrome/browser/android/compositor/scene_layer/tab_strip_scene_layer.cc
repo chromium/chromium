@@ -51,7 +51,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     scrollable_strip_layer_->AddChild(new_tab_button_);
   }
 
-  tab_strip_layer_->SetBackgroundColor(SK_ColorBLACK);
+  tab_strip_layer_->SetBackgroundColor(SkColors::kBlack);
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
@@ -165,7 +165,8 @@ void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
   }
 
   scrim_layer_->SetIsDrawable(true);
-  scrim_layer_->SetBackgroundColor(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   scrim_layer_->SetBounds(gfx::Size(width, height));
   scrim_layer_->SetPosition(gfx::PointF(x, y));
   scrim_layer_->SetOpacity(alpha);
@@ -179,6 +180,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jfloat y,
     jfloat width,
     jfloat height,
+    jfloat touch_target_offset,
     jboolean visible,
     jint tint,
     jfloat button_alpha,
@@ -191,6 +193,10 @@ void TabStripSceneLayer::UpdateNewTabButton(
   new_tab_button_->SetUIResourceId(button_resource->ui_resource()->id());
   float left_offset = (width - button_resource->size().width()) / 2;
   float top_offset = (height - button_resource->size().height()) / 2;
+  // The touch target for the new tab button is skewed towards the end of the
+  // strip. This ensures that the view itself is correctly aligned without
+  // adjusting the touch target.
+  left_offset += touch_target_offset;
   new_tab_button_->SetPosition(gfx::PointF(x + left_offset, y + top_offset));
   new_tab_button_->SetBounds(button_resource->size());
   new_tab_button_->SetHideLayerAndSubtree(!visible);

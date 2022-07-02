@@ -8,15 +8,16 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './strings.m.js';
-import './signin_shared_css.js';
-import './signin_vars_css.js';
+import './signin_shared.css.js';
+import './signin_vars.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './enterprise_profile_welcome_app.html.js';
 import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxy, EnterpriseProfileWelcomeBrowserProxyImpl} from './enterprise_profile_welcome_browser_proxy.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,7 +51,7 @@ export class EnterpriseProfileWelcomeAppElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -152,6 +153,9 @@ export class EnterpriseProfileWelcomeAppElement extends
   }
 
   private setProfileInfo_(info: EnterpriseProfileInfo) {
+    // <if expr="not chromeos_lacros">
+    this.style.setProperty('--header-background-color', info.backgroundColor);
+    // </if>
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;

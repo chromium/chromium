@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -159,7 +160,7 @@ class PropertyTest : public testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;
-  ObjectProxy* object_proxy_;
+  raw_ptr<ObjectProxy> object_proxy_;
   std::unique_ptr<Properties> properties_;
   std::unique_ptr<TestService> test_service_;
   // Properties updated.

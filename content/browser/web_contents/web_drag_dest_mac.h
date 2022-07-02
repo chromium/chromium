@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_DRAG_DEST_MAC_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_DRAG_DEST_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -67,10 +69,10 @@ CONTENT_EXPORT
 @interface WebDragDest : NSObject {
  @private
   // Our associated WebContentsImpl. Weak reference.
-  content::WebContentsImpl* _webContents;
+  raw_ptr<content::WebContentsImpl> _webContents;
 
   // Delegate; weak.
-  content::WebDragDestDelegate* _delegate;
+  raw_ptr<content::WebDragDestDelegate> _delegate;
 
   // Updated asynchronously during a drag to tell us whether or not we should
   // allow the drop.

@@ -83,7 +83,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
                        base::OnceClosure callback) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   bool CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   // Called by ThreadState to set the needed global variables when this context
   // is current.

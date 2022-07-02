@@ -119,16 +119,9 @@ class OriginDataView;
 // * The host component of an IPv6 address includes brackets, just like the URL
 //   representation.
 //
-// Usage:
-//
-// * Origins are generally constructed from an already-canonicalized GURL:
-//
-//     GURL url("https://example.com/");
-//     url::Origin origin = Origin::Create(url);
-//     origin.scheme(); // "https"
-//     origin.host(); // "example.com"
-//     origin.port(); // 443
-//     origin.opaque(); // false
+// * Constructing origins from GURLs (or from SchemeHostPort) is typically a red
+//   flag (this is true for `url::Origin::Create` but also to some extent for
+//   `url::Origin::Resolve`). See docs/security/origin-vs-url.md for more.
 //
 // * To answer the question "Are |this| and |that| "same-origin" with each
 //   other?", use |Origin::IsSameOriginWith|:
@@ -142,29 +135,46 @@ class COMPONENT_EXPORT(URL) Origin {
   // existing origins.
   Origin();
 
-  // Creates an Origin from |url|, as described at
-  // https://url.spec.whatwg.org/#origin, with the following additions:
+  // WARNING: Converting an URL into an Origin is usually a red flag. See
+  // //docs/security/origin-vs-url.md for more details. Some discussion about
+  // deprecating the Create method can be found in https://crbug.com/1270878.
   //
-  // 1. If |url| is invalid or non-standard, an opaque Origin is constructed.
+  // Creates an Origin from `url`, as described at
+  // https://url.spec.whatwg.org/#origin, with the following additions:
+  // 1. If `url` is invalid or non-standard, an opaque Origin is constructed.
   // 2. 'filesystem' URLs behave as 'blob' URLs (that is, the origin is parsed
   //    out of everything in the URL which follows the scheme).
   // 3. 'file' URLs all parse as ("file", "", 0).
   //
-  // Note that the returned Origin may have a different scheme and host from
-  // |url| (e.g. in case of blob URLs - see OriginTest.ConstructFromGURL).
+  // WARNING: `url::Origin::Create(url)` can give unexpected results if:
+  // 1) `url` is "about:blank", or "about:srcdoc" (returning unique, opaque
+  //    origin rather than the real origin of the frame)
+  // 2) `url` comes from a sandboxed frame (potentially returning a non-opaque
+  //    origin, when an opaque one is needed; see also
+  //    https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/)
+  // 3) Wrong `url` is used - e.g. in some navigations `base_url_for_data_url`
+  //    might need to be used instead of relying on
+  //    `content::NavigationHandle::GetURL`.
+  //
+  // WARNING: The returned Origin may have a different scheme and host from
+  // `url` (e.g. in case of blob URLs - see OriginTest.ConstructFromGURL).
+  //
+  // WARNING: data: URLs will be correctly be translated into opaque origins,
+  // but the precursor origin will be lost (unlike with `url::Origin::Resolve`).
   static Origin Create(const GURL& url);
 
-  // Creates an Origin for the resource |url| as if it were requested
-  // from the context of |base_origin|.  If |url| is standard
+  // Creates an Origin for the resource `url` as if it were requested
+  // from the context of `base_origin`. If `url` is standard
   // (in the sense that it embeds a complete origin, like http/https),
   // this returns the same value as would Create().
   //
-  // If |url| is "about:blank", this returns a copy of |base_origin|.
+  // If `url` is "about:blank" or "about:srcdoc", this returns a copy of
+  // `base_origin`.
   //
-  // Otherwise, returns a new opaque origin derived from |base_origin|.
+  // Otherwise, returns a new opaque origin derived from `base_origin`.
   // In this case, the resulting opaque origin will inherit the tuple
-  // (or precursor tuple) of |base_origin|, but will not be same origin
-  // with |base_origin|, even if |base_origin| is already opaque.
+  // (or precursor tuple) of `base_origin`, but will not be same origin
+  // with `base_origin`, even if `base_origin` is already opaque.
   static Origin Resolve(const GURL& url, const Origin& base_origin);
 
   // Copyable and movable.
@@ -222,9 +232,9 @@ class COMPONENT_EXPORT(URL) Origin {
   }
 
   // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
-  // ports are exact matches.  Opaque origin is never "same-origin" with any
+  // ports are exact matches. Opaque origin is never "same-origin" with any
   // `url`.  about:blank, about:srcdoc, and invalid GURLs are never
-  // "same-origin" with any origin.  This method is a shorthand for
+  // "same-origin" with any origin. This method is a shorthand for
   // `origin.IsSameOriginWith(url::Origin::Create(url))`.
   //
   // See also CanBeDerivedFrom.
@@ -442,9 +452,9 @@ std::ostream& operator<<(std::ostream& out, const Origin::Nonce& origin);
 
 COMPONENT_EXPORT(URL) bool IsSameOriginWith(const GURL& a, const GURL& b);
 
-// DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) copies |origin| into a new
-// stack-allocated variable named |<var_name>|.  This helps ensure that the
-// value of |origin| gets preserved in crash dumps.
+// DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) copies `origin` into a new
+// stack-allocated variable named `<var_name>`. This helps ensure that the
+// value of `origin` gets preserved in crash dumps.
 #define DEBUG_ALIAS_FOR_ORIGIN(var_name, origin) \
   DEBUG_ALIAS_FOR_CSTR(var_name, (origin).Serialize().c_str(), 128)
 

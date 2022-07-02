@@ -37,41 +37,11 @@ NOINLINE NOT_TAIL_CALLED void ReportThreadHang() {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-NOINLINE void StartupHang() {
-  // TODO(rtenneti): http://crbug.com/440885 enable crashing after fixing false
-  // positive startup hang data.
-  // ReportThreadHang();
-  [[maybe_unused]] volatile int inhibit_comdat = __LINE__;
-}
-
 NOINLINE void ShutdownHang() {
   ReportThreadHang();
   [[maybe_unused]] volatile int inhibit_comdat = __LINE__;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-NOINLINE void ThreadUnresponsive_UI() {
-  ReportThreadHang();
-  [[maybe_unused]] volatile int inhibit_comdat = __LINE__;
-}
-
-NOINLINE void ThreadUnresponsive_IO() {
-  ReportThreadHang();
-  [[maybe_unused]] volatile int inhibit_comdat = __LINE__;
-}
-
-NOINLINE void CrashBecauseThreadWasUnresponsive(
-    content::BrowserThread::ID thread_id) {
-  switch (thread_id) {
-    case content::BrowserThread::UI:
-      return ThreadUnresponsive_UI();
-    case content::BrowserThread::IO:
-      return ThreadUnresponsive_IO();
-    case content::BrowserThread::ID_COUNT:
-      NOTREACHED();
-      break;
-  }
-}
 
 }  // namespace metrics

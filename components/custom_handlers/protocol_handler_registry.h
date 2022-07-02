@@ -75,9 +75,14 @@ class ProtocolHandlerRegistry : public KeyedService {
     virtual void OnProtocolHandlerRegistryChanged() = 0;
   };
 
-  // Creates a new instance.
+  // Intended for testing use only.
   ProtocolHandlerRegistry(PrefService* prefs,
                           std::unique_ptr<Delegate> delegate);
+
+  // Creates a new instance and performs initialization.
+  static std::unique_ptr<ProtocolHandlerRegistry> Create(
+      PrefService* prefs,
+      std::unique_ptr<Delegate> delegate);
 
   ProtocolHandlerRegistry(const ProtocolHandlerRegistry&) = delete;
   ProtocolHandlerRegistry& operator=(const ProtocolHandlerRegistry&) = delete;
@@ -211,16 +216,6 @@ class ProtocolHandlerRegistry : public KeyedService {
   // load command was issued, otherwise the command will be ignored.
   void AddPredefinedHandler(const ProtocolHandler& handler);
 
-  // Install default protocol handlers for chromeos which must be done
-  // prior to calling InitProtocolSettings.
-  // TODO(jfernandez): This method is declared as public because it's invoked by
-  // the ProtocolHandlerRegistryFactory. Instead declaring it private and make
-  // the factory a friend class, we  could add a Create() method on
-  // ProtocolHandlerRegistry that constructs the object, calls the necessary
-  // methods on it, then returns it as a unique_ptr (this is the usual way to
-  // have these Init() type methods called correctly).
-  void InstallDefaultsForChromeOS();
-
   void SetIsLoading(bool is_loading);
 
  private:
@@ -229,6 +224,10 @@ class ProtocolHandlerRegistry : public KeyedService {
       content::BrowserThread::IO>;
 
   friend class ProtocolHandlerRegistryTest;
+
+  // Install default protocol handlers for chromeos which must be done
+  // prior to calling InitProtocolSettings.
+  void InstallDefaultsForChromeOS();
 
   // Puts the given handler at the top of the list of handlers for its
   // protocol.

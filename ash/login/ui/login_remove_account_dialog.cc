@@ -176,9 +176,8 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     std::u16string managed_text = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
-    management_disclosure_label_ =
-        login_views_utils::CreateBubbleLabel(managed_text, this);
-    managed_user_data_->AddChildView(management_disclosure_label_);
+    management_disclosure_label_ = managed_user_data_->AddChildView(
+        login_views_utils::CreateBubbleLabel(managed_text, this));
     AddChildView(managed_user_data_);
   }
 

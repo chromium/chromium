@@ -7,15 +7,13 @@
 #include "base/check.h"
 #include "net/der/parse_values.h"
 
-namespace net {
+namespace net::der {
 
-namespace der {
-
-Parser::Parser() : advance_len_(0) {
+Parser::Parser() {
   CBS_init(&cbs_, nullptr, 0);
 }
 
-Parser::Parser(const Input& input) : advance_len_(0) {
+Parser::Parser(const Input& input) {
   CBS_init(&cbs_, input.UnsafeData(), input.Length());
 }
 
@@ -155,6 +153,4 @@ bool Parser::ReadGeneralizedTime(GeneralizedTime* out) {
   return ParseGeneralizedTime(value, out);
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

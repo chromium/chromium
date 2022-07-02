@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -106,13 +107,29 @@ class ExtensionTelemetryService : public KeyedService {
   std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
   GetExtensionInfoForReport(const extensions::Extension& extension);
 
-  void UploadPersistedFile(std::string report, bool success);
+  void UploadPersistedFile(std::string report);
 
   // Creates access token fetcher based on profile log-in status.
   // Returns nullptr when the user is not signed in.
   std::unique_ptr<SafeBrowsingTokenFetcher> GetTokenFetcher();
 
-  std::unique_ptr<safe_browsing::ExtensionTelemetryPersister> persister_;
+  // Called periodically based on the Telemetry Service timer. If time
+  // elapsed since last upload is less than the reporting interval, persists
+  // a new report, else uploads current report and any persisted reports.
+  void PersistOrUploadData();
+
+  // Uploads an extension telemetry report.
+  void UploadReport(std::unique_ptr<std::string> report);
+
+  // Checks the time of the last upload and if enough time has passed,
+  // uploads telemetry data. Runs on a delayed post task on startup.
+  void StartUploadCheck();
+
+  // The persister object is bound to the threadpool. This prevents the
+  // the read/write operations the `persister_` runs from blocking
+  // the UI thread. It also allows the `persister_` object to be
+  // destroyed cleanly while running tasks during Chrome shutdown.
+  base::SequenceBound<ExtensionTelemetryPersister> persister_;
 
   // The profile with which this instance of the service is associated.
   const raw_ptr<Profile> profile_;

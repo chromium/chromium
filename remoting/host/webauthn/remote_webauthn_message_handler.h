@@ -34,8 +34,10 @@ class RemoteWebAuthnMessageHandler final
       public mojom::WebAuthnRequestCanceller,
       public protocol::NamedMessagePipeHandler {
  public:
-  RemoteWebAuthnMessageHandler(const std::string& name,
-                               std::unique_ptr<protocol::MessagePipe> pipe);
+  RemoteWebAuthnMessageHandler(
+      const std::string& name,
+      std::unique_ptr<protocol::MessagePipe> pipe,
+      std::unique_ptr<RemoteWebAuthnStateChangeNotifier> state_change_notifier);
   RemoteWebAuthnMessageHandler(const RemoteWebAuthnMessageHandler&) = delete;
   RemoteWebAuthnMessageHandler& operator=(const RemoteWebAuthnMessageHandler&) =
       delete;
@@ -75,11 +77,6 @@ class RemoteWebAuthnMessageHandler final
   using CallbackMap = base::flat_map<uint64_t, CallbackType>;
 
   friend class RemoteWebAuthnMessageHandlerTest;
-
-  RemoteWebAuthnMessageHandler(
-      const std::string& name,
-      std::unique_ptr<protocol::MessagePipe> pipe,
-      std::unique_ptr<RemoteWebAuthnStateChangeNotifier> state_change_notifier);
 
   void OnReceiverDisconnected();
   void OnIsUvpaaResponse(

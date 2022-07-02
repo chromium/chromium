@@ -34,6 +34,8 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
   virtual void OnApplicationLocaleReady(const std::string& locale) {}
+  virtual void OnPreferredLanguagesChanged(
+      const std::string& preferred_languages) {}
   virtual void OnEligibilityChanged(bool eligible) {}
 };
 
@@ -56,6 +58,8 @@ class QuickAnswersState {
   virtual void OnConsentResult(ConsentResultType result) {}
 
   bool ShouldUseQuickAnswersTextAnnotator();
+
+  bool IsSupportedLanguage(const std::string& language);
 
   bool settings_enabled() const { return settings_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {

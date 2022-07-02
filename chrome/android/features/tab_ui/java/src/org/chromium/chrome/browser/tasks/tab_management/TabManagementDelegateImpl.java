@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -52,7 +53,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ViewGroup containerView,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView) {
+            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
         if (UmaSessionStats.isMetricsServiceAvailable()) {
             UmaSessionStats.registerSyntheticFieldTrial(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
@@ -67,7 +71,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 && SysUtils.isLowEndDevice()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
-                rootView);
+                rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
     }
 
     @Override
@@ -81,12 +85,16 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ViewGroup containerView,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView) {
+            @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
         return new TabSwitcherCoordinator(activity, lifecycleDispatcher, tabModelSelector,
                 tabContentManager, browserControls, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, shareDelegateSupplier,
                 multiWindowModeStateDispatcher, scrimCoordinator,
-                TabListCoordinator.TabListMode.CAROUSEL, rootView);
+                TabListCoordinator.TabListMode.CAROUSEL, rootView, dynamicResourceLoaderSupplier,
+                snackbarManager, modalDialogManager);
     }
 
     @Override

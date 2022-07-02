@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -33,11 +34,7 @@
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
-#else
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
-#endif
 
 namespace views {
 namespace {
@@ -73,7 +70,7 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
     compositor_ = nullptr;
   }
 
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   const HelperCallback callback_;
 };
 
@@ -167,7 +164,6 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
   return result;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // In Windows, the native events sent to chrome are separated into client
   // and non-client versions of events, which we record on our LocatedEvent
@@ -220,7 +216,6 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   if (!event->handled())
     WindowTreeHostPlatform::DispatchEvent(event);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DesktopWindowTreeHostLinux::OnClosed() {
   DestroyNonClientEventFilter();

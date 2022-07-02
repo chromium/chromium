@@ -79,7 +79,7 @@ std::unique_ptr<SequencedSocketData> BuildNullSocketData() {
 class MockWeakTimer : public base::MockOneShotTimer,
                       public base::SupportsWeakPtr<MockWeakTimer> {
  public:
-  MockWeakTimer() {}
+  MockWeakTimer() = default;
 };
 
 const char kOrigin[] = "http://www.example.org";
@@ -101,11 +101,7 @@ static IsolationInfo CreateIsolationInfo() {
 class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
                                   public WebSocketStreamCreateTestBase {
  protected:
-  WebSocketStreamCreateTest()
-      : stream_type_(GetParam()),
-        http2_response_status_("200"),
-        reset_websocket_http2_stream_(false),
-        sequence_number_(0) {
+  WebSocketStreamCreateTest() : stream_type_(GetParam()) {
     // Make sure these tests all pass with connection partitioning enabled. The
     // disabled case is less interesting, and is tested more directly at lower
     // layers.
@@ -187,10 +183,9 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     // connection preface, initial settings, and window update.
 
     // HTTP/2 connection preface.
-    frames_.push_back(spdy::SpdySerializedFrame(
-        const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
-        spdy::kHttp2ConnectionHeaderPrefixSize,
-        /* owns_buffer = */ false));
+    frames_.emplace_back(const_cast<char*>(spdy::kHttp2ConnectionHeaderPrefix),
+                         spdy::kHttp2ConnectionHeaderPrefixSize,
+                         /* owns_buffer = */ false);
     AddWrite(&frames_.back());
 
     // Server advertises WebSockets over HTTP/2 support.
@@ -288,7 +283,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     }
 
     // EOF.
-    reads_.push_back(MockRead(ASYNC, 0, sequence_number_++));
+    reads_.emplace_back(ASYNC, 0, sequence_number_++);
 
     auto socket_data = std::make_unique<SequencedSocketData>(reads_, writes_);
     socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -381,13 +376,13 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
  private:
   void AddWrite(const spdy::SpdySerializedFrame* frame) {
-    writes_.push_back(
-        MockWrite(ASYNC, frame->data(), frame->size(), sequence_number_++));
+    writes_.emplace_back(ASYNC, frame->data(), frame->size(),
+                         sequence_number_++);
   }
 
   void AddRead(const spdy::SpdySerializedFrame* frame) {
-    reads_.push_back(
-        MockRead(ASYNC, frame->data(), frame->size(), sequence_number_++));
+    reads_.emplace_back(ASYNC, frame->data(), frame->size(),
+                        sequence_number_++);
   }
 
  protected:
@@ -398,12 +393,12 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
   std::unique_ptr<base::OneShotTimer> timer_;
   std::string additional_data_;
-  const char* http2_response_status_;
-  bool reset_websocket_http2_stream_;
+  const char* http2_response_status_ = "200";
+  bool reset_websocket_http2_stream_ = false;
   SpdyTestUtil spdy_util_;
   NetLogWithSource log_;
 
-  int sequence_number_;
+  int sequence_number_ = 0;
 
   // Store mock HTTP/2 data.
   std::vector<spdy::SpdySerializedFrame> frames_;

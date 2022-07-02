@@ -23,7 +23,14 @@
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_DONE" desc="The text shown on the consent confirmation bubble bubble. User can click this button to close the bubble.">
       Done
     </message>
-    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount. Note: This is intentionally left blank. No translation is required."></message>
-    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" translateable="false" desc="The actual consent descrition that shows in the native consent dialog. Note: This is intentionally left blank. No translation is required."></message>
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON" translateable="false" desc="Text shown on the accept button of the consent dialog. By clicking this button, users has chosen to accept the consent.">
+      Yes, I'm in
+    </message>
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount. Note: This is intentionally left blank. No translation is required.">
+      Get discounts on your carts&#13; &amp; when you shop online
+    </message>
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" translateable="false" desc="The actual consent descrition that shows in the native consent dialog. Note: This is intentionally left blank. No translation is required.">
+      Let Google find personalized discounts on your carts and on online stores you visit. When available, discounts will automatically show up on your carts and on sites.
+    </message>
   </if>
 </grit-part>

@@ -20,7 +20,7 @@ class ParsingException(Exception):
     return repr(self.args[0])
 
 
-class AddressMapping(object):
+class AddressMapping:
   def __init__(self):
     self._symbol_map = {}
 
@@ -33,7 +33,7 @@ class AddressMapping(object):
 
 class RangeAddressMapping(AddressMapping):
   def __init__(self):
-    super(RangeAddressMapping, self).__init__()
+    super().__init__()
     self._sorted_start_list = []
     self._is_sorted = True
 
@@ -57,7 +57,7 @@ class RangeAddressMapping(AddressMapping):
     return self._symbol_map[found_start_address]
 
 
-class Procedure(object):
+class Procedure:
   """A class for a procedure symbol and an address range for the symbol."""
 
   def __init__(self, start, end, name):
@@ -77,7 +77,7 @@ class Procedure(object):
     return '%x-%x: %s' % (self.start, self.end, self.name)
 
 
-class ElfSection(object):
+class ElfSection:
   """A class for an elf section header."""
 
   def __init__(
@@ -114,7 +114,7 @@ class ElfSection(object):
     return '%x+%x(%x) %s' % (self.address, self.size, self.offset, self.name)
 
 
-class StaticSymbolsInFile(object):
+class StaticSymbolsInFile:
   """Represents static symbol information in a binary file."""
 
   def __init__(self, my_name):
@@ -169,7 +169,7 @@ class StaticSymbolsInFile(object):
         found_header = True
         break
     if not found_header:
-      return None
+      return
 
     for line in f:
       line = line.rstrip()
@@ -201,7 +201,7 @@ class StaticSymbolsInFile(object):
   def _parse_nm_bsd_line(line):
     if line[8] == ' ':
       return line[0:8], line[9], line[11:]
-    elif line[16] == ' ':
+    if line[16] == ' ':
       return line[0:16], line[17], line[19:]
     raise ParsingException('Invalid nm output.')
 
@@ -249,11 +249,11 @@ class StaticSymbolsInFile(object):
       # that is, a line with type 'T'.  If we never see a 'T' entry,
       # we'll just go ahead and process the first entry (which never
       # got touched in the queue), and ignore the others.
-      if start_val == last_start and (sym_type == 't' or sym_type == 'T'):
+      if start_val == last_start and sym_type in ('t', 'T'):
         # We are the 'T' symbol at this address, replace previous symbol.
         routine = sym_name
         continue
-      elif start_val == last_start:
+      if start_val == last_start:
         # We're not the 'T' symbol at this address, so ignore us.
         continue
 

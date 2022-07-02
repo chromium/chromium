@@ -8,14 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "build/chromecast_buildflags.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/viz_service_export.h"
 
-#if BUILDFLAG(IS_CHROMECAST)
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#endif
 
 namespace viz {
 // Similar to underlay strategy plus Cast-specific handling of content bounds.
@@ -66,7 +63,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
   void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
                        AggregatedRenderPass* render_pass) override;
 
-#if BUILDFLAG(IS_CHROMECAST)
   // In Chromecast build, OverlayStrategyUnderlayCast needs a valid mojo
   // interface to VideoGeometrySetter Service (shared by all instances of
   // OverlaystrategyUnderlayCast). This must be called before compositor starts.
@@ -75,7 +71,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
   static void ConnectVideoGeometrySetter(
       mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
           video_geometry_setter);
-#endif
 
   OverlayStrategy GetUMAEnum() const override;
 

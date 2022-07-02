@@ -1,11 +1,15 @@
 include_rules = [
   "+components/metrics/call_stack_profile_builder.h",
+  "+components/metrics/call_stack_profile_params.h",
   "+components/services/heap_profiling/public",
   "+components/version_info",
 ]
 
 specific_include_rules = {
   "heap_profiler_controller_unittest\.cc": [
+    "+components/metrics/public/mojom/call_stack_profile_collector.mojom.h",
+    "+mojo/public/cpp/bindings",
+    "+third_party/metrics_proto/execution_context.pb.h",
     "+third_party/metrics_proto/sampled_profile.pb.h",
   ],
 }

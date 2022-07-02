@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 
+#include "base/check_op.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -45,8 +47,8 @@ class PLATFORM_EXPORT PendingLayer {
     return text_known_to_be_on_opaque_background_;
   }
   const PaintChunkSubset& Chunks() const { return chunks_; }
-  const PropertyTreeState& GetPropertyTreeState() const {
-    return property_tree_state_;
+  const PropertyTreeState GetPropertyTreeState() const {
+    return property_tree_state_.GetPropertyTreeState();
   }
   const gfx::Vector2dF& OffsetOfDecompositedTransforms() const {
     return offset_of_decomposited_transforms_;
@@ -69,8 +71,9 @@ class PLATFORM_EXPORT PendingLayer {
   // both layers from their original property tree states to |merged_state|.
   // Returns whether the merge is successful.
   bool Merge(const PendingLayer& guest, bool prefers_lcd_text = false) {
-    return MergeInternal(guest, guest.property_tree_state_, prefers_lcd_text,
-                         /*dry_run*/ false);
+    return MergeInternal(guest,
+                         guest.property_tree_state_.GetPropertyTreeState(),
+                         prefers_lcd_text, /*dry_run*/ false);
   }
 
   // Returns true if |guest| can be merged into |this|.
@@ -185,7 +188,7 @@ class PLATFORM_EXPORT PendingLayer {
   bool text_known_to_be_on_opaque_background_ = false;
   bool has_decomposited_blend_mode_ = false;
   PaintChunkSubset chunks_;
-  PropertyTreeState property_tree_state_;
+  RefCountedPropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
@@ -196,6 +199,9 @@ class PLATFORM_EXPORT PendingLayer {
   // This is set to non-null after layerization if !ChunkRequiresOwnLayer().
   std::unique_ptr<ContentLayerClientImpl> content_layer_client_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PendingLayer&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_

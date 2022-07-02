@@ -152,6 +152,22 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     discovery_network_monitor_->OnConnectionChanged(connection_type);
   }
 
+  void ExpectOpenChannels(std::vector<MediaSinkInternal> cast_sinks,
+                          int num_times) {
+    for (auto sink : cast_sinks) {
+      EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+                  OpenChannel(sink, _, SinkSource::kAccessCode, _, _))
+          .Times(num_times);
+    }
+  }
+
+  void ExpectHasSink(std::vector<MediaSinkInternal> cast_sinks, int num_times) {
+    for (auto sink : cast_sinks) {
+      EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(sink.id()))
+          .Times(num_times);
+    }
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -286,7 +302,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 TEST_F(AccessCodeCastSinkServiceTest,
        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled) {
   feature_list_.Reset();
-  feature_list_.Init();
+  feature_list_.InitAndDisableFeature(features::kAccessCodeCastRememberDevices);
   // Test to see that an AccessCode cast sink will be removed after the session
   // is ended.
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -363,6 +379,9 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
   // exists in the media router.
   MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  auto cast_data = cast_sink1.cast_data();
+  cast_data.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  cast_sink1.set_cast_data(cast_data);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
@@ -416,6 +435,9 @@ TEST_F(AccessCodeCastSinkServiceTest, AddNewSinkToMediaRouter) {
   // exist.
   MockAddSinkResultCallback mock_callback;
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  auto cast_data = cast_sink1.cast_data();
+  cast_data.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  cast_sink1.set_cast_data(cast_data);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _));
@@ -453,14 +475,11 @@ TEST_F(AccessCodeCastSinkServiceTest, ValidDiscoveryDeviceAndCode) {
   access_code_cast_sink_service_->OnAccessCodeValidated(
       mock_callback.Get(), discovery_device_proto, AddSinkResultCode::OK);
 
-  // Assume sink is not present in the Media Router so a call to OpenChannel is
-  // made.
-  access_code_cast_sink_service_->OpenChannelIfNecessary(
-      cast_sink1, mock_callback.Get(), false);
-
   // Channel successfully opens.
   access_code_cast_sink_service_->OnChannelOpenedResult(mock_callback.Get(),
                                                         "123456", true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+  FastForwardUiAndIoTasks();
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -534,6 +553,9 @@ TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink2);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink3);
 
+  // Initialize histogram tester so we can ensure metrics are being collected.
+  base::HistogramTester histogram_tester;
+
   FastForwardUiAndIoTasks();
 
   std::vector<MediaSinkInternal> cast_sinks_ethernet;
@@ -547,19 +569,24 @@ TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
       access_code_cast_sink_service_->ValidateDeviceFromSinkId(cast_sink3.id())
           .value());
 
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannels(cast_sinks_ethernet, SinkSource::kAccessCode))
-      .Times(1);
+  ExpectOpenChannels(cast_sinks_ethernet, 1);
+  ExpectHasSink(cast_sinks_ethernet, 1);
 
   FastForwardUiAndIoTasks();
 
   access_code_cast_sink_service_->InitAllStoredDevices();
+
+  // Test to ensure that the count of remembered devices was properly logged.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 3, 1);
 
   // GetNetworkId() is run on the IO thread, so we must run RunUntilIdle and
   // RunAllTasks for that task to finish before we can continue with the
   // mock_task_runner.
   FastForwardUiAndIoTasks();
   content::RunAllTasksUntilIdle();
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+  FastForwardUiAndIoTasks();
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -599,9 +626,11 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
       access_code_cast_sink_service_->ValidateDeviceFromSinkId(cast_sink3.id())
           .value());
 
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannels(cast_sinks_ethernet, SinkSource::kAccessCode))
-      .Times(1);
+  // Overall this unit test should call OpenChannel for each cast sink twice.
+  // This is on init stored devices and then connecting to a new network will
+  // trigger a call to add every stored cast device back again.
+  ExpectOpenChannels(cast_sinks_ethernet, 2);
+  ExpectHasSink(cast_sinks_ethernet, 2);
 
   FastForwardUiAndIoTasks();
 
@@ -624,12 +653,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
   EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
                    ->GetDict()
                    .empty());
-
-  // Connecting to a new network will trigger a call to add every stored cast
-  // device back again.
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannels(cast_sinks_ethernet, SinkSource::kAccessCode))
-      .Times(1);
 
   // When the network changes, the sinks on that network should be removed.
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
@@ -701,9 +724,11 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
       access_code_cast_sink_service_->ValidateDeviceFromSinkId(cast_sink3.id())
           .value());
 
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannels(cast_sinks_ethernet, SinkSource::kAccessCode))
-      .Times(1);
+  // Overall this unit test should call OpenChannel for each cast sink twice.
+  // This is on init stored devices and then connecting to a new network will
+  // trigger a call to add every stored cast device back again.
+  ExpectOpenChannels(cast_sinks_ethernet, 2);
+  ExpectHasSink(cast_sinks_ethernet, 2);
 
   FastForwardUiAndIoTasks();
 
@@ -726,12 +751,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
                    ->GetDict()
                    .empty());
-
-  // Connecting to a new network will trigger a call to add every stored cast
-  // device back again.
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannels(cast_sinks_ethernet, SinkSource::kAccessCode))
-      .Times(1);
 
   content::RunAllTasksUntilIdle();
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
@@ -1075,6 +1094,130 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeDurationPref) {
       access_code_cast_sink_service_
           ->current_session_expiration_timers_[cast_sink1.id()]
           ->GetCurrentDelay());
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
+  // This test ensures that a call to remove a media sink will NOT be made if
+  // there is currently an active route.
+  SetDeviceDurationPrefForTest(base::Seconds(10000));
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+  std::vector<MediaRoute> route_list = {media_route_cast};
+
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(cast_sink1.id()));
+  // Simulate that this cast sink has an open route.
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
+      route_list);
+  ON_CALL(*router_, GetCurrentRoutes())
+      .WillByDefault(Return(std::vector<MediaRoute>{media_route_cast}));
+
+  // Since the route has not changed, no call to remove the sink should have
+  // been made after the network changed.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1))
+      .Times(0);
+
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+
+  fake_network_info_ = fake_wifi_info_;
+  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+
+  content::RunAllTasksUntilIdle();
+  mock_time_task_runner()->FastForwardBy(base::Seconds(100));
+
+  // Simulate that the route has ended.
+  ON_CALL(*router_, GetCurrentRoutes())
+      .WillByDefault(Return(std::vector<MediaRoute>{}));
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated({});
+
+  // The sink should NOT now be removed from the media router since it was not
+  // expired.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1))
+      .Times(0);
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+
+  // The sink did not expire in this situation so it should still exist in the
+  // pref service.
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                   ->GetDict()
+                   .empty());
+}
+
+TEST_F(AccessCodeCastSinkServiceTest,
+       TestChangeNetworkWithRouteActiveExpiration) {
+  // This test ensures that a call to remove a media sink will NOT be made if
+  // there is currently an active route, this time when the sink has expired
+  // before the network has changed.
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  auto cast_data = cast_sink1.cast_data();
+  cast_data.discovery_type = CastDiscoveryType::kAccessCodeRememberedDevice;
+  cast_sink1.set_cast_data(cast_data);
+
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+  std::vector<MediaRoute> route_list = {media_route_cast};
+
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(cast_sink1.id()));
+  // Simulate that this cast sink has an open route.
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
+      route_list);
+  ON_CALL(*router_, GetCurrentRoutes())
+      .WillByDefault(Return(std::vector<MediaRoute>{media_route_cast}));
+
+  // Since the route has not changed, no call to remove the sink should have
+  // been made after the network changed.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1))
+      .Times(0);
+
+  // Expire the sink
+  mock_time_task_runner()->FastForwardBy(base::Seconds(300));
+  task_environment_.FastForwardBy(base::Seconds(300));
+
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+
+  fake_network_info_ = fake_wifi_info_;
+  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+
+  content::RunAllTasksUntilIdle();
+  mock_time_task_runner()->FastForwardBy(base::Seconds(300));
+
+  // Simulate that the route has ended.
+  ON_CALL(*router_, GetCurrentRoutes())
+      .WillByDefault(Return(std::vector<MediaRoute>{}));
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated({});
+
+  // The sink should now be removed from the media router.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1));
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+  FastForwardUiAndIoTasks();
+
+  // The sink did expire in this situation so it should not exist in the pref
+  // service.
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                  ->GetDict()
+                  .empty());
 }
 
 }  // namespace media_router

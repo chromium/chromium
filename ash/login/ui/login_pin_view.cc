@@ -136,6 +136,7 @@ class BasePinButton : public views::View {
         this));
 
     views::FocusRing::Install(this);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
         this, views::FocusRing::Get(this), kInkDropCornerRadiusDp);
   }
@@ -178,13 +179,6 @@ class BasePinButton : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kButton;
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
  protected:
@@ -278,8 +272,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
                       size,
                       l10n_util::GetStringUTF16(
                           IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME),
-                      on_press),
-        palette_(palette) {
+                      on_press) {
     image_ = AddChildView(new views::ImageView());
     SetEnabled(false);
   }
@@ -403,8 +396,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       AddEnabledChangedCallback(base::BindRepeating(
           &LoginPinView::BackspacePinButton::OnEnabledChanged,
           base::Unretained(this)));
-
-  LoginPalette palette_;
 };
 
 // A PIN button to press to submit the PIN / password.
@@ -417,8 +408,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
                       size,
                       l10n_util::GetStringUTF16(
                           IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME),
-                      on_press),
-        palette_(palette) {
+                      on_press) {
     image_ = AddChildView(std::make_unique<views::ImageView>());
     SetEnabled(false);
   }
@@ -446,8 +436,6 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
       AddEnabledChangedCallback(
           base::BindRepeating(&LoginPinView::SubmitPinButton::UpdateImage,
                               base::Unretained(this)));
-
-  LoginPalette palette_;
 };
 
 // static

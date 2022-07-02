@@ -8,6 +8,7 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -2129,7 +2130,7 @@ TEST_F(SurfaceSynchronizationTest, ActiveFrameIndex) {
   child_support2().SubmitCompositorFrame(child_id2.local_surface_id(),
                                          MakeDefaultCompositorFrame());
   EXPECT_TRUE(parent_surface()->HasActiveFrame());
-  uint64_t expected_index = CompositorFrameSinkSupport::kFrameIndexStart;
+  uint64_t expected_index = kFrameIndexStart;
   EXPECT_EQ(expected_index, parent_surface()->GetActiveFrameIndex());
 }
 

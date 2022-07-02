@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 //
 // Implementation of a Windows event trace controller class.
+
 #include "base/win/event_trace_controller.h"
+
 #include "base/check.h"
+#include "base/numerics/checked_math.h"
 
 constexpr size_t kDefaultRealtimeBufferSizeKb = 16;
 
@@ -88,7 +91,8 @@ HRESULT EtwTraceController::StartRealtimeSession(const wchar_t* session_name,
   EVENT_TRACE_PROPERTIES& p = *prop.get();
   p.LogFileMode = EVENT_TRACE_REAL_TIME_MODE | EVENT_TRACE_USE_PAGED_MEMORY;
   p.FlushTimer = 1;   // flush every second.
-  p.BufferSize = buffer_size ? buffer_size : kDefaultRealtimeBufferSizeKb;
+  p.BufferSize = checked_cast<ULONG>(
+      buffer_size ? buffer_size : kDefaultRealtimeBufferSizeKb);
   p.LogFileNameOffset = 0;
   return Start(session_name, &prop);
 }

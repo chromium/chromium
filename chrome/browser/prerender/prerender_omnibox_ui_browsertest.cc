@@ -14,6 +14,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -679,10 +681,28 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                     expected_prerender_url);
 
+  // With the default setting, there should be no prefetches because the server
+  // does not respond a prefetch suggestion.
+  SearchPrefetchService* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(Profile::FromBrowserContext(
+          GetActiveWebContents()->GetBrowserContext()));
+  ASSERT_NE(search_prefetch_service, nullptr);
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          u"prerender222");
+  EXPECT_FALSE(prefetch_status.has_value());
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch", 0);
+
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_TRUE(
       base::Contains(prerender_rfh->GetLastCommittedURL().spec(), "pf=cs"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.DefaultSearchEngine."
+      "SearchTermExtractorCorrectness",
+      true, 1);
 
   // Ensure there is a search hint.
   auto is_prerender_match = [](const AutocompleteMatch& match) {
@@ -698,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url));
@@ -759,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   // The displayed url shouldn't contain the parameter of pf=cs.
@@ -814,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   // Wait until the history is updated.
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                                   "historyUpdated;"));
 
   // The displayed url shouldn't contain the parameter of pf=cs.

@@ -81,6 +81,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
                 add(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);
+                add(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP);
                 add(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
                 add(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID);
@@ -90,12 +91,10 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);
-                add(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP);
                 add(ChromeFeatureList.FEED_LOADING_PLACEHOLDER);
-                add(ChromeFeatureList
-                                .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
                 add(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
+                add(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
                 add(ChromeFeatureList.INSTANT_START);
                 add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
@@ -139,15 +138,10 @@ public class ChromeCachedFlags {
                         add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
                         add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
                         add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
-                        add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
-                        add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
-                        add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
                         add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
-                        add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
-                        add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
                         add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
                         add(StartSurfaceConfiguration
@@ -220,11 +214,7 @@ public class ChromeCachedFlags {
 
         // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
         List<String> featuresToCache = new ArrayList<String>() {
-            {
-                add(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
-                add(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD);
-                add(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH);
-            }
+            { add(ChromeFeatureList.EXPERIMENTS_FOR_AGSA); }
         };
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
 

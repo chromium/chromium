@@ -194,13 +194,6 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
                 // Skip binding properties that haven't changed.
                 if (newModel.compareValue(oldModel, key)) {
                     continue;
-                } else {
-                    // When rebinding a view, if the value has changed it should be writable as
-                    // views reasonably may not expect read-only keys not to change or be rebound.
-                    assert key instanceof PropertyModel.WritableObjectPropertyKey
-                            || key instanceof PropertyModel.WritableIntPropertyKey
-                            || key instanceof PropertyModel.WritableBooleanPropertyKey
-                            || key instanceof PropertyModel.WritableFloatPropertyKey;
                 }
             } else if (!setProperties.contains(key)) {
                 // If there is no previous model, skip binding properties that haven't been set.

@@ -16,8 +16,8 @@ namespace sync_sessions {
 
 class StartSyncFlareMock {
  public:
-  StartSyncFlareMock() {}
-  ~StartSyncFlareMock() {}
+  StartSyncFlareMock() = default;
+  ~StartSyncFlareMock() = default;
 
   void StartSyncFlare(syncer::ModelType type) { was_run_ = true; }
 

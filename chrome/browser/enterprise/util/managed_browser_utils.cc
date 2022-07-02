@@ -60,9 +60,8 @@ namespace {
 // URL in |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting. The
 // format of the returned filters corresponds to the "filter" property of the
 // AutoSelectCertificateForUrls policy as documented at policy_templates.json.
-std::vector<base::Value> GetCertAutoSelectionFilters(
-    Profile* profile,
-    const GURL& requesting_url) {
+base::Value::List GetCertAutoSelectionFilters(Profile* profile,
+                                              const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value setting = host_content_settings_map->GetWebsiteSetting(
@@ -72,8 +71,7 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
   if (!setting.is_dict())
     return {};
 
-  base::Value* filters =
-      setting.FindKeyOfType("filters", base::Value::Type::LIST);
+  base::Value::List* filters = setting.GetDict().FindList("filters");
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by
@@ -84,14 +82,14 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
         ContentSettingsType::AUTO_SELECT_CERTIFICATE, base::Value());
     return {};
   }
-  return std::move(*filters).TakeListDeprecated();
+  return std::move(*filters);
 }
 
 // Returns whether the client certificate matches any of the auto-selection
 // filters. Returns false when there's no valid filter.
 bool CertMatchesSelectionFilters(
     const net::ClientCertIdentity& client_cert,
-    const std::vector<base::Value>& auto_selection_filters) {
+    const base::Value::List& auto_selection_filters) {
   for (const auto& filter : auto_selection_filters) {
     if (!filter.is_dict()) {
       // The filter has a wrong format, so ignore it. Note that reporting of
@@ -99,15 +97,12 @@ bool CertMatchesSelectionFilters(
       // policy handler - see configuration_policy_handler_list_factory.cc.
       continue;
     }
-
     auto issuer_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("ISSUER", base::Value::Type::DICTIONARY), "CN",
-            "L", "O", "OU");
+        ParseFromOptionalDict(filter.GetDict().FindDict("ISSUER"), "CN", "L",
+                              "O", "OU");
     auto subject_pattern = certificate_matching::CertificatePrincipalPattern::
-        ParseFromOptionalDict(
-            filter.FindKeyOfType("SUBJECT", base::Value::Type::DICTIONARY),
-            "CN", "L", "O", "OU");
+        ParseFromOptionalDict(filter.GetDict().FindDict("SUBJECT"), "CN", "L",
+                              "O", "OU");
 
     if (issuer_pattern.Matches(client_cert.certificate()->issuer()) &&
         subject_pattern.Matches(client_cert.certificate()->subject())) {
@@ -178,7 +173,7 @@ void AutoSelectCertificates(
     net::ClientCertIdentityList* nonmatching_client_certs) {
   matching_client_certs->clear();
   nonmatching_client_certs->clear();
-  const std::vector<base::Value> auto_selection_filters =
+  const base::Value::List auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
   for (auto& client_cert : client_certs) {
     if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))

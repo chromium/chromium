@@ -12,6 +12,8 @@ const DestroyAccessibilityTree =
     nativeAutomationInternal.DestroyAccessibilityTree;
 const StartCachingAccessibilityTrees =
     nativeAutomationInternal.StartCachingAccessibilityTrees;
+const StopCachingAccessibilityTrees =
+    nativeAutomationInternal.StopCachingAccessibilityTrees;
 const AddTreeChangeObserver = nativeAutomationInternal.AddTreeChangeObserver;
 const RemoveTreeChangeObserver =
     nativeAutomationInternal.RemoveTreeChangeObserver;
@@ -26,9 +28,10 @@ const SetDesktopID = nativeAutomationInternal.SetDesktopID;
 window.automationUtil = function() {};
 
 // TODO(aboxhall): Look into using WeakMap
-const idToCallback = {};
+let idToCallback = {};
 
-let desktopId = undefined;
+let desktopId;
+let desktopTree;
 
 automationUtil.storeTreeCallback = function(id, callback) {
   if (!callback) {
@@ -94,7 +97,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     });
   });
 
-  let desktopTree = null;
   apiFunctions.setHandleRequest('getDesktop', function(callback) {
     StartCachingAccessibilityTrees();
     if (desktopId !== undefined) {
@@ -249,6 +251,19 @@ automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
   for (let i = 0; i < nodeIDs.length; i++) {
     privates(tree).impl.remove(nodeIDs[i]);
   }
+});
+
+automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
+  if (!desktopId) {
+    return;
+  }
+  automationInternal.disableDesktop(() => {
+    desktopId = undefined;
+    desktopTree = undefined;
+    idToCallback = {};
+    AutomationRootNode.destroyAll();
+    StopCachingAccessibilityTrees();
+  });
 });
 
 /**

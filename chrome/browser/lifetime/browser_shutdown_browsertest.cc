@@ -80,23 +80,13 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   BrowserList::RemoveObserver(&closing_observer);
 }
 
-// Flakes on Mac11.0: https://crbug.com/1259913
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TwoBrowsersClosingShutdownHistograms \
-  DISABLED_TwoBrowsersClosingShutdownHistograms
-#else
-#define MAYBE_TwoBrowsersClosingShutdownHistograms \
-  TwoBrowsersClosingShutdownHistograms
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
-                       MAYBE_TwoBrowsersClosingShutdownHistograms) {
+                       TwoBrowsersClosingShutdownHistograms) {
   histogram_tester_.ExpectUniqueSample(
       "Shutdown.ShutdownType",
       static_cast<int>(browser_shutdown::ShutdownType::kWindowClose), 1);
-  histogram_tester_.ExpectTotalCount("Shutdown.renderers.total", 1);
-  histogram_tester_.ExpectTotalCount("Shutdown.window_close.time2", 1);
-  histogram_tester_.ExpectTotalCount("Shutdown.window_close.time_per_process",
-                                     1);
+  histogram_tester_.ExpectTotalCount("Shutdown.Renderers.Total", 1);
+  histogram_tester_.ExpectTotalCount("Shutdown.WindowClose.Time", 1);
 }
 #else
 // On Chrome OS, the shutdown accelerator is handled by Ash and requires

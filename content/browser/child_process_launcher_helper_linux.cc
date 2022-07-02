@@ -73,7 +73,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     bool* is_synchronous_launch,
     int* launch_result) {
   *is_synchronous_launch = true;
-
+  Process process;
   ZygoteHandle zygote_handle =
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote)
           ? nullptr
@@ -98,16 +98,20 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     }
 #endif
 
-    Process process;
     process.process = base::Process(handle);
     process.zygote = zygote_handle;
-    return process;
+  } else {
+    process.process = base::LaunchProcess(*command_line(), options);
+    *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
+                                               : LAUNCH_RESULT_FAILURE;
   }
 
-  Process process;
-  process.process = base::LaunchProcess(*command_line(), options);
-  *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
-                                             : LAUNCH_RESULT_FAILURE;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (GetProcessType() == switches::kRendererProcess) {
+    process.process.InitializePriority();
+  }
+#endif
+
   return process;
 }
 

@@ -13,23 +13,23 @@
 @protocol GridCommands
 // Tells the receiver to insert a new item at the end of the list.
 - (void)addNewItem;
-// Tells the receiver to insert a new item at |index|. It is an error to call
-// this method with an |index| greater than the number of items in the model.
+// Tells the receiver to insert a new item at `index`. It is an error to call
+// this method with an `index` greater than the number of items in the model.
 - (void)insertNewItemAtIndex:(NSUInteger)index;
-// Tells the receiver to select the item with identifier |itemID|. If there is
+// Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made.
 - (void)selectItemWithID:(NSString*)itemID;
-// Asks the receiver whether the item with identifier |itemID| is already
+// Asks the receiver whether the item with identifier `itemID` is already
 // selected.
 - (BOOL)isItemWithIDSelected:(NSString*)itemID;
-// Tells the receiver to move the item with identifier |itemID| to |index|. If
+// Tells the receiver to move the item with identifier `itemID` to `index`. If
 // there is no item with that identifier, no move should be made. It is an error
-// to pass a value for |index| outside of the bounds of the items array.
+// to pass a value for `index` outside of the bounds of the items array.
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)index;
-// Tells the receiver to close the item with identifier |itemID|. If there is
+// Tells the receiver to close the item with identifier `itemID`. If there is
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(NSString*)itemID;
-// Tells the receiver to close the items with the identifiers in |itemIDs|.
+// Tells the receiver to close the items with the identifiers in `itemIDs`.
 // ItemIDs which are not associated with any item are ignored.
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs;
 // Tells the receiver to close all items.
@@ -49,14 +49,14 @@
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
                                             anchor:
                                                 (UIBarButtonItem*)buttonAnchor;
-// Shows a share sheet to share |items|, anchored to the |buttonAnchor|.
+// Shows a share sheet to share `items`, anchored to the `buttonAnchor`.
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor;
-// Returns the menu to display when the Add To button is selected for |items|.
+// Returns the menu to display when the Add To button is selected for `items`.
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
     (NSArray<NSString*>*)items;
 
-// Tells the receiver to perform a search using |searchText| and update the list
+// Tells the receiver to perform a search using `searchText` and update the list
 // of visible items based on the result.
 - (void)searchItemsWithText:(NSString*)searchText;
 
@@ -64,8 +64,8 @@
 // active item.
 - (void)resetToAllItems;
 
-// Tells the receiver to fetch the search history results count for |searchText|
-// and provide it to the |completion| block.
+// Tells the receiver to fetch the search history results count for `searchText`
+// and provide it to the `completion` block.
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion;
 

@@ -147,7 +147,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                   const gpu::Mailbox yuva_plane_mailboxes[],
                                   const gpu::Mailbox& source_mailbox) override;
 
-  void BeginRasterCHROMIUM(GLuint sk_color,
+  void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            MsaaMode msaa_mode,
@@ -213,27 +213,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  void Swap(uint32_t flags,
-            SwapCompletedCallback swap_completed,
-            PresentationCallback present_callback) override;
-  void SwapWithBounds(const std::vector<gfx::Rect>& rects,
-                      uint32_t flags,
-                      SwapCompletedCallback swap_completed,
-                      PresentationCallback present_callback) override;
-  void PartialSwapBuffers(const gfx::Rect& sub_buffer,
-                          uint32_t flags,
-                          SwapCompletedCallback swap_completed,
-                          PresentationCallback present_callback) override;
-  void CommitOverlayPlanes(uint32_t flags,
-                           SwapCompletedCallback swap_completed,
-                           PresentationCallback present_callback) override;
-  void ScheduleOverlayPlane(int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            unsigned overlay_texture_id,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& uv_rect,
-                            bool enable_blend,
-                            unsigned gpu_fence_id) override;
   uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
@@ -307,11 +286,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
-  void OnGpuControlSwapBuffersCompleted(
-      const SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) final;
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final;
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   // Gets the GLError through our wrapper.
@@ -438,11 +412,11 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   std::vector<size_t> temp_raster_offsets_;
 
   struct RasterProperties {
-    RasterProperties(SkColor background_color,
+    RasterProperties(SkColor4f background_color,
                      bool can_use_lcd_text,
                      sk_sp<SkColorSpace> color_space);
     ~RasterProperties();
-    SkColor background_color = SK_ColorWHITE;
+    SkColor4f background_color = SkColors::kWhite;
     bool can_use_lcd_text = false;
     sk_sp<SkColorSpace> color_space;
   };

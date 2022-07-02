@@ -31,6 +31,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/color/color_id.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -89,28 +90,23 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
 
   // These methods return color codes that will be handled by the app's theming
   // system.
-  int GetHelpBubbleBackgroundColor() const override {
-    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND;
-  }
-  int GetHelpBubbleForegroundColor() const override {
-    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND;
-  }
-  int GetHelpBubbleDefaultButtonBackgroundColor() const override {
-    return ThemeProperties::
-        COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND;
-  }
-  int GetHelpBubbleDefaultButtonForegroundColor() const override {
-    return ThemeProperties::
-        COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND;
-  }
-  int GetHelpBubbleButtonBorderColor() const override {
-    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER;
-  }
-  int GetHelpBubbleCloseButtonInkDropColor() const override {
-    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP;
-  }
   ui::ColorId GetHelpBubbleBackgroundColorId() const override {
     return kColorFeaturePromoBubbleBackground;
+  }
+  ui::ColorId GetHelpBubbleForegroundColorId() const override {
+    return kColorFeaturePromoBubbleForeground;
+  }
+  ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const override {
+    return kColorFeaturePromoBubbleDefaultButtonBackground;
+  }
+  ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const override {
+    return kColorFeaturePromoBubbleDefaultButtonForeground;
+  }
+  ui::ColorId GetHelpBubbleButtonBorderColorId() const override {
+    return kColorFeaturePromoBubbleButtonBorder;
+  }
+  ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const override {
+    return kColorFeaturePromoBubbleCloseButtonInkDrop;
   }
 };
 
@@ -234,11 +230,9 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::AcceleratorInfo(IDC_RESTORE_TAB)));
 
   // kIPHSideSearchFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::kIPHSideSearchFeature,
-                    kSideSearchButtonElementId, IDS_SIDE_SEARCH_PROMO)
-                    .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+      &feature_engagement::kIPHSideSearchFeature, kSideSearchButtonElementId,
+      IDS_SIDE_SEARCH_PROMO));
 
   // kIPHTabSearchFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(

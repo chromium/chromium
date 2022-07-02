@@ -1604,55 +1604,55 @@ static const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL
 /* 1646 */	NdrFcShort( 0x1 ),	/* 1 */
 /* 1648 */	NdrFcShort( 0x0 ),	/* 0 */
 
-	/* Parameter parameter1 */
+	/* Parameter substitution1 */
 
 /* 1650 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1652 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 1654 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter2 */
+	/* Parameter substitution2 */
 
 /* 1656 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1658 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
 /* 1660 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter3 */
+	/* Parameter substitution3 */
 
 /* 1662 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1664 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
 /* 1666 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter4 */
+	/* Parameter substitution4 */
 
 /* 1668 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1670 */	NdrFcShort( 0x34 ),	/* x86 Stack size/offset = 52 */
 /* 1672 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter5 */
+	/* Parameter substitution5 */
 
 /* 1674 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1676 */	NdrFcShort( 0x44 ),	/* x86 Stack size/offset = 68 */
 /* 1678 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter6 */
+	/* Parameter substitution6 */
 
 /* 1680 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1682 */	NdrFcShort( 0x54 ),	/* x86 Stack size/offset = 84 */
 /* 1684 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter7 */
+	/* Parameter substitution7 */
 
 /* 1686 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1688 */	NdrFcShort( 0x64 ),	/* x86 Stack size/offset = 100 */
 /* 1690 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter8 */
+	/* Parameter substitution8 */
 
 /* 1692 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1694 */	NdrFcShort( 0x74 ),	/* x86 Stack size/offset = 116 */
 /* 1696 */	NdrFcShort( 0x43e ),	/* Type Offset=1086 */
 
-	/* Parameter parameter9 */
+	/* Parameter substitution9 */
 
 /* 1698 */	NdrFcShort( 0x8b ),	/* Flags:  must size, must free, in, by val, */
 /* 1700 */	NdrFcShort( 0x84 ),	/* x86 Stack size/offset = 132 */

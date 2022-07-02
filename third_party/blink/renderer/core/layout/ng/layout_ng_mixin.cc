@@ -272,11 +272,13 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   Base::CheckIsNotDestroyed();
 
   auto* css_container = To<LayoutBoxModelObject>(Base::Container());
-  LayoutBox* container = css_container->IsBox() ? To<LayoutBox>(css_container)
-                                                : Base::ContainingBlock();
+  DCHECK(!css_container->IsBox() || css_container->IsLayoutBlock());
+  auto* container = DynamicTo<LayoutBlock>(css_container);
+  if (!container)
+    container = Base::ContainingBlock();
   const ComputedStyle* container_style = container->Style();
   NGConstraintSpace constraint_space =
-      NGConstraintSpace::CreateFromLayoutObject(*this);
+      NGConstraintSpace::CreateFromLayoutObject(*container);
 
   // As this is part of the Legacy->NG bridge, the container_builder is used
   // for indicating the resolved size of the OOF-positioned containing-block
@@ -287,7 +289,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   NGBlockNode container_node(container);
   NGBoxFragmentBuilder container_builder(
       container_node, scoped_refptr<const ComputedStyle>(container_style),
-      /* space */ nullptr, container_style->GetWritingDirection());
+      constraint_space, container_style->GetWritingDirection());
   container_builder.SetIsNewFormattingContext(
       container_node.CreatesNewFormattingContext());
 
@@ -352,9 +354,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // should get laid out by the actual containing block.
   NGOutOfFlowLayoutPart(css_container->CanContainAbsolutePositionObjects(),
                         css_container->CanContainFixedPositionObjects(),
-                        css_container->IsLayoutGrid(), *container_style,
-                        constraint_space, &container_builder,
-                        initial_containing_block_fixed_size)
+                        css_container->IsLayoutGrid(), constraint_space,
+                        &container_builder, initial_containing_block_fixed_size)
       .Run(/* only_layout */ this);
   const NGLayoutResult* result = container_builder.ToBoxFragment();
 
@@ -394,6 +395,11 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
 template <typename Base>
 const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   Base::CheckIsNotDestroyed();
+
+  // This is an entry-point for LayoutNG from the legacy engine. This means that
+  // we need to be at a formatting context boundary, since NG and legacy don't
+  // cooperate on e.g. margin collapsing.
+  DCHECK(this->CreatesNewFormattingContext());
 
   const NGLayoutResult* previous_result = Base::GetCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();

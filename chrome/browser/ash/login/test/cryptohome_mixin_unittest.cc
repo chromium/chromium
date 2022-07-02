@@ -6,7 +6,7 @@
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,14 +19,14 @@ class CryptohomeMixinTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    if (chromeos::FakeUserDataAuthClient::Get() != nullptr) {
-      chromeos::FakeUserDataAuthClient::Shutdown();
+    if (FakeUserDataAuthClient::Get() != nullptr) {
+      FakeUserDataAuthClient::Shutdown();
     }
   }
 
  protected:
   void InitializeFakeUserDataAuthClient() {
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
   }
 
   std::unique_ptr<CryptohomeMixin> cryptohome_mixin_;

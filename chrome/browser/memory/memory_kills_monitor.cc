@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "content/public/browser/browser_thread.h"
@@ -81,7 +82,10 @@ void MemoryKillsMonitor::StartMonitoring() {
   monitoring_started_.Set();
 
   // Starts the OOM kills monitor.
-  OOMKillsMonitor::GetInstance().Initialize();
+  if (g_browser_process != nullptr &&
+      g_browser_process->local_state() != nullptr) {
+    OOMKillsMonitor::GetInstance().Initialize(g_browser_process->local_state());
+  }
 }
 
 void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,

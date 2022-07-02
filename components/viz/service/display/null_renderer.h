@@ -45,7 +45,6 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
   void DoDrawQuad(const DrawQuad* quad,
                   const gfx::QuadF* clip_region) override {}
   void BeginDrawingFrame() override;
-  void FlushOverdrawFeedback(const gfx::Rect& output_rect) override {}
   void FinishDrawingFrame() override {}
   bool FlippedFramebuffer() const override;
   void EnsureScissorTestEnabled() override {}

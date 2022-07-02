@@ -2401,10 +2401,9 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   storage::BucketLocator GetOrCreateBucket(const blink::StorageKey& storage_key,
                                            const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    storage::BucketInitParams params(storage_key);
-    params.name = name;
-    quota_manager_proxy_->GetOrCreateBucket(
-        params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        storage::BucketInitParams(storage_key, name),
+        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();
@@ -2514,70 +2513,104 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket1));
 }
 
-TEST_F(CacheStorageManagerTest, UpgradePaddingVersion) {
-  // Create an empty directory for the cache_storage files.
-  auto* legacy_manager =
-      static_cast<CacheStorageManager*>(cache_manager_.get());
-  base::FilePath manager_dir = legacy_manager->root_path();
-  base::FilePath storage_dir = CacheStorageManager::ConstructStorageKeyPath(
-      manager_dir, storage_key1_, storage::mojom::CacheStorageOwner::kCacheAPI);
-  EXPECT_TRUE(base::CreateDirectory(manager_dir));
+class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
+ public:
+  void DoTest(std::string test_index_path,
+              base::RepeatingCallback<void(const proto::CacheStorageIndex&,
+                                           const proto::CacheStorageIndex&,
+                                           int64_t)> test_logic) {
+    // Create an empty directory for the cache_storage files.
+    auto* legacy_manager =
+        static_cast<CacheStorageManager*>(cache_manager_.get());
+    base::FilePath manager_dir = legacy_manager->root_path();
+    base::FilePath storage_dir = CacheStorageManager::ConstructStorageKeyPath(
+        manager_dir, storage_key1_,
+        storage::mojom::CacheStorageOwner::kCacheAPI);
+    EXPECT_TRUE(base::CreateDirectory(manager_dir));
 
-  // Destroy the manager while we operate on the underlying files.
-  DestroyStorageManager();
+    // Destroy the manager while we operate on the underlying files.
+    DestroyStorageManager();
 
-  // Determine the location of the old, frozen copy of the cache_storage
-  // files in the test data.
-  base::FilePath root_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
-  base::FilePath test_data_path =
-      root_path.AppendASCII("content/test/data/cache_storage/padding_v2/")
-          .Append(storage_dir.BaseName());
+    // Determine the location of the old, frozen copy of the cache_storage
+    // files in the test data.
+    base::FilePath root_path;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+    base::FilePath test_data_path =
+        root_path.AppendASCII(test_index_path).Append(storage_dir.BaseName());
 
-  // Copy the old files into the test storage directory.
-  EXPECT_TRUE(base::CopyDirectory(test_data_path, storage_dir.DirName(),
-                                  /*recursive=*/true));
+    // Copy the old files into the test storage directory.
+    EXPECT_TRUE(base::CopyDirectory(test_data_path, storage_dir.DirName(),
+                                    /*recursive=*/true));
 
-  // Read the index file from disk.
-  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
-  std::string protobuf;
-  EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
-  proto::CacheStorageIndex original_index;
-  EXPECT_TRUE(original_index.ParseFromString(protobuf));
+    // Read the index file from disk.
+    base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+    std::string protobuf;
+    EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
+    proto::CacheStorageIndex original_index;
+    EXPECT_TRUE(original_index.ParseFromString(protobuf));
 
-  // Verify the old index matches our expectations.  It should contain
-  // a single cache with the old padding version.
-  EXPECT_EQ(original_index.cache_size(), 1);
-  EXPECT_EQ(original_index.cache(0).padding_version(), 2);
-  int64_t original_padding = original_index.cache(0).padding();
+    // Re-create the manager and ask it for the size of the test origin.
+    // This should trigger the migration of the padding values on disk.
+    CreateStorageManager();
+    int64_t total_usage = GetStorageKeyUsage(storage_key1_);
 
-  // Re-create the manager and ask it for the size of the test origin.
-  // This should trigger the migration of the padding values on disk.
-  CreateStorageManager();
-  int64_t total_usage = GetStorageKeyUsage(storage_key1_);
+    // Flush the index and destroy the manager so we can inspect the index
+    // again.
+    FlushCacheStorageIndex(storage_key1_);
+    DestroyStorageManager();
 
-  // Flush the index and destroy the manager so we can inspect the index
-  // again.
-  FlushCacheStorageIndex(storage_key1_);
-  DestroyStorageManager();
+    // Read the newly modified index off of disk.
+    std::string protobuf2;
+    base::ReadFileToString(index_path, &protobuf2);
+    proto::CacheStorageIndex upgraded_index;
+    EXPECT_TRUE(upgraded_index.ParseFromString(protobuf2));
 
-  // Read the newly modified index off of disk.
-  std::string protobuf2;
-  base::ReadFileToString(index_path, &protobuf2);
-  proto::CacheStorageIndex upgraded_index;
-  EXPECT_TRUE(upgraded_index.ParseFromString(protobuf2));
+    // Run the test logic callback.
+    test_logic.Run(original_index, upgraded_index, total_usage);
+  }
+};
 
-  // Verify the single cache has had its padding version upgraded.
-  EXPECT_EQ(upgraded_index.cache_size(), 1);
-  EXPECT_EQ(upgraded_index.cache(0).padding_version(), 3);
-  int64_t upgraded_size = upgraded_index.cache(0).size();
-  int64_t upgraded_padding = upgraded_index.cache(0).padding();
+TEST_F(CacheStorageIndexMigrationTest, PaddingMigration) {
+  DoTest("content/test/data/cache_storage/padding_v2/",
+         base::BindLambdaForTesting(
+             [](const proto::CacheStorageIndex& original_index,
+                const proto::CacheStorageIndex& upgraded_index,
+                int64_t total_usage) {
+               // Verify the old index matches our expectations.  It should
+               // contain a single cache with the old padding version.
+               EXPECT_EQ(original_index.cache_size(), 1);
+               EXPECT_EQ(original_index.cache(0).padding_version(), 2);
+               int64_t original_padding = original_index.cache(0).padding();
 
-  // Verify the padding has changed with the migration.  Note, the non-padded
-  // size may or may not have changed depending on if additional fields are
-  // stored in each entry or the index in the new disk schema.
-  EXPECT_NE(original_padding, upgraded_padding);
-  EXPECT_EQ(total_usage, (upgraded_size + upgraded_padding));
+               // Verify the single cache has had its padding version upgraded.
+               EXPECT_EQ(upgraded_index.cache_size(), 1);
+               EXPECT_EQ(upgraded_index.cache(0).padding_version(), 3);
+               int64_t upgraded_size = upgraded_index.cache(0).size();
+               int64_t upgraded_padding = upgraded_index.cache(0).padding();
+
+               // Verify the padding has changed with the migration.  Note, the
+               // non-padded size may or may not have changed depending on if
+               // additional fields are stored in each entry or the index in
+               // the new disk schema.
+               EXPECT_NE(original_padding, upgraded_padding);
+               EXPECT_EQ(total_usage, (upgraded_size + upgraded_padding));
+             }));
+}
+
+TEST_F(CacheStorageIndexMigrationTest, StorageKeyMigration) {
+  DoTest("content/test/data/cache_storage/storage_key/",
+         base::BindLambdaForTesting(
+             [this](const proto::CacheStorageIndex& original_index,
+                    const proto::CacheStorageIndex& upgraded_index,
+                    int64_t total_usage) {
+               EXPECT_FALSE(original_index.has_storage_key());
+               EXPECT_TRUE(upgraded_index.has_storage_key());
+
+               absl::optional<blink::StorageKey> result =
+                   blink::StorageKey::Deserialize(upgraded_index.storage_key());
+               ASSERT_TRUE(result.has_value());
+               EXPECT_EQ(this->storage_key1_, result.value());
+             }));
 }
 
 INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,

@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 
 namespace policy {
 
@@ -59,19 +59,15 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
       base::BindRepeating(
           &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+
+  network_state_handler_observer_.Observe(
+      chromeos::NetworkHandler::Get()->network_state_handler());
 
   // Fire it once so we're sure we get an invocation on startup.
   OnDeviceHostnamePropertyChanged();
 }
 
-DeviceNamePolicyHandlerImpl::~DeviceNamePolicyHandlerImpl() {
-  if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
-  }
-}
+DeviceNamePolicyHandlerImpl::~DeviceNamePolicyHandlerImpl() = default;
 
 DeviceNamePolicyHandler::DeviceNamePolicy
 DeviceNamePolicyHandlerImpl::GetDeviceNamePolicy() const {
@@ -89,6 +85,10 @@ DeviceNamePolicyHandlerImpl::GetHostnameChosenByAdministrator() const {
 void DeviceNamePolicyHandlerImpl::DefaultNetworkChanged(
     const chromeos::NetworkState* network) {
   OnDeviceHostnamePropertyChanged();
+}
+
+void DeviceNamePolicyHandlerImpl::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged() {

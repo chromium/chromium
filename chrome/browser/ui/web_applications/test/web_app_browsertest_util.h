@@ -12,10 +12,12 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/window_open_disposition.h"
 
 class Browser;
 class GURL;
@@ -47,17 +49,27 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url);
 // Navigates to |app_url|, verifies WebApp installability, and installs app.
 AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url);
 
-// Launches a new app window for |app| in |profile|.
-Browser* LaunchWebAppBrowser(Profile*, const AppId&);
+// Launches a new app window for |app| in |profile| with specified
+// |disposition|.
+Browser* LaunchWebAppBrowser(
+    Profile*,
+    const AppId&,
+    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
 // Launches the app, waits for the app url to load.
-Browser* LaunchWebAppBrowserAndWait(Profile*, const AppId&);
+Browser* LaunchWebAppBrowserAndWait(
+    Profile*,
+    const AppId&,
+    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
 // Launches a new tab for |app| in |profile|.
 Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 
 // Return |ExternalInstallOptions| with OS shortcut creation disabled.
-ExternalInstallOptions CreateInstallOptions(const GURL& url);
+ExternalInstallOptions CreateInstallOptions(
+    const GURL& url,
+    const ExternalInstallSource& source =
+        ExternalInstallSource::kInternalDefault);
 
 // Synchronous version of ExternallyManagedAppManager::Install.
 ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(

@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -48,8 +49,8 @@ class X11WindowManager {
   }
 
  private:
-  X11Window* located_events_grabber_ = nullptr;
-  X11Window* window_mouse_currently_on_ = nullptr;
+  raw_ptr<X11Window> located_events_grabber_ = nullptr;
+  raw_ptr<X11Window> window_mouse_currently_on_ = nullptr;
 
   base::flat_map<gfx::AcceleratedWidget, X11Window*> windows_;
 };

@@ -36,7 +36,7 @@ void SuppressKeyboardRAII::RenderFrameCreated(
 }
 
 void SuppressKeyboardRAII::SuppressKeyboard(bool suppress) {
-  web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(&SuppressKeyboardForFrame, suppress));
 }
 

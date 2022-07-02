@@ -7,6 +7,8 @@
 
 #include "base/types/expected.h"
 
+namespace ash {
+
 // SystemExtensionsStatusOr is a union of an status enum class and an object.
 // This class either holds an object in a usable state, or a status code
 // explaining why `T` is not present. This class is typically the return value
@@ -62,5 +64,7 @@ class SystemExtensionsStatusOr {
  private:
   base::expected<T, S> value_or_status_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_

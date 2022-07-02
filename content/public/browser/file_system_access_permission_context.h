@@ -5,10 +5,13 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 #define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 #include "url/origin.h"
 
@@ -141,6 +144,10 @@ class FileSystemAccessPermissionContext {
   // well-known directory.
   virtual base::FilePath GetWellKnownDirectoryPath(
       blink::mojom::WellKnownDirectory directory) = 0;
+
+  // Return the desired title of the file picker for the given `options`.
+  virtual std::u16string GetPickerTitle(
+      const blink::mojom::FilePickerOptionsPtr& options) = 0;
 
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;

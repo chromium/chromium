@@ -521,6 +521,9 @@ TEST_F(CertProvisioningWorkerTest, Success) {
       &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
       GetStateChangeCallback(), GetResultCallback());
 
+  auto VerifyNoBackendErrorsSeen = [&worker]() {
+    EXPECT_EQ(worker.GetLastBackendServerError(), absl::nullopt);
+  };
   {
     testing::InSequence seq;
 
@@ -531,24 +534,29 @@ TEST_F(CertProvisioningWorkerTest, Success) {
                             GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_START_CSR_OK(
         ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
                                        kCertProfileVersion, GetPublicKey(),
                                        /*callback=*/_),
         em::HashingAlgorithm::SHA256);
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
                                                     /*callback=*/_));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_CALL(
         *key_permissions_manager_,
@@ -557,18 +565,21 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
         KeyAttributeType::kCertificateProvisioningId, kCertProfileId, _));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(
         SignRSAPKCS1Digest(::testing::Optional(TokenId::kUser), kDataToSign,
                            GetPublicKey(), HashAlgorithm::HASH_ALGORITHM_SHA256,
                            /*callback=*/_));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
         kChallengeResponse, kSignature, /*callback=*/_));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_DOWNLOAD_CERT_OK(ClientCertProvisioningDownloadCert(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -577,7 +588,8 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(TokenId::kUser,
                                                    /*certificate=*/_,
                                                    /*callback=*/_));
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
@@ -1423,6 +1435,97 @@ TEST_F(CertProvisioningWorkerTest, BackoffStrategy) {
   }
 }
 
+// Checks that when the server returns TEMPORARY_UNAVAILABLE status code, the
+// worker will update its BackendServerError attribute.
+TEST_F(CertProvisioningWorkerTest, ProcessBackendServerErrorResponse) {
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  CertProvisioningWorkerImpl worker(
+      CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(
+        *mock_tpm_challenge_key,
+        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
+                            /*will_register_key=*/true,
+                            GetKeyName(kCertProfileId),
+                            /*profile=*/_,
+                            /*callback=*/_, /*signals=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_START_CSR_TEMPORARY_UNAVAILABLE(ClientCertProvisioningStartCsr(
+        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
+        /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce([&worker]() {
+          EXPECT_THAT(worker.GetLastBackendServerError(),
+                      testing::Ne(absl::nullopt));
+        });
+    worker.DoStep();
+  }
+
+  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+
+  {
+    testing::InSequence seq;
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce([&worker]() {
+          EXPECT_THAT(worker.GetLastBackendServerError(),
+                      testing::Eq(absl::nullopt));
+        });
+    worker.DoStep();
+  }
+}
+
+// Checks that when a success scenario happens, the backend server error is
+// cleared.
+TEST_F(CertProvisioningWorkerTest, ClearBackendServerError) {
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  CertProvisioningWorkerImpl worker(
+      CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
+      &cloud_policy_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(
+        *mock_tpm_challenge_key,
+        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
+                            /*will_register_key=*/true,
+                            GetKeyName(kCertProfileId),
+                            /*profile=*/_,
+                            /*callback=*/_, /*signals=*/_));
+
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
+    worker.DoStep();
+  }
+
+  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  EXPECT_THAT(worker.GetLastBackendServerError(), testing::Eq(absl::nullopt));
+}
 // Checks that the worker removes a key when an error occurs after the key was
 // registered.
 TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {

@@ -34,7 +34,7 @@ Here's what works well:
 *   VSCode Remote, which allows you to edit remotely-hosted code, and even run
     computationally expensive plugins like vscode-clangd on the remote
     server/workstation (see the [Remote section](#Remote)). Great for working-
-    from-home. (Googlers: See [go/vscode-remote](http://go/vscode-remote)].)
+    from-home. (Googlers: See [go/vscode-remote](http://go/vscode-remote).)
 
 [TOC]
 
@@ -60,6 +60,8 @@ terminal. The argument to `code` is the base directory of the workspace. VS
 Code does not require project or solution files. However, it does store
 workspace settings in a `.vscode` folder in your base directory.
 
+If you installed Code Insiders, the binary name is `code-insiders` instead.
+
 ### Fixes for Known Issues
 
 #### Git on Windows
@@ -72,8 +74,14 @@ integration to work:
 ```json
 {
   "git.path": "C:\\src\\depot_tools\\git.bat"
+
+  // more settings here...
 }
 ```
+
+Tip: you can jump to the settings JSON file by using `Ctrl+Shift+P` and using
+the "Preferences: Open User Settings (JSON)" verb (for whatever reason, setting
+`git.path` as a folder setting does not appear to work).
 
 ### Useful Extensions
 
@@ -88,6 +96,8 @@ every day:
     `editor.formatOnSave` setting).
 *   ***Python*** -
     Linting, intellisense, code formatting, refactoring, debugging, snippets.
+    * If you want type checking, add: `"python.analysis.typeCheckingMode": "basic",`
+      to your `settings.json` file (you can also find it in the settings UI).
 *   ***Toggle Header/Source*** -
     Toggles between .cc and .h with `F4`. The C/C++ extension supports this as
     well through `Alt+O` but sometimes chooses the wrong file when there are
@@ -140,7 +150,8 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
 ### Usage Tips
 *   `Ctrl+P` opens a search box to find and open a file.
 *   `F1` or `Ctrl+Shift+P` opens a search box to find a command (e.g. Tasks: Run
-    Task).
+    Task). Note: if you want to run one of the [Predefined tasks in
+    tasks.json](#Tasks), it is faster to just use `Ctrl+P` &gt; "task <n>".
 *   `Ctrl+K, Ctrl+S` opens the key bindings editor.
 *   ``Ctrl+` `` toggles the built-in terminal.
 *   `Ctrl+Shift+M` toggles the problems view (linter warnings, compile errors
@@ -230,7 +241,7 @@ documentation](https://code.visualstudio.com/docs/customization/overview) for an
 introduction to VS Code customization.
 
 ### Workspace Settings
-Open the file [//tools/vscode/settings.json5](/tools/vscode/settings.json5),
+Open the file [//tools/vscode/settings.json](/tools/vscode/settings.json),
 and check out the default settings there. Feel free to commit added or removed
 settings to enable better team development, or change settings locally to suit
 personal preference. Remember to replace `<full_path_to_your_home>`! To use
@@ -238,7 +249,7 @@ these settings wholesale, enter the following commands into your terminal while
 at the src directory:
 ```
 $ mkdir .vscode/
-$ cp tools/vscode/settings.json5 .vscode/settings.json
+$ cp tools/vscode/settings.json .vscode
 ```
 
 Note: these settings assume that the workspace folder (the root folder displayed
@@ -248,24 +259,55 @@ replace any references to ${workspaceFolder} with the path to your `src/`.
 ### Tasks
 Next, we'll tell VS Code how to compile our code, run tests, and to read
 warnings and errors from the build output. Open the file
-[//tools/vscode/tasks.json5](/tools/vscode/tasks.json5). This will provide tasks
+[//tools/vscode/tasks.json](/tools/vscode/tasks.json). This will provide tasks
 to do basic things. You might have to adjust the commands to your situation and
 needs. To use these settings wholesale, enter the following command into your
 terminal:
 ```
-$ cp tools/vscode/tasks.json5 .vscode/tasks.json
+$ cp tools/vscode/tasks.json .vscode
 ```
+
+Before running most of the tasks, you'll need to set `chrome.outputDir`. You can
+do this by typing `Ctrl+Shift+P` &gt; "Preferences: Open Folder Settings (JSON)"
+and adding something like:
+
+```json
+{
+  "chrome.outputDir": "C:\\src\\chrome\\src\\out\\release"
+
+  // more settings here...
+}
+
+```
+
+Now you can run tasks by using `Ctrl+P` and typing "task " and then a number
+of your choice. If you select one of the build tasks, the build output will
+display in the terminal pane. Jump through build problems quickly using F8 /
+Shift-F8. See [task names](#task-names) for more info on running tasks.
+
+If you have intellisense enabled but do not have include paths set up correctly,
+jumping through problems will also try to navigate through all the include files
+it cannot locate and add a lot of noise. You can fix your include path or simply
+set intellisense to "tag parser" mode by doing the following:
+
+1. Open Preferences (`Ctrl+Shift+P` &gt; "Preferences: Open User Settings").
+2. Type "intellisense engine" in the settings search box.
+3. Select "Tag Parser" as the provider.
+
+Note: on a Chromebook, use 🔍+<8th button in the top row that's not ESC>. In
+most cases, this is the top row button that is the closest to be directly above
+the 8 key.
 
 ### Launch Commands
 Launch commands are the equivalent of `F5` in Visual Studio: They launch some
 program or a debugger. Optionally, they can run some task defined in
 `tasks.json`. Launch commands can be run from the debug view (`Ctrl+Shift+D`).
-Open the file at [//tools/vscode/launch.json5](/tools/vscode/launch.json5) and
+Open the file at [//tools/vscode/launch.json](/tools/vscode/launch.json) and
 adjust the example launch commands to your situation and needs (e.g., the value
 of "type" needs adjustment for Windows). To use these settings wholesale, enter
 the following command into your terminal:
 ```
-$ cp tools/vscode/launch.json5 .vscode/launch.json
+$ cp tools/vscode/launch.json .vscode
 ```
 
 ### Key Bindings
@@ -288,11 +330,11 @@ For instance, to install eclipse keymaps, install the
 [in the marketplace](https://marketplace.visualstudio.com/search?target=vscode&category=Keymaps).
 
 Some key bindings that are likely to be useful for you are available at
-[//tools/vscode/keybindings.json5](/tools/vscode/keybindings.json5). Please
+[//tools/vscode/keybindings.json](/tools/vscode/keybindings.json). Please
 take a look and adjust them to your situation and needs. To use these settings
 wholesale, enter the following command into your terminal:
 ```
-$ cp tools/vscode/keybindings.json5 .vscode/keybindings.json
+$ cp tools/vscode/keybindings.json .vscode
 ```
 
 ### Remote
@@ -340,17 +382,18 @@ VSCode should work remotely after following this step.
 ### Snippets
 
 There are some useful snippets provided in
-[//tools/vscode/cpp.json5](/tools/vscode/cpp.json5).
+[//tools/vscode/cpp.json](/tools/vscode/cpp.json).
 
 You can either install them in your user profile (path may vary depending on the
 platform):
 ```
-$ cp tools/vscode/cpp.json5 ~/.config/Code/User/snippets/cpp.json
+$ mkdir -p ~/.config/Code/User/snippets
+$ cp tools/vscode/cpp.json ~/.config/Code/User/snippets
 ```
 
 Or install them as project snippets:
 ```
-$ cp tools/vscode/cpp.json5 .vscode/cpp.code-snippets
+$ cp tools/vscode/cpp.json .vscode/cpp.code-snippets
 ```
 
 ### Tips

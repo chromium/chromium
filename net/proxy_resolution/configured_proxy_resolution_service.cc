@@ -418,11 +418,7 @@ GURL SanitizeUrl(const GURL& url) {
 
 class ConfiguredProxyResolutionService::InitProxyResolver {
  public:
-  InitProxyResolver()
-      : proxy_resolver_factory_(nullptr),
-        proxy_resolver_(nullptr),
-        next_state_(State::kNone),
-        quick_check_enabled_(true) {}
+  InitProxyResolver() = default;
 
   InitProxyResolver(const InitProxyResolver&) = delete;
   InitProxyResolver& operator=(const InitProxyResolver&) = delete;
@@ -603,12 +599,12 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   PacFileDataWithSource script_data_;
   base::TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
-  raw_ptr<ProxyResolverFactory> proxy_resolver_factory_;
+  raw_ptr<ProxyResolverFactory> proxy_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
-  raw_ptr<std::unique_ptr<ProxyResolver>> proxy_resolver_;
+  raw_ptr<std::unique_ptr<ProxyResolver>> proxy_resolver_ = nullptr;
   CompletionOnceCallback callback_;
-  State next_state_;
-  bool quick_check_enabled_;
+  State next_state_ = State::kNone;
+  bool quick_check_enabled_ = true;
 };
 
 // ConfiguredProxyResolutionService::PacFileDeciderPoller
@@ -837,8 +833,6 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
     bool quick_check_enabled)
     : config_service_(std::move(config_service)),
       resolver_factory_(std::move(resolver_factory)),
-      current_state_(STATE_NONE),
-      permanent_error_(OK),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
           base::Milliseconds(kDelayAfterNetworkChangesMs)),
@@ -1363,18 +1357,18 @@ void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   ApplyProxyConfigIfAvailable();
 }
 
-base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues() {
-  base::Value net_info_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
+  base::Value::Dict net_info_dict;
 
   // Log Proxy Settings.
   {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     if (fetched_config_)
-      dict.SetKey("original", fetched_config_->value().ToValue());
+      dict.Set("original", fetched_config_->value().ToValue());
     if (config_)
-      dict.SetKey("effective", config_->value().ToValue());
+      dict.Set("effective", config_->value().ToValue());
 
-    net_info_dict.SetKey(kNetInfoProxySettings, std::move(dict));
+    net_info_dict.Set(kNetInfoProxySettings, std::move(dict));
   }
 
   // Log Bad Proxies.
@@ -1393,7 +1387,7 @@ base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues() {
       list.Append(std::move(dict));
     }
 
-    net_info_dict.SetKey(kNetInfoBadProxies, std::move(list));
+    net_info_dict.Set(kNetInfoBadProxies, std::move(list));
   }
 
   return net_info_dict;

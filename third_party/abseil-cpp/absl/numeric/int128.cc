@@ -332,6 +332,7 @@ std::ostream& operator<<(std::ostream& os, int128 v) {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 namespace std {
 constexpr bool numeric_limits<absl::uint128>::is_specialized;
 constexpr bool numeric_limits<absl::uint128>::is_signed;
@@ -381,3 +382,4 @@ constexpr int numeric_limits<absl::int128>::max_exponent10;
 constexpr bool numeric_limits<absl::int128>::traps;
 constexpr bool numeric_limits<absl::int128>::tinyness_before;
 }  // namespace std
+#endif

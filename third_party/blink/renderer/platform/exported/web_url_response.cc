@@ -328,7 +328,7 @@ void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
   exposed_header_names.Append(
-      header_names.Data(), base::checked_cast<wtf_size_t>(header_names.size()));
+      header_names.data(), base::checked_cast<wtf_size_t>(header_names.size()));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 
@@ -489,5 +489,9 @@ bool WebURLResponse::RequestIncludeCredentials() const {
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
+
+void WebURLResponse::SetHasPartitionedCookie(bool has_partitioned_cookie) {
+  resource_response_->SetHasPartitionedCookie(has_partitioned_cookie);
+}
 
 }  // namespace blink

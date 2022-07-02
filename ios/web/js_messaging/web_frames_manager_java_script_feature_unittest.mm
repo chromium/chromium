@@ -21,9 +21,6 @@
 
 namespace {
 
-// A base64 encoded sample key.
-const char kFrameKey[] = "R7lsXtR74c6R9A9k691gUQ8JAd0be+w//Lntgcbjwrc=";
-
 // Message command sent when a frame becomes available.
 NSString* const kFrameBecameAvailableMessageName = @"FrameBecameAvailable";
 // Message command sent when a frame is unloading.
@@ -69,8 +66,6 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     // Mock WKScriptMessage for "FrameBecameAvailable" message.
     NSDictionary* body = @{
       @"crwFrameId" : base::SysUTF8ToNSString(web_frame->GetFrameId()),
-      @"crwFrameKey" : base::SysUTF8ToNSString(kFrameKey),
-      @"crwFrameLastReceivedMessageId" : @-1,
     };
     WKScriptMessage* message = OCMClassMock([WKScriptMessage class]);
     OCMStub([message body]).andReturn(body);

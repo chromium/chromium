@@ -20,7 +20,7 @@ struct WebSocketFrame;
 class NET_EXPORT_PRIVATE WebSocketDeflatePredictorImpl
     : public WebSocketDeflatePredictor {
  public:
-  ~WebSocketDeflatePredictorImpl() override {}
+  ~WebSocketDeflatePredictorImpl() override = default;
 
   Result Predict(const std::vector<std::unique_ptr<WebSocketFrame>>& frames,
                  size_t frame_index) override;

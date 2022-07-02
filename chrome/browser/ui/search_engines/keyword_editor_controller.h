@@ -46,7 +46,7 @@ class KeywordEditorController {
 
   // Return true if the given `url` can be removed. A `url` can be removed if it
   // is a normal entry (non-extension) and is not the current default search
-  // engine.
+  // engine or a starter pack engine.
   bool CanRemove(const TemplateURL* url) const;
 
   // Return true if the given `url` can be activated. A `url` can be activated

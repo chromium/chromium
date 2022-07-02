@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -38,7 +39,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 54;
+const int kCurrentVersionNumber = 56;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -92,7 +93,9 @@ HistoryDatabase::HistoryDatabase(
            // Set the cache size. The page size, plus a little extra, times this
            // value, tells us how much memory the cache will use maximum.
            // 1000 * 4kB = 4MB
-           .cache_size = 1000}) {}
+           .cache_size = 1000}),
+      typed_url_metadata_db_(&db_, &meta_table_),
+      history_metadata_db_(&db_, &meta_table_) {}
 
 HistoryDatabase::~HistoryDatabase() = default;
 
@@ -122,8 +125,14 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
-      !InitSegmentTables() || !InitSyncTable() || !InitVisitAnnotationsTables())
+      !InitSegmentTables() || !typed_url_metadata_db_.Init() ||
+      !InitVisitAnnotationsTables()) {
     return LogInitFailure(InitStep::CREATE_TABLES);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
+      !history_metadata_db_.Init()) {
+    return LogInitFailure(InitStep::CREATE_TABLES);
+  }
   CreateMainURLIndex();
 
   // TODO(benjhayden) Remove at some point.
@@ -372,12 +381,16 @@ void HistoryDatabase::UpdateEarlyExpirationThreshold(base::Time threshold) {
   cached_early_expiration_threshold_ = threshold;
 }
 
-sql::Database& HistoryDatabase::GetDB() {
-  return db_;
+TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {
+  return &typed_url_metadata_db_;
 }
 
-sql::MetaTable& HistoryDatabase::GetMetaTable() {
-  return meta_table_;
+HistorySyncMetadataDatabase* HistoryDatabase::GetHistoryMetadataDB() {
+  return &history_metadata_db_;
+}
+
+sql::Database& HistoryDatabase::GetDB() {
+  return db_;
 }
 
 // Migration -------------------------------------------------------------------
@@ -591,7 +604,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
     std::vector<URLID> visited_url_rowids_sorted;
     if (!GetAllVisitedURLRowidsForMigrationToVersion40(
             &visited_url_rowids_sorted) ||
-        !CleanTypedURLOrphanedMetadataForMigrationToVersion40(
+        !typed_url_metadata_db_.CleanOrphanedMetadataForMigrationToVersion40(
             visited_url_rowids_sorted)) {
       return LogMigrationFailure(40);
     }
@@ -684,6 +697,20 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   if (cur_version == 53) {
     if (!MigrateContentAnnotationsAddAlternativeTitle())
       return LogMigrationFailure(53);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 54) {
+    if (!MigrateVisitsAutoincrementIdAndAddOriginatorColumns())
+      return LogMigrationFailure(54);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 55) {
+    if (!MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns())
+      return LogMigrationFailure(55);
     cur_version++;
     meta_table_.SetVersionNumber(cur_version);
   }

@@ -66,7 +66,7 @@ void DeviceOAuth2TokenStoreDesktop::Init(InitCallback callback) {
 }
 
 CoreAccountId DeviceOAuth2TokenStoreDesktop::GetAccountId() const {
-  return CoreAccountId::FromEmail(
+  return CoreAccountId::FromRobotEmail(
       local_state_->GetString(kCBCMServiceAccountEmail));
 }
 
@@ -115,7 +115,7 @@ void DeviceOAuth2TokenStoreDesktop::PrepareTrustedAccountId(
 
 void DeviceOAuth2TokenStoreDesktop::SetAccountEmail(
     const std::string& account_email) {
-  if (GetAccountId() == CoreAccountId::FromEmail(account_email))
+  if (GetAccountId() == CoreAccountId::FromRobotEmail(account_email))
     return;
 
   local_state_->SetString(kCBCMServiceAccountEmail, account_email);

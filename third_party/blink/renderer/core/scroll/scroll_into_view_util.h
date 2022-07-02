@@ -20,6 +20,14 @@ struct PhysicalRect;
 
 namespace scroll_into_view_util {
 
+// Takes the given rect, in absolute coordinates of the frame of the given
+// LayoutObject, and scrolls the LayoutObject and all its containers such that
+// the child content of the LayoutObject at that rect is visible in the
+// viewport.
+void CORE_EXPORT ScrollRectToVisible(const LayoutObject&,
+                                     const PhysicalRect&,
+                                     mojom::blink::ScrollIntoViewParamsPtr);
+
 // ScrollFocusedEditableIntoView uses the caret rect for ScrollIntoView but
 // stores enough information in `params` so that the editable element's bounds
 // can be reconstructed. Given `caret_rect`, this will return the editable
@@ -35,14 +43,6 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
                                 const gfx::RectF& caret_rect_in_src,
                                 const LayoutObject& src_frame,
                                 const LayoutView& dest_frame);
-
-// Takes the given rect, in absolute coordinates of the frame of the given
-// LayoutObject, and scrolls the LayoutObject and all its containers such that
-// the child content of the LayoutObject at that rect is visible in the
-// viewport.
-void CORE_EXPORT ScrollRectToVisible(const LayoutObject&,
-                                     const PhysicalRect&,
-                                     mojom::blink::ScrollIntoViewParamsPtr);
 
 }  // namespace scroll_into_view_util
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -16,6 +17,7 @@
 #include "media/base/media_util.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
@@ -41,6 +43,7 @@ constexpr Bitrate kDefaultBitrate =
     Bitrate::ConstantBitrate(kDefaultBitrateBps);
 constexpr uint32_t kDefaultFramerate = 30;
 constexpr size_t kMaxNumOfRefFrames = 3u;
+
 constexpr int kSpatialLayersResolutionDenom[][3] = {
     {1, 0, 0},  // For one spatial layer.
     {2, 1, 0},  // For two spatial layers.
@@ -95,14 +98,6 @@ bool IsSVCSupported(const VideoEncodeAccelerator::Config& config) {
          config.storage_type ==
              VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer &&
          config.output_profile == VP9PROFILE_PROFILE0;
-}
-
-MATCHER_P2(MatchesVaapiVideoEncoderDelegateConfig,
-           max_ref_frames,
-           bitrate_control,
-           "") {
-  return arg.max_num_ref_frames == max_ref_frames &&
-         arg.bitrate_control == bitrate_control;
 }
 
 MATCHER_P3(MatchesBitstreamBufferMetadata,
@@ -304,8 +299,6 @@ class VaapiVideoEncodeAcceleratorTest
       NO_THREAD_SAFETY_ANALYSIS {
     base::RunLoop run_loop;
     ::testing::InSequence s;
-    constexpr auto kBitrateControl = VaapiVideoEncoderDelegate::BitrateControl::
-        kConstantQuantizationParameter;
     const size_t num_spatial_layers = config.spatial_layers.size();
     // Scaling is needed only for non highest spatial layer, so here the vpp
     // number is |num_spatial_layers - 1|.
@@ -323,9 +316,12 @@ class VaapiVideoEncodeAcceleratorTest
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
     vaapi_encoder->vpp_vaapi_wrapper_ = mock_vpp_vaapi_wrapper_;
 
-    EXPECT_CALL(*mock_encoder_,
-                Initialize(_, MatchesVaapiVideoEncoderDelegateConfig(
-                                  kMaxNumOfRefFrames, kBitrateControl)))
+    EXPECT_CALL(
+        *mock_encoder_,
+        Initialize(_,
+                   testing::Field(
+                       &VaapiVideoEncoderDelegate::Config::max_num_ref_frames,
+                       kMaxNumOfRefFrames)))
         .WillOnce(Return(true));
     EXPECT_CALL(*mock_vaapi_wrapper_, CreateContext(kDefaultEncodeSize))
         .WillOnce(Return(true));
@@ -543,16 +539,10 @@ class VaapiVideoEncodeAcceleratorTest
 
       // For reconstructed surface.
       if (va_encode_surface_ids_[i].empty()) {
-        // TODO(https://github.com/intel/media-driver/issues/1232): Remove this
-        // workaround of aligning |encode_size|.
-        gfx::Size aligned_size(
-            base::bits::AlignUp(svc_resolutions[i].width(), 16),
-            base::bits::AlignUp(svc_resolutions[i].height(), 16));
-
         EXPECT_CALL(
             *mock_vaapi_wrapper_,
             CreateScopedVASurfaces(
-                VA_RT_FORMAT_YUV420, aligned_size,
+                VA_RT_FORMAT_YUV420, svc_resolutions[i],
                 std::vector<VaapiWrapper::SurfaceUsageHint>{
                     VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
                 _, absl::optional<gfx::Size>(), absl::optional<uint32_t>()))
@@ -661,7 +651,7 @@ class VaapiVideoEncodeAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
-  MockVP9VaapiVideoEncoderDelegate* mock_encoder_ = nullptr;
+  raw_ptr<MockVP9VaapiVideoEncoderDelegate> mock_encoder_ = nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {

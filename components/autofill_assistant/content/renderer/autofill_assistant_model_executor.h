@@ -86,13 +86,13 @@ class AutofillAssistantModelExecutor
 
   // Helper functions for post processing based on |model_metadata_|.
   bool GetIndexOfBestRole(const std::vector<float>& output_role,
-                          size_t* index_of_best_role);
+                          size_t* index_of_best_role) const;
   bool GetBlockIndex(const std::vector<float>& output_role,
                      size_t index_of_best_role,
-                     int* block_index);
+                     int* block_index) const;
   bool GetObjective(const std::vector<float>& output_objective,
                     int block_index,
-                    int* objective);
+                    int* objective) const;
 
   // Tokenizer for HTML tag.
   std::unique_ptr<tflite::support::text::tokenizer::RegexTokenizer>

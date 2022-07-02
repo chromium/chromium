@@ -81,17 +81,6 @@ component("network_service") {
     "network_service_network_delegate.h",
     "network_service_proxy_delegate.cc",
     "network_service_proxy_delegate.h",
-    "origin_policy/origin_policy_constants.h",
-    "origin_policy/origin_policy_fetcher.cc",
-    "origin_policy/origin_policy_fetcher.h",
-    "origin_policy/origin_policy_header_values.cc",
-    "origin_policy/origin_policy_header_values.h",
-    "origin_policy/origin_policy_manager.cc",
-    "origin_policy/origin_policy_manager.h",
-    "origin_policy/origin_policy_parsed_header.cc",
-    "origin_policy/origin_policy_parsed_header.h",
-    "origin_policy/origin_policy_parser.cc",
-    "origin_policy/origin_policy_parser.h",
     "pending_callback_chain.cc",
     "pending_callback_chain.h",
     "private_network_access_checker.cc",
@@ -343,6 +332,7 @@ source_set("tests") {
 
   sources = [
     "chunked_data_pipe_upload_data_stream_unittest.cc",
+    "cookie_access_delegate_impl_unittest.cc",
     "cookie_manager_unittest.cc",
     "cookie_settings_unittest.cc",
     "cors/cors_url_loader_factory_unittest.cc",
@@ -369,9 +359,6 @@ source_set("tests") {
     "network_quality_estimator_manager_unittest.cc",
     "network_service_proxy_delegate_unittest.cc",
     "network_service_unittest.cc",
-    "origin_policy/origin_policy_manager_unittest.cc",
-    "origin_policy/origin_policy_parsed_header_unittest.cc",
-    "origin_policy/origin_policy_parser_unittest.cc",
     "pending_callback_chain_unittest.cc",
     "private_network_access_checker_unittest.cc",
     "proxy_auto_config_library_unittest.cc",
@@ -523,6 +510,8 @@ source_set("test_support") {
     "test/test_resource_scheduler.h",
     "test/test_shared_url_loader_factory.cc",
     "test/test_shared_url_loader_factory.h",
+    "test/test_socket_broker_impl.cc",
+    "test/test_socket_broker_impl.h",
     "test/test_udp_socket.cc",
     "test/test_udp_socket.h",
     "test/test_url_loader_client.cc",
@@ -583,17 +572,4 @@ fuzzer_test("network_content_security_policy_fuzzer") {
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
   seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
-}
-
-fuzzer_test("origin_policy_parser_fuzzer") {
-  sources = [ "origin_policy/origin_policy_parser_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
-  dict = "origin_policy/origin_policy_parser_fuzzer.dict"
-  seed_corpus = "origin_policy/origin_policy_parser_fuzzer_corpus"
 }

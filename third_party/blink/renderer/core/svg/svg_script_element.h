@@ -87,13 +87,14 @@ class SVGScriptElement final : public SVGElement,
   String ChildTextContent() override;
   String ScriptTextInternalSlot() const override;
   bool HasSourceAttribute() const override;
+  bool HasAttributionsrcAttribute() const override { return false; }
   bool IsConnected() const override;
   bool HasChildren() const override;
   const AtomicString& GetNonceForElement() const override;
   bool ElementHasDuplicateAttributes() const override {
     return HasDuplicateAttribute();
   }
-  bool IsExplicitlyRenderBlocking() const override { return false; }
+  bool IsPotentiallyRenderBlocking() const override { return false; }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
                                const WTF::OrdinalNumber&,
                                const String& script_content) override;

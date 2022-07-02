@@ -11,7 +11,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
@@ -32,7 +32,7 @@ public class CustomTabActivityVrTestRule extends CustomTabActivityTestRule imple
                         base, desc, CustomTabActivityVrTestRule.this, () -> {
                             startCustomTabActivityWithIntent(
                                     VrTestRuleUtils.maybeAddStandaloneIntentData(
-                                            CustomTabsTestUtils.createMinimalCustomTabIntent(
+                                            CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                                                     InstrumentationRegistry.getTargetContext(),
                                                     "about:blank")));
                             TestVrShellDelegate.createTestVrShellDelegate(getActivity());

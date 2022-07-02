@@ -206,7 +206,8 @@ class ObfuscatedFileEnumerator final
   }
 
   raw_ptr<SandboxDirectoryDatabase> db_;
-  raw_ptr<FileSystemOperationContext> context_;
+  // TODO(crbug.com/1298696): Breaks storage_unittests.
+  raw_ptr<FileSystemOperationContext, DegradeToNoOpWhenMTE> context_;
   raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
   FileSystemURL root_url_;
   bool recursive_;
@@ -275,7 +276,6 @@ class ObfuscatedStorageKeyEnumerator
 ObfuscatedFileUtil::ObfuscatedFileUtil(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const base::FilePath& file_system_directory,
-    const base::FilePath& bucket_base_path,
     leveldb::Env* env_override,
     GetTypeStringForURLCallback get_type_string_for_url,
     const std::set<std::string>& known_type_strings,
@@ -283,7 +283,6 @@ ObfuscatedFileUtil::ObfuscatedFileUtil(
     bool is_incognito)
     : special_storage_policy_(std::move(special_storage_policy)),
       file_system_directory_(file_system_directory),
-      bucket_base_path_(bucket_base_path),
       env_override_(env_override),
       is_incognito_(is_incognito),
       db_flush_delay_seconds_(10 * 60),  // 10 mins.
@@ -793,7 +792,7 @@ base::File::Error ObfuscatedFileUtil::DeleteDirectory(
     return base::File::FILE_ERROR_NOT_FOUND;
   if (!file_id) {
     // Cannot remove the root directory.
-    return base::File::FILE_ERROR_FAILED;
+    return base::File::FILE_ERROR_ACCESS_DENIED;
   }
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
@@ -866,6 +865,34 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
   if (!db->ListChildren(file_id, &children))
     return true;
   return children.empty();
+}
+
+base::FileErrorOr<base::FilePath>
+ObfuscatedFileUtil::GetDirectoryForBucketAndType(const BucketLocator& bucket,
+                                                 const std::string& type_string,
+                                                 bool create) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // A default bucket in a first-party context uses
+  // GetDirectoryForStorageKeyAndType() to determine its file path.
+  if (bucket.storage_key.IsFirstPartyContext() && bucket.is_default) {
+    base::File::Error error = base::File::FILE_OK;
+    base::FilePath path = GetDirectoryForStorageKeyAndType(
+        bucket.storage_key, type_string, create, &error);
+    if (error != base::File::FILE_OK)
+      return error;
+    return path;
+  }
+  // All other contexts use the provided bucket information to construct the
+  // file path.
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket, QuotaClientType::kFileSystem);
+  // Append the file system type and verify the path is valid.
+  path = path.AppendASCII(type_string);
+  base::File::Error error = GetDirectoryHelper(path, create);
+  if (error != base::File::FILE_OK)
+    return error;
+  return path;
 }
 
 // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKeyAndType
@@ -1013,8 +1040,7 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!url.bucket().has_value() ||
-      (url.storage_key().IsFirstPartyContext() && url.bucket()->is_default)) {
+  if (!url.bucket().has_value()) {
     // Access the SandboxDirectoryDatabase to construct the file path.
     // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKey and
     // its related functions to return a base::FileErrorOr<base::FilePath>.
@@ -1026,15 +1052,8 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     return path;
   }
   // Construct the file path using the provided bucket information.
-  base::FilePath path =
-      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
-          url.bucket().value(), QuotaClientType::kFileSystem);
-  // Append the file system type and verify the path is valid.
-  path = path.AppendASCII(CallGetTypeStringForURL(url));
-  base::File::Error error = GetDirectoryHelper(path, create);
-  if (error != base::File::FILE_OK)
-    return error;
-  return path;
+  return GetDirectoryForBucketAndType(url.bucket().value(),
+                                      CallGetTypeStringForURL(url), create);
 }
 
 std::string ObfuscatedFileUtil::CallGetTypeStringForURL(
@@ -1265,7 +1284,7 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     // Retrieve the bucket information for third-party StorageKey.
     QuotaErrorOr<BucketInfo> bucket =
         sandbox_delegate_->quota_manager_proxy()->GetOrCreateBucketSync(
-            BucketInitParams(storage_key));
+            BucketInitParams::ForDefaultBucket(storage_key));
     if (!bucket.ok())
       return base::File::FILE_ERROR_FAILED;
     // Get the path and verify it is valid.

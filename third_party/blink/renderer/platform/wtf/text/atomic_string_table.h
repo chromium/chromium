@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -39,7 +40,9 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> Add(StringImpl*);
   scoped_refptr<StringImpl> Add(scoped_refptr<StringImpl>&&);
   scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
-  scoped_refptr<StringImpl> Add(const UChar* chars, unsigned length);
+  scoped_refptr<StringImpl> Add(const UChar* chars,
+                                unsigned length,
+                                AtomicStringUCharEncoding encoding);
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.

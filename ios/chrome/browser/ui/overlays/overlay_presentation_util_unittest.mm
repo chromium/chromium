@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -28,13 +29,14 @@
 
 using OverlayPresentationUtilTest = PlatformTest;
 
-// Tests that the frame returned by |ContainedModalFrameThatFit| fits in the
+// Tests that the frame returned by `ContainedModalFrameThatFit` fits in the
 // given view.
 TEST_F(OverlayPresentationUtilTest, TestContainedModalFrameThatFit) {
   TestModalPositioner* positioner = [[TestModalPositioner alloc] init];
 
   CGRect frame = CGRectMake(0, 0, 500, 500);
-  UITextView* text_view = [[UITextView alloc] initWithFrame:frame];
+  UITextView* text_view = CreateUITextViewWithTextKit1();
+  text_view.frame = frame;
   text_view.text = @"test";
 
   // The text_view must be added to the window so that its safe area is not

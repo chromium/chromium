@@ -172,7 +172,8 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
   }
 
   bool intercepted = false;
-  probe::FileChooserOpened(document.GetFrame(), &input, &intercepted);
+  probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
+                           &intercepted);
   if (intercepted) {
     event.SetDefaultHandled();
     return;

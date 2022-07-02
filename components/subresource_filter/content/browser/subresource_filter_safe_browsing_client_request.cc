@@ -48,7 +48,6 @@ void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Just return SAFE if the database is not supported.
   bool synchronous_finish =
-      !database_manager_->IsSupported() ||
       database_manager_->CheckUrlForSubresourceFilter(url, this);
   if (synchronous_finish) {
     request_completed_ = true;

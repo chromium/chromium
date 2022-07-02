@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/performance_hint/hint_session.h"
@@ -172,7 +173,7 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    mojo::ScopedSharedBufferHandle activity_flags,
+    base::UnsafeSharedMemoryRegion activity_flags_region,
     gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
@@ -208,7 +209,7 @@ void VizMainImpl::CreateGpuService(
 
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
-      gpu::GpuProcessActivityFlags(std::move(activity_flags)),
+      gpu::GpuProcessActivityFlags(std::move(activity_flags_region)),
       gpu_init_->TakeDefaultOffscreenSurface(),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.shutdown_event);
@@ -261,16 +262,6 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
   DCHECK(gpu_service_);
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
-  gl::GLSurfaceFormat format;
-  // If we are running a SW Viz process, we may not have a default offscreen
-  // surface.
-  if (auto* offscreen_surface =
-          gpu_service_->gpu_channel_manager()->default_offscreen_surface()) {
-    format = offscreen_surface->GetFormat();
-  } else {
-    DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationDisabled);
-  }
-
   // When the host loses its connection to the viz process, it assumes the
   // process has crashed and tries to reinitialize it. However, it is possible
   // to have lost the connection for other reasons (e.g. deserialization
@@ -278,18 +269,11 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
   // FrameSinkManagerImpl, so just do a hard CHECK rather than crashing down the
   // road so that all crash reports caused by this issue look the same and have
   // the same signature. https://crbug.com/928845
-  CHECK(!task_executor_);
+  CHECK(!has_created_frame_sink_manager_);
+  has_created_frame_sink_manager_ = true;
 
-  task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
-      this, gpu_thread_task_runner_, gpu_service_->GetGpuScheduler(),
-      gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
-      format, gpu_service_->gpu_feature_info(),
-      gpu_service_->gpu_channel_manager()->gpu_preferences(),
-      gpu_service_->shared_image_manager(),
-      gpu_service_->gpu_channel_manager()->program_cache());
-
-  viz_compositor_thread_runner_->CreateFrameSinkManager(
-      std::move(params), task_executor_.get(), gpu_service_.get());
+  viz_compositor_thread_runner_->CreateFrameSinkManager(std::move(params),
+                                                        gpu_service_.get());
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -306,20 +290,6 @@ void VizMainImpl::StopDebugStream() {
   VizDebugger::GetInstance()->StopDebugStream();
 }
 #endif
-
-scoped_refptr<gpu::SharedContextState> VizMainImpl::GetSharedContextState() {
-  // This method should be only called for GLRenderer and not for SkiaRenderer.
-  // Hence adding DCHECK since DrDc only works with SkiaRenderer.
-  DCHECK(!features::IsDrDcEnabled());
-  return gpu_service_->GetContextState();
-}
-
-scoped_refptr<gl::GLShareGroup> VizMainImpl::GetShareGroup() {
-  // This method should be only called for GLRenderer and not for SkiaRenderer.
-  // Hence adding DCHECK since DrDc only works with SkiaRenderer.
-  DCHECK(!features::IsDrDcEnabled());
-  return gpu_service_->share_group();
-}
 
 void VizMainImpl::ExitProcess(ExitCode immediate_exit_code) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());

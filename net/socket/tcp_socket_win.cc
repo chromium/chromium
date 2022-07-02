@@ -133,10 +133,10 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   // The buffers used in Read() and Write().
   scoped_refptr<IOBuffer> read_iobuffer_;
   scoped_refptr<IOBuffer> write_iobuffer_;
-  int read_buffer_length_;
-  int write_buffer_length_;
+  int read_buffer_length_ = 0;
+  int write_buffer_length_ = 0;
 
-  bool non_blocking_reads_initialized_;
+  bool non_blocking_reads_initialized_ = false;
 
  private:
   friend class base::RefCounted<Core>;
@@ -144,7 +144,7 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
    public:
     explicit ReadDelegate(Core* core) : core_(core) {}
-    ~ReadDelegate() override {}
+    ~ReadDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;
@@ -156,7 +156,7 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   class WriteDelegate : public base::win::ObjectWatcher::Delegate {
    public:
     explicit WriteDelegate(Core* core) : core_(core) {}
-    ~WriteDelegate() override {}
+    ~WriteDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;
@@ -183,9 +183,6 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
 
 TCPSocketWin::Core::Core(TCPSocketWin* socket)
     : read_event_(WSACreateEvent()),
-      read_buffer_length_(0),
-      write_buffer_length_(0),
-      non_blocking_reads_initialized_(false),
       socket_(socket),
       reader_(this),
       writer_(this) {
@@ -263,13 +260,6 @@ TCPSocketWin::TCPSocketWin(
     : socket_(INVALID_SOCKET),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       accept_event_(WSA_INVALID_EVENT),
-      accept_socket_(nullptr),
-      accept_address_(nullptr),
-      waiting_connect_(false),
-      waiting_read_(false),
-      waiting_write_(false),
-      connect_os_error_(0),
-      logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
   EnsureWinsockInit();
@@ -757,6 +747,29 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
   } else {
     NOTREACHED();
   }
+}
+
+int TCPSocketWin::OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                                 SocketDescriptor* out) {
+  THREAD_CHECKER(thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker);
+
+  SOCKET new_socket = CreatePlatformSocket(ConvertAddressFamily(family),
+                                           SOCK_STREAM, IPPROTO_TCP);
+  int os_error = WSAGetLastError();
+  int result = OK;
+  if (new_socket == INVALID_SOCKET) {
+    PLOG(ERROR) << "CreatePlatformSocket() returned an error";
+    result = MapSystemError(os_error);
+  }
+
+  if (!SetNonBlockingAndGetError(new_socket, &os_error)) {
+    result = MapSystemError(os_error);
+  }
+
+  *out = new_socket;
+  new_socket = INVALID_SOCKET;
+  return result;
 }
 
 SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {

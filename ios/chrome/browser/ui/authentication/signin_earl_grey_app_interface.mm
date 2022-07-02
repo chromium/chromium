@@ -103,7 +103,7 @@
       chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefService->SetString(prefs::kGoogleServicesLastUsername, emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_REAUTHENTICATE
+      initWithOperation:AuthenticationOperationReauthenticate
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_RESIGNIN_INFOBAR];
   UIViewController* baseViewController =

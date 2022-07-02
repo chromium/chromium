@@ -7,7 +7,7 @@
     Information missing
   </message>
   <message name="IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR" desc="Text label that is shown when autofill assistant cannot help anymore, because something went wrong.">
-    Sorry, something went wrong.
+    Something went wrong
   </message>
   <message name="IDS_AUTOFILL_ASSISTANT_LOADING" desc="Text label that is shown during the loading of the first page, right after being triggered.">
     Opening <ph name="SITE_NAME">$1<ex>google.com</ex></ph>…

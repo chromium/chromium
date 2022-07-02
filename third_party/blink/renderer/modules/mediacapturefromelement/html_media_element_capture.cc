@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_media_element_capture.h"
 
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -25,7 +26,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -111,7 +112,7 @@ void CreateHTMLAudioElementCapturer(
       track_id, MediaStreamSource::StreamType::kTypeAudio, track_id,
       false /* is_remote */, base::WrapUnique(media_stream_audio_source));
   auto* media_stream_component =
-      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(media_stream_source);
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = track_id;
@@ -181,7 +182,11 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
           track->Component(),
           MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
-    MediaStreamDescriptor* const descriptor = media_element_->GetSrcObject();
+    auto variant = media_element_->GetSrcObjectVariant();
+    // The load type check above, should prevent this from failing:
+    DCHECK(absl::holds_alternative<MediaStreamDescriptor*>(variant));
+    MediaStreamDescriptor* const descriptor =
+        absl::get<MediaStreamDescriptor*>(variant);
     DCHECK(descriptor);
     for (unsigned i = 0; i < descriptor->NumberOfAudioComponents(); i++) {
       media_stream_->AddTrackByComponentAndFireEvents(
@@ -311,7 +316,11 @@ MediaStream* HTMLMediaElementCapture::captureStream(
 
   // If |element| is actually playing a MediaStream, just clone it.
   if (element.GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
-    MediaStreamDescriptor* const element_descriptor = element.GetSrcObject();
+    auto variant = element.GetSrcObjectVariant();
+    // The load type check above, should prevent this from failing:
+    DCHECK(absl::holds_alternative<MediaStreamDescriptor*>(variant));
+    MediaStreamDescriptor* const element_descriptor =
+        absl::get<MediaStreamDescriptor*>(variant);
     DCHECK(element_descriptor);
     return MediaStream::Create(context, element_descriptor);
   }

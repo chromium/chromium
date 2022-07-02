@@ -23,11 +23,6 @@
 namespace {
 
 const CGFloat kJavaScriptTimeout = 1;
-// The animation still looks good without the screenshot so the timeout is
-// smaller.
-const CGFloat kScreenshotTimeout = 0.3;
-const CGFloat kScreenshotInset = 2;
-const CGFloat kScreenshotCornerRadius = 10;
 
 // Wrapper around CFRunLoop() to help crash server put all crashes happening
 // while the loop is executed in the same bucket. Marked as `noinline` to
@@ -111,29 +106,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   }
   web::ContextMenuParams params = optionalParams.value();
 
-  // Converts javascript bounding box to webView bounding box.
-  CGRect screenshotBoundingBox = params.bounding_box;
-  if (!CGRectIsEmpty(screenshotBoundingBox)) {
-    screenshotBoundingBox =
-        [self webViewBoundingBoxFromElementBoundingBox:screenshotBoundingBox];
-  }
-
-  // Adding the screenshot view here, so it can be used in the delegate's
-  // methods.
-  if (base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2Screenshot) &&
-      base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2) &&
-      !CGRectIsEmpty(screenshotBoundingBox)) {
-    self.screenshotView =
-        [self fetchScreenshotViewAtBoundingBox:screenshotBoundingBox];
-    params.screenshot = self.screenshotView.image;
-    self.screenshotView.center =
-        CGPointMake(CGRectGetMidX(screenshotBoundingBox),
-                    CGRectGetMidY(screenshotBoundingBox));
-  } else {
-    self.screenshotView.center = location;
-  }
+  self.screenshotView.center = location;
 
   // Adding the screenshotView here so they can be used in the
   // delegate's methods. Will be removed if no menu is presented.
@@ -163,20 +136,26 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
                           (UIContextMenuInteraction*)interaction
     previewForHighlightingMenuWithConfiguration:
         (UIContextMenuConfiguration*)configuration {
+  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor = UIColor.clearColor;
+
   return [[UITargetedPreview alloc] initWithView:self.screenshotView
-                                      parameters:[self previewParameters]];
+                                      parameters:previewParameters];
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
                           (UIContextMenuInteraction*)interaction
     previewForDismissingMenuWithConfiguration:
         (UIContextMenuConfiguration*)configuration {
+  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor = UIColor.clearColor;
+
   // If the dismiss view is not attached to the view hierarchy, fallback to nil
   // to prevent app crashing. See crbug.com/1231888.
   UITargetedPreview* targetPreview =
       self.screenshotView.window
           ? [[UITargetedPreview alloc] initWithView:self.screenshotView
-                                         parameters:[self previewParameters]]
+                                         parameters:previewParameters]
           : nil;
   self.screenshotView = nil;
   return targetPreview;
@@ -204,21 +183,6 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 }
 
 #pragma mark - Private
-
-// Returns preview parameters for highlight/dismiss previews.
-- (UIPreviewParameters*)previewParameters {
-  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
-  previewParameters.backgroundColor = UIColor.clearColor;
-  if (kScreenshotInset < self.screenshotView.frame.size.width &&
-      kScreenshotInset < self.screenshotView.frame.size.height) {
-    previewParameters.visiblePath = [UIBezierPath
-        bezierPathWithRoundedRect:CGRectInset(self.screenshotView.bounds,
-                                              kScreenshotInset,
-                                              kScreenshotInset)
-                     cornerRadius:kScreenshotCornerRadius];
-  }
-  return previewParameters;
-}
 
 // Prevents the web view gesture recognizer to get the touch events.
 - (void)cancelAllTouches {
@@ -287,91 +251,6 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   isRunLoopComplete = YES;
 
   return resultParams;
-}
-
-// Converts HTMLElement bounding box to webView coordinates.
-// Returns CGRectZero if the converted bounding box exeeds the maximum allowed
-// size.
-- (CGRect)webViewBoundingBoxFromElementBoundingBox:(CGRect)elementBoundingBox {
-  CGRect boundingBox = elementBoundingBox;
-
-  // Viewport gives the correct top inset.
-  id<CRWViewportAdjustmentContainer> viewportAdjustmentContainer =
-      static_cast<id<CRWViewportAdjustmentContainer>>(self.webState->GetView());
-  UIView<CRWViewportAdjustment>* viewportAdjustmentView =
-      [viewportAdjustmentContainer fullscreenViewportAdjuster];
-  UIEdgeInsets viewportInsets = [viewportAdjustmentView viewportInsets];
-
-  // Bounding box is scaled to handle page zooming.
-  // ScrollView gives the correct left inset.
-  CGFloat zoomScale = self.webView.scrollView.zoomScale;
-  boundingBox.size.width *= zoomScale;
-  boundingBox.size.height *= zoomScale;
-  boundingBox.origin.x = boundingBox.origin.x * zoomScale +
-                         self.webView.scrollView.adjustedContentInset.left;
-  boundingBox.origin.y = boundingBox.origin.y * zoomScale + viewportInsets.top;
-
-  const double size = boundingBox.size.height * boundingBox.size.width;
-  if (size >= web::kContextMenuMaxScreenshotSize) {
-    return CGRectZero;
-  }
-
-  return boundingBox;
-}
-
-// Fetches a UIImageView containing a screenshot of webState at location of
-// |screenshotBoundingBox|. The screenshot image can be empty.
-- (UIImageView*)fetchScreenshotViewAtBoundingBox:(CGRect)screenshotBoundingBox {
-  // While traditionally using dispatch_async would be used here, we have to
-  // instead use CFRunLoop because dispatch_async blocks the thread. As this
-  // function is called by iOS when it detects the user's force touch, it is on
-  // the main thread and we cannot block that. CFRunLoop instead just loops on
-  // the main thread until the completion block is fired.
-  __block BOOL isRunLoopNested = NO;
-  __block BOOL screenshotCompleted = NO;
-  __block BOOL isRunLoopComplete = NO;
-
-  __block UIImageView* screenshotView = [[UIImageView alloc]
-      initWithFrame:CGRectMake(0, 0, screenshotBoundingBox.size.width,
-                               screenshotBoundingBox.size.height)];
-  screenshotView.backgroundColor = UIColor.clearColor;
-  self.webState->TakeSnapshot(
-      gfx::RectF(screenshotBoundingBox),
-      base::BindRepeating(^(const gfx::Image& image) {
-        screenshotCompleted = YES;
-        if (image.HasRepresentation(
-                gfx::Image::RepresentationType::kImageRepCocoaTouch)) {
-          screenshotView.image = image.ToUIImage();
-        }
-        if (isRunLoopNested) {
-          CFRunLoopStop(CFRunLoopGetCurrent());
-        }
-      }));
-
-  // Make sure to timeout in case the screenshot doesn't return in a timely
-  // manner. While this is executing, the scrolling on the page is frozen.
-  // Interacting with the page will force this method to return even before any
-  // of this code is called.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                               (int64_t)(kScreenshotTimeout * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   if (!isRunLoopComplete) {
-                     CFRunLoopStop(CFRunLoopGetCurrent());
-                     screenshotCompleted = YES;
-                   }
-                 });
-
-  // CFRunLoopRun isn't necessary if javascript evaluation is completed by the
-  // time we reach this line.
-  if (!screenshotCompleted) {
-    isRunLoopNested = YES;
-    ContextMenuNestedCFRunLoop();
-    isRunLoopNested = NO;
-  }
-
-  isRunLoopComplete = YES;
-
-  return screenshotView;
 }
 
 @end

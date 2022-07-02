@@ -67,6 +67,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const String& text) override;
 #endif
+  Vector<String> ReadStandardFormatNames();
 
   mojo::ReceiverSet<mojom::blink::ClipboardHost> receivers_;
   ClipboardSequenceNumberToken sequence_number_;

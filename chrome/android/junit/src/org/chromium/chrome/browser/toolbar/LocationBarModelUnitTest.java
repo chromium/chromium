@@ -66,6 +66,7 @@ import org.chromium.url.ShadowGURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowTrustedCdn.class})
 @DisableFeatures({ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
     static class ShadowTrustedCdn {

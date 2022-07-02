@@ -117,7 +117,7 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  const BookmarkNode* node = model->AddURL(
+  const BookmarkNode* node = model->AddNewURL(
       _bookmarkNode, _bookmarkNode->children().size(), std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkItem);
@@ -146,7 +146,7 @@ using bookmarks::BookmarkNode;
   }
 
   const BookmarkNode* node =
-      model->AddURL(_bookmarkNode, position, std::u16string(), url);
+      model->AddNewURL(_bookmarkNode, position, std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkItem);
     return;

@@ -26,7 +26,7 @@ enum class MobileMessagesSaveCardModalEvent {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Records histogram for Modal |event|.
+// Records histogram for Modal `event`.
 + (void)recordModalEvent:(MobileMessagesSaveCardModalEvent)event;
 
 @end

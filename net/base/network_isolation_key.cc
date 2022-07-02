@@ -126,15 +126,16 @@ bool NetworkIsolationKey::ToValue(base::Value* out_value) const {
       SerializeSiteWithNonce(*top_frame_site_);
   if (!top_frame_value)
     return false;
-  *out_value = base::Value(base::Value::Type::LIST);
-  out_value->Append(std::move(*top_frame_value));
+  base::Value::List list;
+  list.Append(std::move(top_frame_value).value());
 
   absl::optional<std::string> frame_value =
       SerializeSiteWithNonce(*frame_site_);
   if (!frame_value)
     return false;
-  out_value->Append(std::move(*frame_value));
+  list.Append(std::move(frame_value).value());
 
+  *out_value = base::Value(std::move(list));
   return true;
 }
 
@@ -144,7 +145,7 @@ bool NetworkIsolationKey::FromValue(
   if (!value.is_list())
     return false;
 
-  base::Value::ConstListView list = value.GetListDeprecated();
+  const base::Value::List& list = value.GetList();
   if (list.empty()) {
     *network_isolation_key = NetworkIsolationKey();
     return true;
@@ -164,6 +165,12 @@ bool NetworkIsolationKey::FromValue(
   // Opaque origins are currently never serialized to disk, but they used to be.
   if (!frame_site || frame_site->opaque())
     return false;
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame) &&
+      frame_site != top_frame_site) {
+    return false;
+  }
 
   *network_isolation_key =
       NetworkIsolationKey(std::move(*top_frame_site), std::move(*frame_site));

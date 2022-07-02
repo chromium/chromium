@@ -116,7 +116,7 @@ TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointInOmniboxWhileNavigating) {
 
   std::unique_ptr<content::NavigationSimulator> simulator =
       content::NavigationSimulator::CreateRendererInitiated(
-          GURL(kHttpsUrl2), web_contents()->GetMainFrame());
+          GURL(kHttpsUrl2), web_contents()->GetPrimaryMainFrame());
   simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
   simulator->Start();
   ASSERT_TRUE(web_contents()->IsWaitingForResponse());

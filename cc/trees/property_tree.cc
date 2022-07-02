@@ -22,6 +22,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -57,7 +58,6 @@ PropertyTree<T>& PropertyTree<T>::operator=(const PropertyTree<T>&) = default;
 TransformTree::TransformTree(PropertyTrees* property_trees)
     : PropertyTree<TransformNode>(property_trees),
       page_scale_factor_(1.f),
-      overscroll_node_id_(kInvalidPropertyNodeId),
       fixed_elements_dont_overscroll_(false),
       device_scale_factor_(1.f),
       device_transform_scale_factor_(1.f) {
@@ -128,7 +128,6 @@ void TransformTree::clear() {
   PropertyTree<TransformNode>::clear();
 
   page_scale_factor_ = 1.f;
-  overscroll_node_id_ = kInvalidPropertyNodeId;
   fixed_elements_dont_overscroll_ = false;
   device_scale_factor_ = 1.f;
   device_transform_scale_factor_ = 1.f;
@@ -174,14 +173,16 @@ void TransformTree::ResetChangeTracking() {
   }
 }
 
-void TransformTree::UpdateTransforms(int id) {
+void TransformTree::UpdateTransforms(
+    int id,
+    const ViewportPropertyIds* viewport_property_ids) {
   TransformNode* node = Node(id);
   TransformNode* parent_node = parent(node);
   DCHECK(parent_node);
   // TODO(flackr): Only dirty when scroll offset changes.
   if (node->sticky_position_constraint_id >= 0 ||
       node->needs_local_transform_update || ShouldUndoOverscroll(node)) {
-    UpdateLocalTransform(node);
+    UpdateLocalTransform(node, viewport_property_ids);
   } else {
     UndoSnapping(node);
   }
@@ -460,12 +461,19 @@ bool TransformTree::ShouldUndoOverscroll(const TransformNode* node) const {
 
 void TransformTree::UpdateFixedNodeTransformAndClip(
     const TransformNode* node,
-    gfx::Vector2dF& fixed_position_adjustment) {
-  if (!ShouldUndoOverscroll(node) ||
-      overscroll_node_id_ == kInvalidPropertyNodeId)
+    gfx::Vector2dF& fixed_position_adjustment,
+    const ViewportPropertyIds* viewport_property_ids) {
+  const int transform_id =
+      viewport_property_ids
+          ? viewport_property_ids->overscroll_elasticity_transform
+          : kInvalidPropertyNodeId;
+  const int clip_id = viewport_property_ids ? viewport_property_ids->outer_clip
+                                            : kInvalidPropertyNodeId;
+  if (!ShouldUndoOverscroll(node) || transform_id == kInvalidPropertyNodeId ||
+      clip_id == kInvalidPropertyNodeId)
     return;
 
-  const TransformNode* overscroll_node = Node(overscroll_node_id_);
+  const TransformNode* overscroll_node = Node(transform_id);
   const gfx::Vector2dF overscroll_offset =
       overscroll_node->scroll_offset.OffsetFromOrigin();
   if (overscroll_offset.IsZero())
@@ -475,24 +483,24 @@ void TransformTree::UpdateFixedNodeTransformAndClip(
       gfx::ScaleVector2d(overscroll_offset, 1.f / page_scale_factor());
 
   ClipTree& clip_tree = property_trees()->clip_tree_mutable();
-  ClipNode* clip_node = clip_tree.Node(clip_tree.overscroll_node_id());
+  ClipNode* clip_node = clip_tree.Node(clip_id);
+  DCHECK(clip_node);
 
-  if (clip_node) {
-    // Inflate the clip rect based on the overscroll direction.
-    gfx::OutsetsF outsets;
-    fixed_position_adjustment.x() < 0
-        ? outsets.set_left(-fixed_position_adjustment.x())
-        : outsets.set_right(fixed_position_adjustment.x());
-    fixed_position_adjustment.y() < 0
-        ? outsets.set_top(-fixed_position_adjustment.y())
-        : outsets.set_bottom(fixed_position_adjustment.y());
-
-    clip_node->clip.Outset(outsets);
-    clip_tree.set_needs_update(true);
-  }
+  // Inflate the clip rect based on the overscroll direction.
+  gfx::OutsetsF outsets;
+  fixed_position_adjustment.x() < 0
+      ? outsets.set_left(-fixed_position_adjustment.x())
+      : outsets.set_right(fixed_position_adjustment.x());
+  fixed_position_adjustment.y() < 0
+      ? outsets.set_top(-fixed_position_adjustment.y())
+      : outsets.set_bottom(fixed_position_adjustment.y());
+  clip_node->clip.Outset(outsets);
+  clip_tree.set_needs_update(true);
 }
 
-void TransformTree::UpdateLocalTransform(TransformNode* node) {
+void TransformTree::UpdateLocalTransform(
+    TransformNode* node,
+    const ViewportPropertyIds* viewport_property_ids) {
   gfx::Transform transform;
   transform.Translate3d(node->post_translation.x() + node->origin.x(),
                         node->post_translation.y() + node->origin.y(),
@@ -504,7 +512,8 @@ void TransformTree::UpdateLocalTransform(TransformNode* node) {
         property_trees()->outer_viewport_container_bounds_delta().y());
   }
 
-  UpdateFixedNodeTransformAndClip(node, fixed_position_adjustment);
+  UpdateFixedNodeTransformAndClip(node, fixed_position_adjustment,
+                                  viewport_property_ids);
   transform.Translate(fixed_position_adjustment -
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
@@ -709,7 +718,6 @@ void TransformTree::SetToScreen(int node_id, const gfx::Transform& transform) {
 bool TransformTree::operator==(const TransformTree& other) const {
   return PropertyTree::operator==(other) &&
          page_scale_factor_ == other.page_scale_factor() &&
-         overscroll_node_id_ == other.overscroll_node_id() &&
          fixed_elements_dont_overscroll_ ==
              other.fixed_elements_dont_overscroll() &&
          device_scale_factor_ == other.device_scale_factor() &&
@@ -1265,8 +1273,7 @@ EffectTree::CopyRequestMap EffectTree::TakeCopyRequests() {
 }
 
 ClipTree::ClipTree(PropertyTrees* property_trees)
-    : PropertyTree<ClipNode>(property_trees),
-      overscroll_node_id_(kInvalidPropertyNodeId) {}
+    : PropertyTree<ClipNode>(property_trees) {}
 
 void ClipTree::SetViewportClip(gfx::RectF viewport_rect) {
   if (size() < 2)
@@ -1286,8 +1293,7 @@ gfx::RectF ClipTree::ViewportClip() const {
 
 #if DCHECK_IS_ON()
 bool ClipTree::operator==(const ClipTree& other) const {
-  return PropertyTree::operator==(other) &&
-         overscroll_node_id_ == other.overscroll_node_id();
+  return PropertyTree::operator==(other);
 }
 #endif
 
@@ -1964,6 +1970,9 @@ bool PropertyTrees::ElementIsAnimatingChanged(
     const ElementId element_id = it->second;
     switch (property) {
       case TargetProperty::TRANSFORM:
+      case TargetProperty::SCALE:
+      case TargetProperty::ROTATE:
+      case TargetProperty::TRANSLATE:
         if (TransformNode* transform_node =
                 transform_tree_mutable().FindNodeFromElementId(element_id)) {
           if (mask.currently_running[property])

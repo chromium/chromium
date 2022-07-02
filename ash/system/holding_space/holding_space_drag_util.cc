@@ -13,6 +13,7 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
@@ -219,7 +220,7 @@ class DragImageItemChipView : public DragImageItemView {
     icon->SetImage(item->image().GetImageSkia(
         icon->GetPreferredSize(),
         /*dark_background=*/features::IsDarkLightModeEnabled() &&
-            AshColorProvider::Get()->IsDarkModeEnabled()));
+            DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
 
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
@@ -262,7 +263,7 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
     image->SetImage(item->image().GetImageSkia(
         image->GetPreferredSize(),
         /*dark_background=*/features::IsDarkLightModeEnabled() &&
-            AshColorProvider::Get()->IsDarkModeEnabled()));
+            DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
   }
 };
 
@@ -313,9 +314,10 @@ class DragImageOverflowBadge : public views::View {
     // Label.
     auto* label = AddChildView(
         bubble_utils::CreateLabel(bubble_utils::LabelStyle::kBadge));
-    label->SetEnabledColor(AshColorProvider::Get()->IsDarkModeEnabled()
-                               ? gfx::kGoogleGrey900
-                               : gfx::kGoogleGrey200);
+    label->SetEnabledColor(
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+            ? gfx::kGoogleGrey900
+            : gfx::kGoogleGrey200);
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
   }
 };

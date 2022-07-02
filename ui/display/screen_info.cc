@@ -22,7 +22,8 @@ bool ScreenInfo::operator==(const ScreenInfo& other) const {
          orientation_type == other.orientation_type &&
          orientation_angle == other.orientation_angle &&
          is_extended == other.is_extended && is_primary == other.is_primary &&
-         is_internal == other.is_internal && display_id == other.display_id;
+         is_internal == other.is_internal && label == other.label &&
+         display_id == other.display_id;
 }
 
 bool ScreenInfo::operator!=(const ScreenInfo& other) const {

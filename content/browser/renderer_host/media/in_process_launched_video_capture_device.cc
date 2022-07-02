@@ -124,6 +124,9 @@ void InProcessLaunchedVideoCaptureDevice::Crop(
   // Unretained() is safe to use here because |device| would be null if it
   // was scheduled for shutdown and destruction, and because this task is
   // guaranteed to run before the task that destroys the |device|.
+  //
+  // Explicitly bind the callback to the I/O thread since the VideoCaptureDevice
+  // Crop method runs the callback on an unspecified thread.
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&media::VideoCaptureDevice::Crop,

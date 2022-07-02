@@ -10,8 +10,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -101,11 +101,6 @@ const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
        {.subpage = mojom::Subpage::kEditDictionary}},
   });
   return *tags;
-}
-
-bool IsLanguageSettingsV2Update2Enabled() {
-  return base::FeatureList::IsEnabled(
-      ::chromeos::features::kLanguageSettingsUpdate2);
 }
 
 const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
@@ -447,8 +442,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLanguagesPageStringsV2(html_source);
   AddInputPageStringsV2(html_source);
 
-  html_source->AddBoolean("enableLanguageSettingsV2Update2",
-                          IsLanguageSettingsV2Update2Enabled());
+  html_source->AddBoolean("enableLanguageSettingsV2Update2", true);
   html_source->AddBoolean("onDeviceGrammarCheckEnabled",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kOnDeviceGrammarCheck));

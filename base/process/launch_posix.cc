@@ -33,6 +33,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
@@ -127,9 +128,11 @@ typedef uint64_t kernel_sigset_t;
 // This is what struct sigaction looks like to the kernel at least on X86 and
 // ARM. MIPS, for instance, is very different.
 struct kernel_sigaction {
-  void* k_sa_handler;  // For this usage it only needs to be a generic pointer.
+  raw_ptr<void>
+      k_sa_handler;  // For this usage it only needs to be a generic pointer.
   unsigned long k_sa_flags;
-  void* k_sa_restorer;  // For this usage it only needs to be a generic pointer.
+  raw_ptr<void>
+      k_sa_restorer;  // For this usage it only needs to be a generic pointer.
   kernel_sigset_t k_sa_mask;
 };
 

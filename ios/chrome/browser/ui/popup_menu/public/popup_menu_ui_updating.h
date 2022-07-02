@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, PopupMenuType) {
 // Protocol for a class updating the UI to reflect the presentation of a popup
 // menu.
 @protocol PopupMenuUIUpdating
-// Updates the UI for the presentation of the popup menu of type |popupType|.
+// Updates the UI for the presentation of the popup menu of type `popupType`.
 - (void)updateUIForMenuDisplayed:(PopupMenuType)popupType;
 // Update the UI for the dismissal of the popup menu.
 - (void)updateUIForMenuDismissed;

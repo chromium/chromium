@@ -1129,8 +1129,8 @@ BatchUploadRequest::BatchUploadRequest(
     const DriveApiUrlGenerator& url_generator)
     : DriveUrlFetchRequestBase(
           sender,
-          // Safe to not retain as the SimpleURLoader is owned by our base class
-          // and cannot outlive this instance.
+          // Safe to not retain as the SimpleURLLoader is owned by our base
+          // class and cannot outlive this instance.
           base::BindRepeating(&BatchUploadRequest::OnUploadProgress,
                               base::Unretained(this)),
           ProgressCallback()),

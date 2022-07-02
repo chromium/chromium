@@ -77,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
   // ad script is loaded and that the subresource filter UI doesn't show up.
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 0);
@@ -105,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
   // shows up.
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
 
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 1);
@@ -153,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
   // running in dry run mode.
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 0);

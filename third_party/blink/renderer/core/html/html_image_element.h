@@ -193,6 +193,8 @@ class CORE_EXPORT HTMLImageElement final
 
   void InvalidateAttributeMapping();
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
   static bool SupportedImageType(const String& type,
                                  const HashSet<String>* disabled_image_types);
 

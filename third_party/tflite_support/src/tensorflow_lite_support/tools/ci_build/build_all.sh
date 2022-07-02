@@ -19,10 +19,17 @@ set -ex
 
 bash tensorflow_lite_support/custom_ops/tf_configure.sh
 
+# Compile the two schema srcjars first. Compiling
+# tensorflow-lite-support-metadata-lib directly will lead to a racing issue
+# similar to b/200756963 that two sets of TFLite schema source files are
+# generated, and will thus cause the duplicated Java class error.
+bazel build -c opt --config=monolithic tensorflow_lite_support/metadata:schema_fbs_java_srcjar
+bazel build -c opt --config=monolithic tensorflow_lite_support/metadata:metadata_schema_java_srcjar
+
 # Break down metadata builds and avoid the flacky issue when building schema
 # with Bazel. See b/200756963.
 bazel build -c opt --config=monolithic \
-    //tensorflow_lite_support/metadata/java:tensorflowlite_support_metadata_lib
+    //tensorflow_lite_support/metadata/java:tensorflow-lite-support-metadata-lib
 bazel build -c opt --config=monolithic \
     //tensorflow_lite_support/metadata/cc:metadata_extractor
 
@@ -51,10 +58,10 @@ bazel build -c opt ${BAZEL_PARALLEL} --config=monolithic \
     //tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/audio:task-library-audio \
     //tensorflow_lite_support/acceleration/configuration:gpu-delegate-plugin
 
-bazel clean
-# Coral plugin.
-bazel build -c opt ${BAZEL_PARALLEL} --define=darwinn_portable=1 \
-    //tensorflow_lite_support/acceleration/configuration:edgetpu_coral_plugin
+# Pip package
+bazel build -c opt ${BAZEL_PARALLEL} \
+      --define darwinn_portable=1 \
+      tensorflow_lite_support/tools/pip_package:build_pip_package
 
 # Tests.
 

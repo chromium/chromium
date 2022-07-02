@@ -18,13 +18,13 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/proxy/proxy_config_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   // Change network to be behind a captive portal.
   network_state_test_helper_->service_test()->SetServiceProperty(
       kWifiServicePath, shill::kStateProperty,
-      base::Value(shill::kStatePortal));
+      base::Value(shill::kStateRedirectFound));
 
   reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
   reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
     // Change network to be behind a captive portal.
     network_test_helper.service_test()->SetServiceProperty(
         kWifiServicePath, shill::kStateProperty,
-        base::Value(shill::kStatePortal));
+        base::Value(shill::kStateRedirectFound));
 
     reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
     reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
@@ -482,6 +482,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   // Wait for proxy login handler and authenticate.
   WaitForLoginHandler();
   ASSERT_TRUE(login_handler());
+  ASSERT_EQ(login_handler()->web_contents()->GetOuterWebContents(),
+            reauth_dialog_helper->DialogWebContents());
   login_handler()->SetAuth(u"foo", u"bar");
 
   reauth_dialog_helper->WaitForIdpPageLoad();
@@ -516,6 +518,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   // Appearance of login handler means that proxy authentication was requested
   WaitForLoginHandler();
   ASSERT_TRUE(login_handler());
+  ASSERT_EQ(login_handler()->web_contents()->GetOuterWebContents(),
+            reauth_dialog_helper->DialogWebContents());
 
   content::WindowedNotificationObserver auth_cancelled_waiter(
       chrome::NOTIFICATION_AUTH_CANCELLED,

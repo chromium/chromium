@@ -35,7 +35,8 @@ class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
 
  private:
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  const raw_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  const raw_ptr<InProcessGpuMemoryBufferManager, DanglingUntriaged>
+      gpu_memory_buffer_manager_;
 };
 
 }  // namespace viz

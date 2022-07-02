@@ -98,6 +98,15 @@ WifiLanMedium::~WifiLanMedium() {
   shutdown_waitable_event.Wait();
 }
 
+bool WifiLanMedium::IsNetworkConnected() const {
+  // This is not used by ChromeOS. A virtual function was created in the base
+  // class to support Windows, so this implementation only exists to override
+  // that function. This may be implemented correctly at a later date if
+  // Wi-Fi LAN would need similar functionality.
+  // Context: cl/452402734
+  return true;
+}
+
 /*============================================================================*/
 // Begin: ConnectToService()
 /*============================================================================*/

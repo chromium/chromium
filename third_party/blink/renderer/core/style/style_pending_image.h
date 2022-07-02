@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_PENDING_IMAGE_H_
 
+#include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -43,7 +44,7 @@ class ImageResourceObserver;
 // are not referenced by the final style.  They should only exist in a
 // ComputedStyle for non-rendered elements created with EnsureComputedStyle or
 // display:contents.
-class StylePendingImage final : public StyleImage {
+class CORE_EXPORT StylePendingImage final : public StyleImage {
  public:
   explicit StylePendingImage(const CSSValue& value)
       : value_(const_cast<CSSValue*>(&value)) {
@@ -99,7 +100,7 @@ inline bool StylePendingImage::IsEqual(const StyleImage& other) const {
   if (!other.IsPendingImage())
     return false;
   const auto& other_pending = To<StylePendingImage>(other);
-  return value_ == other_pending.value_;
+  return base::ValuesEquivalent(value_, other_pending.value_);
 }
 
 }  // namespace blink

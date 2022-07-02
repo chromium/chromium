@@ -73,6 +73,7 @@ HtmlVideoElementCapturerSource::GetPreferredFormats() {
 void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const RunningCallback& running_callback) {
   DVLOG(2) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);
@@ -120,7 +121,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   if (start_capture_time_.is_null())
     start_capture_time_ = current_time;
 
-  if (auto frame = web_media_player_->GetCurrentFrame()) {
+  if (auto frame = web_media_player_->GetCurrentFrameThenUpdate()) {
     auto new_frame = media::VideoFrame::WrapVideoFrame(
         frame, frame->format(), frame->visible_rect(), frame->natural_size());
     new_frame->set_timestamp(current_time - start_capture_time_);

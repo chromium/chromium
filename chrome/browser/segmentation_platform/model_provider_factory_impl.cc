@@ -6,8 +6,8 @@
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 namespace {
@@ -15,8 +15,7 @@ namespace {
 class DummyModelProvider : public ModelProvider {
  public:
   DummyModelProvider()
-      : ModelProvider(optimization_guide::proto::OptimizationTarget::
-                          OPTIMIZATION_TARGET_UNKNOWN) {}
+      : ModelProvider(proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {}
   void InitAndFetchModel(
       const ModelUpdatedCallback& model_updated_callback) override {}
 
@@ -40,24 +39,22 @@ ModelProviderFactoryImpl::ModelProviderFactoryImpl(
 ModelProviderFactoryImpl::~ModelProviderFactoryImpl() = default;
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
+    proto::SegmentId segment_id) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!optimization_guide_provider_) {
     // Optimization guide may not be available in some tests,
     return std::make_unique<DummyModelProvider>();
   }
   return std::make_unique<OptimizationGuideSegmentationModelProvider>(
-      optimization_guide_provider_, background_task_runner_,
-      optimization_target);
+      optimization_guide_provider_, background_task_runner_, segment_id);
 #else
   return std::make_unique<DummyModelProvider>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  return DefaultModelsRegister::GetInstance().GetModelProvider(
-      optimization_target);
+    proto::SegmentId segment_id) {
+  return DefaultModelsRegister::GetInstance().GetModelProvider(segment_id);
 }
 
 }  // namespace segmentation_platform

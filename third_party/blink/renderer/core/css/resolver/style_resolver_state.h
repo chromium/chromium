@@ -55,7 +55,7 @@ class CORE_EXPORT StyleResolverState {
  public:
   StyleResolverState(Document&,
                      Element&,
-                     const StyleRecalcContext& = StyleRecalcContext(),
+                     const StyleRecalcContext* = nullptr,
                      const StyleRequest& = StyleRequest());
   StyleResolverState(const StyleResolverState&) = delete;
   StyleResolverState& operator=(const StyleResolverState&) = delete;
@@ -118,6 +118,10 @@ class CORE_EXPORT StyleResolverState {
 
   Element* GetAnimatingElement() const;
 
+  // Returns the pseudo element if the style resolution is targeting a pseudo
+  // element, null otherwise.
+  PseudoElement* GetPseudoElement() const;
+
   void SetParentStyle(scoped_refptr<const ComputedStyle>);
   const ComputedStyle* ParentStyle() const { return parent_style_.get(); }
 
@@ -164,6 +168,7 @@ class CORE_EXPORT StyleResolverState {
     return originating_element_style_.get();
   }
   bool IsForHighlight() const { return is_for_highlight_; }
+  bool IsForCustomHighlight() const { return is_for_custom_highlight_; }
 
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
@@ -183,6 +188,11 @@ class CORE_EXPORT StyleResolverState {
     return affects_compositor_snapshots_;
   }
   void SetAffectsCompositorSnapshots() { affects_compositor_snapshots_ = true; }
+
+  bool RejectedLegacyOverlapping() const {
+    return rejected_legacy_overlapping_;
+  }
+  void SetRejectedLegacyOverlapping() { rejected_legacy_overlapping_ = true; }
 
  private:
   void UpdateLengthConversionData();
@@ -213,7 +223,7 @@ class CORE_EXPORT StyleResolverState {
   PseudoElement* pseudo_element_;
   ElementStyleResources element_style_resources_;
   ElementType element_type_;
-  Element* nearest_container_;
+  Element* container_unit_context_;
 
   scoped_refptr<const ComputedStyle> originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.
@@ -235,6 +245,10 @@ class CORE_EXPORT StyleResolverState {
 
   // True if snapshots of composited keyframes require re-validation.
   bool affects_compositor_snapshots_ = false;
+
+  // True if the cascade rejected any properties with the kLegacyOverlapping
+  // flag.
+  bool rejected_legacy_overlapping_ = false;
 };
 
 }  // namespace blink

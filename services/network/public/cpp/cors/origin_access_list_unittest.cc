@@ -265,6 +265,20 @@ TEST_F(OriginAccessListTest, IsPriorityRespected) {
   EXPECT_FALSE(IsAllowed(https_sub_example_origin()));
 }
 
+TEST_F(OriginAccessListTest, BlockWhenAllowAndBlockHaveSamePriority) {
+  AddAllowListEntry("https", "example.com", kAnyPort, kAllowSubdomains,
+                    kAllowAnyPort,
+                    mojom::CorsOriginAccessMatchPriority::kLowPriority);
+  EXPECT_TRUE(IsAllowed(https_example_origin()));
+
+  // Add a blocklist rule with the same priority. We should default to blocking
+  // access.
+  AddBlockListEntry("https", "example.com", kAnyPort, kAllowSubdomains,
+                    kAllowAnyPort,
+                    mojom::CorsOriginAccessMatchPriority::kLowPriority);
+  EXPECT_FALSE(IsAllowed(https_example_origin()));
+}
+
 TEST_F(OriginAccessListTest, IsPriorityRespectedReverse) {
   AddAllowListEntry("https", "example.com", kAnyPort, kDisallowSubdomains,
                     kAllowAnyPort,

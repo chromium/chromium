@@ -811,6 +811,12 @@ void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
 
   observed_profile_manager_.Reset();
 
+  // Activate user remote commands only for unicorn accounts.
+  // The server side only supports user-scoped remote commands for unicorn
+  // accounts at the moment. See b/193450869 for more detail.
+  if (!IsChildUser(account_id_))
+    return;
+
   invalidation::ProfileInvalidationProvider* const invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
 
@@ -831,12 +837,12 @@ void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(
-              base::BindRepeating(&UserCloudPolicyManagerAsh::ProfileShutdown,
-                                  base::Unretained(this)));
+          ->Subscribe(base::BindRepeating(
+              &UserCloudPolicyManagerAsh::ShutdownRemoteCommands,
+              base::Unretained(this)));
 }
 
-void UserCloudPolicyManagerAsh::ProfileShutdown() {
+void UserCloudPolicyManagerAsh::ShutdownRemoteCommands() {
   // Unregister the RemoteCommandsInvalidatorImpl from the InvalidatorRegistrar.
   invalidator_->Shutdown();
   invalidator_.reset();

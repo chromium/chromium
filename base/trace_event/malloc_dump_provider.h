@@ -50,8 +50,11 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   MallocDumpProvider();
   ~MallocDumpProvider() override;
 
-  void ReportSyscallCount(uint64_t syscall_count,
-                          MemoryAllocatorDump* malloc_dump);
+  void ReportPerMinuteStats(uint64_t syscall_count,
+                            size_t cumulative_brp_quarantined_bytes,
+                            size_t cumulative_brp_quarantined_count,
+                            MemoryAllocatorDump* malloc_dump,
+                            MemoryAllocatorDump* partition_alloc_dump);
 
   bool emit_metrics_on_memory_dump_
       GUARDED_BY(emit_metrics_on_memory_dump_lock_) = true;
@@ -63,6 +66,8 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   // which is not desirable as early process activity is highly relevant.
   base::TimeTicks last_memory_dump_time_ = base::TimeTicks::Now();
   uint64_t last_syscall_count_ = 0;
+  size_t last_cumulative_brp_quarantined_bytes_ = 0;
+  size_t last_cumulative_brp_quarantined_count_ = 0;
 #endif
 };
 
@@ -71,29 +76,33 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
 // PartitionAllocMemoryDumpProvider. This implements an interface that will
 // be called with memory statistics for each bucket in the allocator.
 class BASE_EXPORT MemoryDumpPartitionStatsDumper final
-    : public base::PartitionStatsDumper {
+    : public partition_alloc::PartitionStatsDumper {
  public:
   MemoryDumpPartitionStatsDumper(const char* root_name,
                                  ProcessMemoryDump* memory_dump,
-                                 MemoryDumpLevelOfDetail level_of_detail)
-      : root_name_(root_name),
-        memory_dump_(memory_dump),
-        detailed_(level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {}
+                                 MemoryDumpLevelOfDetail level_of_detail);
 
   static const char* kPartitionsDumpName;
 
   // PartitionStatsDumper implementation.
-  void PartitionDumpTotals(const char* partition_name,
-                           const base::PartitionMemoryStats*) override;
+  void PartitionDumpTotals(
+      const char* partition_name,
+      const partition_alloc::PartitionMemoryStats*) override;
   void PartitionsDumpBucketStats(
       const char* partition_name,
-      const base::PartitionBucketMemoryStats*) override;
+      const partition_alloc::PartitionBucketMemoryStats*) override;
 
   size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
   size_t total_resident_bytes() const { return total_resident_bytes_; }
   size_t total_active_bytes() const { return total_active_bytes_; }
   size_t total_active_count() const { return total_active_count_; }
   uint64_t syscall_count() const { return syscall_count_; }
+  size_t cumulative_brp_quarantined_bytes() const {
+    return cumulative_brp_quarantined_bytes_;
+  }
+  size_t cumulative_brp_quarantined_count() const {
+    return cumulative_brp_quarantined_count_;
+  }
 
  private:
   const char* root_name_;
@@ -104,6 +113,8 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   size_t total_active_bytes_ = 0;
   size_t total_active_count_ = 0;
   uint64_t syscall_count_ = 0;
+  size_t cumulative_brp_quarantined_bytes_ = 0;
+  size_t cumulative_brp_quarantined_count_ = 0;
   bool detailed_;
 };
 

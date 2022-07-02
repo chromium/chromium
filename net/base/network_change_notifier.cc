@@ -68,7 +68,7 @@ base::Lock& NetworkChangeNotifierCreationLock() {
 
 class MockNetworkChangeNotifier : public NetworkChangeNotifier {
  public:
-  MockNetworkChangeNotifier(
+  explicit MockNetworkChangeNotifier(
       std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier)
       : NetworkChangeNotifier(
             NetworkChangeCalculatorParams(),
@@ -107,10 +107,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
       public IPAddressObserver {
  public:
   explicit NetworkChangeCalculator(const NetworkChangeCalculatorParams& params)
-      : params_(params),
-        have_announced_(false),
-        last_announced_connection_type_(CONNECTION_NONE),
-        pending_connection_type_(CONNECTION_NONE) {
+      : params_(params) {
     DCHECK(g_network_change_notifier);
     AddConnectionTypeObserver(this);
     AddConnectionCostObserver(this);
@@ -180,11 +177,11 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   const NetworkChangeCalculatorParams params_;
 
   // Indicates if NotifyObserversOfNetworkChange has been called yet.
-  bool have_announced_;
+  bool have_announced_ = false;
   // Last value passed to NotifyObserversOfNetworkChange.
-  ConnectionType last_announced_connection_type_;
+  ConnectionType last_announced_connection_type_ = CONNECTION_NONE;
   // Value to pass to NotifyObserversOfNetworkChange when Notify is called.
-  ConnectionType pending_connection_type_;
+  ConnectionType pending_connection_type_ = CONNECTION_NONE;
   // Used to delay notifications so duplicates can be combined.
   base::OneShotTimer timer_;
 
@@ -222,8 +219,7 @@ class NetworkChangeNotifier::ObserverList {
                 base::ObserverListPolicy::EXISTING_ONLY)),
         default_network_active_observer_list_(
             new base::ObserverListThreadSafe<DefaultNetworkActiveObserver>(
-                base::ObserverListPolicy::EXISTING_ONLY)),
-        connection_cost_observers_added_(false) {}
+                base::ObserverListPolicy::EXISTING_ONLY)) {}
 
   ObserverList(const ObserverList&) = delete;
   ObserverList& operator=(const ObserverList&) = delete;
@@ -257,7 +253,7 @@ class NetworkChangeNotifier::ObserverList {
   // Indicates if connection cost observer was added before
   // network_change_notifier was initialized, if so ConnectionCostObserverAdded
   // is invoked from constructor.
-  std::atomic_bool connection_cost_observers_added_;
+  std::atomic_bool connection_cost_observers_added_ = false;
 };
 
 class NetworkChangeNotifier::SystemDnsConfigObserver
@@ -333,7 +329,7 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
       /*require_wlan=*/false);
 #else
   NOTIMPLEMENTED();
-  return NULL;
+  return nullptr;
 #endif
 }
 
@@ -526,8 +522,9 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
 // static
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTracker() {
-  return g_network_change_notifier ?
-        g_network_change_notifier->GetAddressTrackerInternal() : NULL;
+  return g_network_change_notifier
+             ? g_network_change_notifier->GetAddressTrackerInternal()
+             : nullptr;
 }
 #endif
 
@@ -572,29 +569,29 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
     const NetworkInterfaceList& interfaces) {
   bool first = true;
   ConnectionType result = CONNECTION_NONE;
-  for (size_t i = 0; i < interfaces.size(); ++i) {
+  for (const auto& network_interface : interfaces) {
 #if BUILDFLAG(IS_WIN)
-    if (interfaces[i].friendly_name == "Teredo Tunneling Pseudo-Interface")
+    if (network_interface.friendly_name == "Teredo Tunneling Pseudo-Interface")
       continue;
 #endif
 #if BUILDFLAG(IS_APPLE)
     // Ignore link-local addresses as they aren't globally routable.
     // Mac assigns these to disconnected interfaces like tunnel interfaces
     // ("utun"), airdrop interfaces ("awdl"), and ethernet ports ("en").
-    if (interfaces[i].address.IsLinkLocal())
+    if (network_interface.address.IsLinkLocal())
       continue;
 #endif
 
     // Remove VMware network interfaces as they're internal and should not be
     // used to determine the network connection type.
-    if (base::ToLowerASCII(interfaces[i].friendly_name).find("vmnet") !=
+    if (base::ToLowerASCII(network_interface.friendly_name).find("vmnet") !=
         std::string::npos) {
       continue;
     }
     if (first) {
       first = false;
-      result = interfaces[i].type;
-    } else if (result != interfaces[i].type) {
+      result = network_interface.type;
+    } else if (result != network_interface.type) {
       return CONNECTION_UNKNOWN;
     }
   }
@@ -869,7 +866,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTrackerInternal() const {
-  return NULL;
+  return nullptr;
 }
 #endif
 

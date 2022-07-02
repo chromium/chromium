@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"

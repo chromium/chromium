@@ -65,20 +65,6 @@ BPF_TEST_C(BaselinePolicyAndroid,
   BPF_ASSERT_EQ(EPERM, errno);
 }
 
-class AllowSchedSetaffinityBaselinePoliyAndroid : public BaselinePolicyAndroid {
- public:
-  AllowSchedSetaffinityBaselinePoliyAndroid()
-      : BaselinePolicyAndroid(RuntimeOptions{.allow_sched_affinity = true}) {}
-};
-
-BPF_TEST_C(BaselinePolicyAndroid,
-           SchedAffinity_Allowed,
-           AllowSchedSetaffinityBaselinePoliyAndroid) {
-  cpu_set_t set{};
-  BPF_ASSERT_NE(-1, sched_getaffinity(0, sizeof(set), &set));
-  BPF_ASSERT_NE(-1, sched_setaffinity(0, sizeof(set), &set));
-}
-
 BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Allowed, BaselinePolicyAndroid) {
   base::ScopedFD fd(HANDLE_EINTR(open("/dev/null", O_RDWR)));
   BPF_ASSERT(fd.is_valid());

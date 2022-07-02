@@ -41,6 +41,19 @@ namespace captions {
 class CaptionBubbleFrameView;
 class CaptionBubbleLabel;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. These should be the same as
+// LiveCaptionSessionEvent in enums.xml.
+enum class SessionEvent {
+  // We began showing captions for an audio stream.
+  kStreamStarted = 0,
+  // The audio stream ended and the caption bubble closes.
+  kStreamEnded = 1,
+  // The close button was clicked, so we stopped listening to an audio stream.
+  kCloseButtonClicked = 2,
+  kMaxValue = kCloseButtonClicked,
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble
 //
@@ -158,6 +171,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnInactivityTimeout();
 
   void MediaFoundationErrorCheckboxPressed();
+  bool HasMediaFoundationError();
+
+  void LogSessionEvent(SessionEvent event);
 
   // Unowned. Owned by views hierarchy.
   raw_ptr<CaptionBubbleLabel> label_;

@@ -1,9 +1,12 @@
 <style>
   :host {
     --emoji-background: transparent;
+    /* Fixed height and width are required for buttons that have variants,
+     * Otherwise, when showing variants, buttons' positions will be moved.
+     */
     height: var(--emoji-size);
     position: relative;
-    width: var(--emoji-size);
+    width:  var(--emoji-size);
   }
 
   #emoji-button {
@@ -13,7 +16,7 @@
     cursor: pointer;
     display: block;
     font-family: 'Noto Color Emoji';
-    font-size: 19px; /*This gives emoji with height of 22px*/
+    font-size: 19px;
     height: 100%;
     line-height: var(--emoji-size);
     outline: none;
@@ -65,12 +68,12 @@
 
   #tooltip {
     --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-opacity: 1;
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
     --paper-tooltip-delay-in: var(--emoji-tooltip-delay-in);
     --paper-tooltip-delay-out: var(--emoji-tooltip-delay-out);
     --paper-tooltip-duration-in: 0;
     --paper-tooltip-duration-out: 0;
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
   }
 
   #tooltip::part(tooltip) {
@@ -83,14 +86,9 @@
   }
 </style>
 
-
-<button
-    id="emoji-button"
-    class$="[[_className(variants)]]"
-    on-click="onClick"
-    on-contextmenu="onContextMenu"
-    disabled="[[disabled]]"
-    aria-label="[[_label(tooltip, emoji, variants)]]">
+<button id="emoji-button" class$="[[_className(variants)]]"
+  on-click="onClick" on-contextmenu="onContextMenu"
+  disabled="[[disabled]]" aria-label="[[_label(tooltip, emoji, variants)]]">
   [[emoji]]
 </button>
 <template is="dom-if" if="[[!variant]]">
@@ -98,7 +96,7 @@
     part="tooltip" offset="8">
     [[tooltip]]
   </paper-tooltip>
-</tooltip>
+</template>
 <template is="dom-if" if="[[variantsVisible]]">
   <emoji-variants variants="[[variants]]" tooltip="[[tooltip]]">
   </emoji-variants>

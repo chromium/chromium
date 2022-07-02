@@ -36,13 +36,18 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
 
   static const char kTargetNotFoundError[];
 
-  // |web_contents| is the WebContents for which the stream is created, and will
-  // also be used to determine where to show the picker's UI.
+  // |exclude_system_audio| is piped from the original call. It is a constraint
+  // that needs to be applied before the picker is shown to the user, as it
+  // affects the picker. It is therefore provided to the extension function
+  // rather than to getUserMedia(), as is the case for other constraints.
+  //
   // |origin| is the origin for which the stream is created.
+  //
   // |target_name| is the display name of the stream target.
   ResponseAction Execute(
       const std::vector<api::desktop_capture::DesktopCaptureSourceType>&
           sources,
+      bool exclude_system_audio,
       content::RenderFrameHost* render_frame_host,
       const GURL& origin,
       const std::u16string target_name);

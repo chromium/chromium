@@ -342,7 +342,8 @@ class FullscreenButton : public ImageButton {
   METADATA_HEADER(FullscreenButton);
   explicit FullscreenButton(PressedCallback callback,
                             ButtonMenuItemModel* menu_model,
-                            int fullscreen_index)
+                            int fullscreen_index,
+                            bool is_in_fullscreen)
       : ImageButton(std::move(callback)) {
     // Since |fullscreen_button_| will reside in a menu, make it ALWAYS
     // focusable regardless of the platform.
@@ -352,9 +353,11 @@ class FullscreenButton : public ImageButton {
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
         InMenuButtonBackground::LEADING_BORDER));
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN));
+    const int accname_string_id =
+        is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
+    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
     SetAccessibleName(GetAccessibleNameForAppMenuItem(
-        menu_model, fullscreen_index, IDS_ACCNAME_FULLSCREEN,
+        menu_model, fullscreen_index, accname_string_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
         // mode on most ChromeOS devices which cannot be specified in the
@@ -519,7 +522,8 @@ class AppMenu::ZoomView : public AppMenuView {
               menu->CancelAndEvaluate(menu_model, index);
             },
             menu, menu_model, fullscreen_index),
-        menu_model, fullscreen_index);
+        menu_model, fullscreen_index,
+        menu->browser_->window() && menu->browser_->window()->IsFullscreen());
 
     // all buttons on menu should must be a custom button in order for
     // the keyboard navigation to work.

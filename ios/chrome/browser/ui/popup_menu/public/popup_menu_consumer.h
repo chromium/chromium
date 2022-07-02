@@ -17,11 +17,11 @@
 // after the popup menu items.
 @property(nonatomic, weak) TableViewItem<PopupMenuItem>* itemToHighlight;
 
-// Sets the |items| to be displayed by this Consumer. Removes all the currently
+// Sets the `items` to be displayed by this Consumer. Removes all the currently
 // presented items.
 - (void)setPopupMenuItems:
     (NSArray<NSArray<TableViewItem<PopupMenuItem>*>*>*)items;
-// Notifies the consumer that |items| have changed.
+// Notifies the consumer that `items` have changed.
 - (void)itemsHaveChanged:(NSArray<TableViewItem<PopupMenuItem>*>*)items;
 
 @end

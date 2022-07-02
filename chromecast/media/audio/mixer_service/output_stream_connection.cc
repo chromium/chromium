@@ -241,7 +241,9 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
         (message.mixer_underrun().type() == MixerUnderrun::INPUT_UNDERRUN
              ? "Platform.Audio.Mixer.StreamUnderrun"
              : "Platform.Audio.Mixer.OutputUnderrun");
-    RecordCastEvent(metric_name, CreateCastEvent(metric_name),
+    std::unique_ptr<CastEventBuilder> event = CreateCastEvent(metric_name);
+    delegate_->ProcessCastEvent(event.get());
+    RecordCastEvent(metric_name, std::move(event),
                     /* verbose_log_level = */ 0);
     delegate_->OnMixerUnderrun(static_cast<Delegate::MixerUnderrunType>(
         message.mixer_underrun().type()));

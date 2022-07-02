@@ -132,10 +132,8 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
 
   std::vector<char> input;
   // Concatenate all frames.
-  for (int i = 0; i < kNumInputs; ++i) {
-    input.insert(input.end(),
-                 kInputs[i].frame,
-                 kInputs[i].frame + kInputs[i].frame_length);
+  for (const auto& data : kInputs) {
+    input.insert(input.end(), data.frame, data.frame + data.frame_length);
   }
 
   WebSocketFrameParser parser;
@@ -318,10 +316,10 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
 }
 
 TEST(WebSocketFrameParserTest, DecodeFramesOfVariousLengths) {
-  for (int i = 0; i < kNumFrameHeaderTests; ++i) {
-    const char* frame_header = kFrameHeaderTests[i].frame_header;
-    size_t frame_header_length = kFrameHeaderTests[i].frame_header_length;
-    uint64_t frame_length = kFrameHeaderTests[i].frame_length;
+  for (const auto& test : kFrameHeaderTests) {
+    const char* frame_header = test.frame_header;
+    size_t frame_header_length = test.frame_header_length;
+    uint64_t frame_length = test.frame_length;
 
     std::vector<char> input(frame_header, frame_header + frame_header_length);
     // Limit the payload size not to flood the console on failure.
@@ -332,10 +330,10 @@ TEST(WebSocketFrameParserTest, DecodeFramesOfVariousLengths) {
     WebSocketFrameParser parser;
 
     std::vector<std::unique_ptr<WebSocketFrameChunk>> frames;
-    EXPECT_EQ(kFrameHeaderTests[i].error_code == kWebSocketNormalClosure,
+    EXPECT_EQ(test.error_code == kWebSocketNormalClosure,
               parser.Decode(input.data(), input.size(), &frames));
-    EXPECT_EQ(kFrameHeaderTests[i].error_code, parser.websocket_error());
-    if (kFrameHeaderTests[i].error_code != kWebSocketNormalClosure) {
+    EXPECT_EQ(test.error_code, parser.websocket_error());
+    if (test.error_code != kWebSocketNormalClosure) {
       EXPECT_EQ(0u, frames.size());
     } else {
       EXPECT_EQ(1u, frames.size());
@@ -435,20 +433,19 @@ TEST(WebSocketFrameParserTest, InvalidLengthEncoding) {
     size_t frame_header_length;
   };
   static const TestCase kTests[] = {
-    // For frames with two-byte extended length field, the payload length
-    // should be 126 (0x7E) bytes or more.
-    { "\x81\x7E\x00\x00", 4 },
-    { "\x81\x7E\x00\x7D", 4 },
-    // For frames with eight-byte extended length field, the payload length
-    // should be 0x10000 bytes or more.
-    { "\x81\x7F\x00\x00\x00\x00\x00\x00\x00\x00", 10 },
-    { "\x81\x7E\x00\x00\x00\x00\x00\x00\xFF\xFF", 10 },
+      // For frames with two-byte extended length field, the payload length
+      // should be 126 (0x7E) bytes or more.
+      {"\x81\x7E\x00\x00", 4},
+      {"\x81\x7E\x00\x7D", 4},
+      // For frames with eight-byte extended length field, the payload length
+      // should be 0x10000 bytes or more.
+      {"\x81\x7F\x00\x00\x00\x00\x00\x00\x00\x00", 10},
+      {"\x81\x7E\x00\x00\x00\x00\x00\x00\xFF\xFF", 10},
   };
-  static const int kNumTests = std::size(kTests);
 
-  for (int i = 0; i < kNumTests; ++i) {
-    const char* frame_header = kTests[i].frame_header;
-    size_t frame_header_length = kTests[i].frame_header_length;
+  for (const auto& test : kTests) {
+    const char* frame_header = test.frame_header;
+    size_t frame_header_length = test.frame_header_length;
 
     WebSocketFrameParser parser;
 
@@ -473,31 +470,29 @@ TEST(WebSocketFrameParserTest, FrameTypes) {
     WebSocketFrameHeader::OpCode opcode;
   };
   static const TestCase kTests[] = {
-    { "\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation },
-    { "\x81\x00", 2, WebSocketFrameHeader::kOpCodeText },
-    { "\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary },
-    { "\x88\x00", 2, WebSocketFrameHeader::kOpCodeClose },
-    { "\x89\x00", 2, WebSocketFrameHeader::kOpCodePing },
-    { "\x8A\x00", 2, WebSocketFrameHeader::kOpCodePong },
-    // These are undefined opcodes, but the parser needs to be able to parse
-    // them anyway.
-    { "\x83\x00", 2, 0x3 },
-    { "\x84\x00", 2, 0x4 },
-    { "\x85\x00", 2, 0x5 },
-    { "\x86\x00", 2, 0x6 },
-    { "\x87\x00", 2, 0x7 },
-    { "\x8B\x00", 2, 0xB },
-    { "\x8C\x00", 2, 0xC },
-    { "\x8D\x00", 2, 0xD },
-    { "\x8E\x00", 2, 0xE },
-    { "\x8F\x00", 2, 0xF }
-  };
-  static const int kNumTests = std::size(kTests);
+      {"\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation},
+      {"\x81\x00", 2, WebSocketFrameHeader::kOpCodeText},
+      {"\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary},
+      {"\x88\x00", 2, WebSocketFrameHeader::kOpCodeClose},
+      {"\x89\x00", 2, WebSocketFrameHeader::kOpCodePing},
+      {"\x8A\x00", 2, WebSocketFrameHeader::kOpCodePong},
+      // These are undefined opcodes, but the parser needs to be able to parse
+      // them anyway.
+      {"\x83\x00", 2, 0x3},
+      {"\x84\x00", 2, 0x4},
+      {"\x85\x00", 2, 0x5},
+      {"\x86\x00", 2, 0x6},
+      {"\x87\x00", 2, 0x7},
+      {"\x8B\x00", 2, 0xB},
+      {"\x8C\x00", 2, 0xC},
+      {"\x8D\x00", 2, 0xD},
+      {"\x8E\x00", 2, 0xE},
+      {"\x8F\x00", 2, 0xF}};
 
-  for (int i = 0; i < kNumTests; ++i) {
-    const char* frame_header = kTests[i].frame_header;
-    size_t frame_header_length = kTests[i].frame_header_length;
-    WebSocketFrameHeader::OpCode opcode = kTests[i].opcode;
+  for (const auto& test : kTests) {
+    const char* frame_header = test.frame_header;
+    size_t frame_header_length = test.frame_header_length;
+    WebSocketFrameHeader::OpCode opcode = test.opcode;
 
     WebSocketFrameParser parser;
 
@@ -545,15 +540,14 @@ TEST(WebSocketFrameParserTest, FinalBitAndReservedBits) {
     { "\x71\x00", 2, false, true, true, true },
     { "\xF1\x00", 2, true, true, true, true }
   };
-  static const int kNumTests = std::size(kTests);
 
-  for (int i = 0; i < kNumTests; ++i) {
-    const char* frame_header = kTests[i].frame_header;
-    size_t frame_header_length = kTests[i].frame_header_length;
-    bool final = kTests[i].final;
-    bool reserved1 = kTests[i].reserved1;
-    bool reserved2 = kTests[i].reserved2;
-    bool reserved3 = kTests[i].reserved3;
+  for (const auto& test : kTests) {
+    const char* frame_header = test.frame_header;
+    size_t frame_header_length = test.frame_header_length;
+    bool final = test.final;
+    bool reserved1 = test.reserved1;
+    bool reserved2 = test.reserved2;
+    bool reserved3 = test.reserved3;
 
     WebSocketFrameParser parser;
 

@@ -343,19 +343,20 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
-    const PhysicalSize& size,
+    const PhysicalRect& rect_in_container,
+    const NGInlinePaintContext* inline_context,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
-  absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, style.GetFont(), size);
+  absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
+      text_info, style, style.GetFont(), rect_in_container, inline_context);
   if (!ink_overflow) {
-    *ink_overflow_out = {PhysicalOffset(), size};
+    *ink_overflow_out = {PhysicalOffset(), rect_in_container.size};
     return Reset(type);
   }
   ink_overflow->ExpandEdgesToPixelBoundaries();
   *ink_overflow_out = *ink_overflow;
-  return SetSelf(type, *ink_overflow, size);
+  return SetSelf(type, *ink_overflow, rect_in_container.size);
 }
 
 NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
@@ -378,8 +379,10 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
                          LayoutUnit(rect.height()))
           : PhysicalSize(LayoutUnit(rect.width()),
                          LayoutUnit(rect.height() / length_adjust_scale));
-  absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, scaled_font, item_size);
+  // No |inline_context| because the decoration box is not supported for SVG.
+  absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
+      text_info, style, scaled_font, PhysicalRect(PhysicalOffset(), item_size),
+      /* inline_context */ nullptr);
   const bool needs_transform =
       scaling_factor != 1.0f || !transform.IsIdentity();
   PhysicalSize unscaled_size = PhysicalSize::FromSizeFRound(rect.size());
@@ -427,7 +430,8 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
-    const PhysicalSize& size) {
+    const PhysicalRect& rect_in_container,
+    const NGInlinePaintContext* inline_context) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
   const gfx::RectF text_ink_bounds = scaled_font.TextInkBounds(text_info);
   LayoutRect ink_overflow = EnclosingLayoutRect(text_ink_bounds);
@@ -446,13 +450,16 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   // Following effects, such as shadows, operate on the text decorations,
   // so compute text decoration overflow first.
   if (!style.AppliedTextDecorations().IsEmpty() && scaled_font.PrimaryFont()) {
-    LayoutRect decoration_rect =
-        ComputeTextDecorationOverflow(style, scaled_font, ink_overflow);
+    LayoutRect decoration_rect = ComputeTextDecorationOverflow(
+        style, scaled_font, rect_in_container.offset, ink_overflow,
+        inline_context);
     ink_overflow.Unite(decoration_rect);
   }
 
-  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone)
-    ink_overflow = ComputeEmphasisMarkOverflow(style, size, ink_overflow);
+  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
+    ink_overflow = ComputeEmphasisMarkOverflow(style, rect_in_container.size,
+                                               ink_overflow);
+  }
 
   const WritingMode writing_mode = style.GetWritingMode();
   if (ShadowList* text_shadow = style.TextShadow()) {
@@ -466,15 +473,16 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   }
 
   PhysicalRect local_ink_overflow =
-      WritingModeConverter({writing_mode, TextDirection::kLtr}, size)
+      WritingModeConverter({writing_mode, TextDirection::kLtr},
+                           rect_in_container.size)
           .ToPhysical(LogicalRect(ink_overflow));
 
   // Uniting the frame rect ensures that non-ink spaces such side bearings, or
   // even space characters, are included in the visual rect for decorations.
-  if (!HasOverflow(local_ink_overflow, size))
+  if (!HasOverflow(local_ink_overflow, rect_in_container.size))
     return absl::nullopt;
 
-  local_ink_overflow.Unite({{}, size});
+  local_ink_overflow.Unite({{}, rect_in_container.size});
   return local_ink_overflow;
 }
 
@@ -506,93 +514,45 @@ LayoutRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const ComputedStyle& style,
     const Font& scaled_font,
-    const LayoutRect& ink_overflow) {
+    const PhysicalOffset& offset_in_container,
+    const LayoutRect& ink_overflow,
+    const NGInlinePaintContext* inline_context) {
   DCHECK(!style.AppliedTextDecorations().IsEmpty());
-  // TODO(https://crbug.com/1145160): Reduce code duplication between here and
-  // TextPainterBase::PaintDecorations*.
-
-  // Use a zero offset because all offsets
-  // are applied to the ink overflow after it has been computed.
-  PhysicalOffset offset;
   // Ideally we should pass MinimumThickness1(false) if this function is
   // called for NGFragmentItem::kSvgText. However it requires to add arguments
   // to some functions.
-  // We pass MinimumTHickness1(true) even for kSvgText.  it's acceptable
+  // We pass MinimumThickness1(true) even for kSvgText.  it's acceptable
   // because it just makes the resultant ink overflow slightly larger.
   const MinimumThickness1 kMinimumThicknessIsOne(true);
   TextDecorationInfo decoration_info(
-      offset, ink_overflow.Width(), style.GetFontBaseline(), style, scaled_font,
-      absl::nullopt, nullptr, kMinimumThicknessIsOne);
-  NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
-                                           nullptr);
+      offset_in_container, ink_overflow.Width(), style, inline_context,
+      /* selection_text_decoration */ absl::nullopt, &scaled_font,
+      kMinimumThicknessIsOne);
+  NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
+                                           style);
   const Vector<AppliedTextDecoration>& decorations =
       style.AppliedTextDecorations();
-
-  // text-underline-position may flip underline and overline.
-  ResolvedUnderlinePosition underline_position =
-      decoration_info.UnderlinePosition();
-  bool flip_underline_and_overline = false;
-  if (underline_position == ResolvedUnderlinePosition::kOver) {
-    flip_underline_and_overline = true;
-    underline_position = ResolvedUnderlinePosition::kUnder;
-  }
 
   gfx::RectF accumulated_bound;
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
-    const AppliedTextDecoration& decoration =
-        decorations[applied_decoration_index];
-    TextDecorationLine lines = decoration.Lines();
-    bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
-    bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
-    if (flip_underline_and_overline)
-      std::swap(has_underline, has_overline);
-
     decoration_info.SetDecorationIndex(applied_decoration_index);
-
-    float resolved_thickness = decoration_info.ResolvedThickness();
-
-    if (has_underline) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
-
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetLineData(TextDecorationLine::kUnderline,
-                                  paint_underline_offset);
+    if (decoration_info.HasUnderline()) {
+      decoration_info.SetUnderlineLineData(decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
     }
-    if (has_overline) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? decoration.UnderlineOffset() : Length();
-
-      FontVerticalPositionType position =
-          flip_underline_and_overline ? FontVerticalPositionType::TopOfEmHeight
-                                      : FontVerticalPositionType::TextTop;
-      const int paint_overline_offset =
-          decoration_offset.ComputeUnderlineOffsetForUnder(
-              line_offset, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetLineData(TextDecorationLine::kOverline,
-                                  paint_overline_offset);
+    if (decoration_info.HasOverline()) {
+      decoration_info.SetOverlineLineData(decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
     }
-    if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
-      // For increased line thickness, the line-through decoration needs to grow
-      // in both directions from its origin, subtract half the thickness to keep
-      // it centered at the same origin.
-      const float line_through_offset =
-          2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetLineData(TextDecorationLine::kLineThrough,
-                                  line_through_offset);
+    if (decoration_info.HasLineThrough()) {
+      decoration_info.SetLineThroughLineData();
       accumulated_bound.Union(decoration_info.Bounds());
     }
   }
+  // Adjust the container coordinate system to the local coordinate system.
+  accumulated_bound -= gfx::Vector2dF(offset_in_container);
   return EnclosingLayoutRect(accumulated_bound);
 }
 

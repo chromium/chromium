@@ -20,15 +20,11 @@ namespace sequence_manager {
 namespace internal {
 
 TaskQueueSelector::TaskQueueSelector(
-    scoped_refptr<AssociatedThreadId> associated_thread,
+    scoped_refptr<const AssociatedThreadId> associated_thread,
     const SequenceManager::Settings& settings)
     : associated_thread_(std::move(associated_thread)),
-#if DCHECK_IS_ON()
-      random_task_selection_(settings.random_task_selection_seed != 0),
-#endif
       delayed_work_queue_sets_("delayed", this, settings),
-      immediate_work_queue_sets_("immediate", this, settings) {
-}
+      immediate_work_queue_sets_("immediate", this, settings) {}
 
 TaskQueueSelector::~TaskQueueSelector() = default;
 
@@ -188,21 +184,11 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   // but the resulting queue must be the lower one.
   if (option == SelectTaskOption::kSkipDelayedTask) {
     WorkQueue* queue =
-#if DCHECK_IS_ON()
-        random_task_selection_
-            ? ChooseImmediateOnlyWithPriority<SetOperationRandom>(priority)
-            :
-#endif
-            ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
+        ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
     return queue;
   }
 
-  WorkQueue* queue =
-#if DCHECK_IS_ON()
-      random_task_selection_ ? ChooseWithPriority<SetOperationRandom>(priority)
-                             :
-#endif
-                             ChooseWithPriority<SetOperationOldest>(priority);
+  WorkQueue* queue = ChooseWithPriority<SetOperationOldest>(priority);
 
   // If we have selected a delayed task while having an immediate task of the
   // same priority, increase the starvation count.
@@ -249,7 +235,7 @@ TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(
-    size_t immediate_starvation_count) {
+    int immediate_starvation_count) {
   immediate_starvation_count_ = immediate_starvation_count;
 }
 

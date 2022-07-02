@@ -25,7 +25,6 @@
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -68,6 +67,19 @@ AppServiceProxyAsh::~AppServiceProxyAsh() {
   AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
       &app_capability_access_cache_);
   AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
+}
+
+bool AppServiceProxyAsh::IsValidProfile() {
+  if (!profile_) {
+    return false;
+  }
+
+  // Use OTR profile for Guest Session.
+  if (profile_->IsGuestSession()) {
+    return profile_->IsOffTheRecord();
+  }
+
+  return AppServiceProxyBase::IsValidProfile();
 }
 
 void AppServiceProxyAsh::Initialize() {
@@ -463,7 +475,6 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   auto icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
-  auto app_type = update.AppType();
   auto icon_type = IconType::kStandard;
 
   // For browser tests, load the app icon, because there is no family link
@@ -472,27 +483,13 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   // For non_child profile, load the app icon, because the app is blocked by
   // admin.
   if (!dialog_created_callback_.is_null() || !profile_->IsChild()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAppServiceLoadIconWithoutMojom)) {
-      if (!icon_key.has_value()) {
-        std::move(callback).Run(std::make_unique<IconValue>());
-        return;
-      }
-      LoadIconFromIconKey(app_type, update.AppId(), icon_key.value(), icon_type,
-                          kIconSize, kAllowPlaceholderIcon,
-                          std::move(callback));
-    } else {
-      if (!icon_key.has_value()) {
-        MojomIconValueToIconValueCallback(std::move(callback))
-            .Run(apps::mojom::IconValue::New());
-        return;
-      }
-      LoadIconFromIconKey(
-          ConvertAppTypeToMojomAppType(app_type), update.AppId(),
-          ConvertIconKeyToMojomIconKey(icon_key.value()),
-          apps::mojom::IconType::kStandard, kIconSize, kAllowPlaceholderIcon,
-          MojomIconValueToIconValueCallback(std::move(callback)));
+    if (!icon_key.has_value()) {
+      std::move(callback).Run(std::make_unique<IconValue>());
+      return;
     }
+    LoadIconFromIconKey(update.AppType(), update.AppId(), icon_key.value(),
+                        icon_type, kIconSize, kAllowPlaceholderIcon,
+                        std::move(callback));
     return;
   }
 

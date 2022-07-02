@@ -10,34 +10,31 @@
  *
  *    <settings-ui prefs="{{prefs}}"></settings-ui>
  */
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_elements/cr_drawer/cr_drawer.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
 import '../os_toolbar/os_toolbar.js';
 import '../../settings_shared_css.js';
 import '../../prefs/prefs.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
-import {CrContainerShadowBehavior} from '//resources/cr_elements/cr_container_shadow_behavior.m.js';
-import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
-import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrContainerShadowBehavior, CrContainerShadowBehaviorInterface} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {listenOnce} from 'chrome://resources/js/util.m.js';
+import {Debouncer, html, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
-import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
+import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
-import {routes} from '../os_route.js';
 import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 /** Global defined when the main Settings script runs. */
 let defaultResourceLoaded = true;  // eslint-disable-line prefer-const
@@ -46,128 +43,141 @@ assert(
     !window.settings || !defaultResourceLoaded,
     'settings_ui.js run twice. You probably have an invalid import.');
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrContainerShadowBehaviorInterface}
+ * @implements {FindShortcutBehaviorInterface}
+ */
+const OsSettingsUiElementBase = mixinBehaviors(
+    [
+      CrContainerShadowBehavior, FindShortcutBehavior,
+      // Calls currentRouteChanged() in attached(),so ensure other behaviors
+      // run their attached() first.
+      RouteObserverBehavior
+    ],
+    PolymerElement);
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-ui',
+/** @polymer */
+class OsSettingsUiElement extends OsSettingsUiElementBase {
+  static get is() {
+    return 'os-settings-ui';
+  }
 
-  behaviors: [
-    CrContainerShadowBehavior,
-    FindShortcutBehavior,
-    // Calls currentRouteChanged() in attached(), so ensure other behaviors
-    // run their attached() first.
-    RouteObserverBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: Object,
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: Object,
 
-    /** @private */
-    advancedOpenedInMain_: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'onAdvancedOpenedInMainChanged_',
-    },
+      /** @private */
+      advancedOpenedInMain_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'onAdvancedOpenedInMainChanged_',
+      },
 
-    /** @private */
-    advancedOpenedInMenu_: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'onAdvancedOpenedInMenuChanged_',
-    },
+      /** @private */
+      advancedOpenedInMenu_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'onAdvancedOpenedInMenuChanged_',
+      },
 
-    /** @private {boolean} */
-    toolbarSpinnerActive_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      toolbarSpinnerActive_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether settings is in the narrow state (side nav hidden). Controlled
-     * by a binding in the os-toolbar element.
-     */
-    isNarrow: {
-      type: Boolean,
-      value: false,
-      readonly: true,
-      notify: true,
-      observer: 'onNarrowChanged_',
-    },
+      /**
+       * Whether settings is in the narrow state (side nav hidden). Controlled
+       * by a binding in the os-toolbar element.
+       */
+      isNarrow: {
+        type: Boolean,
+        value: false,
+        readonly: true,
+        notify: true,
+        observer: 'onNarrowChanged_',
+      },
 
-    /**
-     * @private {!OSPageVisibility}
-     */
-    pageVisibility_: {type: Object, value: osPageVisibility},
+      /**
+       * @private {!OSPageVisibility}
+       */
+      pageVisibility_: {type: Object, value: osPageVisibility},
 
-    /** @private */
-    havePlayStoreApp_: Boolean,
+      /** @private */
+      havePlayStoreApp_: Boolean,
 
-    /** @private */
-    showAndroidApps_: Boolean,
+      /** @private */
+      showAndroidApps_: Boolean,
 
-    /** @private */
-    showArcvmManageUsb_: Boolean,
+      /** @private */
+      showArcvmManageUsb_: Boolean,
 
-    /** @private */
-    showCrostini_: Boolean,
+      /** @private */
+      showCrostini_: Boolean,
 
-    /** @private */
-    showToolbar_: Boolean,
+      /** @private */
+      showToolbar_: Boolean,
 
-    /** @private */
-    showNavMenu_: Boolean,
+      /** @private */
+      showNavMenu_: Boolean,
 
-    /** @private */
-    showPluginVm_: Boolean,
+      /** @private */
+      showPluginVm_: Boolean,
 
-    /** @private */
-    showReset_: Boolean,
+      /** @private */
+      showReset_: Boolean,
 
-    /** @private */
-    showStartup_: Boolean,
+      /** @private */
+      showStartup_: Boolean,
 
-    /** @private */
-    showKerberosSection_: Boolean,
+      /** @private */
+      showKerberosSection_: Boolean,
 
-    /**
-     * The threshold at which the toolbar will change from normal to narrow
-     * mode, in px.
-     * @private {boolean}
-     */
-    narrowThreshold_: {
-      type: Number,
-      value: 980,
-    },
-  },
-
-  listeners: {
-    'refresh-pref': 'onRefreshPref_',
-    'user-action-setting-change': 'onSettingChange_',
-  },
-
-  /**
-   * The route of the selected element in os-settings-menu. Stored here to
-   * defer navigation until drawer animation completes.
-   * @private {Route}
-   */
-  activeRoute_: null,
-
-  /**
-   * Converts prefs to settings metrics to help record pref changes.
-   * @private {PrefToSettingMetricConverter}
-   */
-  prefToSettingMetricConverter_: null,
+      /**
+       * The threshold at which the toolbar will change from normal to narrow
+       * mode, in px.
+       * @private {boolean}
+       */
+      narrowThreshold_: {
+        type: Number,
+        value: 980,
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    Router.getInstance().initializeRouteFromUrl();
+  constructor() {
+    super();
+
+    /**
+     * The route of the selected element in os-settings-menu. Stored here to
+     * defer navigation until drawer animation completes.
+     * @private {Route}
+     */
+    this.activeRoute_ = null;
+
+    /**
+     * Converts prefs to settings metrics to help record pref changes.
+     * @private {!PrefToSettingMetricConverter}
+     */
     this.prefToSettingMetricConverter_ = new PrefToSettingMetricConverter();
-  },
+
+    /** @private {?Debouncer} */
+    this.scrollEndDebouncer_ = null;
+
+    Router.getInstance().initializeRouteFromUrl();
+  }
 
   /**
    * @override
@@ -175,6 +185,8 @@ Polymer({
    * ES5 strict mode.
    */
   ready() {
+    super.ready();
+
     window.CrPolicyStrings = {
       controlledSettingExtension:
           loadTimeData.getString('controlledSettingExtension'),
@@ -219,28 +231,40 @@ Polymer({
       this.$.container.style.visibility = 'hidden';
     });
 
+    this.addEventListener('refresh-pref', (event) => {
+      this.onRefreshPref_(/** @type {!CustomEvent<string>} */ (event));
+    });
+    this.addEventListener('user-action-setting-change', (event) => {
+      this.onSettingChange_(
+          /** @type {!CustomEvent <!{prefKey: string, prefValue: *}>} */ (
+              event));
+    });
+
     // If navigation menu is not shown, do not listen to the drawer.
     if (!this.showNavMenu_) {
       return;
     }
 
-    this.async(() => {
+    microTask.run(() => {
       // Lazy-create the drawer the first time it is opened or swiped into
       // view.
-      const drawer = /** @type {!CrDrawerElement} */ (this.$$('#drawer'));
+      const drawer = /** @type {!CrDrawerElement} */ (
+          this.shadowRoot.querySelector('#drawer'));
       assert(drawer);
       listenOnce(drawer, 'cr-drawer-opening', () => {
-        this.$$('#drawerTemplate').if = true;
+        this.shadowRoot.querySelector('#drawerTemplate').if = true;
       });
 
       window.addEventListener('popstate', e => {
         drawer.cancel();
       });
     });
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
 
     setTimeout(function() {
@@ -261,10 +285,11 @@ Polymer({
 
       this.$.container.scrollTo({top: top, behavior: 'auto'});
       const onScroll = () => {
-        this.debounce('scrollEnd', () => {
-          this.$.container.removeEventListener('scroll', onScroll);
-          resolve();
-        }, 75);
+        this.scrollEndDebouncer_ = Debouncer.debounce(
+            this.scrollEndDebouncer_, timeOut.after(75), () => {
+              this.$.container.removeEventListener('scroll', onScroll);
+              resolve();
+            });
       };
       this.$.container.addEventListener('scroll', onScroll);
     });
@@ -288,19 +313,21 @@ Polymer({
     // Clicks need to be captured because unlike focus/blur to the settings
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     window.removeEventListener('focus', recordPageFocus);
     window.removeEventListener('blur', recordPageBlur);
     window.removeEventListener('click', recordClick);
     Router.getInstance().resetRouteForTesting();
-  },
+  }
 
   /**
    * @param {!Route} newRoute
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
     if (oldRoute && newRoute !== oldRoute) {
@@ -317,25 +344,30 @@ Polymer({
       this.enableShadowBehavior(false);
       this.showDropShadows();
     }
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   handleFindShortcut(modalContextOpen) {
     if (modalContextOpen || !this.showToolbar_) {
       return false;
     }
-    this.$$('os-toolbar').getSearchField().showAndFocus();
-    this.$$('os-toolbar').getSearchField().getSearchInput().select();
+    this.shadowRoot.querySelector('os-toolbar').getSearchField().showAndFocus();
+    this.shadowRoot.querySelector('os-toolbar')
+        .getSearchField()
+        .getSearchInput()
+        .select();
     return true;
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
     if (!this.showToolbar_) {
-      return;
+      return false;
     }
-    return this.$$('os-toolbar').getSearchField().isSearchFocused();
-  },
+    return this.shadowRoot.querySelector('os-toolbar')
+        .getSearchField()
+        .isSearchFocused();
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -343,7 +375,7 @@ Polymer({
    */
   onRefreshPref_(e) {
     return /** @type {SettingsPrefsElement} */ (this.$.prefs).refresh(e.detail);
-  },
+  }
 
   /**
    * @param {!CustomEvent<!{prefKey: string, prefValue: *}>} e
@@ -366,7 +398,7 @@ Polymer({
     const value = /** @type {!chromeos.settings.mojom.SettingChangeValue} */ (
         settingMetric.value);
     recordSettingChange(setting, value);
-  },
+  }
 
   /**
    * Called when a section is selected.
@@ -384,19 +416,19 @@ Polymer({
     if (this.isNarrow) {
       // If the onIronActivate event came from the drawer, close the drawer
       // and wait for the menu to close before navigating to |activeRoute_|.
-      this.$$('#drawer').close();
+      this.shadowRoot.querySelector('#drawer').close();
       return;
     }
     this.navigateToActiveRoute_();
-  },
+  }
 
   /** @private */
   onMenuButtonTap_() {
     if (!this.showNavMenu_) {
       return;
     }
-    this.$$('#drawer').toggle();
-  },
+    this.shadowRoot.querySelector('#drawer').toggle();
+  }
 
   /**
    * Navigates to |activeRoute_| if set. Used to delay navigation until after
@@ -410,7 +442,7 @@ Polymer({
           /* removeSearch */ true);
       this.activeRoute_ = null;
     }
-  },
+  }
 
   /**
    * When this is called, The drawer animation is finished, and the dialog no
@@ -422,7 +454,7 @@ Polymer({
    * @private
    */
   onMenuClose_() {
-    if (!this.$$('#drawer').wasCanceled()) {
+    if (!this.shadowRoot.querySelector('#drawer').wasCanceled()) {
       // If a navigation happened, MainPageBehavior#currentRouteChanged
       // handles focusing the corresponding section when we call
       // settings.NavigateTo().
@@ -437,7 +469,7 @@ Polymer({
     listenOnce(this.$.container, ['blur', 'pointerdown'], () => {
       this.$.container.removeAttribute('tabindex');
     });
-  },
+  }
 
   /** @private */
   onAdvancedOpenedInMainChanged_() {
@@ -445,7 +477,7 @@ Polymer({
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
     }
-  },
+  }
 
   /** @private */
   onAdvancedOpenedInMenuChanged_() {
@@ -453,20 +485,23 @@ Polymer({
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
     }
-  },
+  }
 
   /** @private */
   onNarrowChanged_() {
-    if (this.showNavMenu_ && this.$$('#drawer').open && !this.isNarrow) {
-      this.$$('#drawer').close();
+    if (this.showNavMenu_ && this.shadowRoot.querySelector('#drawer').open &&
+        !this.isNarrow) {
+      this.shadowRoot.querySelector('#drawer').close();
     }
-  },
+  }
 
   /**
    * Handles a tap on the drawer's icon.
    * @private
    */
   onDrawerIconClick_() {
-    this.$$('#drawer').cancel();
-  },
-});
+    this.shadowRoot.querySelector('#drawer').cancel();
+  }
+}
+
+customElements.define(OsSettingsUiElement.is, OsSettingsUiElement);

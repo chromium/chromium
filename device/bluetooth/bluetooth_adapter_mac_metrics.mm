@@ -42,15 +42,7 @@ MacOSBluetoothOperationsResult GetMacOSOperationResultFromNSError(
       case CBErrorAlreadyAdvertising:
         return MacOSBluetoothOperationsResult::CBERROR_ALREADY_ADVERTISING;
       case CBErrorConnectionFailed:
-        if (base::mac::IsAtLeastOS10_13()) {
-          return MacOSBluetoothOperationsResult::CBERROR_CONNECTION_FAILED;
-        } else {
-          // For macOS 10.12 or before, the value CBErrorMaxConnection has the
-          // same value than CBErrorConnectionFailed and the same description
-          // than CBErrorConnectionLimitReached.
-          return MacOSBluetoothOperationsResult::
-              CBERROR_CONNECTION_LIMIT_REACHED;
-        }
+        return MacOSBluetoothOperationsResult::CBERROR_CONNECTION_FAILED;
       case CBErrorConnectionLimitReached:
         return MacOSBluetoothOperationsResult::CBERROR_CONNECTION_LIMIT_REACHED;
       case CBErrorUnknownDevice:

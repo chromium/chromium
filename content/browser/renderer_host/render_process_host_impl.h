@@ -28,7 +28,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/storage_partition_impl.h"
@@ -82,7 +81,13 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
+#else
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
 class CommandLine;
@@ -289,7 +294,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void BindBucketManagerHost(
+  void BindBucketManagerHostForRenderFrame(
+      const GlobalRenderFrameHostId& render_frame_host_id,
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
+  void BindBucketManagerHostForWorker(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
@@ -667,6 +675,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver)
       override;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver)
+      override;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   void BindP2PSocketManager(
       net::NetworkIsolationKey isolation_key,
       mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
@@ -676,6 +690,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void SetIpcSendWatcherForTesting(IpcSendWatcher watcher) {
     ipc_send_watcher_for_testing_ = std::move(watcher);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(const url::Origin& origin,
+                      mojo::PendingReceiver<blink::mojom::HidService> receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   PepperRendererConnection* pepper_renderer_connection() {
@@ -784,8 +803,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<viz::mojom::CompositingModeReporter> receiver);
   void CreateDomStorageProvider(
       mojo::PendingReceiver<blink::mojom::DomStorageProvider> receiver);
-  void CreateCodeCacheHost(
-      mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateRendererHost(
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
   void BindMediaInterfaceProxy(
@@ -1113,16 +1130,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // RenderProcessHost. This is destroyed early in ResetIPC() method.
   std::unique_ptr<PermissionServiceContext> permission_service_context_;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Connection to the StableVideoDecoderFactory that lives in a utility
+  // process. This is only used for out-of-process video decoding.
+  mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
+      stable_video_decoder_factory_remote_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
-
-  // TODO(mythria): Currently we are in the process of migrating CodeCacheHost
-  // interface to use execution specific contexts. Once the migration is
-  // complete remove CodeCacheHost interface from the RenderProcessHost.
-  // Currently fetching code caches from main thread use the interface
-  // associated with the RenderFrameHost. All others (fetches from worker
-  // threads, writing into code caches) use per-process interface.
-  CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   bool channel_connected_;
   bool sent_render_process_ready_;
@@ -1195,14 +1211,18 @@ class CONTENT_EXPORT RenderProcessHostImpl
   friend class IOThreadHostImpl;
   absl::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
-  // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() run.
+  // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost
-  // is recycled.
+  // is used for a new renderer process or prepares for deletion.
+  // Most cases should use this factory, so the resulting WeakPtrs are no longer
+  // valid after DeleteSoon is called, when the RenderProcessHost is in a partly
+  // torn-down state.
   base::WeakPtrFactory<RenderProcessHostImpl> instance_weak_factory_{this};
 
-  // A WeakPtrFactory that doesn't get reset, unlike |instance_weak_factory_|
-  // above. This is used to create SafeRefs.
-  base::WeakPtrFactory<RenderProcessHostImpl> weak_ptr_factory_{this};
+  // A WeakPtrFactory which should only be used for creating SafeRefs. All other
+  // weak pointers should use |instance_weak_factory_|. This WeakPtrFactory
+  // doesn't get reset until this RenderProcessHost object is actually deleted.
+  base::WeakPtrFactory<RenderProcessHostImpl> safe_ref_factory_{this};
 };
 
 }  // namespace content

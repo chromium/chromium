@@ -94,10 +94,6 @@ class ASH_PUBLIC_EXPORT AppListController {
       bool animate,
       base::OnceClosure update_position_closure) = 0;
 
-  // Hides the continue section. Sets a pref so the section stays hidden across
-  // restarts.
-  virtual void HideContinueSection() = 0;
-
  protected:
   AppListController();
   virtual ~AppListController();

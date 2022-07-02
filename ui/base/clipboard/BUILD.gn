@@ -34,10 +34,8 @@ component("clipboard_types") {
     sources += [ "clipboard_format_type_win.cc" ]
   }
 
-  if (use_aura) {
-    if ((!is_chromecast && is_linux) || is_chromeos_lacros || !is_win) {
-      sources += [ "clipboard_format_type_aura.cc" ]
-    }
+  if (use_aura && !is_win) {
+    sources += [ "clipboard_format_type_aura.cc" ]
   }
 
   defines = [ "IS_UI_BASE_CLIPBOARD_TYPES_IMPL" ]

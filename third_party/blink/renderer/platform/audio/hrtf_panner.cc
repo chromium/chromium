@@ -30,29 +30,57 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database.h"
+#include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
+namespace {
+
 // The value of 2 milliseconds is larger than the largest delay which exists in
 // any HRTFKernel from the default HRTFDatabase (0.0136 seconds).
 // We ASSERT the delay values used in process() with this value.
-const double kMaxDelayTimeSeconds = 0.002;
+constexpr double kMaxDelayTimeSeconds = 0.002;
 
-const int kUninitializedAzimuth = -1;
+constexpr int kUninitializedAzimuth = -1;
+
+// Given an azimuth angle in the range -180 -> +180, returns the corresponding
+// azimuth index for the database, and azimuthBlend which is an interpolation
+// value from 0 -> 1.
+int CalculateDesiredAzimuthIndexAndBlend(double azimuth,
+                                         double& azimuth_blend) {
+  // Convert the azimuth angle from the range -180 -> +180 into the range 0 ->
+  // 360.  The azimuth index may then be calculated from this positive value.
+  if (azimuth < 0) {
+    azimuth += 360.0;
+  }
+
+  const int number_of_azimuths = HRTFDatabase::NumberOfAzimuths();
+  const double angle_between_azimuths = 360.0 / number_of_azimuths;
+
+  // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
+  const double desired_azimuth_index_float = azimuth / angle_between_azimuths;
+  int desired_azimuth_index = static_cast<int>(desired_azimuth_index_float);
+  azimuth_blend =
+      desired_azimuth_index_float - static_cast<double>(desired_azimuth_index);
+
+  // We don't immediately start using this azimuth index, but instead approach
+  // this index from the last index we rendered at.  This minimizes the clicks
+  // and graininess for moving sources which occur otherwise.
+  desired_azimuth_index =
+      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
+  return desired_azimuth_index;
+}
+
+}  // namespace
 
 HRTFPanner::HRTFPanner(float sample_rate,
                        unsigned render_quantum_frames,
                        HRTFDatabaseLoader* database_loader)
     : database_loader_(database_loader),
       sample_rate_(sample_rate),
-      crossfade_selection_(kCrossfadeSelection1),
       azimuth_index1_(kUninitializedAzimuth),
-      elevation1_(0),
       azimuth_index2_(kUninitializedAzimuth),
-      elevation2_(0),
-      crossfade_x_(0),
-      crossfade_incr_(0),
       convolver_l1_(FftSizeForSampleRate(sample_rate)),
       convolver_r1_(FftSizeForSampleRate(sample_rate)),
       convolver_l2_(FftSizeForSampleRate(sample_rate)),
@@ -81,9 +109,9 @@ unsigned HRTFPanner::FftSizeForSampleRate(float sample_rate) {
 
   DCHECK(audio_utilities::IsValidAudioBufferSampleRate(sample_rate));
 
-  int truncated_impulse_length = 256;
-  double sample_rate_ratio = sample_rate / 44100;
-  double resampled_length = truncated_impulse_length * sample_rate_ratio;
+  constexpr int truncated_impulse_length = 256;
+  const double sample_rate_ratio = sample_rate / 44100;
+  const double resampled_length = truncated_impulse_length * sample_rate_ratio;
 
   // This is the size used for analysis frames in the HRTF kernel.  The
   // convolvers used by the kernel are twice this size.
@@ -93,7 +121,7 @@ unsigned HRTFPanner::FftSizeForSampleRate(float sample_rate) {
   // Don't let the analysis size be smaller than the supported size
   analysis_fft_size = std::max(analysis_fft_size, FFTFrame::MinFFTSize());
 
-  unsigned convolver_fft_size = 2 * analysis_fft_size;
+  const unsigned convolver_fft_size = 2 * analysis_fft_size;
 
   // Make sure this size of convolver is supported.
   DCHECK_LE(convolver_fft_size, FFTFrame::MaxFFTSize());
@@ -110,38 +138,14 @@ void HRTFPanner::Reset() {
   delay_line_r_.Reset();
 }
 
-int HRTFPanner::CalculateDesiredAzimuthIndexAndBlend(double azimuth,
-                                                     double& azimuth_blend) {
-  // Convert the azimuth angle from the range -180 -> +180 into the range 0 ->
-  // 360.  The azimuth index may then be calculated from this positive value.
-  if (azimuth < 0) {
-    azimuth += 360.0;
-  }
-
-  int number_of_azimuths = HRTFDatabase::NumberOfAzimuths();
-  const double angle_between_azimuths = 360.0 / number_of_azimuths;
-
-  // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
-  double desired_azimuth_index_float = azimuth / angle_between_azimuths;
-  int desired_azimuth_index = static_cast<int>(desired_azimuth_index_float);
-  azimuth_blend =
-      desired_azimuth_index_float - static_cast<double>(desired_azimuth_index);
-
-  // We don't immediately start using this azimuth index, but instead approach
-  // this index from the last index we rendered at.  This minimizes the clicks
-  // and graininess for moving sources which occur otherwise.
-  desired_azimuth_index =
-      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
-  return desired_azimuth_index;
-}
-
 void HRTFPanner::Pan(double desired_azimuth,
                      double elevation,
                      const AudioBus* input_bus,
                      AudioBus* output_bus,
                      uint32_t frames_to_process,
                      AudioBus::ChannelInterpretation channel_interpretation) {
-  unsigned num_input_channels = input_bus ? input_bus->NumberOfChannels() : 0;
+  const unsigned num_input_channels =
+      input_bus ? input_bus->NumberOfChannels() : 0;
 
   DCHECK(input_bus);
   DCHECK_GE(num_input_channels, 1u);
@@ -151,7 +155,7 @@ void HRTFPanner::Pan(double desired_azimuth,
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
   DCHECK_LE(frames_to_process, output_bus->length());
 
-  HRTFDatabase* database = database_loader_->Database();
+  const HRTFDatabase* const database = database_loader_->Database();
   if (!database) {
     output_bus->CopyFrom(*input_bus, channel_interpretation);
     return;
@@ -159,7 +163,7 @@ void HRTFPanner::Pan(double desired_azimuth,
 
   // IRCAM HRTF azimuths values from the loaded database is reversed from the
   // panner's notion of azimuth.
-  double azimuth = -desired_azimuth;
+  const double azimuth = -desired_azimuth;
 
   DCHECK_GE(azimuth, -180.0);
   DCHECK_LE(azimuth, 180.0);
@@ -183,7 +187,7 @@ void HRTFPanner::Pan(double desired_azimuth,
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
   double azimuth_blend;
-  int desired_azimuth_index =
+  const int desired_azimuth_index =
       CalculateDesiredAzimuthIndexAndBlend(azimuth, azimuth_blend);
 
   // Initially snap azimuth and elevation values to first values encountered.
@@ -220,7 +224,7 @@ void HRTFPanner::Pan(double desired_azimuth,
   }
 
   // This algorithm currently requires that we process in power-of-two size
-  // chunks of at least |RenderQuantumFrames()|.
+  // chunks of at least `RenderQuantumFrames()`.
   DCHECK_EQ(1UL << static_cast<int>(log2(frames_to_process)),
             frames_to_process);
   DCHECK_GE(frames_to_process, RenderQuantumFrames());
@@ -255,13 +259,13 @@ void HRTFPanner::Pan(double desired_azimuth,
     DCHECK_LT(frame_delay_r2 / SampleRate(), kMaxDelayTimeSeconds);
 
     // Crossfade inter-aural delays based on transitions.
-    double frame_delay_l =
+    const double frame_delay_l =
         (1 - crossfade_x_) * frame_delay_l1 + crossfade_x_ * frame_delay_l2;
-    double frame_delay_r =
+    const double frame_delay_r =
         (1 - crossfade_x_) * frame_delay_r1 + crossfade_x_ * frame_delay_r2;
 
     // Calculate the source and destination pointers for the current segment.
-    unsigned offset = segment * kFramesPerSegment;
+    const unsigned offset = segment * kFramesPerSegment;
     const float* segment_source_l = source_l + offset;
     const float* segment_source_r = source_r + offset;
     float* segment_destination_l = destination_l + offset;
@@ -275,7 +279,7 @@ void HRTFPanner::Pan(double desired_azimuth,
     delay_line_r_.Process(segment_source_r, segment_destination_r,
                           kFramesPerSegment);
 
-    bool needs_crossfading = crossfade_incr_;
+    const bool needs_crossfading = crossfade_incr_;
 
     // Have the convolvers render directly to the final destination if we're not
     // cross-fading.
@@ -309,7 +313,7 @@ void HRTFPanner::Pan(double desired_azimuth,
     if (needs_crossfading) {
       // Apply linear cross-fade.
       float x = crossfade_x_;
-      float incr = crossfade_incr_;
+      const float incr = crossfade_incr_;
       for (unsigned i = 0; i < kFramesPerSegment; ++i) {
         segment_destination_l[i] = (1 - x) * convolution_destination_l1[i] +
                                    x * convolution_destination_l2[i];

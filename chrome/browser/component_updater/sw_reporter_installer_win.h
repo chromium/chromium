@@ -17,6 +17,7 @@
 #include "components/component_updater/component_updater_service.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace base {
 class Value;
@@ -42,22 +43,30 @@ enum SoftwareReporterConfigurationError {
   kBadTag = 0,
   kBadParams = 1,
   kMissingParams = 2,
-  kMaxValue = kMissingParams
+  kMissingPromptSeed = 3,
+  kMaxValue = kMissingPromptSeed
 };
 
 // Callback for running the software reporter after it is downloaded.
 using OnComponentReadyCallback = base::RepeatingCallback<void(
+    const std::string& prompt_seed,
     safe_browsing::SwReporterInvocationSequence&& invocations)>;
 
 class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit SwReporterInstallerPolicy(OnComponentReadyCallback callback);
+  SwReporterInstallerPolicy(PrefService* prefs,
+                            OnComponentReadyCallback callback);
 
   SwReporterInstallerPolicy(const SwReporterInstallerPolicy&) = delete;
   SwReporterInstallerPolicy& operator=(const SwReporterInstallerPolicy&) =
       delete;
 
   ~SwReporterInstallerPolicy() override;
+
+  // Use `cohort_name` instead of a random reporter cohort tag if no tag is set
+  // in a feature param or prefs. In production the policy randomly chooses
+  // "canary" or "stable".
+  void SetRandomReporterCohortForTesting(const std::string& cohort_name);
 
   // ComponentInstallerPolicy implementation.
   bool VerifyInstallation(const base::Value& manifest,
@@ -79,7 +88,14 @@ class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
  private:
   friend class SwReporterInstallerTest;
 
+  // Returns a value for the "tag" param.
+  std::string GetReporterCohortTag(PrefService* prefs) const;
+
+  raw_ptr<PrefService> prefs_;
   OnComponentReadyCallback on_component_ready_callback_;
+
+  // This string will be used as the "random" cohort name in tests.
+  std::string random_cohort_for_testing_;
 };
 
 // Forces an update of the reporter component.
@@ -110,7 +126,8 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
 
 // Call once during startup to make the component update service aware of the
 // SwReporter. Once ready, this may trigger a periodic run of the reporter.
-void RegisterSwReporterComponent(ComponentUpdateService* cus);
+void RegisterSwReporterComponent(ComponentUpdateService* cus,
+                                 PrefService* prefs);
 
 // Allow tests to register a function to be called when the registration
 // of the reporter component is done.

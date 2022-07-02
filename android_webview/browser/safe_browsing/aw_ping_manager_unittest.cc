@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -21,6 +22,10 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using safe_browsing::ClientSafeBrowsingReportRequest;
+using ReportThreatDetailsResult =
+    safe_browsing::PingManager::ReportThreatDetailsResult;
 
 namespace android_webview {
 
@@ -33,9 +38,13 @@ class AwPingManagerTest : public testing::Test {
     aw_feature_list_creator_->CreateLocalState();
     browser_process_ =
         std::make_unique<AwBrowserProcess>(aw_feature_list_creator_.get());
+    safe_browsing::WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
   }
 
-  void TearDown() override { base::RunLoop().RunUntilIdle(); }
+  void TearDown() override {
+    base::RunLoop().RunUntilIdle();
+    safe_browsing::WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
+  }
 
   void RunReportThreatDetailsTest(bool is_remove_cookies_feature_enabled);
 
@@ -48,6 +57,7 @@ class AwPingManagerTest : public testing::Test {
 
 void AwPingManagerTest::RunReportThreatDetailsTest(
     bool is_remove_cookies_feature_enabled) {
+  base::RunLoop csbrr_logged_run_loop;
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   if (is_remove_cookies_feature_enabled) {
@@ -57,8 +67,16 @@ void AwPingManagerTest::RunReportThreatDetailsTest(
     scoped_feature_list.InitAndDisableFeature(
         safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests);
   }
+  safe_browsing::WebUIInfoSingleton::GetInstance()
+      ->SetOnCSBRRLoggedCallbackForTesting(csbrr_logged_run_loop.QuitClosure());
 
-  std::string report_content = "testing_report_content";
+  std::string report_content;
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  // The report must be non-empty. The selected property to set is arbitrary.
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+  EXPECT_TRUE(report->SerializeToString(&report_content));
+
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -80,8 +98,14 @@ void AwPingManagerTest::RunReportThreatDetailsTest(
       ->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
 
   AwBrowserContext context;
-  safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
-      ->ReportThreatDetails(report_content);
+  ReportThreatDetailsResult result =
+      safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
+          ->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, ReportThreatDetailsResult::SUCCESS);
+  csbrr_logged_run_loop.Run();
+  EXPECT_EQ(
+      safe_browsing::WebUIInfoSingleton::GetInstance()->csbrrs_sent().size(),
+      1u);
 }
 
 TEST_F(AwPingManagerTest, ReportThreatDetails_RemoveCookiesFeatureEnabled) {

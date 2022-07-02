@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -137,10 +138,6 @@
 #include "net/android/http_auth_negotiate_android.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/browser/plugin_private_storage_helper.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "content/browser/media/media_license_manager.h"
@@ -387,23 +384,19 @@ void ClearLocalStorageOnUIThread(
     const scoped_refptr<DOMStorageContextWrapper>& dom_storage_context,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     StoragePartition::OriginMatcherFunction origin_matcher,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!storage_origin.is_empty()) {
-    bool can_delete = !origin_matcher ||
-                      origin_matcher.Run(url::Origin::Create(storage_origin),
-                                         special_storage_policy.get());
+  if (!storage_key.origin().opaque()) {
+    bool can_delete =
+        !origin_matcher ||
+        origin_matcher.Run(storage_key.origin(), special_storage_policy.get());
     if (can_delete) {
-      dom_storage_context->DeleteLocalStorage(
-          // TODO(https://crbug.com/1199077): Pass the real StorageKey
-          // when StoragePartitionImpl is converted.
-          blink::StorageKey(url::Origin::Create(storage_origin)),
-          std::move(callback));
+      dom_storage_context->DeleteLocalStorage(storage_key, std::move(callback));
     } else {
       std::move(callback).Run();
     }
@@ -729,9 +722,9 @@ void FinishGenerateNegotiateAuthToken(
 // surface to something simple and generic. It is designed to be used by
 // callsites in ClearDataImpl.
 //
-// Precondition: `matcher_func` and `storage_origin` cannot both be set.
-// If both `matcher_func` and `storage_origin` are null/empty, should return a
-// null callback that indicates all origins should match. This is an
+// Precondition: `matcher_func` and `storage_key`'s origin cannot both be set.
+// If both `matcher_func` and `storage_key`'s origin are null/empty, should
+// return a null callback that indicates all origins should match. This is an
 // optimization for backends to efficiently clear all data.
 //
 // TODO(csharrison, mek): Right now, the only storage backend that uses this is
@@ -740,12 +733,13 @@ void FinishGenerateNegotiateAuthToken(
 // rethinking this approach if / when storage backends move out of process
 // (see crbug.com/1016065 for initial work here).
 base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     StoragePartition::OriginMatcherFunction matcher_func,
     scoped_refptr<storage::SpecialStoragePolicy> policy) {
-  DCHECK(storage_origin.is_empty() || matcher_func.is_null());
+  const bool storage_key_origin_empty = storage_key.origin().opaque();
+  DCHECK(storage_key_origin_empty || matcher_func.is_null());
 
-  if (storage_origin.is_empty() && matcher_func.is_null())
+  if (storage_key_origin_empty && matcher_func.is_null())
     return base::NullCallback();
 
   if (matcher_func) {
@@ -757,9 +751,29 @@ base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
         },
         std::move(matcher_func), std::move(policy));
   }
-  DCHECK(!storage_origin.is_empty());
+  DCHECK(!storage_key_origin_empty);
   return base::BindRepeating(std::equal_to<const url::Origin&>(),
-                             url::Origin::Create(storage_origin));
+                             storage_key.origin());
+}
+
+void ClearPluginPrivateDataOnFileTaskRunner(
+    scoped_refptr<storage::FileSystemContext> filesystem_context,
+    base::OnceClosure callback) {
+  DCHECK(filesystem_context->default_file_task_runner()
+             ->RunsTasksInCurrentSequence());
+  DVLOG(3) << "Clearing plugin data: " << filesystem_context;
+
+  // The Plugin Private File System has been deprecated. Delete all data at
+  // %profile/File System/Plugins.
+  auto plugin_path = filesystem_context->partition_path()
+                         .Append(storage::kFileSystemDirectory)
+                         .Append(FILE_PATH_LITERAL("Plugins"));
+
+  filesystem_context->default_file_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     plugin_path),
+      std::move(callback));
 }
 
 }  // namespace
@@ -845,7 +859,7 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
     quota_client_types.insert(storage::QuotaClientType::kServiceWorkerCache);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH)
     quota_client_types.insert(storage::QuotaClientType::kBackgroundFetch);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA)
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES)
     quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
   return quota_client_types;
 }
@@ -875,15 +889,14 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   QuotaManagedDataDeletionHelper(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      const absl::optional<url::Origin>& storage_origin,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback)
       : remove_mask_(remove_mask),
         quota_storage_remove_mask_(quota_storage_remove_mask),
-        storage_origin_(storage_origin),
+        storage_key_(storage_key),
         callback_(std::move(callback)),
         task_count_(0) {
-    DCHECK(!storage_origin_.has_value() ||
-           !storage_origin_->GetURL().is_empty());
+    DCHECK(!storage_key_.has_value() || !storage_key_->origin().opaque());
   }
 
   QuotaManagedDataDeletionHelper(const QuotaManagedDataDeletionHelper&) =
@@ -917,7 +930,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   // All of these data are accessed on IO thread.
   uint32_t remove_mask_;
   uint32_t quota_storage_remove_mask_;
-  absl::optional<url::Origin> storage_origin_;
+  absl::optional<blink::StorageKey> storage_key_;
   base::OnceClosure callback_;
   int task_count_;
 };
@@ -947,7 +960,7 @@ class StoragePartitionImpl::DataDeletionHelper {
   ~DataDeletionHelper() = default;
 
   void ClearDataOnUIThread(
-      const GURL& storage_origin,
+      const blink::StorageKey& storage_key,
       OriginMatcherFunction origin_matcher,
       CookieDeletionFilterPtr cookie_deletion_filter,
       const base::FilePath& path,
@@ -957,7 +970,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionManagerImpl* attribution_manager,
+      AttributionManager* attribution_manager,
       AggregationServiceImpl* aggregation_service,
       storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
@@ -968,7 +981,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       const scoped_refptr<storage::QuotaManager>& quota_manager,
       const base::Time begin,
       const base::Time end,
-      const GURL& storage_origin,
+      const blink::StorageKey& storage_key,
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       StoragePartition::OriginMatcherFunction origin_matcher,
@@ -1015,7 +1028,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
     const scoped_refptr<storage::QuotaManager>& quota_manager,
     const base::Time begin,
     const base::Time end,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     StoragePartition::OriginMatcherFunction origin_matcher,
     bool perform_storage_cleanup,
@@ -1025,9 +1038,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
   StoragePartitionImpl::QuotaManagedDataDeletionHelper* helper =
       new StoragePartitionImpl::QuotaManagedDataDeletionHelper(
           remove_mask_, quota_storage_remove_mask_,
-          storage_origin.is_empty()
-              ? absl::nullopt
-              : absl::make_optional(url::Origin::Create(storage_origin)),
+          storage_key.origin().opaque() ? absl::nullopt
+                                        : absl::make_optional(storage_key),
           std::move(callback));
   helper->ClearDataOnIOThread(quota_manager, begin, end, special_storage_policy,
                               std::move(origin_matcher),
@@ -1191,8 +1203,7 @@ void StoragePartitionImpl::Initialize(
   // Each consumer is responsible for registering its QuotaClient during
   // its construction.
   filesystem_context_ = CreateFileSystemContext(
-      browser_context_, partition_path_, GetBucketBasePath(), is_in_memory(),
-      quota_manager_proxy);
+      browser_context_, partition_path_, is_in_memory(), quota_manager_proxy);
 
   database_tracker_ = storage::DatabaseTracker::Create(
       partition_path_, is_in_memory(),
@@ -1367,8 +1378,8 @@ void StoragePartitionImpl::Initialize(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   media_license_manager_ = std::make_unique<MediaLicenseManager>(
-      filesystem_context_, is_in_memory(),
-      browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
+      is_in_memory(), browser_context_->GetSpecialStoragePolicy(),
+      quota_manager_proxy);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
@@ -1395,10 +1406,6 @@ const StoragePartitionConfig& StoragePartitionImpl::GetConfig() {
 
 base::FilePath StoragePartitionImpl::GetPath() {
   return partition_path_;
-}
-
-base::FilePath StoragePartitionImpl::GetBucketBasePath() {
-  return partition_path_.Append(storage::kWebStorageDirectory);
 }
 
 std::string StoragePartitionImpl::GetPartitionDomain() {
@@ -1645,7 +1652,7 @@ StoragePartitionImpl::GetFileSystemAccessManager() {
   return file_system_access_manager_.get();
 }
 
-AttributionManagerImpl* StoragePartitionImpl::GetAttributionManager() {
+AttributionManager* StoragePartitionImpl::GetAttributionManager() {
   DCHECK(initialized_);
   return attribution_manager_.get();
 }
@@ -2016,9 +2023,10 @@ void StoragePartitionImpl::OnFileUploadRequested(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
     OnFileUploadRequestedCallback callback) {
   NetworkContextOnFileUploadRequested(process_id, async, file_paths,
-                                      std::move(callback));
+                                      destination_url, std::move(callback));
 }
 
 void StoragePartitionImpl::OnCanSendReportingReports(
@@ -2165,7 +2173,7 @@ void StoragePartitionImpl::OnNewSCTAuditingReportSent() {
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     OriginMatcherFunction origin_matcher,
     CookieDeletionFilterPtr cookie_deletion_filter,
     bool perform_storage_cleanup,
@@ -2175,7 +2183,7 @@ void StoragePartitionImpl::ClearDataImpl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : data_removal_observers_) {
-    auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
+    auto filter = CreateGenericOriginMatcher(storage_key, origin_matcher,
                                              special_storage_policy_);
     observer.OnOriginDataCleared(remove_mask, std::move(filter), begin, end);
   }
@@ -2188,13 +2196,12 @@ void StoragePartitionImpl::ClearDataImpl(
   // DataDeletionHelper::DecrementTaskCount().
   deletion_helpers_running_++;
   helper->ClearDataOnUIThread(
-      storage_origin, std::move(origin_matcher),
-      std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
-      quota_manager_.get(), special_storage_policy_.get(),
-      filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      interest_group_manager_.get(), attribution_manager_.get(),
-      aggregation_service_.get(), shared_storage_manager_.get(),
-      perform_storage_cleanup, begin, end);
+      storage_key, std::move(origin_matcher), std::move(cookie_deletion_filter),
+      GetPath(), dom_storage_context_.get(), quota_manager_.get(),
+      special_storage_policy_.get(), filesystem_context_.get(),
+      GetCookieManagerForBrowserProcess(), interest_group_manager_.get(),
+      attribution_manager_.get(), aggregation_service_.get(),
+      shared_storage_manager_.get(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2310,8 +2317,7 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
   (*deletion_task_count)++;
   for (const auto& bucket : buckets) {
     // TODO(mkwst): Clean this up, it's slow. http://crbug.com/130746
-    if (storage_origin_.has_value() &&
-        bucket.storage_key.origin() != *storage_origin_)
+    if (storage_key_.has_value() && bucket.storage_key != *storage_key_)
       continue;
 
     if (origin_matcher && !origin_matcher.Run(bucket.storage_key.origin(),
@@ -2384,7 +2390,7 @@ void StoragePartitionImpl::DataDeletionHelper::RecordUnfinishedSubTasks() {
 }
 
 void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     OriginMatcherFunction origin_matcher,
     CookieDeletionFilterPtr cookie_deletion_filter,
     const base::FilePath& path,
@@ -2394,7 +2400,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionManagerImpl* attribution_manager,
+    AttributionManager* attribution_manager,
     AggregationServiceImpl* aggregation_service,
     storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
@@ -2403,8 +2409,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   DCHECK_NE(remove_mask_, 0u);
   DCHECK(callback_);
 
-  // Only one of `storage_origin` and `origin_matcher` can be set.
-  DCHECK(storage_origin.is_empty() || origin_matcher.is_null());
+  // Only one of `storage_key`'s origin and `origin_matcher` can be set.
+  const bool storage_key_origin_empty = storage_key.origin().opaque();
+  DCHECK(storage_key_origin_empty || origin_matcher.is_null());
 
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
@@ -2444,9 +2451,14 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
     if (interest_group_manager) {
       interest_group_manager->DeleteInterestGroupData(
-          CreateGenericOriginMatcher(storage_origin, origin_matcher,
+          CreateGenericOriginMatcher(storage_key, origin_matcher,
                                      storage_policy_ref));
     }
+  }
+
+  if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE) {
+    if (interest_group_manager)
+      interest_group_manager->ClearPermissionsCache();
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
@@ -2454,13 +2466,13 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||
       remove_mask_ & REMOVE_DATA_MASK_SERVICE_WORKERS ||
       remove_mask_ & REMOVE_DATA_MASK_CACHE_STORAGE ||
-      remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
+      remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
                        base::Unretained(this),
                        base::WrapRefCounted(quota_manager), begin, end,
-                       storage_origin, storage_policy_ref, origin_matcher,
+                       storage_key, storage_policy_ref, origin_matcher,
                        perform_storage_cleanup,
                        CreateTaskCompletionClosure(TracingDataType::kQuota)));
   }
@@ -2468,14 +2480,14 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   if (remove_mask_ & REMOVE_DATA_MASK_LOCAL_STORAGE) {
     ClearLocalStorageOnUIThread(
         base::WrapRefCounted(dom_storage_context), storage_policy_ref,
-        origin_matcher, storage_origin, perform_storage_cleanup, begin, end,
+        origin_matcher, storage_key, perform_storage_cleanup, begin, end,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kLocalStorage)));
 
     // ClearDataImpl cannot clear session storage data when a particular origin
     // is specified. Therefore we ignore clearing session storage in this case.
     // TODO(lazyboy): Fix.
-    if (storage_origin.is_empty()) {
+    if (storage_key_origin_empty) {
       // TODO(crbug.com/960325): Sometimes SessionStorage fails to call its
       // callback. Figure out why.
       ClearSessionStorageOnUIThread(
@@ -2500,11 +2512,17 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
-  auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
+  auto filter = CreateGenericOriginMatcher(storage_key, origin_matcher,
                                            storage_policy_ref);
-  if (attribution_manager && (remove_mask_ & REMOVE_DATA_MASK_CONVERSIONS)) {
+
+  // It is not expected to only delete internal attribution reporting data.
+  DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL) ||
+         remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
+  if (attribution_manager &&
+      (remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED)) {
     attribution_manager->ClearData(
         begin, end, filter,
+        remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
         CreateTaskCompletionClosure(TracingDataType::kConversions));
   }
 
@@ -2522,17 +2540,14 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         CreateTaskCompletionClosure(TracingDataType::kAggregationService));
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  if (remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
-    filesystem_context->default_file_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClearPluginPrivateDataOnFileTaskRunner,
-            base::WrapRefCounted(filesystem_context), storage_origin,
-            origin_matcher, storage_policy_ref, begin, end,
-            CreateTaskCompletionClosure(TracingDataType::kPluginPrivate)));
-  }
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+  // TODO(crbug.com/1340250): The Plugin Private File System is removed, but
+  // some devices may still have old data on their machine. For now greedily try
+  // to delete this data, but we'll want to remove this code at some point.
+  filesystem_context->default_file_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearPluginPrivateDataOnFileTaskRunner,
+                                base::WrapRefCounted(filesystem_context),
+                                CreateTaskCompletionClosure(
+                                    TracingDataType::kPluginPrivate)));
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
       shared_storage_manager &&
@@ -2564,24 +2579,25 @@ void StoragePartitionImpl::ClearDataForOrigin(
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   if (!storage_origin.host().empty())
     deletion_filter->host_name = storage_origin.host();
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_origin,
+  ClearDataImpl(remove_mask, quota_storage_remove_mask,
+                blink::StorageKey(url::Origin::Create(storage_origin)),
                 OriginMatcherFunction(), std::move(deletion_filter), false,
                 base::Time(), base::Time::Max(), std::move(callback));
 }
 
 void StoragePartitionImpl::ClearData(uint32_t remove_mask,
                                      uint32_t quota_storage_remove_mask,
-                                     const GURL& storage_origin,
+                                     const blink::StorageKey& storage_key,
                                      const base::Time begin,
                                      const base::Time end,
                                      base::OnceClosure callback) {
   DCHECK(initialized_);
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  if (!storage_origin.host().empty())
-    deletion_filter->host_name = storage_origin.host();
+  if (!storage_key.origin().host().empty())
+    deletion_filter->host_name = storage_key.origin().host();
   bool perform_storage_cleanup =
-      begin.is_null() && end.is_max() && storage_origin.is_empty();
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_origin,
+      begin.is_null() && end.is_max() && storage_key.origin().opaque();
+  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_key,
                 OriginMatcherFunction(), std::move(deletion_filter),
                 perform_storage_cleanup, begin, end, std::move(callback));
 }
@@ -2596,7 +2612,7 @@ void StoragePartitionImpl::ClearData(
     const base::Time end,
     base::OnceClosure callback) {
   DCHECK(initialized_);
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, GURL(),
+  ClearDataImpl(remove_mask, quota_storage_remove_mask, blink::StorageKey(),
                 std::move(origin_matcher), std::move(cookie_deletion_filter),
                 perform_storage_cleanup, begin, end, std::move(callback));
 }
@@ -2632,6 +2648,20 @@ void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {
   bluetooth_allowed_devices_map_->Clear();
 }
 
+void StoragePartitionImpl::ResetAttributionManagerForTesting(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(initialized_);
+
+  // Reset the existing manager first to ensure that the underlying DB is only
+  // accessed by one instance at a time.
+  attribution_manager_.reset();
+
+  attribution_manager_ = AttributionManagerImpl::CreateWithNewDbForTesting(
+      this, partition_path_, special_storage_policy_);
+
+  std::move(callback).Run(/*success=*/!!attribution_manager_);
+}
+
 void StoragePartitionImpl::AddObserver(DataRemovalObserver* observer) {
   data_removal_observers_.AddObserver(observer);
 }
@@ -2650,8 +2680,6 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
     url_loader_factory_for_browser_process_with_corb_.FlushForTesting();
   if (cookie_manager_for_browser_process_)
     cookie_manager_for_browser_process_.FlushForTesting();
-  if (origin_policy_manager_for_browser_process_)
-    origin_policy_manager_for_browser_process_.FlushForTesting();
 }
 
 void StoragePartitionImpl::WaitForDeletionTasksForTesting() {
@@ -2790,6 +2818,12 @@ void StoragePartitionImpl::OverrideAggregationServiceForTesting(
   aggregation_service_ = std::move(aggregation_service);
 }
 
+void StoragePartitionImpl::OverrideAttributionManagerForTesting(
+    std::unique_ptr<AttributionManager> attribution_manager) {
+  DCHECK(initialized_);
+  attribution_manager_ = std::move(attribution_manager);
+}
+
 void StoragePartitionImpl::GetQuotaSettings(
     storage::OptionalQuotaSettingsCallback callback) {
   if (g_test_quota_settings) {
@@ -2907,32 +2941,6 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessInternal(
       GetCreateURLLoaderFactoryCallback().Run(std::move(original_factory)));
   is_test_url_loader_factory = true;
   return url_loader_factory.get();
-}
-
-network::mojom::OriginPolicyManager*
-StoragePartitionImpl::GetOriginPolicyManagerForBrowserProcess() {
-  DCHECK(initialized_);
-  if (!origin_policy_manager_for_browser_process_ ||
-      !origin_policy_manager_for_browser_process_.is_connected()) {
-    GetNetworkContext()->GetOriginPolicyManager(
-        origin_policy_manager_for_browser_process_
-            .BindNewPipeAndPassReceiver());
-  }
-  return origin_policy_manager_for_browser_process_.get();
-}
-
-void StoragePartitionImpl::SetOriginPolicyManagerForBrowserProcessForTesting(
-    mojo::PendingRemote<network::mojom::OriginPolicyManager>
-        test_origin_policy_manager) {
-  DCHECK(initialized_);
-  origin_policy_manager_for_browser_process_.Bind(
-      std::move(test_origin_policy_manager));
-}
-
-void StoragePartitionImpl::
-    ResetOriginPolicyManagerForBrowserProcessForTesting() {
-  DCHECK(initialized_);
-  origin_policy_manager_for_browser_process_.reset();
 }
 
 void StoragePartition::SetDefaultQuotaSettingsForTesting(

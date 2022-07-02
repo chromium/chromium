@@ -51,6 +51,21 @@ android_library("autofill_assistant_java_test_support") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
+android_library("unit_test_java") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantHistoryDeletionObserverTest.java" ]
+
+  deps = [
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//components/autofill_assistant/android:java",
+    "//components/autofill_assistant/android:public_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 android_library("test_java") {
   resources_package = "org.chromium.components.autofill_assistant"
 
@@ -75,7 +90,6 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantFormActionTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantGenericUiTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantHeaderUiTest.java",
-    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantHistoryDeletionObserverTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInfoBoxUiTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInputActionIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInterruptIntegrationTest.java",
@@ -115,7 +129,6 @@ android_library("test_java") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
@@ -131,7 +144,7 @@ android_library("test_java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/util:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill_assistant/android:java",
     "//components/autofill_assistant/android:java_resources",
@@ -161,6 +174,9 @@ android_library("test_java") {
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]
+
+  # Add tests from "guided_browsing" sub-component.
+  deps += [ "guided_browsing:test_java" ]
 
   data = [ "//components/test/data/autofill_assistant/" ]
 }

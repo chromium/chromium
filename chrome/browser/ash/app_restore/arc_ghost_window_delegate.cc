@@ -20,11 +20,12 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     ArcWindowHandler* handler,
     int window_id,
     int64_t display_id,
-    const gfx::Rect& bounds)
+    const gfx::Rect& bounds,
+    chromeos::WindowStateType window_state)
     : window_id_(window_id),
       bounds_(gfx::Rect(bounds)),
       pending_close_(false),
-      window_state_(chromeos::WindowStateType::kDefault),
+      window_state_(window_state),
       shell_surface_(shell_surface),
       arc_handler_(handler) {
   DCHECK(shell_surface);

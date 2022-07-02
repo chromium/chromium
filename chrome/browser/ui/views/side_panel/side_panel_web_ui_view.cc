@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -27,6 +29,7 @@ SidePanelWebUIView::SidePanelWebUIView(Browser* browser,
       on_show_cb_(std::move(on_show_cb)),
       close_cb_(std::move(close_cb)),
       contents_wrapper_(contents_wrapper) {
+  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(false);
   SetVisible(false);
   set_allow_accelerators(true);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
@@ -64,6 +67,7 @@ void SidePanelWebUIView::ViewHierarchyChanged(
 
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
+  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
   RequestFocus();
   if (on_show_cb_)
     on_show_cb_.Run();

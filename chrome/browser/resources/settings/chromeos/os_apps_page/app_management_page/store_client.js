@@ -43,7 +43,7 @@ export const AppManagementStoreClientImpl = {
 
 /**
  * @interface
- * @extends {StoreClientInterface}
+ * @extends {StoreClientInterface<AppManagementPageState>}
  */
 export class AppManagementStoreClientInterface {
   /**

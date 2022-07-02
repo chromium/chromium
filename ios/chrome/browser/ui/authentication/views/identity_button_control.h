@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection) {
 // Set the identity avatar shown.
 - (void)setIdentityAvatar:(UIImage*)identityAvatar;
 
-// Set the name and email shown. |name| can be nil.
+// Set the name and email shown. `name` can be nil.
 - (void)setIdentityName:(NSString*)name email:(NSString*)email;
 
 @end

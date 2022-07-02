@@ -221,18 +221,6 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
     const RegistrationOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
-  // TODO(crbug.com/824647): Remove this check after module loading for
-  // ServiceWorker is enabled by default.
-  if (options->type() == script_type_names::kModule &&
-      !RuntimeEnabledFeatures::ModuleServiceWorkerEnabled()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "type 'module' in RegistrationOptions is not implemented yet."
-        "See https://crbug.com/824647 for details."));
-    return promise;
-  }
-
   auto callbacks = std::make_unique<CallbackPromiseAdapter<
       ServiceWorkerRegistration, ServiceWorkerErrorForUpdate>>(resolver);
 

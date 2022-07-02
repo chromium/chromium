@@ -148,10 +148,8 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   separator_view_->SetVisible(ShouldShowSeparator());
 
-  views::InkDrop::Get(this)->SetVisibleOpacity(
-      GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
-  views::InkDrop::Get(this)->SetHighlightOpacity(
-      GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+  views::InkDrop::Get(this)->SetVisibleOpacity(kOmniboxOpacitySelected);
+  views::InkDrop::Get(this)->SetHighlightOpacity(kOmniboxOpacityHovered);
 
   views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
       [](IconLabelBubbleView* host) {

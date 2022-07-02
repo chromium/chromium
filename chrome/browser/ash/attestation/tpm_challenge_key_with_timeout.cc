@@ -23,7 +23,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
     const std::string& challenge,
     bool register_key,
     const std::string& key_name_for_spkac,
-    const absl::optional<::attestation::DeviceTrustSignals>& signals) {
+    const absl::optional<std::string>& signals) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
 

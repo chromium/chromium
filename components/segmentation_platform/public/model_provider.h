@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -19,15 +19,12 @@ class SegmentationModelMetadata;
 // single optimization target.
 class ModelProvider {
  public:
-  using ModelUpdatedCallback = base::RepeatingCallback<void(
-      optimization_guide::proto::OptimizationTarget,
-      proto::SegmentationModelMetadata,
-      int64_t)>;
+  using ModelUpdatedCallback = base::RepeatingCallback<
+      void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<float>&)>;
 
-  explicit ModelProvider(
-      optimization_guide::proto::OptimizationTarget optimization_target);
+  explicit ModelProvider(proto::SegmentId segment_id);
   virtual ~ModelProvider();
 
   ModelProvider(ModelProvider&) = delete;
@@ -57,7 +54,7 @@ class ModelProvider {
   virtual bool ModelAvailable() = 0;
 
  protected:
-  const optimization_guide::proto::OptimizationTarget optimization_target_;
+  const proto::SegmentId segment_id_;
 };
 
 // Interface used by segmentation platform to create ModelProvider(s).
@@ -65,15 +62,14 @@ class ModelProviderFactory {
  public:
   virtual ~ModelProviderFactory();
 
-  // Creates a model provider for the given `optimization_target`.
-  virtual std::unique_ptr<ModelProvider> CreateProvider(
-      optimization_guide::proto::OptimizationTarget) = 0;
+  // Creates a model provider for the given `segment_id`.
+  virtual std::unique_ptr<ModelProvider> CreateProvider(proto::SegmentId) = 0;
 
   // Creates a default model provider to be used when the original provider did
   // not provide a model. Returns `nullptr` when a default provider is not
   // available.
   virtual std::unique_ptr<ModelProvider> CreateDefaultProvider(
-      optimization_guide::proto::OptimizationTarget) = 0;
+      proto::SegmentId) = 0;
 };
 
 }  // namespace segmentation_platform

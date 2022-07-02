@@ -82,11 +82,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   base::FilePath GetClientBucketPath(const BucketLocator& bucket,
                                      QuotaClientType client_type);
 
-  // Gets the bucket with the name, storage key, quota and expiration specified
-  // in `bucket_params` for StorageType kTemporary and returns a BucketInfo with
-  // all fields filled in. If one doesn't exist, it creates a new bucket with
-  // the specified policies. Returns a QuotaError if the operation has failed.
-  virtual void GetOrCreateBucket(
+  // Gets the bucket with the name, storage key, quota and expiration
+  // specified in `bucket_params` for StorageType kTemporary and returns a
+  // BucketInfo with all fields filled in. This will also update the bucket's
+  // policies to match `bucket_params` for those parameters which may be
+  // updated, but only if it's a user created bucket (not the default bucket).
+  // If one doesn't exist, it creates a new bucket with the specified policies.
+  // Returns a QuotaError if the operation has failed.
+  virtual void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
@@ -98,7 +101,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // quota_manager_impl_task_runner. Additionally, the asychonrous version of
   // this method `GetOrCreateBucket` is preferred; only use this synchronous
   // version where asynchronous bucket retrieval is not possible.
-  QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+  virtual QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
       const BucketInitParams& params);
 
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
@@ -106,8 +109,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // StorageType::kSyncable and StorageType::kPersistent are deprecated.
   // (crbug.com/1233525, crbug.com/1286964).
   virtual void GetOrCreateBucketDeprecated(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name,
+      const BucketInitParams& params,
       blink::mojom::StorageType storage_type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
@@ -143,6 +145,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Retrieves all buckets for `storage_key` and `type` that are in the buckets
+  // table. Expired buckets will be filtered out of the reply and also deleted
+  // from disk.
+  virtual void GetBucketsForStorageKeyDeleteExpired(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
+
   // Deletes bucket with `bucket_name` for `storage_key` for
   // StorageType::kTemporary for all registered QuotaClients if a bucket exists.
   // Will return QuotaStatusCode to the callback. Called by Storage Buckets API
@@ -152,6 +163,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       const std::string& bucket_name,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback);
+
+  // Updates the expiration for a bucket.
+  virtual void UpdateBucketExpiration(
+      BucketId bucket,
+      const base::Time& expiration,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Updates the persistence for a bucket.
+  virtual void UpdateBucketPersistence(
+      BucketId bucket,
+      bool persistent,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                      blink::mojom::StorageType type,
@@ -201,6 +226,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback);
+
+  void GetBucketUsageAndQuota(
+      const BucketInfo& bucket,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 

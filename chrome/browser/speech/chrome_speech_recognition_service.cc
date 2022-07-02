@@ -28,12 +28,23 @@ ChromeSpeechRecognitionService::ChromeSpeechRecognitionService(
 
 ChromeSpeechRecognitionService::~ChromeSpeechRecognitionService() = default;
 
-void ChromeSpeechRecognitionService::Create(
+void ChromeSpeechRecognitionService::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   LaunchIfNotRunning();
 
   if (speech_recognition_service_.is_bound())
-    speech_recognition_service_->BindContext(std::move(receiver));
+    speech_recognition_service_->BindSpeechRecognitionContext(
+        std::move(receiver));
+}
+
+void ChromeSpeechRecognitionService::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        receiver) {
+  LaunchIfNotRunning();
+
+  if (speech_recognition_service_.is_bound())
+    speech_recognition_service_->BindAudioSourceSpeechRecognitionContext(
+        std::move(receiver));
 }
 
 void ChromeSpeechRecognitionService::LaunchIfNotRunning() {

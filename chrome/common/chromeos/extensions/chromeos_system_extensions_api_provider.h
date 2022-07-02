@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/extensions_api_provider.h"
 
@@ -44,7 +45,7 @@ class ChromeOSSystemExtensionsAPIProvider
   void RegisterManifestHandlers() override;
 
  private:
-  extensions::ManifestHandlerRegistry* registry_;  // not owned
+  raw_ptr<extensions::ManifestHandlerRegistry> registry_;  // not owned
 };
 
 }  // namespace chromeos

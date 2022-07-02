@@ -34,8 +34,8 @@
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -45,6 +45,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/display.h"
@@ -451,8 +452,7 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     int64_t display_id = data_it.second->display_id.has_value()
                              ? data_it.second->display_id.value()
                              : display::kInvalidDisplayId;
-    if (data_it.second->intent.has_value()) {
-      DCHECK(data_it.second->intent.value());
+    if (data_it.second->intent) {
       ::full_restore::SaveAppLaunchInfo(
           file_path, std::make_unique<::app_restore::AppLaunchInfo>(
                          app_id, event_flags, data_it.second->intent->Clone(),
@@ -638,12 +638,11 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
     window_id_to_session_id_[window_id] = arc_session_id;
   }
 
-  if (data_it->second->intent.has_value()) {
-    DCHECK(data_it->second->intent.value());
-    proxy->LaunchAppWithIntent(app_id, data_it->second->event_flag.value(),
-                               data_it->second->intent->Clone(),
-                               apps::mojom::LaunchSource::kFromFullRestore,
-                               std::move(window_info));
+  if (data_it->second->intent) {
+    proxy->LaunchAppWithIntent(
+        app_id, data_it->second->event_flag.value(),
+        apps::ConvertIntentToMojomIntent(data_it->second->intent),
+        apps::mojom::LaunchSource::kFromFullRestore, std::move(window_info));
   } else {
     proxy->Launch(app_id, data_it->second->event_flag.value(),
                   apps::mojom::LaunchSource::kFromFullRestore,
@@ -818,15 +817,9 @@ void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
                             is_arc_ghost_window);
 
-  if (!is_arc_ghost_window) {
-    if (!::full_restore::features::IsArcGhostWindowEnabled()) {
-      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                    NoGhostWindowReason::kFlagDisabled);
-    }
-    if (!exo::WMHelper::HasInstance()) {
-      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                    NoGhostWindowReason::kNoExoHelper);
-    }
+  if (!is_arc_ghost_window && !exo::WMHelper::HasInstance()) {
+    base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                  NoGhostWindowReason::kNoExoHelper);
   }
 }
 

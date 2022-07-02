@@ -110,6 +110,8 @@ message NetworkTelemetry {
   optional int64 link_quality = 13;
   // Wifi power management enabled
   optional bool power_management_enabled = 14;
+  // Signal strength for wireless networks in dBm.
+  optional int32 signal_strength_dbm = 15;
 }
 
 // Configured networks telemetry data.

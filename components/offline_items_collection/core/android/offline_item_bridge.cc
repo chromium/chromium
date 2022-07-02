@@ -40,7 +40,7 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       item.is_openable, ConvertUTF8ToJavaString(env, item.file_path.value()),
       ConvertUTF8ToJavaString(env, item.mime_type),
       url::GURLAndroid::FromNativeGURL(env, item.url),
-      ConvertUTF8ToJavaString(env, item.original_url.spec()),
+      url::GURLAndroid::FromNativeGURL(env, item.original_url),
       item.is_off_the_record, ConvertUTF8ToJavaString(env, item.otr_profile_id),
       static_cast<jint>(item.state), static_cast<jint>(item.fail_state),
       static_cast<jint>(item.pending_state), item.is_resumable,

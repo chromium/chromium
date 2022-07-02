@@ -230,7 +230,11 @@ XrResult OpenXrTestHelper::CreateSession(XrSession* session) {
   session_ = TreatIntegerAsHandle<XrSession>(++next_handle_);
   *session = session_;
   SetSessionState(XR_SESSION_STATE_IDLE);
-  SetSessionState(XR_SESSION_STATE_READY);
+  if (GetCanCreateSession()) {
+    SetSessionState(XR_SESSION_STATE_READY);
+  } else {
+    SetSessionState(XR_SESSION_STATE_EXITING);
+  }
   return XR_SUCCESS;
 }
 
@@ -923,6 +927,17 @@ absl::optional<device::DeviceConfig> OpenXrTestHelper::GetDeviceConfig() {
     return test_hook_->WaitGetDeviceConfig();
   }
   return absl::nullopt;
+}
+
+bool OpenXrTestHelper::GetCanCreateSession() {
+  base::AutoLock lock(lock_);
+  if (test_hook_) {
+    return test_hook_->WaitGetCanCreateSession();
+  }
+
+  // In the absence of a test hook telling us that we can't create a session;
+  // assume that we can, as there's enough of a default implementation to do so.
+  return true;
 }
 
 device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(

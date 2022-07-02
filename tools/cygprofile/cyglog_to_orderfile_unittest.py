@@ -31,7 +31,7 @@ SectionTestSymbol = collections.namedtuple(
 
 class TestObjectFileProcessor(cyglog_to_orderfile.ObjectFileProcessor):
   def __init__(self, symbol_to_sections):
-    super(TestObjectFileProcessor, self).__init__(None)
+    super().__init__(None)
     self._symbol_to_sections_map = symbol_to_sections
 
 

@@ -12,11 +12,11 @@
 #include "base/memory/page_size.h"
 #include "base/posix/safe_strerror.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chromeos/memory/userspace_swap/region.h"
-#include "chromeos/memory/userspace_swap/swap_storage.h"
-#include "chromeos/memory/userspace_swap/userfaultfd.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
+#include "chromeos/ash/components/memory/userspace_swap/region.h"
+#include "chromeos/ash/components/memory/userspace_swap/swap_storage.h"
+#include "chromeos/ash/components/memory/userspace_swap/userfaultfd.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -36,11 +36,11 @@ namespace userspace_swap {
 
 namespace {
 
-using chromeos::memory::userspace_swap::Region;
-using chromeos::memory::userspace_swap::RendererSwapData;
-using chromeos::memory::userspace_swap::SwapFile;
-using chromeos::memory::userspace_swap::UserfaultFD;
-using chromeos::memory::userspace_swap::UserspaceSwapConfig;
+using ::ash::memory::userspace_swap::Region;
+using ::ash::memory::userspace_swap::RendererSwapData;
+using ::ash::memory::userspace_swap::SwapFile;
+using ::ash::memory::userspace_swap::UserfaultFD;
+using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 
 // We cache the swap device free space so we don't hammer the FS layer with
 // unnecessary syscalls. The initial value of 30s was chosen because it seemed
@@ -193,11 +193,11 @@ uint64_t GetProcessNodeReclaimedBytes(const ProcessNode* process_node) {
 }
 
 uint64_t GetTotalSwapFileUsageBytes() {
-  return chromeos::memory::userspace_swap::GetGlobalSwapDiskspaceUsed();
+  return ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed();
 }
 
 uint64_t GetTotalReclaimedBytes() {
-  return chromeos::memory::userspace_swap::GetGlobalMemoryReclaimed();
+  return ash::memory::userspace_swap::GetGlobalMemoryReclaimed();
 }
 
 void SwapProcessNode(const ProcessNode* process_node) {
@@ -225,11 +225,11 @@ void SwapProcessNode(const ProcessNode* process_node) {
 
   // This renderer can only swap up to what's available in the global swap file
   // limit or what's available in it's own swap file limit.
-  int64_t available_swap_bytes = std::min(
-      config.maximum_swap_disk_space_bytes -
-          chromeos::memory::userspace_swap::GetGlobalSwapDiskspaceUsed(),
-      config.renderer_maximum_disk_swap_file_size_bytes -
-          swap_file_disk_space_used_bytes);
+  int64_t available_swap_bytes =
+      std::min(config.maximum_swap_disk_space_bytes -
+                   ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed(),
+               config.renderer_maximum_disk_swap_file_size_bytes -
+                   swap_file_disk_space_used_bytes);
 
   // We have a configurable limit to the number of regions we will consider per
   // iteration and adjust based on how much disk space is actually
@@ -247,7 +247,7 @@ void SwapProcessNode(const ProcessNode* process_node) {
 
   // Now we know how many regions this renderer can theoretically swap after
   // enforcing all configurable limits.
-  chromeos::memory::userspace_swap::SwapRenderer(
+  ash::memory::userspace_swap::SwapRenderer(
       swap_data.get(), total_regions_swapable * kRegionSize);
 }
 
@@ -261,7 +261,7 @@ UserspaceSwapInitializationImpl::~UserspaceSwapInitializationImpl() = default;
 
 // static
 bool UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled() {
-  return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
+  return ash::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
 // static

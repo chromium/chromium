@@ -154,7 +154,8 @@ class NET_EXPORT_PRIVATE SystemHostResolverProc : public HostResolverProc {
 struct NET_EXPORT_PRIVATE ProcTaskParams {
   // Default delay between calls to the system resolver for the same hostname.
   // (Can be overridden by field trial.)
-  static const base::TimeDelta kDnsDefaultUnresponsiveDelay;
+  static constexpr base::TimeDelta kDnsDefaultUnresponsiveDelay =
+      base::Seconds(6);
 
   // Sets up defaults.
   ProcTaskParams(HostResolverProc* resolver_proc, size_t max_retry_attempts);
@@ -174,10 +175,10 @@ struct NET_EXPORT_PRIVATE ProcTaskParams {
 
   // This is the limit after which we make another attempt to resolve the host
   // if the worker thread has not responded yet.
-  base::TimeDelta unresponsive_delay;
+  base::TimeDelta unresponsive_delay = kDnsDefaultUnresponsiveDelay;
 
   // Factor to grow |unresponsive_delay| when we re-re-try.
-  uint32_t retry_factor;
+  uint32_t retry_factor = 2;
 };
 
 }  // namespace net

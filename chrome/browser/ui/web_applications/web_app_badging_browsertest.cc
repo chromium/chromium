@@ -70,7 +70,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     auto frames = CollectAllRenderFrameHosts(web_contents->GetPrimaryPage());
     ASSERT_EQ(4u, frames.size());
 
-    main_frame_ = web_contents->GetMainFrame();
+    main_frame_ = web_contents->GetPrimaryMainFrame();
     for (auto* frame : frames) {
       if (frame->GetLastCommittedURL() == sub_start_url) {
         sub_app_frame_ = frame;
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest,
       OpenURLOffTheRecord(profile(), main_frame_->GetLastCommittedURL());
   RenderFrameHost* incognito_frame = incognito_browser->tab_strip_model()
                                          ->GetActiveWebContents()
-                                         ->GetMainFrame();
+                                         ->GetPrimaryMainFrame();
 
   ASSERT_TRUE(
       content::ExecuteScript(incognito_frame, "navigator.setAppBadge()"));

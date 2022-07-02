@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/x/x11_display_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/event.h"
@@ -72,8 +73,8 @@ class X11ScreenOzone : public PlatformScreen,
 
   gfx::Point GetCursorLocation() const;
 
-  x11::Connection* const connection_;
-  X11WindowManager* const window_manager_;
+  const raw_ptr<x11::Connection> connection_;
+  const raw_ptr<X11WindowManager> window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
 
   // Scale value that DesktopScreenOzoneLinux sets by listening to

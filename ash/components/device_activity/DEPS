@@ -1,6 +1,6 @@
 include_rules = [
-  "+chromeos/dbus/session_manager",
   "+chromeos/ash/components/dbus/system_clock",
+  "+chromeos/ash/components/dbus/session_manager",
   "+components/policy",
   "+components/version_info",
   "+crypto",

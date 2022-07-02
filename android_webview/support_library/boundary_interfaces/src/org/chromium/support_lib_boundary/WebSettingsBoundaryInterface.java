@@ -64,4 +64,7 @@ public interface WebSettingsBoundaryInterface {
     void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
     @RequestedWithHeaderMode
     int getRequestedWithHeaderMode();
+
+    void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled);
+    boolean getEnterpriseAuthenticationAppLinkPolicyEnabled();
 }

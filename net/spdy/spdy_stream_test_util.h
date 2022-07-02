@@ -18,9 +18,7 @@
 #include "net/spdy/spdy_read_queue.h"
 #include "net/spdy/spdy_stream.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 // Delegate that calls Close() on |stream_| on OnClose. Used by tests
 // to make sure that such an action is harmless.
@@ -100,9 +98,9 @@ class StreamDelegateBase : public SpdyStream::Delegate {
 
  private:
   base::WeakPtr<SpdyStream> stream_;
-  spdy::SpdyStreamId stream_id_;
+  spdy::SpdyStreamId stream_id_ = 0;
   TestCompletionCallback callback_;
-  bool send_headers_completed_;
+  bool send_headers_completed_ = false;
   std::vector<spdy::Http2HeaderBlock> early_hints_;
   spdy::Http2HeaderBlock response_headers_;
   SpdyReadQueue received_data_queue_;
@@ -181,8 +179,6 @@ class StreamDelegateDetectEOF : public StreamDelegateBase {
   bool eof_detected_ = false;
 };
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_SPDY_SPDY_STREAM_TEST_UTIL_H_

@@ -13,9 +13,9 @@
 @interface SyncScreenCoordinator : InterruptibleChromeCoordinator
 
 // Initiates a SyncScreenCoordinator with
-// |navigationController| to present the view;
-// |browser| to provide the browser;
-// |delegate| to handle user action.
+// `navigationController` to present the view;
+// `browser` to provide the browser;
+// `delegate` to handle user action.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

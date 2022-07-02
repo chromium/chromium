@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
              <input />)HTML");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* text_field = FindNode(ax::mojom::Role::kTextField);
   ASSERT_NE(nullptr, text_field);
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   AccessibilityNotificationWaiter value_waiter(shell()->web_contents(),
                                                ui::kAXModeComplete,
                                                ax::mojom::Event::kValueChanged);
-  value_waiter.WaitForNotification();
+  ASSERT_TRUE(value_waiter.WaitForNotification());
   AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
   EXPECT_NE(text_edit.edit_text_marker, nil);
 
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
              </table>)HTML");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
   ASSERT_NE(nullptr, table);
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   GURL url(R"HTML(data:text/html, <p>Hello, world!</p>)HTML");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* text = FindNode(ax::mojom::Role::kStaticText);
   ASSERT_NE(nullptr, text);
@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NE(nil, cocoa_text);
 
   NSPoint position = [[cocoa_text position] pointValue];
-  NSSize size = [[cocoa_text size] sizeValue];
+
+  NSSize size = cocoa_text.accessibilityFrame.size;
   NSRect frame = NSMakeRect(position.x, position.y, size.width, size.height);
 
   NSPoint p0_before = position;
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
              </div>)HTML");
 
   ASSERT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
   base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_tree(
@@ -573,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
   auto menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   gfx::Point tree_point =
@@ -626,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
              </div>)HTML");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   std::pair<ax::mojom::Role, bool> tests[] = {
       std::make_pair(ax::mojom::Role::kTree, true),
@@ -679,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
              </div>)HTML");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   std::pair<ax::mojom::Role, bool> tests[] = {
       std::make_pair(ax::mojom::Role::kTree, true),
@@ -722,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                   </div>)HTML");
 
   ASSERT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   base::scoped_nsobject<BrowserAccessibilityCocoa> content_editable(
       [GetManager()->GetRoot()->PlatformGetChild(0)->GetNativeViewAccessible()
@@ -736,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
             web_contents, ui::kAXModeComplete,
             ax::mojom::Event::kTextSelectionChanged);
         ASSERT_TRUE(ExecJs(web_contents, script));
-        waiter.WaitForNotification();
+        ASSERT_TRUE(waiter.WaitForNotification());
       };
 
   FocusAccessibilityElementAndWaitForFocusChange(content_editable);

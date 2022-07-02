@@ -10,14 +10,14 @@
 // Embed different values related to the sign-in completion.
 @interface SigninCompletionInfo : NSObject
 
-// Returns an instance with |identity| and no completion action.
+// Returns an instance with `identity` and no completion action.
 + (instancetype)signinCompletionInfoWithIdentity:(ChromeIdentity*)identity;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Designated initializer.
-// |identity| is the identity chosen by the user to sign-in.
-// |signinCompletionAction| is the action required to complete the sign-in.
+// `identity` is the identity chosen by the user to sign-in.
+// `signinCompletionAction` is the action required to complete the sign-in.
 - (instancetype)initWithIdentity:(ChromeIdentity*)identity
           signinCompletionAction:(SigninCompletionAction)signinCompletionAction
     NS_DESIGNATED_INITIALIZER;
@@ -32,8 +32,8 @@
 @end
 
 // Called when the sign-in dialog is closed.
-// |result| is the sign-in result state.
-// |signinCompletionInfo| different values related to the sign-in, see
+// `result` is the sign-in result state.
+// `signinCompletionInfo` different values related to the sign-in, see
 // SigninCompletionInfo class.
 using SigninCoordinatorCompletionCallback =
     void (^)(SigninCoordinatorResult result, SigninCompletionInfo* info);

@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 
 namespace ui {
@@ -58,22 +59,32 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
   return *this;
 }
 
-DialogModel::Builder& DialogModel::Builder::AddDialogExtraButton(
+DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     std::u16string label,
     const DialogModelButton::Params& params) {
+  DCHECK(!model_->extra_button_);
+  DCHECK(!model_->extra_link_);
   model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
                                 std::move(callback), std::move(label), params);
   return *this;
 }
 
+DialogModel::Builder& DialogModel::Builder::AddExtraLink(
+    ui::DialogModelLabel::Link link) {
+  DCHECK(!model_->extra_button_);
+  DCHECK(!model_->extra_link_);
+  model_->extra_link_.emplace(std::move(link));
+  return *this;
+}
+
 DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
-    int unique_id) {
-  // This must be called with unique_id >= 0 (-1 is "no ID").
-  DCHECK_GE(unique_id, 0);
+    ElementIdentifier id) {
+  // This must be called with a non-null id
+  DCHECK(id);
   // This can only be called once.
   DCHECK(!model_->initially_focused_field_);
-  model_->initially_focused_field_ = unique_id;
+  model_->initially_focused_field_ = id;
   return *this;
 }
 
@@ -86,22 +97,26 @@ DialogModel::DialogModel(base::PassKey<Builder>,
 
 DialogModel::~DialogModel() = default;
 
-void DialogModel::AddBodyText(const DialogModelLabel& label) {
-  AddField(std::make_unique<DialogModelBodyText>(GetPassKey(), this, label));
+void DialogModel::AddBodyText(const DialogModelLabel& label,
+                              ElementIdentifier id) {
+  AddField(
+      std::make_unique<DialogModelBodyText>(GetPassKey(), this, label, id));
 }
 
-void DialogModel::AddCheckbox(int unique_id,
+void DialogModel::AddCheckbox(ElementIdentifier id,
                               const DialogModelLabel& label,
                               const DialogModelCheckbox::Params& params) {
-  AddField(std::make_unique<DialogModelCheckbox>(GetPassKey(), this, unique_id,
-                                                 label, params));
+  AddField(std::make_unique<DialogModelCheckbox>(GetPassKey(), this, id, label,
+                                                 params));
 }
 
-void DialogModel::AddCombobox(std::u16string label,
+void DialogModel::AddCombobox(ElementIdentifier id,
+                              std::u16string label,
                               std::unique_ptr<ui::ComboboxModel> combobox_model,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
-      GetPassKey(), this, std::move(label), std::move(combobox_model), params));
+      GetPassKey(), this, id, std::move(label), std::move(combobox_model),
+      params));
 }
 
 void DialogModel::AddSeparator() {
@@ -110,51 +125,56 @@ void DialogModel::AddSeparator() {
 
 void DialogModel::AddMenuItem(ImageModel icon,
                               std::u16string label,
-                              base::RepeatingCallback<void(int)> callback) {
+                              base::RepeatingCallback<void(int)> callback,
+                              const DialogModelMenuItem::Params& params) {
   AddField(std::make_unique<DialogModelMenuItem>(
       GetPassKey(), this, std::move(icon), std::move(label),
-      std::move(callback)));
+      std::move(callback), params));
 }
 
-void DialogModel::AddTextfield(std::u16string label,
+void DialogModel::AddTextfield(ElementIdentifier id,
+                               std::u16string label,
                                std::u16string text,
                                const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(
-      GetPassKey(), this, std::move(label), std::move(text), params));
+      GetPassKey(), this, id, std::move(label), std::move(text), params));
 }
 
 void DialogModel::AddCustomField(
-    std::unique_ptr<DialogModelCustomField::Factory> factory,
-    int unique_id) {
-  AddField(std::make_unique<DialogModelCustomField>(
-      GetPassKey(), this, unique_id, std::move(factory)));
+    std::unique_ptr<DialogModelCustomField::Field> field,
+    ElementIdentifier id) {
+  AddField(std::make_unique<DialogModelCustomField>(GetPassKey(), this, id,
+                                                    std::move(field)));
 }
 
-bool DialogModel::HasField(int unique_id) const {
-  return base::ranges::any_of(fields_, [unique_id](auto& field) {
-    return field->unique_id_ == unique_id;
-  });
+bool DialogModel::HasField(ElementIdentifier id) const {
+  return base::ranges::any_of(fields_,
+                              [id](auto& field) { return field->id_ == id; });
 }
 
-DialogModelField* DialogModel::GetFieldByUniqueId(int unique_id) {
+DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
+  // Assert that there is one and only one.
+  DCHECK_EQ(1, static_cast<int>(base::ranges::count_if(
+                   fields_, [id](auto& field) { return field->id_ == id; })));
+
   for (auto& field : fields_) {
-    if (field->unique_id_ == unique_id)
+    if (field->id_ == id)
       return field.get();
   }
-  NOTREACHED() << "No field with unique_id: " << unique_id;
   return nullptr;
 }
 
-DialogModelCheckbox* DialogModel::GetCheckboxByUniqueId(int unique_id) {
-  return GetFieldByUniqueId(unique_id)->AsCheckbox();
+DialogModelCheckbox* DialogModel::GetCheckboxByUniqueId(ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsCheckbox();
 }
 
-DialogModelCombobox* DialogModel::GetComboboxByUniqueId(int unique_id) {
-  return GetFieldByUniqueId(unique_id)->AsCombobox();
+DialogModelCombobox* DialogModel::GetComboboxByUniqueId(ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsCombobox();
 }
 
-DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(int unique_id) {
-  return GetFieldByUniqueId(unique_id)->AsTextfield();
+DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(
+    ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsTextfield();
 }
 
 void DialogModel::OnDialogAcceptAction(base::PassKey<DialogModelHost>) {

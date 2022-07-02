@@ -10,10 +10,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/network/cellular_utils.h"
-#include "chromeos/network/managed_cellular_pref_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -96,17 +96,17 @@ class StubCellularNetworksProviderTest : public testing::Test {
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, std::string());
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoEID, std::string());
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, iccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
 
-    helper_.device_test()->SetDeviceProperty(kDefaultCellularDevicePath,
-                                             shill::kSIMSlotInfoProperty,
-                                             base::Value(sim_slot_infos),
-                                             /*notify_changed=*/true);
+    helper_.device_test()->SetDeviceProperty(
+        kDefaultCellularDevicePath, shill::kSIMSlotInfoProperty,
+        base::Value(std::move(sim_slot_infos)),
+        /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 

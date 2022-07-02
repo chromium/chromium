@@ -116,10 +116,6 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
     : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
       buffer_manager_(buffer_manager),
       widget_(widget),
-      has_implicit_external_sync_(
-          GetGLDisplayEGL()->HasEGLExtension("EGL_ARM_implicit_external_sync")),
-      has_image_flush_external_(
-          GetGLDisplayEGL()->HasEGLExtension("EGL_EXT_image_flush_external")),
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);
@@ -136,21 +132,46 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     gl::GLImage* image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
+  auto* frame = unsubmitted_frames_.back().get();
+  // There are multiple scheduling submissions for the same frame. If the
+  // previous schedule failed, there is no reason to continue.
+  if (!frame->schedule_planes_succeeded)
+    return false;
+
+  // Solid color overlays are non-backed. Thus, queue them directly.
+  // TODO(msisov): reconsider this once Linux Wayland compositors also support
+  // creation of non-backed solid color wl_buffers.
   if (!image) {
     // Only solid color overlays can be non-backed.
     if (!overlay_plane_data.is_solid_color) {
       LOG(WARNING) << "Only solid color overlay planes are allowed to be "
                       "scheduled without GLImage.";
+      frame->schedule_planes_succeeded = false;
       return false;
     }
     DCHECK(!gpu_fence);
-    unsubmitted_frames_.back()->non_backed_overlays.emplace_back(
-        overlay_plane_data);
+
+    BufferId buf_id = solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
+        overlay_plane_data.color.value(), buffer_manager_);
+    // Invalid buffer id.
+    if (buf_id == 0) {
+      frame->schedule_planes_succeeded = false;
+      return false;
+    }
+    frame->in_flight_color_buffers.push_back(buf_id);
+    QueueWaylandOverlayConfig(
+        {overlay_plane_data, nullptr, buf_id, surface_scale_factor()});
   } else {
-    unsubmitted_frames_.back()->overlays.emplace_back(
-        image, std::move(gpu_fence), overlay_plane_data);
+    std::vector<gfx::GpuFence> acquire_fences;
+    if (gpu_fence)
+      acquire_fences.push_back(std::move(*gpu_fence));
+
+    auto pixmap = image->GetNativePixmap();
+    DCHECK(pixmap);
+    frame->schedule_planes_succeeded = pixmap->ScheduleOverlayPlane(
+        widget_, overlay_plane_data, std::move(acquire_fences), {});
   }
-  return true;
+  return frame->schedule_planes_succeeded;
 }
 
 bool GbmSurfacelessWayland::IsOffscreen() {
@@ -189,19 +210,14 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
     return;
   }
 
-  if (!no_gl_flush_for_tests_ &&
-      ((!has_image_flush_external_ &&
-        !buffer_manager_->supports_acquire_fence()) ||
-       requires_gl_flush_on_swap_buffers_)) {
+  if ((!no_gl_flush_for_tests_ && !buffer_manager_->supports_acquire_fence()) ||
+      requires_gl_flush_on_swap_buffers_) {
     glFlush();
   }
-
-  unsubmitted_frames_.back()->Flush();
 
   PendingFrame* frame = unsubmitted_frames_.back().get();
   frame->completion_callback = std::move(completion_callback);
   frame->presentation_callback = std::move(presentation_callback);
-  frame->ScheduleOverlayPlanes(this);
 
   unsubmitted_frames_.push_back(
       std::make_unique<PendingFrame>(next_frame_id()));
@@ -312,48 +328,6 @@ GbmSurfacelessWayland::PendingFrame::PendingFrame(uint32_t frame_id)
 
 GbmSurfacelessWayland::PendingFrame::~PendingFrame() = default;
 
-void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
-    GbmSurfacelessWayland* surfaceless) {
-  DCHECK(surfaceless);
-  for (auto& overlay : overlays) {
-    if (!overlay.ScheduleOverlayPlane(surfaceless->widget_))
-      return;
-  }
-
-  // Solid color overlays are non-backed. Thus, queue them directly.
-  // TODO(msisov): reconsider this once Linux Wayland compositors also support
-  // creation of non-backed solid color wl_buffers.
-  in_flight_color_buffers.reserve(non_backed_overlays.size());
-  for (auto& overlay_data : non_backed_overlays) {
-    // This mustn't happen, but let's be explicit here and fail scheduling if
-    // it is not a solid color overlay.
-    if (!overlay_data.color.has_value()) {
-      schedule_planes_succeeded = false;
-      return;
-    }
-
-    BufferId buf_id =
-        surfaceless->solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
-            overlay_data.color.value(), surfaceless->buffer_manager_);
-    // Invalid buffer id.
-    if (buf_id == 0) {
-      schedule_planes_succeeded = false;
-      return;
-    }
-    in_flight_color_buffers.push_back(buf_id);
-    surfaceless->QueueWaylandOverlayConfig(
-        {overlay_data, nullptr, buf_id, surfaceless->surface_scale_factor()});
-  }
-
-  schedule_planes_succeeded = true;
-  return;
-}
-
-void GbmSurfacelessWayland::PendingFrame::Flush() {
-  for (const auto& overlay : overlays)
-    overlay.Flush();
-}
-
 void GbmSurfacelessWayland::MaybeSubmitFrames() {
   while (!unsubmitted_frames_.empty() && unsubmitted_frames_.front()->ready) {
     auto submitted_frame = std::move(unsubmitted_frames_.front());
@@ -416,7 +390,6 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
     solid_color_buffers_holder_->OnSubmission(buf, buffer_manager_);
   }
   submitted_frame->in_flight_color_buffers.clear();
-  submitted_frame->overlays.clear();
 
   // Check if the fence has retired.
   if (!release_fence.is_null()) {

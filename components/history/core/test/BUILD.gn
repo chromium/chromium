@@ -21,6 +21,8 @@ static_library("test") {
     "test_history_database.h",
     "thumbnail-inl.h",
     "thumbnail.h",
+    "visit_annotations_test_utils.cc",
+    "visit_annotations_test_utils.h",
     "wait_top_sites_loaded_observer.cc",
     "wait_top_sites_loaded_observer.h",
   ]

@@ -435,7 +435,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void RequestUnbufferedInputEvents(LocalFrame*) = 0;
   virtual void SetTouchAction(LocalFrame*, TouchAction) = 0;
 
-  // Checks if there is an opened popup, called by LayoutMenuList::showPopup().
+  // Checks if there is an opened popup, called by LayoutMenuList::showPopUp().
   virtual bool HasOpenedPopup() const = 0;
   virtual PopupMenu* OpenPopupMenu(LocalFrame&, HTMLSelectElement&) = 0;
   virtual PagePopup* OpenPagePopup(PagePopupClient*) = 0;
@@ -480,6 +480,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void DidChangeSelectionInSelectControl(HTMLFormControlElement&) {}
   virtual void SelectFieldOptionsChanged(HTMLFormControlElement&) {}
   virtual void AjaxSucceeded(LocalFrame*) {}
+  // Called when |element| is in autofilled state and the value has been changed
+  // by JavaScript. |old_value| contains the value before being changed.
+  virtual void JavaScriptChangedAutofilledValue(HTMLFormControlElement&,
+                                                const String& old_value) {}
 
   // Input method editor related functions.
   virtual void ShowVirtualKeyboardOnElementFocus(LocalFrame&) {}

@@ -44,8 +44,14 @@ std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA() {
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (!device)
     return nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/901264): Encoders use hack for passing offset within
+  // a DMA-buf, which is not supported upstream.
   return base::WrapUnique<VideoEncodeAccelerator>(
       new V4L2VideoEncodeAccelerator(std::move(device)));
+#else
+  return nullptr;
+#endif
 }
 #endif
 
@@ -80,10 +86,11 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA() {
 // true, VEA is limited to a subset of features that is compatible with Win 7.
 std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new MediaFoundationVideoEncodeAccelerator(gpu_preferences,
-                                                gpu_workarounds));
+      new MediaFoundationVideoEncodeAccelerator(
+          gpu_preferences, gpu_workarounds, gpu_device.luid));
 }
 #endif
 
@@ -92,7 +99,8 @@ using VEAFactoryFunction =
 
 std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   // Array of VEAFactoryFunctions potentially usable on the current platform.
   // This list is ordered by priority, from most to least preferred, if
   // applicable. This list is composed once and then reused.
@@ -121,7 +129,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #endif
 #if BUILDFLAG(IS_WIN)
   vea_factory_functions.push_back(base::BindRepeating(
-      &CreateMediaFoundationVEA, gpu_preferences, gpu_workarounds));
+      &CreateMediaFoundationVEA, gpu_preferences, gpu_workarounds, gpu_device));
 #endif
   return vea_factory_functions;
 }
@@ -129,13 +137,14 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device,
     bool populate_extended_info) {
   if (gpu_preferences.disable_accelerated_video_encode)
     return VideoEncodeAccelerator::SupportedProfiles();
 
   VideoEncodeAccelerator::SupportedProfiles profiles;
   for (const auto& create_vea :
-       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds)) {
+       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device)) {
     auto vea = std::move(create_vea).Run();
     if (!vea)
       continue;
@@ -157,13 +166,14 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device,
     std::unique_ptr<MediaLog> media_log) {
   // NullMediaLog silently and safely does nothing.
   if (!media_log)
     media_log = std::make_unique<media::NullMediaLog>();
 
   for (const auto& create_vea :
-       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds)) {
+       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device)) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
     if (!vea)
       continue;
@@ -182,19 +192,20 @@ MEDIA_GPU_EXPORT VideoEncodeAccelerator::SupportedProfiles
 GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device,
     bool populate_extended_info) {
   // Cache the supported profiles so that they will not be computed more than
   // once per GPU process. It is assumed that |gpu_preferences| do not change
   // between calls.
   VideoEncodeAccelerator::SupportedProfiles* profiles_ptr = nullptr;
   if (populate_extended_info) {
-    static auto profiles =
-        GetSupportedProfilesInternal(gpu_preferences, gpu_workarounds, true);
+    static auto profiles = GetSupportedProfilesInternal(
+        gpu_preferences, gpu_workarounds, gpu_device, true);
     profiles_ptr = &profiles;
 
   } else {
-    static auto profiles =
-        GetSupportedProfilesInternal(gpu_preferences, gpu_workarounds, false);
+    static auto profiles = GetSupportedProfilesInternal(
+        gpu_preferences, gpu_workarounds, gpu_device, false);
     profiles_ptr = &profiles;
   }
 
@@ -207,7 +218,7 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
   if (profiles_ptr->empty()) {
     VLOGF(1) << "Supported profiles empty, querying again...";
     *profiles_ptr = GetSupportedProfilesInternal(
-        gpu_preferences, gpu_workarounds, populate_extended_info);
+        gpu_preferences, gpu_workarounds, gpu_device, populate_extended_info);
   }
 #endif
 

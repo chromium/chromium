@@ -17,3 +17,5 @@ blink_core_sources_resize_observer = [
   "resize_observer_utilities.cc",
   "resize_observer_utilities.h",
 ]
+
+blink_core_tests_resize_observer = [ "resize_observer_test.cc" ]

@@ -13,8 +13,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/commerce/subscriptions/android/jni_headers/CommerceSubscription_jni.h"
 #include "chrome/browser/commerce/subscriptions/android/jni_headers/CommerceSubscriptionsStorage_jni.h"
-#include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 namespace {

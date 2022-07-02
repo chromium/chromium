@@ -217,7 +217,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   std::set<std::string> dns_aliases_;
   bool has_dns_override_ = false;
 
-  State next_state_;
+  State next_state_ = STATE_NONE;
 
   // The addresses are divided into IPv4 and IPv6, which are performed partially
   // in parallel. If the list of IPv6 addresses is non-empty, then the IPv6 jobs

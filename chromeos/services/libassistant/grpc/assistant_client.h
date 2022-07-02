@@ -49,6 +49,7 @@ class ActionModule;
 class AssistantManager;
 class AssistantManagerInternal;
 class ChromeOSApiDelegate;
+class HttpConnectionFactory;
 }  // namespace assistant_client
 
 namespace chromeos {
@@ -103,6 +104,9 @@ class AssistantClient {
   // on new status change.
   virtual void StartServices(
       ServicesStatusObserver* services_status_observer) = 0;
+
+  virtual void StartGrpcHttpConnectionClient(
+      assistant_client::HttpConnectionFactory*) = 0;
 
   virtual void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) = 0;

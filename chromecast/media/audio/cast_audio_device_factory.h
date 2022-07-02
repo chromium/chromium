@@ -13,8 +13,6 @@
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 namespace media {
-class AudioCapturerSource;
-class AudioRendererSink;
 class SwitchableAudioRendererSink;
 }  // namespace media
 
@@ -24,31 +22,13 @@ namespace media {
 class CastAudioDeviceFactory final : public blink::AudioDeviceFactory {
  public:
   CastAudioDeviceFactory();
-
-  CastAudioDeviceFactory(const CastAudioDeviceFactory&) = delete;
-  CastAudioDeviceFactory& operator=(const CastAudioDeviceFactory&) = delete;
-
   ~CastAudioDeviceFactory() override;
 
-  scoped_refptr<::media::AudioRendererSink> CreateFinalAudioRendererSink(
-      const blink::LocalFrameToken& frame_token,
-      const ::media::AudioSinkParameters& params,
-      base::TimeDelta auth_timeout) override;
-
-  scoped_refptr<::media::AudioRendererSink> CreateAudioRendererSink(
-      blink::WebAudioDeviceSourceType source_type,
-      const blink::LocalFrameToken& frame_token,
-      const ::media::AudioSinkParameters& params) override;
-
   scoped_refptr<::media::SwitchableAudioRendererSink>
-  CreateSwitchableAudioRendererSink(
+  NewSwitchableAudioRendererSink(
       blink::WebAudioDeviceSourceType source_type,
       const blink::LocalFrameToken& frame_token,
       const ::media::AudioSinkParameters& params) override;
-
-  scoped_refptr<::media::AudioCapturerSource> CreateAudioCapturerSource(
-      const blink::LocalFrameToken& frame_token,
-      const ::media::AudioSourceParameters& params) override;
 };
 
 }  // namespace media

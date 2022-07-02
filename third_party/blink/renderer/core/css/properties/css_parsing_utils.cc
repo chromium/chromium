@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
+#include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
-#include "third_party/blink/renderer/core/css/css_grid_line_names_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -79,8 +79,8 @@
 
 namespace blink {
 
+using cssvalue::CSSBracketedValueList;
 using cssvalue::CSSFontFeatureValue;
-using cssvalue::CSSGridLineNamesValue;
 
 namespace css_parsing_utils {
 namespace {
@@ -319,6 +319,31 @@ cssvalue::CSSBasicShapePolygonValue* ConsumeBasicShapePolygon(
   return shape;
 }
 
+template <typename T>
+bool ConsumeBorderRadiusCommon(CSSParserTokenRange& args,
+                               const CSSParserContext& context,
+                               T* shape) {
+  if (ConsumeIdent<CSSValueID::kRound>(args)) {
+    CSSValue* horizontal_radii[4] = {nullptr};
+    CSSValue* vertical_radii[4] = {nullptr};
+    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false))
+      return false;
+    shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[0], vertical_radii[0],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetTopRightRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[1], vertical_radii[1],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetBottomRightRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[2], vertical_radii[2],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetBottomLeftRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[3], vertical_radii[3],
+        CSSValuePair::kDropIdenticalValues));
+  }
+  return true;
+}
+
 cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
     CSSParserTokenRange& args,
     const CSSParserContext& context) {
@@ -348,24 +373,57 @@ cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
   else
     shape->UpdateShapeSize1Value(top);
 
-  if (ConsumeIdent<CSSValueID::kRound>(args)) {
-    CSSValue* horizontal_radii[4] = {nullptr};
-    CSSValue* vertical_radii[4] = {nullptr};
-    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false))
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
+  return shape;
+}
+
+cssvalue::CSSBasicShapeRectValue* ConsumeBasicShapeRect(
+    CSSParserTokenRange& args,
+    const CSSParserContext& context) {
+  CSSValue* lengths[4];
+  for (auto*& length : lengths) {
+    length = ConsumeLengthOrPercent(args, context,
+                                    CSSPrimitiveValue::ValueRange::kAll);
+    if (length)
+      continue;
+
+    if (args.Peek().Id() == CSSValueID::kAuto)
+      length = css_parsing_utils::ConsumeIdent(args);
+
+    if (!length)
       return nullptr;
-    shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[0], vertical_radii[0],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetTopRightRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[1], vertical_radii[1],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetBottomRightRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[2], vertical_radii[2],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetBottomLeftRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[3], vertical_radii[3],
-        CSSValuePair::kDropIdenticalValues));
   }
+
+  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(
+      lengths[0], lengths[1], lengths[2], lengths[3]);
+
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
+  return shape;
+}
+
+cssvalue::CSSBasicShapeXYWHValue* ConsumeBasicShapeXYWH(
+    CSSParserTokenRange& args,
+    const CSSParserContext& context) {
+  CSSPrimitiveValue* lengths[4];
+  for (size_t i = 0; i < 4; i++) {
+    // The last 2 values are width/height which must be positive.
+    auto value_range = i > 1 ? CSSPrimitiveValue::ValueRange::kNonNegative
+                             : CSSPrimitiveValue::ValueRange::kAll;
+    lengths[i] = ConsumeLengthOrPercent(args, context, value_range);
+    if (!lengths[i])
+      return nullptr;
+  }
+
+  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeXYWHValue>(
+      lengths[0], lengths[1], lengths[2], lengths[3]);
+
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
   return shape;
 }
 
@@ -655,26 +713,23 @@ class MathFunctionParser {
   STACK_ALLOCATED();
 
  public:
-  MathFunctionParser(CSSParserTokenRange& range,
-                     const CSSParserContext& context,
-                     CSSPrimitiveValue::ValueRange value_range)
+  MathFunctionParser(
+      CSSParserTokenRange& range,
+      const CSSParserContext& context,
+      CSSPrimitiveValue::ValueRange value_range,
+      CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone)
       : source_range_(range), range_(range) {
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kFunctionToken) {
       calc_value_ = CSSMathFunctionValue::Create(
-          CSSMathExpressionNode::ParseMathFunction(token.FunctionId(),
-                                                   ConsumeFunction(range_)),
+          CSSMathExpressionNode::ParseMathFunction(
+              token.FunctionId(), ConsumeFunction(range_), context,
+              allowed_anchor_queries),
           value_range);
     }
     if (calc_value_ && calc_value_->HasComparisons())
       context.Count(WebFeature::kCSSComparisonFunctions);
   }
-
-  explicit MathFunctionParser(CSSParserTokenRange& range,
-                              const CSSParserContext& context)
-      : MathFunctionParser(range,
-                           context,
-                           CSSPrimitiveValue::ValueRange::kAll) {}
 
   const CSSMathFunctionValue* Value() const { return calc_value_; }
   CSSMathFunctionValue* ConsumeValue() {
@@ -966,13 +1021,15 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range,
-    UnitlessQuirk unitless) {
+    UnitlessQuirk unitless,
+    CSSAnchorQueryTypes allowed_anchor_queries) {
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kDimensionToken || token.GetType() == kNumberToken)
     return ConsumeLength(range, context, value_range, unitless);
   if (token.GetType() == kPercentageToken)
     return ConsumePercent(range, context, value_range);
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(range, context, value_range,
+                                 allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode()))
       return math_parser.ConsumeValue();
@@ -1072,18 +1129,13 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
 static CSSPrimitiveValue* ConsumeMathFunctionAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    MathFunctionParser math_parser(range, context,
-                                   CSSPrimitiveValue::ValueRange::kAll);
-    if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
-      if (calculation->Category() != kCalcAngle)
-        return nullptr;
-    }
-    return math_parser.ConsumeValue();
+  MathFunctionParser math_parser(range, context,
+                                 CSSPrimitiveValue::ValueRange::kAll);
+  if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
+    if (calculation->Category() != kCalcAngle)
+      return nullptr;
   }
-  return ConsumeMathFunctionAngle(range, context,
-                                  std::numeric_limits<double>::lowest(),
-                                  std::numeric_limits<double>::max());
+  return math_parser.ConsumeValue();
 }
 
 CSSPrimitiveValue* ConsumeAngle(
@@ -1231,6 +1283,29 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange& range,
   }
   return ConsumeCustomIdentWithToken(range.ConsumeIncludingWhitespace(),
                                      context);
+}
+
+// Consume a custom ident more conservatively, for use in new uses of custom
+// idents, while we figure out if we can make these changes to existing uses.
+// Making new uses different avoids adding to the compatibility problem.
+CSSCustomIdentValue* ConsumeCustomIdentConservatively(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  if (range.Peek().GetType() != kIdentToken)
+    return nullptr;
+  switch (range.Peek().Id()) {
+    // TODO(crbug.com/882285): ConsumeCustomIdent should not allow "default".
+    case CSSValueID::kDefault:
+    // TODO(crbug.com/1340852): Find out if we can make auto/none/normal
+    // invalid generally.  For now, avoid allowing them on new custom idents.
+    case CSSValueID::kNone:
+    case CSSValueID::kNormal:
+    case CSSValueID::kAuto:
+      return nullptr;
+    default:
+      break;
+  }
+  return ConsumeCustomIdent(range, context);
 }
 
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange& range,
@@ -2661,12 +2736,18 @@ CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange& range) {
                       CSSValueID::kBorderBox, CSSValueID::kMarginBox>(range);
 }
 
+// https://drafts.csswg.org/css-box-4/#typedef-visual-box
+CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kContentBox, CSSValueID::kPaddingBox,
+                      CSSValueID::kBorderBox>(range);
+}
+
 void AddProperty(CSSPropertyID resolved_property,
                  CSSPropertyID current_shorthand,
                  const CSSValue& value,
                  bool important,
                  IsImplicitProperty implicit,
-                 HeapVector<CSSPropertyValue, 256>& properties) {
+                 HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK(!IsPropertyAlias(resolved_property));
   DCHECK(implicit == IsImplicitProperty::kNotImplicit ||
          implicit == IsImplicitProperty::kImplicit);
@@ -2851,7 +2932,7 @@ bool ConsumeShorthandVia2Longhands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK_EQ(shorthand.length(), 2u);
   const CSSProperty** longhands = shorthand.properties();
 
@@ -2883,7 +2964,7 @@ bool ConsumeShorthandVia4Longhands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK_EQ(shorthand.length(), 4u);
   const CSSProperty** longhands = shorthand.properties();
   const CSSValue* top =
@@ -2930,7 +3011,7 @@ bool ConsumeShorthandGreedilyViaLonghands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   // Existing shorthands have at most 6 longhands.
   DCHECK_LE(shorthand.length(), 6u);
   const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
@@ -2965,11 +3046,10 @@ bool ConsumeShorthandGreedilyViaLonghands(
   return true;
 }
 
-void AddExpandedPropertyForValue(
-    CSSPropertyID property,
-    const CSSValue& value,
-    bool important,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+void AddExpandedPropertyForValue(CSSPropertyID property,
+                                 const CSSValue& value,
+                                 bool important,
+                                 HeapVector<CSSPropertyValue, 64>& properties) {
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
   unsigned shorthand_length = shorthand.length();
   DCHECK(shorthand_length);
@@ -3454,7 +3534,7 @@ bool ParseBackgroundOrMask(bool important,
                            CSSParserTokenRange& range,
                            const CSSParserContext& context,
                            const CSSParserLocalContext& local_context,
-                           HeapVector<CSSPropertyValue, 256>& properties) {
+                           HeapVector<CSSPropertyValue, 64>& properties) {
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
          shorthand_id == CSSPropertyID::kWebkitMask);
@@ -4370,19 +4450,19 @@ CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
   return ConsumeCustomIdent(range, context);
 }
 
-// Appends to the passed in CSSGridLineNamesValue if any, otherwise creates a
+// Appends to the passed in CSSBracketedValueList if any, otherwise creates a
 // new one. Returns nullptr if an empty list is consumed.
-CSSGridLineNamesValue* ConsumeGridLineNames(
+CSSBracketedValueList* ConsumeGridLineNames(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     bool is_subgrid_track_list,
-    CSSGridLineNamesValue* line_names = nullptr) {
+    CSSBracketedValueList* line_names = nullptr) {
   CSSParserTokenRange range_copy = range;
   if (range_copy.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken)
     return nullptr;
 
   if (!line_names)
-    line_names = MakeGarbageCollected<CSSGridLineNamesValue>();
+    line_names = MakeGarbageCollected<CSSBracketedValueList>();
 
   while (CSSCustomIdentValue* line_name =
              ConsumeCustomIdentForGridLine(range_copy, context)) {
@@ -4403,7 +4483,7 @@ bool AppendLineNames(CSSParserTokenRange& range,
                      const CSSParserContext& context,
                      bool is_subgrid_track_list,
                      CSSValueList* values) {
-  if (CSSGridLineNamesValue* line_names =
+  if (CSSBracketedValueList* line_names =
           ConsumeGridLineNames(range, context, is_subgrid_track_list)) {
     values->Append(*line_names);
     return true;
@@ -4509,7 +4589,7 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
 
   // Persists between loop iterations so we can use the same value for
   // consecutive <line-names> values
-  CSSGridLineNamesValue* line_names = nullptr;
+  CSSBracketedValueList* line_names = nullptr;
 
   do {
     // Handle leading <custom-ident>*.
@@ -5001,7 +5081,8 @@ CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
       ValidWidthOrHeightKeyword(range.Peek().Id(), context))
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless);
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
@@ -5011,16 +5092,19 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
       ValidWidthOrHeightKeyword(range.Peek().Id(), context))
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless);
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,
                                 const CSSParserContext& context,
-                                UnitlessQuirk unitless) {
+                                UnitlessQuirk unitless,
+                                CSSAnchorQueryTypes allowed_anchor_queries) {
   if (range.Peek().Id() == CSSValueID::kAuto)
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(range, context,
-                                CSSPrimitiveValue::ValueRange::kAll, unitless);
+                                CSSPrimitiveValue::ValueRange::kAll, unitless,
+                                allowed_anchor_queries);
 }
 
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange& range,
@@ -5123,7 +5207,9 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 
 CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
                             const CSSParserContext& context,
-                            AllowPathValue allow_path) {
+                            AllowPathValue allow_path,
+                            AllowBasicShapeRectValue allow_rect,
+                            AllowBasicShapeXYWHValue allow_xywh) {
   CSSValue* shape = nullptr;
   if (range.Peek().GetType() != kFunctionToken)
     return nullptr;
@@ -5140,6 +5226,12 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
     shape = ConsumeBasicShapeInset(args, context);
   else if (id == CSSValueID::kPath && allow_path == AllowPathValue::kAllow)
     shape = ConsumeBasicShapePath(args);
+  else if (id == CSSValueID::kRect &&
+           allow_rect == AllowBasicShapeRectValue::kAllow)
+    shape = ConsumeBasicShapeRect(args, context);
+  else if (id == CSSValueID::kXywh &&
+           allow_xywh == AllowBasicShapeXYWHValue::kAllow)
+    shape = ConsumeBasicShapeXYWH(args, context);
   if (!shape || !args.AtEnd())
     return nullptr;
 
@@ -5202,7 +5294,8 @@ CSSValue* ConsumeToggleGroup(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  CSSCustomIdentValue* toggle_name =
+      ConsumeCustomIdentConservatively(range, context);
   if (!toggle_name)
     return nullptr;
 
@@ -5216,24 +5309,41 @@ CSSValue* ConsumeToggleGroup(CSSParserTokenRange& range,
   return list;
 }
 
+// <toggle-value> = <integer [0,∞]> | <custom-ident>
+static CSSValue* ConsumeToggleValue(CSSParserTokenRange& range,
+                                    const CSSParserContext& context) {
+  if (CSSPrimitiveValue* integer_value = ConsumeIntegerOrNumberCalc(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegativeInteger)) {
+    return integer_value;
+  }
+
+  return ConsumeCustomIdentConservatively(range, context);
+}
+
 CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  CSSCustomIdentValue* toggle_name =
+      ConsumeCustomIdentConservatively(range, context);
   if (!toggle_name)
     return nullptr;
 
-  CSSPrimitiveValue* initial_state_value = nullptr;
-  CSSPrimitiveValue* maximum_state_value = nullptr;
-  CSSIdentifierValue* sticky_value = nullptr;
+  // Create the list now so that we can append the states to it when we
+  // find them; save the other values for the end.
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*toggle_name);
+
+  bool found_states = false;
+  CSSIdentifierValue* overflow_value = nullptr;
   CSSIdentifierValue* group_value = nullptr;
   CSSIdentifierValue* self_value = nullptr;
 
   while (!range.AtEnd()) {
-    if (!sticky_value) {
-      sticky_value = ConsumeIdent<CSSValueID::kSticky>(range);
-      if (sticky_value)
+    if (!overflow_value) {
+      overflow_value = ConsumeIdent<CSSValueID::kCycle, CSSValueID::kCycleOn,
+                                    CSSValueID::kSticky>(range);
+      if (overflow_value)
         continue;
     }
     if (!group_value) {
@@ -5246,47 +5356,67 @@ CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange& range,
       if (self_value)
         continue;
     }
-    if (!maximum_state_value) {
-      DCHECK(!initial_state_value);
+    if (!found_states) {
+      // <toggle-states> [at <toggle-value>]?
+      //   where:
+      //     <toggle-states> = <integer [1,∞]> | '[' <custom-ident>* ']'
+      //     <toggle-value> = <integer [0,∞]> | <custom-ident>
+      if (CSSPrimitiveValue* maximum_state_value = ConsumeIntegerOrNumberCalc(
+              range, context,
+              CSSPrimitiveValue::ValueRange::kPositiveInteger)) {
+        found_states = true;
+        list->Append(*maximum_state_value);
+      } else if (range.Peek().GetType() == kLeftBracketToken) {
+        CSSParserTokenRange block = range.ConsumeBlock();
+        block.ConsumeWhitespace();
+        range.ConsumeWhitespace();
 
-      // [ <integer [0,∞]> / ]? <integer [1,∞]>
-      CSSParserTokenRange saved_range(range);
-      initial_state_value = ConsumeIntegerOrNumberCalc(
-          range, context, CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
-      if (initial_state_value) {
-        if (!ConsumeSlashIncludingWhitespace(range)) {
-          // Retry as just <integer [1,∞]>.
-          range = saved_range;
-          initial_state_value = nullptr;
+        auto* state_list = MakeGarbageCollected<CSSBracketedValueList>();
+        HashSet<AtomicString> states_found;
+
+        while (true) {
+          CSSCustomIdentValue* state_name =
+              ConsumeCustomIdentConservatively(block, context);
+          if (!state_name)
+            break;
+
+          // If <toggle-states> is a bracketed list, and there are any
+          // repeated <custom-ident>s among its items, the property is
+          // invalid.
+          if (!states_found.insert(state_name->Value()).is_new_entry) {
+            return nullptr;
+          }
+
+          state_list->Append(*state_name);
         }
 
-        maximum_state_value = ConsumeIntegerOrNumberCalc(
-            range, context, CSSPrimitiveValue::ValueRange::kPositiveInteger);
-        if (maximum_state_value)
-          continue;
-        // Note: If this is ever used in a context where it could be
-        // followed by another slash, we'd need to retry here if we
-        // didn't already retry above, or better separate the code for
-        // parsing two numbers from the code for parsing one.
-        range = saved_range;
-        initial_state_value = nullptr;
+        // TODO(https://github.com/tabatkins/css-toggle/issues/19): The
+        // spec currently allows an empty list of states, but this
+        // doesn't make sense, so we do not.
+        if (state_list->length() == 0 || !block.AtEnd()) {
+          return nullptr;
+        }
+        list->Append(*state_list);
+        found_states = true;
+      }
+
+      if (found_states) {
+        if (CSSValue* at_value = ConsumeIdent<CSSValueID::kAt>(range)) {
+          list->Append(*at_value);
+          if (CSSValue* toggle_value = ConsumeToggleValue(range, context)) {
+            list->Append(*toggle_value);
+          } else {
+            return nullptr;
+          }
+        }
+        continue;
       }
     }
     break;
   }
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*toggle_name);
-  if (maximum_state_value) {
-    CSSValueList* number_list = CSSValueList::CreateSlashSeparated();
-    if (initial_state_value) {
-      number_list->Append(*initial_state_value);
-    }
-    number_list->Append(*maximum_state_value);
-    list->Append(*number_list);
-  }
-  if (sticky_value)
-    list->Append(*sticky_value);
+  if (overflow_value)
+    list->Append(*overflow_value);
   if (group_value)
     list->Append(*group_value);
   if (self_value)
@@ -5299,17 +5429,39 @@ CSSValue* ConsumeToggleTrigger(CSSParserTokenRange& range,
                                const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)
     return nullptr;
-  CSSCustomIdentValue* toggle_name = ConsumeCustomIdent(range, context);
+  CSSCustomIdentValue* toggle_name =
+      ConsumeCustomIdentConservatively(range, context);
   if (!toggle_name)
     return nullptr;
 
-  CSSPrimitiveValue* target_value = ConsumeIntegerOrNumberCalc(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
-
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*toggle_name);
-  if (target_value)
-    list->Append(*target_value);
+
+  CSSIdentifierValue* mode_value =
+      ConsumeIdent<CSSValueID::kPrev, CSSValueID::kNext, CSSValueID::kSet>(
+          range);
+  if (!mode_value)
+    return list;
+
+  list->Append(*mode_value);
+
+  if (mode_value->GetValueID() != CSSValueID::kSet) {
+    // [prev | next] <integer [1,∞]>?
+    DCHECK(mode_value->GetValueID() == CSSValueID::kPrev ||
+           mode_value->GetValueID() == CSSValueID::kNext);
+    CSSPrimitiveValue* increment_value = ConsumeIntegerOrNumberCalc(
+        range, context, CSSPrimitiveValue::ValueRange::kPositiveInteger);
+    if (increment_value)
+      list->Append(*increment_value);
+  } else {
+    // set <toggle-value>
+    DCHECK_EQ(mode_value->GetValueID(), CSSValueID::kSet);
+    if (CSSValue* target_value = ConsumeToggleValue(range, context)) {
+      list->Append(*target_value);
+    } else {
+      return nullptr;
+    }
+  }
 
   return list;
 }
@@ -5502,12 +5654,17 @@ CSSValue* ParseSpacing(CSSParserTokenRange& range,
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
-  // TODO(crbug.com/1066390): ConsumeCustomIdent should not allow "default".
-  if (range.Peek().Id() == CSSValueID::kDefault)
+  if (range.Peek().GetType() != kIdentToken)
     return nullptr;
-  if (range.Peek().Id() == CSSValueID::kNone)
+  if (range.Peek().Id() == CSSValueID::kNormal)
     return nullptr;
-  return ConsumeCustomIdent(range, context);
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "not"))
+    return nullptr;
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "and"))
+    return nullptr;
+  if (EqualIgnoringASCIICase(range.Peek().Value(), "or"))
+    return nullptr;
+  return ConsumeCustomIdentConservatively(range, context);
 }
 
 CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
@@ -5517,32 +5674,42 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  while (true) {
-    CSSValue* value = ConsumeSingleContainerName(range, context);
-    if (!value)
-      break;
+  while (CSSValue* value = ConsumeSingleContainerName(range, context))
     list->Append(*value);
-  }
 
   return list->length() ? list : nullptr;
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
-  if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
+  if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(range))
     return value;
 
-  if (CSSValue* value =
-          ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range)) {
-    // Note that StyleBuilderConverter::ConvertFlags requires that values
-    // other than 'none' appear in a CSSValueList, hence we return a list with
-    // one item here. Also note that the full grammar will require multiple
-    // list items in the future, when we add support for 'style' and 'state'.
-    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    list->Append(*value);
-    return list;
+  CSSValue* style = nullptr;
+  CSSValue* size = nullptr;
+  while (!range.AtEnd()) {
+    if (!size) {
+      size = ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range);
+      if (size)
+        continue;
+    }
+    if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
+      if (!style) {
+        style = ConsumeIdent<CSSValueID::kStyle>(range);
+        if (style)
+          continue;
+      }
+    }
+    return nullptr;
   }
+  if (!size && !style)
+    return nullptr;
 
-  return nullptr;
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (style)
+    list->Append(*style);
+  if (size)
+    list->Append(*size);
+  return list;
 }
 
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,

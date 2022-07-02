@@ -37,14 +37,11 @@ WebServiceWorkerFetchContext::Create(
         mojom::blink::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
     const WebVector<WebString>& cors_exempt_header_list) {
-  // Create isolated copies for `worker_script_url` and
-  // `script_url_to_skip_throttling` as the fetch context will be used on a
-  // service worker thread that is different from the current thread.
   return base::MakeRefCounted<WebServiceWorkerFetchContextImpl>(
-      renderer_preferences, KURL::CreateIsolated(worker_script_url.GetString()),
+      renderer_preferences, KURL(worker_script_url.GetString()),
       std::move(pending_url_loader_factory),
       std::move(pending_script_loader_factory),
-      KURL::CreateIsolated(script_url_to_skip_throttling.GetString()),
+      KURL(script_url_to_skip_throttling.GetString()),
       std::move(throttle_provider),
       std::move(websocket_handshake_throttle_provider),
       std::move(preference_watcher_receiver),
@@ -180,7 +177,7 @@ net::SiteForCookies WebServiceWorkerFetchContextImpl::SiteForCookies() const {
   // SiteForCookies, because "site for cookies" for the service worker is
   // the service worker's origin's host's registrable domain.
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-07#section-2.1.2
-  return net::SiteForCookies::FromUrl(worker_script_url_);
+  return net::SiteForCookies::FromUrl(GURL(worker_script_url_));
 }
 
 absl::optional<WebSecurityOrigin>
@@ -216,14 +213,6 @@ void WebServiceWorkerFetchContextImpl::NotifyUpdate(
 
 WebString WebServiceWorkerFetchContextImpl::GetAcceptLanguages() const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
-}
-
-CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
-WebServiceWorkerFetchContextImpl::TakePendingWorkerTimingReceiver(
-    int request_id) {
-  // No receiver exists because requests from service workers are never handled
-  // by a service worker.
-  return {};
 }
 
 void WebServiceWorkerFetchContextImpl::SetIsOfflineMode(bool is_offline_mode) {

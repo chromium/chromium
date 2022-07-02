@@ -44,12 +44,28 @@ py_library(
     ],
     deps = [
         "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
-        "//tensorflow_lite_support/python/task/processor/proto:bounding_box_pb2",
         "//tensorflow_lite_support/python/task/processor/proto:segmentation_options_pb2",
         "//tensorflow_lite_support/python/task/processor/proto:segmentations_pb2",
         "//tensorflow_lite_support/python/task/vision/core:tensor_image",
         "//tensorflow_lite_support/python/task/vision/core/pybinds:image_utils",
         "//tensorflow_lite_support/python/task/vision/pybinds:_pywrap_image_segmenter",
+    ],
+)
+
+py_library(
+    name = "image_searcher",
+    srcs = [
+        "image_searcher.py",
+    ],
+    deps = [
+        "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
+        "//tensorflow_lite_support/python/task/processor/proto:bounding_box_pb2",
+        "//tensorflow_lite_support/python/task/processor/proto:embedding_options_pb2",
+        "//tensorflow_lite_support/python/task/processor/proto:search_options_py_pb2",
+        "//tensorflow_lite_support/python/task/processor/proto:search_result_pb2",
+        "//tensorflow_lite_support/python/task/vision/core:tensor_image",
+        "//tensorflow_lite_support/python/task/vision/core/pybinds:image_utils",
+        "//tensorflow_lite_support/python/task/vision/pybinds:_pywrap_image_searcher",
     ],
 )
 

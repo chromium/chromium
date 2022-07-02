@@ -6,6 +6,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -36,6 +38,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
 
@@ -74,7 +77,7 @@ class FencedFrameBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -82,6 +85,7 @@ class FencedFrameBrowserTest : public ContentBrowserTest {
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+  base::HistogramTester histogram_tester_;
 
  private:
   test::FencedFrameTestHelper fenced_frame_test_helper_;
@@ -616,7 +620,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NodesForIsLoading) {
           primary_rfh.get()->child_at(0)->current_frame_host()));
   ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
 
-  RenderFrameHostImpl* inner_contents_rfh = inner_contents->GetMainFrame();
+  RenderFrameHostImpl* inner_contents_rfh =
+      inner_contents->GetPrimaryMainFrame();
   FrameTree& inner_contents_primary_frame_tree =
       inner_contents->GetPrimaryFrameTree();
   ASSERT_TRUE(inner_contents_rfh);
@@ -685,9 +690,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
 }
 
 // Test that when the documents inside the fenced frame tree are loading, then
-// `WebContents::IsLoading`, `FrameTree::IsLoading`, and
-// `FrameTreeNode::IsLoading` should return true. Primary `FrameTree::IsLoading`
-// value should reflect the loading state of descendant fenced frames.
+// `WebContents::IsLoading`, `FrameTree::IsLoadingIncludingInnerFrameTrees`, and
+// `FrameTreeNode::IsLoading` should return true. Primary
+// `FrameTree::IsLoadingIncludingInnerFrameTrees` value should reflect the
+// loading state of descendant fenced frames.
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
   // Create a HTTP response to control fenced frame navigation.
   net::test_server::ControllableHttpResponse fenced_frame_response(
@@ -716,14 +722,16 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
       inner_fenced_frame_rfh->frame_tree_node();
   FrameTree* fenced_frame_tree = fenced_frame_root_node->frame_tree();
 
-  // All WebContents::IsLoading, FrameTree::IsLoading, and
-  // FrameTreeNode::IsLoading should return true when the fenced frame is
-  // loading along with primary FrameTree::IsLoading as we check for inner frame
-  // trees loading state.
+  // All WebContents::IsLoading, FrameTree::IsLoadingIncludingInnerFrameTrees,
+  // and FrameTreeNode::IsLoading should return true when the fenced frame is
+  // loading along with primary FrameTree::IsLoadingIncludingInnerFrameTrees as
+  // we check for inner frame trees loading state.
   EXPECT_TRUE(web_contents()->IsLoading());
-  EXPECT_TRUE(primary_main_frame_host()->frame_tree()->IsLoading());
+  EXPECT_TRUE(primary_main_frame_host()
+                  ->frame_tree()
+                  ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_TRUE(fenced_frame_root_node->IsLoading());
-  EXPECT_TRUE(fenced_frame_tree->IsLoading());
+  EXPECT_TRUE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
 
   // Complete the fenced frame response and finish fenced frame navigation.
   fenced_frame_response.WaitForRequest();
@@ -738,9 +746,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
   // frame stops loading.
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_FALSE(web_contents()->IsLoading());
-  EXPECT_FALSE(primary_main_frame_host()->frame_tree()->IsLoading());
+  EXPECT_FALSE(primary_main_frame_host()
+                   ->frame_tree()
+                   ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_FALSE(fenced_frame_root_node->IsLoading());
-  EXPECT_FALSE(fenced_frame_tree->IsLoading());
+  EXPECT_FALSE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
 }
 
 // Test that when the documents inside the fenced frame tree are loading,
@@ -945,6 +955,201 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UserInteractionForFencedFrame) {
   fenced_frame_rfh->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       ProcessAllocationWithFullSiteIsolation) {
+  ASSERT_TRUE(https_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Empty fenced frame document should have a different site instance, but
+  // should be in the same process as embedder.
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   GURL());
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(fenced_frame_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      primary_main_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Same-site fenced frame document should be in the same process as embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, same_site_fenced_frame_url);
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(fenced_frame_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      primary_main_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Cross-site fenced frame document should be in a different process from its
+  // embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, cross_site_fenced_frame_url);
+  EXPECT_NE(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       CrossSiteFencedFramesShareProcess) {
+  ASSERT_TRUE(https_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Two fenced frames that are same-site with each other, and cross-site with
+  // the embedder should be in the same process. This happens due to the
+  // subframe process reuse policy which also applies to fenced frames (the
+  // second fenced frame will try to reuse an existing process that is locked to
+  // the same site).
+  RenderFrameHost* ff_rfh_1 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  RenderFrameHost* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  EXPECT_NE(ff_rfh_1->GetSiteInstance(), ff_rfh_2->GetSiteInstance());
+  EXPECT_NE(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_EQ(ff_rfh_1->GetProcess(), ff_rfh_2->GetProcess());
+
+  // The cross-site fenced frame should be moved to the same process as embedder
+  // when navigated to same-site (similar to before).
+  ff_rfh_2 = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      ff_rfh_2, same_site_fenced_frame_url);
+  EXPECT_EQ(ff_rfh_2->GetProcess(), primary_main_frame_host()->GetProcess());
+}
+
+// Tests to ensure that the owner forced sandbox flags are set when a fenced
+// frame is created, and are kept after the fenced frame is navigated
+// to a page with a CSP sandbox header.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, EnsureSandboxFlagsEnforced) {
+  ASSERT_TRUE(https_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  RenderFrameHostImplWrapper ff_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+
+  EXPECT_TRUE(ff_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
+
+  TestFrameNavigationObserver observer(ff_rfh.get());
+  GURL new_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/sandbox_flags.html");
+  EXPECT_TRUE(
+      ExecJs(primary_rfh.get(),
+             JsReplace("document.querySelector('fencedframe').src = $1;",
+                       new_fenced_frame_url)));
+  observer.Wait();
+
+  EXPECT_TRUE(!ff_rfh->IsErrorDocument());
+  EXPECT_TRUE(ff_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
+}
+
+class FencedFrameWithSiteIsolationDisabledBrowserTest
+    : public FencedFrameBrowserTest {
+ public:
+  FencedFrameWithSiteIsolationDisabledBrowserTest() = default;
+  ~FencedFrameWithSiteIsolationDisabledBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FencedFrameBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationWithSiteIsolationDisabled) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Empty fenced frame document should be in the same process as embedder.
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   GURL());
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Same-site fenced frame document should be in the same process as embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, same_site_fenced_frame_url);
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Cross-site fenced frame document should be in the same process as the
+  // embedder (with site isolation disabled).
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, cross_site_fenced_frame_url);
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationWithDynamicIsolatedOrigin) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL isolated_cross_site_fenced_frame_url =
+      https_server()->GetURL("isolated.b.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Start isolating "isolated.b.test".
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(isolated_cross_site_fenced_frame_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  RenderFrameHost* ff_rfh_1 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  RenderFrameHost* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), isolated_cross_site_fenced_frame_url);
+
+  // The c.test fenced frame should share a process with the embedder, but
+  // the isolated.b.test fenced frame should be in a different process.
+  EXPECT_EQ(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_NE(ff_rfh_2->GetProcess(), ff_rfh_1->GetProcess());
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {
@@ -1047,11 +1252,8 @@ class FencedFrameNestedFrameBrowserTest
  protected:
   FencedFrameNestedFrameBrowserTest() {
     if (std::get<1>(GetParam())) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
+      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
+          test::FencedFrameTestHelper::FencedFrameType::kShadowDOM);
     } else {
       fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
     }
@@ -1075,8 +1277,8 @@ class FencedFrameNestedFrameBrowserTest
     const GURL main_url =
         https_server()->GetURL(kSameOriginHostName, "/title1.html");
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
-    RenderFrameHostImpl* frame =
-        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
+        web_contents()->GetPrimaryMainFrame());
     int depth = 0;
     for (const auto& type : std::get<0>(GetParam())) {
       ++depth;
@@ -1104,27 +1306,8 @@ class FencedFrameNestedFrameBrowserTest
         "/fenced_frames/title1.html?depth=" + base::NumberToString(depth));
 
     if (IsFencedFrameType(type)) {
-      if (fenced_frame_helper_) {
-        return static_cast<RenderFrameHostImpl*>(
-            fenced_frame_helper_->CreateFencedFrame(parent, url));
-      }
-      // FencedFrameTestHelper only supports the MPArch version of fenced
-      // frames. So need to maually create a fenced frame for the ShadowDOM
-      // version.
-      constexpr char kAddFencedFrameScript[] = R"({
-          frame = document.createElement('fencedframe');
-          document.body.appendChild(frame);
-        })";
-      EXPECT_TRUE(ExecJs(parent, kAddFencedFrameScript));
-      constexpr char kNavigateFencedFrameScript[] = R"({
-          document.body.getElementsByTagName('fencedframe')[0].src = $1;
-        })";
-      RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-          parent->child_at(0)->current_frame_host());
-      TestFrameNavigationObserver observer(rfh);
-      EXPECT_TRUE(ExecJs(parent, JsReplace(kNavigateFencedFrameScript, url)));
-      observer.Wait();
-      return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
+      return static_cast<RenderFrameHostImpl*>(
+          fenced_frame_helper_->CreateFencedFrame(parent, url));
     }
     EXPECT_TRUE(ExecJs(parent, JsReplace(kAddIframeScript, url)));
 
@@ -1215,7 +1398,12 @@ class FencedFrameNestedModesTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ContentBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(https_server());
+
+    ASSERT_TRUE(https_server()->Start());
   }
 
   WebContentsImpl* web_contents() {
@@ -1223,12 +1411,16 @@ class FencedFrameNestedModesTest
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return *fenced_frame_test_helper_.get();
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   std::string ModeToString(blink::mojom::FencedFrameMode mode) {
@@ -1247,6 +1439,7 @@ class FencedFrameNestedModesTest
   // and it automatically enables MPArch fenced frames when created.
   std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // This test runs the following steps:
@@ -1255,18 +1448,24 @@ class FencedFrameNestedModesTest
 //   3.) Asserts that creation of the child fenced frame either failed or
 //       succeeded depending on its mode.
 IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
-  const GURL main_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // 1.) Create the parent fenced frame.
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
   constexpr char kAddFencedFrameScript[] = R"({
       const fenced_frame = document.createElement('fencedframe');
+      fenced_frame.src = $2;
       fenced_frame.mode = $1;
       document.body.appendChild(fenced_frame);
     })";
-  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
-                     JsReplace(kAddFencedFrameScript, GetParentMode())));
+  EXPECT_TRUE(ExecJs(
+      primary_main_frame_host(),
+      JsReplace(kAddFencedFrameScript, GetParentMode(), fenced_frame_url)));
+
+  // Wait for page to load in order to have it know it's in a secure context.
+  WaitForLoadStop(web_contents());
 
   // Get the fenced frame's RFH.
   ASSERT_EQ(1u, primary_main_frame_host()->child_count());
@@ -1281,18 +1480,36 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_TRUE(parent_fenced_frame_rfh);
 
   // 2.) Attempt to create the child fenced frame.
-  EXPECT_TRUE(ExecJs(parent_fenced_frame_rfh,
-                     JsReplace(kAddFencedFrameScript, GetChildMode())));
+  EXPECT_TRUE(ExecJs(
+      parent_fenced_frame_rfh,
+      JsReplace(kAddFencedFrameScript, GetChildMode(), fenced_frame_url)));
 
   // 3.) Assert that the child fenced frame was created or not created depending
   //     on the test parameters.
+  content::FetchHistogramsFromChildProcesses();
   if (GetParentMode() != GetChildMode()) {
-    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
     // Child fenced frame creation should have failed based on its mode.
+    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+    // kIncompatibleMode
+    histogram_tester_.ExpectBucketCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 3, 1);
   } else {
-    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
     // Child fenced frame creation should have succeeded because its mode is the
     // same as its parent.
+    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+    if (GetChildMode() == "default") {
+      // kSuccessDefault
+      histogram_tester_.ExpectBucketCount(
+          "Blink.FencedFrame.CreationOrNavigationOutcome", 0, 2);
+    } else {
+      // kSuccessOpaque
+      histogram_tester_.ExpectBucketCount(
+          "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 2);
+    }
   }
 }
 

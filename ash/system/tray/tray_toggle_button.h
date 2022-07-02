@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_TRAY_TRAY_TOGGLE_BUTTON_H_
 #define ASH_SYSTEM_TRAY_TRAY_TOGGLE_BUTTON_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 
 namespace ui {
@@ -17,6 +18,7 @@ namespace ash {
 // colors from AshColorProvider.
 class TrayToggleButton : public views::ToggleButton {
  public:
+  METADATA_HEADER(TrayToggleButton);
   TrayToggleButton(PressedCallback callback, int accessible_name_id);
   TrayToggleButton(const TrayToggleButton&) = delete;
   TrayToggleButton& operator=(const TrayToggleButton&) = delete;

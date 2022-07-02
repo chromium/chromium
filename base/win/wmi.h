@@ -15,7 +15,7 @@
 // CoInitializeEx beforehand.
 //
 // For more information about WMI programming:
-// http://msdn2.microsoft.com/en-us/library/aa384642(VS.85).aspx
+// https://docs.microsoft.com/en-us/windows/win32/wmisdk
 
 #ifndef BASE_WIN_WMI_H_
 #define BASE_WIN_WMI_H_
@@ -25,9 +25,34 @@
 
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
+
+// Enumeration of errors that can arise when connecting to a WMI server and
+// running a query.
+enum class WmiError {
+  kFailedToCreateInstance = 0,
+  kFailedToConnectToWMI = 1,
+  kFailedToSetSecurityBlanket = 2,
+  kFailedToExecWMIQuery = 3,
+};
+
+// String used to connect to the CIMV2 WMI server.
+BASE_EXPORT extern const wchar_t kCimV2ServerName[];
+
+// String used to connect to the SecurityCenter2 WMI server.
+BASE_EXPORT extern const wchar_t kSecurityCenter2ServerName[];
+
+// Connects to a server named `server_name` on the local computer through COM
+// and run the given WQL `query`. Sets `enumerator` with the values returned by
+// that `query`. Will return a WmiError value if an error occurs, else returns
+// absl::nullopt.
+BASE_EXPORT absl::optional<WmiError> RunWmiQuery(
+    const std::wstring& server_name,
+    const std::wstring& query,
+    Microsoft::WRL::ComPtr<IEnumWbemClassObject>* enumerator);
 
 // Creates an instance of the WMI service connected to the local computer and
 // returns its COM interface. If |set_blanket| is set to true, the basic COM
@@ -78,7 +103,7 @@ class BASE_EXPORT WmiComputerSystemInfo {
 
  private:
   void PopulateSerialNumber(
-      const Microsoft::WRL::ComPtr<IWbemServices>& services);
+      const Microsoft::WRL::ComPtr<IEnumWbemClassObject>& enumerator_bios);
 
   std::wstring serial_number_;
 };

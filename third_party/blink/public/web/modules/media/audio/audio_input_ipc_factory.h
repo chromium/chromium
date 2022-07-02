@@ -13,7 +13,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace media {
@@ -26,18 +25,13 @@ namespace blink {
 // This is a thread-safe factory for AudioInputIPC objects.
 class BLINK_MODULES_EXPORT AudioInputIPCFactory {
  public:
-  AudioInputIPCFactory(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+  explicit AudioInputIPCFactory(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   AudioInputIPCFactory(const AudioInputIPCFactory&) = delete;
   AudioInputIPCFactory& operator=(const AudioInputIPCFactory&) = delete;
   ~AudioInputIPCFactory();
 
   static AudioInputIPCFactory& GetInstance();
-
-  const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() const {
-    return io_task_runner_;
-  }
 
   // The returned object may only be used on io_task_runner().
   std::unique_ptr<media::AudioInputIPC> CreateAudioInputIPC(
@@ -46,7 +40,6 @@ class BLINK_MODULES_EXPORT AudioInputIPCFactory {
 
  private:
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 };
 
 }  // namespace blink

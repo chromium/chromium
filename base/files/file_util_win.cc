@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -38,6 +39,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -86,7 +88,7 @@ DWORD DeleteFileRecursive(const FilePath& path,
         (recursive || !info.IsDirectory())) {
       ::SetFileAttributes(
           current.value().c_str(),
-          info.find_data().dwFileAttributes & ~FILE_ATTRIBUTE_READONLY);
+          info.find_data().dwFileAttributes & ~DWORD{FILE_ATTRIBUTE_READONLY});
     }
 
     DWORD this_result = ERROR_SUCCESS;
@@ -149,7 +151,7 @@ bool DoCopyFile(const FilePath& from_path,
     return false;
   }
   if (attrs & FILE_ATTRIBUTE_READONLY) {
-    SetFileAttributes(dest, attrs & ~FILE_ATTRIBUTE_READONLY);
+    SetFileAttributes(dest, attrs & ~DWORD{FILE_ATTRIBUTE_READONLY});
   }
   return true;
 }
@@ -272,7 +274,7 @@ DWORD DoDeleteFile(const FilePath& path, bool recursive) {
   // Clear the read-only bit if it is set.
   if ((attr & FILE_ATTRIBUTE_READONLY) &&
       !::SetFileAttributes(path.value().c_str(),
-                           attr & ~FILE_ATTRIBUTE_READONLY)) {
+                           attr & ~DWORD{FILE_ATTRIBUTE_READONLY})) {
     // It's possible for |path| to be gone now under a race with other deleters.
     return ReturnLastErrorOrSuccessOnNotFound();
   }
@@ -311,39 +313,75 @@ bool DeleteFileOrSetLastError(const FilePath& path, bool recursive) {
 
 constexpr int kMaxDeleteAttempts = 9;
 
-void LogFileDeleteRetryCount(int attempt) {
-  UmaHistogramExactLinear("Windows.FileDeleteRetryCount", attempt,
-                          kMaxDeleteAttempts);
+void LogFileDeleteRetryCount(bool recursive, int attempt) {
+  UmaHistogramExactLinear(recursive ? "Windows.PathRecursivelyDeleteRetryCount"
+                                    : "Windows.FileDeleteRetryCount",
+                          attempt, kMaxDeleteAttempts);
 }
 
-void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
+void DeleteFileWithRetry(const FilePath& path,
+                         bool recursive,
+                         int attempt,
+                         OnceCallback<void(bool)> reply_callback) {
   // Retry every 250ms for up to two seconds. These values were pulled out of
   // thin air, and may be adjusted in the future based on the metrics collected.
   static constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
-  if (DeleteFile(file_path)) {
+  if (DeleteFileOrSetLastError(path, recursive)) {
     // Log how many times we had to retry the RetryDeleteFile operation before
     // it succeeded. This will be from 0 to kMaxDeleteAttempts - 1.
-    LogFileDeleteRetryCount(attempt);
+    LogFileDeleteRetryCount(recursive, attempt);
+    // Consider introducing further retries until the item has been removed from
+    // the filesystem and its name is ready for reuse; see the comments in
+    // chrome/installer/mini_installer/delete_with_retry.cc for details.
+    if (!reply_callback.is_null())
+      std::move(reply_callback).Run(true);
     return;
   }
+
   ++attempt;
   DCHECK_LE(attempt, kMaxDeleteAttempts);
   if (attempt == kMaxDeleteAttempts) {
     // Log kMaxDeleteAttempts to indicate failure after exhausting all attempts.
-    LogFileDeleteRetryCount(attempt);
+    LogFileDeleteRetryCount(recursive, attempt);
+    if (!reply_callback.is_null())
+      std::move(reply_callback).Run(false);
     return;
   }
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      BindOnce(&DeleteFileWithRetry, attempt, file_path),
-      kDeleteFileRetryDelay);
+
+  ThreadPool::PostDelayedTask(FROM_HERE,
+                              {TaskPriority::BEST_EFFORT, MayBlock()},
+                              BindOnce(&DeleteFileWithRetry, path, recursive,
+                                       attempt, std::move(reply_callback)),
+                              kDeleteFileRetryDelay);
+}
+
+OnceClosure GetDeleteFileCallbackInternal(
+    const FilePath& path,
+    bool recursive,
+    OnceCallback<void(bool)> reply_callback) {
+  OnceCallback<void(bool)> bound_callback;
+  if (!reply_callback.is_null()) {
+    bound_callback = BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                  std::move(reply_callback));
+  }
+  return BindOnce(&DeleteFileWithRetry, path, recursive, /*attempt=*/0,
+                  std::move(bound_callback));
 }
 
 }  // namespace
 
-OnceClosure GetDeleteFileCallback(const FilePath& path) {
-  return BindOnce(&DeleteFileWithRetry, 0, path);
+OnceClosure GetDeleteFileCallback(const FilePath& path,
+                                  OnceCallback<void(bool)> reply_callback) {
+  return GetDeleteFileCallbackInternal(path, /*recursive=*/false,
+                                       std::move(reply_callback));
+}
+
+OnceClosure GetDeletePathRecursivelyCallback(
+    const FilePath& path,
+    OnceCallback<void(bool)> reply_callback) {
+  return GetDeleteFileCallbackInternal(path, /*recursive=*/true,
+                                       std::move(reply_callback));
 }
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -774,7 +812,9 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   ULARGE_INTEGER size;
   size.HighPart = attr.nFileSizeHigh;
   size.LowPart = attr.nFileSizeLow;
-  results->size = size.QuadPart;
+  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // cast.
+  results->size = checked_cast<int64_t>(size.QuadPart);
 
   results->is_directory =
       (attr.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -841,12 +881,15 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
                                     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                     OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN,
                                     NULL));
-  if (!file.is_valid())
+  if (!file.is_valid() || max_size < 0)
     return -1;
 
   DWORD read;
-  if (::ReadFile(file.get(), data, max_size, &read, NULL))
-    return read;
+  if (::ReadFile(file.get(), data, static_cast<DWORD>(max_size), &read, NULL)) {
+    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // and eliminate this cast.
+    return checked_cast<int>(read);
+  }
 
   return -1;
 }
@@ -856,15 +899,16 @@ int WriteFile(const FilePath& filename, const char* data, int size) {
   win::ScopedHandle file(CreateFile(filename.value().c_str(), GENERIC_WRITE, 0,
                                     NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
                                     NULL));
-  if (!file.is_valid()) {
-    DPLOG(WARNING) << "CreateFile failed for path " << filename.value();
+  if (!file.is_valid() || size < 0) {
+    DPLOG(WARNING) << "WriteFile failed for path " << filename.value();
     return -1;
   }
 
   DWORD written;
-  BOOL result = ::WriteFile(file.get(), data, size, &written, NULL);
+  BOOL result =
+      ::WriteFile(file.get(), data, static_cast<DWORD>(size), &written, NULL);
   if (result && static_cast<int>(written) == size)
-    return written;
+    return static_cast<int>(written);
 
   if (!result) {
     // WriteFile failed.
@@ -957,7 +1001,8 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 
 bool SetNonBlocking(int fd) {
   unsigned long nonblocking = 1;
-  if (ioctlsocket(fd, FIONBIO, &nonblocking) == 0)
+  if (ioctlsocket(static_cast<SOCKET>(fd), static_cast<long>(FIONBIO),
+                  &nonblocking) == 0)
     return true;
   return false;
 }
@@ -978,9 +1023,9 @@ PrefetchVirtualMemoryPtr GetPrefetchVirtualMemoryPtr() {
 
 }  // namespace
 
-PrefetchResult PreReadFile(const FilePath& file_path,
-                           bool is_executable,
-                           int64_t max_bytes) {
+bool PreReadFile(const FilePath& file_path,
+                 bool is_executable,
+                 int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
   // On Win8 and higher use ::PrefetchVirtualMemory(). This is better than a
@@ -991,14 +1036,12 @@ PrefetchResult PreReadFile(const FilePath& file_path,
       GetPrefetchVirtualMemoryPtr();
 
   if (prefetch_virtual_memory == nullptr)
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kSlowSuccess}
-               : PrefetchResult{PrefetchResultCode::kSlowFailed};
+    return internal::PreReadFileSlow(file_path, max_bytes);
 
   if (max_bytes == 0) {
     // PrefetchVirtualMemory() fails when asked to read zero bytes.
     // base::MemoryMappedFile::Initialize() fails on an empty file.
-    return PrefetchResult{PrefetchResultCode::kSuccess};
+    return true;
   }
 
   // PrefetchVirtualMemory() fails if the file is opened with write access.
@@ -1006,11 +1049,9 @@ PrefetchResult PreReadFile(const FilePath& file_path,
                                         ? MemoryMappedFile::READ_CODE_IMAGE
                                         : MemoryMappedFile::READ_ONLY;
   MemoryMappedFile mapped_file;
-  if (!mapped_file.Initialize(file_path, access)) {
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kMemoryMapFailedSlowUsed}
-               : PrefetchResult{PrefetchResultCode::kMemoryMapFailedSlowFailed};
-  }
+  if (!mapped_file.Initialize(file_path, access))
+    return internal::PreReadFileSlow(file_path, max_bytes);
+
   const ::SIZE_T length =
       std::min(base::saturated_cast<::SIZE_T>(max_bytes),
                base::saturated_cast<::SIZE_T>(mapped_file.length()));
@@ -1018,11 +1059,9 @@ PrefetchResult PreReadFile(const FilePath& file_path,
   if (!prefetch_virtual_memory(::GetCurrentProcess(),
                                /*NumberOfEntries=*/1, &address_range,
                                /*Flags=*/0)) {
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kFastFailedSlowUsed}
-               : PrefetchResult{PrefetchResultCode::kFastFailedSlowFailed};
+    return internal::PreReadFileSlow(file_path, max_bytes);
   }
-  return PrefetchResult{PrefetchResultCode::kSuccess};
+  return true;
 }
 
 // -----------------------------------------------------------------------------

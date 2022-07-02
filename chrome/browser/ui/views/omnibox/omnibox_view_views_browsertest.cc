@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -454,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   matches.push_back(match);
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -502,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_current_url(GURL("http://autocomplete-result/"));
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -604,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -704,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -827,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   matches.push_back(match);
   AutocompleteInput input(u"e", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -1053,8 +1054,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(
+      security_interstitials::omnibox_https_upgrades::kEventHistogram, 0);
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
   EXPECT_TRUE(base::Contains(enumerator.urls(), url));
 
@@ -1070,6 +1071,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       Click(ui_controls::LEFT, click_location, click_location));
   PressEnterAndWaitForNavigations(1);
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              0);
+  histograms.ExpectTotalCount(
+      security_interstitials::omnibox_https_upgrades::kEventHistogram, 0);
 }

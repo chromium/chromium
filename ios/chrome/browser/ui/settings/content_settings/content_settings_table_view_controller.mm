@@ -186,9 +186,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  if (IsDiscoverFeedPreviewEnabled() ||
-      base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
+  if (IsDiscoverFeedPreviewEnabled()) {
     [model addItem:[self linkPreviewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
@@ -398,7 +396,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Verifies using the navigation stack if this is a return from mailTo settings
-// and this instance should reset |openedMailTo|.
+// and this instance should reset `openedMailTo`.
 - (void)checkMailToOwnership {
   if (!_browser)
     return;

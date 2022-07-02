@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,18 +56,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // recorded when |navigation_prefetch_| is true.
   void RecordNavigationURLHistogram(const GURL& navigation_url);
 
-  // Informs |this| that only determining headers is needed. When headers are
-  // determined, |this| can stop receiving messages from the network service.
-  void SetHeadersReceivedCallback(base::OnceClosure headers_received_callback);
-
-  // Whether a successful status code has been received with the headers.
-  // |false| when headers have not been received.
-  bool ReadyToServe();
-
-  // Whether an error status code has been received with the headers. |false|
-  // when headers have not been received.
-  bool ReceivedError();
-
  private:
   // mojo::DataPipeDrainer::Client:
   void OnDataAvailable(const void* data, size_t num_bytes) override;
@@ -98,8 +87,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // When a disconnection occurs in the network URLLoader mojo pipe, this
@@ -152,6 +139,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // Marks the parent prefetch request as servable. Called as delayed task.
   void MarkPrefetchAsServable();
+
+  // Called on `this` receives servable response.
+  void OnServableResponseCodeReceived();
 
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
@@ -221,13 +211,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // report it again.
   bool marked_as_servable_ = false;
 
-  raw_ptr<Profile> profile_;
-
-  // If not null, called when headers are received.
-  base::OnceClosure headers_received_callback_;
-
-  // Whether the response can be served to the user (based on status code).
-  absl::optional<bool> can_be_served_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 

@@ -61,6 +61,11 @@ impl BindgenSemanticAttributes {
                 ConvertError::UnusedTemplateParam,
                 Some(ErrorContext::new_for_item(id_for_context.clone())),
             ))
+        } else if self.get_cpp_visibility() != CppVisibility::Public {
+            Err(ConvertErrorWithContext(
+                ConvertError::NonPublicNestedType,
+                Some(ErrorContext::new_for_item(id_for_context.clone())),
+            ))
         } else {
             Ok(())
         }

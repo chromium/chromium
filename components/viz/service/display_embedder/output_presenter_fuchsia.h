@@ -56,8 +56,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) final;
-  void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
-                        std::vector<ScopedOverlayAccess*> accesses) final;
+  void ScheduleOverlayPlane(
+      const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
+      ScopedOverlayAccess* access,
+      std::unique_ptr<gfx::GpuFence> acquire_fence) final;
 
  private:
   struct PendingFrame {

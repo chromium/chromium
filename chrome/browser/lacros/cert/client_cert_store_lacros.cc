@@ -4,15 +4,24 @@
 
 #include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer.h"
 #include "net/ssl/client_cert_store_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
 ClientCertStoreLacros::ClientCertStoreLacros(
+    std::unique_ptr<chromeos::CertificateProvider> cert_provider,
     CertDbInitializer* cert_db_initializer,
     std::unique_ptr<net::ClientCertStore> underlying_store)
-    : cert_db_initializer_(cert_db_initializer),
+    : cert_provider_(std::move(cert_provider)),
+      cert_db_initializer_(cert_db_initializer),
       underlying_store_(std::move(underlying_store)) {
   DCHECK(underlying_store_);
   DCHECK(cert_db_initializer_);
@@ -31,7 +40,67 @@ void ClientCertStoreLacros::GetClientCerts(
     return;
   }
 
-  underlying_store_->GetClientCerts(cert_request_info, std::move(callback));
+  underlying_store_->GetClientCerts(
+      cert_request_info,
+      base::BindOnce(
+          &ClientCertStoreLacros::AppendAdditionalCerts, base::Unretained(this),
+          base::Unretained(&cert_request_info), std::move(callback)));
+}
+
+void ClientCertStoreLacros::AppendAdditionalCerts(
+    const net::SSLCertRequestInfo* request,
+    ClientCertListCallback callback,
+    net::ClientCertIdentityList client_certs) {
+  auto get_certs_and_filter = base::BindOnce(
+      &ClientCertStoreLacros::GotAdditionalCerts, base::Unretained(request),
+      std::move(callback), std::move(client_certs));
+  if (cert_provider_) {
+    cert_provider_->GetCertificates(std::move(get_certs_and_filter));
+  } else {
+    std::move(get_certs_and_filter).Run(net::ClientCertIdentityList());
+  }
+}
+
+// static
+void ClientCertStoreLacros::GotAdditionalCerts(
+    const net::SSLCertRequestInfo* request,
+    ClientCertListCallback callback,
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIdentityList additional_certs) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ClientCertStoreLacros::FilterAndJoinCertsOnWorkerThread,
+                     base::Unretained(request), std::move(client_certs),
+                     std::move(additional_certs)),
+      std::move(callback));
+}
+
+// static
+net::ClientCertIdentityList
+ClientCertStoreLacros::FilterAndJoinCertsOnWorkerThread(
+    const net::SSLCertRequestInfo* request,
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIdentityList additional_certs) {
+  // This method may acquire the NSS lock or reenter this code via extension
+  // hooks (such as smart card UI). To ensure threads are not starved or
+  // deadlocked, the base::ScopedBlockingCall below increments the thread pool
+  // capacity if this method takes too much time to run.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  net::ClientCertStoreNSS::FilterCertsOnWorkerThread(&additional_certs,
+                                                     *request);
+
+  int first_additional_cert_index = client_certs.size();
+  client_certs.reserve(first_additional_cert_index + additional_certs.size());
+  for (std::unique_ptr<net::ClientCertIdentity>& cert : additional_certs)
+    client_certs.push_back(std::move(cert));
+  // Ensure that the sorting persists after join
+  std::inplace_merge(begin(client_certs),
+                     begin(client_certs) + first_additional_cert_index,
+                     end(client_certs), net::ClientCertIdentitySorter());
+  return client_certs;
 }
 
 void ClientCertStoreLacros::WaitForCertDb() {
@@ -51,7 +120,6 @@ void ClientCertStoreLacros::OnCertDbReady() {
 
   // Dispatch all the queued requests.
   for (auto& request : local_requests) {
-    underlying_store_->GetClientCerts(*request.first,
-                                      std::move(request.second));
+    GetClientCerts(*request.first, std::move(request.second));
   }
 }

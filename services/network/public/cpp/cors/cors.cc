@@ -11,7 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
@@ -232,14 +232,10 @@ absl::optional<CorsErrorStatus> CheckAccessAndReportMetrics(
   cors::AccessCheckResult result = error_status
                                        ? cors::AccessCheckResult::kNotPermitted
                                        : cors::AccessCheckResult::kPermitted;
-  UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult", result);
+  base::UmaHistogramEnumeration("Net.Cors.AccessCheckResult", result);
   if (!IsOriginPotentiallyTrustworthy(origin)) {
-    UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckResult.NotSecureRequestor",
-                              result);
-  }
-  if (error_status) {
-    UMA_HISTOGRAM_ENUMERATION("Net.Cors.AccessCheckError",
-                              error_status->cors_error);
+    base::UmaHistogramEnumeration(
+        "Net.Cors.AccessCheckResult.NotSecureRequestor", result);
   }
   return error_status;
 }
@@ -382,12 +378,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "sec-ch-ua-full",
 
       "sec-ch-ua-wow64",
-
-      // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
-      // will only be sent in the presence of a valid Origin Trial token. It
-      // was introduced to enable safely experimenting with cookies set with the
-      // Partitioned attribute.
-      "sec-ch-partitioned-cookies",
   });
 
   if (!base::Contains(safe_names, lower_name))

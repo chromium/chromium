@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_STARTUP_APP_LAUNCHER_UPDATE_CHECKER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -45,7 +46,7 @@ class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
   // Callback for extension updater check.
   void OnExtensionUpdaterDone();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Whether an extensions with an available update has been detected.
   bool update_found_ = false;

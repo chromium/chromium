@@ -155,7 +155,8 @@ void ReaderModeIconView::OnExecuting(
   content::WebContents* contents = GetWebContents();
   if (!contents || IsDistilledPage(contents->GetLastCommittedURL()))
     return;
-  ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   ukm::builders::ReaderModeActivated(source_id)
       .SetActivatedViaOmnibox(true)
       .Record(ukm::UkmRecorder::Get());
@@ -171,7 +172,7 @@ void ReaderModeIconView::OnResult(
 
   if (result.is_last) {
     ukm::SourceId source_id =
-        web_contents->GetMainFrame()->GetPageUkmSourceId();
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     ukm::builders::ReaderModeReceivedDistillability(source_id)
         .SetIsPageDistillable(result.is_distillable)
         .Record(ukm::UkmRecorder::Get());

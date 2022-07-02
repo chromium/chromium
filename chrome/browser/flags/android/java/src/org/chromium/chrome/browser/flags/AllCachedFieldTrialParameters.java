@@ -43,8 +43,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
 
     public AllCachedFieldTrialParameters(String featureName) {
         // As this includes all parameters, the parameterName is empty.
-        super(featureName, /* parameterName */ "", FieldTrialParameterType.ALL,
-                /* preferenceKeyOverride */ null);
+        super(featureName, /* parameterName */ "", FieldTrialParameterType.ALL);
     }
 
     /**

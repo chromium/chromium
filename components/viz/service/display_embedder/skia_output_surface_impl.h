@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -38,7 +39,8 @@ class DelegatedInkPointRenderer;
 
 namespace gpu {
 class SharedImageRepresentationFactory;
-}
+struct SwapBuffersCompleteParams;
+}  // namespace gpu
 
 namespace viz {
 
@@ -76,7 +78,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // OutputSurface implementation:
   gpu::SurfaceHandle GetSurfaceHandle() const override;
   void BindToClient(OutputSurfaceClient* client) override;
-  void BindFramebuffer() override;
   void SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
   void SetEnableDCLayers(bool enable) override;
   void EnsureBackbuffer() override;
@@ -89,13 +90,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
   gpu::Mailbox GetOverlayMailbox() const override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override;
-  unsigned UpdateGpuFence() override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   base::ScopedClosureRunner GetCacheBackBufferCb() override;
@@ -122,7 +118,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  sk_sp<SkColorSpace> color_space,
                                  bool is_overlay,
                                  const gpu::Mailbox& mailbox) override;
-  void EndPaint(base::OnceClosure on_finished) override;
+  SkCanvas* RecordOverdrawForCurrentPaint() override;
+  void EndPaint(base::OnceClosure on_finished,
+                base::OnceCallback<void(gfx::GpuFenceHandle)>
+                    return_release_fence_cb) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
@@ -198,6 +197,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                       std::vector<gpu::SyncToken> sync_tokens,
                       bool make_current,
                       bool need_framebuffer);
+  void ScheduleOrRetainGpuTask(base::OnceClosure callback,
+                               std::vector<gpu::SyncToken> tokens);
 
   enum class SyncMode {
     kNoWait = 0,

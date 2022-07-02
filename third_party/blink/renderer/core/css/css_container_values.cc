@@ -11,29 +11,47 @@
 namespace blink {
 
 CSSContainerValues::CSSContainerValues(Document& document,
-                                       const ComputedStyle& style,
+                                       Element& container,
                                        absl::optional<double> width,
                                        absl::optional<double> height)
     : MediaValuesDynamic(document.GetFrame()),
+      style_(container.GetComputedStyle()),
       width_(width),
       height_(height),
-      writing_mode_(style.GetWritingMode()),
-      font_sizes_(&style, document.documentElement()->GetComputedStyle()) {}
+      writing_mode_(container.ComputedStyleRef().GetWritingMode()),
+      font_sizes_(CSSToLengthConversionData::FontSizes(
+                      container.GetComputedStyle(),
+                      document.documentElement()->GetComputedStyle())
+                      .Unzoomed()),
+      container_sizes_(container.ParentOrShadowHostElement()) {}
 
-float CSSContainerValues::EmSize() const {
+void CSSContainerValues::Trace(Visitor* visitor) const {
+  visitor->Trace(container_sizes_);
+  MediaValuesDynamic::Trace(visitor);
+}
+
+float CSSContainerValues::EmFontSize() const {
   return font_sizes_.Em();
 }
 
-float CSSContainerValues::RemSize() const {
+float CSSContainerValues::RemFontSize() const {
   return font_sizes_.Rem();
 }
 
-float CSSContainerValues::ExSize() const {
-  return font_sizes_.Ex() / font_sizes_.Zoom();
+float CSSContainerValues::ExFontSize() const {
+  return font_sizes_.Ex();
 }
 
-float CSSContainerValues::ChSize() const {
-  return font_sizes_.Ch() / font_sizes_.Zoom();
+float CSSContainerValues::ChFontSize() const {
+  return font_sizes_.Ch();
+}
+
+double CSSContainerValues::ContainerWidth() const {
+  return container_sizes_.Width().value_or(SmallViewportWidth());
+}
+
+double CSSContainerValues::ContainerHeight() const {
+  return container_sizes_.Height().value_or(SmallViewportHeight());
 }
 
 }  // namespace blink

@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
@@ -226,7 +227,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   GenerateKeyCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
-  ExtensionPlatformKeysService* const service_;
+  const raw_ptr<ExtensionPlatformKeysService> service_;
 
  private:
   void DoStep() {
@@ -575,7 +576,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   SignCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
-  ExtensionPlatformKeysService* const service_;
+  const raw_ptr<ExtensionPlatformKeysService> service_;
   base::WeakPtrFactory<SignTask> weak_factory_{this};
 };
 
@@ -878,10 +879,10 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   const bool interactive_;
   const std::string extension_id_;
   SelectCertificatesCallback callback_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
       extension_key_permissions_service_;
-  ExtensionPlatformKeysService* const service_;
+  const raw_ptr<ExtensionPlatformKeysService> service_;
   base::WeakPtrFactory<SelectTask> weak_factory_{this};
 };
 

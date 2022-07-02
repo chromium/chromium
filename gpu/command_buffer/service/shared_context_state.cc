@@ -262,15 +262,10 @@ SharedContextState::~SharedContextState() {
 
 bool SharedContextState::InitializeGrContext(
     const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& workarounds_ref,
+    const GpuDriverBugWorkarounds& workarounds,
     gpu::raster::GrShaderCache* cache,
     GpuProcessActivityFlags* activity_flags,
     gl::ProgressReporter* progress_reporter) {
-  // TODO(crbug.com/1319451): Remove workaround for skia. This workaround will
-  // only apply to command buffer clients.
-  GpuDriverBugWorkarounds workarounds(workarounds_ref);
-  workarounds.max_texture_size_limit_4096 = false;
-
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
 
@@ -303,10 +298,7 @@ bool SharedContextState::InitializeGrContext(
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
-    bool use_version_es2 = false;
-#if BUILDFLAG(IS_ANDROID)
-    use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
-#endif
+    constexpr bool use_version_es2 = false;
     sk_sp<GrGLInterface> interface(gl::init::CreateGrGLInterface(
         *context_->GetVersionInfo(), use_version_es2, progress_reporter));
     if (!interface) {

@@ -1,0 +1,75 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionContainerView.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileBuilder.java",
+    "java/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileView.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//components/omnibox/browser:browser_java",
+    "//components/search_engines/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/metrics_proto:metrics_proto_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.search_resumption"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-v23/search_resumption_module_background_bottom.xml",
+    "java/res/drawable-v23/search_resumption_module_background_middle.xml",
+    "java/res/drawable-v23/search_resumption_module_background_top.xml",
+    "java/res/drawable-v31/search_resumption_module_background_bottom.xml",
+    "java/res/drawable-v31/search_resumption_module_background_middle.xml",
+    "java/res/drawable-v31/search_resumption_module_background_top.xml",
+    "java/res/layout/search_resumption_module_layout.xml",
+    "java/res/layout/search_resumption_module_tile_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionModuleMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_resumption/SearchResumptionTileBuilderUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/omnibox/browser:browser_java",
+    "//components/search_engines/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+  ]
+}

@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LACROS_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
@@ -49,14 +50,14 @@ class VIEWS_EXPORT WindowEventFilterLacros : public ui::EventHandler {
   void MaybeDispatchHostWindowDragMovement(int hittest,
                                            ui::LocatedEvent* event);
 
-  DesktopWindowTreeHostPlatform* const desktop_window_tree_host_;
+  const raw_ptr<DesktopWindowTreeHostPlatform> desktop_window_tree_host_;
 
   int previous_pressed_component_ = HTNOWHERE;
 
   // A handler, which is used for interactive move/resize events if set and
   // unless MaybeDispatchHostWindowDragMovement is overridden by a derived
   // class.
-  ui::WmMoveResizeHandler* const handler_;
+  const raw_ptr<ui::WmMoveResizeHandler> handler_;
 };
 
 }  // namespace views

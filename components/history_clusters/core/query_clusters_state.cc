@@ -133,13 +133,14 @@ void QueryClustersState::OnGotClusters(
   // This is distinct from the "tall monitor" case because the page may already
   // be full of clusters. In that case, the WebUI would not know to make another
   // request for clusters.
-  if (clusters.empty() && !continuation_params.is_done) {
+  if (clusters.empty() && !continuation_params.exhausted_all_visits) {
     LoadNextBatchOfClusters(std::move(callback));
     return;
   }
 
   std::move(callback).Run(query_, std::move(clusters),
-                          !continuation_params.is_done, is_continuation_);
+                          !continuation_params.exhausted_all_visits,
+                          is_continuation_);
   is_continuation_ = true;
 
   // Log metrics after delivering the results to the page.

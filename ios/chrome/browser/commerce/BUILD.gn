@@ -38,6 +38,7 @@ static_library("shopping_service") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/keyed_service/ios",
+    "//components/prefs",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",

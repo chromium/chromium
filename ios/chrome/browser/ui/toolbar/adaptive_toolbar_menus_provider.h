@@ -18,7 +18,7 @@ typedef NS_ENUM(NSUInteger, AdaptiveToolbarButtonType) {
 // Provider of menus for the toolbar.
 @protocol AdaptiveToolbarMenusProvider
 
-// Returns a menu for the button of type |buttonType|.
+// Returns a menu for the button of type `buttonType`.
 - (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType;
 
 @end

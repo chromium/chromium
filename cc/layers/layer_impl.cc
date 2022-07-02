@@ -71,8 +71,8 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       contributes_to_drawn_render_surface_(false),
       hit_testable_(false),
       is_inner_viewport_scroll_layer_(false),
-      background_color_(0),
-      safe_opaque_background_color_(0),
+      background_color_(SkColors::kTransparent),
+      safe_opaque_background_color_(SkColors::kTransparent),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
@@ -228,7 +228,7 @@ bool LayerImpl::ShowDebugBorders(DebugBorderType type) const {
   return layer_tree_impl()->debug_state().show_debug_borders.test(type);
 }
 
-void LayerImpl::GetDebugBorderProperties(SkColor* color, float* width) const {
+void LayerImpl::GetDebugBorderProperties(SkColor4f* color, float* width) const {
   float device_scale_factor =
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
@@ -247,7 +247,7 @@ void LayerImpl::AppendDebugBorderQuad(
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data) const {
-  SkColor color;
+  SkColor4f color;
   float width;
   GetDebugBorderProperties(&color, &width);
   AppendDebugBorderQuad(render_pass, quad_rect, shared_quad_state,
@@ -259,7 +259,7 @@ void LayerImpl::AppendDebugBorderQuad(
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data,
-    SkColor color,
+    SkColor4f color,
     float width) const {
   if (!ShowDebugBorders(DebugBorderType::LAYER))
     return;
@@ -273,14 +273,14 @@ void LayerImpl::AppendDebugBorderQuad(
   gfx::Rect visible_quad_rect(quad_rect);
   auto* debug_border_quad =
       render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-  debug_border_quad->SetNew(
-      shared_quad_state, quad_rect, visible_quad_rect, color, width);
+  debug_border_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
+                            color, width);
   if (contents_opaque()) {
     // When opaque, draw a second inner border that is thicker than the outer
     // border, but more transparent.
     static const float kFillOpacity = 0.3f;
-    SkColor fill_color = SkColorSetA(
-        color, static_cast<uint8_t>(SkColorGetA(color) * kFillOpacity));
+    SkColor4f fill_color = color;
+    fill_color.fA *= kFillOpacity;
     float fill_width = width * 3;
     gfx::Rect fill_rect = quad_rect;
     fill_rect.Inset(fill_width / 2.f);
@@ -569,7 +569,7 @@ bool LayerImpl::HitTestable() const {
   return should_hit_test;
 }
 
-void LayerImpl::SetBackgroundColor(SkColor background_color) {
+void LayerImpl::SetBackgroundColor(SkColor4f background_color) {
   if (background_color_ == background_color)
     return;
 
@@ -577,7 +577,7 @@ void LayerImpl::SetBackgroundColor(SkColor background_color) {
   NoteLayerPropertyChanged();
 }
 
-void LayerImpl::SetSafeOpaqueBackgroundColor(SkColor background_color) {
+void LayerImpl::SetSafeOpaqueBackgroundColor(SkColor4f background_color) {
   safe_opaque_background_color_ = background_color;
 }
 

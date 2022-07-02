@@ -69,8 +69,6 @@ class WebApps : public apps::PublisherBase,
  protected:
   const WebApp* GetWebApp(const AppId& app_id) const;
 
-  bool Accepts(const std::string& app_id) const;
-
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
   }
@@ -101,12 +99,6 @@ class WebApps : public apps::PublisherBase,
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                LoadIconCallback callback) override;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,

@@ -18,7 +18,7 @@ void LaunchDiagnosticsAppAtConnectivityScreen(Profile* profile) {
       "chrome://diagnostics/?connectivity"};
   web_app::SystemAppLaunchParams params;
   params.url = GURL(diagnostics_connectivity_url);
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS, params);
+  LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS, params);
 }
 }  // namespace
 
@@ -36,7 +36,7 @@ void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
   if (ash::features::IsNetworkingInDiagnosticsAppEnabled()) {
     LaunchDiagnosticsAppAtConnectivityScreen(std::move(profile));
   } else {
-    LaunchSystemWebAppAsync(profile,
-                            web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
+    web_app::LaunchSystemWebAppAsync(
+        profile, ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
   }
 }

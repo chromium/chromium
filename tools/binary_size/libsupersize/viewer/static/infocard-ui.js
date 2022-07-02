@@ -58,7 +58,8 @@ const displayInfocard = (() => {
     _showDisassemblyOverlay(disassembly) {
       const eltModal = document.getElementById('disassembly-modal');
       const eltCode = document.getElementById('disassembly-code');
-      const eltDownload = document.getElementById('disassembly-download');
+      const eltDownload = /** @type {!HTMLAnchorElement} */ (
+          document.getElementById('disassembly-download'));
       const eltClose = document.getElementById('disassembly-close');
       const diffHtml = Diff2Html.html(disassembly, {
         drawFileList: false,
@@ -68,9 +69,10 @@ const displayInfocard = (() => {
       eltCode.innerHTML = diffHtml;
       eltModal.style.display = '';
       const blob = new Blob([disassembly], {type: 'text/plain'});
-      eltDownload.href = URL.createObjectURL(blob);
+      const objectUrl = URL.createObjectURL(blob);
+      eltDownload.href = objectUrl;
       eltClose.onclick = function() {
-        URL.revokeObjectURL(blob);
+        URL.revokeObjectURL(objectUrl);
         eltModal.style.display = 'none';
       }
     }
@@ -121,7 +123,7 @@ const displayInfocard = (() => {
           const eltAnchor = document.createElement('a')
           eltAnchor.appendChild(document.createTextNode('Show Disassembly'))
           eltAnchor.href = '#';
-          eltAnchor.addEventListener(`click`, (e) => {
+          eltAnchor.addEventListener('click', (e) => {
             e.preventDefault();
             this._showDisassemblyOverlay(node.disassembly)
           });
@@ -141,17 +143,25 @@ const displayInfocard = (() => {
     }
 
     /**
-     * Updates the icon and type text. The type label is pulled from the
-     * title of the icon supplied.
-     * @param {SVGSVGElement} icon Icon to display
+     * Returns the type label of a node. By default this is pulled from the
+     * title of the associated icon.
+     * @param {TreeNode} node
+     * @param {!SVGSVGElement} icon
      */
-    _setTypeContent(icon) {
-      const typeDescription = icon.querySelector('title').textContent;
-      icon.setAttribute('fill', '#fff');
+    _getTypeDescription(node, icon) {
+      return icon.querySelector('title').textContent;
+    }
 
-      this._typeInfo.textContent = typeDescription;
-      this._iconInfo.removeChild(this._iconInfo.lastElementChild);
-      this._iconInfo.appendChild(icon);
+    /**
+     * @param {TreeNode} node
+     * @return {!SVGSVGElement} The created icon.
+     */
+    _setTypeContent(node) {
+      const icon = getIconTemplate(node.type[0]);
+      icon.setAttribute('fill', '#fff');
+      this._typeInfo.textContent = this._getTypeDescription(node, icon);
+      this._iconInfo.replaceChild(icon, this._iconInfo.lastElementChild);
+      return icon;
     }
 
     /**
@@ -192,10 +202,9 @@ const displayInfocard = (() => {
       // Update DOM
       this._updateSize(node);
       this._updateDetails(node);
-      if (type !== this._lastType) {
-        // No need to create a new icon if it is identical.
-        const icon = getIconTemplate(type);
-        this._setTypeContent(icon);
+      // If possible, skip making new type content.
+      if (type !== this._lastType || type === _ARTIFACT_TYPES.GROUP) {
+        this._setTypeContent(node);
         this._lastType = type;
       }
       this._flagsInfo.textContent = this._flagsString(node);
@@ -217,12 +226,13 @@ const displayInfocard = (() => {
 
   class SymbolInfocard extends Infocard {
     /**
-     * @param {SVGSVGElement} icon Icon to display
+     * @param {TreeNode} node
+     * @return {!SVGSVGElement} The created icon.
      */
-    _setTypeContent(icon) {
-      const color = icon.getAttribute('fill');
-      super._setTypeContent(icon);
-      this._iconInfo.style.backgroundColor = color;
+    _setTypeContent(node) {
+      const icon = super._setTypeContent(node);
+      this._iconInfo.style.backgroundColor = getIconStyle(node.type[0]).color;
+      return icon;
     }
   }
 
@@ -264,11 +274,29 @@ const displayInfocard = (() => {
     }
 
     /**
-     * @param {SVGSVGElement} icon Icon to display
+     * @param {TreeNode} node
+     * @param {!SVGSVGElement} icon
      */
-    _setTypeContent(icon) {
-      super._setTypeContent(icon);
+    _getTypeDescription(node, icon) {
+      const depth = node.idPath.replace(/[^/]/g, '').length;
+      if (depth === 0) {
+        const t = state.get('group_by');
+        if (t) {
+          // Format, e.g., "generated_type" to "Generated type".
+          return (t[0].toUpperCase() + t.slice(1)).replace(/_/g, ' ');
+        }
+      }
+      return super._getTypeDescription(node, icon);
+    }
+
+    /**
+     * @param {TreeNode} node
+     * @return {!SVGSVGElement} The created icon.
+     */
+    _setTypeContent(node) {
+      const icon = super._setTypeContent(node);
       icon.classList.add('canvas-overlay');
+      return icon;
     }
 
     _flagsString(artifactNode) {

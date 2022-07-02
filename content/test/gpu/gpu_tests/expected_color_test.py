@@ -3,12 +3,16 @@
 # found in the LICENSE file.
 
 import logging
+import typing
 
+from gpu_tests import common_typing as ct
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_integration_test_base
 
 from telemetry.util import image_util
 from telemetry.util import rgba_color
+
+ExpectedColorExpectation = typing.Dict[str, typing.Any]
 
 
 class ExpectedColorTest(
@@ -21,19 +25,22 @@ class ExpectedColorTest(
   Gold normally for the test.
   """
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 
-  def GetGoldJsonKeys(self, page):
+  def GetGoldJsonKeys(self, page: pixel_test_pages.PixelTestPage
+                      ) -> typing.Dict[str, str]:
     keys = super().GetGoldJsonKeys(page)
     keys['expected_color_comment'] = (
         'This is an expected color test. Triaging in Gold will not affect test '
         'behavior.')
     return keys
 
-  def _ValidateScreenshotSamplesWithSkiaGold(self, tab, page, screenshot,
-                                             device_pixel_ratio):
+  def _ValidateScreenshotSamplesWithSkiaGold(self, tab: ct.Tab,
+                                             page: 'ExpectedColorPixelTestPage',
+                                             screenshot: ct.Screenshot,
+                                             device_pixel_ratio: float) -> None:
     """Samples the given screenshot and verifies pixel color values.
 
     In case any of the samples do not match the expected color, it raises
@@ -63,8 +70,9 @@ class ExpectedColorTest(
       # _CompareScreenshotSamples. See https://stackoverflow.com/q/28698622.
       raise comparison_exception
 
-  def _CompareScreenshotSamples(self, tab, screenshot, page,
-                                device_pixel_ratio):
+  def _CompareScreenshotSamples(self, tab: ct.Tab, screenshot: ct.Screenshot,
+                                page: 'ExpectedColorPixelTestPage',
+                                device_pixel_ratio: float) -> None:
     """Checks a screenshot for expected colors.
 
     Args:
@@ -77,7 +85,8 @@ class ExpectedColorTest(
       AssertionError if the check fails for some reason.
     """
 
-    def _CompareScreenshotWithExpectation(expectation):
+    def _CompareScreenshotWithExpectation(
+        expectation: ExpectedColorExpectation):
       """Compares a portion of the screenshot to the given expectation.
 
       Fails the test if a the screenshot does not match within the tolerance.
@@ -153,7 +162,8 @@ class ExpectedColorTest(
 class ExpectedColorPixelTestPage(pixel_test_pages.PixelTestPage):
   """Extension of PixelTestPage with expected color information."""
 
-  def __init__(self, expected_colors, *args, **kwargs):
+  def __init__(self, expected_colors: typing.List[ExpectedColorExpectation],
+               *args, **kwargs):
     # The tolerance when comparing against the reference image.
     self.tolerance = kwargs.pop('tolerance', 2)
 

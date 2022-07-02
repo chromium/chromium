@@ -29,16 +29,6 @@ TEST(AutofillTypeTest, ServerFieldTypes) {
   EXPECT_EQ(PHONE_HOME_NUMBER, phone.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kPhoneHome, phone.group());
 
-  // Billing type.
-  AutofillType billing_address(ADDRESS_BILLING_LINE1);
-  EXPECT_EQ(ADDRESS_HOME_LINE1, billing_address.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kAddressBilling, billing_address.group());
-
-  // Last value, to check any offset errors.
-  AutofillType last(NAME_BILLING_SUFFIX);
-  EXPECT_EQ(NAME_SUFFIX, last.GetStorableType());
-  EXPECT_EQ(FieldTypeGroup::kNameBilling, last.group());
-
   // Boundary (error) condition.
   AutofillType boundary(MAX_VALID_FIELD_TYPE);
   EXPECT_EQ(UNKNOWN_TYPE, boundary.GetStorableType());

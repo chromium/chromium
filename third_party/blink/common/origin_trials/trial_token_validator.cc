@@ -6,11 +6,13 @@
 
 #include <memory>
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
@@ -57,7 +59,16 @@ OriginTrialTokenStatus IsTokenValid(
 
 }  // namespace
 
-TrialTokenValidator::TrialTokenValidator() {}
+TrialTokenValidator::OriginInfo::OriginInfo(const url::Origin& wrapped_origin)
+    : origin(wrapped_origin) {
+  is_secure = network::IsOriginPotentiallyTrustworthy(origin);
+}
+
+TrialTokenValidator::OriginInfo::OriginInfo(const url::Origin& wrapped_origin,
+                                            bool origin_is_secure)
+    : origin(wrapped_origin), is_secure(origin_is_secure) {}
+
+TrialTokenValidator::TrialTokenValidator() = default;
 
 TrialTokenValidator::~TrialTokenValidator() = default;
 
@@ -69,6 +80,109 @@ void TrialTokenValidator::SetOriginTrialPolicyGetter(
 void TrialTokenValidator::ResetOriginTrialPolicyGetter() {
   SetOriginTrialPolicyGetter(
       base::BindRepeating([]() -> OriginTrialPolicy* { return nullptr; }));
+}
+
+TrialTokenResult TrialTokenValidator::ValidateTokenAndTrial(
+    base::StringPiece token,
+    const url::Origin& origin,
+    base::Time current_time) const {
+  return ValidateTokenAndTrialWithOriginInfo(
+      token, OriginInfo(origin), base::span<const OriginInfo>{}, current_time);
+}
+
+TrialTokenResult TrialTokenValidator::ValidateTokenAndTrial(
+    base::StringPiece token,
+    const url::Origin& origin,
+    base::span<const url::Origin> third_party_origins,
+    base::Time current_time) const {
+  std::vector<OriginInfo> third_party_origin_info;
+  for (const url::Origin& third_party_origin : third_party_origins) {
+    third_party_origin_info.emplace_back(third_party_origin);
+  }
+  return ValidateTokenAndTrialWithOriginInfo(
+      token, OriginInfo(origin), third_party_origin_info, current_time);
+}
+
+TrialTokenResult TrialTokenValidator::ValidateTokenAndTrialWithOriginInfo(
+    base::StringPiece token,
+    const OriginInfo& origin,
+    base::span<const OriginInfo> third_party_origin_info,
+    base::Time current_time) const {
+  std::vector<url::Origin> third_party_origins;
+  for (const OriginInfo& info : third_party_origin_info) {
+    third_party_origins.push_back(info.origin);
+  }
+  TrialTokenResult token_result =
+      ValidateToken(token, origin.origin, third_party_origins, current_time);
+
+  if (token_result.Status() != OriginTrialTokenStatus::kSuccess)
+    return token_result;
+
+  const TrialToken& parsed_token = *token_result.ParsedToken();
+
+  if (!origin_trials::IsTrialValid(parsed_token.feature_name())) {
+    token_result.SetStatus(OriginTrialTokenStatus::kUnknownTrial);
+    return token_result;
+  }
+
+  if (parsed_token.is_third_party() &&
+      !origin_trials::IsTrialEnabledForThirdPartyOrigins(
+          parsed_token.feature_name())) {
+    DVLOG(1) << "ValidateTokenAndTrial: feature disabled for third party trial";
+    token_result.SetStatus(OriginTrialTokenStatus::kFeatureDisabled);
+    return token_result;
+  }
+
+  // Origin trials are only enabled for secure origins. The only exception
+  // is for deprecation trials. For those, the secure origin check can be
+  // skipped.
+  if (origin_trials::IsTrialEnabledForInsecureContext(
+          parsed_token.feature_name())) {
+    return token_result;
+  }
+
+  bool is_secure = origin.is_secure;
+  if (parsed_token.is_third_party()) {
+    // For third-party tokens, both the current origin and the script origin
+    // must be secure. Due to subdomain matching, the token origin might not
+    // be an exact match for one of the provided script origins, and the result
+    // doesn't indicate which specific origin was matched. This means it's not
+    // a direct lookup to find the appropriate script origin. To avoid re-doing
+    // all the origin comparisons, there are shortcuts that depend on how many
+    // script origins were provided. There must be at least one, or the third
+    // party token would not be validated successfully.
+    DCHECK(!third_party_origin_info.empty());
+    if (third_party_origin_info.size() == 1) {
+      // Only one script origin, it must be the origin used for validation.
+      is_secure &= third_party_origin_info[0].is_secure;
+    } else {
+      // Match the origin in the token to one of the multiple script origins, if
+      // necessary. If all the provided origins are secure, then it doesn't
+      // matter which one matched. Only insecure origins need to be matched.
+      bool is_script_origin_secure = true;
+      for (const OriginInfo& script_origin_info : third_party_origin_info) {
+        if (script_origin_info.is_secure) {
+          continue;
+        }
+        // Re-use the IsValid() check, as it contains the subdomain matching
+        // logic. The token validation takes the first valid match, so can
+        // assume that success means it was the origin used.
+        if (parsed_token.IsValid(script_origin_info.origin, current_time) ==
+            OriginTrialTokenStatus::kSuccess) {
+          is_script_origin_secure = false;
+          break;
+        }
+      }
+      is_secure &= is_script_origin_secure;
+    }
+  }
+
+  if (!is_secure) {
+    DVLOG(1) << "ValidateTokenAndTrial: not secure";
+    token_result.SetStatus(OriginTrialTokenStatus::kInsecure);
+  }
+
+  return token_result;
 }
 
 TrialTokenResult TrialTokenValidator::ValidateToken(
@@ -189,7 +303,8 @@ bool TrialTokenValidator::ResponseBearsValidTokenForFeature(
   size_t iter = 0;
   std::string token;
   while (response_headers.EnumerateHeader(&iter, "Origin-Trial", &token)) {
-    TrialTokenResult result = ValidateToken(token, origin, current_time);
+    TrialTokenResult result =
+        ValidateTokenAndTrial(token, origin, current_time);
     // TODO(mek): Log the validation errors to histograms?
     if (result.Status() == OriginTrialTokenStatus::kSuccess)
       if (result.ParsedToken()->feature_name() == feature_name)

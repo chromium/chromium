@@ -30,7 +30,7 @@ gfx::NativeViewAccessible AccessibilityBrowserTest::GetRendererAccessible() {
 }
 
 void AccessibilityBrowserTest::ExecuteScript(const std::u16string& script) {
-  shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       script, base::NullCallback());
 }
 
@@ -43,7 +43,7 @@ void AccessibilityBrowserTest::LoadInitialAccessibilityTreeFromHtml(
   GURL html_data_url("data:text/html," +
                      base::EscapeQueryParamValue(html, false));
   EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 void AccessibilityBrowserTest::LoadInputField() {
@@ -110,7 +110,7 @@ void AccessibilityBrowserTest::LoadSampleParagraphInScrollableEditable() {
       u"range.setEnd(editable.lastChild, 0);"
       u"selection.removeAllRanges();"
       u"selection.addRange(range);");
-  selection_waiter.WaitForNotification();
+  ASSERT_TRUE(selection_waiter.WaitForNotification());
 }
 
 // Loads a page with a paragraph of sample text which is below the

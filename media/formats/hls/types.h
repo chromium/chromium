@@ -19,45 +19,93 @@ namespace media::hls::types {
 using DecimalInteger = uint64_t;
 
 MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
-    SourceString source_str);
+    ResolvedSourceString source_str);
 
 // A `DecimalFloatingPoint` is an unsigned floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using DecimalFloatingPoint = double;
 
 MEDIA_EXPORT ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    SourceString source_str);
+    ResolvedSourceString source_str);
 
 // A `SignedDecimalFloatingPoint` is a signed floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using SignedDecimalFloatingPoint = double;
 
 MEDIA_EXPORT ParseStatus::Or<SignedDecimalFloatingPoint>
-ParseSignedDecimalFloatingPoint(SourceString source_str);
+ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str);
 
 // A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
 // height.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
 struct MEDIA_EXPORT DecimalResolution {
+  static ParseStatus::Or<DecimalResolution> Parse(
+      ResolvedSourceString source_str);
+
   types::DecimalInteger width;
   types::DecimalInteger height;
+};
 
-  static ParseStatus::Or<DecimalResolution> Parse(SourceString source_str);
+// A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
+// in tags describing byte ranges of a resource.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
+struct MEDIA_EXPORT ByteRangeExpression {
+  static ParseStatus::Or<ByteRangeExpression> Parse(
+      ResolvedSourceString source_str);
+
+  // The length of the sub-range, in bytes.
+  types::DecimalInteger length;
+
+  // If present, the offset in bytes from the beginning of the resource.
+  // If not present, the sub-range begins at the next byte following that of the
+  // previous segment. The previous segment must be a subrange of the same
+  // resource.
+  absl::optional<types::DecimalInteger> offset;
+};
+
+// This is similar to `ByteRangeExpression`, but with a stronger contract:
+// - `length` is non-zero
+// - `offset` is non-optional
+// - `offset+length` may not overflow `types::DecimalInteger`
+class MEDIA_EXPORT ByteRange {
+ public:
+  // Validates that the range given by `[offset,offset+length)` is non-empty and
+  // that `GetEnd()` would not exceed the max value representable by a
+  // `DecimalInteger`.
+  static absl::optional<ByteRange> Validate(DecimalInteger length,
+                                            DecimalInteger offset);
+
+  DecimalInteger GetLength() const { return length_; }
+  DecimalInteger GetOffset() const { return offset_; }
+  DecimalInteger GetEnd() const { return offset_ + length_; }
+
+ private:
+  ByteRange(DecimalInteger length, DecimalInteger offset)
+      : length_(length), offset_(offset) {}
+
+  DecimalInteger length_;
+  DecimalInteger offset_;
 };
 
 // Parses a string surrounded by double-quotes ("), returning the inner string.
 // These appear in the context of attribute-lists, and are subject to variable
 // substitution. `sub_buffer` must outlive the returned string.
-MEDIA_EXPORT ParseStatus::Or<base::StringPiece> ParseQuotedString(
+// `allow_empty` determines whether an empty quoted string is accepted, (after
+// variable substitution) which isn't the case for most attributes.
+MEDIA_EXPORT ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer);
+    VariableDictionary::SubstitutionBuffer& sub_buffer,
+    bool allow_empty = false);
 
 // Parses a string surrounded by double-quotes ("), returning the interior
 // string. These appear in the context of attribute-lists, however certain tags
 // disallow variable substitution so this function exists to serve those.
+// `allow_empty` determines whether an empty quoted string is accepted, which
+// isn't the case for most attributes.
 MEDIA_EXPORT ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
-    SourceString source_str);
+    SourceString source_str,
+    bool allow_empty = false);
 
 // Provides an iterator-style interface over attribute-lists.
 // Since the number of attributes expected in an attribute-list for a tag varies

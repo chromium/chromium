@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuoutofmemoryerror_gpuvalidationerror.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_error.h"
 
 namespace blink {
 
@@ -29,7 +29,7 @@ void GPUUncapturedErrorEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 
-const V8GPUError* GPUUncapturedErrorEvent::error() const {
+const GPUError* GPUUncapturedErrorEvent::error() const {
   return error_;
 }
 

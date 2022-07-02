@@ -43,6 +43,13 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Killswitch for client side phishing detection. Since client side models are
+// run on a large fraction of navigations, crashes due to the model are very
+// impactful, even if only a small fraction of users have a bad version of the
+// model. This Finch flag allows us to remediate long-tail component versions
+// while we fix the root cause.
+extern const base::Feature kClientSideDetectionKillswitch;
+
 // Controls whether an access token is attached to scanning requests triggered
 // by enterprise Connectors.
 extern const base::Feature kConnectorsScanningAccessToken;
@@ -53,6 +60,13 @@ extern const base::Feature kConnectorsScanningAccessToken;
 // instead of just showing an "Open Now" button with the blocking UI.
 extern const base::Feature kConnectorsScanningReportOnlyUI;
 
+// Controls whether to connect to the Safe Browsing service early on startup.
+// The alternative is to connect as soon as the first Safe Browsing check is
+// made associated with a URK request. Android only. On this platform getting
+// the notification about the success of establishing the connection can be
+// delayed by several seconds.
+extern const base::Feature kCreateSafebrowsingOnStartup;
+
 // Controls whether the delayed warning experiment is enabled.
 extern const base::Feature kDelayedWarnings;
 // True if mouse clicks should undelay the warnings immediately when delayed
@@ -62,8 +76,16 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // Whether to use download bubble instead of download shelf.
 extern const base::Feature kDownloadBubble;
 
+// The V2 of the download bubble, consisting of features that were not available
+// on the download shelf. This is only eligible to be enabled when
+// kDownloadBubble is already enabled.
+extern const base::Feature kDownloadBubbleV2;
+
 // Enables Enhanced Safe Browsing.
 extern const base::Feature kEnhancedProtection;
+
+// Phase 2 of Enhanced Safe Browsing changes.
+extern const base::Feature kEnhancedProtectionPhase2IOS;
 
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
@@ -75,6 +97,11 @@ extern const base::Feature kExtensionTelemetryPersistence;
 
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
+
+// Specifies the number of writes the telemetry service will perform during
+// a full upload interval.
+extern const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval;
+
 // Enables collection of telemetry signal whenever an extension invokes the
 // tabs.executeScript API call.
 extern const base::Feature kExtensionTelemetryTabsExecuteScriptSignal;
@@ -88,6 +115,9 @@ extern const base::Feature kFileTypePoliciesTag;
 // The parameter name used for getting the tag value from
 // `kFileTypePoliciesTag`.
 const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
+
+// Enable logging of the account enhanced protection setting in Protego pings.
+extern const base::Feature kLogAccountEnhancedProtectionStateInProtegoPings;
 
 // Enable omitting non-user gesture from referrer chain.
 extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
@@ -123,6 +153,12 @@ extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;
 // default and control groups of the experiment.
 extern const base::Feature kSimplifiedUrlDisplay;
 
+// Controls whether to automatically enable Enhanced Protection for desktop
+// tailored security users. If not enabled, users of tailored security are
+// notified that they can enable Enhanced Protection through an operating system
+// notification.
+extern const base::Feature kTailoredSecurityDesktopNotice;
+
 // Controls whether the integration of tailored security settings is enabled.
 extern const base::Feature kTailoredSecurityIntegration;
 
@@ -133,16 +169,6 @@ extern const base::Feature kTailoredSecurityIntegration;
 // "tag2" if they have attribute "foo" set. All tag names and attributes should
 // be lower case.
 extern const base::Feature kThreatDomDetailsTagAndAttributeFeature;
-
-// Controls the daily quota for data collection triggers. It's a single param
-// containing a comma-separated list of pairs. The format of the param is
-// "T1,Q1,T2,Q2,...Tn,Qn", where Tx is a TriggerType and Qx is how many reports
-// that trigger is allowed to send per day.
-// TODO(crbug.com/744869): This param should be deprecated after ad sampler
-// launch in favour of having a unique quota feature and param per trigger.
-// Having a single shared feature makes it impossible to run multiple trigger
-// trials simultaneously.
-extern const base::Feature kTriggerThrottlerDailyQuotaFeature;
 
 // Controls whether Chrome uses new download warning UX.
 extern const base::Feature kUseNewDownloadWarnings;

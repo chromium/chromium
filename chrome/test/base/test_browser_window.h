@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -171,7 +172,7 @@ class TestBrowserWindow : public BrowserWindow {
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents) override;
+      share::ShareAttempt attempt) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,
@@ -180,6 +181,12 @@ class TestBrowserWindow : public BrowserWindow {
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool is_user_gesture) override;
+  void ShowPartialTranslateBubble(
+      PartialTranslateBubbleModel::ViewState view_state,
+      const std::string& source_language,
+      const std::string& target_language,
+      const std::u16string& text_selection,
+      translate::TranslateErrors::Type error_type) override;
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override {}
@@ -195,10 +202,7 @@ class TestBrowserWindow : public BrowserWindow {
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
-  void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_keyboard) override {}
+  void ShowAvatarBubbleFromAvatarButton(bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -229,10 +233,6 @@ class TestBrowserWindow : public BrowserWindow {
 
   void CreateTabSearchBubble() override {}
   void CloseTabSearchBubble() override {}
-
-  bool IsSideSearchPanelVisible() const override;
-  void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, std::string>& extra_data) override;
 
   user_education::FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(

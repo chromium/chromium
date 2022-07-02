@@ -22,4 +22,8 @@ void PermissionRequestObserver::OnBubbleAdded() {
   loop_.Quit();
 }
 
+void PermissionRequestObserver::OnRequestsFinalized() {
+  loop_.Quit();
+}
+
 }  // namespace permissions

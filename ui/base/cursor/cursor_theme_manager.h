@@ -21,6 +21,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_THEME_MANAGER) CursorThemeManager {
 
   static CursorThemeManager* GetInstance();
 
+  static void SetInstance(CursorThemeManager* instance);
+
   // Adds |observer| and makes initial OnCursorThemNameChanged() and/or
   // OnCursorThemeSizeChanged() calls if the respective settings were set.
   void AddObserver(CursorThemeManagerObserver* observer);

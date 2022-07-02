@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/info_map.h"

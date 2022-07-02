@@ -10,7 +10,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,9 +26,8 @@ namespace settings {
 
 class SearchTagRegistry;
 
-class InternetSection
-    : public OsSettingsSection,
-      public network_config::mojom::CrosNetworkConfigObserver {
+class InternetSection : public OsSettingsSection,
+                        public network_config::CrosNetworkConfigObserver {
  public:
   InternetSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~InternetSection() override;
@@ -48,18 +47,11 @@ class InternetSection
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 
-  // network_config::mojom::CrosNetworkConfigObserver:
+  // network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
       std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
       override;
   void OnDeviceStateListChanged() override;
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
-      override {}
-  void OnNetworkStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   void FetchDeviceList();
   void OnGlobalPolicy(network_config::mojom::GlobalPolicyPtr global_policy);

@@ -53,7 +53,6 @@ class CameraPanTiltZoomPermissionContext
  private:
   // PermissionContextBase
   void RequestPermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_frame_origin,
       bool user_gesture,

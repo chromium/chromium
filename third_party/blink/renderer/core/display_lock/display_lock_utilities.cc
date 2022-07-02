@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -363,10 +363,8 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::EnsureMinimumForcedPhase(
   // Our `phase_` is already at least as permissive as `phase`.
   if (static_cast<int>(phase_) >= static_cast<int>(phase))
     return;
-  for (auto context : forced_context_set_) {
-    context->NotifyForcedUpdateScopeEnded(phase_);
-    context->NotifyForcedUpdateScopeStarted(phase, emit_warnings_);
-  }
+  for (auto context : forced_context_set_)
+    context->UpgradeForcedScope(phase_, phase, emit_warnings_);
   phase_ = phase;
 }
 

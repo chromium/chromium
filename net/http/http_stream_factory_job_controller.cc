@@ -44,13 +44,12 @@ namespace {
 // Returns parameters associated with the proxy resolution.
 base::Value NetLogHttpStreamJobProxyServerResolved(
     const ProxyServer& proxy_server) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetStringKey("proxy_server",
-                    proxy_server.is_valid()
-                        ? ProxyServerToPacResultElement(proxy_server)
-                        : std::string());
-  return dict;
+  dict.Set("proxy_server", proxy_server.is_valid()
+                               ? ProxyServerToPacResultElement(proxy_server)
+                               : std::string());
+  return base::Value(std::move(dict));
 }
 
 GURL CreateAltSvcUrl(const GURL& origin_url,
@@ -103,21 +102,20 @@ const int kMaxDelayTimeForMainJobSecs = 3;
 
 base::Value NetLogJobControllerParams(const HttpRequestInfo& request_info,
                                       bool is_preconnect) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", request_info.url.possibly_invalid_spec());
-  dict.SetBoolKey("is_preconnect", is_preconnect);
-  dict.SetStringKey("privacy_mode",
-                    PrivacyModeToDebugString(request_info.privacy_mode));
+  base::Value::Dict dict;
+  dict.Set("url", request_info.url.possibly_invalid_spec());
+  dict.Set("is_preconnect", is_preconnect);
+  dict.Set("privacy_mode", PrivacyModeToDebugString(request_info.privacy_mode));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
                                bool is_broken) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("alt_svc", alt_svc_info->ToString());
-  dict.SetBoolKey("is_broken", is_broken);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("alt_svc", alt_svc_info->ToString());
+  dict.Set("is_broken", is_broken);
+  return base::Value(std::move(dict));
 }
 
 HttpStreamFactory::JobController::JobController(
@@ -136,28 +134,16 @@ HttpStreamFactory::JobController::JobController(
     : factory_(factory),
       session_(session),
       job_factory_(job_factory),
-      request_(nullptr),
       delegate_(delegate),
       is_preconnect_(is_preconnect),
       is_websocket_(is_websocket),
       enable_ip_based_pooling_(enable_ip_based_pooling),
       enable_alternative_services_(enable_alternative_services),
-      main_job_net_error_(OK),
-      alternative_job_net_error_(OK),
-      alternative_job_failed_on_default_network_(false),
-      job_bound_(false),
-      main_job_is_blocked_(false),
-      main_job_is_resumed_(false),
       delay_main_job_with_available_spdy_session_(
           delay_main_job_with_available_spdy_session),
-      bound_job_(nullptr),
-      next_state_(STATE_RESOLVE_PROXY),
-      proxy_resolve_request_(nullptr),
       request_info_(request_info),
       server_ssl_config_(server_ssl_config),
       proxy_ssl_config_(proxy_ssl_config),
-      num_streams_(0),
-      priority_(IDLE),
       net_log_(NetLogWithSource::Make(
           session->net_log(),
           NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)) {

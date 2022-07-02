@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
@@ -233,17 +234,23 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
   if (intent->files.has_value()) {
     std::vector<GURL> file_urls;
     for (const auto& intent_file : *intent->files) {
+      if (intent_file->url.SchemeIsFile()) {
+        DCHECK(file_urls.empty());
+        break;
+      }
       file_urls.push_back(intent_file->url);
     }
-    std::vector<storage::FileSystemURL> file_system_urls =
-        GetFileSystemURL(profile, file_urls);
-    for (const auto& file_system_url : file_system_urls) {
-      params.launch_files.push_back(file_system_url.path());
+    if (!file_urls.empty()) {
+      std::vector<storage::FileSystemURL> file_system_urls =
+          GetFileSystemURL(profile, file_urls);
+      for (const auto& file_system_url : file_system_urls) {
+        params.launch_files.push_back(file_system_url.path());
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  params.intent = std::move(intent);
+  params.intent = ConvertMojomIntentToIntent(intent);
 
   return params;
 }
@@ -303,9 +310,7 @@ extensions::AppLaunchSource GetAppLaunchSource(
   }
 }
 
-int GetEventFlags(apps::mojom::LaunchContainer container,
-                  WindowOpenDisposition disposition,
-                  bool prefer_container) {
+int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
   if (prefer_container) {
     return ui::EF_NONE;
   }
@@ -407,6 +412,7 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
       ConvertAppServiceToCrosapiLaunchContainer(params.container);
   crosapi_params->disposition =
       ConvertWindowOpenDispositionToCrosapi(params.disposition);
+  crosapi_params->display_id = params.display_id;
   return crosapi_params;
 }
 
@@ -417,7 +423,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
       crosapi_params->app_id,
       ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
       ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
-      crosapi_params->launch_source);
+      crosapi_params->launch_source, crosapi_params->display_id);
   if (!crosapi_params->intent) {
     return params;
   }
@@ -432,7 +438,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
     }
   }
 
-  params.intent = apps_util::ConvertCrosapiToAppServiceIntent(
+  params.intent = apps_util::CreateAppServiceIntentFromCrosapi(
       crosapi_params->intent, profile);
   return params;
 }

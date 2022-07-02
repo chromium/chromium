@@ -72,6 +72,19 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release']
             },
+            'Fake Test Linux HighDPI': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'steps': {
+                    'high_dpi_blink_web_tests (with patch)': {
+                        'flag_specific': 'highdpi',
+                    },
+                },
+            },
+            'Fake Test Mac12.0': {
+                'port_name': 'mac-mac12',
+                'specifiers': ['Mac12', 'Release'],
+            },
             'Fake Test Mac11.0': {
                 'port_name': 'mac-mac11',
                 'specifiers': ['Mac11', 'Release']
@@ -88,17 +101,13 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'mac-mac10.13',
                 'specifiers': ['Mac10.13', 'Release']
             },
-            'Fake Test Mac10.12': {
-                'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release']
-            },
         })
         # Note: this is a pre-assumption of the tests in this file. If this
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux-trusty', 'mac-mac10.12', 'mac-mac10.13', 'mac-mac10.14',
-            'mac-mac10.15', 'mac-mac11', 'win-win10.20h2', 'win-win11'
+            'linux-trusty', 'mac-mac10.13', 'mac-mac10.14', 'mac-mac10.15',
+            'mac-mac11', 'mac-mac12', 'win-win10.20h2', 'win-win11'
         ])
 
     def _assert_optimization(self,

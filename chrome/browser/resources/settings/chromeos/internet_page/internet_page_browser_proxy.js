@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @fileoverview A helper object used for Internet page. */
-  /** @interface */
+
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+
+/** @interface */
 export class InternetPageBrowserProxy {
   /**
    * Shows the account details page of a cellular network.
@@ -53,10 +52,23 @@ export class InternetPageBrowserProxy {
   setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
 }
 
+/** @type {?InternetPageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {InternetPageBrowserProxy}
  */
 export class InternetPageBrowserProxyImpl {
+  /** @return {!InternetPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new InternetPageBrowserProxyImpl());
+  }
+
+  /** @param {!InternetPageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   showCarrierAccountDetail(guid) {
     chrome.send('showCarrierAccountDetail', [guid]);
@@ -87,5 +99,3 @@ export class InternetPageBrowserProxyImpl {
     addWebUIListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
   }
 }
-
-addSingletonGetter(InternetPageBrowserProxyImpl);

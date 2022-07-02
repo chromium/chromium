@@ -66,7 +66,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // |input_format| specifies the format of the incoming capture data.
   // |output_format| specifies the output format. If
   // |settings|.NeedWebrtcAudioProcessing() is true, then the output must be in
-  // 10 ms chunks.
+  // 10 ms chunks: the formats must specify |sample rate|/100 samples per buffer
+  // (rounded down). Sample rates which are not divisible by 100 are supported
+  // on a best-effort basis, audio quality and stability may suffer.
   static std::unique_ptr<AudioProcessor> Create(
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       LogCallback log_callback,

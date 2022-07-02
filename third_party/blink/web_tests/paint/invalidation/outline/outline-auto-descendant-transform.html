@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http:/html4/strict.dtd">
+<html lang="en">
+  <head>
+    <style type="text/css">
+      .a {
+        background: blue;
+        height: 20px;
+        width: 20px;
+        position: relative;
+        margin: 30px;
+        outline-color: red;
+        outline-style: auto;
+      }
+      .b {
+        background: green;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: absolute;
+        transform: scale(1.5);
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="a"><div class="b"></div></div>
+    <div class="a"><div class="b"></div></div>
+  </body>
+</html>

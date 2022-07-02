@@ -1,0 +1,191 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/suggestions_context.h"
+#include "components/autofill/core/browser/test_form_structure.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/strings/grit/components_strings.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+
+using testing::Field;
+using testing::UnorderedElementsAre;
+
+namespace autofill {
+
+namespace {
+
+class MockSuggestionsHandler
+    : public MerchantPromoCodeManager::SuggestionsHandler {
+ public:
+  MockSuggestionsHandler() = default;
+  MockSuggestionsHandler(const MockSuggestionsHandler&) = delete;
+  MockSuggestionsHandler& operator=(const MockSuggestionsHandler&) = delete;
+  ~MockSuggestionsHandler() override = default;
+
+  MOCK_METHOD(void,
+              OnSuggestionsReturned,
+              (int query_id,
+               bool autoselect_first_suggestion,
+               const std::vector<Suggestion>& suggestions),
+              (override));
+
+  base::WeakPtr<MockSuggestionsHandler> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
+};
+}  // namespace
+
+class MerchantPromoCodeManagerTest : public testing::Test {
+ protected:
+  MerchantPromoCodeManagerTest() {
+    personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
+    merchant_promo_code_manager_ = std::make_unique<MerchantPromoCodeManager>();
+    merchant_promo_code_manager_->Init(personal_data_manager_.get(),
+                                       /*is_off_the_record=*/false);
+  }
+
+  // Sets up the TestPersonalDataManager with a promo code offer for the given
+  // |origin|, and sets the offer details url of the offer to
+  // |offer_details_url|. Returns the promo code inserted in case the test wants
+  // to match it against returned suggestions.
+  std::string SetUpPromoCodeOffer(std::string origin,
+                                  const GURL& offer_details_url) {
+    personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
+    AutofillOfferData testPromoCodeOfferData =
+        test::GetPromoCodeOfferData(GURL(origin));
+    testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
+    personal_data_manager_.get()->AddOfferDataForTest(
+        std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
+    return testPromoCodeOfferData.GetPromoCode();
+  }
+
+  std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
+  std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
+};
+
+TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  std::u16string test_name = u"Some Field Name";
+  std::u16string test_prefix = u"SomePrefix";
+  bool autoselect_first_suggestion = false;
+  std::string last_committed_origin_url = "https://www.example.com";
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  TestFormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  std::string promo_code = SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/"));
+  Suggestion promo_code_suggestion = Suggestion(base::ASCIIToUTF16(promo_code));
+  Suggestion footer_suggestion = Suggestion(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
+
+  // Setting up mock to verify that the handler is returned a list of
+  // promo-code-based suggestions and the promo code details line.
+  EXPECT_CALL(
+      *suggestions_handler.get(),
+      OnSuggestionsReturned(
+          test_query_id, autoselect_first_suggestion,
+          UnorderedElementsAre(
+              Field(&Suggestion::main_text, promo_code_suggestion.main_text),
+              Field(&Suggestion::main_text, footer_suggestion.main_text))))
+      .Times(1);
+
+  // Simulate request for suggestions.
+  // Because all criteria are met, active promo code suggestions for the given
+  // merchant site will be displayed instead of requesting Autocomplete
+  // suggestions.
+  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      autoselect_first_suggestion, test_name, test_prefix, "Some Type",
+      suggestions_handler->GetWeakPtr(),
+      /*context=*/context);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       DoesNotShowPromoCodeOffersForOffTheRecord) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  std::string promo_code = SetUpPromoCodeOffer(
+      last_committed_origin_url, GURL("https://offer-details-url.com/"));
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  TestFormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  merchant_promo_code_manager_->is_off_the_record_ = true;
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // the user is off the record.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
+      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*context=*/context);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       DoesNotShowPromoCodeOffersIfPersonalDataManagerDoesNotExist) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  TestFormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+  merchant_promo_code_manager_->personal_data_manager_ = nullptr;
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // personal data manager does not exist.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
+      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*context=*/context);
+}
+
+TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  std::string last_committed_origin_url = "https://www.example.com";
+  personal_data_manager_.get()->SetAutofillWalletImportEnabled(true);
+  FormData form_data;
+  form_data.main_frame_origin =
+      url::Origin::Create(GURL(last_committed_origin_url));
+  TestFormStructure form_structure{form_data};
+  SuggestionsContext context;
+  context.form_structure = &form_structure;
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // there are no promo code offers to suggest.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  // Simulate request for suggestions.
+  merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+      /*query_id=*/2, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
+      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*context=*/context);
+}
+
+}  // namespace autofill

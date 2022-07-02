@@ -163,7 +163,7 @@
     [self.actionSheet stop];
   }
   // Reset this observer manually. We want this to go out of scope now, ensuring
-  // it detaches before |browser| and its WebStateList get destroyed.
+  // it detaches before `browser` and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
 }
 

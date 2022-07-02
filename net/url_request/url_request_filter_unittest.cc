@@ -26,7 +26,7 @@ namespace {
 
 class TestURLRequestInterceptor : public URLRequestInterceptor {
  public:
-  TestURLRequestInterceptor() : job_(nullptr) {}
+  TestURLRequestInterceptor() = default;
 
   TestURLRequestInterceptor(const TestURLRequestInterceptor&) = delete;
   TestURLRequestInterceptor& operator=(const TestURLRequestInterceptor&) =
@@ -47,7 +47,7 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
   }
 
  private:
-  mutable raw_ptr<URLRequestTestJob> job_;
+  mutable raw_ptr<URLRequestTestJob> job_ = nullptr;
 };
 
 TEST(URLRequestFilter, BasicMatching) {

@@ -44,7 +44,6 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
@@ -395,8 +394,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;
 
-  absl::optional<WebOriginPolicy> origin_policy;
-
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.
   WebURL web_bundle_physical_url;
@@ -438,6 +435,12 @@ struct BLINK_EXPORT WebNavigationParams {
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;
 
+  // Blink's copy of a permissions policy constructed in the browser that should
+  // take precedence over any permissions policy constructed in blink. This is
+  // useful for isolated applications, which use a different base permissions
+  // policy than blink, which uses a fully permissive policy as its base.
+  absl::optional<blink::ParsedPermissionsPolicy> permissions_policy_override;
+
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for
   // that API.
@@ -461,9 +464,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // reporting url. Null, otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
-
-  // Whether or not this navigation will commit in an anonymous frame.
-  bool anonymous = false;
 };
 
 }  // namespace blink

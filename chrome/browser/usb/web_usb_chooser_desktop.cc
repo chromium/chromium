@@ -7,23 +7,15 @@
 #include <utility>
 
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
-#include "content/public/browser/web_contents.h"
 
-WebUsbChooserDesktop::WebUsbChooserDesktop(
-    content::RenderFrameHost* render_frame_host)
-    : WebUsbChooser(render_frame_host) {}
+WebUsbChooserDesktop::WebUsbChooserDesktop() = default;
 
 WebUsbChooserDesktop::~WebUsbChooserDesktop() = default;
 
 void WebUsbChooserDesktop::ShowChooser(
+    content::RenderFrameHost* render_frame_host,
     std::unique_ptr<UsbChooserController> controller) {
-  closure_runner_.RunAndReset();
   closure_runner_.ReplaceClosure(chrome::ShowDeviceChooserDialog(
-      render_frame_host(), std::move(controller)));
-}
-
-base::WeakPtr<WebUsbChooser> WebUsbChooserDesktop::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
+      render_frame_host, std::move(controller)));
 }

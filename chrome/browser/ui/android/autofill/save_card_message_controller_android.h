@@ -73,6 +73,7 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) override;
   void OnSaveCardConfirmed(JNIEnv* env) override;
+  void OnUserDismiss(JNIEnv* env) override;
   void DialogDismissed(JNIEnv* env) override;
   void OnLinkClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jstring>& url) override;

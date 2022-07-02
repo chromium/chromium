@@ -59,25 +59,15 @@ if (enable_pdf) {
   }
 
   source_set("internal") {
-    visibility = [
-      ":*",
-
-      # TODO(crbug.com/1158929): Eliminate chrome_find_request_manager_browsertest.cc's dependence
-      # on document_loader_impl.h.
-      "//chrome/test:browser_tests${exec_target_suffix}",
-    ]
+    visibility = [ ":*" ]
 
     sources = [
       "accessibility.cc",
       "accessibility.h",
-      "chunk_stream.h",
       "document_attachment_info.cc",
       "document_attachment_info.h",
       "document_layout.cc",
       "document_layout.h",
-      "document_loader.h",
-      "document_loader_impl.cc",
-      "document_loader_impl.h",
       "document_metadata.cc",
       "document_metadata.h",
       "draw_utils/coordinates.cc",
@@ -131,17 +121,12 @@ if (enable_pdf) {
       "pdfium/pdfium_unsupported_features.h",
       "preview_mode_client.cc",
       "preview_mode_client.h",
-      "range_set.cc",
-      "range_set.h",
       "ui/document_properties.cc",
       "ui/document_properties.h",
       "ui/file_name.cc",
       "ui/file_name.h",
       "ui/thumbnail.cc",
       "ui/thumbnail.h",
-      "url_loader_wrapper.h",
-      "url_loader_wrapper_impl.cc",
-      "url_loader_wrapper_impl.h",
     ]
 
     public_configs = [ ":pdfium_includes" ]
@@ -159,13 +144,12 @@ if (enable_pdf) {
       ":buildflags",
       ":content_restriction",
       ":features",
-      ":ppapi_migration",
       "//base",
       "//base:i18n",
       "//build:chromeos_buildflags",
       "//components/strings",
       "//gin",
-      "//net",
+      "//pdf/loader",
       "//printing",
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common:headers",
@@ -204,7 +188,6 @@ if (enable_pdf) {
       ":content_restriction",
       ":internal",
       ":pdf",
-      ":ppapi_migration",
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
@@ -242,25 +225,6 @@ if (enable_pdf) {
     ]
   }
 
-  source_set("ppapi_migration") {
-    visibility = [ ":*" ]
-
-    sources = [
-      "ppapi_migration/result_codes.h",
-      "ppapi_migration/url_loader.cc",
-      "ppapi_migration/url_loader.h",
-    ]
-
-    configs += [ ":strict" ]
-
-    deps = [
-      "//base",
-      "//net",
-      "//third_party/blink/public:blink",
-      "//url",
-    ]
-  }
-
   static_library("pdf_view_web_plugin") {
     # The PDF viewer relies on plugin infrastructure, which is currently tied to
     # PPAPI support. Fuchsia does not have plugins enabled and is in a state
@@ -288,12 +252,15 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility",
+      ":buildflags",
+      ":content_restriction",
       ":internal",
-      ":ppapi_migration",
       "//base",
       "//base:i18n",
       "//cc/paint",
       "//gin",
+      "//net",
+      "//pdf/loader",
       "//printing",
       "//services/network/public/mojom:url_loader_base",
       "//skia",
@@ -302,16 +269,19 @@ if (enable_pdf) {
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/events/blink",
+      "//ui/gfx/range",
       "//v8",
     ]
   }
 
   source_set("pdf_test_utils") {
-    visibility = [ ":*" ]
+    visibility = [ "//pdf/*" ]
 
     testonly = true
 
     sources = [
+      "test/mock_web_associated_url_loader.cc",
+      "test/mock_web_associated_url_loader.h",
       "test/test_client.cc",
       "test/test_client.h",
       "test/test_document_loader.cc",
@@ -324,12 +294,12 @@ if (enable_pdf) {
 
     deps = [
       ":internal",
-      ":ppapi_migration",
       "//base",
       "//cc:test_support",
+      "//pdf/loader",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/blink/public/common:headers",
+      "//third_party/blink/public:blink",
       "//ui/gfx/range",
       "//ui/latency:latency",
     ]
@@ -353,9 +323,7 @@ if (enable_pdf) {
     testonly = true
 
     sources = [
-      "chunk_stream_unittest.cc",
       "document_layout_unittest.cc",
-      "document_loader_impl_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
       "file_extension_unittest.cc",
       "page_orientation_unittest.cc",
@@ -363,7 +331,6 @@ if (enable_pdf) {
       "parsed_params_unittest.cc",
       "pdf_transform_unittest.cc",
       "pdf_utils/dates_unittest.cc",
-      "pdf_view_plugin_base_unittest.cc",
       "pdf_view_web_plugin_unittest.cc",
       "pdfium/accessibility_unittest.cc",
       "pdfium/findtext_unittest.cc",
@@ -375,8 +342,6 @@ if (enable_pdf) {
       "pdfium/pdfium_print_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
-      "ppapi_migration/url_loader_unittest.cc",
-      "range_set_unittest.cc",
       "test/run_all_unittests.cc",
       "ui/document_properties_unittest.cc",
       "ui/file_name_unittest.cc",
@@ -395,7 +360,6 @@ if (enable_pdf) {
       ":pdf",
       ":pdf_test_utils",
       ":pdf_view_web_plugin",
-      ":ppapi_migration",
       "//base",
       "//base:i18n",
       "//base/test:test_support",
@@ -403,6 +367,9 @@ if (enable_pdf) {
       "//gin",
       "//mojo/core/embedder",
       "//mojo/public/cpp/bindings",
+      "//net",
+      "//pdf/loader",
+      "//pdf/loader:unit_tests",
       "//printing",
       "//skia",
       "//testing/gmock",

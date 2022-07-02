@@ -51,11 +51,9 @@ class HostCachePersistenceManagerTest : public testing::Test {
   // correctness.
   void CheckPref(size_t expected_size) {
     const base::Value* value = pref_service_->GetUserPref(kPrefName);
-    base::Value list(base::Value::Type::LIST);
-    if (value)
-      list = base::Value(value->GetListDeprecated());
     net::HostCache temp_cache(10);
-    temp_cache.RestoreFromListValue(base::Value::AsListValue(list));
+    if (value)
+      temp_cache.RestoreFromListValue(value->GetList());
     ASSERT_EQ(expected_size, temp_cache.size());
   }
 
@@ -80,10 +78,10 @@ class HostCachePersistenceManagerTest : public testing::Test {
     temp_cache.Set(key2, entry, base::TimeTicks::Now(), base::Seconds(1));
     temp_cache.Set(key3, entry, base::TimeTicks::Now(), base::Seconds(1));
 
-    base::Value value(base::Value::Type::LIST);
-    temp_cache.GetList(&value, false /* include_stale */,
+    base::Value::List list;
+    temp_cache.GetList(list, false /* include_stale */,
                        net::HostCache::SerializationType::kRestorable);
-    pref_service_->Set(kPrefName, value);
+    pref_service_->SetList(kPrefName, std::move(list));
   }
 
   static const char kPrefName[];

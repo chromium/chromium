@@ -79,6 +79,7 @@ class MockInputApi(object):
     self.change = MockChange([])
     self.presubmit_local_path = os.path.dirname(__file__)
     self.is_windows = sys.platform == 'win32'
+    self.no_diffs = False
 
   def CreateMockFileInPath(self, f_list):
     self.os_path.exists = lambda x: x in f_list

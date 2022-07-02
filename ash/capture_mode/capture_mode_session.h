@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,7 +58,8 @@ class ASH_EXPORT CaptureModeSession
       public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate {
+      public FolderSelectionDialogController::Delegate,
+      public ShellObserver {
  public:
   // Creates the bar widget on a calculated root window. |projector_mode|
   // specifies whether this session was started for the projector workflow.
@@ -192,6 +194,9 @@ class ASH_EXPORT CaptureModeSession
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // ShellObserver:
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
+
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
@@ -307,8 +312,8 @@ class ASH_EXPORT CaptureModeSession
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Returns the fine tune position that corresponds to the given
-  // |location_in_root|.
-  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_root,
+  // `location_in_screen`.
+  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_screen,
                                        bool is_touch) const;
 
   // Handles updating the select region UI.
@@ -407,10 +412,6 @@ class ASH_EXPORT CaptureModeSession
   void UpdateRegionHorizontally(bool left, int event_flags);
   void UpdateRegionVertically(bool up, int event_flags);
 
-  // Returns true if the event is on a visible settings menu. This includes the
-  // space between the capture bar and the menu.
-  bool IsEventInSettingsMenuBounds(const gfx::Point& location_in_screen);
-
   // Called when the parent container of camera preview may need to be updated.
   void MaybeReparentCameraPreviewWidget();
 
@@ -418,9 +419,12 @@ class ASH_EXPORT CaptureModeSession
   // camera preview's bounds and visibility.
   void MaybeUpdateCameraPreviewBounds();
 
-  // Returns true if the given `event` is targeted on the capture bar or the
-  // setting menu if it exists.
-  bool IsEventTargetedOnCaptureBarOrMenu(const ui::LocatedEvent& event) const;
+  // Returns true if the given `event` is targeted on the capture bar.
+  bool IsEventTargetedOnCaptureBar(const ui::LocatedEvent& event) const;
+
+  // Returns true if the given `event` is targeted on the setting menu if it
+  // exists.
+  bool IsEventTargetedOnSettingsMenu(const ui::LocatedEvent& event) const;
 
   CaptureModeController* const controller_;
 
@@ -473,6 +477,13 @@ class ASH_EXPORT CaptureModeSession
   // region is non empty, the capture session will enter the fine tune phase,
   // where the user can reposition and resize the region with a lot of accuracy.
   bool is_selecting_region_ = false;
+
+  // True when a located pressed event is received outside the bounds of a
+  // present settings menu widget. This event will be used to dismiss the
+  // settings menu and all future located events up to and including the
+  // released event will be ignored (i.e. will not be used to update the capture
+  // region, perform capture ... etc.).
+  bool ignore_located_events_ = false;
 
   // The location of the last press and drag events.
   gfx::Point initial_location_in_root_;

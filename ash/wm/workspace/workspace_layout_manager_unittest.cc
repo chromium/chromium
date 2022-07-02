@@ -17,6 +17,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -54,6 +55,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -580,7 +582,8 @@ TEST_F(WorkspaceLayoutManagerTest,
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window_state = WindowState::Get(window.get());
   auto insets = gfx::Insets::TLBR(0, 0, 56, 0);
-  Shell::Get()->SetDisplayWorkAreaInsets(window.get(), insets);
+  WorkAreaInsets::ForWindow(window.get())
+      ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(), insets, insets);
   const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
@@ -592,13 +595,16 @@ TEST_F(WorkspaceLayoutManagerTest,
 
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  // The following two SetDisplayWorkAreaInsets calls simulate the case of
+  // The following two `UpdateWorkAreaInsetsForTest` calls simulate the case of
   // crbug.com/673803 that work area first becomes fullscreen and then returns
   // to the original state.
-  Shell::Get()->SetDisplayWorkAreaInsets(window.get(), gfx::Insets());
+  WorkAreaInsets::ForWindow(window.get())
+      ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(), gfx::Insets(),
+                                    gfx::Insets());
   ui::LayerAnimator* animator = window->layer()->GetAnimator();
   EXPECT_TRUE(animator->is_animating());
-  Shell::Get()->SetDisplayWorkAreaInsets(window.get(), insets);
+  WorkAreaInsets::ForWindow(window.get())
+      ->UpdateWorkAreaInsetsForTest(window.get(), gfx::Rect(), insets, insets);
   animator->StopAnimating();
   EXPECT_FALSE(animator->is_animating());
   EXPECT_EQ(expected_bounds.ToString(), window->bounds().ToString());
@@ -1671,15 +1677,32 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
 
   void ShowKeyboard() {
     layout_manager_->OnKeyboardDisplacingBoundsChanged(keyboard_bounds_);
-    restore_work_area_insets_ = GetPrimaryDisplay().GetWorkAreaInsets();
-    Shell::Get()->SetDisplayWorkAreaInsets(
-        Shell::GetPrimaryRootWindow(),
-        gfx::Insets::TLBR(0, 0, keyboard_bounds_.height(), 0));
+
+    aura::Window* root = Shell::GetPrimaryRootWindow();
+    WorkAreaInsets* work_area_insets = WorkAreaInsets::ForWindow(root);
+
+    restore_work_area_insets_ =
+        work_area_insets->in_session_user_work_area_insets();
+
+    gfx::Insets insets = gfx::Insets::TLBR(0, 0, keyboard_bounds_.height(), 0);
+    work_area_insets->UpdateWorkAreaInsetsForTest(root, gfx::Rect(),
+                                                  gfx::Insets(), insets);
+
+    ash::KeyboardStateDescriptor state{true, keyboard_bounds_, keyboard_bounds_,
+                                       keyboard_bounds_};
+    work_area_insets->OnKeyboardAppearanceChanged(state);
   }
 
   void HideKeyboard() {
-    Shell::Get()->SetDisplayWorkAreaInsets(Shell::GetPrimaryRootWindow(),
-                                           restore_work_area_insets_);
+    aura::Window* root = Shell::GetPrimaryRootWindow();
+    WorkAreaInsets* work_area_insets = WorkAreaInsets::ForWindow(root);
+    work_area_insets->UpdateWorkAreaInsetsForTest(
+        root, gfx::Rect(), gfx::Insets(), restore_work_area_insets_);
+
+    ash::KeyboardStateDescriptor state{true, gfx::Rect(), gfx::Rect(),
+                                       gfx::Rect()};
+    work_area_insets->OnKeyboardAppearanceChanged(state);
+
     layout_manager_->OnKeyboardDisplacingBoundsChanged(gfx::Rect());
   }
 
@@ -2004,6 +2027,22 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   test_state()->reset_num_system_ui_area_changes();
 
   unified_system_tray->CloseBubble();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+}
+
+// Expect that showing the clamshell bubble launcher triggers as system UI area
+// change event.
+TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
+       SystemUiAreaChangeOnClamshellLauncherVisibilityChange) {
+  base::test::ScopedFeatureList feature_list(features::kProductivityLauncher);
+  ASSERT_FALSE(Shell::Get()->IsInTabletMode());
+
+  AppListController* app_list_controller = AppListController::Get();
+  app_list_controller->ShowAppList();
+  EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
+  test_state()->reset_num_system_ui_area_changes();
+
+  app_list_controller->DismissAppList();
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 

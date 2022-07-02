@@ -1,0 +1,412 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+
+import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
+import {HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams, HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleProxy, HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+
+const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
+const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
+const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
+
+const HelpBubbleMixinTestElementBase = HelpBubbleMixin(PolymerElement) as {
+  new (): PolymerElement & HelpBubbleMixinInterface,
+};
+
+export interface HelpBubbleMixinTestElement {
+  $: {
+    bulletList: HTMLElement,
+    container: HTMLElement,
+    helpBubble: HelpBubbleElement,
+    p1: HTMLElement,
+    title: HTMLElement,
+  };
+}
+
+export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
+  static get is() {
+    return 'help-bubble-mixin-test-element';
+  }
+
+  static get template() {
+    return html`
+    <div id='container'>
+      <h1 id='title'>This is the title</h1>
+      <p id='p1'>Some paragraph text</p>
+      <ul id='bulletList'>
+        <li>List item 1</li>
+        <li>List item 2</li>
+      </ul>
+    </div>`;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.registerHelpBubbleIdentifier(TITLE_NATIVE_ID, 'title');
+    this.registerHelpBubbleIdentifier(PARAGRAPH_NATIVE_ID, 'p1');
+    this.registerHelpBubbleIdentifier(LIST_NATIVE_ID, 'bulletList');
+  }
+
+
+  getHelpBubbleFor(anchorId: string): HelpBubbleElement|null {
+    return this.shadowRoot!.querySelector<HelpBubbleElement>(
+        `help-bubble[anchor-id='${anchorId}']`);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'help-bubble-mixin-test-element': HelpBubbleMixinTestElement;
+  }
+}
+
+customElements.define(
+    HelpBubbleMixinTestElement.is, HelpBubbleMixinTestElement);
+
+class TestHelpBubbleHandler extends TestBrowserProxy implements
+    HelpBubbleHandlerInterface {
+  constructor() {
+    super([
+      'helpBubbleAnchorVisibilityChanged',
+      'helpBubbleButtonPressed',
+      'helpBubbleClosed',
+    ]);
+  }
+
+  helpBubbleAnchorVisibilityChanged(
+      nativeIdentifier: string, visible: boolean) {
+    this.methodCalled(
+        'helpBubbleAnchorVisibilityChanged', nativeIdentifier, visible);
+  }
+
+  helpBubbleButtonPressed(nativeIdentifier: string, button: number) {
+    this.methodCalled('helpBubbleButtonPressed', nativeIdentifier, button);
+  }
+
+  helpBubbleClosed(nativeIdentifier: string, byUser: boolean) {
+    this.methodCalled('helpBubbleClosed', nativeIdentifier, byUser);
+  }
+}
+
+class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
+  private testHandler_ = new TestHelpBubbleHandler();
+  private callbackRouter_: HelpBubbleClientCallbackRouter =
+      new HelpBubbleClientCallbackRouter();
+  private callbackRouterRemote_: HelpBubbleClientRemote;
+
+  constructor() {
+    super();
+
+    this.callbackRouterRemote_ =
+        this.callbackRouter_.$.bindNewPipeAndPassRemote();
+  }
+
+  getHandler(): TestHelpBubbleHandler {
+    return this.testHandler_;
+  }
+
+  getCallbackRouter(): HelpBubbleClientCallbackRouter {
+    return this.callbackRouter_;
+  }
+
+  getCallbackRouterRemote(): HelpBubbleClientRemote {
+    return this.callbackRouterRemote_;
+  }
+}
+
+suite('CrComponentsHelpBubbleMixinTest', () => {
+  let testProxy: TestHelpBubbleProxy;
+  let container: HelpBubbleMixinTestElement;
+
+  setup(() => {
+    testProxy = new TestHelpBubbleProxy();
+    HelpBubbleProxyImpl.setInstance(testProxy);
+
+    document.body.innerHTML = '';
+    container = document.createElement('help-bubble-mixin-test-element');
+    document.body.appendChild(container);
+    return waitAfterNextRender(container);
+  });
+
+  test('help bubble mixin reports bubble closed', () => {
+    assertFalse(container.isHelpBubbleShowing());
+  });
+
+  const defaultParams: HelpBubbleParams = new HelpBubbleParams();
+  defaultParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
+  defaultParams.position = HelpBubblePosition.ABOVE;
+  defaultParams.bodyText = 'This is a help bubble.';
+  defaultParams.buttons = [];
+
+  test('help bubble mixin shows bubble when called directly', () => {
+    assertFalse(container.isHelpBubbleShowing());
+    assertFalse(container.isHelpBubbleShowingFor('p1'));
+    container.showHelpBubble('p1', defaultParams);
+    assertTrue(container.isHelpBubbleShowing());
+    assertTrue(container.isHelpBubbleShowingFor('p1'));
+  });
+
+  test('help bubble mixin reports not open for other elements', () => {
+    // Valid but not open.
+    assertFalse(container.isHelpBubbleShowingFor('title'));
+    // Not valid (and not open).
+    assertFalse(container.isHelpBubbleShowingFor('foo'));
+  });
+
+  test('help bubble mixin hides bubble when called directly', () => {
+    container.showHelpBubble('p1', defaultParams);
+    assertTrue(container.hideHelpBubble('p1'));
+    assertFalse(container.isHelpBubbleShowing());
+  });
+
+  test('help bubble mixin called directly doesn\'t hide wrong bubble', () => {
+    container.showHelpBubble('p1', defaultParams);
+    assertFalse(container.hideHelpBubble('title'));
+    assertTrue(container.isHelpBubbleShowing());
+  });
+
+  test('help bubble mixin show and hide multiple bubbles directly', () => {
+    container.showHelpBubble('p1', defaultParams);
+    assertTrue(container.isHelpBubbleShowingFor('p1'));
+    assertFalse(container.isHelpBubbleShowingFor('title'));
+    assertTrue(container.isHelpBubbleShowing());
+
+    container.showHelpBubble('title', defaultParams);
+    assertTrue(container.isHelpBubbleShowingFor('p1'));
+    assertTrue(container.isHelpBubbleShowingFor('title'));
+    assertTrue(container.isHelpBubbleShowing());
+
+    container.hideHelpBubble('p1');
+    assertFalse(container.isHelpBubbleShowingFor('p1'));
+    assertTrue(container.isHelpBubbleShowingFor('title'));
+    assertTrue(container.isHelpBubbleShowing());
+
+    container.hideHelpBubble('title');
+    assertFalse(container.isHelpBubbleShowingFor('p1'));
+    assertFalse(container.isHelpBubbleShowingFor('title'));
+    assertFalse(container.isHelpBubbleShowing());
+  });
+
+  test(
+      'help bubble mixin shows help bubble when called via proxy', async () => {
+        testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+        await waitAfterNextRender(container);
+        assertTrue(container.isHelpBubbleShowing());
+        const bubble = container.getHelpBubbleFor('p1');
+        assertTrue(!!bubble);
+        assertEquals(container.$.p1, bubble.getAnchorElement());
+        assertTrue(isVisible(bubble));
+      });
+
+  test(
+      'help bubble mixin hides help bubble when called via proxy', async () => {
+        testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+        await waitAfterNextRender(container);
+        testProxy.getCallbackRouterRemote().hideHelpBubble(
+            defaultParams.nativeIdentifier);
+        await waitAfterNextRender(container);
+        assertFalse(container.isHelpBubbleShowing());
+      });
+
+  test(
+      'help bubble mixin doesn\'t hide help bubble when called with wrong id',
+      async () => {
+        testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+        await waitAfterNextRender(container);
+        testProxy.getCallbackRouterRemote().hideHelpBubble(LIST_NATIVE_ID);
+        await waitAfterNextRender(container);
+        assertTrue(container.isHelpBubbleShowing());
+      });
+
+  test(
+      'help bubble ignores unregistered ID in ShowHelpBubble call',
+      async () => {
+        const params: HelpBubbleParams = new HelpBubbleParams();
+        params.nativeIdentifier = 'This is an unregistered identifier';
+        params.position = HelpBubblePosition.ABOVE;
+        params.bodyText = 'This is a help bubble.';
+        params.buttons = [];
+
+        testProxy.getCallbackRouterRemote().showHelpBubble(params);
+        await waitAfterNextRender(container);
+        assertFalse(container.isHelpBubbleShowing());
+      });
+
+  test(
+      'help bubble ignores unregistered ID in HideHelpBubble call',
+      async () => {
+        testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+        await waitAfterNextRender(container);
+        testProxy.getCallbackRouterRemote().hideHelpBubble(
+            'This is an unregistered identifier');
+        await waitAfterNextRender(container);
+        assertTrue(container.isHelpBubbleShowing());
+      });
+
+  test('help bubble ignores unregistered ID in focus call', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    testProxy.getCallbackRouterRemote().toggleFocusForAccessibility(
+        'This is an unregistered identifier');
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+  });
+
+  test('help bubble mixin sends events on initially visible', async () => {
+    await waitAfterNextRender(container);
+    // Since we're watching three elements, we get events for all three.
+    assertEquals(
+        3,
+        testProxy.getHandler().getCallCount(
+            'helpBubbleAnchorVisibilityChanged'));
+    assertDeepEquals(
+        [
+          [TITLE_NATIVE_ID, true],
+          [PARAGRAPH_NATIVE_ID, true],
+          [LIST_NATIVE_ID, true],
+        ],
+        testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
+  });
+
+  test('help bubble mixin sends event on lost visibility', async () => {
+    // Already waited for the container to render, but intersection events won't
+    // be sent until the following frame.
+    await waitAfterNextRender(container);
+
+    container.style.display = 'none';
+
+    // The same applies here.
+    await waitAfterNextRender(container);
+    await waitAfterNextRender(container);
+
+    assertEquals(
+        6,
+        testProxy.getHandler().getCallCount(
+            'helpBubbleAnchorVisibilityChanged'));
+    assertDeepEquals(
+        [
+          [TITLE_NATIVE_ID, true],
+          [PARAGRAPH_NATIVE_ID, true],
+          [LIST_NATIVE_ID, true],
+          [TITLE_NATIVE_ID, false],
+          [PARAGRAPH_NATIVE_ID, false],
+          [LIST_NATIVE_ID, false],
+        ],
+        testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
+  });
+
+  test(
+      'help bubble mixin sends event on closed due to anchor losing visibility',
+      async () => {
+        // Already waited for the container to render, but intersection events
+        // won't be sent until the following frame.
+        await waitAfterNextRender(container);
+        container.showHelpBubble('p1', defaultParams);
+
+        // Hiding the container will cause the bubble to be closed.
+        container.$.p1.style.display = 'none';
+
+        // The same applies here.
+        await waitAfterNextRender(container);
+        await waitAfterNextRender(container);
+
+        assertEquals(
+            1, testProxy.getHandler().getCallCount('helpBubbleClosed'));
+        assertDeepEquals(
+            [[PARAGRAPH_NATIVE_ID, false]],
+            testProxy.getHandler().getArgs('helpBubbleClosed'));
+        assertFalse(container.isHelpBubbleShowing());
+      });
+
+
+  test(
+      'help bubble mixin does not send event when non-anchor loses visibility',
+      async () => {
+        // Already waited for the container to render, but intersection events
+        // won't be sent until the following frame.
+        await waitAfterNextRender(container);
+        container.showHelpBubble('p1', defaultParams);
+
+        // This is not the current bubble anchor, so should not send an event.
+        container.$.title.style.display = 'none';
+
+        // The same applies here.
+        await waitAfterNextRender(container);
+        await waitAfterNextRender(container);
+
+        assertEquals(
+            0, testProxy.getHandler().getCallCount('helpBubbleClosed'));
+        assertTrue(container.isHelpBubbleShowing());
+      });
+
+  test('help bubble mixin reshow bubble', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    testProxy.getCallbackRouterRemote().hideHelpBubble(
+        defaultParams.nativeIdentifier);
+    await waitAfterNextRender(container);
+    assertFalse(container.isHelpBubbleShowing());
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    const bubble = container.getHelpBubbleFor('p1');
+    assertTrue(!!bubble);
+    assertEquals(container.$.p1, bubble.getAnchorElement());
+    assertTrue(isVisible(bubble));
+  });
+
+  const secondParams: HelpBubbleParams = new HelpBubbleParams();
+  secondParams.nativeIdentifier = TITLE_NATIVE_ID;
+  secondParams.position = HelpBubblePosition.BELOW;
+  secondParams.bodyText = 'This is another help bubble.';
+  secondParams.buttons = [];
+
+  test('help bubble mixin shows multiple bubbles', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    const bubble1 = container.getHelpBubbleFor('title');
+    const bubble2 = container.getHelpBubbleFor('p1');
+    assertTrue(!!bubble1);
+    assertTrue(!!bubble2);
+    assertEquals(container.$.title, bubble1!.getAnchorElement());
+    assertEquals(container.$.p1, bubble2!.getAnchorElement());
+    assertTrue(isVisible(bubble1));
+    assertTrue(isVisible(bubble2));
+  });
+
+  test('help bubble mixin hides multiple bubbles', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    await waitAfterNextRender(container);
+
+    testProxy.getCallbackRouterRemote().hideHelpBubble(
+        defaultParams.nativeIdentifier);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    assertEquals(
+        container.$.title,
+        container.getHelpBubbleFor('title')?.getAnchorElement());
+    assertEquals(null, container.getHelpBubbleFor('p1'));
+
+    testProxy.getCallbackRouterRemote().hideHelpBubble(
+        secondParams.nativeIdentifier);
+    await waitAfterNextRender(container);
+    assertFalse(container.isHelpBubbleShowing());
+    assertEquals(null, container.getHelpBubbleFor('title'));
+    assertEquals(null, container.getHelpBubbleFor('p1'));
+  });
+});

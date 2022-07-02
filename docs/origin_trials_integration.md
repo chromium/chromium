@@ -248,7 +248,7 @@ as tests for script-added tokens. For examples, refer to the existing tests in
 [origin_trials/webexposed]: /third_party/blink/web_tests/http/tests/origin_trials/webexposed/
 [runtime\_enabled\_features.json5]: /third_party/blink/renderer/platform/runtime_enabled_features.json5
 [trial_token_unittest.cc]: /third_party/blink/common/origin_trials/trial_token_unittest.cc
-[web\_feature.mojom]: /third_party/blink/public/mojom/web_feature/web_feature.mojom
+[web\_feature.mojom]: /third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [update\_use\_counter\_feature\_enum.py]: /tools/metrics/histograms/update_use_counter_feature_enum.py
 [Measure]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c
 [css\_properties.json5]: /third_party/blink/renderer/core/css/css_properties.json5

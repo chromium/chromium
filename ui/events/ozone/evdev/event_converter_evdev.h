@@ -19,6 +19,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -101,6 +102,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Dump recent events into a file.
   virtual void DumpTouchEventLog(const char* filename);
 
+  // Returns value corresponding to keyboard status (No Keyboard, Keyboard in
+  // Blocklist, ect.).
+  virtual KeyboardType GetKeyboardType() const;
+
   // Returns true if the converter is used for a keyboard device.
   virtual bool HasKeyboard() const;
 
@@ -155,6 +160,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns whether the gamepad device supports rumble type force feedback.
   virtual bool GetGamepadRumbleCapability() const;
 
+  // Returns supported key bits of the gamepad.
+  virtual std::vector<uint64_t> GetGamepadKeyBits() const;
+
   // Sets which keyboard keys should be processed. If |enable_filter| is
   // false, all keys are allowed and |allowed_keys| is ignored.
   virtual void SetKeyFilter(bool enable_filter,
@@ -181,6 +189,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Set callback to trigger keyboard device update.
   virtual void SetReceivedValidInputCallback(
       ReceivedValidInputCallback callback);
+
+  // Returns supported key bits of the keyboard.
+  virtual std::vector<uint64_t> GetKeyboardKeyBits() const;
 
   // Helper to generate a base::TimeTicks from an input_event's time
   static base::TimeTicks TimeTicksFromInputEvent(const input_event& event);

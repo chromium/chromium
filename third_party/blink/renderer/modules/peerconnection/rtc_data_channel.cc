@@ -31,6 +31,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -49,7 +50,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace WTF {
@@ -140,12 +140,12 @@ void RecordMessageSent(const webrtc::DataChannelInterface& channel,
 
   if (channel.reliable()) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.ReliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.UnreliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   }
 }
 
@@ -264,7 +264,7 @@ void RTCDataChannel::Observer::OnBufferedAmountChange(uint64_t sent_data_size) {
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnBufferedAmountChangeImpl,
                           scoped_refptr<Observer>(this),
-                          SafeCast<unsigned>(sent_data_size)));
+                          base::checked_cast<unsigned>(sent_data_size)));
 }
 
 void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
@@ -666,7 +666,8 @@ void RTCDataChannel::OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer) {
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
       DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
-          buffer->data.cdata(), SafeCast<unsigned>(buffer->data.size()));
+          buffer->data.cdata(),
+          base::checked_cast<unsigned>(buffer->data.size()));
       ScheduleDispatchEvent(MessageEvent::Create(dom_buffer));
       return;
     }

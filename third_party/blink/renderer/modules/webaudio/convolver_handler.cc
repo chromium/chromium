@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_convolver_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -16,6 +17,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
+namespace blink {
+
+namespace {
+
 // Note about empirical tuning:
 // The maximum FFT size affects reverb performance and accuracy.
 // If the reverb is single-threaded and processes entirely in the real-time
@@ -23,17 +28,20 @@
 // a good value.  But, the Reverb object is multi-threaded, so we want this as
 // high as possible without losing too much accuracy.  Very large FFTs will have
 // worse phase errors. Given these constraints 32768 is a good compromise.
-const unsigned MaxFFTSize = 32768;
+constexpr unsigned kMaxFftSize = 32768;
 
-namespace blink {
+constexpr unsigned kDefaultNumberOfInputChannels = 2;
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
 
 ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
-    : AudioHandler(kNodeTypeConvolver, node, sample_rate), normalize_(true) {
+    : AudioHandler(kNodeTypeConvolver, node, sample_rate) {
   AddInput();
-  AddOutput(1);
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   // Node-specific default mixing rules.
-  channel_count_ = 2;
+  channel_count_ = kDefaultNumberOfInputChannels;
   SetInternalChannelCountMode(kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
@@ -61,8 +69,8 @@ void ConvolverHandler::Process(uint32_t frames_to_process) {
   DCHECK(output_bus);
 
   // Synchronize with possible dynamic changes to the impulse response.
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     if (!IsInitialized() || !reverb_) {
       output_bus->Zero();
     } else {
@@ -88,7 +96,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
 
   if (!buffer) {
     BaseAudioContext::GraphAutoLocker context_locker(Context());
-    MutexLocker locker(process_lock_);
+    base::AutoLock locker(process_lock_);
     reverb_.reset();
     shared_buffer_ = nullptr;
     return;
@@ -149,7 +157,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
     // This means the buffer effectively has length 0, which is the same as if
     // no buffer were given.
     BaseAudioContext::GraphAutoLocker context_locker(Context());
-    MutexLocker locker(process_lock_);
+    base::AutoLock locker(process_lock_);
     reverb_.reset();
     shared_buffer_ = nullptr;
     return;
@@ -165,7 +173,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   // Create the reverb with the given impulse response.
   std::unique_ptr<Reverb> reverb = std::make_unique<Reverb>(
       buffer_bus.get(), GetDeferredTaskHandler().RenderQuantumFrames(),
-      MaxFFTSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
+      kMaxFftSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
 
   {
     // The context must be locked since changing the buffer can
@@ -173,7 +181,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
     BaseAudioContext::GraphAutoLocker context_locker(Context());
 
     // Synchronize with process().
-    MutexLocker locker(process_lock_);
+    base::AutoLock locker(process_lock_);
     reverb_ = std::move(reverb);
     shared_buffer_ = buffer->CreateSharedAudioBuffer();
     if (buffer) {
@@ -191,8 +199,8 @@ bool ConvolverHandler::RequiresTailProcessing() const {
 }
 
 double ConvolverHandler::TailTime() const {
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     return reverb_ ? reverb_->ImpulseResponseLength() /
                          static_cast<double>(Context()->sampleRate())
                    : 0;
@@ -203,8 +211,8 @@ double ConvolverHandler::TailTime() const {
 }
 
 double ConvolverHandler::LatencyTime() const {
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     return reverb_ ? reverb_->LatencyFrames() /
                          static_cast<double>(Context()->sampleRate())
                    : 0;
@@ -280,9 +288,22 @@ void ConvolverHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   DCHECK(input);
   DCHECK_EQ(input, &Input(0));
 
-  if (shared_buffer_) {
+  bool has_shared_buffer = false;
+  unsigned number_of_channels = 1;
+  bool lock_successfully_acquired = false;
+
+  // TODO(hongchan): Check what to do when the lock cannot be acquired.
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
+    lock_successfully_acquired = true;
+    has_shared_buffer = !!shared_buffer_;
+    if (has_shared_buffer)
+      number_of_channels = shared_buffer_->numberOfChannels();
+  }
+
+  if (has_shared_buffer || !lock_successfully_acquired) {
     unsigned number_of_output_channels = ComputeNumberOfOutputChannels(
-        input->NumberOfChannels(), shared_buffer_->numberOfChannels());
+        input->NumberOfChannels(), number_of_channels);
 
     if (IsInitialized() &&
         number_of_output_channels != Output(0).NumberOfChannels()) {

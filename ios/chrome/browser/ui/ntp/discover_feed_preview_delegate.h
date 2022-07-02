@@ -12,7 +12,7 @@ class GURL;
 // Protocol for actions relating to the Discover feed preview.
 @protocol DiscoverFeedPreviewDelegate
 
-// A view controller which displays a preview of |URL|.
+// A view controller which displays a preview of `URL`.
 - (UIViewController*)discoverFeedPreviewWithURL:(const GURL)URL;
 
 // Handles the action when users tap on the discover feed preview.

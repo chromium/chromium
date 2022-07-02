@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/time/time.h"
@@ -19,7 +20,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -50,7 +50,8 @@ constexpr int kNotificationCheckDelayInSeconds = 2;
 // MobileDataNotifications
 
 MobileDataNotifications::MobileDataNotifications() {
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
   NetworkHandler::Get()->network_connection_handler()->AddObserver(this);
   UserManager::Get()->AddSessionStateObserver(this);
   SessionManager::Get()->AddObserver(this);
@@ -58,8 +59,6 @@ MobileDataNotifications::MobileDataNotifications() {
 
 MobileDataNotifications::~MobileDataNotifications() {
   if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
     NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
   }
   UserManager::Get()->RemoveSessionStateObserver(this);
@@ -71,6 +70,10 @@ void MobileDataNotifications::ActiveNetworksChanged(
   if (SessionManager::Get()->IsUserSessionBlocked())
     return;
   ShowOptionalMobileDataNotificationImpl(active_networks);
+}
+
+void MobileDataNotifications::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void MobileDataNotifications::ConnectSucceeded(
@@ -139,7 +142,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierMobileData),
+              kNotifierMobileData, ash::NotificationCatalogName::kMobileData),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&MobileDataNotificationClicked,

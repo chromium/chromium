@@ -49,7 +49,6 @@
 namespace syncer {
 namespace {
 
-using base::OneShotTimer;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
@@ -87,8 +86,10 @@ MATCHER_P(EqualsProto, expected, "") {
 }
 
 MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
-  if (expected_specifics.has_sharing_fields() != arg.sharing_info().has_value())
+  if (expected_specifics.has_sharing_fields() !=
+      arg.sharing_info().has_value()) {
     return false;
+  }
 
   if (expected_specifics.has_sharing_fields()) {
     auto& expected_fields = expected_specifics.sharing_fields();
@@ -110,8 +111,10 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
     }
 
     for (int i = 0; i < expected_fields.enabled_features_size(); ++i) {
-      if (!arg_info.enabled_features.count(expected_fields.enabled_features(i)))
+      if (!arg_info.enabled_features.count(
+              expected_fields.enabled_features(i))) {
         return false;
+      }
     }
   }
 
@@ -478,8 +481,9 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   ~DeviceInfoSyncBridgeTest() override {
     // Some tests may never initialize the bridge.
-    if (bridge_)
+    if (bridge_) {
       bridge_->RemoveObserver(this);
+    }
 
     // Force all remaining (store) tasks to execute so we don't leak memory.
     base::RunLoop().RunUntilIdle();

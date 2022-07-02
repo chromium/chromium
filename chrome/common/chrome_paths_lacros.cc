@@ -26,6 +26,8 @@ struct DefaultPaths {
   base::FilePath android_files_dir;
   base::FilePath linux_files_dir;
   base::FilePath share_cache_dir;
+  base::FilePath preinstalled_web_app_config_dir;
+  base::FilePath preinstalled_web_app_extra_config_dir;
 };
 
 DefaultPaths& GetDefaultPaths() {
@@ -35,14 +37,17 @@ DefaultPaths& GetDefaultPaths() {
 
 }  // namespace
 
-void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
-                           const base::FilePath& downloads_dir,
-                           const base::FilePath& drivefs,
-                           const base::FilePath& removable_media_dir,
-                           const base::FilePath& android_files_dir,
-                           const base::FilePath& linux_files_dir,
-                           const base::FilePath& ash_resources_dir,
-                           const base::FilePath& share_cache_dir) {
+void SetLacrosDefaultPaths(
+    const base::FilePath& documents_dir,
+    const base::FilePath& downloads_dir,
+    const base::FilePath& drivefs,
+    const base::FilePath& removable_media_dir,
+    const base::FilePath& android_files_dir,
+    const base::FilePath& linux_files_dir,
+    const base::FilePath& ash_resources_dir,
+    const base::FilePath& share_cache_dir,
+    const base::FilePath& preinstalled_web_app_config_dir,
+    const base::FilePath& preinstalled_web_app_extra_config_dir) {
   DCHECK(!documents_dir.empty());
   DCHECK(documents_dir.IsAbsolute());
   GetDefaultPaths().documents_dir = documents_dir;
@@ -60,6 +65,10 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
   chromeos::lacros_paths::SetAshResourcesPath(ash_resources_dir);
 
   GetDefaultPaths().share_cache_dir = share_cache_dir;
+  GetDefaultPaths().preinstalled_web_app_config_dir =
+      preinstalled_web_app_config_dir;
+  GetDefaultPaths().preinstalled_web_app_extra_config_dir =
+      preinstalled_web_app_extra_config_dir;
 }
 
 void SetLacrosDefaultPathsFromInitParams(
@@ -86,11 +95,23 @@ void SetLacrosDefaultPathsFromInitParams(
     base::FilePath share_cache_dir;
     if (init_params->default_paths->share_cache.has_value())
       share_cache_dir = init_params->default_paths->share_cache.value();
+    base::FilePath preinstalled_web_app_config_dir;
+    if (init_params->default_paths->preinstalled_web_app_config.has_value()) {
+      preinstalled_web_app_config_dir =
+          init_params->default_paths->preinstalled_web_app_config.value();
+    }
+    base::FilePath preinstalled_web_app_extra_config_dir;
+    if (init_params->default_paths->preinstalled_web_app_extra_config
+            .has_value()) {
+      preinstalled_web_app_extra_config_dir =
+          init_params->default_paths->preinstalled_web_app_extra_config.value();
+    }
 
     chrome::SetLacrosDefaultPaths(
         init_params->default_paths->documents,
         init_params->default_paths->downloads, drivefs_dir, removable_media_dir,
-        android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir);
+        android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir,
+        preinstalled_web_app_config_dir, preinstalled_web_app_extra_config_dir);
   }
 }
 
@@ -190,6 +211,20 @@ bool GetShareCachePath(base::FilePath* result) {
   if (GetDefaultPaths().share_cache_dir.empty())
     return false;
   *result = GetDefaultPaths().share_cache_dir;
+  return true;
+}
+
+bool GetPreinstalledWebAppConfigPath(base::FilePath* result) {
+  if (GetDefaultPaths().preinstalled_web_app_config_dir.empty())
+    return false;
+  *result = GetDefaultPaths().preinstalled_web_app_config_dir;
+  return true;
+}
+
+bool GetPreinstalledWebAppExtraConfigPath(base::FilePath* result) {
+  if (GetDefaultPaths().preinstalled_web_app_extra_config_dir.empty())
+    return false;
+  *result = GetDefaultPaths().preinstalled_web_app_extra_config_dir;
   return true;
 }
 

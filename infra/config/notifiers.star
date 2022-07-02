@@ -282,3 +282,11 @@ luci.notifier(
     ],
     on_new_status = ["FAILURE"],
 )
+
+luci.notifier(
+    name = "cr-accessibility",
+    notify_emails = [
+        "chrome-a11y-alerts@google.com",
+    ],
+    on_new_status = ["FAILURE"],
+)

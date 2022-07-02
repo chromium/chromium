@@ -32,7 +32,7 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
   // windows with opaque origins that were opened by extensions, and may
   // still be running code.
   const url::SchemeHostPort& tuple_or_precursor_tuple =
-      web_contents->GetMainFrame()
+      web_contents->GetPrimaryMainFrame()
           ->GetLastCommittedOrigin()
           .GetTupleOrPrecursorTupleIfOpaque();
   if (tuple_or_precursor_tuple.scheme() == extensions::kExtensionScheme &&

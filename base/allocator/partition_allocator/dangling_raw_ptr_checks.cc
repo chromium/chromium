@@ -4,8 +4,8 @@
 
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
@@ -36,10 +36,10 @@ void SetDanglingRawPtrReleasedFn(DanglingRawPtrReleasedFn fn) {
 
 namespace internal {
 
-BASE_EXPORT void DanglingRawPtrDetected(uintptr_t id) {
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrDetected(uintptr_t id) {
   g_dangling_raw_ptr_detected_fn(id);
 }
-BASE_EXPORT void DanglingRawPtrReleased(uintptr_t id) {
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DanglingRawPtrReleased(uintptr_t id) {
   g_dangling_raw_ptr_released_fn(id);
 }
 

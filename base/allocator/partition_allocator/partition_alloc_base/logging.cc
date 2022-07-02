@@ -4,16 +4,23 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 
-#ifdef BASE_CHECK_H_
+// TODO(1151236): After finishing copying //base files to PA library, remove
+// defined(BASE_CHECK_H_) from here.
+#if defined(                                                             \
+    BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CHECK_H_) || \
+    defined(BASE_CHECK_H_) ||                                            \
+    defined(BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_)
 #error "logging.h should not include check.h"
 #endif
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/base_export.h"
-#include "base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+
 #include <io.h>
 #include <windows.h>
 // Windows warns on using write().  It prefers _write().
@@ -21,31 +28,6 @@
 // Windows doesn't define STDERR_FILENO.  Define it here.
 #define STDERR_FILENO 2
 
-#elif BUILDFLAG(IS_APPLE)
-// In MacOS 10.12 and iOS 10.0 and later ASL (Apple System Log) was deprecated
-// in favor of OS_LOG (Unified Logging).
-#include <AvailabilityMacros.h>
-#if BUILDFLAG(IS_IOS)
-#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define USE_ASL
-#endif
-#else  // BUILDFLAG(IS_IOS)
-#if !defined(MAC_OS_X_VERSION_10_12) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
-#define USE_ASL
-#endif
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_ASL)
-#include <asl.h>
-#else
-#include <os/log.h>
-#endif
-
-#include <CoreFoundation/CoreFoundation.h>
-#include <mach-o/dyld.h>
-#include <mach/mach.h>
-#include <mach/mach_time.h>
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -106,7 +88,8 @@ void WriteToFd(int fd, const char* data, size_t length) {
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
 // determined at run-time. We default it to INFO, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
@@ -206,7 +189,8 @@ SystemErrorCode GetLastSystemErrorCode() {
 #endif
 }
 
-BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 #if BUILDFLAG(IS_WIN)
   const int kErrorMessageBufferSize = 256;
   char msgbuf[kErrorMessageBufferSize];
@@ -219,13 +203,14 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
     size_t whitespace_pos = message.find_last_not_of("\n\r ");
     if (whitespace_pos != std::string::npos)
       message.erase(whitespace_pos + 1);
-    return message + base::StringPrintf(" (0x%lX)", error_code);
+    return message + base::TruncatingStringPrintf(" (0x%lX)", error_code);
   }
-  return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
-                            GetLastError(), error_code);
+  return base::TruncatingStringPrintf(
+      "Error (0x%lX) while retrieving error. (0x%lX)", GetLastError(),
+      error_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::safe_strerror(error_code) +
-         base::StringPrintf(" (%d)", error_code);
+         base::TruncatingStringPrintf(" (%d)", error_code);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -277,7 +262,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    IMMEDIATE_CRASH();
+    PA_IMMEDIATE_CRASH();
 }
 
 // This was defined at the beginning of this file.

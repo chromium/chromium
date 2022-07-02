@@ -19,25 +19,25 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 
 // A view that encapsulates an animation used to transition into a grid.
 // A transition animator should place this view at the appropriate place in the
-// view hierarchy and then call |-beginAnimations| on its |animator| property.
+// view hierarchy and then call `-beginAnimations` on its `animator` property.
 @interface GridTransitionAnimation : UIView
 
 // The animator object this animation uses; it will have the same duration
 // that this object is initialized with.
-// This property is |nil| until this object is added to a view hierarchy. Any
-// animations or callbacks added to |animator| must be added *after* this object
+// This property is `nil` until this object is added to a view hierarchy. Any
+// animations or callbacks added to `animator` must be added *after* this object
 // is added as a subview of another view.
 @property(nonatomic, readonly) id<UIViewImplicitlyAnimating> animator;
 
-// The active cell view; this will be animated to or from the |expandedRect|
+// The active cell view; this will be animated to or from the `expandedRect`
 // specified by the GridTransitionLayout this object is initialized with, so
-// it may be necessary to reparent |activeCell| to another view so the
+// it may be necessary to reparent `activeCell` to another view so the
 // animation can be properly layered.
 @property(nonatomic, strong) UIView* activeCell;
 
-// Designated initializer. |layout| is a GridTransitionLayout object defining
-// the layout the animation should animate to. |delegate| is an object that will
-// be informed about events in this object's animation. |direction| is the
+// Designated initializer. `layout` is a GridTransitionLayout object defining
+// the layout the animation should animate to. `delegate` is an object that will
+// be informed about events in this object's animation. `direction` is the
 // direction that the transition will animate.
 - (instancetype)initWithLayout:(GridTransitionLayout*)layout
                       duration:(NSTimeInterval)duration

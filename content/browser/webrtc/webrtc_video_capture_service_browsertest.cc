@@ -20,6 +20,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -213,11 +214,14 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
       gl->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
       GLuint texture =
           gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+      gl->BeginSharedImageAccessDirectCHROMIUM(
+          texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
       gl->BindTexture(GL_TEXTURE_2D, texture);
       gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, kDummyFrameCodedSize.width(),
                         kDummyFrameCodedSize.height(), GL_RGBA,
                         GL_UNSIGNED_BYTE, dummy_frame_data.get());
       gl->BindTexture(GL_TEXTURE_2D, 0);
+      gl->EndSharedImageAccessDirectCHROMIUM(texture);
       gl->DeleteTextures(1, &texture);
       gpu::SyncToken gl_token;
       gl->GenSyncTokenCHROMIUM(gl_token.GetData());

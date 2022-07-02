@@ -62,9 +62,7 @@ bool UserEventEqualityChecker::IsExitConditionSatisfied(std::ostream* os) {
     // identical events, though there can be duplicates in some cases.
     auto iter = base::ranges::find(
         remaining_expected_specifics, server_specifics.event_time_usec(),
-        [](const sync_pb::UserEventSpecifics& specifics) {
-          return specifics.event_time_usec();
-        });
+        &sync_pb::UserEventSpecifics::event_time_usec);
     // We don't expect to encounter id matching events with different values,
     // this isn't going to recover so fail the test case now.
     EXPECT_NE(iter, remaining_expected_specifics.end());

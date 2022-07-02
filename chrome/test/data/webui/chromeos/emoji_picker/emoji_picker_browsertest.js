@@ -31,7 +31,7 @@ var EmojiPickerMainTest = class extends EmojiPickerBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_test.js';
+        'chromeos/emoji_picker/emoji_picker_test.js&host=test';
   }
 };
 
@@ -45,7 +45,7 @@ var EmojiPickerStoreTest = class extends EmojiPickerBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_store_test.js';
+        'chromeos/emoji_picker/emoji_picker_store_test.js&host=test';
   }
 };
 
@@ -63,11 +63,28 @@ var EmojiPickerExtensionBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_extension_test.js';
+        'chromeos/emoji_picker/emoji_picker_extension_test.js&host=test';
   }
 };
 
 TEST_F('EmojiPickerExtensionBrowserTest', 'All', function() {
+  mocha.run();
+});
+
+var EmojiPickerExtensionSearchTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kImeSystemEmojiPickerExtension']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_search_test.js&host=test';
+  }
+};
+
+TEST_F('EmojiPickerExtensionSearchTest', 'All', function() {
   mocha.run();
 });
 
@@ -81,7 +98,7 @@ var EmojiPickerTrieTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_trie_test.js';
+        'chromeos/emoji_picker/emoji_picker_trie_test.js&host=test';
   }
 };
 
@@ -94,7 +111,7 @@ var EmojiPickerPrefixSearchTest =
   /** @override */
   get browsePreload() {
     return 'chrome://emoji-picker/test_loader.html?module=' +
-        'chromeos/emoji_picker/emoji_picker_prefix_search_test.js';
+        'chromeos/emoji_picker/emoji_picker_prefix_search_test.js&host=test';
   }
 };
 

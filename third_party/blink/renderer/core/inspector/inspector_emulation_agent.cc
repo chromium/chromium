@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
 using protocol::Maybe;
@@ -51,6 +52,7 @@ InspectorEmulationAgent::InspectorEmulationAgent(
                                   /*default_value=*/WTF::String()),
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
+      hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
       user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
       serialized_ua_metadata_override_(
           &agent_state_,
@@ -91,6 +93,9 @@ void InspectorEmulationAgent::Restore() {
       save_serialized_ua_metadata_override.size()));
   serialized_ua_metadata_override_.Set(save_serialized_ua_metadata_override);
   setCPUThrottlingRate(cpu_throttling_rate_.Get());
+
+  if (int concurrency = hardware_concurrency_override_.Get())
+    setHardwareConcurrencyOverride(concurrency);
 
   if (!locale_override_.Get().IsEmpty())
     setLocaleOverride(locale_override_.Get());
@@ -159,6 +164,7 @@ Response InspectorEmulationAgent::disable() {
     enabled_ = false;
   }
 
+  hardware_concurrency_override_.Clear();
   setUserAgentOverride(
       String(), protocol::Maybe<String>(), protocol::Maybe<String>(),
       protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
@@ -292,7 +298,7 @@ Response InspectorEmulationAgent::setEmulatedMedia(
     if (forced_colors_value == "active") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
       bool is_dark_mode = false;
@@ -305,17 +311,18 @@ Response InspectorEmulationAgent::setEmulatedMedia(
       } else {
         is_dark_mode = prefers_color_scheme_value == "dark";
       }
-      Platform::Current()->ThemeEngine()->OverrideForcedColorsTheme(
+      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme(
           is_dark_mode);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
-      Platform::Current()->ThemeEngine()->SetForcedColors(ForcedColors::kNone);
+      WebThemeEngineHelper::GetNativeThemeEngine()->SetForcedColors(
+          ForcedColors::kNone);
     } else if (forced_colors_override_) {
-      Platform::Current()->ThemeEngine()->ResetToSystemColors(
+      WebThemeEngineHelper::GetNativeThemeEngine()->ResetToSystemColors(
           initial_system_color_info_state_);
     }
 
@@ -607,6 +614,18 @@ Response InspectorEmulationAgent::clearDeviceMetricsOverride() {
   return AssertPage();
 }
 
+Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
+    int hardware_concurrency) {
+  if (hardware_concurrency <= 0) {
+    return Response::InvalidParams(
+        "HardwareConcurrency must be a positive number");
+  }
+  InnerEnable();
+  hardware_concurrency_override_.Set(hardware_concurrency);
+
+  return Response::Success();
+}
+
 Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
     protocol::Maybe<String> accept_language,
@@ -769,6 +788,12 @@ void InspectorEmulationAgent::WillCreateDocumentParser(
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().IsEmpty())
     *accept_lang = accept_language_override_.Get();
+}
+
+void InspectorEmulationAgent::ApplyHardwareConcurrencyOverride(
+    unsigned int& hardware_concurrency) {
+  if (int concurrency = hardware_concurrency_override_.Get())
+    hardware_concurrency = concurrency;
 }
 
 void InspectorEmulationAgent::ApplyUserAgentOverride(String* user_agent) {

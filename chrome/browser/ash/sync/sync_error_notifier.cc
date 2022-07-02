@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -175,7 +176,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSyncNotificationId);
+      kProfileSyncNotificationId, ash::NotificationCatalogName::kSyncError);
 
   // Set |profile_id| for multi-user notification blocker.
   notifier_id.profile_id =

@@ -250,7 +250,7 @@ export class TextNavigationManager {
    */
   static saveSelectStart() {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus((focusedNode) => {
+    chrome.automation.getFocus(focusedNode => {
       manager.selectionStartObject_ = focusedNode;
       manager.selectionStartIndex_ = manager.getSelectionIndexFromNode_(
           manager.selectionStartObject_,
@@ -319,7 +319,7 @@ export class TextNavigationManager {
    */
   static saveSelectEnd() {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus((focusedNode) => {
+    chrome.automation.getFocus(focusedNode => {
       manager.selectionEndObject_ = focusedNode;
       manager.selectionEndIndex_ = manager.getSelectionIndexFromNode_(
           manager.selectionEndObject_,

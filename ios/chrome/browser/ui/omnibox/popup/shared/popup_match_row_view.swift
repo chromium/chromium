@@ -5,6 +5,17 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
+/// PreferenceKey to listen to changes of a view's size.
+struct PopupMatchRowSizePreferenceKey: PreferenceKey {
+  static var defaultValue = CGSize.zero
+  // This function determines how to combine the preference values for two
+  // child views. In the absence of any better combination method, just use the
+  // second value.
+  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+    value = nextValue()
+  }
+}
+
 struct PopupMatchRowView: View {
   enum Colors {
     static let highlightingColor = Color(
@@ -40,6 +51,7 @@ struct PopupMatchRowView: View {
 
   @State var isPressed = false
   @State var childView = CGSize.zero
+  @State var currentSize = CGSize.zero
 
   var button: some View {
 
@@ -82,7 +94,7 @@ struct PopupMatchRowView: View {
       Spacer().frame(
         width: leadingMarginForRowContent + spaceBetweenRowContentLeadingEdgeAndSuggestionText)
       customSeparatorColor.frame(height: 0.5)
-    }.environment(\.layoutDirection, .leftToRight)
+    }
   }
 
   @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
@@ -90,9 +102,9 @@ struct PopupMatchRowView: View {
   var leadingMarginForRowContent: CGFloat {
     switch uiVariation {
     case .one:
-      return uiConfiguration.omniboxLeadingSpace
+      return uiConfiguration.omniboxLeadingSpace + 7
     case .two:
-      return 0
+      return 8
     }
   }
 
@@ -114,6 +126,15 @@ struct PopupMatchRowView: View {
     }
   }
 
+  var spaceBetweenTextAndImage: CGFloat {
+    switch uiVariation {
+    case .one:
+      return 14
+    case .two:
+      return 15
+    }
+  }
+
   var spaceBetweenRowContentLeadingEdgeAndSuggestionText: CGFloat {
     switch uiVariation {
     case .one:
@@ -126,7 +147,9 @@ struct PopupMatchRowView: View {
   var body: some View {
     ZStack {
       // This hides system separators when disabling them is not possible.
-      backgroundColor
+      backgroundColor.notifyOnSizeChange { size in
+        currentSize = size
+      }
 
       if shouldDisplayCustomSeparator {
         VStack {
@@ -148,20 +171,18 @@ struct PopupMatchRowView: View {
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
         Color.clear.frame(width: leadingMarginForRowContent)
-        HStack(alignment: .center, spacing: 0) {
-          Color.clear.frame(
-            width: spaceBetweenRowContentLeadingEdgeAndCenterOfSuggestionImage
-              - PopupMatchImageView.Dimension.image / 2)
-          match.image
-            .map { image in
-              PopupMatchImageView(
-                image: image, highlightColor: highlightColor
-              )
-              .accessibilityHidden(true)
-              .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-            }
-          Spacer()
-        }.frame(width: spaceBetweenRowContentLeadingEdgeAndSuggestionText)
+
+        match.image
+          .map { image in
+            PopupMatchImageView(
+              image: image, highlightColor: highlightColor
+            )
+            .accessibilityHidden(true)
+            .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+          }
+
+        Color.clear.frame(width: spaceBetweenTextAndImage)
+
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
             GradientTextView(match.text, highlightColor: highlightColor)
@@ -190,16 +211,16 @@ struct PopupMatchRowView: View {
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
             .foregroundColor(isHighlighted ? highlightColor : .chromeBlue)
-            .environment(\.layoutDirection, layoutDirection)
         }
         Color.clear.frame(width: trailingMarginForRowContent)
       }
       .padding(
         uiVariation == .one ? Dimensions.VariationOne.padding : Dimensions.VariationTwo.padding
       )
-      .environment(\.layoutDirection, .leftToRight)
+      .environment(\.layoutDirection, layoutDirection)
     }
     .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
+    .preference(key: PopupMatchRowSizePreferenceKey.self, value: self.currentSize)
   }
 
   var backgroundColor: Color {

@@ -95,6 +95,11 @@ HRESULT ServiceMain::RegisterClassObject() {
                 "Arrays cookies_ and class_factories must be the same size.");
 
   IID class_ids[] = {install_static::GetElevatorClsid()};
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kElevatorClsIdForTestingSwitch)) {
+    class_ids[0] = {kTestElevatorClsid};
+  }
+
   DCHECK_EQ(std::size(cookies_), std::size(class_ids));
   static_assert(std::extent<decltype(cookies_)>() == std::size(class_ids),
                 "Arrays cookies_ and class_ids must be the same size.");

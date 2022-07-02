@@ -183,6 +183,25 @@ bool PaymentRequestTestController::ConfirmPayment() {
   return true;
 }
 
+bool PaymentRequestTestController::ClickOptOut() {
+  if (!delegate_)
+    return false;
+
+  PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
+  SecurePaymentConfirmationNoCreds* no_creds_dialog =
+      delegate_->GetNoMatchingCredentialsDialogForTesting();
+  if (!dialog && !no_creds_dialog)
+    return false;
+
+  // The SPC dialog will exist, but will not be showing a view, when the
+  // no-matching-creds dialog is present. Therefore, we have to check the
+  // no-matching-creds case first, as it will only be present when it is showing
+  // a view.
+  if (no_creds_dialog)
+    return no_creds_dialog->ClickOptOutForTesting();
+  return dialog->ClickOptOutForTesting();
+}
+
 bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
   return CloseDialog();
 }

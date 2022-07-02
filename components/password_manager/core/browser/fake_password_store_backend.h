@@ -39,7 +39,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void Clear();
 
   const PasswordMap& stored_passwords() const { return stored_passwords_; }
-  int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
   IsAccountStore is_account_store() const { return is_account_store_; }
 
  private:
@@ -53,25 +52,25 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
-      LoginsReply callback,
+      LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
-                     PasswordStoreChangeListReply callback) override;
+                     PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
@@ -98,8 +97,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
-  // Number of calls of FillMatchingLogins() method.
-  int fill_matching_logins_calls_ = 0;
   PasswordMap stored_passwords_;
 };
 

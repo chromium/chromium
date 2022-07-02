@@ -36,7 +36,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool premultiplied,
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
-              SkColor background,
+              SkColor4f background,
               const float opacity[4],
               bool flipped,
               bool nearest,
@@ -52,7 +52,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool premultiplied,
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
-              SkColor background,
+              SkColor4f background,
               const float opacity[4],
               bool flipped,
               bool nearest,
@@ -61,7 +61,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
 
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;
-  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor4f background_color = SkColors::kTransparent;
   float vertex_opacity[4] = {0, 0, 0, 0};
   bool y_flipped : 1;
   bool nearest_neighbor : 1;

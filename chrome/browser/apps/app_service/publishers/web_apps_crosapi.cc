@@ -120,33 +120,6 @@ void WebAppsCrosapi::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void WebAppsCrosapi::LoadIcon(const std::string& app_id,
-                              apps::mojom::IconKeyPtr icon_key,
-                              apps::mojom::IconType mojom_icon_type,
-                              int32_t size_hint_in_dip,
-                              bool allow_placeholder_icon,
-                              LoadIconCallback callback) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  if (!icon_key) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  const IconType icon_type = ConvertMojomIconTypeToIconType(mojom_icon_type);
-  const apps::IconEffects icon_effects =
-      static_cast<apps::IconEffects>(icon_key->icon_effects);
-  controller_->LoadIcon(
-      app_id, ConvertMojomIconKeyToIconKey(icon_key), icon_type,
-      size_hint_in_dip,
-      base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
-                     icon_type, size_hint_in_dip, icon_effects,
-                     IconValueToMojomIconValueCallback(std::move(callback))));
-}
-
 void WebAppsCrosapi::Launch(const std::string& app_id,
                             int32_t event_flags,
                             apps::mojom::LaunchSource launch_source,
@@ -239,15 +212,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf) {
-    // TODO(crbug.com/1203992): We cannot use InstanceRegistry with lacros yet,
-    // because InstanceRegistry updates for lacros isn't implemented yet, so we
-    // need to check BrowserAppInstanceRegistry directly. Remove this when
-    // InstanceRegistry updates are implemented.
-    bool app_running =
-        web_app::IsWebAppsCrosapiEnabled()
-            ? proxy_->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
-            : proxy_->InstanceRegistry().ContainsAppId(app_id);
-    if (app_running) {
+    if (proxy_->InstanceRegistry().ContainsAppId(app_id)) {
       apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                            &menu_items);
     }

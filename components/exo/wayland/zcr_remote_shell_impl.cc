@@ -521,6 +521,14 @@ void WaylandRemoteShell::OnRemoteSurfaceDestroyed(wl_resource* resource) {
 }
 
 // Overridden from display::DisplayObserver:
+void WaylandRemoteShell::OnWillProcessDisplayChanges() {
+  in_display_update_ = true;
+}
+
+void WaylandRemoteShell::OnDidProcessDisplayChanges() {
+  in_display_update_ = false;
+}
+
 void WaylandRemoteShell::OnDisplayAdded(const display::Display& new_display) {
   ScheduleSendDisplayMetrics(0);
 }
@@ -774,7 +782,7 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
     }
   }
 
-  if (needs_send_display_metrics_) {
+  if (in_display_update_ || needs_send_display_metrics_) {
     // We store only the latest bounds for each |resource|.
     pending_bounds_changes_.insert_or_assign(
         std::move(resource),
@@ -1484,9 +1492,10 @@ void toast_surface_set_position(wl_client* client,
                                 uint32_t display_id_lo,
                                 int32_t x,
                                 int32_t y) {
-  GetUserDataAs<ToastSurface>(resource)->SetDisplay(
-      static_cast<int64_t>(display_id_hi) << 32 | display_id_lo);
-  GetUserDataAs<ToastSurface>(resource)->SetBoundsOrigin(gfx::Point(x, y));
+  const int64_t display_id =
+      static_cast<int64_t>(display_id_hi) << 32 | display_id_lo;
+  GetUserDataAs<ToastSurface>(resource)->SetBoundsOrigin(display_id,
+                                                         gfx::Point(x, y));
 }
 
 void toast_surface_set_size(wl_client* client,

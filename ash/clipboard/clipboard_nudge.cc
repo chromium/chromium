@@ -4,6 +4,8 @@
 
 #include "ash/clipboard/clipboard_nudge.h"
 
+#include <memory>
+
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -13,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/system_nudge_label.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/compositor/layer.h"
@@ -64,39 +67,8 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
 
 ClipboardNudge::~ClipboardNudge() = default;
 
-std::unique_ptr<views::View> ClipboardNudge::CreateLabelView() const {
-  std::unique_ptr<views::StyledLabel> label =
-      std::make_unique<views::StyledLabel>();
-  label->SetPaintToLayer();
-  label->layer()->SetFillsBoundsOpaquely(false);
-
+std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
   bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
-
-  // Set the keyboard shortcut icon depending on whether search button or
-  // launcher button is being used.
-  gfx::ImageSkia shortcut_icon;
-  SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  if (use_launcher_key) {
-    if (IsAssistantAvailable()) {
-      shortcut_icon = gfx::CreateVectorIcon(gfx::IconDescription(
-          kClipboardLauncherOuterIcon, kKeyboardShortcutIconSize, icon_color,
-          &kClipboardLauncherInnerIcon));
-    } else {
-      shortcut_icon =
-          gfx::CreateVectorIcon(kClipboardLauncherNoAssistantIcon,
-                                kKeyboardShortcutIconSize, icon_color);
-    }
-  } else {
-    shortcut_icon = gfx::CreateVectorIcon(
-        kClipboardSearchIcon, kKeyboardShortcutIconSize, icon_color);
-  }
-  auto keyboard_shortcut_icon = std::make_unique<views::ImageView>();
-  keyboard_shortcut_icon->SetImage(shortcut_icon);
-  keyboard_shortcut_icon->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, -2)));
-
-  // Set the text for |label_|.
   std::u16string shortcut_key = l10n_util::GetStringUTF16(
       use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                        : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
@@ -107,24 +79,39 @@ std::unique_ptr<views::View> ClipboardNudge::CreateLabelView() const {
           : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,
       shortcut_key, &offset);
   offset = offset + shortcut_key.length();
-  label->SetText(label_text);
+  // Set the label's text.
+  auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
 
-  // Set the color of the text surrounding the shortcut icon.
-  views::StyledLabel::RangeStyleInfo text_color;
-  text_color.override_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  label->AddStyleRange(gfx::Range(0, offset), text_color);
-  label->AddStyleRange(gfx::Range(offset + 1, label_text.length()), text_color);
+  // Set the keyboard shortcut icon depending on whether search button
+  // or launcher button is being used.
+  auto keyboard_shortcut_icon = std::make_unique<views::ImageView>();
+  keyboard_shortcut_icon->SetImage(ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](bool use_launcher_key, const ui::ColorProvider*) {
+            SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary);
+            if (use_launcher_key) {
+              return IsAssistantAvailable()
+                         ? gfx::CreateVectorIcon(gfx::IconDescription(
+                               kClipboardLauncherOuterIcon,
+                               kKeyboardShortcutIconSize, icon_color,
+                               &kClipboardLauncherInnerIcon))
+                         : gfx::CreateVectorIcon(
+                               kClipboardLauncherNoAssistantIcon,
+                               kKeyboardShortcutIconSize, icon_color);
+            }
+            return gfx::CreateVectorIcon(kClipboardSearchIcon,
+                                         kKeyboardShortcutIconSize, icon_color);
+          },
+          use_launcher_key),
+      gfx::Size(kKeyboardShortcutIconSize, kKeyboardShortcutIconSize)));
+  keyboard_shortcut_icon->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, -2)));
 
-  // Add the shortcut icon to |label_|.
-  views::StyledLabel::RangeStyleInfo icon_style;
-  icon_style.custom_view = keyboard_shortcut_icon.get();
-  label->AddCustomView(std::move(keyboard_shortcut_icon));
-  label->AddStyleRange(gfx::Range(offset, offset + 1), icon_style);
+  // Transfer shortcut icon ownership to the label.
+  label->AddCustomView(std::move(keyboard_shortcut_icon), offset);
 
-  label->SizeToFit(kMinLabelWidth);
-  label->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
-  return std::move(label);
+  return label;
 }
 
 const gfx::VectorIcon& ClipboardNudge::GetIcon() const {

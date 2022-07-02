@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/quarantine_connection.h"
+#include "components/file_access/scoped_file_access.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -64,10 +65,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/public/browser/conditional_ui_delegate_android.h"
-#endif
-
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/global_descriptors.h"
 #endif
@@ -91,7 +88,6 @@ using LoginAuthRequiredCallback =
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
 class FilePath;
 class Location;
 class SequencedTaskRunner;
@@ -136,7 +132,6 @@ class BinderMapWithContext;
 }  // namespace mojo
 
 namespace network {
-enum class OriginPolicyState;
 class SharedURLLoaderFactory;
 namespace mojom {
 class TrustedHeaderClient;
@@ -220,6 +215,7 @@ class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
 class NavigationUIData;
+class PrefetchServiceDelegate;
 class QuotaPermissionContext;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -752,6 +748,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void UpdateRendererPreferencesForWorker(
       BrowserContext* browser_context,
       blink::RendererPreferences* out_prefs);
+
+  // Requests access to |files| in order to be sent to |destination_url|.
+  // |continuation_callback| is called with a token that should be held until
+  // `open()` operation on the files is finished.
+  virtual void RequestFilesAccess(
+      const std::vector<base::FilePath>& files,
+      const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>
+          continuation_callback);
 
   // Allow the embedder to control if access to file system by a shared worker
   // is allowed.
@@ -1287,8 +1292,14 @@ class CONTENT_EXPORT ContentBrowserClient {
 #if BUILDFLAG(IS_WIN)
   // Defines flags that can be passed to PreSpawnChild.
   enum ChildSpawnFlags {
-    NONE = 0,
-    RENDERER_CODE_INTEGRITY = 1 << 0,
+    kChildSpawnFlagNone = 0,
+    kChildSpawnFlagRendererCodeIntegrity = 1 << 0,
+  };
+
+  // Defines flags that can be passed to GetAppContainerSidForSandboxType.
+  enum AppContainerFlags {
+    kAppContainerFlagNone = 0,
+    kAppContainerFlagDisableAppContainer = 1 << 0,
   };
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
@@ -1311,8 +1322,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the AppContainer SID for the specified sandboxed process type, or
   // empty string if this sandboxed process type does not support living inside
   // an AppContainer. Called on PROCESS_LAUNCHER thread.
+  // `flags` can signal to the embedder any special behavior that should happen
+  // for the `sandbox_type`.
   virtual std::wstring GetAppContainerSidForSandboxType(
-      sandbox::mojom::Sandbox sandbox_type);
+      sandbox::mojom::Sandbox sandbox_type,
+      AppContainerFlags flags);
+
+  // Returns true if renderer App Container should be disabled.
+  // This is called on the UI thread.
+  virtual bool IsRendererAppContainerDisabled();
 
   // Returns the LPAC capability name to use for file data that the network
   // service needs to access to when running within LPAC sandbox. Embedders
@@ -1701,7 +1719,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |GetNetConstants()| and passed to FileNetLogObserver - see documentation
   // of |FileNetLogObserver::CreateBounded()| for more information.  The
   // convention is to put new constants under a subdict at the key "clientInfo".
-  virtual base::DictionaryValue GetNetLogConstants();
+  virtual base::Value::Dict GetNetLogConstants();
 
 #if BUILDFLAG(IS_ANDROID)
   // Only used by Android WebView.
@@ -1906,12 +1924,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterRendererPreferenceWatcher(
       BrowserContext* browser_context,
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher);
-
-  // Returns the HTML content of the error page for Origin Policy related
-  // errors.
-  virtual absl::optional<std::string> GetOriginPolicyErrorPage(
-      network::OriginPolicyState error_reason,
-      content::NavigationHandle* navigation_handle);
 
   // Returns true if it is OK to accept untrusted exchanges, such as expired
   // signed exchanges, and unsigned Web Bundles.
@@ -2202,6 +2214,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<SpeculationHostDelegate>
   CreateSpeculationHostDelegate(RenderFrameHost& render_frame_host);
 
+  // Allows the embedder to provide a PrefetchServiceDelegate that will be used
+  // to make prefetches.
+  virtual std::unique_ptr<PrefetchServiceDelegate>
+  CreatePrefetchServiceDelegate(BrowserContext* browser_context);
+
   // Allows the embedder to show a dialog that will be used to control whether a
   // connection through the Direct Sockets API is permitted. If the connection
   // is permitted, the remote address and port that the user input will be sent
@@ -2259,16 +2276,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // `net/base/net_error_list.h`. Information is returned in a struct. Default
   // implementation returns nullptr.
   virtual mojom::AlternativeErrorPageOverrideInfoPtr
-  GetAlternativeErrorPageOverrideInfo(const GURL& url,
-                                      BrowserContext* browser_context,
-                                      int32_t error_code);
+  GetAlternativeErrorPageOverrideInfo(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host,
+      content::BrowserContext* browser_context,
+      int32_t error_code);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Gets the delegate interface that is used to interact with the Web
-  // Authentication Conditional UI implementation in the embedder.
-  virtual ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
-      RenderFrameHost* host);
-#endif  //  BUILDFLAG(IS_ANDROID)
+  // Handle a new-window/-tab request using an external implementation-defined
+  // handler, if appropriate. Returns true iff the request was handled.
+  virtual bool OpenExternally(RenderFrameHost* opener,
+                              const GURL& url,
+                              WindowOpenDisposition disposition);
 };
 
 }  // namespace content

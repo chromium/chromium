@@ -37,7 +37,6 @@ class PaletteTrayTestApi;
 class PaletteToolManager;
 class PaletteWelcomeBubble;
 class TrayBubbleWrapper;
-class SystemShadow;
 
 // The PaletteTray shows the palette in the bottom area of the screen. This
 // class also controls the lifetime for all of the tools available in the
@@ -163,7 +162,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
   std::unique_ptr<TrayBubbleWrapper> bubble_;
-  std::unique_ptr<SystemShadow> shadow_;
 
   // A Shell pre-target handler that notifies PaletteTray of stylus events.
   std::unique_ptr<ui::EventHandler> stylus_event_handler_;

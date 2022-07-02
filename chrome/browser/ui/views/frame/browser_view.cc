@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -97,7 +98,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_view.h"
-#include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -154,6 +154,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
@@ -236,7 +237,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget.h"
@@ -300,7 +300,6 @@
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
-using views::ColumnSet;
 using web_modal::WebContentsModalDialogHost;
 
 namespace {
@@ -454,18 +453,13 @@ class ContentsSeparator : public views::View {
   METADATA_HEADER(ContentsSeparator);
 
   ContentsSeparator() {
+    SetBackground(
+        views::CreateThemedSolidBackground(kColorToolbarContentAreaSeparator));
+
     // BrowserViewLayout will respect either the height or width of this,
     // depending on orientation, not simultaneously both.
     SetPreferredSize(
         gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
-  }
-
- private:
-  // views::View:
-  void OnThemeChanged() override {
-    SetBackground(views::CreateSolidBackground(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)));
-    View::OnThemeChanged();
   }
 };
 
@@ -900,12 +894,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-    right_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
-    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-      side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
-    }
+  right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+  right_aligned_side_panel_separator_ =
+      AddChildView(std::make_unique<ContentsSeparator>());
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (lens::features::IsLensSidePanelEnabled()) {
@@ -918,12 +912,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #endif
 
   if (browser_->is_type_normal() && IsSideSearchEnabled(browser_->profile())) {
-    side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-    left_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
-
-    side_search_controller_ = std::make_unique<SideSearchBrowserController>(
-        side_search_side_panel_, this);
+    if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+      side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+      left_aligned_side_panel_separator_ =
+          AddChildView(std::make_unique<ContentsSeparator>());
+      side_search_controller_ = std::make_unique<SideSearchBrowserController>(
+          side_search_side_panel_, this);
+    }
   }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
@@ -1563,7 +1558,13 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Update all the UI bits.
   UpdateTitleBar();
 
-  TranslateBubbleView::CloseCurrentBubble();
+  if (old_contents) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(old_contents);
+
+    if (translate_bubble_controller)
+      translate_bubble_controller->CloseBubble();
+  }
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -1913,11 +1914,11 @@ void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
 void BrowserView::FocusToolbar() {
   // Temporarily reveal the top-of-window views (if not already revealed) so
   // that the toolbar is visible and is considered focusable. If the
-  // toolbar gains focus, |immersive_mode_controller_| will keep the
+  // toolbar gains focus, `immersive_mode_controller_` will keep the
   // top-of-window views revealed.
-  std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock(
+  std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_YES));
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
 
   // Start the traversal within the main toolbar. SetPaneFocus stores
   // the current focused view before changing focus.
@@ -2159,6 +2160,19 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
 
       if (focusable) {
         focusable->RequestFocus();
+#if BUILDFLAG(IS_MAC)
+        // TODO(crbug.com/650859): When a view requests focus on other
+        // platforms, its widget is activated. When doing so in FocusManager on
+        // MacOS a lot of interactive tests fail when the widget is destroyed.
+        // Activating the widget here should be safe as this happens only
+        // after explicit user action (focusing inactive dialog or rotating
+        // panes).
+        views::Widget* const widget = bubble->GetWidget();
+        if (widget && widget->IsVisible() && !widget->IsActive()) {
+          DCHECK(browser_->window()->IsActive());
+          widget->Activate();
+        }
+#endif
         return true;
       }
     }
@@ -2353,9 +2367,12 @@ BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
 SharingDialog* BrowserView::ShowSharingDialog(
     content::WebContents* web_contents,
     SharingDialogData data) {
+  // TODO(https://crbug.com/1311680): Remove this altogether. This used to
+  // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
+  // now gone altogether.
   auto* dialog_view =
       new SharingDialogView(toolbar_button_provider()->GetAnchorView(
-                                PageActionIconType::kSharedClipboard),
+                                PageActionIconType::kClickToCall),
                             web_contents, std::move(data));
 
   views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
@@ -2414,10 +2431,10 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
-    content::WebContents* web_contents) {
+    share::ShareAttempt attempt) {
   auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
       toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
-      web_contents);
+      attempt);
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kSharingHub);
@@ -2456,14 +2473,38 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   PageActionIconView* translate_icon =
       toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kTranslate);
-  TranslateBubbleView::ShowBubble(
-      toolbar_button_provider()->GetAnchorView(PageActionIconType::kTranslate),
-      translate_icon, web_contents, step, source_language, target_language,
-      error_type,
-      is_user_gesture ? TranslateBubbleView::USER_GESTURE
-                      : TranslateBubbleView::AUTOMATIC);
+  TranslateBubbleController::GetOrCreate(web_contents)
+      ->ShowTranslateBubble(toolbar_button_provider()->GetAnchorView(
+                                PageActionIconType::kTranslate),
+                            translate_icon, step, source_language,
+                            target_language, error_type,
+                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
+                                            : TranslateBubbleView::AUTOMATIC);
 
   return ShowTranslateBubbleResult::SUCCESS;
+}
+
+void BrowserView::ShowPartialTranslateBubble(
+    PartialTranslateBubbleModel::ViewState view_state,
+    const std::string& source_language,
+    const std::string& target_language,
+    const std::u16string& text_selection,
+    translate::TranslateErrors::Type error_type) {
+  // Show the Translate icon and enabled the associated command to show the
+  // Translate UI.
+  ChromeTranslateClient::FromWebContents(GetActiveWebContents())
+      ->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetTranslateEnabled(true);
+
+  TranslateBubbleController::GetOrCreate(GetActiveWebContents())
+      ->ShowPartialTranslateBubble(
+          toolbar_button_provider()->GetAnchorView(
+              PageActionIconType::kTranslate),
+          toolbar_button_provider()->GetPageActionIconView(
+              PageActionIconType::kTranslate),
+          view_state, source_language, target_language, text_selection,
+          error_type);
 }
 
 void BrowserView::ShowOneClickSigninConfirmation(
@@ -2499,13 +2540,8 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
     return nullptr;
   }
   if (!download_shelf_) {
-    if (base::FeatureList::IsEnabled(features::kWebUIDownloadShelf)) {
-      download_shelf_ = AddChildView(
-          std::make_unique<DownloadShelfWebView>(browser_.get(), this));
-    } else {
-      download_shelf_ = AddChildView(
-          std::make_unique<DownloadShelfView>(browser_.get(), this));
-    }
+    download_shelf_ =
+        AddChildView(std::make_unique<DownloadShelfView>(browser_.get(), this));
     GetBrowserViewLayout()->set_download_shelf(download_shelf_->GetView());
   }
   return download_shelf_;
@@ -2537,9 +2573,9 @@ void BrowserView::ShowAppMenu() {
     return;
 
   // Keep the top-of-window views revealed as long as the app menu is visible.
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO));
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
 
   toolbar_button_provider_->GetAppMenuButton()
       ->menu_button_controller()
@@ -2927,7 +2963,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
 
   // Tab has a pending permission request.
   if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->chip()) {
+      toolbar_->location_bar()->IsChipActive()) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, title);
   }
@@ -3377,28 +3413,13 @@ void BrowserView::RightAlignedSidePanelWasClosed() {
   }
 }
 
-bool BrowserView::IsSideSearchPanelVisible() const {
-  if (side_search_controller_)
-    return side_search_controller_->GetSidePanelToggledOpen();
-
-  return false;
-}
-
-void BrowserView::MaybeRestoreSideSearchStatePerWindow(
-    const std::map<std::string, std::string>& extra_data) {
-  if (side_search_controller_) {
-    side_search::MaybeRestoreSideSearchWindowState(
-        side_search_controller_.get(), extra_data);
-  }
-}
-
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
     return;
 
-  std::unique_ptr<ImmersiveRevealedLock> revealer(
+  std::unique_ptr<ImmersiveRevealedLock> revealer =
       immersive_mode_controller_->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_YES));
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
   auto delete_revealer = base::BindOnce(
       [](std::unique_ptr<ImmersiveRevealedLock>) {}, std::move(revealer));
   constexpr auto kDefaultDelay = base::Seconds(1);
@@ -3420,7 +3441,7 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   // When permission is requested, permission chip must be first pane in the
   // pane traversal order to be easily accessible for keyboard users.
   if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->chip()) {
+      toolbar_->location_bar()->IsChipActive()) {
     panes->push_back(toolbar_->location_bar()->chip());
   }
   panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());
@@ -3483,16 +3504,6 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     // down. When the tab strip is empty we'll be called back again.
     frame_->Hide();
     result = views::CloseRequestResult::kCannotClose;
-  }
-
-  // Persist the side search browser controller's window side panel state for
-  // use during session restoration. Since the side panel is closed by default,
-  // we only want to persist the state if the side panel is currently open.
-  if (side_search_controller_ &&
-      side_search_controller_->GetSidePanelToggledOpen()) {
-    side_search::MaybeSaveSideSearchWindowSessionData(
-        GetProfile(), browser()->session_id(),
-        side_search_controller_->GetSidePanelToggledOpen());
   }
 
   browser_->OnWindowClosing();
@@ -4208,28 +4219,14 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 #endif
 }
 
-void BrowserView::ShowAvatarBubbleFromAvatarButton(
-    AvatarBubbleMode mode,
-    signin_metrics::AccessPoint access_point,
-    bool is_source_accelerator) {
+void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   // Do not show avatar bubble if there is no avatar menu button.
   views::Button* avatar_button =
       toolbar_button_provider_->GetAvatarToolbarButton();
   if (!avatar_button)
     return;
 
-  profiles::BubbleViewMode bubble_view_mode;
-  profiles::BubbleViewModeFromAvatarBubbleMode(mode, GetProfile(),
-                                               &bubble_view_mode);
-// TODO(https://crbug.com/1260291): Add support for Lacros.
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (SigninViewController::ShouldShowSigninForMode(bubble_view_mode)) {
-    browser_->signin_view_controller()->ShowSignin(bubble_view_mode,
-                                                   access_point);
-    return;
-  }
-#endif
-  ProfileMenuViewBase::ShowBubble(bubble_view_mode, avatar_button, browser(),
+  ProfileMenuViewBase::ShowBubble(avatar_button, browser(),
                                   is_source_accelerator);
 }
 

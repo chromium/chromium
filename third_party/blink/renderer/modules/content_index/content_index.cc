@@ -94,6 +94,14 @@ ScriptPromise ContentIndex::add(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "ContentIndex is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
+
   WTF::String description_error =
       ValidateDescription(*description, registration_.Get());
   if (!description_error.IsNull()) {
@@ -233,6 +241,14 @@ ScriptPromise ContentIndex::deleteDescription(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "ContentIndex is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -272,6 +288,14 @@ ScriptPromise ContentIndex::getDescriptions(ScriptState* script_state,
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
+    return ScriptPromise();
+  }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "ContentIndex is not allowed in fenced frames.");
     return ScriptPromise();
   }
 

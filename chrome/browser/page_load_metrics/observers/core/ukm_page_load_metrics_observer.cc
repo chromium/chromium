@@ -12,7 +12,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -96,6 +95,29 @@ bool IsDefaultSearchEngine(content::BrowserContext* browser_context,
     return false;
 
   return template_service->IsSearchResultsPageFromDefaultSearchProvider(url);
+}
+
+bool IsValidSearchURL(content::BrowserContext* browser_context,
+                      const GURL& url) {
+  if (!browser_context)
+    return false;
+
+  auto* template_service = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+  if (!template_service)
+    return false;
+
+  const TemplateURL* template_url =
+      template_service->GetTemplateURLForHost(url.host());
+  const SearchTermsData& search_terms_data =
+      template_service->search_terms_data();
+
+  std::u16string search_terms;
+  // Is eligible if it is a valid template URL and contains search terms.
+  return template_url &&
+         template_url->ExtractSearchTermsFromURL(url, search_terms_data,
+                                                 &search_terms) &&
+         !search_terms.empty();
 }
 
 bool IsUserHomePage(content::BrowserContext* browser_context, const GURL& url) {
@@ -191,6 +213,9 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
       IsDefaultSearchEngine(browser_context_, navigation_handle->GetURL());
   start_url_is_home_page_ =
       IsUserHomePage(browser_context_, navigation_handle->GetURL());
+
+  was_scoped_search_like_navigation_ =
+      IsValidSearchURL(browser_context_, navigation_handle->GetURL());
 
   if (started_in_foreground) {
     last_time_shown_ = navigation_handle->NavigationStart();
@@ -307,7 +332,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                        .GetLastCommittedEntry()
                                        ->GetMainFrameDocumentSequenceNumber();
 
-  render_process_assignment_ = web_contents->GetMainFrame()
+  render_process_assignment_ = web_contents->GetPrimaryMainFrame()
                                    ->GetSiteInstance()
                                    ->GetLastProcessAssignmentOutcome();
 
@@ -632,7 +657,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
     builder.SetPaintTiming_LargestContentfulPaintType(
-        all_frames_largest_contentful_paint.Type());
+        LargestContentfulPaintTypeToUKMFlags(
+            all_frames_largest_contentful_paint.Type()));
     if (all_frames_largest_contentful_paint.TextOrImage() ==
         page_load_metrics::ContentfulPaintTimingInfo::
             LargestContentTextOrImage::kImage) {
@@ -743,6 +769,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes2(
       ukm::GetExponentialBucketMinForBytes(media_bytes_));
 
+  builder.SetSoftNavigationCount(GetDelegate().GetSoftNavigationCount());
+
   if (main_frame_timing_)
     ReportMainResourceTimingMetrics(builder);
 
@@ -833,6 +861,10 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
     RecordPageLoadTimestampMetrics(builder);
+  }
+
+  if (GetDelegate().DidCommit()) {
+    builder.SetIsScopedSearchLikeNavigation(was_scoped_search_like_navigation_);
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -1134,15 +1166,8 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
     return;
   }
 
-  base::ElapsedTimer timer;
   cc::UkmSmoothnessData smoothness_data;
   bool success = smoothness->Read(smoothness_data);
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration",
-      timer.Elapsed(), base::Microseconds(1), base::Milliseconds(5), 100);
-  UMA_HISTOGRAM_BOOLEAN(
-      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess", success);
 
   if (!success)
     return;

@@ -85,7 +85,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
   }
 
   bool CanLoadScript(const Extension* extension) {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     std::string code = base::StringPrintf(
         R"(
         var s = document.createElement('script');
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
 
   // The iframe must be blocked because of CSP.
   console_observer.Wait();
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_EQ(popup_url, main_frame->GetLastCommittedURL());
   EXPECT_EQ(iframe_url, child_frame->GetLastCommittedURL());

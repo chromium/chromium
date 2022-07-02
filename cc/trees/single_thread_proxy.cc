@@ -233,7 +233,8 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   DebugScopedSetImplThread impl(task_runner_provider_);
 
-  host_impl_->BeginCommit(commit_state->source_frame_number);
+  host_impl_->BeginCommit(commit_state->source_frame_number,
+                          commit_state->trace_id);
 
   host_impl_->FinishCommit(*commit_state, unsafe_state);
   commit_state.reset();
@@ -891,6 +892,14 @@ size_t SingleThreadProxy::CommitDurationSampleCountForTesting() const {
   DCHECK(scheduler_on_impl_thread_);
   return scheduler_on_impl_thread_
       ->CommitDurationSampleCountForTesting();  // IN-TEST
+}
+
+void SingleThreadProxy::ReportEventLatency(
+    std::vector<EventLatencyTracker::LatencyData> latencies) {
+  DCHECK(!task_runner_provider_->HasImplThread() ||
+         task_runner_provider_->IsImplThread());
+  DebugScopedSetMainThread main(task_runner_provider_);
+  layer_tree_host_->ReportEventLatency(std::move(latencies));
 }
 
 void SingleThreadProxy::SetRenderFrameObserver(

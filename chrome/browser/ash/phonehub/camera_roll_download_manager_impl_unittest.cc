@@ -237,6 +237,28 @@ TEST_F(CameraRollDownloadManagerImplTest,
       GetDownloadPath().Append("IMG_0001 (1).jpeg")));
 }
 
+TEST_F(CameraRollDownloadManagerImplTest,
+       CreatePayloadFilesWithFilePathCollision) {
+  proto::CameraRollItemMetadata item_metadata;
+  item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
+
+  // Delete the file for this payload after it has been added to holding space.
+  // If CreatePayloadFiles is called for the same item again, it will create the
+  // file at the same path. However adding the new payload to holding space will
+  // fail because the first payload already exists in the model with the same
+  // path.
+  CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
+  base::FilePath file_path = GetDownloadPath().Append("IMG_0001.jpeg");
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, file_path));
+  EXPECT_TRUE(base::DeleteFile(file_path));
+
+  CreatePayloadFilesResult error =
+      CreatePayloadFilesAndGetError(/*payload_id=*/-5678, item_metadata);
+  EXPECT_EQ(CreatePayloadFilesResult::kNotUniqueFilePath, error);
+}
+
 TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
@@ -261,6 +283,15 @@ TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   EXPECT_EQ(0.5f, holding_space_item->progress().GetValue());
 
   task_environment_.FastForwardBy(base::Seconds(5));
+  camera_roll_download_manager()->UpdateDownloadProgress(
+      secure_channel::mojom::FileTransferUpdate::New(
+          /*payload_id=*/1234,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
+          /*total_bytes=*/file_size_bytes,
+          /*bytes_transferred=*/file_size_bytes));
+  EXPECT_FALSE(holding_space_item->progress().IsComplete());
+  EXPECT_FLOAT_EQ(1, holding_space_item->progress().GetValue().value());
+
   camera_roll_download_manager()->UpdateDownloadProgress(
       secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
@@ -348,7 +379,6 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   base::FilePath expected_path = GetDownloadPath().Append("IMG_0001.jpeg");
-  EXPECT_TRUE(base::PathExists(expected_path));
   base::RunLoop delete_file_run_loop;
   base::FilePathWatcher watcher;
   watcher.Watch(expected_path, base::FilePathWatcher::Type::kNonRecursive,
@@ -356,6 +386,16 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
                     [&](const base::FilePath& file_path, bool error) {
                       delete_file_run_loop.Quit();
                     }));
+  camera_roll_download_manager()->UpdateDownloadProgress(
+      secure_channel::mojom::FileTransferUpdate::New(
+          /*payload_id=*/1234,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
+          /*total_bytes=*/1000,
+          /*bytes_transferred=*/200));
+
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, expected_path));
+  EXPECT_TRUE(base::PathExists(expected_path));
 
   camera_roll_download_manager()->UpdateDownloadProgress(
       secure_channel::mojom::FileTransferUpdate::New(
@@ -365,6 +405,8 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
           /*bytes_transferred=*/200));
   delete_file_run_loop.Run();
 
+  EXPECT_FALSE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll, expected_path));
   EXPECT_FALSE(base::PathExists(expected_path));
 }
 

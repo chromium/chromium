@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
@@ -53,6 +54,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   PrefService* GetLocalState() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   history::HistoryService* GetHistoryService() override;
+  history_clusters::HistoryClustersService* GetHistoryClustersService()
+      override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
@@ -60,7 +63,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   query_tiles::TileService* GetQueryTileService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
-  ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
 
   // Test-only setters
   void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
@@ -71,16 +73,17 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     history_service_ = std::move(service);
   }
 
+  void set_history_clusters_service(
+      history_clusters::HistoryClustersService* service) {
+    history_clusters_service_ = service;
+  }
+
   void set_in_memory_url_index(std::unique_ptr<InMemoryURLIndex> index) {
     in_memory_url_index_ = std::move(index);
   }
 
   void set_top_sites(scoped_refptr<history::TopSites> top_sites) {
     top_sites_ = std::move(top_sites);
-  }
-
-  void set_ntp_most_visited_sites(ntp_tiles::MostVisitedSites* ntp_mv_sites) {
-    ntp_most_visited_sites_ = ntp_mv_sites;
   }
 
   void set_shortcuts_backend(scoped_refptr<ShortcutsBackend> backend) {
@@ -93,13 +96,14 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   TestSchemeClassifier scheme_classifier_;
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index_;
   std::unique_ptr<history::HistoryService> history_service_;
+  raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_ =
+      nullptr;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
   std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_{};
-  ntp_tiles::MostVisitedSites* ntp_most_visited_sites_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

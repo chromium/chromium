@@ -776,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   // malware image, and also starts a renderer-initiated top-level navigation to
   // a site that does not respond.  Should show interstitial and have first page
   // in referrer.
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"navigateAndLoadMalwareImage()", base::NullCallback());
   load_stop_observer.Wait();
 
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
       .Times(1);
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* rfh = contents->GetMainFrame();
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   content::LoadStopObserver load_stop_observer(contents);
   // Start a browser initiated top-level navigation to a site that does not
   // respond.
@@ -855,13 +855,14 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   // Have the current tab open a new tab with window.open().
   WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_rfh = main_contents->GetMainFrame();
+  content::RenderFrameHost* main_rfh = main_contents->GetPrimaryMainFrame();
 
   content::WebContentsAddedObserver web_contents_added_observer;
   main_rfh->ExecuteJavaScriptForTests(u"w=window.open();",
                                       base::NullCallback());
   WebContents* new_tab_contents = web_contents_added_observer.GetWebContents();
-  content::RenderFrameHost* new_tab_rfh = new_tab_contents->GetMainFrame();
+  content::RenderFrameHost* new_tab_rfh =
+      new_tab_contents->GetPrimaryMainFrame();
   // A fresh WebContents should be on the initial NavigationEntry, or have
   // no NavigationEntry (if InitialNavigationEntry is disabled).
   EXPECT_TRUE(!new_tab_contents->GetController().GetLastCommittedEntry() ||

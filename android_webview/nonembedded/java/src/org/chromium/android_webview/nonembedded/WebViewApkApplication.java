@@ -15,8 +15,9 @@ import com.android.webview.chromium.WebViewLibraryPreloader;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeController;
-import org.chromium.android_webview.devui.util.WebViewPackageHelper;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -73,7 +74,14 @@ public class WebViewApkApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        checkForAppRecovery();
         FontPreloadingWorkaround.maybeInstallWorkaround(this);
+    }
+
+    public static void checkForAppRecovery() {
+        if (ContextUtils.getProcessName().contains(":webview_service")) {
+            PlatformServiceBridge.getInstance().checkForAppRecovery();
+        }
     }
 
     /**

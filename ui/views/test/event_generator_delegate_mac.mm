@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
@@ -11,6 +13,7 @@
 #include "base/time/time.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_processor.h"
@@ -195,6 +198,7 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
 NSEvent* CreateMouseEventInWindow(NSWindow* window,
                                   ui::EventType event_type,
                                   const gfx::Point& point_in_root,
+                                  const base::TimeTicks time_stamp,
                                   int flags) {
   NSUInteger click_count = 0;
   if (event_type == ui::ET_MOUSE_PRESSED ||
@@ -212,7 +216,7 @@ NSEvent* CreateMouseEventInWindow(NSWindow* window,
   return [NSEvent mouseEventWithType:type
                             location:point
                        modifierFlags:modifiers
-                           timestamp:0
+                           timestamp:ui::EventTimeStampToSeconds(time_stamp)
                         windowNumber:[window windowNumber]
                              context:nil
                          eventNumber:0
@@ -326,7 +330,7 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
  private:
   static EventGeneratorDelegateMac* instance_;
 
-  ui::test::EventGenerator* owner_;
+  raw_ptr<ui::test::EventGenerator> owner_;
   base::scoped_nsobject<NSWindow> target_window_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_pressed_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_location_;
@@ -426,7 +430,8 @@ void EventGeneratorDelegateMac::OnMouseEvent(ui::MouseEvent* event) {
       event->type() == ui::ET_MOUSEWHEEL
           ? CreateMouseWheelEventInWindow(target_window_, event)
           : CreateMouseEventInWindow(target_window_, event->type(),
-                                     event->location(), event->flags());
+                                     event->location(), event->time_stamp(),
+                                     event->flags());
 
   using Target = ui::test::EventGenerator::Target;
   switch (owner_->target()) {

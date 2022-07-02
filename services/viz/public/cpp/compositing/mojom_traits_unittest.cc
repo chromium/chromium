@@ -499,7 +499,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // DebugBorderDrawQuad.
   const gfx::Rect rect1(1234, 4321, 1357, 7531);
-  const SkColor color1 = SK_ColorRED;
+  const SkColor4f color1 = SkColors::kRed;
   const int32_t width1 = 1337;
   DebugBorderDrawQuad* debug_quad =
       render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
@@ -507,7 +507,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // SolidColorDrawQuad.
   const gfx::Rect rect2(2468, 8642, 4321, 1234);
-  const uint32_t color2 = 0xffffffff;
+  const SkColor4f color2 = SkColors::kWhite;
   const bool force_anti_aliasing_off = true;
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -800,13 +800,13 @@ TEST_F(StructTraitsTest, RenderPass) {
       input->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
   const gfx::Rect debug_quad_rect(12, 56, 89, 10);
   debug_quad->SetNew(shared_state_1, debug_quad_rect, debug_quad_rect,
-                     SK_ColorBLUE, 1337);
+                     SkColors::kBlue, 1337);
 
   SolidColorDrawQuad* color_quad =
       input->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   const gfx::Rect color_quad_rect(123, 456, 789, 101);
   color_quad->SetNew(shared_state_2, color_quad_rect, color_quad_rect,
-                     SK_ColorRED, true);
+                     SkColors::kRed, true);
 
   SurfaceDrawQuad* surface_quad =
       input->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
@@ -817,7 +817,7 @@ TEST_F(StructTraitsTest, RenderPass) {
           absl::nullopt,
           SurfaceId(FrameSinkId(1337, 1234),
                     LocalSurfaceId(1234, base::UnguessableToken::Create()))),
-      SK_ColorYELLOW, false);
+      SkColors::kYellow, false);
   // Test non-default values.
   surface_quad->is_reflection = !surface_quad->is_reflection;
   surface_quad->allow_merge = !surface_quad->allow_merge;
@@ -950,14 +950,14 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
 
   const gfx::Rect rect1(1234, 4321, 1357, 7531);
-  const SkColor color1 = SK_ColorRED;
+  const SkColor4f color1 = SkColors::kRed;
   const int32_t width1 = 1337;
   DebugBorderDrawQuad* debug_quad =
       render_pass->CreateAndAppendDrawQuad<DebugBorderDrawQuad>();
   debug_quad->SetNew(sqs, rect1, rect1, color1, width1);
 
   const gfx::Rect rect2(2468, 8642, 4321, 1234);
-  const uint32_t color2 = 0xffffffff;
+  const SkColor4f color2 = SkColors::kWhite;
   const bool force_anti_aliasing_off = true;
   SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -974,7 +974,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
       render_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   primary_surface_quad->SetNew(
       sqs, rect3, rect3, SurfaceRange(fallback_surface_id, primary_surface_id),
-      SK_ColorBLUE, false);
+      SkColors::kBlue, false);
 
   const gfx::Rect rect4(1234, 5678, 91012, 13141);
   const bool needs_blending = true;
@@ -1002,7 +1002,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const bool premultiplied_alpha = true;
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
-  const SkColor background_color = SK_ColorGREEN;
+  const SkColor4f background_color = SkColors::kGreen;
   const bool y_flipped = true;
   const bool nearest_neighbor = true;
   const bool secure_output_only = true;
@@ -1057,7 +1057,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_TRUE(out_primary_surface_draw_quad->needs_blending);
   EXPECT_EQ(primary_surface_id,
             out_primary_surface_draw_quad->surface_range.end());
-  EXPECT_EQ(SK_ColorBLUE,
+  EXPECT_EQ(SkColors::kBlue,
             out_primary_surface_draw_quad->default_background_color);
   EXPECT_EQ(fallback_surface_id,
             out_primary_surface_draw_quad->surface_range.start());
@@ -1136,7 +1136,8 @@ TEST_F(StructTraitsTest, TransferableResource) {
       gpu::CommandBufferId::FromUnsafeValue(0xdeadbeef));
   const uint64_t release_count = 0xdeadbeefdeadL;
   const uint32_t texture_target = 1337;
-  const bool read_lock_fences_enabled = true;
+  const TransferableResource::SynchronizationType sync_type =
+      TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   const bool is_software = false;
   const bool is_overlay_candidate = true;
 
@@ -1152,7 +1153,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.filter = filter;
   input.size = size;
   input.mailbox_holder = mailbox_holder;
-  input.read_lock_fences_enabled = read_lock_fences_enabled;
+  input.synchronization_type = sync_type;
   input.is_software = is_software;
   input.is_overlay_candidate = is_overlay_candidate;
 
@@ -1168,7 +1169,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(mailbox_holder.sync_token, output.mailbox_holder.sync_token);
   EXPECT_EQ(mailbox_holder.texture_target,
             output.mailbox_holder.texture_target);
-  EXPECT_EQ(read_lock_fences_enabled, output.read_lock_fences_enabled);
+  EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);
 }

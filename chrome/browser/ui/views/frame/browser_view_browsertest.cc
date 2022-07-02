@@ -141,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   TestWebContentsObserver observer(
       browser2->tab_strip_model()->GetWebContentsAt(0),
       browser2->tab_strip_model()->GetWebContentsAt(1));
@@ -249,14 +250,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
 
   // Go to empty tab. Bookmark bar should hide.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
 
   // Go to ntp tab. Bookmark bar should not show.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
@@ -265,13 +268,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, true);
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(bookmark_bar->GetVisible());
   EXPECT_EQ(1, observer.change_count());
   observer.clear_change_count();
 
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();

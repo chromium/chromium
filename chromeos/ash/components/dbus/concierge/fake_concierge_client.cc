@@ -183,10 +183,10 @@ void FakeConciergeClient::ListVmDisks(
       FROM_HERE, base::BindOnce(std::move(callback), list_vm_disks_response_));
 }
 
-void FakeConciergeClient::StartTerminaVm(
+void FakeConciergeClient::StartVm(
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  start_termina_vm_call_count_++;
+  start_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_),
       send_start_vm_response_delay_);
@@ -218,11 +218,11 @@ void FakeConciergeClient::StartTerminaVm(
                                 std::move(vm_started_signal)));
 }
 
-void FakeConciergeClient::StartTerminaVmWithFd(
+void FakeConciergeClient::StartVmWithFd(
     base::ScopedFD fd,
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  StartTerminaVm(std::move(request), std::move(callback));
+  StartVm(std::move(request), std::move(callback));
 }
 
 void FakeConciergeClient::NotifyTremplinStarted(
@@ -363,14 +363,6 @@ void FakeConciergeClient::ResizeDiskImage(
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakeConciergeClient::SetVmId(
-    const vm_tools::concierge::SetVmIdRequest& request,
-    DBusMethodCallback<vm_tools::concierge::SetVmIdResponse> callback) {
-  set_vm_id_call_count_++;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), set_vm_id_response_));
-}
-
 void FakeConciergeClient::ReclaimVmMemory(
     const vm_tools::concierge::ReclaimVmMemoryRequest& request,
     DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback) {
@@ -462,9 +454,6 @@ void FakeConciergeClient::InitializeProtoResponses() {
 
   detach_usb_device_response_.emplace();
   detach_usb_device_response_->set_success(true);
-
-  set_vm_id_response_.emplace();
-  set_vm_id_response_->set_success(true);
 }
 
 }  // namespace ash

@@ -780,7 +780,7 @@ void AXTree::RemoveObserver(AXTreeObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-AXTreeID AXTree::GetAXTreeID() const {
+const AXTreeID& AXTree::GetAXTreeID() const {
   return data().tree_id;
 }
 

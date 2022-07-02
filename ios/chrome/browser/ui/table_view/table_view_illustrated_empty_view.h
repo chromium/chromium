@@ -13,8 +13,8 @@
 @interface TableViewIllustratedEmptyView
     : UIView <ChromeEmptyTableViewBackground>
 
-// Designated initializer for a view that displays a large |image|, a |title|
-// and a |subtitle|.
+// Designated initializer for a view that displays a large `image`, a `title`
+// and a `subtitle`.
 - (instancetype)initWithFrame:(CGRect)frame
                         image:(UIImage*)image
                         title:(NSString*)title

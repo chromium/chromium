@@ -132,6 +132,7 @@ source_set("unit_tests") {
   sources = [
     "base/client_tag_hash_unittest.cc",
     "base/model_type_unittest.cc",
+    "base/page_transition_conversion_unittest.cc",
     "base/protobuf_unittest.cc",
     "base/sync_prefs_unittest.cc",
     "base/sync_util_unittest.cc",
@@ -219,6 +220,7 @@ source_set("unit_tests") {
       "trusted_vault/trusted_vault_connection_impl_unittest.cc",
       "trusted_vault/trusted_vault_crypto_unittest.cc",
       "trusted_vault/trusted_vault_request_unittest.cc",
+      "trusted_vault/trusted_vault_server_constants_unittest.cc",
     ]
   }
 
@@ -270,6 +272,7 @@ source_set("unit_tests") {
     "//third_party/leveldatabase",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib/google:compression_utils",
+    "//ui/base",
     "//url",
   ]
 

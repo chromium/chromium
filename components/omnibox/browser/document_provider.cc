@@ -589,9 +589,10 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
       field_trial_triggered_in_session_(false),
       backoff_for_session_(false),
       client_(client),
-      listener_(listener),
       cache_size_(cache_size),
       matches_cache_(MatchesCache::NO_AUTO_EVICT) {
+  AddListener(listener);
+
   if (base::FeatureList::IsEnabled(omnibox::kDebounceDocumentProvider)) {
     bool from_last_run = base::GetFieldTrialParamByFeatureAsBool(
         omnibox::kDebounceDocumentProvider,
@@ -630,7 +631,7 @@ void DocumentProvider::OnURLLoadComplete(
   LogTotalTime(time_run_invoked_, false);
   loader_.reset();
   done_ = true;
-  listener_->OnProviderUpdate(results_updated);
+  NotifyListeners(results_updated);
 }
 
 bool DocumentProvider::UpdateResults(const std::string& json_data) {

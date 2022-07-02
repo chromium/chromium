@@ -62,7 +62,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 #endif
 
 namespace {
@@ -497,8 +496,7 @@ ProfileMenuViewBase::EditButtonParams::EditButtonParams(
     const EditButtonParams&) = default;
 
 // static
-void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
-                                     views::Button* anchor_button,
+void ProfileMenuViewBase::ShowBubble(views::Button* anchor_button,
                                      Browser* browser,
                                      bool is_source_accelerator) {
   if (IsShowing())
@@ -510,8 +508,7 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
       feature_engagement::kIPHProfileSwitchFeature);
 
   ProfileMenuViewBase* bubble = nullptr;
-  if (view_mode == profiles::BUBBLE_VIEW_MODE_INCOGNITO) {
-    DCHECK(browser->profile()->IsIncognitoProfile());
+  if (browser->profile()->IsIncognitoProfile()) {
     bubble = new IncognitoMenuView(anchor_button, browser);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -519,7 +516,6 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
     // BUBBLE_VIEW_MODE_INCOGNITO.
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
-    DCHECK_EQ(profiles::BUBBLE_VIEW_MODE_PROFILE_CHOOSER, view_mode);
     bubble = new ProfileMenuView(anchor_button, browser);
 #endif
   }
@@ -567,15 +563,16 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
 
   SetEnableArrowKeyTraversal(true);
+
+  // TODO(crbug.com/1341017): Using `SetAccessibleRole(kMenu)` here will
+  // result in screenreader to announce the menu having only one item. This is
+  // probably because this API sets the a11y role for the widget, but not root
+  // view in it. This is confusing and prone to misuse. We should unify the two
+  // sets of API for BubbleDialogDelegateView.
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
 
   RegisterWindowClosingCallback(base::BindOnce(
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
-
-  // Use `ax::mojom::Role::kMenuBar`, because it fits better the kind of UI
-  // contained in this dialog. The top-level container in this dialog uses a
-  // kMenu role to match.
-  SetAccessibleRole(ax::mojom::Role::kMenuBar);
 }
 
 ProfileMenuViewBase::~ProfileMenuViewBase() {

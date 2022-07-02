@@ -5,16 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WIN_FALLBACK_FAMILY_STYLE_CACHE_WIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WIN_FALLBACK_FAMILY_STYLE_CACHE_WIN_H_
 
+#include "base/containers/lru_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
-#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
 using TypefaceVector = Vector<sk_sp<SkTypeface>>;
-using FallbackLruCache = WTF::LruCache<String, TypefaceVector>;
+using FallbackLruCache = base::HashingLRUCache<String, TypefaceVector>;
 
 class FallbackFamilyStyleCache {
   USING_FAST_MALLOC(FallbackFamilyStyleCache);

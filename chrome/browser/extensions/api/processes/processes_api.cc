@@ -338,10 +338,9 @@ void ProcessesEventRouter::OnTaskUnresponsive(task_manager::TaskId id) {
                 api::processes::OnUnresponsive::Create(process));
 }
 
-void ProcessesEventRouter::DispatchEvent(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    std::vector<base::Value> event_args) const {
+void ProcessesEventRouter::DispatchEvent(events::HistogramValue histogram_value,
+                                         const std::string& event_name,
+                                         base::Value::List event_args) const {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     std::unique_ptr<Event> event(
@@ -477,7 +476,7 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   // TODO(https://crbug.com/767563): chrome.processes.getProcessIdForTab API
   // incorrectly assumes a *single* renderer process per tab.
-  const int process_id = contents->GetMainFrame()->GetProcess()->GetID();
+  const int process_id = contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   return RespondNow(ArgumentList(
       api::processes::GetProcessIdForTab::Results::Create(process_id)));
 }

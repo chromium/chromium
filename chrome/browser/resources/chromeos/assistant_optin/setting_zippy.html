@@ -4,24 +4,18 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 
 <link rel="import" href="../components/common_styles/common_styles.html">
 
 <link rel="import" href="./assistant_common_styles.html">
+<link rel="import" href="./utils.html">
 
 <dom-module id="setting-zippy">
   <template>
     <style include="oobe-common-styles assistant-common-styles">
-      #container:not([expandStyle]) {
+      #container {
         padding-top: 8px;
-      }
-
-      #container[expandStyle] {
-        align-items: center;
-        height: 48px;
       }
 
       .sub-title {
@@ -37,6 +31,8 @@
       }
 
       .icon {
+        color: var(--cros-icon-color-secondary);
+        display: flex;
         min-width: 36px;
       }
 
@@ -48,12 +44,6 @@
 
       .line {
         background-color: var(--cros-color-primary);
-      }
-
-      cr-expand-button {
-        padding-inline-end: 8px;
-        /* Overrides default value 12px for cr-icon-button */
-        --cr-section-vertical-padding: 0;
       }
 
       .toggle {
@@ -83,9 +73,14 @@
         padding: 0;
       }
 
+      #container[cardStyle] .icon svg {
+        margin: auto;
+      }
+
       #container[cardStyle] .icon {
         background: var(--cros-highlight-color);
         border-radius: 50%;
+        color: var(--cros-icon-color-blue);
         height: 40px;
         margin-inline-end: 16px;
         margin-top: 4px;
@@ -96,49 +91,42 @@
         margin: 10px;
       }
     </style>
-    <template is="dom-if" if="[[expandStyle]]">
-      <cr-expand-button expanded="{{expanded_}}">
-        <div id="container" class="flex layout horizontal"
-            expandStyle$="[[expandStyle]]">
-          <div class="icon">
-            <webview class="icon-view" src="[[iconSrc]]" tabindex="-1">
-            </webview>
-          </div>
-          <div>
-            <div class="sub-title">
-              <slot name="title"></slot>
-            </div>
-            <div class="content">
-              <slot name="content"></slot>
-            </div>
-          </div>
+    <div id="container" class="flex layout horizontal"
+        cardStyle$="[[cardStyle]]">
+      <div class="icon">
+        <template is="dom-if"
+            if="[[shouldUseWebviewIcon_(iconSrc, nativeIconType)]]">
+          <webview class="icon-view" src="[[iconSrc]]" tabindex="-1">
+          </webview>
+        </template>
+        <template is="dom-if" if="[[shouldUseWAANativeIcon_(nativeIconType)]]">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 9V7h3.198A5.996 5.996 0 0 0 10 4c-3.315 0-6 2.685-6 6s2.685 6 6 6a6 6 0 0 0 5.917-4.999h2.02A8.007 8.007 0 0 1 9.993 18C5.576 18 2 14.416 2 10s3.576-8 7.992-8a7.992 7.992 0 0 1 6.009 2.712L16 3h2v6h-6Zm-1.5-3v4l2.5 2.5-1.5 1.5-3-3V6h2Z"fill="currentColor"></path>
+          </svg>
+        </template>
+        <template is="dom-if" if="[[shouldUseDANativeIcon_(nativeIconType)]]">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M18 15h1a1 1 0 1 1 0 2H1a1 1 0 1 1 0-2h1V4a1 1 0 0 1 1-1h14a.997.997 0 0 1 1 1v11Zm-2-3V5H4v7h12Zm-8 2v1h4v-1H8Z" fill="currentColor"></path>
+          </svg>
+        </template>
+        <template is="dom-if" if="[[shouldUseInfoNativeIcon_(nativeIconType)]]">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9 14h2v-4H9v4Zm1-12c-4.416 0-8 3.584-8 8s3.584 8 8 8 8-3.584 8-8-3.584-8-8-8Zm0 14c-3.308 0-6-2.693-6-6 0-3.308 2.692-6 6-6 3.307 0 6 2.692 6 6 0 3.307-2.693 6-6 6ZM9 8h2V6H9v2Z" fill="currentColor"></path>
+          </svg>
+        </template>
+      </div>
+      <div>
+        <div class="sub-title">
+          <slot name="title"></slot>
         </div>
-      </cr-expand-button>
-      <iron-collapse opened="[[expanded_]]">
-        <div class="content indent">
-          <slot name="additional"></slot>
-        </div>
-      </iron-collapse>
-    </template>
-    <template is="dom-if" if="[[!expandStyle]]">
-      <div id="container" class="flex layout horizontal"
-          expandStyle$="[[expandStyle]]" cardStyle$="[[cardStyle]]">
-        <div class="icon">
-          <webview class="icon-view" src="[[iconSrc]]" tabindex="-1"></webview>
-        </div>
-        <div>
-          <div class="sub-title">
-            <slot name="title"></slot>
-          </div>
-          <div id="description" class="content">
-            <slot name="content"></slot>
-          </div>
-        </div>
-        <div class="toggle">
-          <slot name="toggle"></slot>
+        <div id="description" class="content">
+          <slot name="content"></slot>
         </div>
       </div>
-    </template>
+      <div class="toggle">
+        <slot name="toggle"></slot>
+      </div>
+    </div>
     <div class="line" hidden="[[hideLine]]"></div>
   </template>
   <script src="setting_zippy.js"></script>

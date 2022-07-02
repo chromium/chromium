@@ -42,11 +42,11 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
 
  private:
   // Get the current DownloadService and sub component statuses.
-  void HandleGetServiceStatus(const base::ListValue* args);
-  void HandleGetServiceDownloads(const base::ListValue* args);
+  void HandleGetServiceStatus(const base::Value::List& args);
+  void HandleGetServiceDownloads(const base::Value::List& args);
 
   // Starts a background download.
-  void HandleStartDownload(const base::ListValue* args);
+  void HandleStartDownload(const base::Value::List& args);
 
   raw_ptr<download::BackgroundDownloadService> download_service_;
 

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
@@ -67,6 +67,7 @@ void MountPerformer::MountPersistentDirectory(
 void MountPerformer::MountForMigration(std::unique_ptr<UserContext> context,
                                        AuthOperationCallback callback) {
   user_data_auth::PrepareVaultForMigrationRequest request;
+  LOGIN_LOG(EVENT) << "Mount persistent directory for migration";
   request.set_auth_session_id(context->GetAuthSessionId());
   UserDataAuthClient::Get()->PrepareVaultForMigration(
       request, base::BindOnce(&MountPerformer::OnPrepareVaultForMigration,

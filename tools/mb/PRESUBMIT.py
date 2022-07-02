@@ -52,14 +52,13 @@ def _CommonChecks(input_api, output_api):
       output_api,
       version='2.7',
       # pylint complains about Checkfreeze not being defined, its probably
-      # finding a different PRESUBMIT.py
+      # finding a different PRESUBMIT.py. Note that this warning only appears if
+      # the number of Pylint jobs is greater than one.
       files_to_skip=['PRESUBMIT_test.py'],
-      # Disabling certain python3-specific warnings until the conversion
-      # is complete.
+      # Disabling this warning because this pattern - involving ToSrcRelPath -
+      # seems intrinsic to how mb_unittest.py is implemented.
       disabled_warnings=[
-          'super-with-arguments',
-          'raise-missing-from',
-          'useless-object-inheritance',
+          'attribute-defined-outside-init',
       ],
   )
   results.extend(input_api.RunTests(pylint_checks))

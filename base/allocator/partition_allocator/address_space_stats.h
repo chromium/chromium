@@ -7,9 +7,9 @@
 
 #include <cstddef>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
@@ -42,7 +42,7 @@ struct AddressSpaceStats {
 
 // Interface passed to `AddressPoolManager::DumpStats()` to mediate
 // for `AddressSpaceDumpProvider`.
-class BASE_EXPORT AddressSpaceStatsDumper {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressSpaceStatsDumper {
  public:
   virtual void DumpStats(const AddressSpaceStats* address_space_stats) = 0;
 };

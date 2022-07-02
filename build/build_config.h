@@ -16,10 +16,10 @@
 //
 //  Operating System:
 //    IS_AIX / IS_ANDROID / IS_ASMJS / IS_CHROMEOS / IS_FREEBSD / IS_FUCHSIA /
-//    IS_IOS / IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD / IS_OPENBSD / IS_QNX /
-//    IS_SOLARIS / IS_WIN
+//    IS_IOS / IS_IOS_MACCATALYST / IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD /
+//    IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WIN
 //  Operating System family:
-//    IS_APPLE: IOS or MAC
+//    IS_APPLE: IOS or MAC or IOS_MACCATALYST
 //    IS_BSD: FREEBSD or NETBSD or OPENBSD
 //    IS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
 //              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
@@ -64,6 +64,11 @@
 #include <TargetConditionals.h>
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #define OS_IOS 1
+// Catalyst is the technology that allows running iOS apps on macOS. These
+// builds are both OS_IOS and OS_IOS_MACCATALYST.
+#if defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST
+#define OS_IOS_MACCATALYST
+#endif  // defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST
 #else
 #define OS_MAC 1
 #endif  // defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
@@ -178,6 +183,12 @@
 #define BUILDFLAG_INTERNAL_IS_IOS() (1)
 #else
 #define BUILDFLAG_INTERNAL_IS_IOS() (0)
+#endif
+
+#if defined(OS_IOS_MACCATALYST)
+#define BUILDFLAG_INTERNAL_IS_IOS_MACCATALYST() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_IOS_MACCATALYST() (0)
 #endif
 
 #if defined(OS_LINUX)

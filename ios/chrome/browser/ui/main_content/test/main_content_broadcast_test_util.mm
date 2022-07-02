@@ -53,7 +53,7 @@ void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
                                   bool should_broadcast) {
   ASSERT_TRUE(ui_state);
   ASSERT_TRUE(broadcaster);
-  // Create an observer and modifier for |ui_state|.
+  // Create an observer and modifier for `ui_state`.
   TestMainContentUIObserver* observer =
       [[TestMainContentUIObserver alloc] init];
   observer.broadcaster = broadcaster;
@@ -68,6 +68,6 @@ void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
     EXPECT_EQ(observer.scrolling, modifier.was_scrolling());
     EXPECT_EQ(observer.dragging, modifier.was_dragging());
   }
-  // Stop observing |broadcaster|.
+  // Stop observing `broadcaster`.
   observer.broadcaster = nil;
 }

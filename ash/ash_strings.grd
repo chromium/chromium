@@ -1454,7 +1454,7 @@ This file contains the strings for ash.
         Recent apps
       </message>
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER" desc="The placeholder of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
-        App streaming is now set up. Once you get started, recently launched apps will appear here.
+        When you stream your phone’s apps, they will appear here
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
         Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
@@ -1633,6 +1633,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_LOADING" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but it is still loading.">
         Assistant is loading...
       </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_METALAYER_TOAST_DEPRECATE" desc="Message content on the toast that appears when the user presses the stylus button to activate the Assistant but the feature is deprecated.">
+        Searching what's on my screen with Google Assistant is no longer supported.
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
       </message>
@@ -1753,7 +1756,7 @@ This file contains the strings for ash.
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph>
       </message>
 
-      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE" desc="The accessible title for the projector marker button in the system tray, telling the user how to use the marker."> 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE" desc="The accessible title for the projector marker button in the system tray, telling the user how to use the marker.">
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph> Use the trackpad, touchscreen, or stylus to draw onscreen.
       </message>
 
@@ -1799,14 +1802,23 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON" desc="The text of the confirm button of the desks templates delete dialog, which shows up when trying to delete a template.">
         Delete
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE" desc="The text of the title of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Unsupported apps in template
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE" desc="The text of the title of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Unsupported apps in desk
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
         Replace template?
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk replace dialog, which shows up when trying to rename a saved desk to the name of an existing desk.">
+        Replace saved desk?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
         Delete template?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk delete dialog, which shows up when trying to delete a saved desk.">
+        Delete saved desk?
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LACROS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Lacros windows aren't currently supported. Other apps will be saved.
@@ -1820,8 +1832,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Incognito windows aren’t currently supported. Other apps will be saved.
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
         Template named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+        A saved desk named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates delete dialog, which shows up when trying to delete a template.">
         <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> will be permanently deleted
@@ -1877,6 +1892,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST" desc="The text of the toast displayed when user tries to save a template whose metadata would exceed the threshold for Chrome Sync. The template is not saved and this toast shows up instead.">
         Couldn’t save template. Too many windows or tabs.
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESK_TOO_LARGE_TOAST" desc="The text of the toast displayed when user tries to save a desk whose metadata would exceed the threshold for Chrome Sync. The desk is not saved and this toast shows up instead.">
+        Couldn’t save desk. Too many windows or tabs.
+      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
       </message>
@@ -1885,6 +1903,21 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" desc="The label visible above the save and recall items in the saved desk library.">
         Saved for later
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_TEMPLATES_OR_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks or templates.">
+        No saved desks or templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks.">
+        No saved desks
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME" desc="The full accessible name of template grid item">
+        Template, <ph name="TEMPLATE_NAME">$1</ph>
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME" desc="The full accessible name of save and recall grid item">
+        Saved desk, <ph name="SAVE_AND_RECALL_DESK_NAME">$1</ph>
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION" desc="The extra accessible description of saved desk grid item">
+        Press Ctrl+W to close
       </message>
 
       <!-- Virtual Desks -->
@@ -1945,6 +1978,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_CLOSE_ALL_UNDO_TEXT" desc="Label for the undo button in the close-all toast.">
         Undo
       </message>
+      <message name="IDS_ASH_DESKS_CLOSE_ALL_UNDONE_NOTIFICATION" desc="ChromeVox announcement that is read when the user presses the button to undo desk removal.">
+        Desk and windows reopened
+      </message>
 
       <!-- Status tray charging strings. -->
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE" desc="The title of a notification indicating that a low-current USB charger has been connected.">
@@ -2004,7 +2040,72 @@ This file contains the strings for ash.
       <message name="IDS_ASH_POWER_SOURCE_PORT_UNKNOWN" desc="The text referring to the device to charge from, when its port location cannot be determined.">
         USB-C device
       </message>
-
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_TITLE" desc="The title in the generic notificiation for battery being charged.">Battery Charging</message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_FULL" desc="The label in the tray dialog to indicate that the battery is full.">
+        Battery full
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CRITICAL_BATTERY_TITLE" desc="The title for the notification displayed when device battery level is critically low.">Device will power down soon</message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE" desc="The title for the notification displayed when device battery level is low.">Low Battery</message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE" desc="The label in the tray dialog to show the remaining battery power as a percent.">
+        About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
+Connect your device to power.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_TITLE" desc="The title displayed in a battery status notification.">Battery status</message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT" desc="The label in the tray dialog to show the remaining battery power as a percent.">
+        <ph name="percentage">{0,number,percent}<ex>56%</ex></ph> remaining
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL" desc="The label in the tray dialog to show a time estimate until the battery is fully charged.">
+        <ph name="time">$1<ex>2h 53m</ex></ph> until full
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING" desc="The label in the tray dialog indicating that the time to charge or discharge the battery is being calculated.">
+        Calculating...
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is empty.">
+        <ph name="time">$1<ex>2:53</ex></ph> left
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is fully charged.">
+        <ph name="time">$1<ex>2:53</ex></ph> until full
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE" desc="The label in the tray dialog to indicate that battery charging is unreliable.">
+        Battery charging may be unreliable.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_FULL_CHARGE_ACCESSIBLE" desc="The message used by accessibility to show battery is fully charged.">
+        Battery is full.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE" desc="The message used by accessibility to show battery is discharging.">
+        Battery at <ph name="percentage">$1<ex>56</ex></ph> percent.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged.">
+        Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
+        Calculating battery time.
+      </message>
+      <message name= "IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_ACCESSIBLE" desc="The message used by accessibility to read remaining battery time until empty.">
+        <ph name="time_left">$1<ex>1 hour and 15 minutes</ex></ph> until battery is empty.
+      </message>
+      <message name= "IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_ACCESSIBLE" desc="The message used by accessibility to read the estimated time until full.">
+        <ph name="time_remaining">$1<ex>1 hour and 15 minutes</ex></ph> remaining until battery is fully charged.
+      </message>
+      <message name = "IDS_ASH_STATUS_TRAY_BATTERY_TIME_ACCESSIBLE" desc="The message used by accessibility to read battery time, which includes both non-zero hours and minutes.">
+        <ph name="hour">$1<ex> 1 hour</ex></ph> and <ph name="minute">$2<ex>15 minutes</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE" desc="The message used by accessibility to indicate that battery charging is unreliable.">
+        Plugged in to a low-power charger. Battery charging may not be reliable.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
+        ''' - '''
+      </message>
+      <!-- Status tray channel indicator strings -->
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_BETA" desc="The string used to indicate that this device is on the beta release track">
+        Beta Channel
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_DEV" desc="The string used to indicate that this device is on the development release track">
+        Dev Channel
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_CANARY" desc="The string used to indicate that this device is on the canary release track">
+        Canary Channel
+      </message>
       <!-- Status Tray Network strings -->
       <message name="IDS_ASH_STATUS_TRAY_NETWORK" desc="The label used in the network dialog header. [CHAR_LIMIT=18]">
         Network
@@ -2341,7 +2442,7 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_AURA_OPEN_PERSONALIZATION_HUB" desc="The label used to open personalization hub in context menu">
-        Personalize
+        Set wallpaper &amp; style
       </message>
       <message name="IDS_AURA_SET_DESKTOP_WALLPAPER" desc="The label used for change wallpaper in context menu">
         Set wallpaper
@@ -2457,54 +2558,6 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_SEARCH" desc="The message shown on a bubble when caps lock is turned on.">
         Press Search or Shift to cancel.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_FULL" desc="The label in the tray dialog to indicate that the battery is full.">
-        Battery full
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT" desc="The label in the tray dialog to show the remaining battery power as a percent.">
-        <ph name="percentage">{0,number,percent}<ex>56%</ex></ph> remaining
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL" desc="The label in the tray dialog to show a time estimate until the battery is fully charged.">
-        <ph name="time">$1<ex>2h 53m</ex></ph> until full
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING" desc="The label in the tray dialog indicating that the time to charge or discharge the battery is being calculated.">
-        Calculating...
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is empty.">
-        <ph name="time">$1<ex>2:53</ex></ph> left
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is fully charged.">
-        <ph name="time">$1<ex>2:53</ex></ph> until full
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE" desc="The label in the tray dialog to indicate that battery charging is unreliable.">
-        Low-power charger
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_FULL_CHARGE_ACCESSIBLE" desc="The message used by accessibility to show battery is fully charged.">
-        Battery is full.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE" desc="The message used by accessibility to show battery is discharging.">
-        Battery at <ph name="percentage">$1<ex>56</ex></ph> percent.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged.">
-        Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
-        Calculating battery time.
-      </message>
-      <message name= "IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_ACCESSIBLE" desc="The message used by accessibility to read remaining battery time until empty.">
-        <ph name="time_left">$1<ex>1 hour and 15 minutes</ex></ph> until battery is empty.
-      </message>
-      <message name= "IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_ACCESSIBLE" desc="The message used by accessibility to read the estimated time until full.">
-        <ph name="time_remaining">$1<ex>1 hour and 15 minutes</ex></ph> remaining until battery is fully charged.
-      </message>
-      <message name = "IDS_ASH_STATUS_TRAY_BATTERY_TIME_ACCESSIBLE" desc="The message used by accessibility to read battery time, which includes both non-zero hours and minutes.">
-        <ph name="hour">$1<ex> 1 hour</ex></ph> and <ph name="minute">$2<ex>15 minutes</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE" desc="The message used by accessibility to indicate that battery charging is unreliable.">
-        Plugged in to a low-power charger. Battery charging may not be reliable.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
-        ''' - '''
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BUBBLE_SESSION_LENGTH_LIMIT" desc="Tray bubble item shown to inform the user that the session length is limited.">
         Session ends in <ph name="session_time_remaining">$1<ex>4 minutes 23 seconds</ex></ph>.
@@ -2907,6 +2960,9 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME" desc="Couldn't sign in because password is invalid for the 2nd time">
         Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you sign out.
+      </message>
+      <message name="IDS_ASH_LOGIN_FORGOT_PASSWORD" desc="Label of the button to recover your password">
+        Forgot password
       </message>
       <message name="IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT" desc="A hint text for the login and lock screens that Caps Lock is on">
         Caps Lock is on.
@@ -3515,16 +3571,16 @@ This file contains the strings for ash.
         Close event panel
       </message>
 
-      <message name="IDS_ASH_CLOSE_BUTTON_TOOLTIP" desc="The tooltip label used in the close button in the calendar event list view.">
-        Close detail information
-      </message>
-
       <message name="IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP" desc="The tooltip of a calendar date cell, which is with 0 or 1 event.">
         <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>0</ex></ph> event
       </message>
 
       <message name="IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP" desc="The tooltip of a calendar date cell, which is with more than 1 event.">
         <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>8</ex></ph> events
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DATE_CELL_LOADING_TOOLTIP" desc="The tooltip of a calendar date cell when the events are loading.">
+        <ph name="date">$1<ex>August 31, 2021</ex></ph>, Loading events.
       </message>
 
       <message name="IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar date cell, which is on focused for the first time.">
@@ -3535,16 +3591,19 @@ This file contains the strings for ash.
         Calendar, week of <ph name="date">$1<ex>July 16th 2021,</ex></ph>, <ph name="selected_date">$2<ex>18</ex></ph> is currently selected.
       </message>
 
+      <message name="IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of the date tray, click on which opens the calendar view.">
+        Calendar view, <ph name="date">$1<ex>Wednesday, May 25, 2022</ex></ph>, <ph name="time">$2<ex>14:07</ex></ph>
+      </message>
+
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
-        <ph name="start_time">$1<ex>12 PM</ex></ph> to 
-        <ph name="end_time">$2<ex>1 PM</ex></ph>, 
-        <ph name="time_zone">$3<ex>Pacific time</ex></ph>, 
+        <ph name="start_time">$1<ex>12 PM</ex></ph> to
+        <ph name="end_time">$2<ex>1 PM</ex></ph>,
+        <ph name="time_zone">$3<ex>Pacific time</ex></ph>,
         <ph name="event_summary">$4<ex>Lunch break</ex></ph>. Select for more details in Google Calendar.
       </message>
 
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP" desc="The tool tip label of a calendar event entry.">
-        <ph name="event_summary">$1<ex>Lunch break</ex></ph>, 
-        <ph name="time_range">$2<ex> 1:00 - 1:30 PM</ex></ph>
+        <ph name="event_summary">$1<ex>Lunch break</ex></ph>, <ph name="time_range">$2<ex>1:00 - 1:30 PM</ex></ph>
       </message>
 
       <message name="IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar `Open in Google Calendar` button.">
@@ -3560,7 +3619,11 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_ASH_CALENDAR_NO_EVENTS" desc="Text that appears on the event list when there are no events.">
-        Open in Google calendar
+        Open in Google Calendar
+      </message>
+
+      <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
+        Loading
       </message>
 
       <!-- Power off menu  -->
@@ -3932,6 +3995,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS" desc="Text of the weather temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
+      </message>
+      <message name="IDS_ASH_SCREENSAVER_STARTS" desc="Text to announce when screensaver starts.">
+        Screen saver starts
       </message>
 
       <!-- Capture Mode -->
@@ -4509,10 +4575,16 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE" desc="Context menu option title to remove a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
         Remove suggestion
       </message>
-      <message name="IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION" desc="Button title to show the launcher continue section after it has been hidden.">
-        Continue where you left off
+      <message name="IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION" desc="Context menu label to show the launcher continue section after it has been hidden.">
+        Show all suggestions
       </message>
       <message name="IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION" desc="Context menu label to hide the launcher continue section (which defaults to being shown).">
+        Hide all suggestions
+      </message>
+      <message name="IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION_TOOLTIP" desc="Tooltip for button that shows the launcher continue section after it has been hidden.">
+        Show all suggestions
+      </message>
+      <message name="IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION_TOOLTIP" desc="Tooltip for button that hides the launcher continue section (which defaults to being shown).">
         Hide all suggestions
       </message>
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT" desc="Text for the privacy notice of the continue section of the launcher in clamshell mode, which shows recent files and apps that the user can continue using.">
@@ -4647,9 +4719,6 @@ New install
       <message name="IDS_APP_LIST_FOLDER_BUTTON_ACCESSIBILE_NAME" desc="The spoken feedback text for navigating to a folder button in top level app list">
         Folder <ph name="folder_name">$1<ex>OEM Apps</ex></ph>
       </message>
-      <message name="IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text for opening an app launcher folder">
-        Open folder
-      </message>
       <message name="IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text for closing an app launcher folder">
         Close folder
       </message>
@@ -4731,7 +4800,7 @@ New install
         Opened yesterday
       </message>
       <message name="IDS_APP_LIST_OPEN_TAB_HINT" desc="Shown alongside launcher search results which will take the user to an open tab when clicked.">
-        Go to this tab
+        <ph name="delimiter">$1<ex> - </ex></ph> Go to this tab
       </message>
       <message name="IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX" desc="Shown next to a video game search result, begins a list of cloud gaming platforms the game is playable on.">
         on
@@ -4809,6 +4878,9 @@ New install
       </message>
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         settings
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+        games
       </message>
 
       <!-- WM -->
@@ -4965,10 +5037,26 @@ New install
         Your battery is kept at 80% while plugged in to extend battery life.
       </message>
       <message name="IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY" desc="Notification message explaining the battery is temporarily at 80%. The message includes the predicted time at which charging will resume.">
-        Your battery is temporarily at 80% while plugged in to extend battery life. Your battery will fully charge by <ph name="FULLY_CHARGE_TIME">$1<ex>7:30 AM</ex></ph>.
+        Extending your battery life. Battery will fully charge by <ph name="FULLY_CHARGE_TIME">$1<ex>7:30 AM</ex></ph>.
       </message>
       <message name="IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_FULLY_CHARGE_NOW_BUTTON_TEXT" desc="Text in notification button to fully charge the device.">
         Fully charge now
+      </message>
+
+      <!-- Keyboard backlight color -->
+      <message name="IDS_ASH_KEYBOARD_BACKLIGHT_COLOR_EDUCATION_NUDGE_TEXT" desc="The body text suggesting that the user can change the keyboard backlight color">
+        You can change the color of your keyboard backlight in Settings > <ph name="APP_TITLE">$1<ex>Wallpaper &amp; style</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME" desc="The accessible text for the brightness slider keyboard backlight icon.">
+        Keyboard backlight color
+      </message>
+
+      <!-- Eche feature -->
+      <message name="IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED" desc="A toast message that we show when user tries to use ctrl+c or ctrl+v in the Eche window.">
+        Can't copy or paste content at this time
+      </message>
+      <message name="IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED" desc="A toast message that we show when user tries to switch to tablet mode.">
+        Can't stream apps in tablet mode. Try again in laptop mode.
       </message>
 
     </messages>

@@ -14,7 +14,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -437,8 +437,6 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
           &execution_context) &&
       supported_method == "basic-card") {
-    Deprecation::CountDeprecation(&execution_context,
-                                  WebFeature::kPaymentRequestBasicCard);
     BasicCardHelper::ParseBasiccardData(input, output->supported_networks,
                                         exception_state);
   } else if (supported_method == kSecurePaymentConfirmationMethod &&
@@ -448,7 +446,7 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                       WebFeature::kSecurePaymentConfirmation);
     output->secure_payment_confirmation =
         SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-            input, exception_state);
+            input, execution_context, exception_state);
   }
 }
 
@@ -810,8 +808,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       DomWindow()->IsPaymentRequestTokenActive();
 
   if (!has_transient_user_activation) {
-    Deprecation::CountDeprecation(
-        GetExecutionContext(), WebFeature::kPaymentRequestShowWithoutGesture);
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kPaymentRequestShowWithoutGesture);
 
     if (!payment_request_token_active) {
       UseCounter::Count(GetExecutionContext(),
@@ -1513,6 +1511,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
 
     case PaymentErrorReason::NOT_ALLOWED_ERROR:
       exception_code = DOMExceptionCode::kNotAllowedError;
+      break;
+
+    case PaymentErrorReason::USER_OPT_OUT:
+      exception_code = DOMExceptionCode::kAbortError;
       break;
 
     case PaymentErrorReason::UNKNOWN:

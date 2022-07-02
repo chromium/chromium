@@ -248,20 +248,20 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 ## Windows Control Overlay
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| #WMLC | install_windowed(SiteWCO) | check_window_controls_overlay_toggle(SiteWCO, Shown) |
-| #WMLC | install_windowed(SiteA) | check_window_controls_overlay_toggle(SiteA, NotShown) |
-| #WMLC | install_windowed(SiteWCO) | enable_window_controls_overlay(SiteWCO) | check_window_controls_overlay(SiteWCO, On) | 
-| #WMLC | install_windowed(SiteWCO) | enable_window_controls_overlay(SiteWCO) | check_window_controls_overlay_toggle(SiteWCO, Shown) | 
-| #WMLC | install_windowed(SiteWCO) | enable_window_controls_overlay(SiteWCO) | disable_window_controls_overlay(SiteWCO) | check_window_controls_overlay(SiteWCO, Off) |
-| #WMLC | install_windowed(SiteWCO) | enable_window_controls_overlay(SiteWCO) | disable_window_controls_overlay(SiteWCO) | check_window_controls_overlay_toggle(SiteWCO, Shown) |
-| #WMLC | install_windowed(SiteWCO) | enable_window_controls_overlay(SiteWCO) | launch(SiteWCO) | check_window_controls_overlay(SiteWCO, On) |
-| #WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, WCO) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWCO, Shown) | 
-| #WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, WCO) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWCO, Shown) | 
-| #WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, WCO) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay(SiteB, Off) |
-| #WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, WCO) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
-| #WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, WCO) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
-| #WMLC | install_windowed(SiteWCO) | manifest_update_display(SiteWCO, Standalone) | await_manifest_update(SiteWCO) | launch(SiteWCO) | check_window_controls_overlay_toggle(SiteWCO, NotShown) | 
-| #WMLC | install_windowed(SiteWCO) | manifest_update_display(SiteWCO, Standalone) | await_manifest_update(SiteWCO) | launch(SiteWCO) | check_window_controls_overlay(SiteWCO, Off) | 
+| WMLC | install_windowed(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) |
+| WMLC | install_windowed(SiteA) | check_window_controls_overlay_toggle(SiteA, NotShown) |
+| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | check_window_controls_overlay(SiteWco, On) | 
+| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
+| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | disable_window_controls_overlay(SiteWco) | check_window_controls_overlay(SiteWco, Off) |
+| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | disable_window_controls_overlay(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) |
+| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | launch(SiteWco) | check_window_controls_overlay(SiteWco, On) |
+| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
+| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
+| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay(SiteB, Off) |
+| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
+| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
+| WMLC | install_windowed(SiteWco) | manifest_update_display(SiteWco, Standalone) | await_manifest_update(SiteWco) | launch(SiteWco) | check_window_controls_overlay_toggle(SiteWco, NotShown) | 
+| WMLC | install_windowed(SiteWco) | manifest_update_display(SiteWco, Standalone) | await_manifest_update(SiteWco) | launch(SiteWco) | check_window_controls_overlay(SiteWco, Off) | 
 
 ## File Handling
 

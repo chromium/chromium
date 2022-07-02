@@ -1,4 +1,7 @@
 <style include="os-feedback-shared">
+  a[href] {
+    text-decoration: none;
+  }
 
   #privacyNote {
     font-size: 12px;
@@ -35,22 +38,44 @@
     width: 50%;
   }
 
+  #screenshotCheckLabel {
+    flex: 1;
+  }
+
+  #screenshotContainer > button {
+    cursor: pointer;
+  }
+
   #screenshotImage {
     display: block;
     height: auto;
-    margin: 0 0 0 auto;
     transition: all 250ms ease;
     width: 68px;
   }
 
   #screenshotImage:hover {
-    margin: 170px 0 0 150px;
-    max-width: 600px;
-    transform: scale(8);
-    z-index: 1;
+    opacity: 0.7;
   }
 
-  #addFile {
+  dialog {
+    bottom: auto;
+    top: auto;
+  }
+
+  cr-dialog::part(dialog) {
+    --cr-dialog-body-padding-horizontal: 0px;
+    --cr-dialog-title-slot-padding-start: 0px;
+    --cr-icon-button-margin-end: 20px;
+    width: 590px;
+  }
+
+  .image-preview {
+    height: auto;
+    max-height: 600px;
+    width: 580px;
+  }
+
+  #addFileContainer {
     align-items: center;
     height: 48px;
     margin-inline-start: 12px;
@@ -67,42 +92,54 @@
     margin-bottom: 24px;
   }
 
+  .disabled-input-text {
+    color: var(--cros-text-color-disabled);
+  }
 </style>
 <div id="container">
   <div id="header">
-    <h1 id="title">Send feedback</h1>
+    <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
   <div id="content">
     <!-- Attach files -->
     <div id="attachFiles">
-      <p>Attach files</p>
+      <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
       <div id="attachFilesContainer">
         <!-- Attach a screenshot -->
         <div id="screenshotContainer" class="card-frame">
           <input id="screenshotCheckbox" type="checkbox"
               aria-labelledby="screenshotCheckLabel"
               disabled="[[!hasScreenshot_(screenshotUrl)]]">
-          <label id="screenshotCheckLabel">Screenshot</label>
-          <img id="screenshotImage" aria-label="$i18n{screenshotA11y}"
+          <label id="screenshotCheckLabel">[[i18n('attachScreenshotLabel')]]</label>
+          <button id="imageButton" on-click="handleScreenshotClick_">
+            <img id="screenshotImage" aria-label="$i18n{screenshotA11y}"
               src="[[screenshotUrl]]">
+           </button>
         </div>
         <!-- Attach a file -->
-        <!-- TODO(xiangdongkong): Create a polymer element.-->
-        <div id="addFile" class="card-frame">Add file</div>
+        <div id="addFileContainer" class="card-frame">
+          <file-attachment></file-attachment>
+        </div>
       </div>
     </div>
     <!-- User e-mail -->
     <div id="userEmail" class="text-field-container"
         hidden$="[[!hasEmail_(feedbackContext)]]">
-      <label id="userEmailLabel">Email</label>
+      <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
       <select id="userEmailDropDown" aria-labelledby="userEmailLabel">
         <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
-        <option value="">Don't include email address</option>
+        <option value="" id="anonymousUser">[[i18n('anonymousUser')]]</option>
       </select>
+    </div>
+    <!-- User consent -->
+    <div id="userConsent" class="checkbox-field-container">
+      <input id="userConsentCheckbox" type="checkbox"
+          aria-labelledby="userConsentLabel">
+      <label id="userConsentLabel">[[i18n('userConsentLabel')]]</label>
     </div>
     <!-- Diagnostic data -->
     <div id="shareDiagnosticData">
-      <p>Share diagnostic data</p>
+      <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
       <!-- URL -->
       <div id="pageUrl" class="checkbox-field-container">
         <input id="pageUrlCheckbox" type="checkbox" aria-labelledby="pageUrlLabel"
@@ -113,27 +150,34 @@
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
-        <input id="sysInfoCheckbox" type="checkbox" aria-labelledby="sysInfoLabel"
+        <input id="sysInfoCheckbox" type="checkbox" aria-labelledby="sysInfoCheckboxLabel"
             checked>
-        <label id="sysInfoLabel">Send system and app info and metrics</label>
+        <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
       </div>
     </div>
     <!-- Privacy note -->
-    <div id="privacyNote">
-      Go to the Legal Help page to request content changes for legal reasons. Some
-      account and system information may be sent to Google. We
-      will use the information you give us to help address technical issues and to
-      improve our services, subject to our Privacy Policy and Terms of Service.
-    </div>
+    <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonBack" class="cancel-button"
         on-click="handleBackButtonClicked_">
-      Back
+      [[i18n('backButtonLabel')]]
     </cr-button>
     <cr-button id="buttonSend" class="action-button"
         on-click="handleSendButtonClicked_">
-      Send
+        [[i18n('sendButtonLabel')]]
     </cr-button>
   </div>
 </div>
+<cr-dialog id="screenshotDialog">
+  <div id="modalDialogTitle" slot="title">
+    <cr-icon-button id="closeDialogButton" class="icon-arrow-back"
+        on-click="handleScreenshotDialogCloseClick_"
+        title="[[i18n('attachScreenshotLabel')]]">
+    </cr-icon-button>
+    <span>[[i18n('attachScreenshotLabel')]]</span>
+  </div>
+  <div slot="body">
+    <img src="[[screenshotUrl]]" class="image-preview">
+  </div>
+</cr-dialog>

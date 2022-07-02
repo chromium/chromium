@@ -7,11 +7,11 @@
 #include <set>
 
 #include "base/logging.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -42,7 +42,7 @@ class FilterExtractor {
   std::set<uint64_t> user_actions;
   std::set<std::pair<std::string, proto::SignalType>> histograms;
   UkmConfig ukm_config;
-  base::flat_set<OptimizationTarget> history_based_segments;
+  base::flat_set<SegmentId> history_based_segments;
 
  private:
   void AddUmaFeatures(const proto::SegmentationModelMetadata& metadata) {
@@ -95,7 +95,7 @@ SignalFilterProcessor::SignalFilterProcessor(
     UserActionSignalHandler* user_action_signal_handler,
     HistogramSignalHandler* histogram_signal_handler,
     HistoryServiceObserver* history_observer,
-    const std::vector<OptimizationTarget>& segment_ids)
+    const std::vector<SegmentId>& segment_ids)
     : storage_service_(storage_service),
       user_action_signal_handler_(user_action_signal_handler),
       histogram_signal_handler_(histogram_signal_handler),
@@ -128,9 +128,15 @@ void SignalFilterProcessor::FilterSignals(
         std::move(extractor.history_based_segments));
   }
   for (const auto& segment_info : segment_infos) {
+    if (is_first_time_model_update_) {
+      stats::RecordModelUpdateTimeDifference(
+          segment_info->segment_info.segment_id(),
+          segment_info->segment_info.model_update_time_s());
+    }
     storage_service_->signal_storage_config()->OnSignalCollectionStarted(
         segment_info->segment_info.model_metadata());
   }
+  is_first_time_model_update_ = false;
 }
 
 void SignalFilterProcessor::EnableMetrics(bool enable_metrics) {

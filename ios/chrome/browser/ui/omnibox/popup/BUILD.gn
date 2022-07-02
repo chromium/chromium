@@ -24,6 +24,7 @@ swift_source_set("popup_swift") {
     "shared/popup_ui_configuration.swift",
     "shared/popup_ui_variation.swift",
     "shared/popup_view.swift",
+    "shared/popup_visible_suggestion_count.swift",
     "shared/pressed_preference_key_button_style.swift",
     "shared/self_sizing_list.swift",
   ]
@@ -77,6 +78,7 @@ source_set("popup") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/search_engines",

@@ -201,6 +201,10 @@ void PaintOpReader::Read(SkRRect* rect) {
   ReadSimple(rect);
 }
 
+void PaintOpReader::Read(SkColor4f* color) {
+  ReadSimple(color);
+}
+
 void PaintOpReader::Read(SkPath* path) {
   uint32_t path_id;
   ReadSimple(&path_id);
@@ -319,6 +323,10 @@ void PaintOpReader::Read(PaintImage* image) {
 
         SkImageInfo image_info =
             SkImageInfo::Make(width, height, color_type, kPremul_SkAlphaType);
+        if (pixel_size < image_info.computeMinByteSize()) {
+          SetInvalid(DeserializationError::kInsufficientPixelData);
+          return;
+        }
         const volatile void* pixel_data = ExtractReadableMemory(pixel_size);
         if (!valid_)
           return;

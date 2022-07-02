@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 class ScriptState;
@@ -39,6 +41,11 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     TaskScope() = default;
   };
 
+  class Observer : public GarbageCollectedMixin {
+   public:
+    virtual void OnCreateTaskScope(const TaskId&) = 0;
+  };
+
   virtual ~TaskAttributionTracker() = default;
 
   // Create a new task scope.
@@ -48,9 +55,19 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   // Get the ID of the currently running task.
   virtual absl::optional<TaskId> RunningTaskId(ScriptState*) const = 0;
+
   // Check for ancestry of the currently running task against an input
   // |parentId|.
   virtual AncestorStatus IsAncestor(ScriptState*, TaskId parentId) = 0;
+  virtual AncestorStatus HasAncestorInSet(
+      ScriptState*,
+      const WTF::HashSet<scheduler::TaskIdType>&) = 0;
+
+  // Register an observer to be notified when a task is started. Only one
+  // observer can be set at every point in time.
+  virtual void RegisterObserver(Observer* observer) = 0;
+  // Unregister the observer.
+  virtual void UnregisterObserver() = 0;
 };
 
 }  // namespace blink::scheduler

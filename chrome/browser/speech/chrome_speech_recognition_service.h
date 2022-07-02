@@ -32,8 +32,13 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
       delete;
   ~ChromeSpeechRecognitionService() override;
 
-  void Create(mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-                  receiver) override;
+  // SpeechRecognitionService:
+  void BindSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver)
+      override;
+  void BindAudioSourceSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+          receiver) override;
 
  private:
   // Launches the speech recognition service in a sandboxed utility process.

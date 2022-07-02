@@ -24,12 +24,6 @@
     <message name="IDS_AR_INFOBAR_TEXT" desc="Text requesting permission for a site to use AR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to create a 3D map of your surroundings and track camera position
     </message>
-    <!-- TODO(https://bugs.chromium.org/p/chromium/issues/detail?id=1106874) -->
-    <message name="IDS_AR_AND_MEDIA_CAPTURE_VIDEO_INFOBAR_TEXT" desc="Text requesting permission for a site to use AR and the Camera Access Feature">
-      <ph name="URL">$1<ex>google.com</ex></ph> wants to:
-      • Create a 3D map of your surroundings and track camera position
-      • Use your camera
-    </message>
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>

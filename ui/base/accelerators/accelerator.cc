@@ -343,15 +343,11 @@ std::u16string Accelerator::KeyCodeToMacSymbol() const {
     case VKEY_NEXT:
       return u"⇟";  // U+21DF, DOWNWARDS ARROW WITH DOUBLE STROKE
     case VKEY_HOME:
-      if (base::mac::IsAtLeastOS10_13() && base::i18n::IsRTL()) {
-        return u"↗";  // U+2197, NORTH EAST ARROW
-      }
-      return u"↖";  // U+2196, NORTH WEST ARROW
+      return base::i18n::IsRTL() ? u"↗"   // U+2197, NORTH EAST ARROW
+                                 : u"↖";  // U+2196, NORTH WEST ARROW
     case VKEY_END:
-      if (base::mac::IsAtLeastOS10_13() && base::i18n::IsRTL()) {
-        return u"↙";  // U+2199, SOUTH WEST ARROW
-      }
-      return u"↘";  // U+2198, SOUTH EAST ARROW
+      return base::i18n::IsRTL() ? u"↙"   // U+2199, SOUTH WEST ARROW
+                                 : u"↘";  // U+2198, SOUTH EAST ARROW
     case VKEY_TAB:
       return u"⇥";  // U+21E5, RIGHTWARDS ARROW TO BAR
     // Mac has a shift-tab icon ("⇤", U+21E4, LEFTWARDS ARROW TO BAR) but we

@@ -34,7 +34,7 @@ enum class TaskSourceExecutionMode {
 
 struct BASE_EXPORT ExecutionEnvironment {
   SequenceToken token;
-  SequenceLocalStorageMap* sequence_local_storage;
+  raw_ptr<SequenceLocalStorageMap> sequence_local_storage;
 };
 
 // A TaskSource is a virtual class that provides a series of Tasks that must be
@@ -217,7 +217,10 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // derived class is responsible for calling AddRef() when a TaskSource from
   // which no Task is executing becomes non-empty and Release() when
   // it becomes empty again (e.g. when DidProcessTask() returns false).
-  raw_ptr<TaskRunner> task_runner_;
+  //
+  // In practise, this pointer is going to become dangling. See task_runner()
+  // comment.
+  raw_ptr<TaskRunner, DisableDanglingPtrDetection> task_runner_;
 
   TaskSourceExecutionMode execution_mode_;
 };

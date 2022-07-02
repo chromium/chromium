@@ -44,12 +44,12 @@ typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
 // override this method in order to get a clean collectionViewModel.
 - (void)loadModel NS_REQUIRES_SUPER;
 
-// Reconfigures the cells corresponding to the given |items| by calling
-// |configureCell:| on each cell.
+// Reconfigures the cells corresponding to the given `items` by calling
+// `configureCell:` on each cell.
 - (void)reconfigureCellsForItems:(NSArray*)items;
 
-// Reconfigures the cells corresponding to the given |indexPaths| by calling
-// |configureCell:| on each cell.
+// Reconfigures the cells corresponding to the given `indexPaths` by calling
+// `configureCell:` on each cell.
 - (void)reconfigureCellsAtIndexPaths:(NSArray*)indexPaths;
 
 #pragma mark MDCCollectionViewEditingDelegate

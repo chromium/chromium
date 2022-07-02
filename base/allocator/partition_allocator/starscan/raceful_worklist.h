@@ -9,10 +9,10 @@
 #include <atomic>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
@@ -124,7 +124,7 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
   // Finally, racefully visit items that were scanned by some other thread.
   for (auto it : to_revisit) {
-    if (LIKELY(it->is_visited.load(std::memory_order_relaxed)))
+    if (PA_LIKELY(it->is_visited.load(std::memory_order_relaxed)))
       continue;
     // Don't bail out here if the item is being visited by another thread.
     // This is helpful to guarantee forward progress if the other thread
@@ -138,10 +138,5 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 }
 
 }  // namespace partition_alloc::internal
-
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base::internal {
-using ::partition_alloc::internal::RacefulWorklist;
-}
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_RACEFUL_WORKLIST_H_

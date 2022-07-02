@@ -37,6 +37,7 @@ class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
                            size_t size,
                            bool key_frame,
                            int pts_ms);
+  void CloseDataPipe();
 
  private:
   // mojom::RemotingDataStreamSender implementation.

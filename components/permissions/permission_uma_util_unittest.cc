@@ -143,8 +143,6 @@ TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
 TEST_F(PermissionUmaUtilTest, MetricsAreRecordedWhenAutoDSEPermissionReverted) {
   const std::string kTransitionHistogramPrefix =
       "Permissions.DSE.AutoPermissionRevertTransition.";
-  const std::string kInvalidTransitionHistogramPrefix =
-      "Permissions.DSE.InvalidAutoPermissionRevertTransition.";
 
   constexpr struct {
     ContentSetting backed_up_setting;
@@ -165,16 +163,6 @@ TEST_F(PermissionUmaUtilTest, MetricsAreRecordedWhenAutoDSEPermissionReverted) {
        permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ALLOW},
       {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
        permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_BLOCK},
-
-      // Invalid combinations.
-      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
-       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
-      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
-       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
-       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
   };
 
   // We test every combination of test case for notifications and geolocation to
@@ -194,33 +182,6 @@ TEST_F(PermissionUmaUtilTest, MetricsAreRecordedWhenAutoDSEPermissionReverted) {
       histograms.ExpectBucketCount(kTransitionHistogramPrefix + type_string,
                                    test.expected_transition, 1);
       histograms.ExpectTotalCount(kTransitionHistogramPrefix + type_string, 1);
-
-      if (test.expected_transition ==
-          permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE) {
-        // If INVALID_END_STATE is recorded, there should be more histograms.
-        const std::string backed_up_histogram =
-            kInvalidTransitionHistogramPrefix + "BackedUpSetting." +
-            type_string;
-        const std::string effective_histogram =
-            kInvalidTransitionHistogramPrefix + "EffectiveSetting." +
-            type_string;
-        const std::string end_state_histogram =
-            kInvalidTransitionHistogramPrefix + "EndStateSetting." +
-            type_string;
-        histograms.ExpectBucketCount(backed_up_histogram,
-                                     test.backed_up_setting, 1);
-        histograms.ExpectBucketCount(effective_histogram,
-                                     test.effective_setting, 1);
-        histograms.ExpectBucketCount(end_state_histogram,
-                                     test.end_state_setting, 1);
-        histograms.ExpectTotalCount(backed_up_histogram, 1);
-        histograms.ExpectTotalCount(effective_histogram, 1);
-        histograms.ExpectTotalCount(end_state_histogram, 1);
-      } else {
-        EXPECT_EQ(base::HistogramTester::CountsMap(),
-                  histograms.GetTotalCountsForPrefix(
-                      "Permissions.DSE.InvalidAutoPermissionRevertTransition"));
-      }
     }
   }
 }

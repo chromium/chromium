@@ -29,7 +29,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
-#include "pdf/document_loader_impl.h"
+#include "pdf/loader/document_loader_impl.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 

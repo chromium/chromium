@@ -73,6 +73,16 @@ export class VolumeManagerImpl extends EventTarget {
   }
 
   /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return false;
+  }
+
+  /** @override */
   dispose() {}
 
   /**
@@ -253,7 +263,9 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
-            console.warn(`'Cannot mount ${sourcePath}': Already mounted as '${
+            console.warn(
+                `Cannot mount (redacted): Already mounted as '${volumeId}'`);
+            console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
                 new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
@@ -263,14 +275,11 @@ export class VolumeManagerImpl extends EventTarget {
             return;
           }
 
-          case VolumeManagerCommon.VolumeError.NEED_PASSWORD: {
-            console.warn(`'Cannot mount ${sourcePath}': ${status}`);
-            this.finishRequest_(requestKey, status);
-            return;
-          }
-
+          case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
+          case VolumeManagerCommon.VolumeError.CANCELLED:
           default:
-            console.warn(`Cannot mount '${sourcePath}': ${status}`);
+            console.warn('Cannot mount (redacted):', status);
+            console.debug(`Cannot mount '${sourcePath}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -287,7 +296,7 @@ export class VolumeManagerImpl extends EventTarget {
           case 'success': {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
-              console.warn(`Unmounted '${volumeId}' without request`);
+              console.debug(`Unmounted '${volumeId}' without request`);
               this.dispatchEvent(new CustomEvent(
                   'externally-unmounted', {detail: volumeInfo}));
             } else {
@@ -300,7 +309,8 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.warn(`Cannot unmount '${volumeId}': ${status}`);
+            console.warn('Cannot unmount (redacted):', status);
+            console.debug(`Cannot unmount '${volumeId}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }
@@ -332,13 +342,13 @@ export class VolumeManagerImpl extends EventTarget {
 
   /** @override */
   async cancelMounting(fileUrl) {
-    console.warn(`Cancelling mounting archive at '${fileUrl}'`);
+    console.debug(`Cancelling mounting archive at '${fileUrl}'`);
     return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
   /** @override */
   async unmount({volumeId}) {
-    console.warn(`Unmounting '${volumeId}'`);
+    console.debug(`Unmounting '${volumeId}'`);
     const key = this.makeRequestKey_('unmount', volumeId);
     const request = this.startRequest_(key);
     await promisify(chrome.fileManagerPrivate.removeMount, volumeId);
@@ -398,10 +408,13 @@ export class VolumeManagerImpl extends EventTarget {
     const volumeInfo = this.getVolumeInfo(entry);
 
     if (util.isFakeEntry(entry)) {
+      const isReadOnly =
+          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
+          !util.isRecentsFilterV2Enabled() :
+          true;
       return new EntryLocationImpl(
           volumeInfo, assert(entry.rootType),
-          true /* the entry points a root directory. */,
-          true /* fake entries are read only. */);
+          true /* The entry points a root directory. */, isReadOnly);
     }
 
     if (!volumeInfo) {

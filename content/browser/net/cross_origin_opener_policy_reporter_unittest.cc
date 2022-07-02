@@ -27,7 +27,7 @@ class TestNetworkContext : public network::TestNetworkContext {
            const std::string& group,
            const GURL& url,
            const net::NetworkIsolationKey& network_isolation_key,
-           base::Value body)
+           base::Value::Dict body)
         : type(type),
           group(group),
           url(url),
@@ -38,7 +38,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     std::string group;
     GURL url;
     net::NetworkIsolationKey network_isolation_key;
-    base::Value body;
+    base::Value::Dict body;
   };
 
   void QueueReport(
@@ -48,7 +48,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const absl::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
-      base::Value body) override {
+      base::Value::Dict body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
         Report(type, group, url, network_isolation_key, std::move(body)));
@@ -120,22 +120,19 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
   EXPECT_EQ(r1.type, "coop");
   EXPECT_EQ(r1.url, context_url());
   EXPECT_EQ(r1.network_isolation_key, network_isolation_key());
-  EXPECT_EQ(r1.body.FindKey("disposition")->GetString(), "enforce");
-  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(), url1_report);
-  EXPECT_EQ(r1.body.FindKey("referrer")->GetString(),
-            "https://referrer.com/?a");
-  EXPECT_EQ(r1.body.FindKey("type")->GetString(), "navigation-to-response");
-  EXPECT_EQ(r1.body.FindKey("effectivePolicy")->GetString(),
-            "same-origin-plus-coep");
+  EXPECT_EQ(*r1.body.FindString("disposition"), "enforce");
+  EXPECT_EQ(*r1.body.FindString("previousResponseURL"), url1_report);
+  EXPECT_EQ(*r1.body.FindString("referrer"), "https://referrer.com/?a");
+  EXPECT_EQ(*r1.body.FindString("type"), "navigation-to-response");
+  EXPECT_EQ(*r1.body.FindString("effectivePolicy"), "same-origin-plus-coep");
 
   EXPECT_EQ(r2.type, "coop");
   EXPECT_EQ(r2.url, context_url());
   EXPECT_EQ(r2.network_isolation_key, network_isolation_key());
-  EXPECT_EQ(r2.body.FindKey("disposition")->GetString(), "enforce");
-  EXPECT_EQ(r2.body.FindKey("nextResponseURL")->GetString(), url3);
-  EXPECT_EQ(r2.body.FindKey("type")->GetString(), "navigation-from-response");
-  EXPECT_EQ(r2.body.FindKey("effectivePolicy")->GetString(),
-            "same-origin-plus-coep");
+  EXPECT_EQ(*r2.body.FindString("disposition"), "enforce");
+  EXPECT_EQ(*r2.body.FindString("nextResponseURL"), url3);
+  EXPECT_EQ(*r2.body.FindString("type"), "navigation-from-response");
+  EXPECT_EQ(*r2.body.FindString("effectivePolicy"), "same-origin-plus-coep");
 }
 
 TEST_F(CrossOriginOpenerPolicyReporterTest, UserAndPassSanitization) {
@@ -151,14 +148,13 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, UserAndPassSanitization) {
 
   EXPECT_EQ(r1.type, "coop");
   EXPECT_EQ(r1.url, GURL("https://www1.example.com/x"));
-  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(),
+  EXPECT_EQ(*r1.body.FindString("previousResponseURL"),
             "https://www2.example.com/x");
-  EXPECT_EQ(r1.body.FindKey("referrer")->GetString(),
-            "https://referrer.com/?a");
+  EXPECT_EQ(*r1.body.FindString("referrer"), "https://referrer.com/?a");
 
   EXPECT_EQ(r2.type, "coop");
   EXPECT_EQ(r2.url, GURL("https://www1.example.com/x"));
-  EXPECT_EQ(r2.body.FindKey("nextResponseURL")->GetString(),
+  EXPECT_EQ(*r2.body.FindString("nextResponseURL"),
             "https://www2.example.com/x");
 }
 

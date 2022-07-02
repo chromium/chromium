@@ -105,6 +105,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
+  MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
@@ -327,11 +328,14 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller() != nullptr);
 
-  ASSERT_TRUE(window_controller()->GetWindowForTesting() != nullptr);
-  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
+  EXPECT_FALSE(window_controller()->GetWindowForTesting());
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
+  ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // The bounds should be nontrivial.
+  EXPECT_NE(window_controller()->GetSourceBounds(), gfx::Rect());
 
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
   EXPECT_FALSE(platform_util::IsWindowActive(native_window));
@@ -607,10 +611,12 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  ASSERT_NE(GetOverlayWindow(), nullptr);
-  ASSERT_FALSE(GetOverlayWindow()->IsVisible());
+  ASSERT_FALSE(GetOverlayWindow());
 
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+
+  ASSERT_TRUE(GetOverlayWindow());
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
   GetOverlayWindow()->SetSize(gfx::Size(400, 400));
 
@@ -1007,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1075,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1109,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1331,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
-      render_frame_hosts[0] == active_web_contents->GetMainFrame()
+      render_frame_hosts[0] == active_web_contents->GetPrimaryMainFrame()
           ? render_frame_hosts[1]
           : render_frame_hosts[0];
 
@@ -1377,10 +1383,12 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  ASSERT_NE(GetOverlayWindow(), nullptr);
-  ASSERT_FALSE(GetOverlayWindow()->IsVisible());
+  ASSERT_FALSE(GetOverlayWindow());
 
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+
+  ASSERT_TRUE(GetOverlayWindow());
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
   // The PiP window starts in the bottom-right quadrant of the screen.
   gfx::Rect bottom_right_bounds = GetOverlayWindow()->GetBounds();
@@ -1641,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          active_web_contents->GetMainFrame(), fenced_frame_url);
+          active_web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }

@@ -12,29 +12,29 @@
 
 using FirstRunUtilTest = PlatformTest;
 
-// Tests IsApplicationManged() when the kPolicyLoaderIOSConfigurationKey value
+// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
 // doesn't exist.
 TEST_F(FirstRunUtilTest, TestBrowserManagedNotExist) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManged());
+  EXPECT_FALSE(IsApplicationManaged());
 }
 
-// Tests IsApplicationManged() when the kPolicyLoaderIOSConfigurationKey value
+// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
 // is empty.
 TEST_F(FirstRunUtilTest, TestBrowserManagedEmpty) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:@{} forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManged());
+  EXPECT_FALSE(IsApplicationManaged());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
-// Tests IsApplicationManged() when the kPolicyLoaderIOSConfigurationKey value
+// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
 // is not empty.
 TEST_F(FirstRunUtilTest, TestBrowserManagedWithValue) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
   [userDefaults setObject:dict forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_TRUE(IsApplicationManged());
+  EXPECT_TRUE(IsApplicationManaged());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }

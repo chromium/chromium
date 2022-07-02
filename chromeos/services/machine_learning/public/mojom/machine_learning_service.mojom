@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -94,7 +94,8 @@ interface MachineLearningService {
       => (LoadHandwritingModelResult result);
   // Create and initialize a document scanner.
   [MinVersion=4] LoadDocumentScanner@10(
-            pending_receiver<DocumentScanner> receiver)
+            pending_receiver<DocumentScanner> receiver,
+            [MinVersion=6] DocumentScannerConfig? config)
       => (LoadModelResult result);
   // Creates a web platform model.
   // This function creates a model loader for Web platform flatbuffer models.

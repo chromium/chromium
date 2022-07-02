@@ -327,7 +327,7 @@ class NET_EXPORT HostCache {
     // DNS aliases and deduplicates.
     void MergeDnsAliasesFrom(const HostCache::Entry& source);
 
-    base::Value GetAsValue(bool include_staleness) const;
+    base::Value::Dict GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;
@@ -462,13 +462,13 @@ class NET_EXPORT HostCache {
   // Fills the provided base::Value with the contents of the cache for
   // serialization. `entry_list` must be non-null list, and will be cleared
   // before adding the cache contents.
-  void GetList(base::Value* entry_list,
+  void GetList(base::Value::List& entry_list,
                bool include_staleness,
                SerializationType serialization_type) const;
   // Takes a base::Value list representing cache entries and stores them in the
   // cache, skipping any that already have entries. Returns true on success,
   // false on failure.
-  bool RestoreFromListValue(const base::Value& old_cache);
+  bool RestoreFromListValue(const base::Value::List& old_cache);
   // Returns the number of entries that were restored in the last call to
   // RestoreFromListValue().
   size_t last_restore_size() const { return restore_size_; }
@@ -526,12 +526,12 @@ class NET_EXPORT HostCache {
   // a resolved result entry.
   EntryMap entries_;
   size_t max_entries_;
-  int network_changes_;
+  int network_changes_ = 0;
   // Number of cache entries that were restored in the last call to
   // RestoreFromListValue(). Used in histograms.
-  size_t restore_size_;
+  size_t restore_size_ = 0;
 
-  raw_ptr<PersistenceDelegate> delegate_;
+  raw_ptr<PersistenceDelegate> delegate_ = nullptr;
   // Shared tick clock, overridden for testing.
   raw_ptr<const base::TickClock> tick_clock_;
 

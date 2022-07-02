@@ -40,7 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_pref_names.h"
@@ -599,6 +599,21 @@ class DriveIntegrationService::DriveFsHolder
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host) override {
     return ConnectToDriveFsNativeMessageExtension(
         profile_, params->extension_id, std::move(port), std::move(host));
+  }
+
+  const std::string GetMachineRootID() override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return "";
+    }
+    return profile_->GetPrefs()->GetString(
+        prefs::kDriveFsMirrorSyncMachineRootId);
+  }
+
+  void PersistMachineRootID(const std::string& id) override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+    profile_->GetPrefs()->SetString(prefs::kDriveFsMirrorSyncMachineRootId, id);
   }
 
   Profile* const profile_;

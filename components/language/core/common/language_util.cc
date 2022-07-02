@@ -28,12 +28,9 @@ struct LanguageCodePair {
 //
 // If this table is updated, please sync this with the synonym table in
 // chrome/browser/resources/settings/languages_page/languages.js.
-const LanguageCodePair kChromeToTranslateLanguageMap[] = {
+const LanguageCodePair kTranslateOnlySynonyms[] = {
     {"no", "nb"},
-    {"tl", "fil"},
-};
-const LanguageCodePair kTranslateToChromeLanguageMap[] = {
-    {"tl", "fil"},
+    {"id", "in"},
 };
 
 // Some languages have changed codes over the years and sometimes the older
@@ -44,6 +41,7 @@ const LanguageCodePair kTranslateToChromeLanguageMap[] = {
 const LanguageCodePair kLanguageCodeSynonyms[] = {
     {"iw", "he"},
     {"jw", "jv"},
+    {"tl", "fil"},
 };
 
 // Some Chinese language codes are compatible with zh-TW or zh-CN in terms of
@@ -82,14 +80,14 @@ void ToTranslateLanguageSynonym(std::string* language) {
     return;
   }
 
-  for (const auto& language_pair : kChromeToTranslateLanguageMap) {
+  for (const auto& language_pair : kTranslateOnlySynonyms) {
     if (main_part == language_pair.chrome_language) {
       *language = language_pair.translate_language;
       return;
     }
   }
 
-  // Apply linear search here because number of items in the list is just four.
+  // Apply linear search here because number of items in the list is just three.
   for (const auto& language_pair : kLanguageCodeSynonyms) {
     if (main_part == language_pair.chrome_language) {
       *language = language_pair.translate_language;
@@ -102,18 +100,11 @@ void ToTranslateLanguageSynonym(std::string* language) {
 }
 
 void ToChromeLanguageSynonym(std::string* language) {
-  for (const auto& language_pair : kTranslateToChromeLanguageMap) {
-    if (*language == language_pair.translate_language) {
-      *language = language_pair.chrome_language;
-      return;
-    }
-  }
-
   auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
   if (main_part.empty())
     return;
 
-  // Apply linear search here because number of items in the list is just four.
+  // Apply linear search here because number of items in the list is just three.
   for (const auto& language_pair : kLanguageCodeSynonyms) {
     if (main_part == language_pair.translate_language) {
       main_part = language_pair.chrome_language;

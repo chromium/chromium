@@ -25,8 +25,8 @@ class TestUtils {
     for (const key in modifiers) {
       keyEvent[key] = modifiers[key];
     }
-    keyEvent.preventDefault = _ => {};
-    keyEvent.stopPropagation = _ => {};
+    keyEvent.preventDefault = () => {};
+    keyEvent.stopPropagation = () => {};
     return keyEvent;
   }
 
@@ -38,7 +38,7 @@ class TestUtils {
    */
   static waitForSpeech(textStringToWaitFor) {
     return new Promise(resolve => {
-      ChromeVox.tts.speak = (textString) => {
+      ChromeVox.tts.speak = textString => {
         if (textString === textStringToWaitFor) {
           resolve();
         }

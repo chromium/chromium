@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.AttachmentType" enum="ViewFileType"
-    expires_after="2022-08-15">
+    expires_after="2022-12-18">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -59,21 +59,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-10-16">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-12-18">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Measures if PDFs opened in the PDF viewer have attachments. This is logged
     whenever a document is opened in the PDF viewer.
-  </summary>
-</histogram>
-
-<histogram name="PDF.IsTagged" enum="BooleanIsTagged"
-    expires_after="2022-04-17">
-  <owner>nektar@chromium.org</owner>
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Tracks documents opened in the PDF viewer that are Tagged PDFs.
   </summary>
 </histogram>
 
@@ -95,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadStatus" enum="ChromePDFViewerLoadStatus"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -105,7 +96,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2022-10-16">
+<histogram name="PDF.PageCount" units="pages" expires_after="2022-12-18">
   <owner>hnakashima@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -113,7 +104,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.Version" enum="PDFVersion" expires_after="2022-08-14">
+<histogram name="PDF.Version" enum="PDFVersion" expires_after="2022-12-11">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Tracks versions of documents opened in the PDF viewer.</summary>

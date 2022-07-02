@@ -23,14 +23,6 @@ std::vector<Mailbox> SharedImageInterface::CreateSharedImageVideoPlanes(
   return {};
 }
 
-Mailbox SharedImageInterface::CreateSharedImageWithAHB(
-    const Mailbox& mailbox,
-    uint32_t usage,
-    const SyncToken& sync_token) {
-  NOTREACHED();
-  return Mailbox();
-}
-
 Mailbox SharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,

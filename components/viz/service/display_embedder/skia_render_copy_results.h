@@ -16,6 +16,8 @@
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
+#include "ui/gfx/color_space.h"
 
 namespace viz {
 
@@ -172,6 +174,70 @@ struct NV12PlanePixelReadContext {
 
   scoped_refptr<NV12PlanesReadbackContext> nv12_planes_readback;
   int plane_index;
+};
+
+// Context that is responsible for sending a CopyOutputResult once the GPU work
+// that populates the GpuMemoryBuffer for the NV12 planes has completed. It will
+// be notified by multiple `NV12SinglePlaneReadyContext`s that the plane has
+// been populated, and once all planes have been completed, it will send the
+// CopyOutputResult.
+class NV12PlanesReadyContext : public base::RefCounted<NV12PlanesReadyContext> {
+ public:
+  NV12PlanesReadyContext(
+      base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+      std::unique_ptr<CopyOutputRequest> request,
+      const gfx::Rect& result_rect,
+      const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
+          plane_mailbox_holders,
+      const gfx::ColorSpace& color_space);
+
+  NV12PlanesReadyContext(const NV12PlanesReadyContext& other) = delete;
+  NV12PlanesReadyContext& operator=(const NV12PlanesReadyContext& other) =
+      delete;
+
+  void OnNV12PlaneReady();
+
+ private:
+  friend class base::RefCounted<NV12PlanesReadyContext>;
+  ~NV12PlanesReadyContext();
+
+  // Needed to notify `SkiaOutputSurfaceImplOnGpu` that readback has completed.
+  // GPU work is not a readback, but we rely on the same mechanism for nudging
+  // Skia to periodically check for asynchronous event completion.
+  base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
+  // Request that we will send a response to:
+  std::unique_ptr<CopyOutputRequest> request_;
+
+  // Data needed to create a response to `request_`:
+  gfx::Rect result_rect_;
+  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
+      plane_mailbox_holders_;
+  gfx::ColorSpace color_space_;
+
+  // Number of planes that still need to report completion:
+  int outstanding_planes_ = CopyOutputResult::kNV12MaxPlanes;
+
+  THREAD_CHECKER(thread_checker_);
+};
+
+// Context that is responsible for notifying `NV12PlanesReadyContext` that GPU
+// side of populating the GpuMemoryBuffer has completed.
+struct NV12SinglePlaneReadyContext {
+  explicit NV12SinglePlaneReadyContext(
+      scoped_refptr<NV12PlanesReadyContext> nv12_planes_flushed);
+
+  NV12SinglePlaneReadyContext(const NV12SinglePlaneReadyContext& other) =
+      delete;
+  NV12SinglePlaneReadyContext& operator=(
+      const NV12SinglePlaneReadyContext& other) = delete;
+
+  ~NV12SinglePlaneReadyContext();
+
+  // Will be called with `NV12PlaneFlushedContext*`:
+  static void OnNV12PlaneReady(GrGpuFinishedContext context);
+
+  // Context to be notified that a plane has been populated.
+  scoped_refptr<NV12PlanesReadyContext> nv12_planes_flushed;
 };
 
 class CopyOutputResultSkiaNV12 : public CopyOutputResult {

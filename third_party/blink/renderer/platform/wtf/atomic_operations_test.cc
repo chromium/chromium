@@ -10,14 +10,14 @@ namespace WTF {
 
 class AtomicOperationsTest : public ::testing::Test {};
 
-template <size_t buffer_size, typename CopyMethod>
+template <size_t buffer_size, size_t alignment, typename CopyMethod>
 void TestCopyImpl(CopyMethod copy) {
-  alignas(sizeof(size_t)) unsigned char src[buffer_size];
+  alignas(alignment) unsigned char src[buffer_size];
   for (size_t i = 0; i < buffer_size; ++i)
     src[i] = static_cast<char>(i + 1);
   // Allocating extra memory before and after the buffer to make sure the
   // atomic memcpy doesn't exceed the buffer in any direction.
-  alignas(sizeof(size_t)) unsigned char tgt[buffer_size + (2 * sizeof(size_t))];
+  alignas(alignment) unsigned char tgt[buffer_size + (2 * sizeof(size_t))];
   memset(tgt, 0, buffer_size + (2 * sizeof(size_t)));
   copy(tgt + sizeof(size_t), src);
   // Check nothing before the buffer was changed
@@ -29,77 +29,95 @@ void TestCopyImpl(CopyMethod copy) {
 }
 
 // Tests for AtomicReadMemcpy
-template <size_t buffer_size>
+template <size_t buffer_size, size_t alignment>
 void TestAtomicReadMemcpy() {
-  TestCopyImpl<buffer_size>(AtomicReadMemcpy<buffer_size>);
+  TestCopyImpl<buffer_size, alignment>(
+      AtomicReadMemcpy<buffer_size, alignment>);
 }
 
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_UINT8T) {
-  TestAtomicReadMemcpy<sizeof(uint8_t)>();
+  TestAtomicReadMemcpy<sizeof(uint8_t), sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<sizeof(uint8_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_UINT16T) {
-  TestAtomicReadMemcpy<sizeof(uint16_t)>();
+  TestAtomicReadMemcpy<sizeof(uint16_t), sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<sizeof(uint16_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_UINT32T) {
-  TestAtomicReadMemcpy<sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<sizeof(uint32_t), sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<sizeof(uint32_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_UINT64T) {
-  TestAtomicReadMemcpy<sizeof(uint64_t)>();
+  TestAtomicReadMemcpy<sizeof(uint64_t), sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<sizeof(uint64_t), sizeof(uintptr_t)>();
 }
 
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_17Bytes) {
-  TestAtomicReadMemcpy<17>();
+  TestAtomicReadMemcpy<17, sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<17, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_34Bytes) {
-  TestAtomicReadMemcpy<34>();
+  TestAtomicReadMemcpy<34, sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<34, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_68Bytes) {
-  TestAtomicReadMemcpy<68>();
+  TestAtomicReadMemcpy<68, sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<68, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicReadMemcpy_127Bytes) {
-  TestAtomicReadMemcpy<127>();
+  TestAtomicReadMemcpy<127, sizeof(uint32_t)>();
+  TestAtomicReadMemcpy<127, sizeof(uintptr_t)>();
 }
 
 // Tests for AtomicWriteMemcpy
-template <size_t buffer_size>
+template <size_t buffer_size, size_t alignment>
 void TestAtomicWriteMemcpy() {
-  TestCopyImpl<buffer_size>(AtomicWriteMemcpy<buffer_size>);
+  TestCopyImpl<buffer_size, alignment>(
+      AtomicWriteMemcpy<buffer_size, alignment>);
 }
 
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_UINT8T) {
-  TestAtomicWriteMemcpy<sizeof(uint8_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint8_t), sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint8_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_UINT16T) {
-  TestAtomicWriteMemcpy<sizeof(uint16_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint16_t), sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint16_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_UINT32T) {
-  TestAtomicWriteMemcpy<sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint32_t), sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint32_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_UINT64T) {
-  TestAtomicWriteMemcpy<sizeof(uint64_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint64_t), sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<sizeof(uint64_t), sizeof(uintptr_t)>();
 }
 
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_17Bytes) {
-  TestAtomicWriteMemcpy<17>();
+  TestAtomicWriteMemcpy<17, sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<17, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_34Bytes) {
-  TestAtomicWriteMemcpy<34>();
+  TestAtomicWriteMemcpy<34, sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<34, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_68Bytes) {
-  TestAtomicWriteMemcpy<68>();
+  TestAtomicWriteMemcpy<68, sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<68, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicWriteMemcpy_127Bytes) {
-  TestAtomicWriteMemcpy<127>();
+  TestAtomicWriteMemcpy<127, sizeof(uint32_t)>();
+  TestAtomicWriteMemcpy<127, sizeof(uintptr_t)>();
 }
 
 // Tests for AtomicMemzero
-template <size_t buffer_size>
+template <size_t buffer_size, size_t alignment>
 void TestAtomicMemzero() {
   // Allocating extra memory before and after the buffer to make sure the
   // AtomicMemzero doesn't exceed the buffer in any direction.
-  alignas(sizeof(size_t)) unsigned char buf[buffer_size + (2 * sizeof(size_t))];
+  alignas(alignment) unsigned char buf[buffer_size + (2 * sizeof(size_t))];
   memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t)));
-  AtomicMemzero<buffer_size>(buf + sizeof(size_t));
+  AtomicMemzero<buffer_size, alignment>(buf + sizeof(size_t));
   // Check nothing before the buffer was changed
   EXPECT_EQ(~size_t{0}, *reinterpret_cast<size_t*>(&buf[0]));
   // Check buffer was copied correctly
@@ -111,29 +129,37 @@ void TestAtomicMemzero() {
 }
 
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT8T) {
-  TestAtomicMemzero<sizeof(uint8_t)>();
+  TestAtomicMemzero<sizeof(uint8_t), sizeof(uint32_t)>();
+  TestAtomicMemzero<sizeof(uint8_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT16T) {
-  TestAtomicMemzero<sizeof(uint16_t)>();
+  TestAtomicMemzero<sizeof(uint16_t), sizeof(uint32_t)>();
+  TestAtomicMemzero<sizeof(uint16_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT32T) {
-  TestAtomicMemzero<sizeof(uint32_t)>();
+  TestAtomicMemzero<sizeof(uint32_t), sizeof(uint32_t)>();
+  TestAtomicMemzero<sizeof(uint32_t), sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_UINT64T) {
-  TestAtomicMemzero<sizeof(uint64_t)>();
+  TestAtomicMemzero<sizeof(uint64_t), sizeof(uint32_t)>();
+  TestAtomicMemzero<sizeof(uint64_t), sizeof(uintptr_t)>();
 }
 
 TEST_F(AtomicOperationsTest, AtomicMemzero_17Bytes) {
-  TestAtomicMemzero<17>();
+  TestAtomicMemzero<17, sizeof(uint32_t)>();
+  TestAtomicMemzero<17, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_34Bytes) {
-  TestAtomicMemzero<34>();
+  TestAtomicMemzero<34, sizeof(uint32_t)>();
+  TestAtomicMemzero<34, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_68Bytes) {
-  TestAtomicMemzero<68>();
+  TestAtomicMemzero<68, sizeof(uint32_t)>();
+  TestAtomicMemzero<68, sizeof(uintptr_t)>();
 }
 TEST_F(AtomicOperationsTest, AtomicMemzero_127Bytes) {
-  TestAtomicMemzero<127>();
+  TestAtomicMemzero<127, sizeof(uint32_t)>();
+  TestAtomicMemzero<127, sizeof(uintptr_t)>();
 }
 
 }  // namespace WTF

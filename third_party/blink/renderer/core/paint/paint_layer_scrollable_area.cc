@@ -542,17 +542,6 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   auto* frame_view = box->GetFrameView();
   frame_view->InvalidateBackgroundAttachmentFixedDescendantsOnScroll(*box);
 
-  // The feature |kOptimizeViewportConstrainedPaintInvalidation| is for testing
-  // the performance of removing the paint invalidation of viewport constrained
-  // objects after scrolling.
-  if (IsA<LayoutView>(box) && frame_view->HasViewportConstrainedObjects() &&
-      !base::FeatureList::IsEnabled(
-          features::kOptimizeViewportConstrainedPaintInvalidation) &&
-      !frame_view->InvalidateViewportConstrainedObjects()) {
-    box->SetShouldDoFullPaintInvalidation();
-    box->SetSubtreeShouldCheckForPaintInvalidation();
-  }
-
   // TODO(chrishtr): remove this slow path once crbug.com/906885 is fixed.
   // See also https://bugs.chromium.org/p/chromium/issues/detail?id=903287#c10.
   if (Layer()->EnclosingPaginationLayer())
@@ -1012,12 +1001,11 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     // needs to update paint properties to account for the correct
     // scrollbounds.
     if (LocalFrameView* frame_view = GetLayoutBox()->GetFrameView()) {
-      if (this == frame_view->LayoutViewport()) {
-        GetLayoutBox()
-            ->GetFrame()
-            ->GetPage()
-            ->GetVisualViewport()
-            .SetNeedsPaintPropertyUpdate();
+      VisualViewport& visual_viewport =
+          GetLayoutBox()->GetFrame()->GetPage()->GetVisualViewport();
+      if (this == frame_view->LayoutViewport() &&
+          visual_viewport.IsActiveViewport()) {
+        visual_viewport.SetNeedsPaintPropertyUpdate();
       }
     }
 
@@ -1140,8 +1128,7 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
   // Being the global root scroller will affect clipping size due to browser
   // controls behavior so we need to update compositing based on updated clip
   // geometry.
-  if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode()))
-    element->SetNeedsCompositingUpdate();
+  Layer()->SetNeedsCompositingInputsUpdate();
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 
   // On Android, where the VisualViewport supplies scrollbars, we need to
@@ -2187,8 +2174,7 @@ void PaintLayerScrollableArea::Resize(const gfx::Point& pos,
   LayoutSize current_size = GetLayoutBox()->Size();
   current_size.Scale(1 / zoom_factor);
 
-  LayoutSize adjusted_old_offset = LayoutSize(
-      old_offset.Width() / zoom_factor, old_offset.Height() / zoom_factor);
+  LayoutSize adjusted_old_offset = old_offset * (1.f / zoom_factor);
   if (GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
     new_offset.set_x(-new_offset.x());
     adjusted_old_offset.SetWidth(-adjusted_old_offset.Width());
@@ -3113,9 +3099,9 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
 gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
     const PhysicalOffset& paint_offset) const {
   const auto* box = GetLayoutBox();
-  auto overflow_clip_rect =
-      ToPixelSnappedRect(box->OverflowClipRect(paint_offset));
-  auto scroll_size = PixelSnappedContentsSize(paint_offset);
+  auto clip_rect = box->OverflowClipRect(paint_offset);
+  auto overflow_clip_rect = ToPixelSnappedRect(clip_rect);
+  auto scroll_size = PixelSnappedContentsSize(clip_rect.offset);
   // Ensure scrolling contents are at least as large as the scroll clip
   scroll_size.SetToMax(overflow_clip_rect.size());
   gfx::Rect result(overflow_clip_rect.origin(), scroll_size);

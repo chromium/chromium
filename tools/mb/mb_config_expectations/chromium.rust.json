@@ -9,7 +9,6 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -24,7 +23,6 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -35,7 +33,6 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -47,7 +44,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

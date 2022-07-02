@@ -5,30 +5,22 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TPM_ERROR_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TPM_ERROR_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class TpmErrorScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between TpmErrorScreen and its
 // WebUI representation.
-class TpmErrorView {
+class TpmErrorView : public base::SupportsWeakPtr<TpmErrorView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"tpm-error-message"};
+  inline constexpr static StaticOobeScreenId kScreenId{"tpm-error-message",
+                                                       "TPMErrorMessageScreen"};
 
-  virtual ~TpmErrorView() {}
+  virtual ~TpmErrorView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::TpmErrorScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Sets corresponding error message when taking tpm ownership return an error.
   virtual void SetTPMOwnedErrorStep() = 0;
@@ -46,19 +38,12 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
 
  private:
   void Show() override;
-  void Bind(ash::TpmErrorScreen* screen) override;
-  void Unbind() override;
   void SetTPMOwnedErrorStep() override;
   void SetTPMDbusErrorStep() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  bool show_on_init_ = false;
-
-  ash::TpmErrorScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

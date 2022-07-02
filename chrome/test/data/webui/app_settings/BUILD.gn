@@ -7,15 +7,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_win || is_mac || is_linux || is_fuchsia)
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_app_settings"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  resource_path_prefix = "app_settings"
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -35,4 +26,14 @@ ts_library("build_ts") {
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   deps = [ "//chrome/browser/resources/app_settings:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_app_settings"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "app_settings"
 }

@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Win Win7 Win10.20h2 Win11 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Win Win10.20h2 Win11 ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -58,7 +58,6 @@ fast/harness/results.html [ Skip ]
 # Only maintain this for the latest macOS.
 [ Win ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 [ Linux ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
-[ Mac10.12 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 
 # Tests Mac system font specific weight variations.
 [ Linux ] virtual/text-antialias/mac-system-ui-weight.html [ Skip ]
@@ -118,7 +117,6 @@ fast/harness/results.html [ Skip ]
 # AAT Small Caps test not supported on platforms other than Mac 10.13.
 [ Linux ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 [ Win ] virtual/text-antialias/small-caps-aat.html [ Skip ]
-[ Mac10.12 ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 
 # Linux layout tests do not have a Myanmar fallback font.
 [ Linux ] inspector-protocol/layout-fonts/fallback-myanmar.js [ Skip ]
@@ -126,7 +124,6 @@ fast/harness/results.html [ Skip ]
 # Windows 10 specific font fallback test.
 crbug.com/1018375 [ Linux ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
 crbug.com/1018375 [ Mac ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
-crbug.com/1018375 [ Win7 ] inspector-protocol/layout-fonts/fallback-dingbats.js [ Skip ]
 
 # Mac only test for case-insensitive font-matching.
 [ Linux ] inspector-protocol/layout-fonts/mac-case-insensitive-matching.js [ Skip ]
@@ -150,17 +147,14 @@ external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-ma
 external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Skip ]
 [ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass ]
 
+# These tests require command line arguments so only virtual/conversions-debug-mode version is run.
+wpt_internal/attribution-reporting/* [ Skip ]
+virtual/conversions-debug-mode/wpt_internal/attribution-reporting/* [ Pass ]
+
 # This test requires a compositor to pass as root scrollbar scrolling is always
 # done on the compositor thread.
 fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Skip ]
 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Pass ]
-
-# Only run fake-Android tests on Linux
-[ Mac ] virtual/android/* [ Skip ]
-[ Win ] virtual/android/* [ Skip ]
-
-# Android doesn't support plugins
-virtual/android/fullscreen/rendering/backdrop-object.html [ Skip ]
 
 # Missing Chrome Mac support, will start working when we move to harfbuzz on mac.
 [ Mac ] virtual/text-antialias/international/zerowidthjoiner.html [ Skip ]
@@ -264,12 +258,6 @@ crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size.html [ Ski
 
 # Debug rendering difference only on Win Debug
 crbug.com/484370 [ Debug Win ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ Skip ]
-crbug.com/552433 [ Debug Win7 ] svg/W3C-SVG-1.1/coords-units-02-b.svg [ Skip ]
-crbug.com/606302 [ Debug Win7 ] compositing/perpendicular-layer-sorting.html [ Skip ]
-crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Skip ]
-crbug.com/606302 [ Debug Win7 ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
-crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001-vertical.html [ Skip ]
-crbug.com/702176 [ Debug Win7 ] fast/table/border-collapsing/001.html [ Skip ]
 
 # Only Windows supports Symbol CMAP encoded fonts.
 crbug.com/627953 [ Linux ] virtual/text-antialias/symbol-cmap.html [ Skip ]
@@ -1049,9 +1037,6 @@ virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream
 # run_web_tests.py; see https://crbug.com/359838.
 http/tests/ManualTests/* [ Skip ]
 
-# These test produce invisible different pixels on Win7 Debug.
-[ Debug Win7 ] fast/table/backgr_border-table-column-group-collapsed-border.html [ Skip ]
-
 # Fails in debug mode, because in debug mode we recompute visual rects after
 # changes to subpixel offsets of composited layers to detect under-invalidation
 # in testing, whereas otherwise we do not do so if the composited layer has a
@@ -1698,44 +1683,6 @@ virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agen
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Pass ]
 # ==== Tests incompatible with the default WPT Origin Isolation end here ==^^
 
-# Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally fail on Win7,
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-translate-responsive-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-transform-responsive-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-transform-responsive.html [ Skip ]
-crbug.com/946022 [ Win7 ] animations/responsive/viewport-unit-translate-responsive.html [ Skip ]
-crbug.com/946022 [ Win7 ] css3/viewport-percentage-lengths/viewport-percentage-lengths-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] compositing/transitions/transform-on-large-layer.html [ Skip ]
-crbug.com/946022 [ Win7 ] compositing/transitions/transform-on-large-layer-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/autoresize/turn-off-autoresize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/autoresize/basic.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/viewport/resize-event-fired-window-resized.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/Window/window-resize-contents.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/dynamic/window-resize-scrollbars-test.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/events/resize-events-count.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/css-grid-layout/flex-content-sized-columns-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] fast/css-grid-layout/flex-content-sized-columns-resize-expected.html [ Skip ]
-crbug.com/946022 [ Win7 ] virtual/text-antialias/line-break-between-text-nodes-with-inline-blocks.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-click-scale-restore-zoomed-image.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-zoom-to-25.html [ Skip ]
-crbug.com/946022 [ Win7 ] images/image-zoom-to-500.html [ Skip ]
-crbug.com/946022 [ Win7 ] media/controls/overflow-menu-hide-on-resize.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/resize-iframe-text.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/scroll/scrollbar-damage-and-full-viewport-repaint.html [ Skip ]
-crbug.com/946022 [ Win7 ] paint/invalidation/window-resize/* [ Skip ]
-
-# These text-antialias tests are flaky on Win7. Won't fix as we have test coverage on Win10.
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-weight.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/textIteratorNilRenderer.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-stretch.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/sub-pixel/text-scaling-pixel.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/bidi-listbox-atsui.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/bidi-listbox.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/international/lang-glyph-cache-separation.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-stretch-variant.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/drawBidiText.html [ Skip ]
-crbug.com/657646 [ Win7 ] virtual/text-antialias/font-features/caps-native-synthesis.html [ Skip ]
-
 external/wpt/html/semantics/forms/the-input-element/event-select-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-datatransferitem-interface/getAsString-manual.html [ Skip ]
 external/wpt/payment-request/payment-response/payerdetailschange-updateWith-manual.https.html [ Skip ]
@@ -1760,12 +1707,11 @@ crbug.com/1047176 [ Mac ] fast/events/wheel/wheelevent-ctrl.html [ Skip ]
 crbug.com/1061765 http/tests/inspector-protocol/trust-tokens/* [ Skip ]
 crbug.com/1061765 http/tests/loading/trust-tokens/* [ Skip ]
 crbug.com/1061765 external/wpt/trust-tokens/end-to-end/* [ Skip ]
+crbug.com/1061765 wpt_internal/trust-tokens/* [ Skip ]
 virtual/trust-tokens/http/tests/inspector-protocol/trust-tokens/* [ Pass ]
 virtual/trust-tokens/http/tests/loading/trust-tokens/* [ Pass ]
 virtual/trust-tokens/external/wpt/trust-tokens/end-to-end/* [ Pass ]
-
-# Mac does not ever have fractional device scale factor.
-[ Mac ] virtual/scalefactor150/* [ Skip ]
+virtual/trust-tokens/wpt_internal/trust-tokens/* [ Pass ]
 
 # Run these tests with under virtual/scalefactor... only.
 crbug.com/567837 fast/hidpi/static/* [ Skip ]
@@ -1787,10 +1733,10 @@ crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.
 crbug.com/1016767 js/weakrefs/* [ Skip ]
 virtual/weakrefs/js/weakrefs/* [ Pass ]
 
-# The Wasm code cache requires disabling the baseline compiler, so only the
+# The Wasm code cache test requires access to V8 internals, so only the
 # virtual test should be run.
-http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
-virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass ]
+http/tests/wasm/caching/code-cache.html [ Skip ]
+virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Pass ]
 
 # This test run under virtual suites only.
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]
@@ -1854,20 +1800,6 @@ crbug.com/626703 [ Win ] external/wpt/html/webappapis/system-state-and-capabilit
 crbug.com/626703 [ Linux ] external/wpt/html/editing/dnd/events/historical-manual.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/html/editing/dnd/events/historical-manual.html [ Skip ]
 crbug.com/626703 [ Win ] external/wpt/html/editing/dnd/events/historical-manual.html [ Skip ]
-
-# Remove from virtual tests when FontAccess is turned on by default.
-external/wpt/font-access/font_access_basic.tentative.https.window.html [ Skip ]
-external/wpt/font-access/font_access_blob.tentative.https.window.html [ Skip ]
-external/wpt/font-access/font_access_detached_iframe.tentative.https.window.html [ Skip ]
-external/wpt/font-access/font_access_permission.tentative.https.window.html [ Skip ]
-external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Skip ]
-external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy-attribute.https.sub.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy.https.sub.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-default-permissions-policy.https.sub.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-disabled-by-permissions-policy.https.sub.html [ Skip ]
-external/wpt/font-access/permissions-policy/local-fonts-supported-by-permissions-policy.html [ Skip ]
 
 # Remove from virtual tests when ComputePressure is turned on by default.
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_arguments.tentative.https.window.html [ Skip ]
@@ -2022,14 +1954,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/icons-member/icons-member
 crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Skip ]
 crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html [ Skip ]
 
-# Virtual test suite shared_array_buffer_on_desktop is platform agnostic
-[ Mac ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
-[ Win ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
-
-# Virtual test suite plz-dedicated-worker is platform agnostic
-[ Mac ] virtual/plz-dedicated-worker/* [ Skip ]
-[ Win ] virtual/plz-dedicated-worker/* [ Skip ]
-
 # The following tests never pass in the default Blink test runner due to forced
 # frame updates, but still pass in the full browser. They are only run in the
 # no-forced-frame-updates virtual test suite.
@@ -2042,3 +1966,6 @@ virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/* [ Pass ]
 # virtual test suite.
 wpt_internal/origin-agent-cluster-default/* [ Skip ]
 virtual/origin-agent-cluster-default/wpt_internal/origin-agent-cluster-default/* [ Pass ]
+
+# Skip manual tests, see crbug/1114920
+external/wpt/html/semantics/forms/the-input-element/disabled-click-picker-manual.html [ Skip ]

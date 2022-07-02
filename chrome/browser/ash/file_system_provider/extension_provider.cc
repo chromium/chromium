@@ -111,7 +111,7 @@ bool ExtensionProvider::RequestMount(Profile* profile) {
       std::make_unique<extensions::Event>(
           extensions::events::FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED,
           extensions::api::file_system_provider::OnMountRequested::kEventName,
-          std::vector<base::Value>()));
+          base::Value::List()));
 
   return true;
 }
@@ -126,7 +126,22 @@ ExtensionProvider::ExtensionProvider(
   capabilities_.multiple_mounts = info.capabilities.multiple_mounts();
   capabilities_.source = info.capabilities.source();
   name_ = info.name;
+  ObserveAppServiceForIcons(profile);
+}
 
+ExtensionProvider::ExtensionProvider(Profile* profile,
+                                     ProviderId id,
+                                     Capabilities capabilities,
+                                     std::string name)
+    : provider_id_(std::move(id)),
+      capabilities_(std::move(capabilities)),
+      name_(std::move(name)) {
+  ObserveAppServiceForIcons(profile);
+}
+
+ExtensionProvider::~ExtensionProvider() = default;
+
+void ExtensionProvider::ObserveAppServiceForIcons(Profile* profile) {
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     auto* AppServiceProxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -155,8 +170,6 @@ ExtensionProvider::ExtensionProvider(
                     GURL(std::string("chrome://extension-icon/") +
                          provider_id_.GetExtensionId() + "/32/1"));
 }
-
-ExtensionProvider::~ExtensionProvider() = default;
 
 void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != provider_id_.GetExtensionId() ||

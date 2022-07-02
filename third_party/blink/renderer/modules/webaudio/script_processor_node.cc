@@ -67,6 +67,24 @@ bool BufferTopologyMatches(AudioBuffer* buffer_1, AudioBuffer* buffer_2) {
          (buffer_1->sampleRate() == buffer_2->sampleRate());
 }
 
+uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
+  // Choose a buffer size based on the audio hardware buffer size. Arbitrarily
+  // make it a power of two that is 4 times greater than the hardware buffer
+  // size.
+  // TODO(crbug.com/855758): What is the best way to choose this?
+  uint32_t buffer_size =
+      1 << static_cast<uint32_t>(log2(4 * callback_buffer_size) + 0.5);
+
+  if (buffer_size < 256) {
+    return 256;
+  }
+  if (buffer_size > 16384) {
+    return 16384;
+  }
+
+  return buffer_size;
+}
+
 }  // namespace
 
 ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
@@ -107,24 +125,6 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
   SetHandler(ScriptProcessorHandler::Create(
       *this, sample_rate, buffer_size, number_of_input_channels,
       number_of_output_channels, input_buffers_, output_buffers_));
-}
-
-static uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
-  // Choose a buffer size based on the audio hardware buffer size. Arbitarily
-  // make it a power of two that is 4 times greater than the hardware buffer
-  // size.
-  // TODO(crbug.com/855758): What is the best way to choose this?
-  uint32_t buffer_size =
-      1 << static_cast<uint32_t>(log2(4 * callback_buffer_size) + 0.5);
-
-  if (buffer_size < 256) {
-    return 256;
-  }
-  if (buffer_size > 16384) {
-    return 16384;
-  }
-
-  return buffer_size;
 }
 
 ScriptProcessorNode* ScriptProcessorNode::Create(
@@ -255,7 +255,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
       static_cast<ScriptProcessorHandler&>(Handler());
 
   {
-    MutexLocker locker(handler.GetBufferLock());
+    base::AutoLock locker(handler.GetBufferLock());
     TRACE_EVENT1(
         TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
         "ScriptProcessorNode::DispatchEvent (copy input under lock)",
@@ -264,10 +264,10 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
     AudioBuffer* backing_input_buffer =
         input_buffers_.at(double_buffer_index).Get();
 
-    // The backing buffer can be |nullptr|, when the number of input channels
+    // The backing buffer can be `nullptr`, when the number of input channels
     // is 0.
     if (backing_input_buffer) {
-      // Also the author code might have transferred |external_input_buffer| to
+      // Also the author code might have transferred `external_input_buffer_` to
       // other threads or replaced it with a different AudioBuffer object. Then
       // re-create a new buffer instance.
       if (IsAudioBufferDetached(external_input_buffer_) ||
@@ -300,7 +300,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
       external_input_buffer_, external_output_buffer_, playback_time));
 
   {
-    MutexLocker locker(handler.GetBufferLock());
+    base::AutoLock locker(handler.GetBufferLock());
     TRACE_EVENT1(
         TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
         "ScriptProcessorNode::DispatchEvent (copy output under lock)",
@@ -341,7 +341,7 @@ bool ScriptProcessorNode::HasPendingActivity() const {
     return false;
   }
 
-  // If |onaudioprocess| event handler is defined, the node should not be
+  // If `.onaudioprocess` event handler is defined, the node should not be
   // GCed even if it is out of scope.
   if (HasEventListeners(event_type_names::kAudioprocess)) {
     return true;

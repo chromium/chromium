@@ -1031,7 +1031,7 @@ class TextureLayerChangeInvisibleMailboxTest
     solid_layer_ = SolidColorLayer::Create();
     solid_layer_->SetBounds(gfx::Size(10, 10));
     solid_layer_->SetIsDrawable(true);
-    solid_layer_->SetBackgroundColor(SK_ColorWHITE);
+    solid_layer_->SetBackgroundColor(SkColors::kWhite);
     root->AddChild(solid_layer_);
 
     parent_layer_ = Layer::Create();
@@ -1067,7 +1067,7 @@ class TextureLayerChangeInvisibleMailboxTest
         resource_changed_ = true;
         texture_layer_->SetNeedsDisplay();
         // Force a change to make sure we draw a frame.
-        solid_layer_->SetBackgroundColor(SK_ColorGRAY);
+        solid_layer_->SetBackgroundColor(SkColors::kGray);
         break;
       case 3:
         // Layer shouldn't have been updated.
@@ -1383,7 +1383,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
     // A drawable layer so that frames always get drawn.
     solid_color_layer_ = SolidColorLayer::Create();
     solid_color_layer_->SetIsDrawable(true);
-    solid_color_layer_->SetBackgroundColor(SK_ColorRED);
+    solid_color_layer_->SetBackgroundColor(SkColors::kRed);
     solid_color_layer_->SetBounds(gfx::Size(10, 10));
     root_->AddChild(solid_color_layer_);
 

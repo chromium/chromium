@@ -10,13 +10,9 @@
 #include "base/strings/string_piece.h"
 #include "third_party/boringssl/src/include/openssl/x509v3.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 class SPKIHash;
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 // Decodes the PEM block in |pem_data| and attempts to parse the resulting
 // structure. Returns a pointer to a X509 instance if successful and NULL

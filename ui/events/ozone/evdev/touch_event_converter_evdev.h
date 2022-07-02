@@ -14,6 +14,8 @@
 #include <queue>
 // See if we compile against new enough headers and add missing definition
 // if the headers are too old.
+#include "base/memory/raw_ptr.h"
+
 #ifndef MT_TOOL_PALM
 #define MT_TOOL_PALM 2
 #endif
@@ -138,7 +140,7 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   const base::ScopedFD input_device_fd_;
 
   // Dispatcher for events.
-  DeviceEventDispatcherEvdev* const dispatcher_;
+  const raw_ptr<DeviceEventDispatcherEvdev> dispatcher_;
 
   // Set if we drop events in kernel (SYN_DROPPED) or in process.
   bool dropped_events_ = false;

@@ -18,8 +18,8 @@ import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
@@ -66,11 +66,10 @@ class MerchantTrustMessageViewModel {
          * @param trustSignals The signal associated with this message.
          * @param messageAssociatedUrl The url associated with this message context.
          */
-        void onMessagePrimaryAction(
-                MerchantTrustSignalsV2 trustSignals, String messageAssociatedUrl);
+        void onMessagePrimaryAction(MerchantInfo merchantInfo, String messageAssociatedUrl);
     }
 
-    public static PropertyModel create(Context context, MerchantTrustSignalsV2 trustSignals,
+    public static PropertyModel create(Context context, MerchantInfo merchantInfo,
             String messageAssociatedUrl, MessageActionsHandler actionsHandler) {
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                 .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
@@ -81,7 +80,7 @@ class MerchantTrustMessageViewModel {
                 .with(MessageBannerProperties.TITLE,
                         context.getResources().getString(getTitleStringRes()))
                 .with(MessageBannerProperties.DESCRIPTION,
-                        getMessageDescription(context, trustSignals,
+                        getMessageDescription(context, merchantInfo,
                                 MerchantViewerConfig.getTrustSignalsMessageDescriptionUI()))
                 .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                         context.getResources().getString(R.string.merchant_viewer_message_action))
@@ -90,7 +89,7 @@ class MerchantTrustMessageViewModel {
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                         () -> {
                             actionsHandler.onMessagePrimaryAction(
-                                    trustSignals, messageAssociatedUrl);
+                                    merchantInfo, messageAssociatedUrl);
                             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                         })
                 .build();
@@ -98,26 +97,25 @@ class MerchantTrustMessageViewModel {
 
     @Nullable
     public static Spannable getMessageDescription(
-            Context context, MerchantTrustSignalsV2 trustSignals, int descriptionUI) {
+            Context context, MerchantInfo merchantInfo, int descriptionUI) {
         if (descriptionUI == MessageDescriptionUI.NONE) return null;
 
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
         if (descriptionUI == MessageDescriptionUI.REVIEWS_FROM_GOOGLE
-                && trustSignals.getMerchantCountRating() > 0) {
+                && merchantInfo.countRating > 0) {
             builder.append(context.getResources().getQuantityString(
                     R.plurals.merchant_viewer_message_description_reviews_from_google,
-                    trustSignals.getMerchantCountRating(),
-                    numberFormatter.format(trustSignals.getMerchantCountRating())));
+                    merchantInfo.countRating, numberFormatter.format(merchantInfo.countRating)));
             return builder;
         }
 
         // The zero rating value means we have no rating data for the merchant, under which
         // condition we shouldn't call this method to generate the description.
-        assert trustSignals.getMerchantStarRating() > 0;
+        assert merchantInfo.starRating > 0;
         // Only keep one decimal to avoid inaccurate double value.
-        double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
+        double ratingValue = Math.round(merchantInfo.starRating * 10) / 10.0;
         NumberFormat ratingValueFormatter = NumberFormat.getIntegerInstance();
         ratingValueFormatter.setMaximumFractionDigits(1);
         ratingValueFormatter.setMinimumFractionDigits(1);
@@ -133,11 +131,10 @@ class MerchantTrustMessageViewModel {
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
         builder.append(" ");
-        if (trustSignals.getMerchantCountRating() > 0) {
+        if (merchantInfo.countRating > 0) {
             builder.append(context.getResources().getQuantityString(
-                    R.plurals.merchant_viewer_message_description_reviews,
-                    trustSignals.getMerchantCountRating(),
-                    numberFormatter.format(trustSignals.getMerchantCountRating())));
+                    R.plurals.merchant_viewer_message_description_reviews, merchantInfo.countRating,
+                    numberFormatter.format(merchantInfo.countRating)));
         } else {
             builder.append(context.getResources().getString(
                     R.string.page_info_store_info_description_with_no_review));

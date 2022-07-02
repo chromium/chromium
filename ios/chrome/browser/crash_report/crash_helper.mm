@@ -31,6 +31,7 @@
 #include "components/crash/core/common/reporter_running_ios.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
+#include "ios/chrome/browser/crash_report/crash_upload_list.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -361,6 +362,10 @@ void RestoreDefaultConfiguration() {
   [[BreakpadController sharedInstance] resetConfiguration];
   [[BreakpadController sharedInstance] start:NO];
   [[BreakpadController sharedInstance] setUploadingEnabled:NO];
+}
+
+void ClearReportsBetween(base::Time delete_begin, base::Time delete_end) {
+  ios::CreateCrashUploadList()->Clear(delete_begin, delete_end);
 }
 
 }  // namespace crash_helper

@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">বারকোড স্ক্যান করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> এমপি</translation>
+<translation id="4096701159033358951">ডকুমেন্ট স্ক্যান করার ফিচার ডাউনলোড হচ্ছে</translation>
 <translation id="4118525110028899586">রেকর্ডিং পজ করুন</translation>
 <translation id="4121305183798804752">ডকুমেন্ট শনাক্ত হয়েছে</translation>
 <translation id="414641094616694804">এই ক্যামেরা রেজোলিউশন পরিবর্তন করতে পারে না</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">ফটো তোলা বন্ধ করুন</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="4570032796877367747">সামনের ক্যামেরা</translation>
+<translation id="4620818268515773682">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন বন্ধ আছে</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4649291346448517080">ফাইল সেভ করা যাচ্ছে না</translation>
 <translation id="4695379108709712600">উপরের দিকে সরানো হচ্ছে</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7670511624014457267">৬০ FPS</translation>
 <translation id="7671804233658741790">নিচে-ডানদিকের কোণার ডকুমেন্ট</translation>
+<translation id="7692090236657809299">'প্যান টিল্ট জুম' চালু করুন</translation>
 <translation id="7726641833034062494">নর্মাল ভিডিও রেকর্ড করুন</translation>
 <translation id="7748344063862150053">উপরে-ডানদিকের কোণার ডকুমেন্ট</translation>
 <translation id="7933675232020478311">নিচে ডানদিকে সরানো হচ্ছে</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">নীচের দিকে টিল্ট করুন</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>

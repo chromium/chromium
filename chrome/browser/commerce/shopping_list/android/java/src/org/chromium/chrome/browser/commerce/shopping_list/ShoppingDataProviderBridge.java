@@ -11,7 +11,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.content_public.browser.WebContents;
 
 /** A bridge for accessing the native ShoppingDataProvider from java. */

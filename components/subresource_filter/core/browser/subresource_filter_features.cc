@@ -44,7 +44,7 @@ class CommaSeparatedStrings {
 
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
     const auto predicate = [lowercase_key](base::StringPiece element) {
-      return base::LowerCaseEqualsASCII(element, lowercase_key);
+      return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
     };
     return std::find_if(pieces_.begin(), pieces_.end(), predicate) !=
            pieces_.end();
@@ -68,18 +68,21 @@ std::string TakeVariationParamOrReturnEmpty(
 
 mojom::ActivationLevel ParseActivationLevel(
     const base::StringPiece activation_level) {
-  if (base::LowerCaseEqualsASCII(activation_level, kActivationLevelEnabled))
+  if (base::EqualsCaseInsensitiveASCII(activation_level,
+                                       kActivationLevelEnabled))
     return mojom::ActivationLevel::kEnabled;
-  else if (base::LowerCaseEqualsASCII(activation_level, kActivationLevelDryRun))
+  else if (base::EqualsCaseInsensitiveASCII(activation_level,
+                                            kActivationLevelDryRun))
     return mojom::ActivationLevel::kDryRun;
   return mojom::ActivationLevel::kDisabled;
 }
 
 ActivationScope ParseActivationScope(const base::StringPiece activation_scope) {
-  if (base::LowerCaseEqualsASCII(activation_scope, kActivationScopeAllSites))
+  if (base::EqualsCaseInsensitiveASCII(activation_scope,
+                                       kActivationScopeAllSites))
     return ActivationScope::ALL_SITES;
-  else if (base::LowerCaseEqualsASCII(activation_scope,
-                                      kActivationScopeActivationList))
+  else if (base::EqualsCaseInsensitiveASCII(activation_scope,
+                                            kActivationScopeActivationList))
     return ActivationScope::ACTIVATION_LIST;
   return ActivationScope::NO_SITES;
 }

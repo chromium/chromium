@@ -212,12 +212,6 @@ void BackgroundFetchDelegateImpl::RenameItem(
   NOTIMPLEMENTED();
 }
 
-void BackgroundFetchDelegateImpl::ChangeSchedule(
-    const offline_items_collection::ContentId& id,
-    absl::optional<offline_items_collection::OfflineItemSchedule> schedule) {
-  NOTIMPLEMENTED();
-}
-
 download::BackgroundDownloadService*
 BackgroundFetchDelegateImpl::GetDownloadService() {
   return BackgroundDownloadServiceFactory::GetInstance()->GetForKey(

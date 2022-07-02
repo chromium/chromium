@@ -299,6 +299,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
         metrics_state_manager_.get(), &platform_field_trials,
@@ -848,6 +850,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // active.
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/std::vector<std::string>(),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
       metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
@@ -1191,8 +1195,6 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
   EXPECT_FALSE(
       field_trial_creator.was_maybe_extend_variations_safe_mode_called());
-  histogram_tester.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1299,13 +1301,9 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   EXPECT_EQ(active_group,
             base::FieldTrialList::FindValue(kExtendedSafeModeTrial));
 
-  // Check metrics.
-  histogram_tester.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
-
   // Verify that the beacon file does not exist.
   EXPECT_FALSE(base::PathExists(
-      user_data_dir_path().Append(variations::kVariationsFilename)));
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename)));
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
@@ -1337,19 +1335,16 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 
   // Verify that the beacon file was written and that the contents are correct.
   const base::FilePath variations_file_path =
-      user_data_dir_path().Append(variations::kVariationsFilename);
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
   EXPECT_TRUE(base::PathExists(variations_file_path));
   std::string beacon_file_contents;
   ASSERT_TRUE(
       base::ReadFileToString(variations_file_path, &beacon_file_contents));
   EXPECT_EQ(beacon_file_contents,
-            "{\"monitoring_stage\":2,"
-            "\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
             "\"variations_crash_streak\":0}");
 
   // Verify metrics.
-  histogram_tester.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.WritePrefsTime", 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }

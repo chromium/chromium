@@ -93,6 +93,7 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/modal_dialog_footer_top_margin"
         android:visibility="gone">
 
         <TextView

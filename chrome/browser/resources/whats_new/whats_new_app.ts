@@ -9,7 +9,6 @@ import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './whats_new_app.html.js';
@@ -84,10 +83,8 @@ export class WhatsNewAppElement extends PolymerElement {
     }
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
-    const feedback =
-        loadTimeData.getBoolean('showFeedbackButton') ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    this.url_ = url.concat(`latest=${latest}&feedback=${feedback}`);
+    this.url_ = url.concat(`latest=${latest}`);
 
     this.eventTracker_.add(
         window, 'message', event => this.handleMessage_(event as MessageEvent));

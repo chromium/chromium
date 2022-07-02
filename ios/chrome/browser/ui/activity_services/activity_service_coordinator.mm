@@ -36,7 +36,9 @@
 
 @interface ActivityServiceCoordinator ()
 
-@property(nonatomic, weak) id<BrowserCommands, FindInPageCommands> handler;
+@property(nonatomic, weak)
+    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
+        handler;
 
 @property(nonatomic, strong) ActivityServiceMediator* mediator;
 
@@ -63,7 +65,8 @@
 #pragma mark - Public methods
 
 - (void)start {
-  self.handler = static_cast<id<BrowserCommands, FindInPageCommands>>(
+  self.handler = static_cast<
+      id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>>(
       self.browser->GetCommandDispatcher());
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -96,7 +99,7 @@
   }
 
   if (self.params.URLs.count > 0) {
-    // If at least one valid URL is found, share the URLs in |_params|.
+    // If at least one valid URL is found, share the URLs in `_params`.
     for (URLWithTitle* urlWithTitle in self.params.URLs) {
       if (!urlWithTitle.URL.is_empty()) {
         [self shareURLs];
@@ -120,7 +123,7 @@
 
 #pragma mark - Private Methods
 
-// Sets up the activity ViewController with the given |items| and |activities|.
+// Sets up the activity ViewController with the given `items` and `activities`.
 - (void)shareItems:(NSArray<id<ChromeActivityItemSource>>*)items
         activities:(NSArray*)activities {
   self.viewController =
@@ -193,7 +196,7 @@
   });
 }
 
-// Shares the current page using its |canonicalURL|.
+// Shares the current page using its `canonicalURL`.
 - (void)sharePageWithCanonicalURL:(const GURL&)canonicalURL {
   ShareToData* data = activity_services::ShareToDataForWebState(
       self.browser->GetWebStateList()->GetActiveWebState(), canonicalURL);

@@ -18,6 +18,12 @@ const ArcTosState = {
 };
 
 /**
+ * Timeout to load online ToS.
+ * @type {number}
+ */
+const ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -34,12 +40,12 @@ const ArcTosState = {
  *   arcBackupRestorePopup: OobeModalDialogElement,
  *   arcLocationServicePopup: OobeModalDialogElement,
  *   arcMetricsPopup: OobeModalDialogElement,
- *   arcTosAcceptButton: OobeTextButtonElement,
+ *   arcTosAcceptButton: OobeTextButton,
  *   arcTosDialog: OobeAdaptiveDialogElement,
- *   arcTosNextButton: OobeTextButtonElement,
+ *   arcTosNextButton: OobeTextButton,
  *   arcTosOverlayPrivacyPolicy: OobeModalDialogElement,
  *   arcTosOverlayWebview: WebView,
- *   arcTosRetryButton: OobeTextButtonElement,
+ *   arcTosRetryButton: OobeTextButton,
  *   arcTosView: WebView,
  *   arcPaiPopup: OobeModalDialogElement,
  * }}
@@ -336,10 +342,6 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     this.pageReady_ = true;
 
     var termsView = this.$.arcTosView;
-    var requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
-
-    termsView.request.onErrorOccurred.addListener(
-        this.onTermsViewErrorOccurred.bind(this), requestFilter);
 
     // Open links from webview in overlay dialog.
     var self = this;
@@ -579,8 +581,27 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     }
     this.termsError = false;
     this.usingOfflineTermsForTesting_ = false;
-    var termsView = this.$.arcTosView;
-    termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
+
+    const loadFailureCallback = () => {
+      // If in demo mode fallback to offline Terms of Service copy.
+      if (this.isDemoModeSetup_() && this.usingOfflineTermsForTesting_) {
+        const TERMS_URL = 'chrome://terms/arc/terms';
+        const webView = this.$.arcTosView;
+        WebViewHelper.loadUrlContentToWebView(
+            webView, TERMS_URL, WebViewHelper.ContentType.HTML);
+        return;
+      }
+      this.showError_();
+    };
+
+    const termsView = this.$.arcTosView;
+    const tosLoader = new WebViewLoader(
+        termsView, ONLINE_LOAD_TIMEOUT_IN_MS, loadFailureCallback,
+        this.isDemoModeSetup_() /* clear_anchors */, false /* inject_css */);
+
+    const tosUrl = this.termsOfServiceHostName_ + '/about/play-terms.html';
+    tosLoader.setUrl(tosUrl);
+
     this.setUIStep(ArcTosState.LOADING);
     this.enableButtons_(false);
   }
@@ -670,21 +691,6 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     if (this.is_shown_) {
       this.$.arcTosNextButton.focus();
     }
-  }
-
-  /**
-   * Handles event when terms view cannot be loaded.
-   */
-  onTermsViewErrorOccurred(details) {
-    // If in demo mode fallback to offline Terms of Service copy.
-    if (this.isDemoModeSetup_() && this.usingOfflineTermsForTesting_) {
-      const TERMS_URL = 'chrome://terms/arc/terms';
-      var webView = this.$.arcTosView;
-      WebViewHelper.loadUrlContentToWebView(
-          webView, TERMS_URL, WebViewHelper.ContentType.HTML);
-      return;
-    }
-    this.showError_();
   }
 
   /**

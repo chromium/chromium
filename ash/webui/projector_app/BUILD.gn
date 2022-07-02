@@ -18,6 +18,8 @@ static_library("projector_app") {
     "projector_message_handler.h",
     "projector_oauth_token_fetcher.cc",
     "projector_oauth_token_fetcher.h",
+    "projector_screencast.cc",
+    "projector_screencast.h",
     "projector_xhr_sender.cc",
     "projector_xhr_sender.h",
     "trusted_projector_annotator_ui.cc",
@@ -56,6 +58,8 @@ source_set("test_support") {
   sources = [
     "test/mock_app_client.cc",
     "test/mock_app_client.h",
+    "test/mock_xhr_sender.cc",
+    "test/mock_xhr_sender.h",
   ]
 
   public_deps = [

@@ -102,13 +102,13 @@ class ServiceWorkerMessagingTestWithActivityLog
 // Tests one-way message from content script to SW extension using
 // chrome.runtime.sendMessage.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorkerOneWay) {
-  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/send_message_tab_to_worker_one_way"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener test_listener("WORKER_RECEIVED_MESSAGE", false);
+  ExtensionTestMessageListener test_listener("WORKER_RECEIVED_MESSAGE");
   test_listener.set_failure_message("FAILURE");
 
   {
@@ -125,14 +125,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorkerOneWay) {
 
 // Tests chrome.runtime.sendMessage from content script to SW extension.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorker) {
-  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/send_message_tab_to_worker"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener reply_listener("CONTENT_SCRIPT_RECEIVED_REPLY",
-                                              false);
+  ExtensionTestMessageListener reply_listener("CONTENT_SCRIPT_RECEIVED_REPLY");
   reply_listener.set_failure_message("FAILURE");
 
   {
@@ -363,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // Step 2/2: Load an extension with service worker background, verify that
   // stopping the service worker doesn't cause message port in
   // |message_port_extension| to crash.
-  ExtensionTestMessageListener worker_running_listener("worker_running", false);
+  ExtensionTestMessageListener worker_running_listener("worker_running");
 
   TestExtensionDir worker_extension_dir;
   const Extension* service_worker_extension =

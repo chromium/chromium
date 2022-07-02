@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -100,8 +101,11 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
   }
   bool is_child_document = element && element == document_element &&
                            element->GetDocument().LocalOwner();
-  if (scrolls_overflow || is_child_document)
-    return touch_action | TouchAction::kPan | TouchAction::kInternalPanXScrolls;
+  if (scrolls_overflow || is_child_document) {
+    return touch_action | TouchAction::kPan |
+           TouchAction::kInternalPanXScrolls |
+           TouchAction::kInternalNotWritable;
+  }
   return touch_action;
 }
 
@@ -521,7 +525,14 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
   DCHECK(style.OverflowX() != EOverflow::kVisible ||
          style.OverflowY() != EOverflow::kVisible);
 
-  if (style.IsDisplayTableBox()) {
+  if (element && element->IsReplacedElementRespectingCSSOverflow()) {
+    // Replaced elements support only 2 overflow configs: visible and clip. All
+    // values other than visible map to clip.
+    if (style.OverflowX() != EOverflow::kVisible)
+      style.SetOverflowX(EOverflow::kClip);
+    if (style.OverflowY() != EOverflow::kVisible)
+      style.SetOverflowY(EOverflow::kClip);
+  } else if (style.IsDisplayTableBox()) {
     // Tables only support overflow:hidden and overflow:visible and ignore
     // anything else, see https://drafts.csswg.org/css2/visufx.html#overflow. As
     // a table is not a block container box the rules for resolving conflicting
@@ -554,8 +565,10 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
     else if (style.OverflowY() == EOverflow::kClip)
       style.SetOverflowY(EOverflow::kHidden);
   }
-  if (element && (style.OverflowX() == EOverflow::kClip ||
-                  style.OverflowY() == EOverflow::kClip)) {
+
+  if (element && !element->IsPseudoElement() &&
+      (style.OverflowX() == EOverflow::kClip ||
+       style.OverflowY() == EOverflow::kClip)) {
     UseCounter::Count(element->GetDocument(),
                       WebFeature::kOverflowClipAlongEitherAxis);
   }
@@ -620,6 +633,16 @@ bool StyleAdjuster::IsEditableElement(Element* element,
   return false;
 }
 
+bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
+  if (!element)
+    return false;
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+    return (input->type() == input_type_names::kPassword) &&
+           !input->ShouldRevealPassword();
+  }
+  return false;
+}
+
 void StyleAdjuster::AdjustEffectiveTouchAction(
     ComputedStyle& style,
     const ComputedStyle& parent_style,
@@ -652,6 +675,12 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     if ((element_touch_action & TouchAction::kPanX) != TouchAction::kNone) {
       element_touch_action |= TouchAction::kInternalPanXScrolls;
     }
+
+    // kInternalNotWritable is only for internal usage, GetTouchAction()
+    // doesn't contain this bit. We set this bit when kPan is set so it can be
+    // cleared for eligible non-password editable areas later on.
+    if ((element_touch_action & TouchAction::kPan) != TouchAction::kNone)
+      element_touch_action |= TouchAction::kInternalNotWritable;
   }
 
   if (!element) {
@@ -665,6 +694,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   if (is_child_document && element->GetDocument().GetFrame()) {
     inherited_action &=
         TouchAction::kPan | TouchAction::kInternalPanXScrolls |
+        TouchAction::kInternalNotWritable |
         element->GetDocument().GetFrame()->InheritedEffectiveTouchAction();
   }
 
@@ -686,6 +716,13 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kStylusWritingToInput) &&
+      (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
+      IsEditableElement(element, style) &&
+      !IsPasswordFieldWithUnrevealedPassword(element)) {
+    element_touch_action &= ~TouchAction::kInternalNotWritable;
+  }
+
   // Apply the adjusted parent effective touch actions.
   style.SetEffectiveTouchAction((element_touch_action & inherited_action) |
                                 enforced_by_policy);
@@ -701,11 +738,11 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
 }
 
 static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
-  if (!element || style.IsForcedInert())
+  if (!element)
     return;
 
   if (element->IsInertRoot()) {
-    style.SetIsForcedInert();
+    style.SetIsInert(true);
     return;
   }
 
@@ -837,13 +874,24 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (style.OverflowX() != EOverflow::kVisible ||
       style.OverflowY() != EOverflow::kVisible)
-    AdjustOverflow(style, element);
+    AdjustOverflow(style, element ? element : state.GetPseudoElement());
 
   // Highlight pseudos propagate decorations with inheritance only.
   if (StopPropagateTextDecorations(style, element) || state.IsForHighlight())
     style.ClearAppliedTextDecorations();
   else
     style.RestoreParentTextDecorations(layout_parent_style);
+
+  // The computed value of currentColor for highlight pseudos is the
+  // color that would have been used if no highlights were applied,
+  // i.e. the originating element's color.
+  if (((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+        state.IsForHighlight()) ||
+       state.IsForCustomHighlight()) &&
+      style.ColorIsCurrentColor() && state.OriginatingElementStyle()) {
+    style.SetColor(state.OriginatingElementStyle()->GetColor());
+  }
+
   if (style.Display() != EDisplay::kContents) {
     style.ApplyTextDecorations(
         parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),

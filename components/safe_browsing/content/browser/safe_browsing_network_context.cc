@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_context_client_base.h"
@@ -20,6 +21,10 @@
 #include "net/net_buildflags.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/remove_stale_data.h"
+#endif
 
 namespace safe_browsing {
 
@@ -115,6 +120,8 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   ~SharedURLLoaderFactory() override = default;
 
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
+    TRACE_EVENT0("startup",
+                 "SafeBrowsingNetworkContext::CreateNetworkContextParams");
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     network::mojom::NetworkContextParamsPtr network_context_params =
         network_context_params_factory_.Run();
@@ -131,6 +138,18 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     network_context_params->file_paths->cookie_database_name = base::FilePath(
         base::FilePath::StringType(kSafeBrowsingBaseFilename) + kCookiesFile);
     network_context_params->enable_encrypted_cookies = false;
+
+#if BUILDFLAG(IS_ANDROID)
+    // On Android the `data_directory` was used by some wrong builds instead of
+    // `unsandboxed_data_path`. Cleaning it up. See crbug.com/1331809.
+    // The `cookie_manager` is set by WebView, where the mistaken migration did
+    // not happen.
+    DCHECK(!trigger_migration_);
+    if (!network_context_params->cookie_manager) {
+      base::android::RemoveStaleDataDirectory(
+          network_context_params->file_paths->data_directory.path());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
 
     return network_context_params;
   }

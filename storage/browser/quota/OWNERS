@@ -3,7 +3,7 @@ ayui@chromium.org
 
 # Secondary
 asully@chromium.org
-jarrydg@chromium.org
+estade@chromium.org
 jsbell@chromium.org
 
 per-file *.mojom=set noparent

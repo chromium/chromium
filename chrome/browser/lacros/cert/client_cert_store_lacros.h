@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_LACROS_CERT_CLIENT_CERT_STORE_LACROS_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/client_cert_store_nss.h"
+
+namespace chromeos {
+class CertificateProvider;
+}
 
 class CertDbInitializer;
 
@@ -21,8 +26,10 @@ class CertDbInitializer;
 // requests to the underlying ClientCertStore.
 class ClientCertStoreLacros final : public net::ClientCertStore {
  public:
-  ClientCertStoreLacros(CertDbInitializer* cert_db_initializer,
-                        std::unique_ptr<net::ClientCertStore> underlying_store);
+  ClientCertStoreLacros(
+      std::unique_ptr<chromeos::CertificateProvider> cert_provider,
+      CertDbInitializer* cert_db_initializer,
+      std::unique_ptr<net::ClientCertStore> underlying_store);
   ClientCertStoreLacros(const ClientCertStoreLacros&) = delete;
   ClientCertStoreLacros& operator=(ClientCertStoreLacros&) = delete;
   ~ClientCertStoreLacros() override;
@@ -36,11 +43,27 @@ class ClientCertStoreLacros final : public net::ClientCertStore {
       std::vector<std::pair<scoped_refptr<const net::SSLCertRequestInfo>,
                             ClientCertListCallback>>;
 
+  void AppendAdditionalCerts(const net::SSLCertRequestInfo* request,
+                             ClientCertListCallback callback,
+                             net::ClientCertIdentityList client_certs);
+
+  static void GotAdditionalCerts(const net::SSLCertRequestInfo* request,
+                                 ClientCertListCallback callback,
+                                 net::ClientCertIdentityList client_certs,
+                                 net::ClientCertIdentityList additional_certs);
+
+  static net::ClientCertIdentityList FilterAndJoinCertsOnWorkerThread(
+      const net::SSLCertRequestInfo* request,
+      net::ClientCertIdentityList client_certs,
+      net::ClientCertIdentityList additional_certs);
+
   void WaitForCertDb();
   void OnCertDbReady();
 
+  std::unique_ptr<chromeos::CertificateProvider> cert_provider_;
+
   bool are_certs_loaded_ = false;
-  CertDbInitializer* cert_db_initializer_ = nullptr;
+  raw_ptr<CertDbInitializer> cert_db_initializer_ = nullptr;
   base::CallbackListSubscription wait_subscription_;
   RequestQueue pending_requests_;
 

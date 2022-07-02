@@ -37,6 +37,8 @@ static_library("session") {
     "arc_vm_client_adapter.h",
     "file_system_status.cc",
     "file_system_status.h",
+    "serial_number_util.cc",
+    "serial_number_util.h",
   ]
 
   deps = [
@@ -52,12 +54,12 @@ static_library("session") {
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc:external_arc",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/memory:memory",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/dbus/dlcservice:dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
-    "//chromeos/dbus/session_manager",
-    "//chromeos/memory:memory",
     "//chromeos/system:system",
     "//components/prefs:prefs",
     "//components/user_manager",
@@ -110,10 +112,12 @@ source_set("unit_tests") {
     "arc_session_impl_unittest.cc",
     "arc_session_runner_unittest.cc",
     "arc_stop_reason_unittest.cc",
+    "arc_upgrade_params_unittest.cc",
     "arc_vm_client_adapter_unittest.cc",
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",
     "file_system_status_unittest.cc",
+    "serial_number_util_unittest.cc",
   ]
 
   deps = [
@@ -126,10 +130,10 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/dbus",
     "//chromeos/dbus/dlcservice",
-    "//chromeos/dbus/session_manager",
     "//chromeos/system:system",
     "//components/account_id",
     "//components/prefs:test_support",

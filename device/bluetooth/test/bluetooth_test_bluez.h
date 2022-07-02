@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
@@ -75,8 +76,8 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
   std::vector<BluetoothLocalGattService*> RegisteredGattServices() override;
 
  private:
-  bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
-  bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothAdapterClient> fake_bluetooth_adapter_client_;
 };
 
 // Defines common test fixture name. Use TEST_F(BluetoothTest, YourTestName).

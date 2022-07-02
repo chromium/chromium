@@ -27,7 +27,7 @@ KeyPersistenceDelegate::KeyInfo MacKeyPersistenceDelegate::LoadKeyPair() {
 }
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
-MacKeyPersistenceDelegate::GetTpmBackedKeyProvider() {
+MacKeyPersistenceDelegate::GetUnexportableKeyProvider() {
   // Mac OS does not expose TPM support.
   return nullptr;
 }

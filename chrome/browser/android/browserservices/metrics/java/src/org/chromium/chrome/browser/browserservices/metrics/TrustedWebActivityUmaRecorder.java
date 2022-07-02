@@ -13,6 +13,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
@@ -160,6 +161,16 @@ public class TrustedWebActivityUmaRecorder {
     }
 
     /**
+     * Records the notification permission request result for a TWA.
+     */
+    public static void recordNotificationPermissionRequestResult(
+            @ContentSettingValues int settingValue) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "TrustedWebActivity.Notification.PermissionRequestResult", settingValue,
+                ContentSettingValues.NUM_SETTINGS);
+    }
+
+    /**
      * Records whether or not a splash screen has been shown when launching a TWA.
      * Uses {@link TaskTraits#BEST_EFFORT} in order to not get in the way of loading the page.
      */
@@ -247,5 +258,10 @@ public class TrustedWebActivityUmaRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 "TrustedWebActivity.QualityEnforcementViolation.Crashed", type,
                 QualityEnforcementViolationType.MAX_VALUE + 1);
+    }
+
+    public void recordExtraCommandSuccess(String command, boolean success) {
+        RecordHistogram.recordBooleanHistogram(
+                "TrustedWebActivity.ExtraCommandSuccess." + command, success);
     }
 }

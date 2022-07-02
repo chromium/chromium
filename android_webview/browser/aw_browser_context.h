@@ -105,7 +105,6 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
       override;
-  variations::VariationsClient* GetVariationsClient() override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
@@ -149,7 +148,6 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
-  std::unique_ptr<variations::VariationsClient> variations_client_;
 
   SimpleFactoryKey simple_factory_key_;
 

@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module ash.ime.mojom;
 
@@ -482,4 +482,8 @@ interface InputMethod {
 
   // Informs the IME that the user has changed the input method quick settings.
   [MinVersion=11] OnQuickSettingsUpdated@7(InputMethodQuickSettings settings);
+
+  // Returns whether the input method is ready to accept key events from a test.
+  // Used for end-to-end testing via Tast.
+  [MinVersion=12, Sync] IsReadyForTesting@8() => (bool ready);
 };

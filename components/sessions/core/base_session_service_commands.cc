@@ -147,6 +147,24 @@ std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
   return std::make_unique<SessionCommand>(command_id, pickle);
 }
 
+std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
+    SessionCommand::id_type command,
+    const SessionID& session_id,
+    const std::string& key,
+    const std::string& data) {
+  base::Pickle pickle;
+  pickle.WriteInt(session_id.id());
+
+  // Enforce a max for ids. They should never be anywhere near this size.
+  static const SessionCommand::size_type max_id_size =
+      std::numeric_limits<SessionCommand::size_type>::max() - 1024;
+  int total_bytes_written = 0;
+  WriteStringToPickle(pickle, &total_bytes_written, max_id_size, key);
+  WriteStringToPickle(pickle, &total_bytes_written, max_id_size, data);
+
+  return std::make_unique<SessionCommand>(command, pickle);
+}
+
 bool RestoreUpdateTabNavigationCommand(
     const SessionCommand& command,
     sessions::SerializedNavigationEntry* navigation,
@@ -236,6 +254,19 @@ bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
   base::PickleIterator iterator(*pickle);
   return ReadSessionIdFromPickle(&iterator, window_id) &&
          iterator.ReadString(user_title);
+}
+
+bool RestoreAddExtraDataCommand(const SessionCommand& command,
+                                SessionID* session_id,
+                                std::string* key,
+                                std::string* data) {
+  std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
+  if (!pickle)
+    return false;
+
+  base::PickleIterator it(*pickle);
+  return ReadSessionIdFromPickle(&it, session_id) && it.ReadString(key) &&
+         it.ReadString(data);
 }
 
 }  // namespace sessions

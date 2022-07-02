@@ -78,9 +78,6 @@
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/public/base/signin_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
 std::unique_ptr<KeyedService> BuildSyncService(
@@ -122,8 +119,9 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // roaming profile location the sync service will not be created.
     UMA_HISTOGRAM_BOOLEAN("Sync.Local.RoamingProfileUnavailable",
                           local_sync_backend_folder.empty());
-    if (local_sync_backend_folder.empty())
+    if (local_sync_backend_folder.empty()) {
       return nullptr;
+    }
 
     init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
   }
@@ -150,12 +148,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // need to take care that SyncServiceImpl doesn't get tripped up between
     // those two cases. Bug 88109.
     bool is_auto_start = browser_defaults::kSyncAutoStarts;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (profile->IsMainProfile() &&
-        !base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
-      is_auto_start = true;
-    }
-#endif
     init_params.start_behavior = is_auto_start
                                      ? syncer::SyncServiceImpl::AUTO_START
                                      : syncer::SyncServiceImpl::MANUAL_START;

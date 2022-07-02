@@ -12,11 +12,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chromeos/network/fake_network_activation_handler.h"
-#include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/ash/components/network/fake_network_activation_handler.h"
+#include "chromeos/ash/components/network/fake_network_connection_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -266,13 +266,13 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
   base::Value CreateCellularSIMSlotInfo(
       const std::string& iccid,
       const std::string& eid = std::string()) {
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, eid);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
-    sim_slot_infos.push_back(std::move(slot_info_item));
-    return base::Value(sim_slot_infos);
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoEID, eid);
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, iccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, false);
+    sim_slot_infos.Append(std::move(slot_info_item));
+    return base::Value(std::move(sim_slot_infos));
   }
 
   base::test::TaskEnvironment task_environment_{

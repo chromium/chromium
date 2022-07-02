@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace webrtc_logging {
 
 // A wrapper around a memory buffer that allows circular read and write with a
@@ -56,7 +58,7 @@ class PartialCircularBuffer {
   void DoWrite(const uint8_t* input, uint32_t input_size);
 
   // Used for reading and writing.
-  BufferData* buffer_data_;
+  raw_ptr<BufferData> buffer_data_;
   uint32_t memory_buffer_size_;
   uint32_t data_size_;
   uint32_t position_;

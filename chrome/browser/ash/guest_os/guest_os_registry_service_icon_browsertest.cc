@@ -102,8 +102,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
 
   std::string AddApp() {
     ApplicationList crostini_list;
-    crostini_list.set_vm_type(
-        GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+    crostini_list.set_vm_type(VmType::TERMINA);
     crostini_list.set_vm_name("termina");
     crostini_list.set_container_name("penguin");
     *crostini_list.add_apps() =
@@ -124,8 +123,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
 
   void RemoveApps() {
     ApplicationList crostini_list;
-    crostini_list.set_vm_type(
-        GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+    crostini_list.set_vm_type(VmType::TERMINA);
     crostini_list.set_vm_name("termina");
     crostini_list.set_container_name("penguin");
     service()->UpdateApplicationList(crostini_list);

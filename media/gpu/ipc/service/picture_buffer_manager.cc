@@ -252,6 +252,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     frame->metadata().allow_overlay = picture.allow_overlay();
     frame->metadata().read_lock_fences_enabled =
         picture.read_lock_fences_enabled();
+    frame->metadata().is_webgpu_compatible = picture.is_webgpu_compatible();
 
     // TODO(sandersd): Provide an API for VDAs to control this.
     frame->metadata().power_efficient = true;

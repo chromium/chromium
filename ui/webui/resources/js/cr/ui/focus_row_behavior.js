@@ -30,7 +30,7 @@ cr.define('cr.ui', function() {
      * @param {!Event} e
      */
     onFocus(row, e) {
-      const element = e.path[0];
+      const element = /** @type {!Element} */ (e.composedPath()[0]);
       const focusableElement = cr.ui.FocusRow.getFocusableElement(element);
       if (element !== focusableElement) {
         focusableElement.focus();

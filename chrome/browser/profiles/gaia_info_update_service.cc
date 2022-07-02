@@ -91,6 +91,20 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
     entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
                           info.account_image);
   }
+
+// On Lacros, the main profile has a default local profile with a default name
+// preset to 'Person %n'. The goal here is to reset it to the Gaia name of the
+// signed in Profile.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile_attributes_storage_->IsDefaultProfileName(
+          entry->GetLocalProfileName(),
+          /*include_check_for_legacy_profile_name=*/false) &&
+      entry->IsUsingDefaultName()) {
+    entry->SetLocalProfileName(
+        profiles::GetDefaultNameForNewSignedInProfile(info),
+        /*is_default_name=*/false);
+  }
+#endif
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {

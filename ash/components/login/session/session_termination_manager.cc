@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {

@@ -22,8 +22,8 @@ class WebState;
 // The consumer that is updated by this mediator.
 @property(nonatomic, weak) id<LinkPreviewConsumer> consumer;
 
-// Init the LinkPreviewMediator with a |webState|, the |previewURL| and the
-// |referrer|.
+// Init the LinkPreviewMediator with a `webState`, the `previewURL` and the
+// `referrer`.
 - (instancetype)initWithWebState:(web::WebState*)webState
                       previewURL:(const GURL&)previewURL
                         referrer:(const web::Referrer&)referrer;

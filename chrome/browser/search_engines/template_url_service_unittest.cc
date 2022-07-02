@@ -1182,6 +1182,49 @@ TEST_F(TemplateURLServiceTest,
                 prefs::kSyncedDefaultSearchProviderGUID));
 }
 
+TEST_F(TemplateURLServiceTest, RepairStarterPackEngines) {
+  test_util()->VerifyLoad();
+
+  // Edit @bookmarks engine
+  TemplateURL* bookmarks = model()->GetTemplateURLForKeyword(u"@bookmarks");
+  ASSERT_TRUE(bookmarks);
+  model()->ResetTemplateURL(bookmarks, u"trash", u"xxx",
+                            "http://www.foo.com/s?q={searchTerms}");
+  EXPECT_EQ(u"trash", bookmarks->short_name());
+  EXPECT_EQ(u"xxx", bookmarks->keyword());
+
+  // Remove @history. Despite the extension added below, it will still be
+  // restored.
+  TemplateURL* history = model()->GetTemplateURLForKeyword(u"@history");
+  ASSERT_TRUE(history);
+  model()->Remove(history);
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"@history"));
+
+  // Register an extension with @history keyword.
+  model()->RegisterOmniboxKeyword("abcdefg", "extension_name", "@history",
+                                  "http://abcdefg", Time());
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"@history"));
+
+  // Now perform the actual repair that should restore @history.
+  model()->RepairStarterPackEngines();
+
+  // The keyword for bookmarks wasn't reverted.
+  EXPECT_EQ(u"trash", bookmarks->short_name());
+  EXPECT_EQ("chrome://bookmarks/?q={searchTerms}", bookmarks->url());
+
+  // @history was repaired, verify that the NORMAL built-in engine is still back
+  // even though the @history extension outranks the built-in engine.
+  history = nullptr;
+  for (TemplateURL* turl : model()->GetTemplateURLs()) {
+    if (turl->keyword() == u"@history" && turl->type() == TemplateURL::NORMAL &&
+        turl->starter_pack_id() > 0) {
+      history = turl;
+      break;
+    }
+  }
+  EXPECT_THAT(history, NotNull());
+}
+
 TEST_F(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
   struct TestData {
     const std::string url;

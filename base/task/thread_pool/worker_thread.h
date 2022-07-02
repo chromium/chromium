@@ -115,11 +115,14 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Creates a thread to back the WorkerThread. The thread will be in a wait
   // state pending a WakeUp() call. No thread will be created if Cleanup() was
-  // called. If specified, |worker_thread_observer| will be notified when the
-  // worker enters and exits its main function. It must not be destroyed before
-  // JoinForTesting() has returned (must never be destroyed in production).
-  // Returns true on success.
-  bool Start(WorkerThreadObserver* worker_thread_observer = nullptr);
+  // called. `io_thread_task_runner` is used to setup FileDescriptorWatcher on
+  // worker threads. `io_thread_task_runner` must refer to a Thread with
+  // MessgaePumpType::IO. If specified, |worker_thread_observer| will be
+  // notified when the worker enters and exits its main function. It must not be
+  // destroyed before JoinForTesting() has returned (must never be destroyed in
+  // production). Returns true on success.
+  bool Start(scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_,
+             WorkerThreadObserver* worker_thread_observer = nullptr);
 
   // Wakes up this WorkerThread if it wasn't already awake. After this is
   // called, this WorkerThread will run Tasks from TaskSources returned by
@@ -244,6 +247,9 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
+
+  // Service thread task runner.
+  scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
 };
 
 }  // namespace internal

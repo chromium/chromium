@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,7 +34,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
           : child_count;
   switch (details.type) {
     case BookmarkEditor::EditDetails::NEW_URL:
-      node = model->AddURL(parent, insert_index, new_title, new_url);
+      node = model->AddNewURL(parent, insert_index, new_title, new_url);
       break;
     case BookmarkEditor::EditDetails::NEW_FOLDER: {
       node = model->AddFolder(parent, insert_index, new_title);

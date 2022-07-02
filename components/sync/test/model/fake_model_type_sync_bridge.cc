@@ -387,6 +387,20 @@ void FakeModelTypeSyncBridge::ApplyStopSyncChanges(
       std::move(delete_metadata_change_list));
 }
 
+sync_pb::EntitySpecifics FakeModelTypeSyncBridge::TrimRemoteSpecificsForCaching(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  if (entity_specifics.unknown_fields().empty()) {
+    return sync_pb::EntitySpecifics();
+  }
+
+  // Keep top-level unknown fields for testing without specific data type
+  // trimming (e.g. in processor unit tests).
+  sync_pb::EntitySpecifics trimmed_specifics;
+  *trimmed_specifics.mutable_unknown_fields() =
+      entity_specifics.unknown_fields();
+  return trimmed_specifics;
+}
+
 void FakeModelTypeSyncBridge::SetConflictResolution(
     ConflictResolution resolution) {
   conflict_resolution_ = resolution;

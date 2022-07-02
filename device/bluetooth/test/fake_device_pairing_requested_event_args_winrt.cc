@@ -63,7 +63,7 @@ HRESULT FakeDevicePairingRequestedEventArgsWinrt::get_DeviceInformation(
 
 HRESULT FakeDevicePairingRequestedEventArgsWinrt::get_PairingKind(
     DevicePairingKinds* value) {
-  *value = DevicePairingKinds_ProvidePin;
+  *value = custom_pairing_->pairing_kind();
   return S_OK;
 }
 
@@ -72,7 +72,8 @@ HRESULT FakeDevicePairingRequestedEventArgsWinrt::get_Pin(HSTRING* value) {
 }
 
 HRESULT FakeDevicePairingRequestedEventArgsWinrt::Accept() {
-  return E_NOTIMPL;
+  custom_pairing_->SetConfirmed();
+  return S_OK;
 }
 
 HRESULT FakeDevicePairingRequestedEventArgsWinrt::AcceptWithPin(HSTRING pin) {

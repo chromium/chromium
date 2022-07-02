@@ -17,6 +17,9 @@
       field_name: 'cros_colors',
       field_id: 2,
     },
+    ColorMappings: {
+      set_name: 'LegacySemantic'
+    },
   },
   colors: {
     /* =========================================================================
@@ -50,7 +53,7 @@
       generate_inverted: true,
     },
     color_warning: {
-      light: "$google_yellow_600",
+      light: "$google_yellow_900",
       dark: "$google_yellow_300",
       generate_per_mode: true,
       generate_inverted: true,
@@ -74,28 +77,28 @@
     },
     bg_color_elevation_1: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.04), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.04), $google_grey_900)",
     },
     bg_color_elevation_2: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.06), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.06), $google_grey_900)",
       generate_inverted: true,
     },
     bg_color_elevation_3: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.08), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.08), $google_grey_900)",
     },
     bg_color_elevation_4: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.1), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.1), $google_grey_900)",
     },
     bg_color_elevation_5: {
       light: "$white",
-      dark: "blend(rgba($white_rgb, 0.12), $google_grey_900)",
+      dark: "blend(rgba($white.rgb, 0.12), $google_grey_900)",
     },
     bg_color_dropped_elevation_1: {
       light: "$google_grey_50",
-      dark: "blend(rgba($black_rgb, 0.2), $google_grey_900)",
+      dark: "blend(rgba($black.rgb, 0.2), $google_grey_900)",
     },
     bg_color_dropped_elevation_2: {
       light: "$google_grey_200",
@@ -106,8 +109,10 @@
      * Text colors.
      */
     text_color_primary: {
-      default: "$color_primary",
+      light: "$color_primary_light",
+      dark: "$color_primary_dark",
       debug: "$google_green_400",
+      generate_inverted: true,
     },
     text_color_secondary: {
       light: "$color_secondary_light",
@@ -122,17 +127,18 @@
     text_color_warning: "$color_warning",
     text_color_alert: "$color_alert",
     text_highlight_color: {
-      light: "rgba($google_blue_600_rgb, 0.3)",
-      dark: "rgba($google_blue_400_rgb, 0.3)",
-      generate_per_mode: true,
+      light: "rgba($google_blue_600.rgb, 0.3)",
+      dark: "rgba($google_blue_400.rgb, 0.3)",
     },
 
     /*
      * Icon colors.
      */
     icon_color_primary: {
-      default: "$color_primary",
+      light: "$color_primary_light",
+      dark: "$color_primary_dark",
       debug: "#ff00ff",
+      generate_inverted: true,
     },
     icon_color_secondary: {
       light: "$color_secondary_light",
@@ -167,84 +173,87 @@
      * App shield colors.
      */
     app_shield_color: {
-      light: "rgb($google_grey_300_rgb)",
-      dark: "rgb($black_rgb)",
+      light: "rgb($google_grey_300.rgb)",
+      dark: "rgb($black.rgb)",
     },
     app_shield_80: {
-      light: "rgba($google_grey_300_rgb, 0.8)",
-      dark: "rgba($black_rgb, 0.8)",
+      light: "rgba($google_grey_300.rgb, 0.8)",
+      dark: "rgba($black.rgb, 0.8)",
     },
     app_shield_60: {
-      light: "rgba($google_grey_300_rgb, 0.6)",
-      dark: "rgba($black_rgb, 0.6)",
+      light: "rgba($google_grey_300.rgb, 0.6)",
+      dark: "rgba($black.rgb, 0.6)",
     },
     app_shield_40: {
-      light: "rgba($google_grey_300_rgb, 0.4)",
-      dark: "rgba($black_rgb, 0.4)",
+      light: "rgba($google_grey_300.rgb, 0.4)",
+      dark: "rgba($black.rgb, 0.4)",
       generate_per_mode: true,
     },
     app_shield_20: {
-      light: "rgba($google_grey_300_rgb, 0.2)",
-      dark: "rgba($black_rgb, 0.2)",
+      light: "rgba($google_grey_300.rgb, 0.2)",
+      dark: "rgba($black.rgb, 0.2)",
     },
 
     /*
      * Other foundational colors.
      */
-    focus_ring_color: "$color_prominent",
+    focus_ring_color: {
+      light: "$color_prominent_light",
+      dark: "$color_prominent_dark",
+      generate_per_mode: true,
+    },
     focus_ring_color_inactive: "$icon_color_secondary",
-    focus_aura_color: "rgba($color_prominent_rgb, 0.24)",
+    focus_aura_color: "rgba($color_prominent.rgb, 0.24)",
     separator_color: {
-      light: "rgba($black_rgb, 0.14)",
-      dark: "rgba($white_rgb, 0.14)",
+      light: "rgba($black.rgb, 0.14)",
+      dark: "rgba($white.rgb, 0.14)",
     },
     shadow_color_key: {
-      light: "rgba($google_grey_800_rgb, 0.3)",
-      dark: "rgba($black_rgb, 0.3)",
+      light: "rgba($google_grey_800.rgb, 0.3)",
+      dark: "rgba($black.rgb, 0.3)",
     },
     shadow_color_ambient: {
-      light: "rgba($google_grey_800_rgb, 0.15)",
-      dark: "rgba($black_rgb, 0.15)",
+      light: "rgba($google_grey_800.rgb, 0.15)",
+      dark: "rgba($black.rgb, 0.15)",
     },
     link_color: "$color_prominent",
     highlight_color: {
       light: "$google_blue_50",
-      dark: "rgba($google_blue_300_rgb, 0.3)",
-      debug: "rgba($google_red_300_rgb, 0.3)",
-      generate_per_mode: true,
+      dark: "rgba($google_blue_300.rgb, 0.3)",
+      debug: "rgba($google_red_300.rgb, 0.3)",
     },
     highlight_color_error: {
       light: "$google_red_50",
-      dark: "rgba($color_alert_rgb, 0.3)",
+      dark: "rgba($color_alert.rgb, 0.3)",
     },
     highlight_color_hover: {
-      light: "rgba($google_grey_700_rgb, 0.2)",
-      dark: "rgba($white_rgb, 0.2)",
+      light: "rgba($google_grey_700.rgb, 0.2)",
+      dark: "rgba($white.rgb, 0.2)",
     },
     highlight_color_focus: {
-      light: "rgba($black_rgb, $ripple_opacity)",
-      dark: "rgba($white_rgb, $ripple_opacity)",
+      light: "rgba($black.rgb, $ripple_opacity)",
+      dark: "rgba($white.rgb, $ripple_opacity)",
     },
     highlight_color_green: {
-      light: "rgb($google_green_50_rgb)",
-      dark: "rgba($google_green_300_rgb, 0.3)",
+      light: "rgb($google_green_50.rgb)",
+      dark: "rgba($google_green_300.rgb, 0.3)",
     },
     highlight_color_red: {
-      light: "rgb($google_red_50_rgb)",
-      dark: "rgba($google_red_600_rgb, 0.3)",
+      light: "rgb($google_red_50.rgb)",
+      dark: "rgba($google_red_600.rgb, 0.3)",
     },
     highlight_color_yellow: {
-      light: "rgb($google_yellow_50_rgb)",
-      dark: "rgba($google_yellow_600_rgb, 0.3)",
+      light: "rgb($google_yellow_50.rgb)",
+      dark: "rgba($google_yellow_600.rgb, 0.3)",
     },
     ripple_color: {
-      light: "rgba($black_rgb, $ripple_opacity)",
-      dark: "rgba($white_rgb, $ripple_opacity)",
+      light: "rgba($black.rgb, $ripple_opacity)",
+      dark: "rgba($white.rgb, $ripple_opacity)",
       generate_per_mode: true,
     },
     ripple_color_prominent: {
-      light: "rgba($color_prominent_rgb, $ripple_opacity)",
-      dark: "rgba($color_prominent_rgb, $ripple_opacity)",
+      light: "rgba($color_prominent.rgb, $ripple_opacity)",
+      dark: "rgba($color_prominent.rgb, $ripple_opacity)",
     },
 
     /* =========================================================================
@@ -252,26 +261,26 @@
      * =======================================================================*/
     toolbar_search_bg_color: {
       light: "$google_grey_100",
-      dark: "rgba($white_rgb, 0.1)",
+      dark: "rgba($white.rgb, 0.1)",
     },
 
     menu_item_bg_color_focus: "$highlight_color_focus",
     menu_item_ripple_color: "$ripple_color",
 
     radio_button_color: "$color_prominent",
-    radio_button_ripple_color: "rgba($radio_button_color_rgb, .2)",
+    radio_button_ripple_color: "rgba($radio_button_color.rgb, .2)",
     radio_button_color_unchecked: "$google_grey_700",
-    radio_button_ripple_color_unchecked: "rgba($google_grey_600_rgb, .15)",
+    radio_button_ripple_color_unchecked: "rgba($google_grey_600.rgb, .15)",
 
     /* button-primary */
     button_background_color_primary: "$color_prominent",
     button_label_color_primary: {
-      light: "$google_grey_200",
+      light: "$white",
       dark: "$google_grey_900",
     },
     button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
-    button_background_color_primary_hover: "rgba($black_rgb, 0.08)",
+    button_background_color_primary_hover: "rgba($black.rgb, 0.08)",
     /* the _preblended variant can be used directly as hover background color
     because it's already blended on top of the background color, the above
     _hover variable is still required because it's being used on google3 side */
@@ -279,12 +288,12 @@
       "blend($button_background_color_primary_hover, $button_background_color_primary)",
     /* button-primary:active */
     button_active_shadow_color_ambient_primary: {
-      light: "rgba($google_blue_500_rgb, 0.15)",
-      dark: "rgba($google_blue_400_rgb, 0.15)"
+      light: "rgba($google_blue_500.rgb, 0.15)",
+      dark: "rgba($google_blue_400.rgb, 0.15)"
     },
     button_active_shadow_color_key_primary: {
-      light: "rgba($google_blue_500_rgb, 0.3)",
-      dark: "rgba($google_blue_400_rgb, 0.3)"
+      light: "rgba($google_blue_500.rgb, 0.3)",
+      dark: "rgba($google_blue_400.rgb, 0.3)"
     },
     /* button-primary[disabled] */
     button_background_color_primary_disabled: {
@@ -306,20 +315,20 @@
     /* button-secondary:hover */
     button_stroke_color_secondary_hover: {
       light: "$google_blue_100",
-      dark: "rgba($google_blue_300_rgb, 0.32)"
+      dark: "rgba($google_blue_300.rgb, 0.32)"
     },
     button_background_color_secondary_hover: {
-      light: "rgba($google_blue_500_rgb, 0.04)",
-      dark: "rgba($google_blue_300_rgb, 0.08)",
+      light: "rgba($google_blue_500.rgb, 0.04)",
+      dark: "rgba($google_blue_300.rgb, 0.08)",
     },
     /* button-secondary:active */
     button_active_shadow_color_ambient_secondary: {
-      light: "rgba($google_grey_500_rgb, 0.15)",
-      dark: "rgba($google_grey_600_rgb, 0.15)"
+      light: "rgba($google_grey_500.rgb, 0.15)",
+      dark: "rgba($google_grey_600.rgb, 0.15)"
     },
     button_active_shadow_color_key_secondary: {
-      light: "rgba($google_grey_500_rgb, 0.3)",
-      dark: "rgba($google_grey_600_rgb, 0.3)"
+      light: "rgba($google_grey_500.rgb, 0.3)",
+      dark: "rgba($google_grey_600.rgb, 0.3)"
     },
     /* button-secondary[disabled] */
     button_label_color_secondary_disabled: {
@@ -350,8 +359,8 @@
 
     /* icon-button */
     icon_button_background_color: {
-      light: "blend(rgba($white_rgb, 0.32), rgba($google_grey_200_rgb, 0.8))",
-      dark: "blend(rgba($black_rgb, 0.16), rgba($google_grey_800_rgb, 0.8))",
+      light: "blend(rgba($white.rgb, 0.32), rgba($google_grey_200.rgb, 0.8))",
+      dark: "blend(rgba($black.rgb, 0.16), rgba($google_grey_800.rgb, 0.8))",
     },
     /* when icon button is pressed, we layer the $ripple_color on top of the
     hover color (which is also $ripple_color) */
@@ -372,19 +381,24 @@
     },
     menu_item_background_hover: "$ripple_color",
 
+    /* nudge */
+    nudge_label_color: "$text_color_primary_inverted",
+    nudge_icon_color: "$icon_color_primary_inverted",
+    nudge_background_color: "$color_prominent",
+
     /* scroll bar */
     app_scrollbar_color_hover: {
       light: "$google_grey_600",
       dark: "$google_grey_400",
     },
     app_scrollbar_color:
-      "rgba($app_scrollbar_color_hover_rgb, $disabled_opacity)",
+      "rgba($app_scrollbar_color_hover.rgb, $disabled_opacity)",
 
     /* slider */
     slider_color_active: "$color_prominent",
     slider_color_inactive: "$color_secondary",
-    slider_track_color_active: "rgba($slider_color_active_rgb, $second_tone_opacity)",
-    slider_track_color_inactive: "rgba($slider_color_inactive_rgb, $second_tone_opacity)",
+    slider_track_color_active: "rgba($slider_color_active.rgb, $second_tone_opacity)",
+    slider_track_color_inactive: "rgba($slider_color_inactive.rgb, $second_tone_opacity)",
 
     /* switch */
     switch_knob_color_active: "$color_prominent",
@@ -413,18 +427,18 @@
       dark: "$google_grey_500",
     },
     tab_slider_track_color: {
-      light: "rgba($black_rgb, 0.06)",
-      dark: "rgba($white_rgb, 0.1)",
+      light: "rgba($black.rgb, 0.06)",
+      dark: "rgba($white.rgb, 0.1)",
     },
 
     /* textfield */
     textfield_background_color: {
       light: "$google_grey_100",
-      dark: "rgba($black_rgb, 0.3)",
+      dark: "rgba($black.rgb, 0.3)",
     },
     textfield_label_color: {
       light: "$google_grey_700",
-      dark: "rgba($white_rgb, 0.6)",
+      dark: "rgba($white.rgb, 0.6)",
     },
     textfield_input_color: "$color_primary",
     /* textfield:focus */
@@ -439,22 +453,22 @@
     textfield_cursor_color_error: "$color_alert",
     /* textfield[disabled] */
     textfield_background_color_disabled: {
-      light: "rgba($google_grey_100_rgb, 0.38)",
-      dark: "rgba($black_rgb, 0.11)",
+      light: "rgba($google_grey_100.rgb, 0.38)",
+      dark: "rgba($black.rgb, 0.11)",
     },
     textfield_label_color_disabled: {
-      light: "rgba($google_grey_700_rgb, 0.38)",
-      dark: "rgba($black_rgb, 0.23)",
+      light: "rgba($google_grey_700.rgb, 0.38)",
+      dark: "rgba($black.rgb, 0.23)",
     },
     textfield_input_color_disabled: {
-      light: "rgba($google_grey_900_rgb, 0.38)",
-      dark: "rgba($white_rgb, 0.33)",
+      light: "rgba($google_grey_900.rgb, 0.38)",
+      dark: "rgba($white.rgb, 0.33)",
     },
 
     /* tooltip */
     tooltip_background_color: {
-      light:"rgba($google_grey_900_rgb, 0.8)",
-      dark:"rgba($white_rgb, 0.8)",
+      light:"rgba($google_grey_900.rgb, 0.8)",
+      dark:"rgba($white.rgb, 0.8)",
     },
     tooltip_icon_color: "$color_primary_inverted",
     tooltip_label_color: {
@@ -469,8 +483,8 @@
       dark:"$google_grey_900",
     },
     shortcut_background_gradient_color: {
-      light:"rgba($white_rgb, 0)",
-      dark:"rgba($white_rgb, 0.12)"
+      light:"rgba($white.rgb, 0)",
+      dark:"rgba($white.rgb, 0.12)"
     },
 
     /* dialog */
@@ -493,8 +507,8 @@
 
     /* Drag selection box */
     selection_outline: {
-      light: "rgba($black_rgb, 0.1)",
-      dark: "rgba($white_rgb, 0.12)",
+      light: "rgba($black.rgb, 0.1)",
+      dark: "rgba($white.rgb, 0.12)",
     }
   },
   opacities: {

@@ -204,12 +204,7 @@ void BleScannerImpl::HandleDeviceUpdated(
     return;
   }
 
-  // Convert the service data from a std::vector<uint8_t> to a std::string.
-  std::string service_data_str;
-  char* string_contents_ptr =
-      base::WriteInto(&service_data_str, service_data->size() + 1);
-  memcpy(string_contents_ptr, service_data->data(), service_data->size());
-
+  std::string service_data_str(service_data->begin(), service_data->end());
   auto potential_result = bluetooth_helper_->IdentifyRemoteDevice(
       service_data_str, GetAllDeviceIdPairs());
 

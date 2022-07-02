@@ -1,0 +1,89 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "android_webview/browser/enterprise_authentication_app_link_policy_handler.h"
+
+#include <memory>
+
+#include "base/strings/string_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "url/gurl.h"
+
+namespace policy {
+EnterpriseAuthenticationAppLinkPolicyHandler::
+    EnterpriseAuthenticationAppLinkPolicyHandler(const char* policy_name,
+                                                 const char* pref_path)
+    : TypeCheckingPolicyHandler(policy_name, base::Value::Type::LIST),
+      pref_path_(pref_path) {}
+
+EnterpriseAuthenticationAppLinkPolicyHandler::
+    ~EnterpriseAuthenticationAppLinkPolicyHandler() = default;
+
+bool EnterpriseAuthenticationAppLinkPolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+    return false;
+
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!value || value->GetList().empty())
+    return true;
+
+  // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
+  // warning message.
+  if (value->GetList().size() > policy::kMaxUrlFiltersPerPolicy) {
+    errors->AddError(policy_name(),
+                     IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
+                     base::NumberToString(policy::kMaxUrlFiltersPerPolicy));
+  }
+
+  std::vector<std::string> invalid_policies;
+  for (const auto& entry : value->GetList()) {
+    if (!ValidatePolicyEntry(entry.FindStringKey("url")))
+      invalid_policies.push_back(entry.GetString());
+  }
+
+  if (!invalid_policies.empty()) {
+    errors->AddError(policy_name(), IDS_POLICY_PROTO_PARSING_ERROR,
+                     base::JoinString(invalid_policies, ","));
+  }
+
+  return invalid_policies.size() < value->GetList().size();
+}
+
+void EnterpriseAuthenticationAppLinkPolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!value)
+    return;
+
+  std::vector<base::Value> filtered_values;
+  for (const auto& entry : value->GetList()) {
+    const std::string* url = entry.FindStringKey("url");
+    if (ValidatePolicyEntry(url))
+      filtered_values.emplace_back(*url);
+  }
+  if (filtered_values.size() > policy::kMaxUrlFiltersPerPolicy)
+    filtered_values.resize(policy::kMaxUrlFiltersPerPolicy);
+
+  prefs->SetValue(pref_path_, base::Value(std::move(filtered_values)));
+}
+
+// Validates that policy follows official pattern
+// https://www.chromium.org/administrators/url-blocklist-filter-format
+bool EnterpriseAuthenticationAppLinkPolicyHandler::ValidatePolicyEntry(
+    const std::string* policy) {
+  url_matcher::util::FilterComponents components;
+  return policy && url_matcher::util::FilterToComponents(
+                       *policy, &components.scheme, &components.host,
+                       &components.match_subdomains, &components.port,
+                       &components.path, &components.query);
+}
+
+}  // namespace policy

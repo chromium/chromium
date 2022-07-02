@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -121,7 +122,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   void InitializeAdapterClients(int adapter);
 
   // System bus instance (owned by FlossDBusThreadManager).
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // Bundle together all Floss clients to be initialized and shutdown in
   // a specified order.

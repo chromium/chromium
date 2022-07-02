@@ -473,11 +473,11 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
   ASSERT_TRUE(ExecJs(web_contents_.get(), script));
 
   ASSERT_EQ(2, (int)render_frames_.size());
-  auto it =
-      std::find_if(render_frames_.begin(), render_frames_.end(),
-                   [this](content::RenderFrameHost* frame) {
-                     return frame->GetParent() == web_contents_->GetMainFrame();
-                   });
+  auto it = std::find_if(render_frames_.begin(), render_frames_.end(),
+                         [this](content::RenderFrameHost* frame) {
+                           return frame->GetParent() ==
+                                  web_contents_->GetPrimaryMainFrame();
+                         });
   ASSERT_NE(render_frames_.end(), it);
   content::RenderFrameHost* sub_frame = *it;
   ASSERT_NE(nullptr, sub_frame);
@@ -490,8 +490,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
   EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(_)).Times(0);
   EXPECT_CALL(mock_cast_wc_observer_, PageStopped(_, _)).Times(0);
   cast_web_contents_->DidFailLoad(
-      web_contents_->GetMainFrame(),
-      web_contents_->GetMainFrame()->GetLastCommittedURL(), net::ERR_ABORTED);
+      web_contents_->GetPrimaryMainFrame(),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      net::ERR_ABORTED);
 
   // ===========================================================================
   // Test: If main frame fails to load, page should enter ERROR state.
@@ -501,8 +502,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
               PageStopped(PageState::ERROR, net::ERR_FAILED))
       .WillOnce(InvokeWithoutArgs([&]() { QuitRunLoop(); }));
   cast_web_contents_->DidFailLoad(
-      web_contents_->GetMainFrame(),
-      web_contents_->GetMainFrame()->GetLastCommittedURL(), net::ERR_FAILED);
+      web_contents_->GetPrimaryMainFrame(),
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      net::ERR_FAILED);
   run_loop_->Run();
 }
 

@@ -562,9 +562,6 @@ void GpuArcVideoDecodeAccelerator::ContinueDecode(
       VLOGF(2) << "Reinitializing decoder for secure mode";
       media::VideoDecodeAccelerator::Config vda_config =
           CreateVdaConfig(profile_, true);
-      // TODO(jkardatzke): Properly set the encryption scheme when we
-      // implement this for Intel. For AMD it doesn't matter since it uses
-      // transcryption.
       vda_config.encryption_scheme = media::EncryptionScheme::kCenc;
       // Set a |pending_init_callback_| to force queueing up any incoming decode
       // requests.

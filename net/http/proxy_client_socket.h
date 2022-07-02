@@ -26,12 +26,12 @@ class NetLogWithSource;
 // A common base class for a stream socket tunneled through a proxy.
 class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
  public:
-  ProxyClientSocket() {}
+  ProxyClientSocket() = default;
 
   ProxyClientSocket(const ProxyClientSocket&) = delete;
   ProxyClientSocket& operator=(const ProxyClientSocket&) = delete;
 
-  ~ProxyClientSocket() override {}
+  ~ProxyClientSocket() override = default;
 
   // Returns the HttpResponseInfo (including HTTP Headers) from
   // the response to the CONNECT request.

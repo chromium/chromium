@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -36,7 +38,8 @@
 namespace web_app {
 
 class PreinstalledWebAppDuplicationFixerBrowserTest
-    : public extensions::ExtensionBrowserTest {
+    : public extensions::ExtensionBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   static GURL install_url() {
     return GURL("https://www.example.com/install_url");
@@ -52,6 +55,17 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   PreinstalledWebAppDuplicationFixerBrowserTest() {
     PreinstalledWebAppManager::SkipStartupForTesting();
     PreinstalledWebAppDuplicationFixer::SkipStartupForTesting();
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      feature_list_.InitWithFeatures(
+          {features::kPreinstalledWebAppDuplicationFixer,
+           features::kUseWebAppDBInsteadOfExternalPrefs},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {features::kPreinstalledWebAppDuplicationFixer},
+          {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
   }
   ~PreinstalledWebAppDuplicationFixerBrowserTest() override = default;
 
@@ -102,9 +116,14 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
     return provider_->registrar().IsInstalled(web_app_id());
   }
 
-  bool IsWebAppExternalInstallPrefSet() {
-    return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-               .LookupAppId(install_url()) == web_app_id();
+  bool IsWebAppExternallyInstalled() {
+    return provider_->registrar().LookupExternalAppId(install_url()) ==
+           web_app_id();
+  }
+
+  bool IsPreinstalledWebAppUninstalled() {
+    return UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
+        .DoesAppIdExist(web_app_id());
   }
 
   bool IsWebAppInSync() const {
@@ -172,20 +191,19 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-  WebAppProvider* provider_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kPreinstalledWebAppDuplicationFixer};
+  raw_ptr<WebAppProvider> provider_;
+  base::test::ScopedFeatureList feature_list_;
   ScopedTestingPreinstalledAppData preinstalled_app_data_;
   base::HistogramTester histogram_tester_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        FixDuplicateChromeApp) {
   SyncPreinstalledWebApps();
   EXPECT_TRUE(IsWebAppInstalled());
   EXPECT_FALSE(IsChromeAppInstalled());
-  EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
+  EXPECT_TRUE(IsWebAppExternallyInstalled());
 
   // Running the fix while the Chrome app is not installed should do nothing.
   {
@@ -194,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
     EXPECT_FALSE(IsChromeAppInstalled());
     EXPECT_EQ(GetFixCountMetrics(), (std::vector<base::Bucket>{{0, 1}}));
     EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 0, 1, 0}));
-    EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
+    EXPECT_TRUE(IsWebAppExternallyInstalled());
   }
 
   InstallChromeApp();
@@ -216,9 +234,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
     EXPECT_TRUE(IsChromeAppInstalled());
     EXPECT_EQ(GetFixCountMetrics(),
               (std::vector<base::Bucket>{{0, 1}, {1, 1}}));
+    EXPECT_FALSE(IsWebAppExternallyInstalled());
     EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 0, 1, 1}));
-    EXPECT_FALSE(IsWebAppExternalInstallPrefSet());
-
     SyncPreinstalledWebAppsAwaitChromeAppUninstall();
     EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsChromeAppInstalled());
@@ -233,25 +250,26 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        RemigrateUninstalledWebApp) {
   SyncPreinstalledWebApps();
   InstallChromeApp();
   EXPECT_TRUE(IsWebAppInstalled());
   EXPECT_TRUE(IsChromeAppInstalled());
-  EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
+  EXPECT_TRUE(IsWebAppExternallyInstalled());
 
   UninstallWebApp();
   EXPECT_FALSE(IsWebAppInstalled());
   EXPECT_TRUE(IsChromeAppInstalled());
-  EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
+  EXPECT_TRUE(IsPreinstalledWebAppUninstalled());
 
   RunAppDuplicationFix();
   EXPECT_FALSE(IsWebAppInstalled());
   EXPECT_TRUE(IsChromeAppInstalled());
   EXPECT_EQ(GetFixCountMetrics(), (std::vector<base::Bucket>{{1, 1}}));
   EXPECT_EQ(GetDuplicationMetrics(), (std::array<int64_t, 4>{0, 1, 0, 0}));
-  EXPECT_FALSE(IsWebAppExternalInstallPrefSet());
+  EXPECT_FALSE(IsWebAppExternallyInstalled());
+  EXPECT_FALSE(IsPreinstalledWebAppUninstalled());
 
   // Running the preinstalled web app sync should remigrate the old Chrome app
   // even if the user had uninstalled the web app.
@@ -270,13 +288,13 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        RunFixOnSyncInstalledWebApp) {
   SyncPreinstalledWebApps();
   InstallChromeApp();
   EXPECT_TRUE(IsWebAppInstalled());
   EXPECT_TRUE(IsChromeAppInstalled());
-  EXPECT_TRUE(IsWebAppExternalInstallPrefSet());
+  EXPECT_TRUE(IsWebAppExternallyInstalled());
 
   // Simulate a user install of the same web app to put it in sync.
   {
@@ -296,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        WebAppPinnedChromeAppUnpinned) {
   SyncPreinstalledWebApps();
   InstallChromeApp();
@@ -313,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   EXPECT_TRUE(IsAppPinned(web_app_id()));
 }
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        WebAppUnpinnedChromeAppPinned) {
   SyncPreinstalledWebApps();
   InstallChromeApp();
@@ -330,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   EXPECT_TRUE(IsAppPinned(web_app_id()));
 }
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppDuplicationFixerBrowserTest,
                        BothUnpinned) {
   SyncPreinstalledWebApps();
   InstallChromeApp();
@@ -345,5 +363,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppDuplicationFixerBrowserTest,
   EXPECT_FALSE(IsAppPinned(web_app_id()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PreinstalledWebAppDuplicationFixerBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace web_app

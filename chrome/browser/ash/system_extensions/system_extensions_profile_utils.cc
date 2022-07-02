@@ -7,6 +7,8 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 
+namespace ash {
+
 constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
 
 base::FilePath GetDirectoryForSystemExtension(Profile& profile,
@@ -18,3 +20,5 @@ base::FilePath GetDirectoryForSystemExtension(Profile& profile,
 base::FilePath GetSystemExtensionsProfileDir(Profile& profile) {
   return profile.GetPath().Append(kSystemExtensionsProfileDirectory);
 }
+
+}  // namespace ash

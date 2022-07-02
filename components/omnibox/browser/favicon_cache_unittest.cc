@@ -327,8 +327,7 @@ TEST_F(FaviconCacheTest, ExpireNullFaviconsByHistory) {
       .Run(favicon_base::FaviconImageResult());
 
   cache_.OnURLVisited(nullptr /* history_service */, ui::PAGE_TRANSITION_LINK,
-                      history::URLRow(kUrlA), history::RedirectList(),
-                      base::Time::Now());
+                      history::URLRow(kUrlA), base::Time::Now());
 
   // Now the empty favicon should have been expired and we expect our second
   // call to the mock underlying FaviconService.

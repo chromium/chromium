@@ -1371,63 +1371,58 @@ TEST_F(IntentUtilTest, Convert) {
   const std::string start_type = "start type";
   const std::string category1 = "category1";
   const std::string data = "data";
-  const apps::mojom::OptionalBool ui_bypassed =
-      apps::mojom::OptionalBool::kTrue;
+  const bool ui_bypassed = true;
   base::flat_map<std::string, std::string> extras = {
       {"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}};
 
-  auto file1 = apps::mojom::IntentFile::New();
-  file1->url = test_url1;
-  auto file2 = apps::mojom::IntentFile::New();
-  file2->url = test_url2;
-  auto files = std::vector<apps::mojom::IntentFilePtr>();
-  files.push_back(std::move(file1));
-  files.push_back(std::move(file2));
+  auto files = std::vector<apps::IntentFilePtr>();
+  files.push_back(std::make_unique<apps::IntentFile>(test_url1));
+  files.push_back(std::make_unique<apps::IntentFile>(test_url2));
 
   auto src_intent =
-      CreateMojomIntent(action, test_url1, mime_type, std::move(files),
-                        activity_name, test_url3, share_text, share_title,
-                        start_type, {category1}, data, ui_bypassed, extras);
+      CreateIntent(action, test_url1, mime_type, std::move(files),
+                   activity_name, test_url3, share_text, share_title,
+                   start_type, {category1}, data, ui_bypassed, extras);
   base::Value value = apps_util::ConvertIntentToValue(src_intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
   EXPECT_EQ(action, dst_intent->action);
   EXPECT_EQ(test_url1, dst_intent->url.value());
   EXPECT_EQ(mime_type, dst_intent->mime_type.value());
-  EXPECT_EQ(2u, dst_intent->files->size());
-  EXPECT_EQ(test_url1, dst_intent->files.value()[0]->url);
-  EXPECT_EQ(test_url2, dst_intent->files.value()[1]->url);
+  EXPECT_EQ(2u, dst_intent->files.size());
+  EXPECT_EQ(test_url1, dst_intent->files[0]->url);
+  EXPECT_EQ(test_url2, dst_intent->files[1]->url);
   EXPECT_EQ(activity_name, dst_intent->activity_name.value());
   EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
   EXPECT_EQ(share_text, dst_intent->share_text.value());
   EXPECT_EQ(share_title, dst_intent->share_title.value());
   EXPECT_EQ(start_type, dst_intent->start_type.value());
-  EXPECT_EQ(1u, dst_intent->categories->size());
-  EXPECT_EQ(category1, dst_intent->categories.value()[0]);
+  EXPECT_EQ(1u, dst_intent->categories.size());
+  EXPECT_EQ(category1, dst_intent->categories[0]);
   EXPECT_EQ(data, dst_intent->data.value());
   EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
-  EXPECT_TRUE(dst_intent->extras.has_value());
-  EXPECT_EQ(3u, dst_intent->extras->size());
-  EXPECT_EQ(extras, dst_intent->extras.value());
+  EXPECT_FALSE(dst_intent->extras.empty());
+  EXPECT_EQ(3u, dst_intent->extras.size());
+  EXPECT_EQ(extras, dst_intent->extras);
 }
 
 TEST_F(IntentUtilTest, ConvertEmptyIntent) {
-  auto intent = apps::mojom::Intent::New();
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
   base::Value value = apps_util::ConvertIntentToValue(intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
   EXPECT_FALSE(dst_intent->url.has_value());
   EXPECT_FALSE(dst_intent->mime_type.has_value());
-  EXPECT_FALSE(dst_intent->files.has_value());
+  EXPECT_TRUE(dst_intent->files.empty());
   EXPECT_FALSE(dst_intent->activity_name.has_value());
   EXPECT_FALSE(dst_intent->drive_share_url.has_value());
   EXPECT_FALSE(dst_intent->share_text.has_value());
   EXPECT_FALSE(dst_intent->share_title.has_value());
   EXPECT_FALSE(dst_intent->start_type.has_value());
-  EXPECT_FALSE(dst_intent->categories.has_value());
+  EXPECT_TRUE(dst_intent->categories.empty());
   EXPECT_FALSE(dst_intent->data.has_value());
-  EXPECT_EQ(apps::mojom::OptionalBool::kUnknown, dst_intent->ui_bypassed);
-  EXPECT_FALSE(dst_intent->extras.has_value());
+  EXPECT_FALSE(dst_intent->ui_bypassed.has_value());
+  EXPECT_TRUE(dst_intent->extras.empty());
 }
 
 TEST_F(IntentUtilTest, CalculateCommonMimeType) {
@@ -1679,6 +1674,7 @@ TEST_F(IntentUtilTest, CloneIntent) {
   auto dst_intent = src_intent->Clone();
   EXPECT_EQ(action, dst_intent->action);
   EXPECT_FALSE(dst_intent->ui_bypassed.has_value());
+  EXPECT_EQ(*src_intent, *dst_intent);
 
   GURL test_url1 = GURL("https://www.google.com/");
   GURL test_url2 = GURL("https://www.abc.com/");
@@ -1722,6 +1718,7 @@ TEST_F(IntentUtilTest, CloneIntent) {
   EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
   EXPECT_EQ(3u, dst_intent->extras.size());
   EXPECT_EQ(extras, dst_intent->extras);
+  EXPECT_EQ(*src_intent, *dst_intent);
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
@@ -1775,4 +1772,71 @@ TEST_F(IntentUtilTest, MojomConvert) {
   EXPECT_TRUE(dst_intent->extras.has_value());
   EXPECT_EQ(3u, dst_intent->extras->size());
   EXPECT_EQ(extras, dst_intent->extras.value());
+}
+
+TEST_F(IntentUtilTest, IntentEqual) {
+  auto intent1 = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  auto intent2 = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  EXPECT_EQ(*intent1, *intent2);
+
+  GURL test_url1 = GURL("https://www.google.com/");
+  GURL test_url2 = GURL("https://www.abc.com/");
+
+  {
+    // Verify whether intents are not equal when IntentFile is different.
+    auto file1 = std::make_unique<apps::IntentFile>(test_url1);
+    auto file2 = std::make_unique<apps::IntentFile>(test_url2);
+    std::vector<apps::IntentFilePtr> files1;
+    std::vector<apps::IntentFilePtr> files2;
+    files1.push_back(std::move(file1));
+    files2.push_back(std::move(file2));
+    intent1->files = std::move(files1);
+    intent2->files = std::move(files2);
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when IntentFile is equal.
+    auto file1 = std::make_unique<apps::IntentFile>(test_url1);
+    auto file2 = std::make_unique<apps::IntentFile>(test_url1);
+    std::vector<apps::IntentFilePtr> files1;
+    std::vector<apps::IntentFilePtr> files2;
+    files1.push_back(std::move(file1));
+    files2.push_back(std::move(file2));
+    intent1->files = std::move(files1);
+    intent2->files = std::move(files2);
+    EXPECT_EQ(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when extras is different.
+    base::flat_map<std::string, std::string> extras1 = {{"key1", "value1"}};
+    base::flat_map<std::string, std::string> extras2 = {{"key2", "value2"}};
+    intent1->extras = std::move(extras1);
+    intent2->extras = std::move(extras2);
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when extras is equal.
+    base::flat_map<std::string, std::string> extras1 = {{"key1", "value1"}};
+    base::flat_map<std::string, std::string> extras2 = {{"key1", "value1"}};
+    intent1->extras = std::move(extras1);
+    intent2->extras = std::move(extras2);
+    EXPECT_EQ(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when mime_type is different.
+    intent1->mime_type = "image/jpeg";
+    intent2->mime_type = "image/png";
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when mime_type is different.
+    intent1->mime_type = "image/jpeg";
+    intent2->mime_type = "image/jpeg";
+    EXPECT_EQ(*intent1, *intent2);
+  }
 }

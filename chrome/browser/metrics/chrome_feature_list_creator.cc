@@ -47,6 +47,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_crash_keys.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -61,11 +62,23 @@ ChromeFeatureListCreator::ChromeFeatureListCreator() = default;
 ChromeFeatureListCreator::~ChromeFeatureListCreator() = default;
 
 void ChromeFeatureListCreator::CreateFeatureList() {
+  // Get the variation IDs passed through the command line. This is done early
+  // on because ConvertFlagsToSwitches() will append to the command line
+  // the variation IDs from flags (so that they are visible in about://version).
+  // This will be passed on to `VariationsService::SetUpFieldTrials()`, which
+  // will manually fetch the variation IDs from flags (hence the reason we do
+  // not pass the mutated command line, otherwise the IDs will be duplicated).
+  // It also distinguishes between variation IDs coming from the command line
+  // and from flags, so we cannot rely on simply putting them all in the
+  // command line.
+  const std::string command_line_variation_ids =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds);
   CreatePrefService();
   ConvertFlagsToSwitches();
   CreateMetricsServices();
   SetupInitialPrefs();
-  SetUpFieldTrials();
+  SetUpFieldTrials(command_line_variation_ids);
 }
 
 void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
@@ -190,7 +203,8 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
                                       flags_ui::kAddSentinels);
 }
 
-void ChromeFeatureListCreator::SetUpFieldTrials() {
+void ChromeFeatureListCreator::SetUpFieldTrials(
+    const std::string& command_line_variation_ids) {
   browser_field_trials_ =
       std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
 
@@ -212,7 +226,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
   variations::VariationsService* variations_service =
       metrics_services_manager_->GetVariationsService();
   variations_service->SetUpFieldTrials(
-      variation_ids,
+      variation_ids, command_line_variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());

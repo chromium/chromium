@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("runtime")
                                 .AppendASCII("uninstall_url")
                                 .AppendASCII("sets_uninstall_url")));
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
-  base::Value::DictStorage dict = extension_function_test_utils::ToDictionary(
+  base::Value::Dict dict = extension_function_test_utils::ToDictionary(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", browser()));
   EXPECT_TRUE(dict.contains("os"));
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
   // reload itself that often without being terminated, the test fails
   // anyway.
   for (int i = 0; i < RuntimeAPI::kFastReloadCount + 1; i++) {
-    ExtensionTestMessageListener ready_listener_reload("ready", false);
+    ExtensionTestMessageListener ready_listener_reload("ready");
     TestExtensionRegistryObserver unload_observer(registry, extension_id);
     ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
         extension_id, "chrome.runtime.reload();"));
@@ -253,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
 
   // This listener will respond to the initial load of the extension
   // and tell the script to do the reload.
-  ExtensionTestMessageListener ready_listener_reload("ready", true);
+  ExtensionTestMessageListener ready_listener_reload("ready",
+                                                     ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
   const std::string extension_id = extension->id();
@@ -261,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
 
   // This listener will respond to the ready message from the
   // reloaded extension and tell the script to finish the test.
-  ExtensionTestMessageListener ready_listener_done("ready", true);
+  ExtensionTestMessageListener ready_listener_done("ready",
+                                                   ReplyBehavior::kWillReply);
   ResultCatcher reload_catcher;
   ready_listener_reload.Reply("reload");
   EXPECT_TRUE(ready_listener_done.WaitUntilSatisfied());
@@ -403,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 // uninstalled, its uninstall url does not open.
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                        DoNotOpenUninstallUrlForBlocklistedExtensions) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("runtime")
@@ -430,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   EXPECT_EQ("about:blank", GetActiveUrl(browser()));
 
   // Load the same extension again, except blocklist it after installation.
-  ExtensionTestMessageListener ready_listener_reload("ready", false);
+  ExtensionTestMessageListener ready_listener_reload("ready");
   extension = LoadExtension(test_data_dir_.AppendASCII("runtime")
                                 .AppendASCII("uninstall_url")
                                 .AppendASCII("sets_uninstall_url"));

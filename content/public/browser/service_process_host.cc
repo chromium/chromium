@@ -46,6 +46,12 @@ ServiceProcessHost::Options::WithExtraCommandLineSwitches(
   return *this;
 }
 
+ServiceProcessHost::Options& ServiceProcessHost::Options::WithProcessCallback(
+    base::OnceCallback<void(const base::Process&)> callback) {
+  process_callback = std::move(callback);
+  return *this;
+}
+
 ServiceProcessHost::Options ServiceProcessHost::Options::Pass() {
   return std::move(*this);
 }

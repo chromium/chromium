@@ -11,7 +11,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 class CrSettingsPrefsInternal {
   isInitialized: boolean = false;
   deferInitialization: boolean;
-  initializedResolver_: PromiseResolver<void> = new PromiseResolver();
+  private initializedResolver_: PromiseResolver<void> = new PromiseResolver();
 
   constructor() {
     /**

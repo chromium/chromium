@@ -13,6 +13,32 @@ using testing::Invoke;
 
 namespace extensions {
 
+const net::BackoffEntry::Policy kZeroBackoffPolicy = {
+    // Number of initial errors (in sequence) to ignore before applying
+    // exponential back-off rules.
+    0,
+
+    // Initial delay for exponential back-off in ms.
+    0,
+
+    // Factor by which the waiting time will be multiplied.
+    2,
+
+    // Fuzzing percentage. ex: 10% will spread requests randomly
+    // between 90%-100% of the calculated time.
+    0.1,
+
+    // Maximum amount of time we are willing to delay our request in ms.
+    600000,  // Ten minutes.
+
+    // Time to keep an entry from being discarded even when it
+    // has no significant state, -1 to never discard.
+    -1,
+
+    // Don't use initial delay unless the last request was an error.
+    false,
+};
+
 MockExtensionDownloaderDelegate::MockExtensionDownloaderDelegate() = default;
 
 MockExtensionDownloaderDelegate::~MockExtensionDownloaderDelegate() = default;
@@ -93,6 +119,35 @@ std::unique_ptr<ExtensionDownloader>
 ExtensionDownloaderTestHelper::CreateDownloader() {
   return std::make_unique<ExtensionDownloader>(
       &delegate_, test_shared_url_loader_factory_, GetTestVerifierFormat());
+}
+
+ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
+                                             const GURL& update_url) {
+  return ExtensionDownloaderTask(
+      id, update_url, mojom::ManifestLocation::kInternal,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      DownloadFetchPriority::kBackground);
+}
+
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url,
+                                       DownloadPingData ping_data) {
+  fetch_data->AddExtension(id, version, &ping_data,
+                           ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
+                           std::string(), mojom::ManifestLocation::kInternal,
+                           DownloadFetchPriority::kBackground);
+  fetch_data->AddAssociatedTask(CreateDownloaderTask(id, update_url));
+}
+
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url) {
+  AddExtensionToFetchDataForTesting(
+      fetch_data, id, version, update_url,
+      ExtensionDownloaderTestHelper::kNeverPingedData);
 }
 
 }  // namespace extensions

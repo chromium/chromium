@@ -18,7 +18,7 @@ namespace gpu {
 // GLImage backing.
 class SharedImageRepresentationGLTextureClient {
  public:
-  virtual bool SharedImageRepresentationGLTextureBeginAccess() = 0;
+  virtual bool SharedImageRepresentationGLTextureBeginAccess(bool readonly) = 0;
   virtual void SharedImageRepresentationGLTextureEndAccess(bool readonly) = 0;
   virtual void SharedImageRepresentationGLTextureRelease(bool have_context) = 0;
 };
@@ -244,7 +244,7 @@ class GPU_GLES2_EXPORT SharedImageBackingGLImage
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // SharedImageRepresentationGLTextureClient:
-  bool SharedImageRepresentationGLTextureBeginAccess() override;
+  bool SharedImageRepresentationGLTextureBeginAccess(bool readonly) override;
   void SharedImageRepresentationGLTextureEndAccess(bool readonly) override;
   void SharedImageRepresentationGLTextureRelease(bool have_context) override;
 

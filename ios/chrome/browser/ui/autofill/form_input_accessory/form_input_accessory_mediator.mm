@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
-#include "ios/chrome/browser/ui/bubble/bubble_features.h"
+#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -78,9 +78,6 @@ const base::Feature kFormInputKeyboardReloadInputViews{
 @property(nonatomic, strong)
     FormInputAccessoryViewHandler* formNavigationHandler;
 
-// The observer to determine when the keyboard dissapears and when it stays.
-@property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
-
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> provider;
 
@@ -124,7 +121,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Bridge to observe form activity in |_webState|.
+  // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
@@ -132,10 +129,10 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   BOOL _suggestionsHaveBeenShown;
 
   // The last seen valid params of a form before retrieving suggestions. Or
-  // empty if |_hasLastSeenParams| is NO.
+  // empty if `_hasLastSeenParams` is NO.
   autofill::FormActivityParams _lastSeenParams;
 
-  // If YES |_lastSeenParams| is valid.
+  // If YES `_lastSeenParams` is valid.
   BOOL _hasLastSeenParams;
 }
 
@@ -184,8 +181,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
                           name:UIApplicationDidEnterBackgroundNotification
                         object:nil];
 
-    _keyboardObserver = [[KeyboardObserverHelper alloc] init];
-    _keyboardObserver.consumer = self;
+    [[KeyboardObserverHelper sharedKeyboardObserver] addConsumer:self];
 
     // In BVC unit tests the password store doesn't exist. Skip creating the
     // fetcher.
@@ -276,7 +272,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   DCHECK_EQ(_webState, webState);
   self.validActivityForAccessoryView = NO;
 
-  // Return early if |params| is not complete.
+  // Return early if `params` is not complete.
   if (params.input_missing) {
     return;
   }
@@ -517,13 +513,13 @@ const base::Feature kFormInputKeyboardReloadInputViews{
         }];
 }
 
-// Post the passed |suggestions| to the consumer.
+// Post the passed `suggestions` to the consumer.
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
   if (self.suggestionsDisabled)
     return;
 
-  // If suggestions are enabled, update |currentProvider|.
+  // If suggestions are enabled, update `currentProvider`.
   self.currentProvider = provider;
   // Post it to the consumer.
   [self.consumer showAccessorySuggestions:suggestions];
@@ -532,9 +528,10 @@ const base::Feature kFormInputKeyboardReloadInputViews{
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
     }
     if (provider.type == SuggestionProviderTypePassword) {
-      [self.handler notifyPasswordSuggestionsShown];
       if (base::FeatureList::IsEnabled(kBubbleRichIPH)) {
-        [self.consumer animateSuggestionLabel];
+        [self.handler showPasswordSuggestionIPHIfNeeded];
+      } else {
+        [self.handler notifyPasswordSuggestionsShown];
       }
     }
   }

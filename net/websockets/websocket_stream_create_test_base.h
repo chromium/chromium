@@ -83,14 +83,14 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   // Only set if the connection failed.
   std::string failure_message_;
   int failure_response_code_ = -1;
-  bool has_failed_;
+  bool has_failed_ = false;
   std::unique_ptr<WebSocketHandshakeRequestInfo> request_info_;
   std::unique_ptr<WebSocketHandshakeResponseInfo> response_info_;
   std::unique_ptr<WebSocketEventInterface::SSLErrorCallbacks>
       ssl_error_callbacks_;
   SSLInfo ssl_info_;
-  bool ssl_fatal_;
-  raw_ptr<URLRequest> url_request_;
+  bool ssl_fatal_ = false;
+  raw_ptr<URLRequest> url_request_ = nullptr;
   AuthChallengeInfo auth_challenge_info_;
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 

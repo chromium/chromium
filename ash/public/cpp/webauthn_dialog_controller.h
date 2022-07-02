@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -18,11 +17,11 @@ namespace ash {
 // WebAuthNDialogController manages the webauthn auth dialog.
 class ASH_PUBLIC_EXPORT WebAuthNDialogController {
  public:
-  // Callback for authentication checks. |success| is nullopt if an
-  // authentication check did not run, otherwise it is true/false if auth
-  // succeeded/failed.
+  // Callback for authentication checks. |success| true/false if auth
+  // succeeded/failed, and |can_use_pin| indicates whether PIN can still be used
+  // (not locked out) after the previous authentication.
   using OnAuthenticateCallback =
-      base::OnceCallback<void(absl::optional<bool> success)>;
+      base::OnceCallback<void(bool success, bool can_use_pin)>;
   // Callback for overall authentication flow result.
   using FinishCallback = base::OnceCallback<void(bool success)>;
 

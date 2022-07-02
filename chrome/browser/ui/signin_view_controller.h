@@ -72,9 +72,6 @@ class SigninViewController {
 
   virtual ~SigninViewController();
 
-  // Returns true if the signin flow should be shown for |mode|.
-  static bool ShouldShowSigninForMode(profiles::BubbleViewMode mode);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the signin attached to |browser_|'s active web contents.
   // |access_point| indicates the access point used to open the Gaia sign in
@@ -129,6 +126,10 @@ class SigninViewController {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Shows the modal profile customization dialog as a browser-modal dialog on
+  // top of the |browser_|'s window.
+  void ShowModalProfileCustomizationDialog();
+
   // Shows the modal sign-in email confirmation dialog as a tab-modal dialog on
   // top of the currently displayed WebContents in |browser_|.
   void ShowModalSigninEmailConfirmationDialog(

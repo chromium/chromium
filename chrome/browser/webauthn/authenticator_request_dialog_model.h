@@ -14,12 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -56,9 +58,9 @@ class AuthenticatorRequestDialogModel {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
 
-    // A more subtle version of the dialog is being shown as an icon or bubble
-    // on the omnibox, prompting the user to tap their security key.
-    kLocationBarBubble,
+    // Conditionally mediated UI. No dialog is shown, instead credentials are
+    // offered to the user on the password autofill prompt.
+    kConditionalMediation,
 
     kMechanismSelection,
 
@@ -84,6 +86,9 @@ class AuthenticatorRequestDialogModel {
     // Bluetooth Low Energy (BLE).
     kBlePowerOnAutomatic,
     kBlePowerOnManual,
+#if BUILDFLAG(IS_MAC)
+    kBlePermissionMac,
+#endif
 
     // Let the user confirm that they want to create a credential in an
     // off-the-record browsing context. Used for platform and caBLE credentials,
@@ -124,7 +129,7 @@ class AuthenticatorRequestDialogModel {
 
   // Implemented by the dialog to observe this model and show the UI panels
   // appropriate for the current step.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the user clicks "Try Again" to restart the user flow.
     virtual void OnStartOver() {}
@@ -238,7 +243,7 @@ class AuthenticatorRequestDialogModel {
     UNLOCK_YOUR_PHONE = 12,
   };
 
-  explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
+  explicit AuthenticatorRequestDialogModel(content::WebContents* web_contents);
 
   AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
       delete;
@@ -263,14 +268,14 @@ class AuthenticatorRequestDialogModel {
            current_step() == Step::kClosed;
   }
 
+  // Returns whether the visible dialog should be closed. This usually means
+  // that the request has finished, or that we are in a step that does not
+  // involve showing UI.
   bool should_dialog_be_closed() const {
-    return current_step() == Step::kClosed;
+    return current_step() == Step::kClosed ||
+           current_step() == Step::kNotStarted ||
+           current_step() == Step::kConditionalMediation;
   }
-  bool should_dialog_be_hidden() const {
-    return current_step() == Step::kNotStarted ||
-           current_step() == Step::kLocationBarBubble;
-  }
-
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;
   }
@@ -286,8 +291,8 @@ class AuthenticatorRequestDialogModel {
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
-  // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
-  // on the location bar instead of the full-blown page-modal UI.
+  // If |is_conditional_mediation| is true, credentials will be shown on the
+  // password autofill instead of the full-blown page-modal UI.
   //
   // |prefer_native_api| indicates that the UI should jump directly to the
   // system WebAuthn UI if there's no better option. This is currently only
@@ -296,11 +301,17 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(TransportAvailabilityInfo transport_availability,
-                 bool use_location_bar_bubble,
+                 bool is_conditional_mediation,
                  bool prefer_native_api);
 
   // Restarts the UX flow.
   void StartOver();
+
+  // Starts a modal WebAuthn flow (i.e. what you normally get if you call
+  // WebAuthn with no mediation parameter) from a conditional request.
+  //
+  // Valid action when at step: kConditionalMediation.
+  void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be
   // used, and starts the guided flow for that transport; or shows the manual
@@ -342,6 +353,11 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action when at step: kBlePowerOnAutomatic.
   void PowerOnBleAdapter();
+
+  // Open the system dialog to grant BLE permission to Chrome.
+  //
+  // Valid action when at step: kBlePermissionMac.
+  void OpenBlePreferences();
 
   // Tries if a USB device is present -- the user claims they plugged it in.
   //
@@ -443,6 +459,10 @@ class AuthenticatorRequestDialogModel {
 
   void SetRequestCallback(RequestCallback request_callback);
 
+  void SetAccountPreselectedCallback(
+      content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
+          callback);
+
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 
@@ -502,9 +522,6 @@ class AuthenticatorRequestDialogModel {
 
   void ReplaceCredListForTesting(
       std::vector<device::DiscoverableCredentialMetadata> creds);
-
-  absl::optional<device::PublicKeyCredentialUserEntity>
-  GetPreselectedAccountForTesting();
 
   ObservableAuthenticatorList& saved_authenticators() {
     return ephemeral_state_.saved_authenticators_;
@@ -572,6 +589,9 @@ class AuthenticatorRequestDialogModel {
   // phones.
   std::vector<std::string> paired_phone_names() const;
 
+  void set_relying_party_id(std::string relying_party_id) {
+    relying_party_id_ = relying_party_id;
+  }
   const std::string& relying_party_id() const { return relying_party_id_; }
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
@@ -634,7 +654,7 @@ class AuthenticatorRequestDialogModel {
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartLocationBarBubbleRequest();
+  void StartConditionalMediationRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
@@ -654,10 +674,14 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at all steps.
   void HideDialogAndDispatchToPlatformAuthenticator();
 
+  // Web contents where the dialog is shown. May be null on unit tests where
+  // there's no actual UI being shown.
+  raw_ptr<content::WebContents> web_contents_;
+
   EphemeralState ephemeral_state_;
 
   // relying_party_id is the RP ID from Webauthn, essentially a domain name.
-  const std::string relying_party_id_;
+  std::string relying_party_id_;
 
   // The current step of the request UX flow that is currently shown.
   Step current_step_ = Step::kNotStarted;
@@ -679,11 +703,13 @@ class AuthenticatorRequestDialogModel {
   // accepts the interstitial that requests to turn on the BLE adapter.
   base::OnceClosure after_ble_adapter_powered_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // This field is only filled out once the UX flow is started.
   TransportAvailabilityInfo transport_availability_;
 
+  content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
+      account_preselected_callback_;
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
 
@@ -701,11 +727,13 @@ class AuthenticatorRequestDialogModel {
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-  absl::optional<device::PublicKeyCredentialUserEntity> preselected_account_;
 
-  // True if this request should use the non-modal location bar bubble UI
-  // instead of the page-modal, regular UI.
-  bool use_location_bar_bubble_ = false;
+  // True if the modal dialog is being shown right now.
+  bool showing_dialog_ = false;
+
+  // True if this request should display credentials on the password autofill
+  // prompt instead of the page-modal, regular UI.
+  bool use_conditional_mediation_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

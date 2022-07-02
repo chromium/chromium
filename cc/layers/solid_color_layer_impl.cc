@@ -31,7 +31,7 @@ void SolidColorLayerImpl::AppendSolidQuads(
     const Occlusion& occlusion_in_layer_space,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& visible_layer_rect,
-    SkColor color,
+    SkColor4f color,
     bool force_anti_aliasing_off,
     SkBlendMode effect_blend_mode,
     AppendQuadsData* append_quads_data) {
@@ -45,8 +45,7 @@ void SolidColorLayerImpl::AppendSolidQuads(
   // mask, but will not work in complex blend mode situations. This bug is
   // tracked in crbug.com/939168.
   if (effect_blend_mode == SkBlendMode::kSrcOver) {
-    float alpha =
-        (SkColorGetA(color) * (1.0f / 255.0f)) * shared_quad_state->opacity;
+    float alpha = color.fA * shared_quad_state->opacity;
 
     if (alpha < std::numeric_limits<float>::epsilon())
       return;

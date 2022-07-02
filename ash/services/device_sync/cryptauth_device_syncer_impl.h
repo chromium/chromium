@@ -146,7 +146,8 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
 
   bool IsAttestationCertificatesUpdateRequired();
   void GetAttestationCertificates();
-  void OnAttestationCertificates(const std::vector<std::string>& cert_chain);
+  void OnAttestationCertificates(const std::vector<std::string>& cert_chain,
+                                 bool valid);
 
   void SyncMetadata();
   void OnSyncMetadataFinished(
@@ -199,6 +200,9 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   void FinishAttempt(CryptAuthDeviceSyncResult::ResultCode result_code);
 
   bool did_non_fatal_error_occur_ = false;
+  // Field reflects the certificate validity state only after local_better_together_device_metadata_
+  // has been updated and before the sync attempt has completed. It is otherwise always false.
+  bool are_attestation_certs_valid_ = false;
 
   // Set in OnAttemptStarted() and not modified during the rest of the flow.
   cryptauthv2::RequestContext request_context_;

@@ -134,13 +134,6 @@ const base::Feature kHighPriorityDatabaseTaskType{
 constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Default = 5 * 60;
 constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded = 10;
 
-// If enabled, the grace period of features::kIntensiveWakeUpThrottling will be
-// |kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded| when a background page
-// is loaded.
-const base::Feature kQuickIntensiveWakeUpThrottlingAfterLoading{
-    "QuickIntensiveWakeUpThrottlingAfterLoading",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Exposed so that multiple tests can tinker with the policy override.
 PLATFORM_EXPORT void
 ClearIntensiveWakeUpThrottlingPolicyOverrideCacheForTesting();

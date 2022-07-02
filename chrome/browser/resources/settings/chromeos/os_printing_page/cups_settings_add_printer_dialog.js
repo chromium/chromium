@@ -14,6 +14,17 @@
  *   add a print server.
  */
 
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import './cups_add_print_server_dialog.js';
+import './cups_add_printer_manually_dialog.js';
+import './cups_add_printer_manufacturer_model_dialog.js';
+import './cups_printer_shared_css.js';
+
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
+
 /**
  * Different dialogs in add printer flow.
  * @enum {string}
@@ -51,68 +62,67 @@ function getEmptyPrinter_() {
   };
 }
 
+/** @polymer */
+class SettingsCupsAddPrinterDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-cups-add-printer-dialog';
+  }
 
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_components/localized_link/localized_link.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import './cups_add_print_server_dialog.js';
-import './cups_add_printer_manually_dialog.js';
-import './cups_add_printer_manufacturer_model_dialog.js';
-import {sortPrinters, matchesSearchTerm, getBaseName, getErrorText, isNetworkProtocol, isNameAndAddressValid, isPPDInfoValid, getPrintServerErrorText} from './cups_printer_dialog_util.js';
-import './cups_printer_shared_css.js';
-import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrinterInfo, PrinterSetupResult, CupsPrintersList, PrinterPpdMakeModel, ManufacturersInfo, ModelsInfo, PrintServerResult, PrinterMakeModel} from './cups_printers_browser_proxy.js';
+  static get properties() {
+    return {
+      /** @type {!CupsPrinterInfo} */
+      newPrinter: {
+        type: Object,
+      },
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-cups-add-printer-dialog',
+      /** @private {string} */
+      previousDialog_: String,
 
-  properties: {
-    /** @type {!CupsPrinterInfo} */
-    newPrinter: {
-      type: Object,
-    },
+      /** @private {string} */
+      currentDialog_: String,
 
-    /** @private {string} */
-    previousDialog_: String,
+      /** @private {boolean} */
+      showManuallyAddDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {string} */
-    currentDialog_: String,
+      /** @private {boolean} */
+      showManufacturerDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showManuallyAddDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showAddPrintServerDialog_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-    /** @private {boolean} */
-    showManufacturerDialog_: {
-      type: Boolean,
-      value: false,
-    },
+  ready() {
+    super.ready();
 
-    /** @private {boolean} */
-    showAddPrintServerDialog_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  listeners: {
-    'open-manually-add-printer-dialog': 'openManuallyAddPrinterDialog_',
-    'open-manufacturer-model-dialog':
-        'openManufacturerModelDialogForCurrentPrinter_',
-    'open-add-print-server-dialog': 'openPrintServerDialog_',
-    'no-detected-printer': 'onNoDetectedPrinter_',
-  },
+    this.addEventListener(
+        'open-manually-add-printer-dialog', this.openManuallyAddPrinterDialog_);
+    this.addEventListener(
+        'open-manufacturer-model-dialog',
+        this.openManufacturerModelDialogForCurrentPrinter_);
+    this.addEventListener(
+        'open-add-print-server-dialog', this.openPrintServerDialog_);
+  }
 
   /** Opens the Add manual printer dialog. */
   open() {
     this.resetData_();
     this.switchDialog_(
         '', AddPrinterDialogs.MANUALLY, 'showManuallyAddDialog_');
-  },
+  }
 
   /**
    * Reset all the printer data in the Add printer flow.
@@ -122,35 +132,35 @@ Polymer({
     if (this.newPrinter) {
       this.newPrinter = getEmptyPrinter_();
     }
-  },
+  }
 
   /** @private */
   openManuallyAddPrinterDialog_() {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.MANUALLY,
         'showManuallyAddDialog_');
-  },
+  }
 
   /** @private */
   openManufacturerModelDialogForCurrentPrinter_() {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.MANUFACTURER,
         'showManufacturerDialog_');
-  },
+  }
 
   /** @param {!CupsPrinterInfo} printer */
   openManufacturerModelDialogForSpecifiedPrinter(printer) {
     this.newPrinter = printer;
     this.switchDialog_(
         '', AddPrinterDialogs.MANUFACTURER, 'showManufacturerDialog_');
-  },
+  }
 
   /** @private */
-  openPrintServerDialog_: function() {
+  openPrintServerDialog_() {
     this.switchDialog_(
         this.currentDialog_, AddPrinterDialogs.PRINTSERVER,
         'showAddPrintServerDialog_');
-  },
+  }
 
   /**
    * Switch dialog from |fromDialog| to |toDialog|.
@@ -165,11 +175,15 @@ Polymer({
     this.currentDialog_ = toDialog;
 
     this.set(domIfBooleanName, true);
-    this.async(function() {
-      const dialog = this.$$(toDialog);
+    microTask.run(() => {
+      const dialog = this.shadowRoot.querySelector(toDialog);
       dialog.addEventListener('close', () => {
         this.set(domIfBooleanName, false);
       });
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCupsAddPrinterDialogElement.is,
+    SettingsCupsAddPrinterDialogElement);

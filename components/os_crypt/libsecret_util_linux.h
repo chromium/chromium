@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 // Utility for dynamically loading libsecret.
 class LibsecretLoader {
@@ -58,7 +59,7 @@ class LibsecretLoader {
 
    private:
     // |results_| and |error_| are C-style objects owned by this instance.
-    GList* results_ = nullptr;
+    raw_ptr<GList> results_ = nullptr;
     GError* error_ = nullptr;
   };
 
@@ -124,7 +125,7 @@ class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
   // to the objects stored in this container. Using a vector here will fail the
   // ASan tests, because it may move the objects and break the references.
   std::list<std::string> name_values_;
-  GHashTable* attrs_;
+  raw_ptr<GHashTable> attrs_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_LIBSECRET_UTIL_LINUX_H_

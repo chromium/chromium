@@ -317,6 +317,9 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
                << phone_status_snapshot.properties().gmscore_version();
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
+  if (features::IsEcheSWAEnabled()) {
+    SetStreamableApps(phone_status_snapshot.streamable_apps());
+  }
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
@@ -338,6 +341,12 @@ void PhoneStatusProcessor::OnHostStatusChanged(
     const MultiDeviceSetupClient::HostStatusWithDevice&
         host_device_with_status) {
   MaybeSetPhoneModelName(host_device_with_status.second);
+}
+
+void PhoneStatusProcessor::SetStreamableApps(
+    const proto::StreamableApps& streamable_apps) {
+  if (streamable_apps.apps_size() > 0 && recent_apps_interaction_handler_)
+    recent_apps_interaction_handler_->SetStreamableApps(streamable_apps);
 }
 
 }  // namespace phonehub

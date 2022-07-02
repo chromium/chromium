@@ -36,11 +36,9 @@ ResolveHostClientImpl::ResolveHostClientImpl(
   parameters->purpose =
       network::mojom::ResolveHostParameters::Purpose::kPreconnect;
   resolve_host_start_time_ = base::TimeTicks::Now();
-  network_context->ResolveHost(
-      net::HostPortPair::FromURL(url), network_isolation_key,
-      std::move(parameters),
-      receiver_.BindNewPipeAndPassRemote(content::GetUIThreadTaskRunner(
-          {content::BrowserTaskType::kPreconnect})));
+  network_context->ResolveHost(net::HostPortPair::FromURL(url),
+                               network_isolation_key, std::move(parameters),
+                               receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostClientImpl::OnConnectionError, base::Unretained(this)));
 }

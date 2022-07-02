@@ -10,19 +10,17 @@ import android.text.TextUtils;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -41,9 +39,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean isBookmarked(GURL url);
     }
     private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private final @NonNull Supplier<LargeIconBridge> mIconBridgeSupplier;
     private final @NonNull BookmarkState mBookmarkState;
-    private final int mDesiredFaviconWidthPx;
 
     /**
      * @param context An Android context.
@@ -55,14 +51,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     public BasicSuggestionProcessor(@NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull Supplier<LargeIconBridge> iconBridgeSupplier,
-            @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost);
+            @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
+        super(context, suggestionHost, faviconFetcher);
 
-        mDesiredFaviconWidthPx = getContext().getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_favicon_size);
         mUrlBarEditingTextProvider = editingTextProvider;
-        mIconBridgeSupplier = iconBridgeSupplier;
         mBookmarkState = bookmarkState;
     }
 
@@ -88,72 +80,29 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      * Note that the stock icons do not include Favicon - Favicon is only declared
      * when we know we have a valid and large enough site favicon to present.
      */
-    private @SuggestionIcon int getSuggestionIconType(AutocompleteMatch suggestion) {
+    private @DrawableRes int getSuggestionIcon(AutocompleteMatch suggestion) {
         if (suggestion.isSearchSuggestion()) {
             switch (suggestion.getType()) {
                 case OmniboxSuggestionType.VOICE_SUGGEST:
-                    return SuggestionIcon.VOICE;
+                    return R.drawable.btn_mic;
 
                 case OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED:
                 case OmniboxSuggestionType.SEARCH_HISTORY:
-                    return SuggestionIcon.HISTORY;
+                    return R.drawable.ic_history_googblue_24dp;
 
                 default:
                     if (suggestion.getSubtypes().contains(/* SUBTYPE_TRENDS = */ 143)) {
-                        return SuggestionIcon.TRENDS;
+                        return R.drawable.trending_up_black_24dp;
                     }
-                    return SuggestionIcon.MAGNIFIER;
+                    return R.drawable.ic_suggestion_magnifier;
             }
         } else {
             if (mBookmarkState.isBookmarked(suggestion.getUrl())) {
-                return SuggestionIcon.BOOKMARK;
+                return R.drawable.btn_star;
             } else {
-                return SuggestionIcon.GLOBE;
+                return R.drawable.ic_globe_24dp;
             }
         }
-    }
-
-    private void updateSuggestionIcon(AutocompleteMatch suggestion, PropertyModel model) {
-        @SuggestionIcon
-        int type = getSuggestionIconType(suggestion);
-        @DrawableRes
-        int icon = R.drawable.ic_suggestion_magnifier;
-
-        switch (type) {
-            case SuggestionIcon.BOOKMARK:
-                icon = R.drawable.btn_star;
-                break;
-
-            case SuggestionIcon.HISTORY:
-                icon = R.drawable.ic_history_googblue_24dp;
-                break;
-
-            case SuggestionIcon.GLOBE:
-                icon = R.drawable.ic_globe_24dp;
-                break;
-
-            case SuggestionIcon.MAGNIFIER:
-                icon = R.drawable.ic_suggestion_magnifier;
-                break;
-
-            case SuggestionIcon.VOICE:
-                icon = R.drawable.btn_mic;
-                break;
-
-            case SuggestionIcon.TRENDS:
-                icon = R.drawable.trending_up_black_24dp;
-                break;
-
-            default:
-                // All other cases are invalid.
-                assert false : "Suggestion type " + type + " is not valid.";
-        }
-
-        model.set(SuggestionViewProperties.SUGGESTION_ICON_TYPE, type);
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
-                        .setAllowTint(true)
-                        .build());
     }
 
     @Override
@@ -179,13 +128,16 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         final SuggestionSpannable textLine1 =
                 getSuggestedQuery(suggestion, !isSearchSuggestion, !urlHighlighted);
 
-        updateSuggestionIcon(suggestion, model);
+        setSuggestionDrawableState(model,
+                SuggestionDrawableState.Builder
+                        .forDrawableRes(getContext(), getSuggestionIcon(suggestion))
+                        .setAllowTint(true)
+                        .build());
+
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, isSearchSuggestion);
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
-        fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), () -> {
-            model.set(SuggestionViewProperties.SUGGESTION_ICON_TYPE, SuggestionIcon.FAVICON);
-        });
+        fetchSuggestionFavicon(model, suggestion.getUrl());
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);
 
         if (!mUrlBarEditingTextProvider.getTextWithoutAutocomplete().trim().equalsIgnoreCase(

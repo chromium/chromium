@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -52,7 +52,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
@@ -70,12 +70,12 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
     @MediumTest
     public void launchNTP_disableAndEnableViaGearMenu() throws IOException, InterruptedException {
         // The web feed requires login to enable, so we must log in first.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         // Load the NTP.
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
 
         // Make sure the eye icon starts off invisible, tab views enabled.
-        onView(withId(R.id.status_indicator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
         // We need to select the TabView which is a parent of the text view with "Following".
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
@@ -86,7 +86,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         onView(withText("Turn off")).perform(ViewActions.click());
 
         // Verify that the eye icon appears, and the tab view disables.
-        onView(withId(R.id.status_indicator)).check(matches(isDisplayed()));
+        onView(withId(R.id.section_status_indicator)).check(matches(isDisplayed()));
         // Make sure the tab gets disabled.
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
@@ -97,7 +97,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         onView(withText("Turn on")).perform(ViewActions.click());
 
         // Verify that the eye icon is gone, and the text is enabled.
-        onView(withId(R.id.status_indicator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
                 .check(matches(isEnabled()));

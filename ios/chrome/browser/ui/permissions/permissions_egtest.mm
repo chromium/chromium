@@ -64,7 +64,7 @@ id<GREYMatcher> InfobarBannerEditButton() {
   return grey_accessibilityID(kInfobarBannerAcceptButtonIdentifier);
 }
 
-// Matcher for camera infobar badge with acceptance state |accepted|;
+// Matcher for camera infobar badge with acceptance state `accepted`;
 id<GREYMatcher> CameraBadge(BOOL accepted) {
   NSString* axid =
       accepted ? kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier
@@ -72,7 +72,7 @@ id<GREYMatcher> CameraBadge(BOOL accepted) {
   return grey_accessibilityID(axid);
 }
 
-// Matcher for microphone infobar badge with acceptance state |accepted|;
+// Matcher for microphone infobar badge with acceptance state `accepted`;
 id<GREYMatcher> MicrophoneBadge(BOOL accepted) {
   NSString* axid =
       accepted
@@ -143,7 +143,7 @@ void TapDoneButtonOnInfobarModal() {
   [button tap];
 }
 
-// Checks that the visibility of the infobar matches |shouldShow|.
+// Checks that the visibility of the infobar matches `shouldShow`.
 - (void)waitUntilInfobarBannerVisibleOrTimeout:(BOOL)shouldShow {
   GREYCondition* infobarShown = [GREYCondition
       conditionWithName:@"Infobar shown"
@@ -167,7 +167,7 @@ void TapDoneButtonOnInfobarModal() {
   }
 }
 
-// Checks |expectedStatesForPermissions| matches the actual states for
+// Checks `expectedStatesForPermissions` matches the actual states for
 // permissions of the active web state; checks will fail if there is no active
 // web state.
 - (void)checkStatesForPermissions:
@@ -389,7 +389,7 @@ void TapDoneButtonOnInfobarModal() {
     [ChromeEarlGrey goBack];
 
     // Note: There's currently an existing WebKit bug that WKUIDelegate method
-    // |requestMediaCapturePermissionForOrigin:| would not be invoked when the
+    // `requestMediaCapturePermissionForOrigin:` would not be invoked when the
     // user hits backward/forward; therefore, the alert and banner would not
     // show again, and the checks for the alert and the infobar banner are
     // commented out. Once this issue is fixed, these checks should be

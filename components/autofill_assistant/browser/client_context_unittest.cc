@@ -4,11 +4,13 @@
 
 #include "components/autofill_assistant/browser/client_context.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/mock_client.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -67,6 +69,7 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::PORTRAIT);
+  EXPECT_EQ(actual_client_context.js_flow_library_loaded(), false);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(actual_client_context.platform_type(),
               ClientContextProto::PLATFORM_TYPE_ANDROID);
@@ -83,7 +86,7 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_THAT(actual_device_context.model(), Eq("model"));
 }
 
-TEST_F(ClientContextTest, UpdateWithTriggerContext) {
+TEST_F(ClientContextTest, UpdatesToClientContext) {
   // Calls expected when the constructor is called.
   EXPECT_CALL(mock_client_, IsAccessibilityEnabled()).WillOnce(Return(false));
   EXPECT_CALL(mock_client_, GetSignedInEmail())
@@ -102,16 +105,19 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
       .WillOnce(Return(std::pair<int, int>(1080, 1920)));
   EXPECT_CALL(mock_client_, GetScreenOrientation())
       .WillOnce(Return(ClientContextProto::LANDSCAPE));
-  client_context.Update({std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{
-                                 {"USER_EMAIL", "example@chromium.org"}}),
-                         /* exp = */ "1,2,3",
-                         /* is_cct = */ true,
-                         /* onboarding_shown = */ true,
-                         /* is_direct_action = */ true,
-                         /* initial_url = */ "https://www.example.com",
-                         /* is_in_chrome_triggered = */ true});
 
+  client_context.Update({
+      std::make_unique<ScriptParameters>(
+          base::flat_map<std::string, std::string>{
+              {"USER_EMAIL", "example@chromium.org"}}),
+      /* experiment_ids = */ "1,2,3",
+      /* is_cct = */ true,
+      /* onboarding_shown = */ true,
+      /* is_direct_action = */ true,
+      /* initial_url = */ "https://www.example.com",
+      /* is_in_chrome_triggered = */ true,
+      /* is_externally_triggered = */ false,
+  });
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
   EXPECT_THAT(actual_client_context.is_cct(), Eq(true));
@@ -128,6 +134,15 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::LANDSCAPE);
+  EXPECT_FALSE(actual_client_context.has_annotate_dom_model_context());
+
+  client_context.UpdateAnnotateDomModelContext(123456);
+  actual_client_context = client_context.AsProto();
+  EXPECT_THAT(
+      actual_client_context.annotate_dom_model_context().model_version(),
+      Eq(123456));
+  EXPECT_FALSE(actual_client_context.annotate_dom_model_context()
+                   .force_semantic_selection());
 }
 
 TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
@@ -142,13 +157,16 @@ TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
   EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
 
-  client_context.Update({std::make_unique<ScriptParameters>(),
-                         /* exp = */ "1,2,3",
-                         /* is_cct = */ true,
-                         /* onboarding_shown = */ true,
-                         /* is_direct_action = */ true,
-                         /* initial_url = */ "https://www.example.com",
-                         /* is_in_chrome_triggered = */ false});
+  client_context.Update({
+      std::make_unique<ScriptParameters>(),
+      /* experiment_ids = */ "1,2,3",
+      /* is_cct = */ true,
+      /* onboarding_shown = */ true,
+      /* is_direct_action = */ true,
+      /* initial_url = */ "https://www.example.com",
+      /* is_in_chrome_triggered = */ false,
+      /* is_externally_triggered = */ false,
+  });
 
   actual_client_context = client_context.AsProto();
   EXPECT_FALSE(actual_client_context.has_window_size());
@@ -162,27 +180,33 @@ TEST_F(ClientContextTest, AccountMatching) {
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::UNKNOWN));
 
-  client_context.Update({std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{
-                                 {"USER_EMAIL", "john.doe@chromium.org"}}),
-                         /* exp = */ std::string(),
-                         /* is_cct = */ false,
-                         /* onboarding_shown = */ false,
-                         /* is_direct_action = */ false,
-                         /* initial_url = */ "https://www.example.com",
-                         /* is_in_chrome_triggered = */ false});
+  client_context.Update({
+      std::make_unique<ScriptParameters>(
+          base::flat_map<std::string, std::string>{
+              {"USER_EMAIL", "john.doe@chromium.org"}}),
+      /* experiment_ids = */ std::string(),
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* initial_url = */ "https://www.example.com",
+      /* is_in_chrome_triggered = */ false,
+      /* is_externally_triggered = */ false,
+  });
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
-  client_context.Update({std::make_unique<ScriptParameters>(
-                             base::flat_map<std::string, std::string>{
-                                 {"USER_EMAIL", "lisa.doe@chromium.org"}}),
-                         /* exp = */ std::string(),
-                         /* is_cct = */ false,
-                         /* onboarding_shown = */ false,
-                         /* is_direct_action = */ false,
-                         /* initial_url = */ "https://www.example.com",
-                         /* is_in_chrome_triggered = */ false});
+  client_context.Update({
+      std::make_unique<ScriptParameters>(
+          base::flat_map<std::string, std::string>{
+              {"USER_EMAIL", "lisa.doe@chromium.org"}}),
+      /* experiment_ids = */ std::string(),
+      /* is_cct = */ false,
+      /* onboarding_shown = */ false,
+      /* is_direct_action = */ false,
+      /* initial_url = */ "https://www.example.com",
+      /* is_in_chrome_triggered = */ false,
+      /* is_externally_triggered = */ false,
+  });
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }
@@ -199,6 +223,27 @@ TEST_F(ClientContextTest, SignedInStatus) {
   ClientContextImpl client_context_b(&mock_client_);
   EXPECT_THAT(client_context_b.AsProto().signed_into_chrome_status(),
               Eq(ClientContextProto::SIGNED_IN));
+}
+
+TEST_F(ClientContextTest, UpdateJsFlowLibraryLoaded) {
+  ClientContextImpl client_context(&mock_client_);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
+  client_context.UpdateJsFlowLibraryLoaded(true);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), true);
+  client_context.UpdateJsFlowLibraryLoaded(false);
+  EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
+}
+
+TEST_F(ClientContextTest, AnnotateDomSwitchForcesSemanticSelection) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAutofillAssistantAnnotateDom);
+
+  ClientContextImpl client_context(&mock_client_);
+  client_context.UpdateAnnotateDomModelContext(123456);
+
+  auto model_context = client_context.AsProto().annotate_dom_model_context();
+  EXPECT_THAT(model_context.model_version(), Eq(123456));
+  EXPECT_TRUE(model_context.force_semantic_selection());
 }
 
 }  // namespace

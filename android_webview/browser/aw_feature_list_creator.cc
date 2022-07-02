@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -46,6 +47,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "net/base/features.h"
 #include "net/nqe/pref_names.h"
@@ -128,6 +130,25 @@ AwFeatureListCreator::AwFeatureListCreator()
     : aw_field_trials_(std::make_unique<AwFieldTrials>()) {}
 
 AwFeatureListCreator::~AwFeatureListCreator() {}
+
+void AwFeatureListCreator::CreateFeatureListAndFieldTrials() {
+  TRACE_EVENT0("startup",
+               "AwFeatureListCreator::CreateFeatureListAndFieldTrials");
+  CreateLocalState();
+  AwMetricsServiceClient::SetInstance(std::make_unique<AwMetricsServiceClient>(
+      std::make_unique<AwMetricsServiceClientDelegate>()));
+  AwMetricsServiceClient::GetInstance()->Initialize(local_state_.get());
+  SetUpFieldTrials();
+}
+
+void AwFeatureListCreator::CreateLocalState() {
+  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
+  local_state_ = CreatePrefService();
+}
+
+void AwFeatureListCreator::DisableSignatureVerificationForTesting() {
+  g_signature_verification_enabled = false;
+}
 
 std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
@@ -227,36 +248,20 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());
 
   auto* metrics_client = AwMetricsServiceClient::GetInstance();
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
   // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low
   // entropy provider. The X-Client-Data header is not reported on WebView, so
   // we pass an empty object as the |low_entropy_source_value|.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
-      GetSwitchDependentFeatureOverrides(
-          *base::CommandLine::ForCurrentProcess()),
+      command_line->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds),
+      GetSwitchDependentFeatureOverrides(*command_line),
       /*low_entropy_provider=*/nullptr, std::move(feature_list),
       metrics_client->metrics_state_manager(), aw_field_trials_.get(),
       &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt);
-}
-
-void AwFeatureListCreator::CreateLocalState() {
-  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
-  local_state_ = CreatePrefService();
-}
-
-void AwFeatureListCreator::CreateFeatureListAndFieldTrials() {
-  TRACE_EVENT0("startup",
-               "AwFeatureListCreator::CreateFeatureListAndFieldTrials");
-  CreateLocalState();
-  AwMetricsServiceClient::SetInstance(std::make_unique<AwMetricsServiceClient>(
-      std::make_unique<AwMetricsServiceClientDelegate>()));
-  AwMetricsServiceClient::GetInstance()->Initialize(local_state_.get());
-  SetUpFieldTrials();
-}
-
-void AwFeatureListCreator::DisableSignatureVerificationForTesting() {
-  g_signature_verification_enabled = false;
 }
 
 }  // namespace android_webview

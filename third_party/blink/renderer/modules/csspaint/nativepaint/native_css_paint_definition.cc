@@ -18,28 +18,28 @@ NativeCssPaintDefinition::NativeCssPaintDefinition(
     : NativePaintDefinition(local_root, type) {}
 
 bool NativeCssPaintDefinition::CanGetValueFromKeyframe(
+    const Element* element,
     const PropertySpecificKeyframe* frame,
-    const KeyframeEffectModelBase* model) {
+    const KeyframeEffectModelBase* model,
+    ValueFilter filter) {
   if (model->IsStringKeyframeEffectModel()) {
     DCHECK(frame->IsCSSPropertySpecificKeyframe());
     const CSSValue* value = To<CSSPropertySpecificKeyframe>(frame)->Value();
-    if (!value)
-      return false;
+    return filter(element, value, nullptr);
   } else {
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
         keyframe->GetValue()->Value().interpolable_value.get();
-    if (!value)
-      return false;
+    return filter(element, nullptr, value);
   }
-  return true;
 }
 
 Animation* NativeCssPaintDefinition::GetAnimationForProperty(
     const Element* element,
-    const CSSProperty& property) {
+    const CSSProperty& property,
+    ValueFilter filter) {
   if (!element->GetElementAnimations())
     return nullptr;
   Animation* compositable_animation = nullptr;
@@ -68,11 +68,18 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
       model->GetPropertySpecificKeyframes(PropertyHandle(property));
   DCHECK_GE(frames->size(), 2u);
   for (const auto& frame : *frames) {
-    if (!CanGetValueFromKeyframe(frame, model)) {
+    if (!CanGetValueFromKeyframe(element, frame, model, filter)) {
       return nullptr;
     }
   }
   return compositable_animation;
+}
+
+bool NativeCssPaintDefinition::DefaultValueFilter(
+    const Element* element,
+    const CSSValue* value,
+    const InterpolableValue* interpolable_value) {
+  return value || interpolable_value;
 }
 
 }  // namespace blink

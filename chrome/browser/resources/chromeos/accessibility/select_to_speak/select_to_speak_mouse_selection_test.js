@@ -47,7 +47,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -70,7 +70,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksMultipleNodesWhenDragged',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -103,7 +103,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksAcrossNodesInAParagraph',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -134,7 +134,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksNodeAfterTrayTapAndMouseClick',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -163,7 +163,7 @@ TEST_F(
       });
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'CancelsSelectionModeWithStateChange',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -188,7 +188,7 @@ TEST_F(
       });
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'CancelsSpeechWithTrayTap',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -229,7 +229,7 @@ TEST_F(
       // stylus may act as a laser pointer unless it taps on the stylus options
       // button, which always opens on a tap regardless of the stylus behavior
       // selected.
-      this.runWithLoadedDesktop((desktop) => {
+      this.runWithLoadedDesktop(desktop => {
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
@@ -240,8 +240,8 @@ TEST_F(
           // sure we actually don't start speech after the hittest and focus
           // callbacks are used to check which nodes should be spoken.
           desktop.addEventListener(
-              EventType.MOUSE_RELEASED, this.newCallback((evt) => {
-                chrome.automation.getFocus(this.newCallback((node) => {
+              EventType.MOUSE_RELEASED, this.newCallback(evt => {
+                chrome.automation.getFocus(this.newCallback(node => {
                   assertEquals(
                       selectToSpeak.state_, SelectToSpeakState.INACTIVE);
                   assertFalse(this.mockTts.currentlySpeaking());

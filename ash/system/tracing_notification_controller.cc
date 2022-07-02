@@ -4,6 +4,7 @@
 
 #include "ash/system/tracing_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -67,7 +68,8 @@ void TracingNotificationController::CreateNotification() {
           IDS_ASH_STATUS_TRAY_TRACING_NOTIFICATION_MESSAGE),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+                                 kNotifierId,
+                                 NotificationCatalogName::kTracing),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&HandleNotificationClick)),

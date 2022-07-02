@@ -161,7 +161,7 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
 int64_t GetDefaultMemoryLimit() {
   const int kMegabyte = 1024 * 1024;
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Bypass IsLowEndDevice() check and fix max_default_memory_limit to 64MB on
   // Chromecast devices. Set value here as IsLowEndDevice() is used on some, but
   // not all Chromecast devices.

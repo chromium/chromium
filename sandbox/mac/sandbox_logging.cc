@@ -5,6 +5,7 @@
 #include "sandbox/mac/sandbox_logging.h"
 
 #include <errno.h>
+#include <os/log.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,18 +16,6 @@
 #include <string>
 
 #include "build/build_config.h"
-
-#include <AvailabilityMacros.h>
-#if !defined(MAC_OS_X_VERSION_10_12) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
-#define USE_ASL
-#endif
-
-#if defined(USE_ASL)
-#include <asl.h>
-#else
-#include <os/log.h>
-#endif
 
 #if defined(ARCH_CPU_X86_64)
 #define ABORT()                                                                \
@@ -52,75 +41,6 @@ namespace sandbox::logging {
 namespace {
 
 enum class Level { FATAL, ERR, WARN, INFO };
-
-#if defined(USE_ASL)
-
-void SendAslLog(Level level, const char* message) {
-  class ASLClient {
-   public:
-    explicit ASLClient()
-        : client_(asl_open(nullptr,
-                           "com.apple.console",
-                           ASL_OPT_STDERR | ASL_OPT_NO_DELAY)) {}
-    ~ASLClient() { asl_close(client_); }
-
-    aslclient get() const { return client_; }
-
-    ASLClient(const ASLClient&) = delete;
-    ASLClient& operator=(const ASLClient&) = delete;
-
-   private:
-    aslclient client_;
-  } asl_client;
-
-  class ASLMessage {
-   public:
-    ASLMessage() : message_(asl_new(ASL_TYPE_MSG)) {}
-    ~ASLMessage() { asl_free(message_); }
-
-    aslmsg get() const { return message_; }
-
-    ASLMessage(const ASLMessage&) = delete;
-    ASLMessage& operator=(const ASLMessage&) = delete;
-
-   private:
-    aslmsg message_;
-  } asl_message;
-
-  // By default, messages are only readable by the admin group. Explicitly
-  // make them readable by the user generating the messages.
-  char euid_string[12];
-  snprintf(euid_string, sizeof(euid_string) / sizeof(euid_string[0]), "%d",
-           geteuid());
-  asl_set(asl_message.get(), ASL_KEY_READ_UID, euid_string);
-
-  std::string asl_level_string;
-  switch (level) {
-    case Level::FATAL:
-      asl_level_string = ASL_STRING_CRIT;
-      break;
-    case Level::ERR:
-      asl_level_string = ASL_STRING_ERR;
-      break;
-    case Level::WARN:
-      asl_level_string = ASL_STRING_WARNING;
-      break;
-    case Level::INFO:
-    default:
-      asl_level_string = ASL_STRING_INFO;
-      break;
-  }
-
-  asl_set(asl_message.get(), ASL_KEY_LEVEL, asl_level_string.c_str());
-  asl_set(asl_message.get(), ASL_KEY_MSG, message);
-  asl_send(asl_client.get(), asl_message.get());
-
-  if (level == Level::FATAL) {
-    abort_report_np(message);
-  }
-}
-
-#else
 
 void SendOsLog(Level level, const char* message) {
   const class OSLog {
@@ -156,8 +76,6 @@ void SendOsLog(Level level, const char* message) {
   }
 }
 
-#endif  // defined(USE_ASL)
-
 // |error| is strerror(errno) when a P* logging function is called. Pass
 // |nullptr| if no errno is set.
 void DoLogging(Level level,
@@ -168,11 +86,7 @@ void DoLogging(Level level,
   int ret = vsnprintf(message, sizeof(message), fmt, args);
 
   if (ret < 0) {
-#if defined(USE_ASL)
-    SendAslLog(level, "warning: log message could not be formatted");
-#else
     SendOsLog(level, "warning: log message could not be formatted");
-#endif  // defined(USE_ASL)
     return;
   }
 
@@ -183,18 +97,10 @@ void DoLogging(Level level,
   if (error)
     final_message += ": " + *error;
 
-#if defined(USE_ASL)
-  SendAslLog(level, final_message.c_str());
-#else
   SendOsLog(level, final_message.c_str());
-#endif  // defined(USE_ASL)
 
   if (truncated) {
-#if defined(USE_ASL)
-    SendAslLog(level, "warning: previous log message truncated");
-#else
     SendOsLog(level, "warning: previous log message truncated");
-#endif  // defined(USE_ASL)
   }
 }
 

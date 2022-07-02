@@ -9,6 +9,7 @@
       "implemented_in": "chrome/browser/chromeos/extensions/wallpaper_api.h"
     },
     "description": "Use the <code>chrome.wallpaper</code> API to change the ChromeOS wallpaper.",
+    "platforms": ["chromeos", "lacros"],
     "types":
     [
       {
@@ -23,6 +24,7 @@
       "name": "setWallpaper",
       "type": "function",
       "description": "Sets wallpaper to the image at <em>url</em> or <em>wallpaperData</em> with the specified <em>layout</em>",
+      "platforms": ["chromeos", "lacros"],
       "parameters": [
         {
           "name": "details",

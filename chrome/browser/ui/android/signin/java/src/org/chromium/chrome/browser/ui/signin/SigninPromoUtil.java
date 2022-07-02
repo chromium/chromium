@@ -8,7 +8,8 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.chromium.base.Promise;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,8 +20,8 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -75,14 +76,14 @@ public final class SigninPromoUtil {
         }
 
         final Profile profile = Profile.getLastUsedRegularProfile();
-        if (IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
-                    ConsentLevel.SYNC)
-                != null) {
-            // Don't show if user is signed in.
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
+            // Don't show if user is signed in and syncing.
             return false;
         }
 
-        if (TextUtils.isEmpty(
+        if (!TextUtils.isEmpty(
                     UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))) {
             // Don't show if user has manually signed out.
             return false;
@@ -97,12 +98,10 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        final Promise<AccountInfo> firstAccountPromise =
-                AccountInfoServiceProvider.get().getAccountInfoByEmail(accounts.get(0).name);
-        if (!(firstAccountPromise.isFulfilled()
-                    && firstAccountPromise.getResult()
-                                    .getAccountCapabilities()
-                                    .canOfferExtendedSyncPromos()
+        final @Nullable AccountInfo firstAccount =
+                identityManager.findExtendedAccountInfoByEmailAddress(accounts.get(0).name);
+        if (!(firstAccount != null
+                    && firstAccount.getAccountCapabilities().canOfferExtendedSyncPromos()
                             == Tribool.TRUE)) {
             // Show promo only when CanOfferExtendedSyncPromos capability for the first account
             // is fetched and true.

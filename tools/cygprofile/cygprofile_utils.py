@@ -8,7 +8,7 @@
 import logging
 
 
-class WarningCollector(object):
+class WarningCollector:
   """Collects warnings, but limits the number printed to a set value."""
   def __init__(self, max_warnings, level=logging.WARNING):
     self._warnings = 0

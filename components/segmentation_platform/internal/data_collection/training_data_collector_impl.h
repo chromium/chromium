@@ -13,16 +13,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+using proto::SegmentId;
+
 struct Config;
 class SegmentationResultPrefs;
 
@@ -65,7 +65,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnGetTrainingTensors(const absl::optional<ImmediaCollectionParam>& param,
                             const proto::SegmentInfo& segment_info,
-                            bool success,
+                            bool has_error,
                             const std::vector<float>& input_tensors,
                             const std::vector<float>& output_tensors);
 
@@ -88,12 +88,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // Hash of histograms for immediate training data collection. When any
   // histogram hash contained in the map is recorded, a UKM message is reported
   // right away.
-  base::flat_map<uint64_t,
-                 base::flat_set<optimization_guide::proto::OptimizationTarget>>
+  base::flat_map<uint64_t, base::flat_set<proto::SegmentId>>
       immediate_collection_histograms_;
 
   // A list of segment IDs that needs to report metrics continuously.
-  std::set<OptimizationTarget> continuous_collection_segments_;
+  std::set<SegmentId> continuous_collection_segments_;
 
   base::WeakPtrFactory<TrainingDataCollectorImpl> weak_ptr_factory_{this};
 };

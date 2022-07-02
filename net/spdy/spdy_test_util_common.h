@@ -195,26 +195,30 @@ struct SpdySessionDependencies {
   std::unique_ptr<ReportingService> reporting_service;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
-  bool enable_ip_pooling;
-  bool enable_ping;
-  bool enable_user_alternate_protocol_ports;
-  bool enable_quic;
-  bool enable_server_push_cancellation;
-  size_t session_max_recv_window_size;
-  int session_max_queued_capped_frames;
+  bool enable_ip_pooling = true;
+  bool enable_ping = false;
+  bool enable_user_alternate_protocol_ports = false;
+  bool enable_quic = false;
+  bool enable_server_push_cancellation = false;
+  size_t session_max_recv_window_size = kDefaultInitialWindowSize;
+  int session_max_queued_capped_frames = kSpdySessionMaxQueuedCappedFrames;
   spdy::SettingsMap http2_settings;
   SpdySession::TimeFunc time_func;
-  bool enable_http2_alternative_service;
-  bool enable_http2_settings_grease;
+  bool enable_http2_alternative_service = false;
+  bool enable_http2_settings_grease = false;
   absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
-  bool http2_end_stream_with_data_frame;
-  raw_ptr<NetLog> net_log;
-  bool disable_idle_sockets_close_on_memory_pressure;
-  bool enable_early_data;
-  bool key_auth_cache_server_entries_by_network_isolation_key;
-  bool enable_priority_update;
-  bool go_away_on_ip_change;
-  bool ignore_ip_address_changes;
+  bool http2_end_stream_with_data_frame = false;
+  raw_ptr<NetLog> net_log = nullptr;
+  bool disable_idle_sockets_close_on_memory_pressure = false;
+  bool enable_early_data = false;
+  bool key_auth_cache_server_entries_by_network_isolation_key = false;
+  bool enable_priority_update = false;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+  bool go_away_on_ip_change = true;
+#else
+  bool go_away_on_ip_change = false;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+  bool ignore_ip_address_changes = false;
 };
 
 std::unique_ptr<URLRequestContextBuilder>

@@ -240,7 +240,7 @@ void HandleAccessibilityRequestCallback(
   bool show_internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
   data.SetStringKey(kInternal, show_internal ? kOn : kOff);
 
-  std::unique_ptr<base::ListValue> rvh_list(new base::ListValue());
+  std::unique_ptr<base::ListValue> page_list(new base::ListValue());
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
       content::RenderWidgetHost::GetRenderWidgetHosts());
 
@@ -256,6 +256,8 @@ void HandleAccessibilityRequestCallback(
     content::WebContentsDelegate* delegate = web_contents->GetDelegate();
     if (!delegate)
       continue;
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh)
+      continue;
     // Ignore views that are never user-visible, like background pages.
     if (delegate->IsNeverComposited(web_contents))
       continue;
@@ -267,9 +269,9 @@ void HandleAccessibilityRequestCallback(
         BuildTargetDescriptor(rvh);
     descriptor->SetBoolKey(kNative, is_native_enabled);
     descriptor->SetBoolKey(kWeb, is_web_enabled);
-    rvh_list->Append(base::Value::FromUniquePtrValue(std::move(descriptor)));
+    page_list->Append(base::Value::FromUniquePtrValue(std::move(descriptor)));
   }
-  data.Set(kPagesField, std::move(rvh_list));
+  data.Set(kPagesField, std::move(page_list));
 
   std::unique_ptr<base::ListValue> browser_list(new base::ListValue());
 #if !BUILDFLAG(IS_ANDROID)
@@ -317,7 +319,7 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     }
   }
   str += "\n";
-  for (int i = 0; i < node->GetDelegate()->GetChildCount(); i++) {
+  for (size_t i = 0; i < node->GetDelegate()->GetChildCount(); i++) {
     gfx::NativeViewAccessible child = node->GetDelegate()->ChildAtIndex(i);
     ui::AXPlatformNode* child_node =
         ui::AXPlatformNode::FromNativeViewAccessible(child);
@@ -398,32 +400,32 @@ AccessibilityUIMessageHandler::~AccessibilityUIMessageHandler() {
 void AccessibilityUIMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "toggleAccessibility",
       base::BindRepeating(&AccessibilityUIMessageHandler::ToggleAccessibility,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setGlobalFlag",
       base::BindRepeating(&AccessibilityUIMessageHandler::SetGlobalFlag,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestWebContentsTree",
       base::BindRepeating(
           &AccessibilityUIMessageHandler::RequestWebContentsTree,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestNativeUITree",
       base::BindRepeating(&AccessibilityUIMessageHandler::RequestNativeUITree,
                           base::Unretained(this)));
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestWidgetsTree",
       base::BindRepeating(&AccessibilityUIMessageHandler::RequestWidgetsTree,
                           base::Unretained(this)));
 #endif
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestAccessibilityEvents",
       base::BindRepeating(
           &AccessibilityUIMessageHandler::RequestAccessibilityEvents,
@@ -431,8 +433,8 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
 }
 
 void AccessibilityUIMessageHandler::ToggleAccessibility(
-    const base::ListValue* args) {
-  const base::Value& data = args->GetListDeprecated()[0];
+    const base::Value::List& args) {
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   int process_id = *data.FindIntPath(kProcessIdField);
@@ -467,13 +469,13 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
   web_contents->SetAccessibilityMode(current_mode);
 
   if (should_request_tree) {
-    base::DictionaryValue request_data;
-    request_data.SetIntPath(kProcessIdField, process_id);
-    request_data.SetIntPath(kRoutingIdField, routing_id);
-    request_data.SetStringPath(kRequestTypeField, kShowOrRefreshTree);
-    base::ListValue request_args;
+    base::Value::Dict request_data;
+    request_data.Set(kProcessIdField, process_id);
+    request_data.Set(kRoutingIdField, routing_id);
+    request_data.Set(kRequestTypeField, kShowOrRefreshTree);
+    base::Value::List request_args;
     request_args.Append(std::move(request_data));
-    RequestWebContentsTree(&request_args);
+    RequestWebContentsTree(request_args);
   } else {
     // Call accessibility.showOrRefreshTree without a 'tree' field so the row's
     // accessibility mode buttons are updated.
@@ -483,8 +485,9 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
   }
 }
 
-void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
-  const base::Value& data = args->GetListDeprecated()[0];
+void AccessibilityUIMessageHandler::SetGlobalFlag(
+    const base::Value::List& args) {
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   const std::string* flag_name_str_p = data.FindStringPath(kFlagNameField);
@@ -564,8 +567,8 @@ void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(
 }
 
 void AccessibilityUIMessageHandler::RequestWebContentsTree(
-    const base::ListValue* args) {
-  const base::Value& data = args->GetListDeprecated()[0];
+    const base::Value::List& args) {
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -611,8 +614,8 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
 }
 
 void AccessibilityUIMessageHandler::RequestNativeUITree(
-    const base::ListValue* args) {
-  const base::Value& data = args->GetListDeprecated()[0];
+    const base::Value::List& args) {
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -654,9 +657,9 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
 }
 
 void AccessibilityUIMessageHandler::RequestWidgetsTree(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::Value& data = args->GetListDeprecated()[0];
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
@@ -714,8 +717,8 @@ void AccessibilityUIMessageHandler::StopRecording(
 }
 
 void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
-    const base::ListValue* args) {
-  const base::Value& data = args->GetListDeprecated()[0];
+    const base::Value::List& args) {
+  const base::Value& data = args[0];
   CHECK(data.is_dict());
 
   int process_id = *data.FindIntPath(kProcessIdField);

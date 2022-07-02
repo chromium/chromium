@@ -44,6 +44,12 @@ class DlpFilesPolicyServiceProvider
   void IsDlpPolicyMatched(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
 
+  // org.chromium.DlpFilesPolicyService.IsFilesTransferRestricted
+  // implementation.
+  void IsFilesTransferRestricted(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
   base::WeakPtrFactory<DlpFilesPolicyServiceProvider> weak_ptr_factory_{this};
 };
 

@@ -74,8 +74,7 @@ void XMLParserScriptRunner::ProcessScriptElement(
   // [Parsing] When the element's end tag is subsequently parsed, the user agent
   // must perform a microtask checkpoint, and then prepare the script element.
   // [spec text]
-  bool success = script_loader->PrepareScript(
-      script_start_position, ScriptLoader::kAllowLegacyTypeInTypeAttribute);
+  bool success = script_loader->PrepareScript(script_start_position);
 
   if (script_loader->GetScriptType() ==
       ScriptLoader::ScriptTypeAtPrepare::kModule) {

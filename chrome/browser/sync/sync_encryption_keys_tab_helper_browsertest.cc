@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kConsoleSuccessMessage);
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   // Calling setSyncEncryptionKeys() in the main frame works and it gets
   // the callback by setSyncEncryptionKeys().
   const std::vector<uint8_t> kExpectedEncryptionKey = {7};
-  ExecJsSetSyncEncryptionKeys(web_contents()->GetMainFrame(),
+  ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
                               kExpectedEncryptionKey);
   console_observer.Wait();
   EXPECT_EQ(1u, console_observer.messages().size());
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   // EncryptionKeysApi is created for the primary page.
-  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
   const GURL prerendering_url =
       https_server()->GetURL("accounts.google.com", "/simple.html");
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   prerender_helper().NavigatePrimaryPage(prerendering_url);
   // Ensure that loading `prerendering_url` is not activated from prerendering.
   EXPECT_FALSE(host_observer.was_activated());
-  auto* primary_main_frame = web_contents()->GetMainFrame();
+  auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   // Ensure that the main frame has EncryptionKeysApi.
   EXPECT_TRUE(HasEncryptionKeysApi(primary_main_frame));
 
@@ -246,12 +246,12 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
   const GURL main_url = https_server()->GetURL("accounts.google.com",
                                                "/fenced_frames/title1.html");
   auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), main_url);
+      web_contents()->GetPrimaryMainFrame(), main_url);
   // EncryptionKeysApi is also created for a fenced frame since it's a main
   // frame as well.
   EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // EncryptionKeysApi is NOT created for the primary page as the origin is
   // disallowed.
-  EXPECT_FALSE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kConsoleFailureMessage);
@@ -308,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(
   // Calling setSyncEncryptionKeys() should fail because the API is not even
   // defined.
   const std::vector<uint8_t> kEncryptionKey = {7};
-  ExecJsSetSyncEncryptionKeys(web_contents()->GetMainFrame(), kEncryptionKey);
+  ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
+                              kEncryptionKey);
   console_observer.Wait();
   EXPECT_EQ(1u, console_observer.messages().size());
 }

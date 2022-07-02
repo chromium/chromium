@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +21,6 @@
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/tpm/install_attributes.h"
@@ -196,15 +194,11 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
-        bool is_main_profile = ChromeSigninClientFactory::GetForProfile(profile)
-                                   ->GetInitialPrimaryAccount()
-                                   .has_value();
-        return std::make_unique<signin::MirrorLandingAccountReconcilorDelegate>(
-            IdentityManagerFactory::GetForProfile(profile), is_main_profile);
-      }
-      return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile));
+      return std::make_unique<signin::MirrorLandingAccountReconcilorDelegate>(
+          IdentityManagerFactory::GetForProfile(profile),
+          ChromeSigninClientFactory::GetForProfile(profile)
+              ->GetInitialPrimaryAccount()
+              .has_value());
 #else
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));

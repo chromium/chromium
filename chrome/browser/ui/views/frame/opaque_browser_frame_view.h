@@ -95,6 +95,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   gfx::Size GetBrowserViewMinimumSize() const override;
   bool ShouldShowCaptionButtons() const override;
   bool IsRegularOrGuestSession() const override;
+  bool CanMaximize() const override;
+  bool CanMinimize() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   bool IsFullscreen() const override;
@@ -218,7 +220,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   raw_ptr<views::Button> close_button_;
 
   // The window icon and title.
-  TabIconView* window_icon_;
+  raw_ptr<TabIconView> window_icon_;
   raw_ptr<views::Label> window_title_;
 
   // Background painter for the window frame.

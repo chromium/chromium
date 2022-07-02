@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace unzip {
 
@@ -34,13 +35,17 @@ class UnzipperImpl : public mojom::Unzipper {
       mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
       mojom::UnzipOptionsPtr options,
       mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
+      mojo::PendingRemote<mojom::UnzipListener> listener_remote,
       UnzipCallback callback) override;
 
   void DetectEncoding(base::File zip_file,
                       DetectEncodingCallback callback) override;
 
-  void GetExtractedSize(base::File zip_file,
-                        GetExtractedSizeCallback callback) override;
+  void GetExtractedInfo(base::File zip_file,
+                        GetExtractedInfoCallback callback) override;
+
+  static void Listener(const mojo::Remote<mojom::UnzipListener>& listener,
+                       uint64_t bytes);
 
   mojo::Receiver<mojom::Unzipper> receiver_{this};
 };

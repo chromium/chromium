@@ -146,6 +146,8 @@ void zlib_compress(
   stream.avail_in = (uInt)input_size;
 
   result = deflate(&stream, Z_FINISH);
+  if (stream.avail_in > 0)
+    error_exit("compress: input was not consumed", Z_DATA_ERROR);
   if (result == Z_STREAM_END)
     output_size = stream.total_out;
   result |= deflateEnd(&stream);

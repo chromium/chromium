@@ -14,7 +14,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "components/certificate_transparency/ct_features.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
@@ -70,7 +69,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       SignedCertificateTimestamp::Origin desired_origin,
       size_t num_scts,
       const std::vector<std::string>& desired_log_keys,
-      bool timestamp_past_enforcement_date,
+      bool timestamp_past_2022_policy_date,
       SCTList* verified_scts) {
     for (size_t i = 0; i < num_scts; ++i) {
       scoped_refptr<SignedCertificateTimestamp> sct(
@@ -81,11 +80,11 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       else
         sct->log_id = std::string(crypto::kSHA256Length, static_cast<char>(i));
 
-      if (timestamp_past_enforcement_date) {
-        EXPECT_TRUE(base::Time::FromUTCExploded({2015, 8, 0, 15, 0, 0, 0, 0},
+      if (timestamp_past_2022_policy_date) {
+        EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 15, 0, 0, 0, 0},
                                                 &sct->timestamp));
       } else {
-        EXPECT_TRUE(base::Time::FromUTCExploded({2015, 6, 0, 15, 0, 0, 0, 0},
+        EXPECT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 14, 0, 0, 0, 0},
                                                 &sct->timestamp));
       }
 
@@ -95,6 +94,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
 
   void AddDisqualifiedLogSCT(SignedCertificateTimestamp::Origin desired_origin,
                              bool timestamp_after_disqualification_date,
+                             bool timestamp_past_2022_policy_date,
                              SCTList* verified_scts) {
     static const char kTestRetiredLogID[] =
         "\xcd\xb5\x17\x9b\x7f\xc1\xc0\x46\xfe\xea\x31\x13\x6a\x3f\x8f\x00\x2e"
@@ -102,8 +102,14 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     static_assert(std::size(kTestRetiredLogID) - 1 == crypto::kSHA256Length,
                   "Incorrect log ID length.");
     base::Time retirement_time;
-    ASSERT_TRUE(base::Time::FromUTCExploded({2016, 4, 0, 15, 0, 0, 0, 0},
-                                            &retirement_time));
+    if (timestamp_past_2022_policy_date) {
+      ASSERT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 16, 0, 0, 0, 0},
+                                              &retirement_time));
+    } else {
+      ASSERT_TRUE(base::Time::FromUTCExploded({2022, 4, 0, 14, 12, 0, 0, 0},
+                                              &retirement_time));
+    }
+
     policy_enforcer_->SetDisqualifiedLogForTesting(
         std::make_pair(std::string(kTestRetiredLogID, 32), retirement_time));
 
@@ -112,11 +118,9 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     sct->origin = desired_origin;
     sct->log_id = std::string(kTestRetiredLogID, crypto::kSHA256Length);
     if (timestamp_after_disqualification_date) {
-      EXPECT_TRUE(base::Time::FromUTCExploded({2016, 4, 0, 16, 0, 0, 0, 0},
-                                              &sct->timestamp));
+      sct->timestamp = retirement_time + base::Hours(1);
     } else {
-      EXPECT_TRUE(base::Time::FromUTCExploded({2016, 4, 0, 1, 0, 0, 0, 0},
-                                              &sct->timestamp));
+      sct->timestamp = retirement_time - base::Hours(1);
     }
 
     verified_scts->push_back(sct);
@@ -125,11 +129,12 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
   void FillListWithSCTsOfOrigin(
       SignedCertificateTimestamp::Origin desired_origin,
       size_t num_scts,
+      bool timestamp_past_2022_policy_date,
       SCTList* verified_scts) {
     std::vector<std::string> desired_log_ids;
     desired_log_ids.push_back(google_log_id_);
-    FillListWithSCTsOfOrigin(desired_origin, num_scts, desired_log_ids, true,
-                             verified_scts);
+    FillListWithSCTsOfOrigin(desired_origin, num_scts, desired_log_ids,
+                             timestamp_past_2022_policy_date, verified_scts);
   }
 
   base::Time CreateTime(const base::Time::Exploded& exploded) {
@@ -159,28 +164,13 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Subclass of ChromeCTPolicyEnforcerTest that tests using only the pre-2022
-// policy.
-class ChromeCTPolicyEnforcerTestPre2022Policy
-    : public ChromeCTPolicyEnforcerTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {},
-        /*disabled_features*/ {
-            features::kCertificateTransparency2022Policy,
-            features::kCertificateTransparency2022PolicyAllCerts});
-    ChromeCTPolicyEnforcerTest::SetUp();
-  }
-};
-
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+TEST_F(ChromeCTPolicyEnforcerTest,
        DoesNotConformToCTPolicyNotEnoughDiverseSCTsAllGoogle) {
   SCTList scts;
   std::vector<std::string> desired_log_ids(2, google_log_id_);
 
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           desired_log_ids.size(), desired_log_ids, true,
+                           desired_log_ids.size(), desired_log_ids, false,
                            &scts);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
@@ -188,13 +178,13 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+TEST_F(ChromeCTPolicyEnforcerTest,
        DoesNotConformToCTPolicyNotEnoughDiverseSCTsAllNonGoogle) {
   SCTList scts;
   std::vector<std::string> desired_log_ids(2, non_google_log_id_);
 
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           desired_log_ids.size(), desired_log_ids, true,
+                           desired_log_ids.size(), desired_log_ids, false,
                            &scts);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
@@ -202,20 +192,7 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
-       ConformsToCTPolicyIfSCTBeforeEnforcementDate) {
-  SCTList scts;
-  // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
-  // All 5 SCTs will be from non-Google logs.
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5,
-                           std::vector<std::string>(), false, &scts);
-
-  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-            policy_enforcer_->CheckCompliance(chain_.get(), scts,
-                                              NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+TEST_F(ChromeCTPolicyEnforcerTest,
        ConformsToPolicyExactNumberOfSCTsForValidityPeriod) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key(
       crypto::RSAPrivateKey::Create(1024));
@@ -284,18 +261,31 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
 
     for (size_t j = 0; j < required_scts - 1; ++j) {
       SCTList scts;
-      FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, j,
-                               std::vector<std::string>(), false, &scts);
-      EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                policy_enforcer_->CheckCompliance(cert.get(), scts,
-                                                  NetLogWithSource()))
+      std::vector<std::string> desired_logs;
+      desired_logs.push_back(google_log_id_);
+      if (j > 0) {
+        FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 1,
+                                 desired_logs, false, &scts);
+        FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                                 j - 1, std::vector<std::string>(), false,
+                                 &scts);
+      }
+      CTPolicyCompliance expected_failure =
+          j == 1 ? CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS
+                 : CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
+      EXPECT_EQ(expected_failure, policy_enforcer_->CheckCompliance(
+                                      cert.get(), scts, NetLogWithSource()))
           << " for: " << (end - start).InDays() << " and " << required_scts
           << " scts=" << scts.size() << " j=" << j;
     }
     SCTList scts;
+    std::vector<std::string> desired_logs;
+    desired_logs.push_back(google_log_id_);
+    FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 1,
+                             desired_logs, false, &scts);
     FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                             required_scts, std::vector<std::string>(), false,
-                             &scts);
+                             required_scts - 1, std::vector<std::string>(),
+                             false, &scts);
     EXPECT_EQ(
         CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
         policy_enforcer_->CheckCompliance(cert.get(), scts, NetLogWithSource()))
@@ -304,7 +294,7 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   }
 }
 
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
+TEST_F(ChromeCTPolicyEnforcerTest,
        DoesNotConformToCTPolicyNotEnoughUniqueEmbeddedLogs) {
   SCTList scts;
   std::vector<std::string> desired_logs;
@@ -313,21 +303,21 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   desired_logs.clear();
   desired_logs.push_back(google_log_id_);
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, false, &scts);
 
   // Two distinct non-Google logs.
   desired_logs.clear();
   desired_logs.emplace_back(crypto::kSHA256Length, 'A');
   desired_logs.emplace_back(crypto::kSHA256Length, 'B');
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, false, &scts);
 
   // Two unique SCTs from the same non-Google log.
   desired_logs.clear();
   desired_logs.emplace_back(crypto::kSHA256Length, 'C');
   desired_logs.emplace_back(crypto::kSHA256Length, 'C');
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, false, &scts);
 
   // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
   // However, there are only 4 SCTs are from distinct logs.
@@ -336,8 +326,7 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
-       DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
+TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   SCTList scts;
 
   // The results should be the same before and after disqualification,
@@ -346,9 +335,9 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   // SCT from before disqualification.
   scts.clear();
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
+                           1, false, &scts);
   AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                        false, &scts);
+                        false, false, &scts);
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
@@ -356,9 +345,9 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   // SCT from after disqualification.
   scts.clear();
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
+                           1, false, &scts);
   AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                        true, &scts);
+                        true, false, &scts);
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
@@ -366,8 +355,9 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   // Embedded SCT from before disqualification.
   scts.clear();
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
+                           1, false, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, false,
+                        &scts);
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
@@ -375,8 +365,9 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
   // Embedded SCT from after disqualification.
   scts.clear();
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+                           1, false, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, false,
+                        &scts);
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
@@ -386,28 +377,13 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
 // policy and the 2022 policy.
 class ChromeCTPolicyEnforcerTestBothPolicies
     : public ChromeCTPolicyEnforcerTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kCertificateTransparency2022PolicyAllCerts);
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features*/ {},
-          /*disabled_features*/ {
-              features::kCertificateTransparency2022Policy,
-              features::kCertificateTransparency2022PolicyAllCerts});
-    }
-    ChromeCTPolicyEnforcerTest::SetUp();
-  }
-};
+      public ::testing::WithParamInterface<bool> {};
 
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        ConformsToCTPolicyWithNonEmbeddedSCTs) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
+                           2, GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -422,7 +398,7 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, EnforcementDisabledByBinaryAge) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
+                           2, GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -444,7 +420,8 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        ConformsToCTPolicyWithEmbeddedSCTs) {
   // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
   SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5,
+                           GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -465,13 +442,15 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
   desired_logs.clear();
   desired_logs.push_back(google_log_id_);
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, GetParam(),
+                           &scts);
 
   // One non-Google log, delivered via TLS.
   desired_logs.clear();
   desired_logs.push_back(non_google_log_id_);
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, GetParam(),
+                           &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -492,13 +471,15 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
   desired_logs.clear();
   desired_logs.push_back(google_log_id_);
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, GetParam(),
+                           &scts);
 
   // One non-Google log, delivered via OCSP.
   desired_logs.clear();
   desired_logs.push_back(non_google_log_id_);
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE,
-                           desired_logs.size(), desired_logs, true, &scts);
+                           desired_logs.size(), desired_logs, GetParam(),
+                           &scts);
 
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
@@ -515,7 +496,8 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        DoesNotConformToCTPolicyNotEnoughSCTs) {
   // |chain_| is valid for 10 years - over 121 months - so requires 5 SCTs.
   SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 2, &scts);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 2,
+                           GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -530,8 +512,15 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        ConformsWithDisqualifiedLogBeforeDisqualificationDate) {
   SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 4, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false, &scts);
+  std::vector<std::string> desired_log_ids;
+  desired_log_ids.push_back(google_log_id_);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 1,
+                           desired_log_ids, GetParam(), &scts);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
+                           GetParam() ? 1 : 3, std::vector<std::string>(),
+                           GetParam(), &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false,
+                        GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -550,8 +539,9 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
   // Add required - 1 valid SCTs (with the old policy 5 are required, with the
   // new policy 3).
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           GetParam() ? 2 : 4, &scts);
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+                           GetParam() ? 2 : 4, GetParam(), &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true,
+                        GetParam(), &scts);
   if (GetParam()) {
     std::map<std::string, OperatorHistoryEntry> operator_history;
     FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -567,11 +557,12 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        DoesNotConformWithIssuanceDateAfterDisqualificationDate) {
   SCTList scts;
-  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true, &scts);
+  AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, true,
+                        GetParam(), &scts);
   // Add required - 1 valid SCTs (with the old policy 5 are required, with the
   // new policy 3).
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
-                           GetParam() ? 2 : 4, &scts);
+                           GetParam() ? 2 : 4, GetParam(), &scts);
   // Make sure all SCTs are after the disqualification date.
   for (size_t i = 1; i < scts.size(); ++i)
     scts[i]->timestamp = scts[0]->timestamp;
@@ -591,7 +582,7 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, UpdateCTLogList) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
+                           2, GetParam(), &scts);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
@@ -631,7 +622,7 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, UpdateCTLogList) {
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, TimestampUpdates) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
+                           1, GetParam(), &scts);
 
   // Clear the log list and set the last updated time to more than 10 weeks ago.
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
@@ -715,7 +706,8 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        ConformsWithCTPolicyFutureRetirementDateLogs) {
   SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5,
+                           GetParam(), &scts);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs = {google_log_id_};
@@ -747,7 +739,8 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
        DoesNotConformWithCTPolicyPastRetirementDateLogs) {
   SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5, &scts);
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, 5,
+                           GetParam(), &scts);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs = {google_log_id_};
@@ -781,17 +774,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ChromeCTPolicyEnforcerTestBothPolicies,
                          testing::Bool());
 
-class ChromeCTPolicyEnforcerTest2022Policy : public ChromeCTPolicyEnforcerTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCertificateTransparency2022Policy);
-    ChromeCTPolicyEnforcerTest::SetUp();
-  }
-};
-
-TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
-       2022PolicyNotInEffectBeforeTargetDate) {
+TEST_F(ChromeCTPolicyEnforcerTest, 2022PolicyNotInEffectBeforeTargetDate) {
   // Old policy should enforce one Google log requirement.
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
@@ -810,8 +793,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
-       2022PolicyInEffectAfterTargetDate) {
+TEST_F(ChromeCTPolicyEnforcerTest, 2022PolicyInEffectAfterTargetDate) {
   // New policy should allow SCTs from all non-Google operators to comply as
   // long as diversity requirement is fulfilled.
   SCTList scts;
@@ -831,17 +813,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022Policy,
                                               NetLogWithSource()));
 }
 
-class ChromeCTPolicyEnforcerTest2022PolicyAllCerts
-    : public ChromeCTPolicyEnforcerTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCertificateTransparency2022PolicyAllCerts);
-    ChromeCTPolicyEnforcerTest::SetUp();
-  }
-};
-
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
+TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key(
       crypto::RSAPrivateKey::Create(1024));
   ASSERT_TRUE(private_key);
@@ -896,7 +868,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
     for (size_t j = 0; j <= scts_required; ++j) {
       SCTList scts;
       FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, j,
-                               std::vector<std::string>(), false, &scts);
+                               std::vector<std::string>(), true, &scts);
       // Add different operators to the logs so the SCTs comply with operator
       // diversity.
       FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
@@ -921,7 +893,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
   }
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
+TEST_F(ChromeCTPolicyEnforcerTest,
        DoesNotConformToCTPolicyAllLogsSameOperator) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
@@ -939,8 +911,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
-       ConformsToCTPolicyDifferentOperators) {
+TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyDifferentOperators) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -953,8 +924,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
-       ConformsToPolicyDueToOperatorSwitch) {
+TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -976,8 +946,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
-       DoesNotConformToPolicyDueToOperatorSwitch) {
+TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -996,7 +965,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, MultipleOperatorSwitches) {
+TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);
@@ -1016,8 +985,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, MultipleOperatorSwitches) {
                                               NetLogWithSource()));
 }
 
-TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts,
-       MultipleOperatorSwitchesBeforeSCTTimestamp) {
+TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   SCTList scts;
   FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                            2, std::vector<std::string>(), true, &scts);

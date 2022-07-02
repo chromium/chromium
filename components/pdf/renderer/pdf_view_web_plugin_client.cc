@@ -26,6 +26,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -224,8 +225,20 @@ blink::WebLocalFrame* PdfViewWebPluginClient::GetFrame() const {
   return plugin_container_->GetDocument().GetFrame();
 }
 
-blink::WebLocalFrameClient* PdfViewWebPluginClient::GetWebLocalFrameClient() {
-  return GetFrame()->Client();
+void PdfViewWebPluginClient::DidStartLoading() {
+  blink::WebLocalFrameClient* frame_client = GetFrame()->Client();
+  if (!frame_client)
+    return;
+
+  frame_client->DidStartLoading();
+}
+
+void PdfViewWebPluginClient::DidStopLoading() {
+  blink::WebLocalFrameClient* frame_client = GetFrame()->Client();
+  if (!frame_client)
+    return;
+
+  frame_client->DidStopLoading();
 }
 
 void PdfViewWebPluginClient::Print() {

@@ -5,10 +5,11 @@
 #ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_
 #define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_
 
+#include <memory>
 #include <vector>
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,13 +23,31 @@ namespace mojom = ::chromeos::cros_healthd::mojom;
 
 class ProbeService : public health::mojom::ProbeService {
  public:
-  explicit ProbeService(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+  class Factory {
+   public:
+    static std::unique_ptr<health::mojom::ProbeService> Create(
+        mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+    static void SetForTesting(Factory* test_factory);
+
+    virtual ~Factory();
+
+   protected:
+    virtual std::unique_ptr<health::mojom::ProbeService> CreateInstance(
+        mojo::PendingReceiver<health::mojom::ProbeService> receiver) = 0;
+
+   private:
+    static Factory* test_factory_;
+  };
+
   ProbeService(const ProbeService&) = delete;
   ProbeService& operator=(const ProbeService&) = delete;
   ~ProbeService() override;
 
  private:
+  explicit ProbeService(
+      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+
+  // health::mojom::ProbeService override
   void ProbeTelemetryInfo(
       const std::vector<health::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;

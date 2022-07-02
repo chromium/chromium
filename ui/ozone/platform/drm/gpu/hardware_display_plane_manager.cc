@@ -522,13 +522,24 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
 
 ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
+  absl::optional<std::string> driver = drm_->GetDriverName();
+  if (!driver.has_value())
+    return {.is_valid = false};
+
   ui::HardwareCapabilities hc;
+  hc.is_valid = true;
   hc.num_overlay_capable_planes = std::count_if(
       planes_.begin(), planes_.end(),
       [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
         return plane->type() != DRM_PLANE_TYPE_CURSOR &&
                plane->CanUseForCrtcId(crtc_id);
       });
+  // While AMD advertises a cursor plane, it's actually a "fake" plane that the
+  // display hardware blits to the topmost plane at presentation time. If that
+  // topmost plane is scaled/translated (e.g. video), the cursor will then be
+  // transformed along with it, leading to an incorrect cursor location in the
+  // final presentation. For more info, see b/194335274.
+  hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
   return hc;
 }
 

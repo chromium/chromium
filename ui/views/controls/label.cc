@@ -38,7 +38,6 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/selection_controller.h"
 
 namespace {
@@ -800,9 +799,9 @@ void Label::OnThemeChanged() {
   UpdateColorsFromTheme();
 }
 
-gfx::NativeCursor Label::GetCursor(const ui::MouseEvent& event) {
-  return GetRenderTextForSelectionController() ? GetNativeIBeamCursor()
-                                               : gfx::kNullCursor;
+ui::Cursor Label::GetCursor(const ui::MouseEvent& event) {
+  return GetRenderTextForSelectionController() ? ui::mojom::CursorType::kIBeam
+                                               : ui::Cursor();
 }
 
 void Label::OnFocus() {

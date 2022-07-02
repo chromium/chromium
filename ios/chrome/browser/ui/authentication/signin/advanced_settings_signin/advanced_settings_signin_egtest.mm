@@ -302,7 +302,8 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:chrome_test_util::BookmarksMenuButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];

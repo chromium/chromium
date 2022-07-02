@@ -760,6 +760,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const gfx::Range& range,
       const std::vector<gfx::Rect>& character_bounds) override;
   void OnImeCancelComposition() override;
+  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override;
+  void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
@@ -1132,7 +1134,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
-  raw_ptr<FrameTree> frame_tree_;
+  raw_ptr<FrameTree, DanglingUntriaged> frame_tree_;
 
   // RenderWidgetHost are either:
   // - Owned by RenderViewHostImpl.
@@ -1166,7 +1168,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // The delegate of the owner of this object.
   // This member is non-null if and only if this RenderWidgetHost is associated
   // with a main frame RenderWidget.
-  raw_ptr<RenderWidgetHostOwnerDelegate> owner_delegate_ = nullptr;
+  raw_ptr<RenderWidgetHostOwnerDelegate, DanglingUntriaged> owner_delegate_ =
+      nullptr;
 
   // AgentSchedulingGroupHost to be used for IPC with the corresponding
   // (renderer-side) AgentSchedulingGroup. Its channel may be nullptr if the
@@ -1443,6 +1446,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_loading_voter_;
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
+
+  // Use for metrics reporting. Used to check if
+  // OnRenderFrameMetadataChangedAfterActivation is being called for the first
+  // time.
+  bool first_surface_activated_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

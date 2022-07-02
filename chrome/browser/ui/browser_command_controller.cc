@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -105,6 +106,16 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+// TODO(https://crbug.com/1331331): Clean this up after the deprecation period.
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
+#include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif
+
 using WebExposedIsolationLevel =
     content::RenderFrameHost::WebExposedIsolationLevel;
 
@@ -159,6 +170,28 @@ bool CanOpenFile(Browser* browser) {
 
   return true;
 }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+// TODO(https://crbug.com/1331331): Clean this up after the deprecation period.
+void ShowDeprecatedBasicPrintInfoBar(Browser* browser) {
+  ui::AcceleratorProvider* provider =
+      chrome::AcceleratorProviderForBrowser(browser);
+
+  ui::Accelerator accelerator;
+  bool success =
+      provider->GetAcceleratorForCommandId(IDC_BASIC_PRINT, &accelerator);
+  DCHECK(success);
+
+  auto message = l10n_util::GetStringFUTF16(
+      IDS_PRINT_BASIC_SHORTCUT_DEPRECATION_TEXT, accelerator.GetShortcutText());
+  CreateSimpleAlertInfoBar(
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser->tab_strip_model()->GetActiveWebContents()),
+      infobars::InfoBarDelegate::BASIC_PRINT_DEPRECATED_ACCELERATOR_DELEGATE,
+      &vector_icons::kWarningIcon, message,
+      /*auto_expire=*/false, /*should_animate=*/true);
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 }  // namespace
 
@@ -458,13 +491,17 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_SELECT_NEXT_TAB:
       base::RecordAction(base::UserMetricsAction("Accel_SelectNextTab"));
-      SelectNextTab(browser_,
-                    {TabStripModel::GestureType::kKeyboard, time_stamp});
+      SelectNextTab(
+          browser_,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
       break;
     case IDC_SELECT_PREVIOUS_TAB:
       base::RecordAction(base::UserMetricsAction("Accel_SelectPreviousTab"));
-      SelectPreviousTab(browser_,
-                        {TabStripModel::GestureType::kKeyboard, time_stamp});
+      SelectPreviousTab(
+          browser_,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
       break;
     case IDC_MOVE_TAB_NEXT:
       MoveTabNext(browser_);
@@ -481,13 +518,17 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SELECT_TAB_6:
     case IDC_SELECT_TAB_7:
       base::RecordAction(base::UserMetricsAction("Accel_SelectNumberedTab"));
-      SelectNumberedTab(browser_, id - IDC_SELECT_TAB_0,
-                        {TabStripModel::GestureType::kKeyboard, time_stamp});
+      SelectNumberedTab(
+          browser_, id - IDC_SELECT_TAB_0,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
       break;
     case IDC_SELECT_LAST_TAB:
       base::RecordAction(base::UserMetricsAction("Accel_SelectNumberedTab"));
-      SelectLastTab(browser_,
-                    {TabStripModel::GestureType::kKeyboard, time_stamp});
+      SelectLastTab(
+          browser_,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
       break;
     case IDC_DUPLICATE_TAB:
       DuplicateTab(browser_);
@@ -568,7 +609,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_VIEW_SOURCE:
       browser_->tab_strip_model()
           ->GetActiveWebContents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->ViewSource();
       break;
     case IDC_PRINT:
@@ -576,6 +617,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
 #if BUILDFLAG(ENABLE_PRINTING)
+    case IDC_BASIC_PRINT_DEPRECATED:
+      ShowDeprecatedBasicPrintInfoBar(browser_);
+      [[fallthrough]];
     case IDC_BASIC_PRINT:
       base::RecordAction(base::UserMetricsAction("Accel_Advanced_Print"));
       BasicPrint(browser_);
@@ -1340,9 +1384,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_PWA_WINDOW,
                                         web_app::CanPopOutWebApp(profile()));
 
-  bool is_isolated_app =
-      current_web_contents->GetMainFrame()->GetWebExposedIsolationLevel() >=
-      WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
+                             ->GetWebExposedIsolationLevel() >=
+                         WebExposedIsolationLevel::kMaybeIsolatedApplication;
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_IN_CHROME, IsWebAppOrCustomTab() && !is_isolated_app);
 
@@ -1594,6 +1638,8 @@ void BrowserCommandController::UpdatePrintingState() {
   bool print_enabled = CanPrint(browser_);
   command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
 #if BUILDFLAG(ENABLE_PRINTING)
+  command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT_DEPRECATED,
+                                        CanBasicPrint(browser_));
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,
                                         CanBasicPrint(browser_));
 #endif

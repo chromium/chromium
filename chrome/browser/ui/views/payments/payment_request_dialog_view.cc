@@ -221,6 +221,11 @@ void PaymentRequestDialogView::ConfirmPaymentForTesting() {
   Pay();
 }
 
+bool PaymentRequestDialogView::ClickOptOutForTesting() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void PaymentRequestDialogView::OnStartUpdating(
     PaymentRequestSpec::UpdateReason reason) {
   ShowProcessingSpinner();

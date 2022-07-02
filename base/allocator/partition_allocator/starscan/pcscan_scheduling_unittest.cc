@@ -5,24 +5,12 @@
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/time/time.h"
-#include "base/time/time_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {
-
-namespace base {
-
-using ::base::TimeTicksNowFunction;
-
-namespace subtle {
-
-using ::base::subtle::ScopedTimeClockOverrides;
-
-}  // namespace subtle
-
-}  // namespace base
 
 namespace {
 constexpr size_t kMB = 1024 * 1024;

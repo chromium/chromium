@@ -15,4 +15,9 @@ class TouchToFillResourceProviderImpl implements TouchToFillResourceProvider {
     public @DrawableRes int getHeaderImageDrawableId() {
         return R.drawable.touch_to_fill_header_image;
     }
+
+    @Override
+    public @DrawableRes int getWebAuthnIconId() {
+        return R.drawable.touch_to_fill_webauthn_icon;
+    }
 }

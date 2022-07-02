@@ -65,9 +65,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;
 
-  jboolean IsRenderFrameCreated(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&) const;
+  jboolean IsRenderFrameLive(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>&) const;
 
   void GetInterfaceToRendererFrame(
       JNIEnv* env,
@@ -97,12 +96,6 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaParamRef<jstring>&,
       const base::android::JavaParamRef<jobject>&,
       jboolean is_payment_credential_creation) const;
-
-  void OnCredentialsDetailsListReceived(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&,
-      const base::android::JavaParamRef<jobjectArray>& credentials,
-      const base::android::JavaParamRef<jobject>& jcallback) const;
 
   jint GetLifecycleState(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>&) const;

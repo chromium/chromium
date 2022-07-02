@@ -7,6 +7,8 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
+
 #import "base/mac/scoped_nsobject.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
@@ -141,7 +143,7 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
   // True iff the menu is up to date with the actual BookmarkModel.
   bool menuIsValid_;
 
-  Profile* const profile_;  // weak
+  const raw_ptr<Profile> profile_;  // weak
   base::scoped_nsobject<BookmarkMenuCocoaController> controller_;
   base::scoped_nsobject<NSMenu> menu_root_;
 

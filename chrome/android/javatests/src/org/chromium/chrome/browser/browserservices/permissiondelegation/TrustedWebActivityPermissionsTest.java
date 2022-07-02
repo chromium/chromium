@@ -28,7 +28,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -62,7 +62,7 @@ public class TrustedWebActivityPermissionsTest {
     private String mTestPage;
     private Origin mOrigin;
     private String mPackage;
-    private TrustedWebActivityPermissionManager mPermissionManager;
+    private InstalledWebappPermissionManager mPermissionManager;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -79,10 +79,10 @@ public class TrustedWebActivityPermissionsTest {
         mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
 
-        mPermissionManager = ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
+        mPermissionManager = ChromeApplicationImpl.getComponent().resolvePermissionManager();
         mPermissionManager.clearForTesting();
         assertEquals("\"default\"", getNotificationPermission());
     }
@@ -138,9 +138,8 @@ public class TrustedWebActivityPermissionsTest {
     public void allowGeolocation() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPermissionManager.updatePermission(mOrigin, mPackage, GEOLOCATION, true));
-        assertTrue(WebappRegistry.getInstance()
-                           .getTrustedWebActivityPermissionStore()
-                           .arePermissionEnabled(GEOLOCATION, mOrigin));
+        assertTrue(WebappRegistry.getInstance().getPermissionStore().arePermissionEnabled(
+                GEOLOCATION, mOrigin));
     }
 
     @Test
@@ -148,9 +147,8 @@ public class TrustedWebActivityPermissionsTest {
     public void blockGeolocation() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPermissionManager.updatePermission(mOrigin, mPackage, GEOLOCATION, false));
-        assertFalse(WebappRegistry.getInstance()
-                            .getTrustedWebActivityPermissionStore()
-                            .arePermissionEnabled(GEOLOCATION, mOrigin));
+        assertFalse(WebappRegistry.getInstance().getPermissionStore().arePermissionEnabled(
+                GEOLOCATION, mOrigin));
     }
 
     private String getNotificationPermission() throws TimeoutException {

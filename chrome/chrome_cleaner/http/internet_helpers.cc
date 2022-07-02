@@ -99,13 +99,13 @@ void ParseContentType(const std::wstring& content_type_str,
       DCHECK(param_value_begin <= tokenizer.token_end());
       TrimLWS(&param_value_begin, &param_value_end);
 
-      if (base::LowerCaseEqualsASCII(
+      if (base::EqualsCaseInsensitiveASCII(
               base::MakeWStringPiece(param_name_begin, param_name_end),
               "charset")) {
         charset_val = param_value_begin - begin;
         charset_end = param_value_end - begin;
         type_has_charset = true;
-      } else if (base::LowerCaseEqualsASCII(
+      } else if (base::EqualsCaseInsensitiveASCII(
                      base::MakeWStringPiece(param_name_begin, param_name_end),
                      "boundary")) {
         if (boundary)
@@ -142,7 +142,7 @@ void ParseContentType(const std::wstring& content_type_str,
       content_type_str.find_first_of(L'/') != std::wstring::npos) {
     // The common case here is that mime_type is empty.
     bool eq = !mime_type->empty() &&
-              base::LowerCaseEqualsASCII(
+              base::EqualsCaseInsensitiveASCII(
                   base::MakeWStringPiece(begin + type_val, begin + type_end),
                   base::WideToUTF8(*mime_type).data());
     if (!eq) {

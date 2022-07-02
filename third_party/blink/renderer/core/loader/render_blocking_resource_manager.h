@@ -53,6 +53,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Loading API) to block rendering for a short period, so that preloaded fonts
   // have a higher chance to be used by the first paint.
   // Design doc: https://bit.ly/36E8UKB
+  // TODO(crbug.com/1271296): `kRegular` is no longer in use. Clean up the code.
   enum class PreloadType { kRegular, kShortBlockingFont };
   void AddPendingPreload(const PendingLinkPreload& link, PreloadType type);
   void RemovePendingPreload(const PendingLinkPreload& link);

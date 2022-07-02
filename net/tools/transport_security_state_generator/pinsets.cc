@@ -7,9 +7,7 @@
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 Pinsets::Pinsets() = default;
 
@@ -25,6 +23,4 @@ void Pinsets::RegisterPinset(std::unique_ptr<Pinset> pinset) {
       pinset->name(), std::move(pinset)));
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

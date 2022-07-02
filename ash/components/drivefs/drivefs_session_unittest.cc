@@ -245,6 +245,13 @@ class DriveFsSessionForTest : public DriveFsSession {
       ConnectToExtensionCallback callback) override {}
   void DisplayConfirmDialog(mojom::DialogReasonPtr error,
                             DisplayConfirmDialogCallback callback) override {}
+  void ExecuteHttpRequest(
+      mojom::HttpRequestPtr request,
+      mojo::PendingRemote<mojom::HttpDelegate> delegate) override {}
+  void GetMachineRootID(
+      mojom::DriveFsDelegate::GetMachineRootIDCallback callback) override {}
+  void PersistMachineRootID(const std::string& id) override {}
+  void OnMirrorSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {}
 };
 
 class DriveFsSessionTest : public ::testing::Test,

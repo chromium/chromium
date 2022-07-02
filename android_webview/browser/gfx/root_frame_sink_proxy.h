@@ -23,6 +23,10 @@ class RootFrameSinkProxyClient {
       viz::FrameSinkId frame_sink_id,
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
 };
 
 // Per-AwContents object. Straddles UI and Viz thread. Public methods should be
@@ -67,9 +71,17 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
   void ReturnResourcesOnViz(viz::FrameSinkId frame_sink_id,
                             uint32_t layer_tree_frame_sink_id,
                             std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessedOnViz(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
   void ReturnResourcesOnUI(viz::FrameSinkId frame_sink_id,
                            uint32_t layer_tree_frame_sink_id,
                            std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessedOnUI(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
 
   bool BeginFrame(const viz::BeginFrameArgs& args);
 

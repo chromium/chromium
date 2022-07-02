@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources>
+  <!-- QR code camera preview overlay dimensions -->
+  <dimen name="guided_browsing_qr_code_overlay_text_size">16sp</dimen>
+  <dimen name="guided_browsing_qr_code_overlay_rect_size">250dp</dimen>
+  <dimen name="guided_browsing_qr_code_overlay_corner_size">25dp</dimen>
+  <dimen name="guided_browsing_qr_code_overlay_corner_width">4dp</dimen>
+  <dimen name="guided_browsing_qr_code_overlay_text_top_padding">14dp</dimen>
+</resources>

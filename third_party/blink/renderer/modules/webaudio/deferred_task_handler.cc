@@ -156,11 +156,11 @@ void DeferredTaskHandler::RemoveAutomaticPullNode(AudioHandler* node) {
 bool DeferredTaskHandler::HasAutomaticPullNodes() {
   DCHECK(IsAudioThread());
 
-  MutexTryLocker try_locker(automatic_pull_handlers_lock_);
+  base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
 
   // This assumes there is one or more automatic pull nodes when the mutex
   // is held by AddAutomaticPullNode() or RemoveAutomaticPullNode() method.
-  return try_locker.Locked() ? automatic_pull_handlers_.size() > 0 : true;
+  return try_locker.is_acquired() ? automatic_pull_handlers_.size() > 0 : true;
 }
 
 void DeferredTaskHandler::UpdateAutomaticPullNodes() {
@@ -168,8 +168,8 @@ void DeferredTaskHandler::UpdateAutomaticPullNodes() {
   AssertGraphOwner();
 
   if (automatic_pull_handlers_need_updating_) {
-    MutexTryLocker try_locker(automatic_pull_handlers_lock_);
-    if (try_locker.Locked()) {
+    base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
+    if (try_locker.is_acquired()) {
       CopyToVector(automatic_pull_handlers_,
                    rendering_automatic_pull_handlers_);
       automatic_pull_handlers_need_updating_ = false;
@@ -181,8 +181,8 @@ void DeferredTaskHandler::ProcessAutomaticPullNodes(
     uint32_t frames_to_process) {
   DCHECK(IsAudioThread());
 
-  MutexTryLocker try_locker(automatic_pull_handlers_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(automatic_pull_handlers_lock_);
+  if (try_locker.is_acquired()) {
     for (auto& rendering_automatic_pull_handler :
          rendering_automatic_pull_handlers_) {
       rendering_automatic_pull_handler->ProcessIfNecessary(frames_to_process);
@@ -295,9 +295,7 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 
 DeferredTaskHandler::DeferredTaskHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : automatic_pull_handlers_need_updating_(false),
-      task_runner_(std::move(task_runner)),
-      audio_thread_(0) {}
+    : task_runner_(std::move(task_runner)), audio_thread_(0) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -345,8 +343,8 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   AssertGraphOwner();
 
   // Quick exit if there are no handlers that need to be deleted so that we
-  // don't unecessarily post a task.  Be consistent with
-  // |DeleteHandlersOnMainThread()| so we don't accidentally return early when
+  // don't unnecessarily post a task.  Be consistent with
+  // `DeleteHandlersOnMainThread()` so we don't accidentally return early when
   // there are handlers that could be deleted.
   if (rendering_orphan_handlers_.IsEmpty() &&
       finished_tail_processing_handlers_.size() == 0) {
@@ -372,7 +370,7 @@ void DeferredTaskHandler::ClearHandlersToBeDeleted() {
   DCHECK(IsMainThread());
 
   {
-    MutexLocker locker(automatic_pull_handlers_lock_);
+    base::AutoLock locker(automatic_pull_handlers_lock_);
     rendering_automatic_pull_handlers_.clear();
   }
 
@@ -388,7 +386,7 @@ void DeferredTaskHandler::ClearHandlersToBeDeleted() {
 void DeferredTaskHandler::ClearContextFromOrphanHandlers() {
   DCHECK(IsMainThread());
 
-  // |rendering_orphan_handlers_| and |deletable_orphan_handlers_| can
+  // `rendering_orphan_handlers_` and `deletable_orphan_handlers_` can
   // be modified on the audio thread.
   GraphAutoLocker locker(*this);
 
@@ -429,16 +427,16 @@ void DeferredTaskHandler::FinishTailProcessing() {
 
   // TODO(crbug.com/832200): Simplify this!
 
-  // |DisableOutputs()| can cause new handlers to start tail processing, which
+  // `DisableOutputs()` can cause new handlers to start tail processing, which
   // in turn can cause hte handler to want to disable outputs.  For the former
-  // case, the handler is added to |tail_processing_handlers_|.  In the latter
-  // case, the handler is added to |finished_tail_processing_handlers_|.  So, we
+  // case, the handler is added to `tail_processing_handlers_`.  In the latter
+  // case, the handler is added to `finished_tail_processing_handlers_`.  So, we
   // need to loop around until these vectors are completely empty.
   do {
     while (tail_processing_handlers_.size() > 0) {
-      // |DisableOutputs()| can modify |tail_processing_handlers_|, so
+      // `DisableOutputs()` can modify `tail_processing_handlers_`, so
       // swap it out before processing it.  And keep running this until
-      // nothing gets added to |tail_processing_handlers_|.
+      // nothing gets added to `tail_processing_handlers_`.
       Vector<scoped_refptr<AudioHandler>> handlers_to_be_disabled;
 
       handlers_to_be_disabled.swap(tail_processing_handlers_);

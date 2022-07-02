@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -96,7 +98,9 @@ class PaymentRequestShippingAddressUseStatsTest
 
 // Tests that use stats for the shipping address used in a Payment Request are
 // properly updated upon completion.
-IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest, RecordUse) {
+// TODO(crbug.com/1327722): Test is flaky.
+IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
+                       DISABLED_RecordUse) {
   NavigateTo("/payment_request_free_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kSomeDate);
@@ -222,7 +226,14 @@ class PaymentRequestContactAddressUseStatsTest
 
 // Tests that use stats for the contact address used in a Payment Request are
 // properly updated upon completion.
-IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest, RecordUse) {
+// TODO(crbug.com/1328016): Flaky on Linux, investigate and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RecordUse DISABLED_RecordUse
+#else
+#define MAYBE_RecordUse RecordUse
+#endif
+IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
+                       MAYBE_RecordUse) {
   NavigateTo("/payment_request_name_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kSomeDate);
@@ -346,8 +357,11 @@ class PaymentRequestSameShippingAndContactAddressUseStatsTest
 
 // Tests that use stats for an address that was used both as a shipping and
 // contact address in a Payment Request are properly updated upon completion.
+// TODO(crbug.com/1328016): Flaky on Linux, investigate and re-enable.
+// MAYBE_RecordUse defined above (PaymentRequestContactAddressUseStatsTest
+// fixture).
 IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
-                       RecordUse) {
+                       MAYBE_RecordUse) {
   NavigateTo("/payment_request_contact_details_and_free_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kSomeDate);

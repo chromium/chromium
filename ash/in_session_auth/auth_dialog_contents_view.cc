@@ -77,8 +77,6 @@ constexpr SkColor kErrorColor = gfx::kGoogleRed600;
 
 constexpr int kSpacingBeforeButtons = 32;
 
-constexpr int kMaxPinAttempts = 5;
-
 }  // namespace
 
 // Consists of fingerprint icon view and a label.
@@ -572,7 +570,7 @@ void AuthDialogContentsView::AddActionButtonsView() {
 
 void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
   // Ignore anything if reached max attempts.
-  if (pin_attempts_ >= kMaxPinAttempts)
+  if (pin_locked_out_)
     return;
 
   if (title_->IsShowingError())
@@ -587,7 +585,7 @@ void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
 
 void AuthDialogContentsView::OnBackspaceFromPinPad() {
   // Ignore anything if reached max attempts.
-  if (pin_attempts_ >= kMaxPinAttempts)
+  if (pin_locked_out_)
     return;
 
   if (title_->IsShowingError())
@@ -634,16 +632,17 @@ void AuthDialogContentsView::OnAuthSubmit(bool authenticated_by_pin,
 
 void AuthDialogContentsView::OnPasswordOrPinAuthComplete(
     bool authenticated_by_pin,
-    absl::optional<bool> success) {
+    bool success,
+    bool can_use_pin) {
   // On success, do nothing, and the dialog will dismiss.
-  if (success.has_value() && success.value())
+  if (success)
     return;
 
   std::u16string error_text;
   if (authenticated_by_pin) {
-    pin_attempts_++;
+    pin_locked_out_ = !can_use_pin;
     error_text =
-        pin_attempts_ >= kMaxPinAttempts
+        pin_locked_out_
             ? l10n_util::GetStringUTF16(
                   IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS)
             : l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT);
@@ -656,7 +655,7 @@ void AuthDialogContentsView::OnPasswordOrPinAuthComplete(
   if (!authenticated_by_pin) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);
-  } else if (pin_attempts_ < kMaxPinAttempts) {
+  } else if (can_use_pin) {
     if (pin_autosubmit_on_) {
       pin_digit_input_view_->Reset();
       pin_digit_input_view_->SetReadOnly(false);

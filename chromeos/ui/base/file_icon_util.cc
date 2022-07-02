@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -137,10 +139,10 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
 namespace internal {
 
 IconType GetIconTypeForPath(const base::FilePath& filepath) {
-  static const base::NoDestructor<base::flat_map<std::string, IconType>>
-      // Changes to this map should be reflected in
-      // ui/file_manager/file_manager/common/js/file_type.js.
-      extension_to_icon({
+  // Changes to this map should be reflected in
+  // ui/file_manager/base/gn/file_types.json5
+  static const auto extension_to_icon =
+      base::MakeFixedFlatMap<base::StringPiece, IconType>({
           // Image
           {".JPEG", IconType::kImage},
           {".JPG", IconType::kImage},
@@ -193,25 +195,31 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".TXT", IconType::kGeneric},
 
           // Archive
-          {".ZIP", IconType::kArchive},
-          {".RAR", IconType::kArchive},
-          {".ISO", IconType::kArchive},
           {".7Z", IconType::kArchive},
-          {".CRX", IconType::kArchive},
-          {".TAR", IconType::kArchive},
-          {".TAR.BZ2", IconType::kArchive},
-          {".TBZ2", IconType::kArchive},
+          {".BZ", IconType::kArchive},
           {".BZ2", IconType::kArchive},
-          {".TBZ", IconType::kArchive},
-          {".TAR.GZ", IconType::kArchive},
-          {".TGZ", IconType::kArchive},
+          {".CRX", IconType::kArchive},
           {".GZ", IconType::kArchive},
-          {".TAR.LZMA", IconType::kArchive},
-          {".TLZMA", IconType::kArchive},
+          {".ISO", IconType::kArchive},
+          {".LZ", IconType::kArchive},
           {".LZMA", IconType::kArchive},
-          {".TAR.XZ", IconType::kArchive},
+          {".LZO", IconType::kArchive},
+          {".RAR", IconType::kArchive},
+          {".TAR", IconType::kArchive},
+          {".TAZ", IconType::kArchive},
+          {".TB2", IconType::kArchive},
+          {".TBZ", IconType::kArchive},
+          {".TBZ2", IconType::kArchive},
+          {".TGZ", IconType::kArchive},
+          {".TLZ", IconType::kArchive},
+          {".TLZMA", IconType::kArchive},
           {".TXZ", IconType::kArchive},
+          {".TZ", IconType::kArchive},
+          {".TZ2", IconType::kArchive},
+          {".TZST", IconType::kArchive},
           {".XZ", IconType::kArchive},
+          {".Z", IconType::kArchive},
+          {".ZIP", IconType::kArchive},
 
           // Hosted doc
           {".GDOC", IconType::kGdoc},
@@ -244,10 +252,10 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".TINI", IconType::kTini},
       });
 
-  const auto& icon_it =
-      extension_to_icon->find(base::ToUpperASCII(filepath.Extension()));
-  if (icon_it != extension_to_icon->end()) {
-    return icon_it->second;
+  const auto* const it =
+      extension_to_icon.find(base::ToUpperASCII(filepath.Extension()));
+  if (it != extension_to_icon.end()) {
+    return it->second;
   } else {
     return IconType::kGeneric;
   }

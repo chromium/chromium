@@ -93,6 +93,8 @@ constexpr auto kOSSettingsMap =
         {ChromePage::POINTEROVERLAY,
          chromeos::settings::mojom::kPointersSubpagePath},
         {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
+        {ChromePage::PRIVACYHUB,
+         chromeos::settings::mojom::kPrivacyHubSubpagePath},
         {ChromePage::SMARTPRIVACY,
          chromeos::settings::mojom::kSmartPrivacySubpagePath},
         {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
@@ -262,19 +264,17 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
     return;
   }
 
-  int event_flags = apps::GetEventFlags(
-      apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, /*prefer_container=*/false);
+  int event_flags = apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                        /*prefer_container=*/false);
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   proxy->AppRegistryCache().ForOneApp(
       *app_id, [&event_flags](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
-          event_flags = apps::GetEventFlags(
-              apps::mojom::LaunchContainer::kLaunchContainerTab,
-              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              /*prefer_container=*/false);
+          event_flags =
+              apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  /*prefer_container=*/false);
         }
       });
 
@@ -405,17 +405,15 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
 
   apps::mojom::IntentPtr intent = ConvertLaunchIntent(arc_intent);
 
-  auto launch_container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
   proxy->AppRegistryCache().ForOneApp(
-      app_id, [&launch_container, &disposition](const apps::AppUpdate& update) {
+      app_id, [&disposition](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
-          launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
           disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
         }
       });
 
-  int event_flags = apps::GetEventFlags(launch_container, disposition,
+  int event_flags = apps::GetEventFlags(disposition,
                                         /*prefer_container=*/false);
 
   proxy->LaunchAppWithIntent(app_id, event_flags, std::move(intent),

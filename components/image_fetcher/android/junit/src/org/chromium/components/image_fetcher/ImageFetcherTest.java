@@ -126,6 +126,7 @@ public class ImageFetcherTest {
         assertEquals(CLIENT_NAME, params.clientName);
         assertEquals(0, params.width);
         assertEquals(0, params.height);
+        assertFalse(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
 
         // Verifies params with size.
@@ -134,6 +135,7 @@ public class ImageFetcherTest {
         assertEquals(CLIENT_NAME, params.clientName);
         assertEquals(WIDTH_PX, params.width);
         assertEquals(HEIGHT_PX, params.height);
+        assertTrue(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
     }
 
@@ -146,7 +148,28 @@ public class ImageFetcherTest {
         assertEquals(CLIENT_NAME, params.clientName);
         assertEquals(WIDTH_PX, params.width);
         assertEquals(HEIGHT_PX, params.height);
+        assertTrue(params.shouldResize);
         assertEquals(EXPIRATION_INTERVAL, params.expirationIntervalMinutes);
+    }
+
+    @Test
+    public void testCreateParamsNoResize() {
+        ImageFetcher.Params params =
+                ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        assertEquals(URL.getSpec(), params.url);
+        assertEquals(CLIENT_NAME, params.clientName);
+        assertEquals(WIDTH_PX, params.width);
+        assertEquals(HEIGHT_PX, params.height);
+        assertFalse(params.shouldResize);
+        assertEquals(0, params.expirationIntervalMinutes);
+
+        params = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, 0, 0);
+        assertEquals(URL.getSpec(), params.url);
+        assertEquals(CLIENT_NAME, params.clientName);
+        assertEquals(0, params.width);
+        assertEquals(0, params.height);
+        assertFalse(params.shouldResize);
+        assertEquals(0, params.expirationIntervalMinutes);
     }
 
     @Test
@@ -171,9 +194,13 @@ public class ImageFetcherTest {
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
 
+        // Difference in whether bitmap is resized (vs size being used to select frame in .ico).
+        params2 = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        assertFalse(params1.equals(params2));
+        assertFalse(params2.equals(params1));
+
         // Same parameters comparison.
-        params2 = ImageFetcher.Params.createWithExpirationInterval(
-                URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL);
+        params1 = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
         assertTrue(params1.equals(params2));
         assertTrue(params2.equals(params1));
         assertEquals(params1.hashCode(), params2.hashCode());

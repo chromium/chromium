@@ -70,12 +70,12 @@ void GetNameAndAbbreviationViaAlternativeStateNameMap(
   }
   if (state_entry->has_canonical_name() &&
       !state_entry->canonical_name().empty()) {
-    std::u16string full = base::ASCIIToUTF16(state_entry->canonical_name());
+    std::u16string full = base::UTF8ToUTF16(state_entry->canonical_name());
     std::u16string abbr;
     size_t curr_min_abbr_size = INT_MAX;
     for (const auto& it_abbr : state_entry->abbreviations()) {
       if (!it_abbr.empty() && it_abbr.size() < curr_min_abbr_size) {
-        abbr = base::ASCIIToUTF16(it_abbr);
+        abbr = base::UTF8ToUTF16(it_abbr);
         curr_min_abbr_size = it_abbr.size();
       }
     }

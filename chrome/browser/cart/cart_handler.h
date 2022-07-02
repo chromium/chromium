@@ -13,11 +13,16 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Handles requests of chrome cart module sent from JS.
 class CartHandler : public chrome_cart::mojom::CartHandler {
  public:
   CartHandler(mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
-              Profile* profile);
+              Profile* profile,
+              content::WebContents* web_contents);
   ~CartHandler() override;
 
   // chrome_cart::mojom::CartHandler:
@@ -52,6 +57,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
                            std::vector<CartDB::KeyAndValue> res);
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
   raw_ptr<CartService> cart_service_;
+  raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<CartHandler> weak_factory_{this};
 };
 

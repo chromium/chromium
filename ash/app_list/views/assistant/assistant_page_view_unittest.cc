@@ -16,11 +16,12 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -814,8 +815,9 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
+// TODO(b/234164113): Test is flaky.
 TEST_P(AssistantPageClamshellTest,
-       ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
+       DISABLED_ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
       CreateAndGetSuggestionChip("<suggestion chip query>");
@@ -921,7 +923,11 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
 }
 
 TEST_F(AssistantPageNonBubbleTest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kNotificationsRefresh,
+                             chromeos::features::kDarkLightMode});
 
   ShowAssistantUi();
 
@@ -935,7 +941,7 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
   scoped_feature_list_disable_blur.InitAndDisableFeature(
       features::kEnableBackgroundBlur);
 
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  DarkLightModeControllerImpl::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   ASSERT_FALSE(features::IsBackgroundBlurEnabled());
@@ -974,7 +980,7 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
 TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightModeWithBlur) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  DarkLightModeControllerImpl::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsBackgroundBlurEnabled());
 
@@ -1038,20 +1044,23 @@ TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
   auto* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   SetTabletMode(true);
   ShowAssistantUi();
 
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
             color_provider->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
             color_provider->GetBaseLayerColor(

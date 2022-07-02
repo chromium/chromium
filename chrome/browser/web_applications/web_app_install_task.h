@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -102,30 +103,14 @@ class WebAppInstallTask : content::WebContentsObserver {
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);
 
-  // Load |launch_url| and do silent background install with
-  // |InstallWebAppFromManifestWithFallback|. Posts |LoadUrl| task to
-  // |url_loader| immediately. Doesn't memorize |url_loader| pointer.
-  void LoadAndInstallWebAppFromManifestWithFallback(
-      const GURL& launch_url,
-      content::WebContents* web_contents,
-      WebAppUrlLoader* url_loader,
-      OnceInstallCallback callback);
-
   // Load |install_url| and install SubApp. Posts |LoadUrl| task to |url_loader|
   // immediately. Doesn't memorize |url_loader| pointer.
   void LoadAndInstallSubAppFromURL(const GURL& install_url,
+                                   const AppId& expected_app_id,
                                    content::WebContents* contents,
                                    WebAppUrlLoader* url_loader,
+                                   WebAppInstallDialogCallback dialog_callback,
                                    OnceInstallCallback install_callback);
-
-  // Fetches the icon URLs in |web_app_install_info| to populate the icon
-  // bitmaps. Once fetched uses the contents of |web_app_install_info| as the
-  // entire web app installation data.
-  void InstallWebAppFromInfoRetrieveIcons(
-      content::WebContents* web_contents,
-      std::unique_ptr<WebAppInstallInfo> web_app_install_info,
-      WebAppInstallFinalizer::FinalizeOptions finalize_options,
-      OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled
   // |web_app_install_info| which holds all the data needed for installation.
@@ -144,7 +129,11 @@ class WebAppInstallTask : content::WebContentsObserver {
                                OnceInstallCallback callback);
 
   // Perform installation after manifest is retrieved and validated, starts the
-  // installation flow from `OnDidPerformInstallableCheck`
+  // installation flow from `OnDidPerformInstallableCheck`.
+  //
+  // When |dialog_callback| is null (aka |base::NullCallback|) the command
+  // doesn't show installation prompt in UI and installs the application in
+  // background.
   void InstallWebAppOnManifestValidated(
       content::WebContents* contents,
       WebAppInstallDialogCallback dialog_callback,
@@ -286,23 +275,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       IconsDownloadedResult result,
       const DownloadedIconsHttpResults& icons_http_results);
 
-  void LogHeaderIfLogEmpty(const std::string& url);
-  void LogErrorObject(const char* stage,
-                      const std::string& url,
-                      base::Value object);
-
-  void LogUrlLoaderError(const char* stage,
-                         const std::string& url,
-                         WebAppUrlLoader::Result result);
-  void LogExpectedAppIdError(const char* stage,
-                             const std::string& url,
-                             const AppId& app_id);
-  void LogDownloadedIconsErrors(
-      const WebAppInstallInfo& web_app_info,
-      IconsDownloadedResult icons_downloaded_result,
-      const IconsMap& icons_map,
-      const DownloadedIconsHttpResults& icons_http_results);
-
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<Profile> profile_;
@@ -328,7 +300,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   absl::optional<WebAppInstallInfo> web_app_install_info_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-  std::unique_ptr<base::Value> error_dict_;
+  InstallErrorLogEntry log_entry_;
 
   // TODO(crbug.com/1216457): Make this enum const and set its value in the
   // constructor.

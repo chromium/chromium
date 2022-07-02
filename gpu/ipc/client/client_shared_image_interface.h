@@ -75,11 +75,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;
 #endif
-#if BUILDFLAG(IS_ANDROID)
-  Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
-                                   uint32_t usage,
-                                   const SyncToken& sync_token) override;
-#endif
   SwapChainMailboxes CreateSwapChain(viz::ResourceFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,

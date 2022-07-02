@@ -13,13 +13,14 @@
 
 enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
 
-enum NTPTabOpeningPostOpeningAction {
+enum TabOpeningPostOpeningAction {
   // No action should be done
   NO_ACTION = 0,
   START_VOICE_SEARCH,
   START_QR_CODE_SCANNER,
   FOCUS_OMNIBOX,
-  NTP_TAB_OPENING_POST_OPENING_ACTION_COUNT,
+  SHOW_DEFAULT_BROWSER_SETTINGS,
+  TAB_OPENING_POST_OPENING_ACTION_COUNT,
 };
 
 class GURL;
@@ -52,9 +53,9 @@ class GURL;
 @property(nonatomic, readwrite, assign) BOOL launchInIncognito;
 // The mode in which the tab must be opened.
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
-// Action to be taken after opening the initial NTP.
+// Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
-    NTPTabOpeningPostOpeningAction postOpeningAction;
+    TabOpeningPostOpeningAction postOpeningAction;
 // Boolean to track if a Payment Request response is requested at startup.
 @property(nonatomic, readwrite, assign) BOOL completePaymentRequest;
 // Text query that should be executed on startup.

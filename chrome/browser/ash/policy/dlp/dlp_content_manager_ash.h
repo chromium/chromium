@@ -52,6 +52,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // DlpWindowObserver::Delegate overrides:
   void OnWindowOcclusionChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowTitleChanged(aura::Window* window) override;
 
   // Returns which restrictions are applied to the WebContents which are
   // currently visible.
@@ -102,11 +103,9 @@ class DlpContentManagerAsh : public DlpContentManager,
                                   const DlpContentRestrictionSet& restrictions);
 
  private:
-  friend class DlpContentManagerAshTestHelper;
   friend class DlpContentManagerTestHelper;
   friend class DlpContentObserver;
   friend class DlpContentTabHelper;
-  friend class MockDlpContentManagerAsh;
 
   // Structure to keep track of a running video capture.
   struct VideoCaptureInfo {

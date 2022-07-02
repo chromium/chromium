@@ -14,11 +14,7 @@
     <includes>
       <part file="cros_bluetooth_config_resources.grdp" />
       <part file="cros_network_config_resources.grdp" />
-      <part file="human_presence_resources.grdp" />
       <part file="network_health_resources.grdp" />
-      <if expr="enable_cros_libassistant">
-        <part file="assistant_resources.grdp" />
-      </if>
     </includes>
   </release>
 </grit>

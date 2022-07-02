@@ -23,7 +23,7 @@
 namespace partition_alloc::internal::base {
 
 // Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
-inline uint16_t ByteSwap(uint16_t x) {
+inline constexpr uint16_t ByteSwap(uint16_t x) {
 #if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_ushort(x);
 #else
@@ -31,7 +31,7 @@ inline uint16_t ByteSwap(uint16_t x) {
 #endif
 }
 
-inline uint32_t ByteSwap(uint32_t x) {
+inline constexpr uint32_t ByteSwap(uint32_t x) {
 #if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_ulong(x);
 #else
@@ -69,21 +69,21 @@ inline constexpr uintptr_t ByteSwapUintPtrT(uintptr_t x) {
 
 // Converts the bytes in |x| from host order (endianness) to little endian, and
 // returns the result.
-inline uint16_t ByteSwapToLE16(uint16_t x) {
+inline constexpr uint16_t ByteSwapToLE16(uint16_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return x;
 #else
   return ByteSwap(x);
 #endif
 }
-inline uint32_t ByteSwapToLE32(uint32_t x) {
+inline constexpr uint32_t ByteSwapToLE32(uint32_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return x;
 #else
   return ByteSwap(x);
 #endif
 }
-inline uint64_t ByteSwapToLE64(uint64_t x) {
+inline constexpr uint64_t ByteSwapToLE64(uint64_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return x;
 #else
@@ -93,21 +93,21 @@ inline uint64_t ByteSwapToLE64(uint64_t x) {
 
 // Converts the bytes in |x| from network to host order (endianness), and
 // returns the result.
-inline uint16_t NetToHost16(uint16_t x) {
+inline constexpr uint16_t NetToHost16(uint16_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else
   return x;
 #endif
 }
-inline uint32_t NetToHost32(uint32_t x) {
+inline constexpr uint32_t NetToHost32(uint32_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else
   return x;
 #endif
 }
-inline uint64_t NetToHost64(uint64_t x) {
+inline constexpr uint64_t NetToHost64(uint64_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else
@@ -117,21 +117,21 @@ inline uint64_t NetToHost64(uint64_t x) {
 
 // Converts the bytes in |x| from host to network order (endianness), and
 // returns the result.
-inline uint16_t HostToNet16(uint16_t x) {
+inline constexpr uint16_t HostToNet16(uint16_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else
   return x;
 #endif
 }
-inline uint32_t HostToNet32(uint32_t x) {
+inline constexpr uint32_t HostToNet32(uint32_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else
   return x;
 #endif
 }
-inline uint64_t HostToNet64(uint64_t x) {
+inline constexpr uint64_t HostToNet64(uint64_t x) {
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
   return ByteSwap(x);
 #else

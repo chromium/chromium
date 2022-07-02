@@ -172,6 +172,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void GetRoutes(
       bool numeric,
       bool ipv6,
+      bool all_tables,
       DBusMethodCallback<std::vector<std::string>> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface, debugd::kGetRoutes);
     dbus::MessageWriter writer(&method_call);
@@ -185,6 +186,10 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     sub_writer.OpenDictEntry(&elem_writer);
     elem_writer.AppendString("v6");
     elem_writer.AppendVariantOfBool(ipv6);
+    sub_writer.CloseContainer(&elem_writer);
+    sub_writer.OpenDictEntry(&elem_writer);
+    elem_writer.AppendString("all");
+    elem_writer.AppendVariantOfBool(all_tables);
     sub_writer.CloseContainer(&elem_writer);
     writer.CloseContainer(&sub_writer);
     debugdaemon_proxy_->CallMethod(
@@ -629,6 +634,57 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SwapZramEnableWriteback(
+      uint32_t size_mb,
+      DBusMethodCallback<std::string> callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kSwapZramEnableWriteback);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(size_mb);
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnZramWritebackOptionResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SwapZramSetWritebackLimit(
+      uint32_t limit_pages,
+      DBusMethodCallback<std::string> callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kSwapZramSetWritebackLimit);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(limit_pages);
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnZramWritebackOptionResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SwapZramMarkIdle(uint32_t age_seconds,
+                        DBusMethodCallback<std::string> callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kSwapZramMarkIdle);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(age_seconds);
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnZramWritebackOptionResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void InitiateSwapZramWriteback(
+      debugd::ZramWritebackMode mode,
+      DBusMethodCallback<std::string> callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 "InitiateSwapZramWriteback");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(mode);
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnZramWritebackOptionResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StopPacketCapture(const std::string& handle) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kPacketCaptureStop);
@@ -1006,6 +1062,24 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     }
 
     std::move(callback).Run(std::move(flags));
+  }
+
+  void OnZramWritebackOptionResult(DBusMethodCallback<std::string> callback,
+                                   dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::string res;
+    dbus::MessageReader reader(response);
+    if (!reader.PopString(&res)) {
+      LOG(ERROR) << "Received a non-string response from dbus";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(std::move(res));
   }
 
   // Called when a D-Bus signal is initially connected.

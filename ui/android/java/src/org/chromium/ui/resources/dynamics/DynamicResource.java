@@ -4,46 +4,27 @@
 
 package org.chromium.ui.resources.dynamics;
 
-import android.graphics.Bitmap;
-
-import androidx.annotation.CallSuper;
-
+import org.chromium.base.Callback;
 import org.chromium.ui.resources.Resource;
-import org.chromium.ui.resources.ResourceLoader.ResourceLoaderCallback;
 
 /**
- * A representation of a dynamic resource.  The contents of the resource might change from frame to
- * frame.
+ * A representation of a dynamic resource. The contents may change from frame to frame. It should be
+ * be able to return a {@link Resource} version of itself asynchronously. The
+ * {@link DynamicResource} is in charge of tracking when it has changed and should actually be
+ * returning a copy of itself.
  */
-public abstract class DynamicResource implements Resource {
+public interface DynamicResource {
     /**
-     * {@link DynamicResourceLoader#loadResource(int)} only notifies {@link ResourceLoaderCallback}
-     * if the resource is dirty. Therefore, if the resource is not dirty, this should not be called.
-     * @return null. This method should be overridden, and ignore the return value here.
+     * Will be called every render frame to notify the resource. The expectation is that this call
+     * will happen a lot, but only needs to be responded to when the dynamic resource has had a
+     * change that would cause the resulting resource to be different in some way, typically a
+     * change in the return of {@link Resource#getBitmap()}.
      */
-    @Override
-    @CallSuper
-    public Bitmap getBitmap() {
-        assert isDirty() : "getBitmap() should not be called when not dirty";
-        return null;
-    }
-
-    @Override
-    public boolean shouldRemoveResourceOnNullBitmap() {
-        return false;
-    }
+    void onResourceRequested();
 
     /**
-     * Note that this is called for every access to the resource during a frame.  If a resource is
-     * dirty, it should not be dirty again during the same looper call.
-     * {@link DynamicResourceLoader#loadResource(int)} only notifies
-     * {@link ResourceLoaderCallback#onResourceLoaded} if the resource is dirty.
-     * Therefore, if the resource is not dirty, {@link #getBitmap()} doesn't get called.
-     *
-     * TODO(dtrainor): Add checks so that a dynamic resource **can't** be built more than once each
-     * frame.
-     *
-     * @return Whether or not this resource is dirty and the CC component should be rebuilt.
+     * Sets the way this dynamic resource will use to return the resource that is ready to be used
+     * and drawn.
      */
-    abstract boolean isDirty();
+    void setOnResourceReadyCallback(Callback<Resource> onResourceReady);
 }

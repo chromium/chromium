@@ -104,8 +104,6 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
   response->parsed_headers =
       network::PopulateParsedHeaders(info.headers.get(), url_request.url);
   mojo::Remote<network::mojom::URLLoaderClient>& client = params->client;
-  client->OnReceiveResponse(std::move(response),
-                            mojo::ScopedDataPipeConsumerHandle());
 
   uint32_t bytes_written = response_info.body.size();
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -114,7 +112,7 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
            mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
   producer_handle->WriteData(response_info.body.data(), &bytes_written,
                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
+  client->OnReceiveResponse(std::move(response), std::move(consumer_handle));
 
   network::URLLoaderCompletionStatus status;
   status.error_code = response_info.error_code;

@@ -1,23 +1,8 @@
 /* Copyright 2021 The Chromium Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
-
-body:is(.show-scan-mode, :not(.streaming), :not(.photo)) #toggle-barcode {
+body:is(:not(.scan), :not(.streaming)) #scan-modes-group {
   display: none;
-}
-
-body:is(:not(.show-scan-mode), :not(.scan), :not(.streaming)) #scan-modes-group {
-  display: none;
-}
-
-#toggle-barcode:checked {
-  background: url(/images/barcode_toggle_on.svg) center no-repeat,
-              rgba(var(--blue-300-rgb), 0.3);
-}
-
-#toggle-barcode {
-  background-image: url(/images/barcode_toggle_off.svg);
-  border-radius: 50%;
 }
 
 /* The container of scan box for layout and positioning. */
@@ -354,7 +339,6 @@ body.enable-scan-barcode .barcode-scan-box {
 
 #view-crop-document .review-image .dot {
   --icon-size: 12px;
-  --focus-ring-style: none;
   --focus-size: 32px;
 
   border-radius: 50%;
@@ -363,6 +347,10 @@ body.enable-scan-barcode .barcode-scan-box {
   touch-action: none;
   transform: translate(-50%, -50%);
   width: 48px;
+}
+
+#view-crop-document .review-image .dot:focus-visible {
+  outline: none;
 }
 
 #view-crop-document .review-image .dot::before,
@@ -390,7 +378,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #view-crop-document .review-image .dot.dragging::after,
-body.tab-navigation #view-crop-document .review-image .dot:focus::after {
+body.keyboard-navigation #view-crop-document .review-image .dot:focus::after {
   height: var(--focus-size);
   transition-duration: var(--fast1-duration);
   transition-property: width, height;

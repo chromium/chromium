@@ -92,14 +92,15 @@ public class FeedOptionsCoordinator {
         FeedServiceBridge.setContentOrderForWebFeed(selectedOption.get(ChipProperties.ID));
     }
 
-    private PropertyModel createChipModel(
-            @ContentOrder int id, @StringRes int textId, boolean isSelected) {
+    private PropertyModel createChipModel(@ContentOrder int id, @StringRes int textId,
+            boolean isSelected, @StringRes int contentDescriptionId) {
         return new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                 .with(ChipProperties.ID, id)
                 .with(ChipProperties.TEXT, mContext.getResources().getString(textId))
                 .with(ChipProperties.SELECTED, isSelected)
                 .with(ChipProperties.CLICK_HANDLER, this::onOptionSelected)
-                .with(ChipProperties.CONTENT_DESCRIPTION, mContext.getResources().getString(textId))
+                .with(ChipProperties.CONTENT_DESCRIPTION,
+                        mContext.getResources().getString(contentDescriptionId))
                 .build();
     }
 
@@ -108,9 +109,9 @@ public class FeedOptionsCoordinator {
         int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
         List<PropertyModel> chipModels = new ArrayList<>();
         chipModels.add(createChipModel(ContentOrder.GROUPED, R.string.feed_sort_publisher,
-                currentSort == ContentOrder.GROUPED));
+                currentSort == ContentOrder.GROUPED, R.string.feed_options_sort_by_grouped));
         chipModels.add(createChipModel(ContentOrder.REVERSE_CHRON, R.string.latest,
-                currentSort == ContentOrder.REVERSE_CHRON));
+                currentSort == ContentOrder.REVERSE_CHRON, R.string.feed_options_sort_by_latest));
 
         for (PropertyModel model : chipModels) {
             ChipView chip = mView.createNewChip();

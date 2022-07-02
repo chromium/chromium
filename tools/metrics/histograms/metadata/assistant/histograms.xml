@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.DspHotwordDetection"
-    enum="DspHotwordDetectionStatus" expires_after="2022-10-16">
+    enum="DspHotwordDetectionStatus" expires_after="2022-12-18">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -112,6 +112,26 @@ chromium-metrics-reviews@google.com.
     Record the Assistant interaction resolution code. It indicates how the
     Assistant server interpreted a particular query and decision on the state,
     e.g. if the conversation is normal or timed out or ended with other errors.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Libassistant.DlcInstallResult"
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The result of an attempt to install the libassistant DLC package. Emitted
+    when the Assistant service installs the DLC.
+  </summary>
+</histogram>
+
+<histogram name="Assistant.Libassistant.DlcLoadStatus"
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2023-06-30">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records if the libassistant DLC is loaded successfully. Emitted when the
+    libassistant service initializes.
   </summary>
 </histogram>
 

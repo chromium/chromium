@@ -31,35 +31,8 @@ namespace net {
 
 URLRequestContext::URLRequestContext(
     base::PassKey<URLRequestContextBuilder> pass_key)
-    : net_log_(nullptr),
-      host_resolver_(nullptr),
-      cert_verifier_(nullptr),
-      http_auth_handler_factory_(nullptr),
-      proxy_resolution_service_(nullptr),
-      proxy_delegate_(nullptr),
-      ssl_config_service_(nullptr),
-      network_delegate_(nullptr),
-      http_server_properties_(nullptr),
-      http_user_agent_settings_(nullptr),
-      cookie_store_(nullptr),
-      transport_security_state_(nullptr),
-      ct_policy_enforcer_(nullptr),
-      sct_auditing_delegate_(nullptr),
-      http_transaction_factory_(nullptr),
-      job_factory_(nullptr),
-      throttler_manager_(nullptr),
-      quic_context_(nullptr),
-      network_quality_estimator_(nullptr),
-#if BUILDFLAG(ENABLE_REPORTING)
-      reporting_service_(nullptr),
-      network_error_logging_service_(nullptr),
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-      url_requests_(std::make_unique<std::set<const URLRequest*>>()),
-      enable_brotli_(false),
-      check_cleartext_permitted_(false),
-      require_network_isolation_key_(false),
-      bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle) {
-}
+    : url_requests_(std::make_unique<std::set<const URLRequest*>>()),
+      bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
 
 URLRequestContext::~URLRequestContext() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

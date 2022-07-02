@@ -6,9 +6,12 @@ template("generate_grd") {
   action(target_name) {
     script = "//ui/webui/resources/tools/generate_grd.py"
 
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                           ])
 
     inputs = []
     outputs = [ invoker.out_grd ]

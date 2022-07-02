@@ -21,6 +21,7 @@
 #include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -181,10 +182,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
           absl::nullopt) {
     MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
     if (capabilities) {
-      return SelectSettingsAudioCapture(*capabilities, constraints, false,
+      return SelectSettingsAudioCapture(*capabilities, constraints,
+                                        GetMediaStreamType(), false,
                                         is_reconfigurable);
     } else {
-      return SelectSettingsAudioCapture(capabilities_, constraints, false,
+      return SelectSettingsAudioCapture(capabilities_, constraints,
+                                        GetMediaStreamType(), false,
                                         is_reconfigurable);
     }
   }
@@ -558,33 +561,86 @@ class MediaStreamConstraintsUtilAudioTest
   std::string GetMediaStreamSource() override { return GetParam(); }
 };
 
-enum class ApmLocation {
-  kProcessedLocalAudioSource,
-  kAudioService,
-  kAudioServiceAvoidResampling
+enum class ChromeWideAecExperiment {
+  kDisabled,
+  kEnabledWithoutResamplingMitigation,
+  kEnabledWithResamplingMitigation
 };
 
 class MediaStreamConstraintsRemoteAPMTest
     : public MediaStreamConstraintsUtilAudioTestBase,
-      public testing::WithParamInterface<ApmLocation> {
+      public testing::WithParamInterface<
+          std::tuple<std::string, ChromeWideAecExperiment>> {
  protected:
-  ApmLocation GetApmLocation() { return GetParam(); }
+  std::string GetMediaStreamSource() override {
+    return std::get<0>(GetParam());
+  }
+
+  ChromeWideAecExperiment GetChromeWideAecExperiment() {
+    return std::get<1>(GetParam());
+  }
+
+  testing::Message GetMessageForScopedTrace() {
+    std::string experiment_string;
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
+        experiment_string = "disabled";
+        break;
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+        experiment_string = "\"enabled without resampling mitigation\"";
+        break;
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
+        experiment_string = "\"enabled with resampling mitigation\"";
+        break;
+    }
+    return testing::Message()
+           << "GetMediaStreamSource()=\"" << GetMediaStreamSource()
+           << "\", GetChromeWideAecExperiment()=" << experiment_string;
+  }
+
+  // Indicates where and how audio processing is applied.
+  enum class ApmLocation {
+    kProcessedLocalAudioSource,
+    kAudioService,
+    kAudioServiceAvoidResampling
+  };
+
+  ApmLocation GetApmLocation() {
+    if (GetMediaStreamType() !=
+        mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      // Non-mic input sources cannot run APM in the audio service:
+      // https://crbug.com/1328012
+      return ApmLocation::kProcessedLocalAudioSource;
+    }
+
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
+        return ApmLocation::kProcessedLocalAudioSource;
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
+        return ApmLocation::kAudioService;
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
+        return ApmLocation::kAudioServiceAvoidResampling;
+    }
+    NOTREACHED();
+  }
 
  private:
   void SetUp() override {
+    MediaStreamConstraintsUtilAudioTestBase::SetUp();
+
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    switch (GetApmLocation()) {
-      case ApmLocation::kProcessedLocalAudioSource:
+    switch (GetChromeWideAecExperiment()) {
+      case ChromeWideAecExperiment::kDisabled:
         scoped_feature_list_.InitAndDisableFeature(
             media::kChromeWideEchoCancellation);
         break;
-      case ApmLocation::kAudioService:
+      case ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation:
         scoped_feature_list_.InitAndEnableFeatureWithParameters(
             media::kChromeWideEchoCancellation,
             {{ "minimize_resampling",
                "false" }});
         break;
-      case ApmLocation::kAudioServiceAvoidResampling:
+      case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
         scoped_feature_list_.InitAndEnableFeatureWithParameters(
             media::kChromeWideEchoCancellation,
             {{ "minimize_resampling",
@@ -595,15 +651,13 @@ class MediaStreamConstraintsRemoteAPMTest
 
     // Setup the capabilities.
     ResetFactory();
-    if (IsDeviceCapture()) {
-      capabilities_.emplace_back(
-          "default_device", "fake_group1",
-          media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_STEREO,
-                                 media::AudioParameters::kAudioCDSampleRate,
-                                 1000));
-      default_device_ = &capabilities_[0];
-    }
+    capabilities_.emplace_back(
+        "default_device", "fake_group1",
+        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               media::CHANNEL_LAYOUT_STEREO,
+                               media::AudioParameters::kAudioCDSampleRate,
+                               1000));
+    default_device_ = &capabilities_[0];
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1732,7 +1786,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesNoConstraints) {
 
   AudioDeviceCaptureCapabilities capabilities;
   auto result = SelectSettingsAudioCapture(
-      capabilities, constraint_factory_.CreateMediaConstraints(), false);
+      capabilities, constraint_factory_.CreateMediaConstraints(),
+      GetMediaStreamType(), false);
   EXPECT_FALSE(result.HasValue());
   EXPECT_TRUE(std::string(result.failed_constraint_name()).empty());
 }
@@ -1745,7 +1800,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesWithConstraints) {
   AudioDeviceCaptureCapabilities capabilities;
   constraint_factory_.basic().sample_size.SetExact(16);
   auto result = SelectSettingsAudioCapture(
-      capabilities, constraint_factory_.CreateMediaConstraints(), false);
+      capabilities, constraint_factory_.CreateMediaConstraints(),
+      GetMediaStreamType(), false);
   EXPECT_FALSE(result.HasValue());
   EXPECT_TRUE(std::string(result.failed_constraint_name()).empty());
 }
@@ -1992,6 +2048,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
 
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
+        GetMediaStreamType(),
         false /* should_disable_hardware_noise_suppression */);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), kUnusedDeviceID.Utf8());
@@ -2004,6 +2061,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
     constraint_factory_.basic().echo_cancellation.SetExact(true);
     auto result = SelectSettingsAudioCapture(
         capabilities, constraint_factory_.CreateMediaConstraints(),
+        GetMediaStreamType(),
         false /* should_disable_hardware_noise_suppression */);
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), processed_source->device().id);
@@ -2012,7 +2070,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, UsedAndUnusedSources) {
   }
 }
 
-TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimetanlEcWithSource) {
+TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
   std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
       GetLocalMediaStreamAudioSource(
           false /* enable_system_echo_canceller */,
@@ -2028,8 +2086,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimetanlEcWithSource) {
 }
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
-  if (!IsDeviceCapture())
-    return;
+  SCOPED_TRACE(GetMessageForScopedTrace());
 
   AudioCaptureSettings result;
   ResetFactory();
@@ -2048,8 +2105,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
 
 TEST_P(MediaStreamConstraintsRemoteAPMTest,
        WebRtcSampleRateButNotDeviceSampleRate) {
-  if (!IsDeviceCapture())
-    return;
+  SCOPED_TRACE(GetMessageForScopedTrace());
 
   AudioCaptureSettings result;
   ResetFactory();
@@ -2064,6 +2120,30 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
     EXPECT_FALSE(result.HasValue());
   else
     EXPECT_TRUE(result.HasValue());
+}
+
+// TODO(https://crbug.com/1332484): Support sample rates not divisible by 100 in
+// the audio service.
+TEST_P(MediaStreamConstraintsRemoteAPMTest,
+       NonDivisibleSampleRatesAreNotSupportedInAudioService) {
+  SCOPED_TRACE(GetMessageForScopedTrace());
+
+  const std::string k22050HzDeviceId = "22050hz_device";
+  capabilities_.emplace_back(
+      k22050HzDeviceId.c_str(), "22050hz_fake_group",
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::CHANNEL_LAYOUT_STEREO, 22050, 1000));
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact(k22050HzDeviceId.c_str());
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  AudioCaptureSettings result = SelectSettings();
+
+  // Audio processing is only supported when APM runs in the renderer.
+  if (GetApmLocation() == ApmLocation::kProcessedLocalAudioSource)
+    EXPECT_TRUE(result.HasValue());
+  else
+    EXPECT_FALSE(result.HasValue());
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
@@ -2125,13 +2205,23 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamConstraintsRemoteAPMTest,
-    testing::Values(ApmLocation::kProcessedLocalAudioSource,
-                    ApmLocation::kAudioService,
-                    ApmLocation::kAudioServiceAvoidResampling));
+    testing::Combine(
+        testing::Values("",
+                        blink::kMediaStreamSourceTab,
+                        blink::kMediaStreamSourceSystem,
+                        blink::kMediaStreamSourceDesktop),
+        testing::Values(
+            ChromeWideAecExperiment::kDisabled,
+            ChromeWideAecExperiment::kEnabledWithoutResamplingMitigation,
+            ChromeWideAecExperiment::kEnabledWithResamplingMitigation)));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamConstraintsRemoteAPMTest,
-    testing::Values(ApmLocation::kProcessedLocalAudioSource));
+    testing::Combine(testing::Values("",
+                                     blink::kMediaStreamSourceTab,
+                                     blink::kMediaStreamSourceSystem,
+                                     blink::kMediaStreamSourceDesktop),
+                     testing::Values(ChromeWideAecExperiment::kDisabled)));
 #endif
 }  // namespace blink

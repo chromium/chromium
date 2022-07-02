@@ -224,12 +224,6 @@ class TabSlotController {
   // exist or is not collapsed.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
 
-  // Gets the last tab index in |group|, or nullopt if the group is
-  // currently empty. This is always safe to call unlike
-  // ListTabsInGroup().
-  virtual absl::optional<int> GetLastTabInGroup(
-      const tab_groups::TabGroupId& group) const = 0;
-
   // Returns the actual painted color of the given |group|, which depends on the
   // current theme.
   virtual SkColor GetPaintedGroupColor(

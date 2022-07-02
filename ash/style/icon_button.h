@@ -10,6 +10,7 @@
 #include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
+class ImageSkia;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -30,9 +31,11 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   METADATA_HEADER(IconButton);
 
   enum class Type {
+    kTiny,
     kSmall,
     kMedium,
     kLarge,
+    kTinyFloating,
     kSmallFloating,
     kMediumFloating,
     kLargeFloating
@@ -87,9 +90,17 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // wants to have different color from the default one.
   void SetBackgroundColor(const SkColor background_color);
 
+  // Sets the button's background image. The |background_image| is resized to
+  // fit the button. Note, if set, |background_image| is painted on top of
+  // the button's existing background color.
+  void SetBackgroundImage(const gfx::ImageSkia& background_image);
+
   // Sets the icon's color. If the button is togglable, this will be the color
   // when it's not toggled.
   void SetIconColor(const SkColor icon_color);
+
+  // Sets the size to use for the vector icon in DIPs.
+  void SetIconSize(int size);
 
   // Updates the `toggled_` state of the button.
   void SetToggled(bool toggled);
@@ -119,6 +130,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Customized value for button's background color or icon's color.
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> icon_color_;
+
+  // Custom value for icon size (usually used to make the icon smaller).
+  absl::optional<int> icon_size_;
 
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 };

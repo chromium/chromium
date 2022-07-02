@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_UNDERLYING_SOURCE_H_
 
+#include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
@@ -98,11 +99,13 @@ class FrameQueueUnderlyingSource
   // into the the stream's controller. Must be called on |realm_task_runner|.
   void MaybeSendFrameFromQueueToStream();
 
-  Mutex& GetMonitorMutex();
+  base::Lock& GetMonitorLock();
 
   void MaybeMonitorPopFrameId(int frame_id);
-  void MonitorPopFrameLocked(const NativeFrameType& media_frame);
-  void MonitorPushFrameLocked(const NativeFrameType& media_frame);
+  void MonitorPopFrameLocked(const NativeFrameType& media_frame)
+      EXCLUSIVE_LOCKS_REQUIRED(GetMonitorLock());
+  void MonitorPushFrameLocked(const NativeFrameType& media_frame)
+      EXCLUSIVE_LOCKS_REQUIRED(GetMonitorLock());
 
   enum class NewFrameAction { kPush, kReplace, kDrop };
   NewFrameAction AnalyzeNewFrameLocked(
@@ -125,13 +128,13 @@ class FrameQueueUnderlyingSource
   // IO thread) and popped on |realm_task_runner_|.
   FrameQueueHandle<NativeFrameType> frame_queue_handle_;
 
-  mutable Mutex mutex_;
+  mutable base::Lock lock_;
   // If the stream backed by this source is transferred to another in-process
   // realm (e.g., a Worker), |transferred_source_| is the source of the
   // transferred stream.
   CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-      transferred_source_ GUARDED_BY(mutex_);
-  int num_pending_pulls_ GUARDED_BY(mutex_) = 0;
+      transferred_source_ GUARDED_BY(lock_);
+  int num_pending_pulls_ GUARDED_BY(lock_) = 0;
   // When nonempty, |device_id_| is used to monitor all frames queued by this
   // source or exposed to JS via the stream connected to this source.
   // Frame monitoring applies only to video. Audio is never monitored.

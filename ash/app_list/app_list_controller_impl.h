@@ -113,7 +113,6 @@ class ASH_EXPORT AppListControllerImpl
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;
-  void HideContinueSection() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

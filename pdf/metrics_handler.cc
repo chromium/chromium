@@ -22,14 +22,6 @@ enum class PdfHasAttachment {
   kMaxValue = kYes,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfIsTagged {
-  kNo = 0,
-  kYes = 1,
-  kMaxValue = kYes,
-};
-
 }  // namespace
 
 MetricsHandler::MetricsHandler() = default;
@@ -51,8 +43,6 @@ void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration(
       "PDF.HasAttachment", metadata.has_attachments ? PdfHasAttachment::kYes
                                                     : PdfHasAttachment::kNo);
-  base::UmaHistogramEnumeration(
-      "PDF.IsTagged", metadata.tagged ? PdfIsTagged::kYes : PdfIsTagged::kNo);
   base::UmaHistogramEnumeration("PDF.FormType", metadata.form_type);
 }
 

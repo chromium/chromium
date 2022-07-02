@@ -70,17 +70,16 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -149,7 +148,7 @@ constexpr test::UIPath kSamlCloseButton = {"gaia-signin", "signin-frame-dialog",
                                            "saml-close-button"};
 constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
                                           "saml-back-button"};
-const test::UIPath kGaiaLoading = {"gaia-signin", "gaia-loading"};
+const test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
 const test::UIPath kSamlInterstitial = {"gaia-signin", "saml-interstitial"};
 
 constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",
@@ -368,11 +367,12 @@ class SamlTestBase : public OobeBaseTest {
 };
 
 // The first value of the parameter runs the tests with
-// kUseAuthsessionAuthentication feature and the second value with
-// kRedirectToDefaultIdP feature.
+// kUseAuthsessionAuthentication feature, the second value with
+// kRedirectToDefaultIdP feature and the third value with
+// kCheckPasswordsAgainstCryptohomeHelper
 class SamlTestWithFeatures
     : public SamlTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   SamlTestWithFeatures() {
     std::vector<base::Feature> enabled_features;
@@ -387,15 +387,75 @@ class SamlTestWithFeatures
     } else {
       disabled_features.push_back(features::kRedirectToDefaultIdP);
     }
-    // TODO(https://crbug.com/1295294) Introduce a different test suite when the
-    // feature is enabled.
-    disabled_features.push_back(
-        features::kCheckPasswordsAgainstCryptohomeHelper);
+    if (std::get<2>(GetParam())) {
+      enabled_features.push_back(
+          features::kCheckPasswordsAgainstCryptohomeHelper);
+    } else {
+      disabled_features.push_back(
+          features::kCheckPasswordsAgainstCryptohomeHelper);
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The first value of the parameter runs the tests with
+// kUseAuthsessionAuthentication feature and the second value with
+// kRedirectToDefaultIdP feature.
+class ImprovedScrapingTestBase
+    : public SamlTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ImprovedScrapingTestBase();
+
+ protected:
+  void SetFeatures(bool enable_improved_scraping);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+ImprovedScrapingTestBase::ImprovedScrapingTestBase() = default;
+
+void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
+  std::vector<base::Feature> enabled_features;
+  std::vector<base::Feature> disabled_features;
+  if (std::get<0>(GetParam())) {
+    enabled_features.push_back(features::kUseAuthsessionAuthentication);
+  } else {
+    disabled_features.push_back(features::kUseAuthsessionAuthentication);
+  }
+  if (std::get<1>(GetParam())) {
+    enabled_features.push_back(features::kRedirectToDefaultIdP);
+  } else {
+    disabled_features.push_back(features::kRedirectToDefaultIdP);
+  }
+  if (enable_improved_scraping) {
+    enabled_features.push_back(
+        features::kCheckPasswordsAgainstCryptohomeHelper);
+  } else {
+    disabled_features.push_back(
+        features::kCheckPasswordsAgainstCryptohomeHelper);
+  }
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
+// Saml test with kCheckPasswordsAgainstCryptohomeHelper enabled.
+class SamlTestWithImprovedScraping : public ImprovedScrapingTestBase {
+ public:
+  SamlTestWithImprovedScraping() {
+    SetFeatures(/*enable_improved_scraping=*/true);
+  }
+};
+
+// Saml test with kCheckPasswordsAgainstCryptohomeHelper disabled.
+class SamlTestWithoutImprovedScraping : public ImprovedScrapingTestBase {
+ public:
+  SamlTestWithoutImprovedScraping() {
+    SetFeatures(/*enable_improved_scraping=*/false);
+  }
 };
 
 // The value of the parameter runs the tests with kRedirectToDefaultIdP feature.
@@ -692,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -736,14 +796,44 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
                                      1);
 }
 
-// Tests the no password scraped flow.
-// TODO(crbug.com/1315447): Disabled for debug builds.
-#if !defined(NDEBUG)
-#define MAYBE_ScrapedNone DISABLED_ScrapedNone
-#else
-#define MAYBE_ScrapedNone ScrapedNone
-#endif
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MAYBE_ScrapedNone) {
+// Tests the multiple password scraped flow.
+IN_PROC_BROWSER_TEST_P(SamlTestWithImprovedScraping, ScrapedMultiple) {
+  base::HistogramTester histogram_tester;
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
+
+  StartSamlAndWaitForIdpPageLoad(
+      saml_test_users::kFirstUserCorpExampleComEmail);
+
+  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
+  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
+  SigninFrameJS().TypeIntoPath("password1", {"Password1"});
+  SigninFrameJS().TapOn("Submit");
+
+  test::WaitForPrimaryUserSessionStart();
+
+  EXPECT_FALSE(
+      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
+          .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
+              saml_test_users::kFirstUserCorpExampleComEmail,
+              kFirstSAMLUserGaiaId)));
+
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
+  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
+                                      2, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
+                                     1);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
+                                     0);
+  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_no_passwords.html");
 
@@ -834,15 +924,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   WaitForSigninScreen();
 }
 
-// Tests the password confirm flow when more than one password is scraped: show
-// error on the first failure and fatal error on the second failure.
-// TODO(crbug.com/1315447): Disabled for debug builds.
-#if !defined(NDEBUG)
-#define MAYBE_PasswordConfirmFlow DISABLED_PasswordConfirmFlow
-#else
-#define MAYBE_PasswordConfirmFlow PasswordConfirmFlow
-#endif
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MAYBE_PasswordConfirmFlow) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
@@ -1091,6 +1173,7 @@ class SAMLPolicyTest : public SamlTestWithRedirectToDefaultIdPFeature {
   void ClickBackOnSAMLInterstitialPage();
   void ClickNextOnSAMLInterstitialPage();
   void ShowSAMLLoginForm();
+  void MaybeWaitForSAMLToLoad();
   void ClickBackOnSAMLPage();
   void LogInWithSAML(const std::string& user_id,
                      const std::string& auth_sid_cookie,
@@ -1180,11 +1263,9 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_affiliation_ids);
 
   // Set up fake networks.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
+  ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 }
+
 void SAMLPolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
   SamlTestBase::SetUpCommandLine(command_line);
 
@@ -1295,6 +1376,19 @@ void SAMLPolicyTest::ShowSAMLLoginForm() {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
+}
+
+void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
+  // If SAML already loaded return and otherwise wait for the SamlLoaded
+  // message.
+  if (test::OobeJS().GetAttributeBool("isSamlForTesting()", {"gaia-signin"}))
+    return;
+  content::DOMMessageQueue message_queue;
+  SetupAuthFlowChangeListener();
+  std::string message;
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  } while (message != "\"SamlLoaded\"");
   test::OobeJS().ExpectAttributeEQ("isSamlForTesting()", {"gaia-signin"}, true);
 }
 
@@ -1330,7 +1424,7 @@ std::string SAMLPolicyTest::GetCookieValue(const std::string& name) {
 }
 
 void SAMLPolicyTest::GetCookies() {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUserUnsafe(
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
   ASSERT_TRUE(profile);
   base::RunLoop run_loop;
@@ -1536,13 +1630,14 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, SAMLInterstitialChangeAccount) {
 // When GetParam() is false:
 // Tests that clicking "Next" in the SAML interstitial page successfully
 // triggers a SAML redirect request, and the SAML IdP authentication page is
-// loaded and authenticaing there is successful.
-// TODO(https://crbug.com/1102738) flaky test
+// loaded and authenticating there is successful.
 //
 // When GetParam() is true:
 // Tests that clicking back on the SAML page successfully closes the oobe
 // dialog. Reopens a dialog and checks that SAML IdP authentication page is
-// loaded and authenticaing there is successful.
+// loaded and authenticating there is successful.
+// TODO(https://crbug.com/1102738) flaky test - partially fixed but keeping the
+// test disabled since there is still some instabillity observed under load.
 IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_gaia_.fake_gaia()->SetFakeMergeSessionParams(
@@ -1564,6 +1659,7 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, DISABLED_SAMLInterstitialNext) {
 
   if (GetParam()) {
     ShowSAMLLoginForm();
+    MaybeWaitForSAMLToLoad();
   } else {
     ShowSAMLInterstitial();
     ClickNextOnSAMLInterstitialPage();
@@ -1597,20 +1693,20 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, TestLoginMediaPermission) {
 
   // Mic should always be blocked.
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url1,
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 
   // Camera should be allowed if allowed by the allowlist, otherwise blocked.
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetMainFrame(), url1,
+      web_contents->GetPrimaryMainFrame(), url1,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_TRUE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetMainFrame(), url2,
+      web_contents->GetPrimaryMainFrame(), url2,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetMainFrame(), url3,
+      web_contents->GetPrimaryMainFrame(), url3,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 
   // Camera should be blocked in the login screen, even if it's allowed via
@@ -1623,7 +1719,7 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, TestLoginMediaPermission) {
                                       CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(web_contents_delegate->CheckMediaAccessPermission(
-      web_contents->GetMainFrame(), url3,
+      web_contents->GetPrimaryMainFrame(), url3,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 }
 
@@ -1795,9 +1891,9 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
 
 void SAMLDeviceAttestationTest::SetAllowedUrlsPolicy(
     const std::vector<std::string>& allowed_urls) {
-  std::vector<base::Value> allowed_urls_values;
+  base::Value::List allowed_urls_values;
   for (const auto& url : allowed_urls) {
-    allowed_urls_values.push_back(base::Value(url));
+    allowed_urls_values.Append(url);
   }
   settings_provider_->Set(kDeviceWebBasedAttestationAllowedUrls,
                           base::Value(std::move(allowed_urls_values)));
@@ -1974,6 +2070,16 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SamlTestWithFeatures,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SamlTestWithImprovedScraping,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SamlTestWithoutImprovedScraping,
                          ::testing::Combine(::testing::Bool(),
                                             ::testing::Bool()));
 

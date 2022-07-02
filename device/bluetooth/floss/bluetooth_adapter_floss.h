@@ -157,8 +157,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void OnStopDiscovery(DiscoverySessionResultCallback callback,
                        const absl::optional<Void>& ret,
                        const absl::optional<Error>& error);
-  void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
-                          const absl::optional<Error>& error);
   void OnGetConnectionState(const FlossDeviceId& device_id,
                             const absl::optional<uint32_t>& ret,
                             const absl::optional<Error>& error);
@@ -183,6 +181,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void RemoveAdapter();
 
   void PopulateInitialDevices();
+  void ClearAllDevices();
 
   // floss::FlossAdapterClient::Observer override.
   void DiscoverableChanged(bool discoverable) override;

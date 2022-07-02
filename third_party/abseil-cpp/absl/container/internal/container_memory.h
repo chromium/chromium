@@ -174,7 +174,7 @@ decltype(std::declval<F>()(std::declval<T>())) WithConstructed(
 //
 // 2. auto a = PairArgs(args...);
 //    std::pair<F, S> p(std::piecewise_construct,
-//                      std::move(p.first), std::move(p.second));
+//                      std::move(a.first), std::move(a.second));
 inline std::pair<std::tuple<>, std::tuple<>> PairArgs() { return {}; }
 template <class F, class S>
 std::pair<std::tuple<F&&>, std::tuple<S&&>> PairArgs(F&& f, S&& s) {
@@ -402,6 +402,15 @@ struct map_slot_policy {
     }
   }
 
+  // Construct this slot by copying from another slot.
+  template <class Allocator>
+  static void construct(Allocator* alloc, slot_type* slot,
+                        const slot_type* other) {
+    emplace(slot);
+    absl::allocator_traits<Allocator>::construct(*alloc, &slot->value,
+                                                 other->value);
+  }
+
   template <class Allocator>
   static void destroy(Allocator* alloc, slot_type* slot) {
     if (kMutableKeys::value) {
@@ -423,33 +432,6 @@ struct map_slot_policy {
                                                    std::move(old_slot->value));
     }
     destroy(alloc, old_slot);
-  }
-
-  template <class Allocator>
-  static void swap(Allocator* alloc, slot_type* a, slot_type* b) {
-    if (kMutableKeys::value) {
-      using std::swap;
-      swap(a->mutable_value, b->mutable_value);
-    } else {
-      value_type tmp = std::move(a->value);
-      absl::allocator_traits<Allocator>::destroy(*alloc, &a->value);
-      absl::allocator_traits<Allocator>::construct(*alloc, &a->value,
-                                                   std::move(b->value));
-      absl::allocator_traits<Allocator>::destroy(*alloc, &b->value);
-      absl::allocator_traits<Allocator>::construct(*alloc, &b->value,
-                                                   std::move(tmp));
-    }
-  }
-
-  template <class Allocator>
-  static void move(Allocator* alloc, slot_type* src, slot_type* dest) {
-    if (kMutableKeys::value) {
-      dest->mutable_value = std::move(src->mutable_value);
-    } else {
-      absl::allocator_traits<Allocator>::destroy(*alloc, &dest->value);
-      absl::allocator_traits<Allocator>::construct(*alloc, &dest->value,
-                                                   std::move(src->value));
-    }
   }
 };
 

@@ -518,7 +518,7 @@ void TaskTracker::RunTask(Task task,
     ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_set_sequence_local_storage_map_for_current_thread(
             environment.sequence_local_storage
-                ? environment.sequence_local_storage
+                ? environment.sequence_local_storage.get()
                 : &local_storage_map.value());
 
     // Set up TaskRunnerHandle as expected for the scope of the task.

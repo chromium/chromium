@@ -62,6 +62,12 @@
         </select>
       </div>
     </div>
+    <template is="dom-if" if="[[showContainerSelect_(allContainers)]]" restamp>
+      <settings-crostini-container-select
+          containers="[[allContainers]]"
+          selected-container-id="{{containerId_}}">
+      </settings-crostini-container-select>
+    </template>
     <div slot="body">
       <cr-input id="portLabelInput"
           label="$i18n{crostiniPortForwardingAddPortDialogLabelLabel}"

@@ -76,6 +76,13 @@ bool ConfirmReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
 // dismissed before |timeout|.
 bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
 
+// Waits for profile customization dialog to get displayed, then executes
+// javascript to click on done button. Returns false if dialog wasn't
+// dismissed before |timeout|.
+bool CompleteProfileCustomizationDialog(
+    Browser* browser,
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
+
 }  // namespace login_ui_test_utils
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_TEST_UTILS_H_

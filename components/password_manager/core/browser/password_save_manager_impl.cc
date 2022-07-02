@@ -780,8 +780,9 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (IsNewLogin()) {
-    metrics_util::LogNewlySavedPasswordIsGenerated(
+    metrics_util::LogNewlySavedPasswordMetrics(
         pending_credentials_.type == PasswordForm::Type::kGenerated,
+        pending_credentials_.username_value.empty(),
         client_->GetPasswordFeatureManager()
             ->ComputePasswordAccountStorageUsageLevel());
     // Don't send votes if there was no observed form.

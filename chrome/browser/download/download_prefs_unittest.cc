@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_prefs.h"
 
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -22,7 +23,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -57,11 +60,6 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Download prefs are registered when creating the profile.
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
@@ -70,18 +68,10 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   // Download prompt prefs should be registered correctly.
   histogram_tester.ExpectBucketCount("MobileDownload.DownloadPromptStatus",
                                      DownloadPromptStatus::SHOW_INITIAL, 1);
-  histogram_tester.ExpectBucketCount("MobileDownload.DownloadLaterPromptStatus",
-                                     DownloadPromptStatus::SHOW_INITIAL, 1);
   int prompt_status = profile.GetTestingPrefService()->GetInteger(
       prefs::kPromptForDownloadAndroid);
   EXPECT_EQ(prompt_status,
             static_cast<int>(DownloadPromptStatus::SHOW_INITIAL));
-
-  int download_later_prompt_status =
-      profile.GetTestingPrefService()->GetInteger(
-          prefs::kDownloadLaterPromptStatus);
-  EXPECT_EQ(download_later_prompt_status,
-            static_cast<int>(DownloadLaterPromptStatus::kShowInitial));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -368,7 +358,13 @@ TEST(DownloadPrefsTest, AutoOpenSetByPolicyBlobURL) {
   EXPECT_FALSE(prefs.IsAutoOpenByPolicy(kBlobDisallowedURL, kFilePath));
 }
 
-TEST(DownloadPrefsTest, Pdf) {
+// TODO(crbug.com/1326319): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Pdf DISABLED_Pdf
+#else
+#define MAYBE_Pdf Pdf
+#endif
+TEST(DownloadPrefsTest, MAYBE_Pdf) {
   const base::FilePath kPdfFile(FILE_PATH_LITERAL("abcd.pdf"));
   const GURL kURL("http://basic.com");
 
@@ -435,6 +431,68 @@ TEST(DownloadPrefsTest, RelativeDefaultPathCorrected) {
   DownloadPrefs download_prefs(&profile);
   EXPECT_TRUE(download_prefs.DownloadPath().IsAbsolute())
       << "Default download directory is " << download_prefs.DownloadPath();
+  EXPECT_EQ(
+      base::ValueToFilePath(*(profile.GetTestingPrefService()->GetUserPref(
+                                prefs::kDownloadDefaultDirectory)))
+          .value(),
+      download_prefs.GetDefaultDownloadDirectory());
+}
+
+TEST(DownloadPrefsTest, ManagedRelativePathDoesNotChangeUserPref) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kDownloadDefaultDirectory,
+      base::FilePathToValue(base::FilePath::FromUTF8Unsafe("..")));
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kSaveFileDefaultDirectory,
+      base::FilePathToValue(base::FilePath::FromUTF8Unsafe("../../../")));
+  EXPECT_FALSE(profile.GetPrefs()
+                   ->GetFilePath(prefs::kDownloadDefaultDirectory)
+                   .IsAbsolute());
+  EXPECT_FALSE(profile.GetPrefs()
+                   ->GetFilePath(prefs::kSaveFileDefaultDirectory)
+                   .IsAbsolute());
+
+  DownloadPrefs download_prefs(&profile);
+  EXPECT_FALSE(profile.GetTestingPrefService()->GetUserPref(
+      prefs::kDownloadDefaultDirectory));
+  EXPECT_FALSE(profile.GetTestingPrefService()->GetUserPref(
+      prefs::kSaveFileDefaultDirectory));
+}
+
+TEST(DownloadPrefsTest, RecommendedRelativePathDoesNotChangeUserPref) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  base::FilePath save_dir = DownloadPrefs::GetDefaultDownloadDirectory().Append(
+      base::FilePath::FromUTF8Unsafe("tmp"));
+  profile.GetTestingPrefService()->SetRecommendedPref(
+      prefs::kDownloadDefaultDirectory,
+      base::FilePathToValue(base::FilePath::FromUTF8Unsafe("..")));
+  profile.GetTestingPrefService()->SetRecommendedPref(
+      prefs::kSaveFileDefaultDirectory,
+      base::FilePathToValue(base::FilePath::FromUTF8Unsafe("../../../")));
+  profile.GetTestingPrefService()->SetUserPref(prefs::kSaveFileDefaultDirectory,
+                                               base::FilePathToValue(save_dir));
+  EXPECT_FALSE(profile.GetPrefs()
+                   ->GetFilePath(prefs::kDownloadDefaultDirectory)
+                   .IsAbsolute());
+  EXPECT_EQ(profile.GetPrefs()->GetFilePath(prefs::kSaveFileDefaultDirectory),
+            save_dir);
+
+  DownloadPrefs download_prefs(&profile);
+  EXPECT_FALSE(profile.GetTestingPrefService()->GetUserPref(
+      prefs::kDownloadDefaultDirectory));
+  EXPECT_EQ(base::ValueToFilePath(profile.GetTestingPrefService()->GetUserPref(
+                                      prefs::kSaveFileDefaultDirectory))
+                .value(),
+            save_dir);
+
+  EXPECT_EQ(download_prefs.DownloadPath(),
+            DownloadPrefs::GetDefaultDownloadDirectory());
+  EXPECT_EQ(download_prefs.SaveFilePath(), save_dir);
 }
 
 TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
@@ -494,9 +552,12 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                                account_id.GetAccountIdKey()));
   const base::FilePath ash_resources_dir = base::FilePath("/opt/google/chrome");
   base::FilePath share_cache_dir = profile.GetPath().AppendASCII("ShareCache");
+  base::FilePath preinstalled_web_app_config_dir;
+  base::FilePath preinstalled_web_app_extra_config_dir;
   chrome::SetLacrosDefaultPaths(
       documents_path, default_dir, drivefs_dir, removable_media_dir,
-      android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir);
+      android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir,
+      preinstalled_web_app_config_dir, preinstalled_web_app_extra_config_dir);
 #endif
 
   // Test a valid subdirectory of downloads.
@@ -586,39 +647,52 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that download path is correct when migrated from old format.
+TEST(DownloadPrefsTest, DownloadPathWithMigrationFromOldFormat) {
+  content::BrowserTaskEnvironment task_environment;
+  base::FilePath default_download_dir =
+      DownloadPrefs::GetDefaultDownloadDirectory();
+  base::FilePath path_from_pref = default_download_dir.Append("a").Append("b");
+  ash::disks::DiskMountManager::InitializeForTesting(
+      new file_manager::FakeDiskMountManager);
+
+  TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+  // Using a managed pref to set the download dir.
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kDownloadDefaultDirectory, base::FilePathToValue(path_from_pref));
+
+  DownloadPrefs prefs(&profile);
+  // The relative path should be preserved after migration.
+  EXPECT_EQ(prefs.DownloadPath(),
+            base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/a/b"));
+}
+
+// Tests that default download path pref is migrated from old format.
+TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
+  content::BrowserTaskEnvironment task_environment;
+  ash::disks::DiskMountManager::InitializeForTesting(
+      new file_manager::FakeDiskMountManager);
+
+  TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+
+  DownloadPrefs prefs(&profile);
+  // The relative path should be preserved after migration.
+  EXPECT_EQ(
+      profile.GetTestingPrefService()->GetFilePath(
+          prefs::kDownloadDefaultDirectory),
+      base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-TEST(DownloadPrefsTest, DownloadLaterPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile;
-  DownloadPrefs prefs(&profile);
-
-  EXPECT_TRUE(prefs.PromptDownloadLater());
-  EXPECT_FALSE(prefs.HasDownloadLaterPromptShown());
-
-  profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
-  EXPECT_TRUE(prefs.PromptDownloadLater());
-  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
-
-  profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kDontShow));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
-  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
-}
-
-// Verfies the returned value of PromptForDownload() and PromptDownloadLater()
+// Verfies the returned value of PromptForDownload()
 // when prefs::kPromptForDownload is managed by enterprise policy,
 TEST(DownloadPrefsTest, ManagedPromptForDownload) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   profile.GetTestingPrefService()->SetManagedPref(
@@ -626,17 +700,12 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   DownloadPrefs prefs(&profile);
 
   profile.GetPrefs()->SetInteger(
-      prefs::kDownloadLaterPromptStatus,
-      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
-  profile.GetPrefs()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::DONT_SHOW));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
   EXPECT_TRUE(prefs.PromptForDownload());
 
   profile.GetTestingPrefService()->SetManagedPref(
       prefs::kPromptForDownload, std::make_unique<base::Value>(false));
-  EXPECT_FALSE(prefs.PromptDownloadLater());
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 

@@ -97,8 +97,7 @@ DirectoryLister::Core::Core(const base::FilePath& dir,
     : dir_(dir),
       type_(type),
       origin_task_runner_(base::SequencedTaskRunnerHandle::Get().get()),
-      lister_(lister),
-      cancelled_(0) {
+      lister_(lister) {
   DCHECK(lister_);
 }
 

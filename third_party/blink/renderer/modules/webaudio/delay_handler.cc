@@ -12,6 +12,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kNumberOfChannels = 1;
+
+}  // namespace
+
 DelayHandler::DelayHandler(AudioNode& node,
                            float sample_rate,
                            AudioParamHandler& delay_time,
@@ -22,7 +28,7 @@ DelayHandler::DelayHandler(AudioNode& node,
           sample_rate,
           std::make_unique<DelayProcessor>(
               sample_rate,
-              1,
+              kNumberOfChannels,
               node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
               delay_time,
               max_delay_time)) {

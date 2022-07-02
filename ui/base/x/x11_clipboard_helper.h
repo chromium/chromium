@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -116,7 +117,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   const SelectionFormatMap& LookupStorageForAtom(x11::Atom atom);
 
   // Our X11 state.
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   const x11::Window x_root_window_;
 
   // Input-only window used as a selection owner.

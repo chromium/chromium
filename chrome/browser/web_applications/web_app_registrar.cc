@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -37,7 +38,7 @@ namespace web_app {
 namespace {
 
 // With Lacros, only system web apps are exposed using the Ash browser.
-bool WebAppExposed(const WebApp& web_app) {
+bool WebAppSourceSupported(const WebApp& web_app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsWebAppsCrosapiEnabled() && !web_app.IsSystemApp()) {
     return false;
@@ -70,9 +71,44 @@ blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
                  : blink::ParsedPermissionsPolicy();
 }
 
-bool WebAppRegistrar::IsPlaceholderApp(const AppId& app_id) const {
-  return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-      .IsPlaceholderApp(app_id);
+bool WebAppRegistrar::IsPlaceholderApp(
+    const AppId& app_id,
+    const WebAppManagement::Type source_type) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
+        .IsPlaceholderApp(app_id);
+  }
+
+  DCHECK(source_type == WebAppManagement::kPolicy);
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return false;
+
+  const WebApp::ExternalConfigMap& config_map =
+      web_app->management_to_external_config_map();
+  auto it = config_map.find(source_type);
+
+  if (it == config_map.end()) {
+    return false;
+  }
+  return it->second.is_placeholder;
+}
+
+absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
+    const GURL& install_url,
+    const WebAppManagement::Type source_type) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
+        .LookupPlaceholderAppId(install_url);
+  }
+
+  DCHECK(source_type == WebAppManagement::kPolicy);
+  absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
+  if (app_id.has_value() && IsPlaceholderApp(app_id.value(), source_type))
+    return app_id;
+  return absl::nullopt;
 }
 
 void WebAppRegistrar::AddObserver(AppRegistrarObserver* observer) {
@@ -162,34 +198,80 @@ void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
     observer.OnWebAppSettingsPolicyChanged();
 }
 
-std::map<AppId, GURL> WebAppRegistrar::GetExternallyInstalledApps(
+base::flat_map<AppId, base::flat_set<GURL>>
+WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
-  std::map<AppId, GURL> installed_apps =
-      ExternallyInstalledWebAppPrefs::BuildAppIdsMap(profile()->GetPrefs(),
-                                                     install_source);
-  base::EraseIf(installed_apps, [this](const std::pair<AppId, GURL>& app) {
-    return !IsInstalled(app.first);
-  });
+  base::flat_map<AppId, base::flat_set<GURL>> installed_apps;
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    installed_apps = ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
+        profile()->GetPrefs(), install_source);
+    base::EraseIf(installed_apps,
+                  [this](const std::pair<AppId, base::flat_set<GURL>>& app) {
+                    return !IsInstalled(app.first);
+                  });
 
+    return installed_apps;
+  }
+
+  WebAppManagement::Type management_source =
+      ConvertExternalInstallSourceToSource(install_source);
+  for (const WebApp& web_app : GetApps()) {
+    const WebApp::ExternalConfigMap& config_map =
+        web_app.management_to_external_config_map();
+    auto it = config_map.find(management_source);
+    if (it != config_map.end() && !it->second.install_urls.empty())
+      installed_apps[web_app.app_id()] = it->second.install_urls;
+  }
   return installed_apps;
 }
 
 absl::optional<AppId> WebAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
-  return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-      .LookupAppId(install_url);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+        .LookupAppId(install_url);
+  }
+
+  absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
+  if (app_id.has_value())
+    return app_id;
+
+  return absl::nullopt;
 }
 
 bool WebAppRegistrar::HasExternalApp(const AppId& app_id) const {
-  return ExternallyInstalledWebAppPrefs::HasAppId(profile()->GetPrefs(),
-                                                  app_id);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs::HasAppId(profile()->GetPrefs(),
+                                                    app_id);
+  }
+  if (!IsInstalled(app_id))
+    return false;
+
+  const WebApp* web_app = GetAppById(app_id);
+  // If the external config map is filled, then the app was
+  // externally installed.
+  return web_app && web_app->management_to_external_config_map().size() > 0;
 }
 
 bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const AppId& app_id,
     ExternalInstallSource install_source) const {
-  return ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
-      profile()->GetPrefs(), app_id, install_source);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
+        profile()->GetPrefs(), app_id, install_source);
+  }
+
+  if (!IsInstalled(app_id))
+    return false;
+
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app &&
+         base::Contains(web_app->management_to_external_config_map(),
+                        ConvertExternalInstallSourceToSource(install_source));
 }
 
 GURL WebAppRegistrar::GetAppLaunchUrl(const AppId& app_id) const {
@@ -243,7 +325,7 @@ absl::optional<AppId> WebAppRegistrar::FindAppWithUrlInScope(
   size_t best_score = 0U;
   bool best_app_is_shortcut = true;
 
-  for (const AppId& app_id : GetAppIds()) {
+  for (const AppId& app_id : GetAppIdsForAppSet(GetApps())) {
     // TODO(crbug.com/910016): Treat shortcuts as PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut)
@@ -395,7 +477,7 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
     return nullptr;
 
   auto it = registry_.find(app_id);
-  if (it != registry_.end() && WebAppExposed(*it->second))
+  if (it != registry_.end() && WebAppSourceSupported(*it->second))
     return it->second.get();
 
   return nullptr;
@@ -406,7 +488,8 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
     return nullptr;
 
   for (auto const& it : registry_) {
-    if (WebAppExposed(*it.second) && it.second->start_url() == start_url)
+    if (WebAppSourceSupported(*it.second) &&
+        it.second->start_url() == start_url)
       return it.second.get();
   }
   return nullptr;
@@ -417,7 +500,8 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
   AppSet apps_in_sync_install = AppSet(
       this,
       [](const WebApp& web_app) {
-        return web_app.is_from_sync_and_pending_installation();
+        return WebAppSourceSupported(web_app) &&
+               web_app.is_from_sync_and_pending_installation();
       },
       /*empty=*/registry_profile_being_deleted_);
 
@@ -426,6 +510,14 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
     app_ids.push_back(app.app_id());
 
   return app_ids;
+}
+
+bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
+  for (const WebApp& web_app : GetApps()) {
+    if (web_app.management_to_external_config_map().size() > 0)
+      return true;
+  }
+  return false;
 }
 
 void WebAppRegistrar::Start() {
@@ -444,6 +536,18 @@ void WebAppRegistrar::SetSubsystems(
     WebAppTranslationManager* translation_manager) {
   policy_manager_ = policy_manager;
   translation_manager_ = translation_manager;
+}
+
+absl::optional<AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
+    const GURL& install_url) const {
+  for (const WebApp& web_app : GetApps()) {
+    for (auto it : web_app.management_to_external_config_map()) {
+      if (base::Contains(it.second.install_urls, install_url)) {
+        return web_app.app_id();
+      }
+    }
+  }
+  return absl::nullopt;
 }
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
@@ -559,9 +663,8 @@ base::flat_set<std::string> WebAppRegistrar::GetAllDisallowedLaunchProtocols()
 
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
-  for (const WebApp& app : GetAppsIncludingStubs()) {
-    if (!app.is_uninstalling() && app.is_locally_installed() &&
-        app.WasInstalledByUser())
+  for (const WebApp& app : GetApps()) {
+    if (app.is_locally_installed() && app.WasInstalledByUser())
       ++num_user_installed;
   }
   return num_user_installed;
@@ -640,13 +743,6 @@ const apps::ShareTarget* WebAppRegistrar::GetAppShareTarget(
   return (web_app && web_app->share_target().has_value())
              ? &web_app->share_target().value()
              : nullptr;
-}
-
-blink::mojom::HandleLinks WebAppRegistrar::GetAppHandleLinks(
-    const AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->handle_links()
-                 : blink::mojom::HandleLinks::kUndefined;
 }
 
 const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
@@ -876,6 +972,7 @@ WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar,
       mutations_count_(registrar->mutations_count_)
 #endif
 {
+  DCHECK(filter);
 }
 
 WebAppRegistrar::AppSet::~AppSet() {
@@ -909,14 +1006,17 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
-  return AppSet(this, nullptr, /*empty=*/registry_profile_being_deleted_);
+  return AppSet(
+      this,
+      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
+      /*empty=*/registry_profile_being_deleted_);
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(
       this,
       [](const WebApp& web_app) {
-        return WebAppExposed(web_app) &&
+        return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
       },
@@ -925,10 +1025,6 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
 
 void WebAppRegistrar::SetRegistry(Registry&& registry) {
   registry_ = std::move(registry);
-}
-
-WebAppRegistrar::AppSet WebAppRegistrar::FilterApps(Filter filter) const {
-  return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
 }
 
 void WebAppRegistrar::CountMutation() {
@@ -951,20 +1047,23 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(const AppId& app_id) {
   return const_cast<WebApp*>(GetAppById(app_id));
 }
 
-WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutable(
+WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutableForTesting(
     Filter filter) {
   return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
-  return AppSet(this, nullptr, /*empty=*/registry_profile_being_deleted_);
+  return AppSet(
+      this,
+      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
+      /*empty=*/registry_profile_being_deleted_);
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(
       this,
       [](const WebApp& web_app) {
-        return WebAppExposed(web_app) &&
+        return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
       },

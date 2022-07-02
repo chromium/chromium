@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
@@ -275,7 +276,33 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, ServiceWorkerMustSpecifyTab) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, FromServiceWorker) {
+class DesktopCaptureApiTestWithSystemAudioValue
+    : public DesktopCaptureApiTest,
+      public testing::WithParamInterface<std::string> {
+ public:
+  DesktopCaptureApiTestWithSystemAudioValue()
+      : system_audio_preference_(GetParam()) {
+    DesktopCaptureChooseDesktopMediaFunction::SetPickerFactoryForTests(
+        &picker_factory_);
+  }
+
+  ~DesktopCaptureApiTestWithSystemAudioValue() override = default;
+
+ protected:
+  const std::string system_audio_preference_;
+};
+
+// |options| itself is optional, as is its member (systemAudio), and so will
+// future members be (e.g. selfBrowserSurface).
+INSTANTIATE_TEST_SUITE_P(_,
+                         DesktopCaptureApiTestWithSystemAudioValue,
+                         ::testing::Values("",
+                                           "{},",
+                                           "{systemAudio: \"include\"},",
+                                           "{systemAudio: \"exclude\"},"));
+
+IN_PROC_BROWSER_TEST_P(DesktopCaptureApiTestWithSystemAudioValue,
+                       FromServiceWorker) {
   static constexpr char kManifest[] =
       R"({
            "name": "Desktop Capture",
@@ -285,24 +312,26 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, FromServiceWorker) {
            "permissions": ["desktopCapture", "tabs"]
          })";
 
-  static constexpr char kWorker[] =
+  const std::string worker = base::StringPrintf(
       R"(chrome.test.runTests([
            function tabIdSpecified() {
              chrome.tabs.query({}, function(tabs) {
                chrome.test.assertTrue(tabs.length == 1);
                chrome.desktopCapture.chooseDesktopMedia(
                  ["tab"], tabs[0],
+                 %s
                  function(id) {
                    chrome.test.assertEq("string", typeof id);
                    chrome.test.assertTrue(id != "");
                    chrome.test.succeed();
                  });
              });
-        }]))";
+        }]))",
+      system_audio_preference_.c_str());
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), worker);
 
   // Open a tab to capture.
   embedded_test_server()->ServeFilesFromDirectory(GetTestResourcesParentDir());

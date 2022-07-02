@@ -28,8 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 using ::quic::test::MemSliceFromString;
@@ -175,7 +174,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   }
 
  protected:
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DedicatedWebTransportHttp3Client> client_;
   raw_ptr<TestConnectionHelper> helper_;  // Owned by |context_|.
@@ -205,8 +204,8 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   Run();
 }
 
-// TODO(https://crbug.com/1288036): The test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1288036): The test is flaky on iOS.
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_CloseTimeout DISABLED_CloseTimeout
 #else
 #define MAYBE_CloseTimeout CloseTimeout
@@ -263,5 +262,4 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

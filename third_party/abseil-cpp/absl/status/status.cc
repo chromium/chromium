@@ -195,7 +195,9 @@ const std::string* Status::EmptyString() {
   return &empty.str;
 }
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr const char Status::kMovedFromString[];
+#endif
 
 const std::string* Status::MovedFromString() {
   static std::string* moved_from_string = new std::string(kMovedFromString);
@@ -598,6 +600,17 @@ Status ErrnoToStatus(int error_number, absl::string_view message) {
   return Status(ErrnoToStatusCode(error_number),
                 MessageForErrnoToStatus(error_number, message));
 }
+
+namespace status_internal {
+
+std::string* MakeCheckFailString(const absl::Status* status,
+                                 const char* prefix) {
+  return new std::string(
+      absl::StrCat(prefix, " (",
+                   status->ToString(StatusToStringMode::kWithEverything), ")"));
+}
+
+}  // namespace status_internal
 
 ABSL_NAMESPACE_END
 }  // namespace absl

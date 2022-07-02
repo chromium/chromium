@@ -125,7 +125,7 @@ class LevelDBScope {
     // The ranges are expected to be disjoint.
     bool operator()(const EmptyRange& lhs, const EmptyRange& rhs) const;
 
-    raw_ptr<const leveldb::Comparator> comparator_ = nullptr;
+    raw_ptr<const leveldb::Comparator, DanglingUntriaged> comparator_ = nullptr;
   };
 
   enum class Mode { kInMemory, kUndoLogOnDisk };

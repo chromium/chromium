@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/policy_constants.h"
@@ -100,11 +100,11 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
   extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
 
   policy::AffiliationTestHelper affiliation_helper =
       policy::AffiliationTestHelper::CreateForCloud(
-          chromeos::FakeSessionManagerClient::Get());
+          ash::FakeSessionManagerClient::Get());
 
   if (enrollment_status() == EnrollmentStatus::ENROLLED) {
     std::set<std::string> device_affiliation_ids;

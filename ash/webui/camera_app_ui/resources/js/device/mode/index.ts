@@ -7,6 +7,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../../assert.js';
+import * as expert from '../../expert.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CaptureIntent} from '../../mojo/type.js';
 import * as state from '../../state.js';
@@ -130,7 +131,7 @@ export class Modes {
     async function prepareDeviceForPhoto(
         constraints: StreamConstraints, resolution: Resolution,
         captureIntent: CaptureIntent): Promise<void> {
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator === null) {
         return;
       }
@@ -150,13 +151,19 @@ export class Modes {
         isSupported: async () => true,
         isSupportPTZ: () => true,
         prepareDevice: async (constraints) => {
-          const deviceOperator = await DeviceOperator.getInstance();
+          const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return;
           }
           const deviceId = constraints.deviceId;
           await deviceOperator.setCaptureIntent(
               deviceId, CaptureIntent.VIDEO_RECORD);
+          await deviceOperator.setMultipleStreamsEnabled(
+              deviceId,
+              expert.isEnabled(
+                  expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING),
+          );
+
           if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
             await deviceOperator.setStillCaptureResolution(
                 deviceId,
@@ -210,7 +217,7 @@ export class Modes {
           if (deviceId === null) {
             return false;
           }
-          const deviceOperator = await DeviceOperator.getInstance();
+          const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return false;
           }
@@ -228,7 +235,7 @@ export class Modes {
               params.constraints, params.captureResolution,
               assertExists(this.handler));
         },
-        isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
+        isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
@@ -236,11 +243,8 @@ export class Modes {
       },
     };
 
-    for (const s of [state.State.EXPERT, state.State.SAVE_METADATA]) {
-      state.addObserver(s, () => {
-        this.updateSaveMetadata();
-      });
-    }
+    expert.addObserver(
+        expert.ExpertOption.SAVE_METADATA, () => this.updateSaveMetadata());
   }
 
   initialize(handler: CaptureHandler): void {
@@ -349,7 +353,7 @@ export class Modes {
    * @return Promise for the operation.
    */
   private async updateSaveMetadata(): Promise<void> {
-    if (state.get(state.State.EXPERT) && state.get(state.State.SAVE_METADATA)) {
+    if (expert.isEnabled(expert.ExpertOption.SAVE_METADATA)) {
       await this.enableSaveMetadata();
     } else {
       await this.disableSaveMetadata();

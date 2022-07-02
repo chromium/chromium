@@ -8,8 +8,8 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import './styles.js';
-import '../../common/styles.js';
+import '../../css/wallpaper.css.js';
+import '../../css/common.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -20,8 +20,9 @@ import {DisplayableImage} from '../../common/constants.js';
 import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isGooglePhotosPhoto} from '../utils.js';
+import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
 
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_element.html.js';
@@ -87,9 +88,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       currentSelected_: Object,
 
-      focusedColIndex_: {
+      focusedPhotoIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
+        observer: 'onFocusedPhotoIndexChanged_',
       },
 
       pendingSelected_: Object,
@@ -120,6 +122,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         type: String,
         observer: 'onPhotosResumeTokenChanged_',
       },
+
+      error_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -129,8 +136,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** The currently selected wallpaper. */
   private currentSelected_: CurrentWallpaper|null;
 
-  /** The index of the currently focused column. */
-  private focusedColIndex_: number;
+  /** The index of the currently focused photo. */
+  private focusedPhotoIndex_: number;
 
   /** The pending selected wallpaper. */
   private pendingSelected_: DisplayableImage|null;
@@ -159,6 +166,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** The resume token needed to fetch the next page of photos. */
   private photosResumeToken_: string|null;
 
+  /** The current personalization error state. */
+  private error_: PersonalizationStateError|null;
+
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
@@ -179,8 +189,33 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     this.watch<GooglePhotosPhotos['photosResumeToken_']>(
         'photosResumeToken_',
         state => state.wallpaper.googlePhotos.resumeTokens.photos);
-
+    this.watch<GooglePhotosPhotos['error_']>('error_', state => state.error);
     this.updateFromStore();
+  }
+
+  /** Invoked on changes to |focusedPhotoIndex_|. */
+  private onFocusedPhotoIndexChanged_(
+      focusedPhotoIndex: GooglePhotosPhotos['focusedPhotoIndex_']) {
+    // Attempt to focus the |element| at the focused index. Note that the
+    // |element| may not be rendered as it could exist outside of the viewport.
+    const selector = `.photo[photoindex="${focusedPhotoIndex}"]`;
+    const element = this.$.grid.querySelector(selector) as HTMLElement;
+    if (element) {
+      element.focus();
+      return;
+    }
+
+    // If the |element| was not rendered, it exists outside of the viewport. To
+    // force it to render, focus the grid row which contains the |element| at
+    // the focused index. Note that this will automatically trigger another call
+    // to |onFocusedPhotoIndexChanged()|.
+    this.photosByRow_.some((row, rowIndex) => {
+      if (row.some(photo => photo.index === focusedPhotoIndex)) {
+        this.$.grid.focusItem(rowIndex);
+        return true;
+      }
+      return false;
+    });
   }
 
   /** Invoked on grid scroll threshold reached. */
@@ -202,86 +237,96 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on focus of a grid row. */
-  private onGridRowFocused_(e: Event) {
-    // When a grid row is focused, forward the focus event on to the grid item
-    // at the focused column index.
-    const currentTarget = e.currentTarget as HTMLElement;
-    const selector = `.photo[colindex="${this.focusedColIndex_}"]`;
-    const element = currentTarget.querySelector(selector) as HTMLElement;
-    if (element) {
-      element.focus();
+  private onGridRowFocused_() {
+    // If |focusedPhotoIndex_| is -1, this is the first time focus has entered
+    // the grid. In this case advance focus to the first photo.
+    if (this.focusedPhotoIndex_ === -1) {
+      this.focusedPhotoIndex_ = 0;
+      return;
     }
+    // When a grid row is focused, forward the focus event on to the photo at
+    // the focused index.
+    this.onFocusedPhotoIndexChanged_(this.focusedPhotoIndex_);
   }
 
   /** Invoked on key down of a grid row. */
   private onGridRowKeyDown_(e: KeyboardEvent&{
-    model: {index: number, row: GooglePhotosPhoto[]},
+    model: {index: number, row: GooglePhotosPhotosRow},
   }) {
+    let handled = false;
+
     switch (normalizeKeyForRTL(e.key, this.i18n('textdirection') === 'rtl')) {
       case 'ArrowDown':
-        if (e.model.index < this.photosByRow_!.length - 1) {
-          // To be consistent with default iron-list grid behavior, the down
-          // arrow should only advance focus to the succeeding grid row if an
-          // item at the same column index as is currently focused exists.
-          const nextGridRow = this.photosByRow_[e.model.index + 1];
-          if (this.focusedColIndex_ >= nextGridRow.length) {
-            e.preventDefault();
-            e.stopPropagation();
+        // To be consistent with default iron-list grid behavior, the down arrow
+        // should only advance focus to the next grid row if a photo at the same
+        // column index as is currently focused exists.
+        if (e.model.index < this.photosByRow_.length - 1) {
+          let colIndex = -1;
+          e.model.row.some((photo, i) => {
+            if (photo.index === this.focusedPhotoIndex_) {
+              colIndex = i;
+              return true;
+            }
+            return false;
+          });
+          assert(colIndex !== -1);
+          const nextRow = this.photosByRow_[e.model.index + 1];
+          if (colIndex < nextRow.length) {
+            this.focusedPhotoIndex_ = nextRow[colIndex].index;
           }
         }
-        return;
+        handled = true;
+        break;
       case 'ArrowLeft':
-        if (this.focusedColIndex_ > 0) {
-          // Left arrow moves focus to the preceding grid item.
-          this.focusedColIndex_ -= 1;
-          this.$.grid.focusItem(e.model.index);
-        } else if (e.model.index > 0) {
-          // Left arrow moves focus to the preceding grid item, wrapping to the
-          // preceding grid row.
-          const previousGridRow = this.photosByRow_[e.model.index - 1];
-          this.focusedColIndex_ = previousGridRow.length - 1;
-          this.$.grid.focusItem(e.model.index - 1);
-        }
-        return;
+        this.focusedPhotoIndex_ = Math.max(this.focusedPhotoIndex_ - 1, 0);
+        handled = true;
+        break;
       case 'ArrowRight':
-        if (this.focusedColIndex_ < e.model.row.length - 1) {
-          // Right arrow moves focus to the succeeding grid item.
-          this.focusedColIndex_ += 1;
-          this.$.grid.focusItem(e.model.index);
-        } else if (e.model.index < this.photosByRow_!.length - 1) {
-          // Right arrow moves focus to the succeeding grid item, wrapping to
-          // the succeeding grid row.
-          this.focusedColIndex_ = 0;
-          this.$.grid.focusItem(e.model.index + 1);
-        }
-        return;
+        this.focusedPhotoIndex_ =
+            Math.min(this.focusedPhotoIndex_ + 1, this.photos_!.length - 1);
+        handled = true;
+        break;
       case 'ArrowUp':
+        // To be consistent with default iron-list grid behavior, the up arrow
+        // should only advance focus to the previous grid row if a photo at the
+        // the same column index as is currently focused exists.
         if (e.model.index > 0) {
-          // To be consistent with default iron-list grid behavior, the up arrow
-          // should only advance focus to the preceding grid row if an item at
-          // the same column index as is currently focused exists.
-          const previousGridRow = this.photosByRow_[e.model.index - 1];
-          if (this.focusedColIndex_ >= previousGridRow.length) {
-            e.preventDefault();
-            e.stopPropagation();
+          let colIndex = -1;
+          e.model.row.some((photo, i) => {
+            if (photo.index === this.focusedPhotoIndex_) {
+              colIndex = i;
+              return true;
+            }
+            return false;
+          });
+          assert(colIndex !== -1);
+          const previousRow = this.photosByRow_[e.model.index - 1];
+          if (colIndex < previousRow.length) {
+            this.focusedPhotoIndex_ = previousRow[colIndex].index;
           }
         }
-        return;
+        handled = true;
+        break;
       case 'Tab':
         // The grid contains a single |focusable| row which becomes a focus trap
-        // due to the synthetic redirect of focus events to grid items. To
-        // escape the trap, make the |focusable| row unfocusable until has
+        // due to the synthetic redirect of focus events to photos. To escape
+        // the trap, make the |focusable| row unfocusable until focus has
         // advanced to the next candidate.
         const focusable = this.$.grid.querySelector('[tabindex="0"]')!;
         focusable.setAttribute('tabindex', '-1');
         afterNextRender(this, () => focusable.setAttribute('tabindex', '0'));
-        return;
+        break;
+    }
+
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
   /** Invoked on changes to this element's |hidden| state. */
   private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
-    if (hidden) {
+    if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
       this.dispatch(dismissErrorAction(ERROR_ID, /*fromUser=*/ false));
@@ -322,7 +367,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
           id: ERROR_ID,
           message: this.i18n('googlePhotosError'),
           dismiss: {
-            message: this.i18n('googlePhotosRetry'),
+            message: this.i18n('googlePhotosTryAgain'),
             callback: (fromUser: boolean) => {
               if (fromUser) {
                 // Post the reattempt instead of performing it immediately to
@@ -451,6 +496,23 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         undefined;
   }
 
+  /** Returns the number of photos or placeholders currently being displayed. */
+  private getPhotosAriaSetSize_(): number {
+    if (this.photos_) {
+      return this.photos_.length;
+    }
+
+    return getPlaceholders().length * getNumberOfGridItemsPerRow();
+  }
+
+  /**
+   * Returns 'true' or 'false' depending on whether the specified |photo| is
+   * a placeholder.
+   */
+  private getPhotoAriaDisabled_(photo: GooglePhotosPhoto|null): string {
+    return this.isPhotoPlaceholder_(photo).toString();
+  }
+
   /** Returns the aria label for the specified |photo|. */
   private getPhotoAriaLabel_(photo: GooglePhotosPhoto|null): string|undefined {
     if (photo) {
@@ -458,6 +520,23 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
                                            photo.name;
     }
     return undefined;
+  }
+
+  /** Returns the aria posinset index for the photo at index |i|. */
+  private getPhotoAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  /**
+   * Returns 'true' or 'false' depending on whether the specified |photo| is
+   * currently selected.
+   */
+  private getPhotoAriaSelected_(
+      photo: GooglePhotosPhoto|null,
+      currentSelected: GooglePhotosPhotos['currentSelected_'],
+      pendingSelected: GooglePhotosPhotos['pendingSelected_']): string {
+    return this.isPhotoSelected_(photo, currentSelected, pendingSelected)
+        .toString();
   }
 
   /** Returns whether the title for the specified grid |row| is visible. */
@@ -480,13 +559,18 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     if (!photo || (!currentSelected && !pendingSelected)) {
       return false;
     }
+    // NOTE: Old clients may not support |dedupKey| when setting Google Photos
+    // wallpaper, so use |id| in such cases for backwards compatibility.
     if (isGooglePhotosPhoto(pendingSelected) &&
-        pendingSelected!.id === photo.id) {
+        ((pendingSelected!.dedupKey &&
+          isImageAMatchForKey(photo, pendingSelected!.dedupKey)) ||
+         isImageAMatchForKey(photo, pendingSelected!.id))) {
       return true;
     }
     if (!pendingSelected && !!currentSelected &&
-        currentSelected.type === WallpaperType.kOnceGooglePhotos &&
-        currentSelected.key === photo.id) {
+        (currentSelected.type === WallpaperType.kOnceGooglePhotos ||
+         currentSelected.type === WallpaperType.kDailyGooglePhotos) &&
+        isImageEqualToSelected(photo, currentSelected)) {
       return true;
     }
     return false;

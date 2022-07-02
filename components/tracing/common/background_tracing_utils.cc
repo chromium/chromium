@@ -61,22 +61,21 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
     return nullptr;
   }
 
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          config_text, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      config_text, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(ERROR) << "Background tracing has incorrect config: "
-               << value_with_error.error_message;
+               << value_with_error.error().message;
     return nullptr;
   }
 
-  if (!value_with_error.value->is_dict()) {
+  if (!value_with_error->is_dict()) {
     LOG(ERROR) << "Background tracing config is not a dict";
     return nullptr;
   }
 
-  auto config = content::BackgroundTracingConfig::FromDict(
-      std::move(*(value_with_error.value)));
+  auto config =
+      content::BackgroundTracingConfig::FromDict(std::move(*value_with_error));
 
   if (!config) {
     LOG(ERROR) << "Background tracing config dict has invalid contents";
@@ -106,7 +105,7 @@ void SetupBackgroundTracingWithOutputFile(
   // instead of being uploaded to a metrics server, so there are no PII
   // concerns.
   content::BackgroundTracingManager::GetInstance()
-      ->SetActiveScenarioWithReceiveCallback(
+      .SetActiveScenarioWithReceiveCallback(
           std::move(config), std::move(receive_callback),
           content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
@@ -124,10 +123,9 @@ void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
 
 bool SetupBackgroundTracingFromCommandLine(
     const std::string& field_trial_name) {
-  auto* manager = content::BackgroundTracingManager::GetInstance();
-  DCHECK(manager);
-
+  auto& manager = content::BackgroundTracingManager::GetInstance();
   auto* command_line = base::CommandLine::ForCurrentProcess();
+
   switch (GetBackgroundTracingSetupMode()) {
     case BackgroundTracingSetupMode::kDisabledInvalidCommandLine:
       return false;
@@ -139,7 +137,7 @@ bool SetupBackgroundTracingFromCommandLine(
       return true;
     case BackgroundTracingSetupMode::kFromFieldTrialLocalOutput:
       SetupBackgroundTracingWithOutputFile(
-          manager->GetBackgroundTracingConfig(field_trial_name),
+          manager.GetBackgroundTracingConfig(field_trial_name),
           command_line->GetSwitchValuePath(
               switches::kBackgroundTracingOutputFile));
       return true;

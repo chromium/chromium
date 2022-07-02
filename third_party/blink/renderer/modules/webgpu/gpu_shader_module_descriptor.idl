@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUShaderModuleDescriptor : GPUObjectDescriptorBase {
-    // TODO(crbug.com/1069302): Remove SPIR-V support, change this to USVString.
     required (USVString or Uint32Array) code;
+    object sourceMap;
+    record<USVString, GPUShaderModuleCompilationHint> hints;
 };

@@ -63,11 +63,6 @@
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_factory.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
 #include "chrome/browser/extensions/api/mdns/mdns_api.h"
 #endif
@@ -94,9 +89,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::ExternalLogoutDoneEventHandlerFactory::GetInstance();
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  extensions::ExternalLogoutRequestEventHandlerFactory::GetInstance();
 #endif
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
@@ -126,9 +118,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ProcessesAPI::GetFactoryInstance();
   extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance();
   extensions::SessionsAPI::GetFactoryInstance();
-#if BUILDFLAG(IS_CHROMEOS)
-  extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
-#endif
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -144,6 +133,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::VerifyTrustAPI::GetFactoryInstance();
 #endif
+
   extensions::WarningBadgeServiceFactory::GetInstance();
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();

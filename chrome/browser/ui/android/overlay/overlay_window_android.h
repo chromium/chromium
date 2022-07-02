@@ -40,6 +40,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& compositor_view);
   void OnViewSizeChanged(JNIEnv* env, jint width, jint height);
+  void OnBackToTab(JNIEnv* env);
 
   // ui::WindowAndroidObserver implementation.
   void OnCompositingDidCommit() override {}

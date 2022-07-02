@@ -50,7 +50,6 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     init_params.is_anchored_to_status_area = false;
     init_params.insets =
         gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding);
-    init_params.has_shadow = false;
     init_params.translucent = true;
     init_params.preferred_width = kPreferredWidth;
     init_params.close_on_deactivate = false;

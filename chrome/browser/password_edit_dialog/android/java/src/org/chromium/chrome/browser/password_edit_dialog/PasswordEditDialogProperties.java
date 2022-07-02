@@ -38,9 +38,9 @@ class PasswordEditDialogProperties {
             .ReadableObjectPropertyKey<Callback<String>> PASSWORD_CHANGED_CALLBACK =
             new PropertyModel.ReadableObjectPropertyKey<>("password changed callback");
 
-    static final PropertyModel.WritableBooleanPropertyKey EMPTY_PASSWORD_ERROR =
-            new PropertyModel.WritableBooleanPropertyKey("empty password error");
+    static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD_ERROR =
+            new PropertyModel.WritableObjectPropertyKey<>("empty password error");
 
     static final PropertyKey[] ALL_KEYS = {USERNAME_CHANGED_CALLBACK, USERNAMES, USERNAME, PASSWORD,
-            PASSWORD_CHANGED_CALLBACK, EMPTY_PASSWORD_ERROR, FOOTER};
+            PASSWORD_CHANGED_CALLBACK, PASSWORD_ERROR, FOOTER};
 }

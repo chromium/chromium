@@ -49,12 +49,13 @@ namespace {
 //
 // The verifier should rollback until it just tries A(B) alone, at which point
 // it will pull B(F) & F(E) from the keychain and succeed.
-TEST(CertVerifyProcMacTest, MacCRLIntermediate) {
-  if (base::mac::IsAtLeastOS10_12()) {
-    // TODO(crbug.com/671889): Investigate SecTrustSetKeychains issue on Sierra.
-    LOG(INFO) << "Skipping test, SecTrustSetKeychains does not work on 10.12";
-    return;
-  }
+
+// A SecTrustSetKeychains issue was discovered on macOS back when macOS 10.12
+// was new, so this test was disabled on >=10.12. A bug was filed, but no action
+// was ever taken. Six years later, we're removing 10.12 support, and it's
+// unclear if this remains broken, or if this test can be re-enabled.
+// TODO(crbug.com/671889): Figure this out.
+TEST(CertVerifyProcMacTest, DISABLED_MacCRLIntermediate) {
   CertificateList path_2_certs;
   ASSERT_TRUE(
       LoadCertificateFiles({"multi-root-A-by-B.pem", "multi-root-B-by-C.pem",

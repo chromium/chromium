@@ -32,7 +32,7 @@ class TestNetworkContext : public network::TestNetworkContext {
            const std::string& group,
            const GURL& url,
            const net::NetworkIsolationKey& network_isolation_key,
-           base::Value body)
+           base::Value::Dict body)
         : type(type),
           group(group),
           url(url),
@@ -43,7 +43,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     std::string group;
     GURL url;
     net::NetworkIsolationKey network_isolation_key;
-    base::Value body;
+    base::Value::Dict body;
   };
 
   void QueueReport(
@@ -53,7 +53,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const absl::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkIsolationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
-      base::Value body) override {
+      base::Value::Dict body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
         Report(type, group, url, network_isolation_key, std::move(body)));
@@ -99,33 +99,34 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
   void InvalidateWeakPtrs() { storage_partition_.InvalidateWeakPtrs(); }
   const TestNetworkContext& network_context() const { return network_context_; }
-  base::Value CreateBodyForCorp(base::StringPiece blocked_url,
-                                RequestDestination destination,
-                                base::StringPiece disposition) const {
-    base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict CreateBodyForCorp(base::StringPiece blocked_url,
+                                      RequestDestination destination,
+                                      base::StringPiece disposition) const {
+    base::Value::Dict dict;
     for (const auto& pair :
          CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
-      dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
+      dict.Set(std::move(pair.first), std::move(pair.second));
     }
     return dict;
   }
 
-  base::Value CreateBodyForNavigation(base::StringPiece blocked_url,
-                                      base::StringPiece disposition) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict CreateBodyForNavigation(base::StringPiece blocked_url,
+                                            base::StringPiece disposition) {
+    base::Value::Dict dict;
     for (const auto& pair :
          CreateBodyInternal("navigation", blocked_url, disposition)) {
-      dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
+      dict.Set(std::move(pair.first), std::move(pair.second));
     }
     return dict;
   }
 
-  base::Value CreateBodyForWorkerInitialization(base::StringPiece blocked_url,
-                                                base::StringPiece disposition) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict CreateBodyForWorkerInitialization(
+      base::StringPiece blocked_url,
+      base::StringPiece disposition) {
+    base::Value::Dict dict;
     for (const auto& pair : CreateBodyInternal("worker initialization",
                                                blocked_url, disposition)) {
-      dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
+      dict.Set(std::move(pair.first), std::move(pair.second));
     }
     return dict;
   }

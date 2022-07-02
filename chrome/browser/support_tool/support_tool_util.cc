@@ -12,6 +12,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
+#include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
@@ -64,6 +65,10 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:
         handler->AddDataCollector(std::make_unique<UiHierarchyDataCollector>());
+        break;
+      case support_tool::CHROMEOS_NETWORK_ROUTES:
+        handler->AddDataCollector(
+            std::make_unique<NetworkRoutesDataCollector>());
         break;
       case support_tool::CHROMEOS_COMMAND_LINE:
         handler->AddDataCollector(

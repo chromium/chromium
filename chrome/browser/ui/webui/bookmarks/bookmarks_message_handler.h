@@ -8,10 +8,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 class BookmarksMessageHandler : public content::WebUIMessageHandler {
  public:
   BookmarksMessageHandler();
@@ -23,11 +19,11 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
 
  private:
   int GetIncognitoAvailability();
-  void HandleGetIncognitoAvailability(const base::ListValue* args);
+  void HandleGetIncognitoAvailability(const base::Value::List& args);
   void UpdateIncognitoAvailability();
 
   bool CanEditBookmarks();
-  void HandleGetCanEditBookmarks(const base::ListValue* args);
+  void HandleGetCanEditBookmarks(const base::Value::List& args);
   void UpdateCanEditBookmarks();
 
   // content::WebUIMessageHandler:

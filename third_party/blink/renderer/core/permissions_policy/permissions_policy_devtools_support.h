@@ -23,6 +23,9 @@ enum class PermissionsPolicyBlockReason {
   // All permissions are disabled by default for fenced frames, irrespective of
   // headers.
   kInFencedFrameTree,
+  // Feature is not specified in an Isolated App's Web App Manifest and will be
+  // disabled.
+  kInIsolatedApp,
 };
 
 struct PermissionsPolicyBlockLocator {

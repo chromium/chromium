@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
@@ -365,6 +366,18 @@ void LockScreenStartReauthDialog::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
+  // Check that notification source is related to this dialog's web contents.
+  // Otherwise we might falsely react to notifications from chrome tabs which
+  // are open in the user's active session. We use NavigationController objects
+  // for comparison because `LoginHandler` uses them as the source of
+  // proxy-related notifications.
+  if (!base::Contains(webui()->GetWebContents()->GetInnerWebContents(), source,
+                      [](content::WebContents* wc) {
+                        return content::Source(&wc->GetController());
+                      })) {
+    return;
+  }
+
   switch (type) {
     case chrome::NOTIFICATION_AUTH_NEEDED: {
       is_proxy_auth_in_progress_ = true;

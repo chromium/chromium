@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "ui/views/widget/native_widget_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -37,7 +39,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
@@ -123,7 +124,7 @@ class BridgedNativeWidgetTestApi {
   }
 
  private:
-  remote_cocoa::NativeWidgetNSWindowBridge* bridge_;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_;
 };
 
 // Custom native_widget to create a NativeWidgetMacTestWindow.
@@ -248,7 +249,7 @@ class WidgetChangeObserver : public TestWidgetObserver {
   int lost_visible_count_ = 0;
   int target_gained_visible_count_ = 0;
   int target_lost_visible_count_ = 0;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 // This class gives public access to the protected ctor of
@@ -277,12 +278,12 @@ class CustomTooltipView : public View {
   }
 
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
-    return tooltip_handler_ ? tooltip_handler_ : this;
+    return tooltip_handler_ ? tooltip_handler_.get() : this;
   }
 
  private:
   std::u16string tooltip_;
-  View* tooltip_handler_;  // Weak
+  raw_ptr<View> tooltip_handler_;  // Weak
 };
 
 // A Widget subclass that exposes counts to calls made to OnMouseEvent().
@@ -420,7 +421,7 @@ class PaintCountView : public View {
  private:
   int paint_count_ = 0;
   int target_paint_count_ = 0;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 
@@ -568,7 +569,7 @@ TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
 // Simple view for the SetCursor test that overrides View::GetCursor().
 class CursorView : public View {
  public:
-  CursorView(int x, NSCursor* cursor) : cursor_(cursor) {
+  CursorView(int x, const ui::Cursor& cursor) : cursor_(cursor) {
     SetBounds(x, 0, 100, 300);
   }
 
@@ -576,12 +577,10 @@ class CursorView : public View {
   CursorView& operator=(const CursorView&) = delete;
 
   // View:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
-    return cursor_;
-  }
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override { return cursor_; }
 
  private:
-  NSCursor* cursor_;
+  ui::Cursor cursor_;
 };
 
 // Test for Widget::SetCursor(). There is no Widget::GetCursor(), so this uses
@@ -590,15 +589,15 @@ class CursorView : public View {
 // is safe to use this in a non-interactive UI test with the EventGenerator.
 TEST_F(NativeWidgetMacTest, SetCursor) {
   NSCursor* arrow = [NSCursor arrowCursor];
-  NSCursor* hand = GetNativeHandCursor();
-  NSCursor* ibeam = GetNativeIBeamCursor();
+  NSCursor* hand = [NSCursor pointingHandCursor];
+  NSCursor* ibeam = [NSCursor IBeamCursor];
 
   Widget* widget = CreateTopLevelPlatformWidget();
   widget->SetBounds(gfx::Rect(0, 0, 300, 300));
   auto* view_hand = widget->non_client_view()->frame_view()->AddChildView(
-      std::make_unique<CursorView>(0, hand));
+      std::make_unique<CursorView>(0, ui::mojom::CursorType::kHand));
   auto* view_ibeam = widget->non_client_view()->frame_view()->AddChildView(
-      std::make_unique<CursorView>(100, ibeam));
+      std::make_unique<CursorView>(100, ui::mojom::CursorType::kIBeam));
   widget->Show();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
 
@@ -1094,7 +1093,7 @@ class ScopedSwizzleWaiter {
   static ScopedSwizzleWaiter* instance_;
 
   base::mac::ScopedObjCClassSwizzler swizzler_;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
   bool method_called_ = false;
 };
 
@@ -1779,7 +1778,7 @@ class CustomTitleWidgetDelegate : public WidgetDelegate {
   const Widget* GetWidget() const override { return widget_; }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   std::u16string title_;
   bool should_show_title_;
 };
@@ -2022,9 +2021,10 @@ class NativeWidgetMacFullKeyboardAccessTest : public NativeWidgetMacTest {
     NativeWidgetMacTest::TearDown();
   }
 
-  Widget* widget_ = nullptr;
-  remote_cocoa::NativeWidgetNSWindowBridge* bridge_ = nullptr;
-  ui::test::ScopedFakeFullKeyboardAccess* fake_full_keyboard_access_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_ = nullptr;
+  raw_ptr<ui::test::ScopedFakeFullKeyboardAccess> fake_full_keyboard_access_ =
+      nullptr;
 };
 
 // Ensure that calling SetSize doesn't change the origin.
@@ -2155,7 +2155,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
     NativeHostHolder(NativeViewHost* host)
         : host_(host), view_([[NSView alloc] init]) {}
 
-    NativeViewHost* const host_;
+    const raw_ptr<NativeViewHost> host_;
     base::scoped_nsobject<NSView> view_;
   };
 
@@ -2169,7 +2169,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         [[widget_->GetNativeView().GetNativeNSView() subviews] copy]);
 
     native_host_parent_ = new View();
-    widget_->GetContentsView()->AddChildView(native_host_parent_);
+    widget_->GetContentsView()->AddChildView(native_host_parent_.get());
 
     const size_t kNativeViewCount = 3;
     for (size_t i = 0; i < kNativeViewCount; ++i) {
@@ -2195,8 +2195,8 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
 
   NSArray<NSView*>* GetStartingSubviews() { return starting_subviews_; }
 
-  Widget* widget_ = nullptr;
-  View* native_host_parent_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<View> native_host_parent_ = nullptr;
   std::vector<std::unique_ptr<NativeHostHolder>> hosts_;
   base::scoped_nsobject<NSArray<NSView*>> starting_subviews_;
 };
@@ -2274,22 +2274,21 @@ namespace {
 // Also verifies that the touch bar's delegate returns non-nil for all items.
 NSArray* ExtractTouchBarGroupIdentifiers(NSView* view) {
   NSArray* result = nil;
-  if (@available(macOS 10.12.2, *)) {
-    NSTouchBar* touch_bar = [view touchBar];
-    NSTouchBarItemIdentifier principal = [touch_bar principalItemIdentifier];
-    EXPECT_TRUE(principal);
-    NSGroupTouchBarItem* group = base::mac::ObjCCastStrict<NSGroupTouchBarItem>(
-        [[touch_bar delegate] touchBar:touch_bar
-                 makeItemForIdentifier:principal]);
-    EXPECT_TRUE(group);
-    NSTouchBar* nested_touch_bar = [group groupTouchBar];
-    result = [nested_touch_bar itemIdentifiers];
+  NSTouchBar* touch_bar = [view touchBar];
+  NSTouchBarItemIdentifier principal = [touch_bar principalItemIdentifier];
+  EXPECT_TRUE(principal);
+  NSGroupTouchBarItem* group = base::mac::ObjCCastStrict<NSGroupTouchBarItem>(
+      [[touch_bar delegate] touchBar:touch_bar
+               makeItemForIdentifier:principal]);
+  EXPECT_TRUE(group);
+  NSTouchBar* nested_touch_bar = [group groupTouchBar];
+  result = [nested_touch_bar itemIdentifiers];
 
-    for (NSTouchBarItemIdentifier item in result) {
-      EXPECT_TRUE([[touch_bar delegate] touchBar:nested_touch_bar
-                           makeItemForIdentifier:item]);
-    }
+  for (NSTouchBarItemIdentifier item in result) {
+    EXPECT_TRUE([[touch_bar delegate] touchBar:nested_touch_bar
+                         makeItemForIdentifier:item]);
   }
+
   return result;
 }
 
@@ -2303,9 +2302,6 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
       [delegate->GetWidget()->GetNativeWindow().GetNativeNSWindow()
               contentView];
 
-  NSString* principal = nil;
-  NSObject* old_touch_bar = nil;
-
   // Constants from bridged_content_view_touch_bar.mm.
   NSString* const kTouchBarOKId = @"com.google.chrome-OK";
   NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
@@ -2314,23 +2310,19 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
   EXPECT_TRUE(delegate->GetOkButton());
   EXPECT_TRUE(delegate->GetCancelButton());
 
-  if (@available(macOS 10.12.2, *)) {
-    NSTouchBar* touch_bar = [content touchBar];
-    EXPECT_TRUE([touch_bar delegate]);
-    EXPECT_TRUE([[touch_bar delegate] touchBar:touch_bar
-                         makeItemForIdentifier:kTouchBarOKId]);
-    EXPECT_TRUE([[touch_bar delegate] touchBar:touch_bar
-                         makeItemForIdentifier:kTouchBarCancelId]);
+  NSTouchBar* touch_bar = [content touchBar];
+  EXPECT_TRUE([touch_bar delegate]);
+  EXPECT_TRUE([[touch_bar delegate] touchBar:touch_bar
+                       makeItemForIdentifier:kTouchBarOKId]);
+  EXPECT_TRUE([[touch_bar delegate] touchBar:touch_bar
+                       makeItemForIdentifier:kTouchBarCancelId]);
 
-    principal = [touch_bar principalItemIdentifier];
-    EXPECT_NSEQ(@"com.google.chrome-DIALOG-BUTTONS-GROUP", principal);
-    EXPECT_NSEQ((@[ kTouchBarCancelId, kTouchBarOKId ]),
-                ExtractTouchBarGroupIdentifiers(content));
+  NSString* principal = [touch_bar principalItemIdentifier];
+  EXPECT_NSEQ(@"com.google.chrome-DIALOG-BUTTONS-GROUP", principal);
+  EXPECT_NSEQ((@[ kTouchBarCancelId, kTouchBarOKId ]),
+              ExtractTouchBarGroupIdentifiers(content));
 
-    // Ensure the touchBar is recreated by comparing pointers.
-    old_touch_bar = touch_bar;
-    EXPECT_NSEQ(old_touch_bar, [content touchBar]);
-  }
+  // Ensure the touchBar is recreated by comparing pointers.
 
   // Remove the cancel button.
   delegate->SetButtons(ui::DIALOG_BUTTON_OK);
@@ -2338,11 +2330,9 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
   EXPECT_TRUE(delegate->GetOkButton());
   EXPECT_FALSE(delegate->GetCancelButton());
 
-  if (@available(macOS 10.12.2, *)) {
-    NSTouchBar* touch_bar = [content touchBar];
-    EXPECT_NSNE(old_touch_bar, touch_bar);
-    EXPECT_NSEQ((@[ kTouchBarOKId ]), ExtractTouchBarGroupIdentifiers(content));
-  }
+  NSTouchBar* new_touch_bar = [content touchBar];
+  EXPECT_NSNE(touch_bar, new_touch_bar);
+  EXPECT_NSEQ((@[ kTouchBarOKId ]), ExtractTouchBarGroupIdentifiers(content));
 
   delegate->GetWidget()->CloseNow();
 }

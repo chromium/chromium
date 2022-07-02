@@ -109,6 +109,14 @@ void PassphraseTableViewControllerTest::SetUp() {
   auth_service->SignIn(account_manager_service->GetDefaultIdentity(), nil);
 }
 
+void PassphraseTableViewControllerTest::TearDown() {
+  // If the navigation controller exists, clear any of its child view
+  // controllers.
+  [nav_controller_ setViewControllers:@[] animated:NO];
+  nav_controller_ = nil;
+  ChromeTableViewControllerTest::TearDown();
+}
+
 void PassphraseTableViewControllerTest::SetUpNavigationController(
     UIViewController* test_controller) {
   dummy_controller_ = [[UIViewController alloc] init];

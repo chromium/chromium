@@ -48,13 +48,26 @@ class CORE_EXPORT TouchEventManager final
   // Returns whether there is any touch on the screen.
   bool IsAnyTouchActive() const;
 
-  // Keeps track of attributes of the touch point in the
-  // |touch_points_attributes_| map and computes the effective touch-action
-  // value, after possibly performing a hit-test if the original hit test result
-  // was not inside capturing frame |touch_sequence_document_| for touch events.
+  // Returns the target node after performing additional hit-test for individual
+  // touch-points if needed.
+  //
+  // Individual touch-points are hit-tested at PointerEventManager. For any
+  // touch-points after the first one in a multi-touch scenario,
+  // PointerEventManager should hit-test again against TouchEventManager's
+  // |touch_sequence_document_| if the target set by PointerEventManager was
+  // either null or not in |touch_sequence_document_|.
+  Node* GetTouchPointerNode(
+      const WebPointerEvent& event,
+      const event_handling_util::PointerEventTarget& pointer_event_target);
+
+  // Updates attributes of the touch point in |touch_points_attributes_| map.
   void UpdateTouchAttributeMapsForPointerDown(
       const WebPointerEvent&,
-      const event_handling_util::PointerEventTarget&);
+      Node* touch_node,
+      TouchAction effective_touch_action);
+
+  // Return the touch down element of current touch sequence.
+  Element* CurrentTouchDownElement();
 
  private:
   // Class represending one touch point event with its coalesced events and

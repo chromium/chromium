@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -28,31 +29,7 @@ class DeviceManagementResponse;
 
 namespace policy {
 
-class PsmRlweIdProvider;
-
-// A class that handles all communications related to PSM protocol with
-// DMServer. Also, upon successful determination, it caches the membership state
-// of a given identifier in the local_state PrefService. Upon a failed
-// determination it won't allow another membership check.
-class PsmHelper;
-
-// Indicates all possible PSM protocol results after it has executed
-// successfully or terminated because of an error or timeout. These values are
-// persisted to logs. Entries should not be renumbered and numeric values should
-// never be reused.
-enum class PsmResult {
-  kSuccessfulDetermination = 0,
-  kCreateRlweClientLibraryError = 1,
-  kCreateOprfRequestLibraryError = 2,
-  kCreateQueryRequestLibraryError = 3,
-  kProcessingQueryResponseLibraryError = 4,
-  kEmptyOprfResponseError = 5,
-  kEmptyQueryResponseError = 6,
-  kConnectionError = 7,
-  kServerError = 8,
-  kTimeout = 9,
-  kMaxValue = kTimeout,
-};
+class AutoEnrollmentStateMessageProcessor;
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
@@ -65,11 +42,6 @@ class AutoEnrollmentClientImpl
   // server-backed state key is used. It will set the identifier for the
   // DeviceAutoEnrollmentRequest.
   class DeviceIdentifierProviderFRE;
-
-  // Subclasses of this class generate the request to download the device state
-  // (after determining that there is server-side device state) and parse the
-  // response.
-  class StateDownloadMessageProcessor;
 
   class FactoryImpl : public Factory {
    public:
@@ -98,8 +70,8 @@ class AutoEnrollmentClientImpl
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
-        PsmRlweIdProvider* psm_rlwe_id_provider) override;
+        std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client)
+        override;
   };
 
   AutoEnrollmentClientImpl(const AutoEnrollmentClientImpl&) = delete;
@@ -131,12 +103,12 @@ class AutoEnrollmentClientImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<DeviceIdentifierProviderFRE>
           device_identifier_provider_fre,
-      std::unique_ptr<StateDownloadMessageProcessor>
+      std::unique_ptr<AutoEnrollmentStateMessageProcessor>
           state_download_message_processor,
       int power_initial,
       int power_limit,
       std::string uma_suffix,
-      std::unique_ptr<PsmHelper> psm_helper);
+      std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client);
 
   // Tries to load the result of a previous execution of the protocol from
   // local state. Returns true if that decision has been made and is valid.
@@ -167,7 +139,8 @@ class AutoEnrollmentClientImpl
 
   // Calls `NextStep` in case of successful execution of PSM protocol.
   // Otherwise, reports the failure reason of PSM protocol execution.
-  void HandlePsmCompletion(PsmResult psm_result);
+  void HandlePsmCompletion(
+      PsmRlweDmserverClient::ResultHolder psm_result_holder);
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);
@@ -230,6 +203,9 @@ class AutoEnrollmentClientImpl
   // information.
   absl::optional<bool> has_server_state_;
 
+  // Holds the cached PSM execution result.
+  absl::optional<PsmRlweDmserverClient::ResultHolder> psm_result_holder_;
+
   // Whether the download of server-kept device state completed successfully.
   bool device_state_available_;
 
@@ -264,11 +240,12 @@ class AutoEnrollmentClientImpl
   std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre_;
 
   // Fills and parses state retrieval request / response.
-  std::unique_ptr<StateDownloadMessageProcessor>
+  std::unique_ptr<AutoEnrollmentStateMessageProcessor>
       state_download_message_processor_;
 
-  // Obtains the device state using PSM protocol.
-  std::unique_ptr<PsmHelper> psm_helper_;
+  // Obtains the device state using PSM protocol. Handles all communications
+  // related to PSM protocol with DMServer.
+  std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client_;
 
   // Times used to determine the duration of the protocol, and the extra time
   // needed to complete after the signin was complete.

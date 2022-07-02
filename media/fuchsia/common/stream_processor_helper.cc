@@ -104,7 +104,7 @@ void StreamProcessorHelper::Process(IoPacket input) {
                                         fidl::Clone(input.format()));
   }
 
-  DCHECK(input_packets_.find(input.buffer_index()) == input_packets_.end());
+  DCHECK(!input_packets_.contains(input.buffer_index()));
   input_packets_.insert_or_assign(input.buffer_index(), std::move(input));
   processor_->QueueInputPacket(std::move(packet));
 }

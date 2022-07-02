@@ -30,9 +30,9 @@ class PrefRegistrySyncable;
 
 @protocol ApplicationCommands;
 class Browser;
-@protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsCollectionConsumer;
-@protocol DiscoverFeedDelegate;
+@protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
 class NotificationPromoWhatsNew;
@@ -64,7 +64,7 @@ class WebStateList;
 
 // Dispatcher.
 @property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, SnackbarCommands>
+    id<ApplicationCommands, BrowserCoordinatorCommands, SnackbarCommands>
         dispatcher;
 
 // Command handler for the mediator.
@@ -72,8 +72,8 @@ class WebStateList;
     id<ContentSuggestionsCommands, ContentSuggestionsGestureCommands>
         commandHandler;
 
-// Delegate used to communicate to communicate events to the DiscoverFeed.
-@property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
+// Delegate used to communicate to communicate events to the feed.
+@property(nonatomic, weak) id<FeedDelegate> feedDelegate;
 
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsCollectionConsumer>
@@ -101,10 +101,10 @@ class WebStateList;
 // The notification promo owned by this mediator.
 - (NotificationPromoWhatsNew*)notificationPromo;
 
-// Block |URL| from Most Visited sites.
+// Block `URL` from Most Visited sites.
 - (void)blockMostVisitedURL:(GURL)URL;
 
-// Always allow |URL| in Most Visited sites.
+// Always allow `URL` in Most Visited sites.
 - (void)allowMostVisitedURL:(GURL)URL;
 
 // Get the maximum number of sites shown.
@@ -114,7 +114,7 @@ class WebStateList;
 // configureMostRecentTabItemWithWebState: has been called.
 - (BOOL)mostRecentTabStartSurfaceTileIsShowing;
 
-// Configures the most recent tab item with |webState| and |timeLabel|.
+// Configures the most recent tab item with `webState` and `timeLabel`.
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel;
 

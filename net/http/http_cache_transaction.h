@@ -24,6 +24,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
@@ -34,6 +35,10 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
+
+namespace crypto {
+class SecureHash;
+}  // namespace crypto
 
 namespace net {
 
@@ -188,12 +193,17 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // entry has finished writing.
   void WriteModeTransactionAboutToBecomeReader();
 
+  // True if the passed checksum calculated from the response matches the
+  // expected value from the HttpRequestInfo. Consumes `checksum`.
+  bool ResponseChecksumMatches(
+      std::unique_ptr<crypto::SecureHash> checksum) const;
+
  private:
   static const size_t kNumValidationHeaders = 2;
   // Helper struct to pair a header name with its value, for
   // headers used to validate cache entries.
   struct ValidationHeaders {
-    ValidationHeaders() : initialized(false) {}
+    ValidationHeaders() = default;
 
     std::string values[kNumValidationHeaders];
     void Reset() {
@@ -201,7 +211,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       for (auto& value : values)
         value.clear();
     }
-    bool initialized;
+    bool initialized = false;
   };
 
   struct NetworkTransactionInfo {
@@ -281,6 +291,11 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     // by the network layer (skipping the cache entirely).
     STATE_NETWORK_READ,
     STATE_NETWORK_READ_COMPLETE,
+
+    // These states are only entered a single-keyed cache entry needs to be
+    // marked unusable.
+    STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE,
+    STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE,
   };
 
   // Used for categorizing validation triggers in histograms.
@@ -359,6 +374,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoCacheReadDataComplete(int result);
   int DoNetworkRead();
   int DoNetworkReadComplete(int result);
+  int DoMarkSingleKeyedCacheEntryUnusable();
+  int DoMarkSingleKeyedCacheEntryUnusableComplete(int result);
 
   // Adds time out handling while waiting to be added to entry or after headers
   // phase is complete.
@@ -450,15 +467,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Fixes the response headers to match expectations for a HEAD request.
   void FixHeadersForHead();
 
-  // Called to write data to the cache entry.  If the write fails, then the
-  // cache entry is destroyed.  Future calls to this function will just do
-  // nothing without side-effect.  Returns a network error code.
-  int WriteToEntry(int index,
-                   int offset,
-                   IOBuffer* data,
-                   int data_len,
-                   CompletionOnceCallback callback);
-
   // Called to write a response to the cache entry. |truncated| indicates if the
   // entry should be marked as incomplete.
   int WriteResponseInfoToEntry(const HttpResponseInfo& response,
@@ -485,6 +493,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // a truncated or a doomed entry based on whether the stored response can be
   // resumed or not.
   void DoneWithEntry(bool entry_is_complete);
+
+  // Informs the HttpCache that this transaction is done with the entry and
+  // resets related fields.
+  void DoneWithEntryForRestartWithCache();
 
   // Dooms the given entry so that it will not be re-used for other requests,
   // then calls `DoneWithEntry()`.
@@ -583,16 +595,28 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // headers.
   bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
+  // Checksum headers in `request_` for matching against the single-keyed cache
+  // checksum. Initializes `checksum_`.
+  void ChecksumHeaders();
+
+  // Finishes the checksum and validates that it matches the expected value.
+  // Returns true if the checksum matches. Returns false if it does not
+  // match. If no checksumming is taking place then returns true.
+  bool FinishAndCheckChecksum();
+
   // 304 revalidations of resources that set security headers and that get
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
 
   State next_state_{STATE_NONE};
 
-  // Initial request with which Start() was invoked.
-  raw_ptr<const HttpRequestInfo> initial_request_;
+  // Used for tracing.
+  const uint64_t trace_id_;
 
-  raw_ptr<const HttpRequestInfo> request_;
+  // Initial request with which Start() was invoked.
+  raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
+
+  raw_ptr<const HttpRequestInfo, DanglingUntriaged> request_ = nullptr;
 
   std::string method_;
   RequestPriority priority_;
@@ -603,8 +627,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  raw_ptr<HttpCache::ActiveEntry> entry_;
-  HttpCache::ActiveEntry* new_entry_;
+  raw_ptr<HttpCache::ActiveEntry, DanglingUntriaged> entry_ = nullptr;
+  HttpCache::ActiveEntry* new_entry_ = nullptr;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.
   HttpResponseInfo response_;
@@ -619,55 +643,64 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
-  raw_ptr<const HttpResponseInfo> new_response_;
+  raw_ptr<const HttpResponseInfo, DanglingUntriaged> new_response_ = nullptr;
   std::string cache_key_;
-  Mode mode_;
-  bool reading_;  // We are already reading. Never reverts to false once set.
-  bool invalid_range_;  // We may bypass the cache for this request.
-  bool truncated_;  // We don't have all the response data.
-  bool is_sparse_;  // The data is stored in sparse byte ranges.
-  bool range_requested_;  // The user requested a byte range.
-  bool handling_206_;  // We must deal with this 206 response.
-  bool cache_pending_;  // We are waiting for the HttpCache.
+  Mode mode_ = NONE;
+  bool reading_ = false;          // We are already reading. Never reverts to
+                                  // false once set.
+  bool invalid_range_ = false;    // We may bypass the cache for this request.
+  bool truncated_ = false;        // We don't have all the response data.
+  bool is_sparse_ = false;        // The data is stored in sparse byte ranges.
+  bool range_requested_ = false;  // The user requested a byte range.
+  bool handling_206_ = false;     // We must deal with this 206 response.
+  bool cache_pending_ = false;    // We are waiting for the HttpCache.
 
   // Headers have been received from the network and it's not a match with the
   // existing entry.
-  bool done_headers_create_new_entry_;
+  bool done_headers_create_new_entry_ = false;
 
-  bool vary_mismatch_;  // The request doesn't match the stored vary data.
-  bool couldnt_conditionalize_request_;
-  bool bypass_lock_for_test_;  // A test is exercising the cache lock.
-  bool bypass_lock_after_headers_for_test_;  // A test is exercising the cache
-                                             // lock.
-  bool fail_conditionalization_for_test_;  // Fail ConditionalizeRequest.
+  bool vary_mismatch_ = false;  // The request doesn't match the stored vary
+                                // data.
+  bool couldnt_conditionalize_request_ = false;
+  bool bypass_lock_for_test_ = false;  // A test is exercising the cache lock.
+  bool bypass_lock_after_headers_for_test_ = false;  // A test is exercising the
+                                                     // cache lock.
+  bool fail_conditionalization_for_test_ =
+      false;  // Fail ConditionalizeRequest.
+  bool mark_single_keyed_cache_entry_unusable_ =
+      false;  // Set single_keyed_cache_entry_unusable.
+
   scoped_refptr<IOBuffer> read_buf_;
 
   // Length of the buffer passed in Read().
-  int read_buf_len_;
+  int read_buf_len_ = 0;
 
-  int io_buf_len_;
-  int read_offset_;
-  int effective_load_flags_;
+  int io_buf_len_ = 0;
+  int read_offset_ = 0;
+  int effective_load_flags_ = 0;
   std::unique_ptr<PartialData> partial_;  // We are dealing with range requests.
   CompletionRepeatingCallback io_callback_;
 
   // Error code to be returned from a subsequent Read call if shared writing
   // failed in a separate transaction.
-  int shared_writing_error_;
+  int shared_writing_error_ = OK;
 
   // Members used to track data for histograms.
   // This cache_entry_status_ takes precedence over
   // response_.cache_entry_status. In fact, response_.cache_entry_status must be
   // kept in sync with cache_entry_status_ (via SetResponse and
   // UpdateCacheEntryStatus).
-  HttpResponseInfo::CacheEntryStatus cache_entry_status_;
-  ValidationCause validation_cause_;
+  HttpResponseInfo::CacheEntryStatus cache_entry_status_ =
+      HttpResponseInfo::CacheEntryStatus::ENTRY_UNDEFINED;
+  ValidationCause validation_cause_ = VALIDATION_CAUSE_UNDEFINED;
   base::TimeTicks entry_lock_waiting_since_;
   base::TimeTicks first_cache_access_since_;
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
-  bool recorded_histograms_;
+  bool recorded_histograms_ = false;
+  bool has_opened_or_created_entry_ = false;
+  bool record_entry_open_or_creation_time_ = false;
 
   NetworkTransactionInfo network_transaction_info_;
 
@@ -678,14 +711,19 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // TODO(shivanisha) Note that if this transaction dies mid-way and there are
   // other writer transactions, no transaction then accounts for those
   // statistics.
-  bool moved_network_transaction_to_writers_;
+  bool moved_network_transaction_to_writers_ = false;
 
   // The helper object to use to create WebSocketHandshakeStreamBase
   // objects. Only relevant when establishing a WebSocket connection.
   // This is passed to the underlying network transaction. It is stored here in
   // case the transaction does not exist yet.
   raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
-      websocket_handshake_stream_base_create_helper_;
+      websocket_handshake_stream_base_create_helper_ = nullptr;
+
+  // Set if we are currently calculating a checksum of the resource to validate
+  // it against the expected checksum for the single-keyed cache. Accumulates a
+  // hash of selected headers and the body of the response.
+  std::unique_ptr<crypto::SecureHash> checksum_;
 
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
@@ -694,7 +732,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   ResponseHeadersCallback response_headers_callback_;
 
   // True if the Transaction is currently processing the DoLoop.
-  bool in_do_loop_;
+  bool in_do_loop_ = false;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

@@ -229,7 +229,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   if (!GetProcess()->IsInitializedAndNotDead())
     return false;
 
-  int parent_routing_id = MSG_ROUTING_NONE;
+  absl::optional<blink::RemoteFrameToken> parent_frame_token;
   if (frame_tree_node_->parent()) {
     // It is safe to use GetRenderFrameProxyHost to get the parent proxy, since
     // new child frames always start out as local frames, so a new proxy should
@@ -247,8 +247,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     if (!parent_proxy->is_render_frame_proxy_live())
       return false;
 
-    parent_routing_id = parent_proxy->GetRoutingID();
-    CHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
+    parent_frame_token = parent_proxy->GetFrameToken();
   }
 
   absl::optional<blink::FrameToken> opener_frame_token;
@@ -261,7 +260,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
   GetAgentSchedulingGroup().CreateFrameProxy(
       frame_token_, routing_id_, opener_frame_token, view_routing_id,
-      parent_routing_id, frame_tree_node_->tree_scope_type(),
+      parent_frame_token, frame_tree_node_->tree_scope_type(),
       frame_tree_node_->current_replication_state().Clone(),
       frame_tree_node_->devtools_frame_token(),
       CreateAndBindRemoteMainFrameInterfaces());
@@ -646,12 +645,12 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // Verify and unpack IPC payload.
   GURL validated_url;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
-  if (!VerifyOpenURLParams(GetSiteInstance(), params, &validated_url,
-                           &blob_url_loader_factory)) {
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+
+  if (!VerifyOpenURLParams(current_rfh, GetSiteInstance(), params,
+                           &validated_url, &blob_url_loader_factory)) {
     return;
   }
-
-  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
   // Only active documents are allowed to navigate from frame proxy:
   // - If the document is in pending deletion, ignore the navigation, because
@@ -709,7 +708,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
-      params->impression, navigation_start_time);
+      params->is_form_submission, params->impression, navigation_start_time);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

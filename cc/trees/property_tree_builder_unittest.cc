@@ -809,10 +809,10 @@ TEST_F(PropertyTreeBuilderTest, GradientMask) {
     // |angle| is updated by the scale transform.
     EXPECT_EQ(33, layer_impl1->draw_properties()
                       .mask_filter_info.gradient_mask()
-                      .angle());
+                      ->angle());
     EXPECT_EQ(gradient_mask.steps(), layer_impl1->draw_properties()
                                          .mask_filter_info.gradient_mask()
-                                         .steps());
+                                         ->steps());
   }
 
   // Rotate transform eliminates gradient mask.
@@ -878,10 +878,11 @@ TEST_F(PropertyTreeBuilderTest, GradientMask) {
     EXPECT_EQ(gfx::RectF(10, 10, 300, 200),
               render_surface_impl1->mask_filter_info().bounds());
     // |angle| is updated by the scale transform.
-    EXPECT_EQ(33,
-              render_surface_impl1->mask_filter_info().gradient_mask().angle());
-    EXPECT_EQ(gradient_mask.steps(),
-              render_surface_impl1->mask_filter_info().gradient_mask().steps());
+    EXPECT_EQ(
+        33, render_surface_impl1->mask_filter_info().gradient_mask()->angle());
+    EXPECT_EQ(
+        gradient_mask.steps(),
+        render_surface_impl1->mask_filter_info().gradient_mask()->steps());
   }
 
   // Rotate transform eliminates gradient mask.
@@ -960,11 +961,12 @@ TEST_F(PropertyTreeBuilderTest, NestedGradientMask) {
     // |mask_info| coordinates are in the target space of the render surface's
     // layer.
     auto* render_surface_impl1 = GetRenderSurfaceImpl(child1);
-    EXPECT_EQ(gradient_mask1.steps(),
-              render_surface_impl1->mask_filter_info().gradient_mask().steps());
+    EXPECT_EQ(
+        gradient_mask1.steps(),
+        render_surface_impl1->mask_filter_info().gradient_mask()->steps());
     // |angle| is updated by the scale transform.
-    EXPECT_EQ(21,
-              render_surface_impl1->mask_filter_info().gradient_mask().angle());
+    EXPECT_EQ(
+        21, render_surface_impl1->mask_filter_info().gradient_mask()->angle());
 
     // |mask_info| is in the coordinate space of the transform node associated
     // with this effect node.
@@ -979,9 +981,9 @@ TEST_F(PropertyTreeBuilderTest, NestedGradientMask) {
     EXPECT_EQ(gfx::RectF(30, 10, 300, 150),
               draw_properties2.mask_filter_info.bounds());
     // |angle| is updated by the scale transform.
-    EXPECT_EQ(26, draw_properties2.mask_filter_info.gradient_mask().angle());
+    EXPECT_EQ(26, draw_properties2.mask_filter_info.gradient_mask()->angle());
     EXPECT_EQ(gradient_mask2.steps(),
-              draw_properties2.mask_filter_info.gradient_mask().steps());
+              draw_properties2.mask_filter_info.gradient_mask()->steps());
   }
 
   gfx::Transform rotate_transform;

@@ -60,6 +60,11 @@ SemanticElementFinder::SemanticElementFinder(
       annotate_dom_model_service_(annotate_dom_model_service),
       selector_(selector) {
   DCHECK(annotate_dom_model_service_);
+
+  DCHECK_GT(selector_.proto.filters_size(), 0);
+  DCHECK(selector_.proto.filters(0).filter_case() ==
+         SelectorProto::Filter::kSemantic);
+  filter_ = selector_.proto.filters(0).semantic();
 }
 
 SemanticElementFinder::~SemanticElementFinder() = default;
@@ -73,16 +78,18 @@ void SemanticElementFinder::GiveUpWithError(const ClientStatus& status) {
   SendResult(status, ElementFinderResult::EmptyResult());
 }
 
-void SemanticElementFinder::ResultFound(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& object_id) {
+void SemanticElementFinder::ResultFound(const GlobalBackendNodeId& node_id,
+                                        const std::string& object_id,
+                                        const std::string& devtools_frame_id) {
   if (!callback_) {
     return;
   }
 
   ElementFinderResult result;
-  result.SetRenderFrameHost(render_frame_host);
+  result.SetRenderFrameHostGlobalId(node_id.host_id());
   result.SetObjectId(object_id);
+  result.SetNodeFrameId(devtools_frame_id);
+  result.SetBackendNodeId(node_id.backend_node_id());
 
   SendResult(OkClientStatus(), result);
 }
@@ -100,7 +107,7 @@ void SemanticElementFinder::Start(const ElementFinderResult& start_element,
 
   auto* start_frame = start_element.render_frame_host();
   if (!start_frame) {
-    start_frame = web_contents_->GetMainFrame();
+    start_frame = web_contents_->GetPrimaryMainFrame();
   }
   RunAnnotateDomModel(start_frame);
 }
@@ -109,7 +116,6 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
   DCHECK(!callback_);  // Run after finish.
 
   ElementFinderInfoProto info;
-  DCHECK(selector_.proto.has_semantic_information());
   for (auto node_data_status : node_data_frame_status_) {
     info.mutable_semantic_inference_result()->add_status_per_frame(
         NodeDataStatusToSemanticInferenceStatus(node_data_status));
@@ -119,21 +125,13 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
         info.mutable_semantic_inference_result()->add_predicted_elements();
     predicted_element->set_backend_node_id(
         semantic_node_result.backend_node_id());
-    *predicted_element->mutable_semantic_information() =
-        selector_.proto.semantic_information();
+    *predicted_element->mutable_semantic_filter() = filter_;
     // TODO(b/217160707): For the ignore_objective case this is not correct
     // and the inferred objective should be returned from the Agent and used
     // here.
   }
 
   return info;
-}
-
-int SemanticElementFinder::GetBackendNodeId() const {
-  if (semantic_node_results_.empty()) {
-    return 0;
-  }
-  return semantic_node_results_[0].backend_node_id();
 }
 
 void SemanticElementFinder::RunAnnotateDomModel(
@@ -170,11 +168,8 @@ void SemanticElementFinder::RunAnnotateDomModelOnFrame(
   }
 
   driver->GetAutofillAssistantAgent()->GetSemanticNodes(
-      selector_.proto.semantic_information().semantic_role(),
-      selector_.proto.semantic_information().objective(),
-      selector_.proto.semantic_information().ignore_objective(),
-      base::Milliseconds(
-          selector_.proto.semantic_information().model_timeout_ms()),
+      filter_.role(), filter_.objective(), filter_.ignore_objective(),
+      base::Milliseconds(filter_.model_timeout_ms()),
       base::BindOnce(&SemanticElementFinder::OnRunAnnotateDomModelOnFrame,
                      weak_ptr_factory_.GetWeakPtr(), host_id,
                      std::move(callback)));
@@ -214,27 +209,38 @@ void SemanticElementFinder::OnRunAnnotateDomModel(
     GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
+  const auto& semantic_node_result = semantic_node_results_[0];
 
-  // We need to set the empty string for the frame id. The expectation is that
-  // backend node ids are global and devtools is able to resolve the node
-  // without an explicit frame id.
+  // A non-exitent frame should never happen at this point, better to be safe.
+  // E.g. crbug/1335205.
+  // Only assign a devtools frame id if the owning frame is in a different
+  // process than the main frame (in process frames are not tracked and do
+  // not have a session id in our |DevtoolsClient|).
+  std::string devtools_frame_id;
+  auto* frame =
+      content::RenderFrameHost::FromID(semantic_node_result.host_id());
+  if (frame != nullptr && web_contents_->GetPrimaryMainFrame()->GetProcess() !=
+                              frame->GetProcess()) {
+    devtools_frame_id = frame->GetDevToolsFrameToken().ToString();
+  }
+
   devtools_client_->GetDOM()->ResolveNode(
       dom::ResolveNodeParams::Builder()
-          .SetBackendNodeId(semantic_node_results_[0].backend_node_id())
+          .SetBackendNodeId(semantic_node_result.backend_node_id())
           .Build(),
-      /* current_frame_id= */ std::string(),
+      devtools_frame_id,
       base::BindOnce(&SemanticElementFinder::OnResolveNodeForAnnotateDom,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     semantic_node_results_[0].host_id()));
+                     weak_ptr_factory_.GetWeakPtr(), semantic_node_result,
+                     devtools_frame_id));
 }
 
 void SemanticElementFinder::OnResolveNodeForAnnotateDom(
-    content::GlobalRenderFrameHostId host_id,
+    const GlobalBackendNodeId& node,
+    const std::string& devtools_frame_id,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::ResolveNodeResult> result) {
   if (result && result->GetObject() && result->GetObject()->HasObjectId()) {
-    ResultFound(content::RenderFrameHost::FromID(host_id),
-                result->GetObject()->GetObjectId());
+    ResultFound(node, result->GetObject()->GetObjectId(), devtools_frame_id);
     return;
   }
   SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED),

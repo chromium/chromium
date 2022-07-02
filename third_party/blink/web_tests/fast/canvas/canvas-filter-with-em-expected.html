@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--  Since the font size changed, the second filter should be parsed again to
+correctly draw the shadow. The expected version includes an additional whitespace
+to force cnavas to parse again the filter since the strings are not equal.   -->
+<html>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      ctx.filter = "drop-shadow(1em 1em 0 red)";
+      ctx.strokeRect(50, 50, 50, 50);
+      ctx.font = "50px sans-serif";
+      ctx.filter = "drop-shadow(1em 1em 0 red) ";
+      ctx.strokeRect(50, 50, 50, 50);
+
+    </script>
+  </body>
+</html>

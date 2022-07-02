@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -128,7 +127,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1139488")
     public void testErrorMessageHiddenAfterNicknameIsEditedFromInvalidToValid() throws Exception {
         String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
         SettingsActivity activity =

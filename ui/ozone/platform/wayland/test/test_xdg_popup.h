@@ -10,6 +10,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_positioner.h"
 
@@ -50,7 +51,7 @@ class TestXdgPopup : public ServerObject {
   struct TestPositioner::PopupPosition position_;
 
   // Ground surface for this popup.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 
   uint32_t grab_serial_ = 0;
 };

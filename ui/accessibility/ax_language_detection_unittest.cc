@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,7 +104,7 @@ class AXLanguageDetectionTestFixture : public testing::Test {
     return tree.language_detection_manager->lang_info_stats_.count_overridden_;
   }
 
-  const std::unordered_set<std::string>& unique_top_lang_detected(
+  const base::flat_set<std::string>& unique_top_lang_detected(
       AXTree& tree) const {
     return tree.language_detection_manager->lang_info_stats_
         .unique_top_lang_detected_;
@@ -672,8 +673,8 @@ TEST_F(AXLanguageDetectionTestStaticContent, MetricCollection) {
   // There should be 4 unique languages (de, en, fr, es).
   {
     const auto& top_lang = unique_top_lang_detected(tree);
-    const std::unordered_set<std::string> expected_top_lang = {"de", "en", "es",
-                                                               "fr"};
+    const base::flat_set<std::string> expected_top_lang = {"de", "en", "es",
+                                                           "fr"};
     EXPECT_EQ(top_lang, expected_top_lang);
   }
   histograms.ExpectUniqueSample("Accessibility.LanguageDetection.LangsPerPage",
@@ -1182,7 +1183,7 @@ TEST_F(AXLanguageDetectionTestDynamicContent, MetricCollection) {
   // There should be 2 unique languages (fr, es).
   {
     auto top_lang = unique_top_lang_detected(tree);
-    const std::unordered_set<std::string> expected_top_lang = {"es", "fr"};
+    const base::flat_set<std::string> expected_top_lang = {"es", "fr"};
     EXPECT_EQ(top_lang, expected_top_lang);
   }
   // There should be a single (unique, 1) value for '2' unique languages.

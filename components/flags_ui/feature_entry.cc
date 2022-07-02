@@ -42,6 +42,10 @@ bool FeatureEntry::InternalNameMatches(const std::string& name) const {
     case FeatureEntry::ENABLE_DISABLE_VALUE:
     case FeatureEntry::FEATURE_VALUE:
     case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
+    case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // Check that the pattern matches what's produced by NameForOption().
       int index = -1;
       return name.size() > internal_name_length + 1 &&
@@ -55,11 +59,17 @@ int FeatureEntry::NumOptions() const {
   switch (type) {
     case ENABLE_DISABLE_VALUE:
     case FEATURE_VALUE:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case PLATFORM_FEATURE_NAME_VALUE:
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       return 3;
     case MULTI_VALUE:
       return choices.size();
     case FEATURE_WITH_PARAMS_VALUE:
-      return 3 + feature.feature_variations.size();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      return 3 + GetVariations().size();
     default:
       return 0;
   }
@@ -69,7 +79,12 @@ std::string FeatureEntry::NameForOption(int index) const {
   DCHECK(type == FeatureEntry::MULTI_VALUE ||
          type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          type == FeatureEntry::FEATURE_VALUE ||
-         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE);
+         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE ||
+         type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  );
   DCHECK_LT(index, NumOptions());
   return std::string(internal_name) + testing::kMultiSeparator +
          base::NumberToString(index);
@@ -83,18 +98,31 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
   DCHECK(type == FeatureEntry::MULTI_VALUE ||
          type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          type == FeatureEntry::FEATURE_VALUE ||
-         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE);
+         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE ||
+         type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  );
   DCHECK_LT(index, NumOptions());
   const char* description = nullptr;
   if (type == FeatureEntry::ENABLE_DISABLE_VALUE ||
-      type == FeatureEntry::FEATURE_VALUE) {
+      type == FeatureEntry::FEATURE_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE
+#endif
+  ) {
     const char* const kEnableDisableDescriptions[] = {
         kGenericExperimentChoiceDefault,
         kGenericExperimentChoiceEnabled,
         kGenericExperimentChoiceDisabled,
     };
     description = kEnableDisableDescriptions[index];
-  } else if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
+  } else if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             || type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif
+  ) {
     if (index == 0) {
       description = kGenericExperimentChoiceDefault;
     } else if (index == 1) {
@@ -102,9 +130,9 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
     } else if (index < NumOptions() - 1) {
       // First two options do not have variations params.
       int variation_index = index - 2;
-      return base::ASCIIToUTF16(base::StrCat(
-          {kGenericExperimentChoiceEnabled, " ",
-           feature.feature_variations[variation_index].description_text}));
+      return base::ASCIIToUTF16(
+          base::StrCat({kGenericExperimentChoiceEnabled, " ",
+                        GetVariations()[variation_index].description_text}));
     } else {
       DCHECK_EQ(NumOptions() - 1, index);
       description = kGenericExperimentChoiceDisabled;
@@ -124,7 +152,12 @@ const FeatureEntry::Choice& FeatureEntry::ChoiceForOption(int index) const {
 
 FeatureEntry::FeatureState FeatureEntry::StateForOption(int index) const {
   DCHECK(type == FeatureEntry::FEATURE_VALUE ||
-         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE);
+         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE ||
+         type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif
+  );
   DCHECK_LT(index, NumOptions());
 
   if (index == 0)
@@ -137,16 +170,27 @@ FeatureEntry::FeatureState FeatureEntry::StateForOption(int index) const {
 const FeatureEntry::FeatureVariation* FeatureEntry::VariationForOption(
     int index) const {
   DCHECK(type == FeatureEntry::FEATURE_VALUE ||
-         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE);
+         type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE ||
+         type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif
+  );
   DCHECK_LT(index, NumOptions());
 
-  if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE && index > 1 &&
-      index < NumOptions() - 1) {
-    // We have no variations for FEATURE_VALUE type. Option at |index|
-    // corresponds to variation at |index| - 2 as the list starts with "Default"
-    // and "Enabled" (with default parameters).
-    return &feature.feature_variations[index - 2];
+  if ((type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+       || type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
+#endif
+       ) &&
+      index > 1 && index < NumOptions() - 1) {
+    // We have no variations for FEATURE_VALUE type or
+    // PLATFORM_FEATURE_NAME_VALUE type. Option at |index| corresponds to
+    // variation at |index| - 2 as the list starts with "Default" and "Enabled"
+    // (with default parameters).
+    return &GetVariations()[index - 2];
   }
+
   return nullptr;
 }
 
@@ -208,9 +252,45 @@ bool FeatureEntry::IsValid() const {
         return false;
       }
       return true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
+      if (!platform_feature_name.name) {
+        LOG(ERROR) << "no feature name is set";
+        return false;
+      }
+      return true;
+    case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
+      if (!platform_feature_name.name) {
+        LOG(ERROR) << "no feature name is set";
+        return false;
+      }
+      if (platform_feature_name.feature_variations.size() == 0) {
+        LOG(ERROR) << "feature_variations is empty";
+        return false;
+      }
+      if (!platform_feature_name.feature_trial_name) {
+        LOG(ERROR) << "feature_trial_name is null";
+        return false;
+      }
+      return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   NOTREACHED();
   return false;
+}
+
+const base::span<const FeatureEntry::FeatureVariation>
+FeatureEntry::GetVariations() const {
+  if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
+    return feature.feature_variations;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE) {
+    return platform_feature_name.feature_variations;
+  }
+#endif
+  NOTREACHED();
+  return base::span<const FeatureEntry::FeatureVariation>();
 }
 
 namespace testing {

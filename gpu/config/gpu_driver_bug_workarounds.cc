@@ -28,7 +28,7 @@ void IntSetToWorkarounds(const std::vector<int32_t>& enabled_workarounds,
   }
   // TODO(crbug.com/1319451): Rename workaround.
   if (workarounds->max_texture_size_limit_4096)
-    workarounds->client_max_texture_size = 4096;
+    workarounds->webgl_or_caps_max_texture_size = 4096;
 
   if (workarounds->max_copy_texture_chromium_size_1048576)
     workarounds->max_copy_texture_chromium_size = 1048576;
@@ -76,8 +76,8 @@ void GpuDriverBugWorkarounds::Append(const GpuDriverBugWorkarounds& extra) {
   GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)
 #undef GPU_OP
 
-  client_max_texture_size =
-      LowerMax(client_max_texture_size, extra.client_max_texture_size);
+  webgl_or_caps_max_texture_size = LowerMax(
+      webgl_or_caps_max_texture_size, extra.webgl_or_caps_max_texture_size);
   max_copy_texture_chromium_size = LowerMax(
       max_copy_texture_chromium_size, extra.max_copy_texture_chromium_size);
   max_3d_array_texture_size =

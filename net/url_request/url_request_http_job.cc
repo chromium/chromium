@@ -54,6 +54,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/cookies/same_party_context.h"
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
@@ -228,18 +229,7 @@ URLRequestHttpJob::URLRequestHttpJob(
     URLRequest* request,
     const HttpUserAgentSettings* http_user_agent_settings)
     : URLRequestJob(request),
-      num_cookie_lines_left_(0),
-      priority_(DEFAULT_PRIORITY),
-      response_info_(nullptr),
-      proxy_auth_state_(AUTH_STATE_DONT_NEED_AUTH),
-      server_auth_state_(AUTH_STATE_DONT_NEED_AUTH),
-      read_in_progress_(false),
-      throttling_entry_(nullptr),
-      done_(false),
-      awaiting_callback_(false),
-      http_user_agent_settings_(http_user_agent_settings),
-      total_received_bytes_from_previous_transactions_(0),
-      total_sent_bytes_from_previous_transactions_(0) {
+      http_user_agent_settings_(http_user_agent_settings) {
   URLRequestThrottlerManager* manager = request->context()->throttler_manager();
   if (manager)
     throttling_entry_ = manager->RegisterRequestUrl(request->url());
@@ -278,6 +268,9 @@ void URLRequestHttpJob::Start() {
       net::MutableNetworkTrafficAnnotationTag(request_->traffic_annotation());
   request_info_.socket_tag = request_->socket_tag();
   request_info_.idempotency = request_->GetIdempotency();
+  request_info_.pervasive_payloads_index_for_logging =
+      request_->pervasive_payloads_index_for_logging();
+  request_info_.checksum = request_->expected_response_checksum();
 #if BUILDFLAG(ENABLE_REPORTING)
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
@@ -925,6 +918,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     CookieInclusionStatus returned_status;
 
     num_cookie_lines_left_++;
+
+    // `cookie_partition_key_` is only non-null when partitioned cookie are
+    // enabled.
+    if (cookie_partition_key_ && ParsedCookie(cookie_string).IsPartitioned()) {
+      request_->SetHasPartitionedCookie();
+    }
 
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,

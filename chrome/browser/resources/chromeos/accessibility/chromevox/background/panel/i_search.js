@@ -5,6 +5,7 @@
 /**
  * @fileoverview The logic behind incremental search.
  */
+import {Output} from '/chromevox/background/output/output.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
 
 const Dir = constants.Dir;

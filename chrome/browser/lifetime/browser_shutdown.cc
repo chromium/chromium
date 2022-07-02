@@ -180,15 +180,15 @@ bool ShutdownPreThreadsStop() {
   // WARNING: During logoff/shutdown (WM_ENDSESSION) we may not have enough
   // time to get here. If you have something that *must* happen on end session,
   // consider putting it in BrowserProcessImpl::EndSession.
-  PrefService* prefs = g_browser_process->local_state();
-
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
-  if (metrics)
-    metrics->RecordCompletedSessionEnd();
+  if (metrics) {
+    // TODO(crbug/1338797): LogCleanShutdown() is called earlier on in
+    // shutdown. See whether this call can be removed.
+    metrics->LogCleanShutdown();
+  }
 
   bool restart_last_session = RecordShutdownInfoPrefs();
-
-  prefs->CommitPendingWrite();
+  g_browser_process->local_state()->CommitPendingWrite();
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Cleanup any statics created by RLZ. Must be done before NotificationService
@@ -320,40 +320,34 @@ void ReadLastShutdownFile(ShutdownType type,
   if (shutdown_ms == 0 || num_procs == 0)
     return;
 
-  const char* time2_metric_name = nullptr;
-  const char* per_proc_metric_name = nullptr;
-
+  const char* time_metric_name = nullptr;
   switch (type) {
     case ShutdownType::kNotValid:
+      time_metric_name = "Shutdown.NotValid.Time";
+      break;
+
     case ShutdownType::kSilentExit:
-      // The histograms below have expired, so do not record metrics for silent
-      // exits; see https://crbug.com/975118.
+      time_metric_name = "Shutdown.SilentExit.time";
       break;
 
     case ShutdownType::kWindowClose:
-      time2_metric_name = "Shutdown.window_close.time2";
-      per_proc_metric_name = "Shutdown.window_close.time_per_process";
+      time_metric_name = "Shutdown.WindowClose.Time";
       break;
 
     case ShutdownType::kBrowserExit:
-      time2_metric_name = "Shutdown.browser_exit.time2";
-      per_proc_metric_name = "Shutdown.browser_exit.time_per_process";
+      time_metric_name = "Shutdown.BrowserExit.Time";
       break;
 
     case ShutdownType::kEndSession:
-      time2_metric_name = "Shutdown.end_session.time2";
-      per_proc_metric_name = "Shutdown.end_session.time_per_process";
+      time_metric_name = "Shutdown.EndSession.Time";
       break;
   }
-  if (!time2_metric_name)
-    return;
+  DCHECK(time_metric_name);
 
-  base::UmaHistogramMediumTimes(time2_metric_name,
+  base::UmaHistogramMediumTimes(time_metric_name,
                                 base::Milliseconds(shutdown_ms));
-  base::UmaHistogramTimes(per_proc_metric_name,
-                          base::Milliseconds(shutdown_ms / num_procs));
-  base::UmaHistogramCounts100("Shutdown.renderers.total", num_procs);
-  base::UmaHistogramCounts100("Shutdown.renderers.slow", num_procs_slow);
+  base::UmaHistogramCounts100("Shutdown.Renderers.Total", num_procs);
+  base::UmaHistogramCounts100("Shutdown.Renderers.Slow", num_procs_slow);
 }
 
 void ReadLastShutdownInfo() {

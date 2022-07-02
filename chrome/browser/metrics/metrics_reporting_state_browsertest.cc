@@ -94,6 +94,7 @@ class MetricsReportingStateTest : public InProcessBrowserTest {
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     // IsMetricsReportingEnabled() in non-official builds always returns false.
     // Enable the official build checks so that this test can work in both
     // official and non-official builds.
@@ -285,7 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
     MetricsReportingStateClearDataTest,
     testing::ValuesIn<ChangeMetricsReportingStateCalledFrom>(
         {ChangeMetricsReportingStateCalledFrom::kUnknown,
-         ChangeMetricsReportingStateCalledFrom::kUiSettings}));
+         ChangeMetricsReportingStateCalledFrom::kUiSettings,
+         ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange}));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Used to verify that managed/unmanged devices returns correct values based on
@@ -315,7 +317,7 @@ class MetricsReportingStateManagedTest
     MetricsReportingStateTest::SetUp();
   }
 
-  // Set metrics reporting to false.
+  // Set metrics reporting initial value to false.
   bool IsMetricsReportingEnabledInitialValue() const override { return false; }
 
  protected:
@@ -331,7 +333,24 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateManagedTest,
   EXPECT_EQ(IsMetricsReportingPolicyManaged(), is_managed());
 }
 
+IN_PROC_BROWSER_TEST_P(MetricsReportingStateManagedTest,
+                       MetricsReportingStateUpdatesOnCrosMetricsChange) {
+  // Simulate enabling metrics reporting through OnCrosMetricsChange().
+  base::RunLoop run_loop;
+  bool value_after_change = false;
+  ChangeMetricsReportingStateWithReply(
+      true,
+      base::BindOnce(&OnMetricsReportingStateChanged, &value_after_change,
+                     run_loop.QuitClosure()),
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange);
+  run_loop.Run();
+
+  // Value should have changed regardless whether the device is managed or not.
+  ASSERT_TRUE(value_after_change);
+}
+
 INSTANTIATE_TEST_SUITE_P(MetricsReportingStateTests,
                          MetricsReportingStateManagedTest,
                          testing::Bool());
+
 #endif

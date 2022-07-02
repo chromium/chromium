@@ -94,7 +94,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
                                EGL_NONE};
     config_attribs[kBufferSizeOffset] = geometry->depth;
 
-    EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+    EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
     x11::VisualId visual_id;
     ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
         true, &visual_id, nullptr, nullptr, nullptr);

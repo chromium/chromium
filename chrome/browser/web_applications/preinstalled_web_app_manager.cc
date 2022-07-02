@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
@@ -24,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -39,16 +37,16 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -71,23 +69,17 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-// The sub-directory of the extensions directory in which to scan for external
-// web apps (as opposed to external extensions or external ARC apps).
-const base::FilePath::CharType kWebAppsSubDirectory[] =
-    FILE_PATH_LITERAL("web_apps");
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
-const base::FilePath* g_config_dir_for_testing = nullptr;
+bool g_override_previous_user_uninstall_for_testing_ = false;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
@@ -130,8 +122,8 @@ bool IsArcAvailable() {
   return arc::IsArcAvailable();
 #else
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  return init_params && init_params->device_properties &&
+      chromeos::BrowserInitParams::Get();
+  return init_params->device_properties &&
          init_params->device_properties->is_arc_available;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -141,8 +133,8 @@ bool IsTabletFormFactor() {
   return ash::switches::IsTabletFormFactor();
 #else
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  return init_params && init_params->device_properties &&
+      chromeos::BrowserInitParams::Get();
+  return init_params->device_properties &&
          init_params->device_properties->is_tablet_form_factor;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -250,10 +242,14 @@ absl::optional<std::string> GetDisableReason(
   if (options.gate_on_feature_or_installed &&
       !IsPreinstalledAppInstallFeatureEnabled(
           *options.gate_on_feature_or_installed, *profile)) {
-    absl::optional<AppId> app_id =
-        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
-            .LookupAppId(options.install_url);
-    if (!app_id.has_value()) {
+    // Check if the app is currently installed as a preinstalled app or whether
+    // it was previously preinstalled, but no longer installed.
+    absl::optional<AppId> app_id_from_registry =
+        registrar->LookupExternalAppId(options.install_url);
+    absl::optional<AppId> app_id_uninstalled =
+        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+            .LookUpAppIdByInstallUrl(options.install_url);
+    if (!app_id_from_registry.has_value() && !app_id_uninstalled.has_value()) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
           DisabledReason::kGatedFeatureNotEnabledAndAppNotInstalled);
@@ -283,9 +279,10 @@ absl::optional<std::string> GetDisableReason(
   // installed previously.
   if (options.only_for_new_users && !is_new_user) {
     bool was_previously_installed =
-        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
-            .LookupAppId(options.install_url)
-            .has_value();
+        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+            .LookUpAppIdByInstallUrl(options.install_url)
+            .has_value() ||
+        registrar->LookupExternalAppId(options.install_url).has_value();
     if (!was_previously_installed) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
@@ -298,8 +295,7 @@ absl::optional<std::string> GetDisableReason(
   // Remove if was not previously preinstalled.
   if (options.only_if_previously_preinstalled) {
     absl::optional<AppId> app_id =
-        ExternallyInstalledWebAppPrefs(profile->GetPrefs())
-            .LookupAppId(options.install_url);
+        registrar->LookupExternalAppId(options.install_url);
 
     bool was_previously_preinstalled = false;
     if (app_id.has_value()) {
@@ -419,21 +415,19 @@ absl::optional<std::string> GetDisableReason(
   base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                 DisabledReason::kNotDisabled);
 
+  // Remove from install configs of preinstalled_apps
+  // if it was uninstalled by user and if |override_previous_user_uninstall| is
+  // false.
+  if (UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .LookUpAppIdByInstallUrl(options.install_url)
+          .has_value() &&
+      !options.override_previous_user_uninstall) {
+    return options.install_url.spec() +
+           " is not being installed because it was previously uninstalled "
+           "by user.";
+  }
+
   return absl::nullopt;
-}
-
-std::string GetConfigDirectoryFromCommandLine() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPreinstalledWebAppsDir);
-}
-
-std::string GetExtraConfigSubdirectory() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      ash::switches::kExtraWebAppsDir);
-#else
-  return std::string();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -475,9 +469,9 @@ void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
 }
 
-void PreinstalledWebAppManager::SetConfigDirForTesting(
-    const base::FilePath* config_dir) {
-  g_config_dir_for_testing = config_dir;
+void PreinstalledWebAppManager::
+    OverridePreviousUserUninstallConfigForTesting() {
+  g_override_previous_user_uninstall_for_testing_ = true;
 }
 
 void PreinstalledWebAppManager::SetConfigsForTesting(
@@ -577,8 +571,8 @@ void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     LoadedConfigs loaded_configs;
     for (const base::Value& config : *g_configs_for_testing) {
       auto file = base::FilePath(FILE_PATH_LITERAL("test.json"));
-      if (g_config_dir_for_testing) {
-        file = g_config_dir_for_testing->Append(file);
+      if (GetPreinstalledWebAppConfigDirForTesting()) {
+        file = GetPreinstalledWebAppConfigDirForTesting()->Append(file);
       }
 
       loaded_configs.configs.push_back(
@@ -593,16 +587,17 @@ void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     return;
   }
 
-  base::FilePath config_dir = GetConfigDir();
+  base::FilePath config_dir = GetPreinstalledWebAppConfigDir(profile_);
   if (config_dir.empty()) {
     std::move(callback).Run({});
     return;
   }
 
   std::vector<base::FilePath> config_dirs = {config_dir};
-  std::string extra_config_subdir = GetExtraConfigSubdirectory();
-  if (!extra_config_subdir.empty()) {
-    config_dirs.push_back(config_dir.AppendASCII(extra_config_subdir));
+  base::FilePath extra_config_dir =
+      GetPreinstalledWebAppExtraConfigDir(profile_);
+  if (!extra_config_dir.empty()) {
+    config_dirs.push_back(extra_config_dir);
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -657,6 +652,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     options.add_to_desktop = false;
     options.add_to_quick_launch_bar = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (g_override_previous_user_uninstall_for_testing_) {
+      options.override_previous_user_uninstall = true;
+    }
   }
 
   // TODO(crbug.com/1175196): Move this constant into some shared constants.h
@@ -835,43 +834,6 @@ void PreinstalledWebAppManager::OnStartUpTaskCompleted(
     debug_info_->install_results = std::move(install_results);
     debug_info_->uninstall_results = std::move(uninstall_results);
   }
-}
-
-base::FilePath PreinstalledWebAppManager::GetConfigDir() {
-  std::string command_line_directory = GetConfigDirectoryFromCommandLine();
-  if (!command_line_directory.empty())
-    return base::FilePath::FromUTF8Unsafe(command_line_directory);
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // As of mid 2018, only Chrome OS has default/external web apps, and
-    // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
-    // which includes OS_CHROMEOS.
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Exclude sign-in and lock screen profiles.
-  if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
-    return {};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (g_config_dir_for_testing) {
-    return *g_config_dir_for_testing;
-  }
-
-  // For manual testing, you can change s/STANDALONE/USER/, as writing to
-  // "$HOME/.config/chromium/test-user/.config/chromium/External
-  // Extensions/web_apps" does not require root ACLs, unlike
-  // "/usr/share/chromium/extensions/web_apps".
-  base::FilePath dir;
-  if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                             &dir)) {
-    return dir.Append(kWebAppsSubDirectory);
-  }
-
-  LOG(ERROR) << "base::PathService::Get failed";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return {};
 }
 
 bool PreinstalledWebAppManager::IsNewUser() {

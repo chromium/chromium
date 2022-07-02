@@ -130,7 +130,7 @@ const CGFloat kMostVisitedFaviconMinimalSize = 32;
 
 #pragma mark - Private.
 
-// If it is the first time the favicon corresponding to |URL| has its favicon
+// If it is the first time the favicon corresponding to `URL` has its favicon
 // fetched, its impression is logged.
 // This is called when the favicon is fetched and might not represent a tile
 // impression (for example, if some tiles are not displayed on screen because

@@ -24,6 +24,7 @@
 #include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +38,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/shlwapi.h"
@@ -51,6 +53,7 @@
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/user_info.h"
+#include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
 #pragma clang diagnostic push
@@ -384,6 +387,22 @@ void InstallProgressObserverIPC::Invoke(WPARAM wparam, LPARAM lparam) {
   }
 }
 
+void SetUsageStats(UpdaterScope scope,
+                   const std::string& app_id,
+                   bool usage_stats_enabled) {
+  const LONG result =
+      base::win::RegKey(
+          scope == UpdaterScope::kUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
+          base::StrCat({scope == UpdaterScope::kUser ? CLIENT_STATE_KEY
+                                                     : CLIENT_STATE_MEDIUM_KEY,
+                        base::SysUTF8ToWide(app_id)})
+              .c_str(),
+          Wow6432(KEY_WRITE))
+          .WriteValue(L"usagestats", usage_stats_enabled ? 1 : 0);
+  VLOG_IF(1, result != ERROR_SUCCESS)
+      << "Error writing usage stats for " << app_id << ":" << result;
+}
+
 // Implements installing a single application by invoking the code in
 // |UpdateService|, listening to |UpdateService| and UI events, and
 // driving the UI code by calling the functions exposed by
@@ -549,23 +568,29 @@ void AppInstallControllerImpl::DoInstallApp() {
   if (tag_args)
     request.brand_code = tag_args->brand_code;
 
-  update_service_->RegisterApp(
-      request,
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
+                     tag_args && tag_args->usage_stats_enable &&
+                         *tag_args->usage_stats_enable),
       base::BindOnce(
-          [](scoped_refptr<AppInstallControllerImpl> self,
-             const RegistrationResponse& response) {
-            DCHECK(response.status_code == kRegistrationSuccess ||
-                   response.status_code == kRegistrationAlreadyRegistered);
-            self->update_service_->Update(
-                self->app_id_, GetInstallDataIndexFromAppArgs(self->app_id_),
-                UpdateService::Priority::kForeground,
-                UpdateService::PolicySameVersionUpdate::kAllowed,
-                base::BindRepeating(&AppInstallControllerImpl::StateChange,
-                                    self),
-                base::BindOnce(&AppInstallControllerImpl::InstallComplete,
-                               self));
-          },
-          base::WrapRefCounted(this)));
+          &UpdateService::RegisterApp, update_service_, request,
+          base::BindOnce(
+              [](scoped_refptr<AppInstallControllerImpl> self,
+                 const RegistrationResponse& response) {
+                DCHECK(response.status_code == kRegistrationSuccess ||
+                       response.status_code == kRegistrationAlreadyRegistered);
+                self->update_service_->Update(
+                    self->app_id_,
+                    GetInstallDataIndexFromAppArgs(self->app_id_),
+                    UpdateService::Priority::kForeground,
+                    UpdateService::PolicySameVersionUpdate::kAllowed,
+                    base::BindRepeating(&AppInstallControllerImpl::StateChange,
+                                        self),
+                    base::BindOnce(&AppInstallControllerImpl::InstallComplete,
+                                   self));
+              },
+              base::WrapRefCounted(this))));
 }
 
 void AppInstallControllerImpl::InstallAppOffline(
@@ -651,26 +676,32 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   if (tag_args)
     request.brand_code = tag_args->brand_code;
 
-  update_service_->RegisterApp(
-      request,
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
+                     tag_args && tag_args->usage_stats_enable &&
+                         *tag_args->usage_stats_enable),
       base::BindOnce(
-          [](scoped_refptr<AppInstallControllerImpl> self,
-             const base::FilePath& installer_path,
-             const std::string& install_args, const std::string& install_data,
-             const std::string& install_settings,
-             const RegistrationResponse& response) {
-            DCHECK(response.status_code == kRegistrationSuccess ||
-                   response.status_code == kRegistrationAlreadyRegistered);
-            self->update_service_->RunInstaller(
-                self->app_id_, installer_path, install_args, install_data,
-                install_settings,
-                base::BindRepeating(&AppInstallControllerImpl::StateChange,
-                                    self),
-                base::BindOnce(&AppInstallControllerImpl::InstallComplete,
-                               self));
-          },
-          base::WrapRefCounted(this), installer_path, install_args,
-          install_data, install_settings));
+          &UpdateService::RegisterApp, update_service_, request,
+          base::BindOnce(
+              [](scoped_refptr<AppInstallControllerImpl> self,
+                 const base::FilePath& installer_path,
+                 const std::string& install_args,
+                 const std::string& install_data,
+                 const std::string& install_settings,
+                 const RegistrationResponse& response) {
+                DCHECK(response.status_code == kRegistrationSuccess ||
+                       response.status_code == kRegistrationAlreadyRegistered);
+                self->update_service_->RunInstaller(
+                    self->app_id_, installer_path, install_args, install_data,
+                    install_settings,
+                    base::BindRepeating(&AppInstallControllerImpl::StateChange,
+                                        self),
+                    base::BindOnce(&AppInstallControllerImpl::InstallComplete,
+                                   self));
+              },
+              base::WrapRefCounted(this), installer_path, install_args,
+              install_data, install_settings)));
 }
 
 // TODO(crbug.com/1218219) - propagate error code in case of errors.

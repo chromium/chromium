@@ -76,7 +76,7 @@ export class OnboardingChooseWpDisableMethodPage extends
     }
   }
 
-  /** @return {!Promise<!StateResult>} */
+  /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
     if (this.hwwpMethod_ === 'hwwpDisableMethodManual') {
       return this.shimlessRmaService_.chooseManuallyDisableWriteProtect();

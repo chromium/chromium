@@ -23,6 +23,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"
 #include "components/viz/common/features.h"
 #include "content/public/common/content_client.h"
@@ -52,6 +53,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/connect.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
@@ -110,12 +112,12 @@
 #include "content/renderer/media/cast_renderer_factory.h"
 #endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // Enable remoting receiver
 #include "media/remoting/receiver_controller.h"        // nogncheck
 #include "media/remoting/remoting_constants.h"         // nogncheck
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
@@ -345,6 +347,20 @@ void MediaFactory::SetupMojo() {
 
   interface_broker_ = render_frame_->GetBrowserInterfaceBroker();
   DCHECK(interface_broker_);
+
+  // Add callbacks for cast_streaming to the AssociatedInterfaceRegistry to be
+  // populated upon browser-process binding.
+  // TODO(b/3607051): Protect this code block with
+  // #if BUILDFLAG(ENABLE_CAST_RECEIVER) once Fuchsia sets this flag in the
+  // cast_runner build.
+  cast_streaming_resource_provider_ =
+      GetContentClient()->renderer()->CreateCastStreamingResourceProvider();
+  if (cast_streaming_resource_provider_) {
+    render_frame_->GetAssociatedInterfaceRegistry()->AddInterface(
+        cast_streaming_resource_provider_->GetRendererControllerBinder());
+    render_frame_->GetAssociatedInterfaceRegistry()->AddInterface(
+        cast_streaming_resource_provider_->GetDemuxerConnectorBinder());
+  }
 }
 
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
@@ -389,7 +405,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
 
   scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink =
-      blink::AudioDeviceFactory::NewSwitchableAudioRendererSink(
+      blink::AudioDeviceFactory::GetInstance()->NewSwitchableAudioRendererSink(
           blink::WebAudioDeviceSourceType::kMediaElement,
           render_frame_->GetWebFrame()->GetLocalFrameToken(),
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),
@@ -423,10 +439,12 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       std::move(handlers));
 
+  EnsureDecoderFactory();
+
   base::WeakPtr<media::MediaObserver> media_observer;
   auto factory_selector = CreateRendererFactorySelector(
       media_log.get(), url, render_frame_->GetRenderFrameMediaPlaybackOptions(),
-      GetDecoderFactory().get(),
+      decoder_factory_.get(),
       std::make_unique<blink::RemotePlaybackClientWrapperImpl>(client),
       &media_observer);
 
@@ -473,6 +491,12 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   std::unique_ptr<media::Demuxer> demuxer_override =
       GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
                                                             media_task_runner);
+
+  if (!demuxer_override && cast_streaming_resource_provider_) {
+    demuxer_override =
+        cast_streaming_resource_provider_->MaybeGetDemuxerOverride(
+            url, media_task_runner);
+  }
 
   return blink::WebMediaPlayerBuilder::Build(
       web_frame, client, encrypted_client, delegate,
@@ -535,10 +559,11 @@ MediaFactory::CreateRendererFactorySelector(
   bool is_base_renderer_factory_set = false;
 
   if (cast_streaming::IsCastRemotingEnabled() &&
-      cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
+      cast_streaming::IsCastStreamingMediaSourceUrl(url) &&
+      cast_streaming_resource_provider_) {
     factory_selector =
         std::make_unique<cast_streaming::WrappingRendererFactorySelector>(
-            render_frame_);
+            cast_streaming_resource_provider_.get());
   }
 
   auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
@@ -685,7 +710,7 @@ MediaFactory::CreateRendererFactorySelector(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_remoting = std::make_unique<CastRendererClientFactory>(
@@ -709,7 +734,7 @@ MediaFactory::CreateRendererFactorySelector(
         RendererType::kRemoting, std::move(remoting_renderer_factory),
         is_remoting_media);
   }
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
   if (!is_base_renderer_factory_set) {
     // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if
@@ -778,6 +803,11 @@ MediaFactory::GetWebMediaPlayerDelegate() {
 }
 
 base::WeakPtr<media::DecoderFactory> MediaFactory::GetDecoderFactory() {
+  EnsureDecoderFactory();
+  return decoder_factory_->GetWeakPtr();
+}
+
+void MediaFactory::EnsureDecoderFactory() {
   if (!decoder_factory_) {
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
@@ -792,8 +822,6 @@ base::WeakPtr<media::DecoderFactory> MediaFactory::GetDecoderFactory() {
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(
         std::move(external_decoder_factory));
   }
-
-  return decoder_factory_->GetWeakPtr();
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
@@ -52,30 +53,6 @@ using testing::ElementsAre;
 using testing::StrEq;
 using testing::UnorderedElementsAre;
 using testing::WhenSorted;
-
-class TestSearchResult : public ChromeSearchResult {
- public:
-  TestSearchResult(const std::string& id, ResultType type)
-      : instance_id_(instantiation_count++) {
-    set_id(id);
-    SetTitle(base::UTF8ToUTF16(id));
-    SetResultType(type);
-  }
-
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
-
-  ~TestSearchResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-
- private:
-  static int instantiation_count;
-
-  int instance_id_;
-};
-int TestSearchResult::instantiation_count = 0;
 
 MATCHER_P(HasId, id, "") {
   bool match = base::UTF16ToUTF8(arg.result->title()) == id;
@@ -177,10 +154,10 @@ class SearchResultRankerTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  // This is used only to make the ownership clear for the TestSearchResult
+  // This is used only to make the ownership clear for the TestResult
   // objects that the return value of MakeSearchResults() contains raw pointers
   // to.
-  std::list<TestSearchResult> test_search_results_;
+  std::list<TestResult> test_search_results_;
 
   ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;

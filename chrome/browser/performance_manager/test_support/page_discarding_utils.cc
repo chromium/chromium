@@ -32,16 +32,17 @@ void LenientMockPageDiscarder::DiscardPageNodes(
   std::move(post_discard_cb).Run(result);
 }
 
-GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder() {
-  // Some tests depends on the existence of the PageAggregator.
-  graph()->PassToGraph(std::make_unique<PageAggregator>());
-}
+GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder()
+    : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
 GraphTestHarnessWithMockDiscarder::~GraphTestHarnessWithMockDiscarder() =
     default;
 
 void GraphTestHarnessWithMockDiscarder::SetUp() {
   GraphTestHarness::SetUp();
+
+  // Some tests depends on the existence of the PageAggregator.
+  graph()->PassToGraph(std::make_unique<PageAggregator>());
 
   // Make the policy use a mock PageDiscarder.
   auto mock_discarder = std::make_unique<MockPageDiscarder>();

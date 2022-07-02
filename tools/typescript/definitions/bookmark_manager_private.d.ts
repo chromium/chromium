@@ -43,6 +43,9 @@ declare global {
           void;
       export function undo(): void;
       export function redo(): void;
+      export function openInNewTab(id: string, active: boolean): void;
+      export function openInNewWindow(idList: string[], incognito: boolean):
+          void;
 
       export type DragData = {
         elements: chrome.bookmarks.BookmarkTreeNode[]|null;

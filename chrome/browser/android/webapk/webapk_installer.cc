@@ -281,7 +281,7 @@ void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
       if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
-        web_contents_->GetMainFrame()->AddMessageToConsole(
+        web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             base::StringPrintf(kWebApkFailureMessageTemplate,
                                manifest_url_.spec().c_str()));

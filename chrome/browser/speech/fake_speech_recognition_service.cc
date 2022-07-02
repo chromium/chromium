@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +19,13 @@ FakeSpeechRecognitionService::FakeSpeechRecognitionService() = default;
 
 FakeSpeechRecognitionService::~FakeSpeechRecognitionService() = default;
 
-void FakeSpeechRecognitionService::Create(
+void FakeSpeechRecognitionService::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        receiver) {
+  audio_source_speech_recognition_contexts_.Add(this, std::move(receiver));
+}
+
+void FakeSpeechRecognitionService::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   speech_recognition_contexts_.Add(this, std::move(receiver));
 }

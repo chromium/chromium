@@ -4,9 +4,11 @@
 
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -88,9 +90,10 @@ std::vector<gfx::Rect> CollectCollisionRects(
     auto* shelf = Shelf::ForWindow(root_window);
     auto* shelf_window = shelf->GetWindow();
     if (shelf->IsVisible() &&
-        !ShouldIgnoreWindowForCollision(shelf_window, priority))
+        !ShouldIgnoreWindowForCollision(shelf_window, priority)) {
       rects.push_back(ComputeCollisionRectFromBounds(
           shelf_window->GetTargetBounds(), shelf_window->parent()));
+    }
 
     // Explicitly add popup notifications as they are not in the notification
     // tray.
@@ -100,9 +103,10 @@ std::vector<gfx::Rect> CollectCollisionRects(
       if (window->IsVisible() && !window->GetTargetBounds().IsEmpty() &&
           window->GetName() ==
               AshMessagePopupCollection::kMessagePopupWidgetName &&
-          !ShouldIgnoreWindowForCollision(window, priority))
+          !ShouldIgnoreWindowForCollision(window, priority)) {
         rects.push_back(ComputeCollisionRectFromBounds(
             window->GetTargetBounds(), window->parent()));
+      }
     }
 
     // The hotseat doesn't span the whole width of the display, but to allow
@@ -192,6 +196,18 @@ std::vector<gfx::Rect> CollectCollisionRects(
     rects.push_back(
         ComputeCollisionRectFromBounds(camera_preview_window->GetTargetBounds(),
                                        camera_preview_window->parent()));
+  }
+
+  // Avoid clamshell-mode launcher bubble.
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->IsInTabletMode() &&
+      app_list_controller->GetTargetVisibility(display.id())) {
+    aura::Window* window = app_list_controller->GetWindow();
+    if (window) {
+      rects.push_back(ComputeCollisionRectFromBounds(window->GetTargetBounds(),
+                                                     window->parent()));
+    }
   }
 
   return rects;

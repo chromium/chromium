@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -66,9 +65,9 @@ import java.util.List;
  * <p>The coordinator creates and owns elements within this component.
  */
 
-public final class LocationBarCoordinator implements LocationBar, NativeInitObserver,
-                                                     OmniboxSuggestionsDropdownEmbedder,
-                                                     AutocompleteDelegate {
+public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
+                                               OmniboxSuggestionsDropdownEmbedder,
+                                               AutocompleteDelegate {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
         /** Destroys SubCoordinator. */
@@ -132,7 +131,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
      * @param jankTracker Tracks UI jank.
-     * @param exploreIconProvider The provider to get explore sites icon.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
      *         such as when called from a search activity.
@@ -156,7 +154,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
-            @NonNull ExploreIconProvider exploreIconProvider,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
@@ -186,11 +183,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito,
                         reportExceptionCallback);
-        mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
-                mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
-                shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
-                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
-                exploreIconProvider, omniboxPedalDelegate);
+        mAutocompleteCoordinator =
+                new AutocompleteCoordinator(mLocationBarLayout, this, this, mUrlCoordinator,
+                        modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,
+                        locationBarDataProvider, profileObservableSupplier, bringTabToFrontCallback,
+                        tabWindowManagerSupplier, bookmarkState, jankTracker, omniboxPedalDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 modalDialogManagerSupplier, locationBarDataProvider, mTemplateUrlServiceSupplier,

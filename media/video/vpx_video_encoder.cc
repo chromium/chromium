@@ -540,7 +540,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  TRACE_EVENT0("media", "vpx_codec_encode");
+  TRACE_EVENT1("media", "vpx_codec_encode", "timestamp", frame->timestamp());
   auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp_us,
                                     duration_us, flags, deadline);
 
@@ -717,7 +717,7 @@ void VpxVideoEncoder::DrainOutputs(int temporal_id,
       result.timestamp = ts;
       result.color_space = color_space;
       result.size = pkt->data.frame.sz;
-      result.data.reset(new uint8_t[result.size]);
+      result.data = std::make_unique<uint8_t[]>(result.size);
       memcpy(result.data.get(), pkt->data.frame.buf, result.size);
       output_cb_.Run(std::move(result), {});
     }

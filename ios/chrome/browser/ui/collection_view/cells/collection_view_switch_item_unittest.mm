@@ -17,7 +17,7 @@ namespace {
 using CollectionViewSwitchItemTest = PlatformTest;
 
 // Tests that the label and switch values are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(CollectionViewSwitchItemTest, ConfigureCell) {
   CollectionViewSwitchItem* item =
       [[CollectionViewSwitchItem alloc] initWithType:0];
@@ -40,7 +40,7 @@ TEST_F(CollectionViewSwitchItemTest, ConfigureCell) {
 }
 
 // Tests that the text color and enabled state of the switch are set correctly
-// by a call to |configureCell:|.
+// by a call to `configureCell:`.
 TEST_F(CollectionViewSwitchItemTest, EnabledAndDisabled) {
   CollectionViewSwitchCell* cell = [[CollectionViewSwitchCell alloc] init];
   CollectionViewSwitchItem* item =

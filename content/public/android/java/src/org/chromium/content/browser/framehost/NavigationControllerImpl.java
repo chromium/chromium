@@ -5,12 +5,15 @@
 package org.chromium.content.browser.framehost;
 
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -27,6 +30,7 @@ import org.chromium.url.Origin;
 // TODO(tedchoc): Remove the package restriction once this class moves to a non-public content
 //                package whose visibility will be enforced via DEPS.
 /* package */ class NavigationControllerImpl implements NavigationController {
+    private static final String TAG = "NavigationController";
 
     private long mNativeNavigationControllerAndroid;
 
@@ -167,6 +171,8 @@ import org.chromium.url.Origin;
             long inputStart = params.getInputStartTimestamp() == 0
                     ? params.getIntentReceivedTimestamp()
                     : params.getInputStartTimestamp();
+            RecordHistogram.recordTimesHistogram("Android.Omnibox.InputToNavigationControllerStart",
+                    SystemClock.uptimeMillis() - inputStart);
             NavigationControllerImplJni.get().loadUrl(mNativeNavigationControllerAndroid,
                     NavigationControllerImpl.this, params.getUrl(), params.getLoadUrlType(),
                     params.getTransitionType(),
@@ -227,6 +233,11 @@ import org.chromium.url.Origin;
     @Override
     public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange) {
         if (mNativeNavigationControllerAndroid != 0) {
+            Log.i(TAG,
+                    "Thread dump for debugging, override: " + override
+                            + " reloadOnChange: " + reloadOnChange);
+            Thread.dumpStack();
+
             NavigationControllerImplJni.get().setUseDesktopUserAgent(
                     mNativeNavigationControllerAndroid, NavigationControllerImpl.this, override,
                     reloadOnChange);

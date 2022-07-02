@@ -176,8 +176,8 @@ void VdaVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
 
 void VdaVideoFramePool::ReleaseAllFrames() {
   // TODO(jkardatzke): Implement this when we do protected content on Android
-  // for Intel platforms.
-  NOTREACHED();
+  // for Intel platforms. I will do this in a follow up CL, removing the
+  // NOREACHED() for now in order to prevent a DCHECK when this occurs.
 }
 
 void VdaVideoFramePool::CallFrameAvailableCbIfNeeded() {

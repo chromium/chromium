@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_ANDROID_H_
 
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
 
 namespace url_param_filter {
 

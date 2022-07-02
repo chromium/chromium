@@ -14,24 +14,17 @@
 """Tests for audio_classifier."""
 
 import enum
-import json
 
 from absl.testing import parameterized
+import tensorflow as tf
 
-from google.protobuf import json_format
 import unittest
 from tensorflow_lite_support.python.task.audio import audio_classifier
 from tensorflow_lite_support.python.task.audio.core import audio_record
 from tensorflow_lite_support.python.task.audio.core import tensor_audio
 from tensorflow_lite_support.python.task.core.proto import base_options_pb2
-from tensorflow_lite_support.python.task.processor.proto import class_pb2
 from tensorflow_lite_support.python.task.processor.proto import classification_options_pb2
-from tensorflow_lite_support.python.task.processor.proto import classifications_pb2
-from tensorflow_lite_support.python.test import base_test
 from tensorflow_lite_support.python.test import test_util
-
-# TODO(b/220067158): Change to import tensorflow and leverage tf.test once
-# fixed the dependency issue.
 
 _mock = unittest.mock
 _BaseOptions = base_options_pb2.BaseOptions
@@ -40,58 +33,84 @@ _AudioClassifierOptions = audio_classifier.AudioClassifierOptions
 
 _FIXED_INPUT_SIZE_MODEL_FILE = 'yamnet_audio_classifier_with_metadata.tflite'
 _SPEECH_AUDIO_FILE = 'speech.wav'
-_FIXED_INPUT_SIZE_MODEL_CLASSIFICATIONS = {
-    'scores': [{
-        'index': 0,
-        'score': 0.91796875,
-        'class_name': 'Speech'
-    }, {
-        'index': 500,
-        'score': 0.05859375,
-        'class_name': 'Inside, small room'
-    }, {
-        'index': 494,
-        'score': 0.01367188,
-        'class_name': 'Silence'
-    }]
+_FIXED_INPUT_SIZE_MODEL_CLASSIFICATIONS = """
+classifications {
+  classes {
+    index: 0
+    score: 0.917969
+    display_name: ""
+    class_name: "Speech"
+  }
+  classes {
+    index: 500
+    score: 0.058594
+    display_name: ""
+    class_name: "Inside, small room"
+  }
+  classes {
+    index: 494
+    score: 0.011719
+    display_name: ""
+    class_name: "Silence"
+  }
+  head_index: 0
+  head_name: "scores"
 }
+"""
 
 _MULTIHEAD_MODEL_FILE = 'two_heads.tflite'
 _TWO_HEADS_AUDIO_FILE = 'two_heads.wav'
-_MULTIHEAD_MODEL_CLASSIFICATIONS = {
-    'yamnet_classification': [{
-        'index': 508,
-        'score': 0.5486158,
-        'class_name': 'Environmental noise'
-    }, {
-        'index': 507,
-        'score': 0.38086897,
-        'class_name': 'Noise'
-    }, {
-        'index': 106,
-        'score': 0.25613675,
-        'class_name': 'Bird'
-    }],
-    'bird_classification': [{
-        'index': 4,
-        'score': 0.93399656,
-        'class_name': 'Chestnut-crowned Antpitta'
-    }, {
-        'index': 1,
-        'score': 0.065934494,
-        'class_name': 'White-breasted Wood-Wren'
-    }, {
-        'index': 0,
-        'score': 6.1469495e-05,
-        'class_name': 'Red Crossbill'
-    }]
+_MULTIHEAD_MODEL_CLASSIFICATIONS = """
+classifications {
+  classes {
+    index: 508
+    score: 0.548616
+    display_name: ""
+    class_name: "Environmental noise"
+  }
+  classes {
+    index: 507
+    score: 0.380869
+    display_name: ""
+    class_name: "Noise"
+  }
+  classes {
+    index: 106
+    score: 0.256137
+    display_name: ""
+    class_name: "Bird"
+  }
+  head_index: 0
+  head_name: "yamnet_classification"
 }
+classifications {
+  classes {
+    index: 4
+    score: 0.933997
+    display_name: ""
+    class_name: "Chestnut-crowned Antpitta"
+  }
+  classes {
+    index: 1
+    score: 0.065934
+    display_name: ""
+    class_name: "White-breasted Wood-Wren"
+  }
+  classes {
+    index: 0
+    score: 6.1469495e-05
+    display_name: ""
+    class_name: "Red Crossbill"
+  }
+  head_index: 1
+  head_name: "bird_classification"
+}
+"""
 
 _ALLOW_LIST = ['Speech', 'Inside, small room']
 _DENY_LIST = ['Speech']
 _SCORE_THRESHOLD = 0.5
 _MAX_RESULTS = 3
-_ACCEPTABLE_ERROR_RANGE = 0.005
 
 
 class ModelFileType(enum.Enum):
@@ -108,22 +127,7 @@ def _create_classifier_from_options(base_options, **classification_options):
   return classifier
 
 
-def _build_test_data(classifications):
-  expected_result = classifications_pb2.ClassificationResult()
-
-  for index, (head_name, categories) in enumerate(classifications.items()):
-    classifications = classifications_pb2.Classifications(
-        head_index=index, head_name=head_name)
-    classifications.classes.extend(
-        [class_pb2.Category(**args) for args in categories])
-    expected_result.classifications.append(classifications)
-
-  expected_result_dict = json.loads(json_format.MessageToJson(expected_result))
-
-  return expected_result_dict
-
-
-class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
+class AudioClassifierTest(parameterized.TestCase, tf.test.TestCase):
 
   def setUp(self):
     super().setUp()
@@ -195,7 +199,7 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
       (_MULTIHEAD_MODEL_FILE, ModelFileType.FILE_CONTENT, _TWO_HEADS_AUDIO_FILE,
        3, _MULTIHEAD_MODEL_CLASSIFICATIONS))
   def test_classify_model(self, model_name, model_file_type, audio_file_name,
-                          max_results, expected_classifications):
+                          max_results, expected_result_text_proto):
     # Creates classifier.
     model_path = test_util.get_test_data_path(model_name)
     if model_file_type is ModelFileType.FILE_NAME:
@@ -218,14 +222,9 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
     # Classifies the input.
     audio_result = classifier.classify(tensor)
-    audio_result_dict = json.loads(json_format.MessageToJson(audio_result))
-
-    # Builds test data.
-    expected_result_dict = _build_test_data(expected_classifications)
 
     # Comparing results.
-    self.assertDeepAlmostEqual(
-        audio_result_dict, expected_result_dict, delta=_ACCEPTABLE_ERROR_RANGE)
+    self.assertProtoEquals(expected_result_text_proto, audio_result.to_pb2())
 
   def test_max_results_option(self):
     # Creates classifier.
@@ -240,9 +239,7 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
     # Classifies the input.
     audio_result = classifier.classify(tensor)
-    audio_result_dict = json.loads(json_format.MessageToJson(audio_result))
-
-    categories = audio_result_dict['classifications'][0]['classes']
+    categories = audio_result.classifications[0].categories
 
     self.assertLessEqual(
         len(categories), _MAX_RESULTS, 'Too many results returned.')
@@ -260,14 +257,11 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
     # Classifies the input.
     audio_result = classifier.classify(tensor)
-    audio_result_dict = json.loads(json_format.MessageToJson(audio_result))
-
-    categories = audio_result_dict['classifications'][0]['classes']
+    categories = audio_result.classifications[0].categories
 
     for category in categories:
-      score = category['score']
       self.assertGreaterEqual(
-          score, _SCORE_THRESHOLD,
+          category.score, _SCORE_THRESHOLD,
           'Classification with score lower than threshold found. {0}'.format(
               category))
 
@@ -276,7 +270,7 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
     base_options = _BaseOptions(file_name=self.model_path)
 
     classifier = _create_classifier_from_options(
-        base_options, class_name_allowlist=_ALLOW_LIST)
+        base_options, category_name_allowlist=_ALLOW_LIST)
 
     # Load the input audio file.
     tensor = tensor_audio.TensorAudio.create_from_wav_file(
@@ -284,12 +278,10 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
     # Classifies the input.
     audio_result = classifier.classify(tensor)
-    audio_result_dict = json.loads(json_format.MessageToJson(audio_result))
-
-    categories = audio_result_dict['classifications'][0]['classes']
+    categories = audio_result.classifications[0].categories
 
     for category in categories:
-      label = category['className']
+      label = category.category_name
       self.assertIn(
           label, _ALLOW_LIST,
           'Label "{0}" found but not in label allow list'.format(label))
@@ -299,7 +291,7 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
     base_options = _BaseOptions(file_name=self.model_path)
 
     classifier = _create_classifier_from_options(
-        base_options, score_threshold=0.01, class_name_denylist=_DENY_LIST)
+        base_options, score_threshold=0.01, category_name_denylist=_DENY_LIST)
 
     # Load the input audio file.
     tensor = tensor_audio.TensorAudio.create_from_wav_file(
@@ -307,12 +299,10 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
     # Classifies the input.
     audio_result = classifier.classify(tensor)
-    audio_result_dict = json.loads(json_format.MessageToJson(audio_result))
-
-    categories = audio_result_dict['classifications'][0]['classes']
+    categories = audio_result.classifications[0].categories
 
     for category in categories:
-      label = category['className']
+      label = category.category_name
       self.assertNotIn(label, _DENY_LIST,
                        'Label "{0}" found but in deny list.'.format(label))
 
@@ -324,7 +314,7 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
         r'exclusive options.'):
       base_options = _BaseOptions(file_name=self.model_path)
       classification_options = classification_options_pb2.ClassificationOptions(
-          class_name_allowlist=['foo'], class_name_denylist=['bar'])
+          category_name_allowlist=['foo'], category_name_denylist=['bar'])
       options = _AudioClassifierOptions(
           base_options=base_options,
           classification_options=classification_options)
@@ -332,4 +322,4 @@ class AudioClassifierTest(parameterized.TestCase, base_test.BaseTestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  tf.test.main()

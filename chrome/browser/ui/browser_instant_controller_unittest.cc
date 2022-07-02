@@ -113,7 +113,7 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
     // Validate initial instant state.
     EXPECT_EQ(test.start_in_instant_process,
               instant_service_->IsInstantProcess(
-                  contents->GetMainFrame()->GetProcess()->GetID()))
+                  contents->GetPrimaryMainFrame()->GetProcess()->GetID()))
         << test.description;
 
     // Setup an observer to verify reload or absence thereof.

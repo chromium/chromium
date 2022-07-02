@@ -45,7 +45,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -269,7 +268,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(^(OverlayResponse* response) {
-        // |response| is null if WebState was destroyed. Don't call completion
+        // `response` is null if WebState was destroyed. Don't call completion
         // handler if no buttons were tapped.
         if (response) {
           bool confirmed =
@@ -400,8 +399,8 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
-  // |stop| nulls-our _downloadTask and |Cancel| destroys the task. Call |stop|
-  // first to perform all coordinator cleanups, but copy |_downloadTask|
+  // `stop` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
+  // first to perform all coordinator cleanups, but copy `_downloadTask`
   // pointer to destroy the task.
   web::DownloadTask* downloadTask = _downloadTask;
   [self stop];

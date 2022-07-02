@@ -29,8 +29,8 @@ NodeLayoutUpgrade::Reasons NodeLayoutUpgrade::GetReasons(const Node& node) {
 
   const ComputedStyle* style =
       ComputedStyle::NullifyEnsured(node.GetComputedStyle());
-  if (style && style->DependsOnContainerQueries())
-    reasons |= kDependsOnContainerQueries;
+  if (style && style->DependsOnSizeContainerQueries())
+    reasons |= kDependsOnSizeContainerQueries;
   if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()))
     reasons |= kInterleavingRoot;
   return reasons;
@@ -46,7 +46,7 @@ bool NodeLayoutUpgrade::ShouldUpgrade() {
   if (!style_engine.StyleAffectedByLayout())
     return false;
 
-  Reasons mask = kDependsOnContainerQueries;
+  Reasons mask = kDependsOnSizeContainerQueries;
 
   if (GetReasons(node_) & mask)
     return true;

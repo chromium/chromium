@@ -16,7 +16,7 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 // Members of this class should clean up their own UI when they are deallocated.
 @interface ChromeCoordinator : NSObject
 
-// Creates a coordinator that uses |viewController| and |browser|.
+// Creates a coordinator that uses `viewController` and `browser`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
@@ -28,7 +28,7 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
     MutableCoordinatorArray* childCoordinators;
 
 // The currently 'active' child coordinator, if any. By default this is the last
-// coordinator in |childCoordinators|, but subclasses need not adhere to that.
+// coordinator in `childCoordinators`, but subclasses need not adhere to that.
 @property(strong, nonatomic, readonly)
     ChromeCoordinator* activeChildCoordinator;
 
@@ -37,7 +37,7 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
 // Parent coordinator can set this to allow the child coordinator to push their
 // view controller to the navigationController instead of presenting it if
-// needed. This is usually the same object as |baseViewController|.
+// needed. This is usually the same object as `baseViewController`.
 @property(weak, nonatomic, readonly)
     UINavigationController* baseNavigationController;
 

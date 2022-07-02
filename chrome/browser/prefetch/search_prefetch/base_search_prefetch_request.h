@@ -12,10 +12,14 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
+class PrerenderManager;
 class Profile;
 class SearchPrefetchURLLoader;
 
-// Any updates to this class need to be propagated to enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Any updates to this class need to be propagated to SearchPrefetchFinalStatus
+// in enums.xml.
 enum class SearchPrefetchStatus {
   // The request has not started yet. This status should ideally never be
   // recorded as Start() should be called on the same stack as creating the
@@ -38,19 +42,37 @@ enum class SearchPrefetchStatus {
   kComplete = 4,
   // The request hit an error and cannot be served.
   kRequestFailed = 5,
-  // The request was cancelled before completion. This is terminal state.
+  // The request was cancelled before completion. This is a terminal state.
   kRequestCancelled = 6,
-  // The request was served to the navigation stack. This is terminal state.
+  // The request was served to the navigation stack. This is a terminal state.
   kServed = 7,
-  kMaxValue = kServed,
+  // The request was served to the prerender navigation stack. It may move to
+  // |kPrerenderedAndClicked| when the user navigates to the result in omnibox
+  // or |kRequestCancelled| if the user closes omnibox.
+  kPrerendered = 8,
+  // Similar to |kCanBeServedAndUserClicked|, the request was served to the
+  // prerender navigation stack, and is marked as being
+  // clicked by the user. It is expected to move to |kPrerenderActivated| after
+  // the corresponding prerender is fully activated by the user.
+  kPrerenderedAndClicked = 9,
+  // The request was served to the prerender navigation stack, and the prerender
+  // page is fully activated by the user. This is a terminal state.
+  kPrerenderActivated = 10,
+  kMaxValue = kPrerenderActivated,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.
+// It plays the following roles to support search preloading.
+// - Preparing a resource request to prefetch a search terms.
+// - Starting prerendering upon the request succeeding to upgrade prefetch to
+//   prerender after the Search Prefetch Service tells it that the prefetched
+//   term is prerenderable.
 // Implementors should provide the fetch and storage functionality as well as
 // updating |current_status_|.
 class BaseSearchPrefetchRequest {
  public:
   BaseSearchPrefetchRequest(
+      const std::u16string& prefetch_search_terms,
       const GURL& prefetch_url,
       bool navigation_prefetch,
       base::OnceCallback<void(bool)> report_error_callback);
@@ -72,11 +94,22 @@ class BaseSearchPrefetchRequest {
   // Marks a prefetch as canceled and stops any ongoing fetch.
   void CancelPrefetch();
 
+  // Returns true if this request should be canceled when the Autocomplete
+  // suggestion no longer lists this search prefetch.
+  bool ShouldBeCancelledOnResultChanges() const;
+
+  // Called when SearchPrefetchService receives the hint that this prefetch
+  // request can be upgraded to a prerender attempt.
+  void MaybeStartPrerenderSearchResult(PrerenderManager& prerender_manager);
+
   // Called when the prefetch encounters an error.
   void ErrorEncountered();
 
   // Called when the prefetch encounters an error.
   void ErrorEncounteredUsingFallback();
+
+  // Called on the URL loader receives servable response.
+  void OnServableResponseCodeReceived();
 
   // Update the status when the request is serveable.
   void MarkPrefetchAsServable();
@@ -88,8 +121,25 @@ class BaseSearchPrefetchRequest {
   void MarkPrefetchAsClicked();
 
   // Update the status when the request is actually served to the navigation
-  // stack.
+  // stack of a real navigation request.
   void MarkPrefetchAsServed();
+
+  // Updates the status when the request is served to a prerendering navigation
+  // stack. Note that after this point, this request cannot be served to a real
+  // navigation anymore.
+  void MarkPrefetchAsPrerendered();
+
+  // Updates the status when the prerendering page it is serving was activated.
+  void MarkPrefetchAsPrerenderActivated();
+
+  // Called when AutocompleteMatches changes. It resets PrerenderUpgrader.
+  // And if the AutocompleteMatches suggests to prerender a search result,
+  // `MaybeStartPrerenderSearchResult` will be called soon.
+  void ResetPrerenderUpgrader();
+
+  // Record the time at which the user clicked a suggestion matching this
+  // prefetch.
+  void RecordClickTime();
 
   // Whether the request was started as a navigation prefetch (as opposed to a
   // suggestion prefetch).
@@ -115,7 +165,15 @@ class BaseSearchPrefetchRequest {
   TakeSearchPrefetchURLLoader() = 0;
 
  protected:
+  // Whether the request has received a servable response. See
+  // `CanServePrefetchRequest` in ./streaming_search_prefetch_url_loader.cc for
+  // the definition of servable response.
+  bool servable_response_code_received_ = false;
+
   SearchPrefetchStatus current_status_ = SearchPrefetchStatus::kNotStarted;
+
+  // The search terms that this request is prefetching.
+  const std::u16string prefetch_search_terms_;
 
   // The URL to prefetch the search terms from.
   GURL prefetch_url_;
@@ -128,6 +186,14 @@ class BaseSearchPrefetchRequest {
 
   // The time at which the prefetched URL was clicked in the Omnibox.
   base::TimeTicks time_clicked_;
+
+  // Once set, this request will trigger search prerender upon receiving success
+  // response.
+  base::WeakPtr<PrerenderManager> prerender_manager_;
+
+ private:
+  // Cancels ongoing and pending prerender.
+  void StopPrerender();
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_

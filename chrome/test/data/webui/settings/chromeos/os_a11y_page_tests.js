@@ -34,8 +34,9 @@ suite('A11yPageTests', function() {
 
     flush();
 
-    const deepLinkElement = a11yPage.$$('#optionsInMenuToggle')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        a11yPage.shadowRoot.querySelector('#optionsInMenuToggle')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

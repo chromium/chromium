@@ -77,8 +77,9 @@ TEST_F(PerformanceObserverTest, ObserveWithBufferedFlag) {
   EXPECT_EQ(0, NumPerformanceEntries());
 
   // add a layout-shift to performance so getEntries() returns it
-  auto* entry = LayoutShift::Create(0.0, 1234, true, 5678,
-                                    LayoutShift::AttributionList());
+  auto* entry =
+      LayoutShift::Create(0.0, 1234, true, 5678, LayoutShift::AttributionList(),
+                          /*navigation_id=*/1);
   base_->AddLayoutShiftBuffer(*entry);
 
   // call observe with the buffered flag
@@ -139,4 +140,24 @@ TEST_F(PerformanceObserverTest, Disconnect) {
   EXPECT_FALSE(IsRegistered());
   EXPECT_EQ(0, NumPerformanceEntries());
 }
+
+// Tests that an observe() call with an argument that triggers a console error
+// message does not crash, when such call is made after the ExecutionContext is
+// detached.
+TEST_F(PerformanceObserverTest, ObserveAfterContextDetached) {
+  NonThrowableExceptionState exception_state;
+  {
+    V8TestingScope scope;
+    Initialize(scope.GetScriptState());
+  }
+  PerformanceObserverInit* options = PerformanceObserverInit::Create();
+  Vector<String> entry_type_vec;
+  entry_type_vec.push_back("invalid");
+  options->setEntryTypes(entry_type_vec);
+  // The V8TestingScope is out of scope so the observer's ExecutionContext
+  // should now be null.
+  EXPECT_FALSE(observer_->GetExecutionContext());
+  observer_->observe(options, exception_state);
+}
+
 }  // namespace blink

@@ -105,7 +105,7 @@ bool JSONWriter::BuildJSONString(double node, size_t depth) {
   return true;
 }
 
-bool JSONWriter::BuildJSONString(const std::string& node, size_t depth) {
+bool JSONWriter::BuildJSONString(StringPiece node, size_t depth) {
   EscapeJSONString(node, true, json_string_);
   return true;
 }

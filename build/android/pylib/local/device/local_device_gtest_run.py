@@ -763,7 +763,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       if logmon:
         logmon.Close()
       if logcat_file and logcat_file.Link():
-        logging.info('Logcat saved to %s', logcat_file.Link())
+        logging.critical('Logcat saved to %s', logcat_file.Link())
 
   #override
   def _RunTest(self, device, test):

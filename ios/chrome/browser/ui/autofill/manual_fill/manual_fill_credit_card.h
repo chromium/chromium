@@ -38,8 +38,8 @@
 // The credit card icon id.
 @property(nonatomic, readonly) int issuerNetworkIconID;
 
-// Default init. |GUID| and |number| are the only fields considered for
-// equality, so we can differentiate between an obfuscated and a comlete one.
+// Default init. `GUID` and `number` are the only fields considered for
+// equality, so we can differentiate between an obfuscated and a complete one.
 - (instancetype)initWithGUID:(NSString*)GUID
                      network:(NSString*)network
          issuerNetworkIconID:(int)issuerNetworkIconID
@@ -51,8 +51,8 @@
              expirationMonth:(NSString*)expirationMonth
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use |initWithGuid:network:bankName:cardholder:number:
-// obfuscatedNumber:expirationYear:expirationMonth:|.
+// Unavailable. Please use `initWithGuid:network:bankName:cardholder:number:
+// obfuscatedNumber:expirationYear:expirationMonth:`.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

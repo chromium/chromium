@@ -9,10 +9,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/geolocation_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

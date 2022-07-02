@@ -21,8 +21,7 @@
 #include "net/third_party/quiche/src/quiche/http2/adapter/http2_visitor_interface.h"
 #include "net/third_party/quiche/src/quiche/http2/adapter/oghttp2_adapter.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 using StreamId = http2::adapter::Http2StreamId;
 template <class T>
@@ -141,7 +140,6 @@ class Http2Connection : public HttpConnection,
   base::WeakPtrFactory<Http2Connection> weak_factory_{this};
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_HTTP2_CONNECTION_H_

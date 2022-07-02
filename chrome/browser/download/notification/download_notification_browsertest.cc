@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -20,12 +21,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -174,16 +178,16 @@ class SlowDownloadInterceptor {
   }
 
   void HandleKnownSize(content::URLLoaderInterceptor::RequestParams* params) {
-    SendHead(params, "application/octet-stream", /*content_length=*/1024);
-    SendBody(params, "some random data");
+    SendHead(params, "application/octet-stream", /*content_length=*/1024,
+             "some random data");
     base::AutoLock lock(lock_);
     pending_requests_.push_back(
         std::make_unique<PendingRequest>(std::move(*params)));
   }
 
   void HandleUnknownSize(content::URLLoaderInterceptor::RequestParams* params) {
-    SendHead(params, "application/octet-stream", /*content_length=*/-1);
-    SendBody(params, "some random data");
+    SendHead(params, "application/octet-stream", /*content_length=*/-1,
+             "some random data");
     base::AutoLock lock(lock_);
     pending_requests_.push_back(
         std::make_unique<PendingRequest>(std::move(*params)));
@@ -208,8 +212,7 @@ class SlowDownloadInterceptor {
 
   static void SendOk(content::URLLoaderInterceptor::RequestParams* params) {
     std::string response = "OK";
-    SendHead(params, "text/http", response.size());
-    SendBody(params, response);
+    SendHead(params, "text/http", response.size(), response);
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;
     params->client->OnComplete(status);
@@ -217,7 +220,8 @@ class SlowDownloadInterceptor {
 
   static void SendHead(content::URLLoaderInterceptor::RequestParams* params,
                        std::string mime_type,
-                       int64_t content_length) {
+                       int64_t content_length,
+                       std::string data) {
     auto head = network::mojom::URLResponseHead::New();
     std::string headers =
         "HTTP/1.1 200 OK\n"
@@ -231,12 +235,7 @@ class SlowDownloadInterceptor {
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
     head->headers->GetMimeType(&head->mime_type);
-    params->client->OnReceiveResponse(std::move(head),
-                                      mojo::ScopedDataPipeConsumerHandle());
-  }
 
-  static void SendBody(content::URLLoaderInterceptor::RequestParams* params,
-                       std::string data) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     ASSERT_EQ(
@@ -249,7 +248,8 @@ class SlowDownloadInterceptor {
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(data.size(), write_size);
     ASSERT_TRUE(consumer_handle.is_valid());
-    params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
+    params->client->OnReceiveResponse(std::move(head),
+                                      std::move(consumer_handle));
   }
 
   const std::map<std::string, Handler> handlers_;
@@ -536,8 +536,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
   }
 
  private:
-  download::DownloadItem* download_item_ = nullptr;
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
   std::string notification_id_;
 };
 
@@ -1220,8 +1220,9 @@ class MultiProfileDownloadNotificationTest
   }
 
   Profile* GetProfileByIndex(int index) {
-    return ash::ProfileHelper::GetProfileByUserIdHashForTest(
-        kTestAccounts[index].hash);
+    return g_browser_process->profile_manager()->GetProfileByPath(
+        ash::ProfileHelper::GetProfilePathByUserIdHash(
+            kTestAccounts[index].hash));
   }
 
   // Adds a new user for testing to the current session.
@@ -1234,8 +1235,9 @@ class MultiProfileDownloadNotificationTest
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
-    Profile* profile =
-        ash::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
+    Profile* profile = profiles::testing::CreateProfileSync(
+        g_browser_process->profile_manager(),
+        ash::ProfileHelper::GetProfilePathByUserIdHash(info.hash));
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);

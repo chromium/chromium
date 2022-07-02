@@ -166,19 +166,15 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
   ClearOwnerNode();
   ClearOwnerRule();
   Contents()->RegisterClient(this);
-  scoped_refptr<MediaQuerySet> media_query_set;
   switch (options->media()->GetContentType()) {
     case V8UnionMediaListOrString::ContentType::kMediaList:
-      media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
+      media_queries_ = options->media()->GetAsMediaList()->Queries();
       break;
     case V8UnionMediaListOrString::ContentType::kString:
-      media_query_set = MediaQuerySet::Create(options->media()->GetAsString(),
-                                              document.GetExecutionContext());
+      media_queries_ = MediaQuerySet::Create(options->media()->GetAsString(),
+                                             document.GetExecutionContext());
       break;
   }
-  auto* media_list = MakeGarbageCollected<MediaList>(
-      media_query_set, const_cast<CSSStyleSheet*>(this));
-  SetMedia(media_list);
   if (options->alternate())
     SetAlternateFromConstructor(true);
   if (options->disabled())
@@ -292,25 +288,12 @@ void CSSStyleSheet::setDisabled(bool disabled) {
   DidMutate(Mutation::kSheet);
 }
 
-void CSSStyleSheet::SetMediaQueries(
-    scoped_refptr<MediaQuerySet> media_queries) {
-  media_queries_ = std::move(media_queries);
-  if (media_cssom_wrapper_ && media_queries_)
-    media_cssom_wrapper_->Reattach(media_queries_.get());
-}
-
 bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
-  viewport_dependent_media_query_results_.clear();
-  device_dependent_media_query_results_.clear();
-  media_query_unit_flags_ = 0;
+  media_query_result_flags_.Clear();
 
   if (!media_queries_)
     return true;
-  return evaluator.Eval(
-      *media_queries_,
-      MediaQueryEvaluator::Results{&viewport_dependent_media_query_results_,
-                                   &device_dependent_media_query_results_,
-                                   &media_query_unit_flags_});
+  return evaluator.Eval(*media_queries_, &media_query_result_flags_);
 }
 
 void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
@@ -321,8 +304,12 @@ void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
   adopted_tree_scopes_.erase(&tree_scope);
 }
 
+bool CSSStyleSheet::HasViewportDependentMediaQueries() const {
+  return media_query_result_flags_.is_viewport_dependent;
+}
+
 bool CSSStyleSheet::HasDynamicViewportDependentMediaQueries() const {
-  return media_query_unit_flags_ &
+  return media_query_result_flags_.unit_flags &
          MediaQueryExpValue::UnitFlags::kDynamicViewport;
 }
 
@@ -341,7 +328,7 @@ CSSRule* CSSStyleSheet::item(unsigned index) {
 
   Member<CSSRule>& css_rule = child_rule_cssom_wrappers_[index];
   if (!css_rule)
-    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(this);
+    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(index, this);
   return css_rule.Get();
 }
 
@@ -531,16 +518,9 @@ bool CSSStyleSheet::IsLoading() const {
 MediaList* CSSStyleSheet::media() {
   if (!media_queries_)
     media_queries_ = MediaQuerySet::Create();
-
-  if (!media_cssom_wrapper_) {
-    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        media_queries_.get(), const_cast<CSSStyleSheet*>(this));
-  }
+  if (!media_cssom_wrapper_)
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
   return media_cssom_wrapper_.Get();
-}
-
-void CSSStyleSheet::SetMedia(MediaList* media_list) {
-  media_cssom_wrapper_ = media_list;
 }
 
 CSSStyleSheet* CSSStyleSheet::parentStyleSheet() const {
@@ -640,6 +620,7 @@ bool CSSStyleSheet::CanBeActivated(
 
 void CSSStyleSheet::Trace(Visitor* visitor) const {
   visitor->Trace(contents_);
+  visitor->Trace(media_queries_);
   visitor->Trace(owner_node_);
   visitor->Trace(owner_rule_);
   visitor->Trace(media_cssom_wrapper_);

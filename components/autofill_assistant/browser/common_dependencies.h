@@ -49,13 +49,17 @@ class CommonDependencies {
 
   virtual std::string GetCountryCode() const = 0;
 
-  virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
+  virtual autofill::PersonalDataManager* GetPersonalDataManager(
+      content::BrowserContext* browser_context) const = 0;
 
   virtual password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const = 0;
 
   virtual std::string GetSignedInEmail(
-      content::WebContents* web_contents) const = 0;
+      content::BrowserContext* browser_context) const = 0;
+
+  virtual bool IsSupervisedUser(
+      content::BrowserContext* browser_context) const = 0;
 
   virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const = 0;

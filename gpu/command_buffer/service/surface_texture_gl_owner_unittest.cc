@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
@@ -39,7 +40,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
   void SetUp() override {
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/true,
@@ -83,7 +84,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
   }
 
   scoped_refptr<TextureOwner> surface_texture_;
@@ -95,6 +96,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(SurfaceTextureGLOwnerTest, OwnerReturnsServiceId) {

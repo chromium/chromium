@@ -82,6 +82,8 @@ public class WebFeedFollowIntroController {
             "intro-appearance-threshold-minutes";
     // Time between appearances for the same WebFeedId.
     private static final long WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS = TimeUnit.DAYS.toMillis(1);
+    // Maximum number of times a WebFeedId is promoted.
+    private static final long WEB_FEED_ID_MAX_APPEARANCES = 3;
 
     /** Clock to use so we can mock time in tests. */
     public interface Clock {
@@ -182,6 +184,10 @@ public class WebFeedFollowIntroController {
             mSharedPreferencesManager.writeLong(
                     getWebFeedIntroWebFeedIdShownTimeMsKey(recommendedInfo.webFeedId),
                     currentTimeMillis);
+
+            String showCountKey = getWebFeedIntroWebFeedIdShownCountKey(recommendedInfo.webFeedId);
+            long readCountBefore = mSharedPreferencesManager.readLong(showCountKey);
+            mSharedPreferencesManager.writeLong(showCountKey, readCountBefore + 1);
         }
         Log.i(TAG, "Allowed intro: all requirements met");
     }
@@ -305,13 +311,18 @@ public class WebFeedFollowIntroController {
         long timeSinceLastShownForWebFeed = currentTimeMillis
                 - mSharedPreferencesManager.readLong(
                         getWebFeedIntroWebFeedIdShownTimeMsKey(recommendedInfo.webFeedId));
-        if ((timeSinceLastShown < mAppearanceThresholdMillis)
-                || (timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)) {
+        long previousShowCount = mSharedPreferencesManager.readLong(
+                getWebFeedIntroWebFeedIdShownCountKey(recommendedInfo.webFeedId));
+        if (timeSinceLastShown < mAppearanceThresholdMillis
+                || timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS
+                || previousShowCount >= WEB_FEED_ID_MAX_APPEARANCES) {
             Log.i(TAG,
                     "No intro: enoughTimeSinceLastShown=%s, "
-                            + "enoughTimeSinceLastShownForWebFeed=%s",
+                            + "enoughTimeSinceLastShownForWebFeed=%s"
+                            + "tooManyShows=%s",
                     timeSinceLastShown > mAppearanceThresholdMillis,
-                    timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS);
+                    timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS,
+                    previousShowCount >= WEB_FEED_ID_MAX_APPEARANCES);
             return false;
         }
 
@@ -323,9 +334,18 @@ public class WebFeedFollowIntroController {
                 Base64.encodeToString(webFeedId, Base64.DEFAULT));
     }
 
+    private static String getWebFeedIntroWebFeedIdShownCountKey(byte[] webFeedId) {
+        return ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.createKey(
+                Base64.encodeToString(webFeedId, Base64.DEFAULT));
+    }
+
     @VisibleForTesting
     boolean getIntroShownForTesting() {
         return mIntroShownForTesting;
+    }
+    @VisibleForTesting
+    void clearIntroShownForTesting() {
+        mIntroShownForTesting = false;
     }
 
     @VisibleForTesting

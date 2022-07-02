@@ -9,8 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
-namespace net {
-namespace activity_monitor {
+namespace net::activity_monitor {
 
 namespace {
 
@@ -33,5 +32,4 @@ void ResetBytesReceivedForTesting() {
   g_bytes_received = 0;
 }
 
-}  // namespace activity_monitor
-}  // namespace net
+}  // namespace net::activity_monitor

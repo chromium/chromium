@@ -11,12 +11,14 @@
 #include "base/feature_list.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/breadcrumbs/core/features.h"
+#include "components/commerce/ios/browser/commerce_tab_helper.h"
 #include "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #include "components/history/core/browser/top_sites.h"
 #import "components/history/ios/browser/web_state_top_sites_observer.h"
 #include "components/keyed_service/core/service_access_type.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -26,6 +28,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
@@ -40,6 +43,7 @@
 #include "ios/chrome/browser/history/history_tab_helper.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
@@ -58,7 +62,6 @@
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/well_known_change_password_tab_helper.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_tab_helper.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -67,6 +70,7 @@
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -86,6 +90,7 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper.h"
+#include "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
@@ -122,6 +127,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   if (IsPriceAlertsEnabled() &&
       IsPriceAlertsEligible(web_state->GetBrowserState()))
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
+  commerce::CommerceTabHelper::CreateForWebState(
+      web_state, browser_state->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
   AppLauncherTabHelper::CreateForWebState(web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);
@@ -150,9 +158,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 
-  if (IsURLBlocklistEnabled()) {
-    PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
-  }
+  PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
   ImageFetchTabHelper::CreateForWebState(web_state);
 
@@ -235,11 +241,20 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   RepostFormTabHelper::CreateForWebState(web_state);
   NetExportTabHelper::CreateForWebState(web_state);
 
-  HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web_state,
-                                                   browser_state->GetPrefs());
-  HttpsOnlyModeContainer::CreateForWebState(web_state);
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsOnlyMode)) {
+    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web_state,
+                                                     browser_state->GetPrefs());
+    HttpsOnlyModeContainer::CreateForWebState(web_state);
+  }
+
+  if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
+    TypedNavigationUpgradeTabHelper::CreateForWebState(web_state);
+  }
 
   if (IsWebChannelsEnabled()) {
     FollowTabHelper::CreateForWebState(web_state);
   }
+
+  CaptivePortalTabHelper::CreateForWebState(web_state);
 }

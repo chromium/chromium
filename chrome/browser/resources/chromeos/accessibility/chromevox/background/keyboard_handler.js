@@ -5,7 +5,11 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {EventSourceState} from '/chromevox/background/event_source.js';
 import {MathHandler} from '/chromevox/background/math_handler.js';
+import {Output} from '/chromevox/background/output/output.js';
+import {EventSourceType} from '/chromevox/common/event_source_type.js';
 import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
 
 /**

@@ -69,10 +69,10 @@ gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
 }
 
 HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::HELP,
-                                    "Help",
-                                    GURL("chrome://help-app/pwa.html"),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::HELP,
+                                "Help",
+                                GURL("chrome://help-app/pwa.html"),
+                                profile) {}
 
 gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForHelpApp(browser);
@@ -90,10 +90,10 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
   return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
 }
 
-absl::optional<web_app::SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
   if (base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage)) {
-    return web_app::SystemAppBackgroundTaskInfo(
+    return ash::SystemWebAppBackgroundTaskInfo(
         absl::nullopt, GURL("chrome://help-app/background"),
         /*open_immediately=*/true);
   } else {

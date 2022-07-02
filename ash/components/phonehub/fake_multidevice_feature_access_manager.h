@@ -63,6 +63,7 @@ class FakeMultideviceFeatureAccessManager
   bool GetFeatureSetupRequestSupported() const override;
 
  private:
+  friend class MultideviceSetupStateUpdaterTest;
   AccessStatus notification_access_status_;
   AccessStatus camera_roll_access_status_;
   AccessStatus apps_access_status_;

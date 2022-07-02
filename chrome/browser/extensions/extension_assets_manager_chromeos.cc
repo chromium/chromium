@@ -531,8 +531,8 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       } else if (user->is_logged_in()) {
         // For logged in user also check that this path is actually used as
         // installed extension or as delayed install.
-        Profile* profile =
-            ash::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+        Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+        DCHECK(profile);
         ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile);
         if (!extension_prefs || extension_prefs->pref_service()->ReadOnly())
           return false;

@@ -1,0 +1,103 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
+#define ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
+
+#include "base/callback.h"
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ash::hid_detection {
+
+// Manages detecting and automatically connecting to human interface devices.
+class HidDetectionManager {
+ public:
+  // The connection state of an input.
+  enum class InputState {
+    // No device is connected.
+    kSearching,
+
+    // A device is connected via USB.
+    kConnectedViaUsb,
+
+    // A device is being paired with via Bluetooth.
+    kPairingViaBluetooth,
+
+    // A device is connected via Bluetooth.
+    kPairedViaBluetooth,
+
+    // A device is connected, but is not known to be USB (Bluetooth vs USB vs
+    // serial).
+    kConnected
+  };
+
+  // Info of an input on the device.
+  struct InputMetadata {
+    InputState state = InputState::kSearching;
+
+    // The name of the HID currently being interfaced with. Empty if |state| is
+    // kSearching (no HID is being interfaced with).
+    std::string detected_hid_name;
+  };
+
+  // Represents the status of inputs on the device.
+  struct HidDetectionStatus {
+    // Pointer input info of the device.
+    InputMetadata pointer_metadata;
+
+    // Keyboard input info of the device.
+    InputMetadata keyboard_metadata;
+
+    // Indicates the device has a touchscreen connected.
+    bool touchscreen_detected;
+  };
+
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Invoked whenever any HID detection status property changes.
+    virtual void OnHidDetectionStatusChanged(HidDetectionStatus status) = 0;
+  };
+
+  virtual ~HidDetectionManager();
+
+  // Invokes |callback| with a result indicating whether HID detection is
+  // required or not. If both a keyboard and pointer are connected, HID
+  // detection is not required, otherwise it is.
+  virtual void GetIsHidDetectionRequired(
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Begins scanning for HIDs. Informs |delegate| every time
+  // the status of HID detection changes. This should only be called once in the
+  // lifetime of this class.
+  void StartHidDetection(Delegate* delegate);
+
+  // Stops scanning for HIDs. This should only be called while HID detection is
+  // active.
+  void StopHidDetection();
+
+ protected:
+  HidDetectionManager();
+
+  // Implementation-specific version of StartHidDetection().
+  virtual void PerformStartHidDetection() = 0;
+
+  // Implementation-specific version of StopHidDetection().
+  virtual void PerformStopHidDetection() = 0;
+
+  // Computes the HID detection status sent to |delegate_|.
+  virtual HidDetectionStatus ComputeHidDetectionStatus() const = 0;
+
+  // Notifies |delegate_| of status changes; should be called by derived
+  // types to notify observers of status changes.
+  void NotifyHidDetectionStatusChanged();
+
+  Delegate* delegate_ = nullptr;
+};
+
+}  // namespace ash::hid_detection
+
+#endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_

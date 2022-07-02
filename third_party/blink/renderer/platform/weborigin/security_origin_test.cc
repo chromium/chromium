@@ -110,7 +110,7 @@ TEST_F(SecurityOriginTest, LocalAccess) {
 }
 
 TEST_F(SecurityOriginTest, IsNullURLSecure) {
-  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(NullURL()));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(GURL(NullURL())));
 }
 
 TEST_F(SecurityOriginTest, CanAccess) {
@@ -1215,8 +1215,11 @@ class BlinkSecurityOriginTestTraits {
   }
 
   static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
+    // Note: intentionally avoid constructing GURL() directly from `str`, since
+    // this is a test harness intended to exercise the behavior of `KURL` and
+    // `SecurityOrigin`.
     return network::IsUrlPotentiallyTrustworthy(
-        blink::KURL(String::FromUTF8(str)));
+        GURL(blink::KURL(String::FromUTF8(str))));
   }
 
   static bool IsOriginOfLocalhost(const OriginType& origin) {

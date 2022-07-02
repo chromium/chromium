@@ -56,6 +56,7 @@ class FlatBufferModelScorer : public Scorer {
 #endif
 
   int model_version() const override;
+  int dom_model_version() const override;
   size_t max_words_per_term() const override;
   uint32_t murmurhash3_seed() const override;
   size_t max_shingles_per_page() const override;

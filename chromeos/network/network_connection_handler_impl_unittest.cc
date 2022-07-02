@@ -14,10 +14,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/cellular_connection_handler.h"
-#include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/cellular_utils.h"
-#include "chromeos/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/cellular_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -25,12 +28,9 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/stub_cellular_networks_provider.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -337,12 +337,11 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   void SetupUserPolicy(const std::string& network_configs_json) {
     base::Value network_configs(base::Value::Type::LIST);
     if (!network_configs_json.empty()) {
-      base::JSONReader::ValueWithError parsed_json =
-          base::JSONReader::ReadAndReturnValueWithError(
-              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
-      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-      ASSERT_TRUE(parsed_json.value->is_list());
-      network_configs = std::move(*parsed_json.value);
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+          network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+      ASSERT_TRUE(parsed_json->is_list());
+      network_configs = std::move(*parsed_json);
     }
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
@@ -354,12 +353,11 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
                          const base::Value& global_config) {
     base::Value network_configs(base::Value::Type::LIST);
     if (!network_configs_json.empty()) {
-      base::JSONReader::ValueWithError parsed_json =
-          base::JSONReader::ReadAndReturnValueWithError(
-              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
-      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-      ASSERT_TRUE(parsed_json.value->is_list());
-      network_configs = std::move(*parsed_json.value);
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+          network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+      ASSERT_TRUE(parsed_json->is_list());
+      network_configs = std::move(*parsed_json);
     }
     managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                        std::string(),  // no username hash
@@ -416,22 +414,21 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void SetCellularSimLocked() {
     // Simulate a locked SIM.
-    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
-    sim_lock_status.SetKey(shill::kSIMLockTypeProperty,
-                           base::Value(shill::kSIMLockPin));
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMLockStatusProperty,
-        std::move(sim_lock_status), /*notify_changed=*/true);
+        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetKey(shill::kSIMSlotInfoICCID, base::Value(kTestIccid));
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
-        base::Value(sim_slot_infos), /*notify_changed=*/true);
+        base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -621,12 +618,12 @@ TEST_F(NetworkConnectionHandlerImplTest,
   ASSERT_FALSE(wifi0_service_path.empty());
 
   // Set a device policy which blocks wifi0.
-  base::Value::ListStorage blocked;
-  blocked.push_back(base::Value("7769666930"));  // hex(wifi0) = 7769666930
-  base::Value global_config(base::Value::Type::DICTIONARY);
-  global_config.SetKey(::onc::global_network_config::kBlockedHexSSIDs,
-                       base::Value(blocked));
-  SetupDevicePolicy("[]", global_config);
+  base::Value::List blocked;
+  blocked.Append("7769666930");  // hex(wifi0) = 7769666930
+  base::Value::Dict global_config;
+  global_config.Set(::onc::global_network_config::kBlockedHexSSIDs,
+                    std::move(blocked));
+  SetupDevicePolicy("[]", base::Value(std::move(global_config)));
   SetupUserPolicy("[]");
 
   LoginToRegularUser();

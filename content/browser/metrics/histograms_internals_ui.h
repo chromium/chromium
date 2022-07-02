@@ -6,8 +6,20 @@
 #define CONTENT_BROWSER_METRICS_HISTOGRAMS_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
+
+class HistogramsInternalsUI;
+
+// Config for chrome://histograms.
+class HistogramsInternalsUIConfig
+    : public DefaultWebUIConfig<HistogramsInternalsUI> {
+ public:
+  HistogramsInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIHistogramHost) {}
+};
 
 // Handles serving the chrome://histograms HTML, JS, CSS as well as internal
 // page requests.

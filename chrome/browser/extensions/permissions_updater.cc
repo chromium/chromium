@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -36,6 +35,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/cors_util.h"
@@ -128,19 +128,6 @@ class PermissionsUpdaterShutdownNotifierFactory
   ~PermissionsUpdaterShutdownNotifierFactory() override {}
 };
 
-void SetCorsOriginAccessListForAllRelatedProfiles(
-    content::BrowserContext* browser_context,
-    const Extension& extension,
-    base::OnceClosure closure) {
-  // Non-tab-specific extension permissions are shared across profiles (even for
-  // split-mode extensions), so we update all profiles the extension is enabled
-  // for.
-  util::SetCorsOriginAccessListForExtension(
-      util::GetAllRelatedProfiles(Profile::FromBrowserContext(browser_context),
-                                  extension),
-      extension, std::move(closure));
-}
-
 }  // namespace
 
 // A helper class to asynchronously dispatch the event to notify policy host
@@ -149,6 +136,11 @@ void SetCorsOriginAccessListForAllRelatedProfiles(
 // This class manages its own lifetime and deletes itself when either the
 // permissions updated event is fired, or the BrowserContext is shut down
 // (whichever happens first).
+// TODO(devlin): After having extracted much of this into
+// NetworkPermissionsUpdater, this class is a glorified watcher for the
+// profile lifetime (since it depends on things like EventRouter). This might
+// be able to be replaced with a simple check if the profile is still valid in
+// a free function.
 class PermissionsUpdater::NetworkPermissionsUpdateHelper {
  public:
   NetworkPermissionsUpdateHelper(const NetworkPermissionsUpdateHelper&) =
@@ -207,8 +199,8 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
 
   // After an asynchronous call below, the helper will call
   // NotifyPermissionsUpdated if the profile is still valid.
-  SetCorsOriginAccessListForAllRelatedProfiles(
-      browser_context, *extension,
+  NetworkPermissionsUpdater::UpdateExtension(
+      *browser_context, *extension,
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
 }
@@ -226,17 +218,10 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
           browser_context, default_runtime_blocked_hosts.Clone(),
           default_runtime_allowed_hosts.Clone()));
 
-  const ExtensionSet& extensions =
-      ExtensionRegistry::Get(browser_context)->enabled_extensions();
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      extensions.size(),
+  NetworkPermissionsUpdater::UpdateAllExtensions(
+      *browser_context,
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
-
-  for (const auto& extension : extensions) {
-    SetCorsOriginAccessListForAllRelatedProfiles(browser_context, *extension,
-                                                 barrier_closure);
-  }
 }
 
 PermissionsUpdater::NetworkPermissionsUpdateHelper::
@@ -454,8 +439,7 @@ void PermissionsUpdater::SetPolicyHostRestrictions(
 
 void PermissionsUpdater::SetUsesDefaultHostRestrictions(
     const Extension* extension) {
-  extension->permissions_data()->SetUsesDefaultHostRestrictions(
-      util::GetBrowserContextId(browser_context_));
+  extension->permissions_data()->SetUsesDefaultHostRestrictions();
   NetworkPermissionsUpdateHelper::UpdatePermissions(
       browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
 }
@@ -556,6 +540,10 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   bool update_active_permissions = false;
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
     update_active_permissions = true;
+
+    extension->permissions_data()->SetContextId(
+        util::GetBrowserContextId(browser_context_));
+
     // Apply per-extension policy if set.
     ApplyPolicyHostRestrictions(*extension);
   }
@@ -676,11 +664,10 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   EventRouter* event_router =
       event_name ? EventRouter::Get(browser_context) : nullptr;
   if (event_router) {
-    std::vector<base::Value> event_args;
+    base::Value::List event_args;
     std::unique_ptr<api::permissions::Permissions> permissions =
         PackPermissionSet(*changed);
-    event_args.emplace_back(
-        base::Value::FromUniquePtrValue(permissions->ToValue()));
+    event_args.Append(base::Value::FromUniquePtrValue(permissions->ToValue()));
     auto event = std::make_unique<Event>(
         histogram_value, event_name, std::move(event_args), browser_context);
     event_router->DispatchEventToExtension(extension->id(), std::move(event));

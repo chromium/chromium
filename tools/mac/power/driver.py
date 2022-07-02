@@ -249,7 +249,7 @@ class DriverContext:
     self.WriteScenarioSummary(scenario_driver)
 
     dtraces_output_dir = os.path.join(self._output_dir, scenario_driver.name,
-                                      f"dtraces_{profile_mode}")
+                                      "dtraces_stacks")
     os.makedirs(dtraces_output_dir, exist_ok=True)
     scenario_driver.Launch()
     browser_process = scenario_driver.browser.browser_process
@@ -263,24 +263,18 @@ class DriverContext:
           os.path.join(self._output_dir, scenario_driver.name,
                        f'dtrace_{profile_mode}_log.txt'), "w") as dtrace_log:
 
-        # Comments regarding the DTrace probes below.
-        # pid == {pid} to capture the browser process.
-        # ppid == {pid} to capture all child processes.
-        # ustack(64) to capture stacks user space.
-
+        scripts_dir = os.path.join(os.path.dirname(__file__), "dtrace_scripts")
         if profile_mode == "wakeups":
-          probe = "mach_kernel::wakeup"
+          script = os.path.join(scripts_dir, "iwakeups.d")
         else:
-          probe = "profile-1001"
+          script = os.path.join(scripts_dir, "profile.d")
 
         pid = browser_process.pid
-        probe_def = \
-          f"{probe}/pid=={pid} || ppid=={pid}/ {{@[ustack(128)] = count();}}"
-
         output_filename = os.path.join(dtraces_output_dir, f"{pid}.txt")
+
         dtrace_args = [
-            'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-n',
-            probe_def
+            'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-s',
+            script, f"{pid}"
         ]
 
         # No need to add |dtrace_process| to |self._started_processeds| as it's
@@ -296,6 +290,15 @@ class DriverContext:
 
     logging.debug(f"Waiting for dtrace to exit")
     dtrace_process.wait(30)
+
+  def Trace(self, scenario_driver: scenarios.ScenarioOSADriver):
+    self.WriteScenarioSummary(scenario_driver)
+
+    try:
+      scenario_driver.Launch()
+      scenario_driver.Wait()
+    finally:
+      scenario_driver.TearDown()
 
   def WriteScenarioSummary(
       self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver):

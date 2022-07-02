@@ -85,7 +85,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
-  void HideOobeDialog(bool saml_video_timeout = false) override;
+  void HideOobeDialog(bool saml_page_closed = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
   void OnCancelPasswordChangedFlow() override;
@@ -212,8 +212,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   OobeUIDialogDelegate* dialog_ = nullptr;  // Not owned.
   std::unique_ptr<WizardController> wizard_controller_;
 
-  // Number of users that are visible in the views login screen.
-  int user_count_ = 0;
+  // Whether or not there are users that are visible in the views login screen.
+  bool has_user_pods_ = false;
 
   // The account id of the user pod that's being focused.
   AccountId focused_pod_account_id_;

@@ -44,13 +44,15 @@ class TextInputController {
   void ExtendSelectionAndDelete(int before, int after);
   void DeleteSurroundingText(int before, int after);
   void SetMarkedText(const std::string& text, int start, int length);
-  void SetMarkedTextFromExistingText(int start, int length);
+  void SetMarkedTextFromExistingText(int start, int end);
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
   std::vector<int> FirstRectForCharacterRange(unsigned location,
                                               unsigned length);
-  void SetComposition(const std::string& text);
+  void SetComposition(const std::string& text,
+                      int replacement_range_start,
+                      int replacement_range_end);
   void ForceTextInputStateUpdate();
 
   blink::WebView* view();

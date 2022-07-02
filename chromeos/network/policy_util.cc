@@ -10,15 +10,15 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/onc_merger.h"
+#include "chromeos/ash/components/network/onc/onc_normalizer.h"
+#include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_profile.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_merger.h"
-#include "chromeos/network/onc/onc_normalizer.h"
-#include "chromeos/network/onc/onc_translator.h"
 #include "chromeos/network/shill_property_util.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -404,6 +404,20 @@ const std::string* GetIccidFromONC(const base::Value& onc_config) {
     return nullptr;
 
   return cellular_dict->FindStringKey(::onc::cellular::kICCID);
+}
+
+const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
+  const std::string* type =
+      onc_config.FindStringKey(::onc::network_config::kType);
+  const base::Value* cellular_dict =
+      onc_config.FindKey(::onc::network_config::kCellular);
+  const std::string* smdp_address = nullptr;
+
+  if (type && (*type == ::onc::network_type::kCellular) && cellular_dict &&
+      cellular_dict->is_dict())
+    smdp_address = cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);
+
+  return smdp_address;
 }
 
 }  // namespace policy_util

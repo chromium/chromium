@@ -18,11 +18,13 @@ class RenderFrameHost;
 namespace test {
 
 // Browser tests can use this class to more conveniently leverage fenced frames.
-// Note that this only applies to the MPArch version of fenced frames, and not
-// fenced frames based on the ShadowDOM architecture.
+// Note that this applies to both the MPArch and ShadowDOM version of fenced
+// frames.
 class FencedFrameTestHelper {
  public:
-  FencedFrameTestHelper();
+  enum class FencedFrameType { kShadowDOM, kMPArch };
+  explicit FencedFrameTestHelper(
+      FencedFrameType type = FencedFrameType::kMPArch);
   ~FencedFrameTestHelper();
   FencedFrameTestHelper(const FencedFrameTestHelper&) = delete;
   FencedFrameTestHelper& operator=(const FencedFrameTestHelper&) = delete;
@@ -58,10 +60,12 @@ class FencedFrameTestHelper {
   // Returns the last created fenced frame. This can be used by embedders who
   // must create fenced frames from script but need to get the fence frame's
   // inner root RenderFrameHost.
+  // This method will return nullptr if no fenced frames were created.
   static RenderFrameHost* GetMostRecentlyAddedFencedFrame(RenderFrameHost* rfh);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  FencedFrameType type_;
 };
 
 // This helper method creates a fenced frame urn to url mapping and returns the

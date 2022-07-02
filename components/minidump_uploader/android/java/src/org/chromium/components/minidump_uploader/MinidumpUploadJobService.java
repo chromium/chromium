@@ -9,6 +9,7 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -85,6 +86,8 @@ public abstract class MinidumpUploadJobService extends JobService {
     private MinidumpUploadJob.UploadsFinishedCallback createJobFinishedCallback(
             final JobParameters params) {
         return new MinidumpUploadJob.UploadsFinishedCallback() {
+            private final long mTaskStartTimeMs = SystemClock.uptimeMillis();
+
             @Override
             public void uploadsFinished(boolean reschedule) {
                 if (reschedule) {
@@ -96,9 +99,15 @@ public abstract class MinidumpUploadJobService extends JobService {
                     }
                 }
                 MinidumpUploadJobService.this.jobFinished(params, reschedule);
+                recordMinidumpUploadingTime(SystemClock.uptimeMillis() - mTaskStartTimeMs);
             }
         };
     }
+
+    /**
+     * Records minidump uploading time.
+     */
+    protected void recordMinidumpUploadingTime(long taskDurationMs) {}
 
     /**
      * Create a MinidumpUploadJob instance that implements required logic for uploading minidumps

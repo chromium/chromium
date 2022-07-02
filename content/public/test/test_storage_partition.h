@@ -17,9 +17,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
-}
+}  // namespace leveldb_proto
 
 namespace content {
 
@@ -35,7 +39,7 @@ class ZoomLevelDelegate;
 
 namespace mojom {
 class NetworkContext;
-}
+}  // namespace mojom
 
 // Fake implementation of StoragePartition.
 class TestStoragePartition : public StoragePartition {
@@ -49,8 +53,6 @@ class TestStoragePartition : public StoragePartition {
 
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
   base::FilePath GetPath() override;
-
-  base::FilePath GetBucketBasePath() override;
 
   void set_network_context(network::mojom::NetworkContext* context) {
     network_context_ = context;
@@ -188,7 +190,7 @@ class TestStoragePartition : public StoragePartition {
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 const GURL& storage_origin,
+                 const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override;
@@ -217,6 +219,8 @@ class TestStoragePartition : public StoragePartition {
   int GetDataRemovalObserverCount();
 
   void ClearBluetoothAllowedDevicesMapForTesting() override;
+  void ResetAttributionManagerForTesting(
+      base::OnceCallback<void(bool)> callback) override;
   void FlushNetworkInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
   void WaitForCodeCacheShutdownForTesting() override;

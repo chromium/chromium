@@ -43,7 +43,6 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
   out->highp_threshold_min = data.highp_threshold_min();
   out->slow_down_compositing_scale_factor =
       data.slow_down_compositing_scale_factor();
-  out->use_skia_renderer = data.use_skia_renderer();
   out->auto_resize_output_surface = data.auto_resize_output_surface();
   out->requires_alpha_channel = data.requires_alpha_channel();
 

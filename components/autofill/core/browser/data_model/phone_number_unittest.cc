@@ -115,51 +115,99 @@ TEST(PhoneNumberTest, Matcher_TrunkTypes_DE) {
        {u"01741234567", {PHONE_HOME_CITY_AND_NUMBER}}});
 }
 
-// Verify that PhoneNumber::SetInfo() correctly formats the incoming number.
+// Verify that `PhoneNumber::SetInfo()` correctly formats the incoming number.
 TEST(PhoneNumberTest, SetInfo) {
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  const char kLocale[] = "US";  // Irrelevant, as `profile` has a country.
 
   PhoneNumber phone(&profile);
-  EXPECT_EQ(std::u16string(), phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_TRUE(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale).empty());
 
   // Set the formatted info directly.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"(650) 234-5678", "US"));
+  EXPECT_TRUE(
+      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
   EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Unformatted numbers should be formatted.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"8887776666", "US"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"8887776666", kLocale));
   EXPECT_EQ(u"(888) 777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"+18887776666", "US"));
+  EXPECT_EQ(u"8887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+18887776666", kLocale));
   EXPECT_EQ(u"1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"18887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Differently formatted numbers should be left alone.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"800-432-8765", "US"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"800-432-8765", kLocale));
   EXPECT_EQ(u"800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"8004328765", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // SetRawInfo should not try to format.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"8004328765");
   EXPECT_EQ(u"8004328765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
-  // Invalid numbers should not be stored.  In the US, phone numbers cannot
-  // start with the digit '1'.
-  EXPECT_FALSE(
-      phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), u"650111111", "US"));
-  EXPECT_EQ(std::u16string(), phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  // Invalid numbers should not be stored. In the US, phone numbers cannot start
+  // with the digit '1'.
+  EXPECT_FALSE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"650111111", kLocale));
+  EXPECT_TRUE(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale).empty());
 
-  // If the stored number is invalid due to metadata mismatch(non-existing
+  // If the stored number is invalid due to metadata mismatch (non-existing
   // carrier code for example), but otherwise is a possible number and can be
   // parsed into different components, we should respond to queries with best
   // effort as if it is a valid number.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"5141231234", "US"));
-  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "CA"));
-  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, "CA"));
-  EXPECT_EQ(u"514", phone.GetInfo(PHONE_HOME_CITY_CODE, "CA"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"5141231234", kLocale));
+  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"514", phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale));
+}
+
+TEST(PhoneNumberTest, InferCountryCallingCode) {
+  base::test::ScopedFeatureList complement_calling_code_enabled;
+  complement_calling_code_enabled.InitAndEnableFeature(
+      features::kAutofillInferCountryCallingCode);
+
+  AutofillProfile profile;
+  PhoneNumber phone(&profile);
+  const char kLocale[] = "US";
+
+  // No country information available and thus no calling code inferred.
+  EXPECT_TRUE(
+      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale).empty());
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+
+  // With country information available, the calling code is inferred.
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678", kLocale));
+  EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
+  EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+
+  // Pre-formatted number.
+  // In this case the raw info is kept as-is, while the calling code is inferred
+  // for the filling information.
+  EXPECT_TRUE(
+      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
+  EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
+  EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+
+  // Different country.
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"015787912345", kLocale));
+  EXPECT_EQ(u"49", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
+  EXPECT_EQ(u"+4915787912345", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"+49 1578 7912345", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"015787912345",
+            phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 }
 
 // Test that cached phone numbers are correctly invalidated and updated.
@@ -193,7 +241,7 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   PhoneNumber::PhoneCombineHelper number1;
-  EXPECT_FALSE(number1.SetInfo(AutofillType(ADDRESS_BILLING_CITY), u"1"));
+  EXPECT_FALSE(number1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"1"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), u"1"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"2345678"));
@@ -276,7 +324,7 @@ TEST(PhoneNumberTest, TrunkPrefix) {
                         const std::u16string& city_code_without_trunk,
                         const std::u16string& city_number_with_trunk,
                         const std::u16string& city_number_without_trunk) {
-    // Irrelevant, as the `profile` has country information.
+    // The `locale` is irrelevant, as the `profile` has country information.
     const std::string locale = "en-US";
     PhoneNumber phone_number(&profile);
     phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
@@ -321,6 +369,38 @@ TEST(PhoneNumberTest, TrunkPrefix) {
     TestNumber(u"+39 338 1234567", u"338", u"338", u"3381234567",
                u"3381234567");
     TestNumber(u"338 1234567", u"338", u"338", u"3381234567", u"3381234567");
+  }
+}
+
+// Tests that PHONE_HOME_NUMBER_PREFIX and PHONE_HOME_NUMBER_PREFIX are
+// extracted correctly.
+TEST(PhoneNumberTest, NumberPreAndSuffixes) {
+  AutofillProfile profile;
+
+  // Constructs a `PhoneNumber` object from `number` and verifies that the
+  // pre- and suffix match the expectation.
+  auto TestNumber = [&](const std::u16string& number,
+                        const std::u16string& prefix,
+                        const std::u16string& suffix) {
+    // The `locale` is irrelevant, as the `profile` has country information.
+    const std::string locale = "en-US";
+    PhoneNumber phone_number(&profile);
+    phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
+    EXPECT_EQ(prefix, phone_number.GetInfo(PHONE_HOME_NUMBER_PREFIX, locale));
+    EXPECT_EQ(suffix, phone_number.GetInfo(PHONE_HOME_NUMBER_SUFFIX, locale));
+  };
+
+  // US
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+    TestNumber(u"(650) 234-5678", u"234", u"5678");
+  }
+  // JP
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"JP");
+    TestNumber(u"03-3224-9999", u"3224", u"9999");   // Landline
+    TestNumber(u"090-1234-5678", u"1234", u"5678");  // Mobile
+    TestNumber(u"+81 824-86-3123", u"86", u"3123");  // Different length prefix
   }
 }
 

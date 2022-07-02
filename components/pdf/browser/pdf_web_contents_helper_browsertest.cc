@@ -53,7 +53,7 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
   // PDFWebContentsHelperClient:
   content::RenderFrameHost* FindPdfFrame(
       content::WebContents* contents) override {
-    return contents->GetMainFrame();
+    return contents->GetPrimaryMainFrame();
   }
 
   void UpdateContentRestrictions(content::WebContents* contents,

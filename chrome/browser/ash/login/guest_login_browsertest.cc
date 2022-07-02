@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -120,6 +120,31 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+}
+
+// Check that the guest button is visible on user creation screen before
+// entering and after exiting the guest session.
+IN_PROC_BROWSER_TEST_F(GuestLoginTest,
+                       PRE_PRE_UserCreationGuestButtonVisibility) {
+  base::RunLoop restart_job_waiter;
+  FakeSessionManagerClient::Get()->set_restart_job_callback(
+      restart_job_waiter.QuitClosure());
+
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
+  StartGuestSession();
+
+  restart_job_waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_UserCreationGuestButtonVisibility) {
+  login_manager_.WaitForActiveSession();
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+}
+
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, UserCreationGuestButtonVisibility) {
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
 // The test verifies that clicking the Guest button multiple times doesn't

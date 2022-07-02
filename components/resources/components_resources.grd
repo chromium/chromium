@@ -20,7 +20,6 @@ dev_ui_components_resources.grd.
       <part file="management_resources.grdp" />
       <part file="neterror_resources.grdp" />
       <part file="ntp_tiles_resources.grdp" />
-      <part file="offline_pages_resources.grdp" />
       <part file="printing_resources.grdp" />
       <part file="safe_browsing_resources.grdp" />
       <part file="security_interstitials_resources.grdp" />

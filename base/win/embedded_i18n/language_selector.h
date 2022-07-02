@@ -25,7 +25,7 @@ namespace i18n {
 // override selection should a corresponding translation be available.
 class BASE_EXPORT LanguageSelector {
  public:
-  using LangToOffset = std::pair<WStringPiece, int>;
+  using LangToOffset = std::pair<WStringPiece, size_t>;
 
   // Constructor to be used for users of this class that will provide the actual
   // language offsets that will be used.
@@ -53,7 +53,7 @@ class BASE_EXPORT LanguageSelector {
   ~LanguageSelector();
 
   // The offset of the matched language (i.e., IDS_L10N_OFFSET_*).
-  int offset() const { return selected_offset_; }
+  size_t offset() const { return selected_offset_; }
 
   // The full name of the candidate language for which a match was found.
   const std::wstring& matched_candidate() const { return matched_candidate_; }
@@ -66,7 +66,7 @@ class BASE_EXPORT LanguageSelector {
  private:
   std::wstring matched_candidate_;
   std::wstring selected_language_;
-  int selected_offset_;
+  size_t selected_offset_;
 };
 
 }  // namespace i18n

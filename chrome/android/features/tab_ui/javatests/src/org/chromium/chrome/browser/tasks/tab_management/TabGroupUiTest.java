@@ -44,6 +44,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -55,7 +56,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -100,6 +100,7 @@ public class TabGroupUiTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
+                    .setRevision(1)
                     .build();
 
     @Before
@@ -130,13 +131,13 @@ public class TabGroupUiTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"RenderTest"})
-    @FlakyTest(message = "https://crbug.com/1208386")
+    @DisabledTest(message = "https://crbug.com/1208386")
     public void testRenderStrip_Select5thTabIn10Tabs() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        createTabs(cta, false, 10);
+        TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -155,13 +156,13 @@ public class TabGroupUiTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"RenderTest"})
-    @FlakyTest(message = "https://crbug.com/1208386")
+    @DisabledTest(message = "https://crbug.com/1208386")
     public void testRenderStrip_Select10thTabIn10Tabs() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        createTabs(cta, false, 10);
+        TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -180,13 +181,13 @@ public class TabGroupUiTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"RenderTest"})
-    @FlakyTest(message = "https://crbug.com/1208386")
+    @DisabledTest(message = "https://crbug.com/1208386")
     public void testRenderStrip_AddTab() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        createTabs(cta, false, 10);
+        TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -213,7 +214,6 @@ public class TabGroupUiTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_BUG_FIX_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1142576")
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 

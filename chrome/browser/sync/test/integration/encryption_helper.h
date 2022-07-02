@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -18,31 +19,28 @@
 
 // Checker used to block until a Nigori with a given passphrase type is
 // available on the server.
-class ServerNigoriChecker : public SingleClientStatusChangeChecker {
+class ServerPassphraseTypeChecker
+    : public fake_server::FakeServerMatchStatusChecker {
  public:
-  ServerNigoriChecker(syncer::SyncServiceImpl* service,
-                      fake_server::FakeServer* fake_server,
-                      syncer::PassphraseType expected_passphrase_type);
+  explicit ServerPassphraseTypeChecker(
+      syncer::PassphraseType expected_passphrase_type);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ptr<fake_server::FakeServer> fake_server_;
   const syncer::PassphraseType expected_passphrase_type_;
 };
 
 // Checker used to block until a Nigori with a given keybag encryption key name
 // is available on the server.
-class ServerNigoriKeyNameChecker : public SingleClientStatusChangeChecker {
+class ServerNigoriKeyNameChecker
+    : public fake_server::FakeServerMatchStatusChecker {
  public:
-  ServerNigoriKeyNameChecker(const std::string& expected_key_name,
-                             syncer::SyncServiceImpl* service,
-                             fake_server::FakeServer* fake_server);
+  explicit ServerNigoriKeyNameChecker(const std::string& expected_key_name);
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ptr<fake_server::FakeServer> fake_server_;
   const std::string expected_key_name_;
 };
 

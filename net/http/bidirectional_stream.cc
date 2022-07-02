@@ -39,23 +39,22 @@ namespace {
 
 base::Value NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
                                 NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("headers",
-              ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogParams(const GURL& url,
                          const std::string& method,
                          const HttpRequestHeaders* headers,
                          NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", url.possibly_invalid_spec());
-  dict.SetStringKey("method", method);
-  std::string empty;
-  base::Value headers_param(headers->NetLogParams(empty, capture_mode));
-  dict.SetKey("headers", std::move(headers_param));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("url", url.possibly_invalid_spec());
+  dict.Set("method", method);
+  base::Value headers_param(
+      headers->NetLogParams(/*request_line=*/std::string(), capture_mode));
+  dict.Set("headers", std::move(headers_param));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -86,7 +85,6 @@ BidirectionalStream::BidirectionalStream(
                                       NetLogSourceType::BIDIRECTIONAL_STREAM)),
       session_(session),
       send_request_headers_automatically_(send_request_headers_automatically),
-      request_headers_sent_(false),
       delegate_(delegate),
       timer_(std::move(timer)) {
   DCHECK(delegate_);

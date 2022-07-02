@@ -147,7 +147,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetWidgetHost() {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }
@@ -357,10 +357,10 @@ class TouchActionBrowserTest : public ContentBrowserTest {
                 { "name": "pointerUp"}]}]
         )HTML";
 
-    base::JSONReader::ValueWithError parsed_json =
+    auto parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json);
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    ActionsParser actions_parser(std::move(*parsed_json.value));
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    ActionsParser actions_parser(std::move(*parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
 
@@ -395,10 +395,10 @@ class TouchActionBrowserTest : public ContentBrowserTest {
         }]
         )HTML";
 
-    base::JSONReader::ValueWithError parsed_json =
+    auto parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json);
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    ActionsParser actions_parser(std::move(*parsed_json.value));
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    ActionsParser actions_parser(std::move(*parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
 

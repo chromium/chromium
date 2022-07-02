@@ -17,12 +17,12 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 // <if expr="chromeos_ash">
 import './arc_account_picker/arc_account_picker_app.js';
-import './gaia_action_buttons.js';
+import './gaia_action_buttons/gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
 import './signin_error_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
-import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
+import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';
@@ -137,6 +137,18 @@ Polymer({
      * @private {string}
      */
     hostedDomain_: {type: String, value: ''},
+
+    /**
+     * @return {boolean} True if secondary account sign-ins are allowed, false
+     *    otherwise.
+     * @private
+     */
+    isSecondaryGoogleAccountSigninAllowed_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+      },
+    },
     // </if>
 
     /**
@@ -171,6 +183,17 @@ Polymer({
 
   /** @override */
   ready() {
+    // <if expr="chromeos_ash">
+    if (!this.isSecondaryGoogleAccountSigninAllowed_) {
+      // This can happen only if the user opened chrome://chrome-signin manually
+      // in the browser. Normally (in the account addition dialog) this will be
+      // handled earlier and a special error screen will be shown.
+      console.error(
+          'SecondaryGoogleAccountSigninAllowed is set to false - aborting.');
+      return;
+    }
+    // </if>
+
     this.authExtHost_ = new Authenticator(
         /** @type {!WebView} */ (this.$.signinFrame));
     this.addAuthExtHostListeners_();

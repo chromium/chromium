@@ -20,8 +20,7 @@
 namespace apps {
 
 // Queue of WebApks to be installed or updated.
-WebApkInstallQueue::WebApkInstallQueue(Profile* profile)
-    : profile_(profile), connection_ready_(false) {
+WebApkInstallQueue::WebApkInstallQueue(Profile* profile) : profile_(profile) {
   arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
   DCHECK(arc_service_manager);
   arc_service_manager->arc_bridge_service()->webapk()->AddObserver(this);

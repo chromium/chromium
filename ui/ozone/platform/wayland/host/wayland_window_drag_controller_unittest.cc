@@ -28,6 +28,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
@@ -35,7 +36,6 @@
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
-#include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
@@ -63,7 +63,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     return connection_->window_drag_controller();
   }
 
-  MockPlatformWindowDelegate& delegate() { return delegate_; }
+  MockWaylandPlatformWindowDelegate& delegate() { return delegate_; }
 
  protected:
   using State = WaylandWindowDragController::State;
@@ -338,8 +338,8 @@ TEST_P(WaylandWindowDragControllerTest,
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
-  auto window_2 = WaylandWindow::Create(&delegate_, connection_.get(),
-                                        std::move(properties));
+  auto window_2 =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   Sync();
 
@@ -487,8 +487,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
-  auto window_2 = WaylandWindow::Create(&delegate_, connection_.get(),
-                                        std::move(properties));
+  auto window_2 =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   Sync();
 
@@ -640,8 +640,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
-  auto window_2 = WaylandWindow::Create(&delegate_, connection_.get(),
-                                        std::move(properties));
+  auto window_2 =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   Sync();
 
@@ -859,7 +859,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
 }
 
 TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
-  const gfx::Rect original_bounds = window_->GetBounds();
+  const gfx::Rect original_bounds = window_->GetBoundsInPixels();
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
   // Maximize and check restored bounds is correctly set.
@@ -1109,6 +1109,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
                  WmMoveLoopHandler* move_loop_handler,
                  bool in_pixel_coordinates) {
     for (auto* output : *outputs) {
+      SCOPED_TRACE(base::StringPrintf("Output Scale=%d", output->GetScale()));
       gfx::Point p0{10, 10};
       // Compute the expected point first as drag operation will move the
       // window.
@@ -1228,10 +1229,10 @@ TEST_P(WaylandWindowDragControllerTest,
   // to when a tab is detached in a Chrome's tab drag session.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
-  MockPlatformWindowDelegate delegate_2;
+  MockWaylandPlatformWindowDelegate delegate_2;
   EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
-  auto window_2 = WaylandWindow::Create(&delegate_2, connection_.get(),
-                                        std::move(properties));
+  auto window_2 =
+      delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   Sync();
 

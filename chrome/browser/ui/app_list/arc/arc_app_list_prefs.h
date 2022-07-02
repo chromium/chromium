@@ -161,7 +161,8 @@ class ArcAppListPrefs : public KeyedService,
                 bool system,
                 bool vpn_provider,
                 base::flat_map<arc::mojom::AppPermission,
-                               arc::mojom::PermissionStatePtr> permissions);
+                               arc::mojom::PermissionStatePtr> permissions,
+                arc::mojom::WebAppInfoPtr web_app_info);
     ~PackageInfo();
 
     std::string package_name;
@@ -174,6 +175,7 @@ class ArcAppListPrefs : public KeyedService,
     // Maps app permission to permission states
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions;
+    arc::mojom::WebAppInfoPtr web_app_info;
   };
 
   class Observer : public base::CheckedObserver {

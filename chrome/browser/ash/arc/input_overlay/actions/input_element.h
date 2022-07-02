@@ -67,6 +67,9 @@ class InputElement {
   void SetKey(int index, ui::DomCode code);
   // Set keys to |keys|.
   void SetKeys(std::vector<ui::DomCode>& keys);
+  // If it is keyboard-binded input and there is |key| binded, return the index
+  // of the |key|. Otherwise, return -1;
+  int GetIndexOfKey(ui::DomCode key) const;
   std::unique_ptr<InputElementProto> ConvertToProto();
 
   int input_sources() const { return input_sources_; }
@@ -80,6 +83,7 @@ class InputElement {
   int mouse_flags() const { return mouse_flags_; }
 
   bool operator==(const InputElement& other) const;
+  bool operator!=(const InputElement& other) const;
 
  private:
   // Input source for this input element, could be keyboard or mouse or both.

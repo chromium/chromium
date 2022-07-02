@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 

@@ -27,15 +27,20 @@
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#endif
 
 namespace content {
 
@@ -63,18 +68,28 @@ class CONTENT_EXPORT ServiceWorkerHost {
   int worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
 
+  service_manager::InterfaceProvider& remote_interfaces() {
+    return remote_interfaces_;
+  }
+
   // Completes initialization of this provider host. It is called once a
   // renderer process has been found to host the worker.
   void CompleteStartWorkerPreparation(
       int process_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-          broker_receiver);
+          broker_receiver,
+      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+          interface_provider_remote);
 
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   // Used only when EagerCacheStorageSetupForServiceWorkers is disabled.
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+
+#if !BUILDFLAG(IS_ANDROID)
+  void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::ServiceWorkerContainerHost* container_host() {
     return container_host_.get();
@@ -116,6 +131,9 @@ class CONTENT_EXPORT ServiceWorkerHost {
       &broker_};
 
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
+
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.

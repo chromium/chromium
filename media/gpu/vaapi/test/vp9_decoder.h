@@ -50,6 +50,9 @@ class Vp9Decoder : public VideoDecoder {
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
   std::vector<scoped_refptr<SharedVASurface>> ref_frames_;
+
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
 };
 
 }  // namespace vaapi_test

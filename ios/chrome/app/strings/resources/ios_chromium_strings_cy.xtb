@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="3472200483164753384">Ni chefnogir ar Chromium Canary</translation>
 <translation id="3567399274263440288">I gael y gorau o Chromium, mewngofnodwch i Chromium â'ch Cyfrif Google.</translation>
+<translation id="3619462831205197427">Mewngofnodi i'r wefan hon, eich Cyfrif Google a Chromium.</translation>
 <translation id="3639997914391704523">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
 <translation id="3650632991272923014">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chromium a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
@@ -77,7 +78,6 @@
 1. Agorwch y gosodiadau
 2. Tapiwch Ap Pori Diofyn
 3. Dewiswch Chromium.</translation>
-<translation id="6155422572367400359">Mewngofnodi i'r wefan hon, eich Cyfrif Google a Chromium. Gallwch droi cysoni ymlaen yn nes ymlaen.</translation>
 <translation id="6183442264225539303">Mewngofnodi i'r wefan hon a Chromium. Gallwch droi cysoni ymlaen yn nes ymlaen.</translation>
 <translation id="6268381023930128611">Allgofnodi o Chromium?</translation>
 <translation id="632825460376924298">Caniatáu Mewngofnodi i Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Clirio'ch data Chromium o'r ddyfais hon?</translation>
 <translation id="8175055321229419309">Awgrym: <ph name="BEGIN_LINK" />Symudwch Chromium i'ch doc<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="8308172444429103994">Awgrym Chromium. Mewngofnodwch yn gyflymach drwy ddewis eich cyfrinair sydd wedi'i gadw ar frig y bysellfwrdd.</translation>
 <translation id="858114650497379505">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPhone.</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="865600487977764604">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>

@@ -119,7 +119,7 @@ class IsolatedAppTest : public ExtensionBrowserTest {
     std::set<std::string> extension_ids =
         ProcessMap::Get(browser_context)
             ->GetExtensionsInProcess(
-                contents->GetMainFrame()->GetProcess()->GetID());
+                contents->GetPrimaryMainFrame()->GetProcess()->GetID());
     for (auto iter = extension_ids.begin(); iter != extension_ids.end();
          ++iter) {
       const Extension* installed_app =
@@ -477,26 +477,26 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
   int process_id_0 = browser()
                          ->tab_strip_model()
                          ->GetWebContentsAt(0)
-                         ->GetMainFrame()
+                         ->GetPrimaryMainFrame()
                          ->GetProcess()
                          ->GetID();
   int process_id_1 = browser()
                          ->tab_strip_model()
                          ->GetWebContentsAt(1)
-                         ->GetMainFrame()
+                         ->GetPrimaryMainFrame()
                          ->GetProcess()
                          ->GetID();
   EXPECT_NE(process_id_0, process_id_1);
   EXPECT_EQ(process_id_0, browser()
                               ->tab_strip_model()
                               ->GetWebContentsAt(2)
-                              ->GetMainFrame()
+                              ->GetPrimaryMainFrame()
                               ->GetProcess()
                               ->GetID());
   EXPECT_EQ(process_id_0, browser()
                               ->tab_strip_model()
                               ->GetWebContentsAt(3)
-                              ->GetMainFrame()
+                              ->GetPrimaryMainFrame()
                               ->GetProcess()
                               ->GetID());
 
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
   EXPECT_NE(process_id_1, browser()
                               ->tab_strip_model()
                               ->GetWebContentsAt(1)
-                              ->GetMainFrame()
+                              ->GetPrimaryMainFrame()
                               ->GetProcess()
                               ->GetID());
 }

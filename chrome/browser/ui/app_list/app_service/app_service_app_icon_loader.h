@@ -54,11 +54,6 @@ class AppServiceAppIconLoader : public AppIconLoader,
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(const std::string& app_id, apps::IconValuePtr icon_value);
 
-  // Callback invoked when the icon is loaded.
-  // TODO(crbug.com/1251501): Remove this mojom callback.
-  void OnLoadMojomIcon(const std::string& app_id,
-                       apps::mojom::IconValuePtr icon_value);
-
   // Returns true if the app_id does exist in icon_map_.
   bool Exist(const std::string& app_id);
 

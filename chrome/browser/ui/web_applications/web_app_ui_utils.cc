@@ -31,18 +31,8 @@ namespace {
 
 absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-#if BUILDFLAG(IS_CHROMEOS)
-  bool show_app_link_in_app_window = true;
-#else
-  bool show_app_link_in_app_window =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage);
-#endif
   bool show_app_link_in_tabbed_browser =
-      show_app_link_in_app_window &&
       base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
-
-  if (!show_app_link_in_app_window)
-    return absl::nullopt;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
@@ -53,17 +43,21 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     return absl::nullopt;
   }
 
-  WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!helper || helper->GetAppId().empty() || !helper->acting_as_app())
+  const web_app::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id)
+    return absl::nullopt;
+
+  if (!web_app::WebAppTabHelper::FromWebContents(web_contents)->acting_as_app())
     return absl::nullopt;
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar()
-           .IsInstalled(helper->GetAppId())) {
+           .IsInstalled(*app_id)) {
     return absl::nullopt;
   }
 
-  return helper->GetAppId();
+  return *app_id;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

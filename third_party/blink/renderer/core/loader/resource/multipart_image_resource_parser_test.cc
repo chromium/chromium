@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 namespace multipart_image_resource_parser_test {
@@ -29,7 +29,7 @@ class MockClient final : public GarbageCollected<MockClient>,
     data_.push_back(Vector<char>());
   }
   void MultipartDataReceived(const char* bytes, size_t size) override {
-    data_.back().Append(bytes, SafeCast<wtf_size_t>(size));
+    data_.back().Append(bytes, base::checked_cast<wtf_size_t>(size));
   }
 
   Vector<ResourceResponse> responses_;

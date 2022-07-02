@@ -17,7 +17,7 @@ VaapiH264Picture* VaapiH264Picture::AsVaapiH264Picture() {
   return this;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 VaapiH265Picture::VaapiH265Picture(scoped_refptr<VASurface> va_surface)
     : va_surface_(va_surface) {}
 
@@ -27,7 +27,7 @@ VaapiH265Picture* VaapiH265Picture::AsVaapiH265Picture() {
   return this;
 }
 
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 VaapiVP8Picture::VaapiVP8Picture(scoped_refptr<VASurface> va_surface)
     : va_surface_(va_surface) {}

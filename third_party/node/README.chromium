@@ -215,3 +215,52 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Polic
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for FileSystem API
+Short Name: @types/filesystem
+URL: https://www.npmjs.com/package/@types/filesystem
+Version: 0.0.32
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileSystem API.
+
+Description:
+This package contains type definitions for Web FileSystem API.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystem
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for FileWriter API
+Short Name: @types/filewriter
+URL: https://www.npmjs.com/package/@types/filewriter
+Version: 0.0.29
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileWriter API.
+
+Description:
+This package contains type definitions for Web FileWriter API. This is a
+dependency for the @types/filesystem.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
+
+Local Modifications:
+(none)
+
+Name: HTML Minifier
+Short Name: html-minifier
+URL: https://www.npmjs.com/package/html-minifier
+Version: 4.0.0
+License: MIT
+Security Critical: No, as html-minifier itself is only used during build time.
+It does affect the contents of shipped HTML files though.
+
+Description:
+HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
+minifier.
+
+Local Modifications:
+Removed uglify-js dependency since we don't plan to use the --minify-js flag in
+Chromium.

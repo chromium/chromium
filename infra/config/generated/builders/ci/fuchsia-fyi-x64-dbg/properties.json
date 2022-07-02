@@ -65,5 +65,8 @@
     ]
   },
   "builder_group": "chromium.fuchsia.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "fuchsia"
+  ]
 }

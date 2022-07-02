@@ -115,6 +115,9 @@ class LayoutObjectFactory {
                                       const ComputedStyle& style,
                                       LegacyLayout legacy);
 
+  static LayoutObject* CreateSVGForeignObject(Node& node,
+                                              const ComputedStyle& style,
+                                              LegacyLayout legacy);
   static LayoutObject* CreateSVGText(Node& node,
                                      const ComputedStyle& style,
                                      LegacyLayout legacy);

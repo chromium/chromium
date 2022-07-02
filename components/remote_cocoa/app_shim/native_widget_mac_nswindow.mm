@@ -4,6 +4,7 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
+#include "base/auto_reset.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/mac/foundation_util.h"
 #include "base/trace_event/trace_event.h"
@@ -14,6 +15,66 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
+
+namespace {
+
+// AppKit quirk: -[NSWindow orderWindow] does not handle reordering for children
+// windows. Their order is fixed to the attachment order (the last attached
+// window is on the top). Therefore, work around it by re-parenting in our
+// desired order.
+void OrderChildWindow(NSWindow* child_window,
+                      NSWindow* other_window,
+                      NSWindowOrderingMode ordering_mode) {
+  NSWindow* parent = [child_window parentWindow];
+  DCHECK(parent);
+
+  // `ordered_children` sorts children windows back to front.
+  NSArray<NSWindow*>* children = [[child_window parentWindow] childWindows];
+  std::vector<std::pair<NSInteger, NSWindow*>> ordered_children;
+  for (NSWindow* child in children)
+    ordered_children.push_back({[child orderedIndex], child});
+  std::sort(ordered_children.begin(), ordered_children.end(), std::greater<>());
+
+  // If `other_window` is nullptr, place `child_window` in front of (or behind)
+  // all other children windows.
+  if (other_window == nullptr) {
+    other_window = ordering_mode == NSWindowAbove
+                       ? ordered_children.back().second
+                       : parent;
+  }
+
+  if (child_window == other_window)
+    return;
+
+  const bool relative_to_parent = parent == other_window;
+  DCHECK(ordering_mode != NSWindowBelow || !relative_to_parent)
+      << "Placing a child window behind its parent is not supported.";
+
+  for (NSWindow* child in children)
+    [parent removeChildWindow:child];
+
+  // If `relative_to_parent` is true, `child_window` is the first child of its
+  // parent.
+  if (relative_to_parent)
+    [parent addChildWindow:child_window ordered:NSWindowAbove];
+
+  // Re-parent children windows in the desired order.
+  for (auto [ordered_index, child] : ordered_children) {
+    if (child != child_window && child != other_window) {
+      [parent addChildWindow:child ordered:NSWindowAbove];
+    } else if (child == other_window && !relative_to_parent) {
+      if (ordering_mode == NSWindowAbove) {
+        [parent addChildWindow:other_window ordered:NSWindowAbove];
+        [parent addChildWindow:child_window ordered:NSWindowAbove];
+      } else {
+        [parent addChildWindow:child_window ordered:NSWindowAbove];
+        [parent addChildWindow:other_window ordered:NSWindowAbove];
+      }
+    }
+  }
+}
+
+}  // namespace
 
 @interface NSWindow (Private)
 + (Class)frameViewClassForStyleMask:(NSWindowStyleMask)windowStyle;
@@ -58,7 +119,7 @@
   return NO;
 }
 // The base implementation just tests [self class] == [NSThemeFrame class].
-- (BOOL)_shouldFlipTrafficLightsForRTL API_AVAILABLE(macos(10.12)) {
+- (BOOL)_shouldFlipTrafficLightsForRTL {
   return [[self window] windowTitlebarLayoutDirection] ==
          NSUserInterfaceLayoutDirectionRightToLeft;
 }
@@ -84,6 +145,7 @@
   BOOL _willUpdateRestorableState;
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;
+  BOOL _isAddingChildWindow;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
@@ -99,6 +161,7 @@
                                    defer:deferCreation])) {
     _commandDispatcher.reset([[CommandDispatcher alloc] initWithOwner:self]);
   }
+  _isAddingChildWindow = NO;
   return self;
 }
 
@@ -112,6 +175,15 @@
   _willUpdateRestorableState = YES;
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   [super dealloc];
+}
+
+- (void)addChildWindow:(NSWindow*)childWin ordered:(NSWindowOrderingMode)place {
+  base::AutoReset<BOOL> isAddingChildWindow(&_isAddingChildWindow, YES);
+  // Attaching a window to be a child window resets the window level, so
+  // restore the window level afterwards.
+  NSInteger level = childWin.level;
+  [super addChildWindow:childWin ordered:place];
+  childWin.level = level;
 }
 
 - (void)enforceNeverMadeVisible {
@@ -323,13 +395,41 @@
   [super sendEvent:event];
 }
 
-// Override window order functions to intercept other visibility changes. This
-// is needed in addition to the -[NSWindow display] override because Cocoa
-// hardly ever calls display, and reports -[NSWindow isVisible] incorrectly
-// when ordering in a window for the first time.
+// Override window order functions to
+// 1. Intercept other visibility changes
+//    This is needed in addition to the -[NSWindow display] override because
+//    Cocoa hardly ever calls display, and reports -[NSWindow isVisible]
+//    incorrectly when ordering in a window for the first time.
+// 2. Handle child windows
+//    -[NSWindow orderWindow] does not work for child windows. To order
+//    children, we need to detach them from thier parent and re-attach them
+//    in our desire order.
 - (void)orderWindow:(NSWindowOrderingMode)orderingMode
          relativeTo:(NSInteger)otherWindowNumber {
+  NativeWidgetMacNSWindow* parent =
+      static_cast<NativeWidgetMacNSWindow*>([self parentWindow]);
+  // Cocoa will call -[NSWindow orderWindow] during -[NSWindow addChildWindow].
+  // To prevent re-entrancy, skip re-parenting if adding children.
+  if (parent && parent->_isAddingChildWindow) {
+    [super orderWindow:orderingMode relativeTo:otherWindowNumber];
+    [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
+    return;
+  }
+
+  // `otherWindow` is nil if `otherWindowNumber` is 0. In this case, place
+  // `self` at the top / bottom, depending on `orderingMode`.
+  NSWindow* otherWindow = [NSApp windowWithWindowNumber:otherWindowNumber];
+
+  // For unknown reason chrome will freeze during startup without this line.
   [super orderWindow:orderingMode relativeTo:otherWindowNumber];
+
+  // During shutdown the parent may have changed at this point, so reacquire
+  // `parent`.
+  parent = static_cast<NativeWidgetMacNSWindow*>([self parentWindow]);
+  if (parent && (otherWindow == nullptr ||
+                 parent == [otherWindow parentWindow] || parent == otherWindow))
+    OrderChildWindow(self, otherWindow, orderingMode);
+
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
 }
 
@@ -362,7 +462,7 @@
     [super cursorUpdate:theEvent];
 }
 
-- (NSTouchBar*)makeTouchBar API_AVAILABLE(macos(10.12.2)) {
+- (NSTouchBar*)makeTouchBar {
   return _touchBarDelegate ? [_touchBarDelegate makeTouchBar] : nil;
 }
 

@@ -1167,8 +1167,8 @@ void DiskCacheLPMFuzzer::CreateBackend(
             /*file_operations=*/nullptr, cache_path_,
             /*cleanup_tracker=*/nullptr, simple_file_tracker_.get(), max_size_,
             type, /*net_log=*/nullptr);
-    int rv = simple_backend->Init(cb.callback());
-    CHECK_EQ(cb.GetResult(rv), net::OK);
+    simple_backend->Init(cb.callback());
+    CHECK_EQ(cb.WaitForResult(), net::OK);
     simple_cache_impl_ = simple_backend.get();
     cache_ = std::move(simple_backend);
 
@@ -1178,7 +1178,7 @@ void DiskCacheLPMFuzzer::CreateBackend(
       net::TestCompletionCallback wait_for_index_cb;
       simple_cache_impl_->index()->ExecuteWhenReady(
           wait_for_index_cb.callback());
-      rv = wait_for_index_cb.WaitForResult();
+      int rv = wait_for_index_cb.WaitForResult();
       CHECK_EQ(rv, net::OK);
     }
   } else {
@@ -1204,8 +1204,8 @@ void DiskCacheLPMFuzzer::CreateBackend(
 
     // TODO(mpdenton) should I always wait here?
     net::TestCompletionCallback cb;
-    int rv = block_impl_->Init(cb.callback());
-    CHECK_EQ(cb.GetResult(rv), net::OK);
+    block_impl_->Init(cb.callback());
+    CHECK_EQ(cb.WaitForResult(), net::OK);
   }
 }
 

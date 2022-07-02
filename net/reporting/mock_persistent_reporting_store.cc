@@ -153,13 +153,7 @@ std::ostream& operator<<(std::ostream& out,
   }
 }
 
-MockPersistentReportingStore::MockPersistentReportingStore()
-    : load_started_(false),
-      endpoint_count_(0),
-      endpoint_group_count_(0),
-      queued_endpoint_count_delta_(0),
-      queued_endpoint_group_count_delta_(0) {}
-
+MockPersistentReportingStore::MockPersistentReportingStore() = default;
 MockPersistentReportingStore::~MockPersistentReportingStore() = default;
 
 void MockPersistentReportingStore::LoadReportingClients(

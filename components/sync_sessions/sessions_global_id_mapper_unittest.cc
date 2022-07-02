@@ -12,8 +12,6 @@
 namespace sync_sessions {
 namespace {
 
-using testing::_;
-
 const base::Time kTime1 = base::Time::FromInternalValue(110);
 const base::Time kTime2 = base::Time::FromInternalValue(120);
 const base::Time kTime3 = base::Time::FromInternalValue(130);

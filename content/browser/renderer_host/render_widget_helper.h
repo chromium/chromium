@@ -59,11 +59,6 @@ class RenderWidgetHelper
 
   // IO THREAD ONLY -----------------------------------------------------------
 
-  // Lookup the RenderWidgetHelper from the render_process_host_id. Returns NULL
-  // if not found. NOTE: The raw pointer is for temporary use only. To retain,
-  // store in a scoped_refptr.
-  static RenderWidgetHelper* FromProcessHostID(int render_process_host_id);
-
  private:
   friend class base::RefCountedThreadSafe<RenderWidgetHelper>;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::IO>;

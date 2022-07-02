@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import './info_view.js';
 
 import {BrowserBridge} from './browser_bridge.js';
-import {makeInfoView} from './info_view.js';
 
 // Injected script from C++ or test environments may reference `browserBridge`
 // as a property of the global object.
@@ -16,7 +15,8 @@ window.browserBridge = new BrowserBridge();
  */
 function onLoad() {
   // Create the views.
-  decorate('#info-view', makeInfoView(window.browserBridge));
+  document.querySelector('info-view')
+      .addBrowserBridgeListeners(window.browserBridge);
 
   // Because of inherent raciness (between the deprecated DevTools API which
   // telemtry uses to drive the relevant tests, and the asynchronous loading of

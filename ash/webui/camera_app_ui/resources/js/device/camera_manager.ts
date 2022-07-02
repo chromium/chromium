@@ -8,6 +8,7 @@ import {
   assertInstanceof,
 } from '../assert.js';
 import * as error from '../error.js';
+import * as expert from '../expert.js';
 import {Point} from '../geometry.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ScreenState} from '../mojo/type.js';
@@ -143,13 +144,16 @@ export class CameraManager implements EventListener {
       }
     });
 
-    state.addObserver(state.State.SHOW_ALL_RESOLUTIONS, async () => {
-      // Rebuilds the options to adapt to the new state. Then, reconfigure the
-      // stream so that it will apply the new resolution order. At last, update
-      // the checked status of the resolution options.
-      this.scheduler.reconfigurer.capturePreferrer.buildOptions();
-      await this.tryReconfigure(() => {/* Do nothing */});
-    });
+    expert.addObserver(
+        expert.ExpertOption.SHOW_ALL_RESOLUTIONS,
+        async () => {
+          // Rebuilds the options to adapt to the new state. Then, reconfigure
+          // the stream so that it will apply the new resolution order. At last,
+          // update the checked status of the resolution options.
+          this.scheduler.reconfigurer.capturePreferrer.buildOptions();
+          await this.tryReconfigure(() => {/* Do nothing */});
+        },
+    );
   }
 
   getCameraInfo(): CameraInfo {

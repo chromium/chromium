@@ -818,6 +818,18 @@ TEST(StaticAVIFTests, ValidImages) {
   TestByteByByteDecode(&CreateAVIFDecoder,
                        "/images/resources/avif/tiger_3layer_3res.avif", 1,
                        kAnimationNone);
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/tiger_420_8b_grid1x13.avif", 1,
+                       kAnimationNone);
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/dice_444_10b_grid4x3.avif", 1,
+                       kAnimationNone);
+#if defined(HAVE_AVIF_BIT_DEPTH_12_SUPPORT)
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/gracehopper_422_12b_grid2x4.avif", 1,
+      kAnimationNone);
+#endif
 }
 
 TEST(StaticAVIFTests, YUV) {
@@ -929,10 +941,75 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+TEST(StaticAVIFTests, IncrementalDecoding) {
+  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SegmentReader> segment_reader =
+      SegmentReader::CreateFromSharedBuffer(stream_buffer);
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
+      "image/avif", segment_reader, /*data_complete=*/false,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/tiger_420_8b_grid1x13.avif");
+  ASSERT_TRUE(data.get());
+
+  struct Step {
+    size_t size;  // In bytes.
+    ImageFrame::Status status;
+    int num_decoded_rows;  // In pixels.
+  };
+  // There are 13 tiles. Tiles are as wide as the image and 64 pixels tall.
+  // |num_decoded_rows| may be odd due to an output pixel row missing the
+  // following upsampled decoded chroma row (belonging to the next tile).
+  const Step steps[] = {
+      {2000, ImageFrame::kFrameEmpty, 0},
+      // Decoding half of the bytes gives 6 tile rows.
+      {data->size() / 2, ImageFrame::kFramePartial, 6 * 64 - 1},
+      // Decoding all bytes but one gives 12 tile rows.
+      {data->size() - 1, ImageFrame::kFramePartial, 12 * 64 - 1},
+      // Decoding all bytes gives all 13 tile rows.
+      {data->size(), ImageFrame::kFrameComplete, 13 * 64}};
+  size_t previous_size = 0;
+  for (const Step& step : steps) {
+    stream_buffer->Append(data->Data() + previous_size,
+                          step.size - previous_size);
+    decoder->SetData(stream_buffer, step.status == ImageFrame::kFrameComplete);
+
+    EXPECT_EQ(decoder->FrameCount(), 1u);
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    ASSERT_FALSE(decoder->Failed());
+    EXPECT_EQ(frame->GetStatus(), step.status);
+
+    const SkBitmap& bitmap = frame->Bitmap();
+    for (int y = 0; y < bitmap.height(); ++y) {
+      const uint32_t* row = bitmap.getAddr32(0, y);
+      const bool is_row_decoded = y < step.num_decoded_rows;
+      for (int x = 0; x < bitmap.width(); ++x) {
+        // The input image is opaque. Pixels outside the decoded area are fully
+        // transparent black pixels, with each channel value being 0.
+        const bool is_pixel_decoded = row[x] != 0x00000000u;
+        ASSERT_EQ(is_pixel_decoded, is_row_decoded);
+      }
+    }
+    previous_size = step.size;
+  }
+}
+
 TEST(StaticAVIFTests, AlphaHasNoIspeProperty) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(ReadFile("/images/resources/avif/green-no-alpha-ispe.avif"),
                    true);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
+}
+
+TEST(StaticAVIFTests, UnsupportedTransferFunctionInColrProperty) {
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(
+      ReadFile("/images/resources/avif/red-unsupported-transfer.avif"), true);
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_TRUE(decoder->Failed());
 }

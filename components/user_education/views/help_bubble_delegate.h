@@ -40,13 +40,12 @@ class HelpBubbleDelegate {
 
   // These methods return color codes that will be handled by the app's theming
   // system.
-  virtual int GetHelpBubbleBackgroundColor() const = 0;
-  virtual int GetHelpBubbleForegroundColor() const = 0;
-  virtual int GetHelpBubbleDefaultButtonBackgroundColor() const = 0;
-  virtual int GetHelpBubbleDefaultButtonForegroundColor() const = 0;
-  virtual int GetHelpBubbleButtonBorderColor() const = 0;
-  virtual int GetHelpBubbleCloseButtonInkDropColor() const = 0;
   virtual ui::ColorId GetHelpBubbleBackgroundColorId() const = 0;
+  virtual ui::ColorId GetHelpBubbleForegroundColorId() const = 0;
+  virtual ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const = 0;
+  virtual ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const = 0;
+  virtual ui::ColorId GetHelpBubbleButtonBorderColorId() const = 0;
+  virtual ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const = 0;
 };
 
 }  // namespace user_education

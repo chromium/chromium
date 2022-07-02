@@ -116,7 +116,7 @@ void WebAppMenuModel::Build() {
   // Isolated apps shouldn't be opened in Chrome.
   bool is_isolated_app =
       web_contents &&
-      web_contents->GetMainFrame()->GetWebExposedIsolationLevel() >=
+      web_contents->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
           WebExposedIsolationLevel::kMaybeIsolatedApplication;
   if (!is_isolated_app)
     AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);

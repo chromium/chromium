@@ -67,18 +67,18 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
     NTPTilesInternalsMessageHandlerClient* client) {
   client_ = client;
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "update",
       base::BindRepeating(&NTPTilesInternalsMessageHandler::HandleUpdate,
                           base::Unretained(this)));
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "viewPopularSitesJson",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson,
@@ -86,19 +86,19 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
 }
 
 void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!client_->SupportsNTPTiles()) {
-    base::Value disabled(base::Value::Type::DICTIONARY);
-    disabled.SetBoolKey("topSites", false);
-    disabled.SetBoolKey("popular", false);
-    disabled.SetBoolKey("customLinks", false);
+    base::Value::Dict disabled;
+    disabled.Set("topSites", false);
+    disabled.Set("popular", false);
+    disabled.Set("customLinks", false);
     client_->CallJavascriptFunction("cr.webUIListenerCallback",
                                     base::Value("receive-source-info"),
-                                    disabled);
+                                    base::Value(std::move(disabled)));
     SendTiles(NTPTilesVector(), FaviconResultMap());
     return;
   }
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+  DCHECK_EQ(0u, args.size());
 
   popular_sites_json_.clear();
   most_visited_sites_ = client_->MakeMostVisitedSites();
@@ -107,13 +107,13 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void NTPTilesInternalsMessageHandler::HandleUpdate(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!client_->SupportsNTPTiles()) {
     return;
   }
 
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
-  const base::Value& dict = args->GetListDeprecated()[0];
+  DCHECK_EQ(1u, args.size());
+  const base::Value& dict = args[0];
   DCHECK(dict.is_dict());
 
   PrefService* prefs = client_->GetPrefs();
@@ -165,8 +165,8 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 }
 
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
-    const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  DCHECK_EQ(0u, args.size());
   if (!most_visited_sites_ ||
       !most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     return;
@@ -179,81 +179,79 @@ void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
 
 void NTPTilesInternalsMessageHandler::SendSourceInfo() {
   PrefService* prefs = client_->GetPrefs();
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
 
-  value.SetBoolKey("topSites",
-                   most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
-  value.SetBoolKey("customLinks", most_visited_sites_->DoesSourceExist(
-                                      TileSource::CUSTOM_LINKS));
+  value.Set("topSites",
+            most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
+  value.Set("customLinks",
+            most_visited_sites_->DoesSourceExist(TileSource::CUSTOM_LINKS));
 
   if (most_visited_sites_->DoesSourceExist(TileSource::POPULAR)) {
     auto* popular_sites = most_visited_sites_->popular_sites();
-    value.SetStringKey("popular.url", popular_sites->GetURLToFetch().spec());
-    value.SetStringKey("popular.directory",
-                       popular_sites->GetDirectoryToFetch());
-    value.SetStringKey("popular.country", popular_sites->GetCountryToFetch());
-    value.SetStringKey("popular.version", popular_sites->GetVersionToFetch());
+    value.Set("popular.url", popular_sites->GetURLToFetch().spec());
+    value.Set("popular.directory", popular_sites->GetDirectoryToFetch());
+    value.Set("popular.country", popular_sites->GetCountryToFetch());
+    value.Set("popular.version", popular_sites->GetVersionToFetch());
 
-    value.SetStringKey(
-        "popular.overrideURL",
-        prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideURL));
-    value.SetStringKey(
+    value.Set("popular.overrideURL",
+              prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideURL));
+    value.Set(
         "popular.overrideDirectory",
         prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideDirectory));
-    value.SetStringKey(
-        "popular.overrideCountry",
-        prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideCountry));
-    value.SetStringKey(
-        "popular.overrideVersion",
-        prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideVersion));
+    value.Set("popular.overrideCountry",
+              prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideCountry));
+    value.Set("popular.overrideVersion",
+              prefs->GetString(ntp_tiles::prefs::kPopularSitesOverrideVersion));
 
-    value.SetStringKey("popular.json", popular_sites_json_);
+    value.Set("popular.json", popular_sites_json_);
   } else {
-    value.SetBoolKey("popular", false);
+    value.Set("popular", false);
   }
 
   client_->CallJavascriptFunction("cr.webUIListenerCallback",
-                                  base::Value("receive-source-info"), value);
+                                  base::Value("receive-source-info"),
+                                  base::Value(std::move(value)));
 }
 
 void NTPTilesInternalsMessageHandler::SendTiles(
     const NTPTilesVector& tiles,
     const FaviconResultMap& result_map) {
-  base::Value sites_list(base::Value::Type::LIST);
+  base::Value::List sites_list;
   for (const NTPTile& tile : tiles) {
-    base::Value entry(base::Value::Type::DICTIONARY);
-    entry.SetStringKey("title", tile.title);
-    entry.SetStringKey("url", tile.url.spec());
-    entry.SetIntKey("source", static_cast<int>(tile.source));
+    base::Value::Dict entry;
+    entry.Set("title", tile.title);
+    entry.Set("url", tile.url.spec());
+    entry.Set("source", static_cast<int>(tile.source));
     if (tile.source == TileSource::CUSTOM_LINKS) {
-      entry.SetBoolKey("fromMostVisited", tile.from_most_visited);
+      entry.Set("fromMostVisited", tile.from_most_visited);
     }
 
-    base::Value icon_list(base::Value::Type::LIST);
+    base::Value::List icon_list;
     for (const auto& type_and_name : kIconTypesAndNames) {
       auto it = result_map.find(
           FaviconResultMap::key_type(tile.url, type_and_name.type_enum));
 
       if (it != result_map.end()) {
         const favicon_base::FaviconRawBitmapResult& result = it->second;
-        base::Value icon(base::Value::Type::DICTIONARY);
-        icon.SetStringKey("url", result.icon_url.spec());
-        icon.SetStringKey("type", type_and_name.type_name);
-        icon.SetBoolKey("onDemand", !result.fetched_because_of_page_visit);
-        icon.SetIntKey("width", result.pixel_size.width());
-        icon.SetIntKey("height", result.pixel_size.height());
+        base::Value::Dict icon;
+        icon.Set("url", result.icon_url.spec());
+        icon.Set("type", type_and_name.type_name);
+        icon.Set("onDemand", !result.fetched_because_of_page_visit);
+        icon.Set("width", result.pixel_size.width());
+        icon.Set("height", result.pixel_size.height());
         icon_list.Append(std::move(icon));
       }
     }
-    entry.SetKey("icons", std::move(icon_list));
+    entry.Set("icons", std::move(icon_list));
 
     sites_list.Append(std::move(entry));
   }
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetKey("sites", std::move(sites_list));
+  base::Value::Dict result;
+  result.Set("sites", std::move(sites_list));
   client_->CallJavascriptFunction("cr.webUIListenerCallback",
-                                  base::Value("receive-sites"), result);
+                                  base::Value("receive-sites"),
+                                  base::Value(std::move(result)));
 }
 
 void NTPTilesInternalsMessageHandler::OnURLsAvailable(

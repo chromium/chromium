@@ -14,6 +14,7 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -21,6 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -34,7 +37,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
@@ -303,6 +305,17 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
   }
 
+  if (bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
+    vm_name = l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+    vm_names.emplace_back(bruschetta::kBruschettaVmName);
+    vm_names_in_notification.emplace_back(vm_name);
+    settings_sub_page =
+        chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
+  }
+
   DCHECK(vm_names_in_notification.size());
   std::u16string message = l10n_util::GetStringFUTF16(
       IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label,
@@ -317,7 +330,8 @@ void ShowNotificationForDevice(const std::string& guid,
       l10n_util::GetStringUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE),
       message, ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierUsb),
+                                 kNotifierUsb,
+                                 NotificationCatalogName::kCrosUSBDetector),
       rich_notification_data,
       base::MakeRefCounted<CrosUsbNotificationDelegate>(
           notification_id, guid, std::move(vm_names),
@@ -434,9 +448,7 @@ CrosUsbDetector::CrosUsbDetector() {
   fastboot_device_filter_->protocol_code = kFastbootProtocol;
 
   ConciergeClient::Get()->AddVmObserver(this);
-  chromeos::DBusThreadManager::Get()
-      ->GetVmPluginDispatcherClient()
-      ->AddObserver(this);
+  VmPluginDispatcherClient::Get()->AddObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
 }
 
@@ -444,9 +456,7 @@ CrosUsbDetector::~CrosUsbDetector() {
   DCHECK_EQ(this, g_cros_usb_detector);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
-  chromeos::DBusThreadManager::Get()
-      ->GetVmPluginDispatcherClient()
-      ->RemoveObserver(this);
+  VmPluginDispatcherClient::Get()->RemoveObserver(this);
   g_cros_usb_detector = nullptr;
 }
 

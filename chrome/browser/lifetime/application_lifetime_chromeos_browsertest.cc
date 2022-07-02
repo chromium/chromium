@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -27,11 +27,14 @@ namespace chrome {
 class ApplicationLifetimeTest : public InProcessBrowserTest,
                                 public BrowserListObserver {
  public:
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient;
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<ash::UpdateEngineClient>(fake_update_engine_client_));
     BrowserList::AddObserver(this);
   }
 
@@ -80,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
 
   // Session Manager is not going to stop session.
   EXPECT_FALSE(IsAttemptingShutdown());
-  auto* fake_session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* fake_session_manager_client = ash::FakeSessionManagerClient::Get();
   EXPECT_FALSE(fake_session_manager_client->session_stopped());
 
   // No reboot requested.
@@ -103,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
 
   // Session Manager is not going to stop session.
   EXPECT_FALSE(IsAttemptingShutdown());
-  auto* fake_session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* fake_session_manager_client = ash::FakeSessionManagerClient::Get();
   EXPECT_FALSE(fake_session_manager_client->session_stopped());
 
   // No reboot requested via power manager.
@@ -126,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest, AttemptRelaunchRelaunchesOs) {
 
   // Session Manager is not going to stop session.
   EXPECT_FALSE(IsAttemptingShutdown());
-  auto* fake_session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* fake_session_manager_client = ash::FakeSessionManagerClient::Get();
   EXPECT_FALSE(fake_session_manager_client->session_stopped());
 
   // Reboot has been requested.
@@ -147,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
 
   // Session Manager has received stop session request.
   EXPECT_TRUE(IsAttemptingShutdown());
-  auto* fake_session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* fake_session_manager_client = ash::FakeSessionManagerClient::Get();
   EXPECT_TRUE(fake_session_manager_client->session_stopped());
 
   // No reboot requested.

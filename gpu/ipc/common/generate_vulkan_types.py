@@ -1,15 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import filecmp
-import optparse
-import os.path
+import os
 import platform
 import re
 import subprocess
 import sys
+import typing
 
 from xml.etree import ElementTree
 
@@ -74,12 +75,12 @@ _handles = set([])
 _generated_types = []
 
 
-def ValueNameToVALUE_NAME(name):
+def ValueNameToVALUE_NAME(name: str) -> str:
   return re.sub(
     r'(?<=[a-z])[A-Z]|(?<!^)[A-Z](?=[a-z])', r"_\g<0>", name).upper()
 
 
-def ParseEnums(reg):
+def ParseEnums(reg: re.Pattern) -> None:
   for type_elm in reg.findall("enums"):
     name = type_elm.get("name")
     if name == "API Constants":
@@ -112,19 +113,19 @@ def ParseEnums(reg):
     _enums[name] = values
 
 
-def ParseHandleElement(element):
+def ParseHandleElement(element: ElementTree.Element) -> None:
   name = element.get("name") or element.find("name").text
   _handles.add(name)
 
 
-def ParseBaseTypeElement(element):
+def ParseBaseTypeElement(element: ElementTree.Element) -> None:
   name = element.find("name").text
   _type = None if element.find("type") is None else element.find("type").text
   if name not in _type_map:
     _type_map[name] = _type
 
 
-def ParseBitmaskElement(element):
+def ParseBitmaskElement(element: ElementTree.Element) -> None:
   name = element.find("name")
   if name is not None:
     name = name.text
@@ -132,7 +133,7 @@ def ParseBitmaskElement(element):
     _type_map[name] = _type
 
 
-def ParseStructElement(element):
+def ParseStructElement(element: ElementTree.Element) -> None:
   name = element.get("name") or element.find("name").text
   members = []
   for member in element.findall("member"):
@@ -149,7 +150,7 @@ def ParseStructElement(element):
   _structs[name] = members
 
 
-def ParseTypes(reg):
+def ParseTypes(reg: re.Pattern) -> None:
   for type_elm in reg.findall("types/type"):
     category = type_elm.get("category")
     if category == "handle":
@@ -162,14 +163,14 @@ def ParseTypes(reg):
       ParseStructElement(type_elm)
 
 
-def ParseVkXMLFile(path):
+def ParseVkXMLFile(path: str) -> None:
   tree = ElementTree.parse(path)
   reg = tree.getroot()
   ParseEnums(reg)
   ParseTypes(reg)
 
 
-def WriteMojomEnum(name, mojom_file):
+def WriteMojomEnum(name: str, mojom_file: typing.IO) -> None:
   if name in _generated_types:
     return
   _generated_types.append(name)
@@ -183,7 +184,7 @@ def WriteMojomEnum(name, mojom_file):
   mojom_file.write("};\n")
 
 
-def WriteMojomStruct(name, mojom_file):
+def WriteMojomStruct(name: str, mojom_file: typing.IO) -> None:
   if name in _generated_types:
     return
   _generated_types.append(name)
@@ -219,7 +220,7 @@ def WriteMojomStruct(name, mojom_file):
   mojom_file.write("};\n")
 
 
-def WriteMojomTypes(types, mojom_file):
+def WriteMojomTypes(types: typing.Iterable[str], mojom_file: typing.IO) -> None:
   for t in types:
     if t in _structs:
       WriteMojomStruct(t, mojom_file)
@@ -229,7 +230,7 @@ def WriteMojomTypes(types, mojom_file):
       pass
 
 
-def GenerateMojom(mojom_file):
+def GenerateMojom(mojom_file: typing.IO) -> None:
   mojom_file.write(
 '''// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -246,7 +247,7 @@ module gpu.mojom;
   WriteMojomTypes(_STRUCTS, mojom_file)
 
 
-def NormalizedCamelCase(identifier):
+def NormalizedCamelCase(identifier: str) -> None:
   result = identifier[0].upper()
   lowercase_next = True
   for i in range(1, len(identifier)):
@@ -262,7 +263,9 @@ def NormalizedCamelCase(identifier):
   return result
 
 
-def WriteStructTraits(name, traits_header_file, traits_source_file):
+def WriteStructTraits(name: str,
+                      traits_header_file: typing.IO,
+                      traits_source_file: typing.IO) -> None:
   traits_header_file.write(
 """
 template <>
@@ -367,7 +370,7 @@ bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
   traits_header_file.write("};\n")
 
 
-def WriteEnumTraits(name, traits_header_file):
+def WriteEnumTraits(name: str, traits_header_file: typing.IO) -> None:
   traits_header_file.write(
 """
 template <>
@@ -416,7 +419,8 @@ struct EnumTraits<gpu::mojom::%s, %s> {
 
 
 
-def GenerateTraitsFile(traits_header_file, traits_source_file):
+def GenerateTraitsFile(traits_header_file: typing.IO,
+                       traits_source_file: typing.IO) -> None:
   traits_header_file.write(
 """// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -472,7 +476,7 @@ namespace mojo {
 }  // namespace mojo""")
 
 
-def GenerateTypemapFile(typemap_file):
+def GenerateTypemapFile(typemap_file: typing.IO) -> None:
   typemap_file.write(
 """# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -493,24 +497,24 @@ generated_vulkan_type_mappings = [""")
   typemap_file.write("\n]\n")
 
 
-def main(argv):
+def main() -> int:
   """This is the main function."""
 
-  parser = optparse.OptionParser()
-  parser.add_option(
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
       "--output-dir",
       help="Output directory for generated files. Defaults to this script's "
       "directory.")
-  parser.add_option(
+  parser.add_argument(
       "-c", "--check", action="store_true",
       help="Check if output files match generated files in chromium root "
       "directory. Use this in PRESUBMIT scripts with --output-dir.")
 
-  (options, _) = parser.parse_args(args=argv)
+  args = parser.parse_args()
 
   # Support generating files for PRESUBMIT.
-  if options.output_dir:
-    output_dir = options.output_dir
+  if args.output_dir:
+    output_dir = args.output_dir
   else:
     output_dir = _SELF_LOCATION
 
@@ -527,17 +531,17 @@ def main(argv):
 
   mojom_file_name = "vulkan_types.mojom"
   mojom_file = open(
-      os.path.join(output_dir, mojom_file_name), 'wb')
+      os.path.join(output_dir, mojom_file_name), 'w', newline='')
   GenerateMojom(mojom_file)
   mojom_file.close()
   ClangFormat(mojom_file.name)
 
   traits_header_file_name = "vulkan_types_mojom_traits.h"
   traits_header_file = \
-      open(os.path.join(output_dir, traits_header_file_name), 'wb')
+      open(os.path.join(output_dir, traits_header_file_name), 'w', newline='')
   traits_source_file_name = "vulkan_types_mojom_traits.cc"
   traits_source_file = \
-      open(os.path.join(output_dir, traits_source_file_name), 'wb')
+      open(os.path.join(output_dir, traits_source_file_name), 'w', newline='')
   GenerateTraitsFile(traits_header_file, traits_source_file)
   traits_header_file.close()
   ClangFormat(traits_header_file.name)
@@ -546,12 +550,12 @@ def main(argv):
 
   typemap_file_name = "generated_vulkan_type_mappings.gni"
   typemap_file = open(
-      os.path.join(output_dir, typemap_file_name), 'wb')
+      os.path.join(output_dir, typemap_file_name), 'w', newline='')
   GenerateTypemapFile(typemap_file)
   typemap_file.close()
 
   check_failed_filenames = []
-  if options.check:
+  if args.check:
     for filename in [mojom_file_name, traits_header_file_name,
                      traits_source_file_name, typemap_file_name]:
       if not filecmp.cmp(os.path.join(output_dir, filename),
@@ -559,14 +563,14 @@ def main(argv):
         check_failed_filenames.append(filename)
 
   if len(check_failed_filenames) > 0:
-    print 'Please run gpu/ipc/common/generate_vulkan_types.py'
-    print 'Failed check on generated files:'
+    print('Please run gpu/ipc/common/generate_vulkan_types.py')
+    print('Failed check on generated files:')
     for filename in check_failed_filenames:
-      print filename
+      print(filename)
     return 1
 
   return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv))
+  sys.exit(main())

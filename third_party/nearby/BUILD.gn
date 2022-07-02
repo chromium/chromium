@@ -29,25 +29,12 @@ config("nearby_defines") {
 # src/internal/analytics
 ###############################################################################
 # src/internal/analytics
-source_set("analytics") {
+source_set("analytics_event_logger") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/internal/analytics/analytics_recorder.cc" ]
-  public = [ "src/internal/analytics/analytics_recorder.h" ]
-  public_deps = [
-    ":connections_enums_proto",
-    ":connections_event_logger",
-    ":connections_log_proto",
-    ":connections_types",
-    ":error_code_enums_proto",
-    ":platform_base",
-    ":platform_base_error_code_recorder",
-    ":platform_public_logging",
-    ":platform_public_types",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public = [ "src/internal/analytics/event_logger.h" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -64,8 +51,8 @@ source_set("connections") {
   sources = [ "src/connections/core.cc" ]
   public = [ "src/connections/core.h" ]
   public_deps = [
+    ":analytics_event_logger",
     ":connections_enums_proto",
-    ":connections_event_logger",
     ":connections_implementation",
     ":connections_types",
     ":platform_public_comm",
@@ -86,6 +73,7 @@ source_set("connections_types") {
     "src/connections/connection_options.cc",
     "src/connections/discovery_options.cc",
     "src/connections/payload.cc",
+    "src/connections/status.cc",
     "src/connections/strategy.cc",
   ]
   public = [
@@ -112,16 +100,6 @@ source_set("connections_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-source_set("connections_event_logger") {
-  public_configs = [
-    ":nearby_include_config",
-    ":nearby_defines",
-  ]
-  public = [ "src/connections/event_logger.h" ]
-  public_deps = [ ":connections_log_proto" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}
 
 # src/connections/implementation
 source_set("connections_implementation") {
@@ -135,6 +113,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/base_pcp_handler.cc",
     "src/connections/implementation/ble_advertisement.cc",
     "src/connections/implementation/ble_endpoint_channel.cc",
+    "src/connections/implementation/ble_v2_endpoint_channel.cc",
     "src/connections/implementation/bluetooth_bwu_handler.cc",
     "src/connections/implementation/bluetooth_device_name.cc",
     "src/connections/implementation/bluetooth_endpoint_channel.cc",
@@ -169,6 +148,7 @@ source_set("connections_implementation") {
     "src/connections/implementation/base_pcp_handler.h",
     "src/connections/implementation/ble_advertisement.h",
     "src/connections/implementation/ble_endpoint_channel.h",
+    "src/connections/implementation/ble_v2_endpoint_channel.h",
     "src/connections/implementation/bluetooth_bwu_handler.h",
     "src/connections/implementation/bluetooth_device_name.h",
     "src/connections/implementation/bluetooth_endpoint_channel.h",
@@ -204,8 +184,8 @@ source_set("connections_implementation") {
     "src/connections/implementation/wifi_lan_service_info.h",
   ]
   public_deps = [
-    ":analytics",
     ":connections_enums_proto",
+    ":connections_implementation_analytics",
     ":connections_implementation_mediums",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
@@ -238,6 +218,30 @@ source_set("connections_test_util") {
   ]
 }
 
+# src/connections/implementation/analytics
+source_set("connections_implementation_analytics") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/connections/implementation/analytics/analytics_recorder.cc" ]
+  public = [ "src/connections/implementation/analytics/analytics_recorder.h" ]
+  public_deps = [
+    ":analytics_event_logger",
+    ":connections_enums_proto",
+    ":connections_log_proto",
+    ":connections_types",
+    ":error_code_enums_proto",
+    ":platform_base",
+    ":platform_base_error_code_recorder",
+    ":platform_public_logging",
+    ":platform_public_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # src/connections/implementation/mediums
 source_set("connections_implementation_mediums") {
   public_configs = [
@@ -246,32 +250,36 @@ source_set("connections_implementation_mediums") {
   ]
   sources = [
     "src/connections/implementation/mediums/ble.cc",
+    "src/connections/implementation/mediums/ble_v2.cc",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.cc",
     "src/connections/implementation/mediums/ble_v2/ble_advertisement.cc",
     "src/connections/implementation/mediums/ble_v2/ble_advertisement_header.cc",
     "src/connections/implementation/mediums/ble_v2/ble_packet.cc",
+    "src/connections/implementation/mediums/ble_v2/ble_utils.cc",
     "src/connections/implementation/mediums/ble_v2/bloom_filter.cc",
+    "src/connections/implementation/mediums/ble_v2/discovered_peripheral_tracker.cc",
     "src/connections/implementation/mediums/bluetooth_classic.cc",
     "src/connections/implementation/mediums/bluetooth_radio.cc",
     "src/connections/implementation/mediums/mediums.cc",
-    "src/connections/implementation/mediums/uuid.cc",
     "src/connections/implementation/mediums/webrtc.cc",
     "src/connections/implementation/mediums/wifi_hotspot.cc",
     "src/connections/implementation/mediums/wifi_lan.cc",
   ]
   public = [
     "src/connections/implementation/mediums/ble.h",
+    "src/connections/implementation/mediums/ble_v2.h",
     "src/connections/implementation/mediums/ble_v2/advertisement_read_result.h",
     "src/connections/implementation/mediums/ble_v2/ble_advertisement.h",
     "src/connections/implementation/mediums/ble_v2/ble_advertisement_header.h",
     "src/connections/implementation/mediums/ble_v2/ble_packet.h",
-    "src/connections/implementation/mediums/ble_v2/ble_peripheral.h",
+    "src/connections/implementation/mediums/ble_v2/ble_utils.h",
     "src/connections/implementation/mediums/ble_v2/bloom_filter.h",
+    "src/connections/implementation/mediums/ble_v2/discovered_peripheral_callback.h",
+    "src/connections/implementation/mediums/ble_v2/discovered_peripheral_tracker.h",
     "src/connections/implementation/mediums/bluetooth_classic.h",
     "src/connections/implementation/mediums/bluetooth_radio.h",
     "src/connections/implementation/mediums/lost_entity_tracker.h",
     "src/connections/implementation/mediums/mediums.h",
-    "src/connections/implementation/mediums/uuid.h",
     "src/connections/implementation/mediums/webrtc.h",
     "src/connections/implementation/mediums/wifi_hotspot.h",
     "src/connections/implementation/mediums/wifi_lan.h",
@@ -391,6 +399,7 @@ source_set("platform_api_comm") {
     ":offline_wire_formats_proto",
     ":platform_base",
     ":platform_base_cancellation_flag",
+    ":platform_base_uuid",
     "//third_party/abseil-cpp:absl",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -407,7 +416,6 @@ source_set("platform_api_types") {
     "src/internal/platform/implementation/atomic_reference.h",
     "src/internal/platform/implementation/cancelable.h",
     "src/internal/platform/implementation/condition_variable.h",
-    "src/internal/platform/implementation/count_down_latch.h",
     "src/internal/platform/implementation/crypto.h",
     "src/internal/platform/implementation/executor.h",
     "src/internal/platform/implementation/future.h",
@@ -494,6 +502,17 @@ source_set("platform_base_error_code_recorder") {
     ":error_code_enums_proto",
     ":platform_base_logging",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+source_set("platform_base_uuid") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/internal/platform/uuid.cc" ]
+  public = [ "src/internal/platform/uuid.h" ]
+  public_deps = [ ":platform_api_types" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -620,23 +639,28 @@ source_set("platform_public_comm") {
   ]
   sources = [
     "src/internal/platform/ble.cc",
+    "src/internal/platform/ble_v2.cc",
     "src/internal/platform/bluetooth_classic.cc",
     "src/internal/platform/file.cc",
     "src/internal/platform/wifi_hotspot.cc",
     "src/internal/platform/wifi_lan.cc",
+    "src/internal/platform/wifi_utils.cc",
   ]
   public = [
     "src/internal/platform/ble.h",
+    "src/internal/platform/ble_v2.h",
     "src/internal/platform/bluetooth_adapter.h",
     "src/internal/platform/bluetooth_classic.h",
     "src/internal/platform/webrtc.h",
     "src/internal/platform/wifi_hotspot.h",
     "src/internal/platform/wifi_lan.h",
+    "src/internal/platform/wifi_utils.h",
   ]
   public_deps = [
     ":platform_api_comm",
     ":platform_api_platform",
     ":platform_base",
+    ":platform_base_uuid",
     ":platform_public_logging",
     ":platform_public_types",
     "//third_party/abseil-cpp:absl",

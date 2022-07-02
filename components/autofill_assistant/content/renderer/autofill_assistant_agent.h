@@ -47,6 +47,14 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                         bool ignore_objective,
                         base::TimeDelta model_timeout,
                         GetSemanticNodesCallback callback) override;
+  void SetElementValue(int32_t backend_node_id,
+                       const std::u16string& value,
+                       bool send_events,
+                       SetElementValueCallback callback) override;
+  void SetElementChecked(int32_t backend_node_id,
+                         bool checked,
+                         bool send_events,
+                         SetElementCheckedCallback callback) override;
 
  private:
   // content::RenderFrameObserver:

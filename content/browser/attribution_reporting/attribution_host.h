@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -18,7 +16,6 @@
 
 namespace content {
 
-class AttributionManagerProvider;
 class WebContents;
 
 // Class responsible for listening to conversion events originating from blink,
@@ -53,6 +50,7 @@ class CONTENT_EXPORT AttributionHost
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // Notifies the `AttributionDataHostManager` that a navigation with an
@@ -73,10 +71,6 @@ class CONTENT_EXPORT AttributionHost
   // expected to be very small in a given WebContents.
   using NavigationImpressionOriginMap = base::flat_map<int64_t, url::Origin>;
   NavigationImpressionOriginMap navigation_impression_origins_;
-
-  // Gives access to a AttributionManager implementation to forward impressions
-  // and conversion registrations to.
-  std::unique_ptr<AttributionManagerProvider> attribution_manager_provider_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
 

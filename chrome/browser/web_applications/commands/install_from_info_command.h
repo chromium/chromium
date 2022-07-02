@@ -53,7 +53,7 @@ class InstallFromInfoCommand : public WebAppCommand {
   ~InstallFromInfoCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   base::Value ToDebugValue() const override;

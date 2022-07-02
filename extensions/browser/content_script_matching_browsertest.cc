@@ -208,7 +208,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   content::RenderFrameHost* tab1_fooFrame() {
     EXPECT_TRUE(tab1_);
-    return tab1_->GetMainFrame();
+    return tab1_->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* tab1_fooBlankFrame() {
@@ -234,7 +234,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   content::RenderFrameHost* tab2_barBlankFrame1() {
     EXPECT_TRUE(tab2_);
-    return tab2_->GetMainFrame();
+    return tab2_->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* tab2_barBlankFrame2() {

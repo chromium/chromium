@@ -18,6 +18,8 @@
 
 namespace blink {
 
+namespace {
+
 // Determine if filter is stable based on the feedback coefficients.
 // We compute the reflection coefficients for the filter.  If, at any
 // point, the magnitude of the reflection coefficient is greater than
@@ -32,7 +34,7 @@ namespace blink {
 //
 // stopping at A[1](z).  If at any point |k[n]| >= 1, the filter is
 // unstable.
-static bool IsFilterStable(const Vector<double>& feedback_coef) {
+bool IsFilterStable(const Vector<double>& feedback_coef) {
   // Make a copy of the feedback coefficients
   Vector<double> coef(feedback_coef);
   int order = coef.size() - 1;
@@ -66,6 +68,8 @@ static bool IsFilterStable(const Vector<double>& feedback_coef) {
   return true;
 }
 
+}  // namespace
+
 IIRFilterNode::IIRFilterNode(BaseAudioContext& context,
                              const Vector<double>& feedforward_coef,
                              const Vector<double>& feedback_coef,
@@ -76,8 +80,8 @@ IIRFilterNode::IIRFilterNode(BaseAudioContext& context,
                                       is_filter_stable));
 
   // Histogram of the IIRFilter order.  createIIRFilter ensures that the length
-  // of |feedbackCoef| is in the range [1, IIRFilter::kMaxOrder + 1].  The order
-  // is one less than the length of this vector.
+  // of `feedback_coef` is in the range [1, IIRFilter::kMaxOrder + 1].  The
+  // order is one less than the length of this vector.
   base::UmaHistogramSparse("WebAudio.IIRFilterNode.Order",
                            feedback_coef.size() - 1);
 }
@@ -192,7 +196,7 @@ void IIRFilterNode::getFrequencyResponse(
   size_t frequency_hz_length = frequency_hz->length();
 
   // All the arrays must have the same length.  Just verify that all
-  // the arrays have the same length as the |frequency_hz| array.
+  // the arrays have the same length as the `frequency_hz` array.
   if (mag_response->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,

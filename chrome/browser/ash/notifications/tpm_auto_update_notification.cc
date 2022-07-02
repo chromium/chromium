@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -54,7 +55,8 @@ void ShowAutoUpdateNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, notification_id),
+              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+              NotificationCatalogName::kTPMAutoUpdate),
           message_center::RichNotificationData(),
           new message_center::NotificationDelegate(),
           vector_icons::kBusinessIcon,

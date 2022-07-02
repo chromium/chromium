@@ -61,6 +61,24 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getOsVersionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOsVersionInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getOsVersionInfo. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function getStatefulPartitionInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getStatefulPartitionInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getStatefulPartitionInfo.' +
+            ' %s'
+        );
+        chrome.test.succeed();
+      },
       async function getVpdInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getVpdInfo(),
@@ -90,6 +108,20 @@ std::string GetServiceWorkerForError(const std::string& error) {
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.getRoutineUpdate. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function runAcPowerRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runAcPowerRoutine(
+              {
+                expected_status: "connected",
+                expected_power_type: "ac_power"
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runAcPowerRoutine. ' +
             '%s'
         );
         chrome.test.succeed();

@@ -32,7 +32,7 @@ const WhatsNewBrowserTest = class extends PolymerTest {
 var WhatsNewAppTest = class extends WhatsNewBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://whats-new/test_loader.html?module=whats_new/whats_new_app_test.js&host=webui-test';
+    return 'chrome://whats-new/test_loader.html?module=whats_new/whats_new_app_test.js';
   }
 };
 

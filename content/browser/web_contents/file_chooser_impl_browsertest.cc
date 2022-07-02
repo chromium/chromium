@@ -23,7 +23,7 @@ using FileChooserImplBrowserTest = ContentBrowserTest;
 IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, FileChooserAfterRfhDeath) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   mojo::Remote<blink::mojom::FileChooser> chooser =
       FileChooserImpl::CreateBoundForTesting(rfh);
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
   shell()->web_contents()->SetDelegate(delegate.get());
 
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
   auto* chooser = chooser_and_remote.first;
 
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
   shell()->web_contents()->SetDelegate(delegate.get());
 
   auto* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
   auto* chooser = chooser_and_remote.first;
 

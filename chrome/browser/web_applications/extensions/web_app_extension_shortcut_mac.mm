@@ -153,9 +153,7 @@ void ShowCreateChromeAppShortcutsDialog(
   // the user anything. Just create shortcuts.
   CreateShortcuts(web_app::SHORTCUT_CREATION_BY_USER,
                   web_app::ShortcutLocations(), profile, app,
-                  base::DoNothing());
-  if (!close_callback.is_null())
-    std::move(close_callback).Run(true);
+                  base::BindOnce(std::move(close_callback)));
 }
 
 void ShowCreateChromeAppShortcutsDialog(
@@ -167,9 +165,7 @@ void ShowCreateChromeAppShortcutsDialog(
   // the user anything. Just create shortcuts.
   CreateShortcutsForWebApp(web_app::SHORTCUT_CREATION_BY_USER,
                            web_app::ShortcutLocations(), profile, app_id,
-                           base::DoNothing());
-  if (!close_callback.is_null())
-    std::move(close_callback).Run(true);
+                           base::BindOnce(std::move(close_callback)));
 }
 
 }  // namespace chrome

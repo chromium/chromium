@@ -434,6 +434,14 @@ void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
   ShowFramebustBlockInfobarInternal(web_contents, blocked_url);
 }
 
+void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
+    content::WebContents* web_contents) {
+  auto* intercept_navigation_delegate =
+      navigation_interception::InterceptNavigationDelegate::Get(web_contents);
+  if (intercept_navigation_delegate)
+    intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
+}
+
 content::PictureInPictureResult
 TabWebContentsDelegateAndroid::EnterPictureInPicture(
     content::WebContents* web_contents) {
@@ -630,7 +638,7 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   if (base::RandDouble() < 0.01)
-    web_contents->GetMainFrame()->GetProcess()->DumpProcessStack();
+    web_contents->GetPrimaryMainFrame()->GetProcess()->DumpProcessStack();
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableHungRendererInfoBar)) {
@@ -641,7 +649,7 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   DCHECK(!FindHungRendererInfoBar(infobar_manager));
   HungRendererInfoBarDelegate::Create(
-      infobar_manager, web_contents->GetMainFrame()->GetProcess());
+      infobar_manager, web_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
 void JNI_TabWebContentsDelegateAndroidImpl_OnRendererResponsive(

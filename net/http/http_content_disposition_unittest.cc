@@ -201,11 +201,10 @@ TEST(HttpContentDispositionTest, Filename) {
     {"attachment; foobar=x; filename=\"foo.html\"", "",
       L"foo.html"},
   };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    HttpContentDisposition header(tests[i].header, tests[i].referrer_charset);
-    EXPECT_EQ(tests[i].expected,
-        base::UTF8ToWide(header.filename()))
-        << "Failed on input: " << tests[i].header;
+  for (const auto& test : tests) {
+    HttpContentDisposition header(test.header, test.referrer_charset);
+    EXPECT_EQ(test.expected, base::UTF8ToWide(header.filename()))
+        << "Failed on input: " << test.header;
   }
 }
 
@@ -414,12 +413,12 @@ TEST(HttpContentDispositionTest, tc2231) {
       // TODO(abarth): http://greenbytes.de/tech/tc2231/#attrfc2047token
       // TODO(abarth): http://greenbytes.de/tech/tc2231/#attrfc2047quoted
   };
-  for (size_t i = 0; i < std::size(tests); ++i) {
-    HttpContentDisposition header(tests[i].header, std::string());
-    EXPECT_EQ(tests[i].expected_type, header.type())
-        << "Failed on input: " << tests[i].header;
-    EXPECT_EQ(tests[i].expected_filename, base::UTF8ToWide(header.filename()))
-        << "Failed on input: " << tests[i].header;
+  for (const auto& test : tests) {
+    HttpContentDisposition header(test.header, std::string());
+    EXPECT_EQ(test.expected_type, header.type())
+        << "Failed on input: " << test.header;
+    EXPECT_EQ(test.expected_filename, base::UTF8ToWide(header.filename()))
+        << "Failed on input: " << test.header;
   }
 }
 

@@ -65,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -123,11 +123,11 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (bus) {
     chromeos::hermes_clients::Initialize(bus);
-    chromeos::CrasAudioClient::Initialize(bus);
+    ash::CrasAudioClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
     chromeos::hermes_clients::InitializeFakes();
-    chromeos::CrasAudioClient::InitializeFake();
+    ash::CrasAudioClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }
 
@@ -302,7 +302,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   chromeos::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  ash::CrasAudioClient::Shutdown();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

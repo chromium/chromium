@@ -69,12 +69,12 @@ DialogOriginRelationship GetDialogOriginRelationship(
     content::WebContents* web_contents,
     content::RenderFrameHost* alerting_frame) {
   url::Origin main_frame_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   if (!main_frame_origin.GetURL().SchemeIsHTTPOrHTTPS())
     return DialogOriginRelationship::NON_HTTP_MAIN_FRAME;
 
-  if (alerting_frame == web_contents->GetMainFrame())
+  if (alerting_frame == web_contents->GetPrimaryMainFrame())
     return DialogOriginRelationship::HTTP_MAIN_FRAME;
 
   url::Origin alerting_frame_origin = alerting_frame->GetLastCommittedOrigin();
@@ -377,8 +377,9 @@ void TabModalDialogManager::LogDialogDismissalCause(DismissalCause cause) {
   // WebContents that had the alert call in it. For 99.9999% of cases they're
   // the same, but for instances like the <webview> tag in extensions and PDF
   // files that alert they may differ.
-  ukm::SourceId source_id =
-      WebContentsObserver::web_contents()->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id = WebContentsObserver::web_contents()
+                                ->GetPrimaryMainFrame()
+                                ->GetPageUkmSourceId();
   if (source_id != ukm::kInvalidSourceId) {
     ukm::builders::AbusiveExperienceHeuristic_JavaScriptDialog(source_id)
         .SetDismissalCause(static_cast<int64_t>(cause))

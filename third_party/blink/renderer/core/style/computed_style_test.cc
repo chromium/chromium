@@ -141,7 +141,7 @@ TEST_F(ComputedStyleTest,
 }
 
 TEST_F(ComputedStyleTest,
-       UpdatePropertySpecificDifferencesCompositingReasonsTransforom) {
+       UpdatePropertySpecificDifferencesCompositingReasonsTransform) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
@@ -159,6 +159,36 @@ TEST_F(ComputedStyleTest,
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_FALSE(diff.TransformChanged());
   EXPECT_TRUE(diff.CompositingReasonsChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsScaleAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentScaleAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsRotateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentRotateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsTranslateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentTranslateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
 }
 
 TEST_F(ComputedStyleTest,
@@ -429,11 +459,17 @@ TEST_F(ComputedStyleTest, BorderStyle) {
 TEST_F(ComputedStyleTest, AnimationFlags) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentTranslateAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTranslateAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningOpacityAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningFilterAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningBackdropFilterAnimationOnCompositor);
@@ -636,7 +672,8 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -669,7 +706,8 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -711,7 +749,8 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
@@ -746,7 +785,8 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(1.5);
@@ -928,7 +968,8 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(2);
@@ -976,7 +1017,8 @@ TEST_F(ComputedStyleTest,
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
@@ -1016,7 +1058,8 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
@@ -1124,7 +1167,8 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
       document.GetStyleResolver().InitialStyleForElement();
 
   StyleResolverState state(document, *document.documentElement(),
-                           StyleRecalcContext(), StyleRequest(initial.get()));
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);

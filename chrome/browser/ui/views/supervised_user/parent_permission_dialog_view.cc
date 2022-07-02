@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -240,10 +241,10 @@ class ParentPermissionInputSection : public views::TextfieldController {
   base::CallbackListSubscription parent_1_subscription_;
 
   // The credential input field.
-  views::Textfield* credential_input_field_ = nullptr;
+  raw_ptr<views::Textfield> credential_input_field_ = nullptr;
 
   // Owned by the parent view class, not this class.
-  ParentPermissionDialogView* main_view_;
+  raw_ptr<ParentPermissionDialogView> main_view_;
 };
 
 struct ParentPermissionDialogView::Params {
@@ -258,10 +259,10 @@ struct ParentPermissionDialogView::Params {
   std::u16string message;
 
   // An optional extension whose permissions should be displayed
-  const extensions::Extension* extension = nullptr;
+  raw_ptr<const extensions::Extension> extension = nullptr;
 
   // The user's profile
-  Profile* profile = nullptr;
+  raw_ptr<Profile> profile = nullptr;
 
   // The parent window to this window. This member may be nullptr.
   gfx::NativeWindow window = nullptr;
@@ -538,7 +539,7 @@ void ParentPermissionDialogView::ShowDialog() {
           kOpened);
 
   if (params_->extension)
-    InitializeExtensionData(params_->extension);
+    InitializeExtensionData(params_->extension.get());
   else
     ShowDialogInternal();
 }
@@ -834,7 +835,7 @@ class ParentPermissionDialogImpl : public ParentPermissionDialog,
   void OnParentPermissionDialogViewDestroyed() override;
 
  private:
-  ParentPermissionDialogView* view_ = nullptr;
+  raw_ptr<ParentPermissionDialogView> view_ = nullptr;
 };
 
 ParentPermissionDialogImpl::ParentPermissionDialogImpl(

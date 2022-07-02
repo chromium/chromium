@@ -340,7 +340,8 @@ UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
     // Also record the data for extended crash reporting.
     const TimeTicks now = TimeTicks::Now();
     auto& user_data = scoped_activity_.user_data();
-    user_data.SetUint("timestamp_us", now.since_origin().InMicroseconds());
+    user_data.SetUint("timestamp_us", static_cast<uint64_t>(
+                                          now.since_origin().InMicroseconds()));
     user_data.SetUint("blocking_type", static_cast<uint64_t>(blocking_type));
   }
 }

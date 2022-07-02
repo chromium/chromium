@@ -6,6 +6,7 @@
 #define COMPONENTS_REPORTING_CLIENT_MOCK_REPORT_QUEUE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "components/reporting/client/report_queue.h"
@@ -18,24 +19,42 @@
 namespace reporting {
 
 // A mock of ReportQueue for use in testing.
-class MockReportQueue : public ReportQueue {
+class MockReportQueueStrict : public ReportQueue {
  public:
-  MockReportQueue();
-  ~MockReportQueue() override;
+  MockReportQueueStrict();
+  ~MockReportQueueStrict() override;
+
+  // Mock AddRecord with record producer.
+  // Rarely used, by default calls plain-text AddRecord.
+  MOCK_METHOD(void,
+              AddProducedRecord,
+              (RecordProducer, Priority, EnqueueCallback),
+              (const override));
 
   MOCK_METHOD(void,
               AddRecord,
-              (base::StringPiece, Priority, ReportQueue::EnqueueCallback),
-              (const override));
+              (std::string, Priority, EnqueueCallback),
+              (const));
 
-  MOCK_METHOD(void, Flush, (Priority, ReportQueue::FlushCallback), (override));
+  MOCK_METHOD(void, Flush, (Priority, FlushCallback), (override));
 
   MOCK_METHOD(
       (base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>),
       PrepareToAttachActualQueue,
       (),
       (const override));
+
+ private:
+  // Helper method that executes |record_producer| and in case of success
+  // forwards the result to |AddRecord|. In case of failure passes Status to
+  // |callback|.
+  void ForwardProducedRecord(RecordProducer record_producer,
+                             Priority priority,
+                             EnqueueCallback callback);
 };
+
+// Most of the time no need to log uninterested calls.
+typedef ::testing::NiceMock<MockReportQueueStrict> MockReportQueue;
 
 }  // namespace reporting
 

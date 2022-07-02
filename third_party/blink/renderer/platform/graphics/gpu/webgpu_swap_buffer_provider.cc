@@ -37,9 +37,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     WGPUTextureFormat format)
     : dawn_control_client_(dawn_control_client),
       client_(client),
-      device_(device),
-      usage_(usage),
-      format_(WGPUFormatToViz(format)) {
+      device_(device) {
   // Create a layer that will be used by the canvas and will ask for a
   // SharedImage each frame.
   layer_ = cc::TextureLayer::CreateForMailbox(this);
@@ -55,12 +53,24 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   layer_->SetPremultipliedAlpha(true);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
+
+  // Initialize the texture descriptor. Only the size will change after this.
+  texture_desc_ = {};
+  texture_desc_.dimension = WGPUTextureDimension_2D;
+  texture_desc_.mipLevelCount = 1;
+  texture_desc_.sampleCount = 1;
+  texture_desc_.usage = usage;
+  texture_desc_.format = format;
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
   Neuter();
   dawn_control_client_->GetProcs().deviceRelease(device_);
   device_ = nullptr;
+}
+
+viz::ResourceFormat WebGPUSwapBufferProvider::Format() const {
+  return WGPUFormatToViz(texture_desc_.format);
 }
 
 const gfx::Size& WebGPUSwapBufferProvider::Size() const {
@@ -95,11 +105,22 @@ void WebGPUSwapBufferProvider::Neuter() {
   }
 
   if (current_swap_buffer_) {
-    // Ensure we wait for previous WebGPU commands before destroying the shared
-    // image.
     if (auto context_provider = GetContextProviderWeakPtr()) {
       gpu::webgpu::WebGPUInterface* webgpu =
           context_provider->ContextProvider()->WebGPUInterface();
+
+      // Dissociate mailbox to avoid memory leaks.
+      if (wire_device_id_ && wire_texture_id_) {
+        webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
+
+        wire_device_id_ = 0;
+        wire_device_generation_ = 0;
+        wire_texture_id_ = 0;
+        wire_texture_generation_ = 0;
+      }
+
+      // Ensure we wait for previous WebGPU commands before destroying the
+      // shared image.
       webgpu->GenUnverifiedSyncTokenCHROMIUM(
           current_swap_buffer_->access_finished_token.GetData());
     }
@@ -123,7 +144,7 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
 
   if (unused_swap_buffers_.IsEmpty()) {
     gpu::Mailbox mailbox = sii->CreateSharedImage(
-        format_, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+        Format(), size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_WEBGPU |
             gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
@@ -174,8 +195,14 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
   webgpu->WaitSyncTokenCHROMIUM(
       current_swap_buffer_->access_finished_token.GetConstData());
 
-  // Associate the mailbox to a dawn_wire client DawnTexture object
-  gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
+  // Associate the mailbox to a dawn_wire client DawnTexture object. Pass in a
+  // complete descriptor of the texture so that reflection on GPUTexture from
+  // canvases gives the correct result.
+  texture_desc_.size = {static_cast<uint32_t>(size.width()),
+                        static_cast<uint32_t>(size.height()), 1};
+
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu->ReserveTexture(device_, &texture_desc_);
   DCHECK(reservation.texture);
   wire_device_id_ = reservation.deviceId;
   wire_device_generation_ = reservation.deviceGeneration;
@@ -184,7 +211,8 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
 
   webgpu->AssociateMailbox(
       wire_device_id_, wire_device_generation_, wire_texture_id_,
-      wire_texture_generation_, usage_, gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
+      wire_texture_generation_, texture_desc_.usage,
+      gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
       reinterpret_cast<GLbyte*>(&current_swap_buffer_->mailbox));
 
   // When the page request a texture it means we'll need to present it on the
@@ -202,8 +230,9 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
 
   return WebGPUMailboxTextureAndSize(
       WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_, usage_, last_swap_buffer_->mailbox,
-          last_swap_buffer_->access_finished_token,
+          dawn_control_client_, device_,
+          static_cast<WGPUTextureUsage>(texture_desc_.usage),
+          last_swap_buffer_->mailbox, last_swap_buffer_->access_finished_token,
           gpu::webgpu::WEBGPU_MAILBOX_NONE),
       last_swap_buffer_->size);
 }
@@ -258,7 +287,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
       is_overlay_candidate);
   out_resource->color_space = gfx::ColorSpace::CreateSRGB();
-  out_resource->format = format_;
+  out_resource->format = Format();
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).

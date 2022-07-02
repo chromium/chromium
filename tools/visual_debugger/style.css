@@ -80,3 +80,20 @@ button#disconnect {
   --mdc-theme-primary:darkred;
   --mdc-theme-on-primary: white;
 }
+
+.default-orientation {
+  background: white;
+  color: black;
+}
+
+.selected-orientation {
+  background: rgba(255, 0, 0, 0.2);;
+  color: black;
+}
+
+button#live {
+  outline-color: black;
+  --mdc-theme-primary:#FF0000;
+  --mdc-theme-on-primary:black;
+  opacity: 0.8;
+}

@@ -15,12 +15,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
@@ -72,6 +72,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -100,6 +101,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/accuracy_tips/features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -108,7 +110,7 @@
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
-#include "components/commerce/content/browser/metrics/commerce_metrics_tab_helper.h"
+#include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -127,13 +129,13 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
-#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/segmentation_platform/content/segmentation_platform_tab_helper.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -320,6 +322,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
+  commerce::CommerceTabHelper::CreateForWebContents(
+      web_contents, profile->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSBounceDetector::CreateForWebContents(web_contents);
@@ -368,8 +374,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
-  if (performance_manager::PerformanceManager::IsAvailable())
-    performance_manager::TabPropertiesDecorator::SetIsTab(web_contents, true);
+  if (auto* pm_registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);
+  }
   permissions::PermissionRequestManager::CreateForWebContents(web_contents);
   // The PopupBlockerTabHelper has an implicit dependency on
   // ChromeSubresourceFilterClient being available in its constructor.
@@ -411,19 +419,15 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ReputationWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
+  segmentation_platform::SegmentationPlatformTabHelper::CreateForWebContents(
+      web_contents,
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile));
   if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     shopping_list::ShoppingDataProvider::CreateForWebContents(
         web_contents,
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics)) {
-    commerce::metrics::CommerceMetricsTabHelper::CreateForWebContents(
-        web_contents,
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-        profile->GetPrefs(), profile->IsOffTheRecord());
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
         web_contents,
@@ -564,8 +568,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kPrewarmSearchResultsPageFonts))
-    FontPrewarmerTabHelper::CreateForWebContents(web_contents);
+  FontPrewarmerTabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if defined(TOOLKIT_VIEWS)

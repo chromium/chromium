@@ -38,7 +38,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @return {!AutomationNode}
    */
   findNodeById(id) {
-    const predicate = (node) => node.htmlAttributes.id === id;
+    const predicate = node => node.htmlAttributes.id === id;
     const nodeString = 'node with id "' + id + '"';
     return this.findNodeMatchingPredicate(predicate, nodeString);
   }
@@ -49,7 +49,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @return {!AutomationNode}
    */
   findNodeByNameAndRole(name, role) {
-    const predicate = (node) => node.name === name && node.role === role;
+    const predicate = node => node.name === name && node.role === role;
     const nodeString = 'node with name "' + name + '" and role ' + role;
     return this.findNodeMatchingPredicate(predicate, nodeString);
   }
@@ -69,7 +69,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @return {!Promise}
    */
   untilFocusIs(expected) {
-    const doesMatch = (expected) => {
+    const doesMatch = expected => {
       const newNode = Navigator.byItem.node_;
       const automationNode = newNode.automationNode || {};
       return (!expected.instance || newNode instanceof expected.instance) &&
@@ -102,7 +102,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
         return;
       }
       const original = Navigator.byItem.setNode_.bind(Navigator.byItem);
-      Navigator.byItem.setNode_ = (node) => {
+      Navigator.byItem.setNode_ = node => {
         original(node);
         lastFocusChangeTime = new Date();
         if (doesMatch(expected)) {

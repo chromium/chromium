@@ -12,9 +12,6 @@ namespace switches {
 // all work out.
 // -----------------------------------------------------------------------------
 
-// Disables enterprise policy support.
-const char kDisableEnterprisePolicy[] = "disable-enterprise-policy";
-
 // Disable showing available password credentials in the keyboard accessory
 // view when focused on form fields.
 const char kDisableIOSPasswordSuggestions[] =
@@ -23,9 +20,6 @@ const char kDisableIOSPasswordSuggestions[] =
 // Disables the 3rd party keyboard omnibox workaround.
 const char kDisableThirdPartyKeyboardWorkaround[] =
     "disable-third-party-keyboard-workaround";
-
-// Enables enterprise policy support.
-const char kEnableEnterprisePolicy[] = "enable-enterprise-policy";
 
 // Enables support for Handoff from Chrome on iOS to the default browser of
 // other Apple devices.
@@ -44,9 +38,6 @@ const char kEnableDiscoverFeed[] = "enable-discover-feed";
 
 // Enables the upgrade sign-in promo.
 const char kEnableUpgradeSigninPromo[] = "enable-upgrade-signin-promo";
-
-// Installs the URLBlocklist and URLAllowlist handlers.
-const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";
 
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";

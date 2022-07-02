@@ -61,20 +61,19 @@ void LensInternalsUIMessageHandler::HandleRefreshDebugData(
   base::android::Java2dStringArrayTo2dStringVector(env, j_debug_data,
                                                    &debug_data);
 
-  std::vector<base::Value> debug_data_as_vector_of_values;
+  base::Value::List debug_data_as_vector_of_values;
   for (auto const& row : debug_data) {
-    std::vector<base::Value> row_as_list_storage;
+    base::Value::List row_as_list_storage;
     // Convert to base::Value array.
     for (std::u16string const& cell_string : row) {
-      row_as_list_storage.emplace_back(base::Value(cell_string));
+      row_as_list_storage.Append(cell_string);
     }
-    debug_data_as_vector_of_values.emplace_back(
-        base::Value(row_as_list_storage));
+    debug_data_as_vector_of_values.Append(std::move(row_as_list_storage));
   }
 
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id,
-                            base::Value(debug_data_as_vector_of_values));
+  ResolveJavascriptCallback(
+      callback_id, base::Value(std::move(debug_data_as_vector_of_values)));
 }
 
 void LensInternalsUIMessageHandler::HandleStopDebugMode(

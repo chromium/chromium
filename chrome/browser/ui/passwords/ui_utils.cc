@@ -207,6 +207,8 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "save_update_password_bubble";
       case ManagePasswordsReferrer::kPasswordGenerationPrompt:
         return "password_generation_prompt_in_autofill_dropdown";
+      case ManagePasswordsReferrer::kPasswordsGoogleWebsite:
+        return "passwords_google";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
       case ManagePasswordsReferrer::kPasswordBreachDialog:
@@ -248,7 +250,7 @@ void NavigateToPasswordCheckupPage(Profile* profile) {
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
     content::WebContents* web_contents) {
-  content::RenderFrameHost* frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   frame->CreateNetworkServiceDefaultFactory(
       url_loader_factory.BindNewPipeAndPassReceiver());

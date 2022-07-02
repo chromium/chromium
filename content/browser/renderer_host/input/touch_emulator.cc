@@ -360,9 +360,10 @@ void TouchEmulator::OnViewDestroyed(RenderWidgetHostViewBase* destroyed_view) {
     return;
 
   emulated_stream_active_sequence_count_ = 0;
-  // If we aren't enabled, just reset out target.
-  if (!gesture_provider_) {
-    last_emulated_start_target_ = nullptr;
+  last_emulated_start_target_ = nullptr;
+
+  // If we aren't enabled, we can just stop here.
+  if (!enabled()) {
     return;
   }
 

@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
@@ -406,7 +407,10 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event_type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(processing_start),
       MonotonicTimeToDOMHighResTimeStamp(processing_end), event.cancelable(),
-      event.target() ? event.target()->ToNode() : nullptr);
+      event.target() ? event.target()->ToNode() : nullptr,
+      PerformanceEntry::GetNavigationId(
+          GetExecutionContext()));  // TODO(haoliuk): Add WPT for Event Timing.
+                                    // See crbug.com/1320878.
   absl::optional<int> key_code;
   if (event.IsKeyboardEvent())
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
@@ -494,11 +498,29 @@ void WindowPerformance::ReportEventTimings(
           input_delay, processing_time, time_to_next_paint, entry->name());
     }
 
+    // Event Timing
+    ResponsivenessMetrics::EventTimestamps event_timestamps = {
+        event_timestamp, presentation_timestamp};
+    // The page visibility was changed. In this case, we don't care about
+    // the time to next paint.
+    if (last_visibility_change_timestamp_ > event_timestamp &&
+        last_visibility_change_timestamp_ <= presentation_timestamp) {
+      event_timestamps.end_time -= time_to_next_paint;
+    }
+    if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
+                                         event_timestamps)) {
+      NotifyAndAddEventTimingBuffer(entry);
+    };
+
+    // First Input
     if (!first_input_timing_) {
       if (entry->name() == event_type_names::kPointerdown) {
         first_pointer_down_event_timing_ =
             PerformanceEventTiming::CreateFirstInputTiming(entry);
-      } else if (entry->name() == event_type_names::kPointerup) {
+      } else if (entry->name() == event_type_names::kPointerup &&
+                 first_pointer_down_event_timing_) {
+        first_pointer_down_event_timing_->SetInteractionId(
+            entry->interactionId());
         DispatchFirstInputTiming(first_pointer_down_event_timing_);
       } else if (entry->name() == event_type_names::kPointercancel) {
         first_pointer_down_event_timing_.Clear();
@@ -510,20 +532,6 @@ void WindowPerformance::ReportEventTimings(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
     }
-    ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
-    // The page visibility was changed. In this case, we don't care about
-    // the time to next paint.
-    if (last_visibility_change_timestamp_ > event_timestamp &&
-        last_visibility_change_timestamp_ <= presentation_timestamp) {
-      event_timestamps.end_time -= time_to_next_paint;
-    }
-    if (!SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
-                                          event_timestamps)) {
-      continue;
-    }
-
-    NotifyAndAddEventTimingBuffer(entry);
   }
 
   if (RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext())) {
@@ -558,11 +566,11 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
             base::Milliseconds(4));
     unsigned hash = WTF::StringHash::GetHash(entry->name());
     WTF::AddFloatToHash(hash, entry->startTime());
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
         "devtools.timeline", "EventTiming", hash, unsafe_start_time, "data",
         entry->ToTracedValue(DomWindow()->GetFrame()));
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "devtools.timeline", "EventTiming", hash, unsafe_end_time);
   }
 }
@@ -610,7 +618,8 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
-      intrinsic_size.width(), intrinsic_size.height(), id, element);
+      intrinsic_size.width(), intrinsic_size.height(), id, element,
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                ToTraceValue(DomWindow()->GetFrame()));
@@ -648,7 +657,11 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
   DCHECK(RuntimeEnabledFeatures::VisibilityStateEntryEnabled());
   VisibilityStateEntry* entry = MakeGarbageCollected<VisibilityStateEntry>(
       PageHiddenStateString(!is_visible),
-      MonotonicTimeToDOMHighResTimeStamp(timestamp));
+      MonotonicTimeToDOMHighResTimeStamp(timestamp),
+      PerformanceEntry::GetNavigationId(
+          GetExecutionContext()));  // Todo(haoliuk): Add WPT for
+                                    // VisibilityStateEntry. See
+                                    // crbug.com/1320878.
   if (HasObserverFor(PerformanceEntry::kVisibilityState))
     NotifyObserversOfEntry(*entry);
 
@@ -688,7 +701,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
       render_timestamp.is_zero() ? load_timestamp : render_timestamp;
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp.InMillisecondsF(), render_timestamp, paint_size,
-      load_timestamp, first_animated_frame_timestamp, id, url, element);
+      load_timestamp, first_animated_frame_timestamp, id, url, element,
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);

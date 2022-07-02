@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Chrome ช่วยคุณประหยัดเวลาโดยนำบัญชีของคุณไปไว้บนเว็บ คุณสามารถเพิ่มหรือนำบัญชีออกได้ในการตั้งค่า</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3345341804167540816">ใช้ Chrome ในทุกที่</translation>
+<translation id="3428998300753080128">ลงชื่อเข้าใช้เว็บไซต์นี้ บัญชี Google และ Chrome</translation>
 <translation id="3522659714780527202">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="3533694711092285624">ไม่มีรหัสผ่านที่บันทึกไว้ Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="3641179212828090796">ใช้รหัสผ่านที่คุณบันทึกไว้ใน Chrome เพื่อลงชื่อเข้าใช้ได้เร็วขึ้น</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดถอนการติดตั้ง</translation>
 <translation id="4633328489441962921">Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4698415050768537821">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">เคล็ดลับสำหรับ Chrome ลงชื่อเข้าใช้ได้เร็วขึ้นโดยการเลือกรหัสผ่านที่บันทึกไว้บริเวณด้านบนของแป้นพิมพ์</translation>
 <translation id="4819268619367838612">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">ไม่รองรับใน Chrome เบต้า</translation>
 <translation id="5030102366287574140">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">ใช้ Chrome โดยค่าเริ่มต้นเพื่อเปิดลิงก์ ค้นหาจากวิดเจ็ต และป้อนรหัสผ่านอัตโนมัติในแอปอื่นๆ</translation>
 <translation id="81358522153858150">ตอนนี้ Chrome รองรับนโยบายผู้ใช้สำหรับบัญชีที่จัดการแล้ว</translation>
 <translation id="8160472928944011082">อัปเดต Chrome ไม่ได้</translation>
-<translation id="8263079278049777200">ลงชื่อเข้าใช้เว็บไซต์นี้ บัญชี Google และ Chrome คุณเปิดการซิงค์ภายหลังได้</translation>
 <translation id="8357607116237445042">เลือกว่าจะล้างข้อมูล Chrome จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="840168496893712993">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดลองถอนการติดตั้งส่วนเสริมนั้น</translation>

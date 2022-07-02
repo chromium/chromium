@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -55,6 +56,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     // The following three buttons are not used when Duet is enabled.
     private @Nullable NewTabButton mNewTabImageButton;
     private @Nullable ToggleTabStackButton mToggleTabStackButton;
+    private @Nullable MenuButton mMenuButton;
 
     private int mPrimaryColor;
     private @BrandedColorScheme int mBrandedColorScheme;
@@ -79,6 +81,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mNewTabImageButton = findViewById(R.id.new_tab_button);
         mNewTabViewButton = findViewById(R.id.new_tab_view);
         mToggleTabStackButton = findViewById(R.id.tab_switcher_mode_tab_switcher_button);
+        mMenuButton = findViewById(R.id.menu_button_wrapper);
 
         // TODO(twellington): Try to make NewTabButton responsible for handling its own clicks.
         //                    TabSwitcherBottomToolbarCoordinator also uses NewTabButton and
@@ -208,6 +211,14 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     /**
+     * A method to toggle the enabled state of the new tab view button.
+     */
+    void setNewTabButtonEnabled(boolean enabled) {
+        mNewTabViewButton.setEnabled(enabled);
+        mNewTabImageButton.setEnabled(enabled);
+    }
+
+    /**
      * @param tabCountProvider The {@link TabCountProvider} used to observe the number of tabs in
      *                         the current model.
      */
@@ -317,13 +328,17 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
         }
 
+        final ColorStateList tint =
+                ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme);
         if (mNewTabViewButton != null) {
-            final ColorStateList tint =
-                    ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme);
             ((ImageView) mNewTabViewButton.findViewById(R.id.new_tab_view_button))
                     .setImageTintList(tint);
             final TextView newTabViewDesc = mNewTabViewButton.findViewById(R.id.new_tab_view_desc);
             newTabViewDesc.setTextColor(tint.getDefaultColor());
+        }
+
+        if (mMenuButton != null) {
+            mMenuButton.onTintChanged(tint, brandedColorScheme);
         }
     }
 

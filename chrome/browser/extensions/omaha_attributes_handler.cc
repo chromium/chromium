@@ -81,14 +81,22 @@ bool HasOmahaBlocklistStateInAttributes(const base::Value& attributes,
 
 OmahaAttributesHandler::OmahaAttributesHandler(
     ExtensionPrefs* extension_prefs,
+    ExtensionRegistry* registry,
     ExtensionService* extension_service)
     : extension_prefs_(extension_prefs),
+      registry_(registry),
       extension_service_(extension_service) {}
 
 void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // It is possible that an extension is uninstalled when the omaha attributes
+  // are notified by the update client asynchronously. In this case, we should
+  // ignore this extension.
+  if (!registry_->GetInstalledExtension(extension_id)) {
+    return;
+  }
   HandleMalwareOmahaAttribute(extension_id, attributes);
   HandleGreylistOmahaAttribute(
       extension_id, attributes,

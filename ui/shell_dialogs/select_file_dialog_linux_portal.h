@@ -5,6 +5,7 @@
 #ifndef UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 #define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/atomic_flag.h"
@@ -97,13 +98,13 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
 
     // The response object handle that the portal will send a signal to upon the
     // dialog's completion.
-    dbus::ObjectProxy* response_handle = nullptr;
+    raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle = nullptr;
     absl::optional<gfx::AcceleratedWidget> parent;
     Type type;
     // The task runner the SelectFileImpl method was called on.
     scoped_refptr<base::SequencedTaskRunner> main_task_runner;
     // The untyped params to pass to the listener.
-    void* listener_params = nullptr;
+    raw_ptr<void> listener_params = nullptr;
 
    private:
     friend class base::RefCountedThreadSafe<DialogInfo>;

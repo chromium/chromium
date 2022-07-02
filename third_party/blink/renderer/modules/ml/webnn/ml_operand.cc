@@ -4,16 +4,17 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
-#include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 
 namespace blink {
 
-MLOperand::MLOperand(MLContext* context) : ml_context_(context) {}
+MLOperand::MLOperand(MLGraphBuilder* graph_builder)
+    : graph_builder_(graph_builder) {}
 
 MLOperand::~MLOperand() = default;
 
 void MLOperand::Trace(Visitor* visitor) const {
-  visitor->Trace(ml_context_);
+  visitor->Trace(graph_builder_);
   ScriptWrappable::Trace(visitor);
 }
 

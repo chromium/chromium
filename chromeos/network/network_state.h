@@ -13,7 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
-#include "chromeos/network/managed_state.h"
+#include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
 #include "url/gurl.h"
@@ -369,7 +369,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Portal state is derived from connection_state_ and Shill portal properties.
   PortalState portal_state_ = PortalState::kUnknown;
-  int portal_status_code_ = 0;
 
   // Whether the current device has already connected to the tether host device
   // providing the hotspot corresponding to this NetworkState.

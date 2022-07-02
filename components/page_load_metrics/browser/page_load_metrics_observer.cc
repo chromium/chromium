@@ -40,7 +40,7 @@ MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
     : routing_id(id), delta_bytes(delta) {}
 
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
-    const url::Origin& origin_of_final_url,
+    const url::SchemeHostPort& final_url,
     const net::IPEndPoint& remote_endpoint,
     int frame_tree_node_id,
     bool was_cached,
@@ -49,7 +49,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     network::mojom::RequestDestination request_destination,
     int net_error,
     std::unique_ptr<net::LoadTimingInfo> load_timing_info)
-    : origin_of_final_url(origin_of_final_url),
+    : final_url(final_url),
       remote_endpoint(remote_endpoint),
       frame_tree_node_id(frame_tree_node_id),
       was_cached(was_cached),
@@ -61,7 +61,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
 
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const ExtraRequestCompleteInfo& other)
-    : origin_of_final_url(other.origin_of_final_url),
+    : final_url(other.final_url),
       remote_endpoint(other.remote_endpoint),
       frame_tree_node_id(other.frame_tree_node_id),
       was_cached(other.was_cached),

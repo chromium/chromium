@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -220,6 +221,216 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   )HTML");
   // We don't currently set DevtoolsFlexInfo when fragmenting.
   DCHECK(!devtools);
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUma1) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;" id=flexbox>
+      <div style="position: absolute; justify-self: stretch; align-self: flex-end; width:50px; height:50px;" id=item></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  LayoutNGFlexibleBox* flex =
+      To<LayoutNGFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
+  LayoutObject* item = GetLayoutObjectByElementId("item");
+  ItemPosition pos = FlexLayoutAlgorithm::AlignmentForChild(flex->StyleRef(),
+                                                            item->StyleRef());
+  ASSERT_EQ(pos, ItemPosition::kFlexEnd);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferent) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align are clearly different";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaDifferentButRow) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align are clearly different but we don't count row "
+         "flexboxes";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaBothCenter) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: center; align-self: center; "></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align are both center";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaEndFlexEnd) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: end; "></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align map to same even though specified differently";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaLeftEnd) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: left; align-self: end;"></div>
+    </div>
+  )HTML");
+  // current: top right
+  // proposed: top left
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaVerticalWritingMode) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px; writing-mode: vertical-rl;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end;"></div>
+    </div>
+  )HTML");
+  // current: left bottom
+  // proposed: left top
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaOrthogonalWritingMode) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: end; align-self: self-start; writing-mode: vertical-rl;"></div>
+    </div>
+  )HTML");
+  // current: right top
+  // proposed: right top
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
+}
+
+// column-reverse switches main-axis order (start placing items at block-end)
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndReverseStart) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column-reverse; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
+    </div>
+  )HTML");
+  // current: item is at bottom (b/c column-reverse) left (b/c start)
+  // proposed: item is at bottom (b/c column-reverse) right (b/c flex-end)
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos));
+}
+
+// wrap-reverse switches cross-axis order (of the lines)
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaFlexEndWrapReverse) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column wrap-reverse; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: flex-end; align-self: start;"></div>
+    </div>
+  )HTML");
+  // current: item is at top left
+  // proposed: item is at top left
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align map to same even though specified differently";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsSame) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: end;"></div>
+    </div>
+  )HTML");
+  // current: top right
+  // proposed: top right
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "align-items' default value for align-self is same as "
+         "justify-self";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAlignItemsDifferent) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px; align-items: end;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: start;"></div>
+    </div>
+  )HTML");
+  // current: top right
+  // proposed: top left
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "align-items' default value for align-self differs from justify-self";
+}
+
+// These next 4 tests are disabled because we don't have a good way to compare
+// the abspos size to the static position rectangle. This means we overcount the
+// number of pages that will be changed by the abspos proposal in
+// https://github.com/w3c/csswg-drafts/issues/5843.
+
+TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUma0px) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column;">
+      <div style="position: absolute; justify-self: start; align-self: end;">
+      </div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "static pos rectangle and item are both 0px";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSize) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="position: relative; width: 80px;">
+      <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
+        <div style="position: absolute; justify-self: start; align-self: end; width: 80px; height: 50px;">
+        </div>
+      </div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "static pos rectangle is same size as item's margin box";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaSameSizeWithMargin) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width: 70px; height: 100px;">
+      <div style="position: absolute; justify-self: start; align-self: end; margin: 25px 25px; height: 50px;">
+      </div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "static pos rectangle is same size as item's margin box";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, DISABLED_AbsPosUmaAutoInsetsSameSize) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:100px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "auto insets in the axis of same size means no change";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaNoAutoInsets) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:50px; width:50px; justify-self: start; align-self: end; inset: 1px 1px auto auto"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "justify and align are different but has non-auto insets";
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, AbsPosUmaAutoInsetsDifferentSize) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; width:100px; height:100px;">
+      <div style="position: absolute; height:100px; width:50px; justify-self: start; align-self: end; inset: 1px auto 1px auto"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kFlexboxNewAbsPos))
+      << "auto insets in the axis of different size means change";
 }
 
 // Current:  item is at top of container.

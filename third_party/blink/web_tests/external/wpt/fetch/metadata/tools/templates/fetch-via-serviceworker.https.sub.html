@@ -4,6 +4,9 @@
 -->
 <html lang="en">
   <meta charset="utf-8">
+  {%- if subtests|length > 10 %}
+  <meta name="timeout" content="long">
+  {%- endif %}
   <title>HTTP headers on request using the "fetch" API and passing through a Serive Worker</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -83,4 +86,3 @@
   </script>
   </body>
 </html>
-

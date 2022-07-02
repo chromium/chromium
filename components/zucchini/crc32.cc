@@ -28,7 +28,7 @@ std::array<uint32_t, 256> MakeCrc32Table() {
 }  // namespace
 
 // Minimalistic CRC-32 implementation for Zucchini usage. Adapted from LZMA SDK
-// (found at third_party/lzma_sdk/7zCrc.c), which is public domain.
+// (found at third_party/lzma_sdk/C/7zCrc.c), which is public domain.
 uint32_t CalculateCrc32(const uint8_t* first, const uint8_t* last) {
   DCHECK_GE(last, first);
 

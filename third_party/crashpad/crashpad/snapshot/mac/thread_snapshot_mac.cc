@@ -26,13 +26,13 @@ ThreadSnapshotMac::ThreadSnapshotMac()
       context_union_(),
       context_(),
       stack_(),
+      thread_name_(),
       thread_id_(0),
       thread_specific_data_address_(0),
       thread_(MACH_PORT_NULL),
       suspend_count_(0),
       priority_(0),
-      initialized_() {
-}
+      initialized_() {}
 
 ThreadSnapshotMac::~ThreadSnapshotMac() {
 }
@@ -44,6 +44,7 @@ bool ThreadSnapshotMac::Initialize(
 
   thread_ = process_reader_thread.port;
   thread_id_ = process_reader_thread.id;
+  thread_name_ = process_reader_thread.name;
   suspend_count_ = process_reader_thread.suspend_count;
   priority_ = process_reader_thread.priority;
   thread_specific_data_address_ =
@@ -106,6 +107,11 @@ const MemorySnapshot* ThreadSnapshotMac::Stack() const {
 uint64_t ThreadSnapshotMac::ThreadID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return thread_id_;
+}
+
+std::string ThreadSnapshotMac::ThreadName() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return thread_name_;
 }
 
 int ThreadSnapshotMac::SuspendCount() const {

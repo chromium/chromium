@@ -13,7 +13,7 @@
 @protocol HistoryConsumer <NSObject>
 
 // Tells the consumer that the result of a history query has been retrieved.
-// Entries in |result| are already sorted.
+// Entries in `result` are already sorted.
 - (void)
     historyQueryWasCompletedWithResults:
         (const std::vector<history::BrowsingHistoryService::HistoryEntry>&)

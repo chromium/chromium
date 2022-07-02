@@ -10,7 +10,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <button id=firstfocus>Button 1</button>
-<div popup=popup>
+<div popup>
   <p>This is a popup without a focusable element</p>
 </div>
 <button id=secondfocus>Button 2</button>
@@ -22,25 +22,25 @@ promise_test(async () => {
   const popup = document.querySelector('[popup]');
   b1.focus();
   assert_equals(document.activeElement,b1);
-  popup.showPopup();
-  assert_true(popup.matches(':popup-open'));
+  popup.showPopUp();
+  assert_true(popup.matches(':top-layer'));
   assert_equals(document.activeElement,b1);
   // Tab once
   await new test_driver.send_keys(document.body,'\uE004'); // Tab
   assert_equals(document.activeElement, b2, 'Keyboard focus should skip the open popup');
-  assert_false(popup.matches(':popup-open'),'changing focus should close the popup');
+  assert_false(popup.matches(':top-layer'),'changing focus should close the popup');
 
   // Add a focusable button to the popup and make sure we can focus that
   const button = document.createElement('button');
   popup.appendChild(button);
   b1.focus();
-  popup.showPopup();
+  popup.showPopUp();
   assert_equals(document.activeElement,b1);
   // Tab once
   await new test_driver.send_keys(document.body,'\uE004'); // Tab
   assert_equals(document.activeElement, button, 'Keyboard focus should go to the contained button');
-  assert_true(popup.matches(':popup-open'),'changing focus to the popup should leave it showing');
-  popup.hidePopup();
-  assert_false(popup.matches(':popup-open'));
+  assert_true(popup.matches(':top-layer'),'changing focus to the popup should leave it showing');
+  popup.hidePopUp();
+  assert_false(popup.matches(':top-layer'));
 }, "Popup should not be keyboard focusable");
 </script>

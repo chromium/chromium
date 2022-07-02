@@ -171,7 +171,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
   }
 
  private:
-  // Returns an iterator to the entry with id |session_id|.
+  // Returns an iterator to the entry with id `session_id`.
   Entries::iterator GetEntryIteratorById(SessionID session_id) {
     for (auto i = entries_.begin(); i != entries_.end(); ++i) {
       if ((*i)->id == session_id) {
@@ -332,7 +332,7 @@ class TabGridMediatorTest : public PlatformTest {
   }
 
   // Creates a FakeWebState with a navigation history containing exactly only
-  // the given |url|.
+  // the given `url`.
   std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(
       const GURL& url) {
     auto web_state = std::make_unique<web::FakeWebState>();
@@ -480,7 +480,7 @@ TEST_F(TabGridMediatorTest, ConsumerMoveItem) {
 
 #pragma mark - Command tests
 
-// Tests that the active index is updated when |-selectItemWithID:| is called.
+// Tests that the active index is updated when `-selectItemWithID:` is called.
 // Tests that the consumer's selected index is updated.
 TEST_F(TabGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
@@ -492,7 +492,7 @@ TEST_F(TabGridMediatorTest, SelectItemCommand) {
 }
 
 // Tests that the WebStateList count is decremented when
-// |-closeItemWithID:| is called.
+// `-closeItemWithID:` is called.
 // Tests that the consumer's item count is also decremented.
 TEST_F(TabGridMediatorTest, CloseItemCommand) {
   // Previously there were 3 items.
@@ -504,7 +504,7 @@ TEST_F(TabGridMediatorTest, CloseItemCommand) {
 }
 
 // Tests that the WebStateList and consumer's list are empty when
-// |-closeAllItems| is called. Tests that |-undoCloseAllItems| does not restore
+// `-closeAllItems` is called. Tests that `-undoCloseAllItems` does not restore
 // the WebStateList.
 TEST_F(TabGridMediatorTest, CloseAllItemsCommand) {
   // Previously there were 3 items.
@@ -516,7 +516,7 @@ TEST_F(TabGridMediatorTest, CloseAllItemsCommand) {
 }
 
 // Tests that the WebStateList and consumer's list are empty when
-// |-saveAndCloseAllItems| is called.
+// `-saveAndCloseAllItems` is called.
 TEST_F(TabGridMediatorTest, SaveAndCloseAllItemsCommand) {
   // Previously there were 3 items.
   [mediator_ saveAndCloseAllItems];
@@ -525,7 +525,7 @@ TEST_F(TabGridMediatorTest, SaveAndCloseAllItemsCommand) {
 }
 
 // Tests that the WebStateList is not restored to 3 items when
-// |-undoCloseAllItems| is called after |-discardSavedClosedItems| is called.
+// `-undoCloseAllItems` is called after `-discardSavedClosedItems` is called.
 TEST_F(TabGridMediatorTest, DiscardSavedClosedItemsCommand) {
   PrepareForRestoration();
   // Previously there were 3 items.
@@ -537,7 +537,7 @@ TEST_F(TabGridMediatorTest, DiscardSavedClosedItemsCommand) {
 }
 
 // Tests that the WebStateList is restored to 3 items when
-// |-undoCloseAllItems| is called.
+// `-undoCloseAllItems` is called.
 TEST_F(TabGridMediatorTest, UndoCloseAllItemsCommand) {
   PrepareForRestoration();
   // Previously there were 3 items.
@@ -551,7 +551,7 @@ TEST_F(TabGridMediatorTest, UndoCloseAllItemsCommand) {
 }
 
 // Tests that the WebStateList is restored to 3 items when
-// |-undoCloseAllItems| is called.
+// `-undoCloseAllItems` is called.
 TEST_F(TabGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
   PrepareForRestoration();
   // Previously there were 3 items.
@@ -598,8 +598,8 @@ TEST_F(TabGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
   }
 }
 
-// Tests that when |-addNewItem| is called, the WebStateList count is
-// incremented, the |active_index| is at the end of WebStateList, the new
+// Tests that when `-addNewItem` is called, the WebStateList count is
+// incremented, the `active_index` is at the end of WebStateList, the new
 // web state has no opener, and the URL is the New Tab Page.
 // Tests that the consumer has added an item with the correct identifier.
 TEST_F(TabGridMediatorTest, AddNewItemAtEndCommand) {
@@ -624,8 +624,8 @@ TEST_F(TabGridMediatorTest, AddNewItemAtEndCommand) {
   EXPECT_NSEQ(identifier, consumer_.items[3]);
 }
 
-// Tests that when |-insertNewItemAtIndex:| is called, the WebStateList
-// count is incremented, the |active_index| is the newly added index, the new
+// Tests that when `-insertNewItemAtIndex:` is called, the WebStateList
+// count is incremented, the `active_index` is the newly added index, the new
 // web state has no opener, and the URL is the new tab page.
 // Checks that the consumer has added an item with the correct identifier.
 TEST_F(TabGridMediatorTest, InsertNewItemCommand) {
@@ -650,7 +650,7 @@ TEST_F(TabGridMediatorTest, InsertNewItemCommand) {
   EXPECT_NSEQ(identifier, consumer_.items[0]);
 }
 
-// Tests that |-insertNewItemAtIndex:| is a no-op if the mediator's browser
+// Tests that `-insertNewItemAtIndex:` is a no-op if the mediator's browser
 // is bullptr.
 TEST_F(TabGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   mediator_.browser = nullptr;
@@ -661,7 +661,7 @@ TEST_F(TabGridMediatorTest, InsertNewItemWithNoBrowserCommand) {
   EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
 
-// Tests that when |-moveItemFromIndex:toIndex:| is called, there is no change
+// Tests that when `-moveItemFromIndex:toIndex:` is called, there is no change
 // in the item count in WebStateList, but that the constituent web states
 // have been reordered.
 TEST_F(TabGridMediatorTest, MoveItemCommand) {
@@ -693,7 +693,7 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
   EXPECT_EQ(pre_move_selected_id, consumer_.selectedItemID);
 }
 
-// Tests that when |-searchItemsWithText:| is called, there is no change in the
+// Tests that when `-searchItemsWithText:` is called, there is no change in the
 // items in WebStateList and the correct items are populated by the consumer.
 TEST_F(TabGridMediatorTest, SearchItemsWithTextCommand) {
   // Capture ordered original IDs.
@@ -724,7 +724,7 @@ TEST_F(TabGridMediatorTest, SearchItemsWithTextCommand) {
   }
 }
 
-// Tests that when |-resetToAllItems:| is called, the consumer gets all the
+// Tests that when `-resetToAllItems:` is called, the consumer gets all the
 // items from items in WebStateList and correct item selected.
 TEST_F(TabGridMediatorTest, resetToAllItems) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());

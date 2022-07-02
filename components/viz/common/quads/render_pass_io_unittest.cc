@@ -209,7 +209,7 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 30, 40), gfx::Rect(1, 2, 20, 30), true,
-                   SK_ColorRED, false);
+                   SkColors::kRed, false);
       ++quad_count;
     }
     {
@@ -260,8 +260,8 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 100, 50), gfx::Rect(0, 0, 100, 50), false,
                    ResourceId(9u), gfx::Size(100, 50), false,
-                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorBLUE,
-                   vertex_opacity, false, true, false,
+                   gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
+                   SkColors::kBlue, vertex_opacity, false, true, false,
                    gfx::ProtectedVideoType::kHardwareProtected);
       ++sqs_index;
       ++quad_count;
@@ -295,8 +295,8 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 512, 256), gfx::Rect(2, 2, 500, 250), true,
-                   SurfaceRange(kSurfaceId1, kSurfaceId2), SK_ColorWHITE, false,
-                   false, true);
+                   SurfaceRange(kSurfaceId1, kSurfaceId2), SkColors::kWhite,
+                   false, false, true);
       ++quad_count;
     }
     {
@@ -306,7 +306,7 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(10, 10, 512, 256), gfx::Rect(12, 12, 500, 250),
                    true, SurfaceRange(absl::nullopt, kSurfaceId1),
-                   SK_ColorBLACK, true, true, false);
+                   SkColors::kBlack, true, true, false);
       ++quad_count;
     }
     DCHECK_EQ(kSharedQuadStateCount, sqs_index + 1);

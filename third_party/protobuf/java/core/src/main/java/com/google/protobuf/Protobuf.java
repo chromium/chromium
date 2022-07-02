@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentMap;
  * than directly accessing internal APIs) in order to perform operations on protobuf messages.
  */
 @ExperimentalApi
+@CheckReturnValue
 final class Protobuf {
   private static final Protobuf INSTANCE = new Protobuf();
 
@@ -76,11 +77,8 @@ final class Protobuf {
     schemaFor(message).makeImmutable(message);
   }
 
-  /**
-   * Checks if all required fields are set. TODO(xiaofeng): Make this package private when the tests
-   * are moved to protobuf package.
-   */
-  public <T> boolean isInitialized(T message) {
+  /** Checks if all required fields are set. */
+  <T> boolean isInitialized(T message) {
     return schemaFor(message).isInitialized(message);
   }
 
@@ -130,6 +128,7 @@ final class Protobuf {
    * @return the previously registered schema, or {@code null} if no schema was registered
    *     previously.
    */
+  @CanIgnoreReturnValue
   public Schema<?> registerSchemaOverride(Class<?> messageType, Schema<?> schema) {
     checkNotNull(messageType, "messageType");
     checkNotNull(schema, "schema");

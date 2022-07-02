@@ -93,7 +93,7 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
     case AutofillUITypeProfileHomeAddressZip:
       return autofill::ADDRESS_HOME_ZIP;
     case AutofillUITypeProfileHomeAddressSortingCode:
-      return autofill::ADDRESS_BILLING_SORTING_CODE;
+      return autofill::ADDRESS_HOME_SORTING_CODE;
     case AutofillUITypeProfileHomeAddressCountry:
       return autofill::ADDRESS_HOME_COUNTRY;
     case AutofillUITypeProfileHomePhoneWholeNumber:

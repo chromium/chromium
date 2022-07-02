@@ -49,8 +49,7 @@ void WaitForStateStore(Profile* profile, const std::string& extension_id) {
 // action background to blue.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        PRE_BrowserActionDefaultPersistence) {
-  ExtensionTestMessageListener listener("Background Color Set",
-                                        false /* won't send custom reply */);
+  ExtensionTestMessageListener listener("Background Color Set");
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("api_test")
@@ -96,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BrowserActionDefaultPersistence) {
   // If the extension hasn't already set the badge text, then we should wait for
   // it to do so.
   if (extension_action->GetExplicitlySetBadgeText(0) != "Hello") {
-    ExtensionTestMessageListener listener("Badge Text Set",
-                                          false /* won't send custom reply */);
+    ExtensionTestMessageListener listener("Badge Text Set");
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
 

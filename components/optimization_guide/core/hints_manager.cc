@@ -76,15 +76,8 @@ void MaybeRunUpdateClosure(base::OnceClosure update_closure) {
     std::move(update_closure).Run();
 }
 
-// Returns whether the particular component version can be processed, and if it
-// can be, locks the semaphore (in the form of a pref) to signal that the
-// processing of this particular version has started.
-bool CanProcessComponentVersion(PrefService* pref_service,
-                                const base::Version& version,
-                                ProcessHintsComponentResult* out_result) {
-  DCHECK(version.IsValid());
-  DCHECK(out_result);
-
+absl::optional<base::Version>
+GetPendingOptimizationHintsComponentVersionFromPref(PrefService* pref_service) {
   const std::string previous_attempted_version_string =
       pref_service->GetString(prefs::kPendingHintsProcessingVersion);
   if (!previous_attempted_version_string.empty()) {
@@ -94,21 +87,11 @@ bool CanProcessComponentVersion(PrefService* pref_service,
       DLOG(ERROR) << "Bad contents in hints processing pref";
       // Clear pref for fresh start next time.
       pref_service->ClearPref(prefs::kPendingHintsProcessingVersion);
-      *out_result =
-          ProcessHintsComponentResult::kFailedPreviouslyAttemptedVersionInvalid;
-      return false;
+      return absl::nullopt;
     }
-    if (previous_attempted_version.CompareTo(version) == 0) {
-      *out_result = ProcessHintsComponentResult::kFailedFinishProcessing;
-      // Previously attempted same version without completion.
-      return false;
-    }
+    return absl::make_optional(previous_attempted_version);
   }
-
-  // Write config version to pref.
-  pref_service->SetString(prefs::kPendingHintsProcessingVersion,
-                          version.GetString());
-  return true;
+  return absl::nullopt;
 }
 
 // Returns whether |optimization_type| is allowlisted by |optimizations|. If
@@ -306,7 +289,9 @@ HintsManager::HintsManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<PushNotificationManager> push_notification_manager,
     OptimizationGuideLogger* optimization_guide_logger)
-    : is_off_the_record_(is_off_the_record),
+    : failed_component_version_(
+          GetPendingOptimizationHintsComponentVersionFromPref(pref_service)),
+      is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
       pref_service_(pref_service),
       hint_cache_(
@@ -329,6 +314,10 @@ HintsManager::HintsManager(
   if (push_notification_manager_)
     push_notification_manager_->SetDelegate(this);
 
+  // Register as an observer to get updates for the component. This is
+  // needed as a signal during testing.
+  OptimizationHintsComponentUpdateListener::GetInstance()->AddObserver(this);
+
   hint_cache_->Initialize(
       switches::ShouldPurgeOptimizationGuideStoreOnStartup(),
       base::BindOnce(&HintsManager::OnHintCacheInitialized,
@@ -343,9 +332,10 @@ void HintsManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OptimizationHintsComponentUpdateListener::GetInstance()->RemoveObserver(this);
 
-  base::UmaHistogramBoolean("OptimizationGuide.ProcessingComponentAtShutdown",
-                            is_processing_component_);
-  if (is_processing_component_) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ProcessingComponentAtShutdown",
+      currently_processing_component_version_.has_value());
+  if (currently_processing_component_version_) {
     // If we are currently processing the component and we are asked to shut
     // down, we should clear the pref since the function to clear the pref will
     // not run after shut down and we will think that we failed to process the
@@ -379,6 +369,19 @@ HintsManager::GetOptimizationGuideDecisionFromOptimizationTypeDecision(
 void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (currently_processing_component_version_ &&
+      *currently_processing_component_version_ == info.version) {
+    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+        << "Already in the middle of processing OptimizationHints component "
+           "version: "
+        << info.version.GetString();
+    return;
+  }
+
+  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      << "Received OptimizationHints component version: "
+      << info.version.GetString();
+
   // Check for if hint component is disabled. This check is needed because the
   // optimization guide still registers with the service as an observer for
   // components as a signal during testing.
@@ -387,12 +390,21 @@ void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
     return;
   }
 
-  ProcessHintsComponentResult out_result;
-  if (!CanProcessComponentVersion(pref_service_, info.version, &out_result)) {
-    RecordProcessHintsComponentResult(out_result);
+  if (features::ShouldCheckFailedComponentVersionPref() &&
+      failed_component_version_ &&
+      failed_component_version_->CompareTo(info.version) >= 0) {
+    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+        << "Skipping processing OptimizationHints component version: "
+        << info.version.GetString()
+        << " as it had failed in a previous session";
+    RecordProcessHintsComponentResult(
+        ProcessHintsComponentResult::kFailedFinishProcessing);
     MaybeRunUpdateClosure(std::move(next_update_closure_));
     return;
   }
+  // Write version that we are currently processing to prefs.
+  pref_service_->SetString(prefs::kPendingHintsProcessingVersion,
+                           info.version.GetString());
 
   std::unique_ptr<StoreUpdateData> update_data =
       is_off_the_record_
@@ -407,7 +419,10 @@ void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
   // processing will be skipped.
   // base::Unretained(this) is safe since |this| owns |background_task_runner_|
   // and the callback will be canceled if destroyed.
-  is_processing_component_ = true;
+  currently_processing_component_version_ = info.version;
+  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      << "Processing OptimizationHints component version: "
+      << currently_processing_component_version_->GetString();
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ReadComponentFile, info),
       base::BindOnce(&HintsManager::UpdateComponentHints,
@@ -427,6 +442,8 @@ void HintsManager::ProcessOptimizationFilters(
         allowlist_optimization_filters,
     const google::protobuf::RepeatedPtrField<proto::OptimizationFilter>&
         blocklist_optimization_filters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   optimization_types_with_filter_.clear();
   allowlist_optimization_filters_.clear();
   blocklist_optimization_filters_.clear();
@@ -440,6 +457,8 @@ void HintsManager::ProcessOptimizationFilterSet(
     const google::protobuf::RepeatedPtrField<proto::OptimizationFilter>&
         filters,
     bool is_allowlist) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (const auto& filter : filters) {
     if (filter.optimization_type() != proto::TYPE_UNSPECIFIED) {
       optimization_types_with_filter_.insert(filter.optimization_type());
@@ -471,6 +490,8 @@ void HintsManager::ProcessOptimizationFilterSet(
     std::unique_ptr<OptimizationFilter> optimization_filter =
         ProcessOptimizationFilter(filter, &status);
     if (optimization_filter) {
+      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          << "Loaded optimization filter for " << filter.optimization_type();
       if (is_allowlist) {
         allowlist_optimization_filters_.insert(
             {filter.optimization_type(), std::move(optimization_filter)});
@@ -485,6 +506,9 @@ void HintsManager::ProcessOptimizationFilterSet(
 
 void HintsManager::OnHintCacheInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      << "Hint cache initialized";
 
   if (push_notification_manager_) {
     push_notification_manager_->OnDelegateReady();
@@ -514,9 +538,11 @@ void HintsManager::OnHintCacheInitialized() {
     should_clear_hints_for_new_type_ = false;
   }
 
-  // Register as an observer regardless of hint proto override usage. This is
-  // needed as a signal during testing.
-  OptimizationHintsComponentUpdateListener::GetInstance()->AddObserver(this);
+  // This is used as a signal for testing so that tests can push hints via the
+  // component. Fixing the logic appropriately is a lot more work for something
+  // we don't actually do in the wild.
+  LOCAL_HISTOGRAM_BOOLEAN("OptimizationGuide.HintsManager.HintCacheInitialized",
+                          true);
 }
 
 void HintsManager::UpdateComponentHints(
@@ -527,7 +553,9 @@ void HintsManager::UpdateComponentHints(
 
   // If we get here, the component file has been processed correctly and did not
   // crash the device.
-  is_processing_component_ = false;
+  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      << "Component successfully processed";
+  currently_processing_component_version_ = absl::nullopt;
   pref_service_->ClearPref(prefs::kPendingHintsProcessingVersion);
 
   if (!config) {

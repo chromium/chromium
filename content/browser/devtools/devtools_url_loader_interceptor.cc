@@ -372,8 +372,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void StartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
@@ -1173,7 +1171,7 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {
     std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
         create_loader_params_->request.url, cookie_line, now, server_time,
-        net::CookiePartitionKey::Todo());
+        absl::nullopt);
     if (cookie)
       cookies.emplace_back(std::move(cookie));
   }
@@ -1546,11 +1544,6 @@ void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
     client_->OnTransferSizeUpdated(transfer_size_diff);
   else
     response_metadata_->transfer_size += transfer_size_diff;
-}
-
-void InterceptionJob::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  NOTREACHED();
 }
 
 void InterceptionJob::StartLoadingResponseBody(

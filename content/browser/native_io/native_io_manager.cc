@@ -161,8 +161,8 @@ void NativeIOManager::BindReceiver(
 
   // Ensure that the default bucket for the storage key exists on access and
   // bind receiver on retrieval.
-  quota_manager_proxy_->GetOrCreateBucket(
-      storage::BucketInitParams(storage_key),
+  quota_manager_proxy_->UpdateOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&NativeIOManager::BindReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), storage_key,

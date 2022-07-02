@@ -38,9 +38,10 @@ class SnapshotBrowserAgent : public BrowserObserver,
   SnapshotCache* snapshot_cache() { return snapshot_cache_; }
 
  private:
-  explicit SnapshotBrowserAgent(Browser* browser);
   friend class BrowserUserData<SnapshotBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SnapshotBrowserAgent(Browser* browser);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;

@@ -68,6 +68,16 @@ Polymer({
     },
 
     /**
+     * Readonly property indicating whether the current |activationCode|
+     * was scanned from QR code.
+     */
+    isFromQrCode: {
+      type: Boolean,
+      notify: true,
+      value: false,
+    },
+
+    /**
      * Indicates the UI is busy with an operation and cannot be interacted with.
      */
     showBusy: {
@@ -498,6 +508,8 @@ Polymer({
       this.showError = false;
     }
     if (this.state_ === PageState.MANUAL_ENTRY) {
+      this.isFromQrCode = false;
+
       // Clear |qrCodeDetectorTimer_| before closing video stream, prevents
       // image capturer from going into an inactive state and throwing errors
       // when |grabFrame()| is called.
@@ -519,6 +531,7 @@ Polymer({
 
     // Focus on the next button after scanning is successful.
     if (this.state_ === PageState.SCANNING_SUCCESS) {
+      this.isFromQrCode = true;
       this.qrCodeCameraA11yString_ = this.i18n('qrCodeA11YCameraScanSuccess');
       this.fire('focus-default-button');
     }

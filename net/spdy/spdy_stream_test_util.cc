@@ -11,9 +11,7 @@
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 ClosingDelegate::ClosingDelegate(
     const base::WeakPtr<SpdyStream>& stream) : stream_(stream) {
@@ -51,12 +49,8 @@ NetLogSource ClosingDelegate::source_dependency() const {
   return NetLogSource();
 }
 
-StreamDelegateBase::StreamDelegateBase(
-    const base::WeakPtr<SpdyStream>& stream)
-    : stream_(stream),
-      stream_id_(0),
-      send_headers_completed_(false) {
-}
+StreamDelegateBase::StreamDelegateBase(const base::WeakPtr<SpdyStream>& stream)
+    : stream_(stream) {}
 
 StreamDelegateBase::~StreamDelegateBase() = default;
 
@@ -206,6 +200,4 @@ void StreamDelegateDetectEOF::OnDataReceived(
     eof_detected_ = true;
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

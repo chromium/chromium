@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/components/onc/variable_expander.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -29,8 +29,7 @@ namespace policy {
 namespace {
 
 // List of policies where variables like ${MACHINE_NAME} should be expanded.
-constexpr const char* kPoliciesToExpand[] = {key::kNativePrinters,
-                                             key::kPrinters};
+constexpr const char* kPoliciesToExpand[] = {key::kPrinters};
 
 // Fetch policy every 90 minutes which matches the Windows default:
 // https://technet.microsoft.com/en-us/library/cc940895.aspx

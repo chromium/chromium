@@ -5,4 +5,4 @@
 # Must be incremented whenever the runtime library is updated. The WebAPK
 # re-extracts the runtime library from the Chrome APK when
 # |runtime_library_version| is incremented.
-runtime_library_version = 7
+runtime_library_version = 8

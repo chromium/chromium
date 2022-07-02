@@ -205,11 +205,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   // The process where this frame actually lives won't have sufficient
   // information to upgrade the url, since it won't have access to the
   // origin context. Do it now.
-  const FetchClientSettingsObject* fetch_client_settings_object = nullptr;
-  if (window) {
-    fetch_client_settings_object =
-        &window->Fetcher()->GetProperties().GetFetchClientSettingsObject();
-  }
+  const FetchClientSettingsObject* fetch_client_settings_object =
+      &window->Fetcher()->GetProperties().GetFetchClientSettingsObject();
   MixedContentChecker::UpgradeInsecureRequest(
       frame_request.GetResourceRequest(), fetch_client_settings_object, window,
       frame_request.GetFrameType(),
@@ -268,6 +265,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       blink::GetWebURLRequestHeadersAsString(WrappedResourceRequest(request));
   params->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), request.ReferrerString()), request.GetReferrerPolicy());
+  params->is_form_submission = !!frame_request.Form();
   params->disposition = ui::mojom::blink::WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry =
       frame_load_type == WebFrameLoadType::kReplaceCurrentItem;
@@ -431,11 +429,8 @@ void RemoteFrame::AddResourceTimingFromChild(
   HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(Owner());
   DCHECK(owner_element);
 
-  // TODO(https://crbug.com/900700): Take a Mojo pending receiver for
-  // WorkerTimingContainer for navigation from the calling function.
   DOMWindowPerformance::performance(*owner_element->GetDocument().domWindow())
       ->AddResourceTiming(std::move(timing), owner_element->localName(),
-                          /*worker_timing_receiver=*/mojo::NullReceiver(),
                           owner_element->GetDocument().GetExecutionContext());
 }
 

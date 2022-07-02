@@ -35,7 +35,7 @@ class RenderFrameHostPermissionsPolicyTest
       blink::mojom::PermissionsPolicyFeature::kGeolocation;
 
   RenderFrameHost* GetMainRFH(const char* origin) {
-    RenderFrameHost* result = web_contents()->GetMainFrame();
+    RenderFrameHost* result = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(result)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&result, GURL(origin));
     return result;

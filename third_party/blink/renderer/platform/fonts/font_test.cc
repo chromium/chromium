@@ -36,6 +36,35 @@ class FontTest : public FontTestBase {
   }
 };
 
+TEST_F(FontTest, IdeographicFullWidthAhem) {
+  Font font =
+      CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+}
+
+TEST_F(FontTest, IdeographicFullWidthCJKFull) {
+  Font font = CreateTestFont(
+      "M PLUS 1p",
+      blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"), 16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  EXPECT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 16);
+}
+
+TEST_F(FontTest, IdeographicFullWidthCJKNarrow) {
+  Font font = CreateTestFont("CSSHWOrientationTest",
+                             blink::test::BlinkWebTestsFontsTestDataPath(
+                                 "adobe-fonts/CSSHWOrientationTest.otf"),
+                             16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  EXPECT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 8);
+}
+
 TEST_F(FontTest, TextIntercepts) {
   Font font =
       CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 16);

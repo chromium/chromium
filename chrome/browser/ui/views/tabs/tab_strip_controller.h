@@ -174,12 +174,6 @@ class TabStripController {
   virtual absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Gets the last tab index in |group|, or nullopt if the group is
-  // currently empty. This is always safe to call unlike
-  // ListTabsInGroup().
-  virtual absl::optional<int> GetLastTabInGroup(
-      const tab_groups::TabGroupId& group) const = 0;
-
   // Returns the range of tabs in the given |group|. This must not be
   // called during intermediate states where the group is not
   // contiguous. For example, if tabs elsewhere in the tab strip are

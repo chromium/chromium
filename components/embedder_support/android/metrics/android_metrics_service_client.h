@@ -220,7 +220,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // we log metrics. If this returns false, MetricsServiceClient should
   // indicate reporting is disabled. Sampling is due to storage/bandwidth
   // considerations.
-  bool IsInSample() const;
+  virtual bool IsInSample() const;
 
   // Returns the installer type of the app.
   virtual InstallerPackageType GetInstallerPackageType();

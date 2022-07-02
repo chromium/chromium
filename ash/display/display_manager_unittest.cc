@@ -35,13 +35,16 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -3594,6 +3597,44 @@ TEST_F(DisplayManagerTest, DisconnectedInternalDisplayShouldUpdateDisplayInfo) {
   EXPECT_EQ(1.6f, display_info.device_scale_factor());
   ASSERT_EQ(1u, display_info.display_modes().size());
   EXPECT_EQ(1.6f, display_info.display_modes()[0].device_scale_factor());
+}
+
+// TODO(crbug/1262970): Delete when we can read radius from command line.
+TEST_F(DisplayManagerTest, SettingDefaultRoundedCornersOnInternalDisplay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  Shell* shell = Shell::Get();
+  display::DisplayChangeObserver observer(shell->display_manager());
+
+  const std::unique_ptr<display::DisplaySnapshot> internal_snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetName("AmazingFakeRoundedDisplay")
+          .SetNativeMode(MakeDisplayMode())
+          .SetType(
+              display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL)
+          .Build();
+
+  internal_snapshot->set_current_mode(internal_snapshot->native_mode());
+
+  display::DisplayConfigurator::DisplayStateList outputs;
+  outputs.push_back(internal_snapshot.get());
+
+  // Update the display manager through DisplayChangeObserver.
+  observer.OnDisplayModeChanged(outputs);
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  WindowTreeHostManager* window_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  aura::Window* primary_root =
+      window_manager->GetRootWindowForDisplayId(primary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(16.0),
+            primary_root->layer()->rounded_corner_radii());
 }
 
 TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {

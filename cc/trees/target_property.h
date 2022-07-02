@@ -14,6 +14,9 @@ namespace TargetProperty {
 // Must be zero-based as this will be stored in a bitset.
 enum Type {
   TRANSFORM = 0,
+  SCALE,
+  ROTATE,
+  TRANSLATE,
   OPACITY,
   FILTER,
   SCROLL_OFFSET,

@@ -104,7 +104,7 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;
 
   // Asynchronously fetches the list of upload WebRTC logs. Called from JS.
-  void HandleRequestWebRtcLogs(const base::ListValue* args);
+  void HandleRequestWebRtcLogs(const base::Value::List& args);
 
   // Asynchronously load WebRTC text logs.
   void LoadWebRtcTextLogs(const std::string& callback_id);
@@ -185,15 +185,15 @@ WebRtcLogsDOMHandler::~WebRtcLogsDOMHandler() {
 void WebRtcLogsDOMHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestWebRtcLogsList",
       base::BindRepeating(&WebRtcLogsDOMHandler::HandleRequestWebRtcLogs,
                           base::Unretained(this)));
 }
 
 void WebRtcLogsDOMHandler::HandleRequestWebRtcLogs(
-    const base::ListValue* args) {
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+    const base::Value::List& args) {
+  std::string callback_id = args[0].GetString();
   AllowJavascript();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LoadWebRtcTextLogs(callback_id);

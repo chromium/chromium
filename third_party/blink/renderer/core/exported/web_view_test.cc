@@ -497,7 +497,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   // The color should be passed to the compositor.
   cc::LayerTreeHost* host = widget->LayerTreeHostForTesting();
   EXPECT_EQ(SK_ColorBLUE, web_view->BackgroundColor());
-  EXPECT_EQ(SK_ColorBLUE, host->background_color());
+  EXPECT_EQ(SkColors::kBlue, host->background_color());
 
   web_view->Close();
 }
@@ -3257,7 +3257,7 @@ TEST_F(WebViewTest, TouchDoesntSelectEmptyTextarea) {
   auto* text_area_element = To<HTMLTextAreaElement>(static_cast<Node*>(
       web_view->MainFrameImpl()->GetDocument().GetElementById(
           blanklinestextbox)));
-  text_area_element->setValue("hello");
+  text_area_element->SetValue("hello");
 
   // Long-press past last word of textbox.
   EXPECT_TRUE(SimulateGestureAtElementById(
@@ -3816,15 +3816,17 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
   ViewCreatingWebViewClient() : did_focus_called_(false) {}
 
   // WebViewClient overrides.
-  WebView* CreateView(WebLocalFrame* opener,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString& name,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override {
+  WebView* CreateView(
+      WebLocalFrame* opener,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
   void DidFocus() override { did_focus_called_ = true; }
@@ -3899,15 +3901,17 @@ class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
   ViewReusingWebViewClient() = default;
 
   // WebViewClient methods
-  WebView* CreateView(WebLocalFrame*,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString& name,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override {
+  WebView* CreateView(
+      WebLocalFrame*,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override {
     return web_view_;
   }
 
@@ -3994,53 +3998,53 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
   auto* input_element = To<HTMLInputElement>(document->getElementById("date"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01-01", input_element->value());
+  EXPECT_EQ("1970-01-01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element =
       To<HTMLInputElement>(document->getElementById("datetimelocal"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01-01T00:00", input_element->value());
+  EXPECT_EQ("1970-01-01T00:00", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("month"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01", input_element->value());
+  EXPECT_EQ("1970-01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("time"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("00:00", input_element->value());
+  EXPECT_EQ("00:00", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("week"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-W01", input_element->value());
+  EXPECT_EQ("1970-W01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   // Clear the WebViewClient from the webViewHelper to avoid use-after-free in
   // the WebViewHelper destructor.
@@ -4828,27 +4832,19 @@ class MockUnhandledTapNotifierImpl : public mojom::blink::UnhandledTapNotifier {
       mojom::blink::UnhandledTapInfoPtr unhandled_tap_info) override {
     was_unhandled_tap_ = true;
     tapped_position_ = unhandled_tap_info->tapped_position_in_viewport;
-    element_text_run_length_ = unhandled_tap_info->element_text_run_length;
-    font_size_ = unhandled_tap_info->font_size_in_pixels;
   }
   bool WasUnhandledTap() const { return was_unhandled_tap_; }
   int GetTappedXPos() const { return tapped_position_.x(); }
   int GetTappedYPos() const { return tapped_position_.y(); }
-  int GetFontSize() const { return font_size_; }
-  int GetElementTextRunLength() const { return element_text_run_length_; }
   void Reset() {
     was_unhandled_tap_ = false;
     tapped_position_ = gfx::Point();
-    element_text_run_length_ = 0;
-    font_size_ = 0;
     receiver_.reset();
   }
 
  private:
   bool was_unhandled_tap_ = false;
   gfx::Point tapped_position_;
-  int element_text_run_length_ = 0;
-  int font_size_ = 0;
 
   mojo::Receiver<mojom::blink::UnhandledTapNotifier> receiver_{this};
 };
@@ -4934,8 +4930,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeeded) {
   EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
   EXPECT_EQ(64, mock_notifier_.GetTappedXPos());
   EXPECT_EQ(278, mock_notifier_.GetTappedYPos());
-  EXPECT_EQ(16, mock_notifier_.GetFontSize());
-  EXPECT_EQ(7, mock_notifier_.GetElementTextRunLength());
 
   // Test basic tap handling and notification.
   Tap("target");
@@ -4963,8 +4957,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeeded) {
   constexpr float expected_y = 82 * scale - (scale * visual_y);
   EXPECT_EQ(expected_x, mock_notifier_.GetTappedXPos());
   EXPECT_EQ(expected_y, mock_notifier_.GetTappedYPos());
-  EXPECT_EQ(16, mock_notifier_.GetFontSize());
-  EXPECT_EQ(28, mock_notifier_.GetElementTextRunLength());
 }
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithMutateDom) {
@@ -5004,16 +4996,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithNonTriggeringNodes) {
 
   Tap("focusable");
   EXPECT_FALSE(mock_notifier_.WasUnhandledTap());
-}
-
-TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithTextSizes) {
-  Tap("large");
-  EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
-  EXPECT_EQ(20, mock_notifier_.GetFontSize());
-
-  Tap("small");
-  EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
-  EXPECT_EQ(10, mock_notifier_.GetFontSize());
 }
 
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)

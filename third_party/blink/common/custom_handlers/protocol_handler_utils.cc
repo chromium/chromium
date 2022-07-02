@@ -13,6 +13,25 @@
 
 namespace blink {
 
+const char kToken[] = "%s";
+
+URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
+    const GURL& full_url,
+    const base::StringPiece& user_url) {
+  // The specification requires that it is a SyntaxError if the "%s" token is
+  // not present.
+  int index = user_url.find(kToken);
+  if (-1 == index)
+    return URLSyntaxErrorCode::kMissingToken;
+
+  // It is also a SyntaxError if the custom handler URL, as created by removing
+  // the "%s" token and prepending the base url, does not resolve.
+  if (full_url.is_empty() || !full_url.is_valid())
+    return URLSyntaxErrorCode::kInvalidUrl;
+
+  return URLSyntaxErrorCode::kNoError;
+}
+
 bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
                                 ProtocolHandlerSecurityLevel security_level,
                                 bool* has_custom_scheme_prefix) {

@@ -124,6 +124,12 @@ void SubSurface::OnSetParent(Surface* parent, const gfx::Point&) {
     surface_->window()->SetProperty(aura::client::kSkipImeProcessing, true);
 }
 
+Capabilities* SubSurface::GetCapabilities() {
+  if (parent_)
+    return parent_->GetCapabilities();
+  return nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceObserver overrides:
 

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://multidevice-setup/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js';
+import 'chrome://multidevice-setup/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * In the testing framework, a click on a select option does not cause a
@@ -65,15 +63,10 @@ suite('MultiDeviceSetup', () => {
   ];
 
   setup(async () => {
-    // The OOBE host uses polyfill which requires the test to wait until HTML
-    // imports have finished loading before initiating any tests. The Polymer 3
-    // version of the test does not use the OOBE host so this line should not
-    // execute.
-    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     startSetupPageElement = document.createElement('start-setup-page');
     document.body.appendChild(startSetupPageElement);
     startSetupPageElement.devices = DEVICES;
-    Polymer.dom.flush();
+    flush();
     emulateDropdownBehavior(startSetupPageElement.$.deviceDropdown);
   });
 

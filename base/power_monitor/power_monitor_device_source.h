@@ -80,10 +80,13 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
                                          UINT message,
                                          WPARAM wparam,
                                          LPARAM lparam);
+
     // Instance of the module containing the window procedure.
     HMODULE instance_;
     // A hidden message-only window.
     HWND message_hwnd_;
+    // A handle, returned when we register for power setting notification
+    HPOWERNOTIFY power_notify_handle_ = nullptr;
   };
 #endif  // BUILDFLAG(IS_WIN)
 

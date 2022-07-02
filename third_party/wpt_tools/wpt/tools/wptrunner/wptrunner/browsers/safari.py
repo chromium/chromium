@@ -201,5 +201,6 @@ class SafariBrowser(WebDriverBrowser):
                             proc.wait(10)
                         except psutil.TimeoutExpired:
                             proc.kill()
+                            proc.wait(10)
                     except psutil.NoSuchProcess:
                         pass

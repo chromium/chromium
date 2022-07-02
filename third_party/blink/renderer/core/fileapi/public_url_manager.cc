@@ -27,12 +27,11 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -92,8 +91,6 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   }
 
   if (registrable->IsMojoBlob()) {
-    // Measure how much jank the following synchronous IPC introduces.
-    SCOPED_UMA_HISTOGRAM_TIMER("Storage.Blob.RegisterPublicURLTime");
     mojo::PendingRemote<mojom::blink::Blob> blob_remote;
     mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
         blob_remote.InitWithNewPipeAndPassReceiver();

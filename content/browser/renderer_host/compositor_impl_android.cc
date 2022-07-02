@@ -72,6 +72,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
@@ -468,7 +469,7 @@ void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
 
 void CompositorImpl::SetBackgroundColor(int color) {
   DCHECK(host_);
-  host_->set_background_color(color);
+  host_->set_background_color(SkColor4f::FromColor(color));
 }
 
 void CompositorImpl::CreateLayerTreeHost() {
@@ -915,7 +916,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = requires_alpha_channel_;
   renderer_settings.initial_screen_size = display_props.GetSizeInPixel();
-  renderer_settings.use_skia_renderer = features::IsUsingSkiaRenderer();
   renderer_settings.color_space = display_color_spaces_.GetOutputColorSpace(
       gfx::ContentColorUsage::kHDR, requires_alpha_channel_);
 

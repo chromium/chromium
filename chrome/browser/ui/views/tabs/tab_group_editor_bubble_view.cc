@@ -98,33 +98,14 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
   return button;
 }
 
-class MenuItemFactory : public views::BubbleDialogModelHost::CustomViewFactory {
- public:
-  MenuItemFactory(const std::u16string& name,
-                  views::Button::PressedCallback callback,
-                  const gfx::VectorIcon* icon = nullptr)
-      : name_(std::move(name)), callback_(std::move(callback)), icon_(icon) {}
-  ~MenuItemFactory() override = default;
-
-  // views::BubbleDialogModelHost::CustomViewFactory:
-  std::unique_ptr<views::View> CreateView() override {
-    // TODO(pbos): See if dialog_model()->host()->Close(); can be handled by the
-    // menu item itself (after calling callback_). All menu-item actions close
-    // the dialog. We should be able to chain some calls if we have access to
-    // DialogModelDelegate here.
-
-    return CreateMenuItem(-1, name_, callback_, icon_);
-  }
-
-  views::BubbleDialogModelHost::FieldType GetFieldType() const override {
-    return views::BubbleDialogModelHost::FieldType::kMenuItem;
-  }
-
- private:
-  const std::u16string name_;
-  const views::Button::PressedCallback callback_;
-  const raw_ptr<const gfx::VectorIcon> icon_;
-};
+std::unique_ptr<views::BubbleDialogModelHost::CustomView>
+CreateMenuItemCustomView(const std::u16string& name,
+                         views::Button::PressedCallback callback,
+                         const gfx::VectorIcon* icon = nullptr) {
+  return std::make_unique<views::BubbleDialogModelHost::CustomView>(
+      CreateMenuItem(-1, name, std::move(callback), icon),
+      views::BubbleDialogModelHost::FieldType::kMenuItem);
+}
 
 class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
  public:
@@ -226,41 +207,31 @@ views::Widget* TabGroupEditorBubbleView::Show(
 
     dialog_builder.OverrideShowCloseButton(false)
         .AddSeparator()
-        .AddCustomField(
-            std::make_unique<MenuItemFactory>(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
-                    base::Unretained(bubble_delegate)),
-                &kNewTabInGroupIcon),
-            TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP)
-        .AddCustomField(
-            std::make_unique<MenuItemFactory>(
-                l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::UngroupPressed,
-                    base::Unretained(bubble_delegate), header_view),
-                &kUngroupIcon),
-            TAB_GROUP_HEADER_CXMENU_UNGROUP)
-        .AddCustomField(
-            std::make_unique<MenuItemFactory>(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::CloseGroupPressed,
-                    base::Unretained(bubble_delegate)),
-                &kCloseGroupIcon),
-            TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
-        .AddCustomField(
-            std::make_unique<MenuItemFactory>(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
-                    base::Unretained(bubble_delegate)),
-                &kMoveGroupToNewWindowIcon),
-            TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW);
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
+                base::Unretained(bubble_delegate)),
+            &kNewTabInGroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
+            base::BindRepeating(&TabGroupEditorBubbleDelegate::UngroupPressed,
+                                base::Unretained(bubble_delegate), header_view),
+            &kUngroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::CloseGroupPressed,
+                base::Unretained(bubble_delegate)),
+            &kCloseGroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
+                base::Unretained(bubble_delegate)),
+            &kMoveGroupToNewWindowIcon));
 
     // TODO(pbos): Add enabling/disabling of
     // TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW item.

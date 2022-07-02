@@ -101,7 +101,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
   std::string script(base::StringPrintf(
       "window.domAutomationController.send(addIFrame(%d, \"%s\"));",
       iframe_id, url.spec().c_str()));
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 
   quit_closure_ = run_loop.QuitWhenIdleClosure();
@@ -112,7 +112,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
   // Now that we loaded the iframe, let's fetch its src.
   script = base::StringPrintf(
       "window.domAutomationController.send(getIFrameSrc(%d))", iframe_id);
-  iframe_url_ = GURL(RunScript(web_contents->GetMainFrame(), script));
+  iframe_url_ = GURL(RunScript(web_contents->GetPrimaryMainFrame(), script));
 }
 
 IFrameLoader::~IFrameLoader() {
@@ -303,7 +303,7 @@ void GeolocationBrowserTest::SetFrameForScriptExecution(
   render_frame_host_ = nullptr;
 
   if (frame_name.empty()) {
-    render_frame_host_ = web_contents()->GetMainFrame();
+    render_frame_host_ = web_contents()->GetPrimaryMainFrame();
   } else {
     render_frame_host_ = content::FrameMatchingPredicate(
         web_contents()->GetPrimaryPage(),
@@ -532,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, InvalidUrlRequest) {
   content::WebContents* original_tab = web_contents();
   ExpectValueFromScript(GetErrorCodePermissionDenied(),
                         "requestGeolocationFromInvalidUrl()");
-  ExpectValueFromScriptForFrame("1", "isAlive()", original_tab->GetMainFrame());
+  ExpectValueFromScriptForFrame("1", "isAlive()",
+                                original_tab->GetPrimaryMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptBeforeStart) {

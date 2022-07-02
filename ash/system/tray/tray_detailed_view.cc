@@ -4,11 +4,14 @@
 
 #include "ash/system/tray/tray_detailed_view.h"
 
+#include <cstring>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/time/calendar_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -25,6 +28,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -271,8 +275,7 @@ class ScrollContentsView : public views::View {
 TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      delegate->GetInsetsForDetailedView()));
+      views::BoxLayout::Orientation::kVertical));
   SetBackground(views::CreateSolidBackground(
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 }
@@ -281,6 +284,11 @@ TrayDetailedView::~TrayDetailedView() = default;
 
 void TrayDetailedView::OnViewClicked(views::View* sender) {
   HandleViewClicked(sender);
+}
+
+void TrayDetailedView::OverrideProgressBarAccessibleName(
+    const std::u16string& name) {
+  progress_bar_accessible_name_ = name;
 }
 
 void TrayDetailedView::CreateTitleRow(int string_id) {
@@ -294,8 +302,14 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
 
   AddChildViewAt(tri_view_, 0);
 
-  // Do not add a separator below the calendar title.
-  if (string_id != IDS_ASH_CALENDAR_TITLE) {
+  // If this view doesn't have a separator, adds an empty view as a placeholder
+  // so that the views below won't move up when the `progress_bar_` becomes
+  // invisible.
+  if (!has_separator_) {
+    auto buffer_view = std::make_unique<views::View>();
+    buffer_view->SetPreferredSize(gfx::Size(1, kTitleRowProgressBarHeight));
+    AddChildViewAt(std::move(buffer_view), kTitleRowSeparatorIndex);
+  } else {
     AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
   }
 
@@ -394,8 +408,8 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
         std::make_unique<views::ProgressBar>(kTitleRowProgressBarHeight),
         kTitleRowSeparatorIndex + 1);
     progress_bar_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME));
+        progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
     progress_bar_->SetVisible(false);
     progress_bar_->SetForegroundColor(
         AshColorProvider::Get()->GetContentLayerColor(
@@ -445,6 +459,10 @@ void TrayDetailedView::CloseBubble() {
   if (widget->IsClosed())
     return;
   delegate_->CloseBubble();
+}
+
+void TrayDetailedView::IgnoreSeparator() {
+  has_separator_ = false;
 }
 
 void TrayDetailedView::Layout() {

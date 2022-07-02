@@ -11,7 +11,7 @@ import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provid
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
@@ -61,15 +61,6 @@ export function inputListTestSuite() {
   function getCardByDeviceType(deviceType) {
     const card = inputListElement.$$(`input-card[device-type="${deviceType}"]`);
     return /** @type {!InputCardElement} */ (card);
-  }
-
-  /**
-   * Returns whether the element both exists and is visible.
-   * @param {?Element} element
-   * @return {boolean}
-   */
-  function isVisible(element) {
-    return !!element && element.style.display !== 'none';
   }
 
   test('InputListPopulated', async () => {

@@ -61,14 +61,14 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
   // thread.
   void NotifyController();
 
-  int result_;  // Final operation result.
+  int result_ = -1;  // Final operation result.
 
  private:
   friend class base::RefCountedThreadSafe<BackgroundIO>;
 
   // An event to signal when the operation completes.
   base::WaitableEvent io_completed_;
-  raw_ptr<InFlightIO>
+  raw_ptr<InFlightIO, DanglingUntriaged>
       controller_;              // The controller that tracks all operations.
   base::Lock controller_lock_;  // A lock protecting clearing of controller_.
 };
@@ -137,7 +137,7 @@ class InFlightIO {
   IOList io_list_;  // List of pending, in-flight io operations.
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
-  bool running_;  // True after the first posted operation completes.
+  bool running_ = false;  // True after the first posted operation completes.
 #if DCHECK_IS_ON()
   bool single_thread_ = false;  // True if we only have one thread.
 #endif

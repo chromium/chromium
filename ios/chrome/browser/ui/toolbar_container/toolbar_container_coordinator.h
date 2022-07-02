@@ -15,7 +15,7 @@ enum class ToolbarContainerType { kPrimary, kSecondary };
 // Coordinator that manages a stack of toolbars.
 @interface ToolbarContainerCoordinator : ChromeCoordinator
 
-// Initializes a container with |type| and |browserState|.
+// Initializes a container with `type` and `browserState`.
 - (instancetype)initWithBrowser:(Browser*)browser
                            type:(ToolbarContainerType)type
     NS_DESIGNATED_INITIALIZER;
@@ -29,7 +29,7 @@ enum class ToolbarContainerType { kPrimary, kSecondary };
 // The toolbar coordinators being managed by this container.
 @property(nonatomic, strong) NSArray<ChromeCoordinator*>* toolbarCoordinators;
 
-// Returns the height of the toolbars managed by this container at |progress|.
+// Returns the height of the toolbars managed by this container at `progress`.
 - (CGFloat)toolbarStackHeightForFullscreenProgress:(CGFloat)progress;
 
 @end

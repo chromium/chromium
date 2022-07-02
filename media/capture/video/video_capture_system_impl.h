@@ -28,6 +28,8 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
   void GetDeviceInfosAsync(DeviceInfoCallback result_callback) override;
   VideoCaptureErrorOrDevice CreateDevice(const std::string& device_id) override;
 
+  VideoCaptureDeviceFactory* GetFactory() override;
+
  private:
   using DeviceEnumQueue = std::list<DeviceInfoCallback>;
 

@@ -395,6 +395,15 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
   return nullptr;
 }
 
+base::span<ShapeResultView::RunInfoPart> ShapeResultView::Parts() {
+  return {reinterpret_cast<ShapeResultView::RunInfoPart*>(parts_), num_parts_};
+}
+
+base::span<const ShapeResultView::RunInfoPart> ShapeResultView::Parts() const {
+  return {reinterpret_cast<const ShapeResultView::RunInfoPart*>(parts_),
+          num_parts_};
+}
+
 // static
 constexpr size_t ShapeResultView::ByteSize(wtf_size_t num_parts) {
   static_assert(sizeof(ShapeResultView) % alignof(RunInfoPart) == 0,
@@ -472,7 +481,7 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(
 unsigned ShapeResultView::PreviousSafeToBreakOffset(unsigned index) const {
   for (auto it = RunsOrParts().rbegin(); it != RunsOrParts().rend(); ++it) {
     const auto& part = *it;
-    unsigned run_start = part.start_index_;
+    unsigned run_start = part.start_index_ + char_index_offset_;
     if (index >= run_start) {
       unsigned offset = index - run_start;
       if (offset <= part.num_characters_) {

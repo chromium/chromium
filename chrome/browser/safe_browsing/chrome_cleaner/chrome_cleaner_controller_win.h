@@ -147,8 +147,9 @@ class ChromeCleanerController {
   // unless the user has manually requested a reporter run, in which case the
   // |SwReporterInvocationType::kUserInitiatedWithLogsAllowed| or
   // |SwReporterInvocationType::kUserInitiatedWithLogsDisallowed| types will be
-  // passed.
+  // passed. |prompt_seed| is the seed specified in the component manifest.
   virtual void OnSwReporterReady(
+      const std::string& prompt_seed,
       SwReporterInvocationSequence&& invocations) = 0;
 
   // Downloads the Chrome Cleaner binary, executes it and waits for the Cleaner
@@ -197,6 +198,9 @@ class ChromeCleanerController {
 
   // Returns true if cleaner reporting is managed by enterprise policy.
   virtual bool IsReportingManagedByPolicy(Profile* profile) = 0;
+
+  // Returns the prompt seed specified in the component manifest.
+  virtual std::string GetIncomingPromptSeed() = 0;
 
  protected:
   ChromeCleanerController();

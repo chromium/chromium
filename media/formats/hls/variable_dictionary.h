@@ -5,16 +5,17 @@
 #ifndef MEDIA_FORMATS_HLS_VARIABLE_DICTIONARY_H_
 #define MEDIA_FORMATS_HLS_VARIABLE_DICTIONARY_H_
 
+#include <list>
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/source_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
-
-struct SourceString;
 
 namespace types {
 class VariableName;
@@ -22,17 +23,18 @@ class VariableName;
 
 class MEDIA_EXPORT VariableDictionary {
  public:
-  class SubstitutionBuffer {
+  class MEDIA_EXPORT SubstitutionBuffer {
    public:
     friend VariableDictionary;
-    SubstitutionBuffer() = default;
+    SubstitutionBuffer();
+    ~SubstitutionBuffer();
     SubstitutionBuffer(const SubstitutionBuffer&) = delete;
     SubstitutionBuffer(const SubstitutionBuffer&&) = delete;
     SubstitutionBuffer& operator=(const SubstitutionBuffer&) = delete;
     SubstitutionBuffer& operator=(SubstitutionBuffer&&) = delete;
 
    private:
-    std::string buf_;
+    std::list<std::string> strings_;
   };
 
   VariableDictionary();
@@ -53,12 +55,13 @@ class MEDIA_EXPORT VariableDictionary {
   bool Insert(types::VariableName name, std::string value);
 
   // Attempts to resolve all variable references within the given input string
-  // using this dictionary, returning a `base::StringPiece` with the fully
+  // using this dictionary, returning a `ResolvedSourceString` with the fully
   // resolved string, or an error if one occurred. `buffer` will be used to
   // build the resulting string if any substitutions occur, and the caller must
-  // ensure that it outlives the `base::StringPiece` returned by this function.
-  // As an optimization, the buffer will not be used if no substitutions are
-  // necessary.
+  // ensure that it outlives the `ResolvedSourceString` returned by this
+  // function. As an optimization, the buffer will not be used if no
+  // substitutions are necessary, or if the substitution consisted of the entire
+  // input string.
   //
   // This implementation is based on a somewhat pedantic interpretation of the
   // spec:
@@ -69,11 +72,12 @@ class MEDIA_EXPORT VariableDictionary {
   // If a given sequence doesn't exactly match that format then it's ignored,
   // rather than treated as an error. However, if it does match that format and
   // the variable name is undefined, it's treated as an error.
-  ParseStatus::Or<base::StringPiece> Resolve(SourceString input,
-                                             SubstitutionBuffer& buffer) const;
+  ParseStatus::Or<ResolvedSourceString> Resolve(
+      SourceString input,
+      SubstitutionBuffer& buffer) const;
 
  private:
-  base::flat_map<std::string, std::string> entries_;
+  base::flat_map<std::string, std::unique_ptr<std::string>> entries_;
 };
 
 }  // namespace media::hls

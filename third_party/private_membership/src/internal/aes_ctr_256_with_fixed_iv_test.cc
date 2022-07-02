@@ -15,6 +15,7 @@
 #include "third_party/private_membership/src/internal/aes_ctr_256_with_fixed_iv.h"
 
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

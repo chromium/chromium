@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
       browser()->exclusive_access_manager()->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  controller->EnterFullscreenModeForTab(web_contents->GetMainFrame());
+  controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
   bool top_view_in_tab_fullscreen =
       browser_view->immersive_mode_controller()->IsEnabled() ? true : false;
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
       browser()->exclusive_access_manager()->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  controller->EnterFullscreenModeForTab(web_contents->GetMainFrame());
+  controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   // The top view should not show up.

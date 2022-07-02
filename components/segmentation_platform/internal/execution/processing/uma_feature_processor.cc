@@ -9,9 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 
@@ -23,7 +23,7 @@ UmaFeatureProcessor::UmaFeatureProcessor(
     FeatureAggregator* feature_aggregator,
     const base::Time prediction_time,
     const base::TimeDelta bucket_duration,
-    const OptimizationTarget segment_id)
+    const SegmentId segment_id)
     : uma_features_(std::move(uma_features)),
       signal_database_(signal_database),
       feature_aggregator_(feature_aggregator),

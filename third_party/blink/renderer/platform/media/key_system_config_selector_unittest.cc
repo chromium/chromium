@@ -28,7 +28,6 @@ using ::media::EmeConfigRule;
 using ::media::EmeFeatureSupport;
 using ::media::EmeInitDataType;
 using ::media::EmeMediaType;
-using ::media::EmeSessionTypeSupport;
 using MediaKeysRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 
@@ -338,7 +337,7 @@ class FakeKeySystems : public media::KeySystems {
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
+  EmeConfigRule GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override {
     return persistent_license;
   }
@@ -358,7 +357,7 @@ class FakeKeySystems : public media::KeySystems {
   bool init_data_type_keyids_supported_ = false;
 
   // INVALID so that they must be set in any test that needs them.
-  EmeSessionTypeSupport persistent_license = EmeSessionTypeSupport::INVALID;
+  EmeConfigRule persistent_license = EmeConfigRule::NOT_SUPPORTED;
 
   // Every test implicitly requires these, so they must be set. They are set to
   // values that are likely to cause tests to fail if they are accidentally
@@ -877,7 +876,7 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_Empty) {
 TEST_F(KeySystemConfigSelectorTest, SessionTypes_SubsetSupported) {
   // Allow persistent state, as it would be required to be successful.
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
-  key_systems_->persistent_license = EmeSessionTypeSupport::NOT_SUPPORTED;
+  key_systems_->persistent_license = EmeConfigRule::NOT_SUPPORTED;
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kTemporary);
@@ -893,7 +892,7 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_SubsetSupported) {
 TEST_F(KeySystemConfigSelectorTest, SessionTypes_AllSupported) {
   // Allow persistent state, and expect it to be required.
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
-  key_systems_->persistent_license = EmeSessionTypeSupport::SUPPORTED;
+  key_systems_->persistent_license = EmeConfigRule::SUPPORTED;
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kTemporary);
@@ -917,7 +916,7 @@ TEST_F(KeySystemConfigSelectorTest, SessionTypes_PermissionCanBeRequired) {
   key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
   key_systems_->persistent_state = EmeFeatureSupport::REQUESTABLE;
   key_systems_->persistent_license =
-      EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER;
+      EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED;
 
   std::vector<WebEncryptedMediaSessionType> session_types;
   session_types.push_back(WebEncryptedMediaSessionType::kPersistentLicense);

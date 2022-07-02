@@ -10,19 +10,22 @@ import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
-import "url/mojom/url.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
 // This interface is used to notify loading stats of the resource.
 interface ResourceLoadInfoNotifier {
+  // Called to update information to determine whether a user gesture should
+  // carryover to future navigations, when a request is initiated.
+  [EnableIf=is_android]
+  NotifyUpdateUserGestureCarryoverInfo();
+
   // Called to notify the request has been redirected.
   NotifyResourceRedirectReceived(network.mojom.URLRequestRedirectInfo redirect_info,
                                  network.mojom.URLResponseHead redirect_response);
 
   // Called to notify the response has been received.
-  // TODO(crbug.com/973885): make |response_url| as url.mojom.SchemeHostPort
-  // instead of url.mojom.Url if applicable.
   NotifyResourceResponseReceived(int64 request_id,
-                                 url.mojom.Url response_url,
+                                 url.mojom.SchemeHostPort final_response_url,
                                  network.mojom.URLResponseHead head,
                                  network.mojom.RequestDestination request_destination);
 

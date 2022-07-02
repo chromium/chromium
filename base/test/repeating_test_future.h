@@ -134,8 +134,11 @@ class RepeatingTestFuture {
   base::RepeatingCallback<void(CallbackArgumentsTypes...)> GetCallback() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return base::BindRepeating(
-        &RepeatingTestFuture<Types...>::AddValueFromCallbackArguments<
-            CallbackArgumentsTypes...>,
+        [](WeakPtr<RepeatingTestFuture<Types...>> future,
+           CallbackArgumentsTypes... values) {
+          if (future)
+            future->AddValue(std::forward<CallbackArgumentsTypes>(values)...);
+        },
         weak_ptr_factory_.GetWeakPtr());
   }
 
@@ -205,14 +208,6 @@ class RepeatingTestFuture {
     auto result = std::move(elements_.front());
     elements_.pop();
     return result;
-  }
-
-  // Used by GetCallback() to adapt between the form in which the callback
-  // provides arguments, and the argument types specified to this template.
-  // e.g. callbacks often carry arguments as |const Foo&| rather than |Foo|.
-  template <typename... CallbackArgumentsTypes>
-  void AddValueFromCallbackArguments(CallbackArgumentsTypes... values) {
-    AddValue(std::forward<CallbackArgumentsTypes>(values)...);
   }
 
   base::queue<TupleType> elements_ GUARDED_BY_CONTEXT(sequence_checker_);

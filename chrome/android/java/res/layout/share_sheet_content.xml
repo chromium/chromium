@@ -56,7 +56,7 @@
 
       <TextView
         android:id="@+id/subtitle_preview"
-        android:ellipsize="end"
+        android:ellipsize="start"
         android:layout_below="@id/title_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

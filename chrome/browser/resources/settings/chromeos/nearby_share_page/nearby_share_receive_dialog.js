@@ -19,18 +19,18 @@
  *  - showConfirmPage()
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../prefs/prefs.js';
 import '../../shared/nearby_onboarding_one_page.js';
 import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
-import '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
@@ -46,127 +46,150 @@ const Page = {
   VISIBILITY: 'visibility',
 };
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-share-receive-dialog',
+/** @polymer */
+class NearbyShareReceiveDialogElement extends PolymerElement {
+  static get is() {
+    return 'nearby-share-receive-dialog';
+  }
 
-  properties: {
-    /** Mirroring the enum so that it can be used from HTML bindings. */
-    Page: {
-      type: Object,
-      value: Page,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?nearbyShare.mojom.ShareTarget} */
-    shareTarget: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /** Mirroring the enum so that it can be used from HTML bindings. */
+      Page: {
+        type: Object,
+        value: Page,
+      },
 
-    /** @type {?string} */
-    connectionToken: {
-      type: String,
-      value: null,
-    },
+      /** @type {?nearbyShare.mojom.ShareTarget} */
+      shareTarget: {
+        type: Object,
+        value: null,
+      },
 
-    /** @type {NearbySettings} */
-    settings: {
-      type: Object,
-      notify: true,
-      value: {},
-    },
+      /** @type {?string} */
+      connectionToken: {
+        type: String,
+        value: null,
+      },
 
-    /** @private */
-    isSettingsRetreived: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {NearbySettings} */
+      settings: {
+        type: Object,
+        notify: true,
+        value: {},
+      },
+
+      /** @private */
+      isSettingsRetreived: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Status of the current transfer.
+       * @private {?nearbyShare.mojom.TransferStatus}
+       */
+      transferStatus_: {
+        type: nearbyShare.mojom.TransferStatus,
+        value: null,
+      },
+
+      /**
+       * @private {boolean}
+       */
+      nearbyProcessStopped_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * @private {boolean}
+       */
+      startAdvertisingFailed_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onSettingsLoaded_(isSettingsRetreived)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.closing_ = false;
 
     /**
-     * Status of the current transfer.
-     * @private {?nearbyShare.mojom.TransferStatus}
-     */
-    transferStatus_: {
-      type: nearbyShare.mojom.TransferStatus,
-      value: null,
-    },
+     * What should happen once we get settings values from mojo.
+     * @private {?function()}
+     * */
+    this.postSettingsCallback = null;
 
     /**
-     * @private {boolean}
-     */
-    nearbyProcessStopped_: {
-      type: Boolean,
-      value: false,
-    },
+     * What should happen once onboarding is complete.
+     * @private {?function()}
+     * */
+    this.postOnboardingCallback = null;
+
+    /** @private {?nearbyShare.mojom.ReceiveManagerInterface} */
+    this.receiveManager_ = null;
+
+    /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
+    this.observerReceiver_ = null;
 
     /**
-     * @private {boolean}
+     * Timestamp in milliseconds since unix epoch of when high visibility will
+     * be turned off.
+     * @private {number}
      */
-    startAdvertisingFailed_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+    this.highVisibilityShutoffTimestamp_ = 0;
 
-  listeners: {
-    'accept': 'onAccept_',
-    'cancel': 'onCancel_',
-    'change-page': 'onChangePage_',
-    'onboarding-complete': 'onOnboardingComplete_',
-    'reject': 'onReject_',
-    'close': 'close_',
-  },
-
-  observers: [
-    'onSettingsLoaded_(isSettingsRetreived)',
-  ],
-
-  /** @private {boolean} */
-  closing_: false,
-
-  /**
-   * What should happen once we get settings values from mojo.
-   * @private {?function()}
-   * */
-  postSettingsCallback: null,
-
-  /**
-   * What should happen once onboarding is complete.
-   * @private {?function()}
-   * */
-  postOnboardingCallback: null,
-
-  /** @private {?nearbyShare.mojom.ReceiveManagerInterface} */
-  receiveManager_: null,
-
-  /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
-  observerReceiver_: null,
-
-  /**
-   * Timestamp in milliseconds since unix epoch of when high visibility will
-   * be turned off.
-   * @private {number}
-   */
-  highVisibilityShutoffTimestamp_: 0,
-
-  /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
-  registerForegroundReceiveSurfaceResult_: null,
+    /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+    this.registerForegroundReceiveSurfaceResult_ = null;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+
+    this.addEventListener('accept', this.onAccept_);
+    this.addEventListener('cancel', this.onCancel_);
+    this.addEventListener('change-page', (event) => {
+      this.onChangePage_(
+          /** @type {!CustomEvent<!{page: Page}>} */ (event));
+    });
+    this.addEventListener('onboarding-complete', this.onOnboardingComplete_);
+    this.addEventListener('reject', this.onReject_);
+    this.addEventListener('close', this.close_);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.closing_ = false;
-    this.errorString = null;
     this.receiveManager_ = getReceiveManager();
     this.observerReceiver_ = observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.observerReceiver_) {
       this.observerReceiver_.$.close();
     }
-  },
+  }
 
   /**
    * Records via Standard Feature Usage Logging whether or not advertising
@@ -181,7 +204,7 @@ Polymer({
     if (urlParams.get('entrypoint') === 'notification') {
       this.receiveManager_.recordFastInitiationNotificationUsage(success);
     }
-  },
+  }
 
   /**
    * Determines if the feature flag for One-page onboarding workflow is enabled.
@@ -190,7 +213,7 @@ Polymer({
    */
   isOnePageOnboardingEnabled_() {
     return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
-  },
+  }
 
   /**
    * Mojo callback when high visibility changes. If high visibility is false
@@ -215,7 +238,7 @@ Polymer({
       this.nearbyProcessStopped_ = false;
       this.recordFastInitiationNotificationUsage_(/*success=*/ true);
     }
-  },
+  }
 
   /**
    * Mojo callback when transfer status changes.
@@ -232,14 +255,14 @@ Polymer({
           (metadata && metadata.token) ? metadata.token : null;
       this.showConfirmPage();
     }
-  },
+  }
 
   /**
    * Mojo callback when the Nearby utility process stops.
    */
   onNearbyProcessStopped() {
     this.nearbyProcessStopped_ = true;
-  },
+  }
 
   /**
    * Mojo callback when advertising fails to start.
@@ -247,7 +270,7 @@ Polymer({
   onStartAdvertisingFailure() {
     this.startAdvertisingFailed_ = true;
     this.recordFastInitiationNotificationUsage_(/*success=*/ false);
-  },
+  }
 
   /**
    * @private
@@ -257,7 +280,7 @@ Polymer({
       this.postSettingsCallback();
       this.postSettingsCallback = null;
     }
-  },
+  }
 
   /**
    * @return {!CrViewManagerElement} the view manager
@@ -265,7 +288,7 @@ Polymer({
    */
   getViewManager_() {
     return /** @type {!CrViewManagerElement} */ (this.$.viewManager);
-  },
+  }
 
   /** @private */
   close_() {
@@ -282,7 +305,7 @@ Polymer({
         dialog.close();
       }
     });
-  },
+  }
 
   /**
    * Defers running a callback for page navigation in the case that we do not
@@ -320,7 +343,7 @@ Polymer({
 
     // We know the feature is enabled so no need to defer the call.
     return false;
-  },
+  }
 
   /**
    * Call to show the onboarding flow and then close when complete.
@@ -333,7 +356,7 @@ Polymer({
     } else {
       this.getViewManager_().switchView(Page.ONBOARDING);
     }
-  },
+  }
 
   /**
    * Call to show the high visibility page.
@@ -357,7 +380,7 @@ Polymer({
       this.registerForegroundReceiveSurfaceResult_ = result.result;
       this.getViewManager_().switchView(Page.HIGH_VISIBILITY);
     });
-  },
+  }
 
   /**
    * Call to show the share target configuration page.
@@ -369,7 +392,7 @@ Polymer({
       return;
     }
     this.getViewManager_().switchView(Page.CONFIRM);
-  },
+  }
 
   /**
    * Child views can fire a 'change-page' event to trigger a page change.
@@ -378,12 +401,12 @@ Polymer({
    */
   onChangePage_(event) {
     this.getViewManager_().switchView(event.detail.page);
-  },
+  }
 
   /** @private */
   onCancel_() {
     this.close_();
-  },
+  }
 
   /** @private */
   onAccept_() {
@@ -396,7 +419,7 @@ Polymer({
         this.close_();
       }
     });
-  },
+  }
 
   /** @private */
   onOnboardingComplete_() {
@@ -406,7 +429,7 @@ Polymer({
 
     this.postOnboardingCallback();
     this.postOnboardingCallback = null;
-  },
+  }
 
   /** @private */
   onReject_() {
@@ -419,5 +442,8 @@ Polymer({
         this.close_();
       }
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    NearbyShareReceiveDialogElement.is, NearbyShareReceiveDialogElement);

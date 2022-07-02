@@ -59,7 +59,7 @@ WebDialogUIBase::WebDialogUIBase(content::WebUI* web_ui) : web_ui_(web_ui) {}
 // HTML dialogs won't swap WebUIs anyway since they don't navigate.
 WebDialogUIBase::~WebDialogUIBase() = default;
 
-void WebDialogUIBase::CloseDialog(const base::ListValue* args) {
+void WebDialogUIBase::CloseDialog(const base::Value::List& args) {
   OnDialogClosed(args);
 }
 
@@ -76,7 +76,7 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Hook up the javascript function calls, also known as chrome.send("foo")
   // calls in the HTML, to the actual C++ functions.
-  web_ui_->RegisterDeprecatedMessageCallback(
+  web_ui_->RegisterMessageCallback(
       "dialogClose", base::BindRepeating(&WebDialogUIBase::OnDialogClosed,
                                          base::Unretained(this)));
 
@@ -100,13 +100,13 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     delegate->OnDialogShown(web_ui_);
 }
 
-void WebDialogUIBase::OnDialogClosed(const base::ListValue* args) {
+void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;
-    if (args && !args->GetListDeprecated().empty()) {
-      if (args->GetListDeprecated()[0].is_string())
-        json_retval = args->GetListDeprecated()[0].GetString();
+    if (!args.empty()) {
+      if (args[0].is_string())
+        json_retval = args[0].GetString();
       else
         NOTREACHED() << "Could not read JSON argument";
     }

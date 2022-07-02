@@ -15,6 +15,8 @@ import os
 import subprocess
 import sys
 import toml
+import typing
+from typing import Any, Optional
 
 from lib import common
 from lib import consts
@@ -37,7 +39,9 @@ class CrateKey:
     def __repr__(self) -> str:
         return "CrateKey({} v{})".format(self.name, self.epoch)
 
-    def __eq__(self, other: CrateKey) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, CrateKey):
+            return NotImplemented
         return self.name == other.name and self.epoch == other.epoch
 
     def __hash__(self) -> int:
@@ -59,10 +63,12 @@ class CrateUsage(Enum):
         tests, or for use from a build.rs build script."""
         if self == CrateUsage.FOR_NORMAL:
             return CrateBuildOutput.NORMAL.gn_target_name_for_dep()
-        if self == CrateUsage.FOR_BUILDRS:
+        elif self == CrateUsage.FOR_BUILDRS:
             return CrateBuildOutput.BUILDRS.gn_target_name_for_dep()
-        if self == CrateUsage.FOR_TESTS:
+        elif self == CrateUsage.FOR_TESTS:
             return CrateBuildOutput.TESTS.gn_target_name_for_dep()
+        else:
+            return NotImplemented
 
 
 class CrateBuildOutput(Enum):
@@ -103,14 +109,17 @@ class CrateBuildOutput(Enum):
         to see the dependencies of a given build output."""
         if self == CrateBuildOutput.NORMAL:
             return "normal"
-        if self == CrateBuildOutput.BUILDRS:
+        elif self == CrateBuildOutput.BUILDRS:
             return "build"
-        if self == CrateBuildOutput.TESTS:
+        elif self == CrateBuildOutput.TESTS:
             return "dev"
+        else:
+            return NotImplemented
 
 
-def run_cargo_tree(path: str, build: CrateBuildOutput, target_arch: str,
-                   depth: int, features: list) -> list[str]:
+def run_cargo_tree(path: str, build: CrateBuildOutput,
+                   target_arch: Optional[str], depth: Optional[int],
+                   features: list) -> list[str]:
     """Runs `cargo tree` on the Cargo.toml file at `path`.
 
     Note that `cargo tree` actually invokes `rustc` a bunch to collect its
@@ -139,9 +148,9 @@ def run_cargo_tree(path: str, build: CrateBuildOutput, target_arch: str,
     ]
     if target_arch:
         tree_cmd += ["--target", target_arch]
-    if not depth is None:
+    if depth is not None:
         tree_cmd += ["--depth", str(depth)]
-    if not "default" in features:
+    if "default" not in features:
         tree_cmd += ["--no-default-features"]
     features = [f for f in features if not f == "default"]
     if features:
@@ -178,11 +187,12 @@ class ListOf3pCargoToml:
         self._list_of = list_of
 
 
-def write_cargo_toml_in_tempdir(dir: str,
-                                all_3p_tomls: ListOf3pCargoToml,
-                                orig_toml_parsed: dict = None,
-                                orig_toml_path: str = None,
-                                verbose: bool = False) -> str:
+def write_cargo_toml_in_tempdir(
+        dir: str,
+        all_3p_tomls: ListOf3pCargoToml,
+        orig_toml_parsed: Optional[dict[str, Any]] = None,
+        orig_toml_path: Optional[str] = None,
+        verbose: bool = False) -> str:
     """Write a temporary Cargo.toml file that will work with `cargo tree`.
 
     Creates a copy of a Cargo.toml, specified in `orig_toml_path`, in to the
@@ -198,8 +208,7 @@ def write_cargo_toml_in_tempdir(dir: str,
         all_3p_tomls: A cache of local third-party Cargo.toml files, crated by
           gen_list_of_3p_cargo_toml(). The generated Cargo.toml will be patched
           to point `cargo tree` to local Cargo.tomls for dependencies in order
-          to see local changes. It can be `None` if the written Cargo.toml will
-          not have any dependencies.
+          to see local changes.
         orig_toml_parsed: The Cargo.toml file contents to write, as a
           dictionary.
         orig_toml_path: An OS path to the Cargo.toml file which should be copied
@@ -211,11 +220,16 @@ def write_cargo_toml_in_tempdir(dir: str,
         The OS path to the output Cargo.toml file in `dir`, for convenience.
     """
     assert bool(orig_toml_parsed) ^ bool(orig_toml_path)
-    orig_toml_text = None
+    orig_toml_text: Optional[str] = None
     if orig_toml_path:
         with open(orig_toml_path, "r") as f:
             orig_toml_text = f.read()
-        orig_toml_parsed = toml.loads(orig_toml_text)
+        orig_toml_parsed = dict(toml.loads(orig_toml_text))
+
+    # This assertion is necessary for type checking. Now mypy deduces
+    # orig_toml_parsed's type as dict[str, Any] instead of Optional[...]
+    assert orig_toml_parsed is not None
+
     orig_name = orig_toml_parsed["package"]["name"]
     orig_epoch = common.version_epoch_dots(
         orig_toml_parsed["package"]["version"])
@@ -264,7 +278,7 @@ def write_cargo_toml_in_tempdir(dir: str,
     # others to `consts.THIRD_PARTY`. This is to deal with build/dev deps that
     # transitively depend back on the current crate. Otherwise it gets seen in
     # 2 paths.
-    patch = {"patch": {"crates-io": {}}}
+    patch: dict[str, Any] = {"patch": {"crates-io": {}}}
     cwd = os.getcwd()
     for in_3p in all_3p_tomls._list_of:
         if in_3p.name == orig_name and in_3p.epoch == orig_epoch:

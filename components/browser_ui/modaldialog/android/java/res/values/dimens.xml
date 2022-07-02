@@ -12,5 +12,6 @@
     <dimen name="modal_dialog_button_with_icon_text_padding">8dp</dimen>
     <dimen name="modal_dialog_max_height">560dp</dimen>
     <dimen name="modal_dialog_footer_horizontal_padding">24dp</dimen>
+    <dimen name="modal_dialog_footer_top_margin">6dp</dimen>
     <dimen name="modal_dialog_footer_vertical_padding">16dp</dimen>
 </resources>

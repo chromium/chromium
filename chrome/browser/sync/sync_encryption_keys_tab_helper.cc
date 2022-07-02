@@ -151,8 +151,9 @@ void SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
       EncryptionKeyApi::GetForPage(rfh->GetPage());
   // The page has a correspond EncryptionKeyApi instance for the main frame.
   // See DidFinishNavigation.
-  if (!encryption_key_api)
+  if (!encryption_key_api) {
     return;
+  }
   encryption_key_api->BindReceiver(std::move(receiver), rfh);
 }
 
@@ -194,8 +195,9 @@ void SyncEncryptionKeysTabHelper::DidFinishNavigation(
 
 bool SyncEncryptionKeysTabHelper::HasEncryptionKeysApiForTesting(
     content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return false;
+  }
   return EncryptionKeyApi::GetForPage(render_frame_host->GetPage());
 }
 

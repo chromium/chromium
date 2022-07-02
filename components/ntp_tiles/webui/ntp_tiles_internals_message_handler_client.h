@@ -46,18 +46,6 @@ class NTPTilesInternalsMessageHandlerClient {
       const std::string& message,
       base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
-  // Always use RegisterMessageCallback() above in new code.
-  //
-  // TODO(crbug.com/1243386): Existing callers of
-  // RegisterDeprecatedMessageCallback() should be migrated to
-  // RegisterMessageCallback() if possible.
-  //
-  // Registers a callback in Javascript. See content::WebUI and web::WebUIIOS.
-  virtual void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const base::RepeatingCallback<void(const base::ListValue*)>&
-          callback) = 0;
-
   // Invokes a function in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void CallJavascriptFunctionVector(
       const std::string& name,

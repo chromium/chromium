@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -175,10 +176,10 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   // performs additional setup.
   void InitializeClients();
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
   // Separate D-Bus connection used by the "Alternate" set of D-Bus clients. See
   // "Alternate D-Bus Client" note above.
-  dbus::Bus* alternate_bus_;
+  raw_ptr<dbus::Bus> alternate_bus_;
 
   std::unique_ptr<BluetoothDBusClientBundle> client_bundle_;
 

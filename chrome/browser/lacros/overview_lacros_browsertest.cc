@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -42,7 +43,8 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
 
   // Wait for the window to be visible.
   aura::Window* window = browser()->window()->GetNativeWindow();
-  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  std::string id =
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(id);
 
   // Enter overview mode.
@@ -67,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
 
   // Wait for the window to be visible.
   aura::Window* main_window = browser()->window()->GetNativeWindow();
-  std::string main_id =
-      browser_test_util::GetWindowId(main_window->GetRootWindow());
+  std::string main_id = lacros_window_utility::GetRootWindowUniqueId(
+      main_window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(main_id);
 
   // Create an incognito window and make it visible.
@@ -78,8 +80,8 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   AddBlankTabAndShow(incognito_browser);
   aura::Window* incognito_window =
       incognito_browser->window()->GetNativeWindow();
-  std::string incognito_id =
-      browser_test_util::GetWindowId(incognito_window->GetRootWindow());
+  std::string incognito_id = lacros_window_utility::GetRootWindowUniqueId(
+      incognito_window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(incognito_id);
 
   // Enter overview mode.

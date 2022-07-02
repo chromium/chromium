@@ -5,6 +5,8 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_VIEW_COCOA_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_VIEW_COCOA_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <set>
@@ -66,14 +68,14 @@ struct DidOverscrollParams;
   // always valid. When the original host disconnects, |host_| is changed to
   // point to |dummyHost_|, to avoid having to preface every dereference with
   // a nullptr check.
-  remote_cocoa::mojom::RenderWidgetHostNSViewHost* _host;
+  raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSViewHost> _host;
 
   // A separate host interface for the parts of the interface to
   // RenderWidgetHostViewMac that cannot or should not be forwarded over mojo.
   // This includes events (where the extra translation is unnecessary or loses
   // information) and access to accessibility structures (only present in the
   // browser process).
-  remote_cocoa::RenderWidgetHostNSViewHostHelper* _hostHelper;
+  raw_ptr<remote_cocoa::RenderWidgetHostNSViewHostHelper> _hostHelper;
 
   // Dummy host and host helper that are always valid (see above comments
   // about host_).
@@ -121,6 +123,11 @@ struct DidOverscrollParams;
 
   // Indicates if we are currently handling a key down event.
   BOOL _handlingKeyDown;
+
+  // Indicates if a reconversion (which means a piece of committed text becomes
+  // part of the composition again) is triggered in Japanese IME when Live
+  // Conversion is on.
+  BOOL _isReconversionTriggered;
 
   // Indicates if there is any marked text.
   BOOL _hasMarkedText;

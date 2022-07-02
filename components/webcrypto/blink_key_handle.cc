@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "components/webcrypto/crypto_data.h"
-#include "components/webcrypto/status.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace webcrypto {
@@ -20,56 +18,33 @@ class AsymKey;
 
 // Base class for wrapping OpenSSL keys in a type that can be passed to
 // Blink (blink::WebCryptoKeyHandle).
-//
-// In addition to the key's internal OpenSSL representation (EVP_PKEY or just
-// raw bytes), each key maintains a copy of its serialized form in either
-// 'raw', 'pkcs8', or 'spki' format. This is to allow structured cloning of
-// keys to be done synchronously from the target Blink thread, without having to
-// lock access to the key throughout the code.
-//
-// TODO(eroman): Should be able to do the key export needed for structured
-//               clone synchronously.
 class Key : public blink::WebCryptoKeyHandle {
  public:
-  explicit Key(const CryptoData& serialized_key_data)
-      : serialized_key_data_(
-            serialized_key_data.bytes(),
-            serialized_key_data.bytes() + serialized_key_data.byte_length()) {}
-
-  ~Key() override {}
-
   // Helpers to add some safety to casting.
   virtual SymKey* AsSymKey() { return nullptr; }
   virtual AsymKey* AsAsymKey() { return nullptr; }
-
-  const std::vector<uint8_t>& serialized_key_data() const {
-    return serialized_key_data_;
-  }
-
- private:
-  const std::vector<uint8_t> serialized_key_data_;
 };
 
 class SymKey : public Key {
  public:
-  explicit SymKey(const CryptoData& raw_key_data) : Key(raw_key_data) {}
+  explicit SymKey(base::span<const uint8_t> raw_key_data)
+      : raw_key_data_(raw_key_data.begin(), raw_key_data.end()) {}
 
   SymKey(const SymKey&) = delete;
   SymKey& operator=(const SymKey&) = delete;
 
   SymKey* AsSymKey() override { return this; }
 
-  const std::vector<uint8_t>& raw_key_data() const {
-    return serialized_key_data();
-  }
+  const std::vector<uint8_t>& raw_key_data() const { return raw_key_data_; }
+
+ private:
+  std::vector<uint8_t> raw_key_data_;
 };
 
 class AsymKey : public Key {
  public:
   // After construction the |pkey| should NOT be mutated.
-  AsymKey(bssl::UniquePtr<EVP_PKEY> pkey,
-          const std::vector<uint8_t>& serialized_key_data)
-      : Key(CryptoData(serialized_key_data)), pkey_(std::move(pkey)) {}
+  explicit AsymKey(bssl::UniquePtr<EVP_PKEY> pkey) : pkey_(std::move(pkey)) {}
 
   AsymKey(const AsymKey&) = delete;
   AsymKey& operator=(const AsymKey&) = delete;
@@ -100,20 +75,14 @@ EVP_PKEY* GetEVP_PKEY(const blink::WebCryptoKey& key) {
   return GetKey(key)->AsAsymKey()->pkey();
 }
 
-const std::vector<uint8_t>& GetSerializedKeyData(
-    const blink::WebCryptoKey& key) {
-  return GetKey(key)->serialized_key_data();
-}
-
 blink::WebCryptoKeyHandle* CreateSymmetricKeyHandle(
-    const CryptoData& key_bytes) {
+    base::span<const uint8_t> key_bytes) {
   return new SymKey(key_bytes);
 }
 
 blink::WebCryptoKeyHandle* CreateAsymmetricKeyHandle(
-    bssl::UniquePtr<EVP_PKEY> pkey,
-    const std::vector<uint8_t>& serialized_key_data) {
-  return new AsymKey(std::move(pkey), serialized_key_data);
+    bssl::UniquePtr<EVP_PKEY> pkey) {
+  return new AsymKey(std::move(pkey));
 }
 
 }  // namespace webcrypto

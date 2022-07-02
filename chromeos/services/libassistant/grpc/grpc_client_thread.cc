@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/services/libassistant/grpc/grpc_client_cq_tag.h"
+#include "chromeos/assistant/internal/grpc_transport/grpc_client_cq_tag.h"
 
 namespace chromeos {
 namespace libassistant {

@@ -32,7 +32,7 @@ FirmwareUpdateAppBrowserTest.prototype = {
 
   browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
-      'firmware_update_unified_test.js',
+      'firmware_update_unified_test.js&host=test',
 
   featureList: {enabled: ['ash::features::kFirmwareUpdaterApp']},
 };

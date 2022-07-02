@@ -123,6 +123,7 @@ const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
 const char kConnectionCallbackInterface[] =
     "org.chromium.bluetooth.BluetoothConnectionCallback";
 
+const char kOnAdapterPropertyChanged[] = "OnAdapterPropertyChanged";
 const char kOnAddressChanged[] = "OnAddressChanged";
 const char kOnNameChanged[] = "OnNameChanged";
 const char kOnDiscoverableChanged[] = "OnDiscoverableChanged";

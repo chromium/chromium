@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './cluster.js';
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -11,6 +11,7 @@ import '../../cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
@@ -44,7 +45,9 @@ declare global {
   }
 }
 
-interface HistoryClustersElement {
+const HistoryClustersElementBase = I18nMixin(PolymerElement);
+
+export interface HistoryClustersElement {
   $: {
     clusters: IronListElement,
     confirmationDialog: CrLazyRenderElement<CrDialogElement>,
@@ -53,7 +56,7 @@ interface HistoryClustersElement {
   };
 }
 
-class HistoryClustersElement extends PolymerElement {
+export class HistoryClustersElement extends HistoryClustersElementBase {
   static get is() {
     return 'history-clusters';
   }
@@ -115,6 +118,7 @@ class HistoryClustersElement extends PolymerElement {
   private headerText_: string;
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
+  private onHistoryDeletedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
   private placeholderText_: string;
   private result_: QueryResult;
@@ -148,6 +152,9 @@ class HistoryClustersElement extends PolymerElement {
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
             this.onVisitsRemoved_.bind(this));
+    this.onHistoryDeletedListenerId_ =
+        this.callbackRouter_.onHistoryDeleted.addListener(
+            this.onHistoryDeleted_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -183,12 +190,12 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   private onRemoveButtonClick_() {
-    this.pageHandler_.removeVisits(this.visitsToBeRemoved_)
-        .then(({accepted}) => {
-          if (!accepted) {
-            this.visitsToBeRemoved_ = [];
-          }
-        });
+    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
+      // The returned promise resolves with whether the request succeeded in the
+      // browser. That value may be used to show a toast but is ignored for now.
+      // Allow remove requests again.
+      this.visitsToBeRemoved_ = [];
+    });
     this.$.confirmationDialog.get().close();
   }
 
@@ -319,6 +326,10 @@ class HistoryClustersElement extends PolymerElement {
       }
     });
     this.showSpinner_ = false;
+
+    if (loadTimeData.getBoolean('inSidePanel')) {
+      this.pageHandler_.showSidePanelUI();
+    }
   }
 
   /**
@@ -336,15 +347,25 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   /**
-   * Called when the last accepted request to browser to remove visits succeeds.
+   * Called with the original remove params when the last accepted request to
+   * browser to remove visits succeeds.
    */
-  private onVisitsRemoved_() {
+  private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
     // Show the confirmation toast once done removing one visit only; since a
     // confirmation dialog was not shown prior to the action.
-    if (this.visitsToBeRemoved_.length === 1) {
+    if (removedVisits.length === 1) {
       this.$.confirmationToast.get().show();
     }
-    this.visitsToBeRemoved_ = [];
+  }
+
+  /**
+   * Called when History is deleted from a different tab.
+   */
+  private onHistoryDeleted_() {
+    // Just re-issue the existing query to "reload" the results and display
+    // the externally deleted History. It would be nice if we could save the
+    // user's scroll position, but History doesn't do that either.
+    this.onQueryChanged_();
   }
 }
 

@@ -7,7 +7,6 @@
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"

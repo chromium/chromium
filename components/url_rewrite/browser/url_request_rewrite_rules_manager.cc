@@ -101,7 +101,7 @@ void UrlRequestRewriteRulesManager::Updater::OnRulesUpdated(
 
 void UrlRequestRewriteRulesManager::Updater::MaybeRegisterExistingRenderFrame(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->IsRenderFrameCreated()) {
+  if (render_frame_host->IsRenderFrameLive()) {
     // Call RenderFrameCreated() for frames that were created before this
     // observer started observing this WebContents.
     RenderFrameCreated(render_frame_host);

@@ -17,12 +17,12 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+#include "weblayer/browser/accept_languages_service_factory.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/page_impl.h"
 #include "weblayer/browser/tab_impl.h"
-#include "weblayer/browser/translate_accept_languages_factory.h"
 #include "weblayer/browser/translate_ranker_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -114,9 +114,9 @@ TranslateClientImpl::GetTranslatePrefs() {
   return CreateTranslatePrefs(GetPrefs());
 }
 
-translate::TranslateAcceptLanguages*
-TranslateClientImpl::GetTranslateAcceptLanguages() {
-  return TranslateAcceptLanguagesFactory::GetForBrowserContext(
+language::AcceptLanguagesService*
+TranslateClientImpl::GetAcceptLanguagesService() {
+  return AcceptLanguagesServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
 }
 
@@ -148,16 +148,16 @@ void TranslateClientImpl::OnLanguageDetermined(
   // to the most recently committed primary main-frame navigation, if one exists
   // (see the call to SetPageLanguageInNavigation() in
   // ContentTranslateDriver::RegisterPage()); this corresponds to
-  // WebContents::GetMainFrame()::GetPage(). Note also that in certain corner
-  // cases (e.g., tab startup) there might not be such a committed primary
-  // main-frame navigation; in those cases there won't be a weblayer::Page
-  // corresponding to the primary page, as weblayer::Page objects are created
-  // only at navigation commit.
+  // WebContents::GetPrimaryMainFrame()::GetPage(). Note also that in certain
+  // corner cases (e.g., tab startup) there might not be such a committed
+  // primary main-frame navigation; in those cases there won't be a
+  // weblayer::Page corresponding to the primary page, as weblayer::Page objects
+  // are created only at navigation commit.
   // TODO(crbug.com/1231889): Rearchitect translate's renderer-browser Mojo
   // connection to be able to explicitly determine the document/content::Page
   // with which this language determination event is associated.
   PageImpl* page =
-      PageImpl::GetForPage(web_contents()->GetMainFrame()->GetPage());
+      PageImpl::GetForPage(web_contents()->GetPrimaryMainFrame()->GetPage());
   if (page) {
     std::string language = details.adopted_language;
 

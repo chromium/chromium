@@ -49,7 +49,6 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "content/browser/media/cdm_storage_impl.h"
 #include "content/browser/media/media_license_manager.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -169,24 +168,17 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     if (cdm_type_.id.is_zero())
       return;
 
-    // TODO(crbug.com/1231162): Make more test suites templated to test both
-    // backends.
-    if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-      MediaLicenseManager* media_license_manager =
-          static_cast<StoragePartitionImpl*>(
-              render_frame_host_->GetStoragePartition())
-              ->GetMediaLicenseManager();
-      DCHECK(media_license_manager);
+    MediaLicenseManager* media_license_manager =
+        static_cast<StoragePartitionImpl*>(
+            render_frame_host_->GetStoragePartition())
+            ->GetMediaLicenseManager();
+    DCHECK(media_license_manager);
 
-      auto storage_key =
-          static_cast<RenderFrameHostImpl*>(render_frame_host_)->storage_key();
-      media_license_manager->OpenCdmStorage(
-          MediaLicenseManager::BindingContext(storage_key, cdm_type_),
-          std::move(receiver));
-    } else {
-      CdmStorageImpl::Create(render_frame_host_, cdm_type_,
-                             std::move(receiver));
-    }
+    auto storage_key =
+        static_cast<RenderFrameHostImpl*>(render_frame_host_)->storage_key();
+    media_license_manager->OpenCdmStorage(
+        MediaLicenseManager::BindingContext(storage_key, cdm_type_),
+        std::move(receiver));
 #endif
   }
 
@@ -296,11 +288,7 @@ void MediaInterfaceProxy::CreateVideoDecoder(
       oop_video_decoder;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding)) {
-    // TODO(b/195769334): for now, we're using the same
-    // StableVideoDecoderFactory. However, we should be using a separate
-    // StableVideoDecoderFactory for each client (i.e., different renderers
-    // should use different video decoder processes).
-    GetStableVideoDecoderFactory().CreateStableVideoDecoder(
+    render_frame_host().GetProcess()->CreateStableVideoDecoder(
         oop_video_decoder.InitWithNewPipeAndPassReceiver());
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

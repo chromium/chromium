@@ -75,6 +75,9 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   TetherController* GetTetherController() override;
   UserActionRecorder* GetUserActionRecorder() override;
 
+  void GetHostLastSeenTimestamp(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+
  private:
   // KeyedService:
   void Shutdown() override;

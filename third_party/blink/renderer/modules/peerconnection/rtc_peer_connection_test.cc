@@ -421,7 +421,8 @@ class RTCPeerConnectionTest : public testing::Test {
                                 String id) {
     auto* source = MakeGarbageCollected<MediaStreamSource>("sourceId", type,
                                                            "sourceName", false);
-    auto* component = MakeGarbageCollected<MediaStreamComponent>(id, source);
+    auto* component =
+        MakeGarbageCollected<MediaStreamComponentImpl>(id, source);
     return MakeGarbageCollected<MediaStreamTrackImpl>(
         scope.GetExecutionContext(), component);
   }

@@ -331,8 +331,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) override;
 #endif
-  scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
-      override;
   void WaitForDebuggerWhenShown() override;
   void SetTextZoomFactor(float text_zoom_factor) override;
   float TextZoomFactor() override;
@@ -726,6 +724,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                       uint32_t key_modifiers,
                       base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;
+  void OnStartStylusWriting() override;
   void SetBackgroundOpaque(bool opaque) override;
   void SetActive(bool active) override;
   // For both mainframe and childframe change the text direction of the
@@ -788,8 +787,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       int32_t end,
       mojom::blink::SelectionMenuBehavior behavior) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
-  void ScrollFocusedEditableNodeIntoRect(
-      const gfx::Rect& rect_in_dips) override;
+  void ScrollFocusedEditableNodeIntoView() override;
   void WaitForPageScaleAnimationForTesting(
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;

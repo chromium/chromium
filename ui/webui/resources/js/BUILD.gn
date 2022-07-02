@@ -18,13 +18,13 @@ include_polymer = !is_android && !is_ios
 generate_grd("build_grdp") {
   grd_prefix = "webui_js"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess" ]
+  public_deps = [ ":preprocess" ]
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_src_manifest",
   ]
   if (include_polymer) {
-    manifest_files += [ "$target_gen_dir/browser_command/tsconfig.manifest" ]
+    manifest_files += [ "$target_gen_dir/browser_command/build_ts.manifest" ]
   }
   resource_path_prefix = "js"
 }
@@ -64,7 +64,6 @@ preprocess_if_expr("preprocess_src") {
     "assert.js",
     "color_utils.js",
     "cr.m.js",
-    "i18n_template_no_process.js",
     "icon.js",
     "load_time_data.m.js",
     "plural_string_proxy.js",
@@ -72,6 +71,8 @@ preprocess_if_expr("preprocess_src") {
     "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
+
+    # Used by security interstitials and ios inspect UI
     "util.js",
     "webui_resource_test.js",
     "webview_manager.js",
@@ -96,6 +97,7 @@ preprocess_if_expr("preprocess_src") {
       "cr.js",
       "event_tracker.js",
       "i18n_behavior.js",
+      "i18n_template_no_process.js",
       "list_property_update_behavior.js",
       "parse_html_subset.js",
       "polymer_config.js",
@@ -153,8 +155,10 @@ group("closure_compile") {
   deps = [
     ":js_resources",
     "cr:closure_compile",
-    "cr/ui:closure_compile",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "cr/ui:closure_compile" ]
+  }
 }
 
 js_type_check("js_resources") {
@@ -164,18 +168,23 @@ js_type_check("js_resources") {
     ":assert",
     ":cr",
     ":event_tracker",
-    ":i18n_behavior",
     ":i18n_template_no_process",
-    ":list_property_update_behavior",
     ":load_time_data",
     ":parse_html_subset",
     ":promise_resolver",
     ":util",
-    ":web_ui_listener_behavior",
     ":webui_resource_test",
   ]
   if (is_ios) {
     deps += [ "ios:web_ui" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      ":i18n_behavior",
+      ":list_property_update_behavior",
+      ":web_ui_listener_behavior",
+    ]
   }
 }
 
@@ -201,14 +210,16 @@ js_library("i18n_template_no_process") {
   deps = [ ":load_time_data" ]
 }
 
-js_library("i18n_behavior") {
-  deps = [
-    ":load_time_data",
-    ":parse_html_subset",
-  ]
-}
+if (is_chromeos_ash) {
+  js_library("i18n_behavior") {
+    deps = [
+      ":load_time_data",
+      ":parse_html_subset",
+    ]
+  }
 
-js_library("list_property_update_behavior") {
+  js_library("list_property_update_behavior") {
+  }
 }
 
 js_library("load_time_data") {
@@ -231,8 +242,10 @@ js_library("util") {
 js_library("webview_manager") {
 }
 
-js_library("web_ui_listener_behavior") {
-  deps = [ ":cr" ]
+if (is_chromeos_ash) {
+  js_library("web_ui_listener_behavior") {
+    deps = [ ":cr" ]
+  }
 }
 
 js_library("webui_resource_test") {

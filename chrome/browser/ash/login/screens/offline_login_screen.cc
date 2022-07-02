@@ -30,6 +30,8 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
+constexpr char kUserActionEmailSubmitted[] = "email-submitted";
+constexpr char kUserActionCompleteAuthentication[] = "complete-authentication";
 
 // Amount of time the user has to be idle for before showing the online login
 // page.
@@ -67,35 +69,37 @@ std::string OfflineLoginScreen::GetResultString(Result result) {
   }
 }
 
-OfflineLoginScreen::OfflineLoginScreen(OfflineLoginView* view,
+OfflineLoginScreen::OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(OfflineLoginView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
-  if (view_)
-    view_->Bind(this);
 }
 
-OfflineLoginScreen::~OfflineLoginScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void OfflineLoginScreen::OnViewDestroyed(OfflineLoginView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+OfflineLoginScreen::~OfflineLoginScreen() = default;
 
 void OfflineLoginScreen::ShowImpl() {
   if (!view_)
     return;
+
   scoped_observer_ = std::make_unique<base::ScopedObservation<
       NetworkStateInformer, NetworkStateInformerObserver>>(this);
   scoped_observer_->Observe(network_state_informer_.get());
   StartIdleDetection();
-  view_->Show();
+
+  base::Value::Dict params;
+  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
+  if (!enterprise_domain_manager.empty())
+    params.Set("enterpriseDomainManager", enterprise_domain_manager);
+  std::string email_domain;
+  if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
+                                     &email_domain) &&
+      !email_domain.empty()) {
+    params.Set("emailDomain", email_domain);
+  }
+  view_->Show(std::move(params));
 }
 
 void OfflineLoginScreen::HideImpl() {
@@ -105,27 +109,18 @@ void OfflineLoginScreen::HideImpl() {
     view_->Hide();
 }
 
-void OfflineLoginScreen::LoadOffline() {
-  base::DictionaryValue params;
-
-  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
-  if (!enterprise_domain_manager.empty())
-    params.SetStringKey("enterpriseDomainManager", enterprise_domain_manager);
-  std::string email_domain;
-  if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
-                                     &email_domain) &&
-      !email_domain.empty()) {
-    params.SetStringKey("emailDomain", email_domain);
-  }
-  if (view_)
-    view_->LoadParams(std::move(params));
-}
-
-void OfflineLoginScreen::OnUserActionDeprecated(const std::string& action_id) {
+void OfflineLoginScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancel) {
     exit_callback_.Run(Result::BACK);
+  } else if (action_id == kUserActionEmailSubmitted) {
+    CHECK_EQ(args.size(), 2);
+    HandleEmailSubmitted(args[1].GetString());
+  } else if (action_id == kUserActionCompleteAuthentication) {
+    CHECK_EQ(args.size(), 3);
+    HandleCompleteAuth(args[1].GetString(), args[2].GetString());
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -144,6 +139,8 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: User not found! "
                   "account type="
                << AccountId::AccountTypeToString(account_id.GetAccountType());
+    if (!view_)
+      return;
     view_->ShowPasswordMismatchMessage();
     return;
   }
@@ -161,7 +158,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
         << user_context.GetUserType();
   }
   user_context.SetIsUsingOAuth(false);
-  // TODO(dkuzmin): call Login through delegate.
+
   if (ExistingUserController::current_controller()) {
     ExistingUserController::current_controller()->Login(user_context,
                                                         SigninSpecifics());
@@ -172,6 +169,9 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 }
 
 void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
+  if (!view_)
+    return;
+
   bool offline_limit_expired = false;
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -236,6 +236,12 @@ void OfflineLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
       (state == NetworkStateInformer::ONLINE &&
        reason != NetworkError::ERROR_REASON_PORTAL_DETECTED &&
        reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT);
+}
+
+void OfflineLoginScreen::ShowPasswordMismatchMessage() {
+  if (!view_)
+    return;
+  view_->ShowPasswordMismatchMessage();
 }
 
 }  // namespace ash

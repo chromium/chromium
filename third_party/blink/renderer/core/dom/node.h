@@ -695,6 +695,12 @@ class CORE_EXPORT Node : public EventTarget {
   // Whether or not a selection can be started in this object
   virtual bool CanStartSelection() const;
 
+  // TODO(bebeaudr): This is a temporary solution only. Accessibility and Blink
+  // shouldn't differ when it comes to determining if a node is editable, richly
+  // editable or not editable at all.
+  // See https://crbug.com/1331359 for more info.
+  virtual bool IsRichlyEditableForAccessibility() const;
+
   void NotifyPriorityScrollAnchorStatusChanged();
 
   // ---------------------------------------------------------------------------

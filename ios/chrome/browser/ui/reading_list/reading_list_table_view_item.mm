@@ -40,7 +40,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
 @interface ReadingListTableViewItem ()
 
-// The image to supply as to the TableViewURLCell's |faviconBadgeView|.
+// The image to supply as to the TableViewURLCell's `faviconBadgeView`.
 @property(nonatomic, strong) UIImage* distillationBadgeImage;
 
 @end

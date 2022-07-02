@@ -76,6 +76,9 @@ class VisitAnnotationsDatabase {
   // entries for any `Cluster` that it failed to add.
   void AddClusters(const std::vector<Cluster>& clusters);
 
+  // Get recent `Cluster`s' IDs newer than `minimum_time`.
+  std::vector<int64_t> GetRecentClusterIds(base::Time minimum_time);
+
   // Get the most recent clusters within the constraints. The most recent visit
   // of a cluster represents the cluster's time.
   std::vector<int64_t> GetMostRecentClusterIds(base::Time inclusive_min_time,
@@ -84,6 +87,9 @@ class VisitAnnotationsDatabase {
 
   // Get `VisitID`s in a cluster.
   std::vector<VisitID> GetVisitIdsInCluster(int64_t cluster_id);
+
+  // Return whether `visit_id` belongs to any cluster.
+  bool IsVisitClustered(VisitID visit_id);
 
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/unguessable_token.h"
 #include "ui/base/buildflags.h"
@@ -74,7 +75,7 @@ class WaylandKeyboard::ZCRExtendedKeyboard {
         serial, time, key, state, WaylandKeyboard::KeyEventKind::kPeekKey);
   }
 
-  WaylandKeyboard* const keyboard_;
+  const raw_ptr<WaylandKeyboard> keyboard_;
   wl::Object<zcr_extended_keyboard_v1> obj_;
 };
 
@@ -288,8 +289,8 @@ void WaylandKeyboard::OnKey(uint32_t serial,
   }
 
   DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/,
-              down ? absl::make_optional(serial) : absl::nullopt,
-              EventTimeForNow(), device_id(), EF_NONE, kind);
+              absl::make_optional(serial), EventTimeForNow(), device_id(),
+              EF_NONE, kind);
 }
 
 void WaylandKeyboard::DispatchKey(unsigned int key,

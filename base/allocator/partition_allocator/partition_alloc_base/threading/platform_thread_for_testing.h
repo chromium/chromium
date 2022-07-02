@@ -36,12 +36,6 @@ class PlatformThreadForTesting : public PlatformThread {
   PlatformThreadForTesting(const PlatformThreadForTesting&) = delete;
   PlatformThreadForTesting& operator=(const PlatformThreadForTesting&) = delete;
 
-  // Get the handle representing the current thread. On Windows, this is a
-  // pseudo handle constant which will always represent the thread using it and
-  // hence should not be shared with other threads nor be used to differentiate
-  // the current thread from another.
-  static PlatformThreadHandle CurrentHandle();
-
   // Yield the current thread so another thread can be scheduled.
   //
   // Note: this is likely not the right call to make in most situations. If this

@@ -87,10 +87,7 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value = StyleResolver::ComputeValue(
         const_cast<Element*>(element), property_name, *value);
-    // TODO(crbug.com/1255912): handle system color.
-    if (!computed_value->IsColorValue())
-      return false;
-
+    DCHECK(computed_value->IsColorValue());
     const cssvalue::CSSColor* color_value =
         static_cast<const cssvalue::CSSColor*>(computed_value);
     animated_colors->push_back(color_value->Value());
@@ -100,19 +97,10 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
         keyframe->GetValue()->Value().interpolable_value.get();
+    DCHECK(value->IsList());
 
-    if (!value->IsList())
-      return false;
-
-    // Transition keyframes store a pair of color values: one for the actual
-    // color and one for the reported color (conditionally resolved). This is to
-    // prevent JavaScript code from snooping the visited status of links. The
-    // color to use for the animation is stored first in the list.
-    // We need to further check that the color is a simple RGBA color and does
-    // not require blending with other colors (e.g. currentcolor).
     const InterpolableList& list = To<InterpolableList>(*value);
-    if (!CSSColorInterpolationType::IsRGBA(*(list.Get(0))))
-      return false;
+    DCHECK(CSSColorInterpolationType::IsRGBA(*(list.Get(0))));
 
     Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
     animated_colors->push_back(rgba);
@@ -144,6 +132,34 @@ bool GetBGColorPaintWorkletParamsInternal(
   return true;
 }
 
+bool ValidateColorValue(const Element* element,
+                        const CSSValue* value,
+                        const InterpolableValue* interpolable_value) {
+  if (value) {
+    // Cannot composite a background color animation that depends on
+    // currentColor. For now, the color must resolve to a simple RGBA color.
+    // TODO(crbug.com/1255912): handle system color.
+    const CSSPropertyName property_name =
+        CSSPropertyName(CSSPropertyID::kBackgroundColor);
+    const CSSValue* computed_value = StyleResolver::ComputeValue(
+        const_cast<Element*>(element), property_name, *value);
+    return computed_value->IsColorValue();
+  } else if (interpolable_value) {
+    // Transition keyframes store a pair of color values: one for the actual
+    // color and one for the reported color (conditionally resolved). This is to
+    // prevent JavaScript code from snooping the visited status of links. The
+    // color to use for the animation is stored first in the list.
+    // We need to further check that the color is a simple RGBA color and does
+    // not require blending with other colors (e.g. currentcolor).
+    if (!interpolable_value->IsList())
+      return false;
+
+    const InterpolableList& list = To<InterpolableList>(*interpolable_value);
+    return CSSColorInterpolationType::IsRGBA(*(list.Get(0)));
+  }
+  return false;
+}
+
 }  // namespace
 
 template <>
@@ -161,7 +177,8 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
 
 Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor());
+  return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor(),
+                                 ValidateColorValue);
 }
 
 // static

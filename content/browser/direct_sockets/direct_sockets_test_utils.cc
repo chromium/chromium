@@ -171,10 +171,10 @@ void AsyncJsRunner::DomOperationResponse(RenderFrameHost* render_frame_host,
 
   auto parsed = base::JSONReader::ReadAndReturnValueWithError(
       json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  DCHECK(parsed.value);
-  DCHECK_EQ(parsed.value->type(), base::Value::Type::LIST);
+  DCHECK(parsed.has_value());
+  DCHECK_EQ(parsed->type(), base::Value::Type::LIST);
 
-  const auto& list = parsed.value->GetList();
+  const auto& list = parsed->GetList();
   DCHECK_EQ(list.size(), 2U);
   DCHECK(list[0].is_string());
   DCHECK(list[1].is_string());
@@ -193,6 +193,25 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
         window.domAutomationController.send([result, '%s']);
       )",
       script.c_str(), token_.ToString().c_str()));
+}
+
+bool IsolatedAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  return true;
+}
+
+blink::ParsedPermissionsPolicy
+IsolatedAppContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const url::Origin& app_origin) {
+  blink::ParsedPermissionsPolicy out;
+  blink::ParsedPermissionsPolicyDeclaration decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+      /*values=*/{app_origin},
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+  out.push_back(decl);
+  return out;
 }
 
 // misc

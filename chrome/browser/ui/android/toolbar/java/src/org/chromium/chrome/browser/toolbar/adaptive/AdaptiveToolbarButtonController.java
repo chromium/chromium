@@ -167,7 +167,8 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         if (receivedButtonData == null) return null;
 
         if (!mIsSessionVariantRecorded && receivedButtonData.canShow()
-                && receivedButtonData.isEnabled()) {
+                && receivedButtonData.isEnabled()
+                && !receivedButtonData.getButtonSpec().isDynamicAction()) {
             mIsSessionVariantRecorded = true;
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.AdaptiveToolbarButton.SessionVariant",
@@ -191,7 +192,8 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
                     mMenuHandler, receivedButtonSpec.getContentDescriptionResId(),
                     receivedButtonSpec.getSupportsTinting(),
                     receivedButtonSpec.getIPHCommandBuilder(),
-                    receivedButtonSpec.getButtonVariant()));
+                    receivedButtonSpec.getButtonVariant(),
+                    receivedButtonSpec.getActionChipLabelResId()));
         }
         return mButtonData;
     }
@@ -218,11 +220,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
 
     @Override
     public void onFinishNativeInitialization() {
-        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
-            @AdaptiveToolbarButtonVariant
-            int variant = AdaptiveToolbarFeatures.getSingleVariantMode();
-            setSingleProvider(mButtonDataProviderMap.get(variant));
-        } else if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+        if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
             mAdaptiveToolbarStatePredictor.recomputeUiState(uiState -> {
                 setSingleProvider(uiState.canShowUi
                                 ? mButtonDataProviderMap.get(uiState.toolbarButtonState)
@@ -269,5 +267,12 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
                 notifyObservers(uiState.canShowUi);
             });
         }
+    }
+
+    /** Called to notify the controller that a dynamic action is available and should be shown. */
+    public void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
+        // TODO(shaktisahu): Fix logic to show the next preferred button.
+        setSingleProvider(mButtonDataProviderMap.get(action));
+        notifyObservers(action != AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 }

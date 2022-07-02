@@ -40,13 +40,6 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   HTMLLegendElement* Legend() const;
   HTMLCollection* elements();
 
-  // Reattach layout tree for all children but not the element itself. This is
-  // only used for reattaching fieldset children when the fieldset is a query
-  // container for size container queries.
-  void ReattachLayoutTreeChildren() {
-    Element::ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>());
-  }
-
  protected:
   void DisabledAttributeChanged() override;
 

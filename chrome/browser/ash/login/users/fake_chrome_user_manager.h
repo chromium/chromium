@@ -132,6 +132,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
+  bool AreEphemeralUsersEnabled() const override;
   PrefService* GetLocalState() const override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
@@ -147,7 +148,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  bool AreEphemeralUsersEnabled() const override;
   void SetIsCurrentUserNew(bool is_new) override;
   void Initialize() override;
 

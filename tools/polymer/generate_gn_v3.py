@@ -5,7 +5,6 @@
 
 from __future__ import print_function
 
-from datetime import date
 import json
 import os.path as path
 import sys
@@ -71,7 +70,7 @@ def main(created_by, input_files):
   targets = targets.strip()
 
   if targets:
-    current_year = date.today().year
+    current_year = 2021
     print(_COMPILED_RESOURCES_TEMPLATE %
           (current_year, created_by, _COMPILE_JS, targets))
 

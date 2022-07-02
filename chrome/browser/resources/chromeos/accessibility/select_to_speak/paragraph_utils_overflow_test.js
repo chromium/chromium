@@ -42,7 +42,7 @@ SelectToSpeakParagraphOverflowTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphOverflowTest',
     'ReplaceseHorizentalOverflowTextWithSpace', async function() {
       const inputText = 'This text overflows partially';
@@ -66,7 +66,7 @@ TEST_F(
           inputText.replace(/ /g, '').length);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphOverflowTest',
     'ReplaceseVerticalOverflowTextWithSpace', async function() {
       const visibleText = 'This text is visible';
@@ -102,7 +102,7 @@ TEST_F(
       assertEquals(nodeGroup.text.replace(/ /g, '').length, 0);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphOverflowTest',
     'ReplacesEntirelyOverflowTextWithSpace', async function() {
       const inputText = 'This text overflows entirely';
@@ -122,7 +122,7 @@ TEST_F(
       assertEquals(nodeGroup.text.replace(/ /g, '').length, 0);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphOverflowTest', 'OutputsVisibleText',
     async function() {
       const inputText = 'This text is visible';
@@ -143,7 +143,7 @@ TEST_F(
           nodeGroup.text.replace(/ /g, ''), inputText.replace(/ /g, ''));
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakParagraphOverflowTest',
     'DoesNotClipOverflowWordsWhenDisabled', async function() {
       const inputText = 'This text overflows entirely';

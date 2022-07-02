@@ -158,7 +158,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
       base::WrapUnique(new SupervisedUserInterstitial(
           web_contents, url, reason, frame_id, interstitial_navigation_id));
 
-  if (web_contents->GetMainFrame()->GetFrameTreeNodeId() == frame_id)
+  if (web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id)
     CleanUpInfoBar(web_contents);
 
   // Caller is responsible for deleting the interstitial.
@@ -213,7 +213,8 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
 
 void SupervisedUserInterstitial::GoBack() {
   // GoBack only for main frame.
-  DCHECK_EQ(web_contents()->GetMainFrame()->GetFrameTreeNodeId(), frame_id());
+  DCHECK_EQ(web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+            frame_id());
 
   UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand", BACK,
                             HISTOGRAM_BOUNDING_VALUE);
@@ -227,7 +228,7 @@ void SupervisedUserInterstitial::RequestUrlAccessRemote(
                             ACCESS_REQUEST, HISTOGRAM_BOUNDING_VALUE);
 
   RequestPermissionSource source;
-  if (web_contents()->GetMainFrame()->GetFrameTreeNodeId() == frame_id())
+  if (web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id())
     source = RequestPermissionSource::MAIN_FRAME;
   else
     source = RequestPermissionSource::SUB_FRAME;
@@ -248,7 +249,7 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   supervised_user_service->web_approvals_manager().RequestLocalApproval(
-      url_, std::move(callback));
+      web_contents(), url_, std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {

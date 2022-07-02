@@ -130,9 +130,6 @@ void PeripheralNotificationManager::OnBlockedThunderboltDeviceConnected(
 
 void PeripheralNotificationManager::OnCableWarning(
     typecd::CableWarningType cable_warning_type) {
-  if (!base::FeatureList::IsEnabled(features::kUsbNotificationController))
-    return;
-
   // Decode cable warnging signal.
   switch (cable_warning_type) {
     case typecd::CableWarningType::kInvalidDpCable:

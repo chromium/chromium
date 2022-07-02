@@ -1,5 +1,5 @@
 // META: title=Batch Get All
-// META: script=support.js
+// META: script=resources/support.js
 
 'use strict';
 

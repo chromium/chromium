@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -255,10 +256,10 @@ class NotificationDispatcherMojoTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::MockRepeatingClosure on_disconnect_;
   std::unique_ptr<NotificationDispatcherMojo> notification_dispatcher_;
-  FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
+  raw_ptr<FakeMacNotificationProviderFactory> provider_factory_ = nullptr;
 };
 
 TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndDisconnect) {

@@ -21,18 +21,6 @@
       "use_goma": true
     }
   },
-  "mac10.12-blink-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac10.13-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -93,6 +81,30 @@
       "use_goma": true
     }
   },
+  "mac12.0-blink-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac12.0.arm64-blink-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "win10.20h2-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -114,18 +126,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "use_goma": true
-    }
-  },
-  "win7-blink-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
       "use_goma": true
     }
   }

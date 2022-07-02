@@ -376,7 +376,7 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   return false;
 }
 
-bool HasEditableStyle(const Node& node) {
+bool IsEditable(const Node& node) {
   // TODO(editing-dev): We shouldn't check editable style in inactive documents.
   // We should hoist this check in the call stack, replace it by a DCHECK of
   // active document and ultimately cleanup the code paths with inactive
@@ -387,7 +387,7 @@ bool HasEditableStyle(const Node& node) {
   return HasEditableLevel(node, kEditable);
 }
 
-bool HasRichlyEditableStyle(const Node& node) {
+bool IsRichlyEditable(const Node& node) {
   // TODO(editing-dev): We shouldn't check editable style in inactive documents.
   // We should hoist this check in the call stack, replace it by a DCHECK of
   // active document and ultimately cleanup the code paths with inactive
@@ -398,36 +398,16 @@ bool HasRichlyEditableStyle(const Node& node) {
   return HasEditableLevel(node, kRichlyEditable);
 }
 
-// This method is copied from WebElement::IsEditable.
-// TODO(dglazkov): Remove. Consumers of this code should use
-// Node:hasEditableStyle.  http://crbug.com/612560
-bool IsEditableElement(const Node& node) {
-  if (HasEditableStyle(node))
-    return true;
-
-  if (auto* text_control = ToTextControlOrNull(&node)) {
-    if (!text_control->IsDisabledOrReadOnly())
-      return true;
-  }
-
-  if (auto* element = DynamicTo<Element>(&node)) {
-    return EqualIgnoringASCIICase(
-        element->FastGetAttribute(html_names::kRoleAttr), "textbox");
-  }
-
-  return false;
-}
-
 bool IsRootEditableElement(const Node& node) {
-  return HasEditableStyle(node) && node.IsElementNode() &&
-         (!node.parentNode() || !HasEditableStyle(*node.parentNode()) ||
+  return IsEditable(node) && node.IsElementNode() &&
+         (!node.parentNode() || !IsEditable(*node.parentNode()) ||
           !node.parentNode()->IsElementNode() ||
           &node == node.GetDocument().body());
 }
 
 Element* RootEditableElement(const Node& node) {
   const Element* result = nullptr;
-  for (const Node* n = &node; n && HasEditableStyle(*n); n = n->parentNode()) {
+  for (const Node* n = &node; n && IsEditable(*n); n = n->parentNode()) {
     if (auto* element = DynamicTo<Element>(n))
       result = element;
     if (node.GetDocument().body() == n)
@@ -449,7 +429,7 @@ ContainerNode* HighestEditableRoot(const Position& position) {
 
   ContainerNode* node = highest_root->parentNode();
   while (node) {
-    if (HasEditableStyle(*node))
+    if (IsEditable(*node))
       highest_root = node;
     if (IsA<HTMLBodyElement>(*node))
       break;
@@ -482,7 +462,7 @@ bool IsEditablePosition(const Position& position) {
 
   if (node->IsDocumentNode())
     return false;
-  return HasEditableStyle(*node);
+  return IsEditable(*node);
 }
 
 bool IsEditablePosition(const PositionInFlatTree& p) {
@@ -497,7 +477,7 @@ bool IsRichlyEditablePosition(const Position& p) {
   if (IsDisplayInsideTable(node))
     node = node->parentNode();
 
-  return HasRichlyEditableStyle(*node);
+  return IsRichlyEditable(*node);
 }
 
 Element* RootEditableElementOf(const Position& p) {
@@ -658,7 +638,7 @@ PositionTemplate<Strategy> FirstEditablePositionAfterPositionInRootAlgorithm(
   // position falls before highestRoot.
   if (position.CompareTo(PositionTemplate<Strategy>::FirstPositionInNode(
           highest_root)) == -1 &&
-      HasEditableStyle(highest_root))
+      IsEditable(highest_root))
     return PositionTemplate<Strategy>::FirstPositionInNode(highest_root);
 
   PositionTemplate<Strategy> editable_position = position;
@@ -1187,7 +1167,7 @@ Element* EnclosingElementWithTag(const Position& p,
     auto* ancestor = DynamicTo<Element>(runner);
     if (!ancestor)
       continue;
-    if (root && !HasEditableStyle(*ancestor))
+    if (root && !IsEditable(*ancestor))
       continue;
     if (ancestor->HasTagName(tag_name))
       return ancestor;
@@ -1215,7 +1195,7 @@ static Node* EnclosingNodeOfTypeAlgorithm(const PositionTemplate<Strategy>& p,
     // Don't return a non-editable node if the input position was editable,
     // since the callers from editing will no doubt want to perform editing
     // inside the returned node.
-    if (root && !HasEditableStyle(*n))
+    if (root && !IsEditable(*n))
       continue;
     if (node_is_of_type(n))
       return n;
@@ -1249,7 +1229,7 @@ Node* HighestEnclosingNodeOfType(const Position& p,
       rule == kCannotCrossEditingBoundary ? HighestEditableRoot(p) : nullptr;
   for (Node* n = p.ComputeContainerNode(); n && n != stay_within;
        n = n->parentNode()) {
-    if (root && !HasEditableStyle(*n))
+    if (root && !IsEditable(*n))
       continue;
     if (node_is_of_type(n))
       highest = n;
@@ -1411,23 +1391,23 @@ PositionWithAffinity AdjustForEditingBoundary(
     return position_with_affinity;
   const Position& position = position_with_affinity.GetPosition();
   const Node& node = *position.ComputeContainerNode();
-  if (HasEditableStyle(node))
+  if (IsEditable(node))
     return position_with_affinity;
   // TODO(yosin): Once we fix |MostBackwardCaretPosition()| to handle
   // positions other than |kOffsetInAnchor|, we don't need to use
   // |adjusted_position|, e.g. <outer><inner contenteditable> with position
   // before <inner> vs. outer@0[1].
   // [1] editing/selection/click-outside-editable-div.html
-  const Position& adjusted_position = HasEditableStyle(*position.AnchorNode())
+  const Position& adjusted_position = IsEditable(*position.AnchorNode())
                                           ? position.ToOffsetInAnchor()
                                           : position;
   const Position& forward =
       MostForwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*forward.ComputeContainerNode()))
+  if (IsEditable(*forward.ComputeContainerNode()))
     return PositionWithAffinity(forward);
   const Position& backward =
       MostBackwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*backward.ComputeContainerNode()))
+  if (IsEditable(*backward.ComputeContainerNode()))
     return PositionWithAffinity(backward);
   return PositionWithAffinity(adjusted_position,
                               position_with_affinity.Affinity());
@@ -1710,7 +1690,7 @@ const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
   node.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  if (!HasRichlyEditableStyle(node))
+  if (!IsRichlyEditable(node))
     return nullptr;
   const EphemeralRange& range =
       FirstEphemeralRangeOf(node.GetDocument()
@@ -1765,7 +1745,7 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
 
   InputEvent* before_input_event;
 
-  if (HasRichlyEditableStyle(*target) || !data_transfer) {
+  if (IsRichlyEditable(*target) || !data_transfer) {
     before_input_event = InputEvent::CreateBeforeInput(
         input_type, data_transfer, InputTypeIsCancelable(input_type),
         InputEvent::EventIsComposing::kNotComposing,
@@ -1795,8 +1775,8 @@ static bool IsEmptyNonEditableNodeInEditable(const Node& node) {
   // Flat Tree:
   //   <host><div ce><span1>unedittable</span></div></host>
   // e.g. editing/shadow/breaking-editing-boundaries.html
-  return !NodeTraversal::HasChildren(node) && !HasEditableStyle(node) &&
-         node.parentNode() && HasEditableStyle(*node.parentNode());
+  return !NodeTraversal::HasChildren(node) && !IsEditable(node) &&
+         node.parentNode() && IsEditable(*node.parentNode());
 }
 
 // TODO(yosin): We should not use |IsEmptyNonEditableNodeInEditable()| in

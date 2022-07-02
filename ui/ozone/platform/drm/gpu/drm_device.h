@@ -230,6 +230,8 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
   virtual bool SetGammaRamp(uint32_t crtc_id,
                             const std::vector<display::GammaRampRGBEntry>& lut);
 
+  virtual absl::optional<std::string> GetDriverName() const;
+
   // Drm master related
   virtual bool SetMaster();
   virtual bool DropMaster();

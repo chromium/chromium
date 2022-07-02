@@ -101,6 +101,12 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
     return usage_;
   }
 
+  int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
+                                         const BucketLocator& bucket_locator,
+                                         FileSystemType type) override {
+    return usage_;
+  }
+
   // FileUpdateObserver overrides.
   void OnStartUpdate(const FileSystemURL& url) override {}
   void OnUpdate(const FileSystemURL& url, int64_t delta) override {

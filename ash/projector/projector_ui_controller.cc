@@ -7,6 +7,7 @@
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
@@ -107,7 +108,7 @@ void ShowNotification(
           l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_DISPLAY_SOURCE), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kProjectorNotifierId),
+              kProjectorNotifierId, NotificationCatalogName::kProjector),
           optional_fields, delegate, notification_icon, warning_level);
 
   // Remove the previous notification before showing the new one if there are
@@ -146,14 +147,14 @@ ProjectorUiController::ProjectorUiController(
 
 ProjectorUiController::~ProjectorUiController() = default;
 
-void ProjectorUiController::ShowToolbar(aura::Window* current_root) {
+void ProjectorUiController::ShowAnnotationTray(aura::Window* current_root) {
   current_root_ = current_root;
 
   // Show the tray icon.
   SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/true);
 }
 
-void ProjectorUiController::CloseToolbar() {
+void ProjectorUiController::HideAnnotationTray() {
   ResetTools();
   // Hide the tray icon.
   if (auto* projector_annotation_tray =
@@ -161,7 +162,7 @@ void ProjectorUiController::CloseToolbar() {
     projector_annotation_tray->HideAnnotationTray();
   }
 
-  should_enable_annotation_tray_button_.reset();
+  canvas_initialized_state_.reset();
   current_root_ = nullptr;
 }
 
@@ -186,17 +187,9 @@ void ProjectorUiController::ResetTools() {
   }
 }
 
-// TODO(b/232419423): Rename this function.
 void ProjectorUiController::OnCanvasInitialized(bool success) {
-  should_enable_annotation_tray_button_ = success;
-
-  if (auto* projector_annotation_tray =
-          GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetEnabled(
-        *should_enable_annotation_tray_button_);
-    if (!*should_enable_annotation_tray_button_)
-      projector_annotation_tray->OnCanvasInitializationFailed();
-  }
+  canvas_initialized_state_ = success;
+  UpdateTrayEnabledState();
 }
 
 void ProjectorUiController::OnRecordedWindowChangingRoot(
@@ -206,8 +199,8 @@ void ProjectorUiController::OnRecordedWindowChangingRoot(
   SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/false);
   SetProjectorAnnotationTrayVisibility(new_root, /*visible=*/true);
   current_root_ = new_root;
-  if (should_enable_annotation_tray_button_)
-    OnCanvasInitialized(*should_enable_annotation_tray_button_);
+  if (canvas_initialized_state_)
+    UpdateTrayEnabledState();
 }
 
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
@@ -223,5 +216,12 @@ ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
       {kProjectorRedPenColor, ProjectorMarkerColor::kRed},
       {kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
   return marker_colors_map[color];
+}
+
+void ProjectorUiController::UpdateTrayEnabledState() {
+  if (auto* projector_annotation_tray =
+          GetProjectorAnnotationTrayForRoot(current_root_)) {
+    projector_annotation_tray->SetTrayEnabled(*canvas_initialized_state_);
+  }
 }
 }  // namespace ash

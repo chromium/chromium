@@ -7,8 +7,9 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance")
 load("//lib/consoles.star", "consoles")
+load("//lib/structs.star", "structs")
 
 ci.defaults.set(
     builder_group = "chromium.mac",
@@ -187,7 +188,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac10.11 Tests",
+    name = "mac12-arm64-rel-tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -198,48 +199,21 @@ ci.thin_tester(
             config = "chromium",
             apply_configs = [
                 "mb",
-                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-mac-archive",
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "11",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Mac Builder"],
-)
-
-ci.thin_tester(
-    name = "Mac10.12 Tests",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        build_gs_bucket = "chromium-mac-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
+        category = "release|arm64",
         short_name = "12",
     ),
-    cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Mac Builder"],
+    # TODO(crbug.com/1334005): Add to rotation when it's stable.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    triggered_by = ["ci/mac-arm64-rel"],
 )
 
 ci.thin_tester(
@@ -356,7 +330,35 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac11 Tests (dbg)",
+    name = "Mac12 Tests",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "12",
+    ),
+    # TODO(crbug.com/1332397): Add to rotation when it's stable.
+    sheriff_rotations = args.ignore_default(None),
+    triggered_by = ["ci/Mac Builder"],
+)
+
+ci.thin_tester(
+    name = "Mac12 Tests (dbg)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -376,7 +378,7 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
-        short_name = "11",
+        short_name = "12",
     ),
     cq_mirrors_console_view = "mirrors",
     sheriff_rotations = args.ignore_default(None),
@@ -449,6 +451,29 @@ ios_builder(
     ],
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
+)
+
+ios_builder(
+    name = "ios-device (reclient shadow)",
+    builder_spec = builder_config.copy_from(
+        "ci/ios-device",
+        lambda spec: structs.evolve(
+            spec,
+            build_gs_bucket = None,
+        ),
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ios|default",
+            short_name = "rec",
+        ),
+    ],
+    builderless = True,
+    tree_closing = False,
+    sheriff_rotations = args.ignore_default(None),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 40,
 )
 
 ios_builder(

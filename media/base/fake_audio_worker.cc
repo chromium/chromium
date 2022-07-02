@@ -185,8 +185,10 @@ void FakeAudioWorker::Worker::DoRead() {
                                             frames_elapsed_, sample_rate_);
   }
 
-  worker_task_runner_->PostDelayedTask(FROM_HERE, worker_task_cb_.callback(),
-                                       next_read_time - now);
+  worker_task_runner_->PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey(),
+                                         FROM_HERE, worker_task_cb_.callback(),
+                                         next_read_time,
+                                         base::subtle::DelayPolicy::kPrecise);
 }
 
 }  // namespace media

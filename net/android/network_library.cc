@@ -30,8 +30,7 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaByteArray;
 
-namespace net {
-namespace android {
+namespace net::android {
 
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                          base::StringPiece auth_type,
@@ -120,6 +119,11 @@ std::string GetWifiSSID() {
   return base::android::ConvertJavaStringToUTF8(
       Java_AndroidNetworkLibrary_getWifiSSID(
           base::android::AttachCurrentThread()));
+}
+
+void SetWifiEnabledForTesting(bool enabled) {
+  Java_AndroidNetworkLibrary_setWifiEnabled(
+      base::android::AttachCurrentThread(), enabled);
 }
 
 absl::optional<int32_t> GetWifiSignalLevel() {
@@ -328,5 +332,4 @@ NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
   return get_addrinfo_for_network(network, node, service, hints, res);
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

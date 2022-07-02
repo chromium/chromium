@@ -35,17 +35,21 @@ class CrosWindow : public ScriptWrappable {
   int32_t width();
   int32_t height();
 
-  ScriptPromise setOrigin(ScriptState* script_state, int32_t x, int32_t y);
-  ScriptPromise setBounds(ScriptState* script_state,
-                          int32_t x,
-                          int32_t y,
-                          int32_t width,
-                          int32_t height);
+  ScriptPromise moveTo(ScriptState* script_state, int32_t x, int32_t y);
+  ScriptPromise moveBy(ScriptState* script_state,
+                       int32_t delta_x,
+                       int32_t delta_y);
+  ScriptPromise resizeTo(ScriptState* script_state,
+                         int32_t width,
+                         int32_t height);
+  ScriptPromise resizeBy(ScriptState* script_state,
+                         int32_t delta_width,
+                         int32_t delta_height);
   ScriptPromise setFullscreen(ScriptState* script_state, bool fullscreen);
   ScriptPromise maximize(ScriptState* script_state);
   ScriptPromise minimize(ScriptState* script_state);
   ScriptPromise focus(ScriptState* script_state);
-  void close();
+  ScriptPromise close(ScriptState* script_state);
 
  private:
   Member<CrosWindowManagement> window_management_;

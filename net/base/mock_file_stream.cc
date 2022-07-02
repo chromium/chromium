@@ -11,24 +11,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace net {
-
-namespace testing {
+namespace net::testing {
 
 MockFileStream::MockFileStream(
     const scoped_refptr<base::TaskRunner>& task_runner)
-    : FileStream(task_runner),
-      forced_error_(OK),
-      async_error_(false),
-      throttled_(false) {}
+    : FileStream(task_runner) {}
 
 MockFileStream::MockFileStream(
     base::File file,
     const scoped_refptr<base::TaskRunner>& task_runner)
-    : FileStream(std::move(file), task_runner),
-      forced_error_(OK),
-      async_error_(false),
-      throttled_(false) {}
+    : FileStream(std::move(file), task_runner) {}
 
 MockFileStream::~MockFileStream() = default;
 
@@ -132,6 +124,4 @@ int64_t MockFileStream::ErrorCallback64(Int64CompletionOnceCallback callback) {
   return ret;
 }
 
-}  // namespace testing
-
-}  // namespace net
+}  // namespace net::testing

@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
   ASSERT_NE(main_frame->GetLastCommittedOrigin(),
             subframe->GetLastCommittedOrigin());
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   // SiteInstance.
   EXPECT_TRUE(WaitForLoadStop(new_web_contents));
   EXPECT_EQ(link_url, new_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(new_web_contents->GetMainFrame()->GetSiteInstance(),
+  EXPECT_EQ(new_web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
             subframe->GetSiteInstance());
 }
 #endif  // !BUILDFLAG(IS_MAC)

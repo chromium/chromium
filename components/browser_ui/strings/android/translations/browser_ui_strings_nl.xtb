@@ -49,11 +49,13 @@
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> verwijderen</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
 <translation id="2321958826496381788">Sleep de schuifknop tot je deze tekst prettig kunt lezen. De tekst moet minimaal deze grootte hebben nadat je op een alinea hebt gedubbeltikt.</translation>
+<translation id="2329473609445770916">Deze site definieert interesses waarmee andere sites je advertenties kunnen laten zien</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2379925928934107488">Donker thema zo mogelijk toepassen op sites als Chrome het donkere thema gebruikt</translation>
 <translation id="2387895666653383613">Tekstgrootte</translation>
@@ -90,6 +92,7 @@
 <translation id="300526633675317032">Hiermee wordt de volledige <ph name="SIZE_IN_KB" /> aan site-opslag gewist.</translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
+<translation id="3069226013421428034">Externe login toestaan voor een specifieke site.</translation>
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Informatie bekijken</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
@@ -97,6 +100,7 @@
 <translation id="3203366800380907218">Van internet</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
+<translation id="3248611290851046188">Deze site definieert interesses waarmee andere sites je advertenties kunnen laten zien. Deze site krijgt ook je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
@@ -113,6 +117,7 @@
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="3797520601150691162">Donker thema niet toepassen op een specifieke site</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefoonnummers</translation>
 <translation id="3826050100957962900">Externe login</translation>
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
@@ -123,11 +128,13 @@
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3987993985790029246">Link kop.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
+<translation id="3992684624889376114">Over deze pagina</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Cookies voor een specifieke site toestaan.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
+<translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
 <translation id="4194328954146351878">Vragen voordat sites informatie op NFC-apparaten mogen zien en wijzigen (aanbevolen)</translation>
 <translation id="4200726100658658164">Locatie-instellingen openen</translation>
 <translation id="4226663524361240545">Het apparaat kan trillen bij meldingen</translation>
@@ -222,6 +229,7 @@
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6320088164292336938">Trillen</translation>
+<translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
 <translation id="6388207532828177975">Wissen en opnieuw instellen</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
 <translation id="6439114592976064011">Voorkomen dat sites je virtualreality-apparaat en -gegevens gebruiken</translation>

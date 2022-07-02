@@ -304,7 +304,7 @@ VideoTrackRecorderImpl::Counter::GetWeakPtr() {
 
 VideoTrackRecorderImpl::Encoder::Encoder(
     const OnEncodedVideoCB& on_encoded_video_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner)
     : main_task_runner_(std::move(main_task_runner)),
@@ -332,10 +332,13 @@ VideoTrackRecorderImpl::Encoder::~Encoder() {
     origin_task_runner_->DeleteSoon(FROM_HERE,
                                     std::move(num_frames_in_encode_));
   }
-  if (encoder_thread_context_ &&
-      !encoding_task_runner_->RunsTasksInCurrentSequence()) {
-    encoding_task_runner_->DeleteSoon(FROM_HERE,
-                                      std::move(encoder_thread_context_));
+  if (!encoding_task_runner_->RunsTasksInCurrentSequence()) {
+    if (encoder_thread_context_) {
+      encoding_task_runner_->DeleteSoon(FROM_HERE,
+                                        std::move(encoder_thread_context_));
+    }
+    if (video_renderer_)
+      encoding_task_runner_->DeleteSoon(FROM_HERE, std::move(video_renderer_));
   }
 }
 
@@ -611,7 +614,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
@@ -668,7 +671,7 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 void VideoTrackRecorderImpl::InitializeEncoder(
     CodecProfile codec_profile,
     const OnEncodedVideoCB& on_encoded_video_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     bool allow_vea_encoder,
     scoped_refptr<media::VideoFrame> video_frame,
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
@@ -697,7 +700,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
 void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     CodecProfile codec_profile,
     const OnEncodedVideoCB& on_encoded_video_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     bool allow_vea_encoder,
     scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks capture_time) {

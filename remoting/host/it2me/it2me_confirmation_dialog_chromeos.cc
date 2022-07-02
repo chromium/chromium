@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -114,7 +115,8 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
           FormatMessage(remote_user_email, style_), u"", GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kConfirmationNotifierId),
+              kConfirmationNotifierId,
+              ash::NotificationCatalogName::kIt2MeConfirmation),
           data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&It2MeConfirmationDialogChromeOS::

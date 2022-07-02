@@ -199,7 +199,7 @@ void StreamTexture::OnFrameAvailable() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   has_pending_frame_ = true;
 
-  if (!client_ || !texture_owner_)
+  if (!client_ || !texture_owner_ || !channel_)
     return;
 
   // We haven't received size for first time yet from the MediaPlayer we will

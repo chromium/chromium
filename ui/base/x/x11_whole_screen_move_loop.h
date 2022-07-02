@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/x/x11_move_loop.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
@@ -64,7 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
 
   void PostDispatchIfNeeded(const ui::MouseEvent& event);
 
-  X11MoveLoopDelegate* delegate_;
+  raw_ptr<X11MoveLoopDelegate> delegate_;
 
   // Are we running a nested run loop from RunMoveLoop()?
   bool in_move_loop_;

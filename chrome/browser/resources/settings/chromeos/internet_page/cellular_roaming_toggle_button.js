@@ -10,81 +10,96 @@
  */
 
 import '../../prefs/prefs.js';
-import './internet_shared_css.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../../settings_shared_css.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'cellular-roaming-toggle-button',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ */
+const CellularRoamingToggleButtonElementBase =
+    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-  ],
+/** @polymer */
+class CellularRoamingToggleButtonElement extends
+    CellularRoamingToggleButtonElementBase {
+  static get is() {
+    return 'cellular-roaming-toggle-button';
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
-    managedProperties: {
-      type: Object,
-      observer: 'managedPropertiesChanged_',
-    },
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+      managedProperties: {
+        type: Object,
+      },
 
-    /**
-     * The allow roaming state.
-     * @private
-     */
-    isRoamingAllowedForNetwork_: {
-      type: Boolean,
-      observer: 'isRoamingAllowedForNetworkChanged_',
-    },
-  },
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
+      /**
+       * The allow roaming state.
+       * @private
+       */
+      isRoamingAllowedForNetwork_: {
+        type: Boolean,
+        observer: 'isRoamingAllowedForNetworkChanged_',
+        notify: true,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      `managedPropertiesChanged_(
+          prefs.cros.signed.data_roaming_enabled.*,
+          managedProperties.*)`,
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  },
-
-  /**
-   * Returns the text sub-label for testing.
-   * @return {string}
-   */
-  getSubLabelForTesting() {
-    return this.$$('#cellularRoamingToggleSubLabel').innerText;
-  },
+  }
 
   /**
    * Returns the child element responsible for controlling cellular roaming.
    * @return {?CrToggleElement}
    */
   getCellularRoamingToggle() {
-    return /** @type {?CrToggleElement} */ (this.$$('#control'));
-  },
+    return /** @type {?CrToggleElement} */ (
+        this.shadowRoot.querySelector('#cellularRoamingToggle'));
+  }
 
   /** @private */
   isRoamingAllowedForNetworkChanged_() {
@@ -105,7 +120,7 @@ Polymer({
           }
         });
     recordSettingChange();
-  },
+  }
 
   /**
    * @return {boolean} The value derived from the network state reported by
@@ -116,7 +131,7 @@ Polymer({
     return !!OncMojo.getActiveValue(
                this.managedProperties.typeProperties.cellular.allowRoaming) &&
         !this.isRoamingProhibitedByPolicy_();
-  },
+  }
 
   /**
    * @return {string} The text to display with roaming details.
@@ -134,7 +149,7 @@ Polymer({
             'Roaming' ?
         this.i18n('networkAllowDataRoamingEnabledRoaming') :
         this.i18n('networkAllowDataRoamingEnabledHome');
-  },
+  }
 
   /** @private */
   managedPropertiesChanged_() {
@@ -142,8 +157,17 @@ Polymer({
         !this.managedProperties.typeProperties.cellular.allowRoaming) {
       return;
     }
+
+    // We override the enforcement of the managed property here so that we can
+    // have the toggle show the policy enforcement icon when the global policy
+    // prohibits roaming.
+    if (this.isRoamingProhibitedByPolicy_()) {
+      this.set(
+          'managedProperties.typeProperties.cellular.allowRoaming.policySource',
+          chromeos.networkConfig.mojom.PolicySource.kDevicePolicyEnforced);
+    }
     this.isRoamingAllowedForNetwork_ = this.getRoamingAllowedForNetwork_();
-  },
+  }
 
   /** @private */
   onCellularRoamingRowClicked_(event) {
@@ -152,7 +176,7 @@ Polymer({
       return;
     }
     this.isRoamingAllowedForNetwork_ = !this.isRoamingAllowedForNetwork_;
-  },
+  }
 
   /** @private */
   isRoamingProhibitedByPolicy_() {
@@ -160,15 +184,20 @@ Polymer({
     return !dataRoamingEnabled.value &&
         dataRoamingEnabled.controlledBy ===
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
-  },
+  }
 
   /** @private */
   isPerNetworkToggleDisabled_() {
-    return this.disabled || this.isRoamingProhibitedByPolicy_();
-  },
+    return this.disabled || this.isRoamingProhibitedByPolicy_() ||
+        CrPolicyNetworkBehaviorMojo.isNetworkPolicyEnforced(
+            this.managedProperties.typeProperties.cellular.allowRoaming);
+  }
 
   /** @private */
   showPerNetworkAllowRoamingToggle_() {
     return this.isRoamingAllowedForNetwork_ !== undefined;
-  },
-});
+  }
+}
+
+customElements.define(
+    CellularRoamingToggleButtonElement.is, CellularRoamingToggleButtonElement);

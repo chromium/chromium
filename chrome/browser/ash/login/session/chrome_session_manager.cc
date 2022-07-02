@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -14,6 +15,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -36,12 +38,12 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm_firmware_update_notification.h"
 #include "chrome/browser/ash/u2f_notification.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,9 +55,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/user_manager/user_manager.h"
@@ -96,6 +99,51 @@ void StartLoginOobeSession() {
   }
 }
 
+// Seed the stub user account in the same way as it's done in
+// `UserSessionManager::InitProfilePreferences` for regular users.
+void UpsertStubUserToAccountManager(Profile* user_profile,
+                                    const user_manager::User* user) {
+  // 1. Make sure that the account is present in
+  // `account_manager::AccountManager`.
+  account_manager::AccountManager* account_manager =
+      g_browser_process->platform_part()
+          ->GetAccountManagerFactory()
+          ->GetAccountManager(user_profile->GetPath().value());
+
+  DCHECK(account_manager->IsInitialized());
+
+  const ::account_manager::AccountKey account_key{
+      user->GetAccountId().GetGaiaId(), account_manager::AccountType::kGaia};
+
+  account_manager->UpsertAccount(
+      account_key, /*raw_email=*/user->GetDisplayEmail(),
+      account_manager::AccountManager::kInvalidToken);
+
+  DCHECK(account_manager->IsTokenAvailable(account_key));
+
+  // 2. Seed it into `IdentityManager`.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(user_profile);
+  signin::AccountsMutator* accounts_mutator =
+      identity_manager->GetAccountsMutator();
+  CoreAccountId account_id = accounts_mutator->SeedAccountInfo(
+      user->GetAccountId().GetGaiaId(), user->GetDisplayEmail());
+
+  // 3. Set it as the Primary Account.
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_id, signin::ConsentLevel::kSync);
+
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK_EQ(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia,
+      user->GetAccountId().GetGaiaId());
+
+  DCHECK_EQ(account_id, identity_manager->GetPrimaryAccountId(
+                            signin::ConsentLevel::kSignin));
+  VLOG(1) << "Seed IdentityManager for stub account, "
+          << "success=" << !account_id.empty();
+}
+
 // Starts Chrome with an existing user session. Possible cases:
 // 1. Chrome is restarted after crash.
 // 2. Chrome is restarted for Guest session.
@@ -105,6 +153,9 @@ void StartLoginOobeSession() {
 //    added. See PreEarlyInitialization().
 void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
+                         command_line->HasSwitch(::switches::kTestType);
 
   if (command_line->HasSwitch(switches::kLoginUser)) {
     // TODO(https://crbug.com/977489): There's a lot of code duplication with
@@ -134,7 +185,17 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
       return;
     }
 
-    ProfileHelper::Get()->ProfileStartup(user_profile);
+    SigninProfileHandler::Get()->ProfileStartUp(user_profile);
+
+    if (!is_running_test &&
+        user_manager->IsStubAccountId(user->GetAccountId())) {
+      // Add stub user to Account Manager. (But not when running tests: this
+      // allows tests to setup appropriate environment)
+      ash::InitializeAccountManager(
+          user_profile->GetPath(),
+          /*initialization_callback=*/base::BindOnce(
+              &UpsertStubUserToAccountManager, user_profile, user));
+    }
 
     user_session_mgr->NotifyUserProfileLoaded(user_profile, user);
 
@@ -147,8 +208,6 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     user_session_mgr->RestoreActiveSessions();
   }
 
-  bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
-                         command_line->HasSwitch(::switches::kTestType);
   if (!is_running_test) {
     // We did not log in (we crashed or are debugging), so we need to
     // restore Sync.

@@ -21,6 +21,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -155,7 +156,7 @@ void RunLoopFor(base::TimeDelta duration) {
 // Returns the render frame host where Gaia credentials can be filled in.
 content::RenderFrameHost* GetSigninFrame(content::WebContents* web_contents) {
   // Dice displays the Gaia page directly in a tab.
-  return web_contents->GetMainFrame();
+  return web_contents->GetPrimaryMainFrame();
 }
 
 // Waits until the condition is met, by polling.
@@ -377,6 +378,28 @@ class SigninViewControllerTestUtil {
 #endif
   }
 
+  static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+    return false;
+#else
+    SigninViewController* signin_view_controller =
+        browser->signin_view_controller();
+    DCHECK(signin_view_controller);
+    if (!signin_view_controller->ShowsModalDialog())
+      return false;
+    content::WebContents* dialog_web_contents =
+        signin_view_controller->GetModalDialogWebContentsForTesting();
+    DCHECK(dialog_web_contents);
+    std::string button_selector =
+        GetButtonSelectorForApp("profile-customization-app", "doneButton");
+    if (!IsElementReady(dialog_web_contents, button_selector))
+      return false;
+
+    return content::ExecJs(dialog_web_contents, button_selector + ".click();");
+#endif
+  }
+
   static bool ShowsModalDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();
@@ -485,6 +508,17 @@ bool SignInWithUI(Browser* browser,
 #endif
 }
 
+bool TryUntilSuccessWithTimeout(base::RepeatingCallback<bool()> try_callback,
+                                base::TimeDelta timeout) {
+  const base::Time expire_time = base::Time::Now() + timeout;
+  while (base::Time::Now() <= expire_time) {
+    if (try_callback.Run())
+      return true;
+    RunLoopFor(base::Seconds(1));
+  }
+  return false;
+}
+
 bool DismissSyncConfirmationDialog(Browser* browser,
                                    base::TimeDelta timeout,
                                    SyncConfirmationDialogAction action) {
@@ -517,28 +551,21 @@ bool CompleteSigninEmailConfirmationDialog(
     Browser* browser,
     base::TimeDelta timeout,
     SigninEmailConfirmationDialog::Action action) {
-  const base::Time expire_time = base::Time::Now() + timeout;
-  while (base::Time::Now() <= expire_time) {
-    if (SigninViewControllerTestUtil::TryCompleteSigninEmailConfirmationDialog(
-            browser, action)) {
-      return true;
-    }
-    RunLoopFor(base::Milliseconds(1000));
-  }
-  return false;
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(SigninViewControllerTestUtil::
+                              TryCompleteSigninEmailConfirmationDialog,
+                          browser, action),
+      timeout);
 }
 
 bool CompleteReauthConfirmationDialog(Browser* browser,
                                       base::TimeDelta timeout,
                                       ReauthDialogAction action) {
-  const base::Time expire_time = base::Time::Now() + timeout;
-  while (base::Time::Now() <= expire_time) {
-    if (SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog(
-            browser, action))
-      return true;
-    RunLoopFor(base::Milliseconds(1000));
-  }
-  return false;
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(
+          SigninViewControllerTestUtil::TryCompleteReauthConfirmationDialog,
+          browser, action),
+      timeout);
 }
 
 bool ConfirmReauthConfirmationDialog(Browser* browser,
@@ -550,6 +577,15 @@ bool ConfirmReauthConfirmationDialog(Browser* browser,
 bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
   return CompleteReauthConfirmationDialog(browser, timeout,
                                           ReauthDialogAction::kCancel);
+}
+
+bool CompleteProfileCustomizationDialog(Browser* browser,
+                                        base::TimeDelta timeout) {
+  return TryUntilSuccessWithTimeout(
+      base::BindRepeating(
+          SigninViewControllerTestUtil::TryCompleteProfileCustomizationDialog,
+          browser),
+      timeout);
 }
 
 }  // namespace login_ui_test_utils

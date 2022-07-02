@@ -123,11 +123,12 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
   // usually only a small number of FontData/SegmentedFontData instances created
   // per CSSSegmentedFontFace. Whereas in variable font animations, this number
   // grows rapidly.
-  scoped_refptr<SegmentedFontData>* cached_font_data =
-      font_data_table_.Get(key);
-  if (cached_font_data && (*cached_font_data) &&
-      (*cached_font_data)->NumFaces())
-    return *cached_font_data;
+  auto it = font_data_table_.Get(key);
+  if (it != font_data_table_.end()) {
+    scoped_refptr<SegmentedFontData> cached_font_data = it->second;
+    if (cached_font_data && cached_font_data->NumFaces())
+      return cached_font_data;
+  }
 
   scoped_refptr<SegmentedFontData> created_font_data =
       SegmentedFontData::Create();

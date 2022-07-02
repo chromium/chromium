@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_ANNOTATION_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_ANNOTATION_TEST_UTILS_H_
 
+#include "base/check_op.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

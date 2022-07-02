@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 struct Config;
@@ -29,10 +29,9 @@ class DefaultModelsRegister {
   DefaultModelsRegister& operator=(const DefaultModelsRegister& client) =
       delete;
 
-  std::unique_ptr<ModelProvider> GetModelProvider(
-      optimization_guide::proto::OptimizationTarget target);
+  std::unique_ptr<ModelProvider> GetModelProvider(proto::SegmentId target);
 
-  void SetModelForTesting(optimization_guide::proto::OptimizationTarget target,
+  void SetModelForTesting(proto::SegmentId target,
                           std::unique_ptr<ModelProvider>);
 
  private:
@@ -40,9 +39,7 @@ class DefaultModelsRegister {
 
   DefaultModelsRegister();
 
-  std::map<optimization_guide::proto::OptimizationTarget,
-           std::unique_ptr<ModelProvider>>
-      providers_;
+  std::map<proto::SegmentId, std::unique_ptr<ModelProvider>> providers_;
 };
 
 // Implementation of FieldTrialRegister that uses synthetic field trials to
@@ -57,6 +54,10 @@ class FieldTrialRegisterImpl : public FieldTrialRegister {
   // FieldTrialRegister:
   void RegisterFieldTrial(base::StringPiece trial_name,
                           base::StringPiece group_name) override;
+
+  void RegisterSubsegmentFieldTrialIfNeeded(base::StringPiece trial_name,
+                                            proto::SegmentId segment_id,
+                                            int subsegment_rank) override;
 };
 
 }  // namespace segmentation_platform

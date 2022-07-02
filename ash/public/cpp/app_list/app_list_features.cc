@@ -37,6 +37,7 @@ const base::Feature kEnableLauncherSearchNormalization{
     "EnableLauncherSearchNormalization", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+// DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
 const base::Feature kForceShowContinueSection{
     "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
@@ -45,12 +46,10 @@ const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherLacrosIntegration{
     "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeedbackOnContinueSectionRemove{
-    "FeedbackOnContinueSectionRemove", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherPlayStoreSearch{"LauncherPlayStoreSearch",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -145,17 +144,13 @@ bool IsForceShowContinueSectionEnabled() {
   return base::FeatureList::IsEnabled(kForceShowContinueSection);
 }
 
-bool IsFeedbackOnContinueSectionRemoveEnabled() {
-  return ash::features::IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kFeedbackOnContinueSectionRemove);
-}
-
 bool IsCompactBubbleLauncherEnabled() {
   return base::FeatureList::IsEnabled(kCompactBubbleLauncher);
 }
 
 bool IsLauncherPlayStoreSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
+  return ash::features::IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
 }
 
 }  // namespace app_list_features

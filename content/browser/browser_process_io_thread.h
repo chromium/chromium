@@ -71,9 +71,6 @@ class CONTENT_EXPORT BrowserProcessIOThread : public base::Thread {
 
   void IOThreadRun(base::RunLoop* run_loop);
 
-  // This method encapsulates cleanup that needs to happen on the IO thread.
-  void IOThreadCleanUp();
-
   // BrowserThreads are not allowed to do file I/O nor wait on synchronization
   // primivives except when explicitly allowed in tests.
   bool is_blocking_allowed_for_testing_ = false;

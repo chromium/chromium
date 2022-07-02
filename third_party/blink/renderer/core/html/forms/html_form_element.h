@@ -34,17 +34,26 @@
 
 namespace blink {
 
+class DOMTokenList;
 class Event;
 class HTMLFormControlElement;
 class HTMLFormControlsCollection;
 class HTMLImageElement;
 class ListedElement;
+class RelList;
 class V8UnionElementOrRadioNodeList;
 
 class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum RelAttribute {
+    kNone = 0,
+    kNoReferrer = 1 << 0,
+    kNoOpener = 1 << 1,
+    kOpener = 1 << 2,
+  };
+
   explicit HTMLFormElement(Document&);
   ~HTMLFormElement() override;
   void Trace(Visitor*) const override;
@@ -63,6 +72,10 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   String encoding() const { return attributes_.EncodingType(); }
   void setEncoding(const AtomicString& value) { setEnctype(value); }
+
+  DOMTokenList& relList() const;
+
+  bool HasRel(RelAttribute relation) const;
 
   bool ShouldAutocomplete() const;
 
@@ -189,6 +202,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool has_elements_associated_by_form_attribute_ : 1;
   bool did_finish_parsing_children_ : 1;
   bool is_in_reset_function_ : 1;
+
+  Member<RelList> rel_list_;
+  unsigned rel_attribute_ = 0;
 };
 
 }  // namespace blink

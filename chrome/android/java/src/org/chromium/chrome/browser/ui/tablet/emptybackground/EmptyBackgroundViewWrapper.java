@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
@@ -172,7 +173,9 @@ public class EmptyBackgroundViewWrapper {
 
     private boolean shouldShowEmptyContainer() {
         TabModel model = mTabModelSelector.getModel(false);
-        if (model == null) return false;
+        if (model == null || TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mActivity)) {
+            return false;
+        }
 
         boolean isIncognitoEmpty = mTabModelSelector.getModel(true).getCount() == 0;
         boolean incognitoSelected = mTabModelSelector.isIncognitoSelected();

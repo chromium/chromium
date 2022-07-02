@@ -12,9 +12,7 @@
 // defined by the core verification/path building code).
 //
 // Errors may be defined for other domains.
-namespace net {
-
-namespace cert_errors {
+namespace net::cert_errors {
 
 // An internal error occurred which prevented path building or verification
 // from finishing.
@@ -142,8 +140,6 @@ NET_EXPORT extern const CertErrorId kIterationLimitExceeded;
 // Depth limit was reached during path building.
 NET_EXPORT extern const CertErrorId kDepthLimitExceeded;
 
-}  // namespace cert_errors
-
-}  // namespace net
+}  // namespace net::cert_errors
 
 #endif  // NET_CERT_INTERNAL_COMMON_CERT_ERRORS_H_

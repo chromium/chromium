@@ -46,7 +46,7 @@ std::unique_ptr<char[]> ReadWavFile(const base::FilePath& wav_filename,
     return nullptr;
   }
 
-  std::unique_ptr<char[]> data(new char[wav_file_length]);
+  auto data = std::make_unique<char[]>(wav_file_length);
   int read_bytes = wav_file.Read(0, data.get(), wav_file_length);
   if (read_bytes != wav_file_length) {
     LOG(ERROR) << "Failed to read all bytes of " << wav_filename.value();

@@ -45,7 +45,7 @@ class UDPSocketTestHelper {
   int LeaveGroupSync(const net::IPAddress& group_address);
 
  private:
-  raw_ptr<mojo::Remote<mojom::UDPSocket>> socket_;
+  raw_ptr<mojo::Remote<mojom::UDPSocket>, DanglingUntriaged> socket_;
 };
 
 // An implementation of mojom::UDPSocketListener that records received results.

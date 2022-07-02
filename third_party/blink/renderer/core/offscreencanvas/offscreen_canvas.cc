@@ -177,7 +177,7 @@ void OffscreenCanvas::SetSize(const gfx::Size& size) {
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(size_);
   if (context_) {
-    if (context_->IsWebGL()) {
+    if (context_->IsWebGL() || IsWebGPU()) {
       context_->Reshape(size_.width(), size_.height());
     } else if (context_->IsRenderingContext2D()) {
       context_->Reset();
@@ -549,6 +549,9 @@ FontSelector* OffscreenCanvas::GetFontSelector() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     return window->document()->GetStyleEngine().GetFontSelector();
   }
+  // TODO(crbug.com/1334864): Temporary mitigation.  Remove the following
+  // CHECK once a more comprehensive solution has been implemented.
+  CHECK(GetExecutionContext()->IsWorkerGlobalScope());
   return To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
 }
 

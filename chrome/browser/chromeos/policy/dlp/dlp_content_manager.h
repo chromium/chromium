@@ -170,6 +170,11 @@ class DlpContentManager : public DlpContentObserver,
     const std::u16string& application_title() const;
     State state() const;
     base::WeakPtr<content::WebContents> web_contents() const;
+    // Saves the |dialog_widget| as the current dialog handle.
+    // Assumes that the previous widget is closed or not set. It's
+    // responsibility of the called to ensure that the restriction level is
+    // WARN.
+    void set_dialog_widget(base::WeakPtr<views::Widget> dialog_widget);
     void set_latest_confidential_contents_info(
         ConfidentialContentsInfo confidential_contents_info);
     // Returns the restriction information that was the last enforced on this
@@ -205,11 +210,9 @@ class DlpContentManager : public DlpContentObserver,
 
     // If currently opened, closes the associated DlpWarnDialog widget.
     void MaybeCloseDialogWidget();
-    // Saves the |dialog_widget| as the current dialog handle.
-    // Assumes that the previous widget is closed or not set. It's
-    // responsibility of the called to ensure that the restriction level is
-    // WARN.
-    void SetDialogWidget(base::WeakPtr<views::Widget> dialog_widget);
+    // Returns true if there is an associated DlpWarnDialog object, false
+    // otherwise.
+    bool HasOpenDialogWidget();
 
     base::WeakPtr<ScreenShareInfo> GetWeakPtr();
 

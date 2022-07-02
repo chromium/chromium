@@ -91,7 +91,9 @@ const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
 const char kIntentActionCreateNote[] = "create_note";
+const char kIntentActionStartOnLockScreen[] = "start_on_lock_screen";
 const char kIntentActionEdit[] = "edit";
+const char kIntentActionPotentialFileHandler[] = "potential_file_handler";
 
 const char kUseBrowserForLink[] = "use_browser";
 
@@ -148,6 +150,16 @@ apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
   return intent;
 }
 
+apps::IntentPtr MakeIntentForActivity(const std::string& activity,
+                                      const std::string& start_type,
+                                      const std::string& category) {
+  auto intent = std::make_unique<apps::Intent>(kIntentActionMain);
+  intent->activity_name = activity;
+  intent->start_type = start_type;
+  intent->categories = std::vector<std::string>{category};
+  return intent;
+}
+
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionView;
@@ -155,10 +167,12 @@ apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   return intent;
 }
 
-apps::mojom::IntentPtr CreateCreateNoteIntent() {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionCreateNote;
-  return intent;
+apps::IntentPtr CreateCreateNoteIntent() {
+  return std::make_unique<apps::Intent>(kIntentActionCreateNote);
+}
+
+apps::IntentPtr CreateStartOnLockScreenIntent() {
+  return std::make_unique<apps::Intent>(kIntentActionStartOnLockScreen);
 }
 
 apps::mojom::IntentPtr CreateViewIntentFromFiles(
@@ -666,7 +680,7 @@ bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
   return true;
 }
 
-base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
+base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
   base::Value intent_value(base::Value::Type::DICTIONARY);
   intent_value.SetStringKey(kActionKey, intent->action);
 
@@ -678,9 +692,9 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   if (intent->mime_type.has_value() && !intent->mime_type.value().empty())
     intent_value.SetStringKey(kMimeTypeKey, intent->mime_type.value());
 
-  if (intent->files.has_value() && !intent->files.value().empty()) {
+  if (!intent->files.empty()) {
     base::Value file_urls_list(base::Value::Type::LIST);
-    for (const auto& file : intent->files.value()) {
+    for (const auto& file : intent->files) {
       DCHECK(file->url.is_valid());
       file_urls_list.Append(base::Value(file->url.spec()));
     }
@@ -707,9 +721,9 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   if (intent->start_type.has_value() && !intent->start_type.value().empty())
     intent_value.SetStringKey(kStartTypeKey, intent->start_type.value());
 
-  if (intent->categories.has_value() && !intent->categories.value().empty()) {
+  if (!intent->categories.empty()) {
     base::Value categories(base::Value::Type::LIST);
-    for (const auto& category : intent->categories.value()) {
+    for (const auto& category : intent->categories) {
       categories.Append(base::Value(category));
     }
     intent_value.SetKey(kCategoriesKey, std::move(categories));
@@ -718,15 +732,13 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   if (intent->data.has_value() && !intent->data.value().empty())
     intent_value.SetStringKey(kDataKey, intent->data.value());
 
-  if (intent->ui_bypassed != apps::mojom::OptionalBool::kUnknown) {
-    intent_value.SetBoolKey(
-        kUiBypassedKey,
-        intent->ui_bypassed == apps::mojom::OptionalBool::kTrue ? true : false);
+  if (intent->ui_bypassed.has_value()) {
+    intent_value.SetBoolKey(kUiBypassedKey, intent->ui_bypassed.value());
   }
 
-  if (intent->extras.has_value() && !intent->extras.value().empty()) {
+  if (!intent->extras.empty()) {
     base::Value extras(base::Value::Type::DICTIONARY);
-    for (const auto& extra : intent->extras.value()) {
+    for (const auto& extra : intent->extras) {
       extras.SetStringKey(extra.first, extra.second);
     }
     intent_value.SetKey(kExtrasKey, std::move(extras));
@@ -749,15 +761,9 @@ absl::optional<std::string> GetStringValueFromDict(
   return *string_value;
 }
 
-apps::mojom::OptionalBool GetBoolValueFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name) {
-  absl::optional<bool> value = dict.FindBoolKey(key_name);
-  if (!value.has_value())
-    return apps::mojom::OptionalBool::kUnknown;
-
-  return value.value() ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
+absl::optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
+                                          const std::string& key_name) {
+  return dict.FindBoolKey(key_name);
 }
 
 absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
@@ -773,31 +779,29 @@ absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
   return url;
 }
 
-absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
+std::vector<apps::IntentFilePtr> GetFilesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetListDeprecated().empty())
-    return absl::nullopt;
+    return std::vector<apps::IntentFilePtr>();
 
-  std::vector<apps::mojom::IntentFilePtr> files;
+  std::vector<apps::IntentFilePtr> files;
   for (const auto& item : value->GetListDeprecated()) {
     GURL url(item.GetString());
     if (url.is_valid()) {
-      auto file = apps::mojom::IntentFile::New();
-      file->url = std::move(url);
-      files.push_back(std::move(file));
+      files.push_back(std::make_unique<apps::IntentFile>(url));
     }
   }
   return files;
 }
 
-absl::optional<std::vector<std::string>> GetCategoriesFromDict(
+std::vector<std::string> GetCategoriesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetListDeprecated().empty())
-    return absl::nullopt;
+    return std::vector<std::string>();
 
   std::vector<std::string> categories;
   for (const auto& item : value->GetListDeprecated())
@@ -806,12 +810,12 @@ absl::optional<std::vector<std::string>> GetCategoriesFromDict(
   return categories;
 }
 
-absl::optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
+base::flat_map<std::string, std::string> GetExtrasFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   const base::Value* value = dict.FindDictKey(key_name);
   if (!value || !value->is_dict())
-    return absl::nullopt;
+    return base::flat_map<std::string, std::string>();
 
   base::flat_map<std::string, std::string> extras;
   for (auto pair : value->DictItems()) {
@@ -822,17 +826,15 @@ absl::optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
   return extras;
 }
 
-apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
-  auto intent = apps::mojom::Intent::New();
-
+apps::IntentPtr ConvertValueToIntent(base::Value&& value) {
   base::DictionaryValue* dict = nullptr;
   if (!value.is_dict() || !value.GetAsDictionary(&dict))
-    return intent;
+    return nullptr;
 
   auto action = GetStringValueFromDict(*dict, kActionKey);
   if (!action.has_value())
-    return intent;
-  intent->action = action.value();
+    return nullptr;
+  auto intent = std::make_unique<apps::Intent>(action.value());
   intent->url = GetGurlValueFromDict(*dict, kUrlKey);
   intent->mime_type = GetStringValueFromDict(*dict, kMimeTypeKey);
   intent->files = GetFilesFromDict(*dict, kFileUrlsKey);

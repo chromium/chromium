@@ -29,9 +29,9 @@ class BASE_EXPORT VlogInfo {
   // code in source files "my_module.*" and "foo*.*" ("-inl" suffixes
   // are also disregarded for this matching).
   //
-  // |log_severity| points to an int that stores the log level. If a valid
+  // |min_log_level| points to an int that stores the log level. If a valid
   // |v_switch| is provided, it will set the log level, and the default
-  // vlog severity will be read from there..
+  // vlog severity will be read from there.
   //
   // Any pattern containing a forward or backward slash will be tested
   // against the whole pathname and not just the module.  E.g.,
@@ -48,15 +48,37 @@ class BASE_EXPORT VlogInfo {
   // __FILE__).
   int GetVlogLevel(base::StringPiece file) const;
 
+  // Returns a new VlogInfo based on |this| but with extra modules/levels added
+  // according to |vmodule_switch|.
+  VlogInfo* WithSwitches(const std::string& vmodule_switch) const;
+
  private:
   void SetMaxVlogLevel(int level);
   int GetMaxVlogLevel() const;
 
   // VmodulePattern holds all the information for each pattern parsed
   // from |vmodule_switch|.
-  struct VmodulePattern;
-  std::vector<VmodulePattern> vmodule_levels_;
-  raw_ptr<int> min_log_level_;
+  struct VmodulePattern {
+    enum MatchTarget { MATCH_MODULE, MATCH_FILE };
+
+    explicit VmodulePattern(const std::string& pattern);
+
+    VmodulePattern();
+
+    std::string pattern;
+    int vlog_level;
+    MatchTarget match_target;
+  };
+
+  VlogInfo(std::vector<VmodulePattern> vmodule_levels, int* min_log_level);
+
+  // Parses `VmodulePatterns` from a string, typically provided on the
+  // commandline.
+  static std::vector<VmodulePattern> ParseVmoduleLevels(
+      const std::string& vmodule_switch);
+
+  const std::vector<VmodulePattern> vmodule_levels_;
+  raw_ptr<int> const min_log_level_;
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The

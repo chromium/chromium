@@ -94,8 +94,7 @@
 using ::testing::ElementsAre;
 using ::testing::Key;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -233,7 +232,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
       delete;
 
-  ~TestSocketPerformanceWatcher() override {}
+  ~TestSocketPerformanceWatcher() override = default;
 
   bool ShouldNotifyUpdatedRTT() const override {
     return *should_notify_updated_rtt_;
@@ -253,17 +252,14 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 class TestSocketPerformanceWatcherFactory
     : public SocketPerformanceWatcherFactory {
  public:
-  TestSocketPerformanceWatcherFactory()
-      : watcher_count_(0u),
-        should_notify_updated_rtt_(true),
-        rtt_notification_received_(false) {}
+  TestSocketPerformanceWatcherFactory() = default;
 
   TestSocketPerformanceWatcherFactory(
       const TestSocketPerformanceWatcherFactory&) = delete;
   TestSocketPerformanceWatcherFactory& operator=(
       const TestSocketPerformanceWatcherFactory&) = delete;
 
-  ~TestSocketPerformanceWatcherFactory() override {}
+  ~TestSocketPerformanceWatcherFactory() override = default;
 
   // SocketPerformanceWatcherFactory implementation:
   std::unique_ptr<SocketPerformanceWatcher> CreateSocketPerformanceWatcher(
@@ -287,9 +283,9 @@ class TestSocketPerformanceWatcherFactory
   }
 
  private:
-  size_t watcher_count_;
-  bool should_notify_updated_rtt_;
-  bool rtt_notification_received_;
+  size_t watcher_count_ = 0u;
+  bool should_notify_updated_rtt_ = true;
+  bool rtt_notification_received_ = false;
 };
 
 class QuicNetworkTransactionTest
@@ -1056,7 +1052,7 @@ class QuicNetworkTransactionTest
       GenerateQuicAltSvcHeader({version_}) + "\r\n";
   const bool client_headers_include_h2_stream_dependency_;
   quic::ParsedQuicVersionVector supported_versions_;
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   MockQuicContext context_;
   std::unique_ptr<QuicTestPacketMaker> client_maker_;
   QuicTestPacketMaker server_maker_;
@@ -7222,7 +7218,7 @@ class QuicNetworkTransactionWithDestinationTest
         version_.transport_version, n);
   }
 
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
   quic::ParsedQuicVersionVector supported_versions_;
@@ -9778,5 +9774,4 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
 
 // TODO(yoichio):  Add the TCP job reuse case. See crrev.com/c/2174099.
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

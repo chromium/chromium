@@ -89,16 +89,18 @@ namespace {
 browsing_data::CannedCookieHelper* GetSiteSettingsCookieContainer(
     Browser* browser) {
   PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(
-          browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetPrimaryMainFrame());
   return settings->allowed_local_shared_objects().cookies();
 }
 
 browsing_data::CannedCookieHelper* GetSiteSettingsBlockedCookieContainer(
     Browser* browser) {
   PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(
-          browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetPrimaryMainFrame());
   return settings->blocked_local_shared_objects().cookies();
 }
 
@@ -309,8 +311,9 @@ class CookieSettingsTest
 
   // Set a cookie by visiting a page that has a Set-Cookie header.
   void HttpWriteCookieWithURL(Browser* browser, const GURL& url) {
-    auto* frame =
-        browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    auto* frame = browser->tab_strip_model()
+                      ->GetActiveWebContents()
+                      ->GetPrimaryMainFrame();
     // Need to load via |frame| for the accessed/blocked cookies lists to be
     // updated properly.
     content::LoadBasicRequest(frame, url);
@@ -476,7 +479,10 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, MAYBE_AllowCookiesUsingExceptions) {
 }
 
 // Verify that cookies can be blocked for a specific website using exceptions.
-IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesUsingExceptions) {
+//
+// TODO(https://crbug.com/931080): Re-enable test once flakiness is fixed.
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       DISABLED_BlockCookiesUsingExceptions) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetPageURL()));
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
@@ -906,9 +912,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectLoopCookies) {
 
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(&observer));
 
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
 // Any cookie access during a navigation does not end up in a new document (e.g.
@@ -928,9 +934,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, CookiesIgnoredFor204) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
-  EXPECT_FALSE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetPrimaryMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
 class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
@@ -971,25 +977,25 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::COOKIES));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
   EXPECT_EQ(main_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  EXPECT_FALSE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetPrimaryMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::COOKIES));
 
   web_contents->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(main_frame, web_contents->GetMainFrame());
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_EQ(main_frame, web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
@@ -1005,14 +1011,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::COOKIES));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
-  EXPECT_FALSE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetPrimaryMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::COOKIES));
 
   // This triggers a OnContentSettingChanged notification that should be
   // processed by the page in the cache.
@@ -1021,9 +1027,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
 
   web_contents->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_FALSE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetPrimaryMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
 // This test verifies that the site settings accurately reflect that an attempt
@@ -1060,9 +1066,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, ContentSettingsBlockDataURLs) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(u"Data URL", web_contents->GetTitle());
 
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
 }
 
 // Tests that if redirect across origins occurs, the new process still gets the
@@ -1086,9 +1092,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, RedirectCrossOrigin) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
@@ -1103,17 +1109,17 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   EXPECT_NE(map, nullptr);
-  EXPECT_FALSE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetPrimaryMainFrame())
+                   ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
   map->SetContentSettingDefaultScope(url_2, url_2,
                                      ContentSettingsType::JAVASCRIPT,
                                      ContentSetting::CONTENT_SETTING_BLOCK);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_2));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingsTest,
@@ -1318,9 +1324,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   // The import must be blocked.
   ui_test_utils::WaitForViewVisibility(
       browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
@@ -1503,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
   auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   {
@@ -1532,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   prerender_test_helper().NavigatePrimaryPage(prerender_url);
 
   main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   EXPECT_TRUE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
 }
@@ -1548,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
 
   auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   prerender_test_helper().AddPrerender(prerender_url);
@@ -1619,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
   auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   std::unique_ptr<content::RenderFrameHostWrapper> fenced_frame;
@@ -1627,7 +1633,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
     NonPrimaryPageCookieAccessObserver cookie_observer(GetWebContents());
     fenced_frame = std::make_unique<content::RenderFrameHostWrapper>(
         fenced_frame_test_helper().CreateFencedFrame(
-            GetWebContents()->GetMainFrame(), fenced_frame_url));
+            GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
     EXPECT_NE(fenced_frame, nullptr);
     // Ensure notification for cookie access by fenced frame has been sent.
     cookie_observer.Wait();
@@ -1654,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
   EXPECT_EQ(ff_pscs->blocked_local_shared_objects().GetObjectCount(), 1u);
 
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                       "const ff = document.querySelector('fencedframe'); "
                       "ff.remove();"));
   ASSERT_TRUE(fenced_frame->WaitUntilRenderFrameDeleted());
@@ -1671,14 +1677,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       https_server_.GetURL("b.test", "/browsing_data/site_data.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_FALSE(GetWebContents()->GetMainFrame()->IsErrorDocument());
+  ASSERT_FALSE(GetWebContents()->GetPrimaryMainFrame()->IsErrorDocument());
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
   auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
 
   content::RenderFrameHost* fenced_frame =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_NE(fenced_frame, nullptr);
   auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
 
@@ -1716,6 +1722,36 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       https_server_.GetURL("b.test", "/fenced_frames/page_with_script.html");
   const GURL other_main_url = https_server_.GetURL("c.test", "/empty.html");
 
+  auto NavigatePrimaryPageAndAddFencedFrame =
+      [&]() -> content::RenderFrameHost* {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+    EXPECT_FALSE(GetWebContents()->GetPrimaryMainFrame()->IsErrorDocument());
+    EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+    content::RenderFrameHost* fenced_frame =
+        fenced_frame_test_helper().CreateFencedFrame(
+            GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+    EXPECT_NE(fenced_frame, nullptr);
+    return fenced_frame;
+  };
+
+  auto ExpectScriptBlocked = [&](content::RenderFrameHost* fenced_frame) {
+    ui_test_utils::WaitForViewVisibility(
+        browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
+    auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+        GetWebContents()->GetPrimaryMainFrame());
+    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+    // Script should have been blocked in the fenced frame (and reflected in
+    // the PSCS of the primary page as well).
+    EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+    EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  };
+
+  auto ExpectScriptAllowed = [&](content::RenderFrameHost* fenced_frame) {
+    EXPECT_EQ(1, EvalJs(fenced_frame, "(async () => { return 1; })();"));
+    auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
+    EXPECT_FALSE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  };
+
   // Block script in (a.test, b.test).
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -1723,52 +1759,25 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       ContentSettingsPattern::FromURL(main_url),
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_FALSE(GetWebContents()->GetMainFrame()->IsErrorDocument());
-  ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
-  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
-
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
-  ASSERT_NE(fenced_frame, nullptr);
-  auto* ff_pscs = PageSpecificContentSettings::GetForFrame(fenced_frame);
-
-  // Script should have been blocked in the fenced frame (and reflected in the
-  // PSCS of the primary page as well).
-  EXPECT_TRUE(ff_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-  EXPECT_TRUE(main_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+      NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptBlocked(fenced_frame);
 
   // Allow script in (a.test, b.test).
   map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(main_url),
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_ALLOW);
-  content::RenderFrameHost* fenced_frame_two =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
-  ASSERT_NE(fenced_frame_two, nullptr);
-  auto* ff_two_pscs =
-      PageSpecificContentSettings::GetForFrame(fenced_frame_two);
-  // Script should not have been blocked in newly added fenced frame.
-  EXPECT_FALSE(ff_two_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptAllowed(fenced_frame);
 
   // Block script in (c.test, b.test).
   map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(other_main_url),
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-  content::RenderFrameHost* fenced_frame_three =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
-  ASSERT_NE(fenced_frame_three, nullptr);
-  auto* ff_three_pscs =
-      PageSpecificContentSettings::GetForFrame(fenced_frame_three);
-  // Script should not have been blocked in newly added fenced frame.
-  EXPECT_FALSE(
-      ff_three_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptAllowed(fenced_frame);
 
   // Block script in (*, b.test) - this should not have any effect as the
   // (a.test, b.test) rule is a narrower rule and should have precedence.
@@ -1776,14 +1785,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_BLOCK);
-  content::RenderFrameHost* fenced_frame_four =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
-  ASSERT_NE(fenced_frame_four, nullptr);
-  auto* ff_four_pscs =
-      PageSpecificContentSettings::GetForFrame(fenced_frame_four);
-  // Script should not have been blocked in newly added fenced frame.
-  EXPECT_FALSE(ff_four_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptAllowed(fenced_frame);
 
   // Remove (a.test, b.test) rule - (*, b.test) rule should now be the narrowest
   // and will be applied.
@@ -1791,14 +1794,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       ContentSettingsPattern::FromURL(main_url),
       ContentSettingsPattern::FromURL(fenced_frame_url),
       ContentSettingsType::JAVASCRIPT, ContentSetting::CONTENT_SETTING_DEFAULT);
-  content::RenderFrameHost* fenced_frame_five =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), fenced_frame_url);
-  ASSERT_NE(fenced_frame_five, nullptr);
-  auto* ff_five_pscs =
-      PageSpecificContentSettings::GetForFrame(fenced_frame_five);
-  // Script should have been blocked in newly added fenced frame.
-  EXPECT_TRUE(ff_five_pscs->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  fenced_frame = NavigatePrimaryPageAndAddFencedFrame();
+  ExpectScriptBlocked(fenced_frame);
 }
 
 class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
@@ -1844,16 +1841,16 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  ASSERT_FALSE(web_contents->GetMainFrame()->IsErrorDocument());
+  ASSERT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(web_contents->GetMainFrame(),
-                                                   fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_NE(nullptr, fenced_frame);
 
   // The import must be blocked.
   ui_test_utils::WaitForViewVisibility(
       browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-  EXPECT_TRUE(
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
-          ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetPrimaryMainFrame())
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
 }

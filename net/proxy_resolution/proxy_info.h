@@ -203,7 +203,7 @@ class NET_EXPORT ProxyInfo {
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   // Whether the proxy result represent a proxy bypass.
-  bool did_bypass_proxy_;
+  bool did_bypass_proxy_ = false;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was
   // determined synchronously without running a PAC.

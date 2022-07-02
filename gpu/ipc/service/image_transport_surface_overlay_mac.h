@@ -92,8 +92,6 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
-  void ScheduleCALayerInUseQuery(
-      std::vector<gl::GLSurface::CALayerInUseQuery> queries) override;
   bool IsSurfaceless() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
@@ -121,8 +119,6 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
   gfx::Size pixel_size_;
   float scale_factor_;
   gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
-
-  std::vector<gl::GLSurface::CALayerInUseQuery> ca_layer_in_use_queries_;
 
   // A GLFence marking the end of the previous frame, used for applying
   // backpressure.
@@ -187,8 +183,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::GLSurfaceEGL,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
-  void ScheduleCALayerInUseQuery(
-      std::vector<gl::GLSurface::CALayerInUseQuery> queries) override;
   bool IsSurfaceless() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
@@ -216,8 +210,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::GLSurfaceEGL,
   gfx::Size pixel_size_;
   float scale_factor_;
   gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
-
-  std::vector<gl::GLSurface::CALayerInUseQuery> ca_layer_in_use_queries_;
 
   // A GLFence marking the end of the previous frame, used for applying
   // backpressure.

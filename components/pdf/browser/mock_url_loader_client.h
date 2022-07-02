@@ -48,10 +48,6 @@ class MockURLLoaderClient : public network::mojom::URLLoaderClient {
               (int32_t transfer_size_diff),
               (override));
   MOCK_METHOD(void,
-              OnStartLoadingResponseBody,
-              (mojo::ScopedDataPipeConsumerHandle body),
-              (override));
-  MOCK_METHOD(void,
               OnComplete,
               (const network::URLLoaderCompletionStatus& status),
               (override));

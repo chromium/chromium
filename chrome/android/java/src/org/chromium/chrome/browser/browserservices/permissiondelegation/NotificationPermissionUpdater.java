@@ -5,18 +5,25 @@
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.content.ComponentName;
+import android.text.TextUtils;
 
-import androidx.annotation.WorkerThread;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
+import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.components.webapk.lib.client.WebApkValidator;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,16 +37,15 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class NotificationPermissionUpdater {
-    private static final String TAG = "TWANotifications";
+    private static final String TAG = "PermissionUpdater";
 
     private static final @ContentSettingsType int TYPE = ContentSettingsType.NOTIFICATIONS;
 
-    private final TrustedWebActivityPermissionManager mPermissionManager;
+    private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
 
     @Inject
-    public NotificationPermissionUpdater(
-            TrustedWebActivityPermissionManager permissionManager,
+    public NotificationPermissionUpdater(InstalledWebappPermissionManager permissionManager,
             TrustedWebActivityClient trustedWebActivityClient) {
         mPermissionManager = permissionManager;
         mTrustedWebActivityClient = trustedWebActivityClient;
@@ -61,14 +67,26 @@ public class NotificationPermissionUpdater {
         // permission if a TrustedWebActivityService exists.
         if (CachedFeatureFlags.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
-            mTrustedWebActivityClient.checkNotificationPermissionSetting(
-                    origin, (app, settingValue) -> {
-                        updatePermission(origin, /*callback=*/0, app, settingValue);
-                    });
+            mTrustedWebActivityClient.checkNotificationPermissionSetting(origin,
+                    (app, settingValue)
+                            -> updatePermission(
+                                    origin, /*callback=*/0, app.getPackageName(), settingValue));
         } else {
-            mTrustedWebActivityClient.checkNotificationPermission(
-                    origin, (app, enabled) -> updatePermission(origin, app, enabled));
+            mTrustedWebActivityClient.checkNotificationPermission(origin,
+                    (app, enabled) -> updatePermission(origin, app.getPackageName(), enabled));
         }
+    }
+
+    public void onWebApkLaunch(Origin origin, String packageName) {
+        if (!BuildInfo.isAtLeastT()
+                || !CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList
+                                .TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION)) {
+            return;
+        }
+        WebApkServiceClient.getInstance().checkNotificationPermission(packageName,
+                settingValue
+                -> updatePermission(origin, /*callback=*/0, packageName, settingValue));
     }
 
     /**
@@ -86,7 +104,8 @@ public class NotificationPermissionUpdater {
                         @Override
                         public void onPermission(
                                 ComponentName app, @ContentSettingValues int settingValue) {
-                            updatePermission(origin, /*callback=*/0, app, settingValue);
+                            updatePermission(
+                                    origin, /*callback=*/0, app.getPackageName(), settingValue);
                         }
 
                         @Override
@@ -98,8 +117,8 @@ public class NotificationPermissionUpdater {
             mTrustedWebActivityClient.checkNotificationPermission(
                     origin, new TrustedWebActivityClient.PermissionCheckCallback() {
                         @Override
-                        public void onPermissionCheck(ComponentName answeringApp, boolean enabled) {
-                            updatePermission(origin, answeringApp, enabled);
+                        public void onPermissionCheck(ComponentName app, boolean enabled) {
+                            updatePermission(origin, app.getPackageName(), enabled);
                         }
 
                         @Override
@@ -111,11 +130,13 @@ public class NotificationPermissionUpdater {
     }
 
     /**
-     * Called when a client app is requesting notification permission. If a
-     * TrustedWebActivityService is found for the given origin, this requests the client app's
-     * Android notification permission.
+     * Called when a web page with an installed app is requesting notification permission. This
+     * first looks for a TWA and if that fails it looks for a WebAPK. When an app is found this
+     * requests the app's Android notification permission. Calling this method only makes sense
+     * from Android T, there is no permission dialog for showing notifications in earlier versions.
      */
-    void requestPermission(Origin origin, long callback) {
+    void requestPermission(Origin origin, String lastCommittedUrl, long callback) {
+        assert BuildInfo.isAtLeastT() : "Cannot request notification permission before Android T";
         mTrustedWebActivityClient.requestNotificationPermission(
                 origin, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;
@@ -124,40 +145,66 @@ public class NotificationPermissionUpdater {
                             ComponentName app, @ContentSettingValues int settingValue) {
                         if (mCalled) return;
                         mCalled = true;
-                        updatePermission(origin, callback, app, settingValue);
+                        TrustedWebActivityUmaRecorder.recordNotificationPermissionRequestResult(
+                                settingValue);
+                        updatePermission(origin, callback, app.getPackageName(), settingValue);
                     }
 
                     @Override
                     public void onNoTwaFound() {
                         if (mCalled) return;
                         mCalled = true;
-                        mPermissionManager.resetStoredPermission(origin, TYPE);
-                        InstalledWebappBridge.runPermissionCallback(
-                                callback, ContentSettingValues.BLOCK);
+                        findWebApkPackageName(lastCommittedUrl,
+                                packageName
+                                -> requestPermissionFromWebApk(origin, callback, packageName));
                     }
                 });
     }
 
-    @WorkerThread
-    // TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
-    private void updatePermission(Origin origin, ComponentName app, boolean enabled) {
-        // This method will be called by the TrustedWebActivityClient on a background thread, so
-        // hop back over to the UI thread to deal with the result.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            Log.d(TAG, "Updating notification permission to: %b", enabled);
-            mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, enabled);
-        });
+    private void requestPermissionFromWebApk(
+            Origin origin, long callback, @Nullable String packageName) {
+        if (TextUtils.isEmpty(packageName)) {
+            mPermissionManager.resetStoredPermission(origin, TYPE);
+            InstalledWebappBridge.runPermissionCallback(callback, ContentSettingValues.BLOCK);
+            return;
+        }
+
+        WebApkServiceClient.getInstance().requestNotificationPermission(
+                packageName, settingValue -> {
+                    WebApkUmaRecorder.recordNotificationPermissionRequestResult(settingValue);
+                    updatePermission(origin, callback, packageName, settingValue);
+                });
     }
 
-    @WorkerThread
-    private void updatePermission(Origin origin, long callback, ComponentName app,
+    /**
+     * Finds a WebAPK that can handle the URL and is backed by Chrome. The package name will be null
+     * if no WebAPK could be found matching these criteria. Note that a WebAPK uses a scope URL
+     * which may contain a path. An origin has no path and would not fall within such a scope. So,
+     * you must pass a more complete URL into this method to get matches for those cases.
+     */
+    private void findWebApkPackageName(String url, Callback<String> packageNameCallback) {
+        String webApkPackageName =
+                WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
+        if (webApkPackageName == null) {
+            packageNameCallback.onResult(null);
+            return;
+        }
+        ChromeWebApkHost.checkChromeBacksWebApkAsync(webApkPackageName,
+                (doesBrowserBackWebApk, browserPackageName)
+                        -> packageNameCallback.onResult(
+                                doesBrowserBackWebApk ? webApkPackageName : null));
+    }
+
+    // TODO(crbug.com/1320272): Delete this method once the new flow has shipped.
+    private void updatePermission(Origin origin, String packageName, boolean enabled) {
+        Log.d(TAG, "Updating notification permission to: %b", enabled);
+        mPermissionManager.updatePermission(origin, packageName, TYPE, enabled);
+    }
+
+    private void updatePermission(Origin origin, long callback, String packageName,
             @ContentSettingValues int settingValue) {
-        // This method will be called by the TrustedWebActivityClient on a background thread, so
-        // hop back over to the UI thread to deal with the result.
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
-            Log.d(TAG, "Updating notification permission to: %d", settingValue);
-            mPermissionManager.updatePermission(origin, app.getPackageName(), TYPE, settingValue);
-            InstalledWebappBridge.runPermissionCallback(callback, settingValue);
-        });
+        Log.d(TAG, "Updating notification permission to: %d", settingValue);
+        mPermissionManager.updatePermission(origin, packageName, TYPE, settingValue);
+        InstalledWebappBridge.runPermissionCallback(callback, settingValue);
     }
 }

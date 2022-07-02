@@ -16,7 +16,7 @@ namespace {
 using ExtensionDialogTest = extensions::ExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionDialogTest, TextInputViaKeyEvent) {
-  ExtensionTestMessageListener init_listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener init_listener("ready");
 
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));

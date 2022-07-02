@@ -99,7 +99,7 @@ class MyInstance : public pp::Instance {
     font.Describe(&desc, &metrics);
 
     char buf[256];
-    sprintf(buf, "%s = %s %dpt",
+    snprintf(buf, sizeof(buf), "%s = %s %dpt",
             title, desc.face().AsString().c_str(), desc.size());
     return std::string(buf);
   }

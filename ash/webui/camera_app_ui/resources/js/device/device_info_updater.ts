@@ -32,16 +32,6 @@ export class DeviceInfoUpdater {
       Array<(updater: DeviceInfoUpdater) => void> = [];
 
   /**
-   * Action locking update of camera information.
-   */
-  private lockingUpdate: Promise<void>|null = null;
-
-  /**
-   * Pending camera information update while update capability is locked.
-   */
-  private pendingUpdate: Promise<void>|null = null;
-
-  /**
    * MediaDeviceInfo of all available video devices.
    */
   private devicesInfo: MediaDeviceInfo[] = [];
@@ -58,48 +48,18 @@ export class DeviceInfoUpdater {
   private pendingDevicesInfo: DeviceInfo[] = [];
 
   constructor() {
-    StreamManager.getInstance().addRealDeviceChangeListener(
-        async (devicesInfo) => {
-          this.pendingDevicesInfo = devicesInfo;
-          await this.update();
-        });
-  }
-
-  /**
-   * Tries to gain lock and initiates update process.
-   */
-  private async update() {
-    if (this.lockingUpdate) {
-      if (this.pendingUpdate) {
-        return;
-      }
-      this.pendingUpdate = (async () => {
-        while (this.lockingUpdate) {
-          try {
-            await this.lockingUpdate;
-          } catch (e) {
-            // Ignore exception from waiting for existing update.
-          }
-        }
-        this.lockingUpdate = this.pendingUpdate;
-        this.pendingUpdate = null;
-        await this.doUpdate();
-        this.lockingUpdate = null;
-      })();
-    } else {
-      this.lockingUpdate = (async () => {
-        await this.doUpdate();
-        this.lockingUpdate = null;
-      })();
-    }
+    StreamManager.getInstance().addRealDeviceChangeListener((devicesInfo) => {
+      this.pendingDevicesInfo = devicesInfo;
+      this.update();
+    });
   }
 
   /**
    * Updates devices information.
    */
-  private async doUpdate() {
+  private update() {
     this.devicesInfo = this.pendingDevicesInfo.map((d) => d.v1Info);
-    if (await DeviceOperator.isSupported()) {
+    if (DeviceOperator.isSupported()) {
       this.camera3DevicesInfo =
           this.pendingDevicesInfo.map((d) => assertExists(d.v3Info));
     } else {
@@ -116,35 +76,6 @@ export class DeviceInfoUpdater {
   addDeviceChangeListener(listener: (updater: DeviceInfoUpdater) => void):
       void {
     this.deviceChangeListeners.push(listener);
-  }
-
-  /**
-   * Requests to lock update of device information. This function is preserved
-   * for device information reader to lock the update capability so as to ensure
-   * getting consistent data between all information providers.
-   *
-   * @param callback Called after update capability is locked. Getting
-   *     information from all providers in callback are guaranteed to be
-   *     consistent.
-   */
-  async lockDeviceInfo(callback: () => Promise<void>): Promise<void> {
-    await StreamManager.getInstance().deviceUpdate();
-    while (this.lockingUpdate || this.pendingUpdate) {
-      try {
-        await this.lockingUpdate;
-        await this.pendingUpdate;
-      } catch (e) {
-        // Ignore exception from waiting for existing update.
-      }
-    }
-    this.lockingUpdate = (async () => {
-      try {
-        await callback();
-      } finally {
-        this.lockingUpdate = null;
-      }
-    })();
-    await this.lockingUpdate;
   }
 
   /**

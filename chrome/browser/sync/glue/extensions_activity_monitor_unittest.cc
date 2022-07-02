@@ -80,7 +80,7 @@ class SyncChromeExtensionsActivityMonitorTest : public testing::Test {
         extension2_(MakeExtension("extension2")),
         id1_(extension1_->id()),
         id2_(extension2_->id()) {}
-  ~SyncChromeExtensionsActivityMonitorTest() override {}
+  ~SyncChromeExtensionsActivityMonitorTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -33,7 +33,7 @@ class DataController {
   absl::optional<base::FilePath> CreateOrGetDirectory();
   base::FilePath GetFilePathFromPackageName(const std::string& package_name);
   // Check if file |file_path| exists.
-  bool ProtoFileExits(base::FilePath file_path);
+  bool ProtoFileExists(base::FilePath file_path);
   // Create empty file if file |file_path| doesn't exists.
   void CreateEmptyFile(base::FilePath file_path);
 

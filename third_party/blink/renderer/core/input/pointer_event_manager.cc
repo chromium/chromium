@@ -368,7 +368,8 @@ void PointerEventManager::AdjustTouchPointerEvent(
          WebPointerProperties::PointerType::kTouch);
 
   LayoutSize hit_rect_size = GetHitTestRectForAdjustment(
-      *frame_, LayoutSize(pointer_event.width, pointer_event.height));
+      *frame_, LayoutSize(LayoutUnit(pointer_event.width),
+                          LayoutUnit(pointer_event.height)));
 
   if (hit_rect_size.IsEmpty())
     return;
@@ -667,13 +668,39 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
         mojom::blink::UserActivationNotificationType::kInteraction);
   }
 
+  Node* pointerdown_node = nullptr;
   if (event.GetType() == WebInputEvent::Type::kPointerDown) {
-    touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
-        event, pointer_event_target);
+    pointerdown_node =
+        touch_event_manager_->GetTouchPointerNode(event, pointer_event_target);
+  }
+
+  TouchAction touch_action = TouchAction::kAuto;
+
+  if (pointerdown_node) {
+    touch_action = touch_action_util::EffectiveTouchActionAtPointerDown(
+        event, pointerdown_node);
+    if (RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled()) {
+      touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
+          event, pointerdown_node, touch_action);
+    }
   }
 
   WebInputEventResult result = DispatchTouchPointerEvent(
       event, coalesced_events, predicted_events, pointer_event_target);
+
+  if (pointerdown_node) {
+    TouchAction new_touch_action =
+        touch_action_util::EffectiveTouchActionAtPointerDown(event,
+                                                             pointerdown_node);
+    if (!RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled()) {
+      touch_event_manager_->UpdateTouchAttributeMapsForPointerDown(
+          event, pointerdown_node, new_touch_action);
+    }
+    if (new_touch_action != touch_action) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kTouchActionChangedAtPointerDown);
+    }
+  }
 
   touch_event_manager_->HandleTouchPoint(event, coalesced_events,
                                          pointer_event_target);
@@ -1168,6 +1195,10 @@ void PointerEventManager::SetGestureManager(GestureManager* gesture_manager) {
 int PointerEventManager::GetPointerEventId(
     const WebPointerProperties& web_pointer_properties) const {
   return pointer_event_factory_.GetPointerEventId(web_pointer_properties);
+}
+
+Element* PointerEventManager::CurrentTouchDownElement() {
+  return touch_event_manager_->CurrentTouchDownElement();
 }
 
 }  // namespace blink

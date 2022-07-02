@@ -223,7 +223,9 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
 
 void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
     const std::u16string& merchant_name,
-    base::OnceClosure response_callback) {
+    const std::string& rp_id,
+    base::OnceClosure response_callback,
+    base::OnceClosure opt_out_callback) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   if (!FrameSupportsPayments(rfh))
     return;
@@ -232,8 +234,9 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
   if (!web_contents)
     return;
   spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
-  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name,
-                                   std::move(response_callback));
+  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name, rp_id,
+                                   std::move(response_callback),
+                                   std::move(opt_out_callback));
 }
 
 std::unique_ptr<webauthn::InternalAuthenticator>

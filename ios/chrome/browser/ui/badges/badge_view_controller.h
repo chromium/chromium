@@ -17,7 +17,7 @@
 @interface BadgeViewController
     : UIViewController <BadgeConsumer, FullscreenUIElement>
 
-// |buttonFactory| must be non-nil.
+// `buttonFactory` must be non-nil.
 - (instancetype)initWithButtonFactory:(BadgeButtonFactory*)buttonFactory
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

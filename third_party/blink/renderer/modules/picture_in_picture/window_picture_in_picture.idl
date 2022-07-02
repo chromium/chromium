@@ -8,5 +8,5 @@
     SecureContext
 ]
 partial interface Window {
-    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<PictureInPictureWindow> requestPictureInPictureWindow(PictureInPictureWindowOptions options);
+    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<PictureInPictureWindow> requestPictureInPictureWindow(optional PictureInPictureWindowOptions options = {});
 };

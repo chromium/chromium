@@ -18,14 +18,10 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
 #include "media/cast/logging/receiver_time_offset_estimator.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace media {
 namespace cast {
@@ -54,7 +50,7 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   // The inner dictionary consists of string - double entries, where the string
   // describes the name of the stat, and the double describes
   // the value of the stat. See CastStat and StatsMap below.
-  std::unique_ptr<base::DictionaryValue> GetStats() const;
+  base::Value::Dict GetStats() const;
 
   // Resets stats in this object.
   void Reset();
@@ -109,7 +105,7 @@ class StatsEventSubscriber final : public RawEventSubscriber {
 
     void Reset();
 
-    std::unique_ptr<base::ListValue> GetHistogram() const;
+    base::Value::List GetHistogram() const;
 
    private:
     int64_t min_;

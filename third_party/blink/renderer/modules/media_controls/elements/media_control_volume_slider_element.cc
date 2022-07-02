@@ -95,10 +95,10 @@ MediaControlVolumeSliderElement::MediaControlVolumeSliderElement(
 }
 
 void MediaControlVolumeSliderElement::SetVolume(double volume) {
-  if (value().ToDouble() == volume)
+  if (Value().ToDouble() == volume)
     return;
 
-  setValue(String::Number(volume));
+  SetValue(String::Number(volume));
   SetVolumeInternal(volume);
 }
 
@@ -157,7 +157,7 @@ void MediaControlVolumeSliderElement::DefaultEventHandler(Event& event) {
   }
 
   if (event.type() == event_type_names::kInput)
-    UnmuteAndSetVolume(value().ToDouble());
+    UnmuteAndSetVolume(Value().ToDouble());
 
   if (event.type() == event_type_names::kFocus)
     GetMediaControls().OpenVolumeSliderIfNecessary();
@@ -181,7 +181,7 @@ bool MediaControlVolumeSliderElement::KeepEventInNode(
 }
 
 void MediaControlVolumeSliderElement::OnWheelEvent(WheelEvent* wheel_event) {
-  double current_volume = value().ToDouble();
+  double current_volume = Value().ToDouble();
   double new_volume = (wheel_event->wheelDelta() > 0)
                           ? current_volume + kScrollVolumeDelta
                           : current_volume - kScrollVolumeDelta;

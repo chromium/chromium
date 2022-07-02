@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -327,7 +327,7 @@ inline v8::Local<v8::Array> ToV8SequenceInternal(
   {
     v8::Context::Scope context_scope(
         creation_context->GetCreationContextChecked());
-    array = v8::Array::New(isolate, SafeCast<int>(sequence.size()));
+    array = v8::Array::New(isolate, base::checked_cast<int>(sequence.size()));
   }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   uint32_t index = 0;

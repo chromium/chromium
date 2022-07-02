@@ -50,6 +50,7 @@ enum class TextFieldEventBehavior {
 };
 
 enum class TextControlSetValueSelection {
+  kSetSelectionToStart,
   kSetSelectionToEnd,
   kClamp,
   kDoNotSet,
@@ -67,6 +68,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void ForwardEvent(Event&);
 
   void SetFocused(bool, mojom::blink::FocusType) override;
+
+  bool IsRichlyEditableForAccessibility() const override { return false; }
 
   // The derived class should return true if placeholder processing is needed.
   virtual bool IsPlaceholderVisible() const = 0;
@@ -121,12 +124,13 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void CheckIfValueWasReverted(const String&);
   void ClearValueBeforeFirstUserEdit();
 
-  virtual String value() const = 0;
-  virtual void setValue(
+  virtual String Value() const = 0;
+  virtual void SetValue(
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
-          TextControlSetValueSelection::kSetSelectionToEnd) = 0;
+          TextControlSetValueSelection::kSetSelectionToEnd,
+      WebAutofillState = WebAutofillState::kNotFilled) = 0;
 
   TextControlInnerEditorElement* InnerEditorElement() const {
     return inner_editor_;
@@ -144,8 +148,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   String DirectionForFormData() const;
 
   // Set the value trimmed to the max length of the field and dispatch the input
-  // and change events.
-  void SetAutofillValue(const String& value);
+  // and change events. If |value| is empty, the autofill state is always
+  // set to WebAutofillState::kNotFilled.
+  void SetAutofillValue(const String& value,
+                        WebAutofillState = WebAutofillState::kAutofilled);
 
   virtual void SetSuggestedValue(const String& value);
   const String& SuggestedValue() const;

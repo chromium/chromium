@@ -18,7 +18,7 @@ android_library("java") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [ "javatests/src/org/chromium/components/strictmode/ThreadStrictModeInterceptorTest.java" ]
   deps = [

@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2022-10-04">
+<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2022-12-04">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -454,15 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AtExitSurfaceCount" units="units" expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The number of surfaces that the GPU process was rendering to right before
-    exiting. This should be equal to the number of tabs (both visible and
-    hidden) rendering via the compositor.
-  </summary>
-</histogram>
-
 <histogram name="GPU.BlocklistFeatureTestResults"
     enum="GPUBlocklistFeatureTestResults" expires_after="2022-10-30">
   <owner>vmiura@chromium.org</owner>
@@ -495,21 +486,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.CollectContextGraphicsInfo" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time that the GPU process spends collecting driver information during
-    startup.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="GPU.CompositingMode" enum="CompositingMode"
     expires_after="never">
   <owner>kylechar@chromium.org</owner>
@@ -522,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ContextLost" enum="ContextLostReason"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>sievers@chromium.org</owner>
   <summary>
     The reason a GPU command buffer context of a given type was lost.
@@ -542,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -552,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3D12FeatureLevel" enum="D3D12FeatureLevel"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -561,18 +537,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.D3D12HighestShaderModel" enum="D3DShaderModel"
-    expires_after="2022-10-09">
+<histogram name="GPU.D3D12HighestShaderModel2" enum="D3DShaderModel"
+    expires_after="2022-12-11">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>amaiorano@google.com</owner>
   <summary>
     The maximum supported D3D shader model version on a D3D12 device. It is
-    recorded in the browser process 120 seconds after the browser launch.
+    recorded in the browser process 120 seconds after the browser launch. Note
+    that the &quot;2&quot; suffix was added when a fix was made in how this stat
+    is collected: the previous unsuffixed version would store
+    &quot;unknown/unsupported&quot; on systems that supported shader model 5.1
+    to 6.5, but were unaware of 6.6. The suffixed version correctly stores the
+    highest supported shader model.
   </summary>
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -648,17 +630,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayerResult.Texture"
-    enum="DCLayerResult" expires_after="2022-05-01">
+    enum="DCLayerResult" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Recorded for each texture quad (on overlay processing) the reason it was or
-    wasn't put in an overlay.
+    wasn't put in an overlay. (This metric might be lack of coverage between
+    2022-05-01 and 2022-06-24 due to metric expiration.)
   </summary>
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.DCLayerResult.Video"
-    enum="DCLayerResult" expires_after="2022-09-18">
+    enum="DCLayerResult" expires_after="2022-11-20">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -699,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2022-10-01">
+    enum="BooleanOverlaySupported" expires_after="2022-12-04">
   <owner>magchen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -709,12 +692,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2022-07-03">
+    expires_after="2023-06-15">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Recorded for each video quad during the video playback whether it is an
-    underlay or an overlay
+    underlay or an overlay.
   </summary>
 </histogram>
 
@@ -729,20 +712,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
-    expires_after="2022-05-01">
+    expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     Which overlay format was chosen for YUV overlays. Recorded once per GPU
-    process launch only if hardware overlays are supported.
+    process launch only if hardware overlays are supported. (Might be lack of
+    metrics coverage between 2022-05-01 and 2022-06-24 due to metric
+    expiration.)
   </summary>
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2021-10-04">
+    enum="BooleanOverlaySupported" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
-  <summary>True if Chrome will try to use DirectComposition overlays.</summary>
+  <owner>magchen@chromium.org</owner>
+  <summary>
+    True if Chrome will try to use DirectComposition overlays. (Might be lack of
+    metrics coverage between 2021-10-04 and 2022-06-24 due to metric
+    expiration.)
+  </summary>
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult2"
@@ -758,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult3"
-    enum="Hresult" expires_after="2022-10-01">
+    enum="Hresult" expires_after="2022-12-04">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -770,20 +761,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
-    expires_after="2020-12-31">
+    expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     What format was used for each overlay swap chain on each swap buffers.
+    (Might be lack of metrics coverage between 2020-12-31 and 2022-06-24 due to
+    metric expiration.)
   </summary>
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2022-03-06">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     What code path was used to present a video frame. Recorded on each present.
+    (Might be lack of metrics coverage between 2022-03-06 and 2022-06-24 due to
+    metric expiration.)
   </summary>
 </histogram>
 
@@ -812,14 +809,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
 </histogram>
 
 <histogram name="GPU.EnsureWorkVisibleDuration" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>alemate@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
@@ -835,7 +832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EnsureWorkVisibleDurationLowRes" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>alemate@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
@@ -859,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -912,6 +909,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary"
+    units="Boolean" expires_after="2022-11-06">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    For each lazy binding check of GLImage performed by GLES2DecoderImpl,
+    records whether binding was actually necessary or not. Used in the effort to
+    eliminate these lazy binding checks (crbug.com/1323341).
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary"
+    units="Boolean" expires_after="2022-11-06">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    For each lazy binding check of GLImage performed by
+    GLES2DecoderPassthroughImpl, records whether binding was actually necessary
+    or not. Used in the effort to eliminate these lazy binding checks
+    (crbug.com/1323341).
+  </summary>
+</histogram>
+
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
     expires_after="2022-10-30">
   <owner>magchen@chromium.org</owner>
@@ -922,7 +943,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GpuCount" units="gpus" expires_after="2022-10-09">
+<histogram name="GPU.GpuCount" units="gpus" expires_after="2022-12-11">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -932,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V3" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-11-13">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1016,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-11-13">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1026,7 +1047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1036,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1101,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
-    enum="MetalReadWriteTextureSupportTier" expires_after="2022-10-04">
+    enum="MetalReadWriteTextureSupportTier" expires_after="2022-12-04">
   <owner>cwallez@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1171,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.MultiGpu.Nvidia" enum="NvidiaDeviceId"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1227,7 +1248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2022-09-15">
+    enum="PaintOpDeserializationError" expires_after="2022-11-20">
   <owner>junov@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1272,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2022-10-23">
+    enum="GPUProcessLifetimeEvent" expires_after="2022-12-25">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -1283,41 +1304,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.SwiftShader"
-    enum="GPUProcessLifetimeEvent" expires_after="2022-10-23">
+    enum="GPUProcessLifetimeEvent" expires_after="2022-12-25">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
     started for SwiftShader WebGL. Crash buckets are based on crash count for
     disabling features. With OOP-D enabled the display compositor with software
     compositing will also run as part of the GPU process.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProgramCache.BinaryCacheHitTime" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to load a gpu program from the program cache.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProgramCache.BinaryCacheMissTime" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to link a gpu program.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
@@ -1360,7 +1353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
-    expires_after="M106">
+    expires_after="2022-11-20">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1371,17 +1364,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Rasterization.Raster.NumPaintOps" units="count"
-    expires_after="M106">
+    expires_after="2022-11-20">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>Number of paint ops in a raster task.</summary>
 </histogram>
 
-<histogram name="Gpu.Rasterization.Raster.NumSlowPaths" units="count"
-    expires_after="M106">
+<histogram name="Gpu.Rasterization.Raster.NumSlowPathsUpToMinForMSAA"
+    units="count" expires_after="2022-11-20">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
-  <summary>Number of slow paths in a raster task.</summary>
+  <summary>
+    Number of slow paths in a raster task. (Only counts up to the minimum
+    required for MSAA)
+  </summary>
 </histogram>
 
 <histogram name="GPU.RenderableFormat.{FORMAT_TYPE}" enum="Boolean"
@@ -1439,7 +1435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Scheduler.TaskSchedulingDelayTime" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>berlu@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -1453,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Scheduler.ThreadSuspendedTime" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>berlu@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -1482,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.ContentConsumed" enum="BooleanMatched"
-    expires_after="2022-06-19">
+    expires_after="2023-02-01">
   <owner>penghuang@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -1493,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SharedImage.DmaBufSupportedType"
-    enum="DmaBufSupportedType" expires_after="2022-09-30">
+    enum="DmaBufSupportedType" expires_after="2022-12-04">
   <owner>vasilyt@chromium.org</owner>
   <owner>hitawala@chromium.org</owner>
   <summary>
@@ -1502,16 +1498,6 @@ chromium-metrics-reviews@google.com.
     supported for the ozone platform, are Vulkan extensions supported and are GL
     extensions supported. This is logged once per gpu process launch through
     SharedImageFactory constructor call.
-  </summary>
-</histogram>
-
-<histogram name="GPU.SharedImageManager.TimeToAcquireLock" units="microseconds"
-    expires_after="2020-08-12">
-  <owner>samans@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
-  <summary>
-    Time it took to acquire the lock in SharedImageManager. Recorded only when
-    the manager is thread-safe. Ignores clients with no high-resolution clock.
   </summary>
 </histogram>
 
@@ -1538,7 +1524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SupportsDX12" enum="BooleanSupported"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1557,7 +1543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SwapTimeUs" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -1624,7 +1610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
-    units="microseconds" expires_after="2022-09-18">
+    units="microseconds" expires_after="2022-11-20">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1787,7 +1773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
-    units="units" expires_after="2022-10-23">
+    units="units" expires_after="2022-12-25">
   <owner>petermcneeley@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <summary>
@@ -1798,7 +1784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayQuadMaterial"
-    enum="OverlayQuadMaterial" expires_after="2022-10-23">
+    enum="OverlayQuadMaterial" expires_after="2022-12-25">
   <owner>petermcneeley@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <summary>
@@ -1808,17 +1794,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2022-09-18">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>hoegsberg@chromium.org</owner>
+    enum="OverlayStrategies" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <summary>
-    Overlay strategies used to promote Hardware Overlays, per frame. Recorded
-    every time a frame is rendered by the display compositor.
+    Overlay strategies used to promote Hardware Overlays, once or more per
+    frame. Recorded every time a frame is rendered by the display compositor, or
+    once per overlay promoted if multiple were promoted.
   </summary>
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>petermcneeley@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <summary>
@@ -1828,7 +1815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
-    enum="BooleanOverlayDamageRect" expires_after="2022-10-23">
+    enum="BooleanOverlayDamageRect" expires_after="2022-12-25">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1889,7 +1876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.CaptureSucceeded"
-    units="BooleanSuccess" expires_after="2023-03-01">
+    enum="BooleanSuccess" expires_after="2023-03-01">
   <owner>bialpio@chromium.org</owner>
   <owner>media-capture-dev@chromium.org</owner>
   <summary>
@@ -1900,7 +1887,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.FrameSinkVideoCapturer.FrameResurrected" units="Boolean"
+<histogram name="Viz.FrameSinkVideoCapturer.FrameResurrected" enum="Boolean"
     expires_after="2023-03-01">
   <owner>bialpio@chromium.org</owner>
   <owner>media-capture-dev@chromium.org</owner>
@@ -1996,24 +1983,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
-    expires_after="2022-09-11">
-  <owner>samans@chromium.org</owner>
+    expires_after="2022-11-13">
   <owner>sadrul@chromium.org</owner>
   <owner>viz-team-wat@google.com</owner>
   <summary>
     The time it took from when FrameSinkVideoCapturerImpl sent a request for an
     RGBA readback until the result comes back and ReadRGBAPlane successfully
     finishes.
-  </summary>
-</histogram>
-
-<histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureSucceeded"
-    enum="BooleanSuccess" expires_after="2020-12-31">
-  <owner>samans@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
-  <summary>
-    Whether an RGBA readback initiated by FrameSinkVideoCapturerImpl succeeded.
   </summary>
 </histogram>
 

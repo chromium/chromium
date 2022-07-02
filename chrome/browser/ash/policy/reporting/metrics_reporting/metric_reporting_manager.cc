@@ -74,10 +74,6 @@ base::TimeDelta GetDefaulEventCheckingRate(base::TimeDelta default_rate) {
 
 }  // namespace
 
-// static
-const base::Feature MetricReportingManager::kEnableNetworkTelemetryReporting{
-    "EnableNetworkTelemetryReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) {
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
@@ -304,15 +300,13 @@ void MetricReportingManager::DelayedInit() {
       ::ash::kReportDeviceBootMode,
       /*default_value=*/true, telemetry_report_queue_.get());
 
-  if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
-    // Network health info.
-    // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
-    // default value to true.
-    InitOneShotCollector(
-        std::make_unique<NetworkInfoSampler>(), info_report_queue_.get(),
-        /*enable_setting_path=*/::ash::kReportDeviceNetworkConfiguration,
-        /*setting_enabled_default_value=*/true);
-  }
+  // Network health info.
+  // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
+  // default value to true.
+  InitOneShotCollector(
+      std::make_unique<NetworkInfoSampler>(), info_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kReportDeviceNetworkConfiguration,
+      /*setting_enabled_default_value=*/true);
 
   initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
                               this, &MetricReportingManager::UploadTelemetry);
@@ -326,13 +320,11 @@ void MetricReportingManager::InitOnAffiliatedLogin() {
       std::make_unique<AudioEventsObserver>(),
       /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
       kReportDeviceAudioStatusDefaultValue);
-  if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
-    // Network health events observer.
-    InitEventObserverManager(
-        std::make_unique<NetworkEventsObserver>(),
-        /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-        kReportDeviceNetworkStatusDefaultValue);
-  }
+  // Network health events observer.
+  InitEventObserverManager(
+      std::make_unique<NetworkEventsObserver>(),
+      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+      kReportDeviceNetworkStatusDefaultValue);
   InitPeripheralsCollectors();
 }
 
@@ -447,9 +439,6 @@ void MetricReportingManager::InitNetworkCollectors() {
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
       GetDefaulCollectionRate(kDefaultNetworkTelemetryCollectionRate));
 
-  if (!base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
-    return;
-  }
   // HttpsLatency events.
   InitPeriodicEventCollector(
       std::move(https_latency_sampler),

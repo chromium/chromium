@@ -78,15 +78,21 @@ public class RadioUtils {
     @RequiresApi(Build.VERSION_CODES.P)
     private static boolean isWifiConnected() {
         assert isSupported();
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
-        Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
-        if (network == null) return false;
-        NetworkCapabilities networkCapabilities =
-                connectivityManager.getNetworkCapabilities(network);
-        if (networkCapabilities == null) return false;
-        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+        try (TraceEvent te = TraceEvent.scoped("RadioUtils::isWifiConnected")) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.CONNECTIVITY_SERVICE);
+            Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
+            if (network == null) {
+                return false;
+            }
+            NetworkCapabilities networkCapabilities =
+                    connectivityManager.getNetworkCapabilities(network);
+            if (networkCapabilities == null) {
+                return false;
+            }
+            return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+        }
     }
 
     /**
@@ -97,20 +103,22 @@ public class RadioUtils {
     @RequiresApi(Build.VERSION_CODES.P)
     private static int getCellSignalLevel() {
         assert isSupported();
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        int level = -1;
-        try {
-            SignalStrength signalStrength = ApiHelperForP.getSignalStrength(telephonyManager);
-            if (signalStrength != null) {
-                level = signalStrength.getLevel();
+        try (TraceEvent te = TraceEvent.scoped("RadioUtils::getCellSignalLevel")) {
+            TelephonyManager telephonyManager =
+                    (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.TELEPHONY_SERVICE);
+            int level = -1;
+            try {
+                SignalStrength signalStrength = ApiHelperForP.getSignalStrength(telephonyManager);
+                if (signalStrength != null) {
+                    level = signalStrength.getLevel();
+                }
+            } catch (java.lang.SecurityException e) {
+                // Sometimes SignalStrength.getLevel() requires extra permissions
+                // that Chrome doesn't have. See crbug.com/1150536.
             }
-        } catch (java.lang.SecurityException e) {
-            // Sometimes SignalStrength.getLevel() requires extra permissions
-            // that Chrome doesn't have. See crbug.com/1150536.
+            return level;
         }
-        return level;
     }
 
     /**
@@ -121,14 +129,16 @@ public class RadioUtils {
     @RequiresApi(Build.VERSION_CODES.P)
     private static int getCellDataActivity() {
         assert isSupported();
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        try {
-            return telephonyManager.getDataActivity();
-        } catch (java.lang.SecurityException e) {
-            // Just in case getDataActivity() requires extra permissions.
-            return -1;
+        try (TraceEvent te = TraceEvent.scoped("RadioUtils::getCellDataActivity")) {
+            TelephonyManager telephonyManager =
+                    (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.TELEPHONY_SERVICE);
+            try {
+                return telephonyManager.getDataActivity();
+            } catch (java.lang.SecurityException e) {
+                // Just in case getDataActivity() requires extra permissions.
+                return -1;
+            }
         }
     }
 }

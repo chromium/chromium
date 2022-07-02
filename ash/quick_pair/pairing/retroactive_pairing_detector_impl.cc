@@ -311,7 +311,8 @@ void RetroactivePairingDetectorImpl::NotifyDeviceFound(
   // to notify a device is found, we can accurately reflect a user's status
   // in the moment. This is flagged on whether the user has the Fast Pair
   // Saved Devices flag enabled.
-  if (features::IsFastPairSavedDevicesEnabled()) {
+  if (features::IsFastPairSavedDevicesEnabled() &&
+      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
     FastPairRepository::Get()->CheckOptInStatus(
         base::BindOnce(&RetroactivePairingDetectorImpl::OnCheckOptInStatus,
                        weak_ptr_factory_.GetWeakPtr(), model_id, ble_address,

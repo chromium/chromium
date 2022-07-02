@@ -33,7 +33,7 @@ std::string GetRandomString(size_t len) {
 // Tests performance of SubstringSetMatcher for 20000 random patterns of length
 // 30.
 TEST(SubstringSetMatcherPerfTest, RandomKeys) {
-  std::vector<StringPattern> patterns;
+  std::vector<MatcherStringPattern> patterns;
   std::set<std::string> pattern_strings;
 
   // Create patterns.
@@ -61,7 +61,7 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
   // Match patterns against a random string of 500 characters.
   const size_t kTextLen = 500;
   base::ElapsedTimer match_timer;
-  std::set<StringPattern::ID> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher->Match(GetRandomString(kTextLen), &matches);
   base::TimeDelta match_time = match_timer.Elapsed();
 

@@ -58,7 +58,7 @@ class TabRestoreService;
 // Delegate to handle presenting the action sheet.
 @property(nonatomic, weak) id<TabGridMediatorDelegate> delegate;
 
-// Initializer with |consumer| as the receiver of model layer updates.
+// Initializer with `consumer` as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<GridConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

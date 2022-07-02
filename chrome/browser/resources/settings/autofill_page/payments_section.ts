@@ -17,7 +17,7 @@ import '../settings_shared_css.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import './credit_card_edit_dialog.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
 

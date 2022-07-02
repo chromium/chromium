@@ -7,16 +7,16 @@
  * 'os-settings-powerwash-dialog' is a dialog shown to request confirmation
  * from the user for a device reset (aka powerwash).
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 import './os_powerwash_dialog_esim_item.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Router} from '../../router.js';
@@ -25,70 +25,90 @@ import {routes} from '../os_route.js';
 
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-powerwash-dialog',
+/** @polymer */
+class OsSettingsPowerwashDialogElement extends PolymerElement {
+  static get is() {
+    return 'os-settings-powerwash-dialog';
+  }
 
-  properties: {
-    requestTpmFirmwareUpdate: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
-     * @private
-     */
-    installedESimProfiles: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      requestTpmFirmwareUpdate: {
+        type: Boolean,
+        value: false,
       },
-    },
+
+      /**
+       * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
+       * @private
+       */
+      installedESimProfiles: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /** @private */
+      shouldShowESimWarning_: {
+        type: Boolean,
+        value: false,
+        computed:
+            'computeShouldShowESimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
+      },
+
+      /** @private */
+      isESimCheckboxChecked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      hasContinueBeenTapped_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!OsResetBrowserProxy} */
+    this.osResetBrowserProxy_ = OsResetBrowserProxyImpl.getInstance();
 
     /** @private */
-    shouldShowESimWarning_: {
-      type: Boolean,
-      value: false,
-      computed:
-          'computeShouldShowESimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
-    },
-
-    /** @private */
-    isESimCheckboxChecked_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    hasContinueBeenTapped_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
-    OsResetBrowserProxyImpl.getInstance().onPowerwashDialogShow();
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.osResetBrowserProxy_.onPowerwashDialogShow();
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onRestartTap_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
-  },
+  }
 
   /** @private */
   onContinueTap_() {
     this.hasContinueBeenTapped_ = true;
-  },
+  }
 
   /** @private */
   onMobileSettingsLinkClicked_(event) {
@@ -102,7 +122,7 @@ Polymer({
     Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -113,5 +133,8 @@ Polymer({
       return false;
     }
     return !!this.installedESimProfiles.length;
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsPowerwashDialogElement.is, OsSettingsPowerwashDialogElement);

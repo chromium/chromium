@@ -218,19 +218,11 @@ config("default_sanitizer_ldflags") {
       # In the static-library build, ASan libraries are different for
       # executables and dlls, see link_executable and link_shared_library below.
       # This here handles only the component build.
-      if (current_cpu == "x64") {
-        # Windows 64-bit.
-        libs = [
-          "clang_rt.asan_dynamic-x86_64.lib",
-          "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
-        ]
-      } else {
-        assert(current_cpu == "x86", "WinASan unsupported architecture")
-        libs = [
-          "clang_rt.asan_dynamic-i386.lib",
-          "clang_rt.asan_dynamic_runtime_thunk-i386.lib",
-        ]
-      }
+      assert(current_cpu == "x64", "WinASan unsupported architecture")
+      libs = [
+        "clang_rt.asan_dynamic-x86_64.lib",
+        "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
+      ]
     }
     if (use_libfuzzer) {
       assert(current_cpu == "x64", "LibFuzzer unsupported architecture")
@@ -282,23 +274,15 @@ config("asan_flags") {
 
 config("link_executable") {
   if (is_asan && is_win && !is_component_build) {
-    if (current_cpu == "x64") {
-      ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
-    } else {
-      assert(current_cpu == "x86", "WinASan unsupported architecture")
-      ldflags = [ "-wholearchive:clang_rt.asan-i386.lib" ]
-    }
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
   }
 }
 
 config("link_shared_library") {
   if (is_asan && is_win && !is_component_build) {
-    if (current_cpu == "x64") {
-      libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
-    } else {
-      assert(current_cpu == "x86", "WinASan unsupported architecture")
-      libs = [ "clang_rt.asan_dll_thunk-i386.lib" ]
-    }
+    assert(current_cpu == "x64", "WinASan unsupported architecture")
+    libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
   }
 }
 
@@ -463,7 +447,7 @@ config("ubsan_flags") {
 
     # Chromecast ubsan builds fail to compile with these
     # experimental flags, so only add them to non-chromecast ubsan builds.
-    if (!is_chromecast) {
+    if (!is_castos && !is_cast_android) {
       cflags += [
         # Employ the experimental PBQP register allocator to avoid slow
         # compilation on files with too many basic blocks.

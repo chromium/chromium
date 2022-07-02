@@ -13,9 +13,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -39,7 +39,6 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -207,9 +206,8 @@ ChromeAppDelegate::ChromeAppDelegate(Profile* profile, bool keep_alive)
           profile_, ProfileKeepAliveOrigin::kAppWindow);
     }
   }
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &ChromeAppDelegate::OnAppTerminating, base::Unretained(this)));
 }
 
 ChromeAppDelegate::~ChromeAppDelegate() {
@@ -338,9 +336,9 @@ void ChromeAppDelegate::SetWebContentsBlocked(
     bool blocked) {
   if (!blocked)
     web_contents->Focus();
-  // RenderViewHost may be NULL during shutdown.
-  content::RenderFrameHost* host = web_contents->GetMainFrame();
-  if (host) {
+  // RenderFrameHost may be NULL during shutdown.
+  content::RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
+  if (host && host->IsRenderFrameLive()) {
     mojo::Remote<extensions::mojom::AppWindow> app_window;
     host->GetRemoteInterfaces()->GetInterface(
         app_window.BindNewPipeAndPassReceiver());
@@ -407,10 +405,7 @@ void ChromeAppDelegate::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
-void ChromeAppDelegate::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void ChromeAppDelegate::OnAppTerminating() {
   if (!terminating_callback_.is_null())
     std::move(terminating_callback_).Run();
 }

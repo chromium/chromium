@@ -174,6 +174,7 @@ constexpr const char* const kLacrosDataPaths[]{
     "Session Storage",
     "Sessions",
     "Shortcuts",
+    "Storage",
     "Sync App Settings",
     "Sync Extension Settings",
     "Top Sites",
@@ -231,6 +232,7 @@ constexpr char kLocalStorageLeveldbName[] = "leveldb";
 // `Sync Data` path.
 constexpr char kSyncDataFilePath[] = "Sync Data";
 constexpr char kSyncDataLeveldbName[] = "LevelDB";
+constexpr char kSyncDataNigoriFileName[] = "Nigori.bin";
 
 // State Store paths.
 constexpr const char* const kStateStorePaths[] = {
@@ -238,6 +240,10 @@ constexpr const char* const kStateStorePaths[] = {
     "Extension Scripts",
     "Extension State",
 };
+
+// `Storage` path.
+constexpr char kStorageFilePath[] = "Storage";
+constexpr char kStorageExtFilePath[] = "ext";
 
 // The type of LevelDB schema.
 enum class LevelDBType {
@@ -290,7 +296,7 @@ constexpr const char* kLacrosOnlyPreferencesKeys[] = {
 };
 
 // List of data types in Sync Data that have to stay in Ash and Ash only.
-static_assert(39 == syncer::GetNumModelTypes(),
+static_assert(40 == syncer::GetNumModelTypes(),
               "If adding a new sync data type, update the lists below if"
               " you want to keep the new data type in Ash only.");
 constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
@@ -299,6 +305,7 @@ constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
     syncer::ModelType::OS_PREFERENCES,
     syncer::ModelType::OS_PRIORITY_PREFERENCES,
     syncer::ModelType::PRINTERS,
+    syncer::ModelType::PRINTERS_AUTHORIZATION_SERVERS,
     syncer::ModelType::WIFI_CONFIGURATIONS,
     syncer::ModelType::WORKSPACE_DESK,
 };
@@ -483,9 +490,9 @@ bool MigrateLevelDB(const base::FilePath& original_path,
 // Migrate Sync Data's LevelDB instance at `original_path` to Ash and Lacros.
 // For Ash, filter out the data types that are not meant to be ported to Lacros.
 // For Lacros, filter out the data types that are meant to stay in Ash.
-bool MigrateSyncData(const base::FilePath& original_path,
-                     const base::FilePath& ash_target_path,
-                     const base::FilePath& lacros_target_path);
+bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
+                            const base::FilePath& ash_target_path,
+                            const base::FilePath& lacros_target_path);
 
 // Manipulates the given representation of Preferences (`root_dict`)
 // so that the given key only contains values relevant to Ash or

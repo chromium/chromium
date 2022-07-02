@@ -225,10 +225,13 @@ void AcceleratedStaticBitmapImage::Draw(cc::PaintCanvas* canvas,
     return;
   auto paint_image_decoding_mode =
       ToPaintImageDecodingMode(draw_options.decode_mode);
-  if (paint_image.decoding_mode() != paint_image_decoding_mode) {
-    paint_image = PaintImageBuilder::WithCopy(std::move(paint_image))
-                      .set_decoding_mode(paint_image_decoding_mode)
-                      .TakePaintImage();
+  if (paint_image.decoding_mode() != paint_image_decoding_mode ||
+      paint_image.may_be_lcp_candidate() != draw_options.may_be_lcp_candidate) {
+    paint_image =
+        PaintImageBuilder::WithCopy(std::move(paint_image))
+            .set_decoding_mode(paint_image_decoding_mode)
+            .set_may_be_lcp_candidate(draw_options.may_be_lcp_candidate)
+            .TakePaintImage();
   }
   StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, draw_options,
                                 paint_image);

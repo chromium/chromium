@@ -44,7 +44,7 @@ class CollectorBase {
       absl::optional<MetricData> metric_data) = 0;
 
   virtual void ReportMetricData(
-      const MetricData& metric_data,
+      MetricData metric_data,
       base::OnceClosure on_data_reported = base::DoNothing());
 
   SEQUENCE_CHECKER(sequence_checker_);

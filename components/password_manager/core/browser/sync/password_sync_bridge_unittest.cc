@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -48,7 +49,6 @@ using testing::NotNull;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
-using testing::UnorderedElementsAreArray;
 
 constexpr char kSignonRealm1[] = "abc";
 constexpr char kSignonRealm2[] = "def";
@@ -151,9 +151,10 @@ sync_pb::PasswordSpecifics CreateSpecifics(
   password_data->set_username_value(username_value);
   password_data->set_password_element(password_element);
   password_data->set_signon_realm(signon_realm);
-  if (!issue_types.empty())
+  if (!issue_types.empty()) {
     *password_data->mutable_password_issues() =
         CreateSpecificsIssues(issue_types);
+  }
   return password_specifics.password();
 }
 
@@ -885,6 +886,76 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
                                       3, 1);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldRemoveSyncMetadataWhenSpecificsCacheContainsSupportedFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kCacheBaseEntitySpecificsInMetadata);
+
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata())
+      .WillByDefault([&]() {
+        // Create entity with a cached supported field.
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        sync_pb::PasswordSpecificsData password_data;
+        password_data.set_username_value("username");
+        sync_pb::EntitySpecifics entity_specifics;
+        *entity_specifics.mutable_password()
+             ->mutable_client_only_encrypted_data() = password_data;
+        sync_pb::EntityMetadata entity_metadata;
+        *entity_metadata.mutable_possibly_trimmed_base_specifics() =
+            entity_specifics;
+        auto metadata_ptr =
+            std::make_unique<sync_pb::EntityMetadata>(entity_metadata);
+        metadata_batch->AddMetadata("storage_key", std::move(metadata_ptr));
+        return metadata_batch;
+      });
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata());
+  EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(
+                                    /*state=*/syncer::HasNotInitialSyncDone(),
+                                    /*entities=*/testing::SizeIs(0))));
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataWhenSpecificsCacheContainsUnsupportedFieldsOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      syncer::kCacheBaseEntitySpecificsInMetadata);
+
+  ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata())
+      .WillByDefault([&]() {
+        // Create entity with a cached unsupported field.
+        auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+        sync_pb::PasswordSpecificsData password_data;
+        *password_data.mutable_unknown_fields() = "unknown";
+        sync_pb::EntitySpecifics entity_specifics;
+        *entity_specifics.mutable_password()
+             ->mutable_client_only_encrypted_data() = password_data;
+        sync_pb::EntityMetadata entity_metadata;
+        *entity_metadata.mutable_possibly_trimmed_base_specifics() =
+            entity_specifics;
+        auto metadata_ptr =
+            std::make_unique<sync_pb::EntityMetadata>(entity_metadata);
+        metadata_batch->AddMetadata("storage_key", std::move(metadata_ptr));
+        return metadata_batch;
+      });
+
+  EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(
+                                    /*state=*/syncer::HasNotInitialSyncDone(),
+                                    /*entities=*/testing::SizeIs(1))));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata())
+      .Times(0);
+
+  auto bridge = std::make_unique<PasswordSyncBridge>(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      base::DoNothing());
 }
 
 TEST_F(PasswordSyncBridgeTest,

@@ -84,7 +84,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                               const WGPUExtent3D& copy_size,
                               const WGPUImageCopyTexture& destination,
                               bool dst_premultiplied_alpha,
-                              WGPUPredefinedColorSpace dst_color_space,
+                              PredefinedColorSpace dst_color_space,
                               bool flipY);
   void WriteBufferImpl(GPUBuffer* buffer,
                        uint64_t buffer_offset,

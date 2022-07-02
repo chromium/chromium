@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/service/display_embedder/viz_process_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -71,11 +70,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage) override;
-
-  gpu::Mailbox CreateSharedImageWithAHB(
-      const gpu::Mailbox& mailbox,
-      uint32_t usage,
-      const gpu::SyncToken& sync_token) override;
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;

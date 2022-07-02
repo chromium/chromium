@@ -270,7 +270,7 @@ public class RecordHistogram {
     @VisibleForTesting
     @Deprecated
     public static int getHistogramValueCountForTesting(String name, int sample) {
-        return RecordHistogramJni.get().getHistogramValueCountForTesting(name, sample, 0);
+        return UmaRecorderHolder.get().getHistogramValueCountForTesting(name, sample);
     }
 
     /**
@@ -282,7 +282,7 @@ public class RecordHistogram {
     @VisibleForTesting
     @Deprecated
     public static int getHistogramTotalCountForTesting(String name) {
-        return RecordHistogramJni.get().getHistogramTotalCountForTesting(name, 0);
+        return UmaRecorderHolder.get().getHistogramTotalCountForTesting(name);
     }
 
     /**
@@ -290,8 +290,6 @@ public class RecordHistogram {
      */
     @NativeMethods
     public interface Natives {
-        int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
-        int getHistogramTotalCountForTesting(String name, long snapshotPtr);
         long createHistogramSnapshotForTesting();
         void destroyHistogramSnapshotForTesting(long snapshotPtr);
     }

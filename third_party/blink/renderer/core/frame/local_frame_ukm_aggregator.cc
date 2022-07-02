@@ -237,15 +237,8 @@ void LocalFrameUkmAggregator::SetTickClockForTesting(
   clock_ = clock;
 }
 
-void LocalFrameUkmAggregator::DidReachFirstContentfulPaint(
-    bool are_painting_main_frame) {
-  DCHECK(fcp_state_ != kHavePassedFCP);
-
-  if (!are_painting_main_frame) {
-    DCHECK(AllMetricsAreZero());
-    return;
-  }
-
+void LocalFrameUkmAggregator::DidReachFirstContentfulPaint() {
+  DCHECK_NE(fcp_state_, kHavePassedFCP);
   fcp_state_ = kThisFrameReachedFCP;
 }
 
@@ -626,26 +619,16 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
     record.reset();
 }
 
-bool LocalFrameUkmAggregator::AllMetricsAreZero() {
-  if (primary_metric_.interval_count != 0)
-    return false;
-  for (auto& record : absolute_metric_records_) {
-    if (record.interval_count != 0) {
-      return false;
-    }
-    if (record.main_frame_count != 0) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void LocalFrameUkmAggregator::ChooseNextFrameForTest() {
   next_frame_sample_control_for_test_ = kMustChooseNextFrame;
 }
 
 void LocalFrameUkmAggregator::DoNotChooseNextFrameForTest() {
   next_frame_sample_control_for_test_ = kMustNotChooseNextFrame;
+}
+
+bool LocalFrameUkmAggregator::IsBeforeFCPForTesting() const {
+  return fcp_state_ == kBeforeFCPSignal;
 }
 
 }  // namespace blink

@@ -10,6 +10,8 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -42,10 +44,10 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
 using chrome_test_util::WebViewMatcher;
 
 namespace {
-// Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
+// Directory containing the `kLogoPagePath` and `kLogoPageImageSourcePath`
 // resources.
 // const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
-// Path to a page containing the chromium logo and the text |kLogoPageText|.
+// Path to a page containing the chromium logo and the text `kLogoPageText`.
 const char kLogoPagePath[] = "/chromium_logo_page.html";
 // Path to the chromium logo.
 const char kLogoPageImageSourcePath[] = "/chromium_logo.png";
@@ -80,6 +82,35 @@ const char kInitialPageHtml[] =
 const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
+
+// URL to a page with a link to the destination page.
+const char kDecoratedLinkSourcePageUrl[] = "/scenarioContextMenuDecoratedLink";
+// HTML content of a page with a link to the destination page.
+const char kDecoratedLinkSourcePageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
+    "style='margin-left:150px' href='/destination?clid=123&nice_param=456' "
+    "id='link'>"
+    "decorated link</a></body></html>";
+// Destination link with decorated parameters.
+const char kDecoratedDestinationLink[] = "/destination?clid=123&nice_param=456";
+// HTML content of a page that is navigated to via link with decoration.
+const char kDecoratedDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Decorated destination!</span></center>"
+    "</body></html>";
+// Destination link with decorated parameters removed.
+const char kFilteredDestinationLink[] = "/destination?nice_param=456";
+// HTML content of a page that is navigated to via link with decoration
+// filtered.
+const char kFilteredDestinationPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+    "/></head><body><script>document.title='new doc'</script>"
+    "<center><span id=\"message\">Filtered destination!</span></center>"
+    "</body></html>";
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -200,6 +231,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kInitialPageDestinationLinkId,
                                    kShortImgTitle, kLogoPageChromiumImageId];
     http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kDecoratedLinkSourcePageUrl) {
+    http_response->set_content(kDecoratedLinkSourcePageHtml);
+  } else if (request.relative_url == kDecoratedDestinationLink) {
+    http_response->set_content(kDecoratedDestinationPageHtml);
+  } else if (request.relative_url == kFilteredDestinationLink) {
+    http_response->set_content(kFilteredDestinationPageHtml);
   } else {
     return nullptr;
   }
@@ -207,7 +244,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long presses on |element_id| to trigger context menu.
+// Long presses on `element_id` to trigger context menu.
 void LongPressElement(const char* element_id) {
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
@@ -222,7 +259,7 @@ void ClearContextMenu() {
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 }
 
-// Taps on |context_menu_item_button| context menu item.
+// Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       assertWithMatcher:grey_notNil()];
@@ -335,7 +372,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   pointOnImage.y = topInset + 25.0;
   pointOnImage.x = [ChromeEarlGrey webStateWebViewSize].width / 2.0;
 
-  // Duration should match |kContextMenuLongPressDuration| as defined in
+  // Duration should match `kContextMenuLongPressDuration` as defined in
   // web_view_actions.mm.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_longPressAtPointWithDuration(pointOnImage, 1.0)];
@@ -361,100 +398,8 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests context menu for image that are also links.
-- (void)testContextMenuImageLink {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL shortTileURL = self.testServer->GetURL(kLinkImagePageUrl);
-  [ChromeEarlGrey loadURL:shortTileURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  // Check that the title is shown.
-  std::string displayedHost = shortTileURL.host() + ":" + shortTileURL.port();
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                                base::SysUTF8ToNSString(displayedHost)),
-                            grey_not(grey_ancestor(grey_kindOfClassName(
-                                @"LocationBarSteadyView"))),
-                            nil)] assertWithMatcher:grey_notNil()];
-  // Check the subtitle is shown.
-  const GURL shortLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kShortLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              shortLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-
-  ClearContextMenu();
-}
-
 // Tests context menu title truncation cases.
 - (void)testContextMenuTitleTruncation {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL shortTileURL = self.testServer->GetURL(kShortTruncationPageUrl);
-  [ChromeEarlGrey loadURL:shortTileURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  LongPressElement(kInitialPageDestinationLinkId);
-  // Check that the title is shown.
-  std::string displayedHost = shortTileURL.host() + ":" + shortTileURL.port();
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                                base::SysUTF8ToNSString(displayedHost)),
-                            grey_not(grey_ancestor(grey_kindOfClassName(
-                                @"LocationBarSteadyView"))),
-                            nil)] assertWithMatcher:grey_notNil()];
-
-  // Check the subtitle is shown.
-  const GURL shortLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kShortLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              shortLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  // Check the long title.
-  const GURL longTitleURL = self.testServer->GetURL(kLongTruncationPageUrl);
-  [ChromeEarlGrey loadURL:longTitleURL];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-
-  LongPressElement(kInitialPageDestinationLinkId);
-  // The menu will be fully displayed (the truncation is done by UILabel).
-  const GURL longLinkHrefURL =
-      self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          base::SysUTF8ToNSString(
-                                              longLinkHrefURL.spec()))]
-      assertWithMatcher:grey_notNil()];
-  ClearContextMenu();
-}
-
-// Tests context menu title truncation cases.
-- (void)testLegacyContextMenuTitleTruncation {
-  if ([ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the old implementation of context menu");
-  }
-
   const GURL shortTtileURL = self.testServer->GetURL(kShortTruncationPageUrl);
   [ChromeEarlGrey loadURL:shortTtileURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -535,7 +480,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_tap()];
 }
@@ -679,38 +624,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:1];
 }
 
-// Tests that tapping on the preview loads the page pointed by the destination
-// URL.
-- (void)testTappingOnPreview {
-  if (![ChromeEarlGrey isContextMenuInWebViewEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test for the new implementation of context menu");
-  }
-
-  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
-  [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kInitialPageDestinationLinkText];
-  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-
-  LongPressElement(kInitialPageDestinationLinkId);
-
-  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              base::SysUTF8ToNSString(
-                                                  destinationURL.spec())),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Checks that JavaScript links only have the "copy" option.
 - (void)testJavaScriptLinks {
   const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);
@@ -743,6 +656,124 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+@end
+
+// Context menu tests for Chrome.
+@interface FilterWhenEnteringIncognitoDisabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoDisabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_disabled.push_back(
+      url_param_filter::features::kIncognitoParamFilterEnabled);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+// Checks that a decorated link isn't filtered when "Open in Incognito" is
+// pressed and the kIncognitoParamFilterEnabled feature is disabled.
+- (void)testOpenIncognitoLinkDoesntFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in Incognito.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was not filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Decorated destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kDecoratedDestinationLink),
+                  @"URL was filtered when it shouldn't have been");
+}
+
+@end
+
+// Context menu tests for Chrome.
+@interface FilterWhenEnteringIncognitoEnabled : ChromeTestCase {
+  std::unique_ptr<ScopedBlockPopupsPref> _blockPopupsPref;
+}
+
+@end
+
+@implementation FilterWhenEnteringIncognitoEnabled
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  // Make create a  127.0.0.1,clid (site,param) source classification
+  std::string classification =
+      url_param_filter::CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"127.0.0.1", {"clid"}}}, {});
+  config.additional_args.push_back(
+      "--enable-features=" +
+      std::string(
+          url_param_filter::features::kIncognitoParamFilterEnabled.name) +
+      ":should_filter/true/classifications/" + classification);
+
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  _blockPopupsPref =
+      std::make_unique<ScopedBlockPopupsPref>(CONTENT_SETTING_ALLOW);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
+// Checks that a decorated link is filtered when "Open in Incognito" is pressed
+// and the kIncognitoParamFilterEnabled feature is enabled.
+- (void)testOpenIncognitoLinkDoesFilterUrlTestCase {
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kDecoratedLinkSourcePageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  // Assert that "clid" was filtered from the loaded URL.
+  [ChromeEarlGrey waitForWebStateContainingText:"Filtered destination!"
+                             inWindowWithNumber:0];
+  GREYAssertEqual([ChromeEarlGrey webStateLastCommittedURL],
+                  self.testServer->GetURL(kFilteredDestinationLink),
+                  @"URL wasn't filtered when it should've been");
 }
 
 @end

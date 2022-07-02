@@ -35,12 +35,12 @@ bool DoesProfileHaveUser(const Profile* profile) {
 
 SmbService* SmbServiceFactory::Get(content::BrowserContext* context) {
   return static_cast<SmbService*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 SmbService* SmbServiceFactory::FindExisting(content::BrowserContext* context) {
   return static_cast<SmbService*>(
-      GetInstance()->GetServiceForBrowserContext(context, false));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
 }
 
 SmbServiceFactory* SmbServiceFactory::GetInstance() {
@@ -49,7 +49,7 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
 
 SmbServiceFactory::SmbServiceFactory()
     : BrowserContextKeyedServiceFactory(
-          "SmbService",
+          /*name=*/"SmbService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
@@ -57,7 +57,7 @@ SmbServiceFactory::SmbServiceFactory()
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }
 
-SmbServiceFactory::~SmbServiceFactory() {}
+SmbServiceFactory::~SmbServiceFactory() = default;
 
 bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
@@ -66,7 +66,7 @@ bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 KeyedService* SmbServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Check if service is enabled by feature flag, via policy, and if profile has
-  // a user. Lockscreen is the example of a profile that doesn't have a user -
+  // a user. Lock screen is the example of a profile that doesn't have a user -
   // in this case smb service is not needed.
   Profile* const profile = Profile::FromBrowserContext(context);
   bool service_should_run =

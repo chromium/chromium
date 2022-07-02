@@ -10,3 +10,5 @@
 
 const char kDefaultDiscoverReferrer[] = "https://www.google.com";
 const char kDiscoverReferrerParameter[] = "DiscoverReferrerParameter";
+
+const CGFloat kDiscoverFeedContentWidth = 430;

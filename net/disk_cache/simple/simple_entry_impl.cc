@@ -1405,8 +1405,8 @@ void SimpleEntryImpl::CreationOperationComplete(
   // If this is a successful creation (rather than open), mark all streams to be
   // saved on close.
   if (in_results->created) {
-    for (int i = 0; i < kSimpleEntryStreamCount; ++i)
-      have_written_[i] = true;
+    for (bool& have_written : have_written_)
+      have_written = true;
   }
 
   // Make sure to keep the index up-to-date. We likely already did this when
@@ -1657,9 +1657,8 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
 
 int64_t SimpleEntryImpl::GetDiskUsage() const {
   int64_t file_size = 0;
-  for (int i = 0; i < kSimpleEntryStreamCount; ++i) {
-    file_size +=
-        simple_util::GetFileSizeFromDataSize(key_.size(), data_size_[i]);
+  for (int data_size : data_size_) {
+    file_size += simple_util::GetFileSizeFromDataSize(key_.size(), data_size);
   }
   file_size += sparse_data_size_;
   return file_size;

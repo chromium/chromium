@@ -74,18 +74,18 @@ class SubprocessMetricsProviderBrowserTest
 
   base::PersistentHistogramAllocator* GetMainFrameAllocator() {
     return get_allocators_by_id().Lookup(
-        shell()->web_contents()->GetMainFrame()->GetProcess()->GetID());
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   }
 
   void SimulateRenderProcessExit() {
     provider_->RenderProcessExited(
-        shell()->web_contents()->GetMainFrame()->GetProcess(),
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
         content::ChildProcessTerminationInfo());
   }
 
   void SimulateRenderProcessHostDestroyed() {
     provider_->RenderProcessHostDestroyed(
-        shell()->web_contents()->GetMainFrame()->GetProcess());
+        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   }
 
  protected:
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
       << " The histogram in the context is " << render_process_histogram;
 
   auto* main_frame_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   SimulateRenderProcessHostDestroyed();
   // Verify the observer removed.
   EXPECT_FALSE(
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
       << " The histogram in the context is " << render_process_histogram;
 
   auto* main_frame_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   SimulateRenderProcessHostDestroyed();
   // Verify the observer removed.
   EXPECT_FALSE(

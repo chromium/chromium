@@ -19,8 +19,8 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "media/base/media_switches.h"
@@ -31,9 +31,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
-
-using chromeos::AudioNode;
-using chromeos::AudioNodeList;
 
 namespace ash {
 namespace {
@@ -169,8 +166,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   }
 
  protected:
-  chromeos::FakeCrasAudioClient* fake_cras_audio_client() {
-    return chromeos::FakeCrasAudioClient::Get();
+  FakeCrasAudioClient* fake_cras_audio_client() {
+    return FakeCrasAudioClient::Get();
   }
 
   AudioDetailedView* audio_detailed_view() {

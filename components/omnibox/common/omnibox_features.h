@@ -15,7 +15,6 @@ namespace omnibox {
 // You can create a new category if none of the existing ones fit.
 extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
-extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
 extern const base::Feature kAndroidAuxiliarySearch;
 
@@ -39,13 +38,11 @@ extern const base::Feature kRetainSuggestionsWithHeaders;
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kClobberTriggersSRPZeroSuggest;
+extern const base::Feature kFocusTriggersContextualWebZeroSuggest;
+extern const base::Feature kFocusTriggersSRPZeroSuggest;
 extern const base::Feature kLocalHistorySuggestRevamp;
-extern const base::Feature kLocalHistoryZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
-extern const base::Feature kOnFocusSuggestionsContextualWeb;
-extern const base::Feature kOnFocusSuggestionsContextualWebAllowSRP;
-extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kZeroSuggestPrefetching;
 // Related, kMaxZeroSuggestMatches.
 
@@ -60,7 +57,11 @@ extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 extern const base::Feature kAggregateShortcuts;
+extern const base::Feature kShortcutExpanding;
 extern const base::Feature kBookmarkPaths;
+// TODO(crbug.com/1202964): Clean up feature flag used in staged roll-out of
+// various CLs related to the contents/description clean-up work.
+extern const base::Feature kStoreTitleInContentsAndUrlInDescription;
 
 // Document provider
 extern const base::Feature kDocumentProvider;
@@ -70,14 +71,13 @@ extern const base::Feature kDocumentProviderAso;
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
 extern const base::Feature kClipboardSuggestionContentHidden;
+extern const base::Feature kSuggestionAnswersColorReverse;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
 extern const base::Feature kNtpRealboxPedals;
 extern const base::Feature kNtpRealboxSuggestionAnswers;
 extern const base::Feature kNtpRealboxTailSuggest;
 extern const base::Feature kOmniboxFuzzyUrlSuggestions;
-extern const base::Feature kOmniboxPedalsAndroidBatch1;
-extern const base::Feature kOmniboxPedalsBatch3NonEnglish;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

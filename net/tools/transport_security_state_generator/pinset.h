@@ -8,9 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 // A Pinset represents the data a website would send in a HPKP header. A pinset
 // is given a name so that multiple entries in the preload list can reference
@@ -51,8 +49,6 @@ class Pinset {
   std::vector<std::string> bad_static_spki_hashes_;
 };
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_PINSET_H_

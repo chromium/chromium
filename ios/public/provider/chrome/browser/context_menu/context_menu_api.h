@@ -11,6 +11,17 @@
 
 class ChromeBrowserState;
 
+// Wraps information to add/show to/in a context menu
+@interface ElementsToAddToContextMenu : NSObject
+
+// The title of the context menu. Can be nil.
+@property(nonatomic, copy) NSString* title;
+
+// List of elements to add to a context menu. Can be nil.
+@property(nonatomic, copy) NSMutableArray<UIMenuElement*>* elements;
+
+@end
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -18,12 +29,13 @@ class WebState;
 namespace ios {
 namespace provider {
 
-// Returns true if any items were added to |menuElements| based on associated
-// |browserState|, |webState| and |params|.
-bool AddContextMenuElements(NSMutableArray<UIMenuElement*>* menu_elements,
-                            ChromeBrowserState* browser_state,
-                            web::WebState* web_state,
-                            web::ContextMenuParams params);
+// Returns the elements to add to the context menu, with their title. If no
+// elements needs to be added, returns nil.
+ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
+    ChromeBrowserState* browser_state,
+    web::WebState* web_state,
+    web::ContextMenuParams params,
+    UIViewController* presenting_view_controller);
 
 }  // namespace provider
 }  // namespace ios

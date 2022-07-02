@@ -4,8 +4,6 @@
 
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 
-#include "base/strings/stringprintf.h"
-
 namespace cast {
 namespace utils {
 
@@ -57,9 +55,8 @@ static std::string GrpcStatusCodeToString(grpc::StatusCode code) {
 
 // static
 std::string GrpcStatusToString(const grpc::Status& status) {
-  return base::StringPrintf("[status=%s: %s]",
-                            GrpcStatusCodeToString(status.error_code()).c_str(),
-                            status.error_message().c_str());
+  return "[status=" + GrpcStatusCodeToString(status.error_code()) + ": " +
+         status.error_message() + "]";
 }
 
 }  // namespace utils

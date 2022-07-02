@@ -24,7 +24,7 @@
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ipc/mach_port_mac.h"
 #endif
 
@@ -135,7 +135,7 @@ void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle) {
     }
     case base::Value::Type::BINARY: {
       pickle->WriteData(reinterpret_cast<const char*>(value.GetBlob().data()),
-                        base::checked_cast<int>(value.GetBlob().size()));
+                        value.GetBlob().size());
       break;
     }
     case base::Value::Type::DICT: {
@@ -433,7 +433,7 @@ void ParamTraits<std::vector<char>>::Write(base::Pickle* m,
   if (p.empty()) {
     m->WriteData(NULL, 0);
   } else {
-    m->WriteData(&p.front(), base::checked_cast<int>(p.size()));
+    m->WriteData(&p.front(), p.size());
   }
 }
 
@@ -441,8 +441,8 @@ bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
   const char *data;
-  int data_size = 0;
-  if (!iter->ReadData(&data, &data_size) || data_size < 0)
+  size_t data_size = 0;
+  if (!iter->ReadData(&data, &data_size))
     return false;
   r->resize(data_size);
   if (data_size)
@@ -459,8 +459,7 @@ void ParamTraits<std::vector<unsigned char>>::Write(base::Pickle* m,
   if (p.empty()) {
     m->WriteData(NULL, 0);
   } else {
-    m->WriteData(reinterpret_cast<const char*>(&p.front()),
-                 base::checked_cast<int>(p.size()));
+    m->WriteData(reinterpret_cast<const char*>(&p.front()), p.size());
   }
 }
 
@@ -468,8 +467,8 @@ bool ParamTraits<std::vector<unsigned char>>::Read(const base::Pickle* m,
                                                    base::PickleIterator* iter,
                                                    param_type* r) {
   const char *data;
-  int data_size = 0;
-  if (!iter->ReadData(&data, &data_size) || data_size < 0)
+  size_t data_size = 0;
+  if (!iter->ReadData(&data, &data_size))
     return false;
   r->resize(data_size);
   if (data_size)
@@ -495,12 +494,11 @@ void ParamTraits<std::vector<bool>>::Write(base::Pickle* m,
 bool ParamTraits<std::vector<bool>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
-  int size;
-  // ReadLength() checks for < 0 itself.
+  size_t size;
   if (!iter->ReadLength(&size))
     return false;
   r->resize(size);
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     bool value;
     if (!ReadParam(m, iter, &value))
       return false;
@@ -963,7 +961,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo vmo = const_cast<param_type&>(p).PassPlatformHandle();
   WriteParam(m, vmo);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   base::mac::ScopedMachSendRight h =
       const_cast<param_type&>(p).PassPlatformHandle();
   MachPortMac mach_port_mac(h.get());
@@ -1017,7 +1015,7 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(std::move(vmo), mode,
                                                       size, guid);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   MachPortMac mach_port_mac;
   if (!ReadParam(m, iter, &mach_port_mac))
     return false;
@@ -1077,7 +1075,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Log(
 #elif BUILDFLAG(IS_WIN)
   l->append("Handle: ");
   LogParam(p.GetPlatformHandle(), l);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   l->append("Mach port: ");
   LogParam(p.GetPlatformHandle(), l);
 #elif BUILDFLAG(IS_ANDROID)
@@ -1437,7 +1435,7 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
   m->WriteUInt32(static_cast<uint32_t>(p.routing_id()));
   m->WriteUInt32(p.type());
   m->WriteUInt32(p.flags());
-  m->WriteData(p.payload(), static_cast<uint32_t>(p.payload_size()));
+  m->WriteData(p.payload(), p.payload_size());
 }
 
 bool ParamTraits<Message>::Read(const base::Pickle* m,
@@ -1449,7 +1447,7 @@ bool ParamTraits<Message>::Read(const base::Pickle* m,
       !iter->ReadUInt32(&flags))
     return false;
 
-  int payload_size;
+  size_t payload_size;
   const char* payload;
   if (!iter->ReadData(&payload, &payload_size))
     return false;
@@ -1492,7 +1490,7 @@ bool ParamTraits<MSG>::Read(const base::Pickle* m,
                             base::PickleIterator* iter,
                             param_type* r) {
   const char *data;
-  int data_size = 0;
+  size_t data_size = 0;
   bool result = iter->ReadData(&data, &data_size);
   if (result && data_size == sizeof(MSG)) {
     memcpy(r, data, sizeof(MSG));

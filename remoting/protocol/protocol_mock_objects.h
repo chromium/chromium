@@ -256,7 +256,7 @@ class MockPairingRegistryDelegate : public PairingRegistry::Delegate {
   ~MockPairingRegistryDelegate() override;
 
   // PairingRegistry::Delegate implementation.
-  std::unique_ptr<base::ListValue> LoadAll() override;
+  base::Value::List LoadAll() override;
   bool DeleteAll() override;
   protocol::PairingRegistry::Pairing Load(
       const std::string& client_id) override;

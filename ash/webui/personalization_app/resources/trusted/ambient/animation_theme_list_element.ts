@@ -6,7 +6,7 @@
  * @fileoverview The element for displaying a list of animation themes.
  */
 import './animation_theme_item_element.js';
-import '../../common/styles.js';
+import '../../css/common.css.js';
 
 import {AnimationTheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -39,7 +39,7 @@ export class AnimationThemeList extends WithPersonalizationStore {
   animationThemes: Array<AnimationTheme>;
   private selectedAnimationTheme: AnimationTheme;
 
-  private getAriaSelected_(
+  private getAriaChecked_(
       animationTheme: AnimationTheme,
       selectedAnimationTheme: AnimationTheme): string {
     return (animationTheme === selectedAnimationTheme).toString();

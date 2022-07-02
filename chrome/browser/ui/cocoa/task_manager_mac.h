@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/base/models/table_model_observer.h"
 
 @class WindowSizeAutosaver;
@@ -31,8 +32,8 @@ class TaskManagerMac;
  @private
   NSTableView* _tableView;
   NSButton* _endProcessButton;
-  task_manager::TaskManagerMac* _taskManagerMac;     // weak
-  task_manager::TaskManagerTableModel* _tableModel;  // weak
+  raw_ptr<task_manager::TaskManagerMac> _taskManagerMac;     // weak
+  raw_ptr<task_manager::TaskManagerTableModel> _tableModel;  // weak
 
   base::scoped_nsobject<WindowSizeAutosaver> _size_saver;
 
@@ -84,9 +85,7 @@ class TaskManagerMac;
 namespace task_manager {
 
 // This class runs the Task Manager on the Mac.
-class TaskManagerMac : public ui::TableModelObserver,
-                       public content::NotificationObserver,
-                       public TableViewDelegate {
+class TaskManagerMac : public ui::TableModelObserver, public TableViewDelegate {
  public:
   TaskManagerMac(const TaskManagerMac&) = delete;
   TaskManagerMac& operator=(const TaskManagerMac&) = delete;
@@ -126,10 +125,7 @@ class TaskManagerMac : public ui::TableModelObserver,
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnAppTerminating();
 
   // Our model.
   TaskManagerTableModel table_model_;
@@ -138,7 +134,7 @@ class TaskManagerMac : public ui::TableModelObserver,
   // is closed.
   TaskManagerWindowController* window_controller_;  // weak
 
-  content::NotificationRegistrar registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // An open task manager window. There can only be one open at a time. This
   // is reset to be null when the window is closed.

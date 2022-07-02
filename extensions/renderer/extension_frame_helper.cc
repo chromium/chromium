@@ -6,15 +6,16 @@
 
 #include <set>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/renderer/api/automation/automation_api_helper.h"
@@ -364,6 +365,10 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
 
 void ExtensionFrameHelper::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
+    return;
+  }
   // Grant cross browsing instance frame lookup if we are an extension. This
   // should match the conditions in FindFrame.
   content::RenderFrame* frame = render_frame();
@@ -566,6 +571,19 @@ void ExtensionFrameHelper::ExecuteDeclarativeScript(
 
 void ExtensionFrameHelper::UpdateBrowserWindowId(int32_t window_id) {
   browser_window_id_ = window_id;
+}
+
+void ExtensionFrameHelper::NotifyDidCreateScriptContext(int32_t world_id) {
+  did_create_script_context_ = true;
+  if (world_id == blink::kMainDOMWorldId &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
+    // Grant cross browsing instance frame lookup if we are an extension. This
+    // should match the conditions in FindFrame.
+    content::RenderFrame* frame = render_frame();
+    if (GetExtensionFromFrame(frame))
+      frame->SetAllowsCrossBrowsingInstanceFrameLookup();
+  }
 }
 
 void ExtensionFrameHelper::OnDestruct() {

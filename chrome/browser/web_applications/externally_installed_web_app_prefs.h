@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_INSTALLED_WEB_APP_PREFS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_INSTALLED_WEB_APP_PREFS_H_
 
-#include <map>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +23,14 @@ class PrefRegistrySyncable;
 }
 
 namespace web_app {
+// TODO(crbug.com/1339965): Retire ExternallyInstalledWebAppPrefs
+// completely if metrics being measured in
+// externally_installed_prefs_migration_metrics.h look good.
+
+// This field is being retired from prefs::kWebAppsPreferences, but is
+// needed for migration to UserUninstalledPreinstalledWebAppPrefs.
+constexpr char kWasExternalAppUninstalledByUser[] =
+    "was_external_app_uninstalled_by_user";
 
 // A Prefs-backed map from web app URLs to app IDs and their InstallSources.
 //
@@ -34,25 +40,9 @@ namespace web_app {
 class ExternallyInstalledWebAppPrefs {
  public:
   // Used in the migration to the web_app DB.
-  using ParsedPrefs = base::flat_map<
-      AppId,
-      base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>>;
+  using ParsedPrefs = base::flat_map<AppId, WebApp::ExternalConfigMap>;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  static bool HasAppId(const PrefService* pref_service, const AppId& app_id);
-
-  // Returns true if |app_id| was added with |install_source| to
-  // |pref_service|.
-  static bool HasAppIdWithInstallSource(const PrefService* pref_service,
-                                        const AppId& app_id,
-                                        ExternalInstallSource install_source);
-
-  // Returns the URLs of the apps that have been installed from
-  // |install_source|. Will still return apps that have been uninstalled.
-  static std::map<AppId, GURL> BuildAppIdsMap(
-      const PrefService* pref_service,
-      ExternalInstallSource install_source);
 
   // Removes invalid registration for Terminal System App.
   static void RemoveTerminalPWA(PrefService* pref_service);
@@ -66,17 +56,8 @@ class ExternallyInstalledWebAppPrefs {
   void Insert(const GURL& url,
               const AppId& app_id,
               ExternalInstallSource install_source);
-  bool Remove(const GURL& url);
-  absl::optional<AppId> LookupAppId(const GURL& url) const;
-  bool HasNoApps() const;
-
-  // Returns an id if there is a placeholder app for |url|. Note that nullopt
-  // does not mean that there is no app for |url| just that there is no
-  // *placeholder app*.
-  absl::optional<AppId> LookupPlaceholderAppId(const GURL& url) const;
 
   void SetIsPlaceholder(const GURL& url, bool is_placeholder);
-  bool IsPlaceholderApp(const AppId& app_id) const;
 
   // Converts the existing external_pref information to a map<AppId,
   // ParsedPrefs> for simplified parsing and migrating to the web app DB.
@@ -87,16 +68,47 @@ class ExternallyInstalledWebAppPrefs {
                                       WebAppSyncBridge* sync_bridge);
 
  private:
+  friend class WebAppRegistrar;
+  friend class PreinstalledWebAppDuplicationFixer;
+
+  bool Remove(const GURL& url);
+
+  absl::optional<AppId> LookupAppId(const GURL& url) const;
+
+  static bool HasAppId(const PrefService* pref_service, const AppId& app_id);
+
+  // Returns the URLs of the apps that have been installed from
+  // |install_source|. Will still return apps that have been uninstalled.
+  static base::flat_map<AppId, base::flat_set<GURL>> BuildAppIdsMap(
+      const PrefService* pref_service,
+      ExternalInstallSource install_source);
+
+  // Returns true if |app_id| was added with |install_source| to
+  // |pref_service|.
+  static bool HasAppIdWithInstallSource(const PrefService* pref_service,
+                                        const AppId& app_id,
+                                        ExternalInstallSource install_source);
+
+  // Returns an id if there is a placeholder app for |url|. Note that nullopt
+  // does not mean that there is no app for |url| just that there is no
+  // *placeholder app*.
+  absl::optional<AppId> LookupPlaceholderAppId(const GURL& url) const;
+
+  bool IsPlaceholderApp(const AppId& app_id) const;
+
   // Used to migrate information regarding user uninstalled preinstalled apps
   // to UserUninstalledPreinstalledWebAppPrefs.
   static void MigrateExternalPrefDataToPreinstalledPrefs(
       PrefService* pref_service,
       const WebAppRegistrar* registrar,
       const ParsedPrefs& parsed_data);
+
   static base::flat_set<GURL> MergeAllUrls(
-      const base::flat_map<WebAppManagement::Type,
-                           WebApp::ExternalManagementConfig>&
-          source_config_map);
+      const WebApp::ExternalConfigMap& source_config_map);
+
+  static void LogDataMetrics(bool data_exists_in_pref,
+                             bool data_exists_in_registrar);
+
   const raw_ptr<PrefService> pref_service_;
 };
 

@@ -368,19 +368,34 @@ void ClientControlledShellSurface::SetBounds(int64_t display_id,
     return;
   }
 
+  // When use_default_scale_cancellation_ is false, the client is scale-aware
+  // and we expect that the |bounds| has been calculated by the client based
+  // on the device_scale_factor of the display with |display_id|.
+  // If the display has been changed before |SetBounds()| is called, for some
+  // cases(eg. move ARC window between displays with shortcut), |pending_scale_|
+  // may be stale and tied the old pending_display. Therefore, we re-initialize
+  // it to 0.0 here to force an update on the value in |EnsurePendingScale()|.
+  // Also need to note that we only want to commit |pending_scale_| in the cases
+  // where it hasn't been initialized before this method call.
+  bool const commit_immediately = pending_scale_ == 0.0;
+  if (!use_default_scale_cancellation_ && display_id != pending_display_id_)
+    pending_scale_ = 0.0;
+
   SetDisplay(display_id);
-  EnsurePendingScale();
+  EnsurePendingScale(commit_immediately);
 
   const gfx::Rect bounds_dp =
       gfx::ScaleToRoundedRect(bounds, GetClientToDpPendingScale());
   SetGeometry(bounds_dp);
 }
 
-void ClientControlledShellSurface::SetBoundsOrigin(const gfx::Point& origin) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetBoundsOrigin", "origin",
-               origin.ToString());
+void ClientControlledShellSurface::SetBoundsOrigin(int64_t display_id,
+                                                   const gfx::Point& origin) {
+  TRACE_EVENT2("exo", "ClientControlledShellSurface::SetBoundsOrigin",
+               "display_id", display_id, "origin", origin.ToString());
 
-  EnsurePendingScale();
+  SetDisplay(display_id);
+  EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Point origin_dp =
       gfx::ScaleToRoundedPoint(origin, GetClientToDpPendingScale());
   pending_geometry_.set_origin(origin_dp);
@@ -395,7 +410,7 @@ void ClientControlledShellSurface::SetBoundsSize(const gfx::Size& size) {
     return;
   }
 
-  EnsurePendingScale();
+  EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Size size_dp =
       gfx::ScaleToRoundedSize(size, GetClientToDpPendingScale());
   pending_geometry_.set_size(size_dp);
@@ -659,7 +674,15 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   bool is_resize = client_bounds.size() != current_size &&
                    !widget_->IsMaximized() && !widget_->IsFullscreen();
 
-  const float scale = 1.f / GetClientToDpScale();
+  // Make sure to use the up-to-date scale factor. At this point, |scale_| or
+  // |pending_scale_| may not be updated yet.
+  display::Display display;
+  const bool display_exists =
+      display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
+                                                            &display);
+  DCHECK(display_exists && display.is_valid());
+  const float scale =
+      use_default_scale_cancellation_ ? 1.f : display.device_scale_factor();
   const gfx::Rect scaled_client_bounds =
       gfx::ScaleToRoundedRect(client_bounds, scale);
   delegate_->OnBoundsChanged(current_state, requested_state, display_id,
@@ -1442,16 +1465,17 @@ const ash::NonClientFrameViewAsh* ClientControlledShellSurface::GetFrameView()
       widget_->non_client_view()->frame_view());
 }
 
-void ClientControlledShellSurface::EnsurePendingScale() {
+void ClientControlledShellSurface::EnsurePendingScale(bool commit_immediately) {
   // Handle the case where we receive bounds from the client before the initial
-  // scale has been set.
+  // scale has been set or |pending_scale_| is stale due to change of displays.
   if (pending_scale_ == 0.0) {
     DCHECK(!use_default_scale_cancellation_);
     display::Display display;
     if (display::Screen::GetScreen()->GetDisplayWithDisplayId(
             pending_display_id_, &display)) {
       SetScale(display.device_scale_factor());
-      CommitPendingScale();
+      if (commit_immediately)
+        CommitPendingScale();
     }
   }
 }

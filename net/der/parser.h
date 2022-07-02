@@ -13,9 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 class BitString;
 struct GeneralizedTime;
@@ -205,11 +203,9 @@ class NET_EXPORT Parser {
 
  private:
   CBS cbs_;
-  size_t advance_len_;
+  size_t advance_len_ = 0;
 };
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_PARSER_H_

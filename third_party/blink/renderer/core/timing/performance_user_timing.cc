@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -75,14 +76,20 @@ bool IsTracingEnabled() {
 UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
 
 void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
-  if (performance_->timing()) {
-    TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
-                           "data",
-                           performance_->timing()->GetNavigationTracingData());
-  } else {
-    TRACE_EVENT_COPY_MARK("blink.user_timing", mark.name().Utf8().c_str());
-  }
   InsertPerformanceEntry(marks_map_, mark);
+  if (!IsTracingEnabled()) {
+    return;
+  }
+
+  std::unique_ptr<TracedValue> traced_value;
+  if (performance_->timing()) {
+    traced_value = performance_->timing()->GetNavigationTracingData();
+  } else {
+    traced_value = std::make_unique<TracedValue>();
+  }
+  traced_value->SetDouble("startTime", mark.startTime());
+  TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
+                         "data", std::move(traced_value));
 }
 
 void UserTiming::ClearMarks(const AtomicString& mark_name) {
@@ -140,6 +147,11 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
                                           "cross-origin timing information.");
     return 0.0;
   }
+
+  // Count the usage of PerformanceTiming attribute names in performance
+  // measure. See crbug.com/1318445.
+  blink::UseCounter::Count(performance_->GetExecutionContext(),
+                           WebFeature::kPerformanceMeasureFindExistingName);
 
   return value - timing->navigationStart();
 }

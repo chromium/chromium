@@ -113,8 +113,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 }
 
 void AccountSelectionViewAndroid::Show(
-    const std::string& rp_etld_plus_one,
-    const std::string& idp_etld_plus_one,
+    const std::string& rp_for_display,
+    const std::string& idp_for_display,
     base::span<const Account> accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
@@ -137,9 +137,8 @@ void AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> client_id_metadata_obj =
       ConvertToJavaClientIdMetadata(env, client_data);
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_,
-      ConvertUTF8ToJavaString(env, rp_etld_plus_one),
-      ConvertUTF8ToJavaString(env, idp_etld_plus_one), accounts_obj,
+      env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_for_display),
+      ConvertUTF8ToJavaString(env, idp_for_display), accounts_obj,
       idp_metadata_obj, client_id_metadata_obj,
       sign_in_mode == Account::SignInMode::kAuto);
 }

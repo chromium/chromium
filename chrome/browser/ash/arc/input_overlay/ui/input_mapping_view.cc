@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 
 namespace arc {
 namespace input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
+constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x99);
 }  // namespace
 
 InputMappingView::InputMappingView(
@@ -31,10 +33,12 @@ InputMappingView::InputMappingView(
 InputMappingView::~InputMappingView() = default;
 
 void InputMappingView::SetDisplayMode(const DisplayMode mode) {
-  if (current_display_mode_ == mode)
+  DCHECK(mode != DisplayMode::kEducation);
+  if (current_display_mode_ == mode || mode == DisplayMode::kMenu ||
+      mode == DisplayMode::kPreMenu) {
     return;
+  }
   switch (mode) {
-    case DisplayMode::kMenu:
     case DisplayMode::kView:
       SetBackground(nullptr);
       break;
@@ -50,6 +54,37 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
     action_view->SetDisplayMode(mode);
   }
   current_display_mode_ = mode;
+}
+
+void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  auto event_location = event.root_location();
+  for (auto* const child : children()) {
+    auto* action_view = static_cast<ActionView*>(child);
+    for (auto* action_label : action_view->labels()) {
+      if (!action_label->HasFocus())
+        continue;
+      auto bounds = action_label->GetBoundsInScreen();
+      if (!bounds.Contains(event_location)) {
+        action_label->ClearFocus();
+        display_overlay_controller_->AddEditMessage(
+            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS),
+            MessageType::kInfo);
+        break;
+      }
+    }
+  }
+}
+
+void InputMappingView::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() == ui::ET_MOUSE_PRESSED)
+    ProcessPressedEvent(*event);
+}
+
+void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->type() == ui::ET_GESTURE_TAP ||
+      event->type() == ui::ET_GESTURE_TAP_DOWN) {
+    ProcessPressedEvent(*event);
+  }
 }
 
 }  // namespace input_overlay

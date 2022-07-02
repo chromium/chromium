@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
+
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 

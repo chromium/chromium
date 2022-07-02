@@ -60,9 +60,6 @@ struct Config {
   base::TimeDelta session_id_max_age = base::Days(30);
   // Maximum number of images prefetched per refresh.
   int max_prefetch_image_requests_per_refresh = 50;
-  // The minimum interval from the last time the notice is viewed in order for
-  // it to be considered viewed again.
-  base::TimeDelta minimum_notice_view_interval = base::Minutes(5);
 
   // Configuration for Web Feeds.
 
@@ -105,7 +102,7 @@ struct Config {
   // Until we get the new list contents API working, keep using FeedQuery.
   // TODO(crbug/1152592): remove this when new endpoint is tested enough.
   // Set using snippets-internals, or the --webfeed-legacy-feedquery switch.
-  bool use_feed_query_requests_for_web_feeds = false;
+  bool use_feed_query_requests = false;
 
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
@@ -127,7 +124,7 @@ const Config& GetFeedConfig();
 
 // Sets whether the legacy feed endpoint should be used for Web Feed content
 // fetches.
-void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy);
+void SetUseFeedQueryRequests(const bool use_legacy);
 
 void SetFeedConfigForTesting(const Config& config);
 void OverrideConfigWithFinchForTesting();

@@ -37,7 +37,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-  PrefService* GetPrefs() override;
+  sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
@@ -51,7 +51,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
  private:
   friend class ChromeBrowserStateImpl;
 
-  // |original_chrome_browser_state_| is the non-incognito
+  // `original_chrome_browser_state_` is the non-incognito
   // ChromeBrowserState instance that owns this instance.
   OffTheRecordChromeBrowserStateImpl(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,

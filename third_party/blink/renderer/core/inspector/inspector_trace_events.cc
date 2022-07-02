@@ -380,7 +380,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoIsHtml)
     DEFINE_STRING_MAPPING(PseudoListBox)
     DEFINE_STRING_MAPPING(PseudoMultiSelectFocus)
-    DEFINE_STRING_MAPPING(PseudoPopupOpen)
+    DEFINE_STRING_MAPPING(PseudoTopLayer)
+    DEFINE_STRING_MAPPING(PseudoPopupHidden)
     DEFINE_STRING_MAPPING(PseudoHostHasAppearance)
     DEFINE_STRING_MAPPING(PseudoVideoPersistent)
     DEFINE_STRING_MAPPING(PseudoVideoPersistentAncestor)
@@ -392,7 +393,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoSpellingError)
     DEFINE_STRING_MAPPING(PseudoGrammarError)
     DEFINE_STRING_MAPPING(PseudoHas)
-    DEFINE_STRING_MAPPING(PseudoRelativeLeftmost)
+    DEFINE_STRING_MAPPING(PseudoRelativeAnchor)
     DEFINE_STRING_MAPPING(PseudoPageTransition)
     DEFINE_STRING_MAPPING(PseudoPageTransitionContainer);
     DEFINE_STRING_MAPPING(PseudoPageTransitionImageWrapper);
@@ -916,7 +917,7 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   dict.Add("requestId", request_id);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("statusCode", response.HttpStatusCode());
-  dict.Add("mimeType", response.MimeType().GetString().IsolatedCopy());
+  dict.Add("mimeType", response.MimeType().GetString());
   dict.Add("encodedDataLength", response.EncodedDataLength());
   dict.Add("fromCache", response.WasCached());
   dict.Add("fromServiceWorker", response.WasFetchedViaServiceWorker());
@@ -1126,14 +1127,16 @@ void inspector_paint_event::Data(perfetto::TracedValue context,
 }
 
 void FrameEventData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
-  bool is_main_frame = frame && frame->IsMainFrame();
-  dict.Add("isMainFrame", is_main_frame);
+  DCHECK(frame);
+  dict.Add("isMainFrame", frame->IsMainFrame());
+  dict.Add("isOutermostMainFrame", frame->IsOutermostMainFrame());
   // TODO(dgozman): this does not work with OOPIF, so everyone who
   // uses it should migrate to frame instead.
   dict.Add("page", IdentifiersFactory::FrameId(&frame->LocalFrameRoot()));
 }
 
 void FillCommonFrameData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
+  DCHECK(frame);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("url", UrlForFrame(frame));
   dict.Add("name", frame->Tree().GetName());

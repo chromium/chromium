@@ -36,6 +36,10 @@ export class FakeFeedbackServiceProvider {
       getScreenshotPng: 0,
       /** @type {number} */
       sendReport: 0,
+      /** @type {number} */
+      openDiagnosticsApp: 0,
+      /** @type {number} */
+      openExploreApp: 0,
     };
   }
 
@@ -114,5 +118,33 @@ export class FakeFeedbackServiceProvider {
    */
   setFakeScreenshotPng(data) {
     this.methods_.setResult('getScreenshotPng', {pngData: data});
+  }
+
+  /**
+   * @return {number}
+   */
+  getOpenDiagnosticsAppCallCount() {
+    return this.callCounts_.openDiagnosticsApp;
+  }
+
+  /**
+   * @return {void}
+   */
+  openDiagnosticsApp() {
+    this.callCounts_.openDiagnosticsApp++;
+  }
+
+  /**
+   * @return {number}
+   */
+  getOpenExploreAppCallCount() {
+    return this.callCounts_.openExploreApp;
+  }
+
+  /**
+   * @return {void}
+   */
+  openExploreApp() {
+    this.callCounts_.openExploreApp++;
   }
 }

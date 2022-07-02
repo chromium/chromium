@@ -84,13 +84,11 @@ class EnabledPolicyBrowsertest
     PolicyTest::SetUpInProcessBrowserTestFixture();
     SetUpPolicyMapWithOverridesPolicy();
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
-    // profile
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
-    // policy
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise policy
     if (GetPrefState() != PrefState::kDefault) {
       policies_.Set(policy::key::kFirstPartySetsEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                    POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
                     base::Value(IsPrefEnabled()), nullptr);
     }
 
@@ -293,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostA, "/echoheader?Cookie")));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
@@ -402,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostD, "/echoheader?Cookie")));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 

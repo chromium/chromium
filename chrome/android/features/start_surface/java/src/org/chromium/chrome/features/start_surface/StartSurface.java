@@ -120,101 +120,85 @@ public interface StartSurface {
     }
 
     /**
-     * Interface to control the StartSurface.
+     * @param listener Registers {@code listener} for tab switcher status changes.
      */
-    interface Controller {
-        /**
-         * @param listener Registers {@code listener} for tab switcher status changes.
-         */
-        void addTabSwitcherViewObserver(TabSwitcherViewObserver listener);
-
-        /**
-         * @param listener Unregisters {@code listener} for tab switcher status changes.
-         */
-        void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
-
-        /**
-         * Hide the tab switcher view.
-         * @param animate Whether we should animate while hiding.
-         */
-        void hideTabSwitcherView(boolean animate);
-
-        /**
-         * Show the overview.
-         * @param animate Whether we should animate while showing.
-         */
-        // TODO(crbug.com/1315676): Decouple Start surface layout and Grid tab switcher layout.
-        void showOverview(boolean animate);
-
-        /**
-         * Sets the state {@link StartSurfaceState} and {@link NewTabPageLaunchOrigin}.
-         * @param state The {@link StartSurfaceState} to show.
-         * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
-         *         start surface.
-         */
-        void setStartSurfaceState(
-                @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
-
-        /**
-         * Sets the state {@link StartSurfaceState} without changing the existing {@link
-         * NewTabPageLaunchOrigin}.
-         * @param state The {@link StartSurfaceState} to show.
-         */
-        void setStartSurfaceState(@StartSurfaceState int state);
-
-        /**
-         * Called by the TabSwitcherLayout when the system back button is pressed.
-         * @return Whether or not the TabSwitcher consumed the event.
-         */
-        boolean onBackPressed();
-
-        /**
-         * Enable recording the first meaningful paint event of StartSurface.
-         * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
-         */
-        void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
-
-        /**
-         * @return The current {@link StartSurfaceState}.
-         */
-        @StartSurfaceState
-        int getStartSurfaceState();
-
-        /**
-         * @return The previous {@link StartSurfaceState}.
-         */
-        @StartSurfaceState
-        int getPreviousStartSurfaceState();
-
-        /**
-         * @return Whether the Start surface or the Tab switcher is shown or showing.
-         */
-        boolean inShowState();
-
-        /**
-         * @return The Tab switcher container view.
-         */
-        ViewGroup getTabSwitcherContainer();
-
-        /**
-         * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
-         * view is restored.
-         *
-         * @param parentView The {@link ViewGroup} to attach snackbars to.
-         */
-        void setSnackbarParentView(ViewGroup parentView);
-
-        /*
-         * Returns whether start surface homepage is showing.
-         */
-        boolean isShowingStartSurfaceHomepage();
-    }
+    void addTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
     /**
-     * @return Controller implementation that can be used for controlling
-     *         visibility changes.
+     * @param listener Unregisters {@code listener} for tab switcher status changes.
      */
-    Controller getController();
+    void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
+
+    /**
+     * Hide the tab switcher view.
+     * @param animate Whether we should animate while hiding.
+     */
+    void hideTabSwitcherView(boolean animate);
+
+    /**
+     * Show the overview.
+     * @param animate Whether we should animate while showing.
+     */
+    // TODO(crbug.com/1315676): Decouple Start surface layout and Grid tab switcher layout.
+    void showOverview(boolean animate);
+
+    /**
+     * Sets the state {@link StartSurfaceState} and {@link NewTabPageLaunchOrigin}.
+     * @param state The {@link StartSurfaceState} to show.
+     * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
+     *         start surface.
+     */
+    void setStartSurfaceState(
+            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
+
+    /**
+     * Sets the state {@link StartSurfaceState} without changing the existing {@link
+     * NewTabPageLaunchOrigin}.
+     * @param state The {@link StartSurfaceState} to show.
+     */
+    void setStartSurfaceState(@StartSurfaceState int state);
+
+    /**
+     * Called by the TabSwitcherLayout when the system back button is pressed.
+     * @return Whether or not the TabSwitcher consumed the event.
+     */
+    boolean onBackPressed();
+
+    /**
+     * Enable recording the first meaningful paint event of StartSurface.
+     * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
+     */
+    void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
+
+    /**
+     * @return The current {@link StartSurfaceState}.
+     */
+    @StartSurfaceState
+    int getStartSurfaceState();
+
+    /**
+     * @return The previous {@link StartSurfaceState}.
+     */
+    @StartSurfaceState
+    int getPreviousStartSurfaceState();
+
+    /**
+     * @return The Tab switcher container view.
+     */
+    ViewGroup getTabSwitcherContainer();
+
+    /**
+     * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
+     * view is restored.
+     *
+     * @param parentView The {@link ViewGroup} to attach snackbars to.
+     */
+    void setSnackbarParentView(ViewGroup parentView);
+
+    /*
+     * Returns whether start surface homepage is showing.
+     */
+    boolean isShowingStartSurfaceHomepage();
 
     /**
      * Returns the TabListDelegate implementation that can be used to access the Tab list of the

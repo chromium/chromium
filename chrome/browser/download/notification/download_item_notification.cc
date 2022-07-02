@@ -68,8 +68,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 using base::UserMetricsAction;
@@ -147,14 +148,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_OpenWhenComplete"));
       break;
-    case DownloadCommands::ALWAYS_OPEN_TYPE:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_AlwaysOpenType"));
-      break;
-    case DownloadCommands::PLATFORM_OPEN:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_PlatformOpen"));
-      break;
     case DownloadCommands::CANCEL:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_Cancel"));
@@ -169,10 +162,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::LEARN_MORE_SCANNING:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_LearnScanning"));
-      break;
-    case DownloadCommands::LEARN_MORE_INTERRUPTED:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_LearnInterrupted"));
       break;
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
       base::RecordAction(
@@ -194,10 +183,13 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_DeepScan"));
       break;
+    // Not actually displayed in notification, so should never be reached.
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::PLATFORM_OPEN:
+    case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_BypassDeepScanning"));
-      break;
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
     case DownloadCommands::MAX:
       NOTREACHED();
       break;
@@ -213,13 +205,8 @@ bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service) {
-    auto* init_params = lacros_service->init_params();
-    return init_params &&
-           init_params->is_holding_space_incognito_profile_integration_enabled;
-  }
-  return false;
+  return chromeos::BrowserInitParams::Get()
+      ->is_holding_space_incognito_profile_integration_enabled;
 #else
   return false;
 #endif
@@ -230,14 +217,8 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service) {
-    auto* init_params = lacros_service->init_params();
-    return init_params &&
-           init_params
-               ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
-  }
-  return false;
+  return chromeos::BrowserInitParams::Get()
+      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
 #else
   return false;
 #endif
@@ -262,7 +243,7 @@ DownloadItemNotification::DownloadItemNotification(
     Profile* profile,
     DownloadUIModel::DownloadUIModelPtr item)
     : profile_(profile), item_(std::move(item)) {
-  item_->AddObserver(this);
+  item_->SetDelegate(this);
   // Creates the notification instance. |title|, |body| and |icon| will be
   // overridden by UpdateNotificationData() below.
   message_center::RichNotificationData rich_notification_data;
@@ -277,8 +258,15 @@ DownloadItemNotification::DownloadItemNotification(
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),  // display_source
       GURL(kDownloadNotificationOrigin),              // origin_url
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kDownloadNotificationNotifierId,
+          ash::NotificationCatalogName::kDownloadNotification),
+#else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDownloadNotificationNotifierId),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));
@@ -289,8 +277,6 @@ DownloadItemNotification::DownloadItemNotification(
 }
 
 DownloadItemNotification::~DownloadItemNotification() {
-  ShutDown();
-
   if (image_decode_status_ == IN_PROGRESS)
     ImageDecoder::Cancel(this);
 }
@@ -307,16 +293,16 @@ void DownloadItemNotification::OnDownloadUpdated() {
   Update();
 }
 
-void DownloadItemNotification::OnDownloadDestroyed() {
+void DownloadItemNotification::OnDownloadDestroyed(const ContentId& id) {
+  item_.reset();
   NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
-      NotificationHandler::Type::TRANSIENT, GetNotificationId());
+      NotificationHandler::Type::TRANSIENT, id.id);
   // |this| will be deleted before there's a chance for Close() to be called
   // through the delegate, so preemptively call it now.
   Close(false);
 
-  observer_->OnDownloadDestroyed(item_->GetContentId());
-
-  item_.reset();
+  // This object may get deleted after this call.
+  observer_->OnDownloadDestroyed(id);
 }
 
 void DownloadItemNotification::DisablePopup() {
@@ -454,11 +440,6 @@ void DownloadItemNotification::Click(
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
   }
-}
-
-void DownloadItemNotification::ShutDown() {
-  if (item_)
-    item_->RemoveObserver(this);
 }
 
 std::string DownloadItemNotification::GetNotificationId() const {
@@ -905,6 +886,8 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
     case DownloadCommands::MAX:
       // Only for menu.
       NOTREACHED();

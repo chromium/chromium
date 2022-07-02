@@ -30,6 +30,7 @@ group("closure_compile") {
     ":network_select_login.m",
     ":notification_card.m",
     ":oobe_a11y_option.m",
+    ":oobe_apps_list.m",
     ":oobe_carousel.m",
     ":oobe_cr_lottie.m",
     ":oobe_i18n_dropdown.m",
@@ -65,6 +66,7 @@ group("polymer3_elements") {
                   ":network_select_login_module",
                   ":notification_card_module",
                   ":oobe_a11y_option_module",
+                  ":oobe_apps_list_module",
                   ":oobe_carousel_module",
                   ":oobe_cr_lottie_module",
                   ":oobe_icons_module",
@@ -169,6 +171,12 @@ js_library("oobe_a11y_option.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.m.js" ]
   deps = []
   extra_deps = [ ":oobe_a11y_option_module" ]
+}
+
+js_library("oobe_apps_list.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_apps_list.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_apps_list_module" ]
 }
 
 js_library("oobe_icons.m") {
@@ -332,6 +340,14 @@ polymer_modulizer("notification_card") {
 polymer_modulizer("oobe_a11y_option") {
   js_file = "oobe_a11y_option.js"
   html_file = "oobe_a11y_option.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_apps_list") {
+  js_file = "oobe_apps_list.js"
+  html_file = "oobe_apps_list.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

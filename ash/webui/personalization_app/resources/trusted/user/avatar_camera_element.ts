@@ -10,11 +10,11 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-
-import '../cros_button_style.js';
+import '../../css/cros_button_style.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -101,6 +101,11 @@ export class AvatarCamera extends WithPersonalizationStore {
         computed: 'computePreviewBlobUrl_(pngBinary_)',
         observer: 'onPreviewBlobUrlChanged_',
       },
+
+      captureInProgress_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -108,6 +113,7 @@ export class AvatarCamera extends WithPersonalizationStore {
   private cameraStream_: MediaStream|null;
   private pngBinary_: Uint8Array|null;
   private previewBlobUrl_: string|null;
+  private captureInProgress_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -152,6 +158,8 @@ export class AvatarCamera extends WithPersonalizationStore {
       const video = this.$.webcamVideo;
       // Display the webcam feed to the user by binding it to |video|.
       video.srcObject = this.cameraStream_;
+      await new Promise((resolve) => afterNextRender(this, resolve));
+      this.shadowRoot!.getElementById('takePhoto')!.focus();
     } catch (e) {
       console.error('Unable to start camera', e);
       this.stopCamera_();
@@ -171,11 +179,22 @@ export class AvatarCamera extends WithPersonalizationStore {
   private async takePhoto_() {
     const webcamUtils = getWebcamUtils();
 
-    const frames = await webcamUtils.captureFrames(
-        this.$.webcamVideo, getCaptureSize(this.mode),
-        webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
+    try {
+      this.captureInProgress_ = true;
+      // Let the animation start smoothly before beginning the capture.
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      const frames = await webcamUtils.captureFrames(
+          this.$.webcamVideo, getCaptureSize(this.mode),
+          webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
 
-    this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+      this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+      await new Promise(resolve => afterNextRender(this, resolve));
+      this.shadowRoot!.getElementById('clearPhoto')!.focus();
+    } catch (e) {
+      console.error('Failed to capture from webcam', e);
+    } finally {
+      this.captureInProgress_ = false;
+    }
   }
 
   private confirmPhoto_() {
@@ -203,6 +222,15 @@ export class AvatarCamera extends WithPersonalizationStore {
 
   private showCameraFeed_(): boolean {
     return !!this.cameraStream_ && !this.previewBlobUrl_;
+  }
+
+  private showTakePhotoButton_(): boolean {
+    return this.showCameraFeed_() && !this.captureInProgress_;
+  }
+
+  private showLoadingSpinnerButton_(): boolean {
+    return this.mode === AvatarCameraMode.VIDEO && this.showCameraFeed_() &&
+        this.captureInProgress_;
   }
 
   private showFooter_(): boolean {

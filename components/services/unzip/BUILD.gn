@@ -46,6 +46,7 @@ bundle_data("unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
+    "//components/test/data/unzip_service/Duplicate Filenames.zip",
     "//components/test/data/unzip_service/SJIS 00.zip",
     "//components/test/data/unzip_service/SJIS 01.zip",
     "//components/test/data/unzip_service/SJIS 02.zip",
@@ -61,7 +62,10 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/unzip_service/SJIS 12.zip",
     "//components/test/data/unzip_service/SJIS 13.zip",
     "//components/test/data/unzip_service/UTF8 (Bug 903664).zip",
+    "//components/test/data/unzip_service/Wrong CRC.zip",
     "//components/test/data/unzip_service/bad_archive.zip",
+    "//components/test/data/unzip_service/bug953599.zip",
+    "//components/test/data/unzip_service/encrypted_archive.zip",
     "//components/test/data/unzip_service/good_archive.zip",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +

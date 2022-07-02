@@ -34,12 +34,31 @@ void MockQuotaManagerProxy::RegisterClient(
   registered_client_.Bind(std::move(client));
 }
 
-void MockQuotaManagerProxy::GetOrCreateBucket(
+void MockQuotaManagerProxy::UpdateOrCreateBucket(
     const BucketInitParams& params,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_)
-    mock_quota_manager_->GetOrCreateBucket(params, std::move(callback));
+    mock_quota_manager_->UpdateOrCreateBucket(params, std::move(callback));
+}
+
+QuotaErrorOr<BucketInfo> MockQuotaManagerProxy::GetOrCreateBucketSync(
+    const BucketInitParams& params) {
+  return (mock_quota_manager_)
+             ? mock_quota_manager_->GetOrCreateBucketSync(params)
+             : QuotaError::kUnknownError;
+}
+
+void MockQuotaManagerProxy::CreateBucketForTesting(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType storage_type,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (mock_quota_manager_) {
+    mock_quota_manager_->CreateBucketForTesting(
+        storage_key, bucket_name, storage_type, std::move(callback));
+  }
 }
 
 void MockQuotaManagerProxy::GetBucket(
@@ -51,6 +70,15 @@ void MockQuotaManagerProxy::GetBucket(
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucket(storage_key, bucket_name, type,
                                    std::move(callback));
+  }
+}
+
+void MockQuotaManagerProxy::GetBucketById(
+    const BucketId& bucket_id,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (mock_quota_manager_) {
+    mock_quota_manager_->GetBucketById(bucket_id, std::move(callback));
   }
 }
 

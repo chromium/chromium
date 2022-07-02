@@ -854,7 +854,7 @@ class _Generator(object):
 
   def _GenerateFunctionParamsCreate(self, function):
     """Generate function to create an instance of Params. The generated
-    function takes a base::Value::ConstListView of arguments.
+    function takes a const base::Value::List& of arguments.
 
     E.g for function "Bar", generate Bar::Params::Create()
     """
@@ -863,7 +863,7 @@ class _Generator(object):
     (c.Append('// static')
       .Sblock('std::unique_ptr<Params> Params::Create(%s) {' %
                   self._GenerateParams([
-                      'const base::Value::ConstListView& args']))
+                      'const base::Value::List& args']))
     )
     if self._generate_error_messages:
       c.Append('DCHECK(error);')
@@ -1028,7 +1028,7 @@ class _Generator(object):
                      failure_value,
                      is_ptr=is_ptr))
       else:
-        args = ['%(src_var)s.GetListDeprecated()', '&%(dst_var)s']
+        args = ['%(src_var)s.GetList()', '&%(dst_var)s']
         if self._generate_error_messages:
           c.Append('std::u16string array_parse_error;')
           args.append('&array_parse_error')
@@ -1109,7 +1109,7 @@ class _Generator(object):
       cpp_type = self._type_helper.GetCppType(item_type, is_in_container=True)
       c.Append('%s = std::make_unique<std::vector<%s>>();' %
                    (dst_var, cpp_type))
-    (c.Sblock('for (const auto& it : (%s).GetListDeprecated()) {' % src_var)
+    (c.Sblock('for (const auto& it : (%s).GetList()) {' % src_var)
       .Append('%s tmp;' % self._type_helper.GetCppType(item_type))
       .Concat(self._GenerateStringToEnumConversion(item_type,
                                                    '(it)',
@@ -1243,9 +1243,9 @@ class _Generator(object):
     c = Code()
     c.Concat(self._GeneratePropertyFunctions(function_scope, params))
 
-    (c.Sblock('std::vector<base::Value> %(function_scope)s'
+    (c.Sblock('base::Value::List %(function_scope)s'
                   'Create(%(declaration_list)s) {')
-      .Append('std::vector<base::Value> create_results;')
+      .Append('base::Value::List create_results;')
       .Append('create_results.reserve(%d);' % len(params) if len(params)
               else '')
     )
@@ -1254,7 +1254,7 @@ class _Generator(object):
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
       c.Cblock(self._CreateValueFromType(
-          'create_results.push_back(base::Value::FromUniquePtrValue(%s));',
+          'create_results.Append(base::Value::FromUniquePtrValue(%s));',
           param.name,
           param.type_,
           param.unix_name))

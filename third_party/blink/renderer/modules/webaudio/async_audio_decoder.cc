@@ -83,8 +83,8 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
       audio_data->Data(), audio_data->ByteLength(), false, sample_rate);
 
   // Decoding is finished, but we need to do the callbacks on the main thread.
-  // A reference to |*bus| is retained by base::OnceCallback and will be removed
-  // after notifyComplete() is done.
+  // A reference to `bus` is retained by base::OnceCallback and will be removed
+  // after `NotifyComplete()` is done.
   //
   // We also want to avoid notifying the main thread if AudioContext does not
   // exist any more.

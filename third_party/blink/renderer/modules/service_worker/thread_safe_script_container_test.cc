@@ -8,7 +8,6 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -24,12 +23,12 @@ const char kKeyUrl[] = "https://example.com/key";
 class ThreadSafeScriptContainerTest : public ::testing::Test {
  public:
   ThreadSafeScriptContainerTest()
-      : writer_thread_(Platform::Current()->CreateThread(
-            ThreadCreationParams(ThreadType::kTestThread)
-                .SetThreadNameForTest("writer_thread"))),
-        reader_thread_(Platform::Current()->CreateThread(
-            ThreadCreationParams(ThreadType::kTestThread)
-                .SetThreadNameForTest("reader_thread"))),
+      : writer_thread_(
+            Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                     .SetThreadNameForTest("writer_thread"))),
+        reader_thread_(
+            Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                     .SetThreadNameForTest("reader_thread"))),
         writer_waiter_(std::make_unique<base::WaitableEvent>(
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)),

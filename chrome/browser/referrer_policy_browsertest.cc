@@ -258,11 +258,15 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
       mouse_event.button = button;
       mouse_event.SetPositionInWidget(15, 15);
       mouse_event.click_count = 1;
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
       mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-      tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-          mouse_event);
+      tab->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->ForwardMouseEvent(mouse_event);
     }
 
     if (disposition == WindowOpenDisposition::CURRENT_TAB) {

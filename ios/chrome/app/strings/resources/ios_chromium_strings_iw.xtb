@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">‏Chromium לא הצליח לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
 <translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
+<translation id="3619462831205197427">‏יש לך אפשרות להיכנס לאתר הזה, לחשבון Google ול-Chromium.</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3650632991272923014">‏במכשיר הזה נעשה שימוש ב‑Chromium על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
@@ -77,7 +78,6 @@
 1. פותחים את ההגדרות
 2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים את Chromium.</translation>
-<translation id="6155422572367400359">‏יש לך אפשרות להיכנס לאתר הזה, לחשבון Google ול-Chromium. ניתן להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="6183442264225539303">‏עליך להיכנס לאתר הזה ול-Chromium. ניתן להפעיל את הסנכרון מאוחר יותר.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">‏למחוק את נתוני Chromium שלך מהמכשיר הזה?</translation>
 <translation id="8175055321229419309">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chromium לשורת המשימות<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">‏Chromium לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="8308172444429103994">‏טיפ ל-Chromium. כדי להיכנס לחשבון מהר יותר, אפשר לבחור את הסיסמה השמורה בחלק העליון של המקלדת.</translation>
 <translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>

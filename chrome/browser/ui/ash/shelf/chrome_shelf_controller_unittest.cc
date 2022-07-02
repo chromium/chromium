@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -104,8 +105,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -533,13 +532,14 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
 
   void StartWebAppProvider(Profile* profile) {
-    auto system_web_app_manager =
-        std::make_unique<web_app::TestSystemWebAppManager>(profile);
-
     auto* provider = web_app::FakeWebAppProvider::Get(profile);
-    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
+
+    auto* system_web_app_manager = ash::TestSystemWebAppManager::Get(profile);
+
     provider->SetRunSubsystemStartupTasks(true);
     provider->Start();
+
+    system_web_app_manager->ScheduleStart();
   }
 
   ui::BaseWindow* GetLastActiveWindowForItemController(
@@ -1369,7 +1369,7 @@ class V2App {
     // in a random RenderFrameHost is Good Enough™.
     window_->Init(GURL(std::string()),
                   new extensions::AppWindowContentsImpl(window_),
-                  creator_web_contents_->GetMainFrame(), params);
+                  creator_web_contents_->GetPrimaryMainFrame(), params);
   }
 
   V2App(const V2App&) = delete;
@@ -1696,6 +1696,20 @@ TEST_F(ChromeShelfControllerLacrosPrimaryTest, ChromeAppWindows) {
   window2.reset();
   VerifyInstance(kDummyAppId, window2.get(), apps::InstanceState::kDestroyed);
   EXPECT_FALSE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
+}
+
+// Regression test for crash. crbug.com/1296949
+TEST_F(ChromeShelfControllerLacrosPrimaryTest, WithoutAppService) {
+  Profile* const controller_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+  EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      controller_profile));
+
+  ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
+  ash::ShelfModel model;
+  FakeChromeShelfItemFactory shelf_item_factory(controller_profile);
+  ChromeShelfController(controller_profile, &model, &shelf_item_factory).Init();
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
@@ -4934,6 +4948,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   web_app::AppId InstallExternalWebApp(std::string start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
+    web_app_info->install_url = GURL(start_url);
     const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
         /*manifest_id=*/absl::nullopt, web_app_info->start_url);
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -4944,8 +4959,10 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
     base::RunLoop run_loop;
     prefs->CommitPendingWrite(run_loop.QuitClosure());
     run_loop.Run();
-    web_app::AppId web_app_id =
-        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    web_app::AppId web_app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields =*/false,
+        webapps::WebappInstallSource::EXTERNAL_POLICY);
     DCHECK_EQ(expected_web_app_id, web_app_id);
     return web_app_id;
   }

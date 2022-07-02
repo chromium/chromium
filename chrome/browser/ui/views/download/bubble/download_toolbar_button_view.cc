@@ -116,9 +116,7 @@ void DownloadToolbarButtonView::Show() {
 }
 
 void DownloadToolbarButtonView::Hide() {
-  if (bubble_delegate_) {
-    CloseDialog(views::Widget::ClosedReason::kUnspecified);
-  }
+  HideDetails();
   SetVisible(false);
   PreferredSizeChanged();
 }
@@ -147,6 +145,14 @@ void DownloadToolbarButtonView::ShowDetails() {
     is_primary_partial_view_ = true;
     CreateBubbleDialogDelegate(GetPrimaryView());
   }
+}
+
+void DownloadToolbarButtonView::HideDetails() {
+  CloseDialog(views::Widget::ClosedReason::kUnspecified);
+}
+
+bool DownloadToolbarButtonView::IsShowingDetails() {
+  return bubble_delegate_ != nullptr;
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {
@@ -204,7 +210,8 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
 
 void DownloadToolbarButtonView::CloseDialog(
     views::Widget::ClosedReason reason) {
-  bubble_delegate_->GetWidget()->CloseWithReason(reason);
+  if (bubble_delegate_)
+    bubble_delegate_->GetWidget()->CloseWithReason(reason);
 }
 
 void DownloadToolbarButtonView::ResizeDialog() {

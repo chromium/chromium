@@ -19,6 +19,7 @@
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   top: 20px;
   left: 20px;
+  page-transition-tag: e1;
 }
 
 div.dst { background: lightgreen; }
@@ -35,9 +36,7 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(e1, "e1");
   t.start(() => {
-    t.setElement(e1, "e1");
     e1.classList.add("dst");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

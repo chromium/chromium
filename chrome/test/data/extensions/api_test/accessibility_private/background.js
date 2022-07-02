@@ -152,6 +152,13 @@ var availableTests = [
 
     chrome.test.notifyPass();
   },
+
+  function testInstallPumpkinForDictation() {
+    chrome.accessibilityPrivate.installPumpkinForDictation((success) => {
+      chrome.test.assertTrue(success);
+      chrome.test.succeed();
+    });
+  },
 ];
 
 chrome.test.getConfig(function(config) {

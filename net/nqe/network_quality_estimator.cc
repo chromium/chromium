@@ -93,9 +93,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
     std::unique_ptr<NetworkQualityEstimatorParams> params,
     NetLog* net_log)
     : params_(std::move(params)),
-      end_to_end_rtt_observation_count_at_last_ect_computation_(0),
-      use_localhost_requests_(false),
-      disable_offline_check_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       last_connection_change_(tick_clock_->NowTicks()),
       current_network_id_(nqe::internal::NetworkID(
@@ -123,16 +120,6 @@ NetworkQualityEstimator::NetworkQualityEstimator(
               tick_clock_,
               params_->weight_multiplier_per_second(),
               1.0 /*params_->weight_multiplier_per_signal_strength_level()*/)},
-      effective_connection_type_at_last_main_frame_(
-          EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      effective_connection_type_recomputation_interval_(base::Seconds(10)),
-      rtt_observations_size_at_last_ect_computation_(0),
-      throughput_observations_size_at_last_ect_computation_(0),
-      transport_rtt_observation_count_last_ect_computation_(0),
-      new_rtt_observations_since_last_ect_computation_(0),
-      new_throughput_observations_since_last_ect_computation_(0),
-      effective_connection_type_(EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      cached_estimate_applied_(false),
       net_log_(NetLogWithSource::Make(
           net_log,
           net::NetLogSourceType::NETWORK_QUALITY_ESTIMATOR)),
@@ -484,8 +471,8 @@ void NetworkQualityEstimator::OnConnectionTypeChanged(
   // Clear the local state.
   last_connection_change_ = tick_clock_->NowTicks();
   http_downstream_throughput_kbps_observations_.Clear();
-  for (int i = 0; i < nqe::internal::OBSERVATION_CATEGORY_COUNT; ++i)
-    rtt_ms_observations_[i].Clear();
+  for (auto& rtt_ms_observation : rtt_ms_observations_)
+    rtt_ms_observation.Clear();
 
   current_network_id_.signal_strength = INT32_MIN;
   network_quality_ = nqe::internal::NetworkQuality();
@@ -842,6 +829,11 @@ NetworkQualityEstimator::GetRecentEffectiveConnectionTypeUsingMetrics(
     return EFFECTIVE_CONNECTION_TYPE_OFFLINE;
   }
 
+  if (force_report_wifi_as_slow_2g_for_testing_ &&
+      current_network_id_.type == NetworkChangeNotifier::CONNECTION_WIFI) {
+    return EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
+  }
+
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP, base::TimeTicks(),
                     http_rtt, nullptr)) {
     *http_rtt = nqe::internal::InvalidRTT();
@@ -1114,8 +1106,8 @@ void NetworkQualityEstimator::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tick_clock_ = tick_clock;
-  for (int i = 0; i < nqe::internal::OBSERVATION_CATEGORY_COUNT; ++i)
-    rtt_ms_observations_[i].SetTickClockForTesting(tick_clock_);
+  for (auto& rtt_ms_observation : rtt_ms_observations_)
+    rtt_ms_observation.SetTickClockForTesting(tick_clock_);  // IN-TEST
   http_downstream_throughput_kbps_observations_.SetTickClockForTesting(
       tick_clock_);
   throughput_analyzer_->SetTickClockForTesting(tick_clock_);
@@ -1484,6 +1476,11 @@ void NetworkQualityEstimator::SimulateNetworkQualityChangeForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   params_->SetForcedEffectiveConnectionTypeForTesting(type);
   ComputeEffectiveConnectionType();
+}
+
+void NetworkQualityEstimator::ForceReportWifiAsSlow2GForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  force_report_wifi_as_slow_2g_for_testing_ = true;
 }
 
 void NetworkQualityEstimator::RecordSpdyPingLatency(

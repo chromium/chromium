@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -28,6 +30,7 @@ class WebAppCommandLock {
       base::flat_set<content::DisjointRangeLockManager::LeveledLockRequest>;
 
   WebAppCommandLock(WebAppCommandLock&&);
+  WebAppCommandLock& operator=(WebAppCommandLock&&);
 
   WebAppCommandLock(const WebAppCommandLock&) = delete;
   WebAppCommandLock& operator=(const WebAppCommandLock&) = delete;
@@ -65,6 +68,8 @@ class WebAppCommandLock {
 
   bool IncludesSharedWebContents() const;
 
+  const base::flat_set<AppId>& app_ids() const { return app_ids_; }
+
   friend class WebAppCommandManager;
 
  private:
@@ -79,6 +84,11 @@ class WebAppCommandLock {
   explicit WebAppCommandLock(base::flat_set<AppId> app_ids,
                              LockType lock_type,
                              LockRequestSet lock_requests);
+
+  // Exposed for usage in the WebAppCommandManager to determine if the shared
+  // web contents can be destroyed.
+  static content::LeveledLockManager::LeveledLockRequest
+  GetSharedWebContentsLock();
 
   enum class LockLevel {
     kStatic = 0,
@@ -113,7 +123,7 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 // Invariants:
 // * Destruction can occur without `Start()` being called. If the system shuts
 //   down and the command was never started, then it will simply be destructed.
-// * `OnShutdown()` and `OnBeforeForcedUninstallFromSync()` are only called if
+// * `OnShutdown()` and `OnSyncSourceRemoved()` are only called if
 //   the command has been started.
 // * `SignalCompletionAndSelfDestruct()` can ONLY be called if `Start()` has
 //   been called. Otherwise it will CHECK-fail.
@@ -150,11 +160,13 @@ class WebAppCommand {
   // this is called.
   virtual void Start() = 0;
 
-  // This is called when the sync system has to be force uninstall a web app
-  // that matches the `queue_id()` AND `Start()` has been called on this
-  // command. The web app should still be in the registry at the time of this
-  // method call, but it will be immediately deleted afterwards.
-  virtual void OnBeforeForcedUninstallFromSync() = 0;
+  // This is called when the sync system has triggered an uninstall for an app
+  // id that is relevant to this command and this command is running (`Start()
+  // has been called). Relevance is determined by the
+  // `WebAppCommandLock::IsAppLocked()` function for this command's lock). The
+  // web app should still be in the registry, but it will no longer have the
+  // `WebAppManagement::kSync` source and `is_uninstalling()` will return true.
+  virtual void OnSyncSourceRemoved() = 0;
 
   // Signals the system is shutting down. Used to cancel any pending operations,
   // if possible, to prevent re-entry. Only called if the command has been
@@ -196,7 +208,7 @@ class WebAppCommand {
 
   Id id_;
   WebAppCommandLock command_lock_;
-  WebAppCommandManager* command_manager_ = nullptr;
+  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
   // Because this is owned by the command manager, it will always outlive this
   // object. Thus a raw pointer is save.
   raw_ptr<content::WebContents> shared_web_contents_;

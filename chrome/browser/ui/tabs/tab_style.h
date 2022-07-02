@@ -7,8 +7,10 @@
 
 #include <tuple>
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -80,14 +82,15 @@ class TabStyle {
   struct TabColors {
     SkColor foreground_color = gfx::kPlaceholderColor;
     SkColor background_color = gfx::kPlaceholderColor;
-    SkColor focus_ring_color = gfx::kPlaceholderColor;
-    SkColor close_button_focus_ring_color = gfx::kPlaceholderColor;
+    ui::ColorId focus_ring_color = kColorTabFocusRingInactive;
+    ui::ColorId close_button_focus_ring_color =
+        kColorTabCloseButtonFocusRingInactive;
 
     TabColors() = default;
     TabColors(SkColor foreground_color,
               SkColor background_color,
-              SkColor focus_ring_color,
-              SkColor close_button_focus_ring_color)
+              ui::ColorId focus_ring_color,
+              ui::ColorId close_button_focus_ring_color)
         : foreground_color(foreground_color),
           background_color(background_color),
           focus_ring_color(focus_ring_color),

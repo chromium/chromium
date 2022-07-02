@@ -25,8 +25,8 @@
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/browser/ui/ash/assistant/test_support/test_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/switches.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
@@ -109,21 +109,18 @@ std::vector<message_center::Notification*> FindVisibleNotificationsByPrefixedId(
 // Returns the view for the specified |notification|.
 message_center::MessageView* FindViewForNotification(
     const message_center::Notification* notification) {
-  ash::UnifiedMessageCenterView* unified_message_center_view =
+  ash::UnifiedMessageListView* unified_message_list_view =
       FindStatusAreaWidget()
           ->unified_system_tray()
           ->message_center_bubble()
-          ->message_center_view();
+          ->message_center_view()
+          ->message_list_view();
 
-  std::vector<message_center::MessageView*> message_views;
-  FindDescendentsOfClass(unified_message_center_view, &message_views);
-
-  for (message_center::MessageView* message_view : message_views) {
-    if (message_view->notification_id() == notification->id())
-      return message_view;
-  }
-
-  return nullptr;
+  // TODO(crbug/1335196): `FindDescendentsOfClass` returning empty list for
+  // `UnifiedMessageCenterView` even when `MessageView`s exist. Need to
+  // investigate and resolve.
+  return unified_message_list_view->GetMessageViewForNotificationId(
+      notification->id());
 }
 
 // Returns the action buttons for the specified |notification|.

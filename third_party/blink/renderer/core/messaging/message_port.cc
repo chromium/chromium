@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -265,7 +266,7 @@ MessagePortArray* MessagePort::EntanglePorts(
     WebVector<MessagePortChannel> channels) {
   // https://html.spec.whatwg.org/C/#message-ports
   // |ports| should be an empty array, not null even when there is no ports.
-  wtf_size_t count = SafeCast<wtf_size_t>(channels.size());
+  wtf_size_t count = base::checked_cast<wtf_size_t>(channels.size());
   MessagePortArray* port_array = MakeGarbageCollected<MessagePortArray>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     auto* port = MakeGarbageCollected<MessagePort>(context);

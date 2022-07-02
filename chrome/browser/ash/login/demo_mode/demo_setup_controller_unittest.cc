@@ -23,8 +23,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -319,6 +319,50 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailWithLowercase) {
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "kr");
   email = DemoSetupController::GetSubOrganizationEmail();
   EXPECT_EQ(email, "");
+}
+
+TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStoreId) {
+  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
+
+  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
+  tested_controller_->set_retailer_store_id_input("ABC-1234");
+  tested_controller_->Enroll(
+      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
+                     base::Unretained(helper_.get())),
+      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
+                     base::Unretained(helper_.get())),
+      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
+                          base::Unretained(helper_.get())));
+
+  EXPECT_TRUE(
+      helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
+  EXPECT_EQ("", GetDeviceRequisition());
+  EXPECT_EQ("ABC", g_browser_process->local_state()->GetString(
+                       prefs::kDemoModeRetailerId));
+  EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
+                        prefs::kDemoModeStoreId));
+}
+
+TEST_F(DemoSetupControllerTest, OnlineSuccessWithInvalidRetailerAndStoreId) {
+  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
+  tested_controller_->set_retailer_store_id_input("ABC");
+
+  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
+  tested_controller_->Enroll(
+      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
+                     base::Unretained(helper_.get())),
+      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
+                     base::Unretained(helper_.get())),
+      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
+                          base::Unretained(helper_.get())));
+
+  EXPECT_TRUE(
+      helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
+  EXPECT_EQ("", GetDeviceRequisition());
+  EXPECT_EQ("", g_browser_process->local_state()->GetString(
+                    prefs::kDemoModeRetailerId));
+  EXPECT_EQ(
+      "", g_browser_process->local_state()->GetString(prefs::kDemoModeStoreId));
 }
 
 }  // namespace

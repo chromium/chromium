@@ -105,6 +105,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   SettingsTableViewController* controller = [[SettingsTableViewController alloc]
       initWithBrowser:browser
            dispatcher:[delegate handlerForSettings]];
+  controller.applicationCommandsHandler =
+      [delegate handlerForApplicationCommands];
+  controller.snackbarCommandsHandler = [delegate handlerForSnackbarCommands];
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller
                          browser:browser
@@ -121,7 +124,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   AccountsTableViewController* controller =
       [[AccountsTableViewController alloc] initWithBrowser:browser
                                  closeSettingsOnAddAccount:YES];
-  controller.dispatcher = [delegate handlerForSettings];
+  controller.applicationCommandsHandler =
+      [delegate handlerForApplicationCommands];
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller
                          browser:browser
@@ -137,7 +141,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   DCHECK(browser);
   // GoogleServicesSettings uses a coordinator to be presented, therefore the
   // view controller is not accessible. Prefer creating a
-  // |SettingsNavigationController| with a nil root view controller and then
+  // `SettingsNavigationController` with a nil root view controller and then
   // use the coordinator to push the GoogleServicesSettings as the first
   // root view controller.
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
@@ -478,7 +482,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Pushes a GoogleServicesSettingsViewController on this settings navigation
 // controller. Does nothing id the top view controller is already of type
-// |GoogleServicesSettingsViewController|.
+// `GoogleServicesSettingsViewController`.
 - (void)showGoogleServices {
   if ([self.topViewController
           isKindOfClass:[GoogleServicesSettingsViewController class]]) {
@@ -552,7 +556,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 // Shows the saved passwords and starts the password check is
-// |startPasswordCheck| is true. If |showCancelButton| is true, adds a cancel
+// `startPasswordCheck` is true. If `showCancelButton` is true, adds a cancel
 // button as the left navigation item.
 - (void)showSavedPasswordsAndStartPasswordCheck:(BOOL)startPasswordCheck
                                showCancelButton:(BOOL)showCancelButton {
@@ -734,29 +738,30 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 #pragma mark - ApplicationSettingsCommands
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showAccountsSettingsFromViewController:
     (UIViewController*)baseViewController {
   AccountsTableViewController* controller =
       [[AccountsTableViewController alloc] initWithBrowser:self.browser
                                  closeSettingsOnAddAccount:NO];
-  controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
+  controller.applicationCommandsHandler =
+      [self.settingsNavigationDelegate handlerForApplicationCommands];
   [self pushViewController:controller animated:YES];
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showGoogleServices];
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showSyncServices];
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
   SyncEncryptionPassphraseTableViewController* controller =
@@ -766,7 +771,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self pushViewController:controller animated:YES];
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton {
@@ -779,7 +784,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self showSavedPasswordsAndStartPasswordCheck:YES showCancelButton:NO];
 }
 
-// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+// TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showProfileSettingsFromViewController:
     (UIViewController*)baseViewController {
   AutofillProfileTableViewController* controller =
@@ -798,10 +803,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showDefaultBrowserSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                        sourceForUMA:
+                                            (DefaultBrowserPromoSource)source {
   DefaultBrowserSettingsTableViewController* controller =
       [[DefaultBrowserSettingsTableViewController alloc] init];
   controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
+  controller.source = source;
   [self pushViewController:controller animated:YES];
 }
 

@@ -138,8 +138,11 @@ Buffer::Texture::Texture(
       texture_target_(GL_TEXTURE_2D),
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  const uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                         gpu::SHARED_IMAGE_USAGE_GLES2;
 
   mailbox_ = sii->CreateSharedImage(
       viz::ResourceFormat::RGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
@@ -168,8 +171,11 @@ Buffer::Texture::Texture(
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                   gpu::SHARED_IMAGE_USAGE_GLES2;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
@@ -443,6 +449,8 @@ bool Buffer::ProduceTransferableResource(
     return false;
   }
 
+  const bool request_release_fence =
+      !per_commit_explicit_release_callback.is_null();
   if (per_commit_explicit_release_callback)
     pending_explicit_releases_.emplace(
         next_commit_id_, std::move(per_commit_explicit_release_callback));
@@ -502,6 +510,11 @@ bool Buffer::ProduceTransferableResource(
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format = viz::GetResourceFormat(gpu_memory_buffer_->GetFormat());
+    if (context_provider->ContextCapabilities().chromium_gpu_fence &&
+        request_release_fence) {
+      resource->synchronization_type =
+          viz::TransferableResource::SynchronizationType::kReleaseFence;
+    }
 
     // The contents texture will be released when no longer used by the
     // compositor.
@@ -646,6 +659,19 @@ void Buffer::MaybeRunPerCommitRelease(
     std::move(buffer_release_callback).Run();
   } else {
 #if BUILDFLAG(IS_POSIX)
+    // Watching the release fence's fd results in a context switch to the I/O
+    // thread. That may steal thread time from other applications, which can
+    // do something useful during that time. Moreover, most of the time the
+    // fence can have already been signalled. Thus, only watch the fence is
+    // readable iff it hasn't been signalled yet.
+    base::TimeTicks ticks;
+    auto status = gfx::GpuFence::GetStatusChangeTime(
+        release_fence.owned_fd.get(), &ticks);
+    if (status == gfx::GpuFence::kSignaled) {
+      std::move(buffer_release_callback).Run();
+      return;
+    }
+
     auto controller = base::FileDescriptorWatcher::WatchReadable(
         release_fence.owned_fd.get(),
         base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));

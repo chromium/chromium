@@ -32,14 +32,12 @@ class FileSystemAccessFileDelegateHostImpl
   ~FileSystemAccessFileDelegateHostImpl() override;
 
   // blink::mojom::FileSystemAccessFileDelegateHost:
-  void Read(uint64_t offset,
-            uint64_t bytes_to_read,
-            ReadCallback callback) override;
-  void Write(uint64_t offset,
+  void Read(int64_t offset, int bytes_to_read, ReadCallback callback) override;
+  void Write(int64_t offset,
              mojo::ScopedDataPipeConsumerHandle data,
              WriteCallback callback) override;
   void GetLength(GetLengthCallback callback) override;
-  void SetLength(uint64_t length, SetLengthCallback callback) override;
+  void SetLength(int64_t length, SetLengthCallback callback) override;
 
  private:
   // State that is kept for the duration of a write operation, to keep track of

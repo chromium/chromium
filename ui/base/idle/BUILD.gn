@@ -30,7 +30,7 @@ component("idle") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/dbus/session_manager" ]
+    deps += [ "//chromeos/ash/components/dbus/session_manager" ]
   }
 
   sources = [

@@ -170,19 +170,37 @@ void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
 }
 
 void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     GetAllVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetVideoInputDeviceFormats(device_id, false /* try_in_use_first */,
-                             std::move(client_callback));
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(media_stream_manager_->media_devices_manager()
+                         ->salt_and_origin_callback(),
+                     render_process_id_, render_frame_id_),
+      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+                     weak_factory_.GetWeakPtr(), hashed_device_id,
+                     false /* try_in_use_first */, std::move(client_callback),
+                     std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     GetAvailableVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetVideoInputDeviceFormats(device_id, true /* try_in_use_first */,
-                             std::move(client_callback));
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(media_stream_manager_->media_devices_manager()
+                         ->salt_and_origin_callback(),
+                     render_process_id_, render_frame_id_),
+      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+                     weak_factory_.GetWeakPtr(), hashed_device_id,
+                     true /* try_in_use_first */, std::move(client_callback),
+                     std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
@@ -387,54 +405,49 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
 }
 
 void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
-    const std::string& device_id,
+    const std::string& hashed_device_id,
     bool try_in_use_first,
-    GetVideoInputDeviceFormatsCallback client_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTaskAndReplyWithResult(
-      GetUIThreadTaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(
-          &MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats,
-          weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
-          try_in_use_first));
-}
-
-void MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats(
     GetVideoInputDeviceFormatsCallback client_callback,
-    const std::string& device_id,
-    bool try_in_use_first,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  media_stream_manager_->video_capture_manager()->EnumerateDevices(
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
+  MediaStreamManager::SendMessageToNativeLog(base::StringPrintf(
+      "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
+      "{try_in_use_first=%s})",
+      hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
+  MediaStreamManager::GetMediaDeviceIDForHMAC(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(
-          &MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats,
-          weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
-          try_in_use_first, salt_and_origin.device_id_salt,
-          salt_and_origin.origin));
+          &MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId,
+          weak_factory_.GetWeakPtr(), hashed_device_id, try_in_use_first,
+          std::move(client_callback), std::move(scoped_trace)));
 }
 
-void MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats(
-    GetVideoInputDeviceFormatsCallback client_callback,
-    const std::string& device_id,
+void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
+    const std::string& hashed_device_id,
     bool try_in_use_first,
-    const std::string& device_id_salt,
-    const url::Origin& security_origin,
-    const media::VideoCaptureDeviceDescriptors& device_descriptors) {
+    GetVideoInputDeviceFormatsCallback client_callback,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
+    const absl::optional<std::string>& raw_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  for (const auto& descriptor : device_descriptors) {
-    if (DoesMediaDeviceIDMatchHMAC(device_id_salt, security_origin, device_id,
-                                   descriptor.device_id)) {
-      std::move(client_callback)
-          .Run(media_stream_manager_->media_devices_manager()
-                   ->GetVideoInputFormats(descriptor.device_id,
-                                          try_in_use_first));
-      return;
-    }
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
+  if (!raw_id) {
+    // TODO(https://crbug.com/1337706): return an error.
+    MediaStreamManager::SendMessageToNativeLog(
+        base::StringPrintf("MDDH::GetVideoInputDeviceFormats: Failed to find "
+                           "raw device id for '%s'",
+                           hashed_device_id.c_str()));
+    std::move(client_callback).Run(media::VideoCaptureFormats());
+    return;
   }
-  std::move(client_callback).Run(media::VideoCaptureFormats());
+  std::move(client_callback)
+      .Run(media_stream_manager_->media_devices_manager()->GetVideoInputFormats(
+          *raw_id, try_in_use_first));
 }
 
 struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {

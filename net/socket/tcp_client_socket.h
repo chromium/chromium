@@ -19,7 +19,6 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_socket.h"
@@ -71,6 +70,12 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                   const IPEndPoint& peer_address);
 
+  // Adopts an unconnected TCPSocket. This function is used by
+  // TCPClientSocketBrokered.
+  TCPClientSocket(std::unique_ptr<TCPSocket> unconnected_socket,
+                  const AddressList& addresses,
+                  NetworkQualityEstimator* network_quality_estimator);
+
   // Creates a TCPClientSocket from a bound-but-not-connected socket.
   static std::unique_ptr<TCPClientSocket> CreateFromBoundSocket(
       std::unique_ptr<TCPSocket> bound_socket,
@@ -87,7 +92,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   int Bind(const IPEndPoint& address) override;
   bool SetKeepAlive(bool enable, int delay) override;
   bool SetNoDelay(bool no_delay) override;
-  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(
@@ -212,25 +216,22 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   CompletionOnceCallback write_callback_;
 
   // The next state for the Connect() state machine.
-  ConnectState next_connect_state_;
+  ConnectState next_connect_state_ = CONNECT_STATE_NONE;
 
   // This socket was previously disconnected and has not been re-connected.
-  bool previously_disconnected_;
-
-  // Failed connection attempts made while trying to connect this socket.
-  ConnectionAttempts connection_attempts_;
+  bool previously_disconnected_ = false;
 
   // Total number of bytes received by the socket.
-  int64_t total_received_bytes_;
+  int64_t total_received_bytes_ = 0;
 
   BeforeConnectCallback before_connect_callback_;
 
-  bool was_ever_used_;
+  bool was_ever_used_ = false;
 
   // Set to true if the socket was disconnected due to entering suspend mode.
   // Once set, read/write operations return ERR_NETWORK_IO_SUSPENDED, until
   // Connect() or Disconnect() is called.
-  bool was_disconnected_on_suspend_;
+  bool was_disconnected_on_suspend_ = false;
 
   // The time when the latest connect attempt was started.
   absl::optional<base::TimeTicks> start_connect_attempt_;

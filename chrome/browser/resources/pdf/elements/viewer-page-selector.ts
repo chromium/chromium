@@ -6,6 +6,7 @@ import './shared-vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ChangePageOrigin} from './viewer-bookmark.js';
 import {getTemplate} from './viewer-page-selector.html.js';
 
 export interface ViewerPageSelectorElement {
@@ -49,7 +50,7 @@ export class ViewerPageSelectorElement extends PolymerElement {
 
     if (!isNaN(page) && page <= this.docLength && page > 0) {
       this.dispatchEvent(new CustomEvent('change-page', {
-        detail: {page: page - 1, origin: 'pageSelector'},
+        detail: {page: page - 1, origin: ChangePageOrigin.PAGE_SELECTOR},
         composed: true,
       }));
     } else {

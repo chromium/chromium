@@ -11,10 +11,13 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "components/autofill_assistant/browser/js_flow_devtools_wrapper.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -316,6 +319,10 @@ class ActionDelegate {
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() const = 0;
 
+  // Get the wrapper that owns the web contents and devtools client for js
+  // flows.
+  virtual JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() const = 0;
+
   // Get the ElementStore.
   virtual ElementStore* GetElementStore() const = 0;
 
@@ -476,12 +483,22 @@ class ActionDelegate {
   // Executes the |external_action|.
   virtual void RequestExternalAction(
       const ExternalActionProto& external_action,
-      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback) = 0;
+      base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+          start_dom_checks_callback,
+      base::OnceCallback<void(const external::Result& result)>
+          end_action_callback) = 0;
 
   // Returns whether or not this instance of Autofill Assistant must use a
   // backend endpoint to query data.
   virtual bool MustUseBackendData() const = 0;
+
+  // Maybe sets the previously executed action. JS flow actions are excluded
+  // because they act as a script executor.
+  virtual void MaybeSetPreviousAction(
+      const ProcessedActionProto& processed_action) = 0;
+
+  // Returns the Autofill Assistant intent for the current flow.
+  virtual absl::optional<std::string> GetIntent() const = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

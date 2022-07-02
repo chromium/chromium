@@ -18,9 +18,7 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
 
   r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
 
-  if (loadTimeData.getBoolean('privacyGuideEnabled')) {
-    r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
-  }
+  r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
@@ -141,7 +139,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection('/autofill', 'autofill');
     r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
-    if (loadTimeData.getBoolean('enablePasswordNotes')) {
+    if (loadTimeData.getBoolean('enablePasswordViewPage')) {
       r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
     }
     r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
@@ -178,11 +176,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     // <if expr="not chromeos_ash and not is_macosx">
     r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
     // </if>
-    // <if expr="not chromeos_ash and not chromeos_lacros">
-    if (loadTimeData.getBoolean('enableDesktopRestructuredLanguageSettings')) {
-      r.LANGUAGE_SETTINGS = r.LANGUAGES.createChild('/languageSettings');
-    }
-    // </if>
 
     if (visibility.downloads !== false) {
       r.DOWNLOADS = r.ADVANCED.createSection('/downloads', 'downloads');
@@ -190,8 +183,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
 
     r.ACCESSIBILITY = r.ADVANCED.createSection('/accessibility', 'a11y');
 
-    // TODO(crbug.com/1307455): Make this just "is_linux" when fixing.
-    // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+    // <if expr="is_linux">
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
     // </if>
 

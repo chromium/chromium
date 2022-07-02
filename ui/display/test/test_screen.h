@@ -21,6 +21,8 @@ class TestScreen : public ScreenBase {
  public:
   static constexpr gfx::Rect kDefaultScreenBounds = gfx::Rect(0, 0, 800, 600);
 
+  static TestScreen* Get();
+
   // TODO(weili): Split this into a protected no-argument constructor for
   // subclass uses and the public one with gfx::Size argument.
   explicit TestScreen(bool create_display = true);

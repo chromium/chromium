@@ -62,10 +62,8 @@ bool Touch::HasStylusDelegate() const {
 // ui::EventHandler overrides:
 
 void Touch::OnTouchEvent(ui::TouchEvent* event) {
-  if (seat_->was_shutdown())
+  if (seat_->was_shutdown() || event->handled())
     return;
-
-  seat_->SetLastPointerLocation(event->root_location_f());
 
   bool send_details = false;
 

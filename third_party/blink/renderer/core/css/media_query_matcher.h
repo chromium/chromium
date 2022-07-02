@@ -21,6 +21,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_MATCHER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -78,13 +79,14 @@ class CORE_EXPORT MediaQueryMatcher final
   using ViewportListenerSet = HeapLinkedHashSet<Member<MediaQueryListListener>>;
   ViewportListenerSet viewport_listeners_;
 
-  // The set of unit flags seen by Evaluate.
+  // The set of result flags seen by Evaluate.
   //
-  // We currently only act on kDynamicViewport. In the future we could also
-  // look at the other values to improve invalidation in those cases.
+  // We currently only act on the unit flag kDynamicViewport. In the future we
+  // could also look at the other values to improve invalidation in those
+  // cases.
   //
   // See MediaQueryExpValue::UnitFlags.
-  unsigned unit_flags_ = 0;
+  MediaQueryResultFlags media_query_result_flags_;
 };
 
 }  // namespace blink

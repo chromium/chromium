@@ -63,6 +63,11 @@ void CommandBufferDirect::DestroyTransferBuffer(int32_t id) {
   service_.DestroyTransferBuffer(id);
 }
 
+void CommandBufferDirect::ForceLostContext(error::ContextLostReason reason) {
+  service_.SetContextLostReason(reason);
+  service_.SetParseError(error::kLostContext);
+}
+
 CommandBufferServiceClient::CommandBatchProcessedResult
 CommandBufferDirect::OnCommandBatchProcessed() {
   return kContinueExecution;

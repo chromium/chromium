@@ -69,31 +69,31 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
 
  private:
   // JS callback to prepare for starting auth.
-  void HandleInitializeMessage(const base::ListValue* args);
+  void HandleInitializeMessage(const base::Value::List& args);
 
   // Continue to initialize the gaia auth extension. It calls
   // |SetExtraInitParams| to set extra init params.
   void ContinueHandleInitializeMessage();
 
   // JS callback to handle tasks after auth extension loads.
-  virtual void HandleAuthExtensionReadyMessage(const base::ListValue* args) {}
+  virtual void HandleAuthExtensionReadyMessage(const base::Value::List& args) {}
 
   // JS callback to complete login. It calls |CompleteLogin| to do the real
   // work.
-  void HandleCompleteLoginMessage(const base::ListValue* args);
+  void HandleCompleteLoginMessage(const base::Value::List& args);
 
   // Called by HandleCompleteLoginMessage after it gets the GAIA URL's cookies
   // from the CookieManager.
   void HandleCompleteLoginMessageWithCookies(
-      const base::ListValue& args,
+      const base::Value::List& args,
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
 
   // JS callback to switch the UI from a constrainted dialog to a full tab.
-  void HandleSwitchToFullTabMessage(const base::ListValue* args);
+  void HandleSwitchToFullTabMessage(const base::Value::List& args);
 
   // Handles the web ui message sent when the window is closed from javascript.
-  virtual void HandleDialogClose(const base::ListValue* args);
+  virtual void HandleDialogClose(const base::Value::List& args);
 
   virtual void SetExtraInitParams(base::Value::Dict& params) {}
   virtual void CompleteLogin(const CompleteLoginParams& params) = 0;

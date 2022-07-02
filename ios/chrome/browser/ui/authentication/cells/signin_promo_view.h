@@ -19,34 +19,43 @@
 //   displays both buttons.
 //
 //  For the warm state, the owner should set:
-//   - the image for |imageView|, using -[SigninPromoView setProfileImage:]
-//   - the label for |textLabel|
-//   - the title for |primaryButton|
-//   - the title for |secondaryButton|
+//   - the image for `imageView`, using -[SigninPromoView setProfileImage:]
+//   - the label for `textLabel`
+//   - the title for `primaryButton`
+//   - the title for `secondaryButton`
 @interface SigninPromoView : UIView
 
 @property(nonatomic, weak) id<SigninPromoViewDelegate> delegate;
 @property(nonatomic, assign) SigninPromoViewMode mode;
 @property(nonatomic, strong, readonly) UIImageView* imageView;
+@property(nonatomic, strong, readonly) UILabel* titleLabel;
 @property(nonatomic, strong, readonly) UILabel* textLabel;
 @property(nonatomic, strong, readonly) UIButton* primaryButton;
 @property(nonatomic, strong, readonly) UIButton* secondaryButton;
 // Hidden by default.
 @property(nonatomic, strong, readonly) UIButton* closeButton;
 
-// Horizontal padding used for |textLabel|, |primaryButton| and
-// |secondaryButton|. Used to compute the preferred max layout width of
-// |textLabel|.
+// Horizontal padding used for `textLabel`, `primaryButton` and
+// `secondaryButton`. Used to compute the preferred max layout width of
+// `textLabel`.
 @property(nonatomic, assign, readonly) CGFloat horizontalPadding;
+
+// `YES` when the promo view layout is compact.
+@property(nonatomic, assign) BOOL compactLayout;
 
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Sets the image in |imageView|. This method will add a circular background
+// Sets the image in `imageView`. This method will add a circular background
 // using CircularImageFromImage() (so if the image is not squared, it will be
 // cropped first). Must only be called in the "Warm State" mode.
 - (void)setProfileImage:(UIImage*)image;
+
+// Sets the image in `imageView`. This image will be used as an alternative to
+// the chromium icon in "Cold State" mode. This image will not use
+// CircularImageFromImage(), instead it will be shown as is.
+- (void)setNonProfileImage:(UIImage*)image;
 
 // Resets the view to be reused.
 - (void)prepareForReuse;

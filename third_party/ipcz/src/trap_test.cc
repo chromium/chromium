@@ -6,15 +6,15 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
-#include "reference_drivers/single_process_reference_driver.h"
-#include "test/test_base.h"
+#include "reference_drivers/sync_reference_driver.h"
+#include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/memory/memory.h"
 
 namespace ipcz {
 namespace {
 
-class TrapTest : public test::TestBase {
+class TrapTest : public test::Test {
  public:
   ~TrapTest() override { Close(node_); }
 
@@ -23,8 +23,7 @@ class TrapTest : public test::TestBase {
   }
 
  private:
-  const IpczHandle node_{
-      CreateNode(reference_drivers::kSingleProcessReferenceDriver)};
+  const IpczHandle node_{CreateNode(reference_drivers::kSyncReferenceDriver)};
 };
 
 TEST_F(TrapTest, RemoveOnClose) {

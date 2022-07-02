@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 
+#include "base/synchronization/lock.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
@@ -70,27 +71,27 @@ VideoFrameHandle::~VideoFrameHandle() {
 }
 
 scoped_refptr<media::VideoFrame> VideoFrameHandle::frame() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return frame_;
 }
 
 sk_sp<SkImage> VideoFrameHandle::sk_image() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return sk_image_;
 }
 
 void VideoFrameHandle::Invalidate() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   InvalidateLocked();
 }
 
 void VideoFrameHandle::SetCloseOnClone() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   close_on_clone_ = true;
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   auto cloned_handle =
       frame_ ? base::MakeRefCounted<VideoFrameHandle>(
                    frame_, sk_image_, close_auditor_, monitoring_source_id_)
@@ -103,18 +104,18 @@ scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::CloneForInternalUse() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_,
                                                          monitoring_source_id_)
                 : nullptr;
 }
 
 void VideoFrameHandle::InvalidateLocked() {
-  mutex_.AssertAcquired();
   MaybeMonitorCloseFrame();
   frame_.reset();
   sk_image_.reset();
   close_auditor_.reset();
+  NotifyExpiredLocked();
 }
 
 void VideoFrameHandle::MaybeMonitorOpenFrame() {
@@ -128,6 +129,27 @@ void VideoFrameHandle::MaybeMonitorCloseFrame() {
   if (frame_ && !monitoring_source_id_.empty()) {
     VideoFrameMonitor::Instance().OnCloseFrame(monitoring_source_id_,
                                                frame_->unique_id());
+  }
+}
+
+bool VideoFrameHandle::WebGPURegisterExternalTextureExpireCallback(
+    WebGPUExternalTextureExpireCallback
+        webgpu_external_texture_expire_callback) {
+  base::AutoLock locker(lock_);
+  if (!frame_)
+    return false;
+  webgpu_external_texture_expire_callbacks_.push_back(
+      std::move(webgpu_external_texture_expire_callback));
+  return true;
+}
+
+void VideoFrameHandle::NotifyExpiredLocked() {
+  DCHECK(!frame_);
+  Vector<WebGPUExternalTextureExpireCallback>
+      webgpu_external_texture_expire_callbacks =
+          std::move(webgpu_external_texture_expire_callbacks_);
+  for (auto& callback : webgpu_external_texture_expire_callbacks) {
+    std::move(callback).Run();
   }
 }
 

@@ -10,7 +10,7 @@
 // InfobarBannerPositioner contains methods used to position the InfobarBanner.
 @protocol InfobarModalPositioner
 
-// The target height for the modal view to be presented based on |width|.
+// The target height for the modal view to be presented based on `width`.
 - (CGFloat)modalHeightForWidth:(CGFloat)width;
 
 @end

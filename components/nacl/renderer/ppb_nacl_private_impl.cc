@@ -50,7 +50,6 @@
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/data_url.h"
@@ -1220,32 +1219,34 @@ PP_Bool PPBNaClPrivate::GetPnaclResourceInfo(PP_Instance instance,
   buffer.get()[rc] = 0;
 
   // Expect the JSON file to contain a top-level object (dictionary).
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(buffer.get());
-  std::unique_ptr<base::DictionaryValue> json_dict;
-  if (parsed_json.value) {
-    json_dict = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(std::move(*parsed_json.value)));
-  }
-  if (!json_dict) {
+
+  if (!parsed_json.has_value()) {
     load_manager->ReportLoadError(
         PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
         std::string("Parsing resource info failed: JSON parse error: ") +
-            parsed_json.error_message);
+            parsed_json.error().message);
     return PP_FALSE;
   }
 
-  std::string pnacl_llc_name;
-  if (json_dict->GetString("pnacl-llc-name", &pnacl_llc_name))
-    *llc_tool_name = ppapi::StringVar::StringToPPVar(pnacl_llc_name);
+  auto* json_dict = parsed_json->GetIfDict();
+  if (!json_dict) {
+    load_manager->ReportLoadError(
+        PP_NACL_ERROR_PNACL_RESOURCE_FETCH,
+        std::string("Parsing resource info failed: JSON parse error: Not a "
+                    "dictionary."));
+    return PP_FALSE;
+  }
 
-  std::string pnacl_ld_name;
-  if (json_dict->GetString("pnacl-ld-name", &pnacl_ld_name))
-    *ld_tool_name = ppapi::StringVar::StringToPPVar(pnacl_ld_name);
+  if (auto* pnacl_llc_name = json_dict->FindString("pnacl-llc-name"))
+    *llc_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_llc_name);
 
-  std::string pnacl_sz_name;
-  if (json_dict->GetString("pnacl-sz-name", &pnacl_sz_name))
-    *subzero_tool_name = ppapi::StringVar::StringToPPVar(pnacl_sz_name);
+  if (auto* pnacl_ld_name = json_dict->FindString("pnacl-ld-name"))
+    *ld_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_ld_name);
+
+  if (auto* pnacl_sz_name = json_dict->FindString("pnacl-sz-name"))
+    *subzero_tool_name = ppapi::StringVar::StringToPPVar(*pnacl_sz_name);
 
   return PP_TRUE;
 }

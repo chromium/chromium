@@ -105,6 +105,10 @@ class ShellToplevelWrapper {
   virtual void SetRestoreInfo(int32_t restore_session_id,
                               int32_t restore_window_id) = 0;
 
+  virtual void SetRestoreInfoWithWindowIdSource(
+      int32_t restore_session_id,
+      const std::string& restore_window_id_source) = 0;
+
   // Request that the server set the orientation lock to the provided lock type.
   // This is only accepted if the requesting window is running in immersive
   // fullscreen mode and in a tablet configuration.
@@ -115,6 +119,14 @@ class ShellToplevelWrapper {
 
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
+
+  // Checks if the server supports chrome to control the window position in
+  // screen coordinates.
+  virtual bool SupportsScreenCoordinates() const = 0;
+
+  // Enables screen coordinates support. This is no-op if the server does not
+  // support the screen coordinates.
+  virtual void EnableScreenCoordinates() = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

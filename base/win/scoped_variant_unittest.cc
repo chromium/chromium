@@ -147,7 +147,7 @@ TEST(ScopedVariantTest, SetSigned1Byte) {
 
 TEST(ScopedVariantTest, SetSigned2Byte) {
   ScopedVariant var;
-  var.Set(static_cast<short>(123));
+  var.Set(static_cast<int16_t>(123));
   ExpectVariantType(VT_I2, var);
   EXPECT_EQ(123, V_I2(var.ptr()));
 }
@@ -175,7 +175,7 @@ TEST(ScopedVariantTest, SetUnsigned1Byte) {
 
 TEST(ScopedVariantTest, SetUnsigned2Byte) {
   ScopedVariant var;
-  var.Set(static_cast<unsigned short>(123));
+  var.Set(static_cast<uint16_t>(123));
   ExpectVariantType(VT_UI2, var);
   EXPECT_EQ(123u, V_UI2(var.ptr()));
 }

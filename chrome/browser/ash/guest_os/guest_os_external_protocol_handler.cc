@@ -18,13 +18,12 @@
 namespace guest_os {
 namespace {
 
-using VmType = guest_os::GuestOsRegistryService::VmType;
+using VmType = guest_os::VmType;
 
 bool AppHandlesProtocol(
     const guest_os::GuestOsRegistryService::Registration& app,
     const GURL& url) {
-  if (app.VmType() == guest_os::GuestOsRegistryService::VmType::
-                          ApplicationList_VmType_BOREALIS &&
+  if (app.VmType() == guest_os::VmType::BOREALIS &&
       !borealis::IsExternalURLAllowed(url)) {
     return false;
   }
@@ -64,18 +63,18 @@ void Launch(Profile* profile, const GURL& url) {
   }
 
   switch (registration->VmType()) {
-    case VmType::ApplicationList_VmType_TERMINA:
+    case VmType::TERMINA:
       crostini::LaunchCrostiniApp(profile, registration->app_id(),
                                   display::kInvalidDisplayId, {url.spec()},
                                   base::DoNothing());
       break;
 
-    case VmType::ApplicationList_VmType_PLUGIN_VM:
+    case VmType::PLUGIN_VM:
       plugin_vm::LaunchPluginVmApp(profile, registration->app_id(),
                                    {url.spec()}, base::DoNothing());
       break;
 
-    case VmType::ApplicationList_VmType_BOREALIS:
+    case VmType::BOREALIS:
       borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
           registration->app_id(), {url.spec()}, base::DoNothing());
       break;

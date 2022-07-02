@@ -81,4 +81,14 @@ TEST(DisplayTest, DisplayFrequency) {
   EXPECT_EQ(120, display.display_frequency());
 }
 
+TEST(DisplayTest, DisplayLabel) {
+  Display display(0, gfx::Rect(0, 0, 100, 100));
+
+  display.set_label("Display 1");
+  EXPECT_EQ("Display 1", display.label());
+
+  display.set_label("Display 2");
+  EXPECT_EQ("Display 2", display.label());
+}
+
 }  // namespace display

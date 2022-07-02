@@ -13,7 +13,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
 });
 
 function getAndResetRequestIntercepted() {
-  window.domAutomationController.send(interceptedRequest ? 'true' : 'false');
+  chrome.test.sendScriptResult(interceptedRequest);
   interceptedRequest = false;
 }
 

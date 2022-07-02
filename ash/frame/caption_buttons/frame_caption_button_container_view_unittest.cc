@@ -9,6 +9,7 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -56,6 +57,7 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     auto delegate = std::make_unique<views::WidgetDelegateView>();
     delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
     delegate->SetCanMinimize(minimize_allowed == MINIMIZE_ALLOWED);
+    delegate->SetCanResize(true);
     delegate->SetShowCloseButton(close_button_visible == CLOSE_BUTTON_VISIBLE);
     params.delegate = delegate.release();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -102,6 +104,14 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     ui::test::EventGenerator* generator = GetEventGenerator();
     generator->MoveMouseTo(
         testApi->size_button()->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ClickFloatButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    auto* float_button = testApi->float_button();
+    generator->MoveMouseTo(float_button->GetBoundsInScreen().CenterPoint());
     generator->ClickLeftButton();
     base::RunLoop().RunUntilIdle();
   }
@@ -323,6 +333,39 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
   EXPECT_TRUE(called);
 }
 
+TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  container.Layout();
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  // Test using size button to restore the maximized window to its normal window
+  // state.
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Snap the window.
+  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_event);
+  // Check the window is now snapped.
+  EXPECT_TRUE(window_state->IsSnapped());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  // Check instead of returning back to normal window state, the window should
+  // return back to Snapped window state.
+  EXPECT_TRUE(window_state->IsSnapped());
+}
+
 // Test float button behavior.
 TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
@@ -335,24 +378,18 @@ TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
   container.Layout();
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   FloatController* controller = Shell::Get()->float_controller();
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(
-      testApi.float_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
+  ClickFloatButton(&testApi);
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
   // Check if window is floated.
   auto* window = widget->GetNativeWindow();
-  EXPECT_TRUE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(window->GetProperty(chromeos::kWindowToggleFloatKey));
   EXPECT_TRUE(controller->IsFloated(window));
-
-  generator->MoveMouseTo(
-      testApi.float_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
+  ClickFloatButton(&testApi);
   // Check if window is unfloated.
-  EXPECT_FALSE(window->GetProperty(chromeos::kWindowFloatTypeKey));
+  EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_FALSE(controller->IsFloated(window));
+  EXPECT_FALSE(window->GetProperty(chromeos::kWindowToggleFloatKey));
 }
 
 }  // namespace ash

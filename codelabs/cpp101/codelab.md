@@ -26,6 +26,11 @@ directory of the Chromium source code. Build all of the example solutions with
 `base/cpp101/` directory locally if you want to try implementing these
 exercises yourself.
 
+### Prerequisite: Getting the Code
+
+Before you can do the exercises you need to set up a system to checkout, build,
+and run the code. Instructions can be found [here](https://sites.google.com/a/chromium.org/dev/developers/how-tos/get-the-code/).
+
 ### Exercise 0: "Hello World!"
 
 This exercise demonstrates the use of the [ninja](https://ninja-build.org/)

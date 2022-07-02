@@ -11,8 +11,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class AppsIconCoalescerTest : public testing::Test,
-                              public ::testing::WithParamInterface<bool> {
+class AppsIconCoalescerTest : public testing::Test {
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
 
@@ -64,22 +63,6 @@ class AppsIconCoalescerTest : public testing::Test,
                                   weak_ptr_factory_.GetWeakPtr()));
     }
 
-    std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
-        const std::string& app_id,
-        apps::mojom::IconKeyPtr mojom_icon_key,
-        apps::mojom::IconType icon_type,
-        int32_t size_hint_in_dip,
-        bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override {
-      auto icon_key = apps::ConvertMojomIconKeyToIconKey(mojom_icon_key);
-      return LoadIconFromIconKey(
-          apps::ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
-          apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-          allow_placeholder_icon,
-          apps::IconValueToMojomIconValueCallback(std::move(callback)));
-    }
-
     apps::IconValuePtr NewIconValuePtr() {
       auto iv = std::make_unique<apps::IconValue>();
       iv->icon_type = apps::IconType::kUncompressed;
@@ -100,38 +83,20 @@ class AppsIconCoalescerTest : public testing::Test,
     base::WeakPtrFactory<FakeIconLoader> weak_ptr_factory_{this};
   };
 
-  bool IsLoadIconWithoutMojomEnabled() const { return GetParam(); }
-
   UniqueReleaser LoadIcon(apps::IconLoader* loader,
                           const std::string& app_id,
                           int* counter,
                           int delta) {
-    static constexpr int32_t size_hint_in_dip = 1;
-    static constexpr bool allow_placeholder_icon = false;
-
-    if (IsLoadIconWithoutMojomEnabled()) {
-      static constexpr auto app_type = apps::AppType::kWeb;
-      static constexpr auto icon_type = apps::IconType::kUncompressed;
-      return loader->LoadIcon(
-          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
-          base::BindOnce([](int* counter, int delta,
-                            apps::IconValuePtr icon) { *counter += delta; },
-                         counter, delta));
-    } else {
-      static constexpr auto app_type = apps::mojom::AppType::kWeb;
-      static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
-      return loader->LoadIcon(
-          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
-          base::BindOnce(
-              [](int* counter, int delta, apps::mojom::IconValuePtr icon) {
-                *counter += delta;
-              },
-              counter, delta));
-    }
+    return loader->LoadIcon(
+        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
+        /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
+        base::BindOnce([](int* counter, int delta,
+                          apps::IconValuePtr icon) { *counter += delta; },
+                       counter, delta));
   }
 };
 
-TEST_P(AppsIconCoalescerTest, CallBackImmediately) {
+TEST_F(AppsIconCoalescerTest, CallBackImmediately) {
   FakeIconLoader fake;
   fake.SetCallBackImmediately(true);
   apps::IconCoalescer coalescer(&fake);
@@ -150,7 +115,7 @@ TEST_P(AppsIconCoalescerTest, CallBackImmediately) {
   EXPECT_EQ(0, fake.NumPendingReleases());
 }
 
-TEST_P(AppsIconCoalescerTest, CallBackDelayedAndAfterRelease) {
+TEST_F(AppsIconCoalescerTest, CallBackDelayedAndAfterRelease) {
   FakeIconLoader fake;
   apps::IconCoalescer coalescer(&fake);
   int counter = 0;
@@ -176,7 +141,7 @@ TEST_P(AppsIconCoalescerTest, CallBackDelayedAndAfterRelease) {
   EXPECT_EQ(0, fake.NumPendingReleases());
 }
 
-TEST_P(AppsIconCoalescerTest, CallBackDelayedAndBeforeRelease) {
+TEST_F(AppsIconCoalescerTest, CallBackDelayedAndBeforeRelease) {
   FakeIconLoader fake;
   apps::IconCoalescer coalescer(&fake);
   int counter = 0;
@@ -205,7 +170,7 @@ TEST_P(AppsIconCoalescerTest, CallBackDelayedAndBeforeRelease) {
   EXPECT_EQ(0, fake.NumPendingReleases());
 }
 
-TEST_P(AppsIconCoalescerTest, MultipleAppIDs) {
+TEST_F(AppsIconCoalescerTest, MultipleAppIDs) {
   FakeIconLoader fake;
   apps::IconCoalescer coalescer(&fake);
   int ant_counter = 0;
@@ -358,9 +323,3 @@ TEST_P(AppsIconCoalescerTest, MultipleAppIDs) {
   e4.reset();
   EXPECT_EQ(0, fake.NumPendingReleases());
 }
-
-// The parameter indicates whether the kAppServiceLoadIconWithoutMojom feature
-// is enabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppsIconCoalescerTest,
-                         ::testing::Values(true, false));

@@ -52,7 +52,6 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.anchor_view = anchor_view;
     init_params.is_anchored_to_status_area = false;
     init_params.margin = gfx::Insets::VH(kBubbleViewMargin, kBubbleViewMargin);
-    init_params.has_shadow = false;
     init_params.translucent = true;
     init_params.close_on_deactivate = false;
     init_params.preferred_width = kPreferredWidth;

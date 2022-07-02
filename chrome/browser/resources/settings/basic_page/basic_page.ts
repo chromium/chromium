@@ -21,7 +21,7 @@ import '../people_page/people_page.js';
 import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
-import '../settings_page_css.js';
+import '../settings_page_styles.css.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
@@ -267,8 +267,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private updatePrivacyGuidePromoVisibility_() {
-    if (this.pageVisibility.privacy === false ||
-        !loadTimeData.getBoolean('privacyGuideEnabled') || this.isManaged_ ||
+    if (this.pageVisibility.privacy === false || this.isManaged_ ||
         this.isChildUser_ || this.prefs === undefined ||
         this.getPref('privacy_guide.viewed').value ||
         this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=

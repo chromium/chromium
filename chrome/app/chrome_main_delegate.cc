@@ -10,23 +10,29 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/cpu_reduction_experiment.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/scoped_add_feature_flags.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -48,6 +54,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
@@ -77,6 +84,8 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -85,14 +94,12 @@
 
 #include <algorithm>
 
-#include "base/debug/close_handle_hook_win.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
-#include "chrome/common/protobuf_init.h"
 #include "chrome/common/win/delay_load_failure_hook.h"
 #include "chrome/install_static/install_util.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
@@ -102,6 +109,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
+#include "base/message_loop/message_pump_mac.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/mac/relauncher.h"
@@ -115,6 +123,7 @@
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
+#include "components/about_ui/credit_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
@@ -133,10 +142,10 @@
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
+#include "chromeos/ash/components/memory/kstaled.h"
+#include "chromeos/ash/components/memory/memory.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
-#include "chromeos/memory/kstaled.h"
-#include "chromeos/memory/memory.h"
-#include "chromeos/memory/swap_configuration.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
@@ -189,11 +198,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
+#include "chromeos/lacros/lacros_paths.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"  // nogncheck
 #include "media/base/media_switches.h"
+#include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/base/ui_base_switches.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -326,6 +339,52 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
 }
 
 #if BUILDFLAG(IS_POSIX)
+bool HandleCreditsSwitch(const base::CommandLine& command_line) {
+  if (!command_line.HasSwitch(switches::kCredits))
+    return false;
+
+  // Load resources: about_credits.html is in component_resources.pak that is
+  // re-packed into resources.pak.
+  base::FilePath resource_dir;
+  bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
+  DCHECK(result);
+
+  const std::string locale =
+      command_line.GetSwitchValueASCII(::switches::kLang);
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      locale, /**parameter_name=*/nullptr,
+      ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+  base::FilePath resources_pak =
+      resource_dir.Append(FILE_PATH_LITERAL("resources.pak"));
+
+#if BUILDFLAG(IS_MAC) && !defined(COMPONENT_BUILD)
+  // In non-component builds, check if a fallback in Resources/ folder is
+  // available.
+  if (!base::PathExists(resources_pak)) {
+    resources_pak =
+        resource_dir.Append(FILE_PATH_LITERAL("Resources/resources.pak"));
+  }
+#endif
+
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      resources_pak, ui::kScaleFactorNone);
+
+  auto credits = about_ui::GetCredits(/**include_scripts=*/false);
+  // If resources failed to load, about_ui::GetCredits returns
+  // a malformed HTML doc containing `</body>\n</html>`.
+  // When the resources loaded successfully, we get a huge document
+  // (~8 MiB) instead.
+  // We use a threshold of 100 characters to see if the resources
+  // were loaded successfully.
+  size_t resource_loading_threshold = 100;
+  if (credits.size() < resource_loading_threshold)
+    printf("%s\n", "Failed to load credits.");
+  else
+    printf("%s\n", credits.c_str());
+
+  return true;
+}
+
 // Check for --version and --product-version; return true if we encountered
 // one of these switches and should exit now.
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
@@ -522,7 +581,15 @@ ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
 ChromeMainDelegate::~ChromeMainDelegate() {
 }
 
-void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+void ChromeMainDelegate::PostEarlyInitialization(InvokedIn invoked_in) {
+  DCHECK(base::ThreadPoolInstance::Get());
+  const auto* invoked_in_browser =
+      absl::get_if<InvokedInBrowserProcess>(&invoked_in);
+  if (!invoked_in_browser) {
+    CommonEarlyInitialization();
+    return;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
@@ -530,7 +597,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
   // For now, do not enable delay load failure hooks for browser process except
   // in tests, where failures really shouldn't happen.
-  if (!is_running_tests)
+  if (invoked_in_browser->is_running_test)
     chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
 
@@ -569,8 +636,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
           case crosapi::mojom::BuildFlag::kUnknown:
             break;
           case crosapi::mojom::BuildFlag::kEnablePlatformEncryptedHevc:
-            base::CommandLine::ForCurrentProcess()->AppendSwitch(
-                switches::kLacrosEnablePlatformEncryptedHevc);
+            // This was deprecated.
             break;
           case crosapi::mojom::BuildFlag::kEnablePlatformHevc:
             base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -594,11 +660,11 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
-  PostFieldTrialInitialization();
+  CommonEarlyInitialization();
 
   // Initializes the resource bundle and determines the locale.
-  std::string actual_locale =
-      LoadLocalState(chrome_feature_list_creator, is_running_tests);
+  std::string actual_locale = LoadLocalState(
+      chrome_feature_list_creator, invoked_in_browser->is_running_test);
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
   chrome_feature_list_creator->OverrideCachedUIStrings();
 
@@ -633,18 +699,15 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #if BUILDFLAG(IS_MAC)
   chrome::CacheChannelInfo();
 #endif
-
-#if BUILDFLAG(IS_WIN)
-  chrome::InitializeProtobuf();
-#endif
 }
 
-bool ChromeMainDelegate::ShouldCreateFeatureList() {
-  // Chrome creates the FeatureList, so content should not.
-  return false;
+bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  // In the browser process Chrome creates the FeatureList, so content should
+  // not.
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
-void ChromeMainDelegate::PostFieldTrialInitialization() {
+void ChromeMainDelegate::CommonEarlyInitialization() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
@@ -685,18 +748,19 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
 
   // Start heap profiling as early as possible so it can start recording
   // memory allocations.
-  if (is_browser_process) {
-    heap_profiler_controller_ =
-        std::make_unique<HeapProfilerController>(channel);
-    heap_profiler_controller_->Start();
+  heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
+      channel,
+      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
+  heap_profiler_controller_->StartIfEnabled();
 
+  if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::ConfigureSwap();
-    chromeos::InitializeKstaled();
+    ash::ConfigureSwap();
+    ash::InitializeKstaled();
 
     // If we're in an experimental group that locks the browser text we will do
     // that now.
-    chromeos::LockMainProgramText();
+    ash::LockMainProgramText();
 #endif
   }
 
@@ -726,6 +790,10 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::internal::TimerBase::InitializeFeatures();
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
+#if BUILDFLAG(IS_MAC)
+  base::PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  base::MessagePumpCFRunLoopBase::InitializeFeatures();
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -804,8 +872,12 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     *exit_code = 0;
     return true;  // Got a --version switch; exit with a success error code.
   }
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
+  if (HandleCreditsSwitch(command_line)) {
+    *exit_code = 0;
+    return true;  // Got a --credits switch; exit with a success error code.
+  }
+  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+  // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // This will directly exit if the user asked for help.
   HandleHelpSwitches(command_line);
@@ -819,20 +891,30 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     return true;
   }
 
-// HandleVerifier detects and reports incorrect handle manipulations. It tracks
-// handle operations on builds that support DCHECK only.
-// TODO(crbug/1104358): Support 64-bit handle hooks.
-#if DCHECK_IS_ON() && !defined(ARCH_CPU_64_BITS)
-  base::debug::InstallHandleHooks();
-#else
+  // HandleVerifier detects and reports incorrect handle manipulations. It
+  // tracks handle operations on builds that support DCHECK only.
+#if !DCHECK_IS_ON()
   base::win::DisableHandleVerifier();
 #endif
 
 #endif  // BUILDFLAG(IS_WIN)
 
+  {
+    base::ScopedAddFeatureFlags features(
+        base::CommandLine::ForCurrentProcess());
+
+    // Disable Event.path on Canary and Dev to help the deprecation and removal.
+    // See crbug.com/1277431 for more details.
+    if (chrome::GetChannel() < version_info::Channel::BETA)
+      features.DisableIfNotSet(::blink::features::kEventPath);
+  }
+
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::RegisterPathProvider();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::lacros_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::dbus_paths::RegisterPathProvider();
@@ -1043,11 +1125,45 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (process_type.empty() || process_type == switches::kZygoteProcess ||
       process_type == switches::kUtilityProcess) {
-    // TODO(elkurin): Add comments here when resource loading using ash
-    // resources is implemented.
+    // Initialize BrowserInitParams before generating and loading shared
+    // resource file since the path required for the feature is set by
+    // BrowserInitParams initialization.
     const crosapi::mojom::BrowserInitParams* init_params =
         chromeos::BrowserInitParams::Get();
     chrome::SetLacrosDefaultPathsFromInitParams(init_params);
+  }
+
+  // Generate shared resource file only on browser process. This is to avoid
+  // generating a file in different processes again.
+  // Also generate only when resource file sharing feature is enabled.
+  if (command_line.HasSwitch(switches::kEnableResourcesFileSharing) &&
+      process_type.empty()) {
+    base::FilePath ash_resources_dir;
+    base::FilePath lacros_resources_dir;
+    base::FilePath user_data_dir;
+    if (base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
+                               &ash_resources_dir) &&
+        base::PathService::Get(base::DIR_ASSETS, &lacros_resources_dir) &&
+        base::PathService::Get(chromeos::lacros_paths::USER_DATA_DIR,
+                               &user_data_dir)) {
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
+          lacros_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
+          user_data_dir.Append(crosapi::kSharedResourcesPackName),
+          ui::kScaleFactorNone);
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_100_percent.pak")),
+          lacros_resources_dir.Append(
+              FILE_PATH_LITERAL("chrome_100_percent.pak")),
+          user_data_dir.Append(crosapi::kSharedChrome100PercentPackName),
+          ui::k100Percent);
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_200_percent.pak")),
+          lacros_resources_dir.Append(
+              FILE_PATH_LITERAL("chrome_200_percent.pak")),
+          user_data_dir.Append(crosapi::kSharedChrome200PercentPackName),
+          ui::k200Percent);
+    }
   }
 #endif
 
@@ -1156,9 +1272,29 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
     base::FilePath resources_pack_path;
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (command_line.HasSwitch(switches::kEnableResourcesFileSharing)) {
+      // If LacrosResourcesFileSharing feature is enabled, Lacros refers to ash
+      // resources pak file.
+      base::FilePath ash_resources_pack_path;
+      base::PathService::Get(chrome::FILE_ASH_RESOURCES_PACK,
+                             &ash_resources_pack_path);
+      base::FilePath shared_resources_pack_path;
+      base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
+                             &shared_resources_pack_path);
+      ui::ResourceBundle::GetSharedInstance()
+          .AddDataPackFromPathWithAshResources(
+              shared_resources_pack_path, ash_resources_pack_path,
+              resources_pack_path, ui::kScaleFactorNone);
+    } else {
+      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+          resources_pack_path, ui::kScaleFactorNone);
+    }
+#else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_ANDROID)
     CHECK(!loaded_locale.empty()) << "Locale could not be found for " <<
         locale;
   }
@@ -1166,6 +1302,13 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Zygote needs to call InitCrashReporter() in RunZygote().
   if (process_type != switches::kZygoteProcess) {
+    if (command_line.HasSwitch(switches::kPreCrashpadCrashTest)) {
+      // Crash for the purposes of testing the handling of crashes that happen
+      // before crashpad is initialized. Please leave this check immediately
+      // before the crashpad initialization; the amount of memory used at this
+      // point is important to the test.
+      IMMEDIATE_CRASH();
+    }
 #if BUILDFLAG(IS_ANDROID)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
     if (process_type.empty()) {

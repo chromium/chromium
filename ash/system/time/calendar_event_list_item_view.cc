@@ -34,8 +34,8 @@
 namespace ash {
 namespace {
 
-// The meeting title is too long, it is truncated in this length.
-constexpr int kTruncatedTitleLength = 20;
+// The paddings for `CalendarEventListViewItem`.
+constexpr auto kEventListItemInsets = gfx::Insets::VH(0, 20);
 
 // Paddings in this view.
 constexpr int kEntryHorizontalPadding = 20;
@@ -56,10 +56,12 @@ std::map<std::string, std::string> event_hex_color_codes = {
     {"9", "5484ed"}, {"10", "51b749"}, {"11", "dc2127"}};
 
 // Sets up the event label.
-void SetUpLabel(views::Label* label) {
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+void SetUpLabel(views::Label* label,
+                gfx::ElideBehavior elide_behavior,
+                gfx::HorizontalAlignment horizontal_alignment) {
+  label->SetHorizontalAlignment(horizontal_alignment);
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetElideBehavior(gfx::NO_ELIDE);
+  label->SetElideBehavior(elide_behavior);
   label->SetSubpixelRenderingEnabled(false);
   label->SetTextContext(CONTEXT_CALENDAR_DATE);
 }
@@ -109,9 +111,28 @@ CalendarEventListItemView::CalendarEventListItemView(
       time_range_(new views::Label()),
       event_url_(event.html_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  DCHECK(calendar_view_controller_->selected_date().has_value());
 
-  const base::Time start_time = event.start_time().date_time();
-  const base::Time end_time = event.end_time().date_time();
+  const base::Time event_start_time = event.start_time().date_time();
+  const base::Time event_end_time = event.end_time().date_time();
+
+  const base::TimeDelta time_difference = calendar_utils::GetTimeDifference(
+      calendar_view_controller_->selected_date().value());
+
+  const base::Time selected_midnight =
+      calendar_view_controller_->selected_date_midnight();
+  const base::Time selected_midnight_utc =
+      calendar_view_controller_->selected_date_midnight_utc();
+  const base::Time selected_last_minute =
+      calendar_utils::GetNextDayMidnight(selected_midnight) - base::Minutes(1);
+  const base::Time selected_last_minute_utc =
+      selected_last_minute - time_difference;
+
+  base::Time start_time =
+      calendar_utils::GetMaxTime(event_start_time, selected_midnight_utc);
+  base::Time end_time =
+      calendar_utils::GetMinTime(event_end_time, selected_last_minute_utc);
+
   bool use_12_hour_clock =
       Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
       base::k12HourClock;
@@ -128,40 +149,40 @@ CalendarEventListItemView::CalendarEventListItemView(
       end_time_string, calendar_utils::GetTimeZone(start_time),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetBorder(views::CreateEmptyBorder(kEventListItemInsets));
   summary_->SetText(event.summary().empty()
                         ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                         : base::UTF8ToUTF16(event.summary()));
-  SetUpLabel(summary_);
-  summary_->SetTruncateLength(kTruncatedTitleLength);
-  summary_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, kEntryHorizontalPadding, 0, 0)));
+  SetUpLabel(summary_, gfx::ElideBehavior::ELIDE_TAIL,
+             gfx::HorizontalAlignment::ALIGN_LEFT);
+  summary_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(0, kEntryHorizontalPadding)));
 
-  // When using AM/PM time format and the start time and end time are in the
-  // same meridiem, remove the first one and the space before it, which are the
-  // last 3 characters.
-  if (use_12_hour_clock &&
-      start_time_string.substr(start_time_string.size() - 2) ==
-          end_time_string.substr(end_time_string.size() - 2)) {
-    start_time_string =
-        start_time_string.substr(0, start_time_string.size() - 3);
-  }
+  auto formatted_interval =
+      use_12_hour_clock ? calendar_utils::FormatTwelveHourClockTimeInterval(
+                              start_time, end_time)
+                        : calendar_utils::FormatTwentyFourHourClockTimeInterval(
+                              start_time, end_time);
+  time_range_->SetText(formatted_interval);
+  SetUpLabel(time_range_, gfx::NO_ELIDE,
+             gfx::HorizontalAlignment::ALIGN_CENTER);
 
-  auto time_range = start_time_string + u" - " + end_time_string;
-  time_range_->SetText(time_range);
-  SetUpLabel(time_range_);
-
-  // Creates a `TriView` which carries the `color_dot` and `summary_` at the
-  // entry start and the `time_range_` at the entry end.
+  // Creates a `TriView` which carries the `color_dot`, `summary_` and
+  // `time_range_`.
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+  tri_view->SetMinSize(
+      TriView::Container::START,
+      gfx::Size(kColorDotViewSize,
+                tri_view->GetMinSize(TriView::Container::START).height()));
   tri_view->AddView(TriView::Container::START,
                     AddChildView(std::make_unique<CalendarEventListItemDot>(
                         event.color_id())));
-  tri_view->AddView(TriView::Container::START, summary_);
+  tri_view->AddView(TriView::Container::CENTER, summary_);
   tri_view->AddView(TriView::Container::END, time_range_);
 
   auto tooltip_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, time_range,
-      base::UTF8ToUTF16(event.summary()));
+      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),
+      formatted_interval);
   time_range_->SetTooltipText(tooltip_text);
   summary_->SetTooltipText(tooltip_text);
 
@@ -184,8 +205,10 @@ bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
 
   GURL finalized_url;
   bool opened_pwa = false;
+  DCHECK(calendar_view_controller_->selected_date().has_value());
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url_, opened_pwa, finalized_url);
+      event_url_, calendar_view_controller_->selected_date_midnight(),
+      opened_pwa, finalized_url);
   return true;
 }
 

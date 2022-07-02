@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
+import {getTemplate} from './zero_trust_connector.html.js';
 
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
-  [KeyTrustLevel.TPM]: 'TPM',
+  [KeyTrustLevel.HW]: 'HW',
   [KeyTrustLevel.OS]: 'OS'
 };
 
@@ -25,7 +25,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
   }
 
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   public set enabledString(str: string) {
@@ -67,12 +67,12 @@ export class ZeroTrustConnectorElement extends CustomElement {
     }
   }
 
-  private _signalsString: string = '';
+  private signalsString_: string = '';
   public set signalsString(str: string) {
     const signalsEl = (this.$('#signals') as HTMLElement);
     if (signalsEl) {
       signalsEl.innerText = str;
-      this._signalsString = str;
+      this.signalsString_ = str;
     } else {
       console.error('Could not find #signals element.');
     }
@@ -83,7 +83,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
   }
 
   public get signalsString(): string {
-    return this._signalsString;
+    return this.signalsString_;
   }
 
   private readonly pageHandler: PageHandlerInterface;

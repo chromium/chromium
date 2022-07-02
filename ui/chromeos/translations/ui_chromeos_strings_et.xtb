@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">Võrke ei ole</translation>
 <translation id="1060368002126861100">Failide avamiseks rakendusega <ph name="APP_NAME" /> teisaldage need esmalt Windowsi failide kausta.</translation>
 <translation id="1062407476771304334">Asenda</translation>
-<translation id="1119069657431255176">Bzip2 tihendatud TAR-arhiiv</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1120073797882051782">Hanguli romaja</translation>
 <translation id="112387589102719461">inglise (USA), programmeerijate Dvoraki klaviatuuriga</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">Hanguli ahnmatae</translation>
 <translation id="1155759005174418845">katalaani keel</translation>
 <translation id="1168100932582989117">Google'i nimeserverid</translation>
-<translation id="1171082344678443012">XZ-vormingus tihendatud arhiiv</translation>
 <translation id="1172970565351728681">Jäänud on ligikaudu <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, telefoni aku: <ph name="BATTERY_STATUS" />%, üksikasjad</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1209796539517632982">Automaatsed nimeserverid</translation>
 <translation id="1210831758834677569">lao</translation>
-<translation id="1223825810409523901">Chrome'i laiendus</translation>
 <translation id="1243314992276662751">Laadi üles</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Jagatud võrgu seadistuste muutmine ei ole lubatud</translation>
 <translation id="1665611772925418501">Faili ei saa muuta.</translation>
 <translation id="1673103856845176271">Turvalisuse tagamiseks on juurdepääs failile keelatud.</translation>
-<translation id="16762847117768727">ISO-kujutis</translation>
 <translation id="169515659049020177">Tõstuklahv</translation>
 <translation id="1715848075824334077">Jalgrattasõit</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> üksuse pakkimine …</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Halda Drive'is</translation>
 <translation id="2009067268969781306">Ketta vormindamisel kustutatakse kõik sellel olevad andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
-<translation id="2028997212275086731">RAR-arhiiv</translation>
-<translation id="2036414735548252477">LZMA-vormingus tihendatud TAR-arhiiv</translation>
 <translation id="2037845485764049925">vene</translation>
 <translation id="2044023416777079300">Modem pole registreeritud</translation>
 <translation id="2046702855113914483">Rāmen</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
 <translation id="2142680004883808240">vene, foneetilise (YaZHert) klaviatuuriga</translation>
 <translation id="2143778271340628265">Puhverserveri käsitsi konfigureerimine</translation>
+<translation id="2148716181193084225">Täna</translation>
 <translation id="2163152940313951844">Sobimatu tähemärk: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugali USA, rahvusvahelise arvutiklaviatuuriga</translation>
 <translation id="2198315389084035571">hiina (lihtsustatud)</translation>
-<translation id="2208158072373999562">Zip-arhiiv</translation>
 <translation id="22085916256174561">korea</translation>
 <translation id="2208919847696382164">Installi Linuxiga</translation>
 <translation id="2225536596944493418">Kas soovite <ph name="NUMBER_OF_ITEMS" /> üksust kindlasti kustutada?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Lülita loendivaatele</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kausta jagati Linuxiga</translation>
 <translation id="2378075407703503998">Valitud on <ph name="SELCTED_FILE_COUNT" /> faili</translation>
+<translation id="2387120140441437063">Ei saa prügikasti teisaldatud faile avada. Taastage failid enne nende avamist.</translation>
 <translation id="2387458720915042159">Puhverserveri ühenduse tüüp</translation>
 <translation id="2389832672041313158">birma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktiveeri</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">Selle kausta sisu on kirjutuskaitstud. Mõnda toimingut ei toetata.</translation>
 <translation id="2542049655219295786">Google'i tabel</translation>
 <translation id="2544853746127077729">Võrk lükkas autentimissertifikaadi tagasi</translation>
-<translation id="2547921442987553570">Lisa laiendusse <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA rahvusvaheline</translation>
 <translation id="2563185590376525700">Konn</translation>
 <translation id="2578394532502990878">tamili, foneetiline</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">hiina, dayi</translation>
 <translation id="3057861065630527966">Fotode ja videote varundamine</translation>
 <translation id="3067790092342515856">Windowsi failid</translation>
-<translation id="3078461028045006476">Jaga laiendusega <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebitid</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3855472144336161447">Saksa Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
-<translation id="386548886866354912">Paki laiendusega <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Kirjeldus</translation>
 <translation id="3899991606604168269">prantsuse (Kanada), mitmekeelse klaviatuuriga</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">inglise (Ühendkuningriik)</translation>
 <translation id="3975895378829046965">bengali, foneetiline</translation>
+<translation id="3991446849494482687">Sellega keelatakse seadmes ka SIM-kaardi luku seade.</translation>
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4017788180641807848">inglise (USA), Workmani klaviatuuriga</translation>
 <translation id="4040753847560036377">Vale PUK</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> baiti</translation>
 <translation id="4880214202172289027">Helitugevuse liugur</translation>
 <translation id="4881695831933465202">Ava</translation>
-<translation id="4886199584824489598">BZIP2-vormingus tihendatud arhiiv</translation>
 <translation id="4900532980794411603">Jagamine üksusega Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, ühenda</translation>
 <translation id="4905417359854579806">Valmis, et varundada <ph name="FILE_COUNT" /></translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-võrk, pole ühendatud</translation>
 <translation id="6074825444536523002">Google'i vorm</translation>
 <translation id="6079871810119356840">ungari, QWERTY-klaviatuuriga</translation>
-<translation id="6082256976217156453">LZMA-vormingus tihendatud arhiiv</translation>
 <translation id="6096979789310008754">Otsingutekst on kustutatud, kuvatud on kõik failid ja kaustad.</translation>
 <translation id="610101264611565198">Fail <ph name="FILE_NAME" /> teisaldatakse kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV-tekstifail</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6170470584681422115">Võileib</translation>
 <translation id="6187719147498869044">ungari</translation>
-<translation id="6189412234224385711">Ava laiendusega <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Muuda PIN-koodi</translation>
 <translation id="6199801702437275229">Talletusruumi teabe ootamine ...</translation>
 <translation id="6205710420833115353">Mõned toimingud võtavad oodatust kauem aega. Kas soovite need katkestada?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">Vale PUK</translation>
 <translation id="6312403991423642364">Tundmatu võrguviga</translation>
 <translation id="6317608858038767920">Kohandatud nimeserveri <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arhiivifail</translation>
 <translation id="6321303798550928047">Lehvitav</translation>
 <translation id="6327785803543103246">Veebipõhise puhverserveri automaattuvastamine</translation>
 <translation id="6339145975392024142">USA rahvusvaheline (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
+<translation id="649877868557234318">Faili <ph name="FILE_NAME" /> ekstraktimine kausta <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Puhverserverite keelamine jagatud võrkudes</translation>
 <translation id="6509122719576673235">norra keel</translation>
 <translation id="6528513914570774834">Luba teistel selle seadme kasutajatel seda võrku kasutada</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Linuxi jagamise haldamine</translation>
 <translation id="6806796368146926706">tähtnumbriline, Jaapani klaviatuuriga</translation>
 <translation id="6808193438228982088">Rebane</translation>
-<translation id="6820687829547641339">Gzipi tihendatud TAR-arhiiv</translation>
 <translation id="6823166707458800069">Kõik sellesse kausta salvestatud failid varundatakse võrgus automaatselt.</translation>
 <translation id="6825883775269213504">vene keel</translation>
 <translation id="6847101934483209767">Kirje <ph name="ENTRY_NAME" /> eemaldati valikust.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">tai, klaviatuuriga TIS 820-2531</translation>
 <translation id="708278670402572152">Skannimise lubamiseks katkestage ühendus</translation>
 <translation id="7086590977277044826">tamili, InScript-klaviatuuriga</translation>
+<translation id="7088615885725309056">Vanemad</translation>
 <translation id="7103992300314999525">makedoonia</translation>
 <translation id="7106346894903675391">Ostke rohkem salvestusruumi ...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;otsi Drive'ist&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7693909743393669729">Ketta vormindamisel kustutatakse kõik sellel olevad andmed ja eemaldatakse kõik olemasolevad partitsioonid (sh nähtamatud partitsioonid). Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7695430100978772476">Ei saanud ketast <ph name="DRIVE_NAME" /> vormindada</translation>
+<translation id="76959938259365003">Prügikasti tühjendamine ebaõnnestus.</translation>
 <translation id="770015031906360009">kreeka keel</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> on kopeeritud.</translation>
 <translation id="7711920809702896782">Pildi teave</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">hiina, wubi</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7774365994322694683">Lind</translation>
+<translation id="7781829728241885113">Eile</translation>
 <translation id="7788080748068240085">Kui soovite salvestada faili „<ph name="FILE_NAME" />” võrguühenduseta kasutamiseks, peate vabastama veel <ph name="TOTAL_FILE_SIZE" /> ruumi:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />vabastage failid, millele teil ei ole enam vaja võrguühenduseta juurde pääseda;<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />kustutage kaustas Allalaadimised olevaid faile.<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">Ära kasuta sünkroonimiseks mobiilset andmesidet</translation>
 <translation id="7928710562641958568">Seadme väljutamine</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
-<translation id="7948417415021769876">7z-arhiiv</translation>
 <translation id="7953739707111622108">Seadet ei saa avada, sest selle failisüsteemi ei tuntud ära.</translation>
 <translation id="7969525169268594403">sloveeni keel</translation>
 <translation id="7972920761225148017">prantsuse (Šveits)</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">Hanguli 3. seade (tõstuklahv puudub)</translation>
 <translation id="8299269255470343364">jaapani keel</translation>
 <translation id="8300849813060516376">OTASP nurjus</translation>
-<translation id="8308481408797647857">XZ-vormingus tihendatud arhiiv</translation>
 <translation id="8312871300878166382">Kleebi kausta</translation>
 <translation id="8329978297633540474">Lihttekst</translation>
 <translation id="8335587457941836791">Riiulilt vabastamine</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">Paremklõpsake failil ja tehke valik „Kinnita riiulile”, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="8461914792118322307">Puhverserver</translation>
 <translation id="8463494891489624050">vietnami, VIQR</translation>
-<translation id="8466234950814670489">TAR-arhiiv</translation>
 <translation id="8475647382427415476">Google Drive ei saanud praegu sünkroonida faili „<ph name="FILENAME" />”. Google Drive proovib hiljem uuesti.</translation>
 <translation id="8477649328507734757">Pöörlev</translation>
 <translation id="8484284835977497781">Valige oma hiljutiste fotode hulgast.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">Muutja:</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="947144732524271678">Valiti <ph name="ENTRY_COUNT" /> kirjet vahemikus <ph name="FROM_ENTRY_NAME" /> kuni <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">GZIP-vormingus tihendatud arhiiv</translation>
 <translation id="965477715979482472">inglise (Lõuna-Aafrika Vabariik)</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="988685240266037636">Fail nimega „<ph name="FILE_NAME" />” on juba olemas. Kas soovite selle asendada?</translation>

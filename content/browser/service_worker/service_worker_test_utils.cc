@@ -91,6 +91,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
+      const blink::ParsedPermissionsPolicy& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -253,8 +254,9 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       network::mojom::URLResponseHead::New(),
       mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, absl::nullopt,
       nullptr, std::move(info), mojo::NullRemote(),
-      base::UnguessableToken::Create(), CreateStubPolicyContainer(),
-      mojo::NullRemote(), nullptr, nullptr,
+      base::UnguessableToken::Create(),
+      std::vector<blink::ParsedPermissionsPolicyDeclaration>(),
+      CreateStubPolicyContainer(), mojo::NullRemote(), nullptr, nullptr,
       base::BindOnce(
           [](mojom::DidCommitProvisionalLoadParamsPtr validated_params,
              mojom::DidCommitProvisionalLoadInterfaceParamsPtr
@@ -365,9 +367,13 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
       provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
       hosted_version, std::move(context));
 
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider;
+
   host->CompleteStartWorkerPreparation(
       process_id,
-      provider_info->browser_interface_broker.InitWithNewPipeAndPassReceiver());
+      provider_info->browser_interface_broker.InitWithNewPipeAndPassReceiver(),
+      pending_interface_provider.InitWithNewPipeAndPassRemote());
   output_endpoint->BindForServiceWorker(std::move(provider_info));
   return host;
 }
@@ -388,7 +394,7 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   // problematic.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewRegistration(
-      options, key,
+      options, key, blink::mojom::AncestorFrameType::kNormalFrame,
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
             registration = std::move(new_registration);

@@ -17,7 +17,7 @@ PluralStringHandler::PluralStringHandler() = default;
 PluralStringHandler::~PluralStringHandler() = default;
 
 void PluralStringHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPluralString",
       base::BindRepeating(&PluralStringHandler::HandleGetPluralString,
                           base::Unretained(this)));
@@ -29,13 +29,17 @@ void PluralStringHandler::AddStringToPluralMap(const std::string& name,
   string_id_map_[name] = string_id;
 }
 
-void PluralStringHandler::HandleGetPluralString(const base::ListValue* args) {
+void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetListDeprecated().size());
-  const std::string callback = args->GetListDeprecated()[0].GetString();
-  const std::string name = args->GetListDeprecated()[1].GetString();
-  const int count = args->GetListDeprecated()[2].GetInt();
-  DCHECK(base::Contains(string_id_map_, name));
+  CHECK_EQ(3U, args.size());
+  const std::string callback = args[0].GetString();
+  const std::string name = args[1].GetString();
+  const int count = args[2].GetInt();
+  if (string_id_map_.find(name) == string_id_map_.end()) {
+    // Only reachable if the WebUI renderer is misbehaving.
+    LOG(ERROR) << "Invalid string ID received: " << name;
+    return;
+  }
   const std::u16string localized_string =
       l10n_util::GetPluralStringFUTF16(string_id_map_.at(name), count);
   ResolveJavascriptCallback(base::Value(callback),

@@ -50,23 +50,6 @@ DocumentPolicy::ParsedDocumentPolicy FilterByOriginTrial(
   return filtered_policy;
 }
 
-// Helper function: Merge the permissions policy strings from HTTP headers and
-// the origin policy (if any). Headers go first, which means that the per-page
-// headers override the origin policy features.
-//
-// TODO(domenic): we want to treat origin policy permissions policy as a single
-// permissions policy, not a header serialization, so it should be processed
-// differently.
-void MergeFeaturesFromOriginPolicy(WTF::StringBuilder& permissions_policy,
-                                   const WebOriginPolicy& origin_policy) {
-  if (!origin_policy.permissions_policy.IsNull()) {
-    if (!permissions_policy.IsEmpty()) {
-      permissions_policy.Append(',');
-    }
-    permissions_policy.Append(origin_policy.permissions_policy);
-  }
-}
-
 }  // namespace
 
 // A helper class that allows the security context be initialized in the
@@ -122,8 +105,8 @@ void SecurityContextInit::ApplyDocumentPolicy(
 void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
-    const absl::optional<WebOriginPolicy>& origin_policy,
-    const FramePolicy& frame_policy) {
+    const FramePolicy& frame_policy,
+    const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy) {
   const url::Origin origin =
       execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
@@ -157,8 +140,6 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   WTF::StringBuilder policy_builder;
   policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
-  if (origin_policy.has_value())
-    MergeFeaturesFromOriginPolicy(policy_builder, origin_policy.value());
   String feature_policy_header = policy_builder.ToString();
   if (!feature_policy_header.IsEmpty())
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);
@@ -213,24 +194,35 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         container_policy);
   }
 
-  std::unique_ptr<PermissionsPolicy> permissions_policy;
-  if (frame.IsInFencedFrameTree()) {
-    // In Fenced Frames, all permission policy gated features must be disabled
-    // for privacy reasons.
-    permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+  if (isolated_app_policy) {
+    DCHECK(frame.IsOutermostMainFrame());
+    std::unique_ptr<PermissionsPolicy> permissions_policy =
+        PermissionsPolicy::CreateFromParsedPolicy(isolated_app_policy.value(),
+                                                  origin);
+    permissions_policy->SetHeaderPolicyForIsolatedApp(
+        permissions_policy_header_);
+    execution_context_->GetSecurityContext().SetPermissionsPolicy(
+        std::move(permissions_policy));
   } else {
-    auto* parent_permissions_policy = frame.Tree().Parent()
-                                          ? frame.Tree()
-                                                .Parent()
-                                                ->GetSecurityContext()
-                                                ->GetPermissionsPolicy()
-                                          : nullptr;
-    permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-        parent_permissions_policy, container_policy, origin);
+    std::unique_ptr<PermissionsPolicy> permissions_policy;
+    if (frame.IsInFencedFrameTree()) {
+      // In Fenced Frames, all permission policy gated features must be disabled
+      // for privacy reasons.
+      permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+    } else {
+      auto* parent_permissions_policy = frame.Tree().Parent()
+                                            ? frame.Tree()
+                                                  .Parent()
+                                                  ->GetSecurityContext()
+                                                  ->GetPermissionsPolicy()
+                                            : nullptr;
+      permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+          parent_permissions_policy, container_policy, origin);
+    }
+    permissions_policy->SetHeaderPolicy(permissions_policy_header_);
+    execution_context_->GetSecurityContext().SetPermissionsPolicy(
+        std::move(permissions_policy));
   }
-  permissions_policy->SetHeaderPolicy(permissions_policy_header_);
-  execution_context_->GetSecurityContext().SetPermissionsPolicy(
-      std::move(permissions_policy));
 
   // Report-only permissions policy only takes effect when it is stricter than
   // enforced permissions policy, i.e. when enforced permissions policy allows a

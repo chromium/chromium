@@ -7,7 +7,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
@@ -33,12 +32,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 namespace {
 
 // Returns an AppLaunchConfiguration containing the given policy data.
-// |policyData| must be in XML format.
+// `policyData` must be in XML format.
 AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data) {
   AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableEnterprisePolicy);
-
   // Remove whitespace from the policy data, because the XML parser does not
   // tolerate newlines.
   base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);

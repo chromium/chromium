@@ -21,9 +21,11 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -41,14 +43,13 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
   }
 }
 
-AggregationServicePayloadContents::AggregationMode ConvertToAggregationMode(
+mojom::AggregationServiceMode ConvertToAggregationMode(
     TestAggregationService::AggregationMode aggregation_mode) {
   switch (aggregation_mode) {
     case TestAggregationService::AggregationMode::kTeeBased:
-      return AggregationServicePayloadContents::AggregationMode::kTeeBased;
+      return mojom::AggregationServiceMode::kTeeBased;
     case TestAggregationService::AggregationMode::kExperimentalPoplar:
-      return AggregationServicePayloadContents::AggregationMode::
-          kExperimentalPoplar;
+      return mojom::AggregationServiceMode::kExperimentalPoplar;
   }
 }
 
@@ -89,8 +90,8 @@ TestAggregationServiceImpl::TestAggregationServiceImpl(
 
 TestAggregationServiceImpl::~TestAggregationServiceImpl() = default;
 
-const base::SequenceBound<AggregationServiceKeyStorage>&
-TestAggregationServiceImpl::GetKeyStorage() {
+const base::SequenceBound<AggregationServiceStorage>&
+TestAggregationServiceImpl::GetStorage() {
   return storage_;
 }
 
@@ -114,7 +115,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
     return;
   }
 
-  storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+  storage_.AsyncCall(&AggregationServiceStorage::SetPublicKeys)
       .WithArgs(url, std::move(*keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
@@ -124,18 +125,19 @@ void TestAggregationServiceImpl::AssembleReport(
     base::OnceCallback<void(base::Value::Dict)> callback) {
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
-      {AggregationServicePayloadContents::HistogramContribution{
-          .bucket = request.bucket, .value = request.value}},
+      {mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/request.bucket, /*value=*/request.value)},
       ConvertToAggregationMode(request.aggregation_mode));
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
-      std::move(request.privacy_budget_key),
       /*report_id=*/base::GUID::GenerateRandomV4(),
       std::move(request.reporting_origin),
       request.is_debug_mode_enabled
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
-          : AggregatableReportSharedInfo::DebugMode::kDisabled);
+          : AggregatableReportSharedInfo::DebugMode::kDisabled,
+      std::move(request.additional_fields), std::move(request.api_version),
+      std::move(request.api_identifier));
 
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
@@ -169,7 +171,7 @@ void TestAggregationServiceImpl::SendReport(
 void TestAggregationServiceImpl::GetPublicKeys(
     const GURL& url,
     base::OnceCallback<void(std::vector<PublicKey>)> callback) const {
-  storage_.AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
+  storage_.AsyncCall(&AggregationServiceStorage::GetPublicKeys)
       .WithArgs(url)
       .Then(std::move(callback));
 }

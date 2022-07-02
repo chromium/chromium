@@ -221,7 +221,7 @@ class TestLauncher {
   // Creates and starts a ThreadPoolInstance with |num_parallel_jobs| dedicated
   // to foreground blocking tasks (corresponds to the traits used to launch and
   // wait for child processes). virtual to mock in testing.
-  virtual void CreateAndStartThreadPool(int num_parallel_jobs);
+  virtual void CreateAndStartThreadPool(size_t num_parallel_jobs);
 
   // Callback to receive result of a test.
   // |result_file| is a path to xml file written by child process.

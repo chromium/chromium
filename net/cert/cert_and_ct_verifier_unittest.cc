@@ -70,7 +70,7 @@ class FakeCTVerifier : public CTVerifier {
 
 class CertAndCTVerifierTest : public TestWithTaskEnvironment {
  public:
-  CertAndCTVerifierTest() {}
+  CertAndCTVerifierTest() = default;
   ~CertAndCTVerifierTest() override = default;
 };
 

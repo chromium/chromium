@@ -52,7 +52,7 @@ import org.chromium.ui.test.util.UiRestriction;
 /** Integration tests for showing IPH bubbles on the toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
+@Features.EnableFeatures({ChromeFeatureList.TOOLBAR_IPH_ANDROID, ChromeFeatureList.ENABLE_IPH})
 public class ToolbarButtonIphTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

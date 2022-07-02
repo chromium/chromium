@@ -84,7 +84,7 @@ String DatabaseTracker::FullPathForDatabase(const SecurityOrigin* origin,
 }
 
 void DatabaseTracker::AddOpenDatabase(Database* database) {
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     open_database_map_ = std::make_unique<DatabaseOriginMap>();
 
@@ -116,7 +116,7 @@ void DatabaseTracker::AddOpenDatabase(Database* database) {
 
 void DatabaseTracker::RemoveOpenDatabase(Database* database) {
   {
-    MutexLocker open_database_map_lock(open_database_map_guard_);
+    base::AutoLock open_database_map_lock(open_database_map_guard_);
     String origin_string = database->GetSecurityOrigin()->ToRawString();
     DCHECK(open_database_map_);
     auto open_database_map_it = open_database_map_->find(origin_string);
@@ -186,7 +186,7 @@ uint64_t DatabaseTracker::GetMaxSizeForDatabase(const Database* database) {
 void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
                                                 const String& name) {
   String origin_string = origin->ToRawString();
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     return;
 
@@ -217,7 +217,7 @@ void DatabaseTracker::CloseDatabasesImmediately(const SecurityOrigin* origin,
 
 void DatabaseTracker::ForEachOpenDatabaseInPage(Page* page,
                                                 DatabaseCallback callback) {
-  MutexLocker open_database_map_lock(open_database_map_guard_);
+  base::AutoLock open_database_map_lock(open_database_map_guard_);
   if (!open_database_map_)
     return;
   for (auto& origin_map : *open_database_map_) {
@@ -236,7 +236,7 @@ void DatabaseTracker::CloseOneDatabaseImmediately(const String& origin_string,
                                                   Database* database) {
   // First we have to confirm the 'database' is still in our collection.
   {
-    MutexLocker open_database_map_lock(open_database_map_guard_);
+    base::AutoLock open_database_map_lock(open_database_map_guard_);
     if (!open_database_map_)
       return;
 

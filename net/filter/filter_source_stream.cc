@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -24,17 +25,11 @@ const char kGZip[] = "gzip";
 const char kXGZip[] = "x-gzip";
 const char kBrotli[] = "br";
 
-const size_t kBufferSize = 32 * 1024;
-
 }  // namespace
 
 FilterSourceStream::FilterSourceStream(SourceType type,
                                        std::unique_ptr<SourceStream> upstream)
-    : SourceStream(type),
-      upstream_(std::move(upstream)),
-      next_state_(STATE_NONE),
-      output_buffer_size_(0),
-      upstream_end_reached_(false) {
+    : SourceStream(type), upstream_(std::move(upstream)) {
   DCHECK(upstream_);
 }
 
@@ -49,7 +44,9 @@ int FilterSourceStream::Read(IOBuffer* read_buffer,
 
   // Allocate a BlockBuffer during first Read().
   if (!input_buffer_) {
-    input_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
+    input_buffer_ = base::MakeRefCounted<IOBufferWithSize>(
+        net::features::kOptimizeNetworkBuffersFilterSourceStreamBufferSize
+            .Get());
     // This is first Read(), start with reading data from |upstream_|.
     next_state_ = STATE_READ_DATA;
   } else {
@@ -82,12 +79,12 @@ FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
     const std::string& encoding) {
   if (encoding.empty()) {
     return TYPE_NONE;
-  } else if (base::LowerCaseEqualsASCII(encoding, kBrotli)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kBrotli)) {
     return TYPE_BROTLI;
-  } else if (base::LowerCaseEqualsASCII(encoding, kDeflate)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kDeflate)) {
     return TYPE_DEFLATE;
-  } else if (base::LowerCaseEqualsASCII(encoding, kGZip) ||
-             base::LowerCaseEqualsASCII(encoding, kXGZip)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kGZip) ||
+             base::EqualsCaseInsensitiveASCII(encoding, kXGZip)) {
     return TYPE_GZIP;
   } else {
     return TYPE_UNKNOWN;
@@ -129,9 +126,11 @@ int FilterSourceStream::DoReadData() {
 
   next_state_ = STATE_READ_DATA_COMPLETE;
   // Use base::Unretained here is safe because |this| owns |upstream_|.
-  int rv = upstream_->Read(input_buffer_.get(), kBufferSize,
-                           base::BindOnce(&FilterSourceStream::OnIOComplete,
-                                          base::Unretained(this)));
+  int rv = upstream_->Read(
+      input_buffer_.get(),
+      net::features::kOptimizeNetworkBuffersFilterSourceStreamBufferSize.Get(),
+      base::BindOnce(&FilterSourceStream::OnIOComplete,
+                     base::Unretained(this)));
 
   return rv;
 }

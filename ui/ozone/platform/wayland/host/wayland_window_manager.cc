@@ -35,7 +35,7 @@ void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
   // Wayland doesn't allow to grab the mouse. However, we start forwarding all
   // mouse events received by WaylandWindow to the aura::WindowEventDispatcher
   // which has capture.
-  auto* old_grabber = located_events_grabber_;
+  auto* old_grabber = located_events_grabber_.get();
   located_events_grabber_ = window;
   if (old_grabber)
     old_grabber->OnWindowLostCapture();
@@ -43,7 +43,7 @@ void WaylandWindowManager::GrabLocatedEvents(WaylandWindow* window) {
 
 void WaylandWindowManager::UngrabLocatedEvents(WaylandWindow* window) {
   DCHECK_EQ(located_events_grabber_, window);
-  auto* old_grabber = located_events_grabber_;
+  auto* old_grabber = located_events_grabber_.get();
   located_events_grabber_ = nullptr;
   old_grabber->OnWindowLostCapture();
 }
@@ -227,6 +227,14 @@ std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {
   for (auto entry : window_map_)
     result.push_back(entry.second);
   return result;
+}
+
+bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
+  for (auto pair : window_map_) {
+    if (pair.second == window)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace ui

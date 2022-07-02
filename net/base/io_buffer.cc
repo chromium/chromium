@@ -68,12 +68,12 @@ StringIOBuffer::~StringIOBuffer() {
 }
 
 DrainableIOBuffer::DrainableIOBuffer(scoped_refptr<IOBuffer> base, int size)
-    : IOBuffer(base->data()), base_(std::move(base)), size_(size), used_(0) {
+    : IOBuffer(base->data()), base_(std::move(base)), size_(size) {
   AssertValidBufferSize(size);
 }
 
 DrainableIOBuffer::DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size)
-    : IOBuffer(base->data()), base_(std::move(base)), size_(size), used_(0) {
+    : IOBuffer(base->data()), base_(std::move(base)), size_(size) {
   AssertValidBufferSize(size);
 }
 
@@ -102,11 +102,7 @@ DrainableIOBuffer::~DrainableIOBuffer() {
   data_ = nullptr;
 }
 
-GrowableIOBuffer::GrowableIOBuffer()
-    : IOBuffer(),
-      capacity_(0),
-      offset_(0) {
-}
+GrowableIOBuffer::GrowableIOBuffer() = default;
 
 void GrowableIOBuffer::SetCapacity(int capacity) {
   DCHECK_GE(capacity, 0);

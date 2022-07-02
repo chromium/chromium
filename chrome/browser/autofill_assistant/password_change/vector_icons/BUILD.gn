@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//components/vector_icons/vector_icons.gni")
+
+aggregate_vector_icons("apc_vector_icons") {
+  icon_directory = "."
+
+  sources = [
+    "bad_new_password.icon",
+    "changed_password.icon",
+    "choose_new_password.icon",
+    "enter_old_password.icon",
+    "error_occurred.icon",
+    "open_site_settings.icon",
+    "save_new_password.icon",
+    "unspecified_state.icon",
+    "user_action_required.icon",
+  ]
+}
+
+source_set("vector_icons") {
+  sources = get_target_outputs(":apc_vector_icons")
+
+  deps = [
+    ":apc_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

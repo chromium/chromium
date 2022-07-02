@@ -71,10 +71,12 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_TRUE(AreWebAppsEnabled(
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* system_profile = profile_manager.CreateSystemProfile();
   EXPECT_FALSE(AreWebAppsEnabled(system_profile));
   EXPECT_FALSE(AreWebAppsEnabled(
       system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* signin_profile =
@@ -136,10 +138,12 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   EXPECT_FALSE(AreWebAppsUserInstallable(
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* system_profile = profile_manager.CreateSystemProfile();
   EXPECT_FALSE(AreWebAppsUserInstallable(system_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* signin_profile =
@@ -176,16 +180,21 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
   ASSERT_TRUE(profile_manager.SetUp());
 
   Profile* guest_profile = profile_manager.CreateGuestProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  guest_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(guest_profile, GetBrowserContextForWebApps(guest_profile));
   EXPECT_EQ(guest_profile,
             GetBrowserContextForWebApps(guest_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
-
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* system_profile = profile_manager.CreateSystemProfile();
   EXPECT_EQ(nullptr, GetBrowserContextForWebApps(system_profile));
   EXPECT_EQ(nullptr,
             GetBrowserContextForWebApps(system_profile->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
+#endif
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
@@ -217,12 +226,14 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
       GetBrowserContextForWebAppMetrics(
           guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* system_profile = profile_manager.CreateSystemProfile();
   EXPECT_EQ(nullptr, GetBrowserContextForWebAppMetrics(system_profile));
   EXPECT_EQ(
       nullptr,
       GetBrowserContextForWebAppMetrics(
           system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+#endif
 }
 
 }  // namespace web_app

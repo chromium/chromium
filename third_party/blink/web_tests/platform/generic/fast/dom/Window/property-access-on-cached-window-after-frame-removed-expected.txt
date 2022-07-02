@@ -3,6 +3,7 @@ Tests property access on a cached DOMWindow after the associated frame is no lon
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 FAIL childWindow.closed should be false. Was true.
+PASS childWindow.crossOriginEmbedderPolicy is 'unsafe-none'
 PASS childWindow.crossOriginIsolated is false
 PASS childWindow.defaultStatus is ''
 PASS childWindow.defaultstatus is ''

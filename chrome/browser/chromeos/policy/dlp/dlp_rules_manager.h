@@ -139,6 +139,10 @@ class DlpRulesManager : public KeyedService {
   // Returns the admin-configured limit for the minimal size of data in the
   // clipboard to be checked against DLP rules.
   virtual size_t GetClipboardCheckSizeLimitInBytes() const = 0;
+
+  // Returns true if there is any files policy set, and the daemon is
+  // successfully initiated.
+  virtual bool IsFilesPolicyEnabled() const = 0;
 };
 
 }  // namespace policy

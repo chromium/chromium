@@ -92,13 +92,21 @@ class BuilderListTest(unittest.TestCase):
             'Flag Specific A': {
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
-                'flag_specific': 'highdpi',
+                'steps': {
+                    'high_dpi_blink_web_tests (with patch)': {
+                        'flag_specific': 'highdpi'
+                    },
+                },
                 "is_try_builder": True
             },
             'Flag Specific B': {
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
-                'flag_specific': 'disable-layout-ng',
+                'steps': {
+                    'layout_ng_disabled_blink_web_tests (with patch)': {
+                        'flag_specific': 'disable-layout-ng',
+                    },
+                },
                 "is_try_builder": True
             },
         })
@@ -189,6 +197,44 @@ class BuilderListTest(unittest.TestCase):
         builders = self.sample_builder_list()
         self.assertEqual('port-b',
                          builders.port_name_for_builder_name('Blink B'))
+
+    def test_port_name_for_flag_specific_option(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            'port-c', builders.port_name_for_flag_specific_option('highdpi'))
+
+    def test_flag_specific_options_for_port_name(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            set(), builders.flag_specific_options_for_port_name('port-a'))
+        self.assertEqual(
+            {'highdpi', 'disable-layout-ng'},
+            builders.flag_specific_options_for_port_name('port-c'))
+
+    def test_reject_flag_specific_multiple_ports(self):
+        with self.assertRaises(ValueError):
+            BuilderList({
+                'Flag Specific A': {
+                    'port_name': 'port-a',
+                    'specifiers': ['A', 'Release'],
+                    'steps': {
+                        'blink_web_tests (with patch)': {
+                            'flag_specific': 'highdpi',
+                        },
+                    },
+                    'is_try_builder': True
+                },
+                'Flag Specific B': {
+                    'port_name': 'port-b',
+                    'specifiers': ['B', 'Release'],
+                    'steps': {
+                        'blink_web_tests (with patch)': {
+                            'flag_specific': 'highdpi',
+                        },
+                    },
+                    'is_try_builder': True
+                },
+            })
 
     def test_specifiers_for_builder(self):
         builders = self.sample_builder_list()

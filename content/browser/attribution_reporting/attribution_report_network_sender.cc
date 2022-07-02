@@ -19,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -146,7 +145,7 @@ void AttributionReportNetworkSender::OnReportSent(
       net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
 
   int response_code = headers ? headers->response_code() : -1;
-  bool external_ok = response_code == net::HTTP_OK;
+  bool external_ok = response_code >= 200 && response_code <= 299;
   Status status =
       internal_ok && external_ok
           ? Status::kOk
@@ -154,7 +153,7 @@ void AttributionReportNetworkSender::OnReportSent(
 
   // TODO(apaseltiner): Consider recording separate metrics for debug reports.
   if (!is_debug_report) {
-    base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
+    base::UmaHistogramEnumeration("Conversions.ReportStatus2", status);
 
     // Since net errors are always negative and HTTP errors are always positive,
     // it is fine to combine these in a single histogram.
@@ -162,7 +161,7 @@ void AttributionReportNetworkSender::OnReportSent(
                              internal_ok ? response_code : net_error);
 
     if (loader->GetNumRetries() > 0) {
-      base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
+      base::UmaHistogramBoolean("Conversions.ReportRetrySucceed2",
                                 status == Status::kOk);
     }
   }

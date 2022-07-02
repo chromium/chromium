@@ -144,8 +144,6 @@ class MockHostResolverProc : public HostResolverProc {
 
   MockHostResolverProc()
       : HostResolverProc(nullptr),
-        num_requests_waiting_(0),
-        num_slots_available_(0),
         requests_waiting_(&lock_),
         slots_available_(&lock_) {}
 
@@ -273,8 +271,8 @@ class MockHostResolverProc : public HostResolverProc {
   mutable base::Lock lock_;
   std::map<ResolveKey, AddressList> rules_;
   CaptureList capture_list_;
-  unsigned num_requests_waiting_;
-  unsigned num_slots_available_;
+  unsigned num_requests_waiting_ = 0;
+  unsigned num_slots_available_ = 0;
   base::ConditionVariable requests_waiting_;
   base::ConditionVariable slots_available_;
 };
@@ -358,11 +356,7 @@ class LookupAttemptHostResolverProc : public HostResolverProc {
                                 int total_attempts)
       : HostResolverProc(previous),
         attempt_number_to_resolve_(attempt_number_to_resolve),
-        current_attempt_number_(0),
         total_attempts_(total_attempts),
-        total_attempts_resolved_(0),
-        resolved_attempt_number_(0),
-        num_attempts_waiting_(0),
         all_done_(&lock_),
         blocked_attempt_signal_(&lock_) {}
 
@@ -458,11 +452,11 @@ class LookupAttemptHostResolverProc : public HostResolverProc {
 
  private:
   int attempt_number_to_resolve_;
-  int current_attempt_number_;  // Incremented whenever Resolve is called.
+  int current_attempt_number_ = 0;  // Incremented whenever Resolve is called.
   int total_attempts_;
-  int total_attempts_resolved_;
-  int resolved_attempt_number_;
-  int num_attempts_waiting_;
+  int total_attempts_resolved_ = 0;
+  int resolved_attempt_number_ = 0;
+  int num_attempts_waiting_ = 0;
 
   // All attempts wait for right attempt to be resolve.
   base::Lock lock_;
@@ -3809,7 +3803,7 @@ TEST_F(HostResolverManagerTest, MdnsListener_RootDomain) {
 DnsConfig CreateValidDnsConfig() {
   IPAddress dns_ip(192, 168, 1, 0);
   DnsConfig config;
-  config.nameservers.push_back(IPEndPoint(dns_ip, dns_protocol::kDefaultPort));
+  config.nameservers.emplace_back(dns_ip, dns_protocol::kDefaultPort);
   config.doh_config =
       *DnsOverHttpsConfig::FromString("https://dns.example.com/");
   config.secure_dns_mode = SecureDnsMode::kOff;
@@ -4189,8 +4183,7 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : HostResolverManagerTest(time_source),
         notifier_task_runner_(
-            base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        dns_client_(nullptr) {
+            base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {
     auto config_service = std::make_unique<TestDnsConfigService>();
     config_service_ = config_service.get();
     notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>(
@@ -4473,7 +4466,7 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
 
   // Owned by |resolver_|.
-  raw_ptr<MockDnsClient> dns_client_;
+  raw_ptr<MockDnsClient> dns_client_ = nullptr;
 };
 
 TEST_F(HostResolverManagerDnsTest, FlushCacheOnDnsConfigChange) {
@@ -8023,6 +8016,9 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const std::vector<IPEndPoint> nameservers = {
       CreateExpected("192.168.0.1", 92)};
   overrides.nameservers = nameservers;
+  overrides.dns_over_tls_active = true;
+  const std::string dns_over_tls_hostname = "dns.example.com";
+  overrides.dns_over_tls_hostname = dns_over_tls_hostname;
   const std::vector<std::string> search = {"str"};
   overrides.search = search;
   overrides.append_to_multi_label_name = false;
@@ -8053,6 +8049,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const DnsConfig* overridden_config = client_ptr->GetEffectiveConfig();
   ASSERT_TRUE(overridden_config);
   EXPECT_EQ(nameservers, overridden_config->nameservers);
+  EXPECT_TRUE(overridden_config->dns_over_tls_active);
+  EXPECT_EQ(dns_over_tls_hostname, overridden_config->dns_over_tls_hostname);
   EXPECT_EQ(search, overridden_config->search);
   EXPECT_FALSE(overridden_config->append_to_multi_label_name);
   EXPECT_EQ(ndots, overridden_config->ndots);

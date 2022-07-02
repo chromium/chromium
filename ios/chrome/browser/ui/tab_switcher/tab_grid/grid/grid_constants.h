@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 // Accessibility identifier prefix of a grid cell. To reference a specific cell,
-// concatenate |kGridCellIdentifierPrefix| with the index of the cell. For
+// concatenate `kGridCellIdentifierPrefix` with the index of the cell. For
 // example, [NSString stringWithFormat:@"%@%d", kGridCellIdentifierPrefix,
 // index].
 extern NSString* const kGridCellIdentifierPrefix;

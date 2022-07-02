@@ -694,9 +694,9 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     if (web_view_->GetWebContents()->IsCrashed())
       InitializeWebView();
 
-    immersive_revealed_lock_.reset(
+    immersive_revealed_lock_ =
         browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
 
     SetVisible(true);
     PreferredSizeChanged();
@@ -832,10 +832,6 @@ TabStripUILayout WebUITabStripContainerView::GetLayout() {
   tab_contents_size.Enlarge(0, -(max_bookmark_height - bookmark_bar_height));
 
   return TabStripUILayout::CalculateForWebViewportSize(tab_contents_size);
-}
-
-SkColor WebUITabStripContainerView::GetColor(int id) const {
-  return GetThemeProvider()->GetColor(id);
 }
 
 SkColor WebUITabStripContainerView::GetColorProviderColor(

@@ -416,7 +416,10 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
 }
 
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
-  return owner_web_contents()->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+  return owner_web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetSiteInstance()
+      ->GetSiteURL();
 }
 
 bool GuestViewBase::ShouldDestroyOnDetach() const {
@@ -554,7 +557,7 @@ double GuestViewBase::PhysicalPixelsToLogicalPixels(int physical_pixels) const {
 
 void GuestViewBase::DidStopLoading() {
   content::RenderViewHost* rvh =
-      web_contents()->GetMainFrame()->GetRenderViewHost();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
 
   if (IsPreferredSizeModeEnabled())
     rvh->EnablePreferredSizeMode();

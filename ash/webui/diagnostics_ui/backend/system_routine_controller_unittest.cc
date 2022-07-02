@@ -5,6 +5,7 @@
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
 
 #include "ash/system/diagnostics/routine_log.h"
+#include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,9 +17,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
@@ -198,6 +199,12 @@ class SystemRoutineControllerTest : public testing::Test {
             &run_loop, &result_count));
     run_loop.Run();
     return result_count == 1;
+  }
+
+  void CallSendRoutineResult(mojom::RoutineResultInfoPtr result_info) {
+    system_routine_controller_->SendRoutineResult(std::move(result_info));
+
+    task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -999,6 +1006,41 @@ TEST_F(SystemRoutineControllerTest, ResetReceiverOnDisconnect) {
   system_routine_controller_->BindInterface(
       remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(system_routine_controller_->ReceiverIsBound());
+}
+
+TEST_F(SystemRoutineControllerTest, SendRoutineResultDoesNotCrash) {
+  const int32_t expected_id = 1;
+  SetRunRoutineResponse(expected_id,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // SendRoutineResult does not crash and routine runner is not updated when
+  // called with nullptr.
+  EXPECT_NO_FATAL_FAILURE(CallSendRoutineResult(/*result_info=*/nullptr));
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // SendRoutineResult does not crash and routine runner is not updated when
+  // RoutineResultInfoPtr exists and |result| has not been configured.
+  EXPECT_NO_FATAL_FAILURE(
+      CallSendRoutineResult(mojom::RoutineResultInfo::New()));
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  mojom::RoutineResultInfoPtr null_result_info =
+      mojom::RoutineResultInfo::New();
+  null_result_info.reset();
+
+  // SendRoutineResult does not crash and routine runner is not updated when
+  // RoutineResultInfoPtr exists and has not been configured.
+  EXPECT_NO_FATAL_FAILURE(CallSendRoutineResult(std::move(null_result_info)));
+  EXPECT_TRUE(routine_runner->result.is_null());
 }
 
 }  // namespace diagnostics

@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-// Object that increments |counter| by 1 for its lifetime.
+// Object that increments `counter` by 1 for its lifetime.
 class ScopedIncrementer {
  public:
   explicit ScopedIncrementer(size_t* counter) : counter_(counter) {

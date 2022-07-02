@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -83,14 +84,14 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
-      base::FeatureList::IsEnabled(
-          features::kHelpAppSearchServiceIntegration) &&
-          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+      base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("HelpAppDiscoverTab", base::FeatureList::IsEnabled(
                                                features::kHelpAppDiscoverTab));
   source->AddBoolean(
       "HelpAppBackgroundPage",
       base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage));
+  source->AddBoolean("isCloudGamingDevice",
+                     chromeos::features::IsCloudGamingDeviceEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();

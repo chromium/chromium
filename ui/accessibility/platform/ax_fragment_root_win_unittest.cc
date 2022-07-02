@@ -420,10 +420,10 @@ TEST_F(AXFragmentRootTest, TestGetChildCount) {
   InitFragmentRoot();
 
   AXPlatformNodeDelegate* fragment_root = ax_fragment_root_.get();
-  EXPECT_EQ(1, fragment_root->GetChildCount());
+  EXPECT_EQ(1u, fragment_root->GetChildCount());
 
   test_fragment_root_delegate_->child_ = nullptr;
-  EXPECT_EQ(0, fragment_root->GetChildCount());
+  EXPECT_EQ(0u, fragment_root->GetChildCount());
 }
 
 TEST_F(AXFragmentRootTest, TestChildAtIndex) {

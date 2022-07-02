@@ -15,16 +15,16 @@ TEST(HistoryClustersDBTasksTest, BeginTimeCalculation) {
     base::Time::Exploded end_time_exploded;
     base::Time::Exploded expected_begin_time_exploded;
   } test_data[] = {
-      // Afternoon times yield a 4AM same day `begin_time`.
+      // Times after 4PM yield a 4AM same day `begin_time`.
       // 2013-10-11 at 5:30PM and 15 seconds and 400 milliseconds.
       {
           {2013, 10, 6, 11, 17, 30, 15, 400},
           {2013, 10, 6, 11, 4, 0, 0, 0},
       },
-      // Early afternoon times such as 2:00PM also yield 4AM the same day.
+      // Afternoon times before 4PM such as 2:00PM yield 4AM the day before.
       {
           {2013, 10, 6, 11, 14, 0, 0, 0},
-          {2013, 10, 6, 11, 4, 0, 0, 0},
+          {2013, 10, 5, 10, 4, 0, 0, 0},
       },
       // Morning times like 10:15AM yield 4AM the day before.
       {

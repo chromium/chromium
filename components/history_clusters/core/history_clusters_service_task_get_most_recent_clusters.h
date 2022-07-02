@@ -42,6 +42,8 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // Invoked after `Start()` asyncly fetches annotated visits. Will asyncly
   // request clusters from `ClusteringBackend`.
   void OnGotAnnotatedVisitsToCluster(
+      // Unused because clusters aren't persisted in this flow.
+      std::vector<int64_t> old_clusters_unused,
       std::vector<history::AnnotatedVisit> annotated_visits,
       QueryClustersContinuationParams continuation_params);
 

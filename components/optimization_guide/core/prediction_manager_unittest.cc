@@ -173,7 +173,6 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
 
   bool FetchOptimizationGuideServiceModels(
       const std::vector<proto::ModelInfo>& models_request_info,
-      const std::vector<proto::FieldTrial>& active_field_trials,
       proto::RequestContext request_context,
       const std::string& locale,
       ModelsFetchedCallback models_fetched_callback) override {

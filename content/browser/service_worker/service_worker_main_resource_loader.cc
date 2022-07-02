@@ -194,22 +194,13 @@ void ServiceWorkerMainResourceLoader::CommitResponseHeaders() {
       "response_code", response_head_->headers->response_code(), "status_text",
       response_head_->headers->GetStatusText());
   TransitionToStatus(Status::kSentHeader);
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
-    return;  // Will be sent in CommitResponseBody.
-
-  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                        mojo::ScopedDataPipeConsumerHandle());
 }
 
 void ServiceWorkerMainResourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   TransitionToStatus(Status::kSentBody);
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                          std::move(response_body));
-  } else {
-    url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
-  }
+  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                        std::move(response_body));
 }
 
 void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {

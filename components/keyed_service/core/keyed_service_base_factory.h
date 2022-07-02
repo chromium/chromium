@@ -48,6 +48,9 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // factories with different type of context, or dependencies are safe to have.
   Type type() { return type_; }
 
+  // Returns whether the service is created for the given context.
+  virtual bool IsServiceCreated(void* context) const = 0;
+
  protected:
   KeyedServiceBaseFactory(const char* service_name,
                           DependencyManager* manager,

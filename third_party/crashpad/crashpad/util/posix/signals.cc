@@ -147,6 +147,25 @@ bool Signals::InstallHandler(int sig,
     PLOG(ERROR) << "sigaction " << sig;
     return false;
   }
+
+// Sanitizers can prevent the installation of signal handlers, but sigaction
+// does not report this as failure. Attempt to detect this by checking the
+// currently installed signal handler.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||    \
+    defined(UNDEFINED_SANITIZER)
+  struct sigaction installed_handler;
+  CHECK_EQ(sigaction(sig, nullptr, &installed_handler), 0);
+  // If the installed handler does not point to the just installed handler, then
+  // the allow_user_segv_handler sanitizer flag is (probably) disabled.
+  if (installed_handler.sa_sigaction != handler) {
+    LOG(WARNING)
+        << "sanitizers are preventing signal handler installation (sig " << sig
+        << ")";
+    return false;
+  }
+#endif
+
   return true;
 }
 

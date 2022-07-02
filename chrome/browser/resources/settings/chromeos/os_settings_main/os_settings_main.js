@@ -6,99 +6,118 @@
  * @fileoverview
  * 'os-settings-main' displays the selected settings page.
  */
-import '//resources/cr_components/managed_footnote/managed_footnote.js';
-import '//resources/cr_elements/hidden_style_css.m.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/js/search_highlight_utils.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/js/search_highlight_utils.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_about_page/os_about_page.js';
 import '../os_settings_page/os_settings_page.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
+import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 /**
  * @typedef {{about: boolean, settings: boolean}}
  */
 let MainPageVisibility;
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-main',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const OsSettingsMainElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement);
 
-  behaviors: [RouteObserverBehavior],
+/** @polymer */
+class OsSettingsMainElement extends OsSettingsMainElementBase {
+  static get is() {
+    return 'os-settings-main';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    advancedToggleExpanded: {
-      type: Boolean,
-      notify: true,
-    },
-
-    /** @private */
-    overscroll_: {
-      type: Number,
-      observer: 'overscrollChanged_',
-    },
-
-    /**
-     * Controls which main pages are displayed via dom-ifs, based on the current
-     * route.
-     * @private {!MainPageVisibility}
-     */
-    showPages_: {
-      type: Object,
-      value() {
-        return {about: false, settings: false};
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    showingSubpage_: Boolean,
+      advancedToggleExpanded: {
+        type: Boolean,
+        notify: true,
+      },
 
-    toolbarSpinnerActive: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      /** @private */
+      overscroll_: {
+        type: Number,
+        observer: 'overscrollChanged_',
+      },
 
-    /**
-     * Dictionary defining page visibility.
-     * @type {!OSPageVisibility}
-     */
-    pageVisibility: Object,
+      /**
+       * Controls which main pages are displayed via dom-ifs, based on the
+       * current route.
+       * @private {!MainPageVisibility}
+       */
+      showPages_: {
+        type: Object,
+        value() {
+          return {about: false, settings: false};
+        },
+      },
 
-    showAndroidApps: Boolean,
+      /** @private */
+      showingSubpage_: Boolean,
 
-    showArcvmManageUsb: Boolean,
+      toolbarSpinnerActive: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-    showCrostini: Boolean,
+      /**
+       * Dictionary defining page visibility.
+       * @type {!OSPageVisibility}
+       */
+      pageVisibility: Object,
 
-    showReset: Boolean,
+      showAndroidApps: Boolean,
 
-    showStartup: Boolean,
+      showArcvmManageUsb: Boolean,
 
-    showKerberosSection: Boolean,
+      showCrostini: Boolean,
 
-    havePlayStoreApp: Boolean,
-  },
+      showReset: Boolean,
+
+      showStartup: Boolean,
+
+      showKerberosSection: Boolean,
+
+      havePlayStoreApp: Boolean,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?function(): void} */
+    this.boundScroll_ = null;
+  }
 
   /** @private */
   overscrollChanged_() {
@@ -115,7 +134,7 @@ Polymer({
       this.offsetParent.addEventListener('scroll', this.boundScroll_);
       window.addEventListener('resize', this.boundScroll_);
     }
-  },
+  }
 
   /**
    * Sets the overscroll padding. Never forces a scroll, i.e., always leaves
@@ -136,7 +155,7 @@ Polymer({
         overscroll.scrollHeight - (overscrollBottom - visibleBottom);
     this.overscroll_ =
         Math.max(opt_minHeight || 0, Math.ceil(visibleOverscroll));
-  },
+  }
 
   /**
    * Updates the hidden state of the about and settings pages based on the
@@ -154,17 +173,17 @@ Polymer({
                                      loadTimeData.getString('aboutPageTitle')) :
                                  loadTimeData.getString('settings');
     }
-  },
+  }
 
   /** @private */
   onShowingSubpage_() {
     this.showingSubpage_ = true;
-  },
+  }
 
   /** @private */
   onShowingMainPage_() {
     this.showingSubpage_ = false;
-  },
+  }
 
   /**
    * A handler for the 'showing-section' event fired from os-settings-page,
@@ -184,7 +203,7 @@ Polymer({
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
     section.focus();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -192,5 +211,7 @@ Polymer({
    */
   showManagedHeader_() {
     return !this.showingSubpage_ && !this.showPages_.about;
-  },
-});
+  }
+}
+
+customElements.define(OsSettingsMainElement.is, OsSettingsMainElement);

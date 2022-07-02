@@ -513,12 +513,94 @@ TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
   // decimal-encoded number (between 0 and 31)
   EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.6.L93.B0", &profile, &level_idc));
   EXPECT_TRUE(ParseHEVCCodecId("hvc1.31.6.L93.B0", &profile, &level_idc));
+  // Spec A.3.2
+  // When general_profile_compatibility_flag[1] is equal to 1,
+  // general_profile_compatibility_flag[2] should be equal to 1 as well.
   EXPECT_TRUE(ParseHEVCCodecId("hvc1.1.6.L93.B0", &profile, &level_idc));
   EXPECT_EQ(profile, HEVCPROFILE_MAIN);
-  EXPECT_TRUE(ParseHEVCCodecId("hvc1.2.2.L93.B0", &profile, &level_idc));
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.1.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.6.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN);
+  // Spec A.3.3
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.2.4.L93.B0", &profile, &level_idc));
   EXPECT_EQ(profile, HEVCPROFILE_MAIN10);
-  EXPECT_TRUE(ParseHEVCCodecId("hvc1.3.4.L93.B0", &profile, &level_idc));
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.2.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN10);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.4.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN10);
+  // Spec A.3.4
+  // When general_profile_compatibility_flag[3] is equal to 1,
+  // general_profile_compatibility_flag[1] and
+  // general_profile_compatibility_flag[2] should be equal to 1 as well.
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.3.E.L93.B0", &profile, &level_idc));
   EXPECT_EQ(profile, HEVCPROFILE_MAIN_STILL_PICTURE);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.E.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN_STILL_PICTURE);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.3.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MAIN_STILL_PICTURE);
+  // Spec A.3.5
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.4.10.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_REXT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.4.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_REXT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.10.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_REXT);
+  // Spec A.3.6
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.5.20.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.5.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.20.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT);
+  // Spec G.11.1.1
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.6.40.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MULTIVIEW_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.6.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MULTIVIEW_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.40.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_MULTIVIEW_MAIN);
+  // Spec H.11.1.1
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.7.80.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.7.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.80.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_MAIN);
+  // Spec I.11.1.1
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.8.100.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_3D_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.8.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_3D_MAIN);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.100.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_3D_MAIN);
+  // Spec A.3.7
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.9.200.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCREEN_EXTENDED);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.9.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCREEN_EXTENDED);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.200.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCREEN_EXTENDED);
+  // Spec H.11.1.2
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.10.400.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_REXT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.10.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_REXT);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.400.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_SCALABLE_REXT);
+  // Spec A.3.8
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.11.800.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.11.0.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED);
+  EXPECT_TRUE(ParseHEVCCodecId("hvc1.0.800.L93.B0", &profile, &level_idc));
+  EXPECT_EQ(profile, HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED);
+
+  // Unmatched general_profile_idc and general_profile_compatibility_flags
+  EXPECT_FALSE(ParseHEVCCodecId("hvc1.12.1000.L93.B0", &profile, &level_idc));
+  EXPECT_FALSE(ParseHEVCCodecId("hvc1.12.0.L93.B0", &profile, &level_idc));
+  EXPECT_FALSE(ParseHEVCCodecId("hvc1.0.1000.L93.B0", &profile, &level_idc));
+
   EXPECT_FALSE(ParseHEVCCodecId("hvc1.-1.6.L93.B0", &profile, &level_idc));
   EXPECT_FALSE(ParseHEVCCodecId("hvc1.32.6.L93.B0", &profile, &level_idc));
   EXPECT_FALSE(ParseHEVCCodecId("hvc1.999.6.L93.B0", &profile, &level_idc));

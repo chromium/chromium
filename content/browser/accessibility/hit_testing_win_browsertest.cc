@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingWinBrowserTest, AccHitTest) {
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectA");
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingWinBrowserTest,
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/simple_rectangles.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectA");
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingWinBrowserTest,
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/hit_testing/text_ranges.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectA");

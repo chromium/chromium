@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/path_service.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
@@ -19,7 +17,7 @@
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
-#include "components/component_updater/component_updater_paths.h"
+#include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

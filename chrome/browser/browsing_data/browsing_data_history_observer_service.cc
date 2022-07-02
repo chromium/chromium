@@ -137,7 +137,10 @@ void DeleteStoragePartitionDataWithFilter(
                      : base::NullCallback();
 
   const uint32_t removal_mask =
-      content::StoragePartition::REMOVE_DATA_MASK_CONVERSIONS;
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED |
+      content::StoragePartition::
+          REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL;
   const uint32_t quota_removal_mask = 0;
   storage_partition->ClearData(
       removal_mask, quota_removal_mask, std::move(matcher_function),

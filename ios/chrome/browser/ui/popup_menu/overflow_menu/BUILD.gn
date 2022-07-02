@@ -4,6 +4,14 @@
 
 import("//build/config/ios/swift_source_set.gni")
 
+source_set("overflow_menu_constants") {
+  sources = [
+    "overflow_menu_constants.cc",
+    "overflow_menu_constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("overflow_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -12,6 +20,7 @@ source_set("overflow_menu") {
   ]
   deps = [
     ":feature_flags",
+    ":overflow_menu_constants",
     ":overflow_menu_swift",
     "resources:overflow_menu_action_bookmark",
     "resources:overflow_menu_action_clear_browsing_data",
@@ -33,14 +42,22 @@ source_set("overflow_menu") {
     "resources:overflow_menu_action_translate",
     "resources:overflow_menu_action_unfollow",
     "resources:overflow_menu_destination_bookmarks",
+    "resources:overflow_menu_destination_bookmarks_simple",
     "resources:overflow_menu_destination_downloads",
+    "resources:overflow_menu_destination_downloads_simple",
     "resources:overflow_menu_destination_history",
+    "resources:overflow_menu_destination_history_simple",
     "resources:overflow_menu_destination_passwords",
     "resources:overflow_menu_destination_passwords_rebrand",
+    "resources:overflow_menu_destination_passwords_simple",
     "resources:overflow_menu_destination_reading_list",
+    "resources:overflow_menu_destination_reading_list_simple",
     "resources:overflow_menu_destination_recent_tabs",
+    "resources:overflow_menu_destination_recent_tabs_simple",
     "resources:overflow_menu_destination_settings",
+    "resources:overflow_menu_destination_settings_simple",
     "resources:overflow_menu_destination_site_info",
+    "resources:overflow_menu_destination_site_info_simple",
     "resources:overflow_menu_footer_managed",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
@@ -52,6 +69,7 @@ source_set("overflow_menu") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow",
     "//ios/chrome/browser/follow:enums",
@@ -71,8 +89,11 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/icons:action_icons",
     "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",
+    "//ios/chrome/browser/ui/popup_menu/public:features",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web/font_size",
@@ -136,7 +157,6 @@ source_set("feature_flags") {
 
 source_set("unit_tests") {
   testonly = true
-
   sources = [ "overflow_menu_mediator_unittest.mm" ]
   deps = [
     ":overflow_menu",
@@ -152,6 +172,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/translate/core/browser",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
@@ -159,7 +180,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/passwords:store_factory",
-    "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",

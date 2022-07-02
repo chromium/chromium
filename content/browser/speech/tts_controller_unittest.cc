@@ -77,6 +77,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
       content::BrowserContext* browser_context,
       const GURL& source_url,
       std::vector<content::VoiceData>* out_voices) override {}
+  void RefreshVoices() override {}
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }

@@ -69,9 +69,7 @@ bool ShouldShowQuickAnswers() {
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl()
     : quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)),
-      quick_answers_access_token_fetcher_(
-          std::make_unique<QuickAnswersAccessTokenFetcher>()) {
+          std::make_unique<QuickAnswersUiController>(this)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   quick_answers_state_ = std::make_unique<QuickAnswersStateAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -79,7 +77,10 @@ QuickAnswersControllerImpl::QuickAnswersControllerImpl()
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
+QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
+  quick_answers_client_.reset();
+  quick_answers_state_.reset();
+}
 
 void QuickAnswersControllerImpl::SetClient(
     std::unique_ptr<QuickAnswersClient> client) {
@@ -227,11 +228,6 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
   title_ = processed_request.preprocessed_output.intent_info.intent_text;
 
   HandleQuickAnswerRequest(processed_request);
-}
-
-void QuickAnswersControllerImpl::RequestAccessToken(
-    AccessTokenCallback callback) {
-  quick_answers_access_token_fetcher_->RequestAccessToken(std::move(callback));
 }
 
 void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {

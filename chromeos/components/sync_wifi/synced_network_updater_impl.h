@@ -12,7 +12,7 @@
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker.h"
 #include "chromeos/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/components/sync_wifi/synced_network_updater.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -27,7 +27,7 @@ class TimerFactory;
 // using mojom::CrosNetworkConfig.
 class SyncedNetworkUpdaterImpl
     : public SyncedNetworkUpdater,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   // |cros_network_config| must outlive this class.
   SyncedNetworkUpdaterImpl(
@@ -46,17 +46,6 @@ class SyncedNetworkUpdaterImpl
 
   // CrosNetworkConfigObserver:
   void OnNetworkStateListChanged() override;
-  void OnActiveNetworksChanged(
-      std::vector<
-          network_config::mojom::NetworkStatePropertiesPtr> /* networks */)
-      override {}
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
-      override {}
-  void OnDeviceStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
  private:
   void StartAddOrUpdateOperation(

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/bind.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -24,18 +25,17 @@ class FeaturePodControllerBase;
 // A toggle button with an icon used by feature pods and in other places.
 class ASH_EXPORT FeaturePodIconButton : public IconButton {
  public:
+  METADATA_HEADER(FeaturePodIconButton);
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
   FeaturePodIconButton(const FeaturePodIconButton&) = delete;
   FeaturePodIconButton& operator=(const FeaturePodIconButton&) = delete;
   ~FeaturePodIconButton() override;
-
-  // views::ImageButton:
-  const char* GetClassName() const override;
 };
 
 // Button internally used in FeaturePodButton. Should not be used directly.
 class ASH_EXPORT FeaturePodLabelButton : public views::Button {
  public:
+  METADATA_HEADER(FeaturePodLabelButton);
   explicit FeaturePodLabelButton(PressedCallback callback);
 
   FeaturePodLabelButton(const FeaturePodLabelButton&) = delete;
@@ -59,7 +59,6 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   // views::Button:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
  private:
@@ -86,8 +85,9 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
 // See the comment in FeaturePodsView for detail.
 class ASH_EXPORT FeaturePodButton : public views::View {
  public:
-  FeaturePodButton(FeaturePodControllerBase* controller,
-                   bool is_togglable = true);
+  METADATA_HEADER(FeaturePodButton);
+  explicit FeaturePodButton(FeaturePodControllerBase* controller,
+                            bool is_togglable = true);
 
   FeaturePodButton(const FeaturePodButton&) = delete;
   FeaturePodButton& operator=(const FeaturePodButton&) = delete;
@@ -146,7 +146,6 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   void SetVisible(bool visible) override;
   bool HasFocus() const override;
   void RequestFocus() override;
-  const char* GetClassName() const override;
 
   bool visible_preferred() const { return visible_preferred_; }
 

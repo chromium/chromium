@@ -137,7 +137,7 @@ class NET_EXPORT_PRIVATE SocketPosix
 
   // Non-null when a Read() is in progress.
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
   CompletionOnceCallback read_callback_;
 
   // Non-null when a ReadIfReady() is in progress.
@@ -145,13 +145,13 @@ class NET_EXPORT_PRIVATE SocketPosix
 
   base::MessagePumpForIO::FdWatchController write_socket_watcher_;
   scoped_refptr<IOBuffer> write_buf_;
-  int write_buf_len_;
+  int write_buf_len_ = 0;
   // External callback; called when write or connect is complete.
   CompletionOnceCallback write_callback_;
 
   // A connect operation is pending. In this case, |write_callback_| needs to be
   // called when connect is complete.
-  bool waiting_connect_;
+  bool waiting_connect_ = false;
 
   std::unique_ptr<SockaddrStorage> peer_address_;
 

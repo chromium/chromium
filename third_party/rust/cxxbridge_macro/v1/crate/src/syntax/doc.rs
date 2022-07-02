@@ -19,10 +19,12 @@ impl Doc {
         self.fragments.push(lit);
     }
 
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub fn is_empty(&self) -> bool {
         self.fragments.is_empty()
     }
 
+    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub fn to_string(&self) -> String {
         let mut doc = String::new();
         for lit in &self.fragments {

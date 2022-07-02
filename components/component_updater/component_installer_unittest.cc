@@ -75,12 +75,14 @@ class MockUpdateClient : public UpdateClient {
  public:
   MockUpdateClient() = default;
 
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               CrxStateChangeCallback crx_state_change_callback,
-               Callback callback) override {
+  base::RepeatingClosure Install(
+      const std::string& id,
+      CrxDataCallback crx_data_callback,
+      CrxStateChangeCallback crx_state_change_callback,
+      Callback callback) override {
     DoInstall(id, std::move(crx_data_callback));
     std::move(callback).Run(update_client::Error::NONE);
+    return base::DoNothing();
   }
 
   void Update(const std::vector<std::string>& ids,

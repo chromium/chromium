@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
@@ -29,6 +30,26 @@ const char* const kRemovedPrefixes[] = {"m.", "mobile.", "www."};
 constexpr char kPlayStoreAppPrefix[] =
     "https://play.google.com/store/apps/details?id=";
 
+std::string GetShownOrigin(const FacetURI& facet_uri,
+                           const std::string& app_display_name,
+                           const GURL& url) {
+  if (facet_uri.IsValidAndroidFacetURI()) {
+    return app_display_name.empty()
+               ? SplitByDotAndReverse(facet_uri.android_package_name())
+               : app_display_name;
+  } else {
+    return password_manager::GetShownOrigin(url::Origin::Create(url));
+  }
+}
+
+GURL GetShownURL(const FacetURI& facet_uri, const GURL& url) {
+  if (facet_uri.IsValidAndroidFacetURI()) {
+    return GURL(kPlayStoreAppPrefix + facet_uri.android_package_name());
+  } else {
+    return url;
+  }
+}
+
 }  // namespace
 
 std::string SplitByDotAndReverse(base::StringPiece host) {
@@ -40,22 +61,23 @@ std::string SplitByDotAndReverse(base::StringPiece host) {
 
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
     const PasswordForm& password_form) {
-  std::string shown_origin;
-  GURL link_url;
-
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(password_form.signon_realm);
-  if (facet_uri.IsValidAndroidFacetURI()) {
-    shown_origin = password_form.app_display_name.empty()
-                       ? SplitByDotAndReverse(facet_uri.android_package_name())
-                       : password_form.app_display_name;
-    link_url = GURL(kPlayStoreAppPrefix + facet_uri.android_package_name());
-  } else {
-    shown_origin = GetShownOrigin(url::Origin::Create(password_form.url));
-    link_url = password_form.url;
-  }
+  return {GetShownOrigin(facet_uri, password_form.app_display_name,
+                         password_form.url),
+          GetShownURL(facet_uri, password_form.url)};
+}
 
-  return {std::move(shown_origin), std::move(link_url)};
+std::string GetShownOrigin(const CredentialUIEntry& credential) {
+  FacetURI facet_uri =
+      FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
+  return GetShownOrigin(facet_uri, credential.app_display_name, credential.url);
+}
+
+GURL GetShownUrl(const CredentialUIEntry& credential) {
+  FacetURI facet_uri =
+      FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
+  return GetShownURL(facet_uri, credential.url);
 }
 
 std::string GetShownOrigin(const url::Origin& origin) {
@@ -107,6 +129,23 @@ void UpdatePasswordFormUsernameAndPassword(
   // The maximum possible value is defined by OR-ing these values.
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.EditsInSaveBubble",
                             username_edited + 2 * password_changed, 4);
+}
+
+std::vector<std::u16string> GetUsernamesForRealm(
+    const std::vector<password_manager::CredentialUIEntry>& credentials,
+    const std::string& signon_realm,
+    bool is_using_account_store) {
+  std::vector<std::u16string> usernames;
+  PasswordForm::Store store = is_using_account_store
+                                  ? PasswordForm::Store::kAccountStore
+                                  : PasswordForm::Store::kProfileStore;
+  for (const auto& credential : credentials) {
+    if (credential.signon_realm == signon_realm &&
+        credential.stored_in.contains(store)) {
+      usernames.push_back(credential.username);
+    }
+  }
+  return usernames;
 }
 
 }  // namespace password_manager

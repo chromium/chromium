@@ -32,6 +32,8 @@
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,7 +81,10 @@ class AppServiceProxyBase : public KeyedService,
   AppServiceProxyBase& operator=(const AppServiceProxyBase&) = delete;
   ~AppServiceProxyBase() override;
 
-  void ReInitializeForTesting(Profile* profile);
+  void ReInitializeForTesting(
+      Profile* profile,
+      base::OnceClosure read_completed_for_testing = base::OnceClosure(),
+      base::OnceClosure write_completed_for_testing = base::OnceClosure());
 
   Profile* profile() const { return profile_; }
 
@@ -89,6 +94,9 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
+  // TODO(crbug.com/1333422): Remove this PreferredAppsImpl() function when
+  // proxy()->AddPreferredApp() can be called directly to add preferred apps.
+  apps::PreferredAppsImpl* PreferredAppsImpl();
   apps::PreferredAppsListHandle& PreferredAppsList();
 
   // Registers `publisher` with the App Service as exclusively publishing apps
@@ -121,17 +129,6 @@ class AppServiceProxyBase : public KeyedService,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
-
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
 
   // Launches the app for the given |app_id|. |event_flags| provides additional
   // context about the action which launches the app (e.g. a middle click
@@ -255,6 +252,9 @@ class AppServiceProxyBase : public KeyedService,
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);
   // Adds a preferred app for |intent|.
+  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   void AddPreferredApp(const std::string& app_id,
                        const apps::mojom::IntentPtr& intent);
 
@@ -263,6 +263,18 @@ class AppServiceProxyBase : public KeyedService,
   // those links will have all their supported links unset, as if
   // RemoveSupportedLinksPreference was called for that app.
   void SetSupportedLinksPreference(const std::string& app_id);
+
+  // Set |app_id| as preferred app for all its supported link filters. Supported
+  // link filters, which have the http/https scheme and at least one host, are
+  // always enabled/disabled as a group. |all_link_filters| should contain all
+  // of the apps' Supported Link intent filters.
+  // Any apps with overlapping preferred app preferences will have all their
+  // supported link filters unset, as if RemoveSupportedLinksPreference was
+  // called for that app.
+  // TODO(crbug.com/1265315): Remove this method to use
+  // SetSupportedLinksPreference(std::string).
+  void SetSupportedLinksPreference(const std::string& app_id,
+                                   IntentFilters all_link_filters);
 
   // Removes all supported link filters from the preferred app list for
   // |app_id|.
@@ -335,16 +347,6 @@ class AppServiceProxyBase : public KeyedService,
         bool allow_placeholder_icon,
         apps::LoadIconCallback callback) override;
 
-    // TODO(crbug.com/1253250): Will be removed soon.
-    std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
-        const std::string& app_id,
-        apps::mojom::IconKeyPtr icon_key,
-        apps::mojom::IconType icon_type,
-        int32_t size_hint_in_dip,
-        bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override;
-
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxyBase
     // field.
     raw_ptr<AppServiceProxyBase> host_;
@@ -352,7 +354,7 @@ class AppServiceProxyBase : public KeyedService,
     raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
   };
 
-  bool IsValidProfile();
+  virtual bool IsValidProfile();
 
   // Called in AppServiceProxyFactory::BuildServiceInstanceFor immediately
   // following the creation of AppServiceProxy. Use this method to perform any
@@ -380,7 +382,10 @@ class AppServiceProxyBase : public KeyedService,
   void InitializePreferredApps(
       std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override;
 
-  apps::mojom::IntentFilterPtr FindBestMatchingFilter(
+  IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  apps::mojom::IntentFilterPtr FindBestMatchingMojomFilter(
       const apps::mojom::IntentPtr& intent);
 
   virtual void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source);
@@ -419,7 +424,7 @@ class AppServiceProxyBase : public KeyedService,
   IconCoalescer icon_coalescer_;
   IconCache outer_icon_loader_;
 
-  std::unique_ptr<PreferredAppsImpl> preferred_apps_impl_;
+  std::unique_ptr<apps::PreferredAppsImpl> preferred_apps_impl_;
   apps::PreferredAppsList preferred_apps_list_;
 
   raw_ptr<Profile> profile_;

@@ -197,6 +197,9 @@ void TabStripModelObserver::OnTabStripModelChanged(
 
 void TabStripModelObserver::OnTabWillBeAdded() {}
 
+void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
+                                               int index) {}
+
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,

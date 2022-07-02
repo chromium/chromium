@@ -92,9 +92,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::
                        kCSSSelectorInternalMediaControlsOverlayCastButton);
-    case WebFeature::kCustomCursorIntersectsViewport:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCustomCursorIntersectsViewport);
     case WebFeature::kDeprecationExample:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kDeprecationExample);
@@ -134,9 +131,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kLocalCSSFileExtensionRejected:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kLocalCSSFileExtensionRejected);
-    case WebFeature::kMediaElementSourceOnOfflineContext:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kMediaElementAudioSourceNode);
     case WebFeature::kMediaSourceAbortRemove:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kMediaSourceAbortRemove);
@@ -159,12 +153,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kObsoleteWebrtcTlsVersion:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kObsoleteWebRtcCipherSuite);
-    case WebFeature::kPaymentRequestBasicCard:
+    case WebFeature::kOpenWebDatabaseInsecureContext:
       return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPaymentRequestBasicCard);
-    case WebFeature::kPaymentRequestShowWithoutGesture:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPaymentRequestShowWithoutGesture);
+          feature, DeprecationIssueType::kOpenWebDatabaseInsecureContext);
     case WebFeature::kPictureSourceSrc:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPictureSourceSrc);
@@ -221,10 +212,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kRtcpMuxPolicyNegotiate:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRtcpMuxPolicyNegotiate);
-    case WebFeature::kRTCConstraintEnableRtpDataChannelsFalse:
-    case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRTPDataChannel);
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return DeprecationInfo::WithTranslation(
           feature,
@@ -248,6 +235,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kXRSupportsSession:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kXRSupportsSession);
+    case WebFeature::kIdentityInCanMakePaymentEvent:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kIdentityInCanMakePaymentEvent);
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }

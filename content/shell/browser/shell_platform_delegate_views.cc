@@ -37,7 +37,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -305,7 +304,7 @@ class ShellView : public views::BoxLayoutView,
 
   // Contents view contains the web contents view
   raw_ptr<views::View> contents_view_ = nullptr;
-  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<views::WebView, DanglingUntriaged> web_view_ = nullptr;
 };
 
 BEGIN_METADATA(ShellView, views::View)
@@ -332,8 +331,9 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
       std::make_unique<wm::WMTestHelper>(default_window_size);
 #else
   platform_->wm_state = std::make_unique<wm::WMState>();
-  CHECK(!display::Screen::GetScreen());
-  platform_->screen = views::CreateDesktopScreen();
+  // FakeScreen tests create their own screen.
+  if (!display::Screen::HasScreen())
+    platform_->screen = views::CreateDesktopScreen();
 #endif
 
   platform_->views_delegate =

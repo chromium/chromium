@@ -70,8 +70,8 @@ class CallbackRegistry<void(Args...)> {
   void Notify(Args&&... args) {
     DVLOG(1) << __func__;
     base::AutoLock lock(lock_);
-    for (auto const& entry : callbacks_)
-      entry.second.Run(std::forward<Args>(args)...);
+    for (auto const& [key_id, callback] : callbacks_)
+      callback.Run(std::forward<Args>(args)...);
   }
 
  private:

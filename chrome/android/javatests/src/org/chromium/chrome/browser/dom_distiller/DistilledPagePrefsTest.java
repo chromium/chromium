@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.SmallTest;
+
+import com.google.common.util.concurrent.AtomicDouble;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -24,9 +24,13 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
+
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Test class for {@link DistilledPagePrefs}.
@@ -40,6 +44,9 @@ public class DistilledPagePrefsTest {
     private DistilledPagePrefs mDistilledPagePrefs;
 
     private static final double EPSILON = 1e-5;
+
+    private static final TimeUnit SEMAPHORE_TIMEOUT_UNIT = TimeUnit.SECONDS;
+    private static final long SEMAPHORE_TIMEOUT_VALUE = 5;
 
     @Before
     public void setUp() {
@@ -82,14 +89,13 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testSingleObserverTheme() throws InterruptedException {
         TestingObserver testObserver = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserver);
+        addObserver(testObserver);
 
         Assert.assertEquals(Theme.LIGHT, testObserver.getTheme());
         setTheme(Theme.DARK);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserver's theme has been updated,
-        Assert.assertEquals(Theme.DARK, testObserver.getTheme());
-        mDistilledPagePrefs.removeObserver(testObserver);
+        Assert.assertEquals(Theme.DARK, testObserver.getThemeAfterWaiting());
+        removeObserver(testObserver);
     }
 
     @Test
@@ -97,22 +103,24 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testMultipleObserversTheme() throws InterruptedException {
         TestingObserver testObserverOne = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverOne);
+        addObserver(testObserverOne);
         TestingObserver testObserverTwo = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverTwo);
+        addObserver(testObserverTwo);
 
         setTheme(Theme.SEPIA);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        Assert.assertEquals(Theme.SEPIA, testObserverOne.getTheme());
-        Assert.assertEquals(Theme.SEPIA, testObserverTwo.getTheme());
-        mDistilledPagePrefs.removeObserver(testObserverOne);
+        Assert.assertEquals(Theme.SEPIA, testObserverOne.getThemeAfterWaiting());
+        Assert.assertEquals(Theme.SEPIA, testObserverTwo.getThemeAfterWaiting());
+        removeObserver(testObserverOne);
 
         setTheme(Theme.DARK);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserverOne's theme is not changed but testObserverTwo's is.
+        Assert.assertEquals(Theme.DARK, testObserverTwo.getThemeAfterWaiting());
+        // There is no simple way to safely wait for something not to happen unless we force a timed
+        // wait, which would slow down test runs. Since testObserverTwo has been invoked, we
+        // incorrectly assume that testObserverOne would have been as well to keep the test runtime
+        // short.
         Assert.assertEquals(Theme.SEPIA, testObserverOne.getTheme());
-        Assert.assertEquals(Theme.DARK, testObserverTwo.getTheme());
-        mDistilledPagePrefs.removeObserver(testObserverTwo);
+        removeObserver(testObserverTwo);
     }
 
     @Test
@@ -132,14 +140,13 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testSingleObserverFontFamily() throws InterruptedException {
         TestingObserver testObserver = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserver);
+        addObserver(testObserver);
 
         Assert.assertEquals(FontFamily.SANS_SERIF, testObserver.getFontFamily());
         setFontFamily(FontFamily.SERIF);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserver's font family has been updated.
-        Assert.assertEquals(FontFamily.SERIF, testObserver.getFontFamily());
-        mDistilledPagePrefs.removeObserver(testObserver);
+        Assert.assertEquals(FontFamily.SERIF, testObserver.getFontFamilyAfterWaiting());
+        removeObserver(testObserver);
     }
 
     @Test
@@ -147,22 +154,24 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testMultipleObserversFontFamily() throws InterruptedException {
         TestingObserver testObserverOne = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverOne);
+        addObserver(testObserverOne);
         TestingObserver testObserverTwo = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverTwo);
+        addObserver(testObserverTwo);
 
         setFontFamily(FontFamily.MONOSPACE);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        Assert.assertEquals(FontFamily.MONOSPACE, testObserverOne.getFontFamily());
-        Assert.assertEquals(FontFamily.MONOSPACE, testObserverTwo.getFontFamily());
-        mDistilledPagePrefs.removeObserver(testObserverOne);
+        Assert.assertEquals(FontFamily.MONOSPACE, testObserverOne.getFontFamilyAfterWaiting());
+        Assert.assertEquals(FontFamily.MONOSPACE, testObserverTwo.getFontFamilyAfterWaiting());
+        removeObserver(testObserverOne);
 
         setFontFamily(FontFamily.SERIF);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserverOne's font family is not changed but testObserverTwo's is.
+        Assert.assertEquals(FontFamily.SERIF, testObserverTwo.getFontFamilyAfterWaiting());
+        // There is no simple way to safely wait for something not to happen unless we force a timed
+        // wait, which would slow down test runs. Since testObserverTwo has been invoked, we
+        // incorrectly assume that testObserverOne would have been as well to keep the test runtime
+        // short.
         Assert.assertEquals(FontFamily.MONOSPACE, testObserverOne.getFontFamily());
-        Assert.assertEquals(FontFamily.SERIF, testObserverTwo.getFontFamily());
-        mDistilledPagePrefs.removeObserver(testObserverTwo);
+        removeObserver(testObserverTwo);
     }
 
     @Test
@@ -182,14 +191,13 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testSingleObserverFontScaling() throws InterruptedException {
         TestingObserver testObserver = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserver);
+        addObserver(testObserver);
 
         Assert.assertNotEquals(1.1, testObserver.getFontScaling(), EPSILON);
         setFontScaling(1.1f);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserver's font scaling has been updated.
-        Assert.assertEquals(1.1, testObserver.getFontScaling(), EPSILON);
-        mDistilledPagePrefs.removeObserver(testObserver);
+        Assert.assertEquals(1.1, testObserver.getFontScalingAfterWaiting(), EPSILON);
+        removeObserver(testObserver);
     }
 
     @Test
@@ -197,22 +205,24 @@ public class DistilledPagePrefsTest {
     @Feature({"DomDistiller"})
     public void testMultipleObserversFontScaling() throws InterruptedException {
         TestingObserver testObserverOne = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverOne);
+        addObserver(testObserverOne);
         TestingObserver testObserverTwo = new TestingObserver();
-        mDistilledPagePrefs.addObserver(testObserverTwo);
+        addObserver(testObserverTwo);
 
         setFontScaling(1.3f);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        Assert.assertEquals(1.3, testObserverOne.getFontScaling(), EPSILON);
-        Assert.assertEquals(1.3, testObserverTwo.getFontScaling(), EPSILON);
-        mDistilledPagePrefs.removeObserver(testObserverOne);
+        Assert.assertEquals(1.3, testObserverOne.getFontScalingAfterWaiting(), EPSILON);
+        Assert.assertEquals(1.3, testObserverTwo.getFontScalingAfterWaiting(), EPSILON);
+        removeObserver(testObserverOne);
 
         setFontScaling(0.9f);
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Check that testObserverOne's font scaling is not changed but testObserverTwo's is.
+        Assert.assertEquals(0.9, testObserverTwo.getFontScalingAfterWaiting(), EPSILON);
+        // There is no simple way to safely wait for something not to happen unless we force a timed
+        // wait, which would slow down test runs. Since testObserverTwo has been invoked, we
+        // incorrectly assume that testObserverOne would have been as well to keep the test runtime
+        // short.
         Assert.assertEquals(1.3, testObserverOne.getFontScaling(), EPSILON);
-        Assert.assertEquals(0.9, testObserverTwo.getFontScaling(), EPSILON);
-        mDistilledPagePrefs.removeObserver(testObserverTwo);
+        removeObserver(testObserverTwo);
     }
 
     @Test
@@ -222,48 +232,74 @@ public class DistilledPagePrefsTest {
         TestingObserver test = new TestingObserver();
 
         // Should successfully add the observer the first time.
-        Assert.assertTrue(mDistilledPagePrefs.addObserver(test));
+        Assert.assertTrue(addObserver(test));
         // Observer cannot be added again, should return false.
-        Assert.assertFalse(mDistilledPagePrefs.addObserver(test));
+        Assert.assertFalse(addObserver(test));
 
         // Delete the observer the first time.
-        Assert.assertTrue(mDistilledPagePrefs.removeObserver(test));
+        Assert.assertTrue(removeObserver(test));
         // Observer cannot be deleted again, should return false.
-        Assert.assertFalse(mDistilledPagePrefs.removeObserver(test));
+        Assert.assertFalse(removeObserver(test));
     }
 
     private static class TestingObserver implements DistilledPagePrefs.Observer {
-        private int mFontFamily;
-        private int mTheme;
-        private float mFontScaling;
+        private final AtomicInteger mFontFamily = new AtomicInteger();
+        private Semaphore mFontFamilySemaphore = new Semaphore(0);
+        private final AtomicInteger mTheme = new AtomicInteger();
+        private Semaphore mThemeSemaphore = new Semaphore(0);
+        private final AtomicDouble mFontScaling = new AtomicDouble();
+        private Semaphore mFontScalingSemaphore = new Semaphore(0);
 
         public TestingObserver() {}
 
         public int getFontFamily() {
-            return mFontFamily;
+            return mFontFamily.get();
+        }
+
+        public int getFontFamilyAfterWaiting() throws InterruptedException {
+            Assert.assertTrue("Did not receive an update for font family",
+                    mFontFamilySemaphore.tryAcquire(
+                            SEMAPHORE_TIMEOUT_VALUE, SEMAPHORE_TIMEOUT_UNIT));
+            return getFontFamily();
         }
 
         @Override
         public void onChangeFontFamily(int font) {
-            mFontFamily = font;
+            mFontFamily.set(font);
+            mFontFamilySemaphore.release();
         }
 
         public int getTheme() {
-            return mTheme;
+            return mTheme.get();
+        }
+
+        public int getThemeAfterWaiting() throws InterruptedException {
+            Assert.assertTrue("Did not receive an update for theme",
+                    mThemeSemaphore.tryAcquire(SEMAPHORE_TIMEOUT_VALUE, SEMAPHORE_TIMEOUT_UNIT));
+            return getTheme();
         }
 
         @Override
         public void onChangeTheme(int theme) {
-            mTheme = theme;
+            mTheme.set(theme);
+            mThemeSemaphore.release();
         }
 
         public float getFontScaling() {
-            return mFontScaling;
+            return (float) mFontScaling.get();
+        }
+
+        public float getFontScalingAfterWaiting() throws InterruptedException {
+            Assert.assertTrue("Did not receive an update for font scaling",
+                    mFontScalingSemaphore.tryAcquire(
+                            SEMAPHORE_TIMEOUT_VALUE, SEMAPHORE_TIMEOUT_UNIT));
+            return getFontScaling();
         }
 
         @Override
         public void onChangeFontScaling(float scaling) {
-            mFontScaling = scaling;
+            mFontScaling.set(scaling);
+            mFontScalingSemaphore.release();
         }
     }
 
@@ -277,5 +313,19 @@ public class DistilledPagePrefsTest {
 
     private void setFontScaling(final float scaling) {
         TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontScaling(scaling));
+    }
+
+    private boolean removeObserver(TestingObserver testObserver) {
+        AtomicBoolean wasRemoved = new AtomicBoolean();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> wasRemoved.set(mDistilledPagePrefs.removeObserver(testObserver)));
+        return wasRemoved.get();
+    }
+
+    private boolean addObserver(TestingObserver testObserver) {
+        AtomicBoolean wasAdded = new AtomicBoolean();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> wasAdded.set(mDistilledPagePrefs.addObserver(testObserver)));
+        return wasAdded.get();
     }
 }

@@ -16,12 +16,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
 
     public BooleanCachedFieldTrialParameter(
             String featureName, String variationName, boolean defaultValue) {
-        this(featureName, variationName, defaultValue, null);
-    }
-
-    public BooleanCachedFieldTrialParameter(String featureName, String variationName,
-            boolean defaultValue, String preferenceKeyOverride) {
-        super(featureName, variationName, FieldTrialParameterType.BOOLEAN, preferenceKeyOverride);
+        super(featureName, variationName, FieldTrialParameterType.BOOLEAN);
         mDefaultValue = defaultValue;
     }
 

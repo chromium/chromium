@@ -40,13 +40,13 @@ namespace {
 base::Value NetLogParameterChannelBindings(
     const std::string& channel_binding_token,
     NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   if (!NetLogCaptureIncludesSocketBytes(capture_mode))
-    return dict;
+    return base::Value(std::move(dict));
 
-  dict.SetStringKey("token", base::HexEncode(channel_binding_token.data(),
-                                             channel_binding_token.size()));
-  return dict;
+  dict.Set("token", base::HexEncode(channel_binding_token.data(),
+                                    channel_binding_token.size()));
+  return base::Value(std::move(dict));
 }
 
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise
@@ -150,10 +150,6 @@ HttpAuthHandlerNegotiate::HttpAuthHandlerNegotiate(
     HostResolver* resolver)
     : auth_system_(std::move(auth_system)),
       resolver_(resolver),
-      already_called_(false),
-      has_credentials_(false),
-      auth_token_(nullptr),
-      next_state_(STATE_NONE),
       http_auth_preferences_(prefs) {}
 
 HttpAuthHandlerNegotiate::~HttpAuthHandlerNegotiate() = default;

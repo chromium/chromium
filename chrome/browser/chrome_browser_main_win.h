@@ -10,8 +10,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main.h"
-
-class ModuleWatcher;
+#include "chrome/common/conflicts/module_watcher_win.h"
 
 namespace base {
 class CommandLine;
@@ -77,6 +76,9 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
       const base::CommandLine& command_line);
 
  private:
+  void OnModuleEvent(const ModuleWatcher::ModuleEvent& event);
+  void SetupModuleDatabase(std::unique_ptr<ModuleWatcher>* module_watcher);
+
   // Watches module load events and forwards them to the ModuleDatabase.
   std::unique_ptr<ModuleWatcher> module_watcher_;
 };

@@ -131,8 +131,12 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string folder_id;           // Id of folder where the item resides.
   syncer::StringOrdinal position;  // Position of the item.
   bool is_folder = false;          // Whether this item is a folder.
-  bool is_persistent = false;  // Whether this folder is allowed to contain only
-                               // 1 item.
+
+  // Whether the folder was system created (e.g. the OEM folder or Linux apps
+  // folder). Historically (pre-2022) these folders were the only ones allowed
+  // to contain a single item.
+  bool is_system_folder = false;
+
   gfx::ImageSkia icon;         // The icon of this item.
   bool is_page_break = false;  // Whether this item is a "page break" item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
@@ -304,19 +308,25 @@ enum class AppListModelStatus {
   kStatusSyncing,  // Syncing apps or installing synced apps.
 };
 
-// Indicate the state of the apps grid reorder animation.
-enum class AppListReorderAnimationStatus {
-  // No reorder animation is active.
+// Indicate the state of animations that affect the entire apps grid (e.g.
+// reorder/sorting, hide continue section). This does not cover smaller
+// animations (e.g. drag and drop, folder open).
+enum class AppListGridAnimationStatus {
+  // No whole-grid animation is active.
   kEmpty,
 
-  // Run the animation that fades out the obsolete layout.
-  kFadeOutAnimation,
+  // Run the animation that fades out the obsolete layout before reordering.
+  kReorderFadeOut,
 
   // After the fade out animation ends and before the fade in animation starts.
-  kIntermediaryState,
+  kReorderIntermediaryState,
 
   // Run the animation that fades in the new layout after reordering.
-  kFadeInAnimation
+  kReorderFadeIn,
+
+  // Run the animation that slides up each row of icons when the continue
+  // section is hidden by the user.
+  kHideContinueSection,
 };
 
 // The UI component the user launched the search result from. Must match

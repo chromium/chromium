@@ -52,7 +52,6 @@ browse:social:twitter_infinite_scroll:2018,,desktop,"2018,infinite_scroll"
 browse:tech:discourse_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scroll"
 browse:tools:autocad:2021,"AutoCAD desktop story,",desktop,"2021,keyboard_input,wasm,webgl"
 browse:tools:docs_scrolling,Google Docs scrolling story:,desktop,"2020,javascript_heavy"
-browse:tools:earth:2020,Load Google Earth and search for the Empire State Building. Watch the,desktop,"2020,keyboard_input,wasm,webgl"
 browse:tools:gmail-compose:2020,,desktop,2020
 browse:tools:gmail-labelclick:2020,,desktop,2020
 browse:tools:gmail-openconversation:2020,,desktop,2020

@@ -68,6 +68,11 @@ class PrintManager : public content::WebContentsObserver,
   // Returns the RenderFrameHost currently targeted by message dispatch.
   content::RenderFrameHost* GetCurrentTargetFrame();
 
+  content::RenderFrameHostReceiverSet<printing::mojom::PrintManagerHost>&
+  print_manager_host_receivers_for_testing() {
+    return print_manager_host_receivers_;
+  }
+
   // Terminates or cancels the print job if one was pending.
   void PrintingRenderFrameDeleted();
 

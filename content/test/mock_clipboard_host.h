@@ -72,6 +72,8 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
  private:
+  std::vector<std::u16string> ReadStandardFormatNames();
+
   mojo::ReceiverSet<blink::mojom::ClipboardHost> receivers_;
   ui::ClipboardSequenceNumberToken sequence_number_;
   std::u16string plain_text_;

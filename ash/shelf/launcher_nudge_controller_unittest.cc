@@ -8,6 +8,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -17,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/command_line.h"
 #include "base/json/values_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -93,7 +95,8 @@ class LauncherNudgeControllerTest : public AshTestBase {
  public:
   LauncherNudgeControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures({features::kShelfLauncherNudge}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kShelfLauncherNudge, features::kProductivityLauncher}, {});
   }
   LauncherNudgeControllerTest(const LauncherNudgeControllerTest&) = delete;
   LauncherNudgeControllerTest& operator=(const LauncherNudgeControllerTest&) =
@@ -155,6 +158,14 @@ TEST_F(LauncherNudgeControllerTest, DisableNudgeForGuestSession) {
   SimulateGuestLogin();
 
   // Do not show the nudge in the guest session.
+  EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
+  EXPECT_EQ(0, GetNudgeShownCount());
+}
+
+TEST_F(LauncherNudgeControllerTest, NoNudgeWhenSkippedByCommandLineFlag) {
+  // Unit tests run with a scoped command line, so directly set the flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kAshNoNudges);
+  SimulateUserLogin("user@gmail.com");
   EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
   EXPECT_EQ(0, GetNudgeShownCount());
 }

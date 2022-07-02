@@ -234,10 +234,11 @@ class NET_EXPORT HttpServerProperties
   //
   // |clock| is used for converting base::TimeTicks to base::Time for
   // wherever base::Time is preferable.
-  HttpServerProperties(std::unique_ptr<PrefDelegate> pref_delegate = nullptr,
-                       NetLog* net_log = nullptr,
-                       const base::TickClock* tick_clock = nullptr,
-                       base::Clock* clock = nullptr);
+  explicit HttpServerProperties(
+      std::unique_ptr<PrefDelegate> pref_delegate = nullptr,
+      NetLog* net_log = nullptr,
+      const base::TickClock* tick_clock = nullptr,
+      base::Clock* clock = nullptr);
 
   HttpServerProperties(const HttpServerProperties&) = delete;
   HttpServerProperties& operator=(const HttpServerProperties&) = delete;
@@ -464,6 +465,15 @@ class NET_EXPORT HttpServerProperties
     return server_info_map_;
   }
 
+  const BrokenAlternativeServices& broken_alternative_services_for_testing()
+      const {
+    return broken_alternative_services_;
+  }
+
+  const QuicServerInfoMap& quic_server_info_map_for_testing() const {
+    return quic_server_info_map_;
+  }
+
   // TODO(mmenke): Look into removing this.
   HttpServerPropertiesManager* properties_manager_for_testing() {
     return properties_manager_.get();
@@ -610,7 +620,7 @@ class NET_EXPORT HttpServerProperties
   // Queue a write when resources finish loading. Set to true when
   // MaybeQueueWriteProperties() is invoked while still waiting on
   // initialization to complete.
-  bool queue_write_on_load_;
+  bool queue_write_on_load_ = false;
 
   // Used to load/save properties from/to preferences. May be nullptr.
   std::unique_ptr<HttpServerPropertiesManager> properties_manager_;

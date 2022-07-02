@@ -242,7 +242,6 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
     return;
   }
 
-  // TODO(crbug.com/1319644): Propagate BucketLocator to GetBucketUsageAndQuota.
   indexed_db_context_->quota_manager_proxy()->GetUsageAndQuota(
       bucket_locator_.storage_key, blink::mojom::StorageType::kTemporary,
       indexed_db_context_->IDBTaskRunner(),

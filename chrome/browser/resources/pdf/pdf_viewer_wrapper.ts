@@ -11,7 +11,7 @@ export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 export {FittingType, Point, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
-export {ChangePageAndXyDetail, ChangePageDetail, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';
+export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer-download-controls.js';
 // <if expr="enable_ink">
@@ -36,6 +36,7 @@ export {PDFScriptingAPI} from './pdf_scripting_api.js';
 export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
 export {PDFViewerBaseElement} from './pdf_viewer_base.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+export {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 export {DocumentDimensions, LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
 export {ZoomManager} from './zoom_manager.js';

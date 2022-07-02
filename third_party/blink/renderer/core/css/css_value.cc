@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
+#include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
-#include "third_party/blink/renderer/core/css/css_grid_line_names_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -179,6 +179,10 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kBasicShapeInsetClass:
         return CompareCSSValues<cssvalue::CSSBasicShapeInsetValue>(*this,
                                                                    other);
+      case kBasicShapeRectClass:
+        return CompareCSSValues<cssvalue::CSSBasicShapeRectValue>(*this, other);
+      case kBasicShapeXYWHClass:
+        return CompareCSSValues<cssvalue::CSSBasicShapeXYWHValue>(*this, other);
       case kBorderImageSliceClass:
         return CompareCSSValues<cssvalue::CSSBorderImageSliceValue>(*this,
                                                                     other);
@@ -232,7 +236,7 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSGridIntegerRepeatValue>(*this,
                                                                      other);
       case kGridLineNamesClass:
-        return CompareCSSValues<cssvalue::CSSGridLineNamesValue>(*this, other);
+        return CompareCSSValues<cssvalue::CSSBracketedValueList>(*this, other);
       case kGridTemplateAreasClass:
         return CompareCSSValues<cssvalue::CSSGridTemplateAreasValue>(*this,
                                                                      other);
@@ -318,6 +322,10 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSBasicShapePolygonValue>(this)->CustomCSSText();
     case kBasicShapeInsetClass:
       return To<cssvalue::CSSBasicShapeInsetValue>(this)->CustomCSSText();
+    case kBasicShapeRectClass:
+      return To<cssvalue::CSSBasicShapeRectValue>(this)->CustomCSSText();
+    case kBasicShapeXYWHClass:
+      return To<cssvalue::CSSBasicShapeXYWHValue>(this)->CustomCSSText();
     case kBorderImageSliceClass:
       return To<cssvalue::CSSBorderImageSliceValue>(this)->CustomCSSText();
     case kColorClass:
@@ -369,7 +377,7 @@ String CSSValue::CssText() const {
     case kGridIntegerRepeatClass:
       return To<cssvalue::CSSGridIntegerRepeatValue>(this)->CustomCSSText();
     case kGridLineNamesClass:
-      return To<cssvalue::CSSGridLineNamesValue>(this)->CustomCSSText();
+      return To<cssvalue::CSSBracketedValueList>(this)->CustomCSSText();
     case kGridTemplateAreasClass:
       return To<cssvalue::CSSGridTemplateAreasValue>(this)->CustomCSSText();
     case kPathClass:
@@ -455,6 +463,12 @@ void CSSValue::FinalizeGarbageCollectedObject() {
     case kBasicShapeInsetClass:
       To<cssvalue::CSSBasicShapeInsetValue>(this)->~CSSBasicShapeInsetValue();
       return;
+    case kBasicShapeRectClass:
+      To<cssvalue::CSSBasicShapeRectValue>(this)->~CSSBasicShapeRectValue();
+      return;
+    case kBasicShapeXYWHClass:
+      To<cssvalue::CSSBasicShapeXYWHValue>(this)->~CSSBasicShapeXYWHValue();
+      return;
     case kBorderImageSliceClass:
       To<cssvalue::CSSBorderImageSliceValue>(this)->~CSSBorderImageSliceValue();
       return;
@@ -532,7 +546,7 @@ void CSSValue::FinalizeGarbageCollectedObject() {
           ->~CSSGridIntegerRepeatValue();
       return;
     case kGridLineNamesClass:
-      To<cssvalue::CSSGridLineNamesValue>(this)->~CSSGridLineNamesValue();
+      To<cssvalue::CSSBracketedValueList>(this)->~CSSBracketedValueList();
       return;
     case kGridTemplateAreasClass:
       To<cssvalue::CSSGridTemplateAreasValue>(this)
@@ -653,6 +667,12 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kBasicShapeInsetClass:
       To<cssvalue::CSSBasicShapeInsetValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kBasicShapeRectClass:
+      To<cssvalue::CSSBasicShapeRectValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kBasicShapeXYWHClass:
+      To<cssvalue::CSSBasicShapeXYWHValue>(this)->TraceAfterDispatch(visitor);
+      return;
     case kBorderImageSliceClass:
       To<cssvalue::CSSBorderImageSliceValue>(this)->TraceAfterDispatch(visitor);
       return;
@@ -730,7 +750,7 @@ void CSSValue::Trace(Visitor* visitor) const {
           visitor);
       return;
     case kGridLineNamesClass:
-      To<cssvalue::CSSGridLineNamesValue>(this)->TraceAfterDispatch(visitor);
+      To<cssvalue::CSSBracketedValueList>(this)->TraceAfterDispatch(visitor);
       return;
     case kGridTemplateAreasClass:
       To<cssvalue::CSSGridTemplateAreasValue>(this)->TraceAfterDispatch(

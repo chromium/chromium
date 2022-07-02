@@ -38,6 +38,7 @@ class FakeAppsAccessManager : public AppsAccessManager {
   friend class chromeos::settings::MultideviceHandlerTest;
   // AppsAccessManager:
   void SetAccessStatusInternal(AccessStatus access_status) override;
+  void NotifyAppsAccessCanceled() override;
 
   AccessStatus access_status_;
 };

@@ -43,8 +43,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -179,7 +179,7 @@ class QuickUnlockPrivateUnitTest
     ash::UserDataAuthClient::InitializeFake();
     if (std::get<0>(param) == TestType::kCryptohome) {
       auto* fake_userdataauth_client_testapi =
-          chromeos::FakeUserDataAuthClient::TestApi::Get();
+          ash::FakeUserDataAuthClient::TestApi::Get();
       fake_userdataauth_client_testapi->set_supports_low_entropy_credentials(
           true);
       fake_userdataauth_client_testapi->set_enable_auth_check(true);
@@ -225,6 +225,7 @@ class QuickUnlockPrivateUnitTest
     fake_user_manager_->AddUser(test_account);
     fake_user_manager_->UserLoggedIn(test_account, kTestUserEmailHash, false,
                                      false);
+    fake_user_manager_->SimulateUserProfileLoad(test_account);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         fake_user_manager_->GetPrimaryUser(), profile);
 

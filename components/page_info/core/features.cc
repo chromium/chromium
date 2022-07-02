@@ -37,9 +37,6 @@ const base::Feature kPageInfoAboutThisSiteNonEn{
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
                                                   "ShowSampleContent", false};
 
-const base::Feature kPageInfoAboutThisSiteUrlGranularity{
-    "PageInfoAboutThisSiteUrlGranularity", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPageInfoAboutThisSiteMoreInfo{
     "PageInfoAboutThisSiteMoreInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 

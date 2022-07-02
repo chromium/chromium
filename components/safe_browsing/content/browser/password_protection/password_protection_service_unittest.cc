@@ -1300,7 +1300,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
   EXPECT_TRUE(actual_request->frames(0).has_password_field());
   ASSERT_TRUE(actual_request->has_password_reuse_event());
   const auto& reuse_event = actual_request->password_reuse_event();
-  EXPECT_TRUE(reuse_event.is_chrome_signin_password());
   EXPECT_EQ(0, reuse_event.domains_matching_password_size());
 #if !BUILDFLAG(IS_ANDROID)
   VerifyContentAreaSizeCollection(*actual_request);
@@ -1331,7 +1330,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
       password_protection_service_->GetLatestRequestProto();
   ASSERT_TRUE(actual_request->has_password_reuse_event());
   const auto& reuse_event = actual_request->password_reuse_event();
-  EXPECT_FALSE(reuse_event.is_chrome_signin_password());
 
   if (password_protection_service_->IsExtendedReporting() &&
       !password_protection_service_->IsIncognito()) {

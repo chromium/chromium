@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack_container.h"
 #include "base/location.h"
@@ -36,6 +37,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_switches.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -1213,6 +1215,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   }
 
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+  bool is_webgpu_compatible = true;
   // Set up the planes creating the mailboxes needed to refer to the textures.
   for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++) {
     size_t gpu_memory_buffer_plane =
@@ -1223,6 +1226,17 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         frame_resources->plane_resources[gpu_memory_buffer_plane]
             .gpu_memory_buffer.get();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    is_webgpu_compatible &= (gpu_memory_buffer != nullptr);
+    if (is_webgpu_compatible) {
+      is_webgpu_compatible &=
+          gpu_memory_buffer->CloneHandle()
+              .native_pixmap_handle.supports_zero_copy_webgpu_import;
+    }
+#else
+    is_webgpu_compatible = false;
+#endif
+
     const gfx::BufferFormat buffer_format =
         GpuMemoryBufferFormat(output_format_, plane);
     unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
@@ -1231,6 +1245,16 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       uint32_t usage =
           gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
           gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      // TODO(crbug.com/1241537): Always add the flag once the
+      // SharedImageBackingOzone is by default turned on.
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableUnsafeWebGPU)) {
+        usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+      }
+#endif
+
       plane_resource.mailbox = sii->CreateSharedImage(
           gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
           GetSharedImageBufferPlane(output_format_, plane), color_space,
@@ -1307,6 +1331,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 #endif  // BUILDFLAG(IS_WIN)
   frame->metadata().allow_overlay = allow_overlay;
   frame->metadata().read_lock_fences_enabled = true;
+  frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   return frame;
 }
 

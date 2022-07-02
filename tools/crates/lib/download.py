@@ -24,6 +24,7 @@ import sys
 import tarfile
 import tempfile
 import toml
+from typing import Optional
 import urllib3
 
 
@@ -170,7 +171,7 @@ def _find_crate_full_version(crate_name: str, partial_version: str,
         toml_version = {"dependencies": {crate_name: partial_version}}
         cargo.write_cargo_toml_in_tempdir(
             workdir,
-            None,
+            cargo.ListOf3pCargoToml([]),
             orig_toml_parsed=cargo.add_required_cargo_fields(toml_version),
             verbose=verbose)
         # `cargo tree` will tell us the actual version number of the dependency,
@@ -187,7 +188,7 @@ def _find_crate_full_version(crate_name: str, partial_version: str,
     return m.group("version")
 
 
-def _download_crate(crate_name: str, version: str) -> bytes:
+def _download_crate(crate_name: str, version: str) -> Optional[bytes]:
     """Downloads a crate from crates.io and returns it as `bytes`.
 
     Returns:
@@ -205,7 +206,7 @@ def _download_crate(crate_name: str, version: str) -> bytes:
     return resp.data
 
 
-def _make_dirs_for_crate(crate_name: str, version: str) -> bool:
+def _make_dirs_for_crate(crate_name: str, version: str):
     """Recursively make directories to hold a downloaded crate."""
     # This is the crate-name/vX/ directory, where the BUILD.gn lives and any
     # patches/ directory that are locally applied to the crate.

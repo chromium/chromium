@@ -180,7 +180,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 #endif
 
 namespace content {
@@ -277,21 +277,24 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
   // Append any switches from the browser process that need to be forwarded on
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
-      switches::kAndroidFontsPath,
-      switches::kClearKeyCdmPathForTesting,
-      switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
-      // Need to tell the zygote that it is headless so that we don't try to use
-      // the wrong type of main delegate.
-      switches::kHeadless,
-      // Zygote process needs to know what resources to have loaded when it
-      // becomes a renderer process.
-      switches::kForceDeviceScaleFactor,
-      switches::kLoggingLevel,
-      switches::kMojoCoreLibraryPath,
-      switches::kPpapiInProcess,
-      switches::kRegisterPepperPlugins,
-      switches::kV,
-      switches::kVModule,
+    switches::kAndroidFontsPath,
+    switches::kClearKeyCdmPathForTesting,
+    switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
+    // Need to tell the zygote that it is headless so that we don't try to use
+    // the wrong type of main delegate.
+    switches::kHeadless,
+    // Zygote process needs to know what resources to have loaded when it
+    // becomes a renderer process.
+    switches::kForceDeviceScaleFactor,
+    switches::kLoggingLevel,
+    switches::kMojoCoreLibraryPath,
+    switches::kPpapiInProcess,
+    switches::kRegisterPepperPlugins,
+    switches::kV,
+    switches::kVModule,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    switches::kEnableResourcesFileSharing,
+#endif
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches, std::size(kForwardSwitches));
@@ -513,6 +516,19 @@ bool ShouldAllowSystemTracingConsumer() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void CreateChildThreadPool(const std::string& process_type) {
+  // Thread pool should only be initialized once.
+  DCHECK(!base::ThreadPoolInstance::Get());
+  base::StringPiece thread_pool_name;
+  if (process_type == switches::kGpuProcess)
+    thread_pool_name = "GPU";
+  else if (process_type == switches::kRendererProcess)
+    thread_pool_name = "Renderer";
+  else
+    thread_pool_name = "ContentChild";
+  base::ThreadPoolInstance::Create(thread_pool_name);
+}
+
 }  // namespace
 
 class ContentClientCreator {
@@ -608,13 +624,18 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   internal::PartitionAllocSupport::Get()->ReconfigureAfterZygoteFork(
       process_type);
 
+  CreateChildThreadPool(process_type);
+
   ContentClientInitializer::Set(process_type, delegate);
 
   MainFunctionParams main_params(command_line);
   main_params.zygote_child = true;
 
-  InitializeFieldTrialAndFeatureList();
-  delegate->PostFieldTrialInitialization();
+  if (delegate->ShouldCreateFeatureList(
+          ContentMainDelegate::InvokedInChildProcess()))
+    InitializeFieldTrialAndFeatureList();
+  delegate->PostEarlyInitialization(
+      ContentMainDelegate::InvokedInChildProcess());
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
       process_type);
@@ -786,12 +807,12 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Cache the BuildInfo for this process.
+  // Cache the system info for this process.
   // This avoids requiring that all callers of certain base:: functions first
   // ensure the cache is populated.
   // Making the blocking call now also avoids the potential for blocking later
   // in when it might be user-visible.
-  base::FetchAndCacheSystemBuildInfo();
+  base::FetchAndCacheSystemInfo();
 #endif
 
   int exit_code = 0;
@@ -989,8 +1010,12 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
     if (process_type != switches::kZygoteProcess) {
       // Zygotes will run this at a later point in time when the command line
       // has been updated.
-      InitializeFieldTrialAndFeatureList();
-      delegate_->PostFieldTrialInitialization();
+      CreateChildThreadPool(process_type);
+      if (delegate_->ShouldCreateFeatureList(
+              ContentMainDelegate::InvokedInChildProcess()))
+        InitializeFieldTrialAndFeatureList();
+      delegate_->PostEarlyInitialization(
+          ContentMainDelegate::InvokedInChildProcess());
 
       internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
           process_type);
@@ -1046,21 +1071,21 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   if (is_browser_main_loop_started_)
     return -1;
 
-  bool should_start_minimal_browser = start_minimal_browser;
   if (!mojo_ipc_support_) {
-    if (delegate_->ShouldCreateFeatureList()) {
+    const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
+        .is_running_test = !main_params.ui_task.is_null()};
+    if (delegate_->ShouldCreateFeatureList(invoked_in_browser)) {
       // This is intentionally leaked since it needs to live for the duration
       // of the process and there's no benefit in cleaning it up at exit.
       base::FieldTrialList* leaked_field_trial_list =
           SetUpFieldTrialsAndFeatureList().release();
       ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
       std::ignore = leaked_field_trial_list;
-      delegate_->PostFieldTrialInitialization();
       mojo::core::InitFeatures();
     }
 
-    // Create and start the ThreadPool early to allow upcoming code to use the
-    // thread_pool.h API.
+    // Create and start the ThreadPool early to allow the rest of the startup
+    // code to use the thread_pool.h API.
     const bool has_thread_pool =
         GetContentClient()->browser()->CreateThreadPool("Browser");
 
@@ -1086,7 +1111,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    delegate_->PostEarlyInitialization(!!main_params.ui_task);
+    delegate_->PostEarlyInitialization(invoked_in_browser);
 
     // The hang watcher needs to be started once the feature list is available
     // but before the IO thread is started.
@@ -1122,7 +1147,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     AndroidBatteryMetrics::GetInstance();
 #endif
 
-    if (should_start_minimal_browser)
+    if (start_minimal_browser)
       ForceInProcessNetworkService(true);
 
     discardable_shared_memory_manager_ =
@@ -1153,7 +1178,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit("");
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit("");
 
-  if (should_start_minimal_browser) {
+  if (start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";
     return -1;
   }

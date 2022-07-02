@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TIMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TIMER_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"

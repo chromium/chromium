@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -35,6 +36,7 @@
 #include "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -62,12 +64,12 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                           SettingsNavigationControllerDelegate>
 
 // Starts the watchdog timer with a timeout of
-// |kAuthenticationFlowTimeoutSeconds| for the fetching managed status
-// operation. It will notify |_delegate| of the failure unless
-// |stopWatchdogTimer| is called before it times out.
+// `kAuthenticationFlowTimeoutSeconds` for the fetching managed status
+// operation. It will notify `_delegate` of the failure unless
+// `stopWatchdogTimer` is called before it times out.
 - (void)startWatchdogTimerForManagedStatus;
 
-// Stops the watchdog timer, and doesn't call the |timeoutDelegateSelector|.
+// Stops the watchdog timer, and doesn't call the `timeoutDelegateSelector`.
 // Returns whether the watchdog was actually running.
 - (BOOL)stopWatchdogTimer;
 
@@ -387,10 +389,25 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _alertCoordinator;
+
   ProceduralBlock acceptBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
+
+    // TODO(crbug.com/1326767): Nullify the browser object in the
+    // AlertCoordinator when the coordinator is stopped to avoid using the
+    // browser object at that moment, in which case the browser object may have
+    // been deleted before the callback block is called. This is to avoid
+    // potential bad memory accesses.
+    Browser* browser = weakAlert.browser;
+    if (browser) {
+      PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+      // TODO(crbug.com/1325115): Remove this line once we determined that the
+      // notification isn't needed anymore.
+      [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
+    }
+
     [strongSelf alertControllerDidDisappear:weakAlert];
     [[strongSelf delegate] didAcceptManagedConfirmation];
   };
@@ -440,7 +457,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (void)alertControllerDidDisappear:(AlertCoordinator*)alertCoordinator {
   if (_alertCoordinator != alertCoordinator) {
-    // Do not reset the |_alertCoordinator| if it has changed. This typically
+    // Do not reset the `_alertCoordinator` if it has changed. This typically
     // happens when the user taps on any of the actions on "Clear Data Before
     // Syncing?" dialog, as the sign-in confirmation dialog is created before
     // the "Clear Data Before Syncing?" dialog is dismissed.
@@ -557,6 +574,29 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     handlerForSettings {
   NOTREACHED();
   return nil;
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
+  NOTREACHED();
+  return nil;
+}
+
+#pragma mark - Internal
+
+- (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
+  if (!policy::IsUserPolicyEnabled()) {
+    // Don't set the notification pref if the User Policy feature isn't
+    // enabled.
+    return;
+  }
+
+  prefService->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
+                          true);
 }
 
 @end

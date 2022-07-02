@@ -565,16 +565,14 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
   std::string headers("HTTP/1.1 200 OK\n\n");
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
-  downstream_request->client->OnReceiveResponse(
-      std::move(head), mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  downstream_request->client->OnStartLoadingResponseBody(
-      std::move(consumer_handle));
+  downstream_request->client->OnReceiveResponse(std::move(head),
+                                                std::move(consumer_handle));
   downstream_data_pipe_ = std::move(producer_handle);
 }
 

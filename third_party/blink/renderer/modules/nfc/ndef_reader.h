@@ -77,6 +77,10 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   void MakeReadOnlyOnMojoConnectionError();
 
  private:
+  class ReadAbortAlgorithm;
+  class WriteAbortAlgorithm;
+  class MakeReadOnlyAbortAlgorithm;
+
   // ExecutionContextLifecycleObserver overrides.
   void ContextDestroyed() override;
 
@@ -87,10 +91,12 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
 
   void WriteAbort(AbortSignal* signal);
   void WriteOnRequestCompleted(ScriptPromiseResolver* resolver,
+                               AbortSignal* signal,
                                device::mojom::blink::NDEFErrorPtr error);
 
   void MakeReadOnlyAbort(AbortSignal* signal);
   void MakeReadOnlyOnRequestCompleted(ScriptPromiseResolver* resolver,
+                                      AbortSignal* signal,
                                       device::mojom::blink::NDEFErrorPtr error);
 
   // Read Permission handling

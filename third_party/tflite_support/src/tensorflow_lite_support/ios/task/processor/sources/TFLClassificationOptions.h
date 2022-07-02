@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Holds settings for any single classification task.
  */
+NS_SWIFT_NAME(ClassificationOptions)
 @interface TFLClassificationOptions : NSObject <NSCopying>
 
 /** If set, all classes  in this list will be filtered out from the results . */
@@ -32,10 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString* displayNamesLocale;
 
 /** Results with score threshold greater than this value are returned . */
-@property(nonatomic, assign) float scoreThreshold;
+@property(nonatomic) float scoreThreshold;
 
 /** Limit to the number of classes that can be returned in results. */
-@property(nonatomic, assign) NSInteger maxResults;
+@property(nonatomic) NSInteger maxResults;
 
 @end
 

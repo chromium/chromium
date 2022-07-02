@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -312,11 +313,12 @@ class BluetoothGattBlueZTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
-  bluez::FakeBluetoothGattServiceClient* fake_bluetooth_gatt_service_client_;
-  bluez::FakeBluetoothGattCharacteristicClient*
+  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothGattServiceClient>
+      fake_bluetooth_gatt_service_client_;
+  raw_ptr<bluez::FakeBluetoothGattCharacteristicClient>
       fake_bluetooth_gatt_characteristic_client_;
-  bluez::FakeBluetoothGattDescriptorClient*
+  raw_ptr<bluez::FakeBluetoothGattDescriptorClient>
       fake_bluetooth_gatt_descriptor_client_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_conn_;
   std::vector<std::unique_ptr<BluetoothGattNotifySession>> update_sessions_;

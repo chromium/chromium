@@ -7,17 +7,22 @@
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
+#include <linux/v4l2-controls.h>
+
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
+#include <linux/media/vp9-ctrls-upstream.h>
+#endif
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
+#include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
 // A Vp9Decoder decodes VP9-encoded IVF streams using v4l2 ioctl calls.
@@ -30,8 +35,7 @@ class Vp9Decoder : public VideoDecoder {
   // Creates a Vp9Decoder after verifying that the underlying implementation
   // supports VP9 stateless decoding.
   static std::unique_ptr<Vp9Decoder> Create(
-      std::unique_ptr<IvfParser> ivf_parser,
-      const media::IvfFileHeader& file_header);
+      const base::MemoryMappedFile& stream);
 
   // Parses next frame from IVF stream and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
@@ -68,6 +72,9 @@ class Vp9Decoder : public VideoDecoder {
   std::set<int> RefreshReferenceSlots(uint8_t refresh_frame_flags,
                                       scoped_refptr<MmapedBuffer> buffer,
                                       uint32_t last_queued_buffer_index);
+
+  // Parser for the IVF stream to decode.
+  const std::unique_ptr<IvfParser> ivf_parser_;
 
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;

@@ -11,10 +11,12 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_photo_config.h"
+#include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/ambient_topic_queue_test_delegate.h"
@@ -651,7 +653,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldStartToRefreshWeather) {
-  auto* model = photo_controller()->ambient_backend_model();
+  auto* model = weather_controller()->weather_model();
   EXPECT_FALSE(model->show_celsius());
   EXPECT_TRUE(model->weather_condition_icon().isNull());
 

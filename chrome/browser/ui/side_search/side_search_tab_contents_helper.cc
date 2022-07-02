@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
+#include "chrome/browser/ui/side_search/unified_side_search_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -38,7 +41,7 @@ void SideSearchTabContentsHelper::NavigateInTabContents(
       params.url, ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK,
                                                params.transition)};
 
-  web_contents()->GetMainFrame()->NotifyUserActivation(
+  web_contents()->GetPrimaryMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
   web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
@@ -96,6 +99,10 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
     // Capture the URL here in case the side contents is closed before the
     // navigation completes.
     last_search_url_ = url;
+
+    // Allow the page action label to be shown next time the entrypoint is
+    // revealed.
+    can_show_page_action_label_ = true;
 
     // If the navigation to a search results page succeeds we should update the
     // side panel availability bit accordingly.
@@ -171,6 +178,16 @@ void SideSearchTabContentsHelper::SetDelegate(
   delegate_ = std::move(delegate);
 }
 
+void SideSearchTabContentsHelper::DidShowPageActionLabel() {
+  ++page_action_label_shown_count_;
+}
+
+bool SideSearchTabContentsHelper::GetAndResetCanShowPageActionLabel() {
+  const bool initial_can_show_page_action_label = can_show_page_action_label_;
+  can_show_page_action_label_ = false;
+  return initial_can_show_page_action_label;
+}
+
 void SideSearchTabContentsHelper::SetSidePanelContentsForTesting(
     std::unique_ptr<content::WebContents> side_panel_contents) {
   side_panel_contents_ = std::move(side_panel_contents);
@@ -184,6 +201,9 @@ SideSearchTabContentsHelper::SideSearchTabContentsHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<SideSearchTabContentsHelper>(*web_contents) {
   config_observation_.Observe(GetConfig());
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    CreateUnifiedSideSearchController(web_contents);
+  }
 }
 
 SideSearchSideContentsHelper*

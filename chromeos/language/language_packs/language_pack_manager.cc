@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -18,6 +19,14 @@
 
 namespace chromeos::language_packs {
 namespace {
+
+// PackResult that is returned by an invalid feature ID is specified.
+PackResult CreateInvalidDlcPackResult() {
+  return {
+      .operation_error = dlcservice::kErrorInvalidDlc,
+      .pack_state = PackResult::WRONG_ID,
+  };
+}
 
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
   PackResult result;
@@ -48,6 +57,8 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // Clients of Language Packs don't need to know the IDs.
   // TODO(b/223250258): We currently only have 10 languages. Add all remaining
   // languages once the infra issue is fixed.
+  // Note: if you add new languages here, make sure to add them to the metrics
+  //       test `LanguagePackMetricsTest.CheckLanguageCodes`.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
           // Handwriting Recognition.
@@ -108,6 +119,14 @@ absl::optional<std::string> GetDlcIdForBasePayload(
   }
 
   return it->second;
+}
+
+void InstallDlc(const std::string& dlc_id,
+                DlcserviceClient::InstallCallback install_callback) {
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(dlc_id);
+  DlcserviceClient::Get()->Install(install_request, std::move(install_callback),
+                                   base::DoNothing());
 }
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
@@ -180,19 +199,12 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(*dlc_id);
-  DlcserviceClient::Get()->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
-      base::DoNothing());
+  InstallDlc(*dlc_id,
+             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
 }
 
 void LanguagePackManager::GetPackState(const std::string& feature_id,
@@ -204,12 +216,12 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
+
+  base::UmaHistogramSparse("ChromeOS.LanguagePacks.GetPackState.LanguageCode",
+                           static_cast<int32_t>(base::PersistentHash(locale)));
 
   DlcserviceClient::Get()->GetDlcState(
       *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
@@ -224,10 +236,7 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
@@ -243,19 +252,12 @@ void LanguagePackManager::InstallBasePayload(
   // If the given |feature_id| doesn't have a Base Payload, run callback and
   // don't reach the DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(*dlc_id);
-  DlcserviceClient::Get()->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
-      base::DoNothing());
+  InstallDlc(*dlc_id,
+             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {

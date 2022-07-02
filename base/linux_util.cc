@@ -146,11 +146,9 @@ bool GetThreadsForProcess(pid_t pid, std::vector<pid_t>* tids) {
   }
 
   while (dir_reader.Next()) {
-    char* endptr;
-    const unsigned long int tid_ul = strtoul(dir_reader.name(), &endptr, 10);
-    if (tid_ul == ULONG_MAX || *endptr)
-      continue;
-    tids->push_back(tid_ul);
+    pid_t tid;
+    if (StringToInt(dir_reader.name(), &tid))
+      tids->push_back(tid);
   }
 
   return true;

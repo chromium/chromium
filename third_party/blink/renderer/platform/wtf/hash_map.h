@@ -22,6 +22,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
@@ -47,7 +49,8 @@ struct KeyValuePairKeyExtractor {
   // Assumes out points to a buffer of size at least sizeof(T::KeyType).
   template <typename T>
   static void ExtractSafe(const T& p, void* out) {
-    AtomicReadMemcpy<sizeof(typename T::KeyType)>(out, &p.key);
+    AtomicReadMemcpy<sizeof(typename T::KeyType), alignof(typename T::KeyType)>(
+        out, &p.key);
   }
 };
 
@@ -360,8 +363,10 @@ template <typename T,
           typename X,
           typename Y>
 HashMap<T, U, V, W, X, Y>::HashMap(std::initializer_list<ValueType> elements) {
-  if (elements.size())
-    impl_.ReserveCapacityForSize(SafeCast<wtf_size_t>(elements.size()));
+  if (elements.size()) {
+    impl_.ReserveCapacityForSize(
+        base::checked_cast<wtf_size_t>(elements.size()));
+  }
   for (const ValueType& element : elements)
     insert(element.key, element.value);
 }

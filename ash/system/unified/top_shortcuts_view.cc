@@ -29,6 +29,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -50,9 +51,6 @@ class UserAvatarButton : public views::Button {
   UserAvatarButton& operator=(const UserAvatarButton&) = delete;
 
   ~UserAvatarButton() override = default;
-
-  // views::Button:
-  void OnThemeChanged() override;
 };
 
 UserAvatarButton::UserAvatarButton(PressedCallback callback)
@@ -64,15 +62,9 @@ UserAvatarButton::UserAvatarButton(PressedCallback callback)
 
   SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
   views::InstallCircleHighlightPathGenerator(this);
-}
-
-void UserAvatarButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace

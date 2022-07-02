@@ -65,30 +65,6 @@ __gCrWeb.stringify = function(value) {
 };
 
 /**
- * Tests an element's visiblity. This test is expensive so should be used
- * sparingly.
- * @param {Element} element A DOM element.
- * @return {boolean} true if the |element| is currently part of the visible
- * DOM.
- */
-__gCrWeb.common.isElementVisible = function(element) {
-  /** @type {Node} */
-  var node = element;
-  while (node && node !== document) {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      var style = window.getComputedStyle(/** @type {Element} */ (node));
-      if (style.display === 'none' || style.visibility === 'hidden') {
-        return false;
-      }
-    }
-    // Move up the tree and test again.
-    node = node.parentNode;
-  }
-  // Test reached the top of the DOM without finding a concealed ancestor.
-  return true;
-};
-
-/**
  * Returns if an element is a text field.
  * This returns true for all of textfield-looking types such as text,
  * password, search, email, url, and number.
@@ -145,47 +121,6 @@ __gCrWeb.common.trim = function(str) {
 };
 
 /**
- * Acquires the specified DOM |attribute| from the DOM |element| and returns
- * its lower-case value, or null if not present.
- * @param {Element} element A DOM element.
- * @param {string} attribute An attribute name.
- * @return {?string} Lowercase value of DOM element or null if not present.
- */
-__gCrWeb.common.getLowerCaseAttribute = function(element, attribute) {
-  if (!element) {
-    return null;
-  }
-  var value = element.getAttribute(attribute);
-  if (value) {
-    return value.toLowerCase();
-  }
-  return null;
-};
-
-/**
- * Converts a relative URL into an absolute URL.
- * @param {Object} doc Document.
- * @param {string} relativeURL Relative URL.
- * @return {string} Absolute URL.
- */
-__gCrWeb.common.absoluteURL = function(doc, relativeURL) {
-  // In the case of data: URL-based pages, relativeURL === absoluteURL.
-  if (doc.location.protocol === 'data:') {
-    return doc.location.href;
-  }
-  var urlNormalizer = doc['__gCrWebURLNormalizer'];
-  if (!urlNormalizer) {
-    urlNormalizer = doc.createElement('a');
-    doc['__gCrWebURLNormalizer'] = urlNormalizer;
-  }
-
-  // Use the magical quality of the <a> element. It automatically converts
-  // relative URLs into absolute ones.
-  urlNormalizer.href = relativeURL;
-  return urlNormalizer.href;
-};
-
-/**
  * Extracts the webpage URL from the given URL by removing the query
  * and the reference (aka fragment) from the URL.
  * @param {string} url Web page URL.
@@ -200,22 +135,9 @@ __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
 };
 
 /**
- * Checks whether the two URLs are from the same origin.
- * @param {string} url_one
- * @param {string} url_two
- * @return {boolean} Whether the two URLs have the same origin.
- */
-__gCrWeb.common.isSameOrigin = function(url_one, url_two) {
-  if (!url_one || !url_two) {
-    // Attempting to create URL representations of an empty string throws an
-    // exception.
-    return false;
-  }
-  return new URL(url_one).origin == new URL(url_two).origin;
-};
-
-/**
  * Posts |message| to the webkit message handler specified by |handlerName|.
+ * DEPRECATED: This function will be removed soon. Instead, use the
+ * implementation at //ios/web/public/js_messaging/resources/utils.ts
  *
  * @param {string} handlerName The name of the webkit message handler.
  * @param {Object} message The message to post to the handler.

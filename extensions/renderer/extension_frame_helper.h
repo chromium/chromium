@@ -121,7 +121,7 @@ class ExtensionFrameHelper
 
   void UpdateBrowserWindowId(int32_t window_id) override;
 
-  void set_did_create_script_context() { did_create_script_context_ = true; }
+  void NotifyDidCreateScriptContext(int32_t world_id);
   bool did_create_script_context() const { return did_create_script_context_; }
 
   // Called when the document element has been inserted in this frame. This

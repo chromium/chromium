@@ -5,14 +5,14 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CPU_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_CPU_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
 
 // Query information about the processor.
-class BASE_EXPORT CPU final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CPU final {
  public:
   CPU();
   CPU(CPU&&);

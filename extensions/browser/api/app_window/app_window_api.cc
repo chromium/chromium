@@ -190,7 +190,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
                                            create_params.window_key);
         if (existing_window) {
           content::RenderFrameHost* existing_frame =
-              existing_window->web_contents()->GetMainFrame();
+              existing_window->web_contents()->GetPrimaryMainFrame();
           int frame_id = MSG_ROUTING_NONE;
           if (source_process_id() == existing_frame->GetProcess()->GetID()) {
             frame_id = existing_frame->GetRoutingID();
@@ -410,7 +410,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   }
 
   content::RenderFrameHost* created_frame =
-      app_window->web_contents()->GetMainFrame();
+      app_window->web_contents()->GetPrimaryMainFrame();
   int frame_id = MSG_ROUTING_NONE;
   if (create_params.creator_process_id == created_frame->GetProcess()->GetID())
     frame_id = created_frame->GetRoutingID();

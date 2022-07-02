@@ -11,9 +11,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 struct SignedEntryData;
 
@@ -57,8 +55,6 @@ NET_EXPORT_PRIVATE bool ExtractSCTListFromOCSPResponse(
     base::StringPiece ocsp_response,
     std::string* sct_list);
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_CT_OBJECTS_EXTRACTOR_H_

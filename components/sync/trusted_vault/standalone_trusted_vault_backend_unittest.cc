@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -954,11 +955,19 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
 
   // Mimic successful key downloading, it should make fetch keys attempt
   // completed. Note that the client should keep old key as well.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(fetch_keys_callback,
               Run(/*keys=*/ElementsAre(kInitialVaultKey, kNewVaultKey)));
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
            kNewLastKeyVersion);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -994,10 +1003,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   Mock::VerifyAndClearExpectations(connection());
 
   // Mimic transient failure.
+  base::HistogramTester histogram_tester;
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kOtherError,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kOtherError,
+      /*expected_bucket_count=*/1);
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
@@ -1201,6 +1217,74 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultVerifyDeviceRegistration);
+
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kVaultKey}, kLastKeyVersion,
+                                      account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Now the device should be registered.
+  ASSERT_TRUE(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered());
+
+  // Mimic a restart. The device should remain registered.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  ASSERT_TRUE(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered());
+
+  // The device should not register again.
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  EXPECT_CALL(*connection(), DownloadNewKeys(Eq(account_info),
+                                             TrustedVaultKeyAndVersionEq(
+                                                 kVaultKey, kLastKeyVersion),
+                                             _, _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+                    std::unique_ptr<SecureBoxKeyPair> key_pair,
+                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
+        download_keys_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Advance exactly `kVerifyDeviceRegistrationDelay` so the download procedure
+  // kicks in. Due to the mock time and the synchronous behavior above of
+  // DownloadNewKeys(), there is no need for epsilons or additional waiting.
+  environment.FastForwardBy(base::Seconds(10));
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Mimic a successful request that returns no new keys.
+  base::HistogramTester histogram_tester;
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys, {}, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultVerifyDeviceRegistrationState",
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kNoNewKeys,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

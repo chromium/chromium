@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/phonehub/pref_names.h"
+#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
@@ -227,6 +231,16 @@ void MultideviceHandler::OnJavascriptAllowed() {
     pref_change_registrar_.Add(
         ::prefs::kNearbySharingEnabledPrefName,
         base::BindRepeating(&MultideviceHandler::OnNearbySharingEnabledChanged,
+                            base::Unretained(this)));
+  }
+  if (features::IsEcheSWAEnabled()) {
+    pref_change_registrar_.Add(
+        ash::prefs::kEnableAutoScreenLock,
+        base::BindRepeating(&MultideviceHandler::OnEnableScreenLockChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
+        phonehub::prefs::kScreenLockStatus,
+        base::BindRepeating(&MultideviceHandler::OnScreenLockStatusChanged,
                             base::Unretained(this)));
   }
 }
@@ -521,7 +535,6 @@ void MultideviceHandler::HandleCancelNotificationSetup(
 
 void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(!apps_access_operation_);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
@@ -541,9 +554,9 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
 
 void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(apps_access_operation_);
 
+  apps_access_manager_->NotifyAppsAccessCanceled();
   apps_access_operation_.reset();
 }
 
@@ -781,9 +794,7 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
                                       is_nearby_share_disallowed_by_policy);
 
   bool is_phone_hub_permissions_dialog_supported =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding) ||
-      base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll);
+      features::IsEcheSWAEnabled() || features::IsPhoneHubCameraRollEnabled();
   page_content_dictionary->SetBoolean(
       kIsPhoneHubPermissionsDialogSupported,
       is_phone_hub_permissions_dialog_supported);
@@ -840,6 +851,27 @@ MultideviceHandler::GetFeatureStatesMap() {
   return multidevice_setup::MultiDeviceSetupClient::
       GenerateDefaultFeatureStatesMap(
           multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
+}
+
+void MultideviceHandler::OnEnableScreenLockChanged() {
+  // We need to use FireWebUIListener to update value dynamically because
+  // loadTimeData is not recreated on refresh.
+  const bool is_screen_lock_enabled =
+      SessionControllerClientImpl::CanLockScreen() &&
+      SessionControllerClientImpl::ShouldLockScreenAutomatically();
+  FireWebUIListener("settings.OnEnableScreenLockChanged",
+                    base::Value(is_screen_lock_enabled));
+}
+
+void MultideviceHandler::OnScreenLockStatusChanged() {
+  // We need to use FireWebUIListener to update value dynamically because
+  // loadTimeData is not recreated on refresh.
+  const bool is_phone_screen_lock_enabled =
+      static_cast<ash::phonehub::ScreenLockManager::LockStatus>(
+          prefs_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
+      ash::phonehub::ScreenLockManager::LockStatus::kLockedOn;
+  FireWebUIListener("settings.OnScreenLockStatusChanged",
+                    base::Value(is_phone_screen_lock_enabled));
 }
 
 }  // namespace settings

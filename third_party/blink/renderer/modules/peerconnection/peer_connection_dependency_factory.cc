@@ -73,7 +73,6 @@
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
-#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace WTF {
@@ -648,10 +647,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
-  pcf_deps.task_queue_factory =
-      !base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)
-          ? CreateWebRtcTaskQueueFactory()
-          : CreateWebRtcMetronomeTaskQueueFactory();
+  pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
   DCHECK(metronome_source_);
   pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();
   pcf_deps.call_factory = webrtc::CreateCallFactory();

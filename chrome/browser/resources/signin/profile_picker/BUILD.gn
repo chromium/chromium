@@ -43,33 +43,7 @@ if (optimize_webui) {
   }
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "profile_picker"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "profile_picker.html",
-    "images/left_banner_image.svg",
-    "images/right_banner_image.svg",
-    "images/dark_mode_left_banner_image.svg",
-    "images/dark_mode_right_banner_image.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "profile_picker.rollup.js|profile_picker.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  }
-}
-
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }
@@ -129,4 +103,30 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "profile_picker"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "profile_picker.html",
+    "images/left_banner_image.svg",
+    "images/right_banner_image.svg",
+    "images/dark_mode_left_banner_image.svg",
+    "images/dark_mode_right_banner_image.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "profile_picker.rollup.js|profile_picker.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 }

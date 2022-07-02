@@ -10,7 +10,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -468,7 +468,16 @@ suite('SettingsDevicePage', function() {
     PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.BASIC);
 
-    DevicePageBrowserProxyImpl.setInstance(new TestDevicePageBrowserProxy());
+    DevicePageBrowserProxyImpl.setInstanceForTesting(
+        new TestDevicePageBrowserProxy());
+
+    // Allow the light DOM to be distributed to settings-animated-pages.
+    setTimeout(done);
+  });
+
+  async function init() {
+    // await is necessary in order for setup() to complete.
+    await flushTasks();
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
 
@@ -477,10 +486,7 @@ suite('SettingsDevicePage', function() {
     basicPage.dataset.page = 'basic';
     basicPage.appendChild(devicePage);
     document.body.appendChild(basicPage);
-
-    // Allow the light DOM to be distributed to settings-animated-pages.
-    setTimeout(done);
-  });
+  }
 
   /** @return {!Promise<!HTMLElement>} */
   function showAndGetDeviceSubpage(subpage, expectedRoute) {
@@ -628,17 +634,6 @@ suite('SettingsDevicePage', function() {
   }
 
   /**
-   * Returns whether the element both exists and is visible.
-   * @param {?Element} element
-   * @return {boolean}
-   */
-  function isVisible(element) {
-    // offsetWidth and offsetHeight reflect more ways that an element could be
-    // hidden, compared to checking the hidden attribute directly.
-    return !!element && element.offsetWidth > 0 && element.offsetHeight > 0;
-  }
-
-  /**
    * Checks that the deep link to a setting focuses the correct element.
    * @param {!Route} route
    * @param {!string} settingId
@@ -658,10 +653,38 @@ suite('SettingsDevicePage', function() {
         `${elementDesc} should be focused for settingId=${settingId}.`);
   }
 
-  test(assert(TestNames.DevicePage), function() {
+  test(assert(TestNames.DevicePage), async function() {
+    await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
+
+    // enableAudioSettingsPage feature flag by default is turned off.
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+
+    webUIListenerCallback('has-mouse-changed', false);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-pointing-stick-changed', false);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-touchpad-changed', false);
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+
+    webUIListenerCallback('has-mouse-changed', true);
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+  });
+
+  test('audio row visibility', async function() {
+    loadTimeData.overrideValues({
+      enableAudioSettingsPage: true,
+    });
+
+    await init();
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
@@ -679,7 +702,8 @@ suite('SettingsDevicePage', function() {
   suite(assert(TestNames.Pointers), function() {
     let pointersPage;
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('pointers', routes.POINTERS)
           .then(function(page) {
             pointersPage = page;
@@ -919,6 +943,7 @@ suite('SettingsDevicePage', function() {
     let keyboardPage;
 
     setup(async () => {
+      await init();
       keyboardPage = await showAndGetDeviceSubpage('keyboard', routes.KEYBOARD);
     });
 
@@ -1074,6 +1099,7 @@ suite('SettingsDevicePage', function() {
     let browserProxy;
 
     setup(async () => {
+      await init();
       displayPage = await showAndGetDeviceSubpage('display', routes.DISPLAY);
       browserProxy = DevicePageBrowserProxyImpl.getInstance();
       await fakeSystemDisplay.getInfoCalled.promise;
@@ -1316,7 +1342,7 @@ suite('SettingsDevicePage', function() {
 
       const deepLinkElement =
           displayPage.shadowRoot.querySelector('#displayMirrorCheckbox')
-              .$$('#checkbox');
+              .shadowRoot.querySelector('#checkbox');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -1391,6 +1417,7 @@ suite('SettingsDevicePage', function() {
 
   test(assert(TestNames.NightLight), async function() {
     // Set up a single display.
+    await init();
     const displayPage =
         await showAndGetDeviceSubpage('display', routes.DISPLAY);
     await fakeSystemDisplay.getInfoCalled.promise;
@@ -1452,7 +1479,8 @@ suite('SettingsDevicePage', function() {
         });
       });
 
-      setup(function() {
+      setup(async function() {
+        await init();
         return showAndGetDeviceSubpage('power', routes.POWER)
             .then(function(page) {
               powerPage = page;
@@ -1492,7 +1520,8 @@ suite('SettingsDevicePage', function() {
             });
       });
 
-      test('no battery', function() {
+      test('no battery', async function() {
+        await init();
         const batteryStatus = {
           present: false,
           charging: false,
@@ -1917,11 +1946,11 @@ suite('SettingsDevicePage', function() {
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
               assertTrue(acIdleSelect.disabled);
               assertTrue(batteryIdleSelect.disabled);
-              expectNotEquals(
+              assertNotEquals(
                   null,
                   powerPage.shadowRoot.querySelector(
                       '#acIdleManagedIndicator'));
-              expectNotEquals(
+              assertNotEquals(
                   null,
                   powerPage.shadowRoot.querySelector(
                       '#batteryIdleManagedIndicator'));
@@ -2053,7 +2082,8 @@ suite('SettingsDevicePage', function() {
       });
     });
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('stylus', routes.STYLUS)
           .then(function(page) {
             stylusPage = page;
@@ -2633,7 +2663,8 @@ suite('SettingsDevicePage', function() {
       testing.Test.disableAnimationsAndTransitions();
     });
 
-    setup(function() {
+    setup(async function() {
+      await init();
       return showAndGetDeviceSubpage('storage', routes.STORAGE)
           .then(function(page) {
             storagePage = page;

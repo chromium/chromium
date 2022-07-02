@@ -20,13 +20,10 @@
 
 namespace blink {
 
-const double AudioScheduledSourceHandler::kUnknownTime = -1;
-
 AudioScheduledSourceHandler::AudioScheduledSourceHandler(NodeType node_type,
                                                          AudioNode& node,
                                                          float sample_rate)
     : AudioHandler(node_type, node, sample_rate),
-      start_time_(0),
       end_time_(kUnknownTime),
       playback_state_(UNSCHEDULED_STATE) {
   if (Context()->GetExecutionContext()) {
@@ -97,7 +94,7 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
     SetPlaybackState(PLAYING_STATE);
     // Determine the offset of the true start time from the starting frame.
     // NOTE: start_frame_offset is usually negative, but may not be because of
-    // the rounding that may happen in computing |start_frame| above.
+    // the rounding that may happen in computing `start_frame` above.
     start_frame_offset = start_time_ * sample_rate - start_frame;
   } else {
     start_frame_offset = 0;
@@ -188,10 +185,11 @@ void AudioScheduledSourceHandler::Start(double when,
 
   // This synchronizes with process(). updateSchedulingInfo will read some of
   // the variables being set here.
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
-  // If |when| < currentTime, the source must start now according to the spec.
-  // So just set startTime to currentTime in this case to start the source now.
+  // If `when` < `currentTime()`, the source must start now according to the
+  // spec. So just set `start_time_` to `currentTime()` in this case to start
+  // the source now.
   start_time_ = std::max(when, Context()->currentTime());
 
   SetPlaybackState(SCHEDULED_STATE);
@@ -215,7 +213,7 @@ void AudioScheduledSourceHandler::Stop(double when,
   }
 
   // This synchronizes with process()
-  MutexLocker process_locker(process_lock_);
+  base::AutoLock process_locker(process_lock_);
 
   // stop() can be called more than once, with the last call to stop taking
   // effect, unless the source has already stopped due to earlier calls to stop.
@@ -243,7 +241,7 @@ void AudioScheduledSourceHandler::Finish() {
 
 void AudioScheduledSourceHandler::NotifyEnded() {
   // NotifyEnded is always called when the node is finished, even if
-  // htere are no event listeners.  We always dispatch the event and
+  // there are no event listeners.  We always dispatch the event and
   // let DispatchEvent take are of sending the event to the right
   // place,
   DCHECK(IsMainThread());

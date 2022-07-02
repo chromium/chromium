@@ -48,12 +48,11 @@ void ShowCustomizationBubble(absl::optional<SkColor> new_profile_color,
     // no conflict with a synced theme / color.
     ProfileCustomizationBubbleSyncController::
         ApplyColorAndShowBubbleWhenNoValueSynced(
-            browser->profile(), anchor_view,
+            browser, anchor_view,
             /*suggested_profile_color=*/new_profile_color.value());
   } else {
     // For non syncing users, simply show the bubble.
-    ProfileCustomizationBubbleView::CreateBubble(browser->profile(),
-                                                 anchor_view);
+    ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
   }
 }
 

@@ -19,3 +19,10 @@ filegroup(
         "*.png",
     ]),
 )
+
+filegroup(
+    name = "test_indices",
+    srcs = glob([
+        "*.ldb",
+    ]),
+)

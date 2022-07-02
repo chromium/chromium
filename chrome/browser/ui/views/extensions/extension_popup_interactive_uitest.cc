@@ -22,6 +22,10 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using ExtensionPopupInteractiveUiTest = extensions::ExtensionApiTest;
 
 // Tests unloading an extension while its popup is actively under inspection.
@@ -114,9 +118,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // The permission may be shown using a chip UI instead of a popped-up bubble.
   // If so, click on the chip to open the bubble.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  PermissionChip* chip = browser_view->toolbar()->location_bar()->chip();
-  if (chip) {
-    views::test::ButtonTestApi(chip->button())
+  LocationBarView* lbv = browser_view->toolbar()->location_bar();
+  if (lbv->IsChipActive() && !lbv->chip()->IsBubbleShowing()) {
+    views::test::ButtonTestApi(lbv->chip()->button())
         .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -146,11 +150,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // bubble.
   const bool is_stacked_above = views::test::WidgetTest::IsWindowStackedAbove(
       extension_popup->GetWidget(), permissions_api.GetPromptWindow());
+
 #if BUILDFLAG(IS_MAC)
-  // This doesn't yet work on mac.
-  // TODO(https://crbug.com/1300006): Investigate and fix.
-  EXPECT_TRUE(is_stacked_above);
-#else
-  EXPECT_FALSE(is_stacked_above);
+  // Child window re-ordering is not reliable on macOS <= 10.13.
+  if (base::mac::IsAtMostOS10_13())
+    return;
 #endif
+  EXPECT_FALSE(is_stacked_above);
 }

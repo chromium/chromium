@@ -526,14 +526,16 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
   // around all of the effects.
   SwitchToTransform(effect.LocalTransformSpace().Unalias());
 
-  // We always create separate effect nodes for normal effects and filter
-  // effects, so we can handle them separately.
   bool has_filter = !effect.Filter().IsEmpty();
   bool has_opacity = effect.Opacity() != 1.f;
+  // TODO(crbug.com/1334293): Normally backdrop filters should be composited and
+  // effect.BackdropFilter() should be null, but compositing can be disabled in
+  // rare cases such as PaintPreview. For now non-composited backdrop filters
+  // are not supported and are ignored.
   bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver;
+  // We always create separate effect nodes for normal effects and filter
+  // effects, so we can handle them separately.
   DCHECK(!has_filter || !(has_opacity || has_other_effects));
-  // We always composite backdrop filters.
-  DCHECK(!effect.BackdropFilter());
 
   // Apply effects.
   cc_list_.StartPaint();
@@ -842,7 +844,8 @@ static void UpdateBackgroundColor(cc::Layer& layer,
   Color background_color;
   for (Color color : base::Reversed(background_colors))
     background_color = background_color.Blend(color);
-  layer.SetBackgroundColor(background_color.Rgb());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  layer.SetBackgroundColor(SkColor4f::FromColor(background_color.Rgb()));
 }
 
 static void UpdateTouchActionRegion(
@@ -1013,15 +1016,19 @@ ConvertPaintedSelectionBoundToLayerSelectionBound(
   return layer_bound;
 }
 
-void PaintChunksToCcLayer::UpdateLayerSelection(
+bool PaintChunksToCcLayer::UpdateLayerSelection(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
     cc::LayerSelection& layer_selection) {
   gfx::Vector2dF layer_offset = layer.offset_to_transform_parent();
+  bool any_selection_was_painted = false;
   for (const auto& chunk : chunks) {
     if (!chunk.layer_selection_data)
       continue;
+
+    any_selection_was_painted |=
+        chunk.layer_selection_data->any_selection_was_painted;
 
     auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
     if (chunk.layer_selection_data->start) {
@@ -1040,6 +1047,8 @@ void PaintChunksToCcLayer::UpdateLayerSelection(
       layer_selection.end.layer_id = layer.id();
     }
   }
+
+  return any_selection_was_painted;
 }
 
 void PaintChunksToCcLayer::UpdateLayerProperties(

@@ -23,6 +23,11 @@
 #include "chrome/browser/shell_integration_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/profiles/profile.h"
+#endif
+
 using extensions::AppWindow;
 
 ui::WindowShowState
@@ -61,6 +66,18 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
   const char kX11WindowRoleApp[] = "app";
   init_params->wm_role_name = std::string(kX11WindowRoleApp);
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params->restore_session_id = app_window()->session_id().id();
+  // `MuxId` could return a non-empty string even if extension is null, so don't
+  // save `restore_window_id_source` to avoid that.
+  if (app_window()->GetExtension()) {
+    Profile* profile =
+        Profile::FromBrowserContext(app_window()->browser_context());
+    init_params->restore_window_id_source =
+        lacros_extensions_util::MuxId(profile, app_window()->GetExtension());
+  }
+#endif
 
   ChromeNativeAppWindowViews::OnBeforeWidgetInit(create_params, init_params,
                                                  widget);

@@ -54,7 +54,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
   bool IsBasicShapeValue() const {
     return class_type_ >= kBasicShapeCircleClass &&
-           class_type_ <= kBasicShapeInsetClass;
+           class_type_ <= kBasicShapeRectClass;
   }
   bool IsBasicShapeCircleValue() const {
     return class_type_ == kBasicShapeCircleClass;
@@ -67,6 +67,12 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsBasicShapeInsetValue() const {
     return class_type_ == kBasicShapeInsetClass;
+  }
+  bool IsBasicShapeRectValue() const {
+    return class_type_ == kBasicShapeRectClass;
+  }
+  bool IsBasicShapeXYWHValue() const {
+    return class_type_ == kBasicShapeXYWHClass;
   }
 
   bool IsBorderImageSliceValue() const {
@@ -221,6 +227,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kBasicShapeEllipseClass,
     kBasicShapePolygonClass,
     kBasicShapeInsetClass,
+    kBasicShapeRectClass,
+    kBasicShapeXYWHClass,
 
     // Image classes.
     kImageClass,

@@ -5,15 +5,14 @@
 #ifndef SERVICES_NETWORK_BROKERED_CLIENT_SOCKET_FACTORY_H_
 #define SERVICES_NETWORK_BROKERED_CLIENT_SOCKET_FACTORY_H_
 
-#include <memory>
-#include <string>
-
 #include "base/component_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_socket.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/transport_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/socket_broker.mojom.h"
 
 namespace net {
 
@@ -35,7 +34,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredClientSocketFactory
     : public net::ClientSocketFactory {
  public:
-  BrokeredClientSocketFactory();
+  explicit BrokeredClientSocketFactory(
+      mojo::PendingRemote<mojom::SocketBroker> pending_remote);
   ~BrokeredClientSocketFactory() override;
 
   BrokeredClientSocketFactory(const BrokeredClientSocketFactory&) = delete;
@@ -58,6 +58,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredClientSocketFactory
       std::unique_ptr<net::StreamSocket> stream_socket,
       const net::HostPortPair& host_and_port,
       const net::SSLConfig& ssl_config) override;
+
+  // Sends an IPC to the SocketBroker to create a new TCP socket.
+  void BrokerCreateTcpSocket(
+      net::AddressFamily address_family,
+      mojom::SocketBroker::CreateTcpSocketCallback callback);
+
+ private:
+  mojo::Remote<mojom::SocketBroker> socket_broker_;
 };
 
 }  // namespace network

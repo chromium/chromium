@@ -2,6 +2,7 @@
 
 pub mod atom;
 pub mod attrs;
+pub mod cfg;
 pub mod check;
 pub mod derive;
 mod discriminant;
@@ -30,13 +31,14 @@ pub mod types;
 mod visit;
 
 use self::attrs::OtherAttrs;
+use self::cfg::CfgExpr;
 use self::namespace::Namespace;
 use self::parse::kw;
 use self::symbol::Symbol;
 use proc_macro2::{Ident, Span};
 use syn::punctuated::Punctuated;
 use syn::token::{Brace, Bracket, Paren};
-use syn::{Attribute, Expr, Generics, Lifetime, LitInt, Path, Token, Type as RustType};
+use syn::{Attribute, Expr, Generics, Lifetime, LitInt, Token, Type as RustType};
 
 pub use self::atom::Atom;
 pub use self::derive::{Derive, Trait};
@@ -59,6 +61,7 @@ pub enum Api {
 }
 
 pub struct Include {
+    pub cfg: CfgExpr,
     pub path: String,
     pub kind: IncludeKind,
     pub begin_span: Span,
@@ -75,6 +78,7 @@ pub enum IncludeKind {
 }
 
 pub struct ExternType {
+    pub cfg: CfgExpr,
     pub lang: Lang,
     pub doc: Doc,
     pub derives: Vec<Derive>,
@@ -90,6 +94,7 @@ pub struct ExternType {
 }
 
 pub struct Struct {
+    pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
     pub attrs: OtherAttrs,
@@ -102,6 +107,7 @@ pub struct Struct {
 }
 
 pub struct Enum {
+    pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
     pub attrs: OtherAttrs,
@@ -118,11 +124,18 @@ pub struct Enum {
 }
 
 pub enum EnumRepr {
-    Native { atom: Atom, repr_type: Type },
-    Foreign { rust_type: Path },
+    Native {
+        atom: Atom,
+        repr_type: Type,
+    },
+    #[cfg(feature = "experimental-enum-variants-from-header")]
+    Foreign {
+        rust_type: syn::Path,
+    },
 }
 
 pub struct ExternFn {
+    pub cfg: CfgExpr,
     pub lang: Lang,
     pub doc: Doc,
     pub attrs: OtherAttrs,
@@ -134,6 +147,7 @@ pub struct ExternFn {
 }
 
 pub struct TypeAlias {
+    pub cfg: CfgExpr,
     pub doc: Doc,
     pub derives: Vec<Derive>,
     pub attrs: OtherAttrs,
@@ -147,6 +161,7 @@ pub struct TypeAlias {
 }
 
 pub struct Impl {
+    pub cfg: CfgExpr,
     pub impl_token: Token![impl],
     pub impl_generics: Lifetimes,
     pub negative: bool,
@@ -164,6 +179,7 @@ pub struct Lifetimes {
 }
 
 pub struct Signature {
+    pub asyncness: Option<Token![async]>,
     pub unsafety: Option<Token![unsafe]>,
     pub fn_token: Token![fn],
     pub generics: Generics,
@@ -176,6 +192,7 @@ pub struct Signature {
 }
 
 pub struct Var {
+    pub cfg: CfgExpr,
     pub doc: Doc,
     pub attrs: OtherAttrs,
     pub visibility: Token![pub],
@@ -198,6 +215,7 @@ pub struct Receiver {
 }
 
 pub struct Variant {
+    pub cfg: CfgExpr,
     pub doc: Doc,
     pub attrs: OtherAttrs,
     pub name: Pair,

@@ -27,7 +27,6 @@ TEST_F(StructTraitsTest, RendererSettings) {
   input.should_clear_root_render_pass = false;
   input.release_overlay_resources_after_gpu_query = true;
   input.highp_threshold_min = -1;
-  input.use_skia_renderer = true;
 
   RendererSettings output;
   mojom::RendererSettings::Deserialize(
@@ -44,7 +43,6 @@ TEST_F(StructTraitsTest, RendererSettings) {
   EXPECT_EQ(input.release_overlay_resources_after_gpu_query,
             output.release_overlay_resources_after_gpu_query);
   EXPECT_EQ(input.highp_threshold_min, output.highp_threshold_min);
-  EXPECT_EQ(input.use_skia_renderer, output.use_skia_renderer);
 }
 
 TEST_F(StructTraitsTest, DebugRendererSettings) {

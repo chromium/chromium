@@ -16,12 +16,12 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "net/url_request/test_url_fetcher_factory.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace invalidation {
 
@@ -253,35 +253,6 @@ TEST_F(PerUserTopicSubscriptionRequestTest, ShouldUnsubscribe) {
 
   EXPECT_EQ(status.code, StatusCode::SUCCESS);
   EXPECT_EQ(status.message, std::string());
-}
-
-TEST_F(PerUserTopicSubscriptionRequestTest, ShouldSkipUnsubscription) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(kInvalidationsSkipUnsubscription);
-
-  PerUserTopicSubscriptionRequest::Builder builder;
-  std::unique_ptr<PerUserTopicSubscriptionRequest> request =
-      builder.SetInstanceIdToken("1234567890")
-          .SetScope("http://valid-url.test")
-          .SetPublicTopicName("test")
-          .SetProjectId("smarty-pants-12345")
-          .SetType(PerUserTopicSubscriptionRequest::UNSUBSCRIBE)
-          .Build();
-
-  base::MockCallback<PerUserTopicSubscriptionRequest::CompletedCallback>
-      callback;
-  Status status(StatusCode::SUCCESS, "initial");
-
-  EXPECT_CALL(callback, Run(_, _)).WillOnce(SaveArg<0>(&status));
-
-  request->Start(callback.Get(), url_loader_factory());
-  base::RunLoop().RunUntilIdle();
-
-  // Since the feature to skip unsubscriptions was specified, no network request
-  // should have been sent, but a non-retriable failure should be reported
-  // immediately.
-  EXPECT_EQ(url_loader_factory()->NumPending(), 0);
-  EXPECT_EQ(status.code, StatusCode::FAILED_NON_RETRIABLE);
 }
 
 // Regression test for crbug.com/1054590, |completed_callback| destroys

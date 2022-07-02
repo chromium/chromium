@@ -40,7 +40,6 @@ DownloadShelfContextMenu::DownloadShelfContextMenu(
     base::WeakPtr<DownloadUIModel> download)
     : download_(download), download_commands_(new DownloadCommands(download)) {
   DCHECK(download_);
-  download_->AddObserver(this);
 }
 
 void DownloadShelfContextMenu::RecordCommandsEnabled(
@@ -51,8 +50,7 @@ void DownloadShelfContextMenu::RecordCommandsEnabled(
     return;
   }
 
-  for (int command_int = 1;
-       command_int < DownloadCommands::Command::BYPASS_DEEP_SCANNING;
+  for (int command_int = 1; command_int < DownloadCommands::Command::MAX;
        command_int++) {
     if (model->GetIndexOfCommandId(command_int) != -1 &&
         IsCommandIdEnabled(command_int)) {
@@ -206,6 +204,9 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       id = IDS_OPEN_DOWNLOAD_NOW;
       break;
+    // These commands are not supported on the context menu.
+    case DownloadCommands::REVIEW:
+    case DownloadCommands::RETRY:
     case DownloadCommands::MAX:
       NOTREACHED();
       break;
@@ -219,7 +220,6 @@ void DownloadShelfContextMenu::DetachFromDownloadItem() {
     return;
 
   download_commands_.reset();
-  download_->RemoveObserver(this);
   download_ = nullptr;
 }
 

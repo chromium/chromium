@@ -65,6 +65,48 @@
       });
     },
 
+    async function testOpenFilePickerAPI() {
+      const [event] = await Promise.all([
+        dp.Page.onceFileChooserOpened(),
+        session.evaluateAsyncWithUserGesture(async () => {
+          try {
+            await window.showOpenFilePicker();
+          }
+          catch (e) {
+            LOG(e.message);
+          }
+        }),
+      ]);
+    },
+
+    async function testSaveFilePickerAPI() {
+      const [event] = await Promise.all([
+        dp.Page.onceFileChooserOpened(),
+        session.evaluateAsyncWithUserGesture(async () => {
+          try {
+            await window.showSaveFilePicker();
+          }
+          catch (e) {
+            LOG(e.message);
+          }
+        }),
+      ]);
+    },
+
+    async function testDirectoryPickerAPI() {
+      const [event] = await Promise.all([
+        dp.Page.onceFileChooserOpened(),
+        session.evaluateAsyncWithUserGesture(async () => {
+          try {
+            await window.showDirectoryPicker();
+          }
+          catch (e) {
+            LOG(e.message);
+          }
+        }),
+      ]);
+    },
+
     async function testErrors() {
       testRunner.log('Try enabling file interception in multiclient');
       const session2 = await page.createSession();

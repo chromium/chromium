@@ -44,6 +44,7 @@ extern const char kChromeUIHistogramHost[];
 extern const char kChromeUIHistoryHost[];
 extern const char kChromeUIInspectHost[];
 extern const char kChromeUIIntersitialsHost[];
+extern const char kChromeUILocalStateHost[];
 extern const char kChromeUIManagementHost[];
 extern const char kChromeUINetExportHost[];
 extern const char kChromeUINewTabHost[];

@@ -367,6 +367,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
   }
 
   if (parent_space.HasBlockFragmentation() && !need_break_before &&
+      !IsResumingLayout(unpositioned_float->token) &&
       exclusion_space->NeedsBreakBeforeFloat(
           unpositioned_float->ClearType(parent_space.Direction())))
     need_break_before = true;

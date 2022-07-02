@@ -349,11 +349,11 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       AddChildView(std::move(destination_dropdown));
 
     const auto titles = GetCredentialLabelsForAccountChooser(password_form);
-    AddChildView(std::make_unique<CredentialsItemView>(
-                     views::Button::PressedCallback(), titles.first,
-                     titles.second, &password_form,
-                     GetURLLoaderForMainFrame(web_contents).get(),
-                     web_contents->GetMainFrame()->GetLastCommittedOrigin()))
+    AddChildView(
+        std::make_unique<CredentialsItemView>(
+            views::Button::PressedCallback(), titles.first, titles.second,
+            &password_form, GetURLLoaderForMainFrame(web_contents).get(),
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()))
         ->SetEnabled(false);
   } else {
     std::unique_ptr<views::EditableCombobox> username_dropdown =

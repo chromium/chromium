@@ -81,7 +81,7 @@ class MockExternalPolicyProviderVisitor
 
   bool OnExternalExtensionUpdateUrlFound(
       const extensions::ExternalInstallInfoUpdateUrl& info,
-      bool is_initial_load) override {
+      bool force_update) override {
     // Extension has the correct location.
     EXPECT_EQ(ManifestLocation::kExternalPolicyDownload,
               info.download_location);

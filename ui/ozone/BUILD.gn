@@ -34,11 +34,6 @@ ozone_platform_ui_test_support_deps =
 ozone_platform_interactive_ui_tests_sources =
     ozone_external_interactive_ui_tests_deps
 
-if (ozone_platform_windows) {
-  ozone_platforms += [ "windows" ]
-  ozone_platform_deps += [ "platform/windows" ]
-}
-
 if (ozone_platform_headless) {
   ozone_platforms += [ "headless" ]
   ozone_platform_deps += [ "platform/headless" ]
@@ -96,6 +91,8 @@ component("ozone_base") {
     "public/hardware_capabilities.h",
     "public/input_controller.cc",
     "public/input_controller.h",
+    "public/native_pixmap_gl_binding.cc",
+    "public/native_pixmap_gl_binding.h",
     "public/overlay_candidates_ozone.cc",
     "public/overlay_candidates_ozone.h",
     "public/overlay_manager_ozone.h",
@@ -270,7 +267,6 @@ source_set("test_support_internal") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
-    "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
@@ -324,6 +320,7 @@ static_library("test_support") {
   visibility = [
     ":*",
     "platform/flatland:flatland_unittests",
+    "platform/wayland:test_support",
     "platform/wayland:wayland_unittests",
     "platform/x11:x11_unittests",
   ]
@@ -410,6 +407,7 @@ test("ozone_unittests") {
 
   deps = [
     ":test_support",
+    "//mojo/core/test:run_all_unittests",
     "//ui/ozone/common:unittests",
   ]
 
@@ -429,7 +427,10 @@ if (ozone_platform_x11) {
   test("ozone_x11_unittests") {
     use_xvfb = true
 
-    deps = [ ":test_support" ]
+    deps = [
+      ":test_support",
+      "//mojo/core/test:run_all_unittests",
+    ]
 
     deps += [ "platform/x11:x11_unittests" ]
 

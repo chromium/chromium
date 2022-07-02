@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 
@@ -31,7 +32,8 @@ void WaylandDrm::Instantiate(WaylandConnection* connection,
                              uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->drm_ ||
+  auto* buffer_factory = connection->wayland_buffer_factory();
+  if (buffer_factory->wayland_drm_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
@@ -41,7 +43,8 @@ void WaylandDrm::Instantiate(WaylandConnection* connection,
     LOG(ERROR) << "Failed to bind wl_drm";
     return;
   }
-  connection->drm_ = std::make_unique<WaylandDrm>(wl_drm.release(), connection);
+  buffer_factory->wayland_drm_ =
+      std::make_unique<WaylandDrm>(wl_drm.release(), connection);
 }
 
 WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
@@ -90,6 +93,12 @@ void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
   connection_->ScheduleFlush();
 
   std::move(callback).Run(std::move(buffer));
+}
+
+bool WaylandDrm::CanCreateBufferImmed() const {
+  // Unlike the WaylandZwpLinuxDmabuf, the WaylandDrm always creates wl_buffers
+  // immediately.
+  return true;
 }
 
 void WaylandDrm::HandleDrmFailure(const std::string& error) {

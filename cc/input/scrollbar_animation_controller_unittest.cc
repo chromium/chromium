@@ -34,8 +34,9 @@ const int kThumbThickness = 10;
 class MockScrollbarAnimationControllerClient
     : public ScrollbarAnimationControllerClient {
  public:
-  explicit MockScrollbarAnimationControllerClient(LayerTreeHostImpl* host_impl)
-      : host_impl_(host_impl) {}
+  explicit MockScrollbarAnimationControllerClient(LayerTreeHostImpl* host_impl,
+                                                  bool is_fluent)
+      : host_impl_(host_impl), is_fluent_(is_fluent) {}
   ~MockScrollbarAnimationControllerClient() override = default;
 
   void PostDelayedScrollbarAnimationTask(base::OnceClosure start_fade,
@@ -49,6 +50,7 @@ class MockScrollbarAnimationControllerClient
     return host_impl_->ScrollbarsFor(scroll_element_id);
   }
   MOCK_METHOD0(DidChangeScrollbarVisibility, void());
+  bool IsFluentScrollbar() const override { return is_fluent_; }
 
   base::OnceClosure& start_fade() { return start_fade_; }
   base::TimeDelta& delay() { return delay_; }
@@ -57,13 +59,15 @@ class MockScrollbarAnimationControllerClient
   base::OnceClosure start_fade_;
   base::TimeDelta delay_;
   raw_ptr<LayerTreeHostImpl> host_impl_;
+  bool is_fluent_;
 };
 
 class ScrollbarAnimationControllerAuraOverlayTest
     : public LayerTreeImplTestBase,
       public testing::Test {
  public:
-  ScrollbarAnimationControllerAuraOverlayTest() : client_(host_impl()) {}
+  explicit ScrollbarAnimationControllerAuraOverlayTest(bool is_fluent = false)
+      : client_(host_impl(), is_fluent) {}
 
   void ExpectScrollbarsOpacity(float opacity) {
     EXPECT_FLOAT_EQ(opacity, v_scrollbar_layer_->Opacity());
@@ -151,6 +155,19 @@ class ScrollbarAnimationControllerAuraOverlayTest
   raw_ptr<SolidColorScrollbarLayerImpl> v_scrollbar_layer_;
   raw_ptr<SolidColorScrollbarLayerImpl> h_scrollbar_layer_;
   NiceMock<MockScrollbarAnimationControllerClient> client_;
+};
+
+class ScrollbarAnimationControllerFluentOverlayTest
+    : public ScrollbarAnimationControllerAuraOverlayTest {
+ public:
+  ScrollbarAnimationControllerFluentOverlayTest()
+      : ScrollbarAnimationControllerAuraOverlayTest(/* is_fluent */ true) {}
+
+  void SetUp() override {
+    ScrollbarAnimationControllerAuraOverlayTest::SetUp();
+    // Mock initial call for did request show on page load.
+    scrollbar_controller_->DidRequestShow();
+  }
 };
 
 // Check initialization of scrollbar. Should start off invisible and thin.
@@ -1291,6 +1308,52 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest, TickmakrsShowHide) {
   EXPECT_EQ(kFadeDelay, client_.delay());
 }
 
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       FluentScrollbarMinimalModeByDefault) {
+  // An fade out animation should have not been enqueued. Scrollbar stays in
+  // the minimal (thin) mode.
+  EXPECT_TRUE(client_.start_fade().is_null());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  v_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  h_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FALSE(scrollbar_controller_->ScrollbarsHidden());
+  ExpectScrollbarsOpacity(1.f);
+}
+
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       FluentScrollbarMinimalModeOnMouseLeave) {
+  // Move mouse inside scroller.
+  scrollbar_controller_->DidMouseMove(gfx::PointF(50, 50));
+  EXPECT_TRUE(client_.start_fade().is_null());
+  ExpectScrollbarsOpacity(1.f);
+
+  // Trigger mouse leave to check that Fluent overlay scrollbars don't fade out.
+  scrollbar_controller_->DidMouseLeave();
+
+  // An fade out animation should have not been enqueued. Scrollbar stays in
+  // the minimal (thin) mode.
+  EXPECT_TRUE(client_.start_fade().is_null());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  v_scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  h_scrollbar_layer_->thumb_thickness_scale_factor());
+  ExpectScrollbarsOpacity(1.f);
+}
+
+TEST_F(ScrollbarAnimationControllerFluentOverlayTest,
+       FluentScrollbarMinimalModeOnWillUpdateScroll) {
+  // Scrollbar should be visible on scroll will update.
+  scrollbar_controller_->WillUpdateScroll();
+
+  // An fade out animation should have not been enqueued. Scrollbar stays in
+  // the minimal (thin) mode.
+  EXPECT_TRUE(client_.start_fade().is_null());
+  EXPECT_FLOAT_EQ(kIdleThicknessScale,
+                  v_scrollbar_layer_->thumb_thickness_scale_factor());
+  ExpectScrollbarsOpacity(1.f);
+}
+
 class ScrollbarAnimationControllerAndroidTest
     : public LayerTreeImplTestBase,
       public testing::Test,
@@ -1314,6 +1377,7 @@ class ScrollbarAnimationControllerAndroidTest
     return host_impl()->ScrollbarsFor(scroll_element_id);
   }
   void DidChangeScrollbarVisibility() override {}
+  bool IsFluentScrollbar() const override { return false; }
 
  protected:
   void SetUp() override {

@@ -14,16 +14,16 @@
 
 namespace features {
 
+GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
+
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 #if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
 GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
 GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
 GPU_EXPORT extern const base::Feature kAImageReader;
 GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
-GPU_EXPORT extern const base::Feature kWebViewZeroCopyVideo;
 GPU_EXPORT extern const base::Feature kWebViewThreadSafeMediaDefault;
 GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -66,7 +66,11 @@ GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 
 GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
 
+GPU_EXPORT extern const base::Feature kNoDiscardableMemoryForGpuDecodePath;
+
 GPU_EXPORT extern const base::Feature kEnableDrDc;
+
+GPU_EXPORT extern const base::Feature kForceGpuMainThreadToNormalPriorityDrDc;
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
@@ -76,8 +80,10 @@ GPU_EXPORT extern const base::Feature kEnableDrDcVulkan;
 
 GPU_EXPORT extern const base::Feature kWebGPUService;
 
+GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
+GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 
@@ -85,7 +91,6 @@ GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsAImageReaderEnabled();
 GPU_EXPORT bool IsAndroidSurfaceControlEnabled();
 GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();
-GPU_EXPORT bool IsWebViewZeroCopyVideoEnabled();
 GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif

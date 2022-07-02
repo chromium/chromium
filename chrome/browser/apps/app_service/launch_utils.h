@@ -70,12 +70,10 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
 extensions::AppLaunchSource GetAppLaunchSource(
     apps::mojom::LaunchSource launch_source);
 
-// Returns event flag for |container| and |disposition|. If |prefer_container|
-// is true, |disposition| will be ignored. Otherwise, |container| is ignored and
-// an event flag based on |disposition| will be returned.
-int GetEventFlags(apps::mojom::LaunchContainer container,
-                  WindowOpenDisposition disposition,
-                  bool prefer_container);
+// Returns event flag for |disposition|. If |prefer_container|
+// is true, |disposition| will be ignored. Otherwise, an event flag based on
+// |disposition| will be returned.
+int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container);
 
 // Returns the browser's session id for restoration if |web_contents| is valid
 // for a system web app, or for a web app not opened in tab. Otherwise, returns

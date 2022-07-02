@@ -10,6 +10,7 @@
       "*://*.example3.com/*",
       "*://*.example4.com/*"],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   }
 }

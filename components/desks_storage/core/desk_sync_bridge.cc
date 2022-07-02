@@ -13,6 +13,7 @@
 #include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,6 +66,9 @@ using SyncWindowOpenDisposition =
 using ProgressiveWebApp = sync_pb::WorkspaceDeskSpecifics_ProgressiveWebApp;
 using ChromeApp = sync_pb::WorkspaceDeskSpecifics_ChromeApp;
 using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
+using SyncTabGroup = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_TabGroup;
+using SyncTabGroupColor = sync_pb::WorkspaceDeskSpecifics_TabGroupColor;
+using TabGroupColor = tab_groups::TabGroupColorId;
 
 namespace {
 
@@ -133,6 +137,71 @@ void FillUrlList(const BrowserAppWindow& browser_app_window,
   for (auto tab : browser_app_window.tabs()) {
     if (tab.has_url())
       out_gurls->emplace_back(tab.url());
+  }
+}
+
+// Since tab groups must have completely valid fields therefore this function
+// exists to validate that sync tab groups are entirely valid.
+bool ValidSyncTabGroup(const SyncTabGroup& sync_tab_group) {
+  return sync_tab_group.has_first_index() && sync_tab_group.has_last_index() &&
+         sync_tab_group.has_title() && sync_tab_group.has_color();
+}
+
+// Converts a sync tab group color to its tab_groups::TabGroupColorId
+// equivalent.
+TabGroupColor TabGroupColorIdFromSyncTabColor(
+    const SyncTabGroupColor& sync_color) {
+  switch (sync_color) {
+    // Default to grey if unknown.
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_UNKNOWN_COLOR:
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY:
+      return TabGroupColor::kGrey;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE:
+      return TabGroupColor::kBlue;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED:
+      return TabGroupColor::kRed;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW:
+      return TabGroupColor::kYellow;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN:
+      return TabGroupColor::kGreen;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK:
+      return TabGroupColor::kPink;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE:
+      return TabGroupColor::kPurple;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN:
+      return TabGroupColor::kCyan;
+    case SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE:
+      return TabGroupColor::kOrange;
+  };
+}
+
+// Instantiates a TabGroup from its sync equivalent.
+app_restore::TabGroupInfo FillTabGroupInfoFromProto(
+    const SyncTabGroup& sync_tab_group) {
+  // This function should never be called with a partially instantiated
+  // tab group.
+  DCHECK(ValidSyncTabGroup(sync_tab_group));
+
+  return app_restore::TabGroupInfo(
+      {static_cast<uint32_t>(sync_tab_group.first_index()),
+       static_cast<uint32_t>(sync_tab_group.last_index())},
+      tab_groups::TabGroupVisualData(
+          base::UTF8ToUTF16(sync_tab_group.title()),
+          TabGroupColorIdFromSyncTabColor(sync_tab_group.color()),
+          sync_tab_group.is_collapsed()));
+}
+
+// Fill `out_group_infos` using information found in the proto's
+// tab group structure.
+void FillTabGroupInfosFromProto(
+    const BrowserAppWindow& browser_app_window,
+    std::vector<app_restore::TabGroupInfo>* out_group_infos) {
+  for (const auto& group : browser_app_window.tab_groups()) {
+    if (!ValidSyncTabGroup(group)) {
+      continue;
+    }
+
+    out_group_infos->push_back(FillTabGroupInfoFromProto(group));
   }
 }
 
@@ -220,9 +289,21 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       FillUrlList(app.app().browser_app_window(),
                   &app_launch_info->urls.value());
 
-      if (app.app().browser_app_window().has_show_as_app())
+      if (app.app().browser_app_window().tab_groups_size() > 0) {
+        app_launch_info->tab_group_infos.emplace();
+        FillTabGroupInfosFromProto(app.app().browser_app_window(),
+                                   &app_launch_info->tab_group_infos.value());
+      }
+
+      if (app.app().browser_app_window().has_show_as_app()) {
         app_launch_info->app_type_browser =
             app.app().browser_app_window().show_as_app();
+      }
+
+      if (app.app().browser_app_window().has_first_non_pinned_tab_index()) {
+        app_launch_info->first_non_pinned_tab_index =
+            app.app().browser_app_window().first_non_pinned_tab_index();
+      }
 
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
@@ -291,6 +372,8 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
     case chromeos::WindowStateType::kPinned:
     case chromeos::WindowStateType::kTrustedPinned:
     case chromeos::WindowStateType::kPip:
+    // TODO(crbug.com/1331825): Float state support for desk template.
+    case chromeos::WindowStateType::kFloated:
       return WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL;
     case chromeos::WindowStateType::kMinimized:
       return WindowState::WorkspaceDeskSpecifics_WindowState_MINIMIZED;
@@ -319,6 +402,57 @@ WindowState FromUiWindowState(ui::WindowShowState state) {
       return WindowState::WorkspaceDeskSpecifics_WindowState_MAXIMIZED;
     case ui::WindowShowState::SHOW_STATE_FULLSCREEN:
       return WindowState::WorkspaceDeskSpecifics_WindowState_FULLSCREEN;
+  }
+}
+
+// Converts a sync tab group color to its tab_groups::TabGroupColorId
+// equivalent.
+SyncTabGroupColor SyncTabColorFromTabGroupColorId(
+    const TabGroupColor& sync_color) {
+  switch (sync_color) {
+    case TabGroupColor::kGrey:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY;
+    case TabGroupColor::kBlue:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE;
+    case TabGroupColor::kRed:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED;
+    case TabGroupColor::kYellow:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW;
+    case TabGroupColor::kGreen:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN;
+    case TabGroupColor::kPink:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK;
+    case TabGroupColor::kPurple:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE;
+    case TabGroupColor::kCyan:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN;
+    case TabGroupColor::kOrange:
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE;
+  };
+}
+
+void FillSyncTabGroupInfo(const app_restore::TabGroupInfo& tab_group_info,
+                          SyncTabGroup* out_sync_tab_group) {
+  out_sync_tab_group->set_first_index(tab_group_info.tab_range.start());
+  out_sync_tab_group->set_last_index(tab_group_info.tab_range.end());
+  out_sync_tab_group->set_title(
+      base::UTF16ToUTF8(tab_group_info.visual_data.title()));
+  // Save some storage space by leaving is_collapsed to default value if the
+  // tab group isn't collapsed.
+  if (tab_group_info.visual_data.is_collapsed()) {
+    out_sync_tab_group->set_is_collapsed(
+        tab_group_info.visual_data.is_collapsed());
+  }
+  out_sync_tab_group->set_color(
+      SyncTabColorFromTabGroupColorId(tab_group_info.visual_data.color()));
+}
+
+void FillBrowserAppTabGroupInfos(
+    const std::vector<app_restore::TabGroupInfo>& tab_group_infos,
+    BrowserAppWindow* out_browser_app_window) {
+  for (const auto& tab_group : tab_group_infos) {
+    SyncTabGroup* sync_tab_group = out_browser_app_window->add_tab_groups();
+    FillSyncTabGroupInfo(tab_group, sync_tab_group);
   }
 }
 
@@ -351,6 +485,16 @@ void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
   if (app_restore_data->app_type_browser.has_value()) {
     out_browser_app_window->set_show_as_app(
         app_restore_data->app_type_browser.value());
+  }
+
+  if (app_restore_data->tab_group_infos.has_value()) {
+    FillBrowserAppTabGroupInfos(app_restore_data->tab_group_infos.value(),
+                                out_browser_app_window);
+  }
+
+  if (app_restore_data->first_non_pinned_tab_index.has_value()) {
+    out_browser_app_window->set_first_non_pinned_tab_index(
+        app_restore_data->first_non_pinned_tab_index.value());
   }
 }
 
@@ -481,10 +625,94 @@ void FillAppWithLaunchContainerAndOpenDisposition(
 }
 
 // Fill `out_app` with `app_restore_data`.
-void FillApp(const std::string& app_id,
+// Return `false` if app type is unsupported.
+bool FillApp(const std::string& app_id,
              const apps::AppType app_type,
              const app_restore::AppRestoreData* app_restore_data,
              WorkspaceDeskSpecifics_App* out_app) {
+  // See definition in components/services/app_service/public/cpp/app_types.h
+  switch (app_type) {
+    case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb: {
+      // System Web Apps.
+      // kSystemWeb is returned for System Web Apps in Lacros-primary
+      // configuration. These can be persisted and launched the same way as
+      // Chrome Apps.
+      ChromeApp* chrome_app_window =
+          out_app->mutable_app()->mutable_chrome_app();
+      chrome_app_window->set_app_id(app_id);
+      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      break;
+    }
+
+    case apps::AppType::kChromeApp: {
+      // Ash Chrome browser OR PWA OR Chrome App hosted in Ash Chrome.
+      if (app_constants::kChromeAppId == app_id) {
+        // This window is either a browser window or a PWA window.
+        // Both cases are persisted as "browser app" since they are launched the
+        // same way. PWA window will have field `app_name` and
+        // `app_type_browser` fields set. FillAppWithAppNameAndTitle has
+        // persisted `app_name` field. FillBrowserAppWindow will persist
+        // `app_type_browser` field.
+        BrowserAppWindow* browser_app_window =
+            out_app->mutable_app()->mutable_browser_app_window();
+        FillBrowserAppWindow(app_restore_data, browser_app_window);
+      } else {
+        // Chrome App
+        ChromeApp* chrome_app_window =
+            out_app->mutable_app()->mutable_chrome_app();
+        chrome_app_window->set_app_id(app_id);
+        FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      }
+      break;
+    }
+
+    case apps::AppType::kStandaloneBrowser: {
+      if (app_constants::kLacrosAppId == app_id) {
+        // Lacros Chrome browser window or PWA hosted in Lacros Chrome.
+        BrowserAppWindow* browser_app_window =
+            out_app->mutable_app()->mutable_browser_app_window();
+        FillBrowserAppWindow(app_restore_data, browser_app_window);
+      } else {
+        // Chrome app running in Lacros should have
+        // AppType::kStandaloneBrowserChromeApp and never reach here.
+        NOTREACHED();
+        // Ignore this app type.
+        return false;
+      }
+
+      break;
+    }
+
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      // Chrome App hosted in Lacros.
+      ChromeApp* chrome_app_window =
+          out_app->mutable_app()->mutable_chrome_app();
+      chrome_app_window->set_app_id(app_id);
+      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
+      break;
+    }
+
+    case apps::AppType::kArc: {
+      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
+      arc_app->set_app_id(app_id);
+      FillArcApp(app_restore_data, arc_app);
+      break;
+    }
+
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kUnknown:
+    case apps::AppType::kMacOs:
+    case apps::AppType::kRemote:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kExtension:
+    case apps::AppType::kStandaloneBrowserExtension:
+      // Unsupported app types will be ignored.
+      return false;
+  }
+
   FillAppWithWindowInfo(app_restore_data->GetWindowInfo().get(), out_app);
 
   // AppRestoreData.GetWindowInfo does not include `display_id` in the returned
@@ -496,44 +724,7 @@ void FillApp(const std::string& app_id,
   // fields.
   FillAppWithAppNameAndTitle(app_restore_data, out_app);
 
-  // See definition components/services/app_service/public/mojom/types.mojom
-  switch (app_type) {
-    case apps::AppType::kWeb:
-    case apps::AppType::kStandaloneBrowser: {
-      if (app_constants::kChromeAppId == app_id ||
-          app_constants::kLacrosAppId == app_id) {
-        // Chrome or Lacros Browser Window.
-        BrowserAppWindow* browser_app_window =
-            out_app->mutable_app()->mutable_browser_app_window();
-        FillBrowserAppWindow(app_restore_data, browser_app_window);
-      } else {
-        // PWA app.
-        ProgressiveWebApp* pwa_window =
-            out_app->mutable_app()->mutable_progress_web_app();
-        pwa_window->set_app_id(app_id);
-        FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
-      }
-      break;
-    }
-    case apps::AppType::kChromeApp: {
-      // Chrome extension backed app, Chrome Apps
-      ChromeApp* chrome_app_window =
-          out_app->mutable_app()->mutable_chrome_app();
-      chrome_app_window->set_app_id(app_id);
-      FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
-      break;
-    }
-    case apps::AppType::kArc: {
-      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
-      arc_app->set_app_id(app_id);
-      FillArcApp(app_restore_data, arc_app);
-      break;
-    }
-    default: {
-      // Unhandled app type.
-      break;
-    }
-  }
+  return true;
 }
 
 void FillArcExtraInfoFromProto(const ArcApp& app,
@@ -644,16 +835,16 @@ void FillWorkspaceDeskSpecifics(
       const int window_id = window_id_to_launch_info.first;
       const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
-      // The apps cache returns kChromeApp for browser windows, therefore we
-      // short circuit the cache retrieval if we get the browser ID.
-      const auto app_type = app_id == app_constants::kChromeAppId
-                                ? apps::AppType::kWeb
-                                : apps_cache->GetAppType(app_id);
+
+      const auto app_type = apps_cache->GetAppType(app_id);
 
       WorkspaceDeskSpecifics_App* app =
           out_entry_proto->mutable_desk()->add_apps();
       app->set_window_id(window_id);
-      FillApp(app_id, app_type, app_restore_data, app);
+      if (!FillApp(app_id, app_type, app_restore_data, app)) {
+        // Unsupported app type, remove this app entry.
+        out_entry_proto->mutable_desk()->mutable_apps()->RemoveLast();
+      }
     }
   }
 }
@@ -671,6 +862,9 @@ void FillDeskType(const DeskTemplate* desk_template,
       out_entry_proto->set_desk_type(
           SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL);
       return;
+    case DeskTemplateType::kUnknown:
+      NOTREACHED();
+      return;
   }
 }
 
@@ -681,6 +875,7 @@ DeskTemplateType GetDeskTemplateTypeFromProtoType(
   switch (proto_type) {
     // Treat unknown desk types as templates.
     case SyncDeskType::WorkspaceDeskSpecifics_DeskType_UNKNOWN_TYPE:
+      return DeskTemplateType::kUnknown;
     case SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE:
       return DeskTemplateType::kTemplate;
     case SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL:
@@ -714,12 +909,19 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
   const base::Time created_time = desk_template_conversion::ProtoTimeToTime(
       pb_entry.created_time_windows_epoch_micros());
 
-  // Protobuf parsing enforces UTF-8 encoding for all strings.
-  auto desk_template = std::make_unique<DeskTemplate>(
-      uuid, ash::DeskTemplateSource::kUser, pb_entry.name(), created_time,
+  const ash::DeskTemplateType desk_type =
       pb_entry.has_desk_type()
           ? GetDeskTemplateTypeFromProtoType(pb_entry.desk_type())
-          : ash::DeskTemplateType::kTemplate);
+          : ash::DeskTemplateType::kTemplate;
+
+  if (desk_type == ash::DeskTemplateType::kUnknown) {
+    return nullptr;
+  }
+
+  // Protobuf parsing enforces UTF-8 encoding for all strings.
+  auto desk_template =
+      std::make_unique<DeskTemplate>(uuid, ash::DeskTemplateSource::kUser,
+                                     pb_entry.name(), created_time, desk_type);
 
   if (pb_entry.has_updated_time_windows_epoch_micros()) {
     desk_template->set_updated_time(desk_template_conversion::ProtoTimeToTime(
@@ -928,15 +1130,6 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
 
-  // While we still find duplicate names iterate the duplicate number. i.e.
-  // if there are 4 duplicates of some template name then this iterates until
-  // the current template will be named 5.
-  while (HasUserTemplateWithName(entry->template_name())) {
-    entry->set_template_name(
-        desk_template_util::AppendDuplicateNumberToDuplicateName(
-            entry->template_name()));
-  }
-
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
@@ -1071,6 +1264,16 @@ bool DeskSyncBridge::IsReady() const {
 
 bool DeskSyncBridge::IsSyncing() const {
   return change_processor()->IsTrackingMetadata();
+}
+
+// TODO(zhumatthew): Once desk sync bridge supports save and recall desk type,
+// update this method to search the correct cache for the entry.
+ash::DeskTemplate* DeskSyncBridge::FindOtherEntryWithName(
+    const std::u16string& name,
+    ash::DeskTemplateType type,
+    const base::GUID& uuid) const {
+  return desk_template_util::FindOtherEntryWithName(name, uuid,
+                                                    desk_template_entries_);
 }
 
 sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(

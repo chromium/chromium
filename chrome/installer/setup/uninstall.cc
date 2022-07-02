@@ -30,7 +30,7 @@
 #include "base/win/registry.h"
 #include "base/win/shortcut.h"
 #include "build/branding_buildflags.h"
-#include "chrome/chrome_elf/chrome_elf_constants.h"
+#include "chrome/chrome_elf/blocklist_constants.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -601,7 +601,6 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
     LOG(DFATAL) << "Cannot retrieve the toast activator registry path";
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (installer_state.system_install()) {
     if (!InstallServiceWorkItem::DeleteService(
             install_static::GetElevationServiceName(),
@@ -612,7 +611,6 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                    << install_static::GetElevationServiceName();
     }
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
   // Delete all Start Menu Internet registrations that refer to this Chrome.
   {

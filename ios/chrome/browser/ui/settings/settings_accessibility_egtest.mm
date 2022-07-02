@@ -106,7 +106,8 @@ id<GREYMatcher> BandwidthSettingsButton() {
 
 // Verifies that Settings opens when signed-out and in Incognito mode.
 // This tests that crbug.com/607335 has not regressed.
-- (void)testSettingsSignedOutIncognito {
+// TODO(crbug.com/1335810): Failing on waterfall
+- (void)DISABLED_testSettingsSignedOutIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]

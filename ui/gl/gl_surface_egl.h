@@ -5,6 +5,7 @@
 #ifndef UI_GL_GL_SURFACE_EGL_H_
 #define UI_GL_GL_SURFACE_EGL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -32,16 +33,6 @@ namespace gl {
 
 class GLSurfacePresentationHelper;
 
-GL_EXPORT void GetEGLInitDisplays(bool supports_angle_d3d,
-                                  bool supports_angle_opengl,
-                                  bool supports_angle_null,
-                                  bool supports_angle_vulkan,
-                                  bool supports_angle_swiftshader,
-                                  bool supports_angle_egl,
-                                  bool supports_angle_metal,
-                                  const base::CommandLine* command_line,
-                                  std::vector<DisplayType>* init_displays);
-
 // Interface for EGL surface.
 class GL_EXPORT GLSurfaceEGL : public GLSurface {
  public:
@@ -61,26 +52,21 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 
   // |system_device_id| specifies which GPU to use on a multi-GPU system.
   // If its value is 0, use the default GPU of the system.
-  static bool InitializeOneOff(EGLDisplayPlatform native_display,
-                               uint64_t system_device_id);
-  static bool InitializeOneOffForTesting();
-  static bool InitializeExtensionSettingsOneOff();
-  static void ShutdownOneOff();
-  // |system_device_id| specifies which GPU to use on a multi-GPU system.
-  // If its value is 0, use the default GPU of the system.
-  static GLDisplayEGL* InitializeDisplay(EGLDisplayPlatform native_display,
-                                         uint64_t system_device_id);
+  // Calling this functionm a second time on the same |system_device_id|
+  // is a no-op and returns the same GLDisplayEGL.
+  // TODO(https://crbug.com/1251724): This will be called once per display
+  // when Chrome begins to support multi-gpu rendering.
+  static GLDisplayEGL* InitializeOneOff(EGLDisplayPlatform native_display,
+                                        uint64_t system_device_id);
+  static GLDisplayEGL* InitializeOneOffForTesting();
+  static void ShutdownOneOff(GLDisplayEGL* display);
 
  protected:
   ~GLSurfaceEGL() override;
 
   EGLConfig config_ = nullptr;
   GLSurfaceFormat format_;
-  GLDisplayEGL* display_ = nullptr;
-
- private:
-  static bool InitializeOneOffCommon(GLDisplayEGL* display);
-  static bool initialized_;
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
 };
 
 // Encapsulates an EGL surface bound to a view.

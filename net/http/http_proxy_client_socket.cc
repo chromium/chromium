@@ -41,9 +41,7 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
                                        base::Unretained(this))),
-      next_state_(STATE_NONE),
       socket_(std::move(socket)),
-      is_reused_(false),
       endpoint_(endpoint),
       auth_(http_auth_controller),
       proxy_server_(proxy_server),

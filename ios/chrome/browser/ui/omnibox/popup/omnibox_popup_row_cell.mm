@@ -131,7 +131,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 }
 
 - (void)willTransitionToState:(UITableViewCellStateMask)state {
-  // |UITableViewCellStateDefaultMask| is actually 0, so it must be checked
+  // `UITableViewCellStateDefaultMask` is actually 0, so it must be checked
   // manually, and can't be checked with bitwise AND.
   if (state == UITableViewCellStateDefaultMask) {
     for (NSLayoutConstraint* constraint in self
@@ -260,7 +260,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   // The text stack view is attached to both ends of the layout gude. This is
   // because it needs to switch directions if the device is in LTR mode and the
   // user types in RTL. Furthermore, because the layout guide is added to the
-  // main view, its direction will not change if the |semanticContentAttribute|
+  // main view, its direction will not change if the `semanticContentAttribute`
   // of this cell or the omnibox changes.
   // However, the text should still extend all the way to cell's trailing edge.
   // To do this, constrain the text to the layout guide using a low priority

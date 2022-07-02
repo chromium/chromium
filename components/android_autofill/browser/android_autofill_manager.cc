@@ -64,6 +64,16 @@ void AndroidAutofillManager::FillProfileForm(
   NOTREACHED();
 }
 
+void AndroidAutofillManager::SetProfileFillViaAutofillAssistantIntent(
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  NOTREACHED();
+}
+
+void AndroidAutofillManager::SetCreditCardFillViaAutofillAssistantIntent(
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  NOTREACHED();
+}
+
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     bool known_success,
@@ -94,10 +104,12 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    bool autoselect_first_suggestion) {
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   if (auto* provider = GetAutofillProvider()) {
     provider->OnAskForValuesToFill(this, query_id, form, field, bounding_box,
-                                   autoselect_first_suggestion);
+                                   autoselect_first_suggestion,
+                                   touch_to_fill_eligible);
   }
 }
 
@@ -145,6 +157,11 @@ void AndroidAutofillManager::OnHidePopup() {
 
 void AndroidAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
 }
+
+void AndroidAutofillManager::JavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {}
 
 void AndroidAutofillManager::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {

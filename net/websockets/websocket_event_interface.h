@@ -39,7 +39,7 @@ class NET_EXPORT WebSocketEventInterface {
   WebSocketEventInterface(const WebSocketEventInterface&) = delete;
   WebSocketEventInterface& operator=(const WebSocketEventInterface&) = delete;
 
-  virtual ~WebSocketEventInterface() {}
+  virtual ~WebSocketEventInterface() = default;
 
   // Called when a URLRequest is created for handshaking.
   virtual void OnCreateURLRequest(URLRequest* request) = 0;
@@ -117,7 +117,7 @@ class NET_EXPORT WebSocketEventInterface {
   // due to layering constraints).
   class NET_EXPORT SSLErrorCallbacks {
    public:
-    virtual ~SSLErrorCallbacks() {}
+    virtual ~SSLErrorCallbacks() = default;
 
     // Cancels the SSL response in response to the error.
     virtual void CancelSSLRequest(int error, const SSLInfo* ssl_info) = 0;
@@ -156,7 +156,7 @@ class NET_EXPORT WebSocketEventInterface {
       absl::optional<AuthCredentials>* credentials) = 0;
 
  protected:
-  WebSocketEventInterface() {}
+  WebSocketEventInterface() = default;
 };
 
 }  // namespace net

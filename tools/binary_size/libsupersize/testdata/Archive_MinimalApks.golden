@@ -187,12 +187,12 @@ Section .bss: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex.method: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex.method: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
@@ -296,12 +296,12 @@ Section .bss: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex.method: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex.method: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
@@ -349,12 +349,12 @@ Section .bss: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .dex.method: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+Section .dex.method: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).

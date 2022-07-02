@@ -33,7 +33,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -192,6 +192,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   is_target_visibility_show_ = true;
   target_page_ = AppListBubblePage::kApps;
 
+  controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
+
   // Refresh the continue tasks before opening the launcher. If a file doesn't
   // exist on disk anymore then the launcher should not create or animate the
   // continue task view for that suggestion.
@@ -268,7 +270,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // time the bubble is shown to make sure it tracks the right display.
   aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
       ->AddObserver(this);
-  controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
+
   bubble_widget_->Show();
   // The page must be set before triggering the show animation so the correct
   // animations are triggered.

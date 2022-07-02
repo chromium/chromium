@@ -9,8 +9,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcFrameSchedulerConstantRate::WebrtcFrameSchedulerConstantRate() = default;
 
@@ -118,7 +117,7 @@ void WebrtcFrameSchedulerConstantRate::ScheduleNextFrame() {
   if (!last_capture_started_time_.is_null()) {
     base::TimeTicks target_capture_time =
         std::max(last_capture_started_time_ + capture_interval, now);
-    delay = target_capture_time - now;
+    delay = std::max(target_capture_time - now, base::Milliseconds(1));
   }
 
   capture_timer_.Start(FROM_HERE, delay, this,
@@ -133,5 +132,4 @@ void WebrtcFrameSchedulerConstantRate::CaptureNextFrame() {
   capture_callback_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

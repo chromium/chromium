@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
-#include "third_party/blink/public/platform/scheduler/web_widget_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -67,7 +66,7 @@ using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using InputEventState = WebThreadScheduler::InputEventState;
+using InputEventState = WidgetScheduler::InputEventState;
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
@@ -89,9 +88,10 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     PageSchedulerImpl* page_scheduler,
     FrameScheduler::Delegate* delegate,
     blink::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
-  auto frame_scheduler =
-      page_scheduler->CreateFrameScheduler(delegate, blame_context, frame_type);
+  auto frame_scheduler = page_scheduler->CreateFrameScheduler(
+      delegate, blame_context, is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -227,7 +227,7 @@ void RepostingUpdateClockIdleTestTask(
   test_task_runner->AdvanceMockTickClock(advance_time);
 }
 
-void WillBeginFrameIdleTask(WebThreadScheduler* scheduler,
+void WillBeginFrameIdleTask(MainThreadSchedulerImpl* scheduler,
                             uint64_t sequence_number,
                             const base::TickClock* clock,
                             base::TimeTicks deadline) {
@@ -374,10 +374,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     return any_thread().begin_main_frame_on_critical_path;
   }
 
-  VirtualTimePolicy virtual_time_policy() const {
-    return main_thread_only().virtual_time_policy;
-  }
-
   void PerformMicrotaskCheckpoint() override {
     if (on_microtask_checkpoint_)
       std::move(on_microtask_checkpoint_).Run();
@@ -466,6 +462,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
         static_cast<AgentGroupSchedulerImpl&>(*agent_group_scheduler_));
     main_frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                             /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kMainFrame);
 
     widget_scheduler_ = scheduler_->CreateWidgetScheduler();
@@ -1022,7 +1019,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   std::unique_ptr<AgentGroupSchedulerImpl> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
-  std::unique_ptr<WebWidgetScheduler> widget_scheduler_;
+  scoped_refptr<WidgetScheduler> widget_scheduler_;
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
@@ -3240,6 +3237,7 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler1.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
@@ -3458,7 +3456,7 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
 TEST_F(MainThreadSchedulerImplWithInitalVirtualTimeTest, VirtualTimeOverride) {
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_EQ(VirtualTimeController::VirtualTimePolicy::kPause,
-            scheduler_->virtual_time_policy());
+            scheduler_->GetVirtualTimePolicyForTest());
   EXPECT_EQ(base::Time::Now(), base::Time::FromJsTime(1000000.0));
 }
 

@@ -334,9 +334,8 @@ bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
 } // namespace
 
 HttpContentDisposition::HttpContentDisposition(
-    const std::string& header, const std::string& referrer_charset)
-  : type_(INLINE),
-    parse_result_flags_(INVALID) {
+    const std::string& header,
+    const std::string& referrer_charset) {
   Parse(header, referrer_charset);
 }
 
@@ -360,9 +359,9 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
 
   DCHECK(type.find('=') == base::StringPiece::npos);
 
-  if (base::LowerCaseEqualsASCII(type, "inline")) {
+  if (base::EqualsCaseInsensitiveASCII(type, "inline")) {
     type_ = INLINE;
-  } else if (base::LowerCaseEqualsASCII(type, "attachment")) {
+  } else if (base::EqualsCaseInsensitiveASCII(type, "attachment")) {
     type_ = ATTACHMENT;
   } else {
     parse_result_flags_ |= HAS_UNKNOWN_DISPOSITION_TYPE;
@@ -404,7 +403,7 @@ void HttpContentDisposition::Parse(const std::string& header,
   HttpUtil::NameValuePairsIterator iter(pos, end, ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
-        base::LowerCaseEqualsASCII(iter.name_piece(), "filename")) {
+        base::EqualsCaseInsensitiveASCII(iter.name_piece(), "filename")) {
       DecodeFilenameValue(iter.value(), referrer_charset, &filename,
                           &parse_result_flags_);
       if (!filename.empty()) {
@@ -412,8 +411,8 @@ void HttpContentDisposition::Parse(const std::string& header,
         if (filename[0] == '\'')
           parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
       }
-    } else if (ext_filename.empty() &&
-               base::LowerCaseEqualsASCII(iter.name_piece(), "filename*")) {
+    } else if (ext_filename.empty() && base::EqualsCaseInsensitiveASCII(
+                                           iter.name_piece(), "filename*")) {
       DecodeExtValue(iter.raw_value(), &ext_filename);
       if (!ext_filename.empty())
         parse_result_flags_ |= HAS_EXT_FILENAME;

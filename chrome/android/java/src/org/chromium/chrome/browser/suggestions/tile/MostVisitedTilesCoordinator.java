@@ -91,10 +91,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mModelChangeProcessor = PropertyModelChangeProcessor.create(propertyModel,
                 new MostVisitedTilesViewBinder.ViewHolder(mvTilesContainerLayout, tilesLayout),
                 MostVisitedTilesViewBinder::bind);
-        mRenderer =
-                new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
+        mRenderer = new TileRenderer(
+                mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
 
-        mMediator = new MostVisitedTilesMediator(activity.getResources(), tilesLayout,
+        mMediator = new MostVisitedTilesMediator(activity.getResources(), mUiConfig, tilesLayout,
                 mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
                 propertyModel, shouldShowSkeletonUIPreNative && isScrollableMVTEnabled,
                 isScrollableMVTEnabled,
@@ -104,7 +104,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
     /**
      * Called before the TasksSurface is showing to initialize MV tiles.
-     * {@link MostVisitedTilesCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
+     * {@link MostVisitedTilesCoordinator#destroyMvtiles()} is called after the TasksSurface hides.
      *
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
      * @param tileGroupDelegate The delegate of tile group.
@@ -132,7 +132,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
-    public void destroyMVTiles() {
+    public void destroyMvtiles() {
         mActivityLifecycleDispatcher.unregister(this);
 
         if (mOfflinePageBridge != null) mOfflinePageBridge = null;

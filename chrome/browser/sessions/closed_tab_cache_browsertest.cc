@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest,
   // Don't cache WebContents when beforeunload listeners are run.
   NavigateToURL(browser(), "a.com");
   content::WebContents* a = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(ExecJs(a->GetMainFrame(),
+  EXPECT_TRUE(ExecJs(a->GetPrimaryMainFrame(),
                      "window.addEventListener('beforeunload', function (e) "
                      "{e.returnValue = '';});"));
   EXPECT_TRUE(a->NeedToFireBeforeUnloadOrUnloadEvents());

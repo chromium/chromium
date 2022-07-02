@@ -481,11 +481,6 @@ const char kMessageCenterLockScreenModeHideSensitive[] = "hideSensitive";
 // A boolean pref storing the enabled status of the ambient color feature.
 const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 
-// A boolean pref used when dark light mode feature is enabled to indicate
-// whether the color mode is themed. If true, the background color will be
-// calculated based on extracted wallpaper color.
-const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
-
 // A boolean pref that indicates whether dark mode is enabled.
 const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 
@@ -697,12 +692,20 @@ const char kSuggestLogoutAfterClosingLastWindow[] =
 // A dictionary pref that maps usernames to wallpaper info.
 const char kUserWallpaperInfo[] = "user_wallpaper_info";
 
+// An ordered list of hashed representations of IDs of Google Photos recently
+// used as wallpapers for Daily Refresh.
+const char kRecentDailyGooglePhotosWallpapers[] =
+    "recent_daily_google_photos_wallpapers";
+
 // A dictionary pref that maps usernames to wallpaper info.
 // This is for wallpapers that are syncable across devices.
 const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 
 // A dictionary pref that maps wallpaper file paths to their prominent colors.
 const char kWallpaperColors[] = "ash.wallpaper.prominent_colors";
+
+// A dictionary pref that maps wallpaper file paths to their k mean colors.
+const char kWallpaperMeanColors[] = "ash.wallpaper.k_mean_colors";
 
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 const char kUserBluetoothAdapterEnabled[] =
@@ -714,6 +717,12 @@ const char kSystemBluetoothAdapterEnabled[] =
 
 // Boolean pref to persist the expanded state of the system tray across reboots.
 const char kSystemTrayExpanded[] = "ash.system_tray.expanded";
+
+// A boolean pref indicating whether the camera is allowed to be used.
+const char kUserCameraAllowed[] = "ash.user.camera_allowed";
+
+// A boolean pref indicating whether the microphone is allowed to be used.
+const char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
 
 // A boolean pref which determines whether tap-dragging is enabled.
 const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
@@ -918,11 +927,6 @@ const char kNextImeShortcutReminderDismissed[] =
 // Boolean pref to indicate whether to use i18n shortcut mapping and deprecate
 // legacy shortcuts.
 const char kDeviceI18nShortcutsEnabled[] = "ash.device_i18n_shortcuts_enabled";
-
-// An integer pref that tracks how many times the user has been shown the
-// notification about shortcuts changing.
-const char kImprovedShortcutsNotificationShownCount[] =
-    "ash.improved_shortcuts_notification_shown_count";
 
 // If a user installs an extension which controls the proxy settings in the
 // primary profile of Chrome OS, this dictionary will contain information about

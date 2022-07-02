@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -29,7 +30,6 @@ namespace web_app {
 class WebAppUiManager;
 class WebAppInstallFinalizer;
 class OsIntegrationManager;
-class SystemWebAppManager;
 class WebAppSyncBridge;
 
 // Checks for updates to a web app's manifest and triggers a reinstall if the
@@ -53,14 +53,16 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                      WebAppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* install_finalizer,
-                     SystemWebAppManager* system_web_app_manager,
                      OsIntegrationManager* os_integration_manager,
                      WebAppSyncBridge* sync_bridge);
+  void SetSystemWebAppDelegateMap(
+      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
+
   void Start();
   void Shutdown();
 
   void MaybeUpdate(const GURL& url,
-                   const AppId& app_id,
+                   const absl::optional<AppId>& app_id,
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const AppId& app_id);
 
@@ -80,6 +82,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     hang_update_checks_for_testing_ = true;
   }
 
+  void ResetManifestThrottleForTesting(const AppId& app_id);
+
  private:
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
@@ -89,14 +93,15 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void OnUpdateStopped(const ManifestUpdateTask& task,
                        ManifestUpdateResult result);
   void NotifyResult(const GURL& url,
-                    const AppId& app_id,
+                    const absl::optional<AppId>& app_id,
                     ManifestUpdateResult result);
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
-  raw_ptr<SystemWebAppManager> system_web_app_manager_ = nullptr;
+  raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
+      nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppInstallManager> install_manager_ = nullptr;

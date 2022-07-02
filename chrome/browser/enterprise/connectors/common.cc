@@ -6,22 +6,116 @@
 
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 namespace enterprise_connectors {
 
-AnalysisSettings::AnalysisSettings() = default;
-AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
-AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
-AnalysisSettings::~AnalysisSettings() = default;
+namespace {
+
+constexpr char kDlpTag[] = "dlp";
+constexpr char kMalwareTag[] = "malware";
+
+bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
+  switch (action) {
+    case TriggeredRule::ACTION_UNSPECIFIED:
+    case TriggeredRule::REPORT_ONLY:
+      return true;
+    case TriggeredRule::WARN:
+    case TriggeredRule::BLOCK:
+      return false;
+  }
+}
+
+}  // namespace
+
+bool ResultShouldAllowDataUse(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result) {
+  using safe_browsing::BinaryUploadService;
+  // Keep this implemented as a switch instead of a simpler if statement so that
+  // new values added to BinaryUploadService::Result cause a compiler error.
+  switch (upload_result) {
+    case BinaryUploadService::Result::SUCCESS:
+    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case BinaryUploadService::Result::TIMEOUT:
+    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    // UNAUTHORIZED allows data usage since it's a result only obtained if the
+    // browser is not authorized to perform deep scanning. It does not make
+    // sense to block data in this situation since no actual scanning of the
+    // data was performed, so it's allowed.
+    case BinaryUploadService::Result::UNAUTHORIZED:
+    case BinaryUploadService::Result::UNKNOWN:
+      return true;
+
+    case BinaryUploadService::Result::FILE_TOO_LARGE:
+      return !settings.block_large_files;
+
+    case BinaryUploadService::Result::FILE_ENCRYPTED:
+      return !settings.block_password_protected_files;
+
+    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
+      return !settings.block_unsupported_file_types;
+  }
+}
+
+RequestHandlerResult CalculateRequestHandlerResult(
+    const AnalysisSettings& settings,
+    safe_browsing::BinaryUploadService::Result upload_result,
+    ContentAnalysisResponse response) {
+  std::string tag;
+  auto action = GetHighestPrecedenceAction(response, &tag);
+
+  bool file_complies = ResultShouldAllowDataUse(settings, upload_result) &&
+                       ContentAnalysisActionAllowsDataUse(action);
+
+  RequestHandlerResult result;
+  result.complies = file_complies;
+  result.tag = tag;
+  if (!file_complies) {
+    if (upload_result ==
+        safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE) {
+      result.final_result = FinalContentAnalysisResult::LARGE_FILES;
+    } else if (upload_result ==
+               safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED) {
+      result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
+    } else if (action == TriggeredRule::WARN) {
+      result.final_result = FinalContentAnalysisResult::WARNING;
+    } else {
+      result.final_result = FinalContentAnalysisResult::FAILURE;
+    }
+  } else {
+    result.final_result = FinalContentAnalysisResult::SUCCESS;
+  }
+  return result;
+}
+
+safe_browsing::EventResult CalculateEventResult(
+    const AnalysisSettings& settings,
+    bool allowed_by_scan_result,
+    bool should_warn) {
+  bool wait_for_verdict =
+      settings.block_until_verdict == BlockUntilVerdict::kBlock;
+  return (allowed_by_scan_result || !wait_for_verdict)
+             ? safe_browsing::EventResult::ALLOWED
+             : (should_warn ? safe_browsing::EventResult::WARNED
+                            : safe_browsing::EventResult::BLOCKED);
+}
 
 ReportingSettings::ReportingSettings() = default;
 ReportingSettings::ReportingSettings(GURL url,
@@ -51,6 +145,10 @@ const char* ConnectorPref(AnalysisConnector connector) {
       return kOnFileAttachedPref;
     case AnalysisConnector::PRINT:
       return kOnPrintPref;
+    case AnalysisConnector::FILE_TRANSFER:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      return kOnFileTransferPref;
+#endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
       return "";
@@ -81,6 +179,10 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
       return kOnFileAttachedScopePref;
     case AnalysisConnector::PRINT:
       return kOnPrintScopePref;
+    case AnalysisConnector::FILE_TRANSFER:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      return kOnFileTransferScopePref;
+#endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
       return "";
@@ -184,7 +286,7 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
   const auto& results = response.results();
   return std::any_of(results.begin(), results.end(), [](const auto& result) {
-    return result.tag() == "malware" && !result.triggered_rules().empty();
+    return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
 }
 
@@ -199,5 +301,84 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
   return !per_profile;
 #endif
 }
+
+bool ShouldPromptReviewForDownload(Profile* profile,
+                                   download::DownloadDangerType danger_type) {
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+      danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+    return ConnectorsServiceFactory::GetForBrowserContext(profile)
+        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+  } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
+    return ConnectorsServiceFactory::GetForBrowserContext(profile)
+        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED,
+                                 kMalwareTag);
+  }
+  return false;
+}
+
+void ShowDownloadReviewDialog(const std::u16string& filename,
+                              Profile* profile,
+                              download::DownloadItem* download_item,
+                              content::WebContents* web_contents,
+                              download::DownloadDangerType danger_type,
+                              base::OnceClosure keep_closure,
+                              base::OnceClosure discard_closure) {
+  auto state = FinalContentAnalysisResult::FAILURE;
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    state = FinalContentAnalysisResult::WARNING;
+  }
+
+  const char* tag =
+      (danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+               danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK
+           ? kDlpTag
+           : kMalwareTag);
+
+  auto* connectors_service =
+      ConnectorsServiceFactory::GetForBrowserContext(profile);
+
+  std::u16string custom_message =
+      connectors_service
+          ->GetCustomMessage(AnalysisConnector::FILE_DOWNLOADED, tag)
+          .value_or(u"");
+  GURL learn_more_url =
+      connectors_service
+          ->GetLearnMoreUrl(AnalysisConnector::FILE_DOWNLOADED, tag)
+          .value_or(GURL());
+
+  bool bypass_justification_required =
+      connectors_service
+          ->GetBypassJustificationRequired(AnalysisConnector::FILE_DOWNLOADED,
+                                           tag)
+          .value_or(false);
+
+  // This dialog opens itself, and is thereafter owned by constrained window
+  // code.
+  new ContentAnalysisDialog(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          filename, custom_message, learn_more_url,
+          bypass_justification_required, std::move(keep_closure),
+          std::move(discard_closure), download_item),
+      web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
+      /* file_count */ 1, state, download_item);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+Profile* GetMainProfileLacros() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return nullptr;
+  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(
+      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  if (main_it == profiles.end())
+    return nullptr;
+  return *main_it;
+}
+#endif
 
 }  // namespace enterprise_connectors

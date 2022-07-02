@@ -137,6 +137,17 @@ SupervisedUserSettingsService::SubscribeForNewWebsiteApproval(
   return website_approval_callback_list_.Add(callback);
 }
 
+void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
+    const std::string& host) {
+  // Write the sync setting.
+  std::string setting_key = MakeSplitSettingKey(
+      supervised_users::kContentPackManualBehaviorHosts, host);
+  SaveItem(setting_key, std::make_unique<base::Value>(true));
+
+  // Now notify subscribers of the updates.
+  website_approval_callback_list_.Notify(setting_key);
+}
+
 base::CallbackListSubscription
 SupervisedUserSettingsService::SubscribeForShutdown(
     const ShutdownCallback& callback) {
@@ -145,6 +156,25 @@ SupervisedUserSettingsService::SubscribeForShutdown(
 
 void SupervisedUserSettingsService::SetActive(bool active) {
   active_ = active;
+
+  if (active_) {
+    // Child account supervised users must be signed in.
+    SetLocalSetting(supervised_users::kSigninAllowed,
+                    std::make_unique<base::Value>(true));
+
+    // Always allow cookies, to avoid website compatibility issues.
+    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
+                    std::make_unique<base::Value>(true));
+
+    // SafeSearch and GeolocationDisabled are controlled at the account level,
+    // so don't override them client-side.
+  } else {
+    SetLocalSetting(supervised_users::kSigninAllowed, nullptr);
+    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed, nullptr);
+    SetLocalSetting(supervised_users::kForceSafeSearch, nullptr);
+    SetLocalSetting(supervised_users::kGeolocationDisabled, nullptr);
+  }
+
   InformSubscribers();
 }
 
@@ -168,16 +198,10 @@ std::string SupervisedUserSettingsService::MakeSplitSettingKey(
   return prefix + kSplitSettingKeySeparator + key;
 }
 
-void SupervisedUserSettingsService::UploadItem(
+void SupervisedUserSettingsService::SaveItem(
     const std::string& key,
     std::unique_ptr<base::Value> value) {
-  DCHECK(!SettingShouldApplyToPrefs(key));
-  PushItemToSync(key, std::move(value));
-}
-
-void SupervisedUserSettingsService::PushItemToSync(
-    const std::string& key,
-    std::unique_ptr<base::Value> value) {
+  // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
   base::Value* dict = nullptr;
   if (sync_processor_) {
@@ -200,6 +224,15 @@ void SupervisedUserSettingsService::PushItemToSync(
     dict = GetQueuedItems();
   }
   dict->SetKey(key_suffix, base::Value::FromUniquePtrValue(std::move(value)));
+
+  // Now notify subscribers of the updates.
+  // For simplicity and consistency with ProcessSyncChanges() we notify both
+  // settings keys.
+  store_->ReportValueChanged(kAtomicSettings,
+                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  store_->ReportValueChanged(kSplitSettings,
+                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  InformSubscribers();
 }
 
 void SupervisedUserSettingsService::SetLocalSetting(

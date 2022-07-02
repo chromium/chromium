@@ -257,7 +257,7 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   TestRenderFrameHost* GetNavigatingRenderFrameHost() {
     return AreAllSitesIsolatedForTesting()
                ? contents()->GetSpeculativePrimaryMainFrame()
-               : contents()->GetMainFrame();
+               : contents()->GetPrimaryMainFrame();
   }
 
   FrameTreeNode* root_ftn() { return contents()->GetPrimaryFrameTree().root(); }
@@ -294,15 +294,12 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
  public:
   // Observes navigation for the specified |web_contents|.
   explicit LoadCommittedDetailsObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        navigation_type_(NAVIGATION_TYPE_UNKNOWN),
-        reload_type_(ReloadType::NONE),
-        is_same_document_(false),
-        is_main_frame_(false),
-        did_replace_entry_(false) {}
+      : WebContentsObserver(web_contents) {}
 
   NavigationType navigation_type() { return navigation_type_; }
-  const GURL& previous_main_frame_url() { return previous_main_frame_url_; }
+  const GURL& previous_primary_main_frame_url() {
+    return previous_primary_main_frame_url_;
+  }
   ReloadType reload_type() { return reload_type_; }
   bool is_same_document() { return is_same_document_; }
   bool is_main_frame() { return is_main_frame_; }
@@ -316,7 +313,8 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
 
     navigation_type_ =
         NavigationRequest::From(navigation_handle)->navigation_type();
-    previous_main_frame_url_ = navigation_handle->GetPreviousMainFrameURL();
+    previous_primary_main_frame_url_ =
+        navigation_handle->GetPreviousPrimaryMainFrameURL();
     reload_type_ = navigation_handle->GetReloadType();
     is_same_document_ = navigation_handle->IsSameDocument();
     is_main_frame_ = navigation_handle->IsInMainFrame();
@@ -324,13 +322,13 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
     has_navigation_ui_data_ = navigation_handle->GetNavigationUIData();
   }
 
-  NavigationType navigation_type_;
-  GURL previous_main_frame_url_;
-  ReloadType reload_type_;
-  bool is_same_document_;
-  bool is_main_frame_;
-  bool did_replace_entry_;
-  bool has_navigation_ui_data_;
+  NavigationType navigation_type_ = NAVIGATION_TYPE_UNKNOWN;
+  GURL previous_primary_main_frame_url_;
+  ReloadType reload_type_ = ReloadType::NONE;
+  bool is_same_document_ = false;
+  bool is_main_frame_ = false;
+  bool did_replace_entry_ = false;
+  bool has_navigation_ui_data_ = false;
 };
 
 // "Legacy" class that was used to run NavigationControllerTest with the now
@@ -1302,9 +1300,10 @@ TEST_F(NavigationControllerTest, ReloadWithGuest) {
                                                     url1);
   ASSERT_TRUE(controller.GetVisibleEntry());
 
-  // Make the entry believe its RenderProcessHost is a guest.
+  // Ensure the entry's SiteInstance and RenderProcessHost are for a guest.
   NavigationEntryImpl* entry1 = controller.GetVisibleEntry();
-  ASSERT_EQ(entry1->site_instance(), guest_instance);
+  ASSERT_EQ(entry1->site_instance()->GetStoragePartitionConfig(),
+            kGuestPartitionConfig);
   ASSERT_TRUE(entry1->site_instance()->IsGuest());
   ASSERT_TRUE(entry1->site_instance()->GetProcess()->IsForGuestsOnly());
 
@@ -1867,7 +1866,7 @@ TEST_F(NavigationControllerTest, NewSubframe) {
   NavigationSimulator::NavigateAndCommitFromDocument(url2, subframe);
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
-  EXPECT_EQ(url1, observer.previous_main_frame_url());
+  EXPECT_EQ(url1, observer.previous_primary_main_frame_url());
   EXPECT_FALSE(observer.is_same_document());
   EXPECT_FALSE(observer.is_main_frame());
 
@@ -2278,7 +2277,7 @@ TEST_F(NavigationControllerTest, PushStateWithOnlyInitialEntry) {
   main_test_rfh()->SendRendererInitiatedNavigationRequest(
       url, false /* has_user_gesture */);
   main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithParams(
+  contents()->GetPrimaryMainFrame()->SendNavigateWithParams(
       std::move(params), true /* was_within_same_document */);
   // We pass if we don't crash.
 }
@@ -3359,7 +3358,7 @@ TEST_F(NavigationControllerTest, CopyStateFromAndPruneTargetPending2) {
   EXPECT_EQ(url2b, other_controller.GetPendingEntry()->GetURL());
 
   // Let the pending entry commit.
-  other_contents->GetMainFrame()->SendNavigateWithTransition(
+  other_contents->GetPrimaryMainFrame()->SendNavigateWithTransition(
       0, false, url2b, ui::PAGE_TRANSITION_LINK);
 }
 
@@ -4292,7 +4291,8 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
-      network::mojom::SourceLocation::New(), nullptr, absl::nullopt,
+      network::mojom::SourceLocation::New(), nullptr,
+      false /*is_form_submission*/, absl::nullopt,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   // Clean up the handler.
@@ -4338,7 +4338,8 @@ TEST_F(NavigationControllerTest,
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       should_replace_current_entry, blink::NavigationDownloadPolicy(), "GET",
       nullptr, "", network::mojom::SourceLocation::New(), nullptr,
-      absl::nullopt, base::TimeTicks::Now() /* navigation_start_time */);
+      false /*is_form_submission*/, absl::nullopt,
+      base::TimeTicks::Now() /* navigation_start_time */);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 
@@ -4556,8 +4557,10 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
   RenderFrameHostImpl* fenced_frame_root = main_test_rfh()->AppendFencedFrame();
   // Navigate fenced frame.
   std::unique_ptr<NavigationSimulator> navigation_simulator =
-      NavigationSimulator::CreateForFencedFrame(kUrl2, fenced_frame_root);
+      NavigationSimulator::CreateRendererInitiated(kUrl2, fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = static_cast<RenderFrameHostImpl*>(
+      navigation_simulator->GetFinalRenderFrameHost());
 
   // Simulate the fenced frame receiving a request from a RenderFrameProxyHost
   // to navigate to `kTestRewriteURL`.
@@ -4570,7 +4573,8 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
       fenced_frame_root->GetSiteInstance(), Referrer(),
       ui::PAGE_TRANSITION_LINK, false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
-      network::mojom::SourceLocation::New(), nullptr, absl::nullopt,
+      network::mojom::SourceLocation::New(), nullptr,
+      false /*is_form_submission*/, absl::nullopt,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   NavigationRequest* request =

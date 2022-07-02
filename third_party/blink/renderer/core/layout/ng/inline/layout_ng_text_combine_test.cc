@@ -554,13 +554,13 @@ LayoutNGBlockFlow DIV id="root"
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 
@@ -574,11 +574,11 @@ LayoutBlockFlow DIV id="root"
   +--LayoutInline Q
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutTextCombine #text "ab"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()))
       << "No more LayoutNGTextCombine";
@@ -640,7 +640,7 @@ LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "1. "
+  |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 
@@ -751,8 +751,6 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
           // tcy
           PhysicalRect(PhysicalOffset(25, 0), PhysicalSize(100, 100)),
           PhysicalRect(PhysicalOffset(20, 0), PhysicalSize(110, 100)),
-          PhysicalRect(PhysicalOffset(25, 0), PhysicalSize(100, 100)),
-          PhysicalRect(PhysicalOffset(20, 0), PhysicalSize(110, 100)),
           // "X"
           PhysicalRect(PhysicalOffset(25, 100), PhysicalSize(100, 100)),
           PhysicalRect(PhysicalOffset(25, 100), PhysicalSize(100, 100))));
@@ -774,8 +772,6 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
       ElementsAre(
           PhysicalRect(PhysicalOffset(0, 0), PhysicalSize(150, 200)),
           // "a"
-          PhysicalRect(PhysicalOffset(25, 0), PhysicalSize(100, 100)),
-          PhysicalRect(PhysicalOffset(20, 0), PhysicalSize(110, 100)),
           PhysicalRect(PhysicalOffset(25, 0), PhysicalSize(100, 100)),
           PhysicalRect(PhysicalOffset(20, 0), PhysicalSize(110, 100)),
           // "X"
@@ -849,7 +845,7 @@ LayoutNGBlockFlow DETAILS id="root"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
@@ -869,7 +865,7 @@ LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
@@ -1459,7 +1455,7 @@ LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "1. "
+  |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
 )DUMP",
@@ -1479,13 +1475,13 @@ LayoutNGBlockFlow DIV id="root"
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
   |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\"")
+  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }

@@ -40,6 +40,7 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
   bool IsUpdateEngineIdle();
 
   void UpdateStatusChangedForTesting(const update_engine::StatusResult& status);
+  void DisableUpdateOnceForTesting();
 
  private:
   // Callback from UpdateEngineClient::RequestUpdateCheck().
@@ -58,6 +59,7 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
   };
   CheckUpdateState check_update_available_ = IDLE;
   std::string new_version_;
+  bool disable_update_for_testing_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

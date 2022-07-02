@@ -80,11 +80,10 @@ class RendererPpapiHostImpl : public RendererPpapiHost {
   bool IsValidInstance(PP_Instance instance) override;
   PepperPluginInstance* GetPluginInstance(PP_Instance instance) override;
   RenderFrame* GetRenderFrameForInstance(PP_Instance instance) override;
-  RenderView* GetRenderViewForInstance(PP_Instance instance) override;
   blink::WebPluginContainer* GetContainerForInstance(
       PP_Instance instance) override;
   bool HasUserGesture(PP_Instance instance) override;
-  int GetRoutingIDForWidget(PP_Instance instance) override;
+  int GetRoutingIDForFrame(PP_Instance instance) override;
   gfx::Point PluginPointToRenderFrame(PP_Instance instance,
                                       const gfx::Point& pt) override;
   IPC::PlatformFileForTransit ShareHandleWithRemote(

@@ -27,7 +27,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -100,6 +99,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         kFolderNameBorderThickness));
 
     AppListColorProvider* color_provider = AppListColorProvider::Get();
+    set_placeholder_text_color(color_provider->GetFolderHintTextColor());
     const SkColor text_color = color_provider->GetFolderTitleTextColor();
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
@@ -107,8 +107,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     SetNameViewBorderAndBackground(is_active);
   }
 
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
-    return views::GetNativeIBeamCursor();
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::mojom::CursorType::kIBeam;
   }
 
   void SetNameViewBorderAndBackground(bool is_active) {

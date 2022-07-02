@@ -33,6 +33,7 @@ source_set("authentication") {
     "unified_consent",
     "//components/consent_auditor",
     "//components/infobars/core",
+    "//components/policy/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",

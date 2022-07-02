@@ -166,7 +166,7 @@ def CheckUpdatedNaClSDK(input_api, output_api):
     # TODO(crbug.com/1222512): Use sys.executable instead of
     # input_api.python_executable once idl_tests.py is py3 compatible, drop
     # shell=True.
-    cmd = [input_api.python_executable, verify_ppapi_py
+    cmd = [input_api.python3_executable, verify_ppapi_py
            ] + nacl_sdk_files[i:i + files_per_command]
     results.extend(
         RunCmdAndCheck(

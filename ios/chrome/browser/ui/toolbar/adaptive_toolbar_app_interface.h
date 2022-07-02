@@ -12,7 +12,7 @@
 // the app binary and can be called from either app or test code.
 @interface AdaptiveToolbarAppInterface : NSObject
 
-// Creates an infobar with |title|. Returns nil on success, or else an NSError
+// Creates an infobar with `title`. Returns nil on success, or else an NSError
 // indicating why the operation failed.
 + (BOOL)addInfobarWithTitle:(NSString*)title;
 

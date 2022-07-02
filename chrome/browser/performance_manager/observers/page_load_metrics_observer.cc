@@ -271,15 +271,15 @@ void PageLoadMetricsWebContentsObserver::DidStopLoading() {
 
 void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1190112): Support non-primary FrameTrees.
+  // We don't record metrics for prerendering pages.
   if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary()) {
+      !navigation_handle->GetRenderFrameHost()->IsActive()) {
     return;
   }
 
   DCHECK(is_loading_);
 
-  if (navigation_handle->IsInMainFrame() &&
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     RecordUKM();
     ukm_source_id_ = ukm::ConvertToSourceId(
@@ -288,12 +288,12 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
 
   NavigationType navigation_type;
   if (navigation_handle->IsSameDocument()) {
-    if (navigation_handle->IsInMainFrame())
+    if (navigation_handle->IsInPrimaryMainFrame())
       navigation_type = NavigationType::kMainFrameSameDocument;
     else
       navigation_type = NavigationType::kSubFrameSameDocument;
   } else {
-    if (navigation_handle->IsInMainFrame())
+    if (navigation_handle->IsInPrimaryMainFrame())
       navigation_type = NavigationType::kMainFrameDifferentDocument;
     else
       navigation_type = NavigationType::kSubFrameDifferentDocument;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 
@@ -37,9 +38,9 @@ class WebDragBookmarkHandlerMac : public content::WebDragDestDelegate {
   // The BookmarkTabHelper.
   // Weak reference; may be NULL if the contents don't have a
   // BookmarkTabHelper (e.g. WebUI dialogs).
-  BookmarkTabHelper* bookmark_tab_helper_;
+  raw_ptr<BookmarkTabHelper> bookmark_tab_helper_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The bookmark data for the current tab. This will be empty if there is not
   // a native bookmark drag.

@@ -41,7 +41,7 @@ struct WebRequestDataWithMatchIds {
   ~WebRequestDataWithMatchIds();
 
   raw_ptr<const WebRequestData> data;
-  std::set<url_matcher::URLMatcherConditionSet::ID> url_match_ids;
+  std::set<base::MatcherStringPattern::ID> url_match_ids;
 };
 
 // Representation of a condition in the Declarative WebRequest API. A condition

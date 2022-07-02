@@ -94,16 +94,15 @@ bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
                    "Windows 10.";
     return false;
   }
+  // If the path exist, we can assume the right permission are already
+  // set on it.
+  if (base::PathExists(cdm_store_path_root))
+    return true;
 
-  // TODO(crbug.com/1323885): After things stabilizes, assume that if the path
-  // exists, the right permission should have been set on it, so only grant
-  // permission on newly created folders.
-  if (!base::PathExists(cdm_store_path_root)) {
-    base::File::Error file_error;
-    if (!base::CreateDirectoryAndGetError(cdm_store_path_root, &file_error)) {
-      DLOG(ERROR) << "Create CDM store path failed with " << file_error;
-      return false;
-    }
+  base::File::Error file_error;
+  if (!base::CreateDirectoryAndGetError(cdm_store_path_root, &file_error)) {
+    DLOG(ERROR) << "Create CDM store path failed with " << file_error;
+    return false;
   }
 
   auto sids = base::win::Sid::FromNamedCapabilityVector(

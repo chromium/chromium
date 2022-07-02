@@ -10,9 +10,13 @@
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -58,7 +62,7 @@ void LaunchCrostini(Profile* profile,
                     LaunchCallback callback) {
   crostini::CrostiniManager::RestartOptions options;
   options.start_vm_only = just_termina;
-  auto container_id = crostini::ContainerId::GetDefault();
+  auto container_id = crostini::DefaultContainerId();
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
       container_id, std::move(options),
       base::BindOnce(
@@ -91,6 +95,29 @@ void LaunchPluginVm(Profile* profile, LaunchCallback callback) {
                 Success(plugin_vm::kPluginVmName, /*container_name=*/""));
           },
           std::move(callback)));
+}
+
+void LaunchBruschetta(Profile* profile,
+                      const std::string& name,
+                      LaunchCallback callback) {
+  auto* service = bruschetta::BruschettaService::GetForProfile(profile);
+  auto launcher = service->GetLauncher(name);
+  if (!launcher) {
+    std::move(callback).Run(ResponseType::Unexpected(
+        "No record found of a Bruschetta VM named " + name));
+    return;
+  }
+  launcher->EnsureRunning(base::BindOnce(
+      [](std::string name, LaunchCallback callback,
+         bruschetta::BruschettaResult result) {
+        if (result != bruschetta::BruschettaResult::kSuccess) {
+          std::move(callback).Run(
+              ResponseType::Unexpected("Failed to launch Bruschetta"));
+          return;
+        }
+        std::move(callback).Run(Success(name, /*container_name=*/""));
+      },
+      name, std::move(callback)));
 }
 
 }  // namespace
@@ -129,6 +156,15 @@ void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
   } else if (main_descriptor == "termina") {
     LaunchCrostini(profile, /*just_termina=*/true,
                    std::move(response_callback));
+  } else if (main_descriptor == "bruschetta") {
+    if (request.launch_descriptors().size() == 1) {
+      std::move(response_callback)
+          .Run(ResponseType::Unexpected(
+              "Error: Bruschetta needs a name to launch"));
+      return;
+    }
+    const std::string& name = request.launch_descriptors()[1];
+    LaunchBruschetta(profile, name, std::move(response_callback));
   } else {
     std::move(response_callback)
         .Run(

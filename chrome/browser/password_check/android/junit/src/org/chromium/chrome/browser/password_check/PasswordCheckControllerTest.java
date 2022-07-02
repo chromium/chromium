@@ -82,6 +82,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
             new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",
@@ -101,7 +102,7 @@ public class PasswordCheckControllerTest {
     private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES =
             "PasswordManager.AutomaticChange.ForSitesWithScripts";
     private static final String PASSWORD_CHECK_REFERRER_HISTOGRAM =
-            "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid";
+            "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2";
     private static final String PASSWORD_CHECK_USER_ACTION_HISTOGRAM =
             "PasswordManager.BulkCheck.UserActionAndroid";
 

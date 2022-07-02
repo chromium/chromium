@@ -75,7 +75,7 @@
     }
 
     // Make sure that some omnibox animations were queued. Otherwise, the final
-    // call to |animationFinished after the toolbar animations finished was
+    // call to `animationFinished` after the toolbar animations finished was
     // interrupted and cleanup still needs to occur.
     if (self.inProgressAnimationCount == 0 && self.isAnimating) {
       [self animationFinished];
@@ -244,7 +244,7 @@
   }
 }
 
-// Updates the UI elements reflect the toolbar expanded state, |animated| or
+// Updates the UI elements reflect the toolbar expanded state, `animated` or
 // not.
 - (void)updateUIToExpandedState:(BOOL)animated {
   void (^expansion)() = ^{
@@ -282,7 +282,7 @@
   }
 }
 
-// Updates the UI elements reflect the toolbar contracted state, |animated| or
+// Updates the UI elements reflect the toolbar contracted state, `animated` or
 // not.
 - (void)updateUIToContractedState:(BOOL)animated {
   void (^contraction)() = ^{

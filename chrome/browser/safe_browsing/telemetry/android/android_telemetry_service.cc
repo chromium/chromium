@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
@@ -225,8 +224,6 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   report->set_type(ClientSafeBrowsingReportRequest::APK_DOWNLOAD);
   report->set_url(item->GetOriginalUrl().spec());
   report->set_page_url(item->GetTabUrl().spec());
-  *report->mutable_population() =
-      safe_browsing::GetUserPopulationForProfile(profile_);
 
   // Fill referrer chain.
   content::WebContents* web_contents =
@@ -234,7 +231,7 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   content::RenderFrameHost* rfh =
       content::DownloadItemUtils::GetRenderFrameHost(item);
   if (!rfh && web_contents)
-    rfh = web_contents->GetMainFrame();
+    rfh = web_contents->GetPrimaryMainFrame();
 
   FillReferrerChain(web_contents, rfh, report.get());
 
@@ -253,23 +250,19 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
 void AndroidTelemetryService::MaybeSendApkDownloadReport(
     content::BrowserContext* browser_context,
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  std::string serialized;
-  if (!report->SerializeToString(&serialized)) {
-    DLOG(ERROR) << "Unable to serialize the APK download telemetry report.";
+  PingManager::ReportThreatDetailsResult result =
+      ChromePingManagerFactory::GetForBrowserContext(browser_context)
+          ->ReportThreatDetails(std::move(report));
+
+  if (result == PingManager::ReportThreatDetailsResult::SUCCESS) {
+    RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome::SENT);
+  } else if (result ==
+             PingManager::ReportThreatDetailsResult::SERIALIZATION_ERROR) {
     RecordApkDownloadTelemetryOutcome(
         ApkDownloadTelemetryOutcome::NOT_SENT_FAILED_TO_SERIALIZE);
-    return;
+  } else {
+    NOTREACHED() << "Unhandled PingManager::ReportThreatDetailsResult type";
   }
-  ChromePingManagerFactory::GetForBrowserContext(browser_context)
-      ->ReportThreatDetails(serialized);
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(report)));
-
-  RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome::SENT);
 }
 
 }  // namespace safe_browsing

@@ -48,7 +48,8 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
-                         const GURL& start_url) {
+                         const GURL& start_url,
+                         const webapps::WebappInstallSource install_source) {
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   WebAppInstallInfo web_app_info;
 
@@ -59,8 +60,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.user_display_mode = UserDisplayMode::kStandalone;
   web_app_info.install_url = start_url;
 
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  WebAppInstallFinalizer::FinalizeOptions options(install_source);
   options.bypass_os_hooks = true;
 
   // In unit tests, we do not have Browser or WebContents instances.

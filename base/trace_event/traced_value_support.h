@@ -96,7 +96,7 @@ template <>
 struct TraceFormatTraits<::base::TimeDelta> {
   static void WriteIntoTrace(perfetto::TracedValue context,
                              const ::base::TimeDelta& value) {
-    std::move(context).WriteUInt64(value.InMicroseconds());
+    std::move(context).WriteInt64(value.InMicroseconds());
   }
 };
 

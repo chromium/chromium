@@ -216,7 +216,7 @@ void DownloadRequestLimiter::TabDownloadState::PromptUserForDownload(
     // so we use the primary main RenderFrameHost here, to avoid discarding the
     // request in the case that the initiator RFH is already gone.
     permission_request_manager->AddRequest(
-        web_contents_->GetMainFrame(),
+        web_contents_->GetPrimaryMainFrame(),
         new DownloadPermissionRequest(factory_.GetWeakPtr(), request_origin));
   } else {
     // Call CancelOnce() so we don't set the content settings.

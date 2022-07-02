@@ -21,6 +21,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
+#include "media/base/video_types.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -47,18 +48,20 @@ void ContentCaptureDeviceBrowserTestBase::ChangePageContentColor(
   // See the HandleRequest() method for the original documents being modified
   // here.
   std::string script;
+  const std::string color_string =
+      base::StringPrintf("%02x%02x%02x", SkColorGetR(color), SkColorGetG(color),
+                         SkColorGetB(color));
   if (IsCrossSiteCaptureTest()) {
     const GURL& inner_frame_url =
         embedded_test_server()->GetURL(kInnerFrameHostname, kInnerFramePath);
     script = base::StringPrintf(
-        "document.getElementsByTagName('iframe')[0].src = '%s?color=123456';",
-        inner_frame_url.spec().c_str());
+        "document.getElementsByTagName('iframe')[0].src = '%s?color=%s';",
+        inner_frame_url.spec().c_str(), color_string.c_str());
   } else {
-    script = "document.body.style.backgroundColor = '#123456';";
+    script = base::StringPrintf("document.body.style.backgroundColor = '#%s';",
+                                color_string.c_str());
   }
-  script.replace(script.find("123456"), 6,
-                 base::StringPrintf("%02x%02x%02x", SkColorGetR(color),
-                                    SkColorGetG(color), SkColorGetB(color)));
+
   CHECK(ExecJs(shell()->web_contents(), script));
 }
 
@@ -94,12 +97,17 @@ ContentCaptureDeviceBrowserTestBase::SnapshotCaptureParams() {
 
   media::VideoCaptureParams params;
   params.requested_format = media::VideoCaptureFormat(
-      capture_size, kMaxFramesPerSecond, media::PIXEL_FORMAT_I420);
+      capture_size, kMaxFramesPerSecond, GetVideoPixelFormat());
   params.resolution_change_policy =
       IsFixedAspectRatioTest()
           ? media::ResolutionChangePolicy::FIXED_ASPECT_RATIO
           : media::ResolutionChangePolicy::ANY_WITHIN_LIMIT;
   return params;
+}
+
+media::VideoPixelFormat
+ContentCaptureDeviceBrowserTestBase::GetVideoPixelFormat() const {
+  return media::VideoPixelFormat::PIXEL_FORMAT_I420;
 }
 
 base::TimeDelta ContentCaptureDeviceBrowserTestBase::GetMinCapturePeriod() {
@@ -120,7 +128,7 @@ void ContentCaptureDeviceBrowserTestBase::NavigateToInitialDocument() {
 
     // Confirm the iframe is a cross-process child render frame.
     auto* const child_frame =
-        ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+        ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     ASSERT_TRUE(child_frame->IsCrossProcessSubframe());
   } else {

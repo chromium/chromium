@@ -39,6 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -71,50 +72,6 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
-bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config,
-                    bool is_top_level_auction) {
-  // The seller origin has to be HTTPS.
-  if (config.seller.scheme() != url::kHttpsScheme)
-    return false;
-
-  // Opaque Origins have empty schemes.
-  DCHECK(!config.seller.opaque());
-
-  // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
-  // share the seller's origin.
-  if (url::SchemeHostPort(config.decision_logic_url) !=
-          config.seller.GetTupleOrPrecursorTupleIfOpaque() ||
-      (config.trusted_scoring_signals_url &&
-       url::SchemeHostPort(*config.trusted_scoring_signals_url) !=
-           config.seller.GetTupleOrPrecursorTupleIfOpaque())) {
-    return false;
-  }
-
-  const auto& non_shared_params = config.auction_ad_config_non_shared_params;
-  // This isn't marked as optional in the Mojo struct, so Mojo should make sure
-  // it is non-null.
-  DCHECK(non_shared_params);
-
-  // All interest group owners must be HTTPS.
-  if (non_shared_params->interest_group_buyers) {
-    for (const url::Origin& buyer : *non_shared_params->interest_group_buyers) {
-      if (buyer.scheme() != url::kHttpsScheme)
-        return false;
-    }
-  }
-
-  for (const auto& component_auction :
-       config.auction_ad_config_non_shared_params->component_auctions) {
-    // Component auctions may not have their own nested component auctions.
-    if (!is_top_level_auction)
-      return false;
-    if (!IsAuctionValid(*component_auction, /*is_top_level_auction=*/false))
-      return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 // static
@@ -134,20 +91,13 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   if (!JoinOrLeaveApiAllowedFromRenderer(group.owner))
     return;
 
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
-  //
-  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
-  // make it not affect the invocation of the callback, to avoid leaking that
-  // joining is disabled for particular owners, through timing information.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kJoin,
-          group.owner)) {
-    // Claim this passed the well-known check.
-    std::move(callback).Run(/*failed_well_known_check=*/false);
-    return;
-  }
+  // If the interest group API is not allowed for this origin, report the result
+  // of the permissions check, but don't actually join the interest group.
+  // The return value of IsInterestGroupAPIAllowed() is potentially affected by
+  // a user's browser configuration, which shouldn't be leaked to sites to
+  // protect against fingerprinting.
+  bool report_result_only = !IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kJoin, group.owner);
 
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
@@ -156,8 +106,8 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(group), main_frame_url_, origin(),
-      GetFrame()->GetNetworkIsolationKey(), *GetFrameURLLoaderFactory(),
-      std::move(callback));
+      GetFrame()->GetNetworkIsolationKey(), report_result_only,
+      *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroup(
@@ -167,22 +117,17 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
   if (!JoinOrLeaveApiAllowedFromRenderer(owner))
     return;
 
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
-  //
-  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
-  // make it not affect the invocation of the callback, to avoid leaking that
-  // joining is disabled for particular owners, through timing information.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kLeave, owner)) {
-    // Claim this passed the well-known check.
-    std::move(callback).Run(/*failed_well_known_check=*/false);
-    return;
-  }
+  // If the interest group API is not allowed for this origin, report the result
+  // of the permissions check, but don't actually join the interest group.
+  // The return value of IsInterestGroupAPIAllowed() is potentially affected by
+  // a user's browser configuration, which shouldn't be leaked to sites to
+  // protect against fingerprinting.
+  bool report_result_only = !IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kLeave, owner);
 
   GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
-      owner, name, origin(), GetFrame()->GetNetworkIsolationKey(),
+      owner, name, main_frame_origin_, origin(),
+      GetFrame()->GetNetworkIsolationKey(), report_result_only,
       *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
@@ -198,14 +143,14 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
 
   if (origin().scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroupForDocument only supported for "
+        "Unexpected request: LeaveInterestGroupForDocument only supported for "
         "secure origins");
     return;
   }
 
   if (!render_frame_host()->IsNestedWithinFencedFrame()) {
     ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroupForDocument only supported "
+        "Unexpected request: LeaveInterestGroupForDocument only supported "
         "within fenced frames");
     return;
   }
@@ -232,8 +177,8 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   GetInterestGroupManager().LeaveInterestGroup(
-      auction_data->interest_group_owner(),
-      auction_data->interest_group_name());
+      auction_data->interest_group_owner(), auction_data->interest_group_name(),
+      main_frame_origin_);
 }
 
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
@@ -253,17 +198,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
       origin(), GetClientSecurityState());
 }
 
-void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
+void AdAuctionServiceImpl::RunAdAuction(const blink::AuctionConfig& config,
                                         RunAdAuctionCallback callback) {
   // If the run ad auction API is not allowed for this context by Permissions
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
     ReportBadMessageAndDeleteThis("Unexpected request");
-    return;
-  }
-  if (!IsAuctionValid(*config, /*is_top_level_auction=*/true)) {
-    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -369,15 +310,10 @@ void AdAuctionServiceImpl::CreateAdRequest(
 }
 
 void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
-                                      ::blink::mojom::AuctionAdConfigPtr config,
+                                      const blink::AuctionConfig& config,
                                       FinalizeAdCallback callback) {
-  if (!config->decision_logic_url.SchemeIs(url::kHttpsScheme)) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
   if (ads_guid.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    ReportBadMessageAndDeleteThis("GUID empty");
     return;
   }
 
@@ -541,8 +477,16 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!render_url) {
     DCHECK(report_urls.empty());
     std::move(callback).Run(absl::nullopt);
-    auction_result_metrics->ReportAuctionResult(
-        AdAuctionResultMetrics::AuctionResult::kFailed);
+    if (auction_result_metrics) {
+      // `auction_result_metrics` can be null since PageUserData like
+      // AdAuctionResultMetrics isn't guaranteed to be destroyed after document
+      // services like `this`, even though this typically is the case for
+      // destruction of the RenderFrameHost (except for renderer crashes).
+      //
+      // So, we need to guard against this.
+      auction_result_metrics->ReportAuctionResult(
+          AdAuctionResultMetrics::AuctionResult::kFailed);
+    }
     GetInterestGroupManager().EnqueueReports(
         std::vector<GURL>(), std::vector<GURL>(), debug_loss_report_urls,
         origin(), GetClientSecurityState(),
@@ -559,8 +503,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);
-  auction_result_metrics->ReportAuctionResult(
-      AdAuctionResultMetrics::AuctionResult::kSucceeded);
+  if (auction_result_metrics) {
+    auction_result_metrics->ReportAuctionResult(
+        AdAuctionResultMetrics::AuctionResult::kSucceeded);
+  }
   GetInterestGroupManager().EnqueueReports(
       report_urls, debug_win_report_urls, debug_loss_report_urls, origin(),
       GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory());

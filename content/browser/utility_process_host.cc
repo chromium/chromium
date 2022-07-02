@@ -118,7 +118,8 @@ bool UtilityProcessHost::Start() {
   return StartProcess();
 }
 
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 void UtilityProcessHost::RunServiceDeprecated(
     const std::string& service_name,
     mojo::ScopedMessagePipeHandle service_pipe,
@@ -296,6 +297,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kForceWaveAudio,
       switches::kRaiseTimerFrequency,
       switches::kTrySupportedChannelLayouts,
+      switches::kUseFakeAudioCaptureTimestamps,
       switches::kWaveOutBuffers,
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
@@ -304,6 +306,9 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kIpAddressSpaceOverrides,
 #if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      switches::kEnableResourcesFileSharing,
 #endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
@@ -365,7 +370,8 @@ bool UtilityProcessHost::StartProcess() {
 
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(process_->GetProcess().Pid());
   pending_run_service_callbacks_.clear();
@@ -376,7 +382,8 @@ void UtilityProcessHost::OnProcessLaunched() {
 
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
   launch_state_ = LaunchState::kLaunchFailed;
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   for (auto& callback : pending_run_service_callbacks_)
     std::move(callback).Run(absl::nullopt);
   pending_run_service_callbacks_.clear();

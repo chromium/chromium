@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -134,6 +136,21 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
+
     AddAgentsToBrowser(browser_.get(), scene_state_);
 
     incognito_browser_ = std::make_unique<TestBrowser>(
@@ -168,7 +185,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         incognito_thumb_strip_supporting_;
 
     // TabGridCoordinator will make its view controller the root, so stash the
-    // original root view controller before starting |coordinator_|.
+    // original root view controller before starting `coordinator_`.
     original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
 
     delegate_ = [[TestTabGridCoordinatorDelegate alloc] init];

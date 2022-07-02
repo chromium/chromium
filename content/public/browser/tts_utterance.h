@@ -8,12 +8,9 @@
 #include <memory>
 #include <set>
 
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace content {
 class BrowserContext;
@@ -87,8 +84,8 @@ class CONTENT_EXPORT TtsUtterance {
   virtual void SetText(const std::string& text) = 0;
   virtual const std::string& GetText() = 0;
 
-  virtual void SetOptions(const base::Value* options) = 0;
-  virtual const base::Value* GetOptions() = 0;
+  virtual void SetOptions(base::Value::Dict options) = 0;
+  virtual const base::Value::Dict* GetOptions() = 0;
 
   virtual void SetSrcId(int src_id) = 0;
   virtual int GetSrcId() = 0;

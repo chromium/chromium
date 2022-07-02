@@ -11,7 +11,7 @@
 // with the coordinator layer, and from there to the rest of the application.
 @protocol ContentSuggestionsCommands
 
-// Opens the Most Visited associated with this |item| at the |mostVisitedItem|.
+// Opens the Most Visited associated with this `item` at the `mostVisitedItem`.
 - (void)openMostVisitedItem:(CollectionViewItem*)item
                     atIndex:(NSInteger)mostVisitedIndex;
 // Handles the actions tapping the "Return to Recent Tab" item that returns the

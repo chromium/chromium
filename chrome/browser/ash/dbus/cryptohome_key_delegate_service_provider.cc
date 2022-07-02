@@ -14,9 +14,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -125,8 +125,9 @@ void HandleSignatureKeyChallenge(
   // installed (e.g., for the smart card based login they are force-installed
   // via the DeviceLoginScreenExtensions admin policy).
   Profile* signin_profile = ProfileHelper::GetSigninProfile();
-  CertificateProviderService* certificate_provider_service =
-      CertificateProviderServiceFactory::GetForBrowserContext(signin_profile);
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          signin_profile);
   if (!certificate_provider_service) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(

@@ -29,7 +29,7 @@ struct CPUContextARM64;
 
 //! \brief Initializes a CPUContextX86 structure from a native context structure
 //!     on Windows.
-void InitializeX86Context(const CONTEXT& context, CPUContextX86* out);
+void InitializeX86Context(const CONTEXT* context, CPUContextX86* out);
 
 #endif  // ARCH_CPU_X86
 
@@ -37,11 +37,22 @@ void InitializeX86Context(const CONTEXT& context, CPUContextX86* out);
 
 //! \brief Initializes a CPUContextX86 structure from a native context structure
 //!     on Windows.
-void InitializeX86Context(const WOW64_CONTEXT& context, CPUContextX86* out);
+void InitializeX86Context(const WOW64_CONTEXT* context, CPUContextX86* out);
 
 //! \brief Initializes a CPUContextX86_64 structure from a native context
 //!     structure on Windows.
-void InitializeX64Context(const CONTEXT& context, CPUContextX86_64* out);
+//! Only reads a max of sizeof(CONTEXT) so will not initialize extended values.
+void InitializeX64Context(const CONTEXT* context, CPUContextX86_64* out);
+
+//! \brief Initializes CET fields of a CPUContextX86_64 structure from
+//!     an xsave location if |context| flags support cet_u values.
+void InitializeX64XStateCet(const CONTEXT* context,
+                            XSAVE_CET_U_FORMAT* cet_u,
+                            CPUContextX86_64* out);
+
+//! \brief Wraps GetXStateEnabledFeatures(), returns true if the specified set
+//!     of flags are all supported.
+bool IsXStateFeatureEnabled(DWORD64 feature);
 
 #endif  // ARCH_CPU_X86_64
 
@@ -49,7 +60,7 @@ void InitializeX64Context(const CONTEXT& context, CPUContextX86_64* out);
 
 //! \brief Initializes a CPUContextARM64 structure from a native context
 //!     structure on Windows.
-void InitializeARM64Context(const CONTEXT& context, CPUContextARM64* out);
+void InitializeARM64Context(const CONTEXT* context, CPUContextARM64* out);
 
 #endif  // ARCH_CPU_ARM64
 

@@ -36,10 +36,10 @@ void CheckDomCodeToMeaning(const char* label,
   ui::DomKey result_dom_key = ui::DomKey::NONE;
   ui::KeyboardCode result_key_code = ui::VKEY_UNKNOWN;
   bool success = f(dom_code, event_flags, &result_dom_key, &result_key_code);
-  SCOPED_TRACE(
-      base::StringPrintf("%s %s %06X:%04X", label,
-                         ui::KeycodeConverter::DomCodeToCodeString(dom_code),
-                         static_cast<int>(dom_code), event_flags));
+  SCOPED_TRACE(base::StringPrintf(
+      "%s %s %06X:%04X", label,
+      ui::KeycodeConverter::DomCodeToCodeString(dom_code).c_str(),
+      static_cast<int>(dom_code), event_flags));
   EXPECT_EQ(result.defined, success);
   if (success) {
     EXPECT_EQ(result.dom_key, result_dom_key)

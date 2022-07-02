@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/x11_window.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,6 +35,7 @@
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_event_translation.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
@@ -182,6 +184,11 @@ std::vector<x11::Window> GetParentsList(x11::Connection* connection,
   return result;
 }
 
+std::vector<x11::Window>& GetSecuritySurfaces() {
+  static base::NoDestructor<std::vector<x11::Window>> security_surfaces;
+  return *security_surfaces;
+}
+
 }  // namespace
 
 X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
@@ -325,6 +332,17 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   if (is_always_on_top_)
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_ABOVE"));
 
+  is_security_surface_ = properties.is_security_surface;
+  if (is_security_surface_) {
+    GetSecuritySurfaces().push_back(xwindow_);
+  } else {
+    // Newly created windows appear at the top of the stacking order, so raise
+    // any security surfaces since the WM will not do it if the window is
+    // override-redirect.
+    for (x11::Window window : GetSecuritySurfaces())
+      RaiseWindow(window);
+  }
+
   workspace_ = absl::nullopt;
   if (properties.visible_on_all_workspaces) {
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_STICKY"));
@@ -361,6 +379,8 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   }
   if (wm_role_name)
     SetWindowRole(xwindow_, std::string(wm_role_name));
+
+  SetTitle(u"");
 
   if (properties.remove_standard_frame) {
     // Setting _GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED tells gnome-shell to not force
@@ -470,7 +490,7 @@ void X11Window::PrepareForShutdown() {
   X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 }
 
-void X11Window::SetBounds(const gfx::Rect& bounds) {
+void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   gfx::Rect new_bounds_in_pixels(bounds.origin(),
                                  AdjustSizeForDisplay(bounds.size()));
 
@@ -533,12 +553,13 @@ void X11Window::SetBounds(const gfx::Rect& bounds) {
   OnXWindowBoundsChanged(new_bounds_in_pixels);
 }
 
-gfx::Rect X11Window::GetBounds() const {
+gfx::Rect X11Window::GetBoundsInPixels() const {
   return bounds_in_pixels_;
 }
 
 void X11Window::SetBoundsInDIP(const gfx::Rect& bounds_in_dip) {
-  SetBounds(platform_window_delegate_->ConvertRectToPixels(bounds_in_dip));
+  SetBoundsInPixels(
+      platform_window_delegate_->ConvertRectToPixels(bounds_in_dip));
 }
 
 gfx::Rect X11Window::GetBoundsInDIP() const {
@@ -622,7 +643,7 @@ void X11Window::ToggleFullscreen() {
   // - works around Flash content which expects to have the size updated
   //   synchronously.
   // See https://crbug.com/361408
-  gfx::Rect new_bounds_px = GetBounds();
+  gfx::Rect new_bounds_px = GetBoundsInPixels();
   if (fullscreen) {
     restored_bounds_in_pixels_ = new_bounds_px;
     if (x11_extension_delegate_)
@@ -666,18 +687,18 @@ void X11Window::Maximize() {
     // Resize the window so that it does not have the same size as a monitor.
     // (Otherwise, some window managers immediately put the window back in
     // fullscreen mode).
-    gfx::Rect bounds_in_pixels = GetBounds();
+    gfx::Rect bounds_in_pixels = GetBoundsInPixels();
     gfx::Rect adjusted_bounds_in_pixels(
         bounds_in_pixels.origin(),
         AdjustSizeForDisplay(bounds_in_pixels.size()));
     if (adjusted_bounds_in_pixels != bounds_in_pixels)
-      SetBounds(adjusted_bounds_in_pixels);
+      SetBoundsInPixels(adjusted_bounds_in_pixels);
   }
 
   // When we are in the process of requesting to maximize a window, we can
   // accurately keep track of our restored bounds instead of relying on the
   // heuristics that are in the PropertyNotify and ConfigureNotify handlers.
-  restored_bounds_in_pixels_ = GetBounds();
+  restored_bounds_in_pixels_ = GetBoundsInPixels();
 
   // Some WMs do not respect maximization hints on unmapped windows, so we
   // save this one for later too.
@@ -1095,6 +1116,43 @@ void X11Window::SetInputRegion(const gfx::Rect* region_px) {
   });
 }
 
+void X11Window::NotifyStartupComplete(const std::string& startup_id) {
+  std::string message = "remove: ID=\"";
+  for (char c : startup_id) {
+    if (c == ' ' || c == '"' || c == '\\')
+      message.push_back('\\');
+    message.push_back(c);
+  }
+  message.push_back('"');
+
+  auto window = x11::CreateDummyWindow();
+  x11::ClientMessageEvent event{
+      .format = 8,
+      .window = window,
+      .type = x11::GetAtom("_NET_STARTUP_INFO_BEGIN"),
+  };
+  constexpr size_t kChunkSize = event.data.data8.size();
+  const x11::Atom net_startup_info = x11::GetAtom("_NET_STARTUP_INFO");
+
+  // X11 ClientMessageEvents are fixed size, but we need to send a variable
+  // sized message.  Send the message `kChunkSize` bytes at a time with the
+  // first message having type _NET_STARTUP_INFO_BEGIN and subsequent messages
+  // having type _NET_STARTUP_INFO.
+  const char* data = message.c_str();
+  const size_t data_size = message.size() + 1;
+  for (size_t offset = 0; offset < data_size; offset += kChunkSize) {
+    size_t copy_size = std::min<size_t>(kChunkSize, data_size - offset);
+    uint8_t* dst = &event.data.data8[0];
+    memcpy(dst, data + offset, copy_size);
+    memset(dst + copy_size, 0, kChunkSize - copy_size);
+    SendEvent(event, x_root_window_, x11::EventMask::PropertyChange);
+    event.type = net_startup_info;
+  }
+
+  connection_->DestroyWindow(window);
+  connection_->Flush();
+}
+
 std::string X11Window::GetWorkspace() const {
   absl::optional<int> workspace_id = workspace_;
   return workspace_id.has_value() ? base::NumberToString(workspace_id.value())
@@ -1287,8 +1345,8 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
       // Another X11Window has installed itself as capture. Translate the
       // event's location and dispatch to the other.
       ConvertEventLocationToTargetWindowLocation(
-          located_events_grabber->GetBounds().origin(), GetBounds().origin(),
-          event->AsLocatedEvent());
+          located_events_grabber->GetBoundsInPixels().origin(),
+          GetBoundsInPixels().origin(), event->AsLocatedEvent());
     }
     return located_events_grabber->DispatchUiEvent(event, xev);
   }
@@ -1582,7 +1640,7 @@ void X11Window::OnMoveLoopEnded() {
 }
 
 void X11Window::SetBoundsOnMove(const gfx::Rect& requested_bounds) {
-  SetBounds(requested_bounds);
+  SetBoundsInPixels(requested_bounds);
 }
 
 scoped_refptr<X11Cursor> X11Window::GetLastCursor() {
@@ -1734,6 +1792,13 @@ void X11Window::CloseXWindow() {
 
   CancelResize();
   UnconfineCursor();
+  // Unregister from the global security surface list if necessary.
+  if (is_security_surface_) {
+    auto& security_surfaces = GetSecuritySurfaces();
+    security_surfaces.erase(
+        std::find(security_surfaces.begin(), security_surfaces.end(), xwindow_),
+        security_surfaces.end());
+  }
 
   connection_->DestroyWindow({xwindow_});
   xwindow_ = x11::Window::None;

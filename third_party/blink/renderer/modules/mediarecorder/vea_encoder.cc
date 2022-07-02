@@ -48,7 +48,7 @@ const uint32_t kMaxKeyframeInterval = 100;
 scoped_refptr<VEAEncoder> VEAEncoder::Create(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
@@ -71,7 +71,7 @@ bool VEAEncoder::OutputBuffer::IsValid() {
 VEAEncoder::VEAEncoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     media::VideoCodecProfile codec,
     absl::optional<uint8_t> level,
     const gfx::Size& size,
@@ -305,7 +305,7 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
   DCHECK(gpu_factories_->GetTaskRunner()->RunsTasksInCurrentSequence());
-  DCHECK_GT(bits_per_second_, 0);
+  DCHECK_NE(bits_per_second_, 0u);
 
   input_visible_size_ = size;
   vea_requested_input_coded_size_ = gfx::Size();
@@ -327,9 +327,8 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
   // |bits_per_second_| is stored as uint32_t.
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_,
-      media::Bitrate::ConstantBitrate(
-          base::saturated_cast<uint32_t>(bits_per_second_)),
-      absl::nullopt, absl::nullopt, level_, false, storage_type,
+      media::Bitrate::ConstantBitrate(bits_per_second_), absl::nullopt,
+      absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ ||
       !video_encoder_->Initialize(config, this,

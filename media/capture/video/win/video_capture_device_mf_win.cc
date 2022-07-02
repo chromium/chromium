@@ -256,9 +256,9 @@ VideoPixelFormat MfSubTypeToSourcePixelFormat(
       {MFVideoFormat_YV12, PIXEL_FORMAT_YV12},
       {GUID_ContainerFormatJpeg, PIXEL_FORMAT_MJPEG}};
 
-  for (const auto& kEntry : kPixelFormatMap) {
-    if (kEntry.mf_source_media_subtype == mf_source_media_subtype) {
-      return kEntry.pixel_format;
+  for (const auto& [source_media_subtype, pixel_format] : kPixelFormatMap) {
+    if (source_media_subtype == mf_source_media_subtype) {
+      return pixel_format;
     }
   }
   return PIXEL_FORMAT_UNKNOWN;

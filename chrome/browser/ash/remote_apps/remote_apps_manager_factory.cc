@@ -12,6 +12,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 
 namespace ash {
 
@@ -35,6 +36,7 @@ RemoteAppsManagerFactory::RemoteAppsManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(extensions::EventRouterFactory::GetInstance());
 }
 
 RemoteAppsManagerFactory::~RemoteAppsManagerFactory() = default;

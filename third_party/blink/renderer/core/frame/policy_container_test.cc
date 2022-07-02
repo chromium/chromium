@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-blink-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -14,24 +15,24 @@ namespace blink {
 TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
+      network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kNever,
-      network::mojom::blink::IPAddressSpace::kPrivate,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>());
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*anonymous=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 
   EXPECT_EQ(network::mojom::blink::ReferrerPolicy::kNever,
             policy_container.GetReferrerPolicy());
-  EXPECT_EQ(network::mojom::blink::IPAddressSpace::kPrivate,
-            policy_container.GetIPAddressSpace());
 }
 
 TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
+      network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kAlways,
-      network::mojom::blink::IPAddressSpace::kPublic,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>());
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*anonymous=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 

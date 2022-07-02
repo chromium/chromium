@@ -34,7 +34,7 @@ generate_grd("build_grdp") {
     "mojo_utils.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":preprocess_generated" ]
+  public_deps = [ ":preprocess_generated" ]
   manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
   grd_prefix = "ash_common"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"

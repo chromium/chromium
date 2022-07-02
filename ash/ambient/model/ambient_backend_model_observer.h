@@ -29,10 +29,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendModelObserver
   // to start ambient mode.
   virtual void OnImagesFailed() {}
 
-  // Invoked when the weather info (condition icon or temperature) stored in the
-  // model has been updated.
-  virtual void OnWeatherInfoUpdated() {}
-
  protected:
   ~AmbientBackendModelObserver() override = default;
 };

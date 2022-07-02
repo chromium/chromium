@@ -72,7 +72,7 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -777,7 +777,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
 
 bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
                                          const std::string& message,
-                                         const base::ListValue& args) {
+                                         const base::Value::List& args) {
   if (message != "crosUrlAboutRedirect")
     return false;
 
@@ -786,7 +786,9 @@ bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
 #else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->SwitchToTab(GURL(chrome::kChromeUIAboutURL));
+  crosapi::BrowserManager::Get()->SwitchToTab(
+      GURL(chrome::kChromeUIAboutURL),
+      /*path_behavior=*/NavigateParams::RESPECT);
 #endif
   return true;
 }

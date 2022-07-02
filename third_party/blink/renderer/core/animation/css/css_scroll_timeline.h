@@ -31,7 +31,6 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
 
     absl::optional<Element*> source_;
     ScrollTimeline::ScrollDirection direction_;
-    HeapVector<Member<ScrollTimelineOffset>> offsets_;
     StyleRuleScrollTimeline* rule_;
   };
 

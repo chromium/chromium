@@ -717,16 +717,15 @@ void InputHandler::ImeSetComposition(
       widget_host = target_host;
   }
 
-  // If replacement start and end are not specified, then they are -1,
+  // If replacement start and end are not specified, then the range is invalid,
   // so no replacing will be done.
-  int replacement_start_out = -1;
-  int replacement_end_out = -1;
+  gfx::Range replacement_range = gfx::Range::InvalidRange();
 
   // Check if replacement_start and end parameters were passed in
   if (replacement_start.isJust()) {
-    replacement_start_out = replacement_start.fromJust();
+    replacement_range.set_start(replacement_start.fromJust());
     if (replacement_end.isJust()) {
-      replacement_end_out = replacement_end.fromJust();
+      replacement_range.set_end(replacement_end.fromJust());
     } else {
       callback->sendFailure(Response::InvalidParams(
           "Either both replacement start/end are specified or neither."));
@@ -740,9 +739,8 @@ void InputHandler::ImeSetComposition(
   widget_host->Focus();
 
   widget_host->GetWidgetInputHandler()->ImeSetComposition(
-      text16, std::vector<ui::ImeTextSpan>(),
-      gfx::Range(replacement_start_out, replacement_end_out), selection_start,
-      selection_end, std::move(closure));
+      text16, std::vector<ui::ImeTextSpan>(), replacement_range,
+      selection_start, selection_end, std::move(closure));
 }
 
 void InputHandler::DispatchMouseEvent(

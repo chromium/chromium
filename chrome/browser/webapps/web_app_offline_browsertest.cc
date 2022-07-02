@@ -25,6 +25,14 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace web_app {
 
 enum class PageFlagParam {
@@ -210,9 +218,18 @@ class WebAppOfflineDarkModeTest
       public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
  public:
   WebAppOfflineDarkModeTest() {
+    std::vector<base::Feature> disabled_features;
+#if BUILDFLAG(IS_CHROMEOS)
+    disabled_features.push_back(chromeos::features::kDarkLightMode);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    disabled_features.push_back(ash::features::kNotificationsRefresh);
+#endif
+
     feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
                                     blink::features::kWebAppEnableDarkMode},
-                                   {});
+                                   {disabled_features});
   }
 
   void SetUp() override {

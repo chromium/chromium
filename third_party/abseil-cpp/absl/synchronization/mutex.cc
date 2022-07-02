@@ -2575,6 +2575,23 @@ bool CondVar::WaitCommon(Mutex *mutex, KernelTimeout t) {
   while (waitp.thread->state.load(std::memory_order_acquire) ==
          PerThreadSynch::kQueued) {
     if (!Mutex::DecrementSynchSem(mutex, waitp.thread, t)) {
+      // DecrementSynchSem returned due to timeout.
+      // Now we will either (1) remove ourselves from the wait list in Remove
+      // below, in which case Remove will set thread.state = kAvailable and
+      // we will not call DecrementSynchSem again; or (2) Signal/SignalAll
+      // has removed us concurrently and is calling Wakeup, which will set
+      // thread.state = kAvailable and post to the semaphore.
+      // It's important to reset the timeout for the case (2) because otherwise
+      // we can live-lock in this loop since DecrementSynchSem will always
+      // return immediately due to timeout, but Signal/SignalAll is not
+      // necessary set thread.state = kAvailable yet (and is not scheduled
+      // due to thread priorities or other scheduler artifacts).
+      // Note this could also be resolved if Signal/SignalAll would set
+      // thread.state = kAvailable while holding the wait list spin lock.
+      // But this can't be easily done for SignalAll since it grabs the whole
+      // wait list with a single compare-exchange and does not really grab
+      // the spin lock.
+      t = KernelTimeout::Never();
       this->Remove(waitp.thread);
       rc = true;
     }

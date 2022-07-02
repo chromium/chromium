@@ -1,5 +1,5 @@
 # crbug.com/1120813
--P/CompositorImplBrowserTestRefreshRate.VideoPreference/*
+-CompositorImplBrowserTestRefreshRate.VideoPreference
 
 # crbug.com/1296341
 -AccessibilityCanvasActionBrowserTest.*

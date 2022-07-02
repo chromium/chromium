@@ -185,7 +185,7 @@ TEST(MediaQuerySetTest, Basic) {
       {"only and", "not all"},
       {"only only", "not all"},
       {"only or", "not all"},
-      {"not (orientation)", "not all"},
+      {"not (orientation)", nullptr},
       {"only (orientation)", "not all"},
       {"(max-width: 800px()), (max-width: 800px)",
        "not all, (max-width: 800px)"},
@@ -231,8 +231,11 @@ TEST(MediaQuerySetTest, Basic) {
 
   for (const MediaQuerySetTestCase& test : test_cases) {
     SCOPED_TRACE(String(test.input));
+    // This test was originally written for mediaqueries-3, and does not
+    // differentiate between real parse errors ("not all") and queries which
+    // have parts which match the <general-enclosed> production.
     TestMediaQuery(test.input, test.output,
-                   *MediaQuerySet::Create(test.input, nullptr));
+                   *MediaQuerySet::Create(test.input, nullptr), "not all");
   }
 }
 
@@ -390,6 +393,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
   ScopedCSSFoldablesForTest foldables_flag(false);
   ScopedDevicePostureForTest device_posture_flag(false);
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
 
   // The first string represents the input string, the second string represents
   // the output string.

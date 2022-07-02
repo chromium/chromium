@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -154,7 +153,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ExploreIconProvider exploreIconProvider,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mContext = context;
         mDelegate = delegate;
@@ -168,9 +166,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
-                activityTabSupplier, bookmarkState, exploreIconProvider, omniboxPedalDelegate);
+                activityTabSupplier, bookmarkState, omniboxPedalDelegate);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
-        mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
+        mDropdownViewInfoListManager =
+                new DropdownItemViewInfoListManager(mSuggestionModels, context);
     }
 
     /**
@@ -819,6 +818,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
             transition = PageTransition.LINK;
         }
+
+        // Kick off an action to clear focus and dismiss the suggestions list.
+        // This normally happens when the target site loads and focus is moved to the webcontents.
+        // On Android T we occasionally observe focus events to be lost, resulting with Suggestions
+        // list obscuring the view.
+        mDelegate.clearOmniboxFocus();
 
         if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
             mDelegate.loadUrlWithPostData(url.getSpec(), transition, inputStart,

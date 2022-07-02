@@ -208,7 +208,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   GURL gurl_;
-  int64_t first_position_;
+  int32_t first_position_;
 
   NiceMock<MockResourceFetchContext> fetch_context_;
   UrlIndex url_index_{&fetch_context_, 0,

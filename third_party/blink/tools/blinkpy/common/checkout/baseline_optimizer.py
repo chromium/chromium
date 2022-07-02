@@ -40,14 +40,8 @@ class BaselineOptimizer(object):
         self._filesystem = host.filesystem
         self._default_port = default_port
         # To ensure the flag-specific baselines join the fallback graph in the
-        # same location each time the optimizer runs, we create a separate port
-        # fixed to Linux. Flag-specific suites only run on Linux builders at
-        # this time.
-        # TODO(crbug/1291020): Allow non-Linux flag-specific suites. We can do
-        # this by reading 'builders.json'.
-        self._flag_spec_port = host.port_factory.get('linux-trusty')
-        self._flag_spec_port.set_option_default(
-            'flag_specific', self._default_port.flag_specific_config_name())
+        # same location each time the optimizer runs, we create a separate port.
+        self._flag_spec_port = self._make_flag_spec_port(host, default_port)
         self._ports = {}
         for port_name in port_names:
             self._ports[port_name] = host.port_factory.get(port_name)
@@ -60,6 +54,15 @@ class BaselineOptimizer(object):
 
         # Only used by unit tests.
         self.new_results_by_directory = []
+
+    def _make_flag_spec_port(self, host, default_port):
+        option = default_port.flag_specific_config_name()
+        if not option:
+            return None
+        port_name = host.builders.port_name_for_flag_specific_option(option)
+        port = host.port_factory.get(port_name)
+        port.set_option_default('flag_specific', option)
+        return port
 
     def optimize(self, test_name, suffix):
         # A visualization of baseline fallback:
@@ -78,11 +81,15 @@ class BaselineOptimizer(object):
         # TODO(robertma): Investigate changing the CLI.
         assert not suffix.startswith('.')
         extension = '.' + suffix
+        succeeded = True
+
+        if self._flag_spec_port:
+            self._optimize_flag_specific_baselines(test_name, extension)
+            return True
 
         baseline_name = self._default_port.output_filename(
             test_name, self._default_port.BASELINE_SUFFIX, extension)
         non_virtual_baseline_name = self._virtual_base(baseline_name)
-        succeeded = True
         if non_virtual_baseline_name:
             # The baseline belongs to a virtual suite.
             _log.debug('Optimizing virtual fallback path.')
@@ -97,10 +104,6 @@ class BaselineOptimizer(object):
         succeeded &= self._optimize_subtree(test_name,
                                             non_virtual_baseline_name)
         self._remove_extra_result_at_root(test_name, non_virtual_baseline_name)
-
-        flag_specific = self._flag_spec_port.flag_specific_config_name()
-        if flag_specific:
-            self._optimize_flag_specific_baselines(test_name, extension)
 
         if not succeeded:
             _log.error('Heuristics failed to optimize %s', baseline_name)

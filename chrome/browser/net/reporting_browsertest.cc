@@ -498,7 +498,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   // Simulate the page being killed due to being unresponsive.
   content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetMainFrame()->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
   auto response = ParseReportUpload(upload_response()->http_request()->content);

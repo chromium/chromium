@@ -54,35 +54,36 @@ bool IsShowingInterstitial(content::WebContents* tab) {
 
 bool IsShowingCaptivePortalInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(), "Connect to");
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), "Connect to");
 }
 
 bool IsShowingSSLInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(),
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
                                       "Your connection is not private");
 }
 
 bool IsShowingMITMInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(),
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
                                       "An application is stopping");
 }
 
 bool IsShowingBadClockInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(), "Your clock is");
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                      "Your clock is");
 }
 
 bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(),
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
                                       "Anything you type, any pages you view");
 }
 
 bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetMainFrame(),
+         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
                                       "this site does not support HTTPS.");
 }
 

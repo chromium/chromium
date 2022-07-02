@@ -1,7 +1,7 @@
 - name: 2d.fillStyle.parse.current.basic
   desc: currentColor is computed from the canvas element
   testing:
-  - 2d.colours.parse
+  - 2d.colors.parse
   - 2d.currentColor.onset
   code: |
     canvas.setAttribute('style', 'color: #0f0');
@@ -14,7 +14,7 @@
 - name: 2d.fillStyle.parse.current.changed
   desc: currentColor is computed when the attribute is set, not when it is painted
   testing:
-  - 2d.colours.parse
+  - 2d.colors.parse
   - 2d.currentColor.onset
   code: |
     canvas.setAttribute('style', 'color: #0f0');
@@ -28,7 +28,7 @@
 - name: 2d.fillStyle.parse.current.removed
   desc: currentColor is solid black when the canvas element is not in a document
   testing:
-  - 2d.colours.parse
+  - 2d.colors.parse
   - 2d.currentColor.outofdoc
   code: |
     // Try not to let it undetectably incorrectly pick up opaque-black
@@ -56,7 +56,7 @@
 
 - name: 2d.fillStyle.invalidstring
   testing:
-  - 2d.colours.invalidstring
+  - 2d.colors.invalidstring
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -68,7 +68,7 @@
 
 - name: 2d.fillStyle.invalidtype
   testing:
-  - 2d.colours.invalidtype
+  - 2d.colors.invalidtype
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
@@ -80,38 +80,46 @@
 
 - name: 2d.fillStyle.get.solid
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.solid
+  - 2d.colors.getcolor
+  - 2d.serializecolor.solid
   code: |
     ctx.fillStyle = '#fa0';
     @assert ctx.fillStyle === '#ffaa00';
 
 - name: 2d.fillStyle.get.semitransparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     @assert ctx.fillStyle =~ /^rgba\(255, 255, 255, 0\.4\d+\)$/;
 
+- name: 2d.fillStyle.get.halftransparent
+  testing:
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
+  code: |
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    @assert ctx.fillStyle === 'rgba(255, 255, 255, 0.5)';
+
 - name: 2d.fillStyle.get.transparent
   testing:
-  - 2d.colours.getcolour
-  - 2d.serializecolour.transparent
+  - 2d.colors.getcolor
+  - 2d.serializecolor.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
     @assert ctx.fillStyle === 'rgba(0, 0, 0, 0)';
 
 - name: 2d.fillStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.fillStyle === '#000000';
 
 - name: 2d.fillStyle.toStringFunctionCallback
   desc: Passing a function in to ctx.fillStyle or ctx.strokeStyle with a toString callback works as specified
   testing:
-    2d.colours.toStringFunctionCallback
+    2d.colors.toStringFunctionCallback
   code: |
     ctx.fillStyle = { toString: function() { return "#008000"; } };
     @assert ctx.fillStyle === "#008000";
@@ -130,7 +138,7 @@
 
 - name: 2d.strokeStyle.default
   testing:
-  - 2d.colours.default
+  - 2d.colors.default
   code: |
     @assert ctx.strokeStyle === '#000000';
 
@@ -173,7 +181,7 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
-- name: 2d.gradient.interpolate.colour
+- name: 2d.gradient.interpolate.color
   testing:
   - 2d.gradient.interpolate.linear
   code: |
@@ -217,7 +225,7 @@
     cr.rectangle(0, 0, 100, 50)
     cr.fill()
 
-- name: 2d.gradient.interpolate.colouralpha
+- name: 2d.gradient.interpolate.coloralpha
   testing:
   - 2d.gradient.interpolate.alpha
   code: |
@@ -575,9 +583,9 @@
     @assert throws TypeError g.addColorStop(-Infinity, '#000');
     @assert throws TypeError g.addColorStop(NaN, '#000');
 
-- name: 2d.gradient.object.invalidcolour
+- name: 2d.gradient.object.invalidcolor
   testing:
-  - 2d.gradient.invalidcolour
+  - 2d.gradient.invalidcolor
   code: |
     var g = ctx.createLinearGradient(0, 0, 100, 0);
     @assert throws SYNTAX_ERR g.addColorStop(0, "");
@@ -2165,7 +2173,7 @@
 - name: 2d.fillStyle.CSSRGB
   desc: CSSRGB works as color input
   testing:
-  - 2d.colours.CSSRGB
+  - 2d.colors.CSSRGB
   code: |
     ctx.fillStyle = new CSSRGB(1, 0, 1);
     @assert ctx.fillStyle === '#ff00ff';
@@ -2206,7 +2214,7 @@
 - name: 2d.fillStyle.CSSHSL
   desc: CSSHSL works as color input
   testing:
-  - 2d.colours.CSSHSL
+  - 2d.colors.CSSHSL
   code: |
     ctx.fillStyle = new CSSHSL(CSS.deg(180), 0.5, 0.5);
     ctx.fillRect(0, 0, 100, 50);

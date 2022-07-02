@@ -17,21 +17,6 @@
     }
   });
 
-   dp.Network.onLoadingFinished(async event => {
-    if (postRequestId === event.params.requestId) {
-      testRunner.log(`Unexpected successful POST request`);
-    } else if (optionsRequestId === event.params.requestId) {
-      testRunner.log(`Unexpected successful OPTIONS request`);
-    } else {
-      testRunner.log(`Unexpected successful unknown request`);
-    }
-  });
-
-  const logBeforeTimeout = setTimeout(() => {
-    testRunner.log(`error text for OPTIONS request: ${optionsErrorText}`);
-    testRunner.log(`error text for POST request: ${postErrorText}`);
-  }, 5000);
-
   dp.Network.onLoadingFailed(async event => {
     if (postRequestId === event.params.requestId) {
       postErrorText = event.params.errorText;
@@ -42,7 +27,6 @@
     if (postErrorText !== undefined && optionsErrorText !== undefined) {
       testRunner.log(`error text for OPTIONS request: ${optionsErrorText}`);
       testRunner.log(`error text for POST request: ${postErrorText}`);
-      clearTimeout(logBeforeTimeout);
       testRunner.completeTest();
     }
   });

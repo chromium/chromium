@@ -217,14 +217,12 @@ class BaseTestServer {
   [[nodiscard]] bool SetAndParseServerData(const std::string& server_data,
                                            int* port);
 
-  // Generates a DictionaryValue with the arguments for launching the external
-  // Python test server.
-  [[nodiscard]] bool GenerateArguments(base::DictionaryValue* arguments) const;
-
-  // Subclasses can override this to add arguments that are specific to their
-  // own test servers.
-  [[nodiscard]] virtual bool GenerateAdditionalArguments(
-      base::DictionaryValue* arguments) const;
+  // Returns a base::Value::Dict with the arguments for launching the external
+  // Python test server, in the form of
+  // { argument-name: argument-value, ... }
+  //
+  // Returns nullopt if an invalid configuration is specified.
+  absl::optional<base::Value::Dict> GenerateArguments() const;
 
  private:
   void Init(const std::string& host);

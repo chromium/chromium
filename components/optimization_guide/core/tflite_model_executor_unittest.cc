@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/test_tflite_model_executor.h"
@@ -74,6 +76,9 @@ class TFLiteModelExecutorTest : public testing::Test {
 
     test_model_provider_ =
         std::make_unique<TestOptimizationGuideModelProvider>();
+
+    execution_sequence_ =
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   }
 
   void TearDown() override { ResetModelHandler(); }
@@ -83,7 +88,7 @@ class TFLiteModelExecutorTest : public testing::Test {
       model_handler_.reset();
 
     model_handler_ = std::make_unique<TestTFLiteModelHandler>(
-        test_model_provider(), task_environment_.GetMainThreadTaskRunner());
+        test_model_provider(), execution_sequence_);
   }
 
   void ResetModelHandler(
@@ -112,6 +117,9 @@ class TFLiteModelExecutorTest : public testing::Test {
     return test_model_provider_.get();
   }
 
+  base::SequencedTaskRunner* execution_sequence() {
+    return execution_sequence_.get();
+  }
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -120,6 +128,7 @@ class TFLiteModelExecutorTest : public testing::Test {
   std::unique_ptr<TestTFLiteModelHandler> model_handler_;
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> execution_sequence_;
   base::test::TaskEnvironment task_environment_;
   base::FilePath model_file_path_;
   std::unique_ptr<TestOptimizationGuideModelProvider> test_model_provider_;
@@ -140,6 +149,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
           run_loop.get()),
       std::vector<float>{1, 1, 1});
   run_loop->Run();
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
@@ -197,6 +209,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
       input);
   run_loop->Run();
 
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
+
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -251,6 +266,8 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
           run_loop.get()),
       input);
   run_loop->Run();
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
@@ -281,6 +298,9 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
           run_loop.get()),
       input);
   run_loop->Run();
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
 
   // The model should have been loaded a second time.
   histogram_tester.ExpectUniqueSample(
@@ -319,7 +339,7 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
 TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
   base::HistogramTester histogram_tester;
   ResetModelHandler(std::make_unique<NoUnloadingTestTFLiteModelHandler>(
-      test_model_provider(), task_environment()->GetMainThreadTaskRunner()));
+      test_model_provider(), execution_sequence()));
 
   proto::Any any_metadata;
   any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
@@ -355,7 +375,9 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
       input);
   run_loop->Run();
 
+  // Ensures pending tasks are processed. They are generating UMA metrics.
   RunUntilIdle();
+
   EXPECT_TRUE(model_handler()->ModelAvailable());
   EXPECT_TRUE(model_handler()
                   ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>());
@@ -394,6 +416,9 @@ TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
       input);
   run_loop->Run();
 
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
+
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
           optimization_guide::GetStringNameForOptimizationTarget(
@@ -420,11 +445,9 @@ class CancelledTFLiteModelExecutorTest : public TFLiteModelExecutorTest {
   }
   ~CancelledTFLiteModelExecutorTest() override = default;
 
-  void SetUp() override { TFLiteModelExecutorTest::SetUp(); }
-
   void CreateModelHandler() override {
     model_handler_ = std::make_unique<EnsureCancelledTestTFLiteModelHandler>(
-        test_model_provider(), task_environment()->GetMainThreadTaskRunner());
+        test_model_provider(), execution_sequence());
   }
 
  private:
@@ -458,6 +481,9 @@ TEST_F(CancelledTFLiteModelExecutorTest, RunsTooLong) {
           &run_loop),
       input);
   run_loop.Run();
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PainfulPageLoad",

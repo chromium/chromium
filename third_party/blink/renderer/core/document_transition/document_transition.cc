@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_set_element_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -118,24 +117,6 @@ bool DocumentTransition::StartNewTransition() {
   return true;
 }
 
-void DocumentTransition::setElement(
-    ScriptState* script_state,
-    Element* element,
-    const AtomicString& tag,
-    const DocumentTransitionSetElementOptions* opts,
-    ExceptionState& exception_state) {
-  if (!style_tracker_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Transition is aborted.");
-    return;
-  }
-
-  if (tag.IsNull())
-    style_tracker_->RemoveSharedElement(element);
-  else
-    style_tracker_->AddSharedElement(element, tag);
-}
-
 ScriptPromise DocumentTransition::start(ScriptState* script_state,
                                         ExceptionState& exception_state) {
   return start(script_state, nullptr, exception_state);
@@ -209,9 +190,6 @@ ScriptPromise DocumentTransition::start(ScriptState* script_state,
   return start_promise_resolver_->Promise();
 }
 
-void DocumentTransition::ignoreCSSTaggedElements(ScriptState*,
-                                                 ExceptionState&) {}
-
 void DocumentTransition::abandon(ScriptState*, ExceptionState&) {
   CancelPendingTransition(kAbortedFromScript);
 }
@@ -247,7 +225,6 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
   StartDeferringCommits();
   if (!capture_resolved_callback_) {
     state_ = State::kCaptured;
-    start_script_state_ = nullptr;
     NotifyPostCaptureCallbackResolved(/*success=*/true);
     return;
   }
@@ -271,7 +248,6 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
                                            post_capture_reject_callable_));
 
   capture_resolved_callback_ = nullptr;
-  start_script_state_ = nullptr;
   state_ = State::kCaptured;
 }
 
@@ -288,6 +264,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   DCHECK(start_promise_resolver_);
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
+  start_script_state_ = nullptr;
 
   // Resolve the promise to notify script when animations finish but don't
   // remove the pseudo element tree.
@@ -334,9 +311,12 @@ DocumentTransition::TakePendingRequest() {
   return std::move(pending_request_);
 }
 
-bool DocumentTransition::IsTransitionParticipant(
+bool DocumentTransition::NeedsSharedElementEffectNode(
     const LayoutObject& object) const {
-  // The layout view is always a participant if there is a transition.
+  // Layout view always needs an effect node, even if root itself is not
+  // transitioning. The reason for this is that we want the root to have an
+  // effect which can be hoisted up be the sibling of the layout view. This
+  // simplifies calling code to have a consistent stacking context structure.
   if (auto* layout_view = DynamicTo<LayoutView>(object))
     return state_ != State::kIdle;
 
@@ -350,7 +330,7 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
     const EffectPaintPropertyNodeOrAlias& current_effect,
     const ClipPaintPropertyNodeOrAlias* current_clip,
     const TransformPaintPropertyNodeOrAlias* current_transform) {
-  DCHECK(IsTransitionParticipant(object));
+  DCHECK(NeedsSharedElementEffectNode(object));
   DCHECK(current_transform);
   DCHECK(current_clip);
 
@@ -372,7 +352,8 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
     style_tracker_->UpdateRootIndexAndSnapshotId(
         state.document_transition_shared_element_id,
         state.shared_element_resource_id);
-    DCHECK(state.document_transition_shared_element_id.valid());
+    DCHECK(state.document_transition_shared_element_id.valid() ||
+           !style_tracker_->IsRootTransitioning());
     return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
   }
 
@@ -385,7 +366,7 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
 
 EffectPaintPropertyNode* DocumentTransition::GetEffect(
     const LayoutObject& object) const {
-  DCHECK(IsTransitionParticipant(object));
+  DCHECK(NeedsSharedElementEffectNode(object));
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element)
@@ -513,7 +494,6 @@ void DocumentTransition::ResetTransitionState(bool abort_style_tracker) {
 
 void DocumentTransition::ResetScriptState(const char* abort_message) {
   capture_resolved_callback_ = nullptr;
-  start_script_state_ = nullptr;
 
   if (post_capture_success_callable_) {
     DCHECK(post_capture_reject_callable_);
@@ -525,7 +505,8 @@ void DocumentTransition::ResetScriptState(const char* abort_message) {
     post_capture_reject_callable_ = nullptr;
   }
 
-  if (start_promise_resolver_) {
+  if (start_promise_resolver_ && start_script_state_->ContextIsValid()) {
+    ScriptState::Scope scope(start_script_state_);
     if (abort_message) {
       start_promise_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
           start_promise_resolver_->GetScriptState()->GetIsolate(),
@@ -533,8 +514,9 @@ void DocumentTransition::ResetScriptState(const char* abort_message) {
     } else {
       start_promise_resolver_->Detach();
     }
-    start_promise_resolver_ = nullptr;
   }
+  start_promise_resolver_ = nullptr;
+  start_script_state_ = nullptr;
 }
 
 }  // namespace blink

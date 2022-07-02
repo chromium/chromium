@@ -33,11 +33,11 @@ class MockPostProcessor : public PostProcessingPipeline {
 
   ~MockPostProcessor() override;
   MOCK_METHOD5(ProcessFrames,
-               double(float* data,
-                      int num_frames,
-                      float current_volume,
-                      float target_volume,
-                      bool is_silence));
+               void(float* data,
+                    int num_frames,
+                    float current_volume,
+                    float target_volume,
+                    bool is_silence));
   MOCK_METHOD1(SetContentType, void(AudioContentType));
   bool SetOutputConfig(const AudioPostProcessor2::Config& config) override {
     sample_rate_ = config.output_sample_rate;
@@ -53,15 +53,17 @@ class MockPostProcessor : public PostProcessingPipeline {
   MOCK_METHOD2(SetPostProcessorConfig,
                void(const std::string& name, const std::string& config));
   MOCK_METHOD1(UpdatePlayoutChannel, void(int));
+  double GetDelaySeconds() override {
+    return static_cast<double>(rendering_delay_frames_) / sample_rate_;
+  }
 
  private:
-  double DoProcessFrames(float* data,
-                         int num_frames,
-                         float current_volume,
-                         float target_volume,
-                         bool is_silence) {
+  void DoProcessFrames(float* data,
+                       int num_frames,
+                       float current_volume,
+                       float target_volume,
+                       bool is_silence) {
     output_buffer_ = data;
-    return static_cast<double>(rendering_delay_frames_) / sample_rate_;
   }
 
   MockPostProcessorFactory* const factory_;

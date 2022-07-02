@@ -130,6 +130,8 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
       absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) override;
 
+  void OnExternalVideoFrameRequest() override;
+
  private:
   friend class MediaLog;
   class RendererWrapper;
@@ -157,6 +159,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Notifications from RendererWrapper.
   void OnError(PipelineStatus error);
+  void OnFallback(PipelineStatus fallback);
   void OnEnded();
   void OnMetadata(const PipelineMetadata& metadata);
   void OnBufferingStateChange(BufferingState state,
@@ -218,6 +221,13 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Cached suspension state for the RendererWrapper.
   bool is_suspended_;
+
+  // 'external_video_frame_request_signaled_' tracks whether we've called
+  // OnExternalVideoFrameRequest on the current renderer. Calls which may
+  // create a new renderer in the RendererWrapper (Start, Resume, SetCdm) will
+  // reset this member. There is no guarantee to the client that
+  // OnExternalVideoFrameRequest will be called only once.
+  bool external_video_frame_request_signaled_ = false;
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineImpl> weak_factory_{this};

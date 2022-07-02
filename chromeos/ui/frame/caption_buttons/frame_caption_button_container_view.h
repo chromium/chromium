@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -91,8 +92,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     }
 
    private:
-    FrameCaptionButtonContainerView* container_view_;
+    raw_ptr<FrameCaptionButtonContainerView> container_view_;
   };
+
+  views::FrameCaptionButton* size_button() { return size_button_; }
 
   // Sets the id of the vector image to paint the button for |icon|. The
   // FrameCaptionButtonContainerView will keep track of the image to use for
@@ -179,19 +182,16 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void CommitSnap(SnapDirection snap) override;
 
   // The widget that the buttons act on.
-  views::Widget* frame_;
+  raw_ptr<views::Widget> frame_;
 
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
-  views::FrameCaptionButton* custom_button_ = nullptr;
-  views::FrameCaptionButton* float_button_ = nullptr;
-  views::FrameCaptionButton* menu_button_ = nullptr;
-  views::FrameCaptionButton* minimize_button_ = nullptr;
-  views::FrameCaptionButton* size_button_ = nullptr;
-  views::FrameCaptionButton* close_button_ = nullptr;
-
-  // Change float button status.
-  void ToggleFloatButton();
+  raw_ptr<views::FrameCaptionButton> custom_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> float_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> menu_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> minimize_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> size_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> close_button_ = nullptr;
 
   // Mapping of the image needed to paint a button for each of the values of
   // CaptionButtonIcon.

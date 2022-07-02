@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -138,7 +139,8 @@ struct AttributeMapComparator {
 
 }  // namespace
 
-ParseStatus::Or<DecimalInteger> ParseDecimalInteger(SourceString source_str) {
+ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
+    ResolvedSourceString source_str) {
   static const base::NoDestructor<re2::RE2> decimal_integer_regex("\\d{1,20}");
 
   const auto str = source_str.Str();
@@ -160,7 +162,7 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(SourceString source_str) {
 }
 
 ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // Utilize signed parsing function
   auto result = ParseSignedDecimalFloatingPoint(source_str);
   if (result.has_error()) {
@@ -177,7 +179,7 @@ ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
 }
 
 ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // Accept no decimal point, decimal point with leading digits, trailing
   // digits, or both
   static const base::NoDestructor<re2::RE2> decimal_floating_point_regex(
@@ -201,7 +203,7 @@ ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
 }
 
 ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // decimal-resolution values are in the format: DecimalInteger 'x'
   // DecimalInteger
   const auto x_index = source_str.Str().find_first_of('x');
@@ -227,18 +229,71 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
                            .height = std::move(height).value()};
 }
 
-ParseStatus::Or<base::StringPiece> ParseQuotedString(
+ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
+    ResolvedSourceString source_str) {
+  // If this ByteRange has an offset, it will be separated from the length by
+  // '@'.
+  const auto at_index = source_str.Str().find_first_of('@');
+  const auto length_str = source_str.Consume(at_index);
+  auto length = ParseDecimalInteger(length_str);
+  if (length.has_error()) {
+    return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+        .AddCause(std::move(length).error());
+  }
+
+  // If the offset was present, try to parse it
+  absl::optional<types::DecimalInteger> offset;
+  if (at_index != base::StringPiece::npos) {
+    source_str.Consume(1);
+    auto offset_result = ParseDecimalInteger(source_str);
+    if (offset_result.has_error()) {
+      return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+          .AddCause(std::move(offset_result).error());
+    }
+
+    offset = std::move(offset_result).value();
+  }
+
+  return ByteRangeExpression{.length = std::move(length).value(),
+                             .offset = offset};
+}
+
+absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
+                                              DecimalInteger offset) {
+  if (length == 0) {
+    return absl::nullopt;
+  }
+
+  // Ensure that `length+offset` won't overflow `DecimalInteger`
+  if (std::numeric_limits<DecimalInteger>::max() - offset < length) {
+    return absl::nullopt;
+  }
+
+  return ByteRange(length, offset);
+}
+
+ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
-    VariableDictionary::SubstitutionBuffer& sub_buffer) {
-  return ParseQuotedStringWithoutSubstitution(source_str)
+    VariableDictionary::SubstitutionBuffer& sub_buffer,
+    bool allow_empty) {
+  return ParseQuotedStringWithoutSubstitution(source_str, allow_empty)
       .MapValue([&variable_dict, &sub_buffer](auto str) {
         return variable_dict.Resolve(str, sub_buffer);
-      });
+      })
+      .MapValue(
+          [allow_empty](auto str) -> ParseStatus::Or<ResolvedSourceString> {
+            if (!allow_empty && str.Empty()) {
+              return ParseStatusCode::kFailedToParseQuotedString;
+            } else {
+              return str;
+            }
+          });
 }
 
 ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
-    SourceString source_str) {
+    SourceString source_str,
+    bool allow_empty) {
   if (source_str.Size() < 2) {
     return ParseStatusCode::kFailedToParseQuotedString;
   }
@@ -249,7 +304,12 @@ ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
     return ParseStatusCode::kFailedToParseQuotedString;
   }
 
-  return source_str.Substr(1, source_str.Size() - 2);
+  auto str = source_str.Substr(1, source_str.Size() - 2);
+  if (!allow_empty && str.Empty()) {
+    return ParseStatusCode::kFailedToParseQuotedString;
+  }
+
+  return str;
 }
 
 AttributeListIterator::AttributeListIterator(SourceString content)

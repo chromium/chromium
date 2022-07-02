@@ -21,6 +21,7 @@ class GPUSupportedFeatures : public ScriptWrappable,
 
   void AddFeatureName(const String& feature_name);
 
+  bool has(const String& feature) const;
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;

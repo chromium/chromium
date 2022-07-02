@@ -541,12 +541,14 @@ TEST_F(TouchActionFilterTest, BitMath) {
             cc::TouchAction::kAuto & cc::TouchAction::kPan);
   EXPECT_EQ(cc::TouchAction::kManipulation,
             cc::TouchAction::kAuto & ~(cc::TouchAction::kDoubleTapZoom |
-                                       cc::TouchAction::kInternalPanXScrolls));
+                                       cc::TouchAction::kInternalPanXScrolls |
+                                       cc::TouchAction::kInternalNotWritable));
   EXPECT_EQ(cc::TouchAction::kPanX,
             cc::TouchAction::kPanLeft | cc::TouchAction::kPanRight);
   EXPECT_EQ(cc::TouchAction::kAuto, cc::TouchAction::kManipulation |
                                         cc::TouchAction::kDoubleTapZoom |
-                                        cc::TouchAction::kInternalPanXScrolls);
+                                        cc::TouchAction::kInternalPanXScrolls |
+                                        cc::TouchAction::kInternalNotWritable);
 }
 
 TEST_F(TouchActionFilterTest, MultiTouch) {

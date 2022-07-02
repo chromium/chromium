@@ -53,6 +53,7 @@ ALIGNMENT_ORDER = [
     'TextDecorationThickness',
     'StyleAspectRatio',
     'absl::optional<StyleIntrinsicLength>',
+    'absl::optional<StyleOverflowClipMargin>',
     # Aligns like float
     'absl::optional<Length>',
     'StyleOffsetRotation',

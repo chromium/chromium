@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -107,9 +108,11 @@ public class SafetyCheckMediatorTest {
 
     private Callback<Integer> mBreachPasswordsCallback;
 
+    private Callback<Exception> mBreachPasswordsFailureCallback;
+
     private Callback<Void> mRunPasswordCheckSuccessfullyCallback;
 
-    private Callback<Integer> mRunPasswordCheckFailedCallback;
+    private Callback<Exception> mRunPasswordCheckFailedCallback;
 
     private boolean mUseNewApi;
 
@@ -132,7 +135,7 @@ public class SafetyCheckMediatorTest {
         }
         if (hasError) {
             assertNotNull(mRunPasswordCheckFailedCallback);
-            mRunPasswordCheckFailedCallback.onResult(null);
+            mRunPasswordCheckFailedCallback.onResult(new Exception());
         } else {
             assertNotNull(mRunPasswordCheckSuccessfullyCallback);
             mRunPasswordCheckSuccessfullyCallback.onResult(null);
@@ -162,6 +165,14 @@ public class SafetyCheckMediatorTest {
         }
     }
 
+    private void failBreachedPasswordsFetch() {
+        if (!mUseNewApi) return;
+        assertNotNull(mBreachPasswordsFailureCallback);
+        mBreachPasswordsFailureCallback.onResult(new Exception());
+        mBreachPasswordsCallback = null;
+        mBreachPasswordsFailureCallback = null;
+    }
+
     private void setInitialPasswordsCount(int passwordCount, int breachedCount) {
         if (mUseNewApi) {
             doAnswer(invocation -> {
@@ -171,7 +182,7 @@ public class SafetyCheckMediatorTest {
                 return null;
             })
                     .when(mPasswordCheckupHelper)
-                    .getNumberOfBreachedCredentials(anyInt(), any(), any(Callback.class), any());
+                    .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
             when(mPasswordStoreBridge.getPasswordStoreCredentialsCount()).thenReturn(passwordCount);
         } else {
             doAnswer(invocation -> {
@@ -192,10 +203,12 @@ public class SafetyCheckMediatorTest {
         if (!mUseNewApi) return;
         doAnswer(invocation -> {
             mBreachPasswordsCallback = invocation.getArgument(2);
+            mBreachPasswordsFailureCallback = invocation.getArgument(3);
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .getNumberOfBreachedCredentials(anyInt(), any(), any(Callback.class), any());
+                .getBreachedCredentialsCount(
+                        anyInt(), any(), any(Callback.class), any(Callback.class));
     }
 
     private void captureRunPasswordCheckCallback() {
@@ -206,7 +219,8 @@ public class SafetyCheckMediatorTest {
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .runPasswordCheckup(anyInt(), any(), any(Callback.class), any(Callback.class));
+                .runPasswordCheckupInBackground(
+                        anyInt(), any(), any(Callback.class), any(Callback.class));
     }
 
     @Before
@@ -620,5 +634,45 @@ public class SafetyCheckMediatorTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.SIGNED_OUT));
+    }
+
+    @Test
+    public void testPasswordCheckFinishedAfterDestroy() {
+        captureRunPasswordCheckCallback();
+        captureBreachPasswordsCallback();
+        mMediator.performSafetyCheck();
+        mMediator.destroy();
+        setPasswordCheckResult(/*hasError=*/false);
+        assertNull(mBreachPasswordsCallback);
+    }
+
+    @Test
+    public void testPasswordCheckFailedAfterDestroy() {
+        captureRunPasswordCheckCallback();
+        captureBreachPasswordsCallback();
+        mMediator.performSafetyCheck();
+        mMediator.destroy();
+        setPasswordCheckResult(/*hasError=*/true);
+        assertNull(mBreachPasswordsCallback);
+    }
+
+    @Test
+    public void testFetchBreachedCredentialsFinishedAfterDestroy() {
+        captureRunPasswordCheckCallback();
+        captureBreachPasswordsCallback();
+        mMediator.performSafetyCheck();
+        setPasswordCheckResult(/*hasError=*/false);
+        mMediator.destroy();
+        fetchBreachedPasswords(10);
+    }
+
+    @Test
+    public void testFetchBreachedCredentialsFailedAfterDestroy() {
+        captureRunPasswordCheckCallback();
+        captureBreachPasswordsCallback();
+        mMediator.performSafetyCheck();
+        setPasswordCheckResult(/*hasError=*/false);
+        mMediator.destroy();
+        failBreachedPasswordsFetch();
     }
 }

@@ -12,12 +12,15 @@
 #include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/cryptohome/key.pb.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
 
-AuthPerformer::AuthPerformer() = default;
+AuthPerformer::AuthPerformer(base::raw_ptr<UserDataAuthClient> client)
+    : client_(client) {}
+
 AuthPerformer::~AuthPerformer() = default;
 
 void AuthPerformer::InvalidateCurrentAttempts() {
@@ -31,7 +34,7 @@ base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
                                      bool ephemeral,
                                      StartSessionCallback callback) {
-  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+  client_->WaitForServiceToBeAvailable(base::BindOnce(
       &AuthPerformer::OnServiceRunning, weak_factory_.GetWeakPtr(),
       std::move(context), ephemeral, std::move(callback)));
 }
@@ -55,34 +58,44 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
     request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_NONE);
   }
 
-  UserDataAuthClient::Get()->StartAuthSession(
+  client_->StartAuthSession(
       request, base::BindOnce(&AuthPerformer::OnStartAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
 }
 
-void AuthPerformer::AuthenticateUsingKey(std::unique_ptr<UserContext> context,
-                                         AuthOperationCallback callback) {
+void AuthPerformer::AuthenticateUsingKnowledgeKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  DCHECK(context->GetChallengeResponseKeys().empty());
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
-    if (context->GetKey()->GetLabel().empty()) {
-      const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
-      const cryptohome::KeyDefinition* key_def =
-          auth_factors.FindOnlinePasswordKey();
-      if (!key_def) {
-        LOGIN_LOG(ERROR) << "Could not find Password key";
-        std::move(callback).Run(
-            std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-        return;
-      }
-      context->GetKey()->SetLabel(key_def->label);
-    }  // empty label
     SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
         &AuthPerformer::HashKeyAndAuthenticate, weak_factory_.GetWeakPtr(),
         std::move(context), std::move(callback)));
     return;
   }  // plain-text password
+
+  // The login code might speculatively set the "gaia" label in the user
+  // context, however at the cryptohome level the existing user key's label can
+  // be either "gaia" or "legacy-N" - which is what we need to use when talking
+  // to cryptohome. If in cryptohome, "gaia" is indeed the label, then at the
+  // end of this operation, gaia would be returned. This case applies to only
+  // "gaia" labels only because they are created at oobe.
+  if (context->GetKey()->GetLabel() == kCryptohomeGaiaKeyLabel ||
+      context->GetKey()->GetLabel().empty()) {
+    const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+    const cryptohome::KeyDefinition* key_def =
+        auth_factors.FindOnlinePasswordKey();
+    if (!key_def) {
+      LOGIN_LOG(ERROR) << "Could not find Password key";
+      std::move(callback).Run(
+          std::move(context),
+          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+      return;
+    }
+    context->GetKey()->SetLabel(key_def->label);
+  }
 
   LOGIN_LOG(EVENT) << "Authenticating using key "
                    << context->GetKey()->GetKeyType();
@@ -94,7 +107,7 @@ void AuthPerformer::AuthenticateUsingKey(std::unique_ptr<UserContext> context,
   cryptohome::KeyDefinitionToKey(
       cryptohome_parameter_utils::CreateKeyDefFromUserContext(*context), key);
 
-  UserDataAuthClient::Get()->AuthenticateAuthSession(
+  client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
@@ -105,7 +118,26 @@ void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                                            const std::string& system_salt) {
   context->GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                                system_salt);
-  AuthenticateUsingKey(std::move(context), std::move(callback));
+  AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
+}
+
+void AuthPerformer::AuthenticateUsingChallengeResponseKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  DCHECK(!context->GetChallengeResponseKeys().empty());
+  LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
+
+  user_data_auth::AuthenticateAuthSessionRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  *request.mutable_authorization() = CreateAuthorizationRequestFromKeyDef(
+      cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
+          *context));
+
+  client_->AuthenticateAuthSession(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
 }
 
 void AuthPerformer::AuthenticateWithPassword(
@@ -128,7 +160,7 @@ void AuthPerformer::AuthenticateWithPassword(
 
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &AuthPerformer::HashPasswordAndAuthenticate, weak_factory_.GetWeakPtr(),
-      password, key_label, std::move(context), std::move(callback)));
+      key_label, password, std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::HashPasswordAndAuthenticate(
@@ -142,7 +174,7 @@ void AuthPerformer::HashPasswordAndAuthenticate(
   password_key.SetLabel(key_label);
   password_key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
   context->SetKey(password_key);
-  AuthenticateUsingKey(std::move(context), std::move(callback));
+  AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 
 void AuthPerformer::AuthenticateWithPin(const std::string& pin,
@@ -167,7 +199,7 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   key.SetLabel(key_def->label);
 
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
-  AuthenticateUsingKey(std::move(context), std::move(callback));
+  AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
@@ -191,7 +223,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   }
   key_data->set_label(key_def->label);
 
-  UserDataAuthClient::Get()->AuthenticateAuthSession(
+  client_->AuthenticateAuthSession(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));

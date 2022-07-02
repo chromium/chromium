@@ -1,7 +1,11 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //chromeos/ash/services/assistant should be updated as well. We need to sync
+# both files until the migration is done.
+
 include_rules = [
   "+ash/components/audio",
   "+ash/public",
-  "+chromeos/assistant",
+  "+chromeos/ash/components/assistant",
   "+chromeos/grit/chromeos_strings.h",
   "+components/signin",
   "+google_apis/gaia",

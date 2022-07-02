@@ -4,29 +4,48 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <algorithm>
+#include <bitset>
+#include <iterator>
+#include <set>
+#include <type_traits>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/grit/components_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -42,6 +61,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -125,7 +145,17 @@ content::BrowserContext* GetBrowserContextForWebApps(
     return nullptr;
   }
   Profile* original_profile = profile->GetOriginalProfile();
-  return AreWebAppsEnabled(original_profile) ? original_profile : nullptr;
+  if (!AreWebAppsEnabled(original_profile))
+    return nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Use OTR profile for Guest Session.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord() ? profile : nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return original_profile;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
@@ -142,6 +172,7 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     const GURL& url,
+    content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   web_app::WebAppProvider* web_app_provider =
@@ -160,38 +191,36 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   std::string theme_color = skia::SkColorToHexString(
       web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK));
   std::string background_color = skia::SkColorToHexString(
       web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE));
-  dict.SetStringKey(default_offline::kThemeColor, theme_color);
-  dict.SetStringKey(default_offline::kBackgroundColor, background_color);
-  dict.SetStringKey(default_offline::kAppShortName,
-                    web_app_registrar.GetAppShortName(*app_id));
-  dict.SetStringKey(
+  dict.Set(default_offline::kThemeColor, theme_color);
+  dict.Set(default_offline::kBackgroundColor, background_color);
+  dict.Set(default_offline::kAppShortName,
+           web_app_registrar.GetAppShortName(*app_id));
+  dict.Set(
       default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
   SkBitmap bitmap = web_app_provider->icon_manager().GetFavicon(*app_id);
   std::string icon_url = EncodeIconAsUrl(bitmap).spec();
-  dict.SetStringKey(default_offline::kIconUrl, icon_url);
+  dict.Set(default_offline::kIconUrl, icon_url);
   absl::optional<SkColor> dark_mode_theme_color =
       web_app_registrar.GetAppDarkModeThemeColor(*app_id);
   if (dark_mode_theme_color) {
-    dict.SetStringKey(default_offline::kDarkModeThemeColor,
-                      skia::SkColorToHexString(dark_mode_theme_color.value()));
+    dict.Set(default_offline::kDarkModeThemeColor,
+             skia::SkColorToHexString(dark_mode_theme_color.value()));
   } else {
-    dict.SetStringKey(default_offline::kDarkModeThemeColor, theme_color);
+    dict.Set(default_offline::kDarkModeThemeColor, theme_color);
   }
   absl::optional<SkColor> dark_mode_background_color =
       web_app_registrar.GetAppDarkModeThemeColor(*app_id);
   if (dark_mode_background_color) {
-    dict.SetStringKey(
-        default_offline::kDarkModeBackgroundColor,
-        skia::SkColorToHexString(dark_mode_background_color.value()));
+    dict.Set(default_offline::kDarkModeBackgroundColor,
+             skia::SkColorToHexString(dark_mode_background_color.value()));
   } else {
-    dict.SetStringKey(default_offline::kDarkModeBackgroundColor,
-                      background_color);
+    dict.Set(default_offline::kDarkModeBackgroundColor, background_color);
   }
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
@@ -293,17 +322,6 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 std::tuple<std::u16string, size_t>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                                                  const AppId& app_id) {
-  auto extensions =
-      GetFileTypeAssociationsHandledByWebAppForDisplayAsList(profile, app_id);
-  return {base::UTF8ToUTF16(base::JoinString(
-              extensions, l10n_util::GetStringUTF8(
-                              IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR))),
-          extensions.size()};
-}
-
-std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
-    Profile* profile,
-    const AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return {};
@@ -311,17 +329,26 @@ std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
   const apps::FileHandlers* file_handlers =
       provider->registrar().GetAppFileHandlers(app_id);
 
-  std::set<std::string> extensions_set =
-      apps::GetFileExtensionsFromFileHandlers(*file_handlers);
-  std::vector<std::string> extensions_for_display;
-  extensions_for_display.reserve(extensions_set.size());
+  std::vector<std::u16string> extensions_for_display =
+      TransformFileExtensionsForDisplay(
+          apps::GetFileExtensionsFromFileHandlers(*file_handlers));
 
-  // Convert file types from formats like ".txt" to "TXT".
-  std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(extensions_for_display),
-                 [](const std::string& extension) {
-                   return base::ToUpperASCII(extension.substr(1));
-                 });
+  return {base::JoinString(extensions_for_display,
+                           l10n_util::GetStringUTF16(
+                               IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)),
+          extensions_for_display.size()};
+}
+
+std::vector<std::u16string> TransformFileExtensionsForDisplay(
+    const std::set<std::string>& extensions) {
+  std::vector<std::u16string> extensions_for_display;
+  extensions_for_display.reserve(extensions.size());
+  std::transform(
+      extensions.begin(), extensions.end(),
+      std::back_inserter(extensions_for_display),
+      [](const std::string& extension) {
+        return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
+      });
   return extensions_for_display;
 }
 
@@ -333,7 +360,8 @@ bool IsWebAppsCrosapiEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  return lacros_service && lacros_service->init_params()->web_apps_enabled &&
+  return chromeos::BrowserInitParams::Get()->web_apps_enabled &&
+         lacros_service &&
          lacros_service->IsAvailable<crosapi::mojom::AppPublisher>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
@@ -477,6 +505,14 @@ bool HasAppSettingsPage(Profile* profile, const GURL& url) {
   if (!provider)
     return false;
   return provider->registrar().IsLocallyInstalled(app_id);
+}
+
+bool IsInScope(const GURL& url, const GURL& scope) {
+  if (!scope.is_valid())
+    return false;
+
+  return base::StartsWith(url.spec(), scope.spec(),
+                          base::CompareCase::SENSITIVE);
 }
 
 }  // namespace web_app

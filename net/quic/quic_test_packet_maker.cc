@@ -20,8 +20,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
@@ -108,11 +107,8 @@ QuicTestPacketMaker::QuicTestPacketMaker(
       spdy_response_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
       qpack_encoder_(&decoder_stream_error_delegate_),
       perspective_(perspective),
-      encryption_level_(quic::ENCRYPTION_FORWARD_SECURE),
-      long_header_type_(quic::INVALID_PACKET_TYPE),
       client_headers_include_h2_stream_dependency_(
-          client_headers_include_h2_stream_dependency),
-      save_packet_frames_(false) {
+          client_headers_include_h2_stream_dependency) {
   DCHECK(!(perspective_ == quic::Perspective::IS_SERVER &&
            client_headers_include_h2_stream_dependency_));
 
@@ -794,8 +790,8 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
 
     std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                           spdy_headers_frame_length);
-    for (size_t i = 0; i < data_writes.size(); ++i) {
-      data += data_writes[i];
+    for (const auto& data_write : data_writes) {
+      data += data_write;
     }
     AddQuicStreamFrame(stream_id, fin, data);
 
@@ -1717,5 +1713,4 @@ void QuicTestPacketMaker::MaybeAddHttp3SettingsFrames() {
   AddQuicStreamFrame(stream_id, false, data);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -1,0 +1,43 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("cpp") {
+  sources = [
+    "data_collector.cc",
+    "data_collector.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser:browser",
+    "//ui/events/devices",
+    "//ui/events/ozone/evdev:event_device_info",
+  ]
+  public_deps = [ "//chromeos/ash/services/cros_healthd/private/mojom" ]
+  defines = []
+  if (is_chromeos_device) {
+    defines += [ "USE_EVDEV_GESTURES" ]
+  }
+  if (use_libinput) {
+    defines += [ "USE_LIBINPUT" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_collector_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//ui/events/devices",
+    "//ui/events/devices:test_support",
+  ]
+}

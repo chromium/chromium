@@ -10,13 +10,13 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,15 +74,25 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
   void ConnectToNetwork(const std::string& tether_network_guid,
                         base::OnceClosure success_callback,
                         StringErrorCallback error_callback) override {
-    last_connected_tether_network_guid_ = tether_network_guid;
-    std::move(success_callback).Run();
+    if (should_connect_to_network_id_succeed_) {
+      last_connected_tether_network_guid_ = tether_network_guid;
+      std::move(success_callback).Run();
+    } else {
+      std::move(error_callback)
+          .Run(NetworkConnectionHandler::kErrorConnectFailed);
+    }
   }
   void DisconnectFromNetwork(const std::string& tether_network_guid,
                              base::OnceClosure success_callback,
                              StringErrorCallback error_callback) override {}
 
+  void ShouldConnectToNetworkIdSucceed(bool success) {
+    should_connect_to_network_id_succeed_ = success;
+  }
+
  private:
   std::string last_connected_tether_network_guid_;
+  bool should_connect_to_network_id_succeed_ = true;
 };
 
 }  // namespace
@@ -264,6 +274,16 @@ TEST_F(NetworkConnectTest, ConnectToTetherNetwork_HasNotConnectedToHost) {
 
   AddTetherNetwork(false /* has_connected_to_host */);
 
+  NetworkConnect::Get()->ConnectToNetworkId(kTetherGuid);
+  EXPECT_TRUE(
+      fake_tether_delegate_->last_connected_tether_network_guid().empty());
+}
+
+TEST_F(NetworkConnectTest, ConnectToTetherNetwork_ConnectError) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConfigure(_)).Times(0);
+
+  AddTetherNetwork(/*has_connected_to_host=*/true);
+  fake_tether_delegate_->ShouldConnectToNetworkIdSucceed(/*success=*/false);
   NetworkConnect::Get()->ConnectToNetworkId(kTetherGuid);
   EXPECT_TRUE(
       fake_tether_delegate_->last_connected_tether_network_guid().empty());

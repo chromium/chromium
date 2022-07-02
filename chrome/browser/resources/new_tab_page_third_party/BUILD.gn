@@ -12,26 +12,17 @@ grd_prefix = "new_tab_page_third_party"
 preprocess_folder = "preprocessed"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
     "browser_proxy.ts",
     "new_tab_page_third_party.ts",
   ]
 }
+
 copy("copy_mojo") {
   deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js__generator" ]
   sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "new_tab_page_third_party.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
 grit("resources") {
@@ -67,4 +58,14 @@ ts_library("build_ts") {
     ":copy_mojo",
     ":preprocess",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "new_tab_page_third_party.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

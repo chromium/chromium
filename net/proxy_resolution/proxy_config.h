@@ -117,9 +117,9 @@ class NET_EXPORT ProxyConfig {
     ProxyBypassRules bypass_rules;
 
     // Reverse the meaning of |bypass_rules|.
-    bool reverse_bypass;
+    bool reverse_bypass = false;
 
-    Type type;
+    Type type = Type::EMPTY;
 
     // Set if |type| is Type::PROXY_LIST.
     ProxyList single_proxies;
@@ -225,7 +225,7 @@ class NET_EXPORT ProxyConfig {
 
  private:
   // True if the proxy configuration should be auto-detected.
-  bool auto_detect_;
+  bool auto_detect_ = false;
 
   // True if the proxy configuration was created from system settings.
   bool from_system_ = false;
@@ -235,7 +235,7 @@ class NET_EXPORT ProxyConfig {
 
   // If true, blocks all traffic in case fetching the PAC script from |pac_url_|
   // fails. Only valid if |pac_url_| is non-empty.
-  bool pac_mandatory_;
+  bool pac_mandatory_ = false;
 
   // Manual proxy settings.
   ProxyRules proxy_rules_;

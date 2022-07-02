@@ -1,3 +1,4 @@
+use crate::syntax::cfg::CfgExpr;
 use crate::syntax::namespace::Namespace;
 use quote::quote;
 use syn::parse::{Error, Parse, ParseStream, Result};
@@ -7,6 +8,7 @@ use syn::{
 };
 
 pub struct Module {
+    pub cfg: CfgExpr,
     pub namespace: Namespace,
     pub attrs: Vec<Attribute>,
     pub vis: Visibility,
@@ -36,6 +38,7 @@ pub struct ItemForeignMod {
 
 impl Parse for Module {
     fn parse(input: ParseStream) -> Result<Self> {
+        let cfg = CfgExpr::Unconditional;
         let namespace = Namespace::ROOT;
         let mut attrs = input.call(Attribute::parse_outer)?;
         let vis: Visibility = input.parse()?;
@@ -62,6 +65,7 @@ impl Parse for Module {
         }
 
         Ok(Module {
+            cfg,
             namespace,
             attrs,
             vis,

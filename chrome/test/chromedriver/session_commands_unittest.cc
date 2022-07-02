@@ -186,7 +186,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Empty JSON object allowed as an entry
-  list_ptr->GetListDeprecated()[0] = base::DictionaryValue();
+  list_ptr->GetList()[0] = base::Value(base::Value::Type::DICT);
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_TRUE(result.DictEmpty());
@@ -486,9 +486,10 @@ class MockChrome : public StubChrome {
 TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
   Capabilities capabilities;
   base::DictionaryValue caps;
-  base::Value::ListStorage args;
-  args.emplace_back("headless");
-  caps.GetDict().SetByDottedPath("goog:chromeOptions.args", base::Value(args));
+  base::Value::List args;
+  args.Append("headless");
+  caps.GetDict().SetByDottedPath("goog:chromeOptions.args",
+                                 base::Value(std::move(args)));
 
   base::DictionaryValue prefs;
   prefs.GetDict().SetByDottedPath("download.default_directory",
@@ -511,9 +512,10 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
 TEST(SessionCommandsTest, ConfigureHeadlessSession_nestedMap) {
   Capabilities capabilities;
   base::DictionaryValue caps;
-  base::Value::ListStorage args;
-  args.emplace_back("headless");
-  caps.GetDict().SetByDottedPath("goog:chromeOptions.args", base::Value(args));
+  base::Value::List args;
+  args.Append("headless");
+  caps.GetDict().SetByDottedPath("goog:chromeOptions.args",
+                                 base::Value(std::move(args)));
 
   base::Value* prefs = caps.GetDict().SetByDottedPath(
       "goog:chromeOptions.prefs", base::Value(base::Value::Type::DICTIONARY));
@@ -537,9 +539,10 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_nestedMap) {
 TEST(SessionCommandsTest, ConfigureHeadlessSession_noDownloadDir) {
   Capabilities capabilities;
   base::DictionaryValue caps;
-  base::Value::ListStorage args;
-  args.emplace_back("headless");
-  caps.GetDict().SetByDottedPath("goog:chromeOptions.args", base::Value(args));
+  base::Value::List args;
+  args.Append("headless");
+  caps.GetDict().SetByDottedPath("goog:chromeOptions.args",
+                                 base::Value(std::move(args)));
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;

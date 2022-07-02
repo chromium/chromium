@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
-#include "base/base_export.h"
 
 namespace partition_alloc::internal::base::debug {
 
@@ -44,10 +44,10 @@ namespace partition_alloc::internal::base::debug {
 // the stack so we can use nullptr. The call to base::debug::Alias() needs to
 // happen after the call that is suspected to be tail called. Note: This
 // technique will prevent tail calls at the specific call site only. To prevent
-// them for all invocations of a function look at NOT_TAIL_CALLED.
+// them for all invocations of a function look at PA_NOT_TAIL_CALLED.
 //
 // Example usage:
-//   NOINLINE void Foo(){
+//   PA_NOINLINE void Foo(){
 //     ... code ...
 //
 //     Bar();
@@ -62,7 +62,7 @@ namespace partition_alloc::internal::base::debug {
 // base::debug::Alias();
 //
 // Example usage:
-//   NOINLINE void Foo(){
+//   PA_NOINLINE void Foo(){
 //     PA_NO_CODE_FOLDING();
 //     Bar();
 //   }
@@ -71,7 +71,7 @@ namespace partition_alloc::internal::base::debug {
 // stack variable (case #1) using base::debug::Alias() will also inhibit
 // tail calls for calls in earlier lines and prevent code folding.
 
-void BASE_EXPORT Alias(const void* var);
+void PA_COMPONENT_EXPORT(PARTITION_ALLOC) Alias(const void* var);
 
 }  // namespace partition_alloc::internal::base::debug
 

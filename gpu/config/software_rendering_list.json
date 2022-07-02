@@ -40,41 +40,6 @@
       ]
     },
     {
-      "id": 5,
-      "description": "ATI/AMD cards with older drivers in Linux are crash-prone",
-      "cr_bugs": [71381, 76428, 73910, 101225, 136240, 357314, 719213],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "exceptions": [
-        {
-          "driver_vendor": ".*AMD.*",
-          "driver_version": {
-            "op": ">=",
-            "style": "lexical",
-            "value": "8.98"
-          }
-        },
-        {
-          "driver_vendor": "Mesa",
-          "driver_version": {
-            "op": ">=",
-            "value": "10.0.4"
-          }
-        },
-        {
-          "driver_vendor": ".*ANGLE.*"
-        },
-        {
-          "driver_vendor": ".*Brahma.*"
-        }
-      ],
-      "features": [
-        "all"
-      ]
-    },
-    {
       "id": 8,
       "description": "NVIDIA GeForce FX Go5200 is assumed to be buggy",
       "cr_bugs": [72938],
@@ -1698,6 +1663,31 @@
       },
       "features": [
         "accelerated_video_encode"
+      ]
+    },
+    {
+      "id": 176,
+      "description": "VMware is buggy on Linux",
+      "cr_bugs": [1327939],
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x15ad",
+      "features": [
+        "all"
+      ]
+    },
+    {
+      "id": 177,
+      "description": "Apple Software Renderer used under VMWare experiences synchronization issues with GPU Raster",
+      "cr_bugs": [607829],
+      "os": {
+        "type": "macosx"
+      },
+      "gl_renderer": ".*Apple Software Renderer.*",
+      "multi_gpu_category": "any",
+      "features": [
+        "gpu_rasterization"
       ]
     }
   ]

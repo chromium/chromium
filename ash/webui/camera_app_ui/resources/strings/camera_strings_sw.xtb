@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Changanua msimbo wa mistari</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="4061162772429051350">MP <ph name="MAGAPIXELS_AMOUNT" /></translation>
+<translation id="4096701159033358951">Inapakua kipengele cha kuchanganua hati</translation>
 <translation id="4118525110028899586">Sitisha kurekodi</translation>
 <translation id="4121305183798804752">Hati imetambuliwa</translation>
 <translation id="414641094616694804">Kamera hii haiwezi kubadilisha ubora</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Acha kupiga picha</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) megapikseli <ph name="MEGAPIXEL" /></translation>
 <translation id="4570032796877367747">Kamera ya mbele</translation>
+<translation id="4620818268515773682">Geuza ili uzime sauti ya maikrofoni. Sauti haijazimwa</translation>
 <translation id="4628948037717959914">Picha</translation>
 <translation id="4649291346448517080">Imeshindwa kuhifadhi faili</translation>
 <translation id="4695379108709712600">Inasogezwa upande wa juu</translation>
@@ -145,6 +147,7 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">Pembe ya chini kulia ya hati</translation>
+<translation id="7692090236657809299">Ruhusu kugeuza kamera upande, kuinamisha na kukuza</translation>
 <translation id="7726641833034062494">Rekodi video ya kawaida</translation>
 <translation id="7748344063862150053">Pembe ya juu kulia ya hati</translation>
 <translation id="7933675232020478311">Inasogezwa upande wa chini kulia</translation>
@@ -158,6 +161,7 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="8425673304802773841">Inamisha chini</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Geuza ili uzime sauti ya maikrofoni. Sauti imezimwa</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8732462232047530626">Kagua kwanza metadata</translation>

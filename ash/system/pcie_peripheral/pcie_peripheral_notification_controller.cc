@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -175,7 +176,8 @@ void PciePeripheralNotificationController::NotifyBillboardDevice() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierPciePeripheral),
+              kNotifierPciePeripheral,
+              NotificationCatalogName::kPcieBillboardDevice),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnBillboardNotificationClicked)),
@@ -210,7 +212,8 @@ void PciePeripheralNotificationController::NotifyLimitedPerformance() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierPciePeripheral),
+              kNotifierPciePeripheral,
+              NotificationCatalogName::kPcieLimitedPerformance),
           optional,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnPeripheralLimitedNotificationClicked)),
@@ -239,7 +242,8 @@ void PciePeripheralNotificationController::NotifyGuestModeNotification(
                 IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE),
       /*display_source=*/std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierPciePeripheral),
+                                 kNotifierPciePeripheral,
+                                 NotificationCatalogName::kPcieGuestMode),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnGuestNotificationClicked,
@@ -265,7 +269,8 @@ void PciePeripheralNotificationController::
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierPciePeripheral),
+              kNotifierPciePeripheral,
+              NotificationCatalogName::kPciePeripheralBlocked),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnPeripheralBlockedNotificationClicked)),

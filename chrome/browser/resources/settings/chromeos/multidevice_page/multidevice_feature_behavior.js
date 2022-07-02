@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
-
 /**
  * @fileoverview Polymer behavior for dealing with MultiDevice features. It is
  * intended to facilitate passing data between elements in the MultiDevice page
  * cleanly and concisely. It includes some constants and utility methods.
  */
+
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
 
 /** @polymerBehavior */
 const MultiDeviceFeatureBehaviorImpl = {
@@ -327,6 +327,110 @@ const MultiDeviceFeatureBehaviorImpl = {
     ].includes(this.pageContentData.mode);
   },
 };
+
+/** @interface */
+export class MultiDeviceFeatureBehaviorInterface {
+  constructor() {
+    /** @type {!MultiDevicePageContentData} */
+    this.pageContentData;
+
+    /** @type {Object<string, number>} */
+    this.MultiDeviceFeature;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  isSuiteOn() {}
+
+  /**
+   * @return {boolean}
+   */
+  isSuiteAllowedByPolicy() {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {boolean}
+   */
+  isFeatureAllowedByPolicy(feature) {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {boolean}
+   */
+  isFeatureSupported(feature) {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubOn() {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {boolean}
+   */
+  isPhoneHubSubFeature(feature) {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubNotificationAccessProhibited() {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubAppsAccessProhibited() {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubCameraRollSetupRequired() {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubAppsSetupRequired() {}
+
+  /**
+   * @return {boolean}
+   */
+  isPhoneHubNotificationsSetupRequired() {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {boolean}
+   */
+  isFeatureStateEditable(feature) {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {string}
+   */
+  getFeatureName(feature) {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {string}
+   */
+  getIconName(feature) {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {string}
+   */
+  getFeatureSummaryHtml(feature) {}
+
+  /**
+   * @param {!MultiDeviceFeature} feature
+   * @return {?MultiDeviceFeatureState}
+   */
+  getFeatureState(feature) {}
+
+  /**
+   * @return {boolean}
+   */
+  isHostSet() {}
+}
 
 /** @polymerBehavior */
 export const MultiDeviceFeatureBehavior = [

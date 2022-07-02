@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
@@ -505,7 +506,7 @@ class BrowserView : public BrowserWindow,
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents) override;
+      share::ShareAttempt attempt) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,
@@ -514,6 +515,12 @@ class BrowserView : public BrowserWindow,
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool is_user_gesture) override;
+  void ShowPartialTranslateBubble(
+      PartialTranslateBubbleModel::ViewState view_state,
+      const std::string& source_language,
+      const std::string& target_language,
+      const std::u16string& text_selection,
+      translate::TranslateErrors::Type error_type) override;
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override;
@@ -536,10 +543,7 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
-  void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_accelerator) override;
+  void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) override;
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
@@ -729,10 +733,6 @@ class BrowserView : public BrowserWindow,
   // users. This is used to implement improved clobbering logic for the right
   // aligned side panels.
   void RightAlignedSidePanelWasClosed();
-
-  bool IsSideSearchPanelVisible() const override;
-  void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, std::string>& extra_data) override;
 
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate

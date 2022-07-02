@@ -252,6 +252,7 @@ COMPONENT_EXPORT(ONC) extern const char kSSID[];
 COMPONENT_EXPORT(ONC) extern const char kSecurity[];
 COMPONENT_EXPORT(ONC) extern const char kSecurityNone[];
 COMPONENT_EXPORT(ONC) extern const char kSignalStrength[];
+COMPONENT_EXPORT(ONC) extern const char kSignalStrengthRssi[];
 COMPONENT_EXPORT(ONC) extern const char kWEP_PSK[];
 COMPONENT_EXPORT(ONC) extern const char kWEP_8021X[];
 COMPONENT_EXPORT(ONC) extern const char kWPA_PSK[];

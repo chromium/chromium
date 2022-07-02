@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -178,33 +179,13 @@ void StandaloneBrowserApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
-                                     apps::mojom::IconKeyPtr icon_key,
-                                     apps::mojom::IconType icon_type,
-                                     int32_t size_hint_in_dip,
-                                     bool allow_placeholder_icon,
-                                     LoadIconCallback callback) {
-  if (icon_key &&
-      icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
-    LoadIconFromResource(
-        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-        icon_key->resource_id,
-        /*is_placeholder_icon=*/false,
-        static_cast<IconEffects>(icon_key->icon_effects),
-        apps::IconValueToMojomIconValueCallback(std::move(callback)));
-    return;
-  }
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
-}
-
 void StandaloneBrowserApps::Launch(const std::string& app_id,
                                    int32_t event_flags,
                                    apps::mojom::LaunchSource launch_source,
                                    apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(app_constants::kLacrosAppId, app_id);
-  crosapi::BrowserManager::Get()->NewWindow(
-      /*incognito=*/false, /*should_trigger_session_restore=*/true);
+  crosapi::BrowserManager::Get()->NewTab(
+      /*should_trigger_session_restore=*/true);
 }
 
 void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
@@ -219,7 +200,8 @@ void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
   // `browser_manager` may be null in tests.
   if (!browser_manager)
     return;
-  browser_manager->SwitchToTab(GURL(chrome::kChromeUIContentSettingsURL));
+  browser_manager->SwitchToTab(GURL(chrome::kChromeUIContentSettingsURL),
+                               /*path_behavior=*/NavigateParams::RESPECT);
 }
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {

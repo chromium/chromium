@@ -472,20 +472,15 @@ test.util.sync.unload = contentWindow => {
  * @return {string} The breadcrumb path.
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
-  const breadcrumb =
-      contentWindow.document.querySelector('#location-breadcrumbs');
+  const doc = contentWindow.document;
+  const breadcrumb = doc.querySelector('#location-breadcrumbs bread-crumb') ||
+      doc.querySelector('#location-breadcrumbs xf-breadcrumbs');
+
   if (!breadcrumb) {
     return '';
   }
 
-  let path = '';
-
-  const crumbs = breadcrumb.querySelector('bread-crumb');
-  if (crumbs) {
-    path = '/' + crumbs.path;
-  }
-
-  return path;
+  return '/' + breadcrumb.path;
 };
 
 /**

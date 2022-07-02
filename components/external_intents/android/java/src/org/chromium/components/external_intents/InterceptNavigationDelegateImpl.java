@@ -17,6 +17,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
+import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -102,7 +103,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
+    public boolean shouldIgnoreNavigation(
+            NavigationHandle navigationHandle, GURL escapedUrl, boolean applyUserGestureCarryover) {
         mClient.onNavigationStarted(navigationHandle);
 
         GURL url = escapedUrl;
@@ -132,20 +134,30 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             assert false;
             return false;
         }
+
+        // Temporarily apply User Gesture Carryover exception for resource requests to the
+        // NavigationHandle.
+        if (applyUserGestureCarryover) {
+            assert !navigationHandle.hasUserGesture();
+            navigationHandle.setUserGestureForCarryover(true);
+        }
         redirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
                 navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
                 lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
 
-        boolean shouldCloseTab = shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent();
-        ExternalNavigationParams params = buildExternalNavigationParams(
-                navigationHandle, redirectHandler, shouldCloseTab, escapedUrl)
-                                                  .build();
+        ExternalNavigationParams params =
+                buildExternalNavigationParams(navigationHandle, redirectHandler, escapedUrl)
+                        .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
         if (mResultCallbackForTesting != null) {
             mResultCallbackForTesting.onResult(Pair.create(url, result));
         }
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
+
+        if (applyUserGestureCarryover) {
+            navigationHandle.setUserGestureForCarryover(false);
+        }
 
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
@@ -156,16 +168,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 assert mExternalNavHandler.canExternalAppHandleUrl(url);
                 if (navigationHandle.isInPrimaryMainFrame()) {
-                    onOverrideUrlLoadingAndLaunchIntent(shouldCloseTab);
+                    onDidFinishMainFrameUrlOverriding(true, false);
                 }
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
                 mShouldClearRedirectHistoryForTabClobbering = true;
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
-                if (!shouldCloseTab && navigationHandle.isInPrimaryMainFrame()) {
-                    onOverrideUrlLoadingAndLaunchIntent(shouldCloseTab);
-                }
                 return true;
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
@@ -182,27 +191,27 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      * ExternalNavigationHandler#shouldOverrideUrlLoading().
      */
     public ExternalNavigationParams.Builder buildExternalNavigationParams(
-            NavigationHandle navigationHandle, RedirectHandler redirectHandler,
-            boolean shouldCloseTab, GURL escapedUrl) {
+            NavigationHandle navigationHandle, RedirectHandler redirectHandler, GURL escapedUrl) {
+        // http://crbug.com/448977: If this is on the initial navigation chain we set the parameter
+        // to open any outgoing intents that come back to Chrome in a new tab as the existing one
+        // may have been closed.
+        boolean onInitialNavigationChain = isTabOnInitialNavigationChain();
         boolean isInitialTabLaunchInBackground =
-                mClient.wasTabLaunchedFromLongPressInBackground() && shouldCloseTab;
-        // http://crbug.com/448977: If a new tab is closed by this overriding, we should open an
-        // Intent in a new tab when Chrome receives it again.
+                mClient.wasTabLaunchedFromLongPressInBackground() && onInitialNavigationChain;
         return new ExternalNavigationParams
                 .Builder(escapedUrl, mClient.isIncognito(), navigationHandle.getReferrerUrl(),
                         navigationHandle.pageTransition(), navigationHandle.isRedirect())
                 .setApplicationMustBeInForeground(true)
                 .setRedirectHandler(redirectHandler)
-                .setOpenInNewTab(shouldCloseTab)
+                .setOpenInNewTab(onInitialNavigationChain)
                 .setIsBackgroundTabNavigation(mClient.isHidden() && !isInitialTabLaunchInBackground)
                 .setIntentLaunchesAllowedInBackgroundTabs(
                         mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle))
                 .setIsMainFrame(navigationHandle.isInPrimaryMainFrame())
                 .setHasUserGesture(navigationHandle.hasUserGesture())
-                .setShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(
-                        shouldCloseTab && navigationHandle.isInPrimaryMainFrame())
                 .setIsRendererInitiated(navigationHandle.isRendererInitiated())
-                .setInitiatorOrigin(navigationHandle.getInitiatorOrigin());
+                .setInitiatorOrigin(navigationHandle.getInitiatorOrigin())
+                .setAsyncActionTakenInMainFrameCallback(this::onDidTakeMainFrameAsyncAction);
     }
 
     /**
@@ -246,34 +255,35 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         return mClient.getWebContents().getNavigationController().isInitialNavigation();
     }
 
-    private boolean shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent() {
+    private boolean isTabOnInitialNavigationChain() {
         if (mClient.getWebContents() == null) return false;
-        // If no navigation has committed, close the tab.
+
         if (mClient.getWebContents().getLastCommittedUrl().isEmpty()) return true;
 
         // http://crbug/415948: If the user has not started a non-initial
         // navigation, this might be a JS redirect.
-        // In such case, we would like to close this tab.
         if (mClient.getOrCreateRedirectHandler().isOnNavigation()) {
             return !mClient.getOrCreateRedirectHandler().hasUserStartedNonInitialNavigation();
         }
         return false;
     }
 
+    private void onDidTakeMainFrameAsyncAction(AsyncActionTakenParams params) {
+        onDidFinishMainFrameUrlOverriding(params.canCloseTab, params.willClobberTab);
+    }
+
     /**
      * Called when Chrome decides to override URL loading and launch an intent or an asynchronous
      * action.
-     * @param shouldCloseTab
      */
-    private void onOverrideUrlLoadingAndLaunchIntent(boolean shouldCloseTab) {
+    private void onDidFinishMainFrameUrlOverriding(boolean canCloseTab, boolean willClobberTab) {
         if (mClient.getWebContents() == null) return;
 
-        // Before leaving Chrome, close the empty child tab.
-        // If a new tab is created through JavaScript open to load this
-        // url, we would like to close it as we will load this url in a
-        // different Activity.
+        boolean shouldCloseTab = canCloseTab && isTabOnInitialNavigationChain();
+
+        // Before leaving Chrome, close any tab created for the navigation chain.
         if (shouldCloseTab) {
-            // Defer closing a tab (and the associated WebContents) till the navigation
+            // Defer closing a tab (and the associated WebContents) until the navigation
             // request and the throttle finishes the job with it.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                 @Override
@@ -299,18 +309,23 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     mClient.closeTab();
                 }
             });
-        } else if (mClient.getOrCreateRedirectHandler().isOnNavigation()) {
-            int lastCommittedEntryIndexBeforeNavigation =
-                    mClient.getOrCreateRedirectHandler()
-                            .getLastCommittedEntryIndexBeforeStartingNavigation();
-            if (getLastCommittedEntryIndex() > lastCommittedEntryIndexBeforeNavigation) {
-                // http://crbug/426679 : we want to go back to the last committed entry index which
-                // was saved before this navigation, and remove the empty entries from the
-                // navigation history.
-                mClearAllForwardHistoryRequired = true;
-                mClient.getWebContents().getNavigationController().goToNavigationIndex(
-                        lastCommittedEntryIndexBeforeNavigation);
-            }
+            return;
+        }
+
+        if (!mClient.getOrCreateRedirectHandler().isOnNavigation()) return;
+        int lastCommittedEntryIndexBeforeNavigation =
+                mClient.getOrCreateRedirectHandler()
+                        .getLastCommittedEntryIndexBeforeStartingNavigation();
+        if (getLastCommittedEntryIndex() <= lastCommittedEntryIndexBeforeNavigation) return;
+        if (willClobberTab) {
+            mShouldClearRedirectHistoryForTabClobbering = true;
+        } else {
+            // http://crbug/426679 : we want to go back to the last committed entry index which
+            // was saved before this navigation, and remove the empty entries from the
+            // navigation history.
+            mClearAllForwardHistoryRequired = true;
+            mClient.getWebContents().getNavigationController().goToNavigationIndex(
+                    lastCommittedEntryIndexBeforeNavigation);
         }
     }
 

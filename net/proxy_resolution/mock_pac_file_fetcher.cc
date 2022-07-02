@@ -14,8 +14,7 @@
 
 namespace net {
 
-MockPacFileFetcher::MockPacFileFetcher()
-    : pending_request_text_(nullptr), is_shutdown_(false) {}
+MockPacFileFetcher::MockPacFileFetcher() = default;
 
 MockPacFileFetcher::~MockPacFileFetcher() = default;
 

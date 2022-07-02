@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "device/bluetooth/test/bluetooth_test_mac.h"
 
@@ -43,9 +44,9 @@ class BluetoothAdapterMacMetricsTest : public BluetoothTest {
     characteristic_ = service_->GetCharacteristics()[0];
   }
 
-  BluetoothDevice* device_ = nullptr;
-  BluetoothRemoteGattService* service_ = nullptr;
-  BluetoothRemoteGattCharacteristic* characteristic_ = nullptr;
+  raw_ptr<BluetoothDevice> device_ = nullptr;
+  raw_ptr<BluetoothRemoteGattService> service_ = nullptr;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic_ = nullptr;
 };
 
 TEST_F(BluetoothAdapterMacMetricsTest, DidFailToConnectToPeripheralError) {

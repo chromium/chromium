@@ -66,9 +66,7 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -123,28 +121,14 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
                    std::unique_ptr<base::OneShotTimer> timer)
       : read_buf_(read_buf),
         read_buf_len_(read_buf_len),
-        timer_(std::move(timer)),
-        loop_(nullptr),
-        next_proto_(kProtoUnknown),
-        received_bytes_(0),
-        sent_bytes_(0),
-        has_load_timing_info_(false),
-        error_(OK),
-        on_data_read_count_(0),
-        on_data_sent_count_(0),
-        not_expect_callback_(false),
-        on_failed_called_(false),
-        send_request_headers_automatically_(true),
-        is_ready_(false),
-        trailers_expected_(false),
-        trailers_received_(false) {
+        timer_(std::move(timer)) {
     loop_ = std::make_unique<base::RunLoop>();
   }
 
   TestDelegateBase(const TestDelegateBase&) = delete;
   TestDelegateBase& operator=(const TestDelegateBase&) = delete;
 
-  ~TestDelegateBase() override {}
+  ~TestDelegateBase() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
     CHECK(!is_ready_);
@@ -338,23 +322,23 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   std::unique_ptr<base::RunLoop> loop_;
   spdy::Http2HeaderBlock response_headers_;
   spdy::Http2HeaderBlock trailers_;
-  NextProto next_proto_;
-  int64_t received_bytes_;
-  int64_t sent_bytes_;
-  bool has_load_timing_info_;
+  NextProto next_proto_ = kProtoUnknown;
+  int64_t received_bytes_ = 0;
+  int64_t sent_bytes_ = 0;
+  bool has_load_timing_info_ = false;
   LoadTimingInfo load_timing_info_;
-  int error_;
-  int on_data_read_count_;
-  int on_data_sent_count_;
+  int error_ = OK;
+  int on_data_read_count_ = 0;
+  int on_data_sent_count_ = 0;
   // This is to ensure that delegate callback is not invoked synchronously when
   // calling into |stream_|.
-  bool not_expect_callback_;
-  bool on_failed_called_;
+  bool not_expect_callback_ = false;
+  bool on_failed_called_ = false;
   CompletionOnceCallback callback_;
-  bool send_request_headers_automatically_;
-  bool is_ready_;
-  bool trailers_expected_;
-  bool trailers_received_;
+  bool send_request_headers_automatically_ = true;
+  bool is_ready_ = false;
+  bool trailers_expected_ = false;
+  bool trailers_received_ = false;
 };
 
 // A delegate that deletes the stream in a particular callback.
@@ -375,7 +359,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
   DeleteStreamDelegate(const DeleteStreamDelegate&) = delete;
   DeleteStreamDelegate& operator=(const DeleteStreamDelegate&) = delete;
 
-  ~DeleteStreamDelegate() override {}
+  ~DeleteStreamDelegate() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
     TestDelegateBase::OnStreamReady(request_headers_sent);
@@ -460,14 +444,12 @@ class BidirectionalStreamQuicImplTest
                       kDefaultServerHostName,
                       quic::Perspective::IS_CLIENT,
                       client_headers_include_h2_stream_dependency_),
-        packet_number_(0),
         server_maker_(version_,
                       connection_id_,
                       &clock_,
                       kDefaultServerHostName,
                       quic::Perspective::IS_SERVER,
                       false),
-        random_generator_(0),
         printer_(version_),
         destination_(url::kHttpsScheme,
                      kDefaultServerHostName,
@@ -480,14 +462,14 @@ class BidirectionalStreamQuicImplTest
     clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
   }
 
-  ~BidirectionalStreamQuicImplTest() {
+  ~BidirectionalStreamQuicImplTest() override {
     if (session_) {
       session_->CloseSessionOnError(
           ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
           quic::ConnectionCloseBehavior::SILENT_CLOSE);
     }
-    for (size_t i = 0; i < writes_.size(); i++) {
-      delete writes_[i].packet;
+    for (auto& write : writes_) {
+      delete write.packet;
     }
   }
 
@@ -500,13 +482,11 @@ class BidirectionalStreamQuicImplTest
 
   // Adds a packet to the list of expected writes.
   void AddWrite(std::unique_ptr<quic::QuicReceivedPacket> packet) {
-    writes_.push_back(PacketToWrite(SYNCHRONOUS, packet.release()));
+    writes_.emplace_back(SYNCHRONOUS, packet.release());
   }
 
   // Adds a write error to the list of expected writes.
-  void AddWriteError(IoMode mode, int rv) {
-    writes_.push_back(PacketToWrite(mode, rv));
-  }
+  void AddWriteError(IoMode mode, int rv) { writes_.emplace_back(mode, rv); }
 
   void ProcessPacket(std::unique_ptr<quic::QuicReceivedPacket> packet) {
     connection_->ProcessUdpPacket(ToQuicSocketAddress(self_addr_),
@@ -830,7 +810,7 @@ class BidirectionalStreamQuicImplTest
   }
 
  protected:
-  QuicFlagSaver saver_;
+  quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
   RecordingNetLogObserver net_log_observer_;
@@ -852,11 +832,11 @@ class BidirectionalStreamQuicImplTest
   const quic::QuicConnectionId connection_id_;
   const quic::QuicStreamId stream_id_;
   QuicTestPacketMaker client_maker_;
-  uint64_t packet_number_;
+  uint64_t packet_number_ = 0;
   QuicTestPacketMaker server_maker_;
   IPEndPoint self_addr_;
   IPEndPoint peer_addr_;
-  quic::test::MockRandom random_generator_;
+  quic::test::MockRandom random_generator_{0};
   QuicPacketPrinter printer_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   std::unique_ptr<StaticSocketDataProvider> socket_data_;
@@ -2477,6 +2457,4 @@ TEST_P(BidirectionalStreamQuicImplTest, ReleaseStreamFails) {
   EXPECT_THAT(delegate->error(), IsError(ERR_CONNECTION_CLOSED));
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

@@ -84,6 +84,26 @@ extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
 
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 const base::Feature kNewExtensionFaviconHandling{
-    "ExtensionsNewFaviconHandling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ExtensionsNewFaviconHandling", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Determine if dynamic extension URLs are handled and redirected.
+const base::Feature kExtensionDynamicURLRedirection{
+    "kExtensionDynamicURLRedirection", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables enhanced site control for extensions and allowing the user to control
+// site permissions.
+const base::Feature kExtensionsMenuAccessControl{
+    "ExtensionsMenuAccessControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, calls RenderFrame::SetAllowsCrossBrowsingInstanceFrameLookup() in
+// DidCreateScriptContext() instead of DidCommitProvisionalLoad() to avoid
+// creating the script context too early which can be bad for performance.
+const base::Feature kAvoidEarlyExtensionScriptContextCreation{
+    "AvoidEarlyExtensionScriptContextCreation",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// The feature enabling offscreen documents in Manifest V3 extensions.
+const base::Feature kExtensionsOffscreenDocuments{
+    "ExtensionsOffscreenDocuments", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace extensions_features

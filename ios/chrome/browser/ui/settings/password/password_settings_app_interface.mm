@@ -73,14 +73,14 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
   }
 
  private:
-  // Puts |obtained_| in a known state not corresponding to any PasswordStore
+  // Puts `obtained_` in a known state not corresponding to any PasswordStore
   // state.
   void ResetObtained() {
     obtained_.clear();
     obtained_.emplace_back(nullptr);
   }
 
-  // Returns true if |obtained_| are in the reset state.
+  // Returns true if `obtained_` are in the reset state.
   bool AreObtainedReset() { return obtained_.size() == 1 && !obtained_[0]; }
 
   void AppendObtainedToResults() {
@@ -99,11 +99,11 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
   base::WeakPtrFactory<FakeStoreConsumer> weak_ptr_factory_{this};
 };
 
-// Saves |form| to the password store and waits until the async processing is
+// Saves `form` to the password store and waits until the async processing is
 // done.
 bool SaveToPasswordStore(const PasswordForm& form) {
   GetPasswordStore()->AddLogin(form);
-  // When we retrieve the form from the store, |in_store| should be set.
+  // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
 
@@ -119,7 +119,7 @@ bool SaveToPasswordStore(const PasswordForm& form) {
   return false;
 }
 
-// Creates a PasswordForm with |index| being part of the username, password,
+// Creates a PasswordForm with `index` being part of the username, password,
 // origin and realm.
 PasswordForm CreateSampleFormWithIndex(int index) {
   PasswordForm form;

@@ -9,7 +9,7 @@
 
 // Accessibility identifier to open the advanced sign-in settings view.
 extern NSString* const kAdvancedSigninSettingsLinkIdentifier;
-// Accessibility identifier for |-UnifiedConsentViewController.view|.
+// Accessibility identifier for `-UnifiedConsentViewController.view`.
 extern NSString* const kUnifiedConsentScrollViewIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_UNIFIED_CONSENT_UNIFIED_CONSENT_CONSTANTS_H_

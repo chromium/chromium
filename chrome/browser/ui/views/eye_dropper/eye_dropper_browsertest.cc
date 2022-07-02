@@ -34,8 +34,10 @@ class EyeDropperBrowserTest : public UiBrowserTest,
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
 #if BUILDFLAG(IS_WIN)
-    content::RenderFrameHost* parent_frame =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    content::RenderFrameHost* parent_frame = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
     eye_dropper_ = ShowEyeDropper(parent_frame, /*listener=*/nullptr);
 #endif
   }

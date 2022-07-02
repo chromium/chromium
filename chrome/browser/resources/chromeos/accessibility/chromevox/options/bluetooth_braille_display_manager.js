@@ -174,7 +174,7 @@ BluetoothBrailleDisplayManager = class {
     this.preferredDisplayAddress_ = display.address;
     localStorage['preferredBrailleDisplayAddress'] = display.address;
     if (!display.connected) {
-      chrome.bluetoothPrivate.connect(display.address, (result) => {
+      chrome.bluetoothPrivate.connect(display.address, result => {
         if (!display.paired) {
           chrome.bluetoothPrivate.pair(display.address);
         }
@@ -221,25 +221,25 @@ BluetoothBrailleDisplayManager = class {
    * @protected
    */
   handleDevicesChanged(opt_device) {
-    chrome.bluetooth.getDevices((devices) => {
-      const displayList = devices.filter((device) => {
-        return this.displayNamePrefixes_.some((name) => {
+    chrome.bluetooth.getDevices(devices => {
+      const displayList = devices.filter(device => {
+        return this.displayNamePrefixes_.some(name => {
           return device.name && device.name.search(name) === 0;
         });
       });
       if (displayList.length === 0) {
         return;
       }
-      if (opt_device && !displayList.find((i) => i.name === opt_device.name)) {
+      if (opt_device && !displayList.find(i => i.name === opt_device.name)) {
         return;
       }
 
-      displayList.forEach((display) => {
+      displayList.forEach(display => {
         if (this.preferredDisplayAddress_ === display.address) {
           this.handlePreferredDisplayConnectionStateChanged(display);
         }
       });
-      this.listeners_.forEach((listener) => {
+      this.listeners_.forEach(listener => {
         listener.onDisplayListChanged(displayList);
       });
     });
@@ -253,7 +253,7 @@ BluetoothBrailleDisplayManager = class {
     if (pairingEvent.pairing ===
         chrome.bluetoothPrivate.PairingEventType.REQUEST_PINCODE) {
       this.listeners_.forEach(
-          (listener) => listener.onPincodeRequested(pairingEvent.device));
+          listener => listener.onPincodeRequested(pairingEvent.device));
     }
   }
 

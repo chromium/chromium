@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
   send_input(u"alpha current tab", WindowOpenDisposition::CURRENT_TAB);
   send_input(u"alpha new tab", WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
   send_input(u"alpha send results", WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -414,10 +414,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   // Split-mode test: Send different input to the on-the-record and off-the-
   // record profiles, and wait for a message from each. Verify that the
   // extension received the proper input in each context.
-  ExtensionTestMessageListener on_the_record_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener on_the_record_listener;
   on_the_record_listener.set_browser_context(profile());
 
-  ExtensionTestMessageListener incognito_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener incognito_listener;
   incognito_listener.set_browser_context(incognito_profile);
 
   {
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   // view. We should have sufficient Mac coverage here by ensuring the result
   // matches are marked as deletable (verified above).
 #if !BUILDFLAG(IS_MAC)
-  ExtensionTestMessageListener delete_suggestion_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener delete_suggestion_listener;
 
   // Skip the first (accept current input) and second (first extension-provided
   // suggestion) omnibox results.
@@ -830,6 +830,90 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
     const AutocompleteMatch& match = result.match_at(1);
     EXPECT_EQ(u"word d", match.fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+  }
+}
+
+// Tests an extension passing empty suggestions. Regression test for
+// https://crbug.com/1330137.
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  // Register a listener that passes back empty suggestions if there is no
+  // text content.
+  static constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           let results = text.length > 0 ?
+               [{content: "foo", description: "Foo"}] :
+               [];
+           suggest(results);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+
+  chrome::FocusLocationBar(browser());
+  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+  // Enter "alpha d" into the omnibox to trigger the extension.
+  InputKeys(browser(), {ui::VKEY_A, ui::VKEY_L, ui::VKEY_P, ui::VKEY_H,
+                        ui::VKEY_A, ui::VKEY_SPACE, ui::VKEY_D});
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  {
+    // We expect three results - sending the typed text to the extension,
+    // the single extension suggestion ("foo"), and to search what the user
+    // typed.
+    const AutocompleteResult& result = autocomplete_controller->result();
+    ASSERT_EQ(3u, result.size()) << AutocompleteResultAsString(result);
+
+    EXPECT_EQ(u"alpha d", result.match_at(0).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+              result.match_at(0).provider->type());
+
+    EXPECT_EQ(u"alpha foo", result.match_at(1).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+              result.match_at(1).provider->type());
+
+    AutocompleteMatch match = result.match_at(2);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+              result.match_at(2).provider->type());
+  }
+
+  // Now, hit the backspace key, so that the only text is "alpha ". The
+  // extension should still be receiving input.
+  InputKeys(browser(), {ui::VKEY_BACK});
+
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  {
+    // The extension sent back an empty set of suggestions, so we expect
+    // only two results - sending the typed text to the extension and searching
+    // for what the user typed.
+    const AutocompleteResult& result = autocomplete_controller->result();
+    ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+
+    EXPECT_EQ(u"alpha ", result.match_at(0).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+              result.match_at(0).provider->type());
+
+    AutocompleteMatch match = result.match_at(1);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+              result.match_at(1).provider->type());
   }
 }
 

@@ -106,7 +106,7 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
       : UpdatedProgressMarkerChecker(service),
         check_exit_condition_cb_(check_exit_condition_cb) {}
 
-  ~NestedUpdatedProgressMarkerChecker() override {}
+  ~NestedUpdatedProgressMarkerChecker() override = default;
 
  protected:
   void CheckExitCondition() override { check_exit_condition_cb_.Run(); }
@@ -119,15 +119,15 @@ QuiesceStatusChangeChecker::QuiesceStatusChangeChecker(
     std::vector<syncer::SyncServiceImpl*> services)
     : MultiClientStatusChangeChecker(services) {
   DCHECK_LE(1U, services.size());
-  for (size_t i = 0; i < services.size(); ++i) {
+  for (syncer::SyncServiceImpl* service : services) {
     checkers_.push_back(std::make_unique<NestedUpdatedProgressMarkerChecker>(
-        services[i],
+        service,
         base::BindRepeating(&QuiesceStatusChangeChecker::CheckExitCondition,
                             base::Unretained(this))));
   }
 }
 
-QuiesceStatusChangeChecker::~QuiesceStatusChangeChecker() {}
+QuiesceStatusChangeChecker::~QuiesceStatusChangeChecker() = default;
 
 bool QuiesceStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
   // Check that all progress markers are up to date.

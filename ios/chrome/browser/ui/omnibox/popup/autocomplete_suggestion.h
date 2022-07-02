@@ -29,7 +29,7 @@
 @property(nonatomic, readonly) NSAttributedString* text;
 // Second line of text.
 @property(nonatomic, readonly) NSAttributedString* detailText;
-// Suggested number of lines to format |detailText|.
+// Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
 
 @property(nonatomic, readonly) id<OmniboxIcon> icon;

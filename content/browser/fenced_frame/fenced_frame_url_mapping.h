@@ -28,6 +28,7 @@ struct AdAuctionData {
 };
 
 using ReportingMetadata = blink::mojom::FencedFrameReporting;
+using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
@@ -49,7 +50,13 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // url and the `SharedStorageBudgetMetadata`.
   struct CONTENT_EXPORT SharedStorageURNMappingResult {
     GURL mapped_url;
-    SharedStorageBudgetMetadata metadata;
+    SharedStorageBudgetMetadata budget_metadata;
+    SharedStorageReportingMap reporting_map;
+    SharedStorageURNMappingResult();
+    SharedStorageURNMappingResult(GURL mapped_url,
+                                  SharedStorageBudgetMetadata budget_metadata,
+                                  SharedStorageReportingMap reporting_map);
+    ~SharedStorageURNMappingResult();
   };
 
   // When the result of an ad auction is a main ad URL with a set of ad
@@ -215,6 +222,16 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   bool HasObserverForTesting(const GURL& urn_uuid,
                              MappingResultObserver* observer);
 
+  // Returns as an out parameter the `ReportingMetadata`'s map for value
+  // `"shared-storage-select-url"` associated with `urn_uuid`, or leaves the out
+  // parameter unchanged if there's no shared storage reporting metadata
+  // associated (i.e. `urn_uuid` did not originate from shared storage or else
+  // there was no metadata passed from JavaScript). Precondition: `urn_uuid`
+  // exists in `urn_uuid_to_url_map_`.
+  void GetSharedStorageReportingMapForTesting(
+      const GURL& urn_uuid,
+      SharedStorageReportingMap* out_reporting_map);
+
  private:
   // Contains the URL a particular URN is mapped to, along with any extra data
   // associated with the URL that needs to be used on commit.
@@ -225,7 +242,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     MapInfo();
     explicit MapInfo(const GURL& url);
     MapInfo(const GURL& url,
-            const SharedStorageBudgetMetadata& shared_storage_budget_metadata);
+            const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
+            const ReportingMetadata& reporting_metadata = ReportingMetadata());
     MapInfo(const MapInfo&);
     MapInfo(MapInfo&&);
     ~MapInfo();

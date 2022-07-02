@@ -4,20 +4,15 @@
 
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 
-#include "base/logging.h"
-#include "chrome/browser/password_manager/affiliation_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,17 +38,16 @@ bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
     return false;
 
   // Referrer origin and target URL must match.
-  url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
-  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL)) ||
-      handle->GetURL() != GURL(password_manager::kManageMyPasswordsURL))
+  if (handle->GetURL() != GURL(password_manager::kManageMyPasswordsURL))
     return false;
 
-#if BUILDFLAG(IS_ANDROID)
-  return password_manager::features::UsesUnifiedPasswordManagerUi();
-#else
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop);
-#endif
+  url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
+  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL)) &&
+      origin !=
+          url::Origin::Create(GURL(password_manager::kTestingReferrerURL)))
+    return false;
+
+  return true;
 }
 
 }  // namespace
@@ -87,7 +81,8 @@ PasswordManagerNavigationThrottle::WillStartRequest() {
 
 #if BUILDFLAG(IS_ANDROID)
   password_manager_launcher::ShowPasswordSettings(
-      web_contents, password_manager::ManagePasswordsReferrer::kChromeSettings);
+      web_contents,
+      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
 #else
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
@@ -103,6 +98,9 @@ PasswordManagerNavigationThrottle::WillStartRequest() {
                        web_contents->OpenURL(params);
                      },
                      web_contents->GetWeakPtr(), std::move(params)));
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
 #endif
   return NavigationThrottle::CANCEL_AND_IGNORE;
 }

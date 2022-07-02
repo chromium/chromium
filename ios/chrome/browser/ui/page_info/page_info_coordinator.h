@@ -14,7 +14,7 @@
 // The coordinator for the page info.
 @interface PageInfoCoordinator : ChromeCoordinator
 
-// |presentationProvider| provides information and runs tasks necessary to
+// `presentationProvider` provides information and runs tasks necessary to
 // present Page Info.
 @property(nonatomic, weak) id<PageInfoPresentation> presentationProvider;
 

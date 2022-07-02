@@ -29,9 +29,9 @@ class RenderFrameHostDelegate;
 // be created, used and destroyed on the IO thread.
 class CONTENT_EXPORT MediaStreamUIProxy {
  public:
-  using ResponseCallback =
-      base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
-                              blink::mojom::MediaStreamRequestResult result)>;
+  using ResponseCallback = base::OnceCallback<void(
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result)>;
 
   using WindowIdCallback =
       base::OnceCallback<void(gfx::NativeViewId window_id)>;
@@ -117,7 +117,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   friend class FakeMediaStreamUIProxy;
 
   void ProcessAccessRequestResponse(
-      const blink::mojom::StreamDevices& devices,
+      blink::mojom::StreamDevicesSetPtr stream_devices_set,
       blink::mojom::MediaStreamRequestResult result);
   void ProcessStopRequestFromUI();
   void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
@@ -170,7 +170,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
 
  private:
   // This is used for RequestAccess().
-  // TODO(crbug/1313021): Use blink::mojom::StreamDevices instead of
+  // TODO(crbug.com/1313021): Use blink::mojom::StreamDevices instead of
   // blink::MediaStreamDevices.
   blink::MediaStreamDevices devices_;
 

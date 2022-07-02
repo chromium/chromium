@@ -1,13 +1,8 @@
-<style include="signin-dialog-shared">
+<style include="signin-shared">
   :host {
     --avatar-size: 100px;
-    --banner-height: 244px;
     --banner-size: auto;
-    --confirmation-description-margin-inline: auto;
-    --content-container-margin-bottom: calc(32px + 2 * var(--footer-margin));
-    --content-container-margin-top: 72px;
-    --footer-margin: 40px;
-    --text-font-size: 1.16em;
+    --footer-margin: 24px;
     color: var(--cr-primary-text-color);
     display: block;
   }
@@ -29,14 +24,12 @@
     margin: auto 0;
   }
 
-  /* The settings button is at the start of the line (opposite to other buttons)
-     when sync is optional. */
-  .sync-optional #settingsButton {
+  #settingsButton {
     inset-inline-start: var(--action-container-padding);
     position: absolute;
   }
 
-  /* Old design */
+  /* Modal dialog design */
   #illustration-container {
     height: 168px;
     margin-bottom: 32px;
@@ -93,24 +86,9 @@
     }
   }
 
-  #old-footer {
+  #modal-footer {
     margin-bottom: 0;
     padding-top: 12px;
-  }
-
-  /* New design */
-  :host([is-new-design-modal-dialog_]) {
-    --avatar-size: 76px;
-    --banner-height: 128px;
-    --banner-size: 90% 90%;
-    --content-container-margin-bottom: 0;
-    --content-container-margin-top: 96px;
-    --confirmation-description-margin-inline: 32px;
-    --footer-margin: 16px;
-    --text-font-size: unset;
-    min-height: 468px;
-    position: relative;
-    width: 512px;
   }
 
   /* Makes the absolutely positioned footer relative to confirmationContainer
@@ -122,7 +100,7 @@
   }
 
   #headerContainer {
-    height: var(--banner-height);
+    height: 244px;
     position: relative;
     width: 100%;
   }
@@ -169,11 +147,6 @@
     width: var(--badge-width);
   }
 
-  :host([is-new-design-modal-dialog_]) .work-badge {
-    --badge-width: 26px;
-    --badge-offset: -8px;
-  }
-
   .work-badge > iron-icon {
     --work-icon-size: 20px;
     background-color: var(--md-background-color);
@@ -186,8 +159,8 @@
   }
 
   #contentContainer {
-    margin-bottom: var(--content-container-margin-bottom);
-    margin-top: var(--content-container-margin-top);
+    margin-bottom:  calc(32px + 2 * var(--footer-margin));
+    margin-top: 72px;
     text-align: center;
   }
 
@@ -200,7 +173,7 @@
   #confirmationDescription {
     font-size: 14px;
     line-height: 20px;
-    margin-inline: var(--confirmation-description-margin-inline);
+    margin-inline: auto;
     margin-top: 16px;
     max-width: 516px;
   }
@@ -210,7 +183,7 @@
   }
 
   #buttonsContainer cr-button {
-    font-size: var(--text-font-size);
+    font-size: 1.16em;
     min-width: 111px;
   }
 
@@ -223,13 +196,13 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    /* Old design */
+    /* Modal dialog design */
     #illustration {
       background-image:
           url(./images/sync_confirmation_illustration_dark.svg);
     }
 
-    /* New design */
+    /* Non-modal design */
     #syncPromoBanner {
       background-image:
           url(images/sync_confirmation_refreshed_illustration_dark.svg);
@@ -248,7 +221,7 @@
   which user clicks to indicate consent.
 -->
 
-<template is="dom-if" if="[[!isNewDesign_]]">
+<template is="dom-if" if="[[isModalDialog_]]">
   <div id="illustration-container">
     <div id="grey-banner"></div>
     <div id="illustration"></div>
@@ -264,28 +237,28 @@
         $i18n{syncConfirmationSyncInfoDesc}
       </div>
     </div>
-    <div id="old-footer" class="message-container secondary">
+    <div id="modal-footer" class="message-container secondary">
       $i18n{syncConfirmationSettingsInfo}
     </div>
     <div class="action-row">
       <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div class$="action-container [[syncOptionalClass_]]">
+      <div class="action-container">
         <cr-button class="action-button" id="confirmButton"
             on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
             consent-confirmation autofocus>
           $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-        <if expr="is_macosx or is_linux">
+        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
           </cr-button>
         </if>
         <cr-button id="cancelButton" on-click="onUndo_"
-            disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+            disabled="[[anyButtonClicked_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
-        <if expr="not is_macosx and not is_linux">
+        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
@@ -296,9 +269,9 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[isNewDesign_]]">
+<template is="dom-if" if="[[!isModalDialog_]]">
   <div id="confirmationContainer">
-    <div id="headerContainer" style$="--theme-frame-color:[[highlightColor_]]">
+    <div id="headerContainer">
       <div id="syncPromoBanner"></div>
       <div id="avatarContainer">
         <img id="avatar" alt="" src="[[accountImageSrc_]]">
@@ -322,24 +295,23 @@
     </div>
     <div class="action-row">
       <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div id="buttonsContainer"
-          class$="action-container [[syncOptionalClass_]]">
+      <div id="buttonsContainer" class="action-container">
         <cr-button class="action-button" id="confirmButton"
             on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
             consent-confirmation>
           $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-        <if expr="is_macosx or is_linux">
+        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
           </cr-button>
         </if>
         <cr-button id="notNowButton" on-click="onUndo_"
-          disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+          disabled="[[anyButtonClicked_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
-        <if expr="not is_macosx and not is_linux">
+        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}

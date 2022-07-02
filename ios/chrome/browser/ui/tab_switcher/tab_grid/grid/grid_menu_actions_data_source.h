@@ -14,10 +14,10 @@
 @protocol GridMenuActionsDataSource
 
 // Asks the delegate for the GridItem object representing the grid cell with
-// |identifier|.
+// `identifier`.
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier;
 
-// Asks the delegate if the grid |item| is already bookmarked.
+// Asks the delegate if the grid `item` is already bookmarked.
 - (BOOL)isGridItemBookmarked:(GridItem*)item;
 
 @end

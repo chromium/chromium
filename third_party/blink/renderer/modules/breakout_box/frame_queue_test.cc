@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue.h"
 
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -164,7 +165,7 @@ TEST_F(FrameQueueTest, LockedOperations) {
   const int kMaxSize = 1;
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
-  MutexLocker locker(queue->GetMutex());
+  base::AutoLock locker(queue->GetLock());
   EXPECT_TRUE(queue->IsEmptyLocked());
 
   absl::optional<int> peeked = queue->PeekLocked();

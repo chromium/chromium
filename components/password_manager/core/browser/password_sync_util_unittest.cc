@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/sync_username_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -24,6 +25,7 @@ using PasswordSyncUtilTest = SyncUsernameTestBase;
 
 PasswordForm SimpleGAIAChangePasswordForm() {
   PasswordForm form;
+  form.url = GURL("https://myaccount.google.com/");
   form.signon_realm = "https://myaccount.google.com/";
   return form;
 }
@@ -31,6 +33,7 @@ PasswordForm SimpleGAIAChangePasswordForm() {
 PasswordForm SimpleForm(const char* signon_realm, const char* username) {
   PasswordForm form;
   form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
   form.username_value = ASCIIToUTF16(username);
   return form;
 }
@@ -97,8 +100,9 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
     SetSyncingPasswords(true);
     FakeSigninAs(kTestCases[i].fake_sync_username);
     EXPECT_EQ(kTestCases[i].expected_result,
-              IsSyncAccountCredential(kTestCases[i].form, sync_service(),
-                                      identity_manager()));
+              IsSyncAccountCredential(kTestCases[i].form.url,
+                                      kTestCases[i].form.username_value,
+                                      sync_service(), identity_manager()));
   }
 }
 
@@ -128,6 +132,37 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
         kTestCases[i].expected_result,
         IsSyncAccountEmail(kTestCases[i].input_username, identity_manager()));
   }
+}
+
+TEST_F(PasswordSyncUtilTest, SyncDisabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  sync_service.SetHasSyncConsent(false);
+  EXPECT_FALSE(IsPasswordSyncEnabled(&sync_service));
+  EXPECT_EQ(absl::nullopt, GetSyncingAccount(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(true);
+  static_cast<syncer::TestSyncUserSettings*>(sync_service.GetUserSettings())
+      ->SetSelectedTypes(/*sync_everything=*/false,
+                         {syncer::UserSelectableType::kHistory});
+  EXPECT_FALSE(IsPasswordSyncEnabled(&sync_service));
+  EXPECT_EQ(absl::nullopt, GetSyncingAccount(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, SyncEnabled) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(true);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  EXPECT_TRUE(IsPasswordSyncEnabled(&sync_service));
+  EXPECT_TRUE(GetSyncingAccount(&sync_service).has_value());
+  EXPECT_EQ(active_info.email, GetSyncingAccount(&sync_service).value());
 }
 
 }  // namespace sync_util

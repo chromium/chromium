@@ -83,7 +83,8 @@ WaylandSurface::~WaylandSurface() {
   if (explicit_release_callback_.is_null())
     return;
   for (auto& release : linux_buffer_releases_) {
-    explicit_release_callback_.Run(release.second.buffer, base::ScopedFD());
+    explicit_release_callback_.Run(release.second.buffer.get(),
+                                   base::ScopedFD());
   }
 }
 
@@ -698,7 +699,7 @@ void WaylandSurface::ExplicitRelease(
   DCHECK(iter != linux_buffer_releases_.end());
   DCHECK(iter->second.buffer);
   if (!explicit_release_callback_.is_null())
-    explicit_release_callback_.Run(iter->second.buffer, std::move(fence));
+    explicit_release_callback_.Run(iter->second.buffer.get(), std::move(fence));
   linux_buffer_releases_.erase(iter);
 }
 
@@ -732,6 +733,13 @@ void WaylandSurface::Enter(void* data,
   auto* const surface = static_cast<WaylandSurface*>(data);
   DCHECK(surface);
 
+  // The compositor can send a null output.
+  // crbug.com/1332540
+  if (!output) {
+    LOG(ERROR) << "NULL output received, cannot enter it!";
+    return;
+  }
+
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
 
@@ -751,6 +759,13 @@ void WaylandSurface::Leave(void* data,
                            struct wl_output* output) {
   auto* const surface = static_cast<WaylandSurface*>(data);
   DCHECK(surface);
+
+  // The compositor can send a null output.
+  // crbug.com/1332540
+  if (!output) {
+    LOG(ERROR) << "NULL output received, cannot leave it!";
+    return;
+  }
 
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));

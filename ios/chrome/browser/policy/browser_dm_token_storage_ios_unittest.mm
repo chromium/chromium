@@ -58,7 +58,7 @@ class TestStoreDMTokenDelegate {
   TestStoreDMTokenDelegate() : called_(false), success_(true) {}
   ~TestStoreDMTokenDelegate() {}
 
-  void OnDMTokenStored(bool success) {
+  void OnDMTokenUpdated(bool success) {
     run_loop_.Quit();
     called_ = true;
     success_ = success;
@@ -106,20 +106,21 @@ TEST_F(BrowserDMTokenStorageIOSTest, StoreAndLoadDMToken) {
   base::ScopedTempDir fake_app_data_dir;
 
   ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(
-      base::DIR_APP_DATA, fake_app_data_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
 
   TestStoreDMTokenDelegate callback_delegate;
   BrowserDMTokenStorageIOS storage_delegate;
   auto task = storage_delegate.SaveDMTokenTask(kDMToken,
                                                storage_delegate.InitClientId());
-  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenStored,
+  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                               base::Unretained(&callback_delegate));
   base::PostTaskAndReplyWithResult(
       storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
       std::move(task), std::move(reply));
 
   callback_delegate.Wait();
+  ASSERT_TRUE(callback_delegate.WasCalled());
   ASSERT_TRUE(callback_delegate.success());
 
   base::FilePath app_data_dir_path;
@@ -136,6 +137,82 @@ TEST_F(BrowserDMTokenStorageIOSTest, StoreAndLoadDMToken) {
   ASSERT_TRUE(base::ReadFileToString(dm_token_file_path, &dm_token));
   EXPECT_EQ(kDMToken, dm_token);
   EXPECT_EQ(kDMToken, storage_delegate.InitDMToken());
+}
+
+TEST_F(BrowserDMTokenStorageIOSTest, DeleteDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_app_data_dir;
+
+  ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
+
+  // Creating the DMToken file.
+  base::FilePath app_data_dir_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
+  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
+  ASSERT_TRUE(base::CreateDirectory(dm_token_dir_path));
+
+  std::string filename;
+  BrowserDMTokenStorageIOS storage_delegate;
+  base::Base64UrlEncode(base::SHA1HashString(storage_delegate.InitClientId()),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
+  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+  ASSERT_TRUE(base::WriteFile(base::FilePath(dm_token_file_path), kDMToken));
+  ASSERT_TRUE(base::PathExists(dm_token_file_path));
+
+  // Deleting the saved DMToken.
+  TestStoreDMTokenDelegate delete_callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&delete_callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  delete_callback_delegate.Wait();
+  ASSERT_TRUE(delete_callback_delegate.WasCalled());
+  ASSERT_TRUE(delete_callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+}
+
+TEST_F(BrowserDMTokenStorageIOSTest, DeleteEmptyDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_app_data_dir;
+
+  ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
+
+  BrowserDMTokenStorageIOS storage_delegate;
+  base::FilePath app_data_dir_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
+  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
+  std::string filename;
+  base::Base64UrlEncode(base::SHA1HashString(storage_delegate.InitClientId()),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
+  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+
+  TestStoreDMTokenDelegate callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  callback_delegate.Wait();
+  ASSERT_TRUE(callback_delegate.WasCalled());
+  ASSERT_TRUE(callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
 }
 
 TEST_F(BrowserDMTokenStorageIOSTest, InitDMTokenWithoutDirectory) {

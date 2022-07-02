@@ -18,7 +18,7 @@ def CheckChangeOnUpload(input_api, output_api):
       output_api,
       '.',
       files_to_check=ALLOWEDLIST,
-      skip_shebang_check=True)
+      run_on_python2=False)
 
 
 def CheckChangeOnCommit(input_api, output_api):
@@ -27,4 +27,4 @@ def CheckChangeOnCommit(input_api, output_api):
       output_api,
       '.',
       files_to_check=ALLOWEDLIST,
-      skip_shebang_check=True)
+      run_on_python2=False)

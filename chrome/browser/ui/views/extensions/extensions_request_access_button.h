@@ -7,6 +7,10 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class ToolbarActionViewController;
 class Browser;
 
@@ -25,14 +29,22 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
   void UpdateExtensionsRequestingAccess(
       std::vector<ToolbarActionViewController*> extensions_requesting_access);
 
-  // TODO(crbug.com/1239772): This should be called when the button is hovered.
-  void ShowHoverCard();
+  void MaybeShowHoverCard();
+
+  std::vector<std::string> GetExtensionsNamesForTesting();
+
+  // views::View:
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // ToolbarButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
  private:
   void OnButtonPressed();
+
+  content::WebContents* GetActiveWebContents();
 
   raw_ptr<Browser> browser_;
 

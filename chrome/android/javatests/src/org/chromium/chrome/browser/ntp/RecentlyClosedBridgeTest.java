@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -582,6 +584,104 @@ public class RecentlyClosedBridgeTest {
             Assert.assertEquals("Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
             Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
             Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+        });
+    }
+
+    /**
+     * Tests opening a specific closed group and that it persists across restarts.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.BULK_TAB_RESTORE, ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    public void testOpenRecentlyClosedEntry_Group_FromGroupClosure_WithRestart() {
+        if (mTabGroupModelFilter == null) return;
+
+        // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
+        // reverse.
+        final String urls[] =
+                new String[] {getUrl(TEST_PAGE_C), getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[2], /*incognito=*/false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[1], /*incognito=*/false);
+        final Tab tabC = sActivityTestRule.loadUrlInNewTab(urls[0], /*incognito=*/false);
+
+        final String[] titles = new String[3];
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
+            mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
+            TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+            titles[2] = tabA.getTitle();
+            titles[1] = tabB.getTitle();
+            titles[0] = tabC.getTitle();
+            mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), false);
+        });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(1, tabCount);
+        Assert.assertEquals(1, recentEntries.size());
+        assertEntryIs(recentEntries.get(0), RecentlyClosedGroup.class, new String[] {"Bar"}, titles,
+                urls);
+
+        final RecentlyClosedGroup group = (RecentlyClosedGroup) recentEntries.get(0);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mRecentlyClosedBridge.openRecentlyClosedEntry(mTabModel, group); });
+
+        // 1. Blank tab
+        // 2. tabA restored in new tab.
+        // 3. tabB restored in new tab.
+        // 4. tabC restored in new tab.
+        final List<Tab> tabs = getAllTabs();
+        Assert.assertEquals(4, tabs.size());
+        Assert.assertEquals(titles[2], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
+        Assert.assertEquals(urls[2], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
+        Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(3)));
+        Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
+        final int tabIds[] =
+                new int[] {tabs.get(1).getId(), tabs.get(2).getId(), tabs.get(3).getId()};
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2), tabs.get(3)}),
+                    mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+        });
+
+        // Restart activity.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.saveState(); });
+        sActivityTestRule.recreateActivity();
+        mActivity = sActivityTestRule.getActivity();
+        mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
+        CriteriaHelper.pollUiThread(mTabModelSelector::isTabStateInitialized);
+        mTabModel = mTabModelSelector.getModel(false);
+        TabModelFilter filter =
+                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+        assert filter instanceof TabGroupModelFilter;
+        mTabGroupModelFilter = (TabGroupModelFilter) filter;
+
+        // Confirm the same tabs are present with the same group structure.
+        tabs.clear();
+        tabs.addAll(getAllTabs());
+        Assert.assertEquals(4, tabs.size());
+        Assert.assertEquals(tabIds[0], tabs.get(1).getId());
+        Assert.assertEquals(titles[2], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
+        Assert.assertEquals(urls[2], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        Assert.assertEquals(tabIds[1], tabs.get(2).getId());
+        Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
+        Assert.assertEquals(urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        Assert.assertEquals(tabIds[2], tabs.get(3).getId());
+        Assert.assertEquals(titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(3)));
+        Assert.assertEquals(urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(3)).getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(1)));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(2)));
+            Assert.assertTrue(mTabGroupModelFilter.hasOtherRelatedTabs(tabs.get(3)));
+            Assert.assertEquals(Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2), tabs.get(3)}),
                     mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
         });
     }

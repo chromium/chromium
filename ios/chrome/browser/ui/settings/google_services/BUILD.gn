@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/table_view",

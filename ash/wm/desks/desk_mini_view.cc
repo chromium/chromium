@@ -52,12 +52,13 @@ gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   return gfx::Rect(origin, screen_rect.size());
 }
 
-// Tells whether `desk` contains an app window itself or if the desk is active
-// and at least one visible on all desk window exists.
+// Tells whether `desk` contains an app window itself or if at least one visible
+// on all desk window exists. Returns false if `desk` is nullptr.
 bool ContainsAppWindows(Desk* desk) {
-  if (desk->ContainsAppWindows())
-    return true;
-  return desk->is_active() &&
+  if (!desk)
+    return false;
+
+  return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
 }
 
@@ -92,6 +93,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   desk_name_view->AddObserver(this);
   desk_name_view->set_controller(this);
   desk_name_view->SetText(desk_->name());
+  desk_name_view->SetAccessibleName(desk_->name());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -202,10 +204,11 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
   // the desk.
   const bool old_force_show_desk_buttons = force_show_desk_buttons_;
   force_show_desk_buttons_ =
-      (is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
-      (!is_long_gesture && view_to_update->GetVisible() &&
-       view_to_update->HitTestRect(
-           ConvertScreenRect(view_to_update, screen_rect)));
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      ((is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
+       (!is_long_gesture && view_to_update->GetVisible() &&
+        view_to_update->HitTestRect(
+            ConvertScreenRect(view_to_update, screen_rect))));
 
   if (old_force_show_desk_buttons != force_show_desk_buttons_)
     UpdateDeskButtonVisibility();
@@ -251,13 +254,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
       DesksController::Get()->GetCombineDesksTargetName(desk_));
 
   // Only show the combine desks context menu option if there are app windows in
-  // the desk, or if the desk is active and there are windows that should be
-  // visible on all desks.
+  // the desk, or if there are windows that should be visible on all desks.
   context_menu_->SetCombineDesksMenuItemVisibility(ContainsAppWindows(desk_));
 
-  // Only show the combine desks context menu option if there are app windows in
-  // the desk.
-  context_menu_->SetCombineDesksMenuItemVisibility(desk_->ContainsAppWindows());
   context_menu_->ShowContextMenuForView(
       this,
       base::i18n::IsRTL() ? desk_preview_->GetBoundsInScreen().bottom_right()
@@ -631,7 +630,7 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   // from the size calculations so that the focus UI is aligned.
   views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
   const int focus_ring_length =
-      focus_ring->halo_thickness() - focus_ring->halo_inset();
+      focus_ring->GetHaloThickness() - focus_ring->GetHaloInset();
   const int min_width = std::min(preview_bounds.width() - focus_ring_length,
                                  kMinDeskNameViewWidth);
   const int max_width = std::max(preview_bounds.width() - focus_ring_length,

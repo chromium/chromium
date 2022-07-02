@@ -58,15 +58,15 @@ const char kTestGmailURL[] =
     "chrome-extension://pjkljhegncpnkpknbcohdijeoejaedia/index.html";
 #endif
 
-base::Value::ListStorage FillTestListStorage(const char* url,
-                                             const char* title,
-                                             const bool is_most_visited) {
-  base::Value::ListStorage new_link_list;
-  base::DictionaryValue new_link;
-  new_link.SetKey("url", base::Value(url));
-  new_link.SetKey("title", base::Value(title));
-  new_link.SetKey("isMostVisited", base::Value(is_most_visited));
-  new_link_list.push_back(std::move(new_link));
+base::Value::List FillTestList(const char* url,
+                               const char* title,
+                               const bool is_most_visited) {
+  base::Value::List new_link_list;
+  base::Value::Dict new_link;
+  new_link.Set("url", url);
+  new_link.Set("title", title);
+  new_link.Set("isMostVisited", is_most_visited);
+  new_link_list.Append(std::move(new_link));
   return new_link_list;
 }
 
@@ -99,8 +99,8 @@ class CustomLinksManagerImplTest : public testing::Test {
  public:
   CustomLinksManagerImplTest() {
     CustomLinksManagerImpl::RegisterProfilePrefs(prefs_.registry());
-    base::Value::ListStorage defaults;
-    defaults.emplace_back("pjkljhegncpnkpknbcohdijeoejaedia");
+    base::Value::List defaults;
+    defaults.Append("pjkljhegncpnkpknbcohdijeoejaedia");
     prefs_.registry()->RegisterListPref(
         webapps::kWebAppsMigratedPreinstalledApps,
         base::Value(std::move(defaults)));
@@ -696,8 +696,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateListAfterRemoteChange) {
   // links.
   EXPECT_CALL(callback, Run());
   prefs_.SetUserPref(prefs::kCustomLinksList,
-                     std::make_unique<base::Value>(
-                         FillTestListStorage(kTestUrl, kTestTitle, true)));
+                     base::Value(FillTestList(kTestUrl, kTestTitle, true)));
   EXPECT_EQ(std::vector<Link>({Link{GURL(kTestUrl), kTestTitle16, true}}),
             custom_links_->GetLinks());
 }
@@ -712,11 +711,9 @@ TEST_F(CustomLinksManagerImplTest, InitializeListAfterRemoteChange) {
 
   // Modify the preference. This should notify and initialize custom links.
   EXPECT_CALL(callback, Run()).Times(2);
-  prefs_.SetUserPref(prefs::kCustomLinksInitialized,
-                     std::make_unique<base::Value>(true));
+  prefs_.SetUserPref(prefs::kCustomLinksInitialized, base::Value(true));
   prefs_.SetUserPref(prefs::kCustomLinksList,
-                     std::make_unique<base::Value>(
-                         FillTestListStorage(kTestUrl, kTestTitle, false)));
+                     base::Value(FillTestList(kTestUrl, kTestTitle, false)));
   EXPECT_TRUE(custom_links_->IsInitialized());
   EXPECT_EQ(std::vector<Link>({Link{GURL(kTestUrl), kTestTitle16, false}}),
             custom_links_->GetLinks());
@@ -734,10 +731,8 @@ TEST_F(CustomLinksManagerImplTest, UninitializeListAfterRemoteChange) {
 
   // Modify the preference. This should notify and uninitialize custom links.
   EXPECT_CALL(callback, Run()).Times(2);
-  prefs_.SetUserPref(prefs::kCustomLinksInitialized,
-                     std::make_unique<base::Value>(false));
-  prefs_.SetUserPref(prefs::kCustomLinksList,
-                     std::make_unique<base::Value>(base::Value::ListStorage()));
+  prefs_.SetUserPref(prefs::kCustomLinksInitialized, base::Value(false));
+  prefs_.SetUserPref(prefs::kCustomLinksList, base::Value(base::Value::List()));
   EXPECT_FALSE(custom_links_->IsInitialized());
   EXPECT_EQ(std::vector<Link>(), custom_links_->GetLinks());
 }
@@ -756,12 +751,10 @@ TEST_F(CustomLinksManagerImplTest, ClearThenUninitializeListAfterRemoteChange) {
   // the initialized preference. This should notify and uninitialize custom
   // links.
   EXPECT_CALL(callback, Run()).Times(2);
-  prefs_.SetUserPref(prefs::kCustomLinksList,
-                     std::make_unique<base::Value>(base::Value::ListStorage()));
+  prefs_.SetUserPref(prefs::kCustomLinksList, base::Value(base::Value::List()));
   EXPECT_TRUE(custom_links_->IsInitialized());
   EXPECT_EQ(std::vector<Link>(), custom_links_->GetLinks());
-  prefs_.SetUserPref(prefs::kCustomLinksInitialized,
-                     std::make_unique<base::Value>(false));
+  prefs_.SetUserPref(prefs::kCustomLinksInitialized, base::Value(false));
   EXPECT_FALSE(custom_links_->IsInitialized());
   EXPECT_EQ(std::vector<Link>(), custom_links_->GetLinks());
 }

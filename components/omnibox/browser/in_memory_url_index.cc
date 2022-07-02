@@ -157,7 +157,6 @@ void InMemoryURLIndex::DeleteURL(const GURL& url) {
 void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
                                     ui::PageTransition transition,
                                     const history::URLRow& row,
-                                    const history::RedirectList& redirects,
                                     base::Time visit_time) {
   DCHECK_EQ(history_service_, history_service);
   needs_to_be_cached_ |= private_data_->UpdateURL(

@@ -26,6 +26,7 @@ class ChromeAccountManagerService;
 @class ContentSuggestionsCollectionViewController;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
+class GURL;
 @protocol LogoVendor;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
@@ -111,6 +112,10 @@ class VoiceSearchAvailability;
 // Handles the actions following a tap on the "Learn More" item in the Discover
 // feed menu.
 - (void)handleFeedLearnMoreTapped;
+
+// Handles the actions following a tap on the "Visit Site" item in the followed
+// item edit menu of the follow management page.
+- (void)handleVisitSiteFromFollowManagementList:(const GURL&)url;
 
 @end
 

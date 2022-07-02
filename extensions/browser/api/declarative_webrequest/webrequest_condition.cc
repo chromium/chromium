@@ -21,7 +21,7 @@ using url_matcher::URLMatcherFactory;
 namespace keys = extensions::declarative_webrequest_constants;
 
 namespace {
-static URLMatcherConditionSet::ID g_next_id = 0;
+static base::MatcherStringPattern::ID g_next_id = 0;
 
 // TODO(battre): improve error messaging to give more meaningful messages
 // to the extension developer.

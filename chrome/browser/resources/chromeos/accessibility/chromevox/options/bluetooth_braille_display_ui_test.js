@@ -43,7 +43,7 @@ ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
 ChromeVoxBluetoothBrailleDisplayUITest.prototype.closureModuleDeps =
     ['BluetoothBrailleDisplayManager'];
 
-SYNC_TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
+AX_TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
   const ui = new BluetoothBrailleDisplayUI();
   ui.attach(document.body);
   assertEqualsDOM(
@@ -54,7 +54,7 @@ SYNC_TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
       document.body.children[0]);
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'ChromeVoxBluetoothBrailleDisplayUITest',
     'ControlStateUpdatesNotConnectedOrPaired', function() {
       const ui = new BluetoothBrailleDisplayUI();
@@ -65,7 +65,7 @@ SYNC_TEST_F(
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        const display = displays.find((display) => display.address === address);
+        const display = displays.find(display => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -85,7 +85,7 @@ SYNC_TEST_F(
       ui.detach();
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'ChromeVoxBluetoothBrailleDisplayUITest',
     'ControlStateUpdatesPairedNotConnected', function() {
       const ui = new BluetoothBrailleDisplayUI();
@@ -96,7 +96,7 @@ SYNC_TEST_F(
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        const display = displays.find((display) => display.address === address);
+        const display = displays.find(display => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -175,7 +175,7 @@ SYNC_TEST_F(
           document.body.children[0]);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'ChromeVoxBluetoothBrailleDisplayUITest', 'PincodeRequest', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
@@ -210,7 +210,7 @@ TEST_F('ChromeVoxBluetoothBrailleDisplayUITest', 'ClickControls', function() {
   // Fake out getDevice using |display| as the backing source which changes
   // below.
   chrome.bluetooth.getDevice = (address, callback) => {
-    const display = displays.find((display) => display.address === address);
+    const display = displays.find(display => display.address === address);
     assertNotNullNorUndefined(display);
     callback(display);
   };

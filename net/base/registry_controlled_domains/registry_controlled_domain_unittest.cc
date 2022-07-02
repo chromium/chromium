@@ -33,8 +33,7 @@ namespace test6 {
 
 }  // namespace
 
-namespace net {
-namespace registry_controlled_domains {
+namespace net::registry_controlled_domains {
 
 namespace {
 
@@ -644,5 +643,4 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
 #endif
 }
 
-}  // namespace registry_controlled_domains
-}  // namespace net
+}  // namespace net::registry_controlled_domains

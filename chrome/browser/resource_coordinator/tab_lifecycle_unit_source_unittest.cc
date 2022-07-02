@@ -359,7 +359,9 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     // Focus the tab. Expect the state to be ACTIVE.
     EXPECT_CALL(tab_observer_,
                 OnDiscardedStateChange(::testing::_, reason, false));
-    tab_strip_model_->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+    tab_strip_model_->ActivateTabAt(
+        0, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
     ::testing::Mock::VerifyAndClear(&tab_observer_);
     EXPECT_EQ(LifecycleUnitState::ACTIVE,
               background_lifecycle_unit->GetState());
@@ -446,7 +448,9 @@ TEST_F(TabLifecycleUnitSourceTest, SwitchTabInFocusedTabStrip) {
   // Activate the first tab.
   task_environment()->FastForwardBy(kShortDelay);
   auto time_before_activate = NowTicks();
-  tab_strip_model_->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model_->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(IsFocused(first_lifecycle_unit));
   EXPECT_EQ(time_before_activate, second_lifecycle_unit->GetLastFocusedTime());
 
@@ -517,7 +521,7 @@ TEST_F(TabLifecycleUnitSourceTest, DetachWebContents_External) {
 // were destroyed from TabStripModelObserver::TabClosingAt(). If a tab was
 // detached (TabStripModel::DetachWebContentsAt) and its WebContents destroyed,
 // the TabLifecycleUnit was never destroyed. This was solved by giving ownership
-// of a TabLifecycleUnit to a WebContentsUserData.
+// of a tab lifecycleunit to a WebContentsUserData.
 TEST_F(TabLifecycleUnitSourceTest, DetachAndDeleteWebContents) {
   LifecycleUnit* first_lifecycle_unit = nullptr;
   LifecycleUnit* second_lifecycle_unit = nullptr;

@@ -63,12 +63,15 @@ class GeoLanguageProviderTest : public testing::Test {
     geo_language_provider_.SetGeoLanguages(languages);
   }
 
-  void SetUpCachedLanguages(const std::vector<std::string>& languages) {
+  void SetUpCachedLanguages(const std::vector<std::string>& languages,
+                            const double update_time) {
     base::ListValue cache_list;
     for (const std::string& language : languages) {
       cache_list.Append(language);
     }
     local_state_.Set(GeoLanguageProvider::kCachedGeoLanguagesPref, cache_list);
+    local_state_.SetDouble(
+        GeoLanguageProvider::kTimeOfLastGeoLanguagesUpdatePref, update_time);
   }
 
   const std::vector<std::string> GetCachedLanguages() {
@@ -151,8 +154,9 @@ TEST_F(GeoLanguageProviderTest, ButDoCallInTheNextDay) {
   EXPECT_EQ(expected_langs_2, GetCachedLanguages());
 }
 
-TEST_F(GeoLanguageProviderTest, CachedLanguagesPresent) {
-  SetUpCachedLanguages({"en", "fr"});
+TEST_F(GeoLanguageProviderTest, CachedLanguagesUpdatedOnStartup) {
+  SetUpCachedLanguages({"en", "fr"},
+                       (base::Time::Now() - base::Hours(25)).ToDoubleT());
   MoveToLocation(23.0, 80.0);
   StartGeoLanguageProvider();
 
@@ -162,6 +166,20 @@ TEST_F(GeoLanguageProviderTest, CachedLanguagesPresent) {
   task_environment_.RunUntilIdle();
 
   expected_langs = {"hi", "en"};
+  EXPECT_EQ(expected_langs, GetCurrentGeoLanguages());
+  EXPECT_EQ(expected_langs, GetCachedLanguages());
+}
+
+TEST_F(GeoLanguageProviderTest, CachedLanguagesNotUpdatedOnStartup) {
+  SetUpCachedLanguages({"en", "fr"}, base::Time::Now().ToDoubleT());
+  MoveToLocation(23.0, 80.0);
+  StartGeoLanguageProvider();
+
+  std::vector<std::string> expected_langs = {"en", "fr"};
+  EXPECT_EQ(expected_langs, GetCurrentGeoLanguages());
+
+  task_environment_.RunUntilIdle();
+
   EXPECT_EQ(expected_langs, GetCurrentGeoLanguages());
   EXPECT_EQ(expected_langs, GetCachedLanguages());
 }

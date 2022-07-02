@@ -15,8 +15,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
-#include "ui/display/test/scoped_screen_override.h"
-#include "ui/display/test/test_screen.h"
 
 namespace extensions {
 
@@ -74,8 +72,6 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
-  display::test::TestScreen test_screen_;
-  std::unique_ptr<display::test::ScopedScreenOverride> scoped_screen_override_;
   scoped_refptr<extensions::SearchQueryFunction> function_;
 };
 
@@ -91,8 +87,6 @@ void SearchApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
-  scoped_screen_override_ =
-      std::make_unique<display::test::ScopedScreenOverride>(&test_screen_);
 
   // Mock TemplateURLService.
   auto* template_url_service = static_cast<TemplateURLService*>(

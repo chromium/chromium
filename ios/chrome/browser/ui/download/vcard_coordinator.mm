@@ -44,7 +44,7 @@
 
 - (void)stop {
   // Reset this observer manually. We want this to go out of scope now, to
-  // ensure it detaches before |browser| and its WebStateList get destroyed.
+  // ensure it detaches before `browser` and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
 
   self.navigationViewController = nil;
@@ -66,12 +66,12 @@
 
 #pragma mark - Private
 
-// Dismisses the the |navigationViewController|.
+// Dismisses the the `navigationViewController`.
 - (void)dismissButtonTapped {
   [self.baseViewController dismissViewControllerAnimated:true completion:nil];
 }
 
-// Retreives contact informations from |data| and presents it.
+// Retreives contact informations from `data` and presents it.
 - (void)presentContactVCardFromData:(NSData*)vcardData {
   // TODO(crbug.com/1278657): Vcard download code only support the first
   // contact.

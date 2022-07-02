@@ -133,9 +133,7 @@ if (is_android) {
     ]
   }
 
-  android_library("query_tiles_junit_tests") {
-    bypass_platform_checks = true
-    testonly = true
+  robolectric_library("query_tiles_junit_tests") {
     sources = [ "android/java/src/org/chromium/components/query_tiles/TileUmaLoggerTest.java" ]
 
     deps = [
@@ -143,8 +141,6 @@ if (is_android) {
       ":test_support_java",
       "//base:base_java",
       "//base:base_junit_test_support",
-      "//build/android:build_java",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
     ]
   }

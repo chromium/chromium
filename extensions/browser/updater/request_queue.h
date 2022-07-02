@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -83,18 +84,18 @@ class RequestQueue {
 
  private:
   struct Request {
-    Request(net::BackoffEntry* backoff_entry, T* request)
-        : backoff_entry(backoff_entry), request(request) {}
+    Request(std::unique_ptr<net::BackoffEntry> backoff_entry,
+            std::unique_ptr<T> fetch)
+        : backoff_entry(std::move(backoff_entry)), fetch(std::move(fetch)) {}
     std::unique_ptr<net::BackoffEntry> backoff_entry;
-    std::unique_ptr<T> request;
+    std::unique_ptr<T> fetch;
   };
 
   // Compares the release time of two pending requests.
   static bool CompareRequests(const Request& a, const Request& b);
 
   // Pushes a request with a given backoff entry onto the queue.
-  void PushImpl(std::unique_ptr<T> request,
-                std::unique_ptr<net::BackoffEntry> backoff_entry);
+  void PushImpl(Request request);
 
   // The backoff policy used to determine backoff delays.
   raw_ptr<const net::BackoffEntry::Policy> backoff_policy_;
@@ -106,9 +107,8 @@ class RequestQueue {
   // the code needs to be able to iterate over all pending requests.
   base::circular_deque<Request> pending_requests_;
 
-  // Active request and its associated backoff entry.
-  std::unique_ptr<T> active_request_;
-  std::unique_ptr<net::BackoffEntry> active_backoff_entry_;
+  // Active entry with its associated backoff.
+  absl::optional<Request> active_request_;
 
   // Timer to schedule calls to StartNextRequest, if the first pending request
   // hasn't passed its release time yet.
@@ -122,8 +122,8 @@ class RequestQueue<T>::iterator {
  public:
   iterator() = default;
 
-  T* operator*() { return it_->request.get(); }
-  T* operator->() { return it_->request.get(); }
+  T* operator*() { return it_->fetch.get(); }
+  T* operator->() { return it_->fetch.get(); }
   iterator& operator++() {
     ++it_;
     return *this;

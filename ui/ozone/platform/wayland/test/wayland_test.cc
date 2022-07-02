@@ -68,8 +68,8 @@ void WaylandTest::SetUp() {
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(0, 0, 800, 600);
   properties.type = PlatformWindowType::kWindow;
-  window_ = WaylandWindow::Create(&delegate_, connection_.get(),
-                                  std::move(properties), true, true);
+  window_ = delegate_.CreateWaylandWindow(connection_.get(),
+                                          std::move(properties), true, true);
   ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
 
   window_->Show(false);
@@ -128,12 +128,20 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
     if (xdg_surface->xdg_toplevel()) {
       zxdg_toplevel_v6_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                       width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      zxdg_popup_v6_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                                   width, height);
     }
     zxdg_surface_v6_send_configure(xdg_surface->resource(), serial);
   } else {
     if (xdg_surface->xdg_toplevel()) {
       xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                   width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                               width, height);
     }
     xdg_surface_send_configure(xdg_surface->resource(), serial);
   }

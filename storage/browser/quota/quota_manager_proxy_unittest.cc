@@ -49,9 +49,9 @@ class QuotaManagerProxyTest : public testing::Test {
 TEST_F(QuotaManagerProxyTest, GetBucketPath) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   BucketInitParams params(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"));
-  params.name = "draft_bucket";
-  quota_manager_proxy_->GetOrCreateBucket(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      "draft_bucket");
+  quota_manager_proxy_->UpdateOrCreateBucket(
       params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
   auto bucket = future.Take();
   EXPECT_TRUE(bucket.ok());
@@ -67,9 +67,9 @@ TEST_F(QuotaManagerProxyTest, GetBucketPath) {
 TEST_F(QuotaManagerProxyTest, GetClientBucketPath) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
   BucketInitParams params(
-      blink::StorageKey::CreateFromStringForTesting("http://example.com"));
-  params.name = "draft_bucket";
-  quota_manager_proxy_->GetOrCreateBucket(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      "draft_bucket");
+  quota_manager_proxy_->UpdateOrCreateBucket(
       params, base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
   auto bucket = future.Take();
   EXPECT_TRUE(bucket.ok());

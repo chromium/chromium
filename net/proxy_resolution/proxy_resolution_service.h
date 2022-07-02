@@ -93,7 +93,7 @@ class NET_EXPORT ProxyResolutionService {
 
   // Returns proxy related debug information to be included in the NetLog. The
   // data should be appropriate for any capture mode (sensitivity level).
-  virtual base::Value GetProxyNetLogValues() = 0;
+  virtual base::Value::Dict GetProxyNetLogValues() = 0;
 
   // Returns true if |this| is an instance of ConfiguredProxyResolutionService
   // and assigns |this| to the out parameter. Otherwise returns false and sets

@@ -15,8 +15,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../common/styles.js';
-import './cros_button_style.js';
+import '../css/common.css.js';
+import '../css/cros_button_style.css.js';
 
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -47,6 +47,7 @@ export function stringToTopicSource(x: string): TopicSource|null {
 
 export interface PersonalizationBreadcrumb {
   $: {
+    container: HTMLElement,
     keys: IronA11yKeysElement,
     selector: IronSelectorElement,
   };
@@ -160,15 +161,15 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   }
 
   /**
-   * Returns the class of the breadcrumb. The last breadcrumb will not be
-   * selectable.
+   * Returns the aria-current status of the breadcrumb. The last breadcrumb is
+   * considered the "current" breadcrumb representing the active page.
    */
-  private computeBreadcrumbClass_(index: number, breadcrumbs: string[]):
-      string {
-    if (index < breadcrumbs.length - 1) {
-      return 'breadcrumb selectable';
+  private getBreadcrumbAriaCurrent_(index: number, breadcrumbs: string[]):
+      'page'|'false' {
+    if (index === (breadcrumbs.length - 1)) {
+      return 'page';
     }
-    return 'breadcrumb';
+    return 'false';
   }
 
   private computeBreadcrumbs_(): string[] {

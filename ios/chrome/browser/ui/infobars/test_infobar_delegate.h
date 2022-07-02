@@ -9,7 +9,7 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-// An infobar that displays |infobar_message| and one button.
+// An infobar that displays `infobar_message` and one button.
 class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   explicit TestInfoBarDelegate(NSString* infobar_message);

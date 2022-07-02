@@ -28,25 +28,25 @@ class UserNoteStorageImpl : public UserNoteStorage {
   UserNoteStorageImpl(const UserNoteStorageImpl& other) = delete;
   UserNoteStorageImpl& operator=(const UserNoteStorageImpl& other) = delete;
 
+  using Observer = UserNoteStorage::Observer;
+
   // Implement UserNoteStorage
+  void AddObserver(Observer* observer) override;
+
+  void RemoveObserver(Observer* observer) override;
+
   void GetNoteMetadataForUrls(
-      std::vector<GURL> urls,
+      const std::vector<GURL>& urls,
       base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) override;
 
   void GetNotesById(
-      std::vector<base::UnguessableToken> ids,
+      const std::vector<base::UnguessableToken>& ids,
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)> callback)
       override;
 
-  void CreateNote(base::UnguessableToken id,
+  void UpdateNote(const UserNote* model,
                   std::string note_body_text,
-                  UserNoteTarget::TargetType target_type,
-                  std::string original_text,
-                  GURL target_page,
-                  std::string selector) override;
-
-  void UpdateNote(base::UnguessableToken id,
-                  std::string note_body_text) override;
+                  bool is_creation = false) override;
 
   void DeleteNote(const base::UnguessableToken& id) override;
 
@@ -57,9 +57,14 @@ class UserNoteStorageImpl : public UserNoteStorage {
   void DeleteAllNotes() override;
 
  private:
+  void OnNotesChanged(bool notes_changed);
+  base::ObserverList<Observer>::Unchecked observers_;
+
   // Owns and manages access to the UserNotesDatabase living on a different
   // sequence.
   base::SequenceBound<UserNoteDatabase> database_;
+
+  base::WeakPtrFactory<UserNoteStorageImpl> weak_factory_{this};
 };
 }  // namespace user_notes
 

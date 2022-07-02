@@ -445,7 +445,10 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
                                           Profile* profile,
                                           const base::FilePath& path) {
   if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
-    request->set_device_token(analysis_settings_.dm_token);
+    if (analysis_settings_.cloud_or_local_settings.is_cloud_analysis()) {
+      request->set_device_token(
+          analysis_settings_.cloud_or_local_settings.dm_token());
+    }
     request->set_per_profile_request(analysis_settings_.per_profile);
     if (analysis_settings_.client_metadata)
       request->set_client_metadata(*analysis_settings_.client_metadata);
@@ -465,8 +468,8 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
     request->set_content_type(file_metadata_.at(path).mime_type);
   }
 
-  for (const std::string& tag : analysis_settings_.tags)
-    request->add_tag(tag);
+  for (const auto& tag : analysis_settings_.tags)
+    request->add_tag(tag.first);
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(
@@ -515,7 +518,7 @@ void DeepScanningRequest::OnDownloadRequestReady(
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   BinaryUploadService* binary_upload_service =
-      download_service_->GetBinaryUploadService(profile);
+      download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (binary_upload_service) {
     binary_upload_service->MaybeUploadForDeepScanning(
         std::move(deep_scan_request));
@@ -707,7 +710,7 @@ bool DeepScanningRequest::ReportOnlyScan() {
 
   return base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
          analysis_settings_.block_until_verdict ==
-             enterprise_connectors::BlockUntilVerdict::NO_BLOCK;
+             enterprise_connectors::BlockUntilVerdict::kNoBlock;
 }
 
 }  // namespace safe_browsing

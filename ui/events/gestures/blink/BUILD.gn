@@ -10,7 +10,7 @@ source_set("blink") {
     "web_gesture_curve_impl.h",
   ]
 
-  if (is_chromecast && !is_android) {
+  if (is_castos) {
     defines = [ "USE_MOBILE_FLING_CURVE" ]
   }
 

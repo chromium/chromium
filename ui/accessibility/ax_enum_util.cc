@@ -1583,6 +1583,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "ariaDescription";
     case ax::mojom::DescriptionFrom::kButtonLabel:
       return "buttonLabel";
+    case ax::mojom::DescriptionFrom::kPopupElement:
+      return "popupElement";
     case ax::mojom::DescriptionFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::DescriptionFrom::kRubyAnnotation:

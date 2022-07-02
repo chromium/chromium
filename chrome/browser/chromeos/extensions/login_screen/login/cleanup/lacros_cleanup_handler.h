@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_LACROS_CLEANUP_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_LACROS_CLEANUP_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 
 #include <set>
@@ -43,7 +44,7 @@ class LacrosCleanupHandler : public CleanupHandler {
   GetCleanupTriggeredObservers();
 
   std::set<mojo::RemoteSetElementId> pending_observers_;
-  mojo::RemoteSet<crosapi::mojom::LacrosCleanupTriggeredObserver>*
+  raw_ptr<mojo::RemoteSet<crosapi::mojom::LacrosCleanupTriggeredObserver>>
       observers_for_testing_ = nullptr;
   std::vector<std::string> errors_;
   base::RepeatingClosure barrier_closure_;

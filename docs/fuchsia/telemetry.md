@@ -1,9 +1,11 @@
-# Running Telemetry Benchmarks on Fuchsia.
+# Running Telemetry Benchmarks on Fuchsia
+
+[TOC]
 
 General instruction on running and debugging benchmarks can be found in the
 [`tools/perf/README.md`](../../tools/perf/README.md).
 
-Fuchsia uses [web_engine_shell](../../fuchsia/engine/test/README.md) to run
+Fuchsia uses [web_engine_shell](../../fuchsia_web/webengine/test/README.md) to run
 integration tests. Be sure to build any components you wish to deploy on your
 device, along with `web_engine_shell`.
 

@@ -45,6 +45,7 @@
 <translation id="3344973607274501920">Chromium ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
 <translation id="3472200483164753384">Ei tueta Chromium Canaryssa</translation>
 <translation id="3567399274263440288">Kirjaudu sisään Chromiumiin Google-tililläsi, jotta saat parhaan hyödyn Chromiumista.</translation>
+<translation id="3619462831205197427">Kirjaudu tälle sivustolle, Google-tilillesi ja Chromiumiin.</translation>
 <translation id="3639997914391704523">Chromium voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> käytti Chromiumia, ja hänen käyttämiä kirjanmerkkejä, salasanoja ja muita asetuksia jäi laitteelle.</translation>
 <translation id="3805899903892079518">Chromium ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
@@ -77,7 +78,6 @@
 1. Avaa asetukset
 2. Valitse Oletusselain
 3. Valitse Chromium.</translation>
-<translation id="6155422572367400359">Kirjaudu tälle sivustolle, Google-tilillesi ja Chromiumiin. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="6183442264225539303">Kirjaudu tälle sivustolle ja Chromiumiin. Voit laittaa synkronoinnin päälle myöhemmin.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="632825460376924298">Salli Chromium-kirjautuminen</translation>
@@ -115,6 +115,7 @@
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
+<translation id="8308172444429103994">Chromium-vinkki. Kirjaudu sisään nopeammin valitsemalla tallennettu salasana näppäimistön yläreunasta.</translation>
 <translation id="858114650497379505">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="865600487977764604">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>

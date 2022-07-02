@@ -58,6 +58,7 @@ target(link_target_type, "renderer_sources") {
   ]
 
   deps = [
+    "//components/cast_streaming/renderer:resource_provider",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/renderer",

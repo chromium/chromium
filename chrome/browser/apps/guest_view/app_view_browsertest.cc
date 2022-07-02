@@ -76,7 +76,7 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
       return;
     }
 
-    ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
     if (!content::ExecuteScript(
             embedder_web_contents,
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
       extensions::AppWindowRegistry::Get(browser()->profile())
           ->GetCurrentAppWindowForApp(bad_app->id())
           ->web_contents()
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetProcess();
 
   // Monitor |bad_app|'s RenderProcessHost for its exiting.
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
       base::StringPrintf("onAppCommand('%s', '%s');", "EMBED",
                          guest_app->id().c_str())));
   ExtensionTestMessageListener on_embed_requested_listener(
-      "AppViewTest.EmbedRequested", false);
+      "AppViewTest.EmbedRequested");
   EXPECT_TRUE(on_embed_requested_listener.WaitUntilSatisfied());
   // While the host is waiting for the guest to accept/deny embedding, the bad
   // app sends a request to the host.

@@ -106,14 +106,11 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
     const std::string& user_email,
     Profile* profile) {
   base::Value user_email_value(user_email);
-  const base::Value* list =
-      g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
-  if (!list) {
-    NOTREACHED();
-    return false;
-  }
+  const base::Value::List& list =
+      g_browser_process->local_state()->GetValueList(
+          prefs::kUsedPolicyCertificates);
 
-  if (base::Contains(list->GetListDeprecated(), user_email_value)) {
+  if (base::Contains(list, user_email_value)) {
     profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
     return PolicyCertServiceFactory::ClearUsedPolicyCertificates(user_email);
   }

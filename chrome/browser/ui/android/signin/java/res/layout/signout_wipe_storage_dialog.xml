@@ -4,16 +4,21 @@
      found in the LICENSE file. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     style="@style/AlertDialogContent">
+
+    <TextView
+        android:id="@android:id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
     <TextView
         android:id="@android:id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-        tools:text="@string/signout_message"/>
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
     <CheckBox
         android:id="@+id/remove_local_data"

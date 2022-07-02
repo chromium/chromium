@@ -8,21 +8,22 @@
 #include <atomic>
 #include <type_traits>
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
-#include "base/dcheck_is_on.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
 
-class LOCKABLE Lock {
+class PA_LOCKABLE Lock {
  public:
   inline constexpr Lock();
-  void Acquire() EXCLUSIVE_LOCK_FUNCTION() {
-#if DCHECK_IS_ON()
+  void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
     // base::Lock). DCHECK() error message formatting allocates, which triggers
@@ -44,11 +45,11 @@ class LOCKABLE Lock {
       // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
-      if (UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
-                   current_thread)) {
+      if (PA_UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
+                      current_thread)) {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
-        IMMEDIATE_CRASH();
+        PA_IMMEDIATE_CRASH();
       }
       lock_.Acquire();
     }
@@ -58,24 +59,24 @@ class LOCKABLE Lock {
 #endif
   }
 
-  void Release() UNLOCK_FUNCTION() {
-#if DCHECK_IS_ON()
+  void Release() PA_UNLOCK_FUNCTION() {
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
     lock_.Release();
   }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
+  void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
               base::PlatformThread::CurrentRef());
 #endif
   }
 
-  void Reinit() UNLOCK_FUNCTION() {
+  void Reinit() PA_UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
@@ -85,30 +86,32 @@ class LOCKABLE Lock {
  private:
   SpinningMutex lock_;
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
   std::atomic<base::PlatformThreadRef> owning_thread_ref_{};
 #endif
 };
 
-class SCOPED_LOCKABLE ScopedGuard {
+class PA_SCOPED_LOCKABLE ScopedGuard {
  public:
-  explicit ScopedGuard(Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock) : lock_(lock) {
+  explicit ScopedGuard(Lock& lock) PA_EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
     lock_.Acquire();
   }
-  ~ScopedGuard() UNLOCK_FUNCTION() { lock_.Release(); }
+  ~ScopedGuard() PA_UNLOCK_FUNCTION() { lock_.Release(); }
 
  private:
   Lock& lock_;
 };
 
-class SCOPED_LOCKABLE ScopedUnlockGuard {
+class PA_SCOPED_LOCKABLE ScopedUnlockGuard {
  public:
-  explicit ScopedUnlockGuard(Lock& lock) UNLOCK_FUNCTION(lock) : lock_(lock) {
+  explicit ScopedUnlockGuard(Lock& lock) PA_UNLOCK_FUNCTION(lock)
+      : lock_(lock) {
     lock_.Release();
   }
-  ~ScopedUnlockGuard() EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
+  ~ScopedUnlockGuard() PA_EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
 
  private:
   Lock& lock_;

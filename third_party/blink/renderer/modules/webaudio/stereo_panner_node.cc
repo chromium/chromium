@@ -17,16 +17,24 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultPanValue = 0.0;
+constexpr float kMinPanValue = -1.0f;
+constexpr float kMaxPanValue = 1.0f;
+
+}  // namespace
+
 StereoPannerNode::StereoPannerNode(BaseAudioContext& context)
     : AudioNode(context),
       pan_(AudioParam::Create(context,
                               Uuid(),
                               AudioParamHandler::kParamTypeStereoPannerPan,
-                              0,
+                              kDefaultPanValue,
                               AudioParamHandler::AutomationRate::kAudio,
                               AudioParamHandler::AutomationRateMode::kVariable,
-                              -1,
-                              1)) {
+                              kMinPanValue,
+                              kMaxPanValue)) {
   SetHandler(StereoPannerHandler::Create(*this, context.sampleRate(),
                                          pan_->Handler()));
 }

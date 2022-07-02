@@ -588,36 +588,27 @@ by a child template that "extends" this file.
             android:label="@string/storage_management_activity_label"
             android:exported="false">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkActivity"
+
+        <!-- Activities for bookmarks. -->
+        <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddActivity"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="{{ manifest_package }}.ADDBOOKMARK" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkEditActivity"
+        <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:windowSoftInputMode="stateHidden"
             android:exported="false"
             android:label="@string/edit_bookmark"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddEditFolderActivity"
+        <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkFolderSelectActivity"
+        <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:label="@string/bookmark_choose_folder"
@@ -823,7 +814,7 @@ by a child template that "extends" this file.
         </activity>
 
         <!-- Components for Trusted Web Activities -->
-        <receiver android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver"
+        <receiver android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <data android:scheme="package" />
@@ -832,7 +823,7 @@ by a child template that "extends" this file.
             </intent-filter>
             {% if channel in ['default'] %}
             <intent-filter>
-                <action android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver.DEBUG" />
+                <action android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG" />
             </intent-filter>
             {% endif %}
         </receiver>
@@ -1194,6 +1185,9 @@ by a child template that "extends" this file.
             android:exported="false"/>
 
         <service android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
+            android:exported="false"/>
+
+        <service android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
             android:exported="false"/>
 
         <receiver android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"

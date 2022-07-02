@@ -5,6 +5,7 @@
 #include "ash/services/secure_channel/fake_secure_channel.h"
 
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -30,6 +31,12 @@ void FakeSecureChannel::InitiateConnectionToDevice(
     ConnectionPriority connection_priority,
     mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   delegate_from_last_initiate_call_.Bind(std::move(delegate));
+}
+
+void FakeSecureChannel::GetLastSeenTimestamp(
+    const std::string& remote_device_id,
+    GetLastSeenTimestampCallback callback) {
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace ash::secure_channel

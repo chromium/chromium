@@ -104,7 +104,7 @@ TaskContinuationView::TaskChipsView::TaskChipsView() = default;
 TaskContinuationView::TaskChipsView::~TaskChipsView() = default;
 
 void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
-  int view_size = task_chips_.view_size();
+  size_t view_size = task_chips_.view_size();
   task_chips_.Add(task_chip, view_size);
   AddChildView(task_chip);
 }
@@ -127,7 +127,7 @@ gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
 void TaskContinuationView::TaskChipsView::Layout() {
   views::View::Layout();
   CalculateIdealBounds();
-  for (int i = 0; i < task_chips_.view_size(); ++i) {
+  for (size_t i = 0; i < task_chips_.view_size(); ++i) {
     auto* button = task_chips_.view_at(i);
     button->SetBoundsRect(task_chips_.ideal_bounds(i));
   }
@@ -154,7 +154,7 @@ gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
 }
 
 void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
-  for (int i = 0; i < task_chips_.view_size(); ++i) {
+  for (size_t i = 0; i < task_chips_.view_size(); ++i) {
     gfx::Rect tile_bounds =
         gfx::Rect(GetButtonPosition(i), GetTaskContinuationChipSize());
     task_chips_.set_ideal_bounds(i, tile_bounds);

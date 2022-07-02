@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
-#include "base/synchronization/lock.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
 
 namespace sharing {
@@ -15,6 +15,10 @@ namespace sharing {
 struct ShareTargetsSingletonTrait;
 class ShareTargetsObserver;
 
+// An instance of this class represents a set of share targets sourced from a
+// protobuf, which has an initial version in the resource bundle and can be
+// dynamically updated in response to component changes. This class must only be
+// used on the main thread.
 class ShareTargets {
  public:
   ShareTargets(const ShareTargets&) = delete;
@@ -71,13 +75,10 @@ class ShareTargets {
   virtual void RecordUpdateMetrics(UpdateResult result, UpdateOrigin src_name);
 
   // Swap in a different targets. This will rebuild file_type_by_ext_ index.
-  void SwapTargetsLocked(std::unique_ptr<mojom::MapLocaleTargets>& new_targets);
+  void SwapTargets(std::unique_ptr<mojom::MapLocaleTargets>& new_targets);
 
   // The latest targets we've committed. Starts out null.
-  // Protected by lock_.
   std::unique_ptr<mojom::MapLocaleTargets> targets_;
-
-  mutable base::Lock lock_;
 
   // Observers ----------------------------------------------------------------
 
@@ -87,6 +88,8 @@ class ShareTargets {
   void NotifyShareTargetUpdated();
 
   base::ObserverList<ShareTargetsObserver>::Unchecked observers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, UnpackResourceBundle);
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadProto);

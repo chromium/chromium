@@ -122,9 +122,7 @@ void ScriptExecutor::Run(const UserData* user_data,
 #endif
 
   delegate_->GetService()->GetActions(
-      script_path_, delegate_->GetScriptURL(),
-      TriggerContext(
-          {delegate_->GetTriggerContext(), additional_context_.get()}),
+      script_path_, delegate_->GetScriptURL(), GetMergedTriggerContext(),
       last_global_payload_, last_script_payload_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
@@ -629,6 +627,10 @@ content::WebContents* ScriptExecutor::GetWebContents() const {
   return delegate_->GetWebContents();
 }
 
+JsFlowDevtoolsWrapper* ScriptExecutor::GetJsFlowDevtoolsWrapper() const {
+  return delegate_->GetJsFlowDevtoolsWrapper();
+}
+
 ElementStore* ScriptExecutor::GetElementStore() const {
   return element_store_.get();
 }
@@ -829,6 +831,7 @@ void ScriptExecutor::OnGetActions(
       roundtrip_duration.InMilliseconds());
   bool success = http_status == net::HTTP_OK &&
                  ProcessNextActionResponse(response, response_info);
+
   if (should_stop_script_) {
     // The last action forced the script to stop. Sending the result of the
     // action is considered best effort in this situation. Report a successful
@@ -870,12 +873,17 @@ bool ScriptExecutor::ProcessNextActionResponse(
   actions_.clear();
 
   bool should_update_scripts = false;
+  std::string js_flow_library;
   std::vector<std::unique_ptr<Script>> scripts;
   bool parse_result = ProtocolUtils::ParseActions(
       this, response, &run_id_, &last_global_payload_, &last_script_payload_,
-      &actions_, &scripts, &should_update_scripts);
+      &actions_, &scripts, &should_update_scripts, &js_flow_library);
   if (!parse_result) {
     return false;
+  }
+
+  if (!js_flow_library.empty()) {
+    delegate_->SetJsFlowLibrary(js_flow_library);
   }
 
   roundtrip_network_stats_ =
@@ -971,12 +979,22 @@ void ScriptExecutor::GetNextActions() {
   VLOG(2) << "Client execution time: "
           << roundtrip_timing_stats_.client_time_ms();
   delegate_->GetService()->GetNextActions(
-      TriggerContext(
-          {delegate_->GetTriggerContext(), additional_context_.get()}),
-      last_global_payload_, last_script_payload_, processed_actions_,
-      roundtrip_timing_stats_, roundtrip_network_stats_,
+      GetMergedTriggerContext(), last_global_payload_, last_script_payload_,
+      processed_actions_, roundtrip_timing_stats_, roundtrip_network_stats_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
                      weak_ptr_factory_.GetWeakPtr(), get_next_actions_start));
+}
+
+void ScriptExecutor::MaybeSetPreviousAction(
+    const ProcessedActionProto& processed_action) {
+  const auto action_info_case = processed_action.action().action_info_case();
+
+  // JS flows are themselves a way of executing a script.
+  if (action_info_case == ActionProto::kJsFlow) {
+    return;
+  }
+
+  previous_action_type_ = action_info_case;
 }
 
 void ScriptExecutor::OnProcessedAction(
@@ -984,7 +1002,7 @@ void ScriptExecutor::OnProcessedAction(
     std::unique_ptr<ProcessedActionProto> processed_action_proto) {
   DCHECK(current_action_);
   base::TimeDelta run_time = base::TimeTicks::Now() - start_time;
-  previous_action_type_ = processed_action_proto->action().action_info_case();
+  MaybeSetPreviousAction(*processed_action_proto);
   processed_actions_.emplace_back(*processed_action_proto);
 
 #ifdef NDEBUG
@@ -1115,8 +1133,10 @@ bool ScriptExecutor::SupportsExternalActions() {
 
 void ScriptExecutor::RequestExternalAction(
     const ExternalActionProto& external_action,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {
+    base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
+        start_dom_checks_callback,
+    base::OnceCallback<void(const external::Result& result)>
+        end_action_callback) {
   bool prompt = external_action.allow_interrupt() ||
                 external_action.show_touchable_area();
   if (prompt && delegate_->EnterState(AutofillAssistantState::PROMPT)) {
@@ -1130,25 +1150,35 @@ void ScriptExecutor::RequestExternalAction(
   external::Action action;
   *action.mutable_info() = external_action.info();
   ui_delegate_->ExecuteExternalAction(
-      action, base::BindOnce(&ScriptExecutor::OnExternalActionFinished,
-                             weak_ptr_factory_.GetWeakPtr(), external_action,
-                             prompt, std::move(callback)));
+      action, std::move(start_dom_checks_callback),
+      base::BindOnce(&ScriptExecutor::OnExternalActionFinished,
+                     weak_ptr_factory_.GetWeakPtr(), external_action, prompt,
+                     std::move(end_action_callback)));
 }
 
 void ScriptExecutor::OnExternalActionFinished(
     const ExternalActionProto& external_action,
     const bool prompt,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback,
-    ExternalActionDelegate::ActionResult result) {
+    base::OnceCallback<void(const external::Result& result)>
+        end_action_callback,
+    const external::Result& result) {
   if (prompt) {
     CleanUpAfterPrompt(external_action.show_touchable_area());
   }
-  std::move(callback).Run(result);
+  std::move(end_action_callback).Run(result);
 }
 
 bool ScriptExecutor::MustUseBackendData() const {
   return delegate_->MustUseBackendData();
+}
+
+absl::optional<std::string> ScriptExecutor::GetIntent() const {
+  return GetMergedTriggerContext().GetScriptParameters().GetIntent();
+}
+
+TriggerContext ScriptExecutor::GetMergedTriggerContext() const {
+  return TriggerContext(
+      {delegate_->GetTriggerContext(), additional_context_.get()});
 }
 
 }  // namespace autofill_assistant

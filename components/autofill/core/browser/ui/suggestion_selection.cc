@@ -87,7 +87,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
         profile->GetRawInfo(type.GetStorableType()) == raw_field_contents) {
       continue;
     }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     std::u16string value =
         GetInfoInOneLine(profile, type, comparator.app_locale());
@@ -126,7 +126,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       }
 
       suggestions.emplace_back(value);
-      suggestions.back().backend_id = profile->guid();
+      suggestions.back().payload = profile->guid();
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;

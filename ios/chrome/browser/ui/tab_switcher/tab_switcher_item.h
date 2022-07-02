@@ -10,7 +10,7 @@
 // Model object representing an item in the tab switchers.
 @interface TabSwitcherItem : NSObject
 
-// Create an item with |identifier|, which cannot be nil.
+// Create an item with `identifier`, which cannot be nil.
 - (instancetype)initWithIdentifier:(NSString*)identifier
     NS_DESIGNATED_INITIALIZER;
 

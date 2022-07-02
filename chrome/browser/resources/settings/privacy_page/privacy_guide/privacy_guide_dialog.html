@@ -9,32 +9,28 @@
     margin-inline-start: -10px;
   }
 
-  cr-dialog::part(dialog) {
-    border-radius: 0;
+  #dialog {
+    background-color: var(--cr-card-background-color);
+    border: 0;
+    display: block;
     height: 100vh;
-    overflow: auto;
+    margin: 0;
+    max-height: 100vh;
+    max-width: 100vw;
+    padding: 0;
     width: 100vw;
-  }
-
-  cr-dialog::part(wrapper),
-  cr-dialog::part(body-container) {
-    max-height: none;
-    overflow: visible;
-  }
-
-  settings-privacy-guide-page {
-    margin: auto;
   }
 
   settings-privacy-guide-page::part(privacyGuideCard) {
     background-color: transparent;
     box-shadow: none;
+    margin: auto;
     max-width: 680px;
     min-width: 550px;
   }
 </style>
-<cr-dialog id="dialog" ignore-popstate ignore-enter-key no-cancel
-    show-on-attach>
+<dialog id="dialog" on-cancel="onDialogCancel_" on-close="onDialogClose_"
+    aria-label="$i18n{privacyGuideLabel}">
   <div class="cr-row first" id="headerLine" slot="title">
     <cr-icon-button class="icon-arrow-back" id="backToSettingsButton"
         on-click="onSettingsBackClick_"
@@ -44,7 +40,7 @@
     </cr-icon-button>
     <h1 class="cr-title-text">$i18n{privacyGuideLabel}</h1>
   </div>
-  <settings-privacy-guide-page on-close="onClose_" prefs="{{prefs}}"
-      slot="body" is-privacy-guide-v2="true">
+  <settings-privacy-guide-page on-close="onPrivacyGuidePageClose_"
+      prefs="{{prefs}}" slot="body" is-privacy-guide-v2>
   </settings-privacy-guide-page>
-</cr-dialog>
+</dialog>

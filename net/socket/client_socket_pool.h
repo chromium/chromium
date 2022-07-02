@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
@@ -25,10 +26,6 @@
 #include "net/socket/socket_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 
@@ -46,7 +43,7 @@ class StreamSocket;
 // socket pools to communicate with higher layer pools.
 class NET_EXPORT HigherLayeredPool {
  public:
-  virtual ~HigherLayeredPool() {}
+  virtual ~HigherLayeredPool() = default;
 
   // Instructs the HigherLayeredPool to close an idle connection. Return true if
   // one was closed.  Closing an idle connection will call into the lower layer
@@ -58,7 +55,7 @@ class NET_EXPORT HigherLayeredPool {
 // socket pools to communicate with lower layer pools.
 class NET_EXPORT LowerLayeredPool {
  public:
-  virtual ~LowerLayeredPool() {}
+  virtual ~LowerLayeredPool() = default;
 
   // Returns true if a there is currently a request blocked on the per-pool
   // (not per-host) max socket limit, either in this pool, or one that it is
@@ -249,18 +246,21 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // RequestSockets is used to request that |num_sockets| be connected in the
   // connection group for |group_id|.  If the connection group already has
   // |num_sockets| idle sockets / active sockets / currently connecting sockets,
-  // then this function doesn't do anything.  Otherwise, it will start up as
-  // many connections as necessary to reach |num_sockets| total sockets for the
-  // group.  It uses |params| to control how to connect the sockets.   The
+  // then this function doesn't do anything and returns OK.  Otherwise, it will
+  // start up as many connections as necessary to reach |num_sockets| total
+  // sockets for the group and returns ERR_IO_PENDING. And |callback| will be
+  // called with OK when the connection tasks are finished.
+  // It uses |params| to control how to connect the sockets. The
   // ClientSocketPool will assign a priority to the new connections, if any.
   // This priority will probably be lower than all others, since this method
   // is intended to make sure ahead of time that |num_sockets| sockets are
   // available to talk to a host.
-  virtual void RequestSockets(
+  virtual int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      CompletionOnceCallback callback,
       const NetLogWithSource& net_log) = 0;
 
   // Called to change the priority of a RequestSocket call that returned

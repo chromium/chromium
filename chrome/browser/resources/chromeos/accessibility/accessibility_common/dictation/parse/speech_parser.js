@@ -36,6 +36,7 @@ export class SpeechParser {
   /**
    * @param {string} locale The Dictation recognition locale. Only some locales
    *     are supported by Pumpkin.
+   * @return {!Promise}
    */
   async initialize(locale) {
     this.isRTLLocale_ = SpeechParser.RTLLocales.has(locale);

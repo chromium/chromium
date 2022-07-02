@@ -69,8 +69,7 @@ namespace autofill {
 
 bool MatchesPattern(const base::StringPiece16& input,
                     const base::StringPiece16& pattern,
-                    std::u16string* match,
-                    int32_t group_to_be_captured) {
+                    std::vector<std::u16string>* groups) {
   if (input.size() > kMaxStringLength)
     return false;
 
@@ -86,11 +85,15 @@ bool MatchesPattern(const base::StringPiece16& input,
   UBool matched = matcher->find(0, status);
   DCHECK(U_SUCCESS(status));
 
-  if (matched && match) {
-    icu::UnicodeString match_unicode =
-        matcher->group(group_to_be_captured, status);
-    DCHECK(U_SUCCESS(status));
-    *match = base::i18n::UnicodeStringToString16(match_unicode);
+  if (matched && groups) {
+    int32_t matched_groups = matcher->groupCount();
+    groups->resize(matched_groups + 1);
+
+    for (int32_t i = 0; i < matched_groups + 1; ++i) {
+      icu::UnicodeString match_unicode = matcher->group(i, status);
+      DCHECK(U_SUCCESS(status));
+      (*groups)[i] = base::i18n::UnicodeStringToString16(match_unicode);
+    }
   }
 
   return matched;

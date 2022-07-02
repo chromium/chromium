@@ -69,11 +69,11 @@ namespace media {
 
 // static
 std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
-    std::unique_ptr<MediaLog> media_log,
-    scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<VideoDecoderMixin::Client> client,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-        pending_remote_decoder) {
+        pending_remote_decoder,
+    std::unique_ptr<media::MediaLog> media_log,
+    scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
+    base::WeakPtr<VideoDecoderMixin::Client> client) {
   // TODO(b/171813538): make the destructor of this class (as well as the
   // destructor of sister class VaapiVideoDecoder) public so the explicit
   // argument can be removed from this call to base::WrapUnique().
@@ -83,7 +83,7 @@ std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
 }
 
 OOPVideoDecoder::OOPVideoDecoder(
-    std::unique_ptr<MediaLog> media_log,
+    std::unique_ptr<media::MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
@@ -129,11 +129,13 @@ OOPVideoDecoder::OOPVideoDecoder(
   stable_video_frame_handle_releaser_remote_.set_disconnect_handler(
       base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
 
+  DCHECK(!stable_media_log_receiver_.is_bound());
+
   CHECK(!has_error_);
   // TODO(b/171813538): plumb the remaining parameters.
   remote_decoder_->Construct(
       client_receiver_.BindNewEndpointAndPassRemote(),
-      mojo::PendingRemote<stable::mojom::MediaLog>(),
+      stable_media_log_receiver_.BindNewPipeAndPassRemote(),
       std::move(stable_video_frame_handle_releaser_receiver),
       std::move(remote_consumer_handle), gfx::ColorSpace());
 }
@@ -329,6 +331,7 @@ void OOPVideoDecoder::Stop() {
   base::WeakPtr<OOPVideoDecoder> weak_this = weak_this_factory_.GetWeakPtr();
 
   client_receiver_.reset();
+  stable_media_log_receiver_.reset();
   remote_decoder_.reset();
   mojo_decoder_buffer_writer_.reset();
   stable_video_frame_handle_releaser_remote_.reset();
@@ -426,6 +429,14 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
 
   if (waiting_cb_)
     waiting_cb_.Run(reason);
+}
+
+void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
+  VLOGF(2);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (media_log_)
+    media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
 }  // namespace media

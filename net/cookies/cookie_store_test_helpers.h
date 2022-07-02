@@ -119,7 +119,7 @@ class DelayedCookieMonster : public CookieStore {
   std::unique_ptr<CookieMonster> cookie_monster_;
   DelayedCookieMonsterChangeDispatcher change_dispatcher_;
 
-  bool did_run_;
+  bool did_run_ = false;
   CookieAccessResult result_;
   std::string cookie_;
   std::string cookie_line_;
@@ -169,7 +169,7 @@ class FlushablePersistentStore : public CookieMonster::PersistentCookieStore {
  private:
   ~FlushablePersistentStore() override;
 
-  int flush_count_;
+  int flush_count_ = 0;
   base::Lock flush_count_lock_;  // Protects |flush_count_|.
 };
 
@@ -184,7 +184,7 @@ class CallbackCounter : public base::RefCountedThreadSafe<CallbackCounter> {
   friend class base::RefCountedThreadSafe<CallbackCounter>;
   ~CallbackCounter();
 
-  int callback_count_;
+  int callback_count_ = 0;
   base::Lock callback_count_lock_;  // Protects |callback_count_|.
 };
 

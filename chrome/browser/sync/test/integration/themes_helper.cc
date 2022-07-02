@@ -21,8 +21,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
-using sync_datatype_helper::test;
-
 namespace {
 
 // Make a name to pass to an extension helper.
@@ -102,7 +100,7 @@ ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-ThemePendingInstallChecker::~ThemePendingInstallChecker() {}
+ThemePendingInstallChecker::~ThemePendingInstallChecker() = default;
 
 bool ThemePendingInstallChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pending theme to be '" << theme_ << "'";

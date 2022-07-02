@@ -166,14 +166,14 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerReparse() override {}
 
-  void FillOrPreviewForm(int32_t id,
+  void FillOrPreviewForm(int32_t query_id,
                          const FormData& form,
                          mojom::RendererFormDataAction action) override {
     if (action == mojom::RendererFormDataAction::kPreview) {
-      preview_form_id_ = id;
+      preview_form_id_ = query_id;
       preview_form_form_ = form;
     } else {
-      fill_form_id_ = id;
+      fill_form_id_ = query_id;
       fill_form_form_ = form;
     }
     CallDone();
@@ -294,8 +294,6 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());
 };
 
-class MockAutofillClient : public TestAutofillClient {};
-
 class TestContentAutofillDriver : public ContentAutofillDriver {
  public:
   TestContentAutofillDriver(content::RenderFrameHost* rfh,
@@ -338,14 +336,14 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
 
-    test_autofill_client_ = std::make_unique<MockAutofillClient>();
+    test_autofill_client_ = std::make_unique<TestAutofillClient>();
     router_ = std::make_unique<ContentAutofillRouter>();
     driver_ = std::make_unique<TestContentAutofillDriver>(
-        web_contents()->GetMainFrame(), router_.get(),
+        web_contents()->GetPrimaryMainFrame(), router_.get(),
         test_autofill_client_.get());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::AutofillAgent::Name_,
         base::BindRepeating(&FakeAutofillAgent::BindPendingReceiver,
@@ -392,7 +390,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
   bool autofill_across_iframes_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<MockAutofillClient> test_autofill_client_;
+  std::unique_ptr<TestAutofillClient> test_autofill_client_;
   std::unique_ptr<ContentAutofillRouter> router_;
   std::unique_ptr<TestContentAutofillDriver> driver_;
 
@@ -430,17 +428,19 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
 
   EXPECT_EQ(
       form.host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
   EXPECT_EQ(form.url, GURL("https://hostname/path"));
   EXPECT_EQ(form.full_url, GURL());
   EXPECT_EQ(form.main_frame_origin,
-            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
   ASSERT_EQ(form.fields.size(), 1u);
   EXPECT_EQ(
       form.fields.front().host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
 
   EXPECT_EQ(form2.host_frame, form.host_frame);
   EXPECT_EQ(form2.url, form.url);
@@ -517,7 +517,8 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(
       field.host_frame,
-      LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+      LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
   EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
   EXPECT_EQ(field.host_form_signature, CalculateFormSignature(form));
 

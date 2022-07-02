@@ -12,6 +12,7 @@ namespace {
 const char kFrobulateTrialName[] = "Frobulate";
 const char kFrobulateDeprecationTrialName[] = "FrobulateDeprecation";
 const char kFrobulateThirdPartyTrialName[] = "FrobulateThirdParty";
+const char kFrobulatePersistentTrialName[] = "FrobulatePersistent";
 
 }  // namespace
 
@@ -34,6 +35,13 @@ TEST(OriginTrialTest, TrialsEnabledForThirdPartyOrigins) {
       origin_trials::IsTrialEnabledForThirdPartyOrigins(kFrobulateTrialName));
   EXPECT_TRUE(origin_trials::IsTrialEnabledForThirdPartyOrigins(
       kFrobulateThirdPartyTrialName));
+}
+
+TEST(OriginTrialTest, TrialIsPersistent) {
+  EXPECT_FALSE(
+      origin_trials::IsTrialPersistentToNextResponse(kFrobulateTrialName));
+  EXPECT_TRUE(origin_trials::IsTrialPersistentToNextResponse(
+      kFrobulatePersistentTrialName));
 }
 
 }  // namespace blink

@@ -57,7 +57,7 @@ bool ShouldShowOrigin(const SharingDialogData& data,
                       content::WebContents* web_contents) {
   return data.initiating_origin &&
          !data.initiating_origin->IsSameOriginWith(
-             web_contents->GetMainFrame()->GetLastCommittedOrigin());
+             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 std::u16string PrepareHelpTextWithoutOrigin(const SharingDialogData& data) {

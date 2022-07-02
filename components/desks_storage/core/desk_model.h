@@ -16,6 +16,7 @@
 
 namespace ash {
 class DeskTemplate;
+enum class DeskTemplateType;
 }
 
 namespace apps {
@@ -168,6 +169,14 @@ class DeskModel {
   // Whether this model is syncing desk templates to server.
   virtual bool IsSyncing() const = 0;
 
+  // Returns another template that shares the same `name` as the template with
+  // the uuid `uuid`. The `uuid` is used to make sure we are not returning the
+  // current entry itself.
+  virtual ash::DeskTemplate* FindOtherEntryWithName(
+      const std::u16string& name,
+      ash::DeskTemplateType type,
+      const base::GUID& uuid) const = 0;
+
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.
   void AddObserver(DeskModelObserver* observer);
@@ -180,8 +189,8 @@ class DeskModel {
   void RemovePolicyDeskTemplates();
 
  protected:
-  // Finds the admin desk template with the given `uuid`. Returns `nullptr` if
-  // none is found.
+  // Finds the admin desk template with the given `uuid`. Returns `nullptr`
+  // if none is found.
   std::unique_ptr<ash::DeskTemplate> GetAdminDeskTemplateByUUID(
       const std::string& uuid) const;
 

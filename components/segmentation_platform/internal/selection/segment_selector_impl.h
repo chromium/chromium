@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
 class PrefService;
@@ -25,6 +26,7 @@ namespace segmentation_platform {
 struct Config;
 class DefaultModelManager;
 class ExecutionService;
+class ExperimentalGroupRecorder;
 class FieldTrialRegister;
 class SegmentationResultPrefs;
 class SignalStorageConfig;
@@ -55,39 +57,54 @@ class SegmentSelectorImpl : public SegmentSelector {
   void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
+  void GetSelectedSegmentOnDemand(scoped_refptr<InputContext> input_context,
+                                  SegmentSelectionCallback callback) override;
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
-  virtual void UpdateSelectedSegment(OptimizationTarget new_selection);
+  virtual void UpdateSelectedSegment(SegmentId new_selection);
 
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
-  void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
+  void OnModelExecutionCompleted(SegmentId segment_id) override;
+
+  void set_segment_result_provider_for_testing(
+      std::unique_ptr<SegmentResultProvider> result_provider) {
+    segment_result_provider_ = std::move(result_provider);
+  }
 
  private:
   // For testing.
   friend class SegmentSelectorTest;
 
-  using SegmentRanks = base::flat_map<OptimizationTarget, int>;
+  using SegmentRanks = base::flat_map<SegmentId, int>;
 
   // Determines whether segment selection can be run based on whether the
   // segment selection TTL has expired, or selection is unavailable.
   bool IsPreviousSelectionInvalid();
 
+  // Gets scores for all segments and recomputes selection and stores the result
+  // to prefs.
+  void SelectSegmentAndStoreToPrefs();
+
   // Gets ranks for each segment from SegmentResultProvider, and then computes
   // segment selection.
-  void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks);
+  void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks,
+                             scoped_refptr<InputContext> input_context,
+                             SegmentSelectionCallback callback);
 
   // Callback used to get result from SegmentResultProvider for each segment.
   void OnGetResultForSegmentSelection(
       std::unique_ptr<SegmentRanks> ranks,
-      OptimizationTarget current_segment_id,
+      scoped_refptr<InputContext> input_context,
+      SegmentSelectionCallback callback,
+      SegmentId current_segment_id,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Loops through all segments, performs discrete mapping, honors finch
   // supplied tie-breakers, TTL, inertia etc, and finds the highest rank.
   // Ignores the segments that have no results.
-  OptimizationTarget FindBestSegment(const SegmentRanks& segment_scores);
+  SegmentId FindBestSegment(const SegmentRanks& segment_scores);
 
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
@@ -106,7 +123,13 @@ class SegmentSelectorImpl : public SegmentSelector {
   // The config for providing configuration params.
   const raw_ptr<const Config> config_;
 
+  // Delegate that records selected segments to metrics.
   const raw_ptr<FieldTrialRegister> field_trial_register_;
+
+  // Helper that records segmentation subgroups to `field_trial_register_`. Once
+  // for each segment in the `config_`.
+  std::vector<std::unique_ptr<ExperimentalGroupRecorder>>
+      experimental_group_recorder_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

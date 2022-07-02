@@ -15,7 +15,7 @@ class WebStateList;
 @interface WebScrollViewMainContentUIForwarder : NSObject
 
 // Designated initializer for a forwarder that sends the scroll events from
-// |webStateList|'s active WebState's scroll view proxy to |updater|.
+// `webStateList`'s active WebState's scroll view proxy to `updater`.
 - (nullable instancetype)initWithUpdater:
                              (nonnull MainContentUIStateUpdater*)updater
                             webStateList:(nonnull WebStateList*)webStateList

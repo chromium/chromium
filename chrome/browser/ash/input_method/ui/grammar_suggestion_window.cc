@@ -50,8 +50,8 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
-  suggestion_button_ =
-      AddChildView(std::make_unique<SuggestionView>(base::BindRepeating(
+  suggestion_button_ = AddChildView(
+      std::make_unique<CompletionSuggestionView>(base::BindRepeating(
           &AssistiveDelegate::AssistiveWindowButtonClicked,
           base::Unretained(delegate_),
           AssistiveWindowButton{
@@ -164,7 +164,8 @@ void GrammarSuggestionWindow::SetBounds(gfx::Rect bounds) {
   SetAnchorRect(bounds);
 }
 
-SuggestionView* GrammarSuggestionWindow::GetSuggestionButtonForTesting() {
+CompletionSuggestionView*
+GrammarSuggestionWindow::GetSuggestionButtonForTesting() {
   return suggestion_button_;
 }
 

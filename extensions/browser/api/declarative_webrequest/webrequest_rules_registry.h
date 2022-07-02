@@ -62,7 +62,7 @@ using WebRequestRule = DeclarativeRule<WebRequestCondition, WebRequestAction>;
 // represents the {'host_suffix': 'example.com', 'path_prefix': '/query'} part.
 // We will then ask the URLMatcher, whether a given URL
 // "http://www.example.com/query/" has any matches, and the URLMatcher
-// will respond with the URLMatcherConditionSet::ID. We can map this
+// will respond with the base::MatcherStringPattern::ID. We can map this
 // to the WebRequestRule and check whether also the other conditions (in this
 // example 'scheme': 'http') are fulfilled.
 class WebRequestRulesRegistry : public RulesRegistry {
@@ -119,10 +119,10 @@ class WebRequestRulesRegistry : public RulesRegistry {
                            HostPermissionsChecker);
 
   using RuleTriggers =
-      std::map<url_matcher::URLMatcherConditionSet::ID, const WebRequestRule*>;
+      std::map<base::MatcherStringPattern::ID, const WebRequestRule*>;
   using RulesMap =
       std::map<WebRequestRule::RuleId, std::unique_ptr<const WebRequestRule>>;
-  using URLMatches = std::set<url_matcher::URLMatcherConditionSet::ID>;
+  using URLMatches = std::set<base::MatcherStringPattern::ID>;
   using RuleSet = std::set<const WebRequestRule*>;
 
   // This bundles all consistency checkers. Returns true in case of consistency
@@ -150,9 +150,9 @@ class WebRequestRulesRegistry : public RulesRegistry {
   // and add every of the rule's URLMatcherConditionSet to
   // |remove_from_url_matcher|, so that the caller can remove them from the
   // matcher later.
-  void CleanUpAfterRule(const WebRequestRule* rule,
-                        std::vector<url_matcher::URLMatcherConditionSet::ID>*
-                            remove_from_url_matcher);
+  void CleanUpAfterRule(
+      const WebRequestRule* rule,
+      std::vector<base::MatcherStringPattern::ID>* remove_from_url_matcher);
 
   // This is a helper function to GetMatches. Rules triggered by |url_matches|
   // get added to |result| if one of their conditions is fulfilled.
@@ -162,7 +162,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
                          RuleSet* result) const;
 
   // Map that tells us which WebRequestRule may match under the condition that
-  // the URLMatcherConditionSet::ID was returned by the |url_matcher_|.
+  // the base::MatcherStringPattern::ID was returned by the |url_matcher_|.
   RuleTriggers rule_triggers_;
 
   // These rules contain condition sets with conditions without URL attributes.

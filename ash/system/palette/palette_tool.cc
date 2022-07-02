@@ -23,10 +23,8 @@ namespace ash {
 void PaletteTool::RegisterToolInstances(PaletteToolManager* tool_manager) {
   tool_manager->AddTool(std::make_unique<EnterCaptureMode>(tool_manager));
   tool_manager->AddTool(std::make_unique<CreateNoteAction>(tool_manager));
-  if (!ash::features::IsDeprecateAssistantStylusFeaturesEnabled() &&
-      assistant::util::IsGoogleDevice()) {
+  if (assistant::util::IsGoogleDevice())
     tool_manager->AddTool(std::make_unique<MetalayerMode>(tool_manager));
-  }
   tool_manager->AddTool(std::make_unique<LaserPointerMode>(tool_manager));
   tool_manager->AddTool(std::make_unique<MagnifierMode>(tool_manager));
 }

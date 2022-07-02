@@ -103,7 +103,7 @@ class BackgroundTracingActiveScenario::TracingSession {
           FROM_HERE,
           base::BindOnce(
               &BackgroundTracingManagerImpl::OnStartTracingDone,
-              base::Unretained(BackgroundTracingManagerImpl::GetInstance()),
+              base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
               category_preset));
     });
     tracing_session_->Start();
@@ -125,7 +125,7 @@ class BackgroundTracingActiveScenario::TracingSession {
       return;
     }
 
-    if (!BackgroundTracingManagerImpl::GetInstance()->IsAllowedFinalization(
+    if (!BackgroundTracingManagerImpl::GetInstance().IsAllowedFinalization(
             is_crash_scenario)) {
       auto on_failure_cb =
           base::MakeRefCounted<base::RefCountedData<base::OnceClosure>>(
@@ -364,7 +364,7 @@ void BackgroundTracingActiveScenario::OnProtoDataComplete(
   // BackgroundTracingMetricsProvider::ProvideIndependentMetrics will call
   // OnFinalizeComplete once the upload is done.
   DCHECK(receive_callback_.is_null());
-  BackgroundTracingManagerImpl::GetInstance()->SetTraceToUpload(
+  BackgroundTracingManagerImpl::GetInstance().SetTraceToUpload(
       std::move(proto_trace));
 
   if (started_finalizing_closure_) {
@@ -429,7 +429,7 @@ void BackgroundTracingActiveScenario::TriggerNamedEvent(
     BackgroundTracingManager::TriggerHandle handle,
     BackgroundTracingManager::StartedFinalizingCallback callback) {
   std::string trigger_name =
-      BackgroundTracingManagerImpl::GetInstance()->GetTriggerNameFromHandle(
+      BackgroundTracingManagerImpl::GetInstance().GetTriggerNameFromHandle(
           handle);
   auto* triggered_rule = GetRuleAbleToTriggerTracing(trigger_name);
   if (!triggered_rule) {

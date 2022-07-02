@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/android/trigger_script_bridge_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
@@ -56,12 +57,11 @@ StarterDelegateAndroid::StarterDelegateAndroid(
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
-          dependencies_->GetCommonDependencies()->GetPasswordManagerClient(
-              web_contents),
+          GetCommonDependencies()->GetPasswordManagerClient(web_contents),
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.
-  dependencies_->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
+  GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
       web_contents->GetBrowserContext());
 }
 
@@ -249,9 +249,14 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
-  return !dependencies_->GetCommonDependencies()
-              ->GetSignedInEmail(&GetWebContents())
+  return !GetCommonDependencies()
+              ->GetSignedInEmail(GetWebContents().GetBrowserContext())
               .empty();
+}
+
+bool StarterDelegateAndroid::GetIsSupervisedUser() {
+  return GetCommonDependencies()->IsSupervisedUser(
+      GetWebContents().GetBrowserContext());
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {
@@ -260,7 +265,7 @@ bool StarterDelegateAndroid::GetIsCustomTab() const {
 }
 
 bool StarterDelegateAndroid::GetIsWebLayer() const {
-  return dependencies_->GetCommonDependencies()->IsWebLayer();
+  return GetCommonDependencies()->IsWebLayer();
 }
 
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
@@ -291,6 +296,11 @@ void StarterDelegateAndroid::CreateJavaDependenciesIfNecessary() {
   java_onboarding_helper_ = *(++array.begin());
 }
 
+void StarterDelegateAndroid::HeadlessControllerDoneCallback(
+    HeadlessScriptController::ScriptResult result) {
+  headless_script_controller_.reset();
+}
+
 void StarterDelegateAndroid::Start(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
@@ -308,7 +318,20 @@ void StarterDelegateAndroid::Start(
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url, GetIsCustomTab());
 
-  starter_->Start(std::move(trigger_context));
+  if (trigger_context->GetScriptParameters().GetRunHeadless()) {
+    headless_script_controller_ =
+        std::make_unique<HeadlessScriptControllerImpl>(
+            &GetWebContents(), /*action_extension_delegate=*/nullptr);
+
+    headless_script_controller_->StartScript(
+        // Note: this ignores device-only parameters.
+        ui_controller_android_utils::CreateStringMapFromJava(
+            env, jparameter_names, jparameter_values),
+        base::BindOnce(&StarterDelegateAndroid::HeadlessControllerDoneCallback,
+                       base::Unretained(this)));
+  } else {
+    starter_->Start(std::move(trigger_context));
+  }
 }
 
 void StarterDelegateAndroid::StartScriptDefaultUi(
@@ -349,18 +372,20 @@ bool StarterDelegateAndroid::IsRegularScriptVisible() const {
 
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateAndroid::CreateFieldTrialUtil() {
-  return dependencies_->GetCommonDependencies()->CreateFieldTrialUtil();
+  return GetCommonDependencies()->CreateFieldTrialUtil();
 }
 
 bool StarterDelegateAndroid::IsAttached() {
   return !!java_object_;
 }
 
-const CommonDependencies* StarterDelegateAndroid::GetCommonDependencies() {
+const CommonDependencies* StarterDelegateAndroid::GetCommonDependencies()
+    const {
   return dependencies_->GetCommonDependencies();
 }
 
-const PlatformDependencies* StarterDelegateAndroid::GetPlatformDependencies() {
+const PlatformDependencies* StarterDelegateAndroid::GetPlatformDependencies()
+    const {
   return dependencies_->GetPlatformDependencies();
 }
 

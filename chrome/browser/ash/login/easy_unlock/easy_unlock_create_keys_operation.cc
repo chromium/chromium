@@ -20,9 +20,9 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "crypto/encryptor.h"
 #include "crypto/random.h"
 #include "crypto/symmetric_key.h"
@@ -355,7 +355,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
                                              auth_key->GetSecret());
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context_.GetAccountId()));
-  chromeos::UserDataAuthClient::Get()->AddKey(
+  UserDataAuthClient::Get()->AddKey(
       request, base::BindOnce(&EasyUnlockCreateKeysOperation::OnKeyCreated,
                               weak_ptr_factory_.GetWeakPtr(), index, user_key));
 }

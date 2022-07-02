@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gtk/settings_provider.h"
@@ -47,7 +48,7 @@ class SettingsProviderGSettings : public SettingsProvider {
 
   void ParseAndStoreMiddleClickValue(const std::string&);
 
-  GtkUi* delegate_;
+  raw_ptr<GtkUi> delegate_;
 
   ScopedGObject<GSettings> button_settings_;
   ScopedGObject<GSettings> click_settings_;

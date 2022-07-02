@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is not
   // loaded and the subresource filter UI for ad blocking is shown.
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
                 ->infobar_count(),
             1u);
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is
   // loaded as ads are not blocked and the subresource filter UI is not
   // shown.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
@@ -215,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // We are not enforcing ad blocking on ads violations, site should load
   // as expected without subresource filter UI.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.

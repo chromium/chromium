@@ -118,7 +118,7 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
     return nullptr;
 
   if (frame_id == kTopFrameId)
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
 
   DCHECK_GE(frame_id, 1);
 

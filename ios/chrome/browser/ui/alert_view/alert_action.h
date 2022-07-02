@@ -23,7 +23,7 @@
 // Block to be called when this action is triggered.
 @property(nonatomic, readonly) void (^handler)(AlertAction* action);
 
-// Initializes an action with |title| and |handler|.
+// Initializes an action with `title` and `handler`.
 + (instancetype)actionWithTitle:(NSString*)title
                           style:(UIAlertActionStyle)style
                         handler:(void (^)(AlertAction* action))handler;

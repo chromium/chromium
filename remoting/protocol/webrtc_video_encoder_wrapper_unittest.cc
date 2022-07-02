@@ -5,6 +5,7 @@
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 
 #include "base/test/task_environment.h"
+#include "remoting/base/session_options.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,8 +35,7 @@ using webrtc::VideoEncoder;
 using webrtc::VideoFrame;
 using webrtc::VideoFrameType;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -165,15 +165,20 @@ class MockVideoEncoder : public WebrtcVideoEncoder {
 class WebrtcVideoEncoderWrapperTest : public testing::Test {
  public:
   void SetUp() override {
-    mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
-
     // Configure the mock encoder's default behavior to mimic a real encoder.
+    mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
     ON_CALL(*mock_video_encoder_, Encode)
         .WillByDefault([](std::unique_ptr<webrtc::DesktopFrame> frame,
                           const WebrtcVideoEncoder::FrameParams& param,
                           WebrtcVideoEncoder::EncodeCallback done) {
           auto encoded_frame =
               std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
+          encoded_frame->dimensions = frame->size();
+          encoded_frame->data = webrtc::EncodedImageBuffer::Create(
+              frame->size().width() * frame->size().height());
+          encoded_frame->key_frame = param.key_frame;
+          encoded_frame->quantizer = param.vpx_min_quantizer;
+          encoded_frame->codec = kVideoCodecVP9;
           std::move(done).Run(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
                               std::move(encoded_frame));
         });
@@ -182,8 +187,8 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
   std::unique_ptr<WebrtcVideoEncoderWrapper> InitEncoder(SdpVideoFormat sdp,
                                                          VideoCodec codec) {
     auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
-        sdp, task_environment_.GetMainThreadTaskRunner(),
-        observer_.GetWeakPtr());
+        sdp, SessionOptions(), task_environment_.GetMainThreadTaskRunner(),
+        task_environment_.GetMainThreadTaskRunner(), observer_.GetWeakPtr());
     encoder->InitEncode(&codec, kVideoEncoderSettings);
     encoder->RegisterEncodeCompleteCallback(&callback_);
     encoder->SetRates(DefaultRateControlParameters());
@@ -257,17 +262,33 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesFrameEncodedAndReturned) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfEncoderBusy) {
+TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfAsyncEncoderBusy) {
   EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
                                                  kVideoCodecVP9)))
-      .WillOnce(Return(kResultOk));
-
+      .Times(2)
+      .WillRepeatedly(Return(kResultOk));
   auto frame1 = MakeVideoFrame();
   auto frame2 = MakeVideoFrame();
+  auto frame3 = MakeVideoFrame();
+  auto frame4 = MakeVideoFrame();
+  auto frame5 = MakeVideoFrame();
+  auto frame6 = MakeVideoFrame();
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
+  // Encode task will be posted immediately.
   encoder->Encode(frame1, &frame_types);
+  // Frame2 contents will be stored in 'pending' frame while frame 1 is encoded.
   encoder->Encode(frame2, &frame_types);
+  // Frame3 contents will be replace the frame2 contents in 'pending' and cause
+  // frame2 to be dropped.
+  encoder->Encode(frame3, &frame_types);
+  // Replace frame3 contents with frame4.
+  encoder->Encode(frame4, &frame_types);
+  // Replace frame4 contents with frame5.
+  encoder->Encode(frame5, &frame_types);
+  // Replace frame5 contents with frame6.
+  encoder->Encode(frame6, &frame_types);
 
   PostQuitAndRun();
 }
@@ -279,12 +300,20 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
 
     // Encode frame1.
     EXPECT_CALL(*mock_video_encoder_, Encode);
+    EXPECT_CALL(
+        callback_,
+        OnEncodedImage(_, Field(&CodecSpecificInfo::codecType, kVideoCodecVP9)))
+        .WillOnce(Return(kResultOk));
 
     // Encode frame3. Its update-region should be the rectangle-union of frame2
     // and frame3.
     auto combined_rect = DesktopRect::MakeLTRB(100, 200, 310, 410);
     EXPECT_CALL(*mock_video_encoder_,
                 Encode(Pointee(MatchesUpdateRect(combined_rect)), _, _));
+    EXPECT_CALL(
+        callback_,
+        OnEncodedImage(_, Field(&CodecSpecificInfo::codecType, kVideoCodecVP9)))
+        .WillOnce(Return(kResultOk));
   }
 
   auto frame1 = MakeVideoFrame();
@@ -299,12 +328,9 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
   encoder->SetEncoderForTest(std::move(mock_video_encoder_));
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
 
-  // frame2 should be dropped since the encoder is busy.
-  // RunUntilIdle() will wait until frame1 is encoded so that frame3 will not
-  // be dropped.
+  // Frame2 will be dropped and replaced by frame3 since the encoder is busy.
   encoder->Encode(frame1, &frame_types);
   encoder->Encode(frame2, &frame_types);
-  task_environment_.RunUntilIdle();
   encoder->Encode(frame3, &frame_types);
   PostQuitAndRun();
 }
@@ -365,21 +391,22 @@ TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameNotDroppedIfKeyFrame) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, KeyFrameRequestRememberedIfEncoderBusy) {
+TEST_F(WebrtcVideoEncoderWrapperTest,
+       KeyFrameRequestRememberedIfAsyncEncoderBusy) {
   // Three frames are used for this test:
   // Frame 1 kicks off the encoder.
-  // Frame 2 is a key-frame request, which is dropped because frame 1 is still
-  // being encoded.
-  // Frame 3 is a delta-frame request from WebRTC (after frame 1 has been
-  // encoded), but the encoder-wrapper should encode it as a key-frame because
-  // of the previous key-frame request from WebRTC.
+  // Frame 2 is a key-frame request, which is dropped because it is replaced by
+  //     frame 3 while frame 1 is being encoded.
+  // Frame 3 is a delta-frame request from WebRTC, but the encoder-wrapper
+  //     should encode it as a key-frame because of the previous key-frame
+  //     request from WebRTC.
   //
   // The end-result is that the encoder should see two key-frame requests (for
   // frames 1 and 3).
-  // Note that |mock_video_encoder_| does not produce any video frames. This
-  // means that no encoded frames are returned to WebRTC and so OnEncodedImage()
-  // is not EXPECT_CALL()ed by this test.
   EXPECT_CALL(*mock_video_encoder_, Encode(_, IsKeyFrame(), _)).Times(2);
+  EXPECT_CALL(callback_, OnEncodedImage(_, _))
+      .Times(2)
+      .WillRepeatedly(Return(kResultOk));
 
   auto frame1 = MakeVideoFrame();
   auto frame2 = MakeVideoFrame();
@@ -392,13 +419,9 @@ TEST_F(WebrtcVideoEncoderWrapperTest, KeyFrameRequestRememberedIfEncoderBusy) {
 
   encoder->Encode(frame1, &frame_types1);
   encoder->Encode(frame2, &frame_types2);
-
-  // Wait a bit, so the encoder is no longer busy.
-  task_environment_.FastForwardBy(base::Milliseconds(500));
   encoder->Encode(frame3, &frame_types3);
 
   PostQuitAndRun();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

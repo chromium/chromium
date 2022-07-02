@@ -34,7 +34,11 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
     // TabWasShown called twice for a frame without TabWasHidden between. Treat
     // the first TabWasShown as an incomplete tab switch.
     kMissedTabHide = 3,
-    kMaxValue = kMissedTabHide,
+    // The tab switch couldn't be measured because of an unhandled path in the
+    // compositor. (For example, on Mac the BrowserCompositorMac that owns a
+    // DelegatedFrameHost entered the UseParentCompositor state.)
+    kUnhandled = 4,
+    kMaxValue = kUnhandled,
   };
 
   ContentToVisibleTimeReporter();
@@ -58,7 +62,15 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
 
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
-  void TabWasHidden();
+  void TabWasHidden() {
+    TabMeasurementWasInterrupted(TabSwitchResult::kIncomplete);
+  }
+
+  // Indicates that the tab switch measurement associated with this recorder was
+  // interrupted before a frame was presented. `result` is reported to UMA in
+  // TabSwitchResult, and the time since the measurement started is reported in
+  // IncompleteSwitchDuration. Does nothing if no measurement is in progress.
+  void TabMeasurementWasInterrupted(TabSwitchResult result);
 
  private:
   bool IsTabSwitchMetric2FeatureEnabled();
@@ -71,6 +83,12 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       bool show_reason_tab_switching,
       bool show_reason_bfcache_restore,
       const gfx::PresentationFeedback& feedback);
+
+  // Saves the given `state` and `has_saved_frames`, and invalidates all
+  // existing callbacks that might reference the old state.
+  void ResetTabSwitchStartState(
+      mojom::RecordContentToVisibleTimeRequestPtr state = nullptr,
+      bool has_saved_frames = false);
 
   // Whether there was a saved frame for the last tab switch.
   bool has_saved_frames_;

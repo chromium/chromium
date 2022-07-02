@@ -57,6 +57,29 @@ class CORE_EXPORT ElementAnimations final
   ElementAnimations& operator=(const ElementAnimations&) = delete;
   ~ElementAnimations();
 
+  enum class CompositedPaintStatus {
+    // Either no animation is running that affects the target property, or a
+    // fresh compositing decision is required for an animated property.
+    // Any style change for the corresponding property requires paint
+    // invalidation. Even if rendered by a composited animation, we need to
+    // trigger repaint in order to set up a worklet paint image. If the property
+    // is animated, paint will decide if the animation is composited and will
+    // update the status accordingly.
+    kNeedsRepaintOrNoAnimation = 0,
+
+    // An animation is affecting the target property, but it is not being
+    // composited. Paint can short-circuit setting up a worklet paint image
+    // since it is not required. Any style change affecting the target property
+    // requires repaint, but no new compositing decision.
+    kNotComposited = 1,
+
+    // An animation affecting the target property is being rendered on the
+    // compositor. Though repaint won't get triggered by a change to the
+    // property, it can still be triggered for other reasons, in which case a
+    // worklet paint image must be generated.
+    kComposited = 2
+  };
+
   // Animations that are currently active for this element, their effects will
   // be applied during a style recalc. CSS Transitions are included in this
   // stack.
@@ -88,6 +111,17 @@ class CORE_EXPORT ElementAnimations final
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
+  // TODO(crbug.com/1301961): Consider converting to an array or flat map of
+  // fields for paint properties that can be composited.
+  CompositedPaintStatus CompositedBackgroundColorStatus() {
+    return static_cast<CompositedPaintStatus>(
+        composited_background_color_status_);
+  }
+
+  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status) {
+    composited_background_color_status_ = static_cast<unsigned>(status);
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -104,7 +138,13 @@ class CORE_EXPORT ElementAnimations final
   // applying only the animation changes on top of it.
   //
   // See also StyleBaseData.
-  bool animation_style_change_;
+  bool animation_style_change_ : 1;
+
+  // The decision of whether to composite a background color animation needs to
+  // be made at Paint time and respected by the compositor.
+  // The size of the bit-field must be updated if adding new
+  // CompositedPaintStatus values to ensure that it can hold the value.
+  unsigned composited_background_color_status_ : 2;
 
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, PseudoElementBaseComputedStyle);
 };

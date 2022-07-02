@@ -5,12 +5,16 @@
 #ifndef UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 #define UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace display {
 
 class Screen;
 
 namespace test {
 
+// [Deprecated] Do not use this in new code.
+//
 // This class represents a RAII wrapper for global screen overriding. An object
 // of this class restores original display::Screen instance when it goes out of
 // scope. Prefer to use it instead of directly call of
@@ -25,7 +29,7 @@ class ScopedScreenOverride {
   ~ScopedScreenOverride();
 
  private:
-  Screen* original_screen_;
+  raw_ptr<Screen> original_screen_;
 };
 
 }  // namespace test

@@ -76,6 +76,12 @@ class OmniboxClient {
   // Returns the session ID of the current page.
   virtual const SessionID& GetSessionID() const = 0;
 
+  // Called when the user changes the selected |index| in the result list.
+  // |match| is the suggestion corresponding to that index. Currently
+  // experimental and only called from select omnibox implementations.
+  virtual void OnSelectedMatchChanged(size_t index,
+                                      const AutocompleteMatch& match) {}
+
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual OmniboxControllerEmitter* GetOmniboxControllerEmitter();
   virtual TemplateURLService* GetTemplateURLService();
@@ -89,6 +95,11 @@ class OmniboxClient {
   // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
   // redirects.
   virtual int GetHttpsPortForTesting() const = 0;
+
+  // If true, indicates that the tests are using a faux-HTTPS server which is
+  // actually an HTTP server that pretends to serve HTTPS responses. Should only
+  // be true on iOS.
+  virtual bool IsUsingFakeHttpsForHttpsUpgradeTesting() const = 0;
 
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.

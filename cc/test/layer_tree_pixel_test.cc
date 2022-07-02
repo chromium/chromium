@@ -232,7 +232,9 @@ scoped_refptr<SolidColorLayer> LayerTreePixelTest::CreateSolidColorLayer(
   layer->SetBounds(rect.size());
   layer->SetPosition(gfx::PointF(rect.origin()));
   layer->SetOffsetToTransformParent(gfx::Vector2dF(rect.OffsetFromOrigin()));
-  layer->SetBackgroundColor(color);
+  // CreateSolidColorLayer is only being used in tests, so we can live with this
+  // SkColor converted to SkColor4f.
+  layer->SetBackgroundColor(SkColor4f::FromColor(color));
   return layer;
 }
 

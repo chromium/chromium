@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -234,6 +235,48 @@ public final class WebFeedMainMenuItemTest {
         assertEquals("invisible", getChipState());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertEquals("disabled following", getChipState());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSingleRow() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+
+        // Chip group with Follow chip should have same parent as the icon view.
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
+        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
+        View iconView = mWebFeedMainMenuItem.findViewById(R.id.icon);
+        assertEquals(iconView.getParent(), chipsGroup.getParent());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_notFollowed_displaysFollowChip_crowPresent_displaysChipsOnSecondRow() {
+        doAnswer(invocation -> {
+            Callback callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mCrowButtonDelegate)
+                .isEnabledForSite(any(GURL.class), any(Callback.class));
+
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+
+        // Chip group with Follow and Crow chips should be moved to a second row.
+        ViewGroup chipsGroup = mWebFeedMainMenuItem.findViewById(R.id.chip_container);
+        ViewGroup secondRowGroup = mWebFeedMainMenuItem.findViewById(R.id.footer_second_chip_row);
+        assertEquals(secondRowGroup, chipsGroup.getParent());
     }
 
     @Test

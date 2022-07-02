@@ -5,6 +5,16 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
+typedef enum ProtectionLevel {
+  // No validation: This never validates anything.
+  NONE = 0,
+  // Path validation: This will validate that the data is being decrypted by an
+  // executable whose NT path matches the executable that originally encrypted
+  // it. This should only be used for executables in trusted paths e.g.
+  // C:\Program Files, otherwise anyone could pretend to be your executable.
+  PATH_VALIDATION = 1,
+} ProtectionLevel;
+
 [
   object,
   oleautomation,
@@ -32,6 +42,38 @@ interface IElevator : IUnknown
                                  [in, string] const WCHAR* session_id,
                                  [in] DWORD caller_proc_id,
                                  [out] ULONG_PTR* proc_handle);
+
+  // Encrypts data with both caller and SYSTEM context DPAPI.
+  //
+  // @param protection_level the protection level to encrypt data at.
+  // @param plaintext The plaintext data to encrypt.
+  // @param ciphertext The ciphertext of the encrypted data. It is the
+  //                   responsibility of the caller to free this memory using
+  //                   SysFreeString.
+  // @param last_error The result of calling GetLastError if the operation
+  //                   failed.
+  // @return S_OK on success. Any other value on failure.
+  HRESULT EncryptData([in] ProtectionLevel protection_level,
+                      [in] const BSTR plaintext,
+                      [out] BSTR* ciphertext,
+                      [out] DWORD* last_error);
+
+  // Decrypts data with both caller and SYSTEM context DPAPI.
+  //
+  // This will only decrypt data that was encrypted via a paired EncryptData
+  // call from same application, with identity determined by the protection
+  // level of the original encrypt call.
+  //
+  // @param ciphertext The ciphertext data to decrypt.
+  // @param plaintext The plaintext of the decrypted data. It is the
+  //                  responsibility of the caller to free this memory using
+  //                  SysFreeString.
+  // @param last_error The result of calling GetLastError if the operation
+  //                   failed.
+  // @return S_OK on success. Any other value on failure.
+  HRESULT DecryptData([in] const BSTR ciphertext,
+                      [out] BSTR* plaintext,
+                      [out] DWORD* last_error);
 };
 
 // The interfaces below are all IElevator with unique IIDs. IElevator is

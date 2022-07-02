@@ -2,6 +2,8 @@ Tests that cookies are set, updated and removed.
 Test started
 Enabling network
 
+Running test: deleteAllCookies
+
 Running test: simpleCookieAdd
 Setting Cookie
 Num of cookies 1
@@ -185,16 +187,16 @@ Running test: deleteAllCookies
 Running test: setPartitionedCookie
 Setting Cookie
 Num of cookies 1
-name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session, None
 Setting Cookie
 Num of cookies 2
-name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
 Setting Cookie
 Num of cookies 3
-name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session, None
 
 Running test: deleteAllCookies
 
@@ -204,9 +206,9 @@ Num of cookies 0
 Running test: setPartitionedCookies
 Adding multiple cookies
 Num of cookies 3
-name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session
-name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session
+name: __Host-foo, value: bar, domain: devtools.test, path: /, partitionKey: https://example.test, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
+name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://notinset.test, secure, session, None
 
 Running test: getPartitionedCookie
 Num of cookies 1

@@ -15,6 +15,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/search/ntp_features.h"
@@ -183,7 +184,7 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
   // Use a link transition for query tiles, e.g., repeatable queries, so that
   // their visit count is not updated by this navigation. Otherwise duplicate
   // query tiles could also be offered as most visited.
-  // |is_query_tile| can be true only when ntp_features::kNtpRepeatableQueries
+  // |is_query_tile| can be true only when history::kOrganicRepeatableQueries
   // is enabled.
   web_contents_->OpenURL(content::OpenURLParams(
       tile->url, content::Referrer(), disposition,
@@ -213,7 +214,7 @@ void MostVisitedHandler::OnURLsAvailable(
     value->source = static_cast<int32_t>(tile.source);
     value->title_source = static_cast<int32_t>(tile.title_source);
     value->is_query_tile =
-        base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) &&
+        base::FeatureList::IsEnabled(history::kOrganicRepeatableQueries) &&
         template_url_service &&
         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
             tile.url);

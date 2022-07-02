@@ -295,8 +295,12 @@ TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
 TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
        function() {
   // Select the search tab.
-  document.querySelector('#sync-search-tab').selected = true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  const searchTab = document.querySelector('#sync-search-tab');
+  const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
+  const index = tabs.indexOf(searchTab);
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
+  assertTrue(searchTab.hasAttribute('selected'));
 
   // Build the data model and attach to result list.
   setupSyncResultsListForTest([
@@ -315,9 +319,13 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
   ]);
 
   // Select the first list item and verify the search tab remains selected.
-  document.querySelector('#sync-results-list').getListItemByIndex(0).selected =
-      true;
-  assertTrue(document.querySelector('#sync-search-tab').selected);
+  const firstItem =
+      document.querySelector('#sync-results-list').querySelector('li');
+  assertFalse(firstItem.hasAttribute('selected'));
+  firstItem.click();
+  // Verify that this selected the item.
+  assertTrue(firstItem.hasAttribute('selected'));
+  assertTrue(searchTab.hasAttribute('selected'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
@@ -340,8 +348,8 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 
   // Check the type root and expand it.
   const typeRoot = tree.items[0];
-  assertFalse(typeRoot.expanded);
-  typeRoot.expanded = true;
+  assertFalse(typeRoot.hasAttribute('expanded'));
+  typeRoot.toggleAttribute('expanded', true);
   assertEquals(1, typeRoot.items.length);
 
   // An actual sync node.  The child of the type root.
@@ -349,7 +357,8 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 
   // Verify that selecting it affects the details view.
   assertTrue(document.querySelector('#node-details').hasAttribute('hidden'));
-  leaf.selected = true;
+  tree.selectedItem = leaf;
+  assertTrue(leaf.hasAttribute('selected'));
   assertFalse(document.querySelector('#node-details').hasAttribute('hidden'));
 });
 
@@ -362,7 +371,12 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
       'Never');
 
   // Selecting the tab will refresh it.
-  document.querySelector('#sync-browser-tab').selected = true;
+  const syncBrowserTab = document.querySelector('#sync-browser-tab');
+  const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
+  const index = tabs.indexOf(syncBrowserTab);
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
+  assertTrue(syncBrowserTab.hasAttribute('selected'));
   assertNotEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'Never');
@@ -370,8 +384,9 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
   // Re-selecting the tab shouldn't re-refresh.
   document.querySelector('#node-browser-refresh-time').textContent =
       'TestCanary';
-  document.querySelector('#sync-browser-tab').selected = false;
-  document.querySelector('#sync-browser-tab').selected = true;
+  document.querySelector('cr-tab-box').setAttribute('selected-index', '0');
+  document.querySelector('cr-tab-box').setAttribute(
+      'selected-index', index.toString());
   assertEquals(
       document.querySelector('#node-browser-refresh-time').textContent,
       'TestCanary');

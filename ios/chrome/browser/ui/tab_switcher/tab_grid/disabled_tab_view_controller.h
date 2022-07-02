@@ -14,7 +14,7 @@ class GURL;
 // Delegate for this view controller to handle user click actions.
 @protocol DisabledTabViewControllerDelegate
 
-// Notifies the delegate that the user tapped a link with a |URL|.
+// Notifies the delegate that the user tapped a link with a `URL`.
 - (void)didTapLinkWithURL:(const GURL&)URL;
 
 @end

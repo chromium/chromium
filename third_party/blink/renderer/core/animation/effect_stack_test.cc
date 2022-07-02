@@ -74,9 +74,8 @@ class AnimationEffectStackTest : public PageTestBase {
   InertEffect* MakeInertEffect(KeyframeEffectModelBase* effect) {
     Timing timing;
     timing.fill_mode = Timing::FillMode::BOTH;
-    return MakeGarbageCollected<InertEffect>(effect, timing, false,
-                                             AnimationTimeDelta(),
-                                             absl::nullopt, absl::nullopt, 1.0);
+    return MakeGarbageCollected<InertEffect>(
+        effect, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0);
   }
 
   KeyframeEffect* MakeKeyframeEffect(KeyframeEffectModelBase* effect,

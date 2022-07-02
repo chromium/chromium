@@ -11,7 +11,7 @@
 // ViewController that contains enterprise prompt information.
 @interface EnterprisePromptViewController : ConfirmationAlertViewController
 
-// Initializes this alert with its |promptType|.
+// Initializes this alert with its `promptType`.
 - (instancetype)initWithpromptType:(EnterprisePromptType)promptType;
 
 @end

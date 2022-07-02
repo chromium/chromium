@@ -43,8 +43,8 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
   gfx::Size GetMaximumSize() const override { return gfx::Size(); }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
-  gfx::NativeCursor GetCursor(const gfx::Point& point) override {
-    return gfx::kNullCursor;
+  ui::Cursor GetCursor(const gfx::Point& point) override {
+    return ui::Cursor();
   }
   int GetNonClientComponent(const gfx::Point& point) const override {
     return HTCLIENT;
@@ -261,10 +261,10 @@ gfx::NativeViewAccessible NativeViewHostAura::GetNativeViewAccessible() {
   return nullptr;
 }
 
-gfx::NativeCursor NativeViewHostAura::GetCursor(int x, int y) {
+ui::Cursor NativeViewHostAura::GetCursor(int x, int y) {
   if (host_->native_view())
     return host_->native_view()->GetCursor(gfx::Point(x, y));
-  return gfx::kNullCursor;
+  return ui::Cursor();
 }
 
 void NativeViewHostAura::SetVisible(bool visible) {

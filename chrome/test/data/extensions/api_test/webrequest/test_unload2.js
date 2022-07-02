@@ -14,6 +14,7 @@ runTests([
           type: 'main_frame',
           url,
           frameUrl: url,
+          initiator: getInitiatorURLForExtension(),
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -21,6 +22,7 @@ runTests([
         details: {
           type: 'main_frame',
           url,
+          initiator: getInitiatorURLForExtension(),
         },
       },
       { label: 'onSendHeaders',
@@ -28,6 +30,7 @@ runTests([
         details: {
           type: 'main_frame',
           url,
+          initiator: getInitiatorURLForExtension(),
         },
       },
       { label: 'onErrorOccurred',
@@ -35,6 +38,7 @@ runTests([
         details: {
           type: 'main_frame',
           url,
+          initiator: getInitiatorURLForExtension(),
           fromCache: false,
           error: 'net::ERR_ABORTED',
         },

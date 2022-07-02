@@ -27,8 +27,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -38,14 +38,13 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/assistant/buildflags.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -134,8 +133,8 @@ SessionControllerClientImpl::SessionControllerClientImpl() {
   UserManager::Get()->AddSessionStateObserver(this);
   UserManager::Get()->AddObserver(this);
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &SessionControllerClientImpl::OnAppTerminating, base::Unretained(this)));
 
   local_state_registrar_ = std::make_unique<PrefChangeRegistrar>();
   local_state_registrar_->Init(g_browser_process->local_state());
@@ -281,7 +280,7 @@ void SessionControllerClientImpl::EmitAshInitialized() {
   // purely by emitting D-Bus signals, and thus has to be run whenever Ash is
   // started so Ash (DetachableBaseHandler in particular) gets the proper view
   // of the current detachable base state.
-  chromeos::SessionManagerClient::Get()->EmitAshInitialized();
+  ash::SessionManagerClient::Get()->EmitAshInitialized();
 }
 
 PrefService* SessionControllerClientImpl::GetSigninScreenPrefService() {
@@ -412,7 +411,7 @@ void SessionControllerClientImpl::DoLockScreen() {
     return;
 
   VLOG(1) << "Requesting screen lock from SessionControllerClientImpl";
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  ash::SessionManagerClient::Get()->RequestLockScreen();
 }
 
 // static
@@ -496,18 +495,8 @@ void SessionControllerClientImpl::OnCustodianInfoChanged() {
     SendUserSession(*user);
 }
 
-void SessionControllerClientImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_APP_TERMINATING:
-      session_controller_->NotifyChromeTerminating();
-      break;
-    default:
-      NOTREACHED() << "Unexpected notification " << type;
-      break;
-  }
+void SessionControllerClientImpl::OnAppTerminating() {
+  session_controller_->NotifyChromeTerminating();
 }
 
 void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {

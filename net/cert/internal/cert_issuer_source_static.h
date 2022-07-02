@@ -27,6 +27,9 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
   // provide.
   void AddCert(scoped_refptr<ParsedCertificate> cert);
 
+  // Clears the set of certificates.
+  void Clear();
+
   // CertIssuerSource implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;

@@ -150,8 +150,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
                              fromView:tabGridButtonLayoutGuide.owningView];
 }
 
-// Returns the animation duration, based on the |parentSize| and the |yDiff| and
-// |xDiff| between the origin and destination point. The animation is faster the
+// Returns the animation duration, based on the `parentSize` and the `yDiff` and
+// `xDiff` between the origin and destination point. The animation is faster the
 // closer the origin and destination are.
 - (CGFloat)animationDurationWithParentSize:(CGSize)parentSize
                                      xDiff:(CGFloat)xDiff
@@ -167,8 +167,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 }
 
 // Returns the BezierPath that should be followed by the animated view, based on
-// the |parentSize| and the |yDiff| and |xDiff| between the |origin| and
-// |destination| point.
+// the `parentSize` and the `yDiff` and `xDiff` between the `origin` and
+// `destination` point.
 - (UIBezierPath*)positionPathWithParentHeight:(CGFloat)parentHeight
                                         xDiff:(CGFloat)xDiff
                                         yDiff:(CGFloat)yDiff

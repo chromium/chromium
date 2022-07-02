@@ -29,16 +29,6 @@ enum LogoutRpsStatus {
   kError,
 };
 
-enum RevokeStatus {
-  kSuccess,
-  kError
-};
-
-enum LogoutStatus {
-  kSuccess,
-  kNotLoggedIn
-};
-
 // The details of a single logout request from an identity provider.
 struct LogoutRpsRequest {
   // URL to which the request will be sent. The origin is validated to
@@ -67,15 +57,6 @@ interface FederatedAuthRequest {
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();
-
-  // Revokes a token for the specified |account_id| from |provider| for
-  // the RP identified by |client_id|.
-  Revoke(url.mojom.Url provider,
-         string client_id,
-         string account_id) => (RevokeStatus status);
-
-  // Clear internal login state for this RP/IDP/Account triple.
-  Logout(url.mojom.Url provider, string account_id) => (LogoutStatus status);
 
   // Contact the list of Relying Party logout endpoints and account IDs to
   // attempt to initiate user logout.

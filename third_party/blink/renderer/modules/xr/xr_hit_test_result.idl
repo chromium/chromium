@@ -4,6 +4,7 @@
 
 [SecureContext, Exposed=Window, RuntimeEnabled=WebXRHitTest]
 interface XRHitTestResult {
+  [RaisesException]
   XRPose? getPose(XRSpace relative_to);
 
   [RuntimeEnabled=WebXRAnchors, CallWith=ScriptState, RaisesException, MeasureAs=XRHitTestResultCreateAnchor]

@@ -29,23 +29,7 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "sync_file_system_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "main.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/tsconfig.manifest",
-  ]
-  deps = [
-    ":build_ts",
-    ":preprocess",
-  ]
-}
-
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
   out_folder = "$target_gen_dir/preprocessed"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [ "main.css" ]
@@ -64,4 +48,18 @@ ts_library("build_ts") {
   ]
   deps = [ "//ui/webui/resources:library" ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "sync_file_system_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "main.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      [ "$target_gen_dir/$preprocess_manifest" ] +
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  deps = [
+    ":build_ts",
+    ":preprocess",
+  ]
 }

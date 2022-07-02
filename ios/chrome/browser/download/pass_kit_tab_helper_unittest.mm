@@ -18,7 +18,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/io_buffer.h"
 #import "net/base/net_errors.h"
-#import "net/url_request/url_fetcher_response_writer.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

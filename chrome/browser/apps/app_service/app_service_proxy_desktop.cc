@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -44,6 +45,9 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
 void AppServiceProxy::FlushMojoCallsForTesting() {
   app_service_mojom_impl_->FlushMojoCallsForTesting();
   receivers_.FlushForTesting();
+  web_app::WebAppProvider::GetForTest(profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 }
 
 void AppServiceProxy::SetRunOnOsLoginMode(

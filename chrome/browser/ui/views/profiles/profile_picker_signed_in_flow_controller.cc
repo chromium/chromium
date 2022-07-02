@@ -115,17 +115,10 @@ absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
 }
 
 GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
-  // The color should be set also for the loading case. Namely, the sync
-  // confirmation webUI is not re-initialized when loading a URL for the same
-  // host but with another path. If a policy later changes the value of
-  // `GetProfileColor()`, it's fine. In this case, Chrome shows the enterprise
-  // welcome screen in between the loading URL and the sync confirmation URL and
-  // thus the sync confirmation webUI will get recreated with the right color.
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   return AppendSyncConfirmationQueryParams(
       loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
-      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
-       GetProfileColor()});
+      /*is_modal=*/false);
 }
 
 std::unique_ptr<content::WebContents>

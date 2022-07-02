@@ -90,6 +90,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_camera_roll_manager_;
   }
 
+  void set_host_last_seen_timestamp(absl::optional<base::Time> timestamp) {
+    host_last_seen_timestamp_ = timestamp;
+  }
+
  private:
   // PhoneHubManager:
   BrowserTabsModelProvider* GetBrowserTabsModelProvider() override;
@@ -108,6 +112,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   TetherController* GetTetherController() override;
   ConnectionScheduler* GetConnectionScheduler() override;
   UserActionRecorder* GetUserActionRecorder() override;
+  void GetHostLastSeenTimestamp(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -124,6 +130,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeUserActionRecorder fake_user_action_recorder_;
   FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
   FakeCameraRollManager fake_camera_roll_manager_;
+  absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 
 }  // namespace phonehub

@@ -139,7 +139,7 @@ bool IsAshOsUrl(const GURL& url) {
 }
 
 bool IsAshOsAsciiScheme(const base::StringPiece& scheme) {
-  return base::LowerCaseEqualsASCII(scheme, kOsScheme);
+  return base::EqualsCaseInsensitiveASCII(scheme, kOsScheme);
 }
 
 std::string AshOsUrlHost(const GURL& url) {

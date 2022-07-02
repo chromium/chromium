@@ -12,6 +12,7 @@ import android.util.Size;
 import org.chromium.base.Callback;
 import org.chromium.base.StreamUtil;
 import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils.FileOutputStreamWriter;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
@@ -43,6 +44,10 @@ public class LightweightReactionsMediator {
          */
         public void drawFrame(Canvas canvas);
     }
+
+    // Field trial params
+    private static final String SHOULD_LOAD_REACTIONS_ON_DEMAND_PARAM =
+            "should_load_reactions_on_demand";
 
     // GIF encoding constants
     private static final String GIF_FILE_EXT = ".gif";
@@ -99,10 +104,17 @@ public class LightweightReactionsMediator {
         }
 
         mAssetFetchCancelled = false;
+        boolean shouldLoadReactionsOnDemand =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.LIGHTWEIGHT_REACTIONS,
+                        SHOULD_LOAD_REACTIONS_ON_DEMAND_PARAM, false);
 
-        // Keep track of the number of callbacks received (two per reaction expected). Need a
-        // final instance because the counter is updated from within a callback.
-        final Counter counter = new Counter(reactions.size() * 2);
+        // Keep track of the number of callbacks received. Need a final instance because the
+        // counter is updated from within a callback. If the full reactions are not loaded on
+        // demand (loaded here), multiply the number of reactions by 2 as both the thumbnails and
+        // full reactions are loaded.
+        int expectedCalls = shouldLoadReactionsOnDemand ? reactions.size() : reactions.size() * 2;
+        final Counter counter = new Counter(expectedCalls);
 
         // Also use a final array to keep track of the thumbnails fetched so far. Initialize it with
         // null refs so the fetched bitmaps can be inserted at the right index.
@@ -130,22 +142,24 @@ public class LightweightReactionsMediator {
                     callback.onResult(thumbnails);
                 }
             });
-            getGifForUrl(reaction.assetUrl, gif -> {
-                if (mAssetFetchCancelled) {
-                    return;
-                }
-                if (gif == null) {
-                    mAssetFetchCancelled = true;
-                    callback.onResult(null);
-                    return;
-                }
+            if (!shouldLoadReactionsOnDemand) {
+                getGifForUrl(reaction.assetUrl, gif -> {
+                    if (mAssetFetchCancelled) {
+                        return;
+                    }
+                    if (gif == null) {
+                        mAssetFetchCancelled = true;
+                        callback.onResult(null);
+                        return;
+                    }
 
-                counter.increment();
+                    counter.increment();
 
-                if (counter.isDone()) {
-                    callback.onResult(thumbnails);
-                }
-            });
+                    if (counter.isDone()) {
+                        callback.onResult(thumbnails);
+                    }
+                });
+            }
         }
     }
 

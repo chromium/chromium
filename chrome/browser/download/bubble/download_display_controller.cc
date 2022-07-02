@@ -29,7 +29,7 @@ constexpr base::TimeDelta kToolbarIconActiveTimeInterval = base::Minutes(1);
 
 // From the button UI's perspective, whether the download is considered in
 // progress.
-bool IsModelInProgress(const DownloadUIModelPtr& model) {
+bool IsModelInProgress(const DownloadUIModel* model) {
   // Consider dangerous downloads as completed, because we don't want to
   // encourage users to interact with them. However, consider downloads pending
   // scanning as in progress, because we do want users to scan potential
@@ -78,7 +78,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
 }
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
-  std::vector<DownloadUIModelPtr> all_models =
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   // Hide the button if there is only one download item left and that item is
   // about to be removed.
@@ -118,11 +118,17 @@ void DownloadDisplayController::HideToolbarButton() {
   }
 }
 
+void DownloadDisplayController::HideBubble() {
+  if (display_->IsShowingDetails()) {
+    display_->HideDetails();
+  }
+}
+
 void DownloadDisplayController::UpdateToolbarButtonState() {
   int in_progress_count = 0;
   bool has_deep_scanning_download = false;
 
-  std::vector<DownloadUIModelPtr> all_models =
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   if (all_models.empty()) {
     HideToolbarButton();
@@ -134,7 +140,7 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
         model->GetState() != download::DownloadItem::CANCELLED) {
       has_deep_scanning_download = true;
     }
-    if (IsModelInProgress(model)) {
+    if (IsModelInProgress(model.get())) {
       in_progress_count++;
     }
   }
@@ -238,10 +244,10 @@ DownloadDisplayController::GetProgress() {
   int64_t received_bytes = 0;
   int64_t total_bytes = 0;
 
-  std::vector<DownloadUIModelPtr> all_models =
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   for (const auto& model : all_models) {
-    if (IsModelInProgress(model)) {
+    if (IsModelInProgress(model.get())) {
       ++progress_info.download_count;
       if (model->GetTotalBytes() <= 0) {
         // There may or may not be more data coming down this pipe.

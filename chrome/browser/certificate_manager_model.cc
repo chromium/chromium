@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -33,15 +34,15 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -279,7 +280,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
   }
 
   // The source NSSCertDatabase used for listing certificates.
-  net::NSSCertDatabase* cert_db_;
+  raw_ptr<net::NSSCertDatabase> cert_db_;
 
   // ScopedObservation to keep track of the observer for net::CertDatabase.
   base::ScopedObservation<net::CertDatabase, net::CertDatabase::Observer>
@@ -385,12 +386,10 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
     SetCertInfos(std::move(cert_infos));
   }
 
-  chromeos::PolicyCertificateProvider* policy_certs_provider_;
+  raw_ptr<chromeos::PolicyCertificateProvider> policy_certs_provider_;
   Mode mode_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Provides certificates made available by extensions through the
 // chrome.certificateProvider API.
 class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
@@ -459,7 +458,7 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
 
   base::WeakPtrFactory<CertsSourceExtensions> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -510,9 +509,7 @@ void CertificateManagerModel::Create(
   params->policy_certs_provider =
       policy::UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(
           browser_context);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context);
@@ -568,9 +565,7 @@ CertificateManagerModel::CertificateManagerModel(
         certs_source_updated_callback, params->policy_certs_provider,
         CertsSourcePolicy::Mode::kPolicyCertsWithoutWebTrust));
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Extensions is the lowest priority CertsSource.
   if (params->extension_certificate_provider) {
     certs_sources_.push_back(std::make_unique<CertsSourceExtensions>(

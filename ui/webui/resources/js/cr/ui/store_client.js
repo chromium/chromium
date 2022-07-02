@@ -134,7 +134,10 @@ export const StoreClient = {
   },
 };
 
-/** @interface */
+/**
+ * @interface
+ * @template T
+ */
 export class StoreClientInterface {
   /**
    * Helper to dispatch an action to the store, which will update the store
@@ -150,16 +153,16 @@ export class StoreClientInterface {
    */
   dispatchAsync(action) {}
 
-  /** @param {Object} newState */
+  /** @param {T} newState */
   onStateChanged(newState) {}
 
   updateFromStore() {}
 
   watch(localProperty, valueGetter) {}
 
-  /** @return {!Object} */
+  /** @return {!T} */
   getState() {}
 
-  /** @return {!Store} */
+  /** @return {!Store<T>} */
   getStore() {}
 }

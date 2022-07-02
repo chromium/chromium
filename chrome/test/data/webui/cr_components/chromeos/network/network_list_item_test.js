@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_list_item.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_list_item.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
-
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
-// #import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// clang-format on
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 suite('NetworkListItemTest', function() {
   /** @type {!NetworkListItem|undefined} */
@@ -39,7 +35,7 @@ suite('NetworkListItemTest', function() {
   setup(function() {
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
   });
@@ -50,7 +46,7 @@ suite('NetworkListItemTest', function() {
     setEventListeners();
     eventTriggered = false;
     document.body.appendChild(listItem);
-    Polymer.dom.flush();
+    flush();
   }
 
   function initCellularNetwork(iccid, eid, simLocked) {
@@ -79,7 +75,7 @@ suite('NetworkListItemTest', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -101,7 +97,7 @@ suite('NetworkListItemTest', function() {
     listItem.item = OncMojo.managedPropertiesToNetworkState(properties);
 
     // Update the network state.
-    Polymer.dom.flush();
+    flush();
 
     // The network icon exists now.
     networkIcon = listItem.$$('network-icon');
@@ -250,15 +246,15 @@ suite('NetworkListItemTest', function() {
 
     // Clicking the activate button should fire the show-cellular-setup event.
     const showCellularSetupPromise =
-        test_util.eventToPromise('show-cellular-setup', listItem);
+        eventToPromise('show-cellular-setup', listItem);
     activateButton.click();
     const showCellularSetupEvent = await showCellularSetupPromise;
     assertEquals(
         showCellularSetupEvent.detail.pageName,
-        cellularSetup.CellularSetupPageName.PSIM_FLOW_UI);
+        CellularSetupPageName.PSIM_FLOW_UI);
 
     // Selecting the row should fire the show-detail event.
-    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    const showDetailPromise = eventToPromise('show-detail', listItem);
     listItem.$.divOuter.click();
     const showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, networkState);
@@ -304,7 +300,7 @@ suite('NetworkListItemTest', function() {
         listItem.i18n('networkListItemUnavailableSimNetwork'));
 
     // Selecting the row should fire the show-detail event.
-    let showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    let showDetailPromise = eventToPromise('show-detail', listItem);
     listItem.$.divOuter.click();
     let showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, listItem.item);
@@ -336,7 +332,7 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!arrow);
 
     // Selecting the row should fire the show-detail event.
-    showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    showDetailPromise = eventToPromise('show-detail', listItem);
     listItem.$.divOuter.click();
     showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, networkState);
@@ -395,7 +391,7 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!arrow);
 
     // Selecting the row should fire the show-detail event.
-    const showDetailPromise = test_util.eventToPromise('show-detail', listItem);
+    const showDetailPromise = eventToPromise('show-detail', listItem);
     listItem.$.divOuter.click();
     const showDetailEvent = await showDetailPromise;
     assertEquals(showDetailEvent.detail, networkState);
@@ -719,8 +715,7 @@ suite('NetworkListItemTest', function() {
         await flushAsync();
 
         // Selecting the row should fire the show-detail event.
-        const showDetailPromise =
-            test_util.eventToPromise('selected', listItem);
+        const showDetailPromise = eventToPromise('selected', listItem);
         listItem.$.divOuter.click();
         const showDetailEvent = await showDetailPromise;
         assertEquals(showDetailEvent.detail, networkState);

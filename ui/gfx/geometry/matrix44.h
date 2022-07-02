@@ -18,40 +18,6 @@ struct CATransform3D;
 
 namespace gfx {
 
-struct Vector4 {
-  SkScalar fData[4];
-
-  Vector4() { this->set(0, 0, 0, 1); }
-  Vector4(const Vector4& src) { memcpy(fData, src.fData, sizeof(fData)); }
-  Vector4(SkScalar x, SkScalar y, SkScalar z, SkScalar w = SK_Scalar1) {
-    fData[0] = x;
-    fData[1] = y;
-    fData[2] = z;
-    fData[3] = w;
-  }
-
-  Vector4& operator=(const Vector4& src) {
-    memcpy(fData, src.fData, sizeof(fData));
-    return *this;
-  }
-
-  bool operator==(const Vector4& v) const {
-    return fData[0] == v.fData[0] && fData[1] == v.fData[1] &&
-           fData[2] == v.fData[2] && fData[3] == v.fData[3];
-  }
-  bool operator!=(const Vector4& v) const { return !(*this == v); }
-  bool equals(SkScalar x, SkScalar y, SkScalar z, SkScalar w = SK_Scalar1) {
-    return fData[0] == x && fData[1] == y && fData[2] == z && fData[3] == w;
-  }
-
-  void set(SkScalar x, SkScalar y, SkScalar z, SkScalar w = SK_Scalar1) {
-    fData[0] = x;
-    fData[1] = y;
-    fData[2] = z;
-    fData[3] = w;
-  }
-};
-
 // This is the underlying data structure of Transform. Don't use this type
 // directly. The public methods can be called through Transform::matrix().
 class GEOMETRY_SKIA_EXPORT Matrix44 {
@@ -217,16 +183,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   Matrix44& preScale(SkScalar sx, SkScalar sy, SkScalar sz);
   Matrix44& postScale(SkScalar sx, SkScalar sy, SkScalar sz);
 
-  inline Matrix44& setScale(SkScalar scale) {
-    return this->setScale(scale, scale, scale);
-  }
-  inline Matrix44& preScale(SkScalar scale) {
-    return this->preScale(scale, scale, scale);
-  }
-  inline Matrix44& postScale(SkScalar scale) {
-    return this->postScale(scale, scale, scale);
-  }
-
   // Sets this matrix to rotate about the specified unit-length axis vector,
   // by an angle specified by its sin() and cos(). This does not attempt to
   // verify that axis(x, y, z).length() == 1 or that the sin, cos values are
@@ -265,12 +221,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   void mapScalars(const SkScalar src[4], SkScalar dst[4]) const;
   inline void mapScalars(SkScalar vec[4]) const { this->mapScalars(vec, vec); }
 
-  friend Vector4 operator*(const Matrix44& m, const Vector4& src) {
-    Vector4 dst;
-    m.mapScalars(src.fData, dst.fData);
-    return dst;
-  }
-
   /**
    *  map an array of [x, y, 0, 1] through the matrix, returning an array
    *  of [x', y', z', w'].
@@ -280,19 +230,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    *  @param dst4     array of [x', y', z', w'] quads as the output.
    */
   void map2(const float src2[], int count, float dst4[]) const;
-  void map2(const double src2[], int count, double dst4[]) const;
-
-  /** Returns true if transformating an axis-aligned square in 2d by this matrix
-      will produce another 2d axis-aligned square; typically means the matrix
-      is a scale with perhaps a 90-degree rotation. A 3d rotation through 90
-      degrees into a perpendicular plane collapses a square to a line, but
-      is still considered to be axis-aligned.
-
-      By default, tolerates very slight error due to float imprecisions;
-      a 90-degree rotation can still end up with 10^-17 of
-      "non-axis-aligned" result.
-   */
-  bool preserves2dAxisAlignment(SkScalar epsilon = SK_ScalarNearlyZero) const;
 
   double determinant() const;
 

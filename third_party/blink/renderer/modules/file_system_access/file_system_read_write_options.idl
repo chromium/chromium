@@ -6,5 +6,5 @@
 // https://docs.google.com/document/d/1g7ZCqZ5NdiU7oqyCpsc2iZ7rRAY1ZXO-9VoG4LfP7fM
 
 dictionary FileSystemReadWriteOptions {
-  unsigned long long at;
+  [EnforceRange] unsigned long long at;
 };

@@ -209,6 +209,7 @@ There is a [history](https://crbug.com/1042757) of browser_tests being disabled 
 - Filter for "mac"
 - Choose applicable builders from the "luci.chromium.try" section. Examples (from 2022.04.08):
   - mac11-arm64-rel
+  - mac12-arm64-rel
   - mac_chromium_10.11_rel_ng
   - mac_chromium_10.12_rel_ng
   - mac_chromium_10.13_rel_ng

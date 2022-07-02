@@ -12,7 +12,7 @@
 @protocol LanguageSettingsConsumer
 
 // Called when the value of translate::prefs::kOfferTranslateEnabled changes to
-// |enabled|.
+// `enabled`.
 - (void)translateEnabled:(BOOL)enabled;
 
 // Called when the value of language::prefs::kAcceptLanguages or

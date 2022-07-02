@@ -28,7 +28,7 @@ enum class UrlLoadStrategy;
 // Delegate used to make the Tab UI visible.
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
 
-// Stops this Coordinator then calls |completionHandler|. |completionHandler|
+// Stops this Coordinator then calls `completionHandler`. `completionHandler`
 // always will be run.
 - (void)stopWithCompletion:(ProceduralBlock)completionHandler;
 

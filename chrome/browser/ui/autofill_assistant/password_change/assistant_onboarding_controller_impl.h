@@ -9,32 +9,38 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 class OnboardingPrompt;
 
-// Implementation of the |AssistantOnboardingController| interface that keeps
-// a raw pointer to an |AssistantOnboardingPrompt| (i.e. the view component),
-// but does not own anything. As a result, it needs to be informed of the
-// destruction of the prompt by calling one of its |On*()| methods.
+// Implementation of the `AssistantOnboardingController` interface that keeps
+// a weak pointer to an `AssistantOnboardingPrompt` (i.e. the view component),
 class AssistantOnboardingControllerImpl : public AssistantOnboardingController {
  public:
   explicit AssistantOnboardingControllerImpl(
-      const AssistantOnboardingInformation& onboarding_information);
+      const AssistantOnboardingInformation& onboarding_information,
+      content::WebContents* web_contents);
   ~AssistantOnboardingControllerImpl() override;
 
   // OnboardingController:
-  void Show(AssistantOnboardingPrompt* prompt, Callback callback) override;
-  // For the below "On*" methods, the controller does not take care of closing
+  void Show(base::WeakPtr<AssistantOnboardingPrompt> prompt,
+            Callback callback) override;
+  // For the below `On*` methods, the controller does not take care of closing
   // the view - this is done by the view itself.
   void OnAccept() override;
   void OnCancel() override;
   void OnClose() override;
+  void OnLearnMoreClicked() override;
   const AssistantOnboardingInformation& GetOnboardingInformation() override;
+  base::WeakPtr<AssistantOnboardingController> GetWeakPtr() override;
 
  private:
-  // If the controller has a non-null |OnboardingPrompt|, notify its
-  // |OnControllerGone()| method and null the controller's reference to the
-  // prompt.
+  // Closes the `OnboardingPrompt` associated with this controller
+  // (if one exists).
   void ClosePrompt();
 
   // The data representing the "model" behind the controller.
@@ -43,11 +49,16 @@ class AssistantOnboardingControllerImpl : public AssistantOnboardingController {
   // Callback triggered when dialog is accepted, canceled or closed.
   Callback callback_;
 
-  // A reference to the view implementing the |OnboardingPrompt| interface.
-  // Since the view might outlive the controller, it must call one of the
-  // |OnAccept()|, |OnCancel()|, or |OnClose()| methods before destruction
-  // so that the controller can invalidate its reference to it.
-  raw_ptr<AssistantOnboardingPrompt> prompt_ = nullptr;
+  // The `WebContents` for which the dialog is supposed to show.
+  raw_ptr<content::WebContents> web_contents_;
+
+  // A weak pointer to the view implementing the `OnboardingPrompt`
+  // interface.
+  base::WeakPtr<AssistantOnboardingPrompt> prompt_ = nullptr;
+
+  // A factory for weak pointers to the controller.
+  base::WeakPtrFactory<AssistantOnboardingControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_CONTROLLER_IMPL_H_

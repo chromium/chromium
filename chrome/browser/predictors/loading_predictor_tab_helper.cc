@@ -402,7 +402,8 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (!predictor_)
     return;
 
-  auto* page_data = PageData::GetForDocument(*web_contents()->GetMainFrame());
+  auto* page_data =
+      PageData::GetForDocument(*web_contents()->GetPrimaryMainFrame());
   if (!page_data)
     return;
 

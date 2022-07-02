@@ -4,15 +4,10 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encapsulates the response from the server to a Resolve request (as a single immutable object).
@@ -54,7 +49,6 @@ public class ResolvedSearchTerm {
     private final String mQuickActionUri;
     @QuickActionCategory
     private final int mQuickActionCategory;
-    private final long mLoggedEventId;
     private final String mSearchUrlFull;
     private final String mSearchUrlPreload;
     @CardTag
@@ -83,8 +77,6 @@ public class ResolvedSearchTerm {
      * @param caption The caption to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
-     * @param loggedEventId The EventID logged by the server, which should be recorded and sent back
-     *        to the server along with user action results in a subsequent request.
      * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      * @param cardTagEnum A {@link CardTag} enumeration indicating what kind of card was returned,
@@ -96,9 +88,9 @@ public class ResolvedSearchTerm {
             final String mid, boolean doPreventPreload, int selectionStartAdjust,
             int selectionEndAdjust, final String contextLanguage, final String thumbnailUrl,
             final String caption, final String quickActionUri,
-            @QuickActionCategory final int quickActionCategory, final long loggedEventId,
-            final String searchUrlFull, final String searchUrlPreload,
-            @CardTag final int cardTagEnum, final String relatedSearchesJson) {
+            @QuickActionCategory final int quickActionCategory, final String searchUrlFull,
+            final String searchUrlPreload, @CardTag final int cardTagEnum,
+            final String relatedSearchesJson) {
         mIsNetworkUnavailable = isNetworkUnavailable;
         mResponseCode = responseCode;
         mSearchTerm = searchTerm;
@@ -113,7 +105,6 @@ public class ResolvedSearchTerm {
         mCaption = caption;
         mQuickActionUri = quickActionUri;
         mQuickActionCategory = quickActionCategory;
-        mLoggedEventId = loggedEventId;
         mSearchUrlFull = searchUrlFull;
         mSearchUrlPreload = searchUrlPreload;
         mCardTagEnum = cardTagEnum;
@@ -176,10 +167,6 @@ public class ResolvedSearchTerm {
         return mQuickActionCategory;
     }
 
-    public long loggedEventId() {
-        return mLoggedEventId;
-    }
-
     public String searchUrlFull() {
         return mSearchUrlFull;
     }
@@ -225,52 +212,6 @@ public class ResolvedSearchTerm {
         return mRelatedSearchesJson;
     }
 
-    @Override
-    public String toString() {
-        List<String> sections = buildTextSections();
-        return TextUtils.join(", ", sections);
-    }
-
-    private List<String> buildTextSections() {
-        List<String> sections = new ArrayList<String>();
-        if (mIsNetworkUnavailable) {
-            sections.add("Network unavailable!");
-        } else if (mResponseCode != HttpURLConnection.HTTP_OK) {
-            sections.add("ResponseCode:" + mResponseCode);
-        } else if (!relatedSearchesJson().isEmpty()) {
-            sections.add("Related Searches JSON: " + mRelatedSearchesJson);
-        } else {
-            if (mDoPreventPreload) sections.add("Preventing preload!");
-            if (!TextUtils.isEmpty(mSearchTerm)) sections.add("Search for '" + mSearchTerm + "'");
-            if (!TextUtils.isEmpty(mDisplayText)) {
-                sections.add("displayed as '" + mDisplayText + "'");
-            }
-            if (!TextUtils.isEmpty(mMid)) sections.add("MID:'" + mMid + "'");
-            if (mSelectionStartAdjust != 0 || mSelectionEndAdjust != 0) {
-                sections.add(
-                        "selection adjust:" + mSelectionStartAdjust + "," + mSelectionEndAdjust);
-            }
-            if (!TextUtils.isEmpty(mContextLanguage) && mContextLanguage.equals("en")) {
-                sections.add("mContextLanguage:'" + mContextLanguage + "'");
-            }
-            if (!TextUtils.isEmpty(mThumbnailUrl)) sections.add("has thumbnail URL");
-            if (!TextUtils.isEmpty(mCaption)) sections.add("caption:'" + mCaption + "'");
-            if (!TextUtils.isEmpty(mQuickActionUri)) sections.add("has Quick Action URI");
-            if (!TextUtils.isEmpty(mQuickActionUri)) {
-                sections.add("quick Action Category:" + mQuickActionCategory);
-            }
-            if (mLoggedEventId != 0L) sections.add("has loggedEventId");
-            if (!TextUtils.isEmpty(mSearchUrlFull)) {
-                sections.add("search Url full:'" + mSearchUrlFull + "'");
-            }
-            if (!TextUtils.isEmpty(mSearchUrlPreload)) {
-                sections.add("search Url preload:'" + mSearchUrlPreload + "'");
-            }
-            if (mCardTagEnum != CardTag.CT_NONE) sections.add("Card-Tag:" + mCardTagEnum);
-        }
-        return sections;
-    }
-
     /** The builder for {@link ResolvedSearchTerm} objects. */
     public static class Builder {
         private boolean mIsNetworkUnavailable;
@@ -288,35 +229,11 @@ public class ResolvedSearchTerm {
         private String mQuickActionUri;
         @QuickActionCategory
         private int mQuickActionCategory;
-        private long mLoggedEventId;
         private String mSearchUrlFull;
         private String mSearchUrlPreload;
         @CardTag
         private int mCardTagEnum;
         private String mRelatedSearchesJson;
-
-        /** Starts building using the given {@link ResolvedSearchTerm}. */
-        public Builder(ResolvedSearchTerm resolvedSearchTerm) {
-            mIsNetworkUnavailable = resolvedSearchTerm.mIsNetworkUnavailable;
-            mResponseCode = resolvedSearchTerm.mResponseCode;
-            mSearchTerm = resolvedSearchTerm.mSearchTerm;
-            mDisplayText = resolvedSearchTerm.mDisplayText;
-            mAlternateTerm = resolvedSearchTerm.mAlternateTerm;
-            mMid = resolvedSearchTerm.mMid;
-            mDoPreventPreload = resolvedSearchTerm.mDoPreventPreload;
-            mSelectionStartAdjust = resolvedSearchTerm.mSelectionStartAdjust;
-            mSelectionEndAdjust = resolvedSearchTerm.mSelectionEndAdjust;
-            mContextLanguage = resolvedSearchTerm.mContextLanguage;
-            mThumbnailUrl = resolvedSearchTerm.mThumbnailUrl;
-            mCaption = resolvedSearchTerm.mCaption;
-            mQuickActionUri = resolvedSearchTerm.mQuickActionUri;
-            mQuickActionCategory = resolvedSearchTerm.mQuickActionCategory;
-            mLoggedEventId = resolvedSearchTerm.mLoggedEventId;
-            mSearchUrlFull = resolvedSearchTerm.mSearchUrlFull;
-            mSearchUrlPreload = resolvedSearchTerm.mSearchUrlPreload;
-            mCardTagEnum = resolvedSearchTerm.mCardTagEnum;
-            mRelatedSearchesJson = resolvedSearchTerm.mRelatedSearchesJson;
-        }
 
         /**
          * Builds a response to the
@@ -348,7 +265,7 @@ public class ResolvedSearchTerm {
         public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
                 final String displayText, final String alternateTerm, boolean doPreventPreload) {
             this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
-                    doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, 0L, "", "",
+                    doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, "", "",
                     CardTag.CT_NONE, "");
         }
 
@@ -374,8 +291,6 @@ public class ResolvedSearchTerm {
          * @param caption The caption to display.
          * @param quickActionUri The URI for the intent associated with the quick action.
          * @param quickActionCategory The {@link QuickActionCategory} for the quick action.
-         * @param loggedEventId The EventID logged by the server, which should be recorded and sent
-         *        back to the server along with user action results in a subsequent request.
          * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
          * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
          * @param cardTag The primary internal Coca card tag for the resolution, or {@code 0} if
@@ -388,7 +303,7 @@ public class ResolvedSearchTerm {
                 boolean doPreventPreload, int selectionStartAdjust, int selectionEndAdjust,
                 final String contextLanguage, final String thumbnailUrl, final String caption,
                 final String quickActionUri, @QuickActionCategory final int quickActionCategory,
-                final long loggedEventId, final String searchUrlFull, final String searchUrlPreload,
+                final String searchUrlFull, final String searchUrlPreload,
                 @CardTag final int cardTag, final String relatedSearchesJson) {
             mIsNetworkUnavailable = isNetworkUnavailable;
             mResponseCode = responseCode;
@@ -404,7 +319,6 @@ public class ResolvedSearchTerm {
             mCaption = caption;
             mQuickActionUri = quickActionUri;
             mQuickActionCategory = quickActionCategory;
-            mLoggedEventId = loggedEventId;
             mSearchUrlFull = searchUrlFull;
             mSearchUrlPreload = searchUrlPreload;
             mCardTagEnum = fromCocaCardTag(cardTag);
@@ -510,11 +424,6 @@ public class ResolvedSearchTerm {
             return this;
         }
 
-        public Builder setLoggedEventId(long loggedEventId) {
-            mLoggedEventId = loggedEventId;
-            return this;
-        }
-
         /** @param searchUrlFull The URL for the full search to present in the overlay, or empty. */
         public Builder setSearchUrlFull(String searchUrlFull) {
             mSearchUrlFull = searchUrlFull;
@@ -555,8 +464,8 @@ public class ResolvedSearchTerm {
             return new ResolvedSearchTerm(mIsNetworkUnavailable, mResponseCode, mSearchTerm,
                     mDisplayText, mAlternateTerm, mMid, mDoPreventPreload, mSelectionStartAdjust,
                     mSelectionEndAdjust, mContextLanguage, mThumbnailUrl, mCaption, mQuickActionUri,
-                    mQuickActionCategory, mLoggedEventId, mSearchUrlFull, mSearchUrlPreload,
-                    mCardTagEnum, mRelatedSearchesJson);
+                    mQuickActionCategory, mSearchUrlFull, mSearchUrlPreload, mCardTagEnum,
+                    mRelatedSearchesJson);
         }
     }
 }

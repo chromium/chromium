@@ -38,6 +38,14 @@ ScriptPromise PeriodicSyncManager::registerPeriodicSync(
     return ScriptPromise();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Periodic Background Sync is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -53,6 +61,15 @@ ScriptPromise PeriodicSyncManager::registerPeriodicSync(
 }
 
 ScriptPromise PeriodicSyncManager::getTags(ScriptState* script_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "Periodic Background Sync is not allowed in fenced frames."));
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -76,6 +93,15 @@ ScriptPromise PeriodicSyncManager::getTags(ScriptState* script_state) {
 
 ScriptPromise PeriodicSyncManager::unregister(ScriptState* script_state,
                                               const String& tag) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "Periodic Background Sync is not allowed in fenced frames."));
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 

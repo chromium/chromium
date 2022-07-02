@@ -13,8 +13,8 @@
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
-// The banner image. Must be set before the view is loaded.
-@property(nonatomic, strong) UIImage* bannerImage;
+// The name of the banner image. Must be set before the view is loaded.
+@property(nonatomic, strong) NSString* bannerName;
 
 // When set to YES, the banner will be tall (35% of view height). When set to
 // NO, the banner will be of normal height (25% of view height). Defaults to NO.
@@ -74,6 +74,10 @@
 
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIButton* learnMoreButton;
+
+// Whether the bottom of the view controller is reached. This value will always
+// be YES when `self.scrollToEndMandatory` is NO.
+@property(nonatomic, assign, readonly) BOOL didReachBottom;
 
 @end
 

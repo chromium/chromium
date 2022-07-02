@@ -10,9 +10,13 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 
 namespace logging {
+
+class VlogInfo;
+
 // Saves the current logging settings and restores them when destroyed.
 // This is used by logging tests to avoid affecting later tests that
 // may run afterward, in the same process.
@@ -50,6 +54,40 @@ class BASE_EXPORT ScopedLoggingSettings {
   const char* const log_prefix_;
 
   const LogMessageHandlerFunction message_handler_;
+};
+
+// Replaces the existing VLOG config with a new one based on it
+// but with extra modules enabled.
+//
+// *** Using this leaks memory ***
+//
+// For thread safety, we cannot delete the VlogInfo object created by this.
+//
+// This is intended for use in testing only, e.g. in the setup of a test, enable
+// vlogging for modules that are of interest. This can help debug a flaky test
+// which cannot be reproduced locally while avoiding log-spam from the rest of
+// the code.
+//
+// This follows the same pattern as ScopedFeatureList, with init separate from
+// construction to allow easy use in test classes.
+//
+// Using this on multiple threads requires coordination, ScopedVmoduleSwitches
+// must be destroyed in reverse creation order.
+class BASE_EXPORT ScopedVmoduleSwitches {
+ public:
+  explicit ScopedVmoduleSwitches();
+  // Specify which modules and levels to enable. This uses the same syntax as
+  // the commandline flag, e.g. "file=1,dir/other_file=2".
+  void InitWithSwitches(const std::string& vmodule_switch);
+  ~ScopedVmoduleSwitches();
+
+ private:
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+  // Creates a new instance of |VlogInfo| adding |vmodule_switch|.
+  VlogInfo* CreateVlogInfoWithSwitches(const std::string& vmodule_switch);
+  raw_ptr<VlogInfo> scoped_vlog_info_ = nullptr;
+  raw_ptr<VlogInfo> previous_vlog_info_ = nullptr;
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 };
 }  // namespace logging
 

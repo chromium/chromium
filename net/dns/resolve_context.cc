@@ -119,7 +119,7 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
 
 ResolveContext::ServerStats::ServerStats(
     std::unique_ptr<base::SampleVector> buckets)
-    : last_failure_count(0), rtt_histogram(std::move(buckets)) {}
+    : rtt_histogram(std::move(buckets)) {}
 
 ResolveContext::ServerStats::ServerStats(ServerStats&&) = default;
 

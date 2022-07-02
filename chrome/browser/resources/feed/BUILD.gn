@@ -12,7 +12,6 @@ assert(!is_android)
 preprocess_folder = "preprocessed"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
     "feed.ts",
@@ -44,15 +43,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "feed"
-  out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":build_ts" ]
-  input_files = [ "feed.html" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  input_files_base_dir = rebase_path(".", "//")
-}
-
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
@@ -66,4 +56,14 @@ ts_library("build_ts") {
     ":copy_mojom",
     ":preprocess",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "feed"
+  out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  input_files = [ "feed.html" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  input_files_base_dir = rebase_path(".", "//")
 }

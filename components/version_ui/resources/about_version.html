@@ -78,7 +78,7 @@ about:version template page
               <span>$i18n{update_cohort_name}</span>
   </if>
             </span>
-            <button id="copy-to-clipboard"></button>
+            <button id="copy-to-clipboard" aria-label="$i18n{copy_label}"></button>
           </td>
         </tr>
         <tr>
@@ -87,7 +87,7 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos_ash">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
@@ -109,6 +109,7 @@ about:version template page
           </td>
         </tr>
 </if>
+<!-- TODO(crbug.com/1339120): Unify and reuse between Ash and Lacros -->
 <if expr="chromeos_ash">
         <tr>
           <td class="label">$i18n{platform}</td>
@@ -131,6 +132,18 @@ about:version template page
         <tr id="arc_holder"><td class="label">$i18n{arc_label}</td>
           <td class="version">
             <span id="arc_version"></span>
+          </td>
+        </tr>
+</if>
+<if expr="chromeos_lacros">
+        <tr>
+          <td class="label">$i18n{os_name}</td>
+          <td class="version" id="os_type">
+            <span id="copy-os-content">
+              <span>$i18n{os_type}</span>
+              (Ash <span>$i18n{ash_chrome_version}</span>)
+            </span>
+            <button id="copy-os-content-to-clipboard" aria-label="$i18n{copy_label}"></button>
           </td>
         </tr>
 </if>

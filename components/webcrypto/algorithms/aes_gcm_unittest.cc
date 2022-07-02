@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -46,7 +45,7 @@ Status AesGcmEncrypt(const blink::WebCryptoKey& key,
       CreateAesGcmAlgorithm(iv, additional_data, tag_length_bits);
 
   std::vector<uint8_t> output;
-  Status status = Encrypt(algorithm, key, CryptoData(plain_text), &output);
+  Status status = Encrypt(algorithm, key, plain_text, &output);
   if (status.IsError())
     return status;
 
@@ -90,7 +89,7 @@ Status AesGcmDecrypt(const blink::WebCryptoKey& key,
                               authentication_tag.begin(),
                               authentication_tag.end());
 
-  return Decrypt(algorithm, key, CryptoData(cipher_text_with_tag), plain_text);
+  return Decrypt(algorithm, key, cipher_text_with_tag, plain_text);
 }
 
 class WebCryptoAesGcmTest : public WebCryptoTestBase {};

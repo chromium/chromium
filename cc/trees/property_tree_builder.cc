@@ -43,7 +43,7 @@ struct DataForRecursion {
   int closest_ancestor_with_cached_render_surface;
   int closest_ancestor_with_copy_request;
   int closest_ancestor_being_captured;
-  SkColor safe_opaque_background_color;
+  SkColor4f safe_opaque_background_color;
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
   gfx::Transform compound_transform_since_render_target;
@@ -143,6 +143,16 @@ bool HasPotentiallyRunningFilterAnimation(const MutatorHost& host,
 }
 
 bool TransformIsAnimating(const MutatorHost& host, Layer* layer) {
+  DCHECK(!host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::SCALE) &&
+         !host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::ROTATE) &&
+         !host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
   return host.IsAnimatingProperty(layer->element_id(),
                                   layer->GetElementTypeForAnimation(),
                                   TargetProperty::TRANSFORM);
@@ -150,6 +160,16 @@ bool TransformIsAnimating(const MutatorHost& host, Layer* layer) {
 
 bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
                                              Layer* layer) {
+  DCHECK(!host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::SCALE) &&
+         !host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::ROTATE) &&
+         !host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
   return host.HasPotentiallyRunningAnimationForProperty(
       layer->element_id(), layer->GetElementTypeForAnimation(),
       TargetProperty::TRANSFORM);
@@ -242,6 +262,13 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   // the Running state right after commit on the compositor thread.
   const bool has_any_transform_animation = HasAnyAnimationTargetingProperty(
       mutator_host_, layer, TargetProperty::TRANSFORM);
+  DCHECK(!HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::SCALE) &&
+         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::ROTATE) &&
+         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
 
   const bool has_surface = created_render_surface;
 
@@ -689,9 +716,9 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 void SetSafeOpaqueBackgroundColor(const DataForRecursion& data_from_ancestor,
                                   Layer* layer,
                                   DataForRecursion* data_for_children) {
-  SkColor background_color = layer->background_color();
+  SkColor4f background_color = layer->background_color();
   data_for_children->safe_opaque_background_color =
-      SkColorGetA(background_color) == 255
+      background_color.isOpaque()
           ? background_color
           : data_from_ancestor.safe_opaque_background_color;
   layer->SetSafeOpaqueBackgroundColor(
@@ -777,10 +804,10 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.animation_axis_aligned_since_render_target = true;
   data_for_recursion.not_axis_aligned_since_last_clip = false;
 
-  SkColor root_background_color = layer_tree_host_->background_color();
-  if (SkColorGetA(root_background_color) != 255)
-    root_background_color = SkColorSetA(root_background_color, 255);
-  data_for_recursion.safe_opaque_background_color = root_background_color;
+  data_for_recursion.safe_opaque_background_color =
+      layer_tree_host_->background_color().isOpaque()
+          ? layer_tree_host_->background_color()
+          : layer_tree_host_->background_color().makeOpaque();
 
   property_trees_.clear();
   transform_tree_.set_device_scale_factor(

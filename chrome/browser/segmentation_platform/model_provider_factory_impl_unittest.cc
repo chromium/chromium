@@ -41,11 +41,9 @@ class ModelProviderFactoryImplTest : public testing::Test {
 
 TEST_F(ModelProviderFactoryImplTest, ProviderCreated) {
   EXPECT_TRUE(provider_factory_->CreateProvider(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
   EXPECT_TRUE(provider_factory_->CreateProvider(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 }
 
 class DummyModelProviderFactoryImplTest : public ModelProviderFactoryImplTest {
@@ -59,12 +57,10 @@ class DummyModelProviderFactoryImplTest : public ModelProviderFactoryImplTest {
 
 TEST_F(DummyModelProviderFactoryImplTest, ProviderCreated) {
   EXPECT_TRUE(provider_factory_->CreateProvider(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
 
   auto provider = provider_factory_->CreateProvider(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   ASSERT_TRUE(provider);
 
   EXPECT_FALSE(provider->ModelAvailable());

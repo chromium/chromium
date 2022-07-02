@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 
@@ -41,7 +42,7 @@ class QuickAnswersFocusSearch : public views::FocusSearch,
   views::View* GetFocusTraversableParentView() override;
 
  private:
-  views::View* const view_;
+  const raw_ptr<views::View> view_;
   const GetFocusableViewsCallback get_focusable_views_callback_;
 };
 

@@ -8,7 +8,7 @@
  */
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 import './search_engine_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -117,7 +117,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
-  computeVisibleEngines_(engines: Array<SearchEngine>) {
+  private computeVisibleEngines_(engines: Array<SearchEngine>) {
     if (!engines || !engines.length) {
       return;
     }
@@ -125,7 +125,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     return engines.slice(0, this.visibleEnginesSize);
   }
 
-  computeCollapsedEngines_(engines: Array<SearchEngine>) {
+  private computeCollapsedEngines_(engines: Array<SearchEngine>) {
     if (!engines || !engines.length) {
       return;
     }

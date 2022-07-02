@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
@@ -189,18 +190,9 @@ translate::TranslateBubbleUiEvent TranslateBubbleResultToUiEvent(
       [[fallthrough]];
     case ShowTranslateBubbleResult::SUCCESS:
       return translate::TranslateBubbleUiEvent::BUBBLE_SHOWN;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WINDOW_NOT_VALID;
     case ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED:
       return translate::TranslateBubbleUiEvent::
           BUBBLE_NOT_SHOWN_WINDOW_MINIMIZED;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WINDOW_NOT_ACTIVE;
-    case ShowTranslateBubbleResult::WEB_CONTENTS_NOT_ACTIVE:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WEB_CONTENTS_NOT_ACTIVE;
     case ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE:
       return translate::TranslateBubbleUiEvent::
           BUBBLE_NOT_SHOWN_EDITABLE_FIELD_IS_ACTIVE;
@@ -796,13 +788,13 @@ bool CanResetZoom(content::WebContents* contents) {
 }
 
 void SelectNextTab(Browser* browser,
-                   TabStripModel::UserGestureDetails gesture_detail) {
+                   TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectNextTab"));
   browser->tab_strip_model()->SelectNextTab(gesture_detail);
 }
 
 void SelectPreviousTab(Browser* browser,
-                       TabStripModel::UserGestureDetails gesture_detail) {
+                       TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectPrevTab"));
   browser->tab_strip_model()->SelectPreviousTab(gesture_detail);
 }
@@ -819,7 +811,7 @@ void MoveTabPrevious(Browser* browser) {
 
 void SelectNumberedTab(Browser* browser,
                        int index,
-                       TabStripModel::UserGestureDetails gesture_detail) {
+                       TabStripUserGestureDetails gesture_detail) {
   int visible_count = 0;
   for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
     if (browser->tab_strip_model()->IsTabCollapsed(i)) {
@@ -835,7 +827,7 @@ void SelectNumberedTab(Browser* browser,
 }
 
 void SelectLastTab(Browser* browser,
-                   TabStripModel::UserGestureDetails gesture_detail) {
+                   TabStripUserGestureDetails gesture_detail) {
   for (int i = browser->tab_strip_model()->count() - 1; i >= 0; i--) {
     if (!browser->tab_strip_model()->IsTabCollapsed(i)) {
       base::RecordAction(UserMetricsAction("SelectLastTab"));
@@ -1127,8 +1119,7 @@ void BookmarkAllTabs(Browser* browser) {
   base::RecordAction(UserMetricsAction("BookmarkAllTabs"));
   RecordBookmarkAllTabsWithTabsCount(browser->profile(),
                                      browser->tab_strip_model()->count());
-  // We record the profile that invoked this option.
-  RecordBookmarksAdded(browser->profile());
+
   chrome::ShowBookmarkAllTabsDialog(browser);
 }
 
@@ -1280,7 +1271,8 @@ void Translate(Browser* browser) {
       web_contents, step, source_language, target_language,
       translate::TranslateErrors::NONE, true);
   if (result != ShowTranslateBubbleResult::SUCCESS)
-    translate::ReportUiAction(TranslateBubbleResultToUiEvent(result));
+    translate::ReportTranslateBubbleUiAction(
+        TranslateBubbleResultToUiEvent(result));
 }
 
 void ManagePasswordsForPage(Browser* browser) {
@@ -1317,7 +1309,7 @@ void SharingHubFromPageAction(Browser* browser) {
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           web_contents);
-  controller->ShowBubble();
+  controller->ShowBubble(share::ShareAttempt(web_contents));
 }
 
 void ScreenshotCaptureFromPageAction(Browser* browser) {
@@ -1417,7 +1409,7 @@ void RouteMediaInvokedFromAppMenu(Browser* browser) {
     return;
 
   dialog_controller->ShowMediaRouterDialog(
-      media_router::MediaRouterDialogOpenOrigin::APP_MENU);
+      media_router::MediaRouterDialogActivationLocation::APP_MENU);
 }
 
 void CutCopyPaste(Browser* browser, int command_id) {
@@ -1594,8 +1586,7 @@ void ShowAppMenu(Browser* browser) {
 
 void ShowAvatarMenu(Browser* browser) {
   browser->window()->ShowAvatarBubbleFromAvatarButton(
-      BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, true);
+      /*is_source_accelerator=*/true);
 }
 
 void OpenUpdateChromeDialog(Browser* browser) {

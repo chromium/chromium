@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/views_export.h"
@@ -62,12 +63,12 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  DesktopWindowTreeHostPlatform* const desktop_window_tree_host_;
+  const raw_ptr<DesktopWindowTreeHostPlatform> desktop_window_tree_host_;
 
   // A handler, which is used for interactive move/resize events if set and
   // unless MaybeDispatchHostWindowDragMovement is overridden by a derived
   // class.
-  ui::WmMoveResizeHandler* const handler_;
+  const raw_ptr<ui::WmMoveResizeHandler> handler_;
 
   // The non-client component for the target of a MouseEvent. Mouse events can
   // be destructive to the window tree, which can cause the component of a

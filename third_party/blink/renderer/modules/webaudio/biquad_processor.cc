@@ -42,13 +42,10 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
     : AudioDSPKernelProcessor(sample_rate,
                               number_of_channels,
                               render_quantum_frames),
-      type_(FilterType::kLowPass),
       parameter1_(&frequency),
       parameter2_(&q),
       parameter3_(&gain),
-      parameter4_(&detune),
-      filter_coefficients_dirty_(true),
-      has_sample_accurate_values_(false) {}
+      parameter4_(&detune) {}
 
 BiquadProcessor::~BiquadProcessor() {
   if (IsInitialized()) {
@@ -96,9 +93,9 @@ void BiquadProcessor::CheckForDirtyCoefficients() {
       // these methods.  We need to implement another way of noticing if one of
       // the parameters has changed.  We do this as an optimization because
       // computing the filter coefficients from these parameters is fairly
-      // expensive.  NB: The calls to Smooth() don't actually cause the
+      // expensive.  NOTE: The calls to Smooth() don't actually cause the
       // coefficients to be dezippered.  This is just a way to notice that the
-      // coefficient values have changed.  |UpdateCoefficientsIfNecessary()|
+      // coefficient values have changed.  `UpdateCoefficientsIfNecessary()`
       // checks to see if the filter coefficients are dirty and sets the filter
       // to the new value, without smoothing.
       //
@@ -180,8 +177,8 @@ void BiquadProcessor::GetFrequencyResponse(int n_frequencies,
 
   {
     // Get a copy of the current biquad filter coefficients so we can update
-    // |response_kernel| with these values.  We need to synchronize with
-    // |Process()| to prevent process() from updating the filter coefficients
+    // `response_kernel` with these values.  We need to synchronize with
+    // `Process()` to prevent process() from updating the filter coefficients
     // while we're trying to access them.  Since this is on the main thread, we
     // can wait.  The audio thread will update the coefficients the next time
     // around, it it were blocked.

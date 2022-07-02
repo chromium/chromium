@@ -8,17 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
-import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -31,7 +28,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -40,8 +36,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -51,15 +47,14 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiDisableIf;
@@ -67,7 +62,6 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -82,6 +76,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
+@DoNotBatch(reason = "This test suite tests Clank's startup.")
 public class ReturnToChromeUtilTest {
     // clang-format on
     @ParameterAnnotations.ClassParameter
@@ -119,6 +114,7 @@ public class ReturnToChromeUtilTest {
     private final AtomicBoolean mInflated = new AtomicBoolean();
 
     private final boolean mUseInstantStart;
+    ReturnToChromeUtil.ReturnToChromeBackPressHandler mBackPressHandler;
 
     public ReturnToChromeUtilTest(boolean useInstantStart) {
         mUseInstantStart = useInstantStart;
@@ -130,156 +126,6 @@ public class ReturnToChromeUtilTest {
             ApplicationStatus.registerStateListenerForAllActivities(
                     new ActivityInflationObserver());
         });
-    }
-
-    /**
-     * Test that overview mode is not triggered if the delay is longer than the interval between
-     * stop and start.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
-            + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    @DisabledTest(message="https://crbug.com/1130696")
-    public void testTabSwitcherModeNotTriggeredWithinThreshold() throws Exception {
-        // clang-format on
-        createTabStateFile(new int[] {0, 1});
-        startMainActivityWithURLWithoutCurrentTab(null);
-
-        Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse(
-                                ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
-                                        mActivityTestRule.getActivity())));
-
-        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                LayoutType.TAB_SWITCHER));
-
-        waitTabModelRestoration();
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT));
-        assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                LayoutType.TAB_SWITCHER));
-    }
-
-    /**
-     * Test that with {@link StartSurfaceConfiguration#START_SURFACE_OPEN_NTP_INSTEAD_OF_START}
-     * variation, overview mode is not triggered in Single-pane variation with NTP intent, even
-     * though the delay is longer than the interval between stop and start. Plus, a NTP should be
-     * created.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
-            + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1) // See https://crbug.com/1091268.
-    @DisabledTest(message="https://crbug.com/1144184")
-    public void testTabSwitcherModeNotTriggeredWithinThreshold_NTP() throws Exception {
-        // clang-format on
-        createTabStateFile(new int[] {0, 1});
-        startMainActivityWithURLWithoutCurrentTab(UrlConstants.NTP_URL);
-
-        Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse(
-                                ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
-                                        mActivityTestRule.getActivity())));
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                    LayoutType.TAB_SWITCHER));
-        }
-
-        waitTabModelRestoration();
-
-        // 3 tabs since we created NTP in this case.
-        assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                    LayoutType.TAB_SWITCHER));
-        }
-    }
-
-    /**
-     * Test that overview mode is triggered in Single-pane variation with no tabs, even though
-     * the delay is longer than the interval between stop and start.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
-            + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    public void testTabSwitcherModeTriggeredWithinThreshold_NoTab() throws TimeoutException {
-        // clang-format on
-        startMainActivityWithURLWithoutCurrentTab(null);
-
-        Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(
-                                mActivityTestRule.getActivity())));
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
-
-        waitTabModelRestoration();
-        assertEquals(0, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
-    }
-
-    /**
-     * Test that overview mode is triggered in Single-pane variation with NTP intent, even though
-     * the delay is longer than the interval between stop and start.
-     */
-    @Test
-    @SmallTest
-    @FlakyTest(message = "https://crbug.com/1237369")
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
-            + "/start_surface_variation/single"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1) // See https://crbug.com/1091268.
-    public void testTabSwitcherModeTriggeredWithinThreshold_NTP() throws Exception {
-        // clang-format on
-        createTabStateFile(new int[] {0, 1});
-        startMainActivityWithURLWithoutCurrentTab(UrlConstants.NTP_URL);
-
-        Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertTrue(ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
-                                mActivityTestRule.getActivity())));
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                    LayoutType.TAB_SWITCHER));
-        }
-
-        waitTabModelRestoration();
-        // Not 3 because we don't create a tab for NTP in this case.
-        assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                    LayoutType.TAB_SWITCHER));
-        }
     }
 
     /**
@@ -317,97 +163,8 @@ public class ReturnToChromeUtilTest {
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-    }
-
-    /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @DisabledTest(message = "https://crbug.com/1130696")
-    public void testTabSwitcherModeTriggeredBeyondThreshold() throws Exception {
-        // clang-format on
-        createTabStateFile(new int[] {0, 1});
-        startMainActivityWithURLWithoutCurrentTab(null);
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
-
-        waitTabModelRestoration();
-        assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
-    }
-
-    /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start.
-     */
-    @Test
-    @MediumTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, sdk_is_greater_than = VERSION_CODES.O,
-            message = "crbug.com/1134361")
-    @DisabledTest(message = "https://crbug.com/1130696")
-    public void testTabSwitcherModeTriggeredBeyondThreshold_WarmStart() throws Exception {
-        // clang-format on
-        testTabSwitcherModeTriggeredBeyondThreshold();
-
-        // Redo to trigger warm startup UMA.
-        TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        mActivityTestRule.startMainActivityFromLauncher();
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                    LayoutType.TAB_SWITCHER));
-        }
-
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
-
-        assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-    }
-
-    /**
-     * Test that overview mode is triggered if the delay is shorter than the interval between
-     * stop and start.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single"})
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
-    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs() throws TimeoutException {
-        // clang-format on
-        // Cannot use ChromeTabbedActivityTestRule.startMainActivityFromLauncher() because
-        // there's no tab.
-        startMainActivityWithURLWithoutCurrentTab(null);
-
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
-
-        waitTabModelRestoration();
-        assertEquals(0, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        if (!mActivityTestRule.getActivity().isTablet()) {
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        }
+        Assert.assertNotNull(mBackPressHandler.getHandleBackPressChangedSupplier().get());
+        Assert.assertFalse(mBackPressHandler.getHandleBackPressChangedSupplier().get());
     }
 
     /**
@@ -462,6 +219,23 @@ public class ReturnToChromeUtilTest {
                 "10_web_tabs-select_last");
     }
 
+    private void testTabSwitcherModeTriggeredBeyondThreshold() throws Exception {
+        createTabStateFile(new int[] {0, 1});
+        startMainActivityWithURLWithoutCurrentTab(null);
+
+        if (!mActivityTestRule.getActivity().isTablet()) {
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+        }
+
+        waitTabModelRestoration();
+        assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
+        if (!mActivityTestRule.getActivity().isTablet()) {
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+        }
+    }
+
     /**
      * Similar to {@link ChromeTabbedActivityTestRule#startMainActivityWithURL(String url)}
      * but skip verification and tasks regarding current tab.
@@ -478,6 +252,14 @@ public class ReturnToChromeUtilTest {
         } else {
             mActivityTestRule.waitForActivityNativeInitializationComplete();
         }
+        mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> new ReturnToChromeBackPressHandler(
+                                mActivityTestRule.getActivity()
+                                        .getRootUiCoordinatorForTesting()
+                                        .getLayoutStateProviderForTesting(),
+                                mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
+                                () -> {}));
     }
 
     private void waitTabModelRestoration() {

@@ -17,6 +17,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 PrivacyBudgetUkmEntryFilter::PrivacyBudgetUkmEntryFilter(
     IdentifiabilityStudyState* state)
@@ -43,6 +44,12 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   base::EraseIf(entry->metrics, [&](auto metric) {
     const auto surface =
         blink::IdentifiableSurface::FromMetricHash(metric.first);
+    const blink::IdentifiableToken token = metric.second;
+
+    // Update the Reid surface storage map.
+    identifiability_study_state_->MaybeStoreValueForComputingReidScore(surface,
+                                                                       token);
+
     if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
             surface))
       return true;

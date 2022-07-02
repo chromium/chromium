@@ -537,6 +537,20 @@ public class VariationsSeedFetcherTest {
     }
 
     /**
+     * Test method to make sure {@link VariationsSeedFetcher#getConnectionString()} honors the
+     * "--variations-server-url" switch.
+     */
+    @Test
+    @CommandLineFlags.Add(VariationsSwitches.VARIATIONS_SERVER_URL + "=http://localhost:8080/seed")
+    public void testGetConnectionString_HonorsServerUrlCommandlineSwitch() {
+        String urlString = mFetcher.getConnectionString(
+                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
+
+        // The URL should start with the variations server URL passed as a switch.
+        assertTrue(urlString, urlString.startsWith("http://localhost:8080/seed"));
+    }
+
+    /**
      * Test method to make sure {@link VariationsSeedFetcher#getAvailableInstanceManipulations()}
      * honors the
      * "--enable-finch-seed-delta-compression" switch.

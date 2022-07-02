@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
@@ -75,7 +74,8 @@ void ScheduleLoadForRestoredTabs(
 
     bool has_notifications_permission =
         permission_controller->GetPermissionStatusForCurrentDocument(
-            blink::PermissionType::NOTIFICATIONS, content->GetMainFrame()) ==
+            blink::PermissionType::NOTIFICATIONS,
+            content->GetPrimaryMainFrame()) ==
         blink::mojom::PermissionStatus::GRANTED;
 
     BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
@@ -203,8 +203,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     PageNode* page_node = page_node_and_permission.page_node.get();
     if (page_node) {
       DCHECK(!FindPageNodeToLoadData(page_node));
-      DCHECK(TabPropertiesDecorator::Data::FromPageNode(page_node)
-                 ->IsInTabStrip());
+      DCHECK_EQ(page_node->GetType(), PageType::kTab);
 
       page_nodes_to_load_.push_back(
           std::make_unique<PageNodeToLoadData>(page_node));

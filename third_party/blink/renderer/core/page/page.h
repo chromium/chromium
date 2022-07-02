@@ -25,8 +25,11 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -218,6 +221,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   const WebWindowFeatures& GetWindowFeatures() const {
     return window_features_;
+  }
+
+  const absl::optional<features::FencedFramesImplementationType>&
+  FencedFramesImplementationType() const {
+    return fenced_frames_impl_;
   }
 
   PageScaleConstraintsSet& GetPageScaleConstraintsSet();
@@ -428,6 +436,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // breaks this cycle, so the frame is still properly destroyed once no
   // longer needed.
   Member<Frame> main_frame_;
+
+  // The type of fenced frames being used.
+  absl::optional<features::FencedFramesImplementationType> fenced_frames_impl_;
 
   scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
   Member<PageAnimator> animator_;

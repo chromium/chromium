@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -46,7 +45,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
-@Features.EnableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NEW_DISCLOSURE})
 public class DisclosureUiPickerTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -76,14 +74,6 @@ public class DisclosureUiPickerTest {
         mPicker = new DisclosureUiPicker(new FilledLazy<>(mInfobar), new FilledLazy<>(mSnackbar),
                 new FilledLazy<>(mNotification), mIntentDataProvider, mNotificationManager,
                 mLifecycleDispatcher);
-    }
-
-    @Test
-    @Feature("TrustedWebActivities")
-    @Features.DisableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_NEW_DISCLOSURE})
-    public void picksInfobar_whenFeatureDisabled() {
-        mPicker.onFinishNativeInitialization();
-        verify(mInfobar).showIfNeeded();
     }
 
     @Test

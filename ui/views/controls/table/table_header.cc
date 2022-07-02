@@ -27,7 +27,6 @@
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -55,6 +54,7 @@ constexpr int kSortIndicatorSize = 8;
 
 // static
 const int TableHeader::kHorizontalPadding = 7;
+
 // static
 const int TableHeader::kSortIndicatorWidth =
     kSortIndicatorSize + TableHeader::kHorizontalPadding * 2;
@@ -140,16 +140,15 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
         (column.column.id == sorted_column_id &&
          title_width + kSortIndicatorWidth <= width);
 
-    if (paint_sort_indicator &&
-        column.column.alignment == ui::TableColumn::RIGHT) {
+    if (paint_sort_indicator)
       width -= kSortIndicatorWidth;
-    }
 
     canvas->DrawStringRectWithFlags(
         column.column.title, font_list_, text_color,
         gfx::Rect(GetMirroredXWithWidthInView(x, width), kVerticalPadding,
                   width, height() - kVerticalPadding * 2),
-        TableColumnAlignmentToCanvasAlignment(column.column.alignment));
+        TableColumnAlignmentToCanvasAlignment(
+            GetMirroredTableColumnAlignment(column.column.alignment)));
 
     if (paint_sort_indicator) {
       cc::PaintFlags flags;
@@ -158,19 +157,12 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
       flags.setAntiAlias(true);
 
       int indicator_x = 0;
-      ui::TableColumn::Alignment alignment = column.column.alignment;
-      if (base::i18n::IsRTL()) {
-        if (alignment == ui::TableColumn::LEFT)
-          alignment = ui::TableColumn::RIGHT;
-        else if (alignment == ui::TableColumn::RIGHT)
-          alignment = ui::TableColumn::LEFT;
-      }
-      switch (alignment) {
+      switch (column.column.alignment) {
         case ui::TableColumn::LEFT:
           indicator_x = x + title_width;
           break;
         case ui::TableColumn::CENTER:
-          indicator_x = x + width / 2;
+          indicator_x = x + width / 2 + title_width / 2;
           break;
         case ui::TableColumn::RIGHT:
           indicator_x = x + width;
@@ -227,9 +219,9 @@ void TableHeader::AddedToWidget() {
   table_->UpdateVirtualAccessibilityChildrenBounds();
 }
 
-gfx::NativeCursor TableHeader::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor TableHeader::GetCursor(const ui::MouseEvent& event) {
   return GetResizeColumn(GetMirroredXInView(event.x())) != -1
-             ? GetNativeColumnResizeCursor()
+             ? ui::mojom::CursorType::kColumnResize
              : View::GetCursor(event);
 }
 

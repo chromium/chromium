@@ -93,7 +93,8 @@ class TreeNode : public TreeModelNode {
     DCHECK(!node->parent_);
     node->parent_ = static_cast<NodeType*>(this);
     NodeType* node_ptr = node.get();
-    children_.insert(children_.begin() + index, std::move(node));
+    children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                     std::move(node));
     return node_ptr;
   }
 
@@ -107,7 +108,7 @@ class TreeNode : public TreeModelNode {
     DCHECK_LT(index, children_.size());
     children_[index]->parent_ = nullptr;
     std::unique_ptr<NodeType> ptr = std::move(children_[index]);
-    children_.erase(children_.begin() + index);
+    children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
     return ptr;
   }
 

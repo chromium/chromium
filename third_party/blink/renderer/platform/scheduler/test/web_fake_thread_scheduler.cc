@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_agent_group_scheduler_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/test/web_fake_widget_scheduler.h"
 
 namespace blink {
 namespace scheduler {
@@ -38,49 +37,10 @@ WebFakeThreadScheduler::CreateAgentGroupScheduler() {
   return std::make_unique<FakeAgentGroupScheduler>(*this);
 }
 
-std::unique_ptr<WebWidgetScheduler>
-WebFakeThreadScheduler::CreateWidgetScheduler() {
-  return std::make_unique<WebFakeWidgetScheduler>();
-}
-
 WebAgentGroupScheduler*
 WebFakeThreadScheduler::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
-
-std::unique_ptr<WebRenderWidgetSchedulingState>
-WebFakeThreadScheduler::NewRenderWidgetSchedulingState() {
-  return nullptr;
-}
-
-void WebFakeThreadScheduler::WillBeginFrame(const viz::BeginFrameArgs& args) {}
-
-void WebFakeThreadScheduler::BeginFrameNotExpectedSoon() {}
-
-void WebFakeThreadScheduler::BeginMainFrameNotExpectedUntil(
-    base::TimeTicks time) {}
-
-void WebFakeThreadScheduler::DidCommitFrameToCompositor() {}
-
-void WebFakeThreadScheduler::DidHandleInputEventOnCompositorThread(
-    const blink::WebInputEvent& web_input_event,
-    InputEventState event_state) {}
-
-void WebFakeThreadScheduler::WillPostInputEventToMainThread(
-    WebInputEvent::Type web_input_event_type,
-    const WebInputEventAttribution& attribution) {}
-
-void WebFakeThreadScheduler::WillHandleInputEventOnMainThread(
-    WebInputEvent::Type web_input_event_type,
-    const WebInputEventAttribution& attribution) {}
-
-void WebFakeThreadScheduler::DidHandleInputEventOnMainThread(
-    const blink::WebInputEvent& web_input_event,
-    WebInputEventResult result) {}
-
-void WebFakeThreadScheduler::DidAnimateForInputOnCompositorThread() {}
-
-void WebFakeThreadScheduler::DidRunBeginMainFrame() {}
 
 bool WebFakeThreadScheduler::IsHighPriorityWorkAnticipated() {
   return false;

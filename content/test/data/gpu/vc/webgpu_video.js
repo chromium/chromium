@@ -32,11 +32,11 @@ async function webGpuInit(canvasWidth, canvasHeight) {
 const wgslShaders = {
   vertex: `
 struct VertexOutput {
-  @builtin(position) Position : vec4<f32>;
-  @location(0) fragUV : vec2<f32>;
-};
+  @builtin(position) Position : vec4<f32>,
+  @location(0) fragUV : vec2<f32>,
+}
 
-@stage(vertex) fn main(
+@vertex fn main(
   @location(0) position : vec2<f32>,
   @location(1) uv : vec2<f32>
 ) -> VertexOutput {
@@ -51,7 +51,7 @@ struct VertexOutput {
 @group(0) @binding(0) var mySampler: sampler;
 @group(0) @binding(1) var myTexture: texture_external;
 
-@stage(fragment)
+@fragment
 fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
   return textureSampleLevel(myTexture, mySampler, fragUV);
 }
@@ -61,14 +61,14 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
 @group(0) @binding(0) var mySampler: sampler;
 @group(0) @binding(1) var myTexture: texture_2d<f32>;
 
-@stage(fragment)
+@fragment
 fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
   return textureSample(myTexture, mySampler, fragUV);
 }
 `,
 
   vertex_icons: `
-@stage(vertex)
+@vertex
 fn main(@location(0) position : vec2<f32>)
     -> @builtin(position) vec4<f32> {
   return vec4<f32>(position, 0.0, 1.0);
@@ -76,20 +76,20 @@ fn main(@location(0) position : vec2<f32>)
 `,
 
   fragment_output_blue: `
-@stage(fragment)
+@fragment
 fn main() -> @location(0) vec4<f32> {
   return vec4<f32>(0.11328125, 0.4296875, 0.84375, 1.0);
 }
 `,
   fragment_output_light_blue: `
-@stage(fragment)
+@fragment
 fn main() -> @location(0) vec4<f32> {
   return vec4<f32>(0.3515625, 0.50390625, 0.75390625, 1.0);
 }
 `,
 
   fragment_output_white: `
-@stage(fragment)
+@fragment
 fn main() -> @location(0) vec4<f32> {
   return vec4<f32>(1.0, 1.0, 1.0, 1.0);
 }
@@ -165,12 +165,13 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const vertexBufferForVideos = createVertexBufferForVideos(device, videos,
     videoRows, videoColumns);
 
-  const swapChainFormat = context.getPreferredFormat(adapter);
+  const swapChainFormat = navigator.gpu.getPreferredCanvasFormat();
 
   const swapChain = context.configure({
     device,
     format: swapChainFormat,
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    alphaMode: "opaque"
   });
 
   let fragmentShaderModule;
@@ -186,6 +187,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
 
   const pipelineForVideos = device.createRenderPipeline({
+    layout: "auto",
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
@@ -225,7 +227,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     colorAttachments: [
       {
         view: undefined, // Assigned later
-        loadValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+        clearValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+        loadOp: 'clear',
         storeOp: 'store',
       },
     ],
@@ -278,6 +281,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     createVertexBufferForIcons(device, videos, videoRows, videoColumns);
 
   const renderPipelineDescriptorForIcon = {
+    layout: "auto",
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex_icons,
@@ -331,6 +335,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
   const vertexBufferForFPS = createVertexBufferForFPS(device);
   const pipelineForFPS = device.createRenderPipeline({
+    layout: "auto",
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
@@ -545,13 +550,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
     uiFrames++;
 
-    // Always import all videos. The video textures are destroyed before the
-    // next frame.
-    // TODO(crbugs.com/1310172): Only import expired video frames.
     for (let i = 0; i < videos.length; ++i) {
-      videoTextures[i] =
-        device.importExternalTexture(externalTextureDescriptor[i]);
-      totalVideoFrames++;
+      if (!videoTextures[i] || videoTextures[i].expired) {
+        videoTextures[i] =
+          device.importExternalTexture(externalTextureDescriptor[i]);
+        totalVideoFrames++;
+      }
     }
 
     const swapChainTexture = context.getCurrentTexture();

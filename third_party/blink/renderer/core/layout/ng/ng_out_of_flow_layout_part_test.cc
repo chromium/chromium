@@ -1625,8 +1625,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token =
-      To<NGBlockBreakToken>(column1.BreakToken());
+  const NGBlockBreakToken* break_token = column1.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);
@@ -1634,7 +1633,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   EXPECT_FALSE(break_token->IsCausedByColumnSpanner());
 
   const auto& column2 = To<NGPhysicalBoxFragment>(*children[1]);
-  break_token = To<NGBlockBreakToken>(column2.BreakToken());
+  break_token = column2.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 1u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 200);
@@ -1645,7 +1644,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokens) {
   EXPECT_TRUE(spanner.IsColumnSpanAll());
 
   const auto& column3 = To<NGPhysicalBoxFragment>(*children[3]);
-  break_token = To<NGBlockBreakToken>(column3.BreakToken());
+  break_token = column3.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 2u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 250);
@@ -1686,8 +1685,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   ASSERT_EQ(children.size(), 5u);
 
   const auto& column1 = To<NGPhysicalBoxFragment>(*children[0]);
-  const NGBlockBreakToken* break_token =
-      To<NGBlockBreakToken>(column1.BreakToken());
+  const NGBlockBreakToken* break_token = column1.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 0u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 100);
@@ -1695,7 +1693,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   EXPECT_TRUE(break_token->IsCausedByColumnSpanner());
 
   const auto& column2 = To<NGPhysicalBoxFragment>(*children[1]);
-  break_token = To<NGBlockBreakToken>(column2.BreakToken());
+  break_token = column2.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 1u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 200);
@@ -1706,7 +1704,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   EXPECT_TRUE(spanner.IsColumnSpanAll());
 
   const auto& column3 = To<NGPhysicalBoxFragment>(*children[3]);
-  break_token = To<NGBlockBreakToken>(column3.BreakToken());
+  break_token = column3.BreakToken();
   EXPECT_TRUE(break_token);
   EXPECT_EQ(break_token->SequenceNumber(), 2u);
   EXPECT_EQ(break_token->ConsumedBlockSize(), 250);

@@ -53,7 +53,7 @@ class AssistantValueProp extends AssistantValuePropBase {
        */
       urlTemplate_: {
         value:
-            'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
+            'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v5_omni_$.html',
       },
 
       /**
@@ -264,6 +264,12 @@ class AssistantValueProp extends AssistantValuePropBase {
    * Handles event when value prop webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
+    if (details && details.error == 'net::ERR_ABORTED') {
+      // Retry triggers net::ERR_ABORTED, so ignore it.
+      // TODO(b/232592745): Replace with a state machine to handle aborts
+      // gracefully and avoid duplicate reloads.
+      return;
+    }
     this.dispatchEvent(
         new CustomEvent('error', {bubbles: true, composed: true}));
     this.loadingError_ = true;
@@ -361,21 +367,25 @@ class AssistantValueProp extends AssistantValuePropBase {
       for (const j in zippy_data[i]) {
         const data = zippy_data[i][j];
         const zippy = document.createElement('setting-zippy');
-        // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
-        const background = this.isMinorMode_ ?
-            getComputedStyle(document.body)
-                .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
-            getComputedStyle(document.body).getPropertyValue('--cros-bg-color');
-        zippy.setAttribute(
-            'icon-src',
-            'data:text/html;charset=utf-8,' +
-                encodeURIComponent(zippy.getWrappedIcon(
-                    data['iconUri'], data['title'], background)));
-        zippy.setAttribute('step', i);
-        if (this.isMinorMode_) {
-          zippy.setAttribute('hide-line', true);
-          zippy.setAttribute('card-style', true);
+        if (data['useNativeIcons']) {
+          zippy.nativeIconType = data['nativeIconType'];
+          zippy.setAttribute('nativeIconLabel', data['title']);
+        } else {
+          // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
+          const background = this.isMinorMode_ ?
+              getComputedStyle(document.body)
+                  .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
+              getComputedStyle(document.body)
+                  .getPropertyValue('--cros-bg-color');
+          zippy.setAttribute(
+              'icon-src',
+              'data:text/html;charset=utf-8,' +
+                  encodeURIComponent(zippy.getWrappedIcon(
+                      data['iconUri'], data['title'], background)));
         }
+        zippy.setAttribute('step', i);
+        zippy.hideLine = this.isMinorMode_;
+        zippy.cardStyle = this.isMinorMode_;
 
         const title = document.createElement('div');
         title.slot = 'title';

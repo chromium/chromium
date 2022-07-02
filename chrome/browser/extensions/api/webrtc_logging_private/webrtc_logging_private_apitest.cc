@@ -401,7 +401,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     auto* manager = WebRtcEventLogManager::GetInstance();
 
     content::RenderFrameHost* render_frame_host =
-        web_contents()->GetMainFrame();
+        web_contents()->GetPrimaryMainFrame();
     const content::GlobalRenderFrameHostId frame_id =
         render_frame_host->GetGlobalId();
     const base::ProcessId pid =

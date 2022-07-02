@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_PROFILE_ACCOUNT_MANAGER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
@@ -83,7 +84,7 @@ class ProfileAccountManager : public KeyedService,
       const account_manager::AccountKey& account) override;
 
  private:
-  AccountProfileMapper* const mapper_;
+  const raw_ptr<AccountProfileMapper> mapper_;
   const base::FilePath profile_path_;
   base::ObserverList<account_manager::AccountManagerFacade::Observer>
       observers_;

@@ -25,33 +25,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
-namespace {
-
-class NudgeWigetObserver : public views::WidgetObserver {
- public:
-  NudgeWigetObserver(views::Widget* widget) : widget_(widget) {
-    if (widget_)
-      widget_->AddObserver(this);
-  }
-
-  ~NudgeWigetObserver() override { CleanupWidget(); }
-
-  bool WidgetClosed() const { return !widget_; }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override { CleanupWidget(); }
-
-  void CleanupWidget() {
-    if (widget_) {
-      widget_->RemoveObserver(this);
-      widget_ = nullptr;
-    }
-  }
-
- private:
-  views::Widget* widget_;
-};
-}  // namespace
 
 class ClipboardNudgeControllerTest : public AshTestBase {
  public:
@@ -65,10 +38,8 @@ class ClipboardNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kClipboardHistory,
-         chromeos::features::kClipboardHistoryContextMenuNudge},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kClipboardHistoryContextMenuNudge);
     AshTestBase::SetUp();
     nudge_controller_ =
         Shell::Get()->clipboard_history_controller()->nudge_controller();
@@ -274,11 +245,9 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   EXPECT_FALSE(nudge_widget->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
 
-  NudgeWigetObserver widget_close_observer(nudge_widget);
-
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   // Verify the old nudge widget was closed.
-  EXPECT_TRUE(widget_close_observer.WidgetClosed());
+  EXPECT_TRUE(nudge_widget->IsClosed());
 
   nudge = static_cast<ClipboardNudge*>(
       nudge_controller_->GetSystemNudgeForTesting());

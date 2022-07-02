@@ -156,12 +156,6 @@ void DomainReliabilityMonitor::ClearBrowsingData(
   }
 }
 
-base::Value DomainReliabilityMonitor::GetWebUIData() const {
-  base::Value data_value(base::Value::Type::DICTIONARY);
-  data_value.SetKey("contexts", context_manager_.GetWebUIData());
-  return data_value;
-}
-
 const DomainReliabilityContext* DomainReliabilityMonitor::AddContextForTesting(
     std::unique_ptr<const DomainReliabilityConfig> config) {
   DCHECK(config);

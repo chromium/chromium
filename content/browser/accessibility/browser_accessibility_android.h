@@ -125,7 +125,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   std::u16string GetStateDescription() const;
   std::u16string GetMultiselectableStateDescription() const;
-  std::u16string GetToggleButtonStateDescription() const;
+  std::u16string GetToggleStateDescription() const;
   std::u16string GetCheckboxStateDescription() const;
   std::u16string GetListBoxStateDescription() const;
   std::u16string GetListBoxItemStateDescription() const;

@@ -27,6 +27,9 @@ import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
+import org.chromium.net.impl.CronetLogger.CronetSource;
+import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
 import org.chromium.net.urlconnection.CronetURLStreamHandlerFactory;
 
@@ -160,8 +163,15 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     /** If not null, the network to be used for requests that do not explicitly specify one. **/
     private @Nullable Network mNetwork;
 
+    private final int mCronetEngineId;
+
+    int getCronetEngineId() {
+        return mCronetEngineId;
+    }
+
     @UsedByReflection("CronetEngine.java")
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
+        mCronetEngineId = hashCode();
         mRttListenerList.disableThreadAsserts();
         mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
@@ -187,6 +197,15 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
         }
+        CronetLogger logger = CronetLoggerFactory.createLogger();
+        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
+        // about the "w.x.y.z" bit.
+        String version = getVersionString();
+        version = version.split("/")[1];
+        version = version.split("@")[0];
+        // TODO(stefanoduo): Correctly generate the CronetSource parameter.
+        logger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
+                new CronetVersion(version), CronetSource.CRONET_SOURCE_STATICALLY_LINKED);
 
         // Init native Chromium URLRequestContext on init thread.
         CronetLibraryLoader.postToInitThread(new Runnable() {

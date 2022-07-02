@@ -9,6 +9,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 
 _DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -108,6 +109,10 @@ def _validate_and_convert_profraws(profraw_files,
 
   cpu_count = multiprocessing.cpu_count()
   counts = max(10, cpu_count - 5)  # Use 10+ processes, but leave 5 cpu cores.
+  if sys.platform == 'win32':
+    # TODO(crbug.com/1190269) - we can't use more than 56 child processes on
+    # Windows or Python3 may hang.
+    counts = min(counts, 56)
   pool = multiprocessing.Pool(counts)
   output_profdata_files = multiprocessing.Manager().list()
   invalid_profraw_files = multiprocessing.Manager().list()

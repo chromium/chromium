@@ -232,7 +232,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
 
-  // Must be declared *after* |chrome_browser_state_| so it can outlive it.
+  // Must be declared *after* `chrome_browser_state_` so it can outlive it.
   RecentTabsCoordinator* coordinator_;
   id<ApplicationCommands> mock_application_commands_handler_;
   id<ApplicationSettingsCommands> mock_application_settings_commands_handler_;

@@ -5,7 +5,9 @@
 #ifndef UI_GFX_MOJOM_MASK_FILTER_INFO_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_MASK_FILTER_INFO_MOJOM_TRAITS_H_
 
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
+#include "ui/gfx/mojom/linear_gradient_mojom_traits.h"
 #include "ui/gfx/mojom/mask_filter_info.mojom-shared.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 
@@ -15,6 +17,11 @@ struct StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo> {
   static const gfx::RRectF& rounded_corner_bounds(
       const gfx::MaskFilterInfo& info) {
     return info.rounded_corner_bounds();
+  }
+
+  static const absl::optional<gfx::LinearGradient>& gradient_mask(
+      const gfx::MaskFilterInfo& info) {
+    return info.gradient_mask();
   }
 
   static bool Read(gfx::mojom::MaskFilterInfoDataView data,

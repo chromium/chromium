@@ -59,7 +59,7 @@ void CrostiniUpgraderPageHandler::Backup(bool show_file_chooser) {
   Redisplay();
   CrostiniUpgraderDialog::EmitUpgradeDialogEventHistogram(
       crostini::UpgradeDialogEvent::kDidBackup);
-  upgrader_ui_delegate_->Backup(crostini::ContainerId::GetDefault(),
+  upgrader_ui_delegate_->Backup(crostini::DefaultContainerId(),
                                 show_file_chooser, web_contents_->GetWeakPtr());
 }
 
@@ -69,14 +69,14 @@ void CrostiniUpgraderPageHandler::StartPrechecks() {
 
 void CrostiniUpgraderPageHandler::Upgrade() {
   Redisplay();
-  upgrader_ui_delegate_->Upgrade(crostini::ContainerId::GetDefault());
+  upgrader_ui_delegate_->Upgrade(crostini::DefaultContainerId());
 }
 
 void CrostiniUpgraderPageHandler::Restore() {
   Redisplay();
   CrostiniUpgraderDialog::EmitUpgradeDialogEventHistogram(
       crostini::UpgradeDialogEvent::kDidRestore);
-  upgrader_ui_delegate_->Restore(crostini::ContainerId::GetDefault(),
+  upgrader_ui_delegate_->Restore(crostini::DefaultContainerId(),
                                  web_contents_->GetWeakPtr());
 }
 

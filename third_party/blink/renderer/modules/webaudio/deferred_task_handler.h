@@ -29,6 +29,7 @@
 #include <atomic>
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -119,14 +120,14 @@ class MODULES_EXPORT DeferredTaskHandler final
   bool AcceptsTailProcessing() const { return accepts_tail_processing_; }
   void StopAcceptingTailProcessing() { accepts_tail_processing_ = false; }
 
-  // If |node| requires tail processing, add it to the list of tail
+  // If `node` requires tail processing, add it to the list of tail
   // nodes so the tail is processed.
   void AddTailProcessingHandler(scoped_refptr<AudioHandler>);
 
-  // Remove |node| from the list of tail nodes (because the tail processing is
-  // complete).  Set |disable_outputs| to true if the outputs of the handler
+  // Remove `node` from the list of tail nodes (because the tail processing is
+  // complete).  Set `disable_outputs` to true if the outputs of the handler
   // should also be disabled.  This should be true if the tail is done.  But if
-  // we're reconnected or re-enabled, then |disable_outputs| should be false.
+  // we're reconnected or re-enabled, then `disable_outputs` should be false.
   void RemoveTailProcessingHandler(AudioHandler*, bool disable_outputs);
 
   // Remove all tail processing nodes.  Should be called only when the
@@ -221,14 +222,15 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // For the sake of thread safety, we maintain a seperate Vector of
   // AudioHandlers for "automatic-pull nodes":
-  // |rendering_automatic_pull_handlers|. This storage will be copied from
-  // |automatic_pull_handlers| by |UpdateAutomaticPullNodes()| at the beginning
+  // `rendering_automatic_pull_handlers_`. This storage will be copied from
+  // `automatic_pull_handlers` by `UpdateAutomaticPullNodes()` at the beginning
   // or end of the render quantum.
   HashSet<scoped_refptr<AudioHandler>> automatic_pull_handlers_;
-  Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_;
+  Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_
+      GUARDED_BY(automatic_pull_handlers_lock_);
 
-  // Keeps track if the |automatic_pull_handlers| storage is touched.
-  bool automatic_pull_handlers_need_updating_;
+  // Keeps track if the `automatic_pull_handlers` storage is touched.
+  bool automatic_pull_handlers_need_updating_ = false;
 
   // Number of frames to use when rendering the graph.  This is the frames to
   // process for each node.
@@ -272,7 +274,7 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // When source nodes are finished, the handler is placed here to make a note
   // of it.  At a render quantum boundary, these are used to break the
-  // connection and elements here are removed from |active_source_handlers_|.
+  // connection and elements here are removed from `active_source_handlers_`.
   //
   // This must be accessed only from the audio thread.
   Vector<scoped_refptr<AudioHandler>> finished_source_handlers_;
@@ -282,9 +284,9 @@ class MODULES_EXPORT DeferredTaskHandler final
   // Graph locking.
   RecursiveMutex context_graph_mutex_;
 
-  // Protects |rendering_automatic_pull_handlers| when updating, processing, and
-  // clearing. (See crbug.com/1061018)
-  mutable Mutex automatic_pull_handlers_lock_;
+  // Protects `rendering_automatic_pull_handlers_` when updating, processing,
+  // and clearing. (See crbug.com/1061018)
+  mutable base::Lock automatic_pull_handlers_lock_;
 
   std::atomic<base::PlatformThreadId> audio_thread_;
 };

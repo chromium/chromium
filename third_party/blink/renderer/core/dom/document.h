@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
@@ -204,6 +206,7 @@ class Range;
 class RenderBlockingResourceManager;
 class ResizeObserver;
 class ResourceFetcher;
+class ResourceResponse;
 class RootScrollerController;
 class SVGDocumentExtensions;
 class SVGUseElement;
@@ -373,6 +376,14 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsPrerendering() const { return is_prerendering_; }
 
+  void SetIsTrackingSoftNavigationHeuristics(bool value) {
+    is_tracking_soft_navigation_heuristics_ = value;
+  }
+
+  bool IsTrackingSoftNavigationHeuristics() const {
+    return is_tracking_soft_navigation_heuristics_;
+  }
+
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   bool DocumentPolicyFeatureObserved(
@@ -503,6 +514,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void DidChangeVisibilityState();
 
   bool prerendering() const;
+
+  uint32_t softNavigations() const;
 
   bool wasDiscarded() const;
   void SetWasDiscarded(bool);
@@ -713,6 +726,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // data, otherwise use one of the |UpdateStyleAndLayout...| methods above.
   void EnsurePaintLocationDataValidForNode(const Node*,
                                            DocumentUpdateReason reason);
+  void EnsurePaintLocationDataValidForNode(const Node*,
+                                           DocumentUpdateReason reason,
+                                           CSSPropertyID property_id);
 
   // Returns true if page box (margin boxes and page borders) is visible.
   bool IsPageBoxVisible(uint32_t page_index);
@@ -971,6 +987,9 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   ExplicitlySetAttrElementsMap* GetExplicitlySetAttrElementsMap(Element*);
+  void MoveElementExplicitlySetAttrElementsMapToNewDocument(
+      Element*,
+      Document& new_document);
 
   // Returns false if the function fails.  e.g. |pseudo| is not supported.
   bool SetPseudoStateForTesting(Element& element,
@@ -1499,15 +1518,11 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<Element>>& PopupAndHintStack() {
     return popup_and_hint_stack_;
   }
+  HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
+    return popups_waiting_to_hide_;
+  }
   bool PopupOrHintShowing() const;
   bool HintShowing() const;
-  void HideTopmostPopupOrHint();
-  // This hides all visible popups up to, but not including,
-  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  void HideAllPopupsUntil(const Element* endpoint);
-  // This hides the provided popup, if it is showing. This will also
-  // hide all popups above |popup| in the popup stack.
-  void HidePopupIfShowing(Element* popup);
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -1865,6 +1880,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
+  // TODO(https://crbug.com/1296161): Delete this function.
+  void CheckPartitionedCookiesOriginTrial(const ResourceResponse& response);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2101,6 +2119,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool well_formed_;
 
+  bool is_tracking_soft_navigation_heuristics_ = false;
+
   // Document URLs.
   KURL url_;  // Document.URL: The URL from which this document was retrieved.
   KURL base_url_;  // Node.baseURI: The URL to use when resolving relative URLs.
@@ -2303,6 +2323,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack go from earliest (bottom-most) to latest (top-most). If there is a
   // hint in the stack, it is at the top.
   HeapVector<Member<Element>> popup_and_hint_stack_;
+
+  // A set of popups for which hidePopUp() has been called, but animations are
+  // still running.
+  HeapHashSet<Member<Element>> popups_waiting_to_hide_;
 
   int load_event_delay_count_;
 

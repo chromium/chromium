@@ -395,9 +395,9 @@ class EqualsFramesMatcher : public ::testing::MatcherInterface<
   explicit EqualsFramesMatcher(const InitFrame (*expect_frames)[N])
       : expect_frames_(expect_frames) {}
 
-  virtual bool MatchAndExplain(
+  bool MatchAndExplain(
       std::vector<std::unique_ptr<WebSocketFrame>>* actual_frames,
-      ::testing::MatchResultListener* listener) const {
+      ::testing::MatchResultListener* listener) const override {
     if (actual_frames->size() != N) {
       *listener << "the vector size is " << actual_frames->size();
       return false;
@@ -436,11 +436,11 @@ class EqualsFramesMatcher : public ::testing::MatcherInterface<
     return true;
   }
 
-  virtual void DescribeTo(std::ostream* os) const {
+  void DescribeTo(std::ostream* os) const override {
     *os << "matches " << *expect_frames_;
   }
 
-  virtual void DescribeNegationTo(std::ostream* os) const {
+  void DescribeNegationTo(std::ostream* os) const override {
     *os << "does not match " << *expect_frames_;
   }
 
@@ -468,7 +468,7 @@ class ReadableFakeWebSocketStream : public FakeWebSocketStream {
 
   // After constructing the object, call PrepareReadFrames() once for each
   // time you wish it to return from the test.
-  ReadableFakeWebSocketStream() : index_(0), read_frames_pending_(false) {}
+  ReadableFakeWebSocketStream() = default;
 
   // Check that all the prepared responses have been consumed.
   ~ReadableFakeWebSocketStream() override {
@@ -555,13 +555,13 @@ class ReadableFakeWebSocketStream : public FakeWebSocketStream {
   std::vector<std::unique_ptr<Response>> responses_;
 
   // The index into the responses_ array of the next response to be returned.
-  size_t index_;
+  size_t index_ = 0;
 
   // True when an async response from ReadFrames() is pending. This only applies
   // to "real" async responses. Once all the prepared responses have been
   // returned, ReadFrames() returns ERR_IO_PENDING but read_frames_pending_ is
   // not set to true.
-  bool read_frames_pending_;
+  bool read_frames_pending_ = false;
 
   std::vector<scoped_refptr<IOBuffer>> result_frame_data_;
 };
@@ -593,7 +593,7 @@ class UnWriteableFakeWebSocketStream : public FakeWebSocketStream {
 // otherwise the ReadFrames() callback will never be called.
 class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
  public:
-  EchoeyFakeWebSocketStream() : read_frames_(nullptr), done_(false) {}
+  EchoeyFakeWebSocketStream() = default;
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                   CompletionOnceCallback callback) override {
@@ -658,10 +658,10 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
   std::vector<std::unique_ptr<WebSocketFrame>> stored_frames_;
   CompletionOnceCallback read_callback_;
   // Owned by the caller of ReadFrames().
-  raw_ptr<std::vector<std::unique_ptr<WebSocketFrame>>> read_frames_;
+  raw_ptr<std::vector<std::unique_ptr<WebSocketFrame>>> read_frames_ = nullptr;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
   // True if we should close the connection.
-  bool done_;
+  bool done_ = false;
 };
 
 // A FakeWebSocketStream where writes trigger a connection reset.
@@ -673,7 +673,7 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
 // 2. Calling either callback may delete the stream altogether.
 class ResetOnWriteFakeWebSocketStream : public FakeWebSocketStream {
  public:
-  ResetOnWriteFakeWebSocketStream() : closed_(false) {}
+  ResetOnWriteFakeWebSocketStream() = default;
 
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                   CompletionOnceCallback callback) override {
@@ -707,7 +707,7 @@ class ResetOnWriteFakeWebSocketStream : public FakeWebSocketStream {
   }
 
   CompletionOnceCallback read_callback_;
-  bool closed_;
+  bool closed_ = false;
   // An IO error can result in the socket being deleted, so we use weak pointers
   // to ensure correct behaviour in that case.
   base::WeakPtrFactory<ResetOnWriteFakeWebSocketStream> weak_ptr_factory_{this};
@@ -901,8 +901,7 @@ class WebSocketChannelEventInterfaceTest : public WebSocketChannelTest {
             std::make_unique<StrictMock<MockWebSocketEventInterface>>()) {
   }
 
-  ~WebSocketChannelEventInterfaceTest() override {
-  }
+  ~WebSocketChannelEventInterfaceTest() override = default;
 
   // Tests using this fixture must set expectations on the event_interface_ mock
   // object before calling CreateChannelAndConnect() or

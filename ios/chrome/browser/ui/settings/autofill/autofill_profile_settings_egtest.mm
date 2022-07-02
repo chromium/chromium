@@ -116,7 +116,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
 }
 
-// Helper to open the settings page for the Autofill profile with |label|.
+// Helper to open the settings page for the Autofill profile with `label`.
 - (void)openEditProfile:(NSString*)label {
   [self openAutofillProfilesSettings];
 

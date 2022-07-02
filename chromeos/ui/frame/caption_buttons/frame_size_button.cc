@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -124,8 +125,8 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
-  FrameSizeButton* size_button_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<FrameSizeButton> size_button_;
 };
 
 FrameSizeButton::FrameSizeButton(PressedCallback callback,
@@ -245,6 +246,15 @@ void FrameSizeButton::SetButtonsToSnapMode(
     delegate_->SetButtonIcons(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
                               views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
                               animate);
+  }
+  // Show Multitask Menu if float is enabled. Note here float flag is also used
+  // to represent other relatable UI/UX changes.
+  // TODO(shidi) Move this when long hover trigger (crbug.com/1330016) is
+  // implemented.
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    multitask_menu_ = std::make_unique<MultitaskMenu>(
+        /*anchor=*/this, GetWidget()->GetNativeWindow());
+    multitask_menu_->ShowBubble();
   }
 }
 

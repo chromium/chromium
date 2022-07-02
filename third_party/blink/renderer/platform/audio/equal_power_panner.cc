@@ -47,7 +47,7 @@ void EqualPowerPanner::Pan(double azimuth,
   DCHECK_GE(input_bus->NumberOfChannels(), 1u);
   DCHECK_LE(input_bus->NumberOfChannels(), 2u);
 
-  unsigned number_of_input_channels = input_bus->NumberOfChannels();
+  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
 
   DCHECK(output_bus);
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
@@ -70,10 +70,10 @@ void EqualPowerPanner::Pan(double azimuth,
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90) {
-    azimuth = -180 - azimuth;
-  } else if (azimuth > 90) {
-    azimuth = 180 - azimuth;
+  if (azimuth < -90.0) {
+    azimuth = -180.0 - azimuth;
+  } else if (azimuth > 90.0) {
+    azimuth = 180.0 - azimuth;
   }
 
   double desired_pan_position;
@@ -83,18 +83,18 @@ void EqualPowerPanner::Pan(double azimuth,
   if (number_of_input_channels == 1) {  // For mono source case.
     // Pan smoothly from left to right with azimuth going from -90 -> +90
     // degrees.
-    desired_pan_position = (azimuth + 90) / 180;
+    desired_pan_position = (azimuth + 90.0) / 180.0;
   } else {               // For stereo source case.
     if (azimuth <= 0) {  // from -90 -> 0
       // sourceL -> destL and "equal-power pan" sourceR as in mono case
       // by transforming the "azimuth" value from -90 -> 0 degrees into the
       // range -90 -> +90.
-      desired_pan_position = (azimuth + 90) / 90;
+      desired_pan_position = (azimuth + 90.0) / 90.0;
     } else {  // from 0 -> +90
       // sourceR -> destR and "equal-power pan" sourceL as in mono case
       // by transforming the "azimuth" value from 0 -> +90 degrees into the
       // range -90 -> +90.
-      desired_pan_position = azimuth / 90;
+      desired_pan_position = azimuth / 90.0;
     }
   }
 
@@ -105,7 +105,7 @@ void EqualPowerPanner::Pan(double azimuth,
 
   if (number_of_input_channels == 1) {  // For mono source case.
     while (n--) {
-      float input_l = *source_l++;
+      const float input_l = *source_l++;
 
       *destination_l++ = static_cast<float>(input_l * desired_gain_l);
       *destination_r++ = static_cast<float>(input_l * desired_gain_r);
@@ -113,8 +113,8 @@ void EqualPowerPanner::Pan(double azimuth,
   } else {               // For stereo source case.
     if (azimuth <= 0) {  // from -90 -> 0
       while (n--) {
-        float input_l = *source_l++;
-        float input_r = *source_r++;
+        const float input_l = *source_l++;
+        const float input_r = *source_r++;
 
         *destination_l++ =
             static_cast<float>(input_l + input_r * desired_gain_l);
@@ -122,8 +122,8 @@ void EqualPowerPanner::Pan(double azimuth,
       }
     } else {  // from 0 -> +90
       while (n--) {
-        float input_l = *source_l++;
-        float input_r = *source_r++;
+        const float input_l = *source_l++;
+        const float input_r = *source_r++;
 
         *destination_l++ = static_cast<float>(input_l * desired_gain_l);
         *destination_r++ =
@@ -131,45 +131,6 @@ void EqualPowerPanner::Pan(double azimuth,
       }
     }
   }
-}
-
-void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
-                                            double& desired_gain_r,
-                                            double azimuth,
-                                            int number_of_input_channels) {
-  // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = ClampTo(azimuth, -180.0, 180.0);
-
-  // Alias the azimuth ranges behind us to in front of us:
-  // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90) {
-    azimuth = -180 - azimuth;
-  } else if (azimuth > 90) {
-    azimuth = 180 - azimuth;
-  }
-
-  double desired_pan_position;
-
-  if (number_of_input_channels == 1) {  // For mono source case.
-    // Pan smoothly from left to right with azimuth going from -90 -> +90
-    // degrees.
-    desired_pan_position = (azimuth + 90) / 180;
-  } else {               // For stereo source case.
-    if (azimuth <= 0) {  // from -90 -> 0
-      // sourceL -> destL and "equal-power pan" sourceR as in mono case
-      // by transforming the "azimuth" value from -90 -> 0 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = (azimuth + 90) / 90;
-    } else {  // from 0 -> +90
-      // sourceR -> destR and "equal-power pan" sourceL as in mono case
-      // by transforming the "azimuth" value from 0 -> +90 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = azimuth / 90;
-    }
-  }
-
-  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 }
 
 void EqualPowerPanner::PanWithSampleAccurateValues(
@@ -184,7 +145,7 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
   DCHECK_GE(input_bus->NumberOfChannels(), 1u);
   DCHECK_LE(input_bus->NumberOfChannels(), 2u);
 
-  unsigned number_of_input_channels = input_bus->NumberOfChannels();
+  const unsigned number_of_input_channels = input_bus->NumberOfChannels();
 
   DCHECK(output_bus);
   DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
@@ -209,7 +170,7 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
     for (int k = 0; k < n; ++k) {
       double desired_gain_l;
       double desired_gain_r;
-      float input_l = *source_l++;
+      const float input_l = *source_l++;
 
       CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
                            number_of_input_channels);
@@ -224,20 +185,59 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
       CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
                            number_of_input_channels);
       if (azimuth[k] <= 0) {  // from -90 -> 0
-        float input_l = *source_l++;
-        float input_r = *source_r++;
+        const float input_l = *source_l++;
+        const float input_r = *source_r++;
         *destination_l++ =
             static_cast<float>(input_l + input_r * desired_gain_l);
         *destination_r++ = static_cast<float>(input_r * desired_gain_r);
       } else {  // from 0 -> +90
-        float input_l = *source_l++;
-        float input_r = *source_r++;
+        const float input_l = *source_l++;
+        const float input_r = *source_r++;
         *destination_l++ = static_cast<float>(input_l * desired_gain_l);
         *destination_r++ =
             static_cast<float>(input_r + input_l * desired_gain_r);
       }
     }
   }
+}
+
+void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
+                                            double& desired_gain_r,
+                                            double azimuth,
+                                            int number_of_input_channels) {
+  // Clamp azimuth to allowed range of -180 -> +180.
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
+
+  // Alias the azimuth ranges behind us to in front of us:
+  // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
+  if (azimuth < -90.0) {
+    azimuth = -180.0 - azimuth;
+  } else if (azimuth > 90.0) {
+    azimuth = 180.0 - azimuth;
+  }
+
+  double desired_pan_position;
+
+  if (number_of_input_channels == 1) {  // For mono source case.
+    // Pan smoothly from left to right with azimuth going from -90 -> +90
+    // degrees.
+    desired_pan_position = (azimuth + 90.0) / 180.0;
+  } else {               // For stereo source case.
+    if (azimuth <= 0) {  // from -90 -> 0
+      // sourceL -> destL and "equal-power pan" sourceR as in mono case
+      // by transforming the "azimuth" value from -90 -> 0 degrees into the
+      // range -90 -> +90.
+      desired_pan_position = (azimuth + 90.0) / 90.0;
+    } else {  // from 0 -> +90
+      // sourceR -> destR and "equal-power pan" sourceL as in mono case
+      // by transforming the "azimuth" value from 0 -> +90 degrees into the
+      // range -90 -> +90.
+      desired_pan_position = azimuth / 90.0;
+    }
+  }
+
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 }
 
 }  // namespace blink

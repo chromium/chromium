@@ -28,8 +28,8 @@ template <typename T>
 class BreakList {
  public:
   // The break type and const iterator, typedef'ed for convenience.
-  typedef std::pair<size_t, T> Break;
-  typedef typename std::vector<Break>::const_iterator const_iterator;
+  using Break = std::pair<size_t, T>;
+  using const_iterator = typename std::vector<Break>::const_iterator;
 
   // Initialize a break at position 0 with the default or supplied |value|.
   BreakList();
@@ -38,22 +38,27 @@ class BreakList {
   const std::vector<Break>& breaks() const { return breaks_; }
 
   // Clear the breaks and set a break at position 0 with the supplied |value|.
-  void SetValue(T value);
+  // Returns whether or not the breaks changed while applying the |value|.
+  bool SetValue(T value);
 
   // Adjust the breaks to apply |value| over the supplied |range|.
-  void ApplyValue(T value, const Range& range);
+  // Range |range| must be between [0, max_).
+  // Returns true if the breaks changed while applying the |value|.
+  bool ApplyValue(T value, const Range& range);
 
   // Set the max position and trim any breaks at or beyond that position.
   void SetMax(size_t max);
   size_t max() const { return max_; }
 
-  // Get the break applicable to |position| (at or preceeding |position|).
-  typename std::vector<Break>::iterator GetBreak(size_t position);
-  typename std::vector<Break>::const_iterator GetBreak(size_t position) const;
+  // Get the break applicable to |position| (at or preceding |position|).
+  // |position| must be between [0, max_).
+  // Returns a valid iterator. Can't return |break_.end()|.
+  const_iterator GetBreak(size_t position) const;
 
   // Get the range of the supplied break; returns the break's start position and
   // the next break's start position (or |max_| for the terminal break).
-  Range GetRange(const typename BreakList<T>::const_iterator& i) const;
+  // Iterator |i| must be valid and must not be |break_.end()|.
+  Range GetRange(const const_iterator& i) const;
 
   // Comparison functions for testing purposes.
   bool EqualsValueForTesting(T value) const;
@@ -66,38 +71,46 @@ class BreakList {
 #endif
 
   std::vector<Break> breaks_;
-  size_t max_;
+  size_t max_ = 0;
 };
 
-template<class T>
-BreakList<T>::BreakList() : breaks_(1, Break(0, T())), max_(0) {
-}
+template <class T>
+BreakList<T>::BreakList() : breaks_(1, Break(0, T())) {}
 
-template<class T>
-BreakList<T>::BreakList(T value) : breaks_(1, Break(0, value)), max_(0) {
-}
+template <class T>
+BreakList<T>::BreakList(T value) : breaks_(1, Break(0, value)) {}
 
-template<class T>
-void BreakList<T>::SetValue(T value) {
+template <class T>
+bool BreakList<T>::SetValue(T value) {
+  // Return false if setting |value| does not change the breaks.
+  if (breaks_.size() == 1 && breaks_[0].second == value)
+    return false;
+
   breaks_.clear();
   breaks_.push_back(Break(0, value));
+  return true;
 }
 
-template<class T>
-void BreakList<T>::ApplyValue(T value, const Range& range) {
+template <class T>
+bool BreakList<T>::ApplyValue(T value, const Range& range) {
   if (!range.IsValid() || range.is_empty())
-    return;
+    return false;
   DCHECK(!breaks_.empty());
   DCHECK(!range.is_reversed());
   DCHECK(Range(0, static_cast<uint32_t>(max_)).Contains(range));
 
+  // Return false if setting |value| does not change the breaks.
+  const_iterator start = GetBreak(range.start());
+  if (start->second == value && GetRange(start).Contains(range))
+    return false;
+
   // Erase any breaks in |range|, then add start and end breaks as needed.
-  typename std::vector<Break>::iterator start = GetBreak(range.start());
   start += start->first < range.start() ? 1 : 0;
-  typename std::vector<Break>::iterator end = GetBreak(range.end());
+  const_iterator end =
+      range.end() == max_ ? breaks_.cend() - 1 : GetBreak(range.end());
   T trailing_value = end->second;
-  typename std::vector<Break>::iterator i =
-      start == breaks_.end() ? start : breaks_.erase(start, end + 1);
+  const_iterator i =
+      start == breaks_.cend() ? start : breaks_.erase(start, end + 1);
   if (range.start() == 0 || (i - 1)->second != value)
     i = breaks_.insert(i, Break(range.start(), value)) + 1;
   if (trailing_value != value && range.end() != max_)
@@ -106,13 +119,18 @@ void BreakList<T>::ApplyValue(T value, const Range& range) {
 #ifndef NDEBUG
   CheckBreaks();
 #endif
+
+  return true;
 }
 
 template<class T>
 void BreakList<T>::SetMax(size_t max) {
-  typename std::vector<Break>::iterator i = GetBreak(max);
-  i += (i == breaks_.begin() || i->first < max) ? 1 : 0;
-  breaks_.erase(i, breaks_.end());
+  if (max < max_) {
+    const_iterator i = GetBreak(max);
+    if (i == breaks_.begin() || i->first < max)
+      i++;
+    breaks_.erase(i, breaks_.end());
+  }
   max_ = max;
 
 #ifndef NDEBUG
@@ -120,26 +138,26 @@ void BreakList<T>::SetMax(size_t max) {
 #endif
 }
 
-template<class T>
-typename std::vector<std::pair<size_t, T> >::iterator BreakList<T>::GetBreak(
-    size_t position) {
-  typename std::vector<Break>::iterator i = breaks_.end() - 1;
-  for (; i != breaks_.begin() && i->first > position; --i);
-  return i;
-}
-
-template<class T>
-typename std::vector<std::pair<size_t, T> >::const_iterator
-    BreakList<T>::GetBreak(size_t position) const {
-  typename std::vector<Break>::const_iterator i = breaks_.end() - 1;
-  for (; i != breaks_.begin() && i->first > position; --i);
-  return i;
+template <class T>
+typename BreakList<T>::const_iterator BreakList<T>::GetBreak(
+    size_t position) const {
+  DCHECK(!breaks_.empty());
+  DCHECK_LT(position, max_);
+  // Find the iterator with a 'strictly greater' position and return the
+  // previous one.
+  return std::upper_bound(breaks_.cbegin(), breaks_.cend(), position,
+                          [](size_t offset, const Break& value) {
+                            return offset < value.first;
+                          }) -
+         1;
 }
 
 template<class T>
 Range BreakList<T>::GetRange(
     const typename BreakList<T>::const_iterator& i) const {
-  const typename BreakList<T>::const_iterator next = i + 1;
+  // BreakLists are never empty. Iterator should always be valid.
+  DCHECK(i != breaks_.end());
+  const const_iterator next = i + 1;
   return Range(i->first, next == breaks_.end() ? max_ : next->first);
 }
 
@@ -161,6 +179,7 @@ bool BreakList<T>::EqualsForTesting(const std::vector<Break>& breaks) const {
 #ifndef NDEBUG
 template <class T>
 void BreakList<T>::CheckBreaks() {
+  DCHECK(!breaks_.empty()) << "BreakList cannot be empty";
   DCHECK_EQ(breaks_[0].first, 0U) << "The first break must be at position 0.";
   for (size_t i = 0; i < breaks_.size() - 1; ++i) {
     DCHECK_LT(breaks_[i].first, breaks_[i + 1].first) << "Break out of order.";

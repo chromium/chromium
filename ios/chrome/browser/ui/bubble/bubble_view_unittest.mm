@@ -65,7 +65,7 @@ class BubbleViewTest : public PlatformTest {
   const BubbleAlignment alignment_;
   // Distance between the arrow's centerX and the (leading or trailing) edge of
   // the bubble, depending on the BubbleAlignment. If BubbleAlignment is center,
-  // then |alignmentOffset| is ignored.
+  // then `alignmentOffset` is ignored.
   const CGFloat alignmentOffset_;
   // Text that is shorter than the minimum line width.
   NSString* shortText_;
@@ -76,7 +76,7 @@ class BubbleViewTest : public PlatformTest {
   NSTextAlignment textAlignment_;
 };
 
-// Test |sizeThatFits| given short text.
+// Test `sizeThatFits` given short text.
 TEST_F(BubbleViewTest, BubbleSizeShortText) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:shortText_
                                          arrowDirection:arrowDirection_
@@ -263,7 +263,7 @@ TEST_F(BubbleViewTest, ArrowViewLeadingAligned) {
   [bubble layoutIfNeeded];
   UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
-  // The center of the arrow must be at a distance of |alignmentOffset_| to the
+  // The center of the arrow must be at a distance of `alignmentOffset_` to the
   // leading edge of the bubble.
   EXPECT_EQ(CGRectGetMidX(arrowView.frame), alignmentOffset_);
 }
@@ -279,7 +279,7 @@ TEST_F(BubbleViewTest, ArrowViewCenterAligned) {
   [bubble layoutIfNeeded];
   UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
-  // |alignmentOffset| should be ignored with BubbleAlignmentCenter.
+  // `alignmentOffset` should be ignored with BubbleAlignmentCenter.
   EXPECT_EQ(CGRectGetMidX(arrowView.frame), CGRectGetMidX(bubble.frame));
 }
 
@@ -295,7 +295,7 @@ TEST_F(BubbleViewTest, ArrowViewTrailingAligned) {
   [bubble layoutIfNeeded];
   UIView* arrowView = GetArrowViewFromBubbleView(bubble);
   ASSERT_TRUE(arrowView);
-  // The center of the arrow must be at a distance of |alignmentOffset_| to the
+  // The center of the arrow must be at a distance of `alignmentOffset_` to the
   // trailing edge of the bubble.
   EXPECT_EQ(CGRectGetMidX(arrowView.frame),
             bubble.frame.size.width - alignmentOffset_);

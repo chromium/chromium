@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
 
   // Initialize listener and result catcher before the test page is loaded to
   // be sure not to miss any message.
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
   ResultCatcher result_catcher;
 
   // Load the extension test page.
@@ -152,8 +152,10 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
 
   content::WebContentsDelegate* web_contents_delegate =
       browser()->tab_strip_model()->GetActiveWebContents()->GetDelegate();
-  content::RenderFrameHost* main_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
   std::vector<content::RenderFrameHost*> subframes =
       CollectAllRenderFrameHosts(main_frame);
   ASSERT_EQ(3u, subframes.size());

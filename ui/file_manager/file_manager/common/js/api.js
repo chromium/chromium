@@ -101,6 +101,17 @@ export async function getDisallowedTransfers(entries, destinationEntry) {
 }
 
 /**
+ * Wrap the chrome.fileManagerPrivate.getDlpMetadata function in an async/await
+ * compatible style.
+ * @param {!Array<!Entry>} entries entries to be checked
+ * @return {!Promise<!Array<!chrome.fileManagerPrivate.DlpMetadata>>} list of
+ *     DlpMetadata
+ */
+export async function getDlpMetadata(entries) {
+  return promisify(chrome.fileManagerPrivate.getDlpMetadata, entries);
+}
+
+/**
  * Lists Guest OSs which support having their files mounted.
  * @return {!Promise<!Array<!chrome.fileManagerPrivate.MountableGuest>>}
  */
@@ -190,4 +201,17 @@ export async function getFrameColor() {
     console.error('Failed to get frame color.', e);
     return '#ffffff';
   }
+}
+
+/**
+ * Starts an IOTask of `type` and returns a taskId that can be used to cancel
+ * or identify the ongoing IO operation.
+ * @param {!chrome.fileManagerPrivate.IOTaskType} type
+ * @param {!Array<!Entry>} entries
+ * @param {!chrome.fileManagerPrivate.IOTaskParams} params
+ * @returns {!Promise<!number>}
+ */
+export async function startIOTask(type, entries, params) {
+  return promisify(
+      chrome.fileManagerPrivate.startIOTask, type, entries, params);
 }

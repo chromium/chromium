@@ -172,6 +172,9 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchCheckDefers) {

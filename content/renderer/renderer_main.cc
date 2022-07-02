@@ -64,7 +64,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
-#include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
 #endif  // defined(X86_64)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -164,7 +164,7 @@ int RendererMain(MainFunctionParams parameters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
-      chromeos::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
+      ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
   absl::optional<UserspaceSwapInit> swap_init;
   if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();

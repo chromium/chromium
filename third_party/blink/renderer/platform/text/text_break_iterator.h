@@ -26,6 +26,7 @@
 
 #include <unicode/brkiter.h>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"

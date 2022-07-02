@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -120,7 +121,7 @@ class MockAutofillManagerInjector : public content::WebContentsObserver {
  public:
   explicit MockAutofillManagerInjector(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
-    Inject(web_contents->GetMainFrame());
+    Inject(web_contents->GetPrimaryMainFrame());
   }
   ~MockAutofillManagerInjector() override = default;
 
@@ -171,7 +172,7 @@ class AutofillTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     AutofillManager* autofill_manager =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
-            ->DriverForFrame(web_contents->GetMainFrame())
+            ->DriverForFrame(web_contents->GetPrimaryMainFrame())
             ->autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
@@ -379,6 +380,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotAggregatedWithInvalidEmail) {
 // Test profile is saved if phone number is valid in selected country.
 // The data file contains two profiles with valid phone numbers and two
 // profiles with invalid phone numbers from their respective country.
+// If AutofillRemoveInvalidPhoneNumberOnImport is enabled, profiles with invalid
+// phone numbers are imported, but with the number removed.
 IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   std::vector<FormMap> profiles;
 
@@ -429,20 +432,25 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   for (const auto& profile : profiles)
     FillFormAndSubmit("autofill_test_form.html", profile);
 
-  ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
-  int us_address_index = personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-                             ADDRESS_HOME_LINE1) == u"123 Cherry Ave"
-                             ? 0
-                             : 1;
+  // The two valid phone numbers are imported in any case.
+  std::vector<std::u16string> expected_phone_numbers{u"408-871-4567",
+                                                     u"+49 40-80-81-79-000"};
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
+    // With the feature enabled, all four profiles are imported, but two without
+    // a phone number.
+    expected_phone_numbers.resize(4, u"");
+  }
 
-  EXPECT_EQ(
-      u"408-871-4567",
-      personal_data_manager()->GetProfiles()[us_address_index]->GetRawInfo(
-          PHONE_HOME_WHOLE_NUMBER));
-  ASSERT_EQ(
-      u"+49 40-80-81-79-000",
-      personal_data_manager()->GetProfiles()[1 - us_address_index]->GetRawInfo(
-          PHONE_HOME_WHOLE_NUMBER));
+  std::vector<std::u16string> actual_phone_numbers;
+  for (const AutofillProfile* profile :
+       personal_data_manager()->GetProfiles()) {
+    actual_phone_numbers.push_back(
+        profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  }
+
+  EXPECT_THAT(actual_phone_numbers,
+              testing::UnorderedElementsAreArray(expected_phone_numbers));
 }
 
 // Prepend country codes when formatting phone numbers, but only if the user
@@ -657,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::AccessibilityNotificationWaiter layout_waiter_one(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_one.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_one.WaitForNotification());
 
   // Focus target form field.
   const std::string focus_name_first_js =
@@ -697,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::AccessibilityNotificationWaiter layout_waiter_two(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_two.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_two.WaitForNotification());
 
   // Focus target form field.
   ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
@@ -729,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
   content::AccessibilityNotificationWaiter layout_waiter_one(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_one.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_one.WaitForNotification());
 
   // Focus target form field.
   const std::string focus_name_first_js =
@@ -765,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
   content::AccessibilityNotificationWaiter layout_waiter_two(
       web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
   ui_test_utils::NavigateToURL(&params);
-  layout_waiter_two.WaitForNotification();
+  ASSERT_TRUE(layout_waiter_two.WaitForNotification());
 
   // Focus target form field.
   ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
@@ -1018,7 +1026,7 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
       web_contents());
   base::RunLoop run_loop;
   EXPECT_CALL(
-      *injector.GetForFrame(web_contents()->GetMainFrame()),
+      *injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(
@@ -1036,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
   MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
       web_contents());
   base::RunLoop run_loop;
-  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetMainFrame()),
+  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)

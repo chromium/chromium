@@ -58,8 +58,9 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       NOTREACHED();
       break;
   }
-  window->set_update_visual_size_immediately(update_visual_size_immediately);
-  window->set_apply_pending_state_on_update_visual_size(
+  window->set_update_visual_size_immediately_for_testing(
+      update_visual_size_immediately);
+  window->set_apply_pending_state_on_update_visual_size_for_testing(
       apply_pending_state_on_update_visual_size);
   return window && window->Initialize(std::move(properties)) ? std::move(window)
                                                              : nullptr;

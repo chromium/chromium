@@ -89,8 +89,8 @@
       [resultType isEqualToString:AVMetadataObjectTypeInterleaved2of5Code] ||
       [resultType isEqualToString:AVMetadataObjectTypeITF14Code];
 
-  // Note: |captureOutput| is called on the main queue. This is specified by
-  // |setMetadataObjectsDelegate:queue:|.
+  // Note: `captureOutput` is called on the main queue. This is specified by
+  // `setMetadataObjectsDelegate:queue:`.
   [self.qrScannerDelegate receiveQRScannerResult:resultString
                                  loadImmediately:isAllDigits];
 }

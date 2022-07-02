@@ -314,29 +314,29 @@ const newTreeElement = (() => {
    * The element will represent a tree or a leaf, depending on if the tree node
    * object has any children. Trees use a slightly different template and have
    * click event listeners attached.
-   * @param {TreeNode} data Data to use for the UI.
+   * @param {TreeNode} node Data to use for the UI.
    * @returns {DocumentFragment}
    */
-  function makeTreeElement(data) {
-    const isLeaf = data.children && data.children.length === 0;
+  function makeTreeElement(node) {
+    const isLeaf = node.children && node.children.length === 0;
     const template = isLeaf ? _leafTemplate : _treeTemplate;
     const element = document.importNode(template.content, true);
     const listItemEl = element.firstElementChild;
     const link = /** @type {HTMLElement} */ (listItemEl.firstElementChild);
 
     // Associate clickable node & tree data.
-    _uiNodeData.set(link, Object.freeze(data));
+    _uiNodeData.set(link, Object.freeze(node));
 
     // Icons are predefined in the HTML through hidden SVG elements.
-    const type = data.type[0];
+    const type = node.type[0];
     const icon = getIconTemplate(type);
     if (!isLeaf) {
-      const symbolStyle = getIconStyle(data.type[1]);
+      const symbolStyle = getIconStyle(node.type[1]);
       icon.setAttribute('fill', symbolStyle.color);
     }
 
     // Insert an SVG icon at the start of the link to represent adds/removals.
-    const diffStatusIcon = getDiffStatusTemplate(data);
+    const diffStatusIcon = getDiffStatusTemplate(node);
     if (diffStatusIcon) {
       listItemEl.insertBefore(diffStatusIcon, listItemEl.firstElementChild);
     }
@@ -347,14 +347,12 @@ const newTreeElement = (() => {
     // Set the symbol name and hover text.
     /** @type {HTMLSpanElement} */
     const symbolName = element.querySelector('.symbol-name');
-    symbolName.textContent = shortName(data).replace(
-      _SPECIAL_CHAR_REGEX,
-      _ZERO_WIDTH_SPACE
-    );
-    symbolName.title = data.idPath;
+    symbolName.textContent =
+        shortName(node).replace(_SPECIAL_CHAR_REGEX, _ZERO_WIDTH_SPACE);
+    symbolName.title = node.idPath;
 
     // Set the byte size and hover text.
-    _setSize(element.querySelector('.size'), data);
+    _setSize(element.querySelector('.size'), node);
 
     link.addEventListener('mouseover', _handleMouseOver);
     if (!isLeaf) {
@@ -481,7 +479,8 @@ const newTreeElement = (() => {
    */
   function setReviewInfo(metadata) {
     const processReviewInfo = (field) => {
-      const reviewTextElement = document.getElementById('review-text');
+      const reviewTextElement = /** @type {HTMLAnchorElement} */ (
+          document.getElementById('review-text'));
       const reviewInfoElement = document.getElementById('review-info');
       const urlExists = Boolean(
           field?.hasOwnProperty('url') && field?.hasOwnProperty('title'));

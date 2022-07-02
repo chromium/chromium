@@ -47,8 +47,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_handler.h"
@@ -85,6 +86,8 @@ const test::UIPath kDemoPreferencesScreen = {kDemoPrefsId};
 const test::UIPath kDemoPreferencesCountry = {kDemoPrefsId, "countrySelect"};
 const test::UIPath kDemoPreferencesCountrySelect = {kDemoPrefsId,
                                                     "countrySelect", "select"};
+const test::UIPath kDemoPreferencesRetailerStoreId = {kDemoPrefsId,
+                                                      "retailerIdInput"};
 const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 
 const test::UIPath kNetworkScreen = {kNetworkId};
@@ -221,7 +224,7 @@ class DemoSetupTestBase : public OobeBaseTest {
   // Simulates device being connected to the network.
   void SimulateNetworkConnected() {
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(kDefaultNetworkServicePath,
                                 shill::kStateProperty,
                                 base::Value(shill::kStateOnline));
@@ -231,7 +234,7 @@ class DemoSetupTestBase : public OobeBaseTest {
   // Simulates device being disconnected from the network.
   void SimulateNetworkDisconnected() {
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(kDefaultNetworkServicePath,
                                 shill::kStateProperty,
                                 base::Value(shill::kStateIdle));
@@ -248,7 +251,7 @@ class DemoSetupTestBase : public OobeBaseTest {
         0,      // no limit to number of results
         &networks);
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     for (const auto* const network : networks) {
       service->SetServiceProperty(network->path(), shill::kStateProperty,
                                   base::Value(shill::kStateIdle));
@@ -556,6 +559,44 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
 
   SelectFranceAndFinishSetup();
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       OnlineSetupFlowSuccessWithRetailerAndStoreId) {
+  // Simulate successful online setup.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  const std::string expectedRetailerStoreId = "ABC-1234";
+
+  test::OobeJS().TypeIntoPath(expectedRetailerStoreId,
+                              kDemoPreferencesRetailerStoreId);
+  test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  EXPECT_EQ(expectedRetailerStoreId, WizardController::default_controller()
+                                         ->demo_setup_controller()
+                                         ->get_retailer_store_id_input());
+
+  UseOnlineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupProgress();
+
+  EXPECT_EQ("admin-us@cros-demo-mode.com",
+            DemoSetupController::GetSubOrganizationEmail());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
+  EXPECT_EQ("ABC", g_browser_process->local_state()->GetString(
+                       prefs::kDemoModeRetailerId));
+  EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
+                        prefs::kDemoModeStoreId));
+
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {

@@ -172,8 +172,9 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {
     // breaking.
     for (uint32_t qualifier = ui::PAGE_TRANSITION_FORWARD_BACK; qualifier != 0;
          qualifier <<= 1) {
-      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API))
+      if (qualifier == static_cast<uint32_t>(ui::PAGE_TRANSITION_FROM_API)) {
         continue;  // We don't sync PAGE_TRANSITION_FROM_API.
+      }
       ui::PageTransition transition =
           ui::PageTransitionFromInt(core_type | qualifier);
       SerializedNavigationEntryTestHelper::SetTransitionType(transition,

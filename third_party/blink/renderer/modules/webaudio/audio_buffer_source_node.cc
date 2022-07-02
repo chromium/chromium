@@ -42,20 +42,27 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultPlaybackRateValue = 1.0;
+constexpr double kDefaultDetuneValue = 0.0;
+
+}  // namespace
+
 AudioBufferSourceNode::AudioBufferSourceNode(BaseAudioContext& context)
     : AudioScheduledSourceNode(context),
       playback_rate_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeAudioBufferSourcePlaybackRate,
-          1.0,
+          kDefaultPlaybackRateValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed)),
       detune_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeAudioBufferSourceDetune,
-          0.0,
+          kDefaultDetuneValue,
           AudioParamHandler::AutomationRate::kControl,
           AudioParamHandler::AutomationRateMode::kFixed)) {
   SetHandler(AudioBufferSourceHandler::Create(*this, context.sampleRate(),

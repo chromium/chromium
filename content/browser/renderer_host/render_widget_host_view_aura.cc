@@ -1477,12 +1477,6 @@ bool RenderWidgetHostViewAura::SetEditableSelectionRange(
   return true;
 }
 
-bool RenderWidgetHostViewAura::DeleteRange(const gfx::Range& range) {
-  // TODO(suzhe): implement this method when fixing http://crbug.com/55130.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
 bool RenderWidgetHostViewAura::GetTextFromRange(const gfx::Range& range,
                                                 std::u16string* text) const {
   if (!text_input_manager_ || !GetFocusedWidget())
@@ -1556,11 +1550,7 @@ void RenderWidgetHostViewAura::EnsureCaretNotInRect(
   if (hidden_window_bounds_in_screen.IsEmpty())
     return;
 
-  gfx::Rect visible_area_in_local_space = gfx::SubtractRects(
-      window_->GetBoundsInScreen(), hidden_window_bounds_in_screen);
-  visible_area_in_local_space =
-      ConvertRectFromScreen(visible_area_in_local_space);
-  ScrollFocusedEditableNodeIntoRect(visible_area_in_local_space);
+  ScrollFocusedEditableNodeIntoView();
 }
 
 bool RenderWidgetHostViewAura::IsTextEditCommandEnabled(
@@ -1598,7 +1588,7 @@ bool RenderWidgetHostViewAura::SetCompositionFromExistingText(
 
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range RenderWidgetHostViewAura::GetAutocorrectRange() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return gfx::Range();
@@ -1672,10 +1662,15 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
 }
 
 absl::optional<ui::GrammarFragment>
-RenderWidgetHostViewAura::GetGrammarFragment(const gfx::Range& range) {
+RenderWidgetHostViewAura::GetGrammarFragmentAtCursor() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return absl::nullopt;
-  return text_input_manager_->GetGrammarFragment(range);
+  gfx::Range selection_range;
+  if (GetEditableSelectionRange(&selection_range)) {
+    return text_input_manager_->GetGrammarFragment(selection_range);
+  } else {
+    return absl::nullopt;
+  }
 }
 
 bool RenderWidgetHostViewAura::ClearGrammarFragments(const gfx::Range& range) {
@@ -2132,12 +2127,14 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
-  SetContentBackgroundColor(metadata.root_background_color);
+
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  SetContentBackgroundColor(metadata.root_background_color.toSkColor());
   if (inset_surface_id_.is_valid() && metadata.local_surface_id &&
       metadata.local_surface_id.value().is_valid() &&
       metadata.local_surface_id.value().IsSameOrNewerThan(inset_surface_id_)) {
     inset_surface_id_ = viz::LocalSurfaceId();
-    ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+    ScrollFocusedEditableNodeIntoView();
   }
 
   if (metadata.selection.start != selection_start_ ||
@@ -2757,12 +2754,11 @@ void RenderWidgetHostViewAura::SetPopupChild(
       popup_child_host_view ? popup_child_host_view->event_handler() : nullptr);
 }
 
-void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoRect(
-    const gfx::Rect& node_rect) {
+void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoView() {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler)
     return;
-  input_handler->ScrollFocusedEditableNodeIntoRect(node_rect);
+  input_handler->ScrollFocusedEditableNodeIntoView();
 }
 
 void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged(

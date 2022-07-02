@@ -183,11 +183,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (newRoute !== routes.PRIVACY_GUIDE || this.exitIfNecessary()) {
       return;
     }
-    // Set the pref that the user has viewed the Privacy guide.
-    CrSettingsPrefs.initialized.then(() => {
-      this.setPrefValue('privacy_guide.viewed', true);
-    });
-
     this.updateStateFromQueryParameters_();
   }
 
@@ -350,8 +345,16 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   /** Sets the privacy guide step from the URL parameter. */
-  private updateStateFromQueryParameters_() {
+  private async updateStateFromQueryParameters_() {
     assert(Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE);
+
+    // Tasks in the privacy guide UI and in multiple fragments rely on prefs
+    // being loaded. Instead of individually delaying those tasks, await prefs
+    // once when a navigation to the privacy guide happens.
+    await CrSettingsPrefs.initialized;
+    // Set the pref that the user has viewed the Privacy guide.
+    this.setPrefValue('privacy_guide.viewed', true);
+
     const step = Router.getInstance().getQueryParameters().get('step') as
         PrivacyGuideStep;
 

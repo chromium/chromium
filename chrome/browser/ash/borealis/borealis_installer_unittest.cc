@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -57,7 +57,7 @@ class MockObserver : public BorealisInstaller::Observer {
 };
 
 class BorealisInstallerTest : public testing::Test,
-                              protected FakeVmServicesHelper {
+                              protected guest_os::FakeVmServicesHelper {
  public:
   BorealisInstallerTest() = default;
   ~BorealisInstallerTest() override = default;
@@ -404,7 +404,7 @@ class BorealisUninstallerTest : public BorealisInstallerTest {
     vm_tools::apps::ApplicationList list;
     list.set_vm_name("borealis");
     list.set_container_name("penguin");
-    list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    list.set_vm_type(vm_tools::apps::BOREALIS);
     vm_tools::apps::App* app = list.add_apps();
     app->set_desktop_file_id(desktop_file_id);
     vm_tools::apps::App::LocaleString::Entry* entry =
@@ -507,11 +507,10 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
   // Install a fake app.
   SetDummyApp("dummy.desktop");
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)
-          ->GetRegisteredApps(vm_tools::apps::ApplicationList_VmType_BOREALIS)
-          .size(),
-      1u);
+  EXPECT_EQ(guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)
+                ->GetRegisteredApps(vm_tools::apps::BOREALIS)
+                .size(),
+            1u);
 
   EXPECT_CALL(*test_context_manager_, ShutDownBorealis(testing::_))
       .WillOnce(testing::Invoke(
@@ -530,11 +529,10 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 
   // Borealis has no installed apps.
-  EXPECT_EQ(
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)
-          ->GetRegisteredApps(vm_tools::apps::ApplicationList_VmType_BOREALIS)
-          .size(),
-      0u);
+  EXPECT_EQ(guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)
+                ->GetRegisteredApps(vm_tools::apps::BOREALIS)
+                .size(),
+            0u);
 
   // Borealis has no stateful disk.
   EXPECT_GE(FakeConciergeClient()->destroy_disk_image_call_count(), 1);

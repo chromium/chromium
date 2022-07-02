@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -29,9 +29,7 @@ OfflineAudioDestinationHandler::OfflineAudioDestinationHandler(
     uint32_t frames_to_process,
     float sample_rate)
     : AudioDestinationHandler(node),
-      frames_processed_(0),
       frames_to_process_(frames_to_process),
-      is_rendering_started_(false),
       number_of_channels_(number_of_channels),
       sample_rate_(sample_rate),
       main_thread_task_runner_(Context()->GetExecutionContext()->GetTaskRunner(
@@ -109,7 +107,7 @@ void OfflineAudioDestinationHandler::StartRendering() {
   }
 
   // Rendering is already started, which implicitly means we resume the
-  // rendering by calling |doOfflineRendering| on the render thread.
+  // rendering by calling `DoOfflineRendering()` on the render thread.
   PostCrossThreadTask(
       *render_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&OfflineAudioDestinationHandler::DoOfflineRendering,
@@ -233,8 +231,8 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
 
   render_thread_.reset();
 
-  // If the execution context has been destroyed, there's no where to
-  // send the notification, so just return.
+  // If the execution context has been destroyed, there's nowhere to send the
+  // notification, so just return.
   if (IsExecutionContextDestroyed()) {
     return;
   }
@@ -341,7 +339,7 @@ void OfflineAudioDestinationHandler::PrepareTaskRunnerForRendering() {
   } else {
     if (!render_thread_) {
       // The context started from the non-AudioWorklet mode.
-      render_thread_ = Platform::Current()->CreateThread(
+      render_thread_ = Thread::CreateThread(
           ThreadCreationParams(ThreadType::kOfflineAudioRenderThread));
       render_thread_task_runner_ = render_thread_->GetTaskRunner();
     }

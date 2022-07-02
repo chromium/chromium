@@ -129,7 +129,7 @@ Chrome team on approval of the request.
         Investigate any failures, especially concerning the modified
         provider(s).
 
-        For new providers, repeat the test 25-100 times (engineer judgement on
+        For new providers, repeat the test 25-100 times (exercise judgment on
         how much scrutiny is necessary) for the specific provider to ensure the
         provider is reliable:
         ```shell
@@ -157,27 +157,39 @@ Chrome team on approval of the request.
     reviewer in [net OWNERS](/net/OWNERS). The reviewer should confirm that the
     process defined in this document has been followed, especially that the bug
     tracker request has been properly approved.
-1.  If a provider must be intially disabled or partially disabled, e.g. because
+1.  If a provider must be initially disabled or partially disabled, e.g. because
     a provider with significant usage has requested a gradual controlled
-    rollout, a Googler must modify the `DnsOverHttps.gcl` experiment config.
-
-    *** aside
-    TODO(dmcardle): Document the new procedure here, which will involve creating
-    starting a new experiment for each gradual rollout. For some period of time,
-    we'll need to mirror changes between new per-provider experiments and the
-    old `DnsOverHttps.gcl`. Also mention that changes should be reflected in
-    `testing/variations/fieldtrial_testing_config.json`.
-    ***
+    rollout, a Googler must:
+    * Create a launch bug, e.g. the [Cox DoH provider launch
+      bug](https://crbug.com/1303146).
+    * Create a Finch config to roll out each DoH provider, e.g.
+      `DnsOverHttpsCox.gcl`.
+        * Ensure that the provider's `DohProviderEntry::feature` is disabled by
+          default and is enabled by the Finch config.
+        * Before landing the Finch config, make the corresponding changes in
+          [fieldtrial_testing_config.json](/testing/variations/fieldtrial_testing_config.json).
+        * Once the DoH provider's feature has been launched and the Finch
+          experiment has expired, `DohProviderEntry::feature` should be enabled
+          by default.
 
 ## Dynamic control
 
-Googlers may modify the `DnsOverHttps.gcl` experiment config to dynamically
-control Chrome DoH via Feature parameters. This support currently allows
-disabling or partially disabling individual providers.
+DoH providers, especially new ones, may have service interruptions or
+performance degradation to the point that it's necessary to disable their
+autoupgrade feature.
+
+If the malfunctioning DoH provider is still in the middle of a gradual rollout,
+Googlers may dynamically disable the provider by modifying its experiment config
+(`DnsOverHttps${ProviderName}.gcl`).
+
+Otherwise, if the provider's autoupgrade feature has already been launched,
+Googlers should create a new "kill switch config" rather than reuse the expired
+gradual rollout config. Follow the guidance at
+[go/finch-killswitch](http://go/finch-killswitch).
 
 *** aside
 If a user has selected a provider via the "Secure DNS" settings and that
-provider becomes disabled, the UI option will disapear from the dropdown but
+provider becomes disabled, the UI option will disappear from the dropdown but
 selection will convert to a custom text-box entry for the same provider and
 continue to be used for that user.
 ***

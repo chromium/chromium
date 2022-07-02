@@ -20,6 +20,15 @@
         deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
     </settings-toggle-button>
     <div class="hr" hidden="[[isKioskModeActive_]]"></div>
+    <template is="dom-if"
+        if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <cr-link-row id="text-to-speech-page-trigger"
+          label="$i18n{textToSpeechLinkTitle}"
+          on-click="onTextToSpeechTap_"
+          sub-label="$i18n{textToSpeechLinkDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
     <cr-link-row id="subpage-trigger"
         label="$i18n{manageAccessibilityFeatures}"
         on-click="onManageAccessibilityFeaturesTap_"
@@ -33,6 +42,12 @@
         hide-close-button="[[isKioskModeActive_]]">
       <settings-manage-a11y-page prefs="{{prefs}}">
       </settings-manage-a11y-page>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/textToSpeech">
+    <settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
+      <settings-text-to-speech-page prefs="{{prefs}}">
+      </settings-text-to-speech-page>
     </settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/tts">

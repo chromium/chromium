@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -26,8 +27,7 @@
 
 namespace {
 
-bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
-  DCHECK(web_contents);
+bool IsFullScreenMode(Browser* browser) {
   DCHECK(browser);
 
   // PWA uses the title bar as a substitute for LocationBarView.
@@ -40,7 +40,30 @@ bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
 
   LocationBarView* location_bar = browser_view->GetLocationBarView();
 
-  return !location_bar || !location_bar->IsDrawn();
+  return !location_bar || !location_bar->IsDrawn() ||
+         location_bar->GetWidget()->IsFullscreen();
+}
+
+// A permission request should be auto-ignored if a user interacts with the
+// LocationBar. The only exception is the NTP page where the user needs to press
+// on a microphone icon to get a permission request.
+bool ShouldIgnorePermissionRequest(content::WebContents* web_contents,
+                                   Browser* browser) {
+  DCHECK(web_contents);
+  DCHECK(browser);
+
+  // In case of the NTP, `WebContents::GetVisibleURL()` is equal to
+  // `chrome://newtab/`, but the `LocationBarView` will be empty.
+  if (web_contents->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL)) {
+    return false;
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return false;
+
+  LocationBarView* location_bar = browser_view->GetLocationBarView();
+  return location_bar && location_bar->IsEditingOrEmpty();
 }
 
 bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
@@ -90,7 +113,12 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   }
 
   if (delegate->ShouldDropCurrentRequestIfCannotShowQuietly() &&
-      IsFullScreenMode(web_contents, browser)) {
+      IsFullScreenMode(browser)) {
+    return nullptr;
+  }
+
+  // Auto-ignore the permission request if a user is typing into location bar.
+  if (ShouldIgnorePermissionRequest(web_contents, browser)) {
     return nullptr;
   }
 
@@ -118,19 +146,13 @@ PermissionPromptImpl::PermissionPromptImpl(Browser* browser,
 PermissionPromptImpl::~PermissionPromptImpl() {
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      DCHECK(!chip_);
-      if (prompt_bubble_)
-        prompt_bubble_->GetWidget()->Close();
+      CleanUpPromptBubble();
       break;
     case PermissionPromptStyle::kChip:
     case PermissionPromptStyle::kQuietChip:
-      DCHECK(!prompt_bubble_);
-      DCHECK(chip_);
       FinalizeChip();
       break;
     case PermissionPromptStyle::kLocationBarRightIcon:
-      DCHECK(!prompt_bubble_);
-      DCHECK(!chip_);
       content_settings::UpdateLocationBarUiForWebContents(web_contents_);
       break;
   }
@@ -148,59 +170,31 @@ void PermissionPromptImpl::UpdateAnchor() {
     was_browser_changed = true;
   }
   LocationBarView* lbv = GetLocationBarView();
-  const bool is_location_bar_drawn = lbv && lbv->IsDrawn();
+  const bool is_location_bar_drawn =
+      lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      DCHECK(!chip_);
+      DCHECK(!lbv->IsChipActive());
       // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
       // here. Early return is preventing the crash from happening but we still
       // don't know the reason why it is null here and cannot reproduce it.
       if (!prompt_bubble_)
         return;
 
-      if (ShouldCurrentRequestUseChip() && is_location_bar_drawn) {
-        // Change prompt style to chip to avoid dismissing request while
-        // switching UI style.
-        prompt_bubble_->SetPromptStyle(PermissionPromptStyle::kChip);
-        prompt_bubble_->GetWidget()->Close();
-        ShowChip();
-        chip_->OpenBubble();
+      // If |browser_| changed, recreate bubble for correct browser.
+      if (was_browser_changed) {
+        CleanUpPromptBubble();
+        ShowBubble();
       } else {
-        // If |browser_| changed, recreate bubble for correct browser.
-        if (was_browser_changed) {
-          prompt_bubble_->GetWidget()->CloseWithReason(
-              views::Widget::ClosedReason::kUnspecified);
-          ShowBubble();
-        } else {
-          prompt_bubble_->UpdateAnchorPosition();
-        }
+        prompt_bubble_->UpdateAnchorPosition();
       }
       break;
     case PermissionPromptStyle::kChip:
-      DCHECK(!prompt_bubble_);
-
-      if (!lbv->chip()) {
-        chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
-      }
-      // If there is fresh pending request shown as chip UI and location bar
-      // isn't visible anymore, show bubble UI instead.
-      if (!chip_->is_fully_collapsed() && !is_location_bar_drawn) {
-        FinalizeChip();
-        ShowBubble();
-      }
-      break;
     case PermissionPromptStyle::kQuietChip:
       DCHECK(!prompt_bubble_);
+      DCHECK(lbv->IsChipActive());
 
-      if (!lbv->chip()) {
-        chip_ = lbv->DisplayQuietChip(
-            delegate_,
-            !permissions::PermissionUiSelector::ShouldSuppressAnimation(
-                delegate_->ReasonForUsingQuietUi()));
-      }
-      // If there is fresh pending request shown as chip UI and location bar
-      // isn't visible anymore, show bubble UI instead.
-      if (!chip_->is_fully_collapsed() && !is_location_bar_drawn) {
+      if (!is_location_bar_drawn) {
         FinalizeChip();
         ShowBubble();
       }
@@ -245,23 +239,35 @@ PermissionPromptImpl::GetPromptDisposition() const {
   }
 }
 
+void PermissionPromptImpl::CleanUpPromptBubble() {
+  if (prompt_bubble_) {
+    views::Widget* widget = prompt_bubble_->GetWidget();
+    widget->RemoveObserver(this);
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    prompt_bubble_ = nullptr;
+  }
+}
+
 views::Widget* PermissionPromptImpl::GetPromptBubbleWidgetForTesting() {
   if (prompt_bubble_) {
     return prompt_bubble_->GetWidget();
   }
-  return chip_ ? chip_->GetPromptBubbleWidgetForTesting()  // IN-TEST
-               : nullptr;
+
+  LocationBarView* lbv = GetLocationBarView();
+
+  return lbv->IsChipActive() && lbv->chip()->IsBubbleShowing()
+             ? lbv->chip()->GetPromptBubbleWidgetForTesting()  // IN-TEST
+             : nullptr;
 }
 
-void PermissionPromptImpl::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, prompt_bubble_->GetWidget());
+void PermissionPromptImpl::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
 }
 
 bool PermissionPromptImpl::IsLocationBarDisplayed() {
   LocationBarView* lbv = GetLocationBarView();
-  return lbv && lbv->IsDrawn();
+  return lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
 }
 
 void PermissionPromptImpl::SelectPwaPrompt() {
@@ -320,12 +326,12 @@ void PermissionPromptImpl::ShowChip() {
   DCHECK(lbv);
 
   if (delegate_->ShouldCurrentRequestUseQuietUI()) {
-    chip_ = lbv->DisplayQuietChip(
+    lbv->DisplayQuietChip(
         delegate_, !permissions::PermissionUiSelector::ShouldSuppressAnimation(
                        delegate_->ReasonForUsingQuietUi()));
     prompt_style_ = PermissionPromptStyle::kQuietChip;
   } else {
-    chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
+    lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
     prompt_style_ = PermissionPromptStyle::kChip;
   }
 }
@@ -358,6 +364,8 @@ bool PermissionPromptImpl::ShouldCurrentRequestUseQuietChip() {
 }
 
 void PermissionPromptImpl::FinalizeChip() {
-  GetLocationBarView()->FinalizeChip();
-  chip_ = nullptr;
+  LocationBarView* lbv = GetLocationBarView();
+  if (lbv && lbv->chip()) {
+    lbv->FinalizeChip();
+  }
 }

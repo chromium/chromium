@@ -146,10 +146,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
       DCHECK_NE(tracking_id, -1);
       DCHECK(strokes_.count(tracking_id) == 0)
           << " Tracking id " << tracking_id;
-      // Stroke new_stroke(model_->config().max_sample_count);  // TODO:save the
-      // constant here.
-      strokes_.emplace(std::make_pair(
-          tracking_id, PalmFilterStroke(model_->config().max_sample_count)));
+
+      strokes_.emplace(tracking_id, PalmFilterStroke(model_->config()));
       strokes_.find(tracking_id)->second.SetTrackingId(tracking_id);
       tracking_ids_[slot] = tracking_id;
       is_palm_.set(slot, false);
@@ -192,8 +190,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
     }
 
     // Add the sample to the stroke.
-    stroke.AddSample(CreatePalmFilterSample(touch, time, model_->config(),
-                                            palm_filter_dev_info_));
+    stroke.ProcessSample(CreatePalmFilterSample(touch, time, model_->config(),
+                                                palm_filter_dev_info_));
     if (!is_palm_.test(slot) && ShouldDecideStroke(stroke)) {
       // slots_to_decide will have is_delay_ set to false anyway, no need to do
       // the delay detection.
@@ -215,7 +213,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
         config.early_stage_sample_counts.find(stroke.samples_seen()) !=
             config.early_stage_sample_counts.end()) {
       VLOG(1) << "About to run a early_stage prediction.";
-      if (DetectSpuriousStroke(ExtractFeatures(tracking_id), tracking_id,
+      if (DetectSpuriousStroke(ExtractFeatures(tracking_id),
                                model_->config().output_threshold)) {
         VLOG(1) << "hold detected.";
         is_delay_.set(slot, true);
@@ -238,9 +236,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
       is_palm_.set(slot, IsHeuristicPalmStroke(stroke));
       continue;
     }
-    is_palm_.set(slot,
-                 DetectSpuriousStroke(ExtractFeatures(tracking_id), tracking_id,
-                                      model_->config().output_threshold));
+    is_palm_.set(slot, DetectSpuriousStroke(ExtractFeatures(tracking_id),
+                                            model_->config().output_threshold));
     if (is_palm_.test(slot)) {
       shared_palm_state_->latest_palm_touch_time = time;
     }
@@ -307,7 +304,6 @@ bool NeuralStylusPalmDetectionFilter::IsHeuristicPalmStroke(
 
 bool NeuralStylusPalmDetectionFilter::DetectSpuriousStroke(
     const std::vector<float>& features,
-    int tracking_id,
     float threshold) const {
   auto inference_value = model_->Inference(features);
   if (VLOG_IS_ON(1)) {
@@ -372,15 +368,12 @@ void NeuralStylusPalmDetectionFilter::AppendFeatures(
     std::vector<float>* features) const {
   const int size = stroke.samples().size();
   for (int i = 0; i < size; ++i) {
-    const auto& sample = stroke.samples()[i];
+    const PalmFilterSample& sample = stroke.samples()[i];
     features->push_back(sample.major_radius);
     features->push_back(sample.minor_radius <= 0.0 ? sample.major_radius
                                                    : sample.minor_radius);
-    float distance;
-    if (i == 0) {
-      distance = 0;
-
-    } else {
+    float distance = 0;
+    if (i != 0) {
       distance = EuclideanDistance(stroke.samples()[i - 1].point, sample.point);
     }
     features->push_back(distance);

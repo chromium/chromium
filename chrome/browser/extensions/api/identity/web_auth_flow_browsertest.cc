@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
 
   // Create a fenced frame into the inner WebContents of the WebAuthFlow.
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(),
+      web_contents()->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("/fenced_frames/title1.html")));
 }
 
@@ -145,6 +145,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
 
   // Create a fenced frame into the inner WebContents of the WebAuthFlow.
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), embedded_test_server()->GetURL("/error"),
-      net::Error::ERR_FAILED));
+      web_contents()->GetPrimaryMainFrame(),
+      embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }

@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used from the "Manage search engines" section
@@ -52,10 +50,23 @@ export class SearchEnginesBrowserProxy {
   getSearchEnginesList() {}
 }
 
+/** @type {?SearchEnginesBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {SearchEnginesBrowserProxy}
  */
 export class SearchEnginesBrowserProxyImpl {
+  /** @return {!SearchEnginesBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new SearchEnginesBrowserProxyImpl());
+  }
+
+  /** @param {!SearchEnginesBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   setDefaultSearchEngine(modelIndex) {
     chrome.send('setDefaultSearchEngine', [modelIndex]);
@@ -66,7 +77,3 @@ export class SearchEnginesBrowserProxyImpl {
     return sendWithPromise('getSearchEnginesList');
   }
 }
-
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(SearchEnginesBrowserProxyImpl);

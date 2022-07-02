@@ -23,7 +23,8 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     private final PageInfoRowView mRowView;
     private PageInfoAdPersonalizationPreference mSubPage;
 
-    private List<String> mInfo;
+    private boolean mHasJoinedUserToInterestGroup;
+    private List<String> mTopics;
 
     public PageInfoAdPersonalizationController(PageInfoMainController mainController,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate) {
@@ -32,13 +33,15 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         mRowView = rowView;
     }
 
-    public void setTopicsDisplay(List<String> topics) {
-        mInfo = topics;
-        if (mInfo.isEmpty() && sTopicsForTesting != null) {
-            mInfo = sTopicsForTesting;
+    public void setAdPersonalizationInfo(
+            boolean hasJoinedUserToInterestGroup, List<String> topics) {
+        mHasJoinedUserToInterestGroup = hasJoinedUserToInterestGroup;
+        mTopics = topics;
+        if (mTopics.isEmpty() && sTopicsForTesting != null) {
+            mTopics = sTopicsForTesting;
         }
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        rowParams.visible = !mInfo.isEmpty();
+        rowParams.visible = hasJoinedUserToInterestGroup || !mTopics.isEmpty();
         rowParams.title = getSubpageTitle();
         rowParams.iconResId = R.drawable.gm_ads_click_24;
         rowParams.decreaseIconSize = true;
@@ -64,7 +67,8 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         mSubPage = new PageInfoAdPersonalizationPreference();
         PageInfoAdPersonalizationPreference.Params params =
                 new PageInfoAdPersonalizationPreference.Params();
-        params.topicInfo = mInfo;
+        params.hasJoinedUserToInterestGroup = mHasJoinedUserToInterestGroup;
+        params.topicInfo = mTopics;
         params.onManageInterestsButtonClicked = () -> {
             mMainController.recordAction(
                     PageInfoAction.PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);

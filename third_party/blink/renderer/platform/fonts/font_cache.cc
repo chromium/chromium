@@ -114,7 +114,14 @@ FontCache::FontCache()
 #endif
 }
 
-FontCache::~FontCache() = default;
+FontCache::~FontCache() {
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  if (!RuntimeEnabledFeatures::ParallelTextShapingEnabled())
+    delete font_platform_data_cache_;
+#else
+  delete font_platform_data_cache_;
+#endif
+}
 
 #if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(

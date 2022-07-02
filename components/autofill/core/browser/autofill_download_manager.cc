@@ -406,7 +406,7 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
   if (upload.has_single_username_data()) {
-    LogBuffer single_username_data;
+    LogBuffer single_username_data(LogBuffer::IsActive(true));
     single_username_data << Tag{"span"} << "[";
     single_username_data
         << Tr{} << "username_form_signature:"
@@ -736,12 +736,10 @@ bool AutofillDownloadManager::StartUploadRequest(
     request_data.payload = std::move(payload);
 
     DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
-    if (log_manager_) {
-      log_manager_->Log() << LoggingScope::kAutofillServer
-                          << LogMessage::kSendAutofillUpload << Br{}
-                          << "Allow upload?: " << allow_upload << Br{}
-                          << "Data: " << Br{} << upload;
-    }
+    LOG_AF(log_manager_) << LoggingScope::kAutofillServer
+                         << LogMessage::kSendAutofillUpload << Br{}
+                         << "Allow upload?: " << allow_upload << Br{}
+                         << "Data: " << Br{} << upload;
 
     if (!allow_upload)
       return false;
@@ -1018,14 +1016,22 @@ void AutofillDownloadManager::InitActiveExperiments() {
       variations::VariationsIdsProvider::GetInstance();
   DCHECK(variations_ids_provider != nullptr);
 
-  delete active_experiments_;
-  active_experiments_ = new std::vector<variations::VariationID>(
+  // TODO(crbug.com/1331322): Retire the hardcoded GWS ID ranges and only read
+  // the finch parameter.
+  base::flat_set<int> active_experiments(
       variations_ids_provider->GetVariationsVector(
           {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
            variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
-  base::EraseIf(*active_experiments_, [](variations::VariationID id) {
-    return !IsAutofillExperimentId(id);
-  });
+  base::EraseIf(active_experiments, base::not_fn(&IsAutofillExperimentId));
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillServerBehaviors)) {
+    active_experiments.insert(
+        autofill::features::kAutofillServerBehaviorsParam.Get());
+  }
+
+  delete active_experiments_;
+  active_experiments_ = new std::vector<int>(active_experiments.begin(),
+                                             active_experiments.end());
   std::sort(active_experiments_->begin(), active_experiments_->end());
 }
 

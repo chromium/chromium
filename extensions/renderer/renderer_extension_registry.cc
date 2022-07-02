@@ -75,9 +75,10 @@ std::string RendererExtensionRegistry::GetExtensionOrAppIDByURL(
 }
 
 const Extension* RendererExtensionRegistry::GetExtensionOrAppByURL(
-    const GURL& url) const {
+    const GURL& url,
+    bool include_guid) const {
   base::AutoLock lock(lock_);
-  return extensions_.GetExtensionOrAppByURL(url);
+  return extensions_.GetExtensionOrAppByURL(url, include_guid);
 }
 
 const Extension* RendererExtensionRegistry::GetHostedAppByURL(

@@ -111,10 +111,12 @@ function getMetadataData(
 }
 
 /**
- * The singleton instance of DeviceOperator. Initialized by the first
- * invocation of getInstance().
+ * The singleton instance of DeviceOperator. Initialized by calling
+ * initializeInstance().
+ *
+ * Note that undefined means not initialized, and null means not supported.
  */
-let instance: DeviceOperator|null = null;
+let instance: DeviceOperator|null|undefined = undefined;
 
 /**
  * Job queue to sequentialize devices operations.
@@ -132,12 +134,6 @@ export class DeviceOperator {
       wrapEndpoint(CameraAppDeviceProvider.getRemote());
 
   /**
-   * Flag that indicates if the direct communication between camera app and
-   * video capture devices is supported.
-   */
-  private readonly isSupported: Promise<boolean>;
-
-  /**
    * Map which maps from device id to the remote of devices. We want to have
    * only one remote for each devices to avoid unnecessary wastes of resources
    * and also makes it easier to control the connection.
@@ -149,11 +145,13 @@ export class DeviceOperator {
    */
   private readonly cameraInfos = new Map<string, Promise<CameraInfo>>();
 
-  constructor() {
-    this.isSupported = (async () => {
-      const {isSupported} = await this.deviceProvider.isSupported();
-      return isSupported;
-    })();
+  /**
+   * Return if the direct communication between camera app and video capture
+   * devices is supported.
+   */
+  async isSupported(): Promise<boolean> {
+    const {isSupported} = await this.deviceProvider.isSupported();
+    return isSupported;
   }
 
   /**
@@ -648,18 +646,28 @@ export class DeviceOperator {
   }
 
   /**
-   * Enables/Disables multiple streams on target camera device. The extra
+   * Enables/Disables virtual device on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
    *
    * @param deviceId The id of target camera device.
-   * @param enabled True for enabling multiple streams.
+   * @param enabled True for enabling virtual device.
+   */
+  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
+      Promise<void> {
+    if (deviceId) {
+      await this.deviceProvider.setVirtualDeviceEnabled(deviceId, enabled);
+    }
+  }
+
+  /**
+   * Enable/Disables the multiple streams feature for video recording on the
+   * target camera device.
    */
   async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
-    if (deviceId) {
-      await this.deviceProvider.setMultipleStreamsEnabled(deviceId, enabled);
-    }
+    const device = await this.getDevice(deviceId);
+    await device.setMultipleStreamsEnabled(enabled);
   }
 
   /**
@@ -703,17 +711,17 @@ export class DeviceOperator {
   }
 
   /**
-   * Creates a new instance of DeviceOperator if it is not set. Returns the
-   *     exist instance.
+   * Initialize the singleton instance.
    *
-   * @return The singleton instance.
+   * This should be called before all invocation of static getInstance() and
+   * static isSupported().
    */
-  static async getInstance(): Promise<DeviceOperator|null> {
-    if (instance === null) {
-      instance = new DeviceOperator();
-    }
-    if (!await instance.isSupported) {
-      return null;
+  static async initializeInstance(): Promise<void> {
+    assert(instance === undefined);
+    const rawInstance = new DeviceOperator();
+    if (!await rawInstance.isSupported()) {
+      instance = null;
+      return;
     }
 
     // Using a wrapper to ensure all the device operations are sequentialized.
@@ -727,7 +735,17 @@ export class DeviceOperator {
         return val;
       },
     };
-    return new Proxy(instance, deviceOperatorWrapper);
+    instance = new Proxy(rawInstance, deviceOperatorWrapper);
+  }
+
+  /**
+   * Returns the existing singleton instance of DeviceOperator.
+   *
+   * @return The singleton instance.
+   */
+  static getInstance(): DeviceOperator|null {
+    assert(instance !== undefined);
+    return instance;
   }
 
   /**
@@ -735,7 +753,7 @@ export class DeviceOperator {
    *
    * @return True if the DeviceOperator is supported.
    */
-  static async isSupported(): Promise<boolean> {
-    return await this.getInstance() !== null;
+  static isSupported(): boolean {
+    return this.getInstance() !== null;
   }
 }

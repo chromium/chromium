@@ -143,9 +143,13 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
 
   bool opened_iterator = iterator->Open();
   base::UmaHistogramBoolean("SBClientDownload.DmgIterationSuccess",
-                            opened_iterator);
+                            opened_iterator && !iterator->IsEmpty());
   if (!opened_iterator) {
     results->analysis_result = safe_browsing::ArchiveAnalysisResult::kUnknown;
+    return;
+  } else if (iterator->IsEmpty()) {
+    results->analysis_result =
+        safe_browsing::ArchiveAnalysisResult::kDmgNoPartitions;
     return;
   }
 

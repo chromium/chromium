@@ -97,13 +97,12 @@ class GIN_EXPORT IsolateHolder {
   // If the snapshot file contains customised contexts which have static
   // external references, |reference_table| needs to point an array of those
   // reference pointers. Otherwise, it can be nullptr.
-  static void Initialize(
-      ScriptMode mode,
-      v8::ArrayBuffer::Allocator* allocator,
-      const intptr_t* reference_table = nullptr,
-      const std::string js_command_line_flags = {},
-      v8::FatalErrorCallback fatal_error_callback = nullptr,
-      v8::LegacyOOMErrorCallback oom_error_callback = nullptr);
+  static void Initialize(ScriptMode mode,
+                         v8::ArrayBuffer::Allocator* allocator,
+                         const intptr_t* reference_table = nullptr,
+                         const std::string js_command_line_flags = {},
+                         v8::FatalErrorCallback fatal_error_callback = nullptr,
+                         v8::OOMErrorCallback oom_error_callback = nullptr);
 
   // Returns whether `Initialize` has already been invoked in the process.
   // Initialization is a one-way operation (i.e., this method cannot return

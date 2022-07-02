@@ -12,7 +12,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/constants/notifier_catalogs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {

@@ -24,8 +24,8 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 #include "tensorflow_lite_support/cc/test/test_utils.h"
-#include "tensorflow_lite_support/examples/task/vision/desktop/utils/image_utils.h"
 
 namespace tflite {
 namespace task {

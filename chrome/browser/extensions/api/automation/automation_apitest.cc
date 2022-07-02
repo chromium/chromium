@@ -26,6 +26,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/api/automation_internal.h"
@@ -33,6 +34,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -111,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
 
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("automation/tests/basic");
-  ExtensionTestMessageListener got_tree(kGotTree, false /* no reply */);
+  ExtensionTestMessageListener got_tree(kGotTree);
   LoadExtension(extension_path);
   ASSERT_TRUE(got_tree.WaitUntilSatisfied());
 
@@ -144,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   // Enable automation.
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("automation/tests/basic");
-  ExtensionTestMessageListener got_tree(kGotTree, false /* no reply */);
+  ExtensionTestMessageListener got_tree(kGotTree);
   LoadExtension(extension_path);
   ASSERT_TRUE(got_tree.WaitUntilSatisfied());
 
@@ -209,7 +211,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, ImageData) {
+// Flaky on Mac: crbug.com/1338036
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_ImageData DISABLED_ImageData
+#else
+#define MAYBE_ImageData ImageData
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, MAYBE_ImageData) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
                                {.page_url = "image_data.html"}))
@@ -412,6 +420,38 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
 #endif  // !defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+class AutomationApiFencedFrameTest
+    : public AutomationApiTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  AutomationApiFencedFrameTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{blink::features::kFencedFrames,
+                               {{"implementation_type",
+                                 GetParam() ? "shadow_dom" : "mparch"}}},
+                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
+  }
+
+  ~AutomationApiFencedFrameTest() override = default;
+
+ public:
+  void SetUpOnMainThread() override { AutomationApiTest::SetUpOnMainThread(); }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutomationApiFencedFrameTest,
+                         AutomationApiFencedFrameTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AutomationApiFencedFrameTest, DesktopFindInFencedframe) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop/fencedframe",
+                               {.page_url = "focus_fencedframe.html"}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "desktop.html"}))
@@ -646,6 +686,19 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "iframenav.html"}))
+      << message_;
+}
+
+// TODO(crbug.com/1325383): test is flaky on Chromium OS MSAN builder.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_AddRemoveEventListeners DISABLED_AddRemoveEventListeners
+#else
+#define MAYBE_AddRemoveEventListeners AddRemoveEventListeners
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
+                               {.page_url = "add_remove_event_listeners.html"}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

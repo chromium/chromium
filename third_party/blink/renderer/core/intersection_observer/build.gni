@@ -16,3 +16,5 @@ blink_core_sources_intersection_observer = [
   "intersection_observer_entry.cc",
   "intersection_observer_entry.h",
 ]
+
+blink_core_tests_intersection_observer = [ "intersection_observer_test.cc" ]

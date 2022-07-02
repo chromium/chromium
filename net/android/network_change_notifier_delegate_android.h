@@ -37,7 +37,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // initiated by the Java side).
   class Observer : public NetworkChangeNotifier::NetworkObserver {
    public:
-    ~Observer() override {}
+    ~Observer() override = default;
 
     // Updates the current connection type.
     virtual void OnConnectionTypeChanged() = 0;
@@ -165,6 +165,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
     return register_network_callback_failed_;
   }
 
+  static void EnableNetworkChangeNotifierAutoDetectForTest();
+
  private:
   friend class BaseNetworkChangeNotifierAndroidTest;
 
@@ -226,7 +228,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   // Used to enable/disable default network active notifications on the Java
   // side.
-  std::atomic_int default_network_active_observers_;
+  std::atomic_int default_network_active_observers_ = 0;
 };
 
 }  // namespace net

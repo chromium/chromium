@@ -675,7 +675,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, OutOfOrderTabSwitchTest) {
   WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   NavigateHelper(singleton_url, browser(), WindowOpenDisposition::SWITCH_TO_TAB,
                  false, new_tab);
@@ -748,7 +749,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
                  false);
 
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   EXPECT_EQ(omnibox_view->model()->focus_state(),
@@ -757,6 +759,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
 
 #if BUILDFLAG(IS_LINUX)
 // Flaky on Linux Ozone. See https://crbug.com/1230723.
+#define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
+#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+// Flaky on Lacros and Win. See https://crbug.com/674497.
 #define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
 #else
 #define MAYBE_SwitchToTabCorrectWindow SwitchToTabCorrectWindow
@@ -1084,12 +1089,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // There is no navigation (to about:blank or something like that).
   EXPECT_FALSE(params.contents_to_insert->IsLoading());
 
-  ASSERT_TRUE(params.contents_to_insert->GetMainFrame());
-  EXPECT_TRUE(params.contents_to_insert->GetMainFrame()->IsRenderFrameLive());
+  ASSERT_TRUE(params.contents_to_insert->GetPrimaryMainFrame());
+  EXPECT_TRUE(
+      params.contents_to_insert->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(
       params.contents_to_insert->GetController().IsInitialBlankNavigation());
   int renderer_id =
-      params.contents_to_insert->GetMainFrame()->GetProcess()->GetID();
+      params.contents_to_insert->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   // We should have one window, with one tab of WebContents differ from
   // params.target_contents.
@@ -1105,9 +1111,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(browser(), params.browser);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             params.navigated_or_inserted_contents);
-  EXPECT_EQ(renderer_id, params.navigated_or_inserted_contents->GetMainFrame()
-                             ->GetProcess()
-                             ->GetID());
+  EXPECT_EQ(renderer_id,
+            params.navigated_or_inserted_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetID());
 
   // We should have one window, with two tabs.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -1384,8 +1391,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
     content::RenderFrameDeletedObserver crash_observer(
-        web_contents->GetMainFrame());
-    web_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+        web_contents->GetPrimaryMainFrame());
+    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
     crash_observer.WaitUntilDeleted();
   }
   EXPECT_TRUE(web_contents->IsCrashed());
@@ -1612,7 +1619,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_CloseSingletonTab) {
   }
 
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   {
     content::LoadStopObserver observer(
@@ -1850,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Retrieve the iframe.
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(iframe);
 
@@ -1879,21 +1887,31 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 // BrowserNavigatorTest instead.
 // See crbug.com/1320453 for why this is off for lacros.
 class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
- public:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kPictureInPictureV2};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
                        Disposition_PictureInPicture_Open) {
+  // The WebContents holds the parameters from the PiP request.
+  WebContents::CreateParams web_contents_params(browser()->profile());
+  web_contents_params.initial_picture_in_picture_aspect_ratio = 0.5;
+
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
   // Should not re-use the browser.
   EXPECT_NE(browser(), params.browser);
   EXPECT_TRUE(params.browser->is_type_picture_in_picture());
+
+  // The window should have respected the initial aspect ratio.
+  const gfx::Rect override_bounds = params.browser->override_bounds();
+  const float aspect_ratio = static_cast<float>(override_bounds.width()) /
+                             static_cast<float>(override_bounds.height());
+  EXPECT_FLOAT_EQ(0.5, aspect_ratio);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,

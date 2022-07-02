@@ -55,7 +55,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 // Ordered list of all sync switches. If a new switch is added, a new entry
-// must be added in |kSyncableItemTypes| below.
+// must be added in `kSyncableItemTypes` below.
 const std::vector<SyncSetupService::SyncableDatatype> kSyncSwitchItems = {
     SyncSetupService::kSyncAutofill,       SyncSetupService::kSyncBookmarks,
     SyncSetupService::kSyncOmniboxHistory, SyncSetupService::kSyncOpenTabs,
@@ -182,7 +182,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   [self updateSyncItemsNotifyConsumer:NO];
 }
 
-// Updates the sync everything item, and notify the consumer if |notifyConsumer|
+// Updates the sync everything item, and notify the consumer if `notifyConsumer`
 // is set to YES.
 - (void)updateSyncEverythingItemNotifyConsumer:(BOOL)notifyConsumer {
   if ([self.syncEverythingItem isKindOfClass:[TableViewInfoButtonItem class]]) {
@@ -213,14 +213,14 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }
 
 // Updates all the items related to sync (sync data items and autocomplete
-// wallet item). The consumer is notified if |notifyConsumer| is set to YES.
+// wallet item). The consumer is notified if `notifyConsumer` is set to YES.
 - (void)updateSyncItemsNotifyConsumer:(BOOL)notifyConsumer {
   [self updateSyncDataItemsNotifyConsumer:notifyConsumer];
   [self updateAutocompleteWalletItemNotifyConsumer:notifyConsumer];
 }
 
 // Updates all the sync data type items, and notify the consumer if
-// |notifyConsumer| is set to YES.
+// `notifyConsumer` is set to YES.
 - (void)updateSyncDataItemsNotifyConsumer:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.syncSwitchItems) {
     if ([item isKindOfClass:[TableViewInfoButtonItem class]])
@@ -247,7 +247,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }
 
 // Updates the autocomplete wallet item. The consumer is notified if
-// |notifyConsumer| is set to YES.
+// `notifyConsumer` is set to YES.
 - (void)updateAutocompleteWalletItemNotifyConsumer:(BOOL)notifyConsumer {
   if ([self.autocompleteWalletItem
           isKindOfClass:[TableViewInfoButtonItem class]])
@@ -342,7 +342,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   }
 }
 
-// Updates encryption item, and notifies the consumer if |notifyConsumer| is set
+// Updates encryption item, and notifies the consumer if `notifyConsumer` is set
 // to YES.
 - (void)updateEncryptionItem:(BOOL)notifyConsumer {
   BOOL needsUpdate =
@@ -690,7 +690,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   }
 }
 
-// Creates an item to display the sync error. |itemType| should only be one of
+// Creates an item to display the sync error. `itemType` should only be one of
 // those types:
 //   + ReauthDialogAsSyncIsInAuthErrorItemType
 //   + ShowPassphraseDialogErrorItemType
@@ -742,13 +742,13 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 
 // Loads the sync errors section.
 - (void)loadSyncErrorsSection {
-  // The |self.consumer.tableViewModel| will be reset prior to this method.
-  // Ignore any previous value the |self.syncErrorItem| may have contained.
+  // The `self.consumer.tableViewModel` will be reset prior to this method.
+  // Ignore any previous value the `self.syncErrorItem` may have contained.
   self.syncErrorItem = nil;
   [self updateSyncErrorsSection:NO];
 }
 
-// Updates the sync errors section. If |notifyConsumer| is YES, the consumer is
+// Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
   if (!self.syncSetupService->HasFinishedInitialSetup()) {

@@ -231,7 +231,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
         UniqueIDDataTabHelper::FromWebState(_webState);
     uint32_t maxUniqueID = uniqueIDDataTabHelper->GetNextAvailableRendererID();
     [self didFinishPasswordFormExtraction:std::vector<FormData>()
-                          withMaxUniqueID:maxUniqueID];
+                          withMaxUniqueID:maxUniqueID
+                    triggeredByFormChange:false];
   }
 }
 
@@ -250,7 +251,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                                              inFrame:web_frame];
   // Form parsing is run via the main frame for all same origin iframes.
   if (web_frame->IsMainFrame() && webState->ContentIsHTML()) {
-    [self findPasswordFormsAndSendThemToPasswordStore];
+    [self findPasswordFormsAndSendToPasswordStoreForFormChange:false];
   }
 }
 
@@ -524,13 +525,14 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
 - (void)suggestionHelperShouldTriggerFormExtraction:
     (PasswordSuggestionHelper*)suggestionHelper {
-  [self findPasswordFormsAndSendThemToPasswordStore];
+  [self findPasswordFormsAndSendToPasswordStoreForFormChange:false];
 }
 
 #pragma mark - Private methods
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
-                        withMaxUniqueID:(uint32_t)maxID {
+                        withMaxUniqueID:(uint32_t)maxID
+                  triggeredByFormChange:(BOOL)triggeredByFormChange {
   // Do nothing if |self| has been detached.
   if (!_passwordManager) {
     return;
@@ -557,17 +559,24 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // w/ a renderer, it is the renderer who calls OnPasswordFormsParsed()
   // and OnPasswordFormsRendered(). Bling has to improvised a bit on the
   // ordering of these two calls.
-  _passwordManager->OnPasswordFormsRendered(_delegate.passwordManagerDriver,
-                                            forms, true);
+  // Only check for form submissions if forms are not being parsed due to
+  // added elements to the form.
+  if (!triggeredByFormChange) {
+    _passwordManager->OnPasswordFormsRendered(_delegate.passwordManagerDriver,
+                                              forms, true);
+  }
 }
 
-- (void)findPasswordFormsAndSendThemToPasswordStore {
+- (void)findPasswordFormsAndSendToPasswordStoreForFormChange:
+    (BOOL)triggeredByFormChange {
   // Read all password forms from the page and send them to the password
   // manager.
   __weak SharedPasswordController* weakSelf = self;
   [self.formHelper findPasswordFormsWithCompletionHandler:^(
                        const std::vector<FormData>& forms, uint32_t maxID) {
-    [weakSelf didFinishPasswordFormExtraction:forms withMaxUniqueID:maxID];
+    [weakSelf didFinishPasswordFormExtraction:forms
+                              withMaxUniqueID:maxID
+                        triggeredByFormChange:triggeredByFormChange];
   }];
 }
 
@@ -761,7 +770,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // If there's a change in password forms on a page, they should be parsed
   // again.
   if (params.type == "form_changed") {
-    [self findPasswordFormsAndSendThemToPasswordStore];
+    [self findPasswordFormsAndSendToPasswordStoreForFormChange:true];
   }
 
   // If the form was cleared PasswordManager should be informed to decide

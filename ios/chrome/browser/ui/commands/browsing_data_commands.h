@@ -16,9 +16,9 @@ class ChromeBrowserState;
 // Protocol for commands that relate to browsing data.
 @protocol BrowsingDataCommands<NSObject>
 
-// Remove browsing data for |browserState| for the |timePeriod|. The type of
-// data to remove is controlled by |removeMask| (see BrowserDataRemoveMask).
-// Once data is removed, |completionBlock| is invoked.
+// Remove browsing data for `browserState` for the `timePeriod`. The type of
+// data to remove is controlled by `removeMask` (see BrowserDataRemoveMask).
+// Once data is removed, `completionBlock` is invoked.
 - (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
                                timePeriod:(browsing_data::TimePeriod)timePeriod
                                removeMask:(BrowsingDataRemoveMask)removeMask

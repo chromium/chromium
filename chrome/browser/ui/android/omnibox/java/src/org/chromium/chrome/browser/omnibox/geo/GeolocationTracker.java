@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 
 /**
  * Keeps track of the device's location, allowing synchronous location requests.
@@ -99,25 +100,27 @@ class GeolocationTracker {
      * Returns the last known location or null if none is available.
      */
     static Location getLastKnownLocation(Context context) {
-        if (sUseLocationForTesting) {
-            return chooseLocation(sNetworkLocationForTesting, sGpsLocationForTesting);
-        }
+        try (TraceEvent e = TraceEvent.scoped("GeolocationTracker.getLastKnownLocation")) {
+            if (sUseLocationForTesting) {
+                return chooseLocation(sNetworkLocationForTesting, sGpsLocationForTesting);
+            }
 
-        if (!hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            // Do not call location manager without permissions
-            return null;
-        }
+            if (!hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // Do not call location manager without permissions
+                return null;
+            }
 
-        LocationManager locationManager =
-                (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        Location networkLocation =
-                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        Location gpsLocation = null;
-        if (hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Only try to get GPS location when ACCESS_FINE_LOCATION is granted.
-            gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LocationManager locationManager =
+                    (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            Location networkLocation =
+                    locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location gpsLocation = null;
+            if (hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Only try to get GPS location when ACCESS_FINE_LOCATION is granted.
+                gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+            return chooseLocation(networkLocation, gpsLocation);
         }
-        return chooseLocation(networkLocation, gpsLocation);
     }
 
     /**

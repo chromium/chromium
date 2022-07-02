@@ -15,13 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
-namespace blink {
-namespace scheduler {
-class UkmTaskSampler;
-class MainThreadMetricsHelper;
-}  // namespace scheduler
-}  // namespace blink
-
 namespace partition_alloc {
 class RandomGenerator;
 }  // namespace partition_alloc
@@ -85,11 +78,7 @@ void RandomShuffle(Itr first, Itr last) {
 BASE_EXPORT int GetUrandomFD();
 #endif
 
-namespace sequence_manager {
-namespace internal {
-class SequenceManagerImpl;
-}
-}  // namespace sequence_manager
+class MetricsSubSampler;
 
 // Fast, insecure pseudo-random number generator.
 //
@@ -142,19 +131,23 @@ class BASE_EXPORT InsecureRandomGenerator {
   // free() time.
   friend class ::partition_alloc::RandomGenerator;
 
-  // Friend classes below are using the generator to sub-sample metrics after
-  // task execution. Task execution overhead is ~1us on a Linux desktop, and yet
-  // accounts for multiple percentage points of total CPU usage. Keeping it low
-  // is thus important.
-  friend class sequence_manager::internal::SequenceManagerImpl;
-  friend class blink::scheduler::UkmTaskSampler;
-  friend class blink::scheduler::MainThreadMetricsHelper;
+  // Uses the generator to sub-sample metrics.
+  friend class MetricsSubSampler;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorChiSquared);
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorRandDouble);
   FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
+};
+
+class BASE_EXPORT MetricsSubSampler {
+ public:
+  MetricsSubSampler();
+  bool ShouldSample(double probability);
+
+ private:
+  InsecureRandomGenerator generator_;
 };
 
 }  // namespace base

@@ -9,7 +9,7 @@
  * it should timeout, as the timeout for this test is set to 0 ms.
  */
 function onConfigureRequested(options, onSuccess, onError) {
-  setTimeout(onSuccess, 0);
+  setTimeout(onSuccess, 100);
 }
 
 /**

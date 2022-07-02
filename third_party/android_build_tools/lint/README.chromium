@@ -1,0 +1,25 @@
+Name: Android SDK lint
+Short Name: lint
+Version: unknown
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: No
+URL: http://tools.android.com/tips/lint
+
+Description:
+Android lint is used to scan Android source code for potential bugs.
+
+Local Modifications:
+* For the custom lint jar:
+  * This is required only when CustomLint.java changes.
+autoninja -C out/Debug third_party/android_build_tools/lint:custom_lint_java
+cp out/Debug/obj/third_party/android_build_tools/lint/custom_lint_java.javac.jar \
+   third_party/android_build_tools/lint/custom_lint.jar
+
+What version is this:
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * Switching to a newer verison requires manually updating //DEPS.

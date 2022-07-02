@@ -87,8 +87,7 @@ NewTabButton::~NewTabButton() {
 
 void NewTabButton::FrameColorsChanged() {
   const auto* const color_provider = GetColorProvider();
-  views::FocusRing::Get(this)->SetColor(
-      color_provider->GetColor(kColorNewTabButtonFocusRing));
+  views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
   views::InkDrop::Get(this)->SetBaseColor(
       color_provider->GetColor(tab_strip_->ShouldPaintAsActiveFrame()
                                    ? kColorNewTabButtonInkDropFrameActive

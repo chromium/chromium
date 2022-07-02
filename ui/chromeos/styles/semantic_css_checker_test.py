@@ -12,7 +12,7 @@ from semantic_css_checker import SemanticCssChecker
 # Update system path to src/ so we can access src/PRESUBMIT_test_mocks.py.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
-                                 '..', '..'))
+                                 '..'))
 
 from PRESUBMIT_test_mocks import (MockInputApi, MockOutputApi, MockFile,
                                   MockChange, MockAffectedFile)

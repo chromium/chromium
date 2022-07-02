@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPRequireCorpDocument) {
   EXPECT_TRUE(NavigateToURL(
       shell(), ssl_server()->GetURL("a.test", "/cross-origin-isolated.html")));
   RenderFrameHostImpl* page_rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto page_lock =
       ProcessLock::FromSiteInfo(page_rfh->GetSiteInstance()->GetSiteInfo());
   EXPECT_TRUE(page_lock.GetWebExposedIsolationInfo().is_isolated());
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPCredentiallessDocument) {
       shell(), ssl_server()->GetURL(
                    "a.test", "/cross-origin-isolated-credentialless.html")));
   RenderFrameHostImpl* page_rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto page_lock =
       ProcessLock::FromSiteInfo(page_rfh->GetSiteInstance()->GetSiteInfo());
   EXPECT_TRUE(page_lock.GetWebExposedIsolationInfo().is_isolated());
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
 
   const char kSubframeName[] = "foo";
   EvalJsResult result = EvalJs(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       JsReplace(
           "createFrame($1, $2)",
           ssl_server()
@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
 
   const char kSubframeName[] = "foo";
   EvalJsResult result = EvalJs(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       JsReplace(
           "createFrame($1, $2)",
           ssl_server()
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
     RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
 
     // Create an iframe.
     EXPECT_TRUE(ExecJs(main_rfh,
@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
     WaitForLoadStop(shell()->web_contents());
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-    EXPECT_EQ(anonymous, iframe->anonymous());
+    EXPECT_EQ(anonymous, iframe->IsAnonymous());
     EXPECT_EQ(anonymous, EvalJs(iframe, "window.isAnonymouslyFramed"));
     ResetNetworkState();
 

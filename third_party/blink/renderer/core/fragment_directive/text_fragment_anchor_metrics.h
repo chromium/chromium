@@ -48,7 +48,6 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
   void DidCreateAnchor(int selector_count);
 
   void DidFindMatch();
-  void ResetMatchCount();
 
   void DidFindAmbiguousMatch();
 

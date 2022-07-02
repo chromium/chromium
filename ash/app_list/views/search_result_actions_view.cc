@@ -16,8 +16,10 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/icon_button.h"
 #include "base/bind.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -56,6 +58,7 @@ class SearchResultActionButton : public IconButton {
 
   // IconButton:
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // Updates the button visibility upon state change of the button or the
   // search result view associated with it.
@@ -113,6 +116,15 @@ void SearchResultActionButton::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
+void SearchResultActionButton::OnThemeChanged() {
+  absl::optional<ScopedLightModeAsDefault> default_light_mode;
+  // Non-productivity launcher search UI has light background.
+  if (!features::IsProductivityLauncherEnabled())
+    default_light_mode.emplace();
+
+  IconButton::OnThemeChanged();
+}
+
 void SearchResultActionButton::UpdateOnStateChanged() {
   // Show button if the associated result row is hovered or selected, or one
   // of the action buttons is selected.
@@ -162,6 +174,11 @@ bool SearchResultActionsView::IsValidActionIndex(size_t action_index) const {
 
 bool SearchResultActionsView::IsSearchResultHoveredOrSelected() const {
   return delegate_->IsSearchResultHoveredOrSelected();
+}
+
+void SearchResultActionsView::HideActions() {
+  for (views::View* child : children())
+    child->SetVisible(false);
 }
 
 void SearchResultActionsView::UpdateButtonsOnStateChanged() {

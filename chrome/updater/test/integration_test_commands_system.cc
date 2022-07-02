@@ -11,10 +11,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -36,6 +38,16 @@
 
 namespace updater {
 namespace test {
+
+namespace {
+
+std::string StringFromValue(const base::Value& value) {
+  std::string value_string;
+  EXPECT_TRUE(base::JSONWriter::Write(value, &value_string));
+  return value_string;
+}
+
+}  // namespace
 
 class IntegrationTestCommandsSystem : public IntegrationTestCommands {
  public:
@@ -66,6 +78,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& url) const override {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
+  }
+
+  void SetGroupPolicies(const base::Value::Dict& values) const override {
+    RunCommand("set_group_policies",
+               {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
@@ -161,6 +178,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
+  void DeleteUpdaterDirectory() const override {
+    RunCommand("delete_updater_directory", {});
+  }
+
   void InstallApp(const std::string& app_id) const override {
     RunCommand("install_app", {Param("app_id", app_id)});
   }
@@ -187,6 +208,19 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExpectLegacyProcessLauncherSucceeds() const override {
     RunCommand("expect_legacy_process_launcher_succeeds");
+  }
+
+  void ExpectLegacyAppCommandWebSucceeds(
+      const std::string& app_id,
+      const std::string& command_id,
+      const base::Value::List& parameters,
+      int expected_exit_code) const override {
+    RunCommand(
+        "expect_legacy_app_command_web_succeeds",
+        {Param("app_id", app_id), Param("command_id", command_id),
+         Param("parameters", StringFromValue(base::Value(parameters.Clone()))),
+         Param("expected_exit_code",
+               base::NumberToString(expected_exit_code))});
   }
 
   void RunUninstallCmdLine() const override {
@@ -253,6 +287,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("uninstall_app", {Param("app_id", app_id)});
   }
 
+  void RunOfflineInstall() override { RunCommand("run_offline_install"); }
+
  private:
   ~IntegrationTestCommandsSystem() override = default;
 
@@ -271,7 +307,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     const base::CommandLine command_line =
         *base::CommandLine::ForCurrentProcess();
     base::FilePath path(command_line.GetProgram());
+#if !BUILDFLAG(IS_WIN)
+    // Check the presence of the program on non-Windows platform only, because
+    // on Windows the program may run without extension.
     EXPECT_TRUE(base::PathExists(path));
+#endif
     path = path.DirName();
     EXPECT_TRUE(base::PathExists(path));
     path = MakeAbsoluteFilePath(path);

@@ -181,9 +181,9 @@ NSString* kToolbarArrowForwardSymbol = @"arrow.forward";
 
 - (ToolbarButton*)openNewTabButton {
   UIImage* newTabImage =
-      UseSymbols() ? CustomSymbolWithPointSize(kPlusCircleFillSymbol,
-                                               kSymbolToolbarPointSize)
-                   : [UIImage imageNamed:@"toolbar_new_tab_page"];
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kPlusSymbol, kSymbolToolbarPointSize)
+          : [UIImage imageNamed:@"toolbar_new_tab_page"];
   ToolbarNewTabButton* newTabButton =
       [ToolbarNewTabButton toolbarButtonWithImage:newTabImage];
 
@@ -229,8 +229,8 @@ NSString* kToolbarArrowForwardSymbol = @"arrow.forward";
 
 #pragma mark - Helpers
 
-// Sets the |button| width to |width| with a priority of
-// UILayoutPriorityRequired - 1. If the priority is |UILayoutPriorityRequired|,
+// Sets the `button` width to `width` with a priority of
+// UILayoutPriorityRequired - 1. If the priority is `UILayoutPriorityRequired`,
 // there is a conflict when the buttons are hidden as the stack view is setting
 // their width to 0. Setting the priority to UILayoutPriorityDefaultHigh doesn't
 // work as they would have a lower priority than other elements.

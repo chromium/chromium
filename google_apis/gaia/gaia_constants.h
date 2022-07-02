@@ -18,9 +18,6 @@ extern const char kUnexpectedServiceResponse[];
 
 // Gaia services for requesting
 extern const char kGaiaService[];  // uber token
-extern const char kPicasaService[];
-extern const char kSyncService[];
-extern const char kRemotingService[];
 
 // OAuth2 scopes.
 extern const char kOAuth1LoginScope[];
@@ -70,7 +67,6 @@ extern const char kGaiaLsid[];
 extern const char kGaiaOAuthToken[];
 extern const char kGaiaOAuthSecret[];
 extern const char kGaiaOAuthDuration[];
-extern const char kGaiaOAuth2LoginRefreshToken[];
 
 // Used to construct a channel ID for push messaging.
 extern const char kObfuscatedGaiaId[];

@@ -61,12 +61,6 @@ void PrintCertStatus(int cert_status) {
 void PrintCertVerifyResult(const net::CertVerifyResult& result) {
   PrintDebugData(&result);
   PrintCertStatus(result.cert_status);
-  if (result.has_md2)
-    std::cout << "has_md2\n";
-  if (result.has_md4)
-    std::cout << "has_md4\n";
-  if (result.has_md5)
-    std::cout << "has_md5\n";
   if (result.has_sha1)
     std::cout << "has_sha1\n";
   if (result.has_sha1_leaf)

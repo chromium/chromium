@@ -294,12 +294,6 @@ interface CommandBufferClient {
   // destroyed for some reason.
   OnDestroyed(ContextLostReason reason, Error error);
 
-  // Tells the browser that SwapBuffers returned.
-  OnSwapBuffersCompleted(SwapBuffersCompleteParams params);
-
-  // Tells the browser a buffer has been presented on screen.
-  OnBufferPresented(uint64 swap_id, gfx.mojom.PresentationFeedback feedback);
-
   // Returns a block of data from the GPU process to the client.
   // This contains server->client messages produced by dawn_wire and is used to
   // remote WebGPU.
@@ -475,10 +469,6 @@ union DeferredSharedImageRequest {
   [EnableIf=is_win]
   CreateSharedImageVideoPlanesParams create_shared_image_video_planes;
 
-  // See CreateSharedImageWithAHBParams.
-  [EnableIf=is_android]
-  CreateSharedImageWithAHBParams create_shared_image_with_ahb;
-
   // Registers a new shared memory region to share with the GPU process for
   // uploading shared image data.
   mojo_base.mojom.ReadOnlySharedMemoryRegion register_upload_buffer;
@@ -641,24 +631,6 @@ struct CreateSharedImageVideoPlanesParams {
 
   // GpuMemoryBuffer format.
   gfx.mojom.BufferFormat format;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-};
-
-// Creates a new shared image from an existing one backed by an AHardwareBuffer.
-[EnableIf=is_android]
-struct CreateSharedImageWithAHBParams {
-  // Mailbox to identify the new image.
-  Mailbox out_mailbox;
-
-  // Mailbox identifying the existing shared image whose AHardwareBuffer will
-  // back the new image.
-  Mailbox in_mailbox;
 
   // Usage flags corresponding to values defined in
   // gpu/command_buffer/common/shared_image_usage.h.

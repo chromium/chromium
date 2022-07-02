@@ -79,8 +79,9 @@ class BodyDrainer {
 class PluginResponseWriterTest : public testing::Test {
  protected:
   PluginResponseWriterTest() {
-    ON_CALL(mock_client_, OnStartLoadingResponseBody)
-        .WillByDefault([this](mojo::ScopedDataPipeConsumerHandle body) {
+    ON_CALL(mock_client_, OnReceiveResponse)
+        .WillByDefault([this](network::mojom::URLResponseHeadPtr head,
+                              mojo::ScopedDataPipeConsumerHandle body) {
           body_drainer_ = std::make_unique<BodyDrainer>(std::move(body));
         });
   }
@@ -139,13 +140,12 @@ TEST_F(PluginResponseWriterTest, Start) {
     testing::InSequence in_sequence;
 
     EXPECT_CALL(mock_client_, OnReceiveResponse)
-        .WillOnce([](network::mojom::URLResponseHeadPtr head,
-                     mojo::ScopedDataPipeConsumerHandle body) {
+        .WillOnce([this](network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) {
           EXPECT_EQ(200, head->headers->response_code());
           EXPECT_EQ("text/html", head->mime_type);
+          body_drainer_ = std::make_unique<BodyDrainer>(std::move(body));
         });
-
-    EXPECT_CALL(mock_client_, OnStartLoadingResponseBody);
 
     EXPECT_CALL(mock_client_, OnComplete)
         .WillOnce(

@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_internal.h"
 
 namespace partition_alloc::internal {
@@ -107,6 +108,6 @@ void PCScan::RegisterStatsReporter(partition_alloc::StatsReporter* reporter) {
   PCScanInternal::Instance().RegisterStatsReporter(reporter);
 }
 
-PCScan PCScan::instance_ CONSTINIT;
+PCScan PCScan::instance_ PA_CONSTINIT;
 
 }  // namespace partition_alloc::internal

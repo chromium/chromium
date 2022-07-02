@@ -8,8 +8,8 @@
 #include "base/files/file_path.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 
@@ -17,26 +17,30 @@ namespace content {
 
 // static
 void SaveAsWebBundleJob::Start(
-    WebContents* web_contents,
+    WebContentsImpl* web_contents,
     const base::FilePath& file_path,
     base::OnceCallback<void(uint64_t /* file_size */,
                             data_decoder::mojom::WebBundlerError)> callback) {
   std::vector<
       mojo::PendingRemote<data_decoder::mojom::ResourceSnapshotForWebBundle>>
       snapshots;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::vector<mojo::PendingRemote<
-             data_decoder::mojom::ResourceSnapshotForWebBundle>>* snapshots,
-         RenderFrameHost* render_frame_host) {
-        mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle>
-            snapshot;
-        static_cast<RenderFrameHostImpl*>(render_frame_host)
-            ->GetAssociatedLocalFrame()
-            ->GetResourceSnapshotForWebBundle(
-                snapshot.BindNewPipeAndPassReceiver());
-        snapshots->push_back(snapshot.Unbind());
-      },
-      base::Unretained(&snapshots)));
+  // Only include nodes from the primary frame tree, since a Web Bundle
+  // would not be able to load inner frame trees (e.g. fenced frames).
+  // TODO(1321102): Consider supporting inner frame trees.
+  for (FrameTreeNode* node : web_contents->GetPrimaryFrameTree().Nodes()) {
+    if (node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+        FrameTreeNode::kFrameTreeNodeInvalidId) {
+      // Skip inner tree placeholder nodes.
+      continue;
+    }
+    mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle> snapshot;
+    node->current_frame_host()
+        ->GetAssociatedLocalFrame()
+        ->GetResourceSnapshotForWebBundle(
+            snapshot.BindNewPipeAndPassReceiver());
+    snapshots.push_back(snapshot.Unbind());
+  }
+
   new SaveAsWebBundleJob(file_path, std::move(snapshots), std::move(callback));
 }
 

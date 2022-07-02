@@ -179,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   console_observer.Wait();
 
   // ... but it should not have blocked the subframe from being loaded.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Do a different-document navigation to ensure that that the next navigation
   // to |test_url| executes as desired (e.g., to avoid any optimizations from
@@ -188,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // seen flake on the Windows trybot that indicates that such optimizations are
   // occurring.
   NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Verify that the "ad" subframe is blocked if it is flagged by the
   // ruleset.
@@ -196,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Do a different-document navigation to ensure that that the next navigation
   // to |test_url| executes as desired (e.g., to avoid any optimizations from
@@ -205,12 +208,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // seen flake on the Windows trybot that indicates that such optimizations are
   // occurring.
   NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // The main frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 }
 
 // Verifies that subframes are not blocked on non-activated URLs.
@@ -227,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       "suffix-that-does-not-match-anything"));
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Verify that the "ad" subframe is loaded if even it is flagged by the
   // ruleset as the URL is not activated.
@@ -235,7 +241,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -250,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(subresource_filter::kActivationConsoleMessage);
@@ -263,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       test_url, test_url, ContentSettingsType::ADS, CONTENT_SETTING_ALLOW);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // No message for allowlisted url.
   EXPECT_TRUE(console_observer.messages().empty());
@@ -281,7 +290,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(subresource_filter::kActivationConsoleMessage);
@@ -294,7 +304,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                                          CONTENT_SETTING_ALLOW);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // No message for loads that are not activated.
   EXPECT_TRUE(console_observer.messages().empty());
@@ -360,14 +371,16 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
   GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -381,28 +394,32 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ActivateSubresourceFilterInWebContentsForURL(web_contents, test_url);
 
   NavigateAndWaitForCompletion(test_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
   GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // Another navigation to the same domain should be allowed too.
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL(
           "/subresource_filter/frame_with_included_script.html?query"),
       shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   // A cross site blocklisted navigation should stay activated, however.
   GURL a_url(embedded_test_server()->GetURL(
       "a.com", "/subresource_filter/frame_with_included_script.html"));
   ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);
   NavigateAndWaitForCompletion(a_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -425,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
   NavigateAndWaitForCompletion(url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
   histogram_tester.ExpectTotalCount(kTimeSinceAdsInterventionTriggeredHistogram,
                                     0);
@@ -436,11 +454,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
   GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
 
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::
@@ -465,7 +484,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get());
   NavigateAndWaitForCompletion(url, shell());
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::
@@ -512,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
   NavigateAndWaitForCompletion(url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
   histogram_tester.ExpectTotalCount(kTimeSinceAdsInterventionTriggeredHistogram,
                                     0);
@@ -523,11 +544,12 @@ IN_PROC_BROWSER_TEST_F(
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
   GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
 
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::
@@ -553,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get() -
                       base::Minutes(30));
   GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
   // Advance the clock to to kAdsInterventionDuration from the first
@@ -561,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(
   test_clock->Advance(base::Minutes(30));
   NavigateAndWaitForCompletion(url, shell());
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::
@@ -620,7 +643,8 @@ IN_PROC_BROWSER_TEST_F(
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
   NavigateAndWaitForCompletion(url, shell());
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -628,14 +652,15 @@ IN_PROC_BROWSER_TEST_F(
   // Trigger an ads violation and renavigate to the page. Interventions are not
   // enforced so no activation should occur.
   GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
   const base::TimeDelta kRenavigationDelay = base::Hours(2);
   test_clock->Advance(kRenavigationDelay);
   NavigateAndWaitForCompletion(url, shell());
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::
@@ -687,7 +712,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // First load should trigger the UI.
   NavigateAndWaitForCompletion(a_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -698,7 +724,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Second load should not trigger the UI, but should still filter content.
   NavigateAndWaitForCompletion(a_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -711,7 +738,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Load to another domain should trigger the UI.
   NavigateAndWaitForCompletion(b_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -724,7 +752,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       subresource_filter::SubresourceFilterContentSettingsManager::
           kDelayBeforeShowingInfobarAgain);
   NavigateAndWaitForCompletion(a_url, shell());
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,

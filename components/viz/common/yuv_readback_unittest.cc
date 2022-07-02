@@ -49,17 +49,9 @@ class YUVReadbackTest : public testing::Test {
 
     context_ = std::make_unique<gpu::GLInProcessContext>();
     auto result = context_->Initialize(
-        TestGpuServiceHolder::GetInstance()->task_executor(),
-        nullptr,                 /* surface */
-        true,                    /* offscreen */
-        gpu::kNullSurfaceHandle, /* window */
-        attributes, gpu::SharedMemoryLimits(),
-        nullptr, /* gpu_memory_buffer_manager */
-        nullptr, /* image_factory */
-        nullptr, /* gpu::GpuTaskSchedulerHelper */
-        nullptr,
-        /* gpu::DisplayCompositorMemoryAndTaskControllerOnGpu */
-        base::ThreadTaskRunnerHandle::Get());
+        TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
+        gpu::SharedMemoryLimits(),
+        /*image_factory=*/nullptr);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     gpu::ContextSupport* support = context_->GetImplementation();
@@ -105,15 +97,14 @@ class YUVReadbackTest : public testing::Test {
     run_loop.Run();
     json_data.append("]");
 
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(json_data);
-    CHECK(parsed_json.value)
-        << "JSON parsing failed (" << parsed_json.error_message
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json_data);
+    CHECK(parsed_json.has_value())
+        << "JSON parsing failed (" << parsed_json.error().message
         << ") JSON data:" << std::endl
         << json_data;
 
-    CHECK(parsed_json.value->is_list());
-    for (const base::Value& dict : parsed_json.value->GetListDeprecated()) {
+    CHECK(parsed_json->is_list());
+    for (const base::Value& dict : parsed_json->GetListDeprecated()) {
       CHECK(dict.is_dict());
       const std::string* name = dict.FindStringPath("name");
       CHECK(name);

@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserServicesIntentDataProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/ColorProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfo.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappConstants.java",
@@ -33,11 +34,9 @@ android_library("java") {
   ]
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappInfoTest.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappIntentUtilsTest.java",
@@ -50,11 +49,10 @@ android_library("junit") {
     "//chrome/android/webapk/libs/common:splash_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//chrome/browser/android/browserservices/constants:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/webapk/android/libs/common:java",
     "//components/webapps/browser/android:java",
     "//services/device/public/mojom:mojom_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_library_java",

@@ -8,6 +8,8 @@
 # and lineno). You may also define __repr__() to help with analyzing test
 # failures, especially for more complex types.
 
+import os.path
+
 
 class NodeBase(object):
   """Base class for nodes in the AST."""
@@ -187,7 +189,8 @@ class Import(NodeBase):
     assert isinstance(import_filename, str)
     super(Import, self).__init__(**kwargs)
     self.attribute_list = attribute_list
-    self.import_filename = import_filename
+    # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
+    self.import_filename = os.path.normpath(import_filename).replace('\\', '/')
 
   def __eq__(self, other):
     return super(Import, self).__eq__(other) and \

@@ -19,7 +19,7 @@ ChromeVoxBrailleCommandDataTest = class extends ChromeVoxNextE2ETest {
 };
 
 
-SYNC_TEST_F('ChromeVoxBrailleCommandDataTest', 'Duplicates', function() {
+AX_TEST_F('ChromeVoxBrailleCommandDataTest', 'Duplicates', function() {
   try {
     BrailleCommandData.DOT_PATTERN_TO_COMMAND = [];
     BrailleCommandData.init_();

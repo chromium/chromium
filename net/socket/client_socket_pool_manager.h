@@ -9,8 +9,7 @@
 #ifndef NET_SOCKET_CLIENT_SOCKET_POOL_MANAGER_H_
 #define NET_SOCKET_CLIENT_SOCKET_POOL_MANAGER_H_
 
-#include <string>
-
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -18,10 +17,6 @@
 #include "net/http/http_network_session.h"
 #include "net/socket/client_socket_pool.h"
 #include "url/scheme_host_port.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -74,7 +69,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
   virtual ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) = 0;
 
   // Creates a Value summary of the state of the socket pools.
-  virtual std::unique_ptr<base::Value> SocketPoolInfoToValue() const = 0;
+  virtual base::Value SocketPoolInfoToValue() const = 0;
 };
 
 // A helper method that uses the passed in proxy information to initialize a
@@ -138,7 +133,8 @@ int PreconnectSocketsForHttpRequest(url::SchemeHostPort endpoint,
                                     NetworkIsolationKey network_isolation_key,
                                     SecureDnsPolicy secure_dns_policy,
                                     const NetLogWithSource& net_log,
-                                    int num_preconnect_streams);
+                                    int num_preconnect_streams,
+                                    CompletionOnceCallback callback);
 
 }  // namespace net
 

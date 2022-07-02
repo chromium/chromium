@@ -361,13 +361,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           policy.ephemeral_users_enabled().has_ephemeral_users_enabled() &&
           policy.ephemeral_users_enabled().ephemeral_users_enabled());
 
-  std::vector<base::Value> list;
+  base::Value::List list;
   const em::UserAllowlistProto& allowlist_proto = policy.user_allowlist();
   if (policy.user_allowlist().user_allowlist_size() > 0) {
     const RepeatedPtrField<std::string>& allowlist =
         allowlist_proto.user_allowlist();
     for (const std::string& value : allowlist) {
-      list.push_back(base::Value(value));
+      list.Append(value);
     }
   } else {
     const em::UserWhitelistProto& whitelist_proto =   // nocheck
@@ -375,13 +375,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const RepeatedPtrField<std::string>& whitelist =  // nocheck
         whitelist_proto.user_whitelist();             // nocheck
     for (const std::string& value : whitelist) {      // nocheck
-      list.push_back(base::Value(value));
+      list.Append(value);
     }
   }
 
   new_values_cache->SetValue(kAccountsPrefUsers, base::Value(std::move(list)));
 
-  std::vector<base::Value> account_list;
+  base::Value::List account_list;
   const em::DeviceLocalAccountsProto device_local_accounts_proto =
       policy.device_local_accounts();
   const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
@@ -443,7 +443,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           base::Value(
               em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION));
     }
-    account_list.push_back(std::move(entry_dict));
+    account_list.Append(std::move(entry_dict));
   }
   new_values_cache->SetValue(kAccountsPrefDeviceLocalAccounts,
                              base::Value(std::move(account_list)));
@@ -469,9 +469,9 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.device_local_accounts().prompt_for_network_when_offline());
 
   if (policy.has_feature_flags()) {
-    std::vector<base::Value> feature_flags_list;
+    base::Value::List feature_flags_list;
     for (const std::string& entry : policy.feature_flags().feature_flags()) {
-      feature_flags_list.push_back(base::Value(entry));
+      feature_flags_list.Append(entry);
     }
     if (!feature_flags_list.empty()) {
       new_values_cache->SetValue(kFeatureFlags,
@@ -509,34 +509,34 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_login_video_capture_allowed_urls()) {
-    std::vector<base::Value> list;
+    base::Value::List list;
     const em::LoginVideoCaptureAllowedUrlsProto&
         login_video_capture_allowed_urls_proto =
             policy.login_video_capture_allowed_urls();
     for (const auto& value : login_video_capture_allowed_urls_proto.urls()) {
-      list.push_back(base::Value(value));
+      list.Append(value);
     }
     new_values_cache->SetValue(kLoginVideoCaptureAllowedUrls,
                                base::Value(std::move(list)));
   }
 
   if (policy.has_login_screen_locales()) {
-    std::vector<base::Value> locales;
+    base::Value::List locales;
     const em::LoginScreenLocalesProto& login_screen_locales(
         policy.login_screen_locales());
     for (const auto& locale : login_screen_locales.login_screen_locales())
-      locales.push_back(base::Value(locale));
+      locales.Append(locale);
     new_values_cache->SetValue(kDeviceLoginScreenLocales,
                                base::Value(std::move(locales)));
   }
 
   if (policy.has_login_screen_input_methods()) {
-    std::vector<base::Value> input_methods;
+    base::Value::List input_methods;
     const em::LoginScreenInputMethodsProto& login_screen_input_methods(
         policy.login_screen_input_methods());
     for (const auto& input_method :
          login_screen_input_methods.login_screen_input_methods())
-      input_methods.push_back(base::Value(input_method));
+      input_methods.Append(input_method);
     new_values_cache->SetValue(kDeviceLoginScreenInputMethods,
                                base::Value(std::move(input_methods)));
   }
@@ -623,9 +623,9 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
 
     const RepeatedField<int>& allowed_connection_types =
         au_settings_proto.allowed_connection_types();
-    std::vector<base::Value> list;
+    base::Value::List list;
     for (int value : allowed_connection_types) {
-      list.push_back(base::Value(value));
+      list.Append(value);
     }
     if (!list.empty()) {
       new_values_cache->SetValue(kAllowedConnectionTypesForUpdate,

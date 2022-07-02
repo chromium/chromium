@@ -33,7 +33,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -310,11 +309,15 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
   // will overwrite the divider.
   gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
                            password_view_->width(), 1);
-  canvas->FillRect(divider_bounds, GetSeparatorColor());
+  canvas->FillRect(divider_bounds,
+                   GetColorProvider()->GetColor(GetSeparatorColorId()));
 }
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
+  if (!controller_) {
+    return;
+  }
   node_data->SetName(base::JoinString(
       {controller_->SuggestedText(), controller_->password()}, u" "));
   node_data->SetDescription(controller_->HelpText());

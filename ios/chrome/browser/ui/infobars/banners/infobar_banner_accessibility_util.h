@@ -10,14 +10,14 @@
 // Updates the accessibility of the presenting view controller so that VoiceOver
 // users have the ability to select other elements while the banner is
 // presented.  This should be called after the banner's presentation is
-// finished.  |presenting_view_controller| and |banner_view| must not be nil.
+// finished.  `presenting_view_controller` and `banner_view` must not be nil.
 void UpdateBannerAccessibilityForPresentation(
     UIViewController* presenting_view_controller,
     UIView* banner_view);
 
-// Removes the banner view from |presenting_view_controller|'s accessibility
+// Removes the banner view from `presenting_view_controller`'s accessibility
 // elements.  This should be called after the banner's dismissal is finished.
-// |presenting_view_controller| must not be nil.
+// `presenting_view_controller` must not be nil.
 void UpdateBannerAccessibilityForDismissal(
     UIViewController* presenting_view_controller);
 

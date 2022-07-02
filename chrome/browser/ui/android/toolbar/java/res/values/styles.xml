@@ -34,29 +34,5 @@
         <item name="android:layout_width">@dimen/split_toolbar_button_width</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
-    <style name="TextAppearance.BottomToolbarLabel" parent="TextAppearance.RobotoMediumStyle">
-        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
-        <item name="android:textSize">12sp</item>
-    </style>
-    <style name="BottomToolbarButtonWrapper">
-        <item name="android:layout_width">@dimen/bottom_toolbar_button_wrapper_width</item>
-        <item name="android:paddingStart">4dp</item>
-        <item name="android:paddingEnd">4dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:gravity">center</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-    </style>
-    <style name="BottomToolbarLabel">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">7dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.BottomToolbarLabel</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:visibility">gone</item>
-    </style>
     <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow" />
 </resources>

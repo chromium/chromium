@@ -12,25 +12,21 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:layout_marginBottom="32dp"
-    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
     android:layout_marginTop="6dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/description"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:inputType="textMultiLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="24dp"
         android:visibility="gone"
         tools:ignore="TextViewEdits" />
 
-    <include
-        layout="@layout/autofill_cc_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp" />
+    <include layout="@layout/autofill_cc_details" />
 
     <ViewStub
         android:id="@+id/autofill_save_card_content_stub"

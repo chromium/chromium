@@ -57,8 +57,8 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
     OnStateChanged();
 
     ansible_management_service_->ConfigureContainer(
-        crostini::ContainerId::GetDefault(),
-        default_container_ansible_filepath_, base::DoNothing());
+        crostini::DefaultContainerId(), default_container_ansible_filepath_,
+        base::DoNothing());
     return false;
   }
   DCHECK_EQ(state_, State::ERROR);
@@ -80,10 +80,10 @@ std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
 }
 
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationStarted(
-    const crostini::ContainerId& container_id) {}
+    const guest_os::GuestId& container_id) {}
 
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
-    const crostini::ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     bool success) {
   DCHECK_EQ(state_, State::CONFIGURING);
 

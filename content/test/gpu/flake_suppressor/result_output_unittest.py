@@ -6,6 +6,7 @@
 # pylint: disable=protected-access
 
 import tempfile
+import typing
 import unittest
 
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
@@ -13,13 +14,13 @@ from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 from flake_suppressor import result_output
 
 
-class GenerateHtmlOutputFileUntitest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+class GenerateHtmlOutputFileUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self.output_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
     self.output_file_name = self.output_file.name
 
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Basic functionality test."""
     result_map = {
         'some_suite': {
@@ -68,12 +69,12 @@ class GenerateHtmlOutputFileUntitest(fake_filesystem_unittest.TestCase):
 
 
 class RecursiveHtmlToFileUnittest(fake_filesystem_unittest.TestCase):
-  def setUp(self):
+  def setUp(self) -> None:
     self.setUpPyfakefs()
     self.output_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
     self.output_file_name = self.output_file.name
 
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Basic functionality test."""
     string_map = {
         'some_suite': {
@@ -100,14 +101,15 @@ class RecursiveHtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     with open(self.output_file_name) as infile:
       self.assertEqual(infile.read(), expected_output)
 
-  def testUnsupportedType(self):
+  def testUnsupportedType(self) -> None:
     """Tests that providing an unsupported data type fails."""
+    fake_node = typing.cast(result_output.NodeType, 'a')
     with self.assertRaises(RuntimeError):
-      result_output._RecursiveHtmlToFile('a', self.output_file)
+      result_output._RecursiveHtmlToFile(fake_node, self.output_file)
 
 
 class ConvertAggregatedResultsToStringMapUnittest(unittest.TestCase):
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Basic functionality test."""
     result_map = {
         'some_suite': {
@@ -129,7 +131,7 @@ class ConvertAggregatedResultsToStringMapUnittest(unittest.TestCase):
 
 
 class ConvertFromTestGroupingToConfigGroupingUnittest(unittest.TestCase):
-  def testBasic(self):
+  def testBasic(self) -> None:
     """Basic functionality test."""
     string_map = {
         'some_suite': {

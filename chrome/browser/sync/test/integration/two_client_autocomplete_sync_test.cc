@@ -14,7 +14,6 @@ namespace {
 using autofill::AutofillKey;
 using autofill_helper::AddKeys;
 using autofill_helper::GetAllKeys;
-using autofill_helper::KeysMatch;
 using autofill_helper::RemoveKey;
 
 class TwoClientAutocompleteSyncTest : public SyncTest {
@@ -25,7 +24,7 @@ class TwoClientAutocompleteSyncTest : public SyncTest {
   TwoClientAutocompleteSyncTest& operator=(
       const TwoClientAutocompleteSyncTest&) = delete;
 
-  ~TwoClientAutocompleteSyncTest() override {}
+  ~TwoClientAutocompleteSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
 };

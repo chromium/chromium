@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
 
-import androidx.preference.PreferenceFragmentCompat;
-
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
  * Settings fragment for privacy sandbox settings.
  */
-public class SpamFraudFragment extends PreferenceFragmentCompat {
+public class SpamFraudFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String SPAM_FRAUD_DESCRIPTION = "spam_fraud_description";
 
     /**
@@ -21,6 +19,7 @@ public class SpamFraudFragment extends PreferenceFragmentCompat {
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_spam_fraud_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.spam_fraud_preference);
         int description = PrivacySandboxBridge.isPrivacySandboxEnabled()

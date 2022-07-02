@@ -21,9 +21,9 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/switch_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/tts_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
@@ -68,27 +68,37 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kLargeCursor}},
+       {.setting = mojom::Setting::kLargeCursor},
+       {IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR_ALT4, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y,
        mojom::kAccessibilitySectionPath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kHigh,
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kAccessibility},
-       {IDS_OS_SETTINGS_TAG_A11Y_ALT1, SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_A11Y_ALT1, IDS_OS_SETTINGS_TAG_A11Y_ALT2,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kDockedMagnifier}},
+       {.setting = mojom::Setting::kDockedMagnifier},
+       {IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX,
-       mojom::kManageAccessibilitySubpagePath,
+       ::features::IsAccessibilityOSSettingsVisibilityEnabled()
+           ? mojom::kTextToSpeechPagePath
+           : mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChromeVox},
-       {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT1, SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT1,
+        IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX_ALT2, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -103,7 +113,9 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kTextToSpeech},
        {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT1,
-        SearchConcept::kAltTagEnd}},
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_ALT4}},
       {IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS,
        mojom::kCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -115,7 +127,11 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kHighlightCursorWhileMoving}},
+       {.setting = mojom::Setting::kHighlightCursorWhileMoving},
+       {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_CURSOR_ALT3,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_MANAGE,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -134,14 +150,19 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kHighlightTextCaret}},
+       {.setting = mojom::Setting::kHighlightTextCaret},
+       {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_TEXT_CARET_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_DICTATION,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDictation},
-       {IDS_OS_SETTINGS_TAG_A11Y_DICTATION_ALT1, SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_A11Y_DICTATION_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_DICTATION_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_DICTATION_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_DICTATION_ALT4, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -155,21 +176,29 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kHighlightKeyboardFocus}},
+       {.setting = mojom::Setting::kHighlightKeyboardFocus},
+       {IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_KEYBOARD_FOCUS_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kStartupSound}},
+       {.setting = mojom::Setting::kStartupSound},
+       {IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAutoClickWhenCursorStops}},
+       {.setting = mojom::Setting::kAutoClickWhenCursorStops},
+       {IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_SELECT_TO_SPEAK,
-       mojom::kManageAccessibilitySubpagePath,
+       ::features::IsAccessibilityOSSettingsVisibilityEnabled()
+           ? mojom::kTextToSpeechPagePath
+           : mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -185,7 +214,8 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kTextToSpeechRate}},
+       {.setting = mojom::Setting::kTextToSpeechRate},
+       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_RATE_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_SPEECH_VOLUME,
        mojom::kTextToSpeechSubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -197,7 +227,10 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kFullscreenMagnifier}},
+       {.setting = mojom::Setting::kFullscreenMagnifier},
+       {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_ALT2,
+        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
@@ -209,7 +242,9 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kEnableCursorColor}},
+       {.setting = mojom::Setting::kEnableCursorColor},
+       {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT2, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -306,7 +341,8 @@ const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kLiveCaption}},
+       {.setting = mojom::Setting::kLiveCaption},
+       {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -324,12 +360,33 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yVisibilitySearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE,
+       mojom::kTextToSpeechPagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kTextToSpeechPage},
+       {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT4,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
 bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
   return ::features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
+}
+
+bool IsAccessibilityOSSettingsVisibilityEnabled() {
+  return ::features::IsAccessibilityOSSettingsVisibilityEnabled();
 }
 
 bool IsSwitchAccessTextAllowed() {
@@ -406,6 +463,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION},
       {"manageAccessibilityFeatures",
        IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES},
+      {"textToSpeechLinkTitle",
+       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE},
+      {"textToSpeechLinkDescription",
+       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION},
       {"optionsInMenuLabel", IDS_SETTINGS_OPTIONS_IN_MENU_LABEL},
       {"largeMouseCursorLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL},
       {"largeMouseCursorSizeLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL},
@@ -763,6 +824,9 @@ void AccessibilitySection::AddLoadTimeData(
       "isMagnifierContinuousMouseFollowingModeSettingEnabled",
       IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
+  html_source->AddBoolean("isAccessibilityOSSettingsVisibilityEnabled",
+                          IsAccessibilityOSSettingsVisibilityEnabled());
+
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 
@@ -828,6 +892,15 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Subpage::kManageAccessibility, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kManageAccessibilitySubpagePath);
+
+  // Text-to-speech page.
+  if (IsAccessibilityOSSettingsVisibilityEnabled()) {
+    generator->RegisterTopLevelSubpage(
+        IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE,
+        mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
+        mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
+  }
+
   static constexpr mojom::Setting kManageAccessibilitySettings[] = {
       mojom::Setting::kChromeVox,
       mojom::Setting::kSelectToSpeak,
@@ -961,6 +1034,10 @@ void AccessibilitySection::UpdateSearchTags() {
   } else {
     updater.RemoveSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+  }
+
+  if (IsAccessibilityOSSettingsVisibilityEnabled()) {
+    updater.AddSearchTags(GetA11yVisibilitySearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(

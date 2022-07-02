@@ -87,9 +87,7 @@ class InstanceRegistryTest : public testing::Test,
 class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
  public:
   explicit InstanceRecursiveObserver(apps::InstanceRegistry* instance_registry)
-      : instance_registry_(instance_registry) {
-    Observe(instance_registry);
-  }
+      : apps::InstanceRegistry::Observer(instance_registry) {}
 
   ~InstanceRecursiveObserver() override = default;
 
@@ -124,7 +122,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
   // apps::InstanceRegistry::Observer overrides.
   void OnInstanceUpdate(const apps::InstanceUpdate& outer) override {
     int num_instance = 0;
-    instance_registry_->ForEachInstance(
+    instance_registry()->ForEachInstance(
         [&outer, &num_instance](const apps::InstanceUpdate& inner) {
           if (outer.InstanceId() == inner.InstanceId()) {
             ExpectEq(outer, inner);
@@ -132,12 +130,12 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
           num_instance++;
         });
 
-    EXPECT_TRUE(instance_registry_->ForOneInstance(
+    EXPECT_TRUE(instance_registry()->ForOneInstance(
         outer.InstanceId(), [&outer](const apps::InstanceUpdate& inner) {
           ExpectEq(outer, inner);
         }));
 
-    EXPECT_TRUE(instance_registry_->ForInstancesWithWindow(
+    EXPECT_TRUE(instance_registry()->ForInstancesWithWindow(
         outer.Window(), [&outer](const apps::InstanceUpdate& inner) {
           if (outer.InstanceId() == inner.InstanceId()) {
             ExpectEq(outer, inner);
@@ -156,7 +154,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
         super_recursive_instance_params_.pop_back();
         break;
       }
-      instance_registry_->CreateOrUpdateInstance(std::move(*params));
+      instance_registry()->CreateOrUpdateInstance(std::move(*params));
       super_recursive_instance_params_.pop_back();
     }
 
@@ -168,7 +166,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
         super_recursive_instances_.pop_back();
         break;
       }
-      instance_registry_->OnInstance(std::move(instance));
+      instance_registry()->OnInstance(std::move(instance));
       super_recursive_instances_.pop_back();
     }
 
@@ -191,7 +189,6 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
     EXPECT_EQ(outer.BrowserContext(), inner.BrowserContext());
   }
 
-  apps::InstanceRegistry* instance_registry_ = nullptr;
   int expected_num_instances_ = -1;
   int num_instances_seen_on_instance_update_ = 0;
 

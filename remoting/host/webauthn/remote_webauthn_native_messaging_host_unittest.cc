@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -18,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/native_messaging/log_message_handler.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
@@ -128,7 +130,7 @@ class RemoteWebAuthnNativeMessagingHostTest
   void ResetReceiver();
 
   MockWebAuthnProxy webauthn_proxy_;
-  MockChromotingHostServicesProvider* api_provider_;
+  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
   MockChromotingSessionServices api_;
 
  private:
@@ -158,9 +160,15 @@ void RemoteWebAuthnNativeMessagingHostTest::SetUp() {
 
 void RemoteWebAuthnNativeMessagingHostTest::PostMessageFromNativeHost(
     const std::string& message) {
-  response_run_loop_->Quit();
   auto message_json = base::JSONReader::Read(message);
   ASSERT_TRUE(message_json.has_value());
+  std::string* message_type = message_json->FindStringKey(kMessageType);
+  if (message_type &&
+      *message_type == LogMessageHandler::kDebugMessageTypeName) {
+    // Ignore debug message logs.
+    return;
+  }
+  response_run_loop_->Quit();
   latest_message_ = std::move(*message_json);
 }
 

@@ -20,7 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -36,7 +36,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -562,19 +561,19 @@ class TabHoverCardBubbleView::ThumbnailView
     if (image_type_ == ImageType::kPlaceholder)
       return;
 
-    // Theme provider may be null if there is no associated widget. In that case
-    // there is nothing to render, and we can't get theme default colors to
-    // render with anyway, so bail out.
-    const ui::ThemeProvider* const theme_provider = GetThemeProvider();
-    if (!theme_provider)
+    // Color provider may be null if there is no associated widget. In that case
+    // there is nothing to render, and we can't get default colors to render
+    // with anyway, so bail out.
+    const auto* const color_provider = GetColorProvider();
+    if (!color_provider)
       return;
 
     StartFadeOut();
 
     // Check the no-preview color and size to see if it needs to be
     // regenerated. DPI or theme change can cause a regeneration.
-    const SkColor foreground_color = theme_provider->GetColor(
-        ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_FOREGROUND);
+    const SkColor foreground_color =
+        color_provider->GetColor(kColorTabHoverCardForeground);
 
     // Set the no-preview placeholder image. All sizes are in DIPs.
     // gfx::CreateVectorIcon() caches its result so there's no need to store
@@ -629,8 +628,8 @@ class TabHoverCardBubbleView::ThumbnailView
         image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
         image_view->SetImageSize(image.size());
         image_view->SetBackground(views::CreateSolidBackground(
-            image_view->GetThemeProvider()->GetColor(
-                ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND)));
+            image_view->GetColorProvider()->GetColor(
+                kColorTabHoverCardBackground)));
         break;
       case ImageType::kThumbnail:
         image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -673,10 +672,10 @@ class TabHoverCardBubbleView::ThumbnailView
   void StartFadeOut() {
     // If we aren't visible, don't have a widget, or our widget is being
     // destructed and has no theme provider, skip trying to fade out since a
-    // ThemeProvider is needed for fading out placeholder images. (Note that
-    // GetThemeProvider() returns nullptr if there is no widget.)
+    // ColorProvider is needed for fading out placeholder images. (Note that
+    // GetColorProvider() returns nullptr if there is no widget.)
     // See: crbug.com/1246914
-    if (!GetVisible() || !GetThemeProvider())
+    if (!GetVisible() || !GetColorProvider())
       return;
 
     if (!GetPreviewImageCrossfadeStart().has_value())
@@ -846,7 +845,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // existing thumbnail to be decompressed.
   //
   // Note that this code has to go after CreateBubble() above, since setting up
-  // the placeholder image and background color require a ThemeProvider, which
+  // the placeholder image and background color require a ColorProvider, which
   // is only available once this View has been added to its widget.
   if (thumbnail_view_ && !tab->data().thumbnail->has_data() &&
       !tab->IsActive()) {

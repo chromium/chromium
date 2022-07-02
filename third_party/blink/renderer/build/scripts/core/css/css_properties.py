@@ -39,6 +39,8 @@ def validate_property(prop, longhands):
         'Only longhands can be valid_for_cue [%s]' % name
     assert not prop['valid_for_marker'] or prop['is_longhand'], \
         'Only longhands can be valid_for_marker [%s]' % name
+    assert not prop['valid_for_highlight_legacy'] or prop['is_longhand'], \
+        'Only longhands can be valid_for_highlight_legacy [%s]' % name
     assert not prop['valid_for_highlight'] or prop['is_longhand'], \
         'Only longhands can be valid_for_highlight [%s]' % name
     assert not prop['is_internal'] or prop['computable'] is None, \

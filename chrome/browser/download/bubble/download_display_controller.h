@@ -18,7 +18,6 @@ class DownloadManager;
 
 class Profile;
 class DownloadBubbleUIController;
-using DownloadUIModelPtr = ::OfflineItemModel::DownloadUIModelPtr;
 
 namespace base {
 class TimeDelta;
@@ -80,6 +79,13 @@ class DownloadDisplayController
   virtual void OnUpdatedItem(bool is_done, bool show_details_if_done);
   // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem(const ContentId& id);
+
+  // Asks `display_` to hide the toolbar button details. Does nothing if the
+  // details are already hidden.
+  void HideBubble();
+
+  // Returns the DownloadDisplay. Should always return a valid display.
+  DownloadDisplay* download_display_for_testing() { return display_; }
 
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;

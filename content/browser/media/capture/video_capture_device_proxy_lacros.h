@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
+#include "content/browser/media/capture/receiver_media_to_crosapi_adapter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -83,8 +84,8 @@ class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
   void OnUtilizationReport(media::VideoCaptureFeedback feedback) final;
 
  private:
-  // Helper that logs the given error |message| to the |receiver_| and then
-  // stops capture and this VideoCaptureDevice.
+  // Helper that logs the given error |message| to the |receiver_adapater_| and
+  // then stops capture and this VideoCaptureDevice.
   void OnFatalError(std::string message);
 
   // Helper that requests wake lock to prevent the display from sleeping while
@@ -94,9 +95,9 @@ class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
   const DesktopMediaID capture_id_;
 
   // Receives video frames from ash, for translation and propagation into the
-  // video capture tack. This is set by AllocateAndStartWithReceiver(), and
+  // video capture stack. This is set by AllocateAndStartWithReceiver(), and
   // cleared by StopAndDeAllocate().
-  std::unique_ptr<video_capture::VideoFrameHandlerProxyLacros> receiver_;
+  std::unique_ptr<crosapi::mojom::VideoFrameHandler> receiver_adapter_;
 
   // Set when OnFatalError() is called. This prevents any future
   // AllocateAndStartWithReceiver() calls from succeeding.

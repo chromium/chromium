@@ -10,7 +10,9 @@ This document is for web developers who want to participate in Origin Trial for
 
 ## Origin Trial timeline
 
-- Chrome M90-M101
+- Chrome M90-M101, M103-M104
+
+  Note: M102 is excluded.
 
 ## How to create a bundle
 
@@ -58,15 +60,14 @@ Chrome M97+ supports
 [the latest Web Bundles format](https://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html)
 (called as "b2").
 
-## What works in Chrome M90 or later.
+## The old APIs
 
-Chrome M90+ supports a `<link>`-based API, a `urn:uuid` URL and the old
+Chrome M90 - M101 supported `<link>`-based API, a `urn:uuid` URL and the old
 WebBundle format
 ["b1"](https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html).
-They are still supported in Chrome M97+, however, we strongly recommend origin
-trial participants to use new APIs in Chrome M97+.
+however, they were removed in M102.
 
-This guide no longer covers the old APIs, which we plan to remove eventually.
+This guide no longer covers the old APIs. If you are still using the old APIs,
 Please see
 [the previous revision of this guide](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/web_package/subresource_loading_origin_trial.md;drc=1454cf984a485a136c4a525ab79f6cf0a3877504)
 for the old APIs and [the migration guide](https://docs.google.com/document/d/1hAl7jb-a9WET_mSeHBD9HxIBUwUe65Dbyn6u6LRB61s/edit?usp=sharing).

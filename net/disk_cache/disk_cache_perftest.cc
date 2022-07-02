@@ -277,9 +277,10 @@ class ReadHandler {
         what_to_read_(what_to_read),
         cache_(cache),
         final_callback_(std::move(final_callback)) {
-    for (int i = 0; i < kMaxParallelOperations; ++i)
-      read_buffers_[i] = base::MakeRefCounted<net::IOBuffer>(
+    for (auto& read_buffer : read_buffers_) {
+      read_buffer = base::MakeRefCounted<net::IOBuffer>(
           std::max(kHeadersSize, kChunkSize));
+    }
   }
 
   void Run();
@@ -547,10 +548,9 @@ TEST_F(DiskCachePerfTest, BlockFilesPerformance) {
   base::ElapsedTimer sequential_timer;
 
   // Fill up the 32-byte block file (use three files).
-  for (int i = 0; i < kNumBlocks; i++) {
+  for (auto& addr : address) {
     int block_size = base::RandInt(1, 4);
-    EXPECT_TRUE(
-        files.CreateBlock(disk_cache::RANKINGS, block_size, &address[i]));
+    EXPECT_TRUE(files.CreateBlock(disk_cache::RANKINGS, block_size, &addr));
   }
 
   reporter.AddResult(kMetricFillBlocksTimeMs,
@@ -629,9 +629,8 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
         VerifyRvAndCallClosure, base::Unretained(&barrier), kHeadersSize));
 
     base::ElapsedTimer timer_early;
-    for (int e = 0; e < kBatchSize; ++e) {
-      int rv =
-          cache_entry[e]->ReadData(0, 0, buffer1.get(), kHeadersSize, cb_batch);
+    for (auto* entry : cache_entry) {
+      int rv = entry->ReadData(0, 0, buffer1.get(), kHeadersSize, cb_batch);
       if (rv != net::ERR_IO_PENDING) {
         barrier.Run();
         ASSERT_EQ(kHeadersSize, rv);
@@ -645,8 +644,8 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
   }
 
   // Cleanup
-  for (int i = 0; i < kBatchSize; ++i)
-    cache_entry[i]->Close();
+  for (auto* entry : cache_entry)
+    entry->Close();
 
   disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();

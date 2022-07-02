@@ -7,6 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 class VideoOverlayWindow;
@@ -40,6 +41,10 @@ class VideoPictureInPictureWindowController
 
   // Called when the user interacts with the "Hang Up" control.
   virtual void HangUp() = 0;
+
+  // Returns the source bounds of the video, in the WebContents top-level
+  // coordinate space, of the video before it enters picture in picture.
+  virtual const gfx::Rect& GetSourceBounds() const = 0;
 
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -133,8 +134,8 @@ LayoutObject* ListMarker::GetContentChild(const LayoutObject& marker) const {
   return first_child;
 }
 
-LayoutText& ListMarker::GetTextChild(const LayoutObject& marker) const {
-  auto& text = *To<LayoutText>(GetContentChild(marker));
+LayoutTextFragment& ListMarker::GetTextChild(const LayoutObject& marker) const {
+  auto& text = *To<LayoutTextFragment>(GetContentChild(marker));
   // There should be a single text child
   DCHECK(!text.NextSibling());
   return text;
@@ -147,7 +148,7 @@ void ListMarker::UpdateMarkerText(LayoutObject& marker) {
   StringBuilder marker_text_builder;
   marker_text_type_ =
       MarkerText(marker, &marker_text_builder, kWithPrefixSuffix);
-  text.SetTextIfNeeded(marker_text_builder.ToString().ReleaseImpl());
+  text.SetContentString(marker_text_builder.ToString().ReleaseImpl().get());
   DCHECK_NE(marker_text_type_, kNotText);
   DCHECK_NE(marker_text_type_, kUnresolved);
 }
@@ -302,13 +303,14 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   scoped_refptr<ComputedStyle> text_style =
       marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           style_parent.StyleRef(), marker.StyleRef().Display());
-  if (IsA<LayoutText>(child))
+  if (IsA<LayoutTextFragment>(child))
     return child->SetStyle(text_style);
   if (child)
     child->Destroy();
 
-  auto* const new_text = LayoutText::CreateEmptyAnonymous(
-      marker.GetDocument(), text_style, LegacyLayout::kAuto);
+  auto* const new_text = LayoutTextFragment::CreateAnonymous(
+      marker.GetDocument(), StringImpl::empty_, 0, 0, LegacyLayout::kAuto);
+  new_text->SetStyle(std::move(text_style));
   marker.AddChild(new_text);
   marker_text_type_ = kUnresolved;
 }
@@ -404,7 +406,7 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
         margin_start = -marker_inline_size;
     }
   }
-  DCHECK_EQ(margin_start + margin_end, -marker_inline_size);
+  DCHECK_EQ(-margin_start - margin_end, marker_inline_size);
   return {margin_start, margin_end};
 }
 

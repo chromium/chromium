@@ -102,7 +102,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/infobars/InfoBarControlLayoutTest.java",

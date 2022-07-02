@@ -55,6 +55,8 @@
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -71,9 +73,7 @@ using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::SizeIs;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -114,14 +114,6 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 
 class HttpStreamFactoryJobPeer {
  public:
-  static void Start(HttpStreamFactory::Job* job,
-                    HttpStreamRequest::StreamType stream_type) {
-    // Start() is mocked for MockHttpStreamFactoryJob.
-    // This is the alternative method to invoke real Start() method on Job.
-    job->stream_type_ = stream_type;
-    job->StartInternal();
-  }
-
   // Returns |num_streams_| of |job|. It should be 0 for non-preconnect Jobs.
   static int GetNumStreams(const HttpStreamFactory::Job* job) {
     return job->num_streams_;
@@ -1870,11 +1862,12 @@ void HttpStreamFactoryJobControllerTest::
 
   // Run message loop to make the main job succeed.
   base::RunLoop().RunUntilIdle();
+  request_.reset();
+
   // If alt job was retried on the alternate network, the alternative service
   // should be marked broken until the default network changes.
   VerifyBrokenAlternateProtocolMapping(request_info,
                                        alt_job_retried_on_non_default_network);
-  request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
   if (alt_job_retried_on_non_default_network) {
     // Verify the brokenness is cleared when the default network changes.
@@ -1897,7 +1890,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // changes.
 TEST_F(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobSucceededOnAlternateNetwork) {
-  TestAltJobSucceedsAfterMainJobSucceeded(true);
+  TestMainJobSucceedsAfterAltJobSucceeded(true);
 }
 
 void HttpStreamFactoryJobControllerTest::TestMainJobFailsAfterAltJobSucceeded(
@@ -2830,6 +2823,152 @@ TEST_F(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   EXPECT_TRUE(spdy_session);
 }
 
+// This test verifies that a preconnect job doesn't block subsequent requests
+// which can use an existing IP based pooled SpdySession.
+// This test uses "wildcard.pem" to support IpBasedPooling for *.example.org,
+// and starts 3 requests:
+//   [1] Normal non-preconnect request to www.example.org.
+//   [2] Preconnect request to other.example.org. The connection is paused until
+//       OnConnectComplete() is called in the end of the test.
+//   [3] Normal non-preconnect request to other.example.org. This request must
+//       succeed even while the preconnect request [2] is paused.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       PreconnectJobDoesntBlockIpBasedPooling) {
+  // Make sure that both "www.example.org" and "other.example.org" are pointing
+  // to the same IP address.
+  std::vector<HostResolverEndpointResult> endpoints;
+  HostResolverEndpointResult endpoint_result;
+  endpoint_result.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoints.push_back(endpoint_result);
+  session_deps_.host_resolver->rules()->AddRule("www.example.org", endpoints);
+  session_deps_.host_resolver->rules()->AddRule("other.example.org", endpoints);
+  // Make |host_resolver| asynchronous to simulate the issue of
+  // crbug.com/1320608.
+  session_deps_.host_resolver->set_synchronous_mode(false);
+
+  // This is used for the non-preconnect requests [1] and [3].
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  SequencedSocketData first_socket(reads, writes);
+  first_socket.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps_.socket_factory->AddSocketDataProvider(&first_socket);
+
+  // This is used for the non-preconnect requests.
+  SSLSocketDataProvider ssl_data1(ASYNC, OK);
+  ssl_data1.next_proto = kProtoHTTP2;
+  // "wildcard.pem" supports "*.example.org".
+  ssl_data1.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
+
+  // This is used for the preconnect request.
+  SequencedSocketData second_socket;
+  // The connection is paused. And it will be completed with
+  // ERR_CONNECTION_FAILED.
+  second_socket.set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  session_deps_.socket_factory->AddSocketDataProvider(&second_socket);
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.example.org");
+  Initialize(request_info);
+
+  // Start a non-preconnect request [1].
+  {
+    std::unique_ptr<HttpStreamRequest> stream_request = job_controller_->Start(
+        &request_delegate_,
+        /*websocket_handshake_stream_create_helper=*/nullptr,
+        NetLogWithSource(), HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    run_loop.Run();
+  }
+
+  // Sanity check - make sure the SpdySession was created.
+  {
+    base::WeakPtr<SpdySession> spdy_session =
+        session_->spdy_session_pool()->FindAvailableSession(
+            SpdySessionKey(HostPortPair::FromURL(request_info.url),
+                           ProxyServer::Direct(), request_info.privacy_mode,
+                           SpdySessionKey::IsProxySession::kFalse,
+                           request_info.socket_tag,
+                           request_info.network_isolation_key,
+                           request_info.secure_dns_policy),
+            /*enable_ip_based_pooling=*/false, /*is_websocket=*/false,
+            NetLogWithSource());
+    EXPECT_TRUE(spdy_session);
+  }
+
+  HttpRequestInfo other_request_info;
+  other_request_info.method = "GET";
+  other_request_info.url = GURL("https://other.example.org");
+
+  // Create and start a preconnect request [2].
+  MockHttpStreamRequestDelegate preconnect_request_delegate;
+  HttpStreamFactory::JobController* preconnect_job_controller =
+      new HttpStreamFactory::JobController(
+          factory_, &preconnect_request_delegate, session_.get(), &job_factory_,
+          other_request_info, /*is_preconnect=*/true,
+          /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
+          enable_alternative_services_,
+          delay_main_job_with_available_spdy_session_, SSLConfig(),
+          SSLConfig());
+  HttpStreamFactoryPeer::AddJobController(factory_, preconnect_job_controller);
+  preconnect_job_controller->Preconnect(1);
+  base::RunLoop().RunUntilIdle();
+
+  // The SpdySession is available for IP based pooling when the host resolution
+  // has finished.
+  {
+    const SpdySessionKey spdy_session_key = SpdySessionKey(
+        HostPortPair::FromURL(other_request_info.url), ProxyServer::Direct(),
+        other_request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
+        other_request_info.socket_tag, other_request_info.network_isolation_key,
+        other_request_info.secure_dns_policy);
+    EXPECT_FALSE(session_->spdy_session_pool()->FindAvailableSession(
+        spdy_session_key, /*enable_ip_based_pooling=*/false,
+        /*is_websocket=*/false, NetLogWithSource()));
+    EXPECT_TRUE(session_->spdy_session_pool()->FindAvailableSession(
+        spdy_session_key, /*enable_ip_based_pooling=*/true,
+        /*is_websocket=*/false, NetLogWithSource()));
+  }
+
+  // Create and start a second non-preconnect request [3].
+  {
+    MockHttpStreamRequestDelegate request_delegate;
+    HttpStreamFactory::JobController* job_controller =
+        new HttpStreamFactory::JobController(
+            factory_, &request_delegate, session_.get(), &job_factory_,
+            other_request_info, /*is_preconnect=*/false,
+            /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
+            enable_alternative_services_,
+            delay_main_job_with_available_spdy_session_, SSLConfig(),
+            SSLConfig());
+    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
+    std::unique_ptr<HttpStreamRequest> second_stream_request =
+        job_controller->Start(
+            &request_delegate,
+            /*websocket_handshake_stream_create_helper=*/nullptr,
+            NetLogWithSource(), HttpStreamRequest::HTTP_STREAM,
+            DEFAULT_PRIORITY);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(request_delegate, OnStreamReadyImpl(_, _, _))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    run_loop.Run();
+    second_stream_request.reset();
+  }
+
+  second_socket.socket()->OnConnectComplete(
+      MockConnect(SYNCHRONOUS, ERR_CONNECTION_FAILED));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  EXPECT_TRUE(first_socket.AllReadDataConsumed());
+  EXPECT_TRUE(first_socket.AllWriteDataConsumed());
+}
+
 class JobControllerLimitMultipleH2Requests
     : public HttpStreamFactoryJobControllerTest {
  protected:
@@ -3640,6 +3779,4 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

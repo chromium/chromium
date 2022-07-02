@@ -192,7 +192,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<content::NavigationSimulator> simulator =
         content::NavigationSimulator::CreateRendererInitiated(
-            test_case.initial_url, web_contents()->GetMainFrame());
+            test_case.initial_url, web_contents()->GetPrimaryMainFrame());
     simulator->Start();
     simulator->Redirect(test_case.redirect_url);
     simulator->Commit();
@@ -587,9 +587,10 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameTest,
   const GURL fenced_frame_url("https://fencedframe.test");
   MarkUrlAsAbusiveEnforce(fenced_frame_url);
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   // The popup blocker is not triggered for a fenced frame.
   EXPECT_FALSE(popup_blocker()->ShouldApplyAbusivePopupBlocker(

@@ -2,18 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Enum class to identify horizontal or vertical flips
+//
+class FlipEnum {
+  static HorizontalFlip = new FlipEnum(1);
+  static VerticalFlip = new FlipEnum(2);
+
+  constructor(id) {
+    this.id = id;
+  }
+}
+// Circular buffer to store the past X amount of frames.
+//
+class CircularBuffer {
+  constructor(size) {
+    this.instances = Array(size);
+    this.maxSize = size;
+    this.numFrames = 0;
+  }
+
+  get(index) {
+    if (index < 0 || index < this.numFrames - this.maxSize ||
+        index >= this.numFrames) {
+      return undefined;
+    }
+    return this.instances[index % this.maxSize];
+  }
+
+  push(frame) {
+    // Push frames into buffer
+    this.instances[this.numFrames % this.maxSize] = frame;
+    this.numFrames++;
+  }
+}
+
 // Represents a single frame, and contains all associated data.
 //
 class DrawFrame {
-  static instances = [];
+  static maxBufferNumFrames = 10000;
+  static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
 
-  static count() { return DrawFrame.instances.length; }
+  static count() { return DrawFrame.frameBuffer.instances.length; }
 
   static get(index) {
-    const ins = DrawFrame.instances;
-    if (index < 0) return ins[index];
-    if (index >= ins.length) return ins[ins.length - 1];
-    return ins[index];
+    return DrawFrame.frameBuffer.get(index);
   }
 
   constructor(json) {
@@ -37,7 +69,31 @@ class DrawFrame {
     // |new_sources| requires some work. So for now, do the easy thing.
     this.json_ = json;
 
-    DrawFrame.instances.push(this);
+    DrawFrame.frameBuffer.push(this);
+
+    // Update scrubber as new frames come in
+    const scrubberFrame = document.querySelector('#scrubberframe');
+
+    scrubberFrame.max = DrawFrame.frameBuffer.numFrames - 1;
+
+    // Handle scrubber when # of frames reached cap of circular buffer.
+    if (DrawFrame.frameBuffer.numFrames > DrawFrame.frameBuffer.maxSize) {
+      const oldestFrameId = DrawFrame.frameBuffer.numFrames
+                            - DrawFrame.frameBuffer.maxSize;
+
+      scrubberFrame.min = oldestFrameId;
+      // Once the scrubber reaches the left very (oldest frame),
+      // update scrubber value to match scrubber min value and
+      // update drawing on canvas to match correspondingly.
+      if (scrubberFrame.value <= scrubberFrame.min) {
+        scrubberFrame.value = oldestFrameId;
+        Player.instance.forward();
+      }
+    }
+    // Handle scrubber when # of frames haven't yet reached buffer cap.
+    else {
+      scrubberFrame.min = 0;
+    }
   }
 
   submissionCount() {
@@ -49,9 +105,22 @@ class DrawFrame {
       (this.submissionCount() - 1);
   }
 
+  updateCanvasOrientation(canvas, orientationDeg) {
+    // Swap canvas width/height for 90 or 270 deg rotations
+    if (orientationDeg === 90 || orientationDeg === 270) {
+      canvas.width = this.size_.height;
+      canvas.height = this.size_.width;
+    }
+    // Restore original canvas width/height for 0 or 180 deg rotations
+    else {
+      canvas.width = this.size_.width;
+      canvas.height = this.size_.height;
+    }
+  }
+
   updateCanvasSize(canvas, scale) {
-    canvas.width = this.size_.width * scale;
-    canvas.height = this.size_.height * scale;
+    canvas.width *= scale;
+    canvas.height *= scale;
   }
 
   getFilter(source_index) {
@@ -73,29 +142,92 @@ class DrawFrame {
     return filter;
   }
 
-  draw(canvas, scale) {
+  draw(canvas, context, scale, orientationDeg, transformMatrix) {
     for (const call of this.drawCalls_) {
       if (call.drawIndex_ > this.submissionFreezeIndex()) break;
 
-      call.draw(canvas, scale);
+      call.draw(canvas, context, scale, orientationDeg, transformMatrix);
     }
 
-    canvas.fillStyle = 'black';
-    canvas.font = "16px Courier bold";
-    canvas.fillText(this.num_, 3, 15);
+    context.fillStyle = 'black';
+    context.font = "16px Courier bold";
+
+    const frameNumberPosX = 3;
+    const frameNumberPosY = 15;
+    const newFrameNumPos = this.rotateFlipText(frameNumberPosX, frameNumberPosY,
+                                        orientationDeg, scale, transformMatrix);
+
+    context.fillText(this.num_, newFrameNumPos[0], newFrameNumPos[1]);
 
     for (const text of this.drawTexts_) {
+      const textPosX = text.pos[0];
+      const textPosY = text.pos[1];
+
       if (text.drawindex > this.submissionFreezeIndex()) break;
 
       let filter = this.getFilter(text.source_index);
       if (!filter) continue;
 
+      const newTextPos = this.rotateFlipText(textPosX, textPosY,
+                                              orientationDeg, scale,
+                                              transformMatrix);
+
       var color = (filter && filter.drawColor) ?
         filter.drawColor : text.option.color;
-      canvas.fillStyle = color;
+      context.fillStyle = color;
       // TODO: This should also create some DrawText object or something.
-      canvas.fillText(text.text, text.pos[0] * scale, text.pos[1] * scale);
+      context.fillText(text.text, newTextPos[0], newTextPos[1]);
     }
+  }
+
+  // Rotates and flips texts
+  rotateFlipText(textPosX, textPosY, orientationDeg, scale, transformMatrix) {
+    var translationX = 0;
+    var translationY = 0;
+
+    // Determine amount of translation depending on orientation.
+    // We want to put the texts back in frame.
+    switch(orientationDeg) {
+      default:
+        break;
+      case 90:
+        translationX = canvas.width/scale;
+        break;
+      case 180:
+        translationX = canvas.width/scale;
+        translationY = canvas.height/scale;
+        break;
+      case 270:
+        translationY = canvas.height/scale;
+        break;
+      case FlipEnum.HorizontalFlip.id:
+        translationX = canvas.width/scale;
+        break;
+      case FlipEnum.VerticalFlip.id:
+        translationY = canvas.height/scale;
+        break;
+    }
+
+    var newTextPosX;
+    var newTextPosY;
+    // Use rotation/mirroring matrix to get rotated/flipped coords
+    switch (orientationDeg) {
+      default:
+        newTextPosX = textPosX * transformMatrix[0][0] +
+                      textPosY * transformMatrix[0][1] + translationX;
+        newTextPosY = textPosX * transformMatrix[1][0] +
+                      textPosY * transformMatrix[1][1] + translationY;
+        break;
+      case FlipEnum.HorizontalFlip.id:
+        newTextPosX = -textPosX + translationX;
+        newTextPosY = textPosY;
+        break;
+      case FlipEnum.VerticalFlip.id:
+        newTextPosX = textPosX;
+        newTextPosY = -textPosY + translationY;
+        break;
+    }
+    return [newTextPosX * scale, newTextPosY * scale];
   }
 
   appendLogs(logContainer) {
@@ -136,10 +268,14 @@ class Viewer {
   constructor(canvas, log) {
     this.canvas_ = canvas;
     this.logContainer_ = log;
-    this.drawContext_ = this.canvas_.getContext('2d');
+    this.drawContext_ = this.canvas_.getContext("2d");
 
     this.currentFrameIndex_ = -1;
     this.viewScale = 1.0;
+    this.viewOrientation = 0;
+    this.transformMatrix = [[1,0],[0,1]]; // Identity matrix
+    this.translationX = 0;
+    this.translationY = 0;
   }
 
   updateCurrentFrame() {
@@ -170,11 +306,24 @@ class Viewer {
     }
   }
 
+  updateTransformMatrix(orientationDeg) {
+    const orientationRad = orientationDeg * (Math.PI/180.0);
+    // Clockwise rotation Matrix
+    this.transformMatrix =
+                      [[Math.cos(orientationRad), -Math.sin(orientationRad)],
+                      [Math.sin(orientationRad), Math.cos(orientationRad)]];
+  }
+
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
+    frame.updateCanvasOrientation(this.canvas_, this.viewOrientation);
     frame.updateCanvasSize(this.canvas_, this.viewScale);
-    frame.draw(this.drawContext_, this.viewScale);
+    this.updateTransformMatrix(this.viewOrientation);
+    // this.drawContext_.translate(this.translationX, this.translationY);
+    frame.draw(this.canvas_, this.drawContext_,
+                this.viewScale, this.viewOrientation,
+                this.transformMatrix);
   }
 
   updateLogs_() {
@@ -194,6 +343,10 @@ class Viewer {
     this.viewScale = scaleAsInt / 100.0;
   }
 
+  setViewerOrientation(orientationAsInt) {
+    this.viewOrientation = orientationAsInt;
+  }
+
   freezeFrame(frameIndex, drawIndex) {
     if (DrawFrame.get(frameIndex)) {
       this.currentFrameIndex_ = frameIndex;
@@ -205,6 +358,21 @@ class Viewer {
   unfreeze() {
     const frame = this.getCurrentFrame();
     if (frame) frame.unfreeze();
+  }
+
+  zoomToMouse(currentMouseX, currentMouseY, delta) {
+    var factor = 1.1;
+    if (delta > 0) {
+      factor = 0.9;
+    }
+    // this.translationX = currentMouseX;
+    // this.translationY = currentMouseY;
+    // this.updateCurrentFrame();
+    this.viewScale *= factor;
+    this.updateCurrentFrame();
+    // this.translationX = -currentMouseX;
+    // this.translationY = -currentMouseY;
+    // this.updateCurrentFrame();
   }
 };
 
@@ -266,6 +434,18 @@ class Player {
 
   setViewerScale(scaleAsString) {
     this.viewer_.setViewerScale(parseInt(scaleAsString));
+    this.refresh();
+  }
+
+  setViewerOrientation(orientationAsString) {
+    // Set orientationAsInt as selected orientation degree
+    // Horizontal Flip enum or Vertical Flip enum
+    const orientationAsInt = parseInt(orientationAsString) >= 0 ?
+      parseInt(orientationAsString) :
+      (orientationAsString === "Horizontal Flip" ?
+          FlipEnum.HorizontalFlip.id : FlipEnum.VerticalFlip.id);
+
+    this.viewer_.setViewerOrientation(orientationAsInt);
     this.refresh();
   }
 

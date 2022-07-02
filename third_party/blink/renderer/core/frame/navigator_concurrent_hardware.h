@@ -11,7 +11,7 @@ namespace blink {
 
 class CORE_EXPORT NavigatorConcurrentHardware {
  public:
-  unsigned hardwareConcurrency() const;
+  virtual unsigned hardwareConcurrency() const;
 };
 
 }  // namespace blink

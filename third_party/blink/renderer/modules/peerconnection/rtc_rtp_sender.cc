@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -49,7 +50,6 @@
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -348,11 +348,6 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
   }
   // https://w3c.github.io/webrtc-svc/
   if (encoding->hasScalabilityMode()) {
-    if (encoding->scalabilityMode() == "L1T2") {
-      webrtc_encoding.num_temporal_layers = 2;
-    } else if (encoding->scalabilityMode() == "L1T3") {
-      webrtc_encoding.num_temporal_layers = 3;
-    }
     webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
   }
   webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
@@ -490,7 +485,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
 
   HeapVector<Member<RTCRtpEncodingParameters>> encodings;
   encodings.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->encodings.size()));
+      base::checked_cast<wtf_size_t>(webrtc_parameters->encodings.size()));
   for (const auto& webrtc_encoding : webrtc_parameters->encodings) {
     RTCRtpEncodingParameters* encoding = RTCRtpEncodingParameters::Create();
     if (!webrtc_encoding.rid.empty()) {
@@ -521,8 +516,8 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   parameters->setEncodings(encodings);
 
   HeapVector<Member<RTCRtpHeaderExtensionParameters>> headers;
-  headers.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->header_extensions.size()));
+  headers.ReserveCapacity(base::checked_cast<wtf_size_t>(
+      webrtc_parameters->header_extensions.size()));
   for (const auto& webrtc_header : webrtc_parameters->header_extensions) {
     headers.push_back(ToRtpHeaderExtensionParameters(webrtc_header));
   }
@@ -530,7 +525,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
 
   HeapVector<Member<RTCRtpCodecParameters>> codecs;
   codecs.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_parameters->codecs.size()));
+      base::checked_cast<wtf_size_t>(webrtc_parameters->codecs.size()));
   for (const auto& webrtc_codec : webrtc_parameters->codecs) {
     codecs.push_back(ToRtpCodecParameters(webrtc_codec));
   }
@@ -756,7 +751,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
 
   HeapVector<Member<RTCRtpCodecCapability>> codecs;
   codecs.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(rtc_capabilities->codecs.size()));
+      base::checked_cast<wtf_size_t>(rtc_capabilities->codecs.size()));
   for (const auto& rtc_codec : rtc_capabilities->codecs) {
     auto* codec = RTCRtpCodecCapability::Create();
     codec->setMimeType(WTF::String::FromUTF8(rtc_codec.mime_type()));
@@ -813,8 +808,8 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
   capabilities->setCodecs(codecs);
 
   HeapVector<Member<RTCRtpHeaderExtensionCapability>> header_extensions;
-  header_extensions.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(rtc_capabilities->header_extensions.size()));
+  header_extensions.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(
+      rtc_capabilities->header_extensions.size()));
   for (const auto& rtc_header_extension : rtc_capabilities->header_extensions) {
     auto* header_extension = RTCRtpHeaderExtensionCapability::Create();
     header_extension->setUri(WTF::String::FromUTF8(rtc_header_extension.uri));

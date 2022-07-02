@@ -62,7 +62,8 @@ std::set<const WebRequestRule*> WebRequestRulesRegistry::GetMatches(
   // 1st phase -- add all rules with some conditions without UrlFilter
   // attributes.
   for (const auto* rule : rules_with_untriggered_conditions_) {
-    if (rule->conditions().IsFulfilled(-1, request_data))
+    if (rule->conditions().IsFulfilled(base::MatcherStringPattern::kInvalidId,
+                                       request_data))
       result.insert(rule);
   }
 
@@ -215,7 +216,7 @@ std::string WebRequestRulesRegistry::RemoveRulesImpl(
     const std::string& extension_id,
     const std::vector<std::string>& rule_identifiers) {
   // URLMatcherConditionSet IDs that can be removed from URLMatcher.
-  std::vector<URLMatcherConditionSet::ID> remove_from_url_matcher;
+  std::vector<base::MatcherStringPattern::ID> remove_from_url_matcher;
   RulesMap& registered_rules = webrequest_rules_[extension_id];
 
   for (const std::string& identifier : rule_identifiers) {
@@ -246,7 +247,7 @@ std::string WebRequestRulesRegistry::RemoveAllRulesImpl(
     const std::string& extension_id) {
   // First we get out all URLMatcherConditionSets and remove the rule references
   // from |rules_with_untriggered_conditions_|.
-  std::vector<URLMatcherConditionSet::ID> remove_from_url_matcher;
+  std::vector<base::MatcherStringPattern::ID> remove_from_url_matcher;
   for (const auto& rule_id_rule_pair : webrequest_rules_[extension_id])
     CleanUpAfterRule(rule_id_rule_pair.second.get(), &remove_from_url_matcher);
   url_matcher_.RemoveConditionSets(remove_from_url_matcher);
@@ -258,7 +259,7 @@ std::string WebRequestRulesRegistry::RemoveAllRulesImpl(
 
 void WebRequestRulesRegistry::CleanUpAfterRule(
     const WebRequestRule* rule,
-    std::vector<URLMatcherConditionSet::ID>* remove_from_url_matcher) {
+    std::vector<base::MatcherStringPattern::ID>* remove_from_url_matcher) {
   URLMatcherConditionSet::Vector condition_sets;
   rule->conditions().GetURLMatcherConditionSets(&condition_sets);
   for (const scoped_refptr<URLMatcherConditionSet>& condition_set :

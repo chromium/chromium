@@ -9,6 +9,9 @@
         document.getElementById("focusableElement2").addEventListener('focus', () => {
           window.domAutomationController.send('FocusDone2');
         });
+        document.getElementById("focusableElement3").addEventListener('focus', () => {
+          window.domAutomationController.send('FocusDone3');
+        });
       });
     </script>
     <style>
@@ -24,6 +27,8 @@
       <a href="#" id="focusableElement1">Test1</a>
       Some text
       <a href="#" id="focusableElement2">Test2</a>
+      Even more
+      <a href="#" id="focusableElement3">Test3</a>
     </p>
   </body>
 </html>

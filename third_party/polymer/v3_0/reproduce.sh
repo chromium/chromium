@@ -17,6 +17,8 @@ check_dep() {
   fi
 }
 
+set -e
+
 check_dep "which npm" "npm" "visiting https://nodejs.org/en/"
 check_dep "which rsync" "rsync" "apt-get install rsync"
 check_dep "sed --version | grep GNU" \
@@ -50,8 +52,12 @@ find components-chromium/polymer/ -mindepth 3 -maxdepth 3 -name '*.js' \
   -exec sed -i 's/@webcomponents\//..\/..\/..\//g' {} +
 
 # Apply additional chrome specific patches.
-patch -p1 --forward -r - < chromium.patch
-patch -p1 --forward -r - < paper_tooltip.patch
+patch -p1 --forward < chromium.patch
+patch -p1 --forward < iron_icon.patch
+patch -p1 --forward < iron_list.patch
+patch -p1 --forward < iron_overlay_backdrop.patch
+patch -p1 --forward < paper_progress.patch
+patch -p1 --forward < paper_tooltip.patch
 
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
 python minify_polymer.py

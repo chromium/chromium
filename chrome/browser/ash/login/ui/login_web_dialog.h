@@ -22,20 +22,9 @@ namespace ash {
 // Launches web dialog during OOBE/Login with specified URL and title.
 class LoginWebDialog : public ui::WebDialogDelegate {
  public:
-  // Delegate class to get notifications from the dialog.
-  class Delegate {
-   public:
-    // Called when dialog has been closed.
-    virtual void OnDialogClosed();
-
-   protected:
-    virtual ~Delegate() {}
-  };
-
   // If `parent_window` is null then the dialog is placed in the modal dialog
   // container on the primary display.
   LoginWebDialog(content::BrowserContext* browser_context,
-                 Delegate* delegate,
                  gfx::NativeWindow parent_window,
                  const std::u16string& title,
                  const GURL& url);
@@ -87,8 +76,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   content::BrowserContext* const browser_context_;
   gfx::NativeWindow parent_window_;
   gfx::NativeWindow dialog_window_;
-  // Notifications receiver.
-  Delegate* const delegate_;
 
   std::u16string title_;
   const GURL url_;

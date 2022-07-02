@@ -19,7 +19,7 @@
 using AccountControlTableViewItemTest = PlatformTest;
 
 // Tests that the UIImageView and UILabels are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
   TableViewAccountItem* item = [[TableViewAccountItem alloc] initWithType:0];
   UIImage* image = [[UIImage alloc] init];

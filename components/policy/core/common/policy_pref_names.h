@@ -35,6 +35,7 @@ POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
 POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 POLICY_EXPORT extern const char kUrlParamFilterEnabled[];
 POLICY_EXPORT extern const char kSetTimeoutWithout1MsClampEnabled[];
+POLICY_EXPORT extern const char kUnthrottledNestedTimeoutEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -46,7 +47,7 @@ POLICY_EXPORT extern const char kLastPolicyCheckTime[];
 #if BUILDFLAG(IS_IOS)
 POLICY_EXPORT extern const char kUserPolicyNotificationWasShown[];
 #endif
-
+POLICY_EXPORT extern const char kEventPathEnabled[];
 }  // namespace policy_prefs
 }  // namespace policy
 

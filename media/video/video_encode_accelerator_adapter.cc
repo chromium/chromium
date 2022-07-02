@@ -502,7 +502,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
       size_t dst_size = result.size;
       size_t actual_output_size = 0;
       bool config_changed = false;
-      std::unique_ptr<uint8_t[]> dst(new uint8_t[dst_size]);
+      auto dst = std::make_unique<uint8_t[]>(dst_size);
 
       auto status = h264_converter_->ConvertChunk(
           base::span<uint8_t>(src, result.size),
@@ -514,7 +514,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
         // http://www.itu.int/rec/T-REC-H.264. Retry the conversion if the
         // output buffer size is too small.
         dst_size = actual_output_size;
-        dst.reset(new uint8_t[dst_size]);
+        dst = std::make_unique<uint8_t[]>(dst_size);
         status = h264_converter_->ConvertChunk(
             base::span<uint8_t>(src, result.size),
             base::span<uint8_t>(dst.get(), dst_size), &config_changed,
@@ -539,7 +539,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
       }
     } else {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-      result.data.reset(new uint8_t[result.size]);
+      result.data = std::make_unique<uint8_t[]>(result.size);
       memcpy(result.data.get(), mapping.memory(), result.size);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     }

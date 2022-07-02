@@ -34,6 +34,8 @@ class ASH_EXPORT AdaptiveChargingNotificationController
   void ShowAdaptiveChargingNotification(
       absl::optional<int> hours_to_full = absl::nullopt);
 
+  void CloseAdaptiveChargingNotification(bool by_user = false);
+
   bool ShouldShowNotification();
 
   // message_center::NotificationObserver:

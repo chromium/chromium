@@ -19,10 +19,10 @@ namespace net {
 base::Value NetLogPushLookupTransactionParams(
     const NetLogSource& net_log,
     const ServerPushDelegate::ServerPushHelper* push_helper) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  net_log.AddToEventParameters(&dict);
-  dict.SetStringKey("push_url", push_helper->GetURL().possibly_invalid_spec());
-  return dict;
+  base::Value::Dict dict;
+  net_log.AddToEventParameters(dict);
+  dict.Set("push_url", push_helper->GetURL().possibly_invalid_spec());
+  return base::Value(std::move(dict));
 }
 
 HttpCacheLookupManager::LookupTransaction::LookupTransaction(
@@ -30,7 +30,6 @@ HttpCacheLookupManager::LookupTransaction::LookupTransaction(
     NetLog* net_log)
     : push_helper_(std::move(server_push_helper)),
       request_(new HttpRequestInfo()),
-      transaction_(nullptr),
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::SERVER_PUSH_LOOKUP_TRANSACTION)) {}

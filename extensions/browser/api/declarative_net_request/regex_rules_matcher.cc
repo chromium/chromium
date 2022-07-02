@@ -231,9 +231,9 @@ void RegexRulesMatcher::InitializeMatcher() {
                        });
                      }));
 
-  // Convert |strings_to_match| to StringPatterns. This is necessary to use
-  // url_matcher::SubstringSetMatcher.
-  std::vector<base::StringPattern> patterns;
+  // Convert |strings_to_match| to MatcherStringPatterns. This is necessary to
+  // use url_matcher::SubstringSetMatcher.
+  std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
   for (size_t i = 0; i < strings_to_match.size(); ++i)
@@ -272,7 +272,7 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   // To pre-filter the set of regexes to match against |params|, we first need
   // to compute the set of candidate strings tracked by |substring_matcher_|
   // within |params.lower_cased_url_spec|.
-  std::set<int> candidate_ids_set;
+  std::set<base::MatcherStringPattern::ID> candidate_ids_set;
   DCHECK(substring_matcher_);
   substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
   std::vector<int> candidate_ids_list(candidate_ids_set.begin(),

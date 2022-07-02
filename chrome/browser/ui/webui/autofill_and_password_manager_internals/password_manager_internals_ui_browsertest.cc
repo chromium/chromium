@@ -102,44 +102,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
   ASSERT_TRUE(RunJavascriptTest("testLogEmpty"));
 }
 
-// Test that if two tabs with the internals page are open, the second displays
-// the same logs. In particular, this checks that both the second tab gets the
-// logs created before the second tab was opened, and also that the second tab
-// waits with displaying until the internals page is ready (trying to display
-// the old logs just on construction time would fail).
-IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
-                       LogEntry_MultipleTabsIdentical) {
-  // First, open one tab with the internals page, and log something.
-  autofill::LogRouter* log_router =
-      password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
-          browser()->profile());
-  ASSERT_TRUE(log_router);
-  log_router->ProcessLog("<script> text for testing");
-  ASSERT_TRUE(RunJavascriptTest("testLogText"));
-  // Now open a second tab with the internals page, but do not log anything.
-  OpenInternalsPage(WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  // The previously logged text should have made it to the page.
-  ASSERT_TRUE(RunJavascriptTest("testLogText"));
-}
-
-// Test that in the presence of more internals pages, reload does not cause
-// flushing the logs.
-IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
-                       LogEntry_NotFlushedOnReloadIfMultiple) {
-  // Open one more tab with the internals page.
-  OpenInternalsPage(WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  // Now log something.
-  autofill::LogRouter* log_router =
-      password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
-          browser()->profile());
-  ASSERT_TRUE(log_router);
-  log_router->ProcessLog("<script> text for testing");
-  // Reload.
-  OpenInternalsPage(WindowOpenDisposition::CURRENT_TAB);
-  // The text should still be there.
-  ASSERT_TRUE(RunJavascriptTest("testLogText"));
-}
-
 // Test that navigation away from the internals page works OK.
 IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
                        LogEntry_NavigateAway) {

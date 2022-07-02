@@ -10,7 +10,9 @@
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace mojo {
 
@@ -31,7 +33,7 @@ template <>
 struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     StructTraits<cc::mojom::RenderFrameMetadataDataView,
                  cc::RenderFrameMetadata> {
-  static SkColor root_background_color(
+  static SkColor4f root_background_color(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.root_background_color;
   }
@@ -94,6 +96,16 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
   static viz::VerticalScrollDirection new_vertical_scroll_direction(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.new_vertical_scroll_direction;
+  }
+
+  static base::TimeDelta previous_surfaces_visual_update_duration(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.previous_surfaces_visual_update_duration;
+  }
+
+  static base::TimeDelta current_surface_visual_update_duration(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.current_surface_visual_update_duration;
   }
 
 #if BUILDFLAG(IS_ANDROID)

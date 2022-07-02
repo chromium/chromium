@@ -171,7 +171,8 @@ constexpr char kKeyboardUtilsForInjectionModulePath[] =
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
-// TODO(crbug.com/1261902): Remove.
+// TODO(crbug.com/1261902): Clean-up old implementation once feature is
+// launched.
 constexpr char kRecommendAppOldListViewJSPath[] =
     "recommend_app_old_list_view.js";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
@@ -244,8 +245,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
 void AddAssistantScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
-  source->AddResourcePath("voice_match_animation.json",
-                          IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
@@ -341,11 +340,6 @@ bool ShouldUsePolymer3Resources(bool is_oobe_flow) {
 content::WebUIDataSource* CreateOobeUIDataSource(
     const base::Value::Dict& localized_strings,
     const std::string& display_type) {
-  // Cannot exist for the lock screen.
-  if (display_type == OobeUI::kLockDisplay) {
-    NOTREACHED();
-  }
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   content::WebUIDataSource* source =
@@ -421,7 +415,6 @@ std::string GetDisplayType(const GURL& url) {
 // static
 const char OobeUI::kAppLaunchSplashDisplay[] = "app-launch-splash";
 const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";
-const char OobeUI::kLockDisplay[] = "lock";
 const char OobeUI::kLoginDisplay[] = "login";
 const char OobeUI::kOobeDisplay[] = "oobe";
 
@@ -465,7 +458,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<ErrorScreenHandler>());
 
-  error_screen_ = std::make_unique<ErrorScreen>(GetView<ErrorScreenHandler>());
+  error_screen_ =
+      std::make_unique<ErrorScreen>(GetView<ErrorScreenHandler>()->AsWeakPtr());
   ErrorScreen* error_screen = error_screen_.get();
 
   AddScreenHandler(std::make_unique<EnrollmentScreenHandler>(
@@ -767,10 +761,6 @@ void OobeUI::ShowOobeUI(bool show) {
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
 }
 
-void OobeUI::ForwardAccelerator(std::string accelerator_name) {
-  core_handler_->ForwardAccelerator(accelerator_name);
-}
-
 gfx::NativeView OobeUI::GetNativeView() {
   return web_ui()->GetWebContents()->GetNativeView();
 }
@@ -794,10 +784,6 @@ void OobeUI::RemoveObserver(Observer* observer) {
 void OobeUI::OnDisplayConfigurationChanged() {
   if (oobe_display_chooser_)
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
-}
-
-void OobeUI::SetLoginUserCount(int user_count) {
-  core_handler_->SetLoginUserCount(user_count);
 }
 
 void OobeUI::OnSystemTrayBubbleShown() {

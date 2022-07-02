@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -331,7 +330,7 @@
 
 #pragma mark - Private
 
-// Returns a menu for the |navigationItems|.
+// Returns a menu for the `navigationItems`.
 - (UIMenu*)menuForNavigationItems:
     (const std::vector<web::NavigationItem*>)navigationItems {
   NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
@@ -369,7 +368,7 @@
 }
 
 // Returns YES if incognito NTP title and image should be used for back/forward
-// item associated with |URL|.
+// item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
          self.isIncognito &&
@@ -444,7 +443,7 @@
   return nil;
 }
 
-// Navigates to the page associated with |item|.
+// Navigates to the page associated with `item`.
 - (void)navigateToPageForItem:(web::NavigationItem*)item {
   if (!self.webState)
     return;

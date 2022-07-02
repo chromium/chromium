@@ -1,0 +1,11 @@
+Tests that file picker interception works as expected
+{
+    stack : Error: Failed to execute 'showOpenFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().     at <anonymous>:2:12
+}
+{
+    stack : Error: Failed to execute 'showSaveFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().     at <anonymous>:2:12
+}
+{
+    stack : Error: Failed to execute 'showDirectoryPicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().     at <anonymous>:2:12
+}
+Intercepted file chooser mode: selectSingle

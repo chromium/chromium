@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/image_paint_timing_detector.h"
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
@@ -265,15 +266,16 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kKeyUp);
   }
 
+  LocalFrame* GetChildFrame() {
+    return To<LocalFrame>(GetFrame()->Tree().FirstChild());
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 
  private:
   LocalFrame* GetFrame() {
     return web_view_helper_.GetWebView()->MainFrameImpl()->GetFrame();
-  }
-  LocalFrame* GetChildFrame() {
-    return To<LocalFrame>(GetFrame()->Tree().FirstChild());
   }
   ImageResourceContent* CreateImageForTest(int width, int height) {
     sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
@@ -1258,6 +1260,100 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_FullViewportImage) {
   auto* entry = entries[0];
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, true);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_Detached_Frame) {
+  using trace_analyzer::Query;
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+      <style>iframe { display: block; position: relative; margin-left: 30px; margin-top: 50px; width: 250px; height: 250px;} </style>
+      <iframe> </iframe>
+    )HTML");
+  SetChildBodyInnerHTML(R"HTML(
+      <style>body { margin: 10px;} #target { width: 200px; height: 200px; }
+      </style>
+      <img id="target"></img>
+    )HTML");
+  SetChildFrameImageAndPaint("target", 5, 5);
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  LocalFrame* child_frame = GetChildFrame();
+  PaintTimingDetector* child_detector =
+      &child_frame->View()->GetPaintTimingDetector();
+  GetDocument().body()->setInnerHTML("", ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(child_frame->IsDetached());
+
+  // Start tracing, we only want to capture it during the ReportPaintTime.
+  trace_analyzer::Start("loading");
+  child_detector->callback_manager_->ReportPaintTime(
+      std::make_unique<PaintTimingCallbackManager::CallbackQueue>(),
+      test_task_runner_->NowTicks());
+
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("LargestImagePaint::Candidate");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(0u, events.size());
+  q = Query::EventNameIs("LargestImagePaint::NoCandidate");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(0u, events.size());
+}
+
+class ImagePaintTimingDetectorFencedFrameTest
+    : private ScopedFencedFramesForTest,
+      public ImagePaintTimingDetectorTest {
+ public:
+  ImagePaintTimingDetectorFencedFrameTest() : ScopedFencedFramesForTest(true) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  void InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
+    web_view_helper_.InitializeWithOpener(/*opener=*/nullptr,
+                                          /*frame_client=*/nullptr,
+                                          /*view_client=*/nullptr,
+                                          /*update_settings_func=*/nullptr,
+                                          mode);
+    // Enable compositing on the page before running the document lifecycle.
+    web_view_helper_.GetWebView()
+        ->GetPage()
+        ->GetSettings()
+        .SetAcceleratedCompositingEnabled(true);
+
+    WebLocalFrameImpl& frame_impl = *web_view_helper_.LocalMainFrame();
+    frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(gfx::Size(640, 480));
+
+    frame_test_helpers::LoadFrame(
+        web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
+    GetDocument().View()->SetParentVisible(true);
+    GetDocument().View()->SetSelfVisible(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(ImagePaintTimingDetectorFencedFrameTest);
+
+TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  InitializeFencedFrameRoot(mojom::blink::FencedFrameMode::kDefault);
+  GetDocument().SetBaseURLOverride(KURL("https://test.com"));
+  SetBodyInnerHTML(R"HTML(
+      <body></body>
+    )HTML");
+
+  SetBodyInnerHTML(R"HTML(
+    <style>body {margin: 0px;}</style>
+    <img id="target"></img>
+  )HTML");
+  SetImageAndPaint("target", 3000, 3000);
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  ImageRecord* record = LargestImage();
+  EXPECT_EQ(record, nullptr);
+  // Simulate some input event to force StopRecordEntries().
+  SimulateKeyDown();
+  auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 }  // namespace blink

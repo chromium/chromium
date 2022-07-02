@@ -36,11 +36,6 @@
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
-        <org.chromium.components.page_info.PageInfoRowView
-            android:id="@+id/page_info_page_zoom_row"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
     </LinearLayout>
 
     <org.chromium.ui.widget.ButtonCompat

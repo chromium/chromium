@@ -125,8 +125,11 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
 
 using MediaStreamDevices = std::vector<MediaStreamDevice>;
 
+// TODO(crbug.com/1313021): Remove this function and use
+// blink::mojom::StreamDevicesSet directly everywhere.
+// Takes a mojom::StreamDevicesSet and returns all contained MediaStreamDevices.
 BLINK_COMMON_EXPORT MediaStreamDevices
-StreamDevicesToMediaStreamDevicesList(const mojom::StreamDevices& devices);
+ToMediaStreamDevicesList(const mojom::StreamDevicesSet& stream_devices_set);
 
 BLINK_COMMON_EXPORT size_t CountDevices(const mojom::StreamDevices& devices);
 

@@ -352,17 +352,31 @@ enum IOTaskState {
   in_progress,
   success,
   error,
+  need_password,
   cancelled
 };
 
 enum IOTaskType {
   copy,
   delete,
+  empty_trash,
   extract,
   move,
+  restore,
   trash,
   zip
 };
+
+enum RecentDateBucket {
+  today,
+  yesterday,
+  earlier_this_week,
+  earlier_this_month,
+  earlier_this_year,
+  older
+};
+
+enum VmType { termina, plugin_vm, borealis, bruschetta, arcvm };
 
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
@@ -408,6 +422,9 @@ dictionary EntryProperties {
 
   // Timestamp of entry update time by me, in milliseconds past the epoch.
   double? modificationByMeTime;
+
+  // Date bucket calculated by |modificationTime| or |modificationByMeTime|.
+  RecentDateBucket? recentDateBucket;
 
   // URL to the Drive thumbnail image for this file.
   DOMString? thumbnailUrl;
@@ -604,6 +621,9 @@ dictionary VolumeMetadata {
 
   // Flag that specifies whether the volume is hidden from the user.
   boolean hidden;
+
+  // Type of the VM which owns this volume.
+  VmType? vmType;
 };
 
 // Payload data for mount event.
@@ -940,6 +960,12 @@ dictionary IOTaskParams {
   // Destination folder for tasks that require one. Not required by |delete|
   // task.
   [instanceof=DirectoryEntry] object? destinationFolder;
+
+  // Password used for unpacking encrypted archives.
+  DOMString? password;
+
+  // List of paths to restore trashed files to.
+  DOMString[]? restorePaths;
 };
 
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.
@@ -978,6 +1004,17 @@ dictionary ProgressStatus {
 
   // The name of the last error that happened.
   DOMString errorName;
+
+  // The files affected by the IOTask. Currently only returned for TrashIOTask.
+  [instanceOf=Entry] object[]? outputs;
+};
+
+dictionary DlpMetadata {
+  // The source URL of the file, if it's been downloaded.
+  DOMString sourceUrl;
+
+  // True if there is any DLP policy on the file, false otherwise.
+  boolean isDlpRestricted;
 };
 
 // A Guest OS that supports guest->host file sharing. This definition should
@@ -988,6 +1025,9 @@ dictionary MountableGuest {
 
   // The localised display name of this guest as e.g. shown in the sidebar.
   DOMString displayName;
+
+  // The type of the VM backing this guest.
+  VmType vmType;
 };
 
 // Callback that does not take arguments.
@@ -1039,9 +1079,17 @@ callback GetVolumeMetadataListCallback =
 callback GetDisallowedTransfersCallback =
     void([instanceOf=Entry] object[] disallowedEntries);
 
+// |dlpMetadata| A list of DlpMetadata containing DLP information about
+// the entries.
+callback GetDlpMetadataCallback =
+    void(DlpMetadata[] dlpMetadata);
+
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
 callback StartCopyCallback = void(long copyId);
+
+// |taskId| ID of the task that was started. Can be used to cancel ongoing task.
+callback IOTaskIdCallback = void(long taskId);
 
 // |sizeStats| Name/value pairs of size stats. Will be undefined if stats could
 // not be determined.
@@ -1317,6 +1365,15 @@ interface Functions {
       [instanceOf=DirectoryEntry] object destinationEntry,
       GetDisallowedTransfersCallback callback);
 
+  // Returns the list of DlpMetadata containing DLP information
+  // about the entries.
+  // |entries| List of the source entries to be checked.
+  // |callback| Result callback.
+  [nocompile]
+  static void getDlpMetadata(
+      [instanceOf=Entry] object[] entries,
+      GetDlpMetadataCallback callback);
+
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.
   // |entry| Entry of the source entry to be copied.
@@ -1502,6 +1559,7 @@ interface Functions {
   [nocompile]
   static void getRecentFiles(SourceRestriction restriction,
                              RecentFileType fileType,
+                             boolean invalidateCache,
                              GetRecentFilesCallback callback);
 
   // Requests the root directory of the volume with the ID specified in
@@ -1650,7 +1708,8 @@ interface Functions {
   static void startIOTask(
       IOTaskType type,
       [instanceof=Entry] object[] entries,
-      IOTaskParams params);
+      IOTaskParams params,
+      optional IOTaskIdCallback callback);
 
   // Cancels an I/O task by id. Task ids are communicated to the Files App in
   // each I/O task's progress status.

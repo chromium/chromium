@@ -51,8 +51,7 @@ TEST_F(PasswordManagerLogRouterFactoryTest, ServiceActiveNonIncognito) {
   testing::StrictMock<MockLogReceiver> receiver;
 
   ASSERT_TRUE(log_router);
-  EXPECT_EQ(std::vector<base::Value>(),
-            log_router->RegisterReceiver(&receiver));
+  log_router->RegisterReceiver(&receiver);
 
   base::Value log_entry = autofill::LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))

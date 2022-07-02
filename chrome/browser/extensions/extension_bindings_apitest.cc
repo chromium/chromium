@@ -43,7 +43,7 @@ void MouseDownInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetMainFrame()
+  web_contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -56,7 +56,7 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetMainFrame()
+  web_contents->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 // Tests that an error raised during an async function still fires
 // the callback, but sets chrome.runtime.lastError.
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, LastError) {
-  ExtensionTestMessageListener ready_listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("bindings").AppendASCII("last_error")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, LastError) {
 // iframes.
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, AboutBlankIframe) {
   ResultCatcher catcher;
-  ExtensionTestMessageListener listener("load", true);
+  ExtensionTestMessageListener listener("load", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("bindings")
                                           .AppendASCII("about_blank_iframe")));
@@ -280,13 +280,14 @@ class FramesExtensionBindingsApiTest : public ExtensionBindingsApiTest {
 // ("sender").
 IN_PROC_BROWSER_TEST_F(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
   // Load the sender and receiver extensions, and make sure they are ready.
-  ExtensionTestMessageListener sender_ready("sender_ready", true);
+  ExtensionTestMessageListener sender_ready("sender_ready",
+                                            ReplyBehavior::kWillReply);
   const Extension* sender = LoadExtension(
       test_data_dir_.AppendASCII("bindings").AppendASCII("message_sender"));
   ASSERT_NE(nullptr, sender);
   ASSERT_TRUE(sender_ready.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener receiver_ready("receiver_ready", false);
+  ExtensionTestMessageListener receiver_ready("receiver_ready");
   const Extension* receiver =
       LoadExtension(test_data_dir_.AppendASCII("bindings")
                         .AppendASCII("external_message_listener"));
@@ -331,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestFreezingChrome) {
 
 // Tests interaction with event filter parsing.
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestEventFilterParsing) {
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("bindings/event_filter")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
       test_data_dir_.AppendASCII("bindings/listeners_destroy_context"));
   ASSERT_TRUE(extension);
 
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
 
   // Navigate to a web page with an iframe (the iframe is title1.html).
   GURL main_frame_url = embedded_test_server()->GetURL("a.com", "/iframe.html");
@@ -411,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  content::RenderFrameHost* main_frame = tab->GetMainFrame();
+  content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   content::RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
   content::RenderFrameDeletedObserver subframe_deleted(subframe);
 
@@ -425,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   content::RenderProcessHost* main_frame_process = main_frame->GetProcess();
   EXPECT_EQ(main_frame_process, subframe->GetProcess());
 
-  ExtensionTestMessageListener failure_listener("failed", false);
+  ExtensionTestMessageListener failure_listener("failed");
 
   // Tell the extension to register listeners that will remove the iframe, and
   // trigger them.
@@ -638,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   {
     // Passing a message without an active user gesture shouldn't result in a
     // gesture being active on the receiving end.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     content::EvalJsResult result =
         content::EvalJs(tab, "document.getElementById('go-button').click()",
                         content::EXECUTE_SCRIPT_NO_USER_GESTURE);
@@ -651,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   {
     // If there is an active user gesture when the message is sent, we should
     // synthesize a user gesture on the receiving end.
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     content::EvalJsResult result =
         content::EvalJs(tab, "document.getElementById('go-button').click()");
     EXPECT_TRUE(result.value.is_none());
@@ -747,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 
   const Extension* extension = nullptr;
   {
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     extension = LoadExtension(test_dir.UnpackedPath());
     ASSERT_TRUE(extension);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -761,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   ASSERT_TRUE(web_contents);
 
   {
-    ExtensionTestMessageListener listener("got reply", false);
+    ExtensionTestMessageListener listener("got reply");
     listener.set_failure_message("no user gesture");
     MouseDownInWebContents(web_contents);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -812,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   ASSERT_TRUE(web_contents);
 
   {
-    ExtensionTestMessageListener listener("got reply", false);
+    ExtensionTestMessageListener listener("got reply");
     listener.set_failure_message("no user gesture");
     MouseDownInWebContents(web_contents);
     EXPECT_TRUE(listener.WaitUntilSatisfied());

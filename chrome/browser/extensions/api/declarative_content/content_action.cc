@@ -370,11 +370,12 @@ void RequestContentScript::InstructRenderProcessToInject(
     content::WebContents* contents,
     const Extension* extension) const {
   ContentScriptTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
-                                        contents->GetMainFrame(), *extension);
+                                        contents->GetPrimaryMainFrame(),
+                                        *extension);
 
   mojom::LocalFrame* local_frame =
       ExtensionWebContentsObserver::GetForWebContents(contents)->GetLocalFrame(
-          contents->GetMainFrame());
+          contents->GetPrimaryMainFrame());
   if (!local_frame) {
     // TODO(https://crbug.com/1203579): Need to review when this method is
     // called with non-live frame.

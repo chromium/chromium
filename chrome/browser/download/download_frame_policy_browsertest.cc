@@ -197,7 +197,7 @@ class DownloadFramePolicyBrowserTest
     }
 
     content::TestNavigationObserver navigation_observer(web_contents());
-    EXPECT_TRUE(content::ExecJs(web_contents()->GetMainFrame(), script,
+    EXPECT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(), script,
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
     navigation_observer.Wait();
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(
                              is_cross_origin);
 
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationManager navigation_observer(web_contents(),
                                                      download_url);
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').src = $1",
                                 download_url)));
   navigation_observer.WaitForNavigationFinished();
@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
                              is_cross_origin);
 
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 

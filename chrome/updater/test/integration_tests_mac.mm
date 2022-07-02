@@ -120,7 +120,8 @@ void EnterTestMode(const GURL& url) {
                   .SetInitialDelay(0.1)
                   .SetServerKeepAliveSeconds(1)
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
-                  .Overwrite());
+                  .SetOverinstallTimeout(base::Seconds(11))
+                  .Modify());
 }
 
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
@@ -266,7 +267,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   absl::optional<base::FilePath> versioned_folder_path =
-      GetVersionedUpdaterFolderPath(scope);
+      GetVersionedInstallDirectory(scope);
   EXPECT_TRUE(versioned_folder_path);
   if (versioned_folder_path)
     EXPECT_FALSE(base::PathExists(*versioned_folder_path));
@@ -331,17 +332,14 @@ void WaitForUpdaterExit(UpdaterScope /*scope*/) {
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  base::FilePath source_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
-  base::FilePath old_updater_path =
-      source_path.Append("third_party").Append("updater");
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath old_updater_path = exe_path.Append("old_updater");
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  old_updater_path =
-      old_updater_path.Append("chromium_mac_arm64").Append("updater");
+  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
 #elif defined(ARCH_CPU_X86_64)
-  old_updater_path =
-      old_updater_path.Append("chromium_mac_amd64").Append("updater");
+  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("chrome_mac_universal");
@@ -416,6 +414,10 @@ void InstallApp(UpdaterScope scope, const std::string& app_id) {
 void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   SetExistenceCheckerPath(scope, app_id,
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
+}
+
+void RunOfflineInstall(UpdaterScope scope) {
+  // TODO(crbug.com/1286574).
 }
 
 }  // namespace test

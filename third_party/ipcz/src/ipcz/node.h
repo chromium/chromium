@@ -35,6 +35,10 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
     kNormal,
   };
 
+  // Constructs a new node of the given `type`, using `driver` to support IPC.
+  // Note that `driver` must outlive the Node. `driver_node` is an arbitrary
+  // driver-specific handle that may be used for additional context when
+  // interfacing with the driver regarding this node.
   Node(Type type, const IpczDriver& driver, IpczDriverHandle driver_node);
 
   Type type() const { return type_; }
@@ -43,10 +47,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
 
   // APIObject:
   IpczResult Close() override;
-
-  // Deactivates all NodeLinks and their underlying driver transports in
-  // preparation for this node's imminent destruction.
-  void ShutDown();
 
   // Connects to another node using `driver_transport` for I/O to and from the
   // other node. `initial_portals` is a collection of new portals who may
@@ -90,8 +90,12 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
  private:
   ~Node() override;
 
+  // Deactivates all NodeLinks and their underlying driver transports in
+  // preparation for this node's imminent destruction.
+  void ShutDown();
+
   const Type type_;
-  const IpczDriver driver_;
+  const IpczDriver& driver_;
   const IpczDriverHandle driver_node_;
 
   absl::Mutex mutex_;
@@ -110,8 +114,8 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // if this is a non-broker node. If this is a broker node, these links are
   // either assigned by this node itself, or received from other brokers in the
   // system.
-  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links_
-      ABSL_GUARDED_BY(mutex_);
+  using NodeLinkMap = absl::flat_hash_map<NodeName, Ref<NodeLink>>;
+  NodeLinkMap node_links_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

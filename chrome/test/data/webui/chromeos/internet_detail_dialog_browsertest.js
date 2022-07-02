@@ -12,7 +12,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var InternetDetailDialogBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://internet-detail-dialog/test_loader.html?module=chromeos/internet_detail_dialog_test.js';
+    return 'chrome://internet-detail-dialog/test_loader.html?module=chromeos/internet_detail_dialog_test.js&host=test';
   }
 };
 

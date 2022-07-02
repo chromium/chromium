@@ -111,7 +111,10 @@ class ScopedRestoreTexture {
                              ? GL_TEXTURE_BINDING_2D
                              : GL_TEXTURE_BINDING_EXTERNAL_OES,
                          &binding);
-    prev_binding_ = binding;
+    // The bound texture could be already deleted by another context, and the
+    // texture ID |binding| could be reused and points to a different texture.
+    if (api->glIsTextureFn(binding))
+      prev_binding_ = binding;
   }
 
   ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
@@ -160,12 +163,12 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
       plane_index, swap_chain);
   DCHECK_EQ(image->GetDataFormat(), viz::GLDataFormat(format));
   if (!image->Initialize()) {
-    DLOG(ERROR) << "GLImageD3D::Initialize failed";
+    LOG(ERROR) << "GLImageD3D::Initialize failed";
     api->glDeleteTexturesFn(1, &service_id);
     return nullptr;
   }
   if (!image->BindTexImage(texture_target)) {
-    DLOG(ERROR) << "GLImageD3D::BindTexImage failed";
+    LOG(ERROR) << "GLImageD3D::BindTexImage failed";
     api->glDeleteTexturesFn(1, &service_id);
     return nullptr;
   }
@@ -210,7 +213,7 @@ SharedImageBackingD3D::CreateFromSwapChainBuffer(
   auto gl_texture =
       CreateGLTexture(format, size, color_space, d3d11_texture, swap_chain);
   if (!gl_texture) {
-    DLOG(ERROR) << "Failed to create GL texture";
+    LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
   return base::WrapUnique(new SharedImageBackingD3D(
@@ -247,7 +250,7 @@ SharedImageBackingD3D::CreateFromDXGISharedHandle(
     // underlying D3D11 texture.
     gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
     if (!gl_texture) {
-      DLOG(ERROR) << "Failed to create GL texture";
+      LOG(ERROR) << "Failed to create GL texture";
       return nullptr;
     }
   }
@@ -314,7 +317,7 @@ SharedImageBackingD3D::CreateFromVideoTexture(
         /*swap_chain=*/nullptr, GL_TEXTURE_EXTERNAL_OES, array_slice,
         plane_index);
     if (!gl_texture) {
-      DLOG(ERROR) << "Failed to create GL texture";
+      LOG(ERROR) << "Failed to create GL texture";
       return {};
     }
 
@@ -343,7 +346,7 @@ SharedImageBackingD3D::CreateFromSharedMemoryHandle(
   DCHECK_EQ(shared_memory_handle.type, gfx::SHARED_MEMORY_BUFFER);
   auto gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
   if (!gl_texture) {
-    DLOG(ERROR) << "Failed to create GL texture";
+    LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
   auto backing = base::WrapUnique(new SharedImageBackingD3D(
@@ -425,7 +428,7 @@ ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
     HRESULT hr = d3d11_device->CreateTexture2D(&staging_desc, nullptr,
                                                &staging_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to create staging texture. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to create staging texture. hr=" << std::hex << hr;
       return nullptr;
     }
 
@@ -452,7 +455,7 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
   mapped_shared_memory.Initialize(shared_memory_handle_, size(), format());
 
   if (!mapped_shared_memory.IsValid()) {
-    DLOG(ERROR) << "Failed to map shared memory";
+    LOG(ERROR) << "Failed to map shared memory";
     return false;
   }
 
@@ -473,13 +476,13 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
     Microsoft::WRL::ComPtr<ID3D11Device3> device3;
     HRESULT hr = d3d11_device.As(&device3);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
       return false;
     }
     hr = device_context->Map(d3d11_texture_.Get(), 0, D3D11_MAP_WRITE, 0,
                              nullptr);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to map texture for write. hr = " << std::hex << hr;
+      LOG(ERROR) << "Failed to map texture for write. hr = " << std::hex << hr;
       return false;
     }
     device3->WriteToSubresource(d3d11_texture_.Get(), 0, nullptr, source_memory,
@@ -493,7 +496,7 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
     HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_WRITE, 0,
                                      &mapped_resource);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to map texture for write. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to map texture for write. hr=" << std::hex << hr;
       return false;
     }
     uint8_t* dest_memory = static_cast<uint8_t*>(mapped_resource.pData);
@@ -510,7 +513,7 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
 
 bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
   if (shared_memory_handle_.is_null()) {
-    DLOG(ERROR)
+    LOG(ERROR)
         << "Called CopyToGpuMemoryBuffer for backing without shared memory GMB";
     return false;
   }
@@ -519,7 +522,7 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
   mapped_shared_memory.Initialize(shared_memory_handle_, size(), format());
 
   if (!mapped_shared_memory.IsValid()) {
-    DLOG(ERROR) << "Failed to map shared memory";
+    LOG(ERROR) << "Failed to map shared memory";
     return false;
   }
 
@@ -540,13 +543,13 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
     Microsoft::WRL::ComPtr<ID3D11Device3> device3;
     HRESULT hr = d3d11_device.As(&device3);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
       return false;
     }
     hr = device_context->Map(d3d11_texture_.Get(), 0, D3D11_MAP_READ, 0,
                              nullptr);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
       return false;
     }
     device3->ReadFromSubresource(dest_memory, dest_stride, 0,
@@ -562,7 +565,7 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
     HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_READ, 0,
                                      &mapped_resource);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
+      LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
       return false;
     }
     const uint8_t* source_memory = static_cast<uint8_t*>(mapped_resource.pData);
@@ -614,13 +617,13 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   const viz::ResourceFormat viz_resource_format = format();
   const WGPUTextureFormat wgpu_format = viz::ToWGPUFormat(viz_resource_format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
-    DLOG(ERROR) << "Unsupported viz format found: " << viz_resource_format;
+    LOG(ERROR) << "Unsupported viz format found: " << viz_resource_format;
     return nullptr;
   }
   const WGPUTextureUsageFlags usage = GetAllowedDawnUsages(wgpu_format);
   if (usage == WGPUTextureUsage_None) {
-    DLOG(ERROR) << "WGPUTextureUsage is unknown for viz format: "
-                << viz_resource_format;
+    LOG(ERROR) << "WGPUTextureUsage is unknown for viz format: "
+               << viz_resource_format;
     return nullptr;
   }
 
@@ -657,7 +660,7 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
         device, &externalImageDesc);
 
     if (!external_image_) {
-      DLOG(ERROR) << "Failed to create external image";
+      LOG(ERROR) << "Failed to create external image";
       return nullptr;
     }
   }
@@ -719,7 +722,7 @@ gl::GLImage* SharedImageBackingD3D::GetGLImage() const {
 bool SharedImageBackingD3D::PresentSwapChain() {
   TRACE_EVENT0("gpu", "SharedImageBackingD3D::PresentSwapChain");
   if (!swap_chain_ || !is_back_buffer_) {
-    DLOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
+    LOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
     return false;
   }
 
@@ -731,7 +734,7 @@ bool SharedImageBackingD3D::PresentSwapChain() {
 
   HRESULT hr = swap_chain_->Present1(0 /* interval */, flags, &params);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Present1 failed with error " << std::hex << hr;
+    LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
     return false;
   }
 
@@ -742,7 +745,7 @@ bool SharedImageBackingD3D::PresentSwapChain() {
 
   api->glBindTextureFn(GL_TEXTURE_2D, gl_texture_->service_id());
   if (!GetGLImage()->BindTexImage(GL_TEXTURE_2D)) {
-    DLOG(ERROR) << "GLImage::BindTexImage failed";
+    LOG(ERROR) << "GLImage::BindTexImage failed";
     return false;
   }
 
@@ -757,7 +760,7 @@ SharedImageBackingD3D::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                    MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "SharedImageBackingD3D::ProduceGLTexturePassthrough");
   if (!UploadToGpuIfNeeded()) {
-    DLOG(ERROR) << "UploadToGpuIfNeeded failed";
+    LOG(ERROR) << "UploadToGpuIfNeeded failed";
     return nullptr;
   }
   // Lazily create a GL texture if it wasn't provided on initialization.
@@ -766,7 +769,7 @@ SharedImageBackingD3D::ProduceGLTexturePassthrough(SharedImageManager* manager,
     gl_texture =
         CreateGLTexture(format(), size(), color_space(), d3d11_texture_);
     if (!gl_texture) {
-      DLOG(ERROR) << "Failed to create GL texture";
+      LOG(ERROR) << "Failed to create GL texture";
       return nullptr;
     }
   }
@@ -796,7 +799,7 @@ SharedImageBackingD3D::ProduceOverlay(SharedImageManager* manager,
             shared_memory_handle_.region, shared_memory_handle_.id,
             viz::BufferFormat(format()), shared_memory_handle_.offset,
             shared_memory_handle_.stride)) {
-      DLOG(ERROR) << "Failed to initialize GLImageSharedMemory";
+      LOG(ERROR) << "Failed to initialize GLImageSharedMemory";
       return nullptr;
     }
     return std::make_unique<SharedImageRepresentationOverlayD3D>(

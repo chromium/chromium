@@ -121,7 +121,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                       sink_id, source_id, presentation_id);
     std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Sink not found"),
-                            RouteRequestResult::ResultCode::SINK_NOT_FOUND);
+                            mojom::RouteRequestResultCode::SINK_NOT_FOUND);
     return;
   }
 
@@ -133,7 +133,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                       sink_id, source_id, presentation_id);
     std::move(callback).Run(
         absl::nullopt, nullptr, std::string("Invalid source"),
-        RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
+        mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
     return;
   }
 
@@ -153,7 +153,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
   if (!cast_source) {
     std::move(callback).Run(
         absl::nullopt, nullptr, std::string("Invalid source"),
-        RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
+        mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Attempted to join a route with an invalid source", "",
                       media_source, presentation_id);
@@ -172,7 +172,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
     LOG(ERROR) << "missing activity manager";
     std::move(callback).Run(absl::nullopt, nullptr,
                             "Internal error: missing activity manager",
-                            RouteRequestResult::ResultCode::UNKNOWN_ERROR);
+                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     return;
   }
 

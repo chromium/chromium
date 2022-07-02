@@ -42,7 +42,7 @@ class SettingsController : public AssistantClientObserver,
                       UpdateSettingsCallback callback) override;
 
   // AssistantClientObserver:
-  void OnAssistantClientStarted(AssistantClient* assistant_client) override;
+  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
@@ -57,8 +57,10 @@ class SettingsController : public AssistantClientObserver,
   void UpdateInternalOptions(const absl::optional<std::string>& locale,
                              absl::optional<bool> spoken_feedback_enabled,
                              absl::optional<bool> dark_mode_enabled);
+  void UpdateLocaleOverride(const absl::optional<std::string>& locale);
   void UpdateDeviceSettings(const absl::optional<std::string>& locale,
                             absl::optional<bool> hotword_enabled);
+  void UpdateDarkModeEnabledV2(absl::optional<bool> dark_mode_enabled);
 
   // Instantiated when Libassistant is started and destroyed when Libassistant
   // is stopped.

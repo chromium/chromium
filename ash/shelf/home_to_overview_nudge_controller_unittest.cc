@@ -6,9 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/controls/contextual_nudge.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_nudge.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -19,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -30,34 +31,21 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 
-class WidgetCloseObserver : public views::WidgetObserver {
+class WidgetCloseObserver {
  public:
-  explicit WidgetCloseObserver(views::Widget* widget) : widget_(widget) {
-    if (widget_)
-      widget_->AddObserver(this);
-  }
+  explicit WidgetCloseObserver(views::Widget* widget)
+      : widget_(widget->GetWeakPtr()) {}
 
-  ~WidgetCloseObserver() override { CleanupWidget(); }
+  ~WidgetCloseObserver() = default;
 
-  bool WidgetClosed() const { return !widget_; }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override { CleanupWidget(); }
-
-  void CleanupWidget() {
-    if (widget_) {
-      widget_->RemoveObserver(this);
-      widget_ = nullptr;
-    }
-  }
+  bool WidgetClosed() const { return !widget_ || widget_->IsClosed(); }
 
  private:
-  views::Widget* widget_;
+  base::WeakPtr<views::Widget> widget_;
 };
 
 class HomeToOverviewNudgeControllerWithNudgesDisabledTest : public AshTestBase {

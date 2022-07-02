@@ -8,6 +8,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
+    "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
   ]
 }
 
@@ -24,8 +25,9 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/ListCredentials.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
+    "java/src/org/chromium/components/webauthn/WebAuthnCredentialDetails.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
@@ -69,6 +71,10 @@ source_set("android") {
     "fido2api_native_android.cc",
     "internal_authenticator_android.cc",
     "internal_authenticator_android.h",
+    "webauthn_browser_bridge.cc",
+    "webauthn_browser_bridge.h",
+    "webauthn_client_android.cc",
+    "webauthn_client_android.h",
   ]
   deps = [
     ":jni_headers",

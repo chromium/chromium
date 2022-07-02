@@ -92,21 +92,10 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
 DirectRenderer::~DirectRenderer() = default;
 
 void DirectRenderer::Initialize() {
-  auto* context_provider = output_surface_->context_provider();
-
   use_partial_swap_ = settings_->partial_swap_enabled && CanPartialSwap();
-  allow_empty_swap_ = use_partial_swap_;
-  if (context_provider) {
-    if (context_provider->ContextCapabilities().commit_overlay_planes)
-      allow_empty_swap_ = true;
-#if DCHECK_IS_ON()
-    supports_occlusion_query_ =
-        context_provider->ContextCapabilities().occlusion_query;
-#endif
-  } else {
-    allow_empty_swap_ |=
-        output_surface_->capabilities().supports_commit_overlay_planes;
-  }
+  allow_empty_swap_ =
+      use_partial_swap_ ||
+      output_surface_->capabilities().supports_commit_overlay_planes;
 
   initialized_ = true;
 }
@@ -226,28 +215,6 @@ void DirectRenderer::DrawFrame(
   auto* root_render_pass = render_passes_in_draw_order->back().get();
   DCHECK(root_render_pass);
 
-#if DCHECK_IS_ON()
-  bool overdraw_tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.overdraw"),
-                                     &overdraw_tracing_enabled);
-  DLOG_IF(WARNING, !overdraw_tracing_support_missing_logged_once_ &&
-                       overdraw_tracing_enabled && !supports_occlusion_query_)
-      << "Overdraw tracing enabled on platform without support.";
-  overdraw_tracing_support_missing_logged_once_ = true;
-#endif
-
-  bool overdraw_feedback = debug_settings_->show_overdraw_feedback;
-  if (overdraw_feedback && !output_surface_->capabilities().supports_stencil) {
-#if DCHECK_IS_ON()
-    DLOG_IF(WARNING, !overdraw_feedback_support_missing_logged_once_)
-        << "Overdraw feedback enabled on platform without support.";
-    overdraw_feedback_support_missing_logged_once_ = true;
-#endif
-    overdraw_feedback = false;
-  }
-  base::AutoReset<bool> auto_reset_overdraw_feedback(&overdraw_feedback_,
-                                                     overdraw_feedback);
-
   current_frame_valid_ = true;
   current_frame_ = DrawingFrame();
   current_frame()->render_passes_in_draw_order = render_passes_in_draw_order;
@@ -366,7 +333,6 @@ void DirectRenderer::DrawFrame(
   // Only reshape when we know we are going to draw. Otherwise, the reshape
   // can leave the window at the wrong size if we never draw and the proper
   // viewport size is never set.
-  bool use_stencil = overdraw_feedback_;
   bool needs_full_frame_redraw = false;
   auto display_transform = output_surface_->GetDisplayTransform();
   OutputSurface::ReshapeParams reshape_params;
@@ -375,7 +341,6 @@ void DirectRenderer::DrawFrame(
   reshape_params.color_space = frame_color_space;
   reshape_params.sdr_white_level = CurrentFrameSDRWhiteLevel();
   reshape_params.format = frame_buffer_format;
-  reshape_params.use_stencil = use_stencil;
   if (next_frame_needs_full_frame_redraw_ ||
       reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {
@@ -418,16 +383,6 @@ void DirectRenderer::DrawFrame(
 
   if (!skip_drawing_root_render_pass)
     DrawRenderPassAndExecuteCopyRequests(root_render_pass);
-
-  // Use a fence to synchronize display of the main fb used by the output
-  // surface. Note that gpu_fence_id may have the special value 0 ("no fence")
-  // if fences are not supported. In that case synchronization will happen
-  // through other means on the service side.
-  // TODO(afrantzis): Consider using per-overlay fences instead of the one
-  // associated with the output surface when possible.
-  if (current_frame()->output_surface_plane)
-    current_frame()->output_surface_plane->gpu_fence_id =
-        output_surface_->UpdateGpuFence();
 
   if (overlay_processor_)
     overlay_processor_->TakeOverlayCandidates(&current_frame()->overlay_list);
@@ -654,16 +609,8 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   const bool render_pass_requires_scissor =
       render_pass_is_clipped || (supports_dc_layers && is_root_render_pass);
 
-  const bool has_external_stencil_test =
-      is_root_render_pass && output_surface_->HasExternalStencilTest();
   const bool should_clear_surface =
-      !has_external_stencil_test &&
-      (!is_root_render_pass || settings_->should_clear_root_render_pass);
-
-  // If |has_external_stencil_test| we can't discard or clear. Make sure we
-  // don't need to.
-  DCHECK(!has_external_stencil_test ||
-         !current_frame()->current_render_pass->has_transparent_background);
+      !is_root_render_pass || settings_->should_clear_root_render_pass;
 
   SurfaceInitializationMode mode;
   if (should_clear_surface && render_pass_requires_scissor) {
@@ -722,7 +669,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
       // We cannot composite this quad properly, replace it with solid black.
       SolidColorDrawQuad solid_black;
       solid_black.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
-                         /*needs_blending=*/false, SK_ColorBLACK,
+                         /*needs_blending=*/false, SkColors::kBlack,
                          /*force_anti_aliasing_off=*/true);
       DoDrawQuad(&solid_black, nullptr);
       continue;
@@ -733,9 +680,6 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
                 render_pass_requires_scissor);
   FinishDrawingQuadList();
-
-  if (is_root_render_pass && overdraw_feedback_)
-    FlushOverdrawFeedback(render_pass_scissor_in_draw_space);
 
   if (render_pass->generate_mipmap)
     GenerateMipmap();
@@ -963,6 +907,22 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
 
   if (requested_viewport_size != device_viewport_size_)
     last_viewport_resize_time_ = base::TimeTicks::Now();
+
+  // Width & height mustn't be more than max texture size.
+  if (surface_width > output_surface_->capabilities().max_texture_size) {
+    auto old_width = surface_width;
+    surface_width = output_surface_->capabilities().max_texture_size;
+    LOG_IF(ERROR, surface_width < request_width)
+        << "Reduced surface width from " << old_width << " to "
+        << surface_width;
+  }
+  if (surface_height > output_surface_->capabilities().max_texture_size) {
+    auto old_height = surface_height;
+    surface_height = output_surface_->capabilities().max_texture_size;
+    LOG_IF(ERROR, surface_height < request_height)
+        << "Reduced surface height from " << old_height << " to "
+        << surface_height;
+  }
 
   device_viewport_size_ = requested_viewport_size;
   return gfx::Size(surface_width, surface_height);

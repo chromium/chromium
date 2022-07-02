@@ -14,8 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -25,9 +23,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
-
-import java.util.Arrays;
 
 /**
  * Tests the Contextual Search Manager using instrumentation tests.
@@ -36,39 +33,11 @@ import java.util.Arrays;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
-                + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+@EnableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchInstrumentationTest extends ContextualSearchInstrumentationBase {
-    /**
-     * Parameter provider for enabling/disabling Features under development.
-     */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet()
-                            .value(EnabledFeature.TRANSLATIONS)
-                            .name("enableTranslations"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
-                            .name("enableContextualTriggers"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS_MENU)
-                            .name("enableContextualTriggersMenu"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL)
-                            .name("enablePrivacyNeutralEngagement"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES)
-                            .name("enablePrivacyNeutralWithRelatedSearches"));
-        }
-    }
-
-    //    @ParameterAnnotations.UseMethodParameterBefore(BaseFeatureParamProvider.class)
-
     @Override
     @Before
     public void setUp() throws Exception {
@@ -126,16 +95,9 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         longPressNode(SEARCH_NODE);
         assertPeekingPanelNonResolve();
         fakeResponse(mFakeServer.buildResolvedSearchTermWithRelatedSearches(SEARCH_NODE_TERM));
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         mPanel.updatePanelToStateForTest(OverlayPanel.PanelState.EXPANDED);
-        if (enabledFeature == EnabledFeature.PRIVACY_NEUTRAL
-                || enabledFeature == EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES) {
-            // PRIVACY_NEUTRAL feature includes Delayed Intelligence which resolves during the
-            // expand.
-            assertExpandedPanelResolve(SEARCH_NODE_TERM);
-        } else {
-            assertExpandedPanelNonResolve();
-        }
+        assertExpandedPanelNonResolve();
         maximizePanel();
         // TODO(donnd): consider asserting that no caption or other intelligent UI is showing.
         closePanel();

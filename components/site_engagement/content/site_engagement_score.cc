@@ -42,21 +42,18 @@ bool DoublesConsideredDifferent(double value1, double value2, double delta) {
   return abs_difference > delta;
 }
 
-std::unique_ptr<base::DictionaryValue> GetSiteEngagementScoreDictForSettings(
+base::Value::Dict GetSiteEngagementScoreDictForSettings(
     const HostContentSettingsMap* settings,
     const GURL& origin_url) {
   if (!settings)
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
 
-  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
-      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT,
-          nullptr)));
+  base::Value value = settings->GetWebsiteSetting(
+      origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT, nullptr);
+  if (!value.is_dict())
+    return base::Value::Dict();
 
-  if (value.get())
-    return value;
-
-  return std::make_unique<base::DictionaryValue>();
+  return std::move(value.GetDict());
 }
 
 }  // namespace
@@ -274,12 +271,13 @@ mojom::SiteEngagementDetails SiteEngagementScore::GetDetails() const {
 
 void SiteEngagementScore::Commit() {
   DCHECK(settings_map_);
-  if (!UpdateScoreDict(score_dict_.get()))
+  DCHECK(score_dict_);
+  if (!UpdateScoreDict(*score_dict_))
     return;
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::FromUniquePtrValue(std::move(score_dict_)));
+      base::Value(std::move(*score_dict_)));
 }
 
 blink::mojom::EngagementLevel SiteEngagementScore::GetEngagementLevel() const {
@@ -322,14 +320,14 @@ void SiteEngagementScore::Reset(double points,
   last_engagement_time_ = last_engagement_time;
 }
 
-bool SiteEngagementScore::UpdateScoreDict(base::DictionaryValue* score_dict) {
-  double raw_score_orig = score_dict->FindDoubleKey(kRawScoreKey).value_or(0);
+bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {
+  double raw_score_orig = score_dict.FindDouble(kRawScoreKey).value_or(0);
   double points_added_today_orig =
-      score_dict->FindDoubleKey(kPointsAddedTodayKey).value_or(0);
+      score_dict.FindDouble(kPointsAddedTodayKey).value_or(0);
   double last_engagement_time_internal_orig =
-      score_dict->FindDoubleKey(kLastEngagementTimeKey).value_or(0);
+      score_dict.FindDouble(kLastEngagementTimeKey).value_or(0);
   double last_shortcut_launch_time_internal_orig =
-      score_dict->FindDoubleKey(kLastShortcutLaunchTimeKey).value_or(0);
+      score_dict.FindDouble(kLastShortcutLaunchTimeKey).value_or(0);
 
   bool changed =
       DoublesConsideredDifferent(raw_score_orig, raw_score_, kScoreDelta) ||
@@ -345,12 +343,13 @@ bool SiteEngagementScore::UpdateScoreDict(base::DictionaryValue* score_dict) {
   if (!changed)
     return false;
 
-  score_dict->SetDouble(kRawScoreKey, raw_score_);
-  score_dict->SetDouble(kPointsAddedTodayKey, points_added_today_);
-  score_dict->SetDouble(kLastEngagementTimeKey,
-                        last_engagement_time_.ToInternalValue());
-  score_dict->SetDouble(kLastShortcutLaunchTimeKey,
-                        last_shortcut_launch_time_.ToInternalValue());
+  score_dict.Set(kRawScoreKey, raw_score_);
+  score_dict.Set(kPointsAddedTodayKey, points_added_today_);
+  score_dict.Set(kLastEngagementTimeKey,
+                 static_cast<double>(last_engagement_time_.ToInternalValue()));
+  score_dict.Set(
+      kLastShortcutLaunchTimeKey,
+      static_cast<double>(last_shortcut_launch_time_.ToInternalValue()));
 
   return true;
 }
@@ -358,30 +357,30 @@ bool SiteEngagementScore::UpdateScoreDict(base::DictionaryValue* score_dict) {
 SiteEngagementScore::SiteEngagementScore(
     base::Clock* clock,
     const GURL& origin,
-    std::unique_ptr<base::DictionaryValue> score_dict)
+    absl::optional<base::Value::Dict> score_dict)
     : clock_(clock),
       raw_score_(0),
       points_added_today_(0),
       last_engagement_time_(),
       last_shortcut_launch_time_(),
-      score_dict_(score_dict.release()),
+      score_dict_(std::move(score_dict)),
       origin_(origin),
       settings_map_(nullptr) {
   if (!score_dict_)
     return;
 
-  raw_score_ = score_dict_->FindDoubleKey(kRawScoreKey).value_or(0);
+  raw_score_ = score_dict_->FindDouble(kRawScoreKey).value_or(0);
   points_added_today_ =
-      score_dict_->FindDoubleKey(kPointsAddedTodayKey).value_or(0);
+      score_dict_->FindDouble(kPointsAddedTodayKey).value_or(0);
 
   absl::optional<double> maybe_last_engagement_time =
-      score_dict_->FindDoubleKey(kLastEngagementTimeKey);
+      score_dict_->FindDouble(kLastEngagementTimeKey);
   if (maybe_last_engagement_time.has_value())
     last_engagement_time_ =
         base::Time::FromInternalValue(maybe_last_engagement_time.value());
 
   absl::optional<double> maybe_last_shortcut_launch_time =
-      score_dict_->FindDoubleKey(kLastShortcutLaunchTimeKey);
+      score_dict_->FindDouble(kLastShortcutLaunchTimeKey);
   if (maybe_last_shortcut_launch_time.has_value())
     last_shortcut_launch_time_ =
         base::Time::FromInternalValue(maybe_last_shortcut_launch_time.value());

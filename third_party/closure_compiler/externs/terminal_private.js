@@ -111,8 +111,9 @@ chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
  * Returns an object containing info about ChromeOS settings that affect the
  * Terminal, e.g. which feature flags are enabled.
  * @param {function({
- *   tmux_integration: boolean,
- *   ssh: boolean
+ *   alternative_renderer: boolean,
+ *   multi_profile: boolean,
+ *   tmux_integration: boolean
  * }): void} callback Callback that will be called with the info object.
  */
 chrome.terminalPrivate.getOSInfo = function(callback) {};

@@ -12,8 +12,8 @@ namespace chromeos {
 
 void ToggleFloating(aura::Window* window) {
   DCHECK(window);
-  const bool window_float_state = window->GetProperty(kWindowFloatTypeKey);
-  window->SetProperty(kWindowFloatTypeKey, !window_float_state);
+  const bool window_float_state = window->GetProperty(kWindowToggleFloatKey);
+  window->SetProperty(kWindowToggleFloatKey, !window_float_state);
 }
 
 }  // namespace chromeos

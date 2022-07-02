@@ -82,7 +82,7 @@ TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input = To<HTMLInputElement>(GetDocument().QuerySelector("input"));
   input->Focus();
-  input->setValue("Hello, input field");
+  input->SetValue("Hello, input field");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Position new_position(input->InnerEditorElement()->firstChild(), 3);

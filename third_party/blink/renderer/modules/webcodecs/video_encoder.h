@@ -73,6 +73,10 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   static ScriptPromise isConfigSupported(ScriptState*,
                                          const VideoEncoderConfig*,
                                          ExceptionState&);
+
+  // EventTarget interface
+  const AtomicString& InterfaceName() const override;
+
   // ScriptWrappable override.
   bool HasPendingActivity() const override;
 

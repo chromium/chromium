@@ -10,7 +10,7 @@
 // Commands related to Lens.
 @protocol LensCommands
 
-// Search for an image with Lens, using |command| parameters.
+// Search for an image with Lens, using `command` parameters.
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command;
 
 @end

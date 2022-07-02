@@ -5,7 +5,7 @@
   "name": "Google Hangouts",
   // Note: Always update the version number when this file is updated. Chrome
   // triggers extension preferences update on the version increase.
-  "version": "1.3.18",
+  "version": "1.3.19",
   "manifest_version": 2,
   "externally_connectable": {
     "matches": [

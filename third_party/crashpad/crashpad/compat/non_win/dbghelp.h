@@ -42,6 +42,15 @@
 //! \sa MINIDUMP_LOCATION_DESCRIPTOR
 typedef uint32_t RVA;
 
+//! \brief A 64-bit offset within a minidump file, relative to the start of its
+//!     MINIDUMP_HEADER.
+//!
+//! RVA stands for “relative virtual address”. Within a minidump file, RVAs are
+//! used as pointers to link structures together.
+//!
+//! \sa MINIDUMP_LOCATION_DESCRIPTOR64
+typedef uint64_t RVA64;
+
 //! \brief A pointer to a structure or union within a minidump file.
 struct __attribute__((packed, aligned(4))) MINIDUMP_LOCATION_DESCRIPTOR {
   //! \brief The size of the referenced structure or union, in bytes.
@@ -50,6 +59,16 @@ struct __attribute__((packed, aligned(4))) MINIDUMP_LOCATION_DESCRIPTOR {
   //! \brief The relative virtual address of the structure or union within the
   //!     minidump file.
   RVA Rva;
+};
+
+//! \brief A 64-bit pointer to a structure or union within a minidump file.
+struct __attribute__((packed, aligned(4))) MINIDUMP_LOCATION_DESCRIPTOR64 {
+  //! \brief The size of the referenced structure or union, in bytes.
+  uint64_t DataSize;
+
+  //! \brief The 64-bit relative virtual address of the structure or union
+  //!     within the minidump file.
+  RVA64 Rva;
 };
 
 //! \brief A pointer to a snapshot of a region of memory contained within a
@@ -175,6 +194,9 @@ enum MINIDUMP_STREAM_TYPE {
 
   //! \brief The stream type for MINIDUMP_MEMORY_INFO_LIST.
   MemoryInfoListStream = 16,
+
+  //! \brief The stream type for MINIDUMP_THREAD_NAME_LIST.
+  ThreadNamesStream = 24,
 
   //! \brief Values greater than this value will not be used by the system
   //!     and can be used for custom user data streams.
@@ -1080,6 +1102,27 @@ struct __attribute__((packed, aligned(4))) MINIDUMP_MEMORY_INFO_LIST {
   uint64_t NumberOfEntries;
 };
 
+//! \brief Contains the name of the thread with the given thread ID.
+struct __attribute__((packed, aligned(4))) MINIDUMP_THREAD_NAME {
+  //! \brief The identifier of the thread.
+  uint32_t ThreadId;
+
+  //! \brief RVA64 of a MINIDUMP_STRING containing the name of the thread.
+  RVA64 RvaOfThreadName;
+};
+
+//! \brief Variable-sized struct which contains a list of MINIDUMP_THREAD_NAME
+//! structs.
+struct __attribute__((packed, aligned(4))) MINIDUMP_THREAD_NAME_LIST {
+  //! \brief The number of MINIDUMP_THREAD_NAME structs following this field.
+  uint32_t NumberOfThreadNames;
+
+  //! \brief A variably-sized array containing zero or more
+  //!    MINIDUMP_THREAD_NAME structs. The length of the array is indicated by
+  //!    the NumberOfThreadNames field in this struct.
+  struct MINIDUMP_THREAD_NAME ThreadNames[0];
+};
+
 //! \brief Minidump file type values for MINIDUMP_HEADER::Flags. These bits
 //!     describe the types of data carried within a minidump file.
 enum MINIDUMP_TYPE {
@@ -1100,6 +1143,11 @@ enum MINIDUMP_TYPE {
   //!    MINIDUMP_MEMORY_DESCRIPTOR containing the 256 bytes centered around
   //!    the exception address or the instruction pointer.
   MiniDumpNormal = 0x00000000,
+
+  //! \brief A minidump with extended contexts.
+  //!
+  //! Contains Normal plus a MISC_INFO_5 structure describing the contexts.
+  MiniDumpWithAvxXStateContext = 0x00200000,
 };
 
 #endif  // CRASHPAD_COMPAT_NON_WIN_DBGHELP_H_

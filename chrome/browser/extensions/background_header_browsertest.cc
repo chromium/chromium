@@ -83,7 +83,7 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
   }
 
   const Extension* LoadFetchExtension(const std::string& host) {
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     TestExtensionDir test_dir;
     constexpr char kManifestTemplate[] = R"(
     {

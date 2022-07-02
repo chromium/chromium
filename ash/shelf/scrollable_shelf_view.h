@@ -22,6 +22,7 @@
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/context_menu_controller.h"
@@ -149,8 +150,12 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   LayoutStrategy layout_strategy_for_test() const { return layout_strategy_; }
   gfx::Vector2dF scroll_offset_for_test() const { return scroll_offset_; }
 
-  int first_tappable_app_index() const { return first_tappable_app_index_; }
-  int last_tappable_app_index() const { return last_tappable_app_index_; }
+  absl::optional<size_t> first_tappable_app_index() const {
+    return first_tappable_app_index_;
+  }
+  absl::optional<size_t> last_tappable_app_index() const {
+    return last_tappable_app_index_;
+  }
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;
@@ -361,9 +366,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // layout strategy and offset along the main axis (that is the x-axis when
   // shelf is horizontally aligned or the y-axis if the shelf is vertically
   // aligned).
-  std::pair<int, int> CalculateTappableIconIndices(
-      LayoutStrategy layout_strategy,
-      int scroll_distance_on_main_axis) const;
+  std::pair<absl::optional<size_t>, absl::optional<size_t>>
+  CalculateTappableIconIndices(LayoutStrategy layout_strategy,
+                               int scroll_distance_on_main_axis) const;
 
   views::View* FindFirstFocusableChild();
   views::View* FindLastFocusableChild();
@@ -510,8 +515,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   std::unique_ptr<views::FocusSearch> focus_search_;
 
   // The index of the first/last tappable app index.
-  int first_tappable_app_index_ = -1;
-  int last_tappable_app_index_ = -1;
+  absl::optional<size_t> first_tappable_app_index_ = absl::nullopt;
+  absl::optional<size_t> last_tappable_app_index_ = absl::nullopt;
 
   // The number of corner buttons whose ink drop is activated.
   int activated_corner_buttons_ = 0;

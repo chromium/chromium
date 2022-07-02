@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_permissions_panel.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_summary_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
@@ -68,9 +68,8 @@ bool CanPlatformShowAppInfoDialog() {
 
 bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_system_web_app = web_app::WebAppProvider::GetForSystemWebApps(profile)
-                               ->system_web_app_manager()
-                               .IsSystemWebApp(extension_id);
+  bool is_system_web_app =
+      ash::SystemWebAppManager::Get(profile)->IsSystemWebApp(extension_id);
   if (is_system_web_app) {
     return false;
   }

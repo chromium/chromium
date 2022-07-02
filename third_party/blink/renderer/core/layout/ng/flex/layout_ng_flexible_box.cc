@@ -20,19 +20,28 @@ LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
 bool LayoutNGFlexibleBox::HasTopOverflow() const {
-  if (IsHorizontalWritingMode())
-    return StyleRef().ResolvedIsColumnReverseFlexDirection();
-  return StyleRef().IsLeftToRightDirection() ==
-         StyleRef().ResolvedIsRowReverseFlexDirection();
+  const auto& style = StyleRef();
+  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
+  if (style.IsHorizontalWritingMode()) {
+    return style.ResolvedIsColumnReverseFlexDirection() ||
+           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse);
+  }
+  return style.IsLeftToRightDirection() ==
+         (style.ResolvedIsRowReverseFlexDirection() ||
+          (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
 }
 
 bool LayoutNGFlexibleBox::HasLeftOverflow() const {
-  if (IsHorizontalWritingMode()) {
-    return StyleRef().IsLeftToRightDirection() ==
-           StyleRef().ResolvedIsRowReverseFlexDirection();
+  const auto& style = StyleRef();
+  bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
+  if (style.IsHorizontalWritingMode()) {
+    return style.IsLeftToRightDirection() ==
+           (style.ResolvedIsRowReverseFlexDirection() ||
+            (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
   }
-  return (StyleRef().GetWritingMode() == WritingMode::kVerticalLr) ==
-         StyleRef().ResolvedIsColumnReverseFlexDirection();
+  return (style.GetWritingMode() == WritingMode::kVerticalLr) ==
+         (style.ResolvedIsColumnReverseFlexDirection() ||
+          (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
 }
 
 void LayoutNGFlexibleBox::UpdateBlockLayout(bool relayout_children) {

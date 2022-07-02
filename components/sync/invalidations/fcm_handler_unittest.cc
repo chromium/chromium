@@ -251,5 +251,60 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }
 
+TEST_F(FCMHandlerTest, ShouldReplayIncomingMessagesOnAddingListener) {
+  const std::string kPayloadValue1 = "payload_1";
+  const std::string kPayloadValue2 = "payload_2";
+
+  gcm::IncomingMessage gcm_message;
+  gcm_message.raw_data = kPayloadValue1;
+  fcm_handler_.OnMessage(kSyncInvalidationsAppId, gcm_message);
+
+  gcm_message.raw_data = kPayloadValue2;
+  fcm_handler_.OnMessage(kSyncInvalidationsAppId, gcm_message);
+
+  NiceMock<MockListener> mock_listener;
+  EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue1));
+  EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue2));
+  fcm_handler_.AddListener(&mock_listener);
+
+  // Adding the same listener twice should have no effect.
+  fcm_handler_.AddListener(&mock_listener);
+  fcm_handler_.RemoveListener(&mock_listener);
+}
+
+TEST_F(FCMHandlerTest, ShouldLimitIncomingMessagesForReplay) {
+  gcm::IncomingMessage gcm_message;
+  gcm_message.raw_data = "payload";
+  for (size_t i = 0; i < 100; ++i) {
+    fcm_handler_.OnMessage(kSyncInvalidationsAppId, gcm_message);
+  }
+
+  NiceMock<MockListener> mock_listener;
+  EXPECT_CALL(mock_listener, OnInvalidationReceived).Times(5);
+  fcm_handler_.AddListener(&mock_listener);
+  fcm_handler_.RemoveListener(&mock_listener);
+}
+
+TEST_F(FCMHandlerTest, ShouldClearLastIncomingMessagesOnStopListening) {
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillRepeatedly(
+          WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
+            std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+          })));
+  fcm_handler_.StartListening();
+
+  gcm::IncomingMessage gcm_message;
+  gcm_message.raw_data = "payload";
+  fcm_handler_.OnMessage(kSyncInvalidationsAppId, gcm_message);
+
+  fcm_handler_.StopListening();
+  fcm_handler_.StartListening();
+
+  NiceMock<MockListener> mock_listener;
+  EXPECT_CALL(mock_listener, OnInvalidationReceived).Times(0);
+  fcm_handler_.AddListener(&mock_listener);
+  fcm_handler_.RemoveListener(&mock_listener);
+}
+
 }  // namespace
 }  // namespace syncer

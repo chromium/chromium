@@ -1021,9 +1021,9 @@ TEST_P(PaintLayerPainterTest, FixedPositionInNonScrollableViewCullRect) {
     </div>
   )HTML");
 
-  // The cull rect is in the coordinate space of the containing transform
-  // (LayoutView's contents space).
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
+  // The cull rect is inflated when scrolling, because fixed elements don't
+  // participate in overscroll.
+  EXPECT_EQ(gfx::Rect(-200, -100, 800, 600),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 

@@ -55,7 +55,7 @@ class GpuImageDecodeCachePerfTest
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cache_ = std::make_unique<GpuImageDecodeCache>(
         context_provider_.get(), UseTransferCache(), kRGBA_8888_SkColorType,
-        kCacheSize, MaxTextureSize(), PaintImage::kDefaultGeneratorClientId,
+        kCacheSize, MaxTextureSize(), PaintImage::GetNextGeneratorClientId(),
         nullptr);
   }
 

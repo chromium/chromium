@@ -4973,6 +4973,18 @@ void aom_quantize_b_avx(const tran_low_t* coeff_ptr,
                         uint16_t* eob_ptr,
                         const int16_t* scan,
                         const int16_t* iscan);
+void aom_quantize_b_avx2(const tran_low_t* coeff_ptr,
+                         intptr_t n_coeffs,
+                         const int16_t* zbin_ptr,
+                         const int16_t* round_ptr,
+                         const int16_t* quant_ptr,
+                         const int16_t* quant_shift_ptr,
+                         tran_low_t* qcoeff_ptr,
+                         tran_low_t* dqcoeff_ptr,
+                         const int16_t* dequant_ptr,
+                         uint16_t* eob_ptr,
+                         const int16_t* scan,
+                         const int16_t* iscan);
 RTCD_EXTERN void (*aom_quantize_b)(const tran_low_t* coeff_ptr,
                                    intptr_t n_coeffs,
                                    const int16_t* zbin_ptr,
@@ -5022,6 +5034,18 @@ void aom_quantize_b_32x32_avx(const tran_low_t* coeff_ptr,
                               uint16_t* eob_ptr,
                               const int16_t* scan,
                               const int16_t* iscan);
+void aom_quantize_b_32x32_avx2(const tran_low_t* coeff_ptr,
+                               intptr_t n_coeffs,
+                               const int16_t* zbin_ptr,
+                               const int16_t* round_ptr,
+                               const int16_t* quant_ptr,
+                               const int16_t* quant_shift_ptr,
+                               tran_low_t* qcoeff_ptr,
+                               tran_low_t* dqcoeff_ptr,
+                               const int16_t* dequant_ptr,
+                               uint16_t* eob_ptr,
+                               const int16_t* scan,
+                               const int16_t* iscan);
 RTCD_EXTERN void (*aom_quantize_b_32x32)(const tran_low_t* coeff_ptr,
                                          intptr_t n_coeffs,
                                          const int16_t* zbin_ptr,
@@ -5034,32 +5058,6 @@ RTCD_EXTERN void (*aom_quantize_b_32x32)(const tran_low_t* coeff_ptr,
                                          uint16_t* eob_ptr,
                                          const int16_t* scan,
                                          const int16_t* iscan);
-
-void aom_quantize_b_32x32_adaptive_c(const tran_low_t* coeff_ptr,
-                                     intptr_t n_coeffs,
-                                     const int16_t* zbin_ptr,
-                                     const int16_t* round_ptr,
-                                     const int16_t* quant_ptr,
-                                     const int16_t* quant_shift_ptr,
-                                     tran_low_t* qcoeff_ptr,
-                                     tran_low_t* dqcoeff_ptr,
-                                     const int16_t* dequant_ptr,
-                                     uint16_t* eob_ptr,
-                                     const int16_t* scan,
-                                     const int16_t* iscan);
-void aom_quantize_b_32x32_adaptive_sse2(const tran_low_t* coeff_ptr,
-                                        intptr_t n_coeffs,
-                                        const int16_t* zbin_ptr,
-                                        const int16_t* round_ptr,
-                                        const int16_t* quant_ptr,
-                                        const int16_t* quant_shift_ptr,
-                                        tran_low_t* qcoeff_ptr,
-                                        tran_low_t* dqcoeff_ptr,
-                                        const int16_t* dequant_ptr,
-                                        uint16_t* eob_ptr,
-                                        const int16_t* scan,
-                                        const int16_t* iscan);
-#define aom_quantize_b_32x32_adaptive aom_quantize_b_32x32_adaptive_sse2
 
 void aom_quantize_b_64x64_c(const tran_low_t* coeff_ptr,
                             intptr_t n_coeffs,
@@ -5085,6 +5083,18 @@ void aom_quantize_b_64x64_ssse3(const tran_low_t* coeff_ptr,
                                 uint16_t* eob_ptr,
                                 const int16_t* scan,
                                 const int16_t* iscan);
+void aom_quantize_b_64x64_avx2(const tran_low_t* coeff_ptr,
+                               intptr_t n_coeffs,
+                               const int16_t* zbin_ptr,
+                               const int16_t* round_ptr,
+                               const int16_t* quant_ptr,
+                               const int16_t* quant_shift_ptr,
+                               tran_low_t* qcoeff_ptr,
+                               tran_low_t* dqcoeff_ptr,
+                               const int16_t* dequant_ptr,
+                               uint16_t* eob_ptr,
+                               const int16_t* scan,
+                               const int16_t* iscan);
 RTCD_EXTERN void (*aom_quantize_b_64x64)(const tran_low_t* coeff_ptr,
                                          intptr_t n_coeffs,
                                          const int16_t* zbin_ptr,
@@ -5097,81 +5107,6 @@ RTCD_EXTERN void (*aom_quantize_b_64x64)(const tran_low_t* coeff_ptr,
                                          uint16_t* eob_ptr,
                                          const int16_t* scan,
                                          const int16_t* iscan);
-
-void aom_quantize_b_64x64_adaptive_c(const tran_low_t* coeff_ptr,
-                                     intptr_t n_coeffs,
-                                     const int16_t* zbin_ptr,
-                                     const int16_t* round_ptr,
-                                     const int16_t* quant_ptr,
-                                     const int16_t* quant_shift_ptr,
-                                     tran_low_t* qcoeff_ptr,
-                                     tran_low_t* dqcoeff_ptr,
-                                     const int16_t* dequant_ptr,
-                                     uint16_t* eob_ptr,
-                                     const int16_t* scan,
-                                     const int16_t* iscan);
-void aom_quantize_b_64x64_adaptive_sse2(const tran_low_t* coeff_ptr,
-                                        intptr_t n_coeffs,
-                                        const int16_t* zbin_ptr,
-                                        const int16_t* round_ptr,
-                                        const int16_t* quant_ptr,
-                                        const int16_t* quant_shift_ptr,
-                                        tran_low_t* qcoeff_ptr,
-                                        tran_low_t* dqcoeff_ptr,
-                                        const int16_t* dequant_ptr,
-                                        uint16_t* eob_ptr,
-                                        const int16_t* scan,
-                                        const int16_t* iscan);
-#define aom_quantize_b_64x64_adaptive aom_quantize_b_64x64_adaptive_sse2
-
-void aom_quantize_b_adaptive_c(const tran_low_t* coeff_ptr,
-                               intptr_t n_coeffs,
-                               const int16_t* zbin_ptr,
-                               const int16_t* round_ptr,
-                               const int16_t* quant_ptr,
-                               const int16_t* quant_shift_ptr,
-                               tran_low_t* qcoeff_ptr,
-                               tran_low_t* dqcoeff_ptr,
-                               const int16_t* dequant_ptr,
-                               uint16_t* eob_ptr,
-                               const int16_t* scan,
-                               const int16_t* iscan);
-void aom_quantize_b_adaptive_sse2(const tran_low_t* coeff_ptr,
-                                  intptr_t n_coeffs,
-                                  const int16_t* zbin_ptr,
-                                  const int16_t* round_ptr,
-                                  const int16_t* quant_ptr,
-                                  const int16_t* quant_shift_ptr,
-                                  tran_low_t* qcoeff_ptr,
-                                  tran_low_t* dqcoeff_ptr,
-                                  const int16_t* dequant_ptr,
-                                  uint16_t* eob_ptr,
-                                  const int16_t* scan,
-                                  const int16_t* iscan);
-void aom_quantize_b_adaptive_avx2(const tran_low_t* coeff_ptr,
-                                  intptr_t n_coeffs,
-                                  const int16_t* zbin_ptr,
-                                  const int16_t* round_ptr,
-                                  const int16_t* quant_ptr,
-                                  const int16_t* quant_shift_ptr,
-                                  tran_low_t* qcoeff_ptr,
-                                  tran_low_t* dqcoeff_ptr,
-                                  const int16_t* dequant_ptr,
-                                  uint16_t* eob_ptr,
-                                  const int16_t* scan,
-                                  const int16_t* iscan);
-RTCD_EXTERN void (*aom_quantize_b_adaptive)(const tran_low_t* coeff_ptr,
-                                            intptr_t n_coeffs,
-                                            const int16_t* zbin_ptr,
-                                            const int16_t* round_ptr,
-                                            const int16_t* quant_ptr,
-                                            const int16_t* quant_shift_ptr,
-                                            tran_low_t* qcoeff_ptr,
-                                            tran_low_t* dqcoeff_ptr,
-                                            const int16_t* dequant_ptr,
-                                            uint16_t* eob_ptr,
-                                            const int16_t* scan,
-                                            const int16_t* iscan);
 
 unsigned int aom_sad128x128_c(const uint8_t* src_ptr,
                               int src_stride,
@@ -9794,17 +9729,20 @@ static void setup_rtcd_internal(void) {
     aom_quantize_b = aom_quantize_b_ssse3;
   if (flags & HAS_AVX)
     aom_quantize_b = aom_quantize_b_avx;
+  if (flags & HAS_AVX2)
+    aom_quantize_b = aom_quantize_b_avx2;
   aom_quantize_b_32x32 = aom_quantize_b_32x32_c;
   if (flags & HAS_SSSE3)
     aom_quantize_b_32x32 = aom_quantize_b_32x32_ssse3;
   if (flags & HAS_AVX)
     aom_quantize_b_32x32 = aom_quantize_b_32x32_avx;
+  if (flags & HAS_AVX2)
+    aom_quantize_b_32x32 = aom_quantize_b_32x32_avx2;
   aom_quantize_b_64x64 = aom_quantize_b_64x64_c;
   if (flags & HAS_SSSE3)
     aom_quantize_b_64x64 = aom_quantize_b_64x64_ssse3;
-  aom_quantize_b_adaptive = aom_quantize_b_adaptive_sse2;
   if (flags & HAS_AVX2)
-    aom_quantize_b_adaptive = aom_quantize_b_adaptive_avx2;
+    aom_quantize_b_64x64 = aom_quantize_b_64x64_avx2;
   aom_sad128x128 = aom_sad128x128_sse2;
   if (flags & HAS_AVX2)
     aom_sad128x128 = aom_sad128x128_avx2;

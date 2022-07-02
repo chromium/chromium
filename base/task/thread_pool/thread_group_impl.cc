@@ -183,7 +183,8 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     // enters its main function, is descheduled because it wasn't woken up yet,
     // and is woken up immediately after.
     workers_to_start_.ForEachWorker([&](WorkerThread* worker) {
-      worker->Start(outer_->after_start().worker_thread_observer);
+      worker->Start(outer_->after_start().service_thread_task_runner,
+                    outer_->after_start().worker_thread_observer);
       if (outer_->worker_started_for_testing_)
         outer_->worker_started_for_testing_->Wait();
     });
@@ -386,10 +387,10 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
 }
 
 void ThreadGroupImpl::Start(
-    int max_tasks,
-    int max_best_effort_tasks,
+    size_t max_tasks,
+    size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
-    scoped_refptr<SequencedTaskRunner> service_thread_task_runner,
+    scoped_refptr<SingleThreadTaskRunner> service_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer,
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
@@ -762,7 +763,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::CleanupLockRequired(
   if (outer_->num_tasks_before_detach_histogram_) {
     executor->ScheduleAddHistogramSample(
         outer_->num_tasks_before_detach_histogram_,
-        worker_only().num_tasks_since_last_detach);
+        saturated_cast<HistogramBase::Sample>(
+            worker_only().num_tasks_since_last_detach));
   }
   worker->Cleanup();
   outer_->idle_workers_stack_.Remove(worker);

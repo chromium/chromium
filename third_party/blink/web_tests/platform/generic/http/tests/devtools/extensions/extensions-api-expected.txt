@@ -65,6 +65,10 @@ RUNNING TEST: extension_testAPI
         }
         themeName : "themeNameForTest"
     }
+    recorder : {
+        registerRecorderExtensionPlugin : <function>
+        unregisterRecorderExtensionPlugin : <function>
+    }
     resources : {
         addRequestHeaders : <function>
         getHAR : <function>

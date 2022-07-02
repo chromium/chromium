@@ -11,6 +11,8 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
@@ -101,6 +103,12 @@ void RemoteWebAuthnNativeMessagingHost::Start(
     extensions::NativeMessageHost::Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_ = client;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  log_message_handler_ =
+      std::make_unique<LogMessageHandler>(base::BindRepeating(
+          &RemoteWebAuthnNativeMessagingHost::SendMessageToClient,
+          base::Unretained(this)));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

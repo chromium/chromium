@@ -22,30 +22,30 @@
 // Whether the data source has some read elements.
 @property(nonatomic, readonly) BOOL hasReadElements;
 
-// Whether the entry corresponding to the |item| is read.
+// Whether the entry corresponding to the `item` is read.
 - (BOOL)isItemRead:(nonnull id<ReadingListListItem>)item;
 
 // Mark all entries as seen and stop sending updates to the data sink.
 - (void)dataSinkWillBeDismissed;
 
-// Set the read status of the entry associated with |item|.
+// Set the read status of the entry associated with `item`.
 - (void)setReadStatus:(BOOL)read forItem:(nonnull id<ReadingListListItem>)item;
 
-// Removes the entry associated with |item| and logs the deletion.
+// Removes the entry associated with `item` and logs the deletion.
 - (void)removeEntryFromItem:(nonnull id<ReadingListListItem>)item;
 
-// Fills the |readArray| and |unreadArray| with the corresponding items from the
+// Fills the `readArray` and `unreadArray` with the corresponding items from the
 // model. The items are sorted most recent first.
 - (void)
 fillReadItems:(nullable NSMutableArray<id<ReadingListListItem>>*)readArray
   unreadItems:(nullable NSMutableArray<id<ReadingListListItem>>*)unreadArray;
 
-// Fetches the |faviconURL| of this |item|, notifies the data sink when
+// Fetches the `faviconURL` of this `item`, notifies the data sink when
 // receiving the favicon.
 - (void)fetchFaviconForItem:(nonnull id<ReadingListListItem>)item;
 
 // Prepares the data source for batch updates. The UI is not notified for the
-// updates happenning between |-beginBatchUpdates| and |-endBatchUpdates|.
+// updates happenning between `-beginBatchUpdates` and `-endBatchUpdates`.
 - (void)beginBatchUpdates;
 // Notifies the data source that the batch updates are over. After calling this
 // function the UI is notified when the model changes.

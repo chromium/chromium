@@ -202,6 +202,7 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
 
 bool VariationsFieldTrialCreator::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<const base::FieldTrial::EntropyProvider>
         low_entropy_provider,
@@ -231,13 +232,10 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
   http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
-      variation_ids,
-      command_line->GetSwitchValueASCII(switches::kForceVariationIds));
+      variation_ids, command_line_variation_ids);
 
   switch (result) {
     case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
@@ -253,6 +251,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
       break;
   }
 
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
   bool success = http_header_provider->ForceDisableVariationIds(
       command_line->GetSwitchValueASCII(switches::kForceDisableVariationIds));
   if (!success) {
@@ -478,16 +478,8 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
   DCHECK(!group_name.empty());
 
-  if (group_name == kDefaultGroup)
+  if (group_name == kDefaultGroup || group_name == kControlGroup)
     return;
-
-  if (group_name == kControlGroup) {
-    // Populate the histogram for the control group to more easily compare it
-    // with the groups that introduce new behavior.
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Variations.ExtendedSafeMode.WritePrefsTime");
-    return;
-  }
 
   DCHECK_EQ(group_name, kEnabledGroup);
   metrics_state_manager->LogHasSessionShutdownCleanly(

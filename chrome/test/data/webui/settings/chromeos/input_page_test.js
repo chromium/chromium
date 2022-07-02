@@ -98,11 +98,11 @@ suite('input page', () => {
     return CrSettingsPrefs.initialized.then(() => {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
+      LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
       // Sets up test metrics proxy.
       metricsProxy = new TestLanguagesMetricsProxy();
-      LanguagesMetricsProxyImpl.setInstance(metricsProxy);
+      LanguagesMetricsProxyImpl.setInstanceForTesting(metricsProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

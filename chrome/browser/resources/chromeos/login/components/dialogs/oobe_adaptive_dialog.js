@@ -40,6 +40,16 @@ Polymer({
     },
 
     /**
+     * If set, the width of the dialog header will be wider compared to the
+     * the normal dialog in horizontal orientation.
+     */
+    singleColumn: {
+      type: Boolean,
+      reflectToAttribute: true,
+      value: false,
+    },
+
+    /**
      * if readMore is set to true and the content overflows contentContainer,
      * showReadMoreButton_ will be set to true to show the `Read more` button
      * and hide the bottom buttons.
@@ -53,7 +63,7 @@ Polymer({
     showReadMoreButton_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /**

@@ -33,15 +33,12 @@ class StreamingRuntimeApplication final
   ~StreamingRuntimeApplication() override;
 
  private:
-  // RuntimeApplication implementation:
-  const GURL& GetApplicationUrl() const override;
-
   // RuntimeApplicationBase implementation:
   cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
       cast::web::Message message) override;
-  void InitializeApplication(
-      base::OnceClosure app_initialized_callback) override;
-  void StopApplication() override;
+  void LaunchApplication() override;
+  void StopApplication(
+      cast::v2::ApplicationStatusRequest::StopReason stop_reason) override;
   bool IsStreamingApplication() const override;
 
   // StreamingReceiverSessionClient::Handler implementation:

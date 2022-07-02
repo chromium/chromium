@@ -15,10 +15,10 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -199,10 +199,7 @@ void TranslateInfoBarDelegate::TranslationDeclined() {
 bool TranslateInfoBarDelegate::IsTranslatableLanguageByPrefs() const {
   TranslateClient* client = translate_manager_->translate_client();
   std::unique_ptr<TranslatePrefs> translate_prefs(client->GetTranslatePrefs());
-  TranslateAcceptLanguages* accept_languages =
-      client->GetTranslateAcceptLanguages();
-  return translate_prefs->CanTranslateLanguage(accept_languages,
-                                               source_language_code());
+  return translate_prefs->CanTranslateLanguage(source_language_code());
 }
 
 void TranslateInfoBarDelegate::ToggleTranslatableLanguageByPrefs() {

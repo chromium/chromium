@@ -21,6 +21,7 @@
 #include "base/scoped_observation.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -94,7 +95,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   ~HWNDMessageHandler() override;
 
-  void Init(HWND parent, const gfx::Rect& bounds);
+  void Init(HWND parent, const gfx::Rect& bounds, bool headless_mode);
   void InitModalType(ui::ModalType modal_type);
 
   void Close();
@@ -811,10 +812,20 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // call HandleWindowMinimizedOrRestored() when we get a WM_ACTIVATE message.
   bool notify_restore_on_activate_ = false;
 
-  // This tracks headless window visibility state. In headless mode
-  // the platform window is always hidden, so we use this boolean
-  // to track the window's requested visibility state.
-  bool headless_window_visibility_state_ = false;
+  // This tracks headless window visibility, fullscreen and min/max states. In
+  // headless mode the platform window is never made visible or change its
+  // state, so this structure holds the requested state for reporting.
+  struct HeadlessModeWindow {
+    bool IsMinimized() const { return minmax_state == kMinimized; }
+    bool IsMaximized() const { return minmax_state == kMaximized; }
+
+    bool visibility_state = false;
+    bool fullscreen_state = false;
+    enum { kNormal, kMinimized, kMaximized } minmax_state = kNormal;
+  };
+
+  // This is present iff the window has been created in headless mode.
+  absl::optional<HeadlessModeWindow> headless_mode_window_;
 
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the

@@ -154,7 +154,7 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 - (void)containerViewDidLayoutSubviews {
   [super containerViewDidLayoutSubviews];
   if (!self.presented) {
-    // By updating the dimmer view frame in |dismissalTransitionWillBegin|, this
+    // By updating the dimmer view frame in `dismissalTransitionWillBegin`, this
     // method is called. This method should not update the presented view frame,
     // while being dismissed, to avoid unwanted glitches.
     return;

@@ -40,7 +40,10 @@ void BackgroundThumbnailVideoCapturer::Start(
     return;
 
   content::RenderWidgetHostView* const source_view =
-      contents_->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
+      contents_->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView();
   if (!source_view)
     return;
 
@@ -195,6 +198,9 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
       base::Milliseconds(10), 50);
 
   got_frame_callback_.Run(cropped_frame, frame_id);
+}
+
+void BackgroundThumbnailVideoCapturer::OnNewCropVersion(uint32_t crop_version) {
 }
 
 void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}

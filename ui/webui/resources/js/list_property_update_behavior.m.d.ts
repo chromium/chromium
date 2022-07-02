@@ -4,9 +4,8 @@
 
 export interface ListPropertyUpdateBehavior {
   updateList(
-      propertyPath: string,
-      identityGetter: ((arg0: any) => (any | string)),
-      updatedList: object[], identityBasedUpdate?: boolean): boolean;
+      propertyPath: string, identityGetter: ((arg0: any) => (any | string)),
+      updatedList: any[], identityBasedUpdate?: boolean): boolean;
 }
 
 declare const ListPropertyUpdateBehavior: object;

@@ -94,9 +94,7 @@ bool ParseBase64Digest(String base64, Vector<uint8_t>& hash) {
 }
 
 // https://w3c.github.io/webappsec-csp/#effective-directive-for-inline-check
-// TODO(hiroshige): The following two methods are slightly different.
-// Investigate the correct behavior and merge them.
-CSPDirectiveName GetDirectiveTypeForAllowInlineFromInlineType(
+CSPDirectiveName EffectiveDirectiveForInlineCheck(
     ContentSecurityPolicy::InlineType inline_type) {
   // 1. Switch on type: [spec text]
   switch (inline_type) {
@@ -121,24 +119,6 @@ CSPDirectiveName GetDirectiveTypeForAllowInlineFromInlineType(
     // 1. Return style-src-attr. [spec text]
     case ContentSecurityPolicy::InlineType::kStyleAttribute:
       return CSPDirectiveName::StyleSrcAttr;
-  }
-}
-
-CSPDirectiveName GetDirectiveTypeForAllowHashFromInlineType(
-    ContentSecurityPolicy::InlineType inline_type) {
-  switch (inline_type) {
-    case ContentSecurityPolicy::InlineType::kScript:
-      return CSPDirectiveName::ScriptSrcElem;
-
-    case ContentSecurityPolicy::InlineType::kNavigation:
-    case ContentSecurityPolicy::InlineType::kScriptAttribute:
-      return CSPDirectiveName::ScriptSrcAttr;
-
-    case ContentSecurityPolicy::InlineType::kStyleAttribute:
-      return CSPDirectiveName::StyleSrcAttr;
-
-    case ContentSecurityPolicy::InlineType::kStyle:
-      return CSPDirectiveName::StyleSrcElem;
   }
 }
 
@@ -669,8 +649,7 @@ bool CSPDirectiveListAllowInline(
     const String& context_url,
     const WTF::OrdinalNumber& context_line,
     ReportingDisposition reporting_disposition) {
-  CSPDirectiveName type =
-      GetDirectiveTypeForAllowInlineFromInlineType(inline_type);
+  CSPDirectiveName type = EffectiveDirectiveForInlineCheck(inline_type);
 
   CSPOperativeDirective directive = OperativeDirective(csp, type);
   if (IsMatchingNoncePresent(directive.source_list, nonce))
@@ -910,7 +889,7 @@ bool CSPDirectiveListAllowHash(
     const network::mojom::blink::CSPHashSource& hash_value,
     const ContentSecurityPolicy::InlineType inline_type) {
   CSPDirectiveName directive_type =
-      GetDirectiveTypeForAllowHashFromInlineType(inline_type);
+      EffectiveDirectiveForInlineCheck(inline_type);
   const network::mojom::blink::CSPSourceList* operative_directive =
       OperativeDirective(csp, directive_type).source_list;
 

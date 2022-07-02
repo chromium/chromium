@@ -23,7 +23,6 @@ namespace optimization_guide {
 namespace features {
 
 extern const base::Feature kOptimizationHints;
-extern const base::Feature kOptimizationHintsFieldTrials;
 extern const base::Feature kRemoteOptimizationGuideFetching;
 extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
 extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
@@ -46,6 +45,7 @@ extern const base::Feature kPreventLongRunningPredictionModels;
 extern const base::Feature kOverrideNumThreadsForModelExecution;
 extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
 extern const base::Feature kRemotePageMetadata;
+extern const base::Feature kOptimizationHintsComponent;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -211,11 +211,6 @@ bool IsModelExecutionWatchdogEnabled();
 // The default timeout for the watchdog to use if none is given by the caller.
 base::TimeDelta ModelExecutionWatchdogDefaultTimeout();
 
-// Returns a set of field trial name hashes that can be sent in the request to
-// the remote Optimization Guide Service if the client is in one of the
-// specified field trials.
-base::flat_set<uint32_t> FieldTrialNameHashesAllowedForFetch();
-
 // Whether the ability to download models is enabled.
 bool IsModelDownloadingEnabled();
 
@@ -308,6 +303,9 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
 // Whether XNNPACK should be used with TFLite, on platforms where it is
 // supported. This is a no-op on unsupported platforms.
 bool TFLiteXNNPACKDelegateEnabled();
+
+// Whether to check the pref for whether a previous component version failed.
+bool ShouldCheckFailedComponentVersionPref();
 
 }  // namespace features
 }  // namespace optimization_guide

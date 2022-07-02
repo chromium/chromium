@@ -171,15 +171,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   // Set and get the background color for the layer. This color is not used by
   // basic Layers, but subclasses may make use of it.
-  virtual void SetBackgroundColor(SkColor background_color);
-  SkColor background_color() const {
+  virtual void SetBackgroundColor(SkColor4f background_color);
+  SkColor4f background_color() const {
     return inputs_.Read(*this).background_color;
   }
 
   // For layer tree mode only. In layer list mode, client doesn't need to set
   // it. Sets an opaque background color for the layer, to be used in place of
   // the background_color() if the layer says contents_opaque() is true.
-  void SetSafeOpaqueBackgroundColor(SkColor background_color);
+  void SetSafeOpaqueBackgroundColor(SkColor4f background_color);
 
   // Returns a background color with opaqueness equal to the value of
   // contents_opaque().
@@ -189,13 +189,14 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // from background_color() and the argument host_background_color.
   // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
-  // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
-  // checkerboard where the layer is not covered by the background_color().
-  SkColor SafeOpaqueBackgroundColor(SkColor host_background_color) const;
+  // claims to not be), then SkColors::kTransparent is returned to avoid
+  // intrusive checkerboard where the layer is not covered by the
+  // background_color().
+  SkColor4f SafeOpaqueBackgroundColor(SkColor4f host_background_color) const;
 
   // Same as the one-argument version, except that host_background_color is
   // layer_tree_host()->pending_commit_state()->background_color.
-  SkColor SafeOpaqueBackgroundColor() const;
+  SkColor4f SafeOpaqueBackgroundColor() const;
 
   // For layer tree mode only.
   // Set and get the position of this layer, relative to its parent. This is
@@ -999,7 +1000,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     bool is_drawable : 1;
     bool double_sided : 1;
 
-    SkColor background_color;
+    SkColor4f background_color;
     TouchActionRegion touch_action_region;
 
     ElementId element_id;
@@ -1053,7 +1054,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     // surface that darws in a render pass.
     viz::SubtreeCaptureId subtree_capture_id;
 
-    SkColor safe_opaque_background_color = SK_ColorTRANSPARENT;
+    SkColor4f safe_opaque_background_color = SkColors::kTransparent;
 
     FilterOperations filters;
     FilterOperations backdrop_filters;
@@ -1160,7 +1161,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     AllowRemoveForReadd& operator=(const AllowRemoveForReadd&) = delete;
 
    private:
-    Layer* layer_;
+    raw_ptr<Layer> layer_;
   };
 
   bool allow_remove_for_readd_ = false;

@@ -32,7 +32,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chromeos/memory/memory.h"
+#include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
@@ -463,7 +463,10 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.num_cores_disabled = num_cores_disabled;
   params.enable_notifications_refresh =
       ash::features::IsNotificationsRefreshEnabled();
-  params.enable_tts_caching = base::FeatureList::IsEnabled(kEnableTTSCaching);
+  params.enable_tts_caching =
+      base::FeatureList::IsEnabled(kEnableTTSCacheSetup);
+  params.enable_consumer_auto_update_toggle = base::FeatureList::IsEnabled(
+      ash::features::kConsumerAutoUpdateToggleAllowed);
 
   // TODO (b/196460968): Remove after CTS run is complete.
   if (params.enable_notifications_refresh) {
@@ -488,12 +491,6 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
                  << ash::switches::kArcPlayStoreAutoUpdate;
     }
   }
-
-  params.arc_disable_system_default_app =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcDisableSystemDefaultApps);
-  if (params.arc_disable_system_default_app)
-    VLOG(1) << "System default app(s) are disabled";
 
   params.disable_media_store_maintenance =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -711,7 +708,7 @@ void ArcSessionImpl::OnMojoConnected(
   state_ = State::RUNNING_FULL_INSTANCE;
 
   // Some memory parameters may be changed when ARC is launched.
-  chromeos::UpdateMemoryParameters();
+  ash::UpdateMemoryParameters();
 }
 
 void ArcSessionImpl::Stop() {

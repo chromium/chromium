@@ -32,17 +32,17 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/network_ui_resources.h"
 #include "chrome/grit/network_ui_resources_map.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/cellular_esim_uninstall_handler.h"
-#include "chromeos/network/cellular_utils.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
@@ -670,6 +670,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->DisableTrustedTypesCSP();
 
   html->AddLocalizedStrings(localized_strings);
+  html->AddBoolean("isGuestModeActive", IsGuestModeActive());
   network_health::AddResources(html);
   network_diagnostics::AddResources(html);
   cellular_setup::AddLocalizedStrings(html);

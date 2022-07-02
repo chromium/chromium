@@ -184,6 +184,7 @@ void SimpleFontData::PlatformGlyphInit() {
     space_glyph_ = 0;
     space_width_ = 0;
     zero_glyph_ = 0;
+    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
     return;
   }
 
@@ -195,6 +196,18 @@ void SimpleFontData::PlatformGlyphInit() {
   space_width_ = width;
   zero_glyph_ = GlyphForCharacter('0');
   font_metrics_.SetZeroWidth(WidthForGlyph(zero_glyph_));
+
+  // Use the advance of the CJK water character U+6C34 as the approximated
+  // advance of fullwidth ideographic characters, as specified at
+  // https://drafts.csswg.org/css-values-4/#ic.
+  //
+  // It should be computed without shaping; i.e., it doesn't include font
+  // features, ligatures/kerning, nor `letter-spacing`.
+  // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
+  if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter))
+    font_metrics_.SetIdeographicFullWidth(WidthForGlyph(cjk_water_glyph));
+  else
+    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
 }
 
 const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {

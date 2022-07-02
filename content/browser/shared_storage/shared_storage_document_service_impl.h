@@ -52,7 +52,8 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
                              RunOperationOnWorkletCallback callback) override;
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
-      const std::vector<GURL>& urls,
+      std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+          urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
       RunURLSelectionOperationOnWorkletCallback callback) override;
   void SharedStorageSet(const std::u16string& key,

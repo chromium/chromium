@@ -254,7 +254,7 @@ void TextControlElement::select() {
 void TextControlElement::SetValueBeforeFirstUserEditIfNotSet() {
   if (!value_before_first_user_edit_.IsNull())
     return;
-  String value = this->value();
+  String value = this->Value();
   value_before_first_user_edit_ = value.IsNull() ? g_empty_string : value;
 }
 
@@ -283,7 +283,7 @@ void TextControlElement::SetFocused(bool flag,
 
 void TextControlElement::DispatchFormControlChangeEvent() {
   if (!value_before_first_user_edit_.IsNull() &&
-      !EqualIgnoringNullity(value_before_first_user_edit_, value())) {
+      !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
     ClearValueBeforeFirstUserEdit();
     DispatchChangeEvent();
   } else {
@@ -293,7 +293,7 @@ void TextControlElement::DispatchFormControlChangeEvent() {
 
 void TextControlElement::EnqueueChangeEvent() {
   if (!value_before_first_user_edit_.IsNull() &&
-      !EqualIgnoringNullity(value_before_first_user_edit_, value())) {
+      !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
     Event* event = Event::CreateBubble(event_type_names::kChange);
     event->SetTarget(this);
     GetDocument().EnqueueAnimationFrameEvent(event);
@@ -337,7 +337,7 @@ void TextControlElement::setRangeText(const String& replacement,
   text.Append(replacement);
   text.Append(StringView(original_text, end));
 
-  setValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
+  SetValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
            TextControlSetValueSelection::kDoNotSet);
 
   if (selection_mode == "select") {
@@ -926,19 +926,19 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   // problem, it would be best to fix it some day.
   HTMLElement* inner_text = InnerEditorElement();
   if (!inner_text || !IsTextControl())
-    return value();
+    return Value();
 
   auto* layout_object = To<LayoutBlockFlow>(inner_text->GetLayoutObject());
   if (!layout_object)
-    return value();
+    return Value();
 
   if (layout_object->IsLayoutNGObject()) {
     NGInlineCursor cursor(*layout_object);
     if (!cursor)
-      return value();
+      return Value();
     const auto* mapping = NGInlineNode::GetOffsetMapping(layout_object);
     if (!mapping)
-      return value();
+      return Value();
     Position break_position = GetNextSoftBreak(*mapping, cursor);
     StringBuilder result;
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
@@ -971,7 +971,7 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   unsigned break_offset;
   RootInlineBox* line = layout_object->FirstRootBox();
   if (!line)
-    return value();
+    return Value();
 
   GetNextSoftBreak(line, break_node, break_offset);
 
@@ -1048,11 +1048,14 @@ String TextControlElement::DirectionForFormData() const {
   return "ltr";
 }
 
-void TextControlElement::SetAutofillValue(const String& value) {
+void TextControlElement::SetAutofillValue(const String& value,
+                                          WebAutofillState autofill_state) {
   // Set the value trimmed to the max length of the field and dispatch the input
   // and change events.
-  setValue(value.Substring(0, maxLength()),
-           TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+  SetValue(value.Substring(0, maxLength()),
+           TextFieldEventBehavior::kDispatchInputAndChangeEvent,
+           TextControlSetValueSelection::kSetSelectionToEnd,
+           value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
 }
 
 // TODO(crbug.com/772433): Create and use a new suggested-value element instead.

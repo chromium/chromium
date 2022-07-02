@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "headless/lib/renderer/headless_print_render_frame_helper_delegate.h"
+#include "base/command_line.h"
+#include "headless/app/headless_shell_switches.h"
 #include "third_party/blink/public/web/web_element.h"
 
 namespace headless {
@@ -23,8 +25,8 @@ bool HeadlessPrintRenderFrameHelperDelegate::IsPrintPreviewEnabled() {
 }
 
 bool HeadlessPrintRenderFrameHelperDelegate::ShouldGenerateTaggedPDF() {
-  // Always generate tagged PDF, see: https://crbug.com/607777
-  return true;
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      headless::switches::kDisablePDFTagging);
 }
 
 bool HeadlessPrintRenderFrameHelperDelegate::OverridePrint(

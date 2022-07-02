@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
@@ -161,7 +162,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   std::unique_ptr<ParentPermissionInputSection>
       parent_permission_input_section_;
 
-  views::Label* invalid_credential_label_ = nullptr;
+  raw_ptr<views::Label> invalid_credential_label_ = nullptr;
 
   bool invalid_credential_received_ = false;
 
@@ -185,10 +186,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   std::unique_ptr<GaiaAuthFetcher> reauth_token_fetcher_;
 
   // Used to fetch OAuth2 access tokens.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   SupervisedUserExtensionsMetricsRecorder supervised_user_metrics_recorder_;
 

@@ -153,6 +153,10 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
+  if (base::FeatureList::IsEnabled(features::kFedCm)) {
+    permissions_to_display.push_back(
+        ContentSettingsType::FEDERATED_IDENTITY_API);
+  }
 
   std::map<ContentSettingsType, ContentSetting>
       user_specified_settings_to_display;
@@ -235,14 +239,12 @@ absl::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
 
 void PageInfoControllerAndroid::SetAdPersonalizationInfo(
     const AdPersonalizationInfo& info) {
-  // Fledge is not available on Android.
-  DCHECK(!info.has_joined_user_to_interest_group);
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::u16string> topic_names;
   for (const auto& topic : info.accessed_topics) {
     topic_names.push_back(topic.GetLocalizedRepresentation());
   }
-  Java_PageInfoController_updateTopicsDisplay(
-      env, controller_jobject_,
+  Java_PageInfoController_setAdPersonalizationInfo(
+      env, controller_jobject_, info.has_joined_user_to_interest_group,
       base::android::ToJavaArrayOfStrings(env, topic_names));
 }

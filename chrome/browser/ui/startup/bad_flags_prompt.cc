@@ -144,6 +144,10 @@ static const char* kBadFlags[] = {
     // origins.
     switches::kIsolatedAppOrigins,
 
+    // This flag tells Chrome to automatically install given isolated PWA during
+    // start up. The functionality is under active development.
+    switches::kInstallIsolatedAppsAtStartup,
+
     // Allows the specified origin to make Web Authentication API requests on
     // behalf of other origins, if a corresponding Google-internal
     // platform-level enterprise policy is also applied.
@@ -154,6 +158,10 @@ static const char* kBadFlags[] = {
 // Dangerous feature flags in about:flags for which to display a warning that
 // "stability and security will suffer".
 static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
+    // This feature enables experimental support for isolated web apps, which
+    // unlock capabilities with a high potential for security / privacy abuse.
+    &features::kIsolatedWebApps,
+
     &features::kWebBundlesFromNetwork,
 #if BUILDFLAG(IS_ANDROID)
     &chrome::android::kCommandLineOnNonRooted,

@@ -6,7 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 
 #include "base/callback_forward.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 namespace proto {
@@ -31,8 +31,7 @@ class ModelExecutionManager {
   using SegmentationModelUpdatedCallback =
       base::RepeatingCallback<void(proto::SegmentInfo)>;
 
-  virtual ModelProvider* GetProvider(
-      optimization_guide::proto::OptimizationTarget segment_id) = 0;
+  virtual ModelProvider* GetProvider(proto::SegmentId segment_id) = 0;
 
  protected:
   ModelExecutionManager() = default;

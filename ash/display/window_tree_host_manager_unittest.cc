@@ -14,12 +14,14 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
@@ -27,7 +29,9 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -40,6 +44,9 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view.h"
@@ -727,6 +734,107 @@ TEST_F(WindowTreeHostManagerTest, FindNearestDisplay) {
             display::Screen::GetScreen()
                 ->GetDisplayNearestPoint(gfx::Point(300, 400))
                 .id());
+}
+
+TEST_F(WindowTreeHostManagerTest,
+       SettingAndUpdatingRoundedCornerPropertyOnDisplay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // Adding rounded corners on the primary display.
+  UpdateDisplay("300x200~15");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+
+  // Adding a secondary display should not propagate the rounded corner
+  // property.
+  UpdateDisplay("300x200~15,300x200");
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Removing the secondary display should not effect the rounded corner
+  // property.
+  UpdateDisplay("300x200~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Changing the the metrics should not effect rounded corner property.
+  UpdateDisplay("10+20-300x200/ol~15");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+
+  // Updating rounded corners property on the display.
+  UpdateDisplay("300x200~15|15|12|12");
+  EXPECT_EQ(gfx::RoundedCornersF(15.0, 15.0, 12.0, 12.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+}
+
+TEST_F(WindowTreeHostManagerTest,
+       SwappingPrimaryDisplayShouldNotSwapRoundedCornersOnDisplays) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // primary display has rounded corners.
+  UpdateDisplay("300x200~15,400x300");
+
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  display::Display secondary_display =
+      display_manager_test.GetSecondaryDisplay();
+
+  aura::Window* primary_root = Shell::GetPrimaryRootWindow();
+  aura::Window* secondary_root =
+      window_tree_host_manager->GetRootWindowForDisplayId(
+          secondary_display.id());
+
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            primary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(primary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            secondary_root->layer()->rounded_corner_radii());
+
+  // Switch primary and secondary by display ID.
+  window_tree_host_manager->SetPrimaryDisplayId(secondary_display.id());
+
+  // Getting the new primary and secondary root windows after the swap.
+  secondary_display = display_manager_test.GetSecondaryDisplay();
+
+  primary_root = Shell::GetPrimaryRootWindow();
+  secondary_root = window_tree_host_manager->GetRootWindowForDisplayId(
+      secondary_display.id());
+
+  // After swapping primary display, the root windows are swapped. Secondary
+  // root now belongs to the display with rounded corners.
+  EXPECT_EQ(gfx::RoundedCornersF(15.0),
+            secondary_root->layer()->rounded_corner_radii());
+  EXPECT_EQ(secondary_root->layer()->is_fast_rounded_corner(), true);
+  EXPECT_EQ(gfx::RoundedCornersF(0.0),
+            primary_root->layer()->rounded_corner_radii());
 }
 
 TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
@@ -1752,6 +1860,65 @@ TEST_F(WindowTreeHostManagerTest,
   watcher.Stop();
 
   widget->CloseNow();
+}
+
+// Replicates the behavior of MouseWatcher MouseEvent handling that led to crash
+// in https://crbug.com/1278429.
+class RootWindowTestEventHandler : public ui::EventHandler {
+ public:
+  explicit RootWindowTestEventHandler() = default;
+
+  RootWindowTestEventHandler(const RootWindowTestEventHandler&) = delete;
+  RootWindowTestEventHandler& operator=(const RootWindowTestEventHandler&) =
+      delete;
+
+  ~RootWindowTestEventHandler() override = default;
+
+ private:
+  // ui::EventHandler overrides:
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // Crash happened when finding the display in
+    // |screen::GetDisplayNearestPoint()|, we got the display that was being
+    // removed and in turn got null root window from
+    // |window_util::GetRootWindowAt| since the root window was moved to the new
+    // primary display.
+    display::Screen::GetScreen()->GetWindowAtScreenPoint(
+        display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
+};
+
+// Tests for the crash during the replacement of the primary display.
+// See https://crbug.com/1278429.
+TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
+  // We observed a crash during handling of a MouseEvent.
+  UpdateDisplay("800x600");
+  aura::Window* root_window =
+      Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
+          GetPrimaryDisplay().id());
+
+  RootWindowTestEventHandler handler;
+  root_window->AddPreTargetHandler(&handler);
+
+  ui::test::EventGenerator generator(root_window);
+
+  // Move the cursor to a coordinate that is in the logical bounds of the older
+  // display[0,0 800x600] but not in the logical bounds[0,0 350x250] of the new
+  // display. The cursor coordinates also needs to be in the root window's
+  // bounds[0,0 700x500] attached to the new primary display.
+  generator.MoveMouseTo(400, 300);
+
+  // Replace the primary display with a newer display with a different device
+  // scale factor compared to original display.
+  display::ManagedDisplayInfo first_display_info =
+      CreateDisplayInfo(100, 0, display::Display::ROTATE_0);
+  first_display_info.SetBounds(gfx::Rect(0, 0, 700, 500));
+  first_display_info.set_device_scale_factor(2.0);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(first_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  root_window->RemovePreTargetHandler(&handler);
 }
 
 TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {

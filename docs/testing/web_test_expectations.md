@@ -230,7 +230,7 @@ files. You can follow the steps below for easier review.
 
 3. Request review of the CL and tell the reviewer to compare the patch sets that
    were uploaded in step 1 and step 2 to see the differences of the rebaselines.
-   
+
 ## Kinds of expectations files
 
 * [TestExpectations](../../third_party/blink/web_tests/TestExpectations): The
@@ -301,16 +301,16 @@ The syntax of a line is roughly:
   `Bug(username)`.
 * If no modifiers are specified, the test applies to all of the configurations
   applicable to that file.
-* If specified, modifiers must be one of `Fuchsia`, `Mac`, `Mac10.12`,
-  `Mac10.13`, `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Linux`, `Trusty`,
-  `Win`, `Win7`, `Win10.20h2`, `Win11`, and, optionally, `Release`, or `Debug`. Check the
-  top of
+* If specified, modifiers must be one of `Fuchsia`, `Mac`, `Mac10.13`,
+  `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Mac12`, `Mac12-arm64`,
+  `Linux`, `Trusty`, `Win`, `Win10.20h2`, `Win11`, and, optionally,
+  `Release`, or `Debug`. Check the top of
   [TestExpectations](../../third_party/blink/web_tests/TestExpectations) or the
   `ALL_SYSTEMS` macro in
   [third_party/blink/tools/blinkpy/web_tests/port/base.py](../../third_party/blink/tools/blinkpy/web_tests/port/base.py)
   for an up-to-date list.
-* Some modifiers are meta keywords, e.g. `Win` represents `Win7`,
-  `Win10.20h2` and `Win11`. See the `CONFIGURATION_SPECIFIER_MACROS` dictionary in
+* Some modifiers are meta keywords, e.g. `Win` represents `Win10.20h2` and `Win11`.
+  See the `CONFIGURATION_SPECIFIER_MACROS` dictionary in
   [third_party/blink/tools/blinkpy/web_tests/port/base.py](../../third_party/blink/tools/blinkpy/web_tests/port/base.py)
   for the meta keywords and which modifiers they represent.
 * Expectations can be one or more of `Crash`, `Failure`, `Pass`, `Rebaseline`,
@@ -368,7 +368,7 @@ debug build on `Mac10.10`:
 ```
 crbug.com/12345 [ Mac10.10 ] fast/html [ Failure ]
 crbug.com/12345 [ Mac10.10 ] fast/html/keygen.html [ Pass ]
-crbug.com/12345 [ Win7 ] fast/forms/submit.html [ Failure ]
+crbug.com/12345 [ Win11 ] fast/forms/submit.html [ Failure ]
 crbug.com/12345 fast/html/section-element.html [ Failure Crash ]
 ```
 

@@ -112,9 +112,15 @@ TEST_F(CrosBluetoothConfigTest, CallApiFunction) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(CrosBluetoothConfigTest, CallPowerFunction) {
+TEST_F(CrosBluetoothConfigTest, CallPowerFunctions) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   remote->SetBluetoothEnabledState(true);
+  base::RunLoop().RunUntilIdle();
+
+  remote->SetBluetoothHidDetectionActive();
+  base::RunLoop().RunUntilIdle();
+
+  remote->SetBluetoothHidDetectionInactive(/*is_using_bluetooth=*/false);
   base::RunLoop().RunUntilIdle();
 }
 

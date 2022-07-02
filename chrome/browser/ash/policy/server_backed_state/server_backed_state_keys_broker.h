@@ -13,12 +13,12 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 
-namespace base {
-class TimeDelta;
+namespace ash {
+class SessionManagerClient;
 }
 
-namespace chromeos {
-class SessionManagerClient;
+namespace base {
+class TimeDelta;
 }
 
 namespace policy {
@@ -35,7 +35,7 @@ class ServerBackedStateKeysBroker {
   using StateKeysCallback = StateKeysCallbackList::CallbackType;
 
   explicit ServerBackedStateKeysBroker(
-      chromeos::SessionManagerClient* session_manager_client);
+      ash::SessionManagerClient* session_manager_client);
 
   ServerBackedStateKeysBroker(const ServerBackedStateKeysBroker&) = delete;
   ServerBackedStateKeysBroker& operator=(const ServerBackedStateKeysBroker&) =
@@ -82,7 +82,7 @@ class ServerBackedStateKeysBroker {
   // Stores newly-received state keys and notifies consumers.
   void StoreStateKeys(const std::vector<std::string>& state_keys);
 
-  chromeos::SessionManagerClient* session_manager_client_;
+  ash::SessionManagerClient* session_manager_client_;
 
   // The current set of state keys.
   std::vector<std::string> state_keys_;

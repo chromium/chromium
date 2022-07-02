@@ -57,7 +57,7 @@ interface CameraAppDeviceProvider {
   // Add/Remove a virtual device for recording stream according to |enabled|.
   // The virtual device has the same config as |device_id| except facing
   // attribute.
-  SetMultipleStreamsEnabled(string device_id, bool enabled) => (bool success);
+  SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
 };
 
 // Inner interface that used to communicate between browser process (Remote) and
@@ -77,7 +77,7 @@ interface CameraAppDeviceBridge {
   // Add/Remove a virtual device for recording stream according to |enabled|.
   // The virtual device has the same config as |device_id| except facing
   // attribute.
-  SetMultipleStreamsEnabled(string device_id, bool enabled) => (bool success);
+  SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
 };
 
 // Interface for communication from the Chrome Camera App (Remote) to the camera
@@ -136,6 +136,10 @@ interface CameraAppDevice {
   // Registers the document corners observer for preview.
   RegisterDocumentCornersObserver(
       pending_remote<DocumentCornersObserver> observer) => ();
+
+  // Enable/Disable the multiple streams feature for video recording on the
+  // device given by its |device_id|.
+  SetMultipleStreamsEnabled(bool enabled) => ();
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.

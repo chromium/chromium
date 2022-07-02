@@ -138,6 +138,9 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     default_allowed_hosts_.AddPatterns(default_policy_allowed_hosts);
   }
 
+  void UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
+                                  URLPatternSet user_allowed_hosts) override {}
+
   void UpdateTabSpecificPermissions(const std::string& extension_id,
                                     URLPatternSet new_hosts,
                                     int tab_id,

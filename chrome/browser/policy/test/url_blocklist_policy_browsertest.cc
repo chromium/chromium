@@ -422,9 +422,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   FlushBlocklistPolicy();
 
   PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(base::Contains(
-      prefs->GetList(policy_prefs::kUrlBlocklist)->GetListDeprecated(),
-      base::Value("file://*")));
+  EXPECT_FALSE(base::Contains(prefs->GetValueList(policy_prefs::kUrlBlocklist),
+                              base::Value("file://*")));
 
   base::ListValue disabledscheme;
   disabledscheme.Append("file");
@@ -433,9 +432,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  EXPECT_TRUE(base::Contains(
-      prefs->GetList(policy_prefs::kUrlBlocklist)->GetListDeprecated(),
-      base::Value("file://*")));
+  EXPECT_TRUE(base::Contains(prefs->GetValueList(policy_prefs::kUrlBlocklist),
+                             base::Value("file://*")));
 
   // Allowlist one folder and blocklist an another just inside.
   base::ListValue allowlist;

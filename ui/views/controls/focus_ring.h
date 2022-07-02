@@ -9,6 +9,7 @@
 
 #include "base/scoped_observation.h"
 #include "ui/base/class_property.h"
+#include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/view.h"
@@ -77,11 +78,11 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // focus, but the FocusRing sits on the parent instead of the inner view.
   void SetHasFocusPredicate(const ViewPredicate& predicate);
 
-  absl::optional<SkColor> color() const { return color_; }
-  void SetColor(absl::optional<SkColor> color);
+  absl::optional<ui::ColorId> GetColorId() const;
+  void SetColorId(absl::optional<ui::ColorId> color_id);
 
-  float halo_thickness() const { return halo_thickness_; }
-  float halo_inset() const { return halo_inset_; }
+  float GetHaloThickness() const;
+  float GetHaloInset() const;
   void SetHaloThickness(float halo_thickness);
   void SetHaloInset(float halo_inset);
 
@@ -91,6 +92,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
       const ViewHierarchyChangedDetails& details) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // ViewObserver:
   void OnViewFocused(View* view) override;
@@ -119,8 +121,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // the focus ring shows an invalid appearance (usually a different color).
   bool invalid_ = false;
 
-  // Overriding color for the focus ring.
-  absl::optional<SkColor> color_;
+  // Overriding color_id for the focus ring.
+  absl::optional<ui::ColorId> color_id_;
 
   // The predicate used to determine whether the parent has focus.
   absl::optional<ViewPredicate> has_focus_predicate_;

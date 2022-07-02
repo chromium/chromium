@@ -39,7 +39,7 @@ AutofillManager* ToMainFrameAutofillManager(
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
   AutofillManager* autofill_manager =
-      GetAutofillManager(web_contents, web_contents->GetMainFrame());
+      GetAutofillManager(web_contents, web_contents->GetPrimaryMainFrame());
   CHECK(autofill_manager);
   return autofill_manager;
 }

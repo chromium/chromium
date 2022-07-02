@@ -19,8 +19,7 @@
 using ::testing::Return;
 using ::testing::_;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 // Delegate implementation for tests that requires exact match of SpdySessionKey
@@ -30,7 +29,7 @@ class TestDelegate : public Http2PushPromiseIndex::Delegate {
  public:
   TestDelegate() = delete;
   explicit TestDelegate(const SpdySessionKey& key) : key_(key) {}
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   bool ValidatePushedStream(spdy::SpdyStreamId stream_id,
                             const GURL& url,
@@ -470,5 +469,4 @@ TEST(Http2PushPromiseIndexCompareByUrlTest, LookupByURL) {
           url2, nullptr, kNoPushedStreamFound}) == entries.find(entry2));
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

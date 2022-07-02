@@ -79,6 +79,10 @@ void ReceiverMediaToMojoAdapter::OnFrameDropped(
   receiver_->OnFrameDropped(reason);
 }
 
+void ReceiverMediaToMojoAdapter::OnNewCropVersion(uint32_t crop_version) {
+  receiver_->OnNewCropVersion(crop_version);
+}
+
 void ReceiverMediaToMojoAdapter::OnFrameWithEmptyRegionCapture() {
   receiver_->OnFrameWithEmptyRegionCapture();
 }

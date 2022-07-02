@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/loader/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -217,6 +218,36 @@ TEST_F(AnchorElementInteractionTest, TouchEvent) {
   absl::optional<KURL> url_received = hosts_[0]->url_received_;
   EXPECT_TRUE(url_received.has_value());
   EXPECT_EQ(expected_url, url_received);
+}
+
+TEST_F(AnchorElementInteractionTest, DestroyedContext) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.com/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  // Make sure getting pointer events after the execution context has been
+  // destroyed but before the document has been destroyed doesn't cause a crash.
+  GetDocument().GetExecutionContext()->NotifyContextDestroyed();
+  WebPointerEvent event(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
+                           WebPointerProperties::Button::kLeft,
+                           gfx::PointF(100, 100), gfx::PointF(100, 100)),
+      1, 1);
+  GetDocument().GetFrame()->GetEventHandler().HandlePointerEvent(
+      event, Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
+  GetDocument().GetFrame()->GetEventHandler().DispatchBufferedTouchEvents();
+
+  base::RunLoop().RunUntilIdle();
+  KURL expected_url = KURL("https://anchor1.com/");
+  EXPECT_EQ(1u, hosts_.size());
+  absl::optional<KURL> url_received = hosts_[0]->url_received_;
+  EXPECT_FALSE(url_received.has_value());
 }
 
 }  // namespace blink

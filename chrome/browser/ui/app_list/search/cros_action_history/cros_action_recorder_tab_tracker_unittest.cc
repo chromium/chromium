@@ -146,7 +146,7 @@ TEST_F(CrOSActionRecorderTabTrackerPrerenderTest,
 
   // Activate the prerendered page.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      prerendering_url, GetActiveWebContents()->GetMainFrame());
+      prerendering_url, GetActiveWebContents()->GetPrimaryMainFrame());
   EXPECT_EQ(prerender_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 

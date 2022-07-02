@@ -116,8 +116,14 @@ public class AccessibilityActionAndEventTracker {
      * @return                  String representation of the given event
      */
     private static String eventToString(AccessibilityEvent event) {
-        // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED)
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) return null;
+        // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED with no
+        // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag)
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+                && (event.getContentChangeTypes()
+                           & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                        == 0) {
+            return null;
+        }
 
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityEvent.eventTypeToString(event.getEventType()));
@@ -150,9 +156,17 @@ public class AccessibilityActionAndEventTracker {
                 break;
             }
 
+            // Any TYPE_WINDOW_CONTENT_CHANGED event here should have the
+            // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED: {
+                builder.append(" - [contentTypes=");
+                builder.append(event.getContentChangeTypes());
+                builder.append("]");
+                break;
+            }
+
             // Events that do not add extra information for unit tests
             case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
-            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
             case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
             case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
             case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:

@@ -119,6 +119,9 @@ cc_test(
     srcs = ["barrier_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":synchronization",
         "//absl/time",
@@ -132,6 +135,9 @@ cc_test(
     srcs = ["blocking_counter_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":synchronization",
         "//absl/time",
@@ -282,6 +288,9 @@ cc_test(
     size = "medium",
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_wasm",
+    ],
     deps = [
         ":per_thread_sem_test_common",
         ":synchronization",
@@ -298,7 +307,10 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = ["no_test_ios_x86_64"],
+    tags = [
+        "no_test_ios_x86_64",
+        "no_test_wasm",
+    ],
     deps = [
         ":synchronization",
         "//absl/base:core_headers",

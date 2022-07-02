@@ -12,6 +12,10 @@ static_library("hid_detection") {
     "bluetooth_hid_detector.h",
     "bluetooth_hid_detector_impl.cc",
     "bluetooth_hid_detector_impl.h",
+    "hid_detection_manager.cc",
+    "hid_detection_manager.h",
+    "hid_detection_manager_impl.cc",
+    "hid_detection_manager_impl.h",
     "hid_detection_utils.cc",
     "hid_detection_utils.h",
   ]
@@ -25,6 +29,7 @@ static_library("hid_detection") {
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:device_service",
   ]
 }
 
@@ -34,6 +39,8 @@ static_library("test_support") {
   sources = [
     "fake_bluetooth_hid_detector.cc",
     "fake_bluetooth_hid_detector.h",
+    "fake_hid_detection_manager.cc",
+    "fake_hid_detection_manager.h",
   ]
 
   deps = [
@@ -45,10 +52,14 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "bluetooth_hid_detector_impl_unittest.cc" ]
+  sources = [
+    "bluetooth_hid_detector_impl_unittest.cc",
+    "hid_detection_manager_impl_unittest.cc",
+  ]
 
   deps = [
     ":hid_detection",
+    ":test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -57,6 +68,7 @@ source_set("unit_tests") {
     "//chromeos/services/bluetooth_config/public/mojom",
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
+    "//services/device/public/cpp/hid:hid",
     "//testing/gmock",
     "//testing/gtest",
   ]

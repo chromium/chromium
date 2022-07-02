@@ -4,10 +4,10 @@
 
 #include "base/metrics/persistent_histogram_allocator.h"
 
+#include <atomic>
 #include <limits>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -254,7 +254,7 @@ struct PersistentHistogramAllocator::PersistentHistogramData {
   uint32_t bucket_count;
   PersistentMemoryAllocator::Reference ranges_ref;
   uint32_t ranges_checksum;
-  subtle::Atomic32 counts_ref;  // PersistentMemoryAllocator::Reference
+  std::atomic<PersistentMemoryAllocator::Reference> counts_ref;
   HistogramSamples::Metadata samples_metadata;
   HistogramSamples::Metadata logged_metadata;
 
@@ -427,7 +427,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     // next import (which will happen before the next histogram creation)
     // will know to skip it.
     // See also the comment in ImportHistogramsToStatisticsRecorder().
-    subtle::NoBarrier_Store(&last_created_, histogram_ref);
+    last_created_.store(histogram_ref, std::memory_order_relaxed);
     return histogram;
   }
 
@@ -505,7 +505,7 @@ void PersistentHistogramAllocator::SetRangesManager(
 }
 
 void PersistentHistogramAllocator::ClearLastCreatedReferenceForTesting() {
-  subtle::NoBarrier_Store(&last_created_, 0);
+  last_created_.store(0, std::memory_order_relaxed);
 }
 
 std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
@@ -573,7 +573,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
 
   size_t counts_bytes = CalculateRequiredCountsBytes(histogram_bucket_count);
   PersistentMemoryAllocator::Reference counts_ref =
-      subtle::Acquire_Load(&histogram_data_ptr->counts_ref);
+      histogram_data_ptr->counts_ref.load(std::memory_order_acquire);
   if (counts_bytes == 0 ||
       (counts_ref != 0 &&
        memory_allocator_->GetAllocSize(counts_ref) < counts_bytes)) {
@@ -879,7 +879,7 @@ void GlobalHistogramAllocator::Set(
   // also released, future accesses to those histograms will seg-fault.
   CHECK(!subtle::NoBarrier_Load(&g_histogram_allocator));
   subtle::Release_Store(&g_histogram_allocator,
-                        reinterpret_cast<uintptr_t>(allocator.release()));
+                        reinterpret_cast<intptr_t>(allocator.release()));
   size_t existing = StatisticsRecorder::GetHistogramCount();
 
   DVLOG_IF(1, existing)

@@ -28,10 +28,9 @@ SyncAppListHelper* SyncAppListHelper::GetInstance() {
   return instance;
 }
 
-SyncAppListHelper::SyncAppListHelper()
-    : test_(nullptr), setup_completed_(false) {}
+SyncAppListHelper::SyncAppListHelper() = default;
 
-SyncAppListHelper::~SyncAppListHelper() {}
+SyncAppListHelper::~SyncAppListHelper() = default;
 
 void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   if (setup_completed_) {
@@ -84,8 +83,9 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 
     ChromeAppListItem* item2 =
         service2->GetModelUpdater()->ItemAtForTest(index2);
-    if (item1->CompareForTest(item2))
+    if (item1->CompareForTest(item2)) {
       continue;
+    }
 
     LOG(ERROR) << "Item(" << i << ") in profile1: " << item1->ToDebugString()
                << " != "
@@ -147,14 +147,16 @@ void SyncAppListHelper::PrintAppList(Profile* profile) {
   std::map<const std::string, std::vector<ChromeAppListItem*>> children;
   for (size_t i = 0; i < service->GetModelUpdater()->ItemCount(); ++i) {
     ChromeAppListItem* item = service->GetModelUpdater()->ItemAtForTest(i);
-    if (!item->folder_id().empty())
+    if (!item->folder_id().empty()) {
       children[item->folder_id()].push_back(item);
+    }
   }
   for (size_t i = 0; i < service->GetModelUpdater()->ItemCount(); ++i) {
     ChromeAppListItem* item = service->GetModelUpdater()->ItemAtForTest(i);
     // Skip if it's not a top level item.
-    if (!item->folder_id().empty())
+    if (!item->folder_id().empty()) {
       continue;
+    }
     std::string label = base::StringPrintf("Item(%d): ", static_cast<int>(i));
     PrintItem(profile, item, label);
     // Print children if it has any.

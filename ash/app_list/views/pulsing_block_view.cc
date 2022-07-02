@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -93,14 +94,15 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size,
         views::Builder<views::View>()
             .SetVisible(true)
             .SetLayoutManager(std::make_unique<views::FillLayout>())
-            .AddChild(views::Builder<views::View>()
-                          .CopyAddressTo(&background_color_view_)
-                          .SetEnabled(false)
-                          .SetBackground(views::CreateSolidBackground(
-                              AshColorProvider::Get()->IsDarkModeEnabled()
-                                  ? SkColorSetA(SK_ColorWHITE, 0x4D)
-                                  : SkColorSetA(SK_ColorBLACK, 0x33)))
-                          .SetPreferredSize(block_size_))
+            .AddChild(
+                views::Builder<views::View>()
+                    .CopyAddressTo(&background_color_view_)
+                    .SetEnabled(false)
+                    .SetBackground(views::CreateSolidBackground(
+                        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                            ? SkColorSetA(SK_ColorWHITE, 0x4D)
+                            : SkColorSetA(SK_ColorBLACK, 0x33)))
+                    .SetPreferredSize(block_size_))
             .SetPreferredSize(block_size_)
             .SetPaintToLayer()
             .Build());
@@ -151,7 +153,7 @@ void PulsingBlockView::OnThemeChanged() {
 
   if (background_color_view_) {
     background_color_view_->SetBackground(views::CreateSolidBackground(
-        AshColorProvider::Get()->IsDarkModeEnabled()
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
             ? SkColorSetA(SK_ColorWHITE, 0x4D)
             : SkColorSetA(SK_ColorBLACK, 0x33)));
   }

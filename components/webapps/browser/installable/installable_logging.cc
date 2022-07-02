@@ -362,7 +362,7 @@ void LogToConsole(content::WebContents* web_contents,
   if (message.empty())
     return;
 
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       level, GetMessagePrefix() + message);
 }
 

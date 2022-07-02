@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/google/core/common/google_util.h"
 
 namespace safe_search_api {
 
@@ -28,10 +27,6 @@ const size_t kDefaultCacheSize = 1000;
 const size_t kDefaultCacheTimeoutSeconds = 3600;
 
 }  // namespace
-
-// Consider all URLs within a google domain to be safe.
-const base::Feature kAllowAllGoogleUrls{"SafeSearchAllowAllGoogleURLs",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 struct URLChecker::Check {
   Check(const GURL& url, CheckCallback callback);
@@ -65,23 +60,6 @@ URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
 URLChecker::~URLChecker() = default;
 
 bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
-  if (base::FeatureList::IsEnabled(kAllowAllGoogleUrls)) {
-    // Hack: For now, allow all Google URLs to save QPS.
-    if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
-      std::move(callback).Run(url, Classification::SAFE, false);
-      return true;
-    }
-    // Hack: For now, allow all YouTube URLs since YouTube has its own Safety
-    // Mode anyway.
-    if (google_util::IsYoutubeDomainUrl(
-            url, google_util::ALLOW_SUBDOMAIN,
-            google_util::ALLOW_NON_STANDARD_PORTS)) {
-      std::move(callback).Run(url, Classification::SAFE, false);
-      return true;
-    }
-  }
-
   auto cache_it = cache_.Get(url);
   if (cache_it != cache_.end()) {
     const CheckResult& result = cache_it->second;

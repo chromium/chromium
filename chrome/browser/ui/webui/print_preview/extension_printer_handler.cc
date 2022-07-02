@@ -274,11 +274,11 @@ void ExtensionPrinterHandler::DispatchPrintJob(
 
 void ExtensionPrinterHandler::WrapGetPrintersCallback(
     AddedPrintersCallback callback,
-    const base::ListValue& printers,
+    base::Value::List printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
-  if (!printers.GetListDeprecated().empty())
-    callback.Run(printers);
+  if (!printers.empty())
+    callback.Run(std::move(printers));
 
   if (done)
     pending_enumeration_count_--;
@@ -288,12 +288,12 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
 
 void ExtensionPrinterHandler::WrapGetCapabilityCallback(
     GetCapabilityCallback callback,
-    const base::DictionaryValue& capability) {
-  base::Value capabilities(base::Value::Type::DICTIONARY);
-  base::Value cdd = ValidateCddForPrintPreview(capability.Clone());
+    base::Value::Dict capability) {
+  base::Value::Dict capabilities;
+  base::Value::Dict cdd = ValidateCddForPrintPreview(std::move(capability));
   // Leave |capabilities| empty if |cdd| is empty.
-  if (!cdd.DictEmpty())
-    capabilities.SetKey(kSettingCapabilities, std::move(cdd));
+  if (!cdd.empty())
+    capabilities.Set(kSettingCapabilities, std::move(cdd));
 
   std::move(callback).Run(std::move(capabilities));
 }
@@ -358,9 +358,9 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
 
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
-  std::unique_ptr<base::ListValue> list = printer_list.Build();
-  if (!list->GetListDeprecated().empty())
-    callback.Run(*list);
+  base::Value::List list = std::move(printer_list.Build()->GetList());
+  if (!list.empty())
+    callback.Run(std::move(list));
   if (pending_enumeration_count_ == 0)
     std::move(done_callback_).Run();
 }

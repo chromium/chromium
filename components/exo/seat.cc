@@ -31,6 +31,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -130,13 +131,11 @@ void Seat::StartDrag(DataSource* source,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
   // DragDropOperation manages its own lifetime.
+  auto cursor_location =
+      gfx::PointF(display::Screen::GetScreen()->GetCursorScreenPoint());
   drag_drop_operation_ =
       DragDropOperation::Create(data_exchange_delegate_.get(), source, origin,
-                                icon, last_pointer_location_, event_source);
-}
-
-void Seat::SetLastPointerLocation(const gfx::PointF& last_pointer_location) {
-  last_pointer_location_ = last_pointer_location;
+                                icon, cursor_location, event_source);
 }
 
 void Seat::AbortPendingDragOperation() {

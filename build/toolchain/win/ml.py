@@ -2,7 +2,6 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Wraps ml.exe or ml64.exe and postprocesses the output to be deterministic.
 Sets timestamp in .obj file to 0, hence incompatible with link.exe /incremental.
 
@@ -18,6 +17,7 @@ import sys
 
 class Struct(object):
   """A thin wrapper around the struct module that returns a namedtuple"""
+
   def __init__(self, name, *args):
     """Pass the name of the return type, and then an interleaved list of
     format strings as used by the struct module and of field names."""
@@ -60,37 +60,25 @@ def MakeDeterministic(objdata):
   objdata = array.array('b', objdata)  # Writable, e.g. via struct.pack_into.
 
   # Read coff header.
-  COFFHEADER = Struct('COFFHEADER',
-                      'H', 'Machine',
-                      'H', 'NumberOfSections',
-                      'I', 'TimeDateStamp',
-                      'I', 'PointerToSymbolTable',
-                      'I', 'NumberOfSymbols',
-
-                      'H', 'SizeOfOptionalHeader',
-                      'H', 'Characteristics')
+  COFFHEADER = Struct('COFFHEADER', 'H', 'Machine', 'H', 'NumberOfSections',
+                      'I', 'TimeDateStamp', 'I', 'PointerToSymbolTable', 'I',
+                      'NumberOfSymbols', 'H', 'SizeOfOptionalHeader', 'H',
+                      'Characteristics')
   coff_header = COFFHEADER.unpack_from(objdata)
   assert coff_header.SizeOfOptionalHeader == 0  # Only set for binaries.
 
   # Read section headers following coff header.
-  SECTIONHEADER = Struct('SECTIONHEADER',
-                         '8s', 'Name',
-                         'I', 'VirtualSize',
-                         'I', 'VirtualAddress',
-
-                         'I', 'SizeOfRawData',
-                         'I', 'PointerToRawData',
-                         'I', 'PointerToRelocations',
-                         'I', 'PointerToLineNumbers',
-
-                         'H', 'NumberOfRelocations',
-                         'H', 'NumberOfLineNumbers',
-                         'I', 'Characteristics')
+  SECTIONHEADER = Struct('SECTIONHEADER', '8s', 'Name', 'I', 'VirtualSize', 'I',
+                         'VirtualAddress', 'I', 'SizeOfRawData', 'I',
+                         'PointerToRawData', 'I', 'PointerToRelocations', 'I',
+                         'PointerToLineNumbers', 'H', 'NumberOfRelocations',
+                         'H', 'NumberOfLineNumbers', 'I', 'Characteristics')
   section_headers = []
   debug_section_index = -1
   for i in range(0, coff_header.NumberOfSections):
-    section_header = SECTIONHEADER.unpack_from(
-        objdata, offset=COFFHEADER.size() + i * SECTIONHEADER.size())
+    section_header = SECTIONHEADER.unpack_from(objdata,
+                                               offset=COFFHEADER.size() +
+                                               i * SECTIONHEADER.size())
     assert not section_header[0].startswith(b'/')  # Support short names only.
     section_headers.append(section_header)
 
@@ -137,7 +125,8 @@ def MakeDeterministic(objdata):
 
   # Make sure the symbol table (and hence, string table) appear after the last
   # section:
-  assert (coff_header.PointerToSymbolTable >=
+  assert (
+      coff_header.PointerToSymbolTable >=
       section_headers[-1].PointerToRawData + section_headers[-1].SizeOfRawData)
 
   # The symbol table contains a symbol for the no-longer-present .debug$S
@@ -150,14 +139,20 @@ def MakeDeterministic(objdata):
   # - relocations
   # - line number records (never present)
   # - one aux symbol entry (IMAGE_SYM_CLASS_CLR_TOKEN; not present in ml output)
-  SYM = Struct('SYM',
-               '8s', 'Name',
-               'I', 'Value',
-               'h', 'SectionNumber',  # Note: Signed!
-               'H', 'Type',
-
-               'B', 'StorageClass',
-               'B', 'NumberOfAuxSymbols')
+  SYM = Struct(
+      'SYM',
+      '8s',
+      'Name',
+      'I',
+      'Value',
+      'h',
+      'SectionNumber',  # Note: Signed!
+      'H',
+      'Type',
+      'B',
+      'StorageClass',
+      'B',
+      'NumberOfAuxSymbols')
   i = 0
   debug_sym = -1
   while i < coff_header.NumberOfSymbols:
@@ -192,10 +187,8 @@ def MakeDeterministic(objdata):
   # Update symbol table indices in relocations.
   # There are a few processor types that have one or two relocation types
   # where SymbolTableIndex has a different meaning, but not for x86.
-  REL = Struct('REL',
-               'I', 'VirtualAddress',
-               'I', 'SymbolTableIndex',
-               'H', 'Type')
+  REL = Struct('REL', 'I', 'VirtualAddress', 'I', 'SymbolTableIndex', 'H',
+               'Type')
   for header in section_headers[0:debug_section_index]:
     for j in range(0, header.NumberOfRelocations):
       rel_offset = header.PointerToRelocations + j * REL.size()
@@ -211,8 +204,9 @@ def MakeDeterministic(objdata):
 
   # Now that all indices are updated, remove the symbol table entry referring to
   # .debug$S and its aux entry.
-  del objdata[coff_header.PointerToSymbolTable + debug_sym * SYM.size():
-              coff_header.PointerToSymbolTable + (debug_sym + 2) * SYM.size()]
+  del objdata[coff_header.PointerToSymbolTable +
+              debug_sym * SYM.size():coff_header.PointerToSymbolTable +
+              (debug_sym + 2) * SYM.size()]
 
   # Now we know that it's safe to write out the input data, with just the
   # timestamp overwritten to 0, the last section header cut out (and the
@@ -233,8 +227,9 @@ def MakeDeterministic(objdata):
       header = Subtract(header, PointerToRelocations=SECTIONHEADER.size())
     if header.NumberOfLineNumbers:
       header = Subtract(header, PointerToLineNumbers=SECTIONHEADER.size())
-    SECTIONHEADER.pack_into(
-        objdata, COFFHEADER.size() + i * SECTIONHEADER.size(), header)
+    SECTIONHEADER.pack_into(objdata,
+                            COFFHEADER.size() + i * SECTIONHEADER.size(),
+                            header)
   for i in range(debug_section_index + 1, len(section_headers)):
     header = section_headers[i]
     shift = SECTIONHEADER.size() + debug_size
@@ -244,8 +239,9 @@ def MakeDeterministic(objdata):
       header = Subtract(header, PointerToRelocations=shift)
     if header.NumberOfLineNumbers:
       header = Subtract(header, PointerToLineNumbers=shift)
-    SECTIONHEADER.pack_into(
-        objdata, COFFHEADER.size() + i * SECTIONHEADER.size(), header)
+    SECTIONHEADER.pack_into(objdata,
+                            COFFHEADER.size() + i * SECTIONHEADER.size(),
+                            header)
 
   del objdata[debug_offset:debug_offset + debug_size]
 
@@ -257,9 +253,9 @@ def MakeDeterministic(objdata):
                          NumberOfSymbols=2)
   COFFHEADER.pack_into(objdata, 0, coff_header)
 
-  del objdata[
-      COFFHEADER.size() + debug_section_index * SECTIONHEADER.size():
-      COFFHEADER.size() + (debug_section_index + 1) * SECTIONHEADER.size()]
+  del objdata[COFFHEADER.size() +
+              debug_section_index * SECTIONHEADER.size():COFFHEADER.size() +
+              (debug_section_index + 1) * SECTIONHEADER.size()]
 
   # All done!
   if sys.version_info.major == 2:

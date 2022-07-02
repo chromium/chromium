@@ -62,7 +62,7 @@ adb shell settings put global package_verifier_enable 0
 ### Using Emulators
 
 Running tests on emulators is the same as [on device](#Running-Tests). Refer to
-[android_emulator.md](../android_emulator.md) for setting up emulators.
+[android_emulator.md](/docs/android_emulator.md) for setting up emulators.
 
 ## Building Tests
 
@@ -260,7 +260,7 @@ You might want to add stars `*` to each as a regular expression, e.g.
 
 ### Debugging
 
-Similar to [debugging apk targets](../android_debugging_instructions.md#debugging-java):
+Similar to [debugging apk targets](/docs/android_debugging_instructions.md#debugging-java):
 
 ```shell
 out/Debug/bin/run_content_shell_test_apk --wait-for-java-debugger

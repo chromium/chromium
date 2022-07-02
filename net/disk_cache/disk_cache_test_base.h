@@ -197,22 +197,22 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   // cache_ will always have a valid object, regardless of how the cache was
   // initialized. The implementation pointers can be NULL.
   std::unique_ptr<disk_cache::Backend> cache_;
-  raw_ptr<disk_cache::BackendImpl> cache_impl_;
+  raw_ptr<disk_cache::BackendImpl> cache_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
-  raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_;
-  raw_ptr<disk_cache::MemBackendImpl> mem_cache_;
+  raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
+  raw_ptr<disk_cache::MemBackendImpl> mem_cache_ = nullptr;
 
-  uint32_t mask_;
-  int64_t size_;
-  net::CacheType type_;
-  bool memory_only_;
-  bool simple_cache_mode_;
-  bool simple_cache_wait_for_index_;
-  bool force_creation_;
-  bool new_eviction_;
-  bool first_cleanup_;
-  bool integrity_;
-  bool use_current_thread_;
+  uint32_t mask_ = 0;
+  int64_t size_ = 0;
+  net::CacheType type_ = net::DISK_CACHE;
+  bool memory_only_ = false;
+  bool simple_cache_mode_ = false;
+  bool simple_cache_wait_for_index_ = true;
+  bool force_creation_ = false;
+  bool new_eviction_ = false;
+  bool first_cleanup_ = true;
+  bool integrity_ = true;
+  bool use_current_thread_ = false;
   // This is intentionally left uninitialized, to be used by any test.
   bool success_;
 

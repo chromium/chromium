@@ -47,7 +47,7 @@ class TestLocalCardMigrationBubbleControllerImpl
       : LocalCardMigrationBubbleControllerImpl(web_contents) {}
 
   void SimulateNavigation() {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     content::MockNavigationHandle navigation_handle(GURL(), rfh);
     navigation_handle.set_has_committed(true);
     DidFinishNavigation(&navigation_handle);

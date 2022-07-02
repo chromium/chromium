@@ -36,6 +36,7 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   ash::attestation::MachineCertificateUploader* machine_certificate_uploader_;
 
   // RemoteCommandJob:
+  bool IsExpired(base::TimeTicks now) override;
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;
 

@@ -24,14 +24,10 @@ class HistoryServiceObserver {
   // Called when user visits an URL.
   //
   // The `row` ID will be set to the value that is currently in effect in the
-  // main history database. `redirects` is the list of redirects leading up to
-  // the URL. If we have a redirect chain A -> B -> C and user is visiting C,
-  // then `redirects[0]=B` and `redirects[1]=A`. If there are no redirects,
-  // `redirects` is an empty vector.
+  // main history database.
   virtual void OnURLVisited(HistoryService* history_service,
                             ui::PageTransition transition,
                             const URLRow& row,
-                            const RedirectList& redirects,
                             base::Time visit_time) {}
 
   // Called when a URL has been added or modified.

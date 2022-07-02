@@ -83,10 +83,10 @@ void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
-  std::vector<base::Value> filtered_url_allowlist;
-  for (const auto& entry : url_allowlist->GetListDeprecated()) {
+  base::Value::List filtered_url_allowlist;
+  for (const auto& entry : url_allowlist->GetList()) {
     if (entry.is_string())
-      filtered_url_allowlist.push_back(entry.Clone());
+      filtered_url_allowlist.Append(entry.Clone());
   }
 
   prefs->SetValue(policy_prefs::kUrlAllowlist,

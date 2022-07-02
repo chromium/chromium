@@ -24,7 +24,7 @@
 #error "This file requires ARC support."
 #endif
 
-typedef NSArray<TableViewItem*>* ItemArray;
+using ItemArray = NSArray<TableViewItem*>*;
 
 namespace {
 // List of sections.

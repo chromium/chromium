@@ -270,6 +270,9 @@ class CheckedNumeric {
   };
 };
 
+template <typename T>
+CheckedNumeric(T t) -> CheckedNumeric<T>;
+
 // Convenience functions to avoid the ugly template disambiguator syntax.
 template <typename Dst, typename Src>
 constexpr bool IsValidForType(const CheckedNumeric<Src> value) {

@@ -12,34 +12,34 @@ class ChromeBroadcastObserverInterface {
  public:
   virtual ~ChromeBroadcastObserverInterface();
 
-  // Invoked by |-broadcastScrollViewSize:|.
+  // Invoked by `-broadcastScrollViewSize:`.
   virtual void OnScrollViewSizeBroadcasted(CGSize scroll_view_size) {}
 
-  // Invoked by |-broadcastScrollViewContentSize:|.
+  // Invoked by `-broadcastScrollViewContentSize:`.
   virtual void OnScrollViewContentSizeBroadcasted(CGSize content_size) {}
 
-  // Invoked by |-broadcastScrollViewContentInset:|.
+  // Invoked by `-broadcastScrollViewContentInset:`.
   virtual void OnScrollViewContentInsetBroadcasted(UIEdgeInsets conent_inset) {}
 
-  // Invoked by |-broadcastContentScrollOffset:|.
+  // Invoked by `-broadcastContentScrollOffset:`.
   virtual void OnContentScrollOffsetBroadcasted(CGFloat offset) {}
 
-  // Invoked by |-broadcastScrollViewIsScrolling:|.
+  // Invoked by `-broadcastScrollViewIsScrolling:`.
   virtual void OnScrollViewIsScrollingBroadcasted(bool scrolling) {}
 
-  // Invoked by |-broadcastScrollViewIsZooming:|.
+  // Invoked by `-broadcastScrollViewIsZooming:`.
   virtual void OnScrollViewIsZoomingBroadcasted(bool zooming) {}
 
-  // Invoked by |-broadcastScrollViewIsDragging:|.
+  // Invoked by `-broadcastScrollViewIsDragging:`.
   virtual void OnScrollViewIsDraggingBroadcasted(bool dragging) {}
 
-  // Invoked by |-broadcastCollapsedToolbarHeight:|.
+  // Invoked by `-broadcastCollapsedToolbarHeight:`.
   virtual void OnCollapsedToolbarHeightBroadcasted(CGFloat height) {}
 
-  // Invoked by |-broadcastExpandedToolbarHeight:|.
+  // Invoked by `-broadcastExpandedToolbarHeight:`.
   virtual void OnExpandedToolbarHeightBroadcasted(CGFloat height) {}
 
-  // Invoked by |-broadcastBottomToolbarHeight:|.
+  // Invoked by `-broadcastBottomToolbarHeight:`.
   virtual void OnBottomToolbarHeightBroadcasted(CGFloat height) {}
 };
 
@@ -51,7 +51,7 @@ class ChromeBroadcastObserverInterface {
 @property(nonatomic, readonly, nonnull)
     ChromeBroadcastObserverInterface* observer;
 
-// Initializer for a bridge that updates |observer|.
+// Initializer for a bridge that updates `observer`.
 - (nullable instancetype)initWithObserver:
     (nonnull ChromeBroadcastObserverInterface*)observer
     NS_DESIGNATED_INITIALIZER;

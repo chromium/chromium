@@ -210,7 +210,7 @@ NGBreakAppeal CalculateBreakAppealInside(
     consider_break_inside_avoidance = true;
   } else {
     appeal = layout_result.BreakAppeal();
-    consider_break_inside_avoidance = break_token;
+    consider_break_inside_avoidance = break_token && !break_token->IsRepeated();
   }
 
   // We don't let break-inside:avoid affect the child's stored break appeal, but
@@ -847,7 +847,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
   NGBreakAppeal appeal_inside =
       CalculateBreakAppealInside(space, layout_result);
-  if (break_token || appeal_inside < kBreakAppealPerfect) {
+  if ((break_token && !break_token->IsRepeated()) ||
+      appeal_inside < kBreakAppealPerfect) {
     // The block child broke inside, either in this fragmentation context, or in
     // an inner one. We now need to decide whether to keep that break, or if it
     // would be better to break before it. Allow breaking inside if it has the
@@ -921,7 +922,9 @@ void UpdateEarlyBreakAtBlockChild(
     NGBoxFragmentBuilder* builder,
     NGFlexColumnBreakInfo* flex_column_break_info) {
   // If the child already broke, it's a little too late to look for breakpoints.
-  DCHECK(!layout_result.PhysicalFragment().BreakToken());
+  DCHECK(!layout_result.PhysicalFragment().BreakToken() ||
+         To<NGBlockBreakToken>(layout_result.PhysicalFragment().BreakToken())
+             ->IsRepeated());
 
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
@@ -1071,7 +1074,7 @@ NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
     const NGConstraintSpace& space,
     const NGFragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
-  NGBoxFragmentBuilder multicol_container_builder(multicol, style, &space,
+  NGBoxFragmentBuilder multicol_container_builder(multicol, style, space,
                                                   style->GetWritingDirection());
   multicol_container_builder.SetIsNewFormattingContext(true);
   multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);
@@ -1127,7 +1130,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
   DCHECK_GT(box->PhysicalFragmentCount(), 1u);
 
   const NGPhysicalBoxFragment* previous_fragment;
-  if (const auto* break_token = To<NGBlockBreakToken>(fragment.BreakToken())) {
+  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
     // The sequence number of the outgoing break token is the same as the index
     // of this fragment.
     DCHECK_GE(break_token->SequenceNumber(), 1u);
@@ -1139,7 +1142,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
     previous_fragment =
         box->GetPhysicalFragment(box->PhysicalFragmentCount() - 2);
   }
-  return To<NGBlockBreakToken>(previous_fragment->BreakToken());
+  return previous_fragment->BreakToken();
 }
 
 wtf_size_t PreviousInnerFragmentainerIndex(
@@ -1160,23 +1163,15 @@ wtf_size_t PreviousInnerFragmentainerIndex(
   for (const NGPhysicalBoxFragment& walker : box->PhysicalFragments()) {
     if (&walker == &fragment)
       return idx;
-    const auto* break_token = To<NGBlockBreakToken>(walker.BreakToken());
-
     // Find the last fragmentainer inside this fragment.
-    const auto children = break_token->ChildBreakTokens();
-    for (auto& child_token : base::Reversed(children)) {
-      DCHECK(child_token->IsBlockType());
-      if (child_token->InputNode() != break_token->InputNode()) {
-        // Not a fragmentainer (probably a spanner)
+    auto children = walker.Children();
+    for (auto& child : base::Reversed(children)) {
+      if (!child->IsFragmentainerBox()) {
+        // Not a fragmentainer (could be a spanner, OOF, etc.)
         continue;
       }
-      const auto& block_child_token = To<NGBlockBreakToken>(*child_token);
-      // There may be a break before the first column, if we had to break
-      // between the block-start border/padding of the multicol container and
-      // its contents due to space shortage.
-      if (block_child_token.IsBreakBefore())
-        continue;
-      idx = block_child_token.SequenceNumber() + 1;
+      const auto* token = To<NGBlockBreakToken>(child->BreakToken());
+      idx = token->SequenceNumber() + 1;
       break;
     }
   }

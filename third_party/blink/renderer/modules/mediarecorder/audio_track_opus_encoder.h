@@ -23,7 +23,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                               public media::AudioConverter::InputCallback {
  public:
   AudioTrackOpusEncoder(OnEncodedAudioCB on_encoded_audio_cb,
-                        int32_t bits_per_second,
+                        uint32_t bits_per_second,
                         bool vbr_enabled = true);
 
   AudioTrackOpusEncoder(const AudioTrackOpusEncoder&) = delete;
@@ -45,7 +45,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                       uint32_t frames_delayed) override;
 
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
-  const int32_t bits_per_second_;
+  const uint32_t bits_per_second_;
 
   // Opus operates in VBR or constrained VBR modes even when a fixed bitrate
   // is specified, unless 'hard' CBR is explicitly enabled by disabling VBR

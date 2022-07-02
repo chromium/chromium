@@ -36,8 +36,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -49,7 +50,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
@@ -89,7 +90,6 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "url/url_constants.h"
 
@@ -564,14 +564,9 @@ void ResourceLoader::Start() {
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kStarted,
                                absl::nullopt, request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   if (resource_->GetResourceRequest().IsDownloadToNetworkCacheOnly()) {
     // The download-to-cache requests are throttled in net/, they are fire-and
@@ -910,9 +905,9 @@ bool ResourceLoader::WillFollowRedirect(
                            unused_virtual_time_pauser, resource_->GetType());
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->WillSendRequest(*new_request, redirect_response,
-                              resource_->GetType(), options,
-                              initial_request.GetRenderBlockingBehavior());
+    observer->WillSendRequest(
+        *new_request, redirect_response, resource_->GetType(), options,
+        initial_request.GetRenderBlockingBehavior(), resource_);
   }
 
   // First-party cookie logic moved from DocumentLoader in Blink to
@@ -999,15 +994,10 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
                                response.HttpStatusCode(),
-                               request.GetUkmSourceId(), recorder.get(),
-                               resource_);
+                               request.GetUkmSourceId(),
+                               fetcher_->UkmRecorder(), resource_);
   }
 
   ResourceType resource_type = resource_->GetType();
@@ -1233,14 +1223,26 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
                                0, false);
 }
 
-void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
-                                      int64_t encoded_data_length,
-                                      int64_t encoded_body_length,
-                                      int64_t decoded_body_length,
-                                      bool should_report_corb_blocking) {
+void ResourceLoader::DidFinishLoading(
+    base::TimeTicks response_end_time,
+    int64_t encoded_data_length,
+    int64_t encoded_body_length,
+    int64_t decoded_body_length,
+    bool should_report_corb_blocking,
+    absl::optional<bool> pervasive_payload_requested) {
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
+
+  if (pervasive_payload_requested.has_value()) {
+    ukm::SourceId ukm_source_id =
+        resource_->GetResourceRequest().GetUkmSourceId();
+    ukm::builders::Network_CacheTransparency builder(ukm_source_id);
+    builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
+    builder.SetTotalBytesFetched(
+        ukm::GetExponentialBucketMinForBytes(encoded_data_length));
+    builder.Record(fetcher_->UkmRecorder());
+  }
 
   response_end_time_for_error_cases_ = response_end_time;
 
@@ -1286,14 +1288,9 @@ void ResourceLoader::DidFail(const WebURLError& error,
   response_end_time_for_error_cases_ = response_end_time;
 
   if (request.IsAutomaticUpgrade()) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        pending_recorder.InitWithNewPipeAndPassReceiver());
-    auto recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kFailed,
                                error.reason(), request.GetUkmSourceId(),
-                               recorder.get(), resource_);
+                               fetcher_->UkmRecorder(), resource_);
   }
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
@@ -1423,7 +1420,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   if (data_out.size()) {
     data_out.ForEachSegment([this](const char* segment, size_t segment_size,
                                    size_t segment_offset) {
-      DidReceiveData(segment, SafeCast<int>(segment_size));
+      DidReceiveData(segment, base::checked_cast<int>(segment_size));
       return true;
     });
   }

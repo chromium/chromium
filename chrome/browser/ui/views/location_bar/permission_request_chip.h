@@ -7,16 +7,21 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip_delegate.h"
+
+namespace views {
+class View;
+}
 
 class Browser;
 class PermissionPromptBubbleView;
+enum class OmniboxChipTheme;
 
-// A chip view shown in the location bar to notify user about a permission
-// request. Shows a permission bubble on click.
-class PermissionRequestChip : public PermissionChip {
+// An implementation of PermissionChipDelegate that is used in the
+// PermissionChip and provides data for a visual representation of a permission
+// prompt in the form of a normal (loud) permission chip.
+class PermissionRequestChip : public PermissionChipDelegate {
  public:
-  METADATA_HEADER(PermissionRequestChip);
   // If `should_bubble_start_open` is true, a permission prompt bubble will be
   // displayed automatically after PermissionRequestChip is created.
   // `should_bubble_start_open` is evaluated based on
@@ -30,17 +35,28 @@ class PermissionRequestChip : public PermissionChip {
   ~PermissionRequestChip() override;
 
  private:
-  // PermissionChip:
+  // PermissionChipDelegate:
   views::View* CreateBubble() override;
   void ShowBubble() override;
+  const gfx::VectorIcon& GetIconOn() override;
+  const gfx::VectorIcon& GetIconOff() override;
+  std::u16string GetMessage() override;
+  bool ShouldStartOpen() override;
+  bool ShouldExpand() override;
+  OmniboxChipTheme GetTheme() override;
+  permissions::PermissionPrompt::Delegate* GetPermissionPromptDelegate()
+      override;
 
   void RecordChipButtonPressed();
+  void OnPromptBubbleDismissed();
 
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<PermissionPromptBubbleView> prompt_bubble_ = nullptr;
+  raw_ptr<permissions::PermissionPrompt::Delegate> delegate_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;
+  bool should_bubble_start_open_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_REQUEST_CHIP_H_

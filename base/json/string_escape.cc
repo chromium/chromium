@@ -25,7 +25,7 @@ namespace {
 const char kU16EscapeFormat[] = "\\u%04X";
 
 // The code point to output for an invalid input code unit.
-const uint32_t kReplacementCodePoint = 0xFFFD;
+const base_icu::UChar32 kReplacementCodePoint = 0xFFFD;
 
 // Used below in EscapeSpecialCodePoint().
 static_assert('<' == 0x3C, "less than sign must be 0x3c");
@@ -33,7 +33,7 @@ static_assert('<' == 0x3C, "less than sign must be 0x3c");
 // Try to escape the |code_point| if it is a known special character. If
 // successful, returns true and appends the escape sequence to |dest|. This
 // isn't required by the spec, but it's more readable by humans.
-bool EscapeSpecialCodePoint(uint32_t code_point, std::string* dest) {
+bool EscapeSpecialCodePoint(base_icu::UChar32 code_point, std::string* dest) {
   // WARNING: if you add a new case here, you need to update the reader as well.
   // Note: \v is in the reader, but not here since the JSON spec doesn't
   // allow it.
@@ -85,15 +85,11 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
   if (put_in_quotes)
     dest->push_back('"');
 
-  // Casting is necessary because ICU uses int32_t. Try and do so safely.
-  CHECK_LE(str.length(),
-           static_cast<size_t>(std::numeric_limits<int32_t>::max()));
-  const int32_t length = static_cast<int32_t>(str.length());
-
-  for (int32_t i = 0; i < length; ++i) {
-    uint32_t code_point;
+  const size_t length = str.length();
+  for (size_t i = 0; i < length; ++i) {
+    base_icu::UChar32 code_point;
     if (!ReadUnicodeCharacter(str.data(), length, &i, &code_point) ||
-        code_point == static_cast<decltype(code_point)>(CBU_SENTINEL)) {
+        code_point == CBU_SENTINEL) {
       code_point = kReplacementCodePoint;
       did_replacement = true;
     }
@@ -145,14 +141,16 @@ std::string EscapeBytesAsInvalidJSONString(StringPiece str,
   if (put_in_quotes)
     dest.push_back('"');
 
-  for (unsigned char c : str) {
+  for (char c : str) {
     if (EscapeSpecialCodePoint(c, &dest))
       continue;
 
-    if (c < 32 || c > 126)
-      base::StringAppendF(&dest, kU16EscapeFormat, c);
-    else
+    if (c < 32 || c > 126) {
+      base::StringAppendF(&dest, kU16EscapeFormat,
+                          static_cast<unsigned char>(c));
+    } else {
       dest.push_back(c);
+    }
   }
 
   if (put_in_quotes)

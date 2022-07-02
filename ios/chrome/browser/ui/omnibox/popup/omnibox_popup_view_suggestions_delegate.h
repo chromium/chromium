@@ -20,7 +20,7 @@ class OmniboxPopupViewSuggestionsDelegate {
   // match (for example, on NTP with no zero suggest, there's no default match),
   // values in match_type, answer_type, and favicon_url are invalid and a
   // default image should be used instead. Current UI should only use
-  // |matchType|; new UI may use |answerType| and |faviconURL| if available.
+  // `matchType`; new UI may use `answerType` and `faviconURL` if available.
   virtual void OnSelectedMatchImageChanged(
       bool has_match,
       AutocompleteMatchType::Type match_type,

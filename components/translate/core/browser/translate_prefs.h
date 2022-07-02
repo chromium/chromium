@@ -81,8 +81,6 @@ constexpr int kNeverTranslateShortcutMinimumDenials = 2;
 constexpr int kNeverTranslateShortcutMinimumDenials = 3;
 #endif
 
-class TranslateAcceptLanguages;
-
 // This class holds various info about a language, that are related to Translate
 // Preferences and Language Settings.
 struct TranslateLanguageInfo {
@@ -152,11 +150,11 @@ class TranslatePrefs {
   // the rest of the code.
   static std::string MapPreferenceName(const std::string& pref_name);
 
-  // Checks if the "offer translate" (i.e. automatic translate bubble) feature
-  // is enabled.
+  // Returns true if the "offer translate" pref is enabled (i.e. allowing for
+  // automatic Full Page Translate bubbles).
   bool IsOfferTranslateEnabled() const;
 
-  // Checks if translate is allowed by policy.
+  // Returns true if Translate is allowed by policy.
   bool IsTranslateAllowedByPolicy() const;
 
   // Sets the country that the application is run in. Determined by the
@@ -322,8 +320,7 @@ class TranslatePrefs {
   // Gets the user selected language list from language settings.
   void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
-  bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
-                            base::StringPiece language);
+  bool CanTranslateLanguage(base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);
   // True if the detailed language settings are enabled for this user.

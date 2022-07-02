@@ -117,7 +117,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
     }
 
     private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
-        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+        mSigninManager.signOut(SignoutReason.ACCOUNT_EMAIL_UPDATED, () -> {
             if (shouldEnableSync) {
                 mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
                         AccountUtils.createAccountFromName(newAccountName), new SignInCallback() {
@@ -144,7 +144,6 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private void onChildAccountStatusReady(boolean isChild, @Nullable Account childAccount) {
         if (isChild) {
             assert childAccount != null;
-            mSigninManager.onFirstRunCheckDone();
             mSigninManager.runAfterOperationInProgress(() -> {
                 final boolean forceSync = !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS);

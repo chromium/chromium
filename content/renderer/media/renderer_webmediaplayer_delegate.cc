@@ -285,6 +285,12 @@ void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(
 }
 
 void RendererWebMediaPlayerDelegate::OnDestruct() {
+  // All WebMediaPlayer instances should have been destructed by this point.
+  CHECK(id_map_.IsEmpty());
+  CHECK(idle_player_map_.empty());
+  CHECK(stale_players_.empty());
+  CHECK(players_with_video_.empty());
+  CHECK(playing_videos_.empty());
   delete this;
 }
 

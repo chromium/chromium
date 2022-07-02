@@ -32,8 +32,8 @@
 #endif
 
 namespace {
-// For the first |kSearchDelayChars| characters, delay by |kSearchLongDelay|
-// For the remaining characters, delay by |kSearchShortDelay|.
+// For the first `kSearchDelayChars` characters, delay by `kSearchLongDelay`
+// For the remaining characters, delay by `kSearchShortDelay`.
 const NSUInteger kSearchDelayChars = 3;
 const NSTimeInterval kSearchLongDelay = 1.0;
 const NSTimeInterval kSearchShortDelay = 0.100;

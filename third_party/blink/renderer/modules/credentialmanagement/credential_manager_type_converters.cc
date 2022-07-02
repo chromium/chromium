@@ -48,7 +48,6 @@ using blink::mojom::blink::CableRegistration;
 using blink::mojom::blink::CableRegistrationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
-using blink::mojom::blink::CredentialManagerError;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
@@ -220,8 +219,8 @@ TypeConverter<absl::optional<blink::mojom::blink::ResidentKeyRequirement>,
 }
 
 // static
-UserVerificationRequirement
-TypeConverter<UserVerificationRequirement, String>::Convert(
+absl::optional<UserVerificationRequirement>
+TypeConverter<absl::optional<UserVerificationRequirement>, String>::Convert(
     const String& requirement) {
   if (requirement == "required")
     return UserVerificationRequirement::REQUIRED;
@@ -229,13 +228,12 @@ TypeConverter<UserVerificationRequirement, String>::Convert(
     return UserVerificationRequirement::PREFERRED;
   if (requirement == "discouraged")
     return UserVerificationRequirement::DISCOURAGED;
-  NOTREACHED();
-  return UserVerificationRequirement::PREFERRED;
+  return absl::nullopt;
 }
 
 // static
-AttestationConveyancePreference
-TypeConverter<AttestationConveyancePreference, String>::Convert(
+absl::optional<AttestationConveyancePreference>
+TypeConverter<absl::optional<AttestationConveyancePreference>, String>::Convert(
     const String& preference) {
   if (preference == "none")
     return AttestationConveyancePreference::NONE;
@@ -245,22 +243,20 @@ TypeConverter<AttestationConveyancePreference, String>::Convert(
     return AttestationConveyancePreference::DIRECT;
   if (preference == "enterprise")
     return AttestationConveyancePreference::ENTERPRISE;
-  NOTREACHED();
-  return AttestationConveyancePreference::NONE;
+  return absl::nullopt;
 }
 
 // static
-AuthenticatorAttachment
-TypeConverter<AuthenticatorAttachment, absl::optional<String>>::Convert(
-    const absl::optional<String>& attachment) {
+absl::optional<AuthenticatorAttachment> TypeConverter<
+    absl::optional<AuthenticatorAttachment>,
+    absl::optional<String>>::Convert(const absl::optional<String>& attachment) {
   if (!attachment.has_value())
     return AuthenticatorAttachment::NO_PREFERENCE;
   if (attachment.value() == "platform")
     return AuthenticatorAttachment::PLATFORM;
   if (attachment.value() == "cross-platform")
     return AuthenticatorAttachment::CROSS_PLATFORM;
-  NOTREACHED();
-  return AuthenticatorAttachment::NO_PREFERENCE;
+  return absl::nullopt;
 }
 
 // static
@@ -285,11 +281,18 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
     Convert(const blink::AuthenticatorSelectionCriteria& criteria) {
   auto mojo_criteria =
       blink::mojom::blink::AuthenticatorSelectionCriteria::New();
-  absl::optional<String> attachment;
-  if (criteria.hasAuthenticatorAttachment())
-    attachment = criteria.authenticatorAttachment();
+
   mojo_criteria->authenticator_attachment =
-      ConvertTo<AuthenticatorAttachment>(attachment);
+      AuthenticatorAttachment::NO_PREFERENCE;
+  if (criteria.hasAuthenticatorAttachment()) {
+    absl::optional<String> attachment = criteria.authenticatorAttachment();
+    auto maybe_attachment =
+        ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment);
+    if (maybe_attachment) {
+      mojo_criteria->authenticator_attachment = *maybe_attachment;
+    }
+  }
+
   absl::optional<ResidentKeyRequirement> resident_key;
   if (criteria.hasResidentKey()) {
     resident_key = ConvertTo<absl::optional<ResidentKeyRequirement>>(
@@ -302,10 +305,15 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
                                       ? ResidentKeyRequirement::REQUIRED
                                       : ResidentKeyRequirement::DISCOURAGED;
   }
+
   mojo_criteria->user_verification = UserVerificationRequirement::PREFERRED;
   if (criteria.hasUserVerification()) {
-    mojo_criteria->user_verification = ConvertTo<UserVerificationRequirement>(
-        blink::IDLEnumAsString(criteria.userVerification()));
+    absl::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<absl::optional<UserVerificationRequirement>>(
+            criteria.userVerification());
+    if (user_verification) {
+      mojo_criteria->user_verification = *user_verification;
+    }
   }
   return mojo_criteria;
 }
@@ -461,23 +469,13 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         AuthenticatorSelectionCriteria::From(*options.authenticatorSelection());
   }
 
-  mojo_options->attestation =
-      blink::mojom::AttestationConveyancePreference::NONE;
+  mojo_options->attestation = AttestationConveyancePreference::NONE;
   if (options.hasAttestation()) {
-    const auto& attestation = options.attestation();
-    if (attestation == "none") {
-      // Default value.
-    } else if (attestation == "indirect") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::INDIRECT;
-    } else if (attestation == "direct") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::DIRECT;
-    } else if (attestation == "enterprise") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::ENTERPRISE;
-    } else {
-      return nullptr;
+    absl::optional<AttestationConveyancePreference> attestation =
+        ConvertTo<absl::optional<AttestationConveyancePreference>>(
+            options.attestation());
+    if (attestation) {
+      mojo_options->attestation = *attestation;
     }
   }
 
@@ -628,8 +626,12 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
 
   mojo_options->user_verification = UserVerificationRequirement::PREFERRED;
   if (options.hasUserVerification()) {
-    mojo_options->user_verification = ConvertTo<UserVerificationRequirement>(
-        blink::IDLEnumAsString(options.userVerification()));
+    absl::optional<UserVerificationRequirement> user_verification =
+        ConvertTo<absl::optional<UserVerificationRequirement>>(
+            options.userVerification());
+    if (user_verification) {
+      mojo_options->user_verification = *user_verification;
+    }
   }
 
   if (options.hasExtensions()) {

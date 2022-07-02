@@ -174,29 +174,29 @@ void SCTAuditingHandler::MaybeEnqueueReport(
 bool SCTAuditingHandler::SerializeData(std::string* output) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
-  base::Value reports(base::Value::Type::LIST);
+  base::Value::List reports;
   for (const auto& kv : pending_reporters_) {
     auto reporter_key = kv.first;
     auto* reporter = kv.second.get();
 
-    base::Value report_entry(base::Value::Type::DICTIONARY);
+    base::Value::Dict report_entry;
 
-    report_entry.SetStringKey(kReporterKeyKey, reporter_key.ToString());
+    report_entry.Set(kReporterKeyKey, reporter_key.ToString());
 
     if (reporter->sct_hashdance_metadata()) {
-      report_entry.SetKey(kSCTHashdanceMetadataKey,
-                          reporter->sct_hashdance_metadata()->ToValue());
+      report_entry.Set(kSCTHashdanceMetadataKey,
+                       reporter->sct_hashdance_metadata()->ToValue());
     }
 
     base::Value backoff_entry_value =
         net::BackoffEntrySerializer::SerializeToValue(
             *reporter->backoff_entry(), base::Time::Now());
-    report_entry.SetKey(kBackoffEntryKey, std::move(backoff_entry_value));
+    report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
 
     std::string serialized_report;
     reporter->report()->SerializeToString(&serialized_report);
     base::Base64Encode(serialized_report, &serialized_report);
-    report_entry.SetStringKey(kReportKey, serialized_report);
+    report_entry.Set(kReportKey, serialized_report);
 
     reports.Append(std::move(report_entry));
   }
@@ -209,21 +209,23 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   // Parse the serialized reports.
   absl::optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_list()) {
+    base::UmaHistogramCounts100(
+        "Security.SCTAuditing.NumPersistedReportsLoaded", 0);
     return;
   }
 
-  for (base::Value& sct_entry : value->GetListDeprecated()) {
+  size_t num_reporters_deserialized = 0u;
+  for (base::Value& sct_entry : value->GetList()) {
+    base::Value::Dict* entry_dict = sct_entry.GetIfDict();
     if (!sct_entry.is_dict()) {
       continue;
     }
 
-    const std::string* reporter_key_string =
-        sct_entry.FindStringKey(kReporterKeyKey);
-    const std::string* report_string = sct_entry.FindStringKey(kReportKey);
+    std::string* reporter_key_string = entry_dict->FindString(kReporterKeyKey);
+    std::string* report_string = entry_dict->FindString(kReportKey);
     const absl::optional<base::Value> sct_metadata_value =
-        sct_entry.ExtractKey(kSCTHashdanceMetadataKey);
-    const base::Value* backoff_entry_value =
-        sct_entry.FindKey(kBackoffEntryKey);
+        entry_dict->Extract(kSCTHashdanceMetadataKey);
+    const base::Value* backoff_entry_value = entry_dict->Find(kBackoffEntryKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
       continue;
@@ -273,8 +275,10 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
                 std::move(backoff_entry));
+    ++num_reporters_deserialized;
   }
-  // TODO(crbug.com/1144205): Add metrics for number of reporters deserialized.
+  base::UmaHistogramCounts100("Security.SCTAuditing.NumPersistedReportsLoaded",
+                              num_reporters_deserialized);
 }
 
 void SCTAuditingHandler::OnStartupFinished() {
@@ -332,11 +336,14 @@ void SCTAuditingHandler::OnReportsLoadedFromDisk(
   DeserializeData(serialized);
 }
 
-// TODO(crbug.com/1144205): This method should take a completion callback (for
-// callers like NetworkContext::ClearNetworkingHistoryBetween() that want to be
-// able to wait for the write completing), and pass it through to the `writer_`,
-// like TransportSecurityState does.
-void SCTAuditingHandler::ClearPendingReports() {
+void SCTAuditingHandler::OnWriteFinished(base::OnceClosure callback,
+                                         bool /*unused*/) {
+  DCHECK(background_runner_->RunsTasksInCurrentSequence());
+  foreground_runner_->PostTask(FROM_HERE, std::move(callback));
+}
+
+void SCTAuditingHandler::ClearPendingReports(base::OnceClosure callback) {
+  DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
   // Delete any outstanding Reporters. This will delete any extant URLLoader
   // instances owned by the Reporters, which will cancel any outstanding
   // requests/connections. Pending (delayed) retry tasks will fast-fail when
@@ -344,7 +351,15 @@ void SCTAuditingHandler::ClearPendingReports() {
   // task.
   pending_reporters_.Clear();
   if (writer_) {
-    writer_->ScheduleWrite(this);
+    writer_->RegisterOnNextWriteCallbacks(
+        base::OnceClosure(),
+        base::BindOnce(&SCTAuditingHandler::OnWriteFinished,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    auto data = std::make_unique<std::string>();
+    SerializeData(data.get());
+    writer_->WriteNow(std::move(data));
+  } else {
+    std::move(callback).Run();
   }
 }
 
@@ -360,7 +375,7 @@ void SCTAuditingHandler::SetMode(mojom::SCTAuditingMode mode) {
                            &SCTAuditingHandler::ReportHWMMetrics);
   } else {
     histogram_timer_.Stop();
-    ClearPendingReports();
+    ClearPendingReports(base::DoNothing());
   }
 }
 

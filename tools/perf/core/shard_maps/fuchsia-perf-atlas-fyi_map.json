@@ -1,5 +1,20 @@
 {
     "0": {
+        "executables": {
+            "base_perftests": {
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=update",
+                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/chromebook-x64-release/sucrose_eng"
+                ],
+                "path": "bin/run_base_perftests"
+            }
+        },
+        "benchmarks": {}
+    },
+    "1": {
         "benchmarks": {
             "jetstream": {
                 "abridged": false
@@ -8,27 +23,15 @@
                 "abridged": false
             },
             "media.desktop": {
-                "end": 10,
+                "end": 12,
                 "abridged": false
-            }
-        },
-        "executables": {
-            "base_perftests": {
-                "path": "bin/run_base_perftests",
-                "arguments": [
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-retry-limit=0",
-                    "-d",
-                    "--os-check=update",
-                    "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/chromebook-x64-release/sucrose_eng"
-                ]
             }
         }
     },
-    "1": {
+    "2": {
         "benchmarks": {
             "media.desktop": {
-                "begin": 10,
+                "begin": 12,
                 "abridged": false
             },
             "power.desktop": {
@@ -41,16 +44,7 @@
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 7,
-                "abridged": false
-            }
-        }
-    },
-    "2": {
-        "benchmarks": {
-            "system_health.common_desktop": {
-                "begin": 7,
-                "end": 60,
+                "end": 26,
                 "abridged": false
             }
         }
@@ -58,20 +52,20 @@
     "3": {
         "benchmarks": {
             "system_health.common_desktop": {
-                "begin": 60,
+                "begin": 26,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 127,
-        "predicted_min_shard_time": 1542.0,
-        "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 1579.0,
-        "predicted_max_shard_index": 2,
-        "shard #0": 1542.0,
-        "shard #1": 1577.0,
-        "shard #2": 1579.0,
-        "shard #3": 1578.0
+        "num_stories": 126,
+        "predicted_min_shard_time": 551.0,
+        "predicted_min_shard_index": 2,
+        "predicted_max_shard_time": 900.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 900.0,
+        "shard #1": 589.0,
+        "shard #2": 551.0,
+        "shard #3": 551.0
     }
 }

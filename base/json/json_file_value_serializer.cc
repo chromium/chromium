@@ -64,7 +64,7 @@ int JSONFileValueDeserializer::ReadFileToString(std::string* json_string) {
   last_read_size_ = 0u;
   if (!base::ReadFileToString(json_file_path_, json_string)) {
 #if BUILDFLAG(IS_WIN)
-    int error = ::GetLastError();
+    DWORD error = ::GetLastError();
     if (error == ERROR_SHARING_VIOLATION || error == ERROR_LOCK_VIOLATION) {
       return JSON_FILE_LOCKED;
     } else if (error == ERROR_ACCESS_DENIED) {

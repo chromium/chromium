@@ -205,7 +205,8 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
     bool use_swiftshader,
     bool allow_protected_memory) {
   return std::make_unique<ui::VulkanImplementationFlatland>(
-      this, &flatland_sysmem_buffer_manager_, allow_protected_memory);
+      this, &flatland_sysmem_buffer_manager_, use_swiftshader,
+      allow_protected_memory);
 }
 #endif
 

@@ -28,6 +28,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/set_quic_flag.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/third_party/quiche/overrides/quiche_platform_impl/quic_flags_impl.h"
@@ -170,13 +171,13 @@ bool ShouldDisableQuic(base::StringPiece quic_trial_group,
   if (is_quic_force_disabled)
     return true;
 
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "enable_quic"), "false");
 }
 
 bool ShouldEnableQuicProxiesForHttpsUrls(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "enable_quic_proxies_for_https_urls"),
       "true");
@@ -184,7 +185,7 @@ bool ShouldEnableQuicProxiesForHttpsUrls(
 
 bool ShouldRetryWithoutAltSvcOnQuicErrors(
     const VariationParameters& quic_trial_params) {
-  return !base::LowerCaseEqualsASCII(
+  return !base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "retry_without_alt_svc_on_quic_errors"),
       "false");
@@ -212,27 +213,27 @@ quic::QuicTagVector GetQuicClientConnectionOptions(
 
 bool ShouldQuicCloseSessionsOnIpChange(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "close_sessions_on_ip_change"),
       "true");
 }
 
 bool ShouldQuicGoAwaySessionsOnIpChange(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "goaway_sessions_on_ip_change"),
       "true");
 }
 
 absl::optional<bool> GetExponentialBackOffOnInitialDelay(
     const VariationParameters& quic_trial_params) {
-  if (base::LowerCaseEqualsASCII(
+  if (base::EqualsCaseInsensitiveASCII(
           GetVariationParam(quic_trial_params,
                             "exponential_backoff_on_initial_delay"),
           "false")) {
     return false;
   }
-  if (base::LowerCaseEqualsASCII(
+  if (base::EqualsCaseInsensitiveASCII(
           GetVariationParam(quic_trial_params,
                             "exponential_backoff_on_initial_delay"),
           "true")) {
@@ -289,13 +290,13 @@ int GetQuicMaxIdleTimeBeforeCryptoHandshakeSeconds(
 
 bool ShouldQuicEstimateInitialRtt(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "estimate_initial_rtt"), "true");
 }
 
 bool ShouldQuicHeadersIncludeH2StreamDependencies(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "headers_include_h2_stream_dependency"),
       "true");
@@ -303,7 +304,7 @@ bool ShouldQuicHeadersIncludeH2StreamDependencies(
 
 bool ShouldQuicMigrateSessionsOnNetworkChangeV2(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "migrate_sessions_on_network_change_v2"),
       "true");
@@ -311,20 +312,20 @@ bool ShouldQuicMigrateSessionsOnNetworkChangeV2(
 
 bool ShouldQuicMigrateSessionsEarlyV2(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "migrate_sessions_early_v2"),
       "true");
 }
 
 bool ShouldQuicAllowPortMigration(
     const VariationParameters& quic_trial_params) {
-  return !base::LowerCaseEqualsASCII(
+  return !base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "allow_port_migration"), "false");
 }
 
 bool ShouldQuicRetryOnAlternateNetworkBeforeHandshake(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "retry_on_alternate_network_before_handshake"),
       "true");
@@ -344,18 +345,18 @@ int GetQuicMaxTimeOnNonDefaultNetworkSeconds(
 
 bool ShouldQuicMigrateIdleSessions(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "migrate_idle_sessions"), "true");
 }
 
 bool ShouldQuicDisableTlsZeroRtt(const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "disable_tls_zero_rtt"), "true");
 }
 
 bool ShouldQuicDisableGQuicZeroRtt(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "disable_gquic_zero_rtt"), "true");
 }
 
@@ -445,7 +446,7 @@ int GetInitialDelayForBrokenAlternativeServiceSeconds(
 
 bool NotDelayMainJobWithAvailableSpdySession(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "delay_main_job_with_available_spdy_session"),
       "false");
@@ -460,7 +461,7 @@ void SetQuicFlags(const VariationParameters& quic_trial_params) {
         flag, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (tokens.size() != 2)
       continue;
-    SetQuicFlagByName(tokens[0], tokens[1]);
+    net::SetQuicFlagByName(tokens[0], tokens[1]);
   }
 }
 
@@ -479,7 +480,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
       GetVariationParam(quic_trial_params, "quic_version");
   quic::ParsedQuicVersionVector trial_versions =
       quic::ParseQuicVersionVectorString(trial_versions_str);
-  const bool obsolete_versions_allowed = base::LowerCaseEqualsASCII(
+  const bool obsolete_versions_allowed = base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "obsolete_versions_allowed"),
       "true");
   if (!obsolete_versions_allowed) {
@@ -505,7 +506,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
 
 bool ShouldEnableServerPushCancelation(
     const VariationParameters& quic_trial_params) {
-  return base::LowerCaseEqualsASCII(
+  return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "enable_server_push_cancellation"),
       "true");
 }
@@ -517,7 +518,7 @@ bool AreQuicParamsValid(const base::CommandLine& command_line,
     // Skip validation of params from the command line.
     return true;
   }
-  if (!base::LowerCaseEqualsASCII(
+  if (!base::EqualsCaseInsensitiveASCII(
           GetVariationParam(quic_trial_params, "enable_quic"), "true")) {
     // Params that don't explicitly enable QUIC do not carry channel or epoch.
     return true;

@@ -29,22 +29,6 @@ bool OutputSurfaceUnified::IsDisplayedAsOverlayPlane() const {
   return false;
 }
 
-unsigned OutputSurfaceUnified::GetOverlayTextureId() const {
-  return 0;
-}
-
-bool OutputSurfaceUnified::HasExternalStencilTest() const {
-  return false;
-}
-
-uint32_t OutputSurfaceUnified::GetFramebufferCopyTextureFormat() {
-  return 0;
-}
-
-unsigned OutputSurfaceUnified::UpdateGpuFence() {
-  return 0;
-}
-
 gfx::OverlayTransform OutputSurfaceUnified::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
@@ -118,6 +119,9 @@ class OsAndPoliciesUpdateChecker
 
   // Not owned.
   chromeos::NetworkStateHandler* const network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // Scheduled and retries |StartUpdateCheck|.
   TaskExecutorWithRetries update_check_task_executor_;

@@ -30,19 +30,6 @@ bool IsOutputDeviceId(const std::string& device) {
          device == kTtsAudioDeviceId || device == kBypassAudioDeviceId;
 }
 
-std::unique_ptr<FilterGroup> CreateFilterGroup(
-    int input_channels,
-    const std::string& name,
-    const base::Value* filter_list,
-    PostProcessingPipelineFactory* ppp_factory,
-    const base::Value* volume_limits) {
-  DCHECK(ppp_factory);
-  auto pipeline =
-      ppp_factory->CreatePipeline(name, filter_list, input_channels);
-  return std::make_unique<FilterGroup>(input_channels, name,
-                                       std::move(pipeline), volume_limits);
-}
-
 }  // namespace
 
 // static
@@ -78,9 +65,9 @@ bool MixerPipeline::BuildPipeline(PostProcessingPipelineParser* config,
 
     DCHECK(!device_ids->GetListDeprecated().empty());
     DCHECK(device_ids->GetListDeprecated()[0].is_string());
-    filter_groups_.push_back(
-        CreateFilterGroup(input_channels, name, stream_pipeline.pipeline,
-                          factory, stream_pipeline.volume_limits));
+    filter_groups_.push_back(std::make_unique<FilterGroup>(
+        input_channels, name, stream_pipeline.prerender_pipeline.Clone(),
+        &stream_pipeline.pipeline, factory, stream_pipeline.volume_limits));
 
     if (!SetGroupDeviceIds(device_ids, filter_groups_.back().get())) {
       return false;
@@ -101,9 +88,9 @@ bool MixerPipeline::BuildPipeline(PostProcessingPipelineParser* config,
     mix_group_input_channels = mix_pipeline.num_input_channels.value();
   }
   LOG(INFO) << mix_group_input_channels << " input channels to 'mix' group";
-  std::unique_ptr<FilterGroup> mix_filter =
-      CreateFilterGroup(mix_group_input_channels, "mix", mix_pipeline.pipeline,
-                        factory, mix_pipeline.volume_limits);
+  auto mix_filter = std::make_unique<FilterGroup>(
+      mix_group_input_channels, "mix", mix_pipeline.prerender_pipeline.Clone(),
+      &mix_pipeline.pipeline, factory, mix_pipeline.volume_limits);
   for (std::unique_ptr<FilterGroup>& group : filter_groups_) {
     mix_filter->AddMixedInput(group.get());
   }
@@ -123,9 +110,10 @@ bool MixerPipeline::BuildPipeline(PostProcessingPipelineParser* config,
   }
   LOG(INFO) << linearize_group_input_channels
             << " input channels to 'linearize' group";
-  filter_groups_.push_back(CreateFilterGroup(
-      linearize_group_input_channels, "linearize", linearize_pipeline.pipeline,
-      factory, linearize_pipeline.volume_limits));
+  filter_groups_.push_back(std::make_unique<FilterGroup>(
+      linearize_group_input_channels, "linearize",
+      linearize_pipeline.prerender_pipeline.Clone(),
+      &linearize_pipeline.pipeline, factory, linearize_pipeline.volume_limits));
   output_group_ = filter_groups_.back().get();
   output_group_->AddMixedInput(loopback_output_group_);
   if (!SetGroupDeviceIds(linearize_pipeline.stream_types, output_group_)) {
@@ -222,12 +210,6 @@ void MixerPipeline::SetPostProcessorConfig(const std::string& name,
                                            const std::string& config) {
   for (auto&& filter_group : filter_groups_) {
     filter_group->SetPostProcessorConfig(name, config);
-  }
-}
-
-void MixerPipeline::SetPlayoutChannel(int playout_channel) {
-  for (auto& filter_group : filter_groups_) {
-    filter_group->UpdatePlayoutChannel(playout_channel);
   }
 }
 

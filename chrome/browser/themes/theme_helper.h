@@ -70,10 +70,6 @@ class ThemeHelper {
   ThemeHelper(const ThemeHelper&) = delete;
   ThemeHelper& operator=(const ThemeHelper&) = delete;
 
-  SkColor GetColor(int id,
-                   bool incognito,
-                   const CustomThemeSupplier* theme_supplier) const;
-
   // Get the specified tint - |id| is one of the TINT_* enum values.
   color_utils::HSL GetTint(int id,
                            bool incognito,
@@ -99,14 +95,6 @@ class ThemeHelper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
- protected:
-  // Returns the color to use for |id| and |incognito| if the theme service does
-  // not provide an override.
-  virtual SkColor GetDefaultColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier) const;
-
  private:
   friend class theme_service_internal::ThemeServiceTest;
 
@@ -115,18 +103,6 @@ class ThemeHelper {
 
   // Returns a cross platform image for an id.
   gfx::Image GetImageNamed(int id,
-                           bool incognito,
-                           const CustomThemeSupplier* theme_supplier) const;
-
-  // Given a theme property ID |id|, returns the corresponding omnibox color
-  // overridden by the system theme.  Returns absl::nullopt if the color is not
-  // overridden, or if |id| does not correspond to an omnibox color.
-  absl::optional<SkColor> GetOmniboxColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier) const;
-
-  SkColor GetTabGroupColor(int id,
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;
 

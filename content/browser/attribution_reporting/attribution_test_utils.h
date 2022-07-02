@@ -23,14 +23,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
+#include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -53,10 +53,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
-namespace absl {
-class uint128;
-}  // namespace absl
-
 namespace mojo {
 
 template <typename Interface>
@@ -66,7 +62,6 @@ class PendingReceiver;
 
 namespace content {
 
-class AttributionManagerImpl;
 class AttributionObserver;
 class AttributionTrigger;
 
@@ -173,6 +168,14 @@ class MockDataHostManager : public AttributionDataHostManager {
       (override));
 
   MOCK_METHOD(void,
+              NotifyNavigationRedirectRegistation,
+              (const blink::AttributionSrcToken& attribution_src_token,
+               const std::string& header_value,
+               url::Origin reporting_origin,
+               const url::Origin& source_origin),
+              (override));
+
+  MOCK_METHOD(void,
               NotifyNavigationForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
                const url::Origin& source_origin,
@@ -201,7 +204,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
-  int GetMaxAttributionsPerOrigin(
+  int GetMaxReportsPerDestination(
       AttributionReport::ReportType report_type) const override;
   RateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
@@ -218,12 +221,13 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const override;
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const override;
 
   void set_max_attributions_per_source(int max);
 
   void set_max_sources_per_origin(int max);
 
-  void set_max_attributions_per_origin(
+  void set_max_reports_per_destination(
       AttributionReport::ReportType report_type,
       int max);
 
@@ -254,6 +258,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
 
+  void set_source_event_id_cardinality(uint64_t cardinality);
+
   // Detaches the delegate from its current sequence in preparation for being
   // moved to storage, which runs on its own sequence.
   void DetachFromSequence();
@@ -261,8 +267,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
-  int max_event_level_attributions_per_origin_ = INT_MAX;
-  int max_aggregatable_attributions_per_origin_ = INT_MAX;
+  int max_event_level_reports_per_destination_ = INT_MAX;
+  int max_aggregatable_reports_per_destination_ = INT_MAX;
   int max_destinations_per_source_site_reporting_origin_ = INT_MAX;
   int64_t aggregatable_budget_per_source_ = std::numeric_limits<int64_t>::max();
 
@@ -290,22 +296,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   absl::optional<uint64_t> navigation_trigger_data_cardinality_;
   absl::optional<uint64_t> event_trigger_data_cardinality_;
+  absl::optional<uint64_t> source_event_id_cardinality_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-};
-
-// Test manager provider which can be used to inject a fake
-// `AttributionManager`.
-class TestManagerProvider : public AttributionManagerProvider {
- public:
-  explicit TestManagerProvider(AttributionManager* manager)
-      : manager_(manager) {}
-  ~TestManagerProvider() override = default;
-
-  AttributionManager* GetManager(WebContents* web_contents) const override;
-
- private:
-  raw_ptr<AttributionManager> manager_ = nullptr;
 };
 
 class MockAttributionManager : public AttributionManager {
@@ -326,7 +319,8 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForInternalUse,
-      (AttributionReport::ReportType report_type,
+      (AttributionReport::ReportTypes report_types,
+       int limit,
        base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
 
@@ -341,6 +335,7 @@ class MockAttributionManager : public AttributionManager {
               (base::Time delete_begin,
                base::Time delete_end,
                base::RepeatingCallback<bool(const url::Origin&)> filter,
+               bool delete_rate_limit_data,
                base::OnceClosure done),
               (override));
 
@@ -478,8 +473,8 @@ class SourceBuilder {
 
   SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
-  SourceBuilder& SetAggregatableSource(
-      AttributionAggregatableSource aggregatable_source);
+  SourceBuilder& SetAggregationKeys(
+      AttributionAggregationKeys aggregation_keys);
 
   StorableSource Build() const;
 
@@ -505,7 +500,7 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
-  AttributionAggregatableSource aggregatable_source_;
+  AttributionAggregationKeys aggregation_keys_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -540,8 +535,12 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
-  TriggerBuilder& SetAggregatableTrigger(
-      AttributionAggregatableTrigger aggregatable_trigger);
+  TriggerBuilder& SetAggregatableTriggerData(
+      std::vector<AttributionAggregatableTriggerData>
+          aggregatable_trigger_data);
+
+  TriggerBuilder& SetAggregatableValues(
+      AttributionAggregatableValues aggregatable_values);
 
   AttributionTrigger Build() const;
 
@@ -553,7 +552,8 @@ class TriggerBuilder {
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
-  AttributionAggregatableTrigger aggregatable_trigger_;
+  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
+  AttributionAggregatableValues aggregatable_values_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -616,21 +616,6 @@ class ReportBuilder {
   std::vector<AggregatableHistogramContribution> contributions_;
 };
 
-// Helper class to construct a `blink::mojom::AttributionAggregatableSource`
-// for testing.
-class AggregatableSourceMojoBuilder {
- public:
-  AggregatableSourceMojoBuilder();
-  ~AggregatableSourceMojoBuilder();
-
-  AggregatableSourceMojoBuilder& AddKey(std::string key_id, absl::uint128 key);
-
-  blink::mojom::AttributionAggregatableSourcePtr Build() const;
-
- private:
-  blink::mojom::AttributionAggregatableSource aggregatable_source_;
-};
-
 bool operator==(const AttributionTrigger::EventTriggerData& a,
                 const AttributionTrigger::EventTriggerData& b);
 
@@ -668,8 +653,8 @@ bool operator==(const SendResult& a, const SendResult& b);
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b);
 
-bool operator==(const AttributionAggregatableTrigger& a,
-                const AttributionAggregatableTrigger& b);
+bool operator==(const AttributionAggregatableValues& a,
+                const AttributionAggregatableValues& b);
 
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status);
@@ -734,20 +719,17 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionAggregatableTriggerData& trigger_data);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableTrigger& aggregatable_trigger);
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregatableValues& values);
 
-bool operator==(const AttributionAggregatableSource& a,
-                const AttributionAggregatableSource& b);
+bool operator==(const AttributionAggregationKeys& a,
+                const AttributionAggregationKeys& b);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionAggregatableSource& aggregatable_source);
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregationKeys& aggregation_keys);
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManagerImpl* manager,
-    base::Time max_report_time);
+    AttributionManager* manager);
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host);
@@ -802,8 +784,8 @@ MATCHER_P(DedupKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.dedup_keys(), result_listener);
 }
 
-MATCHER_P(AggregatableSourceAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().aggregatable_source(),
+MATCHER_P(AggregationKeysAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().aggregation_keys(),
                             result_listener);
 }
 
@@ -995,7 +977,7 @@ class TestAggregatableSourceProvider {
   SourceBuilder GetBuilder(base::Time source_time = base::Time::Now()) const;
 
  private:
-  AttributionAggregatableSource source_;
+  AttributionAggregationKeys source_;
 };
 
 TriggerBuilder DefaultAggregatableTriggerBuilder(

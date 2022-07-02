@@ -35,6 +35,9 @@ BLINK_COMMON_EXPORT extern const char kEnablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kEnableRasterSideDarkModeForImages[];
 BLINK_COMMON_EXPORT extern const char kEnableRGBA4444Textures[];
 BLINK_COMMON_EXPORT extern const char kEnableZeroCopy[];
+BLINK_COMMON_EXPORT extern const char kEventPathPolicy[];
+BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceDisable[];
+BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kGpuRasterizationMSAASampleCount[];
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottlingPolicy_ForceDisable[];
@@ -51,6 +54,11 @@ BLINK_COMMON_EXPORT extern const char
     kSetTimeoutWithout1MsClampPolicy_ForceDisable[];
 BLINK_COMMON_EXPORT extern const char
     kSetTimeoutWithout1MsClampPolicy_ForceEnable[];
+BLINK_COMMON_EXPORT extern const char kUnthrottledNestedTimeoutPolicy[];
+BLINK_COMMON_EXPORT extern const char
+    kUnthrottledNestedTimeoutPolicy_ForceDisable[];
+BLINK_COMMON_EXPORT extern const char
+    kUnthrottledNestedTimeoutPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
 BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];

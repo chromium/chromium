@@ -6,11 +6,11 @@
 
 #include "base/containers/contains.h"
 #include "base/guid.h"
-#include "chromeos/network/cellular_esim_profile.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
-#include "chromeos/network/cellular_utils.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_event_log.h"
 
 namespace chromeos {

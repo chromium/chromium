@@ -36,6 +36,7 @@ enum WebAppInstallResultCode {
   kInstallTaskDestroyed,
   kUpdateTaskFailed,
   [MinVersion=1] kAppNotInRegistrarAfterCommit,
+  [MinVersion=2] kHaltedBySyncUninstall,
 };
 
 // See |webapps::UninstallResultCode|.

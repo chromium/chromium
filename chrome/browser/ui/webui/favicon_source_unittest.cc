@@ -266,8 +266,8 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
   source()->StartDataRequest(
       GURL(base::StrCat(
           {kDummyPrefix,
-           "?size=16&scale_factor=1x&page_url=https%3A%2F%2Fwww.google."
-           "com&allow_google_server_fallback=0"})),
+           "?size=16&scale_factor=1x&pageUrl=https%3A%2F%2Fwww.google."
+           "com&allowGoogleServerFallback=0"})),
       test_web_contents_getter_, base::BindOnce(&Noop));
 }
 
@@ -283,8 +283,8 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
   source()->StartDataRequest(
       GURL(base::StrCat(
           {kDummyPrefix,
-           "?size=16&scale_factor=1x&page_url=https%3A%2F%2Fwww.google."
-           "com&allow_google_server_fallback=1"})),
+           "?size=16&scale_factor=1x&pageUrl=https%3A%2F%2Fwww.google."
+           "com&allowGoogleServerFallback=1"})),
       test_web_contents_getter_, base::BindOnce(&Noop));
 }
 
@@ -301,8 +301,8 @@ TEST_F(
   source()->StartDataRequest(
       GURL(base::StrCat(
           {kDummyPrefix,
-           "?size=16&scale_factor=1x&page_url=https%3A%2F%2Fwww.google."
-           "com&allow_google_server_fallback=1"})),
+           "?size=16&scale_factor=1x&pageUrl=https%3A%2F%2Fwww.google."
+           "com&allowGoogleServerFallback=1"})),
       test_web_contents_getter_, base::BindOnce(&Noop));
 }
 

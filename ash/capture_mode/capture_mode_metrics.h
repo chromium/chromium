@@ -183,6 +183,9 @@ void RecordRecordingStartsWithCamera(bool starts_with_camera,
 // Records the number of camera disconnections during recording.
 void RecordCameraDisconnectionsDuringRecordings(int num_camera_disconnections);
 
+// Records the given `num_camera_connected`.
+void RecordNumberOfConnectedCameras(int num_camera_connected);
+
 // Records the duration of camera becoming available again after camera
 // disconnection.
 void RecordCameraReconnectDuration(int length_in_seconds,

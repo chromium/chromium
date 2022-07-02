@@ -7,7 +7,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/policy_constants.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -85,8 +84,6 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableEnterprisePolicy);
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }

@@ -31,17 +31,7 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "management"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "management.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-}
-
 preprocess_if_expr("preprocess") {
-  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
 }
@@ -70,4 +60,14 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "management"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "management.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

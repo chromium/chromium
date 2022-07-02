@@ -26,7 +26,6 @@ export interface SigninViewElement {
 
 const SigninViewElementBase = NavigationMixin(PolymerElement);
 
-/** @polymer */
 export class SigninViewElement extends SigninViewElementBase {
   static get is() {
     return 'signin-view';
@@ -71,8 +70,7 @@ export class SigninViewElement extends SigninViewElementBase {
     this.signinViewProxy_.recordNavigatedAway();
   }
 
-  /** private */
-  onSignInClick_() {
+  private onSignInClick_() {
     this.finalized_ = true;
     this.signinViewProxy_.recordSignIn();
     this.welcomeBrowserProxy_.handleActivateSignIn(null);

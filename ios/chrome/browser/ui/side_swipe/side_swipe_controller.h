@@ -33,14 +33,14 @@ extern NSString* const kSideSwipeDidStopNotification;
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView;
 // Returns the main content view.
 - (UIView*)sideSwipeContentView;
-// Makes |tab| the currently visible tab, displaying its view.
+// Makes `tab` the currently visible tab, displaying its view.
 - (void)sideSwipeRedisplayWebState:(web::WebState*)webState;
 // Controls the visibility of views such as the findbar, infobar and voice
 // search bar.
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible;
 // Returns the height of the header view for the current tab.
 - (CGFloat)headerHeightForSideSwipe;
-// Returns |YES| if side swipe should be blocked from initiating, such as when
+// Returns `YES` if side swipe should be blocked from initiating, such as when
 // voice search is up, or if the tools menu is enabled.
 - (BOOL)preventSideSwipe;
 // Returns whether a swipe on the toolbar can start.
@@ -53,7 +53,7 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Controls how an edge gesture is processed, either as tab change or a page
 // change.  For tab changes two full screen CardSideSwipeView views are dragged
 // across the screen. For page changes the SideSwipeControllerDelegate
-// |contentView| is moved across the screen and a SideSwipeNavigationView is
+// `contentView` is moved across the screen and a SideSwipeNavigationView is
 // shown in the remaining space.
 @interface SideSwipeController
     : NSObject<CRWSwipeRecognizerProvider, UIGestureRecognizerDelegate>
@@ -87,7 +87,7 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Enable or disable the side swipe gesture recognizer.
 - (void)setEnabled:(BOOL)enabled;
 
-// Returns |NO| if the device should not rotate.
+// Returns `NO` if the device should not rotate.
 - (BOOL)shouldAutorotate;
 
 // Resets the swipeDelegate's contentView frame origin x position to zero.

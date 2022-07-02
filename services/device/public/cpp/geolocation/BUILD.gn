@@ -15,7 +15,10 @@ component("geolocation") {
   output_name = "geolocation_service"
 
   if (is_mac) {
-    frameworks = [ "CoreLocation.framework" ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Foundation.framework",
+    ]
     sources += [
       "geolocation_manager_impl_mac.h",
       "geolocation_manager_impl_mac.mm",

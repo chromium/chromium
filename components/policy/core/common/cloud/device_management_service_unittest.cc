@@ -18,11 +18,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
+#include "components/policy/core/common/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -61,6 +63,15 @@ const char kEnrollmentToken[] = "enrollment_token";
 #if BUILDFLAG(IS_IOS)
 const char kOAuthAuthorizationHeaderPrefix[] = "OAuth ";
 #endif
+
+// Helper function which generates a DMServer response and populates the
+// `error_detail` field.
+std::string GenerateResponseWithErrorDetail(
+    em::DeviceManagementErrorDetail error_detail) {
+  em::DeviceManagementResponse response;
+  response.add_error_detail(error_detail);
+  return response.SerializeAsString();
+}
 
 // Unit tests for the device management policy service. The tests are run
 // against a TestURLLoaderFactory that is used to short-circuit the request
@@ -345,7 +356,15 @@ void PrintTo(const FailedRequestParams& params, std::ostream* os) {
 // the same for all kinds of requests.
 class DeviceManagementServiceFailedRequestTest
     : public DeviceManagementServiceTestBase,
-      public testing::WithParamInterface<FailedRequestParams> {};
+      public testing::WithParamInterface<FailedRequestParams> {
+ protected:
+  DeviceManagementServiceFailedRequestTest() {
+    feature_list_.InitAndEnableFeature(features::kDmTokenDeletion);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_P(DeviceManagementServiceFailedRequestTest, RegisterRequest) {
   EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));
@@ -474,6 +493,22 @@ INSTANTIATE_TEST_SUITE_P(
                             net::OK,
                             410,
                             PROTO_STRING(kResponseEmpty)),
+        FailedRequestParams(
+            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+            net::OK,
+            410,
+            GenerateResponseWithErrorDetail(
+                em::CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN)),
+        FailedRequestParams(
+#if BUILDFLAG(IS_CHROMEOS)
+            DM_STATUS_SERVICE_DEVICE_NOT_FOUND,
+#else   // BUILDFLAG(IS_CHROMEOS)
+            DM_STATUS_SERVICE_DEVICE_NEEDS_RESET,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+            net::OK,
+            410,
+            GenerateResponseWithErrorDetail(
+                em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)),
         FailedRequestParams(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
                             net::OK,
                             401,

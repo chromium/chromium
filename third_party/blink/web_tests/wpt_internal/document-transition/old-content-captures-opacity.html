@@ -17,9 +17,9 @@
   position: absolute;
   font-size: 30pt;
 }
-#e1 { opacity: 0.75; top: 20px; left: 20px; }
-#e2 { opacity: 0.5; top: 160px; left: 20px; }
-#e3 { opacity: 0.25; top: 300px; left: 20px; }
+#e1 { opacity: 0.75; top: 20px; left: 20px; page-transition-tag: e1; }
+#e2 { opacity: 0.5; top: 160px; left: 20px; page-transition-tag: e2; }
+#e3 { opacity: 0.25; top: 300px; left: 20px; page-transition-tag: e3; }
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
 html::page-transition-container(*) { animation-duration: 300s; }
@@ -35,13 +35,7 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(e1, "e1");
-  t.setElement(e2, "e2");
-  t.setElement(e3, "e3");
   t.start(() => {
-    t.setElement(e1, "e1");
-    t.setElement(e2, "e2");
-    t.setElement(e3, "e3");
     e1.classList.add("dst");
     e2.classList.add("dst");
     e3.classList.add("dst");

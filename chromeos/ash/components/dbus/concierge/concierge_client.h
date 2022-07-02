@@ -167,14 +167,14 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
 
   // Starts a Termina VM if there is not already one running.
   // |callback| is called after the method call finishes.
-  virtual void StartTerminaVm(
+  virtual void StartVm(
       const vm_tools::concierge::StartVmRequest& request,
       DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
 
   // Starts a Termina VM if there is not already one running.
   // |fd| references an extra image for concierge to use.
   // |callback| is called after the method call finishes.
-  virtual void StartTerminaVmWithFd(
+  virtual void StartVmWithFd(
       base::ScopedFD fd,
       const vm_tools::concierge::StartVmRequest& request,
       DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
@@ -269,12 +269,6 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
       const vm_tools::concierge::ResizeDiskImageRequest& request,
       DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
           callback) = 0;
-
-  // Sets the cryptohome id of the given VM.
-  // |callback| is called after the method call finishes.
-  virtual void SetVmId(
-      const vm_tools::concierge::SetVmIdRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SetVmIdResponse> callback) = 0;
 
   // Reclaims memory of the given VM.
   // |callback| is called after the method call finishes.

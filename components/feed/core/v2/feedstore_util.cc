@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/feedstore_util.h"
 
+#include "base/hash/hash.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -35,6 +36,14 @@ int64_t ToTimestampMillis(base::Time t) {
 
 base::Time FromTimestampMillis(int64_t millis) {
   return base::Time::UnixEpoch() + base::Milliseconds(millis);
+}
+
+int64_t ToTimestampNanos(base::Time t) {
+  return (t - base::Time::UnixEpoch()).InNanoseconds();
+}
+
+base::Time FromTimestampMicros(int64_t micros) {
+  return base::Time::UnixEpoch() + base::Microseconds(micros);
 }
 
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data) {
@@ -121,14 +130,14 @@ Metadata::StreamMetadata& MetadataForStream(Metadata& metadata,
   return *sm;
 }
 
-void SetStreamViewContentIds(Metadata& metadata,
-                             const StreamType& stream_type,
-                             const feed::ContentIdSet& content_ids) {
+void SetStreamViewContentHashes(Metadata& metadata,
+                                const StreamType& stream_type,
+                                const feed::ContentHashSet& content_hashes) {
   Metadata::StreamMetadata& stream_metadata =
       MetadataForStream(metadata, stream_type);
-  stream_metadata.clear_view_content_ids();
-  stream_metadata.mutable_view_content_ids()->Add(content_ids.values().begin(),
-                                                  content_ids.values().end());
+  stream_metadata.clear_view_content_hashes();
+  stream_metadata.mutable_view_content_hashes()->Add(
+      content_hashes.values().begin(), content_hashes.values().end());
 }
 
 bool IsKnownStale(const Metadata& metadata, const StreamType& stream_type) {
@@ -159,39 +168,45 @@ feedstore::Metadata MakeMetadata(const std::string& gaia) {
   return md;
 }
 
-absl::optional<Metadata> SetStreamViewContentIds(
+absl::optional<Metadata> SetStreamViewContentHashes(
     const Metadata& metadata,
     const StreamType& stream_type,
-    const feed::ContentIdSet& content_ids) {
+    const feed::ContentHashSet& content_hashes) {
   absl::optional<Metadata> result;
-  if (!(GetViewContentIds(metadata, stream_type) == content_ids)) {
+  if (!(GetViewContentIds(metadata, stream_type) == content_hashes)) {
     result = metadata;
-    SetStreamViewContentIds(*result, stream_type, content_ids);
+    SetStreamViewContentHashes(*result, stream_type, content_hashes);
   }
   return result;
 }
 
-feed::ContentIdSet GetContentIds(const StreamData& stream_data) {
-  return feed::ContentIdSet{
-      {stream_data.content_ids().begin(), stream_data.content_ids().end()}};
+feed::ContentHashSet GetContentIds(const StreamData& stream_data) {
+  return feed::ContentHashSet{{stream_data.content_hashes().begin(),
+                               stream_data.content_hashes().end()}};
 }
-feed::ContentIdSet GetViewContentIds(const Metadata& metadata,
-                                     const StreamType& stream_type) {
+feed::ContentHashSet GetViewContentIds(const Metadata& metadata,
+                                       const StreamType& stream_type) {
   const Metadata::StreamMetadata* stream_metadata =
       FindMetadataForStream(metadata, stream_type);
   if (stream_metadata) {
-    return feed::ContentIdSet({stream_metadata->view_content_ids().begin(),
-                               stream_metadata->view_content_ids().end()});
+    return feed::ContentHashSet({stream_metadata->view_content_hashes().begin(),
+                                 stream_metadata->view_content_hashes().end()});
   }
   return {};
 }
 
-void SetLastServerResponseTime(base::Time t, feedstore::StreamData& data) {
-  data.set_last_server_response_time_millis(ToTimestampMillis(t));
+void SetLastServerResponseTime(Metadata& metadata,
+                               const feed::StreamType& stream_type,
+                               const base::Time& server_time) {
+  Metadata::StreamMetadata& stream_metadata =
+      MetadataForStream(metadata, stream_type);
+  stream_metadata.set_last_server_response_time_millis(
+      ToTimestampMillis(server_time));
 }
 
-base::Time GetLastServerResponseTime(const feedstore::StreamData& data) {
-  return FromTimestampMillis(data.last_server_response_time_millis());
+int32_t ContentHashFromPrefetchMetadata(
+    const feedwire::PrefetchMetadata& prefetch_metadata) {
+  return base::PersistentHash(prefetch_metadata.uri());
 }
 
 }  // namespace feedstore

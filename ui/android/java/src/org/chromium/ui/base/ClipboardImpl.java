@@ -15,6 +15,7 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.text.Html;
 import android.text.Spanned;
@@ -370,12 +371,31 @@ public class ClipboardImpl
 
     @Override
     public void setText(final String text) {
-        setPrimaryClipNoException(ClipData.newPlainText("text", text));
+        setText("text", text);
+    }
+
+    @Override
+    public void setText(final String label, final String text) {
+        setPrimaryClipNoException(ClipData.newPlainText(label, text));
     }
 
     @Override
     void setHTMLText(final String html, final String text) {
         setPrimaryClipNoException(ClipData.newHtmlText("html", text, html));
+    }
+
+    @Override
+    public void setPassword(final String password) {
+        ClipData clipData = ClipData.newPlainText("password", password);
+        // ClipDescription#setExtras requires API level 24.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            PersistableBundle extras = new PersistableBundle();
+            // TODO(crbug.com/1334290): Replace to ClipDescription.EXTRA_IS_SENSITIVE once
+            // chromium import Android T SDK.
+            extras.putBoolean("android.content.extra.IS_SENSITIVE", true);
+            clipData.getDescription().setExtras(extras);
+        }
+        setPrimaryClipNoException(clipData);
     }
 
     @Override

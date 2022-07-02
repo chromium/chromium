@@ -134,4 +134,21 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(BrowserSwitcherNavigationThrottleTest,
+       DoNotCreateThrottleOnNonPrimaryMainFrame) {
+  std::unique_ptr<MockNavigationHandle> handle =
+      CreateMockNavigationHandle(GURL("https://fencedframe.com/"));
+  handle->set_has_committed(true);
+  handle->set_is_in_primary_main_frame(false);
+
+  std::unique_ptr<NavigationThrottle> throttle_non_primary_main_frame =
+      CreateNavigationThrottle(handle.get());
+  EXPECT_EQ(nullptr, throttle_non_primary_main_frame.get());
+
+  handle->set_is_in_primary_main_frame(true);
+  std::unique_ptr<NavigationThrottle> throttle_in_primary_main_frame =
+      CreateNavigationThrottle(handle.get());
+  EXPECT_NE(nullptr, throttle_in_primary_main_frame.get());
+}
+
 }  // namespace browser_switcher

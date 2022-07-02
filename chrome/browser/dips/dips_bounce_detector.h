@@ -7,16 +7,41 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/dips/cookie_access_type.h"
-#include "chrome/browser/dips/cookie_mode.h"
+#include "chrome/browser/dips/dips_utils.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace site_engagement {
 class SiteEngagementService;
 }
 
 class DIPSService;
+
+// ClientBounceDetectionState is owned by the DIPSBounceDetector and stores
+// data needed to detect stateful client-side redirects.
+class ClientBounceDetectionState {
+ public:
+  ClientBounceDetectionState(GURL url,
+                             std::string site,
+                             base::TimeTicks load_time) {
+    this->previous_url = std::move(url);
+    this->current_site = std::move(site);
+    this->page_load_time = load_time;
+  }
+
+  // The NavigationHandle's previously committed URL at the time the navigation
+  // finishes and commits.
+  GURL previous_url;
+  std::string current_site;
+  base::TimeTicks page_load_time;
+  bool received_user_activation = false;
+  CookieAccessType cookie_access_type = CookieAccessType::kNone;
+};
 
 class DIPSBounceDetector
     : public content::WebContentsObserver,
@@ -26,11 +51,27 @@ class DIPSBounceDetector
   DIPSBounceDetector(const DIPSBounceDetector&) = delete;
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
+  using RedirectHandler = base::RepeatingCallback<void(const GURL&,
+                                                       const GURL&,
+                                                       const GURL&,
+                                                       CookieAccessType,
+                                                       DIPSRedirectType)>;
+
+  using ClientRedirectHandler = base::RepeatingCallback<void(const GURL&,
+                                                             const GURL&,
+                                                             const GURL&,
+                                                             base::TimeDelta,
+                                                             CookieAccessType)>;
+
   using ServerRedirectHandler = base::RepeatingCallback<
       void(const GURL&, content::NavigationHandle*, int, CookieAccessType)>;
 
-  using RedirectHandler = base::RepeatingCallback<
-      void(const GURL&, const GURL&, const GURL&, CookieAccessType)>;
+  using Type = network::mojom::CookieAccessDetails::Type;
+
+  void SetStatefulClientRedirectHandlerForTesting(
+      ClientRedirectHandler handler) {
+    stateful_client_redirect_handler_ = handler;
+  }
 
   void SetStatefulServerRedirectHandlerForTesting(
       ServerRedirectHandler handler) {
@@ -40,6 +81,9 @@ class DIPSBounceDetector
   void SetStatefulRedirectHandlerForTesting(RedirectHandler handler) {
     stateful_redirect_handler_ = handler;
   }
+
+  // This must be called prior to the DIPSBounceDetector being constructed.
+  static base::TickClock* SetTickClockForTesting(base::TickClock* clock);
 
  private:
   explicit DIPSBounceDetector(content::WebContents* web_contents);
@@ -56,7 +100,13 @@ class DIPSBounceDetector
   void HandleStatefulRedirect(const GURL& prev_url,
                               const GURL& url,
                               const GURL& next_url,
-                              CookieAccessType access);
+                              CookieAccessType access,
+                              DIPSRedirectType type);
+  void HandleStatefulClientRedirect(const GURL& prev_url,
+                                    const GURL& url,
+                                    const GURL& next_url,
+                                    base::TimeDelta bounce_time,
+                                    CookieAccessType access);
   void HandleStatefulServerRedirect(
       const GURL& prev_url,
       content::NavigationHandle* navigation_handle,
@@ -65,10 +115,14 @@ class DIPSBounceDetector
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override;
 
   // raw_ptr<> is safe here DIPSService is a KeyedService, associated with the
   // BrowserContext/Profile which will outlive the WebContents that
@@ -76,12 +130,17 @@ class DIPSBounceDetector
   raw_ptr<DIPSService> dips_service_;
   // raw_ptr<> is safe here for the same reasons as above.
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
+  absl::optional<ClientBounceDetectionState> client_detection_state_;
+  // By default, this just calls this->HandleStatefulClientRedirect(), but it
+  // can be overridden for tests.
+  ClientRedirectHandler stateful_client_redirect_handler_;
   // By default, this just calls this->HandleStatefulServerRedirect(), but it
   // can be overridden for tests.
   ServerRedirectHandler stateful_server_redirect_handler_;
   // By default, this just calls this->HandleStatefulRedirect(), but it
   // can be overridden for tests.
   RedirectHandler stateful_redirect_handler_;
+  raw_ptr<const base::TickClock> clock_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

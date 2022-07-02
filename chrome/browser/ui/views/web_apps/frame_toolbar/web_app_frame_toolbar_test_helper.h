@@ -50,7 +50,7 @@ class WebAppFrameToolbarTestHelper {
       base::ScopedTempDir* temp_dir);
 
   // WebContents is used to run JS to parse rectangle values into a list value.
-  static base::Value::ListStorage GetXYWidthHeightListValue(
+  static base::Value::List GetXYWidthHeightListValue(
       content::WebContents* web_contents,
       const std::string& rect_value_list,
       const std::string& rect_var_name);

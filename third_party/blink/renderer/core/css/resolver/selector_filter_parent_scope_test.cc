@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -45,10 +46,12 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
       SelectorFilterParentScope div_scope(*div);
       SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-      CSSSelectorList selectors = CSSParser::ParseSelector(
+      CSSSelectorVector selector_vector = CSSParser::ParseSelector(
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
           nullptr, "html *, body *, .match *, #myId *");
+      CSSSelectorList selectors =
+          CSSSelectorList::AdoptSelectorVector(selector_vector);
 
       for (const CSSSelector* selector = selectors.First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
@@ -75,10 +78,12 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilterRootScope span_scope(GetDocument().getElementById("y"));
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  CSSSelectorList selectors = CSSParser::ParseSelector(
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
       nullptr, "html *, body *, div *, span *, .x *, #y *");
+  CSSSelectorList selectors =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
@@ -128,10 +133,12 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   SelectorFilterRootScope span_scope(inner);
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  CSSSelectorList selectors = CSSParser::ParseSelector(
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
       nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *");
+  CSSSelectorList selectors =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {

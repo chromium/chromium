@@ -8,8 +8,6 @@ import android.animation.Animator;
 import android.content.res.Resources;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.MockedInTests;
@@ -60,11 +58,6 @@ class MessageBannerCoordinator {
         mTimer = new MessageAutoDismissTimer();
         mOnTimeUp = onTimeUp;
         view.setSwipeHandler(mMediator);
-        ViewCompat.replaceAccessibilityAction(
-                view, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
-                    messageDismissed.run();
-                    return false;
-                });
         view.setPopupMenuShownListener(
                 createPopupMenuShownListener(mTimer, mAutodismissDurationMs.get(), mOnTimeUp));
     }
@@ -120,6 +113,14 @@ class MessageBannerCoordinator {
             setOnTitleChanged(null);
             messageHidden.run();
         });
+    }
+
+    void cancelTimer() {
+        mTimer.cancelTimer();
+    }
+
+    void startTimer() {
+        mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
     }
 
     void setOnTouchRunnable(Runnable runnable) {

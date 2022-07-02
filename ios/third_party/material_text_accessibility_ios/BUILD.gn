@@ -21,8 +21,6 @@ source_set("material_text_accessibility_ios") {
     "src/src/MDFTextAccessibility.m",
     "src/src/private/MDFColorCalculations.h",
     "src/src/private/MDFColorCalculations.m",
-    "src/src/private/MDFImageCalculations.h",
-    "src/src/private/MDFImageCalculations.m",
     "src/src/private/NSArray+MDFUtils.h",
     "src/src/private/NSArray+MDFUtils.m",
   ]

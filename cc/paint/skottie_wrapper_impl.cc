@@ -295,6 +295,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
   void Seek(float t, FrameDataCallback frame_data_cb) override
       LOCKS_EXCLUDED(lock_) {
+    TRACE_EVENT1("cc", "SkottieWrapperImpl::Seek", "timestamp", t);
     base::AutoLock lock(lock_);
     // There's no need to reset |current_frame_data_cb_| to null when finished.
     // The callback is guaranteed to only be invoked synchronously during calls
@@ -310,6 +311,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
             const SkottieColorMap& color_map,
             const SkottieTextPropertyValueMap& text_map) override
       LOCKS_EXCLUDED(lock_) {
+    TRACE_EVENT1("cc", "SkottieWrapperImpl::Draw", "timestamp", t);
     base::AutoLock lock(lock_);
     current_frame_data_cb_ = std::move(frame_data_cb);
     property_manager_->color_property_manager().SetNewValues(color_map);

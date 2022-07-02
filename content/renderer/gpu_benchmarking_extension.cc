@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/web/modules/canvas/canvas_test_utils.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_image_cache.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -684,7 +685,9 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
                  &GpuBenchmarking::AddCoreAnimationStatusEventListener)
 #endif
       .SetMethod("addSwapCompletionEventListener",
-                 &GpuBenchmarking::AddSwapCompletionEventListener);
+                 &GpuBenchmarking::AddSwapCompletionEventListener)
+      .SetMethod("isAcceleratedCanvasImageSource",
+                 &GpuBenchmarking::IsAcceleratedCanvasImageSource);
 }
 
 void GpuBenchmarking::SetNeedsDisplayOnAllLayers() {
@@ -1471,5 +1474,16 @@ int GpuBenchmarking::AddCoreAnimationStatusEventListener(gin::Arguments* args) {
   return true;
 }
 #endif
+
+bool GpuBenchmarking::IsAcceleratedCanvasImageSource(gin::Arguments* args) {
+  GpuBenchmarkingContext context(render_frame_.get());
+
+  v8::Local<v8::Value> value;
+  if (!args->GetNext(&value)) {
+    args->ThrowError();
+    return false;
+  }
+  return blink::IsAcceleratedCanvasImageSource(args->isolate(), value);
+}
 
 }  // namespace content

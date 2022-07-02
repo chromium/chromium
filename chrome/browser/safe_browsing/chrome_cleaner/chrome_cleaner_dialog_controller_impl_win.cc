@@ -230,7 +230,8 @@ void ChromeCleanerDialogControllerImpl::ShowChromeCleanerPrompt() {
 
   // Don't show the prompt again if it's been shown before for this profile and
   // for the current variations seed.
-  const std::string incoming_seed = GetIncomingSRTSeed();
+  const std::string incoming_seed =
+      cleaner_controller_->GetIncomingPromptSeed();
   const std::string old_seed = prefs->GetString(prefs::kSwReporterPromptSeed);
   if (!incoming_seed.empty() && incoming_seed != old_seed)
     prefs->SetString(prefs::kSwReporterPromptSeed, incoming_seed);

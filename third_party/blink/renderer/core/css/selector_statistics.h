@@ -15,12 +15,11 @@ class RuleData;
 struct RulePerfDataPerRequest {
   RulePerfDataPerRequest(const RuleData* r, bool f, bool m, base::TimeDelta e)
       : rule(r), fast_reject(f), did_match(m), elapsed(e) {}
-  Member<const RuleData> rule;
+  const RuleData* const rule;
   bool fast_reject;
   bool did_match;
   base::TimeDelta elapsed;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(rule); }
   DISALLOW_NEW();
 };
 
@@ -39,6 +38,12 @@ class SelectorStatisticsCollector {
  public:
   void ReserveCapacity(wtf_size_t size);
 
+  // NOTE: The rule must live for at least as long as the
+  // SelectorStatisticsCollector, as it is returned back in
+  // PerRuleStatistics. This is fine, because we throw away
+  // the statistics set at the end of CollectMatchingRulesForList
+  // to do our aggregation (on selectors), and in that time,
+  // we do not modify the rule buckets.
   void BeginCollectionForRule(const RuleData* rule);
   void EndCollectionForCurrentRule();
 

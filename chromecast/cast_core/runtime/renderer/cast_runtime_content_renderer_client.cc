@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "chromecast/cast_core/runtime/common/cors_exempt_headers.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
-#include "components/cast_streaming/public/cast_streaming_url.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
+#include "components/cast_streaming/renderer/public/resource_provider_factory.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "media/base/demuxer.h"
@@ -16,33 +16,9 @@
 
 namespace chromecast {
 
-CastRuntimeContentRendererClient::CastRuntimeContentRendererClient()
-    : cast_streaming_resource_provider_(
-          cast_streaming::ResourceProvider::Create()) {
-  DCHECK(cast_streaming_resource_provider_);
-}
+CastRuntimeContentRendererClient::CastRuntimeContentRendererClient() = default;
 
 CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
-
-void CastRuntimeContentRendererClient::RenderFrameCreated(
-    content::RenderFrame* render_frame) {
-  CastContentRendererClient::RenderFrameCreated(render_frame);
-  cast_streaming_resource_provider_->RenderFrameCreated(render_frame);
-}
-
-std::unique_ptr<::media::Demuxer>
-CastRuntimeContentRendererClient::OverrideDemuxerForUrl(
-    content::RenderFrame* render_frame,
-    const GURL& url,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
-  if (!cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
-    return nullptr;
-  }
-
-  LOG(INFO) << "Overriding demuxer for URL: " << url;
-  return cast_streaming_resource_provider_->OverrideDemuxerForUrl(
-      render_frame, url, std::move(media_task_runner));
-}
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastRuntimeContentRendererClient::CreateURLLoaderThrottleProvider(
@@ -50,6 +26,11 @@ CastRuntimeContentRendererClient::CreateURLLoaderThrottleProvider(
   return std::make_unique<CastURLLoaderThrottleProvider>(
       type, /*url_filter_manager=*/nullptr, this,
       base::BindRepeating(&IsHeaderCorsExempt));
+}
+
+std::unique_ptr<cast_streaming::ResourceProvider>
+CastRuntimeContentRendererClient::CreateCastStreamingResourceProvider() {
+  return cast_streaming::CreateResourceProvider();
 }
 
 }  // namespace chromecast

@@ -56,6 +56,8 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/interest_group_permissions_cache.h"
+#include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/generated_code_cache_settings.h"
@@ -92,15 +94,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "storage/browser/file_system/async_file_util.h"
-#include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_operation_context.h"
-#include "storage/browser/file_system/isolated_context.h"
-#include "storage/common/file_system/file_system_util.h"
-#include "url/origin.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -116,11 +109,6 @@ namespace {
 const int kDefaultClientId = 42;
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-const char kWidevineCdmPluginId[] = "application_x-ppapi-widevine-cdm";
-const char kClearKeyCdmPluginId[] = "application_x-ppapi-clearkey-cdm";
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 const blink::mojom::StorageType kTemporary =
     blink::mojom::StorageType::kTemporary;
@@ -533,201 +521,6 @@ class RemoveCodeCacheTester {
   std::string received_data_;
 };
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-class RemovePluginPrivateDataTester {
- public:
-  explicit RemovePluginPrivateDataTester(
-      storage::FileSystemContext* filesystem_context)
-      : filesystem_context_(filesystem_context) {}
-
-  RemovePluginPrivateDataTester(const RemovePluginPrivateDataTester&) = delete;
-  RemovePluginPrivateDataTester& operator=(
-      const RemovePluginPrivateDataTester&) = delete;
-
-  // Add some files to the PluginPrivateFileSystem. They are created as follows:
-  //   url1 - ClearKey - 1 file - timestamp 10 days ago
-  //   url2 - Widevine - 2 files - timestamps now and 60 days ago
-  void AddPluginPrivateTestData(const GURL& url1, const GURL& url2) {
-    base::Time now = base::Time::Now();
-    base::Time ten_days_ago = now - base::Days(10);
-    base::Time sixty_days_ago = now - base::Days(60);
-
-    // Create a PluginPrivateFileSystem for ClearKey and add a single file
-    // with a timestamp of 1 day ago.
-    std::string clearkey_fsid = CreateFileSystem(kClearKeyCdmPluginId, url1);
-    clearkey_file_ = CreateFile(url1, clearkey_fsid, "foo");
-    SetFileTimestamp(clearkey_file_, ten_days_ago);
-
-    // Create a second PluginPrivateFileSystem for Widevine and add two files
-    // with different times.
-    std::string widevine_fsid = CreateFileSystem(kWidevineCdmPluginId, url2);
-    storage::FileSystemURL widevine_file1 =
-        CreateFile(url2, widevine_fsid, "bar1");
-    storage::FileSystemURL widevine_file2 =
-        CreateFile(url2, widevine_fsid, "bar2");
-    SetFileTimestamp(widevine_file1, now);
-    SetFileTimestamp(widevine_file2, sixty_days_ago);
-  }
-
-  void DeleteClearKeyTestData() { DeleteFile(clearkey_file_); }
-
-  // Returns true, if the given origin exists in a PluginPrivateFileSystem.
-  bool DataExistsForOrigin(const url::Origin& origin) {
-    AwaitCompletionHelper await_completion;
-    bool data_exists_for_origin = false;
-    filesystem_context_->default_file_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RemovePluginPrivateDataTester::
-                           CheckIfDataExistsForOriginOnFileTaskRunner,
-                       base::Unretained(this), origin, &data_exists_for_origin,
-                       &await_completion));
-    await_completion.BlockUntilNotified();
-    return data_exists_for_origin;
-  }
-
- private:
-  // Creates a PluginPrivateFileSystem for the |plugin_name| and |origin|
-  // provided. Returns the file system ID for the created
-  // PluginPrivateFileSystem.
-  std::string CreateFileSystem(const std::string& plugin_name,
-                               const GURL& origin) {
-    AwaitCompletionHelper await_completion;
-    std::string fsid =
-        storage::IsolatedContext::GetInstance()
-            ->RegisterFileSystemForVirtualPath(
-                storage::kFileSystemTypePluginPrivate,
-                storage::kPluginPrivateRootName, base::FilePath());
-    EXPECT_TRUE(storage::ValidateIsolatedFileSystemId(fsid));
-    filesystem_context_->OpenPluginPrivateFileSystem(
-        url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate,
-        fsid, plugin_name, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-        base::BindOnce(&RemovePluginPrivateDataTester::OnFileSystemOpened,
-                       base::Unretained(this), &await_completion));
-    await_completion.BlockUntilNotified();
-    return fsid;
-  }
-
-  // Creates a file named |file_name| in the PluginPrivateFileSystem identified
-  // by |origin| and |fsid|. Returns the URL for the created file. The file
-  // must not already exist or the test will fail.
-  storage::FileSystemURL CreateFile(const GURL& origin,
-                                    const std::string& fsid,
-                                    const std::string& file_name) {
-    AwaitCompletionHelper await_completion;
-    std::string root = storage::GetIsolatedFileSystemRootURIString(
-        origin, fsid, storage::kPluginPrivateRootName);
-    storage::FileSystemURL file_url =
-        filesystem_context_->CrackURLInFirstPartyContext(
-            GURL(root + file_name));
-    storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
-        storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        std::make_unique<storage::FileSystemOperationContext>(
-            filesystem_context_);
-    operation_context->set_allowed_bytes_growth(
-        storage::QuotaManager::kNoLimit);
-    file_util->EnsureFileExists(
-        std::move(operation_context), file_url,
-        base::BindOnce(&RemovePluginPrivateDataTester::OnFileCreated,
-                       base::Unretained(this), &await_completion));
-    await_completion.BlockUntilNotified();
-    return file_url;
-  }
-
-  void DeleteFile(storage::FileSystemURL file_url) {
-    AwaitCompletionHelper await_completion;
-    storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
-        storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        std::make_unique<storage::FileSystemOperationContext>(
-            filesystem_context_);
-    file_util->DeleteFile(
-        std::move(operation_context), file_url,
-        base::BindOnce(&RemovePluginPrivateDataTester::OnFileDeleted,
-                       base::Unretained(this), &await_completion));
-    await_completion.BlockUntilNotified();
-  }
-
-  // Sets the last_access_time and last_modified_time to |time_stamp| on the
-  // file specified by |file_url|. The file must already exist.
-  void SetFileTimestamp(const storage::FileSystemURL& file_url,
-                        const base::Time& time_stamp) {
-    AwaitCompletionHelper await_completion;
-    storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
-        storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        std::make_unique<storage::FileSystemOperationContext>(
-            filesystem_context_);
-    file_util->Touch(
-        std::move(operation_context), file_url, time_stamp, time_stamp,
-        base::BindOnce(&RemovePluginPrivateDataTester::OnFileTouched,
-                       base::Unretained(this), &await_completion));
-    await_completion.BlockUntilNotified();
-  }
-
-  void OnFileSystemOpened(AwaitCompletionHelper* await_completion,
-                          base::File::Error result) {
-    EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    await_completion->Notify();
-  }
-
-  void OnFileCreated(AwaitCompletionHelper* await_completion,
-                     base::File::Error result,
-                     bool created) {
-    EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    EXPECT_TRUE(created);
-    await_completion->Notify();
-  }
-
-  void OnFileDeleted(AwaitCompletionHelper* await_completion,
-                     base::File::Error result) {
-    EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    await_completion->Notify();
-  }
-
-  void OnFileTouched(AwaitCompletionHelper* await_completion,
-                     base::File::Error result) {
-    EXPECT_EQ(base::File::FILE_OK, result) << base::File::ErrorToString(result);
-    await_completion->Notify();
-  }
-
-  // If |origin| exists in the PluginPrivateFileSystem, set
-  // |data_exists_for_origin| to true, false otherwise.
-  void CheckIfDataExistsForOriginOnFileTaskRunner(
-      const url::Origin& origin,
-      bool* data_exists_for_origin,
-      AwaitCompletionHelper* await_completion) {
-    storage::FileSystemBackend* backend =
-        filesystem_context_->GetFileSystemBackend(
-            storage::kFileSystemTypePluginPrivate);
-    storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
-
-    // Determine the set of StorageKeys used.
-    std::vector<blink::StorageKey> storage_keys =
-        quota_util->GetStorageKeysForTypeOnFileTaskRunner(
-            storage::kFileSystemTypePluginPrivate);
-    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
-    // file system will be partitioned; if so, replace the in-line conversion
-    // with the correct third-party StorageKey.
-    *data_exists_for_origin =
-        base::Contains(storage_keys, blink::StorageKey(origin));
-
-    // AwaitCompletionHelper and MessageLoop don't work on a
-    // SequencedTaskRunner, so post a task on the IO thread.
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&AwaitCompletionHelper::Notify,
-                                  base::Unretained(await_completion)));
-  }
-
-  // We don't own this pointer.
-  raw_ptr<storage::FileSystemContext> filesystem_context_;
-
-  // Keep track of the URL for the ClearKey file so that it can be written to
-  // or deleted.
-  storage::FileSystemURL clearkey_file_;
-};
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
  public:
   explicit MockDataRemovalObserver(StoragePartition* partition) {
@@ -789,9 +582,10 @@ bool DoesOriginMatchUnprotected(
 
 void ClearQuotaData(content::StoragePartition* partition,
                     base::RunLoop* loop_to_quit) {
-  partition->ClearData(
-      kAllQuotaRemoveMask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      GURL(), base::Time(), base::Time::Max(), loop_to_quit->QuitClosure());
+  partition->ClearData(kAllQuotaRemoveMask,
+                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                       blink::StorageKey(), base::Time(), base::Time::Max(),
+                       loop_to_quit->QuitClosure());
 }
 
 void ClearQuotaDataWithOriginMatcher(
@@ -809,10 +603,10 @@ void ClearQuotaDataForOrigin(content::StoragePartition* partition,
                              const GURL& remove_origin,
                              const base::Time delete_begin,
                              base::RunLoop* loop_to_quit) {
-  partition->ClearData(kAllQuotaRemoveMask,
-                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-                       remove_origin, delete_begin, base::Time::Max(),
-                       loop_to_quit->QuitClosure());
+  partition->ClearData(
+      kAllQuotaRemoveMask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      blink::StorageKey(url::Origin::Create(remove_origin)), delete_begin,
+      base::Time::Max(), loop_to_quit->QuitClosure());
 }
 
 void ClearQuotaDataForNonPersistent(content::StoragePartition* partition,
@@ -820,7 +614,7 @@ void ClearQuotaDataForNonPersistent(content::StoragePartition* partition,
                                     base::RunLoop* loop_to_quit) {
   partition->ClearData(kAllQuotaRemoveMask,
                        ~StoragePartition::QUOTA_MANAGED_STORAGE_MASK_PERSISTENT,
-                       GURL(), delete_begin, base::Time::Max(),
+                       blink::StorageKey(), delete_begin, base::Time::Max(),
                        loop_to_quit->QuitClosure());
 }
 
@@ -829,8 +623,9 @@ void ClearCookies(content::StoragePartition* partition,
                   const base::Time delete_end,
                   base::RunLoop* run_loop) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES,
-                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-                       delete_begin, delete_end, run_loop->QuitClosure());
+                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                       blink::StorageKey(), delete_begin, delete_end,
+                       run_loop->QuitClosure());
 }
 
 void ClearCookiesMatchingInfo(content::StoragePartition* partition,
@@ -864,8 +659,9 @@ void ClearStuff(uint32_t remove_mask,
 void ClearData(content::StoragePartition* partition, base::RunLoop* run_loop) {
   base::Time time;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-                       time, time, run_loop->QuitClosure());
+                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                       blink::StorageKey(), time, time,
+                       run_loop->QuitClosure());
 }
 
 void ClearCodeCache(content::StoragePartition* partition,
@@ -881,26 +677,24 @@ bool FilterURL(const GURL& filter_url, const GURL& url) {
   return url == filter_url;
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-void ClearPluginPrivateData(content::StoragePartition* partition,
-                            const GURL& storage_origin,
-                            const base::Time delete_begin,
-                            const base::Time delete_end,
-                            base::RunLoop* run_loop) {
-  partition->ClearData(
-      StoragePartitionImpl::REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, storage_origin,
-      delete_begin, delete_end, run_loop->QuitClosure());
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 void ClearInterestGroups(content::StoragePartition* partition,
                          const base::Time delete_begin,
                          const base::Time delete_end,
                          base::RunLoop* run_loop) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS,
-                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-                       delete_begin, delete_end, run_loop->QuitClosure());
+                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                       blink::StorageKey(), delete_begin, delete_end,
+                       run_loop->QuitClosure());
+}
+
+void ClearInterestGroupPermissionsCache(content::StoragePartition* partition,
+                                        const base::Time delete_begin,
+                                        const base::Time delete_end,
+                                        base::RunLoop* run_loop) {
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE,
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, blink::StorageKey(),
+      delete_begin, delete_end, run_loop->QuitClosure());
 }
 
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
@@ -1052,7 +846,7 @@ storage::BucketInfo AddQuotaManagedBucket(
     blink::mojom::StorageType type,
     base::Time modified = base::Time::Now()) {
   storage::BucketInfo bucket =
-      manager->CreateBucket(storage_key, bucket_name, type);
+      manager->CreateBucket({storage_key, bucket_name}, type);
   manager->AddBucket(bucket, {kClientFile}, modified);
   EXPECT_TRUE(manager->BucketHasData(bucket, kClientFile));
   return bucket;
@@ -1484,6 +1278,41 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
   EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
 }
 
+TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {
+  const url::Origin kFrameOrigin =
+      url::Origin::Create(GURL("https://host1.test:1/"));
+  const url::Origin kInterestGroupOrigin =
+      url::Origin::Create(GURL("https://host2.test:2/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kFrameOrigin,
+                                                      kFrameOrigin);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  ASSERT_TRUE(partition->GetInterestGroupManager());
+
+  InterestGroupPermissionsCache& permissions_cache =
+      static_cast<InterestGroupManagerImpl*>(
+          partition->GetInterestGroupManager())
+          ->permissions_checker_for_testing()
+          .cache_for_testing();
+
+  permissions_cache.CachePermissions(InterestGroupPermissionsCache::Permissions{
+                                         /*can_join=*/true, /*can_leave=*/true},
+                                     kFrameOrigin, kInterestGroupOrigin,
+                                     kNetworkIsolationKey);
+  EXPECT_TRUE(permissions_cache.GetPermissions(
+      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
+
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearInterestGroupPermissionsCache, partition,
+                                base::Time(), base::Time::Max(), &run_loop));
+  run_loop.Run();
+
+  EXPECT_FALSE(permissions_cache.GetPermissions(
+      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
+}
+
 TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
@@ -1829,109 +1658,6 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
   run_loop.Run();
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataForever) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
-  tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearPluginPrivateData, partition, GURL(),
-                                base::Time(), base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin2));
-}
-
-TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataLastWeek) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  base::Time a_week_ago = base::Time::Now() - base::Days(7);
-
-  RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
-  tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearPluginPrivateData, partition, GURL(),
-                                a_week_ago, base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  // Origin1 has 1 file from 10 days ago, so it should remain around.
-  // Origin2 has a current file, so it should be removed (even though the
-  // second file is much older).
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin2));
-}
-
-TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataForOrigin) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
-  tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClearPluginPrivateData, partition, kOrigin1.GetURL(),
-                     base::Time(), base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  // Only Origin1 should be deleted.
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-}
-
-TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataAfterDeletion) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
-  tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  // Delete the single file saved for |kOrigin1|. This does not remove the
-  // origin from the list of Origins. However, ClearPluginPrivateData() will
-  // remove it.
-  tester.DeleteClearKeyTestData();
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearPluginPrivateData, partition, GURL(),
-                                base::Time(), base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin2));
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
   GURL url("http://www.example.com/");
   GURL url2("https://www.example.com/");
@@ -1973,8 +1699,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
@@ -1982,49 +1707,43 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   attribution_manager->HandleTrigger(DefaultTrigger());
 
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       source.common_info().impression_origin().GetURL(), now,
-                       now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      blink::StorageKey(source.common_info().impression_origin()), now, now,
+      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   auto source = SourceBuilder(now).SetExpiry(base::Days(2)).Build();
   attribution_manager->HandleSource(source);
   attribution_manager->HandleTrigger(DefaultTrigger());
 
-  EXPECT_FALSE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-                       source.common_info().impression_origin().GetURL(), now,
-                       now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
+      blink::StorageKey(source.common_info().impression_origin()), now, now,
+      run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_FALSE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 20; i++) {
@@ -2039,21 +1758,19 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
     attribution_manager->HandleSource(source);
   }
   base::RunLoop run_loop;
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       GURL(), now, now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      blink::StorageKey(), now, now, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(
-      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
-          .empty());
+  EXPECT_TRUE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
 
-  AttributionManagerImpl* attribution_manager =
-      partition->GetAttributionManager();
+  AttributionManager* attribution_manager = partition->GetAttributionManager();
 
   base::Time now = base::Time::Now();
   for (int i = 0; i < 5; i++) {
@@ -2075,9 +1792,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                            .Build());
   }
 
-  EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager,
-                                                base::Time::Max())
-                    .size());
+  EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager).size());
 
   // Match against enough Origins to delete three of the imp/conv pairs.
   base::RunLoop run_loop;
@@ -2088,12 +1803,11 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                origin == url::Origin::Create(GURL("https://rep-4.com/")) ||
                origin == url::Origin::Create(GURL("https://imp-4.com/"));
       });
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0, func,
-                       nullptr, false, now, now, run_loop.QuitClosure());
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
+      func, nullptr, false, now, now, run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager,
-                                                base::Time::Max())
-                    .size());
+  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager).size());
 }
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
@@ -2129,7 +1843,8 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       observer,
       OnOriginDataCleared(kTestClearMask, testing::Truly(origin_callback_valid),
                           kBeginTime, kEndTime));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask, kTestOrigin,
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask,
+                       blink::StorageKey(url::Origin::Create(kTestOrigin)),
                        kBeginTime, kEndTime, base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
@@ -2370,7 +2085,8 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   EXPECT_CALL(*aggregation_service_ptr,
               ClearData(kBeginTime, kEndTime, testing::_))
       .WillOnce(testing::Invoke(invoke_callback));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask, kTestOrigin,
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask,
+                       blink::StorageKey(url::Origin::Create(kTestOrigin)),
                        kBeginTime, kEndTime, base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
 
@@ -2390,8 +2106,8 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   EXPECT_CALL(*aggregation_service_ptr,
               ClearData(kBeginTime, kEndTime, testing::_))
       .WillOnce(testing::Invoke(invoke_callback));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask, GURL(), kBeginTime,
-                       kEndTime, base::DoNothing());
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask, blink::StorageKey(),
+                       kBeginTime, kEndTime, base::DoNothing());
 }
 
 // https://crbug.com/1221382
@@ -2523,8 +2239,8 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
   base::test::ScopedFeatureList feature_list_;
 
   // We don't own these pointers.
-  StoragePartition* const storage_partition_;
-  storage::SharedStorageManager* shared_storage_manager_;
+  const raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
 };
 
 TEST_F(StoragePartitionImplSharedStorageTest,

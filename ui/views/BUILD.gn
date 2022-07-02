@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -133,6 +134,7 @@ component("views") {
     "controls/image_view_base.h",
     "controls/label.h",
     "controls/link.h",
+    "controls/link_fragment.h",
     "controls/menu/menu_config.h",
     "controls/menu/menu_controller.h",
     "controls/menu/menu_controller_delegate.h",
@@ -191,6 +193,7 @@ component("views") {
     "controls/views_text_services_context_menu.h",
     "controls/views_text_services_context_menu_base.h",
     "debug_utils.h",
+    "dialog_model_context_menu_controller.h",
     "drag_controller.h",
     "drag_utils.h",
     "event_monitor.h",
@@ -210,7 +213,6 @@ component("views") {
     "layout/flex_layout.h",
     "layout/flex_layout_types.h",
     "layout/flex_layout_view.h",
-    "layout/grid_layout.h",
     "layout/layout_manager.h",
     "layout/layout_manager_base.h",
     "layout/layout_provider.h",
@@ -227,7 +229,6 @@ component("views") {
     "mouse_constants.h",
     "mouse_watcher.h",
     "mouse_watcher_view_host.h",
-    "native_cursor.h",
     "native_theme_delegate.h",
     "paint_info.h",
     "painter.h",
@@ -361,6 +362,7 @@ component("views") {
     "controls/image_view_base.cc",
     "controls/label.cc",
     "controls/link.cc",
+    "controls/link_fragment.cc",
     "controls/menu/menu_config.cc",
     "controls/menu/menu_controller.cc",
     "controls/menu/menu_delegate.cc",
@@ -406,6 +408,7 @@ component("views") {
     "controls/tree/tree_view_drawing_provider.cc",
     "controls/views_text_services_context_menu_base.cc",
     "debug_utils.cc",
+    "dialog_model_context_menu_controller.cc",
     "drag_utils.cc",
     "focus/external_focus_tracker.cc",
     "focus/focus_manager.cc",
@@ -422,7 +425,6 @@ component("views") {
     "layout/flex_layout.cc",
     "layout/flex_layout_types.cc",
     "layout/flex_layout_view.cc",
-    "layout/grid_layout.cc",
     "layout/layout_manager.cc",
     "layout/layout_manager_base.cc",
     "layout/layout_provider.cc",
@@ -553,12 +555,16 @@ component("views") {
   ]
 
   if (is_chromeos_ash) {
-    public += [ "highlight_border.h" ]
-    sources += [ "highlight_border.cc" ]
     deps += [
       "//ash/constants",
       "//ui/base/ime/ash",
     ]
+  }
+
+  if (is_chromeos) {
+    public += [ "highlight_border.h" ]
+    sources += [ "highlight_border.cc" ]
+    deps += [ "//chromeos/constants" ]
   }
 
   if (is_linux || is_chromeos || is_fuchsia) {
@@ -567,12 +573,18 @@ component("views") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    public_deps += [ "//ui/base/cursor:theme_manager" ]
+    public_deps += [
+      "//printing/buildflags",
+      "//ui/base/cursor:theme_manager",
+    ]
     deps += [
       "//build:chromecast_buildflags",
       "//ui/base/ime/linux",
       "//ui/shell_dialogs",
     ]
+    if (enable_basic_printing) {
+      deps += [ "//printing" ]
+    }
     public += [
       "linux_ui/device_scale_factor_observer.h",
       "linux_ui/linux_ui.h",
@@ -633,7 +645,6 @@ component("views") {
       "drag_utils_mac.mm",
       "event_monitor_mac.mm",
       "metrics_mac.cc",
-      "native_cursor_mac.mm",
       "style/platform_style_mac.mm",
       "views_touch_selection_controller_factory_mac.cc",
       "widget/native_widget_mac.mm",
@@ -746,7 +757,6 @@ component("views") {
       "drag_utils_aura.cc",
       "event_monitor_aura.cc",
       "metrics_aura.cc",
-      "native_cursor_aura.cc",
       "touchui/touch_selection_controller_impl.cc",
       "touchui/touch_selection_menu_runner_views.cc",
       "touchui/touch_selection_menu_views.cc",
@@ -825,8 +835,7 @@ component("views") {
       if (is_linux) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_linux.h" ]
         sources += [
-          "style/platform_style_linux.cc",
-          "widget/desktop_aura/desktop_screen_linux.cc",
+          "widget/desktop_aura/desktop_screen_ozone_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_linux.cc",
           "widget/desktop_aura/window_event_filter_linux.cc",
           "widget/desktop_aura/window_event_filter_linux.h",
@@ -837,7 +846,6 @@ component("views") {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
         sources += [
           # TODO: do we need one for lacros?
-          "style/platform_style_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.h",
@@ -907,6 +915,26 @@ component("views") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+}
+
+if (is_win || is_mac || is_linux || is_chromeos) {
+  static_library("view_pixel_diff_test_support") {
+    testonly = true
+    sources = [
+      "test/view_skia_gold_pixel_diff.cc",
+      "test/view_skia_gold_pixel_diff.h",
+    ]
+
+    deps = [
+      ":views",
+      "//base",
+      "//skia",
+      "//testing/gtest",
+      "//ui/base:pixel_diff_test_support",
+      "//ui/gfx",
+      "//ui/snapshot",
+    ]
   }
 }
 
@@ -1126,6 +1154,7 @@ test("views_unittests") {
     "controls/editable_combobox/editable_combobox_unittest.cc",
     "controls/image_view_unittest.cc",
     "controls/label_unittest.cc",
+    "controls/link_fragment_unittest.cc",
     "controls/link_unittest.cc",
     "controls/menu/menu_controller_unittest.cc",
     "controls/menu/menu_item_view_unittest.cc",
@@ -1169,7 +1198,6 @@ test("views_unittests") {
     "layout/fill_layout_unittest.cc",
     "layout/flex_layout_unittest.cc",
     "layout/flex_layout_view_unittest.cc",
-    "layout/grid_layout_unittest.cc",
     "layout/layout_manager_base_unittest.cc",
     "layout/normalized_geometry_unittest.cc",
     "layout/proposed_layout_unittest.cc",
@@ -1408,6 +1436,11 @@ test("views_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [ "color_chooser/color_chooser_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
+    deps += [ "//ui/views:view_pixel_diff_test_support" ]
   }
 }
 

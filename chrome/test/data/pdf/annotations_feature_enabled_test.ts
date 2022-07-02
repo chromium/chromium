@@ -61,18 +61,55 @@ chrome.test.runTests([
 
     chrome.test.assertEq(3, cameras.length);
 
+    // When dark/light mode feature is enabled, a border will be applied to the
+    // window. See crrev.com/c/3656414 for more details.
     const expectations = [
-      {top: 2.25, left: -106.5, right: 718.5, bottom: -412.5},
-      {top: 2.25, left: -3.75, right: 408.75, bottom: -205.125},
-      {top: -35.25, left: 33.75, right: 446.25, bottom: -242.625},
+      {
+        top: 2.25,
+        dark_light_top: 2.25,
+        left: -106.5,
+        dark_light_left: -105.75,
+        right: 718.5,
+        dark_light_right: 717.75,
+        bottom: -412.5,
+        dark_light_bottom: -411.75
+      },
+      {
+        top: 2.25,
+        dark_light_top: 2.25,
+        left: -3.75,
+        dark_light_left: -3.75,
+        right: 408.75,
+        dark_light_right: 408,
+        bottom: -205.125,
+        dark_light_bottom: -204.75
+      },
+      {
+        top: -35.25,
+        dark_light_top: -35.25,
+        left: 33.75,
+        dark_light_left: 33.75,
+        right: 446.25,
+        dark_light_right: 445.5,
+        bottom: -242.625,
+        dark_light_bottom: -242.25
+      },
     ];
 
     for (const expectation of expectations) {
       const actual = cameras.shift()!;
-      chrome.test.assertEq(expectation.top, actual.top);
-      chrome.test.assertEq(expectation.left, actual.left);
-      chrome.test.assertEq(expectation.bottom, actual.bottom);
-      chrome.test.assertEq(expectation.right, actual.right);
+      chrome.test.assertTrue(
+          actual.top === expectation.top ||
+          actual.top === expectation.dark_light_top);
+      chrome.test.assertTrue(
+          actual.left === expectation.left ||
+          actual.left === expectation.dark_light_left);
+      chrome.test.assertTrue(
+          actual.bottom === expectation.bottom ||
+          actual.bottom === expectation.dark_light_bottom);
+      chrome.test.assertTrue(
+          actual.right === expectation.right ||
+          actual.right === expectation.dark_light_right);
     }
     chrome.test.succeed();
   },
@@ -138,10 +175,16 @@ chrome.test.runTests([
 
 
     // Need to expand to use this color.
-    const highlighterOptions = viewerAnnotationsBar.shadowRoot!.querySelector(
-        '#highlighter viewer-pen-options')!;
-    highlighterOptions.shadowRoot!
-        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
+    const highlighterOptions =
+        viewerAnnotationsBar.$.highlighter.querySelector('viewer-pen-options');
+    chrome.test.assertTrue(!!highlighterOptions);
+    viewerAnnotationsBar.$.highlighter.click();
+    const collapsedColor =
+        highlighterOptions.shadowRoot!.querySelector<HTMLInputElement>(
+            '#colors [value="#d1c4e9"]');
+    chrome.test.assertTrue(!!collapsedColor);
+    chrome.test.assertTrue(collapsedColor.disabled);
+    collapsedColor.click();
     chrome.test.assertEq('#ffbc00', tool.color);
 
     // Selected size and expanded color.
@@ -149,8 +192,9 @@ chrome.test.runTests([
         .querySelector<HTMLElement>('#sizes [value="1"]')!.click();
     highlighterOptions.shadowRoot!
         .querySelector<HTMLElement>('#colors #expand')!.click();
-    highlighterOptions.shadowRoot!
-        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
+    chrome.test.assertFalse(collapsedColor.disabled);
+    collapsedColor.click();
+
     tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(1, tool.size);

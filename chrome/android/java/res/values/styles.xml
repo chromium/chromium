@@ -302,6 +302,16 @@
         <item name="tabSelectedTextColor">@macro/tab_layout_selected_tab_color</item>
     </style>
 
+    <style name = "HistoryToggleTabLayoutStyle" parent = "TabLayoutStyle">
+        <item name="android:background">@drawable/section_tab_background</item>
+        <item name="tabGravity">center</item>
+        <item name="tabPaddingEnd">7dp</item>
+        <item name="tabPaddingStart">14dp</item>
+        <item name="tabBackground">@drawable/section_tab_background</item>
+        <item name="tabIndicatorColor">@android:color/transparent</item>
+        <item name="tabSelectedTextColor">@color/default_text_color_secondary_list</item>
+    </style>
+
     <!-- Misc styles -->
     <style name="TabBarShadow">
         <item name="android:layout_width">match_parent</item>

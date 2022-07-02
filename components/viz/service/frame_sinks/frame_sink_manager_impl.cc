@@ -416,6 +416,11 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
 
   for (auto& observer : observer_list_)
     observer.OnCreatedCompositorFrameSink(frame_sink_id, support->is_root());
+
+  if (global_throttle_interval_) {
+    UpdateThrottlingRecursively(frame_sink_id,
+                                global_throttle_interval_.value());
+  }
 }
 
 void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
@@ -735,16 +740,41 @@ void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
   UpdateThrottling();
 }
 
+void FrameSinkManagerImpl::StartThrottlingAllFrameSinks(
+    base::TimeDelta interval) {
+  global_throttle_interval_ = interval;
+  UpdateThrottling();
+}
+
+void FrameSinkManagerImpl::StopThrottlingAllFrameSinks() {
+  global_throttle_interval_ = absl::nullopt;
+  UpdateThrottling();
+}
+
 void FrameSinkManagerImpl::UpdateThrottling() {
   // Clear previous throttling effect on all frame sinks.
   for (auto& support_map_item : support_map_) {
     support_map_item.second->ThrottleBeginFrame(base::TimeDelta());
   }
-  if (throttle_interval_.is_zero())
+  if (throttle_interval_.is_zero() &&
+      (!global_throttle_interval_ ||
+       global_throttle_interval_.value().is_zero()))
     return;
 
-  for (const auto& id : frame_sink_ids_to_throttle_) {
-    UpdateThrottlingRecursively(id, throttle_interval_);
+  if (global_throttle_interval_) {
+    for (const auto& support : support_map_) {
+      support.second->ThrottleBeginFrame(global_throttle_interval_.value());
+    }
+  }
+
+  // If the per-frame sink throttle interval is more aggressive than the global
+  // throttling interval, apply it to those frame sinks effectively always
+  // throttling a frame sink as much as possible.
+  if (!global_throttle_interval_ ||
+      throttle_interval_ > global_throttle_interval_) {
+    for (const auto& id : frame_sink_ids_to_throttle_) {
+      UpdateThrottlingRecursively(id, throttle_interval_);
+    }
   }
   // Clear throttling on frame sinks currently being captured.
   for (const auto& id : captured_frame_sink_ids_) {

@@ -1,11 +1,15 @@
 <div>
   <iron-pages attr-for-selected="id" selected="[[currentState_]]">
-    <search-page id="searchPage" on-continue-click="handleContinueClick_">
+    <search-page id="searchPage" on-continue-click="handleContinueClick_"
+        description-template="[[descriptionTemplate_]]">
     </search-page>
     <share-data-page id="shareDataPage" feedback-context="[[feedbackContext_]]"
         on-continue-click="handleContinueClick_"
         on-go-back-click="handleGoBackClick_">
     </share-data-page>
-    <confirmation-page id="confirmationPage"></confirmation-page>
+    <confirmation-page id="confirmationPage"
+        send-report-status="[[sendReportStatus_]]"
+        on-go-back-click="handleGoBackClick_">
+    </confirmation-page>
   </iron-pages>
 </div>

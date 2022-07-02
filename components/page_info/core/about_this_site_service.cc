@@ -71,6 +71,8 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     page_info::proto::SiteInfo site_info;
     if (url == GURL("https://example.com")) {
       auto* description = site_info.mutable_description();
+      description->set_name("Example website");
+      description->set_subtitle("Website");
       description->set_description(
           "A domain used in illustrative examples in documents.");
       description->mutable_source()->set_url("https://example.com");
@@ -82,6 +84,8 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
 
     if (url == GURL("https://permission.site")) {
       auto* description = site_info.mutable_description();
+      description->set_name("Permission Site");
+      description->set_subtitle("Testing site");
       description->set_description(
           "A site containing test buttons for various browser APIs, in order"
           " to trigger permission dialogues and similar UI in modern "

@@ -19,7 +19,7 @@
     // bundle only if a 'Sec-Fetch-Dest: webbundle' header is present in a request.
     // Otherwise, returns an empty body with 400 status code.
     //
-    // In this wpt, we assume that a <link> element fires a load event correctly if
+    // In this wpt, we assume that a <script> element fires a load event correctly if
     // a valid format webbundle is returned.
 
     const same_origin_bundle =
@@ -33,7 +33,8 @@
         await addElementAndWaitForLoad(element);
         element.remove();
       }
-    }, '"Sec-Fetch-Dest: webbundle" header must be present in a request for a bundle' + " with the <link>-based API.");
+    }, '"Sec-Fetch-Dest: webbundle" header must be present in a request for a bundle'
+     + " with <script type=webbundle>.");
 
     promise_test(async () => {
       const res = await fetch(same_origin_bundle);

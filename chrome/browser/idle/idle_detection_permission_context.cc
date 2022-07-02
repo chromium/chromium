@@ -44,7 +44,6 @@ bool IdleDetectionPermissionContext::IsRestrictedToSecureOrigins() const {
 }
 
 void IdleDetectionPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -58,6 +57,12 @@ void IdleDetectionPermissionContext::DecidePermission(
   // PermissionMenuModel::PermissionMenuModel which prevents users from manually
   // allowing the permission.
   if (browser_context()->IsOffTheRecord()) {
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        id.render_process_id(), id.render_frame_id());
+
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(rfh);
+
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
     VisibilityTimerTabHelper::CreateForWebContents(web_contents);
@@ -73,7 +78,7 @@ void IdleDetectionPermissionContext::DecidePermission(
     return;
   }
 
-  PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
+  PermissionContextBase::DecidePermission(id, requesting_origin,
                                           embedding_origin, user_gesture,
                                           std::move(callback));
 }

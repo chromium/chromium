@@ -60,6 +60,9 @@ const char kPrintToPDF[] = "print-to-pdf";
 // Do not display header and footer in the pdf file.
 const char kPrintToPDFNoHeader[] = "print-to-pdf-no-header";
 
+// Do not emit tags when printing PDFs.
+const char kDisablePDFTagging[] = "disable-pdf-tagging";
+
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored unless --proxy-server is also specified. This is a
 // comma-separated list of bypass rules. See:

@@ -16,6 +16,7 @@ ts_library("library") {
   in_files = [
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",
     "mojo/public/mojom/base/file_path.mojom-webui.js",
+    "mojo/public/mojom/base/process_id.mojom-webui.js",
     "mojo/public/mojom/base/safe_base_name.mojom-webui.js",
     "mojo/public/mojom/base/string16.mojom-webui.js",
     "mojo/public/mojom/base/text_direction.mojom-webui.js",
@@ -59,6 +60,12 @@ ts_library("library") {
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",
       "//ui/gfx/range/mojom:mojom_js__generator",
     ]
+  }
+
+  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
+  if (!is_android) {
+    in_files += [ "ui/gfx/mojom/transform.mojom-webui.js" ]
+    extra_deps += [ "//ui/gfx/mojom:mojom_js__generator" ]
   }
 }
 

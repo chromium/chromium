@@ -27,7 +27,7 @@ namespace net {
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
  public:
-  BufferedSpdyFramerVisitorInterface() {}
+  BufferedSpdyFramerVisitorInterface() = default;
 
   BufferedSpdyFramerVisitorInterface(
       const BufferedSpdyFramerVisitorInterface&) = delete;
@@ -123,13 +123,13 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
                               uint8_t frame_type) = 0;
 
  protected:
-  virtual ~BufferedSpdyFramerVisitorInterface() {}
+  virtual ~BufferedSpdyFramerVisitorInterface() = default;
 };
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramer
     : public spdy::SpdyFramerVisitorInterface {
  public:
-  using TimeFunc = base::TimeTicks (*)(void);
+  using TimeFunc = base::TimeTicks (*)();
 
   BufferedSpdyFramer(uint32_t max_header_list_size,
                      const NetLogWithSource& net_log,
@@ -156,6 +156,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnError(http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error,
                std::string detailed_error) override;
   void OnHeaders(spdy::SpdyStreamId stream_id,
+                 size_t payload_length,
                  bool has_priority,
                  int weight,
                  spdy::SpdyStreamId parent_stream_id,
@@ -193,7 +194,9 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnDataFrameHeader(spdy::SpdyStreamId stream_id,
                          size_t length,
                          bool fin) override;
-  void OnContinuation(spdy::SpdyStreamId stream_id, bool end) override;
+  void OnContinuation(spdy::SpdyStreamId stream_id,
+                      size_t payload_length,
+                      bool end) override;
   void OnPriority(spdy::SpdyStreamId stream_id,
                   spdy::SpdyStreamId parent_stream_id,
                   int weight,
@@ -247,7 +250,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
  private:
   spdy::SpdyFramer spdy_framer_;
   http2::Http2DecoderAdapter deframer_;
-  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_;
+  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_ = nullptr;
 
   int frames_received_ = 0;
 

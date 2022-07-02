@@ -10,7 +10,7 @@ namespace base {
 namespace win {
 namespace internal {
 
-DWORD ModifyCode(void* destination, const void* source, int length) {
+DWORD ModifyCode(void* destination, const void* source, size_t length) {
   if ((nullptr == destination) || (nullptr == source) || (0 == length)) {
     NOTREACHED();
     return ERROR_INVALID_PARAMETER;

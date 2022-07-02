@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 namespace {
@@ -43,6 +44,8 @@ const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
 const char kCupRpcVerificationEvent[] =
     "Android.AutofillAssistant.CupRpcVerificationEvent";
+const char kJsFlowStartedEvent[] =
+    "Android.AutofillAssistant.JsFlowStartedEvent";
 const char kDependenciesInvalidated[] =
     "Android.AutofillAssistant.DependenciesInvalidated";
 const char kOnboardingFetcherResultStatus[] =
@@ -73,46 +76,6 @@ std::string GetSuffixForIntent(const std::string& intent) {
     return ".UnknownIntent";
   }
   return histogramsSuffixes[intent];
-}
-
-// Extracts the enum value corresponding to the intent specified in
-// |script_parameters|.
-Metrics::AutofillAssistantIntent ExtractIntentFromScriptParameters(
-    const ScriptParameters& script_parameters) {
-  auto intent = script_parameters.GetIntent();
-  if (!intent) {
-    return Metrics::AutofillAssistantIntent::UNDEFINED_INTENT;
-  }
-  // The list of intents that is known at compile-time. Intents not in this list
-  // will be recorded as UNDEFINED_INTENT.
-  static const base::NoDestructor<
-      base::flat_map<std::string, Metrics::AutofillAssistantIntent>>
-      intents(
-          {{"BUY_MOVIE_TICKET",
-            Metrics::AutofillAssistantIntent::BUY_MOVIE_TICKET},
-           {"RENT_CAR", Metrics::AutofillAssistantIntent::RENT_CAR},
-           {"SHOPPING", Metrics::AutofillAssistantIntent::SHOPPING},
-           {"TELEPORT", Metrics::AutofillAssistantIntent::TELEPORT},
-           {"SHOPPING_ASSISTED_CHECKOUT",
-            Metrics::AutofillAssistantIntent::SHOPPING_ASSISTED_CHECKOUT},
-           {"FLIGHTS_CHECKIN",
-            Metrics::AutofillAssistantIntent::FLIGHTS_CHECKIN},
-           {"FOOD_ORDERING", Metrics::AutofillAssistantIntent::FOOD_ORDERING},
-           {"PASSWORD_CHANGE",
-            Metrics::AutofillAssistantIntent::PASSWORD_CHANGE},
-           {"FOOD_ORDERING_PICKUP",
-            Metrics::AutofillAssistantIntent::FOOD_ORDERING_PICKUP},
-           {"FOOD_ORDERING_DELIVERY",
-            Metrics::AutofillAssistantIntent::FOOD_ORDERING_DELIVERY},
-           {"UNLAUNCHED_VERTICAL_1",
-            Metrics::AutofillAssistantIntent::UNLAUNCHED_VERTICAL_1},
-           {"FIND_COUPONS", Metrics::AutofillAssistantIntent::FIND_COUPONS}});
-
-  auto enum_value_iter = intents->find(*intent);
-  if (enum_value_iter == intents->end()) {
-    return Metrics::AutofillAssistantIntent::UNDEFINED_INTENT;
-  }
-  return enum_value_iter->second;
 }
 
 // Extracts the enum value corresponding to the caller specified in
@@ -559,6 +522,12 @@ void Metrics::RecordCupRpcVerificationEvent(CupRpcVerificationEvent event) {
 }
 
 // static
+void Metrics::RecordJsFlowStartedEvent(JsFlowStartedEvent event) {
+  DCHECK_LE(event, JsFlowStartedEvent::kMaxValue);
+  base::UmaHistogramEnumeration(kJsFlowStartedEvent, event);
+}
+
+// static
 void Metrics::RecordOnboardingFetcherResult(
     OnboardingFetcherResultStatus status) {
   DCHECK_LE(status, OnboardingFetcherResultStatus::kMaxValue);
@@ -572,6 +541,13 @@ void Metrics::RecordServiceRequestRetryCount(int count, bool success) {
                                         : kServiceRequestFailureRetryCount,
                                 /* sample= */ count,
                                 /* exclusive_max= */ 11);
+}
+
+// static
+AutofillAssistantIntent Metrics::ExtractIntentFromScriptParameters(
+    const ScriptParameters& script_parameters) {
+  absl::optional<std::string> intent = script_parameters.GetIntent();
+  return ExtractIntentFromString(intent);
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -698,6 +674,9 @@ std::ostream& operator<<(std::ostream& out, const Metrics::Onboarding& metric) {
       break;
     case Metrics::Onboarding::OB_NO_ANSWER:
       out << "OB_NO_ANSWER";
+      break;
+    case Metrics::Onboarding::OB_EXTERNAL:
+      out << "OB_EXTERNAL";
       break;
       // Do not add default case to force compilation error for new values.
   }

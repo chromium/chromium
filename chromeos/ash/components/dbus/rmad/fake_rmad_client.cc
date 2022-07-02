@@ -217,6 +217,16 @@ void FakeRmadClient::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
                      absl::optional<rmad::SaveLogReply>(save_log_reply_)));
 }
 
+void FakeRmadClient::RecordBrowserActionMetric(
+    const rmad::RecordBrowserActionMetricRequest request,
+    DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     absl::optional<rmad::RecordBrowserActionMetricReply>(
+                         record_browser_action_metric_reply_)));
+}
+
 void FakeRmadClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -354,6 +364,11 @@ void FakeRmadClient::SetSaveLogReply(const std::string& save_path,
                                      rmad::RmadErrorCode error) {
   save_log_reply_.set_save_path(save_path);
   save_log_reply_.set_error(error);
+}
+
+void FakeRmadClient::SetRecordBrowserActionMetricReply(
+    rmad::RmadErrorCode error) {
+  record_browser_action_metric_reply_.set_error(error);
 }
 
 void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {

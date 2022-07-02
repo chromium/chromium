@@ -17,7 +17,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -150,8 +149,9 @@ class BASE_EXPORT SequenceManagerImpl
 
   // SequencedTaskSource implementation:
   absl::optional<SelectedTask> SelectNextTask(
+      LazyNow& lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) override;
-  void DidRunTask() override;
+  void DidRunTask(LazyNow& lazy_now) override;
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override;
   absl::optional<WakeUp> GetPendingWakeUp(
       LazyNow* lazy_now,
@@ -195,7 +195,7 @@ class BASE_EXPORT SequenceManagerImpl
   void ShutdownTaskQueueGracefully(
       std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
-  const scoped_refptr<AssociatedThreadId>& associated_thread() const {
+  scoped_refptr<const AssociatedThreadId> associated_thread() const {
     return associated_thread_;
   }
 
@@ -287,12 +287,12 @@ class BASE_EXPORT SequenceManagerImpl
     std::array<char, static_cast<size_t>(debug::CrashKeySize::Size64)>
         async_stack_buffer = {};
 
-    absl::optional<base::InsecureRandomGenerator> random_generator;
+    absl::optional<base::MetricsSubSampler> metrics_subsampler;
 
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-    const base::TickClock* const default_clock;
+    const raw_ptr<const base::TickClock> default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
     std::unique_ptr<WakeUpQueue> wake_up_queue;
@@ -415,7 +415,8 @@ class BASE_EXPORT SequenceManagerImpl
 
   // Helper to terminate all scoped trace events to allow starting new ones
   // in SelectNextTask().
-  absl::optional<SelectedTask> SelectNextTaskImpl(SelectTaskOption option);
+  absl::optional<SelectedTask> SelectNextTaskImpl(LazyNow& lazy_now,
+                                                  SelectTaskOption option);
 
   // Check if a task of priority |priority| should run given the pending set of
   // native work.
@@ -445,7 +446,7 @@ class BASE_EXPORT SequenceManagerImpl
   TaskQueue::TaskTiming InitializeTaskTiming(
       internal::TaskQueueImpl* task_queue);
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<AssociatedThreadId> associated_thread_;
 
   EnqueueOrderGenerator enqueue_order_generator_;
 
@@ -458,12 +459,6 @@ class BASE_EXPORT SequenceManagerImpl
   base::subtle::Atomic32 add_queue_time_to_tasks_;
 
   AtomicFlagSet empty_queues_to_reload_;
-
-  // A check to bail out early during memory corruption.
-  // https://crbug.com/757940
-  bool Validate();
-
-  volatile int32_t memory_corruption_sentinel_;
 
   MainThreadOnly main_thread_only_;
   MainThreadOnly& main_thread_only() {

@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/owner_settings_service.h"
@@ -48,7 +48,7 @@ enum class FeatureFlagsMigrationStatus {
 // (crbug.com/230018).
 class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
                                 public ProfileManagerObserver,
-                                public chromeos::SessionManagerClient::Observer,
+                                public SessionManagerClient::Observer,
                                 public DeviceSettingsService::Observer {
  public:
   struct ManagementSettings {

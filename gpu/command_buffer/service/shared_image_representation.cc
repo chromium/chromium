@@ -16,10 +16,6 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_fence.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_fence_sync.h"
-#endif
-
 namespace gpu {
 
 SharedImageRepresentation::SharedImageRepresentation(
@@ -383,13 +379,6 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
   backing()->MarkForDestruction();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-SharedImageRepresentationFactoryRef::GetAHardwareBuffer() {
-  return backing()->GetAHardwareBuffer();
-}
-#endif
-
 SharedImageRepresentationVaapi::SharedImageRepresentationVaapi(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -440,7 +429,7 @@ SharedImageRepresentationRaster::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<SharedImageRepresentationRaster> pass_key,
     SharedImageRepresentationRaster* representation,
     const cc::PaintOpBuffer* paint_op_buffer,
-    const absl::optional<SkColor>& clear_color)
+    const absl::optional<SkColor4f>& clear_color)
     : ScopedAccessBase(representation),
       paint_op_buffer_(paint_op_buffer),
       clear_color_(clear_color) {}
@@ -461,7 +450,7 @@ SharedImageRepresentationRaster::ScopedWriteAccess::~ScopedWriteAccess() {
 
 std::unique_ptr<SharedImageRepresentationRaster::ScopedReadAccess>
 SharedImageRepresentationRaster::BeginScopedReadAccess() {
-  absl::optional<SkColor> clear_color;
+  absl::optional<SkColor4f> clear_color;
   auto* paint_op_buffer = BeginReadAccess(clear_color);
   if (!paint_op_buffer)
     return nullptr;
@@ -475,7 +464,7 @@ SharedImageRepresentationRaster::BeginScopedWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
-    const absl::optional<SkColor>& clear_color,
+    const absl::optional<SkColor4f>& clear_color,
     bool visible) {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<SharedImageRepresentationRaster>(), this,

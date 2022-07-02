@@ -67,7 +67,7 @@
 
 #pragma mark - Private
 
-// Updates |self.sortedIdentityItemConfigurators| based on ChromeIdentity list.
+// Updates `self.sortedIdentityItemConfigurators` based on ChromeIdentity list.
 - (void)loadIdentityItemConfigurators {
   if (!self.accountManagerService) {
     return;
@@ -86,7 +86,7 @@
       hasSelectedIdentity = YES;
     }
     // If the configurator is selected, the identity must be equal to
-    // |self.selectedIdentity|.
+    // `self.selectedIdentity`.
     DCHECK(!configurator.selected || [self.selectedIdentity isEqual:identity]);
   }
   if (!hasSelectedIdentity && identities.count > 0) {

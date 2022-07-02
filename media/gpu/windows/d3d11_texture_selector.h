@@ -46,6 +46,7 @@ class MEDIA_GPU_EXPORT TextureSelector {
       ComD3D11VideoDevice video_device,
       ComD3D11DeviceContext device_context,
       MediaLog* media_log,
+      gfx::ColorSpace input_color_space,
       bool shared_image_use_shared_handle = false);
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(

@@ -76,7 +76,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   lgc_letters_n_ascii_.freeze();
 
   // Supplement the Unicode confusable list by the following mapping.
-  // NOTE: Adding a digit-lookalike? Add it to digit_lookalikes_ in
+  // IMPORTANT: Adding a digit-lookalike? Add it to digit_lookalikes_ in
   // idn_spoof_checker.cc, too.
   //   - {U+00E6 (æ), U+04D5 (ӕ)}  => "ae"
   //   - {U+03FC (ϼ), U+048F (ҏ)} => p
@@ -103,7 +103,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //   - {U+0D1F (ട), U+0E23 (ร), U+0EA3 (ຣ), U+0EAE (ຮ)} => s
   //   - U+1042 (၂) => j
   //   - {U+0966 (०), U+09E6 (০), U+0A66 (੦), U+0AE6 (૦), U+0B30 (ଠ),
-  //      U+0B66 (୦), U+0CE6 (೦)} => o,
+  //      U+0B66 (୦), U+0CE6 (೦), U+1005 (စ)} => o,
   //   - {U+09ED (৭), U+0A67 (੧), U+0AE7 (૧)} => q,
   //   - {U+0E1A (บ), U+0E9A (ບ)} => u,
   //   - {U+03B8 (θ)} => 0,
@@ -111,7 +111,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //      U+0ce9 (೩), U+0ced (೭), U+0577 (շ)} => 2,
   //   - {U+0437 (з), U+0499 (ҙ), U+04E1 (ӡ), U+0909 (उ), U+0993 (ও),
   //      U+0A24 (ਤ), U+0A69 (੩), U+0AE9 (૩), U+0C69 (౩),
-  //      U+1012 (ဒ), U+10D5 (ვ), U+10DE (პ)} => 3
+  //      U+1012 (ဒ), U+10D5 (ვ), U+10DE (პ), U+0A5C (ੜ), U+10D9 (კ)} => 3
   //   - {U+0A6B (੫), U+4E29 (丩), U+3110 (ㄐ)} => 4,
   //   - U+0573 (ճ) => 6
   //   - {U+09EA (৪), U+0A6A (੪), U+0b6b (୫)} => 8,
@@ -129,12 +129,12 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
               "[мӎ] > m; [єҽҿၔ] > e; ґ > r; [ғӻ] > f;"
               "[ҫင] > c; [ұ丫] > y; [χҳӽӿ乂] > x;"
               "[ԃძ]  > d; [ԍဌ] > g; [ടรຣຮ] > s; ၂ > j;"
-              "[०০੦૦ଠ୦೦] > o;"
+              "[०০੦૦ଠ୦೦စ] > o;"
               "[৭੧૧] > q;"
               "[บບ] > u;"
               "[θ] > 0;"
               "[२২੨੨૨೩೭շ] > 2;"
-              "[зҙӡउওਤ੩૩౩ဒვპ] > 3;"
+              "[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;"
               "[੫丩ㄐ] > 4;"
               "[ճ] > 6;"
               "[৪੪୫] > 8;"

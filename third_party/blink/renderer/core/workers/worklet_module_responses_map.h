@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_MODULE_RESPONSES_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_MODULE_RESPONSES_MAP_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -45,18 +45,18 @@ class CORE_EXPORT WorkletModuleResponsesMap final
                 ModuleType,
                 ModuleScriptFetcher::Client*,
                 scoped_refptr<base::SingleThreadTaskRunner> client_task_runner)
-      LOCKS_EXCLUDED(mutex_);
+      LOCKS_EXCLUDED(lock_);
 
   // Called on worklet threads.
   void SetEntryParams(const KURL&,
                       ModuleType,
                       const absl::optional<ModuleScriptCreationParams>&)
-      LOCKS_EXCLUDED(mutex_);
+      LOCKS_EXCLUDED(lock_);
 
   // Called when the associated document is destroyed and clears the map.
   // Following GetEntry() calls synchronously call Client::OnFailed().
   // Called on main thread.
-  void Dispose() LOCKS_EXCLUDED(mutex_);
+  void Dispose() LOCKS_EXCLUDED(lock_);
 
   void Trace(Visitor*) const {}
 
@@ -88,16 +88,16 @@ class CORE_EXPORT WorkletModuleResponsesMap final
 
   // |is_available_| is written to false by the main thread on disposal, and
   // read by any thread.
-  bool is_available_ GUARDED_BY(mutex_) = true;
+  bool is_available_ GUARDED_BY(lock_) = true;
 
   // TODO(nhiroki): Keep the insertion order of top-level modules to replay
   // addModule() calls for a newly created global scope.
   // See https://drafts.css-houdini.org/worklets/#creating-a-workletglobalscope
   // Can be read/written by any thread.
   using Key = std::pair<KURL, ModuleType>;
-  HashMap<Key, std::unique_ptr<Entry>> entries_ GUARDED_BY(mutex_);
+  HashMap<Key, std::unique_ptr<Entry>> entries_ GUARDED_BY(lock_);
 
-  Mutex mutex_;
+  base::Lock lock_;
 };
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
+<translation id="1062407476771304334">Nahradiť</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
@@ -15,9 +16,12 @@
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizácie firmvéru externých zariadení je otvorené. K dispozícii je tento počet aktualizácií: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Vyhľadajte články pomocníka a odpovede na bežné otázky o Chromebooku</translation>
+<translation id="1165039591588034296">Chyba</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
+<translation id="1190378975642195988">Akcelerometer v základni</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
 <translation id="1196959502276349371">Verzia <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Prehratie alebo pozastavenie</translation>
@@ -32,11 +36,13 @@
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Zapnutie ochrany proti zápisu</translation>
 <translation id="1308754910631152188">Aktualizuje sa (dokončené na <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">K dispozícii nie je žiadna sieť <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Dátum posledného resetu dát nie je k dispozícii</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domáca sieť, bez roamingu</translation>
+<translation id="132712914231403017">Inštalácia obrazu firmvéru</translation>
 <translation id="1327977588028644528">Brána</translation>
 <translation id="1328223165223065150">Farba tapety</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -59,14 +65,16 @@
 <translation id="1459784442280469416">Uložiť na USB</translation>
 <translation id="1468664791493211953">Ponuky</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
+<translation id="147809995039451286">Aktualizáciu sa nepodarilo stiahnuť</translation>
 <translation id="1478594628797167447">Skener</translation>
-<translation id="1486019694341708158">Zapnutím prepínača vyberiete možnosti šetriča obrazovky</translation>
+<translation id="1483493594462132177">Odoslať</translation>
 <translation id="1491076385728777984">Aktualizuje sa firmvér zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
 <translation id="150962533380566081">Neplatný kód PUK.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1512982610995527443">Zariadenie sa o päť minút vypne</translation>
 <translation id="1522984060396982789">Oprava bola úspešná. Zariadenie môžete vypnúť, prípadne môžete vykonať ďalšie akcie.</translation>
+<translation id="1526389707933164996">Animácia šetriča obrazovky</translation>
 <translation id="152892567002884378">Zvýšenie hlasitosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -75,21 +83,28 @@
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1578784163189013834">Vybrať pozadie šetriča obrazovky</translation>
 <translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
+<translation id="1631385268983122904">Zariadenie zatiaľ znova neskladajte</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
 <translation id="1643449475550628585">Denne meniť obrázok tapety</translation>
 <translation id="1644574205037202324">História</translation>
+<translation id="1645954272419197032">Potvrďte informácie zo zariadení</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
+<translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
+<translation id="1676557873873341166">Nahráva sa video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
 <translation id="1715359911173058521">Pri komunikácii so skenerom sa vyskytol problém. Skontrolujte pripojenie k sieti alebo rozhraniu USB a skúste to znova.</translation>
 <translation id="1717874160321062422">Spravujú <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Menné servery</translation>
 <translation id="1731082422893354635">Touchpad s rozhraním Bluetooth</translation>
+<translation id="1745577949879301685">Obrázky sa nepodarilo načítať. Skontrolujte pripojenie k sieti alebo ich skúste načítať znova.</translation>
 <translation id="1751249301761991853">Osobné</translation>
 <translation id="1753496554272155572">Ukončiť ukážku tapety</translation>
+<translation id="1755556344721611131">Diagnostická aplikácia</translation>
 <translation id="175763766237925754">Dobré (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -106,6 +121,7 @@
 <translation id="1871569928317311284">Vypnúť tmavý motív</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Vypnúť tmavý režim</translation>
+<translation id="1881188606372070653">Ak chcete požiadať o zmenu obsahu z právnych dôvodov, prejdite na stránku <ph name="BEGIN_LINK1" />právnej pomoci<ph name="END_LINK1" />. Niektoré informácie o účte a systéme môžu byť odoslané Googlu. Pomocou informácií, ktoré nám poskytnete, odstránime technické problémy a zlepšíme svoje služby v súlade s <ph name="BEGIN_LINK2" />pravidlami ochrany súkromia<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />zmluvnými podmienkami<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
 <translation id="1908234395526491708">Neúspešné žiadosti UDP</translation>
@@ -117,7 +133,9 @@
 <translation id="1999615961760456652">Prihlasovací portál</translation>
 <translation id="2006864819935886708">Pripojiteľnosť</translation>
 <translation id="2008685064673031089">Vyhľadávanie prvočísel</translation>
+<translation id="2011174342667534258">Verzia súpravy SDK:</translation>
 <translation id="2016697457005847575">Vyskúšať kroky na riešenie problémov</translation>
+<translation id="2016848882344942759">--žiadny štítok White--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Ďalšie nastavenia</translation>
 <translation id="2085089206770112532">Zníženie jasu obrazovky</translation>
@@ -135,6 +153,7 @@
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2177831236093724629">Boli nájdené <ph name="LINK_BEGIN" />nevhodné komponenty<ph name="LINK_END" />. Ak chcete mať istotu, že všetky vhodné komponenty budú identifikované, aktualizujte Chrome OS na najnovšiu verziu.</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
+<translation id="2182088270354640012">Ďakujeme za spätnú väzbu. Vaša spätná väzba pomáha zlepšovať Chrome OS a skontroluje ju tím systému Chrome OS. Vzhľadom na veľký počet odoslaných hlásení vám priamo neodpovieme.</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
 <translation id="2217935453350629363">Aktuálna rýchlosť</translation>
@@ -147,17 +166,19 @@
 <translation id="225692081236532131">Stav aktivácie</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2275586345903859204">Oprava je dokončená</translation>
+<translation id="2276999893457278469">Najlepší pomocný obsah</translation>
 <translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Vložte externé úložisko, napríklad kľúč USB alebo SD kartu, so stiahnutým obrazom z Nástroja na obnovenie Chromebooku</translation>
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
 <translation id="2320295602967756579">Zapnúť svetlý motív</translation>
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
+<translation id="2340422556570134524">Ochrana proti zápisu bola neočakávane zapnutá. Vypnite ju ručne a skúste to znova.</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360257214555822463">Boli zistené <ph name="LINK_BEGIN" />nevhodné komponenty<ph name="LINK_END" />. Ak chcete potvrdiť, že boli nainštalované, urobte tak teraz.</translation>
-<translation id="2363636958541445404">Zapnite danú funkciu a vyberte možnosti šetriča obrazovky</translation>
 <translation id="2364498172489649528">Úspešné</translation>
 <translation id="236594517359128026">Než budete pokračovať, položte laptop na rovný povrch</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -167,6 +188,7 @@
 <translation id="2418150275289244458">Otvoriť v nastaveniach</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. z <ph name="TOTAL_PAGES" /> obrázkov</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
+<translation id="2447969267935997922">Inštalácia je dokončená. Kľúč USB alebo SD kartu môžete vybrať.</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="2480034874476596812">Manuálnym vypnutím</translation>
@@ -178,7 +200,9 @@
 <translation id="2517472476991765520">Skenovať</translation>
 <translation id="2526590354069164005">Pracovná plocha</translation>
 <translation id="253029298928638905">Reštartuje sa…</translation>
+<translation id="2533048460510040082">Navrhovaný pomocný obsah</translation>
 <translation id="2536159006530886390">Nedá sa pripojiť k internetu.</translation>
+<translation id="256360469103926202">Vaša spätná väzba pomáha zlepšovať ChromeOS a náš tím ju skontroluje. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Ak chcete nastaviť sieť, prejdite do Nastavení</translation>
 <translation id="2619761439309613843">Obnovovať denne</translation>
@@ -188,6 +212,7 @@
 <translation id="2712812801627182647">Overovací kľúč TLS</translation>
 <translation id="2713444072780614174">Biela</translation>
 <translation id="2717139507051041123">Povoliť tmavý farebný režim</translation>
+<translation id="2727250716596204208">Obraz firmvéru sa nepodarilo nájsť. Vložte externé úložisko, napríklad kľúč USB alebo SD kartu, so stiahnutým obrazom z Nástroja na obnovenie Chromebooku.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
 <translation id="2756652381241102009">Spustiť diagnostiku</translation>
@@ -203,10 +228,10 @@
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
 <translation id="291142119251986300">Nekvalifikujúce sa komponenty</translation>
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
-<translation id="2928420929544864228">Inštalácia bola dokončená.</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
+<translation id="3027578600144895987">Zavrieť kameru</translation>
 <translation id="3031560714565892478">Zariadenie je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Konečný bod</translation>
@@ -215,21 +240,25 @@
 <translation id="3083667275341675831">Diagnostika pripojenia</translation>
 <translation id="3084958266922136097">Deaktivovať šetrič obrazovky</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
+<translation id="3096753366938912951">Položte kryt na rovný povrch</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Zariadenie je pripojené.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Chcete stranu odstrániť?}=1{Chcete odstrániť {PAGE_NUMBER} stranu?}few{Chcete odstrániť {PAGE_NUMBER} strany?}many{Chcete odstrániť {PAGE_NUMBER} strany?}other{Chcete odstrániť {PAGE_NUMBER} strán?}}</translation>
+<translation id="3137983112374760826">Prebieha poskytovanie zariadenia...</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3156846309055100599">Skenuje sa <ph name="PAGE_NUMBER" />. strana…</translation>
 <translation id="315738237743207937">Bol rozpoznaný prihlasovací portál</translation>
 <translation id="3170673040743561620">Položte dokument na skener</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
+<translation id="319101249942218879">Obrázok avatara bol zmenený</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="320091191259649613">Ak bude po aktualizácii problém pretrvávať, je možné, že komponent je podľa novej klasifikácie vhodný, ale ešte sa nedostal do databázy.</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
+<translation id="3275729367986477355">Obrázok avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upraviť súbor}few{Upraviť súbory}many{Upraviť súbory}other{Upraviť súbory}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Smer kľúča</translation>
@@ -240,11 +269,13 @@
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
+<translation id="3383751554789092165">Informácie zo zariadení podľa potreby zmeňte.</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
 <translation id="3404770484521709967">Komponenty boli nainštalované správne.</translation>
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
+<translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenuje sa <ph name="PAGE_NUM" />. strana. Dokončené: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tlač</translation>
@@ -252,6 +283,7 @@
 <translation id="3484914941826596830">Počas aktualizovania firmvéru neodpájajte toto zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Táto aktualizácia môže trvať niekoľko minút a vaše externé zariadenie nemusí počas nej fungovať.</translation>
 <translation id="3486220673238053218">definícia</translation>
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
+<translation id="3492982278147736083">Gyroskop v kryte</translation>
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
@@ -267,9 +299,13 @@
 <translation id="3604713164406837697">Zmeniť tapetu</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latencia na weboch HTTPS</translation>
+<translation id="361575905210396100">Ďakujeme vám za spätnú väzbu</translation>
+<translation id="3616113530831147358">Zvuk</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
+<translation id="3643198267586205643">Aktualizácia operačného systému</translation>
 <translation id="3643810137582748570">Preskočiť kalibráciu</translation>
+<translation id="3651050199673793219">Výber jednotky teploty</translation>
 <translation id="3678765385266369662">Vyberte, ako chcete vypnúť ochranu proti zápisu</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítava sa...</translation>
@@ -278,15 +314,21 @@
 <translation id="3748026146096797577">Nepripojené</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
 <translation id="3771294271822695279">Súbory videa</translation>
+<translation id="3774059845329307709">Sériové číslo</translation>
 <translation id="3784455785234192852">Uzamknúť</translation>
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
+<translation id="3824259034819781947">Priložiť súbory</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="385051799172605136">Späť</translation>
+<translation id="3856304145690230735">Gyroskop v základni</translation>
 <translation id="385832974417157471">Pred vypnutím vykonajte obnovu zariadenia prostredníctvom funkcie Powerwash. Ak má zariadenie kryt, zatvorte ho až po dokončení obnovy prostredníctvom funkcie Powerwash. Jej dokončenie môže trvať až minútu.</translation>
 <translation id="3858860766373142691">Názov</translation>
+<translation id="3862598938296403232">Vyžaduje sa opis</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
+<translation id="3866249974567520381">Popis</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
+<translation id="3885327323343477505">Zmeniť šetrič obrazovky</translation>
 <translation id="3923184630988645767">Spotreba dát</translation>
 <translation id="3924044641767672375">Odporúčame pripojiť sa k sieti Wi-Fi, čím sa proces opravy zjednoduší. Vaša sieť bude uložená.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
@@ -314,6 +356,7 @@
 <translation id="4140251671072434548">Odblokujte server povolení na vrátenie tovaru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
+<translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4170180284036919717">Nasnímať fotku</translation>
@@ -351,6 +394,7 @@
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4500213108254186382">Akcelerometer v kryte</translation>
 <translation id="4503223151711056411">Šípka doľava</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Zhoda alternatívneho názvu subjektu</translation>
@@ -361,6 +405,8 @@
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM karta je odomknutá</translation>
 <translation id="4562494484721939086">Žiadny signál</translation>
+<translation id="4568938274596692027">Inštalácia je hotová. Pripravuje sa reštart...</translation>
+<translation id="4576943788798178439">Podpora dotykového pera</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
@@ -376,6 +422,7 @@
 <translation id="469379815867856270">Intenzita signálu</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
+<translation id="4740255236714854844">Založte základňu na rovný povrch</translation>
 <translation id="4744944742468440486">Informácie súvisiace s vaším výberom</translation>
 <translation id="4751272708893364980">Zobraziť denníky povolení na vrátenie tovaru</translation>
 <translation id="4773299976671772492">Zastavené</translation>
@@ -385,6 +432,8 @@
 <translation id="4793710386569335688">Ďalšiu pomoc získate v <ph name="BEGIN_LINK" />centre pomoci<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmus kompresie</translation>
 <translation id="4794140124556169553">Spustenie testu procesora môže ovplyvniť výkon systému</translation>
+<translation id="4800589996161293643">Komunita pre Chromebooky</translation>
+<translation id="4804818685124855865">Odpojiť</translation>
 <translation id="4808449224298348341">Bola zrušená tlačová úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Svetlý motív</translation>
 <translation id="4813136279048157860">Moje obrázky</translation>
@@ -403,9 +452,12 @@
 <translation id="4890353053343094602">Okamžite si zvoľte nové heslo</translation>
 <translation id="4891842000192098784">Záťaž</translation>
 <translation id="4897058166682006107">Úroveň batérie ľavého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4905998861748258752">Zapnite danú funkciu a vyberte možnosti šetriča obrazovky</translation>
+<translation id="4908030561598728899">Inštaluje sa firmvér...</translation>
 <translation id="4915052247106771211">Týmto sa obnovia výrobné nastavenia zariadenia (Powerwash).</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4917889632206600977">Zastavené – minul sa papier</translation>
+<translation id="491791267030419270">Tipy, ako napísať spätnú väzbu</translation>
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
@@ -419,6 +471,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Nastavte, aby sa pri nečinnosti obrazovky zobrazovali fotky, čas, počasie a informácie o médiách.</translation>
 <translation id="5039804452771397117">Povoliť</translation>
+<translation id="5044978354634658544">Vloženie USB</translation>
 <translation id="5049856988445523908">SIM karta je uzamknutá (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Názov skupiny</translation>
 <translation id="5051044138948155788">Toto je jediná strana. Prejdete na úvodnú obrazovku skenovania.</translation>
@@ -432,11 +485,14 @@
 <translation id="5166918508782100047">Nastavenia rýchlych odpovedí</translation>
 <translation id="5168185087976003268">Stav batérie</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
+<translation id="5179530508336824319">Ak chcete pokračovať na ďalšiu obrazovku, zapnite ochranu proti zápisu. Pokyny nájdete na stránke podpory výrobcu zariadenia.</translation>
+<translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5190187232518914472">Pripomeňte si obľúbené spomienky. Ak chcete pridať alebo upraviť albumy, prejdite do <ph name="LINK_BEGIN" />Fotiek Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
+<translation id="522307662484862935">Nezahŕňať e‑mailovú adresu</translation>
 <translation id="5227902338748591677">Plán tmavého motívu</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -461,6 +517,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
 <translation id="5376354385557966694">Automatický svetlý režim</translation>
 <translation id="537872351913703572">Zariadenie bude doručené inému používateľovi alebo organizácii</translation>
+<translation id="5389159777326897627">Tapeta a štýl</translation>
 <translation id="5389224261615877010">Dúha</translation>
 <translation id="5395600419410242651">Vymazať všetky údaje</translation>
 <translation id="5400907029458559844">Zariadenie sa pripája.</translation>
@@ -474,6 +531,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenovanie sa nepodarilo dokončiť</translation>
+<translation id="5499762266711462226">Farba klávesnice vychádza z tapety</translation>
 <translation id="5502931783115429516">Android nefunguje</translation>
 <translation id="5507300744274596613">Skontrolujte, či je systém Chrome OS aktuálny</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -486,7 +544,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5649768706273821470">Počúvať</translation>
 <translation id="5655283760733841251">Zvýšenie jasu obrazovky</translation>
-<translation id="5661196929408385351">Powerwash a vypnutie</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -499,6 +557,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="578753362485952307">Ak upravujete hlavný panel na použitie v inom zariadení, prejdite na <ph name="LINK_BEGIN" />tok úprav<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Úspešné</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -510,6 +569,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
+<translation id="5898758006340607522">Vypínač</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5903200662178656908">Zariadenie je kombináciou klávesnice a myši.</translation>
 <translation id="5916084858004523819">Zakázané</translation>
@@ -518,6 +578,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5931523347251946569">Súbor nebol nájdený</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="594552776027197022">Generovanie náhodného páru kľúčov</translation>
+<translation id="5947494881799873997">Vrátiť</translation>
 <translation id="5951259522948394825">Potvrďte, že všetko je na svojom mieste, a prezrite si prehľad diagnostiky</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Predvolená tapeta</translation>
@@ -558,6 +619,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6284632978374966585">Zapnúť tmavý motív</translation>
 <translation id="6295178529664209245">Chcete pokračovať v oprave?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> bol zrušený</translation>
+<translation id="631063167932043783">Preskúmať aplikáciu</translation>
 <translation id="6319207335391420837">Aktualizácia firmvéru zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnúť šetrič obrazovky</translation>
 <translation id="6325525973963619867">Zlyhanie</translation>
@@ -569,6 +631,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
 <translation id="6381741036071372448">Test klávesnice</translation>
 <translation id="6388847657025262518">Podávač dokumentov skenera je zaseknutý. Skontrolujte ho a skúste to znova.</translation>
+<translation id="6394634179843537518">Pridajte súbor</translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -585,6 +648,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6516990319416533844">Ak chcete otestovať rýchlosť nabíjania batérie, nechajte batériu chvíľu vybíjať.</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
+<translation id="6535178685492749208">Ste offline. Spätná väzba bude odoslaná neskôr.</translation>
 <translation id="65587193855025101">Reflektívny skener</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
 <translation id="6566314079205407217">Viacstránkový sken</translation>
@@ -602,6 +666,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6704062477274546131">Prevod adresy IP na názov domény systémom DNS</translation>
+<translation id="6721744718589119342">Ďalšie informácie alebo aktuality vám môžeme poslať e‑mailom</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="6723847290197874913">Podsvietenie klávesnice</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
@@ -615,18 +680,20 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6768237774506518020">Vysoká miera neúspešných prekladov DNS</translation>
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
+<translation id="6822504384524564824">Kód SKU zmeňte iba vtedy, keď sú nové komponenty odlišné od tých, ktoré nahradili. Napríklad dotyková obrazovka nahrádzajúca inú ako dotykovú obrazovku či pamäť inovovaná z 8 GB na 16 GB.</translation>
 <translation id="6840315122969944400">Oprava zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
+<translation id="6876833053687020046">Číslo časti pamäte DRAM</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
 <translation id="6905724422583748843">Späť na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Je otvorený kryt skenera. Zavrite ho a skúste to znova.</translation>
 <translation id="6911383237894364323">Nepodarilo sa pripojiť k mediálnym serverom</translation>
-<translation id="6935486296377631201">Šetrič obrazovky</translation>
 <translation id="6943893908656559156">Vzdialená identita (nepovinné)</translation>
 <translation id="6957231940976260713">Názov služby</translation>
 <translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
+<translation id="6995564396478647735">Skontrolujte, či je zapnutá ochrana proti zápisu</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7041549558901442110">Zariadenie nie je pripojené.</translation>
@@ -637,10 +704,12 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nepodarilo sa – nepodarilo sa autorizovať</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Ochrana proti zápisu je vypnutá</translation>
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
+<translation id="7154020516215182599">Zdieľajte svoju spätnú väzbu alebo opíšte problém. Ak je to možné, uveďte postup, ako sa dá problém reprodukovať.</translation>
 <translation id="7155171745945906037">Existujúca fotka z fotoaparátu alebo súboru</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
@@ -648,7 +717,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7175037578838465313">Konfigurácia siete <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
-<translation id="7191009787982536050">Animácia šetriča obrazovky</translation>
 <translation id="7212734716605298123">Aktualizácie firmvéru pre externé zariadenia</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
@@ -659,12 +727,14 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7297226631177386107">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Spýtajte sa odborníkov vo fóre pomoci pre Chromebooky</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
+<translation id="73631062356239394">Zdieľanie diagnostických údajov</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378886533986123738">Zmeniť šetrič obrazovky</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Vypnúť svetlý motív</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
@@ -693,12 +763,14 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7657530360897961171">Chyba opravy zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7665800271478495366">Zmeniť avatar</translation>
+<translation id="7682274994254393134">Začiatok opravy</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklov</translation>
 <translation id="7747039790905080783">Predzdieľaný kľúč</translation>
 <translation id="7762130827864645708">Zmena hesla bola úspešná. Odteraz používajte nové heslo.</translation>
+<translation id="7762839321248874531">Odoslať <ph name="BEGIN_LINK1" />informácie o systéme a aplikáciách<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Zhoda prípony domény</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7784116172884276937">Nie sú nastavené žiadne servery DNS</translation>
@@ -721,12 +793,14 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7977800524392185497">Ak sa chcete pripojiť k sieti <ph name="NETWORK_NAME" />, prejdite do Nastavení</translation>
 <translation id="7978412674231730200">Súkromný kľúč</translation>
+<translation id="7982789257301363584">Sieť</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Povoliť automatický farebný režim</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8045012663542226664">Vypnutie zvuku mikrofónu</translation>
+<translation id="8063022551652308521">Ochrana proti zápisu je stále vypnutá. Ak chcete pokračovať, zapnite ju.</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
 <translation id="8082366717211101304">DNS sa nedá preložiť v aplikáciách pre Android</translation>
 <translation id="8083281199617904460">Túto opravu môže vykonať iba školený technik. Začnite iba po výmene chybných komponentov.</translation>
@@ -763,8 +837,10 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>
 <translation id="8372477600026034341">Ďalší hostitelia</translation>
 <translation id="8378855320830505539">Oblasť</translation>
+<translation id="8382302752385457774">Štítok White</translation>
 <translation id="8395584934117017006">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
+<translation id="8420955526972171689">Testujte a riešte problémy s hardvérom</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interná klávesnica</translation>
 <translation id="8431300646573772016">Chrome OS – novinky</translation>
@@ -796,7 +872,9 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Spravujte túto funkciu pomocou ľavej alebo pravej šípky.</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
+<translation id="8717030727630712160">Obnovuje sa proces opravy…</translation>
 <translation id="8723108084122415655">Nepredvolená sieť prekračuje úroveň latencie</translation>
+<translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8726019395068607495">Zastavené – dvierka sú otvorené</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
@@ -811,17 +889,21 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8855781559874488009">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTP</translation>
+<translation id="885701979325669005">Úložisko</translation>
 <translation id="8863170912498892583">Zapnúť tmavý motív</translation>
 <translation id="8863888432376731307">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /> a ešte viac</translation>
+<translation id="8864415976656252616">Žiadny navrhovaný obsah. Pozrite si najlepší pomocný obsah.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zariadenie je tablet.</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>
+<translation id="8897267175591692539">Teraz môžete zariadenie znova zložiť</translation>
 <translation id="8898840733695078011">Sila signálu</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8918637186205009138">Zariadenie <ph name="DEVICE_TYPE" /> používateľa <ph name="GIVEN_NAME" /></translation>
 <translation id="8919792139048574232">Pozrite si opravy</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8923267550422472772">Deň mesiaca pre reset</translation>
+<translation id="8925613211674558308">Vpd vo vyrovnávacej pamäti</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
@@ -830,12 +912,12 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="894617464444543719">Zariadenie je telefón.</translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
-<translation id="8970887620466824814">Vyskytol sa problém.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES} stránku}few{Skenovať {NUMBER_OF_PAGES} stránky}many{Skenovať {NUMBER_OF_PAGES} stránky}other{Skenovať {NUMBER_OF_PAGES} stránok}}</translation>
 <translation id="8997710128084572139">Úroveň batérie zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9025198690966128418">Používať ako osobné zariadenie</translation>
+<translation id="9028832514430399253">Zapnutím prepínača vyberiete možnosti šetriča obrazovky</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Preklad DNS má vysokú latenciu</translation>
 <translation id="9063121522582193837">Niektoré komponenty sa nepodarilo kalibrovať</translation>
@@ -854,14 +936,17 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9126720536733509015">Ukladať viacero strán do jedného súboru PDF</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Ľavý kláves Shift</translation>
+<translation id="9148058034647219655">Ukončiť</translation>
 <translation id="9149391708638971077">Spustiť test pamäte</translation>
 <translation id="9173638680043580060">Zostáva menej ako minúta</translation>
 <translation id="917720651393141712">Testovať</translation>
+<translation id="9188992814426075118">Klávesnica sa môže automaticky prispôsobiť tapete</translation>
 <translation id="9204237731135241582">Brána sa nedá kontaktovať v aplikáciách pre Android</translation>
 <translation id="9211490828691860325">Všetky plochy</translation>
 <translation id="922179502584117429">Aktuálna verzia <ph name="VERSION_NUMBER" /> je zastaraná</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="952992212772159698">Neaktivované</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="982713511914535780">Spustiť test vybíjania</translation>

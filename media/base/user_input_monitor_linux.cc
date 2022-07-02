@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
@@ -96,7 +97,7 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  UserInputMonitorAdapter* core_;
+  raw_ptr<UserInputMonitorAdapter, DanglingUntriaged> core_;
 };
 
 UserInputMonitorAdapter* CreateUserInputMonitor(
@@ -116,7 +117,7 @@ UserInputMonitorLinux::UserInputMonitorLinux(
       core_(CreateUserInputMonitor(io_task_runner_)) {}
 
 UserInputMonitorLinux::~UserInputMonitorLinux() {
-  if (core_ && !io_task_runner_->DeleteSoon(FROM_HERE, core_))
+  if (core_ && !io_task_runner_->DeleteSoon(FROM_HERE, core_.get()))
     delete core_;
 }
 

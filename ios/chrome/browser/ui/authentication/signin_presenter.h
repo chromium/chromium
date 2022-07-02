@@ -9,7 +9,7 @@
 
 // Protocol used to display signin UI.
 @protocol SigninPresenter
-// Asks the presenter to display the signin UI configured by |command|.
+// Asks the presenter to display the signin UI configured by `command`.
 - (void)showSignin:(ShowSigninCommand*)command;
 @end
 

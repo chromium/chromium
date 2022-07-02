@@ -2,24 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":process_internals" ]
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/content/browser/process_internals",
-                root_build_dir),
-      ]
+# Copy (via creating sym links) all the other files into the same folder for
+# ts_library.
+copy("copy_files") {
+  deps = [ "//content/browser/process_internals:mojo_bindings_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/content/browser/process_internals/process_internals.mojom-webui.js",
+    "process_internals.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-js_library("process_internals") {
-  deps = [
-    "//content/browser/process_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tree",
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "process_internals.ts",
+    "process_internals.mojom-webui.js",
   ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [ ":copy_files" ]
 }

@@ -171,6 +171,12 @@ void PpapiCommandBufferProxy::DestroyTransferBuffer(int32_t id) {
       ppapi::API_ID_PPB_GRAPHICS_3D, resource_, id));
 }
 
+void PpapiCommandBufferProxy::ForceLostContext(gpu::error::ContextLostReason) {
+  // This entry point was added to CommandBuffer well after PPAPI's
+  // deprecation. No current clients determined its necessity, so it
+  // will not be implemented.
+}
+
 void PpapiCommandBufferProxy::SetLock(base::Lock*) {
   NOTREACHED();
 }
@@ -225,11 +231,6 @@ bool PpapiCommandBufferProxy::CanWaitUnverifiedSyncToken(
     const gpu::SyncToken& sync_token) {
   NOTREACHED();
   return false;
-}
-
-void PpapiCommandBufferProxy::SetDisplayTransform(
-    gfx::OverlayTransform transform) {
-  NOTREACHED();
 }
 
 void PpapiCommandBufferProxy::SignalQuery(uint32_t query,

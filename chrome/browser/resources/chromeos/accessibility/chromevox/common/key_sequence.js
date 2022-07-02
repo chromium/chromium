@@ -7,10 +7,6 @@
  * by the user.
  */
 
-goog.provide('KeySequence');
-
-goog.require('KeyCode');
-
 /**
  * A class to represent a sequence of keys entered by a user or affiliated with
  * a ChromeVox command.
@@ -28,7 +24,7 @@ goog.require('KeyCode');
  * - Whether or not a prefix key was entered before the discrete keys.
  * - Whether sticky mode was active.
  */
-KeySequence = class {
+export class KeySequence {
   /**
    * @param {Event|Object} originalEvent The original key event entered by a
    *     user.
@@ -47,21 +43,21 @@ KeySequence = class {
       originalEvent, opt_cvoxModifier, opt_doubleTap, opt_skipStripping,
       opt_requireStickyMode) {
     /** @type {boolean} */
-    this.doubleTap = !!opt_doubleTap;
+    this.doubleTap = Boolean(opt_doubleTap);
 
     /** @type {boolean} */
-    this.requireStickyMode = !!opt_requireStickyMode;
+    this.requireStickyMode = Boolean(opt_requireStickyMode);
 
     /** @type {boolean} */
-    this.skipStripping = !!opt_skipStripping;
+    this.skipStripping = Boolean(opt_skipStripping);
 
     if (opt_cvoxModifier === undefined) {
       this.cvoxModifier = this.isCVoxModifierActive(originalEvent);
     } else {
       this.cvoxModifier = opt_cvoxModifier;
     }
-    this.stickyMode = !!originalEvent['stickyMode'];
-    this.prefixKey = !!originalEvent['keyPrefix'];
+    this.stickyMode = Boolean(originalEvent['stickyMode']);
+    this.prefixKey = Boolean(originalEvent['keyPrefix']);
 
     if (this.stickyMode && this.prefixKey) {
       throw 'Prefix key and sticky mode cannot both be enabled: ' +
@@ -525,8 +521,7 @@ KeySequence = class {
       seqEvent['keyCode'] = KeyCode.INSERT;
     }
   }
-};
-
+}
 
 // TODO(dtseng): This is incomplete; pull once we have appropriate libs.
 /**

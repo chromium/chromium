@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.ClassRule;
@@ -19,10 +20,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.List;
 
 /**
  * Tests for PrivacySandboxBridge.
@@ -93,6 +97,55 @@ public class PrivacySandboxBridgeTest {
             PrivacySandboxBridge.setTopicAllowed(topic4, true);
             assertThat(PrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic4));
             assertThat(PrivacySandboxBridge.getBlockedTopics(), contains(topic1, topic3));
+        });
+    }
+
+    @Nullable
+    private List<String> getFledgeJoiningEtlds() {
+        PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
+        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(callbackHelper::notifyCalled);
+        return callbackHelper.getOnlyPayloadBlocking();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetFledgeJoiningEtldPlusOneForDisplay() {
+        // Check that this function returns a valid list. We currently can't control from the Java
+        // side what they actually return, so just check that it is not null and there is no crash.
+        TestThreadUtils.runOnUiThreadBlocking(() -> assertNotNull(getFledgeJoiningEtlds()));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetBlockedFledgeJoiningTopFramesForDisplay() {
+        // Check that this function returns a valid list. We currently can't control from the Java
+        // side what they actually return, so just check that it is not null and there is no crash.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> assertNotNull(
+                                PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay()));
+    }
+
+    @Test
+    @SmallTest
+    public void testFledgeBlocking() {
+        String site1 = "a.com";
+        String site2 = "b.com";
+        String site3 = "c.com";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrivacySandboxBridge.setFledgeJoiningAllowed(site1, false);
+            assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                    contains(site1));
+
+            PrivacySandboxBridge.setFledgeJoiningAllowed(site2, false);
+            PrivacySandboxBridge.setFledgeJoiningAllowed(site3, false);
+            assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                    contains(site1, site2, site3));
+
+            PrivacySandboxBridge.setFledgeJoiningAllowed(site2, true);
+            assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                    contains(site1, site3));
         });
     }
 }

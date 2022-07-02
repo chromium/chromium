@@ -32,7 +32,7 @@ class CertIssuerSource;
 // Base class for custom data that CertPathBuilderDelegate can attach to paths.
 class NET_EXPORT CertPathBuilderDelegateData {
  public:
-  virtual ~CertPathBuilderDelegateData() {}
+  virtual ~CertPathBuilderDelegateData() = default;
 };
 
 // Represents a single candidate path that was built or is being processed.

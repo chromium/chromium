@@ -1,0 +1,105 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * cros.ref Color Tokens
+ *
+ * Base semantic palette for Chrome OS. Most colors used in ChromeOS should
+ * resolve to these tokens.
+ *
+ * These tokens will be dynamically updated when the theme changes.
+ */
+{
+  token_namespace: 'cros.ref',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosRef',
+    },
+  },
+  colors: {
+    primary0: '#000000',
+    primary10: '#041e49',
+    primary20: '#062e6f',
+    primary30: '#0842a0',
+    primary40: '#0b57d0',
+    primary50: '#1b6ef3',
+    primary60: '#4c8df6',
+    primary70: '#7cacf8',
+    primary80: '#a8c7fa',
+    primary90: '#d3e3fd',
+    primary95: '#ecf3fe',
+    primary99: '#fafbff',
+    primary100: '#ffffff',
+
+    secondary0: '#000000',
+    secondary10: '#001d35',
+    secondary20: '#003355',
+    secondary30: '#004a77',
+    secondary40: '#00639b',
+    secondary50: '#047db7',
+    secondary60: '#3998d3',
+    secondary70: '#5ab3f0',
+    secondary80: '#7fcfff',
+    secondary90: '#c2e7ff',
+    secondary95: '#dff3ff',
+    secondary99: '#f7fcff',
+    secondary100: '#ffffff',
+
+    tertiary0: '#000000',
+    tertiary10: '#072711',
+    tertiary20: '#0a3818',
+    tertiary30: '#0f5223',
+    tertiary40: '#146c2e',
+    tertiary50: '#198639',
+    tertiary60: '#1ea446',
+    tertiary70: '#37be5f',
+    tertiary80: '#6dd58c',
+    tertiary90: '#c4eed0',
+    tertiary95: '#e7f8ed',
+    tertiary99: '#f2ffee',
+    tertiary100: '#ffffff',
+
+    error0: '#000000',
+    error10: '#410e0b',
+    error20: '#601410',
+    error30: '#8c1d18',
+    error40: '#b3261e',
+    error50: '#dc362e',
+    error60: '#e46962',
+    error70: '#ec928e',
+    error80: '#f2b8b5',
+    error90: '#f9dedc',
+    error95: '#fceeee',
+    error99: '#fffbf9',
+    error100: '#ffffff',
+
+    neutral0: '#000000',
+    neutral10: '#1f1f1f',
+    neutral20: '#303030',
+    neutral30: '#474747',
+    neutral40: '#5e5e5e',
+    neutral50: '#757575',
+    neutral60: '#8f8f8f',
+    neutral70: '#ababab',
+    neutral80: '#c7c7c7',
+    neutral90: '#e3e3e3',
+    neutral95: '#f2f2f2',
+    neutral99: '#fdfcfb',
+    neutral100: '#ffffff',
+
+    neutralvariant0: '#000000',
+    neutralvariant10: '#191d1c',
+    neutralvariant20: '#2d312f',
+    neutralvariant30: '#444746',
+    neutralvariant40: '#5c5f5e',
+    neutralvariant50: '#747775',
+    neutralvariant60: '#8e918f',
+    neutralvariant70: '#a9acaa',
+    neutralvariant80: '#c4c7c5',
+    neutralvariant90: '#e1e3e1',
+    neutralvariant95: '#eff2ef',
+    neutralvariant99: '#fafdfb',
+    neutralvariant100: '#ffffff',
+  },
+}

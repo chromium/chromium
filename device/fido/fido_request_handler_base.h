@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     bool is_ble_powered = false;
     bool can_power_on_ble_adapter = false;
 
+    // ble_access_denied is set to true if Chromium does not have permission
+    // to use the BLE adaptor. Resolving this is a platform-specific operation.
+    bool ble_access_denied = false;
+
     // Indicates whether the native Windows WebAuthn API is available.
     // Dispatching to it should be controlled by the embedder.
     //
@@ -294,6 +298,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
                           FidoAuthenticator* authenticator) override;
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override;
+  void BleDenied() override;
 
   // GetPlatformCredentialStatus is called to learn whether a platform
   // authenticator has credentials responsive to the current request. If this

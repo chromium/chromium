@@ -7,11 +7,8 @@
 
 #include "ash/components/multidevice/logging/log_buffer.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace chromeos {
 
@@ -38,10 +35,10 @@ class MultideviceLogsHandler : public content::WebUIMessageHandler,
 
  private:
   // Message handler callback that returns the Log Buffer in dictionary form.
-  void HandleGetLogMessages(const base::ListValue* args);
+  void HandleGetLogMessages(const base::Value::List& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearLogBuffer(const base::ListValue* args);
+  void ClearLogBuffer(const base::Value::List& args);
 
   base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
 };

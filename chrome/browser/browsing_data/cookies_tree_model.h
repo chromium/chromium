@@ -380,7 +380,11 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void SetBatchExpectation(int batches_expected, bool reset);
 
   // Create CookiesTreeModel by profile info.
-  static std::unique_ptr<CookiesTreeModel> CreateForProfile(Profile* profile);
+  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
+  // deprecated, during this process the semantics of the model are nuanced
+  // w.r.t partitioned storage, and should not be used in new locations.
+  static std::unique_ptr<CookiesTreeModel> CreateForProfileDeprecated(
+      Profile* profile);
 
   static browsing_data::CookieHelper::IsDeletionDisabledCallback
   GetCookieDeletionDisabledCallback(Profile* profile);

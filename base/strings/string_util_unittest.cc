@@ -660,22 +660,6 @@ TEST(StringUtilTest, ToUpperASCII) {
   EXPECT_EQ(u"CC2", ToUpperASCII(u"Cc2"));
 }
 
-TEST(StringUtilTest, LowerCaseEqualsASCII) {
-  static const struct {
-    const char*    src_a;
-    const char*    dst;
-  } lowercase_cases[] = {
-    { "FoO", "foo" },
-    { "foo", "foo" },
-    { "FOO", "foo" },
-  };
-
-  for (const auto& i : lowercase_cases) {
-    EXPECT_TRUE(LowerCaseEqualsASCII(ASCIIToUTF16(i.src_a), i.dst));
-    EXPECT_TRUE(LowerCaseEqualsASCII(i.src_a, i.dst));
-  }
-}
-
 TEST(StringUtilTest, FormatBytesUnlocalized) {
   static const struct {
     int64_t bytes;
@@ -1472,6 +1456,39 @@ TEST(StringUtilTest, EqualsCaseInsensitiveASCII) {
   EXPECT_TRUE(EqualsCaseInsensitiveASCII("Asdf", "aSDF"));
   EXPECT_FALSE(EqualsCaseInsensitiveASCII("bsdf", "aSDF"));
   EXPECT_FALSE(EqualsCaseInsensitiveASCII("Asdf", "aSDFz"));
+
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(u"", u""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(u"Asdf", u"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(u"bsdf", u"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(u"Asdf", u"aSDFz"));
+
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(u"", ""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(u"Asdf", "aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(u"bsdf", "aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(u"Asdf", "aSDFz"));
+
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII("", u""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII("Asdf", u"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII("bsdf", u"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII("Asdf", u"aSDFz"));
+
+  // The `WStringPiece` overloads are only defined on Windows.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"", L""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"Asdf", L"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(L"bsdf", L"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(L"Asdf", L"aSDFz"));
+
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"", ""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII(L"Asdf", "aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(L"bsdf", "aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII(L"Asdf", "aSDFz"));
+
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII("", L""));
+  EXPECT_TRUE(EqualsCaseInsensitiveASCII("Asdf", L"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII("bsdf", L"aSDF"));
+  EXPECT_FALSE(EqualsCaseInsensitiveASCII("Asdf", L"aSDFz"));
+#endif
 }
 
 TEST(StringUtilTest, IsUnicodeWhitespace) {

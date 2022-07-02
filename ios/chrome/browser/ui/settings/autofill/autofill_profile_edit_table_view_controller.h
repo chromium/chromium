@@ -16,7 +16,7 @@ class PersonalDataManager;
 @interface AutofillProfileEditTableViewController
     : AutofillEditTableViewController
 
-// Creates a controller for |profile| and |dataManager| that cannot be null.
+// Creates a controller for `profile` and `dataManager` that cannot be null.
 + (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
                   personalDataManager:
                       (autofill::PersonalDataManager*)dataManager;

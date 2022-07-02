@@ -17,7 +17,7 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -75,14 +75,26 @@ BASE_EXPORT bool DeleteFile(const FilePath& path);
 // WARNING: USING THIS EQUIVALENT TO "rm -rf", SO USE WITH CAUTION.
 BASE_EXPORT bool DeletePathRecursively(const FilePath& path);
 
-// Simplified way to get a callback to do DeleteFile(path) and ignore the
-// DeleteFile() result. On Windows, this will retry the delete via delayed tasks
-// for up to 2 seconds before giving up, to deal with AV S/W locking the file.
-BASE_EXPORT OnceClosure GetDeleteFileCallback(const FilePath& path);
-
-// Simplified way to get a callback to do DeletePathRecursively(path) and ignore
-// the DeletePathRecursively() result.
-BASE_EXPORT OnceClosure GetDeletePathRecursivelyCallback(const FilePath& path);
+// Returns a closure that, when run on any sequence that allows blocking calls,
+// will kick off a potentially asynchronous operation to delete `path`, whose
+// behavior is similar to `DeleteFile()` and `DeletePathRecursively()`
+// respectively.
+//
+// In contrast to `DeleteFile()` and `DeletePathRecursively()`, the thread pool
+// may be used in case retries are needed. On Windows, in particular, retries
+// will be attempted for some time to allow other programs (e.g., anti-virus
+// scanners or malware) to close any open handles to `path` or its contents. If
+// `reply_callback` is not null, it will be posted to the caller's sequence with
+// true if `path` was fully deleted or false otherwise.
+//
+// WARNING: It is NOT safe to use `path` until `reply_callback` is run, as the
+// retry task may still be actively trying to delete it.
+BASE_EXPORT OnceClosure
+GetDeleteFileCallback(const FilePath& path,
+                      OnceCallback<void(bool)> reply_callback = {});
+BASE_EXPORT OnceClosure
+GetDeletePathRecursivelyCallback(const FilePath& path,
+                                 OnceCallback<void(bool)> reply_callback = {});
 
 #if BUILDFLAG(IS_WIN)
 // Schedules to delete the given path, whether it's a file or a directory, until
@@ -506,30 +518,6 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // false.
 BASE_EXPORT bool SetNonBlocking(int fd);
 
-// Possible results of PreReadFile().
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrefetchResultCode {
-  kSuccess = 0,
-  kInvalidFile = 1,
-  kSlowSuccess = 2,
-  kSlowFailed = 3,
-  kMemoryMapFailedSlowUsed = 4,
-  kMemoryMapFailedSlowFailed = 5,
-  kFastFailed = 6,
-  kFastFailedSlowUsed = 7,
-  kFastFailedSlowFailed = 8,
-  kMaxValue = kFastFailedSlowFailed
-};
-
-struct PrefetchResult {
-  bool succeeded() const {
-    return code_ == PrefetchResultCode::kSuccess ||
-           code_ == PrefetchResultCode::kSlowSuccess;
-  }
-  const PrefetchResultCode code_;
-};
-
 // Hints the OS to prefetch the first |max_bytes| of |file_path| into its cache.
 //
 // If called at the appropriate time, this can reduce the latency incurred by
@@ -543,18 +531,17 @@ struct PrefetchResult {
 // executable code or as data. Windows treats the file backed pages in RAM
 // differently, and specifying the wrong value results in two copies in RAM.
 //
-// Returns a PrefetchResult indicating whether prefetch succeeded, and the type
-// of failure if it did not. A return value of kSuccess does not guarantee that
-// the entire desired range was prefetched.
+// Returns true if at least part of the requested range was successfully
+// prefetched.
 //
 // Calling this before using ::LoadLibrary() on Windows is more efficient memory
 // wise, but we must be sure no other threads try to LoadLibrary() the file
 // while we are doing the mapping and prefetching, or the process will get a
 // private copy of the DLL via COW.
-BASE_EXPORT PrefetchResult
-PreReadFile(const FilePath& file_path,
-            bool is_executable,
-            int64_t max_bytes = std::numeric_limits<int64_t>::max());
+BASE_EXPORT bool PreReadFile(
+    const FilePath& file_path,
+    bool is_executable,
+    int64_t max_bytes = std::numeric_limits<int64_t>::max());
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 

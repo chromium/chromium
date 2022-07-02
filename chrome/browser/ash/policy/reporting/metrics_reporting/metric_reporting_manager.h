@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
@@ -37,8 +37,6 @@ class Sampler;
 class MetricReportingManager : public policy::ManagedSessionService::Observer,
                                public ::ash::DeviceSettingsService::Observer {
  public:
-  static const base::Feature kEnableNetworkTelemetryReporting;
-
   // Delegate class for dependencies and behaviors that need to be overridden
   // for testing purposes.
   class Delegate {

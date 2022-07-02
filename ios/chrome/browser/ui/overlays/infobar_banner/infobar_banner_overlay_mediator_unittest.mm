@@ -57,7 +57,7 @@ class InfobarBannerOverlayMediatorTest : public PlatformTest {
     callback_installer_.InstallCallbacks(request_.get());
   }
   ~InfobarBannerOverlayMediatorTest() override {
-    // |callback_receiver_|'s completion callback is guaranteed to be called
+    // `callback_receiver_`'s completion callback is guaranteed to be called
     // when the test fixture is torn down.  This functionality is already tested
     // in OverlayRequestCallbackInstaller's unittests.  This EXPECT_CALL() for
     // the completion callback is added here instead of in individual tests

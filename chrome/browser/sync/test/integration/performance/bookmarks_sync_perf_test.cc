@@ -11,7 +11,6 @@
 #include "testing/perf/perf_result_reporter.h"
 
 using bookmarks_helper::AddURL;
-using bookmarks_helper::AllModelsMatch;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::IndexedURL;
 using bookmarks_helper::IndexedURLTitle;
@@ -77,8 +76,9 @@ void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
   for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
-       GetBookmarkBarNode(profile)->children())
+       GetBookmarkBarNode(profile)->children()) {
     ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
+  }
 }
 
 void BookmarksSyncPerfTest::RemoveURLs(int profile) {

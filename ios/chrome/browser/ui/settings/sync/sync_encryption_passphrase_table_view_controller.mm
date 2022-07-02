@@ -147,7 +147,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   SyncSetupService::SyncServiceState syncServiceState =
       service->GetSyncServiceState();
 
-  // Passphrase error directly set |_syncErrorMessage|.
+  // Passphrase error directly set `_syncErrorMessage`.
   if (syncServiceState == SyncSetupService::kSyncServiceNeedsPassphrase)
     return nil;
 
@@ -249,7 +249,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   return item;
 }
 
-// Returns a passphrase error item having |errorMessage| as title.
+// Returns a passphrase error item having `errorMessage` as title.
 - (TableViewItem*)passphraseErrorItemWithMessage:(NSString*)errorMessage {
   PassphraseErrorItem* item =
       [[PassphraseErrorItem alloc] initWithType:ItemTypeError];
@@ -339,7 +339,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 // Sets up the navigation bar's right button. The button will be enabled iff
-// |-areAllFieldsFilled| returns YES.
+// `-areAllFieldsFilled` returns YES.
 - (void)setRightNavBarItem {
   UIBarButtonItem* submitButtonItem = self.navigationItem.rightBarButtonItem;
   if (!submitButtonItem) {

@@ -229,12 +229,12 @@
     </div>
     <template is="dom-if"
         if="[[!showFragment_(privacySandboxSettingsViewEnum_.MAIN,
-                privacySandboxSettingsView_)]]" restamp>
+                privacySandboxSettingsView)]]" restamp>
       <cr-dialog id="dialogWrapper" show-on-attach on-close="onDialogClose_">
         <template id="learnMoreDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.LEARN_MORE_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxLearnMoreDialogTitle}</div>
           <div slot="body">
             <div class="learn-more-section-title">
@@ -292,7 +292,7 @@
         <template id="adPersonalizationDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div class="ad-personalization-title" slot="title">
             $i18n{privacySandboxAdPersonalizationDialogTitle}
           </div>
@@ -384,7 +384,7 @@
         <template id="adPersonalizationRemovedDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_REMOVED_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div class="ad-personalization-title" slot="title">
             <cr-icon-button id="adPersonalizationBackButton"
                 class="icon-arrow-back" aria-label="$i18n{back}"
@@ -433,7 +433,7 @@
         <template id="adMeasurementDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_MEASUREMENT_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxAdMeasurementDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">
@@ -449,7 +449,7 @@
         <template id="spamAndFraudDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.SPAM_AND_FRAUD_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxSpamAndFraudDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">
@@ -509,9 +509,8 @@
             src="./images/privacy_sandbox_floc_banner.svg">
       </picture>
       <settings-toggle-button id="flocToggleButton"
-          pref="{{prefs.generated.floc_enabled}}"
-          label="$i18n{privacySandboxPageFlocHeading}"
-          on-change="onFlocToggleButtonChange_">
+          pref="[[prefFlocToggle_]]"
+          label="$i18n{privacySandboxPageFlocHeading}">
       </settings-toggle-button>
       <div id="flocExplanation" class="cr-row continuation">
         <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
@@ -520,14 +519,16 @@
         <div class="label-wrapper">
           <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
           <div id="flocStatus" class="cr-secondary-text">
-            [[flocId_.trialStatus]]
+            $i18n{privacySandboxPageFlocStatusNotActive}
           </div>
         </div>
       </div>
       <div class="cr-row continuation">
         <div class="label-wrapper">
           <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
-          <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+          <div id="flocId" class="cr-secondary-text">
+            $i18n{privacySandboxFlocInvalid}
+          </div>
         </div>
       </div>
       <div class="cr-row continuation">
@@ -536,7 +537,7 @@
             $i18n{privacySandboxPageFlocCohortNextUpdate}
           </div>
           <div id="flocUpdatedOn" class="cr-secondary-text">
-            [[flocId_.nextUpdate]]
+            $i18n{privacySandboxPageFlocTimeToNextComputeInvalid}
           </div>
         </div>
       </div>
@@ -547,7 +548,7 @@
       </div>
       <div class="cr-row continuation box-last">
         <cr-button id="resetFlocIdButton" class="cr-button" role="button"
-            disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
+            disabled>
           $i18n{privacySandboxPageFlocResetCohort}
         </cr-button>
       </div>

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -25,8 +26,11 @@ using utils = FocusgroupControllerUtils;
 // static
 bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
                                                     const LocalFrame* frame) {
-  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled());
   DCHECK(frame);
+  DCHECK(frame->DomWindow());
+  ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
+  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
+
   FocusgroupDirection direction = utils::FocusgroupDirectionForEvent(event);
   if (direction == FocusgroupDirection::kNone)
     return false;
@@ -77,13 +81,15 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
 
   Element* nearest_focusgroup = utils::FindNearestFocusgroupAncestor(
       initial_element, FocusgroupType::kLinear);
-  // We only allow focusgroup navigation when we are inside of a focusgroup that
-  // supports the direction.
-  if (!nearest_focusgroup ||
-      !utils::IsAxisSupported(nearest_focusgroup->GetFocusgroupFlags(),
-                              direction)) {
+  // We only allow focusgroup navigation when we are inside of a focusgroup.
+  if (!nearest_focusgroup)
     return false;
-  }
+
+  // When the focusgroup we're in doesn't support the axis of the arrow key
+  // pressed, it might still be able to descend so we can't return just yet.
+  // However, if it can't descend, we should return right away.
+  bool can_only_descend = !utils::IsAxisSupported(
+      nearest_focusgroup->GetFocusgroupFlags(), direction);
 
   // We use the first element after the focusgroup we're in, excluding its
   // subtree, as a shortcut to determine if we exited the current focusgroup
@@ -97,6 +103,7 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
     // 1. Determine whether to descend in other focusgroup.
     bool skip_subtree = false;
     FocusgroupFlags current_flags = current->GetFocusgroupFlags();
+    bool descended = false;
     if (current_flags != FocusgroupFlags::kNone) {
       // When we're on a non-extending focusgroup, we shouldn't go into it. Same
       // for when we're at the root of an extending focusgroup that doesn't
@@ -108,8 +115,14 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
         nearest_focusgroup = current;
         first_element_after_focusgroup =
             utils::NextElement(nearest_focusgroup, /* skip_subtree */ true);
+        descended = true;
       }
     }
+
+    // See comment where |can_only_descend| is declared.
+    if (can_only_descend && !descended)
+      return false;
+
     // 2. Move |current| to the next element.
     current = utils::NextElement(current, skip_subtree);
 
@@ -322,20 +335,31 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
             wrap_result, parent, direction);
         parent = FlatTreeTraversal::ParentElement(*current);
       } else {
-        // Wrapping wasn't an option. Validate that we're still in a focusgroup
-        // even though we went up to the parent element.
-        Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
-            current, FocusgroupType::kLinear);
-        if (!parent_focusgroup ||
-            !utils::IsAxisSupported(parent_focusgroup->GetFocusgroupFlags(),
-                                    direction)) {
-          // At this point, we moved from inside of a focusgroup to the
-          // focusgroup root and it can't wrap. Furthermore, if there's a
-          // parent focusgroup, it doesn't support the axis of the arrow
-          // key, so it doesn't make sense to move into that focusgroup.
+        // Wrapping wasn't an option. At this point, we can only attempt to
+        // ascend to the parent.
+
+        // We can't ascend out of a non-extending focusgroup.
+        FocusgroupFlags current_flags = current->GetFocusgroupFlags();
+        if (current_flags != FocusgroupFlags::kNone &&
+            !(current_flags & FocusgroupFlags::kExtend)) {
           return false;
         }
 
+        // We can't ascend if there is no focusgroup ancestor.
+        Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
+            current, FocusgroupType::kLinear);
+        if (!parent_focusgroup)
+          return false;
+
+        // We can't ascend if the parent focusgroup doesn't support the axis of
+        // the arrow key pressed.
+        if (!utils::IsAxisSupported(parent_focusgroup->GetFocusgroupFlags(),
+                                    direction)) {
+          return false;
+        }
+
+        // At this point, we are certain that we can ascend to the parent
+        // element.
         ascended = true;
         parent = FlatTreeTraversal::ParentElement(*parent);
         // No need to check if the new |parent| is null or not because, if that

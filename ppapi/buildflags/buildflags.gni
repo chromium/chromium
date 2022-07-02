@@ -7,5 +7,15 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 
 declare_args() {
-  enable_plugins = !is_android && !is_ios && !is_chromecast && !is_fuchsia
+  # Enables basic plugin support. This enables support for registering and
+  # looking up plugins, but does not include support for loading plugins using a
+  # specific technology like Pepper.
+  enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
 }
+
+declare_args() {
+  # Enables Pepper API (PPAPI) plugin support.
+  enable_ppapi = enable_plugins
+}
+
+assert(enable_plugins || !enable_ppapi)

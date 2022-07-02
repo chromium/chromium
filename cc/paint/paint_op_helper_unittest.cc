@@ -56,9 +56,11 @@ TEST(PaintOpHelper, ConcatToString) {
 }
 
 TEST(PaintOpHelper, DrawColorToString) {
-  DrawColorOp op(SkColorSetARGB(11, 22, 33, 44), SkBlendMode::kSrc);
+  DrawColorOp op({0.1, 0.2, 0.3, 0.4}, SkBlendMode::kSrc);
   std::string str = PaintOpHelper::ToString(&op);
-  EXPECT_EQ(str, "DrawColorOp(color=rgba(22, 33, 44, 11), mode=kSrc)");
+  EXPECT_EQ(str,
+            "DrawColorOp(color=rgba(0.100000, 0.200000, 0.300000, 0.400000), "
+            "mode=kSrc)");
 }
 
 TEST(PaintOpHelper, DrawDRRectToString) {

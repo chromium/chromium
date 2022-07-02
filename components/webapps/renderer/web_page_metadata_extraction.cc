@@ -81,10 +81,11 @@ mojom::WebPageMetadataPtr ExtractWebPageMetadata(WebLocalFrame* frame) {
       //
       // Bookmark apps also support "apple-touch-icon" and
       // "apple-touch-icon-precomposed".
-      if (base::LowerCaseEqualsASCII(rel, "icon") ||
-          base::LowerCaseEqualsASCII(rel, "shortcut icon") ||
-          base::LowerCaseEqualsASCII(rel, "apple-touch-icon") ||
-          base::LowerCaseEqualsASCII(rel, "apple-touch-icon-precomposed")) {
+      if (base::EqualsCaseInsensitiveASCII(rel, "icon") ||
+          base::EqualsCaseInsensitiveASCII(rel, "shortcut icon") ||
+          base::EqualsCaseInsensitiveASCII(rel, "apple-touch-icon") ||
+          base::EqualsCaseInsensitiveASCII(rel,
+                                           "apple-touch-icon-precomposed")) {
         AddInstallIcon(elem, &metadata->icons);
       }
     } else if (elem.HasHTMLTagName("meta") && elem.HasAttribute("name")) {
@@ -101,10 +102,10 @@ mojom::WebPageMetadataPtr ExtractWebPageMetadata(WebLocalFrame* frame) {
         if (!metadata->application_url.is_valid())
           metadata->application_url = GURL();
       } else if (name == "mobile-web-app-capable" &&
-                 base::LowerCaseEqualsASCII(content.Utf16(), "yes")) {
+                 base::EqualsCaseInsensitiveASCII(content.Utf16(), "yes")) {
         metadata->mobile_capable = mojom::WebPageMobileCapable::ENABLED;
       } else if (name == "apple-mobile-web-app-capable" &&
-                 base::LowerCaseEqualsASCII(content.Utf16(), "yes") &&
+                 base::EqualsCaseInsensitiveASCII(content.Utf16(), "yes") &&
                  metadata->mobile_capable ==
                      mojom::WebPageMobileCapable::UNSPECIFIED) {
         metadata->mobile_capable = mojom::WebPageMobileCapable::ENABLED_APPLE;

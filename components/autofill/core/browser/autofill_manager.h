@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/version_info/channel.h"
 
@@ -135,11 +136,15 @@ class AutofillManager
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
   // |bounding_box| are viewport coordinates.
+  // |touch_to_fill_eligible| indicates if the Touch To Fill surface could be
+  // used for showing suggestion. Note that it doesn't guarantee the given form
+  // input field is eligible for autofilling.
   void OnAskForValuesToFill(int query_id,
                             const FormData& form,
                             const FormFieldData& field,
                             const gfx::RectF& bounding_box,
-                            bool autoselect_first_suggestion);
+                            bool autoselect_first_suggestion,
+                            TouchToFillEligible touch_to_fill_eligible);
 
   // Invoked when |form|'s |field| has focus.
   // |bounding_box| are viewport coordinates.
@@ -162,6 +167,16 @@ class AutofillManager
   virtual void FillProfileForm(const AutofillProfile& profile,
                                const FormData& form,
                                const FormFieldData& field) = 0;
+
+  // Profile Autofill was triggered by assistant's |intent|. This only affects
+  // metrics logging.
+  virtual void SetProfileFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) = 0;
+
+  // Credit Card Autofill was triggered by assistant's |intent|. This only
+  // affects metrics logging.
+  virtual void SetCreditCardFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) = 0;
 
   // Invoked when changes of the forms have been detected: the forms in
   // |updated_forms| are either new or have changed, and the forms in
@@ -190,6 +205,16 @@ class AutofillManager
 
   // Invoked when the options of a select element in the |form| changed.
   virtual void SelectFieldOptionsDidChange(const FormData& form) = 0;
+
+  // Invoked after JavaScript set the value of |field| in |form|. Only called
+  // if |field| was in autofilled state. Note that from a renderer's
+  // perspective, modifying the value with JavaScript leads to a state where
+  // the field is not considered autofilled anymore. So this notification won't
+  // be sent again until the field gets autofilled again.
+  virtual void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) = 0;
 
   // Invoked when the field type predictions are downloaded from the autofill
   // server.
@@ -313,11 +338,13 @@ class AutofillManager
                                         const FormFieldData& field,
                                         const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnAskForValuesToFillImpl(int query_id,
-                                        const FormData& form,
-                                        const FormFieldData& field,
-                                        const gfx::RectF& bounding_box,
-                                        bool autoselect_first_suggestion) = 0;
+  virtual void OnAskForValuesToFillImpl(
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FormFieldData& field,

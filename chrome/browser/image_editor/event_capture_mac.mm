@@ -23,6 +23,45 @@ EventCaptureMac::EventCaptureMac(ui::EventHandler* event_handler,
   web_contents_view_ = web_contents_view.GetNativeNSView();
   window_ = target_native_window.GetNativeNSWindow();
   mouse_capture_ = std::make_unique<remote_cocoa::CocoaMouseCapture>(this);
+
+  CreateKeyDownLocalMonitor(event_handler, target_native_window);
+}
+
+void EventCaptureMac::CreateKeyDownLocalMonitor(
+    ui::EventHandler* event_handler,
+    gfx::NativeWindow target_native_window) {
+  DCHECK(event_handler);
+  NSWindow* target_window = target_native_window.GetNativeNSWindow();
+
+  // Capture a WeakPtr via NSObject. This allows the block to detect another
+  // event monitor for the same event deleting |this|.
+  WeakPtrNSObject* handle = factory_.handle();
+
+  auto block = ^NSEvent*(NSEvent* event) {
+    if (!ui::WeakPtrNSObjectFactory<EventCaptureMac>::Get(handle))
+      return event;
+
+    if (!target_window || [event window] == target_window) {
+      std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
+      if (!ui_event) {
+        return event;
+      }
+      ui::EventType type = ui_event->type();
+      if (type == ui::ET_KEY_PRESSED) {
+        event_handler->OnKeyEvent(ui_event->AsKeyEvent());
+      }
+      // Consume the event if allowed and the corresponding EventHandler method
+      // requested.
+      if (ui_event->cancelable() && ui_event->handled()) {
+        return nil;
+      }
+    }
+    return event;
+  };
+
+  NSEventMask event_mask = NSEventMaskKeyDown;
+  local_keyboard_monitor_ =
+      [NSEvent addLocalMonitorForEventsMatchingMask:event_mask handler:block];
 }
 
 EventCaptureMac::~EventCaptureMac() {
@@ -30,6 +69,8 @@ EventCaptureMac::~EventCaptureMac() {
   // reset of event capture.
   std::move(capture_lost_callback_).Reset();
   mouse_capture_.reset();
+  // Remove keydown monitor
+  [NSEvent removeMonitor:local_keyboard_monitor_];
 }
 
 bool EventCaptureMac::PostCapturedEvent(NSEvent* event) {

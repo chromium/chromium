@@ -5,18 +5,19 @@
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import '../../common/styles.js';
-import '../cros_button_style.js';
+import '../../css/common.css.js';
+import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {isSelectionEvent} from '../../common/utils.js';
-import {BacklightColor} from '../personalization_app.mojom-webui.js';
+import {BacklightColor, BLUE_COLOR, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {setBacklightColor} from './keyboard_backlight_controller.js';
+import {getShouldShowNudge, handleNudgeShown, setBacklightColor} from './keyboard_backlight_controller.js';
 import {getTemplate} from './keyboard_backlight_element.html.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
 import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
@@ -33,6 +34,17 @@ export interface KeyboardBacklight {
     keys: IronA11yKeysElement,
     selector: IronSelectorElement,
   };
+}
+
+/**
+  Based on this algorithm suggested by the W3:
+  https://www.w3.org/TR/AERT/#color-contrast
+*/
+function calculateColorBrightness(hexVal: number): number {
+  const r = (hexVal >> 16) & 0xff;  // extract red
+  const g = (hexVal >> 8) & 0xff;   // extract green
+  const b = (hexVal >> 0) & 0xff;   // extract blue
+  return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
 interface ColorInfo {
@@ -76,6 +88,15 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
       /** The selected backlight color in the system. */
       backlightColor_: Object,
+
+      /** The current wallpaper extracted color. */
+      wallpaperColor_: Object,
+
+      shouldShowNudge_: {
+        type: Boolean,
+        value: false,
+        observer: 'onShouldShowNudgeChanged_',
+      },
     };
   }
 
@@ -85,6 +106,8 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   private wallpaperColorId_: string;
   private ironSelectedColor_: HTMLElement;
   private backlightColor_: BacklightColor|null;
+  private wallpaperColor_: SkColor|null;
+  private shouldShowNudge_: boolean;
 
   override ready() {
     super.ready();
@@ -96,18 +119,45 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
     this.watch<KeyboardBacklight['backlightColor_']>(
         'backlightColor_', state => state.keyboardBacklight.backlightColor);
+    this.watch<KeyboardBacklight['shouldShowNudge_']>(
+        'shouldShowNudge_', state => state.keyboardBacklight.shouldShowNudge);
+    this.watch<KeyboardBacklight['wallpaperColor_']>(
+        'wallpaperColor_', state => state.keyboardBacklight.wallpaperColor);
     this.updateFromStore();
+
+    getShouldShowNudge(getKeyboardBacklightProvider(), this.getStore());
   }
 
   private computePresetColors_(): Record<string, ColorInfo> {
     return {
-      'whiteColor': {hexVal: '#FFFFFF', enumVal: BacklightColor.kWhite},
-      'redColor': {hexVal: '#F28B82', enumVal: BacklightColor.kRed},
-      'yellowColor': {hexVal: '#FDD663', enumVal: BacklightColor.kYellow},
-      'greenColor': {hexVal: '#81C995', enumVal: BacklightColor.kGreen},
-      'blueColor': {hexVal: '#78D9EC', enumVal: BacklightColor.kBlue},
-      'indigoColor': {hexVal: '#8AB4F8', enumVal: BacklightColor.kIndigo},
-      'purpleColor': {hexVal: '#C58AF9', enumVal: BacklightColor.kPurple},
+      'whiteColor': {
+        hexVal: `#${WHITE_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kWhite,
+      },
+      'redColor': {
+        hexVal: `#${RED_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kRed,
+      },
+      'yellowColor': {
+        hexVal: `#${YELLOW_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kYellow,
+      },
+      'greenColor': {
+        hexVal: `#${GREEN_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kGreen,
+      },
+      'blueColor': {
+        hexVal: `#${BLUE_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kBlue,
+      },
+      'indigoColor': {
+        hexVal: `#${INDIGO_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kIndigo,
+      },
+      'purpleColor': {
+        hexVal: `#${PURPLE_COLOR.toString(16)}`,
+        enumVal: BacklightColor.kPurple,
+      },
     };
   }
 
@@ -202,8 +252,6 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         const hexColors =
             Object.values(colors).map(color => color.hexVal).slice(1);
         return `background-image: linear-gradient(${hexColors})`;
-      case this.wallpaperColorId_:
-        return `background-color: #8AB4F8`;
       case 'whiteColor':
         // Add the border for the white background.
         return `background-color: ${
@@ -214,15 +262,64 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     }
   }
 
+  private getWallpaperColorInnerContainerStyle_(wallpaperColor: SkColor):
+      string {
+    // Show the default style when wallpaper color is loading or invalid.
+    if (!wallpaperColor || (wallpaperColor.value & 0xFFFFFF) === 0xFFFFFF) {
+      return `background-color: #FFFFFF;
+          border: 1px solid var(--cros-separator-color);`;
+    }
+    // Strip the alpha value and convert to hex string.
+    const hexStr =
+        (wallpaperColor.value & 0xFFFFFF).toString(16).padStart(6, '0');
+    return `background-color: #${hexStr};`;
+  }
+
+  private getWallpaperIconColorClass_(wallpaperColor: SkColor): string {
+    if (!wallpaperColor || (wallpaperColor.value & 0xFFFFFF) === 0xFFFFFF) {
+      return `light-icon`;
+    }
+    const brightness =
+        calculateColorBrightness(wallpaperColor.value & 0xFFFFFF);
+    if (brightness < 125) {
+      return `dark-icon`;
+    }
+    return `light-icon`;
+  }
+
   private getPresetColorAriaLabel_(presetColorId: string): string {
     return this.i18n(presetColorId);
   }
 
-  private getWallpaperColorAriaSelected_(selectedColor: BacklightColor) {
+  private getWallpaperColorContainerClass_(selectedColor: BacklightColor):
+      string {
+    return this.getColorContainerClass_(
+        this.getWallpaperColorAriaChecked_(selectedColor));
+  }
+
+  private getPresetColorContainerClass_(
+      colorId: string, colors: Record<string, ColorInfo>,
+      selectedColor: BacklightColor) {
+    return this.getColorContainerClass_(
+        this.getPresetColorAriaChecked_(colorId, colors, selectedColor));
+  }
+
+  private getRainbowColorContainerClass_(selectedColor: BacklightColor) {
+    return this.getColorContainerClass_(
+        this.getRainbowColorAriaChecked_(selectedColor));
+  }
+
+  private getColorContainerClass_(isSelected: string) {
+    const defaultClassName = 'color-container';
+    return isSelected === 'true' ? `${defaultClassName} tast-selected-color` :
+                                   defaultClassName;
+  }
+
+  private getWallpaperColorAriaChecked_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kWallpaper).toString();
   }
 
-  private getPresetColorAriaSelected_(
+  private getPresetColorAriaChecked_(
       colorId: string, colors: Record<string, ColorInfo>,
       selectedColor: BacklightColor) {
     if (!colorId || !colors[colorId]) {
@@ -231,8 +328,20 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     return (colors[colorId].enumVal === selectedColor).toString();
   }
 
-  private getRainbowColorAriaSelected(selectedColor: BacklightColor) {
+  private getRainbowColorAriaChecked_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kRainbow).toString();
+  }
+
+  private getWallpaperColorTitle_() {
+    return this.i18n('wallpaperColorTooltipText');
+  }
+
+  private onShouldShowNudgeChanged_(shouldShowNudge: boolean) {
+    if (shouldShowNudge) {
+      setTimeout(() => {
+        handleNudgeShown(getKeyboardBacklightProvider(), this.getStore());
+      }, 3000);
+    }
   }
 }
 

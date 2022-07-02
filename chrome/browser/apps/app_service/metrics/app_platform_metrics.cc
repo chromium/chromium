@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -517,12 +516,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
 ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
     Profile* profile,
     const std::string& app_id) {
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    // The terminal is special, since it's actually a web app (though one we
-    // count as Crostini) it doesn't have a desktop id, so give it a fake one.
-    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("CrostiniTerminal",
-                                                             "Terminal");
-  }
   auto* registry =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   auto registration = registry->GetRegistration(app_id);

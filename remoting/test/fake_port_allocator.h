@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/port_allocator_factory.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting {
@@ -31,10 +32,10 @@ class FakePortAllocator : public cricket::BasicPortAllocator {
 
   // cricket::BasicPortAllocator overrides.
   cricket::PortAllocatorSession* CreateSessionInternal(
-      const std::string& content_name,
+      absl::string_view content_name,
       int component,
-      const std::string& ice_username_fragment,
-      const std::string& ice_password) override;
+      absl::string_view ice_username_fragment,
+      absl::string_view ice_password) override;
 
  private:
   scoped_refptr<protocol::TransportContext> transport_context_;

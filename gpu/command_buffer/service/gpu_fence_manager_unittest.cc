@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -61,7 +62,7 @@ class GpuFenceManagerTest : public GpuServiceTest {
   void SetupMockEGL(const char* extensions) {
     gl::SetGLGetProcAddressProc(gl::MockEGLInterface::GetGLProcAddress);
     egl_ = std::make_unique<::testing::NiceMock<::gl::MockEGLInterface>>();
-    ::gl::MockEGLInterface::SetEGLInterface(egl_.get());
+    gl::MockEGLInterface::SetEGLInterface(egl_.get());
 
     const EGLDisplay kDummyDisplay = reinterpret_cast<EGLDisplay>(0x1001);
     ON_CALL(*egl_, QueryString(_, EGL_EXTENSIONS))
@@ -73,10 +74,13 @@ class GpuFenceManagerTest : public GpuServiceTest {
 
     gl::ClearBindingsEGL();
     gl::InitializeStaticGLBindingsEGL();
-    gl::GLSurfaceEGL::InitializeOneOffForTesting();
+    display_ = gl::GLSurfaceEGL::InitializeOneOffForTesting();
   }
 
-  void TeardownMockEGL() { egl_.reset(); }
+  void TeardownMockEGL() {
+    gl::GLSurfaceEGL::ShutdownOneOff(display_);
+    egl_.reset();
+  }
 
   void SetupFeatureInfo(const char* gl_extensions,
                         const char* gl_version,
@@ -91,6 +95,7 @@ class GpuFenceManagerTest : public GpuServiceTest {
   std::unique_ptr<GpuFenceManager> manager_;
   std::unique_ptr<MockErrorState> error_state_;
   std::unique_ptr<::testing::NiceMock<::gl::MockEGLInterface>> egl_;
+  raw_ptr<gl::GLDisplayEGL> display_ = nullptr;
 };
 
 TEST_F(GpuFenceManagerTest, Basic) {

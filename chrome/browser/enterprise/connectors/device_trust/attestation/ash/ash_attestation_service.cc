@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
@@ -49,6 +50,12 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& serialized_signed_challenge,
     base::Value::Dict signals,
     AttestationCallback callback) {
+  std::string signals_json;
+  if (!base::JSONWriter::Write(signals, &signals_json)) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
   auto tpm_key_challenger =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
@@ -59,7 +66,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
                      std::move(callback)),
       serialized_signed_challenge, /*register_key=*/false,
       /*key_name_for_spkac=*/std::string(),
-      /*signals=*/*DictionarySignalsToProtobufSignals(signals));
+      /*signals=*/signals_json);
 }
 
 void AshAttestationService::ReturnResult(

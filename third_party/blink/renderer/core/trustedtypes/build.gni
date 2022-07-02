@@ -16,3 +16,5 @@ blink_core_sources_trustedtypes = [
   "trusted_types_util.cc",
   "trusted_types_util.h",
 ]
+
+blink_core_tests_trustedtypes = [ "trusted_types_util_test.cc" ]

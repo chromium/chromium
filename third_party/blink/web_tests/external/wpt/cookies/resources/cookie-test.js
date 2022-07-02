@@ -119,7 +119,15 @@ function domCookieTest(cookie, expectedValue, name) {
     await test_driver.delete_all_cookies();
     t.add_cleanup(test_driver.delete_all_cookies);
 
-    document.cookie = cookie;
+    if (typeof cookie === "string") {
+      document.cookie = cookie;
+    } else if (Array.isArray(cookie)) {
+      for (const singlecookie of cookie) {
+        document.cookie = singlecookie;
+      }
+    } else {
+      throw new Error('Unexpected type passed into domCookieTest as cookie: ' + typeof cookie);
+    }
     let cookies = document.cookie;
     assert_equals(cookies, expectedValue, Boolean(expectedValue) ?
                                           'The cookie was set as expected.' :

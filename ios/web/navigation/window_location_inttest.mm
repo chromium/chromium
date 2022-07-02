@@ -138,21 +138,6 @@ TEST_F(WindowLocationTest, Assign) {
   EXPECT_EQ(NSNotFound, GetIndexOfNavigationItem(about_blank_item));
 }
 
-// Tests that calling window.location.assign() with an unresolvable URL loads
-// about:blank.
-TEST_F(WindowLocationTest, WindowLocationAssignUnresolvable) {
-  // Attempt to call window.location.assign() using an unresolvable URL.
-  GURL unresolvable_url("http:https:not a url");
-  SetWindowLocationUrl(unresolvable_url);
-  ASSERT_TRUE(
-      web::test::TapWebViewElementWithId(web_state(), kWindowLocationAssignID));
-
-  // Wait for the no-op text to appear.
-  base::test::ios::WaitUntilCondition(^bool {
-    return IsNoOpTextVisible();
-  });
-}
-
 // Tests that calling window.location.replace() doesn't create a new
 // NavigationItem.
 TEST_F(WindowLocationTest, Replace) {
@@ -182,26 +167,6 @@ TEST_F(WindowLocationTest, Replace) {
   EXPECT_EQ(sample_url, current_item->GetURL());
   EXPECT_EQ(GetIndexOfNavigationItem(current_item) + 1,
             GetIndexOfNavigationItem(about_blank_item));
-}
-
-// Tests that calling window.location.replace() with an unresolvable URL is a
-// no-op.
-TEST_F(WindowLocationTest, WindowLocationReplaceUnresolvable) {
-  if (@available(iOS 14, *)) {
-    // This is a syntax error in WebKit in iOS14.
-    return;
-  }
-
-  // Attempt to call window.location.assign() using an unresolvable URL.
-  GURL unresolvable_url("http:https:not a url");
-  SetWindowLocationUrl(unresolvable_url);
-  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
-                                                 kWindowLocationReplaceID));
-
-  // Wait for the no-op text to appear.
-  base::test::ios::WaitUntilCondition(^bool {
-    return IsNoOpTextVisible();
-  });
 }
 
 // Tests that calling window.location.reload() causes an onload event to occur.

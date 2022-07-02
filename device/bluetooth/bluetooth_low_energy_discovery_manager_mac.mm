@@ -46,8 +46,8 @@ void BluetoothLowEnergyDiscoveryManagerMac::TryStartDiscovery() {
     return;
   }
 
-  if (GetCBManagerState(central_manager_) != CBCentralManagerStatePoweredOn) {
-    DVLOG(1) << "TryStartDiscovery != CBCentralManagerStatePoweredOn";
+  if ([central_manager_ state] != CBManagerStatePoweredOn) {
+    DVLOG(1) << "TryStartDiscovery != CBManagerStatePoweredOn";
     return;
   }
 

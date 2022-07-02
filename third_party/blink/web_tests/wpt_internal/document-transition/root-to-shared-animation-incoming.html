@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="root-to-shared-animation-incoming-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+
+<style>
+body {
+  background: lightgreen;
+  padding: 0;
+  margin: 0;
+}
+#box {
+  width: 100px;
+  height: 120px;
+  background: blue;
+  contain: paint;
+}
+
+html::page-transition-container(*) { animation-delay: 300s; }
+html::page-transition-incoming-image(*) { animation: unset; opacity: 1; }
+html::page-transition-outgoing-image(*) { animation: unset; opacity: 0; }
+</style>
+
+<div id=box></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    document.documentElement.style.pageTransitionTag = "none";
+    box.style.pageTransitionTag = "root";
+    // We should not see the "live" body at all.
+    document.body.style.background = "red";
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

@@ -11,8 +11,16 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -20,6 +28,8 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
@@ -112,4 +122,78 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
         RealboxHandler::PedalVectorIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
+
+  const scoped_refptr<OmniboxAction> history_clusters_action =
+      base::MakeRefCounted<history_clusters::HistoryClustersAction>(
+          "test", history::ClusterKeywordData());
+  const gfx::VectorIcon& vector_icon = history_clusters_action->GetVectorIcon();
+  const std::string& svg_name =
+      RealboxHandler::PedalVectorIconToResourceName(vector_icon);
+  EXPECT_FALSE(svg_name.empty());
+}
+
+class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
+ public:
+  RealboxSearchPreloadBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &RealboxSearchPreloadBrowserTest::GetWebContents,
+            base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSupportSearchSuggestionForPrerender2, {}},
+         {kSearchPrefetchServicePrefetching,
+          {{"max_attempts_per_caching_duration", "3"},
+           {"cache_size", "1"},
+           {"device_memory_threshold_MB", "0"}}}},
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A sink instance that allows Realbox to make IPC without failing DCHECK.
+class RealboxSearchBrowserTestPage : public realbox::mojom::Page {
+ public:
+  // realbox::mojom::Page
+  void AutocompleteResultChanged(
+      realbox::mojom::AutocompleteResultPtr result) override {}
+  void AutocompleteMatchImageAvailable(uint32_t match_index,
+                                       const GURL& url,
+                                       const std::string& data_url) override {}
+
+  mojo::PendingRemote<realbox::mojom::Page> GetRemotePage() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<realbox::mojom::Page> receiver_{this};
+};
+
+// Tests the realbox input can trigger prerender and prefetch.
+IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
+  mojo::Remote<realbox::mojom::PageHandler> remote_page_handler;
+  RealboxSearchBrowserTestPage page;
+  RealboxHandler realbox_handler =
+      RealboxHandler(remote_page_handler.BindNewPipeAndPassReceiver(),
+                     browser()->profile(), GetWebContents());
+  realbox_handler.SetPage(page.GetRemotePage());
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+
+  std::string input_query = "pre";
+  std::string search_terms = "prerender";
+  AddNewSuggestionRule(input_query, {search_terms}, /*prefetch_index=*/0,
+                       /*prerender_index=*/0);
+  GURL prerender_url = GetSearchServerQueryURL(search_terms + "&pf=cs&");
+
+  // Fake a WebUI input.
+  remote_page_handler->QueryAutocomplete(base::ASCIIToUTF16(input_query),
+                                         /*prevent_inline_autocomplete=*/false);
+  remote_page_handler.FlushForTesting();
+
+  // Prerender and Prefetch should be triggered.
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  registry_observer.WaitForTrigger(prerender_url);
 }

@@ -41,6 +41,14 @@
         </cr-link-row>
         <div class="hr"></div>
       </template>
+      <template is="dom-if" if="[[showPrivacyHub_]]" restamp>
+        <cr-link-row id="privacyHubSubpageTrigger"
+            on-click="onPrivacyHub_"
+            label="$i18n{privacyHubTitle}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="hr"></div>
+      </template>
     </template>
 
 <if expr="_google_chrome">
@@ -158,6 +166,12 @@
       <settings-subpage page-title="$i18n{smartPrivacyTitle}">
         <settings-smart-privacy-page prefs="{{prefs}}">
         </settings-smart-privacy-page>
+      </settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/privacyHub">
+      <settings-subpage page-title="$i18n{privacyHubTitle}">
+        <settings-privacy-hub-page prefs="{{prefs}}">
+        </settings-privacy-hub-page>
       </settings-subpage>
     </template>
   </template>

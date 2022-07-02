@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -30,16 +29,16 @@ CrostiniSshfs::CrostiniSshfs(Profile* profile) : profile_(profile) {}
 
 CrostiniSshfs::~CrostiniSshfs() = default;
 
-void CrostiniSshfs::OnContainerShutdown(const ContainerId& container_id) {
+void CrostiniSshfs::OnContainerShutdown(const guest_os::GuestId& container_id) {
   container_shutdown_observer_.Reset();
   SetSshfsMounted(container_id, false);
 }
 
-bool CrostiniSshfs::IsSshfsMounted(const ContainerId& container) {
+bool CrostiniSshfs::IsSshfsMounted(const guest_os::GuestId& container) {
   return (sshfs_mounted_.count(container));
 }
 
-void CrostiniSshfs::SetSshfsMounted(const ContainerId& container,
+void CrostiniSshfs::SetSshfsMounted(const guest_os::GuestId& container,
                                     bool mounted) {
   if (mounted) {
     sshfs_mounted_.emplace(container);
@@ -48,7 +47,7 @@ void CrostiniSshfs::SetSshfsMounted(const ContainerId& container,
   }
 }
 
-void CrostiniSshfs::UnmountCrostiniFiles(const ContainerId& container_id,
+void CrostiniSshfs::UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                                          MountCrostiniFilesCallback callback) {
   // TODO(crbug/1197986): Unmounting should cancel an in-progress mount.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -68,7 +67,7 @@ void CrostiniSshfs::UnmountCrostiniFiles(const ContainerId& container_id,
 }
 
 void CrostiniSshfs::OnRemoveSshfsCrostiniVolume(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     MountCrostiniFilesCallback callback,
     base::Time started,
     bool success) {
@@ -80,7 +79,7 @@ void CrostiniSshfs::OnRemoveSshfsCrostiniVolume(
   std::move(callback).Run(success);
 }
 
-void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
+void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
                                        MountCrostiniFilesCallback callback,
                                        bool background) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -98,7 +97,7 @@ void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
     return;
   }
 
-  if (container_id != ContainerId::GetDefault()) {
+  if (container_id != DefaultContainerId()) {
     LOG(ERROR) << "Unable to mount files for non-default container";
     Finish(CrostiniSshfsResult::kNotDefaultContainer);
     return;
@@ -232,7 +231,7 @@ void CrostiniSshfs::Finish(CrostiniSshfsResult result) {
 }
 
 CrostiniSshfs::InProgressMount::InProgressMount(
-    const ContainerId& container,
+    const guest_os::GuestId& container,
     MountCrostiniFilesCallback callback,
     bool background)
     : container_id(container),
@@ -246,7 +245,7 @@ CrostiniSshfs::InProgressMount& CrostiniSshfs::InProgressMount::operator=(
 CrostiniSshfs::InProgressMount::~InProgressMount() = default;
 
 CrostiniSshfs::PendingRequest::PendingRequest(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     MountCrostiniFilesCallback callback,
     bool background)
     : container_id(container_id),

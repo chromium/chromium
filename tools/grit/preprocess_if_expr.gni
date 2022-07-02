@@ -17,16 +17,27 @@ template("preprocess_if_expr") {
 
     inputs = []
     outputs = []
+
+    in_folder = "."
+    if (defined(invoker.in_folder)) {
+      in_folder = invoker.in_folder
+    }
+
+    out_folder = target_gen_dir
+    if (defined(invoker.out_folder)) {
+      out_folder = invoker.out_folder
+    }
+
     foreach(in_file, invoker.in_files) {
-      inputs += [ invoker.in_folder + "/" + in_file ]
-      outputs += [ invoker.out_folder + "/" + in_file ]
+      inputs += [ "$in_folder/" + in_file ]
+      outputs += [ "$out_folder/" + in_file ]
     }
 
     args = [
              "--in-folder",
-             rebase_path(invoker.in_folder, root_build_dir),
+             rebase_path(in_folder, root_build_dir),
              "--out-folder",
-             rebase_path(invoker.out_folder, root_build_dir),
+             rebase_path(out_folder, root_build_dir),
              "--in-files",
            ] + invoker.in_files + grit_args
 

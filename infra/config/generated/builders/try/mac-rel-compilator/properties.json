@@ -187,6 +187,9 @@
   "$build/code_coverage": {
     "use_clang_coverage": true
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
   "$build/goma": {
     "jobs": 150,
     "rpc_extra_params": "?prod",

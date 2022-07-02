@@ -545,6 +545,18 @@ void BackgroundSyncManager::GetRegistrations(
     StatusAndRegistrationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::SyncManager or
+  // blink::PeriodicSyncManager. Return a not allowed error if the renderer side
+  // check didn't happen for some reason.
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
+      service_worker_context_->GetLiveRegistration(sw_registration_id);
+  if (sw_registration && sw_registration->ancestor_frame_type() ==
+                             blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Background Sync is not allowed in a fenced frame");
+    return;
+  }
+
   if (disabled_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -796,6 +808,16 @@ void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
     RecordFailureAndPostError(GetBackgroundSyncType(options),
                               BACKGROUND_SYNC_STATUS_NO_SERVICE_WORKER,
                               std::move(callback));
+    return;
+  }
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::SyncManager or
+  // blink::PeriodicSyncManager. Return a not allowed error if the renderer side
+  // check didn't happen for some reason.
+  if (sw_registration->ancestor_frame_type() ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Background Sync is not allowed in a fenced frame");
     return;
   }
 

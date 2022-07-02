@@ -48,7 +48,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogChoice.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogController.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogHelper.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogProperties.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogView.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationCustomView.java",
@@ -168,12 +167,11 @@ android_library("download_java_tests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/util/android:java",
     "//components/offline_items_collection/core:core_java",
@@ -190,18 +188,13 @@ android_library("download_java_tests") {
   ]
 }
 
-android_library("junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit_tests") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLaterMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogHelperUnitTest.java",
   ]
 
   deps = [
@@ -210,14 +203,12 @@ android_library("junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -226,6 +217,7 @@ android_library("junit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ic_incognito_download_message.xml",
     "java/res/drawable/infobar_download_complete.xml",
     "java/res/layout/confirm_oma_download.xml",
     "java/res/layout/download_later_dialog.xml",

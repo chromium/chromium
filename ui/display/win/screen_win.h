@@ -157,6 +157,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns true if the native window is occluded.
   virtual bool IsNativeWindowOccluded(gfx::NativeWindow window) const;
 
+  // Returns the cached on_current_workspace() value for the NativeWindow's
+  // host.
+  virtual absl::optional<bool> IsWindowOnCurrentVirtualDesktop(
+      gfx::NativeWindow window) const;
+
  protected:
   ScreenWin(bool initialize);
 

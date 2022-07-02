@@ -506,7 +506,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
       auto source_id = browser()
                            ->tab_strip_model()
                            ->GetActiveWebContents()
-                           ->GetMainFrame()
+                           ->GetPrimaryMainFrame()
                            ->GetPageUkmSourceId();
       bubble_view->OpenAboutThisSitePage(
           service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
@@ -562,7 +562,10 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
     // TODO(crbug.com/1286276): It would be better to actually access the
     // topic through Javascript for an end-to-end test when the API is ready.
     auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame());
 
     pscs->OnTopicAccessed(
         url::Origin::Create(GURL("https://a.test")), false,

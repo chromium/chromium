@@ -262,9 +262,6 @@
       <message name="IDS_ADD" desc="Prompt for the user to add something, like a new address. [CHAR_LIMIT=20]">
         Add
       </message>
-      <message name="IDS_CHANGE" desc="Prompt for the user to change something. [CHAR_LIMIT=20]">
-        Change
-      </message>
       <message name="IDS_SHARE" desc="Content description for a button to share item(s). [CHAR_LIMIT=20]">
         Share
       </message>
@@ -372,6 +369,10 @@
         This page is dangerous
       </message>
 
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
+        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
+      </message>
+
       <!-- Cookie controls UI -->
       <message name="IDS_COOKIE_CONTROLS_BLOCKED_COOKIES" desc="Text showing the number of blocked cookies on a site.">
         {COOKIE_COUNT, plural,
@@ -459,6 +460,9 @@
       <!-- Page Info popup -->
       <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TITLE" desc="The title label of the 'About this site' subpage in Page Info bubble.">
         From the web
+      </message>
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
+        About this page
       </message>
       <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
         From <ph name="SOURCE_NAME">%1$s<ex>Wikipedia</ex></ph>
@@ -593,8 +597,14 @@
       <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
         Ad personalization
       </message>
-      <message name="IDS_PAGE_AD_PERSONALIZATION_DESCRIPTION" desc="Description of a section in PageInfo that shows information on how the current site is using ad personalization APIs from the Privacy Sandbox.">
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION"  desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
         This site gets your interests from Chrome to show you more relevant ads
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads
       </message>
       <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
         Manage interests
@@ -608,21 +618,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
         View site information
-      </message>
-      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
-        Zoom
-      </message>
-      <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
-        Use this setting to increase/decrease the zoom for the page.
-      </message>
-      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
-        Decrease zoom
-      </message>
-      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
-        Increase zoom
-      </message>
-      <message name="IDS_PAGE_ZOOM_FACTOR" desc="Text description of the current page zoom factor set by the user" translateable="false">
-        <ph name="ZOOM_FACTOR">%1$d<ex>100</ex></ph> %%
       </message>
 
       <!-- Media Capture and Streams -->
@@ -677,6 +672,17 @@
         Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://googlechrome.github.io/samples/web-bluetooth/device-info.html</ex></ph>
       </message>
       <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
+        Tap to return to the site
+      </message>
+
+      <!-- USB -->
+      <message name="IDS_CONNECTED_TO_USB_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a USB device.">
+        Connected to a USB device
+      </message>
+      <message name="IDS_USB_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
+        Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://webusb.github.io/arduino/demos/console/</ex></ph>
+      </message>
+      <message name="IDS_USB_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
         Tap to return to the site
       </message>
 
@@ -899,6 +905,46 @@
       </message>
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions
+      </message>
+
+      <!-- Page Zoom -->
+      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+        Zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+        Make the default text and images on sites smaller or larger
+      </message>
+      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
+        Decrease zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
+        Increase zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_FACTOR" desc="Text description of the current page zoom factor set by the user" translateable="false">
+        <ph name="ZOOM_FACTOR">%1$d<ex>100</ex></ph> %%
+      </message>
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_TITLE" desc="Title of the preference that allows the user to always show the menu item for zoom" translateable="false">
+        Show zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom." translateable="false">
+        Zoom in or out on a page from the main menu
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level." translateable="false">
+        Preview
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_TITLE" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        The Wonderful Wizard of Oz
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_SUMMARY" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        Chapter 11: The Wonderful Emerald City of Oz
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_ITEM" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        Even with eyes protected by the green spectacles Dorothy and her friends were at first dazzled by the
+      </message>
+
+      <!-- Search resumption module strings -->
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">
+        Suggested searches based on your last tab
       </message>
     </messages>
   </release>

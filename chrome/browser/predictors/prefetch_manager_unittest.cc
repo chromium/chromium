@@ -253,7 +253,7 @@ TEST_F(PrefetchManagerTest, QueueingMetricsRecorded) {
   base::HistogramTester histogram_tester;
   net::test_server::EmbeddedTestServer test_server;
   std::vector<PrefetchRequest> requests;
-  size_t num_prefetches = features::GetMaxInflightPreresolves();
+  size_t num_prefetches = features::GetMaxInflightPrefetches();
 
   GURL main_frame_url("https://abc.invalid");
 

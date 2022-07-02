@@ -153,8 +153,8 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
   if (client_id.has_value())
     return_dict.SetIntKey("clientId", client_id.value());
 
-  auto event_args = std::vector<base::Value>();
-  event_args.push_back(std::move(return_dict));
+  base::Value::List event_args;
+  event_args.Append(std::move(return_dict));
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::SPEECH_RECOGNITION_PRIVATE_ON_STOP,
       api::speech_recognition_private::OnStop::kEventName,

@@ -61,6 +61,8 @@ class DlpWarnNotifier : public views::WidgetObserver {
   int ActiveWarningDialogsCountForTesting() const;
 
  private:
+  friend class MockDlpWarnNotifier;
+
   // Helper method to create and show a warning dialog for a given
   // |restriction|.
   virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(

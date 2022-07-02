@@ -111,7 +111,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   setup(async function() {
     pluginVmBrowserProxy = new TestPluginVmBrowserProxy();
-    PluginVmBrowserProxyImpl.setInstance(pluginVmBrowserProxy);
+    PluginVmBrowserProxyImpl.setInstanceForTesting(pluginVmBrowserProxy);
     fakeHandler = setupFakeHandler();
     replaceStore();
 

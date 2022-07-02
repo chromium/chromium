@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">Sækir eiginleika til að skanna skjöl</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
 <translation id="4121305183798804752">Skjal greindist</translation>
 <translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">Hætta að taka mynd</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="4570032796877367747">Fremri myndavél</translation>
+<translation id="4620818268515773682">Kveikja/slökkva á hljóðnema. Slökkt er á þöggun</translation>
 <translation id="4628948037717959914">Mynd</translation>
 <translation id="4649291346448517080">Ekki tókst að vista skrána</translation>
 <translation id="4695379108709712600">Færist upp á við</translation>
@@ -145,6 +147,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
 <translation id="7671804233658741790">Neðra, hægra horn skjals</translation>
+<translation id="7692090236657809299">Virkja hliðrun, halla, aðdrátt</translation>
 <translation id="7726641833034062494">Taka upp venjulegt vídeó</translation>
 <translation id="7748344063862150053">Efra, hægra horn skjals</translation>
 <translation id="7933675232020478311">Færist niður og til hægri</translation>
@@ -158,6 +161,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Kveikja/slökkva á hljóðnema. Kveikt er á þöggun</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>

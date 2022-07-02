@@ -32,6 +32,7 @@ const categoryLabels: {[key: string]: string} = {
   service_worker: loadTimeData.getString('cookieServiceWorker'),
   shared_worker: loadTimeData.getString('cookieSharedWorker'),
   media_license: loadTimeData.getString('cookieMediaLicense'),
+  quota: loadTimeData.getString('cookieQuotaStorage'),
 };
 
 /**
@@ -139,9 +140,6 @@ export class SiteDataDetailsSubpageElement extends
     // cookie to differentiate them.
     if (item.type === 'cookie') {
       return item.title;
-    }
-    if (item.type === 'quota') {
-      return item.totalUsage;
     }
     return categoryLabels[item.type];
   }

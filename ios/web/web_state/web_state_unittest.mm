@@ -486,10 +486,18 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
+  int maxSessionSize = wk_navigation_util::kMaxSessionSize;
+  ui::PageTransition transition_type = ui::PAGE_TRANSITION_RELOAD;
+  if (@available(iOS 15, *)) {
+    // kMaxSessionSize is no longer used on iOS15.
+    maxSessionSize = kItemCount;
+    // Synthesized restore defaults to transition first.
+    transition_type = ui::PAGE_TRANSITION_FIRST;
+  }
+
   // Verify that session was fully restored.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    bool restored = navigation_manager->GetItemCount() ==
-                        wk_navigation_util::kMaxSessionSize &&
+    bool restored = navigation_manager->GetItemCount() == maxSessionSize &&
                     navigation_manager->CanGoForward();
     EXPECT_EQ(restored, !navigation_manager->IsRestoreSessionInProgress());
     if (!restored) {
@@ -515,7 +523,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
         EXPECT_EQ(0, navigation_manager->GetLastCommittedItemIndex());
         EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
             navigation_manager->GetLastCommittedItem()->GetTransitionType(),
-            ui::PAGE_TRANSITION_RELOAD));
+            transition_type));
       } else {
         EXPECT_EQ("", web_state_ptr->GetLastCommittedURL());
         EXPECT_EQ(-1, navigation_manager->GetLastCommittedItemIndex());
@@ -540,13 +548,16 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 
     return restored;
   }));
-  EXPECT_EQ(wk_navigation_util::kMaxSessionSize,
-            navigation_manager->GetItemCount());
+  EXPECT_EQ(maxSessionSize, navigation_manager->GetItemCount());
   EXPECT_TRUE(navigation_manager->CanGoForward());
 
   histogram_tester_.ExpectTotalCount(kRestoreNavigationItemCount, 1);
   histogram_tester_.ExpectBucketCount(kRestoreNavigationItemCount, 100, 1);
-  histogram_tester_.ExpectTotalCount(kRestoreNavigationTime, 1);
+  if (@available(iOS 15, *)) {
+  } else {
+    // kRestoreNavigationTime only applies to legacy session restore.
+    histogram_tester_.ExpectTotalCount(kRestoreNavigationTime, 1);
+  }
 
   // Now wait until the last committed item is fully loaded.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -559,7 +570,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager->GetLastCommittedItem()->GetTransitionType(),
-      ui::PAGE_TRANSITION_RELOAD));
+      transition_type));
 
   // The restoration of www.0.com ends with displaying an error page which may
   // not be complete at this point.

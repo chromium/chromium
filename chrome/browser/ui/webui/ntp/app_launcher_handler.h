@@ -137,6 +137,12 @@ class AppLauncherHandler
   // CURRENT_TAB.
   void HandleLaunchApp(const base::ListValue* args);
 
+  void LaunchApp(std::string extension_id,
+                 extension_misc::AppLaunchBucket launch_bucket,
+                 const std::string& source_value,
+                 WindowOpenDisposition disposition,
+                 bool force_launch_deprecated_apps);
+
   // Handles the "setLaunchType" message with args containing [extension_id,
   // launch_type].
   void HandleSetLaunchType(const base::ListValue* args);
@@ -148,7 +154,8 @@ class AppLauncherHandler
 
   // Handles the "createAppShortcut" message with |args| containing
   // [extension_id].
-  void HandleCreateAppShortcut(const base::ListValue* args);
+  void HandleCreateAppShortcut(base::OnceClosure done,
+                               const base::ListValue* args);
 
   // Handles the "installAppLocally" message with |args| containing
   // [extension_id].

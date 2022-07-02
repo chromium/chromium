@@ -60,6 +60,13 @@ class AdaptiveChargingNotificationControllerTest : public AshTestBase {
     return controller_.get();
   }
 
+  void SimulateClick(int button_index) {
+    message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            /*id=*/"adaptive-charging-notify-info");
+    notification->delegate()->Click(button_index, absl::nullopt);
+  }
+
  private:
   std::unique_ptr<AdaptiveChargingNotificationController> controller_;
 };
@@ -113,8 +120,50 @@ TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
 
   ASSERT_TRUE(notification);
 
-  // Current local time is 12:42 pm, so 5 hours after should be 5:42 pm.
-  EXPECT_NE(notification->message().find(u"5:42 pm"), std::u16string::npos);
+  // Current local time is 12:42 pm, so 5 hours after should be 5:30pm (rounding
+  // from 5:42pm).
+  EXPECT_NE(notification->message().find(u"5:30 pm"), std::u16string::npos);
+}
+
+TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
+  // Set default locale.
+  base::test::ScopedRestoreICUDefaultLocale restore_locale;
+  base::i18n::SetICUDefaultLocale("en_AU");
+  base::test::ScopedRestoreDefaultTimezone sydney_time("Australia/Sydney");
+
+  // Override time for testing.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time time;
+        EXPECT_TRUE(base::Time::FromUTCExploded(kTestDateTimeExploded, &time));
+        return time + base::Minutes(3);  // Local time is 12:45pm.
+      },
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  SetAdaptiveChargingPref(true);
+  GetController()->ShowAdaptiveChargingNotification(5);
+
+  const message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindPopupNotificationById(
+          "adaptive-charging-notify-info");
+
+  ASSERT_TRUE(notification);
+
+  // Current local time is 12:45 pm, so 5 hours after should be 6:00pm (rounding
+  // from 5:45pm).
+  EXPECT_NE(notification->message().find(u"6:00 pm"), std::u16string::npos);
+}
+
+TEST_F(AdaptiveChargingNotificationControllerTest,
+       ClickButtonMakesNotificationDisappear) {
+  SetAdaptiveChargingPref(true);
+  GetController()->ShowAdaptiveChargingNotification(5);
+  EXPECT_EQ(VisibleNotificationCount(), 1u);
+
+  // Notification should disappear after click.
+  SimulateClick(/*button_index=*/0);
+  EXPECT_EQ(VisibleNotificationCount(), 0u);
 }
 
 }  // namespace ash

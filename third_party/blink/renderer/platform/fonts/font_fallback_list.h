@@ -123,10 +123,10 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
   Vector<scoped_refptr<FontData>, 1> font_list_;
-  const SimpleFontData* cached_primary_simple_font_data_;
+  const SimpleFontData* cached_primary_simple_font_data_ = nullptr;
   const WeakPersistent<FontFallbackMap> font_fallback_map_;
-  int family_index_;
-  uint16_t generation_;
+  int family_index_ = 0;
+  const uint16_t generation_;
   bool has_loading_fallback_ : 1;
   bool has_custom_font_ : 1;
   bool can_shape_word_by_word_ : 1;

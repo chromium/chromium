@@ -12,7 +12,7 @@ namespace net {
 // Implements encryption and decryption for the persistent cookie store.
 class COMPONENT_EXPORT(NET_EXTRAS) CookieCryptoDelegate {
  public:
-  virtual ~CookieCryptoDelegate() {}
+  virtual ~CookieCryptoDelegate() = default;
 
   // Return if cookies should be encrypted on this platform.  Decryption of
   // previously encrypted cookies is always possible.

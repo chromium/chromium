@@ -45,12 +45,12 @@ class NET_EXPORT HttpAuthHandlerFactory {
     CREATE_PREEMPTIVE,  // Create a handler preemptively.
   };
 
-  HttpAuthHandlerFactory() : http_auth_preferences_(nullptr) {}
+  HttpAuthHandlerFactory() = default;
 
   HttpAuthHandlerFactory(const HttpAuthHandlerFactory&) = delete;
   HttpAuthHandlerFactory& operator=(const HttpAuthHandlerFactory&) = delete;
 
-  virtual ~HttpAuthHandlerFactory() {}
+  virtual ~HttpAuthHandlerFactory() = default;
 
   // Sets the source of the HTTP authentication preferences.
   // HttpAuthHandlerFactory doesn't own the preferences, and the
@@ -163,7 +163,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
 
  private:
   // The preferences for HTTP authentication.
-  raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
+  raw_ptr<const HttpAuthPreferences> http_auth_preferences_ = nullptr;
 };
 
 // The HttpAuthHandlerRegistryFactory dispatches create requests out

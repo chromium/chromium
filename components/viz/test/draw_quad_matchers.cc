@@ -64,7 +64,7 @@ testing::Matcher<const DrawQuad*> IsSolidColorQuad() {
   return IsQuadType(DrawQuad::Material::kSolidColor);
 }
 
-testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor expected_color) {
+testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor4f expected_color) {
   return testing::AllOf(
       IsSolidColorQuad(),
       testing::Truly([expected_color](const DrawQuad* quad) {

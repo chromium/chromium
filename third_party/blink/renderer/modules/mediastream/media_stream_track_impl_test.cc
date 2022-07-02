@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -57,7 +58,7 @@ TEST_F(MediaStreamTrackImplTest, StopTrackTriggersObservers) {
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
       false /* remote */);
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
@@ -78,7 +79,7 @@ TEST_F(MediaStreamTrackImplTest, LabelSanitizer) {
       "id", MediaStreamSource::StreamType::kTypeAudio, "Chromiums AirPods",
       false /* remote */);
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
   EXPECT_EQ(track->label(), "AirPods");
@@ -93,8 +94,9 @@ TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
   auto platform_track =
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
   MediaStreamAudioTrack* platform_track_ptr = platform_track.get();
-  MediaStreamComponent* component = MakeGarbageCollected<MediaStreamComponent>(
-      source, std::move(platform_track));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source,
+                                                     std::move(platform_track));
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 

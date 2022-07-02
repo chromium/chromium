@@ -55,6 +55,7 @@ class Layer;
 
 namespace blink {
 class Element;
+class EmptyLocalFrameClient;
 class Node;
 class Page;
 class PagePopupChromeClient;
@@ -75,8 +76,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebPagePopupImpl(const WebPagePopupImpl&) = delete;
   WebPagePopupImpl& operator=(const WebPagePopupImpl&) = delete;
   ~WebPagePopupImpl() override;
-
-  void Initialize(WebViewImpl*, PagePopupClient*);
 
   // Cancel informs the PopupClient that it should initiate shutdown of this
   // popup via ClosePopup(). It is called to indicate the popup was closed due
@@ -122,6 +121,18 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Called when the browser has shown the popup.
   void DidShowPopup();
 
+  static WebPagePopupImpl* Create(
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      WebViewImpl* opener_impl,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const display::ScreenInfos& screen_infos,
+      PagePopupClient*);
+
  private:
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
@@ -157,7 +168,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void Resize(const gfx::Size&) override;
-  void Close() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void SetFocus(bool) override;
   bool HasFocus() override;
@@ -166,8 +176,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings) override;
-  scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
-      override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
@@ -201,6 +209,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // This may only be called if page_ is non-null.
   LocalFrame& MainFrame() const;
 
+  void Close();
+
   Element* FocusedElement() const;
 
   bool IsViewportPointInWindow(int x, int y);
@@ -222,8 +232,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      WebViewImpl* opener_impl,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const display::ScreenInfos& screen_infos,
+      PagePopupClient*);
+
   void DestroyPage();
+  void MainFrameDetached();
   void SetRootLayer(scoped_refptr<cc::Layer>);
   void SetWebView(WebViewImpl* web_view);
 
@@ -240,13 +255,14 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // This is the WebView that opened the popup.
   WebViewImpl* opener_web_view_ = nullptr;
+  Persistent<PagePopupChromeClient> chrome_client_;
+  Persistent<EmptyLocalFrameClient> local_frame_client_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
   // This member is non-null between the call to Initialize() and the call to
   // ClosePopup(). If page_ is non-null, it is guaranteed to have an attached
   // main LocalFrame with a corresponding non-null LocalFrameView and non-null
   // Document.
   Persistent<Page> page_;
-  Persistent<PagePopupChromeClient> chrome_client_;
   PagePopupClient* popup_client_;
   bool closing_ = false;
 
@@ -284,6 +300,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;
+  friend class EmptyLocalFrameClient;
 };
 
 // WebPagePopupImpl is the only implementation of WebPagePopup and PagePopup, so

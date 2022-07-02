@@ -124,7 +124,7 @@ source_set("test_support") {
 test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  sources = []
+  sources = [ "native_theme_features_unittest.cc" ]
 
   if (use_aura) {
     sources += [ "native_theme_aura_unittest.cc" ]

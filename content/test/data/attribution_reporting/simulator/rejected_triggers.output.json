@@ -6,11 +6,13 @@
         "timestamp": "1643235572000",
         "reporting_origin": "https://r.test",
         "destination_origin": "https://d.test",
-        "Attribution-Reporting-Register-Event-Trigger": [
-          {
-            "trigger_data": "1"
-          }
-        ]
+        "Attribution-Reporting-Register-Trigger": {
+          "event_trigger_data": [
+            {
+              "trigger_data": "1"
+            }
+          ]
+        }
       }
     },
     {
@@ -19,12 +21,14 @@
         "timestamp": "1643235575000",
         "reporting_origin": "https://r.test",
         "destination_origin": "https://d.test",
-        "Attribution-Reporting-Register-Event-Trigger": [
-          {
-            "trigger_data": "3",
-            "deduplication_key": "22"
-          }
-        ]
+        "Attribution-Reporting-Register-Trigger": {
+          "event_trigger_data": [
+            {
+              "trigger_data": "3",
+              "deduplication_key": "22"
+            }
+          ]
+        }
       }
     },
     {
@@ -34,20 +38,31 @@
         "timestamp": "1643235578000",
         "reporting_origin": "https://r.test",
         "destination_origin": "https://d.test",
-        "Attribution-Reporting-Register-Event-Trigger": [
-          {
-            "trigger_data": "6"
+        "Attribution-Reporting-Register-Trigger": {
+          "event_trigger_data": [
+            {
+              "trigger_data": "6"
+            }
+          ],
+          "aggregatable_trigger_data": [
+            {
+              "source_keys": ["a"],
+              "key_piece": "0x400"
+            }
+          ],
+          "aggregatable_values": {
+            "b": 123
           }
-        ],
-        "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [
-          {
-            "source_keys": ["a"],
-            "key_piece": "0x400"
-          }
-        ],
-        "Attribution-Reporting-Register-Aggregatable-Values": {
-          "b": 123
         }
+      }
+    },
+    {
+      "event_level_reason": "noMatchingConfigurations",
+      "trigger": {
+        "timestamp": "1643235579000",
+        "reporting_origin": "https://r.test",
+        "destination_origin": "https://d.test",
+        "Attribution-Reporting-Register-Trigger": {}
       }
     }
   ],

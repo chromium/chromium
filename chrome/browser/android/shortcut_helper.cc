@@ -102,7 +102,8 @@ void RecordAddToHomeScreenUKM(
   if (!web_contents)
     return;
 
-  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   ukm::builders::Webapp_AddToHomeScreen(source_id)
       .SetDisplayMode(static_cast<int>(info.display))
       .SetShortcutReason(static_cast<int>(installable_status))

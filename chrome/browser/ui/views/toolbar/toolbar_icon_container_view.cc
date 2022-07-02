@@ -12,11 +12,13 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -50,8 +52,8 @@ void ToolbarIconContainerView::RoundRectBorder::OnPaintLayer(
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
-  flags.setColor(parent_->GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER));
+  flags.setColor(
+      parent_->GetColorProvider()->GetColor(kColorToolbarButtonBorder));
   gfx::RectF rect(gfx::SizeF(layer_.size()));
   rect.Inset(0.5f);  // Pixel edges -> pixel centers.
   canvas->DrawRoundRect(rect, radius, flags);
@@ -178,7 +180,7 @@ void ToolbarIconContainerView::SetIconColor(SkColor color) {
 
 SkColor ToolbarIconContainerView::GetIconColor() const {
   return icon_color_.value_or(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
+      GetColorProvider()->GetColor(kColorToolbarButtonIcon));
 }
 
 bool ToolbarIconContainerView::GetHighlighted() const {

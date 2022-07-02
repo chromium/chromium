@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">ສະແກນບາໂຄດ</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4096701159033358951">ກຳລັງດາວໂຫຼດຄຸນສົມບັດການສະແກນເອກະສານ</translation>
 <translation id="4118525110028899586">ຢຸດການບັນທຶກໄວ້ຊົ່ວຄາວ</translation>
 <translation id="4121305183798804752">ກວດພົບເອກະສານ</translation>
 <translation id="414641094616694804">ກ້ອງຖ່າຍຮູບນີ້ບໍ່ສາມາດປ່ຽນຄວາມລະອຽດໄດ້</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">ຢຸດການຖ່າຍຮູບ</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ເມກະພິກເຊວ</translation>
 <translation id="4570032796877367747">ກ້ອງຫນ້າ</translation>
+<translation id="4620818268515773682">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ເຊົາປິດສຽງແລ້ວ</translation>
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
 <translation id="4649291346448517080">ບໍ່ສາມາດບັນທຶກໄຟລ໌ໄດ້</translation>
 <translation id="4695379108709712600">ກຳລັງຍ້າຍໄປທາງເທິງ</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">ມຸມຂວາລຸ່ມຂອງເອກະສານ</translation>
+<translation id="7692090236657809299">ເປີດການນຳໃຊ້ການເລື່ອນ, ອຽງ, ຊູມ</translation>
 <translation id="7726641833034062494">ບັນທຶກວິດີໂອປົກກະຕິ</translation>
 <translation id="7748344063862150053">ມຸມຂວາເທິງຂອງເອກະສານ</translation>
 <translation id="7933675232020478311">ກຳລັງຍ້າຍໄປທາງຂວາລຸ່ມ</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">ອຽງລົງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ກຳລັງປິດສຽງຢູ່</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>

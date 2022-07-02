@@ -726,8 +726,8 @@ void OwnBufferFrameDeliverer::Initialize(
     std::unique_ptr<VideoCaptureDevice::Client> client,
     const FakeDeviceState* device_state) {
   FrameDeliverer::Initialize(pixel_format, std::move(client), device_state);
-  buffer_.reset(new uint8_t[VideoFrame::AllocationSize(
-      pixel_format, device_state->format.frame_size)]);
+  buffer_ = std::make_unique<uint8_t[]>(VideoFrame::AllocationSize(
+      pixel_format, device_state->format.frame_size));
 }
 
 void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(

@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#include "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -25,10 +25,11 @@ class PrintActivityTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
+    mocked_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
   }
 
-  // Creates a ShareToData instance with |is_page_printable| set.
+  // Creates a ShareToData instance with `is_page_printable` set.
   ShareToData* CreateData(bool is_page_printable) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")

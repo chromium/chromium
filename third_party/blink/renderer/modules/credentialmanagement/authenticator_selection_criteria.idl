@@ -2,24 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/webauthn/#enumdef-authenticatorattachment
-enum AuthenticatorAttachment {
-  "platform",
-  "cross-platform"
-};
-
-// https://w3c.github.io/webauthn/#enumdef-userverificationrequirement
-enum UserVerificationRequirement {
-    "required",
-    "preferred",
-    "discouraged"
-};
-
 // https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria
 dictionary AuthenticatorSelectionCriteria {
-  AuthenticatorAttachment authenticatorAttachment;
+  // A DOMString expressing an AuthenticatorAttachment.
+  DOMString authenticatorAttachment;
   boolean requireResidentKey = false;
   // A DOMString expressing a ResidentKeyRequirement.
   DOMString residentKey;
-  UserVerificationRequirement userVerification;
+  // A DOMString expressing a UserVerificationRequirement.
+  DOMString userVerification;
 };

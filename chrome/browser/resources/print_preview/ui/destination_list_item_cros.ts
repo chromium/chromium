@@ -43,9 +43,7 @@ export class PrintPreviewDestinationListItemElement extends
   static get properties() {
     return {
       destination: Object,
-
       searchQuery: Object,
-
       searchHint_: String,
 
       destinationIcon_: {
@@ -96,7 +94,7 @@ export class PrintPreviewDestinationListItemElement extends
 
   destination: Destination;
   searchQuery: RegExp|null;
-  destinationIcon_: string;
+  private destinationIcon_: string;
   private searchHint_: string;
   private statusText_: string;
   private isDarkModeActive_: boolean;

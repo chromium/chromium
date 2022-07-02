@@ -67,10 +67,15 @@ KeyframeEffect::~KeyframeEffect() {
 void KeyframeEffect::SetNeedsPushProperties() {
   needs_push_properties_ = true;
 
+  // The keyframe effect may have been removed from the main thread while
+  // an event was in flight from the compositor. In this case, we may need
+  // to push the removal to the compositor but do not expect to have a bound
+  // element animations instance.
   // TODO(smcgruer): We only need the below calls when needs_push_properties_
   // goes from false to true - see http://crbug.com/764405
-  DCHECK(element_animations());
-  element_animations_->SetNeedsPushProperties();
+  if (element_animations()) {
+    element_animations_->SetNeedsPushProperties();
+  }
 
   animation_->SetNeedsPushProperties();
 }
@@ -443,7 +448,8 @@ bool KeyframeEffect::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-float KeyframeEffect::MaximumScale(ElementListType list_type) const {
+float KeyframeEffect::MaximumScale(ElementId element_id,
+                                   ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (const auto& keyframe_model : keyframe_models()) {
     if (keyframe_model->is_finished())
@@ -451,6 +457,12 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
 
     auto* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+
+    ElementId model_element_id = cc_keyframe_model->element_id();
+    if (!model_element_id)
+      model_element_id = element_id_;
+    if (model_element_id != element_id)
+      continue;
 
     if ((list_type == ElementListType::ACTIVE &&
          !cc_keyframe_model->affects_active_elements()) ||

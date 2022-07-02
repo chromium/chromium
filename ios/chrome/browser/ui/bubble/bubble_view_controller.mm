@@ -118,7 +118,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubbleViewType,
   [self.view setFrame:frame];
   [self.view setHidden:NO];
 
-  // Set the y-coordinate of |frame.origin| to its final value.
+  // Set the y-coordinate of `frame.origin` to its final value.
   frame.origin.y = frame.origin.y + kVerticalOffset;
   [UIView animateWithDuration:kAnimationDuration
                         delay:0.0

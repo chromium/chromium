@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Works only on Windows and Linux.
-assert(is_win || is_linux)
+assert(is_win || is_linux || is_chromeos)
 
 executable("traffic_annotation_auditor") {
   sources = [ "traffic_annotation_auditor_ui.cc" ]

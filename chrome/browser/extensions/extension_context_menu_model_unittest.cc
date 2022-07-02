@@ -38,11 +38,14 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
@@ -1089,8 +1092,14 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
       extension, mojom::RunLocation::kDocumentIdle,
       std::move(increment_run_count_3));
 
-  // Return the mode to "Run on click".
+  // Change extension to run "on click". Since we are revoking permissions, we
+  // need to automatically accept the reload page bubble.
+  action_runner->accept_bubble_for_testing(true);
+  content::WindowedNotificationObserver permissions_observer(
+      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+      content::NotificationService::AllSources());
   menu.ExecuteCommand(kOnClick, 0);
+  permissions_observer.Wait();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
@@ -1465,7 +1474,7 @@ TEST_F(ExtensionContextMenuModelTest,
 
   // Navigate to a url that should have "customize by extension" site
   // permissions by default (which allows us to test the page access submenu).
-  AddTab(kActiveUrl);
+  content::WebContents* web_contents = AddTab(kActiveUrl);
   EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
                 url::Origin::Create(kActiveUrl)),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -1484,8 +1493,15 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kOrgUrl));
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
 
-  // Change mode to "Run on click".
+  // Change extension to run "on click". Since we are revoking permissions, we
+  // need to automatically accept the reload page bubble.
+  ExtensionActionRunner::GetForWebContents(web_contents)
+      ->accept_bubble_for_testing(true);
+  content::WindowedNotificationObserver permissions_observer(
+      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+      content::NotificationService::AllSources());
   menu.ExecuteCommand(kOnClick, 0);
+  permissions_observer.Wait();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
@@ -1610,8 +1626,16 @@ TEST_F(ExtensionContextMenuModelTest,
     EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
     EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
 
-    // Set the extension to run on click. This revokes b.com permissions.
+    // Set the extension to run "on click". Since we are revoking b.com
+    // permissions, we need to automatically accept the reload page bubble.
     menu.ExecuteCommand(kOnClick, 0);
+    ExtensionActionRunner::GetForWebContents(web_contents)
+        ->accept_bubble_for_testing(true);
+    content::WindowedNotificationObserver permissions_observer(
+        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        content::NotificationService::AllSources());
+    menu.ExecuteCommand(kOnClick, 0);
+    permissions_observer.Wait();
   }
 
   {
@@ -1645,7 +1669,7 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_FALSE(modifier.HasWithheldHostPermissions());
 
   const GURL a_com("https://a.com");
-  AddTab(a_com);
+  content::WebContents* web_contents = AddTab(a_com);
 
   ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
@@ -1659,8 +1683,16 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
 
-  // Withhold access on a.com by setting the extension to on-click.
+  // Withhold access on a.com by setting the extension to run "on click". Since
+  // we are revoking permissions, we need to automatically accept the reload
+  // page bubble.
+  ExtensionActionRunner::GetForWebContents(web_contents)
+      ->accept_bubble_for_testing(true);
+  content::WindowedNotificationObserver permissions_observer(
+      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+      content::NotificationService::AllSources());
   menu.ExecuteCommand(kOnClick, 0);
+  permissions_observer.Wait();
 
   // This, sadly, removes access for the extension on b.com as well. :( This
   // is because we revoke all host permissions when transitioning from "don't

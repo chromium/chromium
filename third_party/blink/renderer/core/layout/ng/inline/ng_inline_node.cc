@@ -1000,6 +1000,10 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
     node.ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, data,
                                      &previous_data->text_content,
                                      &previous_data->items);
+  } else if (previous_data->IsShapingDeferred()) {
+    node.ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDeferred, data,
+                                     &previous_data->text_content,
+                                     &previous_data->items);
   }
   node.AssociateItemsWithInlines(data);
   return true;

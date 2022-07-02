@@ -45,7 +45,7 @@ public class HistoryAdapterAccessibilityTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
-        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider, false, (vg) -> null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);
@@ -53,7 +53,7 @@ public class HistoryAdapterAccessibilityTest {
 
     @Test
     public void testInitializeEmpty() {
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, false, false);
     }
 
@@ -64,7 +64,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
         mHistoryProvider.addItem(item1);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be three items - the header, a date and the history item;
         // The number of items is less than paging, so the view should not contain footer items.
@@ -84,7 +84,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(2, timestamp);
         mHistoryProvider.addItem(item3);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be five items - the header, a date, two history item, and a footer;
         checkAdapterContents(mAdapter, true, true, null, null, item1, item2, null);
@@ -108,7 +108,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(2, timestamp2);
         mHistoryProvider.addItem(item3);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be six items - the list header, a date header, a history item, another
         // date header, another history item, and the footer.
@@ -164,7 +164,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item4 = StubbedHistoryProvider.createHistoryItem(0, timestamp4);
         mHistoryProvider.addItem(item4);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, true, true, null, null, item1, null, item2, null);
 
         mAdapter.search("google");
@@ -200,7 +200,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item4 = StubbedHistoryProvider.createHistoryItem(1, timestamp4);
         mHistoryProvider.addItem(item4);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, true, true, null, null, item1, null, item2, null);
 
         mAdapter.search("google");
@@ -233,7 +233,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item4 = StubbedHistoryProvider.createHistoryItem(4, timestamp2);
         mHistoryProvider.addItem(item4);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // Only the first 2 of five items should be loaded.
         checkAdapterContents(mAdapter, true, true, null, null, item1, item2, null);
@@ -265,7 +265,7 @@ public class HistoryAdapterAccessibilityTest {
         HistoryItem item4 = StubbedHistoryProvider.createHistoryItem(0, timestamp4);
         mHistoryProvider.addItem(item4);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, true, true, null, null, item1, item2, null);
 
         mAdapter.search("google");

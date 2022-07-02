@@ -10,8 +10,7 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/virtual_ctap2_device.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 // A FidoDeviceDiscovery that always vends a single |VirtualFidoDevice|.
 class VirtualFidoDeviceDiscovery
@@ -66,7 +65,6 @@ class VirtualFidoDeviceDiscovery
   std::string id_;
 };
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test
 
 #endif  // DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_DISCOVERY_H_

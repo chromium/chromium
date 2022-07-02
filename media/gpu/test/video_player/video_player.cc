@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
+#include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 
 namespace media {
@@ -50,12 +51,10 @@ VideoPlayer::~VideoPlayer() {
 // static
 std::unique_ptr<VideoPlayer> VideoPlayer::Create(
     const VideoDecoderClientConfig& config,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    std::unique_ptr<FrameRenderer> frame_renderer,
+    std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto video_player = base::WrapUnique(new VideoPlayer());
-  if (!video_player->CreateDecoderClient(config, gpu_memory_buffer_factory,
-                                         std::move(frame_renderer),
+  if (!video_player->CreateDecoderClient(config, std::move(frame_renderer),
                                          std::move(frame_processors))) {
     return nullptr;
   }
@@ -64,8 +63,7 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Create(
 
 bool VideoPlayer::CreateDecoderClient(
     const VideoDecoderClientConfig& config,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    std::unique_ptr<FrameRenderer> frame_renderer,
+    std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(video_player_state_, VideoPlayerState::kUninitialized);
@@ -79,8 +77,7 @@ bool VideoPlayer::CreateDecoderClient(
       base::BindRepeating(&VideoPlayer::NotifyEvent, base::Unretained(this));
 
   decoder_client_ = VideoDecoderClient::Create(
-      event_cb, gpu_memory_buffer_factory, std::move(frame_renderer),
-      std::move(frame_processors), config);
+      event_cb, std::move(frame_renderer), std::move(frame_processors), config);
   if (!decoder_client_) {
     VLOGF(1) << "Failed to create video decoder client";
     return false;
@@ -175,7 +172,7 @@ VideoPlayerState VideoPlayer::GetState() const {
   return video_player_state_;
 }
 
-FrameRenderer* VideoPlayer::GetFrameRenderer() const {
+FrameRendererDummy* VideoPlayer::GetFrameRenderer() const {
   return decoder_client_->GetFrameRenderer();
 }
 

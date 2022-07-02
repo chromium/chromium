@@ -299,8 +299,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     bool is_phishing;
     if (!HasDebugFeatureDirectory() &&
         csd_service_->GetValidCachedResult(url_, &is_phishing)) {
-      base::UmaHistogramBoolean("SBClientPhishing.RequestSatisfiedFromCache",
-                                true);
       // Since we are already on the UI thread, this is safe.
       host_->MaybeShowPhishingWarning(/*is_from_cache=*/true, url_,
                                       is_phishing);
@@ -400,6 +398,9 @@ void ClientSideDetectionHost::DidFinishNavigation(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    return;
+
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -442,7 +443,7 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     bool should_classify) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_classify) {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
     phishing_detector_.reset();
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
@@ -569,7 +570,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
     DCHECK(web_contents());
     if (ui_manager_.get()) {
       const content::GlobalRenderFrameHostId primary_main_frame_id =
-          web_contents()->GetMainFrame()->GetGlobalId();
+          web_contents()->GetPrimaryMainFrame()->GetGlobalId();
 
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;

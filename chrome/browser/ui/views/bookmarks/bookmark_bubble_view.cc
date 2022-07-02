@@ -22,12 +22,13 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
 #endif
 
 using base::UserMetricsAction;
@@ -39,8 +40,8 @@ using bookmarks::BookmarkNode;
 views::BubbleDialogDelegate* BookmarkBubbleView::bookmark_bubble_ = nullptr;
 
 namespace {
-constexpr int kBookmarkName = 1;
-constexpr int kBookmarkFolder = 2;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkName);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
 }
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
@@ -167,7 +168,7 @@ void BookmarkBubbleView::ShowBubble(
     bool already_bookmarked) {
   if (bookmark_bubble_)
     return;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   BubbleSyncPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bookmarks::BookmarkModel* bookmark_model =
@@ -196,29 +197,27 @@ void BookmarkBubbleView::ShowBubble(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK),
               ui::DialogModelButton::Params().AddAccelerator(
                   ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
-          .AddDialogExtraButton(
+          .AddExtraButton(
               base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
                                   base::Unretained(bubble_delegate)),
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS),
               ui::DialogModelButton::Params().AddAccelerator(
                   ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
           .AddTextfield(
+              kBookmarkName,
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
               bookmark_node->GetTitle(),
-              ui::DialogModelTextfield::Params()
-                  .SetUniqueId(kBookmarkName)
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
+              ui::DialogModelTextfield::Params().SetAccessibleName(
+                  l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
           .AddCombobox(
+              kBookmarkFolder,
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_FOLDER_LABEL),
               std::make_unique<RecentlyUsedFoldersComboModel>(
                   bookmark_model,
                   bookmark_model->GetMostRecentlyAddedUserNodeForURL(url)),
-              ui::DialogModelCombobox::Params()
-                  .SetUniqueId(kBookmarkFolder)
-                  .SetCallback(base::BindRepeating(
-                      &BookmarkBubbleDelegate::OnComboboxAction,
-                      base::Unretained(bubble_delegate))))
+              ui::DialogModelCombobox::Params().SetCallback(
+                  base::BindRepeating(&BookmarkBubbleDelegate::OnComboboxAction,
+                                      base::Unretained(bubble_delegate))))
           .SetInitiallyFocusedField(kBookmarkName)
           .Build();
 
@@ -230,13 +229,13 @@ void BookmarkBubbleView::ShowBubble(
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<DiceBubbleSyncPromoView>(
+    bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,

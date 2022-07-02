@@ -28,9 +28,9 @@
 #include "base/win/windows_types.h"
 
 // windows.h must be included before objidl.h
-#include <windows.h>
+#include <windows.h>  // NOLINT(build/include_order)
 
-#include <objidl.h>
+#include <objidl.h>  // NOLINT(build/include_order)
 
 // Check that type sizes match.
 static_assert(sizeof(CHROME_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),

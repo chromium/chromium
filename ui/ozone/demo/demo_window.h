@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,8 +59,8 @@ class DemoWindow : public PlatformWindowDelegate {
   // initialize the GPU resources via a posted task.
   void StartRendererIfNecessary();
 
-  WindowManager* window_manager_;      // Not owned.
-  RendererFactory* renderer_factory_;  // Not owned.
+  raw_ptr<WindowManager> window_manager_;      // Not owned.
+  raw_ptr<RendererFactory> renderer_factory_;  // Not owned.
 
   std::unique_ptr<Renderer> renderer_;
 

@@ -41,6 +41,8 @@ class Attribute {
  public:
   Attribute(const QualifiedName& name, const AtomicString& value)
       : name_(name), value_(value) {}
+  Attribute(QualifiedName&& name, AtomicString&& value)
+      : name_(std::move(name)), value_(std::move(value)) {}
 
   // NOTE: The references returned by these functions are only valid for as long
   // as the Attribute stays in place. For example, calling a function that

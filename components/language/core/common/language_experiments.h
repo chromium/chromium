@@ -36,15 +36,11 @@ extern const char kContentLanguagesDisableObserversParam[];
 // Notify sync to update data on language determined.
 extern const base::Feature kNotifySyncOnLanguageDetermined;
 
-// This feature uses the existing UI for translate bubble.
+// This feature uses the existing UI for the Full Page Translate bubble.
 extern const base::Feature kUseButtonTranslateBubbleUi;
 
 // This feature enables setting the application language on Android.
 extern const base::Feature kDetailedLanguageSettings;
-
-// This feature enables the desktop version's redesigned language settings
-// layout.
-extern const base::Feature kDesktopRestructuredLanguageSettings;
 
 // This feature enables setting the application language on Desktop.
 extern const base::Feature kDesktopDetailedLanguageSettings;

@@ -81,7 +81,7 @@ bool LayoutNGTextControlSingleLine::NodeAtPoint(
   return stop_hit_testing;
 }
 
-bool LayoutNGTextControlSingleLine::AllowsNonVisibleOverflow() const {
+bool LayoutNGTextControlSingleLine::RespectsCSSOverflow() const {
   NOT_DESTROYED();
   // Do not show scrollbars even if overflow:scroll is specified.
   return false;

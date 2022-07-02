@@ -9,7 +9,7 @@
 [
     Exposed=Window
 ] interface RTCEncodedAudioFrame {
-    readonly attribute unsigned long long timestamp;  // RTP timestamp.
+    readonly attribute unsigned long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
     stringifier;

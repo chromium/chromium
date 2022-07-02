@@ -1749,7 +1749,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), broken_ssl_page));
     ASSERT_EQ("127.0.0.1", contents->GetLastCommittedURL().host());
     ASSERT_TRUE(contents->GetLastCommittedURL().SchemeIs("https"));
-    ASSERT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
+    ASSERT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
   // An overrideable SSL interstitial is now being displayed. Navigate to the

@@ -5,7 +5,8 @@
 #ifndef BASE_LAZY_INSTANCE_HELPERS_H_
 #define BASE_LAZY_INSTANCE_HELPERS_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+#include <cstdint>
 #include "base/base_export.h"
 #include "base/check.h"
 
@@ -17,18 +18,18 @@ namespace internal {
 
 // Our AtomicWord doubles as a spinlock, where a value of
 // kLazyInstanceStateCreating means the spinlock is being held for creation.
-constexpr subtle::AtomicWord kLazyInstanceStateCreating = 1;
+constexpr uintptr_t kLazyInstanceStateCreating = 1;
 
 // Helper for GetOrCreateLazyPointer(). Checks if instance needs to be created.
 // If so returns true otherwise if another thread has beat us, waits for
 // instance to be created and returns false.
-BASE_EXPORT bool NeedsLazyInstance(subtle::AtomicWord* state);
+BASE_EXPORT bool NeedsLazyInstance(std::atomic<uintptr_t>& state);
 
 // Helper for GetOrCreateLazyPointer(). After creating an instance, this is
 // called to register the dtor to be called at program exit and to update the
 // atomic state to hold the |new_instance|
-BASE_EXPORT void CompleteLazyInstance(subtle::AtomicWord* state,
-                                      subtle::AtomicWord new_instance,
+BASE_EXPORT void CompleteLazyInstance(std::atomic<uintptr_t>& state,
+                                      uintptr_t new_instance,
                                       void (*destructor)(void*),
                                       void* destructor_arg);
 
@@ -55,17 +56,16 @@ namespace subtle {
 // worsened by https://chromium-review.googlesource.com/c/chromium/src/+/868013
 // and caught then as https://crbug.com/804034.
 template <typename Type>
-Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
+Type* GetOrCreateLazyPointer(std::atomic<uintptr_t>& state,
                              Type* (*creator_func)(void*),
                              void* creator_arg,
                              void (*destructor)(void*),
                              void* destructor_arg) {
-  DCHECK(state);
   DCHECK(creator_func);
 
   // If any bit in the created mask is true, the instance has already been
   // fully constructed.
-  constexpr subtle::AtomicWord kLazyInstanceCreatedMask =
+  constexpr uintptr_t kLazyInstanceCreatedMask =
       ~internal::kLazyInstanceStateCreating;
 
   // We will hopefully have fast access when the instance is already created.
@@ -74,20 +74,19 @@ Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
   // has acquire memory ordering as a thread which sees |state| > creating needs
   // to acquire visibility over the associated data. Pairing Release_Store is in
   // CompleteLazyInstance().
-  subtle::AtomicWord instance = subtle::Acquire_Load(state);
+  uintptr_t instance = state.load(std::memory_order_acquire);
   if (!(instance & kLazyInstanceCreatedMask)) {
     if (internal::NeedsLazyInstance(state)) {
       // This thread won the race and is now responsible for creating the
       // instance and storing it back into |state|.
-      instance =
-          reinterpret_cast<subtle::AtomicWord>((*creator_func)(creator_arg));
+      instance = reinterpret_cast<uintptr_t>((*creator_func)(creator_arg));
       internal::CompleteLazyInstance(state, instance, destructor,
                                      destructor_arg);
     } else {
       // This thread lost the race but now has visibility over the constructed
       // instance (NeedsLazyInstance() doesn't return until the constructing
       // thread releases the instance via CompleteLazyInstance()).
-      instance = subtle::Acquire_Load(state);
+      instance = state.load(std::memory_order_acquire);
       DCHECK(instance & kLazyInstanceCreatedMask);
     }
   }

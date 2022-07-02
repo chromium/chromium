@@ -302,66 +302,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.CachePurgedInKB" units="KB"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage browser-side cache purged in KB when
-    memory pressure signal was triggered or cache size hit the limits.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.CacheSizeInKB" units="KB"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Total size of the HTML5 LocalStorage databases in KB in the browser-side
-    cache. Recorded each time a new database is opened in memory.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.CommitResult" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of an attempt to commit localstorage data to the database.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason opening the LevelDB database that backs LocalStorage failed.
-  </summary>
-</histogram>
-
-<histogram
-    name="LocalStorageContext.OpenResultAfter{LocalStorageContextOpenReasons}"
-    enum="LocalStorageOpenError" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of opening the LevelDB database that backs LocalStorage.
-    {LocalStorageContextOpenReasons}
-  </summary>
-  <token key="LocalStorageContextOpenReasons">
-    <variant name="CommitErrors" summary="After too many commit errors."/>
-    <variant name="InvalidVersion"
-        summary="After an invalid version was read."/>
-    <variant name="OpenFailed" summary="After opening the DB failed."/>
-    <variant name="ReadVersionError"
-        summary="After reading the schema version failed."/>
-  </token>
-</histogram>
-
-<histogram name="LocalStorageContext.ReadVersionError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason reading the schema version of the LocalStorage database failed.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

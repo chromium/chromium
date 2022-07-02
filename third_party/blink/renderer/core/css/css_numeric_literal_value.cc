@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -24,8 +24,6 @@ void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
     : CSSPrimitiveValue(kNumericLiteralClass), num_(num) {
-  DCHECK(RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() ||
-         std::isfinite(num));
   DCHECK_NE(UnitType::kUnknown, type);
   numeric_literal_unit_type_ = static_cast<unsigned>(type);
 }
@@ -36,15 +34,9 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    // Value can be NaN.
-    if (std::isnan(value))
-      return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
-  } else {
-    // TODO(timloh): This looks wrong.
-    if (std::isinf(value))
-      value = 0;
-  }
+  // Value can be NaN.
+  if (std::isnan(value))
+    return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
   int int_value = ClampTo<int>(value);
   if (value != int_value)
@@ -118,9 +110,9 @@ double CSSNumericLiteralValue::ComputeDotsPerPixel() const {
 }
 
 double CSSNumericLiteralValue::ComputeLengthPx(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsLength());
-  return conversion_data.ZoomedComputedPixels(num_, GetType());
+  return length_resolver.ZoomedComputedPixels(num_, GetType());
 }
 
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
@@ -257,13 +249,11 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
-            (std::isinf(value) || std::isnan(value))) {
+        if (std::isinf(value) || std::isnan(value)) {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text = FormatNumber(value, UnitTypeToString(GetType()));
         }
-
       } else {
         StringBuilder builder;
         int int_value = value;

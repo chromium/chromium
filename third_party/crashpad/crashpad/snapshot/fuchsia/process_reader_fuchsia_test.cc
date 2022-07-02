@@ -22,8 +22,10 @@
 
 #include <iterator>
 
+#include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
+#include "test/scoped_set_thread_name.h"
 #include "test/test_paths.h"
 #include "util/fuchsia/scoped_task_suspend.h"
 
@@ -32,6 +34,8 @@ namespace test {
 namespace {
 
 TEST(ProcessReaderFuchsia, SelfBasic) {
+  const ScopedSetThreadName scoped_set_thread_name("SelfBasic");
+
   ProcessReaderFuchsia process_reader;
   ASSERT_TRUE(process_reader.Initialize(*zx::process::self()));
 
@@ -75,7 +79,7 @@ TEST(ProcessReaderFuchsia, SelfBasic) {
             ZX_OK);
   EXPECT_EQ(threads[0].id, info.koid);
   EXPECT_EQ(threads[0].state, ZX_THREAD_STATE_RUNNING);
-  EXPECT_EQ(threads[0].name, "initial-thread");
+  EXPECT_EQ(threads[0].name, "SelfBasic");
 }
 
 constexpr char kTestMemory[] = "Read me from another process";
@@ -118,27 +122,44 @@ TEST(ProcessReaderFuchsia, ChildBasic) {
   test.Run();
 }
 
+struct ThreadData {
+  zx_handle_t port;
+  std::string name;
+};
+
 void* SignalAndSleep(void* arg) {
+  const ThreadData* thread_data = reinterpret_cast<const ThreadData*>(arg);
+  const ScopedSetThreadName scoped_set_thread_name(thread_data->name);
   zx_port_packet_t packet = {};
   packet.type = ZX_PKT_TYPE_USER;
-  zx_port_queue(*reinterpret_cast<zx_handle_t*>(arg), &packet);
+  zx_port_queue(thread_data->port, &packet);
   zx_nanosleep(ZX_TIME_INFINITE);
   return nullptr;
 }
 
 CRASHPAD_CHILD_TEST_MAIN(ProcessReaderChildThreadsTestMain) {
+  const ScopedSetThreadName scoped_set_thread_name(
+      "ProcessReaderChildThreadsTest-Main");
+
   // Create 5 threads with stack sizes of 4096, 8192, ...
   zx_handle_t port;
   zx_status_t status = zx_port_create(0, &port);
   EXPECT_EQ(status, ZX_OK);
 
   constexpr size_t kNumThreads = 5;
+  struct ThreadData thread_data[kNumThreads] = {{0, 0}};
+
   for (size_t i = 0; i < kNumThreads; ++i) {
+    thread_data[i] = {
+        .port = port,
+        .name = base::StringPrintf("ProcessReaderChildThreadsTest-%zu", i + 1),
+    };
     pthread_attr_t attr;
     EXPECT_EQ(pthread_attr_init(&attr), 0);
     EXPECT_EQ(pthread_attr_setstacksize(&attr, (i + 1) * 4096), 0);
     pthread_t thread;
-    EXPECT_EQ(pthread_create(&thread, &attr, &SignalAndSleep, &port), 0);
+    EXPECT_EQ(pthread_create(&thread, &attr, &SignalAndSleep, &thread_data[i]),
+              0);
   }
 
   // Wait until all threads are ready.
@@ -179,10 +200,14 @@ class ThreadsChildTest : public MultiprocessExec {
     const auto& threads = process_reader.Threads();
     EXPECT_EQ(threads.size(), 6u);
 
+    EXPECT_EQ(threads[0].name, "ProcessReaderChildThreadsTest-main");
+
     for (size_t i = 1; i < 6; ++i) {
       ASSERT_GT(threads[i].stack_regions.size(), 0u);
       EXPECT_GT(threads[i].stack_regions[0].size(), 0u);
       EXPECT_LE(threads[i].stack_regions[0].size(), i * 4096u);
+      EXPECT_EQ(threads[i].name,
+                base::StringPrintf("ProcessReaderChildThreadsTest-%zu", i));
     }
   }
 };

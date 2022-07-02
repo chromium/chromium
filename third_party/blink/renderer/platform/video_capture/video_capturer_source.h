@@ -40,17 +40,24 @@ class PLATFORM_EXPORT VideoCapturerSource {
 
   // Starts capturing frames using the capture |params|. |new_frame_callback| is
   // triggered when a new video frame is available.
+  //
   // If capturing is started successfully then |running_callback| will be
   // called with a parameter of true. Note that some implementations may
   // simply reject StartCapture (by calling running_callback with a false
   // argument) if called with the wrong task runner.
+  //
   // If capturing fails to start or stopped due to an external event then
   // |running_callback| will be called with a parameter of false.
   // |running_callback| will always be called on the same thread as the
   // StartCapture.
+  //
+  // |crop_version_callback| will be called when it is guaranteed that all
+  // subsequent frames |new_frame_callback| is called for, have a crop version
+  // that is equal-to-or-greater-than the given crop version.
   virtual void StartCapture(
       const media::VideoCaptureParams& params,
       const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCaptureCropVersionCB& crop_version_callback,
       const RunningCallback& running_callback) = 0;
 
   // Returns a callback for providing the feedback from the consumer.

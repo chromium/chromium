@@ -1,7 +1,7 @@
 {
   "far_files" : [
-    "gen/fuchsia/engine/web_engine/web_engine.far",
-    "gen/fuchsia/runners/cast_runner/cast_runner.far"
+    "gen/fuchsia_web/webengine/web_engine/web_engine.far",
+    "gen/fuchsia_web/runners/cast_runner/cast_runner.far"
   ],
   "far_total_name" : "chrome_fuchsia",
   "size_limits" : {

@@ -14,16 +14,15 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/intent_common.mojom-forward.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
@@ -47,10 +46,6 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
-namespace web_app {
-class WebApp;
-}  // namespace web_app
-
 namespace apps_util {
 
 // Creates a file filter.
@@ -73,7 +68,6 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
 // shortcuts.
 apps::IntentFilters CreateIntentFiltersForWebApp(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers);
@@ -84,7 +78,6 @@ apps::IntentFilters CreateIntentFiltersForWebApp(
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::AppId& app_id,
-    bool is_note_taking_web_app,
     const GURL& app_scope,
     const apps::ShareTarget* app_share_target,
     const apps::FileHandlers* enabled_file_handlers);
@@ -111,6 +104,21 @@ apps::IntentFilters CreateIntentFiltersForExtension(
 std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension);
 
+// Create an intent filter for a note-taking app.
+apps::IntentFilterPtr CreateNoteTakingFilter();
+
+// Create a mojom intent filter for a note-taking app.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom();
+
+// Create an intent filter for an app capable of running on the lock screen.
+apps::IntentFilterPtr CreateLockScreenFilter();
+
+// Create a mojom intent filter for an app capable of running on the lock
+// screen.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// type URLs from the file paths and
 // mime types of a list of files. This util has to live under chrome/ because it
@@ -132,9 +140,17 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::string& share_title);
 
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
+    const apps::IntentPtr& intent);
+// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+// interface.
+base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent);
 
 // Convert between App Service and ARC Intents.
+arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
+    const apps::IntentPtr& intent);
+// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+// interface.
 arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
     const apps::mojom::IntentPtr& intent);
 
@@ -152,7 +168,12 @@ std::string CreateLaunchIntent(const std::string& package_name,
 // Convert between App Service and ARC IntentFilters.
 arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
-    const apps::mojom::IntentFilterPtr& intent_filter);
+    const apps::IntentFilterPtr& intent_filter);
+
+apps::IntentFilterPtr CreateIntentFilterForArc(
+    const arc::IntentFilter& arc_intent_filter);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif
@@ -168,6 +189,11 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 // replaced with mojom traits after migrating the App Service Intent to use the
 // file path.
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
+    const apps::IntentPtr& app_service_intent,
+    Profile* profile);
+// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+// interface.
+crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::mojom::IntentPtr& app_service_intent,
     Profile* profile);
 
@@ -181,6 +207,11 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
 // because Lacros does not support FileSystemURL as Ash, this method can be
 // replaced with mojom traits after migrating the App Service Intent to use the
 // file path.
+apps::IntentPtr CreateAppServiceIntentFromCrosapi(
+    const crosapi::mojom::IntentPtr& crosapi_intent,
+    Profile* profile);
+// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+// interface.
 apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
     const crosapi::mojom::IntentPtr& crosapi_intent,
     Profile* profile);

@@ -459,7 +459,7 @@ compile), you can instantiate directly:
 ```cpp
 // Binds |foo_ptr| to a no-op OnceCallback takes a scoped_refptr<Foo>.
 // ANTIPATTERN WARNING: This should likely be changed to ReleaseSoon()!
-base::BindOnce(base::DoNothing::Once<scoped_refptr<Foo>>(), foo_ptr);
+base::BindOnce(base::DoNothingAs<void(scoped_refptr<Foo>)>(), foo_ptr);
 ```
 
 ### Passing Unbound Input Parameters

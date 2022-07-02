@@ -247,7 +247,7 @@ class WebRtcSetDescriptionObserverHandlerTest
         String::FromUTF8("local_audio_track"), false, std::move(audio_source));
 
     auto* component =
-        MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+        MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     audio_source_ptr->ConnectToTrack(component);
     return component;
   }

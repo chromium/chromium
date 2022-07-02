@@ -240,8 +240,10 @@ CSSPrimitiveValue::UnitType CSSNumericValue::UnitFromName(const String& name) {
 }
 
 // static
-CSSNumericValue* CSSNumericValue::parse(const String& css_text,
-                                        ExceptionState& exception_state) {
+CSSNumericValue* CSSNumericValue::parse(
+    const ExecutionContext* execution_context,
+    const String& css_text,
+    ExceptionState& exception_state) {
   CSSTokenizer tokenizer(css_text);
   CSSParserTokenStream stream(tokenizer);
   stream.ConsumeWhitespace();
@@ -268,8 +270,12 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
           range.Peek().FunctionId() == CSSValueID::kMin ||
           range.Peek().FunctionId() == CSSValueID::kMax ||
           range.Peek().FunctionId() == CSSValueID::kClamp) {
+        // TODO(crbug.com/1309178): Decide how to handle anchor queries here.
         CSSMathExpressionNode* expression =
-            CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
+            CSSMathExpressionNode::ParseMathFunction(
+                CSSValueID::kCalc, range,
+                *MakeGarbageCollected<CSSParserContext>(*execution_context),
+                kCSSAnchorQueryTypesNone);
         if (expression)
           return CalcToNumericValue(*expression);
       }

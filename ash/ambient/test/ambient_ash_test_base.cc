@@ -501,6 +501,10 @@ AmbientPhotoCache* AmbientAshTestBase::photo_cache() {
   return photo_controller()->get_photo_cache_for_testing();
 }
 
+AmbientWeatherController* AmbientAshTestBase::weather_controller() {
+  return ambient_controller()->ambient_weather_controller();
+}
+
 std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
   std::vector<AmbientContainerView*> result;
   for (auto* ctrl : RootWindowController::root_window_controllers()) {

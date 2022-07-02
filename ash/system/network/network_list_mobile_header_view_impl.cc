@@ -36,8 +36,8 @@ int GetAddESimTooltipMessageId() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-  if (!cellular_device)
-    return 0;
+
+  DCHECK(cellular_device);
 
   switch (cellular_device->inhibit_reason) {
     case chromeos::network_config::mojom::InhibitReason::kInstallingProfile:
@@ -83,7 +83,8 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
       IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
   add_esim_button.get()->SetID(kAddESimButtonId);
   add_esim_button_ = add_esim_button.get();
-  container()->AddView(TriView::Container::END, add_esim_button.release());
+  container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
+                         /*index=*/0);
 };
 
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {

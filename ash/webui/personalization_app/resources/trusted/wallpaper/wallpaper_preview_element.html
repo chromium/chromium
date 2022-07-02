@@ -1,4 +1,4 @@
-<style include="common-style cros-button-style">
+<style include="common cros-button-style">
   #wallpaperLabel {
     align-items: center;
     background: none;
@@ -20,12 +20,18 @@
       '. .     .';
     grid-template-columns: 20px 1fr 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 1fr 24px;
+    height: 100%;
   }
 
-  #wallpaperLabel > p {
+  #wallpaperLabel > h2 {
     color: var(--cros-text-color-primary);
+    display: inline-block;
     font: var(--personalization-app-label-font);
     margin: 14px 0;
+  }
+
+  iron-icon[icon='personalization:managed'] {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
   }
 
   #wallpaperButton {
@@ -34,22 +40,12 @@
     margin-inline-end: -18px;
   }
 
-  #imageContainer, 
+  #imageContainer,
   #imagePlaceholder {
     grid-area: image;
     justify-self: center;
     max-width: 360px;
     min-width: 252px;
-  }
-
-  #shelf {
-    background-color: var(--cros-separator-color);
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    bottom: 0;
-    height: 24px;
-    position: absolute;
-    width: 100%;
   }
 
   ::slotted(personalization-theme) {
@@ -58,21 +54,47 @@
 </style>
 <div class="preview-container" id="container">
   <div id="wallpaperLabel">
-    <p>$i18n{wallpaperLabel}</p>
+    <template is="dom-if" if="[[showPlaceholders_(imageLoading_, image_)]]">
+      <h2>$i18n{wallpaperLabel}</h2>
+    </template>
+    <template is="dom-if" if="[[!showPlaceholders_(imageLoading_, image_)]]">
+      <template is="dom-if" if="[[!isPolicyControlled_(image_)]]">
+        <h2 on-click="onClickWallpaper_" class="clickable">
+          $i18n{wallpaperLabel}
+        </h2>
     <cr-icon-button id="wallpaperButton" iron-icon="cr:chevron-right"
         role="button" on-click="onClickWallpaper_"
+        class="tast-open-subpage"
         aria-label="$i18n{ariaLabelChangeWallpaper}">
     </cr-icon-button>
+      </template>
+      <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
+        <p>$i18n{wallpaperLabel}</p>
+        <iron-icon icon="personalization:managed" title="$i18n{managedSetting}">
+        </iron-icon>
+      </template>
+    </template>
   </div>
-  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
+  <template is="dom-if" if="[[showPlaceholders_(imageLoading_, image_)]]">
     <div id="imagePlaceholder" class="photo-images-container placeholder"></div>
   </template>
-  <template is="dom-if" if="[[showImage_]]">
+  <template is="dom-if" if="[[!showPlaceholders_(imageLoading_, image_)]]">
+    <template is="dom-if" if="[[!isPolicyControlled_(image_)]]">
       <div id="imageContainer" class="photo-images-container clickable"
           on-click="onClickWallpaper_" on-keypress="onClickWallpaper_">
-        <img src$="[[getImageSrc_(image_)]]" alt$="[[getImageAltDescription_(image_)]]">
-        <div id="shelf"></div>
+        <div class="photo-images-border"></div>
+        <img src$="[[getImageSrc_(image_)]]"
+            alt$="[[getImageAltDescription_(image_)]]">
       </div>
+    </template>
+    <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
+      <div id="imageContainer" class="photo-images-container">
+        <div class="photo-images-border"></div>
+        <img src$="[[getImageSrc_(image_)]]"
+            aria-description="$i18n{managedSetting}"
+            alt$="[[getImageAltDescription_(image_)]]">
+      </div>
+    </template>
   </template>
   <slot></slot>
 </div>

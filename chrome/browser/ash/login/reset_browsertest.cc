@@ -30,10 +30,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/prefs/pref_service.h"
@@ -281,7 +281,13 @@ IN_PROC_BROWSER_TEST_F(ResetTest, ShowAndCancelMultipleTimes) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
-IN_PROC_BROWSER_TEST_F(ResetTest, DISABLED_RestartBeforePowerwash) {
+// TODO(https://crbug.com/1337714): Flaky.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RestartBeforePowerwash DISABLED_RestartBeforePowerwash
+#else
+#define MAYBE_RestartBeforePowerwash RestartBeforePowerwash
+#endif
+IN_PROC_BROWSER_TEST_F(ResetTest, MAYBE_RestartBeforePowerwash) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   PrefService* prefs = g_browser_process->local_state();
 

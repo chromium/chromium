@@ -39,6 +39,7 @@
 <translation id="3196546062792660320">Mae Chrome yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3345341804167540816">Gallwch Ddefnyddio Chrome Ymhobman</translation>
+<translation id="3428998300753080128">Mewngofnodi i'r wefan hon, eich Cyfrif Google a Chrome.</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>
 <translation id="3533694711092285624">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="3641179212828090796">Defnyddiwch y cyfrinair a gadwyd gennych yn Chrome i fewngofnodi yn gyflymach</translation>
@@ -58,6 +59,7 @@
 <translation id="4523886039239821078">Mae rhai ychwanegion yn achosi i Chrome dorri. Dadosodwch:</translation>
 <translation id="4633328489441962921">Ni all Chrome wirio am ddiweddariadau</translation>
 <translation id="4698415050768537821">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
+<translation id="4802922164792993118">Awgrym Chrome. Mewngofnodwch yn gyflymach drwy ddewis eich cyfrinair sydd wedi'i gadw ar frig y bysellfwrdd.</translation>
 <translation id="4819268619367838612">Er mwyn helpu i wella'r ap, mae Chrome yn anfon data defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Ni chefnogir ar Chrome Beta</translation>
 <translation id="5030102366287574140">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
@@ -112,7 +114,6 @@
 <translation id="8022947259858476807">Defnyddiwch Chrome yn ddiofyn i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="81358522153858150">Mae Chrome bellach yn cefnogi polisïau defnyddwyr ar gyfer eich cyfrif a reolir</translation>
 <translation id="8160472928944011082">Ni all Chrome ddiweddaru</translation>
-<translation id="8263079278049777200">Mewngofnodi i'r wefan hon, eich Cyfrif Google a Chrome. Gallwch droi cysoni ymlaen yn nes ymlaen.</translation>
 <translation id="8357607116237445042">Dewiswch a ddylid clirio eich data Chrome o'r ddyfais hon neu eu cadw</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="840168496893712993">Mae rhai ychwanegion yn achosi i Chrome dorri. Rhowch gynnig ar ddadosod nhw.</translation>

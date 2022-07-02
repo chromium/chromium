@@ -1,0 +1,76 @@
+<script src="resources/testharness.js"></script>
+<script>
+// Tell testharness.js to not wait for 'real' tests; we only want
+// testharness.js for its assertion helpers.
+setup({'output': false});
+</script>
+
+<script>
+  // 'AsyncBuffer' serves as a helper to buffer LCP reports asynchronously.
+  class AsyncBuffer {
+    constructor() {
+      // 'pending' is an array that will buffer entries reported through the
+      // PerformanceObserver and can be collected with 'pop'.
+      this.pending = [];
+
+      // 'resolve_fn' is a reference to the 'resolve' function of a
+      // Promise that blocks for new entries to arrive via 'push()'. Calling
+      // the function resolves the promise and unblocks calls to 'pop()'.
+      this.resolve_fn = null;
+    }
+
+    // Concatenates the given 'entries' list to this AsyncBuffer.
+    push(entries) {
+      if (entries.length == 0) {
+        throw new Error("Must not push an empty list of entries!");
+      }
+      this.pending = this.pending.concat(entries);
+
+      // If there are calls to 'pop' that are blocked waiting for items, signal
+      // that they can continue.
+      if (this.resolve_fn != null) {
+        this.resolve_fn();
+        this.resolve_fn = null;
+      }
+    }
+
+    // Takes the current pending entries from this AsyncBuffer. If there are no
+    // entries queued already, this will block until some show up.
+    async pop() {
+      if (this.pending.length == 0) {
+        // Need to instantiate a promise to block on. The next call to 'push'
+        // will resolve the promise once it has queued the entries.
+        await new Promise(resolve => {
+          this.resolve_fn = resolve;
+        });
+      }
+      assert_true(this.pending.length > 0);
+
+      const result = this.pending;
+      this.pending = [];
+      return result;
+    }
+  }
+
+  const buffer = new AsyncBuffer();
+  const po = new PerformanceObserver(entryList => {
+    buffer.push(entryList.getEntries());
+  });
+  po.observe({type: 'largest-contentful-paint', buffered: true});
+
+  const block_for_next_lcp = async () => {
+    const seen_events = await buffer.pop();
+    assert_equals(seen_events.length, 1);
+    return seen_events[0].size;
+  };
+
+  const trigger_repaint_and_block_for_next_lcp = async () => {
+    let new_div = document.createElement("div");
+    document.getElementById('firstDiv').appendChild(new_div);
+    new_div.innerText = "Medium text";
+    return await block_for_next_lcp();
+  };
+</script>
+
+<div id="firstDiv" style='width: 600px; height: 10000px'>Short text</div>
+<div style='width: 600px; height: 500px'>Loooooooooooong offscreen text that shouldn't count for LCP computation</div>

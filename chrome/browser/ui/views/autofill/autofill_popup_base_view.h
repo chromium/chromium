@@ -53,9 +53,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // text).
   static int GetHorizontalPadding();
 
-  // views::View:
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
-
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(View*);
 
@@ -66,7 +63,7 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   SkColor GetSelectedBackgroundColor() const;
   SkColor GetSelectedForegroundColor() const;
   SkColor GetFooterBackgroundColor() const;
-  SkColor GetSeparatorColor() const;
+  ui::ColorId GetSeparatorColorId() const;
   SkColor GetWarningColor() const;
 
   base::TimeDelta time_delta_since_popup_shown() const {

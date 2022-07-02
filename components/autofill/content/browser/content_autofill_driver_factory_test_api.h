@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 
 namespace autofill {
@@ -30,7 +31,7 @@ class ContentAutofillDriverFactoryTestApi {
   ContentAutofillRouter& router() { return factory_->router_; }
 
  private:
-  ContentAutofillDriverFactory* factory_;
+  raw_ptr<ContentAutofillDriverFactory> factory_;
 };
 
 }  // namespace autofill

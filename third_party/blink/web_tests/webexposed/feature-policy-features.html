@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <pre id="output"></pre>
+<script src="../resources/feature-policy-features-listing.js"></script>
 <script>
 if (window.testRunner) {
   testRunner.dumpAsText();
@@ -12,7 +13,5 @@ function print(text) {
 print('This test documents Blink\'s web-exposed policy-controlled features.');
 print('All changes to this list should go through Blink\'s feature review process: http://www.chromium.org/blink#new-features');
 print('');
-for (const feature of document.featurePolicy.features().sort()) {
-  print(feature);
-}
+featurePolicyFeaturesListing(false /* platformSpecific */, print);
 </script>

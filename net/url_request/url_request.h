@@ -22,6 +22,7 @@
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
@@ -207,7 +208,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     virtual void OnReadCompleted(URLRequest* request, int bytes_read) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   URLRequest(const URLRequest&) = delete;
@@ -792,9 +793,28 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
 
+  int pervasive_payloads_index_for_logging() const {
+    return pervasive_payloads_index_for_logging_;
+  }
+
+  void set_pervasive_payloads_index_for_logging(int index) {
+    pervasive_payloads_index_for_logging_ = index;
+  }
+
+  const std::string& expected_response_checksum() const {
+    return expected_response_checksum_;
+  }
+
+  void set_expected_response_checksum(const std::string& checksum) {
+    expected_response_checksum_ = checksum;
+  }
+
   static bool DefaultCanUseCookies();
 
   base::WeakPtr<URLRequest> GetWeakPtr();
+
+  bool HasPartitionedCookie() { return has_partitioned_cookie_; }
+  void SetHasPartitionedCookie() { has_partitioned_cookie_ = true; }
 
  protected:
   // Allow the URLRequestJob class to control the is_pending() flag.
@@ -919,29 +939,31 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   IsolationInfo isolation_info_;
 
-  bool force_ignore_site_for_cookies_;
-  bool force_ignore_top_frame_party_for_cookies_;
-  bool force_main_frame_for_same_site_cookies_;
+  bool force_ignore_site_for_cookies_ = false;
+  bool force_ignore_top_frame_party_for_cookies_ = false;
+  bool force_main_frame_for_same_site_cookies_ = false;
   absl::optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;
   std::string method_;  // "GET", "POST", etc. Should be all uppercase.
   std::string referrer_;
-  ReferrerPolicy referrer_policy_;
-  RedirectInfo::FirstPartyURLPolicy first_party_url_policy_;
+  ReferrerPolicy referrer_policy_ =
+      ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  RedirectInfo::FirstPartyURLPolicy first_party_url_policy_ =
+      RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
   HttpRequestHeaders extra_request_headers_;
   // Flags indicating the request type for the load. Expected values are LOAD_*
   // enums above.
-  int load_flags_;
+  int load_flags_ = LOAD_NORMAL;
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
-  bool allow_credentials_;
-  SecureDnsPolicy secure_dns_policy_;
+  bool allow_credentials_ = true;
+  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
 
   CookieAccessResultList maybe_sent_cookies_;
   CookieAndLineAccessResultList maybe_stored_cookies_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  int reporting_upload_depth_;
+  int reporting_upload_depth_ = 0;
 #endif
 
   // Never access methods of the |delegate_| directly. Always use the
@@ -961,7 +983,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // but once an error is encountered or the request is canceled, it will take
   // the appropriate error code and never change again. If multiple failures
   // have been encountered, this will be the first error encountered.
-  int status_;
+  int status_ = OK;
 
   // The HTTP response info, lazily initialized.
   HttpResponseInfo response_info_;
@@ -969,12 +991,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Tells us whether the job is outstanding. This is true from the time
   // Start() is called to the time we dispatch RequestComplete and indicates
   // whether the job is active.
-  bool is_pending_;
+  bool is_pending_ = false;
 
   // Indicates if the request is in the process of redirecting to a new
   // location.  It is true from the time the headers complete until a
   // new request begins.
-  bool is_redirecting_;
+  bool is_redirecting_ = false;
 
   // Number of times we're willing to redirect.  Used to guard against
   // infinite redirects.
@@ -991,23 +1013,23 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // If |calling_delegate_| is true, the event type of the delegate being
   // called.
-  NetLogEventType delegate_event_type_;
+  NetLogEventType delegate_event_type_ = NetLogEventType::FAILED;
 
   // True if this request is currently calling a delegate, or is blocked waiting
   // for the URL request or network delegate to resume it.
-  bool calling_delegate_;
+  bool calling_delegate_ = false;
 
   // An optional parameter that provides additional information about what
   // |this| is currently being blocked by.
   std::string blocked_by_;
-  bool use_blocked_by_as_load_param_;
+  bool use_blocked_by_as_load_param_ = false;
 
   // Safe-guard to ensure that we do not send multiple "I am completed"
   // messages to network delegate.
   // TODO(battre): Remove this. http://crbug.com/89049
-  bool has_notified_completion_;
+  bool has_notified_completion_ = false;
 
-  int64_t received_response_content_length_;
+  int64_t received_response_content_length_ = 0;
 
   base::TimeTicks creation_time_;
 
@@ -1033,9 +1055,25 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
-  bool upgrade_if_insecure_;
+  // The index of the request URL in Cache Transparency's Pervasive Payloads
+  // List. This is only used for logging purposes. It is initialized as -1 to
+  // signify that the index has not been set.
+  int pervasive_payloads_index_for_logging_ = -1;
+
+  // A SHA-256 checksum of the response and selected headers, stored as
+  // upper-case hexadecimal. This is only used if the
+  // LOAD_USE_SINGLE_KEYED_CACHE flag is set. On failure to match the cache
+  // entry will be marked as unusable and will not be re-used.
+  std::string expected_response_checksum_;
+
+  bool upgrade_if_insecure_ = false;
 
   bool send_client_certs_ = true;
+
+  // This boolean is set to true if the response has a Set-Cookie header with
+  // the Partitioned attribute.
+  // TODO(https://crbug.com/1296161): Delete this field.
+  bool has_partitioned_cookie_ = false;
 
   // Idempotency of the request.
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;

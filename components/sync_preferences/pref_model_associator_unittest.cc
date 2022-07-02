@@ -50,8 +50,9 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override {
-    if (pref_name == kCustomMergePrefName)
+    if (pref_name == kCustomMergePrefName) {
       return local_value.Clone();
+    }
     return base::Value();
   }
 };
@@ -98,12 +99,13 @@ class AbstractPreferenceMergeTest : public testing::Test {
         pref_service_->FindPreference(pref_name.c_str());
     ASSERT_TRUE(pref);
     base::Value::Type type = pref->GetType();
-    if (type == base::Value::Type::DICTIONARY)
+    if (type == base::Value::Type::DICTIONARY) {
       empty_value = std::make_unique<base::DictionaryValue>();
-    else if (type == base::Value::Type::LIST)
+    } else if (type == base::Value::Type::LIST) {
       empty_value = std::make_unique<base::ListValue>();
-    else
+    } else {
       FAIL();
+    }
     pref_service_->Set(pref_name.c_str(), *empty_value);
   }
 

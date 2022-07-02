@@ -6,7 +6,6 @@
 #define COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_H_
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -14,10 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace content {
-class RenderFrame;
-}  // namespace content
 
 namespace cast_streaming {
 
@@ -28,19 +23,19 @@ class RendererControllerProxy : public mojom::RendererController {
  public:
   using MojoDisconnectCB = base::OnceCallback<void()>;
 
-  RendererControllerProxy(content::RenderFrame* render_frame,
-                          MojoDisconnectCB disconnection_handler);
+  explicit RendererControllerProxy(MojoDisconnectCB disconnection_handler);
   ~RendererControllerProxy() override;
+
+  // Binds the frame-specific receiver from the browser process.
+  void BindRendererController(
+      mojo::PendingAssociatedReceiver<mojom::RendererController>
+          pending_receiver);
 
   // Gets the receiver associated with the RenderFrame associated with this
   // instance.
   mojo::PendingReceiver<media::mojom::Renderer> GetReceiver();
 
  private:
-  // Binds the frame-specific receiver from the browser process.
-  void BindReceiver(mojo::PendingAssociatedReceiver<mojom::RendererController>
-                        pending_receiver);
-
   // mojom::RendererController overrides.
   //
   // Fuses |browser_process_renderer_controls| received from the browser
@@ -71,8 +66,6 @@ class RendererControllerProxy : public mojom::RendererController {
   MojoDisconnectCB on_mojo_disconnection_;
 
   THREAD_CHECKER(thread_checker_);
-
-  base::WeakPtrFactory<RendererControllerProxy> weak_factory_;
 };
 
 }  // namespace cast_streaming

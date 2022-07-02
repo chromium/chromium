@@ -12,14 +12,15 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "remoting/base/constants.h"
 #include "remoting/base/running_samples.h"
+#include "remoting/base/session_options.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class VideoChannelStateObserver;
 
@@ -33,7 +34,9 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // notified of important events on the |main_task_runner| thread.
   WebrtcVideoEncoderWrapper(
       const webrtc::SdpVideoFormat& format,
+      const SessionOptions& session_options,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner,
       base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer);
   ~WebrtcVideoEncoderWrapper() override;
 
@@ -73,6 +76,13 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // (compared with recent history) and the current bandwidth-estimation.
   bool ShouldDropQualityForLargeFrame(const webrtc::DesktopFrame& frame);
 
+  // Begins encoding |pending_frame_| if it contains valid frame data.
+  void SchedulePendingFrame();
+
+  // Clears |pending_frame_| and notifies WebRTC of the dropped frame when
+  // |pending_frame_| contains valid frame data.
+  void DropPendingFrame();
+
   std::unique_ptr<WebrtcVideoEncoder> encoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -105,6 +115,8 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // True when a frame is being encoded. This guards against encoding multiple
   // frames in parallel, which the encoders are not prepared to handle.
   bool encode_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::unique_ptr<webrtc::VideoFrame> pending_frame_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores the expected id of the next incoming frame to be encoded. If this
   // does not match, it means that WebRTC dropped a frame, and the original
@@ -147,6 +159,15 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
+  // TaskRunner used for scheduling encoding tasks.
+  scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner_;
+
+  // Stores the taret frame rate used for capture and encode scheduling. May be
+  // overridden by the client via SessionOptions. This value is applied to all
+  // codecs and cannot be changed during a session.
+  int target_frame_rate_ = kTargetFrameRate;
+  base::TimeDelta target_frame_interval_;
+
   base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer_;
 
   // This class lives on WebRTC's encoding thread. All methods (including ctor
@@ -156,7 +177,6 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   base::WeakPtrFactory<WebrtcVideoEncoderWrapper> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_ENCODER_WRAPPER_H_

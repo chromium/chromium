@@ -50,8 +50,16 @@ struct ResourceRequest;
 
 namespace extensions {
 
-using ManifestInvalidFailureDataList = std::vector<
-    std::pair<ExtensionId, ExtensionDownloaderDelegate::FailureData>>;
+struct DownloadFailure {
+  DownloadFailure(ExtensionDownloaderDelegate::Error error,
+                  ExtensionDownloaderDelegate::FailureData failure_data);
+  DownloadFailure(DownloadFailure&& other);
+  ~DownloadFailure();
+
+  ExtensionDownloaderDelegate::Error error;
+  ExtensionDownloaderDelegate::FailureData failure_data;
+};
+
 struct UpdateDetails {
   UpdateDetails(const std::string& id, const base::Version& version);
   ~UpdateDetails();
@@ -168,21 +176,22 @@ class ExtensionDownloader {
   // We need to keep track of some information associated with a url
   // when doing a fetch.
   struct ExtensionFetch {
-    ExtensionFetch();
-    ExtensionFetch(const std::string& id,
+    ExtensionFetch(ExtensionDownloaderTask task,
                    const GURL& url,
                    const std::string& package_hash,
                    const std::string& version,
-                   const std::set<int>& request_ids,
                    DownloadFetchPriority fetch_priority);
     ~ExtensionFetch();
+
+    // Collects request ids from associated tasks.
+    std::set<int> GetRequestIds() const;
 
     ExtensionId id;
     GURL url;
     std::string package_hash;
     base::Version version;
-    std::set<int> request_ids;
     DownloadFetchPriority fetch_priority;
+    std::vector<ExtensionDownloaderTask> associated_tasks;
 
     enum CredentialsMode {
       CREDENTIALS_NONE = 0,
@@ -255,22 +264,15 @@ class ExtensionDownloader {
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
 
-  // Tries fetching the extension from cache if manifest fetch is failed for
-  // force installed extensions, and notifies the failure reason for remaining
-  // extensions.
-  void TryFetchingExtensionsFromCache(
-      ManifestFetchData* fetch_data,
-      ExtensionDownloaderDelegate::Error error,
-      const int net_error,
-      const int response_code,
-      const absl::optional<ManifestInvalidFailureDataList>&
-          manifest_invalid_errors);
+  // Tries fetching the extension from cache. Removes found extensions from
+  // |fetch_data|. Return true if all extensions were found.
+  bool TryFetchingExtensionsFromCache(ManifestFetchData* fetch_data);
 
   // Makes a retry attempt, reports failure by calling
   // AddFailureDataOnManifestFetchFailed when fetching of update manifest
   // failed.
   void RetryRequestOrHandleFailureOnManifestFetchFailure(
-      const network::SimpleURLLoader* loader,
+      const network::SimpleURLLoader& loader,
       const int response_code);
 
   // Handles the result of a manifest fetch.
@@ -282,27 +284,30 @@ class ExtensionDownloader {
                              std::unique_ptr<UpdateManifestResults> results,
                              const absl::optional<ManifestParseFailure>& error);
 
-  // This function partition extension IDs stored in |fetch_data| into 3 sets:
-  // update/no update/error using the update information from
-  // |possible_updates| and the extension system. When the function returns:
+  // This function partition extensions from given |tasks| into two sets:
+  // update/error using the update information from |possible_updates| and
+  // the extension system. When the function returns:
   // - |to_update| stores entries from |possible_updates| that will be updated.
-  // - |no_updates| stores the set of extension IDs that will not be updated.
   // - |errors| stores the entries of extension IDs along with the error that
-  // occurred in the process
-  //   determining updates. For example, a common error is |possible_updates|
-  //   doesn't have any update information for some extensions in |fetch_data|.
-  void DetermineUpdates(const ManifestFetchData& fetch_data,
-                        const UpdateManifestResults& possible_updates,
-                        std::vector<UpdateManifestResult*>* to_update,
-                        std::set<std::string>* no_updates,
-                        ManifestInvalidFailureDataList* errors);
+  // occurred in the process (no update available is considered an error from
+  // ExtensionDownloader's perspective).
+  //   For example, a common error is |possible_updates| doesn't have any update
+  //   information for some extensions.
+  void DetermineUpdates(
+      std::vector<ExtensionDownloaderTask> tasks,
+      const UpdateManifestResults& possible_updates,
+      std::vector<std::pair<ExtensionDownloaderTask, UpdateManifestResult*>>*
+          to_update,
+      std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>>* errors);
 
   // Checks whether extension is presented in cache. If yes, return path to its
   // cached CRX, absl::nullopt otherwise. |manifest_fetch_failed| flag indicates
   // whether the lookup in cache is performed after the manifest is fetched or
   // due to failure while fetching or parsing manifest.
   absl::optional<base::FilePath> GetCachedExtension(
-      const ExtensionFetch& fetch_data,
+      const ExtensionId& id,
+      const std::string& package_hash,
+      const base::Version& expected_version,
       bool manifest_fetch_failed);
 
   // Begins (or queues up) download of an updated extension. |info| represents
@@ -320,10 +325,6 @@ class ExtensionDownloader {
 
   void NotifyExtensionManifestUpdateCheckStatus(
       std::vector<UpdateManifestResult> results);
-
-  void NotifyExtensionsManifestInvalidFailure(
-      const ManifestInvalidFailureDataList& errors,
-      const std::set<int>& request_ids);
 
   // Invokes OnExtensionDownloadStageChanged() on the |delegate_| for each
   // extension in the set, with |stage| as the current stage. Make a copy of
@@ -349,9 +350,23 @@ class ExtensionDownloader {
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
 
+  // Invokes OnExtensionDownloadFailed() on the |delegate_| for each extension
+  // in the list, which also provides the reason for the failure. Make a copy
+  // of arguments because there is no guarantee that callback won't indirectly
+  // change source of them.
+  void NotifyExtensionsDownloadFailedWithList(
+      std::vector<std::pair<ExtensionDownloaderTask, DownloadFailure>> errors,
+      std::set<int> request_ids);
+
   // Send a notification that an update was found for |id| that we'll
   // attempt to download.
   void NotifyUpdateFound(const std::string& id, const std::string& version);
+
+  // Helper method to populate lists of manifest fetch requests.
+  void AddToFetches(std::map<FetchDataGroupKey,
+                             std::vector<std::unique_ptr<ManifestFetchData>>>&
+                        fetches_preparing,
+                    ExtensionDownloaderTask task);
 
   // Do real work of StartAllPending. If .crx cache is used, this function
   // is called when cache is ready.

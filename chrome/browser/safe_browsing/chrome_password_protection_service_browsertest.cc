@@ -1029,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start a renderer-initiated navigation away from the current page. The
   // navigation should be deferred.
   content::TestNavigationManager navigation(GetWebContents(), kNextPage);
-  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(),
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                               content::JsReplace("location = $1", kNextPage)));
 
   // Run the navigation until it defers on the
@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start a renderer-initiated navigation away from the current page. The
   // navigation should be deferred.
   content::TestNavigationManager navigation(GetWebContents(), kNextPage);
-  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(),
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                               content::JsReplace("location = $1", kNextPage)));
 
   // Run the navigation until it defers on the
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start a renderer-initiated navigation away from the current page. The
   // navigation should be deferred.
   content::TestNavigationManager navigation(GetWebContents(), kNextPage);
-  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(),
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                               content::JsReplace("location = $1", kNextPage)));
   // Run the navigation until it defers on the
   // PasswordProtectionCommitDeferringCondition.
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(
                                                    kPrerenderUrl);
 
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                       content::JsReplace("location = $1", kPrerenderUrl)));
 
   // Run the navigation until it defers on the
@@ -1262,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestActivationManager prerender_manager(GetWebContents(),
                                                    kPrerenderUrl);
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                       content::JsReplace("location = $1", kPrerenderUrl)));
 
   // Run the navigation until it defers on the
@@ -1303,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(
                                                    kPrerenderUrl);
 
   ASSERT_TRUE(
-      content::ExecJs(GetWebContents()->GetMainFrame(),
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
                       content::JsReplace("location = $1", kPrerenderUrl)));
 
   // Run the navigation until it defers on the
@@ -1390,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestActivationManager prerender_manager(GetWebContents(),
                                                    kURLInBFCache);
   ASSERT_TRUE(content::ExecJs(
-      GetWebContents()->GetMainFrame(),
+      GetWebContents()->GetPrimaryMainFrame(),
       content::JsReplace("window.history.back()", kURLInBFCache)));
 
   // Run the navigation until it defers on the

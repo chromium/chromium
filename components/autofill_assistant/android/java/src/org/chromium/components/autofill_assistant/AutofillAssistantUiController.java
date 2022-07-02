@@ -10,6 +10,7 @@ import android.view.Window;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -25,9 +26,7 @@ import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Bridge to native side autofill_assistant::UiControllerAndroid. It allows native side to control
@@ -39,7 +38,7 @@ import java.util.Set;
 // TODO(crbug.com/806868): This class should be removed once all logic is in native side and the
 // model is directly modified by the native AssistantMediator.
 public class AutofillAssistantUiController {
-    private static final Set<Activity> sActiveActivities = new HashSet<>();
+    private static final String TAG = "AutofillAssistant";
 
     private long mNativeUiController;
 
@@ -47,7 +46,7 @@ public class AutofillAssistantUiController {
     private final AssistantCoordinator mCoordinator;
     private final AssistantDependencies mDependencies;
     private final Destroyable mTabChangeObserverDestroyer;
-    private WebContents mWebContents;
+    private final WebContents mWebContents;
 
     private final AssistantSnackbarFactory mSnackbarFactory;
     private final AssistantFeedbackUtil mFeedbackUtil;
@@ -55,22 +54,22 @@ public class AutofillAssistantUiController {
     private AssistantSnackbar mSnackbar;
 
     /**
-     * Returns {@code true} if an activity without a ui controller was found.
+     * Returns {@code true} if the all dependencies are ready.
      */
     @CalledByNative
-    private static boolean shouldCreateNewInstance(
+    private static boolean canAttachUi(
             WebContents webContents, AssistantDependencies dependencies) {
-        return dependencies.maybeUpdateDependencies(webContents)
-                && !sActiveActivities.contains(dependencies.getActivity());
+        return dependencies.maybeUpdateDependencies(webContents);
     }
 
     @CalledByNative
-    private AutofillAssistantUiController(long nativeUiController,
+    private AutofillAssistantUiController(long nativeUiController, WebContents webContents,
             AssistantDependencies dependencies, boolean allowTabSwitching,
             @Nullable AssistantOverlayCoordinator overlayCoordinator) {
+        Log.e(TAG, "AutofillAssistantUiController::AutofillAssistantUiController");
+        mWebContents = webContents;
         mDependencies = dependencies;
         mActivity = dependencies.getActivity();
-        sActiveActivities.add(mActivity);
 
         mNativeUiController = nativeUiController;
         mSnackbarFactory = dependencies.getSnackbarFactory();
@@ -97,6 +96,12 @@ public class AutofillAssistantUiController {
                     @Override
                     public void onObservingDifferentTab(
                             boolean isTabNull, @Nullable WebContents webContents, boolean isHint) {
+                        Log.v(TAG,
+                                "UiController - onObservingDifferentTab: isTabNull=" + isTabNull
+                                        + ", webContentsIsNull=" + (webContents == null)
+                                        + ", isHint=" + isHint + ", webContents==mWebContents="
+                                        + (webContents == mWebContents));
+
                         if (mWebContents == null) {
                             if (!isHint) {
                                 // This particular scenario would happen only if we're switching
@@ -146,13 +151,12 @@ public class AutofillAssistantUiController {
                             //
                             safeOnTabSwitched(getModel().getBottomSheetState(),
                                     /* activityChanged = */ false);
-                            // A new tab was selected. If Autofill Assistant is running on it,
-                            // attach the UI to that other instance, otherwise destroy the UI.
+                            // A new tab was selected, destroy the UI.
                             @Nullable
                             AutofillAssistantClient client =
                                     AutofillAssistantClient.fromWebContents(mWebContents);
                             if (client != null) {
-                                client.transferUiTo(webContents);
+                                client.destroyUi();
                             }
 
                             if (!isHint) {
@@ -164,6 +168,11 @@ public class AutofillAssistantUiController {
                     @Override
                     public void onActivityAttachmentChanged(
                             @Nullable WebContents webContents, @Nullable WindowAndroid window) {
+                        Log.v(TAG,
+                                "UiController - onActivityAttachmentChanged: webContentsIsNull="
+                                        + (webContents == null)
+                                        + ", windowAndroidIsNull=" + (window == null));
+
                         if (mWebContents == null) return;
 
                         if (window == null && webContents == mWebContents) {
@@ -215,11 +224,6 @@ public class AutofillAssistantUiController {
     // is to avoid boilerplate.
 
     @CalledByNative
-    private void setWebContents(@Nullable WebContents webContents) {
-        mWebContents = webContents;
-    }
-
-    @CalledByNative
     private AssistantModel getModel() {
         return mCoordinator.getModel();
     }
@@ -234,7 +238,6 @@ public class AutofillAssistantUiController {
         mNativeUiController = 0;
         mTabChangeObserverDestroyer.destroy();
         mCoordinator.destroy();
-        sActiveActivities.remove(mActivity);
     }
 
     /**

@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GL_SURFACE_EGL_READBACK_WAYLAND_H_
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
@@ -82,7 +83,7 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
   // Widget of the window that this readback writes pixels to.
   const gfx::AcceleratedWidget widget_;
 
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 
   // Size of the buffer.
   gfx::Size size_;

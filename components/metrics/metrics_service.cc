@@ -427,14 +427,6 @@ void MetricsService::OnApplicationNotIdle() {
     HandleIdleSinceLastTransmission(false);
 }
 
-void MetricsService::RecordStartOfSessionEnd() {
-  LogCleanShutdown(false);
-}
-
-void MetricsService::RecordCompletedSessionEnd() {
-  LogCleanShutdown(true);
-}
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   is_in_foreground_ = false;
@@ -477,6 +469,11 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+void MetricsService::LogCleanShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_manager_->LogHasSessionShutdownCleanly(true);
+}
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
@@ -1093,11 +1090,6 @@ void MetricsService::PrepareProviderMetricsTask() {
       base::BindOnce(&MetricsService::PrepareProviderMetricsTask,
                      self_ptr_factory_.GetWeakPtr()),
       next_check);
-}
-
-void MetricsService::LogCleanShutdown(bool end_completed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_manager_->LogHasSessionShutdownCleanly(true);
 }
 
 void MetricsService::UpdateLastLiveTimestampTask() {

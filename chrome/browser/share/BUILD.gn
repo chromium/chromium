@@ -12,6 +12,8 @@ source_set("share") {
   sources = [
     "default_ranking.cc",
     "default_ranking.h",
+    "share_attempt.cc",
+    "share_attempt.h",
     "share_history.cc",
     "share_history.h",
     "share_ranking.cc",
@@ -20,6 +22,7 @@ source_set("share") {
 
   deps = [
     "//base",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/share/proto:proto",
     "//chrome/services/qrcode_generator/public/cpp",
@@ -45,6 +48,8 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
+      "//chrome/browser/share/core/crow:crow_configuration",
+      "//chrome/browser/share/proto:crow_proto",
       "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",

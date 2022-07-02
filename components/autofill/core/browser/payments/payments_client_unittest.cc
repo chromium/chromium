@@ -162,11 +162,8 @@ class PaymentsClientTest : public testing::Test {
     test_personal_data_.SetAccountInfoForPayments(
         identity_test_env_.MakePrimaryAccountAvailable(
             "example@gmail.com", signin::ConsentLevel::kSync));
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */
-        {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
-         features::kAutofillEnableSendingBcnInGetUploadDetails},
-        /* disabled_features */ {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableSendingBcnInGetUploadDetails);
   }
 
   void TearDown() override { client_.reset(); }
@@ -1354,6 +1351,41 @@ TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
     EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
               virtual_card_enrollment_state);
   }
+}
+
+TEST_F(PaymentsClientTest,
+       UploadSuccessGetDetailsForEnrollmentResponseDetailsPresent) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse);
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"virtual_card_metadata\": "
+                 "{\"status\": \"ENROLLMENT_ELIGIBLE\", "
+                 "\"virtual_card_enrollment_data\": { "
+                 "\"google_legal_message\": { \"line\" : [{ "
+                 "\"template\": \"This is the entire message.\" }] }, "
+                 "\"external_legal_message\": {},"
+                 "\"context_token\": \"some_token\"} } }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
+            CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
+  EXPECT_EQ(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .google_legal_message[0]
+          .text(),
+      u"This is the entire message.");
+  EXPECT_TRUE(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .issuer_legal_message.empty());
+  EXPECT_EQ(
+      upload_card_response_details_.get_details_for_enrollment_response_details
+          .value()
+          .vcn_context_token,
+      "some_token");
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessCardArtUrlPresent) {

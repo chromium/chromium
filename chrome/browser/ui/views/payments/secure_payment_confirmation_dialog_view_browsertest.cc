@@ -23,6 +23,8 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 
 namespace payments {
 namespace {
@@ -49,6 +51,7 @@ class SecurePaymentConfirmationDialogViewTest
   enum DialogEvent : int {
     DIALOG_OPENED,
     DIALOG_CLOSED,
+    OPT_OUT_CLICKED,
   };
 
   // UiBrowserTest:
@@ -58,7 +61,8 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
+            web_contents->GetPrimaryMainFrame(), model_.GetWeakPtr(),
+            GetWeakPtr());
 
     // TODO(crbug.com/1175327): Ideally, we'd expect the browser window to be
     // active here and could check that |IsBrowserWindowActivate()| returned
@@ -102,6 +106,13 @@ class SecurePaymentConfirmationDialogViewTest
     model_.set_verify_button_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
     model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
+
+    model_.set_opt_out_visible(false);
+    model_.set_opt_out_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL));
+    model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
+    model_.set_relying_party_id(u"relyingparty.com");
   }
 
   void InvokeSecurePaymentConfirmationUI() {
@@ -109,7 +120,8 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
+            web_contents->GetPrimaryMainFrame(), model_.GetWeakPtr(),
+            GetWeakPtr());
 
     ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);
@@ -130,6 +142,19 @@ class SecurePaymentConfirmationDialogViewTest
                         test_delegate_->dialog_view()->GetViewByID(
                             static_cast<int>(view_id)))
                         ->GetText());
+  }
+
+  void ExpectOptOutText(views::View* view,
+                        const std::u16string& relying_party_id,
+                        const std::u16string& opt_out_link_label) {
+    // To avoid overfitting, we check only that the opt-out label contains both
+    // the relying party and the call-to-action text that is expected.
+    std::string opt_out_text =
+        base::UTF16ToUTF8(static_cast<views::StyledLabel*>(view)->GetText());
+    EXPECT_THAT(opt_out_text,
+                ::testing::HasSubstr(base::UTF16ToUTF8(relying_party_id)));
+    EXPECT_THAT(opt_out_text,
+                ::testing::HasSubstr(base::UTF16ToUTF8(opt_out_link_label)));
   }
 
   void ExpectViewMatchesModel() {
@@ -196,6 +221,14 @@ class SecurePaymentConfirmationDialogViewTest
     ExpectLabelText(
         model_.total_value(),
         SecurePaymentConfirmationDialogView::DialogViewID::TOTAL_VALUE);
+
+    // The Opt Out link always exists, but should only be visible if requested.
+    views::View* opt_out_view =
+        test_delegate_->dialog_view()->GetFootnoteViewForTesting();
+    EXPECT_NE(opt_out_view, nullptr);
+    EXPECT_EQ(opt_out_view->GetVisible(), model_.opt_out_visible());
+    ExpectOptOutText(opt_out_view, model_.relying_party_id(),
+                     model_.opt_out_link_label());
   }
 
   void ClickAcceptAndWait() {
@@ -206,6 +239,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(confirm_pressed_);
     EXPECT_FALSE(cancel_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -225,6 +259,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -244,6 +279,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_FALSE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -253,6 +289,29 @@ class SecurePaymentConfirmationDialogViewTest
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
         "AuthenticationDialogResult",
         SecurePaymentConfirmationAuthenticationDialogResult::kClosed, 1);
+  }
+
+  void ClickOptOutAndWait() {
+    ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
+
+    views::StyledLabel* opt_out_label = static_cast<views::StyledLabel*>(
+        test_delegate_->dialog_view()->GetFootnoteViewForTesting());
+    opt_out_label->ClickFirstLinkForTesting();
+
+    event_waiter_->Wait();
+
+    EXPECT_FALSE(cancel_pressed_);
+    EXPECT_FALSE(confirm_pressed_);
+    EXPECT_TRUE(opt_out_clicked_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kOptOut, 1);
   }
 
   void ResetEventWaiter(DialogEvent event) {
@@ -275,6 +334,12 @@ class SecurePaymentConfirmationDialogViewTest
 
   void OnCancelButtonPressed() override { cancel_pressed_ = true; }
 
+  void OnOptOutClicked() override {
+    opt_out_clicked_ = true;
+    if (event_waiter_)
+      event_waiter_->OnEvent(DialogEvent::OPT_OUT_CLICKED);
+  }
+
  protected:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
 
@@ -286,6 +351,7 @@ class SecurePaymentConfirmationDialogViewTest
 
   bool confirm_pressed_ = false;
   bool cancel_pressed_ = false;
+  bool opt_out_clicked_ = false;
 
   base::HistogramTester histogram_tester_;
 
@@ -542,6 +608,24 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
             image_view->GetImageBounds().height());
 
   CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       OptOutShownWhenRequested) {
+  CreateModel();
+
+  // Make sure that by default, opt-out wasn't requested. This means that every
+  // other test is correctly testing the 'no opt out' path.
+  ASSERT_FALSE(model_.opt_out_visible());
+
+  // Now set it to true, and invoke SPC.
+  model_.set_opt_out_visible(true);
+
+  InvokeSecurePaymentConfirmationUI();
+
+  ExpectViewMatchesModel();
+
+  ClickOptOutAndWait();
 }
 
 }  // namespace payments

@@ -19,20 +19,21 @@ extern const base::Feature kCustomTabsExperimentFeature;
 extern const base::Feature kDocumentsProviderUnknownSizeFeature;
 extern const base::Feature kEnableArcNearbyShare;
 extern const base::Feature kEnablePerVmCoreScheduling;
-extern const base::Feature kEnableThrottlingNotification;
 extern const base::Feature kEnableTTSCaching;
+extern const base::Feature kEnableTTSCacheSetup;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
 extern const base::Feature kEnableVirtioBlkForData;
 extern const base::Feature kFilePickerExperimentFeature;
+extern const base::Feature kGameModeFeature;
 extern const base::Feature kGmsCoreLowMemoryKillerProtection;
 extern const base::Feature kGuestZram;
 extern const base::FeatureParam<int> kGuestZramSize;
+extern const base::Feature kLockGuestMemory;
 extern const base::Feature kLogdConfig;
 extern const base::FeatureParam<int> kLogdConfigSize;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
-extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kOutOfProcessVideoDecoding;
 extern const base::Feature kPictureInPictureFeature;
@@ -54,7 +55,11 @@ extern const base::Feature kVmBalloonPolicy;
 extern const base::FeatureParam<int> kVmBalloonPolicyModerateKiB;
 extern const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB;
 extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
+extern const base::Feature kVmBroadcastPreNotifyANR;
 extern const base::Feature kVmGmsCoreLowMemoryKillerProtection;
+extern const base::FeatureParam<bool> kVmBalloonPolicyResponsive;
+extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs;
+extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes;
 
 }  // namespace arc
 

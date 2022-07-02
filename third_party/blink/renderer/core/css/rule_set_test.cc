@@ -52,9 +52,9 @@ StyleRule* CreateDummyStyleRule() {
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules("#id { color: tomato; }");
   const RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("id");
+  const HeapVector<RuleData>* rules = rule_set.IdRules("id");
   DCHECK_EQ(1u, rules->size());
-  return rules->at(0)->Rule();
+  return rules->at(0).Rule();
 }
 
 }  // namespace
@@ -65,10 +65,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
   sheet.AddCSSRules("summary::-webkit-details-marker { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("-webkit-details-marker");
-  const HeapVector<Member<const RuleData>>* rules =
-      rule_set.UAShadowPseudoElementRules(str);
+  const HeapVector<RuleData>* rules = rule_set.UAShadowPseudoElementRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0)->Selector().Value());
+  ASSERT_EQ(str, rules->at(0).Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
@@ -77,9 +76,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
   sheet.AddCSSRules("#id { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("id");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
+  const HeapVector<RuleData>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0)->Selector().Value());
+  ASSERT_EQ(str, rules->at(0).Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
@@ -88,9 +87,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
   sheet.AddCSSRules("div:nth-child(2) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("div");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules(str);
+  const HeapVector<RuleData>* rules = rule_set.TagRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0)->Selector().TagQName().LocalName());
+  ASSERT_EQ(str, rules->at(0).Selector().TagQName().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
@@ -100,10 +99,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("id");
   // id is prefered over class even if class preceeds it in the selector.
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
+  const HeapVector<RuleData>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString class_str("class");
-  ASSERT_EQ(class_str, rules->at(0)->Selector().Value());
+  ASSERT_EQ(class_str, rules->at(0).Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
@@ -112,9 +111,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
   sheet.AddCSSRules("#id.class { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("id");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
+  const HeapVector<RuleData>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
-  ASSERT_EQ(str, rules->at(0)->Selector().Value());
+  ASSERT_EQ(str, rules->at(0).Selector().Value());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
@@ -123,10 +122,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
   sheet.AddCSSRules("[attr]#id { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("id");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
+  const HeapVector<RuleData>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString attr_str("attr");
-  ASSERT_EQ(attr_str, rules->at(0)->Selector().Attribute().LocalName());
+  ASSERT_EQ(attr_str, rules->at(0).Selector().Attribute().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
@@ -135,10 +134,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
   sheet.AddCSSRules("div[attr]#id { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("id");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules(str);
+  const HeapVector<RuleData>* rules = rule_set.IdRules(str);
   ASSERT_EQ(1u, rules->size());
   AtomicString tag_str("div");
-  ASSERT_EQ(tag_str, rules->at(0)->Selector().TagQName().LocalName());
+  ASSERT_EQ(tag_str, rules->at(0).Selector().TagQName().LocalName());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
@@ -164,7 +163,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
 
   sheet.AddCSSRules(":host { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -173,7 +172,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostWithId) {
 
   sheet.AddCSSRules(":host(#x) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -182,7 +181,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContext) {
 
   sheet.AddCSSRules(":host-context(*) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -191,7 +190,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextWithId) {
 
   sheet.AddCSSRules(":host-context(#x) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(1u, rules->size());
 }
 
@@ -200,11 +199,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndHostContextNotInRightmost) {
 
   sheet.AddCSSRules(":host-context(#x) .y, :host(.a) > #b  { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* shadow_rules =
-      rule_set.ShadowHostRules();
-  const HeapVector<Member<const RuleData>>* id_rules = rule_set.IdRules("b");
-  const HeapVector<Member<const RuleData>>* class_rules =
-      rule_set.ClassRules("y");
+  const HeapVector<RuleData>* shadow_rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* id_rules = rule_set.IdRules("b");
+  const HeapVector<RuleData>* class_rules = rule_set.ClassRules("y");
   ASSERT_EQ(0u, shadow_rules->size());
   ASSERT_EQ(1u, id_rules->size());
   ASSERT_EQ(1u, class_rules->size());
@@ -215,7 +212,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndClass) {
 
   sheet.AddCSSRules(".foo:host { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(0u, rules->size());
 }
 
@@ -224,7 +221,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextAndClass) {
 
   sheet.AddCSSRules(".foo:host-context(*) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ShadowHostRules();
+  const HeapVector<RuleData>* rules = rule_set.ShadowHostRules();
   ASSERT_EQ(0u, rules->size());
 }
 
@@ -258,7 +255,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
   sheet.AddCSSRules("::cue(b) { }");
   sheet.AddCSSRules("video::cue(u) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.CuePseudoRules();
+  const HeapVector<RuleData>* rules = rule_set.CuePseudoRules();
   ASSERT_EQ(2u, rules->size());
 }
 
@@ -278,7 +275,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
 
   sheet.AddCSSRules("::part(dummy):focus, #id::part(dummy) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.PartPseudoRules();
+  const HeapVector<RuleData>* rules = rule_set.PartPseudoRules();
   ASSERT_EQ(2u, rules->size());
 }
 
@@ -287,7 +284,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {
 
   sheet.AddCSSRules(":is(.a) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  const HeapVector<RuleData>* rules = rule_set.ClassRules("a");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
 }
@@ -297,7 +294,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArg) {
 
   sheet.AddCSSRules(":where(.a) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  const HeapVector<RuleData>* rules = rule_set.ClassRules("a");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
 }
@@ -307,7 +304,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArgNested) {
 
   sheet.AddCSSRules(":where(:is(.a)) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  const HeapVector<RuleData>* rules = rule_set.ClassRules("a");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
 }
@@ -317,7 +314,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IsMultiArg) {
 
   sheet.AddCSSRules(":is(.a, .b) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.UniversalRules();
+  const HeapVector<RuleData>* rules = rule_set.UniversalRules();
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
 }
@@ -327,7 +324,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
 
   sheet.AddCSSRules(":where(.a, .b) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.UniversalRules();
+  const HeapVector<RuleData>* rules = rule_set.UniversalRules();
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
 }
@@ -351,7 +348,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
   sheet.AddCSSRules("[otherattr=\"value\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* list = rule_set.AttrRules("attr");
+  const HeapVector<RuleData>* list = rule_set.AttrRules("attr");
   ASSERT_NE(nullptr, list);
 
   EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
@@ -364,8 +361,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
 
   // One rule is not enough to build a tree, so we will not mass-reject
   // anything on otherattr.
-  const HeapVector<Member<const RuleData>>* list2 =
-      rule_set.AttrRules("otherattr");
+  const HeapVector<RuleData>* list2 = rule_set.AttrRules("otherattr");
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list2, "otherattr", "notfound"));
 }
 
@@ -388,7 +384,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
   sheet.AddCSSRules("[attr=\"\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* list = rule_set.AttrRules("attr");
+  const HeapVector<RuleData>* list = rule_set.AttrRules("attr");
   ASSERT_NE(nullptr, list);
   EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
@@ -415,40 +411,26 @@ TEST(RuleSetTest, SelectorIndexLimit) {
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules(builder.ToString());
   const RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules("b");
+  const HeapVector<RuleData>* rules = rule_set.TagRules("b");
   ASSERT_EQ(1u, rules->size());
-  EXPECT_EQ("b", rules->at(0)->Selector().TagQName().LocalName());
+  EXPECT_EQ("b", rules->at(0).Selector().TagQName().LocalName());
   EXPECT_FALSE(rule_set.TagRules("span"));
-}
-
-TEST(RuleSetTest, RuleDataSelectorIndexLimit) {
-  StyleRule* rule = CreateDummyStyleRule();
-  AddRuleFlags flags = kRuleHasNoSpecialState;
-  const unsigned position = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags,
-                                    nullptr /* container_query */,
-                                    nullptr /* scope */));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, (1 << RuleData::kSelectorIndexBits), position, flags,
-      nullptr /* container_query */, nullptr /* scope */));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, (1 << RuleData::kSelectorIndexBits) + 1, position, flags,
-      nullptr /* container_query */, nullptr /* scope */));
 }
 
 TEST(RuleSetTest, RuleDataPositionLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned selector_index = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags,
-                                    nullptr /* container_query */,
-                                    nullptr /* scope */));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, selector_index, (1 << RuleData::kPositionBits), flags,
-      nullptr /* container_query */, nullptr /* scope */));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, selector_index, (1 << RuleData::kPositionBits) + 1, flags,
-      nullptr /* container_query */, nullptr /* scope */));
+  const ContainerQuery* container_query = nullptr;
+  const CascadeLayer* cascade_layer = nullptr;
+  const StyleScope* style_scope = nullptr;
+
+  auto* rule_set = MakeGarbageCollected<RuleSet>();
+  for (int i = 0; i < (1 << RuleData::kPositionBits) + 1; ++i) {
+    rule_set->AddRule(rule, selector_index, flags, container_query,
+                      cascade_layer, style_scope);
+  }
+  EXPECT_EQ(1u << RuleData::kPositionBits, rule_set->RuleCount());
 }
 
 TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
@@ -475,10 +457,10 @@ TEST(RuleSetTest, NoStyleScope) {
 
   sheet.AddCSSRules("#b {}");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("b");
+  const HeapVector<RuleData>* rules = rule_set.IdRules("b");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
-  EXPECT_FALSE(rules->at(0)->GetStyleScope());
+  EXPECT_EQ(0u, rule_set.ScopeIntervals().size());
 }
 
 TEST(RuleSetTest, StyleScope) {
@@ -486,10 +468,10 @@ TEST(RuleSetTest, StyleScope) {
 
   sheet.AddCSSRules("@scope (.a) { #b {} }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("b");
+  const HeapVector<RuleData>* rules = rule_set.IdRules("b");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
-  EXPECT_TRUE(rules->at(0)->GetStyleScope());
+  EXPECT_EQ(1u, rule_set.ScopeIntervals().size());
 }
 
 TEST(RuleSetTest, NestedStyleScope) {
@@ -504,8 +486,8 @@ TEST(RuleSetTest, NestedStyleScope) {
     }
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
-  const HeapVector<Member<const RuleData>>* a_rules = rule_set.IdRules("a");
-  const HeapVector<Member<const RuleData>>* b_rules = rule_set.IdRules("b");
+  const HeapVector<RuleData>* a_rules = rule_set.IdRules("a");
+  const HeapVector<RuleData>* b_rules = rule_set.IdRules("b");
 
   ASSERT_TRUE(a_rules);
   ASSERT_TRUE(b_rules);
@@ -513,15 +495,24 @@ TEST(RuleSetTest, NestedStyleScope) {
   ASSERT_EQ(1u, a_rules->size());
   ASSERT_EQ(1u, b_rules->size());
 
-  EXPECT_TRUE(a_rules->at(0)->GetStyleScope());
-  EXPECT_FALSE(a_rules->at(0)->GetStyleScope()->Parent());
+  ASSERT_EQ(2u, rule_set.ScopeIntervals().size());
 
-  EXPECT_TRUE(b_rules->at(0)->GetStyleScope());
-  EXPECT_EQ(a_rules->at(0)->GetStyleScope(),
-            b_rules->at(0)->GetStyleScope()->Parent());
+  EXPECT_EQ(a_rules->at(0).GetPosition(),
+            rule_set.ScopeIntervals()[0].start_position);
+  const StyleScope* a_rule_scope = rule_set.ScopeIntervals()[0].value;
 
-  ASSERT_TRUE(b_rules->at(0)->GetStyleScope()->Parent());
-  EXPECT_FALSE(b_rules->at(0)->GetStyleScope()->Parent()->Parent());
+  EXPECT_EQ(b_rules->at(0).GetPosition(),
+            rule_set.ScopeIntervals()[1].start_position);
+  const StyleScope* b_rule_scope = rule_set.ScopeIntervals()[1].value;
+
+  EXPECT_NE(nullptr, a_rule_scope);
+  EXPECT_EQ(nullptr, a_rule_scope->Parent());
+
+  EXPECT_NE(nullptr, b_rule_scope);
+  EXPECT_EQ(a_rule_scope, b_rule_scope->Parent());
+
+  EXPECT_NE(nullptr, b_rule_scope->Parent());
+  EXPECT_EQ(nullptr, b_rule_scope->Parent()->Parent());
 }
 
 class RuleSetCascadeLayerTest : public SimTest {
@@ -551,7 +542,7 @@ class RuleSetCascadeLayerTest : public SimTest {
   }
 
   const RuleData& GetIdRule(const AtomicString& key) {
-    return *GetRuleSet().IdRules(key)->front();
+    return GetRuleSet().IdRules(key)->front();
   }
 
   const CascadeLayer* GetLayerByIdRule(const AtomicString& key) {

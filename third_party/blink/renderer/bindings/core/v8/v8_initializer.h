@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/v8-callbacks.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -71,6 +72,13 @@ class CORE_EXPORT V8Initializer {
   static bool WasmCodeGenerationCheckCallbackInMainThread(
       v8::Local<v8::Context> context,
       v8::Local<v8::String> source);
+
+  static void WasmAsyncResolvePromiseCallback(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Promise::Resolver> resolver,
+      v8::Local<v8::Value> compilation_result,
+      v8::WasmAsyncSuccess success);
 };
 
 }  // namespace blink

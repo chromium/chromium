@@ -418,8 +418,8 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "noodles.blorg`",      "www.-noodles.blorg",
   };
 
-  for (size_t i = 0; i < std::size(bad_hostnames); ++i) {
-    EXPECT_FALSE(IsValidDNSDomain(bad_hostnames[i]));
+  for (const auto* bad_hostname : bad_hostnames) {
+    EXPECT_FALSE(IsValidDNSDomain(bad_hostname));
   }
 
   const char* const good_hostnames[] = {
@@ -428,8 +428,8 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "www_.noodles.blorg",  "www.noodles.blorg.", "_privet._tcp.local",
   };
 
-  for (size_t i = 0; i < std::size(good_hostnames); ++i) {
-    EXPECT_TRUE(IsValidDNSDomain(good_hostnames[i]));
+  for (const auto* good_hostname : good_hostnames) {
+    EXPECT_TRUE(IsValidDNSDomain(good_hostname));
   }
 }
 
@@ -442,8 +442,8 @@ TEST_F(DNSUtilTest, IsValidUnrestrictedDNSDomain) {
       "www.nood(les).blorg", "noo dl(es)._tcp.local",
   };
 
-  for (size_t i = 0; i < std::size(good_hostnames); ++i) {
-    EXPECT_TRUE(IsValidUnrestrictedDNSDomain(good_hostnames[i]));
+  for (const auto* good_hostname : good_hostnames) {
+    EXPECT_TRUE(IsValidUnrestrictedDNSDomain(good_hostname));
   }
 }
 

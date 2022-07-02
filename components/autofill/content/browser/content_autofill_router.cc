@@ -349,14 +349,16 @@ void ContentAutofillRouter::SelectControlDidChange(
 
 void ContentAutofillRouter::AskForValuesToFill(
     ContentAutofillDriver* source,
-    int32_t id,
+    int32_t query_id,
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    bool autoselect_first_suggestion) {
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->AskForValuesToFillImpl(id, form, field, bounding_box,
-                                   autoselect_first_suggestion);
+    source->AskForValuesToFillImpl(query_id, form, field, bounding_box,
+                                   autoselect_first_suggestion,
+                                   touch_to_fill_eligible);
     return;
   }
 
@@ -372,8 +374,9 @@ void ContentAutofillRouter::AskForValuesToFill(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  target->AskForValuesToFillImpl(id, browser_form, field, bounding_box,
-                                 autoselect_first_suggestion);
+  target->AskForValuesToFillImpl(query_id, browser_form, field, bounding_box,
+                                 autoselect_first_suggestion,
+                                 touch_to_fill_eligible);
 }
 
 void ContentAutofillRouter::HidePopup(ContentAutofillDriver* source) {
@@ -529,13 +532,37 @@ void ContentAutofillRouter::SelectFieldOptionsDidChange(
   target->SelectFieldOptionsDidChangeImpl(browser_form);
 }
 
+void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
+    ContentAutofillDriver* source,
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    source->JavaScriptChangedAutofilledValueImpl(form, field, old_value);
+    return;
+  }
+
+  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
+
+  form_forest_.UpdateTreeOfRendererForm(form, source);
+
+  TriggerReparseExcept(source);
+
+  const FormData& browser_form =
+      form_forest_.GetBrowserFormOfRendererForm(form);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  AFCHECK(target, return);
+  target->JavaScriptChangedAutofilledValueImpl(browser_form, field, old_value);
+}
+
 void ContentAutofillRouter::FillFormForAssistant(
     ContentAutofillDriver* source,
     const AutofillableData& fill_data,
     const FormData& form,
-    const FormFieldData& field) {
+    const FormFieldData& field,
+    const autofill_assistant::AutofillAssistantIntent intent) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->FillFormForAssistantImpl(fill_data, form, field);
+    source->FillFormForAssistantImpl(fill_data, form, field, intent);
     return;
   }
 
@@ -551,7 +578,7 @@ void ContentAutofillRouter::FillFormForAssistant(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  target->FillFormForAssistantImpl(fill_data, form, field);
+  target->FillFormForAssistantImpl(fill_data, form, field, intent);
 }
 
 // Routing of events triggered by the browser.

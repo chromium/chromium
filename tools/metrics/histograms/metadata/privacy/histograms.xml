@@ -180,21 +180,34 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DIPS.BounceCategory{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2022-11-01">
+<histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
+    enum="DIPSRedirectCategory" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
-    Whether a redirect accessed cookies and whether its origin previously had
-    user engagement. Recorded when redirecting between different sites,
-    {DIPSCookieMode}.
+    Whether a {DIPSRedirectType} redirect accessed cookies and whether its
+    origin previously had user engagement. Recorded when redirecting between
+    different sites, {DIPSCookieMode}.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+  <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.CookieAccessFilterResult{DIPSCookieMode}"
+    enum="Boolean" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The return value of CookieAccessFilter::Filter(). Recorded once per
+    navigation, {DIPSCookieMode}.
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
@@ -207,8 +220,22 @@ reviewer.
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
+<histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientRedirect"
+    units="ms" expires_after="2022-12-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The amount of time after a navigation to a site commits until a renderer
+    initiated navigation (without user activation) is started to a different
+    site. Not recorded if the redirecting site does not access state (e.g.
+    cookies) or takes longer than 10 seconds to initiate the redirect.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
-    units="ms" expires_after="2022-07-01">
+    units="ms" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
@@ -278,6 +305,19 @@ reviewer.
 <histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status"
     enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
     expires_after="2022-08-23">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.KeyFetcher.Status2, 06/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each key network fetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
+    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
+    expires_after="2022-12-23">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

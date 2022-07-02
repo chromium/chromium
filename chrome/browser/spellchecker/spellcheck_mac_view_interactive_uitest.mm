@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(SpellCheckMacViewInteractiveUiTest,
   test_helper.RunUntilBind();
   spellcheck::SpellCheckMockPanelHost* host =
       test_helper.GetSpellCheckMockPanelHostForProcess(
-          web_contents->GetMainFrame()->GetProcess());
+          web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(host->SpellingPanelVisible());
 }
 #endif

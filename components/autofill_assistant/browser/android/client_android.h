@@ -58,17 +58,13 @@ class ClientAndroid : public Client,
   // Returns whether UI is currently being displayed to the user.
   bool IsVisible() const;
 
-  bool Start(const GURL& url,
+  void Start(const GURL& url,
              std::unique_ptr<TriggerContext> trigger_context,
              std::unique_ptr<Service> test_service_to_inject,
              const base::android::JavaRef<jobject>& joverlay_coordinator,
              const absl::optional<TriggerScriptProto>& trigger_script);
   void OnJavaDestroyUI(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcaller);
-  void TransferUITo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& jother_web_contents);
 
   base::android::ScopedJavaLocalRef<jstring> GetPrimaryAccountName(
       JNIEnv* env,
@@ -110,6 +106,9 @@ class ClientAndroid : public Client,
   void ShowFatalError(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& jcaller);
 
+  bool IsSupervisedUser(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jcaller);
+
   void OnSpokenFeedbackAccessibilityServiceChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
@@ -147,6 +146,9 @@ class ClientAndroid : public Client,
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
   bool MustUseBackendData() const override;
+  void GetAnnotateDomModelVersion(
+      base::OnceCallback<void(absl::optional<int64_t>)> callback)
+      const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(
@@ -180,10 +182,15 @@ class ClientAndroid : public Client,
   // UiDelegate::PerformUserAction() or -1 if not found.
   int FindDirectAction(const std::string& action_name);
 
+  void OnAnnotateDomModelFileAvailable(
+      base::OnceCallback<void(absl::optional<int64_t>)> callback,
+      bool available);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const DependenciesAndroid> dependencies_;
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   // Can change based on activity attachment.
   const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 

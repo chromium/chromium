@@ -124,6 +124,7 @@ mod unordered {
             self.0.entry(key)
         }
 
+        #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
         pub fn remove<Q>(&mut self, key: &Q) -> Option<V>
         where
             K: Borrow<Q>,

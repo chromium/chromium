@@ -158,6 +158,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // ServiceWorkerContext implementation:
   void AddObserver(ServiceWorkerContextObserver* observer) override;
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
+  // TODO (crbug.com/1335059) RegisterServiceWorker passes an invalid frame id.
+  // Currently it's okay because it is used only by PaymentAppInstaller and
+  // Extensions, but ideally we should add some guard to avoid the method is
+  // called from other places.
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::StorageKey& key,
@@ -208,6 +212,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
+  bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
+  service_manager::InterfaceProvider& GetRemoteInterfaces(
+      int64_t service_worker_version_id) override;
 
   scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
       int64_t registration_id);

@@ -5,6 +5,7 @@
 #include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

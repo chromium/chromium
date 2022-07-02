@@ -18,6 +18,8 @@ class DriveFsHostObserver {
  public:
   virtual void OnUnmounted() {}
   virtual void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {}
+  virtual void OnMirrorSyncingStatusUpdate(const mojom::SyncingStatus& status) {
+  }
   virtual void OnFilesChanged(const std::vector<mojom::FileChange>& changes) {}
   virtual void OnError(const mojom::DriveError& error) {}
 

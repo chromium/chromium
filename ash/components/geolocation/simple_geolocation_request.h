@@ -40,7 +40,7 @@ class SimpleGeolocationRequestTestMonitor;
 // Note: we need COMPONENT_EXPORT(ASH_GEOLOCATION) for tests.
 class COMPONENT_EXPORT(ASH_GEOLOCATION) SimpleGeolocationRequest {
  public:
-  // Called when a new geo geolocation information is available.
+  // Called when a new geolocation information is available.
   // The second argument indicates whether there was a server error or not.
   // It is true when there was a server or network error - either no response
   // or a 500 error code.

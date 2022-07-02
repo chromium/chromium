@@ -58,7 +58,7 @@ bool AudioWorkletProcessor::Process(
   AudioWorkletProcessorDefinition* definition =
       global_scope_->FindDefinition(Name());
 
-  // 1st JS arg |inputs_|. Compare |inputs| and |inputs_|. Then allocates the
+  // 1st JS arg `inputs_`. Compare `inputs` and `inputs_`. Then allocates the
   // data container if necessary.
   if (!PortTopologyMatches(isolate, context, inputs, inputs_)) {
     bool inputs_cloned_successfully =
@@ -74,10 +74,10 @@ bool AudioWorkletProcessor::Process(
   DCHECK_EQ(inputs_.Get(isolate)->Length(), inputs.size());
   DCHECK_EQ(input_array_buffers_.size(), inputs.size());
 
-  // Copies |inputs| to the internal |input_array_buffers|.
+  // Copies `inputs` to the internal `input_array_buffers_`.
   CopyPortToArrayBuffers(isolate, inputs, input_array_buffers_);
 
-  // 2nd JS arg |outputs_|. Compare |outputs| and |outputs_|. Then allocates the
+  // 2nd JS arg `outputs_`. Compare `outputs` and `outputs_`. Then allocates the
   // data container if necessary.
   if (!PortTopologyMatches(isolate, context, outputs, outputs_)) {
     bool outputs_cloned_successfully =
@@ -97,7 +97,7 @@ bool AudioWorkletProcessor::Process(
   DCHECK_EQ(outputs_.Get(isolate)->Length(), outputs.size());
   DCHECK_EQ(output_array_buffers_.size(), outputs.size());
 
-  // 3rd JS arg |params_|. Compare |param_value_map| and |params_|. Then
+  // 3rd JS arg `params_`. Compare `param_value_map` and `params_`. Then
   // allocates the data container if necessary.
   if (!ParamValueMapMatchesToParamsObject(isolate, context, param_value_map,
                                           params_)) {
@@ -111,7 +111,7 @@ bool AudioWorkletProcessor::Process(
   DCHECK(!params_.IsEmpty());
   DCHECK(params_.Get(isolate)->IsObject());
 
-  // Copies |param_value_map| to the internal |params_| object. This operation
+  // Copies `param_value_map` to the internal `params_` object. This operation
   // could fail if the getter of parameterDescriptors is overridden by user code
   // and returns incompatible data. (crbug.com/1151069)
   if (!CopyParamValueMapToObject(isolate, context, param_value_map, params_)) {
@@ -138,10 +138,10 @@ bool AudioWorkletProcessor::Process(
   }
   DCHECK(!try_catch.HasCaught());
 
-  // Copies the resulting output from author script to |outputs|.
+  // Copies the resulting output from author script to `outputs`.
   CopyArrayBuffersToPort(isolate, output_array_buffers_, outputs);
 
-  // Return the value from the user-supplied |process()| function. It is
+  // Return the value from the user-supplied `.process()` function. It is
   // used to maintain the lifetime of the node and the processor.
   return result.V8Value()->IsTrue();
 }
@@ -408,8 +408,7 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
 
     // TODO(crbug.com/1095113): Remove this check and move the logic to
-    // AudioWorkletHandler. |param_float_array| is always 128 frames, and this
-    // could be optimized as well.
+    // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
       if (param_float_array->Data()[k] != param_float_array->Data()[0]) {
@@ -418,7 +417,7 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
       }
     }
 
-    // The |param_name| should exist in the |param| object.
+    // The `param_name` should exist in the `param` object.
     v8::Local<v8::Value> param_array_value;
     if (!params_object->Get(context, v8_param_name)
              .ToLocal(&param_array_value) ||
@@ -458,8 +457,7 @@ bool AudioWorkletProcessor::CloneParamValueMapToObject(
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
 
     // TODO(crbug.com/1095113): Remove this check and move the logic to
-    // AudioWorkletHandler. |param_float_array| is always 128 frames, and this
-    // could be optimized as well.
+    // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
       if (param_float_array->Data()[k] != param_float_array->Data()[0]) {
@@ -516,7 +514,7 @@ bool AudioWorkletProcessor::CopyParamValueMapToObject(
         param_array_value.As<v8::Float32Array>();
     size_t array_length = float32_array->Length();
 
-    // The |float32_array| is neither 1 nor 128 frames, or the array buffer is
+    // The `float32_array` is neither 1 nor 128 frames, or the array buffer is
     // trasnferred/detached, do not proceed.
     if ((array_length != 1 && array_length != param_array->size()) ||
         float32_array->Buffer()->ByteLength() == 0) {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/login/ui/arrow_button_view.h"
+#include "ash/login/ui/kiosk_app_default_message.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -276,6 +277,22 @@ bool LoginScreenTestApi::IsSystemInfoShown() {
 }
 
 // static
+bool LoginScreenTestApi::IsKioskDefaultMessageShown() {
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi test_api(lock_screen_test.contents_view());
+  return test_api.kiosk_default_message() &&
+         test_api.kiosk_default_message()->GetVisible();
+}
+
+// static
+bool LoginScreenTestApi::IsKioskInstructionBubbleShown() {
+  LoginShelfView* view = GetLoginShelfView();
+  return view->GetKioskInstructionBubbleForTesting() &&
+         view->GetKioskInstructionBubbleForTesting()->GetWidget() &&
+         view->GetKioskInstructionBubbleForTesting()->GetWidget()->IsVisible();
+}
+
+// static
 bool LoginScreenTestApi::IsPasswordFieldShown(const AccountId& account_id) {
   if (GetFocusedUser() != account_id) {
     ADD_FAILURE() << "The user " << account_id.Serialize() << " is not focused";
@@ -459,6 +476,11 @@ bool LoginScreenTestApi::LaunchApp(const std::string& app_id) {
 }
 
 // static
+bool LoginScreenTestApi::ClickAppsButton() {
+  return SimulateButtonPressedForTesting(LoginShelfView::kApps);
+}
+
+// static
 bool LoginScreenTestApi::ClickAddUserButton() {
   return SimulateButtonPressedForTesting(LoginShelfView::kAddUser);
 }
@@ -527,6 +549,21 @@ int LoginScreenTestApi::GetUsersCount() {
   LockContentsView::TestApi lock_contents_test(
       lock_screen_test.contents_view());
   return lock_contents_test.users().size();
+}
+
+// static
+bool LoginScreenTestApi::FocusKioskDefaultMessage() {
+  if (!IsKioskDefaultMessageShown()) {
+    ADD_FAILURE() << "Kiosk default message is not visible.";
+    return false;
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi test_api(lock_screen_test.contents_view());
+  auto event_generator = MakeAshEventGenerator();
+  event_generator->MoveMouseTo(
+      test_api.kiosk_default_message()->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  return true;
 }
 
 // static

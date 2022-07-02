@@ -142,7 +142,7 @@ struct NET_EXPORT WebSocketFrameChunk {
   std::unique_ptr<WebSocketFrameHeader> header;
 
   // Indicates this part is the last chunk of a frame.
-  bool final_chunk;
+  bool final_chunk = false;
 
   // |payload| is always unmasked even if the frame is masked. |payload| might
   // be empty in the first chunk.

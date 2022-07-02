@@ -24,6 +24,13 @@
 
 using translate_infobar_overlays::TranslateBannerRequestConfig;
 
+namespace {
+
+// The name of the translate icon image.
+NSString* const kTranslateImageName = @"infobar_translate_icon";
+
+}  // namespace
+
 @interface TranslateInfobarBannerOverlayMediator ()
 // The translate banner config from the request.
 @property(nonatomic, readonly) TranslateBannerRequestConfig* config;
@@ -56,19 +63,18 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
   [self.consumer setBannerAccessibilityLabel:[self bannerTitleText]];
   [self.consumer setButtonText:[self infobarButtonText]];
 
-  if (UseSymbols()) {
-    [self.consumer setIconImage:CustomSymbolWithPointSize(
-                                    kTranslateSymbol, kSymbolImagePointSize)];
-  } else {
-    [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
-  }
+  UIImage* iconImage = UseSymbols()
+                           ? CustomSymbolTemplateWithPointSize(
+                                 kTranslateSymbol, kSymbolImagePointSize)
+                           : [UIImage imageNamed:kTranslateImageName];
+  [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:[self bannerTitleText]];
   [self.consumer setSubtitleText:[self bannerSubtitleText]];
 }
 
 // Returns the title text of the banner depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)bannerTitleText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
@@ -94,7 +100,7 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 }
 
 // Returns the text of the banner and modal action button depending on the
-// |self.config.translate_step()|.
+// `self.config.translate_step()`.
 - (NSString*)infobarButtonText {
   switch (self.config->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:

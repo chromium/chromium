@@ -148,6 +148,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorOverlayScrollbarStrokeHoveredLight] =
       SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
                gfx::kGoogleGreyAlpha500);
+  mixer[kColorProgressBarPaused] = {kColorDisabledForeground};
   mixer[kColorProgressBar] = {kColorAccent};
   mixer[kColorSeparator] = {kColorMidground};
   mixer[kColorShadowBase] = {dark_mode ? SK_ColorBLACK : gfx::kGoogleGrey800};

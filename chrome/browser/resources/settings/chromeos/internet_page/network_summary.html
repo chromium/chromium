@@ -8,6 +8,7 @@
     <network-summary-item id="[[getTypeString_(item)]]"
         active-network-state="[[item]]"
         device-state="[[get(item.type, deviceStates)]]"
+        global-policy="[[globalPolicy_]]"
         network-state-list="[[get(item.type, networkStateLists_)]]"
         tether-device-state="[[getTetherDeviceState_(deviceStates)]]">
     </network-summary-item>

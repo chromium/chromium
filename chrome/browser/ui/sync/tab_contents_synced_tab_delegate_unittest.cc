@@ -21,7 +21,7 @@ class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
     SetWebContents(web_contents);
   }
 
-  ~TestSyncedTabDelegate() override {}
+  ~TestSyncedTabDelegate() override = default;
 
   SessionID GetWindowId() const override { return SessionID::InvalidValue(); }
   SessionID GetSessionId() const override { return SessionID::InvalidValue(); }

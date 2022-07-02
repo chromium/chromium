@@ -70,19 +70,6 @@ V8CSSNumberish* AnimationTimeline::duration() {
   return nullptr;
 }
 
-String AnimationTimeline::phase() {
-  switch (CurrentPhaseAndTime().phase) {
-    case TimelinePhase::kInactive:
-      return "inactive";
-    case TimelinePhase::kBefore:
-      return "before";
-    case TimelinePhase::kActive:
-      return "active";
-    case TimelinePhase::kAfter:
-      return "after";
-  }
-}
-
 void AnimationTimeline::ClearOutdatedAnimation(Animation* animation) {
   DCHECK(!animation->Outdated());
   outdated_animation_count_--;
@@ -92,7 +79,8 @@ wtf_size_t AnimationTimeline::AnimationsNeedingUpdateCount() const {
   wtf_size_t count = 0;
   for (const auto& animation : animations_needing_update_) {
     // Exclude animations which are not actively generating frames.
-    if ((!animation->CompositorPending() && !animation->Playing()) ||
+    if ((!animation->CompositorPending() && !animation->Playing() &&
+         !IsScrollTimeline()) ||
         animation->AnimationHasNoEffect()) {
       continue;
     }

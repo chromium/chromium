@@ -724,7 +724,7 @@ void WaitForSettingDoneButton() {
          forKey:kPolicyLoaderIOSConfigurationKey];
 }
 
-// Returns grey matcher for a cell with |titleID| and |detailTextID|.
+// Returns grey matcher for a cell with `titleID` and `detailTextID`.
 - (id<GREYMatcher>)cellMatcherWithTitleID:(int)titleID
                              detailTextID:(int)detailTextID {
   NSString* accessibilityLabel = GetNSString(titleID);
@@ -738,7 +738,7 @@ void WaitForSettingDoneButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Returns GREYElementInteraction for |matcher|, using |scrollViewMatcher| to
+// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
 // scroll.
 - (GREYElementInteraction*)
     elementInteractionWithGreyMatcher:(id<GREYMatcher>)matcher
@@ -754,7 +754,7 @@ void WaitForSettingDoneButton() {
       onElementWithMatcher:scrollViewMatcher];
 }
 
-// Returns GREYElementInteraction for |matcher|, with |self.scrollViewMatcher|
+// Returns GREYElementInteraction for `matcher`, with `self.scrollViewMatcher`
 // to scroll.
 - (GREYElementInteraction*)elementInteractionWithGreyMatcher:
     (id<GREYMatcher>)matcher {
@@ -763,7 +763,7 @@ void WaitForSettingDoneButton() {
 }
 
 // Returns GREYElementInteraction for a cell based on the title string ID and
-// the detail text string ID. |detailTextID| should be set to 0 if it doesn't
+// the detail text string ID. `detailTextID` should be set to 0 if it doesn't
 // exist in the cell.
 - (GREYElementInteraction*)cellElementInteractionWithTitleID:(int)titleID
                                                 detailTextID:(int)detailTextID {
@@ -773,7 +773,7 @@ void WaitForSettingDoneButton() {
 }
 
 // Asserts that a cell exists, based on its title string ID and its detail text
-// string ID. |detailTextID| should be set to 0 if it doesn't exist in the cell.
+// string ID. `detailTextID` should be set to 0 if it doesn't exist in the cell.
 - (void)assertCellWithTitleID:(int)titleID detailTextID:(int)detailTextID {
   [[self cellElementInteractionWithTitleID:titleID detailTextID:detailTextID]
       assertWithMatcher:grey_notNil()];

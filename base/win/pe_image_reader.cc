@@ -180,7 +180,7 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
             win_certificate->dwLength - kWinCertificateSize, context)) {
       return false;
     }
-    size_t padded_length = (win_certificate->dwLength + 7) & ~0x7;
+    size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;
     // Don't overflow when recalculating data_size, since padded_length can be
     // attacker controlled.
     if (!CheckSub(data_size, padded_length).AssignIfValid(&data_size))
@@ -214,7 +214,8 @@ bool PeImageReader::ValidateDosHeader() {
 
 bool PeImageReader::ValidatePeSignature() {
   const DWORD* signature = nullptr;
-  if (!GetStructureAt(GetDosHeader()->e_lfanew, &signature) ||
+  if (!GetStructureAt(static_cast<size_t>(GetDosHeader()->e_lfanew),
+                      &signature) ||
       *signature != IMAGE_NT_SIGNATURE) {
     return false;
   }
@@ -226,9 +227,9 @@ bool PeImageReader::ValidatePeSignature() {
 bool PeImageReader::ValidateCoffFileHeader() {
   DCHECK_NE((validation_state_ & VALID_PE_SIGNATURE), 0U);
   const IMAGE_FILE_HEADER* file_header = nullptr;
-  if (!GetStructureAt(
-          GetDosHeader()->e_lfanew + offsetof(IMAGE_NT_HEADERS32, FileHeader),
-          &file_header)) {
+  if (!GetStructureAt(static_cast<size_t>(GetDosHeader()->e_lfanew) +
+                          offsetof(IMAGE_NT_HEADERS32, FileHeader),
+                      &file_header)) {
     return false;
   }
 
@@ -239,7 +240,8 @@ bool PeImageReader::ValidateCoffFileHeader() {
 bool PeImageReader::ValidateOptionalHeader() {
   const IMAGE_FILE_HEADER* file_header = GetCoffFileHeader();
   const size_t optional_header_offset =
-      GetDosHeader()->e_lfanew + offsetof(IMAGE_NT_HEADERS32, OptionalHeader);
+      static_cast<size_t>(GetDosHeader()->e_lfanew) +
+      offsetof(IMAGE_NT_HEADERS32, OptionalHeader);
   const size_t optional_header_size = file_header->SizeOfOptionalHeader;
   const WORD* optional_header_magic = nullptr;
 
@@ -287,7 +289,7 @@ bool PeImageReader::ValidateSectionHeaders() {
   const size_t number_of_sections = GetNumberOfSections();
 
   // Do all section headers fit in the image?
-  if (!GetStructureAt(first_section_header - image_data_,
+  if (!GetStructureAt(static_cast<size_t>(first_section_header - image_data_),
                       number_of_sections * sizeof(IMAGE_SECTION_HEADER),
                       &first_section_header)) {
     return false;

@@ -15,6 +15,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
+#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -173,11 +174,20 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   bool started() const { return started_; }
 
+  base::FilePath DemoAppComponentPath() {
+    DCHECK(!demo_app_component_path_.empty());
+    return demo_app_component_path_;
+  }
+
   const DemoResources* resources() const { return demo_resources_.get(); }
 
  private:
   DemoSession();
   ~DemoSession() override;
+
+  void OnDemoAppComponentLoaded(
+      component_updater::CrOSComponentManager::Error error,
+      const base::FilePath& path);
 
   // Get country code and full name in current language pair sorted by their
   // full name in currently selected language.
@@ -240,6 +250,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   bool splash_screen_removed_ = false;
   bool screensaver_activated_ = false;
+
+  base::FilePath demo_app_component_path_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

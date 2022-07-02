@@ -19,7 +19,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/system_shadow.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -280,10 +279,6 @@ class ImeMenuListView : public ImeListView {
     // DetailedViewDelegate:
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
-
-    gfx::Insets GetInsetsForDetailedView() const override {
-      return gfx::Insets();
-    }
   };
 
   explicit ImeMenuListView(std::unique_ptr<Delegate> delegate)
@@ -350,7 +345,6 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
-  init_params.has_shadow = false;
   init_params.translucent = true;
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
@@ -383,12 +377,6 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
-
-  // Create a system shadow for the tray bubble.
-  shadow_ = SystemShadow::CreateShadowForWidget(
-      bubble_->GetBubbleWidget(), SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kTrayItemCornerRadius);
-  shadow_->SetContentBounds(gfx::Rect(bubble_view->GetBoundsInScreen().size()));
 }
 
 void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
@@ -406,12 +394,12 @@ bool ImeMenuTray::ShouldShowBottomButtons() {
   // 2) login/lock screen.
   // 3) password input client.
 
-  bool should_show_buttom_buttoms =
+  const bool should_show_bottom_buttons =
       ime_controller_->is_extra_input_options_enabled() &&
       !ime_controller_->current_ime().third_party && !IsInLoginOrLockScreen() &&
       !IsInPasswordInputContext();
 
-  if (!should_show_buttom_buttoms) {
+  if (!should_show_bottom_buttons) {
     is_emoji_enabled_ = is_handwriting_enabled_ = is_voice_enabled_ = false;
     return false;
   }
@@ -468,7 +456,6 @@ bool ImeMenuTray::PerformAction(const ui::Event& event) {
 
 void ImeMenuTray::CloseBubble() {
   bubble_.reset();
-  shadow_.reset();
   ime_list_view_ = nullptr;
   SetIsActive(false);
   shelf()->UpdateAutoHideState();

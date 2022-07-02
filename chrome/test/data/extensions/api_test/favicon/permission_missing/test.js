@@ -9,7 +9,7 @@ window.onload = function() {
     const id = chrome.runtime.id;
     const pageUrl =
         `http://www.example.com:${port}extensions/favicon/test_file.html`;
-    const url = `chrome-extension://${id}/_favicon/?page_url=${pageUrl}`;
+    const url = `chrome-extension://${id}/_favicon/?pageUrl=${pageUrl}`;
     fetch(url).then(() => chrome.test.fail()).catch(error => {
       chrome.test.assertEq('Failed to fetch', error.message);
       chrome.test.succeed();

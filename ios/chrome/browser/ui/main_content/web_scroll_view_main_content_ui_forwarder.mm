@@ -21,8 +21,8 @@
 #endif
 
 namespace {
-// Uses the current values of |proxy|'s properties to update the
-// MainContentUIState via |updater|.
+// Uses the current values of `proxy`'s properties to update the
+// MainContentUIState via `updater`.
 void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
                           CRWWebViewScrollViewProxy* proxy) {
   [updater scrollViewSizeDidChange:proxy.frame.size];
@@ -46,7 +46,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 @property(nonatomic, readonly) WebStateList* webStateList;
 // The WebStateList's active WebState.
 @property(nonatomic, assign) web::WebState* webState;
-// The scroll view proxy whose scroll events are forwarded to |updater|.
+// The scroll view proxy whose scroll events are forwarded to `updater`.
 @property(nonatomic, readonly, strong) CRWWebViewScrollViewProxy* proxy;
 
 @end
@@ -80,7 +80,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 }
 
 - (void)dealloc {
-  // |-disconnect| must be called before deallocation.
+  // `-disconnect` must be called before deallocation.
   DCHECK(!_webStateListBridge);
   DCHECK(!_webStateBridge);
   DCHECK(!_webState);

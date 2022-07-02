@@ -457,7 +457,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
 
     RunCaptivePortalTest();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     // On platforms where captive portal detection is enabled, timer should
     // start for captive portal detection.
     EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
@@ -476,9 +476,8 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
     EXPECT_FALSE(delegate()->suggested_url_checked());
 #else
-    // On Android and Chromecast there is no custom captive portal detection
-    // logic, so the timer should not start and an SSL interstitial should be
-    // shown immediately.
+    // When there is no custom captive portal detection logic, the timer should
+    // not start and an SSL interstitial should be shown immediately.
     EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
     EXPECT_FALSE(delegate()->captive_portal_checked());
     EXPECT_TRUE(delegate()->ssl_interstitial_shown());
@@ -666,7 +665,8 @@ class SSLErrorHandlerDateInvalidTest
 
     field_trial_test()->SetFeatureParams(
         false, 0.0,
-        network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
+        network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY,
+        network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   }
 
   SSLErrorHandlerDateInvalidTest(const SSLErrorHandlerDateInvalidTest&) =
@@ -1158,7 +1158,8 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
   EXPECT_TRUE(test_server()->Start());
   tracker()->SetTimeServerURLForTesting(test_server()->GetURL("/"));
   field_trial_test()->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   error_handler()->StartHandlingError();
 
   EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
@@ -1219,7 +1220,8 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
   EXPECT_TRUE(test_server()->Start());
   tracker()->SetTimeServerURLForTesting(test_server()->GetURL("/"));
   field_trial_test()->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   error_handler()->StartHandlingError();
   EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
   wait_for_time_query_loop.Run();

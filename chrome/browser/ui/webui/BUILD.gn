@@ -34,9 +34,7 @@ source_set("configs") {
       "chrome_untrusted_web_ui_configs_desktop.h",
     ]
 
-    # TODO(crbug.com/1318497): Replace with dep on target which contains
-    # image_editor_untrusted_ui.h.
-    deps += [ "//chrome/browser/ui/webui/image_editor:mojo_bindings" ]
+    deps += [ "//chrome/browser/ui/webui/image_editor:image_editor_ui" ]
   }
 
   # Includes Ash Chrome and Lacros Chrome

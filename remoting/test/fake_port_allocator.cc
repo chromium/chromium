@@ -10,6 +10,7 @@
 #include "remoting/test/fake_network_dispatcher.h"
 #include "remoting/test/fake_network_manager.h"
 #include "remoting/test/fake_socket_factory.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting {
@@ -62,12 +63,13 @@ FakePortAllocator::FakePortAllocator(
 FakePortAllocator::~FakePortAllocator() = default;
 
 cricket::PortAllocatorSession* FakePortAllocator::CreateSessionInternal(
-    const std::string& content_name,
+    absl::string_view content_name,
     int component,
-    const std::string& ice_username_fragment,
-    const std::string& ice_password) {
-  return new FakePortAllocatorSession(this, content_name, component,
-                                      ice_username_fragment, ice_password);
+    absl::string_view ice_username_fragment,
+    absl::string_view ice_password) {
+  return new FakePortAllocatorSession(
+      this, std::string(content_name), component,
+      std::string(ice_username_fragment), std::string(ice_password));
 }
 
 FakePortAllocatorFactory::FakePortAllocatorFactory(

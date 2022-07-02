@@ -60,7 +60,7 @@ class CookieAccessObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::RenderFrameHost* const render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   base::RunLoop run_loop_;
 };
 
@@ -106,7 +106,7 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
 
  private:
   base::SimpleTestClock test_clock_;
-  DIPSTabHelper* helper_ = nullptr;
+  raw_ptr<DIPSTabHelper> helper_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
@@ -203,13 +203,14 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   // Navigating to this URL sets a cookie.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Wait until we can click.
-  content::WaitForHitTestData(web_contents->GetMainFrame());
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
   histograms.ExpectTotalCount(kTimeToInteraction, 0);
   histograms.ExpectTotalCount(kTimeToStorage, 0);
 
   SetDIPSTime(time + base::Seconds(10));
-  UserActivationObserver observer(web_contents, web_contents->GetMainFrame());
+  UserActivationObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer.Wait();
 
@@ -231,14 +232,15 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   // Navigating to this URL sets a cookie.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   // Wait until we can click.
-  content::WaitForHitTestData(web_contents->GetMainFrame());
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
   histograms.ExpectTotalCount(kTimeToInteraction, 0);
   histograms.ExpectTotalCount(kTimeToInteraction_OTR_Block3PC, 0);
   histograms.ExpectTotalCount(kTimeToStorage, 0);
 
   SetDIPSTime(time + base::Seconds(10));
-  UserActivationObserver observer(web_contents, web_contents->GetMainFrame());
+  UserActivationObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer.Wait();
 
@@ -257,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
-  content::RenderFrameHost* frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // wait until we can click.
   SetDIPSTime(time);
   UserActivationObserver click_observer(web_contents, frame);

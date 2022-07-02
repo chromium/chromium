@@ -28,13 +28,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './localized_link.html.js';
 
-interface LocalizedLinkElement {
+export interface LocalizedLinkElement {
   $: {
     container: HTMLElement,
   };
 }
 
-class LocalizedLinkElement extends PolymerElement {
+export class LocalizedLinkElement extends PolymerElement {
   static get is() {
     return 'localized-link';
   }

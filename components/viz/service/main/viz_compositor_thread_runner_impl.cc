@@ -28,7 +28,6 @@
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
@@ -151,17 +150,7 @@ base::SingleThreadTaskRunner* VizCompositorThreadRunnerImpl::task_runner() {
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
-    mojom::FrameSinkManagerParamsPtr params) {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
-                                    CreateFrameSinkManagerOnCompositorThread,
-                                base::Unretained(this), std::move(params),
-                                nullptr, nullptr));
-}
-
-void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params,
-    gpu::CommandBufferTaskExecutor* task_executor,
     GpuServiceImpl* gpu_service) {
   // All of the unretained objects are owned on the GPU thread and destroyed
   // after VizCompositorThread has been shutdown.
@@ -169,18 +158,15 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
       FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
-                                base::Unretained(task_executor),
                                 base::Unretained(gpu_service)));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
-    gpu::CommandBufferTaskExecutor* task_executor,
     GpuServiceImpl* gpu_service) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!frame_sink_manager_);
-  if (features::IsUsingSkiaRenderer())
-    gpu::SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread();
+  gpu::SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread();
 
   server_shared_bitmap_manager_ = std::make_unique<ServerSharedBitmapManager>();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -192,17 +178,14 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   const bool run_all_compositor_stages_before_draw =
       command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw);
 
-  if (task_executor) {
-    DCHECK(gpu_service);
+  if (gpu_service) {
     // Create OutputSurfaceProvider usable for GPU + software compositing.
     gpu_memory_buffer_manager_ =
         std::make_unique<InProcessGpuMemoryBufferManager>(
             gpu_service->gpu_memory_buffer_factory(),
             gpu_service->sync_point_manager());
-    auto* image_factory = gpu_service->gpu_image_factory();
-    output_surface_provider_ = std::make_unique<OutputSurfaceProviderImpl>(
-        gpu_service, task_executor, gpu_service,
-        gpu_memory_buffer_manager_.get(), image_factory, headless);
+    output_surface_provider_ =
+        std::make_unique<OutputSurfaceProviderImpl>(gpu_service, headless);
 
     // Create video frame pool context provider that will enable the frame sink
     // manager to create GMB-backed video frames.

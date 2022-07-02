@@ -38,7 +38,10 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/automation.h"
+#include "extensions/common/mojom/automation_query.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
@@ -66,63 +69,37 @@ const char kNodeDestroyed[] =
 // Handles sending and receiving IPCs for a single querySelector request. On
 // creation, sends the request IPC, and is destroyed either when the response is
 // received or the renderer is destroyed.
-class QuerySelectorHandler : public content::WebContentsObserver {
+class QuerySelectorHandler {
  public:
   QuerySelectorHandler(
-      content::WebContents* web_contents,
-      int request_id,
+      blink::AssociatedInterfaceProvider* interface_provider,
       int acc_obj_id,
-      const std::u16string& query,
+      const std::string& query,
       extensions::AutomationInternalQuerySelectorFunction::Callback callback)
-      : content::WebContentsObserver(web_contents),
-        request_id_(request_id),
-        callback_(std::move(callback)) {
-    content::RenderFrameHost* rfh = web_contents->GetMainFrame();
-
-    rfh->Send(new ExtensionMsg_AutomationQuerySelector(
-        rfh->GetRoutingID(), request_id, acc_obj_id, query));
+      : callback_(std::move(callback)) {
+    interface_provider->GetInterface(&automation_query_);
+    automation_query_->QuerySelector(
+        acc_obj_id, query,
+        base::BindOnce(&QuerySelectorHandler::OnQueryResponse,
+                       base::Unretained(this)));
+    automation_query_.set_disconnect_handler(
+        base::BindOnce(&QuerySelectorHandler::HandleAutomationQueryRemoteError,
+                       base::Unretained(this)));
   }
 
-  ~QuerySelectorHandler() override {}
-
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override {
-    if (message.type() != ExtensionHostMsg_AutomationQuerySelector_Result::ID)
-      return false;
-
-    // There may be several requests in flight; check this response matches.
-    int message_request_id = 0;
-    base::PickleIterator iter(message);
-    if (!iter.ReadInt(&message_request_id))
-      return false;
-
-    if (message_request_id != request_id_)
-      return false;
-
-    IPC_BEGIN_MESSAGE_MAP(QuerySelectorHandler, message)
-      IPC_MESSAGE_HANDLER(ExtensionHostMsg_AutomationQuerySelector_Result,
-                          OnQueryResponse)
-    IPC_END_MESSAGE_MAP()
-    return true;
-  }
-
-  void WebContentsDestroyed() override {
-    std::move(callback_).Run(kRendererDestroyed, 0);
-    delete this;
-  }
+  ~QuerySelectorHandler() = default;
 
  private:
-  void OnQueryResponse(int request_id,
-                       ExtensionHostMsg_AutomationQuerySelector_Error error,
-                       int result_acc_obj_id) {
+  void OnQueryResponse(int32_t result_acc_obj_id,
+                       extensions::mojom::AutomationQueryError error) {
     std::string error_string;
-    switch (error.value) {
-      case ExtensionHostMsg_AutomationQuerySelector_Error::kNone:
+    switch (error) {
+      case extensions::mojom::AutomationQueryError::kNone:
         break;
-      case ExtensionHostMsg_AutomationQuerySelector_Error::kNoDocument:
+      case extensions::mojom::AutomationQueryError::kNoDocument:
         error_string = kNoDocument;
         break;
-      case ExtensionHostMsg_AutomationQuerySelector_Error::kNodeDestroyed:
+      case extensions::mojom::AutomationQueryError::kNodeDestroyed:
         error_string = kNodeDestroyed;
         break;
     }
@@ -130,10 +107,16 @@ class QuerySelectorHandler : public content::WebContentsObserver {
     delete this;
   }
 
-  int request_id_;
-  extensions::AutomationInternalQuerySelectorFunction::Callback callback_;
-};
+  void HandleAutomationQueryRemoteError() {
+    std::move(callback_).Run(kRendererDestroyed, 0);
+    delete this;
+  }
 
+  extensions::AutomationInternalQuerySelectorFunction::Callback callback_;
+
+  // Handles sending IPCs for a single querySelector request.
+  mojo::AssociatedRemote<extensions::mojom::AutomationQuery> automation_query_;
+};
 }  // namespace
 
 using OldAXTreeIdMap = std::map<content::NavigationHandle*, ui::AXTreeID>;
@@ -300,7 +283,7 @@ class AutomationWebContentsObserver
             *web_contents),
         browser_context_(web_contents->GetBrowserContext()) {
     if (web_contents->IsCurrentlyAudible()) {
-      content::RenderFrameHost* rfh = web_contents->GetMainFrame();
+      content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
       if (!rfh)
         return;
 
@@ -354,7 +337,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
     tab_id = automation_api_delegate->GetTabId(contents);
   }
 
-  content::RenderFrameHost* rfh = contents->GetMainFrame();
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   if (!rfh)
     return RespondNow(Error("Could not enable accessibility for active tab"));
 
@@ -402,7 +385,7 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
 
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
-  if (!rfh->GetParent())
+  if (rfh->IsInPrimaryMainFrame())
     contents->EnableWebContentsOnlyAccessibilityMode();
 
   return absl::nullopt;
@@ -786,6 +769,21 @@ AutomationInternalEnableDesktopFunction::Run() {
 #endif  // defined(USE_AURA)
 }
 
+ExtensionFunction::ResponseAction
+AutomationInternalDisableDesktopFunction::Run() {
+#if defined(USE_AURA)
+  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
+  if (!automation_info || !automation_info->desktop)
+    return RespondNow(Error("desktop permission must be requested"));
+
+  AutomationEventRouter::GetInstance()->UnregisterListenerWithDesktopPermission(
+      source_process_id());
+  return RespondNow(NoArguments());
+#else
+  return RespondNow(Error("getDesktop is unsupported by this platform"));
+#endif  // defined(USE_AURA)
+}
+
 // static
 int AutomationInternalQuerySelectorFunction::query_request_id_counter_ = 0;
 
@@ -805,15 +803,10 @@ AutomationInternalQuerySelectorFunction::Run() {
         Error("domQuerySelector query sent on non-web or destroyed tree."));
   }
 
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-
-  int request_id = query_request_id_counter_++;
-  std::u16string selector = base::UTF8ToUTF16(params->args.selector);
-
   // QuerySelectorHandler handles IPCs and deletes itself on completion.
   new QuerySelectorHandler(
-      contents, request_id, params->args.automation_node_id, selector,
+      rfh->GetRemoteAssociatedInterfaces(), params->args.automation_node_id,
+      params->args.selector,
       base::BindOnce(&AutomationInternalQuerySelectorFunction::OnResponse,
                      this));
 

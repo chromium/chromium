@@ -60,6 +60,10 @@ GetNextVariableResult GetNextVariable(const SourceString input) {
 
 }  // namespace
 
+VariableDictionary::SubstitutionBuffer::SubstitutionBuffer() = default;
+
+VariableDictionary::SubstitutionBuffer::~SubstitutionBuffer() = default;
+
 VariableDictionary::VariableDictionary() = default;
 
 VariableDictionary::~VariableDictionary() = default;
@@ -76,30 +80,48 @@ absl::optional<base::StringPiece> VariableDictionary::Find(
     return absl::nullopt;
   }
 
-  return iter->second;
+  return *iter->second;
 }
 
 bool VariableDictionary::Insert(types::VariableName name, std::string value) {
-  return entries_.try_emplace(std::move(name).GetName(), std::move(value))
+  return entries_
+      .try_emplace(std::move(name).GetName(),
+                   std::make_unique<std::string>(std::move(value)))
       .second;
 }
 
-ParseStatus::Or<base::StringPiece> VariableDictionary::Resolve(
+ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
     SourceString input,
     SubstitutionBuffer& buffer) const {
   // Get the first variable reference. If this fails, there were no references
   // and we don't need to allocate anything.
   auto next_var = GetNextVariable(input);
   if (!next_var.tail) {
-    return next_var.head.Str();
+    return ResolvedSourceString::Create(
+        {}, input.Line(), input.Column(), input.Str(),
+        ResolvedSourceStringState{.contains_substitutions = false});
   }
 
-  buffer.buf_.clear();
+  // If there was a variable reference, but it consisted of the entire input
+  // string, then simply return a reference to the substitution string.
+  if (next_var.head.Empty() && next_var.tail->second.Empty()) {
+    auto value = Find(next_var.tail->first);
+    if (!value) {
+      return ParseStatus(ParseStatusCode::kVariableUndefined)
+          .WithData("key", next_var.tail->first.GetName());
+    }
+
+    return ResolvedSourceString::Create(
+        {}, input.Line(), input.Column(), *value,
+        ResolvedSourceStringState{.contains_substitutions = true});
+  }
+
+  auto& string_buf = buffer.strings_.emplace_back();
 
   while (true) {
     // Append the substring leading to the variable, and abort if there was no
     // variable reference
-    buffer.buf_.append(next_var.head.Str().data(), next_var.head.Str().size());
+    string_buf.append(next_var.head.Str().data(), next_var.head.Str().size());
     if (!next_var.tail) {
       break;
     }
@@ -107,16 +129,17 @@ ParseStatus::Or<base::StringPiece> VariableDictionary::Resolve(
     // Look up the variable value
     auto value = Find(next_var.tail->first);
     if (!value) {
-      // TODO(crbug.com/1311111): Create a more structured way of serializing
       return ParseStatus(ParseStatusCode::kVariableUndefined)
           .WithData("key", next_var.tail->first.GetName());
     }
-    buffer.buf_.append(value->data(), value->size());
+    string_buf.append(value->data(), value->size());
 
     next_var = GetNextVariable(next_var.tail->second);
   }
 
-  return base::StringPiece{buffer.buf_};
+  return ResolvedSourceString::Create(
+      {}, input.Line(), input.Column(), string_buf,
+      ResolvedSourceStringState{.contains_substitutions = true});
 }
 
 }  // namespace media::hls

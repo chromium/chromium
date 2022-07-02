@@ -71,7 +71,7 @@ TEST(IPCMessageTest, Bitmap) {
   IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   // Copy the first message block over to |bad_msg|.
   const char* fixed_data;
-  int fixed_data_size;
+  size_t fixed_data_size;
   iter = base::PickleIterator(msg);
   EXPECT_TRUE(iter.ReadData(&fixed_data, &fixed_data_size));
   bad_msg.WriteData(fixed_data, fixed_data_size);

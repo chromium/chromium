@@ -7,11 +7,11 @@
  * 'os-settings-page' is the settings page containing the actual OS settings.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/hidden_style_css.m.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
 import '../os_apps_page/os_apps_page.js';
 import '../os_people_page/os_people_page.js';
@@ -20,7 +20,7 @@ import '../os_printing_page/os_printing_page.js';
 import '../os_search_page/os_search_page.js';
 import '../personalization_page/personalization_page.js';
 import '../../settings_page/settings_section.js';
-import '../../settings_page_css.js';
+import '../../settings_page_styles.css.js';
 import '../bluetooth_page/bluetooth_page.js';
 import '../device_page/device_page.js';
 import '../internet_page/internet_page.js';
@@ -29,155 +29,175 @@ import '../multidevice_page/multidevice_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_icons.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {beforeNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
+import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {MainPageBehavior} from './main_page_behavior.js';
+import {MainPageBehavior, MainPageBehaviorInterface} from './main_page_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MainPageBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const OsSettingsPageElementBase = mixinBehaviors(
+    [MainPageBehavior, RouteObserverBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  behaviors: [
-    MainPageBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class OsSettingsPageElement extends OsSettingsPageElementBase {
+  static get is() {
+    return 'os-settings-page';
+  }
 
-  properties: {
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    showAndroidApps: Boolean,
-
-    showArcvmManageUsb: Boolean,
-
-    showCrostini: Boolean,
-
-    showPluginVm: Boolean,
-
-    showReset: Boolean,
-
-    showStartup: Boolean,
-
-    showKerberosSection: Boolean,
-
-    allowCrostini_: Boolean,
-
-    havePlayStoreApp: Boolean,
-
-    /** @type {!AndroidAppsInfo|undefined} */
-    androidAppsInfo: Object,
-
-    /**
-     * Whether the user is in guest mode.
-     * @private {boolean}
-     */
-    isGuestMode_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isGuest'),
-    },
-
-    /**
-     * Whether Accessibility OS Settings visibility improvements are enabled.
-     * @private{boolean}
-     */
-    isAccessibilityOSSettingsVisibilityEnabled_: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.getBoolean(
-            'isAccessibilityOSSettingsVisibilityEnabled');
-      }
-    },
-
-    /**
-     * Dictionary defining page visibility.
-     * @type {!OSPageVisibility}
-     */
-    pageVisibility: {
-      type: Object,
-      value() {
-        return {};
+  static get properties() {
+    return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    advancedToggleExpanded: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'advancedToggleExpandedChanged_',
-    },
+      showAndroidApps: Boolean,
+
+      showArcvmManageUsb: Boolean,
+
+      showCrostini: Boolean,
+
+      showPluginVm: Boolean,
+
+      showReset: Boolean,
+
+      showStartup: Boolean,
+
+      showKerberosSection: Boolean,
+
+      allowCrostini_: Boolean,
+
+      havePlayStoreApp: Boolean,
+
+      /** @type {!AndroidAppsInfo|undefined} */
+      androidAppsInfo: Object,
+
+      /**
+       * Whether the user is in guest mode.
+       * @private {boolean}
+       */
+      isGuestMode_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isGuest'),
+      },
+
+      /**
+       * Whether Accessibility OS Settings visibility improvements are enabled.
+       * @private{boolean}
+       */
+      isAccessibilityOSSettingsVisibilityEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityOSSettingsVisibilityEnabled');
+        }
+      },
+
+      /**
+       * Dictionary defining page visibility.
+       * @type {!OSPageVisibility}
+       */
+      pageVisibility: {
+        type: Object,
+        value() {
+          return {};
+        },
+      },
+
+      advancedToggleExpanded: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'advancedToggleExpandedChanged_',
+      },
+
+      /**
+       * True if a section is fully expanded to hide other sections beneath it.
+       * False otherwise (even while animating a section open/closed).
+       * @private {boolean}
+       */
+      hasExpandedSection_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the user is a secondary user. Computed so that it is calculated
+       * correctly after loadTimeData is available.
+       * @private
+       */
+      showSecondaryUserBanner_: {
+        type: Boolean,
+        computed: 'computeShowSecondaryUserBanner_(hasExpandedSection_)',
+      },
+
+      /**
+       * Whether to show banner indicating the user to return this device as an
+       * update is required as per policy but the device has reached end of
+       * life.
+       * @private
+       */
+      showUpdateRequiredEolBanner_: {
+        type: Boolean,
+        value: !!loadTimeData.getString('updateRequiredEolBannerText'),
+      },
+
+      /** @private {!Route|undefined} */
+      currentRoute_: Object,
+
+      /** @private */
+      isBluetoothRevampEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableBluetoothRevamp');
+        }
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * True if a section is fully expanded to hide other sections beneath it.
-     * False otherwise (even while animating a section open/closed).
+     * Used to avoid handling a new toggle while currently toggling.
      * @private {boolean}
      */
-    hasExpandedSection_: {
-      type: Boolean,
-      value: false,
-    },
+    this.advancedTogglingInProgress_ = false;
+  }
 
-    /**
-     * Whether the user is a secondary user. Computed so that it is calculated
-     * correctly after loadTimeData is available.
-     * @private
-     */
-    showSecondaryUserBanner_: {
-      type: Boolean,
-      computed: 'computeShowSecondaryUserBanner_(hasExpandedSection_)',
-    },
+  ready() {
+    super.ready();
 
-    /**
-     * Whether to show banner indicating the user to return this device as an
-     * update is required as per policy but the device has reached end of life.
-     * @private
-     */
-    showUpdateRequiredEolBanner_: {
-      type: Boolean,
-      value: !!loadTimeData.getString('updateRequiredEolBannerText'),
-    },
+    this.setAttribute('role', 'main');
 
-    /** @private {!Route|undefined} */
-    currentRoute_: Object,
-
-    /** @private */
-    isBluetoothRevampEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableBluetoothRevamp');
-      }
-    },
-  },
-
-  hostAttributes: {
-    role: 'main',
-  },
-
-  listeners: {
-    'subpage-expand': 'onSubpageExpanded_',
-  },
-
-  /**
-   * Used to avoid handling a new toggle while currently toggling.
-   * @private {boolean}
-   */
-  advancedTogglingInProgress_: false,
+    this.addEventListener('subpage-expand', this.onSubpageExpanded_);
+  }
 
   /** @override */
-  attached: function() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
 
     this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
@@ -186,11 +206,11 @@ Polymer({
     this.addWebUIListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
     AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
-  },
+  }
 
   /**
    * @param {!Route} newRoute
-   * @param {Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
     this.currentRoute_ = newRoute;
@@ -210,13 +230,13 @@ Polymer({
     }
 
     MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
-  },
+  }
 
   // Override MainPageBehavior method.
   containsRoute(route) {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);
-  },
+  }
 
   /**
    * @param {boolean|undefined} visibility
@@ -225,7 +245,7 @@ Polymer({
    */
   showPage_(visibility) {
     return visibility !== false;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -234,7 +254,7 @@ Polymer({
   computeShowSecondaryUserBanner_() {
     return !this.hasExpandedSection_ &&
         loadTimeData.getBoolean('isSecondaryUser');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -242,7 +262,7 @@ Polymer({
    */
   computeShowUpdateRequiredEolBanner_() {
     return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_;
-  },
+  }
 
   /**
    * @param {!AndroidAppsInfo} info
@@ -250,7 +270,7 @@ Polymer({
    */
   androidAppsInfoUpdate_(info) {
     this.androidAppsInfo = info;
-  },
+  }
 
   /**
    * Hides the update required EOL banner. It is shown again when Settings is
@@ -259,7 +279,7 @@ Polymer({
    */
   onCloseEolBannerClicked_() {
     this.showUpdateRequiredEolBanner_ = false;
-  },
+  }
 
   /**
    * Hides everything but the newly expanded subpage.
@@ -267,7 +287,7 @@ Polymer({
    */
   onSubpageExpanded_() {
     this.hasExpandedSection_ = true;
-  },
+  }
 
   /**
    * Render the advanced page now (don't wait for idle).
@@ -281,9 +301,9 @@ Polymer({
     // In Polymer2, async() does not wait long enough for layout to complete.
     // beforeNextRender() must be used instead.
     beforeNextRender(this, () => {
-      this.$$('#advancedPageTemplate').get();
+      this.shadowRoot.querySelector('#advancedPageTemplate').get();
     });
-  },
+  }
 
   advancedToggleClicked_() {
     if (this.advancedTogglingInProgress_) {
@@ -291,29 +311,41 @@ Polymer({
     }
 
     this.advancedTogglingInProgress_ = true;
-    const toggle = this.$$('#toggleContainer');
+    const toggle = this.shadowRoot.querySelector('#toggleContainer');
     if (!this.advancedToggleExpanded) {
       this.advancedToggleExpanded = true;
-      this.async(() => {
-        this.$$('#advancedPageTemplate').get().then(() => {
-          this.fire('scroll-to-top', {
-            top: toggle.offsetTop,
-            callback: () => {
-              this.advancedTogglingInProgress_ = false;
-            }
-          });
-        });
+      microTask.run(() => {
+        this.shadowRoot.querySelector('#advancedPageTemplate')
+            .get()
+            .then(() => {
+              const event = new CustomEvent('scroll-to-top', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  top: toggle.offsetTop,
+                  callback: () => {
+                    this.advancedTogglingInProgress_ = false;
+                  }
+                }
+              });
+              this.dispatchEvent(event);
+            });
       });
     } else {
-      this.fire('scroll-to-bottom', {
-        bottom: toggle.offsetTop + toggle.offsetHeight + 24,
-        callback: () => {
-          this.advancedToggleExpanded = false;
-          this.advancedTogglingInProgress_ = false;
+      const event = new CustomEvent('scroll-to-bottom', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          bottom: toggle.offsetTop + toggle.offsetHeight + 24,
+          callback: () => {
+            this.advancedToggleExpanded = false;
+            this.advancedTogglingInProgress_ = false;
+          }
         }
       });
+      this.dispatchEvent(event);
     }
-  },
+  }
 
   /**
    * @param {!Route} currentRoute
@@ -324,7 +356,7 @@ Polymer({
    */
   showBasicPage_(currentRoute, hasExpandedSection) {
     return !hasExpandedSection || routes.BASIC.contains(currentRoute);
-  },
+  }
 
   /**
    * @param {!Route} currentRoute
@@ -338,7 +370,7 @@ Polymer({
     return hasExpandedSection ?
         (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
         advancedToggleExpanded;
-  },
+  }
 
   /**
    * @param {(boolean|undefined)} visibility
@@ -347,7 +379,7 @@ Polymer({
    */
   showAdvancedSettings_(visibility) {
     return visibility !== false;
-  },
+  }
 
   /**
    * @param {boolean} opened Whether the menu is expanded.
@@ -356,7 +388,7 @@ Polymer({
    */
   getArrowIcon_(opened) {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  },
+  }
 
   /**
    * @param {boolean} bool
@@ -365,5 +397,7 @@ Polymer({
    */
   boolToString_(bool) {
     return bool.toString();
-  },
-});
+  }
+}
+
+customElements.define(OsSettingsPageElement.is, OsSettingsPageElement);

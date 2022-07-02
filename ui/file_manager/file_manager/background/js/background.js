@@ -135,7 +135,9 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     // Initialize string and volume manager related stuffs.
     this.initializationPromise_.then(strings => {
       this.stringData = strings;
-      this.initContextMenu_();
+      if (!window.isSWA) {
+        this.initContextMenu_();
+      }
       this.crostini.initEnabled();
 
       // Force disable of system notifications if the SWA feature flag is on.

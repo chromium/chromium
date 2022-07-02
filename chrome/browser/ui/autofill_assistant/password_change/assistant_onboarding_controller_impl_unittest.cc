@@ -17,8 +17,10 @@ using ::testing::StrictMock;
 class AssistantOnboardingControllerImplTest : public ::testing::Test {
  public:
   AssistantOnboardingControllerImplTest() {
-    controller_ =
-        AssistantOnboardingController::Create(AssistantOnboardingInformation());
+    // Create controller without `WebContents` here - the version with
+    // `WebContents` is tested in the browsertest.
+    controller_ = AssistantOnboardingController::Create(
+        AssistantOnboardingInformation(), /*web_contents=*/nullptr);
   }
   ~AssistantOnboardingControllerImplTest() override = default;
 
@@ -32,7 +34,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndAccept) {
   base::MockCallback<AssistantOnboardingController::Callback> callback;
 
   EXPECT_CALL(prompt, Show);
-  controller_->Show(&prompt, callback.Get());
+  controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on accept.
   EXPECT_CALL(callback, Run(true));
@@ -44,7 +46,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndCancel) {
   base::MockCallback<AssistantOnboardingController::Callback> callback;
 
   EXPECT_CALL(prompt, Show);
-  controller_->Show(&prompt, callback.Get());
+  controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on cancel.
   EXPECT_CALL(callback, Run(false));
@@ -56,7 +58,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndClose) {
   base::MockCallback<AssistantOnboardingController::Callback> callback;
 
   EXPECT_CALL(prompt, Show);
-  controller_->Show(&prompt, callback.Get());
+  controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on cancel.
   EXPECT_CALL(callback, Run(false));
@@ -71,7 +73,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowTwoPromptsAndAcceptSecond) {
   base::MockCallback<AssistantOnboardingController::Callback> first_callback;
 
   EXPECT_CALL(first_prompt, Show);
-  controller_->Show(&first_prompt, first_callback.Get());
+  controller_->Show(first_prompt.GetWeakPtr(), first_callback.Get());
 
   StrictMock<MockAssistantOnboardingPrompt> second_prompt;
   base::MockCallback<AssistantOnboardingController::Callback> second_callback;
@@ -80,9 +82,22 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowTwoPromptsAndAcceptSecond) {
   EXPECT_CALL(first_prompt, OnControllerGone);
   EXPECT_CALL(first_callback, Run(false));
   EXPECT_CALL(second_prompt, Show);
-  controller_->Show(&second_prompt, second_callback.Get());
+  controller_->Show(second_prompt.GetWeakPtr(), second_callback.Get());
 
   // Simulate click on accept.
   EXPECT_CALL(second_callback, Run(true));
   controller_->OnAccept();
+}
+
+TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndRemoveController) {
+  StrictMock<MockAssistantOnboardingPrompt> prompt;
+  base::MockCallback<AssistantOnboardingController::Callback> callback;
+
+  EXPECT_CALL(prompt, Show);
+  controller_->Show(prompt.GetWeakPtr(), callback.Get());
+
+  // Destroying the controller should notify the prompt and run the callback.
+  EXPECT_CALL(prompt, OnControllerGone);
+  EXPECT_CALL(callback, Run(false));
+  controller_.reset();
 }

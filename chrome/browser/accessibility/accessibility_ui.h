@@ -17,7 +17,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
-class ListValue;
 class DictionaryValue;
 }  // namespace base
 
@@ -70,17 +69,17 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   std::vector<std::string> event_logs_;
   std::unique_ptr<AccessibilityUIObserver> observer_;
 
-  void ToggleAccessibility(const base::ListValue* args);
-  void SetGlobalFlag(const base::ListValue* args);
+  void ToggleAccessibility(const base::Value::List& args);
+  void SetGlobalFlag(const base::Value::List& args);
   void GetRequestTypeAndFilters(const base::DictionaryValue& data,
                                 std::string& request_type,
                                 std::string& allow,
                                 std::string& allow_empty,
                                 std::string& deny);
-  void RequestWebContentsTree(const base::ListValue* args);
-  void RequestNativeUITree(const base::ListValue* args);
-  void RequestWidgetsTree(const base::ListValue* args);
-  void RequestAccessibilityEvents(const base::ListValue* args);
+  void RequestWebContentsTree(const base::Value::List& args);
+  void RequestNativeUITree(const base::Value::List& args);
+  void RequestWidgetsTree(const base::Value::List& args);
+  void RequestAccessibilityEvents(const base::Value::List& args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
 

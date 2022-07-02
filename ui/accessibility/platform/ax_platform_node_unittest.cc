@@ -7,6 +7,7 @@
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
+#include "ui/accessibility/platform/test_ax_tree_update.h"
 
 namespace ui {
 
@@ -72,6 +73,12 @@ void AXPlatformNodeTest::Init(
   if (node12.id != kInvalidAXNodeID)
     update.nodes.push_back(node12);
   Init(update);
+}
+
+AXTree* AXPlatformNodeTest::Init(const TestAXTreeUpdateNode& root) {
+  TestAXTreeUpdate update(root);
+  Init(update);
+  return GetTree();
 }
 
 AXTreeUpdate AXPlatformNodeTest::BuildTextField() {

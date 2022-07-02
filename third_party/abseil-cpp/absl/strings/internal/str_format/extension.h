@@ -19,6 +19,7 @@
 #include <limits.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <ostream>
 

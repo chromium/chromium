@@ -108,6 +108,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
@@ -413,6 +415,8 @@ void TestingProfile::Init(bool is_supervised_profile) {
 
   web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
+  ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
+      this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
 #endif
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().
@@ -441,6 +445,7 @@ void TestingProfile::InitializeProfileType() {
     return;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_system = false;
   if (IsOffTheRecord()) {
     is_system = original_profile_->IsSystemProfile();
@@ -455,6 +460,7 @@ void TestingProfile::InitializeProfileType() {
         this, profile_metrics::BrowserProfileType::kSystem);
     return;
   }
+#endif
 
   if (IsOffTheRecord()) {
     profile_metrics::SetBrowserProfileType(
@@ -877,11 +883,21 @@ policy::UserCloudPolicyManager* TestingProfile::GetUserCloudPolicyManager() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::ProfilePolicyConnector* TestingProfile::GetProfilePolicyConnector() {
+  // This matches OffTheRecordProfileImpl::GetProfilePolicyConnector()
+  // implementation.
+  if (IsOffTheRecord())
+    return original_profile_->GetProfilePolicyConnector();
+
   return profile_policy_connector_.get();
 }
 
 const policy::ProfilePolicyConnector*
 TestingProfile::GetProfilePolicyConnector() const {
+  // This matches OffTheRecordProfileImpl::GetProfilePolicyConnector()
+  // implementation.
+  if (IsOffTheRecord())
+    return original_profile_->GetProfilePolicyConnector();
+
   return profile_policy_connector_.get();
 }
 

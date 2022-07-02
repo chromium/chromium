@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
@@ -296,9 +297,9 @@ class UDIFPartitionReadStream : public ReadStream {
   off_t Seek(off_t offset, int whence) override;
 
  private:
-  ReadStream* const stream_;  // The UDIF stream.
+  const raw_ptr<ReadStream> stream_;  // The UDIF stream.
   const uint16_t block_size_;  // The UDIF block size.
-  const UDIFBlock* const block_;  // The block for this partition.
+  const raw_ptr<const UDIFBlock> block_;  // The block for this partition.
   uint64_t current_chunk_;  // The current chunk number.
   // The current chunk stream.
   std::unique_ptr<UDIFBlockChunkReadStream> chunk_stream_;
@@ -340,8 +341,8 @@ class UDIFBlockChunkReadStream : public ReadStream {
   // |chunk_->compressed_offset| into |out_data|.
   bool ReadCompressedData(std::vector<uint8_t>* out_data);
 
-  ReadStream* const stream_;  // The UDIF stream.
-  const UDIFBlockChunk* const chunk_;  // The chunk to be read.
+  const raw_ptr<ReadStream> stream_;           // The UDIF stream.
+  const raw_ptr<const UDIFBlockChunk> chunk_;  // The chunk to be read.
   size_t length_in_bytes_;  // The decompressed length in bytes.
   size_t offset_;  // The offset into the decompressed buffer.
   std::vector<uint8_t> decompress_buffer_;  // Decompressed data buffer.

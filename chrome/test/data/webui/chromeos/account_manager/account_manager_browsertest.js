@@ -13,7 +13,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var AccountMigrationWelcomeTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://account-migration-welcome/test_loader.html?module=chromeos/account_manager/account_migration_welcome_test.js';
+    return 'chrome://account-migration-welcome/test_loader.html?module=chromeos/account_manager/account_migration_welcome_test.js&host=test';
   }
 };
 

@@ -8,11 +8,16 @@
 ##
 ## Top level settings
 ##
-version_id: 12
+version_id: 13
 
 ##
 ## Share Targets
 ##
+
+targets {
+  nickname: "Email"
+  url: "mailto:?body=%(escaped_url)"
+}
 
 targets {
   nickname: "Reddit"
@@ -886,6 +891,7 @@ targets {
 locale_mapping {
   locale_keys: "US"
   locale_keys: "CA"
+  targets: "Email"
   targets: "Facebook"
   targets: "Twitter"
   targets: "Reddit"
@@ -896,12 +902,14 @@ locale_mapping {
 locale_mapping {
   locale_keys: "JP"
   locale_keys: "KR"
+  targets: "Email"
   targets: "Twitter"
   targets: "Facebook"
 }
 
 locale_mapping {
   locale_keys: "IN"
+  targets: "Email"
   targets: "WhatsApp"
   targets: "Facebook"
   targets: "LinkedIn"
@@ -910,6 +918,7 @@ locale_mapping {
 
 locale_mapping {
   locale_keys: "BR"
+  targets: "Email"
   targets: "Facebook"
   targets: "WhatsApp"
   targets: "LinkedIn"
@@ -918,6 +927,7 @@ locale_mapping {
 
 locale_mapping {
   locale_keys: "GB"
+  targets: "Email"
   targets: "Facebook"
   targets: "Twitter"
   targets: "LinkedIn"
@@ -926,6 +936,7 @@ locale_mapping {
 
 locale_mapping {
   locale_keys: "FR"
+  targets: "Email"
   targets: "Facebook"
   targets: "Twitter"
   targets: "LinkedIn"
@@ -933,6 +944,7 @@ locale_mapping {
 }
 locale_mapping {
   locale_keys: "RU"
+  targets: "Email"
   targets: "VK"
   targets: "Facebook"
   targets: "WhatsApp"
@@ -942,6 +954,7 @@ locale_mapping {
 
 locale_mapping {
   locale_keys: "GLOBAL"
+  targets: "Email"
   targets: "Facebook"
   targets: "WhatsApp"
   targets: "Twitter"
@@ -950,6 +963,7 @@ locale_mapping {
 
 locale_mapping {
   locale_keys: "ALL"
+  targets: "Email"
   targets: "Facebook"
   targets: "LinkedIn"
   targets: "Pinterest"

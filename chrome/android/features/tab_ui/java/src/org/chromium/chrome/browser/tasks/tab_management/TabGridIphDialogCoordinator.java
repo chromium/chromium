@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -28,36 +29,39 @@ class TabGridIphDialogCoordinator implements TabSwitcherCoordinator.IphControlle
 
     TabGridIphDialogCoordinator(
             Context context, ViewGroup parent, ModalDialogManager modalDialogManager) {
-        mIphDialogView = (TabGridIphDialogView) LayoutInflater.from(context).inflate(
-                R.layout.iph_drag_and_drop_dialog_layout, null, false);
-        mModalDialogManager = modalDialogManager;
-        mParentView = parent;
+        try (TraceEvent e = TraceEvent.scoped("TabGridIphDialogCoordinator.constructor")) {
+            mIphDialogView = (TabGridIphDialogView) LayoutInflater.from(context).inflate(
+                    R.layout.iph_drag_and_drop_dialog_layout, null, false);
+            mModalDialogManager = modalDialogManager;
+            mParentView = parent;
 
-        ModalDialogProperties.Controller dialogController = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    modalDialogManager.dismissDialog(
-                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                }
-            }
+            ModalDialogProperties.Controller dialogController =
+                    new ModalDialogProperties.Controller() {
+                        @Override
+                        public void onClick(PropertyModel model, int buttonType) {
+                            if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                            }
+                        }
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                mIphDialogView.stopIPHAnimation();
-            }
-        };
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, dialogController)
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                 context.getResources().getString(R.string.ok))
-                         .with(ModalDialogProperties.CUSTOM_VIEW, mIphDialogView)
-                         .build();
+                        @Override
+                        public void onDismiss(PropertyModel model, int dismissalCause) {
+                            mIphDialogView.stopIPHAnimation();
+                        }
+                    };
+            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                             .with(ModalDialogProperties.CONTROLLER, dialogController)
+                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                             .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                     context.getResources().getString(R.string.ok))
+                             .with(ModalDialogProperties.CUSTOM_VIEW, mIphDialogView)
+                             .build();
 
-        mIphDialogView.setRootView(mParentView);
-        mRootViewLayoutListener = mIphDialogView::updateLayout;
-        mParentView.getViewTreeObserver().addOnGlobalLayoutListener(mRootViewLayoutListener);
+            mIphDialogView.setRootView(mParentView);
+            mRootViewLayoutListener = mIphDialogView::updateLayout;
+            mParentView.getViewTreeObserver().addOnGlobalLayoutListener(mRootViewLayoutListener);
+        }
     }
 
     @Override

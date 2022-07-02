@@ -6,84 +6,14 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/overview/rounded_label.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 
 namespace ash {
-
-namespace {
-
-// The contents of RoundedLabelWidget. It is a rounded background with a label
-// containing text we want to display.
-class RoundedLabelView : public views::Label {
- public:
-  RoundedLabelView(int horizontal_padding,
-                   int vertical_padding,
-                   int rounding_dp,
-                   int preferred_height,
-                   int message_id)
-      : views::Label(l10n_util::GetStringUTF16(message_id),
-                     views::style::CONTEXT_LABEL),
-        rounding_dp_(rounding_dp),
-        preferred_height_(preferred_height) {
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(vertical_padding, horizontal_padding)));
-
-    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    const gfx::RoundedCornersF radii(rounding_dp);
-    layer()->SetRoundedCornerRadius(radii);
-    layer()->SetIsFastRoundedCorner(true);
-  }
-  RoundedLabelView(const RoundedLabelView&) = delete;
-  RoundedLabelView& operator=(const RoundedLabelView&) = delete;
-  ~RoundedLabelView() override = default;
-
-  // views::Label:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(views::Label::CalculatePreferredSize().width(),
-                     preferred_height_);
-  }
-
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    auto* color_provider = ColorProvider::Get();
-    const SkColor background_color = color_provider->GetBaseLayerColor(
-        ColorProvider::BaseLayerType::kTransparent80);
-    background()->SetNativeControlColor(background_color);
-    SetBackgroundColor(background_color);
-    SetEnabledColor(color_provider->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kTextColorPrimary));
-  }
-
-  void OnPaintBorder(gfx::Canvas* canvas) override {
-    if (features::IsDarkLightModeEnabled()) {
-      views::HighlightBorder::PaintBorderToCanvas(
-          canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
-          views::HighlightBorder::Type::kHighlightBorder2,
-          /*use_light_colors=*/false);
-    }
-  }
-
- private:
-  const int rounding_dp_;
-  const int preferred_height_;
-};
-
-}  // namespace
 
 RoundedLabelWidget::InitParams::InitParams() = default;
 
@@ -111,16 +41,15 @@ void RoundedLabelWidget::Init(InitParams params) {
   }
   views::Widget::Init(std::move(widget_params));
 
-  SetContentsView(std::make_unique<RoundedLabelView>(
+  SetContentsView(std::make_unique<RoundedLabel>(
       params.horizontal_padding, params.vertical_padding, params.rounding_dp,
-      params.preferred_height, params.message_id));
+      params.preferred_height, l10n_util::GetStringUTF16(params.message_id)));
   Show();
 }
 
 gfx::Rect RoundedLabelWidget::GetBoundsCenteredIn(const gfx::Rect& bounds) {
-  DCHECK(GetContentsView());
-  RoundedLabelView* contents_view =
-      static_cast<RoundedLabelView*>(GetContentsView());
+  views::View* contents_view = GetContentsView();
+  DCHECK(contents_view);
   gfx::Rect widget_bounds = bounds;
   widget_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
   return widget_bounds;

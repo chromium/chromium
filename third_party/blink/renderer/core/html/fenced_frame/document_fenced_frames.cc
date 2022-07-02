@@ -17,7 +17,12 @@ namespace blink {
 const char DocumentFencedFrames::kSupplementName[] = "DocumentFencedFrame";
 
 // static
-DocumentFencedFrames& DocumentFencedFrames::From(Document& document) {
+DocumentFencedFrames* DocumentFencedFrames::Get(Document& document) {
+  return Supplement<Document>::From<DocumentFencedFrames>(document);
+}
+
+// static
+DocumentFencedFrames& DocumentFencedFrames::GetOrCreate(Document& document) {
   DocumentFencedFrames* supplement =
       Supplement<Document>::From<DocumentFencedFrames>(document);
   if (!supplement) {
@@ -32,31 +37,29 @@ DocumentFencedFrames::DocumentFencedFrames(Document& document)
 
 void DocumentFencedFrames::RegisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
+  DCHECK(features::IsFencedFramesMPArchBased());
   fenced_frames_.push_back(fenced_frame);
 
-  if (features::IsFencedFramesMPArchBased()) {
-    LocalFrame* frame = GetSupplementable()->GetFrame();
-    if (!frame)
-      return;
-    if (Page* page = frame->GetPage())
-      page->IncrementSubframeCount();
-  }
+  LocalFrame* frame = GetSupplementable()->GetFrame();
+  if (!frame)
+    return;
+  if (Page* page = frame->GetPage())
+    page->IncrementSubframeCount();
 }
 
 void DocumentFencedFrames::DeregisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
+  DCHECK(features::IsFencedFramesMPArchBased());
   wtf_size_t index = fenced_frames_.Find(fenced_frame);
   if (index != WTF::kNotFound) {
     fenced_frames_.EraseAt(index);
   }
 
-  if (features::IsFencedFramesMPArchBased()) {
-    LocalFrame* frame = GetSupplementable()->GetFrame();
-    if (!frame)
-      return;
-    if (Page* page = frame->GetPage()) {
-      page->DecrementSubframeCount();
-    }
+  LocalFrame* frame = GetSupplementable()->GetFrame();
+  if (!frame)
+    return;
+  if (Page* page = frame->GetPage()) {
+    page->DecrementSubframeCount();
   }
 }
 

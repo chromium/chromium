@@ -23,7 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
@@ -268,6 +268,10 @@ void NetworkStateHandler::AddObserver(NetworkStateHandlerObserver* observer,
       base::StringPrintf("NetworkStateHandler::AddObserver: 0x%p", observer));
 }
 
+void NetworkStateHandler::AddObserver(NetworkStateHandlerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
 void NetworkStateHandler::RemoveObserver(NetworkStateHandlerObserver* observer,
                                          const base::Location& from_here) {
   observers_.RemoveObserver(observer);
@@ -276,6 +280,11 @@ void NetworkStateHandler::RemoveObserver(NetworkStateHandlerObserver* observer,
       device_event_log::LOG_TYPE_NETWORK, device_event_log::LOG_LEVEL_DEBUG,
       base::StringPrintf("NetworkStateHandler::RemoveObserver: 0x%p",
                          observer));
+}
+
+void NetworkStateHandler::RemoveObserver(
+    NetworkStateHandlerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool NetworkStateHandler::HasObserver(NetworkStateHandlerObserver* observer) {
@@ -1332,9 +1341,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   }
 
   UpdateManagedWifiNetworkAvailable();
-  if (features::IsESimPolicyEnabled()) {
-    UpdateBlockedCellularNetworks();
-  }
+  UpdateBlockedCellularNetworks();
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
 
@@ -1597,8 +1604,7 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
 
     if (device->type() == shill::kTypeWifi && !device->scanning())
       UpdateManagedWifiNetworkAvailable();
-    if (device->type() == shill::kTypeCellular && !device->scanning() &&
-        features::IsESimPolicyEnabled()) {
+    if (device->type() == shill::kTypeCellular && !device->scanning()) {
       UpdateBlockedCellularNetworks();
     }
   }
@@ -1687,8 +1693,7 @@ void NetworkStateHandler::ManagedStateListChanged(
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
-      if (features::IsESimPolicyEnabled())
-        UpdateBlockedCellularNetworks();
+      UpdateBlockedCellularNetworks();
       UpdateManagedWifiNetworkAvailable();
       // ManagedStateListChanged only gets executed if all pending updates have
       // completed. Profile networks are loaded if a user is logged in and all
@@ -2191,10 +2196,9 @@ void NetworkStateHandler::LogPropertyUpdated(const ManagedState* state,
                                              const std::string& key,
                                              const base::Value& value) {
   std::string type_str =
-      state->managed_type() == ManagedState::MANAGED_TYPE_DEVICE
-          ? "Device"
-          : state->path() == default_network_path_ ? "DefaultNetwork"
-                                                   : "Network";
+      state->managed_type() == ManagedState::MANAGED_TYPE_DEVICE ? "Device"
+      : state->path() == default_network_path_ ? "DefaultNetwork"
+                                               : "Network";
   device_event_log::LogLevel log_level = device_event_log::LOG_LEVEL_EVENT;
   if (key == shill::kSignalStrengthProperty && !state->IsActive())
     log_level = device_event_log::LOG_LEVEL_DEBUG;

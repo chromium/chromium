@@ -63,7 +63,7 @@ class FileSystemAccessDragDropBrowserTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetRenderWidgetHostImplForMainFrame() {
     WebContentsImpl* web_contents_impl =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    return web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+    return web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   }
 
  protected:

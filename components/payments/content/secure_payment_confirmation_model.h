@@ -130,6 +130,28 @@ class SecurePaymentConfirmationModel {
     cancel_button_visible_ = cancel_button_visible;
   }
 
+  // Opt Out text visibility and label.
+  bool opt_out_visible() const { return opt_out_visible_; }
+  void set_opt_out_visible(const bool opt_out_visible) {
+    opt_out_visible_ = opt_out_visible;
+  }
+  const std::u16string& opt_out_label() const { return opt_out_label_; }
+  void set_opt_out_label(const std::u16string& opt_out_label) {
+    opt_out_label_ = opt_out_label;
+  }
+  const std::u16string& opt_out_link_label() const {
+    return opt_out_link_label_;
+  }
+  void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
+    opt_out_link_label_ = opt_out_link_label;
+  }
+
+  // Relying Party id (origin); used in the opt out dialog.
+  const std::u16string& relying_party_id() const { return relying_party_id_; }
+  void set_relying_party_id(const std::u16string& relying_party_id) {
+    relying_party_id_ = relying_party_id;
+  }
+
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
@@ -156,6 +178,12 @@ class SecurePaymentConfirmationModel {
 
   bool cancel_button_enabled_ = true;
   bool cancel_button_visible_ = true;
+
+  bool opt_out_visible_ = false;
+  std::u16string opt_out_label_;
+  std::u16string opt_out_link_label_;
+
+  std::u16string relying_party_id_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationModel> weak_ptr_factory_{this};
 };

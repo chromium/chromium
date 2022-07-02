@@ -2321,8 +2321,10 @@ TEST_F(TextfieldTest, TextInputClientTest) {
   EXPECT_TRUE(client->GetTextFromRange(range, &substring));
   EXPECT_EQ(u"123", substring);
 
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(client->DeleteRange(range));
   EXPECT_EQ(u"0456789", textfield_->GetText());
+#endif
 
   ui::CompositionText composition;
   composition.text = u"321";
@@ -3206,8 +3208,7 @@ TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
 
   gfx::Rect rect_for_long_text = textfield_->GetAutocorrectCharacterBounds();
 
-  // Clear the text
-  textfield_->DeleteRange(gfx::Range(0, 99));
+  textfield_->clear();
 
   textfield_->InsertText(
       u"hello placeholder text",

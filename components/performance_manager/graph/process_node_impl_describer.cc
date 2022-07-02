@@ -10,11 +10,13 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/common/child_process_host.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -33,8 +35,14 @@ std::string ContentTypeToString(ProcessNode::ContentType content_type) {
       return "Extension";
     case ProcessNode::ContentType::kMainFrame:
       return "Main frame";
+    case ProcessNode::ContentType::kSubframe:
+      return "Subframe";
+    case ProcessNode::ContentType::kNavigatedFrame:
+      return "Navigated Frame";
     case ProcessNode::ContentType::kAd:
       return "Ad";
+    case ProcessNode::ContentType::kWorker:
+      return "Worker";
   }
 }
 
@@ -104,6 +112,15 @@ base::Value GetProcessValueDict(const base::Process& process) {
   return ret;
 }
 
+// Converts TimeTicks to Time. The conversion will be incorrect if system
+// time is adjusted between `ticks` and now.
+base::Time TicksToTime(base::TimeTicks ticks) {
+  base::Time now_time = base::Time::Now();
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::TimeDelta elapsed_since_ticks = now_ticks - ticks;
+  return now_time - elapsed_since_ticks;
+}
+
 }  // namespace
 
 void ProcessNodeImplDescriber::OnPassedToGraph(Graph* graph) {
@@ -150,10 +167,14 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
   ret.SetKey("process", GetProcessValueDict(impl->process()));
 
   ret.SetStringKey("launch_time", base::TimeFormatTimeOfDayWithMilliseconds(
-                                      impl->launch_time()));
+                                      TicksToTime(impl->launch_time())));
 
   if (impl->exit_status()) {
     ret.SetIntKey("exit_status", impl->exit_status().value());
+  }
+
+  if (!impl->metrics_name().empty()) {
+    ret.SetStringKey("metrics_name", impl->metrics_name());
   }
 
   ret.SetBoolKey("main_thread_task_load_is_low",

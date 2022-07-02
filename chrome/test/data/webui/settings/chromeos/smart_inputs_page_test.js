@@ -28,7 +28,8 @@ suite('SmartInputsPage', function() {
       function() {
         loadTimeData.overrideValues({allowAssistivePersonalInfo: true});
         createSmartInputsPage();
-        assertTrue(!!smartInputsPage.$$('#assistPersonalInfo'));
+        assertTrue(
+            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
       });
 
   test(
@@ -36,19 +37,20 @@ suite('SmartInputsPage', function() {
       function() {
         loadTimeData.overrideValues({allowAssistivePersonalInfo: false});
         createSmartInputsPage();
-        assertFalse(!!smartInputsPage.$$('#assistPersonalInfo'));
+        assertFalse(
+            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
       });
 
   test('emojiSuggestAdditionNotNullWhenAllowEmojiSuggestionIsTrue', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: true});
     createSmartInputsPage();
-    assertTrue(!!smartInputsPage.$$('#emojiSuggestion'));
+    assertTrue(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
   });
 
   test('emojiSuggestAdditionNullWhenAllowEmojiSuggestionIsFalse', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: false});
     createSmartInputsPage();
-    assertFalse(!!smartInputsPage.$$('#emojiSuggestion'));
+    assertFalse(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
   });
 
   test('Deep link to emoji suggestion toggle', async () => {
@@ -64,8 +66,9 @@ suite('SmartInputsPage', function() {
 
     flush();
 
-    const deepLinkElement = smartInputsPage.$$('#emojiSuggestion')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        smartInputsPage.shadowRoot.querySelector('#emojiSuggestion')
+            .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

@@ -113,7 +113,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -863,7 +863,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MAYBE_DataIsRemoved) {
   EXPECT_EQ("Anne", *value);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LoginScreen) {
+// Test is flaky: https://crbug.com/1334470
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_LoginScreen) {
   AddPublicSessionToDevicePolicy(kAccountId1);
   AddPublicSessionToDevicePolicy(kAccountId2);
 
@@ -943,7 +944,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyDownload) {
                    .empty());
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
+// TODO(crbug.com/1326284): Re-enable this test
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_AccountListChange) {
   AddPublicSessionToDevicePolicy(kAccountId1);
   AddPublicSessionToDevicePolicy(kAccountId2);
 
@@ -1550,14 +1552,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   run_loop_ = std::make_unique<base::RunLoop>();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
-  proxy->Launch(
-      app->id(),
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
-                          false /* preferred_containner */),
-      apps::mojom::LaunchSource::kFromChromeInternal,
-      apps::MakeWindowInfo(
-          display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+  proxy->Launch(app->id(),
+                apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                    false /* preferred_containner */),
+                apps::mojom::LaunchSource::kFromChromeInternal,
+                apps::MakeWindowInfo(
+                    display::Screen::GetScreen()->GetPrimaryDisplay().id()));
   proxy->FlushMojoCallsForTesting();
   run_loop_->Run();
   EXPECT_EQ(1U, app_window_registry->app_windows().size());

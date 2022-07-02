@@ -20,7 +20,7 @@ using WasmMV3BrowserTest = ExtensionApiTest;
 IN_PROC_BROWSER_TEST_F(WasmMV3BrowserTest, ServiceWorker) {
   ResultCatcher catcher;
 
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("wasm_mv3")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply("go");

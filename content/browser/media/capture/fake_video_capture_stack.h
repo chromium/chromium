@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -58,6 +59,15 @@ class FakeVideoCaptureStack {
   // capture stack.
   void ExpectNoLogMessages();
 
+  using FrameReceivedCallback =
+      base::RepeatingCallback<void(media::VideoFrame*)>;
+
+  // Sets a callback that will be invoked with a pointer to VideoFrame every
+  // time new frame gets added to the queue.
+  void SetFrameReceivedCallback(FrameReceivedCallback callback) {
+    on_frame_received_ = std::move(callback);
+  }
+
  private:
   // A minimal implementation of VideoFrameReceiver that wraps buffers into
   // VideoFrame instances and forwards all relevant callbacks and data to the
@@ -73,6 +83,7 @@ class FakeVideoCaptureStack {
   base::circular_deque<std::string> log_messages_;
   base::circular_deque<scoped_refptr<media::VideoFrame>> frames_;
   base::TimeDelta last_frame_timestamp_ = base::TimeDelta::Min();
+  FrameReceivedCallback on_frame_received_;
 };
 
 }  // namespace content

@@ -296,9 +296,19 @@ suite('<crostini-installer-app>', () => {
 
     // Test invalid usernames
     const invalidUsernames = [
-      'root',   // Unavailable.
-      '0abcd',  // Invalid first character.
-      'aBcd',   // Invalid (uppercase) character.
+      '0abcd',            // Invalid (number) starting character.
+      'aBcd',             // Invalid (uppercase) character.
+      'spa ce',           // Invalid (space) character.
+      '-dash',            // Invalid (dash) starting character.
+      'name\\backslash',  // Invalid (backslash) character.
+      'name@mpersand',    // Invalid (ampersand) character.
+      // Reserved users
+      'root', 'daemon', 'bin', 'sys', 'sync', 'games', 'man', 'lp', 'mail',
+      'news', 'uucp', 'proxy', 'www-data', 'backup', 'list', 'irc', 'gnats',
+      'nobody', '_apt', 'systemd-timesync', 'systemd-network',
+      'systemd-resolve', 'systemd-bus-proxy', 'messagebus', 'sshd', 'rtkit',
+      'pulse', 'android-root', 'chronos-access', 'android-everybody',
+      // End reserved users
     ];
 
     for (const username of invalidUsernames) {

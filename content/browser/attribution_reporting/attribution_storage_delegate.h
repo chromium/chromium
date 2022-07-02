@@ -88,11 +88,11 @@ class AttributionStorageDelegate {
   virtual int GetMaxSourcesPerOrigin() const = 0;
 
   // Returns the maximum number of reports of the given type that can be in
-  // storage at any time for an attribution top-level origin. Note that since
+  // storage at any time for a destination site. Note that since
   // reporting origins are the actual entities that invoke attribution
   // registration, we could consider changing this limit to be keyed by an
   // <attribution origin, reporting origin> tuple.
-  virtual int GetMaxAttributionsPerOrigin(
+  virtual int GetMaxReportsPerDestination(
       AttributionReport::ReportType) const = 0;
 
   // Returns the maximum number of distinct attribution destinations that can
@@ -148,6 +148,9 @@ class AttributionStorageDelegate {
   virtual uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const = 0;
+
+  // Sanitizes `source_event_id` according to the data limit.
+  virtual uint64_t SanitizeSourceEventId(uint64_t source_event_id) const = 0;
 };
 
 }  // namespace content

@@ -252,7 +252,7 @@ class PDFEngine {
     virtual bool IsPrintPreview() const = 0;
 
     // Get the background color of the PDF.
-    virtual SkColor GetBackgroundColor() = 0;
+    virtual SkColor GetBackgroundColor() const = 0;
 
     // Sets selection status.
     virtual void SetIsSelecting(bool is_selecting) {}

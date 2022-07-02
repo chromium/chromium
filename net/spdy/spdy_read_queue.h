@@ -46,7 +46,7 @@ class NET_EXPORT_PRIVATE SpdyReadQueue {
   // Class invariant:
   // |total_size_| is the sum of GetRemainingSize() of |queue_|'s elements.
   base::circular_deque<std::unique_ptr<SpdyBuffer>> queue_;
-  size_t total_size_;
+  size_t total_size_ = 0;
 };
 
 }  // namespace net

@@ -29,6 +29,8 @@
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 #include <libxml/xmlversion.h>
+
+#include "base/numerics/safe_conversions.h"
 #if defined(LIBXML_CATALOG_ENABLED)
 #include <libxml/catalog.h>
 #endif
@@ -606,10 +608,16 @@ static bool ShouldAllowExternalLoad(const KURL& url) {
 }
 
 static void* OpenFunc(const char* uri) {
-  DCHECK(XMLDocumentParserScope::current_document_);
+  Document* document = XMLDocumentParserScope::current_document_;
+  DCHECK(document);
   DCHECK_EQ(CurrentThread(), g_libxml_loader_thread);
 
   KURL url(NullURL(), uri);
+
+  // If the document has no ExecutionContext, it's detached. Detached documents
+  // aren't allowed to fetch.
+  if (!document->GetExecutionContext())
+    return &g_global_descriptor;
 
   if (!ShouldAllowExternalLoad(url))
     return &g_global_descriptor;
@@ -618,7 +626,6 @@ static void* OpenFunc(const char* uri) {
   scoped_refptr<const SharedBuffer> data;
 
   {
-    Document* document = XMLDocumentParserScope::current_document_;
     XMLDocumentParserScope scope(nullptr);
     // FIXME: We should restore the original global error handler as well.
     ResourceLoaderOptions options(
@@ -1448,7 +1455,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
   DCHECK_LE(entity_length_in_utf8, kSharedXhtmlEntityResultLength);
 
   xmlEntityPtr entity = SharedXHTMLEntity();
-  entity->length = SafeCast<int>(entity_length_in_utf8);
+  entity->length = base::checked_cast<int>(entity_length_in_utf8);
   entity->name = name;
   return entity;
 }

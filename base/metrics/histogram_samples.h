@@ -130,7 +130,6 @@ class BASE_EXPORT HistogramSamples {
     LocalMetadata();
   };
 
-  HistogramSamples(uint64_t id, Metadata* meta);
   HistogramSamples(const HistogramSamples&) = delete;
   HistogramSamples& operator=(const HistogramSamples&) = delete;
   virtual ~HistogramSamples();
@@ -182,6 +181,9 @@ class BASE_EXPORT HistogramSamples {
     MAX_NEGATIVE_SAMPLE_REASONS
   };
 
+  HistogramSamples(uint64_t id, Metadata* meta);
+  HistogramSamples(uint64_t id, std::unique_ptr<Metadata> meta);
+
   // Based on |op| type, add or subtract sample counts data from the iterator.
   enum Operator { ADD, SUBTRACT };
   virtual bool AddSubtractImpl(SampleCountIterator* iter, Operator op) = 0;
@@ -230,9 +232,12 @@ class BASE_EXPORT HistogramSamples {
   Metadata* meta() { return meta_; }
 
  private:
-  // Depending on derived class meta values can come from local stoarge or
-  // external storage in which case HistogramSamples class cannot take ownership
-  // of Metadata*.
+  // Depending on derived class `meta_` can come from:
+  // - Local storage: Then `meta_owned_` is set and meta_ points to it.
+  // - External storage: Then `meta_owned_` is null, and `meta_` point toward an
+  //   external object. The callers guarantees the value will outlive this
+  //   instance.
+  std::unique_ptr<Metadata> meta_owned_;
   raw_ptr<Metadata> meta_;
 };
 

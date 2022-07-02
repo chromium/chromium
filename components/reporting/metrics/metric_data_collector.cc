@@ -35,7 +35,7 @@ void CollectorBase::Collect() {
       base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
 }
 
-void CollectorBase::ReportMetricData(const MetricData& metric_data,
+void CollectorBase::ReportMetricData(MetricData metric_data,
                                      base::OnceClosure on_data_reported) {
   auto enqueue_cb = base::BindOnce(
       [](base::OnceClosure on_data_reported, Status status) {
@@ -46,7 +46,9 @@ void CollectorBase::ReportMetricData(const MetricData& metric_data,
         std::move(on_data_reported).Run();
       },
       std::move(on_data_reported));
-  metric_report_queue_->Enqueue(metric_data, std::move(enqueue_cb));
+  metric_report_queue_->Enqueue(
+      std::make_unique<MetricData>(std::move(metric_data)),
+      std::move(enqueue_cb));
 }
 
 OneShotCollector::OneShotCollector(Sampler* sampler,
@@ -84,7 +86,8 @@ void OneShotCollector::OnMetricDataCollected(
   }
 
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_data.value(), std::move(on_data_reported_));
+  ReportMetricData(std::move(metric_data.value()),
+                   std::move(on_data_reported_));
 }
 
 PeriodicCollector::PeriodicCollector(Sampler* sampler,
@@ -122,7 +125,7 @@ void PeriodicCollector::OnMetricDataCollected(
   }
 
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_data.value());
+  ReportMetricData(std::move(metric_data.value()));
 }
 
 void PeriodicCollector::StartPeriodicCollection() {
@@ -236,6 +239,6 @@ void PeriodicEventCollector::OnAdditionalMetricDataCollected(
     return;
   }
 
-  ReportMetricData(metric_data.value());
+  ReportMetricData(std::move(metric_data.value()));
 }
 }  // namespace reporting

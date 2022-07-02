@@ -13,14 +13,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/network/cellular_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/hermes_metrics_util.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
-#include "chromeos/network/cellular_connection_handler.h"
-#include "chromeos/network/cellular_esim_profile.h"
-#include "chromeos/network/cellular_esim_uninstall_handler.h"
-#include "chromeos/network/cellular_inhibitor.h"
-#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
@@ -302,7 +302,7 @@ void ESimProfile::OnRequestPendingProfiles(
   bool success = status == HermesResponseStatus::kSuccess;
   if (!success) {
     NET_LOG(ERROR) << "Error requesting pending profiles to ensure profile "
-                   << "exists on Euicc; status: " << static_cast<int>(status);
+                   << "exists on Euicc; status: " << status;
   }
   OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
 }
@@ -371,8 +371,7 @@ void ESimProfile::OnPendingProfileInstallResult(
   hermes_metrics::LogInstallPendingProfileResult(status);
 
   if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Error Installing pending profile status="
-                   << static_cast<int>(status);
+    NET_LOG(ERROR) << "Error Installing pending profile status=" << status;
     properties_->state = mojom::ProfileState::kPending;
     esim_manager_->NotifyESimProfileChanged(this);
     std::move(install_callback_).Run(InstallResultFromStatus(status));
@@ -459,8 +458,6 @@ bool ESimProfile::IsProfileInstalled() {
 }
 
 bool ESimProfile::IsProfileManaged() {
-  if (!features::IsESimPolicyEnabled())
-    return false;
   NetworkStateHandler::NetworkStateList networks;
   esim_manager_->network_state_handler()->GetNetworkListByType(
       NetworkTypePattern::Cellular(),

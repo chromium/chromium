@@ -288,21 +288,21 @@ ExtensionFunction::ResponseAction FontSettingsGetFontListFunction::Run() {
 }
 
 void FontSettingsGetFontListFunction::FontListHasLoaded(
-    std::unique_ptr<base::ListValue> list) {
-  ExtensionFunction::ResponseValue response = CopyFontsToResult(list.get());
+    base::Value::List list) {
+  ExtensionFunction::ResponseValue response = CopyFontsToResult(list);
   Respond(std::move(response));
 }
 
 ExtensionFunction::ResponseValue
-FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
+FontSettingsGetFontListFunction::CopyFontsToResult(
+    const base::Value::List& fonts) {
   base::Value::List result;
-  for (const auto& entry : fonts->GetListDeprecated()) {
+  for (const auto& entry : fonts) {
     if (!entry.is_list()) {
       NOTREACHED();
       return Error("");
     }
-    const base::Value::ConstListView font_list_value =
-        entry.GetListDeprecated();
+    const base::Value::List& font_list_value = entry.GetList();
 
     if (font_list_value.size() < 2 || !font_list_value[0].is_string() ||
         !font_list_value[1].is_string()) {

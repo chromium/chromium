@@ -99,7 +99,7 @@ class NET_EXPORT QwaveApi {
                        LPOVERLAPPED overlapped);
 
  private:
-  std::atomic<bool> qwave_supported_;
+  std::atomic<bool> qwave_supported_{false};
 
   CreateHandleFn create_handle_func_;
   CloseHandleFn close_handle_func_;
@@ -430,19 +430,19 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   virtual QwaveApi* GetQwaveApi() const;
 
   SOCKET socket_;
-  int addr_family_;
-  bool is_connected_;
+  int addr_family_ = 0;
+  bool is_connected_ = false;
 
   // Bitwise-or'd combination of SocketOptions. Specifies the set of
   // options that should be applied to |socket_| before Bind().
   int socket_options_;
 
   // Multicast interface.
-  uint32_t multicast_interface_;
+  uint32_t multicast_interface_ = 0;
 
   // Multicast socket options cached for SetMulticastOption.
   // Cannot be used after Bind().
-  int multicast_time_to_live_;
+  int multicast_time_to_live_ = 1;
 
   // These are mutable since they're just cached copies to make
   // GetPeerAddress/GetLocalAddress smarter.
@@ -455,7 +455,7 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   scoped_refptr<Core> core_;
 
   // True if non-blocking IO is used.
-  bool use_non_blocking_io_;
+  bool use_non_blocking_io_ = false;
 
   // Watches |read_write_event_|.
   base::win::ObjectWatcher read_write_watcher_;
@@ -467,10 +467,10 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   scoped_refptr<IOBuffer> read_iobuffer_;
   scoped_refptr<IOBuffer> write_iobuffer_;
 
-  int read_iobuffer_len_;
-  int write_iobuffer_len_;
+  int read_iobuffer_len_ = 0;
+  int write_iobuffer_len_ = 0;
 
-  raw_ptr<IPEndPoint> recv_from_address_;
+  raw_ptr<IPEndPoint> recv_from_address_ = nullptr;
 
   // Cached copy of the current address we're sending to, if any.  Used for
   // logging.

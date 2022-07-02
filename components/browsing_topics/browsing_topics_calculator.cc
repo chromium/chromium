@@ -4,6 +4,8 @@
 
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -21,6 +23,49 @@
 namespace browsing_topics {
 
 namespace {
+
+// Return the max time among the three potential time boundaries:
+// - `calculation_time` - `kBrowsingTopicsTimePeriodPerEpoch`.
+// - Last epoch's calculation time.
+// - `data_accessible_since`.
+base::Time DeriveHistoryDataStartTime(
+    base::Time calculation_time,
+    const base::circular_deque<EpochTopics>& epochs,
+    base::Time data_accessible_since) {
+  base::Time start_time =
+      calculation_time -
+      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+  if (!epochs.empty()) {
+    start_time = std::max(start_time, epochs.back().calculation_time());
+  }
+
+  return std::max(start_time, data_accessible_since);
+}
+
+// Return the max time among the three potential time boundaries:
+// - `calculation_time` - `epochs_window` * `kBrowsingTopicsTimePeriodPerEpoch`.
+// - The `epochs_window`-to-the-last epoch's calculation time.
+// - `data_accessible_since`.
+base::Time DeriveApiUsageContextDataStartTime(
+    base::Time calculation_time,
+    const base::circular_deque<EpochTopics>& epochs,
+    base::Time data_accessible_since) {
+  const size_t epochs_window =
+      blink::features::
+          kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering.Get();
+  DCHECK_GT(epochs_window, 0u);
+
+  base::Time start_time =
+      calculation_time -
+      epochs_window * blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+
+  if (epochs.size() >= epochs_window) {
+    start_time = std::max(
+        start_time, epochs[epochs.size() - epochs_window].calculation_time());
+  }
+
+  return std::max(start_time, data_accessible_since);
+}
 
 void RecordCalculatorResultMetrics(
     const BrowsingTopicsCalculator::CalculatorResultStatus& status,
@@ -150,6 +195,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
     optimization_guide::PageContentAnnotationsService* annotations_service,
+    const base::circular_deque<EpochTopics>& epochs,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
@@ -157,6 +203,13 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       annotations_service_(annotations_service),
       calculate_completed_callback_(std::move(callback)),
       calculation_time_(base::Time::Now()) {
+  history_data_start_time_ = DeriveHistoryDataStartTime(
+      calculation_time_, epochs,
+      privacy_sandbox_settings_->TopicsDataAccessibleSince());
+  api_usage_context_data_start_time_ = DeriveApiUsageContextDataStartTime(
+      calculation_time_, epochs,
+      privacy_sandbox_settings_->TopicsDataAccessibleSince());
+
   // Continue asynchronously so that `calculate_completed_callback_` isn't
   // called synchronously while `this` is being constructed.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -237,7 +290,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
 void BrowsingTopicsCalculator::CheckCanCalculate() {
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
-    OnCalculateCompleted(CalculatorResultStatus::kFailurePermissionDenied);
+    OnCalculateCompleted(CalculatorResultStatus::kFailurePermissionDenied,
+                         EpochTopics(calculation_time_));
     return;
   }
 
@@ -245,9 +299,7 @@ void BrowsingTopicsCalculator::CheckCanCalculate() {
   // set of history hosts) so that we can figure out which topics the APIs were
   // called on.
   site_data_manager_->GetBrowsingTopicsApiUsage(
-      /*begin_time=*/DeriveApiUsageContextDataStartTime(
-          calculation_time_,
-          privacy_sandbox_settings_->TopicsDataAccessibleSince()),
+      /*begin_time=*/api_usage_context_data_start_time_,
       /*end_time=*/calculation_time_,
       base::BindOnce(&BrowsingTopicsCalculator::
                          OnGetRecentBrowsingTopicsApiUsagesCompleted,
@@ -260,7 +312,8 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
 
   if (!result.success) {
     OnCalculateCompleted(
-        CalculatorResultStatus::kFailureApiUsageContextQueryError);
+        CalculatorResultStatus::kFailureApiUsageContextQueryError,
+        EpochTopics(calculation_time_));
     return;
   }
 
@@ -272,12 +325,10 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
   // `ApiUsageContext::hashed_main_frame_host` is a hashed number. To get the
   // topic associated with it, we will need to match it against a set of raw
   // hosts with topics. Thus, here we query the history with the larger time
-  // range (from DeriveApiUsageContextDataStartTime() to `calculation_time_`) to
+  // range (from `api_usage_context_data_start_time_` to `calculation_time_`) to
   // get the raw hosts.
   history::QueryOptions options;
-  options.begin_time = DeriveApiUsageContextDataStartTime(
-      calculation_time_,
-      privacy_sandbox_settings_->TopicsDataAccessibleSince());
+  options.begin_time = api_usage_context_data_start_time_;
   options.end_time = calculation_time_;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
@@ -304,10 +355,7 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
     std::string raw_host = url_result.url().host();
     raw_hosts.insert(raw_host);
 
-    if (url_result.visit_time() >=
-        DeriveHistoryDataStartTime(
-            calculation_time_,
-            privacy_sandbox_settings_->TopicsDataAccessibleSince())) {
+    if (url_result.visit_time() >= history_data_start_time_) {
       HashedHost host = HashMainFrameHostForStorage(raw_host);
       history_hosts_count_[host]++;
     }
@@ -354,14 +402,16 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
   if (!model_info) {
     OnCalculateCompleted(
-        CalculatorResultStatus::kFailureAnnotationExecutionError);
+        CalculatorResultStatus::kFailureAnnotationExecutionError,
+        EpochTopics(calculation_time_));
     return;
   }
 
   absl::optional<size_t> taxonomy_size = GetTaxonomySize();
   if (!taxonomy_size) {
     OnCalculateCompleted(
-        CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary);
+        CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary,
+        EpochTopics(calculation_time_));
     return;
   }
 

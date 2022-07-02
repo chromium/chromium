@@ -43,6 +43,9 @@ import java.util.concurrent.Callable;
         "enable-features=WebXRIncubations,LogJsConsoleMessages"})
 @MinAndroidSdkLevel(Build.VERSION_CODES.N) // WebXR for AR is only supported on N+
 public class WebXrArSanityTest {
+    public static final boolean ENABLE_CAMERA_ACCESS =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
@@ -73,12 +76,14 @@ public class WebXrArSanityTest {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_all_ar_features", PAGE_LOAD_TIMEOUT_S);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (!ENABLE_CAMERA_ACCESS) {
             mWebXrArTestFramework.runJavaScriptOrFail(
                     "disableCameraAccess()", POLL_TIMEOUT_SHORT_MS);
         }
 
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(
+                /*needsCameraPermission=*/ENABLE_CAMERA_ACCESS);
+
         // The recording is 12 seconds long, let's tell the test to run for 10 seconds and wait for
         // a bit more than that before timing out.
         mWebXrArTestFramework.executeStepAndWait("stepStartTest(10)", 15 * 1000);
@@ -98,12 +103,14 @@ public class WebXrArSanityTest {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_all_ar_features", PAGE_LOAD_TIMEOUT_S);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (!ENABLE_CAMERA_ACCESS) {
             mWebXrArTestFramework.runJavaScriptOrFail(
                     "disableCameraAccess()", POLL_TIMEOUT_SHORT_MS);
         }
 
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(
+                /*needsCameraPermission=*/ENABLE_CAMERA_ACCESS);
+
         // The recording is 37 seconds long, let's tell the test to run for 30 seconds and wait for
         // a bit more than that before timing out.
         mWebXrArTestFramework.executeStepAndWait("stepStartTest(30)", 40 * 1000);

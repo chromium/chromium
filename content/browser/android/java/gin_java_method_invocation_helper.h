@@ -69,7 +69,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   void Invoke();
 
   bool HoldsPrimitiveResult();
-  const base::ListValue& GetPrimitiveResult();
+  const base::Value::List& GetPrimitiveResult();
   const base::android::JavaRef<jobject>& GetObjectResult();
   const base::android::JavaRef<jclass>& GetSafeAnnotationClass();
   GinJavaBridgeError GetInvocationError();
@@ -92,7 +92,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
                     jmethodID id,
                     jvalue* parameters);
   void SetInvocationError(GinJavaBridgeError error);
-  void SetPrimitiveResult(const base::ListValue& result_wrapper);
+  void SetPrimitiveResult(base::Value::List result_wrapper);
   void SetObjectResult(
       const base::android::JavaRef<jobject>& object,
       const base::android::JavaRef<jclass>& safe_annotation_clazz);
@@ -105,7 +105,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   base::Value arguments_;
   ObjectRefs object_refs_;
   bool holds_primitive_result_;
-  std::unique_ptr<base::ListValue> primitive_result_;
+  std::unique_ptr<base::Value::List> primitive_result_;
   GinJavaBridgeError invocation_error_;
   base::android::ScopedJavaGlobalRef<jobject> object_result_;
   base::android::ScopedJavaGlobalRef<jclass> safe_annotation_clazz_;

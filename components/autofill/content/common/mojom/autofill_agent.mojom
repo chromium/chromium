@@ -16,8 +16,10 @@ interface AutofillAgent {
 
   // Instructs the renderer to fill or preview the active form with the given
   // form data. Refer to AutofillDriver.AskForValuesToFill for comments
-  // about the |id|.
-  FillOrPreviewForm(int32 id, FormData form, RendererFormDataAction action);
+  // about the |query_id|.
+  FillOrPreviewForm(int32 query_id,
+                    FormData form,
+                    RendererFormDataAction action);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);

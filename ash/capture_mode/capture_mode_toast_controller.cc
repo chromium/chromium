@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -28,8 +29,6 @@ constexpr int kToastDefaultHeight = 36;
 constexpr int kToastVerticalPadding = 8;
 constexpr int kToastHorizontalPadding = 16;
 constexpr int kToastBorderThickness = 1;
-constexpr int kToastCornerRadius = 16;
-constexpr gfx::RoundedCornersF kToastRoundedCorners{kToastCornerRadius};
 
 // Animation duration for updating the visibility of `capture_toast_widget_`.
 constexpr base::TimeDelta kCaptureToastVisibilityChangeDuration =
@@ -166,10 +165,21 @@ ui::Layer* CaptureModeToastController::MaybeGetToastLayer() {
 
 void CaptureModeToastController::BuildCaptureToastWidget(
     const std::u16string& label) {
-  capture_toast_widget_ = std::make_unique<views::Widget>(
+  // Create the widget before init it to ensure when the window gets added to
+  // the parent container, `capture_toast_widget_` is already available.
+  capture_toast_widget_ = std::make_unique<views::Widget>();
+  const gfx::Rect toast_widget_screen_bounds =
+      CalculateToastWidgetScreenBounds();
+  capture_toast_widget_->Init(
       CreateWidgetParams(capture_session_->current_root()->GetChildById(
                              kShellWindowId_MenuContainer),
-                         CalculateToastWidgetScreenBounds()));
+                         toast_widget_screen_bounds));
+
+  // We animate the toast widget explicitly in `ShowCaptureToast()` and
+  // `MaybeDismissCaptureToast()`. Any default visibility animations added by
+  // the widget's window should be disabled.
+  capture_toast_widget_->SetVisibilityAnimationTransition(
+      views::Widget::ANIMATE_NONE);
 
   toast_label_view_ = capture_toast_widget_->SetContentsView(
       std::make_unique<views::Label>(label));
@@ -179,8 +189,9 @@ void CaptureModeToastController::BuildCaptureToastWidget(
       AshColorProvider::BaseLayerType::kTransparent80);
   toast_label_view_->SetBackground(
       views::CreateSolidBackground(background_color));
+  const float toast_corner_radius = toast_widget_screen_bounds.height() / 2.f;
   toast_label_view_->SetBorder(views::CreateRoundedRectBorder(
-      kToastBorderThickness, kToastCornerRadius,
+      kToastBorderThickness, toast_corner_radius,
       color_provider->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kHighlightColor1)));
   toast_label_view_->SetAutoColorReadabilityEnabled(false);
@@ -193,7 +204,8 @@ void CaptureModeToastController::BuildCaptureToastWidget(
   toast_label_view_->SetPaintToLayer();
   auto* label_layer = toast_label_view_->layer();
   label_layer->SetFillsBoundsOpaquely(false);
-  label_layer->SetRoundedCornerRadius(kToastRoundedCorners);
+  label_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(toast_corner_radius));
   label_layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   label_layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 

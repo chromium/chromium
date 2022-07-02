@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
@@ -46,6 +48,8 @@ namespace css_parsing_utils {
 enum class AllowInsetAndSpread { kAllow, kForbid };
 enum class AllowTextValue { kAllow, kForbid };
 enum class AllowPathValue { kAllow, kForbid };
+enum class AllowBasicShapeRectValue { kAllow, kForbid };
+enum class AllowBasicShapeXYWHValue { kAllow, kForbid };
 enum class DefaultFill { kFill, kNoFill };
 enum class ParsingStyle { kLegacy, kNotLegacy };
 enum class TrackListType {
@@ -114,7 +118,8 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenRange&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
-    UnitlessQuirk = UnitlessQuirk::kForbid);
+    UnitlessQuirk = UnitlessQuirk::kForbid,
+    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     CSSParserTokenRange&,
     const CSSParserContext&,
@@ -149,6 +154,8 @@ CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
+CSSCustomIdentValue* ConsumeCustomIdentConservatively(CSSParserTokenRange&,
+                                                      const CSSParserContext&);
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenRange&);
@@ -211,6 +218,7 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
                                        const CSSParserContext&);
 
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange&);
+CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange&);
 
 enum class IsImplicitProperty { kNotImplicit, kImplicit };
 
@@ -219,7 +227,7 @@ void AddProperty(CSSPropertyID resolved_property,
                  const CSSValue&,
                  bool important,
                  IsImplicitProperty,
-                 HeapVector<CSSPropertyValue, 256>& properties);
+                 HeapVector<CSSPropertyValue, 64>& properties);
 
 void CountKeywordOnlyPropertyUsage(CSSPropertyID,
                                    const CSSParserContext&,
@@ -235,26 +243,26 @@ bool ConsumeShorthandVia2Longhands(
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 bool ConsumeShorthandVia4Longhands(
     const StylePropertyShorthand&,
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 bool ConsumeShorthandGreedilyViaLonghands(
     const StylePropertyShorthand&,
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 void AddExpandedPropertyForValue(CSSPropertyID prop_id,
                                  const CSSValue&,
                                  bool,
-                                 HeapVector<CSSPropertyValue, 256>& properties);
+                                 HeapVector<CSSPropertyValue, 64>& properties);
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeTransformList(CSSParserTokenRange&, const CSSParserContext&);
@@ -335,7 +343,7 @@ bool ParseBackgroundOrMask(bool,
                            CSSParserTokenRange&,
                            const CSSParserContext&,
                            const CSSParserLocalContext&,
-                           HeapVector<CSSPropertyValue, 256>&);
+                           HeapVector<CSSPropertyValue, 64>&);
 
 bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
                                  CSSValue*& value1,
@@ -451,15 +459,19 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange&,
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
                                 const CSSParserContext&,
-                                UnitlessQuirk);
+                                UnitlessQuirk,
+                                CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
 
-CSSValue* ConsumeBasicShape(CSSParserTokenRange&,
-                            const CSSParserContext&,
-                            AllowPathValue);
+CSSValue* ConsumeBasicShape(
+    CSSParserTokenRange&,
+    const CSSParserContext&,
+    AllowPathValue,
+    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kForbid,
+    AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kForbid);
 bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   CSSValue* vertical_radii[4],
                   CSSParserTokenRange&,

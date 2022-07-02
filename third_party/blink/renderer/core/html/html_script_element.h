@@ -79,6 +79,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   void FinishParsingChildren() override;
 
+  bool IsPotentiallyRenderBlocking() const override;
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -108,14 +110,12 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   bool AsyncAttributeValue() const override;
   bool DeferAttributeValue() const override;
   bool HasSourceAttribute() const override;
+  bool HasAttributionsrcAttribute() const override;
   bool IsConnected() const override;
   bool HasChildren() const override;
   const AtomicString& GetNonceForElement() const override;
   bool ElementHasDuplicateAttributes() const override {
     return HasDuplicateAttribute();
-  }
-  bool IsExplicitlyRenderBlocking() const override {
-    return blocking_attribute_->IsExplicitlyRenderBlocking();
   }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
                                const WTF::OrdinalNumber&,

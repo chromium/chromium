@@ -34,12 +34,14 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int process_id,
     int thread_id,
     int devtools_agent_route_id,
-    ukm::SourceId ukm_source_id)
+    ukm::SourceId ukm_source_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type)
     : ServiceWorkerVersionBaseInfo(scope,
                                    storage_key,
                                    registration_id,
                                    version_id,
-                                   process_id),
+                                   process_id,
+                                   ancestor_frame_type),
       running_status(running_status),
       status(status),
       fetch_handler_existence(fetch_handler_existence),

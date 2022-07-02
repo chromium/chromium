@@ -15,6 +15,7 @@
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -62,7 +63,14 @@
 // Pref service.
 @property(nonatomic, assign, readonly) PrefService* prefService;
 
+// User Policy service.
+@property(nonatomic, assign, readonly)
+    policy::UserPolicySigninService* policyService;
+
 @end
+
+// TODO(crbug.com/1325115): Remove the logic to show the notification dialog
+// once we determined that this isn't needed anymore.
 
 @implementation UserPolicySceneAgent
 
@@ -71,7 +79,9 @@
              applicationCommandsHandler:
                  (id<ApplicationCommands>)applicationCommandsHandler
                             prefService:(PrefService*)prefService
-                            mainBrowser:(Browser*)mainBrowser {
+                            mainBrowser:(Browser*)mainBrowser
+                          policyService:
+                              (policy::UserPolicySigninService*)policyService {
   self = [super init];
   if (self) {
     _sceneUIProvider = sceneUIProvider;
@@ -79,6 +89,7 @@
     _applicationCommandsHandler = applicationCommandsHandler;
     _prefService = prefService;
     _mainBrowser = mainBrowser;
+    _policyService = policyService;
   }
   return self;
 }
@@ -234,6 +245,7 @@
 
   self.prefService->SetBoolean(
       policy::policy_prefs::kUserPolicyNotificationWasShown, true);
+  self.policyService->OnUserPolicyNotificationSeen();
 
   // Release the UI blockers on the other scenes because the notification dialog
   // is now dismissed.

@@ -50,10 +50,14 @@ constexpr std::pair<base::StringPiece, TagName> TagNameEntry(
 // Mapping of tag names to their constants. This must remain sorted by the
 // string value.
 constexpr auto kTagNames = base::MakeFixedFlatMap({
+    TagNameEntry("EXT-X-BITRATE", MediaPlaylistTagName::kXBitrate),
+    TagNameEntry("EXT-X-BYTERANGE", MediaPlaylistTagName::kXByteRange),
     TagNameEntry("EXT-X-CONTENT-STEERING",
                  MultivariantPlaylistTagName::kXContentSteering),
     TagNameEntry("EXT-X-DEFINE", CommonTagName::kXDefine),
     TagNameEntry("EXT-X-DISCONTINUITY", MediaPlaylistTagName::kXDiscontinuity),
+    TagNameEntry("EXT-X-DISCONTINUITY-SEQUENCE",
+                 MediaPlaylistTagName::kXDiscontinuitySequence),
     TagNameEntry("EXT-X-ENDLIST", MediaPlaylistTagName::kXEndList),
     TagNameEntry("EXT-X-GAP", MediaPlaylistTagName::kXGap),
     TagNameEntry("EXT-X-I-FRAME-STREAM-INF",
@@ -63,7 +67,9 @@ constexpr auto kTagNames = base::MakeFixedFlatMap({
                  CommonTagName::kXIndependentSegments),
     TagNameEntry("EXT-X-MEDIA", MultivariantPlaylistTagName::kXMedia),
     TagNameEntry("EXT-X-MEDIA-SEQUENCE", MediaPlaylistTagName::kXMediaSequence),
+    TagNameEntry("EXT-X-PART-INF", MediaPlaylistTagName::kXPartInf),
     TagNameEntry("EXT-X-PLAYLIST-TYPE", MediaPlaylistTagName::kXPlaylistType),
+    TagNameEntry("EXT-X-SERVER-CONTROL", MediaPlaylistTagName::kXServerControl),
     TagNameEntry("EXT-X-SESSION-DATA",
                  MultivariantPlaylistTagName::kXSessionData),
     TagNameEntry("EXT-X-SESSION-KEY",

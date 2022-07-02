@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/screentime/history_bridge.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,7 +97,7 @@ class HistoryBridgeTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> service_;
-  TestHistoryDeleter* deleter_;
+  raw_ptr<TestHistoryDeleter> deleter_;
   std::unique_ptr<HistoryBridge> bridge_;
   base::RunLoop history_teardown_loop_;
 };

@@ -205,8 +205,9 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
       // May be NULL to imply not loading the extension.
       const std::string* extension_dir,
       bool is_final_action) {
-    ExtensionTestMessageListener listener("waiting", true);
-    ExtensionTestMessageListener listener_incognito("waiting_incognito", true);
+    ExtensionTestMessageListener listener("waiting", ReplyBehavior::kWillReply);
+    ExtensionTestMessageListener listener_incognito("waiting_incognito",
+                                                    ReplyBehavior::kWillReply);
 
     // Only load the extension after the listeners have been set up, to avoid
     // initialisation race conditions.
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   registry->AddObserver(&observer);
 
   // Install a managed extension.
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("settings/managed_storage_schemas"));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -750,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
           .Build();
   SetPolicies(*policy);
 
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   // Load the extension to install the event listener and wait for the
   // extension's registration to be stored since it must persist after
   // this PRE_ step exits. Otherwise, the test will be flaky, since the

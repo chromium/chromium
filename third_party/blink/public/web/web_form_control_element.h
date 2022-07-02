@@ -87,8 +87,17 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // and make the option as the current selection.
   void SetValue(const WebString&, bool send_events = false);
   // Sets the autofilled value for input element, textarea element and select
-  // element and sends a sequence of events to the element.
-  void SetAutofillValue(const WebString&);
+  // element and sends a sequence of events to the element. The default
+  // parameter for the WebAutofillState will do the right thing (setting
+  // kAutofilled state if the value is non-null) except in two situations:
+  // - When resetting the state of <select> elements the state at page load, the
+  //   passed value parameter is non-null and yet the select element should be
+  //   in non-autofilled state. This is why the autofill state is only
+  //   considered for <select> elements.
+  // - When filling a value from a <datalist> the field should not be labeled
+  //   as autofilled.
+  void SetAutofillValue(const WebString&,
+                        WebAutofillState = WebAutofillState::kAutofilled);
   // Triggers the emission of a focus event.
   void DispatchFocusEvent();
   // Triggers the emission of a blur event.

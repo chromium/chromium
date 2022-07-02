@@ -45,11 +45,12 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
   };
 
   void TestTraversalIteratorForEmptyRange(Document* document,
-                                          const char* has_scope_element_id,
+                                          const char* has_anchor_element_id,
                                           const char* selector_text) const {
-    Element* has_scope_element = document->getElementById(has_scope_element_id);
-    if (!has_scope_element) {
-      ADD_FAILURE() << "Failed : test iterator on #" << has_scope_element_id
+    Element* has_anchor_element =
+        document->getElementById(has_anchor_element_id);
+    if (!has_anchor_element) {
+      ADD_FAILURE() << "Failed : test iterator on #" << has_anchor_element_id
                     << " (Cannot find element)";
       return;
     }
@@ -59,7 +60,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
         selector_list.First()->SelectorList()->First());
-    for (CheckPseudoHasArgumentTraversalIterator iterator(*has_scope_element,
+    for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {
       AtomicString current_element_id =
@@ -69,7 +70,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       int current_depth = iterator.CurrentDepth();
       ADD_FAILURE() << "Iteration failed : exceeded expected iteration"
                     << " (selector: " << selector_text
-                    << ", has_scope_element: #" << has_scope_element_id
+                    << ", has_anchor_element: #" << has_anchor_element_id
                     << ", index: " << i
                     << ", current_element: " << current_element_id
                     << ", current_depth: " << current_depth << ")";
@@ -79,23 +80,24 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
   template <unsigned length>
   void TestTraversalIteratorSteps(
       Document* document,
-      const char* has_scope_element_id,
+      const char* has_anchor_element_id,
       const char* selector_text,
       const ExpectedTraversalStep (&expected_traversal_steps)[length]) const {
-    Element* has_scope_element = document->getElementById(has_scope_element_id);
-    if (!has_scope_element) {
-      ADD_FAILURE() << "Failed : test iterator on #" << has_scope_element_id
+    Element* has_anchor_element =
+        document->getElementById(has_anchor_element_id);
+    if (!has_anchor_element) {
+      ADD_FAILURE() << "Failed : test iterator on #" << has_anchor_element_id
                     << " (Cannot find element)";
       return;
     }
-    EXPECT_EQ(has_scope_element->GetIdAttribute(), has_scope_element_id);
+    EXPECT_EQ(has_anchor_element->GetIdAttribute(), has_anchor_element_id);
 
     unsigned i = 0;
     CSSSelectorList selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
         selector_list.First()->SelectorList()->First());
-    for (CheckPseudoHasArgumentTraversalIterator iterator(*has_scope_element,
+    for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {
       AtomicString current_element_id =
@@ -106,20 +108,20 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       if (i >= length) {
         ADD_FAILURE() << "Iteration failed : exceeded expected iteration"
                       << " (selector: " << selector_text
-                      << ", has_scope_element: #" << has_scope_element_id
+                      << ", has_anchor_element: #" << has_anchor_element_id
                       << ", index: " << i
                       << ", current_element: " << current_element_id
                       << ", current_depth: " << current_depth << ")";
         continue;
       }
       EXPECT_EQ(expected_traversal_steps[i].element_id, current_element_id)
-          << " (selector: " << selector_text << ", has_scope_element: #"
-          << has_scope_element_id << ", index: " << i
+          << " (selector: " << selector_text << ", has_anchor_element: #"
+          << has_anchor_element_id << ", index: " << i
           << ", expected: " << expected_traversal_steps[i].element_id
           << ", actual: " << current_element_id << ")";
       EXPECT_EQ(expected_traversal_steps[i].depth, current_depth)
-          << " (selector: " << selector_text << ", has_scope_element: #"
-          << has_scope_element_id << ", index: " << i
+          << " (selector: " << selector_text << ", has_anchor_element: #"
+          << has_anchor_element_id << ", index: " << i
           << ", expected: " << expected_traversal_steps[i].depth
           << ", actual: " << current_depth << ")";
     }
@@ -127,7 +129,7 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     for (; i < length; i++) {
       ADD_FAILURE() << "Iteration failed : expected but not traversed"
                     << " (selector: " << selector_text
-                    << ", has_scope_element: #" << has_scope_element_id
+                    << ", has_anchor_element: #" << has_anchor_element_id
                     << ", index: " << i << ", expected_element: "
                     << expected_traversal_steps[i].element_id << ")";
       EXPECT_NE(

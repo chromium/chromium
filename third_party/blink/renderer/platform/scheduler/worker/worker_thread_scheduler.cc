@@ -102,11 +102,13 @@ WorkerThreadScheduler::WorkerThreadScheduler(
     : NonMainThreadSchedulerImpl(sequence_manager,
                                  TaskType::kWorkerThreadTaskQueueDefault),
       thread_type_(thread_type),
+      idle_helper_queue_(
+          GetHelper().NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
       idle_helper_(&GetHelper(),
                    this,
                    "WorkerSchedulerIdlePeriod",
                    base::Milliseconds(300),
-                   GetHelper().NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
+                   idle_helper_queue_->GetTaskQueue()),
       lifecycle_state_(proxy ? proxy->lifecycle_state()
                              : SchedulingLifecycleState::kNotThrottled),
       worker_metrics_helper_(thread_type,
@@ -180,6 +182,7 @@ void WorkerThreadScheduler::RemoveTaskObserver(
 
 void WorkerThreadScheduler::Shutdown() {
   DCHECK(initialized_);
+  ThreadSchedulerImpl::Shutdown();
   idle_helper_.Shutdown();
   GetHelper().Shutdown();
 }

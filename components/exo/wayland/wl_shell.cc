@@ -155,6 +155,8 @@ void shell_get_shell_surface(wl_client* client,
   // before they are enabled and can become visible.
   shell_surface->SetEnabled(false);
 
+  shell_surface->SetCapabilities(GetCapabilities(client));
+
   shell_surface->set_configure_callback(
       base::BindRepeating(&HandleShellSurfaceConfigureCallback,
                           base::Unretained(shell_surface_resource)));

@@ -35,7 +35,7 @@ class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 };
 
@@ -271,7 +271,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
 }
 
 TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
-  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  TestRenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
   ASSERT_NE(main_rfh->policy_container_host(), nullptr);
   EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kDefault);
@@ -309,7 +309,7 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
 }
 
 TEST_F(RenderFrameHostImplTest, FaviconURLsSet) {
-  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  TestRenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
   const auto kFavicon =
       blink::mojom::FaviconURL(GURL("https://example.com/favicon.ico"),
                                blink::mojom::FaviconIconType::kFavicon, {});
@@ -339,7 +339,7 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsSet) {
 }
 
 TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
-  TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
+  TestRenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       GURL("https://example.com/favicon.ico"),
@@ -364,16 +364,16 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
 }
 
 TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
-  EXPECT_FALSE(main_test_rfh()->anonymous());
+  EXPECT_FALSE(main_test_rfh()->IsAnonymous());
 
   auto* child_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
-  EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   child_frame->frame_tree_node()->SetAnonymous(true);
-  EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   // A navigation in the anonymous iframe commits an anonymous RFH.
@@ -383,7 +383,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   navigation->Commit();
   child_frame =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
-  EXPECT_TRUE(child_frame->anonymous());
+  EXPECT_TRUE(child_frame->IsAnonymous());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
   // An anonymous document sets a nonce on its network isolation key.
@@ -395,7 +395,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(child_frame)
           ->AppendChild("grandchild"));
-  EXPECT_TRUE(grandchild_frame->anonymous());
+  EXPECT_TRUE(grandchild_frame->IsAnonymous());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
   // The two anonymous RFH's storage keys should have the same nonce.
@@ -443,24 +443,26 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   scoped_feature_list.InitWithFeatures(
       {features::kAvoidUnnecessaryBeforeUnloadCheckPostTask},
       {features::kAvoidUnnecessaryBeforeUnloadCheckSync});
-  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
+  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
   simulator->set_block_invoking_before_unload_completed_callback(true);
   simulator->Start();
-  EXPECT_TRUE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_TRUE(contents()
+                  ->GetPrimaryMainFrame()
+                  ->is_waiting_for_beforeunload_completion());
   EXPECT_FALSE(local_frame.was_before_unload_called());
   // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
-  contents()->GetMainFrame()->FlushLocalFrameMessages();
+  contents()->GetPrimaryMainFrame()->FlushLocalFrameMessages();
   // This runs a MessageLoop, which also results in the PostTask() scheduled
   // completing.
   local_frame.FlushMessages();
   EXPECT_FALSE(local_frame.was_before_unload_called());
   // Because of the nested message loops run by the previous calls, the task
   // that RenderFrameHostImpl will have also completed.
-  EXPECT_FALSE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(contents()
+                   ->GetPrimaryMainFrame()
+                   ->is_waiting_for_beforeunload_completion());
 }
 
 // Verifies BeforeUnloadNotSentToRenderer() is sent to renderer.
@@ -468,19 +470,21 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
-  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
+  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
   simulator->set_block_invoking_before_unload_completed_callback(true);
   simulator->Start();
-  EXPECT_TRUE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_TRUE(contents()
+                  ->GetPrimaryMainFrame()
+                  ->is_waiting_for_beforeunload_completion());
   // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
-  contents()->GetMainFrame()->FlushLocalFrameMessages();
+  contents()->GetPrimaryMainFrame()->FlushLocalFrameMessages();
   local_frame.FlushMessages();
   EXPECT_TRUE(local_frame.was_before_unload_called());
-  EXPECT_TRUE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_TRUE(contents()
+                  ->GetPrimaryMainFrame()
+                  ->is_waiting_for_beforeunload_completion());
   // Needed to avoid DCHECK in mojo if callback is not run.
   local_frame.RunBeforeUnloadCallback();
 }
@@ -699,8 +703,9 @@ TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
   contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           GURL("https://example.com/navigation.html")));
-  EXPECT_FALSE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(contents()
+                   ->GetPrimaryMainFrame()
+                   ->is_waiting_for_beforeunload_completion());
 }
 
 TEST_F(RenderFrameHostImplTest,
@@ -713,8 +718,9 @@ TEST_F(RenderFrameHostImplTest,
   contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           GURL("https://example.com/navigation.html")));
-  EXPECT_FALSE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(contents()
+                   ->GetPrimaryMainFrame()
+                   ->is_waiting_for_beforeunload_completion());
 }
 
 // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() is
@@ -740,8 +746,9 @@ TEST_F(RenderFrameHostImplTest,
   // Should be waiting on beforeunload as
   // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes
   // precedence.
-  EXPECT_TRUE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_TRUE(contents()
+                  ->GetPrimaryMainFrame()
+                  ->is_waiting_for_beforeunload_completion());
   SetBrowserClientForTesting(old_browser_client);
 }
 #endif
@@ -753,8 +760,9 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadCheckForBrowserInitiated) {
   contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           GURL("https://example.com/navigation.html")));
-  EXPECT_TRUE(
-      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_TRUE(contents()
+                  ->GetPrimaryMainFrame()
+                  ->is_waiting_for_beforeunload_completion());
 }
 
 class RenderFrameHostImplThirdPartyStorageTest
@@ -763,7 +771,7 @@ class RenderFrameHostImplThirdPartyStorageTest
  public:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     if (ThirdPartyStoragePartitioningEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kThirdPartyStoragePartitioning);

@@ -11,9 +11,9 @@
 #include "base/containers/flat_set.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
-#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 // This class reports several use counters coming from Blink.
 // For FencedFrames, it reports the use counters with a "FencedFrames" prefix.

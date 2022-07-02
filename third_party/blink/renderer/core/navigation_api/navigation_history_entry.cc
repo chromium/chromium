@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 
@@ -65,11 +66,18 @@ ScriptValue NavigationHistoryEntry::getState() const {
   return ScriptValue(isolate, state_->Deserialize(isolate));
 }
 
-void NavigationHistoryEntry::SetAndSaveState(SerializedScriptValue* state) {
+void NavigationHistoryEntry::SetAndSaveState(
+    scoped_refptr<SerializedScriptValue> state) {
   DCHECK_EQ(this, NavigationApi::navigation(*DomWindow())->currentEntry());
   state_ = state;
   DomWindow()->document()->Loader()->GetHistoryItem()->SetNavigationApiState(
-      state);
+      state_.get());
+  // Force the new state object to be synced to the browser process immediately.
+  // The state object needs to be available as soon as possible in case a
+  // new navigation commits soon, so that browser has the best chance of having
+  // the up-to-date state object when constructing the arrays of non-current
+  // NavigationHistoryEntries.
+  DomWindow()->GetFrame()->Client()->NotifyCurrentHistoryItemChanged();
 }
 
 const AtomicString& NavigationHistoryEntry::InterfaceName() const {

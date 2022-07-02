@@ -67,17 +67,25 @@ namespace cors {
 class OriginAccessList;
 }
 
-namespace mojom {
-class OriginPolicyManager;
-}
-
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
 class NetToMojoPendingBuffer;
 class KeepaliveStatisticsRecorder;
 class ScopedThrottlingToken;
-struct OriginPolicy;
 class URLLoaderFactory;
+
+// When a request matches a pervasive payload url and checksum a value from this
+// enum will be logged to the "Network.CacheTransparency.CacheNotUsed"
+// histogram. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused. This is exposed in the
+// header file for use in tests.
+enum class CacheTransparencyCacheNotUsedReason {
+  kTryingSingleKeyedCache = 0,
+  kIncompatibleRequestType = 1,
+  kIncompatibleRequestLoadFlags = 2,
+  kIncompatibleRequestHeaders = 3,
+  kMaxValue = kIncompatibleRequestHeaders,
+};
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
@@ -132,9 +140,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // |delete_callback| tells the URLLoader's owner to destroy the URLLoader.
   //
-  // The |context.origin_policy_manager| must always be provided for requests
-  // that have the |obey_origin_policy| flag set.
-  //
   // |trust_token_helper_factory| must be non-null exactly when the request has
   // Trust Tokens parameters.
   //
@@ -148,6 +153,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Pointers from the |url_loader_context| will be used if
   // |dev_tools_observer|, |cookie_access_observer| or
   // |url_loader_network_observer| are not provided.
+  //
+  // |third_party_cookies_enabled| is also false if all cookies are disabled.
+  // The mojom::kURLLoadOptionBlockThirdPartyCookies can be set or unset
+  // independently of this option.
   URLLoader(
       URLLoaderContext& context,
       DeleteCallback delete_callback,
@@ -167,7 +176,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
-          accept_ch_frame_observer);
+          accept_ch_frame_observer,
+      bool third_party_cookies_enabled);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -275,6 +285,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool added_during_redirect);
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
+
+  static void ResetPervasivePayloadsListForTesting();
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
@@ -407,7 +419,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void ReportFlaggedResponseCookies();
   void StartReading();
-  void OnOriginPolicyManagerRetrieveDone(const OriginPolicy& origin_policy);
 
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
   bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
@@ -439,6 +450,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // When Cross-Origin-Embedder-Policy: credentialless is set, do not
   // send or store credentials for no-cors cross-origin request.
   bool CoepAllowCredentials(const GURL& url);
+
+  bool ThirdPartyCookiesEnabled() const;
 
   raw_ptr<net::URLRequestContext> url_request_context_;
 
@@ -482,6 +495,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Stores any CORS error encountered while processing |url_request_|.
   absl::optional<CorsErrorStatus> cors_error_status_;
+
+  // True if a pervasive payload is found, for logging purposes.
+  bool pervasive_payload_requested_ = false;
 
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
@@ -563,9 +579,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
 
-  // Will only be set for requests that have |obey_origin_policy| set.
-  raw_ptr<mojom::OriginPolicyManager> origin_policy_manager_ = nullptr;
-
   // If the request is configured for Trust Tokens
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates
   // the request with the pertinent request headers and, on receiving the
@@ -596,13 +609,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // CookieAccessObserver implementation from the URLLoaderContext aka
   // URLLoaderFactory).
   const mojo::Remote<mojom::CookieAccessObserver> cookie_observer_remote_;
-  mojom::CookieAccessObserver* const cookie_observer_ = nullptr;
+  const raw_ptr<mojom::CookieAccessObserver> cookie_observer_ = nullptr;
   const mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_remote_;
-  mojom::URLLoaderNetworkServiceObserver* const url_loader_network_observer_ =
-      nullptr;
+  const raw_ptr<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
-  mojom::DevToolsObserver* const devtools_observer_ = nullptr;
+  const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.
@@ -614,6 +627,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
+
+  const bool third_party_cookies_enabled_;
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 

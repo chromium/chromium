@@ -18,6 +18,10 @@ class ClientContext {
   virtual ~ClientContext() = default;
   // Updates the client context based on the current state of the client.
   virtual void Update(const TriggerContext& trigger_context) = 0;
+  // Updates the annotate DOM model context.
+  virtual void UpdateAnnotateDomModelContext(int64_t model_version) {}
+  // Updates whether the JS flow library is loaded.
+  virtual void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded){};
   // Returns the proto representation of this client context.
   virtual ClientContextProto AsProto() const = 0;
 };
@@ -26,9 +30,11 @@ class ClientContext {
 class ClientContextImpl : public ClientContext {
  public:
   // |client| must outlive this instance.
-  ClientContextImpl(const Client* client);
+  explicit ClientContextImpl(const Client* client);
   ~ClientContextImpl() override = default;
   void Update(const TriggerContext& trigger_context) override;
+  void UpdateAnnotateDomModelContext(int64_t model_version) override;
+  void UpdateJsFlowLibraryLoaded(bool js_flow_library_loaded) override;
   ClientContextProto AsProto() const override;
 
  private:

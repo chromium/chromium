@@ -137,7 +137,7 @@ AudioDeviceType AudioDevice::GetAudioType(
 
 AudioDevice::AudioDevice() = default;
 
-AudioDevice::AudioDevice(const chromeos::AudioNode& node) {
+AudioDevice::AudioDevice(const AudioNode& node) {
   is_input = node.is_input;
   id = node.id;
   stable_device_id_version = node.StableDeviceIdVersion();

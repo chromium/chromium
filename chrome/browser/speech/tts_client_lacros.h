@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
@@ -55,7 +56,7 @@ class TtsClientLacros : public extensions::BrowserContextKeyedAPI,
 
   void OnGetAllVoices(std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices);
 
-  content::BrowserContext* browser_context_;  // not owned.
+  raw_ptr<content::BrowserContext> browser_context_;  // not owned.
   base::UnguessableToken browser_context_id_;
   mojo::Receiver<crosapi::mojom::TtsClient> receiver_{this};
 

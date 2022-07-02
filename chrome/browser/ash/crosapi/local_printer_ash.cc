@@ -144,12 +144,11 @@ void LocalPrinterAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void LocalPrinterAsh::OnProfileAdded(Profile*) {
-  if (observers_registered_)
+void LocalPrinterAsh::OnProfileAdded(Profile* profile) {
+  if (observers_registered_ || !ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return;
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
+  }
+
   auto* printers_manager_factory =
       ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   // In unit tests, `printers_manager_factory` can be null.
@@ -486,9 +485,8 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
     return;
   }
 
-  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
-  for (const base::Value& deny_list_value :
-       deny_list_from_prefs->GetListDeprecated()) {
+  deny_list.reserve(deny_list_from_prefs->GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     printing::mojom::PrinterType printer_type;
     if (deny_list_str == "extension")

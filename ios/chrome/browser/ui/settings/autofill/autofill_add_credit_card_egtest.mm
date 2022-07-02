@@ -17,7 +17,6 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::AddPaymentMethodButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::IconViewForCellWithLabelId;
@@ -105,13 +104,8 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
   [super setUp];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
-  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
-    [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:AddPaymentMethodButton()]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
 }
 
 - (void)tearDown {

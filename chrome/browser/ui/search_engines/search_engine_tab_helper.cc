@@ -116,7 +116,7 @@ void SearchEngineTabHelper::PageHasOpenSearchDescriptionDocument(
 
   // Only accept messages from the main frame.
   if (osdd_handler_receivers_.GetCurrentTargetFrame() !=
-      web_contents()->GetMainFrame())
+      web_contents()->GetPrimaryMainFrame())
     return;
 
   // Make sure that the page is the current page and other basic checks.
@@ -150,7 +150,7 @@ void SearchEngineTabHelper::PageHasOpenSearchDescriptionDocument(
   if (keyword.empty())
     return;
 
-  auto* frame = web_contents()->GetMainFrame();
+  auto* frame = web_contents()->GetPrimaryMainFrame();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   frame->CreateNetworkServiceDefaultFactory(
       url_loader_factory.BindNewPipeAndPassReceiver());

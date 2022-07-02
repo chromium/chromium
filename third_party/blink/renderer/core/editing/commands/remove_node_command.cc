@@ -49,9 +49,9 @@ void RemoveNodeCommand::DoApply(EditingState* editing_state) {
   GetDocument().UpdateStyleAndLayoutTree();
   if (!parent || (should_assume_content_is_always_editable_ ==
                       kDoNotAssumeContentIsAlwaysEditable &&
-                  !HasEditableStyle(*parent) && parent->InActiveDocument()))
+                  !IsEditable(*parent) && parent->InActiveDocument()))
     return;
-  DCHECK(HasEditableStyle(*parent) || !parent->InActiveDocument()) << parent;
+  DCHECK(IsEditable(*parent) || !parent->InActiveDocument()) << parent;
 
   parent_ = parent;
   ref_child_ = node_->nextSibling();
@@ -67,7 +67,7 @@ void RemoveNodeCommand::DoApply(EditingState* editing_state) {
 void RemoveNodeCommand::DoUnapply() {
   ContainerNode* parent = parent_.Release();
   Node* ref_child = ref_child_.Release();
-  if (!parent || !HasEditableStyle(*parent))
+  if (!parent || !IsEditable(*parent))
     return;
 
   parent->InsertBefore(node_.Get(), ref_child, IGNORE_EXCEPTION_FOR_TESTING);

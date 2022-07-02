@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2022-05-03T22:31:50.125Z",
+  "time_generated": "2022-05-17T17:14:30.770Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -11021,7 +11021,8 @@
                 "browsing history",
                 "browser history",
                 "chrome history",
-                "url history"
+                "url history",
+                "history"
               ]
             }
           ],

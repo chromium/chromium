@@ -60,18 +60,21 @@ const net::NetworkTrafficAnnotationTag
             "page load performance and features such as Translate."
           trigger:
             "When there are new models to download based on response from "
-            "Optimization Guide Service that is triggered daily."
+            "Optimization Guide Service that is triggered at the start of each "
+            "session."
           data: "The URL provided by the Optimization Guide Service to fetch "
             "an updated model. No user information is sent."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
           cookies_allowed: NO
-          setting:
-            "This request cannot be disabled in settings. However it will "
-            "never be made if the "
-            "'OptimizationGuideModelDownloading' feature is disabled."
-          policy_exception_justification: "Not yet implemented."
+          setting: "This feature cannot be disabled."
+          chrome_policy {
+            ComponentUpdatesEnabled {
+              policy_options {mode: MANDATORY}
+              ComponentUpdatesEnabled: false
+            }
+          }
         })");
 
 const base::FilePath::CharType kModelInfoFileName[] =

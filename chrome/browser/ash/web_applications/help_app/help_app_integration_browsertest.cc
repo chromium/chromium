@@ -29,8 +29,10 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
-#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
@@ -38,8 +40,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -130,13 +130,13 @@ void WaitForAppToOpen(const GURL& expected_url) {
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
   const GURL url(kChromeUIHelpAppURL);
   EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(web_app::SystemAppType::HELP, url, "Explore"));
+      ExpectSystemWebAppValid(ash::SystemWebAppType::HELP, url, "Explore"));
 }
 
 // Test that the Help App is searchable by additional strings.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
   WaitForTestSystemAppInstall();
-  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::HELP);
   std::vector<int> search_terms = system_app->GetAdditionalSearchTerms();
   std::vector<std::string> search_terms_strings;
   std::transform(search_terms.begin(), search_terms.end(),
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2SearchInLauncher) {
 // Test that the Help App has a minimum window size of 600x320.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2MinWindowSize) {
   WaitForTestSystemAppInstall();
-  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::HELP);
+  auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::HELP);
   EXPECT_EQ(system_app->GetMinimumWindowSize(), gfx::Size(600, 320));
 }
 
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2MinWindowSize) {
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DefaultWindowBounds) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::HELP, &browser);
+  LaunchApp(ash::SystemWebAppType::HELP, &browser);
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   int x = (work_area.width() - 960) / 2;
@@ -179,10 +179,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
       GURL("chrome://help-app/"));
   navigation_observer.StartWatchingNewWebContents();
 
-  proxy->Launch(
-      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP),
-      ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+  proxy->Launch(*GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP),
+                ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
+                apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   navigation_observer.Wait();
   // The HELP app is 18, see DefaultAppName in
@@ -194,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
 // Test that the Help App can log metrics in the untrusted frame.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
 
   base::UserActionTester user_action_tester;
 
@@ -212,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeEnabledTest,
                        HasCorrectThemeAndBackgroundColor) {
   WaitForTestSystemAppInstall();
   web_app::AppId app_id =
-      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
+      *GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP);
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile())->registrar();
 
@@ -227,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeDisabledTest,
                        HasCorrectThemeAndBackgroundColor) {
   WaitForTestSystemAppInstall();
   web_app::AppId app_id =
-      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
+      *GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP);
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile())->registrar();
 
@@ -346,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2DiscoverTabNotification) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
@@ -408,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2ReleaseNotesNotificationFromBackground) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
   auto display_service =
       std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
@@ -476,14 +475,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2NavigateOnRelaunch) {
 
   Browser* browser;
   content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::HELP, &browser);
+      LaunchApp(ash::SystemWebAppType::HELP, &browser);
 
   // There should be two browser windows, one regular and one for the newly
   // opened app.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   content::TestNavigationObserver navigation_observer(web_contents);
-  LaunchAppWithoutWaiting(web_app::SystemAppType::HELP);
+  LaunchAppWithoutWaiting(ash::SystemWebAppType::HELP);
   // If no navigation happens, then this test will time out due to the wait.
   navigation_observer.Wait();
 
@@ -495,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2NavigateOnRelaunch) {
 // Test direct navigation to a subpage.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
   WaitForTestSystemAppInstall();
-  auto params = LaunchParamsForApp(web_app::SystemAppType::HELP);
+  auto params = LaunchParamsForApp(ash::SystemWebAppType::HELP);
   params.override_url = GURL("chrome://help-app/help/");
 
   content::WebContents* web_contents = LaunchApp(std::move(params));
@@ -509,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
 // Test that the Help App can open the feedback dialog.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
 
   // Script that tells the Help App to open the feedback dialog.
   constexpr char kScript[] = R"(
@@ -531,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
 // Test that the Help App opens the OS Settings family link page.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
 
   // There should be two browser windows, one regular and one for the newly
   // opened help app.
@@ -564,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2UpdateLauncherSearchIndexAndSearch) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
 
   // Script that adds a data item to the launcher search index.
   constexpr char kScript[] = R"(
@@ -615,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2UpdateLauncherSearchIndexFilterInvalid) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
-  content::WebContents* web_contents = LaunchApp(web_app::SystemAppType::HELP);
+  content::WebContents* web_contents = LaunchApp(ash::SystemWebAppType::HELP);
 
   // Script that adds a data item to the launcher search index.
   constexpr char kScript[] = R"(
@@ -695,9 +694,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Wait for system apps background tasks to start.
   base::RunLoop run_loop;
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .on_tasks_started()
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->on_tasks_started()
       .Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
@@ -707,13 +705,13 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   const auto& help_task = std::find_if(
       tasks.begin(), tasks.end(),
       [&bg_task_url](
-          const std::unique_ptr<web_app::SystemAppBackgroundTask>& x) {
+          const std::unique_ptr<ash::SystemWebAppBackgroundTask>& x) {
         return x->url_for_testing() == bg_task_url;
       });
   ASSERT_NE(help_task, tasks.end());
 
   auto* timer = help_task->get()->get_timer_for_testing();
-  EXPECT_EQ(web_app::SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             help_task->get()->get_state_for_testing());
   // The "Immediate" timer waits for several minutes, and it's hard to mock time
   // properly in a browser test, so just fire the timer now. We're not testing

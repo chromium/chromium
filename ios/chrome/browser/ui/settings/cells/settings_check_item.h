@@ -18,35 +18,35 @@
 // The detail text string.
 @property(nonatomic, copy) NSString* detailText;
 
-// The image to display on the leading side of |text| (optional). If this image
+// The image to display on the leading side of `text` (optional). If this image
 // should be tinted to match the text color (e.g. in dark mode), the provided
 // image should have rendering mode UIImageRenderingModeAlwaysTemplate.
 @property(nonatomic, strong) UIImage* leadingImage;
 
-// Tint color for |leadingImage|.
+// Tint color for `leadingImage`.
 @property(nonatomic, copy) UIColor* leadingImageTintColor;
 
-// The image to display on the trailing side of |text| (required). If this image
+// The image to display on the trailing side of `text` (required). If this image
 // should be tinted to match the text color (e.g. in dark mode), the provided
 // image should have rendering mode UIImageRenderingModeAlwaysTemplate. Don't
-// set image with |isIndicatorHidden| equal to false as image won't be shown
+// set image with `isIndicatorHidden` equal to false as image won't be shown
 // in that case.
 @property(nonatomic, strong) UIImage* trailingImage;
 
-// Tint color for |trailingImage|.
+// Tint color for `trailingImage`.
 @property(nonatomic, copy) UIColor* trailingImageTintColor;
 
-// Controls visibility of |activityIndicator|, if set false |trailingImage| or
-// |infoButton| will be hidden and |activityIndicator| will be shown. This
+// Controls visibility of `activityIndicator`, if set false `trailingImage` or
+// `infoButton` will be hidden and `activityIndicator` will be shown. This
 // property has the highest priority.
 @property(nonatomic, assign, getter=isIndicatorHidden) BOOL indicatorHidden;
 
-// Controls visibility of |infoButton|. This property has no effect in case
-// |trailingImage| is provided or |indicatorHidden| is false.
+// Controls visibility of `infoButton`. This property has no effect in case
+// `trailingImage` is provided or `indicatorHidden` is false.
 @property(nonatomic, assign, getter=isInfoButtonHidden) BOOL infoButtonHidden;
 
 // Disabled cell are automatically drawn with dimmed text and without
-// |trailingImage| or |activityIndicator|.
+// `trailingImage` or `activityIndicator`.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 
 @end

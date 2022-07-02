@@ -234,7 +234,7 @@ bool ObfuscatedFileUtilMemoryDelegate::PathExists(const base::FilePath& path) {
 
 base::File ObfuscatedFileUtilMemoryDelegate::CreateOrOpen(
     const base::FilePath& path,
-    int file_flags) {
+    uint32_t file_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO:(https://crbug.com/936722): Once the output of this function is
   // changed to base::File::Error, it can use CreateOrOpenInternal to perform
@@ -244,7 +244,7 @@ base::File ObfuscatedFileUtilMemoryDelegate::CreateOrOpen(
 
 void ObfuscatedFileUtilMemoryDelegate::CreateOrOpenInternal(
     const DecomposedPath& dp,
-    int file_flags) {
+    uint32_t file_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!dp.entry) {
     dp.parent->directory_content.emplace(dp.components.back(), Entry::kFile);

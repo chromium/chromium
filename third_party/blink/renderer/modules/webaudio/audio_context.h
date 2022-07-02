@@ -200,7 +200,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // Records if start() was ever called for any source node in this context.
   bool source_node_started_ = false;
 
-  // Represents whether a context is suspended by explicit |context.suspend()|.
+  // Represents whether a context is suspended by explicit `context.suspend()`.
   bool suspended_by_user_ = false;
 
   // baseLatency for this context

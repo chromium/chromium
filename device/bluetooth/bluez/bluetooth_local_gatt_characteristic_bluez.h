@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
@@ -72,7 +73,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
   Permissions permissions_;
 
   // Service that contains this characteristic.
-  BluetoothLocalGattServiceBlueZ* service_;
+  raw_ptr<BluetoothLocalGattServiceBlueZ> service_;
 
   // Descriptors contained by this characteristic.
   std::vector<std::unique_ptr<BluetoothLocalGattDescriptorBlueZ>> descriptors_;

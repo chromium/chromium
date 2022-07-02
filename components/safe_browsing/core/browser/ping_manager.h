@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -29,6 +30,25 @@ namespace safe_browsing {
 
 class PingManager : public KeyedService {
  public:
+  enum class ReportThreatDetailsResult {
+    SUCCESS = 0,
+    // There was a problem serializing the report to a string.
+    SERIALIZATION_ERROR = 1,
+    // The report is empty, so it is not sent.
+    EMPTY_REPORT = 2,
+  };
+
+  // Interface via which a client of this class can surface relevant events in
+  // WebUI. All methods must be called on the UI thread.
+  class WebUIDelegate {
+   public:
+    virtual ~WebUIDelegate() = default;
+
+    // Track a client safe browsing report being sent.
+    virtual void AddToCSBRRsSent(
+        std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) = 0;
+  };
+
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
@@ -39,7 +59,11 @@ class PingManager : public KeyedService {
       const V4ProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-      base::RepeatingCallback<bool()> get_should_fetch_access_token);
+      base::RepeatingCallback<bool()> get_should_fetch_access_token,
+      WebUIDelegate* webui_delegate,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -53,9 +77,11 @@ class PingManager : public KeyedService {
   // SafeBrowsingtHitUrl.
   void ReportSafeBrowsingHit(const safe_browsing::HitReport& hit_report);
 
-  // Users can opt-in on the SafeBrowsing interstitial to send detailed
-  // threat reports. |report| is the serialized report.
-  void ReportThreatDetails(const std::string& report);
+  // Sends a detailed threat report after performing validation and adding extra
+  // details to the report. The returned object provides details on whether the
+  // report was successful.
+  ReportThreatDetailsResult ReportThreatDetails(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Only used for tests
   void SetURLLoaderFactoryForTesting(
@@ -65,13 +91,15 @@ class PingManager : public KeyedService {
 
  protected:
   friend class PingManagerTest;
-  // Constructs a PingManager with the given |config|, |url_loader_factory|, and
-  // access token fetching information.
   explicit PingManager(
       const V4ProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-      base::RepeatingCallback<bool()> get_should_fetch_access_token);
+      base::RepeatingCallback<bool()> get_should_fetch_access_token,
+      WebUIDelegate* webui_delegate,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
@@ -92,7 +120,7 @@ class PingManager : public KeyedService {
 
   // Once the user's access_token has been fetched by ReportThreatDetails (or
   // intentionally not fetched), attaches the token and sends the report.
-  void ReportThreatDetailsOnGotAccessToken(const std::string& report,
+  void ReportThreatDetailsOnGotAccessToken(const std::string& serialized_report,
                                            const std::string& access_token);
 
   // Track outstanding SafeBrowsing report fetchers for clean up.
@@ -108,6 +136,17 @@ class PingManager : public KeyedService {
   // Determines whether it's relevant to fetch the access token for the user
   // based on whether they're a signed-in ESB user.
   base::RepeatingCallback<bool()> get_should_fetch_access_token_;
+
+  // WebUIInfoSingleton extends PingManager::WebUIDelegate to enable the
+  // workaround of calling AddToCSBRRsSent in WebUIInfoSingleton without /core
+  // having a dependency on /content.
+  raw_ptr<WebUIDelegate> webui_delegate_;
+
+  // The task runner for the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+
+  // Pulls the user population.
+  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

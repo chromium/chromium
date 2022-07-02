@@ -15,28 +15,28 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,8 +45,7 @@ import java.util.List;
 /**
  * Tests that ChannelsUpdater correctly initializes channels on the notification manager.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 @RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsUpdaterTest {
     private NotificationManagerProxy mNotificationManagerProxy;
@@ -55,15 +54,16 @@ public class ChannelsUpdaterTest {
     private Resources mMockResources;
 
     @Rule
-    public TestRule processor = new Features.JUnitProcessor();
+    public JniMocker mJniMocker = new JniMocker();
+    @Mock
+    private UrlFormatter.Natives mUrlFormatterJniMock;
 
     @Before
     public void setUp() {
-        // Not initializing the browser process is safe because
-        // UrlFormatter.formatUrlForSecurityDisplay() is stand-alone.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
 
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = RuntimeEnvironment.getApplication();
         mNotificationManagerProxy = new NotificationManagerProxyImpl(context);
 
         mMockResources = context.getResources();
@@ -89,7 +89,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsFalsePreO() {
@@ -99,7 +98,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsTrueIfOAndNoSavedVersionInPrefs() {
@@ -109,7 +107,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsTrueIfOAndDifferentVersionInPrefs() {
@@ -120,7 +117,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testShouldUpdateChannels_returnsFalseIfOAndSameVersionInPrefs() {
@@ -131,7 +127,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_noopPreO() {
@@ -146,7 +141,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() {
@@ -166,7 +160,6 @@ public class ChannelsUpdaterTest {
     }
 
     @Test
-    @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @RequiresApi(Build.VERSION_CODES.O)
     public void testUpdateChannels_deletesLegacyChannelsAndCreatesExpectedOnes() {

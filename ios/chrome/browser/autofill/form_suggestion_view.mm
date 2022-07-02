@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/autofill/form_suggestion_label.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -159,6 +161,12 @@ const CGFloat kSuggestionHorizontalMargin = 6;
                                          numSuggestions:[self.suggestions count]
                                                delegate:self];
     [self.stackView addArrangedSubview:label];
+
+    // Track the first element.
+    if (idx == 0) {
+      [self.layoutGuideCenter referenceView:label
+                                  underName:kAutofillFirstSuggestionGuide];
+    }
   };
   [self.suggestions enumerateObjectsUsingBlock:setupBlock];
   if (self.trailingView) {

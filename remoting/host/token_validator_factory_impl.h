@@ -16,7 +16,7 @@ namespace remoting {
 
 class RsaKeyPair;
 
-// This class dispenses |TokenValidator| implementations that use a UrlFetcher
+// This class dispenses |TokenValidator| implementations that use a UrlRequest
 // to contact a |token_validation_url| and exchange the |token| for a
 // |shared_secret|.
 class TokenValidatorFactoryImpl : public protocol::TokenValidatorFactory {

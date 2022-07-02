@@ -251,7 +251,8 @@ class AlphaNum {
       const strings_internal::AlphaNumBuffer<size>& buf)
       : piece_(&buf.data[0], buf.size) {}
 
-  AlphaNum(const char* c_str) : piece_(c_str) {}  // NOLINT(runtime/explicit)
+  AlphaNum(const char* c_str)                     // NOLINT(runtime/explicit)
+      : piece_(NullSafeStringView(c_str)) {}      // NOLINT(runtime/explicit)
   AlphaNum(absl::string_view pc) : piece_(pc) {}  // NOLINT(runtime/explicit)
 
   template <typename Allocator>

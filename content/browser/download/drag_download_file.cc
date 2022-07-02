@@ -191,7 +191,7 @@ DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
                                    WebContents* web_contents)
     : file_path_(file_path), file_(std::move(file)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHost* host = web_contents->GetMainFrame();
+  RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   drag_ui_ = new DragDownloadFileUI(
       url, referrer, referrer_encoding, host->GetProcess()->GetID(),
       host->GetRoutingID(),

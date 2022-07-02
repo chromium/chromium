@@ -132,8 +132,10 @@ TEST(SimpleStringDictionary, Iterator) {
 
   // Set a bunch of key/value pairs like key0/value0, key1/value1, ...
   for (int i = 0; i < kPartitionIndex; ++i) {
-    sprintf(key, "key%d", i);
-    sprintf(value, "value%d", i);
+    ASSERT_LT(snprintf(key, sizeof(key), "key%d", i),
+              static_cast<int>(sizeof(key)));
+    ASSERT_LT(snprintf(value, sizeof(value), "value%d", i),
+              static_cast<int>(sizeof(value)));
     dict.SetKeyValue(key, value);
   }
   expected_dictionary_size = kPartitionIndex;
@@ -152,8 +154,10 @@ TEST(SimpleStringDictionary, Iterator) {
 
   // Set some more key/value pairs like key59/value59, key60/value60, ...
   for (int i = kPartitionIndex; i < kDictionaryCapacity; ++i) {
-    sprintf(key, "key%d", i);
-    sprintf(value, "value%d", i);
+    ASSERT_LT(snprintf(key, sizeof(key), "key%d", i),
+              static_cast<int>(sizeof(key)));
+    ASSERT_LT(snprintf(value, sizeof(value), "value%d", i),
+              static_cast<int>(sizeof(value)));
     dict.SetKeyValue(key, value);
   }
   expected_dictionary_size += kDictionaryCapacity - kPartitionIndex;

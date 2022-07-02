@@ -22,8 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
-// TODO(b/174811949): Hide behind ChromeOS build flag.
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -199,10 +197,9 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   auto my_files_folder_path =
       file_manager::util::GetMyFilesFolderForProfile(profile);
 
-  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
   absl::optional<web_app::AppId> app_id =
-      provider->system_web_app_manager().GetAppIdForSystemApp(
-          web_app::SystemAppType::CAMERA);
+      ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
+          ash::SystemWebAppType::CAMERA);
 
   // The launch directory is passed here rather than
   // `SystemWebAppDelegate::LaunchAndNavigateSystemWebApp()` to handle the case
@@ -244,7 +241,7 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
   params.launch_paths = {path};
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
   web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
-                                   web_app::SystemAppType::MEDIA, params);
+                                   ash::SystemWebAppType::MEDIA, params);
 }
 
 void ChromeCameraAppUIDelegate::OpenFeedbackDialog(

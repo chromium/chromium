@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -32,7 +33,7 @@ ColorProvider* GetLightNormalColorProvider() {
       {ColorProviderManager::ColorMode::kLight,
        ColorProviderManager::ContrastMode::kNormal,
        ColorProviderManager::SystemTheme::kDefault,
-       ColorProviderManager::FrameType::kChromium, nullptr});
+       ColorProviderManager::FrameType::kChromium, absl::nullopt, nullptr});
 }
 
 }  // namespace

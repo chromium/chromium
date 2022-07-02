@@ -58,7 +58,7 @@ bool LocationBarModelDelegateIOS::GetURL(GURL* url) const {
   if (!item)
     return false;
   *url = item->GetVirtualURL();
-  // Return |false| for about scheme pages.  This will result in the location
+  // Return `false` for about scheme pages.  This will result in the location
   // bar showing the default page, "about:blank". See crbug.com/989497 for
   // details on why.
   if (url->SchemeIs(url::kAboutScheme))

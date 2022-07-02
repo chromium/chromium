@@ -5,17 +5,19 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
 
+#include <stdint.h>
 #include <memory>
 #include <string>
 
 #include "ash/public/mojom/tray_action.mojom-forward.h"
-#include "base/callback.h"
+#include "ash/public/mojom/tray_action.mojom-shared.h"
+#include "ash/public/mojom/tray_action.mojom.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -24,6 +26,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -36,7 +39,8 @@ class TickClock;
 
 namespace content {
 class BrowserContext;
-}
+class WebContents;
+}  // namespace content
 
 namespace extensions {
 class AppDelegate;
@@ -50,11 +54,12 @@ class LockScreenItemStorage;
 
 namespace lock_screen_apps {
 
+class AppManager;
 class AppWindowMetricsTracker;
+class FirstAppRunToastManager;
 class FocusCyclerDelegate;
 class LockScreenProfileCreator;
 class StateObserver;
-class FirstAppRunToastManager;
 
 // Manages state of lock screen action handler apps, and notifies
 // interested parties as the state changes.
@@ -244,7 +249,7 @@ class StateController : public ash::mojom::TrayActionClient,
   // is first launched for an app.
   // NOTE: The manager can be used for every app launch - before showing the
   // toast dialog, the manager will bail out if it determines that the toast
-  // for the associated app has been previosly seen (and closed) by the user.
+
   std::unique_ptr<FirstAppRunToastManager> first_app_run_toast_manager_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>

@@ -75,7 +75,7 @@ class FakeISearchHandler {
 }
 
 
-TEST_F('ChromeVoxISearchTest', 'Simple', async function() {
+AX_TEST_F('ChromeVoxISearchTest', 'Simple', async function() {
   const rootNode = await this.runWithLoadedTree(this.linksAndHeadingsDoc);
   const handler = new FakeISearchHandler(this);
   const search = new ISearch(new cursors.Cursor(rootNode, 0));

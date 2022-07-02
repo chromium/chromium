@@ -56,10 +56,10 @@ enum class AttemptingMultipleOverlays {
 constexpr char kShouldAttemptMultipleOverlaysHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy."
     "ShouldAttemptMultipleOverlays";
-constexpr char kNumOverlaysAttemptedHistogramName[] =
-    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttempted";
 constexpr char kNumOverlaysPromotedHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysPromoted";
+constexpr char kNumOverlaysAttemptedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttempted";
 constexpr char kNumOverlaysFailedHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysFailed";
 
@@ -161,6 +161,10 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   auto* render_pass = render_passes->back().get();
   bool success = false;
 
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Compositing.Display.OverlayProcessorUsingStrategy.NumQuadsConsidered",
+      render_pass->quad_list.size());
+
   DBG_DRAW_RECT("overlay.incoming.damage", (*damage_rect));
   for (auto&& each : surface_damage_rect_list) {
     DBG_DRAW_RECT("overlay.surface.damage", each);
@@ -185,6 +189,8 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   LogCheckOverlaySupportMetrics();
 
   DCHECK(candidates->empty() || success);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
+                           candidates->size());
 
   UpdateOverlayStatusMap(*candidates);
   UpdateDamageRect(surface_damage_rect_list, *damage_rect);
@@ -585,6 +591,11 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
       num_proposed_pre_sort);
 
   SortProposedOverlayCandidatesPrioritized(&proposed_candidates);
+  if (proposed_candidates.size() == 0) {
+    LogStrategyEnumUMA(num_proposed_pre_sort != 0
+                           ? OverlayStrategy::kNoStrategyFailMin
+                           : OverlayStrategy::kNoStrategyUsed);
+  }
 
   if (ShouldAttemptMultipleOverlays(proposed_candidates)) {
     auto* render_pass = render_pass_list->back().get();
@@ -665,11 +676,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
   }
   RegisterOverlayRequirement(has_required_overlay);
 
-  if (proposed_candidates.size() == 0) {
-    LogStrategyEnumUMA(num_proposed_pre_sort != 0
-                           ? OverlayStrategy::kNoStrategyFailMin
-                           : OverlayStrategy::kNoStrategyUsed);
-  } else {
+  if (proposed_candidates.size() != 0) {
     LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);
   }
   OnOverlaySwitchUMA(ProposedCandidateKey());
@@ -717,6 +724,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     OverlayCandidateList& candidates) {
   if (sorted_candidates.empty()) {
     UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
     return false;
   }
 
@@ -795,12 +803,11 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
                            num_overlays_attempted);
-  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
-                           num_overlays_promoted);
   UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
                            num_overlays_attempted - num_overlays_promoted);
 
   if (candidates.empty()) {
+    LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);
     return false;
   }
 
@@ -824,6 +831,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   // Commit successful candidates.
   for (auto& test_candidate : test_candidates) {
     test_candidate.strategy->CommitCandidate(test_candidate, render_pass);
+    LogStrategyEnumUMA(test_candidate.strategy->GetUMAEnum());
   }
 
   return true;

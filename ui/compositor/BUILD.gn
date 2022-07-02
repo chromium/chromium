@@ -272,6 +272,7 @@ test("compositor_unittests") {
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
 
       "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     ]
   }
 }

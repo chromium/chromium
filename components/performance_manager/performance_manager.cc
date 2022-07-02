@@ -95,8 +95,8 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
   auto* frame_node = helper->GetFrameNode(rfh);
   if (!frame_node) {
     // This should only happen if GetFrameNodeForRenderFrameHost is called
-    // before the RenderFrameCreate notification is dispatched.
-    DCHECK(!rfh->IsRenderFrameCreated());
+    // before the RenderFrameCreated notification is dispatched.
+    DCHECK(!rfh->IsRenderFrameLive());
     return nullptr;
   }
   return frame_node->GetWeakPtrOnUIThread();

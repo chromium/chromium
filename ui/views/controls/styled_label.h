@@ -30,6 +30,7 @@ namespace views {
 
 class Label;
 class Link;
+class LinkFragment;
 
 // A class which can apply mixed styles to a block of text. Currently, text is
 // always multiline. Trailing whitespace in the styled label text is not
@@ -68,6 +69,9 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // Tooltip for the range.
     std::u16string tooltip;
+
+    // Accessible name for the range.
+    std::u16string accessible_name;
 
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
@@ -178,7 +182,10 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // Sends a space keypress to the first child that is a link.  Assumes at least
   // one such child exists.
-  void ClickLinkForTesting();
+  void ClickFirstLinkForTesting();
+
+  // Get the first child that is a link.
+  views::Link* GetFirstLinkForTesting();
 
  private:
   struct StyleRange {
@@ -209,9 +216,11 @@ class VIEWS_EXPORT StyledLabel : public View {
   void CalculateLayout(int width) const;
 
   // Creates a Label for a given |text|, |style_info|, and |range|.
-  std::unique_ptr<Label> CreateLabel(const std::u16string& text,
-                                     const RangeStyleInfo& style_info,
-                                     const gfx::Range& range) const;
+  std::unique_ptr<Label> CreateLabel(
+      const std::u16string& text,
+      const RangeStyleInfo& style_info,
+      const gfx::Range& range,
+      LinkFragment** previous_link_component) const;
 
   // Update the label background color from the theme or
   // |displayed_on_background_color_| if set.

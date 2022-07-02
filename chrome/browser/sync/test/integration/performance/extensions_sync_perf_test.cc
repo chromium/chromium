@@ -9,8 +9,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
-using extensions_helper::AllProfilesHaveSameExtensions;
-using extensions_helper::AllProfilesHaveSameExtensionsAsVerifier;
 using extensions_helper::DisableExtension;
 using extensions_helper::EnableExtension;
 using extensions_helper::GetInstalledExtensions;
@@ -45,7 +43,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class ExtensionsSyncPerfTest : public SyncTest {
  public:
-  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT), extension_number_(0) {}
+  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   ExtensionsSyncPerfTest(const ExtensionsSyncPerfTest&) = delete;
   ExtensionsSyncPerfTest& operator=(const ExtensionsSyncPerfTest&) = delete;
@@ -63,7 +61,7 @@ class ExtensionsSyncPerfTest : public SyncTest {
   int GetExtensionCount(int profile);
 
  private:
-  int extension_number_;
+  int extension_number_ = 0;
 };
 
 void ExtensionsSyncPerfTest::AddExtensions(int profile, int num_extensions) {
@@ -75,10 +73,11 @@ void ExtensionsSyncPerfTest::AddExtensions(int profile, int num_extensions) {
 void ExtensionsSyncPerfTest::UpdateExtensions(int profile) {
   std::vector<int> extensions = GetInstalledExtensions(GetProfile(profile));
   for (int extension : extensions) {
-    if (IsExtensionEnabled(GetProfile(profile), extension))
+    if (IsExtensionEnabled(GetProfile(profile), extension)) {
       DisableExtension(GetProfile(profile), extension);
-    else
+    } else {
       EnableExtension(GetProfile(profile), extension);
+    }
   }
 }
 
@@ -88,8 +87,9 @@ int ExtensionsSyncPerfTest::GetExtensionCount(int profile) {
 
 void ExtensionsSyncPerfTest::RemoveExtensions(int profile) {
   std::vector<int> extensions = GetInstalledExtensions(GetProfile(profile));
-  for (int extension : extensions)
+  for (int extension : extensions) {
     UninstallExtension(GetProfile(profile), extension);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsSyncPerfTest, P0) {

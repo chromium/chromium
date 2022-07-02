@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -114,7 +115,7 @@ class MODULES_EXPORT UserMediaProcessor
   // test requesting local media streams. The function notifies WebKit that the
   // |request| have completed.
   virtual void GetUserMediaRequestSucceeded(
-      MediaStreamDescriptor* descriptor,
+      MediaStreamDescriptorVector* descriptors,
       UserMediaRequest* user_media_request);
   virtual void GetUserMediaRequestFailed(
       blink::mojom::blink::MediaStreamRequestResult result,
@@ -154,7 +155,7 @@ class MODULES_EXPORT UserMediaProcessor
   void OnStreamGenerated(int32_t request_id,
                          blink::mojom::blink::MediaStreamRequestResult result,
                          const String& label,
-                         blink::mojom::blink::StreamDevicesPtr stream_devices,
+                         mojom::blink::StreamDevicesSetPtr stream_devices_set,
                          bool pan_tilt_zoom_allowed);
 
   void GotAllVideoInputFormatsForDevice(
@@ -173,7 +174,7 @@ class MODULES_EXPORT UserMediaProcessor
   bool IsCurrentRequestInfo(UserMediaRequest* user_media_request) const;
   void DelayedGetUserMediaRequestSucceeded(
       int32_t request_id,
-      MediaStreamDescriptor* descriptor,
+      MediaStreamDescriptorVector* descriptors,
       UserMediaRequest* user_media_request);
   void DelayedGetUserMediaRequestFailed(
       int32_t request_id,
@@ -195,11 +196,11 @@ class MODULES_EXPORT UserMediaProcessor
 
   void StartTracks(const String& label);
 
-  void CreateVideoTracks(const Vector<blink::MediaStreamDevice>& devices,
-                         HeapVector<Member<MediaStreamComponent>>* components);
+  blink::MediaStreamComponent* CreateVideoTrack(
+      const absl::optional<blink::MediaStreamDevice>& device);
 
-  void CreateAudioTracks(const Vector<blink::MediaStreamDevice>& devices,
-                         HeapVector<Member<MediaStreamComponent>>* components);
+  blink::MediaStreamComponent* CreateAudioTrack(
+      const absl::optional<blink::MediaStreamDevice>& device);
 
   // Callback function triggered when all native versions of the
   // underlying media sources and tracks have been created and started.

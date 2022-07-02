@@ -85,18 +85,6 @@ void DomainReliabilityContext::ClearBeacons() {
   uploading_beacons_size_ = 0;
 }
 
-base::Value DomainReliabilityContext::GetWebUIData() const {
-  base::Value context_value(base::Value::Type::DICTIONARY);
-
-  context_value.SetStringKey("origin", config().origin.spec());
-  context_value.SetIntKey("beacon_count", static_cast<int>(beacons_.size()));
-  context_value.SetIntKey("uploading_beacon_count",
-                          static_cast<int>(uploading_beacons_size_));
-  context_value.SetKey("scheduler", scheduler_.GetWebUIData());
-
-  return context_value;
-}
-
 void DomainReliabilityContext::GetQueuedBeaconsForTesting(
     std::vector<const DomainReliabilityBeacon*>* beacons_out) const {
   DCHECK(beacons_out);

@@ -47,7 +47,7 @@ void MediaRouterCastUiForTest::SetUp() {
 
 void MediaRouterCastUiForTest::ShowDialog() {
   dialog_controller_->ShowMediaRouterDialog(
-      MediaRouterDialogOpenOrigin::TOOLBAR);
+      MediaRouterDialogActivationLocation::TOOLBAR);
   base::RunLoop().RunUntilIdle();
 }
 

@@ -19,9 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
@@ -58,6 +55,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using content::BrowserThread;
+using ReportThreatDetailsResult =
+    safe_browsing::PingManager::ReportThreatDetailsResult;
 namespace safe_browsing {
 
 namespace {
@@ -234,7 +233,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
       settings.has_value() &&
       settings.value().block_until_verdict ==
-          enterprise_connectors::BlockUntilVerdict::NO_BLOCK;
+          enterprise_connectors::BlockUntilVerdict::kNoBlock;
 
   if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
       base::FeatureList::IsEnabled(
@@ -493,24 +492,10 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
     report->set_did_proceed(true);
     report->set_download_verdict(
         DownloadDangerTypeToDownloadResponseVerdict(item->GetDangerType()));
-    *report->mutable_population() =
-        safe_browsing::GetUserPopulationForProfile(profile);
-    std::string serialized_report;
-    if (report->SerializeToString(&serialized_report)) {
-      sb_service_->SendSerializedDownloadReport(profile, serialized_report);
 
-      // The following is to log this ClientSafeBrowsingReportRequest on any
-      // open
-      // chrome://safe-browsing pages.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
-                         base::Unretained(WebUIInfoSingleton::GetInstance()),
-                         std::move(report)));
-    } else {
-      DCHECK(false)
-          << "Unable to serialize the dangerous download opened report.";
-    }
+    ReportThreatDetailsResult result =
+        sb_service_->SendDownloadReport(profile, std::move(report));
+    DCHECK(result == ReportThreatDetailsResult::SUCCESS);
   }
 }
 
@@ -795,8 +780,9 @@ void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
 }
 
 BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
-    Profile* profile) {
-  return BinaryUploadServiceFactory::GetForProfile(profile);
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings) {
+  return BinaryUploadService::GetForProfile(profile, settings);
 }
 
 SafeBrowsingNavigationObserverManager*

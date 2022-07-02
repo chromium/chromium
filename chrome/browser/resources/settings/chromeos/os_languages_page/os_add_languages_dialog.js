@@ -7,7 +7,7 @@
  * languages.
  */
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Item} from './add_items_dialog.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';

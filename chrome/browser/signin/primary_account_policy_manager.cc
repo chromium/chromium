@@ -23,7 +23,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
 // Manager that presents the profile will be deleted dialog on the first active
 // browser window.
 class PrimaryAccountPolicyManager::DeleteProfileDialogManager
@@ -165,7 +165,7 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
   raw_ptr<Browser> active_browser_;
   base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
 };
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
 
 PrimaryAccountPolicyManager::PrimaryAccountPolicyManager(Profile* profile)
     : profile_(profile) {
@@ -250,7 +250,7 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
       break;
     }
     case signin::Tribool::kFalse:
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
       // Force remove the profile if sign out is not allowed and if the
       // primary account is no longer allowed.
       // This may be called while the profile is initializing, so it must be
@@ -274,14 +274,14 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
                       "allowed, sign out is not allowed. Do nothing.";
 #else
       CHECK(false) << "Deleting profiles is not supported.";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
       break;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
 // Shows the delete profile dialog on the first browser active window.
 void PrimaryAccountPolicyManager::ShowDeleteProfileDialog(
     Profile* profile,
@@ -309,4 +309,4 @@ void PrimaryAccountPolicyManager::OnUserConfirmedProfileDeletion(
                            : base::BindOnce(&webui::OpenNewWindowForProfile),
       ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)

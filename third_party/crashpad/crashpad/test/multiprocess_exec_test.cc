@@ -49,6 +49,8 @@ class TestMultiprocessExec final : public MultiprocessExec {
   }
 };
 
+// This fails under macOS 12; https://crbug.com/1341377
+//
 // TODO(tasak): enable this test after making address randomization not to
 // keep /dev/urandom open.
 // PartitionAllocator opens /dev/urandom because of address randomization.
@@ -56,7 +58,8 @@ class TestMultiprocessExec final : public MultiprocessExec {
 // //base/allocator/partition_allocator/random.cc) So when making
 // PartitionAllocator default, multiprocess_exec_test_child will crash because
 // of LOG(FATAL) << "close". https://crbug.com/1153544
-#if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    defined(OS_MAC)
 #define MAYBE_MultiprocessExec DISABLED_MultiprocessExec
 #else
 #define MAYBE_MultiprocessExec MultiprocessExec

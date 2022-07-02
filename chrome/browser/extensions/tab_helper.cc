@@ -309,9 +309,8 @@ void TabHelper::DidFinishNavigation(
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
-    const Extension* extension = registry->GetExtensionById(
-        web_app::GetAppIdFromApplicationName(browser->app_name()),
-        ExtensionRegistry::EVERYTHING);
+    const Extension* extension = registry->GetInstalledExtension(
+        web_app::GetAppIdFromApplicationName(browser->app_name()));
     if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid()) {
       DCHECK(extension->is_app());
       SetExtensionApp(extension);
@@ -426,7 +425,7 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   // creation, the renderer-side Frame object would not have been created yet.
   // We should wait for RenderFrameCreated() to happen, to avoid sending this
   // message twice.
-  if (render_frame_host->IsRenderFrameCreated()) {
+  if (render_frame_host->IsRenderFrameLive()) {
     SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
     CHECK(id.is_valid());
     ExtensionWebContentsObserver::GetForWebContents(web_contents())

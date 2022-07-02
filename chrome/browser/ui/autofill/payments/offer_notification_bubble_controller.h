@@ -14,7 +14,7 @@
 namespace autofill {
 
 class AutofillBubbleBase;
-struct AutofillOfferData;
+class AutofillOfferData;
 class CreditCard;
 
 // Interface that exposes controller functionality to offer notification related

@@ -154,6 +154,19 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
   SensorReading rounded_reading = reading;
   RoundSensorReading(&rounded_reading, type_);
 
+  {
+    base::AutoLock auto_lock(lock_);
+    // Report new values only if rounded value is different compared to
+    // previous value.
+    if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
+        do_significance_check && last_rounded_reading_.has_value() &&
+        base::ranges::equal(rounded_reading.raw.values,
+                            last_rounded_reading_->raw.values)) {
+      return false;
+    }
+    // Save rounded value for next comparison.
+    last_rounded_reading_ = rounded_reading;
+  }
   seqlock.WriteBegin();
   buffer->reading = rounded_reading;
   seqlock.WriteEnd();

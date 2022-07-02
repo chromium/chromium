@@ -97,12 +97,24 @@ void AppsAccessManagerImpl::OnSetupRequested() {
   }
 }
 
+void AppsAccessManagerImpl::NotifyAppsAccessCanceled() {
+  if (connection_manager_->GetStatus() == ConnectionStatus::kDisconnected) {
+    base::UmaHistogramEnumeration(
+        kEcheOnboardingHistogramName,
+        OnboardingUserActionMetric::kFailedConnection);
+  } else {
+    base::UmaHistogramEnumeration(
+        kEcheOnboardingHistogramName,
+        OnboardingUserActionMetric::kUserActionCanceled);
+  }
+}
+
 void AppsAccessManagerImpl::OnGetAppsAccessStateResponseReceived(
     proto::GetAppsAccessStateResponse apps_access_state_response) {
   if (apps_access_state_response.result() == proto::Result::RESULT_NO_ERROR) {
     current_apps_access_state_ = apps_access_state_response.apps_access_state();
     AccessStatus access_status = ComputeAppsAccessState();
-    UpdateFeatureEnabledState(access_status);
+    UpdateFeatureEnabledState(GetAccessStatus(), access_status);
     SetAccessStatusInternal(access_status);
   }
 }
@@ -111,14 +123,20 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
     proto::SendAppsSetupResponse apps_setup_response) {
   if (apps_setup_response.result() == proto::Result::RESULT_NO_ERROR) {
     current_apps_access_state_ = apps_setup_response.apps_access_state();
+
+    // Log the no error response after |current_apps_access_state_| is updated.
+    LogAppsSetupResponse(apps_setup_response.result());
     AccessStatus access_status = ComputeAppsAccessState();
     SetAccessStatusInternal(access_status);
-
-    if (access_status == AccessStatus::kAccessGranted) {
-      base::UmaHistogramEnumeration(
-          "Eche.Onboarding.UserAction",
-          OnboardingUserActionMetric::kUserActionPermissionGranted);
-    }
+  } else if (IsSetupOperationInProgress()) {
+    // Log the error response before we change the setup operation to not in
+    // progress.
+    LogAppsSetupResponse(apps_setup_response.result());
+    SetAppsSetupOperationStatus(
+        (apps_setup_response.result() ==
+         proto::Result::RESULT_ERROR_USER_REJECTED)
+            ? AppsAccessSetupOperation::Status::kCompletedUserRejected
+            : AppsAccessSetupOperation::Status::kOperationFailedOrCancelled);
   }
 }
 
@@ -127,9 +145,14 @@ void AppsAccessManagerImpl::OnAppPolicyStateChange(
   if (current_app_policy_state_ == app_policy_state)
     return;
   current_app_policy_state_ = app_policy_state;
-  AccessStatus access_status = ComputeAppsAccessState();
-  UpdateFeatureEnabledState(access_status);
-  SetAccessStatusInternal(access_status);
+
+  // We only notify policy state after we also query access status from the
+  // remote phone.
+  if (initialized_) {
+    AccessStatus access_status = ComputeAppsAccessState();
+    UpdateFeatureEnabledState(GetAccessStatus(), access_status);
+    SetAccessStatusInternal(access_status);
+  }
 }
 
 void AppsAccessManagerImpl::OnFeatureStatusChanged() {
@@ -149,15 +172,6 @@ void AppsAccessManagerImpl::OnConnectionStatusChanged() {
 }
 
 void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding)) {
-    PA_LOG(INFO) << "kEchePhoneHubPermissionsOnboarding flag is false, ignores "
-                    "to get apps access status from phone.";
-    pref_service_->SetInteger(prefs::kAppsAccessStatus,
-                              static_cast<int>(AccessStatus::kAccessGranted));
-    return;
-  }
-
   if (initialized_)
     return;
 
@@ -222,6 +236,7 @@ void AppsAccessManagerImpl::SetAccessStatusInternal(
           AppsAccessSetupOperation::Status::kCompletedSuccessfully);
       break;
     case AccessStatus::kProhibited:
+      [[fallthrough]];
     case AccessStatus::kAvailableButNotGranted:
       // Intentionally blank; the operation status should not change.
       break;
@@ -240,16 +255,20 @@ AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState() {
 }
 
 void AppsAccessManagerImpl::UpdateFeatureEnabledState(
-    AccessStatus access_status) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding))
-    return;
-
+    AccessStatus previous_access_status,
+    AccessStatus current_access_status) {
   const FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kEche);
-  switch (access_status) {
+  switch (current_access_status) {
     case AccessStatus::kAccessGranted:
-      if (IsWaitingForAccessToInitiallyEnableApps()) {
+      if (IsPhoneHubEnabled() &&
+          previous_access_status == AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling Apps when the access is changed from "
+                        "kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kEche, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+            base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableApps()) {
         PA_LOG(INFO) << "Enabling Apps for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
@@ -258,6 +277,7 @@ void AppsAccessManagerImpl::UpdateFeatureEnabledState(
       }
       break;
     case AccessStatus::kProhibited:
+      [[fallthrough]];
     case AccessStatus::kAvailableButNotGranted:
       // Disable Apps if apps access has been revoked
       // by the phone.
@@ -278,10 +298,13 @@ bool AppsAccessManagerImpl::IsWaitingForAccessToInitiallyEnableApps() const {
   // 2. the phone has granted access.
   // We do *not* want to automatically enable the feature unless the opt-in flow
   // was triggered from this device
-  return multidevice_setup::IsDefaultFeatureEnabledValue(Feature::kEche,
-                                                         pref_service_) &&
-         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
-             FeatureState::kEnabledByUser;
+  return IsPhoneHubEnabled() && multidevice_setup::IsDefaultFeatureEnabledValue(
+                                    Feature::kEche, pref_service_);
+}
+
+bool AppsAccessManagerImpl::IsPhoneHubEnabled() const {
+  return multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+         FeatureState::kEnabledByUser;
 }
 
 void AppsAccessManagerImpl::UpdateSetupOperationState() {
@@ -336,5 +359,47 @@ bool AppsAccessManagerImpl::IsEligibleForOnboarding(
          feature_status == FeatureStatus::kDisconnected ||
          feature_status == FeatureStatus::kDisabled;
 }
+
+void AppsAccessManagerImpl::LogAppsSetupResponse(
+    proto::Result apps_setup_result) {
+  if (!IsSetupOperationInProgress())
+    return;
+
+  switch (apps_setup_result) {
+    case proto::Result::RESULT_NO_ERROR:
+      if (current_apps_access_state_ ==
+          proto::AppsAccessState::ACCESS_GRANTED) {
+        base::UmaHistogramEnumeration(
+            kEcheOnboardingHistogramName,
+            OnboardingUserActionMetric::kUserActionPermissionGranted);
+      }
+      break;
+    case proto::Result::RESULT_ERROR_USER_REJECTED:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionPermissionRejected);
+      break;
+    case proto::Result::RESULT_ERROR_ACTION_TIMEOUT:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionTimeout);
+      break;
+    case proto::Result::RESULT_ERROR_ACTION_CANCELED:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionRemoteInterrupt);
+      break;
+    case proto::Result::RESULT_ERROR_SYSTEM:
+      base::UmaHistogramEnumeration(kEcheOnboardingHistogramName,
+                                    OnboardingUserActionMetric::kSystemError);
+      break;
+    default:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionUnknown);
+      break;
+  }
+}
+
 }  // namespace eche_app
 }  // namespace ash

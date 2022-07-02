@@ -8,15 +8,32 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::processing {
+namespace {
+
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+
+class MockInputDelegate : public InputDelegate {
+ public:
+  MOCK_METHOD3(Process,
+               void(const proto::CustomInput& input,
+                    const FeatureProcessorState& feature_processor_state,
+                    ProcessedCallback callback));
+};
+
+}  // namespace
 
 class CustomInputProcessorTest : public testing::Test {
  public:
@@ -26,8 +43,8 @@ class CustomInputProcessorTest : public testing::Test {
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
     feature_processor_state_ = std::make_unique<FeatureProcessorState>();
-    custom_input_processor_sql_ =
-        std::make_unique<CustomInputProcessor>(clock_.Now());
+    custom_input_processor_sql_ = std::make_unique<CustomInputProcessor>(
+        clock_.Now(), &input_delegate_holder_);
   }
 
   void TearDown() override {
@@ -60,7 +77,8 @@ class CustomInputProcessorTest : public testing::Test {
       bool expected_error,
       const base::flat_map<int, QueryProcessor::Tensor>& expected_result) {
     std::unique_ptr<CustomInputProcessor> custom_input_processor =
-        std::make_unique<CustomInputProcessor>(std::move(data), clock_.Now());
+        std::make_unique<CustomInputProcessor>(std::move(data), clock_.Now(),
+                                               &input_delegate_holder_);
     std::unique_ptr<FeatureProcessorState> feature_processor_state =
         std::make_unique<FeatureProcessorState>();
 
@@ -83,6 +101,7 @@ class CustomInputProcessorTest : public testing::Test {
     base::RunLoop loop;
     custom_input_processor_sql_->ProcessIndexType<IndexType>(
         data, std::move(feature_processor_state_),
+        std::make_unique<base::flat_map<IndexType, Tensor>>(),
         base::BindOnce(
             &CustomInputProcessorTest::OnProcessingFinishedCallback<IndexType>,
             base::Unretained(this), loop.QuitClosure(), expected_error,
@@ -106,6 +125,7 @@ class CustomInputProcessorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestClock clock_;
+  InputDelegateHolder input_delegate_holder_;
   std::unique_ptr<FeatureProcessorState> feature_processor_state_;
   std::unique_ptr<CustomInputProcessor> custom_input_processor_sql_;
 };
@@ -202,7 +222,51 @@ TEST_F(CustomInputProcessorTest, InvalidTimeRangeBeforePredictionCustomInput) {
                              expected_result);
 }
 
+TEST_F(CustomInputProcessorTest, InputDelegateFailure) {
+  auto moved_delegate = std::make_unique<MockInputDelegate>();
+  MockInputDelegate* delegate = moved_delegate.get();
+  input_delegate_holder_.SetDelegate(proto::CustomInput::PRICE_TRACKING_HINTS,
+                                     std::move(moved_delegate));
+
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] =
+      CreateCustomInput(2, proto::CustomInput::PRICE_TRACKING_HINTS, {}, {});
+
+  EXPECT_CALL(*delegate, Process(_, _, _))
+      .WillOnce(RunOnceCallback<2>(true, Tensor()));
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/true,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, InputDelegate) {
+  auto moved_delegate = std::make_unique<MockInputDelegate>();
+  MockInputDelegate* delegate = moved_delegate.get();
+  input_delegate_holder_.SetDelegate(proto::CustomInput::PRICE_TRACKING_HINTS,
+                                     std::move(moved_delegate));
+
+  int index = 0;
+  base::flat_map<int, proto::CustomInput> data;
+  data[index] =
+      CreateCustomInput(2, proto::CustomInput::PRICE_TRACKING_HINTS, {}, {});
+
+  Tensor result{ProcessedValue(1), ProcessedValue(2)};
+  EXPECT_CALL(*delegate, Process(_, _, _))
+      .WillOnce(RunOnceCallback<2>(false, result));
+  base::flat_map<int, QueryProcessor::Tensor> expected_result{{index, result}};
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
+}
+
 TEST_F(CustomInputProcessorTest, MultipleFillTypesCustomInputs) {
+  auto moved_delegate = std::make_unique<MockInputDelegate>();
+  MockInputDelegate* delegate = moved_delegate.get();
+  input_delegate_holder_.SetDelegate(proto::CustomInput::PRICE_TRACKING_HINTS,
+                                     std::move(moved_delegate));
+  EXPECT_CALL(*delegate, Process(_, _, _))
+      .WillOnce(RunOnceCallback<2>(false, Tensor{ProcessedValue(1)}));
+
   // Create custom inputs data.
   base::flat_map<int, proto::CustomInput> data;
   data[0] =
@@ -211,6 +275,8 @@ TEST_F(CustomInputProcessorTest, MultipleFillTypesCustomInputs) {
       CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2}, {});
   data[2] =
       CreateCustomInput(1, proto::CustomInput::UNKNOWN_FILL_POLICY, {3}, {});
+  data[3] =
+      CreateCustomInput(1, proto::CustomInput::PRICE_TRACKING_HINTS, {}, {});
 
   // Set expected tensor result.
   base::flat_map<int, QueryProcessor::Tensor> expected_result;
@@ -218,6 +284,7 @@ TEST_F(CustomInputProcessorTest, MultipleFillTypesCustomInputs) {
   expected_result[1] = {ProcessedValue(static_cast<float>(1)),
                         ProcessedValue(static_cast<float>(2))};
   expected_result[2] = {ProcessedValue(static_cast<float>(3))};
+  expected_result[3] = {ProcessedValue(1)};
 
   // Process the custom inputs and verify using expected result.
   ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,

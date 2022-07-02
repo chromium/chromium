@@ -21,10 +21,12 @@ enum class PersonalizationEntryPoint {
   kSettings = 3,
   // Settings search.
   kSettingsSearch = 4,
-  kMaxValue = kSettingsSearch,
+  // Keyboard brightness slider.
+  kKeyboardBrightnessSlider = 5,
+  kMaxValue = kKeyboardBrightnessSlider,
 };
 
-constexpr char kPersonalizationEntryPointHistogramName[] =
+inline constexpr char kPersonalizationEntryPointHistogramName[] =
     "Ash.Personalization.EntryPoint";
 
 }  // namespace ash

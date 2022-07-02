@@ -39,6 +39,8 @@ class StandaloneBrowserExtensionAppsFactoryForApp
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 };
 
 // Singleton that owns all StandaloneBrowserExtensionApps publisher for
@@ -65,6 +67,8 @@ class StandaloneBrowserExtensionAppsFactoryForExtension
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

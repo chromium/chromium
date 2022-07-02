@@ -84,7 +84,7 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
     bool has_uninterruptable_methods,
     std::unique_ptr<MessageReceiver> payload_validator,
     const char* interface_name,
-    MessageToStableIPCHashCallback ipc_hash_callback,
+    MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
   // The object hasn't been bound.
   if (!handle_.is_valid())
@@ -103,7 +103,7 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
       std::move(payload_validator), false, std::move(runner_),
       // The version is only queried from the client so the value passed here
       // will not be used.
-      0u, interface_name, ipc_hash_callback, method_name_callback);
+      0u, interface_name, method_info_callback, method_name_callback);
 
   // Note that we defer this until after attaching the endpoint. This is in case
   // `runner_` does not run tasks in the current sequence but MultiplexRouter is

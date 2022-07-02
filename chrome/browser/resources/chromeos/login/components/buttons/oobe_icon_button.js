@@ -2,44 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-    is: 'oobe-icon-button',
 
-    behaviors: [OobeI18nBehavior],
+/* #js_imports_placeholder */
 
-    properties: {
+/**
+ * @polymer
+ */
+/* #export */ class OobeIconButton extends OobeBaseButton {
+
+  static get is() {
+    return 'oobe-icon-button';
+  }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
       icon1x: {type: String, observer: 'updateIconVisibility_'},
       icon2x: String,
+    };
+  }
 
+  updateIconVisibility_() {
+    this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length == 0);
+  }
 
-      /* The ID of the localized string to be used as button text.
-       */
-      textKey: {
-        type: String,
-      },
+}
 
-      labelForAria: {
-        type: String,
-      },
-
-      labelForAriaText_: {
-        type: String,
-        computed: 'ariaLabel_(labelForAria, locale, textKey)',
-      },
-    },
-
-    focus() {
-      this.$.button.focus();
-    },
-
-    updateIconVisibility_() {
-      this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length == 0);
-    },
-
-    ariaLabel_(labelForAria, locale, textKey) {
-      if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
-        return labelForAria;
-      }
-      return this.i18n(textKey);
-    },
-  });
+customElements.define(OobeIconButton.is, OobeIconButton);

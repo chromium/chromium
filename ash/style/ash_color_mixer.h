@@ -13,6 +13,10 @@ class ColorProvider;
 
 namespace ash {
 
+// Adds a color mixer with colors generated from ui/chromeos/styles/*.json5.
+void AddCrosStylesColorMixer(ui::ColorProvider* provider,
+                             const ui::ColorProviderManager::Key& key);
+
 // Adds a color mixer to `provider` that supplies default values for various
 // ash/ colors before taking into account any custom themes.
 void AddAshColorMixer(ui::ColorProvider* provider,

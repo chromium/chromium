@@ -24,18 +24,7 @@ namespace autofill {
 CardNameFixFlowControllerImpl::CardNameFixFlowControllerImpl() {}
 
 CardNameFixFlowControllerImpl::~CardNameFixFlowControllerImpl() {
-  if (card_name_fix_flow_view_)
-    card_name_fix_flow_view_->ControllerGone();
-
-  if (shown_ && !had_user_interaction_) {
-    AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
-        AutofillMetrics::
-            CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION);
-    LogSaveCreditCardPromptResult(
-        SaveCreditCardPromptResult::kInteractedAndIgnored, true,
-        AutofillClient::SaveCreditCardOptions()
-            .with_should_request_name_from_user(true));
-  }
+  MaybeDestroyCardNameFixFlowView(true);
 }
 
 void CardNameFixFlowControllerImpl::Show(
@@ -45,8 +34,7 @@ void CardNameFixFlowControllerImpl::Show(
   DCHECK(!name_accepted_callback.is_null());
   DCHECK(card_name_fix_flow_view);
 
-  if (card_name_fix_flow_view_)
-    card_name_fix_flow_view_->ControllerGone();
+  MaybeDestroyCardNameFixFlowView(false);
   card_name_fix_flow_view_ = card_name_fix_flow_view;
 
   name_accepted_callback_ = std::move(name_accepted_callback);
@@ -59,10 +47,11 @@ void CardNameFixFlowControllerImpl::Show(
   AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_SHOWN);
   shown_ = true;
+  had_user_interaction_ = false;
 }
 
 void CardNameFixFlowControllerImpl::OnConfirmNameDialogClosed() {
-  card_name_fix_flow_view_ = nullptr;
+  MaybeDestroyCardNameFixFlowView(false);
 }
 
 void CardNameFixFlowControllerImpl::OnNameAccepted(const std::u16string& name) {
@@ -133,6 +122,24 @@ std::u16string CardNameFixFlowControllerImpl::GetSaveButtonLabel() const {
 std::u16string CardNameFixFlowControllerImpl::GetTitleText() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_CARDHOLDER_NAME_FIX_FLOW_HEADER);
+}
+
+void CardNameFixFlowControllerImpl::MaybeDestroyCardNameFixFlowView(
+    bool controller_gone) {
+  if (card_name_fix_flow_view_ == nullptr)
+    return;
+  if (controller_gone)
+    card_name_fix_flow_view_->ControllerGone();
+  if (shown_ && !had_user_interaction_) {
+    AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
+        AutofillMetrics::
+            CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION);
+    LogSaveCreditCardPromptResult(
+        SaveCreditCardPromptResult::kInteractedAndIgnored, true,
+        AutofillClient::SaveCreditCardOptions()
+            .with_should_request_name_from_user(true));
+  }
+  card_name_fix_flow_view_ = nullptr;
 }
 
 }  // namespace autofill

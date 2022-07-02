@@ -32,6 +32,9 @@ enum class State {
   // Task has completed with errors.
   kError,
 
+  // Task has failed to finish due to missing password.
+  kNeedPassword,
+
   // Task has been canceled without finishing.
   kCancelled,
 };
@@ -39,8 +42,10 @@ enum class State {
 enum class OperationType {
   kCopy,
   kDelete,
+  kEmptyTrash,
   kExtract,
   kMove,
+  kRestore,
   kTrash,
   kZip,
 };

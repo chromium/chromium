@@ -19,16 +19,12 @@ class AppSettingsBrowserTest extends PolymerTest {
   testGenPreamble() {
     GEN('WebAppSettingsNavigationThrottle::DisableForTesting();');
   }
-
-  get featureList() {
-    return {enabled: ['features::kDesktopPWAsWebAppSettingsPage']};
-  }
 }
 
 var AppSettingsAppTest = class extends AppSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://app-settings/test_loader.html?module=app_settings/app_test.js&host=webui-test';
+    return 'chrome://app-settings/test_loader.html?module=app_settings/app_test.js';
   }
 };
 

@@ -46,8 +46,10 @@ namespace blink {
 static AdditionalBytes
 AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
     unsigned count) {
-  return AdditionalBytes(sizeof(Member<CSSValue>) * count +
-                         sizeof(CSSPropertyValueMetadata) * count);
+  return AdditionalBytes(
+      base::bits::AlignUp(sizeof(Member<CSSValue>) * count,
+                          alignof(CSSPropertyValueMetadata)) +
+      sizeof(CSSPropertyValueMetadata) * count);
 }
 
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
@@ -322,8 +324,8 @@ bool CSSPropertyValueSet::PropertyIsImportant(const T& property) const {
     return PropertyAt(found_property_index).IsImportant();
   return ShorthandIsImportant(property);
 }
-template bool CSSPropertyValueSet::PropertyIsImportant<CSSPropertyID>(
-    const CSSPropertyID&) const;
+template CORE_EXPORT bool CSSPropertyValueSet::PropertyIsImportant<
+    CSSPropertyID>(const CSSPropertyID&) const;
 template bool CSSPropertyValueSet::PropertyIsImportant<AtomicString>(
     const AtomicString&) const;
 
@@ -487,7 +489,7 @@ void MutableCSSPropertyValueSet::ParseDeclarationList(
 
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::AddParsedProperties(
-    const HeapVector<CSSPropertyValue, 256>& properties) {
+    const HeapVector<CSSPropertyValue, 64>& properties) {
   SetResult changed = kUnchanged;
   property_vector_.ReserveCapacity(property_vector_.size() + properties.size());
   for (unsigned i = 0; i < properties.size(); ++i)
@@ -624,7 +626,7 @@ MutableCSSPropertyValueSet* CSSPropertyValueSet::MutableCopy() const {
 
 MutableCSSPropertyValueSet* CSSPropertyValueSet::CopyPropertiesInSet(
     const Vector<const CSSProperty*>& properties) const {
-  HeapVector<CSSPropertyValue, 256> list;
+  HeapVector<CSSPropertyValue, 64> list;
   list.ReserveInitialCapacity(properties.size());
   for (unsigned i = 0; i < properties.size(); ++i) {
     CSSPropertyName name(properties[i]->PropertyID());

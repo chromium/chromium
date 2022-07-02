@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -106,7 +106,7 @@ struct WebAppInstallParams {
   std::vector<std::string> additional_search_terms;
 
   absl::optional<std::string> launch_query_params;
-  absl::optional<SystemAppType> system_app_type;
+  absl::optional<ash::SystemWebAppType> system_app_type;
 
   bool oem_installed = false;
 

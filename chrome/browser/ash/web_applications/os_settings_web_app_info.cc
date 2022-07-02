@@ -54,10 +54,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSSettingsSystemWebApp() {
 }
 
 OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::SETTINGS,
-                                    "OSSettings",
-                                    GURL(chrome::kChromeUISettingsURL),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
+                                "OSSettings",
+                                GURL(chrome::kChromeUISettingsURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
     const {
@@ -72,7 +72,7 @@ gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
   return {300, 100};
 }
 
-std::vector<web_app::AppId>
+std::vector<std::string>
 OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return {web_app::kSettingsAppId, ash::kInternalAppIdSettings};
 }

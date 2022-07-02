@@ -13,7 +13,7 @@
 // optionally supports a badge, for example for reading list new item count.
 @interface ContentSuggestionsShortcutTileView : ContentSuggestionsTileView
 
-// Initializes and configures the view with |config|.
+// Initializes and configures the view with `config`.
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsMostVisitedActionItem*)config;
 
@@ -23,7 +23,7 @@
 // View for action icon.
 @property(nonatomic, strong, readonly) UIImageView* iconView;
 
-// Container view for |countLabel|.
+// Container view for `countLabel`.
 @property(nonatomic, strong, readonly) UIView* countContainer;
 
 // Number shown in badge that is on the top trailing side of cell.

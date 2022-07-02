@@ -19,9 +19,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -661,7 +661,15 @@ void SystemRoutineController::OnPowerRoutineResult(
 
 void SystemRoutineController::SendRoutineResult(
     mojom::RoutineResultInfoPtr result_info) {
-  inflight_routine_runner_->OnRoutineResult(std::move(result_info));
+  // Added as part of investigation of crash reported in crbug/1316648 to test
+  // if crash is related to memory resource allocation. Remove if crash
+  // continues to occur.
+  if (!result_info.is_null() && !result_info->result.is_null()) {
+    inflight_routine_runner_->OnRoutineResult(std::move(result_info));
+  } else {
+    LOG(ERROR) << "RoutineResult is null";
+  }
+
   inflight_routine_runner_.reset();
   inflight_routine_id_ = kInvalidRoutineId;
   inflight_routine_type_.reset();

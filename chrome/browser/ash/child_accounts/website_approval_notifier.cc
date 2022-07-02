@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -97,7 +98,8 @@ void WebsiteApprovalNotifier::MaybeShowApprovalNotification(
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kWebsiteApprovalNotifierId),
+              kWebsiteApprovalNotifierId,
+              NotificationCatalogName::kWebsiteApproval),
           option_fields,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnNotificationClick, url)),

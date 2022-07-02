@@ -2,7 +2,5 @@ include_rules = [
   # Do not add chrome here (use a delegate instead).
   "+chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h",
 
-  # TODO(https://crbug.com/1164001): Remove when these moves to ash.
   "+chromeos/dbus",
-  "+chromeos/services/cros_healthd",
 ]

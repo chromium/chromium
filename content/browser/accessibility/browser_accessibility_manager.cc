@@ -474,9 +474,21 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
   }
 
-  // If this page is hidden by an interstitial, suppress all events.
+  // If this page is hidden by an interstitial or frozen inside the
+  // back/forward cache, suppress all the events. If/when the page becomes
+  // visible, the correct set of accessibility events will be generated.
+  //
+  // Rationale for the back/forward cache behavior:
+  // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
   BrowserAccessibilityManager* root_manager = GetRootManager();
-  if (root_manager && root_manager->hidden_by_interstitial_page()) {
+  bool rfh_in_bfcache = false;
+  // |delegate_| can be nullptr in unittests.
+  if (delegate_) {
+    RenderFrameHostImpl* rfh = delegate_->AccessibilityRenderFrameHost();
+    rfh_in_bfcache = rfh ? rfh->IsInBackForwardCache() : false;
+  }
+  if ((root_manager && root_manager->hidden_by_interstitial_page()) ||
+      rfh_in_bfcache) {
     event_generator().ClearEvents();
     return true;
   }
@@ -1188,28 +1200,24 @@ bool BrowserAccessibilityManager::FindIndicesInCommonParent(
     const BrowserAccessibility& object1,
     const BrowserAccessibility& object2,
     BrowserAccessibility** common_parent,
-    int* child_index1,
-    int* child_index2) {
+    size_t* child_index1,
+    size_t* child_index2) {
   DCHECK(common_parent && child_index1 && child_index2);
   auto* ancestor1 = const_cast<BrowserAccessibility*>(&object1);
   auto* ancestor2 = const_cast<BrowserAccessibility*>(&object2);
   do {
-    *child_index1 = ancestor1->GetIndexInParent();
+    *child_index1 = ancestor1->GetIndexInParent().value_or(0);
     ancestor1 = ancestor1->PlatformGetParent();
   } while (
       ancestor1 &&
       // |BrowserAccessibility::IsAncestorOf| returns true if objects are equal.
       (ancestor1 == ancestor2 || !ancestor2->IsDescendantOf(ancestor1)));
 
-  if (!ancestor1) {
-    *common_parent = nullptr;
-    *child_index1 = -1;
-    *child_index2 = -1;
+  if (!ancestor1)
     return false;
-  }
 
   do {
-    *child_index2 = ancestor2->GetIndexInParent();
+    *child_index2 = ancestor2->GetIndexInParent().value();
     ancestor2 = ancestor2->PlatformGetParent();
   } while (ancestor1 != ancestor2);
 
@@ -1225,8 +1233,8 @@ ax::mojom::TreeOrder BrowserAccessibilityManager::CompareNodes(
     return ax::mojom::TreeOrder::kEqual;
 
   BrowserAccessibility* common_parent;
-  int child_index1;
-  int child_index2;
+  size_t child_index1;
+  size_t child_index2;
   if (FindIndicesInCommonParent(object1, object2, &common_parent, &child_index1,
                                 &child_index2)) {
     if (child_index1 < child_index2)
@@ -1248,8 +1256,8 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   std::vector<const BrowserAccessibility*> text_only_objects;
-  int child_index1 = -1;
-  int child_index2 = -1;
+  size_t child_index1 = 0;
+  size_t child_index2 = 0;
   if (&start_object != &end_object) {
     BrowserAccessibility* common_parent;
     if (!FindIndicesInCommonParent(start_object, end_object, &common_parent,
@@ -1258,8 +1266,6 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
     }
 
     DCHECK(common_parent);
-    DCHECK_GE(child_index1, 0);
-    DCHECK_GE(child_index2, 0);
     // If the child indices are equal, one object is a descendant of the other.
     DCHECK(child_index1 != child_index2 ||
            start_object.IsDescendantOf(&end_object) ||
@@ -1490,11 +1496,8 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
     if (wrapper == GetLastFocusedNode())
       SetLastFocusedNode(nullptr);
 
-    // TODO(accessibility): Move this to the AXEventGenerator which fires
-    // MENU_POPUP_START when a node with the menu role is created. The issue to
-    // be solved is that after the AXEventGenerator adds MENU_POPUP_END, the
-    // node gets removed from the tree. Then PostprocessEvents removes the
-    // events from that now-removed node, thus MENU_POPUP_END never gets fired.
+    // We fire these here, immediately, to ensure we can send platform
+    // notifications prior to the actual destruction of the object.
     if (node->GetRole() == ax::mojom::Role::kMenu)
       FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
   }

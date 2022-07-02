@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SURFACE_WRAPPER_IMPL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SURFACE_WRAPPER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 
 #include <cstdint>
@@ -44,8 +45,8 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
                         uint32_t serial);
 
   // Non-owing WaylandWindow that uses this surface wrapper.
-  WaylandWindow* const wayland_window_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandWindow> wayland_window_;
+  const raw_ptr<WaylandConnection> connection_;
 
   bool is_configured_ = false;
 

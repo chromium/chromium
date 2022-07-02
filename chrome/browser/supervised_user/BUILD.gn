@@ -26,3 +26,30 @@ static_library("test_support") {
     "//components/prefs",
   ]
 }
+
+if (is_android) {
+  android_library("website_parent_approval_java") {
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalDelegateImpl.java",
+    ]
+
+    # Add the actual implementation where necessary so that downstream targets
+    # can provide their own implementations.
+    jar_excluded_patterns = [ "*/WebsiteParentApprovalDelegateImpl.class" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java" ]
+  }
+}

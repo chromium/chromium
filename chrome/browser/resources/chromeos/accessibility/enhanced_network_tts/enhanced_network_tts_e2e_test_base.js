@@ -18,12 +18,12 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
     this.onStopListeners = [];
     chrome.ttsEngine = {
       onSpeakWithAudioStream: {
-        addListener: (callback) => {
+        addListener: callback => {
           this.onSpeakWithAudioStreamListeners.push(callback);
         },
       },
       onStop: {
-        addListener: (callback) => {
+        addListener: callback => {
           this.onStopListeners.push(callback);
         },
       }

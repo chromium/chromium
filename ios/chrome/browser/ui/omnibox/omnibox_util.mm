@@ -42,13 +42,13 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
-      return DEFAULT_FAVICON;
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_URL:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::OPEN_TAB:
+    case AutocompleteMatchType::HISTORY_CLUSTER:
       return DEFAULT_FAVICON;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
@@ -97,7 +97,7 @@ UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
-// Converts the |security_level| to an appropriate security icon type.
+// Converts the `security_level` to an appropriate security icon type.
 LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
@@ -115,7 +115,7 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
   }
 }
 
-// Converts the |security_level| to an appropriate icon in "always template"
+// Converts the `security_level` to an appropriate icon in "always template"
 // rendering mode.
 UIImage* GetLocationBarSecurityIconForSecurityState(
     security_state::SecurityLevel security_level) {

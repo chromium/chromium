@@ -20,7 +20,7 @@
 @property(nonatomic, weak) UIViewController* defaultBaseViewController;
 
 // The view controller the system print dialog should be presented from.
-// This can be passed in the print* method or |defaultBaseViewController| will
+// This can be passed in the print* method or `defaultBaseViewController` will
 // be used.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -90,7 +90,7 @@
 
 // Utility method to print either a renderer or a printable item (as documented
 // in UIPrintInteractionController printingItem).
-// Exactly one of |renderer| and |item| must be not nil.
+// Exactly one of `renderer` and `item` must be not nil.
 - (void)printRenderer:(UIPrintPageRenderer*)renderer
                 orItem:(id)item
              withTitle:(NSString*)title

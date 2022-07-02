@@ -24,7 +24,8 @@ import uuid
 from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
 from common import SDK_ROOT, DIR_SOURCE_ROOT
 
-PACKAGES_SIZE_FILE = 'package_blobs.json'
+PACKAGES_BLOBS_FILE = 'package_blobs.json'
+PACKAGES_SIZES_FILE = 'package_sizes.json'
 
 # Structure representing the compressed and uncompressed sizes for a Fuchsia
 # package.
@@ -232,6 +233,41 @@ def WritePackageBlobsJson(json_path, package_blobs):
 
   with (open(json_path, 'w')) as json_file:
     json.dump(formatted_blob_stats_per_package, json_file, indent=2)
+
+
+def WritePackageSizesJson(json_path, package_sizes):
+  """Writes package sizes into a human-readable JSON format.
+
+  JSON data is a dictionary of each package name being a key, with
+  the following keys within the sub-object:
+    'compressed': compressed size of the package in bytes.
+    'uncompressed': uncompressed size of the package in bytes.
+  """
+  formatted_package_sizes = {}
+  for package, size_info in package_sizes.items():
+    formatted_package_sizes[package] = {
+        'uncompressed': size_info.uncompressed,
+        'compressed': size_info.compressed
+    }
+  with (open(json_path, 'w')) as json_file:
+    json.dump(formatted_package_sizes, json_file, indent=2)
+
+
+def ReadPackageSizesJson(json_path):
+  """Reads package_sizes from a given JSON file.
+
+  Opens json file of blob info written by WritePackageSizesJson,
+  and converts back into package sizes used in this script.
+  """
+  with open(json_path, 'rt') as json_file:
+    formatted_package_info = json.load(json_file)
+
+  package_sizes = {}
+  for package, size_info in formatted_package_info.items():
+    package_sizes[package] = PackageSizes(
+        compressed=size_info['compressed'],
+        uncompressed=size_info['uncompressed'])
+  return package_sizes
 
 
 def GetCompressedSize(file_path):
@@ -492,8 +528,7 @@ def main():
   )
   parser.add_argument(
       '--sizes-path',
-      default=os.path.join('fuchsia', 'release', 'size_tests',
-                           'fyi_sizes.json'),
+      default=os.path.join('tools', 'fuchsia', 'size_tests', 'fyi_sizes.json'),
       help='path to package size limits json file.  The path is relative to '
       'the workspace src directory')
   parser.add_argument('--verbose',
@@ -562,8 +597,10 @@ def main():
                        test_completed, test_status, timestamp)
       with open(os.path.join(results_directory, 'perf_results.json'), 'w') as f:
         json.dump(sizes_histogram, f)
-      WritePackageBlobsJson(os.path.join(results_directory, PACKAGES_SIZE_FILE),
-                            package_blobs)
+      WritePackageBlobsJson(
+          os.path.join(results_directory, PACKAGES_BLOBS_FILE), package_blobs)
+      WritePackageSizesJson(
+          os.path.join(results_directory, PACKAGES_SIZES_FILE), package_sizes)
 
     if args.isolated_script_test_output:
       WriteTestResults(args.isolated_script_test_output, test_completed,

@@ -61,8 +61,6 @@ class ThrottledOfflineContentProvider
   void RenameItem(const ContentId& id,
                   const std::string& name,
                   RenameCallback callback) override;
-  void ChangeSchedule(const ContentId& id,
-                      absl::optional<OfflineItemSchedule> schedule) override;
 
   // Visible for testing. Overrides the time at which this throttle last pushed
   // updates to observers.

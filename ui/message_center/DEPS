@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+chromeos/constants",
   "+components/url_formatter",
   "+skia/ext",
   "+third_party/skia",

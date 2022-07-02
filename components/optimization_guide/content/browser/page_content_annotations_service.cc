@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/navigation_entry.h"
@@ -113,10 +114,12 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     history::HistoryService* history_service,
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
+    OptimizationGuideLogger* optimization_guide_logger,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
-      annotated_text_cache_(features::MaxVisitAnnotationCacheSize()) {
+      annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
+      optimization_guide_logger_(optimization_guide_logger) {
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
   history_service_ = history_service;
@@ -395,10 +398,27 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!content_annotations)
     return;
 
+  bool is_new_entry = false;
   if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
       annotated_text_cache_.end()) {
+    is_new_entry = true;
     annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
   }
+
+  if (is_new_entry) {
+    for (const auto& entity : content_annotations->entities) {
+      // Skip low weight entities.
+      if (entity.weight < 50)
+        continue;
+      GetMetadataForEntityId(
+          entity.id,
+          base::BindOnce(
+              &PageContentAnnotationsService::OnEntityMetadataRetrieved,
+              weak_ptr_factory_.GetWeakPtr(), visit.url, entity.id,
+              entity.weight));
+    }
+  }
+
   MaybeRecordVisibilityUKM(visit, content_annotations);
 
   if (!features::ShouldWriteContentAnnotationsToHistoryService())
@@ -555,6 +575,24 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
                           history_service_->AsWeakPtr(),
                           page_metadata.alternative_title()),
            PageContentAnnotationsType::kRemoteMetdata);
+}
+
+void PageContentAnnotationsService::OnEntityMetadataRetrieved(
+    const GURL& url,
+    const std::string& entity_id,
+    int weight,
+    const absl::optional<EntityMetadata>& entity_metadata) {
+  if (!optimization_guide_logger_ || !entity_metadata.has_value())
+    return;
+
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+
+  OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+      << "Entities: Url=" << url.ReplaceComponents(replacements)
+      << " Weight=" << std::to_string(weight) << ". "
+      << entity_metadata->ToHumanReadableString();
 }
 
 // static

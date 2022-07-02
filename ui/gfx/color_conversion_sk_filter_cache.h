@@ -50,6 +50,7 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                               sk_sp<SkColorSpace> target_color_space,
                               float sdr_max_luminance_nits,
                               float dst_max_luminance_relative,
+                              bool enable_tone_mapping,
                               GrDirectContext* context);
 
  public:

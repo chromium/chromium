@@ -222,7 +222,7 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
                                   StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_->GetOrCreateBucketDeprecated(
-        blink::StorageKey::CreateFromStringForTesting(origin), name, type,
+        {blink::StorageKey::CreateFromStringForTesting(origin), name}, type,
         future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());

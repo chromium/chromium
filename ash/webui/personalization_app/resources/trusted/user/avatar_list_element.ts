@@ -25,14 +25,37 @@ export interface AvatarList {
   $: {avatarCamera: AvatarCamera};
 }
 
-type Option = {
-  id: string,
-  class: string,
-  imgSrc: string,
-  icon: string,
-  title: string,
-  defaultImageIndex?: number|null,
-};
+enum OptionId {
+  LAST_EXTERNAL_IMAGE = 'lastExternalImage',
+  OPEN_CAMERA = 'openCamera',
+  OPEN_VIDEO = 'openVideo',
+  PROFILE_IMAGE = 'profileImage',
+  OPEN_FOLDER = 'openFolder',
+}
+
+interface EnumeratedOption {
+  id: OptionId;
+  class: string;
+  imgSrc?: string;
+  icon: string;
+  title: string;
+}
+
+interface DefaultOption {
+  id: string;
+  class: string;
+  imgSrc: string;
+  icon: string;
+  title: string;
+  defaultImageIndex: number;
+}
+
+type Option = EnumeratedOption|DefaultOption;
+
+function isDefaultOption(option: Option): option is DefaultOption {
+  return option &&
+      typeof (option as DefaultOption).defaultImageIndex === 'number';
+}
 
 export class AvatarList extends WithPersonalizationStore {
   static get is() {
@@ -51,7 +74,10 @@ export class AvatarList extends WithPersonalizationStore {
 
       image_: Object,
 
-      lastExternalUserImageUrl_: Object,
+      lastExternalUserImageUrl_: {
+        type: Object,
+        observer: 'onLastExternalUserImageUrlChanged_',
+      },
 
       /** The presence of a device camera. */
       isCameraPresent_: {
@@ -71,11 +97,15 @@ export class AvatarList extends WithPersonalizationStore {
        */
       options_: {
         type: Array,
-        computed:
-            'computeOptions_(isCameraPresent_, profileImage_, lastExternalUserImageUrl_, defaultUserImages_)',
-        observer: 'onOptionsChanged_',
+        value: [],
       },
     };
+  }
+
+  static get observers() {
+    return [
+      'updateOptions_(isCameraPresent_, profileImage_, lastExternalUserImageUrl_, defaultUserImages_)',
+    ];
   }
 
   private defaultUserImages_: Array<DefaultUserImage>|null;
@@ -101,41 +131,39 @@ export class AvatarList extends WithPersonalizationStore {
     fetchDefaultUserImages(getUserProvider(), this.getStore());
   }
 
-  /** Invoked to compute |options_|. */
-  private computeOptions_(
+  /** Invoked to update |options_|. */
+  private updateOptions_(
       isCameraPresent: AvatarList['isCameraPresent_'],
       profileImage: AvatarList['profileImage_'],
       lastExternalUserImageUrl: AvatarList['lastExternalUserImageUrl_'],
       defaultUserImages: AvatarList['defaultUserImages_']) {
-    const options = [] as Option[];
+    const options: Option[] = [];
     if (isCameraPresent) {
       // Add camera and video options.
       options.push({
-        id: 'openCamera',
+        id: OptionId.OPEN_CAMERA,
         class: 'avatar-button-container',
         imgSrc: '',
         icon: 'personalization:camera',
         title: this.i18n('takeWebcamPhoto'),
       });
       options.push({
-        id: 'openVideo',
+        id: OptionId.OPEN_VIDEO,
         class: 'avatar-button-container',
-        imgSrc: '',
         icon: 'personalization:loop',
         title: this.i18n('takeWebcamVideo'),
       });
     }
     // Add open folder option.
     options.push({
-      id: 'openFolder',
+      id: OptionId.OPEN_FOLDER,
       class: 'avatar-button-container',
-      imgSrc: '',
       icon: 'personalization:folder',
       title: this.i18n('chooseAFile'),
     });
     if (profileImage) {
       options.push({
-        id: 'profileImage',
+        id: OptionId.PROFILE_IMAGE,
         class: 'image-container',
         imgSrc: profileImage.url,
         icon: 'personalization:checkmark',
@@ -144,7 +172,7 @@ export class AvatarList extends WithPersonalizationStore {
     }
     if (lastExternalUserImageUrl) {
       options.push({
-        id: 'lastExternalImage',
+        id: OptionId.LAST_EXTERNAL_IMAGE,
         class: 'image-container',
         imgSrc: lastExternalUserImageUrl.url,
         icon: 'personalization:checkmark',
@@ -163,15 +191,37 @@ export class AvatarList extends WithPersonalizationStore {
         });
       });
     }
-    return options;
-  }
 
-  /** Invoked on changes to |options_|. */
-  private onOptionsChanged_(options: AvatarList['options_']) {
+    const activeElement = this.shadowRoot!.activeElement;
+
     this.updateList(
         /*propertyPath=*/ 'options_',
-        /*identityGetter=*/ (option: Option) => option.id,
-        /*newList=*/ options, /*identityBasedUpdate=*/ true);
+        /*identityGetter=*/
+        (option: Option) => {
+          switch (option.id) {
+            // LAST_EXTERNAL_IMAGE needs to use imgSrc instead of id. Otherwise
+            // iron-list will not update properly when LAST_EXTERNAL_IMAGE
+            // changes, i.e. when user selects a new file from disk.
+            case OptionId.LAST_EXTERNAL_IMAGE:
+              return option.imgSrc!;
+            default:
+              return option.id;
+          }
+        },
+        /*newList=*/ options,
+        /*identityBasedUpdate=*/ true,
+    );
+
+    if (activeElement instanceof HTMLElement) {
+      // Restore focus to previously selected element after list update.
+      activeElement.focus();
+    }
+  }
+
+  private onLastExternalUserImageUrlChanged_(_: Url|null, old: Url|null) {
+    if (old && old.url && old.url.startsWith('blob:')) {
+      URL.revokeObjectURL(old.url);
+    }
   }
 
   private onOptionSelected_(e: Event) {
@@ -181,19 +231,19 @@ export class AvatarList extends WithPersonalizationStore {
     const divElement = e.currentTarget as HTMLDivElement;
     const id = divElement.id;
     switch (id) {
-      case 'openCamera':
+      case OptionId.OPEN_CAMERA:
         this.openCamera_(e);
         break;
-      case 'openVideo':
+      case OptionId.OPEN_VIDEO:
         this.openVideo_(e);
         break;
-      case 'openFolder':
+      case OptionId.OPEN_FOLDER:
         this.onSelectImageFromDisk_(e);
         break;
-      case 'profileImage':
+      case OptionId.PROFILE_IMAGE:
         this.onSelectProfileImage_(e);
         break;
-      case 'lastExternalImage':
+      case OptionId.LAST_EXTERNAL_IMAGE:
         this.onSelectLastExternalUserImage_(e);
         break;
       default:
@@ -282,16 +332,17 @@ export class AvatarList extends WithPersonalizationStore {
       return 'false';
     }
     switch (option.id) {
-      case 'openCamera':
-      case 'openVideo':
-      case 'openFolder':
+      case OptionId.OPEN_CAMERA:
+      case OptionId.OPEN_VIDEO:
+      case OptionId.OPEN_FOLDER:
         return 'false';
-      case 'profileImage':
+      case OptionId.PROFILE_IMAGE:
         return (!!image && !!image.profileImage).toString();
-      case 'lastExternalImage':
+      case OptionId.LAST_EXTERNAL_IMAGE:
         return (!!image && !!image.externalImage).toString();
       default:
         // Handle default user image.
+        assert(isDefaultOption(option));
         return (!!image && !!image.defaultImage &&
                 image.defaultImage.index === option.defaultImageIndex)
             .toString();
@@ -306,7 +357,7 @@ export class AvatarList extends WithPersonalizationStore {
       string {
     const defaultClass = option ? option.class : 'image-container';
     return this.getAriaSelected_(option, image) === 'true' ?
-        `${defaultClass} selected-${this.camelToKebab_(option.id)}` :
+        `${defaultClass} tast-selected-${this.camelToKebab_(option.id)}` :
         defaultClass;
   }
 }

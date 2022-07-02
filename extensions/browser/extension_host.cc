@@ -56,6 +56,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
       initial_url_(url),
       extension_host_type_(host_type) {
   DCHECK(host_type == mojom::ViewType::kExtensionBackgroundPage ||
+         host_type == mojom::ViewType::kOffscreenDocument ||
          host_type == mojom::ViewType::kExtensionDialog ||
          host_type == mojom::ViewType::kExtensionPopup);
   host_contents_ = WebContents::Create(
@@ -63,7 +64,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
   content::WebContentsObserver::Observe(host_contents_.get());
   host_contents_->SetDelegate(this);
   SetViewType(host_contents_.get(), host_type);
-  main_frame_host_ = host_contents_->GetMainFrame();
+  main_frame_host_ = host_contents_->GetPrimaryMainFrame();
 
   // Listen for when an extension is unloaded from the same profile, as it may
   // be the same extension that this points to.
@@ -171,6 +172,12 @@ void ExtensionHost::OnNetworkRequestDone(uint64_t request_id) {
     observer.OnNetworkRequestDone(this, request_id);
 }
 
+bool ExtensionHost::ShouldAllowNavigations() const {
+  // Don't allow background pages or offscreen documents to navigate.
+  return extension_host_type_ != mojom::ViewType::kExtensionBackgroundPage &&
+         extension_host_type_ != mojom::ViewType::kOffscreenDocument;
+}
+
 const GURL& ExtensionHost::GetLastCommittedURL() const {
   return host_contents()->GetLastCommittedURL();
 }
@@ -211,7 +218,7 @@ void ExtensionHost::PrimaryMainFrameRenderProcessGone(
   // process, so it is expected to lose our connection to the render view.
   // Do nothing.
   RenderProcessHost* process_host =
-      host_contents_->GetMainFrame()->GetProcess();
+      host_contents_->GetPrimaryMainFrame()->GetProcess();
   if (process_host && process_host->FastShutdownStarted())
     return;
 
@@ -439,7 +446,8 @@ bool ExtensionHost::CheckMediaAccessPermission(
 
 bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
   mojom::ViewType view_type = extensions::GetViewType(web_contents);
-  return view_type == extensions::mojom::ViewType::kExtensionBackgroundPage;
+  return view_type == mojom::ViewType::kExtensionBackgroundPage ||
+         view_type == mojom::ViewType::kOffscreenDocument;
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(

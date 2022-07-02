@@ -11,8 +11,12 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -132,6 +136,7 @@ void AutofillAssistantAgent::GetSemanticNodes(
     GetSemanticNodesCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (!frame) {
+    VLOG(1) << "Failed to get semantic nodes, no frame.";
     std::move(callback).Run(mojom::NodeDataStatus::kUnexpectedError,
                             std::vector<NodeData>());
     return;
@@ -234,6 +239,72 @@ void AutofillAssistantAgent::OnGetModelFile(
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   std::move(callback).Run(mojom::NodeDataStatus::kSuccess, nodes);
+}
+
+void AutofillAssistantAgent::SetElementValue(const int32_t backend_node_id,
+                                             const std::u16string& value,
+                                             bool send_events,
+                                             SetElementValueCallback callback) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    VLOG(1) << "Failed to set Element value, no frame.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebElement target_element =
+      frame->GetDocument().GetElementByDevToolsNodeId(backend_node_id);
+  if (target_element.IsNull() || !target_element.IsFormControlElement()) {
+    VLOG(3) << "Failed to set Element value, invalid target.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebFormControlElement target_form_control_element =
+      target_element.To<blink::WebFormControlElement>();
+  target_form_control_element.SetValue(blink::WebString::FromUTF16(value),
+                                       send_events);
+  std::move(callback).Run(true);
+}
+
+void AutofillAssistantAgent::SetElementChecked(
+    const int32_t backend_node_id,
+    bool checked,
+    bool send_events,
+    SetElementCheckedCallback callback) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    VLOG(1) << "Failed to set Element checked state, no frame.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebElement target_element =
+      frame->GetDocument().GetElementByDevToolsNodeId(backend_node_id);
+  if (target_element.IsNull()) {
+    VLOG(3) << "Failed to set Element checked state, invalid target.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebInputElement web_input_element =
+      target_element.DynamicTo<blink::WebInputElement>();
+  if (web_input_element.IsNull()) {
+    VLOG(3) << "Failed to set Element checked state, target is not an input "
+               "element.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!web_input_element.IsCheckbox() && !web_input_element.IsRadioButton()) {
+    VLOG(3) << "Failed to set Element checked state, target is not a checkbox "
+               "or a radio button.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  web_input_element.SetChecked(checked, send_events);
+  std::move(callback).Run(true);
 }
 
 }  // namespace autofill_assistant

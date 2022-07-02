@@ -111,34 +111,61 @@ int32_t CrosWindow::height() {
   return window_->bounds.height();
 }
 
-ScriptPromise CrosWindow::setOrigin(ScriptState* script_state,
-                                    int32_t x,
-                                    int32_t y) {
+ScriptPromise CrosWindow::moveTo(ScriptState* script_state,
+                                 int32_t x,
+                                 int32_t y) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
     return ScriptPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  cros_window_management->SetWindowBounds(
-      window_->id, x, y, window_->bounds.width(), window_->bounds.height(),
+  cros_window_management->MoveTo(
+      window_->id, x, y, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
+}
+
+ScriptPromise CrosWindow::moveBy(ScriptState* script_state,
+                                 int32_t delta_x,
+                                 int32_t delta_y) {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return ScriptPromise();
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->MoveBy(
+      window_->id, delta_x, delta_y,
       WTF::Bind(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
-ScriptPromise CrosWindow::setBounds(ScriptState* script_state,
-                                    int32_t x,
-                                    int32_t y,
-                                    int32_t width,
-                                    int32_t height) {
+ScriptPromise CrosWindow::resizeTo(ScriptState* script_state,
+                                   int32_t width,
+                                   int32_t height) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
     return ScriptPromise();
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  cros_window_management->SetWindowBounds(
-      window_->id, x, y, width, height,
+  cros_window_management->ResizeTo(
+      window_->id, width, height,
+      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
+}
+
+ScriptPromise CrosWindow::resizeBy(ScriptState* script_state,
+                                   int32_t delta_width,
+                                   int32_t delta_height) {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return ScriptPromise();
+  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->ResizeBy(
+      window_->id, delta_width, delta_height,
       WTF::Bind(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
@@ -193,13 +220,16 @@ ScriptPromise CrosWindow::focus(ScriptState* script_state) {
   return resolver->Promise();
 }
 
-void CrosWindow::close() {
+ScriptPromise CrosWindow::close(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->Close(window_->id);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Close(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
 }  // namespace blink

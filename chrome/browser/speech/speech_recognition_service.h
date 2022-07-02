@@ -13,8 +13,11 @@ namespace speech {
 
 class SpeechRecognitionService : public KeyedService {
  public:
-  virtual void Create(
+  virtual void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+          receiver) = 0;
+  virtual void BindAudioSourceSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
           receiver) = 0;
 };
 

@@ -162,6 +162,9 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_EQ(entry->GetLocalProfileName(), u"Pat");
+#endif
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -406,3 +409,70 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_FALSE(entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(GAIAInfoUpdateServiceTest,
+       LocalProfileNameCustomized_NoUpdateOnPrimaryAccountChange) {
+  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
+  // Customized local profile name, shouldn't be overridden on
+  // `UpdatePrimaryAccount()`.
+  std::u16string updatedLocalName(u"UpdatedPat");
+  entry->SetLocalProfileName(updatedLocalName, false);
+  ASSERT_FALSE(
+      storage()->IsDefaultProfileName(entry->GetLocalProfileName(), false));
+
+  AccountInfo info = identity_test_env()->MakePrimaryAccountAvailable(
+      "pat@example.com", signin::ConsentLevel::kSync);
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
+                             kNoHostedDomainFound);
+
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      info);
+
+  EXPECT_EQ(entry->GetLocalProfileName(), updatedLocalName);
+  EXPECT_NE(base::UTF16ToUTF8(entry->GetLocalProfileName()), info.given_name);
+}
+
+TEST_F(GAIAInfoUpdateServiceTest,
+       LocalProfileNameCustomizedToDefaultName_NoUpdateOnPrimaryAccountChange) {
+  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
+  // Customized local profile name to the default naming.
+  // Shouldn't be overridden on `UpdatePrimaryAccount()`.
+  std::u16string updatedLocalName(u"Person 1");
+  entry->SetLocalProfileName(updatedLocalName, false);
+  ASSERT_TRUE(
+      storage()->IsDefaultProfileName(entry->GetLocalProfileName(), false));
+  ASSERT_FALSE(entry->IsUsingDefaultName());
+
+  AccountInfo info = identity_test_env()->MakePrimaryAccountAvailable(
+      "pat@example.com", signin::ConsentLevel::kSync);
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
+                             kNoHostedDomainFound);
+
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      info);
+
+  EXPECT_EQ(entry->GetLocalProfileName(), updatedLocalName);
+  EXPECT_NE(base::UTF16ToUTF8(entry->GetLocalProfileName()), info.given_name);
+}
+
+TEST_F(GAIAInfoUpdateServiceTest,
+       LocalProfileNameDefaulted_UpdateOnPrimaryAccountChange) {
+  ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
+  // Local Profile Name defaulted, should be overridden on
+  // `UpdatePrimaryAccount()`.
+  ASSERT_TRUE(
+      storage()->IsDefaultProfileName(entry->GetLocalProfileName(), false));
+  ASSERT_TRUE(entry->IsUsingDefaultName());
+
+  AccountInfo info = identity_test_env()->MakePrimaryAccountAvailable(
+      "pat@example.com", signin::ConsentLevel::kSync);
+  info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
+                             kNoHostedDomainFound);
+
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      info);
+
+  EXPECT_EQ(base::UTF16ToUTF8(entry->GetLocalProfileName()), info.given_name);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

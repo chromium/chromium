@@ -14,7 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,19 +34,15 @@ namespace views {
 class Widget;
 }  // namespace views
 
-class PrefService;
 class Profile;
 
 namespace crostini {
-
-// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
-//     GURL("chrome-untrusted://terminal/html/terminal.html"))
-extern const char kCrostiniTerminalSystemAppId[];
 
 extern const char kCrostiniImageAliasPattern[];
 extern const char kCrostiniContainerDefaultVersion[];
 extern const char kCrostiniContainerFlag[];
 
+extern const guest_os::VmType kCrostiniDefaultVmType;
 extern const char kCrostiniDefaultVmName[];
 extern const char kCrostiniDefaultContainerName[];
 extern const char kCrostiniDefaultUsername[];
@@ -70,30 +68,6 @@ enum class CrostiniAppLaunchAppType {
 
 struct LinuxPackageInfo;
 
-// A unique identifier for our containers.
-struct ContainerId {
-  ContainerId(std::string vm_name, std::string container_name) noexcept;
-  explicit ContainerId(const base::Value&) noexcept;
-
-  base::flat_map<std::string, std::string> ToMap() const;
-  base::Value::Dict ToDictValue() const;
-
-  static ContainerId GetDefault();
-
-  std::string vm_name;
-  std::string container_name;
-};
-
-bool operator<(const ContainerId& lhs, const ContainerId& rhs) noexcept;
-bool operator==(const ContainerId& lhs, const ContainerId& rhs) noexcept;
-inline bool operator!=(const ContainerId& lhs,
-                       const ContainerId& rhs) noexcept {
-  return !(lhs == rhs);
-}
-
-std::ostream& operator<<(std::ostream& ostream,
-                         const ContainerId& container_id);
-
 // Checks if user profile is able to a crostini app with a given app_id.
 bool IsUninstallable(Profile* profile, const std::string& app_id);
 
@@ -106,10 +80,6 @@ bool ShouldAllowContainerUpgrade(Profile* profile);
 // Returns whether default Crostini container should be configured according to
 // the configuration specified by CrostiniAnsiblePlaybook user policy.
 bool ShouldConfigureDefaultContainer(Profile* profile);
-
-// Returns whether a dialog from Crostini is blocking the immediate launch.
-bool MaybeShowCrostiniDialogBeforeLaunch(Profile* profile,
-                                         CrostiniResult result);
 
 using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
 
@@ -152,8 +122,7 @@ enum class CrostiniUISurface { kSettings = 0, kAppList = 1, kCount };
 // functions below.
 
 // Shows the Crostini Uninstaller dialog.
-void ShowCrostiniUninstallerView(Profile* profile,
-                                 CrostiniUISurface ui_surface);
+void ShowCrostiniUninstallerView(Profile* profile);
 bool IsCrostiniRecoveryViewShowing();
 
 // Shows the Crostini App installer dialog.
@@ -166,10 +135,6 @@ views::Widget* ShowCrostiniForceCloseDialog(
     const std::string& app_name,
     views::Widget* closable_widget,
     base::OnceClosure force_close_callback);
-// Shows the Crostini Termina Upgrade dialog (for blocking crostini start until
-// Termina version matches).
-void ShowCrostiniUpdateComponentView(Profile* profile,
-                                     CrostiniUISurface ui_surface);
 // Shows the ui with the error message when installing a package fails.
 void ShowCrostiniPackageInstallFailureView(const std::string& error_message);
 
@@ -198,48 +163,34 @@ void ShowCrostiniRecoveryView(Profile* profile,
                               const std::vector<LaunchArg>& args,
                               CrostiniSuccessCallback callback);
 
-// Remove duplicate containers in the existing kCrostiniContainers pref.
-void RemoveDuplicateContainerEntries(PrefService* prefs);
-
 // Add a newly created LXD container to the kCrostiniContainers pref
 void AddNewLxdContainerToPrefs(Profile* profile,
-                               const ContainerId& container_id);
+                               const guest_os::GuestId& container_id);
 
 // Remove a newly deleted LXD container from the kCrostiniContainers pref, and
 // deregister its apps and mime types.
 void RemoveLxdContainerFromPrefs(Profile* profile,
-                                 const ContainerId& container_id);
+                                 const guest_os::GuestId& container_id);
 
 // Returns a string to be displayed in a notification with the estimated time
 // left for an operation to run which started and time |start| and is current
 // at |percent| way through.
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent);
 
-// Returns a pref value stored for a specific container.
-const base::Value* GetContainerPrefValue(Profile* profile,
-                                         const ContainerId& container_id,
-                                         const std::string& key);
-
-// Sets a pref value for a specific container.
-void UpdateContainerPref(Profile* profile,
-                         const ContainerId& container_id,
-                         const std::string& key,
-                         base::Value value);
-
 SkColor GetContainerBadgeColor(Profile* profile,
-                               const ContainerId& container_id);
+                               const guest_os::GuestId& container_id);
 
 void SetContainerBadgeColor(Profile* profile,
-                            const ContainerId& container_id,
+                            const guest_os::GuestId& container_id,
                             SkColor badge_color);
 
 bool IsContainerVersionExpired(Profile* profile,
-                               const ContainerId& container_id);
+                               const guest_os::GuestId& container_id);
 
 bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const ContainerId& container_id);
+                                   const guest_os::GuestId& container_id);
 
-const ContainerId& DefaultContainerId();
+const guest_os::GuestId& DefaultContainerId();
 
 bool IsCrostiniWindow(const aura::Window* window);
 
@@ -249,7 +200,10 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
 
 // Tests whether or not the specified Container is the last one running on it's
 // VM. Returns true if the VM should be stopped.
-bool ShouldStopVm(Profile* profile, const ContainerId& container_id);
+bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id);
+
+// Formats a container id the way most UI surfaces identify Crostini containers.
+std::string FormatForUi(guest_os::GuestId container_id);
 
 }  // namespace crostini
 

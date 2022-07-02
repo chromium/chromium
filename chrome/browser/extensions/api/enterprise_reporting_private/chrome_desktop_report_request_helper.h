@@ -50,7 +50,7 @@ void RetrieveDeviceData(
 // If an error occurs then the second parameter is false.
 void RetrieveDeviceSecret(
     bool force_recreate,
-    base::OnceCallback<void(const std::string&, long int)> callback);
+    base::OnceCallback<void(const std::string&, int32_t)> callback);
 
 }  // namespace extensions
 

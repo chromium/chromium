@@ -56,8 +56,6 @@ const char* GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "ui_best_effort_tq";
     case BrowserTaskQueues::QueueType::kBootstrap:
       return "ui_bootstrap_tq";
-    case BrowserTaskQueues::QueueType::kPreconnection:
-      return "ui_preconnection_tq";
     case BrowserTaskQueues::QueueType::kDefault:
       return "ui_default_tq";
     case BrowserTaskQueues::QueueType::kUserBlocking:
@@ -79,8 +77,6 @@ const char* GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "io_best_effort_tq";
     case BrowserTaskQueues::QueueType::kBootstrap:
       return "io_bootstrap_tq";
-    case BrowserTaskQueues::QueueType::kPreconnection:
-      return "io_preconnection_tq";
     case BrowserTaskQueues::QueueType::kDefault:
       return "io_default_tq";
     case BrowserTaskQueues::QueueType::kUserBlocking:
@@ -122,12 +118,6 @@ const char* GetDefaultQueueName(BrowserThread::ID thread_id) {
   NOTREACHED();
   return "";
 }
-
-// When GivePreconnectTasksHighestPriority is enabled, the browser will give the
-// dedicated preconnect task queue highest priority rather than its default high
-// priority.
-const base::Feature kGivePreconnectTasksHighestPriority{
-    "GivePreconnectTasksHighestPriority", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -245,17 +235,6 @@ void BrowserTaskQueues::PostFeatureListInitializationSetup() {
   // feature is enabled (see browser_task_executor.cc).
   GetBrowserTaskQueue(QueueType::kBootstrap)
       ->SetQueuePriority(QueuePriority::kHighestPriority);
-
-  // Preconnection tasks are also important during startup so prioritize this
-  // queue too. NOTE: This queue will not be used if the
-  // |kTreatPreconnectAsDefault| feature is enabled (see
-  // browser_task_executor.cc).
-  QueuePriority preconnect_queue_priority =
-      (base::FeatureList::IsEnabled(kGivePreconnectTasksHighestPriority))
-          ? QueuePriority::kHighestPriority
-          : QueuePriority::kHighPriority;
-  GetBrowserTaskQueue(QueueType::kPreconnection)
-      ->SetQueuePriority(preconnect_queue_priority);
 }
 
 void BrowserTaskQueues::OnStartupComplete() {

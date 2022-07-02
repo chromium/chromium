@@ -315,7 +315,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
             outermost_contents, unsafe_url, resource));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
         outermost_contents->GetController().LoadPostCommitErrorPage(
-            outermost_contents->GetMainFrame(), unsafe_url,
+            outermost_contents->GetPrimaryMainFrame(), unsafe_url,
             blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
     if (error_page_navigation_handle) {
       blocking_page->CreatedPostCommitErrorPageNavigation(
@@ -357,9 +357,9 @@ void BaseUIManager::MaybeReportSafeBrowsingHit(
 
 // If the user had opted-in to send ThreatDetails, this gets called
 // when the report is ready.
-void BaseUIManager::SendSerializedThreatDetails(
+void BaseUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,
-    const std::string& serialized) {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;
 }

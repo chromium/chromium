@@ -118,8 +118,10 @@ void BrowserFrame::InitBrowserFrame() {
                                                &params.show_state);
 
       params.workspace = browser->initial_workspace();
-      params.visible_on_all_workspaces =
-          browser->initial_visible_on_all_workspaces_state();
+      if (native_browser_frame_->ShouldUseInitialVisibleOnAllWorkspaces()) {
+        params.visible_on_all_workspaces =
+            browser->initial_visible_on_all_workspaces_state();
+      }
       const base::CommandLine& parsed_command_line =
           *base::CommandLine::ForCurrentProcess();
 
@@ -361,6 +363,9 @@ void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
 
 ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
+  key.frame_type = UseCustomFrame()
+                       ? ui::ColorProviderManager::FrameType::kChromium
+                       : ui::ColorProviderManager::FrameType::kNative;
   auto* app_controller = browser_view_->browser()->app_controller();
   key.app_controller =
       app_controller ? app_controller->get_weak_ref() : nullptr;

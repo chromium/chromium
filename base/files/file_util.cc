@@ -14,6 +14,7 @@
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -25,7 +26,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -35,14 +38,38 @@
 namespace base {
 
 #if !BUILDFLAG(IS_WIN)
-OnceClosure GetDeleteFileCallback(const FilePath& path) {
-  return BindOnce(IgnoreResult(&DeleteFile), path);
-}
-#endif  // !BUILDFLAG(IS_WIN)
 
-OnceClosure GetDeletePathRecursivelyCallback(const FilePath& path) {
-  return BindOnce(IgnoreResult(&DeletePathRecursively), path);
+namespace {
+
+void RunAndReply(OnceCallback<bool()> action_callback,
+                 OnceCallback<void(bool)> reply_callback) {
+  bool result = std::move(action_callback).Run();
+  if (!reply_callback.is_null())
+    std::move(reply_callback).Run(result);
 }
+
+}  // namespace
+
+OnceClosure GetDeleteFileCallback(const FilePath& path,
+                                  OnceCallback<void(bool)> reply_callback) {
+  return BindOnce(&RunAndReply, BindOnce(&DeleteFile, path),
+                  reply_callback.is_null()
+                      ? std::move(reply_callback)
+                      : BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                     std::move(reply_callback)));
+}
+
+OnceClosure GetDeletePathRecursivelyCallback(
+    const FilePath& path,
+    OnceCallback<void(bool)> reply_callback) {
+  return BindOnce(&RunAndReply, BindOnce(&DeletePathRecursively, path),
+                  reply_callback.is_null()
+                      ? std::move(reply_callback)
+                      : BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                     std::move(reply_callback)));
+}
+
+#endif  // !BUILDFLAG(IS_WIN)
 
 int64_t ComputeDirectorySize(const FilePath& root_path) {
   int64_t running_size = 0;
@@ -74,7 +101,8 @@ bool CopyFileContents(File& infile, File& outfile) {
   std::vector<char> buffer(kBufferSize);
 
   for (;;) {
-    int bytes_read = infile.ReadAtCurrentPos(buffer.data(), buffer.size());
+    int bytes_read =
+        infile.ReadAtCurrentPos(buffer.data(), static_cast<int>(buffer.size()));
     if (bytes_read < 0) {
       return false;
     }
@@ -85,7 +113,8 @@ bool CopyFileContents(File& infile, File& outfile) {
     int bytes_written_per_read = 0;
     do {
       int bytes_written_partial = outfile.WriteAtCurrentPos(
-          &buffer[bytes_written_per_read], bytes_read - bytes_written_per_read);
+          &buffer[static_cast<size_t>(bytes_written_per_read)],
+          bytes_read - bytes_written_per_read);
       if (bytes_written_partial < 0) {
         return false;
       }
@@ -201,8 +230,8 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   // Many files have incorrect size (proc files etc). Hence, the file is read
   // sequentially as opposed to a one-shot read, using file size as a hint for
   // chunk size if available.
-  constexpr int64_t kDefaultChunkSize = 1 << 16;
-  int64_t chunk_size = kDefaultChunkSize - 1;
+  constexpr size_t kDefaultChunkSize = 1 << 16;
+  size_t chunk_size = kDefaultChunkSize - 1;
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_WIN)
   BY_HANDLE_FILE_INFORMATION file_info = {};
@@ -210,25 +239,25 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
           reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(stream))),
           &file_info)) {
     LARGE_INTEGER size;
-    size.HighPart = file_info.nFileSizeHigh;
+    size.HighPart = static_cast<LONG>(file_info.nFileSizeHigh);
     size.LowPart = file_info.nFileSizeLow;
     if (size.QuadPart > 0)
-      chunk_size = size.QuadPart;
+      chunk_size = static_cast<size_t>(size.QuadPart);
   }
 #else   // BUILDFLAG(IS_WIN)
   // In cases where the reported file size is 0, use a smaller chunk size to
   // minimize memory allocated and cost of string::resize() in case the read
   // size is small (i.e. proc files). If the file is larger than this, the read
   // loop will reset |chunk_size| to kDefaultChunkSize.
-  constexpr int64_t kSmallChunkSize = 4096;
+  constexpr size_t kSmallChunkSize = 4096;
   chunk_size = kSmallChunkSize - 1;
   stat_wrapper_t file_info = {};
   if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0)
-    chunk_size = file_info.st_size;
+    chunk_size = static_cast<size_t>(file_info.st_size);
 #endif  // BUILDFLAG(IS_WIN)
   // We need to attempt to read at EOF for feof flag to be set so here we
   // use |chunk_size| + 1.
-  chunk_size = std::min<uint64_t>(chunk_size, max_size) + 1;
+  chunk_size = std::min(chunk_size, max_size) + 1;
   size_t bytes_read_this_pass;
   size_t bytes_read_so_far = 0;
   bool read_status = true;
@@ -318,7 +347,7 @@ bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
 bool TouchFile(const FilePath& path,
                const Time& last_accessed,
                const Time& last_modified) {
-  int flags = File::FLAG_OPEN | File::FLAG_WRITE_ATTRIBUTES;
+  uint32_t flags = File::FLAG_OPEN | File::FLAG_WRITE_ATTRIBUTES;
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, FILE_FLAG_BACKUP_SEMANTICS is needed to open a directory.
@@ -393,7 +422,7 @@ FilePath GetUniquePath(const FilePath& path) {
   const int uniquifier = GetUniquePathNumber(path);
   if (uniquifier > 0)
     return path.InsertBeforeExtensionASCII(StringPrintf(" (%d)", uniquifier));
-  return uniquifier == 0 ? path : base::FilePath();
+  return uniquifier == 0 ? path : FilePath();
 }
 
 namespace internal {

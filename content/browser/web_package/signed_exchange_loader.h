@@ -87,9 +87,8 @@ class CONTENT_EXPORT SignedExchangeLoader final
 
   ~SignedExchangeLoader() override;
 
-
   // network::mojom::URLLoaderClient implementation
-  // Only OnStartLoadingResponseBody() and OnComplete() are called.
+  // Only OnComplete() is called.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
                          mojo::ScopedDataPipeConsumerHandle body) override;
@@ -101,8 +100,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
                         OnUploadProgressCallback ack_callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // network::mojom::URLLoader implementation
@@ -115,6 +112,8 @@ class CONTENT_EXPORT SignedExchangeLoader final
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
+
+  void OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
 
   void ConnectToClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);

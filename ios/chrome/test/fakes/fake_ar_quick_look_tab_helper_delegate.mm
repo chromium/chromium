@@ -4,18 +4,15 @@
 
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
 
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface FakeARQuickLookTabHelperDelegate ()
-
-@property(nonatomic, strong) NSMutableArray* fileURLs;
-
-@end
-
-@implementation FakeARQuickLookTabHelperDelegate
+@implementation FakeARQuickLookTabHelperDelegate {
+  NSMutableArray<NSURL*>* _fileURLs;
+  NSURL* _canonicalURL;
+  BOOL _allowsContentScaling;
+}
 
 - (instancetype)init {
   self = [super init];
@@ -25,11 +22,13 @@
   return self;
 }
 
-- (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL
-              allowsContentScaling:(BOOL)allowsScaling {
+- (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                  canonicalURL:(NSURL*)canonicalURL
+                      webState:(web::WebState*)webState
+           allowContentScaling:(BOOL)allowContentScaling {
   [_fileURLs addObject:fileURL];
-  _allowsContentScaling = allowsScaling;
+  _allowsContentScaling = allowContentScaling;
+  _canonicalWebPageURL = canonicalURL;
 }
 
 @end

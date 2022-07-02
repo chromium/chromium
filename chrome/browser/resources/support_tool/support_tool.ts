@@ -4,19 +4,18 @@
 
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/icons.m.js';
 import './data_collectors.js';
 import './issue_details.js';
 import './spinner_page.js';
 import './pii_selection.js';
 import './data_export_done.js';
-import './support_tool_shared_css.js';
+import './support_tool_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy, BrowserProxyImpl, PIIDataItem, StartDataCollectionResult} from './browser_proxy.js';
 import {DataCollectorsElement} from './data_collectors.js';
 import {DataExportDoneElement} from './data_export_done.js';
@@ -46,6 +45,7 @@ export interface SupportToolElement {
     dataCollectors: DataCollectorsElement,
     spinnerPage: SpinnerPageElement,
     piiSelection: PIISelectionElement,
+    exportSpinner: SpinnerPageElement,
     dataExportDone: DataExportDoneElement,
     errorMessageToast: CrToastElement,
   };
@@ -67,6 +67,7 @@ export class SupportToolElement extends SupportToolElementBase {
       selectedPage_: {
         type: SupportToolPageIndex,
         value: SupportToolPageIndex.ISSUE_DETAILS,
+        observer: 'onSelectedPageChange_',
       },
       supportToolPageIndex_: {
         readonly: true,
@@ -172,6 +173,33 @@ export class SupportToolElement extends SupportToolElementBase {
     // Continue button container will only be shown in issue details page and
     // data collectors selection page.
     return this.selectedPage_ >= SupportToolPageIndex.SPINNER;
+  }
+
+  private onSelectedPageChange_() {
+    // On every selected page change, the focus will be moved to each page's
+    // header to ensure a smooth experience in terms of accessibility.
+    switch (this.selectedPage_) {
+      case SupportToolPageIndex.ISSUE_DETAILS:
+        this.$.issueDetails.ensureFocusOnPageHeader();
+        break;
+      case SupportToolPageIndex.DATA_COLLECTOR_SELECTION:
+        this.$.dataCollectors.ensureFocusOnPageHeader();
+        break;
+      case SupportToolPageIndex.SPINNER:
+        this.$.spinnerPage.ensureFocusOnPageHeader();
+        break;
+      case SupportToolPageIndex.PII_SELECTION:
+        this.$.piiSelection.ensureFocusOnPageHeader();
+        break;
+      case SupportToolPageIndex.EXPORT_SPINNER:
+        this.$.exportSpinner.ensureFocusOnPageHeader();
+        break;
+      case SupportToolPageIndex.DATA_EXPORT_DONE:
+        this.$.dataExportDone.ensureFocusOnPageHeader();
+        break;
+      default:
+        break;
+    }
   }
 }
 

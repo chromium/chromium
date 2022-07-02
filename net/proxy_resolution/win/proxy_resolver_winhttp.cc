@@ -72,15 +72,14 @@ class ProxyResolverWinHttp : public ProxyResolver {
   void CloseWinHttpSession();
 
   // Proxy configuration is cached on the session handle.
-  HINTERNET session_handle_;
+  HINTERNET session_handle_ = nullptr;
 
   const GURL pac_url_;
 };
 
 ProxyResolverWinHttp::ProxyResolverWinHttp(
     const scoped_refptr<PacFileData>& script_data)
-    : session_handle_(nullptr),
-      pac_url_(script_data->type() == PacFileData::TYPE_AUTO_DETECT
+    : pac_url_(script_data->type() == PacFileData::TYPE_AUTO_DETECT
                    ? GURL("http://wpad/wpad.dat")
                    : script_data->url()) {}
 

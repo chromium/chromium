@@ -33,7 +33,7 @@ class URL_MATCHER_EXPORT URLMatcherFactory {
   static scoped_refptr<URLMatcherConditionSet> CreateFromURLFilterDictionary(
       URLMatcherConditionFactory* url_matcher_condition_factory,
       const base::Value::Dict& url_filter_dict,
-      URLMatcherConditionSet::ID id,
+      base::MatcherStringPattern::ID id,
       std::string* error);
 
  private:

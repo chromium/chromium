@@ -35,8 +35,6 @@ static bool CalculateReachability(SCNetworkConnectionFlags flags) {
 
 NetworkChangeNotifierMac::NetworkChangeNotifierMac()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsMac()),
-      connection_type_(CONNECTION_UNKNOWN),
-      connection_type_initialized_(false),
       initial_connection_type_cv_(&connection_type_lock_),
       forwarder_(this) {
   // Must be initialized after the rest of this object, as it may call back into
@@ -241,11 +239,11 @@ void NetworkChangeNotifierMac::StartReachabilityNotifications() {
 
   DCHECK(reachability_);
   SCNetworkReachabilityContext reachability_context = {
-      0,     // version
-      this,  // user data
-      NULL,  // retain
-      NULL,  // release
-      NULL   // description
+      0,        // version
+      this,     // user data
+      nullptr,  // retain
+      nullptr,  // release
+      nullptr   // description
   };
   if (!SCNetworkReachabilitySetCallback(
           reachability_, &NetworkChangeNotifierMac::ReachabilityCallback,
@@ -269,18 +267,18 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
   base::ScopedCFTypeRef<CFStringRef> key(
       SCDynamicStoreKeyCreateNetworkGlobalEntity(
-          NULL, kSCDynamicStoreDomainState, kSCEntNetInterface));
+          nullptr, kSCDynamicStoreDomainState, kSCEntNetInterface));
   CFArrayAppendValue(notification_keys.get(), key.get());
   key.reset(SCDynamicStoreKeyCreateNetworkGlobalEntity(
-      NULL, kSCDynamicStoreDomainState, kSCEntNetIPv4));
+      nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv4));
   CFArrayAppendValue(notification_keys.get(), key.get());
   key.reset(SCDynamicStoreKeyCreateNetworkGlobalEntity(
-      NULL, kSCDynamicStoreDomainState, kSCEntNetIPv6));
+      nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv6));
   CFArrayAppendValue(notification_keys.get(), key.get());
 
   // Set the notification keys.  This starts us receiving notifications.
-  bool ret =
-      SCDynamicStoreSetNotificationKeys(store, notification_keys.get(), NULL);
+  bool ret = SCDynamicStoreSetNotificationKeys(store, notification_keys.get(),
+                                               nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 #endif  // BUILDFLAG(IS_IOS)

@@ -25,6 +25,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -186,11 +187,11 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
   void ParseHeader(const NetworkIsolationKey& network_isolation_key,
                    const url::Origin& origin,
                    const std::string& json) {
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated("[" + json + "]");
+    absl::optional<base::Value> value =
+        base::JSONReader::Read("[" + json + "]");
     if (value) {
       ReportingHeaderParser::ParseReportToHeader(
-          context(), network_isolation_key, origin, std::move(value));
+          context(), network_isolation_key, origin, value->GetList());
     }
   }
 };

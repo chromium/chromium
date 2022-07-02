@@ -213,4 +213,41 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
   return cast_sink;
 }
 
+AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
+    AddSinkResultCode value) {
+  switch (value) {
+    case AddSinkResultCode::UNKNOWN_ERROR:
+      return AccessCodeCastAddSinkResult::kUnknownError;
+    case AddSinkResultCode::OK:
+      return AccessCodeCastAddSinkResult::kOk;
+    case AddSinkResultCode::AUTH_ERROR:
+      return AccessCodeCastAddSinkResult::kAuthError;
+    case AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR:
+      return AccessCodeCastAddSinkResult::kHttpResponseCodeError;
+    case AddSinkResultCode::RESPONSE_MALFORMED:
+      return AccessCodeCastAddSinkResult::kResponseMalformed;
+    case AddSinkResultCode::EMPTY_RESPONSE:
+      return AccessCodeCastAddSinkResult::kEmptyResponse;
+    case AddSinkResultCode::INVALID_ACCESS_CODE:
+      return AccessCodeCastAddSinkResult::kInvalidAccessCode;
+    case AddSinkResultCode::ACCESS_CODE_NOT_FOUND:
+      return AccessCodeCastAddSinkResult::kAccessCodeNotFound;
+    case AddSinkResultCode::TOO_MANY_REQUESTS:
+      return AccessCodeCastAddSinkResult::kTooManyRequests;
+    case AddSinkResultCode::SERVICE_NOT_PRESENT:
+      return AccessCodeCastAddSinkResult::kServiceNotPresent;
+    case AddSinkResultCode::SERVER_ERROR:
+      return AccessCodeCastAddSinkResult::kServerError;
+    case AddSinkResultCode::SINK_CREATION_ERROR:
+      return AccessCodeCastAddSinkResult::kSinkCreationError;
+    case AddSinkResultCode::CHANNEL_OPEN_ERROR:
+      return AccessCodeCastAddSinkResult::kChannelOpenError;
+    case AddSinkResultCode::PROFILE_SYNC_ERROR:
+      return AccessCodeCastAddSinkResult::kProfileSyncError;
+    default:
+      NOTREACHED();
+      return AccessCodeCastAddSinkResult::kUnknownError;
+  }
+}
+
 }  // namespace media_router

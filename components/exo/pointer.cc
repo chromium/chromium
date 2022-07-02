@@ -478,15 +478,13 @@ void Pointer::OnSurfaceDestroying(Surface* surface) {
 // ui::EventHandler overrides:
 
 void Pointer::OnMouseEvent(ui::MouseEvent* event) {
-  if (seat_->was_shutdown())
+  if (seat_->was_shutdown() || event->handled())
     return;
 
   // Nothing to report to a client nor have to update the pointer when capture
   // changes.
   if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
     return;
-
-  seat_->SetLastPointerLocation(event->root_location_f());
 
   Surface* target = GetEffectiveTargetForEvent(event);
   gfx::PointF location_in_target = event->location_f();

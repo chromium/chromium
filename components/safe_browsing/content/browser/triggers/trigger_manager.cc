@@ -148,15 +148,12 @@ bool TriggerManager::StartCollectingThreatDetails(
     const security_interstitials::UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     const SBErrorOptions& error_display_options) {
   TriggerManagerReason unused_reason;
   return StartCollectingThreatDetailsWithReason(
       trigger_type, web_contents, resource, url_loader_factory, history_service,
-      get_user_population_callback, referrer_chain_provider,
-      error_display_options, &unused_reason);
+      referrer_chain_provider, error_display_options, &unused_reason);
 }
 
 bool TriggerManager::StartCollectingThreatDetailsWithReason(
@@ -165,8 +162,6 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
     const security_interstitials::UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     const SBErrorOptions& error_display_options,
     TriggerManagerReason* reason) {
@@ -184,8 +179,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   bool should_trim_threat_details = trigger_type == TriggerType::AD_SAMPLE;
   collectors->threat_details = ThreatDetails::NewThreatDetails(
       ui_manager_, web_contents, resource, url_loader_factory, history_service,
-      get_user_population_callback, referrer_chain_provider,
-      should_trim_threat_details,
+      referrer_chain_provider, should_trim_threat_details,
       base::BindOnce(&TriggerManager::ThreatDetailsDone,
                      weak_factory_.GetWeakPtr()));
   return true;

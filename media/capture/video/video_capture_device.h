@@ -318,7 +318,9 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // By including it in frame's metadata, Viz informs Blink what was the
   // latest invocation of cropTo() before a given frame was produced.
   //
-  // The callback reports success/failure.
+  // The callback reports success/failure. It is called on an unspecified
+  // thread, it's the caller's responsibility to wrap it (i.e. via BindPostTask)
+  // as needed.
   virtual void Crop(
       const base::Token& crop_id,
       uint32_t crop_version,

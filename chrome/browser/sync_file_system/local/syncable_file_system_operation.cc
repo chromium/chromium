@@ -296,7 +296,7 @@ void SyncableFileSystemOperation::TouchFile(
 }
 
 void SyncableFileSystemOperation::OpenFile(const FileSystemURL& url,
-                                           int file_flags,
+                                           uint32_t file_flags,
                                            OpenFileCallback callback) {
   NOTREACHED();
 }

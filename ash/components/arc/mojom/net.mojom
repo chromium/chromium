@@ -59,7 +59,7 @@ enum ConnectionStateType {
 
   // The network is active and ready for IP traffic, but a captive portal is
   // known to prevent access to the Internet. This corresponds to
-  // shill::ConnectState.kStatePortal
+  // shill::ConnectState.kStateRedirectFound
   PORTAL = 3,
 
   // The network is active and ready for IP traffic, and there is no known

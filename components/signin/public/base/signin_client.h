@@ -91,11 +91,6 @@ class SigninClient : public KeyedService {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) = 0;
 
-  // Checks whether a user is known to be non-enterprise. Domains such as
-  // gmail.com and googlemail.com are known to not be managed. Also returns
-  // false if the username is empty.
-  virtual bool IsNonEnterpriseUser(const std::string& username);
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns an account used to sign into Chrome OS session if available.
   virtual absl::optional<account_manager::Account>

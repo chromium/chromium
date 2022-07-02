@@ -389,10 +389,12 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   bool is_raw_draw_backing =
       client_->is_using_raw_draw_ && !backing_->overlay_candidate;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
+
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
       playback_settings.visible, color_space_, backing_->mailbox.name);
+
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());
@@ -410,8 +412,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       "Gpu.Rasterization.Raster.NumPaintOps",
       raster_source->GetDisplayItemList()->num_paint_ops());
   UMA_HISTOGRAM_COUNTS_100(
-      "Gpu.Rasterization.Raster.NumSlowPaths",
-      raster_source->GetDisplayItemList()->num_slow_paths());
+      "Gpu.Rasterization.Raster.NumSlowPathsUpToMinForMSAA",
+      raster_source->GetDisplayItemList()->num_slow_paths_up_to_min_for_MSAA());
   ri->EndRasterCHROMIUM();
 
   // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.

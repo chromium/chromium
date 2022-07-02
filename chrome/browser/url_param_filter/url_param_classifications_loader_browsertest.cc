@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/component_updater/url_param_classification_component_installer.h"
-#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "components/component_updater/installer_policies/url_param_classification_component_installer.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -27,6 +27,8 @@ namespace url_param_filter {
 namespace {
 
 enum ShouldFilterState { kUnset, kTrue, kFalse };
+
+constexpr char DEFAULT_TAG[] = "default";
 
 std::string ShouldFilterStateToString(ShouldFilterState state) {
   switch (state) {
@@ -107,7 +109,7 @@ class ClassificationsLoaderFeatureDisabledAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -153,7 +155,7 @@ class ClassificationsLoaderFeatureEnabledAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -162,21 +164,24 @@ IN_PROC_BROWSER_TEST_F(ClassificationsLoaderFeatureEnabledAndComponentInstalled,
                        LoaderUsesComponentClassifications) {
   // Since no feature classifications are provided, the expected
   // classifications should be the component classifications.
-  FilterClassification expected_source = MakeFilterClassification(
-      "source.test", FilterClassification_SiteRole_SOURCE, {"plzblock_src"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "dest.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock_dest"});
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(Pair(
-                  "source.test", UnorderedElementsAre(Pair(
-                                     FilterClassification::USE_CASE_UNKNOWN,
-                                     EqualsProto(expected_source))))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("dest.test", UnorderedElementsAre(Pair(
-                                        FilterClassification::USE_CASE_UNKNOWN,
-                                        EqualsProto(expected_dest))))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("source.test",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock_src",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("dest.test",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock_dest",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 // Feature enabled with just "should_filter"= unset/true/false, and the
@@ -229,7 +234,7 @@ class ClassificationsLoaderFeatureEnabledWithShouldFilterAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -239,22 +244,25 @@ IN_PROC_BROWSER_TEST_P(
     LoaderUsesComponentClassifications) {
   // Since no feature classifications are provided, the expected
   // classifications should be the component classifications.
-  FilterClassification expected_source = MakeFilterClassification(
-      "source.test", FilterClassification_SiteRole_SOURCE, {"plzblock_src"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "dest.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock_dest"});
   ClassificationMap s = loader()->GetSourceClassifications();
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(Pair(
-                  "source.test", UnorderedElementsAre(Pair(
-                                     FilterClassification::USE_CASE_UNKNOWN,
-                                     EqualsProto(expected_source))))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("dest.test", UnorderedElementsAre(Pair(
-                                        FilterClassification::USE_CASE_UNKNOWN,
-                                        EqualsProto(expected_dest))))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("source.test",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock_src",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("dest.test",
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock_dest",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -285,23 +293,24 @@ IN_PROC_BROWSER_TEST_F(
     ClassificationsLoaderFeatureEnabledWithClassificationsAndComponentNotInstalled,
     LoaderUsesClassificationsFromFeature) {
   // ClassificationLoader uses the feature parameters
-  FilterClassification expected_source = MakeFilterClassification(
-      "feature-src.test", FilterClassification_SiteRole_SOURCE, {"plzblock1"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock2"});
   EXPECT_THAT(
       loader()->GetSourceClassifications(),
       UnorderedElementsAre(
           Pair("feature-src.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_source))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
   EXPECT_THAT(
       loader()->GetDestinationClassifications(),
       UnorderedElementsAre(
           Pair("feature-dst.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_dest))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 // Feature enabled with just "classifications" param, and the component is
@@ -326,7 +335,7 @@ class
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -336,23 +345,24 @@ IN_PROC_BROWSER_TEST_F(
     LoaderUsesFeatureClassifications) {
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
-  FilterClassification expected_source = MakeFilterClassification(
-      "feature-src.test", FilterClassification_SiteRole_SOURCE, {"plzblock1"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock2"});
   EXPECT_THAT(
       loader()->GetSourceClassifications(),
       UnorderedElementsAre(
           Pair("feature-src.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_source))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
   EXPECT_THAT(
       loader()->GetDestinationClassifications(),
       UnorderedElementsAre(
           Pair("feature-dst.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_dest))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 // Feature enabled with "should_filter"= unset/true/false and a classifications
@@ -378,23 +388,24 @@ IN_PROC_BROWSER_TEST_P(
     LoaderUsesFeatureClassifications) {
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
-  FilterClassification expected_source = MakeFilterClassification(
-      "feature-src.test", FilterClassification_SiteRole_SOURCE, {"plzblock1"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock2"});
   EXPECT_THAT(
       loader()->GetSourceClassifications(),
       UnorderedElementsAre(
           Pair("feature-src.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_source))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
   EXPECT_THAT(
       loader()->GetDestinationClassifications(),
       UnorderedElementsAre(
           Pair("feature-dst.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_dest))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -427,7 +438,7 @@ class ClassificationsLoaderFeatureEnabledWithAllParamsAndComponentInstalled
             component_dir_.GetPath(),
             CreateSerializedUrlParamFilterClassificationForTesting(
                 {{"source.test", {"plzblock_src"}}},
-                {{"dest.test", {"plzblock_dest"}}}));
+                {{"dest.test", {"plzblock_dest"}}}, {DEFAULT_TAG}));
     ClassificationsLoaderBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 };
@@ -437,23 +448,24 @@ IN_PROC_BROWSER_TEST_P(
     LoaderUsesFeatureClassifications) {
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
-  FilterClassification expected_source = MakeFilterClassification(
-      "feature-src.test", FilterClassification_SiteRole_SOURCE, {"plzblock1"});
-  FilterClassification expected_dest = MakeFilterClassification(
-      "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
-      {"plzblock2"});
   EXPECT_THAT(
       loader()->GetSourceClassifications(),
       UnorderedElementsAre(
           Pair("feature-src.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_source))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
   EXPECT_THAT(
       loader()->GetDestinationClassifications(),
       UnorderedElementsAre(
           Pair("feature-dst.test",
-               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
-                                         EqualsProto(expected_dest))))));
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 
 INSTANTIATE_TEST_CASE_P(

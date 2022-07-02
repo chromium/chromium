@@ -32,6 +32,13 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
   static JavaScriptFeatureManager* FromBrowserState(
       BrowserState* browser_state);
 
+  // Returns the JavaScriptContentWorld for the page content world associated
+  // with |browser_state|. If a JavaScriptFeatureManager does not already exist,
+  // one will be created and associated with |browser_state|. |browser_state|
+  // must not be null.
+  static JavaScriptContentWorld* GetPageContentWorldForBrowserState(
+      BrowserState* browser_state);
+
   // Configures |features| on |user_content_controller_| by adding user scripts
   // and script message handlers.
   // NOTE: |page_content_world_| and |isolated_world_| will be recreated.

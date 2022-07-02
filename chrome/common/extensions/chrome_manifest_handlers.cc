@@ -26,10 +26,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
+#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #endif
 
@@ -61,11 +61,11 @@ void RegisterChromeManifestHandlers() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
+  registry->RegisterHandler(
+      std::make_unique<FileSystemProviderCapabilitiesHandler>());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterHandler(
-      std::make_unique<FileSystemProviderCapabilitiesHandler>());
   registry->RegisterHandler(std::make_unique<InputComponentsHandler>());
 #endif
 }

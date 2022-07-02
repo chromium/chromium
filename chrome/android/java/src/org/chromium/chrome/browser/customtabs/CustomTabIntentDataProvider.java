@@ -609,6 +609,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    public boolean isPartialHeightCustomTab() {
+        return getInitialActivityHeight() > 0;
+    }
+
+    @Override
     public boolean shouldAnimateOnFinish() {
         return mAnimationBundle != null && getClientPackageName() != null;
     }
@@ -632,8 +637,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getAnimationExitRes() {
-        return shouldAnimateOnFinish() ? mAnimationBundle.getInt(BUNDLE_EXIT_ANIMATION_RESOURCE)
-                                       : 0;
+        return shouldAnimateOnFinish() && !isPartialHeightCustomTab()
+                ? mAnimationBundle.getInt(BUNDLE_EXIT_ANIMATION_RESOURCE)
+                : 0;
     }
 
     @Deprecated
@@ -881,6 +887,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
+    }
+    @Override
+    public boolean shouldSuppressAppMenu() {
+        // The media viewer has no default menu items, so if there are also no custom items, we
+        // should disable the menu altogether.
+        return isMediaViewer() && getMenuTitles().isEmpty();
     }
 
     @Override

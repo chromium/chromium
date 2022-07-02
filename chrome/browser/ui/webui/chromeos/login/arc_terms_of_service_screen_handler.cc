@@ -28,7 +28,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
@@ -68,8 +67,6 @@ ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
     oobe_ui->RemoveObserver(this);
   if (network_time_zone_observing_) {
     network_time_zone_observing_ = false;
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
     system::TimezoneSettings::GetInstance()->RemoveObserver(this);
   }
   if (session_manager_observing_ && session_manager::SessionManager::Get()) {
@@ -142,11 +139,12 @@ void ArcTermsOfServiceScreenHandler::DeclareLocalizedValues(
   builder->Add("arcTermsOfServiceScreenHeadingForChild",
                IDS_ARC_OOBE_TERMS_HEADING_CHILD);
   builder->Add("arcTermsOfServiceScreenDescription",
-      IDS_ARC_OOBE_TERMS_DESCRIPTION);
+               IDS_ARC_OOBE_TERMS_DESCRIPTION);
   builder->Add("arcTermsOfServiceScreenDescriptionForChild",
                IDS_ARC_OOBE_TERMS_DESCRIPTION_CHILD);
   builder->Add("arcTermsOfServiceLoading", IDS_ARC_OOBE_TERMS_LOADING);
-  builder->Add("arcTermsOfServiceErrorTitle", IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
+  builder->Add("arcTermsOfServiceErrorTitle",
+               IDS_OOBE_GENERIC_FATAL_ERROR_TITLE);
   builder->Add("arcTermsOfServiceErrorMessage", IDS_ARC_OOBE_TERMS_LOAD_ERROR);
   builder->Add("arcTermsOfServiceRetryButton", IDS_ARC_OOBE_TERMS_BUTTON_RETRY);
   builder->Add("arcTermsOfServiceAcceptButton",
@@ -252,8 +250,7 @@ void ArcTermsOfServiceScreenHandler::OnMetricsModeChanged(bool enabled,
       ProfileHelper::Get()->GetUserByProfile(profile);
   CHECK(user);
 
-  const AccountId owner =
-      user_manager::UserManager::Get()->GetOwnerAccountId();
+  const AccountId owner = user_manager::UserManager::Get()->GetOwnerAccountId();
 
   // Owner may not be set in case of initial account setup. Note, in case of
   // enterprise enrolled devices owner is always empty and we need to account
@@ -281,14 +278,16 @@ void ArcTermsOfServiceScreenHandler::OnMetricsModeChanged(bool enabled,
 }
 
 void ArcTermsOfServiceScreenHandler::OnBackupAndRestoreModeChanged(
-    bool enabled, bool managed) {
+    bool enabled,
+    bool managed) {
   backup_restore_managed_ = managed;
   CallJS("login.ArcTermsOfServiceScreen.setBackupAndRestoreMode", enabled,
          managed);
 }
 
 void ArcTermsOfServiceScreenHandler::OnLocationServicesModeChanged(
-    bool enabled, bool managed) {
+    bool enabled,
+    bool managed) {
   location_services_managed_ = managed;
   CallJS("login.ArcTermsOfServiceScreen.setLocationServicesMode", enabled,
          managed);
@@ -323,8 +322,7 @@ void ArcTermsOfServiceScreenHandler::Show() {
 void ArcTermsOfServiceScreenHandler::Hide() {
   if (network_time_zone_observing_) {
     network_time_zone_observing_ = false;
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
+    network_state_handler_observer_.Reset();
     system::TimezoneSettings::GetInstance()->RemoveObserver(this);
   }
   if (session_manager_observing_ && session_manager::SessionManager::Get()) {
@@ -342,8 +340,8 @@ void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
   if (network_time_zone_observing_)
     return;
 
-  chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      chromeos::NetworkHandler::Get()->network_state_handler());
   system::TimezoneSettings::GetInstance()->AddObserver(this);
   network_time_zone_observing_ = true;
 }

@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -26,8 +26,7 @@ bool ShouldHostedAppsRunInLacros() {
   if (g_enable_hosted_apps_in_lacros_for_testing)
     return true;
 
-  auto* lacros_service = chromeos::LacrosService::Get();
-  return lacros_service && lacros_service->init_params()->publish_hosted_apps;
+  return chromeos::BrowserInitParams::Get()->publish_hosted_apps;
 }
 
 void EnableHostedAppsInLacrosForTesting() {

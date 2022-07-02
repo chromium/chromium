@@ -5,7 +5,9 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
@@ -22,9 +24,11 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -39,6 +43,11 @@ class UnifiedSystemTrayTest : public AshTestBase {
   UnifiedSystemTrayTest(const UnifiedSystemTrayTest&) = delete;
   UnifiedSystemTrayTest& operator=(const UnifiedSystemTrayTest&) = delete;
   ~UnifiedSystemTrayTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kCalendarView);
+    AshTestBase::SetUp();
+  }
 
  protected:
   const std::string AddNotification() {
@@ -104,6 +113,7 @@ class UnifiedSystemTrayTest : public AshTestBase {
 
  private:
   int id_ = 0;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
@@ -284,6 +294,7 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter) {
   message_center_view->SetVisible(true);
 
   EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(message_center_view->collapsed());
 
   auto did_focus = tray->FocusMessageCenter(false);
 
@@ -304,34 +315,6 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_MessageCenterBubbleNotShown) {
   auto did_focus = tray->FocusMessageCenter(false);
 
   EXPECT_FALSE(did_focus);
-}
-
-TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_CollapseQuickSettings) {
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
-  auto* message_center_view =
-      tray->message_center_bubble()->message_center_view();
-  auto* focus_manager = message_center_view->GetFocusManager();
-
-  AddNotification();
-  AddNotification();
-  message_center_view->SetVisible(true);
-
-  EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
-
-  auto* quick_settings_controller =
-      GetUnifiedSystemTrayBubble()->unified_system_tray_controller();
-  quick_settings_controller->EnsureExpanded();
-
-  auto did_focus = tray->FocusMessageCenter(false);
-
-  EXPECT_TRUE(did_focus);
-
-  EXPECT_FALSE(quick_settings_controller->IsExpanded());
-  EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
-  EXPECT_FALSE(message_center_view->collapsed());
-  EXPECT_TRUE(message_center_view->Contains(focus_manager->GetFocusedView()));
 }
 
 TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
@@ -356,7 +339,6 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
 
   EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
   EXPECT_TRUE(message_center_bubble->GetBubbleWidget()->IsActive());
-  EXPECT_FALSE(message_center_view->collapsed());
   EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
 }
 
@@ -438,6 +420,74 @@ TEST_F(UnifiedSystemTrayTest, TimeInQuickSettingsMetric) {
   tray->CloseBubble();
   histogram_tester.ExpectTotalCount("Ash.QuickSettings.UserJourneyTime",
                                     /*count=*/2);
+}
+
+// Tests that pressing the TOGGLE_CALENDAR accelerator once results in the
+// calendar view showing.
+TEST_F(UnifiedSystemTrayTest, PressCalendarAccelerator) {
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+}
+
+// Tests that pressing the TOGGLE_CALENDAR accelerator twice results in a hidden
+// QuickSettings bubble.
+TEST_F(UnifiedSystemTrayTest, ToggleCalendarViewAccelerator) {
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  EXPECT_FALSE(GetUnifiedSystemTrayBubble());
+}
+
+// Tests that showing the calendar view by the TOGGLE_CALENDAR accelerator
+// results in the CalendarDateCellView being focused.
+TEST_F(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  auto* focus_manager =
+      GetUnifiedSystemTrayBubble()->GetBubbleWidget()->GetFocusManager();
+  EXPECT_TRUE(focus_manager->GetFocusedView());
+  EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
+               "CalendarDateCellView");
+}
+
+// Tests that CalendarView switches back to Quick Settings when screen size is
+// limited and the bubble requires a collapsed state.
+TEST_F(UnifiedSystemTrayTest, CalendarGoesToMainView) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+
+  // Set a limited screen size.
+  UpdateDisplay("800x600");
+
+  // Generate a notification, close and open the bubble so we can show the
+  // collapsed message center.
+  AddNotification();
+  tray->CloseBubble();
+  tray->ShowBubble();
+
+  // Ensure message center is collapsed when Calendar is not being shown.
+  auto* message_center_view =
+      tray->message_center_bubble()->message_center_view();
+  EXPECT_FALSE(tray->IsShowingCalendarView());
+  EXPECT_TRUE(message_center_view->collapsed());
+
+  // Ensure message center is collapsed when the Calendar is being shown.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(tray->IsShowingCalendarView());
+  EXPECT_TRUE(message_center_view->collapsed());
+
+  // Test that Calendar is no longer shown after expanding the collapsed
+  // message center.
+  tray->message_center_bubble()->ExpandMessageCenter();
+  EXPECT_FALSE(message_center_view->collapsed());
+  EXPECT_FALSE(tray->IsShowingCalendarView());
 }
 
 }  // namespace ash

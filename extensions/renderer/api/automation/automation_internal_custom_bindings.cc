@@ -24,7 +24,6 @@
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest.h"
@@ -484,11 +483,12 @@ class NodeIDPlusDimensionsWrapper
   NodeIDPlusDimensionsFunction function_;
 };
 
-using NodeIDPlusEventFunction = void (*)(v8::Isolate* isolate,
-                                         v8::ReturnValue<v8::Value> result,
-                                         AutomationAXTreeWrapper* tree_wrapper,
-                                         ui::AXNode* node,
-                                         api::automation::EventType event_type);
+typedef std::function<void(v8::Isolate* isolate,
+                           v8::ReturnValue<v8::Value> result,
+                           AutomationAXTreeWrapper* tree_wrapper,
+                           ui::AXNode* node,
+                           api::automation::EventType event_type)>
+    NodeIDPlusEventFunction;
 
 class NodeIDPlusEventWrapper
     : public base::RefCountedThreadSafe<NodeIDPlusEventWrapper> {
@@ -629,6 +629,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
   ROUTE_FUNCTION(IsInteractPermitted);
   ROUTE_FUNCTION(GetSchemaAdditions);
   ROUTE_FUNCTION(StartCachingAccessibilityTrees);
+  ROUTE_FUNCTION(StopCachingAccessibilityTrees);
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
@@ -1726,17 +1727,19 @@ void AutomationInternalCustomBindings::AddRoutes() {
   });
   RouteNodeIDPlusEventFunction(
       "EventListenerAdded",
-      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         api::automation::EventType event_type) {
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
+             api::automation::EventType event_type) {
         tree_wrapper->EventListenerAdded(event_type, node);
+        TreeEventListenersChanged(tree_wrapper);
       });
   RouteNodeIDPlusEventFunction(
       "EventListenerRemoved",
-      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         api::automation::EventType event_type) {
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
+             api::automation::EventType event_type) {
         tree_wrapper->EventListenerRemoved(event_type, node);
+        TreeEventListenersChanged(tree_wrapper);
       });
 }
 
@@ -1800,6 +1803,15 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees(
   }
 }
 
+void AutomationInternalCustomBindings::StopCachingAccessibilityTrees(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  message_filter_->Detach();
+  message_filter_.reset();
+  tree_change_observers_.clear();
+  tree_id_to_tree_wrapper_map_.clear();
+  AutomationAXTreeWrapper::GetChildTreeIDReverseMap().clear();
+}
+
 void AutomationInternalCustomBindings::GetSchemaAdditions(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = GetIsolate();
@@ -1856,6 +1868,7 @@ void AutomationInternalCustomBindings::DestroyAccessibilityTree(
     accessibility_focused_tree_id_ = ui::AXTreeIDUnknown();
 
   tree_id_to_tree_wrapper_map_.erase(tree_id);
+  trees_with_event_listeners_.erase(tree_id);
 }
 
 void AutomationInternalCustomBindings::AddTreeChangeObserver(
@@ -1906,18 +1919,22 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
   if (!focus)
     return false;
 
-  // If the focused node is the owner of a child tree, that indicates
-  // a node within the child tree is the one that actually has focus. This
-  // doesn't apply to portals: portals have a child tree, but nothing in the
-  // tree can have focus.
-  std::string child_tree_id_str;
-  std::string child_tree_node_app_id_str;
-  while ((focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                    &child_tree_id_str) ||
-          focus->GetStringAttribute(
-              ax::mojom::StringAttribute::kChildTreeNodeAppId,
-              &child_tree_node_app_id_str)) &&
-         focus->GetRole() != ax::mojom::Role::kPortal) {
+  while (true) {
+    // If the focused node is the owner of a child tree, that indicates
+    // a node within the child tree is the one that actually has focus. This
+    // doesn't apply to portals: portals have a child tree, but nothing in the
+    // tree can have focus.
+    if (focus->GetRole() == ax::mojom::Role::kPortal)
+      break;
+
+    const std::string& child_tree_id_str =
+        focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+    const std::string& child_tree_node_app_id_str = focus->GetStringAttribute(
+        ax::mojom::StringAttribute::kChildTreeNodeAppId);
+
+    if (child_tree_id_str.empty() && child_tree_node_app_id_str.empty())
+      break;
+
     AutomationAXTreeWrapper* child_tree_wrapper = nullptr;
 
     if (!child_tree_node_app_id_str.empty()) {
@@ -1929,11 +1946,7 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
         ui::AXNode* child_app_node = child_app_nodes[0];
         auto* wrapper = GetAutomationAXTreeWrapperFromTreeID(
             child_app_node->tree()->GetAXTreeID());
-
-        // TODO: figure out why this condition seems necessary (otherwise, we
-        // loop forever).
-        if (wrapper != tree_wrapper)
-          child_tree_wrapper = wrapper;
+        child_tree_wrapper = wrapper;
       }
     }
 
@@ -2153,7 +2166,8 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
     AutomationAXTreeWrapper** in_out_tree_wrapper,
-    bool should_use_app_id) const {
+    bool should_use_app_id,
+    bool requires_unignored) const {
   if (should_use_app_id &&
       node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     ui::AXNode* parent_app_node =
@@ -2166,7 +2180,15 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
     }
   }
 
-  ui::AXNode* parent = node->GetUnignoredParent();
+  ui::AXNode* parent = nullptr;
+  if (!requires_unignored) {
+    parent = node->GetParent();
+    if (parent)
+      return parent;
+    return GetHostInParentTree(in_out_tree_wrapper);
+  }
+
+  parent = node->GetUnignoredParent();
   if (!parent) {
     // Search up ancestor trees until we find one with a host that is unignored.
     while ((parent = GetHostInParentTree(in_out_tree_wrapper))) {
@@ -2450,6 +2472,10 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
         nullptr, context());
     return;
   }
+
+  // After handling events in js, if the client did not add any event listeners,
+  // shut things down.
+  TreeEventListenersChanged(tree_wrapper);
 }
 
 void AutomationInternalCustomBindings::OnAccessibilityLocationChange(
@@ -2855,7 +2881,8 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   if (!head_pos->AtStartOfParagraph()) {
     ui::AXNodePosition::AXPositionInstance start_para_pos =
         head_pos->CreatePreviousParagraphStartPosition(
-            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+            {ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+             ui::AXBoundaryDetection::kDontCheckInitialPosition});
     ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> pre_range(
         start_para_pos->Clone(), head_pos->Clone());
     pre_str = pre_range.GetText();
@@ -2865,7 +2892,8 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   // node to the end of the paragraph.
   ui::AXNodePosition::AXPositionInstance end_para_pos =
       head_pos->CreateNextParagraphEndPosition(
-          ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+          {ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>> post_range(
       head_pos->Clone(), end_para_pos->Clone());
   post_str = post_range.GetText();
@@ -2949,6 +2977,39 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
   }
 
   return gfx::ToEnclosingRect(bounds);
+}
+
+void AutomationInternalCustomBindings::TreeEventListenersChanged(
+    AutomationAXTreeWrapper* tree_wrapper) {
+  if (tree_wrapper->EventListenerCount() != 0) {
+    trees_with_event_listeners_.insert(tree_wrapper->GetTreeID());
+    return;
+  }
+
+  if (trees_with_event_listeners_.empty())
+    return;
+
+  trees_with_event_listeners_.erase(tree_wrapper->GetTreeID());
+  if (!trees_with_event_listeners_.empty())
+    return;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      context()->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AutomationInternalCustomBindings::
+                         MaybeSendOnAllAutomationEventListenersRemoved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AutomationInternalCustomBindings::
+    MaybeSendOnAllAutomationEventListenersRemoved() {
+  if (!trees_with_event_listeners_.empty())
+    return;
+
+  bindings_system_->DispatchEventInContext(
+      "automationInternal.onAllAutomationEventListenersRemoved",
+      base::Value::List(), nullptr, context());
 }
 
 }  // namespace extensions

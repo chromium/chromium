@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 
 namespace ui {
 
 class WaylandConnection;
-class WaylandInputMethodContext;
 
 class WaylandInputMethodContextFactory : public LinuxInputMethodContextFactory {
  public:
@@ -26,16 +26,10 @@ class WaylandInputMethodContextFactory : public LinuxInputMethodContextFactory {
   ~WaylandInputMethodContextFactory() override;
 
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
-
-  // Exposed for unit tests but also called by CreateInputMethodContext
-  std::unique_ptr<WaylandInputMethodContext> CreateWaylandInputMethodContext(
-      ui::LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const;
+      LinuxInputMethodContextDelegate* delegate) const override;
 
  private:
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

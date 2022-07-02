@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -29,8 +30,10 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -83,8 +86,8 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 
 TestWebContents::~TestWebContents() = default;
 
-TestRenderFrameHost* TestWebContents::GetMainFrame() {
-  auto* instance = WebContentsImpl::GetMainFrame();
+TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
+  auto* instance = WebContentsImpl::GetPrimaryMainFrame();
   DCHECK(instance->IsTestRenderFrameHost())
       << "You may want to instantiate RenderViewHostTestEnabler.";
   return static_cast<TestRenderFrameHost*>(instance);
@@ -178,6 +181,16 @@ bool TestWebContents::TestDidDownloadImage(
   return true;
 }
 
+void TestWebContents::TestSetFaviconURL(
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
+  GetPrimaryPage().set_favicon_urls(mojo::Clone(favicon_urls));
+}
+
+void TestWebContents::TestUpdateFaviconURL(
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
+  GetPrimaryMainFrame()->UpdateFaviconURL(mojo::Clone(favicon_urls));
+}
+
 void TestWebContents::SetLastCommittedURL(const GURL& url) {
   last_committed_url_ = url;
 }
@@ -219,7 +232,7 @@ void TestWebContents::TestDidFinishLoad(const GURL& url) {
 
 void TestWebContents::TestDidFailLoadWithError(const GURL& url,
                                                int error_code) {
-  GetMainFrame()->DidFailLoadWithError(url, error_code);
+  GetPrimaryMainFrame()->DidFailLoadWithError(url, error_code);
 }
 
 bool TestWebContents::CrossProcessNavigationPending() {
@@ -278,7 +291,7 @@ void TestWebContents::NavigateAndFail(const GURL& url, int error_code) {
 
 void TestWebContents::TestSetIsLoading(bool value) {
   if (value) {
-    DidStartLoading(GetMainFrame()->frame_tree_node(), true);
+    DidStartLoading(GetPrimaryMainFrame()->frame_tree_node(), true);
   } else {
     for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
       RenderFrameHostImpl* current_frame_host =
@@ -397,16 +410,16 @@ base::UnguessableToken TestWebContents::GetAudioGroupId() {
 const blink::PortalToken& TestWebContents::CreatePortal(
     std::unique_ptr<WebContents> web_contents) {
   auto portal =
-      std::make_unique<Portal>(GetMainFrame(), std::move(web_contents));
+      std::make_unique<Portal>(GetPrimaryMainFrame(), std::move(web_contents));
   const blink::PortalToken& token = portal->portal_token();
   portal->CreateProxyAndAttachPortal();
-  GetMainFrame()->OnPortalCreatedForTesting(std::move(portal));
+  GetPrimaryMainFrame()->OnPortalCreatedForTesting(std::move(portal));
   return token;
 }
 
 WebContents* TestWebContents::GetPortalContents(
     const blink::PortalToken& portal_token) {
-  Portal* portal = GetMainFrame()->FindPortalByToken(portal_token);
+  Portal* portal = GetPrimaryMainFrame()->FindPortalByToken(portal_token);
   if (!portal)
     return nullptr;
   return portal->GetPortalContents();
@@ -424,7 +437,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrerender2MemoryControls));
 
-  TestRenderFrameHost* rfhi = GetMainFrame();
+  TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(
       PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
                           /*embedder_histogram_suffix=*/"", Referrer(),
@@ -465,6 +478,30 @@ TestWebContents::AddPrerenderAndStartNavigation(const GURL& url) {
 
   return NavigationSimulatorImpl::CreateFromPendingInFrame(
       FrameTreeNode::GloballyFindByID(host->frame_tree_node_id()));
+}
+
+void TestWebContents::ActivatePrerenderedPage(const GURL& url) {
+  // Make sure the page for `url` has been prerendered.
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host = registry->FindHostByUrlForTesting(url);
+  DCHECK(prerender_host);
+  int prerender_host_id = prerender_host->frame_tree_node_id();
+
+  // Activate the prerendered page.
+  test::PrerenderHostObserver prerender_host_observer(*this, prerender_host_id);
+  std::unique_ptr<NavigationSimulatorImpl> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(url,
+                                                       GetPrimaryMainFrame());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      GetPrimaryMainFrame()->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  navigation->Commit();
+  prerender_host_observer.WaitForDestroyed();
+
+  DCHECK_EQ(GetPrimaryMainFrame()->GetLastCommittedURL(), url);
+
+  DCHECK(prerender_host_observer.was_activated());
+  DCHECK_EQ(registry->FindReservedHostById(prerender_host_id), nullptr);
 }
 
 base::TimeTicks TestWebContents::GetTabSwitchStartTime() {

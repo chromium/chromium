@@ -153,6 +153,10 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
  private:
   friend class CanvasCaptureMediaStreamTrack;
 
+  // MediaStreamTrack
+  void applyConstraints(ScriptPromiseResolver*,
+                        const MediaTrackConstraints*) override;
+
   // MediaStreamSource::Observer
   void SourceChangedState() override;
   void SourceChangedCaptureHandle() override;

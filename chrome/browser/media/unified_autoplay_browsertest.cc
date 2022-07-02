@@ -116,7 +116,7 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
   void SetAutoplayForceAllowFlag(const GURL& url) {
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     GetWebContents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->GetInterface(&client);
     client->AddAutoplayFlags(url::Origin::Create(url),
@@ -144,11 +144,11 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
         is_renderer_initiated, from_context_menu);
 
     open_url_params.initiator_origin =
-        active_contents->GetMainFrame()->GetLastCommittedOrigin();
+        active_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     open_url_params.source_render_process_id =
-        active_contents->GetMainFrame()->GetProcess()->GetID();
+        active_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
     open_url_params.source_render_frame_id =
-        active_contents->GetMainFrame()->GetRoutingID();
+        active_contents->GetPrimaryMainFrame()->GetRoutingID();
     open_url_params.user_gesture = user_gesture;
 
     return active_contents->OpenURL(open_url_params);
@@ -458,7 +458,7 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
   }
 
   content::RenderFrameHost* main_frame() const {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* first_child() const {

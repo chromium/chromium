@@ -15,78 +15,51 @@ use crate::system::mojo_types::*;
 
 use ffi::c_void;
 
-#[repr(u32)]
-/// Create flags for message pipes
-pub enum Create {
-    None = 0,
-}
+use super::UntypedHandle;
 
-#[repr(u32)]
-/// Write flags for message pipes
-pub enum Write {
-    None = 0,
-}
-
-#[repr(u32)]
-/// Read flags for message pipes
-pub enum Read {
-    None = 0,
-}
-
-#[repr(u32)]
-/// Create message flags
-pub enum CreateMessage {
-    None = 0,
-
-    /// Do not enforce size restrictions on this message, allowing its serialized
+bitflags::bitflags! {
+    #[derive(Default)]
+    pub struct CreateMessageFlags: u32 {
+            /// Do not enforce size restrictions on this message, allowing its serialized
     /// payload to grow arbitrarily large. If this flag is NOT specified, Mojo will
     /// throw an assertion failure at serialization time when the message exceeds a
     /// globally configured maximum size.
-    UnlimitedSize = 1 << 0,
+    const UNLIMITED_SIZE = 1 << 0;
+    }
 }
 
-#[repr(u32)]
-/// Append message flags
-pub enum AppendMessage {
-    None = 0,
-
+bitflags::bitflags! {
+    #[derive(Default)]
+    pub struct AppendMessageFlags: u32 {
     /// If set, this comments the resulting (post-append) message size as the final
     /// size of the message payload, in terms of both bytes and attached handles.
-    CommitSize = 1 << 0,
+    const COMMIT_SIZE = 1 << 0;
+    }
 }
 
-#[repr(u32)]
-/// Read message flags
-pub enum ReadMessage {
-    None = 0,
-
-    /// Ignores attached handles when retrieving message data. This leaves any
+bitflags::bitflags! {
+    #[derive(Default)]
+    pub struct ReadMessageFlags: u32 {
+            /// Ignores attached handles when retrieving message data. This leaves any
     /// attached handles intact and owned by the message object.
-    IgnoreHandles = 1 << 0,
+        const IGNORE_HANDLES = 1 << 0;
+    }
 }
 
 /// Creates a message pipe in Mojo and gives back two
 /// MessageEndpoints which represent the endpoints of the
 /// message pipe
-pub fn create(flags: CreateFlags) -> Result<(MessageEndpoint, MessageEndpoint), MojoResult> {
-    let mut handle0: MojoHandle = 0;
-    let mut handle1: MojoHandle = 0;
-    let opts = ffi::MojoCreateMessagePipeOptions::new(flags);
-    let raw_opts = opts.inner_ptr();
-    let r = MojoResult::from_code(unsafe {
-        ffi::MojoCreateMessagePipe(
-            raw_opts,
-            &mut handle0 as *mut MojoHandle,
-            &mut handle1 as *mut MojoHandle,
-        )
-    });
-    if r != MojoResult::Okay {
-        Err(r)
-    } else {
-        Ok((
-            MessageEndpoint { handle: unsafe { handle::acquire(handle0) } },
-            MessageEndpoint { handle: unsafe { handle::acquire(handle1) } },
-        ))
+pub fn create() -> Result<(MessageEndpoint, MessageEndpoint), MojoResult> {
+    let mut handle0 = UntypedHandle::invalid();
+    let mut handle1 = UntypedHandle::invalid();
+    let opts = ffi::MojoCreateMessagePipeOptions::new(0);
+    match MojoResult::from_code(unsafe {
+        ffi::MojoCreateMessagePipe(opts.inner_ptr(), handle0.as_mut_ptr(), handle1.as_mut_ptr())
+    }) {
+        MojoResult::Okay => {
+            Ok((MessageEndpoint { handle: handle0 }, MessageEndpoint { handle: handle1 }))
+        }
+        e => Err(e),
     }
 }
 
@@ -110,20 +83,20 @@ impl MessageEndpoint {
     ///
     /// If an empty message (that is, it has neither data nor handles)
     /// is received, it will show up as an Err() containing MojoResult::Okay.
-    pub fn read(
-        &self,
-        _flags: ReadFlags,
-    ) -> Result<(vec::Vec<u8>, vec::Vec<handle::UntypedHandle>), MojoResult> {
+    pub fn read(&self) -> Result<(vec::Vec<u8>, vec::Vec<handle::UntypedHandle>), MojoResult> {
         // Read the message, yielding a message object we can copy data from.
         let message_handle = {
             let mut h = 0;
-            let result = MojoResult::from_code(unsafe {
-                ffi::MojoReadMessage(self.handle.get_native_handle(), ptr::null(), &mut h as *mut _)
-            });
-            if result != MojoResult::Okay {
-                return Err(result);
+            match MojoResult::from_code(unsafe {
+                ffi::MojoReadMessage(
+                    self.handle.get_native_handle(),
+                    ptr::null(),
+                    &mut h as *mut ffi::types::MojoMessageHandle,
+                )
+            }) {
+                MojoResult::Okay => h,
+                e => return Err(e),
             }
-            h
         };
 
         let mut buffer: *mut c_void = ptr::null_mut();
@@ -143,16 +116,15 @@ impl MessageEndpoint {
             return Err(result_prelim);
         }
 
-        let mut raw_handles: vec::Vec<MojoHandle> = vec::Vec::with_capacity(num_handles as usize);
+        let mut handles: vec::Vec<UntypedHandle> = vec::Vec::with_capacity(num_handles as usize);
         if num_handles > 0 {
-            let raw_handles_ptr = raw_handles.as_mut_ptr();
             let result = MojoResult::from_code(unsafe {
                 ffi::MojoGetMessageData(
                     message_handle,
                     ptr::null(),
                     &mut buffer as *mut _,
                     &mut num_bytes as *mut _,
-                    raw_handles_ptr,
+                    UntypedHandle::slice_as_mut_ptr(&mut handles),
                     &mut num_handles as *mut _,
                 )
             });
@@ -177,15 +149,6 @@ impl MessageEndpoint {
         };
 
         unsafe {
-            raw_handles.set_len(num_handles as usize);
-        }
-        let mut handles: vec::Vec<handle::UntypedHandle> =
-            vec::Vec::with_capacity(num_handles as usize);
-        for raw_handle in raw_handles.iter() {
-            handles.push(unsafe { handle::acquire(*raw_handle) });
-        }
-
-        unsafe {
             ffi::MojoDestroyMessage(message_handle);
         }
 
@@ -207,12 +170,7 @@ impl MessageEndpoint {
     /// When a handle is sent through a message pipe it is invalidated and
     /// may not even be represented by the same integer on the other side,
     /// so care must be taken to design your application with this in mind.
-    pub fn write(
-        &self,
-        bytes: &[u8],
-        mut handles: vec::Vec<handle::UntypedHandle>,
-        flags: WriteFlags,
-    ) -> MojoResult {
+    pub fn write(&self, bytes: &[u8], handles: vec::Vec<handle::UntypedHandle>) -> MojoResult {
         // Create the message object we will write data into then send.
         let message_handle = unsafe {
             let mut h = 0;
@@ -222,31 +180,21 @@ impl MessageEndpoint {
         };
 
         // "Append" to the message, getting a buffer to copy our data to.
-        let mut raw_handles: vec::Vec<MojoHandle> = vec::Vec::with_capacity(handles.len());
-        for handle in handles.iter_mut() {
-            raw_handles.push(handle.get_native_handle());
-            handle.invalidate();
-        }
-
-        let raw_handles_ptr;
-        if raw_handles.len() == 0 {
-            raw_handles_ptr = ptr::null();
-        } else {
-            raw_handles_ptr = raw_handles.as_ptr();
-        }
+        let raw_handles_ptr: *const MojoHandle =
+            if handles.len() == 0 { ptr::null() } else { UntypedHandle::slice_as_ptr(&handles) };
 
         let mut buffer_ptr: *mut c_void = std::ptr::null_mut();
         let mut buffer_size: u32 = 0;
 
         let append_message_options =
-            ffi::MojoAppendMessageDataOptions::new(AppendMessage::CommitSize as u32);
+            ffi::MojoAppendMessageDataOptions::new(AppendMessageFlags::COMMIT_SIZE.bits());
 
         let result = MojoResult::from_code(unsafe {
             ffi::MojoAppendMessageData(
                 message_handle,
                 bytes.len() as u32,
                 raw_handles_ptr,
-                raw_handles.len() as u32,
+                handles.len() as u32,
                 append_message_options.inner_ptr(),
                 &mut buffer_ptr as *mut _,
                 &mut buffer_size as *mut _,
@@ -275,7 +223,7 @@ impl MessageEndpoint {
         }
 
         // Send the message. This takes ownership of the message object.
-        let write_message_options = ffi::MojoWriteMessageOptions::new(flags);
+        let write_message_options = ffi::MojoWriteMessageOptions::new(0);
         return MojoResult::from_code(unsafe {
             ffi::MojoWriteMessage(
                 self.handle.get_native_handle(),

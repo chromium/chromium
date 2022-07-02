@@ -101,11 +101,15 @@ SecurityStatePageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SecurityStatePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // All data aggregation are done in SiteEngagementService and
+  // SecurityStateTabHelper, and this class just monitors the timings to record
+  // the aggregated data. As the outermost page's OnCommit and OnComplete are
+  // the timing this class is interested in, it just stops observing
+  // FencedFrames.
   return STOP_OBSERVING;
 }
 

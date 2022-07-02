@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -94,9 +95,9 @@ bool IsOriginSessionOnly(
 void RecordCreateReportStatus(CreateReportResult result) {
   static_assert(
       AttributionTrigger::EventLevelResult::kMaxValue ==
-          AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy,
-      "Bump version of Conversions.CreateReportStatus2 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus2",
+          AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
+      "Bump version of Conversions.CreateReportStatus3 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus3",
                                 result.event_level_status());
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus2",
@@ -164,12 +165,12 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
   switch (report.GetReportType()) {
     case AttributionReport::ReportType::kEventLevel:
       base::UmaHistogramEnumeration(
-          "Conversions.ReportSendOutcome2",
+          "Conversions.ReportSendOutcome3",
           ConvertToConversionReportSendOutcome(status));
       break;
     case AttributionReport::ReportType::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
-          "Conversions.AggregatableReport.ReportSendOutcome",
+          "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
       break;
   }
@@ -218,6 +219,23 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
 // static
 void AttributionManagerImpl::RunInMemoryForTesting() {
   AttributionStorageSql::RunInMemoryForTesting();
+}
+
+// static
+std::unique_ptr<AttributionManagerImpl>
+AttributionManagerImpl::CreateWithNewDbForTesting(
+    StoragePartitionImpl* storage_partition,
+    const base::FilePath& user_data_directory,
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!AttributionStorageSql::DeleteStorageForTesting(user_data_directory))
+      return nullptr;
+  }
+
+  return std::make_unique<AttributionManagerImpl>(
+      storage_partition, user_data_directory,
+      std::move(special_storage_policy));
 }
 
 bool AttributionManagerImpl::IsReportAllowed(
@@ -304,7 +322,8 @@ AttributionManagerImpl::~AttributionManagerImpl() {
           &IsOriginSessionOnly, std::move(special_storage_policy_));
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(base::Time::Min(), base::Time::Max(),
-                std::move(session_only_origin_predicate));
+                std::move(session_only_origin_predicate),
+                /*delete_rate_limit_data=*/true);
 }
 
 void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
@@ -544,12 +563,12 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
-    AttributionReport::ReportType report_type,
+    AttributionReport::ReportTypes report_types,
+    int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(
-          /*max_report_time=*/base::Time::Max(), /*limit=*/1000,
-          AttributionReport::ReportTypes{report_type})
+          /*max_report_time=*/base::Time::Max(), limit, std::move(report_types))
       .Then(std::move(callback));
 }
 
@@ -566,9 +585,11 @@ void AttributionManagerImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
+    bool delete_rate_limit_data,
     base::OnceClosure done) {
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
-      .WithArgs(delete_begin, delete_end, std::move(filter))
+      .WithArgs(delete_begin, delete_end, std::move(filter),
+                delete_rate_limit_data)
       .Then(base::BindOnce(
           [](base::OnceClosure done,
              base::WeakPtr<AttributionManagerImpl> manager) {

@@ -31,6 +31,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/cycleclock.h"
+#include "absl/base/internal/prefetch.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
@@ -194,35 +195,39 @@ TEST(Group, Match) {
   }
 }
 
-TEST(Group, MatchEmpty) {
+TEST(Group, MaskEmpty) {
   if (Group::kWidth == 16) {
     ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
                       ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
                       CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
                       CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0, 4));
+    EXPECT_THAT(Group{group}.MaskEmpty().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmpty().HighestBitSet(), 4);
   } else if (Group::kWidth == 8) {
     ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
                       ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
                       ctrl_t::kSentinel, CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0));
+    EXPECT_THAT(Group{group}.MaskEmpty().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmpty().HighestBitSet(), 0);
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
   }
 }
 
-TEST(Group, MatchEmptyOrDeleted) {
+TEST(Group, MaskEmptyOrDeleted) {
   if (Group::kWidth == 16) {
-    ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
-                      ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
-                      CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
-                      CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 2, 4));
+    ctrl_t group[] = {ctrl_t::kEmpty,   CtrlT(1), ctrl_t::kEmpty,    CtrlT(3),
+                      ctrl_t::kDeleted, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
+                      CtrlT(7),         CtrlT(5), CtrlT(3),          CtrlT(1),
+                      CtrlT(1),         CtrlT(1), CtrlT(1),          CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().HighestBitSet(), 4);
   } else if (Group::kWidth == 8) {
     ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
                       ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
                       ctrl_t::kSentinel, CtrlT(1)};
-    EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 3));
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().LowestBitSet(), 0);
+    EXPECT_THAT(Group{group}.MaskEmptyOrDeleted().HighestBitSet(), 3);
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
   }

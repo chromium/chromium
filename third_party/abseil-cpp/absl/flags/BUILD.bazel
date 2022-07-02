@@ -326,6 +326,11 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_android",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
     deps = [
         ":commandlineflag",
         ":commandlineflag_internal",
@@ -362,6 +367,11 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_android",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
     deps = [
         ":config",
         ":flag",
@@ -423,6 +433,11 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_android",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
     deps = [
         ":flag",
         ":parse",
@@ -458,6 +473,7 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["no_test_wasm"],
     deps = [
         ":program_name",
         "//absl/strings",
@@ -473,6 +489,11 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_android",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
     deps = [
         ":commandlineflag_internal",
         ":flag",
@@ -495,6 +516,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     shard_count = 31,
+    tags = ["no_test_wasm"],
     deps = [
         ":flag_internal",
         "//absl/base",
@@ -529,6 +551,11 @@ cc_test(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test_android",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
     deps = [
         ":config",
         ":flag",

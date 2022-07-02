@@ -61,6 +61,23 @@ class BuilderList(object):
             assert 'port_name' in builders_dict[builder]
             assert ('android' in specifiers or
                     len(builders_dict[builder]['specifiers']) == 2)
+        self._flag_spec_to_port = self._find_ports_for_flag_specific_options()
+
+    def _find_ports_for_flag_specific_options(self):
+        flag_spec_to_port = {}
+        for builder_name, builder in self._builders.items():
+            port_name = self.port_name_for_builder_name(builder_name)
+            for step_name in self.step_names_for_builder(builder_name):
+                option = self.flag_specific_option(builder_name, step_name)
+                if not option:
+                    continue
+                maybe_port_name = flag_spec_to_port.get(option)
+                if maybe_port_name and maybe_port_name != port_name:
+                    raise ValueError(
+                        'Flag-specific suite %r can only run on one port, got: '
+                        '%r, %r' % (option, maybe_port_name, port_name))
+                flag_spec_to_port[option] = port_name
+        return flag_spec_to_port
 
     @staticmethod
     def load_default_builder_list(filesystem):
@@ -95,23 +112,27 @@ class BuilderList(object):
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
         builders = []
-        for b in self._builders:
+        for b, builder in self._builders.items():
             builder_specifiers = _lower_specifiers(
-                self._builders[b].get('specifiers', {}))
+                builder.get('specifiers', {}))
+            flag_specific_suites = {
+                step.get('flag_specific')
+                for step in builder.get('steps', {}).values()
+            }
             if flag_specific:
-                if (flag_specific == '*' and
-                        not self._builders[b].get('flag_specific', None)):
+                if flag_specific == '*' and not any(flag_specific_suites):
                     # Skip non flag_specific builders
                     continue
-                if (flag_specific != '*' and
-                        self._builders[b].get('flag_specific', None) != flag_specific):
-                    # Skip if not an exact match
+                if (flag_specific != '*'
+                        and flag_specific not in flag_specific_suites):
+                    # Skip if none of the steps has an exact match
                     continue
-            if is_try and self._builders[b].get('is_try_builder', False) != is_try:
+            if is_try and builder.get('is_try_builder', False) != is_try:
                 continue
-            if is_cq and self._builders[b].get('is_cq_builder', False) != is_cq:
+            if is_cq and builder.get('is_cq_builder', False) != is_cq:
                 continue
-            if ((not is_cq and not is_try) and self._builders[b].get('is_try_builder', False)):
+            if ((not is_cq and not is_try)
+                    and builder.get('is_try_builder', False)):
                 continue
             if builder_specifiers & exclude_specifiers:
                 continue
@@ -136,11 +157,17 @@ class BuilderList(object):
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']
 
+    def port_name_for_flag_specific_option(self, option):
+        return self._flag_spec_to_port[option]
+
     def specifiers_for_builder(self, builder_name):
         return self._builders[builder_name]['specifiers']
 
-    def step_name_for_builder(self, builder_name):
-        return self._builders[builder_name].get('step_name', None)
+    def _steps(self, builder_name):
+        return self._builders[builder_name].get('steps', {})
+
+    def step_names_for_builder(self, builder_name):
+        return sorted(self._steps(builder_name))
 
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
@@ -148,11 +175,20 @@ class BuilderList(object):
     def is_wpt_builder(self, builder_name):
         return 'wpt' in builder_name
 
-    def is_flag_specific_builder(self, builder_name):
-        return self._builders[builder_name].get('flag_specific', None) != None
+    def flag_specific_option(self, builder_name, step_name):
+        steps = self._steps(builder_name)
+        # TODO(crbug/1291020): We cannot validate the step name here because
+        # some steps are retrieved from the results server instead of read from
+        # 'builders.json'. Once all the steps are in the config, we can allow
+        # bad step names to raise an exception.
+        return steps.get(step_name, {}).get('flag_specific')
 
-    def flag_specific_option(self, builder_name):
-        return self._builders[builder_name].get('flag_specific', None)
+    def flag_specific_options_for_port_name(self, port_name):
+        return {
+            option
+            for option, port in self._flag_spec_to_port.items()
+            if port == port_name
+        }
 
     def platform_specifier_for_builder(self, builder_name):
         return self.specifiers_for_builder(builder_name)[0]

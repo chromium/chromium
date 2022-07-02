@@ -2,7 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export class BrowserProxy {
+export interface BrowserProxy {
+  textChanged(newText: string): void;
+  optionSelected(index: number, resultSetId: number): void;
+  heightChanged(newHeight: number): void;
+  dismiss(): void;
+  promptCancelled(): void;
+}
+
+export class BrowserProxyImpl implements BrowserProxy {
   /**
    * Notifies the backend that user input has changed.
    * @param newText The current contents of the user input field.
@@ -46,7 +54,7 @@ export class BrowserProxy {
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    return instance || (instance = new BrowserProxyImpl());
   }
 
   static setInstance(obj: BrowserProxy) {

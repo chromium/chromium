@@ -269,7 +269,7 @@ void CastHandler::StartObservingForSinks(
 
   if (presentation_url.isJust()) {
     url::Origin frame_origin =
-        web_contents_->GetMainFrame()->GetLastCommittedOrigin();
+        web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     std::vector<media_router::MediaSource> sources = {
         media_router::MediaSource(presentation_url.fromJust())};
     query_result_manager_->SetSourcesForCastMode(
@@ -307,7 +307,7 @@ void CastHandler::OnDesktopMirroringStarted(
     std::unique_ptr<StartDesktopMirroringCallback> callback,
     media_router::mojom::RoutePresentationConnectionPtr connection,
     const media_router::RouteRequestResult& result) {
-  if (result.result_code() == media_router::RouteRequestResult::OK) {
+  if (result.result_code() == media_router::mojom::RouteRequestResultCode::OK) {
     initiated_routes_.insert(result.route()->media_route_id());
     callback->sendSuccess();
   } else {
@@ -319,7 +319,7 @@ void CastHandler::OnTabMirroringStarted(
     std::unique_ptr<StartTabMirroringCallback> callback,
     media_router::mojom::RoutePresentationConnectionPtr connection,
     const media_router::RouteRequestResult& result) {
-  if (result.result_code() == media_router::RouteRequestResult::OK) {
+  if (result.result_code() == media_router::mojom::RouteRequestResultCode::OK) {
     initiated_routes_.insert(result.route()->media_route_id());
     callback->sendSuccess();
   } else {
@@ -331,7 +331,7 @@ void CastHandler::OnPresentationStarted(
     std::unique_ptr<media_router::StartPresentationContext> context,
     media_router::mojom::RoutePresentationConnectionPtr connection,
     const media_router::RouteRequestResult& result) {
-  if (result.result_code() == media_router::RouteRequestResult::OK)
+  if (result.result_code() == media_router::mojom::RouteRequestResultCode::OK)
     initiated_routes_.insert(result.route()->media_route_id());
   context->HandleRouteResponse(std::move(connection), result);
 }

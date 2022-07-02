@@ -193,9 +193,6 @@ class DocumentProvider : public AutocompleteProvider {
   // Client for accessing TemplateUrlService, prefs, etc.
   raw_ptr<AutocompleteProviderClient> client_;
 
-  // Listener to notify when results are available.
-  raw_ptr<AutocompleteProviderListener> listener_;
-
   // Saved when starting a new autocomplete request so that it can be retrieved
   // when responses return asynchronously.
   AutocompleteInput input_;

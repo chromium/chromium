@@ -28,6 +28,7 @@ void SetUpOpenH264Params(const VideoEncoder::Options& options,
   params->iComplexityMode = MEDIUM_COMPLEXITY;
   params->iUsageType = CAMERA_VIDEO_REAL_TIME;
   params->bEnableDenoise = false;
+  params->eSpsPpsIdStrategy = SPS_LISTING;
   // Set to 1 due to https://crbug.com/583348
   params->iMultipleThreadIdc = 1;
   if (options.framerate.has_value())
@@ -171,7 +172,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 
   DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
   size_t total_chunk_size = frame_info.iFrameSizeInBytes;
-  result.data.reset(new uint8_t[total_chunk_size]);
+  result.data = std::make_unique<uint8_t[]>(total_chunk_size);
   auto* gather_buffer = result.data.get();
 
   if (h264_converter_) {
@@ -328,7 +329,8 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   SFrameBSInfo frame_info = {};
-  TRACE_EVENT0("media", "OpenH264::EncodeFrame");
+  TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
+               frame->timestamp());
   if (int err = codec_->EncodeFrame(&picture, &frame_info)) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,

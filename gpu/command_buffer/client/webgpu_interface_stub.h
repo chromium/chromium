@@ -28,7 +28,9 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   void FlushCommands() override;
   bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
-  ReservedTexture ReserveTexture(WGPUDevice device) override;
+  ReservedTexture ReserveTexture(
+      WGPUDevice device,
+      const WGPUTextureDescriptor* optionalDesc) override;
 
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 

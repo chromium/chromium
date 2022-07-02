@@ -12,7 +12,7 @@
 
 namespace password_manager {
 
-struct PasswordForm;
+struct CredentialUIEntry;
 
 // Static-only class bundling together the API for serializing passwords into
 // CSV format.
@@ -22,16 +22,17 @@ class PasswordCSVWriter {
   PasswordCSVWriter(const PasswordCSVWriter&) = delete;
   PasswordCSVWriter& operator=(const PasswordCSVWriter&) = delete;
 
-  // Creates a CSV representation of the forms stored in |password|. Note that
-  // this loses all the metadata except for the origin, username and password.
+  // Creates a CSV representation of the credential stored in |credentials|.
+  // Note that this loses all the metadata except for the origin, username and
+  // password.
   static std::string SerializePasswords(
-      const std::vector<std::unique_ptr<PasswordForm>>& passwords);
+      const std::vector<CredentialUIEntry>& credentials);
 
  private:
-  // Converts |form| into a single line in the CSV format. Metadata are lost,
-  // see SerializePasswords.
+  // Converts |credential| into a single line in the CSV format. Metadata are
+  // lost, see SerializePasswords.
   static std::map<std::string, std::string> PasswordFormToRecord(
-      const PasswordForm& form);
+      const CredentialUIEntry& credential);
 };
 
 }  // namespace password_manager

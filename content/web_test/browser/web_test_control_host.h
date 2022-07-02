@@ -244,7 +244,7 @@ class WebTestControlHost : public WebContentsObserver,
                                     bool by_user) override;
   void SimulateWebContentIndexDelete(const std::string& id) override;
   void WebTestRuntimeFlagsChanged(
-      base::Value changed_web_test_runtime_flags) override;
+      base::Value::Dict changed_web_test_runtime_flags) override;
   void RegisterIsolatedFileSystem(
       const std::vector<base::FilePath>& file_paths,
       RegisterIsolatedFileSystemCallback callback) override;
@@ -254,7 +254,9 @@ class WebTestControlHost : public WebContentsObserver,
   void AllowPointerLock() override;
   void WorkItemAdded(mojom::WorkItemPtr work_item) override;
   void RequestWorkItem() override;
-  void WorkQueueStatesChanged(base::Value changed_work_queue_states) override;
+  void WorkQueueStatesChanged(
+      base::Value::Dict changed_work_queue_states) override;
+  void SetAcceptLanguages(const std::string& accept_languages) override;
 
   void DiscardMainWindow();
   // Closes all windows opened by the test. This is every window but the main
@@ -344,6 +346,7 @@ class WebTestControlHost : public WebContentsObserver,
   // Stores the default test-adapted WebPreferences which is then used to fully
   // reset the main window's preferences if and when it is reused.
   blink::web_pref::WebPreferences default_prefs_;
+  std::string default_accept_languages_;
 
   // True if the WebPreferences of newly created RenderViewHost should be
   // overridden with prefs_.
@@ -370,7 +373,7 @@ class WebTestControlHost : public WebContentsObserver,
   // Changes reported by WebTestRuntimeFlagsChanged() that have accumulated
   // since PrepareForWebTest (i.e. changes that need to be sent to a fresh
   // renderer created while test is in progress).
-  base::DictionaryValue accumulated_web_test_runtime_flags_changes_;
+  base::Value::Dict accumulated_web_test_runtime_flags_changes_;
 
   // A snasphot of the current runtime flags.
   WebTestRuntimeFlags web_test_runtime_flags_;
@@ -380,7 +383,7 @@ class WebTestControlHost : public WebContentsObserver,
   base::circular_deque<mojom::WorkItemPtr> work_queue_;
 
   // Properties of the work queue.
-  base::DictionaryValue work_queue_states_;
+  base::Value::Dict work_queue_states_;
 
   mojom::WebTestRendererDumpResultPtr renderer_dump_result_;
   std::string navigation_history_dump_;

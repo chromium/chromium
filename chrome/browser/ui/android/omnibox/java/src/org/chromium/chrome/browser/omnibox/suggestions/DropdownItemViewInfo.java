@@ -22,9 +22,4 @@ public class DropdownItemViewInfo extends MVCListAdapter.ListItem {
         this.processor = processor;
         this.groupId = groupId;
     }
-
-    @Override
-    public String toString() {
-        return "DropdownItemViewInfo(group=" + groupId + ", type=" + type + ")";
-    }
 }

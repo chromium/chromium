@@ -40,8 +40,9 @@ namespace {
 int64_t StringAtIndexToInt64(const base::Value::List& list, size_t index) {
   if (list.size() > index && list[index].is_string()) {
     int64_t integer = 0;
-    if (base::StringToInt64(list[index].GetString(), &integer))
+    if (base::StringToInt64(list[index].GetString(), &integer)) {
       return integer;
+    }
   }
   return 0;
 }
@@ -259,8 +260,9 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   DCHECK_EQ(0U, args.size());
 
   SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   service->GetUserSettings()->SetSyncRequested(true);
   // If the service was previously stopped via StopAndClear(), then the
@@ -275,8 +277,9 @@ void SyncInternalsMessageHandler::HandleRequestStopKeepData(
   DCHECK_EQ(0U, args.size());
 
   SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   service->GetUserSettings()->SetSyncRequested(false);
 }
@@ -286,8 +289,9 @@ void SyncInternalsMessageHandler::HandleRequestStopClearData(
   DCHECK_EQ(0U, args.size());
 
   SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   service->StopAndClear();
 }
@@ -295,8 +299,9 @@ void SyncInternalsMessageHandler::HandleRequestStopClearData(
 void SyncInternalsMessageHandler::HandleTriggerRefresh(
     const base::Value::List& args) {
   SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   service->TriggerRefresh(syncer::ModelTypeSet::All());
 }
@@ -388,8 +393,9 @@ SyncInternalsMessageHandler::GetSyncInvalidationsService() {
 
 void SyncInternalsMessageHandler::UnregisterModelNotifications() {
   SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   // Cannot use ScopedObserver to do all the tracking because most don't follow
   // AddObserver/RemoveObserver method naming style.

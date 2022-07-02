@@ -28,7 +28,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"  // nogncheck
@@ -90,23 +89,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebString FullUserAgent() override;
   blink::WebString ReducedUserAgent() override;
   blink::UserAgentMetadata UserAgentMetadata() override;
-  void CacheMetadata(blink::mojom::CodeCacheType cache_type,
-                     const blink::WebURL&,
-                     base::Time,
-                     const uint8_t*,
-                     size_t) override;
-  void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
-                       const blink::WebURL&,
-                       FetchCachedCodeCallback) override;
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
-                           const GURL&) override;
-  void CacheMetadataInCacheStorage(
-      const blink::WebURL&,
-      base::Time,
-      const uint8_t*,
-      size_t,
-      const blink::WebSecurityOrigin& cacheStorageOrigin,
-      const blink::WebString& cacheStorageCacheName) override;
   bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) override;
   blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate()
       override;
@@ -229,13 +211,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebString& client_id,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner>
-          worker_timing_callback_task_runner,
-      base::RepeatingCallback<
-          void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-          worker_timing_callback) override;
-  void RecordMetricsForBackgroundedRendererPurge() override;
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   std::string GetNameForHistogram(const char* name) override;
   std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
       blink::CrossVariantMojoRemote<
@@ -269,10 +245,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
  private:
   bool CheckPreparsedJsCachingEnabled() const;
 
-  // Return the mojo interface for making CodeCache calls. Safe to call from
-  // other threads, as it returns the SharedRemote by copy.
-  mojo::SharedRemote<blink::mojom::CodeCacheHost> GetCodeCacheHost();
-
   void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
                                    const gpu::GPUInfo& gpu_info) const;
 
@@ -293,12 +265,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::scheduler::WebThreadScheduler* main_thread_scheduler_;
 
   TopLevelBlameContext top_level_blame_context_;
-
-  base::Lock code_cache_host_lock_;
-  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_remote_
-      GUARDED_BY(code_cache_host_lock_);
-  mojo::SharedRemote<blink::mojom::CodeCacheHost> code_cache_host_
-      GUARDED_BY(code_cache_host_lock_);
 
   // Event that signals `io_thread_id_` is set and ready to be read.
   mutable base::WaitableEvent io_thread_id_ready_event_;

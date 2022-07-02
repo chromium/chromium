@@ -226,11 +226,11 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // True if we've used the username:password embedded in the URL.  This
   // makes sure we use the embedded identity only once for the transaction,
   // preventing an infinite auth restart loop.
-  bool embedded_identity_used_;
+  bool embedded_identity_used_ = false;
 
   // True if default credentials have already been tried for this transaction
   // in response to an HTTP authentication challenge.
-  bool default_credentials_used_;
+  bool default_credentials_used_ = false;
 
   // These two are owned by the HttpNetworkSession/IOThread, which own the
   // objects which reference |this|. Therefore, these raw pointers are valid

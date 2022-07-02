@@ -68,20 +68,20 @@ class PLATFORM_EXPORT StrokeData final {
   void SetLineDash(const DashArray&, float);
 
   // Sets everything on the paint except the pattern, gradient and color.
+  void SetupPaint(cc::PaintFlags*) const;
+
+  // Setup any DashPathEffect on the paint.
   // If a non-zero length is provided, the number of dashes/dots on a
   // dashed/dotted line will be adjusted to start and end that length with a
   // dash/dot. If non-zero, dash_thickness is the thickness to use when
   // deciding on dash sizes. Used in border painting when we stroke thick
   // to allow for clipping at corners, but still want small dashes.
-  void SetupPaint(cc::PaintFlags*,
-                  const int length = 0,
-                  const int dash_thickess = 0) const;
-
-  // Setup any DashPathEffect on the paint. See SetupPaint above for parameter
-  // information.
+  // If closed_path is true, a gap will be allocated after the last dash, so
+  // that all dashes will be evenly spaced on the closed path.
   void SetupPaintDashPathEffect(cc::PaintFlags*,
                                 const int path_length = 0,
-                                const int dash_thickness = 0) const;
+                                const int dash_thickness = 0,
+                                const bool closed_path = false) const;
 
   // Determine whether a stroked line should be drawn using dashes. In practice,
   // we draw dashes when a dashed stroke is specified or when a dotted stroke
@@ -104,14 +104,15 @@ class PLATFORM_EXPORT StrokeData final {
     return thickness >= 3 ? 1.0 : 2.0;
   }
 
+ private:
   // Return a dash gap size that places dashes at each end of a stroke that is
   // strokeLength long, given preferred dash and gap sizes. The gap returned is
   // the one that minimizes deviation from the preferred gap length.
   static float SelectBestDashGap(float stroke_length,
                                  float dash_length,
-                                 float gap_length);
+                                 float gap_length,
+                                 bool closed_path);
 
- private:
   StrokeStyle style_ = kSolidStroke;
   float thickness_ = 0;
   cc::PaintFlags::Cap line_cap_ = cc::PaintFlags::kDefault_Cap;

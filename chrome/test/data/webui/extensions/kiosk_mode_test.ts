@@ -69,14 +69,14 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     browserProxy.setInitialSettings(Object.assign(initialSettings, settings));
   }
 
-  function initPage(): Promise<void> {
+  async function initPage() {
     document.body.innerHTML = '';
     browserProxy.reset();
     dialog = document.createElement('extensions-kiosk-dialog');
     document.body.appendChild(dialog);
 
-    return browserProxy.whenCalled('getKioskAppSettings')
-        .then(() => flushTasks());
+    await browserProxy.whenCalled('getKioskAppSettings');
+    await flushTasks();
   }
 
   setup(function() {
@@ -87,68 +87,62 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     return initPage();
   });
 
-  test(assert(extension_kiosk_mode_tests.TestNames.Layout), function() {
+  test(assert(extension_kiosk_mode_tests.TestNames.Layout), async function() {
     const apps = basicApps.slice(0);
     apps[1]!.autoLaunch = true;
     apps[1]!.isLoading = true;
     setAppSettings({apps: apps, hasAutoLaunchApp: true});
 
-    return initPage()
-        .then(() => {
-          const items =
-              dialog.shadowRoot!.querySelectorAll<HTMLElement>('.list-item');
-          assertEquals(items.length, 2);
-          assertTrue(items[0]!.textContent!.includes(basicApps[0]!.name));
-          assertTrue(items[1]!.textContent!.includes(basicApps[1]!.name));
-          // Second item should show the auto-lauch label.
-          assertTrue(items[0]!.querySelector('span')!.hidden);
-          assertFalse(items[1]!.querySelector('span')!.hidden);
-          // No permission to edit auto-launch so buttons should be hidden.
-          assertTrue(items[0]!.querySelector('cr-button')!.hidden);
-          assertTrue(items[1]!.querySelector('cr-button')!.hidden);
-          // Bailout checkbox should be hidden when auto-launch editing
-          // disabled.
-          assertTrue(dialog.shadowRoot!.querySelector('cr-checkbox')!.hidden);
+    await initPage();
 
-          items[0]!.querySelector<HTMLElement>('.icon-delete-gray')!.click();
-          flush();
-          return browserProxy.whenCalled('removeKioskApp');
-        })
-        .then(appId => {
-          assertEquals(appId, basicApps[0]!.id);
-        });
+    const items =
+        dialog.shadowRoot!.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(items.length, 2);
+    assertTrue(items[0]!.textContent!.includes(basicApps[0]!.name));
+    assertTrue(items[1]!.textContent!.includes(basicApps[1]!.name));
+    // Second item should show the auto-lauch label.
+    assertTrue(items[0]!.querySelector('span')!.hidden);
+    assertFalse(items[1]!.querySelector('span')!.hidden);
+    // No permission to edit auto-launch so buttons should be hidden.
+    assertTrue(items[0]!.querySelector('cr-button')!.hidden);
+    assertTrue(items[1]!.querySelector('cr-button')!.hidden);
+    // Bailout checkbox should be hidden when auto-launch editing
+    // disabled.
+    assertTrue(dialog.shadowRoot!.querySelector('cr-checkbox')!.hidden);
+
+    items[0]!.querySelector<HTMLElement>('.icon-delete-gray')!.click();
+    flush();
+    const appId = await browserProxy.whenCalled('removeKioskApp');
+    assertEquals(appId, basicApps[0]!.id);
   });
 
-  test(assert(extension_kiosk_mode_tests.TestNames.AutoLaunch), function() {
-    const apps = basicApps.slice(0);
-    apps[1]!.autoLaunch = true;
-    setAppSettings({apps: apps, hasAutoLaunchApp: true});
-    setInitialSettings({autoLaunchEnabled: true});
+  test(
+      assert(extension_kiosk_mode_tests.TestNames.AutoLaunch),
+      async function() {
+        const apps = basicApps.slice(0);
+        apps[1]!.autoLaunch = true;
+        setAppSettings({apps: apps, hasAutoLaunchApp: true});
+        setInitialSettings({autoLaunchEnabled: true});
 
-    let buttons: NodeListOf<HTMLElement>;
-    return initPage()
-        .then(() => {
-          buttons = dialog.shadowRoot!.querySelectorAll<HTMLElement>(
-              '.list-item cr-button');
-          // Has permission to edit auto-launch so buttons should be seen.
-          assertFalse(buttons[0]!.hidden);
-          assertFalse(buttons[1]!.hidden);
+        await initPage();
 
-          buttons[0]!.click();
-          return browserProxy.whenCalled('enableKioskAutoLaunch');
-        })
-        .then(appId => {
-          assertEquals(appId, basicApps[0]!.id);
+        const buttons: NodeListOf<HTMLElement> =
+            dialog.shadowRoot!.querySelectorAll<HTMLElement>(
+                '.list-item cr-button');
+        // Has permission to edit auto-launch so buttons should be seen.
+        assertFalse(buttons[0]!.hidden);
+        assertFalse(buttons[1]!.hidden);
 
-          buttons[1]!.click();
-          return browserProxy.whenCalled('disableKioskAutoLaunch');
-        })
-        .then(appId => {
-          assertEquals(appId, basicApps[1]!.id);
-        });
-  });
+        buttons[0]!.click();
+        let appId = await browserProxy.whenCalled('enableKioskAutoLaunch');
+        assertEquals(appId, basicApps[0]!.id);
 
-  test(assert(extension_kiosk_mode_tests.TestNames.Bailout), function() {
+        buttons[1]!.click();
+        appId = await browserProxy.whenCalled('disableKioskAutoLaunch');
+        assertEquals(appId, basicApps[1]!.id);
+      });
+
+  test(assert(extension_kiosk_mode_tests.TestNames.Bailout), async function() {
     const apps = basicApps.slice(0);
     apps[1]!.autoLaunch = true;
     setAppSettings({apps: apps, hasAutoLaunchApp: true});
@@ -156,69 +150,64 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
 
     assertFalse(dialog.$.confirmDialog.open);
 
-    let bailoutCheckbox: CrCheckboxElement;
-    return initPage()
-        .then(() => {
-          bailoutCheckbox = dialog.shadowRoot!.querySelector('cr-checkbox')!;
-          // Bailout checkbox should be usable when auto-launching.
-          assertFalse(bailoutCheckbox.hidden);
-          assertFalse(bailoutCheckbox.disabled);
-          assertFalse(bailoutCheckbox.checked);
+    await initPage();
 
-          // Making sure canceling doesn't change anything.
-          bailoutCheckbox.click();
-          flush();
-          assertTrue(dialog.$.confirmDialog.open);
+    const bailoutCheckbox: CrCheckboxElement =
+        dialog.shadowRoot!.querySelector('cr-checkbox')!;
+    // Bailout checkbox should be usable when auto-launching.
+    assertFalse(bailoutCheckbox.hidden);
+    assertFalse(bailoutCheckbox.disabled);
+    assertFalse(bailoutCheckbox.checked);
 
-          dialog.$.confirmDialog.querySelector<HTMLElement>(
-                                    '.cancel-button')!.click();
-          flush();
-          assertFalse(bailoutCheckbox.checked);
-          assertFalse(dialog.$.confirmDialog.open);
-          assertTrue(dialog.$.dialog.open);
+    // Making sure canceling doesn't change anything.
+    bailoutCheckbox.click();
+    flush();
+    assertTrue(dialog.$.confirmDialog.open);
 
-          // Accepting confirmation dialog should trigger browserProxy call.
-          bailoutCheckbox.click();
-          flush();
-          assertTrue(dialog.$.confirmDialog.open);
+    dialog.$.confirmDialog.querySelector<HTMLElement>(
+                              '.cancel-button')!.click();
+    flush();
+    assertFalse(bailoutCheckbox.checked);
+    assertFalse(dialog.$.confirmDialog.open);
+    assertTrue(dialog.$.dialog.open);
 
-          dialog.$.confirmDialog.querySelector<HTMLElement>(
-                                    '.action-button')!.click();
-          flush();
-          assertTrue(bailoutCheckbox.checked);
-          assertFalse(dialog.$.confirmDialog.open);
-          assertTrue(dialog.$.dialog.open);
-          return browserProxy.whenCalled('setDisableBailoutShortcut');
-        })
-        .then(disabled => {
-          assertTrue(disabled);
+    // Accepting confirmation dialog should trigger browserProxy call.
+    bailoutCheckbox.click();
+    flush();
+    assertTrue(dialog.$.confirmDialog.open);
 
-          // Test clicking on checkbox again should simply re-enable bailout.
-          browserProxy.reset();
-          bailoutCheckbox.click();
-          assertFalse(bailoutCheckbox.checked);
-          assertFalse(dialog.$.confirmDialog.open);
-          return browserProxy.whenCalled('setDisableBailoutShortcut');
-        })
-        .then(disabled => {
-          assertFalse(disabled);
-        });
+    dialog.$.confirmDialog.querySelector<HTMLElement>(
+                              '.action-button')!.click();
+    flush();
+    assertTrue(bailoutCheckbox.checked);
+    assertFalse(dialog.$.confirmDialog.open);
+    assertTrue(dialog.$.dialog.open);
+    let disabled = await browserProxy.whenCalled('setDisableBailoutShortcut');
+    assertTrue(disabled);
+
+    // Test clicking on checkbox again should simply re-enable bailout.
+    browserProxy.reset();
+    bailoutCheckbox.click();
+    assertFalse(bailoutCheckbox.checked);
+    assertFalse(dialog.$.confirmDialog.open);
+    disabled = await browserProxy.whenCalled('setDisableBailoutShortcut');
+    assertFalse(disabled);
   });
 
-  test(assert(extension_kiosk_mode_tests.TestNames.AddButton), function() {
-    const addButton = dialog.$.addButton;
-    assertTrue(!!addButton);
-    assertTrue(addButton.disabled);
+  test(
+      assert(extension_kiosk_mode_tests.TestNames.AddButton), async function() {
+        const addButton = dialog.$.addButton;
+        assertTrue(!!addButton);
+        assertTrue(addButton.disabled);
 
-    const addInput = dialog.$.addInput;
-    addInput.value = 'blah';
-    assertFalse(addButton.disabled);
+        const addInput = dialog.$.addInput;
+        addInput.value = 'blah';
+        assertFalse(addButton.disabled);
 
-    addButton.click();
-    return browserProxy.whenCalled('addKioskApp').then(appId => {
-      assertEquals(appId, 'blah');
-    });
-  });
+        addButton.click();
+        const appId = await browserProxy.whenCalled('addKioskApp');
+        assertEquals(appId, 'blah');
+      });
 
   test(assert(extension_kiosk_mode_tests.TestNames.Updated), function() {
     const items =

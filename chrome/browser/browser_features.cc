@@ -27,7 +27,7 @@ const base::Feature kColorProviderRedirectionForThemeProvider = {
 
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
-const base::Feature kDestroyProfileOnBrowserClose{
+const base::Feature kDestroyProfileOnBrowserClose {
   "DestroyProfileOnBrowserClose",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -92,14 +92,6 @@ const base::Feature kCopyLinkToText{"CopyLinkToText",
 // Adds a "Snooze" action to mute notifications during screen sharing sessions.
 const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_WIN)
-// Results in remembering fonts used at the time of fcp, and prewarming those
-// fonts on subsequent loading of search results pages for the default search
-// engine.
-const base::Feature kPrewarmSearchResultsPageFonts{
-    "PrewarmSearchResultsPageFonts", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Gates sandboxed iframe navigation toward external protocol behind any of:
@@ -172,4 +164,10 @@ const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch{
     "RestartNetworkServiceUnsandboxedForFailedLaunch",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_WIN)
+// When this feature is enabled, metrics are gathered regarding the performance
+// and reliability of app-bound encryption primitives on a background thread.
+const base::Feature kAppBoundEncryptionMetrics{
+    "AppBoundEncryptionMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 }  // namespace features

@@ -49,7 +49,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     const blink::StorageKey& key,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    const GlobalRenderFrameHostId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type)
     : context_(context),
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),
@@ -65,7 +66,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       force_bypass_cache_(false),
       skip_script_comparison_(false),
       promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
-      requesting_frame_id_(requesting_frame_id) {
+      requesting_frame_id_(requesting_frame_id),
+      ancestor_frame_type_(ancestor_frame_type) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
 }
@@ -89,7 +91,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       should_uninstall_on_failure_(false),
       force_bypass_cache_(force_bypass_cache),
       skip_script_comparison_(skip_script_comparison),
-      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk) {
+      promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
+      ancestor_frame_type_(registration->ancestor_frame_type()) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
   internal_.registration = registration;
@@ -379,7 +382,7 @@ void ServiceWorkerRegisterJob::RegisterAndContinue() {
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_, worker_script_type_, update_via_cache_);
   context_->registry()->CreateNewRegistration(
-      options, key_,
+      options, key_, ancestor_frame_type_,
       base::BindOnce(&ServiceWorkerRegisterJob::ContinueWithNewRegistration,
                      weak_factory_.GetWeakPtr()));
 }

@@ -35,10 +35,10 @@ const CGFloat kAnimationDuration = 0.15;
 
 @interface ToolbarAccessoryPresenter ()
 
-// The |presenting| public property redefined as readwrite.
+// The `presenting` public property redefined as readwrite.
 @property(nonatomic, assign, readwrite, getter=isPresenting) BOOL presenting;
 
-// The view that acts as the background for |presentedView|, redefined as
+// The view that acts as the background for `presentedView`, redefined as
 // readwrite. This is especially important on iPhone, as this view that holds
 // everything around the safe area.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
@@ -233,7 +233,7 @@ const CGFloat kAnimationDuration = 0.15;
     [self.backgroundView.heightAnchor
         constraintEqualToConstant:kPrimaryToolbarHeight],
   ]];
-  // Layouts |shadow| around |self.backgroundView|.
+  // Layouts `shadow` around `self.backgroundView`.
   AddSameConstraintsToSidesWithInsets(
       shadow, self.backgroundView,
       LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
@@ -269,7 +269,7 @@ const CGFloat kAnimationDuration = 0.15;
       .active = YES;
 }
 
-// Creates the background view and adds |self.presentedViewController.view| to
+// Creates the background view and adds `self.presentedViewController.view` to
 // it
 - (UIView*)createBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];

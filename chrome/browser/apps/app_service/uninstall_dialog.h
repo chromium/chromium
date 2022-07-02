@@ -120,7 +120,7 @@ class UninstallDialog {
 
   OnUninstallForTestingCallback uninstall_dialog_created_callback_;
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   // Tracks whether |parent_window_| got destroyed.
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;

@@ -114,7 +114,7 @@ void FeatureNotificationGuideServiceImpl::CheckForLowEnagedUser() {
   is_low_engaged_user_ =
       result.is_ready && result.segment.has_value() &&
       result.segment.value() ==
-          optimization_guide::proto::OptimizationTarget::
+          segmentation_platform::proto::SegmentId::
               OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 }
 

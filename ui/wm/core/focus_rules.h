@@ -5,7 +5,7 @@
 #ifndef UI_WM_CORE_FOCUS_RULES_H_
 #define UI_WM_CORE_FOCUS_RULES_H_
 
-#include "ui/wm/core/wm_core_export.h"
+#include "base/component_export.h"
 
 namespace aura {
 class Window;
@@ -19,7 +19,7 @@ namespace wm {
 
 // Implemented by an object that establishes the rules about what can be
 // focused or activated.
-class WM_CORE_EXPORT FocusRules {
+class COMPONENT_EXPORT(UI_WM) FocusRules {
  public:
   virtual ~FocusRules() {}
 

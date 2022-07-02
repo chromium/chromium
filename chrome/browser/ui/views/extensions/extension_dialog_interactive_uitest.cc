@@ -34,10 +34,10 @@ class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
 #define MAYBE_TabFocusLoop TabFocusLoop
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionDialogUiTest, MAYBE_TabFocusLoop) {
-  ExtensionTestMessageListener init_listener("ready", false /* will_reply */);
-  ExtensionTestMessageListener button1_focus_listener("button1-focused", false);
-  ExtensionTestMessageListener button2_focus_listener("button2-focused", false);
-  ExtensionTestMessageListener button3_focus_listener("button3-focused", false);
+  ExtensionTestMessageListener init_listener("ready");
+  ExtensionTestMessageListener button1_focus_listener("button1-focused");
+  ExtensionTestMessageListener button2_focus_listener("button2-focused");
+  ExtensionTestMessageListener button3_focus_listener("button3-focused");
 
   // Load an extension for the test.
   scoped_refptr<const extensions::Extension> extension =

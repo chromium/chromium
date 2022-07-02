@@ -164,7 +164,7 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
 namespace apps {
 
 PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()), registry_(nullptr) {
+    : AppPublisher(proxy), profile_(proxy->profile()) {
   // Don't show anything for non-primary profiles. We can't use
   // `PluginVmFeatures::Get()->IsAllowed()` here because we still let the user
   // uninstall Plugin VM when it isn't allowed for some other reasons (e.g.
@@ -213,8 +213,7 @@ void PluginVmApps::Connect(
   apps.push_back(GetPluginVmApp(profile_, is_allowed_));
 
   for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_PLUGIN_VM)) {
+       registry_->GetRegisteredApps(guest_os::VmType::PLUGIN_VM)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
         pair.second;
     apps.push_back(Convert(registration, /*new_icon_key=*/true));
@@ -240,8 +239,7 @@ void PluginVmApps::Initialize() {
   std::vector<AppPtr> apps;
   apps.push_back(CreatePluginVmApp(profile_, is_allowed_));
   for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_PLUGIN_VM)) {
+       registry_->GetRegisteredApps(guest_os::VmType::PLUGIN_VM)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
         pair.second;
     apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
@@ -259,25 +257,6 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
   registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
                       allow_placeholder_icon, IconKey::kInvalidResourceId,
                       std::move(callback));
-}
-
-void PluginVmApps::LoadIcon(const std::string& app_id,
-                            apps::mojom::IconKeyPtr icon_key,
-                            apps::mojom::IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  std::unique_ptr<IconKey> key = ConvertMojomIconKeyToIconKey(icon_key);
-  registry_->LoadIcon(app_id, *key, ConvertMojomIconTypeToIconType(icon_type),
-                      size_hint_in_dip, allow_placeholder_icon,
-                      apps::mojom::IconKey::kInvalidResourceId,
-                      IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
@@ -318,8 +297,7 @@ void PluginVmApps::Uninstall(const std::string& app_id,
                              bool clear_site_data,
                              bool report_abuse) {
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-      ->ClearApplicationList(guest_os::GuestOsRegistryService::VmType::
-                                 ApplicationList_VmType_PLUGIN_VM,
+      ->ClearApplicationList(guest_os::VmType::PLUGIN_VM,
                              plugin_vm::kPluginVmName, "");
   plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
       ->UninstallPluginVm();
@@ -351,12 +329,11 @@ void PluginVmApps::GetMenuModel(const std::string& app_id,
 
 void PluginVmApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
-    guest_os::GuestOsRegistryService::VmType vm_type,
+    guest_os::VmType vm_type,
     const std::vector<std::string>& updated_apps,
     const std::vector<std::string>& removed_apps,
     const std::vector<std::string>& inserted_apps) {
-  if (vm_type != guest_os::GuestOsRegistryService::VmType::
-                     ApplicationList_VmType_PLUGIN_VM) {
+  if (vm_type != guest_os::VmType::PLUGIN_VM) {
     return;
   }
 
@@ -392,8 +369,7 @@ void PluginVmApps::OnRegistryUpdated(
 AppPtr PluginVmApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
-  DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
-                                       ApplicationList_VmType_PLUGIN_VM);
+  DCHECK_EQ(registration.VmType(), guest_os::VmType::PLUGIN_VM);
 
   auto app = AppPublisher::MakeApp(
       AppType::kPluginVm, registration.app_id(), Readiness::kReady,
@@ -420,8 +396,7 @@ AppPtr PluginVmApps::CreateApp(
 apps::mojom::AppPtr PluginVmApps::Convert(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool new_icon_key) {
-  DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
-                                       ApplicationList_VmType_PLUGIN_VM);
+  DCHECK_EQ(registration.VmType(), guest_os::VmType::PLUGIN_VM);
 
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kPluginVm, registration.app_id(),

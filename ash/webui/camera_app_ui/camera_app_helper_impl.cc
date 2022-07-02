@@ -288,10 +288,30 @@ void CameraAppHelperImpl::MonitorFileDeletion(
                 std::move(callback)));
 }
 
-void CameraAppHelperImpl::IsDocumentModeSupported(
-    IsDocumentModeSupportedCallback callback) {
-  bool supported = document_scanner_service_ != nullptr;
-  std::move(callback).Run(supported);
+void CameraAppHelperImpl::GetDocumentScannerReadyState(
+    GetDocumentScannerReadyStateCallback callback) {
+  if (document_scanner_service_ == nullptr) {
+    std::move(callback).Run(
+        camera_app::mojom::DocumentScannerReadyState::NOT_SUPPORTED);
+    return;
+  }
+  if (document_scanner_service_->IsLoaded()) {
+    std::move(callback).Run(
+        camera_app::mojom::DocumentScannerReadyState::SUPPORTED_AND_READY);
+    return;
+  }
+  std::move(callback).Run(
+      camera_app::mojom::DocumentScannerReadyState::SUPPORTED_BUT_NOT_READY);
+}
+
+void CameraAppHelperImpl::RegisterDocumentScannerReadyCallback(
+    RegisterDocumentScannerReadyCallbackCallback callback) {
+  if (document_scanner_service_ == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+  document_scanner_service_->RegisterDocumentScannerReadyCallback(
+      std::move(callback));
 }
 
 void CameraAppHelperImpl::ScanDocumentCorners(

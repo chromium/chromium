@@ -116,6 +116,9 @@ std::string CreateHistogramNameWithSuffix(const std::string& name,
     case DownloadSource::RETRY:
       suffix = "Retry";
       break;
+    case DownloadSource::RETRY_FROM_BUBBLE:
+      suffix = "RetryFromBubble";
+      break;
   }
 
   return name + "." + suffix;
@@ -235,6 +238,13 @@ void RecordDownloadResumption(DownloadInterruptReason reason,
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Resume.LastReason", reason,
                                    samples);
   base::UmaHistogramBoolean("Download.Resume.UserResume", user_resume);
+}
+
+void RecordDownloadRetry(DownloadInterruptReason reason) {
+  std::vector<base::HistogramBase::Sample> samples =
+      base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
+  UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
+                                   samples);
 }
 
 void RecordAutoResumeCountLimitReached(DownloadInterruptReason reason) {

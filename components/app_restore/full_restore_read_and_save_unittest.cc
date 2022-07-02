@@ -23,6 +23,8 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1114,7 +1116,7 @@ TEST_F(FullRestoreReadAndSaveTest,
   base::OneShotTimer* timer = save_handler->GetTimerForTesting();
 
   // Add a Chrome app launch info.
-  auto intent = apps::mojom::Intent::New();
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
   intent->activity_name = "activity_name";
   SaveAppLaunchInfo(
       GetPath(),

@@ -66,10 +66,13 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView> CreateReauthConfirmationWebView(
       Browser* browser,
       signin_metrics::ReauthAccessPoint);
-
-  static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
-      Browser* browser);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
+      Browser* browser,
+      bool show_profile_switch_iph = false);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -33,6 +33,10 @@
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/ui_base_switches.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_l10n_util.h"
 #endif
@@ -115,6 +119,25 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 
     // Avoid loading DFM native resources here, to keep startup lean. These
     // resources are loaded on-use, when an already-installed DFM loads.
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kEnableResourcesFileSharing)) {
+      // If LacrosResourcesFileSharing feature is enabled, Lacros refers to ash
+      // resources pak file.
+      base::FilePath ash_resources_pack_path;
+      base::PathService::Get(chrome::FILE_ASH_RESOURCES_PACK,
+                             &ash_resources_pack_path);
+      base::FilePath shared_resources_pack_path;
+      base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
+                             &shared_resources_pack_path);
+      ui::ResourceBundle::GetSharedInstance()
+          .AddDataPackFromPathWithAshResources(
+              shared_resources_pack_path, ash_resources_pack_path,
+              resources_pack_path, ui::kScaleFactorNone);
+    } else {
+      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+          resources_pack_path, ui::kScaleFactorNone);
+    }
 #else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);

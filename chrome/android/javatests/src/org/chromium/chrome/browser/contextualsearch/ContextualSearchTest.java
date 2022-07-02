@@ -32,8 +32,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 // TODO(donnd): Add parameterized testing so Long-press resolve and Translations
 // can be tested too.  Or just remove this whole suite if it's not useful for
 // these experimental triggering changes.
-@Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE,
-        ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS})
+@Features.DisableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
     @Override
@@ -115,7 +114,6 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.DisableFeatures("ContextualSearchLongpressResolve")
     public void testTapProcessIsRobustWhenSelectionGetsCleared() {
         Assert.assertEquals(0, mPanelManager.getRequestPanelShowCount());
 

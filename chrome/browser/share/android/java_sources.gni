@@ -64,7 +64,9 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureManagerDelegateImpl.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/DevicePickerBottomSheetAdapter.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/DevicePickerBottomSheetContent.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/ManageAccountDevicesLinkView.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NoTargetDeviceBottomSheetContent.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationSharedPrefManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
@@ -77,6 +79,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleMetricsHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetUsageRankingHelper.java",
 ]
 
 share_java_deps = [

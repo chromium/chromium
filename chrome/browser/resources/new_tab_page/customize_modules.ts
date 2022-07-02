@@ -35,6 +35,7 @@ type ModuleSetting = {
 
 export interface CustomizeModulesElement {
   $: {
+    container: HTMLElement,
     customizeButton: CrRadioButtonElement,
     hideButton: CrRadioButtonElement,
     toggleRepeat: DomRepeat,
@@ -102,6 +103,7 @@ export class CustomizeModulesElement extends I18nMixin
         NewTabPageProxy.getInstance()
             .callbackRouter.setDisabledModules.addListener(
                 (all: boolean, ids: string[]) => {
+                  this.$.container.hidden = false;
                   this.show_ = !all;
                   this.modules_.forEach(({id}, i) => {
                     const checked = !all && !ids.includes(id);

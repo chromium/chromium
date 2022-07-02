@@ -6,14 +6,24 @@ from optparse import OptionParser
 from selenium import webdriver
 
 import json
+import logging
+import platform
 import selenium
+import subprocess
 import sys
 import time
+import traceback
 
 DEFAULT_STP_DRIVER_PATH = '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver'
 
+# Maximum number of times the benchmark will be run before giving up.
+MAX_ATTEMPTS = 6
+
+
 class BrowserBench(object):
   def __init__(self, name, version):
+    # Log more information to help identify failures.
+    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
     self._name = name
     self._version = version
     self._output = None
@@ -27,6 +37,12 @@ class BrowserBench(object):
     if optargs.arguments:
       for arg in optargs.arguments.split(','):
         options.add_argument(arg)
+    else:
+      # If no arguments were given, enable field trial config and no first run.
+      # These ensure a consistent set of flags.
+      options.add_argument('--no-first-run')
+      options.add_argument('--enable-field-trial-config')
+
     if optargs.chrome_path:
       options.binary_location = optargs.chrome_path
     service = webdriver.chrome.service.Service(
@@ -60,13 +76,46 @@ class BrowserBench(object):
         try:
           return BrowserBench._CreateSafariDriver(optargs)
         except selenium.common.exceptions.SessionNotCreatedException as e:
-          print('Connecting to Safari failed, will try again ', e)
+          traceback.print_exc(e)
+          logging.info('Connecting to Safari failed, will try again')
           time.sleep(5)
-      print('Failed to connect to Safari, this likely means Safari is running '
-            ' something else')
+      logging.warning('Failed to connect to Safari, this likely means Safari '
+                      'is running something else')
       return None
     else:
       return None
+
+  @staticmethod
+  def _KillBrowser(optargs):
+    if optargs.browser == 'safari' or optargs.browser == 'stp':
+      browser_process_name = ('Safari' if optargs.browser == 'safari' else
+                          'Safari Technology Preview')
+      logging.warning('Killing Safari')
+      subprocess.run(['killall', '-9', browser_process_name])
+      # Sleep for a little bit to ensure the kill happened.
+      time.sleep(5)
+
+      # safaridriver may be wedged, kill it too.
+      logging.warning('Killing safaridriver')
+      subprocess.run(['killall', '-9', 'safaridriver'])
+      # Sleep for a little bit to ensure the kill happened.
+      time.sleep(5)
+
+      logging.warning('Continuing after kill')
+      return
+    # This logic is primarily for Safari, which seems to occasionally hang. Will
+    # implement for Chrome if necessary.
+    logging.warning('Not handling kill of chrome, if this is hit and test '
+                    'fails, implement it')
+
+  def _CreateDriverAndRun(self, optargs):
+    logging.info('Creating Driver')
+    driver = BrowserBench._CreateDriver(optargs)
+    if not driver:
+      raise Exception('failed to create driver')
+    driver.set_window_size(900, 780)
+    logging.info('About to run test')
+    return self.RunAndExtractMeasurements(driver, optargs)
 
   def _ConvertMeasurementsToSkiaFormat(self, measurements):
     '''
@@ -126,6 +175,15 @@ class BrowserBench(object):
     line arguments.
     '''
 
+    logging.info('Script starting')
+
+    caffeinate_process = None
+    if platform.system() == 'Darwin':
+      logging.info('Starting caffeinate')
+      # Caffeinate ensures the machine is not sleeping/idle.
+      caffeinate_process = subprocess.Popen(
+          ['/usr/bin/caffeinate', '-uims', '-t', '300'])
+
     parser = OptionParser()
     parser.add_option('-b',
                       '--browser',
@@ -137,10 +195,11 @@ class BrowserBench(object):
                       dest='executable',
                       help="""Path to the executable to the driver binary. For
                               safari this is the path to safaridriver.""")
-    parser.add_option('-a',
-                      '--arguments',
-                      dest='arguments',
-                      help='Extra arguments to pass to the browser.')
+    parser.add_option(
+        '-a',
+        '--arguments',
+        dest='arguments',
+        help='Extra arguments to pass to the browser (chrome only).')
     parser.add_option('-g',
                       '--githash',
                       dest='githash',
@@ -174,14 +233,34 @@ class BrowserBench(object):
 
     self.UpdateParseArgs(optargs)
 
-    driver = BrowserBench._CreateDriver(optargs)
-    if not driver:
-      sys.stderr.write('Could not create a driver. Aborting.\n')
-      sys.exit(1)
-    driver.set_window_size(900, 780)
+    run_count = 0
+    measurements = False
+    # Try running the benchmark a number of times. For whatever reason either
+    # Safari or safaridriver does not always complete (based on exceptions it
+    # seems the http connection to safari is prematurely closing).
+    while not measurements and run_count < MAX_ATTEMPTS:
+      run_count += 1
+      try:
+        measurements = self._CreateDriverAndRun(optargs)
+        break
+      except Exception as e:
+        if run_count < MAX_ATTEMPTS:
+          logging.warning('Got exception running, will try again',
+                          exc_info=True)
+        else:
+          logging.critical('Got exception running, retried too many times, '
+                           'giving up')
+          if caffeinate_process:
+            caffeinate_process.kill()
+          raise e
+      # When rerunning, first try killing the browser in hopes of state
+      # resetting.
+      BrowserBench._KillBrowser(optargs)
 
-    measurements = self.RunAndExtractMeasurements(driver, optargs)
+    logging.info('Test completed')
     self._ProduceOutput(measurements, extra_key_values)
+    if caffeinate_process:
+      caffeinate_process.kill()
 
   def AddExtraParserOptions(self, parser):
     pass

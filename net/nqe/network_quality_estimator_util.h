@@ -17,9 +17,7 @@ class HostResolver;
 class NetworkIsolationKey;
 class URLRequest;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // A unified compact representation of an IPv6 or an IPv4 address.
 typedef uint64_t IPHash;
@@ -43,9 +41,7 @@ NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
     const HostPortPair& host_port_pair,
     const NetworkIsolationKey& network_isolation_key);
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

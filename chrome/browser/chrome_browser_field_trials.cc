@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
+#include "chrome/browser/ash/login/consolidated_consent_field_trial.h"
 #endif
 
 namespace {
@@ -82,6 +83,10 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::consolidated_consent_field_trial::Create(feature_list, local_state_);
+#endif
+
   // Only create the fallback trials if there isn't already a variations seed
   // being applied. This should occur during first run when first-run variations
   // isn't supported. It's assumed that, if there is a seed, then it either

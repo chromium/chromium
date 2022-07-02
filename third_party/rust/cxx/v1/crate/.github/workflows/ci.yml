@@ -16,6 +16,7 @@ jobs:
           - rust: nightly
           - rust: beta
           - rust: stable
+          - rust: 1.54.0
           - rust: 1.48.0
           - name: macOS
             rust: nightly
@@ -29,12 +30,12 @@ jobs:
             flags: /EHsc
     env:
       CXXFLAGS: ${{matrix.flags}}
-      RUSTFLAGS: --cfg deny_warnings
+      RUSTFLAGS: --cfg deny_warnings -Dwarnings
     steps:
       - name: Enable symlinks (windows)
         if: matrix.os == 'windows'
         run: git config --global core.symlinks true
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -45,18 +46,28 @@ jobs:
         # build. The extra coverage is not particularly valuable and we can
         # still ensure the test is kept passing on the basis of the scheduled
         # builds.
-        if: matrix.os && github.event_name != 'schedule'
-        run: echo "RUSTFLAGS=--cfg skip_ui_tests $RUSTFLAGS" >> $GITHUB_ENV
+        run: |
+          echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
+          echo ::set-output name=exclude::--exclude cxx-test-suite ${{matrix.rust == '1.48.0' && '--exclude cxxbridge-cmd' || ''}}
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} ${{matrix.os && github.event_name != 'schedule' && '--cfg skip_ui_tests' || ''}}
+        id: testsuite
         shell: bash
       - run: cargo run --manifest-path demo/Cargo.toml
-      - run: cargo test --workspace --exclude cxx-test-suite
+      - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
+      - run: cargo check --no-default-features --features alloc
+        env:
+          RUSTFLAGS: --cfg compile_error_if_std ${{env.RUSTFLAGS}}
+      - run: cargo check --no-default-features
+        env:
+          RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
 
   buck:
     name: Buck
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-java@v1
         with:
@@ -83,10 +94,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Bazel
         run: |
-          wget -q -O install.sh https://github.com/bazelbuild/bazel/releases/download/4.0.0/bazel-4.0.0-installer-linux-x86_64.sh
+          wget -q -O install.sh https://github.com/bazelbuild/bazel/releases/download/5.1.1/bazel-5.1.1-installer-linux-x86_64.sh
           chmod +x install.sh
           ./install.sh --user
           echo $HOME/bin >> $GITHUB_PATH
@@ -100,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@clippy
       - run: cargo clippy --workspace --tests -- -Dclippy::all
 
@@ -109,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install clang-tidy
         run: sudo apt-get install clang-tidy-11
       - name: Run clang-tidy
@@ -120,6 +131,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --exit-code 1

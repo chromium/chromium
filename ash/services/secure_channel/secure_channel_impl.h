@@ -120,6 +120,8 @@ class SecureChannelImpl : public mojom::SecureChannel,
       mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void SetNearbyConnector(
       mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
+  void GetLastSeenTimestamp(const std::string& remote_device_id,
+                            GetLastSeenTimestampCallback callback) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;

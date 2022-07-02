@@ -14,15 +14,12 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
-
-class SkDeferredDisplayList;
 
 namespace viz {
 class AggregatedRenderPassDrawQuad;
@@ -43,8 +40,6 @@ class VIZ_SERVICE_EXPORT CALayerOverlaySharedState
   bool is_clipped = false;
   gfx::RectF clip_rect;
   gfx::RRectF rounded_corner_bounds;
-  // The opacity property for the CAayer.
-  float opacity = 1;
   // The transform to apply to the CALayer.
   gfx::Transform transform;
 
@@ -73,8 +68,10 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   gfx::RectF contents_rect;
   // The bounds for the CALayer in pixels.
   gfx::RectF bounds_rect;
+  // The opacity property for the CAayer.
+  float opacity = 1;
   // The background color property for the CALayer.
-  SkColor background_color = SK_ColorTRANSPARENT;
+  SkColor4f background_color = SkColors::kTransparent;
   // The edge anti-aliasing mask property for the CALayer.
   unsigned edge_aa_mask = 0;
   // The minification and magnification filters for the CALayer.
@@ -85,8 +82,6 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into an IOSurface.
   const AggregatedRenderPassDrawQuad* rpdq = nullptr;
-  // The DDL for generating render pass overlay buffer with SkiaRenderer.
-  sk_sp<SkDeferredDisplayList> ddl;
 };
 
 typedef std::vector<CALayerOverlay> CALayerOverlayList;

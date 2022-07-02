@@ -20,7 +20,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
+    ash::SessionManagerClient::RetrievePolicyResponseType;
 
 namespace em = enterprise_management;
 
@@ -28,7 +28,7 @@ namespace policy {
 
 DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
-    chromeos::SessionManagerClient* session_manager_client,
+    ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,

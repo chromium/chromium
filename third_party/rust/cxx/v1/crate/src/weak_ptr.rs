@@ -114,11 +114,9 @@ pub unsafe trait WeakPtrTarget {
 macro_rules! impl_weak_ptr_target {
     ($segment:expr, $name:expr, $ty:ty) => {
         unsafe impl WeakPtrTarget for $ty {
-            #[doc(hidden)]
             fn __typename(f: &mut fmt::Formatter) -> fmt::Result {
                 f.write_str($name)
             }
-            #[doc(hidden)]
             unsafe fn __null(new: *mut c_void) {
                 extern "C" {
                     attr! {
@@ -128,7 +126,6 @@ macro_rules! impl_weak_ptr_target {
                 }
                 unsafe { __null(new) }
             }
-            #[doc(hidden)]
             unsafe fn __clone(this: *const c_void, new: *mut c_void) {
                 extern "C" {
                     attr! {
@@ -138,7 +135,6 @@ macro_rules! impl_weak_ptr_target {
                 }
                 unsafe { __clone(this, new) }
             }
-            #[doc(hidden)]
             unsafe fn __downgrade(shared: *const c_void, weak: *mut c_void) {
                 extern "C" {
                     attr! {
@@ -148,7 +144,6 @@ macro_rules! impl_weak_ptr_target {
                 }
                 unsafe { __downgrade(shared, weak) }
             }
-            #[doc(hidden)]
             unsafe fn __upgrade(weak: *const c_void, shared: *mut c_void) {
                 extern "C" {
                     attr! {
@@ -158,7 +153,6 @@ macro_rules! impl_weak_ptr_target {
                 }
                 unsafe { __upgrade(weak, shared) }
             }
-            #[doc(hidden)]
             unsafe fn __drop(this: *mut c_void) {
                 extern "C" {
                     attr! {

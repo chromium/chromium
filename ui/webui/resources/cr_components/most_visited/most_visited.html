@@ -239,7 +239,8 @@
     </template>
   </dom-repeat>
   <cr-button id="addShortcut" tabindex="0" on-click="onAdd_"
-      hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_" noink>
+      hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_"
+      aria-label="[[i18n('addLinkTitle')]]" title="[[i18n('addLinkTitle')]]" noink>
     <div class="tile-icon">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>

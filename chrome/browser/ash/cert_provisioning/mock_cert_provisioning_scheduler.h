@@ -19,23 +19,19 @@ class MockCertProvisioningScheduler : public CertProvisioningScheduler {
       const MockCertProvisioningScheduler&) = delete;
   ~MockCertProvisioningScheduler() override;
 
-  MOCK_METHOD(void,
-              UpdateOneCert,
+  MOCK_METHOD(bool,
+              UpdateOneWorker,
               (const CertProfileId& cert_profile_id),
               (override));
-  MOCK_METHOD(void, UpdateAllCerts, (), (override));
+  MOCK_METHOD(void, UpdateAllWorkers, (), (override));
   MOCK_METHOD(const WorkerMap&, GetWorkers, (), (const override));
   MOCK_METHOD((const base::flat_map<CertProfileId, FailedWorkerInfo>&),
               GetFailedCertProfileIds,
               (),
               (const override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(base::CallbackListSubscription,
               AddObserver,
-              (CertProvisioningSchedulerObserver*),
-              (override));
-  MOCK_METHOD(void,
-              RemoveObserver,
-              (CertProvisioningSchedulerObserver*),
+              (base::RepeatingClosure callback),
               (override));
 };
 

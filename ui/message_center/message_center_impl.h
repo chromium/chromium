@@ -88,6 +88,7 @@ class MessageCenterImpl : public MessageCenter,
   void DisableNotification(const std::string& id) override;
   void MarkSinglePopupAsShown(const std::string& id,
                               bool mark_notification_as_read) override;
+  void ResetPopupTimer(const std::string& id) override;
   void ResetSinglePopup(const std::string& id) override;
   void DisplayedNotification(const std::string& id,
                              const DisplaySource source) override;

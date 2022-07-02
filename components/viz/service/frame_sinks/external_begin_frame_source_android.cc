@@ -10,6 +10,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
 #include "ui/gfx/android/achoreographer_compat.h"
@@ -55,8 +56,8 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
 
-  ExternalBeginFrameSourceAndroid* const client_;
-  AChoreographer* const achoreographer_;
+  const raw_ptr<ExternalBeginFrameSourceAndroid> client_;
+  const raw_ptr<AChoreographer> achoreographer_;
 
   base::TimeDelta vsync_period_;
   bool vsync_notification_enabled_ = false;

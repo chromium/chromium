@@ -224,3 +224,9 @@ id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
   }
   return single_sign_on_service_;
 }
+
+segmentation_platform::OTRWebStateObserver*
+TestingApplicationContext::GetSegmentationOTRWebStateObserver() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
+}

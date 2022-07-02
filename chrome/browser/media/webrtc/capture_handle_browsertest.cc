@@ -74,7 +74,8 @@ std::string StringifyCaptureHandle(WebContents* web_contents,
 
   std::string origin_str;
   if (expose_origin) {
-    const auto origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+    const auto origin =
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     origin_str =
         base::StringPrintf(",\"origin\":\"%s\"", origin.Serialize().c_str());
   }
@@ -92,20 +93,21 @@ struct TabInfo {
 
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "captureOtherTab();", &script_result));
+        web_contents->GetPrimaryMainFrame(), "captureOtherTab();",
+        &script_result));
     EXPECT_EQ(script_result, "capture-success");
   }
 
   void StartCapturingFromEmbeddedFrame() {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "captureOtherTabFromEmbeddedFrame();",
-        &script_result));
+        web_contents->GetPrimaryMainFrame(),
+        "captureOtherTabFromEmbeddedFrame();", &script_result));
     EXPECT_EQ(script_result, "embedded-capture-success");
   }
 
   url::Origin GetOrigin() const {
-    return web_contents->GetMainFrame()->GetLastCommittedOrigin();
+    return web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
 
   std::string GetOriginAsString() const { return GetOrigin().Serialize(); }
@@ -116,7 +118,7 @@ struct TabInfo {
       const std::vector<std::string>& permitted_origins) {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf(
             "callSetCaptureHandleConfig(%s, \"%s\", %s);",
             expose_origin ? "true" : "false", handle.c_str(),
@@ -131,22 +133,23 @@ struct TabInfo {
   std::string ReadCaptureHandle() {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "readCaptureHandle();", &script_result));
+        web_contents->GetPrimaryMainFrame(), "readCaptureHandle();",
+        &script_result));
     return script_result;
   }
 
   std::string ReadCaptureHandleInEmbeddedFrame() {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "readCaptureHandleInEmbeddedFrame();",
-        &script_result));
+        web_contents->GetPrimaryMainFrame(),
+        "readCaptureHandleInEmbeddedFrame();", &script_result));
     return script_result;
   }
 
   void Navigate(GURL url, bool expect_handle_reset = false) {
     std::string script_result;
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("clickLinkToUrl(\"%s\");", url.spec().c_str()),
         &script_result));
     ASSERT_EQ(script_result, "link-success");
@@ -159,14 +162,15 @@ struct TabInfo {
   std::string LastEvent() {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "readLastEvent();", &script_result));
+        web_contents->GetPrimaryMainFrame(), "readLastEvent();",
+        &script_result));
     return script_result;
   }
 
   std::string LastEmbeddedEvent() {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "readLastEmbeddedEvent();",
+        web_contents->GetPrimaryMainFrame(), "readLastEmbeddedEvent();",
         &script_result));
     return script_result;
   }
@@ -174,7 +178,7 @@ struct TabInfo {
   void StartEmbeddingFrame(const GURL& url) {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("startEmbeddingFrame('%s');", url.spec().c_str()),
         &script_result));
     EXPECT_EQ(script_result, "embedding-done");
@@ -298,7 +302,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
     if (self_capture) {
       std::string script_result;
       EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-          web_contents->GetMainFrame(),
+          web_contents->GetPrimaryMainFrame(),
           base::StringPrintf("setTitle(\"%s\");", kCapturedTabTitle),
           &script_result));
       EXPECT_EQ(script_result, "title-changed");
@@ -613,8 +617,8 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   // In-document navigation does not change the capture handle (config).
   std::string navigation_result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      captured_tab.web_contents->GetMainFrame(), "clickLinkToPageBottom();",
-      &navigation_result));
+      captured_tab.web_contents->GetPrimaryMainFrame(),
+      "clickLinkToPageBottom();", &navigation_result));
   ASSERT_EQ(navigation_result, "navigated");
 
   // No event was fired (verified in teardown) and getCaptureHandle returns the

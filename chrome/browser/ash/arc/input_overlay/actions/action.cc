@@ -214,8 +214,7 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBind(std::unique_ptr<InputElement> input_element,
-                           DisplayMode mode) {
+void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::move(input_element);
@@ -224,7 +223,6 @@ void Action::PrepareToBind(std::unique_ptr<InputElement> input_element,
   if (!action_view_)
     return;
   action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(mode);
 }
 
 void Action::BindPending() {
@@ -248,12 +246,17 @@ void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
 
 void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   DCHECK(action_view_);
-  if (!action_view_ || GetCurrentDisplayedBinding() == *original_binding_)
+  if (!action_view_)
     return;
-  pending_binding_.reset();
-  pending_binding_ = std::make_unique<InputElement>(*original_binding_);
-  action_view_->SetViewContent(BindingOption::kPending, content_bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEdited);
+
+  if (GetCurrentDisplayedBinding() != *original_binding_) {
+    pending_binding_.reset();
+    pending_binding_ = std::make_unique<InputElement>(*original_binding_);
+    action_view_->SetViewContent(BindingOption::kPending, content_bounds);
+  }
+  // Set to |DisplayMode::kRestore| to clear the focus even the current binding
+  // is same as original binding.
+  action_view_->SetDisplayMode(DisplayMode::kRestore);
 }
 
 const InputElement& Action::GetCurrentDisplayedBinding() {
@@ -341,22 +344,33 @@ bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
   return false;
 }
 
-void Action::OnTouchReleased() {
-  DCHECK(touch_id_);
-  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
-  touch_id_ = absl::nullopt;
-  if (locations_.empty())
-    return;
-  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+bool Action::VerifyOnKeyRelease(ui::DomCode code) {
+  if (!touch_id_) {
+    LOG(ERROR) << "There should be a touch ID for the release {"
+               << ui::KeycodeConverter::DomCodeToCodeString(code) << "}.";
+    DCHECK_EQ(keys_pressed_.size(), 0);
+    return false;
+  }
+
+  DCHECK_NE(keys_pressed_.size(), 0);
+  if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code))
+    return false;
+
+  return true;
 }
 
-void Action::OnTouchCancelled() {
+void Action::OnTouchReleased() {
   DCHECK(touch_id_);
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
   touch_id_ = absl::nullopt;
   keys_pressed_.clear();
   if (locations_.empty())
     return;
+  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+}
+
+void Action::OnTouchCancelled() {
+  OnTouchReleased();
   current_position_index_ = 0;
 }
 
@@ -365,7 +379,12 @@ void Action::PostUnbindProcess() {
     return;
   auto bounds = CalculateWindowContentBounds(target_window_);
   action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound);
+  const int label_index = action_view_->unbind_label_index();
+  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
+                               (label_index == kDefaultLabelIndex
+                                    ? nullptr
+                                    : action_view_->labels()[label_index]));
+  action_view_->set_unbind_label_index(kDefaultLabelIndex);
 }
 
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {

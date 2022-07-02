@@ -11,11 +11,6 @@
 #include <stdlib.h>
 #include <string>
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS  // make some CString ctors explicit
-
-#include <atlbase.h>
-#include <atlstr.h>
-
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -26,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"

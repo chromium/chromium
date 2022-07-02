@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/bruschetta/fake_bruschetta_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -38,9 +39,10 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -133,15 +135,18 @@ class TestCrosUsbDeviceObserver : public CrosUsbDeviceObserver {
 class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
  public:
   CrosUsbDetectorTest() {
+    // Needed for ChunneldClient via GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
+    VmPluginDispatcherClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = FakeConciergeClient::Get();
     fake_vm_plugin_dispatcher_client_ =
-        static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-            chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
+        static_cast<FakeVmPluginDispatcherClient*>(
+            VmPluginDispatcherClient::Get());
 
     mock_disk_mount_manager_ =
         new testing::NiceMock<disks::MockDiskMountManager>;
@@ -153,9 +158,11 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ~CrosUsbDetectorTest() override {
     disks::DiskMountManager::Shutdown();
+    VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -287,8 +294,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ash::FakeCiceroneClient* fake_cicerone_client_;
   FakeConciergeClient* fake_concierge_client_;
-  // Owned by chromeos::DBusThreadManager
-  chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
+  FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
@@ -379,16 +385,27 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Should have 2 buttions when ARCVM is enabled and user enables ARC but the
+  // Should have 3 buttions when ARCVM is enabled and user enables ARC but the
   // feature is disabled.
-  // Update this test when the kUsbDeviceDefaultAttachToArcVm is enabled
-  // by default or removed.
   ASSERT_TRUE(arc::SetArcPlayStoreEnabledForProfile(profile(), true));
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 2u);
+  EXPECT_EQ(notification->buttons().size(), 3u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Now should have 4 buttons when Bruschetta is enabled.
+  bruschetta::FakeBruschettaFeatures bruschetta_features;
+  bruschetta_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(notification->buttons().size(), 4u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosUsbDetectorTest, UsbNotificationClicked) {

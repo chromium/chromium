@@ -45,7 +45,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/manager/display_configurator.h"
@@ -54,6 +56,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -94,6 +97,19 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
 
   host->SetDisplayTransformHint(
       display::DisplayRotationToOverlayTransform(effective_rotation));
+
+  const display::ManagedDisplayInfo& display_info =
+      GetDisplayManager()->GetDisplayInfo(display.id());
+  if (display::features::IsRoundedDisplayEnabled()) {
+    // Set/Update rounded corners on the display.
+    ui::Layer* root_layer = host->window()->layer();
+    DCHECK(root_layer);
+    root_layer->SetRoundedCornerRadius(display_info.rounded_corners_radii());
+    // If root_layer does not have rounded corners, setting the fast rounded
+    // corner optimization on does not have any effect.
+    root_layer->SetIsFastRoundedCorner(
+        !display_info.rounded_corners_radii().IsEmpty());
+  }
 
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.
@@ -596,6 +612,8 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
   RootWindowController* controller =
       RootWindowController::ForWindow(root_being_deleted);
   DCHECK(controller);
+  // Some code relies on this being called before MoveWindowsTo().
+  Shell::Get()->OnRootWindowWillShutdown(root_being_deleted);
   aura::Window* primary_root_after_host_deletion =
       GetRootWindowForDisplayId(GetPrimaryDisplayId());
   controller->MoveWindowsTo(primary_root_after_host_deletion);

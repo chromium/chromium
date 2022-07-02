@@ -273,7 +273,7 @@ base::TimeTicks TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
 
 base::ProcessHandle TabLifecycleUnitSource::TabLifecycleUnit::GetProcessHandle()
     const {
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   if (!main_frame)
     return base::ProcessHandle();
   content::RenderProcessHost* process = main_frame->GetProcess();
@@ -503,7 +503,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 #if BUILDFLAG(IS_CHROMEOS)
   if (!fast_shutdown_success &&
       discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    content::RenderFrameHost* main_frame = old_contents->GetMainFrame();
+    content::RenderFrameHost* main_frame = old_contents->GetPrimaryMainFrame();
     // We avoid fast shutdown on tabs with beforeunload handlers on the main
     // frame, as that is often an indication of unsaved user state.
     DCHECK(main_frame);
@@ -611,7 +611,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
 
 content::RenderProcessHost*
 TabLifecycleUnitSource::TabLifecycleUnit::GetRenderProcessHost() const {
-  return web_contents()->GetMainFrame()->GetProcess();
+  return web_contents()->GetPrimaryMainFrame()->GetProcess();
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(

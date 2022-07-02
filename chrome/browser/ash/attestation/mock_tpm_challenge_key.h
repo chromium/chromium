@@ -21,17 +21,16 @@ class MockTpmChallengeKey : public TpmChallengeKey {
 
   void EnableFake();
 
-  MOCK_METHOD(
-      void,
-      BuildResponse,
-      (chromeos::attestation::AttestationKeyType key_type,
-       Profile* profile,
-       TpmChallengeKeyCallback callback,
-       const std::string& challenge,
-       bool register_key,
-       const std::string& key_name_for_spkac,
-       const absl::optional<::attestation::DeviceTrustSignals>& signals),
-      (override));
+  MOCK_METHOD(void,
+              BuildResponse,
+              (chromeos::attestation::AttestationKeyType key_type,
+               Profile* profile,
+               TpmChallengeKeyCallback callback,
+               const std::string& challenge,
+               bool register_key,
+               const std::string& key_name_for_spkac,
+               const absl::optional<std::string>& signals),
+              (override));
 
   void FakeBuildResponseSuccess(TpmChallengeKeyCallback callback);
 };

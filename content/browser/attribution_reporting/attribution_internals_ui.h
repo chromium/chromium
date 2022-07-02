@@ -7,25 +7,36 @@
 
 #include <memory>
 
-#include "content/browser/attribution_reporting/attribution_internals.mojom.h"
-#include "content/common/content_export.h"
+#include "content/browser/attribution_reporting/attribution_internals.mojom-forward.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
 class AttributionInternalsHandlerImpl;
-class AttributionManagerProvider;
+class AttributionInternalsUI;
+class RenderFrameHost;
+class WebUI;
+
+// WebUIConfig for chrome://attribution-internals page
+class AttributionInternalsUIConfig
+    : public DefaultWebUIConfig<AttributionInternalsUI> {
+ public:
+  AttributionInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIAttributionInternalsHost) {
+  }
+};
 
 // WebUI which handles serving the chrome://attribution-internals page.
-class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
+class AttributionInternalsUI : public WebUIController {
  public:
   explicit AttributionInternalsUI(WebUI* web_ui);
-  AttributionInternalsUI(const AttributionInternalsUI& other) = delete;
-  AttributionInternalsUI& operator=(const AttributionInternalsUI& other) =
-      delete;
-  AttributionInternalsUI(AttributionInternalsUI&& other) = delete;
-  AttributionInternalsUI& operator=(AttributionInternalsUI&& other) = delete;
+  AttributionInternalsUI(const AttributionInternalsUI&) = delete;
+  AttributionInternalsUI& operator=(const AttributionInternalsUI&) = delete;
+  AttributionInternalsUI(AttributionInternalsUI&&) = delete;
+  AttributionInternalsUI& operator=(AttributionInternalsUI&&) = delete;
   ~AttributionInternalsUI() override;
 
   // WebUIController overrides:
@@ -33,9 +44,6 @@ class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
 
   void BindInterface(
       mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
-
-  void SetAttributionManagerProviderForTesting(
-      std::unique_ptr<AttributionManagerProvider> manager_provider);
 
  private:
   std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;

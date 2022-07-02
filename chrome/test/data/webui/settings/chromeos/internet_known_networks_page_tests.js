@@ -88,8 +88,8 @@ suite('InternetKnownNetworksPage', function() {
 
       assertEquals(2, internetKnownNetworksPage.networkStateList_.length);
 
-      const preferredList =
-          internetKnownNetworksPage.$$('#preferredNetworkList');
+      const preferredList = internetKnownNetworksPage.shadowRoot.querySelector(
+          '#preferredNetworkList');
       assertTrue(!!preferredList);
       const preferredElems = preferredList.querySelectorAll('cr-link-row');
       assertEquals(preferredElems.length, 1);
@@ -126,8 +126,8 @@ suite('InternetKnownNetworksPage', function() {
       await flushAsync();
 
       assertEquals(2, internetKnownNetworksPage.networkStateList_.length);
-      const preferredList =
-          internetKnownNetworksPage.$$('#preferredNetworkList');
+      const preferredList = internetKnownNetworksPage.shadowRoot.querySelector(
+          '#preferredNetworkList');
       assertTrue(!!preferredList);
 
       const preferredPolicyIcon =
@@ -147,7 +147,8 @@ suite('InternetKnownNetworksPage', function() {
               'knownNetworksMenuButtonTitle', 'wifi2'));
 
       const notPreferredList =
-          internetKnownNetworksPage.$$('#notPreferredNetworkList');
+          internetKnownNetworksPage.shadowRoot.querySelector(
+              '#notPreferredNetworkList');
       assertTrue(!!notPreferredList);
 
       const notPreferredPolicyIcon =

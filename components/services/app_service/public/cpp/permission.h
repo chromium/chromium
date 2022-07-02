@@ -24,7 +24,8 @@ ENUM(PermissionType,
      kNotifications,
      kContacts,
      kStorage,
-     kPrinting)
+     kPrinting,
+     kFileHandling)
 
 ENUM(TriState, kAllow, kBlock, kAsk)
 

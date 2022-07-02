@@ -12,7 +12,7 @@ class ChromeBrowserState;
 // Controller for the UI that allows the user to block popups.
 @interface BlockPopupsTableViewController : SettingsRootTableViewController
 
-// The designated initializer. |browserState| must not be nil.
+// The designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 

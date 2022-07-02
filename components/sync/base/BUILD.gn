@@ -33,6 +33,8 @@ static_library("base") {
     "legacy_directory_deletion.h",
     "model_type.cc",
     "model_type.h",
+    "page_transition_conversion.cc",
+    "page_transition_conversion.h",
     "passphrase_enums.cc",
     "passphrase_enums.h",
     "pref_names.h",

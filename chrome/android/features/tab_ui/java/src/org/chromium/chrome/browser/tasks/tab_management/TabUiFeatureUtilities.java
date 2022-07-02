@@ -157,6 +157,29 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * @return Whether the tab strip improvements are enabled.
+     * @param context The activity context.
+     */
+    public static boolean isTabStripImprovementsEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+    }
+
+    /**
+     * @return Whether tab groups are enabled for tablet.
+     * @param context The activity context.
+     */
+    public static boolean isTabletTabGroupsEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
+    }
+
+    public static boolean isTabletTabManagementImprovementsEnabled(Context context) {
+        return isTabletGridTabSwitcherEnabled(context) && isTabStripImprovementsEnabled(context)
+                && isTabletTabGroupsEnabled(context);
+    }
+
+    /**
      * Set whether the tablet grid tab switcher polish is enabled for testing.
      */
     public static void setTabletGridTabSwitcherPolishEnabledForTesting(@Nullable Boolean enabled) {

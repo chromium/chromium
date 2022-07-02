@@ -31,7 +31,7 @@
       @"and how to dynamically change the primary button label.";
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
-  self.bannerImage = [UIImage imageNamed:@"Sample-banner-tall"];
+  self.bannerName = @"Sample-banner-tall";
   self.isTallBanner = YES;
   self.scrollToEndMandatory = YES;
 

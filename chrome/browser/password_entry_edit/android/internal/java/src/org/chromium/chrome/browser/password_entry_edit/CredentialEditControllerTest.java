@@ -39,6 +39,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
+import android.os.PersistableBundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -86,6 +88,13 @@ public class CredentialEditControllerTest {
 
     CredentialEditMediator mMediator;
     PropertyModel mModel;
+
+    private void verifyTheClipdataContainSensitiveExtra(ClipData clipData) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            PersistableBundle extras = clipData.getDescription().getExtras();
+            assertTrue(extras.getBoolean("android.content.extra.IS_SENSITIVE"));
+        }
+    }
 
     @Before
     public void setUp() {
@@ -203,8 +212,8 @@ public class CredentialEditControllerTest {
 
         ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData expectedClip = ClipData.newPlainText("password", TEST_PASSWORD);
-        assertEquals(expectedClip.toString(), clipboard.getPrimaryClip().toString());
+        assertEquals(TEST_PASSWORD, clipboard.getPrimaryClip().getItemAt(0).getText());
+        verifyTheClipdataContainSensitiveExtra(clipboard.getPrimaryClip());
     }
 
     @Test

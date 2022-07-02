@@ -191,7 +191,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   // We don't have an HWND yet, so scale relative to the nearest screen.
   gfx::Rect pixel_bounds =
       display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
-  message_handler_->Init(parent_hwnd, pixel_bounds);
+  message_handler_->Init(parent_hwnd, pixel_bounds, params.headless_mode);
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
@@ -522,7 +522,7 @@ void DesktopWindowTreeHostWin::SetFullscreen(bool fullscreen) {
 }
 
 bool DesktopWindowTreeHostWin::IsFullscreen() const {
-  return message_handler_->fullscreen_handler()->fullscreen();
+  return message_handler_->IsFullscreen();
 }
 
 void DesktopWindowTreeHostWin::SetOpacity(float opacity) {
@@ -800,10 +800,6 @@ bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
 
 bool DesktopWindowTreeHostWin::IsModal() const {
   return native_widget_delegate_->IsModal();
-}
-
-bool DesktopWindowTreeHostWin::IsHeadless() const {
-  return desktop_native_widget_aura_->IsHeadlessMode();
 }
 
 int DesktopWindowTreeHostWin::GetInitialShowState() const {

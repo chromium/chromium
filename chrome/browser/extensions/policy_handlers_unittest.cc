@@ -397,10 +397,9 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
 }
 
 TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
-  base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy1,
-                                                    kJsonParseOptions);
-  ASSERT_TRUE(policy_result.value) << policy_result.error_message;
+  auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
+      kTestManagementPolicy1, kJsonParseOptions);
+  ASSERT_TRUE(policy_result.has_value()) << policy_result.error().message;
 
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
@@ -411,7 +410,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
 
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, std::move(*policy_result.value),
+                 policy::POLICY_SOURCE_CLOUD, std::move(*policy_result),
                  nullptr);
   // CheckPolicySettings() has an error message because of the missing update
   // URL.
@@ -453,8 +452,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
 
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 policy_value.value.value().Clone(), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_EQ(2u, errors.size());
@@ -472,10 +470,9 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
 
 TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
   // Mark as enterprise managed.
-  base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy2,
-                                                    kJsonParseOptions);
-  ASSERT_TRUE(policy_result.value) << policy_result.error_message;
+  auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
+      kTestManagementPolicy2, kJsonParseOptions);
+  ASSERT_TRUE(policy_result.has_value()) << policy_result.error().message;
 
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
@@ -486,29 +483,26 @@ TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
 
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, policy_result.value->Clone(),
-                 nullptr);
+                 policy::POLICY_SOURCE_CLOUD, policy_result->Clone(), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = NULL;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
-  EXPECT_EQ(*policy_result.value, *value);
+  EXPECT_EQ(*policy_result, *value);
 }
 
 TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
   // Check that invalid keys are dropped from the dictionary, but the rest of
   // the settings apply correctly.
 
-  base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy5,
-                                                    kJsonParseOptions);
-  ASSERT_TRUE(policy_result.value) << policy_result.error_message;
+  auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
+      kTestManagementPolicy5, kJsonParseOptions);
+  ASSERT_TRUE(policy_result.has_value()) << policy_result.error().message;
 
-  base::JSONReader::ValueWithError stripped_policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kSanitizedTestManagementPolicy5, kJsonParseOptions);
-  ASSERT_TRUE(stripped_policy_result.value)
-      << stripped_policy_result.error_message;
+  auto stripped_policy_result = base::JSONReader::ReadAndReturnValueWithError(
+      kSanitizedTestManagementPolicy5, kJsonParseOptions);
+  ASSERT_TRUE(stripped_policy_result.has_value())
+      << stripped_policy_result.error().message;
 
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
@@ -519,7 +513,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
 
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, std::move(*policy_result.value),
+                 policy::POLICY_SOURCE_CLOUD, std::move(*policy_result),
                  nullptr);
   // CheckPolicySettings() has an error message because of the missing update
   // URL.
@@ -530,7 +524,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = nullptr;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
-  EXPECT_EQ(*stripped_policy_result.value, *value);
+  EXPECT_EQ(*stripped_policy_result, *value);
 }
 
 // Only enterprise managed machines can auto install extensions from a location
@@ -539,12 +533,12 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   // Mark as not enterprise managed.
   auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
       kSensitiveTestManagementPolicy, kJsonParseOptions);
-  ASSERT_TRUE(policy_result.value) << policy_result.error_message;
+  ASSERT_TRUE(policy_result.has_value()) << policy_result.error().message;
 
   auto sanitized_policy_result = base::JSONReader::ReadAndReturnValueWithError(
       kSanitizedTestManagementPolicy, kJsonParseOptions);
-  ASSERT_TRUE(sanitized_policy_result.value)
-      << sanitized_policy_result.error_message;
+  ASSERT_TRUE(sanitized_policy_result.has_value())
+      << sanitized_policy_result.error().message;
 
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
@@ -555,15 +549,14 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
 
   policy_map.Set(policy::key::kExtensionSettings,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, policy_result.value->Clone(),
-                 nullptr);
+                 policy::POLICY_SOURCE_CLOUD, policy_result->Clone(), nullptr);
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
 
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = nullptr;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
-  EXPECT_EQ(*sanitized_policy_result.value, *value);
+  EXPECT_EQ(*sanitized_policy_result, *value);
 }
 
 }  // namespace extensions

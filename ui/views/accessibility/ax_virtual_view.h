@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
@@ -71,11 +72,11 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // Adds |view| as a child of this virtual view, optionally at |index|.
   // We take ownership of our children.
   void AddChildView(std::unique_ptr<AXVirtualView> view);
-  void AddChildViewAt(std::unique_ptr<AXVirtualView> view, int index);
+  void AddChildViewAt(std::unique_ptr<AXVirtualView> view, size_t index);
 
-  // Moves |view| to the specified |index|. A negative value for |index| moves
+  // Moves |view| to the specified |index|. A too-large value for |index| moves
   // |view| to the end.
-  void ReorderChildView(AXVirtualView* view, int index);
+  void ReorderChildView(AXVirtualView* view, size_t index);
 
   // Removes this virtual view from its parent, which could either be a virtual
   // or a real view. Hands ownership of this view back to the caller.
@@ -110,9 +111,9 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // is also this AXVirtualView.
   bool Contains(const AXVirtualView* view) const;
 
-  // Returns the index of |view|, or -1 if |view| is not a child of this virtual
-  // view.
-  int GetIndexOf(const AXVirtualView* view) const;
+  // Returns the index of |view|, or nullopt if |view| is not a child of this
+  // virtual view.
+  absl::optional<size_t> GetIndexOf(const AXVirtualView* view) const;
 
   //
   // Other methods.
@@ -140,8 +141,8 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   //   necessarily reflect the internal descendant tree. (An ignored node means
   //   that the node should not be exposed to the platform.)
   const ui::AXNodeData& GetData() const override;
-  int GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(int index) override;
+  size_t GetChildCount() const override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;

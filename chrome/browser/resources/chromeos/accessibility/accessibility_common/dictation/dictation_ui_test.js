@@ -7,7 +7,7 @@ GEN_INCLUDE(['dictation_test_base.js']);
 /** UI tests for Dictation. */
 DictationUIE2ETest = class extends DictationE2ETestBase {};
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'ShownWhenSpeechRecognitionStarts', async function() {
       this.toggleDictationOn();
       await this.waitForUIProperties({
@@ -16,7 +16,7 @@ SYNC_TEST_F(
       });
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'DisplaysInterimSpeechResults', async function() {
       this.toggleDictationOn();
       // Send an interim speech result.
@@ -29,7 +29,7 @@ SYNC_TEST_F(
       });
     });
 
-SYNC_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
+AX_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
   this.toggleDictationOn();
   // Perform a command.
   this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
@@ -41,7 +41,7 @@ SYNC_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
   });
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'ResetsToStandbyModeAfterFinalSpeechResult',
     async function() {
       this.toggleDictationOn();
@@ -66,7 +66,7 @@ SYNC_TEST_F(
       });
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'HiddenWhenDictationDeactivates', async function() {
       this.toggleDictationOn();
       await this.waitForUIProperties({
@@ -78,7 +78,7 @@ SYNC_TEST_F(
           {visible: false, icon: this.iconType.HIDDEN});
     });
 
-SYNC_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
+AX_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
   this.toggleDictationOn();
   await this.waitForUIProperties({
     visible: true,
@@ -92,7 +92,7 @@ SYNC_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
   });
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownWhenTextCommitted', async function() {
       this.toggleDictationOn();
       await this.waitForUIProperties({
@@ -119,7 +119,7 @@ SYNC_TEST_F(
       });
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterTextSelected', async function() {
       this.toggleDictationOn();
       await this.waitForUIProperties({
@@ -147,7 +147,7 @@ SYNC_TEST_F(
       });
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterCommandExecuted', async function() {
       this.toggleDictationOn();
       await this.waitForUIProperties({

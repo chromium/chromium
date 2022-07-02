@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -101,6 +102,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
     private final OneshotSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerSupplier;
+    private final CrowButtonDelegate mCrowButtonDelegate;
 
     @VisibleForTesting
     static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
@@ -220,6 +222,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      * @param backPressManager {@link BackPressManager} to handle back press.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
@@ -242,7 +245,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            BackPressManager backPressManager) {
+            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -265,6 +268,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mToolbarSupplier = toolbarSupplier;
+        mCrowButtonDelegate = crowButtonDelegate;
 
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
@@ -278,7 +282,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
                     containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
-                    scrimCoordinator, /* rootView= */ containerView);
+                    scrimCoordinator, /* rootView= */ containerView, dynamicResourceLoaderSupplier,
+                    snackbarManager, modalDialogManager);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mTabSwitcher.getTabSwitcherCustomViewManager());
         } else {
@@ -405,7 +410,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
                     mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
                     mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
-                    mConstructedTimeNs, mSwipeRefreshLayout);
+                    mConstructedTimeNs, mSwipeRefreshLayout, mCrowButtonDelegate);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
@@ -413,8 +418,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 UserPrefs.get(Profile.getLastUsedRegularProfile()), mSnackbarManager);
 
         if (mTabSwitcher != null) {
-            mTabSwitcher.initWithNative(mActivity, mTabContentManager,
-                    mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
+            mTabSwitcher.initWithNative();
         }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get(),
@@ -433,9 +437,74 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
     }
 
-    @Override
-    public Controller getController() {
+    @VisibleForTesting
+    public StartSurfaceMediator getMediatorForTesting() {
         return mStartSurfaceMediator;
+    }
+
+    @Override
+    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
+        mStartSurfaceMediator.addTabSwitcherViewObserver(observer);
+    }
+
+    @Override
+    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener) {
+        mStartSurfaceMediator.removeTabSwitcherViewObserver(listener);
+    }
+
+    @Override
+    public void hideTabSwitcherView(boolean animate) {
+        mStartSurfaceMediator.hideTabSwitcherView(animate);
+    }
+
+    @Override
+    public void showOverview(boolean animate) {
+        mStartSurfaceMediator.showOverview(animate);
+    }
+
+    @Override
+    public void setStartSurfaceState(int state, int launchOrigin) {
+        mStartSurfaceMediator.setStartSurfaceState(state, launchOrigin);
+    }
+
+    @Override
+    public void setStartSurfaceState(int state) {
+        mStartSurfaceMediator.setStartSurfaceState(state);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return mStartSurfaceMediator.onBackPressed();
+    }
+
+    @Override
+    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
+        mStartSurfaceMediator.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
+    }
+
+    @Override
+    public int getStartSurfaceState() {
+        return mStartSurfaceMediator.getStartSurfaceState();
+    }
+
+    @Override
+    public int getPreviousStartSurfaceState() {
+        return mStartSurfaceMediator.getPreviousStartSurfaceState();
+    }
+
+    @Override
+    public ViewGroup getTabSwitcherContainer() {
+        return mStartSurfaceMediator.getTabSwitcherContainer();
+    }
+
+    @Override
+    public void setSnackbarParentView(ViewGroup parentView) {
+        mStartSurfaceMediator.setSnackbarParentView(parentView);
+    }
+
+    @Override
+    public boolean isShowingStartSurfaceHomepage() {
+        return mStartSurfaceMediator.isShowingStartSurfaceHomepage();
     }
 
     @Override
@@ -715,11 +784,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
                         - getPixelSize(R.dimen.search_box_start_padding));
 
-        float fakeTextSize = mActivity.getResources().getDimension(
-                R.dimen.tasks_surface_location_bar_url_text_size);
-        float realTextSize =
-                mActivity.getResources().getDimension(R.dimen.location_bar_url_text_size);
-
         int fakeButtonSize = getPixelSize(R.dimen.tasks_surface_location_bar_url_button_size);
         int realButtonSize = getPixelSize(R.dimen.location_bar_action_icon_width);
 
@@ -744,7 +808,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
             mTasksSurface.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
                     (int) (fakeEndPadding * (1 - expansionFraction)),
-                    fakeTextSize + (realTextSize - fakeTextSize) * expansionFraction,
                     SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
                             ? realTranslationX * expansionFraction
                             : 0,

@@ -20,6 +20,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,9 +41,9 @@ public class SearchOfflineItemFilterTest {
 
     @Test
     public void testTitleFiltering() {
-        OfflineItem item1 = buildItem("cows", "");
-        OfflineItem item2 = buildItem("cows are", "");
-        OfflineItem item3 = buildItem("cows are crazy!", "");
+        OfflineItem item1 = buildItem("cows", GURL.emptyGURL());
+        OfflineItem item2 = buildItem("cows are", GURL.emptyGURL());
+        OfflineItem item3 = buildItem("cows are crazy!", GURL.emptyGURL());
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -89,9 +91,10 @@ public class SearchOfflineItemFilterTest {
 
     @Test
     public void testUrlFiltering() {
-        OfflineItem item1 = buildItem("", "http://www.google.com");
-        OfflineItem item2 = buildItem("", "http://www.google.com/dogs");
-        OfflineItem item3 = buildItem("", "http://www.google.com/dogs-are-fun");
+        OfflineItem item1 = buildItem("", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL));
+        OfflineItem item2 = buildItem("", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS));
+        OfflineItem item3 =
+                buildItem("", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS_FUN));
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -139,9 +142,9 @@ public class SearchOfflineItemFilterTest {
 
     @Test
     public void testUrlOrTitleFiltering() {
-        OfflineItem item1 = buildItem("cat", "http://www.google.com/dog");
-        OfflineItem item2 = buildItem("dog", "http://www.google.com/cat");
-        OfflineItem item3 = buildItem("cow", "http://www.google.com/pig");
+        OfflineItem item1 = buildItem("cat", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOG));
+        OfflineItem item2 = buildItem("dog", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT));
+        OfflineItem item3 = buildItem("cow", JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_PIG));
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -164,7 +167,7 @@ public class SearchOfflineItemFilterTest {
         };
     }
 
-    private static OfflineItem buildItem(String title, String url) {
+    private static OfflineItem buildItem(String title, GURL url) {
         OfflineItem item = new OfflineItem();
         item.title = title;
         item.originalUrl = url;

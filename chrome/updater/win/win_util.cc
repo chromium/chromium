@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/base_paths_win.h"
 #include "base/callback_helpers.h"
@@ -85,7 +86,7 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   SID_IDENTIFIER_AUTHORITY* authority = ::GetSidIdentifierAuthority(sid);
   if (!authority)
     return E_FAIL;
-  static const SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
+  constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
   if (std::memcmp(authority, &kMandatoryLabelAuth,
                   sizeof(SID_IDENTIFIER_AUTHORITY))) {
@@ -166,6 +167,28 @@ HWND CreateForegroundParentWindowForUAC() {
     ::SetForegroundWindow(foreground_parent);
   }
   return foreground_parent.Detach();
+}
+
+// Compares the OS, service pack, and build numbers using `::VerifyVersionInfo`,
+// in accordance with `type_mask` and `oper`.
+bool CompareOSVersionsInternal(const OSVERSIONINFOEX& os,
+                               DWORD type_mask,
+                               BYTE oper) {
+  DCHECK(type_mask);
+  DCHECK(oper);
+
+  ULONGLONG cond_mask = 0;
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_MAJORVERSION, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_MINORVERSION, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_SERVICEPACKMAJOR, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_SERVICEPACKMINOR, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_BUILDNUMBER, oper);
+
+  // `::VerifyVersionInfo` could return `FALSE` due to an error other than
+  // `ERROR_OLD_WIN_VERSION`. We do not handle that case here.
+  // https://msdn.microsoft.com/ms725492.
+  OSVERSIONINFOEX os_in = os;
+  return ::VerifyVersionInfo(&os_in, type_mask, cond_mask);
 }
 
 }  // namespace
@@ -750,6 +773,39 @@ bool IsServiceRunning(const std::wstring& service_name) {
 HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope) {
   return scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
                                         : HKEY_CURRENT_USER;
+}
+
+absl::optional<OSVERSIONINFOEX> GetOSVersion() {
+  // `::RtlGetVersion` is being used here instead of `::GetVersionEx`, because
+  // the latter function can return the incorrect version if it is shimmed using
+  // an app compat shim.
+  using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
+  static const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
+      ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
+  if (!rtl_get_version)
+    return absl::nullopt;
+
+  OSVERSIONINFOEX os_out = {};
+  os_out.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+  rtl_get_version(&os_out);
+  if (!os_out.dwMajorVersion)
+    return absl::nullopt;
+
+  return os_out;
+}
+
+bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
+  DCHECK(oper);
+
+  constexpr DWORD kOSTypeMask = VER_MAJORVERSION | VER_MINORVERSION |
+                                VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR;
+  constexpr DWORD kBuildTypeMask = VER_BUILDNUMBER;
+
+  // If the OS and the service pack match, return the build number comparison.
+  return CompareOSVersionsInternal(os_version, kOSTypeMask, VER_EQUAL)
+             ? CompareOSVersionsInternal(os_version, kBuildTypeMask, oper)
+             : CompareOSVersionsInternal(os_version, kOSTypeMask, oper);
 }
 
 }  // namespace updater

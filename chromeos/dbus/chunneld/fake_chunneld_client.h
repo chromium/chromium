@@ -22,6 +22,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) FakeChunneldClient
   FakeChunneldClient& operator=(const FakeChunneldClient&) = delete;
 
   // ChunneldClient:
+  void Init(dbus::Bus* bus) override {}
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void WaitForServiceToBeAvailable(
@@ -29,9 +30,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) FakeChunneldClient
 
   void NotifyChunneldStopped();
   void NotifyChunneldStarted();
-
- protected:
-  void Init(dbus::Bus* bus) override {}
 
  private:
   void InitializeProtoResponses();

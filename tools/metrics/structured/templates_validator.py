@@ -97,6 +97,8 @@ class {project.validator} final :
     static constexpr IdScope kIdScope = IdScope::{project.id_scope};
     static constexpr EventType kEventType =
         StructuredEventProto_EventType_{project.event_type};
+    static constexpr int kKeyRotationPeriod =
+        {project.key_rotation_period};
 }};
 
 {project.validator}::{project.validator}() :
@@ -104,7 +106,8 @@ class {project.validator} final :
   {project.validator}::kProjectNameHash,
   {project.validator}::kIdType,
   {project.validator}::kIdScope,
-  {project.validator}::kEventType
+  {project.validator}::kEventType,
+  {project.validator}::kKeyRotationPeriod
 )
   {{}}
 

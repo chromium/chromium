@@ -13,6 +13,7 @@
 
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -201,8 +202,8 @@ class Service : public KeyedService,
   // then returns nullptr.
   ProviderInterface* GetProvider(const ProviderId& provider_id);
 
-  Profile* profile_;
-  extensions::ExtensionRegistry* extension_registry_;  // Not owned.
+  raw_ptr<Profile> profile_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;  // Not owned.
   base::ObserverList<Observer>::Unchecked observers_;
   std::map<FileSystemKey, std::unique_ptr<ProvidedFileSystemInterface>>
       file_system_map_;

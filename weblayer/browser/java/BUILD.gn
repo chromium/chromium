@@ -408,13 +408,9 @@ android_library("test_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-android_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit_test_support") {
   deps = [
     ":java",
-    "//build/android:build_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
@@ -422,7 +418,6 @@ android_library("junit_test_support") {
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/mockito:mockito_java",
@@ -434,9 +429,7 @@ android_library("junit_test_support") {
   sources = [ "org/chromium/weblayer_private/payments/test_support/WebLayerPaymentRequestBuilder.java" ]
 }
 
-junit_binary("weblayer_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_binary("weblayer_junit_tests") {
   testonly = true
   sources = [ "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java" ]
   resources_package = "org.chromium.weblayer_private.test"
@@ -445,7 +438,6 @@ junit_binary("weblayer_junit_tests") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",

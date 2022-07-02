@@ -26,6 +26,8 @@ class DesktopCaptureOptions;
 
 namespace remoting {
 
+class DesktopDisplayInfoMonitor;
+
 // Used to create audio/video capturers and event executor that work with
 // the local console.
 class BasicDesktopEnvironment : public DesktopEnvironment {
@@ -40,10 +42,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
-      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
-  std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
-      override;
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer() override;
+  DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() override;
   std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
       override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
@@ -56,8 +56,9 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer(
-      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  CreateComposingVideoCapturer() override;
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() override;
 
  protected:
   friend class BasicDesktopEnvironmentFactory;
@@ -115,6 +116,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
 
   // Used to send messages directly to the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
+
+  std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   DesktopEnvironmentOptions options_;
 };

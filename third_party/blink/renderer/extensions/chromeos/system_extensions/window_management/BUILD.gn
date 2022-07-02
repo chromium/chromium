@@ -6,6 +6,10 @@ import("//third_party/blink/renderer/extensions/extensions.gni")
 
 blink_extensions_chromeos_sources("window_management") {
   sources = [
+    "cros_accelerator_event.cc",
+    "cros_accelerator_event.h",
+    "cros_screen.cc",
+    "cros_screen.h",
     "cros_window.cc",
     "cros_window.h",
     "cros_window_management.cc",
@@ -14,6 +18,7 @@ blink_extensions_chromeos_sources("window_management") {
 
   deps = [
     "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/extensions/chromeos:chromeos_events",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]

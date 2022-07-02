@@ -95,17 +95,22 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 
+  const bool is_push_available =
+      refresh_scheduler && refresh_scheduler->invalidations_available();
+
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
   dict->SetBoolKey("error", !no_error);
-  dict->SetBoolKey(
-      "policiesPushAvailable",
-      refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
+  dict->SetBoolKey("policiesPushAvailable", is_push_available);
   dict->SetStringKey("status", status);
-  dict->SetStringKey(
-      "refreshInterval",
-      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  // If push is on, policy update will be done via push. Hide policy fetch
+  // interval label to prevent users from misunderstanding.
+  if (!is_push_available) {
+    dict->SetStringKey(
+        "refreshInterval",
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  }
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
           ? base::Time::FromJavaTime(policy->timestamp())
@@ -139,6 +144,16 @@ void PolicyStatusProvider::GetStatusFromPolicyData(
 
   dict->SetStringKey("clientId", client_id);
   dict->SetStringKey("username", username);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Include the "Managed by:" attribute for the user policy legend.
+  if (policy->state() == enterprise_management::PolicyData::ACTIVE) {
+    if (policy->has_managed_by())
+      dict->SetStringKey("enterpriseDomainManager", policy->managed_by());
+    else if (policy->has_display_domain())
+      dict->SetStringKey("enterpriseDomainManager", policy->display_domain());
+  }
+#endif
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.

@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
+<translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
@@ -15,9 +16,12 @@
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
+<translation id="1145516343487477149">ຊອກຫາບົດຄວາມຊ່ວຍເຫຼືອ ແລະ ຄຳຕອບສຳລັບຄຳຖາມ Chromebook ທົ່ວໄປ</translation>
+<translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
+<translation id="1190378975642195988">ຕົວວັດແທກຄວາມເລັ່ງຖານ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
@@ -32,12 +36,15 @@
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">ເປີດໃຊ້ Write Protect</translation>
 <translation id="1308754910631152188">ກຳລັງອັບເດດ (ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">ບໍ່ມີເຄືອຂ່າຍ <ph name="NETWORK_NAME" /> ທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="131421566576084655">ບໍ່ມີຂໍ້ມູນວັນທີຂອງການຣີເຊັດອິນເຕີເນັດຫຼ້າສຸດ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ເຄືອຂ່າຍພາຍໃນ, ບໍ່ໂຣມມິງ</translation>
+<translation id="132712914231403017">ຕິດຕັ້ງໄຟລ໌ເຟີມແວ</translation>
 <translation id="1327977588028644528">​ເກດ​ເວ</translation>
+<translation id="1328223165223065150">ສີຮູບພື້ນຫຼັງ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ພໍດີກັບພື້ນທີ່ສະແກນ</translation>
 <translation id="1367951781824006909">ເລືອກໄຟລ໌</translation>
@@ -55,14 +62,19 @@
 <translation id="1442433966118452622">ທີ່ມາຮູບ</translation>
 <translation id="1451536289672181509">ອຸປະກອນແມ່ນແປ້ນພິມ.</translation>
 <translation id="1459693405370120464">ສະພາບອາກາດ</translation>
+<translation id="1459784442280469416">ບັນທຶກໄປໃສ່ USB</translation>
 <translation id="1468664791493211953">ຂໍ້ສະເໜີ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ອາດຈະສາມາດຕິດຕາມການເຄື່ອນໄຫວຂອງທ່ານໄດ້.</translation>
+<translation id="147809995039451286">ບໍ່ສາມາດດາວໂຫຼດການອັບເດດໄດ້</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
-<translation id="1486019694341708158">ເປີດໃຊ້ຕົວສະຫຼັບເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
+<translation id="1483493594462132177">ສົ່ງ</translation>
 <translation id="1491076385728777984">ກຳລັງອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
+<translation id="1512982610995527443">ອຸປະກອນຈະປິດເຄື່ອງໃນ 5 ວິນາທີ</translation>
+<translation id="1522984060396982789">ການສ້ອມແປງຂອງທ່ານສຳເລັດແລ້ວ. ທ່ານສາມາດປິດອຸປະກອນ ຫຼື ດຳເນີນການເພີ່ມເຕີມບາງຢ່າງໄດ້.</translation>
+<translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
@@ -71,21 +83,28 @@
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1578784163189013834">ເລືອກພື້ນຫຼັງສະກຣີນເຊັບເວີ</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
+<translation id="1631385268983122904">ຢ່າປະກອບອຸປະກອນເຂົ້າກັນເທື່ອ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641857168437328880">ຕົວປ້ອນເອກະສານ (ດ້ານດຽວ)</translation>
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
+<translation id="1645954272419197032">ກະລຸນາຢືນຢັນຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
+<translation id="1672499492233627739">ຟີດວິດີໂອເວັບແຄມ</translation>
+<translation id="1676557873873341166">ກຳລັງຖ່າຍວິດີໂອ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
 <translation id="1715359911173058521">ເກີດບັນຫາຂຶ້ນໃນການຕິດຕໍ່ສື່ສານກັບເຄື່ອງສະແກນ. ກະລຸນາກວດສອບເຄືອຂ່າຍ ຫຼື ການເຊື່ອມຕໍ່ USB ແລ້ວລອງໃໝ່.</translation>
 <translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
 <translation id="1731082422893354635">ແຜ່ນສໍາຜັດ Bluetooth</translation>
+<translation id="1745577949879301685">ບໍ່ສາມາດໂຫຼດຮູບໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ ຫຼື ລອງໂຫຼດຮູບຄືນໃໝ່.</translation>
 <translation id="1751249301761991853">ສ່ວນຕົວ</translation>
 <translation id="1753496554272155572">ອອກຈາກຕົວຢ່າງຮູບພື້ນຫຼັງ</translation>
+<translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
 <translation id="175763766237925754">ດີ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -102,9 +121,11 @@
 <translation id="1871569928317311284">ປິດຮູບແບບສີສັນມືດ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
+<translation id="1881188606372070653">ເຂົ້າໄປ <ph name="BEGIN_LINK1" />ໜ້າຊ່ວຍເຫຼືອທາງກົດໝາຍ<ph name="END_LINK1" /> ເພື່ອຮ້ອງຂໍການປ່ຽນແປງເນື້ອຫາດ້ວຍເຫດຜົນທາງກົດໝາຍ. ຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລະບົບບາງຢ່າງອາດຖືກສົ່ງໄປໃຫ້ Google. ພວກເຮົາຈະໃຊ້ຂໍ້ມູນທີ່ທ່ານມອບໃຫ້ພວກເຮົາເພື່ອແກ້ໄຂບັນຫາທາງເທັກນິກ ແລະ ປັບປຸງບໍລິການຂອງພວກເຮົາ, ເຊິ່ງຈະເປັນໄປຕາມ <ph name="BEGIN_LINK2" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK2" /> ແລະ <ph name="BEGIN_LINK3" />ຂໍ້ກຳນົດບໍລິການຂອງພວກເຮົາ<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
+<translation id="1932611479324127242">ຕັດແຮງດັນໄຟຟ້າຂອງແບັດເຕີຣີ</translation>
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1977994649430373166">ຮູບໂປຣໄຟລ໌ Google</translation>
@@ -112,7 +133,9 @@
 <translation id="1999615961760456652">ຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="2006864819935886708">ການເຊື່ອມຕໍ່</translation>
 <translation id="2008685064673031089">ການຊອກຫາສຳຄັນ</translation>
+<translation id="2011174342667534258">ເວີຊັນ SDK:</translation>
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
+<translation id="2016848882344942759">--ບໍ່ມີ white-label--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
@@ -123,12 +146,14 @@
 <translation id="2138109643290557664">ລ່ອງລອຍຜ່ານໄປ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ຮູບ</translation>
+<translation id="2154739667870063220">ປິດ​ເປີດ​ໃໝ່</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2177831236093724629">ພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ເພື່ອກວດສອບວ່າອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂທັງໝົດໄດ້ຮັບການລະບຸແລ້ວ, ໃຫ້ອັບເດດ Chrome OS ຂອງທ່ານເປັນເວີຊັນຫຼ້າສຸດ.</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
+<translation id="2182088270354640012">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມ. ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍປັບປຸງ Chrome OS ແລະ ຈະຖືກກວດສອບໂດຍທີມງານ Chrome OS. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍທີ່ສົ່ງເຂົ້າມາ, ທ່ານຈະບໍ່ໄດ້ຮັບການຕອບກັບໂດຍກົງ.</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
@@ -140,17 +165,20 @@
 <translation id="2240366984605217732">ສະວິດໂຄງຮ່າງ</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
 <translation id="2271469253353559191">ກຳນົດເວລາໂໝດມືດ</translation>
+<translation id="2275586345903859204">ສ້ອມແປງສຳເລັດແລ້ວ</translation>
+<translation id="2276999893457278469">ເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ</translation>
 <translation id="2287186687001756809">ບໍ່ມີຮູບທີ່ສາມາດໃຊ້ໄດ້. ເພື່ອເພີ່ມຮູບ, ກະລຸນາເຂົ້າໄປ <ph name="LINK" /></translation>
+<translation id="2294753434210277304">ແຊກບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ, ເຊັ່ນ: ໄດຣຟ໌ USB ຫຼື SD card, ດ້ວຍໄຟລ໌ການໃຊ້ປະໂຫຍດການກູ້ຄືນ Chromebook ທີ່ດາວໂຫຼດມາແລ້ວ</translation>
 <translation id="2307344026739914387">ໃຊ້ຄູ່ກະແຈປັດຈຸບັນ</translation>
 <translation id="2320295602967756579">ເປີດການນຳໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="2323506179655536734">ຂ້າມແລ້ວ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
+<translation id="2340422556570134524">Write Protect ຖືກເປີດໃຊ້ໂດຍບໍ່ຄາດຄິດ. ກະລຸນາປິດ Write Protect ດ້ວຍຕົວເອງກ່ອນລອງໃໝ່.</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2360257214555822463">ກວດພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ຫາກທ່ານເລືອກທີ່ຈະຢືນຢັນວ່ານີ້ໄດ້ຮັບການຕິດຕັ້ງແລ້ວ, ກະລຸນາເຮັດຕອນນີ້.</translation>
-<translation id="2363636958541445404">ເປີດຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="236594517359128026">ກ່ອນການດຳເນີນການ, ໃຫ້ວາງແລັບທັອບຂອງທ່ານໄວ້ຢູ່ພື້ນທີ່ຮາບພຽງກ່ອນ</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -160,6 +188,7 @@
 <translation id="2418150275289244458">ເປີດໃນການຕັ້ງຄ່າ</translation>
 <translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
+<translation id="2447969267935997922">ຕິດຕັ້ງສຳເລັດແລ້ວ. ຕອນນີ້ທ່ານສາມາດຖອດໄດຣຟ໌ USB ຫຼື SD card ຂອງທ່ານອອກໄດ້ແລ້ວ.</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2480034874476596812">ປິດໄວ້ດ້ວຍຕົວເອງ</translation>
@@ -171,7 +200,9 @@
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2526590354069164005">ເດັສທັອບ</translation>
 <translation id="253029298928638905">ກຳ​ລັງ​ຣີ​ສະ​ຕາດ...</translation>
+<translation id="2533048460510040082">ເນື້ອຫາຊ່ວຍເຫຼືອທີ່ແນະນຳ</translation>
 <translation id="2536159006530886390">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້.</translation>
+<translation id="256360469103926202">ຄຳຕິຊົມຂອງທ່ານຈະຊ່ວຍປັບປຸງ ChromeOS ແລະ ຈະຖືກກວດສອບໂດຍທີມງານຂອງພວກເຮົາ. ເນື່ອງຈາກມີລາຍງານຈຳນວນຫຼາຍ, ພວກເຮົາຈະບໍ່ສາມາດຕອບກັບໄດ້.</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
@@ -181,8 +212,10 @@
 <translation id="2712812801627182647">ກະແຈການພິສູດຢືນຢັນ TLS</translation>
 <translation id="2713444072780614174">ສີ​ຂາວ</translation>
 <translation id="2717139507051041123">ເປີດການນຳໃຊ້ໂໝດສີມືດ</translation>
+<translation id="2727250716596204208">ບໍ່ສາມາດຊອກຫາໄຟລ໌ເຟີມແວໄດ້. ແຊກບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ, ເຊັ່ນ: ໄດຣຟ໌ USB ຫຼື SD card, ດ້ວຍໄຟລ໌ການໃຊ້ປະໂຫຍດການກູ້ຄືນ Chromebook ທີ່ດາວໂຫຼດມາແລ້ວ.</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2751739896257479635">ການຮັບຮອງຄວາມຖືກຕ້ອງ EAP ໄລຍະທີ 2</translation>
+<translation id="2756652381241102009">ເປີດໃຊ້ການວິນິໄສ</translation>
 <translation id="2783010256799387990">ຜ່ານແລ້ວ</translation>
 <translation id="2789486458103222910">ຕົກລົງ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
@@ -195,10 +228,10 @@
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="291142119251986300">ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ</translation>
 <translation id="2926057806159140518">ລະບຸຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ສະແກນລະຫັດ QR ທ່ານ</translation>
-<translation id="2928420929544864228">ສຳເລັດການຕິດຕັ້ງແລ້ວ.</translation>
 <translation id="3008341117444806826">ໂຫຼດຂໍ້ມູນໃໝ່</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="3017079585324758401">ພາບພື້ນຫຼັງ</translation>
+<translation id="3027578600144895987">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="3031560714565892478">ອຸປະກອນແມ່ນກ້ອງຖ່າຍວິດີໂອ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ຈຸດສິ້ນສຸດ</translation>
@@ -207,21 +240,25 @@
 <translation id="3083667275341675831">ການວິນິໄສການເຊື່ອມຕໍ່</translation>
 <translation id="3084958266922136097">ປິດການນຳໃຊ້ສກຣີນເຊັບເວີ</translation>
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
+<translation id="3096753366938912951">ວາງຝາໃສ່ພື້ນຮາບພຽງ</translation>
 <translation id="3102119246920354026">ແຄ​ຊ໌</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ເຊື່ອມຕໍ່ອຸປະກອນແລ້ວ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກບໍ?}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}}</translation>
+<translation id="3137983112374760826">ກຳລັງຈັດສັນອຸປະກອນ...</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ກວດພົບຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="3170673040743561620">ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
+<translation id="319101249942218879">ປ່ຽນຮູບແທນຕົວແລ້ວ</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
 <translation id="320091191259649613">ຫາກທ່ານຍັງຄົງພົບບັນຫາຫຼັງຈາກອັບເດດ, ມັນເປັນໄປໄດ້ວ່າອົງປະກອບດັ່ງກ່າວຫາກໍຜ່ານເງື່ອນໄຂ ແລະ ຍັງບໍ່ໄດ້ຖືກສົ່ງເຂົ້າໄປໃນຖານຂໍ້ມູນເທື່ອ.</translation>
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
+<translation id="3275729367986477355">ຮູບແທນຕົວ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ແກ້ໄຂໄຟລ໌}other{ແກ້ໄຂໄຟລ໌}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ທິດທາງກະແຈ</translation>
@@ -232,11 +269,13 @@
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
+<translation id="3383751554789092165">ປ່ຽນຂໍ້​ມູນ​ອຸ​ປະ​ກອນຕາມຄວາມຕ້ອງການ.</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
 <translation id="3404770484521709967">ຕິດຕັ້ງອົງປະກອບຢ່າງຖືກຕ້ອງແລ້ວ.</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
+<translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUM" />. ສຳເລັດແລ້ວ <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
@@ -244,6 +283,7 @@
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
+<translation id="3492982278147736083">ຕົວວັດແທກການໝຸນຮອບຝາ</translation>
 <translation id="3517001332549868749">ອັບເດດ ChromeOS</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
@@ -259,9 +299,13 @@
 <translation id="3604713164406837697">ປ່ຽນພາບພື້ນຫຼັງ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
+<translation id="361575905210396100">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມຂອງທ່ານ</translation>
+<translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="3643198267586205643">ອັບເດດລະບົບປະຕິບັດການ</translation>
 <translation id="3643810137582748570">ຂ້າມການປັບທຽບ</translation>
+<translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
 <translation id="3678765385266369662">ເລືອກວິທີທີ່ທ່ານຕ້ອງການປິດການປ້ອງກັນການຂຽນ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
@@ -270,15 +314,21 @@
 <translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
 <translation id="3771294271822695279">ໄຟລ​໌​ວິ​ດີ​ໂອ</translation>
+<translation id="3774059845329307709">ໝາຍເລກຊີຣຽວ</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
 <translation id="38114475217616659">ລຶບລ້າງປະຫວັດທັງໝົດ</translation>
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
+<translation id="3824259034819781947">ແນບໄຟລ໌</translation>
 <translation id="3838338534323494292">ລະຫັດຜ່ານໃໝ່</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
+<translation id="3856304145690230735">ຕົວວັດແທກການໝຸນຮອບຖານ</translation>
 <translation id="385832974417157471">ກ່ອນການປິດເຄື່ອງ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="3858860766373142691">ຊື່</translation>
+<translation id="3862598938296403232">ຕ້ອງລະບຸຄຳອະທິບາຍ</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
+<translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
+<translation id="3885327323343477505">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
 <translation id="3923184630988645767">ການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3924044641767672375">ແນະນຳໃຫ້ເຊື່ອມຕໍ່ຫາ Wi-Fi ເພື່ອເຮັດໃຫ້ຂັ້ນຕອນການສ້ອມແປງງ່າຍຂຶ້ນ. ລະບົບຈະບັນທຶກເຄືອຂ່າຍຂອງທ່ານໄວ້.</translation>
 <translation id="3932043219784172185">ບໍ່ມີການເຊື່ອມຕໍ່ອຸປະກອນ</translation>
@@ -306,6 +356,7 @@
 <translation id="4140251671072434548">ດຳເນີນການປົດລັອກເຊີບເວີ RMA</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
+<translation id="4150201353443180367">ການສະແດງຜົນ</translation>
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
@@ -333,6 +384,7 @@
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">ຮູບແທນຕົວປັດຈຸບັນ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ປິດຢູ່</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
@@ -343,6 +395,7 @@
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
+<translation id="4500213108254186382">ຕົວວັດແທກຄວາມເລັ່ງຝາ</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
 <translation id="4511264077854731334">ໜ້າເວັບ</translation>
 <translation id="4521826082652183069">ຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້</translation>
@@ -353,6 +406,8 @@
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">ປົດລັອກຊິມແລ້ວ</translation>
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
+<translation id="4568938274596692027">ຕິດຕັ້ງສຳເລັດແລ້ວ. ກຳລັງກະກຽມຣີສະຕາດ...</translation>
+<translation id="4576943788798178439">ການຮອງຮັບປາກກາ</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
@@ -368,7 +423,9 @@
 <translation id="469379815867856270">ຄວາມແຮງສັນຍານ</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
+<translation id="4740255236714854844">ວາງຖານໃສ່ພື້ນຮາບພຽງ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
+<translation id="4751272708893364980">ເບິ່ງບັນທຶກ RMA</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4774530504324923332">ທ່ານຈະຕ້ອງໃຊ້ກະແຈຄວາມປອດໄພທີ່ເປີດການນຳໃຊ້ RSU, ຕົວສະແກນລະຫັດ QR ແລະ ອຸປະກອນທີສອງທີ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
@@ -376,6 +433,8 @@
 <translation id="4793710386569335688">ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">ອະກໍຣິທຶມ​ການ​ບີບ​ອັດ​ຂໍ້​ມູນ</translation>
 <translation id="4794140124556169553">ການທົດສອບ CPU ອາດກະທົບກັບປະສິດທິພາບລະບົບຂອງທ່ານໄດ້</translation>
+<translation id="4800589996161293643">ຊຸມຊົນ Chromebook</translation>
+<translation id="4804818685124855865">ຕັດເຊື່ອມຕໍ່</translation>
 <translation id="4808449224298348341">ຍົກເລີກວຽກພິມ <ph name="DOCUMENT_TITLE" /> ແລ້ວ</translation>
 <translation id="4809927044794281115">ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="4813136279048157860">ຮູບພາບຂອງຂ້ອຍ</translation>
@@ -394,9 +453,12 @@
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
 <translation id="4891842000192098784">ປະສິດທິພາບເມື່ອເພີ່ມແຮງກົດດັນ</translation>
 <translation id="4897058166682006107">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຊ້າຍເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4905998861748258752">ເປີດໃຊ້ຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
+<translation id="4908030561598728899">ກຳລັງຕິດຕັ້ງເຟີມແວ...</translation>
 <translation id="4915052247106771211">ນີ້ຈະຣີເຊັດອຸປະກອນນີ້ໄປເປັນຄ່າຈາກໂຮງງານ (Powerwash).</translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
+<translation id="491791267030419270">ເຄັດລັບໃນການຂຽນຄຳຕິຊົມ</translation>
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="4930320165497208503">ເພື່ອຕັ້ງຄ່າ ຫຼື ອັບເດດການເຊື່ອມຕໍ່, ໃຫ້ເຂົ້າໄປຫາ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
@@ -410,6 +472,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ເມື່ອໜ້າຈໍຂອງທ່ານຢູ່ລ້າໆ, ໃຫ້ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ.</translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
+<translation id="5044978354634658544">ໃສ່ USB</translation>
 <translation id="5049856988445523908">ລັອກຊິມແລ້ວ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ຊື່​ກຸ່ມ​</translation>
 <translation id="5051044138948155788">ນີ້ແມ່ນໜ້າດຽວເທົ່ານັ້ນ. ນີ້ຈະພາທ່ານໄປໜ້າຈໍເລີ່ມຕົ້ນການສະແກນ.</translation>
@@ -423,11 +486,14 @@
 <translation id="5166918508782100047">ການຕັ້ງຄ່າຄຳຕອບດ່ວນ</translation>
 <translation id="5168185087976003268">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
+<translation id="5179530508336824319">ກະລຸນາເປີດການນຳໃຊ້ Write Protect ເພື່ອສືບຕໍ່ຫາໜ້າຈໍຕໍ່ໄປ. ໃຫ້ເຂົ້າໄປໜ້າຊ່ວຍເຫຼືອຂອງຜູ້ຜະລິດອຸປະກອນເພື່ອເບິ່ງຄຳແນະນຳ.</translation>
+<translation id="5181140330217080051">ກໍາລັງດາວ​ໂຫຼດ</translation>
 <translation id="5190187232518914472">ຫວນຄືນຄວາມຊົງຈຳທີ່ທ່ານມັກ. ເພື່ອເພີ່ມ ຫຼື ແກ້ໄຂອະລະບໍ້າ, ກະລຸນາໄປທີ່ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">ຂ້ອຍບໍ່ສາມາດຊອກເຫັນອັນໃດຢູ່ໃນໜ້າຈໍຂອງທ່ານທີ່ຂ້ອຍສາມາດຊ່ວຍໄດ້.
 ລອງແຕະໄມເພື່ອຖາມຂ້ອຍອັນໃດກໍໄດ້.</translation>
 <translation id="5212593641110061691">ແທັບລອຍ</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
+<translation id="522307662484862935">ຢ່າຮວມທີ່ຢູ່ອີເມວ</translation>
 <translation id="5227902338748591677">ກຳນົດການຮູບແບບສີສັນມືດ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
 <translation id="5252456968953390977">ໂຣມມິງ</translation>
@@ -452,9 +518,12 @@
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5376354385557966694">ໂໝດແຈ້ງອັດຕະໂນມັດ</translation>
 <translation id="537872351913703572">ອຸປະກອນຈະສົ່ງໄປຫາຜູ້ໃຊ້ ຫຼື ອົງການອື່ນ</translation>
+<translation id="5389159777326897627">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
+<translation id="5389224261615877010">ຮຸ້ງ</translation>
 <translation id="5395600419410242651">ລຶບຂໍ້ມູນທັງໝົດ</translation>
 <translation id="5400907029458559844">ອຸປະກອນກຳລັງເຊື່ອມຕໍ່ຢູ່.</translation>
 <translation id="5401938042319910061">ເອີ້ນໃຊ້ສິ່ງທີ່ເຮັດປະຈຳທັງໝົດ</translation>
+<translation id="5406131354638931058">ຕັດແຮງດັນໄຟຟ້າຂອງແບັດເຕີຣີສຳລັບອຸປະກອນທີ່ຈະຈັດສົ່ງ ຫຼື ຈະຖືກຈັດເກັບໄວ້</translation>
 <translation id="5423849171846380976">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
@@ -463,6 +532,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ {0} ຄັ້ງ}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ບໍ່ສາມາດສະແກນໃຫ້ສຳເລັດໄດ້</translation>
+<translation id="5499762266711462226">ສີແປ້ນພິມແມ່ນອ້າງອີງໃສ່ຮູບພື້ນຫຼັງ</translation>
 <translation id="5502931783115429516">Android ບໍ່ໄດ້ຖືກເອີ້ນໃຊ້ຢູ່</translation>
 <translation id="5507300744274596613">ໃຫ້ກວດສອບວ່າອັບເດດ Chrome OS ແລ້ວ</translation>
 <translation id="5519195206574732858">LTE</translation>
@@ -475,7 +545,7 @@
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
 <translation id="5655283760733841251">ແປ້ນພິມເພີ່ມຄວາມສະຫວ່າງ</translation>
-<translation id="5661196929408385351">Powerwash ແລະ ປິດເຄື່ອງ</translation>
+<translation id="5659593005791499971">ອີເມວ</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ຄອບຄົວ</translation>
@@ -488,6 +558,7 @@
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
 <translation id="578753362485952307">ຫາກທ່ານກຳລັງສ້ອມແປງເມນບອດເພື່ອໃຊ້ໃນອຸປະກອນອື່ນ, ກະລຸນາເຂົ້າໄປ <ph name="LINK_BEGIN" />ຂັ້ນຕອນການສ້ອມແປງ<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">ສໍາ​ເລັດ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5843706793424741864">ຟາເຣນຮາຍ</translation>
@@ -499,6 +570,7 @@
 <translation id="5866840822086176774">ແຮງທີ່ສຸດ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
+<translation id="5898758006340607522">ປຸ່ມເປີດປິດ</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5903200662178656908">ອຸປະກອນແມ່ນຊຸດແປ້ນພິມ ແລະ ເມົ້າ.</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
@@ -507,6 +579,8 @@
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="594552776027197022">ສ້າງຄູ່ກະແຈແບບສຸ່ມ</translation>
+<translation id="5947494881799873997">ກັບຄືນ</translation>
+<translation id="5951259522948394825">ຢືນຢັນວ່າທຸກຢ່າງຖືກຕ້ອງແລ້ວ ແລະ ເບິ່ງລາຍງານການວິນິໄສ</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
@@ -546,6 +620,7 @@
 <translation id="6284632978374966585">ເປີດໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="6295178529664209245">ສືບຕໍ່ການສ້ອມແປງບໍ?</translation>
 <translation id="6302401976930124515">ຍົກເລີກການທົດສອບ <ph name="TEST_NAME" /> ແລ້ວ</translation>
+<translation id="631063167932043783">ແອັບ Explore</translation>
 <translation id="6319207335391420837">ອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">ເປີດສະກຣີນເຊັບເວີ</translation>
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
@@ -557,6 +632,7 @@
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
 <translation id="6381741036071372448">ທົດສອບແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
+<translation id="6394634179843537518">ເພີ່ມໄຟລ໌</translation>
 <translation id="6410257289063177456">ໄຟລ​໌​ຮູບ​</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
@@ -573,6 +649,7 @@
 <translation id="6516990319416533844">ເພື່ອທົດສອບອັດຕາການສາກແບັດເຕີຣີ, ໃຫ້ປ່ອຍໃຫ້ມີການໃຊ້ແບັດເຕີຣີເປັນໄລຍະເວລາສັ້ນໆ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
+<translation id="6535178685492749208">ທ່ານອອບລາຍຢູ່. ຄຳຕິຊົມຈະຖືກສົ່ງໃນພາຍຫຼັງ.</translation>
 <translation id="65587193855025101">ແບບແທ່ນນອນ</translation>
 <translation id="6564646048574748301">ບໍ່ສຳເລັດ, ບໍ່ສາມາດຕິດຕໍ່ເຄື່ອງພິມໄດ້</translation>
 <translation id="6566314079205407217">ການສະແກນຫຼາຍໜ້າ</translation>
@@ -590,6 +667,7 @@
 <translation id="6659594942844771486">ແຖບ</translation>
 <translation id="6692996468359469499">ຮັບຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="6704062477274546131">ຄວາມລະອຽດ DNS</translation>
+<translation id="6721744718589119342">ພວກເຮົາອາດສົ່ງອີເມວຫາທ່ານສຳລັບຂໍ້ມູນ ຫຼື ອັບເດດເພີ່ມເຕີມ</translation>
 <translation id="6723839937902243910">ໄຟ</translation>
 <translation id="6723847290197874913">ໄຟແປ້ນພິມ</translation>
 <translation id="672609503628871915">ເບິ່ງ​ມີອັນໃດໃຫມ່</translation>
@@ -603,18 +681,20 @@
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="680983167891198932">ກະແຈ</translation>
 <translation id="6816797338148849397">ມີຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ. ໃຊ້ລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ.</translation>
+<translation id="6822504384524564824">ຄວນປ່ຽນ SKU ສະເພາະກໍລະນີທີ່ອົງປະກອບໃໝ່ແຕກຕ່າງຈາກອັນທີ່ພວກມັນໄປແທນທີ່ເທົ່ານັ້ນ. ຕົວຢ່າງ: ໜ້າຈໍສຳຜັດແທນທີ່ໜ້າຈໍແບບບໍ່ສຳຜັດ ຫຼື ອັບເກຣດໜ່ວຍຄວາມຈຳຈາກ 8GB ເປັນ 16GB.</translation>
 <translation id="6840315122969944400">ສ້ອມແປງ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
+<translation id="6876833053687020046">ໝາຍເລກຊິ້ນສ່ວນ DRAM</translation>
 <translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="6905724422583748843">ກັບໄປ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
 <translation id="6911383237894364323">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີມີເດຍໄດ້</translation>
-<translation id="6935486296377631201">ພາບພັກໜ້າຈໍ</translation>
 <translation id="6943893908656559156">ຂໍ້ມູນປະຈຳຕົວໄລຍະໄກ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
 <translation id="6961170852793647506">ເພື່ອເລີ່ມຕົ້ນ, ໃຫ້ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
+<translation id="6995564396478647735">ກວດສອບວ່າເປີດໃຊ້ Write Protect ແລ້ວ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7041549558901442110">ອຸປະກອນບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
@@ -626,10 +706,12 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ບໍ່ສຳເລັດ, ການມອບສິດບໍ່ສຳເລັດ</translation>
 <translation id="7103252855940681301">ອຸປະກອນທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /> ຊື່ <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">ປິດ Write Protect ໄວ້ຢູ່</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
+<translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
 <translation id="7155171745945906037">ຮູບຖ່າຍທີ່ມີຢູ່ຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7170236477717446850">ຮູບໂປຣໄຟລ໌</translation>
@@ -637,7 +719,6 @@
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
-<translation id="7191009787982536050">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="7212734716605298123">ອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍໃນ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
@@ -648,12 +729,14 @@
 <translation id="7297226631177386107">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTPS ໄດ້</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">ຖາມຜູ້ຊ່ຽວຊານໃນກະດານຊ່ວຍເຫຼືອ Chromebook</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
+<translation id="73631062356239394">ແບ່ງປັນຂໍ້ມູນການວິນິໄສ</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378886533986123738">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ປິດຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="741244894080940828">ການປ່ຽນ</translation>
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
@@ -682,12 +765,14 @@
 <translation id="7657530360897961171">ສ້ອມແປງ <ph name="DEVICE_TYPE" /> ຜິດພາດ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7665800271478495366">ປ່ຽນຮູບແທນຕົວ</translation>
+<translation id="7682274994254393134">ເລີ່ມສ້ອມແປງ</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7747039790905080783">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="7762130827864645708">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານສຳເລັດແລ້ວ. ກະລຸນາໃຊ້ລະຫັດຜ່ານໃໝ່ນັບຈາກນີ້ໄປ.</translation>
+<translation id="7762839321248874531">ສົ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ມູນລະບົບ ແລະ ແອັບ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ການວັດແທກ<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">ຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນ</translation>
 <translation id="7769672763586021400">ID ຮຸ່ນ</translation>
 <translation id="7784116172884276937">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
@@ -710,12 +795,14 @@
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
+<translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
+<translation id="8063022551652308521">Write Protect ຍັງຄົງປິດຢູ່. ເພື່ອສືບຕໍ່, ໃຫ້ເປີດໃຊ້ Write Protect ກ່ອນ.</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="8083281199617904460">ຂັ້ນຕອນການສ້ອມແປງນີ້ແມ່ນສຳລັບຊ່າງສ້ອມແປງທີ່ໄດ້ຮັບການເຝິກມາແລ້ວ. ໃຫ້ເລີ່ມສະເພາະຫຼັງຈາກການປ່ຽນອົງປະກອບທີ່ເສຍຫາຍເທົ່ານັ້ນ.</translation>
@@ -728,6 +815,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
+<translation id="819552138404104974">ບັນທຶກ RMA</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8217675307824400706">ເລີ່ມການເຊື່ອມຕໍ່</translation>
@@ -751,8 +839,10 @@
 <translation id="8364946094152050673">ເຊີບເວີຊື່ຫວ່າງເປົ່າ</translation>
 <translation id="8372477600026034341">ໂຮສເພີ່ມເຕີມ</translation>
 <translation id="8378855320830505539">ພາກພື້ນ</translation>
+<translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ຈັດການໂດຍວິສາຫະກິດ</translation>
 <translation id="8398927464629426868">ອັດຕາການສາກ ຫຼື ຄາຍປະຈຸຂອງອຸປະກອນໃນປັດຈຸບັນ</translation>
+<translation id="8420955526972171689">ທົດສອບ ແລະ ແກ້ໄຂບັນຫາຮາດແວ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ແປ້ນພິມພາຍໃນ</translation>
 <translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
@@ -761,6 +851,7 @@
 <translation id="8456761643544401578">ໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="8461329675984532579">ຊື່ຜູ້ໃຫ້ບໍລິການ Home</translation>
 <translation id="8467104829907989997">ກຳລັງປັບທຽບອົງປະກອບ...</translation>
+<translation id="8474030592808010086">ຖອດສາຍອຸປະກອນອອກເພື່ອຕັດແຮງດັນໄຟຟ້າຂອງແບັດເຕີຣີ</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
 <translation id="8483248364096924578">ທີ່ຢູ່ IP</translation>
@@ -783,7 +874,9 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
+<translation id="8717030727630712160">ກຳລັງສືບຕໍ່ຂັ້ນຕອນສ້ອມແປງ…</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
+<translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
@@ -798,16 +891,21 @@
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8855781559874488009">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ໄດ້</translation>
+<translation id="885701979325669005">ການເກັບຂໍ້ມູນ</translation>
 <translation id="8863170912498892583">ເປີດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="8863888432376731307">ຮັບ <ph name="INTENT" /> ສຳລັບ "<ph name="QUERY" />" ແລະ ອື່ນໆ</translation>
+<translation id="8864415976656252616">ບໍ່ມີເນື້ອຫາທີ່ແນະນຳ. ເບິ່ງເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ອຸປະກອນແມ່ນແທັບເລັດ.</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
+<translation id="8897267175591692539">ຕອນນີ້ທ່ານສາມາດປະກອບອຸປະກອນເຂົ້າກັນໄດ້ແລ້ວ</translation>
 <translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ຂອງ <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">ເບິ່ງວ່າມີການແກ້ໄຂຫຍັງ</translation>
 <translation id="8919837981463578619">ບໍ່ສຳເລັດ, ຖາດໃສ່ເຈ້ຍຫາຍໄປ</translation>
 <translation id="8923267550422472772">ວັນທີຂອງເດືອນສຳລັບການຣີເຊັດ</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">ບໍ່ສຳເລັດ, ເຈ້ຍໝົດ</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">ໄຮ້ສາຍ</translation>
@@ -816,12 +914,12 @@
 <translation id="894617464444543719">ອຸປະກອນແມ່ນໂທລະສັບ.</translation>
 <translation id="8968751544471797276">ອັດຕາການສາກ</translation>
 <translation id="8970109610781093811">ເອີ້ນໃຊ້ອີກຄັ້ງ</translation>
-<translation id="8970887620466824814">ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ສະແກນ}=1{ສະແກນໜ້າ {NUMBER_OF_PAGES}}other{ສະແກນໜ້າ {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">ອຸປະກອນມີແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9025198690966128418">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
+<translation id="9028832514430399253">ເປີດໃຊ້ຕົວສະຫຼັບເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9063121522582193837">ບໍ່ສາມາດປັບທຽບອົງປະກອບບາງຢ່າງໄດ້</translation>
@@ -840,14 +938,17 @@
 <translation id="9126720536733509015">ບັນທຶກຫຼາຍໜ້າເປັນ PDF ດຽວ</translation>
 <translation id="9137526406337347448">ການບໍລິການ Google</translation>
 <translation id="9138630967333032450">Shift ຊ້າຍ</translation>
+<translation id="9148058034647219655">ອອກ</translation>
 <translation id="9149391708638971077">ດຳເນີນການທົດສອບຄວາມຈຳ</translation>
 <translation id="9173638680043580060">ເຫຼືອບໍ່ຮອດໜຶ່ງນາທີ</translation>
 <translation id="917720651393141712">ທົດສອບ</translation>
+<translation id="9188992814426075118">ແປ້ນພິມຂອງທ່ານສາມາດຈັບຄູ່ກັບຮູບພື້ນຫຼັງຂອງທ່ານໄດ້ອັດຕະໂນມັດ</translation>
 <translation id="9204237731135241582">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວຈາກແອັບ Android ໄດ້</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
 <translation id="922179502584117429">ເວີຊັນປັດຈຸບັນ <ph name="VERSION_NUMBER" /> ແມ່ນເກົ່າແລ້ວ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
 <translation id="960719561871045870">ລະຫັດຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="982713511914535780">ດຳເນີນການທົດສອບການຄາຍປະຈຸຂອງແບັດເຕີຣີ</translation>

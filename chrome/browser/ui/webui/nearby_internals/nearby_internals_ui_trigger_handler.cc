@@ -192,14 +192,14 @@ base::Value ShareTargetToDictionary(const ShareTarget share_target) {
 // argument to JavaScript functions.
 base::Value ShareTargetMapToList(
     const base::flat_map<std::string, ShareTarget>& id_to_share_target_map) {
-  base::Value::ListStorage share_target_list;
+  base::Value::List share_target_list;
   share_target_list.reserve(id_to_share_target_map.size());
 
   for (const auto& it : id_to_share_target_map) {
-    share_target_list.push_back(ShareTargetToDictionary(it.second));
+    share_target_list.Append(ShareTargetToDictionary(it.second));
   }
 
-  return base::Value(share_target_list);
+  return base::Value(std::move(share_target_list));
 }
 
 // Converts |transfer_metadata| to a raw dictionary value used as a JSON

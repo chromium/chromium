@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
@@ -269,7 +271,7 @@ class ImageCaptureDeviceManagerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestStorageMonitor* monitor_;
+  raw_ptr<TestStorageMonitor> monitor_;
   TestCameraListener listener_;
 };
 

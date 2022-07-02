@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 
 TopContainerBackground::TopContainerBackground(BrowserView* browser_view)
@@ -47,6 +49,6 @@ void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
                          bounds.width(), bounds.height(), 1.0f,
                          SkTileMode::kRepeat, SkTileMode::kMirror);
   } else {
-    canvas->DrawColor(theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR));
+    canvas->DrawColor(view->GetColorProvider()->GetColor(kColorToolbar));
   }
 }

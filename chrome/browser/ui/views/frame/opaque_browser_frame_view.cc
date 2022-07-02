@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,6 +37,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -486,6 +488,14 @@ bool OpaqueBrowserFrameView::IsRegularOrGuestSession() const {
   return browser_view()->GetRegularOrGuestSession();
 }
 
+bool OpaqueBrowserFrameView::CanMaximize() const {
+  return browser_view()->CanMaximize();
+}
+
+bool OpaqueBrowserFrameView::CanMinimize() const {
+  return browser_view()->CanMinimize();
+}
+
 bool OpaqueBrowserFrameView::IsMaximized() const {
   return frame()->IsMaximized();
 }
@@ -663,7 +673,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
     // (&processed_bg_image) to create a local copy, so it's safe for this
     // to be locally scoped.
     button->SetBackgroundImage(
-        tp->GetColor(ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND),
+        frame()->GetColorProvider()->GetColor(kColorCaptionButtonBackground),
         (processed_bg_image.isNull() ? nullptr : &processed_bg_image),
         tp->GetImageSkiaNamed(mask_image_id));
   }
@@ -823,8 +833,8 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
   }
 
   // For popup windows, draw location bar sides.
-  const SkColor location_bar_border_color = GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_LOCATION_BAR_BORDER_OPAQUE);
+  const SkColor location_bar_border_color =
+      GetColorProvider()->GetColor(kColorLocationBarBorderOpaque);
   if (!tabstrip_visible && IsToolbarVisible()) {
     gfx::Rect side(client_bounds.x() - kClientEdgeThickness, y,
                    kClientEdgeThickness, toolbar_bounds.height());

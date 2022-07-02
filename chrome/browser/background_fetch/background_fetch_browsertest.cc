@@ -360,7 +360,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     return content::ExecuteScriptAndExtractString(
         active_browser_->tab_strip_model()
             ->GetActiveWebContents()
-            ->GetMainFrame(),
+            ->GetPrimaryMainFrame(),
         script, result);
   }
 
@@ -704,9 +704,10 @@ IN_PROC_BROWSER_TEST_F(
             offline_items_collection::OfflineItemState::CANCELLED);
 }
 
+// TODO(crbug.com/1329696): Fix flaky timeouts and re-enable.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
-    OfflineItemCollection_VerifyResourceDownloadedWhenCorrectDownloadTotalSpecified) {
+    DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenCorrectDownloadTotalSpecified) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection.
 
@@ -1000,9 +1001,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   // Load a fenced frame.
   GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
 
   GURL fenced_frame_test_url(
       https_server()->GetURL("/fenced_frames/background_fetch.html"));
@@ -1016,8 +1019,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
 
   constexpr char kExpectedError[] =
       "NotAllowedError - Failed to execute 'fetch' on "
-      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
-      "frame tree.";
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =
@@ -1042,9 +1045,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   GURL fenced_frame_url(
       cross_origin_server.GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-          fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                   fenced_frame_url);
 
   GURL fenced_frame_test_url(
       cross_origin_server.GetURL("/fenced_frames/background_fetch.html"));
@@ -1057,8 +1062,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
 
   constexpr char kExpectedError[] =
       "NotAllowedError - Failed to execute 'fetch' on "
-      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
-      "frame tree.";
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =

@@ -16,9 +16,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/login/session/session_termination_manager.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #endif
 
@@ -38,6 +38,7 @@ base::CallbackListSubscription AddAppTerminatingCallback(
       std::move(app_terminating_callback));
 }
 void NotifyAppTerminating() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool notified = false;
   if (notified)
     return;
@@ -52,6 +53,7 @@ void NotifyAppTerminating() {
 }
 
 void NotifyAndTerminate(bool fast_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool notified = false;
   // Return if a shutdown request has already been sent.

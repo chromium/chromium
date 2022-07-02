@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_EXPRESSION_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_EXPRESSION_NODE_H_
 
+#include "base/check_op.h"
+#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -37,6 +40,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool IsNumber() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
+  virtual bool IsAnchorQuery() const { return false; }
 
   virtual scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const = 0;
@@ -165,6 +169,84 @@ template <>
 struct DowncastTraits<CalculationExpressionOperationNode> {
   static bool AllowFrom(const CalculationExpressionNode& node) {
     return node.IsOperation();
+  }
+};
+
+class PLATFORM_EXPORT CalculationExpressionAnchorQueryNode final
+    : public CalculationExpressionNode {
+ public:
+  static scoped_refptr<const CalculationExpressionAnchorQueryNode> CreateAnchor(
+      const AtomicString& name,
+      AnchorValue side,
+      const Length& fallback);
+  static scoped_refptr<const CalculationExpressionAnchorQueryNode>
+  CreateAnchorPercentage(const AtomicString& name,
+                         float percentage,
+                         const Length& fallback);
+  static scoped_refptr<const CalculationExpressionAnchorQueryNode>
+  CreateAnchorSize(const AtomicString& name,
+                   AnchorSizeValue size,
+                   const Length& fallback);
+
+  AnchorQueryType Type() const { return type_; }
+  const AtomicString& AnchorName() const { return anchor_name_; }
+  AnchorValue AnchorSide() const {
+    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
+    return value_.anchor_side;
+  }
+  float AnchorSidePercentage() const {
+    DCHECK_EQ(type_, AnchorQueryType::kAnchor);
+    DCHECK_EQ(AnchorSide(), AnchorValue::kPercentage);
+    return side_percentage_;
+  }
+  AnchorSizeValue AnchorSize() const {
+    DCHECK_EQ(type_, AnchorQueryType::kAnchorSize);
+    return value_.anchor_size;
+  }
+  const Length& GetFallback() const { return fallback_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value) const final;
+  bool operator==(const CalculationExpressionNode& other) const final;
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final;
+  bool IsAnchorQuery() const final { return true; }
+  ~CalculationExpressionAnchorQueryNode() final = default;
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final {
+    return ResultType::kPixelsAndPercent;
+  }
+#endif
+
+  union AnchorQueryValue {
+    AnchorValue anchor_side;
+    AnchorSizeValue anchor_size;
+  };
+
+  CalculationExpressionAnchorQueryNode(AnchorQueryType type,
+                                       const AtomicString& anchor_name,
+                                       AnchorQueryValue value,
+                                       float side_percentage,
+                                       const Length& fallback)
+      : type_(type),
+        anchor_name_(anchor_name),
+        value_(value),
+        side_percentage_(side_percentage),
+        fallback_(fallback) {}
+
+ private:
+  AnchorQueryType type_;
+  AtomicString anchor_name_;
+  AnchorQueryValue value_;
+  float side_percentage_ = 0;  // For AnchorSideValue::kPercentage only
+  Length fallback_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionAnchorQueryNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsAnchorQuery();
   }
 };
 

@@ -39,4 +39,8 @@ void Renderer::SetWasPlayedWithUserActivation(
   // Not supported by most renderers.
 }
 
+void Renderer::OnExternalVideoFrameRequest() {
+  // Default implementation of OnExternalVideoFrameRequest is to no-op.
+}
+
 }  // namespace media

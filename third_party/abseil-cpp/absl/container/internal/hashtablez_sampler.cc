@@ -32,7 +32,10 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
+
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr int HashtablezInfo::kMaxStackDepth;
+#endif
 
 namespace {
 ABSL_CONST_INIT std::atomic<bool> g_hashtablez_enabled{

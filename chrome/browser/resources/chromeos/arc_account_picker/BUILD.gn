@@ -19,7 +19,10 @@ generate_grd("build_grd") {
   # Resources are expected to be registered with paths like:
   # arc_account_picker/resource_name.js
   input_files_base_dir = rebase_path("./", "//")
-  input_files = [ "arc_account_picker_browser_proxy.js" ]
+  input_files = [
+    "arc_account_picker_browser_proxy.js",
+    "arc_util.js",
+  ]
   grdp_files = [ generated_grdp_file ]
 }
 
@@ -56,6 +59,7 @@ js_type_check("closure_compile") {
   deps = [
     ":arc_account_picker_app",
     ":arc_account_picker_browser_proxy",
+    ":arc_util",
   ]
 }
 
@@ -63,12 +67,17 @@ js_library("arc_account_picker_app") {
   deps = [
     ":arc_account_picker_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("arc_account_picker_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("arc_util") {
+  deps = [ "//ui/webui/resources/js:assert.m" ]
 }
 
 html_to_js("web_components") {

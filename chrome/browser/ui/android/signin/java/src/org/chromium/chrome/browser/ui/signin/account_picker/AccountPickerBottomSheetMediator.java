@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -27,7 +28,9 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.List;
 
@@ -49,6 +52,10 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private @Nullable String mDefaultAccountName;
     private @Nullable String mAddedAccountName;
 
+    private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
+
     AccountPickerBottomSheetMediator(WindowAndroid windowAndroid,
             AccountPickerDelegate accountPickerDelegate, Runnable onDismissButtonClicked) {
         mWindowAndroid = windowAndroid;
@@ -59,6 +66,14 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked,
                 view -> onDismissButtonClicked.run(), accountPickerDelegate.getEntryPoint());
+        mModelPropertyChangedObserver = (source, propertyKey) -> {
+            if (AccountPickerBottomSheetProperties.VIEW_STATE == propertyKey) {
+                mBackPressStateChangedSupplier.set(
+                        mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                        == ViewState.EXPANDED_ACCOUNT_LIST);
+            }
+        };
+        mModel.addObserver(mModelPropertyChangedObserver);
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
@@ -130,6 +145,11 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         return false;
     }
 
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
     /**
      * Implements {@link AccountsChangeObserver}.
      */
@@ -158,6 +178,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mAccountPickerDelegate.destroy();
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
+        mModel.removeObserver(mModelPropertyChangedObserver);
     }
 
     private void updateAccounts(List<Account> accounts) {

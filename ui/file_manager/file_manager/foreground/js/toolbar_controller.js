@@ -4,7 +4,6 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, strf, util} from '../../common/js/util.js';
@@ -349,8 +348,7 @@ export class ToolbarController {
              entry => util.isNonModifiable(this.volumeManager_, entry)));
     // Show 'Move to Trash' rather than 'Delete' if possible.
     this.moveToTrashButton_.hidden = true;
-    if (!this.deleteButton_.hidden &&
-        loadTimeData.getBoolean('FILES_TRASH_ENABLED') &&
+    if (!this.deleteButton_.hidden && util.isTrashEnabled() &&
         this.fileOperationManager_.willUseTrash(
             this.volumeManager_, selection.entries)) {
       this.deleteButton_.hidden = true;

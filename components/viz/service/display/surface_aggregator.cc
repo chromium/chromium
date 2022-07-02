@@ -302,71 +302,20 @@ SurfaceAggregator::SurfaceAggregator(
       aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
       de_jelly_enabled_(DeJellyEnabled()),
-      clip_prewalk_damage_(features::IsClipPrewalkDamageEnabled()),
       extra_pass_for_readback_option_(extra_pass_option) {
   DCHECK(manager_);
   DCHECK(provider_);
+  manager_->AddObserver(this);
 }
 
 SurfaceAggregator::~SurfaceAggregator() {
-  // Notify client of all surfaces being removed.
+  manager_->RemoveObserver(this);
+
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
+
+  // Notify client of all surfaces being removed.
   ProcessAddedAndRemovedSurfaces();
-}
-
-int SurfaceAggregator::ChildIdForSurface(Surface* surface) {
-  auto it = surface_id_to_resource_child_id_.find(surface->surface_id());
-  if (it == surface_id_to_resource_child_id_.end()) {
-    int child_id = provider_->CreateChild(
-        base::BindRepeating(&SurfaceClient::UnrefResources, surface->client()),
-        surface->surface_id());
-    surface_id_to_resource_child_id_[surface->surface_id()] = child_id;
-    return child_id;
-  } else {
-    return it->second;
-  }
-}
-
-gfx::Rect SurfaceAggregator::DamageRectForSurface(
-    const ResolvedFrameData& resolved_frame,
-    bool include_per_quad_damage) const {
-  const Surface* surface = resolved_frame.surface();
-
-  // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
-  // However, we dont use |damage_rect| because when we transition from
-  // interpolated frame we would end up using the |damage_rect| from the
-  // original non interpolated frame.
-  // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
-  // out a small bounds on the damage given an animation that happens in
-  // SurfaceAnimationManager.
-  if (surface->HasSurfaceAnimationDamage())
-    return resolved_frame.GetOutputRect();
-
-  // TODO(crbug.com/1194082): Cache the previous frame_index in
-  // ResolvedFrameData to avoid multiple maps lookups here.
-  auto it = previous_contained_surfaces_.find(surface->surface_id());
-  if (it != previous_contained_surfaces_.end()) {
-    uint64_t previous_index = it->second;
-    // The resolved frame index is unchanged from last aggregation so there is
-    // no damage.
-    if (previous_index == surface->GetActiveFrameIndex())
-      return gfx::Rect();
-  }
-
-  const SurfaceId& previous_surface_id = surface->previous_frame_surface_id();
-  if (surface->surface_id() != previous_surface_id) {
-    it = previous_contained_surfaces_.find(previous_surface_id);
-  }
-
-  if (it != previous_contained_surfaces_.end()) {
-    uint64_t previous_index = it->second;
-    if (previous_index == surface->GetActiveFrameIndex() - 1) {
-      return resolved_frame.GetDamageRect(include_per_quad_damage);
-    }
-  }
-
-  return resolved_frame.GetOutputRect();
 }
 
 // This function is called at each render pass - CopyQuadsToPass().
@@ -442,7 +391,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     if (RenderPassNeedsFullDamage(resolved_frame->GetRootRenderPassData())) {
       damage_rect = resolved_frame->GetOutputRect();
     } else {
-      damage_rect = DamageRectForSurface(*resolved_frame, false);
+      damage_rect = resolved_frame->GetSurfaceDamage(false);
     }
   }
 
@@ -534,10 +483,20 @@ bool SurfaceAggregator::CanPotentiallyMergePass(
          sqs->de_jelly_delta_y == 0;
 }
 
+void SurfaceAggregator::OnSurfaceDestroyed(const SurfaceId& surface_id) {
+  DCHECK(!is_inside_aggregate_);
+
+  auto iter = resolved_frames_.find(surface_id);
+  if (iter != resolved_frames_.end()) {
+    TRACE_EVENT0("viz", "SurfaceAggregator::SurfaceDestroyed");
+    resolved_frames_.erase(iter);
+  }
+}
+
 const ResolvedFrameData* SurfaceAggregator::GetLatestFrameData(
     const SurfaceId& surface_id) {
-  auto* surface = manager_->GetSurfaceForId(surface_id);
-  return GetResolvedFrame(surface, /*inside_aggregation=*/false);
+  DCHECK(!is_inside_aggregate_);
+  return GetResolvedFrame(surface_id);
 }
 
 ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
@@ -546,59 +505,63 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
   // this aggregation, then find ResolvedFrameData for that surface.
   auto iter = resolved_surface_ranges_.find(range);
   if (iter == resolved_surface_ranges_.end()) {
-    iter = resolved_surface_ranges_
-               .emplace(range, manager_->GetLatestInFlightSurface(range))
-               .first;
+    auto* surface = manager_->GetLatestInFlightSurface(range);
+    SurfaceId surface_id = surface ? surface->surface_id() : SurfaceId();
+    iter = resolved_surface_ranges_.emplace(range, surface_id).first;
   }
 
-  return GetResolvedFrame(iter->second, /*inside_aggregation=*/true);
+  if (!iter->second.is_valid()) {
+    // There is no surface for `range`.
+    return nullptr;
+  }
+
+  return GetResolvedFrame(iter->second);
 }
 
 ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceId& surface_id) {
-  return GetResolvedFrame(manager_->GetSurfaceForId(surface_id),
-                          /*inside_aggregation=*/true);
-}
+  DCHECK(surface_id.is_valid());
 
-ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
-    Surface* surface,
-    bool inside_aggregation) {
-  if (!surface || !surface->HasActiveFrame()) {
-    // If there is no resolved surface or the surface has no active frame there
-    // is no resolved frame data to return.
-    return nullptr;
-  }
-
-  auto iter = resolved_frames_.find(surface);
+  auto iter = resolved_frames_.find(surface_id);
   if (iter == resolved_frames_.end()) {
-    iter =
-        resolved_frames_
-            .emplace(std::piecewise_construct, std::forward_as_tuple(surface),
-                     std::forward_as_tuple(surface->surface_id(), surface))
-            .first;
+    auto* surface = manager_->GetSurfaceForId(surface_id);
+    if (!surface || !surface->HasActiveFrame()) {
+      // If there is no resolved surface or the surface has no active frame
+      // there is no resolved frame data to return.
+      return nullptr;
+    }
+
+    uint64_t prev_frame_index = 0u;
+    // If this is the first frame in a new surface there might be damage
+    // compared to the previous frame in a different surface.
+    if (surface->surface_id() != surface->previous_frame_surface_id()) {
+      auto prev_resolved_frame_iter =
+          resolved_frames_.find(surface->previous_frame_surface_id());
+      if (prev_resolved_frame_iter != resolved_frames_.end()) {
+        prev_frame_index =
+            prev_resolved_frame_iter->second.previous_frame_index();
+      }
+    }
+
+    iter = resolved_frames_
+               .emplace(
+                   std::piecewise_construct, std::forward_as_tuple(surface_id),
+                   std::forward_as_tuple(provider_, surface, prev_frame_index))
+               .first;
   }
 
   ResolvedFrameData& resolved_frame = iter->second;
-  DCHECK_EQ(resolved_frame.surface(), surface);
+  Surface* surface = resolved_frame.surface();
 
-  // Verify that a new surface wasn't created at the same address as a deleted
-  // surface with a different SurfaceId.
-  // TODO(kylechar): Invalidate cached resolved frame data when
-  // SurfaceObserver signals the surface has been destroyed instead.
-  if (resolved_frame.surface_id() != surface->surface_id()) {
-    resolved_frames_.erase(iter);
-    return GetResolvedFrame(surface, inside_aggregation);
-  }
+  if (is_inside_aggregate_ && !resolved_frame.WasUsedInAggregation()) {
+    // Mark the frame as used this aggregation so it persists.
+    resolved_frame.MarkAsUsedInAggregation();
 
-  // Mark the frame as used this aggregation so it persists.
-  bool first_use = inside_aggregation ? resolved_frame.MarkAsUsed() : true;
-
-  if (first_use) {
     // If there is a new CompositorFrame for `surface` compute resolved frame
     // data for the new resolved CompositorFrame.
-    if (resolved_frame.frame_index() != surface->GetActiveFrameIndex() ||
+    if (resolved_frame.previous_frame_index() !=
+            surface->GetActiveFrameIndex() ||
         surface->HasSurfaceAnimationDamage()) {
-      DCHECK(inside_aggregation);
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
@@ -969,7 +932,7 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
 
   // No matching surface was found so create a SolidColorDrawQuad with the
   // SurfaceDrawQuad default background color.
-  SkColor background_color = surface_quad->default_background_color;
+  SkColor4f background_color = surface_quad->default_background_color;
   auto* shared_quad_state =
       CopySharedQuadState(surface_quad->shared_quad_state, target_transform,
                           clip_rect, mask_filter_info, dest_pass);
@@ -980,6 +943,7 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
                            surface_quad->visible_rect, background_color, false);
 }
 
+// TODO(crbug.com/1308932): background_color to SkColor4f
 void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
@@ -1011,7 +975,8 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* right_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     right_gutter->SetNew(shared_quad_state, right_gutter_rect,
-                         right_gutter_rect, background_color, false);
+                         right_gutter_rect,
+                         SkColor4f::FromColor(background_color), false);
   }
 
   if (fallback_rect.height() < primary_rect.height()) {
@@ -1028,7 +993,8 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     auto* bottom_gutter =
         dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
     bottom_gutter->SetNew(shared_quad_state, bottom_gutter_rect,
-                          bottom_gutter_rect, background_color, false);
+                          bottom_gutter_rect,
+                          SkColor4f::FromColor(background_color), false);
   }
 }
 
@@ -1382,7 +1348,7 @@ void SurfaceAggregator::CopyQuadsToPass(
               dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
           solid_color_quad->SetNew(dest_pass->shared_quad_state_list.back(),
                                    quad->rect, quad->visible_rect,
-                                   SK_ColorBLACK, false);
+                                   SkColors::kBlack, false);
           dest_quad = solid_color_quad;
         } else {
           dest_quad = dest_pass->CopyFromAndAppendDrawQuad(quad);
@@ -1506,11 +1472,11 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
 }
 
 void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
-  for (const auto& surface : previous_contained_surfaces_) {
-    if (!contained_surfaces_.count(surface.first))
-      // Release resources of removed surface.
-      ReleaseResources(surface.first);
-  }
+  // Delete resolved frame data that wasn't used this aggregation. This releases
+  // resources associated with those resolved frames.
+  base::EraseIf(resolved_frames_, [](auto& entry) {
+    return !entry.second.WasUsedInAggregation();
+  });
 }
 
 gfx::Rect SurfaceAggregator::PrewalkRenderPass(
@@ -1550,7 +1516,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   // accumulated from all quads in the surface, and needs to be expanded by any
   // pixel-moving backdrop filter in the render pass if intersecting. Transform
   // this damage into the local space of the render pass for this purpose.
-  gfx::Rect surface_root_rp_damage = DamageRectForSurface(resolved_frame, true);
+  gfx::Rect surface_root_rp_damage = resolved_frame.GetSurfaceDamage(true);
   if (!surface_root_rp_damage.IsEmpty()) {
     gfx::Transform root_to_target_transform(
         gfx::Transform::kSkipInitialization);
@@ -1730,13 +1696,11 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       }
     }
 
-    if (clip_prewalk_damage_) {
-      // Clip the quad damage to the quad visible before converting back to
-      // render pass coordinate space. Expanded damage outside the quad rect for
-      // filters are added to |damage_rect| directly so this only clips damage
-      // from drawing the quad itself.
-      quad_damage_rect.Intersect(quad->visible_rect);
-    }
+    // Clip the quad damage to the quad visible before converting back to
+    // render pass coordinate space. Expanded damage outside the quad rect for
+    // filters are added to |damage_rect| directly so this only clips damage
+    // from drawing the quad itself.
+    quad_damage_rect.Intersect(quad->visible_rect);
 
     if (!quad_damage_rect.IsEmpty()) {
       // Convert the quad damage rect into its target space and clip it if
@@ -1761,15 +1725,13 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       damage_rect.Union(render_pass.output_rect);
     }
 
-    if (clip_prewalk_damage_) {
-      // The added damage from quads in the render pass is transformed back
-      // into the render pass coordinate space without clipping, so it can
-      // extend beyond the edge of the current render pass. Coordinates outside
-      // the output_rect are invalid in this render passes coordinate space but
-      // they may be valid coordinates in the embedder coordinate space, causing
-      // unnecessary damage expansion.
-      damage_rect.Intersect(render_pass.output_rect);
-    }
+    // The added damage from quads in the render pass is transformed back into
+    // the render pass coordinate space without clipping, so it can extend
+    // beyond the edge of the current render pass. Coordinates outside the
+    // output_rect are invalid in this render passes coordinate space but they
+    // may be valid coordinates in the embedder coordinate space, causing
+    // unnecessary damage expansion.
+    damage_rect.Intersect(render_pass.output_rect);
   }
 
   return damage_rect;
@@ -1782,27 +1744,18 @@ void SurfaceAggregator::ProcessResolvedFrame(
       surface->GetActiveOrInterpolatedFrame();
   auto& resource_list = compositor_frame.resource_list;
 
-  int child_id = ChildIdForSurface(surface);
-
   // Ref the resources in the surface, and let the provider know we've received
   // new resources from the compositor frame.
   if (surface->client())
     surface->client()->RefResources(resource_list);
-  provider_->ReceiveFromChild(child_id, resource_list);
 
   stats_->declare_resources_count += resource_list.size();
 
-  ResourceIdSet resource_set = resolved_frame.UpdateForActiveFrame(
-      provider_->GetChildToParentMap(child_id), render_pass_id_generator_);
-
-  // Declare the used resources to the provider. This will cause all resources
-  // that were received but not used in the render passes to be unreferenced in
-  // the surface, and returned to the child in the resource provider.
-  provider_->DeclareUsedResourcesFromChild(child_id, resource_set);
+  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
 }
 
 bool SurfaceAggregator::CheckFrameSinksChanged(const Surface* surface) {
-  contained_surfaces_[surface->surface_id()] = surface->GetActiveFrameIndex();
+  contained_surfaces_.insert(surface->surface_id());
   LocalSurfaceId& local_surface_id =
       contained_frame_sinks_[surface->surface_id().frame_sink_id()];
   bool frame_sinks_changed = (!previous_contained_frame_sinks_.contains(
@@ -1835,7 +1788,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
     parent_pass->aggregation().embedded_passes.insert(&root_resolved_pass);
   }
 
-  gfx::Rect damage_rect = DamageRectForSurface(resolved_frame, true);
+  gfx::Rect damage_rect = resolved_frame.GetSurfaceDamage(true);
 
   // Avoid infinite recursion by adding current surface to
   // |referenced_surfaces_|.
@@ -1985,23 +1938,26 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     const gfx::Rect& target_damage,
     int64_t display_trace_id) {
   DCHECK(!expected_display_time.is_null());
-
-  root_surface_id_ = surface_id;
-  Surface* surface = manager_->GetSurfaceForId(surface_id);
-  DCHECK(surface);
   DCHECK(contained_surfaces_.empty());
 
-  CheckFrameSinksChanged(surface);
+  DCHECK(!is_inside_aggregate_);
+  is_inside_aggregate_ = true;
+
+  root_surface_id_ = surface_id;
 
   // Start recording new stats for this aggregation.
   stats_.emplace();
 
   base::ElapsedTimer prewalk_timer;
-  ResolvedFrameData* resolved_frame =
-      GetResolvedFrame(surface, /*inside_aggregation=*/true);
+  ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
 
-  if (!resolved_frame || !resolved_frame->is_valid())
+  if (!resolved_frame || !resolved_frame->is_valid()) {
+    ResetAfterAggregate();
     return {};
+  }
+
+  Surface* surface = resolved_frame->surface();
+  CheckFrameSinksChanged(surface);
 
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
@@ -2115,8 +2071,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   ResetAfterAggregate();
 
-  for (auto it : previous_contained_surfaces_) {
-    surface = manager_->GetSurfaceForId(it.first);
+  for (auto& surface_id : previous_contained_surfaces_) {
+    surface = manager_->GetSurfaceForId(surface_id);
     if (surface) {
       surface->allocation_group()->TakeAggregatedLatencyInfoUpTo(
           surface, &frame.latency_info);
@@ -2165,6 +2121,9 @@ void SurfaceAggregator::RecordStatHistograms() {
 }
 
 void SurfaceAggregator::ResetAfterAggregate() {
+  DCHECK(is_inside_aggregate_);
+
+  is_inside_aggregate_ = false;
   dest_pass_list_ = nullptr;
   surface_damage_rect_list_ = nullptr;
   current_zero_damage_rect_is_not_recorded_ = false;
@@ -2177,26 +2136,15 @@ void SurfaceAggregator::ResetAfterAggregate() {
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
 
-  // Delete resolved frame data that wasn't used this frame.
-  base::EraseIf(resolved_frames_, [](auto& entry) {
-    return !entry.second.CheckIfUsedAndReset();
-  });
-}
-
-void SurfaceAggregator::ReleaseResources(const SurfaceId& surface_id) {
-  auto it = surface_id_to_resource_child_id_.find(surface_id);
-  if (it != surface_id_to_resource_child_id_.end()) {
-    provider_->DestroyChild(it->second);
-    surface_id_to_resource_child_id_.erase(it);
-  }
+  // Reset resolved frame data from this aggregation.
+  for (auto& [surface_id, resolved_frame] : resolved_frames_)
+    resolved_frame.ResetAfterAggregation();
 }
 
 void SurfaceAggregator::SetFullDamageForSurface(const SurfaceId& surface_id) {
-  auto it = previous_contained_surfaces_.find(surface_id);
-  if (it == previous_contained_surfaces_.end())
-    return;
-  // Set the last drawn index as 0 to ensure full damage next time it's drawn.
-  it->second = 0;
+  auto iter = resolved_frames_.find(surface_id);
+  if (iter != resolved_frames_.end())
+    iter->second.SetFullDamageForNextAggregation();
 }
 
 void SurfaceAggregator::SetDisplayColorSpaces(
@@ -2211,12 +2159,16 @@ void SurfaceAggregator::SetMaxRenderTargetSize(int max_size) {
 
 bool SurfaceAggregator::NotifySurfaceDamageAndCheckForDisplayDamage(
     const SurfaceId& surface_id) {
-  if (previous_contained_surfaces_.count(surface_id)) {
-    Surface* surface = manager_->GetSurfaceForId(surface_id);
-    if (surface) {
-      DCHECK(surface->HasActiveFrame());
-      if (surface->GetActiveOrInterpolatedFrame().resource_list.empty())
-        ReleaseResources(surface_id);
+  auto iter = resolved_frames_.find(surface_id);
+  if (iter != resolved_frames_.end()) {
+    auto& resolved_frame = iter->second;
+    DCHECK(resolved_frame.surface()->HasActiveFrame());
+    if (resolved_frame.surface()
+            ->GetActiveOrInterpolatedFrame()
+            .resource_list.empty()) {
+      // When a client submits a CompositorFrame without resources it's
+      // typically done to force return of existing resources to the client.
+      resolved_frame.ForceReleaseResource();
     }
     return true;
   }

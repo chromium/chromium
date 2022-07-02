@@ -54,6 +54,11 @@ class DrmGpuDisplayManager {
   bool TakeDisplayControl();
   void RelinquishDisplayControl();
 
+  // Whether or not a udev display change event triggered by a DRM property
+  // should go through or get blocked.
+  bool ShouldDisplayEventTriggerConfiguration(
+      const EventPropertyMap& event_props);
+
   bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests);
   bool GetHDCPState(int64_t display_id,

@@ -38,7 +38,7 @@ class DelegatedInkPointPixelTestHelper {
 
   void CreateAndSendMetadata(const gfx::PointF& point,
                              float diameter,
-                             SkColor color,
+                             SkColor4f color,
                              base::TimeTicks timestamp,
                              const gfx::RectF& presentation_area);
 

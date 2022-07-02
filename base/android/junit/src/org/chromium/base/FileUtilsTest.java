@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.NonNull;
-import android.annotation.Nullable;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -468,8 +466,7 @@ public class FileUtilsTest {
         }
 
         @Override
-        public @Nullable ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
-                throws FileNotFoundException {
+        public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
             String uriString = uri.toString();
             if (mUriToFilename.containsKey(uriString)) {
                 String filename = mUriToFilename.get(uriString);

@@ -4,10 +4,12 @@
 # found in the LICENSE file.
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler, test
+from functools import partial
 import sys
 import urllib.request
 import socketserver
 import webbrowser
+import os
 
 debugger_port = 0
 remote_port = 7777
@@ -33,7 +35,9 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
             "\n      ssh root@$DUT_IP -L " + \
             str(remote_port)+":localhost:" + str(remote_port)
         contents = bytes(contents, 'UTF-8')
-        self.send_response(400)
+        # Used error code 206 to prevent console logs every time
+        # connection is unsuccessful.
+        self.send_response(206)
 
       self.send_header("Content-type", "text/html")
       self.send_header("Content-length", len(contents))
@@ -47,7 +51,10 @@ if __name__ == '__main__':
   try:
     remote_port = int(sys.argv[1]) if len(sys.argv) > 1 else remote_port
     debugger_port = int(sys.argv[2]) if len(sys.argv) > 2 else debugger_port
-    Handler = CORSRequestHandler
+    # Creates a partial object that will behave like a function called with args
+    # and kwargs, while overriding directory with the given path.
+    Handler = partial(CORSRequestHandler,
+                      directory=os.path.relpath(os.path.dirname(__file__)))
     socketserver.TCPServer.allow_reuse_address = True
     tpc_server = socketserver.TCPServer(("", debugger_port), Handler)
     # If socket is not specified it was assigned so we must grab it.

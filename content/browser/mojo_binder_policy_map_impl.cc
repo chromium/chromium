@@ -43,10 +43,6 @@ void RegisterNonAssociatedPoliciesForSameOriginPrerendering(
   // content/browser/prerender/prerender_metrics.h once you add a new kCancel
   // interface.
 
-  // NotificationService has a sync message and is requested in
-  // Notification constructor, so it should be kCancel.
-  map.SetNonAssociatedPolicy<blink::mojom::NotificationService>(
-      MojoBinderNonAssociatedPolicy::kCancel);
   map.SetNonAssociatedPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderNonAssociatedPolicy::kCancel);
   map.SetNonAssociatedPolicy<device::mojom::GamepadMonitor>(

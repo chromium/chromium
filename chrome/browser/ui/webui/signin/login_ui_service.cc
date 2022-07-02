@@ -60,6 +60,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   NOTREACHED();
 #else
   last_login_error_ = error;
+  // TODO(crbug.com/1326904): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
@@ -69,10 +70,6 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
     } else {
       LOG(ERROR) << "Unable to show Login error message: " << error.message();
     }
-  } else if (browser) {
-    browser->window()->ShowAvatarBubbleFromAvatarButton(
-        BrowserWindow::AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN,
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, false);
   }
 #endif
 }

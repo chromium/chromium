@@ -148,7 +148,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
   Element* target1 = GetDocument().getElementById("target1");
   const ObjectPaintProperties* target1_properties =
       target1->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_CLIP_RECT(FloatRoundedRect(200, 150, 100, 100),
+  EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 100, 100),
                    target1_properties->OverflowClip());
   // Likewise, it inherits clip from the viewport, skipping overflow clip of the
   // scroller.
@@ -2195,9 +2195,9 @@ TEST_P(PaintPropertyTreeBuilderTest, CSSClipFixedPositionDescendant) {
   LayoutObject* fixed = GetLayoutObjectByElementId("fixed");
   EXPECT_EQ(clip_properties->CssClip(),
             &fixed->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(DocPreTranslation(),
+  EXPECT_EQ(fixed->FirstFragment().PaintProperties()->PaintOffsetTranslation(),
             &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
-  EXPECT_EQ(PhysicalOffset(654, 321), fixed->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), fixed->FirstFragment().PaintOffset());
   CHECK_VISUAL_RECT(PhysicalRect(), fixed,
                     GetDocument().View()->GetLayoutView(),
                     // TODO(crbug.com/599939): CSS clip of fixed-position
@@ -2376,9 +2376,9 @@ TEST_P(PaintPropertyTreeBuilderTest, CSSClipFixedPositionDescendantNonShared) {
   LayoutObject* fixed = GetLayoutObjectByElementId("fixed");
   EXPECT_EQ(clip_properties->CssClipFixedPosition(),
             &fixed->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(DocPreTranslation(),
+  EXPECT_EQ(fixed->FirstFragment().PaintProperties()->PaintOffsetTranslation(),
             &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
-  EXPECT_EQ(PhysicalOffset(654, 321), fixed->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), fixed->FirstFragment().PaintOffset());
   CHECK_VISUAL_RECT(PhysicalRect(), fixed,
                     GetDocument().View()->GetLayoutView(),
                     // TODO(crbug.com/599939): CSS clip of fixed-position
@@ -3763,6 +3763,35 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollWithRoundedRect) {
             rounded_box_properties->OverflowClip()->Parent());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollWithSubpixelBorder) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #scroller {
+          width: 200px;
+          height: 201.594px;
+          border: 2.8px solid blue;
+          overflow: scroll;
+        }
+        #content {
+          width: 600px;
+          height: 201.594px;
+        }
+      </style>
+      <div id="scroller">
+        <div id="content"></div>
+      </div>
+    )HTML");
+
+  PaintLayer* paint_layer = GetPaintLayerByElementId("scroller");
+  ASSERT_FALSE(paint_layer->GetScrollableArea()->HasVerticalOverflow());
+
+  // When there is no vertical overflow, the contents height should not be
+  // larger than the container height.
+  const auto* properties = PaintPropertiesForElement("scroller");
+  const auto* scroll = properties->Scroll();
+  EXPECT_EQ(scroll->ContentsRect().height(), scroll->ContainerRect().height());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, CssClipContentsTreeState) {
   // This test verifies the tree builder correctly computes and records the
   // property tree context for a (pseudo) stacking context that is scrolled by a
@@ -4989,23 +5018,18 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutMotionPath) {
   )HTML");
 
   auto* motion_path = GetLayoutObjectByElementId("motionPath");
-  EXPECT_EQ(gfx::Vector2dF(50, 150), motion_path->FirstFragment()
-                                         .PaintProperties()
-                                         ->Transform()
-                                         ->Translation2D());
+  auto* motion_path_properties = motion_path->FirstFragment().PaintProperties();
+  EXPECT_EQ(motion_path_properties->Transform(), nullptr);
+  EXPECT_EQ(gfx::Vector2dF(50, 150),
+            motion_path_properties->Offset()->Translation2D());
   // We don't need to store origin for 2d-translation.
-  EXPECT_EQ(
-      gfx::Point3F(),
-      motion_path->FirstFragment().PaintProperties()->Transform()->Origin());
+  EXPECT_EQ(gfx::Point3F(), motion_path_properties->Offset()->Origin());
 
   auto* will_change = GetLayoutObjectByElementId("willChange");
-  EXPECT_TRUE(will_change->FirstFragment()
-                  .PaintProperties()
-                  ->Transform()
-                  ->IsIdentity());
-  EXPECT_EQ(
-      gfx::Point3F(),
-      will_change->FirstFragment().PaintProperties()->Transform()->Origin());
+  auto* will_change_properties = will_change->FirstFragment().PaintProperties();
+  EXPECT_EQ(will_change_properties->Offset(), nullptr);
+  EXPECT_TRUE(will_change_properties->Transform()->IsIdentity());
+  EXPECT_EQ(gfx::Point3F(), will_change_properties->Transform()->Origin());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, ChangePositionUpdateDescendantProperties) {
@@ -6905,7 +6929,8 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollPropertyHierarchy) {
 
   // |fixed| escapes both top and middle scrollers.
   auto& fixed_fragment = GetLayoutObjectByElementId("fixed")->FirstFragment();
-  EXPECT_EQ(DocPreTranslation(), &fixed_fragment.PreTransform());
+  EXPECT_EQ(fixed_fragment.PaintProperties()->PaintOffsetTranslation(),
+            &fixed_fragment.PreTransform());
   EXPECT_EQ(top_properties->OverflowClip()->Parent(),
             &fixed_fragment.PreClip());
 
@@ -7035,6 +7060,81 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
   EXPECT_EQ(gfx::Point3F(100, 100, 0), transform_node->Origin());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: backdrop-filter"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->BackdropFilter());
+  EXPECT_TRUE(
+      properties->Effect()->RequiresCompositingForWillChangeBackdropFilter());
+
+  // will-change:backdrop-filter should not cause transform or filter node.
+  EXPECT_FALSE(properties->Transform());
+  EXPECT_FALSE(properties->Filter());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest,
+       WillChangeBackdropFilterWithTransformAndFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: backdrop-filter;
+        transform: translateX(10px); filter: blur(5px)"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->BackdropFilter());
+  EXPECT_TRUE(
+      properties->Effect()->RequiresCompositingForWillChangeBackdropFilter());
+
+  // will-change:backdrop-filter should not add compositing reason for the
+  // transform or the filter node.
+  ASSERT_TRUE(properties->Transform());
+  EXPECT_FALSE(properties->Transform()->HasDirectCompositingReasons());
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_FALSE(properties->Filter()->HasDirectCompositingReasons());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: filter"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
+
+  // will-change:filter should not cause transform or effect node.
+  EXPECT_FALSE(properties->Transform());
+  EXPECT_FALSE(properties->Effect());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilterWithTransformAndOpacity) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="will-change: filter;
+        transform: translateX(10px); opacity: 0.5"></div>
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
+
+  // will-change:filter should not add compositing reason for the transform or
+  // the filter node.
+  ASSERT_TRUE(properties->Transform());
+  EXPECT_FALSE(properties->Transform()->HasDirectCompositingReasons());
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->HasDirectCompositingReasons());
 }
 
 }  // namespace blink

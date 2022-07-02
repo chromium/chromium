@@ -105,19 +105,19 @@ void WebAuthFlow::Start() {
   base::Base64Encode(random_bytes, &app_window_key_);
 
   // identityPrivate.onWebFlowRequest(app_window_key, provider_url_, mode_)
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(app_window_key_);
-  args->Append(provider_url_.spec());
+  base::Value::List args;
+  args.Append(app_window_key_);
+  args.Append(provider_url_.spec());
   if (mode_ == WebAuthFlow::INTERACTIVE)
-    args->Append("interactive");
+    args.Append("interactive");
   else
-    args->Append("silent");
-  args->Append(GetPartitionName(partition_));
+    args.Append("silent");
+  args.Append(GetPartitionName(partition_));
 
   auto event =
       std::make_unique<Event>(events::IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST,
                               identity_private::OnWebFlowRequest::kEventName,
-                              std::move(*args).TakeListDeprecated(), profile_);
+                              std::move(args), profile_);
   ExtensionSystem* system = ExtensionSystem::Get(profile_);
 
   extensions::ComponentLoader* component_loader =

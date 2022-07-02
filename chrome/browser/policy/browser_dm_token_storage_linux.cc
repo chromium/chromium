@@ -59,12 +59,22 @@ bool GetDmTokenFilePath(base::FilePath* token_file_path,
 bool StoreDMTokenInUserDataDir(const std::string& token,
                                const std::string& client_id) {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, client_id, true)) {
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/true)) {
     NOTREACHED();
     return false;
   }
 
   return base::ImportantFileWriter::WriteFileAtomically(token_file_path, token);
+}
+
+bool DeleteDMTokenFromUserDataDir(const std::string& client_id) {
+  base::FilePath token_file_path;
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/false)) {
+    NOTREACHED();
+    return false;
+  }
+
+  return base::DeleteFile(token_file_path);
 }
 
 }  // namespace
@@ -158,6 +168,11 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageLinux::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
   return base::BindOnce(&StoreDMTokenInUserDataDir, token, client_id);
+}
+
+BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageLinux::DeleteDMTokenTask(
+    const std::string& client_id) {
+  return base::BindOnce(&DeleteDMTokenFromUserDataDir, client_id);
 }
 
 scoped_refptr<base::TaskRunner>

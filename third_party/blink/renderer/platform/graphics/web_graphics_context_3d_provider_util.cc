@@ -44,7 +44,7 @@ CreateContextProviderOnWorkerThread(
   ContextProviderCreationInfo creation_info;
   creation_info.context_attributes = context_attributes;
   creation_info.gl_info = gl_info;
-  creation_info.url = url.Copy();
+  creation_info.url = url;
   PostCrossThreadTask(
       *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&CreateContextProviderOnMainThread,

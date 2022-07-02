@@ -31,6 +31,9 @@ class WebAppRegistrar;
 // Install the web app after the manifest is retrieved and validated.
 class WebAppInstallCommand : public WebAppCommand {
  public:
+  // When |dialog_callback| is null (aka |base::NullCallback|) the command
+  // doesn't show installation prompt in UI and installs the application in
+  // background.
   WebAppInstallCommand(
       const AppId& app_id,
       Profile* profile,
@@ -49,7 +52,7 @@ class WebAppInstallCommand : public WebAppCommand {
   ~WebAppInstallCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   content::WebContents* GetInstallingWebContents() override;

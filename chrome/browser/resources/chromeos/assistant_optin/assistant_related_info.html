@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="../components/behaviors/oobe_dialog_host_behavior.html">
@@ -78,8 +79,9 @@
         <div class="example-text" hidden="[[!childName_]]">
           [[i18nDynamic(locale, 'assistantRelatedInfoExampleForChild')]]
         </div>
-        <img id="relatedInfoImg" class="oobe-illustration" aria-hidden="true"
-            src="./assistant_optin/assistant_related_info.svg">
+        <cr-lottie id="relatedInfoImg"
+            animation-url="[[getAnimationUrl_(isDarkModeActive_)]]">
+        </cr-lottie>
       </div>
       <div slot="content" id="content-container" class="landscape-header-aligned"
           hidden$="[[!skipActivityControl_]]">

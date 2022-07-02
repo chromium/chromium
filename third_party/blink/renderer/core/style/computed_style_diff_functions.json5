@@ -228,7 +228,8 @@
                 "contain-intrinsic-height", "container-type",
                 "content-visibility", "aspect-ratio", "overflow-clip-margin",
                 "-internal-align-self-block", "orphans", "widows",
-                "scrollbar-gutter"],
+                "scrollbar-gutter", "break-after", "break-before",
+                "break-inside"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -268,10 +269,6 @@
           {
             method: "InsideLink()",
             field_dependencies: ["InsideLink"]
-          },
-          {
-            method: "InternalVisitedBackgroundColor()",
-            field_dependencies: ["-internal-visited-background-color"]
           },
           {
             method: "Resize()",
@@ -378,8 +375,9 @@
             // from just the matrix, including but not limited to animation state.
             method: "HasTransform()",
             field_dependencies: ["transform", "offset-position",
-                    "HasCurrentTransformAnimation", "translate", "rotate",
-                    "scale"]
+                    "HasCurrentTranslateAnimation", "HasCurrentRotateAnimation",
+                    "HasCurrentScaleAnimation", "HasCurrentTransformAnimation",
+                    "translate", "rotate", "scale"]
           },
         ]
     },

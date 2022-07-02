@@ -191,7 +191,7 @@ void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       wc, "uiTests.setupLegacyFilesForTest();", &result));
-  EXPECT_EQ("[OK]", result);
+  ASSERT_EQ("[OK]", result);
 }
 
 template <typename... T>
@@ -691,7 +691,7 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
 
   const extensions::Extension* LoadExtension(base::FilePath extension_path) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
-    ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED", false);
+    ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
     extensions::UnpackedInstaller::Create(extension_service_)
         ->Load(extension_path);
     observer.WaitForExtensionLoaded();
@@ -1070,7 +1070,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   //       - data:
   //       - web URL
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1195,7 +1196,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_sidebar_pane_extension_rfh =
@@ -1255,7 +1257,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(3U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* http_iframe_rfh =
@@ -1320,7 +1323,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1391,7 +1395,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(5U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
 
   RenderFrameHost* devtools_extension_a_devtools_rfh =
       content::FrameMatchingPredicate(
@@ -1471,7 +1476,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
       CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* devtools_extension_devtools_page_rfh =
       ChildFrameAt(main_devtools_rfh, 0);
   RenderFrameHost* devtools_extension_panel_rfh =
@@ -1521,7 +1527,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
       "devtoolsFrame.src = '" +
       devtools_url.spec() + "';";
 
-  RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
+  RenderFrameHost* main_devtools_rfh =
+      main_web_contents()->GetPrimaryMainFrame();
 
   content::TestNavigationManager manager(main_web_contents(), devtools_url);
   ASSERT_TRUE(content::ExecuteScript(main_devtools_rfh, javascript));
@@ -1795,15 +1802,13 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   if (url.query() != kPushUseNullEndTime)
     load_timing.push_end = base::TimeTicks::Now();
 
-  params->client->OnReceiveResponse(std::move(response),
-                                    mojo::ScopedDataPipeConsumerHandle());
-
   // The response's body is empty. The pipe is not filled.
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
-  params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
+  params->client->OnReceiveResponse(std::move(response),
+                                    std::move(consumer_handle));
   params->client->OnComplete(network::URLLoaderCompletionStatus());
   return true;
 }
@@ -1904,7 +1909,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
-          ->DriverForFrame(GetInspectedTab()->GetMainFrame());
+          ->DriverForFrame(GetInspectedTab()->GetPrimaryMainFrame());
   auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
       autofill_driver->autofill_manager());
   BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
@@ -2135,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest, InspectSharedWorker) {
 
 // Flaky on multiple platforms. See http://crbug.com/1263230
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_PauseInSharedWorkerInitialization DISABLED_PauseInSharedWorkerInitialization
 #else
 #define MAYBE_PauseInSharedWorkerInitialization PauseInSharedWorkerInitialization
@@ -2513,7 +2518,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
 }
 
 // Tests that OpenInNewTab filters URLs.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilter) {
+// TODO(https://crbug.com/1335516): Flaky on Windows and Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_TestOpenInNewTabFilter DISABLED_TestOpenInNewTabFilter
+#else
+#define MAYBE_TestOpenInNewTabFilter TestOpenInNewTabFilter
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsUIBindings::Delegate* bindings_delegate_ =
       static_cast<DevToolsUIBindings::Delegate*>(window_);
@@ -2965,7 +2976,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, DevToolsFetchFromHttpDisallowed) {
   const auto result = FetchFromDevToolsWindow("http://www.google.com");
   EXPECT_THAT(result.error,
               ::testing::StartsWith(
-                  "a JavaScript error:\nTypeError: Failed to fetch\n"));
+                  "a JavaScript error: \"TypeError: Failed to fetch\n"));
 
   CloseDevToolsWindow();
 }
@@ -2978,7 +2989,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
             "devtools://devtools/bundled/devtools_compatibility.js");
   EXPECT_THAT(result.error,
               ::testing::StartsWith(
-                  "a JavaScript error:\nTypeError: Failed to fetch\n"));
+                  "a JavaScript error: \"TypeError: Failed to fetch\n"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {

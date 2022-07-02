@@ -128,6 +128,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   display::ScreenInfo GetScreenInfo() const override;
   display::ScreenInfos GetScreenInfos() const override;
 
+  // For HiDPI capture mode, allow applying a render scale multiplier
+  // which modifies the effective device scale factor. Use a scale
+  // of 1.0f (exactly) to disable the feature after it was used.
+  void SetScaleOverrideForCapture(float scale);
+  float GetScaleOverrideForCapture() const;
+
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
@@ -238,6 +244,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Informs that the focused DOM node has changed.
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
+
+  // Requests to start stylus writing and returns true if successful.
+  virtual bool RequestStartStylusWriting();
 
   // This method will clear any cached fallback surface. For use in response to
   // a CommitPending where there is no content for TakeFallbackContentFrom.
@@ -618,6 +627,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Cached information about the renderer's display environment.
   display::ScreenInfos screen_infos_;
+
+  float scale_override_for_capture_ = 1.0f;
 
   // Indicates whether keyboard lock is active for this view.
   bool keyboard_locked_ = false;

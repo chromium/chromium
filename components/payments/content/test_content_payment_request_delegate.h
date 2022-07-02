@@ -78,7 +78,9 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
   void ShowNoMatchingPaymentCredentialDialog(
       const std::u16string& merchant_name,
-      base::OnceClosure response_callback) override;
+      const std::string& rp_id,
+      base::OnceClosure response_callback,
+      base::OnceClosure opt_out_callback) override;
 
  private:
   TestPaymentRequestDelegate core_delegate_;

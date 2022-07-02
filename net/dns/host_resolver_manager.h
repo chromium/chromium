@@ -147,7 +147,7 @@ class NET_EXPORT HostResolverManager
   // TODO(crbug.com/1022059): Use the HostCache out of the ResolveContext
   // instead of passing it separately.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
-      absl::variant<url::SchemeHostPort, HostPortPair> host,
+      HostResolver::Host host,
       NetworkIsolationKey network_isolation_key,
       NetLogWithSource net_log,
       absl::optional<ResolveHostParameters> optional_parameters,
@@ -498,7 +498,7 @@ class NET_EXPORT HostResolverManager
   std::unique_ptr<PrioritizedDispatcher> dispatcher_;
 
   // Limit on the maximum number of jobs queued in |dispatcher_|.
-  size_t max_queued_jobs_;
+  size_t max_queued_jobs_ = 0;
 
   // Parameters for ProcTask.
   ProcTaskParams proc_params_;
@@ -517,13 +517,13 @@ class NET_EXPORT HostResolverManager
   bool check_ipv6_on_wifi_;
 
   base::TimeTicks last_ipv6_probe_time_;
-  bool last_ipv6_probe_result_;
+  bool last_ipv6_probe_result_ = true;
 
   // Any resolver flags that should be added to a request by default.
-  HostResolverFlags additional_resolver_flags_;
+  HostResolverFlags additional_resolver_flags_ = 0;
 
   // Allow fallback to ProcTask if DnsTask fails.
-  bool allow_fallback_to_proctask_;
+  bool allow_fallback_to_proctask_ = true;
 
   // Task runner used for DNS lookups using the system resolver. Normally a
   // ThreadPool task runner, but can be overridden for tests.
@@ -540,7 +540,7 @@ class NET_EXPORT HostResolverManager
                      true /* check_empty */,
                      false /* allow_reentrancy */>
       registered_contexts_;
-  bool invalidation_in_progress_;
+  bool invalidation_in_progress_ = false;
 
   // Helper for metrics associated with `features::kDnsHttpssvc`.
   HttpssvcExperimentDomainCache httpssvc_domain_cache_;

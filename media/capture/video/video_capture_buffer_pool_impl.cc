@@ -16,30 +16,30 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "ui/gfx/buffer_format_util.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace media {
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     VideoCaptureBufferType buffer_type)
-    : VideoCaptureBufferPoolImpl(buffer_type,
-                                 kVideoCaptureDefaultMaxBufferPoolSize) {}
+    : VideoCaptureBufferPoolImpl(
+          buffer_type,
+          kVideoCaptureDefaultMaxBufferPoolSize,
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {}
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     VideoCaptureBufferType buffer_type,
     int count)
+    : VideoCaptureBufferPoolImpl(
+          buffer_type,
+          count,
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {}
+
+VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
+    VideoCaptureBufferType buffer_type,
+    int count,
+    std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory)
     : buffer_type_(buffer_type),
       count_(count),
-#if BUILDFLAG(IS_WIN)
-      buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>())
-#else
-      buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>())
-#endif
-{
+      buffer_tracker_factory_(std::move(buffer_tracker_factory)) {
   DCHECK_GT(count, 0);
 }
 
@@ -309,5 +309,4 @@ VideoCaptureBufferTracker* VideoCaptureBufferPoolImpl::GetTracker(
   auto it = trackers_.find(buffer_id);
   return (it == trackers_.end()) ? nullptr : it->second.get();
 }
-
 }  // namespace media

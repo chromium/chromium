@@ -108,43 +108,45 @@ TEST(ProtocolTraits, PrimitiveValueSerialization) {
 }
 
 template <typename... Args>
-std::vector<base::Value> MakeList(Args&&... args) {
-  std::vector<base::Value> res;
-  (res.push_back(base::Value(std::forward<Args>(args))), ...);
+base::Value::List MakeList(Args&&... args) {
+  base::Value::List res;
+  (res.Append(std::forward<Args>(args)), ...);
   return res;
 }
 
 TEST(ProtocolTraits, ListValueSerialization) {
-  EXPECT_THAT(
-      ConvertTo<std::vector<int>>(base::Value(std::vector<base::Value>())),
-      Eq(std::vector<int>()));
-  EXPECT_THAT(RoundTrip(base::Value(std::vector<base::Value>())),
-              IsJson(base::Value(base::Value::Type::LIST)));
+  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(base::Value::List())),
+              Eq(std::vector<int>()));
+  EXPECT_THAT(RoundTrip(base::Value(base::Value::List())),
+              IsJson(base::Value(base::Value::List())));
 
-  std::vector<base::Value> list = MakeList(2, 3, 5);
-  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(list)),
+  base::Value::List list = MakeList(2, 3, 5);
+  base::Value list_value = base::Value(list.Clone());
+  EXPECT_THAT(ConvertTo<std::vector<int>>(list_value),
               Eq(std::vector<int>{2, 3, 5}));
-  EXPECT_THAT(ConvertTo<base::Value>(list), IsJson(base::Value(list)));
-  EXPECT_THAT(RoundTrip(base::Value(list)), IsJson(base::Value(list)));
+  EXPECT_THAT(ConvertTo<base::Value>(list), IsJson(list_value));
+  EXPECT_THAT(RoundTrip(list_value), IsJson(list_value));
 
-  std::vector<base::Value> list_of_lists =
-      MakeList(list, MakeList("foo", "bar", "bazz"), MakeList(base::Value()));
-  EXPECT_THAT(RoundTrip(base::Value(list_of_lists)),
-              IsJson(base::Value(list_of_lists)));
+  base::Value list_of_lists_value =
+      base::Value(MakeList(list_value.Clone(), MakeList("foo", "bar", "bazz"),
+                           MakeList(base::Value())));
+  EXPECT_THAT(RoundTrip(list_of_lists_value), IsJson(list_of_lists_value));
 }
 
 TEST(ProtocolTraits, DictValueSerialization) {
-  base::flat_map<std::string, base::Value> dict;
-  EXPECT_THAT(RoundTrip(base::Value(dict)),
+  base::Value::Dict dict;
+  EXPECT_THAT(RoundTrip(base::Value(dict.Clone())),
               IsJson(base::Value(base::Value::Type::DICTIONARY)));
-  dict.insert(std::make_pair("int", base::Value(42)));
-  dict.insert(std::make_pair("double", base::Value(2.718281828459045)));
-  dict.insert(std::make_pair("string", base::Value("foo")));
-  dict.insert(std::make_pair("list", base::Value(MakeList("bar", 42))));
-  dict.insert(std::make_pair("null", base::Value()));
-  dict.insert(std::make_pair("dict", base::Value(dict)));
-  EXPECT_THAT(ConvertTo<base::Value>(dict), IsJson(base::Value(dict)));
-  EXPECT_THAT(RoundTrip(base::Value(dict)), IsJson(base::Value(dict)));
+  dict.Set("int", 42);
+  dict.Set("double", 2.718281828459045);
+  dict.Set("string", "foo");
+  dict.Set("list", base::Value(MakeList("bar", 42)));
+  dict.Set("null", base::Value());
+  dict.Set("dict", dict.Clone());
+  EXPECT_THAT(ConvertTo<base::Value>(dict.Clone()),
+              IsJson(base::Value(dict.Clone())));
+  EXPECT_THAT(RoundTrip(base::Value(dict.Clone())),
+              IsJson(base::Value(dict.Clone())));
 }
 
 }  // namespace

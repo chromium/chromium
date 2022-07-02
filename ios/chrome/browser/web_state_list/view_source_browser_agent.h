@@ -35,8 +35,9 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
 
  private:
   friend class BrowserUserData<ViewSourceBrowserAgent>;
-  explicit ViewSourceBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit ViewSourceBrowserAgent(Browser* browser);
 
   // Inserts a tab into |browser_| showing the |source| for |web_state|.
   void InsertSourceViewTab(NSString* source, web::WebState* web_state);

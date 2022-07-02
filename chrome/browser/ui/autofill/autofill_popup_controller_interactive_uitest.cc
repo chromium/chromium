@@ -67,7 +67,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
   }
 
   content::RenderFrameHost* main_rfh() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   BrowserAutofillManager& autofill_manager() {

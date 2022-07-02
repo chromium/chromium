@@ -183,7 +183,7 @@ CookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), std::string(kGlobalDomainKey),
-      std::string(kGlobalNameKey), GURL(""), CookiePartitionKey::Todo(),
+      std::string(kGlobalNameKey), GURL(""), absl::nullopt,
       first_party_sets_enabled_, std::move(callback));
 
   LinkSubscription(subscription.get());

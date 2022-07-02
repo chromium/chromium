@@ -5,8 +5,8 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
 #include "base/command_line.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -16,18 +16,19 @@ class ClientSideDetectionServiceFactoryTest : public testing::Test {
   ClientSideDetectionServiceFactoryTest() = default;
   ~ClientSideDetectionServiceFactoryTest() override = default;
 
-  Profile* profile() { return profile_.get(); }
+  Profile* profile() { return &profile_; }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
 
-TEST_F(ClientSideDetectionServiceFactoryTest,
-       TestGetForProfileWithCommandLineFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kDisableClientSidePhishingDetection);
+TEST_F(ClientSideDetectionServiceFactoryTest, DisabledIncognito) {
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
+  auto* otr_profile = profile()->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/true);
   EXPECT_EQ(nullptr,
-            ClientSideDetectionServiceFactory::GetForProfile(profile()));
+            ClientSideDetectionServiceFactory::GetForProfile(otr_profile));
 }
 
 }  // namespace safe_browsing

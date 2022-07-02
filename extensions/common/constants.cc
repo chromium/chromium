@@ -123,13 +123,14 @@ const int kUnknownTabId = -1;
 const int kUnknownWindowId = -1;
 const int kCurrentWindowId = -2;
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_CAST_RECEIVER)
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id for the built-in component extension.
 const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
 #else
 // The extension id for the web store extension.
 const char kChromeVoxExtensionId[] = "kgejglhpjiefppelpmljglcjbhoiplfn";
 #endif
+
 const char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 const char kQuickOfficeComponentExtensionId[] =
     "bpmcpldpdmajfigpchkicefoigmkfalc";
@@ -173,6 +174,13 @@ const char kScreensaverKraneZdksAppId[] = "fafhbhdboeiciklpkminlncemohljlkj";
 const char kSigninProfileTestExtensionId[] = "mecfefiddjlmabpeilblgegnbioikfmp";
 const char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
+const char kStagingAttractLoopAppId[] = "aefaeciooibphdopnjjmgjdlckdcfbae";
+const char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
+// 2022 Attract Loop App ID
+const char kNewAttractLoopAppId[] = "igilkdghcdehjdcpndaodgnjgdggiemm";
+// 2022 Highlights App ID
+const char kNewHighlightsAppId[] = "enchmnkoajljphdmahljlebfmpkkbnkj";
+
 bool IsSystemUIApp(base::StringPiece extension_id) {
   static const char* const kApps[] = {
       // clang-format off
@@ -185,6 +193,18 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
       // clang-format on
   };
   for (const char* id : kApps) {
+    if (extension_id == id)
+      return true;
+  }
+  return false;
+}
+
+bool IsDemoModeChromeApp(base::StringPiece extension_id) {
+  static const char* const kDemoModeApps[] = {
+      kHighlightsAppId,        kScreensaverAppId,    kStagingAttractLoopAppId,
+      kStagingHighlightsAppId, kNewAttractLoopAppId, kNewHighlightsAppId,
+  };
+  for (const char* id : kDemoModeApps) {
     if (extension_id == id)
       return true;
   }

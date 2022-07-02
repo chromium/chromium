@@ -193,10 +193,10 @@ void CameraAppDeviceBridgeImpl::IsSupported(IsSupportedCallback callback) {
   std::move(callback).Run(is_supported_);
 }
 
-void CameraAppDeviceBridgeImpl::SetMultipleStreamsEnabled(
+void CameraAppDeviceBridgeImpl::SetVirtualDeviceEnabled(
     const std::string& device_id,
     bool enabled,
-    SetMultipleStreamsEnabledCallback callback) {
+    SetVirtualDeviceEnabledCallback callback) {
   base::AutoLock lock(virtual_device_controller_lock_);
   if (!virtual_device_controller_) {
     std::move(callback).Run(false);

@@ -19,8 +19,8 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
-#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -37,7 +37,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -85,14 +84,10 @@ void CleanupLayer(views::View* view) {
 
 }  // namespace
 
-ContinueSectionView::ContinueSectionView(
-    AppListViewDelegate* view_delegate,
-    SearchResultPageDialogController* dialog_controller,
-    int columns,
-    bool tablet_mode)
-    : view_delegate_(view_delegate),
-      dialog_controller_(dialog_controller),
-      tablet_mode_(tablet_mode) {
+ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
+                                         int columns,
+                                         bool tablet_mode)
+    : view_delegate_(view_delegate), tablet_mode_(tablet_mode) {
   DCHECK(view_delegate_);
 
   AppListModelProvider::Get()->AddObserver(this);
@@ -109,7 +104,9 @@ ContinueSectionView::ContinueSectionView(
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kUnbounded));
 
-  if (!tablet_mode) {
+  // The launcher "hide continue section" feature makes the label a child of
+  // AppListBubbleAppsPage.
+  if (!tablet_mode && !features::IsLauncherHideContinueSectionEnabled()) {
     continue_label_ = AddChildView(CreateContinueLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
     continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -122,7 +119,7 @@ ContinueSectionView::ContinueSectionView(
           base::BindRepeating(
               &ContinueSectionView::OnSearchResultContainerResultsChanged,
               base::Unretained(this)),
-          dialog_controller_, tablet_mode));
+          tablet_mode));
   suggestions_container_->SetVisible(false);
 }
 
@@ -234,6 +231,14 @@ void ContinueSectionView::OnPrivacyToastAcknowledged() {
 }
 
 void ContinueSectionView::AnimateDismissToast(base::RepeatingClosure callback) {
+  // Prevents setting up new animation if the toast is already hiding.
+  // https://crbug.com/1326237.
+  DCHECK(privacy_toast_);
+  if (privacy_toast_->layer() &&
+      privacy_toast_->layer()->GetTargetOpacity() == 0.f) {
+    return;
+  }
+
   PrepareForLayerAnimation(privacy_toast_);
 
   views::AnimationBuilder animation_builder;
@@ -465,14 +470,25 @@ void ContinueSectionView::OnDidChangeFocus(views::View* focused_before,
   // If a child of the privacy toast gained focus (e.g. the OK button) then
   // ensure the whole toast is visible.
   if (privacy_toast_ && privacy_toast_->Contains(focused_now)) {
-    privacy_toast_->ScrollViewToVisible();
+    if (features::IsLauncherHideContinueSectionEnabled()) {
+      // The parent view owns the continue label, which provides more context
+      // for the privacy notice. Ensure the label is visible.
+      parent()->ScrollViewToVisible();
+    } else {
+      privacy_toast_->ScrollViewToVisible();
+    }
     return;
   }
   // If a suggested task gained focus then ensure the continue label is visible
   // so the user knows what this section is.
   if (suggestions_container_->Contains(focused_now)) {
-    DCHECK(continue_label_);
-    continue_label_->ScrollViewToVisible();
+    if (features::IsLauncherHideContinueSectionEnabled()) {
+      // The parent view owns the continue label, so ensure label visibility.
+      parent()->ScrollViewToVisible();
+    } else {
+      DCHECK(continue_label_);
+      continue_label_->ScrollViewToVisible();
+    }
   }
 }
 

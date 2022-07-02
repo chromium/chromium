@@ -220,6 +220,7 @@ void BackForwardCacheBrowserTest::SetupFeaturesAndParameters() {
 
   feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                               disabled_features_);
+  vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
 }
 
 void BackForwardCacheBrowserTest::EnableFeatureAndSetParams(
@@ -411,19 +412,19 @@ void BackForwardCacheBrowserTest::StartRecordingEvents(
 }
 
 void BackForwardCacheBrowserTest::MatchEventList(RenderFrameHostImpl* rfh,
-                                                 base::ListValue list,
+                                                 base::Value list,
                                                  base::Location location) {
   EXPECT_EQ(list, EvalJs(rfh, "window.testObservedEvents"))
       << location.ToString();
 }
 
-  // Creates a minimal HTTPS server, accessible through https_server().
-  // Returns a pointer to the server.
+// Creates a minimal HTTPS server, accessible through https_server().
+// Returns a pointer to the server.
 net::EmbeddedTestServer* BackForwardCacheBrowserTest::CreateHttpsServer() {
   https_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_->AddDefaultHandlers(GetTestDataFilePath());
-  https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   return https_server();
 }
 
@@ -881,8 +882,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ResponseHeaders) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/set-header?X-Foo: bar"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/set-header?X-Foo: bar"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   NavigationHandleObserver observer1(web_contents(), url_a);
@@ -1060,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL http_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL https_url(https_server()->GetURL("a.com", "/title1.html"));
+  GURL http_url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
   GURL file_url = net::FilePathToFileURL(GetTestFilePath("", "title1.html"));
   GURL data_url = GURL("data:text/html,");
   GURL blank_url = GURL(url::kAboutBlankURL);
@@ -1527,6 +1528,7 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
+         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         {});
   }
@@ -1535,24 +1537,36 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Navigate from A to B and go back.
+// Ensure that the BackForwardCache trial is not activated and the
+// BackForwardCache_NoMemoryLimit_Trial trial got activated as expected on
+// low-memory devices.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
                        DisableBFCacheForLowEndDevices) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // Ensure that the trial starts inactive.
+  // Ensure that the BackForwardCache trial starts inactive, and the
+  // BackForwardCache_NoMemoryLimit_Trial trial starts active.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   EXPECT_FALSE(IsBackForwardCacheEnabled());
 
-  // Ensure that we do not activate the trial when querying bfcache status,
-  // which is protected by low-memory setting.
+  // Ensure that we do not activate the BackForwardCache trial when querying
+  // bfcache status, and the BackForwardCache_NoMemoryLimit_Trial trial stays
+  // active.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   // 1) Navigate to A.
@@ -1567,13 +1581,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
   // memory is less than the memory threshold.
   delete_observer_rfh_a.WaitUntilDeleted();
 
-  // Nothing is recorded when the memory is less than the threshold value.
-  ExpectOutcomeDidNotChange(FROM_HERE);
-  ExpectNotRestoredDidNotChange(FROM_HERE);
+  // 4) Go back to check the
+  // NotRestoredReasons.kBackForwardCacheDisabledByLowMemory is recorded when
+  // the memory is less than the threshold value.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  // Ensure that the trial still hasn't been activated.
+  ExpectNotRestored(
+      {
+          BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled,
+          BackForwardCacheMetrics::NotRestoredReason::
+              kBackForwardCacheDisabledByLowMemory,
+      },
+      {}, {}, {}, {}, FROM_HERE);
+
+  // Ensure that the BackForwardCache trial still hasn't been activated, and the
+  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1652,23 +1680,56 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+
     // Set the value of memory threshold less than the physical memory and check
     // if back-forward cache is enabled or not.
     std::string memory_threshold =
         base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() - 1);
-    EnableFeatureAndSetParams(features::kBackForwardCacheMemoryControls,
-                              "memory_threshold_for_back_forward_cache_in_mb",
-                              memory_threshold);
-    EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
-                              "max_buffered_bytes_per_process", "1000");
-
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCacheMemoryControls,
+          {{"memory_threshold_for_back_forward_cache_in_mb",
+            memory_threshold}}},
+         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
+         {blink::features::kLoadingTasksUnfreezable, {}}},
+        {});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Navigate from A to B and go back.
+// Ensure that the BackForwardCache_NoMemoryLimit_Trial and the
+// BackForwardCache trials got activated as expected on high-memory devices
+// when the BackForwardCache feature is enabled.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
                        EnableBFCacheForHighMemoryDevices) {
+  // Ensure that the BackForwardCache and the
+  // BackForwardCache_NoMemoryLimit_Trial trials start active
+  // on high-memory devices when the BackForwardCache feature is enabled,
+  // because IsBackForwardCacheEnabled() got queried already before the test
+  // starts.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
+          ->trial_name()));
+
+  EXPECT_TRUE(IsBackForwardCacheEnabled());
+
+  // Ensure that the BackForwardCache and the
+  // BackForwardCache_NoMemoryLimit_Trial trial stays active after
+  // querying IsBackForwardCacheEnabled().
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
+          ->trial_name()));
+
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -1683,6 +1744,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
   // 3) A should be stored in back-forward cache because the physical memory is
   // greater than the memory threshold.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Ensure that the BackForwardCache and the
+  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(features::kBackForwardCache)
+          ->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
+          ->trial_name()));
 }
 
 // Trigger network reqeuests, then navigate from A to B, then go back.
@@ -1742,6 +1813,88 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(
           blink::features::kLoadingTasksUnfreezable)
+          ->trial_name()));
+}
+
+// Tests for high memory devices that have the BackForwardCache feature flag
+// disabled.
+class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+
+    // Set the value of memory threshold less than the physical memory and check
+    // if back-forward cache is enabled or not.
+    std::string memory_threshold =
+        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() - 1);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kBackForwardCacheMemoryControls,
+          {{"memory_threshold_for_back_forward_cache_in_mb",
+            memory_threshold}}},
+         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
+         {blink::features::kLoadingTasksUnfreezable, {}}},
+        /*disabled_features=*/
+        {features::kBackForwardCache});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that the BackForwardCache_NoMemoryLimit_Trial does not get activated
+// on high-memory devices that have the BackForwardCache feature disabled.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled,
+    HighMemoryDevicesWithBFacheDisabled) {
+  // Ensure that BackForwardCache_NoMemoryLimit_Trial trials starts inactive
+  // on high-memory devices that have the BackForwardCache feature disabled.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
+          ->trial_name()));
+
+  // Ensure that IsBackForwardCacheEnabled() returns false, because the
+  // BackForwardCache feature is disabled.
+  EXPECT_FALSE(IsBackForwardCacheEnabled());
+
+  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive
+  // after querying IsBackForwardCacheEnabled().
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
+          ->trial_name()));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) A shouldn't be stored in back-forward cache because the BackForwardCache
+  // feature is disabled.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 4) Go back to check that only kBackForwardCacheDisabled is recorded.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  ExpectNotRestored(
+      {
+          BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled,
+      },
+      {}, {}, {}, {}, FROM_HERE);
+
+  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
+      base::FeatureList::GetFieldTrial(
+          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1882,7 +2035,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to |url_1| and hide the tab.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImpl* main_frame_1 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_1 = web_contents->GetPrimaryMainFrame();
   // We need to set it to Visibility::VISIBLE first in case this is the first
   // time the visibility is updated.
   web_contents->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -1928,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Navigate to |url_3| which is same-origin with |url_1|, so we can check
   // the localStorage values.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  RenderFrameHostImpl* main_frame_3 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_3 = web_contents->GetPrimaryMainFrame();
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
@@ -2951,7 +3104,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
   content::RenderFrameHostImpl* fenced_frame_host =
       static_cast<content::RenderFrameHostImpl*>(
           fenced_frame_test_helper().CreateFencedFrame(
-              web_contents()->GetMainFrame(), url_b));
+              web_contents()->GetPrimaryMainFrame(), url_b));
   RenderFrameHostWrapper fenced_frame_host_wrapper(fenced_frame_host);
 
   // 3) Navigate to C on the fenced frame host.

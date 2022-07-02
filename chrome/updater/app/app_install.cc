@@ -23,6 +23,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -93,7 +94,8 @@ scoped_refptr<App> MakeAppInstall() {
 AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
                        AppInstallController::Maker app_install_controller_maker)
     : splash_screen_maker_(std::move(splash_screen_maker)),
-      app_install_controller_maker_(app_install_controller_maker) {
+      app_install_controller_maker_(app_install_controller_maker),
+      external_constants_(CreateExternalConstants()) {
   DCHECK(splash_screen_maker_);
   DCHECK(app_install_controller_maker_);
 }
@@ -138,7 +140,8 @@ void AppInstall::FirstTaskRun() {
 
   // Creating instances of `UpdateServiceProxy` is possible only after task
   // scheduling has been initialized.
-  update_service_ = CreateUpdateServiceProxy(updater_scope());
+  update_service_ = CreateUpdateServiceProxy(
+      updater_scope(), external_constants_->OverinstallTimeout());
   update_service_->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this));
 }
@@ -177,7 +180,17 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
     return;
   }
 
-  WakeCandidate();
+  // It's possible that a previous updater existed but is nonresponsive. In
+  // this case, clear the active version in global prefs so that the system can
+  // recover.
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(FROM_HERE,
+                         base::BindOnce(
+                             [](UpdaterScope scope) {
+                               CreateGlobalPrefs(scope)->SetActiveVersion("");
+                             },
+                             updater_scope()),
+                         base::BindOnce(&AppInstall::WakeCandidate, this));
 }
 
 void AppInstall::WakeCandidate() {
@@ -210,7 +223,8 @@ void AppInstall::RegisterUpdater() {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1297163) - encapsulate the reinitialization of the
   // proxy server instance to avoid this special case.
-  update_service_ = CreateUpdateServiceProxy(updater_scope());
+  update_service_ = CreateUpdateServiceProxy(
+      updater_scope(), external_constants_->OverinstallTimeout());
 #endif
 
   RegistrationRequest request;

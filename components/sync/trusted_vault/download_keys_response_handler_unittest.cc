@@ -99,7 +99,7 @@ class DownloadKeysResponseHandlerTest : public testing::Test {
 };
 
 // All HttpStatuses except kSuccess should end up in kOtherError or
-// kMemberNotFoundOrCorrupted reporting.
+// kMemberNotFound reporting.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
   EXPECT_THAT(
       handler()
@@ -107,7 +107,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
               /*http_status=*/TrustedVaultRequest::HttpStatus::kNotFound,
               /*response_body=*/std::string())
           .status,
-      Eq(TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted));
+      Eq(TrustedVaultDownloadKeysStatus::kMemberNotFound));
   EXPECT_THAT(
       handler()
           .ProcessResponse(
@@ -261,7 +261,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 }
 
 // The test populates undecryptable/corrupted |wrapped_key| field, handler
-// should return kMemberNotFoundOrCorrupted to allow client to restore Member by
+// should return kMembershipCorrupted to allow client to restore the member by
 // re-registration.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
   sync_pb::SecurityDomainMember member;
@@ -281,7 +281,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
                       /*response_body=*/member.SerializeAsString())
                   .status,
-              Eq(TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted));
+              Eq(TrustedVaultDownloadKeysStatus::kMembershipCorrupted));
 }
 
 // The test populates invalid |rotation_proof| field for the single key
@@ -362,7 +362,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
                       /*response_body=*/sync_pb::SecurityDomainMember()
                           .SerializeAsString())
                   .status,
-              Eq(TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted));
+              Eq(TrustedVaultDownloadKeysStatus::kMembershipNotFound));
 }
 
 // Same as above, but there is a different security domain membership.
@@ -379,7 +379,23 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
                       /*response_body=*/member.SerializeAsString())
                   .status,
-              Eq(TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted));
+              Eq(TrustedVaultDownloadKeysStatus::kMembershipNotFound));
+}
+
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
+  sync_pb::SecurityDomainMember member;
+  AddSecurityDomainMembership(kSyncSecurityDomainName,
+                              MakeTestKeyPair()->public_key(),
+                              /*trusted_vault_keys=*/{},
+                              /*trusted_vault_keys_versions=*/{},
+                              /*signing_keys=*/{}, &member);
+
+  EXPECT_THAT(handler()
+                  .ProcessResponse(
+                      /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+                      /*response_body=*/member.SerializeAsString())
+                  .status,
+              Eq(TrustedVaultDownloadKeysStatus::kMembershipEmpty));
 }
 
 // Tests handling presence of other security domain memberships.

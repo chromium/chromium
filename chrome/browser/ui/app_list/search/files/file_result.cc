@@ -11,7 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -149,43 +149,16 @@ FileResult::FileResult(const std::string& schema,
   if (details)
     SetDetails(details.value());
 
-  // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled. Productivity launcher
-  // has dark background by default, so use icons for dark background in that
-  // case.
-  const bool dark_background =
-      ash::features::IsDarkLightModeEnabled()
-          ? ash::ColorProvider::Get()->IsDarkModeEnabled()
-          : ash::features::IsProductivityLauncherEnabled();
-  if (display_type == DisplayType::kChip) {
-    SetChipIcon(chromeos::GetChipIconForPath(filepath, dark_background));
-  } else if (display_type == DisplayType::kContinue) {
-    // For Continue Section, if dark/light mode is disabled, we should use the
-    // icon and not the chip icon with a dark background as default.
-    const gfx::ImageSkia chip_icon =
-        ash::features::IsDarkLightModeEnabled()
-            ? chromeos::GetChipIconForPath(filepath, dark_background)
-            : chromeos::GetIconForPath(filepath, /*dark_background=*/true);
-    SetChipIcon(chip_icon);
-  } else {
-    switch (type) {
-      case Type::kFile:
-        SetIcon(IconInfo(chromeos::GetIconForPath(filepath, dark_background),
-                         kSystemIconDimension));
-        break;
-      case Type::kDirectory:
-        SetIcon(IconInfo(chromeos::GetIconFromType("folder", dark_background),
-                         kSystemIconDimension));
-        break;
-      case Type::kSharedDirectory:
-        SetIcon(IconInfo(chromeos::GetIconFromType("shared", dark_background),
-                         kSystemIconDimension));
-        break;
-    }
-  }
+  UpdateIcon();
+
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->AddObserver(this);
 }
 
-FileResult::~FileResult() = default;
+FileResult::~FileResult() {
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->RemoveObserver(this);
+}
 
 void FileResult::Open(int event_flags) {
   switch (type_) {
@@ -253,6 +226,10 @@ void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
                                         weak_factory_.GetWeakPtr()));
 }
 
+void FileResult::OnColorModeChanged(bool dark_mode_enabled) {
+  UpdateIcon();
+}
+
 void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
                                    base::File::Error error) {
   if (!bitmap) {
@@ -276,6 +253,47 @@ void FileResult::SetDetailsToJustificationString() {
   GetJustificationStringAsync(
       filepath_, base::BindOnce(&FileResult::OnJustificationStringReturned,
                                 weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::UpdateIcon() {
+  // Launcher search results UI is light by default, so use icons for light
+  // background if dark/light mode feature is not enabled. Productivity launcher
+  // has dark background by default, so use icons for dark background in that
+  // case.
+  const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
+  // DarkLightModeController might be nullptr in tests.
+  auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
+  const bool dark_background =
+      is_dark_light_enabled
+          ? dark_light_mode_controller &&
+                dark_light_mode_controller->IsDarkModeEnabled()
+          : ash::features::IsProductivityLauncherEnabled();
+  if (display_type() == DisplayType::kChip) {
+    SetChipIcon(chromeos::GetChipIconForPath(filepath_, dark_background));
+  } else if (display_type() == DisplayType::kContinue) {
+    // For Continue Section, if dark/light mode is disabled, we should use the
+    // icon and not the chip icon with a dark background as default.
+    const gfx::ImageSkia chip_icon =
+        is_dark_light_enabled
+            ? chromeos::GetChipIconForPath(filepath_, dark_background)
+            : chromeos::GetIconForPath(filepath_, /*dark_background=*/true);
+    SetChipIcon(chip_icon);
+  } else {
+    switch (type_) {
+      case Type::kFile:
+        SetIcon(IconInfo(chromeos::GetIconForPath(filepath_, dark_background),
+                         kSystemIconDimension));
+        break;
+      case Type::kDirectory:
+        SetIcon(IconInfo(chromeos::GetIconFromType("folder", dark_background),
+                         kSystemIconDimension));
+        break;
+      case Type::kSharedDirectory:
+        SetIcon(IconInfo(chromeos::GetIconFromType("shared", dark_background),
+                         kSystemIconDimension));
+        break;
+    }
+  }
 }
 
 void FileResult::OnJustificationStringReturned(

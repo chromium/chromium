@@ -95,11 +95,15 @@ FidoDeviceAuthenticator* FidoDeviceDiscovery::GetAuthenticator(
 }
 
 bool FidoDeviceDiscovery::AddDevice(std::unique_ptr<FidoDevice> device) {
+  return AddAuthenticator(
+      std::make_unique<FidoDeviceAuthenticator>(std::move(device)));
+}
+
+bool FidoDeviceDiscovery::AddAuthenticator(
+    std::unique_ptr<FidoDeviceAuthenticator> authenticator) {
   if (state_ == State::kStopped)
     return false;
 
-  auto authenticator =
-      std::make_unique<FidoDeviceAuthenticator>(std::move(device));
   std::string authenticator_id = authenticator->GetId();
   const auto result = authenticators_.emplace(std::move(authenticator_id),
                                               std::move(authenticator));

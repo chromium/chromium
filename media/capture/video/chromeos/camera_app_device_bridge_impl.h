@@ -73,10 +73,10 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void IsSupported(IsSupportedCallback callback) override;
 
-  void SetMultipleStreamsEnabled(
+  void SetVirtualDeviceEnabled(
       const std::string& device_id,
       bool enabled,
-      SetMultipleStreamsEnabledCallback callback) override;
+      SetVirtualDeviceEnabledCallback callback) override;
 
  private:
   friend struct base::DefaultSingletonTraits<CameraAppDeviceBridgeImpl>;

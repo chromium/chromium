@@ -24,7 +24,7 @@ node("minify") {
 generate_grd("build_grdp") {
   grd_prefix = "lottie"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":minify" ]
+  public_deps = [ ":minify" ]
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [ "lottie_worker.min.js" ]
   resource_path_prefix = "lottie"

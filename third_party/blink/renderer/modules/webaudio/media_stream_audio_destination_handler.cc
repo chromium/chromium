@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_handler.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -14,9 +15,14 @@
 
 namespace blink {
 
-// WebAudioCapturerSource ignores the channel count beyond 8, so we set the
-// block here to avoid anything can cause the crash.
-static const uint32_t kMaxChannelCount = 8;
+namespace {
+
+// Channel counts greater than 8 are ignored by some audio tracks/sinks (see
+// WebAudioMediaStreamSource), so we set a limit here to avoid anything that
+// could cause a crash.
+constexpr uint32_t kMaxChannelCountSupported = 8;
+
+}  // namespace
 
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
@@ -54,7 +60,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // MediaStreamDestination's channel count.
 
   // Synchronize with possible dynamic changes to the channel count.
-  MutexTryLocker try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
 
   auto source = source_.Lock();
 
@@ -62,7 +68,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   // mix bus to a new channel count, if needed.  If not, just use the
   // old mix bus to do the mixing; we'll update the bus next time
   // around.
-  if (try_locker.Locked()) {
+  if (try_locker.is_acquired()) {
     unsigned count = ChannelCount();
     if (count != mix_bus_->NumberOfChannels()) {
       mix_bus_ = AudioBus::Create(
@@ -86,7 +92,7 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   DCHECK(IsMainThread());
 
   // Currently the maximum channel count supported for this node is 8,
-  // which is constrained by m_source (WebAudioCapturereSource). Although
+  // which is constrained by source_ (WebAudioMediaStreamSource). Although
   // it has its own safety check for the excessive channels, throwing an
   // exception here is useful to developers.
   if (channel_count < 1 || channel_count > MaxChannelCount()) {
@@ -100,14 +106,14 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   }
 
   // Synchronize changes in the channel count with process() which
-  // needs to update m_mixBus.
-  MutexLocker locker(process_lock_);
+  // needs to update mix_bus_.
+  base::AutoLock locker(process_lock_);
 
   AudioHandler::SetChannelCount(channel_count, exception_state);
 }
 
 uint32_t MediaStreamAudioDestinationHandler::MaxChannelCount() const {
-  return kMaxChannelCount;
+  return kMaxChannelCountSupported;
 }
 
 void MediaStreamAudioDestinationHandler::PullInputs(

@@ -27,6 +27,11 @@ class TargetHistogramDataView;
 struct COMPONENT_EXPORT(LEARNING_COMMON) TargetHistogramPair {
   TargetValue target_value;
   double count;
+
+  TargetHistogramPair() = default;
+
+  TargetHistogramPair(const TargetValue& value, double count)
+      : target_value(value), count(count) {}
 };
 
 // Histogram of target values that allows fractional counts.

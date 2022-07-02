@@ -23,6 +23,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kFailedToParseSignedDecimalFloatingPoint);
     PARSE_STATUS_CODE_CASE(kFailedToParseDecimalResolution);
     PARSE_STATUS_CODE_CASE(kFailedToParseQuotedString);
+    PARSE_STATUS_CODE_CASE(kFailedToParseByteRange);
     PARSE_STATUS_CODE_CASE(kInvalidPlaylistVersion);
     PARSE_STATUS_CODE_CASE(kUnknownPlaylistType);
     PARSE_STATUS_CODE_CASE(kMalformedAttributeList);
@@ -31,6 +32,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kInvalidUri);
     PARSE_STATUS_CODE_CASE(kPlaylistMissingM3uTag);
     PARSE_STATUS_CODE_CASE(kMediaPlaylistMissingTargetDuration);
+    PARSE_STATUS_CODE_CASE(kTargetDurationExceedsMax);
     PARSE_STATUS_CODE_CASE(kMediaSegmentMissingInfTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentExceedsTargetDuration);
     PARSE_STATUS_CODE_CASE(kPlaylistHasDuplicateTags);
@@ -44,6 +46,17 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kXStreamInfTagNotFollowedByUri);
     PARSE_STATUS_CODE_CASE(kVariantMissingStreamInfTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeMediaSequenceTag);
+    PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeDiscontinuitySequenceTag);
+    PARSE_STATUS_CODE_CASE(kDiscontinuityTagBeforeDiscontinuitySequenceTag);
+    PARSE_STATUS_CODE_CASE(kByteRangeRequiresOffset);
+    PARSE_STATUS_CODE_CASE(kByteRangeInvalid);
+    PARSE_STATUS_CODE_CASE(kValueOverflowsTimeDelta);
+    PARSE_STATUS_CODE_CASE(kPlaylistOverflowsTimeDelta);
+    PARSE_STATUS_CODE_CASE(kSkipBoundaryTooLow);
+    PARSE_STATUS_CODE_CASE(kHoldBackDistanceTooLow);
+    PARSE_STATUS_CODE_CASE(kPartTargetDurationExceedsTargetDuration);
+    PARSE_STATUS_CODE_CASE(kPartHoldBackDistanceTooLow);
+    PARSE_STATUS_CODE_CASE(kPartInfTagWithoutPartHoldBack);
   }
 
   NOTREACHED();

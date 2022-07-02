@@ -14,24 +14,23 @@
 #include "media/cast/encoding/audio_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
                          StatusChangeOnceCallback status_change_cb,
                          CastTransport* const transport_sender)
-    : FrameSender(cast_environment,
-                  transport_sender,
-                  audio_config,
-                  NewFixedCongestionControl(audio_config.max_bitrate)),
-      samples_in_encoder_(0) {
+    : cast_environment_(cast_environment),
+      rtp_timebase_(audio_config.rtp_timebase),
+      frame_sender_(FrameSender::Create(cast_environment,
+                                        audio_config,
+                                        transport_sender,
+                                        this)) {
   if (!audio_config.use_external_encoder) {
     audio_encoder_ = std::make_unique<AudioEncoder>(
-        cast_environment, audio_config.channels, audio_config.rtp_timebase,
+        std::move(cast_environment), audio_config.channels, rtp_timebase_,
         audio_config.max_bitrate, audio_config.codec,
-        base::BindRepeating(&AudioSender::OnEncodedAudioFrame, AsWeakPtr(),
-                            audio_config.max_bitrate));
+        base::BindRepeating(&AudioSender::OnEncodedAudioFrame, AsWeakPtr()));
   }
 
   // AudioEncoder provides no operational status changes during normal use.
@@ -46,8 +45,8 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
   // The number of samples per encoded audio frame depends on the codec and its
   // initialization parameters. Now that we have an encoder, we can calculate
   // the maximum frame rate.
-  max_frame_rate_ =
-      audio_config.rtp_timebase / audio_encoder_->GetSamplesPerFrame();
+  frame_sender_->SetMaxFrameRate(rtp_timebase_ /
+                                 audio_encoder_->GetSamplesPerFrame());
 }
 
 AudioSender::~AudioSender() = default;
@@ -62,13 +61,22 @@ void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
   }
 
   const base::TimeDelta next_frame_duration =
-      RtpTimeDelta::FromTicks(audio_bus->frames()).ToTimeDelta(rtp_timebase());
-  if (ShouldDropNextFrame(next_frame_duration))
+      RtpTimeDelta::FromTicks(audio_bus->frames()).ToTimeDelta(rtp_timebase_);
+  if (frame_sender_->ShouldDropNextFrame(next_frame_duration))
     return;
 
   samples_in_encoder_ += audio_bus->frames();
 
   audio_encoder_->InsertAudio(std::move(audio_bus), recorded_time);
+}
+
+void AudioSender::SetTargetPlayoutDelay(
+    base::TimeDelta new_target_playout_delay) {
+  frame_sender_->SetTargetPlayoutDelay(new_target_playout_delay);
+}
+
+base::TimeDelta AudioSender::GetTargetPlayoutDelay() const {
+  return frame_sender_->GetTargetPlayoutDelay();
 }
 
 base::WeakPtr<AudioSender> AudioSender::AsWeakPtr() {
@@ -77,27 +85,23 @@ base::WeakPtr<AudioSender> AudioSender::AsWeakPtr() {
 
 int AudioSender::GetNumberOfFramesInEncoder() const {
   // Note: It's possible for a partial frame to be in the encoder, but returning
-  // the floor() is good enough for the "design limit" check in FrameSender.
+  // the floor() is good enough for the "design limit" check in FrameSenderImpl.
   return samples_in_encoder_ / audio_encoder_->GetSamplesPerFrame();
 }
 
-base::TimeDelta AudioSender::GetInFlightMediaDuration() const {
-  const int samples_in_flight = samples_in_encoder_ +
-      GetUnacknowledgedFrameCount() * audio_encoder_->GetSamplesPerFrame();
-  return RtpTimeDelta::FromTicks(samples_in_flight).ToTimeDelta(rtp_timebase());
+base::TimeDelta AudioSender::GetEncoderBacklogDuration() const {
+  return RtpTimeDelta::FromTicks(samples_in_encoder_)
+      .ToTimeDelta(rtp_timebase_);
 }
 
 void AudioSender::OnEncodedAudioFrame(
-    int encoder_bitrate,
     std::unique_ptr<SenderEncodedFrame> encoded_frame,
     int samples_skipped) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
   samples_in_encoder_ -= audio_encoder_->GetSamplesPerFrame() + samples_skipped;
   DCHECK_GE(samples_in_encoder_, 0);
-
-  SendEncodedFrame(encoder_bitrate, std::move(encoded_frame));
+  frame_sender_->EnqueueFrame(std::move(encoded_frame));
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

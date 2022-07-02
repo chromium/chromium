@@ -426,7 +426,7 @@ export class PanelSearchMenu extends PanelMenu {
         this, menuItemTitle, menuItemShortcut, menuItemBraille, gesture,
         callback, 'result-number-' + this.searchResultCounter_.toString());
     // Ensure that item styling is updated on mouse hovers.
-    item.element.addEventListener('mouseover', (event) => {
+    item.element.addEventListener('mouseover', event => {
       this.resetItemAtActiveIndex();
     }, true);
     return item;

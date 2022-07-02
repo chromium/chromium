@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/power/hid_battery_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -243,7 +244,8 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       params.message, std::u16string(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 params.notifier_name),
+                                 params.notifier_name,
+                                 NotificationCatalogName::kPeripheralBattery),
       message_center::RichNotificationData(), std::move(delegate), *params.icon,
       message_center::SystemNotificationWarningLevel::WARNING);
 

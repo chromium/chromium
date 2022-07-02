@@ -13,6 +13,7 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
@@ -26,7 +27,7 @@
 namespace ash {
 
 AmbientContainerView::AmbientContainerView(
-    AmbientViewDelegate* delegate,
+    AmbientViewDelegateImpl* delegate,
     std::unique_ptr<AmbientAnimationStaticResources>
         animation_static_resources) {
   DCHECK(delegate);
@@ -40,12 +41,20 @@ AmbientContainerView::AmbientContainerView(
   // Updates focus behavior to receive key press events.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  View* main_rendering_view = nullptr;
+  AmbientAnimationTheme theme =
+      animation_static_resources
+          ? animation_static_resources->GetAmbientAnimationTheme()
+          : AmbientAnimationTheme::kSlideshow;
   if (animation_static_resources) {
-    AddChildView(std::make_unique<AmbientAnimationView>(
+    main_rendering_view = AddChildView(std::make_unique<AmbientAnimationView>(
         delegate, std::move(animation_static_resources)));
   } else {
-    AddChildView(std::make_unique<PhotoView>(delegate));
+    main_rendering_view = AddChildView(std::make_unique<PhotoView>(delegate));
   }
+  orientation_metrics_recorder_ =
+      std::make_unique<ambient::AmbientOrientationMetricsRecorder>(
+          main_rendering_view, theme);
 }
 
 AmbientContainerView::~AmbientContainerView() = default;

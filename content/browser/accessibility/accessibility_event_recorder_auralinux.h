@@ -64,7 +64,7 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
   void AddATSPIEventListeners();
   void RemoveATSPIEventListeners();
 
-  AtspiEventListener* atspi_event_listener_ = nullptr;
+  raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
   // TODO: should be either removed or converted to a weakptr.
   const raw_ptr<BrowserAccessibilityManager> manager_;
   base::ProcessId pid_;

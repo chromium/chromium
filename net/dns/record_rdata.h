@@ -29,7 +29,7 @@ class DnsRecordParser;
 // DNS record data such as TTL, Name, Type and Class.
 class NET_EXPORT RecordRdata {
  public:
-  virtual ~RecordRdata() {}
+  virtual ~RecordRdata() = default;
 
   // Return true if `data` represents RDATA in the wire format with a valid size
   // for the give `type`. Always returns true for unrecognized `type`s as the
@@ -68,9 +68,9 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
  private:
   SrvRecordRdata();
 
-  uint16_t priority_;
-  uint16_t weight_;
-  uint16_t port_;
+  uint16_t priority_ = 0;
+  uint16_t weight_ = 0;
+  uint16_t port_ = 0;
 
   std::string target_;
 };

@@ -4,7 +4,6 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
@@ -723,7 +722,8 @@ export class NavigationListModel extends EventTarget {
     }
 
     // Add Trash.
-    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
+    // TODO(b/237351925): Trash should not show up when in File picker / saver.
+    if (util.isTrashEnabled()) {
       if (!this.trashItem_) {
         this.trashItem_ = new NavigationModelFakeItem(
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -27,6 +28,7 @@ ChromeDataUseMeasurement& ChromeDataUseMeasurement::GetInstance() {
 
 ChromeDataUseMeasurement::ChromeDataUseMeasurement() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("browser", "ChromeDataUseMeasurement");
 
 #if BUILDFLAG(IS_ANDROID)
   int64_t bytes = 0;
@@ -59,6 +61,7 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
 void ChromeDataUseMeasurement::ReportDataUsage(TrafficDirection dir,
                                                int64_t message_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("browser", "ChromeDataUseMeasurement::ReportDataUsage");
 
   if (message_size_bytes <= 0)
     return;

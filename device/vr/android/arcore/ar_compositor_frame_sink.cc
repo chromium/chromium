@@ -381,7 +381,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
           render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
       dom_quad->SetNew(dom_quad_state, gfx::Rect(output_rect.size()),
                        gfx::Rect(output_rect.size()),
-                       viz::SurfaceRange(*dom_surface_id), SK_ColorTRANSPARENT,
+                       viz::SurfaceRange(*dom_surface_id),
+                       SkColors::kTransparent,
                        /*stretch_content_to_fill_bounds=*/true);
     }
   }
@@ -415,7 +416,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*premultiplied_alpha=*/true,
         /*uv_top_left=*/xr_frame->bounds_left.origin(),
         /*uv_bottom_right=*/xr_frame->bounds_left.bottom_right(),
-        /*background_color=*/SK_ColorTRANSPARENT, opacity,
+        /*background_color=*/SkColors::kTransparent, opacity,
         /*y_flipped=*/true,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
@@ -454,7 +455,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*premultiplied_alpha=*/true,
                       /*uv_top_left=*/gfx::PointF(0.f, 0.f),
                       /*uv_bottom_right=*/gfx::PointF(1.f, 1.f),
-                      /*background_color=*/SK_ColorTRANSPARENT, opacity,
+                      /*background_color=*/SkColors::kTransparent, opacity,
                       /*y_flipped=*/true,
                       /*nearest_neighbor=*/false,
                       /*secure_output_only=*/false,

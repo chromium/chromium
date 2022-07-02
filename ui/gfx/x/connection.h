@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -261,7 +262,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     // The response must already have been obtained using WaitForResponse().
     void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
 
-    Connection* connection = nullptr;
+    raw_ptr<Connection, DanglingUntriaged> connection = nullptr;
     SequenceType sequence = 0;
     bool generates_reply = false;
     const char* request_name_for_tracing = nullptr;
@@ -325,7 +326,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t GenerateIdImpl();
 
-  xcb_connection_t* connection_ = nullptr;
+  raw_ptr<xcb_connection_t, DanglingUntriaged> connection_ = nullptr;
   std::unique_ptr<XlibDisplay> xlib_display_;
 
   bool synchronous_ = false;
@@ -336,9 +337,9 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::string display_string_;
   int default_screen_id_ = 0;
   Setup setup_;
-  Screen* default_screen_ = nullptr;
-  Depth* default_root_depth_ = nullptr;
-  VisualType* default_root_visual_ = nullptr;
+  raw_ptr<Screen> default_screen_ = nullptr;
+  raw_ptr<Depth> default_root_depth_ = nullptr;
+  raw_ptr<VisualType> default_root_visual_ = nullptr;
 
   base::flat_map<VisualId, VisualInfo> default_screen_visuals_;
 
@@ -349,7 +350,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   base::ObserverList<EventObserver>::Unchecked event_observers_;
 
   // The Event currently being dispatched, or nullptr if there is none.
-  const Event* dispatching_event_ = nullptr;
+  raw_ptr<const Event> dispatching_event_ = nullptr;
 
   base::circular_deque<Request> requests_;
   // The sequence ID of requests_.front(), or if |requests_| is empty, then the

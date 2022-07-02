@@ -17,6 +17,7 @@
 namespace segmentation_platform::processing {
 class CustomInputProcessor;
 class FeatureProcessorState;
+class InputDelegateHolder;
 
 // SqlFeatureProcessor takes a list of SqlFeature type of input, fetches samples
 // from the UKMDatabase, and computes an input tensor to use when executing the
@@ -27,6 +28,7 @@ class SqlFeatureProcessor : public QueryProcessor {
 
   SqlFeatureProcessor(QueryList&& queries,
                       base::Time prediction_time,
+                      InputDelegateHolder* input_delegate_holder,
                       UkmDatabase* ukm_database);
   ~SqlFeatureProcessor() override;
 
@@ -56,6 +58,8 @@ class SqlFeatureProcessor : public QueryProcessor {
 
   // Time at which we expect the model execution to run.
   const base::Time prediction_time_;
+
+  const raw_ptr<InputDelegateHolder> input_delegate_holder_;
 
   // Main database for fetching data.
   const raw_ptr<UkmDatabase> ukm_database_;

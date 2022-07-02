@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "ui/gfx/native_widget_types.h"
@@ -47,7 +48,7 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
                      OutputSurfaceFrame frame) override;
 
  private:
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   const x11::Window window_;
   const x11::VisualId visual_;
   const x11::GraphicsContext gc_;

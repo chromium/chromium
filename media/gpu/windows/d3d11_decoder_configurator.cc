@@ -64,13 +64,13 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   } else if (config.profile() == AV1PROFILE_PROFILE_PRO) {
     decoder_guid = DXVA_ModeAV1_VLD_Profile2;
   }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   else if (config.profile() == HEVCPROFILE_MAIN) {
     decoder_guid = D3D11_DECODER_PROFILE_HEVC_VLD_MAIN;
   } else if (config.profile() == HEVCPROFILE_MAIN10) {
     decoder_guid = D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   else {
     MEDIA_LOG(INFO, media_log)
         << "D3D11VideoDecoder does not support codec " << config.codec();

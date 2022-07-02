@@ -5,18 +5,25 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 
+#include <map>
+#include <set>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/buckets/bucket_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 
 namespace storage {
 struct BucketInfo;
+class QuotaManagerProxy;
 }  // namespace storage
 
 namespace content {
@@ -38,9 +45,11 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   BucketManagerHost& operator=(const BucketManagerHost&) = delete;
 
   // Binds |receiver| to the BucketManagerHost. The |receiver| must belong to
-  // the frame or worker from this host's origin.
+  // the frame or worker from this host's origin. `permission_decision` is used
+  // to determine permissions for the receiver.
   void BindReceiver(
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+      const BucketHost::PermissionDecisionCallback& permission_decision);
 
   // The origin served by this host.
   const url::Origin& origin() const { return origin_; }
@@ -61,17 +70,25 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
 
   void RemoveBucketHost(const std::string& name);
 
+  storage::QuotaManagerProxy* GetQuotaManagerProxy();
+
  private:
   // Called when a receiver in the receiver set is disconnected.
   void OnReceiverDisconnect();
 
-  void DidGetBucket(blink::mojom::BucketPoliciesPtr policy,
+  // `receiver_id` reflects which mojo connection called `open`.
+  void DidGetBucket(mojo::ReceiverId receiver_id,
                     OpenBucketCallback callback,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
+
+  void DidGetBuckets(
+      KeysCallback callback,
+      storage::QuotaErrorOr<std::set<storage::BucketInfo>> result);
 
   void DidDeleteBucket(const std::string& bucket_name,
                        DeleteBucketCallback callback,
                        blink::mojom::QuotaStatusCode status);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer is safe because BucketManager owns this BucketManagerHost, and
@@ -87,6 +104,12 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   // Add receivers for frames & workers for `origin_` associated with
   // the StoragePartition that owns `manager_`.
   mojo::ReceiverSet<blink::mojom::BucketManagerHost> receivers_;
+
+  // A mapping from an integer which identifies the mojo receiver (found in
+  // `receivers_`) to a callback which decides whether that receiver has
+  // permission to use certain web features (namely, DURABLE_STORAGE).
+  std::map<mojo::ReceiverId, BucketHost::PermissionDecisionCallback>
+      permission_decider_map_;
 
   base::WeakPtrFactory<BucketManagerHost> weak_factory_{this};
 };

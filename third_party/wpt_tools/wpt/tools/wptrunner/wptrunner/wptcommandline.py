@@ -75,6 +75,10 @@ scheme host and port.""")
                         default=True,
                         dest="fail_on_unexpected_pass",
                         help="Exit with status code 0 when all unexpected results are PASS")
+    parser.add_argument("--no-restart-on-new-group", action="store_false",
+                        default=True,
+                        dest="restart_on_new_group",
+                        help="Don't restart test runner when start a new test group")
 
     mode_group = parser.add_argument_group("Mode")
     mode_group.add_argument("--list-test-groups", action="store_true",

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -31,8 +32,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   WaylandInputMethodContext(WaylandConnection* connection,
                             WaylandKeyboard::Delegate* key_delegate,
-                            LinuxInputMethodContextDelegate* ime_delegate,
-                            bool is_simple);
+                            LinuxInputMethodContextDelegate* ime_delegate);
   WaylandInputMethodContext(const WaylandInputMethodContext&) = delete;
   WaylandInputMethodContext& operator=(const WaylandInputMethodContext&) =
       delete;
@@ -52,9 +52,11 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                       TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning) override;
+  void UpdateFocus(bool has_client,
+                   TextInputType old_type,
+                   TextInputType new_type) override;
+  void SetGrammarFragmentAtCursor(const GrammarFragment& fragment) override;
   void Reset() override;
-  void Focus() override;
-  void Blur() override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
   // VirtualKeyboardController overrides:
@@ -77,21 +79,27 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnSetPreeditRegion(int32_t index,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;
+
+  void OnClearGrammarFragments(const gfx::Range& range) override;
+  void OnAddGrammarFragment(const GrammarFragment& fragment) override;
+
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 
  private:
+  void Focus();
+  void Blur();
   void UpdatePreeditText(const std::u16string& preedit_text);
   void MaybeUpdateActivated();
 
-  WaylandConnection* const connection_;  // TODO(jani) Handle this better
+  const raw_ptr<WaylandConnection>
+      connection_;  // TODO(jani) Handle this better
 
   // Delegate key events to be injected into PlatformEvent system.
-  WaylandKeyboard::Delegate* const key_delegate_;
+  const raw_ptr<WaylandKeyboard::Delegate> key_delegate_;
 
   // Delegate IME-specific events to be handled by //ui code.
-  LinuxInputMethodContextDelegate* const ime_delegate_;
-  bool is_simple_;
+  const raw_ptr<LinuxInputMethodContextDelegate> ime_delegate_;
 
   std::unique_ptr<ZWPTextInputWrapper> text_input_;
 

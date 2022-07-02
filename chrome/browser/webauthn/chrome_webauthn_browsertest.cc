@@ -8,12 +8,15 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -27,6 +30,8 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_test_util.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "device/fido/virtual_u2f_device.h"
@@ -138,6 +143,142 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       kGetAssertionCredID1234, &result));
 
   EXPECT_EQ("webauthn: OK", result);
+}
+
+class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
+  class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
+   public:
+    enum State {
+      kHasNotShowedUI,
+      kWaitingForUI,
+      kShowedUI,
+    };
+    virtual ~Observer() = default;
+    void WaitForUI() {
+      if (state_ != kHasNotShowedUI) {
+        return;
+      }
+      state_ = kWaitingForUI;
+      run_loop_.Run();
+    }
+
+    // ChromeAuthenticatorRequestDelegate::TestObserver:
+    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
+      delegate_ = delegate;
+    };
+
+    std::vector<std::unique_ptr<device::cablev2::Pairing>>
+    GetCablePairingsFromSyncedDevices() override {
+      return {};
+    };
+
+    void OnTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate,
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
+        override{};
+
+    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
+      if (state_ == kWaitingForUI) {
+        // When the content layer controls authenticator dispatch, dispatching
+        // happens on tasks posted right before the UI is shown. We need to
+        // QuitWhenIdle to make sure that, if an authenticator is dispatched to,
+        // that task has a chance to finish before the test continues. That way
+        // we can catch any potentially unexpected authenticator dispatches.
+        run_loop_.QuitWhenIdle();
+      }
+      state_ = kShowedUI;
+    };
+
+    void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data,
+        base::span<const uint8_t> experiments,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet exp_sheet,
+        AuthenticatorRequestDialogModel::ExperimentServerLinkTitle exp_title)
+        override {}
+
+    raw_ptr<ChromeAuthenticatorRequestDelegate> delegate_ = nullptr;
+
+   private:
+    State state_ = kHasNotShowedUI;
+    base::RunLoop run_loop_;
+  };
+
+  void SetUpOnMainThread() override {
+    WebAuthnBrowserTest::SetUpOnMainThread();
+    observer_ = std::make_unique<Observer>();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory_ = virtual_device_factory.get();
+    static constexpr uint8_t kCredentialID[] = {1, 2, 3, 4};
+    virtual_device_factory->mutable_state()->InjectResidentKey(
+        kCredentialID, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
+        "flandre", "Flandre Scarlet");
+    virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
+    device::VirtualCtap2Device::Config config;
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    virtual_device_factory->SetCtap2Config(std::move(config));
+    content::AuthenticatorEnvironment::GetInstance()
+        ->ReplaceDefaultDiscoveryFactoryForTesting(
+            std::move(virtual_device_factory));
+
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
+        observer_.get());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAuthConditionalUI};
+  std::unique_ptr<Observer> observer_;
+  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+};
+
+// Tests that the "Sign in with another device…" button dispatches requests to
+// plugged in authenticators.
+IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
+                       ConditionalUIOtherDeviceButton) {
+  static constexpr char kRequest[] = R"((() => {
+  let cred_id = new Uint8Array([1,2,3,4]);
+  navigator.credentials.get({
+    mediation: 'conditional',
+    publicKey: {
+      challenge: cred_id,
+      timeout: 10000,
+      allowCredentials: [],
+    }}).then(c => window.domAutomationController.send('webauthn: OK'),
+             e => window.domAutomationController.send('error ' + e));
+  })())";
+
+  // Make a Conditional UI request. The authenticator should not be dispatched
+  // to before the user clicks the "Sign in with another device…" button.
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting([](device::VirtualFidoDevice* device) {
+        CHECK(false) << "Virtual device should not have been dispatched to";
+        return false;
+      });
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kRequest);
+  observer_->WaitForUI();
+
+  // Allow the virtual device to respond to requests, then simulate clicking the
+  // "Sign in with another device…" button and wait for a result.
+  base::RunLoop run_loop;
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return true; });
+  ChromePasswordManagerClient* password_manager_client =
+      ChromePasswordManagerClient::FromWebContents(web_contents);
+  password_manager_client->GetWebAuthnCredentialsDelegate()
+      ->LaunchWebAuthnFlow();
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
 }
 
 // WebAuthnCableExtension exercises code paths where a server sends a caBLEv2

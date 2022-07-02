@@ -6,9 +6,19 @@ package(
 )
 
 cc_library(
-    name = "zip_mem_file",
-    srcs = ["zip_mem_file.cc"],
-    hdrs = ["zip_mem_file.h"],
+    name = "zip_writable_mem_file",
+    srcs = ["zip_writable_mem_file.cc"],
+    hdrs = ["zip_writable_mem_file.h"],
+    deps = [
+        "@com_google_absl//absl/strings",
+        "@zlib//:zlib_minizip",
+    ],
+)
+
+cc_library(
+    name = "zip_readonly_mem_file",
+    srcs = ["zip_readonly_mem_file.cc"],
+    hdrs = ["zip_readonly_mem_file.h"],
     deps = [
         "@com_google_absl//absl/strings",
         "@zlib//:zlib_minizip",

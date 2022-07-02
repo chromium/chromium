@@ -249,6 +249,17 @@ class ChromeWorkerUserAgentBrowserTest
     expected_request_urls_ = expected_request_urls;
   }
 
+  // Return |true| in the two conditions: 1) if the user agent minor version
+  // matches "0.0.0" and we expect the user agent to be reduced in UAReduction
+  // origin trial. 2) if the user agent minor version doesn't match "0.0.0" and
+  // we don't expect the user agent to be reduced in UAReduction origin trial.
+  // Otherwise, return false. We should not always expect reduced UA when
+  // kReduceUserAgentMinorVersion feature turns on, it would give false positive
+  // test results when the feature turns on as default. For example, if we
+  // expect full UA in the UADeprecation origin trial with
+  // kReduceUserAgentMinorVersion turned on, the actual value gives reduced UA,
+  // and the validation will succeed in this case which causes us to ignore
+  // actual bugs in code.
   void CheckUserAgentString(const std::string& user_agent_value,
                             const bool expected_user_agent_reduced) {
     // A regular expression that matches Chrome/{major_version}.{minor_version}
@@ -257,13 +268,6 @@ class ChromeWorkerUserAgentBrowserTest
         "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
     // The minor version in the reduced UA string is always "0.0.0".
     static constexpr char kReducedMinorVersion[] = "0.0.0";
-    // The minor version in the ReduceUserAgentMinorVersion experiment is always
-    // "0.X.0", where X is the frozen build version.
-    const std::string kReduceUserAgentMinorVersion =
-        "0." +
-        std::string(
-            blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
-        ".0";
 
     std::string minor_version;
     EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
@@ -271,9 +275,6 @@ class ChromeWorkerUserAgentBrowserTest
 
     if (expected_user_agent_reduced) {
       EXPECT_EQ(minor_version, kReducedMinorVersion);
-    } else if (base::FeatureList::IsEnabled(
-                   blink::features::kReduceUserAgentMinorVersion)) {
-      EXPECT_EQ(minor_version, kReduceUserAgentMinorVersion);
     } else {
       EXPECT_NE(minor_version, kReducedMinorVersion);
     }

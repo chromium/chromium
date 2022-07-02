@@ -5,6 +5,7 @@
 import {assert, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
+import * as expert from '../expert.js';
 import {FaceOverlay} from '../face.js';
 import {Point} from '../geometry.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
@@ -38,7 +39,6 @@ import {
 } from '../type.js';
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
-import {windowController} from '../window_controller.js';
 
 import {
   StreamConstraints,
@@ -101,13 +101,8 @@ export class Preview {
    * @param onNewStreamNeeded Callback to request new stream.
    */
   constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
-    window.addEventListener('resize', () => this.onWindowStatusChanged());
-
-    windowController.addListener(() => this.onWindowStatusChanged());
-
-    for (const s of [state.State.EXPERT, state.State.SHOW_METADATA]) {
-      state.addObserver(s, () => this.updateShowMetadata());
-    }
+    expert.addObserver(
+        expert.ExpertOption.SHOW_METADATA, () => this.updateShowMetadata());
   }
 
   getVideo(): PreviewVideo {
@@ -170,7 +165,7 @@ export class Preview {
   }
 
   private async updatePTZ() {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
 
     this.isSupportPTZInternal = await (async () => {
@@ -183,9 +178,7 @@ export class Preview {
       }
       if (this.facing === Facing.EXTERNAL) {
         return true;
-      } else if (
-          state.get(state.State.EXPERT) &&
-          state.get(state.State.ENABLE_PTZ_FOR_BUILTIN)) {
+      } else if (expert.isEnabled(expert.ExpertOption.ENABLE_PTZ_FOR_BUILTIN)) {
         return true;
       }
 
@@ -325,7 +318,7 @@ export class Preview {
       this.updateShowMetadata();
       await this.updatePTZ();
 
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
         const isSuccess =
@@ -363,7 +356,7 @@ export class Preview {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         deviceOperator.dropConnection(deviceId);
       }
@@ -382,7 +375,7 @@ export class Preview {
    * Checks preview whether to show preview metadata or not.
    */
   private updateShowMetadata() {
-    if (state.get(state.State.EXPERT) && state.get(state.State.SHOW_METADATA)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_METADATA)) {
       this.enableShowMetadata();
     } else {
       this.disableShowMetadata();
@@ -555,7 +548,7 @@ export class Preview {
       };
     })();
 
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (!deviceOperator) {
       return;
     }
@@ -648,11 +641,6 @@ export class Preview {
       return;
     }
 
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
-      return;
-    }
-
     closeEndpoint(this.metadataObserver);
     this.metadataObserver = null;
 
@@ -663,18 +651,11 @@ export class Preview {
   }
 
   /**
-   * Handles the the window state or window size changed.
-   */
-  private onWindowStatusChanged() {
-    nav.onWindowStatusChanged();
-  }
-
-  /**
    * Handles changed intrinsic size (first loaded or orientation changes).
    */
   private async onIntrinsicSizeChanged(): Promise<void> {
-    if (this.video.videoWidth && this.video.videoHeight) {
-      this.onWindowStatusChanged();
+    if (this.video.videoWidth !== 0 && this.video.videoHeight !== 0) {
+      nav.layoutShownViews();
     }
     this.cancelFocus();
   }

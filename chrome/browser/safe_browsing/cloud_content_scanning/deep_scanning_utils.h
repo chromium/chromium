@@ -51,6 +51,9 @@ enum class DeepScanAccessPoint {
 
   // A deep scan was initiated from printing a page.
   PRINT,
+
+  // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
+  FILE_TRANSFER,
 };
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 
@@ -120,18 +123,6 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
                            int64_t total_bytes,
                            const std::string& result,
                            bool success);
-
-// Returns an array of the file types supported for DLP scanning.
-const std::array<const base::FilePath::CharType*, 26>& SupportedDlpFileTypes();
-
-// Returns true if the given file type is supported for DLP scanning.
-bool FileTypeSupportedForDlp(const base::FilePath& path);
-
-// Returns an array of the mime types supported for DLP scanning.
-const std::array<const char*, 38>& SupportedDlpMimeTypes();
-
-// Returns true if the given mime type is supported for DLP scanning.
-bool MimeTypeSupportedForDlp(const std::string& mime_type);
 
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse

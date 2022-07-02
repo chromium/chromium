@@ -4,7 +4,11 @@
 
 source_set("context_menu_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "context_menu_api.h" ]
+  sources = [
+    "context_menu_api.h",
+    "context_menu_api.mm",
+  ]
+
   deps = [ "//ios/web/public/ui" ]
   frameworks = [ "UIKit.framework" ]
 }

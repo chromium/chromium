@@ -54,7 +54,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     HungRendererDialogView::Show(
         web_contents,
-        web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+        web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
         base::DoNothing());
 
     if (name == "MultiplePages") {
@@ -76,7 +76,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
   void EndForWebContents(HungRendererDialogView* dialog,
                          content::WebContents* contents) {
     dialog->EndDialog(
-        contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+        contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   }
 };
 
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
   // showing the window, populate the table model instead.
   dialog->table_model_for_testing()->InitForWebContents(
       web_contents,
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
       base::DoNothing());
 
   // Makes sure the virtual accessibility views are in sync with the model when
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
   content::RenderWidgetHost* widget_host1 =
-      web_contents1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
 
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser1->profile(), true));
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
   content::RenderWidgetHost* widget_host2 =
-      web_contents2->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents2->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
 
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents1));
   EXPECT_FALSE(HungRendererDialogView::IsShowingForWebContents(web_contents2));

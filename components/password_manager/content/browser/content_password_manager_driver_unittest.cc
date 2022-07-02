@@ -199,7 +199,7 @@ class ContentPasswordManagerDriverTest
         .WillByDefault(Return(&log_manager_));
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         autofill::mojom::PasswordAutofillAgent::Name_,
         base::BindRepeating(&FakePasswordAutofillAgent::BindPendingReceiver,
@@ -286,13 +286,14 @@ TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
   autofill::FormData form;
   autofill::FormData form2 = GetFormWithFrameAndFormMetaData(main_rfh(), form);
 
-  EXPECT_EQ(form2.host_frame,
-            autofill::LocalFrameToken(
-                web_contents()->GetMainFrame()->GetFrameToken().value()));
+  EXPECT_EQ(
+      form2.host_frame,
+      autofill::LocalFrameToken(
+          web_contents()->GetPrimaryMainFrame()->GetFrameToken().value()));
   EXPECT_EQ(form2.url, GURL("https://hostname/path"));
   EXPECT_EQ(form2.full_url, GURL("https://hostname/path?query#hash"));
   EXPECT_EQ(form2.main_frame_origin,
-            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form2.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
 }
@@ -321,7 +322,7 @@ class ContentPasswordManagerDriverURLTest
     expected_form.main_frame_origin =
         url::Origin::CreateFromNormalizedTuple("https", "hostname", 443);
     expected_form.host_frame = autofill::LocalFrameToken(
-        web_contents()->GetMainFrame()->GetFrameToken().value());
+        web_contents()->GetPrimaryMainFrame()->GetFrameToken().value());
     return expected_form;
   }
 
@@ -407,9 +408,10 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
   // Navigate a fenced frame.
   GURL fenced_frame_url = GURL("https://hostname/path?query#hash");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
+  fenced_frame_root = navigation_simulator->GetFinalRenderFrameHost();
 
   autofill::FormData initial_form;
   autofill::FormData form_in_fenced_frame =
@@ -427,7 +429,7 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
   EXPECT_EQ(form_in_fenced_frame.main_frame_origin,
             fenced_frame_root->GetLastCommittedOrigin());
   EXPECT_NE(form_in_fenced_frame.main_frame_origin,
-            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form_in_fenced_frame.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
 }

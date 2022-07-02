@@ -19,10 +19,6 @@ bool AdjustOOMScore(ProcessId process, int score) {
   return false;
 }
 
-void TerminateBecauseOutOfMemory(size_t size) {
-  abort();
-}
-
 // UncheckedMalloc and Calloc exist so that platforms making use of
 // EnableTerminationOnOutOfMemory have a way to allocate memory without
 // crashing. This _stubs.cc file is for platforms that do not support

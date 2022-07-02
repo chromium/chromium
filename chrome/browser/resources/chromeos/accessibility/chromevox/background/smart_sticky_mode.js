@@ -7,6 +7,7 @@
  * when the current range is over an editable; restores sticky mode when not on
  * an editable.
  */
+import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 
 /** @implements {ChromeVoxStateObserver} */
@@ -34,7 +35,7 @@ export class SmartStickyMode {
    */
   onCurrentRangeChanged(newRange, opt_fromEditing) {
     if (!newRange || this.ignoreRangeChanges_ ||
-        ChromeVoxState.isReadingContinuously || opt_fromEditing ||
+        ChromeVoxState.instance.isReadingContinuously || opt_fromEditing ||
         localStorage['smartStickyMode'] !== 'true') {
       return;
     }
@@ -56,7 +57,8 @@ export class SmartStickyMode {
     // Several cases arise which may lead to a sticky mode toggle:
     // The node is either editable itself or a descendant of an editable.
     // The node is a relation target of an editable.
-    const shouldTurnOffStickyMode = !!this.getEditableOrRelatedEditable_(node);
+    const shouldTurnOffStickyMode =
+        Boolean(this.getEditableOrRelatedEditable_(node));
 
     // This toggler should not make any changes when the range isn't what we're
     // lloking for and we haven't previously tracked any sticky mode state from
@@ -165,7 +167,7 @@ export class SmartStickyMode {
       while (!found && focus) {
         if (focus.activeDescendantFor && focus.activeDescendantFor.length) {
           found = focus.activeDescendantFor.find(
-              (n) => n.state[chrome.automation.StateType.EDITABLE]);
+              n => n.state[chrome.automation.StateType.EDITABLE]);
         }
 
         if (found) {
@@ -174,7 +176,7 @@ export class SmartStickyMode {
 
         if (focus.controlledBy && focus.controlledBy.length) {
           found = focus.controlledBy.find(
-              (n) => n.state[chrome.automation.StateType.EDITABLE]);
+              n => n.state[chrome.automation.StateType.EDITABLE]);
         }
 
         if (found) {

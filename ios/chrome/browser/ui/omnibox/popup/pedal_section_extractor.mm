@@ -101,6 +101,10 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   [self.dataSink setSemanticContentAttribute:semanticContentAttribute];
 }
 
+- (void)newResultsAvailable {
+  return [self.dataSink newResultsAvailable];
+}
+
 #pragma mark - AutocompleteResultConsumerDelegate
 
 - (void)autocompleteResultConsumerCancelledHighlighting:

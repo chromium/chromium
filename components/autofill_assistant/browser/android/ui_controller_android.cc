@@ -246,17 +246,18 @@ std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   JNIEnv* env = AttachCurrentThread();
-  if (!Java_AutofillAssistantUiController_shouldCreateNewInstance(
+  if (!Java_AutofillAssistantUiController_canAttachUi(
           env, web_contents->GetJavaWebContents(), jdependencies)) {
     return nullptr;
   }
 
-  return std::make_unique<UiControllerAndroid>(env, jdependencies,
+  return std::make_unique<UiControllerAndroid>(env, web_contents, jdependencies,
                                                joverlay_coordinator);
 }
 
 UiControllerAndroid::UiControllerAndroid(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator)
     : overlay_delegate_(this),
@@ -268,7 +269,8 @@ UiControllerAndroid::UiControllerAndroid(
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)) {
   java_object_ = Java_AutofillAssistantUiController_Constructor(
-      env, reinterpret_cast<intptr_t>(this), jdependencies,
+      env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
+      jdependencies,
       /* allowTabSwitching= */
       base::FeatureList::IsEnabled(features::kAutofillAssistantChromeEntry),
       joverlay_coordinator);
@@ -282,8 +284,8 @@ UiControllerAndroid::UiControllerAndroid(
   // Register header_delegate_ as delegate for clicks on header buttons.
   header_model_->SetDelegate(header_delegate_);
 
-  // Register collect_user_data_delegate_ as delegate for the collect user data
-  // UI.
+  // Register collect_user_data_delegate_ as delegate for the collect user
+  // data UI.
   Java_AssistantCollectUserDataModel_setDelegate(
       env, GetCollectUserDataModel(),
       collect_user_data_delegate_.GetJavaObject());
@@ -316,12 +318,11 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
 
   JNIEnv* env = AttachCurrentThread();
   auto java_web_contents = web_contents->GetJavaWebContents();
-  Java_AutofillAssistantUiController_setWebContents(env, java_object_,
-                                                    java_web_contents);
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   Java_AssistantOverlayModel_setWebContents(env, GetOverlayModel(),
                                             java_web_contents);
+
   OnClientSettingsChanged(execution_delegate_->GetClientSettings());
   Java_AssistantModel_setPeekModeDisabled(env, GetModel(), false);
 
@@ -806,13 +807,13 @@ void UiControllerAndroid::UpdateActions(
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
-          /* content_description= */ nullptr);
+          /* contentDescription= */ nullptr);
     } else if (execution_delegate_->GetState() !=
                AutofillAssistantState::INACTIVE) {
       jcancel_chip = Java_AutofillAssistantUiController_createCancelButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""), -1,
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
-          /* content_description= */ nullptr);
+          /* contentDescription= */ nullptr);
     }
     if (jcancel_chip) {
       Java_AutofillAssistantUiController_appendChipToList(env, jchips,
@@ -1180,8 +1181,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
 
   Java_AssistantCollectUserDataModel_setShouldStoreUserDataChanges(
       env, jmodel, collect_user_data_options->should_store_data_changes);
-  Java_AssistantCollectUserDataModel_setUseGmsCoreEditDialogs(
-      env, jmodel, collect_user_data_options->use_gms_core_edit_dialogs);
+  Java_AssistantCollectUserDataModel_setUseAlternativeEditDialogs(
+      env, jmodel, collect_user_data_options->use_alternative_edit_dialogs);
   Java_AssistantCollectUserDataModel_setRequestName(
       env, jmodel, collect_user_data_options->request_payer_name);
   Java_AssistantCollectUserDataModel_setRequestEmail(
@@ -1241,24 +1242,12 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       base::android::ToJavaArrayOfStrings(
           env, collect_user_data_options->supported_basic_card_networks));
   if (collect_user_data_options->data_origin_notice) {
-    Java_AssistantCollectUserDataModel_setDataOriginLinkText(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env, collect_user_data_options->data_origin_notice->link_text()));
-    Java_AssistantCollectUserDataModel_setDataOriginDialogTitle(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env,
-            collect_user_data_options->data_origin_notice->dialog_title()));
-    Java_AssistantCollectUserDataModel_setDataOriginDialogText(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env, collect_user_data_options->data_origin_notice->dialog_text()));
-    Java_AssistantCollectUserDataModel_setDataOriginDialogButtonText(
-        env, jmodel,
-        ConvertUTF8ToJavaString(env,
-                                collect_user_data_options->data_origin_notice
-                                    ->dialog_button_text()));
+    const auto& configuration = *collect_user_data_options->data_origin_notice;
+    Java_AssistantCollectUserDataModel_setDataOriginNoticeConfiguration(
+        env, jmodel, ConvertUTF8ToJavaString(env, configuration.link_text()),
+        ConvertUTF8ToJavaString(env, configuration.dialog_title()),
+        ConvertUTF8ToJavaString(env, configuration.dialog_text()),
+        ConvertUTF8ToJavaString(env, configuration.dialog_button_text()));
   }
   if (collect_user_data_options->request_login_choice) {
     auto jlist = CreateJavaLoginChoiceList(
@@ -1386,7 +1375,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
               env, *user_data.available_contacts_[index]->profile,
               base::android::GetDefaultLocaleString()),
           base::android::ToJavaArrayOfStrings(env, errors),
-          collect_user_data_options->can_edit_contacts);
+          user_data.available_contacts_[index]->can_edit);
     }
     Java_AssistantCollectUserDataModel_setAvailableContacts(env, jmodel,
                                                             jcontactlist);
@@ -1433,7 +1422,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
       const auto& errors = user_data::GetShippingAddressValidationErrors(
           shipping_address->profile.get(), *collect_user_data_options);
       auto jedit_token =
-          collect_user_data_options->use_gms_core_edit_dialogs
+          collect_user_data_options->use_alternative_edit_dialogs
               ? ToJavaByteArray(
                     env, shipping_address->edit_token.value_or(std::string()))
               : nullptr;
@@ -1467,13 +1456,26 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
     const auto& selected_contact_errors = user_data::GetContactValidationErrors(
         selected_contact_profile, *collect_user_data_options);
 
+    bool can_edit = true;
+    if (selected_contact_profile) {
+      const auto& contact_it = base::ranges::find_if(
+          user_data.available_contacts_,
+          [&](const std::unique_ptr<Contact>& contact) {
+            return contact->profile &&
+                   contact->profile->guid() == selected_contact_profile->guid();
+          });
+      if (contact_it != user_data.available_contacts_.end()) {
+        can_edit = (*contact_it)->can_edit;
+      }
+    }
+
     // In the UserDataFieldChange::CONTACT_PROFILE case the selection is
     // already known in Java, but it has no errors. The PDM off case does not
     // set updated contacts.
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
         base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
-        collect_user_data_options->can_edit_contacts);
+        can_edit);
   }
 
   if (field_change == UserDataFieldChange::ALL ||
@@ -1491,13 +1493,26 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
         user_data::GetPhoneNumberValidationErrors(selected_phone_number,
                                                   *collect_user_data_options);
 
+    bool can_edit = true;
+    if (selected_phone_number) {
+      const auto& phone_number_it = base::ranges::find_if(
+          user_data.available_phone_numbers_,
+          [&](const std::unique_ptr<PhoneNumber>& phone_number) {
+            return phone_number->profile && phone_number->profile->guid() ==
+                                                selected_phone_number->guid();
+          });
+      if (phone_number_it != user_data.available_phone_numbers_.end()) {
+        can_edit = (*phone_number_it)->can_edit;
+      }
+    }
+
     // In the UserDataFieldChange::PHONE_NUMBER case the selection is already
     // known in Java, but it has no errors. The PDM off case does not set
     // updated phone numbers.
     Java_AssistantCollectUserDataModel_setSelectedPhoneNumber(
         env, jmodel, jselected_phone_number,
         base::android::ToJavaArrayOfStrings(env, selected_phone_number_errors),
-        /* canEdit = */ false);
+        can_edit);
   }
 
   if (field_change == UserDataFieldChange::ALL ||
@@ -1516,7 +1531,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
         user_data::GetShippingAddressValidationErrors(
             selected_shipping_address, *collect_user_data_options);
     auto jselected_shipping_address_edit_token =
-        collect_user_data_options->use_gms_core_edit_dialogs
+        collect_user_data_options->use_alternative_edit_dialogs
             ? ToJavaByteArray(env, std::string())
             : nullptr;
     if (selected_shipping_address) {
@@ -1569,7 +1584,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
           instrument->card.get(), instrument->billing_address.get(),
           *collect_user_data_options);
       auto jedit_token =
-          collect_user_data_options->use_gms_core_edit_dialogs
+          collect_user_data_options->use_alternative_edit_dialogs
               ? ToJavaByteArray(env,
                                 instrument->edit_token.value_or(std::string()))
               : nullptr;
@@ -1612,7 +1627,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
             selected_card, selected_billing_address,
             *collect_user_data_options);
     auto jselected_payment_instrument_edit_token =
-        collect_user_data_options->use_gms_core_edit_dialogs
+        collect_user_data_options->use_alternative_edit_dialogs
             ? ToJavaByteArray(env, std::string())
             : nullptr;
     if (selected_card) {
@@ -2007,15 +2022,6 @@ UiControllerAndroid::CreateGenericUiControllerForProto(
       ui_delegate_->GetEventHandler(), execution_delegate_->GetUserModel(),
       ui_delegate_->GetBasicInteractions());
 }
-
-void UiControllerAndroid::OnError(const std::string& error_message,
-                                  Metrics::DropOutReason reason) {}
-void UiControllerAndroid::OnExecuteScript(const std::string& start_message) {}
-void UiControllerAndroid::OnStart(const TriggerContext& trigger_context) {}
-void UiControllerAndroid::OnStop() {}
-void UiControllerAndroid::OnResetState() {}
-void UiControllerAndroid::OnUiShownChanged(bool shown) {}
-void UiControllerAndroid::OnShutdown(Metrics::DropOutReason reason) {}
 
 base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetGenericUiModel() {

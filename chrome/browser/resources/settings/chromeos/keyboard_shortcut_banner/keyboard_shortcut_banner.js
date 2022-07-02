@@ -12,11 +12,11 @@
  * keyboard shortcuts. For example, "Press Ctrl + Space" should be passed in as
  * "Press <kbd><kbd>Ctrl</kbd>+<kbd>Space</kbd></kbd>".
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @constructor
@@ -52,7 +52,8 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
   /** @private */
   onDismissClick_() {
     getAnnouncerInstance().announce(this.i18n('shortcutBannerDismissed'));
-    this.dispatchEvent(new CustomEvent('dismiss'));
+    this.dispatchEvent(
+        new CustomEvent('dismiss', {bubbles: true, composed: true}));
   }
 
   /**

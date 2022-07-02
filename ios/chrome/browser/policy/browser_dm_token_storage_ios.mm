@@ -53,7 +53,7 @@ bool GetDmTokenFilePath(base::FilePath* token_file_path,
 bool StoreDMTokenInDirAppDataDir(const std::string& token,
                                  const std::string& client_id) {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, client_id, true)) {
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/true)) {
     NOTREACHED();
     return false;
   }
@@ -64,6 +64,16 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
 
   base::mac::SetBackupExclusion(token_file_path);
   return true;
+}
+
+bool DeleteDMTokenFromAppDataDir(const std::string& client_id) {
+  base::FilePath token_file_path;
+  if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/false)) {
+    NOTREACHED();
+    return false;
+  }
+
+  return base::DeleteFile(token_file_path);
 }
 
 }  // namespace
@@ -93,7 +103,8 @@ std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {
 
 std::string BrowserDMTokenStorageIOS::InitDMToken() {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, InitClientId(), false))
+  if (!GetDmTokenFilePath(&token_file_path, InitClientId(),
+                          /*create_dir=*/false))
     return std::string();
 
   std::string token;
@@ -112,6 +123,11 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageIOS::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
   return base::BindOnce(&StoreDMTokenInDirAppDataDir, token, client_id);
+}
+
+BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageIOS::DeleteDMTokenTask(
+    const std::string& client_id) {
+  return base::BindOnce(&DeleteDMTokenFromAppDataDir, client_id);
 }
 
 scoped_refptr<base::TaskRunner>

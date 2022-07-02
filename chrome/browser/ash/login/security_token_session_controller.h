@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,7 +39,7 @@ namespace login {
 // is getting informed what is going to happen when the certificate vanishes.
 class SecurityTokenSessionController
     : public KeyedService,
-      public CertificateProviderService::Observer {
+      public chromeos::CertificateProviderService::Observer {
  public:
   enum class Behavior { kIgnore, kLogout, kLock };
 
@@ -47,7 +47,7 @@ class SecurityTokenSessionController
       PrefService* local_state,
       PrefService* profile_prefs,
       const user_manager::User* user,
-      CertificateProviderService* certificate_provider_service);
+      chromeos::CertificateProviderService* certificate_provider_service);
   SecurityTokenSessionController(const SecurityTokenSessionController& other) =
       delete;
   SecurityTokenSessionController& operator=(
@@ -74,7 +74,7 @@ class SecurityTokenSessionController
   // CertificateProviderService::Observer
   void OnCertificatesUpdated(
       const std::string& extension_id,
-      const std::vector<certificate_provider::CertificateInfo>&
+      const std::vector<chromeos::certificate_provider::CertificateInfo>&
           certificate_infos) override;
 
  private:
@@ -104,8 +104,8 @@ class SecurityTokenSessionController
       extensions_missing_required_certificates_;
   views::Widget* fullscreen_notification_ = nullptr;
   base::OneShotTimer action_timer_;
-  CertificateProviderService* certificate_provider_service_ = nullptr;
-  std::unique_ptr<CertificateProvider> certificate_provider_;
+  chromeos::CertificateProviderService* certificate_provider_service_ = nullptr;
+  std::unique_ptr<chromeos::CertificateProvider> certificate_provider_;
 
   base::WeakPtrFactory<SecurityTokenSessionController> weak_ptr_factory_{this};
 };

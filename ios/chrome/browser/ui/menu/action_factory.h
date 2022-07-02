@@ -18,66 +18,66 @@ class GURL;
 @interface ActionFactory : NSObject
 
 // Initializes a factory instance to create action instances for the given
-// |scenario|.
+// `scenario`.
 - (instancetype)initWithScenario:(MenuScenario)scenario;
 
-// Creates a UIAction instance configured with the given |title| and |image|.
-// Upon execution, the action's |type| will be recorded and the |block| will be
+// Creates a UIAction instance configured with the given `title` and `image`.
+// Upon execution, the action's `type` will be recorded and the `block` will be
 // run.
 - (UIAction*)actionWithTitle:(NSString*)title
                        image:(UIImage*)image
                         type:(MenuActionType)type
                        block:(ProceduralBlock)block;
 
-// Creates a UIAction instance configured to copy the given |URL| to the
+// Creates a UIAction instance configured to copy the given `URL` to the
 // pasteboard.
 - (UIAction*)actionToCopyURL:(const GURL)URL;
 
 // Creates a UIAction instance configured for sharing which will invoke
-// the given |block| upon execution.
+// the given `block` upon execution.
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for deletion which will invoke
-// the given delete |block| when executed.
+// the given delete `block` when executed.
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance whose title and icon are configured for opening a
-// URL in a new tab. When triggered, the action will invoke the |block| which
+// URL in a new tab. When triggered, the action will invoke the `block` which
 // needs to open a URL in a new tab.
 - (UIAction*)actionToOpenInNewTabWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance whose title and icon are configured for opening
-// multiple URLs in new tabs. When triggered, the action will invoke the |block|
+// multiple URLs in new tabs. When triggered, the action will invoke the `block`
 // which needs to open URLs in new tabs.
 - (UIAction*)actionToOpenAllTabsWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for suppression which will invoke
-// the given delete |block| when executed.
+// the given delete `block` when executed.
 - (UIAction*)actionToRemoveWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance whose title and icon are configured for editing
-// which will invoke the given edit |block| when executed.
+// which will invoke the given edit `block` when executed.
 - (UIAction*)actionToEditWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for hiding which will invoke
-// the given hiding |block| when executed.
+// the given hiding `block` when executed.
 - (UIAction*)actionToHideWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for moving a folder which will invoke
-// the given |block| when executed.
+// the given `block` when executed.
 - (UIAction*)actionToMoveFolderWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for marking an entry from the
-// ReadingList as read, which will invoke the given |block| when executed.
+// ReadingList as read, which will invoke the given `block` when executed.
 - (UIAction*)actionToMarkAsReadWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for marking an entry from the
-// ReadingList as unread, which will invoke the given |block| when executed.
+// ReadingList as unread, which will invoke the given `block` when executed.
 - (UIAction*)actionToMarkAsUnreadWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance whose title and icon are configured for viewing
 // an offline version of an URL in a new tab. When triggered, the action will
-// invoke the |block| when executed.
+// invoke the `block` when executed.
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for adding to the reading list.
@@ -99,7 +99,7 @@ class GURL;
 - (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for searching an image with given search service
-// |title|. Invokes the given |completion| block after execution.
+// `title`. Invokes the given `completion` block after execution.
 - (UIAction*)actionSearchImageWithTitle:(NSString*)title
                                   Block:(ProceduralBlock)block;
 
@@ -110,7 +110,7 @@ class GURL;
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for searching an image with Lens.
-// Invokes the given |completion| block after execution.
+// Invokes the given `completion` block after execution.
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block;
 
 @end

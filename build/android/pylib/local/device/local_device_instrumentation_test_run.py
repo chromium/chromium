@@ -135,6 +135,22 @@ def _LogTestEndpoints(device, test_name):
         check_return=True)
 
 
+@contextlib.contextmanager
+def _VoiceInteractionService(device, use_voice_interaction_service):
+  def set_voice_interaction_service(service):
+    device.RunShellCommand('settings put secure voice_interaction_service %s' %
+                           service)
+
+  try:
+    default_voice_interaction_service = device.RunShellCommand(
+        'settings get secure voice_interaction_service', single_line=True)
+
+    set_voice_interaction_service(use_voice_interaction_service)
+    yield
+  finally:
+    set_voice_interaction_service(default_voice_interaction_service)
+
+
 def DismissCrashDialogs(device):
   # Dismiss any error dialogs. Limit the number in case we have an error
   # loop or we are failing to dismiss.
@@ -234,12 +250,14 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          d.Install(apk,
-                    modules=modules,
-                    fake_modules=fake_modules,
-                    permissions=permissions,
-                    additional_locales=additional_locales,
-                    instant_app=instant_app)
+          d.Install(
+              apk,
+              modules=modules,
+              fake_modules=fake_modules,
+              permissions=permissions,
+              additional_locales=additional_locales,
+              instant_app=instant_app,
+              force_queryable=self._test_instance.IsApkForceQueryable(apk))
 
         return install_helper_internal
 
@@ -270,7 +288,8 @@ class LocalDeviceInstrumentationTestRun(
                            instant_app=self._test_instance.test_apk_as_instant))
 
       steps.extend(
-          install_helper(apk) for apk in self._test_instance.additional_apks)
+          install_helper(apk, instant_app=self._test_instance.IsApkInstant(apk))
+          for apk in self._test_instance.additional_apks)
 
       # We'll potentially need the package names later for setting app
       # compatibility workarounds.
@@ -303,6 +322,22 @@ class LocalDeviceInstrumentationTestRun(
           self._context_managers[str(dev)].append(webview_context)
 
         steps.append(use_webview_provider)
+
+      if self._test_instance.use_voice_interaction_service:
+
+        @trace_event.traced
+        def use_voice_interaction_service(device):
+          voice_interaction_service_context = _VoiceInteractionService(
+              device, self._test_instance.use_voice_interaction_service)
+          # Pylint is not smart enough to realize that this field has
+          # an __enter__ method, and will complain loudly.
+          # pylint: disable=no-member
+          voice_interaction_service_context.__enter__()
+          # pylint: enable=no-member
+          self._context_managers[str(device)].append(
+              voice_interaction_service_context)
+
+        steps.append(use_voice_interaction_service)
 
       # The apk under test needs to be installed last since installing other
       # apks after will unintentionally clear the fake module directory.
@@ -1071,7 +1106,7 @@ class LocalDeviceInstrumentationTestRun(
       if logmon:
         logmon.Close()
       if logcat_file and logcat_file.Link():
-        logging.info('Logcat saved to %s', logcat_file.Link())
+        logging.critical('Logcat saved to %s', logcat_file.Link())
 
   def _SaveTraceData(self, trace_device_file, device, test_class):
     trace_host_file = self._env.trace_output

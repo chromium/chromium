@@ -219,7 +219,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
 class FeaturePromoDialogSideSearchTest : public FeaturePromoDialogTest {
  public:
   FeaturePromoDialogSideSearchTest() {
-    feature_list_.InitAndEnableFeature(features::kSideSearch);
+    // Currently the IPH is only supported for the Google ChromeOS
+    // configuration.
+    feature_list_.InitWithFeatures({features::kSideSearch},
+                                   {features::kSideSearchDSESupport});
   }
 
   void SetUpOnMainThread() override {

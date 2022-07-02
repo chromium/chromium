@@ -11,9 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/x509v3.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -212,6 +210,4 @@ TEST(CertUtilTest, ExtractSubjectNameFromCertificate) {
 
 }  // namespace
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

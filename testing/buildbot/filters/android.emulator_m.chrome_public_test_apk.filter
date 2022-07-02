@@ -45,19 +45,9 @@
 # crbug.com/1062055
 -org.chromium.chrome.browser.metrics.StartupLoadingMetricsTest.testWebApkStartRecorded
 
-# crbug.com/1090942
--org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragmentTest.*
-
 # crbug.com/1112812
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest.testAutostart
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyYear
-
-# crbug.com/1061178
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
-
-# crbug.com/1146477
--org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
--org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
 
 # crbug.com/1131717
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantKeyboardIntegrationTest.keyboardDoesNotShowOnElementClickInIFrame

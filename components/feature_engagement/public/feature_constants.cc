@@ -76,14 +76,15 @@ const base::Feature
         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHAddToHomescreenMessageFeature{
     "IPH_AddToHomescreenMessage", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kIPHAddToHomescreenTextBubbleFeature{
-    "IPH_AddToHomescreenTextBubble", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkOptOutFeature{"IPH_AutoDarkOptOut",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkUserEducationMessageFeature{
     "IPH_AutoDarkUserEducationMessage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature{
     "IPH_AutoDarkUserEducationMessageOptIn", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHContextualPageActionsPriceTrackingFeature{
+    "IPH_ContextualPageActions_PriceTracking",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHCrowFeature{"IPH_Crow",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverDetailFeature{
@@ -210,6 +211,8 @@ const base::Feature kIPHPageInfoStoreInfoFeature{
     "IPH_PageInfoStoreInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPreviewsOmniboxUIFeature{
     "IPH_PreviewsOmniboxUI", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHPriceDropNTPFeature{"IPH_PriceDropNTP",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHShoppingListMenuItemFeature{
     "IPH_ShoppingListMenuItem", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsQuicklyComparePagesFeature{
@@ -240,6 +243,8 @@ const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedHeaderMenuFeature{"IPH_FeedHeaderMenu",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHWebFeedAwarenessFeature{
+    "IPH_WebFeedAwareness", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHFeedSwipeRefresh{"IPH_FeedSwipeRefresh",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification1Feature{
@@ -262,8 +267,6 @@ const base::Feature kIPHSharedHighlightingBuilder{
     "IPH_SharedHighlightingBuilder", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHSharedHighlightingReceiverFeature{
     "IPH_SharedHighlightingReceiver", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHStartSurfaceTabSwitcherHomeButton{
-    "IPH_StartSurfaceTabSwitcherHomeButton", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHSharingHubWebnotesStylizeFeature{
     "IPH_SharingHubWebnotesStylize", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)

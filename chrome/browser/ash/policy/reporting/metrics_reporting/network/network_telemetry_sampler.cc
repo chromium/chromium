@@ -9,30 +9,43 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/containers/contains.h"
+#include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using ::chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr;
 
 namespace reporting {
 namespace {
 
+::ash::NetworkStateHandler::NetworkStateList GetNetworkStateList() {
+  ::ash::NetworkStateHandler::NetworkStateList network_state_list;
+  ::ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      ::ash::NetworkTypePattern::Default(),
+      /*configured_only=*/true,
+      /*visible_only=*/false,
+      /*limit=*/0,  // no limit to number of results
+      &network_state_list);
+  return network_state_list;
+}
+
 NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
     const std::string& device_path,
-    const ::chromeos::cros_healthd::mojom::TelemetryInfoPtr& telemetry_info) {
-  if (device_path.empty() || telemetry_info.is_null() ||
-      telemetry_info->network_interface_result.is_null() ||
-      !telemetry_info->network_interface_result->is_network_interface_info()) {
+    const ::chromeos::cros_healthd::mojom::TelemetryInfoPtr&
+        cros_healthd_telemetry) {
+  if (device_path.empty() || cros_healthd_telemetry.is_null() ||
+      cros_healthd_telemetry->network_interface_result.is_null() ||
+      !cros_healthd_telemetry->network_interface_result
+           ->is_network_interface_info()) {
     return nullptr;
   }
 
@@ -45,7 +58,8 @@ NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
 
   const std::string& interface_name = device_state->interface();
   const auto& interface_info_list =
-      telemetry_info->network_interface_result->get_network_interface_info();
+      cros_healthd_telemetry->network_interface_result
+          ->get_network_interface_info();
   const auto& interface_info_it = std::find_if(
       interface_info_list.begin(), interface_info_list.end(),
       [&interface_name](const NetworkInterfaceInfoPtr& interface_info) {
@@ -117,7 +131,7 @@ NetworkTelemetrySampler::~NetworkTelemetrySampler() = default;
 
 void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   auto handle_probe_result_cb =
-      base::BindOnce(&NetworkTelemetrySampler::HandleNetworkTelemetryResult,
+      base::BindOnce(&NetworkTelemetrySampler::CollectWifiSignalStrengthRssi,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   ::ash::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
       std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>{
@@ -126,27 +140,55 @@ void NetworkTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
                          std::move(handle_probe_result_cb)));
 }
 
-void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
+void NetworkTelemetrySampler::CollectWifiSignalStrengthRssi(
     OptionalMetricCallback callback,
-    ::chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
-  bool full_telemetry_reporting_enabled = base::FeatureList::IsEnabled(
-      MetricReportingManager::kEnableNetworkTelemetryReporting);
+    ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry) {
+  base::queue<std::string> service_paths;
+  ::ash::NetworkStateHandler::NetworkStateList network_state_list =
+      GetNetworkStateList();
+  for (const auto* network : network_state_list) {
+    ::ash::NetworkTypePattern type =
+        ::ash::NetworkTypePattern::Primitive(network->type());
+    if (!type.Equals(::ash::NetworkTypePattern::WiFi()) ||
+        network->signal_strength() == 0) {
+      continue;
+    }
+    service_paths.push(network->path());
+  }
 
-  if (result.is_null() || result->network_interface_result.is_null()) {
+  if (service_paths.empty()) {
+    CollectNetworksStates(std::move(callback),
+                          std::move(cros_healthd_telemetry),
+                          /*service_path_rssi_map=*/{});
+    return;
+  }
+
+  auto wifi_signal_rssi_cb =
+      base::BindOnce(&NetworkTelemetrySampler::CollectNetworksStates,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(cros_healthd_telemetry));
+  FetchWifiSignalStrengthRssi(
+      std::move(service_paths),
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         std::move(wifi_signal_rssi_cb)));
+}
+
+void NetworkTelemetrySampler::CollectNetworksStates(
+    OptionalMetricCallback callback,
+    ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
+    base::flat_map<std::string, int> service_path_rssi_map) {
+  if (cros_healthd_telemetry.is_null() ||
+      cros_healthd_telemetry->network_interface_result.is_null()) {
     DVLOG(1) << "cros_healthd: Error getting network result, result is null.";
-  } else if (result->network_interface_result->is_error()) {
-    DVLOG(1) << "cros_healthd: Error getting network result: "
-             << result->network_interface_result->get_error()->msg;
+  } else if (cros_healthd_telemetry->network_interface_result->is_error()) {
+    DVLOG(1)
+        << "cros_healthd: Error getting network result: "
+        << cros_healthd_telemetry->network_interface_result->get_error()->msg;
   }
 
   MetricData metric_data;
-  ::ash::NetworkStateHandler::NetworkStateList network_state_list;
-  ::ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
-      ::ash::NetworkTypePattern::Default(),
-      /*configured_only=*/true,
-      /*visible_only=*/false,
-      /*limit=*/0,  // no limit to number of results
-      &network_state_list);
+  ::ash::NetworkStateHandler::NetworkStateList network_state_list =
+      GetNetworkStateList();
   if (network_state_list.empty()) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -165,46 +207,49 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
       continue;
     }
 
-    bool item_reported = full_telemetry_reporting_enabled;
-    NetworkTelemetry* network_telemetry = nullptr;
-    if (full_telemetry_reporting_enabled) {
-      if (network->IsOnline()) {
-        should_collect_latency = true;
-      }
+    should_report = true;
+    if (network->IsOnline()) {
+      should_collect_latency = true;
+    }
 
-      network_telemetry = metric_data.mutable_telemetry_data()
-                              ->mutable_networks_telemetry()
-                              ->add_network_telemetry();
+    NetworkTelemetry* const network_telemetry =
+        metric_data.mutable_telemetry_data()
+            ->mutable_networks_telemetry()
+            ->add_network_telemetry();
 
-      network_telemetry->set_guid(network->guid());
+    network_telemetry->set_guid(network->guid());
 
-      network_telemetry->set_connection_state(
-          GetNetworkConnectionState(network));
+    network_telemetry->set_type(GetNetworkType(type));
 
-      if (!network->device_path().empty()) {
-        network_telemetry->set_device_path(network->device_path());
-      }
+    network_telemetry->set_connection_state(GetNetworkConnectionState(network));
 
-      if (!network->GetIpAddress().empty()) {
-        network_telemetry->set_ip_address(network->GetIpAddress());
-      }
+    if (!network->device_path().empty()) {
+      network_telemetry->set_device_path(network->device_path());
+    }
 
-      if (!network->GetGateway().empty()) {
-        network_telemetry->set_gateway(network->GetGateway());
-      }
+    if (!network->GetIpAddress().empty()) {
+      network_telemetry->set_ip_address(network->GetIpAddress());
+    }
+
+    if (!network->GetGateway().empty()) {
+      network_telemetry->set_gateway(network->GetGateway());
     }
 
     if (type.Equals(::ash::NetworkTypePattern::WiFi())) {
-      const auto& network_interface_info =
-          GetWifiNetworkInterfaceInfo(network->device_path(), result);
+      network_telemetry->set_signal_strength(network->signal_strength());
+      if (base::Contains(service_path_rssi_map, network->path())) {
+        network_telemetry->set_signal_strength_dbm(
+            service_path_rssi_map.at(network->path()));
+      } else {
+        DVLOG(1) << "Wifi signal RSSI not found in the service to signal "
+                    "map for service: "
+                 << network->path();
+      }
+
+      const auto& network_interface_info = GetWifiNetworkInterfaceInfo(
+          network->device_path(), cros_healthd_telemetry);
       if (!network_interface_info.is_null() &&
           !network_interface_info->get_wireless_interface_info().is_null()) {
-        item_reported = true;
-        if (!network_telemetry) {
-          network_telemetry = metric_data.mutable_telemetry_data()
-                                  ->mutable_networks_telemetry()
-                                  ->add_network_telemetry();
-        }
         const auto& wireless_info =
             network_interface_info->get_wireless_interface_info();
 
@@ -228,14 +273,6 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
           network_telemetry->set_link_quality(wireless_link_info->link_quality);
         }
       }
-      if (item_reported) {
-        network_telemetry->set_signal_strength(network->signal_strength());
-      }
-    }
-
-    if (item_reported) {
-      network_telemetry->set_type(GetNetworkType(type));
-      should_report = true;
     }
   }
 

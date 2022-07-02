@@ -21,7 +21,7 @@
 // The frame of the presentation container view in window coordinates.
 @property(nonatomic, readonly) CGRect windowFrame;
 // Initializer for a presentation controller that lays its presentation
-// container view with |windowFrame|.
+// container view with `windowFrame`.
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController

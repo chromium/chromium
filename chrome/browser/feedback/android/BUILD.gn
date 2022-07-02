@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/ProcessIdFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
   ]
@@ -30,6 +31,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
     "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackCollector.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
@@ -54,7 +56,9 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/signin/public/android:java",
     "//components/variations/android:variations_java",
     "//content/public/android:content_java",
     "//net/android:net_java",

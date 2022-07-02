@@ -39,7 +39,7 @@ class DistantSession;
 // Whether the updates of the RecentTabs should be ignored. Setting this to NO
 // would trigger a reload of the TableView.
 @property(nonatomic, assign) BOOL preventUpdates;
-// Search term for filtering displayed items to those which match |searchTerm|.
+// Search term for filtering displayed items to those which match `searchTerm`.
 // Setting as null clears any search results and resets to showing all tabs.
 @property(nonatomic, copy) NSString* searchTerms;
 
@@ -60,12 +60,12 @@ class DistantSession;
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Returns Sessions corresponding to the given |sectionIdentifier|.
+// Returns Sessions corresponding to the given `sectionIdentifier`.
 - (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifer;
 
 // Hides Sessions corresponding to the given the table view's
-// |sectionIdentifier|.
+// `sectionIdentifier`.
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier;
 
 @end

@@ -79,12 +79,6 @@ class BASE_EXPORT WorkQueueSets {
   absl::optional<WorkQueueAndTaskOrder> GetOldestQueueAndTaskOrderInSet(
       size_t set_index) const;
 
-#if DCHECK_IS_ON()
-  // O(1)
-  absl::optional<WorkQueueAndTaskOrder> GetRandomQueueAndTaskOrderInSet(
-      size_t set_index) const;
-#endif
-
   // O(1)
   bool IsSetEmpty(size_t set_index) const;
 
@@ -105,7 +99,7 @@ class BASE_EXPORT WorkQueueSets {
  private:
   struct OldestTaskOrder {
     TaskOrder key;
-    WorkQueue* value;
+    raw_ptr<WorkQueue> value;
 
     // Used for a min-heap.
     bool operator>(const OldestTaskOrder& other) const {
@@ -126,27 +120,6 @@ class BASE_EXPORT WorkQueueSets {
   std::array<IntrusiveHeap<OldestTaskOrder, std::greater<>>,
              TaskQueue::kQueuePriorityCount>
       work_queue_heaps_;
-
-#if DCHECK_IS_ON()
-  static inline uint64_t MurmurHash3(uint64_t value) {
-    value ^= value >> 33;
-    value *= uint64_t{0xFF51AFD7ED558CCD};
-    value ^= value >> 33;
-    value *= uint64_t{0xC4CEB9FE1A85EC53};
-    value ^= value >> 33;
-    return value;
-  }
-
-  // This is for a debugging feature which lets us randomize task selection. Its
-  // not for production use.
-  // TODO(alexclarke): Use a seedable PRNG from ::base if one is added.
-  uint64_t Random() const {
-    last_rand_ = MurmurHash3(last_rand_);
-    return last_rand_;
-  }
-
-  mutable uint64_t last_rand_;
-#endif
 
   const raw_ptr<Observer> observer_;
 };

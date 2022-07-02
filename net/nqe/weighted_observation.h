@@ -7,11 +7,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // Holds an observation and its weight.
 struct NET_EXPORT_PRIVATE WeightedObservation {
@@ -21,11 +17,7 @@ struct NET_EXPORT_PRIVATE WeightedObservation {
   WeightedObservation(const WeightedObservation& other)
       : WeightedObservation(other.value, other.weight) {}
 
-  WeightedObservation& operator=(const WeightedObservation& other) {
-    value = other.value;
-    weight = other.weight;
-    return *this;
-  }
+  WeightedObservation& operator=(const WeightedObservation& other) = default;
 
   // Required for sorting the samples in the ascending order of values.
   bool operator<(const WeightedObservation& other) const {
@@ -40,10 +32,6 @@ struct NET_EXPORT_PRIVATE WeightedObservation {
   double weight;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_WEIGHTED_OBSERVATION_H_

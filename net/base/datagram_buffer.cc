@@ -13,7 +13,7 @@ namespace net {
 DatagramBufferPool::DatagramBufferPool(size_t max_buffer_size)
     : max_buffer_size_(max_buffer_size) {}
 
-DatagramBufferPool::~DatagramBufferPool() {}
+DatagramBufferPool::~DatagramBufferPool() = default;
 
 void DatagramBufferPool::Enqueue(const char* buffer,
                                  size_t buf_len,
@@ -38,9 +38,9 @@ void DatagramBufferPool::Dequeue(DatagramBuffers* buffers) {
 }
 
 DatagramBuffer::DatagramBuffer(size_t max_buffer_size)
-    : data_(new char[max_buffer_size]), length_(0) {}
+    : data_(new char[max_buffer_size]) {}
 
-DatagramBuffer::~DatagramBuffer() {}
+DatagramBuffer::~DatagramBuffer() = default;
 
 void DatagramBuffer::Set(const char* buffer, size_t buf_len) {
   length_ = buf_len;

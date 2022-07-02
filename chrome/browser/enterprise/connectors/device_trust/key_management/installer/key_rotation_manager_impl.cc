@@ -74,8 +74,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     return false;
   }
 
-  // Create a new key pair.  First try creating a TPM-backed key.  If that does
-  // not work, try a less secure type.
+  // Create a new key pair.  First try creating a hardware-backed key. If that
+  // does not work, try a less secure type.
   KeyTrustLevel new_trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
   auto acceptable_algorithms = {
       crypto::SignatureVerifier::ECDSA_SHA256,
@@ -83,12 +83,12 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
   };
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-      persistence_delegate_->GetTpmBackedKeyProvider();
+      persistence_delegate_->GetUnexportableKeyProvider();
   auto new_key_pair =
       provider ? provider->GenerateSigningKeySlowly(acceptable_algorithms)
                : nullptr;
   if (new_key_pair) {
-    new_trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+    new_trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
   } else {
     new_trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
     ECSigningKeyProvider ec_signing_provider;

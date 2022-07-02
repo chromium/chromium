@@ -15,6 +15,8 @@ USE_PYTHON3 = True
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
 CRBUG_PATTERN = r'crbug\.com/\d+$'
+INCLUDE_PATTERN = r'^#include'
+IOS_PACKAGE_PATTERN = r'^ios'
 ARC_COMPILE_GUARD = [
     '#if !defined(__has_feature) || !__has_feature(objc_arc)',
     '#error "This file requires ARC support."',
@@ -95,6 +97,48 @@ def _CheckBugInToDo(input_api, output_api):
   return [output_api.PresubmitError(error_message)]
 
 
+def _CheckHasNoIncludeDirectives(input_api, output_api):
+  """ Checks that #include preprocessor directives are not present."""
+  errors = []
+  for f in input_api.AffectedFiles():
+    if not _IsInIosPackage(input_api, f.LocalPath()):
+      continue
+    _, ext = os.path.splitext(f.LocalPath())
+    if ext != '.mm':
+      continue
+    for line_num, line in f.ChangedContents():
+      if _HasIncludeDirective(input_api, line):
+        errors.append('%s:%s' % (f.LocalPath(), line_num))
+  if not errors:
+    return []
+
+  singular_plural = 'it' if len(errors) == 1 else 'them'
+  plural_suffix = '' if len(errors) == 1 else 's'
+  error_message = '\n'.join([
+      'Found usage of `#include` preprocessor directive%(plural)s! Please, '
+      'replace %(singular_plural)s with `#import` preprocessor '
+      'directive%(plural)s instead. '
+      'Consider replacing all existing `#include` with `#import` (if any) in '
+      'this file for the code clean up. See //styleguide/objective-c/'
+      'objective-c.md#import-and-include-in-the-directory for more details. '
+      '\n\nAffected file%(plural)s:' % {'plural': plural_suffix,
+      'singular_plural': singular_plural }
+  ] + errors) + '\n'
+
+  return [output_api.PresubmitError(error_message)]
+
+def _IsInIosPackage(input_api, path):
+  """ Returns True if path is within ios package"""
+  ios_package_regex = input_api.re.compile(IOS_PACKAGE_PATTERN)
+
+  return ios_package_regex.search(path)
+
+def _HasIncludeDirective(input_api, line):
+  """ Returns True if #include is found in the line"""
+  include_regex = input_api.re.compile(INCLUDE_PATTERN)
+
+  return include_regex.search(line)
+
 def _HasToDoWithNoBug(input_api, line):
   """ Returns True if TODO is not identified by a bug number."""
   todo_regex = input_api.re.compile(TODO_PATTERN)
@@ -112,4 +156,5 @@ def CheckChangeOnUpload(input_api, output_api):
   results.extend(_CheckBugInToDo(input_api, output_api))
   results.extend(_CheckNullabilityAnnotations(input_api, output_api))
   results.extend(_CheckARCCompilationGuard(input_api, output_api))
+  results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
   return results

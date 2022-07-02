@@ -6,12 +6,12 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SCORE_PROVIDER_H_
 
 #include "base/callback.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+
+using proto::SegmentId;
 
 class SegmentInfoDatabase;
 
@@ -50,7 +50,7 @@ class SegmentScoreProvider {
   // from the last session.
   // Note that there is no strong reason to keep this async, feel free to change
   // this to sync if needed.
-  virtual void GetSegmentScore(OptimizationTarget segment_id,
+  virtual void GetSegmentScore(SegmentId segment_id,
                                SegmentScoreCallback callback) = 0;
 };
 

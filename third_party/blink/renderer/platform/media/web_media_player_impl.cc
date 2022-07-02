@@ -100,7 +100,6 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-
 namespace blink {
 namespace {
 
@@ -1461,6 +1460,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       GetCurrentFrameFromCompositor();
   last_frame_request_time_ = tick_clock_->NowTicks();
   video_frame_readback_count_++;
+  pipeline_controller_->OnExternalVideoFrameRequest();
 
   video_renderer_.Paint(
       video_frame, canvas, gfx::RectF(rect), flags,
@@ -1468,10 +1468,25 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       raster_context_provider_.get());
 }
 
-scoped_refptr<media::VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame>
+WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   last_frame_request_time_ = tick_clock_->NowTicks();
   video_frame_readback_count_++;
+  pipeline_controller_->OnExternalVideoFrameRequest();
   return GetCurrentFrameFromCompositor();
+}
+
+absl::optional<int> WebMediaPlayerImpl::CurrentFrameId() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0("media", "WebMediaPlayerImpl::GetCurrentFrameID");
+
+  // We can't copy from protected frames.
+  if (cdm_context_ref_)
+    return absl::nullopt;
+
+  if (auto frame = compositor_->GetCurrentFrameOnAnyThread())
+    return frame->unique_id();
+  return absl::nullopt;
 }
 
 media::PaintCanvasVideoRenderer*
@@ -1858,6 +1873,10 @@ void WebMediaPlayerImpl::OnMemoryPressure(
                                 base::Unretained(chunk_demuxer_),
                                 base::Seconds(CurrentTime()),
                                 memory_pressure_level, force_instant_gc));
+}
+
+void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
+  media_metrics_provider_->OnFallback(std::move(status).AddHere());
 }
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
@@ -2694,7 +2713,8 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
     client_->ResumePlayback();
   } else if (state == media::MediaStatus::State::PAUSED && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
-    client_->PausePlayback();
+    client_->PausePlayback(
+        WebMediaPlayerClient::PauseReason::kRemotePlayStateChange);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -3419,8 +3439,11 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
 #endif
 
   // Idle timeout chosen arbitrarily.
-  background_pause_timer_.Start(FROM_HERE, base::Seconds(5), client_,
-                                &WebMediaPlayerClient::PausePlayback);
+  background_pause_timer_.Start(
+      FROM_HERE, base::Seconds(5),
+      base::BindOnce(
+          &WebMediaPlayerClient::PausePlayback, base::Unretained(client_),
+          WebMediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3710,7 +3733,8 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
   // client_->PausePlayback() will get `paused_when_hidden_` set to
   // false and UpdatePlayState() called, so set the flag to true after and then
   // return.
-  client_->PausePlayback();
+  client_->PausePlayback(
+      WebMediaPlayerClient::PauseReason::kBackgroundVideoOptimization);
   paused_when_hidden_ = true;
 }
 

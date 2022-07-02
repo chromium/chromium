@@ -61,6 +61,24 @@ content::WebContents* FakeScriptExecutorDelegate::GetWebContents() {
   return web_contents_;
 }
 
+void FakeScriptExecutorDelegate::SetJsFlowLibrary(
+    const std::string& js_flow_library) {
+  GetJsFlowDevtoolsWrapper()->SetJsFlowLibrary(js_flow_library);
+}
+
+JsFlowDevtoolsWrapper* FakeScriptExecutorDelegate::GetJsFlowDevtoolsWrapper() {
+  if (!js_flow_devtools_wrapper_) {
+    content::WebContents* web_contents = GetWebContents();
+    DCHECK(web_contents_)
+        << "devtools wrapper is only available in browsertests";
+
+    js_flow_devtools_wrapper_ =
+        std::make_unique<JsFlowDevtoolsWrapper>(web_contents);
+  }
+
+  return js_flow_devtools_wrapper_.get();
+}
+
 std::string FakeScriptExecutorDelegate::GetEmailAddressForAccessTokenAccount() {
   return std::string();
 }

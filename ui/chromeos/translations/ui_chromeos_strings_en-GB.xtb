@@ -7,7 +7,6 @@
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1060368002126861100">To open files with <ph name="APP_NAME" />, first move them to the Windows files folder.</translation>
 <translation id="1062407476771304334">Replace</translation>
-<translation id="1119069657431255176">Bzip2 compressed tar archive</translation>
 <translation id="1119447706177454957">Internal error</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">English (US) with Programmer Dvorak keyboard</translation>
@@ -21,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Google name servers</translation>
-<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">About <ph name="REMAINING_TIME" /> remaining</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
@@ -31,7 +29,6 @@
 <translation id="1201402288615127009">Next</translation>
 <translation id="1209796539517632982">Automatic name servers</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Chrome extension</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Changing shared network configurations is not allowed</translation>
 <translation id="1665611772925418501">The file could not be modified.</translation>
 <translation id="1673103856845176271">The file could not be accessed for security reasons.</translation>
-<translation id="16762847117768727">ISO image</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cycling</translation>
 <translation id="1722487484194605434">Zipping <ph name="NUMBER_OF_ITEMS" /> items…</translation>
@@ -124,8 +120,6 @@
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
-<translation id="2028997212275086731">RAR archive</translation>
-<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">Russian</translation>
 <translation id="2044023416777079300">Modem not registered</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -141,10 +135,10 @@
 <translation id="2141347188420181405">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, blocked by your administrator. Details</translation>
 <translation id="2142680004883808240">Russian with phonetic YaZHert keyboard</translation>
 <translation id="2143778271340628265">Manual proxy configuration</translation>
+<translation id="2148716181193084225">Today</translation>
 <translation id="2163152940313951844">Invalid character: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portuguese with US international PC keyboard</translation>
 <translation id="2198315389084035571">Simplified Chinese</translation>
-<translation id="2208158072373999562">Zip archive</translation>
 <translation id="22085916256174561">Korean</translation>
 <translation id="2208919847696382164">Install with Linux</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
@@ -166,6 +160,7 @@
 <translation id="2377319039870049694">Switch to list view</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folders shared with Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> files selected</translation>
+<translation id="2387120140441437063">Cannot open binned files. Please restore the files before opening.</translation>
 <translation id="2387458720915042159">Proxy connection type</translation>
 <translation id="2389832672041313158">Burmese/Myanmar</translation>
 <translation id="2392369802118427583">Activate</translation>
@@ -187,7 +182,6 @@
 <translation id="2541377937973966830">The contents of this folder are read-only. Some activities are not supported.</translation>
 <translation id="2542049655219295786">Google table</translation>
 <translation id="2544853746127077729">Authentication certificate rejected by network</translation>
-<translation id="2547921442987553570">Add to <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Frog</translation>
 <translation id="2578394532502990878">Tamil phonetic</translation>
@@ -239,7 +233,6 @@
 <translation id="3047197340186497470">Chinese Dayi</translation>
 <translation id="3057861065630527966">Backup your photos and videos</translation>
 <translation id="3067790092342515856">Windows files</translation>
-<translation id="3078461028045006476">Share with <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, blocked by your administrator, details</translation>
@@ -336,7 +329,6 @@
 <translation id="385051799172605136">Back</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="386548886866354912">Pack with <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3899991606604168269">French (Canada) with multilingual keyboard</translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
@@ -349,6 +341,7 @@
 <translation id="3971140002794351170">Download mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
 <translation id="3975895378829046965">Bangla phonetic</translation>
+<translation id="3991446849494482687">This will also disable the SIM lock setting on the device.</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4017788180641807848">English (US) with Workman keyboard</translation>
 <translation id="4040753847560036377">Incorrect PUK</translation>
@@ -449,7 +442,6 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Volume slider</translation>
 <translation id="4881695831933465202">Open</translation>
-<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Share with Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="4905417359854579806">Ready to backup <ph name="FILE_COUNT" /></translation>
@@ -598,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, not connected</translation>
 <translation id="6074825444536523002">Google form</translation>
 <translation id="6079871810119356840">Hungarian with QWERTY keyboard</translation>
-<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">Search text cleared, showing all files and folders.</translation>
 <translation id="610101264611565198">Moving <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV text</translation>
@@ -612,7 +603,6 @@
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungarian</translation>
-<translation id="6189412234224385711">Open with <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6199801702437275229">Waiting for space info...</translation>
 <translation id="6205710420833115353">Some operations are taking longer than expected. Do you want to abort them?</translation>
@@ -627,6 +617,7 @@
 <translation id="6296410173147755564">Invalid PUK</translation>
 <translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6317608858038767920">Custom nameserver <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> archive</translation>
 <translation id="6321303798550928047">Waving</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
@@ -642,6 +633,7 @@
 <translation id="6423031066725912715">Vietnamese with TCVN keyboard</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
+<translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Disallow proxies for shared networks</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>
@@ -670,7 +662,6 @@
 <translation id="6806699711453372963">Manage Linux sharing</translation>
 <translation id="6806796368146926706">Alphanumeric with Japanese keyboard</translation>
 <translation id="6808193438228982088">Fox</translation>
-<translation id="6820687829547641339">Gzip compressed tar archive</translation>
 <translation id="6823166707458800069">All files saved in this folder are backed up online automatically.</translation>
 <translation id="6825883775269213504">Russian</translation>
 <translation id="6847101934483209767">Removed <ph name="ENTRY_NAME" /> from selection.</translation>
@@ -715,6 +706,7 @@
 <translation id="7075931588889865715">Thai with TIS 820-2531 keyboard</translation>
 <translation id="708278670402572152">Disconnect to enable scanning</translation>
 <translation id="7086590977277044826">Tamil with InScript keyboard</translation>
+<translation id="7088615885725309056">Older</translation>
 <translation id="7103992300314999525">Macedonian</translation>
 <translation id="7106346894903675391">Buy more storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
@@ -779,6 +771,7 @@
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Formatting a drive will erase all data stored on it and remove all existing partitions, including partitions that may not be visible. This action cannot be undone.</translation>
 <translation id="7695430100978772476">Could not format <ph name="DRIVE_NAME" /></translation>
+<translation id="76959938259365003">Failed to empty the bin.</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copied.</translation>
 <translation id="7711920809702896782">Image info</translation>
@@ -789,6 +782,7 @@
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7774365994322694683">Bird</translation>
+<translation id="7781829728241885113">Yesterday</translation>
 <translation id="7788080748068240085">To save "<ph name="FILE_NAME" />" offline you must free up an additional <ph name="TOTAL_FILE_SIZE" /> of space:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />unpin files that you no longer need to access offline<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />delete files from your Downloads folder<ph name="MARKUP_5" /></translation>
@@ -819,7 +813,6 @@
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
 <translation id="7943385054491506837">US Colemak</translation>
-<translation id="7948417415021769876">7z archive</translation>
 <translation id="7953739707111622108">This device cannot be opened because its file system was not recognised.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
@@ -861,7 +854,6 @@
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>
 <translation id="8300849813060516376">OTASP failed</translation>
-<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">Paste into folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">Unpin from shelf</translation>
@@ -883,7 +875,6 @@
 <translation id="8461467696380332069">Right-click a file, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamese VIQR</translation>
-<translation id="8466234950814670489">Tar archive</translation>
 <translation id="8475647382427415476">Google Drive was unable to sync "<ph name="FILENAME" />" right now. Google Drive will try again later.</translation>
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8484284835977497781">Choose from your recent photos.</translation>
@@ -972,7 +963,6 @@
 <translation id="943972244133411984">Modified by</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Selected a range of <ph name="ENTRY_COUNT" /> entries from <ph name="FROM_ENTRY_NAME" /> to <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">A file named '<ph name="FILE_NAME" />' already exists. Do you want to replace it?</translation>

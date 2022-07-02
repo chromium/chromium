@@ -8,16 +8,17 @@
 #include <atomic>
 
 #include "chromecast/browser/cast_content_browser_client.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_watcher.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 
 namespace chromecast {
 
-class CastRuntimeService;
+class CoreBrowserCastService;
 class CastFeatureListCreator;
 class RuntimeApplication;
 
-class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
-                                        public RuntimeApplicationWatcher {
+class CastRuntimeContentBrowserClient
+    : public shell::CastContentBrowserClient,
+      public RuntimeApplicationDispatcher::Observer {
  public:
   static std::unique_ptr<CastRuntimeContentBrowserClient> Create(
       CastFeatureListCreator* feature_list_creator);
@@ -26,8 +27,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
 
-  // Returns an instance of |CastRuntimeService|.
-  virtual CastRuntimeService* GetCastRuntimeService();
+  // Returns an instance of |CoreBrowserCastService|.
+  virtual CoreBrowserCastService* GetCastService();
 
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
@@ -41,37 +42,19 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
       shell::AccessibilityServiceImpl* accessibility_service) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
       ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
-  // This function is used to allow/disallow WebUIs to make network requests.
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateURLLoaderThrottles(
-      const network::ResourceRequest& request,
-      content::BrowserContext* browser_context,
-      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override;
   bool IsBufferingEnabled() override;
 
+  // RuntimeApplicationDispatcher::Observer implementation:
+  void OnForegroundApplicationChanged(RuntimeApplication* app) override;
+
  private:
-  // RuntimeApplicationWatcher overrides:
-  void OnRuntimeApplicationChanged(RuntimeApplication* application) override;
-
-  std::unique_ptr<blink::URLLoaderThrottle> CreateUrlRewriteRulesThrottle(
-      content::WebContents* web_contents);
-
-  // The current application running in this runtime, or nullptr if no such app
-  // exists
-  RuntimeApplication* runtime_application_ = nullptr;
-
-  // Tracks whether the current application is a streaming application, for the
-  // purposes of disabling buffering.
-  std::atomic_bool is_runtime_application_for_streaming_{false};
-
-  // An instance of |CastRuntimeService| created once during the lifetime of the
-  // runtime.
-  CastRuntimeService* cast_runtime_service_ = nullptr;
+  // An instance of |CoreBrowserCastService| created once during the lifetime of
+  // the runtime.
+  CoreBrowserCastService* core_browser_cast_service_ = nullptr;
+  std::atomic_bool is_buffering_enabled_{false};
 };
 
 }  // namespace chromecast

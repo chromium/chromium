@@ -90,7 +90,7 @@
   DCHECK(self.bannerViewController);
   DCHECK(self.started);
 
-  // If |self.baseViewController| is not part of the ViewHierarchy the banner
+  // If `self.baseViewController` is not part of the ViewHierarchy the banner
   // shouldn't be presented.
   if (!self.baseViewController.view.window) {
     return;
@@ -338,12 +338,12 @@
   }
 }
 
-// |presentingViewController| presents the InfobarModal using |driver|. If
-// Modal is presented successfully |completion| will be executed.
+// `presentingViewController` presents the InfobarModal using `driver`. If
+// Modal is presented successfully `completion` will be executed.
 - (void)presentInfobarModalFrom:(UIViewController*)presentingViewController
                          driver:(InfobarModalTransitionDriver*)driver
                      completion:(ProceduralBlock)completion {
-  // |self.modalViewController| only exists while one its being presented, if
+  // `self.modalViewController` only exists while one its being presented, if
   // this is the case early return since there's one already being presented.
   if (self.modalViewController)
     return;
@@ -368,7 +368,7 @@
 
 // Configures the Banner Accessibility in order to give VoiceOver users the
 // ability to select other elements while the banner is presented. Call this
-// method after the Banner has been presented or dismissed. |presenting| is YES
+// method after the Banner has been presented or dismissed. `presenting` is YES
 // if banner was presented, NO if dismissed.
 - (void)configureAccessibilityForBannerInViewController:
             (UIViewController*)presentingViewController

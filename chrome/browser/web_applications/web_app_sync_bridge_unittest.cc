@@ -580,7 +580,8 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
             ScopedRegistryUpdate update(&sync_bridge());
             update->DeleteApp(app_to_uninstall);
           }
-          callback.Run(app_to_uninstall, true);
+          callback.Run(app_to_uninstall,
+                       webapps::UninstallResultCode::kSuccess);
         }
 
         barrier_closure.Run();

@@ -34,11 +34,11 @@ class MockUserInfoFetcherDelegate : public UserInfoFetcher::Delegate {
   ~MockUserInfoFetcherDelegate() {}
   MOCK_METHOD1(OnGetUserInfoFailure,
                void(const GoogleServiceAuthError& error));
-  MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::DictionaryValue* result));
+  MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::Value::Dict& result));
 };
 
-MATCHER_P(MatchDict, expected, "matches DictionaryValue") {
-  return *arg == *expected;
+MATCHER_P(MatchDict, expected, "matches Value::Dict") {
+  return arg == *expected;
 }
 
 class UserInfoFetcherTest : public testing::Test {
@@ -78,10 +78,10 @@ TEST_F(UserInfoFetcherTest, SuccessfulFetch) {
 
   // Generate what we expect our result will look like (should match
   // parsed kUserInfoResponse).
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("email", base::Value("test_user@test.com"));
-  dict.SetKey("verified_email", base::Value(true));
-  dict.SetKey("hd", base::Value("test.com"));
+  base::Value::Dict dict;
+  dict.Set("email", "test_user@test.com");
+  dict.Set("verified_email", true);
+  dict.Set("hd", "test.com");
 
   // Fake a successful fetch - should result in the data being parsed and
   // the values passed off to the success callback.

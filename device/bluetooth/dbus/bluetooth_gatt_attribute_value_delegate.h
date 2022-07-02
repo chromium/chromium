@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
 
@@ -98,7 +99,7 @@ class BluetoothGattAttributeValueDelegate {
   const BluetoothLocalGattServiceBlueZ* service() { return service_; }
 
  private:
-  const BluetoothLocalGattServiceBlueZ* service_;
+  raw_ptr<const BluetoothLocalGattServiceBlueZ> service_;
 };
 
 }  // namespace bluez

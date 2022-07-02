@@ -231,7 +231,6 @@ interface AnimationTimeline
     attribute @@toStringTag
     getter currentTime
     getter duration
-    getter phase
     method constructor
 interface Attr : Node
     attribute @@toStringTag
@@ -244,10 +243,6 @@ interface Attr : Node
     getter value
     method constructor
     setter value
-interface AttributionReporting
-    attribute @@toStringTag
-    method constructor
-    method registerSource
 interface Audio
     attribute @@toStringTag
     method constructor
@@ -315,10 +310,11 @@ interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
     getter maxChannelCount
     method constructor
-interface AudioEncoder
+interface AudioEncoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -326,6 +322,7 @@ interface AudioEncoder
     method encode
     method flush
     method reset
+    setter ondequeue
 interface AudioListener
     attribute @@toStringTag
     getter forwardX
@@ -612,10 +609,11 @@ interface BroadcastChannel : EventTarget
     method postMessage
     setter onmessage
     setter onmessageerror
-interface BrowserCaptureMediaStreamTrack : FocusableMediaStreamTrack
+interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
     attribute @@toStringTag
     method constructor
     method cropTo
+    method focus
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -830,6 +828,11 @@ interface CSSPerspective : CSSTransformComponent
     getter length
     method constructor
     setter length
+interface CSSPositionFallbackRule : CSSRule
+    attribute @@toStringTag
+    getter cssRules
+    getter name
+    method constructor
 interface CSSPositionValue : CSSStyleValue
     attribute @@toStringTag
     getter x
@@ -1003,6 +1006,9 @@ interface CSSTranslate : CSSTransformComponent
     setter x
     setter y
     setter z
+interface CSSTryRule : CSSRule
+    attribute @@toStringTag
+    method constructor
 interface CSSUnitValue : CSSNumericValue
     attribute @@toStringTag
     getter unit
@@ -1362,6 +1368,10 @@ interface CredentialsContainer
     method get
     method preventSilentAccess
     method store
+interface CropTarget
+    static method fromElement
+    attribute @@toStringTag
+    method constructor
 interface Crypto
     attribute @@toStringTag
     getter subtle
@@ -1692,6 +1702,7 @@ interface DelegatedInkTrailPresenter
     method constructor
     method updateInkTrailStartPoint
 interface DeviceMotionEvent : Event
+    static method requestPermission
     attribute @@toStringTag
     getter acceleration
     getter accelerationIncludingGravity
@@ -1711,6 +1722,7 @@ interface DeviceMotionEventRotationRate
     getter gamma
     method constructor
 interface DeviceOrientationEvent : Event
+    static method requestPermission
     attribute @@toStringTag
     getter absolute
     getter alpha
@@ -1897,6 +1909,7 @@ interface Document : Node
     getter rootElement
     getter scripts
     getter scrollingElement
+    getter softNavigations
     getter styleSheets
     getter timeline
     getter title
@@ -2256,7 +2269,7 @@ interface Element : Node
     getter onwebkitfullscreenerror
     getter outerHTML
     getter part
-    getter popup
+    getter popUp
     getter prefix
     getter previousElementSibling
     getter role
@@ -2272,6 +2285,7 @@ interface Element : Node
     method append
     method attachShadow
     method before
+    method checkVisibility
     method closest
     method computedStyleMap
     method constructor
@@ -2291,11 +2305,10 @@ interface Element : Node
     method hasAttributeNS
     method hasAttributes
     method hasPointerCapture
-    method hidePopup
+    method hidePopUp
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
-    method isVisible
     method matches
     method prepend
     method querySelector
@@ -2320,7 +2333,7 @@ interface Element : Node
     method setAttributeNodeNS
     method setHTML
     method setPointerCapture
-    method showPopup
+    method showPopUp
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -2389,7 +2402,7 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
-    setter popup
+    setter popUp
     setter role
     setter scrollLeft
     setter scrollTop
@@ -2614,13 +2627,12 @@ interface FederatedCredential : Credential
     static method logoutRps
     attribute @@toStringTag
     getter iconURL
+    getter idToken
     getter name
     getter protocol
     getter provider
     method constructor
     method login
-    method logout
-    method revoke
 interface File : Blob
     attribute @@toStringTag
     getter lastModified
@@ -2701,6 +2713,14 @@ interface FocusableMediaStreamTrack : MediaStreamTrack
     attribute @@toStringTag
     method constructor
     method focus
+interface FontData
+    attribute @@toStringTag
+    getter family
+    getter fullName
+    getter postscriptName
+    getter style
+    method blob
+    method constructor
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride
@@ -3464,6 +3484,8 @@ interface HTMLFormElement : HTMLElement
     getter method
     getter name
     getter noValidate
+    getter rel
+    getter relList
     getter target
     method @@iterator
     method checkValidity
@@ -3480,6 +3502,8 @@ interface HTMLFormElement : HTMLElement
     setter method
     setter name
     setter noValidate
+    setter rel
+    setter relList
     setter target
 interface HTMLFrameElement : HTMLElement
     attribute @@toStringTag
@@ -4146,6 +4170,7 @@ interface HTMLScriptElement : HTMLElement
     static method supports
     attribute @@toStringTag
     getter async
+    getter attributionSrc
     getter blocking
     getter charset
     getter crossOrigin
@@ -4161,6 +4186,7 @@ interface HTMLScriptElement : HTMLElement
     getter type
     method constructor
     setter async
+    setter attributionSrc
     setter blocking
     setter charset
     setter crossOrigin
@@ -5065,14 +5091,23 @@ interface MLContext
 interface MLGraphBuilder
     attribute @@toStringTag
     method add
+    method averagePool2d
+    method clamp
     method constant
     method constructor
+    method conv2d
+    method gemm
     method input
+    method reshape
+    method softmax
 interface MLModelLoader
     attribute @@toStringTag
     method constructor
     method load
 interface MLOperand
+    attribute @@toStringTag
+    method constructor
+interface MLOperator
     attribute @@toStringTag
     method constructor
 interface Magnetometer : Sensor
@@ -5319,7 +5354,6 @@ interface MediaDevices : EventTarget
     method getDisplayMediaSet
     method getSupportedConstraints
     method getUserMedia
-    method produceCropId
     method setCaptureHandleConfig
     setter ondevicechange
 interface MediaElementAudioSourceNode : AudioNode
@@ -5473,12 +5507,16 @@ interface MediaSource : EventTarget
     method clearLiveSeekableRange
     method constructor
     method endOfStream
+    method getHandle
     method removeSourceBuffer
     method setLiveSeekableRange
     setter duration
     setter onsourceclose
     setter onsourceended
     setter onsourceopen
+interface MediaSourceHandle
+    attribute @@toStringTag
+    method constructor
 interface MediaStream : EventTarget
     attribute @@toStringTag
     getter active
@@ -6471,7 +6509,6 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter serverTiming
     getter transferSize
     getter workerStart
-    getter workerTiming
     method constructor
     method toJSON
 interface PerformanceServerTiming
@@ -8353,7 +8390,6 @@ interface ScriptProcessorNode : AudioNode
 interface ScrollTimeline : AnimationTimeline
     attribute @@toStringTag
     getter orientation
-    getter scrollOffsets
     getter source
     method constructor
 interface SecurityPolicyViolationEvent : Event
@@ -8518,16 +8554,6 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
-interface SharedStorage
-    attribute @@toStringTag
-    getter worklet
-    method append
-    method clear
-    method constructor
-    method delete
-    method run
-    method selectURL
-    method set
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -9259,10 +9285,11 @@ interface VideoDecoder
     method decode
     method flush
     method reset
-interface VideoEncoder
+interface VideoEncoder : EventTarget
     static method isConfigSupported
     attribute @@toStringTag
     getter encodeQueueSize
+    getter ondequeue
     getter state
     method close
     method configure
@@ -9270,6 +9297,7 @@ interface VideoEncoder
     method encode
     method flush
     method reset
+    setter ondequeue
 interface VideoFrame
     attribute @@toStringTag
     getter codedHeight
@@ -9324,6 +9352,10 @@ interface VideoTrackList : EventTarget
     setter onaddtrack
     setter onchange
     setter onremovetrack
+interface ViewTimeline : ScrollTimeline
+    attribute @@toStringTag
+    getter subject
+    method constructor
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect
@@ -11517,11 +11549,11 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter attributionReporting
     getter caches
     getter clientInformation
     getter closed
     getter cookieStore
+    getter crossOriginEmbedderPolicy
     getter crossOriginIsolated
     getter crypto
     getter customElements
@@ -11672,7 +11704,6 @@ namespace CSS
     getter opener
     getter origin
     getter originAgentCluster
-    getter originPolicyIds
     getter outerHeight
     getter outerWidth
     getter pageXOffset
@@ -11691,7 +11722,6 @@ namespace CSS
     getter scrollbars
     getter self
     getter sessionStorage
-    getter sharedStorage
     getter speechSynthesis
     getter status
     getter statusbar
@@ -11734,6 +11764,7 @@ namespace CSS
     method postMessage
     method print
     method prompt
+    method queryLocalFonts
     method queueMicrotask
     method releaseEvents
     method reportError

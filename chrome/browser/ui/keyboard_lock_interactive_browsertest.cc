@@ -5,11 +5,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/fullscreen_keyboard_browsertest_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -133,8 +135,15 @@ void KeyboardLockInteractiveBrowserTest::SetUpCommandLine(
   // keyboard lock hook can interfere with it.
   // Turn off Paint Holding because the content used in the test does not paint
   // anything and we do not want to wait for the timeout.
+  // TODO(crbug.com/1327775): Currently, the download bubble pops open on new
+  // and completed downloads, which takes away focus, and unlocks the keyboard.
+  // The lock returns when the user brings the focus back to the page.
+  // However DownloadNavigationDoesNotUnlock does not pass because of the lost
+  // focus. We want to implement transient notification for Download Bubble in
+  // full screen mode to prevent taking away focus from the page.
   scoped_feature_list_.InitWithFeatures(
-      {}, {features::kSystemKeyboardLock, blink::features::kPaintHolding});
+      {}, {features::kSystemKeyboardLock, blink::features::kPaintHolding,
+           safe_browsing::kDownloadBubble});
 }
 
 void KeyboardLockInteractiveBrowserTest::SetUpOnMainThread() {

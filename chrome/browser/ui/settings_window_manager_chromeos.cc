@@ -8,6 +8,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -94,7 +94,7 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
   if (!UseDeprecatedSettingsWindow(profile)) {
     web_app::SystemAppLaunchParams params;
     params.url = gurl;
-    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
+    web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SETTINGS,
                                      params, apps::MakeWindowInfo(display_id));
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
@@ -159,7 +159,7 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {
   if (!UseDeprecatedSettingsWindow(profile)) {
     return web_app::FindSystemWebAppBrowser(profile,
-                                            web_app::SystemAppType::SETTINGS);
+                                            ash::SystemWebAppType::SETTINGS);
   }
 
   auto iter = settings_session_map_.find(profile);
@@ -181,7 +181,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
     // app install and then provide a valid answer here.
     absl::optional<std::string> settings_app_id =
         web_app::GetAppIdForSystemWebApp(profile,
-                                         web_app::SystemAppType::SETTINGS);
+                                         ash::SystemWebAppType::SETTINGS);
     return settings_app_id &&
            browser->app_controller()->app_id() == settings_app_id.value();
   } else {

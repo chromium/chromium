@@ -15,6 +15,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace leveldb {
 namespace port {
@@ -36,7 +37,7 @@ class LOCKABLE Mutex {
   base::Lock lock_;
 };
 
-// Thinly wraps std::condition_variable.
+// Thinly wraps base::ConditionVariable.
 class CondVar {
  public:
   explicit CondVar(Mutex* mu) : cv_(&mu->lock_) { DCHECK(mu); }
@@ -50,8 +51,13 @@ class CondVar {
   void SignalAll() { cv_.Broadcast(); }
 
  private:
+  // The ConditionVariable is used to coordinate a batch write for efficiency.
+  // This is an allowed use of base-sync-primitives.
   base::ConditionVariable cv_;
 };
+
+// Thinly wraps base::ScopedAllowBaseSyncPrimitives.
+class ScopedAllowWait : base::ScopedAllowBaseSyncPrimitives {};
 
 bool Snappy_Compress(const char* input, size_t input_length,
                      std::string* output);

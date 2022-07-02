@@ -70,9 +70,11 @@ public class AutofillMessageConfirmFlowBridge
                 mNativeSaveCardMessageConfirmDelegate, month, year);
     }
 
-    // no-op
     @Override
-    public void onUserDismiss() {}
+    public void onUserDismiss() {
+        AutofillMessageConfirmFlowBridgeJni.get().onUserDismiss(
+                mNativeSaveCardMessageConfirmDelegate);
+    }
 
     @Override
     public void onLinkClicked(String url) {
@@ -185,6 +187,7 @@ public class AutofillMessageConfirmFlowBridge
         void onDateConfirmed(long nativeSaveCardMessageConfirmDelegate, String month, String year);
         void onNameConfirmed(long nativeSaveCardMessageConfirmDelegate, String name);
         void onSaveCardConfirmed(long nativeSaveCardMessageConfirmDelegate);
+        void onUserDismiss(long nativeSaveCardMessageConfirmDelegate);
         void onLinkClicked(long nativeSaveCardMessageConfirmDelegate, String url);
         void dialogDismissed(long nativeSaveCardMessageConfirmDelegate);
     }

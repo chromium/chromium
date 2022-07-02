@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -55,9 +54,6 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
                 view.setController(model.get(DownloadLaterDialogProperties.CONTROLLER));
             } else if (propertyKey == DownloadLaterDialogProperties.INITIAL_CHOICE) {
                 view.setChoice(model.get(DownloadLaterDialogProperties.INITIAL_CHOICE));
-            } else if (propertyKey == DownloadLaterDialogProperties.DONT_SHOW_AGAIN_SELECTION) {
-                view.setCheckbox(
-                        model.get(DownloadLaterDialogProperties.DONT_SHOW_AGAIN_SELECTION));
             } else if (propertyKey == DownloadLaterDialogProperties.DONT_SHOW_AGAIN_DISABLED) {
                 view.setCheckboxEnabled(
                         !model.get(DownloadLaterDialogProperties.DONT_SHOW_AGAIN_DISABLED));
@@ -131,20 +127,8 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
         mDownloadLater.setVisibility(showDateTimePicker ? View.VISIBLE : View.GONE);
     }
 
-    void setCheckbox(@DownloadLaterPromptStatus int promptStatus) {
-        mCheckBox.setVisibility(VISIBLE);
-        mCheckBox.setChecked(promptStatus == DownloadLaterPromptStatus.DONT_SHOW);
-    }
-
     void setCheckboxEnabled(boolean enabled) {
         mCheckBox.setEnabled(enabled);
-    }
-
-    Integer getPromptStatus() {
-        if (mCheckBox.getVisibility() == View.GONE || !mCheckBox.isEnabled()) return null;
-
-        return mCheckBox.isChecked() ? DownloadLaterPromptStatus.DONT_SHOW
-                                     : DownloadLaterPromptStatus.SHOW_PREFERENCE;
     }
 
     void setSubtitle(@Nullable CharSequence subtitle) {

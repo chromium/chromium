@@ -10,7 +10,10 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -34,7 +37,18 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
     protected ViewResourceAdapter createResourceAdapter() {
         return new ViewResourceAdapter(this) {
             @Override
+            public boolean isDirty() {
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+                    return false;
+                }
+                return super.isDirty();
+            }
+            @Override
             public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
+                RecordHistogram.recordEnumeratedHistogram("Android.Toolbar.BitmapCapture",
+                        ToolbarCaptureType.BOTTOM, ToolbarCaptureType.NUM_ENTRIES);
+
                 mCachedRect.set(dirtyRect);
                 if (mCachedRect.intersect(0, 0, getWidth(), mTopShadowHeightPx)) {
                     canvas.save();

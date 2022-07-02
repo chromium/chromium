@@ -324,20 +324,22 @@ class PipeReaderCBOR : public PipeReaderBase {
 
   void ReadLoopInternal() override {
     while (true) {
-      const size_t kHeaderSize = 6;  // tag? type length*4
-      std::vector<uint8_t> buffer(kHeaderSize);
-      if (!ReadBytes(&buffer.front(), kHeaderSize, true))
+      const size_t kPeekSize =
+          8;  // tag tag_type? byte_string length*4 map_start
+      std::vector<uint8_t> buffer(kPeekSize);
+      if (!ReadBytes(&buffer.front(), kPeekSize, true))
         break;
-      const uint8_t* prefix = buffer.data();
-      if (prefix[0] != crdtp::cbor::InitialByteForEnvelope() ||
-          prefix[1] != crdtp::cbor::InitialByteFor32BitLengthByteString()) {
-        LOG(ERROR) << "Unexpected start of CBOR envelope " << prefix[0] << ","
-                   << prefix[1];
+      auto status_or_header = crdtp::cbor::EnvelopeHeader::ParseFromFragment(
+          crdtp::SpanFrom(buffer));
+      if (!status_or_header.ok()) {
+        LOG(ERROR) << "Error parsing CBOR envelope: "
+                   << status_or_header.status().ToASCIIString();
         return;
       }
-      uint32_t msg_size = UInt32FromCBOR(prefix + 2);
-      buffer.resize(kHeaderSize + msg_size);
-      if (!ReadBytes(&buffer.front() + kHeaderSize, msg_size, true))
+      const size_t msg_size = (*status_or_header).outer_size();
+      CHECK_GT(msg_size, kPeekSize);
+      buffer.resize(msg_size);
+      if (!ReadBytes(&buffer.front() + kPeekSize, msg_size - kPeekSize, true))
         return;
       HandleMessage(std::move(buffer));
     }

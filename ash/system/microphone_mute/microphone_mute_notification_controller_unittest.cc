@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -101,7 +101,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   void UnMuteMicrophone() { CrasAudioHandler::Get()->SetInputMute(false); }
 
   void SetNumberOfActiveInputStreams(int number_of_active_input_streams) {
-    chromeos::FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
+    FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
         {{"CRAS_CLIENT_TYPE_CHROME", number_of_active_input_streams}});
   }
 

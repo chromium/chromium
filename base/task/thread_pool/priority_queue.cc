@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 
 namespace base {
 namespace internal {
@@ -193,12 +194,12 @@ void PriorityQueue::EnableFlushTaskSourcesOnDestroyForTesting() {
 }
 
 void PriorityQueue::DecrementNumTaskSourcesForPriority(TaskPriority priority) {
-  DCHECK_GT(num_task_sources_per_priority_[static_cast<int>(priority)], 0U);
-  --num_task_sources_per_priority_[static_cast<int>(priority)];
+  DCHECK_GT(num_task_sources_per_priority_[base::to_underlying(priority)], 0U);
+  --num_task_sources_per_priority_[base::to_underlying(priority)];
 }
 
 void PriorityQueue::IncrementNumTaskSourcesForPriority(TaskPriority priority) {
-  ++num_task_sources_per_priority_[static_cast<int>(priority)];
+  ++num_task_sources_per_priority_[base::to_underlying(priority)];
 }
 
 }  // namespace internal

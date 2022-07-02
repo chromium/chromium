@@ -60,7 +60,7 @@ class PageInfoPermissionsTest : public PlatformTest {
   PageInfoPermissionsMediator* mediator_ API_AVAILABLE(ios(15.0));
 };
 
-// Verifies that |updateStateForPermission:| updates correctly the web state
+// Verifies that `updateStateForPermission:` updates correctly the web state
 // permission.
 TEST_F(PageInfoPermissionsTest, TestUpdateStateForPermission) {
   if (@available(iOS 15.0, *)) {

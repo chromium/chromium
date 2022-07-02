@@ -16,8 +16,8 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared_css.js';
-import './all_sites_icons.js';
-import './clear_storage_dialog_css.js';
+import './all_sites_icons.html.js';
+import './clear_storage_dialog_shared.css.js';
 import './site_entry.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -70,6 +70,7 @@ export interface AllSitesElement {
   $: {
     allSitesList: IronListElement,
     clearAllButton: HTMLElement,
+    clearLabel: HTMLElement,
     confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
     confirmClearData: CrLazyRenderElement<CrDialogElement>,
     confirmRemoveSite: CrLazyRenderElement<CrDialogElement>,
@@ -263,7 +264,6 @@ export class AllSitesElement extends AllSitesElementBase {
         newMap.set(siteGroup.etldPlus1, siteGroup);
       });
       this.siteGroupMap = newMap;
-      this.updateTotalUsage_();
       this.forceListUpdate_();
     });
   }
@@ -280,7 +280,6 @@ export class AllSitesElement extends AllSitesElementBase {
       newMap.set(storageSiteGroup.etldPlus1, storageSiteGroup);
     });
     this.siteGroupMap = newMap;
-    this.updateTotalUsage_();
     this.forceListUpdate_();
     this.focusOnLastSelectedEntry_();
   }
@@ -291,11 +290,12 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private updateTotalUsage_() {
     let usageSum = 0;
-    for (const [_etldPlus1, siteGroup] of this.siteGroupMap) {
+    for (const siteGroup of this.filteredList_) {
       siteGroup.origins.forEach(origin => {
         usageSum += origin.usage;
       });
     }
+
     this.browserProxy.getFormattedBytes(usageSum).then(totalUsage => {
       this.totalUsage_ = totalUsage;
     });
@@ -402,6 +402,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private forceListUpdate_() {
     this.filteredList_ =
         this.filterPopulatedList_(this.siteGroupMap, this.filter);
+    this.updateTotalUsage_();
     this.$.allSitesList.fire('iron-resize');
   }
 
@@ -455,12 +456,12 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
-  onRemoveSite_(e: RemoveSiteEvent) {
+  private onRemoveSite_(e: RemoveSiteEvent) {
     this.actionMenuModel_ = e.detail;
     this.$.confirmRemoveSite.get().showModal();
   }
 
-  onConfirmRemoveSite_(e: Event) {
+  private onConfirmRemoveSite_(e: Event) {
     const {index, actionScope, origin, isPartitioned} = this.actionMenuModel_!;
     const siteGroupToUpdate = this.filteredList_[index];
 
@@ -540,6 +541,41 @@ export class AllSitesElement extends AllSitesElementBase {
         [AllSitesDialog.CLEAR_DATA, scope, installed, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmClearData.get().showModal();
+  }
+
+  /**
+   * Checks if a filter is applied.
+   * @return True if a filter is applied.
+   */
+  private isFiltered_(): Boolean {
+    return this.filter !== '';
+  }
+
+  /**
+   * Selects the appropriate string to display for clear button based on whether
+   * a filter is applied.
+   * @return The appropriate |clearAllButton| string based on whether a filter
+   *     is applied.
+   */
+  private getClearDataButtonString_(): string {
+    const buttonStringId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageLabel' :
+        'siteSettingsClearAllStorageLabel';
+    return this.i18n(buttonStringId);
+  }
+
+  /**
+   * Selects the appropriate string to display for total usage based on whether
+   * a filter is applied.
+   * @return The appropriate |clearLabel| string based on whether a filter
+   *     is applied.
+   */
+  private getClearStorageDescription_(): string {
+    const descriptionId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageDescription' :
+        'siteSettingsClearAllStorageDescription';
+    return loadTimeData.substituteString(
+        this.i18n(descriptionId), this.totalUsage_);
   }
 
   /**
@@ -712,17 +748,52 @@ export class AllSitesElement extends AllSitesElementBase {
         .some(o => o.hasPermissionSettings);
   }
 
+
   /**
-   * Get the appropriate label for the clear all data confirmation
-   * dialog, depending on whether or not any apps are installed.
+   * Selects the appropriate title to display for clear storage confirmation
+   * dialog based on whether a filter is applied.
+   * @return The appropriate title for clear storage confirmation dialog.
    */
-  private getClearAllDataLabel_(): string {
+  private getClearAllStorageDialogTitle_(): string {
+    const titleId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageDialogTitle' :
+        'siteSettingsClearAllStorageDialogTitle';
+    return loadTimeData.substituteString(this.i18n(titleId), this.totalUsage_);
+  }
+
+  /**
+   * Get the appropriate label for the clear data confirmation dialog, depending
+   * on whether any apps are installed and/or filter is applied.
+   * @return The appropriate description for clear data confirmation dialog.
+   */
+  private getClearAllStorageDialogDescription_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
-    const messageId = anyAppsInstalled ?
-        'siteSettingsClearAllStorageConfirmationInstalled' :
-        'siteSettingsClearAllStorageConfirmation';
+    let messageId;
+    if (anyAppsInstalled) {
+      messageId = this.isFiltered_() ?
+          'siteSettingsClearDisplayedStorageConfirmationInstalled' :
+          'siteSettingsClearAllStorageConfirmationInstalled';
+    } else {
+      messageId = this.isFiltered_() ?
+          'siteSettingsClearDisplayedStorageConfirmation' :
+          'siteSettingsClearAllStorageConfirmation';
+    }
+
     return loadTimeData.substituteString(
         this.i18n(messageId), this.totalUsage_);
+  }
+
+  /**
+   * Selects the appropriate string to display for the sign-out string in
+   * confirmation popup based on whether a filter is applied.
+   * @return The appropriate sign out confirmation string based on whether a
+   *     filter is applied.
+   */
+  private getClearAllStorageDialogSignOutLabel_(): string {
+    const signOutLabelId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageSignOut' :
+        'siteSettingsClearAllStorageSignOut';
+    return this.i18n(signOutLabelId);
   }
 
   /**

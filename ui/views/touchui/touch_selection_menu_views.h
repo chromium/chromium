@@ -66,7 +66,7 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   void WindowClosing() override;
 
   raw_ptr<TouchSelectionMenuRunnerViews> owner_;
-  const raw_ptr<ui::TouchSelectionMenuClient> client_;
+  const raw_ptr<ui::TouchSelectionMenuClient, DanglingUntriaged> client_;
 };
 
 }  // namespace views

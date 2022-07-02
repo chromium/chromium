@@ -94,10 +94,12 @@ const char kSampleToken2[] =
 const char kAppropriateOrigin[] = "https://valid.example.com";
 const char kAppropriateFeatureName[] = "Frobulate";
 const char kAppropriateThirdPartyFeatureName[] = "FrobulateThirdParty";
+const char kAppropriateDeprecationFeatureName[] = "FrobulateDeprecation";
 
 const char kInappropriateFeatureName[] = "Grokalyze";
 const char kInappropriateOrigin[] = "https://invalid.example.com";
 const char kInsecureOrigin[] = "http://valid.example.com";
+const char kUnrelatedOrigin[] = "https://www.google.com";
 
 // Well-formed trial token with an invalid signature.
 // This token is a corruption of the above valid token.
@@ -137,14 +139,13 @@ const char kInsecureOriginToken[] =
 
 // Well-formed token, for match against third party origins.
 // Generate this token with the command (in tools/origin_trials):
-// generate_token.py 3 valid.example.com Frobulate
+// generate_token.py valid.example.com FrobulateThirdParty
 // --is-third-party --expire-timestamp=2000000000
 const char kThirdPartyToken[] =
-    "A8ZESIWJHtuoIZyWgaHUPEhuc4CnbiETy5D4"
-    "PeABEP8NB8oI2fUfF9N53elgnNuyL0ltq+fzMta1pgU3VYLyuAcAAABveyJvcmln"
-    "aW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlLmNvbTo0NDMiLCAiaXNUaGlyZFBh"
-    "cnR5IjogdHJ1ZSwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDIw"
-    "MDAwMDAwMDB9";
+    "A51LHxdQmDueLf8V89ayrd5I0A2xatWl3Eu7feXlCYOTMQJgFznqw8CTmawLphLz"
+    "5k6WshIBcIDEqKjVrAKRqAwAAAB5eyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVUaGlyZFBhcnR5"
+    "IiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
 
 // Well-formed token, for match against third party origins and its usage
 // set to user subset exclusion.
@@ -183,14 +184,14 @@ const char kExpiryGracePeriodToken[] =
 // Well-formed token for match against third party origins and a feature with an
 // expiry grace period.
 // Generate this token with the command (in tools/origin_trials):
-// generate_token.py valid.example.com FrobulateExpiryGracePeriod
+// generate_token.py valid.example.com FrobulateExpiryGracePeriodThirdParty
 //  --is-third-party --expire-timestamp=2000000000
 const char kExpiryGracePeriodThirdPartyToken[] =
-    "A3wCXDPU5jfARV5KUetX5PI46W41gAbndIZKA7mKrTy6WyXoGFavV+"
-    "vBZejzC2D3Ffti4thz0AOMP+K/"
-    "oWxUvA8AAACAeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlLmNvbTo0NDMiLCAiZm"
-    "VhdHVyZSI6ICJGcm9idWxhdGVFeHBpcnlHcmFjZVBlcmlvZCIsICJleHBpcnkiOiAyMDAwMDAw"
-    "MDAwLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZX0=";
+    "AwLU1cK4P3vWskpAlt5cSiiLl9QOJBeVIQEu5ZFJWEZRFSk7zckx8K6MCa+WZ3cU"
+    "8hgF7xoA20QJpfkGzTsCvAEAAACKeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVFeHBpcnlHcmFj"
+    "ZVBlcmlvZFRoaXJkUGFydHkiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhp"
+    "cmRQYXJ0eSI6IHRydWV9";
 
 // Well-formed token, with an unknown feature name.
 // Generate this token with the command (in tools/origin_trials):
@@ -212,6 +213,70 @@ const char kUnknownFeatureThirdPartyToken[] =
     "WzjotyzFopeNLSNU6FGlFZwMAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5leGFtcGxlL"
     "mNvbTo0NDMiLCAiZmVhdHVyZSI6ICJHcm9rYWx5emUiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCw"
     "gImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
+// Well-formed token, for match against third party origins for a trial that
+// doesn't allow third-party origins.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com Frobulate
+// --is-third-party --expire-timestamp=2000000000
+const char kThirdPartyTokenForNonThirdPartyTrial[] =
+    "AzZhTxsmsC9fGlNnLEwMuo88WpNjUCDWRzP9NGyP854gRMcvTvbpO1OzEMwbyFeC"
+    "NjRE7SiCKXMzjchwl0rwTQcAAABveyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGUiLCAiZXhwaXJ5"
+    "IjogMjAwMDAwMDAwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
+// Well-formed token, for match against insecure origins for a deprecation
+// trial.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py http://valid.example.com FrobulateDeprecation
+// --expire-timestamp=2000000000
+const char kDeprecationInsecureToken[] =
+    "A1k7VFKXf+PKrR4J+QPP/pzXmDGKpYqFvWtGxAP0MZoV37/o/Eu1az8ivCp4Z9le"
+    "grPkZW4Hi5wUN5NaA0j64AsAAABieyJvcmlnaW4iOiAiaHR0cDovL3ZhbGlkLmV4"
+    "YW1wbGUuY29tOjgwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlRGVwcmVjYXRpb24i"
+    "LCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+
+// Well-formed token, for match against insecure third-party origins.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py http://valid.example.com FrobulateThirdParty
+// --is-third-party --expire-timestamp=2000000000
+const char kThirdPartyInsecureToken[] =
+    "AxlhBSHLsMiWo84CUgo6vejsWrVDLB1v6oyNxVMvY9Yb9ccf6/1CmDnEEp/vuGk0"
+    "lG9Hn4y91ysAkEGnDtJYMwIAAAB3eyJvcmlnaW4iOiAiaHR0cDovL3ZhbGlkLmV4"
+    "YW1wbGUuY29tOjgwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlVGhpcmRQYXJ0eSIs"
+    "ICJleHBpcnkiOiAyMDAwMDAwMDAwLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZX0=";
+
+// Well-formed token, for match against subdomain origins.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py example.com Frobulate
+// --is-subdomain --expire-timestamp=2000000000
+const char kSubdomainToken[] =
+    "A6Q929l21zbxF8lhVu75RktCi6DIz9tcVTDFCeH752NfJ8cIs4dJjp8xLKRtbPgS"
+    "5p6sR9JDlEu23ubXsWN21w4AAABoeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxl"
+    "LmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGUiLCAiZXhwaXJ5IjogMjAw"
+    "MDAwMDAwMCwgImlzU3ViZG9tYWluIjogdHJ1ZX0=";
+
+// Well-formed token, for match against third-party subdomain origins.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py example.com FrobulateThirdParty
+// --is-subdomain --is-third-party --expire-timestamp=2000000000
+const char kThirdPartySubdomainToken[] =
+    "A+rkIJ7LrKWl0fV+V4Wp5eolmX62Q8IAQgXvHV/DxKVsPjROQPuy9tMkrTgRdHto"
+    "xs/3G3UC4kONFRazlfmE7A8AAACIeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxl"
+    "LmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVUaGlyZFBhcnR5IiwgImV4"
+    "cGlyeSI6IDIwMDAwMDAwMDAsICJpc1N1YmRvbWFpbiI6IHRydWUsICJpc1RoaXJk"
+    "UGFydHkiOiB0cnVlfQ==";
+
+// Token for insecure third-party subdomain matching.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py http://example.com FrobulateThirdParty
+// --is-subdomain --is-third-party --expire-timestamp=2000000000
+const char kThirdPartyInsecureSubdomainToken[] =
+    "A09GOcBObv3Ltpr5tt+sKE16irURhADqX6p+cLIs/pHHmciM8QYJ2YT7JHqGoSsm"
+    "0sSNl8I7KCDSfPaRevse7AYAAACGeyJvcmlnaW4iOiAiaHR0cDovL2V4YW1wbGUu"
+    "Y29tOjgwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlVGhpcmRQYXJ0eSIsICJleHBp"
+    "cnkiOiAyMDAwMDAwMDAwLCAiaXNTdWJkb21haW4iOiB0cnVlLCAiaXNUaGlyZFBh"
+    "cnR5IjogdHJ1ZX0=";
 
 // This timestamp is set to a time after the expiry timestamp of kExpiredToken,
 // but before the expiry timestamp of kValidToken.
@@ -268,6 +333,7 @@ class TrialTokenValidatorTest : public testing::Test {
       : appropriate_origin_(url::Origin::Create(GURL(kAppropriateOrigin))),
         inappropriate_origin_(url::Origin::Create(GURL(kInappropriateOrigin))),
         insecure_origin_(url::Origin::Create(GURL(kInsecureOrigin))),
+        unrelated_origin_(url::Origin::Create(GURL(kUnrelatedOrigin))),
         valid_token_signature_(
             std::string(reinterpret_cast<const char*>(kSampleTokenSignature),
                         std::size(kSampleTokenSignature))),
@@ -303,9 +369,23 @@ class TrialTokenValidatorTest : public testing::Test {
 
   base::Time Now() { return base::Time::FromDoubleT(kNowTimestamp); }
 
+  TrialTokenValidator::OriginInfo WithInfo(const url::Origin& origin) const {
+    return TrialTokenValidator::OriginInfo(origin);
+  }
+
+  std::vector<TrialTokenValidator::OriginInfo> WithInfo(
+      base::span<const url::Origin> origins) const {
+    std::vector<TrialTokenValidator::OriginInfo> info;
+    for (const url::Origin& origin : origins) {
+      info.emplace_back(origin);
+    }
+    return info;
+  }
+
   const url::Origin appropriate_origin_;
   const url::Origin inappropriate_origin_;
   const url::Origin insecure_origin_;
+  const url::Origin unrelated_origin_;
 
   std::string valid_token_signature_;
   std::string expired_token_signature_;
@@ -316,133 +396,285 @@ class TrialTokenValidatorTest : public testing::Test {
   const TrialTokenValidator validator_;
 };
 
-TEST_F(TrialTokenValidatorTest, ValidateValidToken) {
-  TrialTokenResult result =
-      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+// Define two classes that wrap the ValidateToken and ValidateTokenAndTrial
+// methods respectively under a common name, so we can repeat the tests for each
+// function where it makes sense
+class ValidateTokenWrapper {
+ public:
+  explicit ValidateTokenWrapper(const blink::TrialTokenValidator& validator)
+      : validator_(validator) {}
+  virtual ~ValidateTokenWrapper() = default;
+
+  virtual TrialTokenResult Validate(base::StringPiece token,
+                                    const url::Origin& origin,
+                                    base::Time timestamp) const {
+    return validator_.ValidateToken(token, origin, timestamp);
+  }
+
+  virtual TrialTokenResult Validate(
+      base::StringPiece token,
+      const url::Origin& origin,
+      base::span<const url::Origin> script_origins,
+      base::Time timestamp) const {
+    return validator_.ValidateToken(token, origin, script_origins, timestamp);
+  }
+
+ protected:
+  const blink::TrialTokenValidator& validator_;
+};
+
+class ValidateTokenAndTrialWrapper : public ValidateTokenWrapper {
+ public:
+  explicit ValidateTokenAndTrialWrapper(
+      const blink::TrialTokenValidator& validator)
+      : ValidateTokenWrapper(validator) {}
+  ~ValidateTokenAndTrialWrapper() override = default;
+
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::Time timestamp) const override {
+    return validator_.ValidateTokenAndTrial(token, origin, timestamp);
+  }
+
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::span<const url::Origin> script_origins,
+                            base::Time timestamp) const override {
+    return validator_.ValidateTokenAndTrial(token, origin, script_origins,
+                                            timestamp);
+  }
+};
+
+class ValidateTokenAndTrialWithOriginInfoWrapper : public ValidateTokenWrapper {
+ public:
+  explicit ValidateTokenAndTrialWithOriginInfoWrapper(
+      const blink::TrialTokenValidator& validator)
+      : ValidateTokenWrapper(validator) {}
+  ~ValidateTokenAndTrialWithOriginInfoWrapper() override = default;
+
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::Time timestamp) const override {
+    return validator_.ValidateTokenAndTrialWithOriginInfo(
+        token, TrialTokenValidator::OriginInfo(origin), {}, timestamp);
+  }
+
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::span<const url::Origin> script_origins,
+                            base::Time timestamp) const override {
+    std::vector<TrialTokenValidator::OriginInfo> info;
+    for (const url::Origin& origin : script_origins) {
+      info.emplace_back(origin);
+    }
+    return validator_.ValidateTokenAndTrialWithOriginInfo(
+        token, TrialTokenValidator::OriginInfo(origin), info, timestamp);
+  }
+};
+// Factory classes that allows us to instantiate a parameterized test
+class ValidateTokenWrapperFactory {
+ public:
+  virtual ~ValidateTokenWrapperFactory() = default;
+  virtual std::unique_ptr<const ValidateTokenWrapper> CreateWrapper(
+      const blink::TrialTokenValidator& validator) const {
+    return std::make_unique<ValidateTokenWrapper>(validator);
+  };
+};
+
+class ValidateTokenAndTrialWrapperFactory : public ValidateTokenWrapperFactory {
+ public:
+  ~ValidateTokenAndTrialWrapperFactory() override = default;
+  std::unique_ptr<const ValidateTokenWrapper> CreateWrapper(
+      const blink::TrialTokenValidator& validator) const override {
+    return std::make_unique<ValidateTokenAndTrialWrapper>(validator);
+  };
+};
+
+class ValidateTokenAndTrialWithOriginInfoWrapperFactory
+    : public ValidateTokenWrapperFactory {
+ public:
+  ~ValidateTokenAndTrialWithOriginInfoWrapperFactory() override = default;
+  std::unique_ptr<const ValidateTokenWrapper> CreateWrapper(
+      const blink::TrialTokenValidator& validator) const override {
+    return std::make_unique<ValidateTokenAndTrialWithOriginInfoWrapper>(
+        validator);
+  };
+};
+
+// Test suite for tests where TrialTokenValidator::ValidateToken and
+// TrialTokenValidator::ValidateTokenAndTrial should yield the same result
+class TrialTokenValidatorEquivalenceTest
+    : public TrialTokenValidatorTest,
+      public testing::WithParamInterface<ValidateTokenWrapperFactory> {
+ public:
+  TrialTokenValidatorEquivalenceTest()
+      : validator_wrapper_(GetParam().CreateWrapper(validator_)) {
+    DCHECK(validator_wrapper_);
+  }
+
+  ~TrialTokenValidatorEquivalenceTest() noexcept override = default;
+
+  // Expose the |Validate| functions of the wrapper for shorter code in tests
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::Time timestamp) const {
+    return validator_wrapper_->Validate(token, origin, timestamp);
+  }
+
+  TrialTokenResult Validate(base::StringPiece token,
+                            const url::Origin& origin,
+                            base::span<const url::Origin> script_origins,
+                            base::Time timestamp) const {
+    return validator_wrapper_->Validate(token, origin, script_origins,
+                                        timestamp);
+  }
+
+ protected:
+  std::unique_ptr<const ValidateTokenWrapper> validator_wrapper_;
+};
+
+// Tests of the basic ValidateToken functionality where ValidateTokenAndTrial
+// should yield the same result
+// Using TrialTokenValidatorTest as prefix to allow for unified gtest_filter
+INSTANTIATE_TEST_SUITE_P(
+    TrialTokenValidatorTest,
+    TrialTokenValidatorEquivalenceTest,
+    testing::Values(ValidateTokenWrapperFactory(),
+                    ValidateTokenAndTrialWrapperFactory(),
+                    ValidateTokenAndTrialWithOriginInfoWrapperFactory()));
+
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateValidToken) {
+  TrialTokenResult result = Validate(kSampleToken, appropriate_origin_, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
   EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-  EXPECT_EQ(false, result.ParsedToken()->is_third_party());
+  EXPECT_FALSE(result.ParsedToken()->is_third_party());
 
   // All signing keys should be able to validate their tokens.
   TrialTokenResult result2 =
-      validator_.ValidateToken(kSampleToken2, appropriate_origin_, Now());
+      Validate(kSampleToken2, appropriate_origin_, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result2.Status());
   EXPECT_EQ(kAppropriateFeatureName, result2.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result2.ParsedToken()->expiry_time());
-  EXPECT_EQ(false, result2.ParsedToken()->is_third_party());
+  EXPECT_FALSE(result2.ParsedToken()->is_third_party());
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenFromExternalScript) {
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateThirdPartyToken) {
   url::Origin third_party_origins[] = {appropriate_origin_};
-  TrialTokenResult result = validator_.ValidateToken(
-      kThirdPartyToken, inappropriate_origin_, third_party_origins, Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
-  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  TrialTokenResult result = Validate(kThirdPartyToken, appropriate_origin_,
+                                     third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
 }
 
-TEST_F(TrialTokenValidatorTest,
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateThirdPartyTokenFromExternalScript) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  TrialTokenResult result = Validate(kThirdPartyToken, inappropriate_origin_,
+                                     third_party_origins, Now());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->is_third_party());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest,
        ValidateThirdPartyTokenFromMultipleExternalScripts) {
   url::Origin third_party_origins[] = {inappropriate_origin_,
                                        appropriate_origin_};
-  TrialTokenResult result = validator_.ValidateToken(
-      kThirdPartyToken, inappropriate_origin_, third_party_origins, Now());
+  TrialTokenResult result = Validate(kThirdPartyToken, inappropriate_origin_,
+                                     third_party_origins, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
-  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+  EXPECT_TRUE(result.ParsedToken()->is_third_party());
 }
 
-TEST_F(TrialTokenValidatorTest,
+TEST_P(TrialTokenValidatorEquivalenceTest,
        ValidateThirdPartyTokenFromInappropriateScriptOrigin) {
   url::Origin third_party_origins[] = {inappropriate_origin_};
   EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
-            validator_
-                .ValidateToken(kThirdPartyToken, appropriate_origin_,
-                               third_party_origins, Now())
+            Validate(kThirdPartyToken, appropriate_origin_, third_party_origins,
+                     Now())
                 .Status());
 }
 
-TEST_F(TrialTokenValidatorTest,
+TEST_P(TrialTokenValidatorEquivalenceTest,
        ValidateThirdPartyTokenFromMultipleInappropriateScriptOrigins) {
   url::Origin third_party_origins[] = {inappropriate_origin_, insecure_origin_};
   EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
-            validator_
-                .ValidateToken(kThirdPartyToken, appropriate_origin_,
-                               third_party_origins, Now())
+            Validate(kThirdPartyToken, appropriate_origin_, third_party_origins,
+                     Now())
                 .Status());
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenNotFromExternalScript) {
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateThirdPartyTokenNotFromExternalScript) {
   EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
-            validator_
-                .ValidateToken(kThirdPartyToken, appropriate_origin_,
-                               base::span<const url::Origin>{}, Now())
+            Validate(kThirdPartyToken, appropriate_origin_,
+                     base::span<const url::Origin>{}, Now())
                 .Status());
   std::vector<url::Origin> empty_origin_list;
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
-            validator_
-                .ValidateToken(kThirdPartyToken, appropriate_origin_,
-                               empty_origin_list, Now())
-                .Status());
+  EXPECT_EQ(
+      blink::OriginTrialTokenStatus::kWrongOrigin,
+      Validate(kThirdPartyToken, appropriate_origin_, empty_origin_list, Now())
+          .Status());
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateInappropriateOrigin) {
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateInappropriateOrigin) {
   TrialTokenResult inappropriate_result =
-      validator_.ValidateToken(kSampleToken, inappropriate_origin_, Now());
+      Validate(kSampleToken, inappropriate_origin_, Now());
   EXPECT_EQ(inappropriate_result.Status(),
             blink::OriginTrialTokenStatus::kWrongOrigin);
   EXPECT_NE(inappropriate_result.ParsedToken(), nullptr);
 
   TrialTokenResult insecure_result =
-      validator_.ValidateToken(kSampleToken, insecure_origin_, Now());
+      Validate(kSampleToken, insecure_origin_, Now());
   EXPECT_EQ(insecure_result.Status(),
             blink::OriginTrialTokenStatus::kWrongOrigin);
   EXPECT_NE(insecure_result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateInvalidSignature) {
-  TrialTokenResult result = validator_.ValidateToken(
-      kInvalidSignatureToken, appropriate_origin_, Now());
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateInvalidSignature) {
+  TrialTokenResult result =
+      Validate(kInvalidSignatureToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInvalidSignature);
   EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateUnparsableToken) {
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateUnparsableToken) {
   TrialTokenResult result =
-      validator_.ValidateToken(kUnparsableToken, appropriate_origin_, Now());
+      Validate(kUnparsableToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kMalformed);
   EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateExpiredToken) {
-  TrialTokenResult result =
-      validator_.ValidateToken(kExpiredToken, appropriate_origin_, Now());
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateExpiredToken) {
+  TrialTokenResult result = Validate(kExpiredToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
   EXPECT_NE(result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateValidTokenWithIncorrectKey) {
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateValidTokenWithIncorrectKey) {
   SetPublicKeys({kTestPublicKey2});
-  TrialTokenResult result =
-      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+  TrialTokenResult result = Validate(kSampleToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInvalidSignature);
   EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, PublicKeyNotAvailable) {
+TEST_P(TrialTokenValidatorEquivalenceTest, PublicKeyNotAvailable) {
   SetPublicKeys({});
-  TrialTokenResult result =
-      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+  TrialTokenResult result = Validate(kSampleToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kNotSupported);
   EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
-TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeatures) {
-  TrialTokenResult result =
-      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidatorRespectsDisabledFeatures) {
+  TrialTokenResult result = Validate(kSampleToken, appropriate_origin_, Now());
   // Disable an irrelevant feature; token should still validate
   DisableFeature(kInappropriateFeatureName);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
@@ -451,50 +683,44 @@ TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeatures) {
   // Disable the token's feature; it should no longer be valid
   DisableFeature(kAppropriateFeatureName);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kFeatureDisabled,
-            validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .Status());
+            Validate(kSampleToken, appropriate_origin_, Now()).Status());
 }
-TEST_F(TrialTokenValidatorTest,
+TEST_P(TrialTokenValidatorEquivalenceTest,
        ValidatorRespectsDisabledFeaturesForUserWithFirstPartyToken) {
   // Token should be valid if the feature is not disabled for user.
   TrialTokenResult result =
-      validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now());
+      Validate(kUsageSubsetToken, appropriate_origin_, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
   EXPECT_EQ(kAppropriateThirdPartyFeatureName,
             result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   // Token should be invalid when the feature is disabled for user.
   DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
-      validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now())
-          .Status());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
+            Validate(kUsageSubsetToken, appropriate_origin_, Now()).Status());
 }
 
-TEST_F(TrialTokenValidatorTest,
+TEST_P(TrialTokenValidatorEquivalenceTest,
        ValidatorRespectsDisabledFeaturesForUserWithThirdPartyToken) {
   // Token should be valid if the feature is not disabled for user.
   url::Origin third_party_origins[] = {appropriate_origin_};
-  TrialTokenResult result = validator_.ValidateToken(
-      kThirdPartyUsageSubsetToken, inappropriate_origin_, third_party_origins,
-      Now());
+  TrialTokenResult result =
+      Validate(kThirdPartyUsageSubsetToken, inappropriate_origin_,
+               third_party_origins, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
   EXPECT_EQ(kAppropriateThirdPartyFeatureName,
             result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   // Token should be invalid when the feature is disabled for user.
   DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
-      validator_
-          .ValidateToken(kThirdPartyUsageSubsetToken, inappropriate_origin_,
-                         third_party_origins, Now())
-          .Status());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
+            Validate(kThirdPartyUsageSubsetToken, inappropriate_origin_,
+                     third_party_origins, Now())
+                .Status());
 }
 
-TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledTokens) {
-  TrialTokenResult result =
-      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidatorRespectsDisabledTokens) {
+  TrialTokenResult result = Validate(kSampleToken, appropriate_origin_, Now());
   // Disable an irrelevant token; token should still validate
   DisableToken(expired_token_signature_);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
@@ -504,9 +730,98 @@ TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledTokens) {
   // Disable the token; it should no longer be valid
   DisableToken(valid_token_signature_);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kTokenDisabled,
-            validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .Status());
+            Validate(kSampleToken, appropriate_origin_, Now()).Status());
 }
+
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateValidExpiryGraceToken) {
+  // This token is valid one day before the end of the expiry grace period,
+  // even though it is past the token's expiry time.
+  auto current_time =
+      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
+  TrialTokenResult result =
+      Validate(kExpiryGracePeriodToken, appropriate_origin_, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateExpiredExpiryGraceToken) {
+  // This token is expired at the end of the expiry grace period.
+  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
+  TrialTokenResult result =
+      Validate(kExpiryGracePeriodToken, appropriate_origin_, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateValidExpiryGraceThirdPartyToken) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  // This token is valid one day before the end of the expiry grace period,
+  // even though it is past the token's expiry time.
+  auto current_time =
+      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
+  TrialTokenResult result =
+      Validate(kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
+               third_party_origins, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->is_third_party());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateExpiredExpiryGraceThirdPartyToken) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  // This token is expired at the end of the expiry grace period.
+  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
+  TrialTokenResult result =
+      Validate(kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
+               third_party_origins, current_time);
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->is_third_party());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateSubdomainToken) {
+  TrialTokenResult result =
+      Validate(kSubdomainToken, appropriate_origin_, {}, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->match_subdomains());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateSubdomainTokenUnrelatedOrigin) {
+  // A subdomain token should not match against an unrelated origin
+  TrialTokenResult result =
+      Validate(kSubdomainToken, unrelated_origin_, {}, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kWrongOrigin);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->match_subdomains());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest, ValidateThirdPartySubdomainToken) {
+  // Subdomain third-party tokens should validate even if the primary origin
+  // is unrelated and there are other, insecure, origins as well
+  url::Origin script_origins[] = {insecure_origin_, appropriate_origin_};
+  TrialTokenResult result = Validate(kThirdPartySubdomainToken,
+                                     unrelated_origin_, script_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->match_subdomains());
+}
+
+TEST_P(TrialTokenValidatorEquivalenceTest,
+       ValidateThirdPartySubdomainTokenInsecureOrigin) {
+  // Subdomain third-party tokens should not validate against insecure origins
+  url::Origin script_origins[] = {insecure_origin_};
+  TrialTokenResult result = Validate(kThirdPartySubdomainToken,
+                                     unrelated_origin_, script_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kWrongOrigin);
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_TRUE(result.ParsedToken()->match_subdomains());
+}
+
+// Tests of RequestEnablesFeature methods
 
 TEST_F(TrialTokenValidatorTest, ValidateRequestInsecure) {
   response_headers_->AddHeader("Origin-Trial", kInsecureOriginToken);
@@ -516,10 +831,10 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestInsecure) {
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateRequestForDeprecationInsecure) {
-  response_headers_->AddHeader("Origin-Trial", kInsecureOriginToken);
+  response_headers_->AddHeader("Origin-Trial", kDeprecationInsecureToken);
   EXPECT_TRUE(validator_.RequestEnablesDeprecatedFeature(
-      GURL(kInsecureOrigin), response_headers_.get(), kAppropriateFeatureName,
-      Now()));
+      GURL(kInsecureOrigin), response_headers_.get(),
+      kAppropriateDeprecationFeatureName, Now()));
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateRequestValidToken) {
@@ -576,61 +891,42 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestMultipleHeaderValues) {
       kAppropriateFeatureName, Now()));
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateValidExpiryGraceToken) {
-  // This token is valid one day before the end of the expiry grace period,
-  // even though it is past the token's expiry time.
-  auto current_time =
-      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
-  TrialTokenResult result = validator_.ValidateToken(
-      kExpiryGracePeriodToken, appropriate_origin_, current_time);
-  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+TEST_F(TrialTokenValidatorTest, ValidateRequestUnknownFeatureToken) {
+  response_headers_->AddHeader("Origin-Trial", kUnknownFeatureToken);
+  EXPECT_FALSE(validator_.RequestEnablesFeature(
+      GURL(kAppropriateOrigin), response_headers_.get(),
+      kInappropriateFeatureName, Now()));
 }
 
-TEST_F(TrialTokenValidatorTest, ValidateExpiredExpiryGraceToken) {
-  // This token is expired at the end of the expiry grace period.
-  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
-  TrialTokenResult result = validator_.ValidateToken(
-      kExpiryGracePeriodToken, appropriate_origin_, current_time);
-  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-}
-
-TEST_F(TrialTokenValidatorTest, ValidateValidExpiryGraceThirdPartyToken) {
-  url::Origin third_party_origins[] = {appropriate_origin_};
-  // This token is valid one day before the end of the expiry grace period,
-  // even though it is past the token's expiry time.
-  auto current_time =
-      kSampleTokenExpiryTime + kExpiryGracePeriod - base::Days(1);
-  TrialTokenResult result = validator_.ValidateToken(
-      kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
-      third_party_origins, current_time);
-  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
-}
-
-TEST_F(TrialTokenValidatorTest, ValidateExpiredExpiryGraceThirdPartyToken) {
-  url::Origin third_party_origins[] = {appropriate_origin_};
-  // This token is expired at the end of the expiry grace period.
-  auto current_time = kSampleTokenExpiryTime + kExpiryGracePeriod;
-  TrialTokenResult result = validator_.ValidateToken(
-      kExpiryGracePeriodThirdPartyToken, appropriate_origin_,
-      third_party_origins, current_time);
-  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
-  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
-}
+// Tests where ValidateToken and ValidateTokenAndTrial are expected
+// to yield different results.
+// These tests should test both |ValidateToken|, |ValidateTokenAndTrial|,
+// and |ValidateTokenAndTrialWithOriginInfo| to ensure all entry points
+// give the expected results
 
 TEST_F(TrialTokenValidatorTest, ValidateUnknownFeatureToken) {
+  // An unknown feature token can be valid, but the trial validation won't be
   TrialTokenResult result = validator_.ValidateToken(
       kUnknownFeatureToken, appropriate_origin_, Now());
   EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
   EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kUnknownFeatureToken,
+                                            appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kUnknownTrial);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kUnknownFeatureToken, WithInfo(appropriate_origin_), {}, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kUnknownTrial);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateUnknownFeatureThirdPartyToken) {
+  // An unknown feature token can be valid, but the trial validation won't be
   url::Origin third_party_origins[] = {appropriate_origin_};
   TrialTokenResult result =
       validator_.ValidateToken(kUnknownFeatureThirdPartyToken,
@@ -639,6 +935,258 @@ TEST_F(TrialTokenValidatorTest, ValidateUnknownFeatureThirdPartyToken) {
   EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+
+  result = validator_.ValidateTokenAndTrial(kUnknownFeatureThirdPartyToken,
+                                            appropriate_origin_,
+                                            third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kUnknownTrial);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kUnknownFeatureThirdPartyToken, WithInfo(appropriate_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kUnknownTrial);
+  EXPECT_EQ(kInappropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateInsecureToken) {
+  // An insecure token validates against an insecure origin, but only if the
+  // trial allows it
+  TrialTokenResult result =
+      validator_.ValidateToken(kInsecureOriginToken, insecure_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kInsecureOriginToken,
+                                            insecure_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  // Ensure the result is the same if we provide our own security information
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kInsecureOriginToken, WithInfo(insecure_origin_), {}, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateThirdPartyTokenForNonThirdPartyFeature) {
+  // A third-party token should validate against an appropriate third-party
+  // origin, but not if the trial doesn't allow for third-party tokens.
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  TrialTokenResult result =
+      validator_.ValidateToken(kThirdPartyTokenForNonThirdPartyTrial,
+                               appropriate_origin_, third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+
+  result = validator_.ValidateTokenAndTrial(
+      kThirdPartyTokenForNonThirdPartyTrial, appropriate_origin_,
+      third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kFeatureDisabled);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyTokenForNonThirdPartyTrial, WithInfo(appropriate_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kFeatureDisabled);
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateInsecureThirdPartyToken) {
+  // An insecure third-party token is valid against insecure origins,
+  // but only if the trial allows insecure tokens.
+  url::Origin third_party_origins[] = {insecure_origin_};
+  TrialTokenResult result =
+      validator_.ValidateToken(kThirdPartyInsecureToken, appropriate_origin_,
+                               third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kThirdPartyInsecureToken,
+                                            appropriate_origin_,
+                                            third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyInsecureToken, WithInfo(appropriate_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateInsecureThirdPartyTokenInsecureOrigin) {
+  // A third-party token should validate against an insecure primary origin
+  // and a secure third-party origin, but only if the trial allows
+  // for insecure origins in general
+  url::Origin third_party_origins[] = {inappropriate_origin_,
+                                       appropriate_origin_};
+  TrialTokenResult result = validator_.ValidateToken(
+      kThirdPartyToken, insecure_origin_, third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kThirdPartyToken, insecure_origin_,
+                                            third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyToken, WithInfo(insecure_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateInsecureThirdPartyTokenMultipleOrigins) {
+  // An insecure third-party token is valid against insecure origins,
+  // but only if the trial allows insecure tokens. And other, unrelated but
+  // secure third-party origins should not change this-.
+  url::Origin third_party_origins[] = {insecure_origin_, inappropriate_origin_};
+  TrialTokenResult result =
+      validator_.ValidateToken(kThirdPartyInsecureToken, appropriate_origin_,
+                               third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kThirdPartyInsecureToken,
+                                            appropriate_origin_,
+                                            third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyInsecureToken, WithInfo(appropriate_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenInsecureOrigin) {
+  // An insecure third-party subdomain token is valid against an insecure
+  // third-party subdomain, but not if the trial doesn't allow insecure origins.
+  url::Origin third_party_origins[] = {unrelated_origin_, insecure_origin_};
+  TrialTokenResult result =
+      validator_.ValidateToken(kThirdPartyInsecureSubdomainToken,
+                               appropriate_origin_, third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrial(kThirdPartyInsecureSubdomainToken,
+                                            appropriate_origin_,
+                                            third_party_origins, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+
+  result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyInsecureSubdomainToken, WithInfo(appropriate_origin_),
+      WithInfo(third_party_origins), Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+// Finally: Tests that only check the behaviour of
+// |ValidateTokenAndTrialWithOriginInfo| - these are the ones
+// that rely on changes in passing in specific OriginInfo
+
+TEST_F(TrialTokenValidatorTest, ValidateInsecureOriginInfo) {
+  TrialTokenValidator::OriginInfo insecure_origin_info(appropriate_origin_,
+                                                       false);
+  TrialTokenResult result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kSampleToken, insecure_origin_info, {}, Now());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kInsecure, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(false, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest, ValidateInsecureOriginThirdPartyOriginInfo) {
+  // Third-party tokens should not be secure if the primary origin is insecure
+  TrialTokenValidator::OriginInfo insecure_origin_info(appropriate_origin_,
+                                                       false);
+  url::Origin third_party_origins[] = {appropriate_origin_};
+  TrialTokenResult result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyToken, insecure_origin_info, WithInfo(third_party_origins),
+      Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateInsecureThirdPartyOriginThirdPartyOriginInfo) {
+  // Third-party tokens should not be secure if the third-party origin is
+  // insecure
+  TrialTokenValidator::OriginInfo insecure_origin_info(appropriate_origin_,
+                                                       false);
+  TrialTokenValidator::OriginInfo insecure_third_parties[] = {
+      insecure_origin_info};
+  TrialTokenResult result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyToken, WithInfo(appropriate_origin_), insecure_third_parties,
+      Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateMultipleInsecureThirdPartyOriginThirdPartyOriginInfo) {
+  // Third-party tokens should not be secure if the third-party origin is
+  // insecure, even if there are other, secure, third-party origins
+  TrialTokenValidator::OriginInfo insecure_origin_info(appropriate_origin_,
+                                                       false);
+
+  TrialTokenValidator::OriginInfo third_party_origins[] = {
+      WithInfo(inappropriate_origin_),  // Secure, but not appropriate
+      insecure_origin_info};
+  TrialTokenResult result = validator_.ValidateTokenAndTrialWithOriginInfo(
+      kThirdPartyToken, WithInfo(appropriate_origin_), third_party_origins,
+      Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInsecure);
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
 }
 
 }  // namespace blink::trial_token_validator_unittest

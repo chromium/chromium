@@ -290,10 +290,12 @@ void UnsentLogStore::TrimLogs() {
   std::vector<std::unique_ptr<LogInfo>> trimmed_list;
   size_t bytes_used = 0;
 
-  // The distance of the staged log from the end of the list of logs. Usually
-  // this is 0 (end of list). We mark so we can correct adjust the
-  // staged_log_index after log trimming.
-  size_t staged_index_distance = 0;
+  // The distance of the staged log from the end of the list of logs, which is
+  // usually 0 (end of list). This is used in case there is currently a staged
+  // log, which may or may not get trimmed. We want to keep track of the new
+  // position of the staged log after trimming so that we can update
+  // |staged_log_index_|.
+  absl::optional<size_t> staged_index_distance;
 
   // Reverse order, so newest ones are prioritized.
   for (int i = list_.size() - 1; i >= 0; --i) {
@@ -330,8 +332,14 @@ void UnsentLogStore::TrimLogs() {
   // We may need to adjust the staged index since the number of logs may be
   // reduced. However, we want to make sure not to change the index if there is
   // no log staged.
-  if (staged_log_index_ != -1) {
-    staged_log_index_ = list_.size() - 1 - staged_index_distance;
+  if (staged_index_distance.has_value()) {
+    staged_log_index_ = list_.size() - 1 - staged_index_distance.value();
+  } else {
+    // Set |staged_log_index_| to -1. It might already be -1. E.g., at the time
+    // we are trimming logs, there was no staged log. However, it is also
+    // possible that we trimmed away the staged log, so we need to update the
+    // index to -1.
+    staged_log_index_ = -1;
   }
 }
 

@@ -314,15 +314,15 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
         form_data_(form_data),
         client_(client),
         presaving_completed_callback_(std::move(presaving_completed_callback)),
-        password_save_manager_(
-            std::make_unique<password_manager::PasswordSaveManagerImpl>(
-                client)),
         metrics_recorder_(
             base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
                 client->IsCommittedMainFrameSecure(),
                 client->GetUkmSourceId(),
                 client->GetPrefs())),
-        votes_uploader_(client, true /* is_possible_change_password_form */) {
+        votes_uploader_(client, true /* is_possible_change_password_form */),
+        password_save_manager_(
+            std::make_unique<password_manager::PasswordSaveManagerImpl>(
+                client)) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     password_manager::PasswordFormDigest digest(
@@ -330,6 +330,9 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
         password_form_.signon_realm, password_form_.url);
     form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
         digest, client, true);
+
+    password_save_manager_->Init(client_, form_fetcher_.get(),
+                                 metrics_recorder_, &votes_uploader_);
   }
 
   // Password will be presaved when |form_fetcher_| completes fetching.
@@ -345,8 +348,6 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
 
   // password_manager::FormFetcher::Consumer
   void OnFetchCompleted() override {
-    password_save_manager_->Init(client_, form_fetcher_.get(),
-                                 metrics_recorder_, &votes_uploader_);
     password_save_manager_->PresaveGeneratedPassword(password_form_);
     password_save_manager_->CreatePendingCredentials(
         password_form_, &form_data_ /* observed_form */,
@@ -364,12 +365,12 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   // This callback will execute when presaving is completed.
   base::OnceCallback<void()> presaving_completed_callback_;
-  const std::unique_ptr<password_manager::PasswordSaveManager>
-      password_save_manager_;
+  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
   scoped_refptr<password_manager::PasswordFormMetricsRecorder>
       metrics_recorder_;
   password_manager::VotesUploader votes_uploader_;
-  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
+  const std::unique_ptr<password_manager::PasswordSaveManager>
+      password_save_manager_;
 };
 
 WebsiteLoginManagerImpl::WebsiteLoginManagerImpl(
@@ -465,7 +466,8 @@ absl::optional<std::string> WebsiteLoginManagerImpl::GeneratePassword(
   // TODO(crbug.com/1043132): Add support for non-main frames. If another
   // frame has a different origin than the main frame, passwords-related
   // features may not work.
-  auto* driver = factory->GetDriverForFrame(web_contents_->GetMainFrame());
+  auto* driver =
+      factory->GetDriverForFrame(web_contents_->GetPrimaryMainFrame());
   if (!driver) {
     return absl::nullopt;
   }

@@ -69,9 +69,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
-    : IOBuffer(capacity), capacity_(capacity), size_(0) {}
+    : IOBuffer(capacity), capacity_(capacity) {}
 
-QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() {}
+QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 
 void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
                                                      size_t buf_len) {
@@ -81,24 +81,18 @@ void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
   std::memcpy(data(), buffer, buf_len);
 }
 
-QuicChromiumPacketWriter::QuicChromiumPacketWriter() {}
-
 QuicChromiumPacketWriter::QuicChromiumPacketWriter(
     DatagramClientSocket* socket,
     base::SequencedTaskRunner* task_runner)
     : socket_(socket),
-      delegate_(nullptr),
-      packet_(
-          base::MakeRefCounted<ReusableIOBuffer>(quic::kMaxOutgoingPacketSize)),
-      write_in_progress_(false),
-      force_write_blocked_(false),
-      retry_count_(0) {
+      packet_(base::MakeRefCounted<ReusableIOBuffer>(
+          quic::kMaxOutgoingPacketSize)) {
   retry_timer_.SetTaskRunner(task_runner);
   write_callback_ = base::BindRepeating(
       &QuicChromiumPacketWriter::OnWriteComplete, weak_factory_.GetWeakPtr());
 }
 
-QuicChromiumPacketWriter::~QuicChromiumPacketWriter() {}
+QuicChromiumPacketWriter::~QuicChromiumPacketWriter() = default;
 
 void QuicChromiumPacketWriter::set_force_write_blocked(
     bool force_write_blocked) {

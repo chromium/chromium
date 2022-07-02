@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "components/viz/service/display/overlay_candidate_factory.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

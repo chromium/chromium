@@ -127,6 +127,10 @@ int ProtobufModelScorer::model_version() const {
   return model_.version();
 }
 
+int ProtobufModelScorer::dom_model_version() const {
+  return model_.dom_model_version();
+}
+
 bool Scorer::HasVisualTfLiteModel() const {
   return visual_tflite_model_.IsValid();
 }

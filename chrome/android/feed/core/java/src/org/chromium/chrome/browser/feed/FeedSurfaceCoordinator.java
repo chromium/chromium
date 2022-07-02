@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,9 +48,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -85,10 +81,10 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDelegate,
-                                               SwipeRefreshLayout.OnRefreshListener,
-                                               BackToTopBubbleScrollListener.ResultHandler,
-                                               SurfaceCoordinator, FeedAutoplaySettingsDelegate {
+public class FeedSurfaceCoordinator
+        implements FeedSurfaceProvider, FeedBubbleDelegate, SwipeRefreshLayout.OnRefreshListener,
+                   BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator,
+                   FeedAutoplaySettingsDelegate, HasContentListener, FeedContentFirstLoadWatcher {
     private static final String TAG = "FeedSurfaceCoordinator";
     private static final long DELAY_FEED_HEADER_IPH_MS = 50;
 
@@ -117,6 +113,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private FrameLayout mRootView;
     private boolean mIsActive;
     private int mHeaderCount;
+    private int mSectionHeaderIndex;
 
     // Used when Feed is enabled.
     private @Nullable Profile mProfile;
@@ -155,6 +152,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private BackToTopBubble mBackToTopBubble;
+
+    private boolean mWebFeedHasContent;
 
     /**
      * Provides the additional capabilities needed for the container view.
@@ -213,6 +212,20 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             ViewUtils.getRelativeLayoutPosition(mRootView, childView, pos);
             return pos[1];
         }
+    }
+
+    private class Scroller implements Runnable {
+        @Override
+        public void run() {
+            // The feed header may not be visible for smaller screens or landscape mode. Scroll
+            // to show the header after showing the IPH.
+            mMediator.scrollToViewIfNecessary(getSectionHeaderPosition());
+        }
+    }
+
+    // Returns the index of the section header (for you and following tab header).
+    private int getSectionHeaderPosition() {
+        return mSectionHeaderIndex;
     }
 
     /**
@@ -277,19 +290,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
         mSurfaceType = surfaceType;
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
-
-        TabModelObserver tabModelObserver = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                if (mReliabilityLogger != null) {
-                    mReliabilityLogger.onSwitchTabs();
-                }
-            }
-        };
-        tabModelSelector.getModel(/*incognito=*/false).addObserver(tabModelObserver);
-        // The feed isn't shown in incognito tabs, but we add the observer to record when the user
-        // switches to an incognito tab from the feed.
-        tabModelSelector.getModel(/*incognito=*/true).addObserver(tabModelObserver);
+        mWebFeedHasContent = false;
+        mSectionHeaderIndex = 0;
 
         Resources resources = mActivity.getResources();
 
@@ -346,6 +348,13 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mMediator.updateContent();
     }
 
+    @Override
+    public void hasContentChanged(@StreamKind int kind, boolean hasContent) {
+        if (kind == StreamKind.FOLLOWING) {
+            mWebFeedHasContent = hasContent;
+        }
+    }
+
     private void stopScrollTracking() {
         if (mScrollableContainerDelegate != null) {
             mScrollableContainerDelegate.removeScrollListener(mDependencyProvider);
@@ -357,10 +366,28 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mHandler.postDelayed(() -> {
             // The feed header may not be visible for smaller screens or landscape mode. Scroll to
             // show the header before showing the IPH.
-            mMediator.scrollToViewIfNecessary(1);
+            mMediator.scrollToViewIfNecessary(getSectionHeaderPosition());
             UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
             mSectionHeaderView.showHeaderIph(helper);
         }, DELAY_FEED_HEADER_IPH_MS);
+    }
+
+    public void maybeShowWebFeedAwarenessIph() {
+        if (mWebFeedHasContent && mSectionHeaderView.shouldUseWebFeedAwarenessIPH()) {
+            UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+            mSectionHeaderView.showWebFeedAwarenessIph(
+                    helper, StreamTabId.FOLLOWING, new Scroller());
+        }
+    }
+
+    @Override
+    public void nonNativeContentLoaded(@StreamKind int kind) {
+        // We want to show the web feed IPH on the first load of the FOR_YOU feed.
+        if (kind == StreamKind.FOR_YOU) {
+            // After the web feed content has loaded, we will know if we have any content, and it is
+            // safe to show the IPH.
+            maybeShowWebFeedAwarenessIph();
+        }
     }
 
     @Override
@@ -550,13 +577,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
     private RecyclerView setUpView() {
         mContentManager = new NtpListContentManager();
-        Context context = new ContextThemeWrapper(mActivity,
-                (mShowDarkBackground ? R.style.ThemeOverlay_Feed_Dark
-                                     : R.style.ThemeOverlay_Feed_Light));
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mDependencyProvider =
-                    new FeedSurfaceScopeDependencyProvider(mActivity, context, mShowDarkBackground);
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
+                    mActivity, mActivity, mShowDarkBackground);
 
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
             if (mScrollableContainerDelegate != null) {
@@ -580,7 +604,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             }
 
         } else {
-            mHybridListRenderer = new NativeViewListRenderer(context);
+            mHybridListRenderer = new NativeViewListRenderer(mActivity);
         }
 
         RecyclerView view;
@@ -589,7 +613,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
-            view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(context));
+            view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.
@@ -677,7 +701,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     FeedStream createFeedStream(@StreamKind int kind) {
         return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, kind, this,
-                mActionDelegate, mHelpAndFeedbackLauncher);
+                mActionDelegate, mHelpAndFeedbackLauncher, this /* FeedContentFirstLoadWatcher */);
     }
 
     private void setHeaders(List<View> headerViews) {
@@ -699,6 +723,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             mHeaderCount = headerList.size();
             mMediator.notifyHeadersChanged(mHeaderCount);
         }
+        // The section header is the last header to be added, save its index.
+        mSectionHeaderIndex = headerViews.size() - 1;
     }
 
     /** @return The {@link SectionHeaderListProperties} model for the Feed section header. */

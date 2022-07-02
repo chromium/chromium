@@ -50,6 +50,77 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
   return true;
 }
 
+bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
+                               bool& subtree_should_use_infinite_cull_rect) {
+  if (RuntimeEnabledFeatures::InfiniteCullRectEnabled())
+    return true;
+
+  if (subtree_should_use_infinite_cull_rect)
+    return true;
+
+  const LayoutObject& object = layer.GetLayoutObject();
+  bool is_printing = object.GetDocument().Printing();
+  if (IsA<LayoutView>(object) && !object.GetFrame()->ClipsContent() &&
+      // We use custom top cull rect per page when printing.
+      !is_printing) {
+    return true;
+  }
+
+  if (const auto* properties = object.FirstFragment().PaintProperties()) {
+    // Cull rects and clips can't be propagated across a filter which moves
+    // pixels, since the input of the filter may be outside the cull rect /
+    // clips yet still result in painted output.
+    if (properties->Filter() &&
+        properties->Filter()->HasFilterThatMovesPixels() &&
+        // However during printing, we don't want filter outset to cross page
+        // boundaries. This also avoids performance issue because the PDF
+        // renderer is super slow for big filters.
+        !is_printing) {
+      return true;
+    }
+
+    // Cull rect mapping doesn't work under perspective in some cases.
+    // See http://crbug.com/887558 for details.
+    if (properties->Perspective()) {
+      subtree_should_use_infinite_cull_rect = true;
+      return true;
+    }
+
+    const TransformPaintPropertyNode* transform_nodes[] = {
+        properties->Transform(), properties->Offset(), properties->Scale(),
+        properties->Rotate(), properties->Translate()};
+    for (const auto* transform : transform_nodes) {
+      if (!transform)
+        continue;
+
+      // A CSS transform can also have perspective like
+      // "transform: perspective(100px) rotateY(45deg)". In these cases, we
+      // also want to skip cull rect mapping. See http://crbug.com/887558 for
+      // details.
+      if (!transform->IsIdentityOr2DTranslation() &&
+          transform->Matrix().HasPerspective()) {
+        subtree_should_use_infinite_cull_rect = true;
+        return true;
+      }
+
+      // Ensure content under animating transforms is not culled out.
+      if (transform->HasActiveTransformAnimation())
+        return true;
+
+      // As an optimization, skip cull rect updating for non-composited
+      // transforms which have already been painted. This is because the cull
+      // rect update, which needs to do complex mapping of the cull rect, can
+      // be more expensive than over-painting.
+      if (!transform->HasDirectCompositingReasons() &&
+          layer.PreviousPaintResult() == kFullyPainted) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 }  // anonymous namespace
 
 void CullRectUpdater::Update() {
@@ -73,8 +144,8 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 
   root_state_ =
       object.View()->FirstFragment().LocalBorderBoxProperties().Unalias();
-  bool should_use_infinite =
-      PaintLayerPainter(starting_layer_).ShouldUseInfiniteCullRect();
+  bool should_use_infinite = ShouldUseInfiniteCullRect(
+      starting_layer_, subtree_should_use_infinite_cull_rect_);
   auto& fragment = object.GetMutableForPainting().FirstFragment();
   SetFragmentCullRect(
       starting_layer_, fragment,
@@ -109,6 +180,10 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
   // subtree.
   base::AutoReset<bool> reset_force_update(&force_proactive_update_,
                                            force_proactive_update_);
+  // Similarly for subtree_should_use_infinite_cull_rect_.
+  base::AutoReset<bool> reset_subtree_infinite_cull_rect(
+      &subtree_should_use_infinite_cull_rect_,
+      subtree_should_use_infinite_cull_rect_);
 
   if (force_update_self || should_proactively_update ||
       layer.NeedsCullRectUpdate())
@@ -216,20 +291,20 @@ bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
   // the same pagination container, then try to match fragments from
   // |parent_painting_layer| to |layer|, so that any fragment clip for
   // |parent_painting_layer|'s fragment matches |layer|'s. Note we check both
-  // ShouldFragmentCompositedBounds() and next fragment here because the former
+  // EnclosingPaginationLayer() and next fragment here because the former
   // may return false even if |layer| is fragmented, e.g. for fixed-position
   // objects in paged media, and the next fragment can be null even if the first
   // fragment is actually in a fragmented context when the current layer appears
   // in only one of the multiple fragments of the pagination container.
   bool is_fragmented =
-      layer.ShouldFragmentCompositedBounds() || first_fragment.NextFragment();
+      layer.EnclosingPaginationLayer() || first_fragment.NextFragment();
   bool should_match_fragments =
       is_fragmented && parent_painting_layer.EnclosingPaginationLayer() ==
                            layer.EnclosingPaginationLayer();
   bool force_update_children = false;
   bool should_use_infinite_cull_rect =
       !subtree_is_out_of_cull_rect_ &&
-      PaintLayerPainter(layer).ShouldUseInfiniteCullRect();
+      ShouldUseInfiniteCullRect(layer, subtree_should_use_infinite_cull_rect_);
 
   for (auto* fragment = &first_fragment; fragment;
        fragment = fragment->NextFragment()) {
@@ -387,30 +462,26 @@ void CullRectUpdater::PaintPropertiesChanged(
   if (!needs_cull_rect_update) {
     // For cases that the transform change can be directly updated, we should
     // use infinite cull rect to avoid cull rect change and repaint.
+    bool subtree_should_use_infinite_cull_rect = false;
     DCHECK(properties_changed.transform_changed !=
                PaintPropertyChangeType::kChangedOnlyCompositedValues ||
            object.IsSVGChild() ||
-           PaintLayerPainter(painting_layer).ShouldUseInfiniteCullRect());
+           ShouldUseInfiniteCullRect(painting_layer,
+                                     subtree_should_use_infinite_cull_rect));
     return;
   }
 
   if (object.HasLayer()) {
     To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
     if (object.IsLayoutView() &&
-        object.GetFrameView()->HasViewportConstrainedObjects()) {
+        object.GetFrameView()->HasFixedPositionObjects()) {
       // Fixed-position cull rects depend on view clip. See
       // ComputeFragmentCullRect().
       if (const auto* clip_node =
               object.FirstFragment().PaintProperties()->OverflowClip()) {
         if (clip_node->NodeChanged() != PaintPropertyChangeType::kUnchanged) {
-          for (auto constrained :
-               *object.GetFrameView()->ViewportConstrainedObjects()) {
-            if (constrained->IsFixedPositioned()) {
-              To<LayoutBoxModelObject>(constrained.Get())
-                  ->Layer()
-                  ->SetNeedsCullRectUpdate();
-            }
-          }
+          for (auto fixed : *object.GetFrameView()->FixedPositionObjects())
+            To<LayoutBox>(fixed.Get())->Layer()->SetNeedsCullRectUpdate();
         }
       }
     }

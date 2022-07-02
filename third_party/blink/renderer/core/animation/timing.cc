@@ -176,7 +176,6 @@ ComputedEffectTiming* Timing::getComputedTiming(
 
 Timing::CalculatedTiming Timing::CalculateTimings(
     absl::optional<AnimationTimeDelta> local_time,
-    absl::optional<Phase> timeline_phase,
     bool at_progress_timeline_boundary,
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
@@ -186,7 +185,7 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase =
-      CalculatePhase(normalized_timing, local_time, timeline_phase,
+      CalculatePhase(normalized_timing, local_time,
                      at_progress_timeline_boundary, animation_direction);
 
   const absl::optional<AnimationTimeDelta> active_time = CalculateActiveTime(

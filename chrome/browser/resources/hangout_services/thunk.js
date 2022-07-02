@@ -222,6 +222,12 @@ function onChooseDesktopMediaPort(port) {
     const method = message['method'];
     if (method === 'chooseDesktopMedia') {
       const sources = message['sources'];
+
+      // Options that getDisplayMedia() also has, which are applied *before*
+      // the user makes their choice, and which typically serve to shape
+      // the choice offered to the user.
+      const options = message['options'] || {systemAudio: 'include'};
+
       let cancelId = null;
       const tab = port.sender.tab;
       if (tab) {
@@ -230,12 +236,13 @@ function onChooseDesktopMediaPort(port) {
         // the <iframe>, even though it doesn't really load the new url.
         tab.url = port.sender.url;
         cancelId = chrome.desktopCapture.chooseDesktopMedia(
-            sources, tab, sendResponse);
+            sources, tab, options, sendResponse);
       } else {
         const requestInfo = {};
         requestInfo['guestProcessId'] = port.sender.guestProcessId || 0;
         requestInfo['guestRenderFrameId'] =
             port.sender.guestRenderFrameRoutingId || 0;
+        // TODO(crbug.com/1329129): Plumb systemAudio and other options here.
         cancelId = chrome.webrtcDesktopCapturePrivate.chooseDesktopMedia(
             sources, requestInfo, sendResponse);
       }

@@ -38,13 +38,13 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -199,11 +199,15 @@ void PerformClick(content::WebContents* contents, int x, int y) {
   click_event.button = blink::WebMouseEvent::Button::kLeft;
   click_event.click_count = 1;
   click_event.SetPositionInWidget(x, y);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
+  contents->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(click_event);
   click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      click_event);
+  contents->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(click_event);
 }
 
 class ExtensionPolicyTest : public ExtensionPolicyTestBase {
@@ -2341,11 +2345,20 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
 }
 
 class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
-    : public WebAppInstallForceListPolicyTest {
+    : public WebAppInstallForceListPolicyTest,
+      public testing::WithParamInterface<bool> {
  public:
   WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() {
     test_page_ = "/close-socket";
     fallback_app_name_ = "fallback app name";
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
   }
 
   ~WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() override =
@@ -2356,9 +2369,12 @@ class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
   WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest& operator=(
       const WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest&) =
       delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
     StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
@@ -2371,15 +2387,16 @@ IN_PROC_BROWSER_TEST_F(
     app_id = install_observer.BeginListeningAndWait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
-
-  std::unique_ptr<web_app::ExternallyInstalledWebAppPrefs>
-      externally_installed_app_prefs =
-          std::make_unique<web_app::ExternallyInstalledWebAppPrefs>(
-              browser()->profile()->GetPrefs());
-  ASSERT_TRUE(
-      externally_installed_app_prefs->LookupPlaceholderAppId(policy_app_url_)
-          .has_value());
+  ASSERT_TRUE(registrar
+                  .LookupPlaceholderAppId(policy_app_url_,
+                                          web_app::WebAppManagement::kPolicy)
+                  .has_value());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
+    ::testing::Bool());
 
 // Fixture for tests that have two profiles with a different policy for each.
 class ExtensionPolicyTest2Contexts : public PolicyTest {

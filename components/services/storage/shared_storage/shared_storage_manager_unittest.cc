@@ -969,7 +969,7 @@ TEST_P(SharedStorageManagerParamTest, BasicOperations) {
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value2");
 
   EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin1, u"key1"));
-  EXPECT_FALSE(GetSync(kOrigin1, u"key1").data);
+  EXPECT_EQ(OperationResult::kKeyNotFound, GetSync(kOrigin1, u"key1").result);
 }
 
 TEST_P(SharedStorageManagerParamTest, IgnoreIfPresent) {

@@ -155,6 +155,13 @@ void MockClientCommandBuffer::DelegateToFake() {
           this, &FakeCommandBufferServiceBase::DestroyTransferBufferHelper));
 }
 
+void MockClientCommandBuffer::ForceLostContext(
+    error::ContextLostReason reason) {
+  // TODO(kbr): add a test for a call to this method.
+  SetParseError(error::kLostContext);
+  SetContextLostReason(reason);
+}
+
 MockClientCommandBufferMockFlush::MockClientCommandBufferMockFlush() {
   DelegateToFake();
 }

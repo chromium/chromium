@@ -1543,6 +1543,28 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
   OnClosePrintPreviewDialog();
 }
 
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewInvalidPageRange) {
+  LoadHTML(kHelloWorldHTML);
+
+  // Request a page beyond the end of document and assure we get the entire
+  // document back.
+  base::Value::Dict page_range;
+  page_range.Set(kSettingPageRangeFrom, 2);
+  page_range.Set(kSettingPageRangeTo, 2);
+  base::Value::List page_range_array;
+  page_range_array.Append(std::move(page_range));
+  print_settings().Set(kSettingPageRange, std::move(page_range_array));
+
+  OnPrintPreview();
+
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  OnClosePrintPreviewDialog();
+}
+
 // Test to verify that preview generated only for one page.
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
   LoadHTML(kMultipageHTML);

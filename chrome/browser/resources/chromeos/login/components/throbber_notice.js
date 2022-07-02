@@ -27,6 +27,15 @@ class ThrobberNotice extends ThrobberNoticeBase {
   constructor() {
     super();
   }
+
+  /**
+   * Returns the a11y message to be shown on this throbber, if the textkey is set.
+   * @param {string} locale
+   * @returns
+   */
+  getAriaLabel(locale) {
+    return (!this.textKey) ? '' : this.i18n(this.textKey);
+  }
 }
 
 customElements.define(ThrobberNotice.is, ThrobberNotice);

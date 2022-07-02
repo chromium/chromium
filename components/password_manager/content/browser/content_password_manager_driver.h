@@ -54,6 +54,7 @@ class ContentPasswordManagerDriver
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
           pending_receiver);
+  void UnbindReceiver();
 
   // PasswordManagerDriver implementation.
   int GetId() const override;

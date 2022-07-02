@@ -44,7 +44,7 @@ promise_test(async () => {
   await mouseMoveTo(x, y);
   const pixelsToScroll = 40;
   await smoothScroll(
-    pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT
+    pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT, !isPercentBasedScrollingEnabled()
   );
 
   if (isPercentBasedScrollingEnabled()) {

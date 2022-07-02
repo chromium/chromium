@@ -8,16 +8,18 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
-#include "chromeos/components/human_presence/human_presence_internals.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_internals.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
-#include "chromeos/grit/chromeos_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -45,8 +47,8 @@ class HumanPresenceInternalsUIMessageHandler
   void OnJavascriptDisallowed() override;
 
   // chromeos::HumanPresenceDBusClient::Observer implementation.
-  void OnHpsSenseChanged(hps::HpsResult state) override;
-  void OnHpsNotifyChanged(hps::HpsResult state) override;
+  void OnHpsSenseChanged(const hps::HpsResultProto&) override;
+  void OnHpsNotifyChanged(const hps::HpsResultProto&) override;
   void OnRestart() override;
   void OnShutdown() override;
 
@@ -60,8 +62,10 @@ class HumanPresenceInternalsUIMessageHandler
   void QuerySnoopingProtection(const base::Value::List& args);
 
   void OnConnected(bool connected);
-  void OnLockOnLeaveResult(absl::optional<hps::HpsResult>);
-  void OnSnoopingProtectionResult(absl::optional<hps::HpsResult>);
+  void OnLockOnLeaveResult(absl::optional<hps::HpsResultProto>);
+  void OnSnoopingProtectionResult(absl::optional<hps::HpsResultProto>);
+  static absl::optional<std::string> ReadManifest();
+  void UpdateManifest(absl::optional<std::string> manifest);
 
   base::ScopedObservation<chromeos::HumanPresenceDBusClient,
                           chromeos::HumanPresenceDBusClient::Observer>
@@ -79,20 +83,22 @@ HumanPresenceInternalsUIMessageHandler::
     ~HumanPresenceInternalsUIMessageHandler() = default;
 
 void HumanPresenceInternalsUIMessageHandler::OnHpsSenseChanged(
-    hps::HpsResult state) {
+    const hps::HpsResultProto& state) {
   OnLockOnLeaveResult(state);
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnHpsNotifyChanged(
-    hps::HpsResult state) {
+    const hps::HpsResultProto& state) {
   OnSnoopingProtectionResult(state);
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
-    absl::optional<hps::HpsResult> state) {
+    absl::optional<hps::HpsResultProto> state) {
   base::DictionaryValue value;
   if (state.has_value()) {
-    value.SetInteger("state", *state);
+    value.SetInteger("state", state->value());
+    value.SetInteger("inference_result", state->inference_result());
+    value.SetInteger("inference_result_valid", state->inference_result_valid());
   } else {
     value.SetBoolean("disabled", true);
   }
@@ -100,10 +106,12 @@ void HumanPresenceInternalsUIMessageHandler::OnLockOnLeaveResult(
 }
 
 void HumanPresenceInternalsUIMessageHandler::OnSnoopingProtectionResult(
-    absl::optional<hps::HpsResult> state) {
+    absl::optional<hps::HpsResultProto> state) {
   base::DictionaryValue value;
   if (state.has_value()) {
-    value.SetInteger("state", *state);
+    value.SetInteger("state", state->value());
+    value.SetInteger("inference_result", state->inference_result());
+    value.SetInteger("inference_result_valid", state->inference_result_valid());
   } else {
     value.SetBoolean("disabled", true);
   }
@@ -135,6 +143,36 @@ void HumanPresenceInternalsUIMessageHandler::OnConnected(bool connected) {
   base::DictionaryValue value;
   value.SetBoolean("connected", connected);
   FireWebUIListener(hps::kHumanPresenceInternalsConnectedEvent, value);
+
+  if (connected) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&HumanPresenceInternalsUIMessageHandler::ReadManifest),
+        base::BindOnce(&HumanPresenceInternalsUIMessageHandler::UpdateManifest,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+// static
+absl::optional<std::string>
+HumanPresenceInternalsUIMessageHandler::ReadManifest() {
+  std::string manifest;
+  const base::FilePath::CharType kManifestPath[] =
+      FILE_PATH_LITERAL("/usr/lib/firmware/hps/manifest.txt");
+  if (!base::ReadFileToString(base::FilePath(kManifestPath), &manifest))
+    return absl::nullopt;
+  return manifest;
+}
+
+void HumanPresenceInternalsUIMessageHandler::UpdateManifest(
+    absl::optional<std::string> manifest) {
+  if (!manifest.has_value()) {
+    FireWebUIListener(hps::kHumanPresenceInternalsManifestEvent,
+                      base::Value("(Failed to read manifest)"));
+    return;
+  }
+  FireWebUIListener(hps::kHumanPresenceInternalsManifestEvent,
+                    base::Value(*manifest));
 }
 
 void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(
@@ -145,6 +183,7 @@ void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(
     return;
   }
   hps::FeatureConfig config(*hps::GetEnableLockOnLeaveConfig());
+  config.set_report_raw_results(true);
   chromeos::HumanPresenceDBusClient::Get()->EnableHpsSense(config);
 }
 
@@ -171,6 +210,7 @@ void HumanPresenceInternalsUIMessageHandler::EnableSnoopingProtection(
     return;
   }
   hps::FeatureConfig config(*hps::GetEnableSnoopingProtectionConfig());
+  config.set_report_raw_results(true);
   chromeos::HumanPresenceDBusClient::Get()->EnableHpsNotify(config);
 }
 

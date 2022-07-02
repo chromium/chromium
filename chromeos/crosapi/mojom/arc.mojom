@@ -11,31 +11,31 @@ import "ui/gfx/image/mojom/image.mojom";
 // TODO(crbug.com/1268687): It should be migrated to AppService in the future.
 
 // The status in ash-chrome side. Return with the result.
-[Stable]
+[Stable, Extensible]
 enum RequestActivityIconsStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
 
   // Ended with error to connect to ARC in ash-chrome.
-  kArcNotAvailable,
+  [Default] kArcNotAvailable,
 };
 
-[Stable]
+[Stable, Extensible]
 enum RequestTextSelectionActionsStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
 
   // Ended with error to connect to ARC in ash-chrome.
-  kArcNotAvailable,
+  [Default] kArcNotAvailable,
 };
 
-[Stable]
+[Stable, Extensible]
 enum RequestUrlHandlerListStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
 
   // Ended with error to connect to ARC in ash-chrome.
-  kArcNotAvailable,
+  [Default]kArcNotAvailable,
 };
 
 [Stable, Extensible]

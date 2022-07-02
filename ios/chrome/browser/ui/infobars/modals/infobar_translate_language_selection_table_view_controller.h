@@ -13,7 +13,7 @@
 
 // InfobarTranslateLanguageSelectionTableViewController represents the content
 // for selecting a different source or target language depending on
-// |sourceLanguage| passed in the init method.
+// `sourceLanguage` passed in the init method.
 @interface InfobarTranslateLanguageSelectionTableViewController
     : ChromeTableViewController <InfobarTranslateLanguageSelectionConsumer>
 

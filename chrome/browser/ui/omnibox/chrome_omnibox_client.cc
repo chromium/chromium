@@ -170,6 +170,11 @@ int ChromeOmniboxClient::GetHttpsPortForTesting() const {
   return TypedNavigationUpgradeThrottle::GetHttpsPortForTesting();
 }
 
+bool ChromeOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  // Tests on desktop/Android always use a real HTTPS server.
+  return false;
+}
+
 gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   TemplateURLService* service =
@@ -260,7 +265,8 @@ void ChromeOmniboxClient::OnResultChanged(
   if (should_preload) {
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnResultChanged(result);
+      search_prefetch_service->OnResultChanged(controller_->GetWebContents(),
+                                               result);
     }
   }
 
@@ -276,19 +282,6 @@ void ChromeOmniboxClient::OnResultChanged(
   int result_index = -1;
   for (const AutocompleteMatch& match : result) {
     ++result_index;
-
-    // Trigger prerendering only if `should_preload` is set to true. Caller
-    // uses this parameter to explicitly allow embedders to preload (currently,
-    // prefetch or prerender). A typical scenario is that the caller will only
-    // set it to true if the results will not change, to ensure that the
-    // preload operation is not triggered for the same input repeatedly.
-    // TODO(https://crbug.com/1295170): Migrate this part to
-    // SearchPrefetchService, to unify pre* operations.
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        should_preload && BaseSearchProvider::ShouldPrerender(match)) {
-      DoPrerender(match);
-    }
-
     if (match.ImageUrl().is_empty()) {
       continue;
     }
@@ -429,6 +422,15 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
 void ChromeOmniboxClient::FocusWebContents() {
   if (controller_->GetWebContents())
     controller_->GetWebContents()->Focus();
+}
+
+void ChromeOmniboxClient::OnSelectedMatchChanged(
+    size_t index,
+    const AutocompleteMatch& match) {
+  if (SearchPrefetchService* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    search_prefetch_service->MaybePrefetchLikelyMatch(index, match);
+  }
 }
 
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {

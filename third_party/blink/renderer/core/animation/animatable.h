@@ -45,6 +45,10 @@ class ScriptState;
 class ScriptValue;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 
+struct GetAnimationsOptionsResolved {
+  bool use_subtree;
+};
+
 // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
 class CORE_EXPORT Animatable {
  public:
@@ -62,6 +66,9 @@ class CORE_EXPORT Animatable {
 
   HeapVector<Member<Animation>> getAnimations(
       GetAnimationsOptions* options = nullptr);
+
+  HeapVector<Member<Animation>> GetAnimationsInternal(
+      GetAnimationsOptionsResolved options);
 };
 
 }  // namespace blink

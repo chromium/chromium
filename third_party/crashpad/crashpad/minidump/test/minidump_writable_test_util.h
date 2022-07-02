@@ -59,6 +59,17 @@ const void* MinidumpWritableAtLocationDescriptorInternal(
     size_t expected_size,
     bool allow_oversized_data);
 
+//! \brief 64-bit specialization of
+//! MinidumpWritableAtLocationDescriptorInternal.
+//!
+//! Do not call this function. Use the typed version,
+//! MinidumpWritableAtLocationDescriptor<>(), or another type-specific function.
+const void* MinidumpWritableAtLocationDescriptorInternal(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR64& location,
+    size_t expected_size,
+    bool allow_oversized_data);
+
 //! \brief A traits class defining whether a minidump object type is required to
 //!     appear only as a fixed-size object or if it is variable-sized.
 //!
@@ -90,6 +101,7 @@ MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_MEMORY_LIST);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_MODULE_LIST);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_UNLOADED_MODULE_LIST);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_THREAD_LIST);
+MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_THREAD_NAME_LIST);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_HANDLE_DATA_STREAM);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_MEMORY_INFO_LIST);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MinidumpModuleCrashpadInfoList);
@@ -134,6 +146,22 @@ const T* TMinidumpWritableAtLocationDescriptor(
           MinidumpWritableTraits<T>::kAllowOversizedData));
 }
 
+//! \brief 64-bit specialization of TMinidumpWritableAtLocationDescriptor.
+//!
+//! Do not call this function directly. Use
+//! MinidumpWritableAtLocationDescriptor<>() instead.
+template <typename T>
+const T* TMinidumpWritableAtLocationDescriptor(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR64& location) {
+  return reinterpret_cast<const T*>(
+      MinidumpWritableAtLocationDescriptorInternal(
+          file_contents,
+          location,
+          sizeof(T),
+          MinidumpWritableTraits<T>::kAllowOversizedData));
+}
+
 //! \brief Returns a typed minidump object located within a minidump file’s
 //!     contents, where the offset and size of the object are known.
 //!
@@ -141,7 +169,8 @@ const T* TMinidumpWritableAtLocationDescriptor(
 //! checking than the default implementation:
 //!  - With a MINIDUMP_HEADER template parameter, a template specialization
 //!    ensures that the structure’s magic number and version fields are correct.
-//!  - With a MINIDUMP_MEMORY_LIST, MINIDUMP_THREAD_LIST, MINIDUMP_MODULE_LIST,
+//!  - With a MINIDUMP_MEMORY_LIST, MINIDUMP_THREAD_LIST,
+//!    MINIDUMP_THREAD_NAME_LIST, MINIDUMP_MODULE_LIST,
 //!    MINIDUMP_MEMORY_INFO_LIST, MinidumpSimpleStringDictionary, or
 //!    MinidumpAnnotationList template parameter, template specializations
 //!    ensure that the size given by \a location matches the size expected of a
@@ -165,6 +194,14 @@ template <typename T>
 const T* MinidumpWritableAtLocationDescriptor(
     const std::string& file_contents,
     const MINIDUMP_LOCATION_DESCRIPTOR& location) {
+  return TMinidumpWritableAtLocationDescriptor<T>(file_contents, location);
+}
+
+//! \brief 64-bit specialization of MinidumpWritableAtLocationDescriptor.
+template <typename T>
+const T* MinidumpWritableAtLocationDescriptor(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR64& location) {
   return TMinidumpWritableAtLocationDescriptor<T>(file_contents, location);
 }
 
@@ -199,6 +236,12 @@ MinidumpWritableAtLocationDescriptor<MINIDUMP_UNLOADED_MODULE_LIST>(
 template <>
 const MINIDUMP_THREAD_LIST*
 MinidumpWritableAtLocationDescriptor<MINIDUMP_THREAD_LIST>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
+
+template <>
+const MINIDUMP_THREAD_NAME_LIST*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_THREAD_NAME_LIST>(
     const std::string& file_contents,
     const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
@@ -265,6 +308,15 @@ MinidumpWritableAtLocationDescriptor<MinidumpAnnotationList>(
 template <typename T>
 const T* MinidumpWritableAtRVA(const std::string& file_contents, RVA rva) {
   MINIDUMP_LOCATION_DESCRIPTOR location;
+  location.DataSize = sizeof(T);
+  location.Rva = rva;
+  return MinidumpWritableAtLocationDescriptor<T>(file_contents, location);
+}
+
+//! \brief 64-bit specialization of MinidumpWritableAtRVA.
+template <typename T>
+const T* MinidumpWritableAtRVA(const std::string& file_contents, RVA64 rva) {
+  MINIDUMP_LOCATION_DESCRIPTOR64 location;
   location.DataSize = sizeof(T);
   location.Rva = rva;
   return MinidumpWritableAtLocationDescriptor<T>(file_contents, location);

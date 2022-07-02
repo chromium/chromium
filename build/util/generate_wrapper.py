@@ -43,6 +43,7 @@ SCRIPT_TEMPLATES = {
 PY_TEMPLATE = textwrap.dedent("""\
     import os
     import re
+    import shlex
     import subprocess
     import sys
 
@@ -104,6 +105,13 @@ PY_TEMPLATE = textwrap.dedent("""\
         outdir = os.environ['ISOLATED_OUTDIR']
       return outdir, remaining_args
 
+    def InsertWrapperScriptArgs(args):
+      i = 0
+      while i < len(args):
+        if args[i] == '--wrapper-script-args':
+          args.insert(i + 1, "'%s'" % shlex.join(s for s in sys.argv))
+          break
+        i += 1
 
     def FilterIsolatedOutdirBasedArgs(outdir, args):
       rargs = []
@@ -142,6 +150,7 @@ PY_TEMPLATE = textwrap.dedent("""\
       executable_path = ExpandWrappedPath('{executable_path}')
       outdir, remaining_args = FindIsolatedOutdir(raw_args)
       args = {executable_args}
+      InsertWrapperScriptArgs(args)
       args = FilterIsolatedOutdirBasedArgs(outdir, args)
       executable_args = ExpandWrappedPaths(args)
       cmd = [executable_path] + args + remaining_args

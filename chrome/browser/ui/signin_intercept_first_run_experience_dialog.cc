@@ -287,8 +287,7 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   const signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
-  signin_metrics::RecordSigninUserActionForAccessPoint(access_point,
-                                                       promo_action);
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,
@@ -374,7 +373,7 @@ void SigninInterceptFirstRunExperienceDialog::PreloadProfileCustomizationUI() {
   DCHECK(web_ui);
   web_ui->Initialize(
       base::BindOnce(&SigninInterceptFirstRunExperienceDialog::
-                         OnProfileCustomizationDoneButtonClicked,
+                         ProfileCustomizationCloseOnCompletion,
                      // Unretained is fine because `this` owns the web contents.
                      base::Unretained(this)));
 }
@@ -398,7 +397,15 @@ void SigninInterceptFirstRunExperienceDialog::OnSyncedThemeReady(
 }
 
 void SigninInterceptFirstRunExperienceDialog::
-    OnProfileCustomizationDoneButtonClicked() {
-  RecordDialogEvent(DialogEvent::kProfileCustomizationClickDone);
+    ProfileCustomizationCloseOnCompletion(
+        ProfileCustomizationHandler::CustomizationResult customization_result) {
+  switch (customization_result) {
+    case ProfileCustomizationHandler::CustomizationResult::kDone:
+      RecordDialogEvent(DialogEvent::kProfileCustomizationClickDone);
+      break;
+    case ProfileCustomizationHandler::CustomizationResult::kSkip:
+      RecordDialogEvent(DialogEvent::kProfileCustomizationClickSkip);
+      break;
+  }
   DoNextStep(Step::kProfileCustomization, Step::kProfileSwitchIPHAndCloseModal);
 }

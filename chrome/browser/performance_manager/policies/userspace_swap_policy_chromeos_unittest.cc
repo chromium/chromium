@@ -7,7 +7,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -26,7 +26,7 @@ namespace performance_manager {
 namespace policies {
 
 namespace {
-using chromeos::memory::userspace_swap::UserspaceSwapConfig;
+using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
@@ -121,7 +121,8 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
 
   void AttachProcess() {
     // Create a process so this process node doesn't bail on Process.IsValid();
-    process_node()->SetProcess(base::Process::Current(), base::Time::Now());
+    process_node()->SetProcess(base::Process::Current(),
+                               /* launch_time=*/base::TimeTicks::Now());
   }
 
   void TearDown() override {

@@ -19,6 +19,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -31,6 +32,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 namespace {
@@ -257,8 +259,7 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
   // by the instance of DiceTurnSyncOnHelper constructed later on in
   // ProfilePickerSignedInFlowController).
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
   signin_metrics::LogSigninAccessPointStarted(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
@@ -271,8 +272,7 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      contents(),
-      host_->GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+      contents(), host_->GetColorProvider()->GetColor(kColorToolbar));
 
   toolbar_->BuildToolbar(base::BindRepeating(
       &ProfilePickerDiceSignInProvider::NavigateBack, base::Unretained(this)));

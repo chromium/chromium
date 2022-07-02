@@ -20,11 +20,11 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
@@ -90,7 +90,7 @@ struct DatabaseMaintenanceImpl::CleanupState {
 };
 
 DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
-    const base::flat_set<OptimizationTarget>& segment_ids,
+    const base::flat_set<SegmentId>& segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_info_database,
     SignalDatabase* signal_database,
@@ -106,8 +106,7 @@ DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
-  std::vector<OptimizationTarget> segment_ids(segment_ids_.begin(),
-                                              segment_ids_.end());
+  std::vector<SegmentId> segment_ids(segment_ids_.begin(), segment_ids_.end());
   default_model_manager_->GetAllSegmentInfoFromBothModels(
       segment_ids, segment_info_database_,
       base::BindOnce(&DatabaseMaintenanceImpl::OnSegmentInfoCallback,

@@ -39,7 +39,7 @@ def CommonChecks(input_api, output_api):
     commands = []
     if generating_files:
       commands.append(input_api.Command(name='generate_vulkan_types',
-                                        cmd=[input_api.python_executable,
+                                        cmd=[input_api.python3_executable,
                                              'generate_vulkan_types.py',
                                              '--check',
                                              '--output-dir=' + temp_dir],

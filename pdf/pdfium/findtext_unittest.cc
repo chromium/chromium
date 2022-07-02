@@ -149,4 +149,55 @@ TEST_F(FindTextTest, FindFancyQuotationMarkText) {
   engine->StartFind(base::UTF16ToUTF8(term), /*case_sensitive=*/true);
 }
 
+TEST_F(FindTextTest, SelectFindResult) {
+  FindTextTestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(1, /*final_result=*/false));
+    EXPECT_CALL(client, NotifySelectedFindResultChanged(0));
+    for (int i = 1; i < 4; ++i) {
+      EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(
+                              i + 1, /*final_result=*/false));
+    }
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
+  }
+
+  engine->StartFind("world", /*case_sensitive=*/true);
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
+  }
+
+  ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(client, NotifySelectedFindResultChanged(2));
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
+  }
+  ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(client, NotifySelectedFindResultChanged(1));
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(4, /*final_result=*/true));
+  }
+  ASSERT_TRUE(engine->SelectFindResult(/*forward=*/false));
+}
+
 }  // namespace chrome_pdf

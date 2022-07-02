@@ -9,8 +9,10 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -53,6 +55,9 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
  public:
+  static void ConvertEventToTarget(const EventTarget* new_target,
+                                   LocatedEvent* event);
+
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
                      WaylandWindowManager* window_manager,
@@ -111,19 +116,33 @@ class WaylandEventSource : public PlatformEventSource,
   void OnResetPointerFlags() override;
   const gfx::PointF& GetPointerLocation() const override;
   bool IsPointerButtonPressed(EventFlags button) const override;
+  void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
+  const WaylandWindow* GetPointerTarget() const override;
 
   // WaylandTouch::Delegate
+  using DispatchPolicy = WaylandTouch::Delegate::EventDispatchPolicy;
   void OnTouchPressEvent(WaylandWindow* window,
                          const gfx::PointF& location,
                          base::TimeTicks timestamp,
-                         PointerId id) override;
-  void OnTouchReleaseEvent(base::TimeTicks timestamp, PointerId id) override;
+                         PointerId id,
+                         EventDispatchPolicy dispatch_policy) override;
+  void OnTouchReleaseEvent(base::TimeTicks timestamp,
+                           PointerId id,
+                           EventDispatchPolicy dispatch_policy) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
-                          PointerId id) override;
+                          PointerId id,
+                          EventDispatchPolicy dispatch_policy) override;
   void OnTouchCancelEvent() override;
+  void OnTouchFrame() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
+  const WaylandWindow* GetTouchTarget(PointerId id) const override;
+  void OnTouchStylusToolChanged(PointerId pointer_id,
+                                EventPointerType pointer_type) override;
+  void OnTouchStylusForceChanged(PointerId pointer_id, float force) override;
+  void OnTouchStylusTiltChanged(PointerId pointer_id,
+                                const gfx::Vector2dF& tilt) override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
@@ -146,6 +165,7 @@ class WaylandEventSource : public PlatformEventSource,
     PointerFrame& operator=(const PointerFrame&);
     PointerFrame& operator=(PointerFrame&&);
 
+    WaylandWindow* target = nullptr;
     absl::optional<uint32_t> axis_source;
     float dx = 0.0f;
     float dy = 0.0f;
@@ -153,7 +173,16 @@ class WaylandEventSource : public PlatformEventSource,
     bool is_axis_stop = false;
   };
 
-  struct TouchPoint;
+  struct TouchFrame {
+    TouchFrame(const TouchEvent& event,
+               base::OnceCallback<void()> completion_cb);
+    TouchFrame(const TouchFrame& other) = delete;
+    TouchFrame(TouchFrame&&) = delete;
+    ~TouchFrame();
+
+    TouchEvent event;
+    base::OnceCallback<void()> completion_cb;
+  };
 
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
@@ -171,9 +200,25 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   bool SurfaceSubmissionInPixelCoordinates() const;
-  WaylandWindowManager* const window_manager_;
 
-  WaylandConnection* const connection_;
+  // For pointer events.
+  PointerDetails PointerDetailsForDispatching() const;
+
+  // For touch events.
+  absl::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
+
+  // Wrap up method to support async touch release processing.
+  void OnTouchReleaseInternal(PointerId id);
+
+  // Set the target to the event, then dispatch the event.
+  void SetTargetAndDispatchEvent(Event* event, EventTarget* target);
+
+  // Find and set the target for the touch event, then dispatch the event.
+  void SetTouchTargetAndDispatchTouchEvent(TouchEvent* event);
+
+  const raw_ptr<WaylandWindowManager> window_manager_;
+
+  const raw_ptr<WaylandConnection> connection_;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.
   int pointer_flags_ = 0;
@@ -196,12 +241,28 @@ class WaylandEventSource : public PlatformEventSource,
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
 
+  // Last known pointer stylus type (eg mouse, pen, eraser or touch).
+  absl::optional<EventPointerType> last_pointer_stylus_tool_;
+
+  // Last known touch stylus type (eg touch, pen or eraser).
+  struct StylusData {
+    EventPointerType type = EventPointerType::kUnknown;
+    gfx::Vector2dF tilt;
+    float force = std::numeric_limits<float>::quiet_NaN();
+  };
+  base::flat_map<PointerId, absl::optional<StylusData>> last_touch_stylus_data_;
+
   // Recent pointer frames to compute fling scroll.
   // Front is newer, and back is older.
   std::deque<PointerFrame> recent_pointer_frames_;
 
+  // Order set of touch events to be dispatching on the next
+  // wl_touch::frame event.
+  std::deque<std::unique_ptr<TouchFrame>> touch_frames_;
+
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.
+  struct TouchPoint;
   base::flat_map<PointerId, std::unique_ptr<TouchPoint>> touch_points_;
 
   std::unique_ptr<WaylandEventWatcher> event_watcher_;

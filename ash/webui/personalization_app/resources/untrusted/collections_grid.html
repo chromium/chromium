@@ -1,4 +1,4 @@
-<style include="common-style trusted-style">
+<style include="common wallpaper">
   :host {
     margin: 12px 0;
   }
@@ -138,20 +138,30 @@
     display: none;
   }
 </style>
-<iron-list items="[[tiles_]]" grid>
+<iron-list items="[[tiles_]]"
+    grid
+    role="listbox"
+    aria-setsize$="[[tiles_.length]]">
   <template>
     <div class="photo-container">
       <template is="dom-if" if="[[isLoadingTile_(item)]]">
-        <div tabindex$="[[tabIndex]]" role="button"
+        <div tabindex$="[[tabIndex]]"
+            role="option"
             class="photo-inner-container placeholder"
             style$="[[getLoadingPlaceholderAnimationDelay(index)]]"
-            aria-label$="[[geti18n_('ariaLabelLoading')]]" aria-disabled="true">
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-label$="[[geti18n_('ariaLabelLoading')]]"
+            aria-disabled="true">
         </div>
       </template>
       <template is="dom-if" if="[[isFailureTile_(item)]]">
-        <div tabindex$="[[tabIndex]]" role="button" aria-disabled="true"
+        <div tabindex$="[[tabIndex]]"
+            role="button"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-disabled="true"
             class="photo-inner-container photo-loading-failure">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
                   aria-hidden="true" clear-src>
@@ -166,14 +176,17 @@
       </div>
       </template>
       <template is="dom-if" if="[[isEmptyTile_(item)]]">
-        <div tabindex$="[[tabIndex]]" role="button"
-            aria-disabled$="[[!isSelectableTile_(item)]]"
+        <div tabindex$="[[tabIndex]]"
+            role="option"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-disabled$="[[getTileAriaDisabled_(item)]]"
             class$="[[getClassForEmptyTile_(item)]]"
             managed$="[[isManagedTile_(item)]]"
             selectable$="[[isSelectableTile_(item)]]"
             on-click="onCollectionSelected_"
             on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <img is="cr-auto-img" auto-src="[[getImageUrlForEmptyTile_(item)]]"
                 aria-hidden="true" clear-src>
           </div>
@@ -190,11 +203,14 @@
         </div>
       </template>
       <template is="dom-if" if="[[isImageTile_(item)]]">
-        <div class="photo-inner-container" role="button"
+        <div class="photo-inner-container"
+            role="option"
+            aria-posinset$="[[getAriaIndex_(index)]]"
             on-click="onCollectionSelected_"
             on-keypress="onCollectionSelected_"
             tabindex$="[[tabIndex]]">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
                   class$="[[getClassForImg_(index, item)]]"

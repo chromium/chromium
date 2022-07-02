@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_WINDOW_SIZE_AUTOSAVER_H_
 #define CHROME_BROWSER_UI_COCOA_WINDOW_SIZE_AUTOSAVER_H_
 
+#include "base/memory/raw_ptr.h"
+
 class PrefService;
 @class NSWindow;
 
@@ -22,7 +24,7 @@ class PrefService;
 // initial repositioning is not visible.
 @interface WindowSizeAutosaver : NSObject {
   NSWindow* _window;  // weak
-  PrefService* _prefService;  // weak
+  raw_ptr<PrefService> _prefService;  // weak
   const char* _path;
 }
 

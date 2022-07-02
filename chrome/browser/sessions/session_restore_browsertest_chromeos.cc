@@ -12,6 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/defaults.h"
@@ -20,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -435,14 +436,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
 }
 
 class SystemWebAppSessionRestoreTestChromeOS
-    : public web_app::SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppSessionRestoreTestChromeOS()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        ash::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
     maybe_installation_->set_update_policy(
-        web_app::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+        ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
   }
 
   ~SystemWebAppSessionRestoreTestChromeOS() override = default;

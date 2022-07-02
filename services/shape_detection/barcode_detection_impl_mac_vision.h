@@ -26,8 +26,7 @@ namespace shape_detection {
 
 // This class is the implementation of Barcode Detection based on Mac OS Vision
 // framework (https://developer.apple.com/documentation/vision).
-class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
-    : public mojom::BarcodeDetection {
+class BarcodeDetectionImplMacVision : public mojom::BarcodeDetection {
  public:
   static bool IsBlockedMacOSVersion();
 

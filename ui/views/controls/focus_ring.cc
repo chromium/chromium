@@ -47,11 +47,12 @@ bool IsPathUsable(const SkPath& path) {
                              path.isRRect(nullptr));
 }
 
-SkColor GetColor(View* focus_ring, bool valid) {
-  if (!valid) {
-    return focus_ring->GetColorProvider()->GetColor(
-        ui::kColorAlertHighSeverity);
-  }
+SkColor GetPaintColor(FocusRing* focus_ring, bool valid) {
+  const auto* cp = focus_ring->GetColorProvider();
+  if (!valid)
+    return cp->GetColor(ui::kColorAlertHighSeverity);
+  if (auto color_id = focus_ring->GetColorId(); color_id.has_value())
+    return cp->GetColor(color_id.value());
   return GetCascadingAccentColor(focus_ring);
 }
 
@@ -137,19 +138,37 @@ void FocusRing::SetHasFocusPredicate(const ViewPredicate& predicate) {
   RefreshLayer();
 }
 
-void FocusRing::SetColor(absl::optional<SkColor> color) {
-  color_ = color;
-  SchedulePaint();
+absl::optional<ui::ColorId> FocusRing::GetColorId() const {
+  return color_id_;
+}
+
+void FocusRing::SetColorId(absl::optional<ui::ColorId> color_id) {
+  if (color_id_ == color_id)
+    return;
+  color_id_ = color_id;
+  OnPropertyChanged(&color_id_, PropertyEffects::kPropertyEffectsPaint);
+}
+
+float FocusRing::GetHaloThickness() const {
+  return halo_thickness_;
+}
+
+float FocusRing::GetHaloInset() const {
+  return halo_inset_;
 }
 
 void FocusRing::SetHaloThickness(float halo_thickness) {
+  if (halo_thickness_ == halo_thickness)
+    return;
   halo_thickness_ = halo_thickness;
-  SchedulePaint();
+  OnPropertyChanged(&halo_thickness_, PropertyEffects::kPropertyEffectsPaint);
 }
 
 void FocusRing::SetHaloInset(float halo_inset) {
+  if (halo_inset_ == halo_inset)
+    return;
   halo_inset_ = halo_inset;
-  SchedulePaint();
+  OnPropertyChanged(&halo_inset_, PropertyEffects::kPropertyEffectsPaint);
 }
 
 void FocusRing::Layout() {
@@ -232,7 +251,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     canvas->sk_canvas()->drawRRect(ring_rect, paint);
   }
 
-  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
+  paint.setColor(GetPaintColor(this, !invalid_));
   paint.setStrokeWidth(halo_thickness_);
   canvas->sk_canvas()->drawRRect(ring_rect, paint);
 }
@@ -271,6 +290,12 @@ void FocusRing::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // JavaScript alert, is marked as ignored, that control's parent will not
   // have any "invisible" FocusRing children.
   node_data->AddState(ax::mojom::State::kIgnored);
+}
+
+void FocusRing::OnThemeChanged() {
+  View::OnThemeChanged();
+  if (invalid_ || color_id_.has_value())
+    SchedulePaint();
 }
 
 void FocusRing::OnViewFocused(View* view) {
@@ -354,6 +379,9 @@ SkPath GetHighlightPath(const View* view, float halo_thickness) {
 }
 
 BEGIN_METADATA(FocusRing, View)
+ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ColorId)
+ADD_PROPERTY_METADATA(float, HaloInset)
+ADD_PROPERTY_METADATA(float, HaloThickness)
 END_METADATA
 
 }  // namespace views

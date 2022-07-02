@@ -13,7 +13,7 @@
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 

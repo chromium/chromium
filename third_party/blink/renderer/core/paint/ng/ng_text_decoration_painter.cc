@@ -73,14 +73,15 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
     top *= scaling_factor / text_item_.SvgScalingFactor();
     top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
     result.emplace(PhysicalOffset(decoration_rect_.offset.left, top),
-                   decoration_rect_.Width(), style.GetFontBaseline(), style,
-                   scaled_font, effective_selection_decoration, nullptr,
+                   decoration_rect_.Width(), style,
+                   text_painter_.InlineContext(),
+                   effective_selection_decoration, &scaled_font,
                    MinimumThickness1(false), scaling_factor);
   } else {
     result.emplace(
-        decoration_rect_.offset, decoration_rect_.Width(),
-        style.GetFontBaseline(), style, text_item_.ScaledFont(),
-        effective_selection_decoration, nullptr,
+        decoration_rect_.offset, decoration_rect_.Width(), style,
+        text_painter_.InlineContext(), effective_selection_decoration,
+        &text_item_.ScaledFont(),
         MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
   }
 }

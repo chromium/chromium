@@ -255,7 +255,7 @@ class SitePerProcessBrowserTestWithSadFrameTabReload
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -425,16 +425,17 @@ IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTestWithSadFrameTabReload,
     // TODO(crbug.com/1325478): Re-enable this test
     DISABLED_CrashedFencedframeVisibilityMetricsDuringParentLoad) {
-  // Since Fenced Frames should create a renderer per fenced frame, we
-  // do not need to explicitly change the site.
-  GURL main_url(
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"));
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  GURL primary_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL child_url(
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html"));
+  GURL grandchild_url(
+      embedded_test_server()->GetURL("c.com", "/fenced_frames/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), primary_url));
   RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
   RenderFrameHostImplWrapper child_rfh(
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
-                                                   main_url));
+                                                   child_url));
   // Note that height and width follows the layout function in
   // content/test/data/cross_site_iframe_factory.html.
   EXPECT_TRUE(ExecJs(primary_rfh.get(), R"(
@@ -445,7 +446,8 @@ IN_PROC_BROWSER_TEST_P(
        ff.height = 1 * (110 + 30) + 50
        )"));
   RenderFrameHostImplWrapper grandchild_rfh(
-      fenced_frame_test_helper().CreateFencedFrame(child_rfh.get(), main_url));
+      fenced_frame_test_helper().CreateFencedFrame(child_rfh.get(),
+                                                   grandchild_url));
   // Note that height and width follows the layout function in
   // content/test/data/cross_site_iframe_factory.html.
   EXPECT_TRUE(ExecJs(child_rfh.get(), R"(

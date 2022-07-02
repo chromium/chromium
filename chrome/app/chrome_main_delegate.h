@@ -63,9 +63,8 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   void ZygoteForked() override;
 #endif
   void PreBrowserMain() override;
-  void PostEarlyInitialization(bool is_running_tests) override;
-  bool ShouldCreateFeatureList() override;
-  void PostFieldTrialInitialization() override;
+  void PostEarlyInitialization(InvokedIn invoked_in) override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
@@ -75,6 +74,9 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   content::ContentGpuClient* CreateContentGpuClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
+
+  // Initialization that happens in all process types.
+  void CommonEarlyInitialization();
 
 #if BUILDFLAG(IS_MAC)
   void InitMacCrashReporter(const base::CommandLine& command_line,

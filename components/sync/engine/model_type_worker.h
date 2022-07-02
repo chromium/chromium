@@ -38,6 +38,27 @@ namespace syncer {
 class CancelationSignal;
 class ModelTypeProcessor;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordNotesStateForUMA {
+  // No password note is set in the proto or the backup.
+  kUnset = 0,
+  // Password note is set in the password specifics data. Indicates an entity
+  // created on a client supporting password notes. This doesn't guarantee the
+  // backup is set too, but in practice it will be set in both (in the
+  // foreseeable future).
+  kSetInSpecificsData = 1,
+  // Password notes is set in the backup, indicates that after the note was
+  // created on the client, and update from a legacy client was committed and
+  // the server carried the backup blob over.
+  kSetOnlyInBackup = 2,
+  // Similar to kSetOnlyInBackup, but the backup is corrupted. This should be
+  // rare
+  // to happen.
+  kSetOnlyInBackupButCorrupted = 3,
+  kMaxValue = kSetOnlyInBackupButCorrupted,
+};
+
 // A smart cache for sync types to communicate with the sync thread.
 //
 // When the sync data type wants to talk to the sync server, it will

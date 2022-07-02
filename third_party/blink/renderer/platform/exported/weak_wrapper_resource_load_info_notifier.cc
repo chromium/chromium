@@ -25,14 +25,23 @@ void WeakWrapperResourceLoadInfoNotifier::NotifyResourceRedirectReceived(
       redirect_info, std::move(redirect_response));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void WeakWrapperResourceLoadInfoNotifier::
+    NotifyUpdateUserGestureCarryoverInfo() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  resource_load_info_notifier_->NotifyUpdateUserGestureCarryoverInfo();
+}
+#endif
+
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceResponseReceived(
     int64_t request_id,
-    const GURL& final_url,
+    const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   resource_load_info_notifier_->NotifyResourceResponseReceived(
-      request_id, final_url, std::move(response_head), request_destination);
+      request_id, final_response_url, std::move(response_head),
+      request_destination);
 }
 
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated(

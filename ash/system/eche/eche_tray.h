@@ -25,6 +25,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
@@ -89,6 +91,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void OnVirtualKeyboardVisibilityChanged() override;
+  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                    bool visible) override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -141,7 +146,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The `url` parameter is used to load the `WebView` inside the bubble.
   // The `icon` is used to update the tray icon for `EcheTray`.
   // The `visible_name` is shown as a tooltip for the Eche icon.
-  void LoadBubble(const GURL& url,
+  //
+  // Returns true if the bubble is loaded or initialized successfully.
+  bool LoadBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name);
 
@@ -162,12 +169,34 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // TrayBackgroundView's background inkdrop activate.
   void InitBubble();
 
+  // Starts graceful close to ensure the connection resource is released before
+  // the window is closed.
+  void StartGracefulClose();
+
   // Test helpers
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
   AshWebView* get_web_view_for_test() { return web_view_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);
+
+  // Intercepts all the events targeted to the internal webview in order to
+  // process the accelerator keys.
+  class EventInterceptor : public ui::EventHandler {
+   public:
+    EventInterceptor(EcheTray* eche_tray);
+
+    EventInterceptor(const EventInterceptor&) = delete;
+    EventInterceptor& operator=(const EventInterceptor&) = delete;
+
+    ~EventInterceptor() override;
+
+    // ui::EventHandler:
+    void OnKeyEvent(ui::KeyEvent* event) override;
+
+   private:
+    EcheTray* const eche_tray_;
+  };
 
   // Calculates and returns the size of the Exo bubble based on the screen size
   // and orientation.
@@ -184,10 +213,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void StopLoadingAnimation();
   void StartLoadingAnimation();
   void SetIconVisibility(bool visibility);
-
-  // Starts graceful close to ensure connection resource is released before
-  // window is closed.
-  void StartGracefulClose();
 
   PhoneHubTray* GetPhoneHubTray();
   EcheIconLoadingIndicatorView* GetLoadingIndicator();
@@ -212,6 +237,13 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // returns the position of the anchor that bubble needs to be anchored to.
   gfx::Rect GetAnchor();
+
+  // Processes the accelerator keys and returns true if the accelerator was
+  // processed completely in this method and no further processing is needed.
+  bool ProcessAcceleratorKeys(ui::KeyEvent* event);
+
+  // Returns true only if the bubble is initialized and visible.
+  bool IsBubbleVisible();
 
   // The url that is transferred to the web view.
   // In the current implementation, this is supposed to be
@@ -238,6 +270,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   views::Button* close_button_ = nullptr;
   views::Button* minimize_button_ = nullptr;
   views::Button* arrow_back_button_ = nullptr;
+  std::unique_ptr<EventInterceptor> event_interceptor_;
 
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.

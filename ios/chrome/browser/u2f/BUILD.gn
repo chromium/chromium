@@ -31,6 +31,7 @@ source_set("u2f_internal") {
     "//ios/chrome/common",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//net",
     "//url",
   ]

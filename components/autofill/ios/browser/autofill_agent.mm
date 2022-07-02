@@ -333,7 +333,8 @@ void GetFormField(autofill::FormFieldData* field,
   // -showAutofillPopup:popupDelegate:.
   autofillManager->OnAskForValuesToFill(++_lastQueryID, form, field,
                                         gfx::RectF(),
-                                        /*autoselect_first_suggestion=*/false);
+                                        /*autoselect_first_suggestion=*/false,
+                                        autofill::TouchToFillEligible(false));
 }
 
 - (void)checkIfSuggestionsAvailableForForm:

@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AllSitesElement, ContentSetting, ContentSettingsTypes, LocalDataBrowserProxyImpl, SiteGroup, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -113,6 +113,11 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     }
   }
 
+  function getSubstitutedString(messageId: string, substitute: string): string {
+    return loadTimeData.substituteString(
+        testElement.i18n(messageId), substitute);
+  }
+
   test('All sites list populated', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
@@ -153,49 +158,225 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     }
   });
 
-  test('can be sorted by most visited', function() {
+  test('can be sorted by most visited', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
 
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      // Add additional origins and artificially insert fake engagement scores
-      // to sort.
-      assertEquals(3, testElement.siteGroupMap.size);
-      const fooSiteGroup = testElement.siteGroupMap.get('foo.com')!;
-      fooSiteGroup.origins.push(
-          createOriginInfo('https://login.foo.com', {engagement: 20}));
-      assertEquals(2, fooSiteGroup.origins.length);
-      fooSiteGroup.origins[0]!.engagement = 50.4;
-      const googleSiteGroup = testElement.siteGroupMap.get('google.com')!;
-      assertEquals(1, googleSiteGroup.origins.length);
-      googleSiteGroup.origins[0]!.engagement = 55.1261;
-      const barSiteGroup = testElement.siteGroupMap.get('bar.com')!;
-      assertEquals(1, barSiteGroup.origins.length);
-      barSiteGroup.origins[0]!.engagement = 0.5235;
+    await browserProxy.whenCalled('getAllSites');
 
-      // 'Most visited' is the default sort method, so sort by a different
-      // method first to ensure changing to 'Most visited' works.
-      testElement.$.sortMethod.value = 'name';
-      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-      flush();
-      let siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-      assertEquals(
-          'google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    // Add additional origins and artificially insert fake engagement scores
+    // to sort.
+    assertEquals(3, testElement.siteGroupMap.size);
+    const fooSiteGroup = testElement.siteGroupMap.get('foo.com')!;
+    fooSiteGroup.origins.push(
+        createOriginInfo('https://login.foo.com', {engagement: 20}));
+    assertEquals(2, fooSiteGroup.origins.length);
+    fooSiteGroup.origins[0]!.engagement = 50.4;
+    const googleSiteGroup = testElement.siteGroupMap.get('google.com')!;
+    assertEquals(1, googleSiteGroup.origins.length);
+    googleSiteGroup.origins[0]!.engagement = 55.1261;
+    const barSiteGroup = testElement.siteGroupMap.get('bar.com')!;
+    assertEquals(1, barSiteGroup.origins.length);
+    barSiteGroup.origins[0]!.engagement = 0.5235;
 
-      testElement.$.sortMethod.value = 'most-visited';
-      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-      flush();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      // Each site entry is sorted by its maximum engagement, so expect
-      // 'foo.com' to come after 'google.com'.
+    // 'Most visited' is the default sort method, so sort by a different
+    // method first to ensure changing to 'Most visited' works.
+    testElement.$.sortMethod.value = 'name';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+
+    testElement.$.sortMethod.value = 'most-visited';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    // Each site entry is sorted by its maximum engagement, so expect
+    // 'foo.com' to come after 'google.com'.
+    assertEquals('google.com', siteEntries[0]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
+    assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
+  });
+
+  test('dynamic filtered clear data button strings', async function() {
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+
+    const clearAllButton = testElement.$.clearAllButton;
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        clearAllButton.innerText.trim());
+
+    // Setting a filter, text should change.
+    testElement.filter = 'foo';
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearDisplayedStorageLabel'),
+        clearAllButton.innerText.trim());
+
+    // Removing the filter.
+    testElement.filter = '';
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        clearAllButton.innerText.trim());
+  });
+
+  test('dynamic filtered total usage strings', async function() {
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    // Removing extra unwanted site entries.
+    testElement.siteGroupMap.delete('google.com');
+    testElement.forceListUpdateForTesting();
+    await flushTasks();
+
+    const clearLabel = testElement.$.clearLabel;
+    assertEquals(
+        getSubstitutedString('siteSettingsClearAllStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
+
+    // Setting a filter, 'foo.com' exists but doesn't have storage.
+    testElement.filter = 'foo';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsClearDisplayedStorageDescription', '0 B'),
+        clearLabel.innerText.trim());
+
+    // Changing the filter, 100 B given to 'bar.com; in the test proxy.
+    testElement.filter = 'bar';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsClearDisplayedStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
+
+    // Remove the filter, without changing the total amount of storage.
+    testElement.filter = '';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString('siteSettingsClearAllStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
+  });
+
+  test('dynamic filtered clear data confirmation strings', async function() {
+    interface DialogState {
+      filter: boolean;
+      appInstalled: boolean;
+      storage: boolean;
+      title: string;
+      description: string;
+      signout: string;
+    }
+
+    const dialogStates: DialogState[] = [
+      {
+        filter: false,
+        appInstalled: false,
+        storage: true,
+        title: 'siteSettingsClearAllStorageDialogTitle',
+        description: 'siteSettingsClearAllStorageConfirmation',
+        signout: 'siteSettingsClearAllStorageSignOut'
+      },
+      {
+        filter: false,
+        appInstalled: true,
+        storage: true,
+        title: 'siteSettingsClearAllStorageDialogTitle',
+        description: 'siteSettingsClearAllStorageConfirmationInstalled',
+        signout: 'siteSettingsClearAllStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: false,
+        storage: true,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: false,
+        storage: false,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: true,
+        storage: false,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: true,
+        storage: true,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+    ];
+
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    // Removing extra unwanted site entries.
+    testElement.siteGroupMap.delete('google.com');
+
+    const clearAllButton =
+        testElement.$.clearAllButton.querySelector('cr-button')!;
+    const confirmClearAllData = testElement.$.confirmClearAllData.get();
+
+    // Open the clear all data dialog.
+    assertFalse(confirmClearAllData.open, 'closed dialog');
+    clearAllButton.click();
+    assertTrue(confirmClearAllData.open, 'open dialog');
+
+    for (const state of dialogStates) {
+      assertTrue(state.filter || state.storage, 'valid state');
+
+      if (state.storage) {  // 'bar' has storage of 100 B
+        testElement.filter = state.filter ? 'bar' : '';
+      } else {  // 'foo' has storage of 0 B
+        testElement.filter = state.filter ? 'foo' : '';
+      }
+
+      testElement.siteGroupMap.get('foo.com')!.hasInstalledPWA =
+          state.appInstalled;
+      testElement.siteGroupMap.get('bar.com')!.hasInstalledPWA =
+          state.appInstalled;
+
+      testElement.forceListUpdateForTesting();
+      await flushTasks();
+
+      const confirmationTitle =
+          confirmClearAllData.querySelector<HTMLElement>(
+                                 '[slot=title]')!.innerText.trim();
+      const confirmationDescription =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogDescription')!.innerText.trim();
+      const confirmationSignOutLabel =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogSignOutLabel')!.innerText.trim();
+
+      assertEquals(loadTimeData.getString(state.title), confirmationTitle);
       assertEquals(
-          'google.com', siteEntries[0]!.$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-      assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
-    });
+          getSubstitutedString(
+              state.description, state.storage ? '100 B' : '0 B'),
+          confirmationDescription);
+      assertEquals(
+          loadTimeData.getString(state.signout), confirmationSignOutLabel);
+    }
   });
 
   test('can be sorted by storage', async function() {
@@ -226,7 +407,6 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     // name.
     testElement.$.sortMethod.value = 'data-stored';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-
 
     flush();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');

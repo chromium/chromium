@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -141,7 +142,7 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
     return record;
   }
 
-  BluetoothAdapterBlueZ* adapter_bluez_;
+  raw_ptr<BluetoothAdapterBlueZ> adapter_bluez_;
   size_t success_callbacks_;
   size_t error_callbacks_;
 

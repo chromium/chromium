@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
+#include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -101,10 +103,11 @@ class WebContentsModalDialogHost;
 }
 
 enum class ShowTranslateBubbleResult {
-  // The translate bubble was successfully shown.
+  // The Full Page Translate bubble was successfully shown.
   SUCCESS,
 
-  // The various reasons for which the translate bubble could fail to be shown.
+  // The various reasons for which the Full Page Translate bubble could fail to
+  // be shown.
   BROWSER_WINDOW_NOT_VALID,
   BROWSER_WINDOW_MINIMIZED,
   BROWSER_WINDOW_NOT_ACTIVE,
@@ -447,10 +450,10 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Sharing Hub bubble. This must only be called as a direct result
   // of user action.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents) = 0;
+      share::ShareAttempt attempt) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Shows the translate bubble.
+  // Shows the Full Page Translate bubble.
   //
   // |is_user_gesture| is true when the bubble is shown on the user's deliberate
   // action.
@@ -461,6 +464,14 @@ class BrowserWindow : public ui::BaseWindow {
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool is_user_gesture) = 0;
+
+  // Shows the Partial Translate bubble.
+  virtual void ShowPartialTranslateBubble(
+      PartialTranslateBubbleModel::ViewState view_state,
+      const std::string& source_language,
+      const std::string& target_language,
+      const std::u16string& text_selection,
+      translate::TranslateErrors::Type error_type) = 0;
 
   // Shows the one-click sign in confirmation UI. |email| holds the full email
   // address of the account that has signed in.
@@ -521,21 +532,7 @@ class BrowserWindow : public ui::BaseWindow {
                                             bool user_gesture,
                                             bool in_tab_dragging);
 
-  // Shows the avatar bubble on the window frame off of the avatar button with
-  // the given mode. The Service Type specified by GAIA is provided as well.
-  // |access_point| indicates the access point used to open the Gaia sign in
-  // page.
-  enum AvatarBubbleMode {
-    AVATAR_BUBBLE_MODE_DEFAULT,
-    AVATAR_BUBBLE_MODE_SIGNIN,
-    AVATAR_BUBBLE_MODE_ADD_ACCOUNT,
-    AVATAR_BUBBLE_MODE_REAUTH,
-    AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN
-  };
-  virtual void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_accelerator) = 0;
+  virtual void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) = 0;
 
   // Attempts showing the In-Produce-Help for profile Switching. This is called
   // after creating a new profile or opening an existing profile. If the profile
@@ -622,10 +619,6 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Shows an Incognito history disclaimer dialog.
   virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
-
-  virtual bool IsSideSearchPanelVisible() const = 0;
-  virtual void MaybeRestoreSideSearchStatePerWindow(
-      const std::map<std::string, std::string>& extra_data) = 0;
 
  protected:
   friend class BrowserCloseManager;

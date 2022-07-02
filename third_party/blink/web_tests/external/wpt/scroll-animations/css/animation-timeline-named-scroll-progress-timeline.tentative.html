@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<title>The animation-timeline: scroll-timeline-name</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/rewrite#scroll-timelines-named">
+<link rel="help" src="https://github.com/w3c/csswg-drafts/issues/6674">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @keyframes anim {
+    from { translate: 50px; }
+    to { translate: 150px; }
+  }
+  #target {
+    width: 100px;
+    height: 100px;
+  }
+  .square {
+    width: 100px;
+    height: 100px;
+  }
+  .square-container {
+    width: 300px;
+    height: 300px;
+  }
+  .scroller {
+    overflow: scroll;
+  }
+  .content {
+    inline-size: 100%;
+    block-size: 100%;
+    padding-inline-end: 100px;
+    padding-block-end: 100px;
+  }
+</style>
+<body>
+<div id="log"></div>
+<script>
+"use strict";
+
+function createScrollerAndTarget(t, scrollerSizeClass) {
+  let scroller = document.createElement('div');
+  let className = scrollerSizeClass || 'square';
+  scroller.className = `scroller ${className}`;
+  let content = document.createElement('div');
+  content.className = 'content';
+
+  scroller.appendChild(content);
+
+  let target = document.createElement('div');
+  target.id = 'target';
+
+  t.add_cleanup(function() {
+    content.remove();
+    scroller.remove();
+    target.remove();
+  });
+
+  return [scroller, target];
+}
+
+// -------------------------
+// Test scroll-timeline-name
+// -------------------------
+
+test(t => {
+  let target = document.createElement('div');
+  target.id = 'target';
+  target.className = 'scroller';
+  let content = document.createElement('div');
+  content.className = 'content';
+
+  // <div id='target' class='scroller'>
+  //   <div id='content'></div>
+  // </div>
+  document.body.appendChild(target);
+  target.appendChild(content);
+
+  target.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  target.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+
+  content.remove();
+  target.remove();
+}, 'scroll-timeline-name is referenceable in animation-timeline on the ' +
+   'declaring element itself');
+
+test(t => {
+  let [parent, target] = createScrollerAndTarget(t, 'square-container');
+
+  // <div id='parent' class='scroller'>
+  //   <div id='target'></div>
+  //   <div id='content'></div>
+  // </div>
+  document.body.appendChild(parent);
+  parent.insertBefore(target, parent.firstElementChild);
+
+  parent.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  parent.scrollTop = 100; // 50%, in [0, 200].
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, "scroll-timeline-name is referenceable in animation-timeline on that " +
+   "element's descendants");
+
+test(t => {
+  let [sibling, target] = createScrollerAndTarget(t);
+
+  // <div id='sibling' class='scroller'> ... </div>
+  // <div id='target'></div>
+  document.body.appendChild(sibling);
+  document.body.appendChild(target);
+
+  sibling.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  sibling.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, "scroll-timeline-name is referenceable in animation-timeline on that " +
+   "element's following siblings");
+
+test(t => {
+  let [sibling, target] = createScrollerAndTarget(t);
+  let parent = document.createElement('div');
+
+  // <div id='sibling' class='scroller'> ... </div>
+  // <div id='parent'>
+  //   <div id='target'></div>
+  // </div>
+  document.body.appendChild(sibling);
+  document.body.appendChild(parent);
+  parent.appendChild(target);
+
+  sibling.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  sibling.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+
+  parent.remove();
+}, "scroll-timeline-name is referenceable in animation-timeline on that " +
+   "element's following siblings' descendants");
+
+// FIXME: We may use global scope for scroll-timeline-name.
+// See https://github.com/w3c/csswg-drafts/issues/7047
+test(t => {
+  let [sibling, target] = createScrollerAndTarget(t);
+
+  // <div id='target'></div>
+  // <div id='sibling' class='scroller'> ... </div>
+  document.body.appendChild(target);
+  document.body.appendChild(sibling);
+
+  sibling.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  sibling.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, '50px',
+    'Animation with unknown timeline name holds current time at zero');
+}, "scroll-timeline-name is not referenceable in animation-timeline on that " +
+   "element's previous siblings");
+
+test(t => {
+  let [sibling, target] = createScrollerAndTarget(t);
+  let parent = document.createElement('div');
+  parent.className = 'scroller square-container';
+  let content = document.createElement('div');
+  content.className = 'content';
+
+  // <div id='parent' class='scroller'>
+  //   <div id='sibling' class='scroller'> ... </div>
+  //   <div id='target'></div>
+  //   <div id='content'></div>
+  // </div>
+  document.body.appendChild(parent);
+  parent.appendChild(sibling);
+  parent.appendChild(target);
+  parent.appendChild(content);
+
+  parent.style.scrollTimelineName = 'timeline';
+  parent.style.scrollTimelineAxis = 'inline';
+  sibling.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  parent.scrollTop = 50; // 25%, in [0, 200].
+  sibling.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+
+  content.remove();
+  parent.remove();
+}, 'scroll-timeline-name is matched based on tree order, which considers ' +
+   'siblings closer than parents');
+
+test(t => {
+  let sibling = document.createElement('div');
+  sibling.className = 'square';
+  sibling.style.overflowX = 'clip'; // This makes overflow-y be clip as well.
+  let target = document.createElement('div');
+  target.id = 'target';
+
+  // <div id='sibling' style='overflow-x: clip'></div>
+  // <div id='target'></div>
+  document.body.appendChild(sibling);
+  document.body.appendChild(target);
+
+  sibling.style.scrollTimelineName = 'timeline';
+  target.style.animation = "anim 10s linear timeline";
+
+  sibling.scrollTop = 50; // 50%, in [0, 100].
+  assert_equals(getComputedStyle(target).translate, 'none',
+    'Animation with an unresolved current time');
+
+  target.remove();
+  sibling.remove();
+}, 'scroll-timeline-name on an element which is not a scroll-container');
+
+// TODO: Add more tests which change scroll-timeline-name property.
+// Those animations which use this timeline should be restyled propertly.
+
+// -------------------------
+// Test scroll-timeline-axis
+// -------------------------
+
+test(t => {
+  let [scroller, target] = createScrollerAndTarget(t);
+  scroller.style.writingMode = 'vertical-lr';
+
+  document.body.appendChild(scroller);
+  document.body.appendChild(target);
+
+  scroller.style.scrollTimeline = 'timeline block';
+  target.style.animation = "anim 10s linear timeline";
+
+  scroller.scrollLeft = 50;
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'scroll-timeline-axis is block');
+
+test(t => {
+  let [scroller, target] = createScrollerAndTarget(t);
+  scroller.style.writingMode = 'vertical-lr';
+
+  document.body.appendChild(scroller);
+  document.body.appendChild(target);
+
+  scroller.style.scrollTimeline = 'timeline inline';
+  target.style.animation = "anim 10s linear timeline";
+
+  scroller.scrollTop = 50;
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'scroll-timeline-axis is inline');
+
+test(t => {
+  let [scroller, target] = createScrollerAndTarget(t);
+  scroller.style.writingMode = 'vertical-lr';
+
+  document.body.appendChild(scroller);
+  document.body.appendChild(target);
+
+  scroller.style.scrollTimeline = 'timeline horizontal';
+  target.style.animation = "anim 10s linear timeline";
+
+  scroller.scrollLeft = 50;
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'scroll-timeline-axis is horizontal');
+
+test(t => {
+  let [scroller, target] = createScrollerAndTarget(t);
+  scroller.style.writingMode = 'vertical-lr';
+
+  document.body.appendChild(scroller);
+  document.body.appendChild(target);
+
+  scroller.style.scrollTimeline = 'timeline vertical';
+  target.style.animation = "anim 10s linear timeline";
+
+  scroller.scrollTop = 50;
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'scroll-timeline-axis is vertical');
+
+// TODO: Add more tests which change scroll-timeline-axis property.
+// Those animations which use this timeline should be restyled properly.
+
+</script>
+</body>

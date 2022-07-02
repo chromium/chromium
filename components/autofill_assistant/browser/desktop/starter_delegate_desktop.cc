@@ -98,8 +98,14 @@ bool StarterDelegateDesktop::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterDelegateDesktop::GetIsLoggedIn() {
-  // Only relevant for trigger scripts, which don't exist in headless.
-  return false;
+  return !common_dependencies_
+              ->GetSignedInEmail(GetWebContents().GetBrowserContext())
+              .empty();
+}
+
+bool StarterDelegateDesktop::GetIsSupervisedUser() {
+  return common_dependencies_->IsSupervisedUser(
+      GetWebContents().GetBrowserContext());
 }
 
 bool StarterDelegateDesktop::GetIsCustomTab() const {
@@ -140,11 +146,13 @@ bool StarterDelegateDesktop::IsAttached() {
   return true;
 }
 
-const CommonDependencies* StarterDelegateDesktop::GetCommonDependencies() {
+const CommonDependencies* StarterDelegateDesktop::GetCommonDependencies()
+    const {
   return common_dependencies_.get();
 }
 
-const PlatformDependencies* StarterDelegateDesktop::GetPlatformDependencies() {
+const PlatformDependencies* StarterDelegateDesktop::GetPlatformDependencies()
+    const {
   return platform_dependencies_.get();
 }
 

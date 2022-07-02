@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,6 +7,7 @@ import argparse
 import os
 import subprocess
 import sys
+import time
 
 def main():
   description = 'Invokes build-webkit with the given options.'
@@ -73,7 +74,20 @@ def main():
     command.append('WK_FRAMEWORK_HEADER_POSTPROCESSING_DISABLED=NO')
 
   proc = subprocess.Popen(command, cwd=cwd, env=env)
-  proc.communicate()
+
+  # Building WebKit can take multiple hours, so produce output periodically to
+  # to avoid appearing to be hung.
+  build_finished = False
+  start_time = time.time()
+  while not build_finished:
+    build_finished = True
+    try:
+      proc.communicate(timeout=600)
+    except subprocess.TimeoutExpired:
+      elapsed = time.time() - start_time
+      print(f'WebKit is still building, {elapsed:.0f} seconds elapsed')
+      build_finished = False
+
   return proc.returncode
 
 if __name__ == '__main__':

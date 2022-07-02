@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -30,7 +31,7 @@ class DeskContainerObserver;
 // container per display (root window) per each desk.
 // Those containers are parent windows of the windows that belong to the
 // associated desk. When the desk is active, those containers are shown, when
-// the desk is in active, those containers are hidden.
+// the desk is inactive, those containers are hidden.
 class ASH_EXPORT Desk {
  public:
   class Observer : public base::CheckedObserver {
@@ -60,6 +61,8 @@ class ASH_EXPORT Desk {
   static int GetWeeklyActiveDesks();
 
   int container_id() const { return container_id_; }
+
+  const base::GUID& uuid() const { return uuid_; }
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
@@ -203,6 +206,9 @@ class ASH_EXPORT Desk {
   // If |this| has not been interacted with yet this week, increment
   // |g_weekly_active_desks| and set |this| to interacted with.
   void MaybeIncrementWeeklyActiveDesks();
+
+  // Uniquely identifies the desk.
+  const base::GUID uuid_;
 
   // The associated container ID with this desk.
   const int container_id_;

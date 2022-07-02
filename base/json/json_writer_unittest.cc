@@ -164,28 +164,28 @@ TEST(JSONWriterTest, DoublesAsInts) {
 TEST(JSONWriterTest, StackOverflow) {
   std::string output_js;
 
-  Value::ListStorage deep_list_storage;
+  Value::List deep_list;
   const size_t max_depth = 100000;
 
   for (size_t i = 0; i < max_depth; ++i) {
-    Value::ListStorage inner_list_storage;
-    std::swap(inner_list_storage, deep_list_storage);
-    deep_list_storage.push_back(Value(std::move(inner_list_storage)));
+    Value::List new_top_list;
+    new_top_list.Append(std::move(deep_list));
+    deep_list = std::move(new_top_list);
   }
 
-  Value deep_list(std::move(deep_list_storage));
-  EXPECT_FALSE(JSONWriter::Write(deep_list, &output_js));
+  Value deep_list_value(std::move(deep_list));
+  EXPECT_FALSE(JSONWriter::Write(deep_list_value, &output_js));
   EXPECT_FALSE(JSONWriter::WriteWithOptions(
-      deep_list, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
+      deep_list_value, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
 
   // We cannot just let deep_list tear down since it
   // would cause a stack overflow. Therefore, we tear
   // down the deep list manually.
-  deep_list_storage = std::move(deep_list).TakeListDeprecated();
-  while (!deep_list_storage.empty()) {
-    DCHECK_EQ(deep_list_storage.size(), 1u);
-    Value inner_list = std::move(deep_list_storage[0]);
-    deep_list_storage = std::move(inner_list).TakeListDeprecated();
+  deep_list = std::move(deep_list_value.GetList());
+  while (!deep_list.empty()) {
+    DCHECK_EQ(deep_list.size(), 1u);
+    Value::List inner_list = std::move(deep_list[0].GetList());
+    deep_list = std::move(inner_list);
   }
 }
 
@@ -203,10 +203,10 @@ TEST(JSONWriterTest, TestMaxDepthWithValidNodes) {
   }
 
   // Ensure we can read and write the JSON
-  JSONReader::ValueWithError json_val = JSONReader::ReadAndReturnValueWithError(
+  auto json_val = JSONReader::ReadAndReturnValueWithError(
       nested_json, JSON_ALLOW_TRAILING_COMMAS);
-  EXPECT_TRUE(json_val.value);
-  const Value& value = json_val.value.value();
+  EXPECT_TRUE(json_val.has_value());
+  const Value& value = *json_val;
   std::string serialized;
   EXPECT_TRUE(JSONWriter::Write(value, &serialized));
 }

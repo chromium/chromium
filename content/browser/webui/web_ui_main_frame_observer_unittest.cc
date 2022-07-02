@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
@@ -67,7 +68,7 @@ class FakeJsErrorReportProcessor : public JsErrorReportProcessor {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   JavaScriptErrorReport last_error_report_;
   int error_report_count_ = 0;
-  BrowserContext* browser_context_ = nullptr;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
 };
 
 class MockWebUIController : public WebUIController {
@@ -102,7 +103,7 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
     // TestWebContents::Create, the static_casts are safe.
     web_ui_ = std::make_unique<WebUIImpl>(
         static_cast<TestWebContents*>(web_contents()),
-        static_cast<TestWebContents*>(web_contents())->GetMainFrame());
+        static_cast<TestWebContents*>(web_contents())->GetPrimaryMainFrame());
     web_ui_->SetController(
         std::make_unique<MockWebUIController>(web_ui_.get()));
     process()->Init();
@@ -316,8 +317,8 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
   NavigateToPage();
   auto another_contents =
       TestWebContents::Create(browser_context(), site_instance_);
-  CHECK(another_contents->GetMainFrame());
-  CallOnDidAddMessageToConsole(another_contents->GetMainFrame(),
+  CHECK(another_contents->GetPrimaryMainFrame());
+  CallOnDidAddMessageToConsole(another_contents->GetPrimaryMainFrame(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceURL16, kStackTrace16);
   task_environment()->RunUntilIdle();

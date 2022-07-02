@@ -27,6 +27,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -384,6 +385,13 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
 
 const char* DeskPreviewView::GetClassName() const {
   return "DeskPreviewView";
+}
+
+void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // Avoid failing accessibility checks if we don't have a name.
+  views::Button::GetAccessibleNodeData(node_data);
+  if (GetAccessibleName().empty())
+    node_data->SetNameExplicitlyEmpty();
 }
 
 void DeskPreviewView::Layout() {

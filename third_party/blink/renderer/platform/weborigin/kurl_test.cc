@@ -754,26 +754,13 @@ TEST(KURLTest, Offsets) {
   EXPECT_EQ(11u, kurl3.PathAfterLastSlash());
 }
 
-TEST(KURLTest, DeepCopy) {
-  const char kUrl[] = "http://www.google.com/";
-  const KURL src(kUrl);
-  EXPECT_TRUE(src.GetString() ==
-              kUrl);  // This really just initializes the cache.
-  const KURL dest = src.Copy();
-  EXPECT_TRUE(dest.GetString() ==
-              kUrl);  // This really just initializes the cache.
-
-  // The pointers should be different for both UTF-8 and UTF-16.
-  EXPECT_NE(dest.GetString().Impl(), src.GetString().Impl());
-}
-
 TEST(KURLTest, DeepCopyInnerURL) {
   const char kUrl[] = "filesystem:http://www.google.com/temporary/test.txt";
   const char kInnerURL[] = "http://www.google.com/temporary";
   const KURL src(kUrl);
   EXPECT_TRUE(src.GetString() == kUrl);
   EXPECT_TRUE(src.InnerURL()->GetString() == kInnerURL);
-  const KURL dest = src.Copy();
+  const KURL dest = src;
   EXPECT_TRUE(dest.GetString() == kUrl);
   EXPECT_TRUE(dest.InnerURL()->GetString() == kInnerURL);
 }
@@ -1083,7 +1070,7 @@ TEST(KURLTest, InvalidKURLToGURL) {
 
   // This passes the original internal url to GURL, check that it arrives
   // in an internally self-consistent state.
-  GURL gurl = kurl;
+  GURL gurl = GURL(kurl);
   EXPECT_FALSE(gurl.is_valid());
   EXPECT_TRUE(gurl.SchemeIs(url::kHttpScheme));
 

@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
@@ -88,22 +89,30 @@ struct NET_EXPORT HttpNetworkSessionParams {
   HttpNetworkSessionParams(const HttpNetworkSessionParams& other);
   ~HttpNetworkSessionParams();
 
-  bool enable_server_push_cancellation;
+  bool enable_server_push_cancellation = false;
   HostMappingRules host_mapping_rules;
-  bool ignore_certificate_errors;
-  uint16_t testing_fixed_http_port;
-  uint16_t testing_fixed_https_port;
-  bool enable_user_alternate_protocol_ports;
+  bool ignore_certificate_errors = false;
+  uint16_t testing_fixed_http_port = 0;
+  uint16_t testing_fixed_https_port = 0;
+  bool enable_user_alternate_protocol_ports = false;
 
   // Use SPDY ping frames to test for connection health after idle.
-  bool enable_spdy_ping_based_connection_checking;
-  bool enable_http2;
+  bool enable_spdy_ping_based_connection_checking = true;
+  bool enable_http2 = true;
   size_t spdy_session_max_recv_window_size;
   // Maximum number of capped frames that can be queued at any time.
   int spdy_session_max_queued_capped_frames;
   // Whether SPDY pools should mark sessions as going away upon relevant network
   // changes (instead of closing them). Default value is OS specific.
-  bool spdy_go_away_on_ip_change;
+  // For OSs that terminate TCP connections upon relevant network changes,
+  // attempt to preserve active streams by marking all sessions as going
+  // away, rather than explicitly closing them. Streams may still fail due
+  // to a generated TCP reset.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+  bool spdy_go_away_on_ip_change = true;
+#else
+  bool spdy_go_away_on_ip_change = false;
+#endif
   // HTTP/2 connection settings.
   // Unknown settings will still be sent to the server.
   // Might contain unknown setting identifiers from a predefined set that
@@ -117,7 +126,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
   // The setting identifier and value will be drawn independently for each
   // connection to prevent tracking of the client.
-  bool enable_http2_settings_grease;
+  bool enable_http2_settings_grease = false;
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame.
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
@@ -131,35 +140,35 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // If unset, the HEADERS frame will have the END_STREAM flag set on.
   // This is useful in conjunction with |greased_http2_frame| so that a frame
   // of reserved type can be sent out even on requests without a body.
-  bool http2_end_stream_with_data_frame;
+  bool http2_end_stream_with_data_frame = false;
   // Source of time for SPDY connections.
   SpdySessionPool::TimeFunc time_func;
   // Whether to enable HTTP/2 Alt-Svc entries.
-  bool enable_http2_alternative_service;
+  bool enable_http2_alternative_service = false;
 
   // Enables 0-RTT support.
   bool enable_early_data;
 
   // Enables QUIC support.
-  bool enable_quic;
+  bool enable_quic = true;
 
   // If true, HTTPS URLs can be sent to QUIC proxies.
-  bool enable_quic_proxies_for_https_urls;
+  bool enable_quic_proxies_for_https_urls = false;
 
   // If non-empty, QUIC will only be spoken to hosts in this list.
   base::flat_set<std::string> quic_host_allowlist;
 
   // If true, idle sockets won't be closed when memory pressure happens.
-  bool disable_idle_sockets_close_on_memory_pressure;
+  bool disable_idle_sockets_close_on_memory_pressure = false;
 
-  bool key_auth_cache_server_entries_by_network_isolation_key;
+  bool key_auth_cache_server_entries_by_network_isolation_key = false;
 
   // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
   // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE
   // frames any longer if SETTINGS_DEPRECATE_HTTP2_PRIORITIES is missing or
   // has zero 0, but continue and also stop sending HTTP/2-style priority
   // information in HEADERS frames and PRIORITY frames if it has value 1.
-  bool enable_priority_update;
+  bool enable_priority_update = false;
 
   // If true, objects used by a HttpNetworkTransaction are asked not to perform
   // disruptive work after there has been an IP address change (which usually
@@ -168,7 +177,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // network: for these, the underlying network does never change, even if the
   // default network does (hence underlying objects should not drop their
   // state).
-  bool ignore_ip_address_changes;
+  bool ignore_ip_address_changes = false;
 };
 
   // Structure with pointers to the dependencies of the HttpNetworkSession.
@@ -261,7 +270,7 @@ class NET_EXPORT HttpNetworkSession {
 #endif
 
   // Creates a Value summary of the state of the socket pools.
-  std::unique_ptr<base::Value> SocketPoolInfoToValue() const;
+  base::Value SocketPoolInfoToValue() const;
 
   // Creates a Value summary of the state of the SPDY sessions.
   std::unique_ptr<base::Value> SpdySessionPoolInfoToValue() const;

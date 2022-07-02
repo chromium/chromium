@@ -44,7 +44,7 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
 
   // Returns PartitionRoot corresponding to the allocator, or nullptr if the
   // allocator is not enabled.
-  ThreadSafePartitionRoot* root() {
+  partition_alloc::ThreadSafePartitionRoot* root() {
     if (!allocator_.get())
       return nullptr;
     return allocator_->root();
@@ -59,7 +59,9 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   NonScannableAllocatorImpl();
   ~NonScannableAllocatorImpl();
 
-  std::unique_ptr<base::PartitionAllocator, PCScanMetadataDeleter> allocator_;
+  std::unique_ptr<partition_alloc::PartitionAllocator,
+                  partition_alloc::internal::PCScanMetadataDeleter>
+      allocator_;
   std::atomic_bool pcscan_enabled_{false};
 };
 

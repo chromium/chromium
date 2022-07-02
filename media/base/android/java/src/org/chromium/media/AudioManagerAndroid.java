@@ -31,6 +31,7 @@ import android.provider.Settings;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -49,36 +50,6 @@ class AudioManagerAndroid {
     // Set to true to enable debug logs. Avoid in production builds.
     // NOTE: always check in as false.
     private static final boolean DEBUG = false;
-
-    /**
-     * NonThreadSafe is a helper class used to help verify that methods of a
-     * class are called from the same thread.
-     * Inspired by class in package com.google.android.apps.chrome.utilities.
-     * Is only utilized when DEBUG is set to true.
-     */
-    private static class NonThreadSafe {
-        private final Long mThreadId;
-
-        public NonThreadSafe() {
-            if (DEBUG) {
-                mThreadId = Thread.currentThread().getId();
-            } else {
-                // Avoids "Unread field" issue reported by findbugs.
-                mThreadId = 0L;
-            }
-        }
-
-        /**
-         * Checks if the method is called on the valid thread.
-         * Assigns the current thread if no thread was assigned.
-         */
-        public boolean calledOnValidThread() {
-            if (DEBUG) {
-                return mThreadId.equals(Thread.currentThread().getId());
-            }
-            return true;
-        }
-    }
 
     /** Simple container for device information. */
     private static class AudioDeviceName {
@@ -169,9 +140,9 @@ class AudioManagerAndroid {
     private int mRequestedAudioDevice = DEVICE_INVALID;
 
     // This class should be created, initialized and closed on the audio thread
-    // in the audio manager. We use |mNonThreadSafe| to ensure that this is
-    // the case. Only active when |DEBUG| is set to true.
-    private final NonThreadSafe mNonThreadSafe = new NonThreadSafe();
+    // in the audio manager. We use |mThreadChecker| to ensure that this is
+    // the case.
+    private final ThreadChecker mThreadChecker = new ThreadChecker();
 
     // Lock to protect |mAudioDevices| and |mRequestedAudioDevice| which can
     // be accessed from the main thread and the audio manager thread.
@@ -225,7 +196,7 @@ class AudioManagerAndroid {
      */
     @CalledByNative
     private void init() {
-        checkIfCalledOnValidThread();
+        mThreadChecker.assertOnValidThread();
         if (DEBUG) logd("init");
         if (DEBUG) logDeviceInfo();
         if (mIsInitialized) return;
@@ -267,7 +238,7 @@ class AudioManagerAndroid {
      */
     @CalledByNative
     private void close() {
-        checkIfCalledOnValidThread();
+        mThreadChecker.assertOnValidThread();
         if (DEBUG) logd("close");
         if (!mIsInitialized) return;
 
@@ -286,7 +257,7 @@ class AudioManagerAndroid {
      */
     @CalledByNative
     private void setCommunicationAudioModeOn(boolean on) {
-        checkIfCalledOnValidThread();
+        mThreadChecker.assertOnValidThread();
         if (DEBUG) logd("setCommunicationAudioModeOn" + on + ")");
         if (!mIsInitialized) return;
 
@@ -523,7 +494,7 @@ class AudioManagerAndroid {
     // See b/80326798 for more information.
     @CalledByNative
     private int getOutputLatency() {
-        checkIfCalledOnValidThread();
+        mThreadChecker.assertOnValidThread();
 
         int result = 0;
         if (sGetOutputLatency != null) {
@@ -536,16 +507,6 @@ class AudioManagerAndroid {
         }
 
         return result;
-    }
-
-    /**
-     * Helper method for debugging purposes. Ensures that method is
-     * called on same thread as this object was created on.
-     */
-    private void checkIfCalledOnValidThread() {
-        if (DEBUG && !mNonThreadSafe.calledOnValidThread()) {
-            throw new IllegalStateException("Method is not called on valid thread");
-        }
     }
 
     /**

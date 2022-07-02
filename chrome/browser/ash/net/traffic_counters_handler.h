@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -27,7 +27,7 @@ namespace traffic_counters {
 // years. Similarly, if the user specified day was 31, the actual day of reset
 // for April would be April 30th.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler
-    : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+    : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   using TimeGetter = base::RepeatingCallback<base::Time()>;
 
@@ -41,17 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler
   void Start();
 
   // CrosNetworkConfigObserver
-  void OnNetworkStateListChanged() override {}
-  void OnDeviceStateListChanged() override {}
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           active_networks) override;
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
-      override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   void SetTimeGetterForTest(TimeGetter time_getter);
   void RunForTesting();

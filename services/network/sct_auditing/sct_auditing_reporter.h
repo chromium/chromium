@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -175,7 +176,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
 
   // The NetworkContext which owns the SCTAuditingHandler that created this
   // Reporter.
-  NetworkContext* owner_network_context_;
+  raw_ptr<NetworkContext> owner_network_context_;
 
   net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;

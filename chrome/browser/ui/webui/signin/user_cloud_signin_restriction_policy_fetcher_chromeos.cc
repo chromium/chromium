@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -154,10 +155,11 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchUserInfo() {
 }
 
 void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoSuccess(
-    const base::DictionaryValue* user_info) {
+    const base::Value::Dict& user_info) {
   // Check if the user account has a hosted domain.
-  if (user_info->HasKey(kHostedDomainKey)) {
-    hosted_domain_ = user_info->FindKey(kHostedDomainKey)->GetString();
+  const std::string* hosted_domain = user_info.FindString(kHostedDomainKey);
+  if (hosted_domain) {
+    hosted_domain_ = *hosted_domain;
     GetSecondaryGoogleAccountUsageInternal();
   } else {
     // Non Enterprise accounts do not have restrictions.

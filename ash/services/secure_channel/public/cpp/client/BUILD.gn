@@ -22,6 +22,8 @@ source_set("client") {
     "connection_manager_impl.h",
     "nearby_connector.cc",
     "nearby_connector.h",
+    "nearby_metrics_recorder.cc",
+    "nearby_metrics_recorder.h",
     "presence_monitor_client.h",
     "presence_monitor_client_impl.cc",
     "presence_monitor_client_impl.h",

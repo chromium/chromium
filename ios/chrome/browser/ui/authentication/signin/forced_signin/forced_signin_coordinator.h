@@ -13,8 +13,8 @@
 @interface ForcedSigninCoordinator : SigninCoordinator
 
 // Initiate the coordinator.
-// |browser| used for authentication. It must not be off the record (incognito).
-// |screenProvider| helps decide which screen to show.
+// `browser` used for authentication. It must not be off the record (incognito).
+// `screenProvider` helps decide which screen to show.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider

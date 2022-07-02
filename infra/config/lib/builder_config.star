@@ -10,8 +10,6 @@ load("./args.star", "args")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
 
-# TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
-
 def _enum(**kwargs):
     """Create an enum struct.
 
@@ -198,6 +196,36 @@ def _skylab_upload_location(*, gs_bucket, gs_extra = None):
         gs_extra = gs_extra,
     )
 
+def _clusterfuzz_archive(
+        *,
+        gs_bucket,
+        gs_acl = None,
+        archive_name_prefix,
+        archive_subdir = None):
+    """The details for configuring clusterfuzz archiving.
+
+    Args:
+        gs_bucket: (str) The name of the Google Cloud Storage bucket to upload
+            the archive to.
+        gs_acl: (str) The name of a Google Cloud Storage canned ACL to apply to
+            the uploaded archive.
+        archive_name_prefix: (str) The prefix of the archive's name. The name of
+            the archive will contain additional details such as platform and
+            target among others.
+        archive_subdir: (str) An optional additional subdirectory within the
+            platform/target directory to upload the archive to.
+    """
+    if not gs_bucket:
+        fail("gs_bucket must be provided")
+    if not archive_name_prefix:
+        fail("archive_name_prefix must be provided")
+    return struct(
+        gs_bucket = gs_bucket,
+        gs_acl = gs_acl,
+        archive_name_prefix = archive_name_prefix,
+        archive_subdir = archive_subdir,
+    )
+
 def _builder_spec(
         *,
         execution_mode = _execution_mode.COMPILE_AND_TEST,
@@ -211,7 +239,8 @@ def _builder_spec(
         run_tests_serially = None,
         perf_isolate_upload = None,
         expose_trigger_properties = None,
-        skylab_upload_location = None):
+        skylab_upload_location = None,
+        clusterfuzz_archive = None):
     """Details for configuring execution for a single builder.
 
     Args:
@@ -251,6 +280,8 @@ def _builder_spec(
         skylab_upload_location: (skylab_upload_location) The location to upload
             tests when using the lacros on skylab pipeline. This must be set if
             the builder triggers tests on skylab.
+        clusterfuzz_archive: (clusterfuzz_archive) The details of archiving for
+            clusterfuzz.
 
     Returns:
         A builder spec struct that can be passed to builder to set the builder
@@ -276,6 +307,7 @@ def _builder_spec(
         perf_isolate_upload = perf_isolate_upload,
         expose_trigger_properties = expose_trigger_properties,
         skylab_upload_location = skylab_upload_location,
+        clusterfuzz_archive = clusterfuzz_archive,
     )
 
 _rts_condition = _enum(
@@ -373,10 +405,11 @@ builder_config = struct(
     # builder's
     copy_from = _copy_from,
 
-    # Function and associated constants for defining builder spec
+    # Functions and associated constants for defining builder spec
     builder_spec = _builder_spec,
     execution_mode = _execution_mode,
     skylab_upload_location = _skylab_upload_location,
+    clusterfuzz_archive = _clusterfuzz_archive,
 
     # Function for defining gclient recipe module config
     gclient_config = _gclient_config,

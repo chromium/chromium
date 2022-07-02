@@ -14,7 +14,7 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './profile_info_browser_proxy.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
@@ -146,8 +146,8 @@ export class SettingsSyncAccountControlElement extends
   promoLabelWithNoAccount: string;
   promoSecondaryLabelWithAccount: string;
   promoSecondaryLabelWithNoAccount: string;
-  signedIn_: boolean;
-  storedAccounts_: Array<StoredAccount>;
+  private signedIn_: boolean;
+  private storedAccounts_: Array<StoredAccount>;
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
   embeddedInSubpage: boolean;
@@ -168,23 +168,12 @@ export class SettingsSyncAccountControlElement extends
   }
 
   /**
-   * Records the following user actions:
-   * - Signin_Impression_FromSettings and
-   * - Signin_ImpressionWithAccount_FromSettings
-   * - Signin_ImpressionWithNoAccount_FromSettings
+   * Records Signin_Impression_FromSettings user action.
    */
-  recordImpressionUserActions_() {
+  private recordImpressionUserActions_() {
     assert(!this.syncStatus.signedIn);
-    assert(this.shownAccount_ !== undefined);
 
     chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');
-    if (this.shownAccount_) {
-      chrome.metricsPrivate.recordUserAction(
-          'Signin_ImpressionWithAccount_FromSettings');
-    } else {
-      chrome.metricsPrivate.recordUserAction(
-          'Signin_ImpressionWithNoAccount_FromSettings');
-    }
   }
 
   private computeSignedIn_(): boolean {
@@ -310,16 +299,6 @@ export class SettingsSyncAccountControlElement extends
         !this.getPref('signin.allowed_on_next_startup').value;
   }
 
-  private isNonSyncingProfilesSupported_(): boolean {
-    // <if expr="chromeos_lacros">
-    return loadTimeData.getBoolean('nonSyncingProfilesEnabled');
-    // </if>
-
-    // <if expr="not chromeos_lacros">
-    return true;
-    // </if>
-  }
-
   private shouldShowTurnOffButton_(): boolean {
     // <if expr="chromeos_ash">
     if (this.syncStatus.domain) {
@@ -329,10 +308,6 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
     // </if>
-
-    if (!this.isNonSyncingProfilesSupported_()) {
-      return false;
-    }
 
     return !this.hideButtons && !this.showSetupButtons_ &&
         !!this.syncStatus.signedIn;

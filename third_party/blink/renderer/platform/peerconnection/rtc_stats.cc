@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -118,7 +119,7 @@ size_t CountAllowlistedStats(
 
 template <typename T>
 Vector<T> ToWTFVector(const std::vector<T>& vector) {
-  Vector<T> wtf_vector(SafeCast<WTF::wtf_size_t>(vector.size()));
+  Vector<T> wtf_vector(base::checked_cast<WTF::wtf_size_t>(vector.size()));
   std::move(vector.begin(), vector.end(), wtf_vector.begin());
   return wtf_vector;
 }
@@ -320,7 +321,7 @@ HashMap<String, uint64_t> RTCStatsMember::ValueMapStringUint64() const {
       *member_
            ->cast_to<webrtc::RTCStatsMember<std::map<std::string, uint64_t>>>();
   HashMap<String, uint64_t> wtf_map;
-  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  wtf_map.ReserveCapacityForSize(base::checked_cast<unsigned>(map.size()));
   for (auto& elem : map) {
     wtf_map.insert(String::FromUTF8(elem.first), elem.second);
   }
@@ -333,7 +334,7 @@ HashMap<String, double> RTCStatsMember::ValueMapStringDouble() const {
       *member_
            ->cast_to<webrtc::RTCStatsMember<std::map<std::string, double>>>();
   HashMap<String, double> wtf_map;
-  wtf_map.ReserveCapacityForSize(SafeCast<unsigned>(map.size()));
+  wtf_map.ReserveCapacityForSize(base::checked_cast<unsigned>(map.size()));
   for (auto& elem : map) {
     wtf_map.insert(String::FromUTF8(elem.first), elem.second);
   }

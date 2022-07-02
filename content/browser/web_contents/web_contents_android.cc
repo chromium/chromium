@@ -291,7 +291,7 @@ void WebContentsAndroid::SetViewAndroidDelegate(
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetMainFrame(
     JNIEnv* env) const {
-  return web_contents_->GetMainFrame()->GetJavaRenderFrameHost();
+  return web_contents_->GetPrimaryMainFrame()->GetJavaRenderFrameHost();
 }
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetFocusedFrame(
@@ -488,7 +488,7 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(JNIEnv* env) {
   bool should_overlay_content =
       web_contents_->GetPrimaryPage().virtual_keyboard_overlays_content();
   if (!should_overlay_content)
-    input_handler->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+    input_handler->ScrollFocusedEditableNodeIntoView();
 }
 
 void WebContentsAndroid::SelectAroundCaretAck(
@@ -545,7 +545,7 @@ void WebContentsAndroid::EvaluateJavaScript(
 
   if (!callback) {
     // No callback requested.
-    web_contents_->GetMainFrame()->ExecuteJavaScript(
+    web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(
         ConvertJavaStringToUTF16(env, script), base::NullCallback());
     return;
   }
@@ -555,7 +555,7 @@ void WebContentsAndroid::EvaluateJavaScript(
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(
       ConvertJavaStringToUTF16(env, script),
       base::BindOnce(&JavaScriptResultCallback, j_callback));
 }
@@ -572,7 +572,7 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
 
   if (!callback) {
     // No callback requested.
-    web_contents_->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         ConvertJavaStringToUTF16(env, script), base::NullCallback());
     return;
   }
@@ -582,7 +582,7 @@ void WebContentsAndroid::EvaluateJavaScriptForTests(
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
-  web_contents_->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       ConvertJavaStringToUTF16(env, script),
       base::BindOnce(&JavaScriptResultCallback, j_callback));
 }
@@ -594,7 +594,7 @@ void WebContentsAndroid::AddMessageToDevToolsConsole(
   DCHECK_GE(level, 0);
   DCHECK_LE(level, static_cast<int>(blink::mojom::ConsoleMessageLevel::kError));
 
-  web_contents_->GetMainFrame()->AddMessageToConsole(
+  web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
       static_cast<blink::mojom::ConsoleMessageLevel>(level),
       ConvertJavaStringToUTF8(env, message));
 }
@@ -635,7 +635,7 @@ void WebContentsAndroid::RequestSmartClipExtract(
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
-  web_contents_->GetMainFrame()->RequestSmartClipExtract(
+  web_contents_->GetPrimaryMainFrame()->RequestSmartClipExtract(
       base::BindOnce(&SmartClipCallback, j_callback),
       gfx::Rect(x, y, width, height));
 }

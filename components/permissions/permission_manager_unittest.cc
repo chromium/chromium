@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -65,7 +66,7 @@ class ScopedPartitionedOriginBrowserClient
 
  private:
   url::Origin app_origin_;
-  content::ContentBrowserClient* old_client_;
+  raw_ptr<content::ContentBrowserClient> old_client_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -689,7 +690,8 @@ TEST_F(PermissionManagerTest, InsecureOrigin) {
 
   PermissionResult result =
       GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-          ContentSettingsType::GEOLOCATION, web_contents()->GetMainFrame());
+          ContentSettingsType::GEOLOCATION,
+          web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
   EXPECT_EQ(PermissionStatusSource::INSECURE_ORIGIN, result.source);
@@ -698,7 +700,7 @@ TEST_F(PermissionManagerTest, InsecureOrigin) {
   NavigateAndCommit(secure_frame);
 
   result = GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-      ContentSettingsType::GEOLOCATION, web_contents()->GetMainFrame());
+      ContentSettingsType::GEOLOCATION, web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(CONTENT_SETTING_ASK, result.content_setting);
   EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result.source);

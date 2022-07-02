@@ -115,8 +115,8 @@ void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {
   slow_down_raster_scale_factor_for_debug_ = factor;
 }
 
-void RecordingSource::SetBackgroundColor(SkColor background_color) {
-  background_color_ = SkColor4f::FromColor(background_color);
+void RecordingSource::SetBackgroundColor(SkColor4f background_color) {
+  background_color_ = background_color;
 }
 
 void RecordingSource::SetRequiresClear(bool requires_clear) {

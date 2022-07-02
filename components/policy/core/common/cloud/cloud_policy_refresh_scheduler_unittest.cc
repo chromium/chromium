@@ -60,7 +60,8 @@ class MockObserver : public CloudPolicyRefreshSchedulerObserver {
 class CloudPolicyRefreshSchedulerTest : public testing::Test {
  protected:
   CloudPolicyRefreshSchedulerTest()
-      : service_(std::make_unique<MockCloudPolicyService>(&client_, &store_)),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        service_(std::make_unique<MockCloudPolicyService>(&client_, &store_)),
         task_runner_(new base::TestSimpleTaskRunner()),
         mock_clock_(std::make_unique<base::SimpleTestClock>()) {}
 
@@ -542,13 +543,7 @@ TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnRegistrationStateChanged) {
   EXPECT_FALSE(task_runner_->HasPendingTask());
 }
 
-// TODO(crbug.com/1322731): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OnStoreLoaded DISABLED_OnStoreLoaded
-#else
-#define MAYBE_OnStoreLoaded OnStoreLoaded
-#endif
-TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, MAYBE_OnStoreLoaded) {
+TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnStoreLoaded) {
   store_.NotifyStoreLoaded();
   CheckTiming(refresh_scheduler_.get(), kPolicyRefreshRate);
 }
@@ -611,6 +606,7 @@ static const ClientErrorTestParam kClientErrorTestCases[] = {
     {DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL, -1, 1},
     {DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED, -1, 1},
     {DM_STATUS_SERVICE_TOO_MANY_REQUESTS, kPolicyRefreshRate, 1},
+    {DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, -1, 1},
     {DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE, -1, 1},
 };
 

@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
@@ -700,6 +701,15 @@ void LoopbackServer::ClearServerData() {
   Init();
 }
 
+void LoopbackServer::DeleteAllEntitiesForModelType(ModelType model_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto should_delete_entry = [model_type](const auto& id_and_entity) {
+    return id_and_entity.second->GetModelType() == model_type;
+  };
+  base::EraseIf(entities_, should_delete_entry);
+  ScheduleSaveStateToFile();
+}
+
 std::string LoopbackServer::GetStoreBirthday() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::NumberToString(store_birthday_);
@@ -884,9 +894,9 @@ bool LoopbackServer::LoadStateFromFile() {
   if (state_file_error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION("Sync.Local.ReadPlatformFileError",
                               -state_file_error, -base::File::FILE_ERROR_MAX);
-    LOG(ERROR)
-        << "Loopback sync cannot read the persistent state file with error "
-        << base::File::ErrorToString(state_file_error);
+    LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+               << persistent_file_ << ") with error "
+               << base::File::ErrorToString(state_file_error);
     return false;
   }
 
@@ -896,10 +906,12 @@ bool LoopbackServer::LoadStateFromFile() {
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
       return DeSerializeState(proto);
     }
-    LOG(ERROR) << "Loopback sync cannot parse the persistent state file.";
+    LOG(ERROR) << "Loopback sync cannot parse the persistent state file ("
+               << persistent_file_ << ").";
     return false;
   }
-  LOG(ERROR) << "Loopback sync cannot read the persistent state file.";
+  LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+             << persistent_file_ << ").";
   return false;
 }
 

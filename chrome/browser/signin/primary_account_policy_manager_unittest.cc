@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/primary_account_policy_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -67,7 +68,7 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };

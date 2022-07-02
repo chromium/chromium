@@ -45,10 +45,9 @@ public class LinkToTextIPHController {
      *         will be rendered.
      * @param TabModelSelector The {@link TabModelSelector} to open a new tab.
      */
-    public LinkToTextIPHController(
-            ObservableSupplier<Tab> tabSupplier, TabModelSelector tabModelSelector) {
+    public LinkToTextIPHController(ObservableSupplier<Tab> tabSupplier,
+            TabModelSelector tabModelSelector, ObservableSupplier<Profile> profileSupplier) {
         mTabModelSelector = tabModelSelector;
-        mTracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
@@ -59,6 +58,7 @@ public class LinkToTextIPHController {
 
                 if (!LinkToTextHelper.hasTextFragment(url)) return;
 
+                mTracker = TrackerFactory.getTrackerForProfile(profileSupplier.get());
                 if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
                     return;
                 }

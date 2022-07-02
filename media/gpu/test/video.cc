@@ -364,17 +364,17 @@ bool Video::LoadMetadata() {
 
   auto metadata_result =
       base::JSONReader::ReadAndReturnValueWithError(json_data);
-  if (!metadata_result.value) {
+  if (!metadata_result.has_value()) {
     LOG(ERROR) << "Failed to parse video metadata: " << metadata_file_path_
-               << ": " << metadata_result.error_message;
+               << ": " << metadata_result.error().message;
     return false;
   }
-  absl::optional<base::Value> metadata = std::move(metadata_result.value);
+  base::Value& metadata = *metadata_result;
 
   // Find the video's profile, only required for encoded video streams.
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   const base::Value* profile =
-      metadata->FindKeyOfType("profile", base::Value::Type::STRING);
+      metadata.FindKeyOfType("profile", base::Value::Type::STRING);
   if (profile) {
     auto converted_profile = ConvertStringtoProfile(profile->GetString());
     if (!converted_profile) {
@@ -394,7 +394,7 @@ bool Video::LoadMetadata() {
   // Find the video's bit depth. This is optional and only required for encoded
   // video streams.
   const base::Value* bit_depth =
-      metadata->FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
   if (bit_depth) {
     bit_depth_ = base::checked_cast<uint8_t>(bit_depth->GetInt());
   } else {
@@ -409,7 +409,7 @@ bool Video::LoadMetadata() {
   // Find the video's pixel format, only required for raw video streams.
   pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
   const base::Value* pixel_format =
-      metadata->FindKeyOfType("pixel_format", base::Value::Type::STRING);
+      metadata.FindKeyOfType("pixel_format", base::Value::Type::STRING);
   if (pixel_format) {
     auto converted_pixel_format =
         ConvertStringtoPixelFormat(pixel_format->GetString());
@@ -434,7 +434,7 @@ bool Video::LoadMetadata() {
   }
 
   const base::Value* frame_rate =
-      metadata->FindKeyOfType("frame_rate", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("frame_rate", base::Value::Type::INTEGER);
   if (!frame_rate) {
     LOG(ERROR) << "Key \"frame_rate\" is not found in " << metadata_file_path_;
     return false;
@@ -442,7 +442,7 @@ bool Video::LoadMetadata() {
   frame_rate_ = static_cast<uint32_t>(frame_rate->GetInt());
 
   const base::Value* num_frames =
-      metadata->FindKeyOfType("num_frames", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("num_frames", base::Value::Type::INTEGER);
   if (!num_frames) {
     LOG(ERROR) << "Key \"num_frames\" is not found in " << metadata_file_path_;
     return false;
@@ -454,7 +454,7 @@ bool Video::LoadMetadata() {
   if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
       (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX)) {
     const base::Value* num_fragments =
-        metadata->FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
+        metadata.FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
     if (!num_fragments) {
       LOG(ERROR) << "Key \"num_fragments\" is required for H.264/HEVC video "
                     "streams but could not be found in "
@@ -465,13 +465,13 @@ bool Video::LoadMetadata() {
   }
 
   const base::Value* width =
-      metadata->FindKeyOfType("width", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("width", base::Value::Type::INTEGER);
   if (!width) {
     LOG(ERROR) << "Key \"width\" is not found in " << metadata_file_path_;
     return false;
   }
   const base::Value* height =
-      metadata->FindKeyOfType("height", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("height", base::Value::Type::INTEGER);
   if (!height) {
     LOG(ERROR) << "Key \"height\" is not found in " << metadata_file_path_;
     return false;
@@ -485,7 +485,7 @@ bool Video::LoadMetadata() {
   // Find optional frame checksums. These are only required when using the frame
   // validator.
   const base::Value* md5_checksums =
-      metadata->FindKeyOfType("md5_checksums", base::Value::Type::LIST);
+      metadata.FindKeyOfType("md5_checksums", base::Value::Type::LIST);
   if (md5_checksums) {
     for (const base::Value& checksum : md5_checksums->GetListDeprecated()) {
       frame_checksums_.push_back(checksum.GetString());

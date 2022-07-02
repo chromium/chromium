@@ -22,7 +22,7 @@ namespace signin {
 // Returns the maximum allowed waiting time for the Account Capabilities API.
 base::TimeDelta GetWaitThresholdForCapabilities();
 
-// Returns true if this user sign-in upgrade should be shown for |browserState|.
+// Returns true if this user sign-in upgrade should be shown for `browserState`.
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
                                     const base::Version& current_version);
 

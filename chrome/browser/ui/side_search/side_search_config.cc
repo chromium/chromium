@@ -201,10 +201,14 @@ void SideSearchConfig::RemoveObserver(Observer* observer) {
 void SideSearchConfig::ResetStateAndNotifyConfigChanged() {
   // Reset the availabiliy bit before propagating notifications.
   is_side_panel_srp_available_ = false;
-  should_show_page_action_label_ = true;
+  page_action_label_shown_count_ = 0;
 
   for (auto& observer : observers_)
     observer.OnSideSearchConfigChanged();
+}
+
+void SideSearchConfig::DidShowPageActionLabel() {
+  ++page_action_label_shown_count_;
 }
 
 void SideSearchConfig::ApplyGoogleSearchConfigurationForTesting() {

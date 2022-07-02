@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -47,27 +46,12 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
   report->set_download_verdict(download_verdict);
   report->set_url(download.GetURL().spec());
   report->set_did_proceed(did_proceed);
-  *report->mutable_population() =
-      safe_browsing::GetUserPopulationForProfile(profile);
   std::string token =
       safe_browsing::DownloadProtectionService::GetDownloadPingToken(&download);
   if (!token.empty())
     report->set_token(token);
-  std::string serialized_report;
-  if (report->SerializeToString(&serialized_report)) {
-    sb_service->SendSerializedDownloadReport(profile, serialized_report);
 
-    // The following is to log this ClientSafeBrowsingReportRequest on any open
-    // chrome://safe-browsing pages.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &safe_browsing::WebUIInfoSingleton::AddToCSBRRsSent,
-            base::Unretained(safe_browsing::WebUIInfoSingleton::GetInstance()),
-            std::move(report)));
-  } else {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
-  }
+  sb_service->SendDownloadReport(profile, std::move(report));
 }
 
 void DownloadDangerPrompt::RecordDownloadDangerPrompt(

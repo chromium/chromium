@@ -35,8 +35,7 @@ PostSaveCompromisedBubbleController::PostSaveCompromisedBubbleController(
 PostSaveCompromisedBubbleController::~PostSaveCompromisedBubbleController() {
   // Make sure the interactions are reported even if Views didn't notify the
   // controller about the bubble being closed.
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 std::u16string PostSaveCompromisedBubbleController::GetBody() {

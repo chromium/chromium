@@ -25,6 +25,7 @@ ThreadSnapshotFuchsia::ThreadSnapshotFuchsia()
       context_arch_(),
       context_(),
       stack_(),
+      thread_name_(),
       thread_id_(ZX_KOID_INVALID),
       thread_specific_data_address_(0),
       initialized_() {}
@@ -60,6 +61,7 @@ bool ThreadSnapshotFuchsia::Initialize(
     // TODO(scottmg): Handle split stack by adding other parts to ExtraMemory().
   }
 
+  thread_name_ = thread.name;
   thread_id_ = thread.id;
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -79,6 +81,11 @@ const MemorySnapshot* ThreadSnapshotFuchsia::Stack() const {
 uint64_t ThreadSnapshotFuchsia::ThreadID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return thread_id_;
+}
+
+std::string ThreadSnapshotFuchsia::ThreadName() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return thread_name_;
 }
 
 int ThreadSnapshotFuchsia::SuspendCount() const {

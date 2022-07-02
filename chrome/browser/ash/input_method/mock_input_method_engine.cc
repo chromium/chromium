@@ -42,6 +42,9 @@ void MockInputMethodEngine::SetSurroundingText(const std::u16string& text,
 void MockInputMethodEngine::SetCompositionBounds(
     const std::vector<gfx::Rect>& bounds) {}
 
+void MockInputMethodEngine::SetCaretBounds(
+    const gfx::Rect& caret_bounds) {}
+
 ui::VirtualKeyboardController*
 MockInputMethodEngine::GetVirtualKeyboardController() const {
   return nullptr;
@@ -56,6 +59,10 @@ void MockInputMethodEngine::CandidateClicked(uint32_t index) {}
 void MockInputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {}
 
 void MockInputMethodEngine::SetCastingEnabled(bool casting_enabled) {}
+
+bool MockInputMethodEngine::IsReadyForTesting() {
+  return true;
+}
 
 const std::string& MockInputMethodEngine::GetActiveComponentId() const {
   return active_component_id_;

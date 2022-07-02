@@ -6,11 +6,11 @@ package org.chromium.chrome.test.pagecontroller.utils;
 
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.By;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.test.uiautomator.By;
 
 import java.util.regex.Pattern;
 

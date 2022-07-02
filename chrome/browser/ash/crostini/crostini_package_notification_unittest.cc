@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,10 +32,11 @@ constexpr char kNotificationId[] = "notification_id";
 
 class CrostiniPackageNotificationTest : public testing::Test {
  public:
-  CrostiniPackageNotificationTest() {}
+  CrostiniPackageNotificationTest() = default;
 
   void SetUp() override {
     DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -57,6 +59,7 @@ class CrostiniPackageNotificationTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 
@@ -71,8 +74,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithNoIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   notification.UpdateProgress(PackageOperationStatus::SUCCEEDED, 100);
   EXPECT_EQ(notification.GetButtonCountForTesting(), 0);
@@ -82,8 +85,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithOneIcon) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -96,8 +99,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithTwoIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -116,9 +119,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallIgnorePreviousIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING,
-      ContainerId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   app = CrostiniTestHelper::BasicApp(kSecondAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -131,9 +133,8 @@ TEST_F(CrostiniPackageNotificationTest, FailureErrorMessage) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING,
-      ContainerId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   // Initially, the error message is blank.
   EXPECT_EQ(notification.GetErrorMessageForTesting(), "");

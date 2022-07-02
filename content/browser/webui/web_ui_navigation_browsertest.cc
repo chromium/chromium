@@ -816,8 +816,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationDisabledWebSecurityBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
   EXPECT_EQ(kBlockedURL, popup->web_contents()->GetLastCommittedURL());
 
-  RenderFrameHost* main_rfh = shell()->web_contents()->GetMainFrame();
-  RenderFrameHost* popup_rfh = popup->web_contents()->GetMainFrame();
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* popup_rfh = popup->web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(main_rfh->GetSiteInstance(), popup_rfh->GetSiteInstance());
   EXPECT_TRUE(main_rfh->GetSiteInstance()->IsRelatedSiteInstance(
       popup_rfh->GetSiteInstance()));
@@ -845,8 +845,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationDisabledWebSecurityBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
   EXPECT_EQ(kBlockedURL, popup->web_contents()->GetLastCommittedURL());
 
-  RenderFrameHost* main_rfh = shell()->web_contents()->GetMainFrame();
-  RenderFrameHost* popup_rfh = popup->web_contents()->GetMainFrame();
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* popup_rfh = popup->web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(main_rfh->GetSiteInstance(), popup_rfh->GetSiteInstance());
   EXPECT_TRUE(main_rfh->GetSiteInstance()->IsRelatedSiteInstance(
       popup_rfh->GetSiteInstance()));
@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the "hostname" is also part of the site URL.
   auto site_info = static_cast<SiteInstanceImpl*>(
-                       web_contents->GetMainFrame()->GetSiteInstance())
+                       web_contents->GetPrimaryMainFrame()->GetSiteInstance())
                        ->GetSiteInfo();
   EXPECT_EQ(expected_site_info, site_info);
 
@@ -989,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the "hostname" is also part of the site URL.
   auto site_info = static_cast<SiteInstanceImpl*>(
-                       web_contents->GetMainFrame()->GetSiteInstance())
+                       web_contents->GetPrimaryMainFrame()->GetSiteInstance())
                        ->GetSiteInfo();
   EXPECT_EQ(expected_site_info, site_info);
 
@@ -1019,8 +1019,9 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   GURL start_url(GetWebUIURL("web-ui/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(start_url, shell()->web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+  EXPECT_EQ(
+      BINDINGS_POLICY_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()

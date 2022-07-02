@@ -13,6 +13,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.page_info.PageInfoController;
@@ -55,6 +56,8 @@ public class ChromePageInfo {
      */
     public void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight) {
         WebContents webContents = tab.getWebContents();
+        if (webContents == null || !ProfileManager.isInitialized()) return;
+
         Activity activity = TabUtils.getActivity(tab);
         PageInfoController.show(activity, webContents, mPublisher, mSource,
                 new ChromePageInfoControllerDelegate(activity, webContents,

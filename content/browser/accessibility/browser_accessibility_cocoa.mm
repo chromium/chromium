@@ -630,7 +630,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilitySelectedTextRangeAttribute, @"selectedTextRange"},
       {NSAccessibilitySelectedTextMarkerRangeAttribute,
        @"selectedTextMarkerRange"},
-      {NSAccessibilitySizeAttribute, @"size"},
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
       {NSAccessibilitySubroleAttribute, @"subrole"},
       {NSAccessibilityTabsAttribute, @"tabs"},
@@ -1071,16 +1070,6 @@ bool content::IsNSRange(id value) {
   return nil;
 }
 
-// The origin of this accessibility object in the page's document.
-// This is relative to webkit's top-left origin, not Cocoa's
-// bottom-left origin.
-- (NSPoint)origin {
-  if (![self instanceActive])
-    return NSMakePoint(0, 0);
-  gfx::Rect bounds = _owner->GetClippedRootFrameBoundsRect();
-  return NSMakePoint(bounds.x(), bounds.y());
-}
-
 - (id)parent {
   if (![self instanceActive])
     return nil;
@@ -1101,10 +1090,7 @@ bool content::IsNSRange(id value) {
 - (NSValue*)position {
   if (![self instanceActive])
     return nil;
-  NSPoint origin = [self origin];
-  NSSize size = [[self size] sizeValue];
-  NSPoint pointInScreen =
-      [self rectInScreen:gfx::Rect(gfx::Point(origin), gfx::Size(size))].origin;
+  NSPoint pointInScreen = [self accessibilityFrame].origin;
   return [NSValue valueWithPoint:pointInScreen];
 }
 
@@ -1426,13 +1412,6 @@ bool content::IsNSRange(id value) {
   // Voiceover expects this range to be backwards in order to read the selected
   // words correctly.
   return AXRangeToAXTextMarkerRange(ax_range.AsBackwardRange());
-}
-
-- (NSValue*)size {
-  if (![self instanceActive])
-    return nil;
-  gfx::Rect bounds = _owner->GetClippedRootFrameBoundsRect();
-  return [NSValue valueWithSize:NSMakeSize(bounds.width(), bounds.height())];
 }
 
 - (NSString*)sortDirection {
@@ -1903,8 +1882,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreateNextCharacterPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreateNextCharacterPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -1913,8 +1894,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreatePreviousCharacterPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreatePreviousCharacterPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -1924,10 +1907,14 @@ bool content::IsNSRange(id value) {
     if (endPosition->IsNullPosition())
       return nil;
 
-    AXPosition startWordPosition = endPosition->CreatePreviousWordStartPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
-    AXPosition endWordPosition = endPosition->CreatePreviousWordEndPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
+    AXPosition startWordPosition =
+        endPosition->CreatePreviousWordStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
+    AXPosition endWordPosition =
+        endPosition->CreatePreviousWordEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXPosition startPosition = *startWordPosition <= *endWordPosition
                                    ? std::move(endWordPosition)
                                    : std::move(startWordPosition);
@@ -1942,10 +1929,14 @@ bool content::IsNSRange(id value) {
     if (startPosition->IsNullPosition())
       return nil;
 
-    AXPosition endWordPosition = startPosition->CreateNextWordEndPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
-    AXPosition startWordPosition = startPosition->CreateNextWordStartPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
+    AXPosition endWordPosition =
+        startPosition->CreateNextWordEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
+    AXPosition startWordPosition =
+        startPosition->CreateNextWordStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXPosition endPosition = *startWordPosition <= *endWordPosition
                                  ? std::move(startWordPosition)
                                  : std::move(endWordPosition);
@@ -1959,8 +1950,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreateNextWordEndPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreateNextWordEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -1969,8 +1962,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreatePreviousWordStartPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreatePreviousWordStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute isEqualToString:
@@ -2006,9 +2001,12 @@ bool content::IsNSRange(id value) {
     // Make sure that the line start position is really at the start of the
     // current line.
     lineStartPosition = lineStartPosition->CreatePreviousLineStartPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary);
-    AXPosition lineEndPosition = lineStartPosition->CreateNextLineEndPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundary);
+        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+                              ui::AXBoundaryDetection::kCheckInitialPosition));
+    AXPosition lineEndPosition =
+        lineStartPosition->CreateNextLineEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXRange range(std::move(lineStartPosition), std::move(lineEndPosition));
     return AXRangeToAXTextMarkerRange(std::move(range));
   }
@@ -2020,10 +2018,14 @@ bool content::IsNSRange(id value) {
     if (endPosition->IsNullPosition())
       return nil;
 
-    AXPosition startLinePosition = endPosition->CreatePreviousLineStartPosition(
-        ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
-    AXPosition endLinePosition = endPosition->CreatePreviousLineEndPosition(
-        ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+    AXPosition startLinePosition =
+        endPosition->CreatePreviousLineStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
+    AXPosition endLinePosition =
+        endPosition->CreatePreviousLineEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXPosition startPosition = *startLinePosition <= *endLinePosition
                                    ? std::move(endLinePosition)
                                    : std::move(startLinePosition);
@@ -2038,10 +2040,14 @@ bool content::IsNSRange(id value) {
     if (startPosition->IsNullPosition())
       return nil;
 
-    AXPosition startLinePosition = startPosition->CreateNextLineStartPosition(
-        ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
-    AXPosition endLinePosition = startPosition->CreateNextLineEndPosition(
-        ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+    AXPosition startLinePosition =
+        startPosition->CreateNextLineStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
+    AXPosition endLinePosition =
+        startPosition->CreateNextLineEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXPosition endPosition = *startLinePosition <= *endLinePosition
                                  ? std::move(startLinePosition)
                                  : std::move(endLinePosition);
@@ -2055,8 +2061,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreateNextLineEndPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreateNextLineEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -2065,8 +2073,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreatePreviousLineStartPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreatePreviousLineStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -2101,8 +2111,10 @@ bool content::IsNSRange(id value) {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return nil;
-    return AXPositionToAXTextMarker(position->CreateNextParagraphEndPosition(
-        ui::AXBoundaryBehavior::kCrossBoundary));
+    return AXPositionToAXTextMarker(
+        position->CreateNextParagraphEndPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -2112,8 +2124,9 @@ bool content::IsNSRange(id value) {
     if (position->IsNullPosition())
       return nil;
     return AXPositionToAXTextMarker(
-        position->CreatePreviousParagraphStartPosition(
-            ui::AXBoundaryBehavior::kCrossBoundary));
+        position->CreatePreviousParagraphStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kCrossBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition)));
   }
 
   if ([attribute
@@ -2124,9 +2137,11 @@ bool content::IsNSRange(id value) {
       return nil;
 
     AXPosition startPosition = position->CreatePreviousFormatStartPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary);
+        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+                              ui::AXBoundaryDetection::kCheckInitialPosition));
     AXPosition endPosition = position->CreateNextFormatEndPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary);
+        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+                              ui::AXBoundaryDetection::kCheckInitialPosition));
     AXRange range(std::move(startPosition), std::move(endPosition));
     return AXRangeToAXTextMarkerRange(std::move(range));
   }
@@ -2208,9 +2223,12 @@ bool content::IsNSRange(id value) {
     //
     // Note that hard line breaks are on a line of their own.
     AXPosition startPosition = position->CreatePreviousLineStartPosition(
-        ui::AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary);
-    AXPosition endPosition = startPosition->CreateNextLineStartPosition(
-        ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary);
+        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+                              ui::AXBoundaryDetection::kCheckInitialPosition));
+    AXPosition endPosition =
+        startPosition->CreateNextLineStartPosition(ui::AXMovementOptions(
+            ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+            ui::AXBoundaryDetection::kDontCheckInitialPosition));
     AXRange range(std::move(startPosition), std::move(endPosition));
     return AXRangeToAXTextMarkerRange(std::move(range));
   }
@@ -2304,7 +2322,7 @@ bool content::IsNSRange(id value) {
     if (child->PlatformGetParent() != _owner)
       return nil;
 
-    return @(child->GetIndexInParent());
+    return @(child->GetIndexInParent().value());
   }
 
   return nil;
@@ -2444,7 +2462,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityRoleAttribute,
                        NSAccessibilityRoleDescriptionAttribute,
                        NSAccessibilitySelectedTextMarkerRangeAttribute,
-                       NSAccessibilitySizeAttribute,
                        NSAccessibilityStartTextMarkerAttribute,
                        NSAccessibilitySubroleAttribute,
                        NSAccessibilityTopLevelUIElementAttribute,

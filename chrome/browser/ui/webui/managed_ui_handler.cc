@@ -53,13 +53,14 @@ ManagedUIHandler::~ManagedUIHandler() {
 }
 
 void ManagedUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "observeManagedUI",
       base::BindRepeating(&ManagedUIHandler::HandleObserveManagedUI,
                           base::Unretained(this)));
 }
 
-void ManagedUIHandler::HandleObserveManagedUI(const base::ListValue* /*args*/) {
+void ManagedUIHandler::HandleObserveManagedUI(
+    const base::Value::List& /*args*/) {
   AllowJavascript();
   AddObservers();
 }

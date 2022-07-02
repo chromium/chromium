@@ -8,13 +8,10 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -65,21 +62,6 @@ void ChangeListPref(int index,
   for (const base::Value& it : new_value.GetListDeprecated()) {
     list->Append(it.Clone());
   }
-}
-
-scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile) {
-  base::RunLoop run_loop;
-  profile->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
-  run_loop.Run();
-
-  auto pref_store = base::MakeRefCounted<JsonPrefStore>(
-      profile->GetPath().Append(chrome::kPreferencesFilename));
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  if (pref_store->ReadPrefs() != PersistentPrefStore::PREF_READ_ERROR_NONE) {
-    ADD_FAILURE() << " Failed reading the prefs file into the store.";
-  }
-
-  return pref_store;
 }
 
 bool BooleanPrefMatches(const char* pref_name) {
@@ -176,6 +158,25 @@ absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
 }
 
 }  // namespace preferences_helper
+
+BooleanPrefValueChecker::BooleanPrefValueChecker(PrefService* pref_service,
+                                                 const char* path,
+                                                 bool expected_value)
+    : path_(path),
+      expected_value_(expected_value),
+      pref_service_(pref_service) {
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      path_, base::BindRepeating(&BooleanPrefValueChecker::CheckExitCondition,
+                                 base::Unretained(this)));
+}
+
+BooleanPrefValueChecker::~BooleanPrefValueChecker() = default;
+
+bool BooleanPrefValueChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << path_ << "' to be " << expected_value_;
+  return pref_service_->GetBoolean(path_) == expected_value_;
+}
 
 PrefMatchChecker::PrefMatchChecker(const char* path) : path_(path) {
   for (int i = 0; i < test()->num_clients(); ++i) {

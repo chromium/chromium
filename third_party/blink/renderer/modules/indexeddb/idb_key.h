@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"

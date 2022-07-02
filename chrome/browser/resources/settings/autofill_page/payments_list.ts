@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 import './credit_card_list_entry.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import './upi_id_list_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

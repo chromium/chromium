@@ -161,6 +161,23 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     return;
   }
 
+  // HACK: The service worker layer might invoke this callback with an ID for a
+  // RenderProcessHost that has already terminated. This isn't the right fix for
+  // this, because it results in the internal state here stalling out - we'll
+  // wait on the browser side to be ready, which will never happen. This should
+  // be cleaned up on the next activation sequence, but this still isn't good.
+  // The proper fix here is that the service worker layer shouldn't be invoking
+  // this callback with stale processes.
+  // https://crbug.com/1335821.
+  if (!content::RenderProcessHost::FromID(process_id)) {
+    // NOTE: The following is an antipattern [1]. We have this as a temporary
+    // hack to avoid crashing for stable users while the bug is addressed.
+    // [1]
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/c++/c++-dos-and-donts.md#guarding-with-dcheck_is_on
+    NOTREACHED();
+    return;
+  }
+
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
                         true);
   UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime",

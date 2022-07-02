@@ -82,7 +82,7 @@ class MEDIA_EXPORT KeySystems {
       const bool* hw_secure_requirement) const = 0;
 
   // Returns the support |key_system| provides for persistent-license sessions.
-  virtual EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
+  virtual EmeConfigRule GetPersistentLicenseSessionSupport(
       const std::string& key_system) const = 0;
 
   // Returns the support |key_system| provides for persistent state.

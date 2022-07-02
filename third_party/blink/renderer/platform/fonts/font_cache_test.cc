@@ -13,11 +13,14 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
-TEST(FontCache, getLastResortFallbackFont) {
+class FontCacheTest : public FontTestBase {};
+
+TEST_F(FontCacheTest, getLastResortFallbackFont) {
   FontCache& font_cache = FontCache::Get();
 
   // Perform the test for the default font family (kStandardFamily) and the
@@ -36,7 +39,7 @@ TEST(FontCache, getLastResortFallbackFont) {
   }
 }
 
-TEST(FontCache, NoFallbackForPrivateUseArea) {
+TEST_F(FontCacheTest, NoFallbackForPrivateUseArea) {
   FontCache& font_cache = FontCache::Get();
 
   // Perform the test for the default font family (kStandardFamily) and the
@@ -59,7 +62,7 @@ TEST(FontCache, NoFallbackForPrivateUseArea) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-TEST(FontCache, FallbackForEmojis) {
+TEST_F(FontCacheTest, FallbackForEmojis) {
   FontCache& font_cache = FontCache::Get();
   FontCachePurgePreventer purge_preventer;
 
@@ -116,7 +119,7 @@ TEST(FontCache, FallbackForEmojis) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-TEST(FontCache, firstAvailableOrFirst) {
+TEST_F(FontCacheTest, firstAvailableOrFirst) {
   EXPECT_TRUE(FontCache::FirstAvailableOrFirst("").IsEmpty());
   EXPECT_TRUE(FontCache::FirstAvailableOrFirst(String()).IsEmpty());
 
@@ -137,7 +140,7 @@ TEST(FontCache, firstAvailableOrFirst) {
 }
 
 // https://crbug.com/969402
-TEST(FontCache, getLargerThanMaxUnsignedFont) {
+TEST_F(FontCacheTest, getLargerThanMaxUnsignedFont) {
   FontCache& font_cache = FontCache::Get();
 
   FontDescription font_description;
@@ -156,14 +159,14 @@ TEST(FontCache, getLargerThanMaxUnsignedFont) {
 }
 
 #if !BUILDFLAG(IS_MAC)
-TEST(FontCache, systemFont) {
+TEST_F(FontCacheTest, systemFont) {
   FontCache::SystemFontFamily();
   // Test the function does not crash. Return value varies by system and config.
 }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-TEST(FontCache, Locale) {
+TEST_F(FontCacheTest, Locale) {
   FontCacheKey key1(FontFaceCreationParams(), /* font_size */ 16,
                     /* options */ 0, /* device_scale_factor */ 1.0f,
                     /* variation_settings */ nullptr,

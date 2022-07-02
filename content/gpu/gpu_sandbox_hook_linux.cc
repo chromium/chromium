@@ -104,6 +104,16 @@ static const char kLibV4lEncPluginPath[] =
 
 constexpr int dlopen_flag = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
 
+void AddStandardChromeOsPermissions(
+    std::vector<BrokerFilePermission>* permissions) {
+  static const char kAngleEglPath[] = "/opt/google/chrome/libEGL.so";
+  static const char kAngleGlesPath[] = "/opt/google/chrome/libGLESv2.so";
+
+  // For the ANGLE passthrough command decoder.
+  permissions->push_back(BrokerFilePermission::ReadOnly(kAngleEglPath));
+  permissions->push_back(BrokerFilePermission::ReadOnly(kAngleGlesPath));
+}
+
 void AddV4L2GpuPermissions(
     std::vector<BrokerFilePermission>* permissions,
     const sandbox::policy::SandboxSeccompBPF::Options& options) {
@@ -388,6 +398,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
   AddVulkanICDPermissions(&permissions);
 
   if (IsChromeOS()) {
+    AddStandardChromeOsPermissions(&permissions);
     if (UseV4L2Codec())
       AddV4L2GpuPermissions(&permissions, options);
     if (IsArchitectureArm()) {

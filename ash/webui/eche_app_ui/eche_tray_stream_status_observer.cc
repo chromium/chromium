@@ -4,6 +4,8 @@
 
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
@@ -16,6 +18,20 @@ EcheTray* GetEcheTray() {
   return Shell::GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->eche_tray();
+}
+
+void CloseBubble() {
+  auto* eche_tray = ash::GetEcheTray();
+  if (eche_tray)
+    eche_tray->StartGracefulClose();
+  return;
+}
+
+// Checks FeatureStatus that eche feature is not able to use.
+bool NeedClose(eche_app::FeatureStatus status) {
+  return status == eche_app::FeatureStatus::kIneligible ||
+         status == eche_app::FeatureStatus::kDisabled ||
+         status == eche_app::FeatureStatus::kDependentFeature;
 }
 
 namespace eche_app {
@@ -32,19 +48,17 @@ void LaunchBubble(const GURL& url,
   eche_tray->SetGracefulGoBackCallback(std::move(graceful_go_back_callback));
 }
 
-void CloseBubble() {
-  auto* eche_tray = ash::GetEcheTray();
-  if (eche_tray)
-    eche_tray->PurgeAndClose();
-  return;
-}
-
 EcheTrayStreamStatusObserver::EcheTrayStreamStatusObserver(
-    EcheStreamStatusChangeHandler* stream_status_change_handler) {
+    EcheStreamStatusChangeHandler* stream_status_change_handler,
+    FeatureStatusProvider* feature_status_provider)
+    : feature_status_provider_(feature_status_provider) {
   observed_session_.Observe(stream_status_change_handler);
+  feature_status_provider_->AddObserver(this);
 }
 
-EcheTrayStreamStatusObserver::~EcheTrayStreamStatusObserver() = default;
+EcheTrayStreamStatusObserver::~EcheTrayStreamStatusObserver() {
+  feature_status_provider_->RemoveObserver(this);
+}
 
 void EcheTrayStreamStatusObserver::OnStartStreaming() {
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
@@ -53,6 +67,15 @@ void EcheTrayStreamStatusObserver::OnStartStreaming() {
 void EcheTrayStreamStatusObserver::OnStreamStatusChanged(
     mojom::StreamStatus status) {
   GetEcheTray()->OnStreamStatusChanged(status);
+}
+
+void EcheTrayStreamStatusObserver::OnFeatureStatusChanged() {
+  if (NeedClose(feature_status_provider_->GetStatus()) &&
+      !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
+    PA_LOG(INFO) << "Close Eche window when feature status: "
+                 << feature_status_provider_->GetStatus();
+    CloseBubble();
+  }
 }
 
 }  // namespace eche_app

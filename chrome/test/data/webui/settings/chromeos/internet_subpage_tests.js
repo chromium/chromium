@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('InternetSubpage', function() {
@@ -111,10 +111,12 @@ suite('InternetSubpage', function() {
       ]);
       return flushAsync().then(() => {
         assertEquals(2, internetSubpage.networkStateList_.length);
-        const toggle = internetSubpage.$$('#deviceEnabledButton');
+        const toggle =
+            internetSubpage.shadowRoot.querySelector('#deviceEnabledButton');
         assertTrue(!!toggle);
         assertFalse(toggle.disabled);
-        const networkList = internetSubpage.$$('#networkList');
+        const networkList =
+            internetSubpage.shadowRoot.querySelector('#networkList');
         assertTrue(!!networkList);
         assertEquals(2, networkList.networks.length);
       });
@@ -134,7 +136,8 @@ suite('InternetSubpage', function() {
 
       await flushAsync();
 
-      const deepLinkElement = internetSubpage.$$('#deviceEnabledButton');
+      const deepLinkElement =
+          internetSubpage.shadowRoot.querySelector('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
@@ -151,13 +154,16 @@ suite('InternetSubpage', function() {
       ]);
       return flushAsync().then(() => {
         assertEquals(2, internetSubpage.networkStateList_.length);
-        const toggle = internetSubpage.$$('#deviceEnabledButton');
+        const toggle =
+            internetSubpage.shadowRoot.querySelector('#deviceEnabledButton');
         assertTrue(!!toggle);
         assertFalse(toggle.disabled);
-        const networkList = internetSubpage.$$('#networkList');
+        const networkList =
+            internetSubpage.shadowRoot.querySelector('#networkList');
         assertTrue(!!networkList);
         assertEquals(2, networkList.networks.length);
-        const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
+        const tetherToggle =
+            internetSubpage.shadowRoot.querySelector('#tetherEnabledButton');
         // No separate tether toggle when Celular is not available; the
         // primary toggle enables or disables Tether in that case.
         assertFalse(!!tetherToggle);
@@ -182,7 +188,8 @@ suite('InternetSubpage', function() {
 
       await flushAsync();
 
-      const deepLinkElement = internetSubpage.$$('#deviceEnabledButton');
+      const deepLinkElement =
+          internetSubpage.shadowRoot.querySelector('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
@@ -195,7 +202,8 @@ suite('InternetSubpage', function() {
       addCellularNetworks();
       const mojom = chromeos.networkConfig.mojom;
       await flushAsync();
-      const cellularNetworkList = internetSubpage.$$('#cellularNetworkList');
+      const cellularNetworkList =
+          internetSubpage.shadowRoot.querySelector('#cellularNetworkList');
       cellularNetworkList.cellularDeviceState = {
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
@@ -229,14 +237,17 @@ suite('InternetSubpage', function() {
           addCellularNetworks();
           return flushAsync().then(() => {
             assertEquals(3, internetSubpage.networkStateList_.length);
-            const toggle = internetSubpage.$$('#deviceEnabledButton');
+            const toggle = internetSubpage.shadowRoot.querySelector(
+                '#deviceEnabledButton');
             assertTrue(!!toggle);
             assertFalse(toggle.disabled);
             const cellularNetworkList =
-                internetSubpage.$$('#cellularNetworkList');
+                internetSubpage.shadowRoot.querySelector(
+                    '#cellularNetworkList');
             assertTrue(!!cellularNetworkList);
             assertEquals(3, cellularNetworkList.networks.length);
-            const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
+            const tetherToggle = internetSubpage.shadowRoot.querySelector(
+                '#tetherEnabledButton');
             assertFalse(!!tetherToggle);
           });
         });
@@ -288,8 +299,10 @@ suite('InternetSubpage', function() {
       internetSubpage.deviceState = deviceState;
 
       await flushAsync();
-      const cellularNetworkList = internetSubpage.$$('#cellularNetworkList');
-      assertTrue(!!cellularNetworkList.$$('#psimNetworkList'));
+      const cellularNetworkList =
+          internetSubpage.shadowRoot.querySelector('#cellularNetworkList');
+      assertTrue(
+          !!cellularNetworkList.shadowRoot.querySelector('#psimNetworkList'));
     });
 
     // Regression test for https://crbug.com/1182406.
@@ -299,7 +312,8 @@ suite('InternetSubpage', function() {
           addCellularNetworks([] /* networks */);
           return flushAsync().then(() => {
             const cellularNetworkList =
-                internetSubpage.$$('#cellularNetworkList');
+                internetSubpage.shadowRoot.querySelector(
+                    '#cellularNetworkList');
             assertTrue(!!cellularNetworkList);
           });
         });
@@ -468,7 +482,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               assertEquals(mojom.AlwaysOnVpnMode.kOff, networkAlwaysOnVpn.mode);
               assertEquals('', networkAlwaysOnVpn.service);
@@ -488,7 +503,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               assertEquals(
                   mojom.AlwaysOnVpnMode.kBestEffort, networkAlwaysOnVpn.mode);
@@ -509,7 +525,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               assertEquals(
                   mojom.AlwaysOnVpnMode.kStrict, networkAlwaysOnVpn.mode);
@@ -526,7 +543,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               networkAlwaysOnVpn.mode = mojom.AlwaysOnVpnMode.kBestEffort;
               networkAlwaysOnVpn.service = 'vpn1_guid';
@@ -549,7 +567,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               networkAlwaysOnVpn.mode = mojom.AlwaysOnVpnMode.kStrict;
               networkAlwaysOnVpn.service = 'vpn2_guid';
@@ -565,7 +584,8 @@ suite('InternetSubpage', function() {
 
       test('Always-on VPN is not shown without networks', () => {
         return initSubpage().then(() => {
-          const networkAlwaysOnVpn = internetSubpage.$$('#alwaysOnVpnSelector');
+          const networkAlwaysOnVpn =
+              internetSubpage.shadowRoot.querySelector('#alwaysOnVpnSelector');
           assert(!networkAlwaysOnVpn);
         });
       });
@@ -583,7 +603,8 @@ suite('InternetSubpage', function() {
             })
             .then(() => {
               const networkAlwaysOnVpn =
-                  internetSubpage.$$('#alwaysOnVpnSelector');
+                  internetSubpage.shadowRoot.querySelector(
+                      '#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               // The list should contain 2 compatible networks.
               assertEquals(2, networkAlwaysOnVpn.networks.length);

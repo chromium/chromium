@@ -11,13 +11,13 @@ class OmniboxTextChangeDelegate {
  public:
   // Called when the Omnibox text field starts editing
   virtual void OnDidBeginEditing() = 0;
-  // Called before the Omnibox text field changes. |new_text| will replace the
-  // text currently in |range|. This should return true if the text change
+  // Called before the Omnibox text field changes. `new_text` will replace the
+  // text currently in `range`. This should return true if the text change
   // should happen and false otherwise.
   // See -textField:shouldChangeCharactersInRange:replacementString: for more
   // details.
   virtual bool OnWillChange(NSRange range, NSString* new_text) = 0;
-  // Called after the Omnibox text field changes. |processing_user_input| holds
+  // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   virtual void OnDidChange(bool processing_user_input) = 0;
   // Called before the Omnibox text field finishes editing.

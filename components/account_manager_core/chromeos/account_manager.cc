@@ -16,6 +16,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -255,8 +256,8 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
   }
 
   const ::account_manager::AccountKey account_key_;
-  AccountManager* const account_manager_;
-  OAuth2AccessTokenConsumer* const consumer_;
+  const raw_ptr<AccountManager> account_manager_;
+  const raw_ptr<OAuth2AccessTokenConsumer> consumer_;
 
   bool are_token_requests_allowed_ = false;
   bool is_request_pending_ = false;

@@ -43,12 +43,11 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 #endif
   }
 
-  bool SkipTest() const override {
-    const std::string dmabuf_import_ext = "EGL_MESA_image_dma_buf_export";
-    std::string platform_extensions(DriverEGL::GetPlatformExtensions());
-    gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-    if (!gfx::HasExtension(extensions, dmabuf_import_ext)) {
-      LOG(WARNING) << "Skip test, missing extension " << dmabuf_import_ext;
+  bool SkipTest(GLDisplay* display) const override {
+    GLDisplayEGL* display_egl = static_cast<GLDisplayEGL*>(display);
+    if (!display_egl->ext->b_EGL_MESA_image_dma_buf_export) {
+      LOG(WARNING) << "Skip test, missing extension "
+                   << "EGL_MESA_image_dma_buf_export";
       return true;
     }
 
@@ -95,7 +94,7 @@ TYPED_TEST_SUITE_P(GLImageNativePixmapToDmabufTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageNativePixmapToDmabufTest,
                             MAYBE_GLTexture2DToDmabuf) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   const gfx::Size image_size(64, 64);

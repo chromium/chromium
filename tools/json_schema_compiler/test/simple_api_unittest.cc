@@ -67,8 +67,8 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
 }
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
-  std::vector<base::Value> params_value;
-  params_value.emplace_back(6);
+  base::Value::List params_value;
+  params_value.Append(6);
   std::unique_ptr<simple_api::IncrementInteger::Params> params(
       simple_api::IncrementInteger::Params::Create(params_value));
   EXPECT_TRUE(params.get());
@@ -77,15 +77,15 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("text");
-    params_value.emplace_back("text");
+    base::Value::List params_value;
+    params_value.Append("text");
+    params_value.Append("text");
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<simple_api::IncrementInteger::Params> params(
         simple_api::IncrementInteger::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -94,15 +94,15 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
-    std::vector<base::Value> params_value;
+    base::Value::List params_value;
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->str.get());
   }
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back("asdf");
+    base::Value::List params_value;
+    params_value.Append("asdf");
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -113,8 +113,8 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back();
+    base::Value::List params_value;
+    params_value.Append(base::Value());
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -124,8 +124,8 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back(5);
+    base::Value::List params_value;
+    params_value.Append(5);
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
@@ -134,9 +134,9 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
   {
-    std::vector<base::Value> params_value;
-    params_value.emplace_back();
-    params_value.emplace_back("asdf");
+    base::Value::List params_value;
+    params_value.Append(base::Value());
+    params_value.Append("asdf");
     std::unique_ptr<simple_api::OptionalBeforeRequired::Params> params(
         simple_api::OptionalBeforeRequired::Params::Create(params_value));
     EXPECT_TRUE(params.get());
@@ -175,7 +175,7 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
     std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
     auto test_type = std::make_unique<simple_api::TestType>();
     EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
-    std::vector<base::Value> results =
+    base::Value::List results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
     EXPECT_EQ(results[0], *value);

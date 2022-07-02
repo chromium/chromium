@@ -43,6 +43,10 @@ class FakePersonalizationAppKeyboardBacklightProvider
 
   void SetBacklightColor(mojom::BacklightColor backlight_color) override {}
 
+  void ShouldShowNudge(ShouldShowNudgeCallback callback) override {}
+
+  void HandleNudgeShown() override {}
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightProvider>
       ambient_receiver_{this};

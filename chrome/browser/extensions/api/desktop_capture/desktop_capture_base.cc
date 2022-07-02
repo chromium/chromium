@@ -81,6 +81,7 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::Cancel() {
 ExtensionFunction::ResponseAction
 DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::vector<api::desktop_capture::DesktopCaptureSourceType>& sources,
+    bool exclude_system_audio,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     const std::u16string target_name) {
@@ -157,6 +158,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.app_name = base::UTF8ToUTF16(GetCallerDisplayName());
   picker_params.target_name = target_name;
   picker_params.request_audio = request_audio;
+  picker_params.exclude_system_audio = exclude_system_audio;
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
   picker_params.restricted_by_policy =

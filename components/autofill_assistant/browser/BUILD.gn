@@ -27,7 +27,11 @@ proto_library("proto") {
 }
 
 proto_library("test_proto") {
-  sources = [ "parse_jspb_test.proto" ]
+  sources = [
+    "external_action_extension_test.proto",
+    "parse_jspb_test.proto",
+  ]
+  link_deps = [ "//components/autofill_assistant/browser/public:proto" ]
 }
 
 static_library("browser") {
@@ -178,6 +182,7 @@ static_library("browser") {
     "display_strings_util.h",
     "element_area.cc",
     "element_area.h",
+    "empty_controller_observer.h",
     "empty_website_login_manager_impl.cc",
     "empty_website_login_manager_impl.h",
     "event_handler.cc",
@@ -194,14 +199,16 @@ static_library("browser") {
     "generic_ui_replace_placeholders.h",
     "headless/client_headless.cc",
     "headless/client_headless.h",
-    "headless/external_script_controller_impl.cc",
-    "headless/external_script_controller_impl.h",
+    "headless/headless_script_controller_impl.cc",
+    "headless/headless_script_controller_impl.h",
     "headless/headless_ui_controller.cc",
     "headless/headless_ui_controller.h",
     "info_box.cc",
     "info_box.h",
     "intent_strings.cc",
     "intent_strings.h",
+    "js_flow_devtools_wrapper.cc",
+    "js_flow_devtools_wrapper.h",
     "js_flow_executor.h",
     "js_flow_executor_impl.cc",
     "js_flow_executor_impl.h",
@@ -373,6 +380,7 @@ static_library("browser") {
     "//components/autofill_assistant/content/browser",
     "//components/autofill_assistant/content/common",
     "//components/autofill_assistant/content/common:mojo_interfaces",
+    "//components/autofill_assistant/core/public:public",
     "//components/client_update_protocol",
     "//components/google/core/common:common",
     "//components/keyed_service/core",
@@ -400,6 +408,10 @@ static_library("unit_test_support") {
   sources = [
     "actions/mock_action_delegate.cc",
     "actions/mock_action_delegate.h",
+    "actions/wait_for_dom_test_base.cc",
+    "actions/wait_for_dom_test_base.h",
+    "fake_common_dependencies.cc",
+    "fake_common_dependencies.h",
     "fake_script_executor_delegate.cc",
     "fake_script_executor_delegate.h",
     "fake_script_executor_ui_delegate.cc",
@@ -440,6 +452,7 @@ static_library("unit_test_support") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill_assistant/core/public:public",
     "//components/password_manager/core/browser:browser",
     "//components/version_info",
     "//testing/gmock",
@@ -464,6 +477,7 @@ source_set("unit_tests") {
     "actions/edit_password_action_unittest.cc",
     "actions/execute_js_action_unittest.cc",
     "actions/expect_navigation_action_unittest.cc",
+    "actions/external_action_unittest.cc",
     "actions/fallback_handler/required_field_unittest.cc",
     "actions/fallback_handler/required_fields_fallback_handler_unittest.cc",
     "actions/generate_password_for_form_field_action_unittest.cc",

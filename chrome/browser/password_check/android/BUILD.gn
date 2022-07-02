@@ -43,6 +43,7 @@ android_library("public_java") {
     "//chrome/browser/tab:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/ukm/android:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
@@ -77,7 +78,7 @@ android_library("public_ui_java") {
   ]
 }
 
-junit_binary("password_check_junit_tests") {
+robolectric_binary("password_check_junit_tests") {
   testonly = true
 
   sources = [ "junit/src/org/chromium/chrome/browser/password_check/PasswordCheckControllerTest.java" ]
@@ -90,7 +91,6 @@ junit_binary("password_check_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check/android:password_check_java_enums",
@@ -98,8 +98,9 @@ junit_binary("password_check_junit_tests") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/settings:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
@@ -123,7 +124,6 @@ android_library("test_java") {
     "internal:internal_java",
     "internal:internal_ui_factory_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
@@ -135,9 +135,10 @@ android_library("test_java") {
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",

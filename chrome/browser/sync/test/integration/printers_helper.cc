@@ -87,12 +87,11 @@ bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
                             const std::string& description) {
   PrinterList printers = manager->GetSavedPrinters();
   std::string printer_id = PrinterId(index);
-  auto found = base::ranges::find(
-      printers, printer_id,
-      [](const chromeos::Printer& printer) { return printer.id(); });
+  auto found = base::ranges::find(printers, printer_id, &chromeos::Printer::id);
 
-  if (found == printers.end())
+  if (found == printers.end()) {
     return false;
+  }
 
   found->set_description(description);
   manager->UpdateSavedPrinter(*found);
@@ -178,6 +177,6 @@ PrintersMatchChecker::PrintersMatchChecker()
     : AwaitMatchStatusChangeChecker(base::BindRepeating(
           &printers_helper::AllProfilesContainSamePrinters)) {}
 
-PrintersMatchChecker::~PrintersMatchChecker() {}
+PrintersMatchChecker::~PrintersMatchChecker() = default;
 
 }  // namespace printers_helper

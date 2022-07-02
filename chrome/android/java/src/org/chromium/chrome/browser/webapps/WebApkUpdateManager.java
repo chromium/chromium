@@ -23,6 +23,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.MergedWebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -81,7 +82,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private WebappInfo mInfo;
 
     /** The updated manifest information. */
-    private WebappInfo mFetchedInfo;
+    private MergedWebappInfo mFetchedInfo;
 
     /** The URL of the primary icon. */
     private String mFetchedPrimaryIconUrl;
@@ -152,9 +153,22 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     @Override
     public void onGotManifestData(BrowserServicesIntentDataProvider fetchedIntentDataProvider,
             String primaryIconUrl, String splashIconUrl) {
-        mFetchedInfo = WebappInfo.create(fetchedIntentDataProvider);
+        mFetchedInfo =
+                MergedWebappInfo.create(/* oldWebappInfo= */ mInfo, fetchedIntentDataProvider);
         mFetchedPrimaryIconUrl = primaryIconUrl;
         mFetchedSplashIconUrl = splashIconUrl;
+
+        // When only some/no app identity updates are permitted, the update
+        // should still proceed with updating all the other values (not related
+        // to the blocked app identity update).
+        if (!nameUpdateDialogEnabled()) {
+            mFetchedInfo.setUseOldName(true);
+        }
+        if (!iconUpdateDialogEnabled()) {
+            mFetchedInfo.setUseOldIcon(true);
+            // Forces recreation of the primary icon during proto construction.
+            mFetchedPrimaryIconUrl = "";
+        }
 
         mStorage.updateTimeOfLastCheckForUpdatedWebManifest();
         if (mUpdateFailureHandler != null) {

@@ -22,7 +22,7 @@
                         image:(UIImage*)image;
 
 // Update views for latest gesture, and call completion blocks whether
-// |threshold| is met.
+// `threshold` is met.
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
      onOverThresholdCompletion:(void (^)(void))onOverThresholdCompletion
     onUnderThresholdCompletion:(void (^)(void))onUnderThresholdCompletion;

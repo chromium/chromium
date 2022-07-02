@@ -25,7 +25,9 @@
 #include "ash/components/smbfs/smbfs_mounter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -71,11 +73,14 @@
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -92,8 +97,6 @@
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -831,6 +834,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(drive_dss_pin)
   PRINT_IF_NOT_DEFAULT(files_swa)
+  PRINT_IF_NOT_DEFAULT(files_experimental)
   PRINT_IF_NOT_DEFAULT(generic_documents_provider)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
@@ -1693,28 +1697,53 @@ class SmbfsTestVolume : public LocalTestVolume {
 
 class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
  public:
-  MockGuestOsMountProvider(Profile* profile, std::string name)
-      : profile_(profile), name_(name) {}
+  MockGuestOsMountProvider(Profile* profile,
+                           std::string name,
+                           std::string vm_type)
+      : profile_(profile), name_(name) {
+    if (vm_type == "bruschetta") {
+      vm_type_ = guest_os::VmType::BRUSCHETTA;
+    } else if (vm_type == "termina") {
+      vm_type_ = guest_os::VmType::TERMINA;
+    } else if (vm_type == "arcvm") {
+      vm_type_ = guest_os::VmType::ARCVM;
+    } else if (vm_type == "unknown") {
+      vm_type_ = guest_os::VmType::UNKNOWN;
+    } else {
+      NOTREACHED();
+      vm_type_ = guest_os::VmType::UNKNOWN;
+    }
+  }
 
   MockGuestOsMountProvider(const MockGuestOsMountProvider&) = delete;
   MockGuestOsMountProvider& operator=(const MockGuestOsMountProvider&) = delete;
 
   std::string DisplayName() override { return name_; }
   Profile* profile() override { return profile_; }
-  crostini::ContainerId ContainerId() override {
-    return crostini::ContainerId::GetDefault();
+  guest_os::GuestId GuestId() override {
+    return crostini::DefaultContainerId();
   }
 
-  guest_os::VmType vm_type() override {
-    return guest_os::VmType::ApplicationList_VmType_TERMINA;
+  void Prepare(base::OnceCallback<
+               void(bool success, int cid, int port, base::FilePath homedir)>
+                   callback) override {
+    std::move(callback).Run(true, cid_, 1234, base::FilePath());
   }
+
+  std::unique_ptr<guest_os::GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) override {
+    return nullptr;
+  }
+
+  guest_os::VmType vm_type() override { return vm_type_; }
 
   int cid_;
-  int cid() override { return cid_; }
 
  private:
   Profile* profile_;
   std::string name_;
+  guest_os::VmType vm_type_;
 };
 
 // GuestOsTestVolume: local test volume for the "Guest OS" directories.
@@ -1722,9 +1751,9 @@ class GuestOsTestVolume : public LocalTestVolume {
  public:
   explicit GuestOsTestVolume(Profile* profile,
                              MockGuestOsMountProvider* provider)
-      : LocalTestVolume(util::GetGuestOsMountPointName(
-            profile,
-            crostini::ContainerId::GetDefault())),
+      : LocalTestVolume(
+            util::GetGuestOsMountPointName(profile,
+                                           crostini::DefaultContainerId())),
         provider_(provider) {}
 
   GuestOsTestVolume(const GuestOsTestVolume&) = delete;
@@ -1860,6 +1889,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesSWA);
   }
 
+  if (options.files_experimental) {
+    enabled_features.push_back(chromeos::features::kFilesAppExperimental);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesAppExperimental);
+  }
+
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
@@ -1898,6 +1933,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
   } else {
     disabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
+  }
+
+  if (options.enable_mirrorsync) {
+    enabled_features.push_back(chromeos::features::kDriveFsMirroring);
+  } else {
+    disabled_features.push_back(chromeos::features::kDriveFsMirroring);
   }
 
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
@@ -2095,10 +2136,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
   // Enable System Web Apps if needed.
   if (options.media_swa || options.files_swa) {
-    auto& system_web_app_manager =
-        web_app::WebAppProvider::GetForTest(profile())
-            ->system_web_app_manager();
-    system_web_app_manager.InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
   }
 
   // For tablet mode tests, enable the Ash virtual keyboard.
@@ -2222,6 +2261,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isFilesAppExperimental") {
+    // Return whether the flag Files Experimental is enabled.
+    *output =
+        base::FeatureList::IsEnabled(chromeos::features::kFilesAppExperimental)
+            ? "true"
+            : "false";
+    return;
+  }
+
   if (name == "isInGuestMode") {
     // Obtain if the test runs in guest or incognito mode.
     LOG(INFO) << GetTestCaseName() << " is in " << options.guest_mode
@@ -2282,7 +2330,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     WebContentCapturingObserver observer(fileAppURL);
     observer.StartWatchingNewWebContents();
     web_app::LaunchSystemWebAppAsync(
-        profile(), web_app::SystemAppType::FILE_MANAGER, params);
+        profile(), ash::SystemWebAppType::FILE_MANAGER, params);
     observer.Wait();
     ASSERT_TRUE(observer.last_navigation_succeeded());
     LoadSwaTestUtils(observer.web_contents());
@@ -2408,21 +2456,23 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "executeScriptInChromeUntrusted") {
     for (auto* web_contents : GetAllWebContents()) {
       bool found = false;
-      web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-          [](const base::DictionaryValue& value, bool& found,
-             std::string* output, content::RenderFrameHost* frame) {
-            const url::Origin origin = frame->GetLastCommittedOrigin();
-            if (origin.GetURL() ==
-                ash::file_manager::kChromeUIFileManagerUntrustedURL) {
-              const std::string* script = value.FindStringKey("data");
-              EXPECT_TRUE(script);
-              CHECK(ExecuteScriptAndExtractString(frame, *script, output));
-              found = true;
-              return content::RenderFrameHost::FrameIterationAction::kStop;
-            }
-            return content::RenderFrameHost::FrameIterationAction::kContinue;
-          },
-          std::ref(value), std::ref(found), output));
+      web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+          base::BindRepeating(
+              [](const base::DictionaryValue& value, bool& found,
+                 std::string* output, content::RenderFrameHost* frame) {
+                const url::Origin origin = frame->GetLastCommittedOrigin();
+                if (origin.GetURL() ==
+                    ash::file_manager::kChromeUIFileManagerUntrustedURL) {
+                  const std::string* script = value.FindStringKey("data");
+                  EXPECT_TRUE(script);
+                  CHECK(ExecuteScriptAndExtractString(frame, *script, output));
+                  found = true;
+                  return content::RenderFrameHost::FrameIterationAction::kStop;
+                }
+                return content::RenderFrameHost::FrameIterationAction::
+                    kContinue;
+              },
+              std::ref(value), std::ref(found), output));
       if (found)
         return;
     }
@@ -2953,8 +3003,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       if (!window->web_contents())
         break;
 
-      CHECK(window->web_contents()->GetMainFrame());
-      window->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+      CHECK(window->web_contents()->GetPrimaryMainFrame());
+      window->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
           base::UTF8ToUTF16(*script), base::NullCallback());
 
       break;
@@ -3000,6 +3050,24 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isFiltersInRecentsEnabled") {
     *output = options.enable_filters_in_recents ? "true" : "false";
+    return;
+  }
+
+  if (name == "isFiltersInRecentsEnabledV2") {
+    *output = options.enable_filters_in_recents_v2 ? "true" : "false";
+    return;
+  }
+
+  if (name == "isDarkModeEnabled") {
+    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+    *output = ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                  ? "true"
+                  : "false";
+    return;
+  }
+
+  if (name == "isMirrorSyncEnabled") {
+    *output = options.enable_mirrorsync ? "true" : "false";
     return;
   }
 
@@ -3139,11 +3207,15 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
   if (name == "registerMountableGuest") {
     auto* displayName = value.GetDict().FindString("displayName");
     auto* canMount = value.GetDict().Find("canMount");
+    auto* vmType = value.GetDict().FindString("vmType");
     CHECK(displayName != nullptr);
+    // TODO(davidmunro): Merge with in-constructor derivation.
+    // auto id = guest_os::GuestId(guest_os::VmType::UNKNOWN, *displayName,
+    // *displayName);
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())
                          ->MountProviderRegistry();
-    auto id = registry->Register(
-        std::make_unique<MockGuestOsMountProvider>(profile(), *displayName));
+    auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(
+        profile(), *displayName, vmType ? *vmType : "bruschetta"));
     MockGuestOsMountProvider* ptr =
         reinterpret_cast<MockGuestOsMountProvider*>(registry->Get(id));
     ptr->cid_ = id;
@@ -3151,7 +3223,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
       // If we ask for the volume to be mountable we add it to the map, and it's
       // mountable. If not then it's an unknown volume and the mount request
       // fails.
-      guest_os_volumes_[base::StringPrintf("sftp://%d:0", id)] =
+      guest_os_volumes_[base::StringPrintf("sftp://%d:1234", id)] =
           std::make_unique<GuestOsTestVolume>(profile(), ptr);
     }
 
@@ -3265,7 +3337,7 @@ FileManagerBrowserTestBase::GetAllWebContents() {
         content::WebContents::FromRenderViewHost(rvh);
     if (!web_contents)
       continue;
-    if (web_contents->GetMainFrame()->GetRenderViewHost() != rvh)
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh)
       continue;
     // Because a WebContents can only have one current RVH at a time, there will
     // be no duplicate WebContents here.

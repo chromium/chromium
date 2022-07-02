@@ -4,9 +4,13 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <vector>
+
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,6 +20,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "chrome/updater/win/win_util.h"
+#endif
 
 namespace {
 
@@ -31,9 +42,9 @@ constexpr char kAP[] = "ap";    // Key for storing ap.
 
 constexpr char kHadApps[] = "had_apps";
 
-// TODO(crbug.com/1292189): rename "updater_time" to "last_checked".
-constexpr char kLastChecked[] = "update_time";
+constexpr char kLastChecked[] = "last_checked";
 constexpr char kLastStarted[] = "last_started";
+constexpr char kLastOSVersion[] = "last_os_version";
 
 }  // namespace
 
@@ -129,9 +140,9 @@ bool PersistedData::RemoveApp(const std::string& id) {
     return false;
 
   DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  base::Value* apps = update->FindDictKey("apps");
+  base::Value::Dict* apps = update->GetDict().FindDict("apps");
 
-  return apps ? apps->RemoveKey(id) : false;
+  return apps ? apps->Remove(id) : false;
 }
 
 std::vector<std::string> PersistedData::GetAppIds() const {
@@ -143,12 +154,12 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   const auto* pref = pref_service_->GetDictionary(kPersistedDataPreference);
   if (!pref)
     return {};
-  const auto* apps = pref->FindKey("apps");
-  if (!apps || !apps->is_dict())
+  const auto* apps = pref->GetDict().FindDict("apps");
+  if (!apps)
     return {};
   std::vector<std::string> app_ids;
-  for (auto kv : apps->DictItems()) {
-    const auto& app_id = kv.first;
+  for (auto it = apps->begin(); it != apps->end(); ++it) {
+    const auto& app_id = it->first;
     const auto pv = GetProductVersion(app_id);
     if (pv.IsValid())
       app_ids.push_back(app_id);
@@ -156,7 +167,7 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   return app_ids;
 }
 
-const base::Value* PersistedData::GetAppKey(const std::string& id) const {
+const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return nullptr;
@@ -164,19 +175,19 @@ const base::Value* PersistedData::GetAppKey(const std::string& id) const {
       pref_service_->GetDictionary(kPersistedDataPreference);
   if (!dict)
     return nullptr;
-  const base::Value* apps = dict->FindDictKey("apps");
+  const base::Value::Dict* apps = dict->GetDict().FindDict("apps");
   if (!apps)
     return nullptr;
-  return apps->FindDictKey(id);
+  return apps->FindDict(id);
 }
 
 std::string PersistedData::GetString(const std::string& id,
                                      const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* app_key = GetAppKey(id);
+  const base::Value::Dict* app_key = GetAppKey(id);
   if (!app_key)
     return {};
-  const std::string* value = app_key->FindStringKey(key);
+  const std::string* value = app_key->FindString(key);
   if (!value)
     return {};
   return *value;
@@ -185,12 +196,12 @@ std::string PersistedData::GetString(const std::string& id,
 base::Value* PersistedData::GetOrCreateAppKey(const std::string& id,
                                               base::Value* root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value* apps = root->FindDictKey("apps");
-  if (!apps)
-    apps = root->SetKey("apps", base::Value(base::Value::Type::DICTIONARY));
-  base::Value* app = apps->FindDictKey(id);
-  if (!app)
-    app = apps->SetKey(id, base::Value(base::Value::Type::DICTIONARY));
+  base::Value* apps = root->GetDict().Find("apps");
+  if (!apps || !apps->is_dict())
+    apps = root->GetDict().Set("apps", base::Value::Dict());
+  base::Value* app = apps->GetDict().Find(id);
+  if (!app || !app->is_dict())
+    app = apps->GetDict().Set(id, base::Value::Dict());
   return app;
 }
 
@@ -201,7 +212,7 @@ void PersistedData::SetString(const std::string& id,
   if (!pref_service_)
     return;
   DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
+  GetOrCreateAppKey(id, update.Get())->GetDict().Set(key, value);
 }
 
 bool PersistedData::GetHadApps() const {
@@ -237,12 +248,55 @@ void PersistedData::SetLastStarted(const base::Time& time) {
     pref_service_->SetTime(kLastStarted, time);
 }
 
+#if BUILDFLAG(IS_WIN)
+absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Unpacks the os version from a base-64-encoded string internally.
+  const std::string encoded_os_version =
+      pref_service_->GetString(kLastOSVersion);
+
+  if (encoded_os_version.empty())
+    return absl::nullopt;
+
+  const absl::optional<std::vector<uint8_t>> decoded_os_version =
+      base::Base64Decode(encoded_os_version);
+  if (!decoded_os_version ||
+      decoded_os_version->size() != sizeof(OSVERSIONINFOEX)) {
+    return absl::nullopt;
+  }
+
+  return *reinterpret_cast<const OSVERSIONINFOEX*>(decoded_os_version->data());
+}
+
+void PersistedData::SetLastOSVersion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!pref_service_)
+    return;
+
+  // Get and set the current OS version.
+  absl::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
+  if (!os_version)
+    return;
+
+  // The os version is internally stored as a base-64-encoded string.
+  std::string encoded_os_version;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(&os_version.value()),
+                        sizeof(OSVERSIONINFOEX)),
+      &encoded_os_version);
+  return pref_service_->SetString(kLastOSVersion, encoded_os_version);
+}
+#endif
+
 // Register persisted data prefs, except for kPersistedDataPreference.
 // kPersistedDataPreference is registered by update_client::RegisterPrefs.
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
+  registry->RegisterStringPref(kLastOSVersion, {});
 }
 
 }  // namespace updater

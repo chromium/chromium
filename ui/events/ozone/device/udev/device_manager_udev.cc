@@ -5,12 +5,15 @@
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "device/udev_linux/udev.h"
+#include "device/udev_linux/udev_loader.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 
@@ -159,10 +162,8 @@ void DeviceManagerUdev::OnFileCanWriteWithoutBlocking(int fd) {
 std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
     udev_device* device) {
   const char* path = device::udev_device_get_devnode(device);
-  const char* action = device::udev_device_get_action(device);
   const char* subsystem =
       device::udev_device_get_property_value(device, "SUBSYSTEM");
-
   if (!path || !subsystem)
     return nullptr;
 
@@ -177,6 +178,7 @@ std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
   else
     return nullptr;
 
+  const char* action = device::udev_device_get_action(device);
   DeviceEvent::ActionType action_type;
   if (!action || !strcmp(action, "add"))
     action_type = DeviceEvent::ADD;
@@ -187,8 +189,19 @@ std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
   else
     return nullptr;
 
+  PropertyMap property_map;
+  udev_list_entry* property_list =
+      device::udev_device_get_properties_list_entry(device);
+  udev_list_entry* entry;
+  udev_list_entry_foreach(entry, property_list) {
+    const std::string key(device::udev_list_entry_get_name(entry));
+    const std::string value(
+        device::udev_device_get_property_value(device, key.c_str()));
+    property_map.insert({key, value});
+  }
+
   return std::make_unique<DeviceEvent>(device_type, action_type,
-                                       base::FilePath(path));
+                                       base::FilePath(path), property_map);
 }
 
 }  // namespace ui

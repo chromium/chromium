@@ -14,6 +14,7 @@ use super::template::{
 };
 use super::traversal::{EdgeKind, Trace, Tracer};
 use crate::clang::{self, Cursor};
+use crate::ir::function::Visibility;
 use crate::parse::{ClangItemParser, ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
@@ -1106,7 +1107,8 @@ impl Type {
                     }
                 }
                 CXType_Enum => {
-                    let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
+                    let visibility = Visibility::from(cursor.access_specifier());
+                    let enum_ = Enum::from_ty(ty, visibility, ctx).expect("Not an enum?");
 
                     if name.is_empty() {
                         let pretty_name = ty.spelling();

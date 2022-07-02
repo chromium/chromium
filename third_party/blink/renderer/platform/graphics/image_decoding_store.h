@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"

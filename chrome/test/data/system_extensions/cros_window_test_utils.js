@@ -16,7 +16,7 @@ async function setFullscreenAndTest(fullscreen) {
   await assertSingleWindow();
   {
     let [window] = await chromeos.windowManagement.getWindows();
-    window.setFullscreen(fullscreen);
+    await window.setFullscreen(fullscreen);
   }
 
   if (fullscreen) {
@@ -31,50 +31,63 @@ async function setFullscreenAndTest(fullscreen) {
   }
 }
 
-async function setOriginAndTest(x, y) {
+// Calls the moveTo function and checks that the origin is set correctly
+// without affecting bounds.
+async function moveToAndTest(x, y) {
   await assertSingleWindow();
 
-  let originalWidth, originalHeight;
+  let [window] = await chromeos.windowManagement.getWindows();
+  const originalWidth = window.width;
+  const originalHeight = window.height;
+  await window.moveTo(x, y);
 
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    originalWidth = window.width;
-    originalHeight = window.height;
-    window.setOrigin(x, y);
-  }
-
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    assert_equals(
-        window.screenLeft, x,
-        `SetOrigin should set origin without changing bounds`);
-    assert_equals(
-        window.screenTop, y,
-        `SetOrigin should set origin without changing bounds`);
-    assert_equals(
-        window.width, originalWidth,
-        `SetOrigin should set origin without changing bounds`);
-    assert_equals(
-        window.height, originalHeight,
-        `SetOrigin should set origin without changing bounds`);
-  }
+  await assertWindowBounds(x, y, originalWidth, originalHeight);
 }
 
-async function setBoundsAndTest(x, y, width, height) {
+// Calls the moveBy function and checks that the origin is shifted without
+// affecting bounds.
+async function moveByAndTest(deltaX, deltaY) {
   await assertSingleWindow();
 
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    window.setBounds(x, y, width, height);
-  }
+  let [window] = await chromeos.windowManagement.getWindows();
+  const originalX = window.screenLeft;
+  const originalY = window.screenTop;
+  const originalWidth = window.width;
+  const originalHeight = window.height;
+  await window.moveBy(deltaX, deltaY);
 
-  {
-    let [window] = await chromeos.windowManagement.getWindows();
-    assert_equals(window.screenLeft, x, `set bounds incorrectly`);
-    assert_equals(window.screenTop, y, `set bounds incorrectly`);
-    assert_equals(window.width, width, `set bounds incorrectly`);
-    assert_equals(window.height, height, `set bounds incorrectly`);
-  }
+  await assertWindowBounds(
+      originalX + deltaX, originalY + deltaY, originalWidth, originalHeight);
+}
+
+// Calls the resizeTo function and asserts that the bounds are set correctly
+// without moving the origin.
+async function resizeToAndTest(width, height) {
+  await assertSingleWindow();
+
+  let [window] = await chromeos.windowManagement.getWindows();
+  const originalX = window.screenLeft;
+  const originalY = window.screenTop;
+  await window.resizeTo(width, height);
+
+  await assertWindowBounds(originalX, originalY, width, height);
+}
+
+// Calls the resizeBy function and asserts that the bounds are shifted correctly
+// without moving the origin.
+async function resizeByAndTest(deltaWidth, deltaHeight) {
+  await assertSingleWindow();
+
+  let [window] = await chromeos.windowManagement.getWindows();
+  const originalX = window.screenLeft;
+  const originalY = window.screenTop;
+  const originalWidth = window.width;
+  const originalHeight = window.height;
+  await window.resizeBy(deltaWidth, deltaHeight);
+
+  await assertWindowBounds(
+      originalX, originalY, originalWidth + deltaWidth,
+      originalHeight + deltaHeight);
 }
 
 // Maximizes the window and checks the maximized state is set correctly.
@@ -82,7 +95,7 @@ async function maximizeAndTest() {
   await assertSingleWindow();
 
   let [window] = await chromeos.windowManagement.getWindows();
-  window.maximize();
+  await window.maximize();
   await assertWindowState("maximized");
 }
 
@@ -91,7 +104,7 @@ async function minimizeAndTest() {
   await assertSingleWindow();
 
   let [window] = await chromeos.windowManagement.getWindows();
-  window.minimize();
+  await window.minimize();
   await assertWindowState("minimized");
 }
 
@@ -100,7 +113,7 @@ async function focusAndTest() {
 
   {
     let [window] = await chromeos.windowManagement.getWindows();
-    window.focus();
+    await window.focus();
   }
 
   {
@@ -122,4 +135,16 @@ async function assertWindowState(state) {
   assert_equals(
       window.visibilityState, state === 'minimized' ? 'hidden' : 'shown',
       `window should be in the ${state} state`);
+}
+
+async function assertWindowBounds(x, y, width, height) {
+  await assertSingleWindow();
+
+  let [window] = await chromeos.windowManagement.getWindows();
+  assert_equals(window.screenLeft, x);
+  assert_equals(window.screenTop, y);
+  assert_equals(window.screenLeft, window.screenX);
+  assert_equals(window.screenTop, window.screenY);
+  assert_equals(window.width, width);
+  assert_equals(window.height, height);
 }

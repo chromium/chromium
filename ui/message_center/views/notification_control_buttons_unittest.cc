@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/notification_control_buttons_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
@@ -35,7 +36,7 @@ class TestMessageView : public MessageView {
   }
 
  private:
-  NotificationControlButtonsView* buttons_view_ = nullptr;
+  raw_ptr<NotificationControlButtonsView> buttons_view_ = nullptr;
 };
 
 }  // namespace

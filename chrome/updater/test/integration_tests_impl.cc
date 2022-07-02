@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -142,17 +143,18 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
           base::JSONReader::Read(request_body);
       if (!doc || !doc->is_dict())
         return false;
-      const base::Value* object_request = doc->FindKey("request");
-      if (!object_request || !object_request->is_dict())
+      const base::Value::Dict* object_request =
+          doc->GetDict().FindDict("request");
+      if (!object_request)
         return false;
-      const base::Value* value_ismachine = object_request->FindKey("ismachine");
-      if (!value_ismachine || !value_ismachine->is_bool())
+      absl::optional<bool> ismachine = object_request->FindBool("ismachine");
+      if (!ismachine.has_value())
         return false;
       switch (scope) {
         case UpdaterScope::kSystem:
-          return value_ismachine->GetBool();
+          return *ismachine;
         case UpdaterScope::kUser:
-          return !value_ismachine->GetBool();
+          return !*ismachine;
       }
     }();
     if (!is_match) {
@@ -186,6 +188,10 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id) {
                           loop.Quit();
                         })));
   loop.Run();
+}
+
+void SetGroupPolicies(const base::Value::Dict& values) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetGroupPolicies(values).Modify());
 }
 
 void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
@@ -285,7 +291,7 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
 
   // Invoke the wake client of that version.
   base::CommandLine command_line(
-      GetVersionedUpdaterFolderPathForVersion(scope, active_version)
+      GetVersionedInstallDirectory(scope, active_version)
           ->Append(GetExecutableRelativePath()));
   command_line.AppendSwitch(kWakeSwitch);
   int exit_code = -1;
@@ -314,6 +320,12 @@ void UpdateAll(UpdaterScope scope) {
       base::BindOnce(base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
   loop.Run();
+}
+
+void DeleteUpdaterDirectory(UpdaterScope scope) {
+  absl::optional<base::FilePath> install_dir = GetBaseInstallDirectory(scope);
+  ASSERT_TRUE(install_dir);
+  ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
 }
 
 void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
@@ -422,8 +434,10 @@ bool WaitFor(base::RepeatingCallback<bool()> predicate) {
   while (base::TimeTicks::Now() < deadline) {
     if (predicate.Run())
       return true;
-    base::PlatformThread::Sleep(base::Milliseconds(200));
+
+    base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
   }
+
   return false;
 }
 

@@ -34,18 +34,6 @@
 
 namespace blink {
 
-const double RealtimeAnalyser::kDefaultSmoothingTimeConstant = 0.8;
-const double RealtimeAnalyser::kDefaultMinDecibels = -100;
-const double RealtimeAnalyser::kDefaultMaxDecibels = -30;
-
-const unsigned RealtimeAnalyser::kDefaultFFTSize = 2048;
-// All FFT implementations are expected to handle power-of-two sizes
-// MinFFTSize <= size <= MaxFFTSize.
-const unsigned RealtimeAnalyser::kMinFFTSize = 32;
-const unsigned RealtimeAnalyser::kMaxFFTSize = 32768;
-const unsigned RealtimeAnalyser::kInputBufferSize =
-    RealtimeAnalyser::kMaxFFTSize * 2;
-
 RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
     : input_buffer_(kInputBufferSize),
       down_mix_bus_(AudioBus::Create(1, render_quantum_frames)),
@@ -53,8 +41,7 @@ RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
       magnitude_buffer_(kDefaultFFTSize / 2),
       smoothing_time_constant_(kDefaultSmoothingTimeConstant),
       min_decibels_(kDefaultMinDecibels),
-      max_decibels_(kDefaultMaxDecibels),
-      last_analysis_time_(-1) {
+      max_decibels_(kDefaultMaxDecibels) {
   analysis_frame_ = std::make_unique<FFTFrame>(kDefaultFFTSize);
 }
 

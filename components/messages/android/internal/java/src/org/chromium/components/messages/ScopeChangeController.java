@@ -10,19 +10,18 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.LoadCommittedDetails;
-import org.chromium.content_public.browser.NavigationController;
-import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Observe the webContents to notify queue manager of proper scope changes of {@link
@@ -78,6 +77,8 @@ class ScopeChangeController {
             extends WebContentsObserver implements ScopeObserver {
         private final Delegate mDelegate;
         private final ScopeKey mScopeKey;
+        // TODO(crbug.com/1340572): Replace GURL with Origin.
+        private GURL mLastVisitedUrl;
 
         public NavigationWebContentsScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             super(scopeKey.webContents);
@@ -112,24 +113,27 @@ class ScopeChangeController {
         }
 
         @Override
-        public void navigationEntryCommitted(LoadCommittedDetails details) {
-            if (mScopeKey.scopeType != MessageScopeType.NAVIGATION) {
+        public void didFinishNavigation(NavigationHandle navigationHandle) {
+            if (mScopeKey.scopeType != MessageScopeType.NAVIGATION
+                    && mScopeKey.scopeType != MessageScopeType.ORIGIN) {
                 return;
             }
-            if (!details.isMainFrame() || details.isSameDocument() || details.didReplaceEntry()) {
+
+            if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()
+                    || !navigationHandle.hasCommitted() || navigationHandle.isReload()) {
                 return;
             }
-            super.navigationEntryCommitted(details);
 
-            NavigationController controller = mScopeKey.webContents.getNavigationController();
-            NavigationEntry entry =
-                    controller.getEntryAtIndex(controller.getLastCommittedEntryIndex());
-
-            int transition = entry.getTransition();
-            if ((transition & PageTransition.RELOAD) != PageTransition.RELOAD
-                    && (transition & PageTransition.IS_REDIRECT_MASK) == 0) {
-                destroy();
+            if (mScopeKey.scopeType == MessageScopeType.ORIGIN) {
+                if (mLastVisitedUrl == null
+                        || originEquals(mLastVisitedUrl, navigationHandle.getUrl())) {
+                    mLastVisitedUrl = navigationHandle.getUrl();
+                    return;
+                }
+                mLastVisitedUrl = navigationHandle.getUrl();
             }
+
+            destroy();
         }
 
         @Override
@@ -147,6 +151,13 @@ class ScopeChangeController {
             // TODO(crbug.com/1205392): This is a temporary solution; remove this when
             // tab-reparent is fully supported.
             destroy();
+        }
+
+        private boolean originEquals(GURL url1, GURL url2) {
+            if (url1 == null || url2 == null) return false;
+            return Objects.equals(url1.getScheme(), url2.getScheme())
+                    && Objects.equals(url1.getHost(), url2.getHost())
+                    && Objects.equals(url1.getPort(), url2.getPort());
         }
     }
 

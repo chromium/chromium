@@ -9,7 +9,11 @@
 
 #include "base/time/time.h"
 
+class PrefService;
+
 namespace history_clusters {
+
+class HistoryClustersService;
 
 // The default configuration. Always use |GetConfig()| to get the current
 // configuration.
@@ -25,12 +29,6 @@ struct Config {
   // The max number of visits to use for each clustering iteration. This limits
   // the number of visits sent to the clustering backend per batch.
   int max_visits_to_cluster = 1000;
-
-  // The recency threshold controlling which visits will be clustered. This
-  // isn't the only factor; i.e. visits older than `MaxDaysToCluster()` may
-  // still be clustered. Only applies when using persisted visit context
-  // annotations; i.e. `kPersistContextAnnotationsInHistoryDb` is true.
-  int max_days_to_cluster = 9;
 
   // A soft cap on the number of keyword phrases to cache. 5000 should be more
   // than enough, as the 99.9th percentile of users has 2000. A few nuances:
@@ -80,12 +78,35 @@ struct Config {
   bool omnibox_action = false;
 
   // If enabled, allows the Omnibox Action chip to also appear on URLs. This
-  // does nothing if `omnibox_action` is disabled.
+  // does nothing if `omnibox_action` is disabled. Note, that if you turn this
+  // flag to true, you almost certainly will want to set
+  // `omnibox_action_on_navigation_intents` to true as well, as otherwise your
+  // desired action chips on URLs will almost certainly all be suppressed.
   bool omnibox_action_on_urls = false;
 
   // If enabled, allows the Omnibox Action chip to appear on URLs from noisy
-  // visits. This does nothing if `omnibox_action_on_urls` is false.
+  // visits. This does nothing if `omnibox_action_on_urls` is disabled.
   bool omnibox_action_on_noisy_urls = true;
+
+  // If enabled, allows the Omnibox Action chip to appear when it's likely the
+  // user is intending to perform a navigation. This does not affect which
+  // suggestions are allowed to display the chip. Does nothing if
+  // `omnibox_action` is disabled.
+  bool omnibox_action_on_navigation_intents = false;
+
+  // If `omnibox_action_on_navigation_intents` is enabled, this threshold
+  // helps determine when the user is intending to perform a navigation.
+  int omnibox_action_navigation_intent_score_threshold = 1300;
+
+  // If enabled, allows the Omnibox Action chip to appear when the suggestions
+  // contain pedals. Does nothing if `omnibox_action` is disabled.
+  bool omnibox_action_with_pedals = false;
+
+  // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
+  // instead of an action chip. Enabling this won't actually disable
+  // `omnibox_action_with_pedals`, but for user experiments, the intent is to
+  // only have 1 enabled.
+  bool omnibox_history_cluster_provider = false;
 
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.
@@ -102,6 +123,19 @@ struct Config {
   // If enabled, adds the keywords of detected entities from noisy visits to a
   // cluster.
   bool keyword_filter_on_noisy_visits = true;
+
+  // If enabled, adds the search terms of the visits that have them.
+  bool keyword_filter_on_search_terms = false;
+
+  // If enabled, adds the keywords of detected entities that may be for
+  // the visit's host.
+  bool keyword_filter_on_visit_hosts = true;
+
+  // The weight for category keyword scores per cluster.
+  float category_keyword_score_weight = 1.0;
+
+  // Maximum number of keywords to keep per cluster.
+  size_t max_num_keywords_per_cluster = 20;
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
   // Does nothing if `kJourneys` is disabled.
@@ -158,6 +192,10 @@ struct Config {
 
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
+
+  // Whether to hide clusters that only contain URLs from the same domain on
+  // prominent UI surfaces.
+  bool should_hide_single_domain_clusters_on_prominent_ui_surfaces = false;
 
   // Whether to filter clusters that are noisy from the UI. This will
   // heuristically remove clusters that are unlikely to be "interesting".
@@ -228,6 +266,13 @@ struct Config {
   // Whether to check if all visits for a host should be in resulting clusters.
   bool should_check_hosts_to_skip_clustering_for = false;
 
+  // The max number of hosts that should be stored in the engagement score
+  // cache.
+  int engagement_score_cache_size = 100;
+
+  // The max time a host should be stored in the engagement score cache.
+  base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
+
   // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
   bool use_continue_on_shutdown = true;
 
@@ -242,6 +287,11 @@ struct Config {
 // cached.
 bool IsApplicationLocaleSupportedByJourneys(
     const std::string& application_locale);
+
+// Checks some prerequisites for history cluster omnibox suggestions and
+// actions.
+bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
+                                PrefService* prefs);
 
 // Gets the current configuration. OverrideWithFinch() must have been called
 // before GetConfig() is called.

@@ -32,8 +32,8 @@
 #include "components/offline_pages/core/model/update_publish_id_task.h"
 #include "components/offline_pages/core/model/visuals_availability_task.h"
 #include "components/offline_pages/core/offline_clock.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
-#include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_store_utils.h"
@@ -186,7 +186,7 @@ OfflinePageModelTaskified::OfflinePageModelTaskified(
   CreateArchivesDirectoryIfNeeded();
 }
 
-OfflinePageModelTaskified::~OfflinePageModelTaskified() {}
+OfflinePageModelTaskified::~OfflinePageModelTaskified() = default;
 
 void OfflinePageModelTaskified::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -582,9 +582,9 @@ void OfflinePageModelTaskified::OnDeleteDone(
 
   // Remove the page from the system download manager. We don't need to wait for
   // completion before calling the delete page callback.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&OfflinePageModelTaskified::Unpublish,
-                                        archive_publisher_.get(), publish_ids));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&OfflinePageModelTaskified::Unpublish,
+                                archive_publisher_->GetWeakPtr(), publish_ids));
 
   if (!callback.is_null())
     std::move(callback).Run(result);
@@ -609,9 +609,9 @@ void OfflinePageModelTaskified::OnStoreFaviconDone(int64_t offline_id,
 }
 
 void OfflinePageModelTaskified::Unpublish(
-    OfflinePageArchivePublisher* publisher,
+    base::WeakPtr<OfflinePageArchivePublisher> publisher,
     const std::vector<PublishedArchiveId>& publish_ids) {
-  if (!publish_ids.empty())
+  if (publisher && !publish_ids.empty())
     publisher->UnpublishArchives(publish_ids);
 }
 
@@ -663,7 +663,7 @@ void OfflinePageModelTaskified::RunMaintenanceTasks(base::Time now,
 void OfflinePageModelTaskified::OnPersistentPageConsistencyCheckDone(
     bool success,
     const std::vector<PublishedArchiveId>& ids_of_deleted_pages) {
-  Unpublish(archive_publisher_.get(), ids_of_deleted_pages);
+  Unpublish(archive_publisher_->GetWeakPtr(), ids_of_deleted_pages);
 }
 
 void OfflinePageModelTaskified::OnClearCachedPagesDone(

@@ -35,6 +35,12 @@ inline constexpr char kSyncOsApps[] = "sync.os_apps";
 inline constexpr char kSyncOsPreferences[] = "sync.os_preferences";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// On Lacros, apps sync for primary profile is controlled by the OS. This
+// preference caches the last known value.
+inline constexpr char kSyncAppsEnabledByOs[] = "sync.apps_enabled_by_os";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Booleans specifying whether the user has selected to sync the following
 // user selectable types.
 inline constexpr char kSyncApps[] = "sync.apps";

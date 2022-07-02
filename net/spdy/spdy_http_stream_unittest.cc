@@ -38,9 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -1265,6 +1263,4 @@ TEST_F(SpdyHttpStreamTest, DownloadWithEmptyDataFrame) {
 // TODO(willchan): Write a longer test for SpdyStream that exercises all
 // methods.
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

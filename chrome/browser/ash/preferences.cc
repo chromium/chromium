@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
+#include "chrome/browser/ash/login/consolidated_consent_field_trial.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -49,7 +50,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/devicemode.h"
@@ -122,7 +123,7 @@ Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
 Preferences::~Preferences() {
   prefs_->RemoveObserver(this);
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -154,6 +155,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
 
   RegisterLocalStatePrefs(registry);
+  ash::consolidated_consent_field_trial::RegisterLocalStatePrefs(registry);
 }
 
 // static
@@ -258,9 +260,12 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(drive::prefs::kDriveFsPinnedMigrated, false);
   registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableVerboseLogging,
                                 false);
-  // Do not sync drive::prefs::kDriveFsEnableMirrorSync because we're syncing
-  // local files and users may wish to turn this off on a per device basis.
+  // Do not sync drive::prefs::kDriveFsEnableMirrorSync and
+  // drive::prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
+  // and users may wish to turn this off on a per device basis.
   registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableMirrorSync, false);
+  registry->RegisterStringPref(drive::prefs::kDriveFsMirrorSyncMachineRootId,
+                               "");
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
@@ -334,9 +339,6 @@ void Preferences::RegisterProfilePrefs(
 
   // Don't sync the note-taking app; it may not be installed on other devices.
   registry->RegisterStringPref(::prefs::kNoteTakingAppId, std::string());
-  registry->RegisterBooleanPref(::prefs::kNoteTakingAppEnabledOnLockScreen,
-                                true);
-  registry->RegisterListPref(::prefs::kNoteTakingAppsLockScreenAllowlist);
   registry->RegisterBooleanPref(::prefs::kRestoreLastLockScreenNote, true);
   registry->RegisterDictionaryPref(
       ::prefs::kNoteTakingAppsLockScreenToastShown);
@@ -349,9 +351,7 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  registry->RegisterBooleanPref(::prefs::kExternalStorageDisabled, false);
-
-  registry->RegisterBooleanPref(::prefs::kExternalStorageReadOnly, false);
+  disks::prefs::RegisterProfilePrefs(registry);
 
   registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
 
@@ -488,9 +488,6 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kTextToSpeechVolume, blink::mojom::kSpeechSynthesisDefaultVolume,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  // By default showing Sync Consent is set to true. It can changed by policy.
-  registry->RegisterBooleanPref(::prefs::kEnableSyncConsent, true);
-
   registry->RegisterBooleanPref(prefs::kSyncOobeCompleted, false);
 
   registry->RegisterBooleanPref(::prefs::kTPMFirmwareUpdateCleanupDismissed,
@@ -517,9 +514,6 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterDictionaryPref(prefs::kLauncherSearchNormalizerParameters);
-
-  registry->RegisterListPref(
-      ::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
   registry->RegisterListPref(
       prefs::kFilesAppFolderShortcuts,
@@ -610,8 +604,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
     pref_change_registrar_.Add(copy_pref, callback);
 
   // Re-enable OTA update when feature flag is disabled by owner.
-  auto* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  auto* update_engine_client = UpdateEngineClient::Get();
   if (user_manager::UserManager::Get()->IsCurrentUserOwner() &&
       !features::IsConsumerAutoUpdateToggleAllowed()) {
     // Write into the platform will signal back so pref gets synced.
@@ -634,7 +627,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // This causes OnIsSyncingChanged to be called when the value of
   // PrefService::IsSyncing() changes.
   prefs->AddObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   user_ = user;
   user_is_primary_ =
@@ -701,9 +694,7 @@ void Preferences::InitUserPrefsForTesting(
 
   InitUserPrefs(prefs);
 
-  auto* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-  update_engine_client->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   input_method_syncer_ =
       std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);

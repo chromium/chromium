@@ -9,12 +9,12 @@
 
 @protocol PasswordIssue;
 
-// Table view item used by |PasswordIssuesTableViewController|. It is created to
-// hold |PasswordIssueWithForm|.
+// Table view item used by `PasswordIssuesTableViewController`. It is created to
+// hold `PasswordIssueWithForm`.
 @interface PasswordIssueContentItem : TableViewURLItem
 
-// Associated password issue. Settings this property will change |title| and
-// |detailText|.
+// Associated password issue. Settings this property will change `title` and
+// `detailText`.
 @property(nonatomic, strong) id<PasswordIssue> password;
 
 @end

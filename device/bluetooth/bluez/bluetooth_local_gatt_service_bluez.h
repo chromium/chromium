@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
@@ -83,7 +84,7 @@ class BluetoothLocalGattServiceBlueZ
 
   // Delegate to receive read/write requests for attribute  values contained
   // in this service.
-  device::BluetoothLocalGattService::Delegate* delegate_;
+  raw_ptr<device::BluetoothLocalGattService::Delegate> delegate_;
 
   // Characteristics contained by this service.
   std::map<dbus::ObjectPath,

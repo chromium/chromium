@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
@@ -59,6 +59,10 @@ struct PartitionMemoryStats {
       total_brp_quarantined_bytes;  // Total bytes that are quarantined by BRP.
   size_t total_brp_quarantined_count;  // Total number of slots that are
                                        // quarantined by BRP.
+  size_t cumulative_brp_quarantined_bytes;  // Cumulative bytes that are
+                                            // quarantined by BRP.
+  size_t cumulative_brp_quarantined_count;  // Cumulative number of slots that
+                                            // are quarantined by BRP.
 #endif
 
   bool has_thread_cache;
@@ -97,7 +101,7 @@ struct PartitionBucketMemoryStats {
 
 // Interface that is passed to PartitionDumpStats and
 // PartitionDumpStats for using the memory statistics.
-class BASE_EXPORT PartitionStatsDumper {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionStatsDumper {
  public:
   // Called to dump total memory used by partition, once per partition.
   virtual void PartitionDumpTotals(const char* partition_name,
@@ -110,7 +114,8 @@ class BASE_EXPORT PartitionStatsDumper {
 
 // Simple version of PartitionStatsDumper, storing the returned stats in stats_.
 // Does not handle per-bucket stats.
-class BASE_EXPORT SimplePartitionStatsDumper : public PartitionStatsDumper {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SimplePartitionStatsDumper
+    : public PartitionStatsDumper {
  public:
   SimplePartitionStatsDumper();
 
@@ -127,17 +132,5 @@ class BASE_EXPORT SimplePartitionStatsDumper : public PartitionStatsDumper {
 };
 
 }  // namespace partition_alloc
-
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionBucketMemoryStats;
-using ::partition_alloc::PartitionMemoryStats;
-using ::partition_alloc::PartitionStatsDumper;
-using ::partition_alloc::SimplePartitionStatsDumper;
-using ::partition_alloc::ThreadCacheStats;
-
-}  // namespace base
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_STATS_H_

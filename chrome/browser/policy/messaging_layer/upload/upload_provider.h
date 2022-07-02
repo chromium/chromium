@@ -16,6 +16,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage/storage_module_interface.h"
 
 namespace reporting {
@@ -47,9 +48,13 @@ class EncryptedReportingUploadProvider {
   virtual ~EncryptedReportingUploadProvider();
 
   // Called to upload records and/or request encryption key.
+  // |scoped_reservation| may be provided to control the usage
+  // of memory for request building. If it is not provided, memory usage is not
+  // controlled.
   void RequestUploadEncryptedRecords(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      std::vector<EncryptedRecord> records,
+      absl::optional<ScopedReservation> scoped_reservation,
       base::OnceCallback<void(Status)> result_cb);
 
  private:

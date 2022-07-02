@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.system.Os;
 
 import androidx.annotation.IntDef;
@@ -25,6 +24,8 @@ import org.chromium.base.Log;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TimeUtils.CurrentThreadTimeMillisTimer;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.JNINamespace;
@@ -812,7 +813,9 @@ public class LibraryLoader {
 
         // Load libraries using the system linker.
         for (String library : NativeLibraries.LIBRARIES) {
-            if (!isInZipFile()) {
+            // TODO(crbug.com/1337134): Always use System.loadLibrary().
+            boolean isTrichrome = !forceSystemLinker() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+            if (!isInZipFile() || isTrichrome) {
                 System.loadLibrary(library);
             } else {
                 // Load directly from the APK.
@@ -843,8 +846,8 @@ public class LibraryLoader {
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
             setLinkerImplementationIfNeededAlreadyLocked();
 
-            long startTime = SystemClock.uptimeMillis();
-            long startThreadTime = SystemClock.currentThreadTimeMillis();
+            UptimeMillisTimer uptimeTimer = new UptimeMillisTimer();
+            CurrentThreadTimeMillisTimer threadTimeTimer = new CurrentThreadTimeMillisTimer();
 
             if (useChromiumLinker() && !mFallbackToSystemLinker) {
                 if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
@@ -858,10 +861,9 @@ public class LibraryLoader {
                 loadWithSystemLinkerAlreadyLocked(appInfo, inZygote);
             }
 
-            long loadTimeMs = SystemClock.uptimeMillis() - startTime;
+            long loadTimeMs = uptimeTimer.getElapsedMillis();
             getMediator().recordLoadTimeHistogram(loadTimeMs);
-            getMediator().recordLoadThreadTimeHistogram(
-                    SystemClock.currentThreadTimeMillis() - startThreadTime);
+            getMediator().recordLoadThreadTimeHistogram(threadTimeTimer.getElapsedMillis());
             if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {
@@ -870,7 +872,6 @@ public class LibraryLoader {
     }
 
     @VisibleForTesting
-    // After Android M, this function is likely a no-op.
     protected void loadNonMainDex() {
         if (mLoadState == LoadState.LOADED) return;
         synchronized (mNonMainDexLock) {
@@ -878,6 +879,7 @@ public class LibraryLoader {
             if (mLoadState == LoadState.LOADED) return;
             try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadNonMainDex")) {
                 if (!JNIUtils.isSelectiveJniRegistrationEnabled()) {
+                    // On M+ the native symbols are exported, and registering natives seems fast.
                     LibraryLoaderJni.get().registerNonMainDexJni();
                 }
                 mLoadState = LoadState.LOADED;

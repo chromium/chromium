@@ -47,8 +47,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    auto model = std::make_unique<AuthenticatorRequestDialogModel>(
-        /*relying_party_id=*/"example.com");
+    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    model_->set_relying_party_id("example.com");
     ::device::FidoRequestHandlerBase::TransportAvailabilityInfo
         transport_availability;
     transport_availability.available_transports = {
@@ -65,7 +66,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       std::array<uint8_t, device::kP256X962Length> public_key = {0};
       AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
                                                          public_key);
-      model->set_cable_transport_info(
+      model_->set_cable_transport_info(
           /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{phone},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
@@ -74,85 +75,82 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     transport_availability.request_type =
         device::FidoRequestType::kGetAssertion;
-    model->StartFlow(std::move(transport_availability),
-                     /*use_location_bar_bubble=*/false,
-                     /*prefer_native_api=*/false);
 
     // The dialog should immediately close as soon as it is displayed.
     if (name == "mechanisms") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     } else if (name == "activate_usb") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate);
     } else if (name == "timeout") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kTimedOut);
     } else if (name == "no_available_transports") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
     } else if (name == "key_not_registered") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kKeyNotRegistered);
     } else if (name == "key_already_registered") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kKeyAlreadyRegistered);
     } else if (name == "internal_unrecognized_error") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kErrorInternalUnrecognized);
     } else if (name == "ble_power_on_manual") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kBlePowerOnManual);
     } else if (name == "touchid_incognito") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
     } else if (name == "cable_activate" ||
                name == "cable_server_link_activate") {
-      model->set_cable_transport_info(
+      model_->set_cable_transport_info(
           /*extension_is_v2=*/false,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_activate") {
-      model->set_cable_transport_info(
+      model_->set_cable_transport_info(
           /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_pair") {
-      model->set_cable_transport_info(
+      model_->set_cable_transport_info(
           /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "set_pin") {
-      model->CollectPIN(device::pin::PINEntryReason::kSet,
-                        device::pin::PINEntryError::kNoError, 6, 0,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kSet,
+                         device::pin::PINEntryError::kNoError, 6, 0,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin") {
-      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
-                        device::pin::PINEntryError::kNoError, 6, 8,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                         device::pin::PINEntryError::kNoError, 6, 8,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_two_tries_remaining") {
-      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
-                        device::pin::PINEntryError::kWrongPIN, 6, 2,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                         device::pin::PINEntryError::kWrongPIN, 6, 2,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_one_try_remaining") {
-      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
-                        device::pin::PINEntryError::kWrongPIN, 6, 1,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                         device::pin::PINEntryError::kWrongPIN, 6, 1,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_fallback") {
-      model->CollectPIN(device::pin::PINEntryReason::kChallenge,
-                        device::pin::PINEntryError::kInternalUvLocked, 6, 8,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChallenge,
+                         device::pin::PINEntryError::kInternalUvLocked, 6, 8,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "inline_bio_enrollment") {
-      model->StartInlineBioEnrollment(base::DoNothing());
+      model_->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
           FROM_HERE, base::Seconds(2),
-          base::BindLambdaForTesting([&, weak_model = model->GetWeakPtr()] {
+          base::BindLambdaForTesting([&, weak_model = model_->GetWeakPtr()] {
             if (!weak_model || weak_model->current_step() !=
                                    AuthenticatorRequestDialogModel::Step::
                                        kInlineBioEnrollment) {
@@ -163,36 +161,36 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
               timer_.Stop();
           }));
     } else if (name == "retry_uv") {
-      model->OnRetryUserVerification(5);
+      model_->OnRetryUserVerification(5);
     } else if (name == "retry_uv_two_tries_remaining") {
-      model->OnRetryUserVerification(2);
+      model_->OnRetryUserVerification(2);
     } else if (name == "retry_uv_one_try_remaining") {
-      model->OnRetryUserVerification(1);
+      model_->OnRetryUserVerification(1);
     } else if (name == "force_pin_change") {
-      model->CollectPIN(device::pin::PINEntryReason::kChange,
-                        device::pin::PINEntryError::kNoError, 6, 0,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChange,
+                         device::pin::PINEntryError::kNoError, 6, 0,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "force_pin_change_same_as_current") {
-      model->CollectPIN(device::pin::PINEntryReason::kChange,
-                        device::pin::PINEntryError::kSameAsCurrentPIN, 6, 0,
-                        base::BindOnce([](std::u16string pin) {}));
+      model_->CollectPIN(device::pin::PINEntryReason::kChange,
+                         device::pin::PINEntryError::kSameAsCurrentPIN, 6, 0,
+                         base::BindOnce([](std::u16string pin) {}));
     } else if (name == "second_tap") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);
     } else if (name == "soft_block") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinErrorSoftBlock);
     } else if (name == "hard_block") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kClientPinErrorHardBlock);
     } else if (name == "authenticator_removed") {
-      model->SetCurrentStepForTesting(AuthenticatorRequestDialogModel::Step::
-                                          kClientPinErrorAuthenticatorRemoved);
+      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogModel::Step::
+                                           kClientPinErrorAuthenticatorRemoved);
     } else if (name == "missing_capability") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMissingCapability);
     } else if (name == "storage_full") {
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kStorageFull);
     } else if (name == "account_select") {
       // These strings attempt to exercise the encoding of direction and
@@ -254,31 +252,37 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         responses.emplace_back(std::move(response));
       }
 
-      model->SelectAccount(
+      model_->SelectAccount(
           std::move(responses),
           base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
     } else if (name == "request_attestation_permission") {
-      model->RequestAttestationPermission(false, base::DoNothing());
+      model_->RequestAttestationPermission(false, base::DoNothing());
     } else if (name == "request_enterprise_attestation_permission") {
-      model->RequestAttestationPermission(true, base::DoNothing());
+      model_->RequestAttestationPermission(true, base::DoNothing());
     } else if (name == "server_link_title_UNLOCK_YOUR_PHONE") {
-      model->set_cable_transport_info(
+      model_->set_cable_transport_info(
           /*extension_is_v2=*/true, /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      model->experiment_server_link_title_ = AuthenticatorRequestDialogModel::
+      model_->experiment_server_link_title_ = AuthenticatorRequestDialogModel::
           ExperimentServerLinkTitle::UNLOCK_YOUR_PHONE;
-      model->SetCurrentStepForTesting(
+      model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     }
+#if BUILDFLAG(IS_MAC)
+    else if (name == "ble_permission_mac") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kBlePermissionMac);
+    }
+#endif
 
 #define EXP_SHEET(x)                                                    \
   else if (name == "server_link_sheet_" #x) {                           \
-    model->set_cable_transport_info(                                    \
+    model_->set_cable_transport_info(                                   \
         /*extension_is_v2=*/true, /*paired_phones=*/{},                 \
         /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode"); \
-    model->experiment_server_link_sheet_ =                              \
+    model_->experiment_server_link_sheet_ =                             \
         AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::x;  \
-    model->SetCurrentStepForTesting(                                    \
+    model_->SetCurrentStepForTesting(                                   \
         AuthenticatorRequestDialogModel::Step::kCableActivate);         \
   }
 
@@ -289,12 +293,13 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     EXP_SHEET(ARM_5)
     EXP_SHEET(ARM_6)
 #undef EXP_SHEET
-
-    ShowAuthenticatorRequestDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(), std::move(model));
+    model_->StartFlow(std::move(transport_availability),
+                      /*use_location_bar_bubble=*/false,
+                      /*prefer_native_api=*/false);
   }
 
  private:
+  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -481,3 +486,9 @@ EXP_SHEET(ARM_4)
 EXP_SHEET(ARM_5)
 EXP_SHEET(ARM_6)
 #undef EXP_SHEET
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
+  ShowAndVerifyUi();
+}
+#endif

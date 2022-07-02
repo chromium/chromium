@@ -15,8 +15,8 @@
 #include "base/location.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/net/client_cert_filter.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "crypto/nss_crypto_module_delegate.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -24,7 +24,7 @@
 namespace ash {
 
 ClientCertStoreAsh::ClientCertStoreAsh(
-    std::unique_ptr<CertificateProvider> cert_provider,
+    std::unique_ptr<chromeos::CertificateProvider> cert_provider,
     bool use_system_slot,
     const std::string& username_hash,
     const PasswordDelegateFactory& password_delegate_factory)
@@ -46,7 +46,7 @@ void ClientCertStoreAsh::GetClientCerts(
   base::OnceClosure get_additional_certs_and_continue;
   if (cert_provider_) {
     get_additional_certs_and_continue =
-        base::BindOnce(&CertificateProvider::GetCertificates,
+        base::BindOnce(&chromeos::CertificateProvider::GetCertificates,
                        base::Unretained(cert_provider_.get()),
                        std::move(get_platform_certs_and_filter));
   } else {

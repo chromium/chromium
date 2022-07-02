@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/printing.h"
@@ -156,9 +157,9 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   static const bool kServiceIsNULLWhileTesting = true;
   static const char* service_name() { return "PrintingAPIHandler"; }
 
-  content::BrowserContext* const browser_context_;
-  EventRouter* const event_router_;
-  ExtensionRegistry* const extension_registry_;
+  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<EventRouter> event_router_;
+  const raw_ptr<ExtensionRegistry> extension_registry_;
   std::unique_ptr<PrintJobController> print_job_controller_;
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
 
@@ -169,7 +170,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // This is needed to cancel print jobs.
   base::flat_map<std::string, PrintJobInfo> print_jobs_;
 
-  crosapi::mojom::LocalPrinter* local_printer_;
+  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   int local_printer_version_ = 0;
 #endif

@@ -65,8 +65,9 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync engine initialization to complete";
-    if (service()->IsEngineInitialized())
+    if (service()->IsEngineInitialized()) {
       return true;
+    }
     // Engine initialization is blocked by an auth error.
     if (HasAuthError(service())) {
       LOG(WARNING) << "Sync engine initialization blocked by auth error";
@@ -105,18 +106,7 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
     if (HasAuthError(service())) {
       return true;
     }
-    // TODO(crbug.com/1010397): The verification of INITIALIZING is only needed
-    // due to SyncEncryptionHandlerImpl issuing an unnecessary
-    // OnPassphraseRequired() during initialization.
-    if (service()
-            ->GetUserSettings()
-            ->IsPassphraseRequiredForPreferredDataTypes() &&
-        transport_state != syncer::SyncService::TransportState::INITIALIZING) {
-      LOG(FATAL)
-          << "A passphrase is required for decryption but was not provided. "
-             "Waiting for sync to become available won't succeed. Make sure "
-             "to pass it when setting up sync.";
-    }
+
     // Still waiting on sync setup.
     return false;
   }
@@ -339,8 +329,9 @@ bool SyncServiceImplHarness::SetupSyncImpl(
   // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
-  if (signin_type_ == SigninType::UI_SIGNIN)
+  if (signin_type_ == SigninType::UI_SIGNIN) {
     return signin_delegate_->ConfirmSigninUI(profile_);
+  }
   return true;
 }
 

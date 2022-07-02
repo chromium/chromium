@@ -109,11 +109,11 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
 
   // Keeps track of whether a read is currently in flight, after which
   // OnReadComplete will be called.
-  bool read_pending_;
+  bool read_pending_ = false;
 
   // The number of iterations of the read loop that have completed synchronously
   // and without posting a new task to the message loop.
-  int synchronous_read_count_;
+  int synchronous_read_count_ = 0;
 
   // The target buffer of the current read.
   scoped_refptr<IOBufferWithSize> read_buffer_;

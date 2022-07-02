@@ -82,6 +82,10 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // audio being played out locally.
   bool disable_local_echo;
 
+  // If audio is requested, |exclude_system_audio| can indicate that
+  // system-audio should nevertheless not be offered to the user.
+  bool exclude_system_audio = false;
+
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
 };
@@ -152,10 +156,10 @@ class MediaStreamUI {
 };
 
 // Callback used return results of media access requests.
-using MediaResponseCallback =
-    base::OnceCallback<void(const blink::mojom::StreamDevices& stream_devices,
-                            blink::mojom::MediaStreamRequestResult result,
-                            std::unique_ptr<MediaStreamUI> ui)>;
+using MediaResponseCallback = base::OnceCallback<void(
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<MediaStreamUI> ui)>;
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_MEDIA_STREAM_REQUEST_H_

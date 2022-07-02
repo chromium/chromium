@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-blink.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -130,12 +129,12 @@ CrossThreadHTTPHeaderMapData ToCrossThreadHTTPHeaderMapData(
 class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
  public:
   ServiceWorkerInstalledScriptsManagerTest()
-      : io_thread_(Platform::Current()->CreateThread(
-            ThreadCreationParams(ThreadType::kTestThread)
-                .SetThreadNameForTest("io thread"))),
-        worker_thread_(Platform::Current()->CreateThread(
-            ThreadCreationParams(ThreadType::kTestThread)
-                .SetThreadNameForTest("worker thread"))),
+      : io_thread_(
+            Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                     .SetThreadNameForTest("io thread"))),
+        worker_thread_(
+            Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                     .SetThreadNameForTest("worker thread"))),
         worker_waiter_(std::make_unique<base::WaitableEvent>(
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {}

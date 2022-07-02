@@ -5,8 +5,8 @@
 import re
 
 _NON_SEMANTIC_CSS_COLOR_PATTERNS = [
-  "--google-",
-  "--paper-",
+  "var(--google-",
+  "var(--paper-",
   ": #",
   "rgb",
   "hsl",

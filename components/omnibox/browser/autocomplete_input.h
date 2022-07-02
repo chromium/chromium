@@ -38,7 +38,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
   // This constructor adds |cursor_position|, related to |text|.
   // |cursor_position| represents the location of the cursor within the
   // query |text|. It may be set to std::u16string::npos if the input
@@ -49,7 +50,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
 
   // This constructor adds |desired_tld|, related to |text|. |desired_tld|
   // is the user's desired TLD, if one is not already present in the text to
@@ -63,7 +65,8 @@ class AutocompleteInput {
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
                     bool should_use_https_as_default_scheme = false,
-                    int https_port_for_testing = 0);
+                    int https_port_for_testing = 0,
+                    bool use_fake_https_for_https_upgrade_testing = false);
 
   AutocompleteInput(const AutocompleteInput& other);
   ~AutocompleteInput();
@@ -100,10 +103,12 @@ class AutocompleteInput {
   // use https:// as the default scheme. If so, fills |upgraded_url| with the
   // upgraded https:// URL. |https_port_for_testing| can be set to a non-zero
   // value in tests to load test cases over net::EmbeddedTestServer.
-  static bool ShouldUpgradeToHttps(const std::u16string& text,
-                                   const GURL& url,
-                                   int https_port_for_testing,
-                                   GURL* upgraded_url);
+  static bool ShouldUpgradeToHttps(
+      const std::u16string& text,
+      const GURL& url,
+      int https_port_for_testing,
+      bool use_fake_https_for_https_upgrade_testing,
+      GURL* upgraded_url);
 
   // Code that wants to format URLs with a format flag including
   // net::kFormatUrlOmitTrailingSlashOnBareHostname risk changing the meaning if
@@ -327,6 +332,10 @@ class AutocompleteInput {
   // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
   // redirects.
   int https_port_for_testing_;
+  // If true, indicates that the tests are using a faux-HTTPS server which is
+  // actually an HTTP server that pretends to serve HTTPS responses. Should only
+  // be true on iOS.
+  bool use_fake_https_for_https_upgrade_testing_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_

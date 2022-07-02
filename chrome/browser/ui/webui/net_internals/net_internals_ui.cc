@@ -41,7 +41,8 @@ content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://test chrome://webui-test "
+      "'self';");
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->DisableTrustedTypesCSP();
@@ -74,7 +75,7 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   // Resolve JS |callback_id| with |result|.
   // If the renderer is displaying a log file, the message will be ignored.
   void ResolveCallbackWithResult(const std::string& callback_id,
-                                 base::Value result);
+                                 base::Value::Dict result);
 
   void OnExpectCTTestReportCallback(const std::string& callback_id,
                                     bool success);
@@ -196,8 +197,9 @@ void NetInternalsMessageHandler::OnHSTSQuery(const base::Value::List& list) {
 
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
     const std::string& callback_id,
-    base::Value result) {
-  ResolveJavascriptCallback(base::Value(callback_id), result);
+    base::Value::Dict result) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(result)));
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::Value::List& list) {
@@ -267,7 +269,8 @@ void NetInternalsMessageHandler::OnExpectCTTestReport(
   GURL report_uri(*report_uri_str);
   AllowJavascript();
   if (!report_uri.is_valid()) {
-    ResolveCallbackWithResult(*callback_id, base::Value("invalid"));
+    ResolveJavascriptCallback(base::Value(*callback_id),
+                              base::Value("invalid"));
     return;
   }
 
@@ -280,8 +283,9 @@ void NetInternalsMessageHandler::OnExpectCTTestReport(
 void NetInternalsMessageHandler::OnExpectCTTestReportCallback(
     const std::string& callback_id,
     bool success) {
-  ResolveCallbackWithResult(
-      callback_id, success ? base::Value("success") : base::Value("failure"));
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      success ? base::Value("success") : base::Value("failure"));
 }
 
 void NetInternalsMessageHandler::OnFlushSocketPools(

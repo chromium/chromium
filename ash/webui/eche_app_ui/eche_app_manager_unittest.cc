@@ -33,8 +33,6 @@ namespace ash {
 namespace eche_app {
 
 namespace {
-void CloseEcheAppFunction() {}
-
 void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                            const std::string& package_name,
                            const std::u16string& visible_name,
@@ -45,6 +43,8 @@ void LaunchNotificationFunction(
     const absl::optional<std::u16string>& title,
     const absl::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
+
+void CloseNotificationFunction(const std::string& notification_id) {}
 
 class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
  public:
@@ -118,8 +118,8 @@ class EcheAppManagerTest : public testing::Test {
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
         std::move(fake_presence_monitor_client),
         base::BindRepeating(&LaunchEcheAppFunction),
-        base::BindRepeating(&CloseEcheAppFunction),
-        base::BindRepeating(&LaunchNotificationFunction));
+        base::BindRepeating(&LaunchNotificationFunction),
+        base::BindRepeating(&CloseNotificationFunction));
   }
 
   mojo::Remote<mojom::SignalingMessageExchanger>&

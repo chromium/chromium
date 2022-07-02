@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 
@@ -50,6 +49,7 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kBuiltIn:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kSystemWeb:
+    case apps::AppType::kRemote:
       // Chrome, Lacros, Settings, etc. are built-in.
       return false;
     case apps::AppType::kMacOs:
@@ -61,7 +61,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kExtension:
     case apps::AppType::kWeb:
     case apps::AppType::kPluginVm:
-    case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kStandaloneBrowserChromeApp:
     case apps::AppType::kStandaloneBrowserExtension:
@@ -91,8 +90,15 @@ AppServiceAppItem::AppServiceAppItem(
     if (app_type_ == apps::AppType::kRemote) {
       ash::RemoteAppsManager* remote_manager =
           ash::RemoteAppsManagerFactory::GetForProfile(profile);
-      if (remote_manager->ShouldAddToFront(app_update.AppId()))
+      if (remote_manager->ShouldAddToFront(app_update.AppId())) {
         SetPosition(model_updater->GetPositionBeforeFirstItem());
+      } else {
+        // Add the app at the end of the app list to preserve behavior from
+        // before productivity launcher, so the positions in which remote apps
+        // are added are consistent with old launcher order (which may be
+        // assumed by extensions using remote apps API).
+        SetPosition(model_updater->GetFirstAvailablePosition());
+      }
 
       const ash::RemoteAppsModel::AppInfo* app_info =
           remote_manager->GetAppInfo(app_update.AppId());
@@ -106,9 +112,8 @@ AppServiceAppItem::AppServiceAppItem(
       SetPosition(CalculateDefaultPositionIfApplicable());
     }
 
-    // Crostini apps and the Terminal System App start in the crostini folder.
-    if (app_type_ == apps::AppType::kCrostini ||
-        id() == crostini::kCrostiniTerminalSystemAppId) {
+    // Crostini apps start in the crostini folder.
+    if (app_type_ == apps::AppType::kCrostini) {
       DCHECK(folder_id().empty());
       SetChromeFolderId(ash::kCrostiniFolderId);
     }
@@ -255,22 +260,12 @@ void AppServiceAppItem::Launch(int event_flags,
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        app_type_, id(), apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-        allow_placeholder_icon,
-        base::BindOnce(&AppServiceAppItem::OnLoadIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type_), id(),
-        apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-        allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &AppServiceAppItem::OnLoadIcon, weak_ptr_factory_.GetWeakPtr())));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
+      app_type_, id(), apps::IconType::kStandard,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {

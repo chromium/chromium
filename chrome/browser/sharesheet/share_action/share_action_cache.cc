@@ -76,6 +76,10 @@ bool ShareActionCache::HasVisibleActions(const apps::mojom::IntentPtr& intent,
   return false;
 }
 
+void ShareActionCache::AddShareActionForTesting() {
+  AddShareAction(std::make_unique<ExampleAction>());
+}
+
 void ShareActionCache::AddShareAction(std::unique_ptr<ShareAction> action) {
   share_actions_.push_back(std::move(action));
 }

@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
+#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/browser/verbatim_match.h"
@@ -404,9 +405,9 @@ size_t HistoryURLProviderParams::EstimateMemoryUsage() const {
 HistoryURLProvider::HistoryURLProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_URL, client),
-      listener_(listener),
       params_(nullptr),
       search_url_database_(OmniboxFieldTrial::HUPSearchDatabase()) {
+  AddListener(listener);
   // Initialize the default HUP scoring params.
   OmniboxFieldTrial::GetDefaultHUPScoringParams(&scoring_params_);
   // Initialize HUP scoring params based on the current experiment.
@@ -434,33 +435,40 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
       (input.type() == metrics::OmniboxInputType::EMPTY))
     return;
 
+  // Remove the keyword from input if we're in keyword mode for a starter pack
+  // engine.
+  AutocompleteInput autocomplete_input =
+      KeywordProvider::AdjustInputForStarterPackEngines(
+          input, client()->GetTemplateURLService());
+
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
-  const FixupReturn fixup_return(FixupUserInput(input));
+  const FixupReturn fixup_return(FixupUserInput(autocomplete_input));
   if (!fixup_return.first)
     return;
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);
-  AutocompleteInput fixed_up_input(input);
+  AutocompleteInput fixed_up_input(autocomplete_input);
   fixed_up_input.UpdateText(fixup_return.second, std::u16string::npos, parts);
 
   // Create a match for what the user typed.
-  const bool trim_http = !AutocompleteInput::HasHTTPScheme(input.text());
+  const bool trim_http =
+      !AutocompleteInput::HasHTTPScheme(autocomplete_input.text());
   AutocompleteMatch what_you_typed_match(
       VerbatimMatchForInput(this, client(), fixed_up_input,
                             fixed_up_input.canonicalized_url(), trim_http));
 
   // If the input fix-up above added characters, show them as an
   // autocompletion, unless directed not to.
-  if (!input.prevent_inline_autocomplete() &&
-      fixed_up_input.text().size() > input.text().size() &&
-      base::StartsWith(fixed_up_input.text(), input.text(),
+  if (!autocomplete_input.prevent_inline_autocomplete() &&
+      fixed_up_input.text().size() > autocomplete_input.text().size() &&
+      base::StartsWith(fixed_up_input.text(), autocomplete_input.text(),
                        base::CompareCase::SENSITIVE)) {
     what_you_typed_match.fill_into_edit = fixed_up_input.text();
     what_you_typed_match.inline_autocompletion =
-        fixed_up_input.text().substr(input.text().size());
+        fixed_up_input.text().substr(autocomplete_input.text().size());
     what_you_typed_match.contents_class.push_back(
-        {input.text().length(), ACMatchClassification::URL});
+        {autocomplete_input.text().length(), ACMatchClassification::URL});
   }
 
   what_you_typed_match.relevance = CalculateRelevance(WHAT_YOU_TYPED, 0);
@@ -492,7 +500,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // onto the |params_| member for later deletion below if we need to run pass
   // 2.
   std::unique_ptr<HistoryURLProviderParams> params(new HistoryURLProviderParams(
-      fixed_up_input, input, trim_http, what_you_typed_match,
+      fixed_up_input, autocomplete_input, trim_http, what_you_typed_match,
       default_search_provider, search_terms_data,
       client()->AllowDeletingBrowserHistory()));
 
@@ -516,7 +524,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Pass 2: Ask the history service to call us back on the history thread,
   // where we can read the full on-disk DB.
-  if (search_url_database_ && input.want_asynchronous_matches()) {
+  if (search_url_database_ && autocomplete_input.want_asynchronous_matches()) {
     done_ = false;
     params_ = params.release();  // This object will be destroyed in
                                  // QueryComplete() once we're done with it.
@@ -811,7 +819,7 @@ void HistoryURLProvider::QueryComplete(
   }
 
   done_ = true;
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 bool HistoryURLProvider::FixupExactSuggestion(
@@ -907,7 +915,7 @@ GURL HistoryURLProvider::AsKnownIntranetURL(
   // input's text and parts between Parse() and here, it seems better to be
   // paranoid and check.
   if ((input.type() != metrics::OmniboxInputType::UNKNOWN) ||
-      !base::LowerCaseEqualsASCII(input.scheme(), url::kHttpScheme) ||
+      !base::EqualsCaseInsensitiveASCII(input.scheme(), url::kHttpScheme) ||
       !input.parts().host.is_nonempty())
     return GURL();
 

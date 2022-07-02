@@ -84,24 +84,26 @@ class KeyRotationManagerTest : public testing::Test,
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
 };
 
-// Tests a success key rotation flow when a TPM key and TPM key provider are
-// available.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
+// Tests a success key rotation flow when a hardware key and hardware key
+// provider are available.
+TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_WithKey) {
   base::HistogramTester histogram_tester;
 
-  // The factory creates instances backed by fake TPM keys.
-  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
-  auto original_key_wrapped = scoped_factory_.tpm_wrapped_key();
+  // The factory creates instances backed by fake hardware keys.
+  auto mock_persistence_delegate =
+      scoped_factory_.CreateMockedHardwareDelegate();
+  auto original_key_wrapped = scoped_factory_.hw_wrapped_key();
 
-  // The mocked delegate is already set-up to return a working TPM key and
-  // provider.
+  // The mocked delegate is already set-up to return a working hardware key
+  // and provider.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(2);
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider())
+      .Times(2);
   EXPECT_CALL(
       *mock_persistence_delegate,
-      StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, Not(original_key_wrapped)))
+      StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, Not(original_key_wrapped)))
       .WillOnce(Return(true));
 
   GURL dm_server_url(kDmServerUrl);
@@ -126,8 +128,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
   ASSERT_TRUE(request.ParseFromString(captured_body));
   auto upload_key_request = request.browser_public_key_upload_request();
   EXPECT_EQ(BPKUR::EC_KEY, upload_key_request.key_type());
-  EXPECT_EQ(BPKUR::CHROME_BROWSER_TPM_KEY,
-            upload_key_request.key_trust_level());
+  EXPECT_EQ(BPKUR::CHROME_BROWSER_HW_KEY, upload_key_request.key_trust_level());
   EXPECT_FALSE(upload_key_request.public_key().empty());
   EXPECT_FALSE(upload_key_request.signature().empty());
 
@@ -139,23 +140,24 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
                                       1);
 }
 
-// Tests a success key rotation flow when TPM key provider is available, but
-// no previous key was created.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
+// Tests a success key rotation flow when hardware key provider is available,
+// but no previous key was created.
+TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Hw_NoKey) {
   base::HistogramTester histogram_tester;
 
-  // The factory creates instances backed by fake TPM keys.
-  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+  // The factory creates instances backed by fake hardware keys.
+  auto mock_persistence_delegate =
+      scoped_factory_.CreateMockedHardwareDelegate();
 
-  // The mocked delegate is already set-up to return a working TPM key and
-  // provider. Force it to not return a key.
+  // The mocked delegate is already set-up to return a working hardware key
+  // and provider. Force it to not return a key.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
-              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+              StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
 
   GURL dm_server_url(kDmServerUrl);
@@ -174,9 +176,9 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
-// Tests a success key rotation flow when a TPM key provider is not available
-// and no key previously existed.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
+// Tests a success key rotation flow when a hardware key provider is not
+// available and no key previously existed.
+TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_NoKey) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate =
@@ -185,7 +187,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
       .WillOnce(Return(CreateEmptyKeyPair()));
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .WillOnce(Return(true));
@@ -207,29 +209,30 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
-// Tests a failed key rotation flow when a TPM key provider is available
+// Tests a failed key rotation flow when a hardware key provider is available
 // and no key previously existed and the network request permanetly failed.
 // Also, in this case the registry should be cleared.
 TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_Tpm_WithoutKey_NetworkFails_ClearRegistry) {
+       RotateWithAdminRights_Hw_WithoutKey_NetworkFails_ClearRegistry) {
   base::HistogramTester histogram_tester;
 
-  // The factory creates instances backed by fake TPM keys.
-  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+  // The factory creates instances backed by fake hardware keys.
+  auto mock_persistence_delegate =
+      scoped_factory_.CreateMockedHardwareDelegate();
 
   InSequence s;
 
-  // The mocked delegate is already set-up to return a working TPM key and
-  // provider. Force it to not return a key.
+  // The mocked delegate is already set-up to return a working hardware key
+  // and provider. Force it to not return a key.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
 
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
-              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+              StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
 
   GURL dm_server_url(kDmServerUrl);
@@ -257,30 +260,31 @@ TEST_P(KeyRotationManagerTest,
                                       kHardFailureCode, 1);
 }
 
-// Tests a failed key rotation flow when a TPM key provider is available
+// Tests a failed key rotation flow when a hardware key provider is available
 // and no key previously existed and the network request transiently
 // fails. Also, in this case the registry should be cleared.
 TEST_P(
     KeyRotationManagerTest,
-    RotateWithAdminRights_Tpm_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
+    RotateWithAdminRights_Hw_WithoutKey_ExhaustedNetworkFails_ClearRegistry) {
   base::HistogramTester histogram_tester;
 
-  // The factory creates instances backed by fake TPM keys.
-  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+  // The factory creates instances backed by fake hardware keys.
+  auto mock_persistence_delegate =
+      scoped_factory_.CreateMockedHardwareDelegate();
 
   InSequence s;
 
-  // The mocked delegate is already set-up to return a working TPM key and
-  // provider. Force it to not return a key.
+  // The mocked delegate is already set-up to return a working hardware key
+  // and provider. Force it to not return a key.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
 
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
-              StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
+              StoreKeyPair(BPKUR::CHROME_BROWSER_HW_KEY, _))
       .WillOnce(Return(true));
 
   GURL dm_server_url(kDmServerUrl);
@@ -309,9 +313,9 @@ TEST_P(
                                       kTransientFailureCode, 1);
 }
 
-// Tests a success key rotation flow when a TPM key provider is not available
-// and a key previously existed.
-TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
+// Tests a success key rotation flow when a hardware key provider is not
+// available and a key previously existed.
+TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -319,7 +323,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .WillOnce(Return(true));
@@ -341,10 +345,10 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
-// Tests a failed key rotation flow when a TPM key provider is not available
-// and a key previously existed, but storing the new key locally failed.
-TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_NoTpm_WithKey_StoreFailed) {
+// Tests a failed key rotation flow when a hardware key provider is not
+// available and a key previously existed, but storing the new key locally
+// failed.
+TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoHw_WithKey_StoreFailed) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -353,7 +357,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -378,7 +382,7 @@ TEST_P(KeyRotationManagerTest,
 // Tests a key rotation flow where the network request fails and the subsequent
 // attempt to restore the old key also fails.
 TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_NoTpm_WithKey_NetworkFails_RestoreFails) {
+       RotateWithAdminRights_NoHw_WithKey_NetworkFails_RestoreFails) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -387,7 +391,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -415,11 +419,11 @@ TEST_P(KeyRotationManagerTest,
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
-// Tests a failed key rotation flow when a TPM key provider is not available
-// and a key previously existed, and the network request transiently fails.
-// Also, in this case, the original key should be stored back.
+// Tests a failed key rotation flow when a hardware key provider is not
+// available and a key previously existed, and the network request transiently
+// fails. Also, in this case, the original key should be stored back.
 TEST_P(KeyRotationManagerTest,
-       RotateWithAdminRights_NoTpm_WithKey_ExhaustedNetworkFailure) {
+       RotateWithAdminRights_NoHw_WithKey_ExhaustedNetworkFailure) {
   base::HistogramTester histogram_tester;
 
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
@@ -430,7 +434,7 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
       StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, Not(original_key_wrapped)))
@@ -470,7 +474,8 @@ TEST_P(KeyRotationManagerTest,
   EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
-  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(0);
+  EXPECT_CALL(*mock_persistence_delegate, GetUnexportableKeyProvider())
+      .Times(0);
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
       .Times(0);

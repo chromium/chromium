@@ -95,6 +95,8 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
         super(context, delegate, R.layout.autofill_name_fixflow, title, drawableId,
                 cardholderAccount, confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
+        // Dialog of infobar doesn't show any details of the cc.
+        mDialogView.findViewById(R.id.cc_details).setVisibility(View.GONE);
         mUserNameInput = (EditText) mDialogView.findViewById(R.id.cc_name_edit);
         mUserNameInput.setText(inferredName, BufferType.EDITABLE);
         mNameFixFlowTooltipIcon = (ImageView) mDialogView.findViewById(R.id.cc_name_tooltip_icon);
@@ -126,6 +128,7 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
             String confirmButtonLabel) {
         this(context, delegate, inferredName, title, /*drawableId=*/0, cardholderAccount,
                 confirmButtonLabel, true);
+        // Unlike infobar, dialog of Message UI should show all cc details.
         mDialogView.findViewById(R.id.cc_details).setVisibility(View.VISIBLE);
         TextView detailsMasked = mDialogView.findViewById(R.id.cc_details_masked);
         detailsMasked.setText(cardLabel);
@@ -188,6 +191,12 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        // Do not call onUserDismiss if dialog was dismissed either because the user
+        // accepted to save the card or was dismissed by native code.
+        if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+            mDelegate.onUserDismiss();
+        }
+        // Call whenever the dialog is dismissed.
         mDelegate.onPromptDismissed();
     }
 }

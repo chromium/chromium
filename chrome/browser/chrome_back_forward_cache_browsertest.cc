@@ -7,10 +7,12 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +25,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/permissions/permission_manager.h"
@@ -30,7 +33,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -38,6 +40,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -117,7 +120,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   void SetupFeaturesAndParameters() {
@@ -130,6 +133,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features_);
+    vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }
 
   void EnableFeatureAndSetParams(base::Feature feature,
@@ -146,6 +150,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
   std::unordered_map<base::Feature,
                      std::map<std::string, std::string>,
                      FeatureHash,
@@ -231,17 +236,16 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-// TODO(crbug.com/1324437): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
-                       DISABLED_PermissionContextBase) {
+                       PermissionContextBase) {
   // HTTPS needed for GEOLOCATION permission
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a));
@@ -296,11 +300,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // HTTPS needed for WebShare permission.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
@@ -331,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // HTTPS needed for WebNfc permission.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
@@ -370,11 +374,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                        RestoresMixedContentSettings) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
-  GURL url_a(https_server.GetURL("a.com",
+  GURL url_a(https_server.GetURL("a.test",
                                  "/content_setting_bubble/mixed_script.html"));
-  GURL url_b(https_server.GetURL("b.com",
+  GURL url_b(https_server.GetURL("b.test",
                                  "/content_setting_bubble/mixed_script.html"));
 
   // 1) Load page A that has mixed content.
@@ -657,4 +661,256 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_url_b_active_title,
                                      expected_url_a_cached_title));
+}
+
+class ChromeBackForwardCacheBrowserWithEmbedTest
+    : public ChromeBackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  ChromeBackForwardCacheBrowserWithEmbedTest() = default;
+  ~ChromeBackForwardCacheBrowserWithEmbedTest() override = default;
+
+  static std::string GetSrcAttributeForTag(const std::string& tag) {
+    return tag == "embed" ? "src" : "data";
+  }
+
+  void SetUpOnMainThread() override {
+    ChromeBackForwardCacheBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Allow BackForwardCache for non-plugin embedded elements.
+    EnableFeatureAndSetParams(
+        blink::features::kBackForwardCacheEnabledForNonPluginEmbed, "", "");
+    ChromeBackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void ExpectBlocklistedFeature(
+      blink::scheduler::WebSchedulerTrackedFeature feature,
+      base::Location location) {
+    content::FetchHistogramsFromChildProcesses();
+    base::HistogramBase::Sample sample = base::HistogramBase::Sample(feature);
+    base::Bucket expected_blocklisted(sample, 1);
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome."
+                    "BlocklistedFeature"),
+                testing::Contains(expected_blocklisted))
+        << location.ToString();
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.AllSites.HistoryNavigationOutcome."
+                    "BlocklistedFeature"),
+                testing::Contains(expected_blocklisted))
+        << location.ToString();
+  }
+
+  void ExpectNotRestoredReasonHaveInnerContents(base::Location location) {
+    // BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents
+    uint8_t reason = 32;
+    content::FetchHistogramsFromChildProcesses();
+    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
+    base::Bucket expected_not_restored(sample, 1);
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome."
+                    "NotRestoredReason"),
+                testing::Contains(expected_not_restored))
+        << location.ToString();
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.AllSites.HistoryNavigationOutcome."
+                    "NotRestoredReason"),
+                testing::Contains(expected_not_restored))
+        << location.ToString();
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeBackForwardCacheBrowserWithEmbedTest,
+    testing::ValuesIn<std::vector<std::string>>({"embed", "object"}));
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesNotCachePageWithEmbeddedPlugin) {
+  const auto tag = GetParam();
+  const auto page_with_plugin = base::StringPrintf(
+      "/back_forward_cache/page_with_%s_plugin.html", tag.c_str());
+
+  // Navigate to A, a page with embedded Pepper plugin.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("a.com", page_with_plugin)));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is NOT stored in the BackForwardCache.
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Navigate back to A.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  // Verify A is not restored from BackForwardCache due to |kContainsPlugins|.
+  ExpectBlocklistedFeature(
+      blink::scheduler::WebSchedulerTrackedFeature::kContainsPlugins,
+      FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesNotCachePageWithEmbeddedPdf) {
+  const auto tag = GetParam();
+  const auto page_with_pdf = base::StringPrintf(
+      "/back_forward_cache/page_with_%s_pdf.html", tag.c_str());
+
+  // Navigate to A, a page with embedded PDF.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+      web_contents(), /*wait_for_hit_test_data=*/true, tag));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is NOT stored in the BackForwardCache.
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Navigate back to A.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  // Verify A is not restored from BackForwardCache. Loading PDF plugins
+  // in chrome actually creates a nested WebContents which takes precedent over
+  // the blocklisted feature kContainsPlugins.
+  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+  const auto tag = GetParam();
+
+  // Navigate to A.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+  //  Embed a PDF into A, and wait until PDF is loaded.
+  ASSERT_TRUE(content::ExecJs(
+      rfh_a.get(), content::JsReplace(R"(
+    new Promise(async resolve => {
+      let el = document.createElement($1);
+      el.type = 'application/pdf';
+      el[$2] = '/pdf/test.pdf';
+      el.onload = e => resolve();
+      document.body.append(el);
+    });
+  )",
+                                      tag, GetSrcAttributeForTag(tag))));
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is NOT stored in the BackForwardCache.
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  //  Navigate back to A.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  // Verify A is not restored from BackForwardCache. Loading PDF plugins
+  // in chrome actually creates a nested WebContents which takes precedent over
+  // the blocklisted feature kContainsPlugins.
+  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesCachePageWithEmbeddedHtml) {
+  const auto tag = GetParam();
+  const auto page_with_html = base::StringPrintf(
+      "/back_forward_cache/page_with_%s_html.html", tag.c_str());
+
+  // Navigate to A, a page with embedded HTML.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", page_with_html)));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is stored in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
+  const auto tag = GetParam();
+  const auto page_with_html = base::StringPrintf(
+      "/back_forward_cache/page_with_%s_html.html", tag.c_str());
+
+  // Navigate to A, a page with embedded HTML.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", page_with_html)));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+  //  Mutate the embed into PDF, and wait until PDF is loaded.
+  ASSERT_TRUE(content::ExecJs(
+      rfh_a.get(), content::JsReplace(R"(
+    new Promise(async resolve => {
+      let el = document.getElementById($1);
+      el.type = 'application/pdf';
+      el[$2] = '/pdf/test.pdf';
+      el.onload = e => resolve();
+    });
+  )",
+                                      tag, GetSrcAttributeForTag(tag))));
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is NOT stored in the BackForwardCache.
+  EXPECT_NE(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Navigate back to A.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  // Verify A is not restored from BackForwardCache. Loading PDF plugins
+  // in chrome actually creates a nested WebContents which takes precedent over
+  // the blocklisted feature kContainsPlugins.
+  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
+                       DoesCachePageWithEmbeddedPdfMutatedIntoHtml) {
+  const auto tag = GetParam();
+  const auto page_with_pdf = base::StringPrintf(
+      "/back_forward_cache/page_with_%s_pdf.html", tag.c_str());
+
+  // Navigate to A, a page with embedded PDF.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+  //  Mutate the embed into HTML, and wait until HTML is loaded.
+  ASSERT_TRUE(content::ExecJs(
+      rfh_a.get(), content::JsReplace(R"(
+    new Promise(async resolve => {
+      let el = document.getElementById($1);
+      el.type = 'text/html';
+      el[$2] = '/title1.html';
+      el.onload = e => resolve();
+    });
+  )",
+                                      tag, GetSrcAttributeForTag(tag))));
+
+  // Navigate to B.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Verify A is stored in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }

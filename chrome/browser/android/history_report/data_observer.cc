@@ -96,7 +96,6 @@ void DataObserver::DeleteBookmarks(const std::set<GURL>& removed_urls) {
 void DataObserver::OnURLVisited(history::HistoryService* history_service,
                                 ui::PageTransition transition,
                                 const history::URLRow& row,
-                                const history::RedirectList& redirects,
                                 base::Time visit_time) {
   if (row.hidden() || ui::PageTransitionIsRedirect(transition))
     return;

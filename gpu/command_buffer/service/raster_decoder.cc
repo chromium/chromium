@@ -359,6 +359,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
     info.fFinishedContext =
         new base::WeakPtr<RasterCommandsCompletedQuery>(weak_ptr);
     gr_context->flush(info);
+    gr_context->submit();
   }
 
   void QueryCounter(base::subtle::Atomic32 submit_count) override {
@@ -768,7 +769,10 @@ class RasterDecoderImpl final : public RasterDecoder,
                                             const volatile GLbyte* mailboxes);
 
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
-  void DoBeginRasterCHROMIUM(GLuint sk_color,
+  void DoBeginRasterCHROMIUM(GLfloat r,
+                             GLfloat g,
+                             GLfloat b,
+                             GLfloat a,
                              GLboolean needs_clear,
                              GLuint msaa_sample_count,
                              MsaaMode msaa_mode,
@@ -799,12 +803,6 @@ class RasterDecoderImpl final : public RasterDecoder,
       GLsizei n,
       const volatile GLuint* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
-
-  // Generates a DDL, if necessary, and compiles shaders requires to raster it.
-  // Returns false each time a shader needed to be compiled and the decoder
-  // should yield. Returns true once all shaders in the DDL have been compiled.
-  bool EnsureDDLReadyForRaster();
-
   void FlushAndSubmitIfNecessary(
       SkSurface* surface,
       std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState,
@@ -1301,13 +1299,13 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   } else {
     NOTIMPLEMENTED();
   }
-  if (feature_info()->workarounds().client_max_texture_size) {
+  if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
-                 feature_info()->workarounds().client_max_texture_size);
+                 feature_info()->workarounds().webgl_or_caps_max_texture_size);
     caps.max_cube_map_texture_size =
         std::min(caps.max_cube_map_texture_size,
-                 feature_info()->workarounds().client_max_texture_size);
+                 feature_info()->workarounds().webgl_or_caps_max_texture_size);
   }
   if (feature_info()->workarounds().max_3d_array_texture_size) {
     caps.max_3d_texture_size =
@@ -1441,8 +1439,11 @@ bool RasterDecoderImpl::HasPendingQueries() const {
 }
 
 void RasterDecoderImpl::ProcessPendingQueries(bool did_finish) {
-  if (query_manager_)
+  if (query_manager_) {
+    if (auto* gr_context = shared_context_state_->gr_context())
+      gr_context->checkAsyncWorkCompletion();
     query_manager_->ProcessPendingQueries(did_finish);
+  }
 }
 
 bool RasterDecoderImpl::HasMoreIdleWork() const {
@@ -3210,7 +3211,10 @@ void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {
   paint_cache_->PurgeAll();
 }
 
-void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
+void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
+                                              GLfloat g,
+                                              GLfloat b,
+                                              GLfloat a,
                                               GLboolean needs_clear,
                                               GLuint msaa_sample_count,
                                               MsaaMode msaa_mode,
@@ -3302,10 +3306,11 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     surface_props = skia::LegacyDisplayGlobals::GetSkSurfaceProps(flags);
   }
 
+  SkColor4f sk_color_4f = {r, g, b, a};
   if (shared_image_raster_) {
-    absl::optional<SkColor> clear_color;
+    absl::optional<SkColor4f> clear_color;
     if (needs_clear)
-      clear_color.emplace(sk_color);
+      clear_color.emplace(sk_color_4f);
     scoped_shared_image_raster_write_ =
         shared_image_raster_->BeginScopedWriteAccess(
             shared_context_state_, final_msaa_count, surface_props, clear_color,
@@ -3362,7 +3367,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   // and so any extra pixels outside the raster area that get sampled may be
   // incorrect.
   if (needs_clear) {
-    raster_canvas_->drawColor(sk_color, SkBlendMode::kSrc);
+    raster_canvas_->drawColor(sk_color_4f, SkBlendMode::kSrc);
     shared_image_->SetCleared();
   }
   DCHECK(shared_image_->IsCleared());

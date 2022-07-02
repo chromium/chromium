@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -153,7 +154,7 @@ class TestOAuth2TokenServiceObserver
   std::vector<std::vector<CoreAccountId>> batch_change_records_;
 
   // Non-owning pointer.
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 class MockProfileOAuth2TokenServiceObserver
@@ -182,10 +183,20 @@ class MockProfileOAuth2TokenServiceObserver
   MOCK_METHOD(void, OnRefreshTokenRevoked, (const CoreAccountId&), (override));
 
  private:
-  ProfileOAuth2TokenServiceDelegate* const delegate_;
+  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
 };
 
 }  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
+ public:
+  MockTestSigninClient(PrefService* pref_service)
+      : testing::StrictMock<TestSigninClient>(pref_service) {}
+
+  MOCK_METHOD(void, RemoveAllAccounts, (), (override));
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
  public:
@@ -204,7 +215,12 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     AccountManager::RegisterPrefs(pref_service_.registry());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    client_ = std::make_unique<MockTestSigninClient>(&pref_service_);
+#else
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     account_manager_.Initialize(tmp_dir_.GetPath(),
                                 client_->GetURLLoaderFactory(),
                                 immediate_callback_runner_);
@@ -220,17 +236,25 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
     account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
+    ResetProfileOAuth2TokenServiceDelegateChromeOS(
+        /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
+  }
+
+  void ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      bool delete_signin_cookies_on_exit,
+      bool is_syncing) {
+    delegate_.reset();
     delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
         client_.get(), &account_tracker_service_,
         network::TestNetworkConnectionTracker::GetInstance(),
         account_manager_facade_.get(),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-        /*delete_signin_cookies_on_exit=*/false,
+        delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         /*is_regular_profile=*/true);
 
     LoadCredentialsAndWaitForCompletion(
-        account_info_.account_id /* primary_account_id */);
+        /*primary_account_id=*/account_info_.account_id, is_syncing);
   }
 
   account_manager::AccountKey gaia_account_key() const {
@@ -269,12 +293,13 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   }
 
   void LoadCredentialsAndWaitForCompletion(
-      const CoreAccountId& primary_account_id) {
+      const CoreAccountId& primary_account_id,
+      bool is_syncing) {
     MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokensLoaded())
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    delegate_->LoadCredentials(primary_account_id, /*is_syncing=*/false);
+    delegate_->LoadCredentials(primary_account_id, is_syncing);
     run_loop.Run();
   }
 
@@ -367,8 +392,60 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
       base::BindRepeating(
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); });
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<MockTestSigninClient> client_;
+#else
   std::unique_ptr<TestSigninClient> client_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests |RemoveAllAccounts| is not called on startup if
+// |delete_signin_cookies_on_exit| is false.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartup) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/false, /*is_syncing=*/false);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieClearedOnStartupSecondaryNonSyncingProfile) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(1);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/false);
+}
+
+// Test that |delete_signin_cookies_on_exit| does nothing if the profile
+// is syncing.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartupSyncingProfile) {
+  EXPECT_FALSE(client_->GetInitialPrimaryAccount().has_value());
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/true);
+}
+
+// Test that |delete_signin_cookies_on_exit| does nothing for the main profile.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       CookieNotClearedOnStartupMainProfile) {
+  // The delegate figures out that the profile is the main profile by checking
+  // if the |SigninClient| has an initial primary account set.
+  client_->SetInitialPrimaryAccountForTests(
+      account_manager::Account{
+          account_manager::AccountKey{kGaiaId,
+                                      account_manager::AccountType::kGaia},
+          kUserEmail},
+      /*is_child=*/false);
+  EXPECT_TRUE(client_->GetInitialPrimaryAccount().has_value());
+
+  EXPECT_CALL(*(client_.get()), RemoveAllAccounts()).Times(0);
+  ResetProfileOAuth2TokenServiceDelegateChromeOS(
+      /*delete_signin_cookies_on_exit=*/true, /*is_syncing=*/false);
+}
+#endif
 
 // Refresh tokens should load successfully for non-regular (Signin and Lock
 // Screen) Profiles.

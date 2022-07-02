@@ -49,9 +49,9 @@ class BASE_EXPORT TrackEventHandle {
   IncrementalState* incremental_state() const { return incremental_state_; }
 
  private:
-  TrackEvent* event_;
-  IncrementalState* incremental_state_;
-  CompletionListener* listener_;
+  raw_ptr<TrackEvent> event_;
+  raw_ptr<IncrementalState> incremental_state_;
+  raw_ptr<CompletionListener> listener_;
 };
 
 // Handle to a TracePacket which notifies a listener upon its destruction (after

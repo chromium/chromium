@@ -11,9 +11,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // This data is used to notifying the Browser to show UI for an unhandled tap if needed.
 struct UnhandledTapInfo {
     gfx.mojom.Point tapped_position_in_viewport;
-    // These values default to 0,  which indicates an undetermined value.
-    uint32 font_size_in_pixels = 0;
-    uint32 element_text_run_length = 0;
 };
 
 interface UnhandledTapNotifier {

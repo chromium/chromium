@@ -60,9 +60,10 @@ IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, NoLeak) {
 
   WebContents* web_contents = shell()->web_contents();
   content::RenderProcessHostWatcher exit_observer(
-      web_contents->GetMainFrame()->GetProcess(),
+      web_contents->GetPrimaryMainFrame()->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  web_contents->GetMainFrame()->GetProcess()->Shutdown(RESULT_CODE_KILLED);
+  web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      RESULT_CODE_KILLED);
   exit_observer.Wait();
 
   web_contents->GetController().Reload(ReloadType::NORMAL, true);

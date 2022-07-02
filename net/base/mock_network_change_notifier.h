@@ -79,12 +79,12 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
  private:
   // Create using MockNetworkChangeNotifier::Create().
-  MockNetworkChangeNotifier(
+  explicit MockNetworkChangeNotifier(
       std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier);
 
-  bool force_network_handles_supported_;
-  ConnectionType connection_type_;
-  ConnectionCost connection_cost_;
+  bool force_network_handles_supported_ = false;
+  ConnectionType connection_type_ = CONNECTION_UNKNOWN;
+  ConnectionCost connection_cost_ = CONNECTION_COST_UNKNOWN;
   bool use_default_connection_cost_implementation_ = false;
   NetworkChangeNotifier::NetworkList connected_networks_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;

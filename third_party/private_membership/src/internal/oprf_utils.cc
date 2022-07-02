@@ -29,7 +29,7 @@ namespace private_membership {
   doubly_encrypted_id.set_queried_encrypted_id(std::string(encrypted_id));
 
   auto reencrypted_id =
-      ec_cipher->ReEncrypt(std::string(encrypted_id));
+      ec_cipher->ReEncrypt(std::string(encrypted_id)); // NOLINT
   if (!reencrypted_id.ok()) {
     return reencrypted_id.status();
   }

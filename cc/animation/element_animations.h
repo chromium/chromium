@@ -80,7 +80,8 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // Returns true if there are any KeyframeModels at all to process.
   bool HasAnyKeyframeModel() const;
 
-  bool HasAnyAnimationTargetingProperty(TargetProperty::Type property) const;
+  bool HasAnyAnimationTargetingProperty(TargetProperty::Type property,
+                                        ElementId element_id) const;
 
   // Returns true if there is an animation that is either currently animating
   // the given property or scheduled to animate this property in the future, and
@@ -98,7 +99,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // Returns the maximum scale along any dimension at any destination in active
   // scale animations, or kInvalidScale if there is no active transform
   // animation or the scale cannot be computed.
-  float MaximumScale(ElementListType list_type) const;
+  float MaximumScale(ElementId element_id, ElementListType list_type) const;
 
   bool ScrollOffsetAnimationWasInterrupted() const;
 
@@ -187,6 +188,10 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   static gfx::TargetProperties GetPropertiesMaskForAnimationState();
 
+  void UpdateMaximumScale(ElementId element_id,
+                          ElementListType list_type,
+                          float* cached_scale);
+
   void UpdateKeyframeEffectsTickingState() const;
   void RemoveKeyframeEffectsFromTicking() const;
 
@@ -203,8 +208,10 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   PropertyAnimationState active_state_;
   PropertyAnimationState pending_state_;
-  float active_maximum_scale_;
-  float pending_maximum_scale_;
+  float transform_property_active_maximum_scale_;
+  float transform_property_pending_maximum_scale_;
+  float scale_property_active_maximum_scale_;
+  float scale_property_pending_maximum_scale_;
 };
 
 }  // namespace cc

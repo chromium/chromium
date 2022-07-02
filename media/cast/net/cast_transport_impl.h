@@ -93,7 +93,7 @@ class CastTransportImpl final : public CastTransport {
   //   "media_streaming_mode" (value ignored)
   //        - Turn media streaming mode on.
   // Note, these options may be ignored on some platforms.
-  void SetOptions(const base::DictionaryValue& options) final;
+  void SetOptions(const base::Value::Dict& options) final;
 
   // CastTransport implementation for receiving.
   void AddValidRtpReceiver(uint32_t rtp_sender_ssrc,

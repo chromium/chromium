@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <limits>
 #include <string>
 
 #include "base/bind.h"
@@ -49,6 +50,8 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/fwupd/firmware_update_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -294,6 +297,11 @@ void AboutHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
+      "getFirmwareUpdateCount",
+      base::BindRepeating(&AboutHandler::HandleGetFirmwareUpdateCount,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
@@ -492,7 +500,7 @@ void AboutHandler::HandleOpenOsHelpPage(const base::Value::List& args) {
 }
 
 void AboutHandler::HandleSetChannel(const base::Value::List& args) {
-  DCHECK(args.size() == 2);
+  DCHECK_EQ(2U, args.size());
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
@@ -530,6 +538,17 @@ void AboutHandler::OnGetVersionInfoReady(
     std::string callback_id,
     std::unique_ptr<base::DictionaryValue> version_info) {
   ResolveJavascriptCallback(base::Value(callback_id), *version_info);
+}
+
+void AboutHandler::HandleGetFirmwareUpdateCount(const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  auto* firmware_update_manager = ash::FirmwareUpdateManager::Get();
+  size_t update_count = firmware_update_manager->GetUpdateCount();
+  DCHECK_LT(update_count, std::numeric_limits<int>::max());
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(static_cast<int>(update_count)));
 }
 
 void AboutHandler::HandleGetRegulatoryInfo(const base::Value::List& args) {

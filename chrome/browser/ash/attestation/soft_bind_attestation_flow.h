@@ -22,7 +22,8 @@ namespace attestation {
 class SoftBindAttestationFlow {
  public:
   using Callback =
-      base::OnceCallback<void(const std::vector<std::string>& cert)>;
+      base::OnceCallback<void(const std::vector<std::string>& certs,
+                              bool valid)>;
 
   SoftBindAttestationFlow();
   ~SoftBindAttestationFlow();

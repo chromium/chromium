@@ -55,6 +55,9 @@ std::string ExtractDomainName(const std::string& email);
 // to be used sparingly since it ship Googler-only code to all users.
 bool IsGoogleInternalAccountEmail(const std::string& email);
 
+// Returns true if |email| correspnds to the email of a robot account.
+bool IsGoogleRobotAccountEmail(const std::string& email);
+
 // Mechanically compares the scheme, host, and port of the |url| against the
 // GAIA url in GaiaUrls. This means that this function will *not* work for
 // determining whether a frame with an "about:blank" URL or "blob:..." URL has

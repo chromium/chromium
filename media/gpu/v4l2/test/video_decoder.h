@@ -7,15 +7,17 @@
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
-#include "media/filters/ivf_parser.h"
-
 namespace media {
-
-class IvfParser;
-
 namespace v4l2_test {
 
-// VideoDecoder decodes encoded IVF streams using v4l2 ioctl calls.
+// For stateless API, fourcc |VP9F| is needed instead of |VP90| for VP9 codec.
+// Fourcc |AV1F| is needed instead of |AV10| for AV1 codec.
+// https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-compressed.html
+// Converts fourcc |VP90| or |AV01| from file header to fourcc |VP9F| or |AV1F|,
+// which is a format supported on driver.
+uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc);
+
+// VideoDecoder decodes encoded video streams using v4l2 ioctl calls.
 class VideoDecoder {
  public:
   // Result of decoding the current frame.
@@ -25,8 +27,7 @@ class VideoDecoder {
     kEOStream,
   };
 
-  VideoDecoder(std::unique_ptr<IvfParser> ivf_parser,
-               std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+  VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                std::unique_ptr<V4L2Queue> OUTPUT_queue,
                std::unique_ptr<V4L2Queue> CAPTURE_queue);
 
@@ -49,8 +50,13 @@ class VideoDecoder {
   bool LastDecodedFrameVisible() const { return last_decoded_frame_visible_; }
 
  protected:
-  // Parser for the IVF stream to decode.
-  const std::unique_ptr<IvfParser> ivf_parser_;
+  // Helper method for converting MM21 frames to I420.
+  static void ConvertMM21ToYUV(std::vector<char>& dest_y,
+                               std::vector<char>& dest_u,
+                               std::vector<char>& dest_v,
+                               char* src_y,
+                               char* src_uv,
+                               gfx::Size size);
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;

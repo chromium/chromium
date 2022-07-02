@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/base_export.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -20,16 +21,9 @@ BASE_EXPORT void EnableTerminationOnHeapCorruption();
 // Turns on process termination if memory runs out.
 BASE_EXPORT void EnableTerminationOnOutOfMemory();
 
-// Terminates process. Should be called only for out of memory errors.
-// |size| is the size of the failed allocation, or 0 if not known.
-// Crash reporting classifies such crashes as OOM.
-// Must be allocation-safe.
-BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
-
-// Records the size of the allocation that caused the current OOM crash, for
-// consumption by Breakpad.
-// TODO: this can be removed when Breakpad is no longer supported.
-BASE_EXPORT extern size_t g_oom_size;
+// The function has been moved to partition_alloc:: namespace. The base:: alias
+// has been provided to avoid changing too many callers.
+using partition_alloc::TerminateBecauseOutOfMemory;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
@@ -55,13 +49,7 @@ bool ReleaseAddressSpaceReservation();
 #if BUILDFLAG(IS_WIN)
 namespace win {
 
-// Custom Windows exception code chosen to indicate an out of memory error.
-// See https://msdn.microsoft.com/en-us/library/het71c37.aspx.
-// "To make sure that you do not define a code that conflicts with an existing
-// exception code" ... "The resulting error code should therefore have the
-// highest four bits set to hexadecimal E."
-// 0xe0000008 was chosen arbitrarily, as 0x00000008 is ERROR_NOT_ENOUGH_MEMORY.
-const DWORD kOomExceptionCode = 0xe0000008;
+using partition_alloc::win::kOomExceptionCode;
 
 }  // namespace win
 #endif

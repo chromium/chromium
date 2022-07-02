@@ -24,6 +24,7 @@ struct FrameTimingDetails;
 
 namespace cc {
 class DroppedFrameCounter;
+class EventLatencyTracker;
 class UkmManager;
 struct BeginMainFrameMetrics;
 struct FrameInfo;
@@ -107,6 +108,10 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetFrameSequenceTrackerCollection(
       FrameSequenceTrackerCollection* frame_sequence_trackers) {
     global_trackers_.frame_sequence_trackers = frame_sequence_trackers;
+  }
+
+  void set_event_latency_tracker(EventLatencyTracker* event_latency_tracker) {
+    global_trackers_.event_latency_tracker = event_latency_tracker;
   }
 
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {

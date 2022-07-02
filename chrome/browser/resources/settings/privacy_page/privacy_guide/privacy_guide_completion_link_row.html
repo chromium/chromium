@@ -1,4 +1,8 @@
 <style include="cr-shared-style cr-actionable-row-style">
+  :host {
+    padding-inline-start: 4px;
+  }
+
   #labelWrapper {
     flex: 1;
     padding-inline-start: 16px;
@@ -11,6 +15,7 @@
 
   cr-icon-button {
     --cr-icon-button-icon-size: 24px;
+    margin: 2px;
   }
 </style>
 <picture>
@@ -23,8 +28,7 @@
     [[subLabel]]
   </div>
 </div>
-<cr-icon-button iron-icon="cr:open-in-new"
-    aria-describedby="subLabel"
-    aria-labelledby="label"
+<cr-icon-button iron-icon="cr:open-in-new" role="link"
+    aria-describedby="subLabel" aria-labelledby="label"
     aria-roledescription$="$i18n{subpageArrowRoleDescription}">
 </cr-icon-button>

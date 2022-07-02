@@ -90,13 +90,6 @@ void NavigationPreloadRequest::OnReceiveCachedMetadata(
 void NavigationPreloadRequest::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
 
-void NavigationPreloadRequest::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!body_.is_valid());
-  body_ = std::move(body);
-  MaybeReportResponseToOwner();
-}
-
 void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK) {

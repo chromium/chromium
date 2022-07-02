@@ -20,11 +20,6 @@ namespace safe_browsing {
 // static
 ClientSideDetectionService* ClientSideDetectionServiceFactory::GetForProfile(
     Profile* profile) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableClientSidePhishingDetection)) {
-    return nullptr;
-  }
-
   return static_cast<ClientSideDetectionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */
                                                  true));
@@ -46,12 +41,6 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new ClientSideDetectionService(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile));
-}
-
-content::BrowserContext*
-ClientSideDetectionServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace safe_browsing

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -21,7 +21,7 @@ SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
     : BrowserContextKeyedServiceFactory(
           "SecurityTokenSessionController",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CertificateProviderServiceFactory::GetInstance());
+  DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 }
 
 SecurityTokenSessionControllerFactory::
@@ -57,8 +57,9 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(context));
-  CertificateProviderService* certificate_provider_service =
-      CertificateProviderServiceFactory::GetForBrowserContext(context);
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          context);
   return new SecurityTokenSessionController(local_state, profile->GetPrefs(),
                                             user, certificate_provider_service);
 }

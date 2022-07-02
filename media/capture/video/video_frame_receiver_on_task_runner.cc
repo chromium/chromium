@@ -53,6 +53,12 @@ void VideoFrameReceiverOnTaskRunner::OnFrameDropped(
       base::BindOnce(&VideoFrameReceiver::OnFrameDropped, receiver_, reason));
 }
 
+void VideoFrameReceiverOnTaskRunner::OnNewCropVersion(uint32_t crop_version) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&VideoFrameReceiver::OnNewCropVersion,
+                                        receiver_, crop_version));
+}
+
 void VideoFrameReceiverOnTaskRunner::OnFrameWithEmptyRegionCapture() {
   task_runner_->PostTask(
       FROM_HERE,

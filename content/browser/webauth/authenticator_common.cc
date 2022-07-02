@@ -354,8 +354,12 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
   // implemented in u2fd.
   if (base::FeatureList::IsEnabled(device::kWebAuthCrosPlatformAuthenticator) &&
       !is_u2f_api_request) {
+    // There are two possible PIDs the virtual U2F HID device could use, with or
+    // without corp protocol functionality.
     constexpr device::VidPid kChromeOsU2fdVidPid{0x18d1, 0x502c};
-    discovery_factory->set_hid_ignore_list({kChromeOsU2fdVidPid});
+    constexpr device::VidPid kChromeOsU2fdCorpVidPid{0x18d1, 0x5212};
+    discovery_factory->set_hid_ignore_list(
+        {kChromeOsU2fdVidPid, kChromeOsU2fdCorpVidPid});
     discovery_factory->set_generate_request_id_callback(
         GetWebAuthenticationDelegate()->GetGenerateRequestIdCallback(
             render_frame_host));
@@ -436,6 +440,7 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
           &AuthenticatorCommon::StartMakeCredentialRequest,
           weak_factory_.GetWeakPtr(),
           /*allow_skipping_pin_touch=*/false) /* start_over_callback */,
+      base::DoNothing() /* account_preselected_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
           request_handler_->GetWeakPtr()) /* request_callback */,
@@ -472,7 +477,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
                 GetRenderFrameHost(), discovery_factory(),
                 UsesDiscoverableCreds(*ctap_get_assertion_request_));
 
-  request_handler_ = std::make_unique<device::GetAssertionRequestHandler>(
+  auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(), transports, *ctap_get_assertion_request_,
       *ctap_get_assertion_options_, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommon::OnSignResponse,
@@ -486,14 +491,18 @@ void AuthenticatorCommon::StartGetAssertionRequest(
           weak_factory_.GetWeakPtr(),
           /*allow_skipping_pin_touch=*/false) /* start_over_callback */,
       base::BindRepeating(
-          &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
-          request_handler_->GetWeakPtr()) /* request_callback */,
+          &device::GetAssertionRequestHandler::PreselectAccount,
+          request_handler->GetWeakPtr()) /* account_preselected_callback */,
+      base::BindRepeating(
+          &device::GetAssertionRequestHandler::StartAuthenticatorRequest,
+          request_handler->GetWeakPtr()) /* request_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
-          request_handler_
+          request_handler
               ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
 
-  request_handler_->set_observer(request_delegate_.get());
+  request_handler->set_observer(request_delegate_.get());
+  request_handler_ = std::move(request_handler);
 }
 
 bool AuthenticatorCommon::IsFocused() const {
@@ -548,16 +557,6 @@ void AuthenticatorCommon::MakeCredential(
   make_credential_response_callback_ = std::move(callback);
 
   BeginRequestTimeout(options->timeout);
-
-  if (options->remote_desktop_client_override) {
-    // WebAuthRequestSecurityChecker will validate whether use of the extension
-    // is authorized.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebAuthRemoteDesktopSupport)) {
-      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
-      return;
-    }
-  }
 
   WebAuthRequestSecurityChecker::RequestType request_type =
       options->is_payment_credential_creation
@@ -866,16 +865,6 @@ void AuthenticatorCommon::GetAssertion(
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
 
-  if (options->remote_desktop_client_override) {
-    // WebAuthRequestSecurityChecker will validate whether use of the extension
-    // is authorized.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebAuthRemoteDesktopSupport)) {
-      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
-      return;
-    }
-  }
-
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
   }
@@ -1027,7 +1016,9 @@ void AuthenticatorCommon::GetAssertion(
           blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
       return;
     }
-    empty_allow_list_ = true;
+    if (!options->is_conditional) {
+      maybe_show_account_picker_ = true;
+    }
   }
 
   if (options->large_blob_read && options->large_blob_write) {
@@ -1525,7 +1516,7 @@ void AuthenticatorCommon::OnSignResponse(
   // built-in. In that case, consider that credential pre-selected.
   // Authenticators can also use the userSelected signal (from CTAP 2.1)
   // to indicate that selection has already occurred.
-  if (empty_allow_list_ && !response_data->at(0).user_selected &&
+  if (maybe_show_account_picker_ && !response_data->at(0).user_selected &&
       (response_data->size() > 1 ||
        (response_data->at(0).user_entity &&
         (response_data->at(0).user_entity->name ||
@@ -1906,7 +1897,7 @@ void AuthenticatorCommon::Cleanup() {
   app_id_.reset();
   caller_origin_ = url::Origin();
   relying_party_id_.clear();
-  empty_allow_list_ = false;
+  maybe_show_account_picker_ = false;
   error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   requested_extensions_.clear();

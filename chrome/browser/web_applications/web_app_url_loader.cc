@@ -80,13 +80,15 @@ class LoaderTask : public content::WebContentsObserver {
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
     // Ignore subframe loads.
-    if (web_contents()->GetMainFrame() != render_frame_host) {
+    if (web_contents()->GetPrimaryMainFrame() != render_frame_host) {
       return;
     }
 
     // Flush all DidFinishLoad events until about:blank loaded.
-    if (url_.IsAboutBlank() && !validated_url.IsAboutBlank())
+    if ((url_.IsAboutBlank() && !validated_url.IsAboutBlank()) ||
+        (!url_.IsAboutBlank() && validated_url.IsAboutBlank())) {
       return;
+    }
 
     timer_.Stop();
 
@@ -111,7 +113,7 @@ class LoaderTask : public content::WebContentsObserver {
                    const GURL& validated_url,
                    int error_code) override {
     // Ignore subframe loads.
-    if (web_contents()->GetMainFrame() != render_frame_host) {
+    if (web_contents()->GetPrimaryMainFrame() != render_frame_host) {
       return;
     }
 

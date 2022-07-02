@@ -43,7 +43,9 @@
 
 @interface ActivityServiceMediator ()
 
-@property(nonatomic, weak) id<BrowserCommands, FindInPageCommands> handler;
+@property(nonatomic, weak)
+    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
+        handler;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
@@ -64,7 +66,9 @@
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCommands,
+                                    BrowserCoordinatorCommands,
+                                    FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
@@ -87,8 +91,8 @@
     (NSArray<ShareToData*>*)dataItems {
   NSMutableArray* items = [[NSMutableArray alloc] init];
 
-  // The |additionalText| is not added when sharing multiple URLs since items
-  // are not associated with each other and the |additionalText| is not likely
+  // The `additionalText` is not added when sharing multiple URLs since items
+  // are not associated with each other and the `additionalText` is not likely
   // be meaningful without the context of the page it came from.
   if (dataItems.count == 1 && dataItems.firstObject.additionalText) {
     [items addObject:[[ChromeActivityTextSource alloc]

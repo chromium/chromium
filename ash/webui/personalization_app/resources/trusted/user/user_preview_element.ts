@@ -10,7 +10,9 @@
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -22,6 +24,19 @@ import {UserImageObserver} from './user_image_observer.js';
 import {getUserProvider} from './user_interface_provider.js';
 import {getTemplate} from './user_preview_element.html.js';
 import {selectUserImageUrl} from './user_selectors.js';
+
+class AvatarChangedEvent extends CustomEvent<{text: string}> {
+  constructor() {
+    super(
+        'iron-announce',
+        {
+          bubbles: true,
+          composed: true,
+          detail: {text: loadTimeData.getString('ariaAnnounceAvatarChanged')},
+        },
+    );
+  }
+}
 
 export class UserPreview extends WithPersonalizationStore {
   static get is() {
@@ -55,6 +70,11 @@ export class UserPreview extends WithPersonalizationStore {
   private imageUrl_: Url|null;
   private imageIsEnterpriseManaged_: boolean|null;
 
+  override ready() {
+    super.ready();
+    IronA11yAnnouncer.requestAvailability();
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     UserImageObserver.initUserImageObserverIfNeeded();
@@ -68,19 +88,13 @@ export class UserPreview extends WithPersonalizationStore {
     initializeUserData(getUserProvider(), this.getStore());
   }
 
-  private onClickUserEmail_() {
-    window.open('chrome://os-settings/accountManager');
-  }
-
   private onClickUserSubpageLink_() {
     PersonalizationRouter.instance().goToRoute(Paths.USER);
   }
 
-  private onImageUrlChanged_(_: Url|null, old: Url|null): void {
-    if (old && old.url.startsWith('blob:')) {
-      // Revoke old object urls to clear memory. This is safe to call multiple
-      // times.
-      URL.revokeObjectURL(old.url);
+  private onImageUrlChanged_(value: Url|null, old: Url|null): void {
+    if (value && old) {
+      this.dispatchEvent(new AvatarChangedEvent());
     }
   }
 

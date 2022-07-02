@@ -56,7 +56,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialMetadata {
   CredentialMetadata& operator=(CredentialMetadata&&);
   ~CredentialMetadata();
 
-  PublicKeyCredentialUserEntity ToPublicKeyCredentialUserEntity();
+  PublicKeyCredentialUserEntity ToPublicKeyCredentialUserEntity() const;
 
   // The version used when unsealing the credential ID.
   Version version;

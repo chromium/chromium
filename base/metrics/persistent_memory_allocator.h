@@ -620,7 +620,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   struct Memory {
     Memory(void* b, MemoryType t) : base(b), type(t) {}
 
-    void* base;
+    raw_ptr<void> base;
     MemoryType type;
   };
 
@@ -661,24 +661,29 @@ class BASE_EXPORT PersistentMemoryAllocator {
   Reference AllocateImpl(size_t size, uint32_t type_id);
 
   // Get the block header associated with a specific reference.
-  const volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id,
-                                       uint32_t size, bool queue_ok,
+  const volatile BlockHeader* GetBlock(Reference ref,
+                                       uint32_t type_id,
+                                       size_t size,
+                                       bool queue_ok,
                                        bool free_ok) const;
-  volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id, uint32_t size,
-                                 bool queue_ok, bool free_ok) {
-      return const_cast<volatile BlockHeader*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
-              ref, type_id, size, queue_ok, free_ok));
+  volatile BlockHeader* GetBlock(Reference ref,
+                                 uint32_t type_id,
+                                 size_t size,
+                                 bool queue_ok,
+                                 bool free_ok) {
+    return const_cast<volatile BlockHeader*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
+            ref, type_id, size, queue_ok, free_ok));
   }
 
   // Get the actual data within a block associated with a specific reference.
-  const volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                                    uint32_t size) const;
-  volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                              uint32_t size) {
-      return const_cast<volatile void*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
-              ref, type_id, size));
+  const volatile void* GetBlockData(Reference ref,
+                                    uint32_t type_id,
+                                    size_t size) const;
+  volatile void* GetBlockData(Reference ref, uint32_t type_id, size_t size) {
+    return const_cast<volatile void*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
+            ref, type_id, size));
   }
 
   // Record an error in the internal histogram.
@@ -853,20 +858,6 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // with every Get() request to see if the allocation has already been
   // done. If reading |ref| outside of this object, be sure to do an
   // "acquire" load. Don't write to it -- leave that to this object.
-  //
-  // For convenience, methods taking both Atomic32 and std::atomic<Reference>
-  // are defined.
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              bool make_iterable);
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              subtle::Atomic32* ref,
-                              uint32_t type,
-                              size_t size,
-                              size_t offset,
-                              bool make_iterable);
   DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
                               std::atomic<Reference>* ref,
                               uint32_t type,

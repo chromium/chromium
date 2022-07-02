@@ -8,13 +8,17 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
@@ -26,6 +30,7 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -75,7 +80,7 @@ bool CanBeIncognitoEnabled(const Extension* extension) {
           extension->location() == mojom::ManifestLocation::kComponent);
 }
 
-bool IsIncognitoEnabled(const std::string& extension_id,
+bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context) {
   const Extension* extension =
       ExtensionRegistry::Get(context)->GetExtensionById(
@@ -113,7 +118,7 @@ const std::string& GetPartitionDomainForExtension(const Extension* extension) {
 }
 
 content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
   if (ExtensionsBrowserClient::Get()->HasIsolatedStorage(extension_id,
                                                          browser_context)) {
@@ -129,7 +134,7 @@ content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
 }
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context,
     bool can_create) {
   auto storage_partition_config =
@@ -170,7 +175,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 
   if (SharedModuleInfo::IsImportedPath(path)) {
     // Check if this is a valid path that is imported for this extension.
-    std::string new_extension_id;
+    ExtensionId new_extension_id;
     std::string new_relative_path;
     SharedModuleInfo::ParseImportedPath(path, &new_extension_id,
                                         &new_relative_path);
@@ -283,6 +288,41 @@ void InitializeFileSchemeAccessForExtension(
     content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
         render_process_id, url::kFileScheme);
   }
+}
+
+ExtensionId GetExtensionIdForSiteInstance(
+    content::SiteInstance& site_instance) {
+  // <webview> guests always store the ExtensionId in the partition domain.
+  if (site_instance.IsGuest())
+    return site_instance.GetStoragePartitionConfig().partition_domain();
+
+  // This works for both apps and extensions because the site has been
+  // normalized to the extension URL for hosted apps.
+  const GURL& site_url = site_instance.GetSiteURL();
+  if (!site_url.SchemeIs(kExtensionScheme))
+    return ExtensionId();
+
+  // Navigating to a disabled (or uninstalled or not-yet-installed) extension
+  // will set the site URL to chrome-extension://invalid.
+  ExtensionId maybe_extension_id = site_url.host();
+  if (maybe_extension_id == "invalid")
+    return ExtensionId();
+
+  // Otherwise,`site_url.host()` should always be a valid extension id.  In
+  // particular, navigations should never commit a URL that uses a dynamic,
+  // GUID-based hostname (such navigations should redirect to the statically
+  // known, extension-id-based hostname).
+  DCHECK(crx_file::id_util::IdIsValid(maybe_extension_id))
+      << "; maybe_extension_id = " << maybe_extension_id;
+  return maybe_extension_id;
+}
+
+bool CanRendererHostExtensionOrigin(int render_process_id,
+                                    const ExtensionId& extension_id) {
+  url::Origin extension_origin =
+      Extension::CreateOriginFromExtensionId(extension_id);
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
 }
 
 }  // namespace util

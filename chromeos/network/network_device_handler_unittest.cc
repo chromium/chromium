@@ -13,11 +13,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_device_handler_impl.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler.h"
@@ -439,9 +439,9 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 1);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 1);
   histogram_tester.ExpectBucketCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
@@ -452,9 +452,9 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
 
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 2);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
@@ -510,6 +510,19 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinUnblockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 0);
+
+  // Test that if SIM PIN locking is prohibited, PUK unblocking a SIM will
+  // also disable the SIM PIN lock setting.
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+  network_device_handler_->UnblockPin(kDefaultCellularDevicePath, kPin, kPuk,
+                                      GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, ChangePin) {
@@ -559,7 +572,7 @@ TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 0);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 0);
 
   // Test that the success callback gets called when removing a PIN lock.
   network_device_handler_->RequirePin(kDefaultCellularDevicePath, false,
@@ -567,6 +580,8 @@ TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
                                       GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
@@ -587,5 +602,37 @@ TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram, 0);
+}
+
+TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
+  base::HistogramTester histogram_tester;
+
+  fake_device_client_->GetTestInterface()->SetSimLocked(
+      kDefaultCellularDevicePath, true);
+
+  // Test that removing the PIN Lock requirement does not occur when the policy
+  // is not applied.
+  network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
+                                    GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
+
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+
+  // Test that removing the PIN Lock requirement does occur when the policy is
+  // applied.
+  network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
+                                    GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
 }
 }  // namespace chromeos

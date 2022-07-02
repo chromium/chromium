@@ -77,7 +77,7 @@ static int gAnyContext = 0;
 
 @interface CRWWebViewScrollViewProxy () {
   std::unique_ptr<UIScrollViewContentInsetAdjustmentBehavior>
-      _storedContentInsetAdjustmentBehavior API_AVAILABLE(ios(11.0));
+      _storedContentInsetAdjustmentBehavior;
   std::unique_ptr<BOOL> _storedClipsToBounds;
 }
 
@@ -299,14 +299,12 @@ static int gAnyContext = 0;
   self.underlyingScrollView.clipsToBounds = clipsToBounds;
 }
 
-- (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior
-    API_AVAILABLE(ios(11.0)) {
+- (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior {
   return [self.underlyingScrollView contentInsetAdjustmentBehavior];
 }
 
 - (void)setContentInsetAdjustmentBehavior:
-    (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior
-    API_AVAILABLE(ios(11.0)) {
+    (UIScrollViewContentInsetAdjustmentBehavior)contentInsetAdjustmentBehavior {
   [self.underlyingScrollView
       setContentInsetAdjustmentBehavior:contentInsetAdjustmentBehavior];
   _storedContentInsetAdjustmentBehavior =

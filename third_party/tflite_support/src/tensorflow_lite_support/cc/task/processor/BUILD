@@ -186,6 +186,8 @@ cc_library_with_tflite(
         "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
         "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
+        "//tensorflow_lite_support/metadata:metadata_schema_cc",
+        "//tensorflow_lite_support/metadata/cc:metadata_extractor",
         "//tensorflow_lite_support/scann_ondevice/cc:index",
         "//tensorflow_lite_support/scann_ondevice/cc/core:partitioner",
         "//tensorflow_lite_support/scann_ondevice/cc/core:processor",

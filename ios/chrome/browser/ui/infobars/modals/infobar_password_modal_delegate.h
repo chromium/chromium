@@ -12,8 +12,8 @@
 // Delegate to handle Password Infobar Modal actions.
 @protocol InfobarPasswordModalDelegate <InfobarModalDelegate>
 
-// Updates (or saves in case they haven't been previously saved) the |username|
-// and |password| of the PasswordManagerInfobarDelegate.
+// Updates (or saves in case they haven't been previously saved) the `username`
+// and `password` of the PasswordManagerInfobarDelegate.
 - (void)updateCredentialsWithUsername:(NSString*)username
                              password:(NSString*)password;
 

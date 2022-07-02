@@ -933,17 +933,17 @@ TEST(MarshallingTest, TestOptionalDoubleUnparsing) {
 // --------------------------------------------------------------------
 
 TEST(MarshallingTest, TestOptionalStringUnparsing) {
-  absl::optional<std::string> value;
+  absl::optional<std::string> strvalue;
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
 
-  EXPECT_EQ(absl::UnparseFlag(value), "");
-  value = "asdfg";
-  EXPECT_EQ(absl::UnparseFlag(value), "asdfg");
-  value = " ";
-  EXPECT_EQ(absl::UnparseFlag(value), " ");
-  value = "";  // This is UB to set optional string flag to ""
-  EXPECT_EQ(absl::UnparseFlag(value), "");
-  value = absl::nullopt;
-  EXPECT_EQ(absl::UnparseFlag(value), "");
+  strvalue = "asdfg";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "asdfg");
+
+  strvalue = " ";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), " ");
+
+  strvalue = "";  // It is UB to set an optional string flag to ""
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
 }
 
 // --------------------------------------------------------------------
@@ -952,18 +952,22 @@ TEST(MarshallingTest, TestOptionalStringUnparsing) {
 
 TEST(MarshallingTest, TestStdOptionalUnparsing) {
   std::optional<std::string> strvalue;
-
   EXPECT_EQ(absl::UnparseFlag(strvalue), "");
+
   strvalue = "asdfg";
   EXPECT_EQ(absl::UnparseFlag(strvalue), "asdfg");
-  strvalue = std::nullopt;
+
+  strvalue = " ";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), " ");
+
+  strvalue = "";  // It is UB to set an optional string flag to ""
   EXPECT_EQ(absl::UnparseFlag(strvalue), "");
 
-  std::optional<int> intvalue(10);
-
-  EXPECT_EQ(absl::UnparseFlag(intvalue), "10");
-  intvalue = std::nullopt;
+  std::optional<int> intvalue;
   EXPECT_EQ(absl::UnparseFlag(intvalue), "");
+
+  intvalue = 10;
+  EXPECT_EQ(absl::UnparseFlag(intvalue), "10");
 }
 
 // --------------------------------------------------------------------

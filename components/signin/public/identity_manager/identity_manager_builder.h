@@ -71,7 +71,8 @@ struct IdentityManagerBuildParams {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  account_manager::AccountManagerFacade* account_manager_facade = nullptr;
+  raw_ptr<account_manager::AccountManagerFacade> account_manager_facade =
+      nullptr;
   bool is_regular_profile = false;
 #endif
 

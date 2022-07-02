@@ -90,8 +90,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
         BaseCustomTabActivityComponent component = super.createComponent(commonsModule);
-        mOpenTimeRecorder = new CustomTabsOpenTimeRecorder(
-                getLifecycleDispatcher(), mNavigationController, this::isFinishing);
+        mOpenTimeRecorder = new CustomTabsOpenTimeRecorder(getLifecycleDispatcher(),
+                mNavigationController, this::isFinishing, mIntentDataProvider);
         return component;
     }
 
@@ -224,7 +224,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (id == R.id.bookmark_this_page_id) {
-            addOrEditBookmark(getActivityTab());
+            mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
         } else if (id == R.id.open_in_browser_id) {
@@ -256,16 +256,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
         }
         return new CustomTabIntentDataProvider(intent, this, colorScheme);
-    }
-
-    @Override
-    public boolean supportsAppMenu() {
-        // The media viewer has no default menu items, so if there are also no custom items, we
-        // should disable the menu altogether.
-        if (mIntentDataProvider.isMediaViewer() && mIntentDataProvider.getMenuTitles().isEmpty()) {
-            return false;
-        }
-        return super.supportsAppMenu();
     }
 
     /**
@@ -307,15 +297,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
 
         return super.requiresFirstRunToBeCompleted(intent);
-    }
-
-    /**
-     * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
-     * otherwise.
-     */
-    @Nullable
-    public String getTwaPackage() {
-        return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
     }
 
     @Override

@@ -20,7 +20,6 @@ class StubWebView : public WebView {
   std::string GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
-  Status SetUpDevTools() override;
   Status HandleReceivedEvents() override;
   Status GetUrl(std::string* url) override;
   Status Load(const std::string& url, const Timeout* timeout) override;
@@ -124,7 +123,6 @@ class StubWebView : public WebView {
                                  int xoffset,
                                  int yoffset) override;
   bool IsNonBlocking() const override;
-  bool IsOOPIF(const std::string& frame_id) override;
   FrameTracker* GetFrameTracker() const override;
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;

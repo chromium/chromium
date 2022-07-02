@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
@@ -17,13 +16,11 @@
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,7 +69,7 @@ CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
 
 CrostiniUpgrader::CrostiniUpgrader(Profile* profile)
     : profile_(profile),
-      container_id_("", ""),
+      container_id_(kCrostiniDefaultVmType, "", ""),
       log_sequence_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       current_log_file_(absl::nullopt),
@@ -199,7 +196,7 @@ void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
 }
 
 void CrostiniUpgrader::Backup(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     bool show_file_chooser,
     base::WeakPtr<content::WebContents> web_contents) {
   if (show_file_chooser) {
@@ -218,7 +215,7 @@ void CrostiniUpgrader::Backup(
 }
 
 void CrostiniUpgrader::OnBackupPathChecked(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents,
     base::FilePath path,
     bool path_exists) {
@@ -309,7 +306,7 @@ void CrostiniUpgrader::DoPrechecks() {
   }
 }
 
-void CrostiniUpgrader::Upgrade(const ContainerId& container_id) {
+void CrostiniUpgrader::Upgrade(const guest_os::GuestId& container_id) {
   container_id_ = container_id;
 
   if (!current_log_file_.has_value()) {
@@ -361,7 +358,7 @@ void CrostiniUpgrader::OnUpgrade(CrostiniResult result) {
 }
 
 void CrostiniUpgrader::Restore(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents) {
   if (!backup_path_.has_value()) {
     CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
@@ -377,7 +374,7 @@ void CrostiniUpgrader::Restore(
 }
 
 void CrostiniUpgrader::OnRestorePathChecked(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents,
     base::FilePath path,
     bool path_exists) {
@@ -432,7 +429,7 @@ void CrostiniUpgrader::CancelBeforeStart() {
 }
 
 void CrostiniUpgrader::OnUpgradeContainerProgress(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     UpgradeContainerProgressStatus status,
     const std::vector<std::string>& messages) {
   if (container_id != container_id_) {

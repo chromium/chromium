@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -124,6 +124,20 @@ class MultiDeviceSectionTest : public testing::Test {
     pref_service_.SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
   }
 
+  void VerifyOnScreenLockStatusChangedIsCalled() {
+    EXPECT_CALL(*mock_web_ui_data_source_, AddBoolean(testing::_, testing::_))
+        .Times(testing::AnyNumber());
+    multi_device_section_->AddLoadTimeData(mock_web_ui_data_source_.get());
+
+    EXPECT_CALL(*mock_web_ui_data_source_,
+                AddBoolean(testing::Eq("isPhoneScreenLockEnabled"), testing::_))
+        .Times(1);
+    pref_service_.SetInteger(
+        ash::phonehub::prefs::kScreenLockStatus,
+        static_cast<int>(
+            ash::phonehub::ScreenLockManager::LockStatus::kLockedOn));
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -140,6 +154,10 @@ class MultiDeviceSectionTest : public testing::Test {
 
 TEST_F(MultiDeviceSectionTest, OnEnableScreenLockChanged) {
   VerifyOnEnableScreenLockChangedIsCalled();
+}
+
+TEST_F(MultiDeviceSectionTest, OnScreenLockStatusChanged) {
+  VerifyOnScreenLockStatusChangedIsCalled();
 }
 
 }  // namespace settings

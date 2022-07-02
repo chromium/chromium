@@ -40,13 +40,9 @@ class SampledProfile;
 // at the time the profiler is created. Otherwise the CallStackProfileCollector
 // can be used directly.
 //
-// To use, create as a leaky lazy instance:
-//
-//   base::LazyInstance<metrics::ChildCallStackProfileCollector>::Leaky
-//       g_call_stack_profile_collector = LAZY_INSTANCE_INITIALIZER;
-//
-// Then, invoke Collect() in CallStackProfileBuilder::OnProfileCompleted() to
-// collect a profile.
+// CallStackProfileBuilder owns and manages a ChildCallStackProfileCollector. It
+// invokes Collect() in CallStackProfileBuilder::OnProfileCompleted() to collect
+// a profile.
 //
 // When the mojo InterfaceProvider becomes available, provide it via
 // SetParentProfileCollector().
@@ -79,9 +75,10 @@ class ChildCallStackProfileCollector {
   // for storage, pending availability of the parent mojo interface.
   struct ProfileState {
     ProfileState();
-    // |profile| is not const& because it can be very large and must be passed
-    // with std::move.
-    ProfileState(base::TimeTicks start_timestamp, std::string profile);
+    // |profile| can be very large and must be passed with std::move.
+    ProfileState(base::TimeTicks start_timestamp,
+                 mojom::ProfileType profile_type,
+                 std::string&& profile);
 
     ProfileState(const ProfileState&) = delete;
     ProfileState& operator=(const ProfileState&) = delete;
@@ -93,6 +90,7 @@ class ChildCallStackProfileCollector {
     ProfileState& operator=(ProfileState&&);
 
     base::TimeTicks start_timestamp;
+    mojom::ProfileType profile_type;
 
     // The serialized sampled profile.
     std::string profile;

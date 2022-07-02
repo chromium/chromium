@@ -40,18 +40,18 @@ const GURL GetFrenchUrl();
 // height. GREYAssert is induced if test bookmarks can not be loaded.
 - (void)setupBookmarksWhichExceedsScreenHeight;
 
-// Waits for the Bookmark modedl to be |loaded|. GREYAssert is induced if test
+// Waits for the Bookmark modedl to be `loaded`. GREYAssert is induced if test
 // bookmarks can not be loaded.
 - (void)waitForBookmarkModelLoaded:(BOOL)loaded;
 
 #pragma mark - Common Helpers
 
-// Verifies that |expectedCount| bookmarks exist with the corresponding |title|
+// Verifies that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel. GREYAssert is induced if the count doesn't match.
 - (void)verifyBookmarksWithTitle:(NSString*)title
                    expectedCount:(NSUInteger)expectedCount;
 
-// Verifies that there is |count| children on the bookmark folder with |name|.
+// Verifies that there is `count` children on the bookmark folder with `name`.
 // GREYAssert is induced if the folder doesn't exist or the count doesn't match.
 - (void)verifyChildCount:(int)count inFolderWithName:(NSString*)name;
 
@@ -63,20 +63,20 @@ const GURL GetFrenchUrl();
 // is induced if the bookmark can't be removed.
 - (void)removeBookmarkWithTitle:(NSString*)title;
 
-// Moves bookmark with title |bookmarkTitle| into a folder with title
-// |newFolder|. GREYAssert is induced if the bookmark can't be moved.
+// Moves bookmark with title `bookmarkTitle` into a folder with title
+// `newFolder`. GREYAssert is induced if the bookmark can't be moved.
 - (void)moveBookmarkWithTitle:(NSString*)bookmarkTitle
             toFolderWithTitle:(NSString*)newFolder;
 
-// Verifies the existence of a Bookmark with |URL| and |name|. GREYAssert is
+// Verifies the existence of a Bookmark with `URL` and `name`. GREYAssert is
 // induced if the bookmarks doesn't exist.
 - (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL name:(NSString*)name;
 
-// Verifies the absence of a Bookmark with |URL|. GREYAssert is induced if the
+// Verifies the absence of a Bookmark with `URL`. GREYAssert is induced if the
 // bookmarks does exist.
 - (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL;
 
-// Verifies that a folder called |title| exists. GREYAssert is induced if the
+// Verifies that a folder called `title` exists. GREYAssert is induced if the
 // folder doesn't exist.
 - (void)verifyExistenceOfFolderWithTitle:(NSString*)title;
 
@@ -89,7 +89,7 @@ const GURL GetFrenchUrl();
 // Checks that the promo has already been seen or not.
 - (void)setPromoAlreadySeen:(BOOL)seen;
 
-// Sets that the promo has already been seen |times| number of times.
+// Sets that the promo has already been seen `times` number of times.
 - (void)setPromoAlreadySeenNumberOfTimes:(int)times;
 
 // Returns the number of times a Promo has been seen.

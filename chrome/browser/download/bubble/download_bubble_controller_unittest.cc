@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -86,7 +87,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
     auto manager = std::make_unique<NiceMock<content::MockDownloadManager>>();
     manager_ = manager.get();
-    EXPECT_CALL(*manager, GetBrowserContext()).WillRepeatedly(Return(profile_));
+    EXPECT_CALL(*manager, GetBrowserContext())
+        .WillRepeatedly(Return(profile_.get()));
     EXPECT_CALL(*manager, RemoveObserver(_)).WillRepeatedly(Return());
     profile_->SetDownloadManagerForTesting(std::move(manager));
 
@@ -224,14 +226,14 @@ class DownloadBubbleUIControllerTest : public testing::Test {
   std::unique_ptr<NiceMock<MockDownloadDisplayController>> display_controller_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   OfflineItemList offline_items_;
-  NiceMock<content::MockDownloadManager>* manager_;
+  raw_ptr<NiceMock<content::MockDownloadManager>> manager_;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<
       NiceMock<offline_items_collection::MockOfflineContentProvider>>
       content_provider_;
   std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 TEST_F(DownloadBubbleUIControllerTest, ProcessesNewItems) {
@@ -398,7 +400,7 @@ class DownloadBubbleUIControllerIncognitoTest
  protected:
   std::unique_ptr<TestBrowserWindow> incognito_window_;
   std::unique_ptr<Browser> incognito_browser_;
-  TestingProfile* incognito_profile_;
+  raw_ptr<TestingProfile> incognito_profile_;
   std::unique_ptr<DownloadBubbleUIController> incognito_controller_;
   std::unique_ptr<NiceMock<MockDownloadDisplayController>>
       incognito_display_controller_;

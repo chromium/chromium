@@ -145,7 +145,7 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "background_image") {
     ServeBackgroundImage(url_param, GURL(), "cover", "no-repeat", "no-repeat",
-                         "center", "center", std::move(callback));
+                         "center", "center", "inherit", std::move(callback));
     return;
   }
   if (path == "custom_background_image") {
@@ -172,6 +172,7 @@ void UntrustedSource::StartDataRequest(
         params.count("repeatY") == 1 ? params["repeatY"] : "no-repeat",
         params.count("positionX") == 1 ? params["positionX"] : "center",
         params.count("positionY") == 1 ? params["positionY"] : "center",
+        params.count("scrimDisplay") == 1 ? params["scrimDisplay"] : "inherit",
         std::move(callback));
     return;
   }
@@ -275,6 +276,7 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& repeat_y,
     const std::string& position_x,
     const std::string& position_y,
+    const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
   if (!url.is_valid() || !(url.SchemeIs(url::kHttpsScheme) ||
                            url.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -296,6 +298,7 @@ void UntrustedSource::ServeBackgroundImage(
   replacements["repeatY"] = repeat_y;
   replacements["positionX"] = position_x;
   replacements["positionY"] = position_y;
+  replacements["scrimDisplay"] = scrim_display;
   std::string html = FormatTemplate(
       IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements);
   std::move(callback).Run(base::RefCountedString::TakeString(&html));

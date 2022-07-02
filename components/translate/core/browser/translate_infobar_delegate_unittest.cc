@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -19,7 +20,6 @@
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/translate/core/browser/mock_translate_ranker.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -199,9 +199,9 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
   // language.
   std::unique_ptr<TranslateInfoBarDelegate> delegate =
       ConstructInfoBarDelegate();
-  TranslateAcceptLanguages accept_languages(pref_service_.get(),
-                                            testing::accept_languages_prefs);
-  ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
+  language::AcceptLanguagesService accept_languages(
+      pref_service_.get(), testing::accept_languages_prefs);
+  ON_CALL(*(client_.get()), GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ListPrefUpdate update(pref_service_.get(),
                         translate::prefs::kBlockedLanguages);
@@ -305,9 +305,9 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
 }
 
 TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
-  TranslateAcceptLanguages accept_languages(pref_service_.get(),
-                                            testing::accept_languages_prefs);
-  ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
+  language::AcceptLanguagesService accept_languages(
+      pref_service_.get(), testing::accept_languages_prefs);
+  ON_CALL(*(client_.get()), GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   DictionaryPrefUpdate update_translate_denied_count(

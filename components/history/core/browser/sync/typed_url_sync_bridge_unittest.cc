@@ -45,15 +45,12 @@ using syncer::MetadataChangeList;
 using syncer::MockModelTypeChangeProcessor;
 using testing::_;
 using testing::AllOf;
-using testing::Contains;
 using testing::DoAll;
 using testing::IsEmpty;
 using testing::Mock;
 using testing::NiceMock;
-using testing::Not;
 using testing::Pointee;
 using testing::Return;
-using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 // Constants used to limit size of visits processed. See
@@ -255,7 +252,7 @@ void StoreMetadata(const std::string& storage_key,
 
 class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
  public:
-  TestHistoryBackendDelegate() {}
+  TestHistoryBackendDelegate() = default;
 
   TestHistoryBackendDelegate(const TestHistoryBackendDelegate&) = delete;
   TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
@@ -269,7 +266,6 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
                              const GURL& icon_url) override {}
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         Time visit_time) override {}
   void NotifyURLsModified(const std::vector<URLRow>& changed_urls) override {}
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
@@ -291,7 +287,7 @@ class TestHistoryBackendForSync : public HistoryBackend {
                        std::move(backend_client),
                        base::ThreadTaskRunnerHandle::Get()) {}
 
-  bool IsExpiredVisitTime(const Time& time) override {
+  bool IsExpiredVisitTime(const Time& time) const override {
     return time.ToDeltaSinceWindowsEpoch().InMicroseconds() == kExpiredVisit;
   }
 
@@ -316,14 +312,14 @@ class TestHistoryBackendForSync : public HistoryBackend {
 
     std::vector<VisitInfo> added_visits;
     for (const auto& visit : visits) {
-      added_visits.push_back(VisitInfo(visit.visit_time, visit.transition));
+      added_visits.emplace_back(visit.visit_time, visit.transition);
     }
     AddVisits(new_url->url(), added_visits, SOURCE_SYNCED);
     new_url->set_id(GetIdByUrl(new_url->url()));
   }
 
  private:
-  ~TestHistoryBackendForSync() override {}
+  ~TestHistoryBackendForSync() override = default;
 };
 
 class MockHistoryBackendClient : public HistoryBackendClient {
@@ -348,10 +344,10 @@ class TypedURLSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     fake_history_backend_->Init(
         false, TestHistoryDatabaseParamsForPath(test_dir_.GetPath()));
-    std::unique_ptr<TypedURLSyncBridge> bridge =
-        std::make_unique<TypedURLSyncBridge>(
-            fake_history_backend_.get(), fake_history_backend_->db(),
-            mock_processor_.CreateForwardingProcessor());
+    auto bridge = std::make_unique<TypedURLSyncBridge>(
+        fake_history_backend_.get(),
+        fake_history_backend_->db()->GetTypedURLMetadataDB(),
+        mock_processor_.CreateForwardingProcessor());
     typed_url_sync_bridge_ = bridge.get();
     typed_url_sync_bridge_->Init();
     typed_url_sync_bridge_->history_backend_observation_.Reset();
@@ -843,7 +839,7 @@ TEST_F(TypedURLSyncBridgeTest, MergeUrlsWithUsernameAndPassword) {
 
   // Notify typed url sync service of the update.
   bridge()->OnURLVisited(fake_history_backend_.get(), ui::PAGE_TRANSITION_TYPED,
-                         server_row, RedirectList(), SinceEpoch(7));
+                         server_row, SinceEpoch(7));
 }
 
 // Starting sync with both local and sync have same typed URL, but different
@@ -981,8 +977,7 @@ TEST_F(TypedURLSyncBridgeTest, ReloadVisitLocalTypedUrl) {
 
   // Notify typed url sync service of the update.
   bridge()->OnURLVisited(fake_history_backend_.get(),
-                         ui::PAGE_TRANSITION_RELOAD, url_row, RedirectList(),
-                         SinceEpoch(7));
+                         ui::PAGE_TRANSITION_RELOAD, url_row, SinceEpoch(7));
   // No change pass to processor
 }
 
@@ -1011,7 +1006,7 @@ TEST_F(TypedURLSyncBridgeTest, LinkVisitLocalTypedUrl) {
   ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
   // Notify typed url sync service of non-typed visit, expect no change.
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), SinceEpoch(6));
+                         SinceEpoch(6));
   // No change pass to processor
 }
 
@@ -1039,7 +1034,7 @@ TEST_F(TypedURLSyncBridgeTest, TypedVisitLocalTypedUrl) {
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   const sync_pb::TypedUrlSpecifics& url_specifics =
       entity_data.specifics.typed_url();
@@ -1281,12 +1276,15 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   // Add `kMaxTypedUrlVisits` + 10 visits to the url. The 10 oldest
   // non-typed visits are expected to be skipped.
   int i = 1;
-  for (; i <= kMaxTypedUrlVisits - 20; ++i)
+  for (; i <= kMaxTypedUrlVisits - 20; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
-  for (; i <= kMaxTypedUrlVisits; ++i)
+  }
+  for (; i <= kMaxTypedUrlVisits; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_LINK, i, &url_row, &visits);
-  for (; i <= kMaxTypedUrlVisits + 10; ++i)
+  }
+  for (; i <= kMaxTypedUrlVisits + 10; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
 
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
@@ -1296,7 +1294,7 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   EXPECT_CALL(mock_processor_, Put(GetStorageKey(kURL), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   const sync_pb::TypedUrlSpecifics& url_specifics =
       entity_data.specifics.typed_url();
@@ -1339,18 +1337,20 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
   // Add enough visits to the url so that typed count is above the throttle
   // limit, and not right on the interval that gets synced.
   int i = 1;
-  for (; i < kVisitThrottleThreshold + kVisitThrottleMultiple / 2; ++i)
+  for (; i < kVisitThrottleThreshold + kVisitThrottleMultiple / 2; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
   // Notify typed url sync service of typed visit.
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   visits.clear();
-  for (; i % kVisitThrottleMultiple != 1; ++i)
+  for (; i % kVisitThrottleMultiple != 1; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
   --i;  // Account for the increment before the condition ends.
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
@@ -1359,7 +1359,7 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
   EXPECT_CALL(mock_processor_, Put(GetStorageKey(kURL), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   ASSERT_EQ(i, entity_data.specifics.typed_url().visits_size());
 }
@@ -1498,8 +1498,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsSame) {
   const int64_t visits[] = {1024, 2065, 65534, 1237684};
 
   for (int64_t visit : visits) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
     new_url.add_visits(visit);
     new_url.add_visit_transitions(ui::PAGE_TRANSITION_TYPED);
   }
@@ -1528,8 +1528,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsRemove) {
   const int64_t visits_removed[] = {1500, 6000, 2237684};
 
   for (int64_t visit : visits_left) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
   }
 
   for (int64_t visit : visits_right) {
@@ -1562,8 +1562,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsAdd) {
   const int64_t visits_added[] = {1, 1500, 6000, 2237684};
 
   for (int64_t visit : visits_left) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
   }
 
   for (int64_t visit : visits_right) {

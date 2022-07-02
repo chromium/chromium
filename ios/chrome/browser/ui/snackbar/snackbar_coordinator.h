@@ -13,7 +13,7 @@
 // Coordinator that handles commands to show snackbars.
 @interface SnackbarCoordinator : ChromeCoordinator
 
-// Initializer for a coordinator for |request|.
+// Initializer for a coordinator for `request`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   delegate:

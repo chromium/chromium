@@ -1,9 +1,14 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //chromeos/ash/components/network should be updated as well. We need to sync
+# both files until the migration is done.
+
 noparent = True
 
 include_rules = [
   "+ash/constants",
   "+base",
   "+base/component_export.h",
+  "+chromeos/ash/components/network",
   "+chromeos/test",
   "+chromeos/dbus",
   "+chromeos/components/feature_usage",
@@ -25,9 +30,20 @@ include_rules = [
   "+net",
   "+services/preferences/public/cpp",
   "+testing",
-  "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",
   "+url",
+
+  # Abseil features must be allowlisted explicitly for now. See
+  # //styleguide/c++/c++11.html. Allowed features' headers will be listed
+  # explicitly here.
+  # Please keep this section in sync with //DEPS.
+  '-absl',
+  '-third_party/abseil-cpp',
+  '+third_party/abseil-cpp/absl/base/attributes.h',
+  "+third_party/abseil-cpp/absl/numeric/int128.h",
+  '+third_party/abseil-cpp/absl/types/optional.h',
+  '+third_party/abseil-cpp/absl/types/variant.h',
+  '+third_party/abseil-cpp/absl/utility/utility.h',
 ]
 
 specific_include_rules = {

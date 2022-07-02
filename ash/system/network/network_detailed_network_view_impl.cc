@@ -41,13 +41,13 @@ NetworkDetailedNetworkViewImpl::AddNetworkListItem() {
       new NetworkListNetworkItemView(/*listener=*/this));
 }
 
-NetworkListNetworkHeaderView*
+NetworkListWifiHeaderView*
 NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
   return scroll_content()->AddChildView(
       new NetworkListWifiHeaderViewImpl(/*delegate=*/this));
 }
 
-NetworkListNetworkHeaderView*
+NetworkListMobileHeaderView*
 NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
   return scroll_content()->AddChildView(
       new NetworkListMobileHeaderViewImpl(/*delegate=*/this));

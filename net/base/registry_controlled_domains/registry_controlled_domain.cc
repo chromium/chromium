@@ -60,8 +60,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
 
-namespace net {
-namespace registry_controlled_domains {
+namespace net::registry_controlled_domains {
 
 namespace {
 #include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
@@ -469,5 +468,4 @@ void SetFindDomainGraphForTesting(const unsigned char* domains, size_t length) {
   g_graph_length = length;
 }
 
-}  // namespace registry_controlled_domains
-}  // namespace net
+}  // namespace net::registry_controlled_domains

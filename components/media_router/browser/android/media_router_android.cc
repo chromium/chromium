@@ -296,7 +296,8 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
     }
   }
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-      RouteRequestResult::OK, mojom::MediaRouteProviderId::ANDROID_CAF);
+      mojom::RouteRequestResultCode::OK,
+      mojom::MediaRouteProviderId::ANDROID_CAF);
   RemoveRoute(route_id);
 }
 
@@ -360,7 +361,7 @@ void MediaRouterAndroid::OnPresentationConnectionError(
 void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
-    base::OnceCallback<void(RouteRequestResult::ResultCode,
+    base::OnceCallback<void(mojom::RouteRequestResultCode,
                             absl::optional<mojom::MediaRouteProviderId>)>
         callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
@@ -369,7 +370,7 @@ void MediaRouterAndroid::OnRouteRequestError(
 
   // TODO: Provide a more specific result code.
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-      error_text, RouteRequestResult::UNKNOWN_ERROR);
+      error_text, mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   std::move(request->callback).Run(nullptr, *result);
 
   route_requests_.Remove(route_request_id);

@@ -38,9 +38,16 @@ func getCppFiles(dir string) []string {
 		}
 		ext := filepath.Ext(file.Name())
 		if ext == ".cc" || ext == ".h" {
-			isTestFile, err := filepath.Match("*_test.*", file.Name())
-			if err != nil {
-				panic(err)
+			matches := []string{"*_test.*", "*_test_data.*"}
+			var isTestFile bool
+			for i := range matches {
+				isTestFile, err = filepath.Match(matches[i], file.Name())
+				if err != nil {
+					panic(err)
+				}
+				if isTestFile {
+					break
+				}
 			}
 			if !isTestFile {
 				paths = append(paths, filepath.Join(dir, file.Name()))

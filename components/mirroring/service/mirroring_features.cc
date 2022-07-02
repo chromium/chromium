@@ -8,11 +8,6 @@
 namespace mirroring {
 namespace features {
 
-// Controls whether the Open Screen libcast SenderSession is used for
-// initializing and managing streaming sessions, or the legacy implementation.
-const base::Feature kOpenscreenCastStreamingSession{
-    "OpenscreenCastStreamingSession", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether offers using the AV1 codec for video encoding are included
 // in mirroring negotiations in addition to the VP8 codec, or offers only
 // include VP8.

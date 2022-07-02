@@ -23,7 +23,7 @@ class InstallerStringTest : public testing::Test {
 
 // Tests the strcat/strcpy/length support of the StackString class.
 TEST_F(InstallerStringTest, StackStringOverflow) {
-  static const wchar_t kTestString[] = L"1234567890";
+  static constexpr wchar_t kTestString[] = L"1234567890";
 
   StackString<MAX_PATH> str;
   EXPECT_EQ(size_t{MAX_PATH}, str.capacity());

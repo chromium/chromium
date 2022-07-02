@@ -90,19 +90,25 @@ H264Decoder::H264Accelerator::H264Accelerator() = default;
 
 H264Decoder::H264Accelerator::~H264Accelerator() = default;
 
-H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
-    base::span<const uint8_t> stream,
-    const DecryptConfig* decrypt_config) {
-  return H264Decoder::H264Accelerator::Status::kNotSupported;
-}
+void H264Decoder::H264Accelerator::ProcessSPS(
+    const H264SPS* sps,
+    base::span<const uint8_t> sps_nalu_data) {}
+
+void H264Decoder::H264Accelerator::ProcessPPS(
+    const H264PPS* pps,
+    base::span<const uint8_t> pps_nalu_data) {}
 
 H264Decoder::H264Accelerator::Status
 H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
     const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
-    const std::vector<uint8_t>& sps_nalu_data,
-    const std::vector<uint8_t>& pps_nalu_data,
     H264SliceHeader* slice_header_out) {
+  return H264Decoder::H264Accelerator::Status::kNotSupported;
+}
+
+H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
 
@@ -1292,7 +1298,6 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
   all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
                         subsamples.end());
   return accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
-                                                 last_sps_nalu_, last_pps_nalu_,
                                                  curr_slice_hdr_.get());
 }
 
@@ -1553,9 +1558,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         bool need_new_buffers = false;
         if (!ProcessSPS(sps_id, &need_new_buffers))
           SET_ERROR_AND_RETURN();
+        accelerator_->ProcessSPS(
+            parser_.GetSPS(sps_id),
+            base::span<const uint8_t>(curr_nalu_->data, curr_nalu_->size));
 
-        last_sps_nalu_.assign(curr_nalu_->data,
-                              curr_nalu_->data + curr_nalu_->size);
         if (state_ == State::kNeedStreamMetadata)
           state_ = State::kAfterReset;
 
@@ -1576,9 +1582,9 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         par_res = parser_.ParsePPS(&last_parsed_pps_id_);
         if (par_res != H264Parser::kOk)
           SET_ERROR_AND_RETURN();
-
-        last_pps_nalu_.assign(curr_nalu_->data,
-                              curr_nalu_->data + curr_nalu_->size);
+        accelerator_->ProcessPPS(
+            parser_.GetPPS(last_parsed_pps_id_),
+            base::span<const uint8_t>(curr_nalu_->data, curr_nalu_->size));
         break;
       }
 

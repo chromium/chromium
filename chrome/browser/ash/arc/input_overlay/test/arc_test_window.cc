@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
 
@@ -15,22 +16,14 @@ namespace test {
 ArcTestWindow::ArcTestWindow(exo::test::ExoTestHelper* helper,
                              aura::Window* root,
                              const std::string& package_name) {
-  surface_ = std::make_unique<exo::Surface>();
-  buffer_ = std::make_unique<exo::Buffer>(
-      helper->CreateGpuMemoryBuffer(gfx::Size(100, 100)));
-  shell_surface_ =
-      helper->CreateClientControlledShellSurface(surface_.get(), false);
-  surface_->Attach(buffer_.get());
-
+  shell_surface_ = exo::test::ShellSurfaceBuilder({100, 100})
+                       .SetApplicationId(package_name.c_str())
+                       .BuildClientControlledShellSurface();
   auto display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root).id();
   shell_surface_->SetBounds(display_id, gfx::Rect(10, 10, 100, 100));
+  surface_ = shell_surface_->root_surface();
   surface_->Commit();
-  shell_surface_->GetWidget()->Show();
-  shell_surface_->GetWidget()->Activate();
-  surface_->SetApplicationId(package_name.c_str());
-  shell_surface_->GetWidget()->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   shell_surface_->GetWidget()->GetNativeWindow()->SetProperty(
       ash::kArcPackageNameKey, package_name);
 }

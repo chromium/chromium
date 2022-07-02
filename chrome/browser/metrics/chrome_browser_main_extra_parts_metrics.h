@@ -16,7 +16,6 @@
 
 class ChromeBrowserMainParts;
 class PowerMetricsReporter;
-class ProcessMetricsRecorder;
 class ProcessMonitor;
 
 namespace chrome {
@@ -70,18 +69,14 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
 #endif  // defined(USE_OZONE)
 
+#if !BUILDFLAG(IS_ANDROID)
   // The process monitor instance. Allows collecting metrics about every child
   // process.
   std::unique_ptr<ProcessMonitor> process_monitor_;
 
-  // Observes the |process_monitor_| and records histograms from the metrics
-  // received.
-  std::unique_ptr<ProcessMetricsRecorder> process_metrics_recorder_;
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Reports power metrics.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
-#endif  // BUILDFLAG(IS_MAC) || defined (OS_WIN)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

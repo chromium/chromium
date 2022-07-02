@@ -193,7 +193,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   /**
    * @return Whether to show the "More settings" link.
    */
-  computeShouldShowMoreSettings_(): boolean {
+  private computeShouldShowMoreSettings_(): boolean {
     // Destination settings is always available. See if the total number of
     // available sections exceeds the maximum number to show.
     return [

@@ -46,7 +46,8 @@ class FakePaintImageGenerator : public PaintImageGenerator {
       SkYUVAPixmapInfo* yuva_pixmap_info) const override;
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                      size_t frame_index,
-                     uint32_t lazy_pixel_ref) override;
+                     uint32_t lazy_pixel_ref,
+                     PaintImage::GeneratorClientId client_id) override;
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const override;
   const ImageHeaderMetadata* GetMetadataForDecodeAcceleration() const override;
 

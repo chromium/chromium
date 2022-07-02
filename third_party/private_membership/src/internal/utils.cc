@@ -14,6 +14,8 @@
 
 #include "third_party/private_membership/src/internal/utils.h"
 
+#include <string>
+
 #include "third_party/shell-encryption/src/status_macros.h"
 
 namespace private_membership {

@@ -30,10 +30,9 @@ import subprocess
 
 class TaggingError(Exception):
     """Module exception class."""
-    pass
 
 
-class Tagger(object):
+class Tagger:
     """A container for a tagging operation."""
 
     def __init__(self, tagging_exe):

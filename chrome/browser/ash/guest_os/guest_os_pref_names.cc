@@ -19,11 +19,14 @@ const char kGuestOsMimeTypes[] = "crostini.mime_types";
 
 // Registry of installed app for each VM/container.
 const char kGuestOsRegistry[] = "crostini.registry";
+
+// GuestOsRegistry and GuestId
+const char kVmTypeKey[] = "vm_type";
+const char kVmNameKey[] = "vm_name";
+const char kContainerNameKey[] = "container_name";
+
 // Keys for the |kGuestOsRegistry| Dictionary stored in prefs for each app.
 const char kAppDesktopFileIdKey[] = "desktop_file_id";
-const char kAppVmTypeKey[] = "vm_type";
-const char kAppVmNameKey[] = "vm_name";
-const char kAppContainerNameKey[] = "container_name";
 const char kAppCommentKey[] = "comment";
 const char kAppExtensionsKey[] = "extensions";
 const char kAppMimeTypesKey[] = "mime_types";
@@ -39,10 +42,18 @@ const char kAppStartupNotifyKey[] = "startup_notify";
 const char kAppInstallTimeKey[] = "install_time";
 const char kAppLastLaunchTimeKey[] = "last_launch_time";
 
+// GuestId
+const char kGuestOsContainers[] = "crostini.containers";
+const char kContainerOsVersionKey[] = "container_os_version";
+const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
+// SkColor used to assign badges to apps associated with this container.
+const char kContainerColorKey[] = "badge_color";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOSPathsSharedToVms);
   registry->RegisterDictionaryPref(kGuestOsMimeTypes);
   registry->RegisterDictionaryPref(kGuestOsRegistry);
+  registry->RegisterListPref(kGuestOsContainers);
 }
 
 }  // namespace prefs

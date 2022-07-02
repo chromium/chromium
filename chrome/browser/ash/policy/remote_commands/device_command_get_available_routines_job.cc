@@ -13,7 +13,7 @@
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {

@@ -106,8 +106,7 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   // Get ADB sideloading status if supported on device. Otherwise, default is to
   // not show.
   if (base::FeatureList::IsEnabled(features::kArcAdbSideloadingFeature)) {
-    chromeos::SessionManagerClient* client =
-        chromeos::SessionManagerClient::Get();
+    SessionManagerClient* client = SessionManagerClient::Get();
     client->QueryAdbSideload(
         base::BindOnce(&VersionInfoUpdater::OnQueryAdbSideload,
                        weak_pointer_factory_.GetWeakPtr()));

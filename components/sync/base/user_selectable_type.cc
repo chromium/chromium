@@ -6,10 +6,8 @@
 
 #include <type_traits>
 
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,6 +51,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
         // SyncSettingsCategorization makes Printers a separate OS setting.
         model_types.Put(PRINTERS);
+        model_types.Put(PRINTERS_AUTHORIZATION_SERVERS);
 
         // Workspace desk template is an OS-only feature. When
         // SyncSettingsCategorization is disabled, WORKSPACE_DESK should be
@@ -97,12 +96,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs: {
-      ModelTypeSet model_type_group = {PROXY_TABS, SESSIONS};
-      if (!base::FeatureList::IsEnabled(
-              kDecoupleSendTabToSelfAndSyncSettings)) {
-        model_type_group.Put(SEND_TAB_TO_SELF);
-      }
-      return {kTabsTypeName, PROXY_TABS, model_type_group};
+      return {kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS}};
     }
     case UserSelectableType::kWifiConfigurations: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -134,10 +128,10 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
               APPS,
               {APP_LIST, APPS, APP_SETTINGS, ARC_PACKAGE, WEB_APPS}};
     case UserSelectableOsType::kOsPreferences:
-      return {
-          kOsPreferencesTypeName,
-          OS_PREFERENCES,
-          {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS, WORKSPACE_DESK}};
+      return {kOsPreferencesTypeName,
+              OS_PREFERENCES,
+              {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
+               PRINTERS_AUTHORIZATION_SERVERS, WORKSPACE_DESK}};
     case UserSelectableOsType::kOsWifiConfigurations:
       return {kOsWifiConfigurationsTypeName,
               WIFI_CONFIGURATIONS,

@@ -70,7 +70,7 @@ AutoclickE2ETest = class extends E2ETestBase {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'AutoclickE2ETest', 'HighlightsRootWebAreaIfNotScrollable',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -90,7 +90,7 @@ TEST_F(
       this.assertSameRect(focusRings[0].rects[0], expected);
     });
 
-TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
+AX_TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
   const root = await this.runWithLoadedTree(
       'data:text/html;charset=utf-8,' +
       '<div style="width:100px;height:100px;overflow:scroll">' +
@@ -116,7 +116,7 @@ TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', async function() {
   this.assertSameRect(focusRings[0].rects[0], expected);
 });
 
-TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', async function() {
+AX_TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', async function() {
   const root = await this.runWithLoadedTree(
       'data:text/html;charset=utf-8,<p>Cats rock!</p>');
   // Turn on screen magnifier so that when we turn off autoclick, the

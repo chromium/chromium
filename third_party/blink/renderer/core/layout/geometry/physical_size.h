@@ -29,8 +29,14 @@ struct CORE_EXPORT PhysicalSize {
   constexpr PhysicalSize(LayoutUnit width, LayoutUnit height)
       : width(width), height(height) {}
 
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter,
+  // or use FromSizeF*() instead.
+  PhysicalSize(double, double) = delete;
+
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
-  inline PhysicalSize(int width, int height);
+  // 'constexpr' is to let compiler detect usage from production code.
+  constexpr PhysicalSize(int width, int height);
 
   LayoutUnit width;
   LayoutUnit height;

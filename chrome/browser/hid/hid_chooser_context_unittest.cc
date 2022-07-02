@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -101,8 +102,8 @@ class HidChooserContextTestBase {
             }));
     run_loop.Run();
 
-    scoped_permission_observation_.Observe(context_);
-    scoped_device_observation_.Observe(context_);
+    scoped_permission_observation_.Observe(context_.get());
+    scoped_device_observation_.Observe(context_.get());
   }
 
   void DoTearDown() {
@@ -148,6 +149,9 @@ class HidChooserContextTestBase {
         device::HidBlocklist::Get().GetProtectedReportIds(
             device::HidBlocklist::kReportTypeFeature, kTestVendorId,
             kTestProductId, device->collections);
+    device->is_excluded_by_blocklist =
+        device::HidBlocklist::Get().IsVendorProductBlocked(kTestVendorId,
+                                                           kTestProductId);
     return device;
   }
 
@@ -281,13 +285,13 @@ class HidChooserContextTestBase {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
 
-  HidChooserContext* context_;
+  raw_ptr<HidChooserContext> context_;
   permissions::MockPermissionObserver permission_observer_;
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,
@@ -644,8 +648,8 @@ struct BlocklistTestData {
     {nullptr, true},          {"", true},
     {"1234:abcd::::", false}, {"1234:0001::::", true},
     {"1234:::::", false},     {"2468:::::", true},
-    {"::0001:0005::", false}, {"::0001:0006::", true},
-    {"::0001:::", false},     {"::ff00:::", true},
+    {"::0001:0005::", true},  {"::0001:0006::", true},
+    {"::0001:::", true},      {"::ff00:::", true},
 };
 
 class HidChooserContextBlocklistTest
@@ -1144,37 +1148,17 @@ TEST_P(HidChooserContextAffiliatedTest, BlocklistOverridesPolicy) {
   EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
-TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistFidoRule) {
-  const auto kFidoAllowedOrigin = url::Origin::Create(
-      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
-  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
-
-  // Connect a FIDO device. It should be blocked by the blocklist because it
-  // has a top-level collection with a usage from the FIDO usage page.
-  auto device = ConnectFidoDeviceBlocking();
-  EXPECT_FALSE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
-  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
-
-  // Granting permission to the privileged origin succeeds.
-  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *device);
-  EXPECT_TRUE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
-
-  // Granting permission to the non-privileged origin fails.
-  GrantDevicePermissionBlocking(kOtherOrigin, *device);
-  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
-}
-
 TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistDeviceIdRule) {
   const auto kFidoAllowedOrigin = url::Origin::Create(
       GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
   const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
 
-  // Connect a FIDO device.
-  auto device = ConnectFidoDeviceBlocking();
-
   // Configure the blocklist to deny access to devices with kTestVendorId and
   // kTestProductId.
   SetDynamicBlocklist("1234:abcd::::");
+
+  // Connect a FIDO device.
+  auto device = ConnectFidoDeviceBlocking();
 
   // Check that the FIDO device is still blocked. Now it is blocked both for
   // being FIDO and also for matching the device ID rule.
@@ -1194,6 +1178,10 @@ TEST_P(HidChooserContextAffiliatedTest, FidoAllowlistAndPolicy) {
   const auto kFidoAndPolicyAllowedOrigin = url::Origin::Create(
       GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
   const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Configure the blocklist to deny access to devices with kTestVendorId and
+  // kTestProductId.
+  SetDynamicBlocklist("1234:abcd::::");
 
   SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
       [

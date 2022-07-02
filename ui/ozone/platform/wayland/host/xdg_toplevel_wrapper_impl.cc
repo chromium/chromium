@@ -109,19 +109,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
         zaura_toplevel_surface_submission_in_pixel_coordinates(
             aura_toplevel_.get());
       }
-
-      if (features::IsWaylandScreenCoordinatesEnabled()) {
-        DCHECK(ProtocolSupportsScreenCoordinates());
-        zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
-
-        static constexpr zaura_toplevel_listener aura_toplevel_listener = {
-            &ConfigureAuraTopLevel,
-            &OnOriginChange,
-        };
-
-        zaura_toplevel_add_listener(aura_toplevel_.get(),
-                                    &aura_toplevel_listener, this);
-      }
     }
   }
 
@@ -370,7 +357,7 @@ void XDGToplevelWrapperImpl::Unlock() {
 }
 
 void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
-  DCHECK(ProtocolSupportsScreenCoordinates());
+  DCHECK(SupportsScreenCoordinates());
   uint32_t id = wayland_window_->GetPreferredEnteredOutputId();
   auto* output = connection_->wayland_output_manager()->GetOutput(id);
   if (!output) {
@@ -379,6 +366,9 @@ void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
     LOG(WARNING) << "Output Not found for id=" << id;
     output = connection_->wayland_output_manager()->GetPrimaryOutput();
   }
+  // `output` can be null in unit tests where it doesn't wait for output events.
+  if (!output)
+    return;
   zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(), bounds.y(),
                                    bounds.width(), bounds.height(),
                                    output->get_output());
@@ -395,10 +385,29 @@ void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
   }
 }
 
-bool XDGToplevelWrapperImpl::ProtocolSupportsScreenCoordinates() {
+bool XDGToplevelWrapperImpl::SupportsScreenCoordinates() const {
   return aura_toplevel_ &&
          zaura_toplevel_get_version(aura_toplevel_.get()) >=
              ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
+}
+
+void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
+  if (!features::IsWaylandScreenCoordinatesEnabled())
+    return;
+  if (!SupportsScreenCoordinates()) {
+    LOG(WARNING) << "Server implementation of wayland is incompatible, "
+                    "WaylandScreenCoordinatesEnabled has no effect.";
+    return;
+  }
+  zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
+
+  static constexpr zaura_toplevel_listener aura_toplevel_listener = {
+      &ConfigureAuraTopLevel,
+      &OnOriginChange,
+  };
+
+  zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
+                              this);
 }
 
 void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
@@ -407,6 +416,18 @@ void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
                             ZAURA_TOPLEVEL_SET_RESTORE_INFO_SINCE_VERSION) {
     zaura_toplevel_set_restore_info(aura_toplevel_.get(), restore_session_id,
                                     restore_window_id);
+  }
+}
+
+void XDGToplevelWrapperImpl::SetRestoreInfoWithWindowIdSource(
+    int32_t restore_session_id,
+    const std::string& restore_window_id_source) {
+  if (aura_toplevel_ &&
+      zaura_toplevel_get_version(aura_toplevel_.get()) >=
+          ZAURA_TOPLEVEL_SET_RESTORE_INFO_WITH_WINDOW_ID_SOURCE_SINCE_VERSION) {
+    zaura_toplevel_set_restore_info_with_window_id_source(
+        aura_toplevel_.get(), restore_session_id,
+        restore_window_id_source.c_str());
   }
 }
 

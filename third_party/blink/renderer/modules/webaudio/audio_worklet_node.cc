@@ -176,14 +176,14 @@ AudioWorkletNode* AudioWorkletNode::Create(
               .ToLocalChecked(),
           serialize_options, exception_state);
 
-  // |serialized_node_options| can be nullptr if the option dictionary is not
+  // `serialized_node_options` can be nullptr if the option dictionary is not
   // valid.
   if (!serialized_node_options) {
     serialized_node_options = SerializedScriptValue::NullValue();
   }
   DCHECK(serialized_node_options);
 
-  // This is non-blocking async call. |node| still can be returned to user
+  // This is non-blocking async call. `node` still can be returned to user
   // before the scheduled async task is completed.
   context->audioWorklet()->CreateProcessor(node->GetWorkletHandler(),
                                            std::move(processor_port_channel),
@@ -191,7 +191,7 @@ AudioWorkletNode* AudioWorkletNode::Create(
 
   {
     // The node should be manually added to the automatic pull node list,
-    // even without a |connect()| call.
+    // even without a `connect()` call.
     BaseAudioContext::GraphAutoLocker locker(context);
     node->Handler().UpdatePullStatusIfNeeded();
   }

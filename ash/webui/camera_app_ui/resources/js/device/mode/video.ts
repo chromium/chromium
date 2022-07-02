@@ -9,6 +9,7 @@ import {
 } from '../../assert.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
+import * as expert from '../../expert.js';
 import * as h264 from '../../h264.js';
 import {I18nString} from '../../i18n_string.js';
 import {Filenamer} from '../../models/file_namer.js';
@@ -250,7 +251,7 @@ export class Video extends ModeBase {
    * @return Returns whether taking video sanpshot via Blob stream is enabled.
    */
   async isBlobVideoSnapshotEnabled(): Promise<boolean> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     const {deviceId} = this.video.getVideoSettings();
     return deviceOperator !== null &&
         (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));
@@ -634,7 +635,7 @@ export class VideoFactory extends ModeFactory {
 
   produce(): ModeBase {
     let captureConstraints = null;
-    if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
+    if (expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING)) {
       const {width, height} = assertExists(this.captureResolution);
       captureConstraints = {
         deviceId: this.constraints.deviceId,

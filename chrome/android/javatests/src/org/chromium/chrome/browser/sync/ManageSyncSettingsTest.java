@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -71,7 +72,7 @@ import java.util.Set;
 public class ManageSyncSettingsTest {
     private static final String TAG = "ManageSyncSettingsTest";
 
-    private static final int RENDER_TEST_REVISION = 4;
+    private static final int RENDER_TEST_REVISION = 5;
 
     /**
      * Maps ModelTypes to their UI element IDs.
@@ -83,6 +84,7 @@ public class ManageSyncSettingsTest {
         UI_DATATYPES.put(ModelType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS);
         UI_DATATYPES.put(ModelType.TYPED_URLS, ManageSyncSettings.PREF_SYNC_HISTORY);
         UI_DATATYPES.put(ModelType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS);
+        UI_DATATYPES.put(ModelType.READING_LIST, ManageSyncSettings.PREF_SYNC_READING_LIST);
         UI_DATATYPES.put(ModelType.PROXY_TABS, ManageSyncSettings.PREF_SYNC_RECENT_TABS);
         UI_DATATYPES.put(ModelType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS);
     }
@@ -160,7 +162,11 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testUnsettingAllDataTypesStopsSync() {
+    public void testUnsettingAllDataTypesDoesNotStopSync() {
+        // See crbug.com/1291946: The original MICE implementation stopped sync
+        // (by setting SyncRequested to false) when the user disabled all data
+        // types, for migration / backwards compatibility reasons. As of M104,
+        // that's no longer the case.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -170,37 +176,8 @@ public class ManageSyncSettingsTest {
         for (CheckBoxPreference dataType : getDataTypes(fragment).values()) {
             mSyncTestRule.togglePreference(dataType);
         }
-        // All data types have been unchecked. Sync should stop.
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testSettingAnyDataTypeStartsSync() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
-        mSyncTestRule.stopSync();
-        ManageSyncSettings fragment = startManageSyncPreferences();
-
-        CheckBoxPreference syncAutofill =
-                (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        mSyncTestRule.togglePreference(syncAutofill);
-        // Sync should start after any data type is checked.
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testTogglingSyncEverythingStartsSync() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(false, new HashSet<>());
-        mSyncTestRule.stopSync();
-        ManageSyncSettings fragment = startManageSyncPreferences();
-
-        mSyncTestRule.togglePreference(getSyncEverything(fragment));
-        // Sync should start after setting sync everything toggle.
+        // All data types have been unchecked, but Sync itself should still be
+        // enabled.
         Assert.assertTrue(SyncTestUtil.isSyncRequested());
     }
 
@@ -233,12 +210,15 @@ public class ManageSyncSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_and_signout_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void testSignOutAndTurnOffSyncDisabledForChildUser() {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();

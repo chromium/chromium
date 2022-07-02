@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 
+#include <utility>
+
 #include "ash/wm/window_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -13,6 +15,8 @@
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -24,14 +28,20 @@
 
 namespace ash {
 
-WindowManagementImpl::WindowManagementImpl(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+WindowManagementImpl::WindowManagementImpl(int32_t render_process_host_id)
+    : render_process_host_id_(render_process_host_id) {}
 
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
   std::vector<blink::mojom::CrosWindowInfoPtr> windows;
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    std::move(callback).Run(std::move(windows));
+    return;
+  }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->InstanceRegistry().ForEachInstance(
       [&windows](const apps::InstanceUpdate& update) {
         auto window = blink::mojom::CrosWindowInfo::New();
@@ -72,12 +82,10 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
   std::move(callback).Run(std::move(windows));
 }
 
-void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
-                                           int32_t x,
-                                           int32_t y,
-                                           int32_t width,
-                                           int32_t height,
-                                           SetWindowBoundsCallback callback) {
+void WindowManagementImpl::MoveTo(const base::UnguessableToken& id,
+                                  int32_t x,
+                                  int32_t y,
+                                  MoveToCallback callback) {
   aura::Window* target = GetWindow(id);
   // TODO(crbug.com/1253318): Ensure this works with multiple screens.
   if (!target) {
@@ -86,7 +94,61 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
     return;
   }
 
-  target->SetBounds(gfx::Rect(x, y, width, height));
+  target->SetBounds(
+      gfx::Rect(x, y, target->bounds().width(), target->bounds().height()));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::MoveBy(const base::UnguessableToken& id,
+                                  int32_t delta_x,
+                                  int32_t delta_y,
+                                  MoveByCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(
+      gfx::Rect(target->bounds().x() + delta_x, target->bounds().y() + delta_y,
+                target->bounds().width(), target->bounds().height()));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::ResizeTo(const base::UnguessableToken& id,
+                                    int32_t width,
+                                    int32_t height,
+                                    ResizeToCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(
+      gfx::Rect(target->bounds().x(), target->bounds().y(), width, height));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::ResizeBy(const base::UnguessableToken& id,
+                                    int32_t delta_width,
+                                    int32_t delta_height,
+                                    ResizeByCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(gfx::Rect(target->bounds().x(), target->bounds().y(),
+                              target->bounds().width() + delta_width,
+                              target->bounds().height() + delta_height));
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
@@ -157,18 +219,40 @@ void WindowManagementImpl::Focus(const base::UnguessableToken& id,
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
-void WindowManagementImpl::Close(const base::UnguessableToken& id) {
+void WindowManagementImpl::Close(const base::UnguessableToken& id,
+                                 CloseCallback callback) {
   views::Widget* widget = GetWidget(id);
-  if (widget) {
-    widget->Close();
+  if (!widget) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNoWidget);
+    return;
   }
+  widget->Close();
+  // TODO(crbug.com/232703960): Scope into close function and refactor for
+  // error handling.
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+Profile* WindowManagementImpl::GetProfile() {
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(render_process_host_id_);
+  if (!render_process_host)
+    return nullptr;
+
+  return Profile::FromBrowserContext(render_process_host->GetBrowserContext());
 }
 
 aura::Window* WindowManagementImpl::GetWindow(
     const base::UnguessableToken& id) {
   aura::Window* target = nullptr;
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return nullptr;
+  }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->InstanceRegistry().ForOneInstance(
       id, [&target](const apps::InstanceUpdate& update) {
         target = update.Window()->GetToplevelWindow();
@@ -187,6 +271,21 @@ views::Widget* WindowManagementImpl::GetWidget(
 
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(target);
   return widget;
+}
+
+void WindowManagementImpl::GetAllScreens(GetAllScreensCallback callback) {
+  std::vector<blink::mojom::CrosScreenInfoPtr> screens;
+
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    auto screen = blink::mojom::CrosScreenInfo::New();
+    screen->work_area = display.work_area();
+    screen->bounds = display.bounds();
+    screen->is_primary =
+        display.id() == display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    screens.push_back(std::move(screen));
+  }
+
+  std::move(callback).Run(std::move(screens));
 }
 
 }  // namespace ash

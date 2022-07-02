@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL scroll-timeline-name is referenceable in animation-timeline on the declaring element itself assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-name is referenceable in animation-timeline on that element's descendants assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-name is referenceable in animation-timeline on that element's following siblings assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-name is referenceable in animation-timeline on that element's following siblings' descendants assert_equals: expected "100px" but got "50px"
+PASS scroll-timeline-name is not referenceable in animation-timeline on that element's previous siblings
+FAIL scroll-timeline-name is matched based on tree order, which considers siblings closer than parents assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-name on an element which is not a scroll-container assert_equals: Animation with an unresolved current time expected "none" but got "50px"
+FAIL scroll-timeline-axis is block assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-axis is inline assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-axis is horizontal assert_equals: expected "100px" but got "50px"
+FAIL scroll-timeline-axis is vertical assert_equals: expected "100px" but got "50px"
+Harness: the test ran to completion.
+

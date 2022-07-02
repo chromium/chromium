@@ -1,18 +1,4 @@
 {
-  "ANGLE GPU Android Release (Nexus 5X)": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "ChromeOS FYI Release (amd64-generic)": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
@@ -24,7 +10,6 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -39,7 +24,6 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -52,7 +36,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -67,7 +50,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_static_angle": true
     }
@@ -84,7 +66,6 @@
       "symbol_level": 1,
       "use_bundled_weston": true,
       "use_ozone": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -97,7 +78,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -109,7 +89,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -172,7 +151,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -185,7 +163,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -197,7 +174,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -211,7 +187,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -224,7 +199,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -237,7 +211,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -251,35 +224,7 @@
       "is_tsan": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
-    }
-  },
-  "Optional Android Release (Nexus 5X)": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
-  "Optional Android Release (Pixel 4)": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
     }
   },
   "gpu-fyi-chromeos-jacuzzi-exp": {

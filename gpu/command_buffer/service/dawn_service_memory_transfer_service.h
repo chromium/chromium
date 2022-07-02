@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_SERVICE_MEMORY_TRANSFER_SERVICE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_SERVICE_MEMORY_TRANSFER_SERVICE_H_
 
-#include <dawn_wire/WireServer.h>
+#include <dawn/wire/WireServer.h>
 
 #include "base/memory/raw_ptr.h"
 

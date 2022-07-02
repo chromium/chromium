@@ -12,6 +12,8 @@
 #include "ash/shell.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_toggle_controller.h"
 #include "ash/system/keyboard_brightness/unified_keyboard_brightness_slider_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -120,6 +122,14 @@ void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
     // User has made a brightness adjustment, or the KBL was made
     // no-longer-forced-off implicitly in response to a user adjustment.
     ShowBubble(SLIDER_TYPE_KEYBOARD_BRIGHTNESS);
+    if (features::IsRgbKeyboardEnabled()) {
+      // Show the education nudge to change the keyboard backlight color if
+      // applicable. |bubble_view_| is used as the anchor view.
+      Shell::Get()
+          ->keyboard_backlight_color_controller()
+          ->keyboard_backlight_color_nudge_controller()
+          ->MaybeShowEducationNudge(bubble_view_);
+    }
   } else if (cause == power_manager::
                           BacklightBrightnessChange_Cause_USER_TOGGLED_OFF ||
              cause == power_manager::
@@ -156,7 +166,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.
-    if (slider_type == SLIDER_TYPE_MIC)
+    if (slider_type == SLIDER_TYPE_MIC && tray_->bubble())
       tray_->ShowAudioDetailedViewBubble();
     return;
   }
@@ -208,7 +218,6 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   init_params.insets = GetTrayBubbleInsets();
-  init_params.has_shadow = false;
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);

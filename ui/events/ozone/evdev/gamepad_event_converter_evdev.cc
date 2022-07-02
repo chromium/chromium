@@ -58,6 +58,14 @@ GamepadEventConverterEvdev::GamepadEventConverterEvdev(
     }
   }
   supports_rumble_ = devinfo.SupportsRumble();
+  // Converts unsigned long to uint64_t.
+  const auto key_bits = devinfo.GetKeyBits();
+  key_bits_.resize(key_bits.size());
+  for (int i = 0; i < KEY_CNT; i++) {
+    if (EvdevBitIsSet(key_bits.data(), i)) {
+      EvdevSetUint64Bit(key_bits_.data(), i);
+    }
+  }
 }
 
 GamepadEventConverterEvdev::~GamepadEventConverterEvdev() {
@@ -197,6 +205,10 @@ GamepadEventConverterEvdev::GetGamepadAxes() const {
 
 bool GamepadEventConverterEvdev::GetGamepadRumbleCapability() const {
   return supports_rumble_;
+}
+
+std::vector<uint64_t> GamepadEventConverterEvdev::GetGamepadKeyBits() const {
+  return key_bits_;
 }
 
 void GamepadEventConverterEvdev::ProcessEvent(const input_event& evdev_ev) {

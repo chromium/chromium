@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
@@ -91,13 +92,13 @@ std::string ExpectedOsPlatform() {
   return "Windows";
 #elif BUILDFLAG(IS_MAC)
   return "Mac OS X";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "ChromeOS";
 #else
   return "ChromiumOS";
 #endif
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return "Linux";
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
@@ -355,13 +356,13 @@ class ConnectorsServiceAnalysisProfileBrowserTest
                policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                    BuildBrowserDictionary(include_device_info));
     base::Value::Dict context = reporting::GetContext(browser()->profile());
-    output.Merge(context);
+    output.Merge(std::move(context));
     if (include_device_info) {
       base::Value::Dict device;
       device.Set("device", policy::ReportingJobConfigurationBase::
                                DeviceDictionaryBuilder ::BuildDeviceDictionary(
                                    kFakeBrowserDMToken, kFakeBrowserClientId));
-      output.Merge(device);
+      output.Merge(std::move(device));
     }
 
     return output;
@@ -488,7 +489,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ValidateClientMetadata(*settings.value().client_metadata,
                            /*profile_reporting*/ false);
@@ -518,7 +521,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ValidateClientMetadata(*settings.value().client_metadata,
                            /*profile_reporting*/ false);
@@ -534,7 +539,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+      ASSERT_EQ(kFakeProfileDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ValidateClientMetadata(*settings.value().client_metadata,
                              /*profile_reporting*/ true);
@@ -542,7 +549,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+      ASSERT_EQ(kFakeProfileDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_TRUE(settings.value().client_metadata);
       ValidateClientMetadata(*settings.value().client_metadata,
@@ -566,7 +575,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.has_value());
   } else {
     ASSERT_TRUE(settings.has_value());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+    ASSERT_EQ(kFakeBrowserDMToken,
+              settings.value().cloud_or_local_settings.dm_token());
     ASSERT_FALSE(settings.value().per_profile);
     ASSERT_FALSE(settings.value().client_metadata);
   }
@@ -581,14 +592,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+      ASSERT_EQ(kFakeProfileDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      EXPECT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+      ASSERT_EQ(kFakeProfileDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);

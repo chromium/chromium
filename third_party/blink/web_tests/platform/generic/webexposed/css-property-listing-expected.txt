@@ -58,6 +58,7 @@ All changes to this list should go through Blink's feature review process: http:
     align-self
     alignment-baseline
     all
+    anchor-name
     animation-delay
     animation-direction
     animation-duration
@@ -298,6 +299,7 @@ All changes to this list should go through Blink's feature review process: http:
     perspective-origin
     pointer-events
     position
+    position-fallback
     quotes
     r
     resize

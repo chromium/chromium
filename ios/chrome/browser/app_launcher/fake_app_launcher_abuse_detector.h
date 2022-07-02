@@ -10,7 +10,7 @@
 // An AppLauncherAbuseDetector for testing.
 @interface FakeAppLauncherAbuseDetector : AppLauncherAbuseDetector
 
-// The policy returned by |-launchPolicyforURL:fromSourcePageURL:|.  Default
+// The policy returned by `-launchPolicyforURL:fromSourcePageURL:`.  Default
 // value is ExternalAppLaunchPolicyAllow.
 @property(nonatomic, assign) ExternalAppLaunchPolicy policy;
 

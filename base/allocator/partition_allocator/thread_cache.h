@@ -10,7 +10,13 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
@@ -18,10 +24,6 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
@@ -66,7 +68,7 @@ class ThreadCacheInspector;
 
 namespace internal {
 
-extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
+extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 // On Android, we have to go through emutls, since this is always a shared
 // library, so don't bother.
 #if defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
@@ -74,7 +76,8 @@ extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 #endif
 
 #if defined(PA_THREAD_CACHE_FAST_TLS)
-extern BASE_EXPORT thread_local ThreadCache* g_thread_cache;
+extern PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) thread_local ThreadCache* g_thread_cache;
 #endif
 
 }  // namespace internal
@@ -95,7 +98,7 @@ struct ThreadCacheLimits {
 // This class cannot allocate in the (Un)registerThreadCache() functions, as
 // they are called from ThreadCache constructor, which is from within the
 // allocator. However the other members can allocate.
-class BASE_EXPORT ThreadCacheRegistry {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
  public:
   static ThreadCacheRegistry& Instance();
   // Do not instantiate.
@@ -143,9 +146,11 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   void ResetForTesting();
 
-  static constexpr base::TimeDelta kMinPurgeInterval = base::Seconds(1);
-  static constexpr base::TimeDelta kMaxPurgeInterval = base::Minutes(1);
-  static constexpr base::TimeDelta kDefaultPurgeInterval =
+  static constexpr internal::base::TimeDelta kMinPurgeInterval =
+      internal::base::Seconds(1);
+  static constexpr internal::base::TimeDelta kMaxPurgeInterval =
+      internal::base::Minutes(1);
+  static constexpr internal::base::TimeDelta kDefaultPurgeInterval =
       2 * kMinPurgeInterval;
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
@@ -155,9 +160,10 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   // Not using base::Lock as the object's constructor must be constexpr.
   internal::Lock lock_;
-  ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
+  ThreadCache* list_head_ PA_GUARDED_BY(GetLock()) = nullptr;
   bool periodic_purge_is_initialized_ = false;
-  base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
+  internal::base::TimeDelta periodic_purge_next_interval_ =
+      kDefaultPurgeInterval;
 
 #if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
@@ -179,7 +185,7 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
   } while (0)
 #endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 namespace internal {
 
@@ -201,13 +207,13 @@ class ReentrancyGuard {
 #define PA_REENTRANCY_GUARD(x) \
   internal::ReentrancyGuard guard { x }
 
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_REENTRANCY_GUARD(x) \
   do {                         \
   } while (0)
 
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 // Per-thread cache. *Not* threadsafe, must only be accessed from a single
 // thread.
@@ -216,7 +222,7 @@ class ReentrancyGuard {
 // manipulated, as it is a thread_local member. As such, any
 // |ThreadCache::instance->*()| call will necessarily be done from a single
 // thread.
-class BASE_EXPORT ThreadCache {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
  public:
   // Initializes the thread cache for |root|. May allocate, so should be called
   // with the thread cache disabled on the partition side, and without the
@@ -275,14 +281,16 @@ class BASE_EXPORT ThreadCache {
   // Returns true if the slot was put in the cache, and false otherwise. This
   // can happen either because the cache is full or the allocation was too
   // large.
-  ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start, size_t bucket_index);
+  PA_ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start,
+                                        size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
   // Returns 0 on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
-  ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index, size_t* slot_size);
+  PA_ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index,
+                                          size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -327,11 +335,11 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kLargeSizeThreshold;
 
   const ThreadCache* prev_for_testing() const
-      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
     return prev_;
   }
   const ThreadCache* next_for_testing() const
-      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
     return next_;
   }
 
@@ -363,7 +371,7 @@ class BASE_EXPORT ThreadCache {
   template <bool crash_on_corruption>
   void ClearBucketHelper(Bucket& bucket, size_t limit);
   void ClearBucket(Bucket& bucket, size_t limit);
-  ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
+  PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   template <bool crash_on_corruption>
@@ -416,14 +424,14 @@ class BASE_EXPORT ThreadCache {
   PartitionRoot<>* const root_;
 
   const internal::base::PlatformThreadId thread_id_;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_thread_cache_ = false;
 #endif
 
   // Intrusive list since ThreadCacheRegistry::RegisterThreadCache() cannot
   // allocate.
-  ThreadCache* next_ GUARDED_BY(ThreadCacheRegistry::GetLock());
-  ThreadCache* prev_ GUARDED_BY(ThreadCacheRegistry::GetLock());
+  ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
+  ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
@@ -453,12 +461,12 @@ class BASE_EXPORT ThreadCache {
   PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
-ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
-                                                size_t bucket_index) {
+PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
+                                                   size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
     return false;
   }
@@ -477,18 +485,18 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
   // gambling that the compiler would not issue multiple loads.
   uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
   // Batched deallocation, amortizing lock acquisitions.
-  if (UNLIKELY(bucket.count > limit)) {
+  if (PA_UNLIKELY(bucket.count > limit)) {
     ClearBucket(bucket, limit / 2);
   }
 
-  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+  if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
     PurgeInternal();
 
   return true;
 }
 
-ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
-                                                  size_t* slot_size) {
+PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
+                                                     size_t* slot_size) {
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -496,14 +504,14 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
     return 0;
   }
 
   auto& bucket = buckets_[bucket_index];
-  if (LIKELY(bucket.freelist_head)) {
+  if (PA_LIKELY(bucket.freelist_head)) {
     PA_INCREMENT_COUNTER(stats_.alloc_hits);
   } else {
     PA_DCHECK(bucket.count == 0);
@@ -514,7 +522,7 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
-    if (UNLIKELY(!bucket.freelist_head))
+    if (PA_UNLIKELY(!bucket.freelist_head))
       return 0;
   }
 
@@ -537,8 +545,8 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   return reinterpret_cast<uintptr_t>(result);
 }
 
-ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
-                                            uintptr_t slot_start) {
+PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
+                                               uintptr_t slot_start) {
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
     defined(PA_HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
@@ -556,7 +564,7 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   // Everything below requires this alignment.
   static_assert(internal::kAlignment == 16, "");
 
-#if HAS_BUILTIN(__builtin_assume_aligned)
+#if PA_HAS_BUILTIN(__builtin_assume_aligned)
   uintptr_t address = reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
       reinterpret_cast<void*>(slot_start), internal::kAlignment));
 #else
@@ -583,8 +591,8 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   slot_size_remaining_in_16_bytes = std::min(
       slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
 
-  static const uint32_t poison_16_bytes[4] = {0xdeadbeef, 0xdeadbeef,
-                                              0xdeadbeef, 0xdeadbeef};
+  static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
+                                              0xbadbad00, 0xbadbad00};
   uint32_t* address_aligned = reinterpret_cast<uint32_t*>(address);
 
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
@@ -602,14 +610,5 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 }
 
 }  // namespace partition_alloc
-
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::ThreadCache;
-using ::partition_alloc::ThreadCacheRegistry;
-
-}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_THREAD_CACHE_H_

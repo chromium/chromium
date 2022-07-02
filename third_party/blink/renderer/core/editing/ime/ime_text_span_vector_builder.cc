@@ -30,12 +30,14 @@
 
 #include "third_party/blink/renderer/core/editing/ime/ime_text_span_vector_builder.h"
 
+#include "base/numerics/safe_conversions.h"
+
 namespace blink {
 
 Vector<ImeTextSpan> ImeTextSpanVectorBuilder::Build(
     const WebVector<ui::ImeTextSpan>& ime_text_spans) {
   Vector<ImeTextSpan> result;
-  wtf_size_t size = SafeCast<wtf_size_t>(ime_text_spans.size());
+  wtf_size_t size = base::checked_cast<wtf_size_t>(ime_text_spans.size());
   result.ReserveCapacity(size);
   for (wtf_size_t i = 0; i < size; ++i)
     result.push_back(ime_text_spans[i]);

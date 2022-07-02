@@ -91,7 +91,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 };
 
 void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
@@ -134,7 +134,7 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
       return;
 
     player_ = std::make_unique<MockMediaSessionPlayerObserver>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
 
     MediaSessionImpl::Get(shell()->web_contents())
         ->AddPlayer(player_.get(), kPlayerId);
@@ -145,7 +145,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
   }
 
   MediaSessionServiceImpl* GetService() {
-    RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+    RenderFrameHost* main_frame =
+        shell()->web_contents()->GetPrimaryMainFrame();
     const auto main_frame_id = main_frame->GetGlobalId();
     if (GetSession()->services_.count(main_frame_id))
       return GetSession()->services_[main_frame_id];

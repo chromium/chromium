@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
@@ -72,10 +73,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -893,7 +894,7 @@ class ExistingUserControllerActiveDirectoryTest
     AuthPolicyClient::InitializeFake();
     FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
     // Required for tpm_util. Will be destroyed in browser shutdown.
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     RefreshDevicePolicy();
     policy_provider_.SetDefaultReturns(
@@ -1310,9 +1311,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
   EXPECT_TRUE(user->force_online_signin());
 }
 
-// TODO(crbug.com/1324677): Re-enable this test
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
-                       DISABLED_TpmError) {
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
   SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::TPM_ERROR);
 
   OobeScreenWaiter(TpmErrorView::kScreenId).Wait();
@@ -1320,7 +1319,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
-  test::OobeJS().ClickOnPath({"tpm-error-message", "restartButton"});
+  test::TapOnPathAndWaitForOobeToBeDestroyed(
+      {"tpm-error-message", "restartButton"});
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
 }

@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -35,7 +35,7 @@ class WebViewTranslateClient : public translate::TranslateClient {
       translate::TranslateRanker* translate_ranker,
       language::LanguageModel* language_model,
       web::WebState* web_state,
-      translate::TranslateAcceptLanguages* accept_languages);
+      language::AcceptLanguagesService* accept_languages);
 
   WebViewTranslateClient(const WebViewTranslateClient&) = delete;
   WebViewTranslateClient& operator=(const WebViewTranslateClient&) = delete;
@@ -67,7 +67,7 @@ class WebViewTranslateClient : public translate::TranslateClient {
   translate::IOSTranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
-  translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
+  language::AcceptLanguagesService* GetAcceptLanguagesService() override;
   int GetInfobarIconID() const override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
@@ -84,7 +84,7 @@ class WebViewTranslateClient : public translate::TranslateClient {
   PrefService* pref_service_;
   translate::TranslateManager translate_manager_;
   translate::IOSTranslateDriver translate_driver_;
-  translate::TranslateAcceptLanguages* accept_languages_;
+  language::AcceptLanguagesService* accept_languages_;
 
   // ObjC class that wraps this class.
   __weak CWVTranslationController* translation_controller_ = nil;

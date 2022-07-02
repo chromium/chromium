@@ -10,6 +10,8 @@ namespace share {
 
 const base::Feature kPersistShareHubOnAppSwitch{
     "PersistShareHubOnAppSwitch", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kScreenshotsForAndroidV2{"ScreenshotsForAndroidV2",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSharingDesktopScreenshotsEdit{
     "SharingDesktopScreenshotsEdit", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kUpcomingSharingFeatures{"UpcomingSharingFeatures",

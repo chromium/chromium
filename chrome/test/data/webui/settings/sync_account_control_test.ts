@@ -37,9 +37,6 @@ suite('SyncAccountControl', function() {
   }
 
   setup(async function() {
-    // <if expr="chromeos_lacros">
-    loadTimeData.overrideValues({nonSyncingProfilesEnabled: true});
-    // </if>
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);

@@ -21,7 +21,6 @@ import {DuplexMode, MediaSizeValue, Ticket} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
-import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
@@ -271,16 +270,12 @@ export class PrintPreviewPreviewAreaElement extends
     this.documentReady_ = false;
     this.getPreview_().then(
         previewUid => {
-          MetricsContext.getPreview().record(
-              PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
           if (!this.documentModifiable) {
             this.onPreviewStart_(previewUid, -1);
           }
           this.documentReady_ = true;
         },
         type => {
-          MetricsContext.getPreview().record(
-              PrintPreviewInitializationEvents.FUNCTION_FAILED);
           if (type === 'SETTINGS_INVALID') {
             this.error = Error.INVALID_PRINTER;
             this.previewState = PreviewAreaState.ERROR;
@@ -289,8 +284,6 @@ export class PrintPreviewPreviewAreaElement extends
             this.previewState = PreviewAreaState.ERROR;
           }
         });
-    MetricsContext.getPreview().record(
-        PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
   // <if expr="is_macosx">

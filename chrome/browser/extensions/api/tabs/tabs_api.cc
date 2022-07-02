@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -575,55 +576,6 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   return RespondNow(OneArgument(base::Value(std::move(window_list))));
 }
 
-bool WindowsCreateFunction::ShouldOpenIncognitoWindow(
-    const windows::Create::Params::CreateData* create_data,
-    std::vector<GURL>* urls,
-    std::string* error) {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  const IncognitoModePrefs::Availability incognito_availability =
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs());
-  bool incognito = false;
-  if (create_data && create_data->incognito) {
-    incognito = *create_data->incognito;
-    if (incognito &&
-        incognito_availability == IncognitoModePrefs::Availability::kDisabled) {
-      *error = tabs_constants::kIncognitoModeIsDisabled;
-      return false;
-    }
-    if (!incognito &&
-        incognito_availability == IncognitoModePrefs::Availability::kForced) {
-      *error = tabs_constants::kIncognitoModeIsForced;
-      return false;
-    }
-  } else if (incognito_availability ==
-             IncognitoModePrefs::Availability::kForced) {
-    // If incognito argument is not specified explicitly, we default to
-    // incognito when forced so by policy.
-    incognito = true;
-  }
-
-  // Remove all URLs that are not allowed in an incognito session. Note that a
-  // ChromeOS guest session is not considered incognito in this case.
-  if (incognito && !profile->IsGuestSession()) {
-    std::string first_url_erased;
-    for (size_t i = 0; i < urls->size();) {
-      if (IsURLAllowedInIncognito((*urls)[i], profile)) {
-        i++;
-      } else {
-        if (first_url_erased.empty())
-          first_url_erased = (*urls)[i].spec();
-        urls->erase(urls->begin() + i);
-      }
-    }
-    if (urls->empty() && !first_url_erased.empty()) {
-      *error = ErrorUtils::FormatErrorMessage(
-          tabs_constants::kURLsNotAllowedInIncognitoError, first_url_erased);
-      return false;
-    }
-  }
-  return incognito;
-}
-
 ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::unique_ptr<windows::Create::Params> params(
       windows::Create::Params::Create(args()));
@@ -659,14 +611,19 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   // Decide whether we are opening a normal window or an incognito window.
   std::string error;
-  bool open_incognito_window =
-      ShouldOpenIncognitoWindow(create_data, &urls, &error);
-  if (!error.empty())
+  Profile* calling_profile = Profile::FromBrowserContext(browser_context());
+  windows_util::IncognitoResult incognito_result =
+      windows_util::ShouldOpenIncognitoWindow(
+          calling_profile,
+          create_data && create_data->incognito
+              ? absl::optional<bool>(*create_data->incognito)
+              : absl::nullopt,
+          &urls, &error);
+  if (incognito_result == windows_util::IncognitoResult::kError)
     return RespondNow(Error(std::move(error)));
 
-  Profile* calling_profile = Profile::FromBrowserContext(browser_context());
   Profile* window_profile =
-      open_incognito_window
+      incognito_result == windows_util::IncognitoResult::kIncognito
           ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : calling_profile;
 
@@ -833,7 +790,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (!contents && urls.empty() && window_type == Browser::TYPE_NORMAL) {
     chrome::NewTab(new_window);
   }
-  chrome::SelectNumberedTab(new_window, 0, {TabStripModel::GestureType::kNone});
+  chrome::SelectNumberedTab(
+      new_window, 0,
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kNone));
 
   if (focused) {
     new_window->window()->Show();

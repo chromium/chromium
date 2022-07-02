@@ -55,7 +55,7 @@ void SetTransform(PaintChunk& chunk,
                   const TransformPaintPropertyNode& transform) {
   auto properties = chunk.properties.GetPropertyTreeState();
   properties.SetTransform(transform);
-  chunk.properties = RefCountedPropertyTreeState(properties);
+  chunk.properties = RefCountedPropertyTreeStateOrAlias(properties);
 }
 
 class MockScrollCallbacks : public CompositorScrollCallbacks {
@@ -4670,8 +4670,9 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
-      scroll_unification_enabled_(true);
+  // This test requires scroll unification.
+  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
+    return;
 
   const uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;

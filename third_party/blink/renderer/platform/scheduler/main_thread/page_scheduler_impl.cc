@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -171,10 +172,10 @@ PageSchedulerImpl::PageSchedulerImpl(
           base::FeatureList::IsEnabled(features::kThrottleForegroundTimers)),
       foreground_timers_throttled_wake_up_interval_(
           GetForegroundTimersThrottledWakeUpInterval()) {
-  page_lifecycle_state_tracker_ = std::make_unique<PageLifecycleStateTracker>(
-      kDefaultPageVisibility == PageVisibilityState::kVisible
-          ? PageLifecycleState::kActive
-          : PageLifecycleState::kHiddenBackgrounded);
+  current_lifecycle_state_ =
+      (kDefaultPageVisibility == PageVisibilityState::kVisible
+           ? PageLifecycleState::kActive
+           : PageLifecycleState::kHiddenBackgrounded);
   do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
       &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
   do_intensively_throttle_wake_ups_callback_.Reset(
@@ -215,13 +216,12 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
 
   switch (page_visibility_) {
     case PageVisibilityState::kVisible:
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          PageLifecycleState::kActive);
+      SetPageLifecycleState(PageLifecycleState::kActive);
       break;
     case PageVisibilityState::kHidden:
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          IsBackgrounded() ? PageLifecycleState::kHiddenBackgrounded
-                           : PageLifecycleState::kHiddenForegrounded);
+      SetPageLifecycleState(IsBackgrounded()
+                                ? PageLifecycleState::kHiddenBackgrounded
+                                : PageLifecycleState::kHiddenForegrounded);
       break;
   }
 
@@ -271,21 +271,17 @@ void PageSchedulerImpl::SetPageFrozenImpl(
       PageSchedulerImpl::NotificationPolicy::kNotifyFrames)
     NotifyFrames();
   if (frozen) {
-    page_lifecycle_state_tracker_->SetPageLifecycleState(
-        PageLifecycleState::kFrozen);
+    SetPageLifecycleState(PageLifecycleState::kFrozen);
     main_thread_scheduler_->OnPageFrozen();
   } else {
     // The new state may have already been set if unfreezing through the
     // renderer, but that's okay - duplicate state changes won't be recorded.
     if (IsPageVisible()) {
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          PageLifecycleState::kActive);
+      SetPageLifecycleState(PageLifecycleState::kActive);
     } else if (IsBackgrounded()) {
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          PageLifecycleState::kHiddenBackgrounded);
+      SetPageLifecycleState(PageLifecycleState::kHiddenBackgrounded);
     } else {
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          PageLifecycleState::kHiddenForegrounded);
+      SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
     }
     // Since the page is no longer frozen, detach the handler that watches for
     // IPCs posted to frozen pages (or cancel setting up the handler).
@@ -370,9 +366,10 @@ void PageSchedulerImpl::RegisterFrameSchedulerImpl(
 std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
     FrameScheduler::Delegate* delegate,
     blink::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = std::make_unique<FrameSchedulerImpl>(
-      this, delegate, blame_context, frame_type);
+      this, delegate, blame_context, is_in_embedded_frame_tree, frame_type);
   RegisterFrameSchedulerImpl(frame_scheduler.get());
   return frame_scheduler;
 }
@@ -391,8 +388,7 @@ void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
     audio_state_ = AudioState::kAudible;
     on_audio_silent_closure_.Cancel();
     if (!IsPageVisible()) {
-      page_lifecycle_state_tracker_->SetPageLifecycleState(
-          PageLifecycleState::kHiddenForegrounded);
+      SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
     }
     // Pages with audio playing should not be frozen.
     SetPageFrozenImpl(false, NotificationPolicy::kDoNotNotifyFrames);
@@ -419,8 +415,7 @@ void PageSchedulerImpl::OnAudioSilent() {
   NotifyFrames();
   main_thread_scheduler_->OnAudioStateChanged();
   if (IsBackgrounded()) {
-    page_lifecycle_state_tracker_->SetPageLifecycleState(
-        PageLifecycleState::kHiddenBackgrounded);
+    SetPageLifecycleState(PageLifecycleState::kHiddenBackgrounded);
     MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
   }
   if (ShouldFreezePage()) {
@@ -446,6 +441,10 @@ bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
   if (!delegate_)
     return false;
   return delegate_->RequestBeginMainFrameNotExpected(new_state);
+}
+
+scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler() {
+  return main_thread_scheduler_->CreateWidgetScheduler();
 }
 
 bool PageSchedulerImpl::IsAudioPlaying() const {
@@ -485,8 +484,7 @@ void PageSchedulerImpl::OnThrottlingStatusUpdated() {
 
 void PageSchedulerImpl::OnVirtualTimeEnabled() {
   if (page_visibility_ == PageVisibilityState::kHidden) {
-    page_lifecycle_state_tracker_->SetPageLifecycleState(
-        PageLifecycleState::kHiddenForegrounded);
+    SetPageLifecycleState(PageLifecycleState::kHiddenForegrounded);
   }
   UpdatePolicyOnVisibilityChange(NotificationPolicy::kNotifyFrames);
 }
@@ -512,6 +510,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
   return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
                      [](const FrameSchedulerImpl* fs) {
                        return fs->IsWaitingForContentfulPaint() &&
+                              !fs->IsInEmbeddedFrameTree() &&
                               fs->GetFrameType() ==
                                   FrameScheduler::FrameType::kMainFrame;
                      });
@@ -521,6 +520,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
   return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
                      [](const FrameSchedulerImpl* fs) {
                        return fs->IsWaitingForMeaningfulPaint() &&
+                              !fs->IsInEmbeddedFrameTree() &&
                               fs->GetFrameType() ==
                                   FrameScheduler::FrameType::kMainFrame;
                      });
@@ -834,92 +834,13 @@ void PageSchedulerImpl::DoFreezePage() {
 }
 
 PageLifecycleState PageSchedulerImpl::GetPageLifecycleState() const {
-  return page_lifecycle_state_tracker_->GetPageLifecycleState();
+  return current_lifecycle_state_;
 }
 
-PageSchedulerImpl::PageLifecycleStateTracker::PageLifecycleStateTracker(
-    PageLifecycleState state)
-    : current_state_(kDefaultPageLifecycleState) {
-  SetPageLifecycleState(state);
-}
-
-void PageSchedulerImpl::PageLifecycleStateTracker::SetPageLifecycleState(
-    PageLifecycleState new_state) {
-  if (new_state == current_state_)
+void PageSchedulerImpl::SetPageLifecycleState(PageLifecycleState new_state) {
+  if (new_state == current_lifecycle_state_)
     return;
-  absl::optional<PageLifecycleStateTransition> transition =
-      ComputePageLifecycleStateTransition(current_state_, new_state);
-  if (transition) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kHistogramPageLifecycleStateTransition,
-        static_cast<PageLifecycleStateTransition>(transition.value()));
-  }
-  current_state_ = new_state;
-}
-
-PageLifecycleState
-PageSchedulerImpl::PageLifecycleStateTracker::GetPageLifecycleState() const {
-  return current_state_;
-}
-
-// static
-absl::optional<PageSchedulerImpl::PageLifecycleStateTransition>
-PageSchedulerImpl::PageLifecycleStateTracker::
-    ComputePageLifecycleStateTransition(PageLifecycleState old_state,
-                                        PageLifecycleState new_state) {
-  switch (old_state) {
-    case PageLifecycleState::kUnknown:
-      // We don't track the initial transition.
-      return absl::nullopt;
-    case PageLifecycleState::kActive:
-      switch (new_state) {
-        case PageLifecycleState::kHiddenForegrounded:
-          return PageLifecycleStateTransition::kActiveToHiddenForegrounded;
-        case PageLifecycleState::kHiddenBackgrounded:
-          return PageLifecycleStateTransition::kActiveToHiddenBackgrounded;
-        default:
-          NOTREACHED();
-          return absl::nullopt;
-      }
-    case PageLifecycleState::kHiddenForegrounded:
-      switch (new_state) {
-        case PageLifecycleState::kActive:
-          return PageLifecycleStateTransition::kHiddenForegroundedToActive;
-        case PageLifecycleState::kHiddenBackgrounded:
-          return PageLifecycleStateTransition::
-              kHiddenForegroundedToHiddenBackgrounded;
-        case PageLifecycleState::kFrozen:
-          return PageLifecycleStateTransition::kHiddenForegroundedToFrozen;
-        default:
-          NOTREACHED();
-          return absl::nullopt;
-      }
-    case PageLifecycleState::kHiddenBackgrounded:
-      switch (new_state) {
-        case PageLifecycleState::kActive:
-          return PageLifecycleStateTransition::kHiddenBackgroundedToActive;
-        case PageLifecycleState::kHiddenForegrounded:
-          return PageLifecycleStateTransition::
-              kHiddenBackgroundedToHiddenForegrounded;
-        case PageLifecycleState::kFrozen:
-          return PageLifecycleStateTransition::kHiddenBackgroundedToFrozen;
-        default:
-          NOTREACHED();
-          return absl::nullopt;
-      }
-    case PageLifecycleState::kFrozen:
-      switch (new_state) {
-        case PageLifecycleState::kActive:
-          return PageLifecycleStateTransition::kFrozenToActive;
-        case PageLifecycleState::kHiddenForegrounded:
-          return PageLifecycleStateTransition::kFrozenToHiddenForegrounded;
-        case PageLifecycleState::kHiddenBackgrounded:
-          return PageLifecycleStateTransition::kFrozenToHiddenBackgrounded;
-        default:
-          NOTREACHED();
-          return absl::nullopt;
-      }
-  }
+  current_lifecycle_state_ = new_state;
 }
 
 FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
@@ -960,10 +881,6 @@ PageSchedulerImpl::AllWakeUpBudgetPools() {
           same_origin_intensive_wake_up_budget_pool_.get(),
           cross_origin_intensive_wake_up_budget_pool_.get()};
 }
-
-// static
-const char PageSchedulerImpl::kHistogramPageLifecycleStateTransition[] =
-    "PageScheduler.PageLifecycleStateTransition";
 
 }  // namespace scheduler
 }  // namespace blink

@@ -75,6 +75,12 @@ class AndroidAutofillManager : public AutofillManager {
                          mojom::RendererFormDataAction action,
                          const FormData& form);
 
+  void SetProfileFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
+  void SetCreditCardFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
  protected:
   friend void AndroidDriverInitHook(
       AutofillClient* client,
@@ -99,11 +105,13 @@ class AndroidAutofillManager : public AutofillManager {
                                 const FormFieldData& field,
                                 const gfx::RectF& bounding_box) override;
 
-  void OnAskForValuesToFillImpl(int query_id,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box,
-                                bool autoselect_first_suggestion) override;
+  void OnAskForValuesToFillImpl(
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) override;
 
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FormFieldData& field,
@@ -112,6 +120,11 @@ class AndroidAutofillManager : public AutofillManager {
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;
+
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
 
   bool ShouldParseForms(const std::vector<FormData>& forms) override;
 

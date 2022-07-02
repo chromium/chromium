@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host_platform.h"
@@ -211,8 +212,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Helper method that returns the display for the |window()|.
   display::Display GetDisplayNearestRootWindow() const;
 
-  internal::NativeWidgetDelegate* const native_widget_delegate_;
-  DesktopNativeWidgetAura* const desktop_native_widget_aura_;
+  const raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
+  const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;
 
@@ -220,7 +221,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   // We can optionally have a parent which can order us to close, or own
   // children who we're responsible for closing when we CloseNow().
-  DesktopWindowTreeHostPlatform* window_parent_ = nullptr;
+  raw_ptr<DesktopWindowTreeHostPlatform> window_parent_ = nullptr;
   std::set<DesktopWindowTreeHostPlatform*> window_children_;
 
   // Used for tab dragging in move loop requests.

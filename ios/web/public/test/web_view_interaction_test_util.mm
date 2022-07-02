@@ -102,6 +102,9 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
                   << "JavaScriptFeature does not appear to be configured.";
       return nullptr;
     }
+  } else {
+    world = JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+        web_state->GetBrowserState());
   }
 
   WebFrameImpl* frame = static_cast<WebFrameImpl*>(GetMainFrame(web_state));

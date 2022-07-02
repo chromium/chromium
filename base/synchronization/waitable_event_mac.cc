@@ -4,7 +4,6 @@
 
 #include "base/synchronization/waitable_event.h"
 
-#include <dispatch/dispatch.h>
 #include <mach/mach.h>
 #include <sys/event.h>
 
@@ -12,10 +11,7 @@
 
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
-#include "base/mac/dispatch_source_mach.h"
-#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
-#include "base/mac/scoped_dispatch_object.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,7 +33,7 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
   kern_return_t kr = mach_port_construct(mach_task_self(), &options, 0, &name);
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_construct";
 
-  receive_right_ = new ReceiveRight(name, UseSlowWatchList(policy_));
+  receive_right_ = new ReceiveRight(name);
   send_right_.reset(name);
 
   if (initial_state == InitialState::SIGNALED)
@@ -50,31 +46,7 @@ void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }
 
-// NO_THREAD_SAFETY_ANALYSIS: Runtime dependent locking.
-void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
-  // If using the slow watch-list, copy the watchers to a local. After
-  // mach_msg(), the event object may be deleted by an awoken thread.
-  const bool use_slow_path = UseSlowWatchList(policy_);
-  ReceiveRight* receive_right = nullptr;  // Manually reference counted.
-  std::unique_ptr<std::list<OnceClosure>> watch_list;
-  if (use_slow_path) {
-    // To avoid a race condition of a WaitableEventWatcher getting added
-    // while another thread is in this method, hold the watch-list lock for
-    // the duration of mach_msg(). This requires ref-counting the
-    // |receive_right_| object that contains it, in case the event is deleted
-    // by a waiting thread after mach_msg().
-    receive_right = receive_right_.get();
-    receive_right->AddRef();
-
-    ReceiveRight::WatchList* slow_watch_list = receive_right->SlowWatchList();
-    slow_watch_list->lock.Acquire();
-
-    if (!slow_watch_list->list.empty()) {
-      watch_list = std::make_unique<std::list<OnceClosure>>();
-      std::swap(*watch_list, slow_watch_list->list);
-    }
-  }
-
+void WaitableEvent::Signal() {
   mach_msg_empty_send_t msg{};
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
   msg.header.msgh_size = sizeof(&msg);
@@ -85,22 +57,6 @@ void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
       mach_msg(&msg.header, MACH_SEND_MSG | MACH_SEND_TIMEOUT, sizeof(msg), 0,
                MACH_PORT_NULL, 0, MACH_PORT_NULL);
   MACH_CHECK(kr == KERN_SUCCESS || kr == MACH_SEND_TIMED_OUT, kr) << "mach_msg";
-
-  if (use_slow_path) {
-    // If a WaitableEventWatcher were to start watching when the event is
-    // signaled, it runs the callback immediately without adding it to the
-    // list. Therefore the watch list can only be non-empty if the event is
-    // newly signaled.
-    if (watch_list.get()) {
-      MACH_CHECK(kr == KERN_SUCCESS, kr);
-      for (auto& watcher : *watch_list) {
-        std::move(watcher).Run();
-      }
-    }
-
-    receive_right->SlowWatchList()->lock.Release();
-    receive_right->Release();
-  }
 }
 
 bool WaitableEvent::IsSignaled() {
@@ -182,16 +138,6 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 }
 
 // static
-bool WaitableEvent::UseSlowWatchList(ResetPolicy policy) {
-#if BUILDFLAG(IS_IOS)
-  const bool use_slow_path = false;
-#else
-  static bool use_slow_path = !mac::IsAtLeastOS10_12();
-#endif
-  return policy == ResetPolicy::MANUAL && use_slow_path;
-}
-
-// static
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
   DCHECK(count) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
@@ -201,22 +147,15 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
 
   // On macOS 10.11+, using Mach port sets may cause system instability, per
   // https://crbug.com/756102. On macOS 10.12+, a kqueue can be used
-  // instead to work around that. On macOS 10.9 and 10.10, kqueue only works
-  // for port sets, so port sets are just used directly. On macOS 10.11,
-  // libdispatch sources are used. Therefore, there are three different
-  // primitives that can be used to implement WaitMany. Which one to use is
-  // selected at run-time by OS version checks.
+  // instead to work around that.
   enum WaitManyPrimitive {
     KQUEUE,
-    DISPATCH,
     PORT_SET,
   };
 #if BUILDFLAG(IS_IOS)
   const WaitManyPrimitive kPrimitive = PORT_SET;
 #else
-  const WaitManyPrimitive kPrimitive =
-      mac::IsAtLeastOS10_12() ? KQUEUE
-                              : (mac::IsOS10_11() ? DISPATCH : PORT_SET);
+  const WaitManyPrimitive kPrimitive = KQUEUE;
 #endif
   if (kPrimitive == KQUEUE) {
     std::vector<kevent64_s> events(count);
@@ -248,51 +187,6 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
     }
 
     return triggered;
-  } else if (kPrimitive == DISPATCH) {
-    // Each item in |raw_waitables| will be watched using a dispatch souce
-    // scheduled on the serial |queue|. The first one to be invoked will
-    // signal the |semaphore| that this method will wait on.
-    ScopedDispatchObject<dispatch_queue_t> queue(dispatch_queue_create(
-        "org.chromium.base.WaitableEvent.WaitMany", DISPATCH_QUEUE_SERIAL));
-    ScopedDispatchObject<dispatch_semaphore_t> semaphore(
-        dispatch_semaphore_create(0));
-
-    // Block capture references. |signaled| will identify the index in
-    // |raw_waitables| whose source was invoked.
-    dispatch_semaphore_t semaphore_ref = semaphore.get();
-    const size_t kUnsignaled = -1;
-    __block size_t signaled = kUnsignaled;
-
-    // Create a MACH_RECV dispatch source for each event. These must be
-    // destroyed before the |queue| and |semaphore|.
-    std::vector<std::unique_ptr<DispatchSourceMach>> sources;
-    for (size_t i = 0; i < count; ++i) {
-      const bool auto_reset =
-          raw_waitables[i]->policy_ == WaitableEvent::ResetPolicy::AUTOMATIC;
-      // The block will copy a reference to |right|.
-      scoped_refptr<WaitableEvent::ReceiveRight> right =
-          raw_waitables[i]->receive_right_;
-      auto source =
-          std::make_unique<DispatchSourceMach>(queue, right->Name(), ^{
-            // After the semaphore is signaled, another event be signaled and
-            // the source may have its block put on the |queue|. WaitMany
-            // should only report (and auto-reset) one event, so the first
-            // event to signal is reported.
-            if (signaled == kUnsignaled) {
-              signaled = i;
-              if (auto_reset) {
-                PeekPort(right->Name(), true);
-              }
-              dispatch_semaphore_signal(semaphore_ref);
-            }
-          });
-      source->Resume();
-      sources.push_back(std::move(source));
-    }
-
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    DCHECK_NE(signaled, kUnsignaled);
-    return signaled;
   } else {
     DCHECK_EQ(kPrimitive, PORT_SET);
 
@@ -372,15 +266,8 @@ bool WaitableEvent::PeekPort(mach_port_t port, bool dequeue) {
   }
 }
 
-WaitableEvent::ReceiveRight::ReceiveRight(mach_port_t name,
-                                          bool create_slow_watch_list)
-    : right_(name),
-      slow_watch_list_(create_slow_watch_list ? new WatchList() : nullptr) {}
+WaitableEvent::ReceiveRight::ReceiveRight(mach_port_t name) : right_(name) {}
 
 WaitableEvent::ReceiveRight::~ReceiveRight() = default;
-
-WaitableEvent::ReceiveRight::WatchList::WatchList() = default;
-
-WaitableEvent::ReceiveRight::WatchList::~WatchList() = default;
 
 }  // namespace base

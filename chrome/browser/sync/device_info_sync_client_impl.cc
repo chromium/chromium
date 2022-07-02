@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
@@ -53,11 +51,9 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  return base::FeatureList::IsEnabled(
-             syncer::kDecoupleSendTabToSelfAndSyncSettings)
-             ? true
-             : send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(
-                   profile_->GetPrefs());
+  // Always true starting with M101, see crbug.com/1299833. Older clients and
+  // clients from other embedders might still return false.
+  return true;
 }
 
 // syncer::DeviceInfoSyncClient:

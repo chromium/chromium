@@ -57,11 +57,6 @@ const base::Feature kAsyncStackAdTagging{"AsyncStackAdTagging",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 
-AdTracker::AdScriptIdentifier::AdScriptIdentifier(
-    const v8_inspector::V8DebuggerId& context_id,
-    int id)
-    : context_id(context_id), id(id) {}
-
 // static
 AdTracker* AdTracker::FromExecutionContext(
     ExecutionContext* execution_context) {
@@ -184,11 +179,10 @@ void AdTracker::DidExecuteScript() {
   if (stack_frame_is_ad_.back()) {
     DCHECK_LT(0, num_ads_in_stack_);
     num_ads_in_stack_ -= 1;
+    if (num_ads_in_stack_ == 0)
+      bottom_most_ad_script_.reset();
   }
   stack_frame_is_ad_.pop_back();
-
-  if (num_ads_in_stack_ == 0)
-    bottom_most_ad_script_.reset();
 }
 
 void AdTracker::Will(const probe::ExecuteScript& probe) {
@@ -268,8 +262,10 @@ void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
   if (!async_stack_enabled_)
     return;
 
-  if (IsAdScriptInStack(StackType::kBottomAndTop))
-    task_context->SetAdTask();
+  absl::optional<AdScriptIdentifier> id;
+  if (IsAdScriptInStack(StackType::kBottomAndTop, &id)) {
+    task_context->SetAdTask(id);
+  }
 }
 
 void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
@@ -277,8 +273,14 @@ void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
   if (!async_stack_enabled_)
     return;
 
-  if (task_context->IsAdTask())
+  if (task_context->IsAdTask()) {
+    if (running_ad_async_tasks_ == 0) {
+      DCHECK(!bottom_most_async_ad_script_.has_value());
+      bottom_most_async_ad_script_ = task_context->ad_identifier();
+    }
+
     running_ad_async_tasks_ += 1;
+  }
 }
 
 void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
@@ -286,21 +288,31 @@ void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   if (!async_stack_enabled_)
     return;
 
-  if (task_context->IsAdTask())
+  if (task_context->IsAdTask()) {
+    DCHECK_GE(running_ad_async_tasks_, 1);
     running_ad_async_tasks_ -= 1;
+    if (running_ad_async_tasks_ == 0)
+      bottom_most_async_ad_script_.reset();
+  }
 }
 
 bool AdTracker::IsAdScriptInStack(
     StackType stack_type,
     absl::optional<AdScriptIdentifier>* out_ad_script) {
+  // First check if async tasks are running, as `bottom_most_async_ad_script_`
+  // is more likely to be what the caller is looking for than
+  // `bottom_most_ad_script_`.
+  if (running_ad_async_tasks_ > 0) {
+    if (out_ad_script)
+      *out_ad_script = bottom_most_async_ad_script_;
+    return true;
+  }
+
   if (num_ads_in_stack_ > 0) {
     if (out_ad_script)
       *out_ad_script = bottom_most_ad_script_;
     return true;
   }
-
-  if (running_ad_async_tasks_ > 0)
-    return true;
 
   ExecutionContext* execution_context = GetCurrentExecutionContext();
   if (!execution_context)

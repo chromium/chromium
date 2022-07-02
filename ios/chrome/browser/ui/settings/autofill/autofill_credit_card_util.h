@@ -10,8 +10,8 @@
 
 @interface AutofillCreditCardUtil : NSObject
 
-// Returns a new autofill::CreditCard object with |cardHolderName|,
-// |cardNumber|, |expirationMonth|, |expirationYear|, |cardNickname|.
+// Returns a new autofill::CreditCard object with `cardHolderName`,
+// `cardNumber`, `expirationMonth`, `expirationYear`, `cardNickname`.
 + (autofill::CreditCard)creditCardWithHolderName:(NSString*)cardHolderName
                                       cardNumber:(NSString*)cardNumber
                                  expirationMonth:(NSString*)expirationMonth
@@ -35,18 +35,18 @@
             cardNickname:(NSString*)cardNickname
                 appLocal:(const std::string&)appLocal;
 
-// Checks if a credit card has a valid |cardNumber|.
+// Checks if a credit card has a valid `cardNumber`.
 + (BOOL)isValidCreditCardNumber:(NSString*)cardNumber
                        appLocal:(const std::string&)appLocal;
 
-// Checks if a credit card has a valid |expirationMonth|.
+// Checks if a credit card has a valid `expirationMonth`.
 + (BOOL)isValidCreditCardExpirationMonth:(NSString*)expirationMonth;
 
-// Checks if a credit card has a valid |expirationYear|.
+// Checks if a credit card has a valid `expirationYear`.
 + (BOOL)isValidCreditCardExpirationYear:(NSString*)expirationYear
                                appLocal:(const std::string&)appLocal;
 
-// Checks if a credit card has a valid |nickname|.
+// Checks if a credit card has a valid `nickname`.
 + (BOOL)isValidCardNickname:(NSString*)cardNickname;
 
 @end

@@ -16,14 +16,14 @@
 
 namespace {
 
-void ShowBubble(Profile* profile,
+void ShowBubble(Browser* browser,
                 views::View* anchor_view,
                 ProfileCustomizationBubbleSyncController::Outcome outcome) {
   switch (outcome) {
     case ProfileCustomizationBubbleSyncController::Outcome::kAbort:
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kShowBubble:
-      ProfileCustomizationBubbleView::CreateBubble(profile, anchor_view);
+      ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise
@@ -43,20 +43,22 @@ void ShowBubble(Profile* profile,
 
 // static
 void ProfileCustomizationBubbleSyncController::
-    ApplyColorAndShowBubbleWhenNoValueSynced(Profile* profile,
+    ApplyColorAndShowBubbleWhenNoValueSynced(Browser* browser,
                                              views::View* anchor_view,
                                              SkColor suggested_profile_color) {
+  DCHECK(browser);
+  Profile* profile = browser->profile();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   // TODO(crbug.com/1213112): A speculative fix, remove if not functional or not
   // needed.
-  if (!profile || !anchor_view || !sync_service)
+  if (!anchor_view || !sync_service)
     return;
   // The controller is owned by itself.
   auto* controller = new ProfileCustomizationBubbleSyncController(
       profile, anchor_view, sync_service,
       ThemeServiceFactory::GetForProfile(profile),
-      base::BindOnce(&ShowBubble, profile, anchor_view),
+      base::BindOnce(&ShowBubble, browser, anchor_view),
       suggested_profile_color);
   controller->Init();
 }
@@ -188,6 +190,6 @@ void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
                                  ->GetAvatarToolbarButton();
   CHECK(anchor_view);
   ProfileCustomizationBubbleSyncController::
-      ApplyColorAndShowBubbleWhenNoValueSynced(browser->profile(), anchor_view,
+      ApplyColorAndShowBubbleWhenNoValueSynced(browser, anchor_view,
                                                suggested_profile_color);
 }

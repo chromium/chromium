@@ -26,8 +26,10 @@
 #include "components/prefs/pref_member.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
+#include "services/network/public/mojom/first_party_sets_access_delegate.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 class PrefRegistrySimple;
@@ -204,6 +206,10 @@ class ProfileNetworkContextService
   std::unique_ptr<TrialComparisonCertVerifierController>
       trial_comparison_cert_verifier_controller_;
 #endif
+
+  // TODO(crbug.com/1325050): Let FirstPartySetsHandlerImpl own it.
+  mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
+      fps_access_delegate_remote_set_;
 
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>

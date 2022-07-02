@@ -472,10 +472,10 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateAllowedPane() {
   allowed_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // This captures a snapshot of the allowed cookies of the current page so we
-  // are fine using WebContents::GetMainFrame() here
+  // are fine using WebContents::GetPrimaryMainFrame() here
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents_->GetMainFrame());
+          web_contents_->GetPrimaryMainFrame());
   allowed_cookies_tree_model_ =
       CreateCookiesTreeModel(content_settings->allowed_local_shared_objects());
   std::unique_ptr<CookiesTreeViewDrawingProvider> allowed_drawing_provider =
@@ -519,7 +519,7 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateBlockedPane() {
 
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents_->GetMainFrame());
+          web_contents_->GetPrimaryMainFrame());
   blocked_cookies_tree_model_ =
       CreateCookiesTreeModel(content_settings->blocked_local_shared_objects());
   std::unique_ptr<CookiesTreeViewDrawingProvider> blocked_drawing_provider =

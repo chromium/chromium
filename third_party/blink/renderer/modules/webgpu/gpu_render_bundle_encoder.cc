@@ -19,17 +19,30 @@ namespace blink {
 // static
 GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     GPUDevice* device,
-    const GPURenderBundleEncoderDescriptor* webgpu_desc) {
+    const GPURenderBundleEncoderDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
   uint32_t color_formats_count =
       static_cast<uint32_t>(webgpu_desc->colorFormats().size());
+
+  for (const auto& color_format : webgpu_desc->colorFormats()) {
+    if (color_format.has_value() &&
+        !device->ValidateTextureFormatUsage(color_format.value(),
+                                            exception_state)) {
+      return nullptr;
+    }
+  }
 
   std::unique_ptr<WGPUTextureFormat[]> color_formats =
       AsDawnEnum<WGPUTextureFormat>(webgpu_desc->colorFormats());
 
   WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
-    depth_stencil_format =
-        AsDawnEnum<WGPUTextureFormat>(webgpu_desc->depthStencilFormat());
+    if (!device->ValidateTextureFormatUsage(webgpu_desc->depthStencilFormat(),
+                                            exception_state)) {
+      return nullptr;
+    }
+
+    depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
   std::string label;

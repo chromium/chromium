@@ -66,7 +66,7 @@ ConstrainedWebDialogUI::~ConstrainedWebDialogUI() = default;
 void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Add a "dialogClose" callback which matches WebDialogUI behavior.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "dialogClose",
       base::BindRepeating(&ConstrainedWebDialogUI::OnDialogCloseMessage,
                           base::Unretained(this)));
@@ -87,15 +87,16 @@ void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
   dialog_delegate->OnDialogShown(web_ui());
 }
 
-void ConstrainedWebDialogUI::OnDialogCloseMessage(const base::ListValue* args) {
+void ConstrainedWebDialogUI::OnDialogCloseMessage(
+    const base::Value::List& args) {
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
   if (!delegate)
     return;
 
   std::string json_retval;
-  if (!args->GetListDeprecated().empty()) {
-    if (args->GetListDeprecated()[0].is_string()) {
-      json_retval = args->GetListDeprecated()[0].GetString();
+  if (!args.empty()) {
+    if (args[0].is_string()) {
+      json_retval = args[0].GetString();
     } else {
       NOTREACHED() << "Could not read JSON argument";
     }

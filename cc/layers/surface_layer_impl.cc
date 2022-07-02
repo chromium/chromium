@@ -217,7 +217,7 @@ gfx::Rect SurfaceLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
       layer_tree_impl()->device_scale_factor());
 }
 
-void SurfaceLayerImpl::GetDebugBorderProperties(SkColor* color,
+void SurfaceLayerImpl::GetDebugBorderProperties(SkColor4f* color,
                                                 float* width) const {
   *color = DebugColors::SurfaceLayerBorderColor();
   *width = DebugColors::SurfaceLayerBorderWidth(
@@ -233,10 +233,10 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       render_pass->CreateAndAppendSharedQuadState();
   PopulateSharedQuadState(shared_quad_state, contents_opaque());
 
-  SkColor color;
   float border_width;
-  GetDebugBorderProperties(&color, &border_width);
+  GetDebugBorderProperties(nullptr, &border_width);
 
+  // TODO(crbug.com/1308932) Make these SkColor4fs
   SkColor colors[] = {
       0x80ff0000,  // Red.
       0x80ffa500,  // Orange.
@@ -271,14 +271,16 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       bool force_anti_aliasing_off = false;
       auto* top_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      top_quad->SetNew(shared_quad_state, top, top, colors[i % kNumColors],
+      top_quad->SetNew(shared_quad_state, top, top,
+                       SkColor4f::FromColor(colors[i % kNumColors]),
                        force_anti_aliasing_off);
 
       auto* bottom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      bottom_quad->SetNew(shared_quad_state, bottom, bottom,
-                          colors[kNumColors - 1 - (i % kNumColors)],
-                          force_anti_aliasing_off);
+      bottom_quad->SetNew(
+          shared_quad_state, bottom, bottom,
+          SkColor4f::FromColor(colors[kNumColors - 1 - (i % kNumColors)]),
+          force_anti_aliasing_off);
 
       if (contents_opaque()) {
         // Draws a stripe filling the layer vertically with the same color and
@@ -292,7 +294,8 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
             static_cast<uint8_t>(SkColorGetA(colors[i % kNumColors]) *
                                  kFillOpacity));
         gfx::Rect fill_rect(x, 0, width, bounds().height());
-        solid_quad->SetNew(shared_quad_state, fill_rect, fill_rect, fill_color,
+        solid_quad->SetNew(shared_quad_state, fill_rect, fill_rect,
+                           SkColor4f::FromColor(fill_color),
                            force_anti_aliasing_off);
       }
     }
@@ -300,14 +303,16 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       bool force_anti_aliasing_off = false;
       auto* left_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      left_quad->SetNew(shared_quad_state, left, left,
-                        colors[kNumColors - 1 - (i % kNumColors)],
-                        force_anti_aliasing_off);
+      left_quad->SetNew(
+          shared_quad_state, left, left,
+          SkColor4f::FromColor(colors[kNumColors - 1 - (i % kNumColors)]),
+          force_anti_aliasing_off);
 
       auto* right_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       right_quad->SetNew(shared_quad_state, right, right,
-                         colors[i % kNumColors], force_anti_aliasing_off);
+                         SkColor4f::FromColor(colors[i % kNumColors]),
+                         force_anti_aliasing_off);
     }
   }
 }

@@ -21,6 +21,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewController {
   virtual MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) = 0;
 
+  // Animate all notification views after a resize.
+  virtual void AnimateResize() = 0;
+
   // Updates the notification id associated with a `MessageCenterView` and
   // popup if required. We do this to covert an existing message view into
   // a message view that acts as a container for grouped notifications.

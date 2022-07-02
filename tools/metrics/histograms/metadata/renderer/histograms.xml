@@ -22,21 +22,30 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="ProcessLifetimeResolution">
-  <variant name="HighResolution" summary="Tops out at 5 minutes."/>
-  <variant name="LowResolution" summary="Tops out at 24 hours"/>
-</variants>
-
-<variants name="RendererLifetime">
-  <variant name="" summary="Applies to all lifetimes."/>
-  <variant name=".LongLived"
-      summary="Renderer process was alive for more than a minute."/>
-  <variant name=".ShortLived"
-      summary="Renderer process was alive for up to one minute."/>
+<variants name="RendererHostedContentType">
+  <variant name="" summary="all renderers"/>
+  <variant name=".Empty"
+      summary="renderers that never hosted a frame or a worker"/>
+  <variant name=".Extension"
+      summary="renderers that hosted an extension background page"/>
+  <variant name=".MainFrame"
+      summary="renderers that hosted a navigated main frame"/>
+  <variant name=".Speculative"
+      summary="speculative renderers, i.e. renderers that hosted frames but
+               in which no navigation commit occured"/>
+  <variant name=".Subframe_Ad"
+      summary="renderers that hosted a navigated subframe (tagged as an ad),
+               but no main frame"/>
+  <variant name=".Subframe_NoAd"
+      summary="renderers that hosted a navigated subframe (not tagged as an
+               ad), but no main frame"/>
+  <variant name=".Worker"
+      summary="renderers that hosted a worker (service, dedicated or shared),
+               but no navigated frame"/>
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -255,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -268,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -281,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -294,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.DomContentLoaded" units="ms"
-    expires_after="2022-09-09">
+    expires_after="2022-11-13">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -307,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.FCP" units="ms"
-    expires_after="2022-09-09">
+    expires_after="2022-11-13">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -319,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -332,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-18">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -345,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
-    units="ms" expires_after="2022-10-16">
+    units="ms" expires_after="2022-12-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -386,39 +395,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.ProcessLifetime2.{Resolution}" units="ms"
-    expires_after="2023-02-28">
+<histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
+    units="ms" expires_after="2023-02-28">
+  <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The total time for which a renderer process was live. Recorded when the
-    browser identifies the process as having gone away.
+    The time elapsed between the creation and destruction of a renderer.
+    Recorded for {RendererHostedContentType}.
   </summary>
-  <token key="Resolution" variants="ProcessLifetimeResolution"/>
+  <token key="RendererHostedContentType" variants="RendererHostedContentType"/>
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
     The time it takes RenderThreadImpl::Init() to run, recorded for each
     renderer process.
   </summary>
-</histogram>
-
-<histogram name="Renderer.TotalCPUUse2{Lifetime}" units="ms"
-    expires_after="2022-05-06">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Total CPU utilization of a renderer, read just before the process is about
-    to go away. Total CPU time can exceed the total process lifetime. This is
-    because CPU use of N seconds can be spread out over M threads. Example: A
-    Renderer having 4 threads active for a period of 1 minute in parallel will
-    use 4 minutes of CPU time. Not recorded on Android.
-  </summary>
-  <token key="Lifetime" variants="RendererLifetime"/>
 </histogram>
 
 <histogram name="RendererScheduler.IPC.FrameVisibility" enum="Boolean"
@@ -432,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2022-10-23">
+    expires_after="2022-12-25">
   <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in
@@ -443,26 +439,6 @@ chromium-metrics-reviews@google.com.
     This metric is emitted when the renderer main thread task is completed or
     renderer is backgrounded or foregrounded, at most once per second per
     renderer amortized.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.ResourceLoadingTaskCountPerNetPriority"
-    enum="NetRequestPriority" expires_after="M77">
-  <owner>farahcharab@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Used to track the number of resource loading tasks split by net priority.
-    Recorded each time the resource's request priority is changed.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.ResourceLoadingTaskCountPerPriority"
-    enum="TaskQueuePriority" expires_after="M77">
-  <owner>farahcharab@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Used to track the number of resource loading tasks split by execution
-    priority. Recorded each time a task is executed.
   </summary>
 </histogram>
 
@@ -576,24 +552,6 @@ chromium-metrics-reviews@google.com.
     The count of same-document-navigations split by whether it is the
     same-document backward/forward navigation, history API navigation, or other
     fragment navigation.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.WebFramesPerScheduler" units="web frames"
-    expires_after="M77">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Number of web frame schedulers per renderer scheduler. Recorded once per
-    navigation.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.WebViewsPerScheduler" units="web views"
-    expires_after="M77">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Number of web view schedulers per renderer scheduler. Recorded once per
-    navigation.
   </summary>
 </histogram>
 

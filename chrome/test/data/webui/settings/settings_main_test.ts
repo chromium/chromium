@@ -66,38 +66,29 @@ suite('MainPageTests', function() {
     settingsMain.remove();
   });
 
-  test('searchContents() triggers SearchManager', function() {
+  test('searchContents() triggers SearchManager', async function() {
     flush();
 
     const expectedQuery1 = 'foo';
     const expectedQuery2 = 'bar';
     const expectedQuery3 = '';
 
-    return settingsMain.searchContents(expectedQuery1)
-        .then(function() {
-          return searchManager.whenCalled('search');
-        })
-        .then(function(query) {
-          assertEquals(expectedQuery1, query);
+    await settingsMain.searchContents(expectedQuery1);
 
-          searchManager.resetResolver('search');
-          return settingsMain.searchContents(expectedQuery2);
-        })
-        .then(function() {
-          return searchManager.whenCalled('search');
-        })
-        .then(function(query) {
-          assertEquals(expectedQuery2, query);
+    let query = await searchManager.whenCalled('search');
+    assertEquals(expectedQuery1, query);
 
-          searchManager.resetResolver('search');
-          return settingsMain.searchContents(expectedQuery3);
-        })
-        .then(function() {
-          return searchManager.whenCalled('search');
-        })
-        .then(function(query) {
-          assertEquals(expectedQuery3, query);
-        });
+    searchManager.resetResolver('search');
+    await settingsMain.searchContents(expectedQuery2);
+
+    query = await searchManager.whenCalled('search');
+    assertEquals(expectedQuery2, query);
+
+    searchManager.resetResolver('search');
+    await settingsMain.searchContents(expectedQuery3);
+
+    query = await searchManager.whenCalled('search');
+    assertEquals(expectedQuery3, query);
   });
 
   function showingManagedHeader(): boolean {

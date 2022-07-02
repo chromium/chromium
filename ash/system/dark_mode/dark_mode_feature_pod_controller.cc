@@ -9,8 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -23,11 +22,11 @@ DarkModeFeaturePodController::DarkModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
   DCHECK(tray_controller_);
-  AshColorProvider::Get()->AddObserver(this);
+  DarkLightModeControllerImpl::Get()->AddObserver(this);
 }
 
 DarkModeFeaturePodController::~DarkModeFeaturePodController() {
-  AshColorProvider::Get()->RemoveObserver(this);
+  DarkLightModeControllerImpl::Get()->RemoveObserver(this);
 }
 
 FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
@@ -45,7 +44,7 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
       Shell::Get()->session_controller()->GetSessionState() !=
           session_manager::SessionState::OOBE);
 
-  UpdateButton(AshColorProvider::Get()->IsDarkModeEnabled());
+  UpdateButton(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   return button_;
 }
 
@@ -54,12 +53,12 @@ void DarkModeFeaturePodController::OnIconPressed() {
   // auto scheduling. This ensures that on and off states of the pod button
   // match the non-scheduled states of Dark and Light buttons in
   // personalization hub respectively.
-  ash::Shell::Get()->dark_mode_controller()->SetAutoScheduleEnabled(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->SetAutoScheduleEnabled(
       /*enabled=*/false);
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
   base::UmaHistogramBoolean("Ash.DarkTheme.SystemTray.IsDarkModeEnabled",
-                            color_provider->IsDarkModeEnabled());
+                            dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 void DarkModeFeaturePodController::OnLabelPressed() {
@@ -77,7 +76,9 @@ void DarkModeFeaturePodController::OnColorModeChanged(bool dark_mode_enabled) {
 
 void DarkModeFeaturePodController::UpdateButton(bool dark_mode_enabled) {
   button_->SetToggled(dark_mode_enabled);
-  if (ash::Shell::Get()->dark_mode_controller()->GetAutoScheduleEnabled()) {
+  if (ash::Shell::Get()
+          ->dark_light_mode_controller()
+          ->GetAutoScheduleEnabled()) {
     button_->SetSubLabel(l10n_util::GetStringUTF16(
         dark_mode_enabled
             ? IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE_AUTO_SCHEDULED

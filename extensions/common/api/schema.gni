@@ -76,7 +76,6 @@ if (is_chromeos_ash) {
     "diagnostics.idl",
     "lock_screen_data.idl",
     "media_perception_private.idl",
-    "vpn_provider.idl",
     "webcam_private.idl",
   ]
 }

@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(
   // Activate the prerendered page.
   prerender_helper().NavigatePrimaryPage(prerender_url);
   content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetWebContents()->GetMainFrame());
+      GetWebContents()->GetPrimaryMainFrame());
   user_activation_interceptor.UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kNotifyActivation,
       blink::mojom::UserActivationNotificationType::kTest);

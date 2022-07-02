@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include <atomic>
+#include <memory>
 
 // logging.h is a widely included header and its size has significant impact on
 // build time. Try not to raise this limit unless absolutely necessary. See
@@ -23,6 +25,9 @@
 
 #include "base/base_export.h"
 #include "base/debug/crash_logging.h"
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+#include "base/debug/leak_annotations.h"
+#endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include "base/immediate_crash.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
@@ -40,30 +45,11 @@ typedef HANDLE FileHandle;
 #define STDERR_FILENO 2
 
 #elif BUILDFLAG(IS_APPLE)
-// In MacOS 10.12 and iOS 10.0 and later ASL (Apple System Log) was deprecated
-// in favor of OS_LOG (Unified Logging).
-#include <AvailabilityMacros.h>
-#if BUILDFLAG(IS_IOS)
-#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define USE_ASL
-#endif
-#else  // BUILDFLAG(IS_IOS)
-#if !defined(MAC_OS_X_VERSION_10_12) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
-#define USE_ASL
-#endif
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_ASL)
-#include <asl.h>
-#else
-#include <os/log.h>
-#endif
-
 #include <CoreFoundation/CoreFoundation.h>
+#include <mach-o/dyld.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <mach-o/dyld.h>
+#include <os/log.h>
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_NACL)
@@ -140,10 +126,95 @@ namespace logging {
 
 namespace {
 
+int g_min_log_level = 0;
+
 #if BUILDFLAG(USE_RUNTIME_VLOG)
-VlogInfo* g_vlog_info = nullptr;
-VlogInfo* g_vlog_info_prev = nullptr;
+// NOTE: Once |g_vlog_info| has been initialized, it might be in use
+// by another thread. Never delete the old VLogInfo, just create a second
+// one and overwrite. We need to use leak-san annotations on this intentional
+// leak.
+//
+// This can be read/written on multiple threads. In tests we don't see that
+// causing a problem as updates tend to happen early. Atomic ensures there are
+// no problems. To avoid some of the overhead of Atomic, we use
+// |load(std::memory_order_acquire)| and |store(...,
+// std::memory_order_release)| when reading or writing. This guarantees that the
+// referenced object is available at the time the |g_vlog_info| is read and that
+// |g_vlog_info| is updated atomically.
+//
+// Do not access this directly. You must use |GetVlogInfo|, |InitializeVlogInfo|
+// and/or |ExchangeVlogInfo|.
+std::atomic<VlogInfo*> g_vlog_info = nullptr;
+
+VlogInfo* GetVlogInfo() {
+  return g_vlog_info.load(std::memory_order_acquire);
+}
+
+// Sets g_vlog_info if it is not already set. Checking that it's not already set
+// prevents logging initialization (which can come late in test setup) from
+// overwriting values set via ScopedVmoduleSwitches.
+bool InitializeVlogInfo(VlogInfo* vlog_info) {
+  VlogInfo* previous_vlog_info = nullptr;
+  return g_vlog_info.compare_exchange_strong(previous_vlog_info, vlog_info);
+}
+
+VlogInfo* ExchangeVlogInfo(VlogInfo* vlog_info) {
+  return g_vlog_info.exchange(vlog_info);
+}
+
+// Creates a VlogInfo from the commandline if it has been initialized and if it
+// contains relevant switches, otherwise this returns |nullptr|.
+std::unique_ptr<VlogInfo> VlogInfoFromCommandLine() {
+  if (!base::CommandLine::InitializedForCurrentProcess())
+    return nullptr;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kV) &&
+      !command_line->HasSwitch(switches::kVModule)) {
+    return nullptr;
+  }
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+  // See comments on |g_vlog_info|.
+  ScopedLeakSanitizerDisabler lsan_disabler;
+#endif  // defined(LEAK_SANITIZER)
+  return std::make_unique<VlogInfo>(
+      command_line->GetSwitchValueASCII(switches::kV),
+      command_line->GetSwitchValueASCII(switches::kVModule), &g_min_log_level);
+}
+
+// If the commandline is initialized for the current process this will
+// initialize g_vlog_info. If there are no VLOG switches, it will initialize it
+// to |nullptr|.
+void MaybeInitializeVlogInfo() {
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    std::unique_ptr<VlogInfo> vlog_info = VlogInfoFromCommandLine();
+    if (vlog_info) {
+      // VlogInfoFromCommandLine is annotated with ScopedLeakSanitizerDisabler
+      // so it's allowed to leak. If the object was installed, we release it.
+      if (InitializeVlogInfo(vlog_info.get())) {
+        vlog_info.release();
+      }
+    }
+  }
+}
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
+
+#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
+
+// Warn developers that vlog command line settings are being ignored.
+void MaybeWarnVmodule() {
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kV) ||
+        command_line->HasSwitch(switches::kVModule)) {
+      LOG(WARNING)
+          << "--" << switches::kV << " and --" << switches::kVModule
+          << " are currently ignored. See comments in base/logging.h on "
+             "proper usage of USE_RUNTIME_VLOG.";
+    }
+  }
+}
+
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
@@ -154,8 +225,6 @@ const char* log_severity_name(int severity) {
     return log_severity_names[severity];
   return "UNKNOWN";
 }
-
-int g_min_log_level = 0;
 
 // Specifies the process' logging sink(s), represented as a combination of
 // LoggingDestination values joined by bitwise OR.
@@ -223,8 +292,8 @@ uint64_t TickCount() {
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
 
-  uint64_t absolute_micro = static_cast<int64_t>(ts.tv_sec) * 1000000 +
-                            static_cast<int64_t>(ts.tv_nsec) / 1000;
+  uint64_t absolute_micro = static_cast<uint64_t>(ts.tv_sec) * 1000000 +
+                            static_cast<uint64_t>(ts.tv_nsec) / 1000;
 
   return absolute_micro;
 #endif
@@ -381,14 +450,14 @@ inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
 
 void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
-  int rv;
+  long rv;
   while (bytes_written < length) {
     rv = HANDLE_EINTR(write(fd, data + bytes_written, length - bytes_written));
     if (rv < 0) {
       // Give up, nothing we can do now.
       break;
     }
-    bytes_written += rv;
+    bytes_written += static_cast<size_t>(rv);
   }
 }
 
@@ -418,25 +487,12 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 #endif
 
 #if BUILDFLAG(USE_RUNTIME_VLOG)
-  if (base::CommandLine::InitializedForCurrentProcess()) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    // Don't bother initializing |g_vlog_info| unless we use one of the
-    // vlog switches.
-    if (command_line->HasSwitch(switches::kV) ||
-        command_line->HasSwitch(switches::kVModule)) {
-      // NOTE: If |g_vlog_info| has already been initialized, it might be in use
-      // by another thread. Don't delete the old VLogInfo, just create a second
-      // one. We keep track of both to avoid memory leak warnings.
-      CHECK(!g_vlog_info_prev);
-      g_vlog_info_prev = g_vlog_info;
+  MaybeInitializeVlogInfo();
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
-      g_vlog_info =
-          new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
-                       command_line->GetSwitchValueASCII(switches::kVModule),
-                       &g_min_log_level);
-    }
-  }
-#endif  // defined(USE_RUNTIME_VLOG)
+#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
+  MaybeWarnVmodule();
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
   g_logging_destination = settings.logging_dest;
 
@@ -523,7 +579,7 @@ int GetVlogLevelHelper(const char* file, size_t N) {
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
-  VlogInfo* vlog_info = g_vlog_info;
+  VlogInfo* vlog_info = GetVlogInfo();
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();
@@ -605,7 +661,7 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 }
 
 LogMessage::~LogMessage() {
-  size_t stack_start = stream_.tellp();
+  size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
   if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
@@ -647,10 +703,9 @@ LogMessage::~LogMessage() {
     OutputDebugStringA(str_newline.c_str());
 #elif BUILDFLAG(IS_APPLE)
     // In LOG_TO_SYSTEM_DEBUG_LOG mode, log messages are always written to
-    // stderr. If stderr is /dev/null, also log via ASL (Apple System Log) or
-    // its successor OS_LOG. If there's something weird about stderr, assume
-    // that log messages are going nowhere and log via ASL/OS_LOG too.
-    // Messages logged via ASL/OS_LOG show up in Console.app.
+    // stderr. If stderr is /dev/null, also log via os_log. If there's something
+    // weird about stderr, assume that log messages are going nowhere and log
+    // via os_log too. Messages logged via os_log show up in Console.app.
     //
     // Programs started by launchd, as UI applications normally are, have had
     // stderr connected to /dev/null since OS X 10.8. Prior to that, stderr was
@@ -658,15 +713,10 @@ LogMessage::~LogMessage() {
     // 10.7.5 launchd-392.39/launchd/src/launchd_core_logic.c).
     //
     // Another alternative would be to determine whether stderr is a pipe to
-    // launchd and avoid logging via ASL only in that case. See 10.7.5
+    // launchd and avoid logging via os_log only in that case. See 10.7.5
     // CF-635.21/CFUtilities.c also_do_stderr(). This would result in logging to
-    // both stderr and ASL/OS_LOG even in tests, where it's undesirable to log
-    // to the system log at all.
-    //
-    // Note that the ASL client by default discards messages whose levels are
-    // below ASL_LEVEL_NOTICE. It's possible to change that with
-    // asl_set_filter(), but this is pointless because syslogd normally applies
-    // the same filter.
+    // both stderr and os_log even in tests, where it's undesirable to log to
+    // the system log at all.
     const bool log_to_system = []() {
       struct stat stderr_stat;
       if (fstat(fileno(stderr), &stderr_stat) == -1) {
@@ -694,72 +744,7 @@ LogMessage::~LogMessage() {
       std::string main_bundle_id =
           main_bundle_id_cf ? base::SysCFStringRefToUTF8(main_bundle_id_cf)
                             : std::string("");
-#if defined(USE_ASL)
-      // The facility is set to the main bundle ID if available. Otherwise,
-      // "com.apple.console" is used.
-      const class ASLClient {
-       public:
-        explicit ASLClient(const std::string& facility)
-            : client_(asl_open(nullptr, facility.c_str(), ASL_OPT_NO_DELAY)) {}
-        ASLClient(const ASLClient&) = delete;
-        ASLClient& operator=(const ASLClient&) = delete;
-        ~ASLClient() { asl_close(client_); }
 
-        aslclient get() const { return client_; }
-
-       private:
-        aslclient client_;
-      } asl_client(main_bundle_id.empty() ? main_bundle_id
-                                          : "com.apple.console");
-
-      const class ASLMessage {
-       public:
-        ASLMessage() : message_(asl_new(ASL_TYPE_MSG)) {}
-        ASLMessage(const ASLMessage&) = delete;
-        ASLMessage& operator=(const ASLMessage&) = delete;
-        ~ASLMessage() { asl_free(message_); }
-
-        aslmsg get() const { return message_; }
-
-       private:
-        aslmsg message_;
-      } asl_message;
-
-      // By default, messages are only readable by the admin group. Explicitly
-      // make them readable by the user generating the messages.
-      char euid_string[12];
-      snprintf(euid_string, std::size(euid_string), "%d", geteuid());
-      asl_set(asl_message.get(), ASL_KEY_READ_UID, euid_string);
-
-      // Map Chrome log severities to ASL log levels.
-      const char* const asl_level_string = [](LogSeverity severity) {
-        // ASL_LEVEL_* are ints, but ASL needs equivalent strings. This
-        // non-obvious two-step macro trick achieves what's needed.
-        // https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
-#define ASL_LEVEL_STR(level) ASL_LEVEL_STR_X(level)
-#define ASL_LEVEL_STR_X(level) #level
-        switch (severity) {
-          case LOGGING_INFO:
-            return ASL_LEVEL_STR(ASL_LEVEL_INFO);
-          case LOGGING_WARNING:
-            return ASL_LEVEL_STR(ASL_LEVEL_WARNING);
-          case LOGGING_ERROR:
-            return ASL_LEVEL_STR(ASL_LEVEL_ERR);
-          case LOGGING_FATAL:
-            return ASL_LEVEL_STR(ASL_LEVEL_CRIT);
-          default:
-            return severity < 0 ? ASL_LEVEL_STR(ASL_LEVEL_DEBUG)
-                                : ASL_LEVEL_STR(ASL_LEVEL_NOTICE);
-        }
-#undef ASL_LEVEL_STR
-#undef ASL_LEVEL_STR_X
-      }(severity_);
-      asl_set(asl_message.get(), ASL_KEY_LEVEL, asl_level_string);
-
-      asl_set(asl_message.get(), ASL_KEY_MSG, str_newline.c_str());
-
-      asl_send(asl_client.get(), asl_message.get());
-#else   // !defined(USE_ASL)
       const class OSLog {
        public:
         explicit OSLog(const char* subsystem)
@@ -795,7 +780,6 @@ LogMessage::~LogMessage() {
       }(severity_);
       os_log_with_type(log.get(), os_log_type, "%{public}s",
                        str_newline.c_str());
-#endif  // defined(USE_ASL)
     }
 #elif BUILDFLAG(IS_ANDROID)
     android_LogPriority priority =
@@ -1143,7 +1127,7 @@ void RawLog(int level, const char* message) {
     WriteToFd(STDERR_FILENO, message, message_len);
 
     if (message_len > 0 && message[message_len - 1] != '\n') {
-      int rv;
+      long rv;
       do {
         rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
         if (rv < 0) {
@@ -1178,6 +1162,53 @@ int GetDisableAllVLogLevel() {
   return -1;
 }
 #endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
+
+// Used for testing. Declared in test/scoped_logging_settings.h.
+ScopedVmoduleSwitches::ScopedVmoduleSwitches() = default;
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+VlogInfo* ScopedVmoduleSwitches::CreateVlogInfoWithSwitches(
+    const std::string& vmodule_switch) {
+  // Try get a VlogInfo on which to base this.
+  // First ensure that VLOG has been initialized.
+  MaybeInitializeVlogInfo();
+
+  // Getting this now and setting it later is racy, however if a
+  // ScopedVmoduleSwitches is being used on multiple threads that requires
+  // further coordination and avoids this race.
+  VlogInfo* base_vlog_info = GetVlogInfo();
+  if (!base_vlog_info) {
+    // Base is |nullptr|, so just create it from scratch.
+    return new VlogInfo(/*v_switch_=*/"", vmodule_switch, &g_min_log_level);
+  }
+  return base_vlog_info->WithSwitches(vmodule_switch);
+}
+
+void ScopedVmoduleSwitches::InitWithSwitches(
+    const std::string& vmodule_switch) {
+  // Make sure we are only initialized once.
+  CHECK(!scoped_vlog_info_);
+  {
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+    // See comments on |g_vlog_info|.
+    ScopedLeakSanitizerDisabler lsan_disabler;
+#endif  // defined(LEAK_SANITIZER)
+    scoped_vlog_info_ = CreateVlogInfoWithSwitches(vmodule_switch);
+  }
+  previous_vlog_info_ = ExchangeVlogInfo(scoped_vlog_info_);
+}
+
+ScopedVmoduleSwitches::~ScopedVmoduleSwitches() {
+  VlogInfo* replaced_vlog_info = ExchangeVlogInfo(previous_vlog_info_);
+  // Make sure something didn't replace our scoped VlogInfo while we weren't
+  // looking.
+  CHECK_EQ(replaced_vlog_info, scoped_vlog_info_);
+}
+#else
+void ScopedVmoduleSwitches::InitWithSwitches(
+    const std::string& vmodule_switch) {}
+
+ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging
 

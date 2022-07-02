@@ -38,7 +38,7 @@ typedef void (^FormSuggestionsReadyCompletion)(
 @property(nonatomic, readonly) SuggestionProviderType type;
 
 // Asynchronously retrieves form suggestions from this provider for the
-// specified form/field and returns it via |accessoryViewUpdateBlock|. View
+// specified form/field and returns it via `accessoryViewUpdateBlock`. View
 // will be nil if no accessories are available from this provider.
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
                           webState:(web::WebState*)webState

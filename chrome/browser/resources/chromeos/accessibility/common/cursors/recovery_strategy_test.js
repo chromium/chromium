@@ -18,7 +18,7 @@ AccessibilityExtensionRecoveryStrategyTest =
 };
 
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionRecoveryStrategyTest', 'ReparentedRecovery',
     async function() {
       const root = await this.runWithLoadedTree(`

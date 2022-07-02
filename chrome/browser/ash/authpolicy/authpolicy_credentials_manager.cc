@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -29,7 +30,6 @@
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -225,7 +225,8 @@ void AuthPolicyCredentialsManager::StartObserveNetwork() {
   if (is_observing_network_)
     return;
   is_observing_network_ = true;
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 }
 
 void AuthPolicyCredentialsManager::StopObserveNetwork() {
@@ -233,8 +234,7 @@ void AuthPolicyCredentialsManager::StopObserveNetwork() {
     return;
   DCHECK(NetworkHandler::IsInitialized());
   is_observing_network_ = false;
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 void AuthPolicyCredentialsManager::UpdateDisplayAndGivenName(
@@ -265,7 +265,8 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
                                       base::NumberToString(message_id);
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
+      kProfileSigninNotificationId,
+      NotificationCatalogName::kAuthpolicyCredentialsError);
 
   // Set |profile_id| for multi-user notification blocker.
   notifier_id.profile_id = profile_->GetProfileUserName();

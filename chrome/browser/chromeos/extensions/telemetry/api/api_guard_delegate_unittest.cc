@@ -26,27 +26,40 @@ namespace chromeos {
 struct ExtensionInfoTestParams {
   ExtensionInfoTestParams(const std::string& extension_id,
                           const std::string& pwa_page_url,
-                          const std::string& matches_origin)
+                          const std::string& matches_origin,
+                          const std::string& manufacturer)
       : extension_id(extension_id),
         pwa_page_url(pwa_page_url),
-        matches_origin(matches_origin) {}
+        matches_origin(matches_origin),
+        manufacturer(manufacturer) {}
   ExtensionInfoTestParams(const ExtensionInfoTestParams& other) = default;
   ~ExtensionInfoTestParams() = default;
 
   const std::string extension_id;
   const std::string pwa_page_url;
   const std::string matches_origin;
+  const std::string manufacturer;
 };
 
 const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
     ExtensionInfoTestParams(
         /*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
         /*pwa_page_url=*/"http://www.google.com",
-        /*matches_origin=*/"*://www.google.com/*"),
+        /*matches_origin=*/"*://www.google.com/*",
+        /*manufacturer=*/"HP"),  // TODO(http://b/237059912): Refactor this as
+                                 // soon as it becomes a set.
     ExtensionInfoTestParams(
         /*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
         /*pwa_page_url=*/"https://hpcs-appschr.hpcloud.hp.com",
-        /*matches_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*")};
+        /*matches_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*",
+        /*manufacturer=*/"HP"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
+        /*pwa_page_url=*/
+        "https://dlcdnccls.asus.com/app/myasus_for_chromebook/ ",
+        /*matches_origin=*/"https://dlcdnccls.asus.com/*",
+        /*manufacturer=*/"ASUS"),
+};
 
 // Tests that Chrome OS System Extensions must fulfill the requirements to
 // access Telemetry Extension APIs. All tests are parameterized with the
@@ -70,7 +83,8 @@ class ApiGuardDelegateTest
 
     CreateExtension();
     // Make sure device manufacturer is allowlisted.
-    SetDeviceManufacturer("HP");
+    SetDeviceManufacturer(manufacturer());
+
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -95,6 +109,8 @@ class ApiGuardDelegateTest
   std::string pwa_page_url() const { return GetParam().pwa_page_url; }
 
   std::string matches_origin() const { return GetParam().matches_origin; }
+
+  std::string manufacturer() const { return GetParam().manufacturer; }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(

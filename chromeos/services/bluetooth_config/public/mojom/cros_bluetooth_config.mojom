@@ -313,9 +313,15 @@ interface CrosBluetoothConfig {
   // not currently modifiable, this function is a no-op.
   SetBluetoothEnabledState(bool enabled);
 
-  // Turns Bluetooth on if |active| is true, and restores the Bluetooth enabled
-  // state that was last persisted to local state if |active| is false.
-  SetBluetoothHidDetectionActive(bool active);
+  // Turns Bluetooth on without persisting the enabled state to prefs.
+  SetBluetoothHidDetectionActive();
+
+  // If |is_using_bluetooth| is false, restores the Bluetooth enabled
+  // state that was last persisted to local state. If |is_using_bluetooth|
+  // is true, this function is a no-op. |is_using_bluetooth| should be set
+  // to true if there is at least one HID that is connected via Bluetooth,
+  // and false otherwise.
+  SetBluetoothHidDetectionInactive(bool is_using_bluetooth);
 
   // Starts a discovery session, during which time it will be possible
   // to find new devices and pair them. To stop discovery, disconnect

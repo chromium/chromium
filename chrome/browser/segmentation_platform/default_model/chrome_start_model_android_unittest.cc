@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -35,11 +35,10 @@ class ChromeStartModelTest : public testing::Test {
     loop.Run();
   }
 
-  void OnInitFinishedCallback(
-      base::RepeatingClosure closure,
-      optimization_guide::proto::OptimizationTarget target,
-      proto::SegmentationModelMetadata metadata,
-      int64_t) {
+  void OnInitFinishedCallback(base::RepeatingClosure closure,
+                              proto::SegmentId target,
+                              proto::SegmentationModelMetadata metadata,
+                              int64_t) {
     EXPECT_EQ(metadata_utils::ValidateMetadataAndFeatures(metadata),
               metadata_utils::ValidationResult::kValidationSuccess);
     std::move(closure).Run();

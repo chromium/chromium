@@ -14,7 +14,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -248,8 +247,9 @@ std::unique_ptr<views::View>
 PaymentHandlerWebFlowViewController::CreateHeaderContentView(
     views::View* header_view) {
   const url::Origin origin =
-      web_contents() ? web_contents()->GetMainFrame()->GetLastCommittedOrigin()
-                     : url::Origin::Create(target_);
+      web_contents()
+          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin::Create(target_);
   std::unique_ptr<views::Background> background =
       GetHeaderBackground(header_view);
   return std::make_unique<ReadOnlyOriginView>(
@@ -346,8 +346,8 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
-        .Run(true, web_contents()->GetMainFrame()->GetProcess()->GetID(),
-             web_contents()->GetMainFrame()->GetRoutingID());
+        .Run(true, web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+             web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
   UpdateHeaderView();

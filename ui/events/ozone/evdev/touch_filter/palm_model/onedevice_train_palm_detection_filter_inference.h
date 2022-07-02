@@ -6,8 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_PALM_MODEL_ONEDEVICE_TRAIN_PALM_DETECTION_FILTER_INFERENCE_H_
 #include <cstdint>
 
-namespace ui {
-namespace internal_onedevice {
+namespace ui::internal_onedevice::alpha_model {
 struct alignas(16) FixedAllocations {
   float alloc0[20];
   int32_t shape0[2];
@@ -36,6 +35,5 @@ void Inference(
     ,
     FixedAllocations* __restrict fixed);
 
-}  // namespace internal_onedevice
-}  // namespace ui
+}  // namespace ui::internal_onedevice::alpha_model
 #endif  // UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_PALM_MODEL_ONEDEVICE_TRAIN_PALM_DETECTION_FILTER_INFERENCE_H_

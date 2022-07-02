@@ -1099,6 +1099,16 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
         permission, output));
     EXPECT_EQ(*permission, *output);
   }
+  {
+    auto permission = std::make_unique<apps::Permission>(
+        apps::PermissionType::kFileHandling,
+        std::make_unique<apps::PermissionValue>(true),
+        /*is_managed=*/false);
+    apps::PermissionPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
+        permission, output));
+    EXPECT_EQ(*permission, *output);
+  }
 }
 
 // Test that serialization and deserialization works with updating

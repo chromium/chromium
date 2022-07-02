@@ -17,7 +17,6 @@ namespace chromeos {
 // verified OOBE configuration, that allows to automate out-of-box experience.
 // This configuration comes either from the state before power wash, or from
 // USB stick during USB-based enrollment flow.
-
 class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
     : public DBusClient {
  public:
@@ -25,13 +24,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
       base::OnceCallback<void(bool has_configuration,
                               const std::string& configuration)>;
 
+  // Returns the global instance if initialized. May return null.
+  static OobeConfigurationClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   OobeConfigurationClient(const OobeConfigurationClient&) = delete;
   OobeConfigurationClient& operator=(const OobeConfigurationClient&) = delete;
-
-  ~OobeConfigurationClient() override = default;
-
-  // Factory function.
-  static std::unique_ptr<OobeConfigurationClient> Create();
 
   // Checks if valid OOBE configuration exists.
   virtual void CheckForOobeConfiguration(ConfigurationCallback callback) = 0;
@@ -39,8 +45,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
  protected:
   friend class OobeConfigurationClientTest;
 
-  // Create() should be used instead.
-  OobeConfigurationClient() = default;
+  // Initialize() should be used instead.
+  OobeConfigurationClient();
+  ~OobeConfigurationClient() override;
 };
 
 }  // namespace chromeos

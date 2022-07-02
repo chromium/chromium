@@ -22,14 +22,13 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chromeos/network/device_state.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -86,10 +85,8 @@ void MobileActivator::TerminateActivation() {
   continue_reconnect_timer_.Stop();
   reconnect_timeout_timer_.Stop();
 
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
-  }
+  network_state_handler_observer_.Reset();
+
   meid_.clear();
   iccid_.clear();
   service_path_.clear();
@@ -129,6 +126,10 @@ void MobileActivator::NetworkPropertiesUpdated(const NetworkState* network) {
   service_path_ = network->path();
 
   EvaluateCellularNetwork(network);
+}
+
+void MobileActivator::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void MobileActivator::AddObserver(MobileActivator::Observer* observer) {
@@ -273,7 +274,8 @@ void MobileActivator::StartActivation() {
   }
 
   // Start monitoring network property changes.
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 
   if (network->activation_type() == shill::kActivationTypeNonCellular) {
     StartActivationOverNonCellularNetwork();
@@ -742,8 +744,7 @@ const char* MobileActivator::GetStateDescription(PlanActivationState state) {
 
 void MobileActivator::CompleteActivation() {
   // Remove observers, we are done with this page.
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 bool MobileActivator::RunningActivation() const {

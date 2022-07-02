@@ -34,7 +34,7 @@ void ReportingCacheImpl::AddReport(
     const std::string& user_agent,
     const std::string& group_name,
     const std::string& type,
-    std::unique_ptr<const base::Value> body,
+    base::Value::Dict body,
     int depth,
     base::TimeTicks queued,
     int attempts) {
@@ -51,7 +51,8 @@ void ReportingCacheImpl::AddReport(
 
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_isolation_key, url, user_agent, group_name,
-      type, std::move(body), depth, queued, attempts);
+      type, std::make_unique<base::Value>(std::move(body)), depth, queued,
+      attempts);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);
@@ -99,37 +100,35 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
                      std::tie(report2->queued, report2->url);
             });
 
-  std::vector<base::Value> report_list;
+  base::Value::List report_list;
   for (const ReportingReport* report : sorted_reports) {
-    base::Value report_dict(base::Value::Type::DICTIONARY);
-    report_dict.SetKey(
-        "network_isolation_key",
-        base::Value(report->network_isolation_key.ToDebugString()));
-    report_dict.SetKey("url", base::Value(report->url.spec()));
-    report_dict.SetKey("group", base::Value(report->group));
-    report_dict.SetKey("type", base::Value(report->type));
-    report_dict.SetKey("depth", base::Value(report->depth));
-    report_dict.SetKey("queued",
-                       base::Value(NetLog::TickCountToString(report->queued)));
-    report_dict.SetKey("attempts", base::Value(report->attempts));
+    base::Value::Dict report_dict;
+    report_dict.Set("network_isolation_key",
+                    report->network_isolation_key.ToDebugString());
+    report_dict.Set("url", report->url.spec());
+    report_dict.Set("group", report->group);
+    report_dict.Set("type", report->type);
+    report_dict.Set("depth", report->depth);
+    report_dict.Set("queued", NetLog::TickCountToString(report->queued));
+    report_dict.Set("attempts", report->attempts);
     if (report->body) {
-      report_dict.SetKey("body", report->body->Clone());
+      report_dict.Set("body", report->body->Clone());
     }
     switch (report->status) {
       case ReportingReport::Status::DOOMED:
-        report_dict.SetKey("status", base::Value("doomed"));
+        report_dict.Set("status", "doomed");
         break;
       case ReportingReport::Status::PENDING:
-        report_dict.SetKey("status", base::Value("pending"));
+        report_dict.Set("status", "pending");
         break;
       case ReportingReport::Status::QUEUED:
-        report_dict.SetKey("status", base::Value("queued"));
+        report_dict.Set("status", "queued");
         break;
       case ReportingReport::Status::SUCCESS:
-        report_dict.SetKey("status", base::Value("success"));
+        report_dict.Set("status", "success");
         break;
     }
-    report_list.push_back(std::move(report_dict));
+    report_list.Append(std::move(report_dict));
   }
   return base::Value(std::move(report_list));
 }
@@ -773,10 +772,10 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
 
 base::Value ReportingCacheImpl::GetClientsAsValue() const {
   ConsistencyCheckClients();
-  std::vector<base::Value> client_list;
+  base::Value::List client_list;
   for (const auto& domain_and_client : clients_) {
     const Client& client = domain_and_client.second;
-    client_list.push_back(GetClientAsValue(client));
+    client_list.Append(GetClientAsValue(client));
   }
   return base::Value(std::move(client_list));
 }
@@ -1599,67 +1598,66 @@ void ReportingCacheImpl::RemoveEndpointItFromIndex(
 }
 
 base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
-  base::Value client_dict(base::Value::Type::DICTIONARY);
-  client_dict.SetKey("network_isolation_key",
-                     base::Value(client.network_isolation_key.ToDebugString()));
-  client_dict.SetKey("origin", base::Value(client.origin.Serialize()));
+  base::Value::Dict client_dict;
+  client_dict.Set("network_isolation_key",
+                  client.network_isolation_key.ToDebugString());
+  client_dict.Set("origin", client.origin.Serialize());
 
-  std::vector<base::Value> group_list;
+  base::Value::List group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
     ReportingEndpointGroupKey group_key(client.network_isolation_key,
                                         client.origin, group_name);
     const CachedReportingEndpointGroup& group = endpoint_groups_.at(group_key);
-    group_list.push_back(GetEndpointGroupAsValue(group));
+    group_list.Append(GetEndpointGroupAsValue(group));
   }
 
-  client_dict.SetKey("groups", base::Value(std::move(group_list)));
+  client_dict.Set("groups", std::move(group_list));
 
-  return client_dict;
+  return base::Value(std::move(client_dict));
 }
 
 base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
     const CachedReportingEndpointGroup& group) const {
-  base::Value group_dict(base::Value::Type::DICTIONARY);
-  group_dict.SetKey("name", base::Value(group.group_key.group_name));
-  group_dict.SetKey("expires",
-                    base::Value(NetLog::TimeToString(group.expires)));
-  group_dict.SetKey(
-      "includeSubdomains",
-      base::Value(group.include_subdomains == OriginSubdomains::INCLUDE));
+  base::Value::Dict group_dict;
+  group_dict.Set("name", group.group_key.group_name);
+  group_dict.Set("expires", NetLog::TimeToString(group.expires));
+  group_dict.Set("includeSubdomains",
+                 group.include_subdomains == OriginSubdomains::INCLUDE);
 
-  std::vector<base::Value> endpoint_list;
+  base::Value::List endpoint_list;
 
   const auto group_range = endpoints_.equal_range(group.group_key);
   for (auto it = group_range.first; it != group_range.second; ++it) {
     const ReportingEndpoint& endpoint = it->second;
-    endpoint_list.push_back(GetEndpointAsValue(endpoint));
+    endpoint_list.Append(GetEndpointAsValue(endpoint));
   }
 
-  group_dict.SetKey("endpoints", base::Value(std::move(endpoint_list)));
+  group_dict.Set("endpoints", std::move(endpoint_list));
 
-  return group_dict;
+  return base::Value(std::move(group_dict));
 }
 
 base::Value ReportingCacheImpl::GetEndpointAsValue(
     const ReportingEndpoint& endpoint) const {
-  base::Value endpoint_dict(base::Value::Type::DICTIONARY);
-  endpoint_dict.SetKey("url", base::Value(endpoint.info.url.spec()));
-  endpoint_dict.SetKey("priority", base::Value(endpoint.info.priority));
-  endpoint_dict.SetKey("weight", base::Value(endpoint.info.weight));
+  base::Value::Dict endpoint_dict;
+  endpoint_dict.Set("url", endpoint.info.url.spec());
+  endpoint_dict.Set("priority", endpoint.info.priority);
+  endpoint_dict.Set("weight", endpoint.info.weight);
 
   const ReportingEndpoint::Statistics& stats = endpoint.stats;
-  base::Value successful_dict(base::Value::Type::DICTIONARY);
-  successful_dict.SetKey("uploads", base::Value(stats.successful_uploads));
-  successful_dict.SetKey("reports", base::Value(stats.successful_reports));
-  endpoint_dict.SetKey("successful", std::move(successful_dict));
-  base::Value failed_dict(base::Value::Type::DICTIONARY);
-  failed_dict.SetKey("uploads", base::Value(stats.attempted_uploads -
-                                            stats.successful_uploads));
-  failed_dict.SetKey("reports", base::Value(stats.attempted_reports -
-                                            stats.successful_reports));
-  endpoint_dict.SetKey("failed", std::move(failed_dict));
+  base::Value::Dict successful_dict;
+  successful_dict.Set("uploads", stats.successful_uploads);
+  successful_dict.Set("reports", stats.successful_reports);
+  endpoint_dict.Set("successful", std::move(successful_dict));
 
-  return endpoint_dict;
+  base::Value::Dict failed_dict;
+  failed_dict.Set("uploads",
+                  stats.attempted_uploads - stats.successful_uploads);
+  failed_dict.Set("reports",
+                  stats.attempted_reports - stats.successful_reports);
+  endpoint_dict.Set("failed", std::move(failed_dict));
+
+  return base::Value(std::move(endpoint_dict));
 }
 
 }  // namespace net

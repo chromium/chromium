@@ -652,10 +652,9 @@ constexpr TaggedPDFTestData kTaggedPDFTestData[] = {
      kExpectedImageRoleOnlyStructTreeJSON},
 };
 
-class HeadlessWebContentsTaggedPDFTest
+class HeadlessWebContentsTaggedPDFTestBase
     : public HeadlessAsyncDevTooledBrowserTest,
-      public page::Observer,
-      public ::testing::WithParamInterface<TaggedPDFTestData> {
+      public page::Observer {
  public:
   void RunDevTooledTest() override {
     EXPECT_TRUE(embedded_test_server()->Start());
@@ -667,7 +666,7 @@ class HeadlessWebContentsTaggedPDFTest
     run_loop.Run();
 
     devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL(GetParam().url).spec());
+        embedded_test_server()->GetURL(GetUrl()).spec());
   }
 
   void OnLoadEventFired(const page::LoadEventFiredParams&) override {
@@ -681,7 +680,7 @@ class HeadlessWebContentsTaggedPDFTest
             .SetMarginLeft(0)
             .SetMarginRight(0)
             .Build(),
-        base::BindOnce(&HeadlessWebContentsTaggedPDFTest::OnPDFCreated,
+        base::BindOnce(&HeadlessWebContentsTaggedPDFTestBase::OnPDFCreated,
                        base::Unretained(this)));
   }
 
@@ -694,9 +693,24 @@ class HeadlessWebContentsTaggedPDFTest
     EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
     EXPECT_EQ(1, num_pages);
 
+    CheckPDF(pdf_span);
+
+    FinishAsynchronousTest();
+  }
+
+  virtual const char* GetUrl() = 0;
+  virtual void CheckPDF(base::span<const uint8_t> pdf_span) = 0;
+};
+
+class HeadlessWebContentsTaggedPDFTest
+    : public HeadlessWebContentsTaggedPDFTestBase,
+      public ::testing::WithParamInterface<TaggedPDFTestData> {
+ public:
+  const char* GetUrl() override { return GetParam().url; }
+
+  void CheckPDF(base::span<const uint8_t> pdf_span) override {
     absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    ASSERT_TRUE(tagged.has_value());
-    EXPECT_TRUE(tagged.value());
+    EXPECT_THAT(tagged, testing::Optional(true));
 
     constexpr int kFirstPage = 0;
     base::Value struct_tree =
@@ -708,8 +722,6 @@ class HeadlessWebContentsTaggedPDFTest
     base::RemoveChars(json, "\r", &json);
 
     EXPECT_EQ(GetParam().expected_json, json);
-
-    FinishAsynchronousTest();
   }
 };
 
@@ -717,6 +729,29 @@ HEADLESS_ASYNC_DEVTOOLED_TEST_P(HeadlessWebContentsTaggedPDFTest);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessWebContentsTaggedPDFTest,
+                         ::testing::ValuesIn(kTaggedPDFTestData));
+
+class HeadlessWebContentsTaggedPDFDisabledTest
+    : public HeadlessWebContentsTaggedPDFTestBase,
+      public ::testing::WithParamInterface<TaggedPDFTestData> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessWebContentsTaggedPDFTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisablePDFTagging);
+  }
+
+  const char* GetUrl() override { return GetParam().url; }
+
+  void CheckPDF(base::span<const uint8_t> pdf_span) override {
+    absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    EXPECT_THAT(tagged, testing::Optional(false));
+  }
+};
+
+HEADLESS_ASYNC_DEVTOOLED_TEST_P(HeadlessWebContentsTaggedPDFDisabledTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessWebContentsTaggedPDFDisabledTest,
                          ::testing::ValuesIn(kTaggedPDFTestData));
 
 #endif  // BUILDFLAG(ENABLE_TAGGED_PDF)

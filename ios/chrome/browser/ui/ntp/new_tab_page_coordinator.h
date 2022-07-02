@@ -34,7 +34,7 @@ class WebState;
 // The toolbar delegate to pass to ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
-// Returns |YES| if the coordinator is started.
+// Returns `YES` if the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 
 // The pan gesture handler for the view controller.
@@ -82,6 +82,9 @@ class WebState;
 // Updates the new tab page based on if there is unseen content in the Following
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
+
+// Called when the given `feedType` has completed updates.
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end
 

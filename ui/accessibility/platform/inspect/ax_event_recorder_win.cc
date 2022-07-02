@@ -38,23 +38,6 @@ std::string RoleVariantToString(const base::win::ScopedVariant& role) {
   return std::string();
 }
 
-HRESULT QueryIAccessible2(IAccessible* accessible, IAccessible2** accessible2) {
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  return SUCCEEDED(hr)
-             ? service_provider->QueryService(IID_IAccessible2, accessible2)
-             : hr;
-}
-
-HRESULT QueryIAccessibleText(IAccessible* accessible,
-                             IAccessibleText** accessible_text) {
-  Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
-  return SUCCEEDED(hr) ? service_provider->QueryService(IID_IAccessibleText,
-                                                        accessible_text)
-                       : hr;
-}
-
 std::string BstrToPrettyUTF8(BSTR bstr) {
   std::wstring wstr(bstr, SysStringLen(bstr));
 
@@ -223,7 +206,7 @@ void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
 
   AccessibleStates ia2_state = 0;
   Microsoft::WRL::ComPtr<IAccessible2> iaccessible2;
-  hr = QueryIAccessible2(iaccessible.Get(), &iaccessible2);
+  hr = IA2QueryInterface<IAccessible2>(iaccessible.Get(), &iaccessible2);
   bool has_ia2 = SUCCEEDED(hr) && iaccessible2;
 
   std::wstring html_tag;
@@ -302,7 +285,7 @@ void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   // For TEXT_REMOVED and TEXT_INSERTED events, query the text that was
   // inserted or removed and include that in the log.
   Microsoft::WRL::ComPtr<IAccessibleText> accessible_text;
-  hr = QueryIAccessibleText(iaccessible.Get(), &accessible_text);
+  hr = IA2QueryInterface<IAccessibleText>(iaccessible.Get(), &accessible_text);
   if (SUCCEEDED(hr)) {
     if (event == IA2_EVENT_TEXT_REMOVED) {
       IA2TextSegment old_text;

@@ -35,6 +35,10 @@ class CC_EXPORT TileTask : public Task {
   // of the task.
   virtual void OnTaskCompleted() = 0;
 
+  // This method should report true if the task contains image decodes that
+  // might be for LCP candidates.
+  virtual bool TaskContainsLCPCandidateImages() const;
+
   void DidComplete();
   bool HasCompleted() const;
 

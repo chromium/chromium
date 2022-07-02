@@ -83,8 +83,7 @@ DomainReliabilityScheduler::DomainReliabilityScheduler(
       upload_pending_(false),
       upload_scheduled_(false),
       upload_running_(false),
-      collector_index_(kInvalidCollectorIndex),
-      last_upload_finished_(false) {
+      collector_index_(kInvalidCollectorIndex) {
   backoff_policy_.num_errors_to_ignore = 0;
   backoff_policy_.initial_delay_ms =
       params.upload_retry_interval.InMilliseconds();
@@ -123,9 +122,6 @@ size_t DomainReliabilityScheduler::OnUploadStart() {
 
   VLOG(1) << "Starting upload to collector " << collector_index_ << ".";
 
-  last_upload_start_time_ = now;
-  last_upload_collector_index_ = collector_index_;
-
   return collector_index_;
 }
 
@@ -152,48 +148,7 @@ void DomainReliabilityScheduler::OnUploadComplete(
     first_beacon_time_ = old_first_beacon_time_;
   }
 
-  last_upload_end_time_ = time_->NowTicks();
-  last_upload_success_ = result.is_success();
-  last_upload_finished_ = true;
-
   MaybeScheduleUpload();
-}
-
-base::Value DomainReliabilityScheduler::GetWebUIData() const {
-  base::TimeTicks now = time_->NowTicks();
-
-  base::Value data(base::Value::Type::DICTIONARY);
-
-  data.SetBoolKey("upload_pending", upload_pending_);
-  data.SetBoolKey("upload_scheduled", upload_scheduled_);
-  data.SetBoolKey("upload_running", upload_running_);
-
-  data.SetIntKey("scheduled_min", (scheduled_min_time_ - now).InSeconds());
-  data.SetIntKey("scheduled_max", (scheduled_max_time_ - now).InSeconds());
-
-  data.SetIntKey("collector_index", static_cast<int>(collector_index_));
-
-  if (last_upload_finished_) {
-    base::Value last(base::Value::Type::DICTIONARY);
-    last.SetIntKey("start_time", (now - last_upload_start_time_).InSeconds());
-    last.SetIntKey("end_time", (now - last_upload_end_time_).InSeconds());
-    last.SetIntKey("collector_index",
-                   static_cast<int>(last_upload_collector_index_));
-    last.SetBoolKey("success", last_upload_success_);
-    data.SetKey("last_upload", std::move(last));
-  }
-
-  base::Value collectors_value(base::Value::Type::LIST);
-  for (const auto& collector : collectors_) {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetIntKey("failures", collector->failure_count());
-    value.SetIntKey("next_upload",
-                    (collector->GetReleaseTime() - now).InSeconds());
-    collectors_value.Append(std::move(value));
-  }
-  data.SetKey("collectors", std::move(collectors_value));
-
-  return data;
 }
 
 void DomainReliabilityScheduler::MakeDeterministicForTesting() {
@@ -218,11 +173,13 @@ void DomainReliabilityScheduler::MaybeScheduleUpload() {
   size_t collector_index;
   GetNextUploadTimeAndCollector(now, &min_by_backoff, &collector_index);
 
-  scheduled_min_time_ = std::max(min_by_deadline, min_by_backoff);
-  scheduled_max_time_ = std::max(max_by_deadline, min_by_backoff);
+  base::TimeTicks scheduled_min_time =
+      std::max(min_by_deadline, min_by_backoff);
+  base::TimeTicks scheduled_max_time =
+      std::max(max_by_deadline, min_by_backoff);
 
-  base::TimeDelta min_delay = scheduled_min_time_ - now;
-  base::TimeDelta max_delay = scheduled_max_time_ - now;
+  base::TimeDelta min_delay = scheduled_min_time - now;
+  base::TimeDelta max_delay = scheduled_max_time - now;
 
   VLOG(1) << "Scheduling upload for between " << min_delay.InSeconds()
           << " and " << max_delay.InSeconds() << " seconds from now.";

@@ -383,7 +383,8 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_WIN) && !BUILDFLAG(GOOGLE_CHROME_BRANDING))
   EXPECT_TRUE(info.built_in_dns_client_enabled);
 #else
   EXPECT_FALSE(info.built_in_dns_client_enabled);

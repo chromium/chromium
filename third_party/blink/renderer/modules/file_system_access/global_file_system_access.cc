@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
@@ -227,7 +228,22 @@ ScriptPromise ShowFilePickerImpl(
     LocalDOMWindow& window,
     mojom::blink::FilePickerOptionsPtr options,
     mojom::blink::CommonFilePickerOptionsPtr common_options,
+    ExceptionState& exception_state,
     bool return_as_sequence) {
+  bool multiple =
+      options->which() ==
+          mojom::blink::FilePickerOptions::Tag::kOpenFilePickerOptions &&
+      options->get_open_file_picker_options()->can_select_multiple_files;
+  bool intercepted = false;
+  probe::FileChooserOpened(window.GetFrame(), /*element=*/nullptr, multiple,
+                           &intercepted);
+  if (intercepted) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kAbortError,
+        "Intercepted by Page.setInterceptFileChooserDialog().");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise resolver_result = resolver->Promise();
 
@@ -350,6 +366,7 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
       mojom::blink::CommonFilePickerOptions::New(
           std::move(starting_directory_id),
           std::move(well_known_starting_directory), std::move(token)),
+      exception_state,
       /*return_as_sequence=*/true);
 }
 
@@ -414,6 +431,7 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
       mojom::blink::CommonFilePickerOptions::New(
           std::move(starting_directory_id),
           std::move(well_known_starting_directory), std::move(token)),
+      exception_state,
       /*return_as_sequence=*/false);
 }
 
@@ -464,6 +482,7 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
       mojom::blink::CommonFilePickerOptions::New(
           std::move(starting_directory_id),
           std::move(well_known_starting_directory), std::move(token)),
+      exception_state,
       /*return_as_sequence=*/false);
 }
 

@@ -96,7 +96,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
 
 class TestUploadCallback {
  public:
-  TestUploadCallback() : called_(false), waiting_(false) {}
+  TestUploadCallback() = default;
 
   ReportingUploader::UploadCallback callback() {
     return base::BindOnce(&TestUploadCallback::OnUploadComplete,
@@ -129,10 +129,10 @@ class TestUploadCallback {
     }
   }
 
-  bool called_;
+  bool called_ = false;
   ReportingUploader::Outcome outcome_;
 
-  bool waiting_;
+  bool waiting_ = false;
   base::OnceClosure closure_;
 };
 

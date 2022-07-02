@@ -575,7 +575,8 @@ TabProperty UserActivityManager::UpdateOpenTabURL() {
     content::WebContents* contents = tab_strip_model->GetActiveWebContents();
 
     if (contents) {
-      ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+      ukm::SourceId source_id =
+          contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
       if (source_id == ukm::kInvalidSourceId)
         return property;
 

@@ -43,7 +43,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class SessionsSyncPerfTest : public SyncTest {
  public:
-  SessionsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
+  SessionsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   SessionsSyncPerfTest(const SessionsSyncPerfTest&) = delete;
   SessionsSyncPerfTest& operator=(const SessionsSyncPerfTest&) = delete;
@@ -68,7 +68,7 @@ class SessionsSyncPerfTest : public SyncTest {
   // Returns a unique URL according to the integer |n|.
   GURL IntToURL(int n);
 
-  int url_number_;
+  int url_number_ = 0;
 };
 
 void SessionsSyncPerfTest::AddTabs(int profile, int num_tabs) {
@@ -116,9 +116,11 @@ int SessionsSyncPerfTest::GetTabCount(int profile) {
 
   int tab_count = 0;
   sessions.push_back(local_session);
-  for (const sync_sessions::SyncedSession* session : sessions)
-    for (const auto& [window_id, window] : session->windows)
+  for (const sync_sessions::SyncedSession* session : sessions) {
+    for (const auto& [window_id, window] : session->windows) {
       tab_count += window->wrapped_window.tabs.size();
+    }
+  }
 
   return tab_count;
 }

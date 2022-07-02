@@ -84,6 +84,9 @@ gpu_android_builder(
 gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
     pool = "luci.chromium.gpu.android.nexus5x.try",
+    mirrors = [
+        "ci/Android Release (Nexus 5X)",
+    ],
 )
 
 def gpu_chromeos_builder(*, name, **kwargs):
@@ -229,7 +232,20 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-arm64-apple-m1-exp",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Experimental Release (Apple M1)",
+    ],
+    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-arm64-apple-m1-rel",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Release (Apple M1)",
+    ],
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
 )
 

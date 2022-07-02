@@ -14,8 +14,7 @@ FakeInputMethodContextFactory::~FakeInputMethodContextFactory() = default;
 
 std::unique_ptr<LinuxInputMethodContext>
 FakeInputMethodContextFactory::CreateInputMethodContext(
-    LinuxInputMethodContextDelegate* /* delegate */,
-    bool is_simple) const {
+    LinuxInputMethodContextDelegate* /* delegate */) const {
   return std::make_unique<FakeInputMethodContext>();
 }
 

@@ -68,11 +68,11 @@ PresentationRequest* PresentationRequest::Create(
   Vector<KURL> parsed_urls;
   for (const auto& source : sources) {
     if (source->IsPresentationSource()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "Presentation sources must be URL strings.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "You must pass in valid URL strings.");
       return nullptr;
     }
+    DCHECK(source->IsUSVString());
     const String& url = source->GetAsUSVString();
     const KURL& parsed_url = KURL(execution_context->Url(), url);
 

@@ -48,6 +48,10 @@ std::string SkColorToRGBAString(SkColor color) {
   return str.str();
 }
 
+std::string SkColorToRGBAString(SkColor4f color) {
+  return SkColorToRGBAString(color.toSkColor());
+}
+
 std::unordered_set<uint64_t> ProcessStack(
     std::ostringstream& str,
     std::vector<StackFrame>& stack,

@@ -26,20 +26,27 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) ChunneldClient
     virtual void ChunneldServiceStarted() = 0;
   };
 
+  // Returns the global instance if initialized. May return null.
+  static ChunneldClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance used on Linux desktop, if
+  // no instance already exists.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
+  ChunneldClient(const ChunneldClient&) = delete;
+  ChunneldClient& operator=(const ChunneldClient&) = delete;
+
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;
 
   // Removes an observer if added.
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  ~ChunneldClient() override;
-
-  ChunneldClient(const ChunneldClient&) = delete;
-  ChunneldClient& operator=(const ChunneldClient&) = delete;
-
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<ChunneldClient> Create();
 
   // Registers |callback| to run when the Concierge service becomes available.
   // If the service is already available, or if connecting to the name-owner-
@@ -50,8 +57,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CHUNNELD) ChunneldClient
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   ChunneldClient();
+  ~ChunneldClient() override;
 };
 
 }  // namespace chromeos

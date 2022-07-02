@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
+<translation id="4096701159033358951">正在下載文件掃描功能</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">這部攝影機無法變更解析度</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">停止拍照</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />：<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> 百萬像素</translation>
 <translation id="4570032796877367747">前置鏡頭</translation>
+<translation id="4620818268515773682">將麥克風切換為靜音。靜音功能已關閉</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4649291346448517080">無法儲存檔案</translation>
 <translation id="4695379108709712600">向上移動</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">每秒畫格數：60</translation>
 <translation id="7671804233658741790">文件右下角</translation>
+<translation id="7692090236657809299">啟用平移、傾斜和縮放功能</translation>
 <translation id="7726641833034062494">錄製一般影片</translation>
 <translation id="7748344063862150053">文件右上角</translation>
 <translation id="7933675232020478311">向右下移動</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8687491812650032292">HD 高畫質 <ph name="HEIGHT" />p (<ph name="WIDTH" />：<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">將麥克風切換為靜音。靜音功能已開啟</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">預覽中繼資料</translation>

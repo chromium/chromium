@@ -99,18 +99,6 @@ suite('Metrics', function() {
     assertEquals(1, actionMap['BookmarkStarClicked']);
     items[1].$.link.click();
     assertEquals(1, actionMap['EntryLinkClick']);
-    assertEquals(1, histogramMap['HistoryPage.ClickPosition']![1]);
-    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset']![1]);
-
-    // TODO(https://crbug.com/1000573): Log the contents of this histogram
-    // for debugging in case the flakiness reoccurs.
-    console.info(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']!));
-
-    // The "age in days" histogram should record 8 days, since the history
-    // entry was created between 7 and 8 days ago and we round the
-    // recorded value up.
-    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDays']![8]);
-    assertEquals(1, histogramMap['HistoryPage.ClickAgeInDaysSubset']![8]);
 
     testService.resetResolver('queryHistory');
     testService.setQueryResult({
@@ -140,8 +128,6 @@ suite('Metrics', function() {
     assertTrue(!!items[4]);
     items[0].$.link.click();
     assertEquals(1, actionMap['SearchResultClick']);
-    assertEquals(1, histogramMap['HistoryPage.ClickPosition']![0]);
-    assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset']![0]);
     items[0].$.checkbox.click();
     items[4].$.checkbox.click();
     await flushTasks();
@@ -172,9 +158,6 @@ suite('Metrics', function() {
       testService.whenCalled('removeVisits'),
       flushTasks(),
     ]);
-
-    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPosition']![0]);
-    assertEquals(1, histogramMap['HistoryPage.RemoveEntryPositionSubset']![0]);
   });
 
   test('synced-device-manager', async () => {
@@ -234,5 +217,18 @@ suite('Metrics', function() {
     syncedDeviceManager!.shadowRoot!
         .querySelector<HTMLElement>('#menuDeleteButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.HIDE_FOR_NOW]);
+  });
+
+  test('history-clusters-duration', async () => {
+    await finishSetup([]);
+
+    navigateTo('/journeys', app);
+    await flushTasks();
+
+    navigateTo('/history', app);
+    await flushTasks();
+
+    const args = await testService.whenCalled('recordLongTime');
+    assertEquals(args[0], 'History.Clusters.WebUISessionDuration');
   });
 });

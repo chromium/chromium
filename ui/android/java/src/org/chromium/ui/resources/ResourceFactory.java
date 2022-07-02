@@ -28,7 +28,7 @@ public class ResourceFactory {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long createBitmapResource();
         long createNinePatchBitmapResource(int paddingLeft, int paddingTop, int paddingRight,
                 int paddingBottom, int apertureLeft, int apertureTop, int apertureRight,

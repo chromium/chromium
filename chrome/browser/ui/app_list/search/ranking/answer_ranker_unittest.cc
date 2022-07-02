@@ -6,30 +6,21 @@
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
 namespace {
 
-class TestResult : public ChromeSearchResult {
- public:
-  TestResult(double relevance, DisplayType display_type, bool best_match) {
-    set_relevance(relevance);
-    SetDisplayType(display_type);
-    SetBestMatch(best_match);
-  }
-  ~TestResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-};
-
 Results make_omnibox_candidates(std::vector<double> relevances) {
   Results results;
   for (const double relevance : relevances) {
+    // |id| and |normalized_relevance| must be set but are not used.
     results.push_back(std::make_unique<TestResult>(
-        relevance, ash::SearchResultDisplayType::kAnswerCard, false));
+        /*id=*/"", relevance,
+        /*normalized_relevance=*/0.0, ash::SearchResultDisplayType::kAnswerCard,
+        false));
   }
   return results;
 }
@@ -37,8 +28,11 @@ Results make_omnibox_candidates(std::vector<double> relevances) {
 Results make_shortcut_candidates(std::vector<bool> best_matches) {
   Results results;
   for (const double best_match : best_matches) {
+    // |id| and |normalized_relevance| must be set but are not used.
     results.push_back(std::make_unique<TestResult>(
-        1, ash::SearchResultDisplayType::kList, best_match));
+        /*id=*/"",
+        /*relevance=*/1, /*normalized_relevance=*/0.0,
+        ash::SearchResultDisplayType::kList, best_match));
   }
   return results;
 }

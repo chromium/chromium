@@ -57,7 +57,7 @@ struct URL_MATCHER_EXPORT FilterComponents {
 // or block-list (false) filter.
 URL_MATCHER_EXPORT scoped_refptr<url_matcher::URLMatcherConditionSet>
 CreateConditionSet(url_matcher::URLMatcher* url_matcher,
-                   url_matcher::URLMatcherConditionSet::ID id,
+                   base::MatcherStringPattern::ID id,
                    const std::string& scheme,
                    const std::string& host,
                    bool match_subdomains,
@@ -98,9 +98,9 @@ URL_MATCHER_EXPORT bool FilterToComponents(const std::string& filter,
 URL_MATCHER_EXPORT void AddFilters(
     url_matcher::URLMatcher* matcher,
     bool allow,
-    url_matcher::URLMatcherConditionSet::ID* id,
+    base::MatcherStringPattern::ID* id,
     const base::ListValue* patterns,
-    std::map<url_matcher::URLMatcherConditionSet::ID,
+    std::map<base::MatcherStringPattern::ID,
              url_matcher::util::FilterComponents>* filters = nullptr);
 
 // Adds the filters in `patterns` to `url_matcher` as a ConditionSet::Vector.
@@ -115,9 +115,9 @@ URL_MATCHER_EXPORT void AddFilters(
 URL_MATCHER_EXPORT void AddFilters(
     url_matcher::URLMatcher* matcher,
     bool allow,
-    url_matcher::URLMatcherConditionSet::ID* id,
+    base::MatcherStringPattern::ID* id,
     const std::vector<std::string>& patterns,
-    std::map<url_matcher::URLMatcherConditionSet::ID,
+    std::map<base::MatcherStringPattern::ID,
              url_matcher::util::FilterComponents>* filters = nullptr);
 
 URL_MATCHER_EXPORT void AddAllowFilters(url_matcher::URLMatcher* matcher,

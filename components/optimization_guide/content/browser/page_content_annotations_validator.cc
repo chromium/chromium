@@ -6,11 +6,14 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -29,16 +32,32 @@ const char* kRandomNouns[] = {
 };
 const size_t kCountRandomNouns = 20;
 
-void LogAnnotationResultToConsole(
+void LogLinesToFileOnBackgroundSequence(const base::FilePath& path,
+                                        const std::vector<std::string>& lines) {
+  std::string data = base::JoinString(lines, "\n") + "\n";
+  if (base::PathExists(path)) {
+    base::AppendToFile(path, data);
+    return;
+  }
+  base::WriteFile(path, data);
+}
+
+void MaybeLogAnnotationResultToFile(
     const std::vector<BatchAnnotationResult>& results) {
-  if (!switches::LogPageContentAnnotationsValidationToConsole()) {
+  absl::optional<base::FilePath> path =
+      switches::PageContentAnnotationsValidationWriteToFile();
+  if (!path) {
     return;
   }
 
-  LOG(ERROR) << "PageContentAnnotations Validation Complete:";
-  for (size_t i = 0; i < results.size(); i++) {
-    LOG(ERROR) << "  " << i << ": " << results[i].ToJSON();
+  std::vector<std::string> lines;
+  for (const BatchAnnotationResult& result : results) {
+    lines.push_back(result.ToJSON());
   }
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&LogLinesToFileOnBackgroundSequence, *path, lines));
 }
 
 }  // namespace
@@ -93,7 +112,7 @@ PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
 
 void PageContentAnnotationsValidator::Run() {
   for (AnnotationType type : enabled_annotation_types_) {
-    annotator_->Annotate(base::BindOnce(&LogAnnotationResultToConsole),
+    annotator_->Annotate(base::BindOnce(&MaybeLogAnnotationResultToFile),
                          BuildInputsForType(type), type);
   }
 }

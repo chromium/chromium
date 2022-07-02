@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -66,7 +67,7 @@ class FromGWSPageLoadMetricsObserverTest
   }
 
  protected:
-  FromGWSPageLoadMetricsObserver* observer_ = nullptr;
+  raw_ptr<FromGWSPageLoadMetricsObserver> observer_ = nullptr;
 };
 
 class FromGWSPageLoadMetricsLoggerTest : public testing::Test {};

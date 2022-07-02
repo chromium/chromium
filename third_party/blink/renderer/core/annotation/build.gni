@@ -12,3 +12,9 @@ blink_core_sources_annotation = [
   "text_annotation_selector.cc",
   "text_annotation_selector.h",
 ]
+
+blink_core_tests_annotation = [
+  "annotation_agent_container_impl_test.cc",
+  "annotation_agent_impl_test.cc",
+  "annotation_test_utils.h",
+]

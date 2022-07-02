@@ -6,17 +6,17 @@
  * @fileoverview
  * 'settings-pointers' is the settings subpage with mouse and touchpad settings.
  */
-import '//resources/cr_components/localized_link/localized_link.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../controls/settings_radio_group.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
@@ -230,11 +230,12 @@ class SettingsPointersElement extends SettingsPointersElementBase {
    * @private
    */
   onLearnMoreLinkClicked_(event) {
-    if (!Array.isArray(event.path) || !event.path.length) {
+    const path = event.composedPath();
+    if (!Array.isArray(path) || !path.length) {
       return;
     }
 
-    if (event.path[0].tagName === 'A') {
+    if (path[0].tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }

@@ -27,6 +27,7 @@
 #include "ash/components/arc/test/fake_app_host.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -49,10 +50,10 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -396,7 +397,7 @@ class ArcVmClientAdapterTest : public testing::Test,
         // connect_sleep_duration_initial
         base::Milliseconds(20));
 
-    chromeos::SessionManagerClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFake();
 
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
     app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
@@ -406,7 +407,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   void TearDown() override {
     arc_dlc_installer_.reset();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();
     run_loop_.reset();
@@ -1101,8 +1102,8 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_FailedAdbResponse) {
   StartMiniArc();
 
   // Ask the Fake Session Manager to return a failed Adb Sideload response.
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
-      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::FAILED);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      ash::FakeSessionManagerClient::AdbSideloadResponseCode::FAILED);
 
   UpgradeArcWithParamsAndStopVmCount(false, {}, /*run_until_stop_vm_count=*/2);
   ExpectArcStopped();
@@ -1114,9 +1115,8 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NeedPowerwashAdbResponse) {
 
   // Ask the Fake Session Manager to return a Need_Powerwash Adb Sideload
   // response.
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
-      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::
-          NEED_POWERWASH);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      ash::FakeSessionManagerClient::AdbSideloadResponseCode::NEED_POWERWASH);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
@@ -1139,7 +1139,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDefault) {
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyEnabled) {
   StartMiniArc();
 
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
@@ -1150,7 +1150,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyEnabled) {
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDisabled) {
   StartMiniArc();
 
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
@@ -1311,17 +1311,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
   UpgradeArcWithParams(true, std::move(params));
   EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
                              "ro.boot.arc_demo_mode=1"));
-}
-
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_DisableSystemDefaultApp) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.arc_disable_system_default_app = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.disable_system_default_app=1"));
 }
 
 TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableMediaStoreMaintenance) {
@@ -1543,28 +1532,6 @@ TEST_F(ArcVmClientAdapterTest, TestCreateArcVmClientAdapter) {
   CreateArcVmClientAdapter();
 }
 
-TEST_F(ArcVmClientAdapterTest, ChromeOsChannelStable) {
-  base::test::ScopedChromeOSVersionInfo info(
-      "CHROMEOS_RELEASE_TRACK=stable-channel", base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.chromeos_channel=stable"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
-  base::test::ScopedChromeOSVersionInfo info("CHROMEOS_RELEASE_TRACK=invalid",
-                                             base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.chromeos_channel=unknown"));
-}
-
 TEST_F(ArcVmClientAdapterTest, DefaultBlockSize) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(arc::kUseDefaultBlockSize, true /* use */);
@@ -1667,18 +1634,6 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
   EXPECT_TRUE(HasDiskImage(req, kCreatedDiskImagePath));
   EXPECT_TRUE(
       base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
-}
-
-TEST_F(ArcVmClientAdapterTest, VshdForTest) {
-  base::test::ScopedChromeOSVersionInfo info(
-      "CHROMEOS_RELEASE_TRACK=testimage-channel", base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  UpgradeArc(true);
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.vshd_service_override=vshd_for_test"));
 }
 
 TEST_F(ArcVmClientAdapterTest, VshdForRelease) {
@@ -1922,6 +1877,32 @@ TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagEnabled) {
       req.params(), "androidboot.arc_enable_gmscore_lmk_protection=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_Default) {
+  StartMiniArc();
+
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(
+      req.params(), "androidboot.arc_enable_gmscore_lmk_protection=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, BroadcastPreANRDefault) {
+  StartMiniArc();
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  for (const auto& param : request.params())
+    EXPECT_EQ(std::string::npos, param.find("arc.broadcast_anr_prenotify"));
+}
+
+TEST_F(ArcVmClientAdapterTest, BroadcastPreANREnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kVmBroadcastPreNotifyANR, true);
+
+  StartMiniArc();
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arc.broadcast_anr_prenotify=1"));
+}
+
 TEST_F(ArcVmClientAdapterTest, TrimVmMemory_Success) {
   SetValidUserInfo();
   vm_tools::concierge::ReclaimVmMemoryResponse response;
@@ -2053,11 +2034,22 @@ TEST_F(ArcVmClientAdapterTest, ArcVmUseHugePagesEnabled) {
   EXPECT_TRUE(request.use_hugepages());
 }
 
-TEST_F(ArcVmClientAdapterTest, ArcVmUseHugePagesDisabled) {
+TEST_F(ArcVmClientAdapterTest, ArcVmLockGuestMemoryEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLockGuestMemory);
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.lock_guest_memory());
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcVmMemoryOptionsDisabled) {
+  StartParams start_params(GetPopulatedStartParams());
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  // Verify that both options are disabled by default.
   EXPECT_FALSE(request.use_hugepages());
+  EXPECT_FALSE(request.lock_guest_memory());
 }
 
 // Test that StartArcVmRequest has no memory_mib field when kVmMemorySize is
@@ -2336,6 +2328,37 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Disabled) {
                              "ro.boot.enable_arc_nearby_share=0"));
 }
 
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.enable_consumer_auto_update_toggle());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kConsumerAutoUpdateToggleAllowed);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.enable_consumer_auto_update_toggle());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kConsumerAutoUpdateToggleAllowed);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.enable_consumer_auto_update_toggle());
+}
+
 // Test that StartArcVmRequest has no androidboot.arcvm.logd.size field
 // when kLogdConfig is disabled.
 TEST_F(ArcVmClientAdapterTest, ArcVmLogdSizeDisabled) {
@@ -2537,6 +2560,24 @@ TEST_F(ArcVmClientAdapterTest, ArcVmTTSCachingEnabled) {
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_TRUE(
       base::Contains(request.params(), "androidboot.arc.tts.caching=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_tts_cache = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.skip_tts_cache=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, ConvertUpgradeParams_EnableTtsCacheSetup) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_tts_cache = false;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.skip_tts_cache=0"));
 }
 
 }  // namespace

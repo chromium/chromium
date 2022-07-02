@@ -114,7 +114,7 @@ public class PriceDropNotifier {
         mContext = context;
         mNotificationManagerProxy = notificationManager;
         mPriceDropNotificationManager =
-                new PriceDropNotificationManager(mContext, mNotificationManagerProxy);
+                PriceDropNotificationManagerFactory.create(mContext, mNotificationManagerProxy);
     }
 
     /**

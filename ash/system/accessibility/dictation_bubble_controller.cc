@@ -20,8 +20,9 @@ DictationBubbleController::DictationBubbleController() {
       Shell::Get()->window_tree_host_manager()->input_method();
   if (!input_method_observer_.IsObservingSource(input_method))
     input_method_observer_.Observe(input_method);
-  if (!color_mode_observer_.IsObservingSource(AshColorProvider::Get()))
-    color_mode_observer_.Observe(AshColorProvider::Get());
+  if (!color_mode_observer_.IsObservingSource(
+          DarkLightModeControllerImpl::Get()))
+    color_mode_observer_.Observe(DarkLightModeControllerImpl::Get());
 }
 
 DictationBubbleController::~DictationBubbleController() {

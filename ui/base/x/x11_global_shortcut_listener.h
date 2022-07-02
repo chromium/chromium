@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/x/xproto.h"
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XGlobalShortcutListener
   std::set<Accelerator> registered_combinations_;
 
   // The x11 default display and the native root window.
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
   x11::Window x_root_window_;
 };
 

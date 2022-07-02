@@ -151,10 +151,10 @@ TEST_F(CryptoTokenPrivateApiTest, IsAppIdHashInEnterpriseContext) {
   ASSERT_TRUE(GetAppIdHashInEnterpriseContext(rp_id_hash, &result));
   EXPECT_FALSE(result);
 
-  base::Value::ListStorage permitted_list;
-  permitted_list.emplace_back(example_com);
-  profile()->GetPrefs()->Set(prefs::kSecurityKeyPermitAttestation,
-                             base::Value(permitted_list));
+  base::Value::List permitted_list;
+  permitted_list.Append(example_com);
+  profile()->GetPrefs()->SetList(prefs::kSecurityKeyPermitAttestation,
+                                 std::move(permitted_list));
 
   ASSERT_TRUE(GetAppIdHashInEnterpriseContext(example_com_hash, &result));
   EXPECT_TRUE(result);
@@ -267,11 +267,11 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
         api::CryptotokenPrivateCanAppIdGetAttestationFunction>();
     function->set_has_callback(true);
 
-    base::Value::DictStorage dict;
-    dict.emplace("appId", app_id);
-    dict.emplace("tabId", tab_id_);
-    dict.emplace("frameId", -1);  // Ignored.
-    dict.emplace("origin", app_id);
+    base::Value::Dict dict;
+    dict.Set("appId", app_id);
+    dict.Set("tabId", tab_id_);
+    dict.Set("frameId", -1);  // Ignored.
+    dict.Set("origin", app_id);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));
@@ -300,11 +300,11 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
         api::CryptotokenPrivateCanMakeU2fApiRequestFunction>();
     function->set_has_callback(true);
 
-    base::Value::DictStorage dict;
-    dict.emplace("appId", origin);
-    dict.emplace("tabId", tab_id_);
-    dict.emplace("frameId", 0 /* main frame */);
-    dict.emplace("origin", origin);
+    base::Value::Dict dict;
+    dict.Set("appId", origin);
+    dict.Set("tabId", tab_id_);
+    dict.Set("frameId", 0 /* main frame */);
+    dict.Set("origin", origin);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));
@@ -350,10 +350,10 @@ TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {
 
 TEST_F(CryptoTokenPermissionTest, PolicyOverridesAttestationPrompt) {
   const std::string example_com("https://example.com");
-  base::Value::ListStorage permitted_list;
-  permitted_list.emplace_back(example_com);
-  profile()->GetPrefs()->Set(prefs::kSecurityKeyPermitAttestation,
-                             base::Value(permitted_list));
+  base::Value::List permitted_list;
+  permitted_list.Append(example_com);
+  profile()->GetPrefs()->SetList(prefs::kSecurityKeyPermitAttestation,
+                                 std::move(permitted_list));
 
   // If an appId is configured by enterprise policy then attestation requests
   // should be permitted without showing a prompt.
@@ -392,25 +392,6 @@ TEST_F(CryptoTokenPermissionTest, FeatureFlagOverridesRequestPrompt) {
                                    permissions::PermissionRequestManager::NONE,
                                    &result));
   EXPECT_TRUE(result);
-}
-
-TEST_F(CryptoTokenPermissionTest, EnterprisePolicyOverridesRequestPrompt) {
-  // Setting the deprecation override policy should cause the prompt to be
-  // suppressed. This should be true even when the API has been
-  // default-disabled, because the policy overrides that too.
-  for (bool api_enabled : {false, true}) {
-    SCOPED_TRACE(api_enabled);
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(extensions_features::kU2FSecurityKeyAPI,
-                                      api_enabled);
-    browser()->profile()->GetPrefs()->Set(
-        extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
-    bool result = false;
-    ASSERT_TRUE(CanMakeU2fApiRequest(
-        "https://test.com", permissions::PermissionRequestManager::NONE,
-        &result));
-    EXPECT_TRUE(result);
-  }
 }
 
 }  // namespace extensions

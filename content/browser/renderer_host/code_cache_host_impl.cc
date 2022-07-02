@@ -346,9 +346,9 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  auto read_callback =
-      base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto read_callback = base::BindOnce(
+      &CodeCacheHostImpl::OnReceiveCachedCode, weak_ptr_factory_.GetWeakPtr(),
+      cache_type, base::TimeTicks::Now(), std::move(callback));
   code_cache->FetchEntry(url, *origin_lock, network_isolation_key_,
                          std::move(read_callback));
 }
@@ -424,9 +424,17 @@ GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(
   return generated_code_cache_context_->generated_wasm_code_cache();
 }
 
-void CodeCacheHostImpl::OnReceiveCachedCode(FetchCachedCodeCallback callback,
-                                            const base::Time& response_time,
-                                            mojo_base::BigBuffer data) {
+void CodeCacheHostImpl::OnReceiveCachedCode(
+    blink::mojom::CodeCacheType cache_type,
+    base::TimeTicks start_time,
+    FetchCachedCodeCallback callback,
+    const base::Time& response_time,
+    mojo_base::BigBuffer data) {
+  if (cache_type == blink::mojom::CodeCacheType::kJavascript &&
+      data.size() > 0) {
+    base::UmaHistogramTimes("SiteIsolatedCodeCache.JS.FetchCodeCache",
+                            base::TimeTicks::Now() - start_time);
+  }
   std::move(callback).Run(response_time, std::move(data));
 }
 

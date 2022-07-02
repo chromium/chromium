@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/vr_device_base.h"
 #include "device/vr/vr_export.h"
@@ -35,7 +36,7 @@ class DEVICE_VR_EXPORT FakeVRDeviceProvider : public VRDeviceProvider {
  private:
   std::vector<std::unique_ptr<VRDeviceBase>> devices_;
   bool initialized_;
-  VRDeviceProviderClient* client_ = nullptr;
+  raw_ptr<VRDeviceProviderClient> client_ = nullptr;
 };
 
 }  // namespace device

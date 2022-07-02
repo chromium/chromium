@@ -12,6 +12,8 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from '../arc_account_picker/test_util.js';
+
 import {getFakeAccountsList, TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_util.js';
 
 window.edu_coexistence_app_tests = {};
@@ -27,14 +29,22 @@ edu_coexistence_app_tests.TestNames = {
   DontSwitchViewIfDisplayingError: 'No view switch after error',
   ShowErrorScreenImmediatelyOnLoadAbort:
       'Show error screen immediately on loadabort in webview',
+  ShowArcPicker: 'ShowArcPicker',
+  ArcPickerSwitchToNormalSignin: 'ArcPickerSwitchToNormalSignin',
 };
 
 suite(edu_coexistence_app_tests.suiteName, function() {
   let appComponent;
   let testBrowserProxy;
-  setup(function() {
+  let testArcBrowserProxy;
+
+  /**
+   * @param {?AccountAdditionOptions} dialogArgs
+   */
+  function setupWithParams(dialogArgs) {
     testBrowserProxy = new TestEduCoexistenceBrowserProxy();
     EduCoexistenceBrowserProxyImpl.instance_ = testBrowserProxy;
+    testBrowserProxy.setDialogArguments(dialogArgs);
     testBrowserProxy.setInitializeEduArgsResponse(async function() {
       return {
         url: 'https://foo.example.com/supervision/coexistence/intro',
@@ -49,11 +59,27 @@ suite(edu_coexistence_app_tests.suiteName, function() {
       };
     });
 
+    if (loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
+      testArcBrowserProxy = new TestArcAccountPickerBrowserProxy();
+      testArcBrowserProxy.setAccountsNotAvailableInArc(
+          getFakeAccountsNotAvailableInArcList());
+      setTestArcAccountPickerBrowserProxy(testArcBrowserProxy);
+    }
 
     PolymerTest.clearBody();
     appComponent = document.createElement('edu-coexistence-app');
     document.body.appendChild(appComponent);
     flush();
+  }
+
+  async function waitForSwitchViewPromise() {
+    return new Promise(
+        resolve => appComponent.addEventListener(
+            'switch-view-notify-for-testing', () => resolve()));
+  }
+
+  setup(function() {
+    setupWithParams({isAvailableInArc: true, showArcAvailabilityPicker: false});
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.InitOnline), function() {
@@ -89,6 +115,44 @@ suite(edu_coexistence_app_tests.suiteName, function() {
     appComponent.fire('go-error');
     assertEquals(appComponent.currentScreen_, Screens.ERROR);
   });
+
+  test(
+      assert(edu_coexistence_app_tests.TestNames.ShowArcPicker),
+      async function() {
+        setupWithParams(
+            {isAvailableInArc: true, showArcAvailabilityPicker: true});
+        const switchViewPromise = waitForSwitchViewPromise();
+        appComponent.setInitialScreen_(true /** online **/);
+        await switchViewPromise;
+        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+
+        window.dispatchEvent(new Event('offline'));
+        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+
+        window.dispatchEvent(new Event('online'));
+        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+
+        appComponent.fire('go-error');
+        assertEquals(appComponent.currentScreen_, Screens.ERROR);
+      });
+
+  test(
+      assert(edu_coexistence_app_tests.TestNames.ArcPickerSwitchToNormalSignin),
+      async function() {
+        setupWithParams(
+            {isAvailableInArc: true, showArcAvailabilityPicker: true});
+        const switchViewPromise = waitForSwitchViewPromise();
+        appComponent.setInitialScreen_(true /** online **/);
+        await switchViewPromise;
+        assertEquals(appComponent.currentScreen_, Screens.ARC_ACCOUNT_PICKER);
+
+        const arcAccountPickerComponent =
+            /** @type {ArcAccountPickerAppElement} */ (
+                appComponent.$$('arc-account-picker-app'));
+        arcAccountPickerComponent.shadowRoot.querySelector('#addAccountButton')
+            .click();
+        assertEquals(appComponent.currentScreen_, Screens.ONLINE_FLOW);
+      });
 
   test(
       assert(

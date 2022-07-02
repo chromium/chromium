@@ -36,8 +36,6 @@ SkColorTypeToResourceFormat(SkColorType color_type);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataType(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLCopyTextureInternalFormat(
-    ResourceFormat format);
 
 // Returns the pixel format of the resource when mapped into client-side memory.
 // Returns a default value when IsGpuMemoryBufferFormatSupported() returns false
@@ -54,8 +52,7 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
     ResourceFormat format,
     bool use_angle_rgbx_format);
 
-// Returns whether the format can be used with GpuMemoryBuffer texture storage,
-// allocated through TexStorage2DImageCHROMIUM.
+// Returns whether the format can be used with GpuMemoryBuffer texture storage.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
     ResourceFormat format);
 

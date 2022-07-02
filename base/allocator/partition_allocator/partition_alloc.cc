@@ -9,10 +9,11 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
@@ -20,7 +21,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/dcheck_is_on.h"
 
 namespace partition_alloc {
 
@@ -80,7 +80,7 @@ void PartitionAllocGlobalUninitForTesting() {
 #if defined(PA_HAS_64_BITS_POINTERS)
   internal::PartitionAddressSpace::UninitForTesting();
 #else
-  internal::AddressPoolManager::GetInstance()->ResetForTesting();
+  internal::AddressPoolManager::GetInstance().ResetForTesting();
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::g_oom_handling_function = nullptr;
@@ -106,7 +106,8 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 
-#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+#if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
 void CheckThatSlotOffsetIsZero(uintptr_t address) {
   // Add kPartitionPastAllocationAdjustment, because

@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
@@ -60,7 +61,8 @@ class PLATFORM_EXPORT GraphicsContextState final {
   // cc::PaintFlags objects that reflect the current state. If the length of the
   // path to be stroked is known, pass it in for correct dash or dot placement.
   const cc::PaintFlags& StrokeFlags(const int stroked_path_length = 0,
-                                    const int dash_thickness = 0) const;
+                                    const int dash_thickness = 0,
+                                    const bool closed_path = false) const;
   const cc::PaintFlags& FillFlags() const { return fill_flags_; }
 
   uint16_t SaveCount() const { return save_count_; }

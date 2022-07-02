@@ -268,7 +268,7 @@ TEST(RasterSourceTest, RasterFullContents) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorBLACK);
+  recording_source->SetBackgroundColor(SkColors::kBlack);
 
   // Because the caller sets content opaque, it also promises that it
   // has at least filled in layer_bounds opaquely.
@@ -302,7 +302,7 @@ TEST(RasterSourceTest, RasterFullContents) {
       SkBitmap bitmap;
       bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
       SkCanvas canvas(bitmap, SkSurfaceProps{});
-      canvas.clear(SK_ColorTRANSPARENT);
+      canvas.clear(SkColors::kTransparent);
 
       raster->PlaybackToCanvas(
           &canvas, content_bounds, canvas_rect, canvas_rect,
@@ -333,7 +333,7 @@ TEST(RasterSourceTest, RasterFullContentsWithRasterTranslation) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorBLACK);
+  recording_source->SetBackgroundColor(SkColors::kBlack);
 
   // Because the caller sets content opaque, it also promises that it
   // has at least filled in layer_bounds opaquely.
@@ -363,7 +363,7 @@ TEST(RasterSourceTest, RasterFullContentsWithRasterTranslation) {
       SkBitmap bitmap;
       bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
       SkCanvas canvas(bitmap, SkSurfaceProps{});
-      canvas.clear(SK_ColorTRANSPARENT);
+      canvas.clear(SkColors::kTransparent);
 
       raster->PlaybackToCanvas(
           &canvas, content_bounds, canvas_rect, canvas_rect,
@@ -393,7 +393,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorGREEN);
+  recording_source->SetBackgroundColor(SkColors::kGreen);
 
   // First record everything as white.
   PaintFlags white_flags;
@@ -467,7 +467,7 @@ TEST(RasterSourceTest, RasterPartialContentsWithRasterTranslation) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorGREEN);
+  recording_source->SetBackgroundColor(SkColors::kGreen);
 
   // First record everything as white.
   PaintFlags white_flags;
@@ -558,7 +558,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorGREEN);
+  recording_source->SetBackgroundColor(SkColors::kGreen);
   recording_source->SetRequiresClear(true);
 
   // First record everything as white.
@@ -596,7 +596,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
 
   std::unique_ptr<FakeRecordingSource> recording_source_light =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source_light->SetBackgroundColor(SK_ColorGREEN);
+  recording_source_light->SetBackgroundColor(SkColors::kGreen);
   recording_source_light->SetRequiresClear(true);
 
   // Record everything as a slightly lighter white.
@@ -633,7 +633,7 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
 
   std::unique_ptr<FakeRecordingSource> recording_source =
       FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->SetBackgroundColor(SK_ColorTRANSPARENT);
+  recording_source->SetBackgroundColor(SkColors::kTransparent);
   recording_source->SetRequiresClear(true);
   recording_source->Rerecord();
 

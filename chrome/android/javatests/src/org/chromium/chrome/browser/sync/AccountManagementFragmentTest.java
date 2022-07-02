@@ -41,6 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -64,7 +65,7 @@ public class AccountManagementFragmentTest {
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -81,7 +82,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementFragmentView() throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -92,8 +93,8 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSignedInAccountShownOnTop() throws Exception {
-        mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccount("testSecondary@gmail.com");
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -104,7 +105,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementViewForChildAccount() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
@@ -123,11 +124,11 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
         // The code under test doesn't care what account type this is, though in practice only
         // EDU accounts are supported on devices where the primary account is a child account.
-        mAccountManagerTestRule.addAccount("account@school.com");
-        mAccountManagerTestRule.waitForSeeding();
+        mSigninTestRule.addAccount("account@school.com");
+        mSigninTestRule.waitForSeeding();
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
@@ -145,7 +146,7 @@ public class AccountManagementFragmentTest {
     @Test
     @SmallTest
     public void testSignOutUserWithoutShowingSignOutDialog() {
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out)).perform(click());
@@ -160,10 +161,12 @@ public class AccountManagementFragmentTest {
     @Test
     @SmallTest
     public void showSignOutDialogBeforeSigningUserOut() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_and_signout_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 }

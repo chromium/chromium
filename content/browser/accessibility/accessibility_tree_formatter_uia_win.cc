@@ -120,6 +120,74 @@ void GetUIARuntimeId(IUIAutomationElement* first_child,
   *runtime_id_out = runtime_id.Release();
 }
 
+void GetUIARoot(ui::AXPlatformNodeDelegate* start,
+                IUIAutomation* uia,
+                IUIAutomationElement** root) {
+  content::BrowserAccessibility* start_internal =
+      content::BrowserAccessibility::FromAXPlatformNodeDelegate(start);
+  // Start by getting the root element for the HWND hosting the web content.
+  HWND hwnd = start_internal->manager()
+                  ->GetRoot()
+                  ->GetTargetForNativeAccessibilityEvent();
+  uia->ElementFromHandle(hwnd, root);
+}
+
+void GetUIAElementFromDelegate(ui::AXPlatformNodeDelegate* start,
+                               IUIAutomation* uia,
+                               IUIAutomationElement** element) {
+  // We use the UI Automation client API to produce the tree dump, but
+  // BrowserAccessibility has a pointer to a provider API implementation, and
+  // we can't directly relate the two -- the OS manages the relationship.
+  // To locate the client element we want, we'll construct a RuntimeId
+  // corresponding to our provider element, then search for that.
+  Microsoft::WRL::ComPtr<IUIAutomationElement> root;
+  GetUIARoot(start, uia, &root);
+  CHECK(root.Get());
+
+  // The root element is provided by AXFragmentRootWin, whose RuntimeId is not
+  // in the same form as elements provided by BrowserAccessibility.
+  // Find the root element's first child, which should be provided by
+  // BrowserAccessibility. We'll use that element's RuntimeId as a template for
+  // the RuntimeId of the element we're looking for.
+  Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
+  uia->get_RawViewWalker(&tree_walker);
+  Microsoft::WRL::ComPtr<IUIAutomationElement> first_child;
+  tree_walker->GetFirstChildElement(root.Get(), &first_child);
+  CHECK(first_child.Get());
+
+  // Get first_child's RuntimeId and swap out the last element in its SAFEARRAY
+  // for the UniqueId of the element we want to start from.
+  Microsoft::WRL::ComPtr<IUnknown> start_unknown =
+      content::BrowserAccessibility::FromAXPlatformNodeDelegate(start)
+          ->GetNativeViewAccessible();
+  Microsoft::WRL::ComPtr<IRawElementProviderFragment> start_fragment;
+  start_unknown.As(&start_fragment);
+  CHECK(start_fragment.Get());
+  base::win::ScopedSafearray uia_runtime_id;
+  GetUIARuntimeId(first_child.Get(), start_fragment.Get(),
+                  uia_runtime_id.Receive());
+
+  // Find the element with the desired RuntimeId.
+  base::win::ScopedVariant runtime_id_variant(uia_runtime_id.Release());
+  Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
+  uia->CreatePropertyCondition(UIA_RuntimeIdPropertyId, runtime_id_variant,
+                               &condition);
+  CHECK(condition);
+
+  root->FindFirst(TreeScope_Subtree, condition.Get(), element);
+}
+
+RECT GetUIARootBounds(ui::AXPlatformNodeDelegate* delegate,
+                      IUIAutomation* uia) {
+  Microsoft::WRL::ComPtr<IUIAutomationElement> root;
+  GetUIARoot(delegate, uia, &root);
+  CHECK(root.Get());
+  RECT root_bounds = {0};
+  root->get_CurrentBoundingRectangle(&root_bounds);
+
+  return root_bounds;
+}
+
 }  // namespace
 
 namespace content {
@@ -402,58 +470,10 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
 
 base::Value AccessibilityTreeFormatterUia::BuildTree(
     ui::AXPlatformNodeDelegate* start) const {
-  // We use the UI Automation client API to produce the tree dump, but
-  // BrowserAccessibility has a pointer to a provider API implementation, and
-  // we can't directly relate the two -- the OS manages the relationship.
-  // To locate the client element we want, we'll construct a RuntimeId
-  // corresponding to our provider element, then search for that.
-
-  BrowserAccessibility* start_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(start);
-  // Start by getting the root element for the HWND hosting the web content.
-  HWND hwnd = start_internal->manager()
-                  ->GetRoot()
-                  ->GetTargetForNativeAccessibilityEvent();
-  Microsoft::WRL::ComPtr<IUIAutomationElement> root;
-  uia_->ElementFromHandle(hwnd, &root);
-  CHECK(root.Get());
-
-  // Get the bounds of the root element, to pass into tree building later.
-  RECT root_bounds = {0};
-  root->get_CurrentBoundingRectangle(&root_bounds);
-
-  // The root element is provided by AXFragmentRootWin, whose RuntimeId is not
-  // in the same form as elements provided by BrowserAccessibility.
-  // Find the root element's first child, which should be provided by
-  // BrowserAccessibility. We'll use that element's RuntimeId as a template for
-  // the RuntimeId of the element we're looking for.
-  Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
-  uia_->get_RawViewWalker(&tree_walker);
-  Microsoft::WRL::ComPtr<IUIAutomationElement> first_child;
-  tree_walker->GetFirstChildElement(root.Get(), &first_child);
-  CHECK(first_child.Get());
-
-  // Get first_child's RuntimeId and swap out the last element in its SAFEARRAY
-  // for the UniqueId of the element we want to start from.
-  Microsoft::WRL::ComPtr<IUnknown> start_unknown =
-      start_internal->GetNativeViewAccessible();
-  Microsoft::WRL::ComPtr<IRawElementProviderFragment> start_fragment;
-  start_unknown.As(&start_fragment);
-  CHECK(start_fragment.Get());
-  base::win::ScopedSafearray uia_runtime_id;
-  GetUIARuntimeId(first_child.Get(), start_fragment.Get(),
-                  uia_runtime_id.Receive());
-
-  // Find the element with the desired RuntimeId.
-  base::win::ScopedVariant runtime_id_variant(uia_runtime_id.Release());
-  Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
-  uia_->CreatePropertyCondition(UIA_RuntimeIdPropertyId, runtime_id_variant,
-                                &condition);
-  CHECK(condition);
   Microsoft::WRL::ComPtr<IUIAutomationElement> start_element;
+  GetUIAElementFromDelegate(start, uia_.Get(), &start_element);
 
-  root->FindFirst(TreeScope_Subtree, condition.Get(), &start_element);
-
+  RECT root_bounds = GetUIARootBounds(start, uia_.Get());
   base::DictionaryValue tree;
   if (start_element.Get()) {
     // Build an accessibility tree starting from that element.
@@ -472,6 +492,9 @@ base::Value AccessibilityTreeFormatterUia::BuildTree(
                                   &is_pane_condition);
     Microsoft::WRL::ComPtr<IUIAutomationCondition> not_is_pane_condition;
     uia_->CreateNotCondition(is_pane_condition.Get(), &not_is_pane_condition);
+    Microsoft::WRL::ComPtr<IUIAutomationElement> root;
+    GetUIARoot(start, uia_.Get(), &root);
+    CHECK(root.Get());
     root->FindFirst(TreeScope_Subtree, not_is_pane_condition.Get(),
                     &non_pane_descendant);
 
@@ -500,6 +523,23 @@ base::Value AccessibilityTreeFormatterUia::BuildTreeForSelector(
   }
 
   return base::Value(base::Value::Type::DICTIONARY);
+}
+
+base::Value AccessibilityTreeFormatterUia::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
+  GetUIAElementFromDelegate(node, uia_.Get(), &uia_element);
+  // Note that we have to go through external UIA APIs to get a reference to
+  // the given node's UIA Element. This requires that the node is marked as
+  // a content/control element (see IsUIAControl for more details). If you see
+  // the following CHECK hit, most likely the node is not a UIA control and thus
+  // not exposed via the Find* APIs.
+  CHECK(uia_element.Get());
+
+  RECT root_bounds = GetUIARootBounds(node, uia_.Get());
+  base::DictionaryValue tree;
+  AddProperties(uia_element.Get(), root_bounds.left, root_bounds.top, &tree);
+  return tree;
 }
 
 void AccessibilityTreeFormatterUia::RecursiveBuildTree(

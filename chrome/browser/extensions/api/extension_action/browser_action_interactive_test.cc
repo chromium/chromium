@@ -54,12 +54,30 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/widget/widget.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_display.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
 namespace extensions {
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool IsDownloadSurfaceVisible(BrowserWindow* window) {
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
+             ? window->GetDownloadBubbleUIController()
+                   ->display_controller_for_testing()
+                   ->download_display_for_testing()
+                   ->IsShowingDetails()
+             : window->IsDownloadShelfVisible();
+}
+#endif
 
 // Helper to ensure all extension hosts are destroyed during the test. If a host
 // is still alive, the Profile can not be destroyed in
@@ -180,7 +198,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
         content::NotificationService::AllSources());
     std::unique_ptr<ExtensionTestMessageListener> listener;
     if (!will_reply)
-      listener = std::make_unique<ExtensionTestMessageListener>("ready", false);
+      listener = std::make_unique<ExtensionTestMessageListener>("ready");
     // Show first popup in first window and expect it to have loaded.
     ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
                                  {.page_url = "open_popup_succeeds.html"}))
@@ -253,7 +271,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   auto browserActionBar = ExtensionActionTestHelper::Create(browser());
   // Setup extension message listener to wait for javascript to finish running.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   {
     OpenPopupViaAPI(true);
     EXPECT_TRUE(browserActionBar->HasPopup());
@@ -328,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                         .AppendASCII("open_popup_background"),
                     {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
-  ExtensionTestMessageListener listener(false);
+  ExtensionTestMessageListener listener;
   listener.set_extension_id(extension->id());
 
   Browser* incognito_browser =
@@ -349,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
       LoadExtension(test_data_dir_.AppendASCII("browser_action/popup"));
   ASSERT_TRUE(first_extension) << message_;
 
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   // Load the test extension which will do nothing except notifyPass() to
   // return control here.
   ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
@@ -414,7 +432,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
   ExtensionHostTestHelper host_helper(profile());
   // Change active tabs, the extension popup should close.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   host_helper.WaitForHostDestroyed();
 
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
@@ -595,8 +614,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
 // TODO(crbug.com/1249851): Test crashes on Windows
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
-#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-// TODO(crbug.com/1269076): Test is flaky for linux tsan builds
+#elif BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1269076): Test is flaky for linux tsan and asan builds
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1269076): Test is flaky on Mac as well.
@@ -729,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
 
   // Load up the extension, which will call chrome.browserAction.openPopup()
   // when it is loaded and verify that the popup didn't open.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   EXPECT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browser_action/open_popup_on_reply")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -1021,10 +1041,11 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 
   // The test verification below is applicable only to scenarios where the
-  // download shelf is supported - on ChromeOS, instead of the download shelf,
-  // there is a download notification in the right-bottom corner of the screen.
+  // download surface is supported - on ChromeOS, instead of the download
+  // surface, there is a download notification in the right-bottom corner of the
+  // screen.
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  EXPECT_TRUE(IsDownloadSurfaceVisible(browser()->window()));
 #endif
 }
 
@@ -1056,10 +1077,11 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 
   // The test verification below is applicable only to scenarios where the
-  // download shelf is supported - on ChromeOS, instead of the download shelf,
-  // there is a download notification in the right-bottom corner of the screen.
+  // download surface is supported - on ChromeOS, instead of the download
+  // surface, there is a download notification in the right-bottom corner of the
+  // screen.
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  EXPECT_TRUE(IsDownloadSurfaceVisible(browser()->window()));
 #endif
 }
 

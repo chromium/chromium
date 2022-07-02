@@ -80,16 +80,26 @@ void AudioDevicesPrefHandlerStub::SetNoiseCancellationState(
   noise_cancellation_state_ = noise_cancellation_state;
 }
 
-bool AudioDevicesPrefHandlerStub::GetAudioOutputAllowedValue() {
-  return true;
+bool AudioDevicesPrefHandlerStub::GetAudioOutputAllowedValue() const {
+  return is_audio_output_allowed_;
+}
+
+void AudioDevicesPrefHandlerStub::SetAudioOutputAllowedValue(
+    bool is_audio_output_allowed) {
+  is_audio_output_allowed_ = is_audio_output_allowed;
+  for (auto& observer : observers_) {
+    observer.OnAudioPolicyPrefChanged();
+  }
 }
 
 void AudioDevicesPrefHandlerStub::AddAudioPrefObserver(
     AudioPrefObserver* observer) {
+  observers_.AddObserver(observer);
 }
 
 void AudioDevicesPrefHandlerStub::RemoveAudioPrefObserver(
     AudioPrefObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash

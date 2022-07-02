@@ -61,7 +61,9 @@ mojom("mojom") {
     sources += [ "speech_recognition_service.mojom" ]
   }
 
-  if (is_chromecast) {
+  # TODO(crbug.com/1293520): Revisit this after the cast renderer has been
+  # deprecated and removed.
+  if (is_castos || is_cast_android) {
     sources += [ "cast_application_media_info_manager.mojom" ]
   }
 
@@ -73,6 +75,7 @@ mojom("mojom") {
   }
 
   public_deps = [
+    ":audio_data",
     ":encryption_pattern",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
@@ -94,6 +97,10 @@ mojom("mojom") {
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
     # remove this dependency.
     public_deps += [ "//sandbox/mac/mojom" ]
+  }
+
+  if (!is_android) {
+    public_deps += [ ":speech_recognition" ]
   }
 
   enabled_features = []
@@ -256,15 +263,6 @@ mojom("mojom") {
       traits_headers = [ "cdm_key_information_mojom_traits.h" ]
       traits_sources = [ "cdm_key_information_mojom_traits.cc" ]
       traits_public_deps = [ "//media" ]
-    },
-    {
-      types = [
-        {
-          mojom = "media.mojom.CopyMode"
-          cpp = "::media::VideoFrameMetadata::CopyMode"
-        },
-      ]
-      traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
     {
       types = [
@@ -665,36 +663,6 @@ mojom("mojom") {
     },
   ]
 
-  if (!is_android) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "media.mojom.HypothesisParts"
-            cpp = "::media::HypothesisParts"
-          },
-          {
-            mojom = "media.mojom.TimingInformation"
-            cpp = "::media::TimingInformation"
-          },
-          {
-            mojom = "media.mojom.SpeechRecognitionResult"
-            cpp = "::media::SpeechRecognitionResult"
-          },
-        ]
-        traits_headers = [
-          "speech_recognition_result_mojom_traits.h",
-          "speech_recognition_result.h",
-        ]
-        traits_sources = [
-          "speech_recognition_result.cc",
-          "speech_recognition_result_mojom_traits.cc",
-        ]
-        traits_public_deps = [ "//base" ]
-      },
-    ]
-  }
-
   if (is_win) {
     cpp_typemaps += [
       {
@@ -739,6 +707,11 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
+mojom("audio_data") {
+  generate_java = true
+  sources = [ "audio_data.mojom" ]
+}
+
 mojom("encryption_pattern") {
   generate_java = true
   sources = [ "encryption_pattern.mojom" ]
@@ -757,6 +730,44 @@ mojom("encryption_pattern") {
         "//media/base/ipc",
       ]
     },
+  ]
+}
+
+# Speech recognition API used between renderer/browser/service and between
+# LaCrOS/Ash.
+mojom("speech_recognition") {
+  sources = [ "speech_recognition.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.HypothesisParts"
+          cpp = "::media::HypothesisParts"
+        },
+        {
+          mojom = "media.mojom.TimingInformation"
+          cpp = "::media::TimingInformation"
+        },
+        {
+          mojom = "media.mojom.SpeechRecognitionResult"
+          cpp = "::media::SpeechRecognitionResult"
+        },
+      ]
+      traits_headers = [
+        "speech_recognition_result_mojom_traits.h",
+        "speech_recognition_result.h",
+      ]
+      traits_sources = [
+        "speech_recognition_result.cc",
+        "speech_recognition_result_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+  public_deps = [
+    ":audio_data",
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
   ]
 }
 
@@ -824,4 +835,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  if (!is_android) {
+    deps += [ ":speech_recognition" ]
+  }
 }

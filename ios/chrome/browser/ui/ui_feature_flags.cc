@@ -11,10 +11,10 @@ const base::Feature kTestFeature{"TestFeature",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableFREDefaultBrowserScreenTesting{
-    "EnableFREDefaultBrowserScreenTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableFREDefaultBrowserPromoScreen{
+    "EnableFREDefaultBrowserPromoScreen", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOSV3",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -30,9 +30,15 @@ const base::Feature kIncognitoBrandConsistencyForIOS{
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIOS3PIntentsInIncognito{"kIOS3pIntentsInIncognito",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDefaultBrowserFullscreenPromoExperiment{
     "DefaultBrowserFullscreenPromoExperiment",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultBrowserIntentsShowSettings{
+    "DefaultBrowserIntentsShowSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kIOSNewOmniboxImplementation{
     "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -64,15 +70,14 @@ const base::Feature kEnableShortenedPasswordAutoFillInstruction{
 const base::Feature kAddSettingForDefaultPageMode{
     "DefaultRequestedMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kUseSFSymbolsSamples{"UseSFSymbolsSamples",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kUseSFSymbols{"UseSFSymbols",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kUseUIKitPopupMenu{"UseUIKitPopupMenu",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableExpKitAppleCalendar{
+    "EnableExpKitAppleCalendar", base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool ShouldUseUIKitPopupMenu() {
-  return base::FeatureList::IsEnabled(kUseUIKitPopupMenu);
-}
+const base::Feature kEnableExpKitCalendarTextClassifier{
+    "EnableExpKitCalendarTextClassifier", base::FEATURE_DISABLED_BY_DEFAULT};

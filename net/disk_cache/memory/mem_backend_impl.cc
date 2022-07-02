@@ -44,9 +44,6 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
-      custom_clock_for_testing_(nullptr),
-      max_size_(0),
-      current_size_(0),
       net_log_(net_log),
       memory_pressure_listener_(
           FROM_HERE,

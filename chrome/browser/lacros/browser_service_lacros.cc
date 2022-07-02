@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,6 +38,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -46,6 +49,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -107,6 +111,7 @@ void OnMainProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
         // TODO(https://crbug.com/1313848): Consider taking a
         // `ScopedProfileKeepAlive`.
         fre_service->OpenFirstRunIfNeeded(
+            LacrosFirstRunService::EntryPoint::kOther,
             base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
                            base::Unretained(profile)));
       } else {
@@ -128,11 +133,21 @@ void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
                           can_trigger_fre));
 }
 
+NavigateParams::PathBehavior ConvertPathBehavior(
+    crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior path_behavior) {
+  switch (path_behavior) {
+    case crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kRespect:
+      return NavigateParams::RESPECT;
+    case crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kIgnore:
+      return NavigateParams::IGNORE_AND_NAVIGATE;
+  }
+}
+
 }  // namespace
 
 // A struct to keep the pending OpenUrl task.
 struct BrowserServiceLacros::PendingOpenUrl {
-  Profile* profile;
+  raw_ptr<Profile> profile;
   GURL url;
   crosapi::mojom::OpenUrlParamsPtr params;
   OpenUrlCallback callback;
@@ -145,7 +160,7 @@ BrowserServiceLacros::BrowserServiceLacros() {
                               weak_ptr_factory_.GetWeakPtr()));
 
   auto* lacros_service = chromeos::LacrosService::Get();
-  const auto* init_params = lacros_service->init_params();
+  const auto* init_params = chromeos::BrowserInitParams::Get();
 
   if (init_params->initial_keep_alive ==
       crosapi::mojom::BrowserInitParams::InitialKeepAlive::kUnknown) {
@@ -244,10 +259,21 @@ void BrowserServiceLacros::NewWindowForDetachingTab(
       /*can_trigger_fre=*/false);
 }
 
-void BrowserServiceLacros::NewTab(NewTabCallback callback) {
+void BrowserServiceLacros::NewTab(bool should_trigger_session_restore,
+                                  NewTabCallback callback) {
+  if (ProfilePicker::ShouldShowAtLaunch() &&
+      chrome::GetTotalBrowserCount() == 0) {
+    // The first browser window will trigger session restore if needed.
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+    std::move(callback).Run();
+    return;
+  }
+
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::NewTabWithProfile,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     should_trigger_session_restore, std::move(callback)),
       /*can_trigger_fre=*/true);
 }
 
@@ -327,10 +353,10 @@ void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
   }
 }
 
-void BrowserServiceLacros::OpenForFullRestore() {
+void BrowserServiceLacros::OpenForFullRestore(bool skip_crash_restore) {
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::OpenForFullRestoreWithProfile,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), skip_crash_restore),
       /*can_trigger_fre=*/true);
 }
 
@@ -426,6 +452,8 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
       break;
     case OpenUrlParams::WindowOpenDisposition::kSwitchToTab:
       navigate_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+      navigate_params.path_behavior =
+          ConvertPathBehavior(params->path_behavior);
       break;
   }
 
@@ -507,7 +535,7 @@ void BrowserServiceLacros::NewFullscreenWindowWithProfile(
 
   browser->window()->Show();
 
-  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+  if (chromeos::BrowserInitParams::Get()->session_type ==
       crosapi::mojom::SessionType::kWebKioskSession) {
     KioskSessionServiceLacros::Get()->InitWebKioskSession(browser, url);
   }
@@ -563,8 +591,10 @@ void BrowserServiceLacros::NewWindowForDetachingTabWithProfile(
                           platform_window->GetWindowUniqueId());
 }
 
-void BrowserServiceLacros::NewTabWithProfile(NewTabCallback callback,
-                                             Profile* profile) {
+void BrowserServiceLacros::NewTabWithProfile(
+    bool should_trigger_session_restore,
+    NewTabCallback callback,
+    Profile* profile) {
   if (!profile) {
     LOG(WARNING) << "No profile, it might be an early exit from the FRE. "
                     "Aborting the requested action.";
@@ -572,12 +602,16 @@ void BrowserServiceLacros::NewTabWithProfile(NewTabCallback callback,
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  if (browser) {
-    chrome::NewTab(browser);
-  } else {
-    chrome::NewEmptyWindow(profile, /*should_trigger_session_restore=*/false);
+  Browser* browser;
+  {
+    chrome::ScopedTabbedBrowserDisplayer displayer(
+        profile, should_trigger_session_restore);
+    browser = displayer.browser();
+    if (browser)
+      chrome::NewTab(browser);
   }
+  if (browser)
+    browser->SetFocusToLocationBar();
   std::move(callback).Run();
 }
 
@@ -635,7 +669,9 @@ void BrowserServiceLacros::RestoreTabWithProfile(RestoreTabCallback callback,
   std::move(callback).Run();
 }
 
-void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
+void BrowserServiceLacros::OpenForFullRestoreWithProfile(
+    bool skip_crash_restore,
+    Profile* profile) {
   if (!profile) {
     LOG(WARNING) << "No profile, it might be an early exit from the FRE. "
                     "Aborting the requested action.";
@@ -674,6 +710,9 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
 
   // Modify the command line to restore browser sessions.
   lacros_command_line->AppendSwitch(switches::kRestoreLastSession);
+
+  if (skip_crash_restore)
+    lacros_command_line->AppendSwitch(switches::kHideCrashRestoreBubble);
 
   StartupBrowserCreator browser_creator;
   browser_creator.LaunchBrowserForLastProfiles(

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/views/focus/focus_manager.h"
@@ -66,7 +67,7 @@ class ImmersiveFocusWatcher
       aura::Window* gaining_active,
       aura::Window* losing_active) override;
 
-  ImmersiveFullscreenController* immersive_fullscreen_controller_;
+  raw_ptr<ImmersiveFullscreenController> immersive_fullscreen_controller_;
 
   // Lock which keeps the top-of-window views revealed based on the focused view
   // and the active widget. Acquiring the lock never triggers a reveal because

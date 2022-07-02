@@ -13,12 +13,14 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/selection/experimental_group_recorder.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -35,6 +37,7 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kUnknown:
     case SegmentResultProvider::ResultState::kSuccessFromDatabase:
     case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
+    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
       NOTREACHED();
       return stats::SegmentationSelectionFailureReason::kMaxValue;
     case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
@@ -55,12 +58,15 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
       return stats::SegmentationSelectionFailureReason::
           kAtLeastOneSegmentDefaultExecFailed;
+    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentTfliteExecFailed;
   }
 }
 
 }  // namespace
 
-using optimization_guide::proto::OptimizationTarget_Name;
+using proto::SegmentId_Name;
 
 SegmentSelectorImpl::SegmentSelectorImpl(
     SegmentInfoDatabase* segment_database,
@@ -112,7 +118,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
 
     group_name = stats::OptimizationTargetToSegmentGroupName(
-        *selected_segment_last_session_.segment);
+        selected_segment->segment_id);
   } else {
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key, stats::SegmentationSelectionFailureReason::
@@ -134,7 +140,20 @@ void SegmentSelectorImpl::OnPlatformInitialized(
       segment_database_, signal_storage_config_, default_model_manager_,
       execution_service, clock_, platform_options_.force_refresh_results);
   if (IsPreviousSelectionInvalid()) {
-    GetRankForNextSegment(std::make_unique<SegmentRanks>());
+    SelectSegmentAndStoreToPrefs();
+  }
+
+  // If the segment selection is ready, also record the subsegment for all the
+  // segments.
+  // TODO(ssid): Store the scores in prefs so that this can be recorded earlier
+  // in startup.
+  if (selected_segment_last_session_.is_ready) {
+    for (const SegmentId segment_id : config_->segment_ids) {
+      experimental_group_recorder_.emplace_back(
+          std::make_unique<ExperimentalGroupRecorder>(
+              segment_result_provider_.get(), field_trial_register_,
+              config_->segmentation_key, segment_id));
+    }
   }
 }
 
@@ -149,8 +168,15 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
   return selected_segment_last_session_;
 }
 
-void SegmentSelectorImpl::OnModelExecutionCompleted(
-    OptimizationTarget segment_id) {
+void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
+    scoped_refptr<InputContext> input_context,
+    SegmentSelectionCallback callback) {
+  DCHECK(config_->on_demand_execution);
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(), input_context,
+                        std::move(callback));
+}
+
+void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   DCHECK(segment_result_provider_);
 
   // If the |segment_id| is not in config, then skip any updates early.
@@ -160,7 +186,7 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
   if (!IsPreviousSelectionInvalid())
     return;
 
-  GetRankForNextSegment(std::make_unique<SegmentRanks>());
+  SelectSegmentAndStoreToPrefs();
 }
 
 bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
@@ -169,7 +195,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
   if (previous_selection.has_value()) {
     bool was_unknown_selected = previous_selection->segment_id ==
-                                OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+                                SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
     base::TimeDelta ttl_to_use = was_unknown_selected
                                      ? config_->unknown_selection_ttl
                                      : config_->segment_selection_ttl;
@@ -179,7 +205,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
           config_->segmentation_key,
           stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
       VLOG(1) << __func__ << ": previous selection of segment="
-              << OptimizationTarget_Name(previous_selection->segment_id)
+              << SegmentId_Name(previous_selection->segment_id)
               << " has not yet expired.";
       return false;
     }
@@ -188,25 +214,56 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
   return true;
 }
 
+void SegmentSelectorImpl::SelectSegmentAndStoreToPrefs() {
+  if (config_->on_demand_execution) {
+    return;
+  }
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(), nullptr,
+                        SegmentSelectionCallback());
+}
+
 void SegmentSelectorImpl::GetRankForNextSegment(
-    std::unique_ptr<SegmentRanks> ranks) {
-  for (OptimizationTarget needed_segment : config_->segment_ids) {
+    std::unique_ptr<SegmentRanks> ranks,
+    scoped_refptr<InputContext> input_context,
+    SegmentSelectionCallback callback) {
+  for (SegmentId needed_segment : config_->segment_ids) {
     if (ranks->count(needed_segment) == 0) {
-      segment_result_provider_->GetSegmentResult(
-          needed_segment, config_->segmentation_key,
+      auto options =
+          std::make_unique<SegmentResultProvider::GetResultOptions>();
+      options->segment_id = needed_segment;
+      options->segmentation_key = config_->segmentation_key;
+      options->ignore_db_scores = config_->on_demand_execution;
+      options->input_context = input_context;
+      options->callback =
           base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
                          weak_ptr_factory_.GetWeakPtr(), std::move(ranks),
-                         needed_segment));
+                         input_context, std::move(callback), needed_segment);
+
+      segment_result_provider_->GetSegmentResult(std::move(options));
       return;
     }
   }
-  OptimizationTarget selected_segment = FindBestSegment(*ranks);
-  UpdateSelectedSegment(selected_segment);
+
+  // Finished fetching ranks for all segments.
+  SegmentId selected_segment = FindBestSegment(*ranks);
+  if (config_->on_demand_execution) {
+    DCHECK(!callback.is_null());
+    SegmentSelectionResult result;
+    result.is_ready = true;
+    result.segment = selected_segment;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  } else {
+    DCHECK(callback.is_null());
+    UpdateSelectedSegment(selected_segment);
+  }
 }
 
 void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     std::unique_ptr<SegmentRanks> ranks,
-    OptimizationTarget current_segment_id,
+    scoped_refptr<InputContext> input_context,
+    SegmentSelectionCallback callback,
+    SegmentId current_segment_id,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   if (!result->rank) {
     stats::RecordSegmentSelectionFailure(config_->segmentation_key,
@@ -215,18 +272,17 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));
 
-  GetRankForNextSegment(std::move(ranks));
+  GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
 }
 
-OptimizationTarget SegmentSelectorImpl::FindBestSegment(
+SegmentId SegmentSelectorImpl::FindBestSegment(
     const SegmentRanks& segment_results) {
   int max_rank = 0;
-  OptimizationTarget max_rank_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+  SegmentId max_rank_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   // Loop through all the results. Convert them to discrete ranks. Select the
   // one with highest discrete rank.
   for (const auto& pair : segment_results) {
-    OptimizationTarget id = pair.first;
+    SegmentId id = pair.first;
     int rank = pair.second;
     if (rank > max_rank) {
       max_rank = rank;
@@ -239,10 +295,9 @@ OptimizationTarget SegmentSelectorImpl::FindBestSegment(
   return max_rank_id;
 }
 
-void SegmentSelectorImpl::UpdateSelectedSegment(
-    OptimizationTarget new_selection) {
-  VLOG(1) << __func__ << ": Updating selected segment="
-          << OptimizationTarget_Name(new_selection);
+void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection) {
+  VLOG(1) << __func__
+          << ": Updating selected segment=" << SegmentId_Name(new_selection);
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
 
@@ -255,7 +310,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
     skip_updating_prefs = new_selection == previous_selection->segment_id;
     skip_updating_prefs |=
         config_->unknown_selection_ttl == base::TimeDelta() &&
-        new_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+        new_selection == SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
     // TODO(shaktisahu): Use segment selection inertia.
   }
 

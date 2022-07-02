@@ -76,8 +76,7 @@
 
 using testing::_;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 const IPEndPoint kIpEndPoint = IPEndPoint(IPAddress::IPv4AllZeros(), 0);
@@ -138,7 +137,6 @@ class QuicChromiumClientSessionTest
         socket_data_(
             new SequencedSocketData(base::make_span(default_read_.get(), 1),
                                     base::span<MockWrite>())),
-        random_(0),
         helper_(&clock_, &random_),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
         session_key_(kServerHostname,
@@ -161,8 +159,7 @@ class QuicChromiumClientSessionTest
                       &clock_,
                       kServerHostname,
                       quic::Perspective::IS_SERVER,
-                      false),
-        migrate_session_early_v2_(false) {
+                      false) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
     // Advance the time, because timers do not like uninitialized times.
@@ -289,7 +286,7 @@ class QuicChromiumClientSessionTest
 
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   quic::QuicConfig config_;
   quic::QuicCryptoClientConfig crypto_config_;
   NetLogWithSource net_log_with_source_{
@@ -298,7 +295,7 @@ class QuicChromiumClientSessionTest
   std::unique_ptr<MockRead> default_read_;
   std::unique_ptr<SequencedSocketData> socket_data_;
   quic::MockClock clock_;
-  quic::test::MockRandom random_;
+  quic::test::MockRandom random_{0};
   QuicChromiumConnectionHelper helper_;
   quic::test::MockAlarmFactory alarm_factory_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
@@ -314,7 +311,7 @@ class QuicChromiumClientSessionTest
   QuicTestPacketMaker client_maker_;
   QuicTestPacketMaker server_maker_;
   ProofVerifyDetailsChromium verify_details_;
-  bool migrate_session_early_v2_;
+  bool migrate_session_early_v2_ = false;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 
@@ -1883,16 +1880,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkIsolationKey) {
                      /*require_dns_https_alpn=*/false)));
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ConnectionNotPooledWithDifferentPin \
-  DISABLED_ConnectionNotPooledWithDifferentPin
-#else
-#define MAYBE_ConnectionNotPooledWithDifferentPin \
-  ConnectionNotPooledWithDifferentPin
-#endif
-TEST_P(QuicChromiumClientSessionTest,
-       MAYBE_ConnectionNotPooledWithDifferentPin) {
+TEST_P(QuicChromiumClientSessionTest, ConnectionNotPooledWithDifferentPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -1917,6 +1905,7 @@ TEST_P(QuicChromiumClientSessionTest,
   Initialize();
 
   transport_security_state_->EnableStaticPinsForTesting();
+  transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
 
   ProofVerifyDetailsChromium details;
   details.cert_verify_result.verified_cert =
@@ -2676,5 +2665,4 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

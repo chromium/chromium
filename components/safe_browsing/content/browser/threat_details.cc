@@ -328,8 +328,6 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
-      base::RepeatingCallback<ChromeUserPopulation()>
-          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback) override {
@@ -338,8 +336,8 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
     // used.
     auto threat_details = base::WrapUnique(new ThreatDetails(
         ui_manager, web_contents, unsafe_resource, url_loader_factory,
-        history_service, get_user_population_callback, referrer_chain_provider,
-        trim_to_ad_tags, std::move(done_callback)));
+        history_service, referrer_chain_provider, trim_to_ad_tags,
+        std::move(done_callback)));
     threat_details->StartCollection();
     return threat_details;
   }
@@ -361,8 +359,6 @@ std::unique_ptr<ThreatDetails> ThreatDetails::NewThreatDetails(
     const UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     bool trim_to_ad_tags,
     ThreatDetailsDoneCallback done_callback) {
@@ -372,8 +368,7 @@ std::unique_ptr<ThreatDetails> ThreatDetails::NewThreatDetails(
     factory_ = g_threat_details_factory_impl.Pointer();
   return factory_->CreateThreatDetails(
       ui_manager, web_contents, resource, url_loader_factory, history_service,
-      get_user_population_callback, referrer_chain_provider, trim_to_ad_tags,
-      std::move(done_callback));
+      referrer_chain_provider, trim_to_ad_tags, std::move(done_callback));
 }
 
 // Create a ThreatDetails for the given tab. Runs in the UI thread.
@@ -383,8 +378,6 @@ ThreatDetails::ThreatDetails(
     const UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     bool trim_to_ad_tags,
     ThreatDetailsDoneCallback done_callback)
@@ -393,7 +386,6 @@ ThreatDetails::ThreatDetails(
       ui_manager_(ui_manager),
       browser_context_(web_contents->GetBrowserContext()),
       resource_(resource),
-      get_user_population_callback_(get_user_population_callback),
       referrer_chain_provider_(referrer_chain_provider),
       cache_result_(false),
       did_proceed_(false),
@@ -643,8 +635,9 @@ void ThreatDetails::StartCollection() {
     // OnReceivedThreatDOMDetails will be called when the renderer replies.
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
     // detail collection could be started once the page loads.
-    web_contents_->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        &ThreatDetails::RequestThreatDOMDetails, GetWeakPtr()));
+    web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        base::BindRepeating(&ThreatDetails::RequestThreatDOMDetails,
+                            GetWeakPtr()));
   }
 }
 
@@ -653,7 +646,7 @@ void ThreatDetails::RequestThreatDOMDetails(content::RenderFrameHost* frame) {
       frame,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kSafeBrowsingThreatDetails));
-  if (!frame->IsRenderFrameCreated()) {
+  if (!frame->IsRenderFrameLive()) {
     // A child frame may have been created browser-side but has not completed
     // setting up the renderer for it yet. In particular, this occurs if the
     // child frame was blocked and that's why we're showing a safe browsing page
@@ -688,14 +681,14 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
   const int sender_frame_tree_node_id = sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;
   for (const mojom::ThreatDOMDetailsNodePtr& node : params) {
-    if (node->child_frame_routing_id == 0)
+    if (!node->child_frame_token)
       continue;
 
     const std::string cur_element_key =
         GetElementKey(sender_frame_tree_node_id, node->node_id);
     int child_frame_tree_node_id =
-        content::RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
-            sender_process_id, node->child_frame_routing_id);
+        content::RenderFrameHost::GetFrameTreeNodeIdForFrameToken(
+            sender_process_id, node->child_frame_token.value());
     if (child_frame_tree_node_id !=
         content::RenderFrameHost::kNoFrameTreeNodeId) {
       child_frame_tree_map[cur_element_key] = child_frame_tree_node_id;
@@ -851,28 +844,11 @@ void ThreatDetails::OnCacheCollectionReady() {
   report_->mutable_client_properties()->set_url_api_type(
       GetUrlApiTypeForThreatSource(resource_.threat_source));
 
-  if (!get_user_population_callback_.is_null()) {
-    *report_->mutable_population() = get_user_population_callback_.Run();
-  }
-
   // Fill the referrer chain if applicable.
   MaybeFillReferrerChain();
 
   // Send the report, using the SafeBrowsingService.
-  std::string serialized;
-  if (!report_->SerializeToString(&serialized)) {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
-    AllDone();
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(report_)));
-
-  ui_manager_->SendSerializedThreatDetails(browser_context_, serialized);
+  ui_manager_->SendThreatDetails(browser_context_, std::move(report_));
 
   AllDone();
 }
@@ -890,7 +866,7 @@ void ThreatDetails::MaybeFillReferrerChain() {
   // We would have cancelled a prerender if it was blocked, so we can use the
   // primary main frame here.
   referrer_chain_provider_->IdentifyReferrerChainByRenderFrameHost(
-      web_contents_->GetMainFrame(), kThreatDetailsUserGestureLimit,
+      web_contents_->GetPrimaryMainFrame(), kThreatDetailsUserGestureLimit,
       report_->mutable_referrer_chain());
 }
 

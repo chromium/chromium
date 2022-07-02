@@ -50,8 +50,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdvertisementManagerMac {
  private:
   void StartAdvertising();
 
-  CBPeripheralManagerState GetPeripheralManagerState();
-
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   CBPeripheralManager* peripheral_manager_;

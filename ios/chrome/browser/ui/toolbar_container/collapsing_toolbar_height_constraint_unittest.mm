@@ -48,7 +48,7 @@ class CollapsingToolbarHeightConstraintTest : public PlatformTest {
     [NSLayoutConstraint deactivateConstraints:constraints_];
   }
 
-  // Sets the progress on |constraint| and forces a layout so the changes take
+  // Sets the progress on `constraint` and forces a layout so the changes take
   // effect.
   void SetProgress(CollapsingToolbarHeightConstraint* constraint,
                    CGFloat progress) {
@@ -57,7 +57,7 @@ class CollapsingToolbarHeightConstraintTest : public PlatformTest {
     [container_ layoutIfNeeded];
   }
 
-  // Adds |view| to |container_| using constraints to hug the top, leading, and
+  // Adds `view` to `container_` using constraints to hug the top, leading, and
   // trailing sides.  The return value is an activated constraint that can be
   // used to update the height.
   CollapsingToolbarHeightConstraint* AddViewToContainer(UIView* view) {

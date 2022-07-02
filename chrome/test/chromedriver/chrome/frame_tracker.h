@@ -33,7 +33,8 @@ class FrameTracker : public DevToolsEventListener {
 
   ~FrameTracker() override;
 
-  Status GetContextIdForFrame(const std::string& frame_id, int* context_id);
+  Status GetContextIdForFrame(const std::string& frame_id,
+                              std::string* context_id);
   WebView* GetTargetForFrame(const std::string& frame_id);
   bool IsKnownFrame(const std::string& frame_id) const;
   void DeleteTargetForFrame(const std::string& frame_id);
@@ -45,7 +46,7 @@ class FrameTracker : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  std::map<std::string, int> frame_to_context_map_;
+  std::map<std::string, std::string> frame_to_context_map_;
   std::map<std::string, std::unique_ptr<WebView>> frame_to_target_map_;
   std::unordered_set<std::string> attached_frames_;
   raw_ptr<WebView> web_view_;

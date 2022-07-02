@@ -160,15 +160,14 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  base::Value::ListStorage quick_unlock_modes_default;
-  quick_unlock_modes_default.emplace_back(kFactorsOptionAll);
-  base::Value::ListStorage webauthn_factors_default;
-  webauthn_factors_default.emplace_back(kFactorsOptionAll);
-  registry->RegisterListPref(
-      prefs::kQuickUnlockModeAllowlist,
-      base::Value(std::move(quick_unlock_modes_default)));
+  base::Value::List quick_unlock_modes_default;
+  quick_unlock_modes_default.Append(kFactorsOptionAll);
+  base::Value::List webauthn_factors_default;
+  webauthn_factors_default.Append(kFactorsOptionAll);
+  registry->RegisterListPref(prefs::kQuickUnlockModeAllowlist,
+                             std::move(quick_unlock_modes_default));
   registry->RegisterListPref(prefs::kWebAuthnFactors,
-                             base::Value(std::move(webauthn_factors_default)));
+                             std::move(webauthn_factors_default));
   registry->RegisterIntegerPref(
       prefs::kQuickUnlockTimeout,
       static_cast<int>(PasswordConfirmationFrequency::TWO_DAYS));

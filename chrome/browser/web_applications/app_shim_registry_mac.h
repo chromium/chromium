@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 
@@ -95,7 +96,7 @@ class AppShimRegistry {
                   const std::set<base::FilePath>* installed_profiles,
                   const std::set<base::FilePath>* last_active_profiles);
 
-  PrefService* override_pref_service_ = nullptr;
+  raw_ptr<PrefService> override_pref_service_ = nullptr;
   base::FilePath override_user_data_dir_;
 };
 

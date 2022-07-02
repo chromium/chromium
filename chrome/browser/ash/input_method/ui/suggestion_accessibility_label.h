@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/timer/timer.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
 

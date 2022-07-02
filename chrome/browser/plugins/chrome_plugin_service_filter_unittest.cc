@@ -36,7 +36,7 @@ class ChromePluginServiceFilterTest : public ChromeRenderViewHostTestHarness {
   }
 
   int main_frame_process_id() {
-    return web_contents()->GetMainFrame()->GetProcess()->GetID();
+    return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   }
 
   raw_ptr<ChromePluginServiceFilter> filter_ = nullptr;

@@ -14,6 +14,7 @@
 
 - (void)loadView {
   self.view = [[ActivityOverlayView alloc] init];
+  self.view.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
 @end

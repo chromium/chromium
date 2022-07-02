@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_state_handler.h"
@@ -100,10 +99,7 @@ class OobeConfigurationTest : public OobeBaseTest {
     // Set up fake networks.
     // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
     // automatically (https://crbug.com/847422).
-    DBusThreadManager::Get()
-        ->GetShillManagerClient()
-        ->GetTestInterface()
-        ->SetupDefaultEnvironment();
+    ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 
     OobeBaseTest::SetUpOnMainThread();
     LoadConfiguration();

@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
@@ -34,6 +36,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -49,22 +53,10 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
-
-namespace {
-
-class MockWebState : public web::FakeWebState {
- public:
-  MockWebState() : web::FakeWebState() {
-    SetNavigationManager(std::make_unique<web::FakeNavigationManager>());
-  }
-
-  MOCK_METHOD2(ExecuteJavaScript,
-               void(const std::u16string&, JavaScriptResultCallback));
-};
-
-}  // namespace
 
 // Test fixture for testing SharingCoordinator.
 class SharingCoordinatorTest : public BookmarkIOSUnitTest {
@@ -112,16 +104,22 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   // Create a test web state.
   GURL test_url = GURL("https://example.com");
   base::Value url_value = base::Value(test_url.spec());
-  auto test_web_state = std::make_unique<MockWebState>();
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
   test_web_state->SetCurrentURL(test_url);
   test_web_state->SetBrowserState(browser_->GetBrowserState());
 
-  EXPECT_CALL(*test_web_state, ExecuteJavaScript(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&](const std::u16string& javascript,
-              base::OnceCallback<void(const base::Value*)> callback) {
-            std::move(callback).Run(&url_value);
-          }));
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  test_web_state->SetWebFramesManager(std::move(frames_manager));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(test_url);
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  frames_manager_ptr->AddWebFrame(std::move(main_frame));
+
+  main_frame_ptr->AddResultForExecutedJs(
+      &url_value, activity_services::kCanonicalURLScript);
 
   AppendNewWebState(std::move(test_web_state));
 
@@ -134,11 +132,13 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
                           params:params
                       originView:fake_origin_view_];
 
+  __block bool completion_handler_called = false;
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
+          completion_handler_called = true;
           return YES;
         }
         return NO;
@@ -147,6 +147,11 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
                  completion:nil];
 
   [coordinator start];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return completion_handler_called;
+  }));
 
   // Verify that the positioning is correct.
   auto activityHandler =

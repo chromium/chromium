@@ -315,8 +315,7 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
         profile_->GetStoragePartition(site_instance)->GetFileSystemContext();
     file_manager::util::ConvertSelectedFileInfoListToFileChooserFileInfoList(
         file_system_context, site_instance->GetSiteURL(), files,
-        base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,
-                       this));
+        base::BindOnce(&FileSelectHelper::CheckIfPolicyAllowed, this));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -329,11 +328,32 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
             base::FilePath(file.display_name).AsUTF16Unsafe())));
   }
 
-  PerformContentAnalysisIfNeeded(std::move(chooser_files));
+  CheckIfPolicyAllowed(std::move(chooser_files));
+}
+
+void FileSelectHelper::CheckIfPolicyAllowed(
+    std::vector<blink::mojom::FileChooserFileInfoPtr> list) {
+  if (AbortIfWebContentsDestroyed())
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(render_frame_host_);
+  dlp_files_controller_.emplace();
+  dlp_files_controller_->FilterDisallowedUploads(
+      std::move(list),
+      render_frame_host_->GetMainFrame()->GetLastCommittedURL(),
+      base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,
+                     weak_ptr_factory_.GetWeakPtr()));
+#else
+  PerformContentAnalysisIfNeeded(std::move(list));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void FileSelectHelper::PerformContentAnalysisIfNeeded(
     std::vector<FileChooserFileInfoPtr> list) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  dlp_files_controller_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (AbortIfWebContentsDestroyed())
     return;
 

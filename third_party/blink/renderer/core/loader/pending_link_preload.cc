@@ -66,8 +66,6 @@ void PendingLinkPreload::AddResource(Resource* resource) {
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload
 void PendingLinkPreload::NotifyModuleLoadFinished(ModuleScript* module) {
-  // Step 13. "Unblock rendering on element."
-  UnblockRendering();
   if (loader_)
     loader_->NotifyModuleLoadFinished(module);
   document_->RemovePendingLinkHeaderPreloadIfNeeded(*this);

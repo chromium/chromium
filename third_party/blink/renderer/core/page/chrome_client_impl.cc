@@ -299,7 +299,8 @@ Page* ChromeClientImpl::CreateWindowDelegate(
       WebLocalFrameImpl::FromFrame(frame),
       WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
       static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()), sandbox_flags,
-      session_storage_namespace_id, consumed_user_gesture, r.Impression()));
+      session_storage_namespace_id, consumed_user_gesture, r.Impression(),
+      r.GetPictureInPictureWindowOptions()));
   if (!new_view)
     return nullptr;
   return new_view->GetPage();
@@ -1211,6 +1212,16 @@ void ChromeClientImpl::SelectFieldOptionsChanged(
 void ChromeClientImpl::AjaxSucceeded(LocalFrame* frame) {
   if (auto* fill_client = AutofillClientFromFrame(frame))
     fill_client->AjaxSucceeded();
+}
+
+void ChromeClientImpl::JavaScriptChangedAutofilledValue(
+    HTMLFormControlElement& element,
+    const String& old_value) {
+  Document& doc = element.GetDocument();
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->JavaScriptChangedAutofilledValue(
+        WebFormControlElement(&element), old_value);
+  }
 }
 
 TransformationMatrix ChromeClientImpl::GetDeviceEmulationTransform() const {

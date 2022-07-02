@@ -12,11 +12,11 @@
 #include <sstream>
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error.h"
-#include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 // TODO(1151236): Need to update the description, because logging for PA
@@ -142,16 +142,16 @@ namespace partition_alloc::internal::logging {
 // up to level INFO) if this function is not called.
 // Note that log messages for VLOG(x) are logged at level -x, so setting
 // the min log level to negative values enables verbose logging.
-BASE_EXPORT void SetMinLogLevel(int level);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SetMinLogLevel(int level);
 
 // Gets the current log level.
-BASE_EXPORT int GetMinLogLevel();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetMinLogLevel();
 
 // Used by PA_LOG_IS_ON to lazy-evaluate stream arguments.
-BASE_EXPORT bool ShouldCreateLogMessage(int severity);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool ShouldCreateLogMessage(int severity);
 
 // Gets the PA_VLOG default verbosity level.
-BASE_EXPORT int GetVlogVerbosity();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetVlogVerbosity();
 
 // Sets the Log Message Handler that gets passed every log message before
 // it's sent to other log destinations (if any).
@@ -162,8 +162,10 @@ typedef bool (*LogMessageHandlerFunction)(int severity,
                                           int line,
                                           size_t message_start,
                                           const std::string& str);
-BASE_EXPORT void SetLogMessageHandler(LogMessageHandlerFunction handler);
-BASE_EXPORT LogMessageHandlerFunction GetLogMessageHandler();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void SetLogMessageHandler(LogMessageHandlerFunction handler);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+LogMessageHandlerFunction GetLogMessageHandler();
 
 using LogSeverity = int;
 constexpr LogSeverity LOGGING_VERBOSE = -1;  // This is level 1 verbosity
@@ -177,7 +179,7 @@ constexpr LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
 // LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
 // mode.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #else
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
@@ -315,8 +317,8 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // TODO(akalin): Add more VLOG variants, e.g. VPLOG.
 
-#define PA_LOG_ASSERT(condition)                       \
-  PA_LOG_IF(FATAL, !(ANALYZER_ASSUME_TRUE(condition))) \
+#define PA_LOG_ASSERT(condition)                          \
+  PA_LOG_IF(FATAL, !(PA_ANALYZER_ASSUME_TRUE(condition))) \
       << "Assert failed: " #condition ". "
 
 #if BUILDFLAG(IS_WIN)
@@ -340,7 +342,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LAZY_STREAM(PA_PLOG_STREAM(severity), \
                  PA_LOG_IS_ON(severity) && (condition))
 
-BASE_EXPORT extern std::ostream* g_swallow_stream;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern std::ostream* g_swallow_stream;
 
 // Note that g_swallow_stream is used instead of an arbitrary PA_LOG() stream to
 // avoid the creation of an object with a non-trivial destructor (LogMessage).
@@ -361,7 +363,7 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 // Definitions for DLOG et al.
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG_IS_ON(severity) PA_LOG_IS_ON(severity)
 #define PA_DLOG_IF(severity, condition) PA_LOG_IF(severity, condition)
@@ -371,11 +373,12 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 #define PA_DVPLOG_IF(verboselevel, condition) \
   PA_VPLOG_IF(verboselevel, condition)
 
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-// If !DCHECK_IS_ON(), we want to avoid emitting any references to |condition|
-// (which may reference a variable defined only if DCHECK_IS_ON()).
-// Contrast this with DCHECK et al., which has different behavior.
+// If !BUILDFLAG(PA_DCHECK_IS_ON), we want to avoid emitting any references to
+// |condition| (which may reference a variable defined only if
+// BUILDFLAG(PA_DCHECK_IS_ON)). Contrast this with DCHECK et al., which has
+// different behavior.
 
 #define PA_DLOG_IS_ON(severity) false
 #define PA_DLOG_IF(severity, condition) PA_EAT_STREAM_PARAMETERS
@@ -384,7 +387,7 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 #define PA_DVLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 #define PA_DVPLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG(severity) \
   PA_LAZY_STREAM(PA_LOG_STREAM(severity), PA_DLOG_IS_ON(severity))
@@ -399,7 +402,7 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 // Definitions for DCHECK et al.
 
 #if defined(DCHECK_IS_CONFIGURABLE)
-BASE_EXPORT extern LogSeverity LOGGING_DCHECK;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
@@ -416,7 +419,7 @@ constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 // You shouldn't actually use LogMessage's constructor to log things,
 // though.  You should use the PA_LOG() macro (and variants thereof)
 // above.
-class BASE_EXPORT LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LogMessage {
  public:
   // Used for PA_LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
@@ -468,12 +471,14 @@ typedef int SystemErrorCode;
 
 // Alias for ::GetLastError() on Windows and errno on POSIX. Avoids having to
 // pull in windows.h just for GetLastError() and DWORD.
-BASE_EXPORT SystemErrorCode GetLastSystemErrorCode();
-BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) SystemErrorCode GetLastSystemErrorCode();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+std::string SystemErrorCodeToString(SystemErrorCode error_code);
 
 #if BUILDFLAG(IS_WIN)
 // Appends a formatted system message of the GetLastError() type.
-class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Win32ErrorLogMessage
+    : public LogMessage {
  public:
   Win32ErrorLogMessage(const char* file,
                        int line,
@@ -489,7 +494,7 @@ class BASE_EXPORT Win32ErrorLogMessage : public LogMessage {
 };
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
-class BASE_EXPORT ErrnoLogMessage : public LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ErrnoLogMessage : public LogMessage {
  public:
   ErrnoLogMessage(const char* file,
                   int line,
@@ -506,7 +511,8 @@ class BASE_EXPORT ErrnoLogMessage : public LogMessage {
 #endif  // BUILDFLAG(IS_WIN)
 
 // Async signal safe logging mechanism.
-BASE_EXPORT void RawLog(int level, const char* message);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void RawLog(int level, const char* message);
 
 #define PA_RAW_LOG(level, message)              \
   ::partition_alloc::internal::logging::RawLog( \

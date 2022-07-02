@@ -25,7 +25,7 @@
 // Whether the scroll view is decelerating.
 @property(nonatomic, assign, getter=isDecelerating) BOOL decelerating;
 
-// Updates |scrolling| based |dragging| and |decelerating|.
+// Updates `scrolling` based `dragging` and `decelerating`.
 - (void)updateIsScrolling;
 
 @end
@@ -117,7 +117,7 @@
   if (!self.panGesture)
     return;
   DCHECK_EQ(panGesture, self.panGesture);
-  // UIScrollView does not sent a |-scrollViewDidEndDecelerating:| signal after
+  // UIScrollView does not sent a `-scrollViewDidEndDecelerating:` signal after
   // pixel alignments, so the state should not be considered decelerating if the
   // target content offset is less than a pixel away from the current value.
   CGFloat singlePixel = 1.0 / [UIScreen mainScreen].scale;

@@ -62,14 +62,13 @@ enum HttpssvcDnsRcode TranslateDnsRcodeForHttpssvcExperiment(uint8_t rcode);
 // the Save* methods. Records metrics to UMA on destruction.
 class NET_EXPORT_PRIVATE HttpssvcMetrics {
  public:
-  explicit HttpssvcMetrics(bool expect_intact);
+  HttpssvcMetrics(bool secure, bool expect_intact);
   ~HttpssvcMetrics();
   HttpssvcMetrics(HttpssvcMetrics&) = delete;
   HttpssvcMetrics(HttpssvcMetrics&&) = delete;
 
   // May be called many times.
-  void SaveForAddressQuery(absl::optional<std::string> doh_provider_id,
-                           base::TimeDelta resolve_time,
+  void SaveForAddressQuery(base::TimeDelta resolve_time,
                            enum HttpssvcDnsRcode rcode);
 
   // Save the fact that the non-integrity queries failed. Prevents metrics from
@@ -77,12 +76,10 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   void SaveAddressQueryFailure();
 
   // Must only be called once.
-  void SaveForIntegrity(absl::optional<std::string> doh_provider_id,
-                        enum HttpssvcDnsRcode rcode,
+  void SaveForIntegrity(enum HttpssvcDnsRcode rcode,
                         const std::vector<bool>& condensed_records,
                         base::TimeDelta integrity_resolve_time);
-  void SaveForHttps(absl::optional<std::string> doh_provider_id,
-                    enum HttpssvcDnsRcode rcode,
+  void SaveForHttps(enum HttpssvcDnsRcode rcode,
                     const std::vector<bool>& condensed_records,
                     base::TimeDelta https_resolve_time);
 
@@ -98,13 +95,11 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   void RecordExpectIntactMetrics();
   void RecordExpectNoerrorMetrics();
 
-  void set_doh_provider_id(absl::optional<std::string> doh_provider_id);
-
+  const bool secure_;
   const bool expect_intact_;
   // RecordIntegrityMetrics() will do nothing when |disqualified_| is true.
   bool disqualified_ = false;
   bool already_recorded_ = false;
-  absl::optional<std::string> doh_provider_id_;
   absl::optional<enum HttpssvcDnsRcode> rcode_integrity_;
   absl::optional<enum HttpssvcDnsRcode> rcode_https_;
   size_t num_integrity_records_ = 0;

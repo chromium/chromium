@@ -53,6 +53,7 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
@@ -64,7 +65,7 @@ import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -142,6 +143,12 @@ enum PluginActionType {
   kRotate90Counterclockwise,
 };
 
+// The result of executing JavaScript within a frame.
+enum JavaScriptExecutionResultType {
+  kSuccess,
+  kException,
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -163,6 +170,7 @@ struct OpenURLParams {
   network.mojom.URLRequestBody? post_body;
   string extra_headers;
   blink.mojom.Referrer referrer;
+  bool is_form_submission;
 
   // The window position to open the URL.
   ui.mojom.WindowOpenDisposition disposition;
@@ -571,6 +579,12 @@ interface LocalFrameHost {
   // sends the new value to the browser. Also sent when a subframe's content
   // frame is changed.
   DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token, string srcdoc_value);
+
+  // Notifies the browser that this frame received a message from a local frame
+  // with a delegated capability (https://wicg.github.io/capability-delegation).
+  // `delegated_capability` is the capability delegated via postMessage().
+  // RemoteFrameHost messages already signal the browser via RouteMessageEvent.
+  ReceivedDelegatedCapability(DelegatedCapability delegated_capability);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will
@@ -772,13 +786,14 @@ interface LocalFrame {
 
   // ONLY FOR TESTS: Same as above but this can optionally trigger a fake user
   // activation notification to test functionalities that are gated by user
-  // activation.
+  // activation, and can block until a resulting promise is resolved.
   JavaScriptExecuteRequestForTests(
       mojo_base.mojom.BigString16 javascript,
-      bool wants_result,
       bool has_user_gesture,
+      bool resolve_promises,
       int32 world_id)
-      => (mojo_base.mojom.Value result);
+      => (JavaScriptExecutionResultType result_type,
+          mojo_base.mojom.Value result);
 
   // Same as JavaScriptExecuteRequest above except the script is run in the
   // isolated world specified by the fourth parameter.

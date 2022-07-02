@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/stack_container.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
@@ -70,6 +71,7 @@ class VisitRow {
            bool arg_incremented_omnibox_typed_score,
            VisitID arg_opener_visit);
   ~VisitRow();
+  VisitRow(const VisitRow&);
 
   // Compares two visits based on dates, for sorting.
   bool operator<(const VisitRow& other) const {
@@ -84,8 +86,9 @@ class VisitRow {
 
   base::Time visit_time;
 
-  // Indicates another visit that was the referring page for this one.
-  // 0 indicates no referrer.
+  // Indicates another visit that was the redirecting or referring page for this
+  // one. 0 indicates no referrer/redirect.
+  // Note that this corresponds to the "from_visit" column in the visit DB.
   VisitID referring_visit = 0;
 
   // A combination of bits from PageTransition.
@@ -115,6 +118,19 @@ class VisitRow {
   // whereas `referring_visit` is only populated if the Referrer is from the
   // same tab.
   VisitID opener_visit = 0;
+
+  // These are set only for synced visits originating from a different machine.
+  // `originator_cache_guid` is the originator machine's unique client ID. It's
+  // called a "cache" just to match Chrome Sync's terminology.
+  std::string originator_cache_guid;
+  VisitID originator_visit_id = 0;
+  // `originator_referring_visit` and `originator_opener_visit` are similar to
+  // the non-"originator" versions, but their contents refer to originator visit
+  // IDs rather than to local ones.
+  // Note that `originator_referring_visit` corresponds to the
+  // "originator_from_visit" column in the visit DB.
+  VisitID originator_referring_visit = 0;
+  VisitID originator_opener_visit = 0;
 
   // We allow the implicit copy constructor and operator=.
 };
@@ -333,10 +349,12 @@ struct VisibleVisitCountToHostResult {
 
 // MostVisitedURL --------------------------------------------------------------
 
-// Holds the per-URL information of the most visited query.
+// Holds the information for a Most Visited page.
 struct MostVisitedURL {
   MostVisitedURL();
-  MostVisitedURL(const GURL& url, const std::u16string& title);
+  MostVisitedURL(const GURL& url,
+                 const std::u16string& title,
+                 double score = 0.0);
   MostVisitedURL(const MostVisitedURL& other);
   MostVisitedURL(MostVisitedURL&& other) noexcept;
   ~MostVisitedURL();
@@ -347,8 +365,9 @@ struct MostVisitedURL {
     return url == other.url;
   }
 
-  GURL url;
-  std::u16string title;
+  GURL url;              // The URL of the page.
+  std::u16string title;  // The title of the page.
+  double score{0.0};     // The frecency score of the page.
 };
 
 // FilteredURL -----------------------------------------------------------------
@@ -421,7 +440,8 @@ struct HistoryAddPageArgs {
                      bool consider_for_ntp_most_visited,
                      bool floc_allowed,
                      absl::optional<std::u16string> title = absl::nullopt,
-                     absl::optional<Opener> opener = absl::nullopt);
+                     absl::optional<Opener> opener = absl::nullopt,
+                     absl::optional<int64_t> bookmark_id = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -445,6 +465,7 @@ struct HistoryAddPageArgs {
   bool floc_allowed;
   absl::optional<std::u16string> title;
   absl::optional<Opener> opener;
+  absl::optional<int64_t> bookmark_id;
 };
 
 // TopSites -------------------------------------------------------------------
@@ -843,11 +864,14 @@ struct ClusterVisit {
   // should not be used by the UI.
   float engagement_score = 0.0;
 
-  // The visit URL modified for better dupe finding.  The result may not be
-  // navigable or even valid; it's only meant to be used for detecting
-  // duplicates. This is similar in intent to
-  // `AutocompleteMatch::stripped_destination_url`, but is not the same, as
-  // History Clusters and Omnibox have different deduping requirements.
+  // The visit URL stripped down for aggressive deduping. This GURL may not be
+  // navigable or even valid. The stripping on `url_for_deduping` must be
+  // strictly more aggressive than on `url_for_display`. This ensures that the
+  // UI never shows two visits that look completely identical.
+  //
+  // The stripping is so aggressive that the URL should not be used alone for
+  // deduping. See `SimilarVisitDeDeduperClusterFinalizer` for an example usage
+  // that combines this with the page title as a deduping key.
   GURL url_for_deduping;
 
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
@@ -868,13 +892,66 @@ struct ClusterVisit {
   bool hidden = false;
 };
 
+// Additional data for a cluster keyword.
+struct ClusterKeywordData {
+  // Corresponds to `HistoryClusterKeywordType` in
+  // tools/metrics/histograms/enums.xml.
+  //
+  // Types are ordered according to preferences.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum ClusterKeywordType {
+    kUnknown = 0,
+    kEntityCategory = 1,
+    kEntityAlias = 2,
+    kEntity = 3,
+    kSearchTerms = 4,
+    kMaxValue = kSearchTerms
+  };
+
+  ClusterKeywordData();
+  explicit ClusterKeywordData(
+      const std::vector<std::string>& entity_collections);
+  ClusterKeywordData(ClusterKeywordType type,
+                     float score,
+                     const std::vector<std::string>& entity_collections);
+  ClusterKeywordData(const ClusterKeywordData&);
+  ClusterKeywordData(ClusterKeywordData&&);
+  ClusterKeywordData& operator=(const ClusterKeywordData&);
+  ClusterKeywordData& operator=(ClusterKeywordData&&);
+  ~ClusterKeywordData();
+  bool operator==(const ClusterKeywordData& data) const;
+
+  // Updates cluster keyword type if a new type is preferred over the existing
+  // type.
+  void MaybeUpdateKeywordType(ClusterKeywordType other_type);
+
+  // Returns a keyword type label.
+  // Only used for logging the UMA metric:
+  //   Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.*.CTR.
+  //
+  // crbug.com/1335975: Remove this method when we remove the histograms.
+  std::string GetKeywordTypeLabel() const;
+
+  ClusterKeywordType type;
+
+  // A floating point score describing how important this
+  // keyword is to the containing cluster.
+  float score;
+
+  // Entity collections associated with the keyword this is attached to.
+  std::vector<std::string> entity_collections;
+};
+
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and
 // `should_show_on_prominent_ui_surfaces`).
 struct Cluster {
   Cluster();
   Cluster(int64_t cluster_id,
           const std::vector<ClusterVisit>& visits,
-          const std::vector<std::u16string>& keywords,
+          const base::flat_map<std::u16string, ClusterKeywordData>&
+              keyword_to_data_map,
           bool should_show_on_prominent_ui_surfaces = true,
           absl::optional<std::u16string> label = absl::nullopt);
   Cluster(const Cluster&);
@@ -883,17 +960,26 @@ struct Cluster {
   Cluster& operator=(Cluster&&);
   ~Cluster();
 
+  std::vector<std::u16string> GetKeywords() const;
+
   int64_t cluster_id = 0;
   std::vector<ClusterVisit> visits;
-  // TODO(manukh): retrieve and persist `keywords`,
+  // TODO(manukh): retrieve and persist `keyword_to_data_map`,
   // `should_show_on_prominent_ui_surfaces, and `label`.
-  std::vector<std::u16string> keywords;
+
+  // A map of keywords to additional data.
+  base::flat_map<std::u16string, ClusterKeywordData> keyword_to_data_map;
+
   // Whether the cluster should be shown prominently on UI surfaces.
   bool should_show_on_prominent_ui_surfaces = true;
 
   // A suitable label for the cluster. Will be nullopt if no suitable label
   // could be determined.
   absl::optional<std::u16string> label;
+
+  // The value of label with any leading or trailing quotation indicators
+  // removed.
+  absl::optional<std::u16string> raw_label;
 
   // The positions within the label that match the search query, if it exists.
   query_parser::Snippet::MatchPositions label_match_positions;

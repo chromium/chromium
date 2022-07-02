@@ -38,7 +38,8 @@ class SimpleFileTrackerTest : public DiskCacheTest {
   // create/delete SimpleSynchronousEntry objects.
   class SyncEntryDeleter {
    public:
-    SyncEntryDeleter(SimpleFileTrackerTest* fixture) : fixture_(fixture) {}
+    explicit SyncEntryDeleter(SimpleFileTrackerTest* fixture)
+        : fixture_(fixture) {}
     void operator()(SimpleSynchronousEntry* entry) {
       fixture_->DeleteSyncEntry(entry);
     }
@@ -230,8 +231,8 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
               borrow->Write(0, msg.data(), msg.size()));
   }
 
-  for (int i = 0; i < kEntries; ++i)
-    file_tracker_.Close(entries[i].get(), SimpleFileTracker::SubFile::FILE_0);
+  for (const auto& entry : entries)
+    file_tracker_.Close(entry.get(), SimpleFileTracker::SubFile::FILE_0);
 
   // Verify the file.
   std::string verify;

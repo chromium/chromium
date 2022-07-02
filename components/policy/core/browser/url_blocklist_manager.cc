@@ -148,7 +148,7 @@ bool URLBlocklist::IsURLBlocked(const GURL& url) const {
 
 URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
     const GURL& url) const {
-  std::set<URLMatcherConditionSet::ID> matching_ids =
+  std::set<base::MatcherStringPattern::ID> matching_ids =
       url_matcher_->MatchURL(url);
 
   const FilterComponents* max = nullptr;

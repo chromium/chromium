@@ -36,9 +36,10 @@
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
+#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
@@ -60,10 +61,10 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/network/network_connect.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "components/crash/core/common/crash_key.h"
@@ -179,6 +180,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   in_session_auth_dialog_client_ =
       std::make_unique<InSessionAuthDialogClient>();
 
+  in_session_auth_token_provider_ =
+      std::make_unique<ash::InSessionAuthTokenProviderImpl>();
+
   // NOTE: The WallpaperControllerClientImpl must be initialized before the
   // session controller, because the session controller triggers the loading
   // of users, which itself calls a code path which eventually reaches the
@@ -190,6 +194,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
   session_controller_client_->Init();
+  // By this point ash shell should have initialized its D-Bus signal
+  // listeners, so inform the session manager that Ash is initialized.
+  session_controller_client_->EmitAshInitialized();
 
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
@@ -231,7 +238,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   }
 
-  desks_templates_client_ = std::make_unique<DesksTemplatesClient>();
+  desks_client_ = std::make_unique<DesksClient>();
 
   if (ash::features::IsBluetoothRevampEnabled()) {
     chromeos::bluetooth_config::FastPairDelegate* delegate =
@@ -324,7 +331,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
-  desks_templates_client_.reset();
+  desks_client_.reset();
 
   projector_app_client_.reset();
   projector_client_.reset();

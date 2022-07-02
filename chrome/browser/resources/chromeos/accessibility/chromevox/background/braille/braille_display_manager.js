@@ -78,13 +78,13 @@ export class BrailleDisplayManager {
 
     BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
-      const onDisplayStateChanged = (newState) =>
+      const onDisplayStateChanged = newState =>
           this.refreshDisplayState_(newState);
       chrome.brailleDisplayPrivate.getDisplayState(onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onDisplayStateChanged.addListener(
           onDisplayStateChanged);
       chrome.brailleDisplayPrivate.onKeyEvent.addListener(
-          (event) => this.onKeyEvent_(event));
+          event => this.onKeyEvent_(event));
     } else {
       // Get the initial captions state since we won't refresh the display
       // state in an API callback in this case.

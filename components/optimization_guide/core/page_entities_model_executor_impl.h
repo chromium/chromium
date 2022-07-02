@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_ENTITIES_MODEL_EXECUTOR_IMPL_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -91,7 +92,7 @@ class EntityAnnotatorHolder {
 
   std::unique_ptr<EntityAnnotatorNativeLibrary>
       entity_annotator_native_library_;
-  void* entity_annotator_ = nullptr;
+  raw_ptr<void> entity_annotator_ = nullptr;
 
   base::WeakPtrFactory<EntityAnnotatorHolder> background_weak_ptr_factory_{
       this};

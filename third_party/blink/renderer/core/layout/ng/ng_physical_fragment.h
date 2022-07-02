@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
@@ -86,8 +87,7 @@ class CORE_EXPORT NGPhysicalFragment
                      NGFragmentType type,
                      unsigned sub_type);
 
-  NGPhysicalFragment(const NGPhysicalFragment& other,
-                     bool recalculate_layout_overflow);
+  NGPhysicalFragment(const NGPhysicalFragment& other);
 
   ~NGPhysicalFragment();
 
@@ -600,8 +600,10 @@ class CORE_EXPORT NGPhysicalFragment
 
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
    public:
+    virtual ~OutOfFlowData() = default;
     virtual void Trace(Visitor* visitor) const;
     HeapVector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
+    NGPhysicalAnchorQuery anchor_query;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -611,16 +613,27 @@ class CORE_EXPORT NGPhysicalFragment
     return has_out_of_flow_fragment_child_;
   }
 
+  // If there is an OOF contained within a fragmentation context, this will
+  // return true for all fragments in the chain from the OOF's CB to the
+  // fragmentainer that the CB resides in.
+  bool HasOutOfFlowInFragmentainerSubtree() const {
+    return has_out_of_flow_in_fragmentainer_subtree_;
+  }
+
   bool HasOutOfFlowPositionedDescendants() const {
     return oof_data_ && !oof_data_->oof_positioned_descendants.IsEmpty();
   }
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
-      const {
-    if (!HasOutOfFlowPositionedDescendants())
-      return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    return {oof_data_->oof_positioned_descendants.data(),
-            oof_data_->oof_positioned_descendants.size()};
+      const;
+
+  bool HasAnchorQuery() const {
+    return oof_data_ && !oof_data_->anchor_query.IsEmpty();
+  }
+  const NGPhysicalAnchorQuery* AnchorQuery() const {
+    if (oof_data_)
+      return &oof_data_->anchor_query;
+    return nullptr;
   }
 
   NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
@@ -709,6 +722,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_last_baseline_ : 1;
   const unsigned has_fragmented_out_of_flow_data_ : 1;
   const unsigned has_out_of_flow_fragment_child_ : 1;
+  const unsigned has_out_of_flow_in_fragmentainer_subtree_ : 1;
 
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection

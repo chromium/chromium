@@ -6,7 +6,9 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 
 declare_args() {
-  enable_media_control_logging_override = is_chromecast
+  # TODO(crbug.com/1328991): Remove is_android from below.
+  enable_media_control_logging_override =
+      is_castos || (is_android && enable_cast_receiver)
 }
 
 buildflag_header("media_control_buildflags") {

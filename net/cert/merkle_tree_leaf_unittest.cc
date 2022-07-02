@@ -16,9 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -129,6 +127,4 @@ TEST_F(MerkleTreeLeafTest, HashForPrecert) {
 
 }  // namespace
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

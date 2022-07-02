@@ -9,17 +9,17 @@
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/test/task_environment.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/cellular_connection_handler.h"
+#include "chromeos/ash/components/network/cellular_connection_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/cellular_esim_installer.h"
+#include "chromeos/ash/components/network/cellular_esim_installer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/ash/components/network/fake_network_connection_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/network/network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

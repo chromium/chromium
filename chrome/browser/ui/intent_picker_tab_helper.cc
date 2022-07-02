@@ -22,13 +22,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
@@ -78,18 +76,10 @@ void LoadSingleAppIcon(Profile* profile,
                        const std::string& app_id,
                        int size_in_dip,
                        base::OnceCallback<void(apps::IconValuePtr)> callback) {
-  constexpr bool allow_placeholder_icon = false;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id,
-        apps::IconType::kStandard, size_in_dip, allow_placeholder_icon,
-        std::move(callback));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kStandard, size_in_dip,
-        allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(std::move(callback)));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+      apps::ConvertMojomAppTypToAppType(app_type), app_id,
+      apps::IconType::kStandard, size_in_dip, /*allow_placeholder_icon=*/false,
+      std::move(callback));
 }
 
 }  // namespace
@@ -212,7 +202,8 @@ void IntentPickerTabHelper::LoadAppIcon(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-  LoadSingleAppIcon(profile, app_type, app_id, gfx::kFaviconSize,
+  LoadSingleAppIcon(profile, app_type, app_id,
+                    apps::GetIntentPickerBubbleIconSize(),
                     base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
                                    weak_factory_.GetWeakPtr(), std::move(apps),
                                    std::move(callback), index));
@@ -292,7 +283,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
       navigation_handle->HasCommitted() &&
       (!navigation_handle->IsSameDocument() ||
        navigation_handle->GetURL() !=
-           navigation_handle->GetPreviousMainFrameURL())) {
+           navigation_handle->GetPreviousPrimaryMainFrameURL())) {
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {

@@ -45,7 +45,7 @@ class UserActionsCollector {
   // Current prefs on the disk. The list is sorted by increasing timestamp.
   base::Value visit_metadata_string_list_pref_;
 
-  PrefService* profile_prefs_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_ = nullptr;
 };
 }  // namespace feed
 

@@ -48,6 +48,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryFuchsia
   std::vector<VideoCaptureDeviceInfo> MakeDevicesInfo();
   void MaybeResolvePendingDeviceInfoCallbacks();
 
+  bool received_initial_list_ = false;
+
   fuchsia::camera3::DeviceWatcherPtr device_watcher_;
 
   // Current list of devices. Set to nullopt if the list hasn't been received

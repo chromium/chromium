@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 
 namespace ui {
 
@@ -17,7 +18,8 @@ class ImageModel;
 // A data model for a combo box.
 class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
  public:
-  virtual ~ComboboxModel() {}
+  ComboboxModel();
+  virtual ~ComboboxModel();
 
   // Returns the number of items in the combo box.
   virtual int GetItemCount() const = 0;
@@ -52,9 +54,17 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   // Returns true if the item at |index| is enabled.
   virtual bool IsItemEnabledAt(int index) const;
 
-  // Adds/removes an observer. Override if model supports mutation.
-  virtual void AddObserver(ComboboxModelObserver* observer) {}
-  virtual void RemoveObserver(ComboboxModelObserver* observer) {}
+  // Adds/removes an observer.
+  void AddObserver(ComboboxModelObserver* observer);
+  void RemoveObserver(ComboboxModelObserver* observer);
+
+ protected:
+  base::ObserverList<ui::ComboboxModelObserver>& observers() {
+    return observers_;
+  }
+
+ private:
+  base::ObserverList<ui::ComboboxModelObserver> observers_;
 };
 
 }  // namespace ui

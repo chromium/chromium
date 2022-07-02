@@ -11,8 +11,6 @@
 
 namespace ash {
 
-class ColorModeObserver;
-
 // An interface implemented by Ash that provides colors for the system UI.
 class ASH_PUBLIC_EXPORT ColorProvider {
  public:
@@ -60,8 +58,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kFocusRingColor,
     kHighlightColor1,
     kHighlightColor2,
+    kHighlightColor3,
     kBorderColor1,
     kBorderColor2,
+    kBorderColor3,
   };
 
   enum class ContentLayerType {
@@ -170,21 +170,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
       SkColor background_color = gfx::kPlaceholderColor) const = 0;
   virtual std::pair<SkColor, float> GetInvertedInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const = 0;
-
-  virtual void AddObserver(ColorModeObserver* observer) = 0;
-  virtual void RemoveObserver(ColorModeObserver* observer) = 0;
-
-  // True if the current color mode is DARK. The default color mode is LIGHT if
-  // the DarkLightMode feature is enabled. And it can be changed through pref
-  // `kDarkModeEnabled`. But the default color mode is DARK if the
-  // DarkLightMode feature is disabled. And it can be overridden by
-  // ScopedLightModeAsDefault. See `override_light_mode_as_default_` for more
-  // details.
-  virtual bool IsDarkModeEnabled() const = 0;
-
-  // Enable or disable dark mode for testing. Only works when the DarkLightMode
-  // feature is enabled.
-  virtual void SetDarkModeEnabledForTest(bool enabled) = 0;
 
  protected:
   ColorProvider();

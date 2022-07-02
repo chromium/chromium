@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/feed/core/v2/public/types.h"
@@ -25,7 +26,7 @@ class WebFeedPageInformationFetcher
   struct PageInformation {
     GURL url;
     // web_contents should be set.
-    content::WebContents* web_contents = nullptr;
+    raw_ptr<content::WebContents> web_contents = nullptr;
   };
 
   // Fetches the canonical URL and RSS URLs for a web page, and then calls

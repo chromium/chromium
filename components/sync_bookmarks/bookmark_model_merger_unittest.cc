@@ -31,7 +31,6 @@
 using testing::_;
 using testing::Eq;
 using testing::IsNull;
-using testing::Ne;
 using testing::NotNull;
 using testing::UnorderedElementsAre;
 
@@ -1696,7 +1695,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForInvalidSpecifics) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kInvalidSpecifics,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfNonFolder) {
@@ -1740,7 +1739,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfNonFolder) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kParentNotFolder,
-      /*count=*/3);
+      /*expected_bucket_count=*/3);
 }
 
 TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfOrphanUpdates) {
@@ -1771,7 +1770,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfOrphanUpdates) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kMissingParentEntity,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
   EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ReachableInputUpdates"),
               Eq(1));
@@ -1792,7 +1791,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForUnsupportedServerTag) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kUnsupportedPermanentFolder,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
@@ -1822,7 +1821,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kMissingParentEntity,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
@@ -1881,7 +1880,8 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
               Eq(4));
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
-      /*sample=*/ExpectedBookmarksGUIDDuplicates::kMatchingUrls, /*count=*/1);
+      /*sample=*/ExpectedBookmarksGUIDDuplicates::kMatchingUrls,
+      /*expected_count=*/1);
   EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ReachableInputUpdates"),
               Eq(3));
@@ -1930,7 +1930,8 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByGUID) {
               UnorderedElementsAre(HasTitle(base::UTF8ToUTF16(kTitle1))));
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
-      /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentUrls, /*count=*/1);
+      /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentUrls,
+      /*expected_count=*/1);
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveMatchingFolderDuplicatesByGUID) {
@@ -1973,7 +1974,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingFolderDuplicatesByGUID) {
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksGUIDDuplicates::kMatchingFolders,
-      /*count=*/1);
+      /*expected_count=*/1);
   EXPECT_THAT(tracker->GetEntityForSyncId("Id1"), IsNull());
   EXPECT_THAT(tracker->GetEntityForSyncId("Id2"), NotNull());
 }
@@ -2029,7 +2030,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentFolderDuplicatesByGUID) {
   histogram_tester.ExpectBucketCount(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentFolders,
-      /*count=*/1);
+      /*expected_count=*/1);
   EXPECT_THAT(tracker->GetEntityForSyncId("Id1"), NotNull());
   EXPECT_THAT(tracker->GetEntityForSyncId("Id2"), IsNull());
   EXPECT_EQ(bookmark_bar_node->children().front()->GetTitle(),
@@ -2184,7 +2185,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentTypeDuplicatesByGUID) {
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksGUIDDuplicates",
       /*sample=*/ExpectedBookmarksGUIDDuplicates::kDifferentTypes,
-      /*count=*/1);
+      /*expected_bucket_count=*/1);
   EXPECT_THAT(tracker->GetEntityForSyncId("Id1"), NotNull());
   EXPECT_THAT(tracker->GetEntityForSyncId("Id2"), IsNull());
   EXPECT_EQ(bookmark_bar_node->children().front()->children().size(), 1u);

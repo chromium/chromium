@@ -84,15 +84,15 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   void UploadSplitItem(const std::string& key, const std::string& value) {
     split_items_.SetKey(key, base::Value(value));
-    settings_service_.UploadItem(
+    settings_service_.SaveItem(
         SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
         std::make_unique<base::Value>(value));
   }
 
   void UploadAtomicItem(const std::string& value) {
     atomic_setting_value_ = std::make_unique<base::Value>(value);
-    settings_service_.UploadItem(kAtomicItemName,
-                                 std::make_unique<base::Value>(value));
+    settings_service_.SaveItem(kAtomicItemName,
+                               std::make_unique<base::Value>(value));
   }
 
   void VerifySyncDataItem(syncer::SyncData sync_data) {
@@ -120,6 +120,40 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
       settings_.reset();
     else
       settings_.reset(settings->DeepCopy());
+  }
+
+  // Check that a single website approval has been added correctly.
+  void CheckWebsiteApproval(
+      syncer::SyncChange::SyncChangeType expected_sync_change_type,
+      const std::string& expected_key) {
+    // Check that we are uploading sync data.
+    ASSERT_EQ(1u, sync_processor_->changes().size());
+    syncer::SyncChange sync_change = sync_processor_->changes()[0];
+    ASSERT_TRUE(sync_change.IsValid());
+    EXPECT_EQ(expected_sync_change_type, sync_change.change_type());
+    EXPECT_EQ(
+        sync_change.sync_data().GetSpecifics().managed_user_setting().name(),
+        expected_key);
+    EXPECT_EQ(absl::optional<base::Value>(true),
+              base::JSONReader::Read(sync_change.sync_data()
+                                         .GetSpecifics()
+                                         .managed_user_setting()
+                                         .value()));
+
+    // It should also show up in local Sync data.
+    syncer::SyncDataList sync_data = settings_service_.GetAllSyncDataForTesting(
+        syncer::SUPERVISED_USER_SETTINGS);
+    for (const syncer::SyncData& sync_data_item : sync_data) {
+      if (sync_data_item.GetSpecifics().managed_user_setting().name().compare(
+              expected_key) == 0) {
+        EXPECT_EQ(
+            absl::optional<base::Value>(true),
+            base::JSONReader::Read(
+                sync_data_item.GetSpecifics().managed_user_setting().value()));
+        return;
+      }
+    }
+    FAIL() << "Expected key not found in local sync data";
   }
 
   // testing::Test overrides:
@@ -410,4 +444,27 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   settings_service_.StopSyncing(syncer::SUPERVISED_USER_SETTINGS);
   StartSyncing(sync_data);
   ASSERT_EQ(0u, sync_processor_->changes().size());
+}
+
+TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
+  // Record a website approval before sync is enabled.
+  settings_service_.RecordLocalWebsiteApproval("youtube.com");
+
+  // Uploading should produce changes when we start syncing.
+  StartSyncing(syncer::SyncDataList());
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_ADD,
+                       "ContentPackManualBehaviorHosts:youtube.com");
+
+  // Uploading after we have started syncing should work too.
+  sync_processor_->changes().clear();
+  settings_service_.RecordLocalWebsiteApproval("photos.google.com");
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_ADD,
+                       "ContentPackManualBehaviorHosts:photos.google.com");
+
+  // Uploading an item with a previously seen key should create an UPDATE
+  // action.
+  sync_processor_->changes().clear();
+  settings_service_.RecordLocalWebsiteApproval("youtube.com");
+  CheckWebsiteApproval(syncer::SyncChange::ACTION_UPDATE,
+                       "ContentPackManualBehaviorHosts:youtube.com");
 }

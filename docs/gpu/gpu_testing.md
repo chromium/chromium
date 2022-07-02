@@ -294,17 +294,13 @@ of all suites and resulting step names as of April 15th 2021:
   * `context_lost_passthrough_tests`
   * `context_lost_tests`
   * `context_lost_validating_tests`
-  * `gl_renderer_context_lost_tests`
 * `hardware_accelerated_feature`
-  * `gl_renderer_hardware_accelerated_feature_tests`
   * `hardware_accelerated_feature_tests`
 * `gpu_process`
-  * `gl_renderer_gpu_process_launch_tests`
   * `gpu_process_launch_tests`
 * `info_collection`
   * `info_collection_tests`
 * `maps`
-  * `gl_renderer_maps_pixel_tests`
   * `maps_pixel_passthrough_test`
   * `maps_pixel_test`
   * `maps_pixel_validating_test`
@@ -312,7 +308,6 @@ of all suites and resulting step names as of April 15th 2021:
 * `pixel`
   * `android_webview_pixel_skia_gold_test`
   * `egl_pixel_skia_gold_test`
-  * `gl_renderer_pixel_skia_gold_tests`
   * `pixel_skia_gold_passthrough_test`
   * `pixel_skia_gold_validating_test`
   * `pixel_tests`

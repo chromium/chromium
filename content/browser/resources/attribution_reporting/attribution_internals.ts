@@ -194,7 +194,7 @@ class Source {
   expiryTime: Date;
   sourceType: string;
   filterData: string;
-  aggregatableSource: string;
+  aggregationKeys: string;
   debugKey: string;
   dedupKeys: string;
   priority: bigint;
@@ -210,8 +210,8 @@ class Source {
     this.sourceType = sourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
-    this.aggregatableSource =
-        JSON.stringify(mojo.aggregatableSource, bigintReplacer, ' ');
+    this.aggregationKeys =
+        JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
     this.status = attributabilityToText(mojo.attributability);
@@ -241,7 +241,7 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
       new CodeColumn<Source>('Filter Data', (e) => e.filterData),
       new CodeColumn<Source>(
-          'Aggregatable Source', (e) => e.aggregatableSource),
+          'Aggregation Keys', (e) => e.aggregationKeys),
       new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
       new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
     ];
@@ -284,16 +284,20 @@ class Trigger {
   destinationOrigin: string;
   reportingOrigin: string;
   filters: string;
+  notFilters: string;
   debugKey: string;
   eventTriggers: string;
   eventLevelStatus: string;
   aggregatableStatus: string;
+  aggregatableTriggers: string;
+  aggregatableValues: string;
 
   constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
     this.destinationOrigin = originToText(mojo.destinationOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.filters = JSON.stringify(mojo.filters, null, ' ');
+    this.notFilters = JSON.stringify(mojo.notFilters, null, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
 
     this.eventTriggers = JSON.stringify(
@@ -312,6 +316,23 @@ class Trigger {
           };
         }),
         bigintReplacer, ' ');
+
+    this.aggregatableTriggers = JSON.stringify(
+        mojo.aggregatableTriggers.map((e) => {
+          // Omit the filters and not filters if they are empty for brevity.
+          return {
+            'key_piece': e.keyPiece,
+            'source_keys': e.sourceKeys,
+            'filters': Object.entries(e.filters).length > 0 ? e.filters :
+                                                              undefined,
+            'not_filters': Object.entries(e.notFilters).length > 0 ?
+                e.notFilters :
+                undefined,
+          };
+        }),
+        bigintReplacer, ' ');
+
+    this.aggregatableValues = JSON.stringify(mojo.aggregatableValues, null, ' ');
 
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
@@ -335,7 +356,12 @@ class TriggerTableModel extends TableModel<Trigger> {
       new ValueColumn<Trigger, string>('Report To', (e) => e.reportingOrigin),
       new ValueColumn<Trigger, string>('Debug Key', (e) => e.debugKey),
       new CodeColumn<Trigger>('Filters', (e) => e.filters),
+      new CodeColumn<Trigger>('Negated Filters', (e) => e.notFilters),
       new CodeColumn<Trigger>('Event Triggers', (e) => e.eventTriggers),
+      new CodeColumn<Trigger>(
+          'Aggregatable Triggers', (e) => e.aggregatableTriggers),
+      new CodeColumn<Trigger>(
+          'Aggregatable Values', (e) => e.aggregatableValues),
     ];
 
     this.emptyRowText = 'No triggers.';
@@ -717,6 +743,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: No aggregatable data present';
     case WebUITrigger_Status.kProhibitedByBrowserPolicy:
       return 'Failure: Prohibited by browser policy';
+    case WebUITrigger_Status.kNoMatchingConfigurations:
+      return 'Rejected: no matching event-level configurations';
     default:
       return status.toString();
   }

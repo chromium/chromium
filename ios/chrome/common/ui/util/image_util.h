@@ -91,4 +91,7 @@ UIImage* ResizeImage(UIImage* image,
 // "//ui/gfx/image/image_util.h".
 UIImage* ResizeImageForSearchByImage(UIImage* image);
 
+// Returns a blurred image generated from the given |image| and |blurRadius|.
+UIImage* BlurredImageWithImage(UIImage* image, CGFloat blurRadius);
+
 #endif  // IOS_CHROME_COMMON_UI_UTIL_IMAGE_UTIL_H_

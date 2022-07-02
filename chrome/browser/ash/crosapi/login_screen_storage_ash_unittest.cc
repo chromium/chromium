@@ -7,9 +7,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -61,25 +61,23 @@ void EvaluateRetrieveResult(base::OnceClosure closure,
 }
 
 void LoginScreenStorageStoreSuccess(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageStoreCallback
-        callback) {
+    ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
   std::move(callback).Run(/*error_message=*/absl::nullopt);
 }
 
 void LoginScreenStorageStoreError(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageStoreCallback
-        callback) {
+    ash::FakeSessionManagerClient::LoginScreenStorageStoreCallback callback) {
   std::move(callback).Run(kError);
 }
 
 void LoginScreenStorageRetrieveSuccess(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
+    ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
   std::move(callback).Run(kData, /*error_message=*/absl::nullopt);
 }
 
 void LoginScreenStorageRetrieveError(
-    chromeos::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
+    ash::FakeSessionManagerClient::LoginScreenStorageRetrieveCallback
         callback) {
   std::move(callback).Run(/*data=*/absl::nullopt, kError);
 }
@@ -88,7 +86,7 @@ void LoginScreenStorageRetrieveError(
 class LoginScreenStorageAshTest : public testing::Test {
  public:
   // A mock around FakeSessionManagerClient for tracking the D-Bus calls.
-  class MockSessionManagerClient : public chromeos::FakeSessionManagerClient {
+  class MockSessionManagerClient : public ash::FakeSessionManagerClient {
    public:
     MockSessionManagerClient() = default;
     ~MockSessionManagerClient() override = default;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/views/linux_ui/device_scale_factor_observer.h"
@@ -68,6 +69,8 @@ class BrowserDesktopWindowTreeHostLinux
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
+  void Show(ui::WindowShowState show_state,
+            const gfx::Rect& restore_bounds) override;
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;
   void UnlockMouse(aura::Window* window) override;
@@ -86,9 +89,9 @@ class BrowserDesktopWindowTreeHostLinux
   // views::OnDeviceScaleFactorChanged:
   void OnDeviceScaleFactorChanged() override;
 
-  BrowserView* browser_view_ = nullptr;
-  BrowserFrame* browser_frame_ = nullptr;
-  DesktopBrowserFrameAuraLinux* native_frame_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<BrowserFrame> browser_frame_ = nullptr;
+  raw_ptr<DesktopBrowserFrameAuraLinux> native_frame_ = nullptr;
 
 #if defined(USE_DBUS_MENU)
   // Each browser frame maintains its own menu bar object because the lower

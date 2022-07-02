@@ -226,7 +226,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectSourceLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -251,7 +251,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectTargetLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -331,11 +331,11 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   return items;
 }
 
-// Records a histogram for |event|.
+// Records a histogram for `event`.
 - (void)recordInfobarEvent:(translate::InfobarEvent)event {
   UMA_HISTOGRAM_ENUMERATION(kEventHistogram, event);
 }
-// Records a histogram of |histogram| for |langCode|. This is used to log the
+// Records a histogram of `histogram` for `langCode`. This is used to log the
 // language distribution of certain Translate events.
 - (void)recordLanguageDataHistogram:(const std::string&)histogramName
                        languageCode:(const std::string&)langCode {
@@ -359,8 +359,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 }
 
 // Returns a dictionary of prefs to send to the modalConsumer depending on
-// |sourceLanguage|, |targetLanguage|, |translateButtonEnabled|, and
-// |self.currentStep|.
+// `sourceLanguage`, `targetLanguage`, `translateButtonEnabled`, and
+// `self.currentStep`.
 - (NSDictionary*)createPrefDictionaryForSourceLanguage:(NSString*)sourceLanguage
                                         targetLanguage:(NSString*)targetLanguage
                                 translateButtonEnabled:

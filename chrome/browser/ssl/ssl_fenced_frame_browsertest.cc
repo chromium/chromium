@@ -44,7 +44,7 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
   }
 
   RenderFrameHost* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   WebContents* web_contents() {
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
 
   // Create a fenced frame and navigate to the allowlisted url.
   RenderFrameHost* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
-      app_contents->GetMainFrame(), allow_url);
+      app_contents->GetPrimaryMainFrame(), allow_url);
   ASSERT_NE(nullptr, fenced_frame_rfh);
   // Ensure that the interstitial isn't shown for the fenced frame in the app.
   EXPECT_FALSE(IsShowingSSLInterstitial(app_contents));

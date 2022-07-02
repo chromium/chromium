@@ -184,7 +184,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
     return;
 
   url::Origin preconnect_origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (preconnect_origin.scheme() != url::kHttpScheme &&
       preconnect_origin.scheme() != url::kHttpsScheme) {
     return;

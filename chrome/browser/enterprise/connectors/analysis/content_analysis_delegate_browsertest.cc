@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <set>
-#include "build/build_config.h"
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -12,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -34,6 +35,7 @@
 
 using extensions::SafeBrowsingPrivateEventRouter;
 using safe_browsing::BinaryUploadService;
+using safe_browsing::CloudBinaryUploadService;
 using ::testing::_;
 using ::testing::Mock;
 
@@ -50,9 +52,10 @@ std::string text() {
   return std::string(100, 'a');
 }
 
-class FakeBinaryUploadService : public BinaryUploadService {
+class FakeBinaryUploadService : public CloudBinaryUploadService {
  public:
-  FakeBinaryUploadService() : BinaryUploadService(nullptr, nullptr, nullptr) {}
+  FakeBinaryUploadService()
+      : CloudBinaryUploadService(nullptr, nullptr, nullptr) {}
 
   // Sets whether the user is authorized to upload data for Deep Scanning.
   void SetAuthorized(bool authorized) {
@@ -126,6 +129,7 @@ class FakeBinaryUploadService : public BinaryUploadService {
           break;
         case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
         case AnalysisConnector::FILE_DOWNLOADED:
+        case AnalysisConnector::FILE_TRANSFER:
           NOTREACHED();
       }
     }
@@ -1143,7 +1147,7 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
   }
 
   void DialogUpdated(ContentAnalysisDialog* dialog,
-                     ContentAnalysisDelegateBase::FinalResult result) override {
+                     FinalContentAnalysisResult result) override {
     ASSERT_TRUE(file_scan_ && blocking_scan());
   }
 

@@ -87,7 +87,7 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
                                                   HRTFKernel*& kernel_l,
                                                   HRTFKernel*& kernel_r,
                                                   double& frame_delay_l,
-                                                  double& frame_delay_r) {
+                                                  double& frame_delay_r) const {
   unsigned elevation_index = IndexFromElevationAngle(elevation_angle);
   SECURITY_DCHECK(elevation_index < elevations_.size());
   SECURITY_DCHECK(elevations_.size() > 0);

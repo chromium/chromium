@@ -53,7 +53,8 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getEnableToggle() {
-    const toggle = alwaysOnVpnOptions.$$('#alwaysOnVpnEnableToggle');
+    const toggle =
+        alwaysOnVpnOptions.shadowRoot.querySelector('#alwaysOnVpnEnableToggle');
     assert(!!toggle);
     return toggle;
   }
@@ -63,7 +64,8 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getLockdownToggle() {
-    const toggle = alwaysOnVpnOptions.$$('#alwaysOnVpnLockdownToggle');
+    const toggle = alwaysOnVpnOptions.shadowRoot.querySelector(
+        '#alwaysOnVpnLockdownToggle');
     assert(!!toggle);
     return toggle;
   }
@@ -73,7 +75,8 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function getServiceSelect() {
-    const select = alwaysOnVpnOptions.$$('#alwaysOnVpnServiceSelect');
+    const select = alwaysOnVpnOptions.shadowRoot.querySelector(
+        '#alwaysOnVpnServiceSelect');
     assert(!!select);
     return select;
   }

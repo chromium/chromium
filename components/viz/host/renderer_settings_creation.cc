@@ -66,7 +66,6 @@ RendererSettings CreateRendererSettings() {
 #endif
   renderer_settings.allow_antialiasing =
       !command_line->HasSwitch(switches::kDisableCompositedAntialiasing);
-  renderer_settings.use_skia_renderer = features::IsUsingSkiaRenderer();
 
   if (command_line->HasSwitch(switches::kSlowDownCompositingScaleFactor)) {
     const int kMinSlowDownScaleFactor = 1;

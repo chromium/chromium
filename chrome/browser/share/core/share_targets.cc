@@ -21,8 +21,6 @@
 
 namespace sharing {
 
-using base::AutoLock;
-
 static const char GLOBAL[] = "GLOBAL";
 
 // Our Singleton needs to populate itself when first constructed.
@@ -44,13 +42,10 @@ ShareTargets* ShareTargets::GetInstance() {
 }
 
 ShareTargets::ShareTargets() = default;
-
-ShareTargets::~ShareTargets() {
-  AutoLock lock(lock_);  // DCHECK fail if the lock is held.
-}
+ShareTargets::~ShareTargets() = default;
 
 void ShareTargets::RecordUpdateMetrics(UpdateResult result, UpdateOrigin src) {
-  lock_.AssertAcquired();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // src_name should be "ResourceBundle" or "DynamicUpdate".
   if (src == UpdateOrigin::DYNAMIC_UPDATE) {
@@ -68,13 +63,14 @@ void ShareTargets::RecordUpdateMetrics(UpdateResult result, UpdateOrigin src) {
 }
 
 void ShareTargets::PopulateFromDynamicUpdate(const std::string& binary_pb) {
-  AutoLock lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   UpdateResult result = PopulateFromBinaryPb(binary_pb);
   RecordUpdateMetrics(result, UpdateOrigin::DYNAMIC_UPDATE);
 }
 
 void ShareTargets::PopulateFromResourceBundle() {
-  AutoLock lock(lock_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   std::string binary_pb =
@@ -85,8 +81,6 @@ void ShareTargets::PopulateFromResourceBundle() {
 
 ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
     const std::string& binary_pb) {
-  lock_.AssertAcquired();
-
   // Parse the proto and do some validation on it.
   if (binary_pb.empty()) {
     return UpdateResult::FAILED_EMPTY;
@@ -112,14 +106,13 @@ ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
   }
 
   // Looks good. Update our internal list.
-  SwapTargetsLocked(new_targets);
+  SwapTargets(new_targets);
   NotifyShareTargetUpdated();
   return UpdateResult::SUCCESS;
 }
 
-void ShareTargets::SwapTargetsLocked(
+void ShareTargets::SwapTargets(
     std::unique_ptr<mojom::MapLocaleTargets>& new_targets) {
-  lock_.AssertAcquired();
   targets_.swap(new_targets);
 }
 
@@ -144,6 +137,7 @@ std::string ShareTargets::GetCountryStringFromID(int countryID) {
 }
 
 void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string locale =
       GetCountryStringFromID(country_codes::GetCurrentCountryID());
 

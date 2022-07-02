@@ -129,7 +129,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // its descendants.
   virtual bool CanProcessEventsOnApplistViews() = 0;
 
-  // Returns whether the AppListView should dismiss immediately.
+  // Returns whether the app list should dismiss immediately. For example, when
+  // the assistant takes a screenshot the app list is closed immediately so it
+  // doesn't appear in the screenshot.
   virtual bool ShouldDismissImmediately() = 0;
 
   // Gets the ideal y position for the close animation, which depends on

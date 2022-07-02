@@ -179,7 +179,9 @@ struct CORE_EXPORT FrameLoadRequest {
     impression_ = impression;
   }
 
-  const absl::optional<Impression>& Impression() const { return impression_; }
+  const absl::optional<blink::Impression>& Impression() const {
+    return impression_;
+  }
 
   bool CanDisplay(const KURL&) const;
 

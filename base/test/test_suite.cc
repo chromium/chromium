@@ -72,7 +72,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -425,13 +425,13 @@ int TestSuite::Run() {
           switches::kTestChildProcess);
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Cache the BuildInfo so individual tests do not need to worry about it.
+  // Cache the system info so individual tests do not need to worry about it.
   // Some ProcessUtilTest cases, which use kTestChildProcess, do not pass any
   // services, so skip this if that switch was present.
   // This must be called before Initialize() because, for example,
   // content::ContentTestSuite::Initialize() may use the cached values.
   if (client_func.empty())
-    FetchAndCacheSystemBuildInfo();
+    FetchAndCacheSystemInfo();
 #endif
 
   Initialize();

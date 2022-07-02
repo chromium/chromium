@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
@@ -109,10 +108,10 @@ class StorageQueueTest
   void TearDown() override {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
-    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
-    ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
+    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
     // Log next uploader id for possible verification.
     LOG(ERROR) << "Next uploader id=" << next_uploader_id.load();
   }
@@ -268,6 +267,9 @@ class StorageQueueTest
             .WillOnce(DoAll(
                 WithoutArgs(
                     Invoke(waiter_.get(), &test::TestCallbackWaiter::Signal)),
+                WithArg<1>(Invoke([](Status status) {
+                  LOG(ERROR) << "Completion signaled with status=" << status;
+                })),
                 WithoutArgs(
                     Invoke([]() { LOG(ERROR) << "Completion signaled"; }))));
         return std::move(uploader_);
@@ -364,6 +366,7 @@ class StorageQueueTest
     }
 
     void ProcessRecord(EncryptedRecord encrypted_record,
+                       ScopedReservation scoped_reservation,
                        base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
       auto sequence_information = encrypted_record.sequence_information();
@@ -533,7 +536,8 @@ class StorageQueueTest
     test::TestEvent<Status> key_update_event;
     test_encryption_module_->UpdateAsymmetricKey("DUMMY KEY", 0,
                                                  key_update_event.cb());
-    ASSERT_OK(key_update_event.result());
+    const auto status = key_update_event.result();
+    ASSERT_OK(status) << status;
   }
 
   // Tries to create a new storage queue by building the test encryption module
@@ -653,7 +657,6 @@ class StorageQueueTest
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
       base::SequencedTaskRunnerHandle::Get()};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;
   StorageOptions options_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
@@ -1795,10 +1798,10 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientDiskSpace) {
 
   // Update total disk space and reset after running the write operation so it
   // does not affect other tests
-  const auto original_disk_space = GetDiskResource()->GetTotal();
-  GetDiskResource()->Test_SetTotal(0);
+  const auto original_disk_space = options_.disk_space_resource()->GetTotal();
+  options_.disk_space_resource()->Test_SetTotal(0);
   Status write_result = WriteString(kData[0]);
-  GetDiskResource()->Test_SetTotal(original_disk_space);
+  options_.disk_space_resource()->Test_SetTotal(original_disk_space);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
 }
@@ -1808,12 +1811,46 @@ TEST_P(StorageQueueTest, WriteRecordWithInsufficientMemory) {
 
   // Update total memory and reset after running the write operation so it does
   // not affect other tests
-  const auto original_total_memory = GetMemoryResource()->GetTotal();
-  GetMemoryResource()->Test_SetTotal(0);
+  const auto original_total_memory = options_.memory_resource()->GetTotal();
+  options_.memory_resource()->Test_SetTotal(0);
   Status write_result = WriteString(kData[0]);
-  GetMemoryResource()->Test_SetTotal(original_total_memory);
+  options_.memory_resource()->Test_SetTotal(original_total_memory);
   EXPECT_FALSE(write_result.ok());
   EXPECT_EQ(write_result.error_code(), error::RESOURCE_EXHAUSTED);
+}
+
+TEST_P(StorageQueueTest, UploadWithInsufficientMemory) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+
+  // Set uploader expectations.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Complete(Status(error::RESOURCE_EXHAUSTED,
+                             "Insufficient memory for upload"));
+      }))
+      .RetiresOnSaturation();
+  EXPECT_CALL(set_mock_uploader_expectations_,
+              Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
+      .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+        return TestUploader::SetUp(&waiter, this)
+            .Required(0, kData[0])
+            .Complete();
+      }))
+      .RetiresOnSaturation();
+
+  // Update total memory to a low amount.
+  const auto original_total_memory = options_.memory_resource()->GetTotal();
+  options_.memory_resource()->Test_SetTotal(100);
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Reset after running upload so it does not affect other tests.
+  options_.memory_resource()->Test_SetTotal(original_total_memory);
+  // Trigger another upload.
+  task_environment_.FastForwardBy(base::Seconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(

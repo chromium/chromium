@@ -615,7 +615,6 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   // should not fall back to the full name as a distinguishing field.
   std::vector<ServerFieldType> suggested_fields;
   suggested_fields.push_back(ADDRESS_HOME_LINE1);
-  suggested_fields.push_back(ADDRESS_BILLING_LINE1);
   suggested_fields.push_back(EMAIL_ADDRESS);
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),

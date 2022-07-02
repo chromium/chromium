@@ -228,7 +228,8 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
 }
 
 // static
-PermissionResult PermissionDecisionAutoBlocker::GetEmbargoResult(
+absl::optional<PermissionResult>
+PermissionDecisionAutoBlocker::GetEmbargoResult(
     HostContentSettingsMap* settings_map,
     const GURL& request_origin,
     ContentSettingsType permission,
@@ -258,8 +259,7 @@ PermissionResult PermissionDecisionAutoBlocker::GetEmbargoResult(
                             PermissionStatusSource::MULTIPLE_IGNORES);
   }
 
-  return PermissionResult(CONTENT_SETTING_ASK,
-                          PermissionStatusSource::UNSPECIFIED);
+  return absl::nullopt;
 }
 
 // static
@@ -304,7 +304,14 @@ void PermissionDecisionAutoBlocker::UpdateFromVariations() {
                            kDefaultEmbargoDays);
 }
 
-PermissionResult PermissionDecisionAutoBlocker::GetEmbargoResult(
+bool PermissionDecisionAutoBlocker::IsEmbargoed(
+    const GURL& request_origin,
+    ContentSettingsType permission) {
+  return GetEmbargoResult(request_origin, permission).has_value();
+}
+
+absl::optional<PermissionResult>
+PermissionDecisionAutoBlocker::GetEmbargoResult(
     const GURL& request_origin,
     ContentSettingsType permission) {
   return GetEmbargoResult(settings_map_, request_origin, permission,
@@ -351,10 +358,7 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
       if (!IsEnabledForContentSetting(content_type))
         continue;
       const GURL url(e.primary_pattern.ToString());
-      PermissionResult result =
-          GetEmbargoResult(settings_map_, url, content_type, clock_->Now());
-      if (result.source == PermissionStatusSource::MULTIPLE_DISMISSALS ||
-          result.source == PermissionStatusSource::MULTIPLE_IGNORES) {
+      if (IsEmbargoed(url, content_type)) {
         origins.insert(url);
         break;
       }

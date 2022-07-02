@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -23,23 +23,6 @@ namespace policy {
 const char kCustomDisplayDomain[] = "acme.corp";
 const char kMachineName[] = "machine_name";
 const char kCustomManager[] = "user@acme.corp";
-
-void WaitUntilPolicyLoaded() {
-  BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  DeviceCloudPolicyStoreAsh* store =
-      connector->GetDeviceCloudPolicyManager()->device_store();
-  if (!store->has_policy()) {
-    MockCloudPolicyStoreObserver observer;
-    base::RunLoop loop;
-    store->AddObserver(&observer);
-    EXPECT_CALL(observer, OnStoreLoaded(store))
-        .Times(1)
-        .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit));
-    loop.Run();
-    store->RemoveObserver(&observer);
-  }
-}
 
 class BrowserPolicyConnectorAshTest : public DevicePolicyCrosBrowserTest {
  public:
@@ -70,8 +53,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, DisplayDomain) {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   device_policy()->policy_data().set_display_domain(kCustomDisplayDomain);
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
   // At this point display domain is set and policy is loaded so expect to see
   /// the display domain.
   EXPECT_EQ(kCustomDisplayDomain, connector->GetEnterpriseDomainManager());
@@ -89,8 +71,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, ManagedBy) {
   device_policy()->policy_data().set_display_domain(kCustomDisplayDomain);
   device_policy()->policy_data().set_managed_by(kCustomManager);
 
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
   // Now that the managed_by is set expect to see that.
   EXPECT_EQ(kCustomManager, connector->GetEnterpriseDomainManager());
 
@@ -106,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MarketSegment) {
 
   device_policy()->policy_data().set_market_segment(
       enterprise_management::PolicyData::ENROLLED_EDUCATION);
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
   EXPECT_EQ(MarketSegment::EDUCATION, connector->GetEnterpriseMarketSegment());
 }
 
@@ -116,8 +96,7 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MachineName) {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   EXPECT_EQ(std::string(), connector->GetMachineName());
   device_policy()->policy_data().set_machine_name(kMachineName);
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
   // At this point custom display domain is set and policy is loaded so expect
   // to see the custom display domain.
   EXPECT_EQ(kMachineName, connector->GetMachineName());

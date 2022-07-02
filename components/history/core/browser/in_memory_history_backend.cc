@@ -40,7 +40,6 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
 void InMemoryHistoryBackend::OnURLVisited(HistoryService* history_service,
                                           ui::PageTransition transition,
                                           const URLRow& row,
-                                          const RedirectList& redirects,
                                           base::Time visit_time) {
   OnURLVisitedOrModified(row);
 }

@@ -16,7 +16,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -88,11 +88,12 @@ class UseCounterPageLoadMetricsObserverTest
 
     if (WithFencedFrames()) {
       content::RenderFrameHost* fenced_frame_root =
-          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          content::RenderFrameHostTester::For(
+              web_contents()->GetPrimaryMainFrame())
               ->AppendFencedFrame();
       ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 
-      auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+      auto simulator = content::NavigationSimulator::CreateRendererInitiated(
           GURL(kFencedFramesUrl), fenced_frame_root);
       ASSERT_NE(nullptr, simulator);
       simulator->Commit();

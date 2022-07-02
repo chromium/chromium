@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -184,6 +185,25 @@ void TestPrinterQuery::SetPrintableAreaOffsets(int offset_x, int offset_y) {
 
 void TestPrinterQuery::StopWorker() {}
 
+class TestPrintViewManagerForSystemDialogPrint : public PrintViewManager {
+ public:
+  explicit TestPrintViewManagerForSystemDialogPrint(
+      content::WebContents* web_contents)
+      : PrintViewManager(web_contents) {}
+  ~TestPrintViewManagerForSystemDialogPrint() override = default;
+
+  // PrintViewManager:
+  void PrintForSystemDialogImpl() override {
+    // There has to be a target frame so DidShowPrintDialog() does not crash.
+    // Manually set it, as there is no IPC in progress.
+    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
+        web_contents()->GetPrimaryMainFrame());
+    DidShowPrintDialog();
+    print_manager_host_receivers_for_testing().SetCurrentTargetFrameForTesting(
+        nullptr);
+  }
+};
+
 }  // namespace
 
 class TestPrintViewManager : public PrintViewManagerBase {
@@ -282,7 +302,7 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
   ASSERT_TRUE(web_contents);
 
   content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(web_contents->GetMainFrame())
+      content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
           ->AppendChild("child");
 
   PrintViewManager* print_view_manager =
@@ -295,6 +315,31 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
 
   content::RenderFrameHostTester::For(sub_frame)->Detach();
   EXPECT_FALSE(print_view_manager->print_preview_rfh());
+}
+
+TEST_F(PrintViewManagerTest, PrintForSystemDialog) {
+  chrome::NewTab(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  auto print_view_manager =
+      std::make_unique<TestPrintViewManagerForSystemDialogPrint>(web_contents);
+
+  ASSERT_TRUE(print_view_manager->PrintPreviewNow(
+      web_contents->GetPrimaryMainFrame(), /*has_selection=*/false));
+
+  base::RunLoop run_loop;
+  bool dialog_shown = false;
+  EXPECT_TRUE(print_view_manager->PrintForSystemDialogNow(
+      base::BindLambdaForTesting([&]() {
+        dialog_shown = true;
+        run_loop.Quit();
+      })));
+  run_loop.Run();
+  EXPECT_TRUE(dialog_shown);
+
+  print_view_manager->PrintPreviewDone();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -320,7 +365,8 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       std::make_unique<TestPrintViewManager>(web_contents);
   PrintViewManager::SetReceiverImplForTesting(print_view_manager.get());
 
-  print_view_manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
+  print_view_manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(),
+                                      false);
 
   base::Value::Dict print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
@@ -330,7 +376,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
       base::BindOnce(&TestPrintViewManager::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));
   print_view_manager->PrintForPrintPreview(std::move(print_ticket), print_data,
-                                           web_contents->GetMainFrame(),
+                                           web_contents->GetPrimaryMainFrame(),
                                            std::move(callback));
   print_view_manager->WaitForCallback();
 

@@ -2,22 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
 #include <string>
+#include <vector>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -34,21 +40,27 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 
 }  // namespace
 
-class ProfileCustomizationBubbleBrowserTest : public DialogBrowserTest {
+class ProfileCustomizationBrowserTest : public DialogBrowserTest {
  public:
-  ProfileCustomizationBubbleBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHProfileSwitchFeature);
+  explicit ProfileCustomizationBrowserTest(bool dialog_enabled) {
+    std::vector<base::Feature> enabled_features = {
+        feature_engagement::kIPHProfileSwitchFeature};
+    std::vector<base::Feature> disabled_features = {};
+    if (dialog_enabled) {
+      enabled_features.push_back(kSyncPromoAfterSigninIntercept);
+    } else {
+      disabled_features.push_back(kSyncPromoAfterSigninIntercept);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ProfileCustomizationBubbleBrowserTest::RegisterTestTracker));
+                &ProfileCustomizationBrowserTest::RegisterTestTracker));
   }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    ProfileCustomizationBubbleView::CreateBubble(browser()->profile(),
-                                                 GetAvatarButton());
+    ProfileCustomizationBubbleView::CreateBubble(browser(), GetAvatarButton());
   }
 
   // Returns the avatar button, which is the anchor view for the customization
@@ -72,6 +84,13 @@ class ProfileCustomizationBubbleBrowserTest : public DialogBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
+class ProfileCustomizationBubbleBrowserTest
+    : public ProfileCustomizationBrowserTest {
+ public:
+  ProfileCustomizationBubbleBrowserTest()
+      : ProfileCustomizationBrowserTest(/*dialog_enabled=*/false) {}
+};
+
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
@@ -87,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   // Create the customization bubble, owned by the view hierarchy.
   ProfileCustomizationBubbleView* bubble =
-      ProfileCustomizationBubbleView::CreateBubble(browser()->profile(),
+      ProfileCustomizationBubbleView::CreateBubble(browser(),
                                                    GetAvatarButton());
 
   feature_engagement::Tracker* tracker =
@@ -99,7 +118,49 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
       tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
       feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
 
-  bubble->OnDoneButtonClicked();
+  bubble->OnCompletionButtonClicked(
+      ProfileCustomizationHandler::CustomizationResult::kDone);
+
+  base::RunLoop loop;
+  tracker->AddOnInitializedCallback(
+      base::BindLambdaForTesting([&loop](bool success) {
+        DCHECK(success);
+        loop.Quit();
+      }));
+  loop.Run();
+
+  ASSERT_TRUE(tracker->IsInitialized());
+  EXPECT_EQ(
+      tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
+      feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
+}
+
+class ProfileCustomizationDialogBrowserTest
+    : public ProfileCustomizationBrowserTest {
+ public:
+  ProfileCustomizationDialogBrowserTest()
+      : ProfileCustomizationBrowserTest(/*dialog_enabled=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileCustomizationDialogBrowserTest, IPH) {
+  AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  // Create the customization dialog, owned by the view hierarchy.
+  ProfileCustomizationBubbleView::CreateBubble(browser(), GetAvatarButton());
+
+  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+
+  feature_engagement::Tracker* tracker =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetFeaturePromoController()
+          ->feature_engagement_tracker();
+
+  EXPECT_NE(
+      tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
+      feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
+
+  ASSERT_TRUE(
+      login_ui_test_utils::CompleteProfileCustomizationDialog(browser()));
 
   base::RunLoop loop;
   tracker->AddOnInitializedCallback(

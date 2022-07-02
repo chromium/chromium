@@ -3,13 +3,16 @@
 # found in the LICENSE file.
 #!/bin/sh
 
-releaseBranchNo=5005
-pinnedReleaseMinusOne=93c720db8323b3ec10d056025ab95c23a31997c9 #101.0.4951.41
-pinnedMain=6ee574c7eb5719153bbe0d1eff07fd0acbd864cc #refs/heads/main@{#966041}
+# BEFORE YOU RUN THIS - In your ~ directory, execute the following. Note - this is named health_chromium so that cd chr<tab> works.
+# mkdir health_chromium
+# cd health_chromium
+# fetch --nohooks chromium
 
-cd ~/chromium/src
+releaseBranchNo=5112 #M104
+pinnedReleaseMinusOne=a1711811edd74ff1cf2150f36ffa3b0dae40b17f #103.0.5060.53
+pinnedMain=6ff741d380a7bfe8aafa4d0e6a8e84c46ddb4d39 #refs/heads/main@{#1018088}
 
-gclient sync --with_branch_heads --with_tags
+cd ~/health_chromium/src
 git fetch
 
 # Current release branch
@@ -27,4 +30,4 @@ headOfMain=`git whatchanged --grep="Updating trunk VERSION" --format="%H" -1 | h
 # M vs. M-1
 ~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
 # Main
-~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
+~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health_pgo --attempts=40

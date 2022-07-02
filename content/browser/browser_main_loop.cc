@@ -22,7 +22,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -97,7 +96,6 @@
 #include "content/browser/utility_process_host.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "content/browser/webui/content_web_ui_configs.h"
-#include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/skia_utils.h"
@@ -169,7 +167,6 @@
 #include "content/browser/android/tracing_controller_android.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
-#include "content/common/android/cpu_affinity_setter.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
 #include "ui/display/screen.h"
@@ -520,20 +517,6 @@ void BrowserMainLoop::Init() {
 int BrowserMainLoop::EarlyInitialization() {
   TRACE_EVENT0("startup", "BrowserMainLoop::EarlyInitialization");
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingBrowserMainBiggerParam, false)) {
-    SetCpuAffinityForCurrentThread(base::HasBiggerCpuCores()
-                                       ? base::CpuAffinityMode::kBiggerCoresOnly
-                                       : base::CpuAffinityMode::kBigCoresOnly);
-  } else if (base::GetFieldTrialParamByFeatureAsBool(
-                 features::kBigLittleScheduling,
-                 features::kBigLittleSchedulingBrowserMainBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
-#endif
-
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // The initialization of the sandbox host ends up with forking the Zygote
   // process and requires no thread been forked. The initialization has happened
@@ -692,8 +675,6 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
   {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::Subsystem:ContentWebUIController");
-    WebUIControllerFactory::RegisterFactory(
-        ContentWebUIControllerFactory::GetInstance());
     RegisterContentWebUIConfigs();
   }
 
@@ -950,7 +931,7 @@ int BrowserMainLoop::PostCreateThreads() {
 
   tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
   content::BackgroundTracingManagerImpl::GetInstance()
-      ->AddMetadataGeneratorFunction();
+      .AddMetadataGeneratorFunction();
 
   if (parts_)
     parts_->PostCreateThreads();
@@ -1057,6 +1038,11 @@ void BrowserMainLoop::RunMainMessageLoop() {
 }
 
 void BrowserMainLoop::PreShutdown() {
+  // Clear OnNextIdleCallback if it's still pending. Failure to do so can result
+  // in an OnFirstIdle phase incorrectly triggering during shutdown if an early
+  // exit paths results in a shutdown path that happens to RunLoop.
+  base::CurrentThread::Get()->RegisterOnNextIdleCallback(base::NullCallback());
+
   ui::Clipboard::OnPreShutdownForCurrentThread();
 }
 

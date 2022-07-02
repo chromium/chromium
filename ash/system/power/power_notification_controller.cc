@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -153,7 +154,8 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
                       PowerStatus::Get()->GetPreferredMinimumPower(), 0)),
         std::u16string(), GURL(),
         message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower),
+            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower,
+            NotificationCatalogName::kPowerNotifier),
         message_center::RichNotificationData(),
         new UsbNotificationDelegate(this), kNotificationLowPowerChargerIcon,
         message_center::SystemNotificationWarningLevel::WARNING);

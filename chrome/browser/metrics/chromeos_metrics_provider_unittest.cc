@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,8 +36,7 @@ using Hardware = metrics::SystemProfileProto::Hardware;
 
 namespace {
 
-constexpr int kTpmV1Family = 0x312e3200;
-constexpr int kTpmV2Family = 0x322e3000;
+constexpr int kTpmFirmwareVersion = 100;
 
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
@@ -124,19 +124,6 @@ class ChromeOSMetricsProviderTest : public testing::Test {
     // Initialize the login state trackers.
     if (!chromeos::LoginState::IsInitialized())
       chromeos::LoginState::Initialize();
-  }
-
-  void CheckTpmType(const Hardware::TpmType& expected_tpm_type) {
-    TestChromeOSMetricsProvider provider;
-    provider.OnDidCreateMetricsLog();
-    metrics::SystemProfileProto system_profile;
-    provider.ProvideSystemProfileMetrics(&system_profile);
-
-    ASSERT_TRUE(system_profile.has_hardware());
-    const Hardware::TpmType proto_tpm_type =
-        system_profile.hardware().tpm_type();
-
-    EXPECT_EQ(expected_tpm_type, proto_tpm_type);
   }
 
   void TearDown() override {
@@ -264,68 +251,55 @@ TEST_F(ChromeOSMetricsProviderTest, FullHardwareClass) {
   EXPECT_EQ(expected_full_hw_class, proto_full_hw_class);
 }
 
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeRuntimeSelection) {
-  chromeos::TpmManagerClient::Get()
-      ->GetTestInterface()
-      ->mutable_supported_features_reply()
-      ->set_support_runtime_selection(true);
+TEST_F(ChromeOSMetricsProviderTest, DemoModeDimensions) {
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  const std::string expected_country = "CA";
+  const std::string expected_retailer_id = "ABC";
+  const std::string expected_store_id = "12345";
+  g_browser_process->local_state()->SetString("demo_mode.country",
+                                              expected_country);
+  g_browser_process->local_state()->SetString("demo_mode.retailer_id",
+                                              expected_retailer_id);
+  g_browser_process->local_state()->SetString("demo_mode.store_id",
+                                              expected_store_id);
 
-  CheckTpmType(Hardware::TPM_TYPE_RUNTIME_SELECTION);
+  TestChromeOSMetricsProvider provider;
+  provider.OnDidCreateMetricsLog();
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  ASSERT_TRUE(system_profile.has_demo_mode_dimensions());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().has_country());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().has_retailer());
+  ASSERT_TRUE(
+      system_profile.demo_mode_dimensions().retailer().has_retailer_id());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().retailer().has_store_id());
+  std::string country = system_profile.demo_mode_dimensions().country();
+  std::string retailer_id =
+      system_profile.demo_mode_dimensions().retailer().retailer_id();
+  std::string store_id =
+      system_profile.demo_mode_dimensions().retailer().store_id();
+
+  EXPECT_EQ(country, expected_country);
+  EXPECT_EQ(retailer_id, expected_retailer_id);
+  EXPECT_EQ(store_id, expected_store_id);
 }
 
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeV1) {
-  chromeos::TpmManagerClient::Get()
-      ->GetTestInterface()
-      ->mutable_version_info_reply()
-      ->set_family(kTpmV1Family);
-
-  CheckTpmType(Hardware::TPM_TYPE_1);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeCr50) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
-  reply->set_family(kTpmV2Family);
-
-  CheckTpmType(Hardware::TPM_TYPE_CR50);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeTi50) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_TI50);
-  reply->set_family(kTpmV2Family);
-
-  CheckTpmType(Hardware::TPM_TYPE_TI50);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidFamily) {
+TEST_F(ChromeOSMetricsProviderTest, TpmFirmwareVersion) {
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_version_info_reply()
-      ->set_family(100);
+      ->set_firmware_version(kTpmFirmwareVersion);
 
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
-}
+  TestChromeOSMetricsProvider provider;
+  provider.OnDidCreateMetricsLog();
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
 
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeGenericTpm2) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_family(kTpmV2Family);
+  ASSERT_TRUE(system_profile.has_hardware());
+  ASSERT_TRUE(system_profile.hardware().has_tpm_firmware_version());
 
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
-}
-
-TEST_F(ChromeOSMetricsProviderTest, TpmTypeInvalidGscWithFamilyV1) {
-  tpm_manager::GetVersionInfoReply* reply = chromeos::TpmManagerClient::Get()
-                                                ->GetTestInterface()
-                                                ->mutable_version_info_reply();
-  reply->set_family(kTpmV1Family);
-  reply->set_gsc_version(tpm_manager::GSC_VERSION_CR50);
-
-  CheckTpmType(Hardware::TPM_TYPE_UNKNOWN);
+  EXPECT_EQ(system_profile.hardware().tpm_firmware_version(),
+            kTpmFirmwareVersion);
 }

@@ -23,7 +23,6 @@ copy("copy_mojo") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "."
   in_files = [
     "media_history.ts",
     "media_data_table.ts",
@@ -67,7 +66,8 @@ generate_grd("build_grd") {
     "webrtc_logs.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   deps = [ ":build_ts" ]
 }
 

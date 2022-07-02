@@ -72,8 +72,6 @@ class ARQuickLookTabHelper
   // ownership of |download_task|.
   virtual void Download(std::unique_ptr<web::DownloadTask> download_task);
 
-  web::WebState* web_state() { return web_state_; }
-
  private:
   friend class web::WebStateUserData<ARQuickLookTabHelper>;
 

@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
@@ -113,7 +113,7 @@ class PublicSessionTosScreenTest : public OobeBaseTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     InitializePolicy();
   }
 
@@ -206,8 +206,8 @@ class PublicSessionTosScreenTest : public OobeBaseTest {
     original_callback_.Run(result_.value());
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   absl::optional<TermsOfServiceScreen::Result> result_;
@@ -361,8 +361,8 @@ class ManagedUserTosScreenTestBase : public OobeBaseTest {
     original_callback_.Run(result_.value());
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   bool TosFileExists() {

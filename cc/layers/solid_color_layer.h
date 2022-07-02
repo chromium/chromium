@@ -25,7 +25,7 @@ class CC_EXPORT SolidColorLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  void SetBackgroundColor(SkColor color) override;
+  void SetBackgroundColor(SkColor4f color) override;
 
  protected:
   SolidColorLayer();

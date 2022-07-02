@@ -29,9 +29,15 @@ JAVA_HOME=../../jdk/current
 JAVA_BIN=../../jdk/current/bin
 MIN_API=21
 
+# E.g.:
+# EXTRA_JARS=../../../out/Release/obj/components/autofill_assistant/browser/proto_java.javac.jar:../../../out/Release/obj/clank/third_party/google3/protobuf.processed.jar
+
+# Uncomment to create r8inputs.zip:
+# DUMP_INPUTS=-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip
+
 rm -f *.class
-$JAVA_BIN/javac -cp $ANDROID_JAR -target 11 -source 11 *.java
-$JAVA_BIN/java -cp $R8_PATH com.android.tools.r8.R8 \
+$JAVA_BIN/javac -cp $ANDROID_JAR:$EXTRA_JARS -target 11 -source 11 *.java
+$JAVA_BIN/java -cp $R8_PATH $DUMP_INPUTS com.android.tools.r8.R8 \
     --min-api $MIN_API \
     --lib "$JAVA_HOME" \
     --lib "$ANDROID_JAR" \
@@ -41,6 +47,7 @@ $JAVA_BIN/java -cp $R8_PATH com.android.tools.r8.R8 \
     --pg-conf playground.pgcfg \
     --pg-map-output Playground.mapping \
     --output . \
+    ${EXTRA_JARS/:/ } \
     *.class
 $DEXDUMP -d classes.dex > dexdump.txt
 

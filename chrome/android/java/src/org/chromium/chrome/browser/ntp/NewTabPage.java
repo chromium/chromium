@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -56,11 +57,14 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogLaunchContext;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -80,6 +84,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -124,6 +129,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final NewTabPageUma mNewTabPageUma;
     private final ContextMenuManager mContextMenuManager;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
+    private final BottomSheetController mBottomSheetController;
+    private final SettingsLauncher mSettingsLauncher;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
     private NewTabPageLayout mNewTabPageLayout;
@@ -321,6 +328,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param windowAndroid The containing window of this page.
      * @param jankTracker {@link JankTracker} object to measure jankiness while NTP is visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param settingsLauncher {@link SettingsLauncher} object to launch settings fragments.
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
@@ -329,7 +337,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             NativePageHost nativePageHost, Tab tab, String url,
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
+            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier,
+            SettingsLauncher settingsLauncher, CrowButtonDelegate crowButtonDelegate) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -342,6 +351,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mMostVisitedTileClickObservers = new ObserverList<>();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabModelSelector = tabModelSelector;
+        mBottomSheetController = bottomSheetController;
+        mSettingsLauncher = settingsLauncher;
 
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
@@ -407,7 +418,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                bottomSheetController, shareDelegateSupplier, url);
+                shareDelegateSupplier, crowButtonDelegate, url);
 
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -453,20 +464,20 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param snackbarManager {@link SnackbarManager} object.
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isInNightMode {@code true} if the night mode setting is on.
-     * @param bottomSheetController The controller for bottom sheets.  Used by the feed.
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
      */
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
-            BottomSheetController bottomSheetController,
-            Supplier<ShareDelegate> shareDelegateSupplier, String url) {
+            Supplier<ShareDelegate> shareDelegateSupplier, CrowButtonDelegate crowButtonDelegate,
+            String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
-                mNewTabPageManager.getNavigationDelegate(), new BookmarkBridge(profile)) {
+                mNewTabPageManager.getNavigationDelegate(), new BookmarkBridge(profile),
+                crowButtonDelegate) {
             @Override
             public void openHelpPage() {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
@@ -478,7 +489,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 snackbarManager, windowAndroid,
                 new SnapScrollHelperImpl(mNewTabPageManager, mNewTabPageLayout), mNewTabPageLayout,
                 mBrowserControlsStateProvider.getTopControlsHeight(), isInNightMode, this, profile,
-                /* isPlaceholderShownInitially= */ false, bottomSheetController,
+                /* isPlaceholderShownInitially= */ false, mBottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),
                 PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
@@ -559,12 +570,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             view.setLayoutParams(layoutParams);
         }
 
-        // Apply negative margin to the top of the N logo (which would otherwise be the height of
-        // the top toolbar) when Duet is enabled to remove some of the empty space.
-        mNewTabPageLayout.setSearchProviderTopMargin((layoutParams.bottomMargin == 0)
-                        ? view.getResources().getDimensionPixelSize(R.dimen.ntp_logo_margin_top)
-                        : -view.getResources().getDimensionPixelSize(
-                                R.dimen.duet_ntp_logo_top_margin));
+        // Apply the height of the top toolbar as the margin to the top of the N logo.
+        mNewTabPageLayout.setSearchProviderTopMargin(getLogoMargin(true));
+        mNewTabPageLayout.setSearchProviderBottomMargin(getLogoMargin(false));
     }
 
     // TODO(sinansahin): This is the same as {@link ToolbarManager#getToolbarExtraYOffset}. So, we
@@ -604,6 +612,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         setSearchProviderInfoOnView(mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
         mNewTabPageLayout.loadSearchProviderLogo();
+        // TODO(https://crbug.com/1329288): Remove this call when the Feed position experiment is
+        // cleaned up.
+        updateMargins();
     }
 
     /**
@@ -714,6 +725,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     @Override
+    public void notifyHidingWithBack() {
+        FeedReliabilityLogger feedReliabilityLogger = mFeedSurfaceProvider.getReliabilityLogger();
+        if (feedReliabilityLogger != null) {
+            feedReliabilityLogger.onNavigateBack();
+        }
+    }
+
+    @Override
     public void onVoiceAvailabilityImpacted() {
         mNewTabPageLayout.updateActionButtonVisibility();
     }
@@ -737,6 +756,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         RecordUserAction.record("MobileNTPShown");
         mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
         SuggestionsMetrics.recordSurfaceVisible();
+
+        // TODO(https://crbug.com/1330704): Find a way to decouple this.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
+            // Once the NTP is loaded, launch the Privacy Sandbox prompt, if needed. This will only
+            // be displayed to the user one time.
+            PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                    PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE, mContext, mSettingsLauncher,
+                    /*isIncognito=*/false, // NTP is not displayed in incognito.
+                    mBottomSheetController);
+        }
 
         FeatureNotificationUtils.registerIPHCallback(FeatureType.VOICE_SEARCH,
                 mNewTabPageLayout::maybeShowFeatureNotificationVoiceSearchIPH);
@@ -947,5 +976,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     public NewTabPageManager getNewTabPageManagerForTesting() {
         return mNewTabPageManager;
+    }
+
+    /**
+     * @param isTopMargin True to return the top margin; False to return bottom margin.
+     * @return The top margin or bottom margin of the logo.
+     */
+    // TODO(https://crbug.com/1329288): Remove this method when the Feed position experiment is
+    // cleaned up.
+    private int getLogoMargin(boolean isTopMargin) {
+        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+        return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
+                       R.dimen.ntp_logo_margin_top)
+                           : mNewTabPageLayout.getResources().getDimensionPixelSize(
+                                   R.dimen.ntp_logo_margin_bottom);
     }
 }

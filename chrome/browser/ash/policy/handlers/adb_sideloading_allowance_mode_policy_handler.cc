@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -176,9 +176,9 @@ void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
     return;
   }
 
-  using ResponseCode = chromeos::SessionManagerClient::AdbSideloadResponseCode;
+  using ResponseCode = ash::SessionManagerClient::AdbSideloadResponseCode;
 
-  auto* client = chromeos::SessionManagerClient::Get();
+  auto* client = ash::SessionManagerClient::Get();
   client->QueryAdbSideload(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback, ResponseCode response_code,
          bool enabled) {

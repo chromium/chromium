@@ -72,6 +72,11 @@ enum ProfileSignout : int {
   // effective on their browser if they Sync with their managed account. The
   // user has the option to sign out to avoid user policies.
   USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG = 19,
+  // The email address of the primary account on the device was updated,
+  // triggering an automatic signout followed by signin.
+  ACCOUNT_EMAIL_UPDATED = 20,
+  // User clicked on sign-out from the clear browsing data page.
+  USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE = 21,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };
@@ -182,6 +187,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = 34,
   ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 35,
   ACCESS_POINT_SEND_TAB_TO_SELF_PROMO = 36,
+  ACCESS_POINT_NTP_FEED_TOP_PROMO = 37,
+  ACCESS_POINT_SETTINGS_SYNC_OFF_ROW = 38,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.
@@ -550,16 +557,10 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
 // -----------------------------------------------------------------------------
 
 // Records corresponding sign in user action for an access point.
-void RecordSigninUserActionForAccessPoint(AccessPoint access_point,
-                                          PromoAction promo_action);
+void RecordSigninUserActionForAccessPoint(AccessPoint access_point);
 
-// Records |Signin_ImpressionWithAccount_From*| user action.
+// Records |Signin_Impression_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
-
-// Records |Signin_Impression{With|No}Account_From*| user action.
-void RecordSigninImpressionWithAccountUserActionForAccessPoint(
-    AccessPoint access_point,
-    bool with_account);
 
 #if BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction| histogram.

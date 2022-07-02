@@ -216,7 +216,7 @@ void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
 }
 
 void RasterImplementationGLES::BeginRasterCHROMIUM(
-    GLuint sk_color,
+    SkColor4f sk_color_4f,
     GLboolean needs_clear,
     GLuint msaa_sample_count,
     MsaaMode msaa_mode,

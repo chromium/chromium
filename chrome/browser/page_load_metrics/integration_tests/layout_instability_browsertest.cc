@@ -5,7 +5,9 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -30,6 +32,10 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
 
 void LayoutInstabilityTest::RunWPT(const std::string& test_file,
                                    bool trace_only) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLayoutShift);
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
   Load("/layout-instability/" + test_file);
@@ -43,6 +49,8 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
       CheckTraceData(expectations.GetList(), *StopTracingAndAnalyze());
   if (trace_only)
     return;
+
+  waiter->Wait();
 
   // Finish session.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_elf/third_party_dlls/beacon.h"
 
-#include "chrome/chrome_elf/chrome_elf_constants.h"
+#include "chrome/chrome_elf/blocklist_constants.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_util.h"
 

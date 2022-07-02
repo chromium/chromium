@@ -50,3 +50,38 @@ TEST(ShellDialogsWin, AppendExtensionIfNeeded) {
                                           test_cases[i].suggested_ext));
   }
 }
+
+TEST(ShellDialogsWin, GetSanitizedFileName) {
+  struct GetSanitizedFileNameTestCase {
+    const wchar_t* filename;
+    const wchar_t* sanitized_filename;
+  } test_cases[] = {
+      {L"", L""},
+      {L"a.txt", L"a.txt"},
+
+      // Only 1 "%" in file name.
+      {L"%", L"%"},
+      {L"%.txt", L"%.txt"},
+      {L"ab%c.txt", L"ab%c.txt"},
+      {L"abc.t%", L"abc.t%"},
+
+      // 2 "%" in file name.
+      {L"%%", L""},
+      {L"%c%", L""},
+      {L"%c%d", L"d"},
+      {L"d%c%.txt", L"d.txt"},
+      {L"ab%c.t%", L"ab"},
+      {L"abc.%t%", L"abc."},
+
+      // More than 2 "%" in file name.
+      {L"%ab%c%.txt", L"c%.txt"},
+      {L"%abc%.%txt%", L"."},
+      {L"%ab%c%.%txt%", L"ctxt%"},
+  };
+
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("i=%zu", i));
+    EXPECT_EQ(base::FilePath(test_cases[i].sanitized_filename),
+              ui::GetSanitizedFileName(base::FilePath(test_cases[i].filename)));
+  }
+}

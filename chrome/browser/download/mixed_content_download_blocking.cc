@@ -293,7 +293,7 @@ bool ContainsExtension(const std::string& extension_list,
        base::SplitStringPiece(extension_list, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     DCHECK_EQ(base::ToLowerASCII(item), item);
-    if (base::LowerCaseEqualsASCII(extension, item))
+    if (base::EqualsCaseInsensitiveASCII(extension, item))
       return true;
   }
 
@@ -310,7 +310,7 @@ void PrintConsoleMessage(const MixedContentDownloadData& data,
     return;
   }
 
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
           "Mixed Content: The site at '%s' was loaded over a secure "

@@ -112,8 +112,6 @@ static_library("libaddressinput") {
     "chromium/chrome_storage_impl.h",
     "chromium/fallback_data_store.cc",
     "chromium/fallback_data_store.h",
-    "chromium/input_suggester.cc",
-    "chromium/input_suggester.h",
     "chromium/storage_test_runner.h",
     "chromium/string_compare.cc",
     "chromium/trie.cc",

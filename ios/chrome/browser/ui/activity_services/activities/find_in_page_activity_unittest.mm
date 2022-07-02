@@ -26,7 +26,7 @@ class FindInPageActivityTest : public PlatformTest {
     mocked_handler_ = OCMStrictProtocolMock(@protocol(FindInPageCommands));
   }
 
-  // Creates a ShareToData instance with |is_page_searchable| set.
+  // Creates a ShareToData instance with `is_page_searchable` set.
   ShareToData* CreateData(bool is_page_searchable) {
     return [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                       visibleURL:GURL("https://google.com/")

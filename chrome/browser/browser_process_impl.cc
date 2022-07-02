@@ -162,6 +162,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
+#include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
+#include "components/webauthn/android/webauthn_client_android.h"
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -245,6 +247,10 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
           startup_data->chrome_feature_list_creator()->TakePrefService()),
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   g_browser_process = this;
+
+  // Initialize the SessionIdGenerator instance, providing a PrefService to
+  // ensure the persistent storage of current max SessionId.
+  sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
   DCHECK(local_state_);
   DCHECK(startup_data);
@@ -349,6 +355,13 @@ void BrowserProcessImpl::Init() {
 
 #if BUILDFLAG(IS_MAC)
   system_media_permissions::LogSystemMediaPermissionsStartupStats();
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
+    components::WebAuthnClientAndroid::SetClient(
+        std::make_unique<ChromeWebAuthnClientAndroid>());
+  }
 #endif
 }
 
@@ -615,7 +628,7 @@ void BrowserProcessImpl::EndSession() {
   // Tell the metrics service it was cleanly shutdown.
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
   if (metrics) {
-    metrics->RecordStartOfSessionEnd();
+    metrics->LogCleanShutdown();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // The MetricsService may update Local State prefs in memory without
     // writing the updated prefs to disk, so schedule a Local State write now.

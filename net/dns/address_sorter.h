@@ -28,7 +28,7 @@ class NET_EXPORT AddressSorter {
   AddressSorter(const AddressSorter&) = delete;
   AddressSorter& operator=(const AddressSorter&) = delete;
 
-  virtual ~AddressSorter() {}
+  virtual ~AddressSorter() = default;
 
   // Sorts `endpoints`, which must include at least one IPv6 address.
   // Calls `callback` upon completion. Could complete synchronously. Could
@@ -40,7 +40,7 @@ class NET_EXPORT AddressSorter {
   static std::unique_ptr<AddressSorter> CreateAddressSorter();
 
  protected:
-  AddressSorter() {}
+  AddressSorter() = default;
 };
 
 }  // namespace net

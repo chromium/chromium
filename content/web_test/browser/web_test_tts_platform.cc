@@ -76,6 +76,8 @@ void WebTestTtsPlatform::GetVoicesForBrowserContext(
     const GURL& source_url,
     std::vector<content::VoiceData>* out_voices) {}
 
+void WebTestTtsPlatform::RefreshVoices() {}
+
 WebTestTtsPlatform::WebTestTtsPlatform() = default;
 
 WebTestTtsPlatform::~WebTestTtsPlatform() = default;

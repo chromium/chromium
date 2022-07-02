@@ -30,6 +30,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip_reader.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/system/statistics_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+using testing::IsSupersetOf;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
@@ -121,7 +127,15 @@ class SupportToolHandlerTest : public ::testing::Test {
   SupportToolHandlerTest(const SupportToolHandlerTest&) = delete;
   SupportToolHandlerTest& operator=(const SupportToolHandlerTest&) = delete;
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Set serial number for testing.
+    fake_statistics_provider_.SetMachineStatistic("serial_number", "000000");
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &fake_statistics_provider_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   void TearDown() override {
     if (!temp_dir_.IsValid())
@@ -164,6 +178,9 @@ class SupportToolHandlerTest : public ::testing::Test {
  private:
   // The temporary directory that we'll store the output files.
   base::ScopedTempDir temp_dir_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::system::FakeStatisticsProvider fake_statistics_provider_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::TaskEnvironment task_environment;
 };
 
@@ -222,10 +239,15 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
       ReadZipFileContents(target_path);
   // Each TestDataCollector should write the output contents on a file in the
   // .zip file which has a same name as the data collector.
-  EXPECT_THAT(zip_contents,
-              UnorderedElementsAre(
-                  Pair("test_data_collector_1", kTestDataToWriteOnFile),
-                  Pair("test_data_collector_2", kTestDataToWriteOnFile)));
+  EXPECT_THAT(
+      zip_contents,
+      IsSupersetOf({Pair("test_data_collector_1", kTestDataToWriteOnFile),
+                    Pair("test_data_collector_2", kTestDataToWriteOnFile)}));
+  // Check metadata file.
+  auto metadata_file_contents = zip_contents.find("metadata.txt");
+  EXPECT_TRUE(metadata_file_contents != zip_contents.end());
+  // Metadata file should not be empty.
+  EXPECT_FALSE(metadata_file_contents->second.empty());
 }
 
 TEST_F(SupportToolHandlerTest, ErrorMessageOnCollectData) {
@@ -303,8 +325,13 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
   // Each TestDataCollector should write the output contents on a file in the
   // .zip file which has a same name as the data collector. The data collectors
   // with error won't create and write to any file.
-  EXPECT_THAT(zip_contents,
-              UnorderedElementsAre(
-                  Pair("test_data_collector_1", kTestDataToWriteOnFile),
-                  Pair("test_data_collector_2", kTestDataToWriteOnFile)));
+  EXPECT_THAT(
+      zip_contents,
+      IsSupersetOf({Pair("test_data_collector_1", kTestDataToWriteOnFile),
+                    Pair("test_data_collector_2", kTestDataToWriteOnFile)}));
+  // Check metadata file.
+  auto metadata_file_contents = zip_contents.find("metadata.txt");
+  EXPECT_TRUE(metadata_file_contents != zip_contents.end());
+  // Metadata file should not be empty.
+  EXPECT_FALSE(metadata_file_contents->second.empty());
 }

@@ -29,8 +29,7 @@ function updatePageWithProperties() {
     $('enable-webfeed-follow-intro-debug').checked =
         properties.isWebFeedFollowIntroDebugEnabled;
     $('enable-webfeed-follow-intro-debug').disabled = false;
-    $('use-feed-query-requests-for-web-feeds').checked =
-        properties.useFeedQueryRequestsForWebFeeds;
+    $('use-feed-query-requests').checked = properties.useFeedQueryRequests;
 
     switch (properties.followingFeedOrder) {
       case FeedOrder.kUnspecified:
@@ -148,11 +147,9 @@ function setupEventListeners() {
     $('enable-webfeed-follow-intro-debug').disabled = true;
   });
 
-  $('use-feed-query-requests-for-web-feeds')
-      .addEventListener('click', function() {
-        pageHandler.setUseFeedQueryRequestsForWebFeeds(
-            $('use-feed-query-requests-for-web-feeds').checked);
-      });
+  $('use-feed-query-requests').addEventListener('click', function() {
+    pageHandler.setUseFeedQueryRequests($('use-feed-query-requests').checked);
+  });
 
   const orderRadioClickListener = function(order) {
     $('following-feed-order-grouped').disabled = true;

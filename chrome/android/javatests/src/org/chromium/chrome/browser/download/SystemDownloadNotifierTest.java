@@ -13,16 +13,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
@@ -37,11 +37,11 @@ import java.util.UUID;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class SystemDownloadNotifierTest {
-    @ClassRule
-    public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
-
     private final SystemDownloadNotifier mSystemDownloadNotifier = new SystemDownloadNotifier();
     private MockDownloadNotificationService mMockDownloadNotificationService;
+
+    @Mock
+    DownloadManagerService mDownloadManagerService;
 
     @BeforeClass
     public static void beforeClass() {
@@ -50,7 +50,9 @@ public class SystemDownloadNotifierTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DownloadManagerService.setDownloadManagerService(mDownloadManagerService);
             mMockDownloadNotificationService = new MockDownloadNotificationService();
             mSystemDownloadNotifier.setDownloadNotificationService(
                     mMockDownloadNotificationService);
@@ -60,6 +62,8 @@ public class SystemDownloadNotifierTest {
     @After
     public void tearDown() {
         ThrottlingNotificationScheduler.getInstance().clear();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { DownloadManagerService.setDownloadManagerService(null); });
     }
 
     private DownloadInfo getDownloadInfo(ContentId id) {

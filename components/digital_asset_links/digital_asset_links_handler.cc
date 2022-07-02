@@ -107,7 +107,7 @@ bool StatementHasMatchingFingerprint(const base::Value& statement,
 void AddMessageToConsole(content::WebContents* web_contents,
                          const std::string& message) {
   if (web_contents) {
-    web_contents->GetMainFrame()->AddMessageToConsole(
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, message);
     return;
   }

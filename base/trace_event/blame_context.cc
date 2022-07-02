@@ -18,7 +18,7 @@ BlameContext::BlameContext(const char* category,
                            const char* name,
                            const char* type,
                            const char* scope,
-                           int64_t id,
+                           uint64_t id,
                            const BlameContext* parent_context)
     : category_(category),
       name_(name),

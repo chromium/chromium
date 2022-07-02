@@ -35,10 +35,10 @@ const EnableDebuggingState = {
 
 /**
  * @typedef {{
- *   removeProtectionProceedButton:  OobeTextButtonElement,
+ *   removeProtectionProceedButton:  OobeTextButton,
  *   password:  CrInputElement,
- *   okButton:  OobeTextButtonElement,
- *   errorOkButton: OobeTextButtonElement
+ *   okButton:  OobeTextButton,
+ *   errorOkButton: OobeTextButton
  * }}
  */
  EnableDebuggingBase.$;

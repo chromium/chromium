@@ -40,18 +40,18 @@ public class HistoryAdapterTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider, false, (vg) -> null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }
 
     private void initializeAdapter() {
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
     }
 
     @Test
     public void testInitialize_Empty() {
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, false, false);
     }
 
@@ -62,7 +62,7 @@ public class HistoryAdapterTest {
         HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
         mHistoryProvider.addItem(item1);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be three items - the header, a date and the history item.
         checkAdapterContents(mAdapter, true, false, null, null, item1);
@@ -78,7 +78,7 @@ public class HistoryAdapterTest {
         HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(1, timestamp);
         mHistoryProvider.addItem(item2);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be four items - the list header, a date header and two history items.
         checkAdapterContents(mAdapter, true, false, null, null, item1, item2);
@@ -112,7 +112,7 @@ public class HistoryAdapterTest {
         HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(1, timestamp2);
         mHistoryProvider.addItem(item2);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // There should be five items - the list header, a date header, a history item, another
         // date header and another history item.
@@ -147,7 +147,7 @@ public class HistoryAdapterTest {
         HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(1, timestamp2);
         mHistoryProvider.addItem(item2);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
         checkAdapterContents(mAdapter, true, false, null, null, item1, null, item2);
 
         mAdapter.search("google");
@@ -188,7 +188,7 @@ public class HistoryAdapterTest {
         HistoryItem item7 = StubbedHistoryProvider.createHistoryItem(1, timestamp3);
         mHistoryProvider.addItem(item7);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         // Only the first five of the seven items should be loaded.
         checkAdapterContents(
@@ -210,7 +210,7 @@ public class HistoryAdapterTest {
         HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
         mHistoryProvider.addItem(item1);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         checkAdapterContents(mAdapter, true, false, null, null, item1);
 
@@ -231,7 +231,7 @@ public class HistoryAdapterTest {
         HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(5, timestamp);
         mHistoryProvider.addItem(item2);
 
-        mAdapter.initialize();
+        mAdapter.startLoadingItems();
 
         checkAdapterContents(mAdapter, true, false, null, null, item1, item2);
         Assert.assertEquals(ContextUtils.getApplicationContext().getString(

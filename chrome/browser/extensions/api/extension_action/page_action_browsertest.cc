@@ -116,14 +116,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, SameDocumentNavigation) {
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
 
-// Tests that the location bar forgets about unloaded page actions.
-// Flaky on Linux: https://crbug.com/1283900
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UnloadPageAction DISABLED_UnloadPageAction
-#else
-#define MAYBE_UnloadPageAction UnloadPageAction
-#endif
-IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, MAYBE_UnloadPageAction) {
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::FilePath extension_path(
@@ -144,11 +137,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, MAYBE_UnloadPageAction) {
 }
 
 // Regression test for crbug.com/44415.
-// TODO(crbug.com/1284555): Re-enable test to run with service workers after
-// fixing flakiness.
-using PageActionWithoutServiceWorkerTest = ExtensionBrowserTest;
-IN_PROC_BROWSER_TEST_F(PageActionWithoutServiceWorkerTest,
-                       PageActionRefreshCrash) {
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
   ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
 

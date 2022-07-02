@@ -67,23 +67,6 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
     self.fail('Did not find any Android-specific isolate names')
 
 
-class GetFakeCiBuildersUnittest(unittest.TestCase):
-  def testStringsConvertedToBuilderEntries(self):
-    """Tests that the easier-to-read strings get converted to BuilderEntry."""
-    instance = gpu_builders.GpuBuilders('webgl_conformance', False)
-    fake_builders = instance.GetFakeCiBuilders()
-    ci_builder = data_types.BuilderEntry('Optional Android Release (Pixel 4)',
-                                         constants.BuilderTypes.CI, False)
-    expected_try = set([
-        data_types.BuilderEntry('android_optional_gpu_tests_rel',
-                                constants.BuilderTypes.TRY, False)
-    ])
-    self.assertEqual(fake_builders[ci_builder], expected_try)
-    ci_builder = data_types.BuilderEntry('Optional Android Release (Nexus 5X)',
-                                         constants.BuilderTypes.CI, False)
-    self.assertEqual(fake_builders[ci_builder], expected_try)
-
-
 class GetNonChromiumBuildersUnittest(unittest.TestCase):
   def testStringsConvertedToBuilderEntries(self):
     """Tests that the easier-to-read strings get converted to BuilderEntry."""

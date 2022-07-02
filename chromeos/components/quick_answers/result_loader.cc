@@ -78,6 +78,10 @@ void ResultLoader::OnBuildRequestComplete(
   if (!request_body.empty())
     loader_->AttachStringForUpload(request_body, "application/json");
 
+  loader_->SetRetryOptions(
+      /*max_retries=*/5, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+                             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
   fetch_start_time_ = base::TimeTicks::Now();
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

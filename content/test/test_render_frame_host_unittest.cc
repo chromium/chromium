@@ -21,7 +21,7 @@ class TestRenderFrameHostTest : public RenderViewHostImplTestHarness,
  public:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 

@@ -10,7 +10,7 @@
 @protocol InfobarModalPositioner;
 
 // Returns a sized frame for the given modal view defined by the
-// |modalPositioner| that fits in the |containerView|.
+// `modalPositioner` that fits in the `containerView`.
 CGRect ContainedModalFrameThatFit(id<InfobarModalPositioner> modalPositioner,
                                   UIView* containerView);
 

@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -162,8 +161,6 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
     else
       expected_report.set_type(
           ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY);
-    *expected_report.mutable_population() =
-        safe_browsing::GetUserPopulationForProfile(browser_to_use->profile());
     expected_report.set_download_verdict(download_verdict);
     expected_report.set_did_proceed(did_proceed);
     if (!token.empty())

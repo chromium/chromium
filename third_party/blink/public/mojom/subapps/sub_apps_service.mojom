@@ -4,9 +4,40 @@
 
 module blink.mojom;
 
+import "url/mojom/url.mojom";
+
 enum SubAppsServiceResult {
   kSuccess,
   kFailure,
+};
+
+// `unhashed_app_id` is the sub app id generated according to
+// https://www.w3.org/TR/appmanifest/#dfn-identity.
+// `install_url` is a fully qualified URL to a page hosting or
+// containing a link to the app's manifest.
+struct SubAppsServiceAddInfo {
+  string unhashed_app_id;
+  url.mojom.Url install_url;
+};
+
+enum SubAppsServiceAddResultCode {
+  // Success category:
+  kSuccessNewInstall,
+  kSuccessAlreadyInstalled,
+
+  // Failure category:
+  kUserInstallDeclined,
+  kExpectedAppIdCheckFailed,
+  kParentAppUninstalled,
+  kFailure,
+};
+
+// `unhashed_app_id` is the sub app id generated according to
+// https://www.w3.org/TR/appmanifest/#dfn-identity.
+// `result_code` specifies the type of success or failure of the installation.
+struct SubAppsServiceAddResult {
+  string unhashed_app_id;
+  SubAppsServiceAddResultCode result_code;
 };
 
 struct SubAppsServiceListResult {
@@ -23,11 +54,9 @@ struct SubAppsServiceListResult {
 // frame, and it's main-frame only. It is only valid for already-installed apps,
 // and has an origin associated with it.
 interface SubAppsService {
-  // Installs a sub-app of an already-installed app corresponding to this
-  // instance of SubAppsService. `install_path` is the absolute path which will
-  // be attached to the origin of the already-installed app (effectively
-  // limiting the API to same-origin apps).
-  Add(string install_path) => (SubAppsServiceResult result);
+  // Installs one or more sub-apps of an already-installed app corresponding to
+  // this instance of SubAppsService.
+  Add(array<SubAppsServiceAddInfo> sub_apps) => (array<SubAppsServiceAddResult> result);
 
   // List all sub-app `app_ids` installed by the app making the API call. The
   // `app_id` format is the same as the `web_app::GenerateAppIdUnhashed`

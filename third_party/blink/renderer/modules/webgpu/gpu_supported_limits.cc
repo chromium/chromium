@@ -30,6 +30,8 @@
   X(maxVertexAttributes)                       \
   X(maxVertexBufferArrayStride)                \
   X(maxInterStageShaderComponents)             \
+  X(maxInterStageShaderVariables)              \
+  X(maxColorAttachments)                       \
   X(maxComputeWorkgroupStorageSize)            \
   X(maxComputeInvocationsPerWorkgroup)         \
   X(maxComputeWorkgroupSizeX)                  \

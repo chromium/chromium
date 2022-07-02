@@ -1,0 +1,2 @@
+Cross-Origin-Embedder-Policy: credentialless
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src https://{{host}}:{{ports[https][0]}}/never/used/path

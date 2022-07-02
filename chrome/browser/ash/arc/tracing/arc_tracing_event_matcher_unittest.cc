@@ -13,7 +13,8 @@ namespace arc {
 namespace {
 
 ArcTracingEvent MakeEvent(const char* json_str) {
-  return ArcTracingEvent(base::JSONReader::Read(json_str).value());
+  return ArcTracingEvent(
+      std::move(base::JSONReader::Read(json_str)->GetDict()));
 }
 
 }  // namespace

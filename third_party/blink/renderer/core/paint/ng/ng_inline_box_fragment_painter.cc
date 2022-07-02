@@ -63,9 +63,12 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
     PaintBackgroundBorderShadow(paint_info, adjusted_paint_offset);
 
   const bool suppress_box_decoration_background = true;
+  DCHECK(inline_context_);
+  NGInlinePaintContext::ScopedInlineItem scoped_item(inline_box_item_,
+                                                     inline_context_);
   DCHECK(inline_box_cursor_);
   NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   PhysicalFragment());
+                                   PhysicalFragment(), inline_context_);
   box_painter.PaintObject(paint_info, adjusted_paint_offset,
                           suppress_box_decoration_background);
 }
@@ -111,9 +114,10 @@ void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
   BackgroundImageGeometry geometry(*static_cast<const LayoutBoxModelObject*>(
       inline_box_fragment_.GetLayoutObject()));
   DCHECK(inline_box_cursor_);
+  DCHECK(inline_context_);
   NGBoxFragmentPainter box_painter(
       *inline_box_cursor_, inline_box_item_,
-      To<NGPhysicalBoxFragment>(inline_box_fragment_));
+      To<NGPhysicalBoxFragment>(inline_box_fragment_), inline_context_);
   PaintBoxDecorationBackground(
       box_painter, paint_info, paint_offset, adjusted_frame_rect, geometry,
       object_may_have_multiple_boxes, SidesToInclude());
@@ -294,6 +298,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
 
+  NGInlinePaintContext inline_context;
   NGInlineCursor cursor(*block_flow);
   cursor.MoveTo(layout_inline);
   if (!cursor)
@@ -307,11 +312,13 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     if (target_fragment_idx != cursor.ContainerFragmentIndex())
       continue;
+    NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+        cursor, &inline_context);
     const NGFragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();
     DCHECK(box_fragment);
-    NGInlineBoxFragmentPainter(cursor, *item, *box_fragment)
+    NGInlineBoxFragmentPainter(cursor, *item, *box_fragment, &inline_context)
         .Paint(paint_info, paint_offset);
   }
 }

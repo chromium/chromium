@@ -714,6 +714,7 @@ component("platform") {
     "fonts/web_font_render_style.cc",
     "fonts/web_font_typeface_factory.cc",
     "fonts/web_font_typeface_factory.h",
+    "geometry/anchor_query_enums.h",
     "geometry/blend.h",
     "geometry/calculation_expression_node.cc",
     "geometry/calculation_expression_node.h",
@@ -1176,6 +1177,8 @@ component("platform") {
     "mediastream/media_stream_audio_track.h",
     "mediastream/media_stream_component.cc",
     "mediastream/media_stream_component.h",
+    "mediastream/media_stream_component_impl.cc",
+    "mediastream/media_stream_component_impl.h",
     "mediastream/media_stream_descriptor.cc",
     "mediastream/media_stream_descriptor.h",
     "mediastream/media_stream_source.cc",
@@ -1184,6 +1187,8 @@ component("platform") {
     "mediastream/media_stream_track_platform.h",
     "mediastream/media_stream_web_audio_source.cc",
     "mediastream/media_stream_web_audio_source.h",
+    "mediastream/transferred_media_stream_component.cc",
+    "mediastream/transferred_media_stream_component.h",
     "mediastream/webaudio_destination_consumer.h",
     "mediastream/webaudio_media_stream_source.cc",
     "mediastream/webaudio_media_stream_source.h",
@@ -1363,6 +1368,8 @@ component("platform") {
     "text/mathml_operator_dictionary.h",
     "text/platform_locale.cc",
     "text/platform_locale.h",
+    "text/quotes_data.cc",
+    "text/quotes_data.h",
     "text/segmented_string.cc",
     "text/segmented_string.h",
     "text/suffix_tree.h",
@@ -1853,6 +1860,8 @@ static_library("test_support") {
     "testing/paint_test_configurations.h",
     "testing/picture_matchers.cc",
     "testing/picture_matchers.h",
+    "testing/scoped_fake_ukm_recorder.cc",
+    "testing/scoped_fake_ukm_recorder.h",
     "testing/scoped_main_thread_overrider.cc",
     "testing/scoped_main_thread_overrider.h",
     "testing/scoped_mocked_url.cc",
@@ -1911,6 +1920,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//components/ukm:test_support",
     "//gin",
     "//media:test_support",
     "//mojo/core/embedder",
@@ -1944,9 +1954,14 @@ test("blink_platform_unittests") {
   }
 
   if (is_android) {
-    # Required because of an indirect dependency on //media/base/android via
-    # platform/media:unit_tests.
-    deps += [ "//media/base/android:media_java" ]
+    deps += [
+      # Required because of an indirect dependency on //media/base/android via
+      # platform/media:unit_tests.
+      "//media/base/android:media_java",
+
+      # Required to disable broken tests.
+      "//testing/buildbot/filters:blink_platform_unittests",
+    ]
   }
 }
 
@@ -2103,8 +2118,8 @@ source_set("blink_platform_unittests_sources") {
     "p2p/ipc_network_manager_test.cc",
     "peerconnection/coalesced_tasks_test.cc",
     "peerconnection/linear_histogram_test.cc",
+    "peerconnection/low_precision_timer_test.cc",
     "peerconnection/metronome_source_test.cc",
-    "peerconnection/metronome_task_queue_factory_test.cc",
     "peerconnection/rtc_encoded_audio_stream_transformer_test.cc",
     "peerconnection/rtc_encoded_video_stream_transformer_test.cc",
     "peerconnection/rtc_rtp_source_test.cc",
@@ -2121,7 +2136,6 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/webrtc_audio_sink_test.cc",
     "peerconnection/webrtc_decoding_info_handler_test.cc",
     "peerconnection/webrtc_encoding_info_handler_test.cc",
-    "peerconnection/webrtc_timer_test.cc",
     "peerconnection/webrtc_video_track_source_test.cc",
     "region_capture_crop_id_test.cc",
     "runtime_enabled_features_test.cc",
@@ -2413,6 +2427,27 @@ source_set("blink_fuzzer_test_support") {
     "//base/test:test_config",
     "//content/test:test_support",
   ]
+}
+
+# Fuzzer for blink::FindCategory.
+fuzzer_test("mathml_operator_dictionary_fuzzer") {
+  sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  libfuzzer_options = [ "max_len=10" ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
+}
+
+# Fuzzer for blink::OpenTypeMathSupportTest.
+fuzzer_test("open_type_math_support_fuzzer") {
+  sources = [ "fonts/opentype/open_type_math_support_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpus = "//third_party/blink/web_tests/external/wpt/fonts/math"
 }
 
 # Fuzzer for blink::MHTMLParser.

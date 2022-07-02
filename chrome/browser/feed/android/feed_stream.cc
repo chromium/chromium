@@ -273,42 +273,6 @@ jlong FeedStream::GetLastFetchTimeMs(
   return feed_stream_api_->GetLastFetchTime(GetStreamType()).ToDoubleT() * 1000;
 }
 
-void FeedStream::ReportNoticeCreated(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
-                                     const JavaParamRef<jstring>& key) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNoticeCreated(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
-}
-
-void FeedStream::ReportNoticeViewed(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj,
-                                    const JavaParamRef<jstring>& key) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNoticeViewed(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
-}
-
-void FeedStream::ReportNoticeOpenAction(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        const JavaParamRef<jstring>& key) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNoticeOpenAction(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
-}
-
-void FeedStream::ReportNoticeDismissed(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
-                                       const JavaParamRef<jstring>& key) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNoticeDismissed(
-      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
-}
-
 void FeedStream::ReportInfoCardTrackViewStarted(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -353,6 +317,15 @@ void FeedStream::ResetInfoCardStates(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ResetInfoCardStates(GetStreamType(), info_card_type);
+}
+
+void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj,
+                                           jint stream_kind) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->InvalidateContentCacheFor(
+      (static_cast<StreamKind>(stream_kind)));
 }
 
 }  // namespace android

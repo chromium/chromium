@@ -7,6 +7,7 @@ import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_pr
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks} from '../../test_util.js';
@@ -41,32 +42,60 @@ export function searchPageTestSuite() {
             document.createElement('search-page'));
     assertTrue(!!page);
     document.body.appendChild(page);
+
     return flushTasks();
   }
 
-  /** Test that expected html elements are in the page after loaded. */
+  /**
+   * @param {string} selector
+   * @returns {!Element}
+   */
+  function getElement(selector) {
+    const element = page.shadowRoot.querySelector(selector);
+    assertTrue(!!element);
+    return /** @type {!Element} */ (element);
+  }
+
+  /**
+   * Test that expected html elements are in the page after loaded.
+   */
   test('SearchPageLoaded', async () => {
     await initializePage();
     // Verify the title is in the page.
-    const title = page.shadowRoot.querySelector('#title');
-    assertTrue(!!title);
+    const title = page.shadowRoot.querySelector('.page-title');
     assertEquals('Send feedback', title.textContent.trim());
+
+    // Verify the iframe is in the page.
+    const untrustedFrame = getElement('iframe');
+    assertEquals(
+        'chrome-untrusted://os-feedback/untrusted_index.html',
+        untrustedFrame.src);
+
+    // Focus is set after the iframe is loaded.
+    await eventToPromise('load', untrustedFrame);
+    // Verify the description input is focused.
+    assertEquals(getElement('textarea'), getDeepActiveElement());
+
+    // Verify the descriptionTitle is in the page.
+    const descriptionTitle = getElement('#descriptionTitle');
+    assertEquals('Description', descriptionTitle.textContent.trim());
+
+    // Verify the feedback writing guidance link is in the page.
+    const writingGuidanceLink = getElement('#feedbackWritingGuidance');
+    assertEquals(
+        'Tips on writing feedback', writingGuidanceLink.textContent.trim());
+    assertEquals('_blank', writingGuidanceLink.target);
+    assertEquals(
+        'https://support.google.com/chromebook/answer/2982029',
+        writingGuidanceLink.href);
 
     // Verify the help content is not in the page. For security reason, help
     // contents fetched online can't be displayed in trusted context.
     const helpContent = page.shadowRoot.querySelector('help-content');
     assertFalse(!!helpContent);
 
-    // Verify the iframe is in the page.
-    const untrustedFrame = page.shadowRoot.querySelector('iframe');
-    assertTrue(!!untrustedFrame);
-    assertEquals(
-        'chrome-untrusted://os-feedback/untrusted_index.html',
-        untrustedFrame.src);
-
     // Verify the continue button is in the page.
-    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
-    assertTrue(!!buttonContinue);
+    const buttonContinue = getElement('#buttonContinue');
     assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
@@ -83,10 +112,13 @@ export function searchPageTestSuite() {
     let textAreaElement = null;
 
     await initializePage();
-    textAreaElement = page.shadowRoot.querySelector('#descriptionText');
-    assertTrue(!!textAreaElement);
-    // Verify the textarea is empty.
+    textAreaElement = getElement('#descriptionText');
+    // Verify the textarea is empty and hint is showing.
     assertEquals('', textAreaElement.value);
+    assertEquals(
+        'Share your feedback or describe your issue. ' +
+            'If possible, include steps to reproduce your issue.',
+        textAreaElement.placeholder);
 
     // Enter three chars.
     textAreaElement.value = 'abc';
@@ -128,8 +160,7 @@ export function searchPageTestSuite() {
 
     await initializePage();
 
-    const iframe = /** @type {!HTMLIFrameElement} */ (
-        page.shadowRoot.querySelector('iframe'));
+    const iframe = /** @type {!HTMLIFrameElement} */ (getElement('iframe'));
     assertTrue(!!iframe);
     // Wait for the iframe completes loading.
     await eventToPromise('load', iframe);
@@ -166,22 +197,24 @@ export function searchPageTestSuite() {
   test('DescriptionEmptyError', async () => {
     await initializePage();
 
-    const errorMsg = page.shadowRoot.querySelector('#descriptionEmptyError');
+    const errorMsg = getElement('#descriptionEmptyError');
     // Verify that the error message is hidden in the beginning.
     assertTrue(errorMsg.hidden);
 
-    const textInput = page.shadowRoot.querySelector('#descriptionText');
+    const textInput = getElement('#descriptionText');
     assertTrue(textInput.value.length === 0);
     // Remove focus on the textarea.
     textInput.blur();
-    assertNotEquals(page.shadowRoot.activeElement, textInput);
+    assertNotEquals(getDeepActiveElement(), textInput);
 
-    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
+    const buttonContinue = getElement('#buttonContinue');
     buttonContinue.click();
     // Verify that the message is not hidden now.
     assertFalse(errorMsg.hidden);
+    assertEquals('Description is required', errorMsg.textContent.trim());
+
     // Verify that the textarea received focus again.
-    assertEquals(page.shadowRoot.activeElement, textInput);
+    assertEquals(getDeepActiveElement(), textInput);
 
     // Now enter some text. The error message should be hidden again.
     textInput.value = 'hello';
@@ -197,17 +230,18 @@ export function searchPageTestSuite() {
   test('Continue', async () => {
     await initializePage();
 
-    const textInput = page.shadowRoot.querySelector('#descriptionText');
+    const textInput = getElement('#descriptionText');
     textInput.value = 'hello';
 
-    const clickPromise = eventToPromise('continue-click', page);
+    const clickPromise =
+        eventToPromise('continue-click', /** @type {!Element} */ (page));
     let actualCurrentState;
 
     page.addEventListener('continue-click', (event) => {
       actualCurrentState = event.detail.currentState;
     });
 
-    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
+    const buttonContinue = getElement('#buttonContinue');
     buttonContinue.click();
 
     await clickPromise;

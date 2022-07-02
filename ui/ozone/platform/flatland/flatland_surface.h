@@ -60,6 +60,8 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   }
 
  private:
+  friend class FlatlandSurfaceTest;
+
   struct PresentationState {
     base::TimeTicks presentation_time;
     base::TimeDelta interval;
@@ -83,21 +85,44 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
     BufferPresentedCallback presentation_callback;
   };
 
+  // Contains Fuchsia's BufferCollection specific id that is used to refer to a
+  // gfx::NativePixmap that can be presented through Flatland.
+  struct FlatlandPixmapId {
+    bool operator<(const FlatlandPixmapId& other_id) const {
+      if (buffer_collection_id == other_id.buffer_collection_id) {
+        return buffer_index < other_id.buffer_index;
+      }
+      return buffer_collection_id < other_id.buffer_collection_id;
+    }
+
+    base::UnguessableToken buffer_collection_id;
+    uint32_t buffer_index;
+  };
+
+  // Contains TransformId and ContentId that are used to present an Image in
+  // Flatland Scene Graph.
+  struct FlatlandIds {
+    fuchsia::ui::composition::ContentId image_id;
+    fuchsia::ui::composition::TransformId transform_id;
+  };
+
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
 
-  void RemoveBufferCollection(
-      gfx::SysmemBufferCollectionId buffer_collection_id);
+  void RemoveBufferCollection(FlatlandPixmapId pixmap_id);
 
   void OnPresentComplete(zx_time_t actual_presentation_time);
+
+  FlatlandIds CreateOrGetFlatlandIds(gfx::NativePixmap* pixmap,
+                                     bool is_primary_plane);
+
+  void ClearScene();
 
   fuchsia::ui::composition::AllocatorPtr flatland_allocator_;
   FlatlandConnection flatland_;
 
-  // Mapping between the SysmemBufferCollectionId stored in NativePixmapHandles
-  // and ContentId id registered with FlatlandConnection.
-  base::flat_map<gfx::SysmemBufferCollectionId,
-                 fuchsia::ui::composition::ContentId>
-      buffer_collection_to_image_id_;
+  // Mapping between the NativePixmapHandle and ContentId id registered with
+  // FlatlandConnection.
+  base::flat_map<FlatlandPixmapId, FlatlandIds> pixmap_ids_to_flatland_ids_;
 
   base::circular_deque<PresentedFrame> pending_frames_;
 
@@ -105,6 +130,11 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
 
   // Flatland resources used for the primary plane, that is not an overlay.
   fuchsia::ui::composition::TransformId root_transform_id_;
+  // |child_transforms_| is expected to be sorted by z_order. Flatland relies on
+  // the order of AddChild() calls to line the children from back-to-front, so
+  // this container is used for order.
+  std::map<int /* z_order */, fuchsia::ui::composition::TransformId>
+      child_transforms_;
   fuchsia::ui::composition::TransformId primary_plane_transform_id_;
 
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;

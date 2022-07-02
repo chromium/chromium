@@ -11,31 +11,67 @@
 
 namespace media::hls {
 
+template <>
 SourceString SourceString::Create(base::PassKey<SourceLineIterator>,
                                   size_t line,
                                   base::StringPiece str) {
-  return SourceString(line, 1, str);
+  return SourceString(line, 1, str, {});
 }
 
-SourceString SourceString::CreateForTesting(base::StringPiece str) {
-  return SourceString::CreateForTesting(1, 1, str);
+template <>
+ResolvedSourceString ResolvedSourceString::Create(
+    base::PassKey<VariableDictionary>,
+    size_t line,
+    size_t column,
+    base::StringPiece str,
+    ResolvedSourceStringState resolution_state) {
+  return ResolvedSourceString(line, column, str, resolution_state);
 }
 
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>
+GenericSourceString<ResolutionState>::CreateForTesting(base::StringPiece str) {
+  return GenericSourceString::CreateForTesting(1, 1, str);
+}
+
+template <>
 SourceString SourceString::CreateForTesting(size_t line,
                                             size_t column,
                                             base::StringPiece str) {
-  return SourceString(line, column, str);
+  return SourceString::CreateForTesting(line, column, str, {});
 }
 
-SourceString::SourceString(size_t line, size_t column, base::StringPiece str)
-    : line_(line), column_(column), str_(str) {}
+template <>
+ResolvedSourceString ResolvedSourceString::CreateForTesting(
+    size_t line,
+    size_t column,
+    base::StringPiece str) {
+  return ResolvedSourceString::CreateForTesting(
+      line, column, str,
+      ResolvedSourceStringState{.contains_substitutions = false});
+}
 
-SourceString SourceString::Substr(size_t pos, size_t count) const {
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>
+GenericSourceString<ResolutionState>::CreateForTesting(
+    size_t line,
+    size_t column,
+    base::StringPiece str,
+    ResolutionState resolution_state) {
+  return GenericSourceString(line, column, str, resolution_state);
+}
+
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>
+GenericSourceString<ResolutionState>::Substr(size_t pos, size_t count) const {
   const auto column = column_ + pos;
-  return SourceString(line_, column, str_.substr(pos, count));
+  return GenericSourceString(line_, column, str_.substr(pos, count),
+                             resolution_state_);
 }
 
-SourceString SourceString::Consume(size_t count) {
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>
+GenericSourceString<ResolutionState>::Consume(size_t count) {
   count = std::min(count, str_.size());
 
   auto consumed = Substr(0, count);
@@ -43,6 +79,34 @@ SourceString SourceString::Consume(size_t count) {
 
   return consumed;
 }
+
+template <>
+ResolvedSourceString SourceString::SkipVariableSubstitution() const {
+  return ResolvedSourceString(
+      Line(), Column(), Str(),
+      ResolvedSourceStringState{.contains_substitutions = false});
+}
+
+template <>
+bool SourceString::ContainsSubstitutions() const {
+  return false;
+}
+
+template <>
+bool ResolvedSourceString::ContainsSubstitutions() const {
+  return resolution_state_.contains_substitutions;
+}
+
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>::GenericSourceString(
+    size_t line,
+    size_t column,
+    base::StringPiece str,
+    ResolutionState resolution_state)
+    : line_(line),
+      column_(column),
+      str_(str),
+      resolution_state_(resolution_state) {}
 
 SourceLineIterator::SourceLineIterator(base::StringPiece source)
     : current_line_(1), source_(source) {}
@@ -74,5 +138,13 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
 
   return SourceString::Create({}, line_number, line_content);
 }
+
+// These forward declarations tell the compiler that we will use
+// `GenericSourceString` with these arguments, allowing us to keep these
+// definitions in our .cc without causing linker errors. This also means if
+// anyone tries to instantiate a `GenericSourceString` with anything but these
+// two specializations they'll most likely get linker errors.
+template class MEDIA_EXPORT GenericSourceString<SourceStringState>;
+template class MEDIA_EXPORT GenericSourceString<ResolvedSourceStringState>;
 
 }  // namespace media::hls

@@ -16,9 +16,12 @@ class ComboboxModel;
 class COMPONENT_EXPORT(UI_BASE) ComboboxModelObserver
     : public base::CheckedObserver {
  public:
-  // Invoked when |model| has changed in some way. The observer should assume
+  // Invoked when `model` has changed in some way. The observer should assume
   // everything changed.
   virtual void OnComboboxModelChanged(ComboboxModel* model) = 0;
+
+  // Invoked when `model` is destroyed. The observer should stop observing.
+  virtual void OnComboboxModelDestroying(ComboboxModel* model) = 0;
 
  protected:
   ~ComboboxModelObserver() override = default;

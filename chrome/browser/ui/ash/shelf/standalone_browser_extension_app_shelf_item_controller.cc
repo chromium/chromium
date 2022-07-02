@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -45,27 +44,13 @@ StandaloneBrowserExtensionAppShelfItemController::
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       ChromeShelfController::instance()->profile());
 
-  constexpr bool kAllowPlaceholderIcon = false;
-  constexpr int32_t kIconSize = 48;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::IconKey icon_key;
-    auto icon_type = apps::IconType::kStandard;
-    icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-        apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id, icon_key,
-        icon_type, kIconSize, kAllowPlaceholderIcon,
-        base::BindOnce(
-            &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
-            weak_factory_.GetWeakPtr()));
-  } else {
-    apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
-    auto icon_type = apps::mojom::IconType::kStandard;
-    icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-        apps::mojom::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
-        std::move(icon_key), icon_type, kIconSize, kAllowPlaceholderIcon,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
-            weak_factory_.GetWeakPtr())));
-  }
+  icon_loader_releaser_ = proxy->LoadIconFromIconKey(
+      apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
+      apps::IconKey(), apps::IconType::kStandard, /*size_hint_in_dip=*/48,
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(
+          &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
+          weak_factory_.GetWeakPtr()));
 
   context_menu_ = std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
       shelf_id.app_id,

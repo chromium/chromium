@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -125,7 +125,7 @@ class VideoTrackRecorderTest
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true /* enabled */);
     track_ = platform_track.get();
-    component_ = MakeGarbageCollected<MediaStreamComponent>(
+    component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         source_, std::move(platform_track));
 
     // Paranoia checks.
@@ -160,7 +160,7 @@ class VideoTrackRecorderTest
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &VideoTrackRecorderTest::OnSourceReadyStateEnded,
             CrossThreadUnretained(this))),
-        0 /* bits_per_second */,
+        0u /* bits_per_second */,
         scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
@@ -545,7 +545,7 @@ class VideoTrackRecorderPassthroughTest
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
         base::WrapUnique(mock_source_));
-    component_ = MakeGarbageCollected<MediaStreamComponent>(
+    component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         source_, std::make_unique<MediaStreamVideoTrack>(
                      mock_source_,
                      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),

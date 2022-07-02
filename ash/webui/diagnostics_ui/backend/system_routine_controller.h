@@ -10,8 +10,8 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,6 +60,8 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   }
 
  private:
+  friend class SystemRoutineControllerTest;
+
   void OnAvailableRoutinesFetched(
       GetSupportedRoutinesCallback callback,
       const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&

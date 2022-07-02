@@ -74,6 +74,7 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_RESUME = 11,
   DOWNLOADS_DOM_EVENT_RETRY_DOWNLOAD = 12,
   DOWNLOADS_DOM_EVENT_OPEN_DURING_SCANNING = 13,
+  DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS = 14,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -189,7 +190,8 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   if (!file)
     return;
   content::WebContents* web_contents = GetWebUIWebContents();
-  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
   const GURL url = file->GetURL();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -372,6 +374,21 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
     DownloadItemModel model(download);
     model.SetOpenWhenComplete(true);
     model.CompleteSafeBrowsingScan();
+  }
+}
+
+void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
+    const std::string& id) {
+  if (!GetWebUIWebContents()->HasRecentInteractiveInputEvent()) {
+    LOG(ERROR) << __func__ << " received without recent user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS);
+  download::DownloadItem* download = GetDownloadByStringId(id);
+  if (download) {
+    DownloadItemModel model(download);
+    model.ReviewScanningVerdict(GetWebUIWebContents());
   }
 }
 

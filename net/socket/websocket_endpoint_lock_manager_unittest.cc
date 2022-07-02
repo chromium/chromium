@@ -26,7 +26,7 @@ namespace {
 
 class FakeWaiter : public WebSocketEndpointLockManager::Waiter {
  public:
-  FakeWaiter() : called_(false) {}
+  FakeWaiter() = default;
 
   void GotEndpointLock() override {
     CHECK(!called_);
@@ -36,7 +36,7 @@ class FakeWaiter : public WebSocketEndpointLockManager::Waiter {
   bool called() const { return called_; }
 
  private:
-  bool called_;
+  bool called_ = false;
 };
 
 class BlockingWaiter : public FakeWaiter {

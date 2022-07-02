@@ -33,9 +33,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/json_pref_store.h"
@@ -153,6 +153,7 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kDisableWebGLImageChromium,
     ::switches::kEnableWebGLImageChromium,
     ::switches::kEnableUnsafeWebGPU,
+    ::switches::kEnableWebGPUDeveloperFeatures,
     ::switches::kDisableWebRtcHWDecoding,
     ::switches::kDisableWebRtcHWEncoding,
     ::switches::kOzonePlatform,
@@ -244,9 +245,8 @@ void DeriveCommandLine(const GURL& start_url,
 // current session.
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
   std::vector<const base::Feature*> kForwardEnabledFeatures{
-      &features::kAutoNightLight,
-      &features::kLacrosPrimary,
-      &features::kLacrosSupport,
+      &features::kAutoNightLight, &features::kLacrosOnly,
+      &features::kLacrosPrimary,  &features::kLacrosSupport,
       &::features::kPluginVm,
   };
 

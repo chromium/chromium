@@ -18,8 +18,11 @@
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace media {
 class AudioBus;
@@ -50,11 +53,12 @@ class LocalFrame;
 // it is being rendered-out.  media::AudioShifter is used to buffer, stretch
 // and skip audio to maintain time synchronization between the producer and
 // consumer.
-class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
-                           public WebMediaStreamAudioSink,
-                           public media::AudioRendererSink::RenderCallback {
+class MODULES_EXPORT TrackAudioRenderer
+    : public WebMediaStreamAudioRenderer,
+      public WebMediaStreamAudioSink,
+      public media::AudioRendererSink::RenderCallback {
  public:
-  // Creates a renderer for the given |audio_track|.  |playout_render_frame_id|
+  // Creates a renderer for the given |audio_track|.  |playout_render_frame|
   // refers to the RenderFrame that owns this instance (e.g., it contains the
   // DOM widget representing the player).  |session_id| and |device_id| are
   // optional, and are used to direct audio output to a pre-selected device;
@@ -65,7 +69,7 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
                      LocalFrame& playout_web_frame,
                      const base::UnguessableToken& session_id,
                      const String& device_id,
-                     base::RepeatingCallback<void()> on_render_error_callback);
+                     base::RepeatingClosure on_render_error_callback);
 
   TrackAudioRenderer(const TrackAudioRenderer&) = delete;
   TrackAudioRenderer& operator=(const TrackAudioRenderer&) = delete;
@@ -82,10 +86,37 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   void SwitchOutputDevice(const std::string& device_id,
                           media::OutputDeviceStatusCB callback) override;
 
+  int TotalFramesPushedForTesting() const;
+  int FramesInAudioShifterForTesting() const;
+
  protected:
   ~TrackAudioRenderer() override;
 
  private:
+  struct PendingData {
+    PendingData(const media::AudioBus& audio_bus, base::TimeTicks ref_time);
+
+    PendingData(PendingData&& other) = default;
+    ~PendingData() = default;
+
+    base::TimeTicks reference_time;
+    std::unique_ptr<media::AudioBus> audio;
+  };
+
+  using PendingDataQueue = WTF::Deque<PendingData>;
+
+  struct PendingReconfig {
+    PendingReconfig(const media::AudioParameters& format, int generation);
+
+    PendingDataQueue data;
+
+    // Used for validation purposes.
+    const int reconfig_number;
+    const media::AudioParameters format;
+  };
+
+  using PendingReconfigQueue = WTF::Deque<PendingReconfig>;
+
   // WebMediaStreamAudioSink implementation.
 
   // Called on the AudioInputDevice worker thread.
@@ -106,23 +137,33 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
 
   void OnRenderErrorCrossThread();
 
-  // Initializes and starts the |sink_| if
-  //  we have received valid |source_params_| &&
-  //  |playing_| has been set to true.
-  void MaybeStartSink();
+  // Initializes and starts the |sink_| if we have received valid
+  // |source_params_| and we are |playing_|.
+  void MaybeStartSink(bool reconfiguring = false);
 
   // Sets new |source_params_| and then re-initializes and restarts |sink_|.
-  void ReconfigureSink(const media::AudioParameters& params);
+  void ReconfigureSink(const media::AudioParameters new_format,
+                       int reconfig_number);
 
   // Creates a new AudioShifter, destroying the old one (if any).  This is
   // called any time playback is started/stopped, or the sink changes.
-  void CreateAudioShifter();
+  // If we are |reconfiguring|, we will push any PendingData saved in
+  // |pending_reconfigs_.front()| into the new |audio_shifter_|.
+  void CreateAudioShifter(bool reconfiguring);
 
   // Called when either the source or sink has changed somehow, or audio has
   // been paused.  Drops the AudioShifter and updates
   // |prior_elapsed_render_time_|.  May be called from either the main thread or
   // the audio thread.  Assumption: |thread_lock_| is already acquired.
-  void HaltAudioFlowWhileLockHeld();
+  void HaltAudioFlow_Locked();
+
+  // Takes |pending_reconfigs_.front()|, pushing its data into |audio_shifter_|.
+  void ConsumePendingReconfigsFront_Locked();
+
+  // Utility function which updates |total_frames_pushed_for_testing_| and calls
+  // |audio_shifter_->push()|.
+  void PushDataIntoShifter_Locked(std::unique_ptr<media::AudioBus>,
+                                  base::TimeTicks);
 
   // The audio track which provides access to the source data to render.
   //
@@ -143,26 +184,26 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   scoped_refptr<media::AudioRendererSink> sink_;
 
   // This does all the synchronization/resampling/smoothing.
-  std::unique_ptr<media::AudioShifter> audio_shifter_;
+  std::unique_ptr<media::AudioShifter> audio_shifter_ GUARDED_BY(thread_lock_);
 
   // These track the time duration of all the audio rendered so far by this
   // instance.  |prior_elapsed_render_time_| tracks the time duration of all
   // audio rendered before the last format change.  |num_samples_rendered_|
   // tracks the number of audio samples rendered since the last format change.
-  base::TimeDelta prior_elapsed_render_time_;
-  int64_t num_samples_rendered_;
+  base::TimeDelta prior_elapsed_render_time_ GUARDED_BY(thread_lock_);
+  int64_t num_samples_rendered_ GUARDED_BY(thread_lock_) = 0;
 
   // The audio parameters of the track's source.
   // Must only be touched on the main thread.
   media::AudioParameters source_params_;
 
-  base::RepeatingCallback<void()> on_render_error_callback_;
+  base::RepeatingClosure on_render_error_callback_;
 
   // Set when playing, cleared when paused.
-  bool playing_;
+  bool playing_ = false;
 
-  // Protects |audio_shifter_|, |prior_elapsed_render_time_|, and
-  // |num_samples_rendered_|.
+  // Protects |audio_shifter_|, |prior_elapsed_render_time_|,
+  // |num_samples_rendered_|, and PendingReconfigs.
   mutable base::Lock thread_lock_;
 
   // The preferred device id of the output device or empty for the default
@@ -171,10 +212,33 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
 
   // Cache value for the volume.  Whenever |sink_| is re-created, its volume
   // should be set to this.
-  float volume_;
+  float volume_ = 0.0;
 
   // Flag to indicate whether |sink_| has been started yet.
-  bool sink_started_;
+  bool sink_started_ = false;
+
+  // Each entry corresponds to a posted ReconfigureSink() call. Entries are
+  // queued in OnSetFormat() on the audio capture sequence, and popped in
+  // ReconfigureSink() on the main thread. If this queue is not empty, there is
+  // still a pending reconfiguration. In that case, we accumulate data (incoming
+  // from OnData() on the capture thread) in |pending_reconfigs_.back()|, until
+  // the reconfiguration completes on the main thread. Upon completing the
+  // reconfiguration, accumulated data is pushed into the new |audio_shifter_|,
+  // to be rendered.
+  PendingReconfigQueue GUARDED_BY(thread_lock_) pending_reconfigs_;
+
+  // Used to drop incoming ReconfigureSink() calls, by comparing the call's
+  // |reconfig_number| against the latest |sink_reconfig_count_|. Incremented
+  // on the audio capture sequence, and checked on the main thread.
+  int sink_reconfig_count_ GUARDED_BY(thread_lock_) = 0;
+
+  // The last format posted to the main thread, via ReconfigureSink(). Used to
+  // avoid calling ReconfigureSink() when consecutive OnSetFormat() calls have
+  // compatible formats.
+  // Only accessed on the audio capture thread.
+  media::AudioParameters last_reconfig_format_;
+
+  int total_frames_pushed_for_testing_ GUARDED_BY(thread_lock_) = 0;
 };
 
 }  // namespace blink

@@ -189,6 +189,19 @@ device_test::mojom::EventData XRTestHookWrapper::WaitGetEventData() {
   return ret;
 }
 
+bool XRTestHookWrapper::WaitGetCanCreateSession() {
+  if (hook_) {
+    bool can_create_session;
+    hook_->WaitGetCanCreateSession(&can_create_session);
+    return can_create_session;
+  }
+
+  // In the absence of a test hook telling us that we can't create a session;
+  // assume that we can, there's often enough default behavior to do so, and
+  // some tests expect to be able to get a session without creating a test hook.
+  return true;
+}
+
 void XRTestHookWrapper::AttachCurrentThread() {
   if (pending_hook_)
     hook_.Bind(std::move(pending_hook_));

@@ -53,7 +53,7 @@ void SplitElementCommand::ExecuteApply() {
   DummyExceptionStateForTesting exception_state;
 
   ContainerNode* parent = element2_->parentNode();
-  if (!parent || !HasEditableStyle(*parent))
+  if (!parent || !IsEditable(*parent))
     return;
   parent->InsertBefore(element1_.Get(), element2_.Get(), exception_state);
   if (exception_state.HadException())
@@ -74,8 +74,7 @@ void SplitElementCommand::DoApply(EditingState*) {
 }
 
 void SplitElementCommand::DoUnapply() {
-  if (!element1_ || !HasEditableStyle(*element1_) ||
-      !HasEditableStyle(*element2_))
+  if (!element1_ || !IsEditable(*element1_) || !IsEditable(*element2_))
     return;
 
   NodeVector children;

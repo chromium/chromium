@@ -54,6 +54,7 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
     this.profilesList_ = profilesList.map(
         profile => ({
           profileState: profile,
+          className: profile.isLoaded ? 'loaded' : 'unloaded',
           expanded: profilesExpanded.get(profile.profilePath) ?? false,
         }));
   }

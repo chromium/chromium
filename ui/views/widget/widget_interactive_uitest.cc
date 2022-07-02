@@ -54,8 +54,11 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-namespace views {
-namespace test {
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
+namespace views::test {
 
 namespace {
 
@@ -627,6 +630,70 @@ TEST_F(WidgetTestInteractive, MAYBE_ChildStackedRelativeToParent) {
   EXPECT_TRUE(IsWindowStackedAbove(parent.get(), popover.get()));
 }
 
+TEST_F(WidgetTestInteractive, ChildWidgetStackAbove) {
+#if BUILDFLAG(IS_MAC)
+  // MacOS 10.13 and before don't report window z-ordering reliably.
+  if (base::mac::IsAtMostOS10_13())
+    GTEST_SKIP();
+#endif
+
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
+                        CreateChildPlatformWidget(toplevel->GetNativeView()),
+                        CreateChildPlatformWidget(toplevel->GetNativeView())};
+  int order[] = {0, 1, 2};
+
+  children[0]->ShowInactive();
+  children[1]->ShowInactive();
+  children[2]->ShowInactive();
+  ShowSync(toplevel.get());
+
+  do {
+    children[order[1]]->StackAboveWidget(children[order[0]]);
+    children[order[2]]->StackAboveWidget(children[order[1]]);
+    for (int i = 0; i < 3; i++)
+      for (int j = 0; j < 3; j++)
+        if (i < j)
+          EXPECT_FALSE(
+              IsWindowStackedAbove(children[order[i]], children[order[j]]));
+        else if (i > j)
+          EXPECT_TRUE(
+              IsWindowStackedAbove(children[order[i]], children[order[j]]));
+  } while (std::next_permutation(order, order + 3));
+}
+
+TEST_F(WidgetTestInteractive, ChildWidgetStackAtTop) {
+#if BUILDFLAG(IS_MAC)
+  // MacOS 10.13 and before don't report window z-ordering reliably.
+  if (base::mac::IsAtMostOS10_13())
+    GTEST_SKIP();
+#endif
+
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
+                        CreateChildPlatformWidget(toplevel->GetNativeView()),
+                        CreateChildPlatformWidget(toplevel->GetNativeView())};
+  int order[] = {0, 1, 2};
+
+  children[0]->ShowInactive();
+  children[1]->ShowInactive();
+  children[2]->ShowInactive();
+  ShowSync(toplevel.get());
+
+  do {
+    children[order[1]]->StackAtTop();
+    children[order[2]]->StackAtTop();
+    for (int i = 0; i < 3; i++)
+      for (int j = 0; j < 3; j++)
+        if (i < j)
+          EXPECT_FALSE(
+              IsWindowStackedAbove(children[order[i]], children[order[j]]));
+        else if (i > j)
+          EXPECT_TRUE(
+              IsWindowStackedAbove(children[order[i]], children[order[j]]));
+  } while (std::next_permutation(order, order + 3));
+}
+
 #if BUILDFLAG(IS_WIN)
 
 // Test view focus retention when a widget's HWND is disabled and re-enabled.
@@ -1000,7 +1067,7 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
   EXPECT_NE(view1, focus_manager1->GetFocusedView());
   EXPECT_FALSE(widget1.IsActive());
   EXPECT_TRUE(widget2.IsActive());
-}  // namespace test
+}
 
 TEST_F(WidgetTestInteractive, ShowCreatesActiveWindow) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
@@ -2153,5 +2220,4 @@ TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   EXPECT_FALSE(key_event2.stopped_propagation());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

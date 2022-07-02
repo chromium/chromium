@@ -18,7 +18,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 #include "url/gurl.h"
@@ -47,7 +46,7 @@ enum class StorageType {
 // load.
 struct ExtraRequestCompleteInfo {
   ExtraRequestCompleteInfo(
-      const url::Origin& origin_of_final_url,
+      const url::SchemeHostPort& final_url,
       const net::IPEndPoint& remote_endpoint,
       int frame_tree_node_id,
       bool was_cached,
@@ -61,12 +60,12 @@ struct ExtraRequestCompleteInfo {
 
   ~ExtraRequestCompleteInfo();
 
-  // The origin of the final URL for the request (final = after redirects).
+  // The scheme/host/port of the final URL for the request
+  // (final = after redirects).
   //
   // The full URL is not available, because in some cases the path and query
   // may be sanitized away - see https://crbug.com/973885.
-  // TODO(crbug.com/973885): use url::SchemeHostPort if applicable.
-  const url::Origin origin_of_final_url;
+  const url::SchemeHostPort final_url;
 
   // The host (IP address) and port for the request.
   const net::IPEndPoint remote_endpoint;
@@ -137,7 +136,8 @@ class PageLoadMetricsObserverInterface {
   // directly delivered to the observers need FORWARD_OBSERVING. See
   // PageLoadMetricsForwardObserver to know which events need the observer layer
   // forwarding. Eventually, we may treat all forwarding at the PageLoadTracker
-  // layer to deprecate the FORWARD_OBSERVING for simplicity.
+  // layer to deprecate the FORWARD_OBSERVING for simplicity. FORWARD_OBSERVING
+  // is available only for OnFencedFramesStart().
   enum ObservePolicy {
     CONTINUE_OBSERVING,
     STOP_OBSERVING,
@@ -313,6 +313,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                               const mojom::PageLoadTiming& timing) = 0;
 
+  // The callback is invoked when a soft navigation is detected.
+  // See https://bit.ly/soft-navigation for more details.
+  virtual void OnSoftNavigationCountUpdated() = 0;
+
   virtual void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) = 0;
 
@@ -322,6 +326,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnInputTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) = 0;
+
+  // OnPageInputTimingUpdate is triggered when an updated InputTiming is
+  // available at the page level.
+  virtual void OnPageInputTimingUpdate(uint64_t num_input_events) = 0;
 
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the
@@ -486,6 +494,21 @@ class PageLoadMetricsObserverInterface {
   virtual void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) = 0;
 
+  // OnRenderFrameDeleted is called when RenderFrameHost for a frame is deleted.
+  // OnSubFrameDeleted is called when FrameTreeNode for a subframe is deleted.
+  // The differences are:
+  //
+  // - OnRenderFrameDeleted is called for all frames. OnSubFrameDeleted is not
+  //   called for main frames. This is because PageLoadTracker is bound with
+  //   RenderFrameHost of the main frame and destruction of PageLoadTracker is
+  //   earlier than one of FrameTreeNode.
+  // - OnRenderFrameDeleted can be called in navigation commit to discard the
+  //   previous RenderFrameHost. At that timing, there are two RenderFrameHost
+  //   that have the same RenderFrameHost::GetFrameNodeId.
+  //
+  // Note that navigation may not trigger deletion of RenderFrameHost, e.g. in
+  // the case of the page entered to Back/Forward cache. If observer only wants
+  // to observe deletion of node, OnSubFrameDeleted is more relevant.
   virtual void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) = 0;
   virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;

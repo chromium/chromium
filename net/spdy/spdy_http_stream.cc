@@ -110,19 +110,6 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       pushed_stream_id_(pushed_stream_id),
       is_reused_(spdy_session_->IsReused()),
       source_dependency_(source_dependency),
-      stream_(nullptr),
-      stream_closed_(false),
-      closed_stream_status_(ERR_FAILED),
-      closed_stream_id_(0),
-      closed_stream_received_bytes_(0),
-      closed_stream_sent_bytes_(0),
-      request_info_(nullptr),
-      response_info_(nullptr),
-      response_headers_complete_(false),
-      upload_stream_in_progress_(false),
-      user_buffer_len_(0),
-      request_body_buf_size_(0),
-      was_alpn_negotiated_(false),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
@@ -704,11 +691,11 @@ void SpdyHttpStream::DoResponseCallback(int rv) {
   std::move(response_callback_).Run(rv);
 }
 
-bool SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!spdy_session_)
-    return false;
+    return ERR_SOCKET_NOT_CONNECTED;
 
-  return spdy_session_->GetPeerAddress(endpoint) == OK;
+  return spdy_session_->GetPeerAddress(endpoint);
 }
 
 void SpdyHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {

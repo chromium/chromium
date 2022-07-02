@@ -7,40 +7,46 @@ package org.chromium.chrome.browser.notifications;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.support.test.InstrumentationRegistry;
 
-import androidx.test.filters.MediumTest;
-
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
- * Instrumentation unit tests for NotificationBuilderBase.
+ * Unit tests for NotificationBuilderBase.
  *
- * Extends NativeLibraryTestBase so that {@link UrlUtilities#getDomainAndRegistry} can access
- * native GetDomainAndRegistry, when called by {@link RoundedIconGenerator#getIconTextForUrl}
- * during testEnsureNormalizedIconBehavior().
+ * Uses ShadowUrlUtilities so that we can mock out {@link UrlUtilities#getDomainAndRegistry} called
+ * by {@link RoundedIconGenerator#getIconTextForUrl} during testEnsureNormalizedIconBehavior().
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 public class NotificationBuilderBaseTest {
     @Before
     public void setUp() {
-        // Not initializing the browser process is safe because GetDomainAndRegistry() is
-        // stand-alone.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        ShadowUrlUtilities.setTestImpl(new ShadowUrlUtilities.TestImpl() {
+            @Override
+            public String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
+                return uri;
+            }
+        });
+    }
+
+    @After
+    public void tearDown() {
+        ShadowUrlUtilities.reset();
     }
 
     /**
@@ -50,13 +56,10 @@ public class NotificationBuilderBaseTest {
      *     (3) Smaller bitmaps should be left alone.
      */
     @Test
-    @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testEnsureNormalizedIconBehavior() {
         // Get the dimensions of the notification icon that will be presented to the user.
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext = RuntimeEnvironment.getApplication();
         Resources resources = appContext.getResources();
 
         int largeIconWidthPx =

@@ -6,6 +6,9 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -14,13 +17,53 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
 namespace {
+
+// Returns true if a scroll into view can continue to cause scrolling in the
+// parent frame.
+bool AllowedToPropagateToParent(
+    const LocalFrame& from_frame,
+    const mojom::blink::ScrollIntoViewParamsPtr& params) {
+  // Focused editable scrolling (i.e. scroll an input the user tapped on)
+  // always originates from a user action in the browser so it should always be
+  // allowed to cross origins and we shouldn't stop it for policy or other
+  // reasons.
+  DCHECK(!params->for_focused_editable || params->cross_origin_boundaries);
+  if (params->for_focused_editable)
+    return true;
+
+  // TODO(bokan): For now, we'll do the safe thing and just block all other
+  // types of scrollIntoView from propagating out of a fenced frame but we may
+  // need to loosen this if we find other critical use cases.
+  // https://crbug.com/1324816.
+  if (from_frame.IsFencedFrameRoot())
+    return false;
+
+  if (!params->cross_origin_boundaries) {
+    Frame* parent_frame = from_frame.Tree().Parent();
+    if (parent_frame &&
+        !parent_frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            from_frame.GetSecurityContext()->GetSecurityOrigin())) {
+      return false;
+    }
+  }
+
+  if (params->type != mojom::blink::ScrollType::kProgrammatic)
+    return true;
+
+  if (!from_frame.GetDocument())
+    return true;
+
+  return !from_frame.GetDocument()->IsVerticalScrollEnforced();
+}
 
 // Helper to return the parent LayoutBox, crossing local frame boundaries, that
 // a scroll should bubble up to or nullptr if the local root has been reached.
@@ -42,7 +85,7 @@ absl::optional<LayoutBox*> GetScrollParent(
   // Otherwise, we're bubbling across a frame boundary. We may be
   // prevented from doing so for security or policy reasons. If so, we're
   // done.
-  if (!box.GetFrame()->View()->AllowedToPropagateScrollIntoView(params))
+  if (!AllowedToPropagateToParent(*box.GetFrame(), params))
     return absl::nullopt;
 
   if (!box.GetFrame()->IsLocalRoot()) {
@@ -68,9 +111,9 @@ absl::optional<LayoutBox*> GetScrollParent(
 // Helper that reveals the given rect, given in absolute coordinates, by
 // scrolling the given `box` LayoutBox and then all its ancestors up to the
 // local root frame.  To continue the reveal through remote ancestors, use
-// LayoutObject::ScrollRectToVisible. Returns the updated absolute rect, in the
-// absolute coordinates of the frame in which the scroll stopped (either due to
-// reaching a local root or a frame which isn't allowed to bubble scrolls.
+// LayoutObject::ScrollRectToVisible. If the scroll bubbled up to the local
+// root successfully, returns the updated absolute rect in the absolute
+// coordinates of the local root. Otherwise returns an empty optional.
 absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
     const LayoutBox& box,
     const PhysicalRect& absolute_rect,
@@ -95,10 +138,13 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
     // if the stop_at_main_frame_layout_viewport option is set. We do this so
     // that we can allow a smooth "scroll and zoom" animation to do the final
     // scroll in cases like scrolling a focused editable box into view.
-    // TODO(bokan): This may need to account for fenced frames.
+    // TODO(bokan): Ensure a fenced frame doesn't get a global root scroller
+    // and then remove the !IsInFencedFrameTree condition.
     // https://crbug.com/1314858
-    if (params->for_focused_editable && current_box->IsGlobalRootScroller())
+    if (!current_box->GetFrame()->IsInFencedFrameTree() &&
+        params->for_focused_editable && current_box->IsGlobalRootScroller()) {
       break;
+    }
 
     ScrollableArea* area_to_scroll = nullptr;
 
@@ -119,8 +165,9 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
         current_box->StyleRef().GetPosition() == EPosition::kFixed &&
         current_box->Container() == current_box->View();
 
-    if (is_fixed_to_frame && current_box->GetFrame()->IsMainFrame() &&
-        params->make_visible_in_visual_viewport) {
+    VisualViewport& visual_viewport =
+        current_box->GetFrame()->GetPage()->GetVisualViewport();
+    if (is_fixed_to_frame && params->make_visible_in_visual_viewport) {
       // If we're in a position:fixed element, scrolling the layout viewport
       // won't have any effect and would be wrong so we want to bubble up to
       // the layout viewport's parent. For subframes that's the frame's owner.
@@ -129,11 +176,20 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // Note: In non-fixed cases, the visual viewport will have been scrolled
       // by the frame scroll via the RootFrameViewport
       // (GetFrameView()->GetScrollableArea() above).
-      absolute_rect_to_scroll =
-          current_box->GetFrame()
-              ->GetPage()
-              ->GetVisualViewport()
-              .ScrollIntoView(absolute_rect_to_scroll, params);
+      if (current_box->GetFrame()->IsMainFrame() &&
+          visual_viewport.IsActiveViewport()) {
+        absolute_rect_to_scroll =
+            current_box->GetFrame()
+                ->GetPage()
+                ->GetVisualViewport()
+                .ScrollIntoView(absolute_rect_to_scroll, params);
+      }
+
+      // TODO(bokan): To be correct we should continue to bubble the scroll
+      // from a subframe since ancestor frames can still scroll the element
+      // into view. However, making that change had some compat-impact so we
+      // intentionally keep this behavior for now while
+      // https://crbug.com/1334265 is resolved.
       break;
     }
 
@@ -167,6 +223,54 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 }  // namespace
 
 namespace scroll_into_view_util {
+
+void ScrollRectToVisible(const LayoutObject& layout_object,
+                         const PhysicalRect& absolute_rect,
+                         mojom::blink::ScrollIntoViewParamsPtr params) {
+  LayoutBox* enclosing_box = layout_object.EnclosingBox();
+  if (!enclosing_box)
+    return;
+
+  LocalFrame* frame = layout_object.GetFrame();
+
+  frame->GetSmoothScrollSequencer().AbortAnimations();
+  frame->GetSmoothScrollSequencer().SetScrollType(params->type);
+  params->is_for_scroll_sequence |=
+      params->type == mojom::blink::ScrollType::kProgrammatic;
+
+  absl::optional<PhysicalRect> updated_absolute_rect =
+      PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params);
+
+  frame->GetSmoothScrollSequencer().RunQueuedAnimations();
+
+  // If the scroll into view stopped early (i.e. before the local root),
+  // there's no need to continue bubbling or finishing a scroll focused
+  // editable into view.
+  if (!updated_absolute_rect)
+    return;
+
+  LocalFrame& local_root = frame->LocalFrameRoot();
+  LocalFrameView* local_root_view = local_root.View();
+
+  if (!local_root_view)
+    return;
+
+  if (!local_root.IsOutermostMainFrame()) {
+    // Continue the scroll via IPC if there's a remote ancestor.
+    if (AllowedToPropagateToParent(local_root, params)) {
+      local_root_view->ScrollRectToVisibleInRemoteParent(*updated_absolute_rect,
+                                                         std::move(params));
+    }
+  } else if (params->for_focused_editable) {
+    // If we're scrolling a focused editable into view, once we reach the main
+    // frame we need to perform an animated scroll and zoom to bring the
+    // editable into a legible size.
+    gfx::RectF caret_rect_in_root_frame(*updated_absolute_rect);
+    DCHECK(!caret_rect_in_root_frame.IsEmpty());
+    local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
+        caret_rect_in_root_frame, std::move(params));
+  }
+}
 
 gfx::RectF FocusedEditableBoundsFromParams(
     const gfx::RectF& caret_rect,
@@ -204,56 +308,6 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
   params->for_focused_editable->relative_location = gfx::Vector2dF(
       editable_bounds_in_dest.offset - caret_rect_in_dest.offset);
   params->for_focused_editable->size = gfx::SizeF(editable_bounds_in_dest.size);
-}
-
-void ScrollRectToVisible(const LayoutObject& layout_object,
-                         const PhysicalRect& absolute_rect,
-                         mojom::blink::ScrollIntoViewParamsPtr params) {
-  LayoutBox* enclosing_box = layout_object.EnclosingBox();
-  if (!enclosing_box)
-    return;
-
-  LocalFrame* frame = layout_object.GetFrame();
-
-  frame->GetSmoothScrollSequencer().AbortAnimations();
-  frame->GetSmoothScrollSequencer().SetScrollType(params->type);
-  params->is_for_scroll_sequence |=
-      params->type == mojom::blink::ScrollType::kProgrammatic;
-
-  absl::optional<PhysicalRect> updated_absolute_rect =
-      PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params);
-
-  frame->GetSmoothScrollSequencer().RunQueuedAnimations();
-
-  // If the scroll into view stopped early (i.e. before the local root),
-  // there's no need to continue bubbling or finishing a scroll focused
-  // editable into view.
-  if (!updated_absolute_rect)
-    return;
-
-  LocalFrame& local_root = frame->LocalFrameRoot();
-  LocalFrameView* local_root_view = local_root.View();
-
-  if (!local_root_view)
-    return;
-
-  if (!local_root.IsMainFrame()) {
-    // Continue the scroll via IPC if there's a remote ancestor.
-    // TODO(bokan): This probably needs to happen fenced frames in at least some
-    // cases. crbug.com/1314858.
-    if (local_root_view->AllowedToPropagateScrollIntoView(params)) {
-      local_root_view->ScrollRectToVisibleInRemoteParent(*updated_absolute_rect,
-                                                         std::move(params));
-    }
-  } else if (params->for_focused_editable) {
-    // If we're scrolling a focused editable into view, once we reach the main
-    // frame we need to perform an animated scroll and zoom to bring the
-    // editable into a legible size.
-    gfx::RectF caret_rect_in_root_frame(*updated_absolute_rect);
-    DCHECK(!caret_rect_in_root_frame.IsEmpty());
-    local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
-        caret_rect_in_root_frame, std::move(params));
-  }
 }
 
 }  // namespace scroll_into_view_util

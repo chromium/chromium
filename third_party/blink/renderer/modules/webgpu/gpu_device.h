@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
@@ -53,6 +54,7 @@ class GPUTexture;
 class GPUTextureDescriptor;
 class ScriptPromiseResolver;
 class ScriptState;
+class V8GPUErrorFilter;
 
 class GPUDevice final : public EventTargetWithInlineData,
                         public ExecutionContextClient,
@@ -121,11 +123,12 @@ class GPUDevice final : public EventTargetWithInlineData,
   GPUCommandEncoder* createCommandEncoder(
       const GPUCommandEncoderDescriptor* descriptor);
   GPURenderBundleEncoder* createRenderBundleEncoder(
-      const GPURenderBundleEncoderDescriptor* descriptor);
+      const GPURenderBundleEncoderDescriptor* descriptor,
+      ExceptionState& exception_state);
 
   GPUQuerySet* createQuerySet(const GPUQuerySetDescriptor* descriptor);
 
-  void pushErrorScope(const WTF::String& filter);
+  void pushErrorScope(const V8GPUErrorFilter& filter);
   ScriptPromise popErrorScope(ScriptState* script_state);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(uncapturederror, kUncapturederror)
@@ -137,13 +140,17 @@ class GPUDevice final : public EventTargetWithInlineData,
   void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
-  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
+  void AddActiveExternalTexture(GPUExternalTexture* external_texture);
+  void RemoveActiveExternalTexture(GPUExternalTexture* external_texture);
+
+  bool ValidateTextureFormatUsage(V8GPUTextureFormat format,
+                                  ExceptionState& exception_state);
 
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
 
-  void DestroyExternalTexturesMicrotask();
+  void DestroyAllExternalTextures();
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
   void OnLogging(WGPULoggingType loggingType, const char* message);
@@ -188,8 +195,12 @@ class GPUDevice final : public EventTargetWithInlineData,
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 
-  bool has_pending_microtask_ = false;
-  HeapVector<Member<GPUExternalTexture>> external_textures_pending_destroy_;
+  // Keep a list of all active GPUExternalTexture. Eagerly destroy them
+  // when the device is destroyed (via .destroy) to free the memory.
+  HeapHashSet<WeakMember<GPUExternalTexture>> active_external_textures_;
+
+  // This attribute records that whether GPUDevice is destroyed (via destroy()).
+  bool destroyed_ = false;
 };
 
 }  // namespace blink

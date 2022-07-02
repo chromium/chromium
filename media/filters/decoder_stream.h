@@ -135,6 +135,10 @@ class MEDIA_EXPORT DecoderStream {
     decoder_change_observer_cb_ = std::move(decoder_change_observer_cb);
   }
 
+  void set_fallback_observer(PipelineStatusCB fallback_cb) {
+    fallback_cb_ = std::move(fallback_cb);
+  }
+
   int get_pending_buffers_size_for_testing() const {
     return pending_buffers_.size();
   }
@@ -173,13 +177,14 @@ class MEDIA_EXPORT DecoderStream {
   // Returns true if one more decode request can be submitted to the decoder.
   bool CanDecodeMore() const;
 
-  void SelectDecoder();
+  void BeginDecoderSelection();
+  void ResumeDecoderSelection(DecoderStatus&& reinit_cause);
 
   // Called when |decoder_selector| selected the |selected_decoder|.
   // |decrypting_demuxer_stream| was also populated if a DecryptingDemuxerStream
   // is created to help decrypt the encrypted stream.
   void OnDecoderSelected(
-      std::unique_ptr<Decoder> selected_decoder,
+      DecoderStatus::Or<std::unique_ptr<Decoder>> decoder_or_error,
       std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream);
 
   // Satisfy pending |read_cb_| with |result|.
@@ -214,7 +219,7 @@ class MEDIA_EXPORT DecoderStream {
 
   void ReinitializeDecoder();
 
-  void CompleteDecoderReinitialization(bool success);
+  void CompleteDecoderReinitialization(DecoderStatus status);
 
   void ResetDecoder();
   void OnDecoderReset();
@@ -236,6 +241,7 @@ class MEDIA_EXPORT DecoderStream {
   StatisticsCB statistics_cb_;
   InitCB init_cb_;
   WaitingCB waiting_cb_;
+  PipelineStatusCB fallback_cb_;
 
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;
@@ -300,6 +306,8 @@ class MEDIA_EXPORT DecoderStream {
   base::TimeDelta skip_prepare_until_timestamp_;
 
   bool encryption_type_reported_ = false;
+
+  int fallback_buffers_being_decoded_ = 0;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<DecoderStream<StreamType>> weak_factory_{this};

@@ -325,8 +325,6 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
   // Choose the TaskPriority based on |resource_request_|'s net priority.
@@ -1676,10 +1674,17 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  if (!weak_this)
+  if (!weak_this || !body)
     return;
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+
+  if (request_state_->body_started || !request_state_->response_info) {
+    // If this was already called, or the headers have not been received,
+    // the URLLoader is violating the API contract.
+    FinishWithResult(net::ERR_UNEXPECTED);
+    return;
+  }
+  request_state_->body_started = true;
+  body_handler_->OnStartLoadingResponseBody(std::move(body));
 }
 
 void SimpleURLLoaderImpl::OnReceiveRedirect(
@@ -1722,19 +1727,6 @@ void SimpleURLLoaderImpl::OnUploadProgress(
   if (on_upload_progress_callback_)
     on_upload_progress_callback_.Run(current_position, total_size);
   std::move(ack_callback).Run();
-}
-
-void SimpleURLLoaderImpl::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (request_state_->body_started || !request_state_->response_info) {
-    // If this was already called, or the headers have not yet been received,
-    // the URLLoader is violating the API contract.
-    FinishWithResult(net::ERR_UNEXPECTED);
-    return;
-  }
-  request_state_->body_started = true;
-  body_handler_->OnStartLoadingResponseBody(std::move(body));
 }
 
 void SimpleURLLoaderImpl::OnComplete(const URLLoaderCompletionStatus& status) {

@@ -621,9 +621,6 @@ UIWindow* GetAnyKeyWindow();
 // Returns YES if a variation triggering server-side behavior is enabled.
 - (BOOL)isTriggerVariationEnabled:(int)variationID;
 
-// Returns YES if |kSupportForAddPasswordsInSettings| is enabled.
-- (BOOL)isAddCredentialsInSettingsEnabled;
-
 // Returns YES if UKM feature is enabled.
 - (BOOL)isUKMEnabled [[nodiscard]];
 
@@ -653,9 +650,6 @@ UIWindow* GetAnyKeyWindow();
 // Returns whether the app is configured to, and running in an environment which
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
-
-// Returns whether the new ContextMenu for web content feature is enabled.
-- (BOOL)isContextMenuInWebViewEnabled;
 
 // Returns whether the NewOverflowMenu feature is enabled.
 - (BOOL)isNewOverflowMenuEnabled;
@@ -721,6 +715,9 @@ UIWindow* GetAnyKeyWindow();
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.
 - (void)resetBrowsingDataPrefs;
+
+// Resets data for the local state pref with |prefName|.
+- (void)resetDataForLocalStatePref:(const std::string&)prefName;
 
 #pragma mark - Pasteboard Utilities (EG2)
 

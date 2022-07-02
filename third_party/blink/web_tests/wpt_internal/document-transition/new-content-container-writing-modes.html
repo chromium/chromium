@@ -14,6 +14,7 @@
   top: 0;
   left: 0;
   contain: paint;
+  page-transition-tag: hidden;
 }
 .tb { writing-mode: horizontal-tb; }
 .lr { writing-mode: vertical-lr; }
@@ -26,7 +27,7 @@
   contain: paint;
   border: 1px solid black;
 }
-#target {
+.source {
   background: red;
   position: absolute;
   top: 50px;
@@ -35,7 +36,6 @@
   height: 500px;
   contain: paint;
 }
-
 html::page-transition-container(hidden) { animation-duration: 300s; }
 html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
 
@@ -58,7 +58,9 @@ html::page-transition { background: lightpink; }
 </style>
 
 <div id=hidden>Should not be visible</div>
-<div id=target>Should not be visible</div>
+<div id=s1 class=source>Should not be visible</div>
+<div id=s2 class=source>Should not be visible</div>
+<div id=s3 class=source>Should not be visible</div>
 <div class=tb><div id=one class=shared>T</div></div>
 <div class=lr><div id=two class=shared>T</div></div>
 <div class=rl><div id=three class=shared>T</div></div>
@@ -66,17 +68,17 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-  t.setElement(target, "s1");
-  t.setElement(target, "s2");
-  t.setElement(target, "s3");
+  s1.style = "page-transition-tag: s1";
+  s2.style = "page-transition-tag: s2";
+  s3.style = "page-transition-tag: s3";
   t.start(() => {
-    target.remove();
-    t.setElement(hidden, "hidden");
+    s1.remove();
+    s2.remove();
+    s3.remove();
     hidden.style.left = "200px";
-    t.setElement(one, "s1");
-    t.setElement(two, "s2");
-    t.setElement(three, "s3");
+    one.style = "page-transition-tag: s1";
+    two.style = "page-transition-tag: s2";
+    three.style = "page-transition-tag: s3";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

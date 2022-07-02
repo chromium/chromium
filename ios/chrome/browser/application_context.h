@@ -56,6 +56,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+namespace segmentation_platform {
+class OTRWebStateObserver;
+}
+
 namespace ukm {
 class UkmRecorder;
 }
@@ -165,6 +169,10 @@ class ApplicationContext {
 
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSSOService() = 0;
+
+  // Returns the application's OTRWebStateObserver for segmentation platform.
+  virtual segmentation_platform::OTRWebStateObserver*
+  GetSegmentationOTRWebStateObserver() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

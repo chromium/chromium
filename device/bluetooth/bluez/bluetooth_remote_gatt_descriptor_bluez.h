@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -64,7 +65,7 @@ class BluetoothRemoteGattDescriptorBlueZ
                const std::string& error_message);
 
   // The GATT characteristic this descriptor belongs to.
-  BluetoothRemoteGattCharacteristicBlueZ* characteristic_;
+  raw_ptr<BluetoothRemoteGattCharacteristicBlueZ> characteristic_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

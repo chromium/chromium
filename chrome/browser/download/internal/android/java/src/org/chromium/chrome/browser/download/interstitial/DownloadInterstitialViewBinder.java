@@ -35,6 +35,8 @@ public class DownloadInterstitialViewBinder {
             view.setSecondaryButtonCallback(
                     model.get(DownloadInterstitialProperties.SECONDARY_BUTTON_CALLBACK)
                             .bind(model.get(DownloadInterstitialProperties.DOWNLOAD_ITEM)));
+        } else if (key.equals(DownloadInterstitialProperties.SHOULD_REMOVE_PENDING_MESSAGE)) {
+            view.removePendingMessage();
         }
     }
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_endpoint.h"
 
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_direction.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webusb/usb_alternate_interface.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -51,9 +52,9 @@ USBEndpoint* USBEndpoint::Create(const USBAlternateInterface* alternate,
 
 USBEndpoint* USBEndpoint::Create(const USBAlternateInterface* alternate,
                                  uint8_t endpoint_number,
-                                 const String& direction,
+                                 const V8USBDirection& direction,
                                  ExceptionState& exception_state) {
-  UsbTransferDirection mojo_direction = direction == "in"
+  UsbTransferDirection mojo_direction = direction == V8USBDirection::Enum::kIn
                                             ? UsbTransferDirection::INBOUND
                                             : UsbTransferDirection::OUTBOUND;
   const auto& endpoints = alternate->Info().endpoints;

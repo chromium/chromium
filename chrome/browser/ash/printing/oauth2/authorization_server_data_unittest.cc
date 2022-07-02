@@ -23,17 +23,14 @@ namespace {
 // Helper function that checks if `value_dict` contains a field `name` with
 // a single-element list that contains a string equals `value`. It doesn't stop
 // execution, just logs errors.
-void ExpectOneElementListOfStrings(
-    const base::Value::DeprecatedDictStorage& value_dict,
-    const std::string& name,
-    const std::string& value) {
-  auto it = value_dict.find(name);
-  ASSERT_NE(it, value_dict.end());
-  ASSERT_EQ(it->second.type(), base::Value::Type::LIST);
-  auto nodeAsList = base::Value::AsListValue(it->second).GetListDeprecated();
-  ASSERT_EQ(nodeAsList.size(), 1);
-  ASSERT_TRUE(nodeAsList.front().is_string());
-  EXPECT_EQ(nodeAsList.front().GetString(), value);
+void ExpectOneElementListOfStrings(const base::Value::Dict& dict,
+                                   const std::string& name,
+                                   const std::string& value) {
+  const base::Value::List* list = dict.FindList(name);
+  ASSERT_TRUE(list);
+  ASSERT_EQ(list->size(), 1);
+  ASSERT_TRUE(list->front().is_string());
+  EXPECT_EQ(list->front().GetString(), value);
 }
 
 TEST(PrintingOAuth2AuthorizationServerDataTest, InitialState) {
@@ -88,7 +85,7 @@ TEST(PrintingOAuth2AuthorizationServerDataTest, RegistrationRequest) {
   ASSERT_EQ(
       server.ReceiveGET("https://a.b/.well-known/oauth-authorization-server/c"),
       "");
-  auto params =
+  base::Value::Dict params =
       BuildMetadata("https://a.b/c", "https://a/auth", "https://b/token",
                     "https://c/reg", "https://d/rev");
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, params);
@@ -99,7 +96,7 @@ TEST(PrintingOAuth2AuthorizationServerDataTest, RegistrationRequest) {
   ExpectOneElementListOfStrings(params, "token_endpoint_auth_method", "none");
   ExpectOneElementListOfStrings(params, "grant_types", "authorization_code");
   ExpectOneElementListOfStrings(params, "response_types", "code");
-  params["client_id"] = base::Value("new_client_id");
+  params.Set("client_id", "new_client_id");
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, params);
 
   // Check the callback and the object.

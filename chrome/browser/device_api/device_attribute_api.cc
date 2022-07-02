@@ -75,6 +75,7 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDirectoryDeviceId(
@@ -94,6 +95,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
           ->GetHostnameChosenByAdministrator();
   std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceHostname(
@@ -115,6 +117,7 @@ void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceSerialNumber(
@@ -137,6 +140,7 @@ void GetAnnotatedAssetId(
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAssetId(
@@ -159,6 +163,7 @@ void GetAnnotatedLocation(
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1328100): Replace with crosapi BrowserInitParams.
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAnnotatedLocation(

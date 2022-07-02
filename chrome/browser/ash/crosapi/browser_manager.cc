@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
@@ -60,16 +61,18 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/nacl/common/buildflags.h"
@@ -83,6 +86,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -154,6 +158,13 @@ enum class LacrosLaunchModeAndSource {
   kMaxValue = kForcedByPolicyLacrosOnly
 };
 
+// Resources file sharing mode.
+enum class ResourcesFileSharingMode {
+  kDefault = 0,
+  // Failed to handle cached shared resources properly.
+  kError = 1,
+};
+
 using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 
 // Pointer to the global instance of BrowserManager.
@@ -195,22 +206,20 @@ bool RotateLacrosLogs() {
   return false;
 }
 
-// Return false when there is a failure that might break resource file sharing
-// feature.
-bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
-  base::FilePath shared_resource_path =
-      browser_util::GetUserDataDir().Append(crosapi::kSharedResourcesPackName);
+ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
+    bool clear_shared_resource_file,
+    base::FilePath shared_resource_path) {
   // If shared resource pak doesn't exit, do nothing.
   if (!base::PathExists(shared_resource_path))
-    return true;
+    return ResourcesFileSharingMode::kDefault;
 
   // Clear shared resource file cache if `clear_shared_resource_file` is true.
   if (clear_shared_resource_file) {
     if (!base::DeleteFile(shared_resource_path)) {
       LOG(ERROR) << "Failed to delete cached shared resource file.";
-      return false;
+      return ResourcesFileSharingMode::kError;
     }
-    return true;
+    return ResourcesFileSharingMode::kDefault;
   }
 
   base::FilePath renamed_shared_resource_path =
@@ -220,9 +229,41 @@ bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
   if (!base::Move(shared_resource_path, renamed_shared_resource_path)) {
     LOG(ERROR) << "Failed to move cached shared resource file to temporary "
                << "location.";
-    return false;
+    return ResourcesFileSharingMode::kError;
   }
-  return true;
+  return ResourcesFileSharingMode::kDefault;
+}
+
+ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
+    bool clear_shared_resource_file) {
+  // Check 3 resource paks, resources.pak, chrome_100_percent.pak and
+  // chrome_200_percent.pak.
+  ResourcesFileSharingMode resources_file_sharing_mode =
+      ResourcesFileSharingMode::kDefault;
+  // Return kError if any of the resources failed to clear or move.
+  // Make sure that ClearOrMoveSharedResourceFileInternal() runs for all
+  // resources even if it already fails for some resource.
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file, browser_util::GetUserDataDir().Append(
+                                          crosapi::kSharedResourcesPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file,
+          browser_util::GetUserDataDir().Append(
+              crosapi::kSharedChrome100PercentPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file,
+          browser_util::GetUserDataDir().Append(
+              crosapi::kSharedChrome200PercentPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  return resources_file_sharing_mode;
 }
 
 // This method runs some work on a background thread prior to launching lacros.
@@ -265,7 +306,8 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   // Clear shared resource file cache if it's initial lacros launch after ash
   // reboot. If not, rename shared resource file cache to temporal name on
   // Lacros launch.
-  if (!ClearOrMoveSharedResourceFile(clear_shared_resource_file))
+  if (ClearOrMoveSharedResourceFile(clear_shared_resource_file) ==
+      ResourcesFileSharingMode::kError)
     params.enable_resource_file_sharing = false;
 
   return params;
@@ -352,6 +394,16 @@ ui::mojom::WindowShowState ConvertWindowShowState(ui::WindowShowState state) {
     case ui::SHOW_STATE_END:
       NOTREACHED();
       return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
+  }
+}
+
+crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior ConvertPathBehavior(
+    NavigateParams::PathBehavior path_behavior) {
+  switch (path_behavior) {
+    case NavigateParams::RESPECT:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kRespect;
+    case NavigateParams::IGNORE_AND_NAVIGATE:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kIgnore;
   }
 }
 
@@ -502,12 +554,12 @@ void BrowserManager::NewWindow(bool incognito,
       incognito, should_trigger_session_restore, base::DoNothing());
 }
 
-void BrowserManager::OpenForFullRestore() {
+void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
   if (!browser_service_) {
     LOG(ERROR) << "BrowserService is disconnected, cannot perform Full Restore";
     return;
   }
-  browser_service_->service->OpenForFullRestore();
+  browser_service_->service->OpenForFullRestore(skip_crash_restore);
 }
 
 bool BrowserManager::NewWindowForDetachingTabSupported() const {
@@ -592,17 +644,19 @@ void BrowserManager::NewGuestWindow() {
   browser_service_->service->NewGuestWindow(base::DoNothing());
 }
 
-void BrowserManager::NewTab() {
+void BrowserManager::NewTab(bool should_trigger_session_restore) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
-      mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+      should_trigger_session_restore
+          ? mojom::InitialBrowserAction::kUseStartupPreference
+          : mojom::InitialBrowserAction::kOpenNewTabPageWindow));
   if (result != MaybeStartResult::kRunning)
     return;
-
   if (!browser_service_.has_value()) {
     LOG(ERROR) << "BrowserService was disconnected";
     return;
   }
-  browser_service_->service->NewTab(base::DoNothing());
+  browser_service_->service->NewTab(should_trigger_session_restore,
+                                    base::DoNothing());
 }
 
 void BrowserManager::OpenUrl(const GURL& url,
@@ -610,13 +664,14 @@ void BrowserManager::OpenUrl(const GURL& url,
   OpenUrlImpl(
       url,
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab,
-      from);
+      from, NavigateParams::RESPECT);
 }
 
-void BrowserManager::SwitchToTab(const GURL& url) {
+void BrowserManager::SwitchToTab(const GURL& url,
+                                 NavigateParams::PathBehavior path_behavior) {
   OpenUrlImpl(
       url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
-      crosapi::mojom::OpenUrlFrom::kUnspecified);
+      crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior);
 }
 
 void BrowserManager::RestoreTab() {
@@ -705,7 +760,8 @@ void BrowserManager::InitializeAndStart() {
   // Post `DryRunToCollectUMA()` to send UMA stats about sizes of files/dirs
   // inside the profile data directory.
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ash::browser_data_migrator_util::DryRunToCollectUMA,
                      ProfileManager::GetPrimaryUserProfile()->GetPath()));
 }
@@ -845,7 +901,8 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
             /* display_source= */ std::u16string(), GURL(),
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT,
-                kLacrosLauncherNotifierID),
+                kLacrosLauncherNotifierID,
+                ash::NotificationCatalogName::kLacrosCannotLaunch),
             message_center::RichNotificationData(),
             base::MakeRefCounted<
                 message_center::HandleNotificationClickDelegate>(
@@ -1037,6 +1094,12 @@ void BrowserManager::StartWithLogFile(
   for (const auto& flag : delimited_flags)
     argv.emplace_back(flag);
 
+  // Forward flag for zero copy video capture to Lacros if it is enabled.
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    argv.emplace_back(
+        base::StringPrintf("--%s", switches::kVideoCaptureUseGpuMemoryBuffer));
+  }
+
   // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
   if (params.logfd.is_valid()) {
     // The next flag will make chrome log only via stderr. See
@@ -1126,7 +1189,7 @@ void BrowserManager::OnBrowserServiceConnected(
     mojo::RemoteSetElementId mojo_id,
     mojom::BrowserService* browser_service,
     uint32_t browser_service_version) {
-  if (id != crosapi_id_ && id != legacy_crosapi_id_) {
+  if (id != crosapi_id_) {
     // This BrowserService is unrelated to this instance. Skipping.
     return;
   }
@@ -1193,7 +1256,6 @@ void BrowserManager::OnMojoDisconnected() {
 
   browser_service_.reset();
   crosapi_id_.reset();
-  legacy_crosapi_id_.reset();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),
@@ -1519,7 +1581,8 @@ void BrowserManager::RecordLacrosLaunchMode() {
 void BrowserManager::OpenUrlImpl(
     const GURL& url,
     crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-    crosapi::mojom::OpenUrlFrom from) {
+    crosapi::mojom::OpenUrlFrom from,
+    NavigateParams::PathBehavior path_behavior) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
       mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}, from));
   if (result != MaybeStartResult::kRunning)
@@ -1539,6 +1602,7 @@ void BrowserManager::OpenUrlImpl(
   auto params = OpenUrlParams::New();
   params->disposition = disposition;
   params->from = from;
+  params->path_behavior = ConvertPathBehavior(path_behavior);
   browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
 }
 

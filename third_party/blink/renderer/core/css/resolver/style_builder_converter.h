@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
@@ -46,14 +47,15 @@
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
 #include "third_party/blink/renderer/core/style/ordered_named_grid_lines.h"
-#include "third_party/blink/renderer/core/style/quotes_data.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/text/quotes_data.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -117,7 +119,9 @@ class StyleBuilderConverter {
                                                   CSSPropertyID);
   static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
                                                            const Font&);
-  template <typename T>
+  // The template parameter ZeroValue indicates which CSSValueID should be
+  // converted to zero.
+  template <typename T, CSSValueID ZeroValue = CSSValueID::kNone>
   static T ConvertFlags(StyleResolverState&, const CSSValue&);
   static FontDescription::FamilyDescription ConvertFontFamily(
       StyleResolverState&,
@@ -182,6 +186,8 @@ class StyleBuilderConverter {
   static float ConvertNumberOrPercentage(StyleResolverState&, const CSSValue&);
   static float ConvertAlpha(StyleResolverState&,
                             const CSSValue&);  // clamps to [0,1]
+  static AtomicString ConvertNoneOrCustomIdent(StyleResolverState&,
+                                               const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(StyleResolverState&,
                                                  const CSSValue&);
   static LengthPoint ConvertPosition(StyleResolverState&, const CSSValue&);
@@ -302,9 +308,6 @@ class StyleBuilderConverter {
       const StyleResolverState&,
       const CSSValue&);
 
-  static void CountSystemColorComputeToSelfUsage(
-      const StyleResolverState& state);
-
   static AtomicString ConvertPageTransitionTag(StyleResolverState&,
                                                const CSSValue&);
 
@@ -326,6 +329,10 @@ class StyleBuilderConverter {
   static scoped_refptr<ToggleTriggerList> ConvertToggleTrigger(
       const StyleResolverState&,
       const CSSValue&);
+
+  static absl::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
+      StyleResolverState&,
+      const CSSValue&);
 };
 
 template <typename T>
@@ -335,12 +342,12 @@ T StyleBuilderConverter::ConvertComputedLength(StyleResolverState& state,
       state.CssToLengthConversionData());
 }
 
-template <typename T>
+template <typename T, CSSValueID ZeroValue>
 T StyleBuilderConverter::ConvertFlags(StyleResolverState& state,
                                       const CSSValue& value) {
   T flags = static_cast<T>(0);
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
+  if (identifier_value && identifier_value->GetValueID() == ZeroValue)
     return flags;
   for (auto& flag_value : To<CSSValueList>(value))
     flags |= To<CSSIdentifierValue>(*flag_value).ConvertTo<T>();

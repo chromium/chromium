@@ -28,11 +28,7 @@ class PollingProxyConfigService::Core
        const NetworkTrafficAnnotationTag& traffic_annotation)
       : get_config_func_(get_config_func),
         poll_interval_(poll_interval),
-        traffic_annotation_(traffic_annotation),
-        have_initialized_origin_runner_(false),
-        has_config_(false),
-        poll_task_outstanding_(false),
-        poll_task_queued_(false) {}
+        traffic_annotation_(traffic_annotation) {}
 
   // Called when the parent PollingProxyConfigService is destroyed
   // (observers should not be called past this point).
@@ -159,10 +155,10 @@ class PollingProxyConfigService::Core
   base::Lock lock_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
 
-  bool have_initialized_origin_runner_;
-  bool has_config_;
-  bool poll_task_outstanding_;
-  bool poll_task_queued_;
+  bool have_initialized_origin_runner_ = false;
+  bool has_config_ = false;
+  bool poll_task_outstanding_ = false;
+  bool poll_task_queued_ = false;
 };
 
 void PollingProxyConfigService::AddObserver(Observer* observer) {

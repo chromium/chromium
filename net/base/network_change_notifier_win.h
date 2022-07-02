@@ -141,7 +141,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   mutable base::Lock last_computed_connection_type_lock_;
   ConnectionType last_computed_connection_type_;
 
-  std::atomic<ConnectionCost> last_computed_connection_cost_;
+  std::atomic<ConnectionCost> last_computed_connection_cost_ =
+      ConnectionCost::CONNECTION_COST_UNKNOWN;
 
   // Result of IsOffline() when NotifyObserversOfConnectionTypeChange()
   // was last called.

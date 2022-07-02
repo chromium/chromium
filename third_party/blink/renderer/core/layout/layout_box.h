@@ -25,15 +25,20 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -1181,17 +1186,46 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void SetCachedLayoutResult(const NGLayoutResult*);
 
   // Store one layout result (with its physical fragment) at the specified
-  // index, and delete all entries following it.
-  void AddLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void AddLayoutResult(const NGLayoutResult*);
+  // index.
+  //
+  // If there's already a result at the specified index, use
+  // ReplaceLayoutResult() to do the job. Otherwise, use AppendLayoutResult().
+  //
+  // If it's going to be the last result, we'll also perform any necessary
+  // finalization (see FinalizeLayoutResults()), and also delete all the old
+  // entries following it (if there used to be more results in a previous
+  // layout).
+  //
+  // In a few specific cases we'll even delete the entries following this
+  // result, even if it's *not* going to be the last one. This is necessary when
+  // we might read out the layout results again before we've got to the end (OOF
+  // block fragmentation, etc.). In all other cases, we'll leave the old results
+  // until we're done, as deleting entries will trigger unnecessary paint
+  // invalidation. With any luck, we'll end up with the same number of results
+  // as the last time, so that paint invalidation might not be necessary.
+  void SetLayoutResult(const NGLayoutResult*, wtf_size_t index);
+
+  // Append one layout result at the end.
+  void AppendLayoutResult(const NGLayoutResult*);
+
+  // Replace a specific layout result. Also perform finalization if it's the
+  // last result (see FinalizeLayoutResults()), but this function does not
+  // delete any (old) results following this one. Callers should generally use
+  // SetLayoutResult() instead of this one, unless they have good reasons not
+  // to.
   void ReplaceLayoutResult(const NGLayoutResult*, wtf_size_t index);
-  void ReplaceLayoutResult(const NGLayoutResult*,
-                           const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
   void RestoreLegacyLayoutResults(const NGLayoutResult* measure_result,
                                   const NGLayoutResult* layout_result);
+
+  // Perform any finalization needed after all the layout results have been
+  // added.
+  void FinalizeLayoutResults();
+
   void ClearLayoutResults();
+  // Clear LayoutObject fields of physical fragments.
+  void DisassociatePhysicalFragments();
 
   // Call when NG fragment count or size changed. Only call if the fragment
   // count is or was larger than 1.
@@ -1274,6 +1308,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return NGPhysicalFragmentList(layout_results_);
   }
   const NGLayoutResult* GetLayoutResult(wtf_size_t i) const;
+  const NGLayoutResultList& GetLayoutResults() const {
+    NOT_DESTROYED();
+    return layout_results_;
+  }
   const NGPhysicalBoxFragment* GetPhysicalFragment(wtf_size_t i) const;
   const FragmentData* FragmentDataFromPhysicalFragment(
       const NGPhysicalBoxFragment&) const;
@@ -1617,10 +1655,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the combination of overflow clip, contain: paint clip and CSS clip
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
-
-  // Adjust the clip rectangle to encompass overflow-clip-margin, and remove
-  // clipping along any axis where we shouldn't clip.
-  void ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const;
 
   virtual void PaintBoxDecorationBackground(
       const PaintInfo&,
@@ -2090,6 +2124,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // scrolling.
   bool IsFixedToView() const;
 
+  // Returns true if the overflow property should be respected. Otherwise
+  // HasNonVisibleOverflow() will be false and we won't create scrollable area
+  // for this object even if overflow is non-visible.
+  virtual bool RespectsCSSOverflow() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
  protected:
   ~LayoutBox() override;
 
@@ -2211,6 +2253,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     CheckIsVisualOverflowComputed();
     return overflow_ && overflow_->visual_overflow;
   }
+
+  // The outsets from this box's border-box that the element's content should be
+  // clipped to, including overflow-clip-margin.
+  LayoutRectOutsets BorderBoxOutsetsForClipping() const;
 
   void UpdateHasSubpixelVisualEffectOutsets(const LayoutRectOutsets&);
   void SetVisualOverflow(const PhysicalRect& self,

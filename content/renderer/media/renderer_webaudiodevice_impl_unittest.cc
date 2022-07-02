@@ -88,22 +88,7 @@ class RendererWebAudioDeviceImplTest
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
-  MOCK_METHOD2(CreateAudioCapturerSource,
-               scoped_refptr<media::AudioCapturerSource>(
-                   const blink::LocalFrameToken&,
-                   const media::AudioSourceParameters&));
-  MOCK_METHOD3(
-      CreateFinalAudioRendererSink,
-      scoped_refptr<media::AudioRendererSink>(const blink::LocalFrameToken&,
-                                              const media::AudioSinkParameters&,
-                                              base::TimeDelta));
-  MOCK_METHOD3(CreateSwitchableAudioRendererSink,
-               scoped_refptr<media::SwitchableAudioRendererSink>(
-                   blink::WebAudioDeviceSourceType,
-                   const blink::LocalFrameToken&,
-                   const media::AudioSinkParameters&));
-
-  scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
+  scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
       blink::WebAudioDeviceSourceType render_token,
       const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) override {

@@ -133,16 +133,15 @@ bool FakeLog::Emptied() const {
 
 std::unique_ptr<base::DictionaryValue> ParseDictionary(
     const std::string& json) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  if (!parsed_json.has_value()) {
     SCOPED_TRACE(json.c_str());
-    SCOPED_TRACE(parsed_json.error_message.c_str());
+    SCOPED_TRACE(parsed_json.error().message.c_str());
     ADD_FAILURE();
     return nullptr;
   }
   base::DictionaryValue* dict = nullptr;
-  if (!parsed_json.value->GetAsDictionary(&dict)) {
+  if (!parsed_json->GetAsDictionary(&dict)) {
     SCOPED_TRACE("JSON object is not a dictionary");
     ADD_FAILURE();
     return nullptr;
@@ -299,11 +298,11 @@ TEST(PerformanceLogger, TracingStartStop) {
   base::ListValue* categories;
   EXPECT_TRUE(cmd->params->GetList("traceConfig.includedCategories",
                                    &categories));
-  ASSERT_EQ(2u, categories->GetListDeprecated().size());
-  ASSERT_TRUE(categories->GetListDeprecated()[0].is_string());
-  EXPECT_EQ("benchmark", categories->GetListDeprecated()[0].GetString());
-  ASSERT_TRUE(categories->GetListDeprecated()[1].is_string());
-  EXPECT_EQ("blink.console", categories->GetListDeprecated()[1].GetString());
+  ASSERT_EQ(2u, categories->GetList().size());
+  ASSERT_TRUE(categories->GetList()[0].is_string());
+  EXPECT_EQ("benchmark", categories->GetList()[0].GetString());
+  ASSERT_TRUE(categories->GetList()[1].is_string());
+  EXPECT_EQ("blink.console", categories->GetList()[1].GetString());
   int expected_interval =
       cmd->params->FindIntKey("bufferUsageReportingInterval").value_or(-1);
   EXPECT_GT(expected_interval, 0);

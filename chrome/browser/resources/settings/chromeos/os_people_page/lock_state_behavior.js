@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 
 /**
  * @fileoverview
@@ -131,10 +131,21 @@ export const LockStateBehaviorImpl = {
    * @param {string} authToken The token returned by
    *                           QuickUnlockPrivate.getAuthToken
    * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
    * @see quickUnlockPrivate.setLockScreenEnabled
    */
-  setLockScreenEnabled(authToken, enabled) {
-    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled);
+  setLockScreenEnabled(authToken, enabled, onComplete) {
+    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled, () => {
+      let success = true;
+      if (chrome.runtime.lastError) {
+        console.warn(
+            'setLockScreenEnabled failed: ' + chrome.runtime.lastError.message);
+        success = false;
+      }
+      if (onComplete) {
+        onComplete(success);
+      }
+    });
   },
 
   /**
@@ -146,6 +157,63 @@ export const LockStateBehaviorImpl = {
     cachedHasPinLogin = this.hasPinLogin;
   },
 };
+
+/**
+ * @interface
+ * @extends {I18nBehaviorInterface}
+ * @extends {WebUIListenerBehaviorInterface}
+ */
+export class LockStateBehaviorInterface {
+  constructor() {
+    /**
+     * The currently selected unlock type.
+     * @type {!LockScreenUnlockType}
+     */
+    this.selectedUnlockType;
+
+    /**
+     * True/false if there is a PIN set; undefined if the computation is still
+     * pending. This is a separate value from selectedUnlockType because the UI
+     * can change the selectedUnlockType before setting up a PIN.
+     * @type {boolean|undefined}
+     */
+    this.hasPin;
+
+    /**
+     * True if the PIN backend supports signin. undefined iff the value is still
+     * resolving.
+     * @type {boolean|undefined}
+     */
+    this.hasPinLogin;
+
+    /**
+     * Interface for chrome.quickUnlockPrivate calls. May be overridden by
+     * tests.
+     * @type {QuickUnlockPrivate}
+     */
+    this.quickUnlockPrivate;
+  }
+
+  /**
+   * Updates the selected unlock type radio group. This function will get called
+   * after preferences are initialized, after the quick unlock mode has been
+   * changed, and after the lockscreen preference has changed.
+   *
+   * @param {boolean} activeModesChanged If the function is called because
+   *     active modes have changed.
+   */
+  updateUnlockType(activeModesChanged) {}
+
+  /**
+   * Sets the lock screen enabled state.
+   * @param {string} authToken The token returned by
+   *                           QuickUnlockPrivate.getAuthToken
+   * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
+   * @see quickUnlockPrivate.setLockScreenEnabled
+   */
+  setLockScreenEnabled(authToken, enabled, onComplete) {}
+}
 
 /** @polymerBehavior */
 export const LockStateBehavior =

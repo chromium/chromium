@@ -17,7 +17,7 @@ class TestPrintJobHistoryServiceObserver
   TestPrintJobHistoryServiceObserver(
       PrintJobHistoryService* print_job_history_service,
       base::RepeatingClosure run_loop_closure);
-  ~TestPrintJobHistoryServiceObserver();
+  ~TestPrintJobHistoryServiceObserver() override;
 
   int num_print_jobs() { return num_print_jobs_; }
 

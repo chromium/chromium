@@ -88,10 +88,14 @@ class CollectUserDataAction : public Action,
   void ShowToUser();
   void OnShowToUser(UserData* user_data, UserDataFieldChange* field_change);
   void UpdateUserData(UserData* user_data);
-  void OnRequestUserData(UserData* user_data,
+  void UseChromeData(UserData* user_data);
+  void OnRequestUserData(bool is_initial_request,
+                         UserData* user_data,
                          bool success,
                          const GetUserDataResponseProto& response);
-  void UpdateMetrics(UserData* user_data);
+  void FallbackToChromeData(UserData* user_data);
+  void UpdateMetrics(UserData* user_data,
+                     Metrics::UserDataSource user_data_source);
   void UpdateUi();
 
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.

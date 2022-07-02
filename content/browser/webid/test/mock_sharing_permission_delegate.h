@@ -23,11 +23,6 @@ class MockSharingPermissionDelegate
       const MockSharingPermissionDelegate&) = delete;
 
   MOCK_METHOD(bool,
-              HasSharingPermissionForAnyAccount,
-              (const url::Origin& relying_party,
-               const url::Origin& identity_provider),
-              (override));
-  MOCK_METHOD(bool,
               HasSharingPermission,
               (const url::Origin& relying_party,
                const url::Origin& identity_provider,
@@ -35,12 +30,6 @@ class MockSharingPermissionDelegate
               (override));
   MOCK_METHOD(void,
               GrantSharingPermission,
-              (const url::Origin& relying_party,
-               const url::Origin& identity_provider,
-               const std::string& account_id),
-              (override));
-  MOCK_METHOD(void,
-              RevokeSharingPermission,
               (const url::Origin& relying_party,
                const url::Origin& identity_provider,
                const std::string& account_id),

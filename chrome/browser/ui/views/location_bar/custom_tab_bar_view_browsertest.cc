@@ -35,10 +35,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/controls/button/image_button.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/public/ozone_switches.h"
-#endif
-
 namespace {
 
 // Waits until the title of any tab in the browser for |contents| has the title
@@ -88,6 +84,9 @@ class TestTitleObserver : public TabStripModelObserver {
 // Opens a new popup window from |web_contents| on |target_url| and returns
 // the Browser it opened in.
 Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   content::TestNavigationObserver nav_observer(target_url);
   nav_observer.StartWatchingNewWebContents();
 
@@ -96,7 +95,7 @@ Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
   EXPECT_TRUE(content::ExecuteScript(web_contents, script));
   nav_observer.Wait();
 
-  return chrome::FindLastActive();
+  return browser_change_observer.Wait();
 }
 
 // Navigates to |target_url| and waits for navigation to complete.
@@ -258,26 +257,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_FALSE(custom_tab_bar_);
 }
 
-// Check the custom tab bar is not instantiated for a popup window.
-// Flaky on linux: crbug.com/1186608, crbug.com/1179071
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
-#else
-#define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
-#endif
-IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
-#if BUILDFLAG(IS_LINUX)
-  {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kOzonePlatform) &&
-        command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
-            "wayland") {
-      // TODO(crbug.com/1179071): Test is flaky on Linux Wayland configuration.
-      GTEST_SKIP() << "Flaky on Linux Wayland";
-    }
-  }
-#endif
-
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
   Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
                              GURL("http://example.com"));
   EXPECT_TRUE(popup);
@@ -294,16 +274,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
 }
 
-// Flaky on linux: crbug.com/1202694
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  DISABLED_BackToAppButtonIsNotVisibleInOutOfScopePopups
-#else
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  BackToAppButtonIsNotVisibleInOutOfScopePopups
-#endif
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
-                       MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups) {
+                       BackToAppButtonIsNotVisibleInOutOfScopePopups) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   const GURL out_of_scope_url = GURL("https://example.com");
 

@@ -164,7 +164,7 @@ TEST_F(UserScriptListenerTest, DelayAndUpdate) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -181,7 +181,7 @@ TEST_F(UserScriptListenerTest, DelayForPersistentScriptPatterns) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kMatchingPrefsUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
 
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
@@ -195,7 +195,7 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -213,7 +213,7 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
 
 TEST_F(UserScriptListenerTest, NoDelayNoExtension) {
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
@@ -224,7 +224,7 @@ TEST_F(UserScriptListenerTest, NoDelayNotMatching) {
   LoadTestExtension();
 
   content::MockNavigationHandle handle(GURL(kNotMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   EXPECT_EQ(nullptr, throttle);
@@ -248,7 +248,7 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
   registry->TriggerOnLoaded(extension.get());
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
@@ -269,7 +269,7 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
 TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
   LoadTestExtension();
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
-                                       web_contents_->GetMainFrame());
+                                       web_contents_->GetPrimaryMainFrame());
   std::unique_ptr<NavigationThrottle> throttle =
       listener_.CreateNavigationThrottle(&handle);
   ASSERT_TRUE(throttle);

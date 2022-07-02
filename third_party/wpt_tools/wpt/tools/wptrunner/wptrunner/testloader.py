@@ -366,6 +366,9 @@ class TestSource:
         self.test_queue = test_queue
         self.current_group = None
         self.current_metadata = None
+        self.logger = structured.get_default_logger()
+        if self.logger is None:
+            self.logger = structured.structuredlog.StructuredLogger("TestSource")
 
     @abstractmethod
     #@classmethod (doesn't compose with @abstractmethod in < 3.3)
@@ -383,10 +386,17 @@ class TestSource:
     def group(self):
         if not self.current_group or len(self.current_group) == 0:
             try:
-                self.current_group, self.current_metadata = self.test_queue.get(block=False)
+                self.current_group, self.current_metadata = self.test_queue.get(block=True, timeout=5)
             except Empty:
+                self.logger.warning("Timed out getting test group from queue")
                 return None, None
         return self.current_group, self.current_metadata
+
+    @classmethod
+    def add_sentinal(cls, test_queue, num_of_workers):
+        # add one sentinal for each worker
+        for _ in range(num_of_workers):
+            test_queue.put((None, None))
 
 
 class GroupedSource(TestSource):
@@ -413,6 +423,7 @@ class GroupedSource(TestSource):
 
         for item in groups:
             test_queue.put(item)
+        cls.add_sentinal(test_queue, kwargs["processes"])
         return test_queue
 
     @classmethod
@@ -444,6 +455,7 @@ class SingleTestSource(TestSource):
 
         for item in zip(queues, metadatas):
             test_queue.put(item)
+        cls.add_sentinal(test_queue, kwargs["processes"])
 
         return test_queue
 
@@ -488,6 +500,8 @@ class GroupFileTestSource(TestSource):
                 test.update_metadata(group_metadata)
 
             test_queue.put((group, group_metadata))
+
+        cls.add_sentinal(test_queue, kwargs["processes"])
 
         return test_queue
 

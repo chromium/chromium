@@ -1,19 +1,17 @@
 <template>
-  <style include="cr-shared-style diagnostics-fonts">
+  <style include="cr-shared-style">
     :host {
       --diagnostics-box-shadow: var(--cros-elevation-1-shadow);
       --diagnostics-box-shadow-elevation-2: var(--cros-elevation-2-shadow);
 
-      --diagnostics-card-icon: {
-        --iron-icon-fill-color: var(--cros-color-prominent);
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        background-color: var(--cros-highlight-color);
-        border-radius: 50%;
-        padding: 8px;
-      };
       --diagnostics-card-bg-color: var(--cros-bg-color);
       --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
+
+      --diagnostics-google-sans-font-family: "Google Sans", sans-serif;
+      --diagnostics-roboto-font-family: Roboto, sans-serif;
+
+      --diagnostics-regular-font-weight: 400;
+      --diagnostics-medium-font-weight: 500;
     }
 
     hr {
@@ -51,11 +49,11 @@
     }
 
     .data-point-margin-end {
-      margin-right: 20px;
+      margin-inline-end: 20px;
     }
 
     .data-point-margin-start {
-      margin-left: 20px;
+      margin-inline-start: 20px;
     }
 
     data-point[orientation=horizontal] {
@@ -92,21 +90,24 @@
       align-items: center;
       display: flex;
       flex-direction: column;
-      width: var(--container-max-width-nav);
       max-width: var(--card-container-max-width);
+      width: var(--container-max-width-nav);
     }
 
     .diagnostics-chip {
-      @apply --diagnostics-overview-font;
       background-color: var(--diagnostics-chip-bg-color);
       border-radius: 16px;
+      color: var(--cros-text-color-secondary);
+      font-family: var(--diagnostics-roboto-font-family);
+      font-size: 13px;
+      font-weight: var(--diagnostics-regular-font-weight);
       height: 20px;
       line-height: 20px;
-      padding: 0px 8px;
+      padding: 0 8px;
     }
 
     .divider {
-      border-left: 1px solid var(--cros-separator-color);
+      border-inline-start: 1px solid var(--cros-separator-color);
       height: 32px;
       padding-inline: 16px;
       position: relative;
@@ -115,7 +116,7 @@
 
     .divider-horizontal {
       align-self: center;
-      border-left: 1px solid var(--cros-separator-color);
+      border-inline-start: 1px solid var(--cros-separator-color);
       height: var(--divider-horizontal-height, 94px);
       margin: 10px 20px;
     }
@@ -128,8 +129,8 @@
 
     .horizontal-data-point-container {
       display: grid;
-      margin: 20px 0;
       grid-template-columns: 1fr 40px 1fr;
+      margin: 20px 0;
     }
 
     .horizontal-data-point-container .data-point-container {
@@ -145,6 +146,13 @@
       margin-bottom: 16px;
       margin-top: 12px;
       padding-inline: 20px;
+    }
+
+    .diagnostics-caution-banner-font {
+      color: var(--cros-text-color-primary);
+      font-family: var(--diagnostics-roboto-font-family);
+      font-size: 14px;
+      font-weight: var(--diagnostics-regular-font-weight);
     }
 
     @media (min-width:600px) {

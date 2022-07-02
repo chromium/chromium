@@ -1120,6 +1120,11 @@ void OverviewItem::OnItemBoundsAnimationEnded() {
   if (!Shell::Get()->overview_controller()->InOverviewSession())
     return;
 
+  if (overview_session_->IsShowingDesksTemplatesGrid()) {
+    HideForDesksTemplatesGrid(false);
+    return;
+  }
+
   UpdateRoundedCornersAndShadow();
   if (should_restack_on_animation_end_) {
     Restack();

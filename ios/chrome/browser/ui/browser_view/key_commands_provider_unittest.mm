@@ -24,7 +24,9 @@ TEST_F(KeyCommandsProviderTest, NoTabs_EditingText_ReturnsObjects) {
   KeyCommandsProvider* provider = [[KeyCommandsProvider alloc] init];
   id mockConsumer =
       [OCMockObject mockForProtocol:@protocol(KeyCommandsPlumbing)];
-  id<ApplicationCommands, BrowserCommands, FindInPageCommands> dispatcher = nil;
+  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+     FindInPageCommands>
+      dispatcher = nil;
   [[[mockConsumer expect] andReturnUnsignedInteger:0] tabsCount];
 
   EXPECT_NE(nil, [provider keyCommandsForConsumer:mockConsumer
@@ -39,7 +41,9 @@ TEST_F(KeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
   KeyCommandsProvider* provider = [[KeyCommandsProvider alloc] init];
   id mockConsumer =
       [OCMockObject mockForProtocol:@protocol(KeyCommandsPlumbing)];
-  id<ApplicationCommands, BrowserCommands, FindInPageCommands> dispatcher = nil;
+  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+     FindInPageCommands>
+      dispatcher = nil;
 
   [[[mockConsumer expect] andReturnUnsignedInteger:0] tabsCount];
 
@@ -57,7 +61,9 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
   KeyCommandsProvider* provider = [[KeyCommandsProvider alloc] init];
   id mockConsumer =
       [OCMockObject mockForProtocol:@protocol(KeyCommandsPlumbing)];
-  id<ApplicationCommands, BrowserCommands, FindInPageCommands> dispatcher = nil;
+  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+     FindInPageCommands>
+      dispatcher = nil;
 
   // No tabs.
   [[[mockConsumer expect] andReturnUnsignedInteger:0] tabsCount];
@@ -87,7 +93,9 @@ TEST_F(KeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
   KeyCommandsProvider* provider = [[KeyCommandsProvider alloc] init];
   id mockConsumer =
       [OCMockObject mockForProtocol:@protocol(KeyCommandsPlumbing)];
-  id<ApplicationCommands, BrowserCommands, FindInPageCommands> dispatcher = nil;
+  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+     FindInPageCommands>
+      dispatcher = nil;
 
   // Not editing text.
   [[[mockConsumer expect] andReturnUnsignedInteger:1] tabsCount];
@@ -119,7 +127,9 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenFindInPageAvailable) {
   KeyCommandsProvider* provider = [[KeyCommandsProvider alloc] init];
   id mockConsumer =
       [OCMockObject mockForProtocol:@protocol(KeyCommandsPlumbing)];
-  id<ApplicationCommands, BrowserCommands, FindInPageCommands> dispatcher = nil;
+  id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+     FindInPageCommands>
+      dispatcher = nil;
 
   // No Find in Page.
   [[[mockConsumer expect] andReturnUnsignedInteger:1] tabsCount];

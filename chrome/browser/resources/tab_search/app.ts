@@ -119,7 +119,7 @@ export class TabSearchAppElement extends PolymerElement {
 
   private searchText_: string;
   private availableHeight_: number;
-  filteredItems_: Array<TitleItem|TabData|TabGroupData>;
+  private filteredItems_: Array<TitleItem|TabData|TabGroupData>;
   private fuzzySearchOptions_: FuzzySearchOptions<TabData|TabGroupData>;
   private moveActiveTabToBottom_: boolean;
   private recentlyClosedDefaultItemDisplayCount_: number;
@@ -609,7 +609,7 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  announceA11y_(text: string) {
+  private announceA11y_(text: string) {
     IronA11yAnnouncer.requestAvailability();
     this.dispatchEvent(new CustomEvent(
         'iron-announce', {bubbles: true, composed: true, detail: {text}}));

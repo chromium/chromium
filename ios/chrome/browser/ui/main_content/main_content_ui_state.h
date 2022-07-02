@@ -11,25 +11,25 @@
 @interface MainContentUIState : NSObject
 
 // The size of the scroll view displaying the main content.
-// This should be broadcast using |-broadcastScrollViewSize:|.
+// This should be broadcast using `-broadcastScrollViewSize:`.
 @property(nonatomic, readonly) CGSize scrollViewSize;
 // The height of the current page's rendered content.
-// This should be broadcast using |-broadcastScrollViewContentSize:|.
+// This should be broadcast using `-broadcastScrollViewContentSize:`.
 @property(nonatomic, readonly) CGSize contentSize;
 // The content inset of the scroll view displaying the main content.
-// This should be broadcast using |-broadcastScrollViewContentInset:|.
+// This should be broadcast using `-broadcastScrollViewContentInset:`.
 @property(nonatomic, readonly) UIEdgeInsets contentInset;
 // The vertical offset of the main content.
-// This should be broadcast using |-broadcastContentScrollOffset:|.
+// This should be broadcast using `-broadcastContentScrollOffset:`.
 @property(nonatomic, readonly) CGFloat yContentOffset;
 // Whether the scroll view is currently scrolling.
-// This should be broadcast using |-broadcastScrollViewIsScrolling:|.
+// This should be broadcast using `-broadcastScrollViewIsScrolling:`.
 @property(nonatomic, readonly, getter=isScrolling) BOOL scrolling;
 // Whether the scroll view is currently zooming.
-// This should be broadcast using |-broadcastScrollViewIsZooming:|.
+// This should be broadcast using `-broadcastScrollViewIsZooming:`.
 @property(nonatomic, readonly, getter=isZooming) BOOL zooming;
 // Whether the scroll view is currently being dragged.
-// This should be broadcast using |-broadcastScrollViewIsDragging:|.
+// This should be broadcast using `-broadcastScrollViewIsDragging:`.
 @property(nonatomic, readonly, getter=isDragging) BOOL dragging;
 
 @end
@@ -40,7 +40,7 @@
 // The state being updated by this object.
 @property(nonatomic, readonly, strong, nonnull) MainContentUIState* state;
 
-// Designated initializer for an object that updates |state|.
+// Designated initializer for an object that updates `state`.
 - (nullable instancetype)initWithState:(nonnull MainContentUIState*)state
     NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)init NS_UNAVAILABLE;
@@ -53,10 +53,10 @@
 - (void)scrollViewDidResetContentInset:(UIEdgeInsets)contentInset;
 // Called to broadcast scroll offset changes due to scrolling.
 - (void)scrollViewDidScrollToOffset:(CGPoint)offset;
-// Called when a drag event with |panGesture| begins.
+// Called when a drag event with `panGesture` begins.
 - (void)scrollViewWillBeginDraggingWithGesture:
     (nonnull UIPanGestureRecognizer*)panGesture;
-// Called when a drag event with |panGesture| ends.  |target| is the final
+// Called when a drag event with `panGesture` ends.  `target` is the final
 // content offset resulting from the residual velocity of the drag event.
 - (void)scrollViewDidEndDraggingWithGesture:
             (nonnull UIPanGestureRecognizer*)panGesture

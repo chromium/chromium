@@ -113,7 +113,7 @@ struct NET_EXPORT GeneralNames {
 // Returns false on failure, and may fill |errors| with additional information.
 // |errors| must be non-null.
 // TODO(mattm): should this be a method on GeneralNames?
-[[nodiscard]] bool ParseGeneralName(
+[[nodiscard]] NET_EXPORT bool ParseGeneralName(
     const der::Input& input,
     GeneralNames::ParseGeneralNameIPAddressType ip_address_type,
     GeneralNames* subtrees,

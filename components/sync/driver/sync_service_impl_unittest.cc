@@ -1010,10 +1010,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
   service()->OnActionableError(client_cmd);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS does not support signout.
-  // TODO(https://crbug.com/1233933): Update this when Lacros profiles support
-  //                                  signed-in-but-not-consented-to-sync state.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ash does not support signout.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(
@@ -1135,6 +1133,7 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
               SetInterestedDataTypes(AllOf(ContainsDataType(BOOKMARKS),
                                            ContainsDataType(DEVICE_INFO))));
   InitializeForNthSync();
+  EXPECT_TRUE(engine()->started_handling_invalidations());
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,

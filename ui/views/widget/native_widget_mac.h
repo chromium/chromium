@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
@@ -175,7 +176,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
                     ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
-  void SetCursor(gfx::NativeCursor cursor) override;
+  void SetCursor(const ui::Cursor& cursor) override;
   void ShowEmojiPanel() override;
   bool IsMouseEventsEnabled() const override;
   bool IsMouseButtonDown() const override;
@@ -263,7 +264,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   friend class views::test::NativeWidgetMacTest;
   class ZoomFocusMonitor;
 
-  internal::NativeWidgetDelegate* delegate_;
+  raw_ptr<internal::NativeWidgetDelegate> delegate_;
   std::unique_ptr<NativeWidgetMacNSWindowHost> ns_window_host_;
 
   Widget::InitParams::Ownership ownership_;
@@ -277,7 +278,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
 
   // Weak pointer to the FocusManager with with |zoom_focus_monitor_| and
   // |ns_window_host_| are registered.
-  FocusManager* focus_manager_ = nullptr;
+  raw_ptr<FocusManager> focus_manager_ = nullptr;
   std::unique_ptr<ui::InputMethod> input_method_;
   std::unique_ptr<ZoomFocusMonitor> zoom_focus_monitor_;
   // Held while this widget is active if it's a child.

@@ -39,7 +39,7 @@
 
 #pragma mark - Helpers
 
-// Checks that side swipe on an element of class |klass| is working to change
+// Checks that side swipe on an element of class `klass` is working to change
 // tab.
 - (void)checkSideSwipeOnToolbarClassName:(NSString*)className {
   // Setup the server.

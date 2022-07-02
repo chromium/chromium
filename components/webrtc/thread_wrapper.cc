@@ -29,9 +29,6 @@ namespace {
 constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
 }
 
-const base::Feature kThreadWrapperUsesMetronome{
-    "ThreadWrapperUsesMetronome", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Class intended to conditionally live for the duration of ThreadWrapper
 // that periodically captures task latencies (definition in docs for
 // SetLatencyAndTaskDurationCallbacks).
@@ -139,7 +136,6 @@ ThreadWrapper::ThreadWrapper(
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
       task_runner_(task_runner),
       send_allowed_(false),
-      use_metronome_(base::FeatureList::IsEnabled(kThreadWrapperUsesMetronome)),
       last_task_id_(0),
       pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -341,26 +337,17 @@ void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                                     uint32_t milliseconds) {
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Milliseconds(milliseconds);
-  if (use_metronome_) {
-    // Coalesce tasks onto the metronome.
-    base::TimeTicks snapped_target_time =
-        blink::MetronomeSource::TimeSnappedToNextTick(target_time);
-    if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
-                                          snapped_target_time)) {
-      task_runner_->PostDelayedTaskAt(
-          base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-          base::BindOnce(&ThreadWrapper::RunCoalescedTaskQueueTasks, weak_ptr_,
-                         snapped_target_time),
-          snapped_target_time, base::subtle::DelayPolicy::kPrecise);
-    }
-    return;
+  // Coalesce low precision tasks onto the metronome.
+  base::TimeTicks snapped_target_time =
+      blink::MetronomeSource::TimeSnappedToNextTick(target_time);
+  if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
+                                        snapped_target_time)) {
+    task_runner_->PostDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+        base::BindOnce(&ThreadWrapper::RunCoalescedTaskQueueTasks, weak_ptr_,
+                       snapped_target_time),
+        snapped_target_time, base::subtle::DelayPolicy::kPrecise);
   }
-  // Do not coalesce tasks onto the metronome.
-  task_runner_->PostDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
-                     std::move(task)),
-      target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
 void ThreadWrapper::PostDelayedHighPrecisionTask(

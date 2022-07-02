@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/browser/ui/webui/about_ui.h"
 #include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
@@ -21,6 +20,7 @@
 #include "ios/chrome/browser/ui/webui/gcm/gcm_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
 #include "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
+#include "ios/chrome/browser/ui/webui/local_state/local_state_ui.h"
 #include "ios/chrome/browser/ui/webui/management/management_ui.h"
 #include "ios/chrome/browser/ui/webui/net_export/net_export_ui.h"
 #include "ios/chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
@@ -86,6 +86,8 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<InspectUI>;
   if (url_host == kChromeUIIntersitialsHost)
     return &NewWebUIIOS<InterstitialUI>;
+  if (url_host == kChromeUILocalStateHost)
+    return &NewWebUIIOS<LocalStateUI>;
   if (url_host == kChromeUIManagementHost)
     return &NewWebUIIOS<ManagementUI>;
   if (url_host == kChromeUINetExportHost)
@@ -112,10 +114,8 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<TermsUI>;
   if (url_host == kChromeUIVersionHost)
     return &NewWebUIIOS<VersionUI>;
-
-  if (IsEnterprisePolicyEnabled() && url_host == kChromeUIPolicyHost) {
+  if (url_host == kChromeUIPolicyHost)
     return &NewWebUIIOS<PolicyUI>;
-  }
 
   return nullptr;
 }

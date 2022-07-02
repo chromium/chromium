@@ -57,9 +57,6 @@ class PythonCheckerTest(unittest.TestCase):
         checker.check()
 
         self.assertEqual([
-            (2, 'pep8/W291', 5, 'trailing whitespace'),
-            (3, 'pep8/E261', 5, 'at least two spaces before inline comment'),
-            (3, 'pep8/E262', 5, "inline comment should start with '# '"),
             (2, 'pylint/C0303(trailing-whitespace)', 5,
              '[] Trailing whitespace'),
             (2, 'pylint/E0602(undefined-variable)', 5,

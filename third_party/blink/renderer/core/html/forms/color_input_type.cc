@@ -116,7 +116,7 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
 
 Color ColorInputType::ValueAsColor() const {
   Color color;
-  bool success = color.SetFromString(GetElement().value());
+  bool success = color.SetFromString(GetElement().Value());
   DCHECK(success);
   return color;
 }
@@ -168,6 +168,12 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
   }
 
   event.SetDefaultHandled();
+}
+
+ControlPart ColorInputType::AutoAppearance() const {
+  return GetElement().FastHasAttribute(html_names::kListAttr)
+             ? kMenulistPart
+             : kSquareButtonPart;
 }
 
 void ColorInputType::OpenPopupView() {
@@ -236,7 +242,7 @@ void ColorInputType::UpdateView() {
     return;
 
   color_swatch->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
-                                       GetElement().value());
+                                       GetElement().Value());
 }
 
 HTMLElement* ColorInputType::ShadowColorSwatch() const {

@@ -11,8 +11,30 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "v8/include/v8-exception.h"
 
 namespace shared_storage_worklet {
+
+namespace {
+
+// Convert ECMAScript value to IDL DOMString:
+// https://webidl.spec.whatwg.org/#es-DOMString
+bool ToIDLDOMString(v8::Isolate* isolate,
+                    v8::Local<v8::Value> val,
+                    std::u16string& out) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  WorkletV8Helper::HandleScope scope(isolate);
+  v8::TryCatch try_catch(isolate);
+
+  v8::Local<v8::String> str;
+  if (!val->ToString(context).ToLocal(&str))
+    return false;
+
+  return gin::ConvertFromV8<std::u16string>(isolate, str, &out);
+}
+
+}  // namespace
 
 SharedStorage::SharedStorage(mojom::SharedStorageWorkletServiceClient* client)
     : client_(client) {}
@@ -47,8 +69,10 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key) ||
+  if (v8_args.size() < 1 || !ToIDLDOMString(isolate, v8_args[0], arg0_key) ||
       !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(
@@ -61,7 +85,7 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
   }
 
   std::u16string arg1_value;
-  if (!args->GetNext(&arg1_value) ||
+  if (v8_args.size() < 2 || !ToIDLDOMString(isolate, v8_args[1], arg1_value) ||
       !blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     resolver
         ->Reject(
@@ -75,9 +99,8 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
 
   gin::Dictionary arg2_options_dict = gin::Dictionary::CreateEmpty(isolate);
 
-  v8::Local<v8::Value> arg2_options;
-  if (args->GetNext(&arg2_options)) {
-    if (!gin::ConvertFromV8(isolate, arg2_options, &arg2_options_dict)) {
+  if (v8_args.size() > 2) {
+    if (!gin::ConvertFromV8(isolate, v8_args[2], &arg2_options_dict)) {
       resolver
           ->Reject(args->GetHolderCreationContext(),
                    gin::StringToV8(
@@ -109,8 +132,10 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key) ||
+  if (v8_args.size() < 1 || !ToIDLDOMString(isolate, v8_args[0], arg0_key) ||
       !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -122,7 +147,7 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
   }
 
   std::u16string arg1_value;
-  if (!args->GetNext(&arg1_value) ||
+  if (v8_args.size() < 2 || !ToIDLDOMString(isolate, v8_args[1], arg1_value) ||
       !blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -151,8 +176,10 @@ v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key) ||
+  if (v8_args.size() < 1 || !ToIDLDOMString(isolate, v8_args[0], arg0_key) ||
       !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -197,8 +224,10 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key) ||
+  if (v8_args.size() < 1 || !ToIDLDOMString(isolate, v8_args[0], arg0_key) ||
       !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(
@@ -268,15 +297,22 @@ void SharedStorage::OnVoidOperationFinished(
 void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
-    bool success,
+    shared_storage_worklet::mojom::SharedStorageGetStatus status,
     const std::string& error_message,
     const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
   v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
 
-  if (success) {
+  if (status ==
+      shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess) {
     resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
+    return;
+  }
+
+  if (status ==
+      shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound) {
+    resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
     return;
   }
 

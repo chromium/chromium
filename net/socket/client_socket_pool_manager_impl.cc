@@ -94,9 +94,8 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   return ret.first->second.get();
 }
 
-std::unique_ptr<base::Value>
-ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+base::Value ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
+  base::Value::List list;
   for (const auto& socket_pool : socket_pools_) {
     // TODO(menke): Is this really needed?
     const char* type;
@@ -107,11 +106,11 @@ ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
     } else {
       type = "http_proxy_socket_pool";
     }
-    list->Append(socket_pool.second->GetInfoAsValue(
+    list.Append(socket_pool.second->GetInfoAsValue(
         ProxyServerToProxyUri(socket_pool.first), type));
   }
 
-  return std::move(list);
+  return base::Value(std::move(list));
 }
 
 }  // namespace net

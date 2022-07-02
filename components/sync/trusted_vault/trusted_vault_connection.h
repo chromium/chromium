@@ -34,9 +34,15 @@ enum class TrustedVaultRegistrationStatus {
 
 enum class TrustedVaultDownloadKeysStatus {
   kSuccess,
-  // Member corresponding to the authentication factor doesn't exist, not
-  // registered in the security domain or corrupted.
-  kMemberNotFoundOrCorrupted,
+  // Member corresponding to the authentication factor doesn't exist.
+  kMemberNotFound,
+  // Member corresponding to the authentication factor not registered in the
+  // security domain.
+  kMembershipNotFound,
+  // Membership exists but is corrupted.
+  kMembershipCorrupted,
+  // Membership exists but is empty.
+  kMembershipEmpty,
   // Keys were successfully downloaded and verified, but no new keys exist.
   kNoNewKeys,
   // At least one of the key proofs isn't valid or unable to verify them using
@@ -46,7 +52,7 @@ enum class TrustedVaultDownloadKeysStatus {
   kAccessTokenFetchingFailure,
   // Used for all network, http and protocol errors, when no statuses above
   // fits.
-  kOtherError
+  kOtherError,
 };
 
 enum class TrustedVaultRecoverabilityStatus {

@@ -55,10 +55,7 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
   // Attempts to focus the anchor if we couldn't focus right after install
   // (because rendering was blocked at the time). This can cause script to run
   // so we can't do it in Invoke.
-  void PerformPreRafActions() override;
-
-  // Does nothing as an element anchor does not have any dismissal work.
-  bool Dismiss() override;
+  void PerformScriptableActions() override;
 
   void Trace(Visitor*) const override;
 

@@ -50,6 +50,7 @@ namespace {
 using base::test::RunOnceClosure;
 using testing::_;
 using MountFailure = DriveFsHost::MountObserver::MountFailure;
+using ChangeLogOptionPair = std::pair<int64_t, std::string>;
 
 constexpr base::TimeDelta kTokenLifetime = base::Hours(1);
 
@@ -63,8 +64,9 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
     return nullptr;
   }
 
-  void FetchChangeLog(std::vector<mojom::FetchChangeLogOptionsPtr> options) {
-    std::vector<std::pair<int64_t, std::string>> unwrapped_options;
+  void FetchChangeLog(
+      std::vector<mojom::FetchChangeLogOptionsPtr> options) override {
+    std::vector<ChangeLogOptionPair> unwrapped_options;
     for (auto& entry : options) {
       unwrapped_options.push_back(
           std::make_pair(entry->change_id, entry->team_drive_id));
@@ -72,12 +74,16 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
     FetchChangeLogImpl(unwrapped_options);
   }
 
-  MOCK_METHOD1(
-      FetchChangeLogImpl,
-      void(const std::vector<std::pair<int64_t, std::string>>& options));
-  MOCK_METHOD0(FetchAllChangeLogs, void());
+  MOCK_METHOD(void,
+              FetchChangeLogImpl,
+              (const std::vector<ChangeLogOptionPair>&));
 
-  MOCK_CONST_METHOD1(OnStartSearchQuery, void(const mojom::QueryParameters&));
+  MOCK_METHOD(void, FetchAllChangeLogs, ());
+
+  MOCK_METHOD(void,
+              OnStartSearchQuery,
+              (const mojom::QueryParameters&),
+              (const));
   void StartSearchQuery(mojo::PendingReceiver<mojom::SearchQuery> receiver,
                         mojom::QueryParametersPtr query_params) override {
     search_receiver_.reset();
@@ -85,9 +91,9 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
     search_receiver_.Bind(std::move(receiver));
   }
 
-  MOCK_METHOD1(OnGetNextPage,
-               drive::FileError(
-                   absl::optional<std::vector<mojom::QueryItemPtr>>* items));
+  MOCK_METHOD(drive::FileError,
+              OnGetNextPage,
+              (absl::optional<std::vector<mojom::QueryItemPtr>> * items));
 
   void GetNextPage(GetNextPageCallback callback) override {
     absl::optional<std::vector<mojom::QueryItemPtr>> items;
@@ -130,10 +136,11 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   }
 
   // DriveFsHost::MountObserver:
-  MOCK_METHOD1(OnMounted, void(const base::FilePath&));
-  MOCK_METHOD2(OnMountFailed,
-               void(MountFailure, absl::optional<base::TimeDelta>));
-  MOCK_METHOD1(OnUnmounted, void(absl::optional<base::TimeDelta>));
+  MOCK_METHOD(void, OnMounted, (const base::FilePath&));
+  MOCK_METHOD(void,
+              OnMountFailed,
+              (MountFailure, absl::optional<base::TimeDelta>));
+  MOCK_METHOD(void, OnUnmounted, (absl::optional<base::TimeDelta>));
 
   drive::DriveNotificationManager& GetDriveNotificationManager() override {
     return drive_notification_manager_;
@@ -179,6 +186,10 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
         kExtensionNotFound;
   }
 
+  const std::string GetMachineRootID() override { return ""; }
+
+  void PersistMachineRootID(const std::string& id) override {}
+
   signin::IdentityManager* const identity_manager_;
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;
@@ -190,11 +201,17 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
 
 class MockDriveFsHostObserver : public DriveFsHostObserver {
  public:
-  MOCK_METHOD0(OnUnmounted, void());
-  MOCK_METHOD1(OnSyncingStatusUpdate, void(const mojom::SyncingStatus& status));
-  MOCK_METHOD1(OnFilesChanged,
-               void(const std::vector<mojom::FileChange>& changes));
-  MOCK_METHOD1(OnError, void(const mojom::DriveError& error));
+  MOCK_METHOD(void, OnUnmounted, ());
+  MOCK_METHOD(void,
+              OnSyncingStatusUpdate,
+              (const mojom::SyncingStatus& status));
+  MOCK_METHOD(void,
+              OnMirrorSyncingStatusUpdate,
+              (const mojom::SyncingStatus& status));
+  MOCK_METHOD(void,
+              OnFilesChanged,
+              (const std::vector<mojom::FileChange>& changes));
+  MOCK_METHOD(void, OnError, (const mojom::DriveError& error));
 };
 
 class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
@@ -675,8 +692,8 @@ TEST_F(DriveFsHostTest, Invalidation) {
   delegate_.FlushForTesting();
 
   EXPECT_CALL(mock_drivefs_,
-              FetchChangeLogImpl(std::vector<std::pair<int64_t, std::string>>{
-                  {123, ""}, {456, "a"}}));
+              FetchChangeLogImpl(
+                  std::vector<ChangeLogOptionPair>{{123, ""}, {456, "a"}}));
 
   for (auto& observer :
        host_delegate_->GetDriveNotificationManager().observers_for_test()) {
@@ -846,6 +863,26 @@ TEST_F(DriveFsHostTest, ConnectToExtension) {
           }));
   run_loop.Run();
   EXPECT_EQ("foo", host_delegate_->get_last_extension_params().extension_id);
+}
+
+TEST_F(DriveFsHostTest, OnMirrorSyncingStatusUpdate_ForwardToObservers) {
+  ASSERT_NO_FATAL_FAILURE(DoMount());
+  MockDriveFsHostObserver observer;
+  base::ScopedObservation<DriveFsHost, DriveFsHostObserver> observation_scoper(
+      &observer);
+  observation_scoper.Observe(host_.get());
+  auto status = mojom::SyncingStatus::New();
+  status->item_events.emplace_back(absl::in_place, 12, 34, "filename.txt",
+                                   mojom::ItemEvent::State::kInProgress, 123,
+                                   456, mojom::ItemEventReason::kPin);
+  mojom::SyncingStatusPtr observed_status;
+  EXPECT_CALL(observer, OnMirrorSyncingStatusUpdate(_))
+      .WillOnce(CloneStruct(&observed_status));
+  delegate_->OnMirrorSyncingStatusUpdate(status.Clone());
+  delegate_.FlushForTesting();
+  testing::Mock::VerifyAndClear(&observer);
+
+  EXPECT_EQ(status, observed_status);
 }
 
 }  // namespace

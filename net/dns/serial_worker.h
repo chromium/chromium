@@ -117,7 +117,7 @@ class NET_EXPORT_PRIVATE SerialWorker {
 
   void RerunWork(std::unique_ptr<WorkItem> work_item);
 
-  State state_;
+  State state_ = State::kIdle;
 
   // Max retries and backoff entry to control timing.
   const int max_number_of_retries_;

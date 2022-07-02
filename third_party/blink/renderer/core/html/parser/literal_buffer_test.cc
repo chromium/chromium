@@ -11,13 +11,13 @@ namespace blink {
 namespace {
 
 TEST(LiteralBufferTest, Empty) {
-  LiteralBuffer<LChar, 16> buf;
+  LCharLiteralBuffer<16> buf;
   EXPECT_TRUE(buf.IsEmpty());
   EXPECT_EQ(0ul, buf.size());
 }
 
 TEST(LiteralBufferTest, AddAndClear) {
-  LiteralBuffer<LChar, 16> buf;
+  LCharLiteralBuffer<16> buf;
   buf.AddChar('a');
   buf.AddChar('b');
   buf.AddChar('c');
@@ -33,12 +33,12 @@ TEST(LiteralBufferTest, AddAndClear) {
 }
 
 TEST(LiteralBufferTest, AppendLiteral) {
-  LiteralBuffer<LChar, 16> lit;
+  LCharLiteralBuffer<16> lit;
   lit.AddChar('a');
   lit.AddChar('b');
   lit.AddChar('c');
 
-  LiteralBuffer<UChar, 4> buf;
+  UCharLiteralBuffer<4> buf;
   buf.AddChar('d');
   buf.AddChar('e');
   buf.AddChar('f');
@@ -50,12 +50,12 @@ TEST(LiteralBufferTest, AppendLiteral) {
 }
 
 TEST(LiteralBufferTest, Copy) {
-  LiteralBuffer<LChar, 16> lit;
+  LCharLiteralBuffer<16> lit;
   lit.AddChar('a');
   lit.AddChar('b');
   lit.AddChar('c');
 
-  LiteralBuffer<LChar, 2> buf;
+  LCharLiteralBuffer<2> buf;
   buf = lit;
 
   EXPECT_FALSE(buf.IsEmpty());
@@ -74,21 +74,37 @@ TEST(LiteralBufferTest, Copy) {
 }
 
 TEST(LiteralBufferTest, Move) {
-  LiteralBuffer<LChar, 2> lit;
+  LCharLiteralBuffer<2> lit;
   lit.AddChar('a');
   lit.AddChar('b');
   lit.AddChar('c');
 
-  LiteralBuffer<LChar, 2> buf(std::move(lit));
+  LCharLiteralBuffer<2> buf(std::move(lit));
 
   EXPECT_FALSE(buf.IsEmpty());
   EXPECT_EQ(3ul, buf.size());
   EXPECT_EQ(buf[0], 'a');
   EXPECT_EQ(buf[1], 'b');
   EXPECT_EQ(buf[2], 'c');
+}
 
-  EXPECT_TRUE(lit.IsEmpty());
-  EXPECT_EQ(0ul, lit.size());
+TEST(LiteralBufferTest, Is8BitAppend) {
+  UCharLiteralBuffer<16> buf;
+  EXPECT_TRUE(buf.Is8Bit());
+  buf.AddChar('a');
+  EXPECT_TRUE(buf.Is8Bit());
+  buf.AddChar(U'\x01D6');
+  EXPECT_FALSE(buf.Is8Bit());
+  buf.clear();
+  EXPECT_TRUE(buf.Is8Bit());
+}
+
+TEST(LiteralBufferTest, Is8BitMove) {
+  UCharLiteralBuffer<16> buf;
+  buf.AddChar(U'\x01D6');
+
+  UCharLiteralBuffer<16> buf2(std::move(buf));
+  EXPECT_FALSE(buf2.Is8Bit());
 }
 
 }  // anonymous namespace

@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -218,8 +217,12 @@ void SharesheetService::ShowBubbleForTesting(
     bool contains_hosted_document,
     LaunchSource source,
     DeliveredCallback delivered_callback,
-    CloseCallback close_callback) {
+    CloseCallback close_callback,
+    int num_actions_to_add) {
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
+  for (int i = 0; i < num_actions_to_add; ++i) {
+    share_action_cache_->AddShareActionForTesting();  // IN-TEST
+  }
   auto targets = GetActionsForIntent(intent, contains_hosted_document);
   OnReadyToShowBubble(native_window, std::move(intent),
                       std::move(delivered_callback), std::move(close_callback),
@@ -287,25 +290,13 @@ void SharesheetService::LoadAppIcons(
 
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
-  auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(app_id);
-  constexpr bool allow_placeholder_icon = false;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        app_type, app_id, apps::IconType::kStandard, kIconSize,
-        allow_placeholder_icon,
-        base::BindOnce(&SharesheetService::OnIconLoaded,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(intent_launch_info), std::move(targets), index,
-                       std::move(callback)));
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
-        apps::mojom::IconType::kStandard, kIconSize, allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &SharesheetService::OnIconLoaded, weak_factory_.GetWeakPtr(),
-            std::move(intent_launch_info), std::move(targets), index,
-            std::move(callback))));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(app_id), app_id,
+      apps::IconType::kStandard, kIconSize,
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&SharesheetService::OnIconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
+                     std::move(targets), index, std::move(callback)));
 }
 
 void SharesheetService::OnIconLoaded(
@@ -401,8 +392,7 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
   auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
   app_service_proxy_->LaunchAppWithIntent(
       base::UTF16ToUTF8(target_name),
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
+      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),
       std::move(intent), launch_source,
       apps::MakeWindowInfo(display::kDefaultDisplayId));
@@ -447,6 +437,8 @@ void SharesheetService::RecordUserActionMetrics(
                  IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kCopyAction);
+  } else if (target_name == u"example") {
+    // This is a test. Do nothing.
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Should be an app if we reached here.
@@ -521,6 +513,8 @@ void SharesheetService::RecordShareActionMetrics(
                  IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
     SharesheetMetrics::RecordSharesheetShareAction(
         SharesheetMetrics::UserAction::kCopyAction);
+  } else if (target_name == u"example") {
+    // This is a test. Do nothing.
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();

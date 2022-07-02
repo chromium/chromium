@@ -17,13 +17,9 @@
 #endif
 
 id MockMXMetadata() {
-  // TODO(crbug.com/1140474): See related bug for why `bundleVersion` comes from
-  // mainBundle instead of from version_info::GetVersionNumber(). Remove once
-  // iOS 14.2 reaches mass adoption.
-  NSString* bundleVersion =
-      [[NSBundle mainBundle] infoDictionary][(NSString*)kCFBundleVersionKey];
   id metadata = OCMClassMock([MXMetaData class]);
-  OCMStub([metadata applicationBuildVersion]).andReturn(bundleVersion);
+  OCMStub([metadata applicationBuildVersion])
+      .andReturn(base::SysUTF8ToNSString(version_info::GetVersionNumber()));
   return metadata;
 }
 

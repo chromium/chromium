@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -215,6 +216,20 @@ std::unique_ptr<protocol::Array<String>> GetEnabledWindowFeatures(
 
 }  // namespace
 
+struct InspectorPageAgent::IsolatedWorldRequest {
+  IsolatedWorldRequest() = delete;
+  IsolatedWorldRequest(String world_name,
+                       bool grant_universal_access,
+                       std::unique_ptr<CreateIsolatedWorldCallback> callback)
+      : world_name(world_name),
+        grant_universal_access(grant_universal_access),
+        callback(std::move(callback)) {}
+
+  const String world_name;
+  const bool grant_universal_access;
+  std::unique_ptr<CreateIsolatedWorldCallback> callback;
+};
+
 static bool PrepareResourceBuffer(const Resource* cached_resource,
                                   bool* has_zero_size) {
   if (!cached_resource)
@@ -304,9 +319,10 @@ static void MaybeEncodeTextContent(const String& text_content,
   }
 
   const SharedBuffer::DeprecatedFlatData flat_buffer(std::move(buffer));
-  return MaybeEncodeTextContent(text_content, flat_buffer.Data(),
-                                SafeCast<wtf_size_t>(flat_buffer.size()),
-                                result, base64_encoded);
+  return MaybeEncodeTextContent(
+      text_content, flat_buffer.Data(),
+      base::checked_cast<wtf_size_t>(flat_buffer.size()), result,
+      base64_encoded);
 }
 
 // static
@@ -336,13 +352,13 @@ bool InspectorPageAgent::SharedBufferContent(
     text_content = decoder->Decode(flat_buffer.Data(), flat_buffer.size());
     text_content = text_content + decoder->Flush();
   } else if (encoding.IsValid()) {
-    text_content = encoding.Decode(flat_buffer.Data(),
-                                   SafeCast<wtf_size_t>(flat_buffer.size()));
+    text_content = encoding.Decode(
+        flat_buffer.Data(), base::checked_cast<wtf_size_t>(flat_buffer.size()));
   }
 
   MaybeEncodeTextContent(text_content, flat_buffer.Data(),
-                         SafeCast<wtf_size_t>(flat_buffer.size()), result,
-                         base64_encoded);
+                         base::checked_cast<wtf_size_t>(flat_buffer.size()),
+                         result, base64_encoded);
   return true;
 }
 
@@ -531,6 +547,7 @@ Response InspectorPageAgent::enable() {
 
 Response InspectorPageAgent::disable() {
   agent_state_.ClearAllFields();
+  pending_isolated_worlds_.clear();
   script_to_evaluate_on_load_once_ = String();
   pending_script_to_evaluate_on_load_once_ = String();
   instrumenting_agents_->RemoveInspectorPageAgent(this);
@@ -806,6 +823,9 @@ CreatePermissionsPolicyBlockLocator(
       reason =
           protocol::Page::PermissionsPolicyBlockReasonEnum::InFencedFrameTree;
       break;
+    case blink::PermissionsPolicyBlockReason::kInIsolatedApp:
+      reason = protocol::Page::PermissionsPolicyBlockReasonEnum::InIsolatedApp;
+      break;
   }
 
   return protocol::Page::PermissionsPolicyBlockLocator::create()
@@ -913,59 +933,55 @@ scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
 void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
   if (!GetFrontend())
     return;
+
+  for (auto& request : pending_isolated_worlds_.Take(frame)) {
+    CreateIsolatedWorldImpl(*frame, request.world_name,
+                            request.grant_universal_access,
+                            std::move(request.callback));
+  }
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
   std::sort(keys.begin(), keys.end(),
             [](const WTF::String& a, const WTF::String& b) {
               return Decimal::FromString(a) < Decimal::FromString(b);
             });
 
+  // Throughout this method,
+  // `ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled` is used because
+  // `inspector-protocol/page/add-script-to-evaluate-on-load-disabled-js.js`
+  // requires that the scripts here should be evaluated on pages with scripting
+  // disabled.
+
   for (const WTF::String& key : keys) {
-    const String source = scripts_to_evaluate_on_load_.Get(key);
-    const String world_name = worlds_to_evaluate_on_load_.Get(key);
-    const bool include_command_line_api =
-        include_command_line_api_for_scripts_to_evaluate_on_load_.Get(key);
     auto* window = frame->DomWindow();
+    v8::HandleScope handle_scope(window->GetIsolate());
+
+    ScriptState* script_state = nullptr;
+    const String world_name = worlds_to_evaluate_on_load_.Get(key);
     if (world_name.IsEmpty()) {
-      if (include_command_line_api) {
-        v8::HandleScope handle_scope(window->GetIsolate());
-        ScriptState* script_state =
-            ToScriptStateForMainWorld(window->GetFrame());
-        auto scope = v8_session_->initializeCommandLineAPIScope(
-            v8_inspector::V8ContextInfo::executionContextId(
-                script_state->GetContext()));
-        DCHECK(scope);
-        ClassicScript::CreateUnspecifiedScript(source)->RunScript(
-            window, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
-      } else {
-        ClassicScript::CreateUnspecifiedScript(source)->RunScript(
-            window, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
-      }
-      continue;
-    }
-
-    scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
-        frame, world_name, true /* grant_universal_access */);
-    if (!world)
-      continue;
-
-    // Note: An error event in an isolated world will never be dispatched to
-    // a foreign world.
-    v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-    if (include_command_line_api) {
-      ScriptState* script_state = ToScriptState(
+      script_state = ToScriptStateForMainWorld(window->GetFrame());
+    } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
+                   frame, world_name, true /* grant_universal_access */)) {
+      script_state = ToScriptState(
           window->GetFrame(),
           *DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(window->GetFrame()),
                                                 world->GetWorldId()));
-      auto scope = v8_session_->initializeCommandLineAPIScope(
+    }
+    if (!script_state)
+      continue;
+
+    std::unique_ptr<v8_inspector::V8InspectorSession::CommandLineAPIScope>
+        scope;
+    if (include_command_line_api_for_scripts_to_evaluate_on_load_.Get(key)) {
+      scope = v8_session_->initializeCommandLineAPIScope(
           v8_inspector::V8ContextInfo::executionContextId(
               script_state->GetContext()));
       DCHECK(scope);
-      ClassicScript::CreateUnspecifiedScript(source)
-          ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
-    } else {
-      ClassicScript::CreateUnspecifiedScript(source)
-          ->RunScriptInIsolatedWorldAndReturnValue(window, world->GetWorldId());
     }
+    ClassicScript::CreateUnspecifiedScript(
+        scripts_to_evaluate_on_load_.Get(key))
+        ->RunScriptOnScriptState(
+            script_state,
+            ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
 
   if (!script_to_evaluate_on_load_once_.IsEmpty()) {
@@ -1015,16 +1031,26 @@ void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
 
 void InspectorPageAgent::FrameAttachedToParent(
     LocalFrame* frame,
-    const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack) {
+    const absl::optional<AdScriptIdentifier>& ad_script_on_stack) {
   // TODO(crbug.com/1217041): If an ad script on the stack caused this frame to
   // be tagged as an ad, send the script's ID to the frontend.
   Frame* parent_frame = frame->Tree().Parent();
   std::unique_ptr<SourceLocation> location =
       SourceLocation::CaptureWithFullStackTrace();
+  Maybe<protocol::Page::AdScriptId> ad_script_id;
+  if (ad_script_on_stack.has_value()) {
+    ad_script_id =
+        protocol::Page::AdScriptId::create()
+            .setScriptId(String::Number(ad_script_on_stack.value().id))
+            .setDebuggerId(ToCoreString(
+                ad_script_on_stack.value().context_id.toString()->string()))
+            .build();
+  }
   GetFrontend()->frameAttached(
       IdentifiersFactory::FrameId(frame),
       IdentifiersFactory::FrameId(parent_frame),
-      location ? location->BuildInspectorObject() : nullptr);
+      location ? location->BuildInspectorObject() : nullptr,
+      std::move(ad_script_id));
   // Some network events referencing this frame will be reported from the
   // browser, so make sure to deliver FrameAttached without buffering,
   // so it gets to the front-end first.
@@ -1585,27 +1611,57 @@ Response InspectorPageAgent::getLayoutMetrics(
   return Response::Success();
 }
 
-protocol::Response InspectorPageAgent::createIsolatedWorld(
+void InspectorPageAgent::createIsolatedWorld(
     const String& frame_id,
     Maybe<String> world_name,
     Maybe<bool> grant_universal_access,
-    int* execution_context_id) {
+    std::unique_ptr<CreateIsolatedWorldCallback> callback) {
   LocalFrame* frame =
       IdentifiersFactory::FrameById(inspected_frames_, frame_id);
-  if (!frame)
-    return Response::ServerError("No frame for given id found");
+  if (!frame) {
+    callback->sendFailure(
+        Response::InvalidParams("No frame for given id found"));
+    return;
+  }
+  if (frame->IsProvisional()) {
+    // If we're not enabled, we won't have DidClearWindowObject, so the below
+    // won't work!
+    if (!enabled_.Get()) {
+      callback->sendFailure(
+          Response::ServerError("Agent needs to be enabled first"));
+      return;
+    }
+    pending_isolated_worlds_.insert(frame, Vector<IsolatedWorldRequest>())
+        .stored_value->value.push_back(IsolatedWorldRequest(
+            world_name.fromMaybe(""), grant_universal_access.fromMaybe(false),
+            std::move(callback)));
+    return;
+  }
+  CreateIsolatedWorldImpl(*frame, world_name.fromMaybe(""),
+                          grant_universal_access.fromMaybe(false),
+                          std::move(callback));
+}
 
-  scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
-      frame, world_name.fromMaybe(""), grant_universal_access.fromMaybe(false));
-  if (!world)
-    return Response::ServerError("Could not create isolated world");
+void InspectorPageAgent::CreateIsolatedWorldImpl(
+    LocalFrame& frame,
+    String world_name,
+    bool grant_universal_access,
+    std::unique_ptr<CreateIsolatedWorldCallback> callback) {
+  DCHECK(!frame.IsProvisional());
+  scoped_refptr<DOMWrapperWorld> world =
+      EnsureDOMWrapperWorld(&frame, world_name, grant_universal_access);
+  if (!world) {
+    callback->sendFailure(
+        Response::ServerError("Could not create isolated world"));
+    return;
+  }
 
   LocalWindowProxy* isolated_world_window_proxy =
-      frame->DomWindow()->GetScriptController().WindowProxy(*world);
+      frame.DomWindow()->GetScriptController().WindowProxy(*world);
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-  *execution_context_id = v8_inspector::V8ContextInfo::executionContextId(
-      isolated_world_window_proxy->ContextIfInitialized());
-  return Response::Success();
+
+  callback->sendSuccess(v8_inspector::V8ContextInfo::executionContextId(
+      isolated_world_window_proxy->ContextIfInitialized()));
 }
 
 Response InspectorPageAgent::setFontFamilies(
@@ -1761,15 +1817,16 @@ void InspectorPageAgent::DidProduceCompilationCache(
 
 void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
                                            HTMLInputElement* element,
+                                           bool multiple,
                                            bool* intercepted) {
   *intercepted |= intercept_file_chooser_.Get();
   if (!intercept_file_chooser_.Get())
     return;
-  bool multiple = element->Multiple();
   GetFrontend()->fileChooserOpened(
-      IdentifiersFactory::FrameId(frame), DOMNodeIds::IdForNode(element),
+      IdentifiersFactory::FrameId(frame),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
-               : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle);
+               : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
+      element ? Maybe<int>(DOMNodeIds::IdForNode(element)) : Maybe<int>());
 }
 
 Response InspectorPageAgent::produceCompilationCache(
@@ -1826,6 +1883,7 @@ Response InspectorPageAgent::generateTestReport(const String& message,
 
 void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
+  visitor->Trace(pending_isolated_worlds_);
   visitor->Trace(inspector_resource_content_loader_);
   visitor->Trace(isolated_worlds_);
   InspectorBaseAgent::Trace(visitor);

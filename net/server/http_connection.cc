@@ -13,8 +13,7 @@
 namespace net {
 
 HttpConnection::ReadIOBuffer::ReadIOBuffer()
-    : base_(base::MakeRefCounted<GrowableIOBuffer>()),
-      max_buffer_size_(kDefaultMaxBufferSize) {
+    : base_(base::MakeRefCounted<GrowableIOBuffer>()) {
   SetCapacity(kInitialBufSize);
 }
 
@@ -91,10 +90,7 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
   }
 }
 
-HttpConnection::QueuedWriteIOBuffer::QueuedWriteIOBuffer()
-    : total_size_(0),
-      max_buffer_size_(kDefaultMaxBufferSize) {
-}
+HttpConnection::QueuedWriteIOBuffer::QueuedWriteIOBuffer() = default;
 
 HttpConnection::QueuedWriteIOBuffer::~QueuedWriteIOBuffer() {
   data_ = nullptr;  // pending_data_ owns data_.

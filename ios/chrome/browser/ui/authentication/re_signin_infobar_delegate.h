@@ -34,7 +34,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ~ReSignInInfoBarDelegate() override;
 
-  // Creates a re-sign-in error infobar and adds it to the |web_state|. Returns
+  // Creates a re-sign-in error infobar and adds it to the `web_state`. Returns
   // whether the infobar was actually added.
   static bool Create(ChromeBrowserState* browser_state,
                      web::WebState* web_state,

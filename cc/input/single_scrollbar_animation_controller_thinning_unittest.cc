@@ -39,6 +39,7 @@ class MockSingleScrollbarAnimationControllerClient
   ScrollbarSet ScrollbarsFor(ElementId scroll_element_id) const override {
     return host_impl_->ScrollbarsFor(scroll_element_id);
   }
+  bool IsFluentScrollbar() const override { return false; }
 
   MOCK_METHOD2(PostDelayedScrollbarAnimationTask,
                void(base::OnceClosure start_fade, base::TimeDelta delay));

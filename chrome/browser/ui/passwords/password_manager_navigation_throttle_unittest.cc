@@ -4,10 +4,8 @@
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -42,13 +40,6 @@ class PasswordManagerNavigationThrottleTest
         ->InitializeRenderFrameIfNeeded();
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kUnifiedPasswordManagerAndroid);
-#else
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kUnifiedPasswordManagerDesktop);
-#endif
   }
 
   content::RenderFrameHost* subframe() const { return subframe_; }
@@ -64,7 +55,6 @@ class PasswordManagerNavigationThrottleTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   raw_ptr<content::RenderFrameHost> subframe_ = nullptr;
@@ -105,5 +95,15 @@ TEST_F(PasswordManagerNavigationThrottleTest,
       .page_transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
       .initiator_origin =
           url::Origin::Create(GURL(password_manager::kReferrerURL)),
+  }));
+}
+
+TEST_F(PasswordManagerNavigationThrottleTest,
+       CreatesNavigationThrottleForTestingWebsite) {
+  EXPECT_TRUE(CreateNavigationThrottle({
+      .url = GURL(password_manager::kManageMyPasswordsURL),
+      .page_transition = ui::PAGE_TRANSITION_LINK,
+      .initiator_origin =
+          url::Origin::Create(GURL(password_manager::kTestingReferrerURL)),
   }));
 }

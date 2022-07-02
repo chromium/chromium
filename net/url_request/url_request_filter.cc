@@ -140,7 +140,7 @@ std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
   return job;
 }
 
-URLRequestFilter::URLRequestFilter() : hit_count_(0) {
+URLRequestFilter::URLRequestFilter() {
   DCHECK(OnMessageLoopForInterceptorAddition());
   URLRequestJobFactory::SetInterceptorForTesting(this);
 }

@@ -106,11 +106,10 @@ void UserInfoFetcher::OnFetchComplete(
   // to the delegate.
   DCHECK(unparsed_data);
   DVLOG(1) << "Received UserInfo response: " << *unparsed_data;
-  std::unique_ptr<base::Value> parsed_value =
-      base::JSONReader::ReadDeprecated(*unparsed_data);
-  base::DictionaryValue* dict;
-  if (parsed_value.get() && parsed_value->GetAsDictionary(&dict)) {
-    delegate_->OnGetUserInfoSuccess(dict);
+  absl::optional<base::Value> parsed_value =
+      base::JSONReader::Read(*unparsed_data);
+  if (parsed_value && parsed_value->is_dict()) {
+    delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());
   } else {
     NOTREACHED() << "Could not parse userinfo response from server";
     delegate_->OnGetUserInfoFailure(GoogleServiceAuthError(

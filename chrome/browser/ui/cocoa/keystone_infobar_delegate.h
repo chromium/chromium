@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COCOA_KEYSTONE_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_COCOA_KEYSTONE_INFOBAR_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -44,7 +45,7 @@ class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Cancel() override;
 
   // The prefs to use.
-  PrefService* prefs_;  // weak
+  raw_ptr<PrefService> prefs_;  // weak
 
   // Whether the info bar should be dismissed on the next navigation.
   bool can_expire_;

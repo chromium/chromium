@@ -1,7 +1,17 @@
 <template>
   <style include="cr-shared-style">
+    :host {
+      --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
+      --feedback-regular-font-weight: 400;
+      --feedback-medium-font-weight: 500;
+    }
+
     html {
       background-color: var(--cros-bg-color);
+    }
+
+    a[href] {
+      color: var(--cros-link-color);
     }
 
     #container {
@@ -22,9 +32,21 @@
       height: 456px;
     }
 
-    #title {
+    .page-title {
+      color: var(--cros-text-color-primary);
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 22px;
+      font-weight: var(--feedback-medium-font-weight);
       margin: auto 0 0 0;
       margin-block-end: 0;
+    }
+
+    h2 {
+      color: var(--cros-text-color-secondary);
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 15px;
+      font-weight: var(--feedback-medium-font-weight);
+      line-height: 22px;
     }
 
     #navButtons {
@@ -34,7 +56,7 @@
     }
 
     cr-button {
-      margin-inline-start: 20px;
+      line-height: 20px;
     }
   </style>
 </template>

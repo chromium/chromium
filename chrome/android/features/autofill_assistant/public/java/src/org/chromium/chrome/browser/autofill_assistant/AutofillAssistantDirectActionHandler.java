@@ -194,6 +194,10 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
                 booleanCallback.onResult(false);
                 return;
             }
+            if (delegate.isSupervisedUser()) {
+                booleanCallback.onResult(false);
+                return;
+            }
             if (ONBOARDING_ACTION.equals(actionId)) {
                 delegate.performOnboarding(experimentIds, arguments, booleanCallback);
                 return;

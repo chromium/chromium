@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_RECEIVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_RECEIVER_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_contributing_source.h"
@@ -121,14 +122,13 @@ class RTCRtpReceiver final : public ScriptWrappable,
 
   // Insertable Streams support for audio
   bool force_encoded_audio_insertable_streams_;
-  WTF::Mutex audio_underlying_source_mutex_;
+  base::Lock audio_underlying_source_lock_;
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSource>
       audio_from_depacketizer_underlying_source_
-          GUARDED_BY(audio_underlying_source_mutex_);
-  WTF::Mutex audio_underlying_sink_mutex_;
+          GUARDED_BY(audio_underlying_source_lock_);
+  base::Lock audio_underlying_sink_lock_;
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSink>
-      audio_to_decoder_underlying_sink_
-          GUARDED_BY(audio_underlying_sink_mutex_);
+      audio_to_decoder_underlying_sink_ GUARDED_BY(audio_underlying_sink_lock_);
   Member<RTCInsertableStreams> encoded_audio_streams_;
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;

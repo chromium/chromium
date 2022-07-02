@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -61,8 +62,8 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   bool SupportsNativePixmaps() const;
 
  private:
-  WaylandConnection* const connection_;
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;
 };
 

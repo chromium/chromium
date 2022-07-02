@@ -6,7 +6,7 @@
 
 namespace net {
 
-ResolveErrorInfo::ResolveErrorInfo() {}
+ResolveErrorInfo::ResolveErrorInfo() = default;
 
 ResolveErrorInfo::ResolveErrorInfo(int resolve_error,
                                    bool is_secure_network_error)

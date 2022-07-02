@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -27,10 +28,10 @@ SkColor GetBgColor(bool use_dark_mode) {
 }  // namespace
 
 OsFlagsSystemWebAppDelegate::OsFlagsSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::OS_FLAGS,
-                                    "OsFlags",
-                                    GURL(chrome::kChromeUIFlagsURL),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_FLAGS,
+                                "OsFlags",
+                                GURL(chrome::kChromeUIFlagsURL),
+                                profile) {}
 
 OsFlagsSystemWebAppDelegate::~OsFlagsSystemWebAppDelegate() = default;
 

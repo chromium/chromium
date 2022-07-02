@@ -135,18 +135,26 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
 
  protected:
   // ScreenEnumerationTest:
-  void SetUpOnMainThread() override {
-    ScreenEnumerationTest::SetUpOnMainThread();
-    original_screen_ = display::Screen::GetScreen();
-    display::Screen::SetScreenInstance(&screen_);
 
+  void SetUp() override {
+    display::Screen::SetScreenInstance(&screen_);
     // Create a shell that observes the fake screen. A display is required.
     screen()->display_list().AddDisplay({0, gfx::Rect(100, 100, 801, 802)},
                                         display::DisplayList::Type::PRIMARY);
+
+    ScreenEnumerationTest::SetUp();
+  }
+  void TearDown() override {
+    ScreenEnumerationTest::TearDown();
+    display::Screen::SetScreenInstance(nullptr);
+  }
+
+  void SetUpOnMainThread() override {
+    ScreenEnumerationTest::SetUpOnMainThread();
+
     test_shell_ = CreateBrowser();
   }
   void TearDownOnMainThread() override {
-    display::Screen::SetScreenInstance(original_screen_);
     ScreenEnumerationTest::TearDownOnMainThread();
   }
 
@@ -154,9 +162,8 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
   Shell* test_shell() { return test_shell_; }
 
  private:
-  raw_ptr<display::Screen> original_screen_ = nullptr;
   display::ScreenBase screen_;
-  raw_ptr<Shell> test_shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> test_shell_ = nullptr;
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.

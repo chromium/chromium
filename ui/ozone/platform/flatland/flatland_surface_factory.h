@@ -74,13 +74,14 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
   // Registers a surface for a |widget|.
   //
   // Must be called on the thread that owns the surface.
-  void AddSurface(gfx::AcceleratedWidget widget, FlatlandSurface* surface)
+  virtual void AddSurface(gfx::AcceleratedWidget widget,
+                          FlatlandSurface* surface)
       LOCKS_EXCLUDED(surface_lock_);
 
   // Removes a surface for a |widget|.
   //
   // Must be called on the thread that owns the surface.
-  void RemoveSurface(gfx::AcceleratedWidget widget)
+  virtual void RemoveSurface(gfx::AcceleratedWidget widget)
       LOCKS_EXCLUDED(surface_lock_);
 
   // Returns the surface for a |widget|.

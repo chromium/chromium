@@ -56,8 +56,8 @@ bool WriteFile::Execute(int request_id) {
       "data",
       base::Value(base::as_bytes(base::make_span(buffer_->data(), length_))));
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(std::move(options_as_value));
+  base::Value::List event_args;
+  event_args.Append(std::move(options_as_value));
 
   return SendEvent(
       request_id,

@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/client_cert_util.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -261,7 +261,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
     return false;
 
   client_cert::ClientCertConfig cert_config;
-  OncToClientCertConfig(onc_source, *policy, &cert_config);
+  OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
 
   if (cert_config.client_cert_type != onc::client_cert::kPattern)
     return false;

@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "base/callback.h"
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 
 namespace base {
 class Value;
@@ -41,7 +43,7 @@ class LogManager {
 
   // Forward a DOM structured log entry to the LogRouter (if registered with
   // one).
-  virtual void LogEntry(base::Value&& entry) const = 0;
+  virtual void LogEntry(const base::Value& entry) const = 0;
 
   // Returns true if logs recorded via LogTextMessage will be displayed, and
   // false otherwise.
@@ -60,6 +62,44 @@ class LogManager {
   // Returns a LogBufferSubmitter that ignores all input.
   static LogBufferSubmitter DevNull();
 };
+
+inline LogBuffer::IsActive IsLoggingActive(LogManager* log_manager) {
+  return LogBuffer::IsActive(log_manager && log_manager->IsLoggingActive());
+}
+
+namespace internal {
+
+// Traits for LOG_AF() macro for `LogManager*`.
+template <typename T>
+struct LoggerTraits<
+    T,
+    typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<T>()),
+                                                    const LogManager*>>> {
+  static bool active(const LogManager* log_manager) {
+    return log_manager && log_manager->IsLoggingActive();
+  }
+
+  static LogBufferSubmitter get_stream(LogManager* log_manager) {
+    return log_manager->Log();
+  }
+};
+
+// Traits for LOG_AF() macro for `LogManager&`.
+template <typename T>
+struct LoggerTraits<
+    T,
+    typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<T>()),
+                                                    const LogManager&>>> {
+  static bool active(const LogManager& log_manager) {
+    return log_manager.IsLoggingActive();
+  }
+
+  static LogBufferSubmitter get_stream(LogManager& log_manager) {
+    return log_manager.Log();
+  }
+};
+
+}  // namespace internal
 
 }  // namespace autofill
 

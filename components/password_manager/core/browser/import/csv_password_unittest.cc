@@ -28,7 +28,7 @@ TEST(CSVPasswordTest, Construction) {
   };
   // Use const to check that ParseValid does not mutate the CSVPassword.
   const CSVPassword csv_pwd(kColMap, "http://example.com,user,password");
-  const PasswordForm result = csv_pwd.ParseValid();
+  const PasswordForm result = csv_pwd.ToPasswordForm();
   const GURL expected_origin("http://example.com");
   EXPECT_EQ(expected_origin, result.url);
   EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
@@ -107,24 +107,21 @@ class CSVPasswordTestSuccess : public ::testing::TestWithParam<TestCase> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_P(CSVPasswordTestSuccess, Parse) {
+TEST_P(CSVPasswordTestSuccess, ShouldParseToPasswordForm) {
   const TestCase& test_case = GetParam();
   SCOPED_TRACE(test_case.name);
   const CSVPassword csv_pwd(test_case.map, test_case.csv);
-  EXPECT_EQ(Status::kOK, csv_pwd.TryParse());
+  EXPECT_EQ(Status::kOK, csv_pwd.GetParseStatus());
 
-  const PasswordForm result = csv_pwd.ParseValid();
+  const PasswordForm result = csv_pwd.ToPasswordForm();
 
   const GURL expected_origin(test_case.origin);
   EXPECT_EQ(expected_origin, result.url);
-  EXPECT_EQ(expected_origin.DeprecatedGetOriginAsURL().spec(),
-            result.signon_realm);
+  EXPECT_EQ(test_case.signon_realm, result.signon_realm);
 
   EXPECT_EQ(base::UTF8ToUTF16(test_case.username), result.username_value);
   EXPECT_EQ(base::UTF8ToUTF16(test_case.password), result.password_value);
   EXPECT_EQ(base::Time::Now(), result.date_created);
-
-  EXPECT_EQ(result, csv_pwd.ParseValid());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -165,9 +162,9 @@ INSTANTIATE_TEST_SUITE_P(
             .Map({{2, Label::kOrigin},
                   {1, Label::kUsername},
                   {0, Label::kPassword}})
-            .CSV("pwd,the-user,android://example,Y,X")
-            .Origin("android://example")
-            .SignonRealm("android://example")
+            .CSV("pwd,the-user,android://host@example,Y,X")
+            .Origin("android://host@example")
+            .SignonRealm("android://host@example")
             .Username("the-user")
             .Password("pwd")
             .Build(),
@@ -260,11 +257,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 class CSVPasswordTestFailure : public ::testing::TestWithParam<TestCase> {};
 
-TEST_P(CSVPasswordTestFailure, Parse) {
+TEST_P(CSVPasswordTestFailure, ShouldFailWithStatus) {
   const TestCase& test_case = GetParam();
   SCOPED_TRACE(test_case.name);
   EXPECT_EQ(test_case.status,
-            CSVPassword(test_case.map, test_case.csv).TryParse());
+            CSVPassword(test_case.map, test_case.csv).GetParseStatus());
 }
 
 INSTANTIATE_TEST_SUITE_P(

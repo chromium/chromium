@@ -17,7 +17,7 @@ class ChromeBrowserState;
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. |browserState| can't be nil.
+// Init method. `browserState` can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 

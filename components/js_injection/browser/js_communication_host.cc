@@ -115,7 +115,7 @@ JsCommunicationHost::AddDocumentStartJavaScript(
   scripts_.emplace_back(script, origin_matcher, next_script_id_++);
 
   ForEachRenderFrameHostWithinSameWebContents(
-      web_contents()->GetMainFrame(),
+      web_contents()->GetPrimaryMainFrame(),
       base::BindRepeating(
           &JsCommunicationHost::NotifyFrameForAddDocumentStartJavaScript,
           base::Unretained(this), &*scripts_.rbegin()));
@@ -128,7 +128,7 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
     if (it->script_id_ == script_id) {
       scripts_.erase(it);
       ForEachRenderFrameHostWithinSameWebContents(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           base::BindRepeating(
               &JsCommunicationHost::NotifyFrameForRemoveDocumentStartJavaScript,
               base::Unretained(this), script_id));
@@ -158,7 +158,7 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
       js_object_name, origin_matcher, std::move(factory)));
 
   ForEachRenderFrameHostWithinSameWebContents(
-      web_contents()->GetMainFrame(),
+      web_contents()->GetPrimaryMainFrame(),
       base::BindRepeating(
           &JsCommunicationHost::NotifyFrameForWebMessageListener,
           base::Unretained(this)));
@@ -172,7 +172,7 @@ void JsCommunicationHost::RemoveWebMessageHostFactory(
     if ((*iterator)->name == js_object_name) {
       js_objects_.erase(iterator);
       ForEachRenderFrameHostWithinSameWebContents(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           base::BindRepeating(
               &JsCommunicationHost::NotifyFrameForWebMessageListener,
               base::Unretained(this)));

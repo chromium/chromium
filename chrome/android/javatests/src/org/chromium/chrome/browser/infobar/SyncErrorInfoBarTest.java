@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -209,6 +210,7 @@ public class SyncErrorInfoBarTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1299060")
     public void testSyncErrorInfoBarIsNotShownBeforeMinimalIntervalPassed() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);

@@ -18,9 +18,9 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 class CryptohomeMiscClient;
-}  // namespace chromeos
+}
 
 namespace policy {
 
@@ -66,7 +66,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   DeviceCloudPolicyStoreAsh* policy_store_;
   PrefService* prefs_;
   ash::attestation::EnrollmentCertificateUploader* certificate_uploader_;
-  chromeos::CryptohomeMiscClient* cryptohome_misc_client_;
+  ash::CryptohomeMiscClient* cryptohome_misc_client_;
 
   // Whether we need to upload the lookup key right now. By default, it is set
   // to true. Later, it is set to false after first successful upload or finding

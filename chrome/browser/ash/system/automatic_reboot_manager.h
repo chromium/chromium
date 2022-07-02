@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -20,8 +21,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
 class PrefRegistrySimple;
@@ -76,8 +75,7 @@ struct SystemEventTimes;
 class AutomaticRebootManager : public PowerManagerClient::Observer,
                                public UpdateEngineClient::Observer,
                                public ui::UserActivityObserver,
-                               public session_manager::SessionManagerObserver,
-                               public content::NotificationObserver {
+                               public session_manager::SessionManagerObserver {
  public:
   AutomaticRebootManager(const base::Clock* clock,
                          const base::TickClock* tick_clock);
@@ -111,11 +109,6 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
@@ -141,6 +134,9 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   // Reboots immediately unless a non-kiosk session is active.
   void Reboot();
 
+  // Callback invoked when Chrome shuts down.
+  void OnAppTerminating();
+
   // Event that is signaled when Init() runs.
   base::WaitableEvent initialized_{
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -152,7 +148,7 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
 
   PrefChangeRegistrar local_state_registrar_;
 
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription on_app_terminating_subscription_;
 
   // Fires when the user has been idle on the login screen for a set amount of
   // time.

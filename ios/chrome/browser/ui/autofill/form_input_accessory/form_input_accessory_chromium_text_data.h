@@ -9,7 +9,7 @@
 
 @class FormInputAccessoryViewTextData;
 
-// A version of |FormInputAccessoryViewTextData| with all the fields filled in
+// A version of `FormInputAccessoryViewTextData` with all the fields filled in
 // with Chromium data.
 FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData();
 

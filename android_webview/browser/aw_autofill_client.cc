@@ -189,6 +189,20 @@ void AwAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   NOTIMPLEMENTED();
 }
 
+bool AwAutofillClient::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool AwAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<autofill::TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AwAutofillClient::HideTouchToFillCreditCard() {
+  NOTREACHED();
+}
+
 void AwAutofillClient::ShowAutofillPopup(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
@@ -301,6 +315,10 @@ void AwAutofillClient::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::OnPromoCodeSuggestionsFooterSelected(const GURL& url) {
+  NOTIMPLEMENTED();
+}
+
 void AwAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   NOTIMPLEMENTED();
@@ -317,7 +335,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
   if (delegate_) {
     delegate_->DidAcceptSuggestion(suggestions_[position].main_text.value,
                                    suggestions_[position].frontend_id,
-                                   suggestions_[position].backend_id, position);
+                                   suggestions_[position].payload, position);
   }
 }
 

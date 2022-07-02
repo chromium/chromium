@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.printingMetrics</code> API to fetch data about
 // printing usage.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"]
 namespace printingMetrics {
   // The source of the print job.

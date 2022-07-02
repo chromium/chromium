@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/pref_service_flags_storage.h"

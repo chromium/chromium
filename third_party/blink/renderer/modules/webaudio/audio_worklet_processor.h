@@ -24,8 +24,8 @@ class MessagePort;
 class ExecutionContext;
 
 // AudioWorkletProcessor class represents the active instance created from
-// AudioWorkletProcessorDefinition. |AudioWorkletNodeHandler| invokes
-// process() method in this object upon graph rendering.
+// AudioWorkletProcessorDefinition. AudioWorkletNodeHandler invokes `.process()`
+// method in this object upon graph rendering.
 //
 // This is constructed and destroyed on a worker thread, and all methods also
 // must be called on the worker thread.
@@ -34,9 +34,9 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
 
  public:
   // This static factory should be called after an instance of
-  // |AudioWorkletNode| gets created by user-supplied JS code in the main
+  // AudioWorkletNode gets created by user-supplied JS code in the main
   // thread. This factory must not be called by user in
-  // |AudioWorkletGlobalScope|.
+  // AudioWorkletGlobalScope.
   static AudioWorkletProcessor* Create(ExecutionContext*);
 
   AudioWorkletProcessor(AudioWorkletGlobalScope*,
@@ -44,7 +44,7 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
                         MessagePort*);
   ~AudioWorkletProcessor() override = default;
 
-  // |AudioWorkletHandler| invokes this method to process audio.
+  // `AudioWorkletHandler` invokes this method to process audio.
   bool Process(
       const Vector<scoped_refptr<AudioBus>>& inputs,
       Vector<scoped_refptr<AudioBus>>& outputs,
@@ -85,11 +85,11 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   static bool FreezeAudioPort(v8::Isolate*, v8::Local<v8::Context>,
                               v8::Local<v8::Array>& audio_port_array);
 
-  // Clones the topology of |audio_port_1| and builds a new AudioPort to
-  // |audio_port_2|. This call makes memory allocation and it should be avoided
-  // in the hot audio stack as much as possible. If |array_buffers| is a valid
-  // pointer, fill in |array_buffers| with new backing ArrayBuffers of
-  // |audio_port_2|. Returns false only if any v8 operation throws an
+  // Clones the topology of `audio_port_1` and builds a new AudioPort to
+  // `audio_port_2`. This call makes memory allocation and it should be avoided
+  // in the hot audio stack as much as possible. If `array_buffers` is a valid
+  // pointer, fill in `array_buffers` with new backing ArrayBuffers of
+  // `audio_port_2`. Returns false only if any v8 operation throws an
   // exception.
   static bool ClonePortTopology(
       v8::Isolate*, v8::Local<v8::Context>,
@@ -115,21 +115,21 @@ class MODULES_EXPORT AudioWorkletProcessor : public ScriptWrappable {
   static void ZeroArrayBuffers(v8::Isolate*,
                                const BackingArrayBuffers& array_buffers);
 
-  // Returns true if the structure of |param_value_map| matches |params| object
+  // Returns true if the structure of `param_value_map` matches `params` object
   // and the underlying ArrayBuffers are not transferred.
   static bool ParamValueMapMatchesToParamsObject(
       v8::Isolate*, v8::Local<v8::Context>,
       const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
       const TraceWrapperV8Reference<v8::Object>& params);
 
-  // Clones the structure of |param_value_map| to a given v8::Object, which
+  // Clones the structure of `param_value_map` to a given v8::Object, which
   // is an associated array of Float32Arrays.
   static bool CloneParamValueMapToObject(
       v8::Isolate*, v8::Local<v8::Context>,
       const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
       TraceWrapperV8Reference<v8::Object>& params);
 
-  // Copies the content of float arrays from |param_value_map] to |params|
+  // Copies the content of float arrays from `param_value_map` to `params`
   // v8::Object.
   static bool CopyParamValueMapToObject(
       v8::Isolate*, v8::Local<v8::Context>,

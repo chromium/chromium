@@ -56,9 +56,11 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
   if (layer.should_check_backface_visibility())
     json->SetString("backfaceVisibility", "hidden");
 
-  if (Color(layer.background_color()).Alpha()) {
-    json->SetString("backgroundColor",
-                    Color(layer.background_color()).NameForLayoutTreeAsText());
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  if (Color(layer.background_color().toSkColor()).Alpha()) {
+    json->SetString(
+        "backgroundColor",
+        Color(layer.background_color().toSkColor()).NameForLayoutTreeAsText());
   }
 
   if (flags &

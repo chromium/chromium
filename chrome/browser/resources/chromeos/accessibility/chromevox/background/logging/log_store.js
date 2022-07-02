@@ -24,6 +24,9 @@ LogStore = class {
      */
     this.logs_ = Array(LogStore.LOG_LIMIT);
 
+    /** @private {boolean} */
+    this.shouldSkipOutput_ = false;
+
     /*
      * this.logs_ is implemented as a ring buffer which starts
      * from this.startIndex_ and ends at this.startIndex_-1
@@ -80,7 +83,7 @@ LogStore = class {
    * @param {!LogType} logType
    */
   writeTextLog(logContent, logType) {
-    if (this.shouldSkipOutput_()) {
+    if (this.shouldSkipOutput_) {
       return;
     }
 
@@ -93,7 +96,7 @@ LogStore = class {
    * @param {!TreeDumper} logContent
    */
   writeTreeLog(logContent) {
-    if (this.shouldSkipOutput_()) {
+    if (this.shouldSkipOutput_) {
       return;
     }
 
@@ -106,7 +109,7 @@ LogStore = class {
    * @param {!BaseLog} log
    */
   writeLog(log) {
-    if (this.shouldSkipOutput_()) {
+    if (this.shouldSkipOutput_) {
       return;
     }
 
@@ -126,22 +129,16 @@ LogStore = class {
     this.startIndex_ = 0;
   }
 
-  /** @private @return {boolean} */
-  shouldSkipOutput_() {
-    if (ChromeVoxState.instance && ChromeVoxState.instance.currentRange &&
-        ChromeVoxState.instance.currentRange.start &&
-        ChromeVoxState.instance.currentRange.start.node &&
-        ChromeVoxState.instance.currentRange.start.node.root) {
-      return ChromeVoxState.instance.currentRange.start.node.root.docUrl
-                 .indexOf(chrome.extension.getURL(
-                     'chromevox/log_page/log.html')) === 0;
-    }
-    return false;
+  /** @param {boolean} newValue */
+  set shouldSkipOutput(newValue) {
+    this.shouldSkipOutput_ = newValue;
   }
 
-  /**
-   * @return {LogStore}
-   */
+  static init() {
+    LogStore.getInstance();
+  }
+
+  /** @return {!LogStore} */
   static getInstance() {
     if (!LogStore.instance) {
       LogStore.instance = new LogStore();
@@ -163,8 +160,8 @@ LogStore.LOG_LIMIT = 3000;
 LogStore.instance;
 
 BridgeHelper.registerHandler(
-    BridgeTargets.LOG_STORE, BridgeActions.CLEAR_LOG,
+    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.CLEAR_LOG,
     () => LogStore.instance.clearLog());
 BridgeHelper.registerHandler(
-    BridgeTargets.LOG_STORE, BridgeActions.GET_LOGS,
+    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.GET_LOGS,
     () => LogStore.instance.getLogs());

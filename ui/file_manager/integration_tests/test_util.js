@@ -471,6 +471,23 @@ export class TestEntryInfo {
         }));
     return new TestEntryInfo(updatedOptions);
   }
+
+  /**
+   * Clone the existing TestEntryInfo object to a new TestEntryInfo object but
+   * with modified targetPath field. This is especially useful for testing
+   * rename functionality.
+   *
+   * @param {string} newName the new modified name
+   * @return {!TestEntryInfo}
+   */
+  cloneWithNewName(newName) {
+    const updatedOptions =
+        /** @type {TestEntryInfoOptions} */ (Object.assign({}, this, {
+          targetPath: newName,
+          nameText: newName,
+        }));
+    return new TestEntryInfo(updatedOptions);
+  }
 }
 
 /**
@@ -1057,7 +1074,7 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '743 bytes',
-    typeText: 'Zip archive'
+    typeText: 'ZIP archive'
   }),
 
   zipSJISArchive: new TestEntryInfo({
@@ -1068,7 +1085,18 @@ export const ENTRIES = {
     lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
     nameText: 'sjis.zip',
     sizeText: '479 bytes',
-    typeText: 'Zip archive'
+    typeText: 'ZIP archive'
+  }),
+
+  zipExtArchive: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'tera.zip',
+    targetPath: 'tera.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
+    nameText: 'tera.zip',
+    sizeText: '250 bytes',
+    typeText: 'ZIP archive'
   }),
 
   debPackage: new TestEntryInfo({
@@ -1320,6 +1348,27 @@ export const ENTRIES = {
     nameText: 'Read-Only File.jpg',
     sizeText: '9 KB',
     typeText: 'JPEG image',
+    capabilities: {
+      canCopy: true,
+      canAddChildren: false,
+      canRename: false,
+      canDelete: false,
+      canShare: true
+    },
+  }),
+
+  // A ZIP file that can't be renamed or deleted, but can be copied and
+  // shared.
+  readOnlyZipFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'archive.zip',
+    targetPath: 'archive.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
+    nameText: 'archive.zip',
+    sharedOption: SharedOption.SHARED,
+    sizeText: '743 bytes',
+    typeText: 'ZIP archive',
     capabilities: {
       canCopy: true,
       canAddChildren: false,

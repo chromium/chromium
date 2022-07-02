@@ -40,10 +40,10 @@ CreateWebAppInfoForDiagnosticsSystemWebApp() {
 }
 
 DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::DIAGNOSTICS,
-                                    "Diagnostics",
-                                    GURL("chrome://diagnostics"),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::DIAGNOSTICS,
+                                "Diagnostics",
+                                GURL("chrome://diagnostics"),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> DiagnosticsSystemAppDelegate::GetWebAppInfo()
     const {

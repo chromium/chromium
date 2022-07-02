@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -20,6 +22,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/insets.h"
@@ -97,6 +100,29 @@ TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsPopupNotification) {
   // but also don't leave the PIP movement area.
   EXPECT_FALSE(moved_bounds.Intersects(popup_bounds));
   EXPECT_TRUE(area.Contains(moved_bounds));
+}
+
+TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsClamshellLauncher) {
+  base::test::ScopedFeatureList feature_list(features::kProductivityLauncher);
+
+  UpdateDisplay("1000x900");
+  AppListController* app_list_controller = AppListController::Get();
+  app_list_controller->ShowAppList();
+
+  display::Display display = GetPrimaryDisplay();
+  gfx::Rect movement_area = CollisionDetectionUtils::GetMovementArea(display);
+  gfx::Rect bubble_bounds =
+      app_list_controller->GetWindow()->GetBoundsInScreen();
+  // Start with bounds that overlap the bubble window.
+  gfx::Rect bounds = gfx::Rect(bubble_bounds.x(), bubble_bounds.y(), 100, 100);
+  gfx::Rect moved_bounds = CollisionDetectionUtils::GetRestingPosition(
+      display, bounds,
+      CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+  // Expect that the returned bounds don't intersect the bubble window but also
+  // don't leave the PIP movement area.
+  EXPECT_FALSE(moved_bounds.Intersects(bubble_bounds));
+  EXPECT_TRUE(movement_area.Contains(moved_bounds));
 }
 
 class CollisionDetectionUtilsDisplayTest

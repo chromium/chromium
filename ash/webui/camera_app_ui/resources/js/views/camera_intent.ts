@@ -76,6 +76,7 @@ export class CameraIntent extends Camera {
               {
                 label: I18nString.CONFIRM_REVIEW_BUTTON,
                 templateId: 'review-intent-button-template',
+                primary: true,
               },
               {exitValue: true}),
           new review.Option(

@@ -8,7 +8,7 @@
   #infoContainer {
     bottom: 0;
     box-sizing: border-box;
-    margin-bottom: 58px;
+    margin-bottom: min(58px, calc(5px + 0.5 * (100vh - var(--view-min-size))));
     position: absolute;
     text-align: center;
     width: 100%;
@@ -100,7 +100,6 @@
     $i18n{signInButtonLabel}
   </cr-button>
   <cr-button id="notNowButton" on-click="onNotNowClick_"
-      hidden="[[!localProfileCreationFlowSupported_]]"
       disabled="[[loadSigninInProgess_]]">
     $i18n{notNowButtonLabel}
   </cr-button>

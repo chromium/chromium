@@ -9,6 +9,7 @@
 
 namespace content {
 
+class BrowserCompositorMac;
 class RenderWidgetHost;
 
 // Returns a new RenderWidgetHostViewMac that can be used in a C++ unit test or
@@ -18,6 +19,11 @@ class RenderWidgetHost;
 // render_widget_host_view_mac.h.)
 RenderWidgetHostViewBase* CreateRenderWidgetHostViewMacForTesting(
     RenderWidgetHost* widget);
+
+// Returns the BrowserCompositorMac for `rwhv`, which must be a
+// RenderWidgetHostViewMac.
+BrowserCompositorMac* GetBrowserCompositorMacForTesting(
+    const RenderWidgetHostView* rwhv);
 
 }  // namespace content
 

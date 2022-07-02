@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "components/prefs/pref_service.h"
 
@@ -27,7 +28,7 @@ class PrefsAshObserver {
   void OnDnsOverHttpsModeChanged(base::Value value);
   void OnDnsOverHttpsTemplatesChanged(base::Value value);
 
-  PrefService* local_state_{nullptr};
+  raw_ptr<PrefService> local_state_{nullptr};
   std::unique_ptr<CrosapiPrefObserver> doh_mode_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_observer_;
 };

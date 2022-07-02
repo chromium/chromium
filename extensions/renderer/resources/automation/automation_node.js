@@ -1763,6 +1763,10 @@ utils.defineProperty(AutomationRootNodeImpl, 'destroy', function(treeID) {
   delete AutomationTreeCache.idToAutomationRootNode[treeID];
 });
 
+utils.defineProperty(AutomationRootNodeImpl, 'destroyAll', function() {
+  AutomationTreeCache.idToAutomationRootNode = {};
+});
+
 /**
  * A counter keeping track of IDs to use for mapping action requests to
  * their callback function.
@@ -2238,6 +2242,10 @@ utils.defineProperty(AutomationRootNode, 'getOrCreate', function(treeID) {
 
 utils.defineProperty(AutomationRootNode, 'destroy', function(treeID) {
   AutomationRootNodeImpl.destroy(treeID);
+});
+
+utils.defineProperty(AutomationRootNode, 'destroyAll', function() {
+  AutomationRootNodeImpl.destroyAll();
 });
 
 exports.$set('AutomationNode', AutomationNode);

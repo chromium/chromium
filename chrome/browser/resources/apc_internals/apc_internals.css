@@ -24,3 +24,12 @@ html {
 #script-fetching-table {
   padding-bottom: 10px;
 }
+
+button:hover {
+  cursor: pointer;
+}
+
+h2 {
+  font-size: 1em;
+  text-align: center;
+}

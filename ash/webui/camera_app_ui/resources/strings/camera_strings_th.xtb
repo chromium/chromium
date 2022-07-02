@@ -72,6 +72,7 @@
 <translation id="3838931309141338733">สแกนบาร์โค้ด</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ล้านพิกเซล</translation>
+<translation id="4096701159033358951">กำลังดาวน์โหลดฟีเจอร์การสแกนเอกสาร</translation>
 <translation id="4118525110028899586">หยุดบันทึกชั่วคราว</translation>
 <translation id="4121305183798804752">ตรวจพบเอกสาร</translation>
 <translation id="414641094616694804">เปลี่ยนความละเอียดของกล้องนี้ไม่ได้</translation>
@@ -82,6 +83,7 @@
 <translation id="4445542136948522167">หยุดถ่ายภาพ</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> เมกะพิกเซล</translation>
 <translation id="4570032796877367747">กล้องหน้า</translation>
+<translation id="4620818268515773682">เปิด/ปิดเสียงไมโครโฟน เปิดเสียงอยู่</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4649291346448517080">บันทึกไฟล์ไม่ได้</translation>
 <translation id="4695379108709712600">ย้ายไปทางด้านบน</translation>
@@ -145,6 +147,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">มุมขวาล่างของเอกสาร</translation>
+<translation id="7692090236657809299">เปิดใช้การเลื่อน การเอียง การซูม</translation>
 <translation id="7726641833034062494">บันทึกวิดีโอทั่วไป</translation>
 <translation id="7748344063862150053">มุมขวาบนของเอกสาร</translation>
 <translation id="7933675232020478311">ย้ายไปทางด้านขวาล่าง</translation>
@@ -158,6 +161,7 @@
 <translation id="8425673304802773841">เอียงลง</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">เปิด/ปิดเสียงไมโครโฟน ปิดเสียงอยู่</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8732462232047530626">แสดงตัวอย่างข้อมูลเมตา</translation>

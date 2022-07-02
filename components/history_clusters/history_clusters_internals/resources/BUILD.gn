@@ -24,15 +24,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/components"
 }
 
-generate_grd("build_grd") {
-  grd_prefix = "history_clusters_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":build_ts" ]
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  input_files = [ "history_clusters_internals.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-}
-
 copy("copy_ts") {
   sources = [
     "history_clusters_internals.ts",
@@ -62,4 +53,14 @@ ts_library("build_ts") {
     ":copy_mojo",
     ":copy_ts",
   ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "history_clusters_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  input_files = [ "history_clusters_internals.html" ]
+  input_files_base_dir = rebase_path(".", "//")
 }

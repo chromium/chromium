@@ -59,7 +59,6 @@ bool StorageAccessGrantPermissionContext::IsRestrictedToSecureOrigins() const {
 }
 
 void StorageAccessGrantPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -100,7 +99,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   }
 
   // Show prompt.
-  PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
+  PermissionContextBase::DecidePermission(id, requesting_origin,
                                           embedding_origin, user_gesture,
                                           std::move(callback));
 }

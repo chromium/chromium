@@ -15,6 +15,7 @@
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_policy.pb.h"
 #include "net/reporting/reporting_test_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,8 +34,8 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  std::unique_ptr<base::Value> data_value =
-      base::JSONReader::ReadDeprecated("[" + data_json + "]");
+  absl::optional<base::Value> data_value =
+      base::JSONReader::Read("[" + data_json + "]");
   if (!data_value)
     return;
 
@@ -42,7 +43,7 @@ void FuzzReportingHeaderParser(const std::string& data_json,
   // testing/libfuzzer/proto and creating a separate converter.
   net::ReportingHeaderParser::ParseReportToHeader(
       &context, net::NetworkIsolationKey(),
-      url::Origin::Create(GURL("https://origin/")), std::move(data_value));
+      url::Origin::Create(GURL("https://origin/")), data_value->GetList());
   if (context.cache()->GetEndpointCount() == 0) {
     return;
   }

@@ -1,0 +1,61 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.segmentation_platform.proto";
+option java_outer_classname = "SegmentationProto";
+
+package segmentation_platform.proto;
+
+// List of user segment types.
+// Any segment that needs a server provided model should have an entry in
+// OptimizationTarget. If the segment only uses default model, then the segment
+// should have a value higher than `MAX_OPTIMIZATION_TARGET`.
+enum SegmentId {
+  OPTIMIZATION_TARGET_UNKNOWN = 0;
+  // Should only be applied when the page load is predicted to be painful.
+  OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
+  // Target for supplying the language detection model via the model downloader.
+  OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
+  // Target for determining topics present on a page.
+  OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
+  // Target for segmentation: New tab page user.
+  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB = 4;
+  // Target for segmentation: Share user.
+  OPTIMIZATION_TARGET_SEGMENTATION_SHARE = 5;
+  // Target for segmentation: Voice user.
+  OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
+  // Target for model validation.
+  OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
+  // Target for determining entities present on a page.
+  OPTIMIZATION_TARGET_PAGE_ENTITIES = 8;
+  // Target for Chrome Permissions Suggestions Service: Notification permission.
+  OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS = 9;
+  // Target that enables data collection on client side for various experiments.
+  OPTIMIZATION_TARGET_SEGMENTATION_DUMMY = 10;
+  // Target for segmentation: Chrome Android Start user.
+  OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID = 11;
+  // Target for segmentation: Query Tiles user.
+  OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES = 12;
+  // Target for determining the UI visibility of a page.
+  OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
+  // Target for supplying the Autofill Assistant annotate DOM model via the
+  // model downloader.
+  OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT = 14;
+  // Target for determining topics present on a page.
+  // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
+  OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
+  // Target for segmentation: Determine users with low engagement with chrome.
+  OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
+  // Target for segmentation: Determine users who prefer to use Feed.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
+  // Target for price tracking action when shown as a contextual page action.
+  OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
+  // Add new entries to OptimizationTarget proto.
+
+  // New entries should start from a 1000 if OptimizationTarget does not have a
+  // corresponding type.
+  MAX_OPTIMIZATION_TARGET = 999;
+};

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_NODE_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_NODE_APPLESCRIPT_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
@@ -18,7 +20,7 @@ class BookmarkNode;
 // bookmark item.
 @interface BookmarkNodeAppleScript : ElementAppleScript {
  @protected
-  const bookmarks::BookmarkNode* _bookmarkNode;  // weak.
+  raw_ptr<const bookmarks::BookmarkNode> _bookmarkNode;  // weak.
   // Contains the temporary title when a scripter creates a new folder/item with
   // title specified like
   // |make new bookmark folder with properties {title:"foo"}|.

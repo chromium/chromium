@@ -14,7 +14,7 @@ SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',
     function() {
       const node = {node: {}};
@@ -25,7 +25,7 @@ SYNC_TEST_F(
       assertEquals(7, WordUtils.getNextWordStart('kitty "cat"', 5, node));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndWithoutWordEnds',
     function() {
       const node = {node: {}};
@@ -35,7 +35,7 @@ SYNC_TEST_F(
       assertEquals(9, WordUtils.getNextWordEnd('kitty cat', 7, node));
     });
 
-SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
+AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
   const inlineText = {wordStarts: [0, 6], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -53,7 +53,7 @@ SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
       10, WordUtils.getNextWordStart('once upon a kitty cat', 10, node));
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartIgnoresStartCharOffset',
     function() {
       const inlineText = {
@@ -77,7 +77,7 @@ SYNC_TEST_F(
           10, WordUtils.getNextWordStart('once upon a kitty cat', 10, node));
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartMultipleChildren',
     function() {
       const inlineText1 = {
@@ -103,7 +103,7 @@ SYNC_TEST_F(
           13, WordUtils.getNextWordStart('kitty cat is cute', 11, node));
     });
 
-SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
+AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
   const inlineText = {wordEnds: [5, 9], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -121,7 +121,7 @@ SYNC_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
   assertEquals(5, WordUtils.getNextWordEnd('kitty cat', 4, node));
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndMultipleChildren',
     function() {
       const inlineText1 = {

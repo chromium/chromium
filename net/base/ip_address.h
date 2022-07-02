@@ -110,8 +110,7 @@ class NET_EXPORT IPAddress {
   // Copies the input address to |ip_address_|. The input is expected to be in
   // network byte order.
   template <size_t N>
-  IPAddress(const uint8_t(&address)[N])
-      : IPAddress(address, N) {}
+  explicit IPAddress(const uint8_t (&address)[N]) : IPAddress(address, N) {}
 
   // Copies the input address to |ip_address_| taking an additional length
   // parameter. The input is expected to be in network byte order.

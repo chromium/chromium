@@ -23,6 +23,14 @@ class GLImage;
 
 namespace ui {
 
+// Mirrors core animation layer edge constants.
+enum CALayerEdge : uint32_t {
+  kLayerEdgeLeft = 0x1,
+  kLayerEdgeRight = 0x2,
+  kLayerEdgeBottom = 0x4,
+  kLayerEdgeTop = 0x8,
+};
+
 struct GL_EXPORT CARendererLayerParams {
   CARendererLayerParams(bool is_clipped,
                         const gfx::Rect clip_rect,

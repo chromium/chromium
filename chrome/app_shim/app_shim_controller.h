@@ -24,6 +24,10 @@ namespace apps {
 class MachBootstrapAcceptorTest;
 }
 
+namespace display {
+class ScopedNativeScreen;
+}
+
 @class AppShimDelegate;
 @class ProfileMenuTarget;
 @class ApplicationDockMenuTarget;
@@ -188,6 +192,9 @@ class AppShimController : public chrome::mojom::AppShim {
   // The target for NSMenuItems in the application dock menu.
   base::scoped_nsobject<ApplicationDockMenuTarget>
       application_dock_menu_target_;
+
+  // The screen object used in the app sim.
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 
   // The items in the profile menu.
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;

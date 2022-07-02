@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -553,7 +554,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;
   std::unique_ptr<MockRenderWidgetHostImpl> host_;
-  RenderWidgetHostViewMac* rwhv_mac_ = nullptr;
+  raw_ptr<RenderWidgetHostViewMac> rwhv_mac_ = nullptr;
   base::scoped_nsobject<RenderWidgetHostViewCocoa> rwhv_cocoa_;
   base::scoped_nsobject<CocoaTestHelperWindow> window_;
 
@@ -1728,7 +1729,6 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     return rwhv_cocoa_.get();
   }
 
-  API_AVAILABLE(macos(10.12.2))
   NSCandidateListTouchBarItem* candidate_list_item() {
     return [tab_GetInProcessNSView().touchBar
         itemForIdentifier:NSTouchBarItemIdentifierCandidateList];
@@ -1738,7 +1738,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
   std::unique_ptr<MockRenderProcessHost> child_process_host_;
   scoped_refptr<SiteInstanceGroup> child_site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostImpl> child_widget_;
-  TestRenderWidgetHostView* child_view_;
+  raw_ptr<TestRenderWidgetHostView> child_view_;
 
  private:
   std::unique_ptr<TestBrowserContext> child_browser_context_;
@@ -1798,6 +1798,97 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
   EXPECT_EQ("SetComposition", GetMessageNames(events));
+}
+
+// This test makes sure that selectedRange and markedRange are updated correctly
+// in various scenarios.
+TEST_F(InputMethodMacTest, MarkedRangeSelectedRange) {
+  // If the replacement range is valid, the range should be replaced with the
+  // new text.
+  {
+    NSString* text = @"sample text";
+    NSRange selectedRange = NSMakeRange(2, 4);
+    NSRange replacementRange = NSMakeRange(1, 1);
+
+    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+    EXPECT_EQ(tab_widget(), text_input_manager()->GetActiveWidget());
+    [tab_GetInProcessNSView() setMarkedText:text
+                              selectedRange:selectedRange
+                           replacementRange:replacementRange];
+
+    NSRange actualSelectedRange = [tab_GetInProcessNSView() selectedRange];
+    NSRange actualMarkedRange = [tab_GetInProcessNSView() markedRange];
+
+    EXPECT_EQ((signed)actualMarkedRange.location, 1);
+    EXPECT_EQ((signed)actualMarkedRange.length, 11);
+    EXPECT_EQ((signed)actualSelectedRange.location, 3);
+    EXPECT_EQ((signed)actualSelectedRange.length, 4);
+  }
+
+  // If the text is empty, the marked range should be reset and the selection
+  // should be collapsed to the begining of the old marked range.
+  {
+    NSString* text = @"";
+    NSRange selectedRange = NSMakeRange(0, 0);
+    NSRange replacementRange = NSMakeRange(NSNotFound, 0);
+
+    EXPECT_EQ(tab_widget(), text_input_manager()->GetActiveWidget());
+    [tab_GetInProcessNSView() setMarkedText:text
+                              selectedRange:selectedRange
+                           replacementRange:replacementRange];
+
+    NSRange actualSelectedRange = [tab_GetInProcessNSView() selectedRange];
+    NSRange actualMarkedRange = [tab_GetInProcessNSView() markedRange];
+
+    EXPECT_EQ((signed)actualMarkedRange.location, (signed)NSNotFound);
+    EXPECT_EQ((signed)actualMarkedRange.length, 0);
+    EXPECT_EQ((signed)actualSelectedRange.location, 1);
+    EXPECT_EQ((signed)actualSelectedRange.length, 0);
+  }
+
+  // If no marked range and no replacement range, the current selection should
+  // be replaced.
+  {
+    NSString* text = @"sample2";
+    NSRange selectedRange = NSMakeRange(3, 2);
+    NSRange replacementRange = NSMakeRange(NSNotFound, 0);
+
+    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+    EXPECT_EQ(tab_widget(), text_input_manager()->GetActiveWidget());
+    [tab_GetInProcessNSView() setMarkedText:text
+                              selectedRange:selectedRange
+                           replacementRange:replacementRange];
+
+    NSRange actualSelectedRange = [tab_GetInProcessNSView() selectedRange];
+    NSRange actualMarkedRange = [tab_GetInProcessNSView() markedRange];
+
+    EXPECT_EQ((signed)actualMarkedRange.location, 1);
+    EXPECT_EQ((signed)actualMarkedRange.length, 7);
+    EXPECT_EQ((signed)actualSelectedRange.location, 4);
+    EXPECT_EQ((signed)actualSelectedRange.length, 2);
+  }
+
+  // If the marked range is valid and there is no replacement range, the current
+  // marked range should be replaced.
+  {
+    NSString* text = @"new";
+    NSRange selectedRange = NSMakeRange(2, 1);
+    NSRange replacementRange = NSMakeRange(NSNotFound, 0);
+
+    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+    EXPECT_EQ(tab_widget(), text_input_manager()->GetActiveWidget());
+    [tab_GetInProcessNSView() setMarkedText:text
+                              selectedRange:selectedRange
+                           replacementRange:replacementRange];
+
+    NSRange actualSelectedRange = [tab_GetInProcessNSView() selectedRange];
+    NSRange actualMarkedRange = [tab_GetInProcessNSView() markedRange];
+
+    EXPECT_EQ((signed)actualMarkedRange.location, 1);
+    EXPECT_EQ((signed)actualMarkedRange.length, 3);
+    EXPECT_EQ((signed)actualSelectedRange.location, 3);
+    EXPECT_EQ((signed)actualSelectedRange.length, 1);
+  }
 }
 
 // This test verifies that calling insertText on the cocoa view will lead to a
@@ -2008,94 +2099,87 @@ TEST_F(InputMethodMacTest, MonitorCompositionRangeForActiveWidget) {
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsPresence) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    EXPECT_NSEQ(nil, candidate_list_item());
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
-    EXPECT_NSNE(nil, candidate_list_item());
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    EXPECT_NSNE(nil, candidate_list_item());
-  }
+  EXPECT_NSEQ(nil, candidate_list_item());
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_NSNE(nil, candidate_list_item());
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_NSNE(nil, candidate_list_item());
 }
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsReplacement) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    EXPECT_NSNE(nil, candidate_list_item());
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_NSNE(nil, candidate_list_item());
+  candidate_list_item().allowsCollapsing = NO;
 
-    FakeTextCheckingResult* fakeResult =
-        [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
-                              replacementString:@"foo"];
+  FakeTextCheckingResult* fakeResult =
+      [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
+                            replacementString:@"foo"];
 
-    const std::u16string kOriginalString = u"abcxxxghi";
+  const std::u16string kOriginalString = u"abcxxxghi";
 
-    // Change the selection once; requests completions from the spell checker.
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
+  // Change the selection once; requests completions from the spell checker.
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
 
-    NSInteger firstSequenceNumber = [spellChecker sequenceNumber];
-    auto firstCompletionHandler = [spellChecker takeCompletionHandler];
+  NSInteger firstSequenceNumber = [spellChecker sequenceNumber];
+  auto firstCompletionHandler = [spellChecker takeCompletionHandler];
 
-    EXPECT_NE(nil, (id)firstCompletionHandler.get());
-    EXPECT_EQ(0U, candidate_list_item().candidates.count);
+  EXPECT_NE(nil, (id)firstCompletionHandler.get());
+  EXPECT_EQ(0U, candidate_list_item().candidates.count);
 
-    // Instead of replying right away, change the selection again!
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(5, 5));
+  // Instead of replying right away, change the selection again!
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(5, 5));
 
-    EXPECT_NE(firstSequenceNumber, [spellChecker sequenceNumber]);
+  EXPECT_NE(firstSequenceNumber, [spellChecker sequenceNumber]);
 
-    // Make sure that calling the stale completion handler is a no-op.
-    firstCompletionHandler.get()(
-        firstSequenceNumber,
-        @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(0U, candidate_list_item().candidates.count);
+  // Make sure that calling the stale completion handler is a no-op.
+  firstCompletionHandler.get()(
+      firstSequenceNumber, @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0U, candidate_list_item().candidates.count);
 
-    // But calling the current handler should work.
-    [spellChecker takeCompletionHandler].get()(
-        [spellChecker sequenceNumber],
-        @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1U, candidate_list_item().candidates.count);
+  // But calling the current handler should work.
+  [spellChecker takeCompletionHandler].get()(
+      [spellChecker sequenceNumber],
+      @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1U, candidate_list_item().candidates.count);
 
-    base::RunLoop().RunUntilIdle();
-    MockWidgetInputHandler::MessageVector events =
-        host_->GetAndResetDispatchedMessages();
-    ASSERT_EQ("", GetMessageNames(events));
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("", GetMessageNames(events));
 
-    // Now, select that result.
-    [tab_GetInProcessNSView() candidateListTouchBarItem:candidate_list_item()
-                           endSelectingCandidateAtIndex:0];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    ASSERT_EQ("CommitText", GetMessageNames(events));
-  }
+  // Now, select that result.
+  [tab_GetInProcessNSView() candidateListTouchBarItem:candidate_list_item()
+                         endSelectingCandidateAtIndex:0];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("CommitText", GetMessageNames(events));
 }
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
-    EXPECT_NSNE(nil, candidate_list_item());
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_NSNE(nil, candidate_list_item());
+  candidate_list_item().allowsCollapsing = NO;
 
-    const std::u16string kOriginalString = u"abcxxxghi";
+  const std::u16string kOriginalString = u"abcxxxghi";
 
-    // Change the selection once; completions should *not* be requested.
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
+  // Change the selection once; completions should *not* be requested.
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
 
-    EXPECT_EQ(0U, [spellChecker sequenceNumber]);
-  }
+  EXPECT_EQ(0U, [spellChecker sequenceNumber]);
 }
 
 // https://crbug.com/893038: There exist code paths which set the selection
@@ -2103,19 +2187,18 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
 // practice, but this has caused crashes in the field.
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  candidate_list_item().allowsCollapsing = NO;
 
-    if (auto completionHandler = [spellChecker takeCompletionHandler]) {
-      completionHandler.get()([spellChecker sequenceNumber], @[]);
-      base::RunLoop().RunUntilIdle();
-    }
+  if (auto completionHandler = [spellChecker takeCompletionHandler]) {
+    completionHandler.get()([spellChecker sequenceNumber], @[]);
+    base::RunLoop().RunUntilIdle();
+  }
 
     FakeTextCheckingResult* fakeResult =
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
@@ -2135,7 +2218,6 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
 
     EXPECT_NE(nil, candidate_list_item().candidates);
     EXPECT_EQ(0U, candidate_list_item().candidates.count);
-  }
 }
 
 // This test verifies that in AutoResize mode a child-allocated

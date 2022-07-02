@@ -13,13 +13,11 @@ namespace signin_ui_util {
 class SigninUiDelegateImplDice : public SigninUiDelegate {
  public:
   // SigninUiDelegate:
-  void ShowSigninUI(Browser* browser,
-                    Profile* profile,
+  void ShowSigninUI(Profile* profile,
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,
                     signin_metrics::PromoAction promo_action) override;
-  void ShowReauthUI(Browser* browser,
-                    Profile* profile,
+  void ShowReauthUI(Profile* profile,
                     const std::string& email,
                     bool enable_sync,
                     signin_metrics::AccessPoint access_point,

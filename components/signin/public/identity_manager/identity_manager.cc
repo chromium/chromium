@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,7 +40,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/account.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -174,16 +172,12 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
     const absl::optional<bool>& initial_account_is_child =
         signin_client_->IsInitialPrimaryAccountChild();
     CHECK(initial_account_is_child.has_value());
-    SetPrimaryAccount(
-        this, account_tracker_service_.get(), signin_client_,
-        initial_account.value(),
-        initial_account_is_child.value() ? signin::Tribool::kTrue
-                                         : signin::Tribool::kFalse,
-        base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
-            ? ConsentLevel::kSignin
-            : ConsentLevel::kSync
-
-    );
+    SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
+                      initial_account.value(),
+                      initial_account_is_child.value()
+                          ? signin::Tribool::kTrue
+                          : signin::Tribool::kFalse,
+                      ConsentLevel::kSignin);
   }
 #endif
 }
@@ -424,11 +418,13 @@ void IdentityManager::OnNetworkInitialized() {
   account_fetcher_service_->OnNetworkInitialized();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IdentityManager::AccountIdMigrationState
 IdentityManager::GetAccountIdMigrationState() const {
   return static_cast<IdentityManager::AccountIdMigrationState>(
       account_tracker_service_->GetMigrationState());
 }
+#endif
 
 CoreAccountId IdentityManager::PickAccountIdForAccount(
     const std::string& gaia,
@@ -448,9 +444,6 @@ void IdentityManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   AccountFetcherService::RegisterPrefs(registry);
   AccountTrackerService::RegisterPrefs(registry);
   GaiaCookieManagerService::RegisterPrefs(registry);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MutableProfileOAuth2TokenServiceDelegate::RegisterProfilePrefs(registry);
-#endif
 }
 
 DiagnosticsProvider* IdentityManager::GetDiagnosticsProvider() {

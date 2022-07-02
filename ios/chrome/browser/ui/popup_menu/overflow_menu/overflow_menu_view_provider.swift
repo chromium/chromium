@@ -10,9 +10,12 @@ import UIKit
 @available(iOS 15, *)
 @objcMembers public class OverflowMenuViewProvider: NSObject {
   public static func makeViewController(
-    withModel model: OverflowMenuModel, metricsHandler: PopupMenuMetricsHandler
+    withModel model: OverflowMenuModel, metricsHandler: PopupMenuMetricsHandler,
+    carouselMetricsDelegate: PopupMenuCarouselMetricsDelegate
   ) -> UIViewController {
     return OverflowMenuHostingController(
-      rootView: OverflowMenuView(model: model, metricsHandler: metricsHandler))
+      rootView: OverflowMenuView(
+        model: model, metricsHandler: metricsHandler,
+        carouselMetricsDelegate: carouselMetricsDelegate))
   }
 }

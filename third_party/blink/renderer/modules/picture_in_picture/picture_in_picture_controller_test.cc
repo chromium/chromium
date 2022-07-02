@@ -14,7 +14,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -79,7 +78,7 @@ class MockPictureInPictureService
  public:
   MockPictureInPictureService() {
     // Setup default implementations.
-    ON_CALL(*this, StartSession(_, _, _, _, _, _, _))
+    ON_CALL(*this, StartSession(_, _, _, _, _, _, _, _))
         .WillByDefault(testing::Invoke(
             this, &MockPictureInPictureService::StartSessionInternal));
   }
@@ -107,6 +106,7 @@ class MockPictureInPictureService
        const gfx::Size&,
        bool,
        mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+       const gfx::Rect&,
        StartSessionCallback));
 
   MockPictureInPictureSession& Session() { return *session_.get(); }
@@ -118,14 +118,19 @@ class MockPictureInPictureService
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+      const gfx::Rect& source_bounds,
       StartSessionCallback callback) {
+    source_bounds_ = source_bounds;
     std::move(callback).Run(std::move(session_remote_), gfx::Size());
   }
+
+  const gfx::Rect& source_bounds() const { return source_bounds_; }
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureService> receiver_{this};
   std::unique_ptr<MockPictureInPictureSession> session_;
   mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote_;
+  gfx::Rect source_bounds_;
 };
 
 class PictureInPictureControllerFrameClient
@@ -222,7 +227,7 @@ class PictureInPictureControllerTest : public testing::Test {
       MediaStreamComponentVector dummy_tracks;
       auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
           dummy_tracks, dummy_tracks);
-      Video()->SetSrcObject(descriptor);
+      Video()->SetSrcObjectVariant(descriptor);
     } else {
       Video()->SetSrc("http://example.com/foo.mp4");
     }
@@ -266,7 +271,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -305,7 +310,7 @@ TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -332,7 +337,7 @@ TEST_F(PictureInPictureControllerTest, StartObserving) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -351,7 +356,7 @@ TEST_F(PictureInPictureControllerTest, StopObserving) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -379,7 +384,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), false, _, _));
+                           player->NaturalSize(), false, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -398,7 +403,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), false, _, _));
+                           player->NaturalSize(), false, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -448,6 +453,83 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
             dom_exception->code());
+}
+
+TEST_F(PictureInPictureControllerTest,
+       EnterPictureInPictureProvideSourceBounds) {
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .PictureInPictureElement());
+
+  WebMediaPlayer* player = Video()->GetWebMediaPlayer();
+  EXPECT_CALL(Service(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
+                           player->NaturalSize(), true, _, _, _));
+
+  PictureInPictureControllerImpl::From(GetDocument())
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
+
+  MakeGarbageCollected<WaitForEvent>(Video(),
+                                     event_type_names::kEnterpictureinpicture);
+
+  // We expect that the video element has some nontrivial rect, else this won't
+  // really test anything.
+  ASSERT_NE(Video()->BoundsInViewport(), gfx::Rect());
+  EXPECT_EQ(Service().source_bounds(), Video()->BoundsInViewport());
+}
+
+TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
+
+  // Enable the PictureInPictureV2 flag.
+  ScopedPictureInPictureAPIForTest scoped_dependency(true);
+  ScopedPictureInPictureV2ForTest scoped_feature(true);
+
+  V8TestingScope scope;
+  KURL url = KURL("https://example.com/");
+
+  // Get pass the LocalDOMWindow::isSecureContext() check.
+  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      nullptr);
+  GetFrame().DomWindow()->GetSecurityContext().SetSecurityOrigin(
+      SecurityOrigin::Create(url));
+
+  // Get pass the BindingSecurity::ShouldAllowAccessTo() check.
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  // Create the PictureInPictureWindowOptions.
+  v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
+  v8_object
+      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "width"),
+            v8::Number::New(scope.GetIsolate(), 640))
+      .Check();
+  v8_object
+      ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "height"),
+            v8::Number::New(scope.GetIsolate(), 320))
+      .Check();
+  PictureInPictureWindowOptions* options =
+      PictureInPictureWindowOptions::Create(resolver->Promise().GetIsolate(),
+                                            v8_object,
+                                            scope.GetExceptionState());
+
+  // Set a base URL for the opener window.
+  GetDocument().SetBaseURLOverride(url);
+  EXPECT_EQ(url.GetString(), GetDocument().BaseURL().GetString());
+
+  PictureInPictureControllerImpl::From(GetDocument())
+      .CreateDocumentPictureInPictureWindow(
+          script_state, *GetFrame().DomWindow(), options, resolver,
+          scope.GetExceptionState());
+
+  PictureInPictureWindow* pictureInPictureWindow =
+      PictureInPictureControllerImpl::From(GetDocument())
+          .pictureInPictureWindow();
+  EXPECT_NE(nullptr, pictureInPictureWindow);
+  EXPECT_EQ(url.GetString(),
+            pictureInPictureWindow->document()->BaseURL().GetString());
 }
 
 }  // namespace blink

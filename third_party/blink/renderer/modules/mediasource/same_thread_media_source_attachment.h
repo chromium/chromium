@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
+#include "third_party/blink/renderer/modules/mediasource/attachment_creation_pass_key_provider.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/url_media_source.h"
@@ -24,12 +25,16 @@ namespace blink {
 class SameThreadMediaSourceAttachment final
     : public MediaSourceAttachmentSupplement {
  public:
-  // The only intended caller of this constructor is
-  // URLMediaSource::createObjectUrl, made more clear by using the PassKey. The
-  // raw pointer is then adopted into a scoped_refptr in
-  // MediaSourceRegistryImpl::RegisterURL.
+  // The only intended callers of this constructor are restricted to those able
+  // to obtain an AttachmentCreationPasskeyProvider's pass key. This method is
+  // expected to only be called in window/main thread context. The raw pointer
+  // is then adopted into a scoped_refptr by the caller (e.g.,
+  // URLMediaSource::createObjectUrl will lead to
+  // MediaSourceRegistryImpl::RegisterURL doing this scoped_refptr adoption).
+  // TODO(crbug.com/506273): For main-thread MediaSource's MediaSourceHandle
+  // usage via srcObject, MediaSource::getHandle() may also call this.
   SameThreadMediaSourceAttachment(MediaSource* media_source,
-                                  base::PassKey<URLMediaSource>);
+                                  AttachmentCreationPassKeyProvider::PassKey);
 
   SameThreadMediaSourceAttachment(const SameThreadMediaSourceAttachment&) =
       delete;

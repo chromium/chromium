@@ -19,6 +19,9 @@
 
 namespace extensions {
 
+// Backoff policy to enforce zero initial delay.
+const extern net::BackoffEntry::Policy kZeroBackoffPolicy;
+
 class MockExtensionDownloaderDelegate
     : public testing::NiceMock<ExtensionDownloaderDelegate> {
  public:
@@ -76,6 +79,13 @@ class MockExtensionDownloaderDelegate
 // TestURLLoaderFactory as a URL factory.
 class ExtensionDownloaderTestHelper {
  public:
+  static constexpr DownloadPingData kNeverPingedData =
+      DownloadPingData(ManifestFetchData::kNeverPinged,
+                       ManifestFetchData::kNeverPinged,
+                       true,
+                       0);
+  static constexpr char kEmptyUpdateUrlData[] = "";
+
   ExtensionDownloaderTestHelper();
 
   ExtensionDownloaderTestHelper(const ExtensionDownloaderTestHelper&) = delete;
@@ -116,6 +126,25 @@ class ExtensionDownloaderTestHelper {
   MockExtensionDownloaderDelegate delegate_;
   ExtensionDownloader downloader_;
 };
+
+// Creates a downloader task with most arguments set to default values.
+// Note that as ExtensionDownloaderTask is just a simple struct, callers can
+// configure additional properties if needed.
+ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
+                                             const GURL& update_url = {});
+
+// Creates extension info and associated task, adds both to `fetch_data`.
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url,
+                                       DownloadPingData ping_data);
+
+// Simplified version with fewer arguments.
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url);
 
 }  // namespace extensions
 

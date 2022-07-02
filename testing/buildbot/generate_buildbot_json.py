@@ -1593,34 +1593,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return bot_names
 
   def get_builders_that_do_not_actually_exist(self):
-    # Some of the bots on the chromium.gpu.fyi waterfall in particular
+    # Some of the bots on the chromium.fyi waterfall in particular
     # are defined only to be mirrored into trybots, and don't actually
     # exist on any of the waterfalls or consoles.
     return [
-        'GPU FYI Fuchsia Builder',
-        'ANGLE GPU Android Release (Nexus 5X)',
-        'ANGLE GPU Linux Release (Intel HD 630)',
-        'ANGLE GPU Linux Release (NVIDIA)',
-        'Optional Android Release (Nexus 5X)',
-        'Optional Android Release (Pixel 4)',
-        'Optional Linux Release (Intel HD 630)',
-        'Optional Linux Release (NVIDIA)',
-        'Optional Mac Release (Intel)',
-        'Optional Mac Retina Release (AMD)',
-        'Optional Mac Retina Release (NVIDIA)',
-        'Optional Win10 x64 Release (Intel HD 630)',
-        'Optional Win10 x64 Release (NVIDIA)',
         # chromium.fyi
         'linux-blink-optional-highdpi-rel-dummy',
-        'mac10.12-blink-rel-dummy',
         'mac10.13-blink-rel-dummy',
         'mac10.14-blink-rel-dummy',
         'mac10.15-blink-rel-dummy',
         'mac11.0-blink-rel-dummy',
         'mac11.0.arm64-blink-rel-dummy',
-        'win7-blink-rel-dummy',
         'win10.20h2-blink-rel-dummy',
-        'win11-blink-rel-dummy',
     ]
 
   def get_internal_waterfalls(self):

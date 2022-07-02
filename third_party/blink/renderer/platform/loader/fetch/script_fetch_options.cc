@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -69,6 +71,14 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   params.SetDefer(defer);
 
   // Steps 4- are Implemented at ClassicPendingScript::Fetch().
+
+  // TODO(crbug.com/1338976): Add correct spec comments here.
+  if (attribution_reporting_eligibility_ ==
+      AttributionReportingEligibility::kEligible) {
+    params.MutableResourceRequest().SetHttpHeaderField(
+        http_names::kAttributionReportingEligible,
+        kAttributionEligibleEventSourceAndTrigger);
+  }
 
   return params;
 }

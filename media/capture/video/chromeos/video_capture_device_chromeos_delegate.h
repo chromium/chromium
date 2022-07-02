@@ -38,7 +38,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   VideoCaptureDeviceChromeOSDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       const VideoCaptureDeviceDescriptor& device_descriptor,
-      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+      CameraHalDelegate* camera_hal_delegate,
       base::OnceClosure cleanup_callback);
 
   VideoCaptureDeviceChromeOSDelegate(
@@ -76,7 +76,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   // A reference to the CameraHalDelegate instance in the VCD factory.  This is
   // used by AllocateAndStart to query camera info and create the camera device.
-  const scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
+  CameraHalDelegate* camera_hal_delegate_;
 
   // A reference to the thread that all the VideoCaptureDevice interface methods
   // are expected to be called on.

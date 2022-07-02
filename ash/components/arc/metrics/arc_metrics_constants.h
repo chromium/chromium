@@ -101,7 +101,10 @@ enum class UserInteractionType {
   // User started an app from Chrome OS full restore.
   APP_STARTED_FROM_FULL_RESTORE = 22,
 
-  kMaxValue = APP_STARTED_FROM_FULL_RESTORE,
+  // User started an app from another app.
+  APP_STARTED_FROM_OTHER_APP = 23,
+
+  kMaxValue = APP_STARTED_FROM_OTHER_APP,
 };
 
 // Enumerates relevant Mojo connections.

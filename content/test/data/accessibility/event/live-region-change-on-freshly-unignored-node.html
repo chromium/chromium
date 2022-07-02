@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="live" aria-live="polite" style="display: none;">Before</div>
+<script>
+  function go() {
+    let live = document.getElementById('live');
+    live.setAttribute("style", "");
+    live.firstChild.data = 'After';
+  }
+</script>
+</body>
+</html>

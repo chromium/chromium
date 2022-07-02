@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.download;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.url.GURL;
 
 /**
  * Class representing information relating to an update in download status.
@@ -30,10 +32,10 @@ public final class DownloadUpdate {
     private final boolean mIsSupportedMimeType;
     private final boolean mIsTransient;
     private final int mNotificationId;
-    private final String mOriginalUrl;
+    private final @NonNull GURL mOriginalUrl;
     private final boolean mShouldPromoteOrigin;
     private final Progress mProgress;
-    private final String mReferrer;
+    private final @NonNull GURL mReferrer;
     private final long mStartTime;
     private final long mSystemDownloadId;
     private final long mTimeRemainingInMillis;
@@ -53,10 +55,10 @@ public final class DownloadUpdate {
         this.mIsSupportedMimeType = builder.mIsSupportedMimeType;
         this.mIsTransient = builder.mIsTransient;
         this.mNotificationId = builder.mNotificationId;
-        this.mOriginalUrl = builder.mOriginalUrl;
+        this.mOriginalUrl = builder.mOriginalUrl == null ? GURL.emptyGURL() : builder.mOriginalUrl;
         this.mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
         this.mProgress = builder.mProgress;
-        this.mReferrer = builder.mReferrer;
+        this.mReferrer = builder.mReferrer == null ? GURL.emptyGURL() : builder.mReferrer;
         this.mStartTime = builder.mStartTime;
         this.mSystemDownloadId = builder.mSystemDownloadId;
         this.mTimeRemainingInMillis = builder.mTimeRemainingInMillis;
@@ -114,7 +116,8 @@ public final class DownloadUpdate {
         return mNotificationId;
     }
 
-    public String getOriginalUrl() {
+    @NonNull
+    public GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
@@ -126,7 +129,8 @@ public final class DownloadUpdate {
         return mProgress;
     }
 
-    public String getReferrer() {
+    @NonNull
+    public GURL getReferrer() {
         return mReferrer;
     }
 
@@ -169,10 +173,10 @@ public final class DownloadUpdate {
         private boolean mIsSupportedMimeType;
         private boolean mIsTransient;
         private int mNotificationId = -1;
-        private String mOriginalUrl;
+        private GURL mOriginalUrl;
         private boolean mShouldPromoteOrigin;
         private Progress mProgress;
-        private String mReferrer;
+        private GURL mReferrer;
         private long mStartTime;
         private long mSystemDownloadId = -1;
         private long mTimeRemainingInMillis;
@@ -233,7 +237,7 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setOriginalUrl(String originalUrl) {
+        public Builder setOriginalUrl(GURL originalUrl) {
             this.mOriginalUrl = originalUrl;
             return this;
         }
@@ -248,7 +252,7 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setReferrer(String referrer) {
+        public Builder setReferrer(GURL referrer) {
             this.mReferrer = referrer;
             return this;
         }

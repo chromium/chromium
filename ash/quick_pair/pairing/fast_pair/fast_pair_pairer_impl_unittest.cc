@@ -1154,6 +1154,68 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
 
+TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kFastPairSavedDevices, true);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  base::RunLoop().RunUntilIdle();
+
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairSubsequent);
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+
+  // With Subsequent pairing, we expect to save the account key to the
+  // Saved Device registry, but not upload the key to Footprints.
+  EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+}
+
+TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kFastPairSavedDevices, false);
+  base::RunLoop().RunUntilIdle();
+
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairSubsequent);
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+
+  // With Subsequent pairing, we expect to save the account key to the
+  // Saved Device registry, but not upload the key to Footprints.
+  EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+}
+
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   fast_pair_repository_.SetOptInStatus(

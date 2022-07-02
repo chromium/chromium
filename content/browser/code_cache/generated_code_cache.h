@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "content/browser/code_cache/simple_lru_cache_index.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -135,7 +136,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
  private:
   class PendingOperation;
-  using ScopedBackendPtr = std::unique_ptr<disk_cache::Backend>;
 
   // State of the backend.
   enum BackendState { kInitializing, kInitialized, kFailed };
@@ -155,9 +155,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   // Creates a simple_disk_cache backend.
   void CreateBackend();
-  void DidCreateBackend(
-      scoped_refptr<base::RefCountedData<ScopedBackendPtr>> backend_ptr,
-      int rv);
+  void DidCreateBackend(disk_cache::BackendResult result);
 
   // Adds operation to the appropriate queue.
   void EnqueueOperation(std::unique_ptr<PendingOperation> op);
@@ -220,6 +218,8 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // possible.
   bool IsValidHeader(scoped_refptr<net::IOBufferWithSize> small_buffer) const;
 
+  void ReportPeriodicalHistograms();
+
   std::unique_ptr<disk_cache::Backend> backend_;
   BackendState backend_state_;
 
@@ -235,7 +235,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
   CodeCacheType cache_type_;
 
   // A hypothetical memory-backed code cache. Used to collect UMAs.
-  SimpleLruCacheIndex lru_cache_index_{/*capacity=*/200 * 1024 * 1024};
+  SimpleLruCacheIndex lru_cache_index_{kLruCacheCapacity};
+  base::RepeatingTimer histograms_timer_;
+  static const int64_t kLruCacheCapacity = 50 * 1024 * 1024;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
 };

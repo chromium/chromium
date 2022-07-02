@@ -183,12 +183,12 @@ class BidderWorkletTest : public testing::Test {
       std::vector<std::string> expected_errors = std::vector<std::string>(),
       const absl::optional<GURL>& expected_debug_loss_report_url =
           absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url =
-          absl::nullopt) {
+      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      const absl::optional<double> expected_set_priority = absl::nullopt) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), std::move(expected_bid),
         expected_data_version, expected_errors, expected_debug_loss_report_url,
-        expected_debug_win_report_url);
+        expected_debug_win_report_url, expected_set_priority);
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -200,14 +200,15 @@ class BidderWorkletTest : public testing::Test {
       std::vector<std::string> expected_errors = std::vector<std::string>(),
       const absl::optional<GURL>& expected_debug_loss_report_url =
           absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url =
-          absl::nullopt) {
+      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      const absl::optional<double> expected_set_priority = absl::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
     RunGenerateBidExpectingResult(
         std::move(expected_bid), expected_data_version, expected_errors,
-        expected_debug_loss_report_url, expected_debug_win_report_url);
+        expected_debug_loss_report_url, expected_debug_win_report_url,
+        expected_set_priority);
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
@@ -217,8 +218,8 @@ class BidderWorkletTest : public testing::Test {
       std::vector<std::string> expected_errors = std::vector<std::string>(),
       const absl::optional<GURL>& expected_debug_loss_report_url =
           absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url =
-          absl::nullopt) {
+      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      const absl::optional<double> expected_set_priority = absl::nullopt) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
     EXPECT_EQ(expected_bid.is_null(), bid_.is_null());
@@ -237,6 +238,7 @@ class BidderWorkletTest : public testing::Test {
     EXPECT_EQ(expected_debug_loss_report_url, bid_debug_loss_report_url_);
     EXPECT_EQ(expected_debug_win_report_url, bid_debug_win_report_url_);
     EXPECT_EQ(expected_errors, bid_errors_);
+    EXPECT_EQ(expected_set_priority, set_priority_);
   }
 
   // Configures `url_loader_factory_` to return a reportWin() script with the
@@ -397,6 +399,7 @@ class BidderWorkletTest : public testing::Test {
                           bool has_data_version,
                           const absl::optional<GURL>& debug_loss_report_url,
                           const absl::optional<GURL>& debug_win_report_url,
+                          double set_priority, bool has_set_priority,
                           const std::vector<std::string>& errors) {
           ADD_FAILURE() << "Callback should not be invoked.";
         }));
@@ -421,14 +424,20 @@ class BidderWorkletTest : public testing::Test {
                            bool has_data_version,
                            const absl::optional<GURL>& debug_loss_report_url,
                            const absl::optional<GURL>& debug_win_report_url,
+                           double set_priority,
+                           bool has_set_priority,
                            const std::vector<std::string>& errors) {
     absl::optional<uint32_t> maybe_data_version;
     if (has_data_version)
       maybe_data_version = data_version;
+    absl::optional<double> maybe_set_priority;
+    if (has_set_priority)
+      maybe_set_priority = set_priority;
     bid_ = std::move(bid);
     data_version_ = maybe_data_version;
     bid_debug_loss_report_url_ = debug_loss_report_url;
     bid_debug_win_report_url_ = debug_win_report_url;
+    set_priority_ = maybe_set_priority;
     bid_errors_ = errors;
     load_script_run_loop_->Quit();
   }
@@ -523,6 +532,7 @@ class BidderWorkletTest : public testing::Test {
   mojom::BidderWorkletBidPtr bid_;
   absl::optional<GURL> bid_debug_loss_report_url_;
   absl::optional<GURL> bid_debug_win_report_url_;
+  absl::optional<double> set_priority_;
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -1550,6 +1560,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                   bool has_data_version,
                   const absl::optional<GURL>& debug_loss_report_url,
                   const absl::optional<GURL>& debug_win_report_url,
+                  double set_priority, bool has_set_priority,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(bid_value, bid->bid);
                 EXPECT_EQ(base::NumberToString(bid_value), bid->ad);
@@ -1642,6 +1653,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                 bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
+                double set_priority, bool has_set_priority,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -1740,6 +1752,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                 bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
+                double set_priority, bool has_set_priority,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -1844,6 +1857,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                 bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
+                double set_priority, bool has_set_priority,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -1927,6 +1941,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
                 bool has_data_version,
                 const absl::optional<GURL>& debug_loss_report_url,
                 const absl::optional<GURL>& debug_win_report_url,
+                double set_priority, bool has_set_priority,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(base::NumberToString(i), bid->ad);
               EXPECT_EQ(i + 1, bid->bid);
@@ -2717,6 +2732,70 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
       {"https://url.test/ execution of `generateBid` timed out."});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
+  // not enough args
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority();
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: setPriority requires 1 double "
+       "parameter."});
+  // priority not a double
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority("string");
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: setPriority requires 1 double "
+       "parameter."});
+  // priority not finite
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority(0.0/0.0);
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: setPriority requires 1 finite "
+       "double parameter."});
+  // priority called twice
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority(4);
+            setPriority(4);
+          )"),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:6 Uncaught TypeError: setPriority may be called at "
+       "most once."});
+  // success
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            setPriority(9.0);
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/9.0);
+}
+
 TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       "", /*expected_report_url =*/absl::nullopt);
@@ -3179,7 +3258,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
     if (event.type != TestChannel::Event::Type::Notification)
       return false;
 
-    const std::string* candidate_method = event.value.FindStringKey("method");
+    const std::string* candidate_method =
+        event.value.GetDict().FindString("method");
     return (candidate_method && *candidate_method == "Debugger.scriptParsed");
   };
 
@@ -3238,7 +3318,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
   // channel1 should have had a parsed notification for kUrl1.
   TestChannel::Event script_parsed1 =
       channel1->WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  const std::string* url1 =
+      script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url1);
   EXPECT_EQ(kUrl1, *url1);
 
@@ -3261,7 +3342,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
   // channel2 should have had a parsed notification for kUrl2.
   TestChannel::Event script_parsed2 =
       channel2->WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url2 = script_parsed2.value.FindStringPath("params.url");
+  const std::string* url2 =
+      script_parsed2.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url2);
   EXPECT_EQ(kUrl2, *url2);
 
@@ -3306,7 +3388,8 @@ TEST_F(BidderWorkletTest, ParseErrorV8Debug) {
   // Should have gotten a parse error notification.
   TestChannel::Event parse_error =
       channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  const std::string* error_url = parse_error.value.FindStringPath("params.url");
+  const std::string* error_url =
+      parse_error.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url);
   EXPECT_EQ(interest_group_bidding_url_.spec(), *error_url);
 }
@@ -3376,26 +3459,27 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
 
   TestDevToolsAgentClient::Event script_parsed1 =
       debug1.WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  const std::string* url1 =
+      script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url1);
   EXPECT_EQ(*url1, kUrl1);
   absl::optional<int> context_id1 =
-      script_parsed1.value.FindIntPath("params.executionContextId");
+      script_parsed1.value.GetDict().FindIntByDottedPath(
+          "params.executionContextId");
   ASSERT_TRUE(context_id1.has_value());
 
   // Next there is the breakpoint.
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value* hit_breakpoints1 =
-      breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
+  base::Value::List* hit_breakpoints1 =
+      breakpoint_hit1.value.GetDict().FindListByDottedPath(
+          "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);
-  base::Value::ConstListView hit_breakpoints_list1 =
-      hit_breakpoints1->GetListDeprecated();
-  ASSERT_EQ(1u, hit_breakpoints_list1.size());
-  ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
+  ASSERT_EQ(1u, hit_breakpoints1->size());
+  ASSERT_TRUE((*hit_breakpoints1)[0].is_string());
   EXPECT_EQ("1:0:0:http://example.com/first.js",
-            hit_breakpoints_list1[0].GetString());
+            (*hit_breakpoints1)[0].GetString());
 
   // Override the bid value.
   const char kCommandTemplate[] = R"({
@@ -3431,15 +3515,14 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug2.WaitForMethodNotification("Debugger.paused");
 
-  base::Value* hit_breakpoints2 =
-      breakpoint_hit2.value.FindListPath("params.hitBreakpoints");
+  base::Value::List* hit_breakpoints2 =
+      breakpoint_hit2.value.GetDict().FindListByDottedPath(
+          "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints2);
-  base::Value::ConstListView hit_breakpoints_list2 =
-      hit_breakpoints2->GetListDeprecated();
-  ASSERT_EQ(1u, hit_breakpoints_list2.size());
-  ASSERT_TRUE(hit_breakpoints_list2[0].is_string());
+  ASSERT_EQ(1u, hit_breakpoints2->size());
+  ASSERT_TRUE((*hit_breakpoints2)[0].is_string());
   EXPECT_EQ("1:0:0:http://example.org/second.js",
-            hit_breakpoints_list2[0].GetString());
+            (*hit_breakpoints2)[0].GetString());
 
   // Go ahead and resume w/o messing with anything.
   load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -3498,7 +3581,8 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug.WaitForMethodNotification("Debugger.paused");
   const std::string* breakpoint1 =
-      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+      breakpoint_hit1.value.GetDict().FindStringByDottedPath(
+          "params.data.eventName");
   ASSERT_TRUE(breakpoint1);
   EXPECT_EQ("instrumentation:beforeBidderWorkletBiddingStart", *breakpoint1);
 
@@ -3521,7 +3605,8 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
   const std::string* breakpoint2 =
-      breakpoint_hit2.value.FindStringPath("params.data.eventName");
+      breakpoint_hit2.value.GetDict().FindStringByDottedPath(
+          "params.data.eventName");
   ASSERT_TRUE(breakpoint2);
   EXPECT_EQ("instrumentation:beforeBidderWorkletReportingStart", *breakpoint2);
 

@@ -66,8 +66,6 @@ def _import_fuchsia_runner():
     from common import ConnectPortForwardingTask
     global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
     from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
-    global device_target
-    import device_target
     global fuchsia_target
     import target as fuchsia_target
     global qemu_target
@@ -291,11 +289,6 @@ class FuchsiaPort(base.Port):
         # platforms.
         return 20000
 
-    def requires_http_server(self):
-        """HTTP server is always required to avoid copying the tests to the VM.
-        """
-        return True
-
     def start_http_server(self, additional_dirs, number_of_drivers):
         additional_dirs['/third_party/blink/PerformanceTests'] = \
             self._perf_tests_dir()
@@ -351,7 +344,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
             cmd.extend([
                 '--ozone-platform=scenic', '--use-vulkan',
                 '--enable-gpu-rasterization', '--force-device-scale-factor=1',
-                '--use-gl=stub', '--enable-features=UseSkiaRenderer,Vulkan',
+                '--use-gl=stub', '--enable-features=Vulkan',
                 '--gpu-watchdog-timeout-seconds=60'
             ])
         return cmd

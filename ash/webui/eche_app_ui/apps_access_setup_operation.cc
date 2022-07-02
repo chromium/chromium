@@ -16,11 +16,13 @@ namespace {
 // Status values which are considered "final" - i.e., once the status of an
 // operation changes to one of these values, the operation has completed. These
 // status values indicate either a success or a fatal error.
-constexpr std::array<AppsAccessSetupOperation::Status, 3>
+constexpr std::array<AppsAccessSetupOperation::Status, 5>
     kOperationFinishedStatus{
         AppsAccessSetupOperation::Status::kTimedOutConnecting,
         AppsAccessSetupOperation::Status::kConnectionDisconnected,
         AppsAccessSetupOperation::Status::kCompletedSuccessfully,
+        AppsAccessSetupOperation::Status::kCompletedUserRejected,
+        AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
     };
 }  // namespace */
 

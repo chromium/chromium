@@ -178,30 +178,28 @@ void CryptAuthKeyBundle::DeactivateKeys() {
 }
 
 base::Value CryptAuthKeyBundle::AsDictionary() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetKey(kBundleNameDictKey,
-              base::Value(KeyBundleNameEnumToString(name_)));
+  dict.Set(kBundleNameDictKey, KeyBundleNameEnumToString(name_));
 
-  std::vector<base::Value> keys;
-  std::transform(
-      handle_to_key_map_.begin(), handle_to_key_map_.end(),
-      std::back_inserter(keys),
-      [](const std::pair<std::string, CryptAuthKey>& handle_key_pair) {
-        if (handle_key_pair.second.IsSymmetricKey())
-          return handle_key_pair.second.AsSymmetricKeyDictionary();
+  base::Value::List keys;
+  for (const auto& handle_key_pair : handle_to_key_map_) {
+    if (handle_key_pair.second.IsSymmetricKey()) {
+      keys.Append(handle_key_pair.second.AsSymmetricKeyDictionary());
+      continue;
+    }
 
-        DCHECK(handle_key_pair.second.IsAsymmetricKey());
-        return handle_key_pair.second.AsAsymmetricKeyDictionary();
-      });
-  dict.SetKey(kKeyListDictKey, base::Value(keys));
+    DCHECK(handle_key_pair.second.IsAsymmetricKey());
+    keys.Append(handle_key_pair.second.AsAsymmetricKeyDictionary());
+  }
+  dict.Set(kKeyListDictKey, std::move(keys));
 
   if (key_directive_) {
-    dict.SetKey(kKeyDirectiveDictKey,
-                util::EncodeProtoMessageAsValueString(&key_directive_.value()));
+    dict.Set(kKeyDirectiveDictKey,
+             util::EncodeProtoMessageAsValueString(&key_directive_.value()));
   }
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 bool CryptAuthKeyBundle::operator==(const CryptAuthKeyBundle& other) const {

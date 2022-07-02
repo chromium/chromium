@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/share/share_attempt.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -28,11 +30,7 @@ namespace sharing_hub {
 // trial.
 class PreviewView : public views::View {
  public:
-  // Taking an initial image here, instead of requiring the caller to call
-  // OnImageChanged() after construction to set the initial image, means that
-  // this class always has a valid image to display and does not have a
-  // "half-initialized" state to worry about.
-  explicit PreviewView(std::u16string title, GURL url, ui::ImageModel image);
+  explicit PreviewView(share::ShareAttempt attempt);
   ~PreviewView() override;
 
   // This seemingly-odd method allows for PreviewView to be uncoupled from the
@@ -49,9 +47,9 @@ class PreviewView : public views::View {
  private:
   base::CallbackListSubscription subscription_;
 
-  views::Label* title_ = nullptr;
-  views::Label* url_ = nullptr;
-  views::ImageView* image_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> url_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
 };
 
 }  // namespace sharing_hub

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -146,12 +147,10 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
     return data_;
   }
 
-  int GetChildCount() const override {
-    return static_cast<int>(widgets_.size());
-  }
+  size_t GetChildCount() const override { return widgets_.size(); }
 
-  gfx::NativeViewAccessible ChildAtIndex(int index) override {
-    if (index < 0 || index >= GetChildCount())
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) override {
+    if (index >= GetChildCount())
       return nullptr;
 
     Widget* widget = widgets_[index];
@@ -185,7 +184,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
 
   // TODO(nektar): Make this into a const pointer so that it can't be set
   // outside the class's constructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
   ui::AXUniqueId unique_id_;
   mutable ui::AXNodeData data_;
   std::vector<Widget*> widgets_;

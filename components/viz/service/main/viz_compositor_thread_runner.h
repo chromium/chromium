@@ -14,10 +14,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace gpu {
-class CommandBufferTaskExecutor;
-}  // namespace gpu
-
 namespace viz {
 
 class GpuServiceImpl;
@@ -36,16 +32,12 @@ class VizCompositorThreadRunner {
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) = 0;
 
-  // Creates FrameSinkManager from |params|. The version with |gpu_service| and
-  // |task_executor| supports both GPU and software compositing, while the
-  // version without supports only software compositing. Should be called from
-  // the thread that owns |this| to initialize state on VizCompositorThread.
-  virtual void CreateFrameSinkManager(
-      mojom::FrameSinkManagerParamsPtr params) = 0;
-  virtual void CreateFrameSinkManager(
-      mojom::FrameSinkManagerParamsPtr params,
-      gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service) = 0;
+  // Creates FrameSinkManager from |params|. If |gpu_service| is null the
+  // display compositor will only support software compositing. Should be called
+  // from the thread that owns |this| to initialize state on
+  // VizCompositorThread.
+  virtual void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
+                                      GpuServiceImpl* gpu_service) = 0;
 };
 
 }  // namespace viz

@@ -271,6 +271,9 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
               gpu_channel,
               static_cast<int32_t>(
                   GpuChannelReservedRoutes::kImageDecodeAccelerator))) {
+  // GpuChannel and CommandBufferStub implementations assume that it is not
+  // possible to simultaneously execute tasks on these two task runners.
+  DCHECK_EQ(main_task_runner_, gpu_channel->task_runner());
   io_thread_checker_.DetachFromThread();
   allow_process_kill_for_testing_ = gpu_channel->gpu_channel_manager()
                                         ->gpu_preferences()
@@ -757,7 +760,8 @@ mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
   return *filter_;
 }
 
-ImageDecodeAcceleratorStub* GpuChannel::GetImageDecodeAcceleratorStub() const {
+ImageDecodeAcceleratorStub*
+GpuChannel::GetImageDecodeAcceleratorStubForTesting() const {
   DCHECK(filter_);
   return filter_->image_decode_accelerator_stub();
 }
@@ -1079,10 +1083,12 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
       if (!manager->gpu_memory_buffer_factory())
         return nullptr;
 
+      // TODO(b/220336463): plumb the right color space.
       return manager->gpu_memory_buffer_factory()
           ->AsImageFactory()
           ->CreateImageForGpuMemoryBuffer(std::move(handle), size, format,
-                                          plane, client_id_, surface_handle);
+                                          gfx::ColorSpace(), plane, client_id_,
+                                          surface_handle);
     }
   }
 }

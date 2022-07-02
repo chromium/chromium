@@ -27,6 +27,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/worker_thread.h"
+#include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
 #include "content/renderer/service_worker/service_worker_type_converters.h"
@@ -101,6 +102,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
         controller_receiver,
     mojo::PendingAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>
         instance_host,
+    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+        pending_interface_provider_receiver,
     blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr provider_info,
     EmbeddedWorkerInstanceClientImpl* owner,
     blink::mojom::EmbeddedWorkerStartTimingPtr start_timing,
@@ -124,6 +127,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       proxy_(nullptr),
       pending_service_worker_receiver_(std::move(service_worker_receiver)),
       controller_receiver_(std::move(controller_receiver)),
+      pending_interface_provider_receiver_(
+          std::move(pending_interface_provider_receiver)),
       pending_subresource_loader_updater_(
           std::move(subresource_loader_updater)),
       owner_(owner),
@@ -136,6 +141,10 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
   instance_host_ =
       mojo::SharedAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>(
           std::move(instance_host), initiator_thread_task_runner_);
+
+  // At the time of writing, there is no need for associated interfaces.
+  blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
+      registry_.GetWeakPtr(), /*associated_interface_registry=*/nullptr);
 
   if (IsOutOfProcessNetworkService()) {
     // If the network service crashes, this worker self-terminates, so it can
@@ -187,12 +196,20 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
   worker_->StartWorkerContext(
       std::move(start_data), std::move(installed_scripts_manager_params),
       std::move(content_settings), std::move(cache_storage),
-      std::move(browser_interface_broker), initiator_thread_task_runner_);
+      std::move(browser_interface_broker), blink_interface_registry_.get(),
+      initiator_thread_task_runner_);
 }
 
 blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   return *worker_;
+}
+
+void ServiceWorkerContextClient::GetInterface(
+    const std::string& interface_name,
+    mojo::ScopedMessagePipeHandle interface_pipe) {
+  if (registry_.TryBindInterface(interface_name, &interface_pipe))
+    return;
 }
 
 void ServiceWorkerContextClient::WorkerReadyForInspectionOnInitiatorThread(
@@ -247,6 +264,10 @@ void ServiceWorkerContextClient::WorkerContextStarted(
 
   DCHECK(controller_receiver_.is_valid());
   proxy_->BindControllerServiceWorker(std::move(controller_receiver_));
+
+  DCHECK(pending_interface_provider_receiver_.is_valid());
+  interface_provider_receiver_.Bind(
+      std::move(pending_interface_provider_receiver_));
 
   GetContentClient()
       ->renderer()
@@ -313,6 +334,14 @@ void ServiceWorkerContextClient::WillInitializeWorkerContext() {
 void ServiceWorkerContextClient::WillDestroyWorkerContext(
     v8::Local<v8::Context> context) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
+
+  // After WillDestroyWorkerContext is called, the ServiceWorkerContext
+  // is destroyed, so destroy InterfaceProvider here and clear the
+  // BinderRegistry to stop any future interface requests. InterfaceProvider is
+  // bound on the worker task runner and therefore, should be destroyed on the
+  // worker task runner.
+  interface_provider_receiver_.reset();
+  registry_.clear();
 
   // At this point WillStopCurrentWorkerThread is already called, so
   // worker_task_runner_->RunsTasksInCurrentSequence() returns false

@@ -57,9 +57,6 @@ protocol::Response PageHandler::Enable() {
 
 protocol::Response PageHandler::Disable() {
   enabled_ = false;
-  // TODO(bokan): This is inadvertently called from a FencedFrame as it has a
-  // PageHandler that gets destroyed when the main frame is refreshed.
-  // ToggleAdBlocking should be a no-op for non-primary pages.
   ToggleAdBlocking(false /* enable */);
   SetSPCTransactionMode(protocol::Page::SetSPCTransactionMode::ModeEnum::None);
   // Do not mark the command as handled. Let it fall through instead, so that
@@ -195,7 +192,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
 
   absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
       print_pages_params = print_to_pdf::GetPrintPagesParams(
-          web_contents_->GetMainFrame()->GetLastCommittedURL(),
+          web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
           OptionalFromMaybe<bool>(landscape),
           OptionalFromMaybe<bool>(display_header_footer),
           OptionalFromMaybe<bool>(print_background),
@@ -225,7 +222,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
   if (auto* print_manager =
           print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
-        web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
+        web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,

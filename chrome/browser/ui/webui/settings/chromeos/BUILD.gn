@@ -5,8 +5,8 @@
 group("mojom_js") {
   public_deps = [
     "constants:mojom_js",
-    "search:mojo_bindings_js",
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js",
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
   ]
 }

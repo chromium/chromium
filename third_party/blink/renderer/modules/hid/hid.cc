@@ -15,9 +15,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
@@ -35,12 +35,12 @@ const char kFeaturePolicyBlocked[] =
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
 // returns false to indicate the call should be allowed.
-bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
+bool ShouldBlockHidServiceCall(ExecutionContext* context,
                                ExceptionState& exception_state) {
-  if (!window) {
+  if (!context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
-  } else if (!window->IsFeatureEnabled(
+  } else if (!context->IsFeatureEnabled(
                  mojom::blink::PermissionsPolicyFeature::kHid,
                  ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
@@ -60,11 +60,8 @@ void RejectWithTypeError(const String& message,
 
 const char HID::kSupplementName[] = "HID";
 
-HID* HID::hid(Navigator& navigator) {
-  if (!navigator.DomWindow())
-    return nullptr;
-
-  HID* hid = Supplement<Navigator>::From<HID>(navigator);
+HID* HID::hid(NavigatorBase& navigator) {
+  HID* hid = Supplement<NavigatorBase>::From<HID>(navigator);
   if (!hid) {
     hid = MakeGarbageCollected<HID>(navigator);
     ProvideTo(navigator, hid);
@@ -72,14 +69,17 @@ HID* HID::hid(Navigator& navigator) {
   return hid;
 }
 
-HID::HID(Navigator& navigator)
+HID::HID(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      Supplement<Navigator>(navigator),
-      service_(navigator.DomWindow()),
-      feature_handle_for_scheduler_(
-          navigator.DomWindow()->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kWebHID,
-              {SchedulingPolicy::DisableBackForwardCache()})) {}
+      Supplement<NavigatorBase>(navigator),
+      service_(navigator.GetExecutionContext()) {
+  auto* context = GetExecutionContext();
+  if (context) {
+    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
+        SchedulingPolicy::Feature::kWebHID,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
+}
 
 HID::~HID() {
   DCHECK(get_devices_promises_.IsEmpty());
@@ -87,7 +87,7 @@ HID::~HID() {
 }
 
 ExecutionContext* HID::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return GetSupplementable()->GetExecutionContext();
 }
 
 const AtomicString& HID::InterfaceName() const {
@@ -145,8 +145,7 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
                               ExceptionState& exception_state) {
-  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
-                                exception_state)) {
+  if (ShouldBlockHidServiceCall(GetExecutionContext(), exception_state)) {
     return ScriptPromise();
   }
 
@@ -162,13 +161,20 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
 ScriptPromise HID::requestDevice(ScriptState* script_state,
                                  const HIDDeviceRequestOptions* options,
                                  ExceptionState& exception_state) {
-  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
-                                exception_state)) {
+  // requestDevice requires a window to satisfy the user activation requirement
+  // and to show a chooser dialog.
+  const auto* window = GetSupplementable()->DomWindow();
+  if (!window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kContextGone);
     return ScriptPromise();
   }
 
-  if (!LocalFrame::HasTransientUserActivation(
-          GetSupplementable()->DomWindow()->GetFrame())) {
+  if (ShouldBlockHidServiceCall(GetExecutionContext(), exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
     return ScriptPromise();
@@ -359,7 +365,7 @@ void HID::Trace(Visitor* visitor) const {
   visitor->Trace(device_cache_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 }  // namespace blink

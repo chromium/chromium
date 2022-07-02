@@ -76,48 +76,53 @@ async function sendUdpAfterClose(address, port, options, requiredBytes) {
   }
 }
 
-async function readUdpAfterSocketClose(address, port, options) {
+async function readUdpAfterSocketClose(address, port) {
   try {
-    let udpSocket = new UDPSocket(address, port, options);
-    let { readable } = await udpSocket.connection;
+    let udpSocket = new UDPSocket(address, port);
+    let { readable, writable } = await udpSocket.connection;
     let reader = readable.getReader();
-    await udpSocket.close({ force: true });
-    let { value, done } = await reader.read();
-    if (!done) {
-      return 'Stream is not closed!';
-    }
-    return 'readUdpAferSocketClose succeeded.';
-  } catch (error) {
-    return ('readUdpAfterSocketClose failed: ' + error);
-  }
-}
-
-async function readUdpAfterStreamClose(address, port, options) {
-  try {
-    let udpSocket = new UDPSocket(address, port, options);
-    let { readable } = await udpSocket.connection;
-    let reader = readable.getReader();
+    let writer = writable.getWriter();
+    let rp = reader.read().catch(() => {});
     await reader.cancel();
-    let { value, done } = await reader.read();
-    if (!done) {
-      return 'Stream is not closed!';
-    }
+    await writer.abort();
+    await rp;
     return 'readUdpAferSocketClose succeeded.';
   } catch (error) {
     return ('readUdpAfterSocketClose failed: ' + error);
   }
 }
 
-async function closeUdpWithLockedReadable(address, port, force = false) {
+async function readUdpAfterStreamClose(address, port) {
+  try {
+    let udpSocket = new UDPSocket(address, port);
+    let { readable } = await udpSocket.connection;
+    let reader = readable.getReader();
+    let rp = reader.read().catch(() => {});
+    await reader.cancel();
+    let { value, done } = await rp;
+    if (!done) {
+      return 'Stream is not closed!';
+    }
+    return 'readUdpAferStreamClose succeeded.';
+  } catch (error) {
+    return ('readUdpAfterStreamClose failed: ' + error);
+  }
+}
+
+async function closeUdpWithLockedReadable(address, port, unlock = false) {
   try {
     let udpSocket = new UDPSocket(address, port);
     let { readable } = await udpSocket.connection;
 
     let reader = readable.getReader();
 
-    await udpSocket.close({ force });
+    if (unlock) {
+      reader.releaseLock();
+    }
 
-    if (force) {
+    await udpSocket.close();
+
+    if (unlock) {
       await udpSocket.closed;
     }
 

@@ -5,11 +5,13 @@
 #ifndef CONTENT_COMMON_THREAD_POOL_UTIL_H_
 #define CONTENT_COMMON_THREAD_POOL_UTIL_H_
 
+#include <stddef.h>
+
 namespace content {
 
 // Returns the minimum number of foreground threads that the ThreadPool
 // must have in a process that runs a renderer.
-int GetMinForegroundThreadsInRendererThreadPool();
+size_t GetMinForegroundThreadsInRendererThreadPool();
 
 }  // namespace content
 

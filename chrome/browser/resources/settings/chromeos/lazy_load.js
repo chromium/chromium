@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 // Uncomment as these modules are migrated to Polymer 3.
+import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_arc_adb.js';
 import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
 import './crostini_page/crostini_confirmation_dialog.js';
+import './crostini_page/crostini_container_select.js';
 import './crostini_page/crostini_disk_resize_confirmation_dialog.js';
 import './crostini_page/crostini_disk_resize_dialog.js';
 import './crostini_page/crostini_export_import.js';
@@ -22,6 +24,7 @@ import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_paths.js';
 import './os_a11y_page/os_a11y_page.js';
 import './os_a11y_page/manage_a11y_page.js';
+import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.js';
@@ -50,6 +53,7 @@ import './os_printing_page/cups_settings_add_printer_dialog.js';
 import './os_printing_page/os_printing_page.js';
 import './os_privacy_page/os_privacy_page.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.js';
+import './os_privacy_page/privacy_hub_page.js';
 import './os_privacy_page/smart_privacy_page.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
@@ -72,4 +76,5 @@ export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResu
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
+export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';

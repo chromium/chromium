@@ -91,6 +91,9 @@ void SafeBrowsingServiceImpl::Initialize(
   UMA_HISTOGRAM_BOOLEAN(
       safe_browsing::kSafeBrowsingEnabledHistogramName,
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled));
+  UMA_HISTOGRAM_BOOLEAN(safe_browsing::kSafeBrowsingEnabledHistogramName,
+                        prefs->GetBoolean(prefs::kSafeBrowsingEnhanced));
+  safe_browsing::RecordExtendedReportingMetrics(*prefs);
   UpdateSafeBrowsingEnabledState();
   if (safe_browsing_metrics_collector)
     safe_browsing_metrics_collector->StartLogging();

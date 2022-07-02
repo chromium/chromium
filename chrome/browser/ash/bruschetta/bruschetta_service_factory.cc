@@ -32,7 +32,7 @@ BruschettaServiceFactory::~BruschettaServiceFactory() = default;
 
 KeyedService* BruschettaServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BruschettaService();
+  return new BruschettaService(Profile::FromBrowserContext(context));
 }
 
 }  // namespace bruschetta

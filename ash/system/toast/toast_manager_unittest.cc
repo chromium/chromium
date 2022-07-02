@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
@@ -669,6 +669,10 @@ TEST_F(ToastManagerImplTest, DismissButton) {
 TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
   base::HistogramTester histogram_tester;
 
+  constexpr char kToastShownCountHistogramName[] =
+      "Ash.NotifierFramework.Toast.ShownCount";
+  constexpr char kToastTimeInQueueHistogramName[] =
+      "Ash.NotifierFramework.Toast.TimeInQueue";
   const ToastCatalogName catalog_name_1 = static_cast<ToastCatalogName>(1);
   const ToastCatalogName catalog_name_2 = static_cast<ToastCatalogName>(2);
   const base::TimeDelta duration = base::Seconds(3);
@@ -676,33 +680,26 @@ TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
   // Show Toast with catalog_name_1.
   std::string id1 = ShowToast("TEXT1", duration,
                               /*visible_on_lock_screen=*/false, catalog_name_1);
-
-  // Expect shown count.
-  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
-                                     catalog_name_1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
+                                     catalog_name_1, 1);
 
   // Expect "TimeInQueue" metric to record zero since there were no toasts in
   // the queue.
-  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
-                                         base::Seconds(0),
-                                         /*expected_count=*/1);
+  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
+                                         base::Seconds(0), 1);
 
   // Replace existing toast a couple of times.
   ReplaceToast(id1, "TEXT1_UPDATED", duration,
                /*visible_on_lock_screen=*/false, catalog_name_1);
   ReplaceToast(id1, "TEXT1_UPDATED", duration,
                /*visible_on_lock_screen=*/false, catalog_name_1);
-
-  // Expect shown count.
-  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
-                                     catalog_name_1,
-                                     /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
+                                     catalog_name_1, 3);
 
   // Expect "TimeInQueue" metric to record zero since the same toast was shown,
   // so it wasn't queued.
-  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
-                                         base::Seconds(0),
-                                         /*expected_count=*/3);
+  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
+                                         base::Seconds(0), 3);
 
   // Try to show toast with catalog_name_2 right after last toast was shown.
   ShowToast("TEXT2", duration, /*visible_on_lock_screen=*/false,
@@ -710,16 +707,13 @@ TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
 
   // Fast forward the toast's duration so the queued toast is shown.
   task_environment()->FastForwardBy(duration);
-
-  // Expect shown count.
-  histogram_tester.ExpectBucketCount("NotifierFramework.Toast.ShownCount",
-                                     catalog_name_2,
-                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kToastShownCountHistogramName,
+                                     catalog_name_2, 1);
 
   // Expect "TimeInQueue" metric to record the toast's duration since the second
   // toast was queued right after the first one was shown.
-  histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
-                                         duration, /*expected_count=*/1);
+  histogram_tester.ExpectTimeBucketCount(kToastTimeInQueueHistogramName,
+                                         duration, 1);
 }
 
 // Table-driven test that checks that a toast's expired callback is run when a

@@ -204,50 +204,41 @@ TEST(FontPlatformDataMacTest, VariableOpticalSizingThreshold) {
 }
 
 TEST(FontPlatformDataMacTest, VariableWeight) {
-  if (@available(macOS 10.13, *)) {
-    sk_sp<SkTypeface> system_font(MakeSystemFontOfSize(19));
-    EXPECT_FALSE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 400));
-    EXPECT_TRUE(
-        VariableAxisChangeEffective(system_font.get(), kWghtTag, 400.5));
-    EXPECT_TRUE(
-        VariableAxisChangeEffective(system_font.get(), kWghtTag, 395.5));
-    EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 2000));
-    EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 0));
-  }
+  sk_sp<SkTypeface> system_font(MakeSystemFontOfSize(19));
+  EXPECT_FALSE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 400));
+  EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 400.5));
+  EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 395.5));
+  EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 2000));
+  EXPECT_TRUE(VariableAxisChangeEffective(system_font.get(), kWghtTag, 0));
 }
 
 TEST(FontPlatformDataMacTest, VariableWeightClamped) {
-  if (@available(macOS 10.13, *)) {
-    sk_sp<SkTypeface> system_font(MakeSystemFontOfSize(19));
+  sk_sp<SkTypeface> system_font(MakeSystemFontOfSize(19));
 
-    SkFontArguments::VariationPosition::Coordinate coordinates[1] = {
-        {kWghtTag, 1000}};
+  SkFontArguments::VariationPosition::Coordinate coordinates[1] = {
+      {kWghtTag, 1000}};
 
-    SkFontArguments::VariationPosition variation_design_position_black{
-        coordinates, 1};
-    sk_sp<SkTypeface> black_typeface(
-        system_font->makeClone(SkFontArguments().setVariationDesignPosition(
-            variation_design_position_black)));
+  SkFontArguments::VariationPosition variation_design_position_black{
+      coordinates, 1};
+  sk_sp<SkTypeface> black_typeface(
+      system_font->makeClone(SkFontArguments().setVariationDesignPosition(
+          variation_design_position_black)));
 
-    EXPECT_FALSE(
-        VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 1001));
-    EXPECT_FALSE(
-        VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 10000));
-    EXPECT_TRUE(
-        VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 999));
+  EXPECT_FALSE(
+      VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 1001));
+  EXPECT_FALSE(
+      VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 10000));
+  EXPECT_TRUE(VariableAxisChangeEffective(black_typeface.get(), kWghtTag, 999));
 
-    coordinates[0].value = 1;
-    SkFontArguments::VariationPosition variation_design_position_thin{
-        coordinates, 1};
-    sk_sp<SkTypeface> thin_typeface(
-        system_font->makeClone(SkFontArguments().setVariationDesignPosition(
-            variation_design_position_thin)));
+  coordinates[0].value = 1;
+  SkFontArguments::VariationPosition variation_design_position_thin{coordinates,
+                                                                    1};
+  sk_sp<SkTypeface> thin_typeface(
+      system_font->makeClone(SkFontArguments().setVariationDesignPosition(
+          variation_design_position_thin)));
 
-    EXPECT_FALSE(VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, 0));
-    EXPECT_FALSE(
-        VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, -1));
-    EXPECT_TRUE(VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, 2));
-  }
+  EXPECT_FALSE(VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, 0));
+  EXPECT_FALSE(VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, -1));
+  EXPECT_TRUE(VariableAxisChangeEffective(thin_typeface.get(), kWghtTag, 2));
 }
-
 }

@@ -290,6 +290,8 @@ void VideoCaptureClient::OnBufferDestroyed(int32_t buffer_id) {
     client_buffers_.erase(buffer_iter);
 }
 
+void VideoCaptureClient::OnNewCropVersion(uint32_t crop_version) {}
+
 void VideoCaptureClient::OnClientBufferFinished(int buffer_id,
                                                 MappingKeepAlive mapping) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

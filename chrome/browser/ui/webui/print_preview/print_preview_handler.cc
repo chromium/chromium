@@ -525,9 +525,8 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
     return;
 
   std::vector<mojom::PrinterType> deny_list;
-  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
-  for (const base::Value& deny_list_value :
-       deny_list_from_prefs->GetListDeprecated()) {
+  deny_list.reserve(deny_list_from_prefs->GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
     if (deny_list_str == "extension")
@@ -974,13 +973,12 @@ void PrintPreviewHandler::ClosePreviewDialog() {
 
 void PrintPreviewHandler::SendPrinterCapabilities(
     const std::string& callback_id,
-    base::Value settings_info) {
+    base::Value::Dict settings_info) {
   // Check that |settings_info| is valid.
-  if (settings_info.is_dict() &&
-      settings_info.FindKeyOfType(kSettingCapabilities,
-                                  base::Value::Type::DICTIONARY)) {
+  if (settings_info.FindDict(kSettingCapabilities)) {
     VLOG(1) << "Get printer capabilities finished";
-    ResolveJavascriptCallback(base::Value(callback_id), settings_info);
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(std::move(settings_info)));
     return;
   }
 
@@ -1144,16 +1142,19 @@ PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
 }
 
 void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
-                                          const base::ListValue& printers) {
+                                          base::Value::List printers) {
   DCHECK(printer_type == mojom::PrinterType::kExtension ||
          printer_type == mojom::PrinterType::kLocal);
-  DCHECK(!printers.GetListDeprecated().empty());
+  // Save the count here, as `printers` gets moved below.
+  const size_t printer_count = printers.size();
+  DCHECK(printer_count);
   FireWebUIListener("printers-added",
-                    base::Value(static_cast<int>(printer_type)), printers);
+                    base::Value(static_cast<int>(printer_type)),
+                    base::Value(std::move(printers)));
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {
-    ReportNumberOfPrinters(printers.GetListDeprecated().size());
+    ReportNumberOfPrinters(printer_count);
     has_logged_printers_count_ = true;
   }
 }
@@ -1182,7 +1183,7 @@ void PrintPreviewHandler::OnPrintResult(const std::string& callback_id,
 
 void PrintPreviewHandler::BadMessageReceived() {
   bad_message::ReceivedBadMessage(
-      GetInitiator()->GetMainFrame()->GetProcess(),
+      GetInitiator()->GetPrimaryMainFrame()->GetProcess(),
       bad_message::BadMessageReason::PPH_EXTRA_PREVIEW_MESSAGE);
 }
 

@@ -39,8 +39,8 @@ TEST_F(DownloadShelfContextMenuTest, InvalidDownloadWontCrashContextMenu) {
   auto download_weak_ptr = download_ui_model->GetWeakPtr();
   EXPECT_CALL(*item, IsMixedContent()).WillRepeatedly(Return(true));
   EXPECT_CALL(*item, IsPaused()).WillRepeatedly(Return(true));
-  // 2 out of 3 commands should be executed.
-  EXPECT_CALL(*item, OpenDownload()).Times(2);
+  // 1 out of 2 commands should be executed.
+  EXPECT_CALL(*item, OpenDownload()).Times(1);
 
   MakeContextMenu(download_ui_model.get());
   EXPECT_NE(menu()->GetMenuModel(), nullptr);
@@ -49,15 +49,8 @@ TEST_F(DownloadShelfContextMenuTest, InvalidDownloadWontCrashContextMenu) {
   EXPECT_TRUE(menu()->IsCommandIdVisible(DownloadCommands::PAUSE));
   menu()->ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE, 0);
 
+  // Weakptr should be invalidated when `download_ui_model` is released.
   download_ui_model.reset();
-  EXPECT_NE(menu()->GetMenuModel(), nullptr);
-  EXPECT_TRUE(menu()->IsCommandIdEnabled(DownloadCommands::KEEP));
-  EXPECT_TRUE(menu()->IsCommandIdChecked(DownloadCommands::PAUSE));
-  EXPECT_TRUE(menu()->IsCommandIdVisible(DownloadCommands::PAUSE));
-  menu()->ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE, 0);
-
-  // |download_ui_model| is released by the task runner.
-  RunUntilIdle();
   EXPECT_EQ(menu()->GetMenuModel(), nullptr);
   EXPECT_FALSE(menu()->IsCommandIdEnabled(DownloadCommands::KEEP));
   EXPECT_FALSE(menu()->IsCommandIdChecked(DownloadCommands::PAUSE));

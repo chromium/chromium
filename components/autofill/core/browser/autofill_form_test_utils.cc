@@ -103,6 +103,7 @@ FormData GetFormData(const FormDataDescription& d) {
     ff.unique_renderer_id =
         dd.unique_renderer_id.value_or(MakeFieldRendererId());
     ff.is_focusable = dd.is_focusable;
+    ff.is_visible = dd.is_visible;
     if (!dd.autocomplete_attribute.empty())
       ff.autocomplete_attribute = dd.autocomplete_attribute;
     if (dd.label)

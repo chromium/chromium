@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 """Module for tag-related helper functions."""
 
+import typing
+
+from flake_suppressor import common_typing as ct
+
 from gpu_tests import gpu_integration_test
 
 IGNORED_TAGS_TO_TEMPORARILY_KEEP = set([
@@ -11,7 +15,7 @@ IGNORED_TAGS_TO_TEMPORARILY_KEEP = set([
 ])
 
 
-def RemoveMostIgnoredTags(tags):
+def RemoveMostIgnoredTags(tags: typing.Iterable[str]) -> ct.TagTupleType:
   """Removes ignored tags from |tags| except temporarily kept ones.
 
   The temporarily kept ones can later be removed by
@@ -24,7 +28,7 @@ def RemoveMostIgnoredTags(tags):
     tags: An iterable of strings containing tags
 
   Returns:
-    A list of strings containing the contents of |tags| with ignored tags
+    A tuple of strings containing the contents of |tags| with ignored tags
     removed except for the ones in IGNORED_TAGS_TO_TEMPORARILY_KEEP.
   """
   ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
@@ -34,10 +38,11 @@ def RemoveMostIgnoredTags(tags):
   tags |= ignored_tags_to_keep
   tags = list(tags)
   tags.sort()
-  return tags
+  return tuple(tags)
 
 
-def RemoveTemporarilyKeptIgnoredTags(tags):
+def RemoveTemporarilyKeptIgnoredTags(tags: typing.Iterable[str]
+                                     ) -> ct.TagTupleType:
   """Removes ignored tags that were temporarily kept.
 
   Args:
@@ -45,10 +50,10 @@ def RemoveTemporarilyKeptIgnoredTags(tags):
         through RemoveMostIgnoredTags()
 
   Returns:
-    A list of strings containing the contents of |tags| with the contents of
+    A tuple of strings containing the contents of |tags| with the contents of
     IGNORED_TAGS_TO_TEMPORARILY_KEEP removed. Thus, the return value should not
     have any remaining ignored tags.
   """
   tags = list(set(tags) - IGNORED_TAGS_TO_TEMPORARILY_KEEP)
   tags.sort()
-  return tags
+  return tuple(tags)

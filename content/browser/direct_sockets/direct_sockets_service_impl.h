@@ -81,8 +81,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void SetEnterpriseManagedForTesting(bool enterprise_managed);
 
-  static void SetPermissionCallbackForTesting(PermissionCallback callback);
-
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
   static absl::optional<net::IPEndPoint> GetLocalAddrForTesting(

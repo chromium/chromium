@@ -9,7 +9,8 @@
 
 #include <vector>
 
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +42,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kExcessiveReportingOrigins = 9,
     kNoMatchingSourceFilterData = 10,
     kProhibitedByBrowserPolicy = 11,
-    kMaxValue = kProhibitedByBrowserPolicy,
+    kNoMatchingConfigurations = 12,
+    kMaxValue = kNoMatchingConfigurations,
   };
 
   // Represents the potential aggregatable outcomes from attempting to register
@@ -98,12 +100,15 @@ class CONTENT_EXPORT AttributionTrigger {
   // Should only be created with values that the browser process has already
   // validated. |conversion_destination| should be filled by a navigation origin
   // known by the browser process.
-  AttributionTrigger(url::Origin destination_origin,
-                     url::Origin reporting_origin,
-                     AttributionFilterData filters,
-                     absl::optional<uint64_t> debug_key,
-                     std::vector<EventTriggerData> event_triggers,
-                     AttributionAggregatableTrigger aggregatable_trigger);
+  AttributionTrigger(
+      url::Origin destination_origin,
+      url::Origin reporting_origin,
+      AttributionFilterData filters,
+      AttributionFilterData not_filters,
+      absl::optional<uint64_t> debug_key,
+      std::vector<EventTriggerData> event_triggers,
+      std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
+      AttributionAggregatableValues aggregatable_values);
 
   AttributionTrigger(const AttributionTrigger& other);
   AttributionTrigger& operator=(const AttributionTrigger& other);
@@ -117,16 +122,23 @@ class CONTENT_EXPORT AttributionTrigger {
 
   const AttributionFilterData& filters() const { return filters_; }
 
-  absl::optional<uint64_t> debug_key() const { return debug_key_; }
+  const AttributionFilterData& not_filters() const { return not_filters_; }
 
-  const AttributionAggregatableTrigger& aggregatable_trigger() const {
-    return aggregatable_trigger_;
-  }
+  absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
   const std::vector<EventTriggerData>& event_triggers() const {
     return event_triggers_;
+  }
+
+  const std::vector<AttributionAggregatableTriggerData>&
+  aggregatable_trigger_data() const {
+    return aggregatable_trigger_data_;
+  }
+
+  const AttributionAggregatableValues& aggregatable_values() const {
+    return aggregatable_values_;
   }
 
  private:
@@ -139,11 +151,14 @@ class CONTENT_EXPORT AttributionTrigger {
 
   AttributionFilterData filters_;
 
+  AttributionFilterData not_filters_;
+
   absl::optional<uint64_t> debug_key_;
 
   std::vector<EventTriggerData> event_triggers_;
 
-  AttributionAggregatableTrigger aggregatable_trigger_;
+  std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
+  AttributionAggregatableValues aggregatable_values_;
 };
 
 }  // namespace content

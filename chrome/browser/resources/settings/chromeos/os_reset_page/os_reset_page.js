@@ -9,47 +9,61 @@
  */
 import './os_powerwash_dialog.js';
 
-import {getEuicc, getNonPendingESimProfiles} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
-import {assert} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-reset-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const OsSettingsResetPageElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
 
-  behaviors: [DeepLinkingBehavior, RouteObserverBehavior],
+/** @polymer */
+class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
+  static get is() {
+    return 'os-settings-reset-page';
+  }
 
-  properties: {
-    /** @private */
-    showPowerwashDialog_: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
-     * @private
-     */
-    installedESimProfiles_: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /** @private */
+      showPowerwashDialog_: Boolean,
+
+      /**
+       * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
+       * @private
+       */
+      installedESimProfiles_: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([chromeos.settings.mojom.Setting.kPowerwash]),
-    },
-  },
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([chromeos.settings.mojom.Setting.kPowerwash]),
+      },
+    };
+  }
 
   /** @private */
   /**
@@ -70,18 +84,18 @@ Polymer({
         this.showPowerwashDialog_ = true;
       });
     });
-  },
+  }
 
   /** @private */
   onPowerwashDialogClose_() {
     this.showPowerwashDialog_ = false;
     focusWithoutInk(assert(this.$.powerwash));
-  },
+  }
 
   /**
    * RouteObserverBehavior
    * @param {!Route} newRoute
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
@@ -91,5 +105,8 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsResetPageElement.is, OsSettingsResetPageElement);

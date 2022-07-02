@@ -685,9 +685,9 @@ struct Response {
 };
 
 struct Context {
-  Context() : result(ERR_IO_PENDING) {}
+  Context() = default;
 
-  int result;
+  int result = ERR_IO_PENDING;
   TestCompletionCallback callback;
   std::unique_ptr<HttpTransaction> trans;
 };
@@ -772,7 +772,7 @@ std::string GenerateCacheKey(const std::string& url) {
 using HttpCacheTest = TestWithTaskEnvironment;
 class HttpCacheIOCallbackTest : public HttpCacheTest {
  public:
-  HttpCacheIOCallbackTest() {}
+  HttpCacheIOCallbackTest() = default;
   ~HttpCacheIOCallbackTest() override = default;
 
   // HttpCache::ActiveEntry is private, doing this allows tests to use it
@@ -814,7 +814,7 @@ class HttpCacheIOCallbackTest : public HttpCacheTest {
 
 class HttpSplitCacheKeyTest : public HttpCacheTest {
  public:
-  HttpSplitCacheKeyTest() {}
+  HttpSplitCacheKeyTest() = default;
   ~HttpSplitCacheKeyTest() override = default;
 
   std::string ComputeCacheKey(const std::string& url_string) {
@@ -825,7 +825,7 @@ class HttpSplitCacheKeyTest : public HttpCacheTest {
     request_info.method = "GET";
     request_info.network_isolation_key = net::NetworkIsolationKey(site, site);
     MockHttpCache cache;
-    return cache.http_cache()->GenerateCacheKeyForTest(&request_info);
+    return cache.http_cache()->GenerateCacheKeyForRequest(&request_info);
   }
 };
 
@@ -1073,6 +1073,54 @@ TEST_F(HttpCacheTest,
     EXPECT_THAT(connected_handler.transports(),
                 ElementsAre(TestTransportInfo()));
   }
+}
+
+// This test verifies that the callback passed to SetConnectedCallback() is
+// called with the right transport type when the cached entry was originally
+// fetched via proxy.
+TEST_F(HttpCacheTest, SimpleGET_ConnectedCallbackOnCacheHitFromProxy) {
+  MockHttpCache cache;
+
+  TransportInfo proxied_transport_info = TestTransportInfo();
+  proxied_transport_info.type = TransportType::kProxied;
+
+  {
+    // Populate the cache.
+    ScopedMockTransaction mock_transaction(kSimpleGET_Transaction);
+    mock_transaction.transport_info = proxied_transport_info;
+    RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
+  }
+
+  // Establish a baseline.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // Load from the cache (only), observe the callback being called.
+
+  ConnectedHandler connected_handler;
+  MockHttpRequest request(kSimpleGET_Transaction);
+
+  std::unique_ptr<HttpTransaction> transaction;
+  EXPECT_THAT(cache.CreateTransaction(&transaction), IsOk());
+  ASSERT_THAT(transaction, NotNull());
+
+  transaction->SetConnectedCallback(connected_handler.Callback());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      transaction->Start(&request, callback.callback(), NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Still only 1 transaction for the previous request. The connected callback
+  // was not called by a second network transaction.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // The transport info mentions both the cache and the original proxy.
+  TransportInfo expected_transport_info = TestTransportInfo();
+  expected_transport_info.type = TransportType::kCachedFromProxy;
+
+  EXPECT_THAT(connected_handler.transports(),
+              ElementsAre(expected_transport_info));
 }
 
 class HttpCacheTest_SplitCacheFeature
@@ -3756,12 +3804,11 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationNoMatch1) {
     EXPECT_EQ(LOAD_STATE_IDLE, context->trans->GetLoadState());
   }
 
-  for (size_t i = 0; i < context_list.size(); i++) {
-    if (context_list[i]->result == ERR_IO_PENDING)
-      context_list[i]->result = context_list[i]->callback.WaitForResult();
+  for (auto& context : context_list) {
+    if (context->result == ERR_IO_PENDING)
+      context->result = context->callback.WaitForResult();
 
-    ReadAndVerifyTransaction(context_list[i]->trans.get(),
-                             kSimpleGET_Transaction);
+    ReadAndVerifyTransaction(context->trans.get(), kSimpleGET_Transaction);
   }
 
   EXPECT_EQ(2, cache.network_layer()->transaction_count());
@@ -5288,7 +5335,8 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelFirst) {
   // Allow all requests to move from the Create queue to the active entry.
   // All would have been added to writers.
   base::RunLoop().RunUntilIdle();
-  std::string cache_key = cache.http_cache()->GenerateCacheKeyForTest(&request);
+  std::string cache_key =
+      cache.http_cache()->GenerateCacheKeyForRequest(&request);
   EXPECT_EQ(kNumTransactions, cache.GetCountWriterTransactions(cache_key));
 
   // The second transaction skipped validation, thus only one network
@@ -5647,7 +5695,7 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-// Tests that we can delete the cache while creating the backend.
+// Tests that we can delete the HttpCache while creating the backend.
 TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
   auto cache = std::make_unique<MockHttpCache>(base::WrapUnique(factory));
@@ -5666,20 +5714,16 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   // The request should be creating the disk cache.
   EXPECT_FALSE(c->callback.have_result());
 
-  // We cannot call FinishCreation because the factory itself will go away with
-  // the cache.
-  CompletionOnceCallback callback = factory->ReleaseCallback();
-  std::unique_ptr<disk_cache::Backend>* backend = factory->backend();
+  // Manually arrange for completion to happen after ~HttpCache.
+  // This can't be done via FinishCreation() since that's in `factory`, and
+  // that's owned by `cache`.
+  disk_cache::BackendResultCallback callback = factory->ReleaseCallback();
 
   cache.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Even though |HttpCache| is destroyed, the Backend that was passed in to
-  // disk_cache::CreateCacheBackend() must still be valid until the callback is
-  // called.
-  backend->reset();
-  // |callback| will destroy |backend|.
-  std::move(callback).Run(ERR_ABORTED);
+  // Simulate the backend completion callback running now the HttpCache is gone.
+  std::move(callback).Run(disk_cache::BackendResult::MakeError(ERR_ABORTED));
 }
 
 // Tests that we can delete the cache while creating the backend, from within
@@ -8261,7 +8305,8 @@ TEST_F(HttpCacheTest, Sparse_WaitForEntry) {
   // Simulate a previous transaction being cancelled.
   disk_cache::Entry* entry;
   MockHttpRequest request(transaction);
-  std::string cache_key = cache.http_cache()->GenerateCacheKeyForTest(&request);
+  std::string cache_key =
+      cache.http_cache()->GenerateCacheKeyForRequest(&request);
   ASSERT_TRUE(cache.OpenBackendEntry(cache_key, &entry));
   entry->CancelSparseIO();
 
@@ -11763,7 +11808,7 @@ HttpCacheHugeResourceTest::GetTestModes() {
 
   for (const auto phase : kTransactionPhases)
     for (const auto initializer : kInitializers)
-      test_modes.push_back(std::make_pair(phase, initializer));
+      test_modes.emplace_back(phase, initializer);
 
   return test_modes;
 }
@@ -12706,7 +12751,7 @@ TEST_F(HttpCacheTest, GetResourceURLFromHttpCacheKey) {
 
 class TestCompletionCallbackForHttpCache : public TestCompletionCallbackBase {
  public:
-  TestCompletionCallbackForHttpCache() {}
+  TestCompletionCallbackForHttpCache() = default;
   ~TestCompletionCallbackForHttpCache() override = default;
 
   CompletionRepeatingCallback callback() {
@@ -13450,6 +13495,300 @@ TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {
 
   EXPECT_EQ(304, response.headers->response_code());
   EXPECT_EQ("cross-origin", response_corp_header);
+}
+
+class HttpCacheSingleKeyedCacheTest : public HttpCacheTest {
+ public:
+  void SetUp() override {
+    // The single-keyed cache feature is meaningless when the split cache is not
+    // enabled. The //net layer doesn't care whether or not the
+    // "CacheTransparency" feature is enabled.
+    feature_list_.InitWithFeatureState(
+        net::features::kSplitCacheByNetworkIsolationKey, true);
+    HttpCacheTest::SetUp();
+  }
+
+  void RunTransactionTestForSingleKeyedCache(
+      HttpCache* cache,
+      const MockTransaction& trans_info,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& checksum) {
+    MockTransaction transaction(trans_info);
+    transaction.load_flags |= LOAD_USE_SINGLE_KEYED_CACHE;
+
+    AddMockTransaction(&transaction);
+    MockHttpRequest request(transaction);
+    request.network_isolation_key = network_isolation_key;
+    request.checksum = checksum;
+
+    HttpResponseInfo response_info;
+    RunTransactionTestWithRequest(cache, transaction, request, &response_info);
+  }
+
+  void RunSimpleTransactionTestForSingleKeyedCache(
+      HttpCache* cache,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& checksum) {
+    RunTransactionTestForSingleKeyedCache(cache, kSimpleGET_Transaction,
+                                          network_isolation_key, checksum);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+constexpr char kChecksumForSimpleGET[] =
+    "80B4C37CEF5CFE69B4A90830282AA2BB772DC4CBC00491A219CE5F2AD75C7B58";
+
+TEST_F(HttpCacheSingleKeyedCacheTest, SuccessfulGET) {
+  MockHttpCache cache;
+  // The first request adds the item to the cache.
+  {
+    const auto site_a = SchemefulSite(GURL("https://a.com/"));
+    RunSimpleTransactionTestForSingleKeyedCache(
+        cache.http_cache(), NetworkIsolationKey(site_a, site_a),
+        kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request verifies that the same cache entry is used with a
+  // different NetworkIsolationKey
+  {
+    const auto site_b = SchemefulSite(GURL("https://b.com/"));
+    RunSimpleTransactionTestForSingleKeyedCache(
+        cache.http_cache(), NetworkIsolationKey(site_b, site_b),
+        kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, GETWithChecksumMismatch) {
+  MockHttpCache cache;
+  const auto site_a = SchemefulSite(GURL("https://a.com/"));
+  // The first request adds the item to the cache.
+  {
+    RunSimpleTransactionTestForSingleKeyedCache(
+        cache.http_cache(), NetworkIsolationKey(site_a, site_a),
+        "000000000000000000000000000000000000000000000000000000000000000");
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request doesn't use the item that was added to the single-keyed
+  // cache, but adds it to the split cache instead.
+  {
+    RunSimpleTransactionTestForSingleKeyedCache(
+        cache.http_cache(), NetworkIsolationKey(site_a, site_a),
+        "000000000000000000000000000000000000000000000000000000000000000");
+
+    // Fetches from the network again, this time into the split cache.
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
+
+  // The third request uses the split cache.
+  {
+    RunSimpleTransactionTestForSingleKeyedCache(
+        cache.http_cache(), NetworkIsolationKey(site_a, site_a),
+        "000000000000000000000000000000000000000000000000000000000000000");
+
+    // Fetches from the split cache.
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(3, cache.disk_cache()->open_count());  // opens both cache entries
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, GETWithBadResponseCode) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  transaction.status = "HTTP/1.1 404 Not Found";
+  const auto site_a = SchemefulSite(GURL("https://a.com/"));
+  // The first request adds the item to the single-keyed cache.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request verifies that the cache entry is not re-used
+  // but a new one is created in the split cache.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, SuccessfulRevalidation) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  // Add a cache control header to permit the entry to be cached, with max-age 0
+  // to force relatidation next time. Add Etag to permit it to be revalidated.
+  transaction.response_headers =
+      "Etag: \"foo\"\n"
+      "Cache-Control: max-age=0\n";
+  {
+    const auto site_a = SchemefulSite(GURL("https://a.com/"));
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request revalidates the existing entry.
+  {
+    const auto site_b = SchemefulSite(GURL("https://b.com/"));
+    transaction.status = "HTTP/1.1 304 Not Modified";
+    // Allow it to be reused without validation next time by increasing max-age.
+    transaction.response_headers =
+        "Etag: \"foo\"\n"
+        "Cache-Control: max-age=10000\n";
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_b, site_b),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The third request re-uses the entry.
+  {
+    const auto site_c = SchemefulSite(GURL("https://c.com/"));
+    // Load from cache again.
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_c, site_c),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, RevalidationChangingUncheckedHeader) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  // Add a cache control header to permit the entry to be cached, with max-age 0
+  // to force relatidation next time. Add Etag to permit it to be revalidated.
+  transaction.response_headers =
+      "Etag: \"foo\"\n"
+      "Cache-Control: max-age=0\n";
+  {
+    const auto site_a = SchemefulSite(GURL("https://a.com/"));
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request revalidates the existing entry.
+  {
+    const auto site_b = SchemefulSite(GURL("https://b.com/"));
+    transaction.status = "HTTP/1.1 304 Not Modified";
+    // Add a response header. This is the only difference from the
+    // SuccessfulRevalidation test.
+    transaction.response_headers =
+        "Etag: \"foo\"\n"
+        "Cache-Control: max-age=10000\n"
+        "X-Unchecked-Header: 1\n";
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_b, site_b),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The third request re-uses the entry.
+  {
+    const auto site_c = SchemefulSite(GURL("https://c.com/"));
+    // Load from cache again.
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_c, site_c),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, RevalidationChangingCheckedHeader) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  // Add a cache control header to permit the entry to be cached, with max-age 0
+  // to force relatidation next time. Add Etag to permit it to be revalidated.
+  transaction.response_headers =
+      "Etag: \"foo\"\n"
+      "Cache-Control: max-age=0\n";
+  {
+    const auto site_a = SchemefulSite(GURL("https://a.com/"));
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The second request marks the single-keyed cache entry unusable because the
+  // checksum no longer matches.
+  {
+    const auto site_b = SchemefulSite(GURL("https://b.com/"));
+    transaction.status = "HTTP/1.1 304 Not Modified";
+    // Add the "Vary" response header.
+    transaction.response_headers =
+        "Etag: \"foo\"\n"
+        "Cache-Control: max-age=10000\n"
+        "Vary: Cookie\n";
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_b, site_b),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(1, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // The third request has to go to the network because the single-keyed cache
+  // entry is unusable. It writes a new entry to the split cache.
+  {
+    const auto site_c = SchemefulSite(GURL("https://c.com/"));
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_c, site_c),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(3, cache.network_layer()->transaction_count());
+    EXPECT_EQ(2, cache.disk_cache()->open_count());
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
 }
 
 }  // namespace net

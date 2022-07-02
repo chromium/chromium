@@ -41,6 +41,14 @@ class NotificationGroupingController
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
 
+  void ConvertFromSingleToGroupNotificationAfterAnimation(
+      const std::string& notification_id,
+      std::string& parent_id,
+      message_center::Notification* parent_notification);
+
+  message_center::NotificationViewController*
+  GetActiveNotificationViewController();
+
  protected:
   // Adds grouped child notifications that belong to a parent message
   // view.
@@ -56,7 +64,10 @@ class NotificationGroupingController
   // a grouped notification. Does this by creating a copy of the
   // parent notification and switching the notification_ids of the
   // current message view associated with the parent notification.
-  void SetupParentNotification(std::string* parent_id);
+  // Returns the new parent_id for the newly created  copy.
+  const std::string& SetupParentNotification(
+      message_center::Notification* parent_notification,
+      const std::string& parent_id);
 
   // Creates a copy notification that will act as a parent notification
   // for its group.
@@ -67,9 +78,6 @@ class NotificationGroupingController
   // `notifications_in_parent_map` Also remove from it's parent notification's
   // view if if the view currently exists.
   void RemoveGroupedChild(const std::string& notification_id);
-
-  message_center::NotificationViewController*
-  GetActiveNotificationViewController();
 
   // Whether a grouped parent notification is being added to MessageCenter. Used
   // to prevent an infinite loop.

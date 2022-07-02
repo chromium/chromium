@@ -62,15 +62,15 @@ constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 // devices.
 const int kAudioDevicesCountHistogramMax = 30;
 
-media_router::MediaRouterDialogOpenOrigin ConvertToOrigin(
+media_router::MediaRouterDialogActivationLocation ConvertToOrigin(
     global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
   switch (entry_point) {
     case global_media_controls::GlobalMediaControlsEntryPoint::kPresentation:
-      return media_router::MediaRouterDialogOpenOrigin::PAGE;
+      return media_router::MediaRouterDialogActivationLocation::PAGE;
     case global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray:
-      return media_router::MediaRouterDialogOpenOrigin::SYSTEM_TRAY;
+      return media_router::MediaRouterDialogActivationLocation::SYSTEM_TRAY;
     case global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon:
-      return media_router::MediaRouterDialogOpenOrigin::TOOLBAR;
+      return media_router::MediaRouterDialogActivationLocation::TOOLBAR;
   }
 }
 

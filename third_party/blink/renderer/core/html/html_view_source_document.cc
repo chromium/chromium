@@ -61,7 +61,7 @@ class ViewSourceEventListener : public NativeEventListener {
   void Invoke(ExecutionContext*, Event* event) override {
     DCHECK_EQ(event->type(), event_type_names::kChange);
     table_->setAttribute(html_names::kClassAttr,
-                         checkbox_->checked() ? "line-wrap" : "");
+                         checkbox_->Checked() ? "line-wrap" : "");
   }
 
   void Trace(Visitor* visitor) const override {

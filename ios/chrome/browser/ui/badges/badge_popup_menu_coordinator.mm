@@ -38,7 +38,7 @@
 // The PopupMenuTableViewController managed by this coordinator.
 @property(nonatomic, strong) PopupMenuTableViewController* popupViewController;
 
-// The presenter of |popupViewController|.
+// The presenter of `popupViewController`.
 @property(nonatomic, strong) PopupMenuPresenter* popupMenuPresenter;
 
 // The consumer of the coordinator.
@@ -147,7 +147,7 @@
 
 #pragma mark - Private
 
-// Adds a modal request for the Infobar of |infobarType|.
+// Adds a modal request for the Infobar of `infobarType`.
 - (void)addModalRequestForInfobarType:(InfobarType)infobarType {
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
@@ -165,7 +165,7 @@
         params);
 }
 
-// Retrieves the existing Infobar of |type|.
+// Retrieves the existing Infobar of `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(
       self.browser->GetWebStateList()->GetActiveWebState());

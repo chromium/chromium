@@ -14,8 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -161,10 +159,6 @@ public class ContextualSearchSelectionController {
         mTabSupplier = tabSupplier;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mContainsWordPattern = Pattern.compile(CONTAINS_WORD_PATTERN);
-        // TODO(donnd): remove when behind-the-flag bug fixed (crbug.com/786589).
-        Log.i(TAG, "Tap suppression enabled: %s",
-                ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED));
     }
 
     /**
@@ -343,8 +337,7 @@ public class ContextualSearchSelectionController {
                 mAreSelectionHandlesShown = true;
                 mAreSelectionHandlesBeingDragged = false;
                 mWasTapGestureDetected = false;
-                mSelectionType = mPolicy.canResolveLongpress() ? SelectionType.RESOLVING_LONG_PRESS
-                                                               : SelectionType.LONG_PRESS;
+                mSelectionType = SelectionType.RESOLVING_LONG_PRESS;
                 shouldHandleSelection = true;
                 SelectionPopupController controller = getSelectionPopupController();
                 if (controller != null) mSelectedText = controller.getSelectedText();
@@ -450,10 +443,8 @@ public class ContextualSearchSelectionController {
      * or #handleNonSuppressedTap() after a possible delay.
      * This should be called when the context is fully built (by gathering surrounding text
      * if needed, etc) but before showing any UX.
-     * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} currently being
-     * used to measure or suppress the UI by Ranker.
      */
-    void handleShouldSuppressTap(ContextualSearchInteractionRecorder interactionRecorder) {
+    void handleShouldSuppressTap() {
         int x = (int) mX;
         int y = (int) mY;
 
@@ -467,32 +458,10 @@ public class ContextualSearchSelectionController {
         mHandler.handleMetricsForWouldSuppressTap(tapHeuristics);
 
         boolean shouldSuppressTapBasedOnHeuristics = tapHeuristics.shouldSuppressTap();
-        boolean shouldOverrideMlTapSuppression = tapHeuristics.shouldOverrideMlTapSuppression();
-
-        // Make sure Tap Suppression features are consistent.
-        assert !ContextualSearchFieldTrial.getSwitch(
-                ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED)
-                || interactionRecorder.isQueryEnabled()
-            : "Tap Suppression requires the Ranker Query feature to be enabled!";
-
-        // If we're suppressing based on heuristics then Ranker doesn't need to know about it.
-        @AssistRankerPrediction
-        int tapPrediction = AssistRankerPrediction.UNDETERMINED;
-        if (!shouldSuppressTapBasedOnHeuristics) {
-            tapHeuristics.logRankerTapSuppression(interactionRecorder);
-            mHandler.logNonHeuristicFeatures(interactionRecorder);
-            tapPrediction = interactionRecorder.runPredictionForTapSuppression();
-            ContextualSearchUma.logRankerPrediction(tapPrediction);
-        }
 
         // Make the suppression decision and act upon it.
-        boolean shouldSuppressTapBasedOnRanker = (tapPrediction == AssistRankerPrediction.SUPPRESS)
-                && ContextualSearchFieldTrial.getSwitch(
-                        ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED)
-                && !shouldOverrideMlTapSuppression;
-        if (shouldSuppressTapBasedOnHeuristics || shouldSuppressTapBasedOnRanker) {
-            Log.i(TAG, "Tap suppressed due to Ranker: %s, heuristics: %s",
-                    shouldSuppressTapBasedOnRanker, shouldSuppressTapBasedOnHeuristics);
+        if (shouldSuppressTapBasedOnHeuristics) {
+            Log.i(TAG, "Tap suppressed due to heuristics: %s", shouldSuppressTapBasedOnHeuristics);
             mHandler.handleSuppressedTap();
         } else {
             mHandler.handleNonSuppressedTap(mTapTimeNanoseconds);
@@ -500,8 +469,7 @@ public class ContextualSearchSelectionController {
 
         if (mTapTimeNanoseconds != 0) {
             // Remember the tap state for subsequent tap evaluation.
-            mLastTapState = new ContextualSearchTapState(
-                    x, y, mTapTimeNanoseconds, shouldSuppressTapBasedOnRanker);
+            mLastTapState = new ContextualSearchTapState(x, y, mTapTimeNanoseconds);
         } else {
             mLastTapState = null;
         }
@@ -556,27 +524,6 @@ public class ContextualSearchSelectionController {
      * @return Whether the selection is valid.
      */
     private boolean validateSelectionSuppression(String selection) {
-        boolean isValid = isValidSelection(selection);
-
-        if (mSelectionType == SelectionType.TAP) {
-            int minSelectionLength = ContextualSearchFieldTrial.getValue(
-                    ContextualSearchSetting.MINIMUM_SELECTION_LENGTH);
-            if (selection.length() < minSelectionLength) {
-                isValid = false;
-                ContextualSearchUma.logSelectionLengthSuppression(true);
-            } else if (minSelectionLength > 0) {
-                ContextualSearchUma.logSelectionLengthSuppression(false);
-            }
-        }
-
-        return isValid;
-    }
-
-    /** Determines if the given selection is valid or not.
-     * @param selection The selection portion of the context.
-     * @return whether the given selection is considered a valid target for a search.
-     */
-    private boolean isValidSelection(String selection) {
         return isValidSelection(selection, getSelectionPopupController());
     }
 

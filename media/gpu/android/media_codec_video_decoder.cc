@@ -384,8 +384,10 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // We only support setting CDM at first initialization. Even if the initial
   // config is clear, we'll still try to set CDM since we may switch to an
   // encrypted config later.
+  const int width = decoder_config_.coded_size().width();
   if (first_init && cdm_context && cdm_context->GetMediaCryptoContext()) {
     DCHECK(media_crypto_.is_null());
+    last_width_ = width;
     SetCdm(cdm_context, std::move(init_cb));
     return;
   }
@@ -401,7 +403,6 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Do the rest of the initialization lazily on the first decode.
   BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 
-  const int width = decoder_config_.coded_size().width();
   // On re-init, reallocate the codec if the size has changed too much.
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
@@ -416,6 +417,9 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // sure, request a deferred flush.
     deferred_flush_pending_ = true;
     deferred_reallocation_pending_ = true;
+    // Since this will re-use the same surface, allow a retry to work around a
+    // race condition in the android framework.
+    should_retry_codec_allocation_ = true;
     last_width_ = width;
   }  // else leave |last_width_| unmodified, since we're re-using the codec.
 }
@@ -706,6 +710,21 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     std::unique_ptr<MediaCodecBridge> codec) {
   DCHECK(!codec_);
   DCHECK_EQ(state_, State::kRunning);
+  bool should_retry_codec_allocation = should_retry_codec_allocation_;
+  should_retry_codec_allocation_ = false;
+
+  // In rare cases, the framework can fail transiently when trying to re-use a
+  // surface.  If we're in one of those cases, then retry codec allocation.
+  // This only happens on R and S, so skip it otherwise.
+  if (!codec && should_retry_codec_allocation &&
+      device_info_->SdkVersion() >= base::android::SDK_VERSION_R &&
+      device_info_->SdkVersion() <= 32 /* SDK_VERSION_S_V2 */
+  ) {
+    // We might want to post this with a short delay, but there is already quite
+    // a lot of overhead in codec allocation.
+    CreateCodec();
+    return;
+  }
 
   if (!codec) {
     EnterTerminalState(State::kError, "Unable to allocate codec");
@@ -719,7 +738,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
                           BindToCurrentLoop(base::BindRepeating(
                               &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                               weak_factory_.GetWeakPtr()))),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunnerHandle::Get(), decoder_config_.coded_size());
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.
@@ -777,6 +796,8 @@ void MediaCodecVideoDecoder::FlushCodec() {
   if (deferred_reallocation_pending_) {
     deferred_reallocation_pending_ = false;
     ReleaseCodec();
+    // Re-initializing the codec with the same surface may need to retry.
+    should_retry_codec_allocation_ = !SurfaceTransitionPending();
     CreateCodec();
   }
 
@@ -1058,6 +1079,12 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.MCVD.ForwardVideoFrameTiming", duration,
                              base::Milliseconds(1), base::Milliseconds(100),
                              25);
+
+  // Attach the HDR metadata if the color space got this far and is still an HDR
+  // color space.  Note that it might be converted to something else along the
+  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
+  if (frame->ColorSpace().IsHDR() && decoder_config_.hdr_metadata())
+    frame->set_hdr_metadata(decoder_config_.hdr_metadata());
 
   // No |frame| indicates an error creating it.
   if (!frame) {

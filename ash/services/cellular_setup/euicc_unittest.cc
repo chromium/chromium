@@ -11,11 +11,11 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/network/fake_network_connection_handler.h"
+#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -75,7 +75,7 @@ class EuiccTest : public ESimTestBase {
 
     base::RunLoop run_loop;
     euicc->InstallProfileFromActivationCode(
-        activation_code, confirmation_code,
+        activation_code, confirmation_code, /*is_install_via_qr_code=*/true,
         base::BindLambdaForTesting(
             [&](mojom::ProfileInstallResult install_result,
                 mojo::PendingRemote<mojom::ESimProfile> esim_profile) {

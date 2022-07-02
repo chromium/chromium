@@ -40,7 +40,6 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -48,7 +47,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
   void DispatchEvent(Profile* profile,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::vector<base::Value> event_args);
+                     base::Value::List event_args);
 
   raw_ptr<Profile> profile_;
   base::ScopedObservation<history::HistoryService,

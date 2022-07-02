@@ -273,6 +273,12 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
                                   generated_password_status_.value()));
   }
 
+  if (submitted_form_frame_.has_value()) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SubmittedFormFrame2", submitted_form_frame_.value(),
+        metrics_util::SubmittedFormFrame::SUBMITTED_FORM_FRAME_COUNT);
+  }
+
   if (password_generation_popup_shown_ !=
       PasswordGenerationPopupShown::kNotShown) {
     UMA_HISTOGRAM_ENUMERATION("PasswordGeneration.PopupShown",

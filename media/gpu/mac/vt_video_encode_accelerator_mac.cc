@@ -19,6 +19,7 @@
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
+#include "media/video/video_encode_accelerator.h"
 
 // This is a min version of macOS where we want to support SVC encoding via
 // EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
@@ -149,6 +150,8 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfile profile;
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
+  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                               VideoEncodeAccelerator::kVariableMode;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
   if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
@@ -169,6 +172,8 @@ VTVideoEncodeAccelerator::GetSupportedProfilesLight() {
   SupportedProfile profile;
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
+  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
+                               VideoEncodeAccelerator::kVariableMode;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
   for (const auto& supported_profile : kSupportedProfiles) {
     profile.profile = supported_profile;

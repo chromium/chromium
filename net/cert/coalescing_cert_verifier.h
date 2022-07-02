@@ -70,9 +70,9 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
 
   std::unique_ptr<CertVerifier> verifier_;
 
-  uint32_t config_id_;
-  uint64_t requests_;
-  uint64_t inflight_joins_;
+  uint32_t config_id_ = 0;
+  uint64_t requests_ = 0;
+  uint64_t inflight_joins_ = 0;
 };
 
 }  // namespace net

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -111,7 +112,8 @@ const char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
 const char kEnhancedProtectionEnabledViaTailoredSecurity[] =
     "safebrowsing.esb_enabled_via_tailored_security";
-
+const char kExtensionTelemetryLastUploadTime[] =
+    "safebrowsing.extension_telemetry_last_upload_time";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -231,6 +233,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kAccountTailoredSecurityShownNotification, false);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
+                             base::Time::Now());
+}
+
+base::Time GetLastUploadTimeForExtensionTelemetry(PrefService& prefs) {
+  return (prefs.GetTime(prefs::kExtensionTelemetryLastUploadTime));
+}
+
+void SetLastUploadTimeForExtensionTelemetry(PrefService& prefs,
+                                            const base::Time& time) {
+  prefs.SetTime(prefs::kExtensionTelemetryLastUploadTime, time);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

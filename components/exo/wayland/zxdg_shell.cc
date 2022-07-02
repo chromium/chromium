@@ -18,6 +18,7 @@
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_positioner.h"
+#include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -165,21 +166,6 @@ uint32_t HandleXdgSurfaceV6ConfigureCallback(
   wl_client_flush(wl_resource_get_client(resource));
   return serial;
 }
-
-struct WaylandXdgSurface {
-  WaylandXdgSurface(std::unique_ptr<XdgShellSurface> shell_surface,
-                    SerialTracker* const serial_tracker)
-      : shell_surface(std::move(shell_surface)),
-        serial_tracker(serial_tracker) {}
-
-  WaylandXdgSurface(const WaylandXdgSurface&) = delete;
-  WaylandXdgSurface& operator=(const WaylandXdgSurface&) = delete;
-
-  std::unique_ptr<XdgShellSurface> shell_surface;
-
-  // Owned by Server, which always outlives this surface.
-  SerialTracker* const serial_tracker;
-};
 
 // Wrapper around shell surface that allows us to handle the case where the
 // xdg surface resource is destroyed before the toplevel resource.
@@ -662,6 +648,8 @@ void xdg_shell_v6_get_xdg_surface(wl_client* client,
   // Xdg shell v6 surfaces are initially disabled and needs to be explicitly
   // mapped before they are enabled and can become visible.
   shell_surface->SetEnabled(false);
+
+  shell_surface->SetCapabilities(GetCapabilities(client));
 
   std::unique_ptr<WaylandXdgSurface> wayland_shell_surface =
       std::make_unique<WaylandXdgSurface>(std::move(shell_surface),
